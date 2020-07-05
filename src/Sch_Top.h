@@ -13,7 +13,6 @@
 #include "Sch_Joypad.h"
 #include "Sch_Serial.h"
 
-#include "Sch_CpuBus.h"
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
 #include "Sch_Bootrom.h"
@@ -27,11 +26,11 @@ namespace Schematics {
 
 struct SchematicTop {
 
-  void preset_sys();
+  void preset_sys(wire CLK_GOOD, wire CLK, wire RST, wire T1, wire T2);
   void preset_cpu(uint16_t addr, uint8_t data, bool read, bool write);
   void preset_ext();
-  void preset_joy();
-  void preset_vram();
+  void preset_joy(uint8_t buttons);
+  void preset_vram(wire OE, uint8_t data);
   void preset_oam();
 
   SignalHash tick();
@@ -60,7 +59,6 @@ struct SchematicTop {
 
   wire UMUT_MODE_DBG1p() const;
   wire UNOR_MODE_DBG2p() const;
-  wire UPOJ_MODE_PROD() const;
   wire TOVA_MODE_DBG2n() const;
   wire TUTO_DBG_VRAMp() const;
 
@@ -300,7 +298,7 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Internal state for debugging
 
-  int phase_counter = -32;
+  int phase_counter = 0;
 
   //-----------------------------------------------------------------------------
   // Top level registers
@@ -324,14 +322,14 @@ struct SchematicTop {
   /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
   /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
 
-  /*p32.RAWU*/ Reg13 RAWU_BG_PIX_B0; // also holds tile index during fetch
-  /*p32.POZO*/ Reg13 POZO_BG_PIX_B1;
-  /*p32.PYZO*/ Reg13 PYZO_BG_PIX_B2; 
-  /*p32.POXA*/ Reg13 POXA_BG_PIX_B3; 
-  /*p32.PULO*/ Reg13 PULO_BG_PIX_B4; 
-  /*p32.POJU*/ Reg13 POJU_BG_PIX_B5; 
-  /*p32.POWY*/ Reg13 POWY_BG_PIX_B6; 
-  /*p32.PYJU*/ Reg13 PYJU_BG_PIX_B7;
+  /*p32.RAWU*/ Reg11 RAWU_BG_PIX_B0; // also holds tile index during fetch
+  /*p32.POZO*/ Reg11 POZO_BG_PIX_B1;
+  /*p32.PYZO*/ Reg11 PYZO_BG_PIX_B2; 
+  /*p32.POXA*/ Reg11 POXA_BG_PIX_B3; 
+  /*p32.PULO*/ Reg11 PULO_BG_PIX_B4; 
+  /*p32.POJU*/ Reg11 POJU_BG_PIX_B5; 
+  /*p32.POWY*/ Reg11 POWY_BG_PIX_B6; 
+  /*p32.PYJU*/ Reg11 PYJU_BG_PIX_B7;
 
   //-----------------------------------------------------------------------------
   // Internal bus to CPU
@@ -436,6 +434,15 @@ struct SchematicTop {
   Tribuf OAM_PIN_DB7;
 
   //-----------------------------------------------------------------------------
+  // Sys pins
+
+  PinIn  SYS_PIN_RST;          // PIN_71 
+  PinIn  SYS_PIN_CLK_xBxDxFxH; // PIN_74 
+  PinIn  SYS_PIN_CLK_GOOD;     // PIN_74 
+  PinIn  SYS_PIN_T2;           // PIN_76, tied to 0 on board
+  PinIn  SYS_PIN_T1;           // PIN_77, tied to 0 on board
+
+  //-----------------------------------------------------------------------------
   // LCD pins
 
   PinOut LCD_PIN_LD1;  // PIN_50 
@@ -446,15 +453,6 @@ struct SchematicTop {
   PinOut LCD_PIN_CPL;  // PIN_55 
   PinOut LCD_PIN_FR;   // PIN_56 
   PinOut LCD_PIN_S;    // PIN_57 
-
-  //-----------------------------------------------------------------------------
-  // Sys pins
-
-  PinIn  SYS_PIN_RST;          // PIN_71 
-  PinIn  SYS_PIN_CLK_xBxDxFxH; // PIN_74 
-  PinIn  SYS_PIN_CLK_GOOD;     // PIN_74 
-  PinIn  SYS_PIN_T2;           // PIN_76 
-  PinIn  SYS_PIN_T1;           // PIN_77 
 
   //-----------------------------------------------------------------------------
   // Joypad pins
@@ -719,7 +717,7 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Sub-modules
 
-private:
+//private:
 
   ClockRegisters clk_reg;
   DebugRegisters dbg_reg;

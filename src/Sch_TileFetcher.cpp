@@ -190,21 +190,17 @@ void TileFetcher::tick(SchematicTop& top) {
   //----------------------------------------
 
   {
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.JOY_PIN_P10_B);
+
     /*p24.LOBY*/ wire LOBY_RENDERINGn      = not(top.XYMU_RENDERINGp());
     /*p27.LAXE*/ wire LAXE_BFETCH_S0n      = not(LAXU_BFETCH_S0.q());
     /*p27.NAKO*/ wire NAKO_BFETCH_S1n      = not(MESU_BFETCH_S1.q());
     /*p27.NOFU*/ wire NOFU_BFETCH_S2n      = not(NYVA_BFETCH_S2.q());
     /*p27.MYSO*/ wire MYSO_BG_TRIGp        = nor(LOBY_RENDERINGn, LAXE_BFETCH_S0n, LYZU_BFETCH_S0_DELAY.q());
-    /*p27.NYDY*/ wire NYDY_LATCH_BG_PIX_Ap = nand(MYSO_BG_TRIGp, MESU_BFETCH_S1.q(), NOFU_BFETCH_S2n);
-    /*p27.MOFU*/ wire MOFU_LATCH_BG_PIX_Bn = and (MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
 
+    /*p27.NYDY*/ wire NYDY_LATCH_BG_PIX_Ap = nand(MYSO_BG_TRIGp, MESU_BFETCH_S1.q(), NOFU_BFETCH_S2n);
     /*p32.METE*/ wire METE_LATCH_BG_PIX_An = not(NYDY_LATCH_BG_PIX_Ap);
     /*p32.LOMA*/ wire LOMA_LATCH_BG_PIX_Ap = not(METE_LATCH_BG_PIX_An);
-    /*p32.LESO*/ wire LESO_LATCH_BG_PIX_Bp = not(MOFU_LATCH_BG_PIX_Bn);
-    /*p32.AJAR*/ wire AJAR_LATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp);
-    /*p32.LABU*/ wire LABU_LATCH_BG_PIX_Bp = not(AJAR_LATCH_BG_PIX_Bn);
-
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.JOY_PIN_P10_B);
 
     // Clock polarity wrong? Check regs on die.
 
@@ -222,23 +218,29 @@ void TileFetcher::tick(SchematicTop& top) {
     // BFETCH_100 - LOMA_BG_LATCHn = 1;
     // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
-    /*p32.LEGU*/ top.LEGU_BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D0);
-    /*p32.NUDU*/ top.NUDU_BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D1);
-    /*p32.MUKU*/ top.MUKU_BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D2);
-    /*p32.LUZO*/ top.LUZO_BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D3);
-    /*p32.MEGU*/ top.MEGU_BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D4);
-    /*p32.MYJY*/ top.MYJY_BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D5);
-    /*p32.NASA*/ top.NASA_BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
-    /*p32.NEFO*/ top.NEFO_BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
+    /*p32.LEGU*/ top.LEGU_BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D0);
+    /*p32.NUDU*/ top.NUDU_BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D1);
+    /*p32.MUKU*/ top.MUKU_BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D2);
+    /*p32.LUZO*/ top.LUZO_BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D3);
+    /*p32.MEGU*/ top.MEGU_BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D4);
+    /*p32.MYJY*/ top.MYJY_BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D5);
+    /*p32.NASA*/ top.NASA_BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
+    /*p32.NEFO*/ top.NEFO_BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
 
-    /*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
-    /*p32.POZO*/ top.POZO_BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D1);
-    /*p32.PYZO*/ top.PYZO_BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D2);
-    /*p32.POXA*/ top.POXA_BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D3);
-    /*p32.PULO*/ top.PULO_BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D4);
-    /*p32.POJU*/ top.POJU_BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D5);
-    /*p32.POWY*/ top.POWY_BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D6);
-    /*p32.PYJU*/ top.PYJU_BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D7);
+    /*p27.MOFU*/ wire MOFU_LATCH_BG_PIX_Bn = and(MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
+    /*p32.LESO*/ wire LESO_LATCH_BG_PIX_Bp = not(MOFU_LATCH_BG_PIX_Bn);
+    /*p??.LUVE*/ wire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
+    /*p32.LABU*/ wire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
+
+    // Why are the clocks swapped?
+    /*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D0);
+    /*p32.POZO*/ top.POZO_BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D1);
+    /*p32.PYZO*/ top.PYZO_BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D2);
+    /*p32.POXA*/ top.POXA_BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D3);
+    /*p32.PULO*/ top.PULO_BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D4);
+    /*p32.POJU*/ top.POJU_BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D5);
+    /*p32.POWY*/ top.POWY_BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D6);
+    /*p32.PYJU*/ top.PYJU_BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, VYPO_P10_Bn, top.VRM_TRI_D7);
   }
 
 
@@ -267,14 +269,14 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p23.GAVE*/ GAVE_SCY0.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D0);
-    /*p23.FYMO*/ FYMO_SCY1.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D1);
-    /*p23.FEZU*/ FEZU_SCY2.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D2);
-    /*p23.FUJO*/ FUJO_SCY3.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D3);
-    /*p23.DEDE*/ DEDE_SCY4.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D4);
-    /*p23.FOTY*/ FOTY_SCY5.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D5);
-    /*p23.FOHA*/ FOHA_SCY6.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D6);
-    /*p23.FUNY*/ FUNY_SCY7.set(CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D7);
+    /*p23.GAVE*/ GAVE_SCY0.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D0);
+    /*p23.FYMO*/ FYMO_SCY1.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D1);
+    /*p23.FEZU*/ FEZU_SCY2.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D2);
+    /*p23.FUJO*/ FUJO_SCY3.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D3);
+    /*p23.DEDE*/ DEDE_SCY4.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D4);
+    /*p23.FOTY*/ FOTY_SCY5.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D5);
+    /*p23.FOHA*/ FOHA_SCY6.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D6);
+    /*p23.FUNY*/ FUNY_SCY7.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, CUNU_RSTn, top.CPU_TRI_D7);
 
     /*p23.WARE*/ top.CPU_TRI_D0.set_tribuf(BUWY_FF42_RDn, GAVE_SCY0.q());
     /*p23.GOBA*/ top.CPU_TRI_D1.set_tribuf(BUWY_FF42_RDn, FYMO_SCY1.q());
@@ -312,14 +314,14 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p23.DATY*/ DATY_SCX0.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D0);
-    /*p23.DUZU*/ DUZU_SCX1.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D1);
-    /*p23.CYXU*/ CYXU_SCX2.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D2);
-    /*p23.GUBO*/ GUBO_SCX3.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D3);
-    /*p23.BEMY*/ BEMY_SCX4.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D4);
-    /*p23.CUZY*/ CUZY_SCX5.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D5);
-    /*p23.CABU*/ CABU_SCX6.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D6);
-    /*p23.BAKE*/ BAKE_SCX7.set(AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D7);
+    /*p23.DATY*/ DATY_SCX0.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D0);
+    /*p23.DUZU*/ DUZU_SCX1.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D1);
+    /*p23.CYXU*/ CYXU_SCX2.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D2);
+    /*p23.GUBO*/ GUBO_SCX3.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D3);
+    /*p23.BEMY*/ BEMY_SCX4.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D4);
+    /*p23.CUZY*/ CUZY_SCX5.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D5);
+    /*p23.CABU*/ CABU_SCX6.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D6);
+    /*p23.BAKE*/ BAKE_SCX7.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, CUNU_RSTn, top.CPU_TRI_D7);
 
     /*p23.EDOS*/ top.CPU_TRI_D0.set_tribuf(!BEBA_FF43_RDn, DATY_SCX0.q());
     /*p23.EKOB*/ top.CPU_TRI_D1.set_tribuf(!BEBA_FF43_RDn, DUZU_SCX1.q());

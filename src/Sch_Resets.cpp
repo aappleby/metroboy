@@ -20,7 +20,27 @@ void ResetRegisters::tick(SchematicTop& top) {
     /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
     /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
     /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
-    /*p01.AFER*/ AFER_RSTp.set(BOMA_xBxxxxxx, top.UPOJ_MODE_PROD(), ASOL_RST_LATCHp);
+
+    /*p07.UBET*/ wire UBET_T1n = not(top.SYS_PIN_T1);
+    /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2);
+    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RST);
+
+    // AFER_01 nc
+    // AFER_02 << UPOJ_04 (RSTp?)
+    // AFER_03 << ASOL_03 (D)
+    // AFER_04 nc
+    // AFER_05 << BOGA_07 (CLKp?)
+    // AFER_06 nc
+    // AFER_07 nc
+    // AFER_08 << BOMA_07 (CLKn?)
+    // AFER_09 << UPOJ_04 (RSTp?)
+    // AFER_10 nc
+    // AFER_11 nc
+    // AFER_12 >> nc
+    // AFER_13 >> AVOR_01
+
+    /*p01.AFER*/ AFER_RSTp.set(BOGA_AxCDEFGH, BOMA_xBxxxxxx, UPOJ_MODE_PRODn, ASOL_RST_LATCHp);
+
     top.CPU_PIN_TABA_RSTp.set(TABA_RSTp);
     top.CPU_PIN_AFER_RSTp.set(AFER_RSTp);
   }

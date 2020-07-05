@@ -12,8 +12,8 @@ struct ClockRegisters {
   void tick(SchematicTop& top);
   SignalHash commit();
 
-private:
-  friend SchematicTop;
+//private:
+  //friend SchematicTop;
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ Reg9_Duo AFUR_xBCDExxx;

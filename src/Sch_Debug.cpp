@@ -4,14 +4,6 @@
 
 using namespace Schematics;
 
-//text_painter.dprintf("UNOR_MODE_DBG2           %d\n", UNOR_MODE_DBG2        .a.val);
-//text_painter.dprintf("UMUT_MODE_DBG1           %d\n", UMUT_MODE_DBG1        .a.val);
-//text_painter.dprintf("UPOJ_MODE_PRODn  %d\n", UPOJ_MODE_PRODn );
-//text_painter.dprintf("UMUT_MODE_DBG1  %d\n", UMUT_MODE_DBG1 );
-//text_painter.dprintf("UNOR_MODE_DBG2  %d\n", UNOR_MODE_DBG2 );
-//text_painter.dprintf("TOVA_MODE_DBG2n %d\n", TOVA_MODE_DBG2n);
-//text_painter.dprintf("RYCA_MODE_DBG2n %d\n", RYCA_MODE_DBG2n);
-
 //-----------------------------------------------------------------------------
 
 void DebugRegisters::tick(const SchematicTop& top) {

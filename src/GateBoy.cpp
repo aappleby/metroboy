@@ -11,18 +11,42 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.init();
   //gateboy.reset(0x100);
 
-  auto gb = gateboy.top();
+  auto top = gateboy.top();
 
   for (int i = 0; i < 10; i++) {
-    gb->preset_sys();
-    gb->preset_cpu(0, 0, 0, 0);
-    gb->preset_ext();
-    gb->preset_joy();
-    gb->preset_vram();
-    gb->preset_oam();
+    wire CLK_GOOD = 0;
+    wire CLK = top->phase_counter & 1;
+    wire RST = 1;
+    wire T1 = 0;
+    wire T2 = 0;
 
-    SignalHash hash = gb->tick();
-    printf("Hash 0x%016llx\n", hash.h);
+    uint8_t buttons = 0;
+
+    for (int pass = 0; pass < 10; pass++) {
+      top->preset_sys(CLK_GOOD, CLK, RST, T1, T2);
+      top->preset_cpu(0, 0, 0, 0);
+      top->preset_ext();
+      top->preset_joy(buttons);
+      top->preset_vram(0, 0);
+      top->preset_oam();
+
+      SignalHash hash = top->tick();
+
+      wire AFUR_xBCDExxx = top->clk_reg.AFUR_xBCDExxx;
+      wire ALEF_xxCDEFxx = top->clk_reg.ALEF_xxCDEFxx;
+      wire APUK_xxxDEFGx = top->clk_reg.APUK_xxxDEFGx;
+      wire ADYK_xxxxEFGH = top->clk_reg.ADYK_xxxxEFGH;
+
+      printf("Pass %d clk %d%d%d%d hash 0x%016llx\n",
+        pass, 
+        AFUR_xBCDExxx,
+        ALEF_xxCDEFxx,
+        APUK_xxxDEFGx,
+        ADYK_xxxxEFGH,
+        hash.h);
+    }
+
+    top->phase_counter++;
   }
 
   return 0;
@@ -172,12 +196,12 @@ void GateBoy::update(double delta) {
 void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text_painter) {
   //uint64_t begin = SDL_GetPerformanceCounter();
 
-  Schematics::SchematicTop& gb = *state_manager.state();
+  Schematics::SchematicTop& top = *state_manager.state();
 
   text_painter.dprintf(" ----- SYS_REG -----\n");
-  text_painter.dprintf("PHASE    %08d\n", gb.phase_counter);
+  text_painter.dprintf("PHASE    %08d\n", top.phase_counter);
 
-  int p = gb.phase_counter & 7;
+  int p = top.phase_counter & 7;
   text_painter.dprintf("PHASE    %c%c%c%c%c%c%c%c\n",
                p == 0 ? 'A' : '_',
                p == 1 ? 'B' : '_',

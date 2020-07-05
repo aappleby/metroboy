@@ -129,7 +129,6 @@
     <ClInclude Include="src\Sch_Channel4.h" />
     <ClInclude Include="src\Sch_Clocks.h" />
     <ClInclude Include="src\Sch_Common.h" />
-    <ClInclude Include="src\Sch_CpuBus.h" />
     <ClInclude Include="src\Sch_Debug.h" />
     <ClInclude Include="src\Sch_DMA.h" />
     <ClInclude Include="src\Sch_Interrupts.h" />
@@ -200,7 +199,6 @@
     <ClCompile Include="src\Sch_Channel4.cpp" />
     <ClCompile Include="src\Sch_Clocks.cpp" />
     <ClCompile Include="src\Sch_Common.cpp" />
-    <ClCompile Include="src\Sch_CpuBus.cpp" />
     <ClCompile Include="src\Sch_Debug.cpp" />
     <ClCompile Include="src\Sch_DMA.cpp" />
     <ClCompile Include="src\Sch_Interrupts.cpp" />

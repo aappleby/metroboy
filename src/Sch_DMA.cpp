@@ -196,7 +196,6 @@ void DmaRegisters::tick(SchematicTop& top) {
 
   // FF46 DMA
   {
-    /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
     /*p04.NYGO*/ wire NYGO_FF46_RDp = not(MOLU_FF46_RDn);
     /*p04.PUSY*/ wire PUSY_FF46_RDn = not(NYGO_FF46_RDp);
 
@@ -209,14 +208,17 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p04.RESU*/ top.CPU_TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14);
     /*p04.NUVY*/ top.CPU_TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15);
 
-    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, top.CPU_TRI_D0);
-    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, top.CPU_TRI_D1);
-    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, top.CPU_TRI_D2);
-    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, top.CPU_TRI_D3);
-    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, top.CPU_TRI_D4);
-    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, top.CPU_TRI_D5);
-    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, top.CPU_TRI_D6);
-    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, top.CPU_TRI_D7);
+    /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
+    /*p??.PYSU*/ wire PYSU_FF46_WRp = not(LORU_FF46_WRn); // not on schematic
+
+    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D0);
+    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D1);
+    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D2);
+    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D3);
+    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D4);
+    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D5);
+    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D6);
+    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D7);
   }
 }
 

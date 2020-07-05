@@ -259,10 +259,10 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RSTn, RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, top.ROPO_LY_MATCH_SYNCp());
 
-    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D0);
-    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D1);
-    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D2);
-    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D3);
+    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D0);
+    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D1);
+    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D2);
+    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D3);
 
     /*p21.PARU*/ wire PARU_IN_VBLANK = not(!top.POPU_VBLANK_d4());
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp, top.ACYL_SCANNINGp()); // die NOR

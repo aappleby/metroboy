@@ -75,8 +75,8 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p35.NUXO*/ wire _PAL_BGPC = and(_PIX_BG1n, _PIX_BG0a, _MASK_BGP);
     /*p35.NYPO*/ wire _PAL_BGPD = and(_PIX_BG1a, _PIX_BG0a, _MASK_BGP);
 
-    /*p35.NURA*/ wire _COL_BGP1 = amux4(BGP7, _PAL_BGPD, BGP5, _PAL_BGPC, BGP3, _PAL_BGPB, BGP1, _PAL_BGPA);
-    /*p35.NELO*/ wire _COL_BGP0 = amux4(BGP6, _PAL_BGPD, BGP4, _PAL_BGPC, BGP2, _PAL_BGPB, BGP0, _PAL_BGPA);
+    /*p35.NURA*/ wire _COL_BGP1 = amux4(MENA_BGP7, _PAL_BGPD, MORU_BGP5, _PAL_BGPC, MAXY_BGP3, _PAL_BGPB, NUSY_BGP1, _PAL_BGPA);
+    /*p35.NELO*/ wire _COL_BGP0 = amux4(MOGY_BGP6, _PAL_BGPD, MUKE_BGP4, _PAL_BGPC, PYLU_BGP2, _PAL_BGPB, PAVO_BGP0, _PAL_BGPA);
 
     //----------
     // Pixel merge and send
@@ -382,50 +382,50 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
   // FF47 BGP
   {
-    /*p22.WYBO*/ wire FF47n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, WESA_A01p, WALO_A02p, XERA_A03n);
-    /*p22.WERA*/ wire FF47 = not(FF47n);
-    /*p36.VELY*/ wire FF47_WR = and (CUPA_CPU_WR_xxxxxFGH, FF47);
-    /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
+    /*p22.WYBO*/ wire WYBO_FF47n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, WESA_A01p, WALO_A02p, XERA_A03n);
+    /*p22.WERA*/ wire WERA_FF47 = not(WYBO_FF47n);
+    /*p36.VELY*/ wire VELY_FF47_WR = and (CUPA_CPU_WR_xxxxxFGH, WERA_FF47);
+    /*p36.TEPO*/ wire TEPO_FF47_WRn = not(VELY_FF47_WR);
 
-    /*p36.PAVO*/ BGP0.set(FF47_WRn, 1, top.CPU_TRI_D0);
-    /*p36.NUSY*/ BGP1.set(FF47_WRn, 1, top.CPU_TRI_D1);
-    /*p36.PYLU*/ BGP2.set(FF47_WRn, 1, top.CPU_TRI_D2);
-    /*p36.MAXY*/ BGP3.set(FF47_WRn, 1, top.CPU_TRI_D3);
-    /*p36.MUKE*/ BGP4.set(FF47_WRn, 1, top.CPU_TRI_D4);
-    /*p36.MORU*/ BGP5.set(FF47_WRn, 1, top.CPU_TRI_D5);
-    /*p36.MOGY*/ BGP6.set(FF47_WRn, 1, top.CPU_TRI_D6);
-    /*p36.MENA*/ BGP7.set(FF47_WRn, 1, top.CPU_TRI_D7);
+    /*p36.PAVO*/ PAVO_BGP0.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D0);
+    /*p36.NUSY*/ NUSY_BGP1.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D1);
+    /*p36.PYLU*/ PYLU_BGP2.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D2);
+    /*p36.MAXY*/ MAXY_BGP3.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D3);
+    /*p36.MUKE*/ MUKE_BGP4.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D4);
+    /*p36.MORU*/ MORU_BGP5.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D5);
+    /*p36.MOGY*/ MOGY_BGP6.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D6);
+    /*p36.MENA*/ MENA_BGP7.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D7);
 
-    /*p36.VUSO*/ wire FF47_RD = and (ASOT_CPU_RD, FF47);
+    /*p36.VUSO*/ wire FF47_RD = and (ASOT_CPU_RD, WERA_FF47);
     /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
 
-    /*p36.RARO*/ top.CPU_TRI_D0.set_tribuf(!FF47_RDn, BGP0.q());
-    /*p36.PABA*/ top.CPU_TRI_D1.set_tribuf(!FF47_RDn, BGP1.q());
-    /*p36.REDO*/ top.CPU_TRI_D2.set_tribuf(!FF47_RDn, BGP2.q());
-    /*p36.LOBE*/ top.CPU_TRI_D3.set_tribuf(!FF47_RDn, BGP3.q());
-    /*p36.LACE*/ top.CPU_TRI_D4.set_tribuf(!FF47_RDn, BGP4.q());
-    /*p36.LYKA*/ top.CPU_TRI_D5.set_tribuf(!FF47_RDn, BGP5.q());
-    /*p36.LODY*/ top.CPU_TRI_D6.set_tribuf(!FF47_RDn, BGP6.q());
-    /*p36.LARY*/ top.CPU_TRI_D7.set_tribuf(!FF47_RDn, BGP7.q());
+    /*p36.RARO*/ top.CPU_TRI_D0.set_tribuf(!FF47_RDn, PAVO_BGP0.q());
+    /*p36.PABA*/ top.CPU_TRI_D1.set_tribuf(!FF47_RDn, NUSY_BGP1.q());
+    /*p36.REDO*/ top.CPU_TRI_D2.set_tribuf(!FF47_RDn, PYLU_BGP2.q());
+    /*p36.LOBE*/ top.CPU_TRI_D3.set_tribuf(!FF47_RDn, MAXY_BGP3.q());
+    /*p36.LACE*/ top.CPU_TRI_D4.set_tribuf(!FF47_RDn, MUKE_BGP4.q());
+    /*p36.LYKA*/ top.CPU_TRI_D5.set_tribuf(!FF47_RDn, MORU_BGP5.q());
+    /*p36.LODY*/ top.CPU_TRI_D6.set_tribuf(!FF47_RDn, MOGY_BGP6.q());
+    /*p36.LARY*/ top.CPU_TRI_D7.set_tribuf(!FF47_RDn, MENA_BGP7.q());
   }
 
   // FF48 OBP0
   {
-    /*p22.WETA*/ wire FF48n = nand(top.WERO_FF40_FF4Fp(), XOLA_A00n, XENO_A01n, XUSY_A02n, WEPO_A03p);
-    /*p22.XAYO*/ wire FF48 = not(FF48n);
-    /*p36.XOMA*/ wire FF48_WR = and (CUPA_CPU_WR_xxxxxFGH, FF48);
-    /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
+    /*p22.WETA*/ wire WETA_FF48n = nand(top.WERO_FF40_FF4Fp(), XOLA_A00n, XENO_A01n, XUSY_A02n, WEPO_A03p);
+    /*p22.XAYO*/ wire XAYO_FF48 = not(WETA_FF48n);
+    /*p36.XOMA*/ wire XOMA_FF48_WR = and (CUPA_CPU_WR_xxxxxFGH, XAYO_FF48);
+    /*p36.XELO*/ wire XELO_FF48_WRn = not(XOMA_FF48_WR);
 
-    /*p36.XUFU*/ OBP00.set(FF48_WRn, 1, top.CPU_TRI_D0);
-    /*p36.XUKY*/ OBP01.set(FF48_WRn, 1, top.CPU_TRI_D1);
-    /*p36.XOVA*/ OBP02.set(FF48_WRn, 1, top.CPU_TRI_D2);
-    /*p36.XALO*/ OBP03.set(FF48_WRn, 1, top.CPU_TRI_D3);
-    /*p36.XERU*/ OBP04.set(FF48_WRn, 1, top.CPU_TRI_D4);
-    /*p36.XYZE*/ OBP05.set(FF48_WRn, 1, top.CPU_TRI_D5);
-    /*p36.XUPO*/ OBP06.set(FF48_WRn, 1, top.CPU_TRI_D6);
-    /*p36.XANA*/ OBP07.set(FF48_WRn, 1, top.CPU_TRI_D7);
+    /*p36.XUFU*/ OBP00.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D0);
+    /*p36.XUKY*/ OBP01.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D1);
+    /*p36.XOVA*/ OBP02.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D2);
+    /*p36.XALO*/ OBP03.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D3);
+    /*p36.XERU*/ OBP04.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D4);
+    /*p36.XYZE*/ OBP05.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D5);
+    /*p36.XUPO*/ OBP06.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D6);
+    /*p36.XANA*/ OBP07.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D7);
 
-    /*p36.XUFY*/ wire FF48_RD = and (ASOT_CPU_RD, FF48);
+    /*p36.XUFY*/ wire FF48_RD = and (ASOT_CPU_RD, XAYO_FF48);
     /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
 
     /*p36.XARY*/ top.CPU_TRI_D0.set_tribuf(!FF48_RDn, OBP00.q());
@@ -440,21 +440,21 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
   // FF49 OBP1
   {
-    /*p22.VAMA*/ wire FF49n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, XENO_A01n, XUSY_A02n, WEPO_A03p);
-    /*p22.TEGO*/ wire FF49 = not(FF49n);
-    /*p36.MYXE*/ wire FF49_WR = and (CUPA_CPU_WR_xxxxxFGH, FF49);
-    /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
+    /*p22.VAMA*/ wire VAMA_FF49n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, XENO_A01n, XUSY_A02n, WEPO_A03p);
+    /*p22.TEGO*/ wire TEGO_FF49 = not(VAMA_FF49n);
+    /*p36.MYXE*/ wire MYXE_FF49_WR = and (CUPA_CPU_WR_xxxxxFGH, TEGO_FF49);
+    /*p36.LEHO*/ wire LEHO_FF49_WRn = not(MYXE_FF49_WR);
 
-    /*p36.MOXY*/ OBP10.set(FF49_WRn, 1, top.CPU_TRI_D0);
-    /*p36.LAWO*/ OBP11.set(FF49_WRn, 1, top.CPU_TRI_D1);
-    /*p36.MOSA*/ OBP12.set(FF49_WRn, 1, top.CPU_TRI_D2);
-    /*p36.LOSE*/ OBP13.set(FF49_WRn, 1, top.CPU_TRI_D3);
-    /*p36.LUNE*/ OBP14.set(FF49_WRn, 1, top.CPU_TRI_D4);
-    /*p36.LUGU*/ OBP15.set(FF49_WRn, 1, top.CPU_TRI_D5);
-    /*p36.LEPU*/ OBP16.set(FF49_WRn, 1, top.CPU_TRI_D6);
-    /*p36.LUXO*/ OBP17.set(FF49_WRn, 1, top.CPU_TRI_D7);
+    /*p36.MOXY*/ OBP10.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D0);
+    /*p36.LAWO*/ OBP11.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D1);
+    /*p36.MOSA*/ OBP12.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D2);
+    /*p36.LOSE*/ OBP13.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D3);
+    /*p36.LUNE*/ OBP14.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D4);
+    /*p36.LUGU*/ OBP15.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D5);
+    /*p36.LEPU*/ OBP16.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D6);
+    /*p36.LUXO*/ OBP17.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D7);
 
-    /*p36.MUMY*/ wire FF49_RD = and (ASOT_CPU_RD, FF49);
+    /*p36.MUMY*/ wire FF49_RD = and (ASOT_CPU_RD, TEGO_FF49);
     /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD); // where does this go?
 
     /*p36.LAJU*/ top.CPU_TRI_D0.set_tribuf(!FF49_RDn, OBP10.q());
@@ -522,14 +522,14 @@ SignalHash PixelPipeRegisters::commit() {
   /*p26.VUMO*/ hash << MASK_PIPE_6.commit_reg();
   /*p26.VAVA*/ hash << MASK_PIPE_7.commit_reg();
 
-  /*p36.PAVO*/ hash << BGP0.commit_reg();
-  /*p36.NUSY*/ hash << BGP1.commit_reg();
-  /*p36.PYLU*/ hash << BGP2.commit_reg();
-  /*p36.MAXY*/ hash << BGP3.commit_reg();
-  /*p36.MUKE*/ hash << BGP4.commit_reg();
-  /*p36.MORU*/ hash << BGP5.commit_reg();
-  /*p36.MOGY*/ hash << BGP6.commit_reg();
-  /*p36.MENA*/ hash << BGP7.commit_reg();
+  /*p36.PAVO*/ hash << PAVO_BGP0.commit_reg();
+  /*p36.NUSY*/ hash << NUSY_BGP1.commit_reg();
+  /*p36.PYLU*/ hash << PYLU_BGP2.commit_reg();
+  /*p36.MAXY*/ hash << MAXY_BGP3.commit_reg();
+  /*p36.MUKE*/ hash << MUKE_BGP4.commit_reg();
+  /*p36.MORU*/ hash << MORU_BGP5.commit_reg();
+  /*p36.MOGY*/ hash << MOGY_BGP6.commit_reg();
+  /*p36.MENA*/ hash << MENA_BGP7.commit_reg();
   /*p36.XUFU*/ hash << OBP00.commit_reg();
   /*p36.XUKY*/ hash << OBP01.commit_reg();
   /*p36.XOVA*/ hash << OBP02.commit_reg();

@@ -234,9 +234,16 @@ struct PinIn {
     return a.val;
   }
 
-  void preset(bool x)        { a = x ? SET_1 : SET_0; }
-  void preset(SignalFlags f) { a.state = uint8_t(f); }
-  void preset(SignalState c) { a = c; }
+  void preset(bool c) {
+    preset(c ? SET_1 : SET_0);
+  }
+  void preset(SignalFlags c) {
+    preset(SignalState(c));
+  }
+  void preset(SignalState c) {
+    if (!a.error) __debugbreak();
+    a = c;
+  }
 
   SignalState clear_preset() {
     SignalState old_a = a;
@@ -254,8 +261,9 @@ struct RegisterBase {
 
   operator const bool() const {
     if (a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
     if (a.hiz)    __debugbreak();
+    if (!b.error) __debugbreak();
+
     //if (a.hiz) return 1;
     return a.val;
   }
@@ -377,6 +385,28 @@ struct Gate : public RegisterBase {
 };
 
 //-----------------------------------------------------------------------------
+// 8-rung register with no reset and dual outputs
+// Two or three vias in center column
+
+// Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
+
+// |o------O | CLKp
+///|====O====| D
+// |  -----  |
+// |O-------o| CLKn
+// |  -----  |
+// |==     ==|
+// |xxx-O-xxx| Q
+// |xxx-O-xxx| Qn or this rung can be empty
+
+// REG8_01 << CLKp
+// REG8_02 << D
+// REG8_03 nc
+// REG8_04 << CLKn
+// REG8_05 nc
+// REG8_06 nc
+// REG8_07 >> Q
+// REG8_08 >> Qn
 
 ///*p32.NEFO*/ NEFO_BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D7);
 
@@ -389,25 +419,15 @@ struct Gate : public RegisterBase {
 // NEFO_07 >> NAJA_02    (Q)
 // NEFO_08 nc
 
-// Three vias in center column
-
-// |o------O | CLK
-///|====O====| D
-// |  -----  |
-// |O-------o| CLKN
-// |  -----  |
-// |==     ==|
-// |xxx-O-xxx| Q
-// |xxx-O-xxx| Qn or this rung can be empty
-
 struct Reg8 : public RegisterBase {
 
-  void set(bool clk, bool val) {
+  void set(bool clkP, bool clkN, bool val) {
+    if (clkP == clkN) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clk;
+    b.clk = clkP;
     b.set = 0;
     b.rst = 0;
     b.error = 0;
@@ -441,13 +461,15 @@ struct Reg8 : public RegisterBase {
 };
 
 //-----------------------------------------------------------------------------
-// set and reset must be async (see interrupts)
-// reset must take priority over set (see interrupts ALUR_RSTn)
-
+// 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
 // Four vias in center column
+// Probably not dual-edge?
+
+// Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
+// store, SCY, SCX, LCDC, WX, WY
 
 // | O===--o | 
-// |==--O====| CLK
+// |==--O====| CLKp
 // | ------- | D
 // |o-------O| CLKn
 // |  -----  | 
@@ -455,6 +477,16 @@ struct Reg8 : public RegisterBase {
 // |o-------o| 
 // |xxx-O-xxx| Q
 // |xxx-O-xxx| Qn?
+
+// REG9_01 nc
+// REG9_02 << CLKp
+// REG9_03 << D
+// REG9_04 << CLKn
+// REG9_05 nc
+// REG9_06 << RSTp?
+// REG9_07 nc
+// REG9_08 >> Q
+// REG9_09 >> Qn
 
 ///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPRITE_X0);
 
@@ -470,12 +502,13 @@ struct Reg8 : public RegisterBase {
 
 struct Reg9 : public RegisterBase {
 
-  void set(bool clk, bool rstN, bool val) {
+  void set(bool clkP, bool clkN, bool rstN, bool val) {
+    if (clkP == clkN) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clk;
+    b.clk = clkP;
     b.set = 0;
     b.rst = !rstN;
     b.error = 0;
@@ -504,33 +537,48 @@ struct Reg9 : public RegisterBase {
 };
 
 //-----------------------------------------------------------------------------
-// set and reset must be async (see interrupts)
-// reset must take priority over set (see interrupts ALUR_RSTn)
+// Reg11 is used by the background pixel temp reg
+// Not sure why it's special. Could be dual-edge.
 
-///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_reg.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
+///*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
 
-// XADU_01 nc
-// XADU_02 << WEFE_02 (rstn)
-// XADU_03 << YFOT_02 (d)
-// XADU_04 nc
-// XADU_05 << WUDA_03 (clk)
-// XADU_06 nc
-// XADU_07 nc
-// XADU_08 << CYKE_02 (clkn?)
-// XADU_09 << WEFE_02 (rstn)
-// XADU_10 nc
-// XADU_11 nc
-// XADU_12 >> WUZY_04 (Q)    // might have these switched, but there's not many of these regs
-// XADU_13 >> nc      (QN)
+// wire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
+// wire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
 
-struct Reg13 : public RegisterBase {
+// RAWU_01 nc
+// RAWU_02 << VYPO_02 (RSTp?)
+// RAWU_03 << VRM_TRI_D0
+// RAWU_04 nc
+// RAWU_05 << LABU_03 (CLKp?)
+// RAWU_06 nc
+// RAWU_07 nc
+// RAWU_08 << LUVE_03 (CLKn?)
+// RAWU_09 << VYPO_02 (RSTp?)
+// RAWU_10 nc
+// RAWU_11 >> TUXE_02
 
-  void set(bool clk, bool rstN, bool val) {
+// LUVE = not(LESO)
+// 
+
+
+/*p32.RAWU*/
+/*p32.POZO*/
+/*p32.PYZO*/
+/*p32.POXA*/
+/*p32.PULO*/
+/*p32.POJU*/
+/*p32.POWY*/
+/*p32.PYJU*/
+
+struct Reg11 : public RegisterBase {
+
+  void set(bool clkP, bool clkN, bool rstN, bool val) {
+    if (clkP == clkN) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clk;
+    b.clk = clkP;
     b.set = 0;
     b.rst = !rstN;
     b.error = 0;
@@ -558,6 +606,100 @@ struct Reg13 : public RegisterBase {
   }
 };
 
+
+//-----------------------------------------------------------------------------
+// Reg13
+// Could be dual-edge. Not sure.
+// Could be pos-reset. Not sure.
+
+// REG13_01 nc
+// REG13_02 << RSTp?
+// REG13_03 << D
+// REG13_04 nc
+// REG13_05 << CLKp?
+// REG13_06 nc
+// REG13_07 nc
+// REG13_08 << CLKn?
+// REG13_09 << RSTp?
+// REG13_10 nc
+// REG13_11 nc
+// REG13_12 >> Qn
+// REG13_13 >> Q
+
+/*p01.AFER*/ // out on 13
+/*p30.XADU*/ // out on 12
+/*p30.XEDY*/ // out on 12
+/*p30.ZUZE*/ // out on 12
+/*p30.XOBE*/ // out on 12
+/*p30.YDUF*/ // out on 12
+/*p30.XECU*/ // out on 12
+
+///*p01.AFER*/ AFER_RSTp.set(BOMA_xBxxxxxx, UPOJ_MODE_PRODn, ASOL_RST_LATCHp);
+///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_reg.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
+
+// AFER_01 nc
+// AFER_02 << UPOJ_04 (RSTp?)
+// AFER_03 << ASOL_03 (D)
+// AFER_04 nc
+// AFER_05 << BOGA_07 (CLKp?)
+// AFER_06 nc
+// AFER_07 nc
+// AFER_08 << BOMA_07 (CLKn?)
+// AFER_09 << UPOJ_04 (RSTp?)
+// AFER_10 nc
+// AFER_11 nc
+// AFER_12 >> nc
+// AFER_13 >> AVOR_01
+
+// XADU_01 nc
+// XADU_02 << WEFE_02 (RSTp?)
+// XADU_03 << YFOT_02 (D)
+// XADU_04 nc
+// XADU_05 << WUDA_03 (CLKp?)
+// XADU_06 nc
+// XADU_07 nc
+// XADU_08 << CYKE_02 (CLKn?)
+// XADU_09 << WEFE_02 (RSTp?)
+// XADU_10 nc
+// XADU_11 nc
+// XADU_12 >> WUZY_04 (Q)    // might have these switched, but there's not many of these regs
+// XADU_13 >> nc      (QN)
+
+struct Reg13 : public RegisterBase {
+
+  void set(bool clkP, bool clkN, bool rstN, bool val) {
+    if (clkP == clkN) __debugbreak();
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clkP;
+    b.set = 0;
+    b.rst = !rstN;
+    b.error = 0;
+  }
+
+  SignalState commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.error = 0;
+
+    b = ERROR;
+
+    return a;
+  }
+};
 
 //-----------------------------------------------------------------------------
 // set and reset must be async (see interrupts)
@@ -585,12 +727,12 @@ struct Reg13 : public RegisterBase {
 
 struct Reg17 : public RegisterBase {
 
-  void set(bool clk, bool rstN, bool val) {
+  void set(bool clkP, bool rstN, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clk;
+    b.clk = clkP;
     b.set = 0;
     b.rst = !rstN;
     b.error = 0;
@@ -670,12 +812,12 @@ struct Reg17 : public RegisterBase {
 
 struct Reg22 : public RegisterBase {
 
-  void set(bool clk, bool setN, bool rstN, bool val) {
+  void set(bool clkP, bool setN, bool rstN, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clk;
+    b.clk = clkP;
     b.set = !setN;
     b.rst = !rstN;
     b.error = 0;
@@ -706,25 +848,26 @@ struct Reg22 : public RegisterBase {
 //-----------------------------------------------------------------------------
 
 // REG9_01 NC
-// REG9_02 << CLK1
+// REG9_02 << CLKp
 // REG9_03 << D
-// REG9_04 << CLK2
+// REG9_04 << CLKn
 // REG9_05 NC
-// REG9_06 << RSTn
+// REG9_06 << RSTp - THIS MUST BE POSITIVE RESET - UPOJ_MODE_PROD is active-low
 // REG9_07 NC
 // REG9_08 >> Q
 // REG9_09 >> QN
 
 struct Reg9_Duo : public RegisterBase {
 
-  void set_duo(bool clk, bool rstN, bool c) {
+  void set_duo(bool clkP, bool clkN, bool rst, bool c) {
+    if (clkP == clkN) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = c;
     b.hiz = 0;
-    b.clk = clk;
+    b.clk = clkP;
     b.set = 0;
-    b.rst = !rstN;
+    b.rst = rst;
     b.error = 0;
   }
 

@@ -223,10 +223,33 @@ private:
 };
 
 //-----------------------------------------------------------------------------
+// I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
+// Not sure how that doesn't break in harware, but whatev.
+
+struct PinIn {
+
+  operator const bool() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  void preset(bool x)        { a = x ? SET_1 : SET_0; }
+  void preset(SignalState c) { a = c; }
+
+  SignalState clear_preset() {
+    SignalState old_a = a;
+    if (a.error) __debugbreak();
+    a = ERROR;
+    return old_a;
+  }
+
+  SignalState a = ERROR;
+};
+
+//-----------------------------------------------------------------------------
 
 struct RegisterBase {
 
-  // FIXME remove this so regs need explicit q/qn
   operator const bool() const {
     if (a.error) __debugbreak();
     if (!b.error) __debugbreak();
@@ -249,29 +272,6 @@ protected:
 };
 
 static_assert(sizeof(RegisterBase) == 2, "RegisterBase size != 2");
-
-//-----------------------------------------------------------------------------
-// I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
-// Not sure how that doesn't break in harware, but whatev.
-
-struct PinIn : public RegisterBase {
-
-  void preset(bool oe, bool val) {
-    a = oe ? (val ? SET_1 : SET_0) : HIZ;
-  }
-
-  void preset(SignalState c) {
-    a = c;
-  }
-
-  SignalState clear_preset() {
-    SignalState old_a = a;
-    //if ( a.err) __debugbreak();
-    //if (!b.err) __debugbreak();
-    //a = ERR;
-    return old_a;
-  }
-};
 
 //-----------------------------------------------------------------------------
 

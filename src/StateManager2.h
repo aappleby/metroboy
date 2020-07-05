@@ -9,20 +9,19 @@ template<class T>
 class StateManager2 {
 public:
 
+  StateManager2() {}
+
   typedef std::function<void(T*)> step_func;
 
-  StateManager2() {
+  void init(step_func s) {
     states.push_back(new T());
+    step_callback = s;
   }
 
   void reset() {
     for (auto s : states) delete s;
     states.clear();
     states.push_back(new T());
-  }
-
-  void set_step(step_func s) {
-    step_callback = s;
   }
 
   T* state() {

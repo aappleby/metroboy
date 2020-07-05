@@ -34,7 +34,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.ETAF*/ XFER_START.set(_FF02_WRn_xxxxxFGH, _XFER_RESET, top.CPU_TRI_D0);
   /*p06.CULY*/ XFER_DIR.set(_FF02_WRn_xxxxxFGH, ALUR_RSTn, top.CPU_TRI_D1);
 
-  /*p06.COTY*/ SER_CLK.set(top.UVYN_DIV_05n(), _FF02_WRn_xxxxxFGH, !SER_CLK.q());
+  /*p06.COTY*/ SER_CLK.set(top.UVYN_DIV_05n(), _FF02_WRn_xxxxxFGH, !SER_CLK);
 
   // XFER_DIR 0 = ext clk
   // XFER DIR 1 = int clk
@@ -45,7 +45,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   // CAVE04 nc
   // CAVE05 >> DAWA01
 
-  /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(SER_CLK.q(), SCK_C.q(), XFER_DIR.q());
+  /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(SER_CLK, SCK_C, XFER_DIR);
 
   /*p06.DAWA*/ wire _DAWA_SER_CLK = or(_SER_CLK_MUXn, !XFER_START.q()); // this must stop the clock or something when the transmit's done
   /*p06.EDYL*/ wire _EDYL_SER_CLK = not(_DAWA_SER_CLK);
@@ -165,8 +165,8 @@ void SerialRegisters::dump_regs(TextPainter& text_painter) {
 
 void SerialRegisters::dump_pins(TextPainter& text_painter) {
   text_painter.dprintf("----- SER_PINS -----\n");
-  text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.prev().val, SCK_B.prev().val, SCK_C.prev().val, SCK_D.prev().val);
-  text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.prev().val, SIN_B.prev().val, SIN_C.prev().val, SIN_D.prev().val);
+  text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.prev().val, SCK_B.prev().val, (bool)SCK_C, SCK_D.prev().val);
+  text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.prev().val, SIN_B.prev().val, (bool)SIN_C, SIN_D.prev().val);
   text_painter.dprintf("SOUT %d\n", SOUT.prev().val);
   text_painter.newline();
 }

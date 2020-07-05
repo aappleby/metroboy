@@ -1,103 +1,59 @@
 #include "GateBoy.h"
 
+using namespace Schematics;
+
 //-----------------------------------------------------------------------------
 
 int GateBoy::main(int /*argc*/, char** /*argv*/) {
   printf("GateBoy sim starting\n");
+
   GateBoy gb;
+  gb.init();
+  //gb.reset(0x100);
 
   return 0;
 }
 
 //-----------------------------------------------------------------------------
 
-uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
-  Schematics::SchematicTop* gb = state_manager.state();
-
+SignalHash GateBoy::cycle(SchematicTop* gb, uint16_t /*addr*/, uint8_t /*data*/, bool /*read*/, bool /*write*/) {
+  SignalHash hash;
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
-    gb->phase_counter++;
-
-    Schematics::SignalHash old_hash;
-    for (int pass = 0; pass < 256; pass++) {
-      //gb->ext_bus.SYS_PIN_CLK_xBxDxFxH.preset(true, (gb->phase_counter & 1));
-
-      //gb->cpu_pins.preset_rd(1);
-      //gb->cpu_pins.preset_wr(0);
-      //gb->cpu_pins.preset_addr_valid(1);
-      //gb->cpu_bus.preset_addr(true, addr);
-
-      //gb->joy_reg.clear_dir();
-
-      gb->tick_everything();
-      Schematics::SignalHash hash = gb->commit_everything();
-      if (hash == old_hash) break;
-      if (pass == 199) printf("stuck!\n");
-      if (pass == 200) __debugbreak();
-    }
+    hash = phase(gb);
   }
-
-  return (uint8_t)gb->get_data();
+  return hash;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
-void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
-  Schematics::SchematicTop* gb = state_manager.state();
+SignalHash GateBoy::phase(Schematics::SchematicTop* gb) {
+  gb->phase_counter++;
 
-  for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
-    gb->phase_counter++;
+  Schematics::SignalHash hash;
+  for (int i = 0; i < 256; i++) {
+    gb->SYS_PIN_CLK_xBxDxFxH.preset(gb->phase_counter & 1);
 
-    for (int pass = 0; pass < 256; pass++) {
-      //gb->ext_bus.SYS_PIN_CLK_xBxDxFxH.preset(true, (gb->phase_counter & 1));
-
-      //gb->gb.CPU_PIN_RD.preset(true, 0);
-      //gb->gb.CPU_PIN_WR.preset(true, 1);
-      //gb->gb.CPU_PIN_ADDR_VALID.preset(true, 1);
-      //gb->cpu_bus.preset_addr(true, addr);
-      //gb->cpu_bus.set_data(true, data);
-
-      //gb->joy_reg.clear_dir();
-
-      gb->tick_everything();
-      bool changed = gb->commit_everything();
-      if (!changed) break;
-      if (pass == 199) printf("stuck!\n");
-      if (pass == 200) __debugbreak();
-    }
+    Schematics::SignalHash new_hash = pass(gb);
+    if (new_hash == hash) break;
+    if (i == 199) printf("stuck!\n");
+    if (i == 200) __debugbreak();
   }
+  return hash;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
-void GateBoy::pass_cycle() {
-  Schematics::SchematicTop* gb = state_manager.state();
-
-  for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
-    gb->phase_counter++;
-
-    for (int pass = 0; pass < 256; pass++) {
-      //gb->ext_pins_in.SYS_PIN_CLK_xBxDxFxH.preset(true, (gb->phase_counter & 1));
-
-      gb->CPU_PIN_RD.preset(true, 0);
-      gb->CPU_PIN_WR.preset(true, 0);
-      gb->CPU_PIN_ADDR_VALID.preset(true, 0);
-      gb->preset_addr(true, 0x0000);
-
-      //gb->joy_reg.clear_dir();
-
-      gb->tick_everything();
-      bool changed = gb->commit_everything();
-      if (!changed) break;
-      if (pass == 199) printf("stuck!\n");
-      if (pass == 200) __debugbreak();
-    }
-  }
+SignalHash GateBoy::pass(SchematicTop* gb) {
+  Schematics::SignalHash hash;
+  hash = gb->tick();
+  return hash;
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoy::init() {
-  reset(0x0100);
+  auto gb_step = [this](Schematics::SchematicTop* gb) { phase(gb); };
+  state_manager.init(gb_step);
 
   /*
   printf("joyp 0x%02x 0x%02x\n", rw_cycle(0xFF00, 0x00), rw_cycle(0xFF00, 0xFF));
@@ -137,42 +93,8 @@ void GateBoy::init() {
 void GateBoy::reset(uint16_t /*new_pc*/) {
   state_manager.reset();
 
-  auto gb_step = [this](Schematics::SchematicTop* gb){
-    gb->phase_counter++;
-
-    for (int pass = 0; pass < 256; pass++) {
-      gb->SYS_PIN_CLK_xBxDxFxH.preset(true, gb->phase_counter & 1);
-
-      /*
-      if (phase >= 32 && phase < 40) {
-      gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-      gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
-      gb->cpu_pins.ADDR_VALIDx.preset(true, 1);
-      gb->cpu_pins.preset_addr(true, 0xFF42);
-      gb->cpu_pins.set_data(true, 0x55);
-      }
-      else if (phase >= 40 && phase < 48) {
-      gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-      gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-      gb->cpu_pins.ADDR_VALIDx.preset(true, 0);
-      gb->cpu_pins.preset_addr(true, 0x0000);
-      }
-      */
-
-      //gb->joy_reg.clear_dir();
-
-      gb->tick_everything();
-      bool changed = gb->commit_everything();
-      if (!changed) break;
-      if (pass == 199) printf("stuck!\n");
-      if (pass == 200) __debugbreak();
-    }
-  };
-
-  state_manager.set_step(gb_step);
-
+  /*
   Schematics::SchematicTop* gb = state_manager.state();
-
   gb->SYS_PIN_RST.preset(true, 1);
   gb->SYS_PIN_CLK_GOOD.preset(true, 0);
   gb->preset_t1t2(0,0);
@@ -183,6 +105,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->CPU_PIN_ADDR_VALID.preset(true, 1);
   gb->CPU_PIN5.preset(true, 0);
   gb->CPU_PIN6.preset(true, 0);
+  */
 
   /*
   gb->int_reg.CPU_PIN_ACK_SERIAL.preset(true, 0);
@@ -194,13 +117,15 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   //gb->ext_pins_in.preset();
 
-  pass_cycle();
+  /*
+  cycle();
   gb->SYS_PIN_RST.preset(true, 0);
-  pass_cycle();
+  cycle();
   gb->SYS_PIN_CLK_GOOD.preset(true, 1);
-  pass_cycle();
+  cycle();
   gb->CPU_PIN_CLKREQ.preset(true, 1);
-  pass_cycle();
+  cycle();
+  */
 }
 
 //-----------------------------------------------------------------------------
@@ -229,6 +154,7 @@ void GateBoy::update(double delta) {
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text_painter) {
   //uint64_t begin = SDL_GetPerformanceCounter();
 
@@ -310,5 +236,6 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   cx += 192;
   */
 }
+#endif
 
 //-----------------------------------------------------------------------------

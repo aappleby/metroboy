@@ -105,7 +105,7 @@ void TimerRegisters::tick(SchematicTop& top) {
     /*p03.PYMA*/ wire PYMA_TIMA_LD_6 = nor(MULO_TIMA_RST, REFU_TIMA_MUX_6);
     /*p03.PAGU*/ wire PAGU_TIMA_LD_7 = nor(MULO_TIMA_RST, RATO_TIMA_MUX_7);
 
-    /*p03.MUZU*/ wire MUZU = or(top.CPU_PIN5.q(), TOPE_FF05_WR);
+    /*p03.MUZU*/ wire MUZU = or(top.CPU_PIN5, TOPE_FF05_WR);
     /*p03.MEXU*/ wire MEXU_TIMA_LOAD = nand(MUZU, ALUR_RSTn, MEKE_INT_TIMERn);
 
     /*p03.REGA*/ REGA_TIMA_0.clk_n(SOGU_TIMA_CLK,   MEXU_TIMA_LOAD, PUXY_TIMA_LD_0);
@@ -130,7 +130,7 @@ void TimerRegisters::tick(SchematicTop& top) {
   {
     /*p03.MEKE*/ wire MEKE_INT_TIMERn = not(MOBA_INT_TIMERp.q());
     /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
-    /*p03.MUZU*/ wire MUZU = or(top.CPU_PIN5.q(), TOPE_FF05_WR);
+    /*p03.MUZU*/ wire MUZU = or(top.CPU_PIN5, TOPE_FF05_WR);
     /*p03.MEXU*/ wire MEXU_TIMA_LOAD = nand(MUZU, ALUR_RSTn, MEKE_INT_TIMERn);
     /*p03.MUGY*/ wire TIMA_LOADn = not(MEXU_TIMA_LOAD);
 

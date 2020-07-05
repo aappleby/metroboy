@@ -27,16 +27,17 @@ namespace Schematics {
 
 struct SchematicTop {
 
+  void preset();
+
+  SignalHash tick();
+
   //-----------------------------------------------------------------------------
 
-  void tick_everything();
   void tick_vram_pins();
   void tick_top_regs();
   void tick_cpu_bus();
 
   //-----------------------------------------------------------------------------
-
-  SignalHash commit_everything();
 
   SignalHash commit_ibus();
   SignalHash commit_vbus();
@@ -57,7 +58,6 @@ struct SchematicTop {
   wire UPOJ_MODE_PROD() const;
   wire TOVA_MODE_DBG2n() const;
   wire TUTO_DBG_VRAMp() const;
-  void preset_t1t2(bool t1, bool t2);
 
   //-----------------------------------------------------------------------------
   // Clock signals
@@ -95,12 +95,8 @@ struct SchematicTop {
   wire UBAL_CPU_WRp_ABCDExxx() const;
 
   int get_addr() const;
-  void preset_addr(bool oe, uint16_t addr);
   int get_data() const;
   void set_data(bool oe, uint8_t data);
-  void preset_rd(bool rd);
-  void preset_wr(bool wr);
-  void preset_addr_valid(bool valid);
 
   //-----------------------------------------------------------------------------
   // Bus mux signals

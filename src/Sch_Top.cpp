@@ -4,14 +4,103 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tick_everything() {
-  clk_reg.tick(*this);
-  dbg_reg.tick(*this);
-  rst_reg.tick(*this);
-  tim_reg.tick(*this);
+void SchematicTop::preset() {
+  CPU_PIN5;
+  CPU_PIN6;
 
-  tick_vram_pins();
-  tick_top_regs();
+  /*
+  CPU_PIN_A00.preset(addr & 0x0001);
+  CPU_PIN_A01.preset(addr & 0x0002);
+  CPU_PIN_A02.preset(addr & 0x0004);
+  CPU_PIN_A03.preset(addr & 0x0008);
+  CPU_PIN_A04.preset(addr & 0x0010);
+  CPU_PIN_A05.preset(addr & 0x0020);
+  CPU_PIN_A06.preset(addr & 0x0040);
+  CPU_PIN_A07.preset(addr & 0x0080);
+  CPU_PIN_A08.preset(addr & 0x0100);
+  CPU_PIN_A09.preset(addr & 0x0200);
+  CPU_PIN_A10.preset(addr & 0x0400);
+  CPU_PIN_A11.preset(addr & 0x0800);
+  CPU_PIN_A12.preset(addr & 0x1000);
+  CPU_PIN_A13.preset(addr & 0x2000);
+  CPU_PIN_A14.preset(addr & 0x4000);
+  CPU_PIN_A15.preset(addr & 0x8000);
+
+  void SchematicTop::preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
+  void SchematicTop::preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
+  void SchematicTop::preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
+
+  */
+
+  CPU_PIN_ACK_JOYPAD;
+  CPU_PIN_ACK_SERIAL;
+  CPU_PIN_ACK_STAT;
+  CPU_PIN_ACK_TIMER;
+  CPU_PIN_ACK_VBLANK;
+  CPU_PIN_ADDR_VALID;
+  CPU_PIN_CLKREQ;
+  CPU_PIN_RD;
+  CPU_PIN_WR;
+
+  EXT_PIN_A00_C;
+  EXT_PIN_A01_C;
+  EXT_PIN_A02_C;
+  EXT_PIN_A03_C;
+  EXT_PIN_A04_C;
+  EXT_PIN_A05_C;
+  EXT_PIN_A06_C;
+  EXT_PIN_A07_C;
+  EXT_PIN_A08_C;
+  EXT_PIN_A09_C;
+  EXT_PIN_A10_C;
+  EXT_PIN_A11_C;
+  EXT_PIN_A12_C;
+  EXT_PIN_A13_C;
+  EXT_PIN_A14_C;
+  EXT_PIN_A15_C;
+
+  EXT_PIN_D0_C;
+  EXT_PIN_D1_C;
+  EXT_PIN_D2_C;
+  EXT_PIN_D3_C;
+  EXT_PIN_D4_C;
+  EXT_PIN_D5_C;
+  EXT_PIN_D6_C;
+  EXT_PIN_D7_C;
+  EXT_PIN_RDn_C;
+  EXT_PIN_WRn_C;
+  JOY_PIN_P10_C;
+  JOY_PIN_P11_C;
+  JOY_PIN_P12_C;
+  JOY_PIN_P13_C;
+  SYS_PIN_CLK_GOOD;
+  SYS_PIN_CLK_xBxDxFxH;
+  SYS_PIN_RST;
+  SYS_PIN_T1;
+  SYS_PIN_T2;
+  VRAM_PIN_MCSn_C;
+  VRAM_PIN_MD0_C;
+  VRAM_PIN_MD1_C;
+  VRAM_PIN_MD2_C;
+  VRAM_PIN_MD3_C;
+  VRAM_PIN_MD4_C;
+  VRAM_PIN_MD5_C;
+  VRAM_PIN_MD6_C;
+  VRAM_PIN_MD7_C;
+  VRAM_PIN_MOEn_C;
+  VRAM_PIN_MWRn_C;
+}
+
+//-----------------------------------------------------------------------------
+
+SignalHash SchematicTop::tick() {
+  //clk_reg.tick(*this);
+  //dbg_reg.tick(*this);
+  //rst_reg.tick(*this);
+  //tim_reg.tick(*this);
+
+  //tick_vram_pins();
+  //tick_top_regs();
 
   /*
   dma_reg.tick(*this);
@@ -28,6 +117,32 @@ void SchematicTop::tick_everything() {
   cpu_pins_out.tick(*this);
   vram_pins.tick(*this);
   */
+
+  //----------
+
+  SignalHash hash;
+
+  //hash << clk_reg.commit();
+  //hash << dbg_reg.commit();
+  //hash << rst_reg.commit();
+  //hash << tim_reg.commit();
+  //hash << lcd_reg.commit();
+  //hash << pxp_reg.commit();
+  //hash << sst_reg.commit();
+  //hash << ppu_reg.commit();
+  //hash << win_reg.commit();
+  //hash << lcd_reg.commit();
+  //hash << ser_reg.commit();
+  //hash << commit_ibus();
+  //hash << commit_vbus();
+  //hash << commit_ebus();
+  //hash << commit_obus();
+  //hash << commit_sys_pins();
+  //hash << commit_lcd_pins();
+  //hash << commit_joy_pins();
+  //hash << commit_top_regs();
+
+  return hash;
 }
 
 //---------------------------------------------------------------------------
@@ -261,37 +376,6 @@ void SchematicTop::tick_top_regs() {
     /*p23.WOKY*/ WOKY_LCDC_WINMAP .set(XUBO_FF40_WRn, XARE_RSTn, CPU_TRI_D6);
     /*p23.XONA*/ XONA_LCDC_EN     .set(XUBO_FF40_WRn, XARE_RSTn, CPU_TRI_D7);
   }
-}
-
-//-----------------------------------------------------------------------------
-
-SignalHash SchematicTop::commit_everything() {
-  SignalHash hash;
-
-  //----------
-
-  hash << clk_reg.commit();
-  hash << dbg_reg.commit();
-  hash << rst_reg.commit();
-  hash << tim_reg.commit();
-  //hash << lcd_reg.commit();
-  //hash << pxp_reg.commit();
-  //hash << sst_reg.commit();
-  //hash << ppu_reg.commit();
-  //hash << win_reg.commit();
-  //hash << lcd_reg.commit();
-  //hash << ser_reg.commit();
-
-  hash << commit_ibus();
-  hash << commit_vbus();
-  hash << commit_ebus();
-  hash << commit_obus();
-  hash << commit_sys_pins();
-  hash << commit_lcd_pins();
-  hash << commit_joy_pins();
-  hash << commit_top_regs();
-
-  return hash;
 }
 
 //-----------------------------------------------------------------------------
@@ -745,11 +829,6 @@ wire SchematicTop::TUTO_DBG_VRAMp() const {
   return TUTO_DBG_VRAMp;
 }
 
-void SchematicTop::preset_t1t2(bool t1, bool t2) {
-  SYS_PIN_T1.preset(true, t1);
-  SYS_PIN_T2.preset(true, t2);
-}
-
 //-----------------------------------------------------------------------------
 // Clock signals
 
@@ -838,25 +917,6 @@ int SchematicTop::get_addr() const {
     CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11, CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
 }
 
-void SchematicTop::preset_addr(bool oe, uint16_t addr) {
-  CPU_PIN_A00.preset(oe, addr & 0x0001);
-  CPU_PIN_A01.preset(oe, addr & 0x0002);
-  CPU_PIN_A02.preset(oe, addr & 0x0004);
-  CPU_PIN_A03.preset(oe, addr & 0x0008);
-  CPU_PIN_A04.preset(oe, addr & 0x0010);
-  CPU_PIN_A05.preset(oe, addr & 0x0020);
-  CPU_PIN_A06.preset(oe, addr & 0x0040);
-  CPU_PIN_A07.preset(oe, addr & 0x0080);
-  CPU_PIN_A08.preset(oe, addr & 0x0100);
-  CPU_PIN_A09.preset(oe, addr & 0x0200);
-  CPU_PIN_A10.preset(oe, addr & 0x0400);
-  CPU_PIN_A11.preset(oe, addr & 0x0800);
-  CPU_PIN_A12.preset(oe, addr & 0x1000);
-  CPU_PIN_A13.preset(oe, addr & 0x2000);
-  CPU_PIN_A14.preset(oe, addr & 0x4000);
-  CPU_PIN_A15.preset(oe, addr & 0x8000);
-}
-
 int SchematicTop::get_data() const {
   return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3, CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
 }
@@ -871,10 +931,6 @@ void SchematicTop::set_data(bool oe, uint8_t data) {
   CPU_TRI_D6.set_tribuf(oe, data & 0x40);
   CPU_TRI_D7.set_tribuf(oe, data & 0x80);
 }
-
-void SchematicTop::preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
-void SchematicTop::preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
-void SchematicTop::preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
 
 //-----------------------------------------------------------------------------
 // Bus mux signals

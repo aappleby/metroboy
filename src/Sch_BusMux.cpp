@@ -152,7 +152,7 @@ void BusMux::tick(SchematicTop& top) {
   /*p07.DYKY*/ pwire DYKY_CPU_WRp_ABCDExxx = not(TAPU_CPU_WRn_xxxxxFGH);
   /*p07.CUPA*/ nwire CUPA_CPU_WRn_xxxxxFGH = not(DYKY_CPU_WRp_ABCDExxx);
 
-  /*p01.AREV*/ nwire AREV_CPU_WRn_ABCDExxx = nand(top.CPU_PIN_WR, AFAS_xxxxxFGH);
+  /*p01.AREV*/ nwire AREV_CPU_WRn_ABCDExxx = nand(top.CPU_PIN_WRp, AFAS_xxxxxFGH);
   /*p01.APOV*/ pwire APOV_CPU_WRp_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
   /*p08.MEXO*/ nwire MEXO_CPU_WRn_ABCDExxx = not(APOV_CPU_WRp_xxxxxFGH);
 
@@ -486,30 +486,6 @@ void BusMux::tick(SchematicTop& top) {
     /*p25.RUMO*/ top.VRM_TRI_A12.set_tribuf_6n(XEDU_VRAM_UNLOCKEDn, top.CPU_PIN_A12);
   }
 
-  // VRAM bus -> CPU bus
-  {
-    /*p25.TYVY*/ nwire TYVY_VRAMD_TO_CPUDn = nand(top.SERE_VRAM_RDp(), LEKO_CPU_RDp);
-    /*p25.SEBY*/ pwire SEBY_VRAMD_TO_CPUDp = not(TYVY_VRAMD_TO_CPUDn);
-
-    /*p25.RERY*/ wire RERY = !not(top.VRM_TRI_D0);
-    /*p25.RUNA*/ wire RUNA = !not(top.VRM_TRI_D1);
-    /*p25.RONA*/ wire RONA = !not(top.VRM_TRI_D2);
-    /*p25.RUNO*/ wire RUNO = !not(top.VRM_TRI_D3);
-    /*p25.SANA*/ wire SANA = !not(top.VRM_TRI_D4);
-    /*p25.RORO*/ wire RORO = !not(top.VRM_TRI_D5);
-    /*p25.RABO*/ wire RABO = !not(top.VRM_TRI_D6);
-    /*p25.SAME*/ wire SAME = !not(top.VRM_TRI_D7);
-
-    /*p25.RUGA*/ top.CPU_TRI_D0.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, RERY);
-    /*p25.ROTA*/ top.CPU_TRI_D1.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, RUNA);
-    /*p25.RYBU*/ top.CPU_TRI_D2.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, RONA);
-    /*p25.RAJU*/ top.CPU_TRI_D3.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, RUNO);
-    /*p25.TYJA*/ top.CPU_TRI_D4.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, SANA);
-    /*p25.REXU*/ top.CPU_TRI_D5.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, RORO);
-    /*p25.RUPY*/ top.CPU_TRI_D6.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, RABO);
-    /*p25.TOKU*/ top.CPU_TRI_D7.set_tribuf_6p(SEBY_VRAMD_TO_CPUDp, SAME);
-  }
-
   // CPU address pins -> address latch
   {
     /*p08.MULE*/ nwire MULE_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
@@ -594,7 +570,7 @@ void BusMux::tick(SchematicTop& top) {
     // So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
 
-    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WR);
+    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WRp);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
@@ -695,7 +671,7 @@ void BusMux::tick(SchematicTop& top) {
   }
 
   {
-    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WR);
+    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WRp);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);

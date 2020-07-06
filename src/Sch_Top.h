@@ -60,7 +60,6 @@ struct SchematicTop {
   pwire UMUT_MODE_DBG1p() const;
   pwire UNOR_MODE_DBG2p() const;
   nwire TOVA_MODE_DBG2n() const;
-  pwire TUTO_DBG_VRAMp() const;
 
   //-----------------------------------------------------------------------------
   // Clock signals
@@ -183,7 +182,6 @@ struct SchematicTop {
 
   pwire XYMU_RENDERINGp() const;
   wire TEVO_FINE_RSTp() const;
-  pwire SERE_VRAM_RDp() const;
   wire NYXU_TILE_FETCHER_RSTn() const;
   wire ACYL_SCANNINGp() const;
   wire LYRY_BFETCH_DONEp() const;
@@ -372,7 +370,7 @@ struct SchematicTop {
   PinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
 
   PinIn  CPU_PIN_RD;            // top right port PORTA_00: ->
-  PinIn  CPU_PIN_WR;            // top right port PORTA_01: ->
+  PinIn  CPU_PIN_WRp;            // top right port PORTA_01: ->
   PinIn  CPU_PIN_ADDR_VALIDn;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
   PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack

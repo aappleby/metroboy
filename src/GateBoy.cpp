@@ -13,7 +13,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   auto top = gateboy.top();
 
-  for (int i = 0; i < 10; i++) {
+  for (int phase = 0; phase < 30; phase++) {
     wire CLK_GOOD = 0;
     wire CLK = top->phase_counter & 1;
     wire RST = 1;
@@ -22,6 +22,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
     uint8_t buttons = 0;
 
+    SignalHash hash;
     for (int pass = 0; pass < 10; pass++) {
       top->preset_sys(CLK_GOOD, CLK, RST, T1, T2);
       top->preset_cpu(0, 0, 0, 0);
@@ -30,21 +31,21 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
       top->preset_vram(0, 0);
       top->preset_oam();
 
-      SignalHash hash = top->tick();
-
-      wire AFUR_xBCDExxx = top->clk_reg.AFUR_xBCDExxx;
-      wire ALEF_xxCDEFxx = top->clk_reg.ALEF_xxCDEFxx;
-      wire APUK_xxxDEFGx = top->clk_reg.APUK_xxxDEFGx;
-      wire ADYK_xxxxEFGH = top->clk_reg.ADYK_xxxxEFGH;
-
-      printf("Pass %d clk %d%d%d%d hash 0x%016llx\n",
-        pass, 
-        AFUR_xBCDExxx,
-        ALEF_xxCDEFxx,
-        APUK_xxxDEFGx,
-        ADYK_xxxxEFGH,
-        hash.h);
+      hash = top->tick();
     }
+
+    wire AFUR_xBCDExxx = top->clk_reg.AFUR_xBCDExxx;
+    wire ALEF_xxCDEFxx = top->clk_reg.ALEF_xxCDEFxx;
+    wire APUK_xxxDEFGx = top->clk_reg.APUK_xxxDEFGx;
+    wire ADYK_xxxxEFGH = top->clk_reg.ADYK_xxxxEFGH;
+
+    printf("Phase %2d clk %d%d%d%d hash 0x%016llx\n",
+      phase,
+      AFUR_xBCDExxx,
+      ALEF_xxCDEFxx,
+      APUK_xxxDEFGx,
+      ADYK_xxxxEFGH,
+      hash.h);
 
     top->phase_counter++;
   }
@@ -69,7 +70,7 @@ SignalHash GateBoy::phase(Schematics::SchematicTop* gb) {
 
   Schematics::SignalHash hash;
   for (int i = 0; i < 256; i++) {
-    gb->SYS_PIN_CLK_xBxDxFxH.preset(gb->phase_counter & 1);
+    gb->SYS_PIN_CLK_B.preset(gb->phase_counter & 1);
 
     Schematics::SignalHash new_hash = pass(gb);
     if (new_hash == hash) break;

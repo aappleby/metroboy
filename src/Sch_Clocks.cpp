@@ -3,24 +3,6 @@
 
 using namespace Schematics;
 
-#if 0
-// if rung 6 of AFUR/ALEF/APUK/ADYK is QN and not Q...
-
-ADYK = !APUK
-APUK = !ALEF
-ALEF = !AFUR
-AFUR = ADYK
-
-ADYK APUK ALEF AFUR
-0    0    0    0
-1    1    1    0
-0    0    1    1
-1    0    0    0
-1    1    1    0
-
-// yeah doesn't work or make sense.
-#endif
-
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tick(SchematicTop& top) {
@@ -28,7 +10,7 @@ void ClockRegisters::tick(SchematicTop& top) {
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
   {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
 
     wire AFUR_xBCDExxx_ = AFUR_xBCDExxx;
@@ -36,20 +18,20 @@ void ClockRegisters::tick(SchematicTop& top) {
     wire APUK_xxxDEFGx_ = APUK_xxxDEFGx;
     wire ADYK_xxxxEFGH_ = ADYK_xxxxEFGH;
 
-    /*p07.UBET*/ wire UBET_T1n = not(top.SYS_PIN_T1);
-    /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2);
-    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RST);
+    /*p07.UBET*/ wire UBET_T1n = not(top.SYS_PIN_T1p);
+    /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2p);
+    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTn);
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
-    /*p01.ADYK*/ ADYK_xxxxEFGH.set_duo( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, UPOJ_MODE_PRODn,  APUK_xxxDEFGx_);
-    /*p01.APUK*/ APUK_xxxDEFGx.set_duo(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, UPOJ_MODE_PRODn,  ALEF_xxCDEFxx_);
-    /*p01.ALEF*/ ALEF_xxCDEFxx.set_duo( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, UPOJ_MODE_PRODn,  AFUR_xBCDExxx_);
-    /*p01.AFUR*/ AFUR_xBCDExxx.set_duo(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, UPOJ_MODE_PRODn, !ADYK_xxxxEFGH_);
+    /*p01.ADYK*/ ADYK_xxxxEFGH.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, UPOJ_MODE_PRODn,  APUK_xxxDEFGx_);
+    /*p01.APUK*/ APUK_xxxDEFGx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, UPOJ_MODE_PRODn,  ALEF_xxCDEFxx_);
+    /*p01.ALEF*/ ALEF_xxCDEFxx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, UPOJ_MODE_PRODn,  AFUR_xBCDExxx_);
+    /*p01.AFUR*/ AFUR_xBCDExxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, UPOJ_MODE_PRODn, !ADYK_xxxxEFGH_);
   }
 
   {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -84,10 +66,10 @@ void ClockRegisters::tick(SchematicTop& top) {
 SignalHash ClockRegisters::commit() {
   SignalHash hash;
 
-  hash << AFUR_xBCDExxx.commit_duo();
-  hash << ALEF_xxCDEFxx.commit_duo();
-  hash << APUK_xxxDEFGx.commit_duo();
-  hash << ADYK_xxxxEFGH.commit_duo();
+  hash << AFUR_xBCDExxx.commit_reg();
+  hash << ALEF_xxCDEFxx.commit_reg();
+  hash << APUK_xxxDEFGx.commit_reg();
+  hash << ADYK_xxxxEFGH.commit_reg();
 
   hash << WUVU_AxxDExxH.commit_reg();
   hash << VENA_xBCDExxx.commit_reg();

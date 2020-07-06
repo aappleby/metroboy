@@ -7,7 +7,7 @@ using namespace Schematics;
 
 void SpriteScanner::tick(SchematicTop& top) {
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);

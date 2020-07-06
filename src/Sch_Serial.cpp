@@ -29,7 +29,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
 
   /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIALp.q());
-  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
   /*p06.CABY*/ wire _XFER_RESET = and (_SER_CNT3n, ALUR_RSTn);
   /*p06.ETAF*/ XFER_START.set(_FF02_WRn_xxxxxFGH, _XFER_RESET, top.CPU_TRI_D0);
   /*p06.CULY*/ XFER_DIR.set(_FF02_WRn_xxxxxFGH, ALUR_RSTn, top.CPU_TRI_D1);

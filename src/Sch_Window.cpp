@@ -7,7 +7,7 @@ using namespace Schematics;
 
 void WindowRegisters::tick(SchematicTop& top) {
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -120,7 +120,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p23.WEKO*/ wire WEKO_FF4A_WR = and (CUPA_CPU_WR_xxxxxFGH, FF4A);
     /*p23.VEFU*/ wire VEFU_FF4A_WRn = not(WEKO_FF4A_WR);
 
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
@@ -171,7 +171,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p23.WUZA*/ wire WUZA_FF4B_WR = and (CUPA_CPU_WR_xxxxxFGH, FF4B);
     /*p23.VOXU*/ wire VOXU_FF4B_WRn = not(WUZA_FF4B_WR);
 
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);

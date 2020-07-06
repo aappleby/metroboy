@@ -36,7 +36,7 @@ void JoypadRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
     /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
     /*p02.KERY*/ wire ANY_BUTTON = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
@@ -66,7 +66,7 @@ void JoypadRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p05.JUTE*/ JUTE_JOYP_RA    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D0);
     /*p05.KECY*/ KECY_JOYP_LB    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D1);
     /*p05.JALE*/ JALE_JOYP_UC    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D2);

@@ -19,7 +19,7 @@ void LcdRegisters::tick(SchematicTop& top) {
   /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
   /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);
 
-  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
   /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
   /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
   /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
@@ -52,13 +52,13 @@ void LcdRegisters::tick(SchematicTop& top) {
   {
     /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
     /*p21.MUWY*/ MUWY_Y0.set(RUTU_LINE_END_F.q(), _LAMA_FRAME_RSTn, !MUWY_Y0.q());
-    /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),         _LAMA_FRAME_RSTn, !MYRO_Y1.q());
-    /*p21.LEXA*/ LEXA_Y2.set(!MYRO_Y1.q(),         _LAMA_FRAME_RSTn, !LEXA_Y2.q());
-    /*p21.LYDO*/ LYDO_Y3.set(!LEXA_Y2.q(),         _LAMA_FRAME_RSTn, !LYDO_Y3.q());
-    /*p21.LOVU*/ LOVU_Y4.set(!LYDO_Y3.q(),         _LAMA_FRAME_RSTn, !LOVU_Y4.q());
-    /*p21.LEMA*/ LEMA_Y5.set(!LOVU_Y4.q(),         _LAMA_FRAME_RSTn, !LEMA_Y5.q());
-    /*p21.MATO*/ MATO_Y6.set(!LEMA_Y5.q(),         _LAMA_FRAME_RSTn, !MATO_Y6.q());
-    /*p21.LAFO*/ LAFO_Y7.set(!MATO_Y6.q(),         _LAMA_FRAME_RSTn, !LAFO_Y7.q());
+    /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),        _LAMA_FRAME_RSTn, !MYRO_Y1.q());
+    /*p21.LEXA*/ LEXA_Y2.set(!MYRO_Y1.q(),        _LAMA_FRAME_RSTn, !LEXA_Y2.q());
+    /*p21.LYDO*/ LYDO_Y3.set(!LEXA_Y2.q(),        _LAMA_FRAME_RSTn, !LYDO_Y3.q());
+    /*p21.LOVU*/ LOVU_Y4.set(!LYDO_Y3.q(),        _LAMA_FRAME_RSTn, !LOVU_Y4.q());
+    /*p21.LEMA*/ LEMA_Y5.set(!LOVU_Y4.q(),        _LAMA_FRAME_RSTn, !LEMA_Y5.q());
+    /*p21.MATO*/ MATO_Y6.set(!LEMA_Y5.q(),        _LAMA_FRAME_RSTn, !MATO_Y6.q());
+    /*p21.LAFO*/ LAFO_Y7.set(!MATO_Y6.q(),        _LAMA_FRAME_RSTn, !LAFO_Y7.q());
   }
 
   {
@@ -233,7 +233,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
-    /*p23.XUFA*/ wire XUFA_FF45_WR = and (CUPA_CPU_WR_xxxxxFGH, FF45);
+    /*p23.XUFA*/ wire XUFA_FF45_WR  = and (CUPA_CPU_WR_xxxxxFGH, FF45);
     /*p23.WANE*/ wire WANE_FF45_WRn = not(XUFA_FF45_WR);
 
     /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRn, !WANE_FF45_WRn, WESY_RSTn, top.CPU_TRI_D0);

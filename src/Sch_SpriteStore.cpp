@@ -41,7 +41,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf(top.FEPO_STORE_MATCHp(), top.DABU_SPRITE_DELTA2());
     /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf(top.FEPO_STORE_MATCHp(), top.GYSA_SPRITE_DELTA3());
 
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);

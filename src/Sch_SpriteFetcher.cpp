@@ -13,7 +13,7 @@ using namespace Schematics;
 
 void SpriteFetcher::tick(SchematicTop& top) {
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -27,6 +27,8 @@ void SpriteFetcher::tick(SchematicTop& top) {
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
 
   wire JOY_PIN_P10_B = 0;
+
+  // VYPO might not be traced correctly.
   /*p27.VYPO*/ wire VYPO_P10_Bn = not(JOY_PIN_P10_B);
 
   //----------------------------------------
@@ -35,10 +37,42 @@ void SpriteFetcher::tick(SchematicTop& top) {
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
   {
+    // lost SOBU somewhere...
+
+    // SOBU_01 == REG17_12
+    // SOBU_02 << TAVA_02
+    // SOBU_03 == REG17_09
+    // SOBU_04 NC
+    // SOBU_05 NC
+    // SOBU_06 << RSTn
+    // SOBU_07 << D
+    // SOBU_08 NC
+    // SOBU_09 == REG17_03
+    // SOBU_10 NC
+    // SOBU_11 NC
+    // SOBU_12 == REG17_01
+    // SOBU_13 << RSTn
+    // SOBU_14 NC
+    // SOBU_15 NC
+    // SOBU_16 >> QN
+    // SOBU_17 >> Q
+
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCHpe = and (SOBU_SPRITE_FETCH_A, !SUDA_SPRITE_FETCH_B);
 
     /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCHpe, ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4n()); // def nor
+
+
+    // TAKA has arms on the VCC side - nand latch
+    // TAKA01 << VEKU02
+    // TAKA02 nc
+    // TAKA03 >> nc
+    // TAKA04 >> SOWO00
+    // TAKA05 nc
+    // TAKA06 << SECA03
+    // if SECA03 goes low, TAKA04 goes high
+    // if VEKU02 goes low, TAKA04 goes low
+
     /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, top.VEKU_SFETCH_RUNNING_RSTn());
 
     /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0);

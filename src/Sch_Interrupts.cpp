@@ -48,7 +48,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
     // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
     // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p02.ROTU*/ wire ROTU_FF0F_WRp = not(REFA_FF0F_WRn);
 
     /*p21.PARU*/ wire PARU_VBLANKp = not(!top.POPU_VBLANK_d4());
@@ -90,7 +90,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.LALU*/ LALU_FF0F_1.set(VOTY_INT_STATp,   MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_FF0F_INp);
     /*p02.NYBO*/ NYBO_FF0F_2.set(MOBA_INT_TIMERp,  PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_FF0F_INp);
     /*p02.UBUL*/ UBUL_FF0F_3.set(CALY_INT_SERIALp, TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_FF0F_INp);
-    /*p02.ULAK*/ ULAK_FF0F_4.set(ASOK_INT_JOYPADp,     TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_FF0F_INp);
+    /*p02.ULAK*/ ULAK_FF0F_4.set(ASOK_INT_JOYPADp, TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_FF0F_INp);
 
     top.CPU_PIN_INT_VBLANK.set(LOPE_FF0F_0);
     top.CPU_PIN_INT_STAT  .set(LALU_FF0F_1);

@@ -93,7 +93,7 @@ using namespace Schematics;
 void BusMux::tick(SchematicTop& top) {
 
   // Clock tree
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -117,7 +117,7 @@ void BusMux::tick(SchematicTop& top) {
   /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
 
   // Reset tree
-  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
   /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
   /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
 
@@ -203,6 +203,7 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.FYDU*/ wire FYDU_DMA_A06n = not(top.DMA_A06());
     /*p28.FETU*/ wire FETU_DMA_A07n = not(top.DMA_A07());
 
+    // double check these, they're tribus or something and not NOTs.
     /*p28.WEFE*/ wire WEFE_P10_Bn = not(top.JOY_PIN_P10_B);
     /*p28.WUWE*/ wire WUWE_P10_Bn = not(top.JOY_PIN_P10_B);
     /*p28.GEFY*/ wire GEFY_P10_Bn = not(top.JOY_PIN_P10_B);
@@ -266,6 +267,8 @@ void BusMux::tick(SchematicTop& top) {
     /*p31.XUNA*/ top.CPU_TRI_D4.set_tribuf(WEWU_OAM_A_CPU_RDn, WYNO_LATCH_OAM_A4);
     /*p31.DEVE*/ top.CPU_TRI_D5.set_tribuf(WEWU_OAM_A_CPU_RDn, CYRA_LATCH_OAM_A5);
     /*p31.ZEHA*/ top.CPU_TRI_D6.set_tribuf(WEWU_OAM_A_CPU_RDn, ZUVE_LATCH_OAM_A6);
+
+    // FYRA is weird lookin'
     /*p31.FYRA*/ top.CPU_TRI_D7.set_tribuf(WEWU_OAM_A_CPU_RDn, ECED_LATCH_OAM_A7);
 
     /*p29.YFAP*/ top.CPU_TRI_D0.set_tribuf(WUME_OAM_B_CPU_RDn, YDYV_LATCH_OAM_B0); // big tri

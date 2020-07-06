@@ -74,6 +74,7 @@ struct SchematicTop {
   wire VENA_xBCDExxx() const;
   wire WOSU_xxCDxxGH() const;
 
+  wire BELE_xBxxxxxx() const;
   wire BYJU_AxCDEFGH() const;
 
   //-----------------------------------------------------------------------------
@@ -332,16 +333,46 @@ struct SchematicTop {
   /*p32.PYJU*/ Reg11 PYJU_BG_PIX_B7;
 
   //-----------------------------------------------------------------------------
+  // Sys pins
+
+  // In reset, T1/2 and RSn are the _same_.
+  // In run, T1/2 and RSTn are _different_.
+  // UPOJ_MODE_PRODn must be _different_ in the two modes.
+  // Therefore in run mode, T1 == 0, T2 == 0, RSTn == 1
+
+  // UPOJ = nand(!T1, !T2, RSTn);
+  // In run mode, UPOJ = nand(!0, !0, 1) = 0
+  // UPOJ goes to the reset pin of AFUR/ALEF/APUK/ADYK.
+  // Therefore the reset pin of AFUR/ALEF/APUK/ADYK _must_ be active high or they
+  // would be stuck in reset in run mode.
+
+  // In run mode:
+  // if SYS_PIN_CLK_A was tied low
+  // then UCOB would be tied high
+  // then UFOL would be tied low
+  // then TAPE_FF04_WR would not affect DIV
+  // Therefore SYS_PIN_CLK_A = 1 in run mode
+
+  PinIn  SYS_PIN_RSTn;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  PinIn  SYS_PIN_CLK_A;  // PIN_74 -> ATEZ, UCOB
+  PinIn  SYS_PIN_CLK_B;  // PIN_74 
+  PinIn  SYS_PIN_T2p;    // PIN_76, tied to 0 on board
+  PinIn  SYS_PIN_T1p;    // PIN_77, tied to 0 on board
+
+  // Ground ties - VYPO, RUNY, WEFE, unlabeled cell between BONE and BUFY.
+
+  wire GND = 0;
+  wire VYPO_GND = 0;
+  wire RUNY_GND = 0;
+  wire WEFE_GND = 0;
+
+  //-----------------------------------------------------------------------------
   // Internal bus to CPU
 
   PinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
 
   PinIn  CPU_PIN_RD;            // top right port PORTA_00: ->
   PinIn  CPU_PIN_WR;            // top right port PORTA_01: ->
-  PinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  PinOut CPU_PIN_SYRO;          // top right port PORTA_03: <- P25.SYRO
-  PinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
   PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
@@ -355,11 +386,32 @@ struct SchematicTop {
   PinIn  CPU_PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
   PinOut CPU_PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
 
+  // In run mode, MATU (a Reg17) must _not_ be stuck.
+  // If CPU_PIN_CLKREQ was 0 in run mode
+  // then ABOL = 1
+  // then NULE = 0, BYRY = 1, BUDE = 0, UVYT = 1, and MATU would be stuck.
+  // Therefore CPU_PIN_CLKREQ must be 1 in run mode
+
   PinIn  CPU_PIN_CLKREQ;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-  PinOut CPU_PIN_AFER_RSTp;     // top center port PORTC_01: <- P01.AFER , reset related reg
+
+  // At boot,
+  // CPU_PIN_DBG = T1 ^ T2
+  // CPU_PIN_PROD = !T1 && !T2 && RSTn;
+
+  PinOut CPU_PIN_PROD;          // top center port PORTC_01: <- P01.AFER , reset related reg
   PinOut CPU_PIN_EXT_RESET;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
   PinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut CPU_PIN_TABA_RSTp;     // top center port PORTC_04: <- P01.CPU_RESET
+  PinOut CPU_PIN_DBG;           // top center port PORTC_04: <- P01.CPU_RESET
+
+  PinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  PinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO
+  PinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  PinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+
+
+
+
+
 
   PinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   PinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
@@ -367,7 +419,7 @@ struct SchematicTop {
   PinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
   PinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
   PinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  PinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
+  PinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
   PinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
   PinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
   PinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
@@ -434,15 +486,6 @@ struct SchematicTop {
   Tribuf OAM_PIN_DB7;
 
   //-----------------------------------------------------------------------------
-  // Sys pins
-
-  PinIn  SYS_PIN_RST;          // PIN_71 
-  PinIn  SYS_PIN_CLK_xBxDxFxH; // PIN_74 
-  PinIn  SYS_PIN_CLK_GOOD;     // PIN_74 
-  PinIn  SYS_PIN_T2;           // PIN_76, tied to 0 on board
-  PinIn  SYS_PIN_T1;           // PIN_77, tied to 0 on board
-
-  //-----------------------------------------------------------------------------
   // LCD pins
 
   PinOut LCD_PIN_LD1;  // PIN_50 
@@ -457,17 +500,8 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Joypad pins
 
-  // The B connections on the joypad pins are werid.
-  // They seem to be used as an input, or at least I can't find the driver
-  // PESU
-  // RARU ROWE RYKE RYNE RASE REJY REKA ROMY
-  // RUNY VYPO TOMY? SEZU? RAWU? PUTE? MYDE RUGO? NYLU WYMO?
-  // WEFE WUWE GEFY WYGA? FABY ECAB? DYSO ERUC GEZE GUVA 
-  // ARAR ATAJ ASUZ AJEC AKAJ ANOC BENU BEDA
-  // BEKU
-
   PinOut JOY_PIN_P10_A;   // PIN_67 <- P05.KOLE
-  PinOut JOY_PIN_P10_B;   // PIN_67 -> BENU BEDA ATAJ ASUZ AJEC AKAJ ANOC ARAR
+  PinOut JOY_PIN_P10_B;   // PIN_67 -> tied low between BONE and BUFY
   PinIn  JOY_PIN_P10_C;   // PIN_67 -> P02.KERY, P05.KEVU
   PinOut JOY_PIN_P10_D;   // PIN_67 <- P05.KYBU
 

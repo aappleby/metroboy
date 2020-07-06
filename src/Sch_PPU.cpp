@@ -90,21 +90,11 @@ using namespace Schematics;
 // if AVAP02 goes high, XYMU02 goes high.
 // if WEGO03 goes high, XYMU02 goes low.
 
-// TAKA has arms on the VCC side - nand latch
-// TAKA01 << VEKU02
-// TAKA02 nc
-// TAKA03 >> nc
-// TAKA04 >> SOWO00
-// TAKA05 nc
-// TAKA06 << SECA03
-// if SECA03 goes low, TAKA04 goes high
-// if VEKU02 goes low, TAKA04 goes low
-
 //------------------------------------------------------------------------------
 
 void PpuRegisters::tick(SchematicTop& top) {
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -251,7 +241,7 @@ void PpuRegisters::tick(SchematicTop& top) {
 
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not(SEPA_FF41_WRp);
     
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);

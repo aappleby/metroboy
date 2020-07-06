@@ -18,6 +18,20 @@ struct CpuBus;
 //typedef const bool wire;
 typedef bool wire;
 
+struct pwire {
+  pwire(bool x) : v(x) {}
+  operator bool() const { return v; }
+private:
+  const bool v;
+};
+
+struct nwire {
+  nwire(bool x) : v(x) {}
+  operator bool() const { return v; }
+private:
+  const bool v;
+};
+
 //-----------------------------------------------------------------------------
 
 inline wire not (wire a) { return !a; }
@@ -463,7 +477,8 @@ struct Reg8 : public RegisterBase {
 //-----------------------------------------------------------------------------
 // 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
 // Four vias in center column
-// Probably not dual-edge?
+
+// The cell layout looks pretty much identical to Reg9Duo - so probably dual-edge?
 
 // Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
 // store, SCY, SCX, LCDC, WX, WY
@@ -478,15 +493,15 @@ struct Reg8 : public RegisterBase {
 // |xxx-O-xxx| Q
 // |xxx-O-xxx| Qn?
 
-// REG9_01 nc
+// REG9_01 NC
 // REG9_02 << CLKp
 // REG9_03 << D
 // REG9_04 << CLKn
-// REG9_05 nc
-// REG9_06 << RSTp?
-// REG9_07 nc
+// REG9_05 NC
+// REG9_06 << RSTp - THIS MUST BE POSITIVE RESET - UPOJ_MODE_PROD is active-low
+// REG9_07 NC
 // REG9_08 >> Q
-// REG9_09 >> Qn
+// REG9_09 >> QN
 
 ///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPRITE_X0);
 
@@ -502,15 +517,15 @@ struct Reg8 : public RegisterBase {
 
 struct Reg9 : public RegisterBase {
 
-  void set(bool clkP, bool clkN, bool rstN, bool val) {
-    if (clkP == clkN) __debugbreak();
+  void set(bool CLKp, bool CLKn, bool RSTp, bool D) {
+    if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = val;
+    b.val = D;
     b.hiz = 0;
-    b.clk = clkP;
+    b.clk = CLKp;
     b.set = 0;
-    b.rst = !rstN;
+    b.rst = RSTp;
     b.error = 0;
   }
 
@@ -540,7 +555,7 @@ struct Reg9 : public RegisterBase {
 // Reg11 is used by the background pixel temp reg
 // Not sure why it's special. Could be dual-edge.
 
-///*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
+///*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, top.VYPO_GND, top.VRM_TRI_D0);
 
 // wire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
 // wire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
@@ -572,15 +587,15 @@ struct Reg9 : public RegisterBase {
 
 struct Reg11 : public RegisterBase {
 
-  void set(bool clkP, bool clkN, bool rstN, bool val) {
-    if (clkP == clkN) __debugbreak();
+  void set(bool CLKp, bool CLKn, bool RSTp, bool D) {
+    if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = val;
+    b.val = D;
     b.hiz = 0;
-    b.clk = clkP;
+    b.clk = CLKp;
     b.set = 0;
-    b.rst = !rstN;
+    b.rst = RSTp;
     b.error = 0;
   }
 
@@ -846,55 +861,10 @@ struct Reg22 : public RegisterBase {
 };
 
 //-----------------------------------------------------------------------------
-
-// REG9_01 NC
-// REG9_02 << CLKp
-// REG9_03 << D
-// REG9_04 << CLKn
-// REG9_05 NC
-// REG9_06 << RSTp - THIS MUST BE POSITIVE RESET - UPOJ_MODE_PROD is active-low
-// REG9_07 NC
-// REG9_08 >> Q
-// REG9_09 >> QN
-
-struct Reg9_Duo : public RegisterBase {
-
-  void set_duo(bool clkP, bool clkN, bool rst, bool c) {
-    if (clkP == clkN) __debugbreak();
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = c;
-    b.hiz = 0;
-    b.clk = clkP;
-    b.set = 0;
-    b.rst = rst;
-    b.error = 0;
-  }
-
-  SignalState commit_duo() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-    
-    bool new_a = (a.clk != b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return a;
-  }
-};
-
-//-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
+
+// ASOL seems to break this pattern, it looks like it has to be nand or have
+// an inverted output.
 
 // NORLATCH_01 << SET
 // NORLATCH_01 NC
@@ -904,6 +874,15 @@ struct Reg9_Duo : public RegisterBase {
 // NORLATCH_01 << RST
 
 struct NorLatch : public RegisterBase {
+
+  void dbg_set(bool val) {
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = val;
+    b.rst = !val;
+    b.error = 0;
+  }
 
   void nor_latch(bool set, bool rst) {
     if ( a.error)  __debugbreak();
@@ -940,6 +919,8 @@ struct NorLatch : public RegisterBase {
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on VCC side
+
+// Only TAKA/LONY seem to use this cell
 
 // NANDLATCH_01 << SETn
 // NANDLATCH_01 NC

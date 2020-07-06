@@ -39,16 +39,16 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p27.MESU*/ MESU_BFETCH_S1.set(!LAXU_BFETCH_S0, top.NYXU_TILE_FETCHER_RSTn(), !MESU_BFETCH_S1);
     /*p27.NYVA*/ NYVA_BFETCH_S2.set(!MESU_BFETCH_S1, top.NYXU_TILE_FETCHER_RSTn(), !NYVA_BFETCH_S2);
 
-    /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (ALET_xBxDxFxH, top.XYMU_RENDERINGp(),         LAXU_BFETCH_S0);
+    /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (ALET_xBxDxFxH, top.XYMU_RENDERINGp().as_nwire(),         LAXU_BFETCH_S0);
   }
 
   {
     /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
     /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(top.NUNY_WX_MATCHpe());
     /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
-    /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
-    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
-    /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
+    /*p24.NAFY*/ pwire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
+    /*p27.MOCE*/ nwire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
+    /*p27.LYRY*/ pwire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
@@ -57,11 +57,11 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
 
     /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
-    /*p24.NYKA*/ NYKA_FETCH_DONE_Ap.set(ALET_xBxDxFxH, NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp);
-    /*p24.PORY*/ PORY_FETCH_DONE_Bp.set(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_FETCH_DONE_Ap);
-    /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.set(ALET_xBxDxFxH, top.XYMU_RENDERINGp(),         PORY_FETCH_DONE_Bp);
+    /*p24.NYKA*/ NYKA_TILE_FETCH_DONE_Ap.set(ALET_xBxDxFxH, NAFY_RENDERING_AND_NOT_WIN_TRIG.as_nwire(), LYRY_BFETCH_DONEp);
+    /*p24.PORY*/ PORY_TILE_FETCH_DONE_Bp.set(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG.as_nwire(), NYKA_TILE_FETCH_DONE_Ap);
+    /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.set(ALET_xBxDxFxH, top.XYMU_RENDERINGp().as_nwire(),           PORY_TILE_FETCH_DONE_Bp);
 
-    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch(PYGO_FETCH_DONE_Cp, LOBY_RENDERINGn);
+    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch((pwire)PYGO_FETCH_DONE_Cp, (pwire)LOBY_RENDERINGn);
   }
 
   //----------------------------------------
@@ -247,10 +247,10 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
     /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
     /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
-    /*p22.WEBU*/ wire WEBU_FF42n = nand(top.WERO_FF40_FF4Fp(), XOLA_A00n, WESA_A01p, XUSY_A02n, XERA_A03n);
+    /*p22.WEBU*/ wire WEBU_FF42n = nand(top.WERO_FF4Xp(), XOLA_A00n, WESA_A01p, XUSY_A02n, XERA_A03n);
     /*p22.XARO*/ wire XARO_FF42p = not(WEBU_FF42n);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
     /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.ANYP*/ wire ANYP_FF42_RDp = and(XARO_FF42p, ASOT_CPU_RD);
@@ -292,10 +292,10 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
     /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
     /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
-    /*p22.WAVU*/ wire WAVU_FF43n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, WESA_A01p, XUSY_A02n, XERA_A03n);
+    /*p22.WAVU*/ wire WAVU_FF43n = nand(top.WERO_FF4Xp(), WADO_A00p, WESA_A01p, XUSY_A02n, XERA_A03n);
     /*p22.XAVY*/ wire XAVY_FF43p = not(WAVU_FF43n);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
     /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.AVOG*/ wire AVOG_FF43_RDp = and (XAVY_FF43p, ASOT_CPU_RD);
@@ -345,8 +345,8 @@ SignalHash TileFetcher::commit() {
   hash << LOVY_FETCH_DONEp.commit_reg();
   hash << LONY_BG_READ_VRAM_LATCHp.commit_latch();
 
-  hash << NYKA_FETCH_DONE_Ap.commit_reg();
-  hash << PORY_FETCH_DONE_Bp.commit_reg();
+  hash << NYKA_TILE_FETCH_DONE_Ap.commit_reg();
+  hash << PORY_TILE_FETCH_DONE_Bp.commit_reg();
   hash << LYZU_BFETCH_S0_DELAY.commit_reg();
 
   hash << GAVE_SCY0.commit_reg();

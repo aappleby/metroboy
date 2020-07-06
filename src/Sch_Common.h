@@ -18,26 +18,35 @@ struct CpuBus;
 //typedef const bool wire;
 typedef bool wire;
 
+//-----------------------------------------------------------------------------
+
 struct pwire;
 struct nwire;
 
 struct pwire {
-  pwire(bool x) : v(x) {}
-  bool operator==(nwire n) const;
-  bool get() const { return v; }
-  operator const bool() const { return v; }
+  pwire(wire x) : v(x) {}
+  wire operator==(nwire n) const;
+  wire get() const { return v; }
+  operator wire() const { return v; }
+  nwire as_nwire() const;
 private:
+  pwire(nwire x);
   const bool v;
 };
 
 struct nwire {
-  nwire(bool x) : v(x) {}
-  bool operator==(pwire p) const;
-  bool get() const { return v; }
-  operator const bool() const { return v; }
+  nwire(wire x) : v(x) {}
+  wire operator==(pwire p) const;
+  wire get() const { return v; }
+  operator wire() const { return v; }
+  pwire as_pwire() const;
 private:
+  nwire(pwire x);
   const bool v;
 };
+
+inline nwire pwire::as_nwire() const { return (nwire)get(); }
+inline pwire nwire::as_pwire() const { return (pwire)get(); }
 
 inline bool nwire::operator==(pwire p) const { return get() == p.get(); }
 inline bool pwire::operator==(nwire n) const { return get() == n.get(); }
@@ -229,7 +238,7 @@ struct Signal {
 
   Signal() : a(ERROR) {}
 
-  operator const bool() const {
+  operator wire() const {
     if (a.error) __debugbreak();
     return a.val;
   }
@@ -248,6 +257,80 @@ struct Signal {
 private:
   SignalState a;
 };
+
+//----------------------------------------
+
+struct PSignal {
+
+  PSignal() : a(ERROR) {}
+
+  explicit operator wire() const  { return (wire)get(); }
+  operator pwire() const { return get(); }
+
+  pwire get() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  nwire as_nwire() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  void operator = (pwire val) {
+    if (!a.error) __debugbreak();
+    a = val ? SET_1 : SET_0;
+  }
+
+  SignalState reset() {
+    auto old_a = a;
+    a = ERROR;
+    return old_a;
+  }
+
+private:
+  //operator const nwire() const;
+  SignalState a;
+};
+
+inline nwire not(PSignal p) { return not(p.get()); }
+
+//----------------------------------------
+
+struct NSignal {
+
+  NSignal() : a(ERROR) {}
+
+  explicit operator wire() const  { return (wire)get(); }
+  operator nwire() const { return get(); }
+
+  nwire get() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  pwire as_pwire() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  void operator = (nwire val) {
+    if (!a.error) __debugbreak();
+    a = val ? SET_1 : SET_0;
+  }
+
+  SignalState reset() {
+    auto old_a = a;
+    a = ERROR;
+    return old_a;
+  }
+
+private:
+  //operator const pwire() const;
+  SignalState a;
+};
+
+inline pwire not(NSignal n) { return not(n.get()); }
 
 //-----------------------------------------------------------------------------
 // I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
@@ -362,14 +445,58 @@ struct Tribuf : public RegisterBase {
     b = x ? SET_1 : SET_0;
   }
 
-  void set_tribuf(bool oe, bool val) {
+  void set_tribuf(pwire OEp, bool val) {
     if (!b.error && !b.hiz) {
-      if (oe) __debugbreak();
+      if (OEp) __debugbreak();
       return;
     }
 
-    b.val = val && oe;
-    b.hiz = !oe;
+    b.val = val && OEp;
+    b.hiz = OEp;
+    b.clk = 0;
+    b.set = 0;
+    b.rst = 0;
+    b.error = 0;
+  }
+
+  // top rung tadpole facing second rung dot
+  void set_tribuf_6p(pwire OEp, bool val) {
+    if (!b.error && !b.hiz) {
+      if (OEp) __debugbreak();
+      return;
+    }
+
+    b.val = val && OEp;
+    b.hiz = OEp;
+    b.clk = 0;
+    b.set = 0;
+    b.rst = 0;
+    b.error = 0;
+  }
+
+  // top rung tadpole not facing second rung dot
+  void set_tribuf_6n(nwire OEn, bool val) {
+    if (!b.error && !b.hiz) {
+      if (!OEn) __debugbreak();
+      return;
+    }
+
+    b.val = val && !OEn;
+    b.hiz = !OEn;
+    b.clk = 0;
+    b.set = 0;
+    b.rst = 0;
+    b.error = 0;
+  }
+
+  void set_tribuf_10(nwire OEn, bool val) {
+    if (!b.error && !b.hiz) {
+      if (!OEn) __debugbreak();
+      return;
+    }
+
+    b.val = val && (!OEn);
+    b.hiz = !OEn;
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
@@ -448,13 +575,13 @@ struct Gate : public RegisterBase {
 
 struct Reg8 : public RegisterBase {
 
-  void set(bool clkP, bool clkN, bool val) {
-    if (clkP == clkN) __debugbreak();
+  void set(pwire CLKp, nwire CLKn, bool val) {
+    if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clkP;
+    b.clk = (wire)CLKp;
     b.set = 0;
     b.rst = 0;
     b.error = 0;
@@ -530,15 +657,15 @@ struct Reg8 : public RegisterBase {
 
 struct Reg9 : public RegisterBase {
 
-  void set(bool CLKp, bool CLKn, bool RSTp, bool D) {
+  void set(pwire CLKp, nwire CLKn, nwire RSTn, bool D) {
     if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = D;
     b.hiz = 0;
-    b.clk = CLKp;
+    b.clk = (wire)CLKp;
     b.set = 0;
-    b.rst = RSTp;
+    b.rst = !(wire)RSTn;
     b.error = 0;
   }
 
@@ -695,15 +822,15 @@ struct Reg11 : public RegisterBase {
 
 struct Reg13 : public RegisterBase {
 
-  void set(bool clkP, bool clkN, bool rstN, bool val) {
-    if (clkP == clkN) __debugbreak();
+  void set(pwire CLKp, nwire CLKn, pwire RSTp, bool D) {
+    if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = val;
+    b.val = D;
     b.hiz = 0;
-    b.clk = clkP;
+    b.clk = (wire)CLKp;
     b.set = 0;
-    b.rst = !rstN;
+    b.rst = (wire)RSTp;
     b.error = 0;
   }
 
@@ -755,14 +882,16 @@ struct Reg13 : public RegisterBase {
 
 struct Reg17 : public RegisterBase {
 
-  void set(bool clkP, bool rstN, bool val) {
+  // must be RSTn, see WUVU/VENA/WOSU
+
+  void set(pwire CLKp, nwire RSTn, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clkP;
+    b.clk = (wire)CLKp;
     b.set = 0;
-    b.rst = !rstN;
+    b.rst = (wire)RSTn;
     b.error = 0;
   }
 
@@ -790,28 +919,28 @@ struct Reg17 : public RegisterBase {
 
 //-----------------------------------------------------------------------------
 
-// REG22_01
+// REG22_01 SC
 // REG22_02 NC
 // REG22_03 NC
 // REG22_04 NC
-// REG22_05
-// REG22_06
-// REG22_07
+// REG22_05 SC
+// REG22_06 SC
+// REG22_07 << D
 // REG22_08 NC
-// REG22_09
+// REG22_09 SC
 // REG22_10 NC
-// REG22_11
+// REG22_11 SC
 // REG22_12 NC
 // REG22_13 NC
-// REG22_14
-// REG22_15
-// REG22_16
-// REG22_17
+// REG22_14 << SETn
+// REG22_15 >> Qn
+// REG22_16 >> Q
+// REG22_17 << RSTn
 // REG22_18 NC
-// REG22_19
-// REG22_20
-// REG22_21
-// REG22_22
+// REG22_19 SC
+// REG22_20 SC
+// REG22_21 SC
+// REG22_22 << CLKp
 
 // /*p02.UBUL*/ UBUL_FF0F_3.set(CALY_INT_SERIALp, TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_FF0F_INp);
 
@@ -840,14 +969,14 @@ struct Reg17 : public RegisterBase {
 
 struct Reg22 : public RegisterBase {
 
-  void set(bool clkP, bool setN, bool rstN, bool val) {
+  void set(pwire CLKp, nwire SETn, nwire RSTn, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clkP;
-    b.set = !setN;
-    b.rst = !rstN;
+    b.clk = (wire)CLKp;
+    b.set = !(wire)SETn;
+    b.rst = !(wire)RSTn;
     b.error = 0;
   }
 
@@ -897,14 +1026,14 @@ struct NorLatch : public RegisterBase {
     b.error = 0;
   }
 
-  void nor_latch(bool set, bool rst) {
+  void nor_latch(pwire SETp, pwire RSTp) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
-    b.set = set;
-    b.rst = rst;
+    b.set = (wire)SETp;
+    b.rst = (wire)RSTp;
     b.error = 0;
   }
 
@@ -944,14 +1073,14 @@ struct NorLatch : public RegisterBase {
 
 struct NandLatch : public RegisterBase {
 
-  void nand_latch(bool setN, bool rstN) {
+  void nand_latch(nwire SETn, nwire RSTn) {
     if (a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
-    b.set = !setN;
-    b.rst = !rstN;
+    b.set = !SETn;
+    b.rst = !RSTn;
     b.error = 0;
   }
 
@@ -978,7 +1107,7 @@ struct NandLatch : public RegisterBase {
 };
 
 //-----------------------------------------------------------------------------
-// Yellow 10-rung cells on die
+// Yellow 10-rung cells on die. Implementation might be wrong.
 
 // TPLATCH_01
 // TPLATCH_02 NC
@@ -992,6 +1121,7 @@ struct NandLatch : public RegisterBase {
 // TPLATCH_10
 
 
+///*p08.RUPA*/ TpLatch RUPA_EXT_DATA_LATCH_06;
 // RUPA_01 << LAVO
 // RUPA_02 NC
 // RUPA_03 << D6_C
@@ -1001,18 +1131,56 @@ struct NandLatch : public RegisterBase {
 // RUPA_07 NC
 // RUPA_08 >> SEVU
 // RUPA_09 NC
-// RUPA_10
+// RUPA_10 ?? NC
+
+///*p02.MATY*/ TpLatch MATY_FF0F_L0;
+// MATY_01 << ROLO_05
+// MATY_02 nc
+// MATY_03 << CPU_PIN_INT_VBLANK
+// MATY_04 nc
+// MATY_05 nc
+// MATY_06 nc
+// MATY_07 nc
+// MATY_08 ?? nc
+// MATY_09 nc
+// MATY_10 >> NELA_04
+
+///*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
+// ALOR_01 << MATE_02
+// ALOR_02 nc
+// ALOR_03 << CPU_PIN_A00
+// ALOR_04 nc
+// ALOR_05 nc
+// ALOR_06 nc
+// ALOR_07 nc
+// ALOR_08 >> AMET_03
+// ALOR_09 nc
+// ALOR_10
+
+///*p31.WYNO*/ TpLatch WYNO_LATCH_OAM_A4;
+///*p31.WYNO*/ WYNO_LATCH_OAM_A4.tp_latch(BODE_OAM_LATCH, top.OAM_PIN_DA4);
+
+// WYNO_01 << BODE_02
+// WYNO_02 NC
+// WYNO_03 << OAM_PIN_DA4
+// WYNO_04 NC
+// WYNO_05 NC
+// WYNO_06 NC
+// WYNO_07 NC
+// WYNO_08 >> GOMO_02
+// WYNO_09 NC
+// WYNO_10 >> XUNA_01
 
 struct TpLatch : public RegisterBase {
 
-  void tp_latch(bool latchN, bool val) {
+  void tp_latch(nwire LATCHp, bool val) {
     if (a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
-    b.set = !latchN && val;
-    b.rst = !latchN && !val;
+    b.set = LATCHp && val;
+    b.rst = LATCHp && !val;
     b.error = 0;
   }
 
@@ -1069,14 +1237,14 @@ struct TpLatch : public RegisterBase {
 
 struct Counter : public RegisterBase {
 
-  void clk_n(bool clk, bool load, bool val) {
+  void clk_n(pwire CLKp, pwire LOADp, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = clk;
-    b.set = load && val;
-    b.rst = load && !val;
+    b.clk = (wire)CLKp;
+    b.set = (wire)LOADp && val;
+    b.rst = (wire)LOADp && !val;
     b.error = 0;
   }
 

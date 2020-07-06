@@ -20,16 +20,16 @@ private:
   friend SchematicTop;
 
   /*p02.LOPE*/ Reg22 LOPE_FF0F_0;
-  /*p02.UBUL*/ Reg22 UBUL_FF0F_3;   // 22-rung?
+  /*p02.UBUL*/ Reg22 UBUL_FF0F_3;
   /*p02.ULAK*/ Reg22 ULAK_FF0F_4;
   /*p02.LALU*/ Reg22 LALU_FF0F_1;
   /*p02.NYBO*/ Reg22 NYBO_FF0F_2;
 
-  /*p02.MATY*/ TpLatch FF0F_L0;
-  /*p02.NEJY*/ TpLatch FF0F_L1;
-  /*p02.NUTY*/ TpLatch FF0F_L2;
-  /*p02.MOPO*/ TpLatch FF0F_L3;
-  /*p02.PAVY*/ TpLatch FF0F_L4;
+  /*p02.MATY*/ TpLatch MATY_FF0F_L0;
+  /*p02.NEJY*/ TpLatch NEJY_FF0F_L1;
+  /*p02.NUTY*/ TpLatch NUTY_FF0F_L2;
+  /*p02.MOPO*/ TpLatch MOPO_FF0F_L3;
+  /*p02.PAVY*/ TpLatch PAVY_FF0F_L4;
 };
 
 //-----------------------------------------------------------------------------

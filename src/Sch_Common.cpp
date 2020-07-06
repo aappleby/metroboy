@@ -22,15 +22,33 @@ bool wire_test() {
   pwire_sink(not(y));
   nwire_sink(not(x));
 
+  NSignal nsig;
+  PSignal psig;
+
+  nsig = 1;
+  psig = 1;
+
+  nwire_sink(nsig);
+  pwire_sink(psig);
+
+  nwire nw = not(psig);
+  pwire pw = not(nsig);
+
+  // these should not compile
+
+  //nwire_sink(psig);
+  //pwire_sink(nsig);
+
   //pwire_sink(not(x));
   //nwire_sink(not(y));
 
   //nwire_sink(x);
   //pwire_sink(y);
 
-  //x = y;
-  //y = x;
-  return x;
+  //nwire p = x;
+  //pwire q = y;
+
+  return (wire)x;
 }
 
 //-----------------------------------------------------------------------------

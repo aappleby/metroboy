@@ -20,7 +20,7 @@ void SpriteScanner::tick(SchematicTop& top) {
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
 
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
   /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
   /*p29.BALU*/ wire BALU_LINE_RSTp = not(ANOM_LINE_RSTn);
   /*p29.BAGY*/ wire BAGY_LINE_RSTn = not(BALU_LINE_RSTp);

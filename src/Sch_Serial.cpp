@@ -24,7 +24,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.URYS*/ wire _FF01_WR_xxxxxFGHn = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, top.CPU_PIN_A00, TOLA_A01n);
   /*p06.DAKU*/ wire _FF01_WR_xxxxxFGHp = not (_FF01_WR_xxxxxFGHn);
   /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
+  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
   /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, top.CPU_PIN_A00, TOLA_A01n);
   /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
 

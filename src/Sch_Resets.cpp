@@ -134,7 +134,7 @@ void ResetRegisters::tick(SchematicTop& top) {
   /*p01.UPYF*/ wire UPYF = or(top.SYS_PIN_RSTn, UCOB);
 
   // Are we _sure_ this is a nor latch?
-  /*p01.TUBO*/ TUBO.nor_latch(UPYF, top.CPU_PIN_CLKREQ);
+  /*p01.TUBO*/ TUBO.nor_latch(UPYF, (pwire)top.CPU_PIN_CLKREQ);
 
   /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2p);
   /*p07.UMUT*/ wire UMUT_MODE_DBG1p = and (top.SYS_PIN_T1p, UVAR_T2n);
@@ -145,13 +145,13 @@ void ResetRegisters::tick(SchematicTop& top) {
   /*p01.UNUT*/ wire UNUT  = and (TUBO, top.UPOF_DIV_15());
   /*p01.TABA*/ wire TABA = or(UNOR_MODE_DBG2p, UMUT_MODE_DBG1p, UNUT);
   /*p01.ALYP*/ wire ALYP_RSTn = not(TABA);
-  /*p01.AFAR*/ wire AFAR_RST  = nor(ALYP_RSTn, top.SYS_PIN_RSTn);
+  /*p01.AFAR*/ pwire AFAR_RST  = nor(ALYP_RSTn, top.SYS_PIN_RSTn);
 
-  /*p01.ASOL*/ ASOL.nor_latch(top.SYS_PIN_RSTn, AFAR_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ ASOL.nor_latch((pwire)top.SYS_PIN_RSTn, AFAR_RST); // Schematic wrong, this is a latch.
 
-  /*p07.UPOJ*/ wire UPOJ = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTn);
+  /*p07.UPOJ*/ nwire UPOJ = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTn);
 
-  /*p01.AFER*/ AFER.set(BOGA_AxCDEFGH, BOMA_xBxxxxxx, UPOJ, ASOL);
+  /*p01.AFER*/ AFER.set(BOGA_AxCDEFGH, BOMA_xBxxxxxx, UPOJ.as_pwire(), ASOL);
 
   top.CPU_PIN_DBG.set(TABA);
   top.CPU_PIN_PROD.set(AFER);

@@ -57,10 +57,10 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Debug signals
 
-  wire UMUT_MODE_DBG1p() const;
-  wire UNOR_MODE_DBG2p() const;
-  wire TOVA_MODE_DBG2n() const;
-  wire TUTO_DBG_VRAMp() const;
+  pwire UMUT_MODE_DBG1p() const;
+  pwire UNOR_MODE_DBG2p() const;
+  nwire TOVA_MODE_DBG2n() const;
+  pwire TUTO_DBG_VRAMp() const;
 
   //-----------------------------------------------------------------------------
   // Clock signals
@@ -84,19 +84,19 @@ struct SchematicTop {
   wire UMEK_DIV_06n() const;
   wire UREK_DIV_07n() const;
   wire UPOF_DIV_15() const;
-  wire MOBA_INT_TIMERp() const;
+  pwire MOBA_INT_TIMERp() const;
 
   //-----------------------------------------------------------------------------
   // Reset signals
 
-  wire AVOR_RSTp() const;
-  wire XAPO_VID_RSTn() const;
+  pwire AVOR_RSTp() const;
+  nwire XAPO_VID_RSTn() const;
 
   //-----------------------------------------------------------------------------
   // CPU signals
 
-  wire UJYV_CPU_RD() const;
-  wire UBAL_CPU_WRp_ABCDExxx() const;
+  nwire UJYV_CPU_RDn() const;
+  pwire UBAL_CPU_WRp_ABCDExxx() const;
 
   int get_addr() const;
   int get_data() const;
@@ -105,120 +105,119 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Bus mux signals
 
-  /*p28.GEKA*/ wire GEKA_OAM_A0p() const;
-  /*p28.ZYFO*/ wire ZYFO_OAM_A1p() const;
-  /*p28.YFOT*/ wire YFOT_OAM_A2p() const;
-  /*p28.YFOC*/ wire YFOC_OAM_A3p() const;
-  /*p28.YVOM*/ wire YVOM_OAM_A4p() const;
-  /*p28.YMEV*/ wire YMEV_OAM_A5p() const;
-  /*p28.XEMU*/ wire XEMU_OAM_A6p() const;
-  /*p28.YZET*/ wire YZET_OAM_A7p() const;
+  /*p28.GEKA*/ pwire GEKA_OAM_A0p() const;
+  /*p28.ZYFO*/ pwire ZYFO_OAM_A1p() const;
+  /*p28.YFOT*/ pwire YFOT_OAM_A2p() const;
+  /*p28.YFOC*/ pwire YFOC_OAM_A3p() const;
+  /*p28.YVOM*/ pwire YVOM_OAM_A4p() const;
+  /*p28.YMEV*/ pwire YMEV_OAM_A5p() const;
+  /*p28.XEMU*/ pwire XEMU_OAM_A6p() const;
+  /*p28.YZET*/ pwire YZET_OAM_A7p() const;
 
-  /*p31.YLOR*/ wire YLOR_SPRITE_X0() const;
-  /*p31.ZYTY*/ wire ZYTY_SPRITE_X1() const;
-  /*p31.ZYVE*/ wire ZYVE_SPRITE_X2() const;
-  /*p31.ZEZY*/ wire ZEZY_SPRITE_X3() const;
-  /*p31.GOMO*/ wire GOMO_SPRITE_X4() const;
-  /*p31.BAXO*/ wire BAXO_SPRITE_X5() const;
-  /*p31.YZOS*/ wire YZOS_SPRITE_X6() const;
-  /*p31.DEPO*/ wire DEPO_SPRITE_X7() const;
+  /*p31.YLOR*/ pwire YLOR_SPRITE_X0() const;
+  /*p31.ZYTY*/ pwire ZYTY_SPRITE_X1() const;
+  /*p31.ZYVE*/ pwire ZYVE_SPRITE_X2() const;
+  /*p31.ZEZY*/ pwire ZEZY_SPRITE_X3() const;
+  /*p31.GOMO*/ pwire GOMO_SPRITE_X4() const;
+  /*p31.BAXO*/ pwire BAXO_SPRITE_X5() const;
+  /*p31.YZOS*/ pwire YZOS_SPRITE_X6() const;
+  /*p31.DEPO*/ pwire DEPO_SPRITE_X7() const;
 
-  /*p29.XUSO*/ wire XUSO_SPRITE_Y0() const;
-  /*p29.XEGU*/ wire XEGU_SPRITE_Y1() const;
-  /*p29.YJEX*/ wire YJEX_SPRITE_Y2() const;
-  /*p29.XYJU*/ wire XYJU_SPRITE_Y3() const;
-  /*p29.YBOG*/ wire YBOG_SPRITE_Y4() const;
-  /*p29.WYSO*/ wire WYSO_SPRITE_Y5() const;
-  /*p29.XOTE*/ wire XOTE_SPRITE_Y6() const;
-  /*p29.YZAB*/ wire YZAB_SPRITE_Y7() const;
+  /*p29.XUSO*/ pwire XUSO_SPRITE_Y0() const;
+  /*p29.XEGU*/ pwire XEGU_SPRITE_Y1() const;
+  /*p29.YJEX*/ pwire YJEX_SPRITE_Y2() const;
+  /*p29.XYJU*/ pwire XYJU_SPRITE_Y3() const;
+  /*p29.YBOG*/ pwire YBOG_SPRITE_Y4() const;
+  /*p29.WYSO*/ pwire WYSO_SPRITE_Y5() const;
+  /*p29.XOTE*/ pwire XOTE_SPRITE_Y6() const;
+  /*p29.YZAB*/ pwire YZAB_SPRITE_Y7() const;
 
   //-----------------------------------------------------------------------------
   // DMA signals
 
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const;
-  /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp() const;
+  /*p04.MATU*/ pwire MATU_DMA_RUNNINGp() const;
+  /*p04.MUDA*/ pwire MUDA_DMA_SRC_VRAMp() const;
 
-  /*p04.NAKY*/ wire DMA_A00() const;
-  /*p04.PYRO*/ wire DMA_A01() const;
-  /*p04.NEFY*/ wire DMA_A02() const;
-  /*p04.MUTY*/ wire DMA_A03() const;
-  /*p04.NYKO*/ wire DMA_A04() const;
-  /*p04.PYLO*/ wire DMA_A05() const;
-  /*p04.NUTO*/ wire DMA_A06() const;
-  /*p04.MUGU*/ wire DMA_A07() const;
-  /*p04.NAFA*/ wire DMA_A08() const;
-  /*p04.PYNE*/ wire DMA_A09() const;
-  /*p04.PARA*/ wire DMA_A10() const;
-  /*p04.NYDO*/ wire DMA_A11() const;
-  /*p04.NYGY*/ wire DMA_A12() const;
-  /*p04.PULA*/ wire DMA_A13() const;
-  /*p04.POKU*/ wire DMA_A14() const;
-  /*p04.MARU*/ wire DMA_A15() const;
+  /*p04.NAKY*/ pwire DMA_A00() const;
+  /*p04.PYRO*/ pwire DMA_A01() const;
+  /*p04.NEFY*/ pwire DMA_A02() const;
+  /*p04.MUTY*/ pwire DMA_A03() const;
+  /*p04.NYKO*/ pwire DMA_A04() const;
+  /*p04.PYLO*/ pwire DMA_A05() const;
+  /*p04.NUTO*/ pwire DMA_A06() const;
+  /*p04.MUGU*/ pwire DMA_A07() const;
+  /*p04.NAFA*/ pwire DMA_A08() const;
+  /*p04.PYNE*/ pwire DMA_A09() const;
+  /*p04.PARA*/ pwire DMA_A10() const;
+  /*p04.NYDO*/ pwire DMA_A11() const;
+  /*p04.NYGY*/ pwire DMA_A12() const;
+  /*p04.PULA*/ pwire DMA_A13() const;
+  /*p04.POKU*/ pwire DMA_A14() const;
+  /*p04.MARU*/ pwire DMA_A15() const;
 
   //-----------------------------------------------------------------------------
   // LCD signals
 
-  wire BYHA_VID_LINE_TRIG_d4n() const;
+  wire BYHA_VID_LINE_TRIG_d4() const;
 
   wire RUTU_LINE_END_F() const;
   wire CATU_LINE_END_B() const;
   wire POPU_VBLANK_d4() const;
-  wire ROPO_LY_MATCH_SYNCp() const;
-  wire MUWY_Y0() const;
-  wire MYRO_Y1() const;
-  wire LEXA_Y2() const;
-  wire LYDO_Y3() const;
-  wire LOVU_Y4() const;
-  wire LEMA_Y5() const;
-  wire MATO_Y6() const;
-  wire LAFO_Y7() const;
+  pwire ROPO_LY_MATCH_SYNCp() const;
+  pwire MUWY_Y0() const;
+  pwire MYRO_Y1() const;
+  pwire LEXA_Y2() const;
+  pwire LYDO_Y3() const;
+  pwire LOVU_Y4() const;
+  pwire LEMA_Y5() const;
+  pwire MATO_Y6() const;
+  pwire LAFO_Y7() const;
 
   //-----------------------------------------------------------------------------
   // Address decoder signals
 
-  wire WERO_FF40_FF4Fp() const;
+  pwire WERO_FF4Xp() const;
 
   //-----------------------------------------------------------------------------
   // PPU signals
 
-  wire XYMU_RENDERINGp() const;
+  pwire XYMU_RENDERINGp() const;
   wire TEVO_FINE_RSTp() const;
-  wire SERE_VRAM_RD() const;
+  pwire SERE_VRAM_RDp() const;
   wire NYXU_TILE_FETCHER_RSTn() const;
   wire ACYL_SCANNINGp() const;
   wire LYRY_BFETCH_DONEp() const;
-  wire SEGU_CLKPIPEn() const;
+  nwire SEGU_CLKPIPEn() const;
   wire SACU_CLKPIPEp() const;
   wire ROZE_FINE_COUNT_7n() const;
   wire VOTY_INT_STATp() const;
-  wire TEKY_SPRITE_FETCH() const;
   wire VEKU_SFETCH_RUNNING_RSTn() const;
 
-  wire XEHO_X0() const;
-  wire SAVY_X1() const;
-  wire XODU_X2() const;
-  wire XYDO_X3() const;
-  wire TUHU_X4() const;
-  wire TUKY_X5() const;
-  wire TAKO_X6() const;
-  wire SYBE_X7() const;
+  pwire XEHO_X0() const;
+  pwire SAVY_X1() const;
+  pwire XODU_X2() const;
+  pwire XYDO_X3() const;
+  pwire TUHU_X4() const;
+  pwire TUKY_X5() const;
+  pwire TAKO_X6() const;
+  pwire SYBE_X7() const;
 
   //-----------------------------------------------------------------------------
   // Tile fetcher signals
 
-  wire PORY_FETCH_DONE_Bp() const;
+  wire PORY_TILE_FETCH_DONE_Bp() const;
   wire LONY_BG_READ_VRAM_LATCHp() const;
 
-  wire DATY_SCX0() const;
-  wire DUZU_SCX1() const;
-  wire CYXU_SCX2() const;
+  pwire DATY_SCX0() const;
+  pwire DUZU_SCX1() const;
+  pwire CYXU_SCX2() const;
 
   //-----------------------------------------------------------------------------
   // Sprite scanner signals
 
-  wire CEHA_SCANNINGp() const;
-  wire BESU_SCANNINGp() const;
-  wire CENO_SCANNINGp() const;
+  pwire CEHA_SCANNINGp() const;
+  pwire BESU_SCANNINGp() const;
+  pwire CENO_SCANNINGp() const;
 
   wire AVAP_RENDER_START_RST() const;
   wire CARE_STORE_ENp_ABxxEFxx() const;
@@ -245,9 +244,8 @@ struct SchematicTop {
 
   wire WEFY_SPR_READp() const;
   wire VAPE_FETCH_OAM_CLK() const;
-  wire VUSA_PIPE_LOAD_SPRITEn() const;
-  wire SOWO_SFETCH_RUNNINGn() const;
-  wire TEXY_SPRITE_READp() const;
+  nwire VUSA_SPRITE_DONEn() const;
+  pwire TEXY_SPR_READ_VRAMp() const;
   wire SOHO_SPR_VRAM_RDp() const;
 
   wire SPR_PIX_A0() const;
@@ -271,6 +269,7 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Window signals
 
+  wire RYDY_WIN_FIRST_TILE_A() const;
   wire NOCU_WIN_MODEn() const;
   wire NUNY_WX_MATCHpe() const;
 
@@ -374,7 +373,7 @@ struct SchematicTop {
 
   PinIn  CPU_PIN_RD;            // top right port PORTA_00: ->
   PinIn  CPU_PIN_WR;            // top right port PORTA_01: ->
-  PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  PinIn  CPU_PIN_ADDR_VALIDn;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
   PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
   PinOut CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int

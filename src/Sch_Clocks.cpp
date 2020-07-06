@@ -18,9 +18,11 @@ void ClockRegisters::tick(SchematicTop& top) {
     wire APUK_xxxDEFGx_ = APUK_xxxDEFGx;
     wire ADYK_xxxxEFGH_ = ADYK_xxxxEFGH;
 
-    /*p07.UBET*/ wire UBET_T1n = not(top.SYS_PIN_T1p);
-    /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2p);
-    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTn);
+    /*p07.UBET*/ nwire UBET_T1n = not(top.SYS_PIN_T1p);
+    /*p07.UVAR*/ nwire UVAR_T2n = not(top.SYS_PIN_T2p);
+
+    // FIXME polarity issues again?
+    /*p07.UPOJ*/ nwire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTn);
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 

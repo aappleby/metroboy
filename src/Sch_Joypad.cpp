@@ -82,6 +82,11 @@ void JoypadRegisters::tick(SchematicTop& top) {
     wire BURO_FF60_0 = 0;
     wire FF60_0n = 1;
 
+    top.JOY_PIN_P10_B.set(top.GND);
+    top.JOY_PIN_P11_B.set(top.GND);
+    top.JOY_PIN_P12_B.set(top.GND);
+    top.JOY_PIN_P13_B.set(top.GND);
+
     /*p05.KOLE*/ top.JOY_PIN_P10_A.set(nand(JUTE_JOYP_RA.q(), BURO_FF60_0));
     /*p05.KYBU*/ top.JOY_PIN_P10_D.set(nor (JUTE_JOYP_RA.q(), FF60_0n));
     /*p05.KYTO*/ top.JOY_PIN_P11_A.set(nand(KECY_JOYP_LB.q(), BURO_FF60_0));
@@ -147,7 +152,7 @@ void dump_regs(TextPainter& text_painter) {
   AWOB_WAKE_CPU.dump(text_painter, "AWOB_WAKE_CPU    ");
   text_painter.newline();
   text_painter.dprintf("----- JOY_PINS -----\n");
-  text_painter.dprintf("P10 %d:%d:%d:%d\n", JOY_PIN_P10_A.a.val, JOY_PIN_P10_B.a.val, JOY_PIN_P10_C.a.val, JOY_PIN_P10_D.a.val);
+  text_painter.dprintf("P10 %d:%d:%d:%d\n", JOY_PIN_P10_A.a.val, top.GND, JOY_PIN_P10_C.a.val, JOY_PIN_P10_D.a.val);
   text_painter.dprintf("P11 %d:%d:%d:%d\n", JOY_PIN_P11_A.a.val, JOY_PIN_P11_B.a.val, JOY_PIN_P11_C.a.val, JOY_PIN_P11_D.a.val);
   text_painter.dprintf("P12 %d:%d:%d:%d\n", JOY_PIN_P12_A.a.val, JOY_PIN_P12_B.a.val, JOY_PIN_P12_C.a.val, JOY_PIN_P12_D.a.val);
   text_painter.dprintf("P13 %d:%d:%d:%d\n", JOY_PIN_P13_A.a.val, JOY_PIN_P13_B.a.val, JOY_PIN_P13_C.a.val, JOY_PIN_P13_D.a.val);
@@ -157,10 +162,9 @@ void dump_regs(TextPainter& text_painter) {
 }
 
 void clear_dir() {
-  // FIXME still don't know who drives these, so we always set them to 0.
-  JOY_PIN_P10_B.set(0);
-  JOY_PIN_P11_B.set(0);
-  JOY_PIN_P12_B.set(0);
-  JOY_PIN_P13_B.set(0);
+  JOY_PIN_P10_B.set(top.GND);
+  JOY_PIN_P11_B.set(top.GND);
+  JOY_PIN_P12_B.set(top.GND);
+  JOY_PIN_P13_B.set(top.GND);
 }
 #endif

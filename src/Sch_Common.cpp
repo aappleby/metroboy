@@ -4,6 +4,37 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+void nwire_sink(nwire n) {
+  printf("nwire sink %d\n", (bool)n);
+}
+
+void pwire_sink(pwire p) {
+  printf("pwire sink %d\n", (bool)p);
+}
+
+bool wire_test() {
+  pwire x = 1;
+  nwire y = 0;
+
+  pwire_sink(x);
+  nwire_sink(y);
+
+  pwire_sink(not(y));
+  nwire_sink(not(x));
+
+  //pwire_sink(not(x));
+  //nwire_sink(not(y));
+
+  //nwire_sink(x);
+  //pwire_sink(y);
+
+  //x = y;
+  //y = x;
+  return x;
+}
+
+//-----------------------------------------------------------------------------
+
 void dump_long(TextPainter& text_painter, const char* label, SignalState a) {
   text_painter.add_text(label);
   text_painter.add_char(a.hiz ? 3 : 1);

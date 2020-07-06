@@ -365,6 +365,7 @@ struct SchematicTop {
   wire VYPO_GND = 0;
   wire RUNY_GND = 0;
   wire WEFE_GND = 0;
+  wire PESU_GND = 0;
 
   //-----------------------------------------------------------------------------
   // Internal bus to CPU
@@ -501,22 +502,22 @@ struct SchematicTop {
   // Joypad pins
 
   PinOut JOY_PIN_P10_A;   // PIN_67 <- P05.KOLE
-  PinOut JOY_PIN_P10_B;   // PIN_67 -> tied low between BONE and BUFY
+  PinOut JOY_PIN_P10_B;   // PIN_67 <- tied low between BONE and BUFY
   PinIn  JOY_PIN_P10_C;   // PIN_67 -> P02.KERY, P05.KEVU
   PinOut JOY_PIN_P10_D;   // PIN_67 <- P05.KYBU
 
   PinOut JOY_PIN_P11_A;   // PIN_66 <- P05.KYTO
-  PinOut JOY_PIN_P11_B;   // PIN_66 
+  PinOut JOY_PIN_P11_B;   // PIN_66 <- tied low between BONE and BUFY
   PinIn  JOY_PIN_P11_C;   // PIN_66 -> P02.KERY, P05.KAPA
   PinOut JOY_PIN_P11_D;   // PIN_66 <- P05.KABU
 
   PinOut JOY_PIN_P12_A;   // PIN_65 <- P05.KYHU
-  PinOut JOY_PIN_P12_B;   // PIN_65 
+  PinOut JOY_PIN_P12_B;   // PIN_65 <- tied low between BONE and BUFY
   PinIn  JOY_PIN_P12_C;   // PIN_65 -> P02.KERY, P05.KEJA
   PinOut JOY_PIN_P12_D;   // PIN_65 <- P05.KASY
 
   PinOut JOY_PIN_P13_A;   // PIN_64 <- P05.KORY
-  PinOut JOY_PIN_P13_B;   // PIN_64 
+  PinOut JOY_PIN_P13_B;   // PIN_64 <- tied low between BONE and BUFY
   PinIn  JOY_PIN_P13_C;   // PIN_64 -> P02.KERY, P05.KOLO
   PinOut JOY_PIN_P13_D;   // PIN_64 <- P05.KALE
 

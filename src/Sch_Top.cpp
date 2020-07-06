@@ -325,25 +325,25 @@ void SchematicTop::tick_cpu_bus() {
 /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clk_reg.BEDO_xBxxxxxx, sys_sig.MODE_DBG2);
 
 if (AFOP_Axxxxxxx) set_data(
-  /*p05.ANOC*/ not(sys_sig.PIN_P10_B),
-  /*p05.ATAJ*/ not(sys_sig.PIN_P10_B),
-  /*p05.AJEC*/ not(sys_sig.PIN_P10_B),
-  /*p05.ASUZ*/ not(sys_sig.PIN_P10_B),
-  /*p05.BENU*/ not(sys_sig.PIN_P10_B),
-  /*p05.AKAJ*/ not(sys_sig.PIN_P10_B),
-  /*p05.ARAR*/ not(sys_sig.PIN_P10_B),
-  /*p05.BEDA*/ not(sys_sig.PIN_P10_B)
+  /*p05.ANOC*/ not(top.GND),
+  /*p05.ATAJ*/ not(top.GND),
+  /*p05.AJEC*/ not(top.GND),
+  /*p05.ASUZ*/ not(top.GND),
+  /*p05.BENU*/ not(top.GND),
+  /*p05.AKAJ*/ not(top.GND),
+  /*p05.ARAR*/ not(top.GND),
+  /*p05.BEDA*/ not(top.GND)
 );
 
 if (LECO_xBCDEFGH) set_data(
-  /*p07.ROMY*/ sys_sig.PIN_P10_B,
-  /*p07.RYNE*/ sys_sig.PIN_P10_B,
-  /*p07.REJY*/ sys_sig.PIN_P10_B,
-  /*p07.RASE*/ sys_sig.PIN_P10_B,
-  /*p07.REKA*/ sys_sig.PIN_P10_B,
-  /*p07.ROWE*/ sys_sig.PIN_P10_B,
-  /*p07.RYKE*/ sys_sig.PIN_P10_B,
-  /*p07.RARU*/ sys_sig.PIN_P10_B
+  /*p07.ROMY*/ top.GND,
+  /*p07.RYNE*/ top.GND,
+  /*p07.REJY*/ top.GND,
+  /*p07.RASE*/ top.GND,
+  /*p07.REKA*/ top.GND,
+  /*p07.ROWE*/ top.GND,
+  /*p07.RYKE*/ top.GND,
+  /*p07.RARU*/ top.GND
 );
 
 
@@ -354,7 +354,7 @@ if (LECO_xBCDEFGH) set_data(
 /*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, clk.CPU_PIN_BOGA_AxCDEFGH);
 /*p25.SOLE*/ wire SOLE = not(TUSO);
 
-if (dbg_sig.VYPO_P10_Bn) bus_out.set_data(
+if (top.VYPO_GND) bus_out.set_data(
   /*p25.TOVU*/ SOLE,
   /*p25.SOSA*/ SOLE,
   /*p25.SEDU*/ SOLE,

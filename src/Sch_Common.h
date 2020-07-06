@@ -18,21 +18,34 @@ struct CpuBus;
 //typedef const bool wire;
 typedef bool wire;
 
+struct pwire;
+struct nwire;
+
 struct pwire {
   pwire(bool x) : v(x) {}
-  operator bool() const { return v; }
+  bool operator==(nwire n) const;
+  bool get() const { return v; }
+  operator const bool() const { return v; }
 private:
   const bool v;
 };
 
 struct nwire {
   nwire(bool x) : v(x) {}
-  operator bool() const { return v; }
+  bool operator==(pwire p) const;
+  bool get() const { return v; }
+  operator const bool() const { return v; }
 private:
   const bool v;
 };
 
+inline bool nwire::operator==(pwire p) const { return get() == p.get(); }
+inline bool pwire::operator==(nwire n) const { return get() == n.get(); }
+
 //-----------------------------------------------------------------------------
+
+inline pwire not(nwire a) { return !a.get(); }
+inline nwire not(pwire a) { return !a.get(); }
 
 inline wire not (wire a) { return !a; }
 
@@ -587,15 +600,15 @@ struct Reg9 : public RegisterBase {
 
 struct Reg11 : public RegisterBase {
 
-  void set(bool CLKp, bool CLKn, bool RSTp, bool D) {
+  void setQ(pwire CLKp, nwire CLKn, pwire RSTp, wire D) {
     if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = D;
     b.hiz = 0;
-    b.clk = CLKp;
+    b.clk = CLKp.get();
     b.set = 0;
-    b.rst = RSTp;
+    b.rst = RSTp.get();
     b.error = 0;
   }
 
@@ -650,7 +663,7 @@ struct Reg11 : public RegisterBase {
 /*p30.XECU*/ // out on 12
 
 ///*p01.AFER*/ AFER_RSTp.set(BOMA_xBxxxxxx, UPOJ_MODE_PRODn, ASOL_RST_LATCHp);
-///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_reg.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
+///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_reg.WUDA_xBCxxFGx, top.WEFE_GND, bus_sig.YFOT_OAM_A2p);
 
 // AFER_01 nc
 // AFER_02 << UPOJ_04 (RSTp?)

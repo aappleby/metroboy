@@ -203,16 +203,15 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.FYDU*/ wire FYDU_DMA_A06n = not(top.DMA_A06());
     /*p28.FETU*/ wire FETU_DMA_A07n = not(top.DMA_A07());
 
-    // double check these, they're tribus or something and not NOTs.
-    /*p28.WEFE*/ wire WEFE_P10_Bn = not(top.JOY_PIN_P10_B);
-    /*p28.WUWE*/ wire WUWE_P10_Bn = not(top.JOY_PIN_P10_B);
-    /*p28.GEFY*/ wire GEFY_P10_Bn = not(top.JOY_PIN_P10_B);
-    /*p28.GECA*/ wire GECA_P10_Bp = not(WEFE_P10_Bn);
-    /*p28.WYDU*/ wire WYDU_P10_Bp = not(WEFE_P10_Bn);
+    /*p28.GECA*/ wire GECA_GND = top.WEFE_GND;
+    /*p28.WYDU*/ wire WYDU_GND = top.WEFE_GND;
+
+    /*p28.WUWE*/ wire WUWE_GND = top.GND;
+    /*p28.GEFY*/ wire GEFY_GND = top.GND;
 
     // Hacky model of weird tribus
-    /*p28.GEKA*/ GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (GECA_P10_Bp & !BETE_PPU_OAM_RDn) | (GEFY_P10_Bn & !APAR_SCAN_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
-    /*p28.ZYFO*/ ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (WYDU_P10_Bp & !BETE_PPU_OAM_RDn) | (WUWE_P10_Bn & !APAR_SCAN_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
+    /*p28.GEKA*/ GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (GECA_GND    & !BETE_PPU_OAM_RDn) | (GEFY_GND    & !APAR_SCAN_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
+    /*p28.ZYFO*/ ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (WYDU_GND    & !BETE_PPU_OAM_RDn) | (WUWE_GND    & !APAR_SCAN_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
     /*p28.YFOT*/ YFOT_OAM_A2p = not((GOSE_A2n & !ASAM_CPU_OAM_RDn) | (GYBU_IDX_0n & !BETE_PPU_OAM_RDn) | (GUSE_SCAN0n & !APAR_SCAN_OAM_RDn) | (FAGO_DMA_A02n & !DUGA_DMA_OAM_RDn));
     /*p28.YFOC*/ YFOC_OAM_A3p = not((WAPE_A3n & !ASAM_CPU_OAM_RDn) | (GYKA_IDX_1n & !BETE_PPU_OAM_RDn) | (GEMA_SCAN1n & !APAR_SCAN_OAM_RDn) | (FYKY_DMA_A03n & !DUGA_DMA_OAM_RDn));
     /*p28.YVOM*/ YVOM_OAM_A4p = not((FEVU_A4n & !ASAM_CPU_OAM_RDn) | (FABY_IDX_2n & !BETE_PPU_OAM_RDn) | (FUTO_SCAN2n & !APAR_SCAN_OAM_RDn) | (ELUG_DMA_A04n & !DUGA_DMA_OAM_RDn));

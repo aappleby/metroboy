@@ -26,11 +26,6 @@ void SpriteFetcher::tick(SchematicTop& top) {
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
 
-  wire JOY_PIN_P10_B = 0;
-
-  // VYPO might not be traced correctly.
-  /*p27.VYPO*/ wire VYPO_P10_Bn = not(JOY_PIN_P10_B);
-
   //----------------------------------------
   // So this is def the chunk that watches FEPO_STORE_MATCHp and triggers a sprite fetch...
 
@@ -57,7 +52,7 @@ void SpriteFetcher::tick(SchematicTop& top) {
     // SOBU_16 >> QN
     // SOBU_17 >> Q
 
-    /*p27.SUDA*/ SUDA_SPRITE_FETCH_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_A);
+    /*p27.SUDA*/ SUDA_SPRITE_FETCH_B.set(LAPE_AxCxExGx, top.VYPO_GND, SOBU_SPRITE_FETCH_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCHpe = and (SOBU_SPRITE_FETCH_A, !SUDA_SPRITE_FETCH_B);
 
     /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCHpe, ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4n()); // def nor
@@ -99,7 +94,7 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(top.VRM_TRI_D0, top.VRM_TRI_D7, XONO_FLIP_X);
 
 
-    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(LAPE_AxCxExGx, VYPO_P10_Bn, TOXE_SFETCH_S0);
+    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(LAPE_AxCxExGx, top.VYPO_GND, TOXE_SFETCH_S0);
     /*p29.TYTU*/ wire TYTU_SFETCH_S0n = not(TOXE_SFETCH_S0.q());
     /*p29.SYCU*/ wire SYCU_SFETCH_S0pe = nor(TYTU_SFETCH_S0n, LOBY_RENDERINGn, TYFO_SFETCH_S0_D1);
 
@@ -158,7 +153,7 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf(ABON_SPRITE_READn, top.WYSO_SPRITE_Y5());
     /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf(ABON_SPRITE_READn, top.XOTE_SPRITE_Y6());
     /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf(ABON_SPRITE_READn, top.YZAB_SPRITE_Y7());
-    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf(ABON_SPRITE_READn, JOY_PIN_P10_B);   // sprites always in low half of tile store
+    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf(ABON_SPRITE_READn, top.GND);   // sprites always in low half of tile store
   }
 }
 

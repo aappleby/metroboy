@@ -5,11 +5,11 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void nwire_sink(nwire n) {
-  printf("nwire sink %d\n", (bool)n);
+  printf("nwire sink %d\n", n.as_wire());
 }
 
 void pwire_sink(pwire p) {
-  printf("pwire sink %d\n", (bool)p);
+  printf("pwire sink %d\n", p.as_wire());
 }
 
 bool wire_test() {
@@ -48,7 +48,7 @@ bool wire_test() {
   //nwire p = x;
   //pwire q = y;
 
-  return (wire)x;
+  return x.as_wire();
 }
 
 //-----------------------------------------------------------------------------

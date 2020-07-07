@@ -70,11 +70,11 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not(top.CPU_PIN_ACK_SERIAL);
     /*p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not(top.CPU_PIN_ACK_JOYPAD);
 
-    /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0, (wire)REFA_FF0F_WRn);
-    /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1, (wire)REFA_FF0F_WRn);
-    /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2, (wire)REFA_FF0F_WRn);
-    /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3, (wire)REFA_FF0F_WRn);
-    /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4, (wire)REFA_FF0F_WRn);
+    /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0, REFA_FF0F_WRn.as_wire());
+    /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1, REFA_FF0F_WRn.as_wire());
+    /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2, REFA_FF0F_WRn.as_wire());
+    /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3, REFA_FF0F_WRn.as_wire());
+    /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4, REFA_FF0F_WRn.as_wire());
 
     /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand((wire)ROTU_FF0F_WRp, LETY_INT_VBL_ACKn,  top.CPU_TRI_D0);
     /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand((wire)ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, top.CPU_TRI_D1);

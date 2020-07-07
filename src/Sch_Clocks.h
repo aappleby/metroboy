@@ -15,10 +15,10 @@ struct ClockRegisters {
 //private:
   //friend SchematicTop;
 
-  /*p01.AFUR*/ Reg9 AFUR_xBCDExxx;
-  /*p01.ALEF*/ Reg9 ALEF_xxCDEFxx;
-  /*p01.APUK*/ Reg9 APUK_xxxDEFGx;
-  /*p01.ADYK*/ Reg9 ADYK_xxxxEFGH;
+  /*p01.AFUR*/ Reg9p AFUR_xBCDExxx; // these have positive reset
+  /*p01.ALEF*/ Reg9p ALEF_xxCDEFxx; // these have positive reset
+  /*p01.APUK*/ Reg9p APUK_xxxDEFGx; // these have positive reset
+  /*p01.ADYK*/ Reg9p ADYK_xxxxEFGH; // these have positive reset
 
   /*p29.WUVU*/ Reg17 WUVU_AxxDExxH;
   /*p21.VENA*/ Reg17 VENA_xBCDExxx;

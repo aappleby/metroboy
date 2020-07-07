@@ -111,7 +111,7 @@ void DmaRegisters::tick(SchematicTop& top) {
   {
     /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
-    /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, bool(LAVY_FF46_WRp));
+    /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor((pwire)LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
 
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);

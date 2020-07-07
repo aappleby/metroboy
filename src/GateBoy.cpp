@@ -14,7 +14,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   auto top = gateboy.top();
 
   for (int phase = 0; phase < 30; phase++) {
-    wire CLK_GOOD = 0;
+    wire CLK_GOOD = 1;
     wire CLK = top->phase_counter & 1;
     wire RST = 1;
     wire T1 = 0;

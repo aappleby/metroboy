@@ -26,9 +26,12 @@ struct nwire;
 struct pwire {
   pwire(wire x) : v(x) {}
   wire operator==(nwire n) const;
-  wire get() const { return v; }
+
   operator wire() const { return v; }
+
+  wire  as_wire()  const { return v; }
   nwire as_nwire() const;
+
 private:
   pwire(nwire x);
   const bool v;
@@ -37,24 +40,26 @@ private:
 struct nwire {
   nwire(wire x) : v(x) {}
   wire operator==(pwire p) const;
-  wire get() const { return v; }
+
   operator wire() const { return v; }
+
+  wire  as_wire()  const { return v; }
   pwire as_pwire() const;
 private:
   nwire(pwire x);
   const bool v;
 };
 
-inline nwire pwire::as_nwire() const { return (nwire)get(); }
-inline pwire nwire::as_pwire() const { return (pwire)get(); }
+inline nwire pwire::as_nwire() const { return (nwire)v; }
+inline pwire nwire::as_pwire() const { return (pwire)v; }
 
-inline bool nwire::operator==(pwire p) const { return get() == p.get(); }
-inline bool pwire::operator==(nwire n) const { return get() == n.get(); }
+inline bool nwire::operator==(pwire p) const { return v == p.as_wire(); }
+inline bool pwire::operator==(nwire n) const { return v == n.as_wire(); }
 
 //-----------------------------------------------------------------------------
 
-inline pwire not(nwire a) { return !a.get(); }
-inline nwire not(pwire a) { return !a.get(); }
+inline pwire not(nwire a) { return !a.as_wire(); }
+inline nwire not(pwire a) { return !a.as_wire(); }
 
 inline wire not (wire a) { return !a; }
 
@@ -264,10 +269,12 @@ struct PSignal {
 
   PSignal() : a(ERROR) {}
 
-  explicit operator wire() const  { return (wire)get(); }
-  operator pwire() const { return get(); }
+  operator pwire() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
 
-  pwire get() const {
+  wire as_wire() const {
     if (a.error) __debugbreak();
     return a.val;
   }
@@ -279,7 +286,7 @@ struct PSignal {
 
   void operator = (pwire val) {
     if (!a.error) __debugbreak();
-    a = val ? SET_1 : SET_0;
+    a = val.as_wire() ? SET_1 : SET_0;
   }
 
   SignalState reset() {
@@ -293,7 +300,7 @@ private:
   SignalState a;
 };
 
-inline nwire not(PSignal p) { return not(p.get()); }
+inline nwire not(PSignal p) { return not(p.as_wire()); }
 
 //----------------------------------------
 
@@ -301,10 +308,12 @@ struct NSignal {
 
   NSignal() : a(ERROR) {}
 
-  explicit operator wire() const  { return (wire)get(); }
-  operator nwire() const { return get(); }
+  operator nwire() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
 
-  nwire get() const {
+  wire as_wire() const {
     if (a.error) __debugbreak();
     return a.val;
   }
@@ -316,7 +325,7 @@ struct NSignal {
 
   void operator = (nwire val) {
     if (!a.error) __debugbreak();
-    a = val ? SET_1 : SET_0;
+    a = val.as_wire() ? SET_1 : SET_0;
   }
 
   SignalState reset() {
@@ -330,7 +339,7 @@ private:
   SignalState a;
 };
 
-inline pwire not(NSignal n) { return not(n.get()); }
+inline pwire not(NSignal n) { return not(n.as_wire()); }
 
 //-----------------------------------------------------------------------------
 // I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
@@ -447,12 +456,12 @@ struct Tribuf : public RegisterBase {
 
   void set_tribuf(pwire OEp, bool val) {
     if (!b.error && !b.hiz) {
-      if (OEp) __debugbreak();
+      if (OEp.as_wire()) __debugbreak();
       return;
     }
 
-    b.val = val && OEp;
-    b.hiz = OEp;
+    b.val = val && OEp.as_wire();
+    b.hiz = OEp.as_wire();
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
@@ -462,12 +471,12 @@ struct Tribuf : public RegisterBase {
   // top rung tadpole facing second rung dot
   void set_tribuf_6p(pwire OEp, bool val) {
     if (!b.error && !b.hiz) {
-      if (OEp) __debugbreak();
+      if (OEp.as_wire()) __debugbreak();
       return;
     }
 
-    b.val = val && OEp;
-    b.hiz = OEp;
+    b.val = val && OEp.as_wire();
+    b.hiz = OEp.as_wire();
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
@@ -477,12 +486,12 @@ struct Tribuf : public RegisterBase {
   // top rung tadpole not facing second rung dot
   void set_tribuf_6n(nwire OEn, bool val) {
     if (!b.error && !b.hiz) {
-      if (!OEn) __debugbreak();
+      if (!OEn.as_wire()) __debugbreak();
       return;
     }
 
-    b.val = val && !OEn;
-    b.hiz = !OEn;
+    b.val = val && !OEn.as_wire();
+    b.hiz = !OEn.as_wire();
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
@@ -491,12 +500,12 @@ struct Tribuf : public RegisterBase {
 
   void set_tribuf_10(nwire OEn, bool val) {
     if (!b.error && !b.hiz) {
-      if (!OEn) __debugbreak();
+      if (!OEn.as_wire()) __debugbreak();
       return;
     }
 
-    b.val = val && (!OEn);
-    b.hiz = !OEn;
+    b.val = val && (!OEn.as_wire());
+    b.hiz = !OEn.as_wire();
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
@@ -581,7 +590,7 @@ struct Reg8 : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = (wire)CLKp;
+    b.clk = CLKp.as_wire();
     b.set = 0;
     b.rst = 0;
     b.error = 0;
@@ -655,6 +664,43 @@ struct Reg8 : public RegisterBase {
 // XEPE_08 >> ZOGY_02  (q)
 // XEPE_09 >> nc
 
+struct Reg9p : public RegisterBase {
+
+  void set(pwire CLKp, nwire CLKn, pwire RSTp, bool D) {
+    if (CLKp == CLKn) __debugbreak();
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = D;
+    b.hiz = 0;
+    b.clk = CLKp.as_wire();
+    b.set = 0;
+    b.rst = RSTp.as_wire();
+    b.error = 0;
+  }
+
+  SignalState commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.error = 0;
+
+    b = ERROR;
+
+    return a;
+  }
+};
+
+
 struct Reg9 : public RegisterBase {
 
   void set(pwire CLKp, nwire CLKn, nwire RSTn, bool D) {
@@ -663,9 +709,9 @@ struct Reg9 : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = D;
     b.hiz = 0;
-    b.clk = (wire)CLKp;
+    b.clk = CLKp.as_wire();
     b.set = 0;
-    b.rst = !(wire)RSTn;
+    b.rst = !RSTn.as_wire();
     b.error = 0;
   }
 
@@ -733,9 +779,9 @@ struct Reg11 : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = D;
     b.hiz = 0;
-    b.clk = CLKp.get();
+    b.clk = CLKp.as_wire();
     b.set = 0;
-    b.rst = RSTp.get();
+    b.rst = RSTp.as_wire();
     b.error = 0;
   }
 
@@ -828,9 +874,9 @@ struct Reg13 : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = D;
     b.hiz = 0;
-    b.clk = (wire)CLKp;
+    b.clk = CLKp.as_wire();
     b.set = 0;
-    b.rst = (wire)RSTp;
+    b.rst = RSTp.as_wire();
     b.error = 0;
   }
 
@@ -889,9 +935,9 @@ struct Reg17 : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = (wire)CLKp;
+    b.clk = CLKp.as_wire();
     b.set = 0;
-    b.rst = (wire)RSTn;
+    b.rst = RSTn.as_wire();
     b.error = 0;
   }
 
@@ -974,9 +1020,9 @@ struct Reg22 : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = (wire)CLKp;
-    b.set = !(wire)SETn;
-    b.rst = !(wire)RSTn;
+    b.clk = CLKp.as_wire();
+    b.set = !SETn.as_wire();
+    b.rst = !RSTn.as_wire();
     b.error = 0;
   }
 
@@ -1032,8 +1078,8 @@ struct NorLatch : public RegisterBase {
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
-    b.set = (wire)SETp;
-    b.rst = (wire)RSTp;
+    b.set = SETp.as_wire();
+    b.rst = RSTp.as_wire();
     b.error = 0;
   }
 
@@ -1079,8 +1125,8 @@ struct NandLatch : public RegisterBase {
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
-    b.set = !SETn;
-    b.rst = !RSTn;
+    b.set = !SETn.as_wire();
+    b.rst = !RSTn.as_wire();
     b.error = 0;
   }
 
@@ -1179,8 +1225,8 @@ struct TpLatch : public RegisterBase {
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
-    b.set = LATCHp && val;
-    b.rst = LATCHp && !val;
+    b.set = LATCHp.as_wire() && val;
+    b.rst = LATCHp.as_wire() && !val;
     b.error = 0;
   }
 
@@ -1242,9 +1288,9 @@ struct Counter : public RegisterBase {
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = (wire)CLKp;
-    b.set = (wire)LOADp && val;
-    b.rst = (wire)LOADp && !val;
+    b.clk = CLKp.as_wire();
+    b.set = LOADp.as_wire() && val;
+    b.rst = LOADp.as_wire() && !val;
     b.error = 0;
   }
 

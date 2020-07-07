@@ -603,7 +603,14 @@ void SchematicTop::tick_vram_pins() {
   /*p01.AREV*/ nwire AREV_CPU_WRn_ABCDExxx = nand(CPU_PIN_WRp, AFAS_xxxxxFGH);
   /*p01.APOV*/ pwire APOV_CPU_WRp_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
 
-
+  /*p04.DECY*/ nwire DECY_FROM_CPU5n = not(CPU_PIN5);
+  /*p04.CATY*/ pwire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
+  /*p07.TEDO*/ pwire TEDO_CPU_RDp = not(UJYV_CPU_RDn());
+  /*p08.REDU*/ nwire REDU_CPU_RDn = not(TEDO_CPU_RDp);
+  /*p07.AJAS*/ nwire AJAS_CPU_RDn = not(TEDO_CPU_RDp);
+  /*p07.ASOT*/ pwire ASOT_CPU_RDp = not(AJAS_CPU_RDn);
+  /*p28.MYNU*/ nwire MYNU_CPU_RDn = nand(ASOT_CPU_RDp, CATY_FROM_CPU5p);
+  /*p28.LEKO*/ pwire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
 
   // the logic here is kinda weird, still seems to select vram.
   /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
@@ -657,6 +664,25 @@ void SchematicTop::tick_vram_pins() {
   /*p27.LENA*/ pwire LENA_BGW_VRAM_RDp = not(LUSU_BGW_VRAM_RDn);
   /*p25.SUTU*/ wire SUTU_MCSn = nor(LENA_BGW_VRAM_RDp, LUFA_DMA_READ_VRAMp, ABON_SPR_READ_VRAMn, SERE_VRAM_RDp);
 
+  /*p25.RUVY*/ wire _RUVY_VRAM_WR = not(SALE_VRAM_WRn);
+  /*p25.SAZO*/ wire _SAZO_VRAM_RD  = and (_RUVY_VRAM_WR, SERE_VRAM_RDp);
+
+  /*p25.RYJE*/ nwire _RYJE_VRAM_RDn = not(_SAZO_VRAM_RD);
+  /*p25.REVO*/ pwire _REVO_VRAM_RDp = not(_RYJE_VRAM_RDn);
+
+  // this is ORing a signal with a delayed version of itself?
+  /*p25.RELA*/ wire _RELA_VBUS_DIR_OUT   = or (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
+
+  /*p25.ROCY*/ pwire _ROCY_VBUS_TRISTATEn = and (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
+  /*p25.RAHU*/ nwire _RAHU_VBUS_DIR_IN = not(_ROCY_VBUS_TRISTATEn);
+  /*p25.ROVE*/ pwire _ROVE_VBUS_DIR_OUT = not(_RAHU_VBUS_DIR_IN);
+
+  /*p25.RENA*/ wire _RENA_VBUS_DIR_IN = not(_RELA_VBUS_DIR_OUT);
+  /*p25.ROFA*/ wire _ROFA_VBUS_DIR_OUT = not(_RENA_VBUS_DIR_IN);
+  /*p25.TYVY*/ nwire TYVY_VRAMD_TO_CPUDn = nand(SERE_VRAM_RDp, LEKO_CPU_RDp);
+  /*p25.SEBY*/ pwire SEBY_VRAMD_TO_CPUDp = not(TYVY_VRAMD_TO_CPUDn);
+
+
   {
     /*p25.TAXY*/ wire TAXY_MWRn_A = and(SOHY_MWRn, RACO_DBG_VRAMn);
     /*p25.SOFY*/ wire SOFY_MWRn_D = or (SOHY_MWRn, TUTO_DBG_VRAMp);
@@ -700,19 +726,6 @@ void SchematicTop::tick_vram_pins() {
   }
 
   {
-    /*p25.RUVY*/ wire _RUVY_VRAM_WR = not(SALE_VRAM_WRn);
-    /*p25.SAZO*/ wire _SAZO_VRAM_RD  = and (_RUVY_VRAM_WR, SERE_VRAM_RDp);
-
-    /*p25.RYJE*/ nwire _RYJE_VRAM_RDn = not(_SAZO_VRAM_RD);
-    /*p25.REVO*/ pwire _REVO_VRAM_RDp = not(_RYJE_VRAM_RDn);
-
-    // this is ORing a signal with a delayed version of itself?
-    /*p25.RELA*/ wire _RELA_VBUS_DIR_OUT   = or (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
-
-    /*p25.ROCY*/ pwire _ROCY_VBUS_TRISTATEn = and (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
-    /*p25.RAHU*/ nwire _RAHU_VBUS_DIR_IN = not(_ROCY_VBUS_TRISTATEn);
-    /*p25.ROVE*/ pwire _ROVE_VBUS_DIR_OUT = not(_RAHU_VBUS_DIR_IN);
-
     /*p25.SEFA*/ wire SEFA = and(VRM_TRI_D0, _ROVE_VBUS_DIR_OUT);
     /*p25.SOGO*/ wire SOGO = and(VRM_TRI_D1, _ROVE_VBUS_DIR_OUT);
     /*p25.SEFU*/ wire SEFU = and(VRM_TRI_D2, _ROVE_VBUS_DIR_OUT);
@@ -766,7 +779,9 @@ void SchematicTop::tick_vram_pins() {
     VRAM_PIN_MD5_D.set(RUMU);
     VRAM_PIN_MD6_D.set(RYTY);
     VRAM_PIN_MD7_D.set(RADY);
+  }
 
+  {
     /*p25.TEME*/ VRM_TRI_D0.set_tribuf_10(_RAHU_VBUS_DIR_IN, CPU_TRI_D0);
     /*p25.TEWU*/ VRM_TRI_D1.set_tribuf_10(_RAHU_VBUS_DIR_IN, CPU_TRI_D1);
     /*p25.TYGO*/ VRM_TRI_D2.set_tribuf_10(_RAHU_VBUS_DIR_IN, CPU_TRI_D2);
@@ -775,43 +790,31 @@ void SchematicTop::tick_vram_pins() {
     /*p25.RUJO*/ VRM_TRI_D5.set_tribuf_10(_RAHU_VBUS_DIR_IN, CPU_TRI_D5);
     /*p25.TOFA*/ VRM_TRI_D6.set_tribuf_10(_RAHU_VBUS_DIR_IN, CPU_TRI_D6);
     /*p25.SUZA*/ VRM_TRI_D7.set_tribuf_10(_RAHU_VBUS_DIR_IN, CPU_TRI_D7);
-
-    {
-      /*p25.RENA*/ wire _RENA_VBUS_DIR_IN = not(_RELA_VBUS_DIR_OUT);
-      /*p25.RODY*/ VRM_TRI_D0.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD0_C);
-      /*p25.REBA*/ VRM_TRI_D1.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD1_C);
-      /*p25.RYDO*/ VRM_TRI_D2.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD2_C);
-      /*p25.REMO*/ VRM_TRI_D3.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD3_C);
-      /*p25.ROCE*/ VRM_TRI_D4.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD4_C);
-      /*p25.ROPU*/ VRM_TRI_D5.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD5_C);
-      /*p25.RETA*/ VRM_TRI_D6.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD6_C);
-      /*p25.RAKU*/ VRM_TRI_D7.set_tribuf(_RENA_VBUS_DIR_IN, VRAM_PIN_MD7_C);
-
-      /*p25.ROFA*/ wire _ROFA_VBUS_DIR_OUT = not(_RENA_VBUS_DIR_IN);
-      /*p25.ROFA*/ VRAM_PIN_MD0_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD1_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD2_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD3_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD4_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD5_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD6_B.set(_ROFA_VBUS_DIR_OUT);
-      /*p25.ROFA*/ VRAM_PIN_MD7_B.set(_ROFA_VBUS_DIR_OUT);
-    }
   }
 
   {
-    /*p04.DECY*/ nwire DECY_FROM_CPU5n = not(CPU_PIN5);
-    /*p04.CATY*/ pwire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
-    /*p07.TEDO*/ pwire TEDO_CPU_RDp = not(UJYV_CPU_RDn());
-    /*p08.REDU*/ nwire REDU_CPU_RDn = not(TEDO_CPU_RDp);
-    /*p07.AJAS*/ nwire AJAS_CPU_RDn = not(TEDO_CPU_RDp);
-    /*p07.ASOT*/ pwire ASOT_CPU_RDp = not(AJAS_CPU_RDn);
-    /*p28.MYNU*/ nwire MYNU_CPU_RDn = nand(ASOT_CPU_RDp, CATY_FROM_CPU5p);
-    /*p28.LEKO*/ pwire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
+    /*p25.RODY*/ VRM_TRI_D0.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD0_C);
+    /*p25.REBA*/ VRM_TRI_D1.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD1_C);
+    /*p25.RYDO*/ VRM_TRI_D2.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD2_C);
+    /*p25.REMO*/ VRM_TRI_D3.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD3_C);
+    /*p25.ROCE*/ VRM_TRI_D4.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD4_C);
+    /*p25.ROPU*/ VRM_TRI_D5.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD5_C);
+    /*p25.RETA*/ VRM_TRI_D6.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD6_C);
+    /*p25.RAKU*/ VRM_TRI_D7.set_tribuf_6p(_RENA_VBUS_DIR_IN, VRAM_PIN_MD7_C);
+  }
 
-    /*p25.TYVY*/ nwire TYVY_VRAMD_TO_CPUDn = nand(SERE_VRAM_RDp, LEKO_CPU_RDp);
-    /*p25.SEBY*/ pwire SEBY_VRAMD_TO_CPUDp = not(TYVY_VRAMD_TO_CPUDn);
+  {
+    /*p25.ROFA*/ VRAM_PIN_MD0_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD1_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD2_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD3_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD4_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD5_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD6_B.set(_ROFA_VBUS_DIR_OUT);
+    /*p25.ROFA*/ VRAM_PIN_MD7_B.set(_ROFA_VBUS_DIR_OUT);
+  }
 
+  {
     /*p25.RERY*/ wire RERY = !not(VRM_TRI_D0);
     /*p25.RUNA*/ wire RUNA = !not(VRM_TRI_D1);
     /*p25.RONA*/ wire RONA = !not(VRM_TRI_D2);

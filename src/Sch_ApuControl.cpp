@@ -1,7 +1,5 @@
 #include "Sch_ApuControl.h"
 
-#include <stdint.h>
-
 namespace Schematics {
 
 #if 0

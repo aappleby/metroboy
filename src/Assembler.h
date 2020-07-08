@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.h"
+#include "File.h"
 
 #include <vector>
 #include <map>
@@ -13,11 +14,11 @@ struct Assembler {
 
   template<typename ... Args>
   void assemble(const char* format, Args ... args);
-  void disassemble_one(const uint8_t* code, std::string& out);
-  void disassemble(const uint8_t* code, size_t code_size, uint16_t code_base, int opcount, std::string& out, bool collapse_nops = true);
+  void disassemble_one(const uint8_t* code, Dumper& dump);
+  void disassemble(const uint8_t* code, size_t code_size, uint16_t code_base, int opcount, Dumper& dump, bool collapse_nops = true);
   void assemble(const char* source);
 
-  void disassemble(std::string& out);
+  void disassemble(Dumper& dump);
 
   void begin(const std::string& new_name) {
     name = new_name;

@@ -24,12 +24,12 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
     SignalHash hash;
     for (int pass = 0; pass < 10; pass++) {
-      top->preset_sys(CLK_GOOD, CLK, RST, T1, T2);
-      top->preset_cpu(0, 0, 0, 0);
-      top->preset_ext();
-      top->preset_joy(buttons);
-      top->preset_vram(0, 0);
-      top->preset_oam();
+      top->set_sys(CLK_GOOD, CLK, RST, T1, T2);
+      top->set_cpu(0, 0, 0, 0);
+      top->set_ext();
+      top->set_joy(buttons);
+      top->set_vram(0, 0);
+      top->set_oam();
 
       hash = top->tick();
     }
@@ -68,12 +68,12 @@ SignalHash GateBoy::cycle(SchematicTop* gb, uint16_t /*addr*/, uint8_t /*data*/,
 SignalHash GateBoy::phase(Schematics::SchematicTop* gb) {
   gb->phase_counter++;
 
-  Schematics::SignalHash hash;
+  SignalHash hash;
   for (int i = 0; i < 256; i++) {
-    gb->SYS_PIN_CLK_B.preset(gb->phase_counter & 1);
+    gb->SYS_PIN_CLK_B.set(gb->phase_counter & 1);
 
-    Schematics::SignalHash new_hash = pass(gb);
-    if (new_hash == hash) break;
+    SignalHash new_hash = pass(gb);
+    if (new_hash.h == hash.h) break;
     if (i == 199) printf("stuck!\n");
     if (i == 200) __debugbreak();
   }
@@ -83,7 +83,7 @@ SignalHash GateBoy::phase(Schematics::SchematicTop* gb) {
 //----------------------------------------
 
 SignalHash GateBoy::pass(SchematicTop* gb) {
-  Schematics::SignalHash hash;
+  SignalHash hash;
   hash = gb->tick();
   return hash;
 }

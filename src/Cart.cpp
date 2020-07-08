@@ -4,6 +4,8 @@
 
 #include "Constants.h"
 
+#include <string.h>
+
 // 0 0x0000 - 8k rom
 // 1 0x2000 - 8k rom
 // 2 0x4000 - 8k rom
@@ -199,17 +201,17 @@ uint8_t* Cart::get_flat_ptr(uint16_t addr) {
 
 //-----------------------------------------------------------------------------
 
-void Cart::dump(std::string& d) {
-  sprintf(d, "\002--------------CART--------------\001\n");
+void Cart::dump(Dumper& d) const {
+  d("\002--------------CART--------------\001\n");
 
-  sprintf(d, "cart_rom       %p\n", cart_rom);
-  sprintf(d, "cart_size      %d\n", cart_size);
-  sprintf(d, "rom_bank_count %d\n", rom_bank_count);
-  sprintf(d, "ram_bank_count %d\n", ram_bank_count);
-  sprintf(d, "ram_enable     %d\n", ram_enable);
-  sprintf(d, "mode           %d\n", mode);
-  sprintf(d, "bank_latch1    %d\n", bank_latch1);
-  sprintf(d, "bank_latch2    %d\n", bank_latch2);
+  d("cart_rom       %p\n", cart_rom);
+  d("cart_size      %d\n", cart_size);
+  d("rom_bank_count %d\n", rom_bank_count);
+  d("ram_bank_count %d\n", ram_bank_count);
+  d("ram_enable     %d\n", ram_enable);
+  d("mode           %d\n", mode);
+  d("bank_latch1    %d\n", bank_latch1);
+  d("bank_latch2    %d\n", bank_latch2);
 }
 
 //-----------------------------------------------------------------------------

@@ -827,7 +827,7 @@ PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC glad_glProgramUniformMatrix4x2fv = NULL;
 PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC glad_glProgramUniformMatrix4x3dv = NULL;
 PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC glad_glProgramUniformMatrix4x3fv = NULL;
 PFNGLPROVOKINGVERTEXPROC glad_glProvokingVertex = NULL;
-PFNGLPUSHATTRIBPROC glad_glPushAttrib = NULL;
+//PFNGLPUSHATTRIBPROC glad_glPushAttrib = NULL;
 PFNGLPUSHCLIENTATTRIBPROC glad_glPushClientAttrib = NULL;
 PFNGLPUSHDEBUGGROUPPROC glad_glPushDebugGroup = NULL;
 PFNGLPUSHMATRIXPROC glad_glPushMatrix = NULL;
@@ -1428,7 +1428,7 @@ static void load_GL_VERSION_1_0(GLADloadproc load) {
 	glad_glIndexMask = (PFNGLINDEXMASKPROC)load("glIndexMask");
 	glad_glAccum = (PFNGLACCUMPROC)load("glAccum");
 	glad_glPopAttrib = (PFNGLPOPATTRIBPROC)load("glPopAttrib");
-	glad_glPushAttrib = (PFNGLPUSHATTRIBPROC)load("glPushAttrib");
+	//glad_glPushAttrib = (PFNGLPUSHATTRIBPROC)load("glPushAttrib");
 	glad_glMap1d = (PFNGLMAP1DPROC)load("glMap1d");
 	glad_glMap1f = (PFNGLMAP1FPROC)load("glMap1f");
 	glad_glMap2d = (PFNGLMAP2DPROC)load("glMap2d");

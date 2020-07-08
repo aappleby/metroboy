@@ -7,11 +7,11 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void InterruptRegisters::tick(SchematicTop& top) {
-  NSignal ROLO_FF0F_RDn;
-  NSignal REFA_FF0F_WRn;
+  Signal ROLO_FF0F_RDn;
+  Signal REFA_FF0F_WRn;
   {
-    /*p07.TEDO*/ pwire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-    /*p07.TAPU*/ nwire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
+    /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
 
     /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(top.CPU_PIN_A07, top.CPU_PIN_A06, top.CPU_PIN_A05, top.CPU_PIN_A04);
     /*p07.SAPA*/ wire SAPA_ADDR_XXXF = and (top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03);
@@ -37,7 +37,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.MOPO*/ MOPO_FF0F_L3.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1); // OUTPUT ON RUNG 10
     /*p02.PAVY*/ PAVY_FF0F_L4.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2); // OUTPUT ON RUNG 10
 
-    /*p02.POLA*/ pwire POLA_FF0F_RD  = not(ROLO_FF0F_RDn);
+    /*p02.POLA*/ wire POLA_FF0F_RD  = not(ROLO_FF0F_RDn);
     /*p02.NELA*/ top.CPU_TRI_D0.set_tribuf_6p(POLA_FF0F_RD, MATY_FF0F_L0);
     /*p02.NABO*/ top.CPU_TRI_D1.set_tribuf_6p(POLA_FF0F_RD, NEJY_FF0F_L1);
     /*p02.ROVA*/ top.CPU_TRI_D2.set_tribuf_6p(POLA_FF0F_RD, NUTY_FF0F_L2);
@@ -53,7 +53,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
     // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-    /*p02.ROTU*/ pwire ROTU_FF0F_WRp = not(REFA_FF0F_WRn);
+    /*p02.ROTU*/ wire ROTU_FF0F_WRp = not(REFA_FF0F_WRn);
 
     /*p21.PARU*/ wire PARU_VBLANKp = not(!top.POPU_VBLANK_d4());
     /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp);
@@ -70,17 +70,17 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not(top.CPU_PIN_ACK_SERIAL);
     /*p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not(top.CPU_PIN_ACK_JOYPAD);
 
-    /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0, REFA_FF0F_WRn.as_wire());
-    /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1, REFA_FF0F_WRn.as_wire());
-    /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2, REFA_FF0F_WRn.as_wire());
-    /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3, REFA_FF0F_WRn.as_wire());
-    /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4, REFA_FF0F_WRn.as_wire());
+    /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0, REFA_FF0F_WRn);
+    /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1, REFA_FF0F_WRn);
+    /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2, REFA_FF0F_WRn);
+    /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3, REFA_FF0F_WRn);
+    /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4, REFA_FF0F_WRn);
 
-    /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand((wire)ROTU_FF0F_WRp, LETY_INT_VBL_ACKn,  top.CPU_TRI_D0);
-    /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand((wire)ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, top.CPU_TRI_D1);
-    /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand((wire)ROTU_FF0F_WRp, LESA_INT_TIM_ACKn,  top.CPU_TRI_D2);
-    /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand((wire)ROTU_FF0F_WRp, LUFE_INT_SER_ACKn,  top.CPU_TRI_D3);
-    /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand((wire)ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn,  top.CPU_TRI_D4);
+    /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn,  top.CPU_TRI_D0);
+    /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, top.CPU_TRI_D1);
+    /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(ROTU_FF0F_WRp, LESA_INT_TIM_ACKn,  top.CPU_TRI_D2);
+    /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(ROTU_FF0F_WRp, LUFE_INT_SER_ACKn,  top.CPU_TRI_D3);
+    /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn,  top.CPU_TRI_D4);
 
     /*p02.LYTA*/ wire LYTA_FF0F_RST0n    = and (MUXE_INT0_WRn, LETY_INT_VBL_ACKn,  ALUR_RSTn);
     /*p02.MOVU*/ wire MOVU_FF0F_RST1n    = and (NABE,          LEJA_INT_STAT_ACKn, ALUR_RSTn);
@@ -130,16 +130,16 @@ void InterruptRegisters::tick(SchematicTop& top) {
 
 SignalHash InterruptRegisters::commit() {
   SignalHash hash;
-  hash << LOPE_FF0F_0.commit_reg();
-  hash << UBUL_FF0F_3.commit_reg();
-  hash << ULAK_FF0F_4.commit_reg();
-  hash << LALU_FF0F_1.commit_reg();
-  hash << NYBO_FF0F_2.commit_reg();
-  hash << MATY_FF0F_L0.commit_latch();
-  hash << NEJY_FF0F_L1.commit_latch();
-  hash << NUTY_FF0F_L2.commit_latch();
-  hash << MOPO_FF0F_L3.commit_latch();
-  hash << PAVY_FF0F_L4.commit_latch();
+  hash << LOPE_FF0F_0.commit();
+  hash << UBUL_FF0F_3.commit();
+  hash << ULAK_FF0F_4.commit();
+  hash << LALU_FF0F_1.commit();
+  hash << NYBO_FF0F_2.commit();
+  hash << MATY_FF0F_L0.commit();
+  hash << NEJY_FF0F_L1.commit();
+  hash << NUTY_FF0F_L2.commit();
+  hash << MOPO_FF0F_L3.commit();
+  hash << PAVY_FF0F_L4.commit();
   return hash;
 }
 

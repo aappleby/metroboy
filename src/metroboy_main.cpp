@@ -17,6 +17,7 @@
 #endif
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <vector>
 #include <typeinfo>
 
@@ -75,14 +76,14 @@ void MetroBoyApp::init() {
   gb_blitter.init();
   dump_painter.init();
 
-  run_microtests();
+  //run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
 
-  post();
+  //post();
 
   //---------
 
@@ -96,7 +97,7 @@ void MetroBoyApp::init() {
 
   //---------
 
-  load("roms/gb-test-roms/cpu_instrs/cpu_instrs");
+  //load("roms/gb-test-roms/cpu_instrs/cpu_instrs");
   //load("roms/gb-test-roms/instr_timing/instr_timing");
   //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
   //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
@@ -123,7 +124,7 @@ void MetroBoyApp::init() {
   //load("microtests/build/dmg", "dma_0xE000");
   //load("microtests/build/dmg", "dma_0xFF00");
 
-  load("microtests/build/dmg", "poweron_006_oam");
+  //load("microtests/build/dmg", "poweron_006_oam");
 
   //runmode = STEP_PHASE;
   //runmode = RUN_FAST;
@@ -370,6 +371,27 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
 
   auto view = get_viewport();
 
+  static bool CLKIN_A = 0;
+  static bool CLKIN_B = 0;
+
+  ImGui::Begin("GB_sys_reset");
+  //ImGui::Checkbox("CLKIN_A", &CLKIN_A); 
+  //CLKIN_A = ImGui::Button("CLKIN_A");
+  CLKIN_A = ImGui::ButtonEx("CLKIN_A", ImVec2(0,0), ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_Repeat);
+  if (CLKIN_A) {
+    ImGui::TextColored(ImVec4(0.0f,1.0f,0.0f,1.0f), "CLKIN_A");
+  }
+  else {
+    ImGui::TextColored(ImVec4(1.0f,0.0f,0.0f,1.0f), "CLKIN_A");
+  }
+  ImGui::Checkbox("CLKIN_B", &CLKIN_B);
+  ImGui::Text("T1");
+  ImGui::Text("T2");
+  ImGui::Text("RST");
+  ImGui::End();
+
+  ImGui::ShowDemoWindow();
+
   //----------------------------------------
   // Wave thingy
 
@@ -387,6 +409,7 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
   //----------------------------------------
   // Gameboy screen
 
+  /*
   update_texture_u8(ram_tex, 0, 0*32, 256, 128, metroboy.get_cart_rom());
   update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
   update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cart_ram());
@@ -394,6 +417,7 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
   update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_main_ram());
 
   gb_blitter.blit_screen(view, 32 * 32, 32 * 1, 2, metroboy.fb());
+  */
 
   /*
   #define FLAG_BG_ON        0x01
@@ -406,6 +430,7 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
   #define FLAG_LCD_ON       0x80
   */
 
+  /*
   int bg_map  = (metroboy.gb().get_ppu().lcdc & FLAG_BG_MAP_1)  ? 1 : 0;
   int win_map = (metroboy.gb().get_ppu().lcdc & FLAG_WIN_MAP_1) ? 1 : 0;
   int alt_map = (metroboy.gb().get_ppu().lcdc & FLAG_TILE_0)    ? 0 : 1;
@@ -416,6 +441,7 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
 
 
   blitter.blit_mono(view, ram_tex, 256, 256, 0, 0, 256, 256, 32 * 32, 32 * 11, 256, 256);
+  */
 
   /*
   const int gb_trace_x = screen_w - 32 * 17;
@@ -492,6 +518,21 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::render_ui(int screen_w, int screen_h) {
+  
+  struct StringDumper : public Dumper {
+    std::string s;
+    virtual void operator()(const char* format, ...) {
+      char source_buf[1024];
+      va_list args;
+      va_start (args, format);
+      vsnprintf (source_buf, 1024 ,format, args);
+      va_end (args);
+      s.append(source_buf);
+    }
+    virtual void clear() { s.clear(); }
+  };
+
+  StringDumper dump;
 
   //----------------------------------------
   // Left column text
@@ -501,65 +542,65 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
   Gameboy& gameboy = metroboy.gb();
 
   if (1) {
-    gameboy.dump_bus(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_bus(dump);
+    dump("\n");
 
-    gameboy.dump_cpu(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_cpu(dump);
+    dump("\n");
 
-    //gameboy.dump_timer(text_buf);
-    //sprintf(text_buf, "\n");
+    //gameboy.dump_timer(dump);
+    //dump("\n");
 
-    gameboy.dma2.dump(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dma2.dump(dump);
+    dump("\n");
 
-    text_painter.render(text_buf, column, 0);
-    text_buf.clear();
+    text_painter.render(dump.s, column, 0);
+    dump.clear();
     column += 32 * 8;
   }
 
   if (1) {
-    gameboy.dump_zram(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_zram(dump);
+    dump("\n");
 
-    gameboy.dump_cart(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_cart(dump);
+    dump("\n");
 
-    gameboy.dump_oam(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_oam(dump);
+    dump("\n");
 
-    gameboy.dump_joypad(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_joypad(dump);
+    dump("\n");
 
-    gameboy.dump_serial(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_serial(dump);
+    dump("\n");
 
-    text_painter.render(text_buf, column, 0);
-    text_buf.clear();
+    text_painter.render(dump.s, column, 0);
+    dump.clear();
     column += 32 * 8;
   }
 
   if (1) {
-    gameboy.lcd.dump(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.lcd.dump(dump);
+    dump("\n");
 
-    gameboy.get_ppu().dump(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.get_ppu().dump(dump);
+    dump("\n");
 
-    text_painter.render(text_buf, column, 0);
-    text_buf.clear();
+    text_painter.render(dump.s, column, 0);
+    dump.clear();
     column += 32 * 8;
   }
 
   if (1) {
-    gameboy.dump_disasm(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.dump_disasm(dump);
+    dump("\n");
 
-    gameboy.get_spu().dump(text_buf);
-    sprintf(text_buf, "\n");
+    gameboy.get_spu().dump(dump);
+    dump("\n");
 
-    text_painter.render(text_buf, column, 0);
-    text_buf.clear();
+    text_painter.render(dump.s, column, 0);
+    dump.clear();
     column += 32 * 8;
   }
 

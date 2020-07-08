@@ -10,7 +10,7 @@ struct Cart {
   void tock(const Req& req);
   void tick(const Req& req, Ack& ebus_ack) const;
 
-  void dump(std::string& d);
+  void dump(Dumper& dump) const;
 
   uint8_t* get_cart_rom() { return cart_rom; }
   uint8_t* get_main_ram() { return main_ram; }

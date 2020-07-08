@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <vector>
 #include <include/SDL.h>
+#include <glad/glad.h>
 
 /*
 extern "C" {
@@ -88,7 +89,7 @@ void check_gl_error() {
   int err = glGetError();
   if (err) {
     printf("glGetError %d\n", err);
-    __debugbreak();
+    //__debugbreak();
   }
 }
 

@@ -5,8 +5,6 @@
 #include "TextPainter.h"
 #include "Viewport.h"
 
-#include <stdint.h>
-
 //-----------------------------------------------------------------------------
 
 class AppBase {

@@ -102,18 +102,18 @@ void PpuRegisters::tick(SchematicTop& top) {
   /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
   /*p27.MOXE*/ wire MOXE_AxCxExGx = not(ALET_xBxDxFxH);
 
-  /*p01.TOFU*/ pwire TOFU_VID_RSTp       = not(top.XAPO_VID_RSTn());
-  /*p21.TADY*/ nwire TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), TOFU_VID_RSTp);
-  /*p21.WEGO*/ pwire WEGO_LINE_END_RST   = or(TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
+  /*p01.TOFU*/ wire TOFU_VID_RSTp       = not(top.XAPO_VID_RSTn());
+  /*p21.TADY*/ wire TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), TOFU_VID_RSTp);
+  /*p21.WEGO*/ wire WEGO_LINE_END_RST   = or(TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
 
-  /*p24.SEGU*/ nwire SEGU_CLKPIPEn = top.SEGU_CLKPIPEn();
-  /*p24.ROXO*/ pwire ROXO_CLKPIPEp = not(SEGU_CLKPIPEn);
-  /*p24.SACU*/ pwire SACU_CLKPIPEp = nor(SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn);
+  /*p24.SEGU*/ wire SEGU_CLKPIPEn = top.SEGU_CLKPIPEn();
+  /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(SEGU_CLKPIPEn);
+  /*p24.SACU*/ wire SACU_CLKPIPEp = nor(SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn);
 
   {
-    /*p21.XUGU*/ nwire _XUGU_X_167 = nand(XEHO_X0, SAVY_X1, XODU_X2, TUKY_X5, SYBE_X7); // 128 + 32 + 4 + 2 + 1 = 167
-    /*p21.XANO*/ pwire _XANO_X_167 = not(_XUGU_X_167);
-    /*p21.XENA*/ nwire _XENA_STORE_MATCHn = not(top.FEPO_STORE_MATCHp());
+    /*p21.XUGU*/ wire _XUGU_X_167 = nand(XEHO_X0, SAVY_X1, XODU_X2, TUKY_X5, SYBE_X7); // 128 + 32 + 4 + 2 + 1 = 167
+    /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167);
+    /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(top.FEPO_STORE_MATCHp());
     /*p21.WODU*/ WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
     /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(ALET_xBxDxFxH, TADY_LINE_START_RST, WODU_RENDER_DONEp);
   }
@@ -135,8 +135,8 @@ void PpuRegisters::tick(SchematicTop& top) {
   {
     // There's a feedback loop here of sorts
 
-    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp, (nwire)XYMU_RENDERINGp, POHU_FINE_MATCHp);
-    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(MOXE_AxCxExGx, (nwire)XYMU_RENDERINGp, PUXA_FINE_MATCH_A);
+    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp, XYMU_RENDERINGp, POHU_FINE_MATCHp);
+    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(MOXE_AxCxExGx, XYMU_RENDERINGp, PUXA_FINE_MATCH_A);
 
     /*p27.POVA*/ wire POVA_FINE_MATCHpe = and (PUXA_FINE_MATCH_A, !NYZE_FINE_MATCH_B);
     /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(XYMU_RENDERINGp);
@@ -161,7 +161,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     // if AVAP goes high, POFY goes high.
     // if PAHO or TOFU go high, POFY goes low.
 
-    /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp().as_nwire(), XYDO_X3);
+    /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3);
     /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC || TOFU_VID_RSTp);
     /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH);
     top.LCD_PIN_ST.set(RUZE_PIN_ST);
@@ -230,8 +230,8 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
     /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
-    /*p21.TOBE*/ pwire TOBE_FF41_RDp = and (ASOT_CPU_RD, VARY_FF41p); // die AND
-    /*p21.VAVE*/ nwire VAVE_FF41_RDn = not(TOBE_FF41_RDp); // die INV
+    /*p21.TOBE*/ wire TOBE_FF41_RDp = and (ASOT_CPU_RD, VARY_FF41p); // die AND
+    /*p21.VAVE*/ wire VAVE_FF41_RDn = not(TOBE_FF41_RDp); // die INV
 
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
@@ -284,35 +284,35 @@ void PpuRegisters::tick(SchematicTop& top) {
 
 SignalHash PpuRegisters::commit() {
   SignalHash hash;
-  /*p??.ROXY*/ hash << ROXY_FINE_MATCH_LATCHn.commit_latch();
-  /*p??.PUXA*/ hash << PUXA_FINE_MATCH_A.commit_reg();
-  /*p27.NYZE*/ hash << NYZE_FINE_MATCH_B.commit_reg();
-  /*p27.RYKU*/ hash << RYKU_FINE_CNT0.commit_reg();
-  /*p27.ROGA*/ hash << ROGA_FINE_CNT1.commit_reg();
-  /*p27.RUBU*/ hash << RUBU_FINE_CNT2.commit_reg();
-  /*p21.XEHO*/ hash << XEHO_X0.commit_reg();
-  /*p21.SAVY*/ hash << SAVY_X1.commit_reg();
-  /*p21.XODU*/ hash << XODU_X2.commit_reg();
-  /*p21.XYDO*/ hash << XYDO_X3.commit_reg();
-  /*p21.TUHU*/ hash << TUHU_X4.commit_reg();
-  /*p21.TUKY*/ hash << TUKY_X5.commit_reg();
-  /*p21.TAKO*/ hash << TAKO_X6.commit_reg();
-  /*p21.SYBE*/ hash << SYBE_X7.commit_reg();
-  /*p21.XYMU*/ hash << XYMU_RENDERINGp.commit_latch();
-  /*p21.VOGA*/ hash << VOGA_RENDER_DONE_SYNC.commit_reg();
+  /*p??.ROXY*/ hash << ROXY_FINE_MATCH_LATCHn.commit();
+  /*p??.PUXA*/ hash << PUXA_FINE_MATCH_A.commit();
+  /*p27.NYZE*/ hash << NYZE_FINE_MATCH_B.commit();
+  /*p27.RYKU*/ hash << RYKU_FINE_CNT0.commit();
+  /*p27.ROGA*/ hash << ROGA_FINE_CNT1.commit();
+  /*p27.RUBU*/ hash << RUBU_FINE_CNT2.commit();
+  /*p21.XEHO*/ hash << XEHO_X0.commit();
+  /*p21.SAVY*/ hash << SAVY_X1.commit();
+  /*p21.XODU*/ hash << XODU_X2.commit();
+  /*p21.XYDO*/ hash << XYDO_X3.commit();
+  /*p21.TUHU*/ hash << TUHU_X4.commit();
+  /*p21.TUKY*/ hash << TUKY_X5.commit();
+  /*p21.TAKO*/ hash << TAKO_X6.commit();
+  /*p21.SYBE*/ hash << SYBE_X7.commit();
+  /*p21.XYMU*/ hash << XYMU_RENDERINGp.commit();
+  /*p21.VOGA*/ hash << VOGA_RENDER_DONE_SYNC.commit();
 
-  /*p21.RUPO*/ hash << RUPO_LYC_MATCH_LATCHn.commit_latch();
+  /*p21.RUPO*/ hash << RUPO_LYC_MATCH_LATCHn.commit();
 
 
-  /*p24.PAHO*/ hash << PAHO_X_8_SYNC.commit_reg();
-  /*p24.RUJU*/ hash << POFY_ST_LATCH.commit_latch(); // nor latch with p24.RUJU, p24.POME
-  /*p21.WUSA*/ hash << _WUSA_LCD_CLOCK_GATE.commit_latch();
+  /*p24.PAHO*/ hash << PAHO_X_8_SYNC.commit();
+  /*p24.RUJU*/ hash << POFY_ST_LATCH.commit(); // nor latch with p24.RUJU, p24.POME
+  /*p21.WUSA*/ hash << _WUSA_LCD_CLOCK_GATE.commit();
 
   // FF41 - STAT
-  /*p21.ROXE*/ hash << ROXE_INT_HBL_EN.commit_reg();
-  /*p21.RUFO*/ hash << RUFO_INT_VBL_EN.commit_reg();
-  /*p21.REFE*/ hash << REFE_INT_OAM_EN.commit_reg();
-  /*p21.RUGU*/ hash << RUGU_INT_LYC_EN.commit_reg();
+  /*p21.ROXE*/ hash << ROXE_INT_HBL_EN.commit();
+  /*p21.RUFO*/ hash << RUFO_INT_VBL_EN.commit();
+  /*p21.REFE*/ hash << REFE_INT_OAM_EN.commit();
+  /*p21.RUGU*/ hash << RUGU_INT_LYC_EN.commit();
 
   return hash;
 }

@@ -56,6 +56,9 @@ struct ApuControl {
   /*p09.BUBU*/ bool NR50_WRn2;
   /*p09.ATAF*/ bool NR50_WRn3;
 
+#pragma warning(push)
+#pragma warning(disable:4201)
+
   union {
     uint8_t NR50;
     struct {
@@ -90,6 +93,8 @@ struct ApuControl {
       /*p09.BEPU*/ bool NR51_7 : 1;
     };
   };
+
+#pragma warning(pop)
 
   //----------
   // FF26 NR52

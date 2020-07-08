@@ -8,7 +8,7 @@ struct LCD {
   void tick(const Req& req, Ack& ack);
   void tock(int phase, const Req& req, bool XONA_LCDC_EN);
 
-  void dump(std::string& d);
+  void dump(Dumper& dump) const;
 
   uint8_t X;
   uint8_t Y;

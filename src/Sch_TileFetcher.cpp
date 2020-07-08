@@ -39,16 +39,16 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p27.MESU*/ MESU_BFETCH_S1.set(!LAXU_BFETCH_S0, top.NYXU_TILE_FETCHER_RSTn(), !MESU_BFETCH_S1);
     /*p27.NYVA*/ NYVA_BFETCH_S2.set(!MESU_BFETCH_S1, top.NYXU_TILE_FETCHER_RSTn(), !NYVA_BFETCH_S2);
 
-    /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (ALET_xBxDxFxH, top.XYMU_RENDERINGp().as_nwire(),         LAXU_BFETCH_S0);
+    /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (ALET_xBxDxFxH, top.XYMU_RENDERINGp(),         LAXU_BFETCH_S0);
   }
 
   {
     /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
     /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(top.NUNY_WX_MATCHpe());
     /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
-    /*p24.NAFY*/ pwire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
-    /*p27.MOCE*/ nwire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
-    /*p27.LYRY*/ pwire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
+    /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
+    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
+    /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
@@ -57,11 +57,11 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
 
     /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
-    /*p24.NYKA*/ NYKA_TILE_FETCH_DONE_Ap.set(ALET_xBxDxFxH, NAFY_RENDERING_AND_NOT_WIN_TRIG.as_nwire(), LYRY_BFETCH_DONEp);
-    /*p24.PORY*/ PORY_TILE_FETCH_DONE_Bp.set(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG.as_nwire(), NYKA_TILE_FETCH_DONE_Ap);
-    /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.set(ALET_xBxDxFxH, top.XYMU_RENDERINGp().as_nwire(),           PORY_TILE_FETCH_DONE_Bp);
+    /*p24.NYKA*/ NYKA_TILE_FETCH_DONE_Ap.set(ALET_xBxDxFxH, NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp);
+    /*p24.PORY*/ PORY_TILE_FETCH_DONE_Bp.set(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_TILE_FETCH_DONE_Ap);
+    /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.set(ALET_xBxDxFxH, top.XYMU_RENDERINGp(),           PORY_TILE_FETCH_DONE_Bp);
 
-    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch((pwire)PYGO_FETCH_DONE_Cp, (pwire)LOBY_RENDERINGn);
+    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch(PYGO_FETCH_DONE_Cp, LOBY_RENDERINGn);
   }
 
   //----------------------------------------
@@ -223,10 +223,10 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p32.NASA*/ top.NASA_BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
     /*p32.NEFO*/ top.NEFO_BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, !LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
 
-    /*p27.MOFU*/ nwire MOFU_LATCH_BG_PIX_Bn = and(MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
-    /*p32.LESO*/ pwire LESO_LATCH_BG_PIX_Bp = not(MOFU_LATCH_BG_PIX_Bn);
-    /*p??.LUVE*/ nwire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
-    /*p32.LABU*/ pwire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
+    /*p27.MOFU*/ wire MOFU_LATCH_BG_PIX_Bn = and(MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
+    /*p32.LESO*/ wire LESO_LATCH_BG_PIX_Bp = not(MOFU_LATCH_BG_PIX_Bn);
+    /*p??.LUVE*/ wire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
+    /*p32.LABU*/ wire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
 
     // Why are the clocks swapped?
     /*p32.RAWU*/ top.RAWU_BG_PIX_B0.setQ(LABU_LATCH_BG_PIX_Bp, LUVE_MATCH_BG_PIX_Bn, top.VYPO_GND, top.VRM_TRI_D0);
@@ -335,37 +335,37 @@ void TileFetcher::tick(SchematicTop& top) {
 SignalHash TileFetcher::commit() {
   SignalHash hash;
 
-  hash << PYGO_FETCH_DONE_Cp.commit_reg();
-  hash << POKY_PORCH_DONEp.commit_latch();
+  hash << PYGO_FETCH_DONE_Cp.commit();
+  hash << POKY_PORCH_DONEp.commit();
 
-  hash << LAXU_BFETCH_S0.commit_reg();
-  hash << MESU_BFETCH_S1.commit_reg();
-  hash << NYVA_BFETCH_S2.commit_reg();
+  hash << LAXU_BFETCH_S0.commit();
+  hash << MESU_BFETCH_S1.commit();
+  hash << NYVA_BFETCH_S2.commit();
 
-  hash << LOVY_FETCH_DONEp.commit_reg();
-  hash << LONY_BG_READ_VRAM_LATCHp.commit_latch();
+  hash << LOVY_FETCH_DONEp.commit();
+  hash << LONY_BG_READ_VRAM_LATCHp.commit();
 
-  hash << NYKA_TILE_FETCH_DONE_Ap.commit_reg();
-  hash << PORY_TILE_FETCH_DONE_Bp.commit_reg();
-  hash << LYZU_BFETCH_S0_DELAY.commit_reg();
+  hash << NYKA_TILE_FETCH_DONE_Ap.commit();
+  hash << PORY_TILE_FETCH_DONE_Bp.commit();
+  hash << LYZU_BFETCH_S0_DELAY.commit();
 
-  hash << GAVE_SCY0.commit_reg();
-  hash << FYMO_SCY1.commit_reg();
-  hash << FEZU_SCY2.commit_reg();
-  hash << FUJO_SCY3.commit_reg();
-  hash << DEDE_SCY4.commit_reg();
-  hash << FOTY_SCY5.commit_reg();
-  hash << FOHA_SCY6.commit_reg();
-  hash << FUNY_SCY7.commit_reg();
+  hash << GAVE_SCY0.commit();
+  hash << FYMO_SCY1.commit();
+  hash << FEZU_SCY2.commit();
+  hash << FUJO_SCY3.commit();
+  hash << DEDE_SCY4.commit();
+  hash << FOTY_SCY5.commit();
+  hash << FOHA_SCY6.commit();
+  hash << FUNY_SCY7.commit();
 
-  hash << DATY_SCX0.commit_reg();
-  hash << DUZU_SCX1.commit_reg();
-  hash << CYXU_SCX2.commit_reg();
-  hash << GUBO_SCX3.commit_reg();
-  hash << BEMY_SCX4.commit_reg();
-  hash << CUZY_SCX5.commit_reg();
-  hash << CABU_SCX6.commit_reg();
-  hash << BAKE_SCX7.commit_reg();
+  hash << DATY_SCX0.commit();
+  hash << DUZU_SCX1.commit();
+  hash << CYXU_SCX2.commit();
+  hash << GUBO_SCX3.commit();
+  hash << BEMY_SCX4.commit();
+  hash << CUZY_SCX5.commit();
+  hash << CABU_SCX6.commit();
+  hash << BAKE_SCX7.commit();
 
   return hash;
 }

@@ -896,34 +896,34 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::dump(std::string& o, const Ack& bus_ack) {
-  sprintf(o, "state       %d\n", state);
-  sprintf(o, "\n");
+void Z80::dump(Dumper& dump, const Ack& bus_ack) const {
+  dump("state       %d\n", state);
+  dump("\n");
 
-  sprintf(o, "op_addr     0x%04x\n", op_addr);
-  sprintf(o, "OP          0x%02x @ %d\n", op, state);
-  sprintf(o, "CB          0x%02x\n", cb);
-  sprintf(o, "out         0x%02x\n", out);
-  sprintf(o, "\n");
+  dump("op_addr     0x%04x\n", op_addr);
+  dump("OP          0x%02x @ %d\n", op, state);
+  dump("CB          0x%02x\n", cb);
+  dump("out         0x%02x\n", out);
+  dump("\n");
 
-  sprintf(o, "bus req     "); print_req(o, bus_req);
-  sprintf(o, "bus ack     "); print_ack(o, bus_ack);
-  sprintf(o, "\n");
+  dump("bus req     "); dump_req(dump, bus_req);
+  dump("bus ack     "); dump_ack(dump, bus_ack);
+  dump("\n");
 
-  sprintf(o, "PC          0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
-  sprintf(o, "SP          0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
-  sprintf(o, "XY          0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
-  sprintf(o, "BC          0x%04x 0x%02x 0x%02x\n", bc, b, c);
-  sprintf(o, "DE          0x%04x 0x%02x 0x%02x\n", de, d, e);
-  sprintf(o, "HL          0x%04x 0x%02x 0x%02x\n", hl, h, l);
-  sprintf(o, "AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
-  sprintf(o, "alu_f       0x%02x\n", alu_f);
-  sprintf(o, "\n");
+  dump("PC          0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
+  dump("SP          0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
+  dump("XY          0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
+  dump("BC          0x%04x 0x%02x 0x%02x\n", bc, b, c);
+  dump("DE          0x%04x 0x%02x 0x%02x\n", de, d, e);
+  dump("HL          0x%04x 0x%02x 0x%02x\n", hl, h, l);
+  dump("AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
+  dump("alu_f       0x%02x\n", alu_f);
+  dump("\n");
 
-  sprintf(o, "IME         %d\n", ime);
-  sprintf(o, "IME_        %d\n", ime_delay);
-  sprintf(o, "interrupt   %d\n", INT);
-  sprintf(o, "int_ack     0x%02x\n", int_ack);
+  dump("IME         %d\n", ime);
+  dump("IME_        %d\n", ime_delay);
+  dump("interrupt   %d\n", INT);
+  dump("int_ack     0x%02x\n", int_ack);
 }
 
 //-----------------------------------------------------------------------------

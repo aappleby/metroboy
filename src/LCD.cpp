@@ -85,18 +85,18 @@ void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_EN) {
 
 //-----------------------------------------------------------------------------
 
-void LCD::dump(std::string& d) {
-  sprintf(d, "\002--------------LCD--------------\001\n");
+void LCD::dump(Dumper& dump) const {
+  dump("\002--------------LCD--------------\001\n");
 
-  sprintf(d, "X            = %d\n", X);
-  sprintf(d, "Y            = %d\n", Y);
-  sprintf(d, "RUTU_LINE_END_F  = %d\n", RUTU_LINE_END_F);
-  sprintf(d, "NYPE_LINE_END_B  = %d\n", NYPE_LINE_END_B);
-  sprintf(d, "CATU_LINE_END_B  = %d\n", CATU_LINE_END_B);
-  sprintf(d, "ANEL_LINE_END_D  = %d\n", ANEL_LINE_END_D);
-  sprintf(d, "MYTA_LINE_153_d4  = %d\n", MYTA_LINE_153_d4);
-  sprintf(d, "MEDA_VSYNC_OUTn   = %d\n", MEDA_VSYNC_OUTn);
-  sprintf(d, "POPU_VBLANK_d4 = %d\n", POPU_VBLANK_d4);
+  dump("X            = %d\n", X);
+  dump("Y            = %d\n", Y);
+  dump("RUTU_LINE_END_F  = %d\n", RUTU_LINE_END_F);
+  dump("NYPE_LINE_END_B  = %d\n", NYPE_LINE_END_B);
+  dump("CATU_LINE_END_B  = %d\n", CATU_LINE_END_B);
+  dump("ANEL_LINE_END_D  = %d\n", ANEL_LINE_END_D);
+  dump("MYTA_LINE_153_d4  = %d\n", MYTA_LINE_153_d4);
+  dump("MEDA_VSYNC_OUTn   = %d\n", MEDA_VSYNC_OUTn);
+  dump("POPU_VBLANK_d4 = %d\n", POPU_VBLANK_d4);
 }
 
 //-----------------------------------------------------------------------------

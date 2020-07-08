@@ -19,25 +19,25 @@ void WindowRegisters::tick(SchematicTop& top) {
 
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
   /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
-  /*p27.XOFO*/ pwire _XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN, _XAHY_VID_LINE_TRIG_d4n, top.XAPO_VID_RSTn());
+  /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN, _XAHY_VID_LINE_TRIG_d4n, top.XAPO_VID_RSTn());
 
-  /*p21.PARU*/ pwire PARU_VBLANKp = not(!top.POPU_VBLANK_d4());
-  /*p01.PYRY*/ pwire _PYRY_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p27.REPU*/ pwire _REPU_VBLANK_RSTp = or(PARU_VBLANKp, _PYRY_VID_RSTp);
-  /*p27.SYNY*/ nwire _SYNY_VBLANK_RSTn = not(_REPU_VBLANK_RSTp);
+  /*p21.PARU*/ wire PARU_VBLANKp = not(!top.POPU_VBLANK_d4());
+  /*p01.PYRY*/ wire _PYRY_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(PARU_VBLANKp, _PYRY_VID_RSTp);
+  /*p27.SYNY*/ wire _SYNY_VBLANK_RSTn = not(_REPU_VBLANK_RSTp);
 
   {
     /*p27.SARY*/ _SARY_WY_MATCH.set(TALU_xBCDExxx, top.XAPO_VID_RSTn(), ROGE_WY_MATCHp(top));
-    /*p27.REJO*/ _REJO_WY_MATCH_LATCH.nor_latch((pwire)_SARY_WY_MATCH, _REPU_VBLANK_RSTp);
+    /*p27.REJO*/ _REJO_WY_MATCH_LATCH.nor_latch(_SARY_WY_MATCH, _REPU_VBLANK_RSTp);
   }
 
   {
     // This trigger fires on the pixel _at_ WX
-    /*p27.ROCO*/ pwire _ROCO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
+    /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
     /*p27.PYCO*/ _PYCO_WX_MATCH_A.set(_ROCO_CLKPIPEp, top.XAPO_VID_RSTn(), NUKO_WX_MATCHp(top));
     /*p27.NUNU*/ _NUNU_WX_MATCH_B.set(MEHE_AxCxExGx, top.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A);
 
-    /*p27.PYNU*/ PYNU_WIN_MODE_A.nor_latch((pwire)_NUNU_WX_MATCH_B, _XOFO_WIN_RSTp);
+    /*p27.PYNU*/ PYNU_WIN_MODE_A.nor_latch(_NUNU_WX_MATCH_B, _XOFO_WIN_RSTp);
     /*p27.NOPA*/ _NOPA_WIN_MODE_B.set(ALET_xBxDxFxH, top.XAPO_VID_RSTn(), PYNU_WIN_MODE_A);
     /*p27.NUNY*/ NUNY_WX_MATCHpe = and (PYNU_WIN_MODE_A, !_NOPA_WIN_MODE_B);
   }
@@ -45,8 +45,8 @@ void WindowRegisters::tick(SchematicTop& top) {
   {
     // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
     /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ROZE_FINE_COUNT_7n());
-    /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn().as_pwire(), top.XYMU_RENDERINGp().as_nwire(), _PANY_WX_MATCHn);
-    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(ALET_xBxDxFxH,                  top.XYMU_RENDERINGp().as_nwire(), _RYFA_WX_MATCHn_A);
+    /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
+    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(ALET_xBxDxFxH,                  top.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A);
     /*p27.SEKO*/ SEKO_WX_MATCHne = nor(!_RYFA_WX_MATCHn_A, _RENE_WX_MATCHn_B);
   }
 
@@ -55,7 +55,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
     ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-    /*p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch((pwire)NUNY_WX_MATCHpe, _PYRY_VID_RSTp || top.PORY_TILE_FETCH_DONE_Bp());
+    /*p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe, _PYRY_VID_RSTp || top.PORY_TILE_FETCH_DONE_Bp());
     /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(ALET_xBxDxFxH, top.XAPO_VID_RSTn(), RYDY_WIN_FIRST_TILE_A);
     /*p27.SYLO*/ wire SYLO_WIN_FIRST_TILE_An = not(RYDY_WIN_FIRST_TILE_A);
     /*p27.TUXY*/ wire TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_FIRST_TILE_An, _SOVY_WIN_FIRST_TILE_B);
@@ -162,8 +162,8 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
     /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
-    /*p23.WYZE*/ pwire FF4B_RDp = and (ASOT_CPU_RD, FF4Bp);
-    /*p23.VYCU*/ nwire FF4B_RDn = not(FF4B_RDp);
+    /*p23.WYZE*/ wire FF4B_RDp = and (ASOT_CPU_RD, FF4Bp);
+    /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RDp);
 
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
@@ -237,48 +237,48 @@ wire WindowRegisters::NUKO_WX_MATCHp(const SchematicTop& top) const {
 
 SignalHash WindowRegisters::commit() {
   SignalHash hash;
-  /*p27.SARY*/ hash << _SARY_WY_MATCH.commit_reg();
-  /*p27.RYFA*/ hash << _RYFA_WX_MATCHn_A.commit_reg();
-  /*p27.RENE*/ hash << _RENE_WX_MATCHn_B.commit_reg();
-  /*p27.PYCO*/ hash << _PYCO_WX_MATCH_A.commit_reg();
-  /*p27.NUNU*/ hash << _NUNU_WX_MATCH_B.commit_reg();
-  /*p27.REJO*/ hash << _REJO_WY_MATCH_LATCH.commit_latch();
-  /*p27.NOPA*/ hash << _NOPA_WIN_MODE_B.commit_reg();
-  /*p27.SOVY*/ hash << _SOVY_WIN_FIRST_TILE_B.commit_reg();
-  /*p27.PYNU*/ hash << PYNU_WIN_MODE_A.commit_latch();
-  /*p27.RYDY*/ hash << RYDY_WIN_FIRST_TILE_A.commit_latch();
+  /*p27.SARY*/ hash << _SARY_WY_MATCH.commit();
+  /*p27.RYFA*/ hash << _RYFA_WX_MATCHn_A.commit();
+  /*p27.RENE*/ hash << _RENE_WX_MATCHn_B.commit();
+  /*p27.PYCO*/ hash << _PYCO_WX_MATCH_A.commit();
+  /*p27.NUNU*/ hash << _NUNU_WX_MATCH_B.commit();
+  /*p27.REJO*/ hash << _REJO_WY_MATCH_LATCH.commit();
+  /*p27.NOPA*/ hash << _NOPA_WIN_MODE_B.commit();
+  /*p27.SOVY*/ hash << _SOVY_WIN_FIRST_TILE_B.commit();
+  /*p27.PYNU*/ hash << PYNU_WIN_MODE_A.commit();
+  /*p27.RYDY*/ hash << RYDY_WIN_FIRST_TILE_A.commit();
 
-  /*p27.WYKA*/ hash << WYKA_WIN_X3.commit_reg();
-  /*p27.WODY*/ hash << WODY_WIN_X4.commit_reg();
-  /*p27.WOBO*/ hash << WOBO_WIN_X5.commit_reg();
-  /*p27.WYKO*/ hash << WYKO_WIN_X6.commit_reg();
-  /*p27.XOLO*/ hash << XOLO_WIN_X7.commit_reg();
-  /*p27.VYNO*/ hash << VYNO_WIN_Y0.commit_reg();
-  /*p27.VUJO*/ hash << VUJO_WIN_Y1.commit_reg();
-  /*p27.VYMU*/ hash << VYMU_WIN_Y2.commit_reg();
-  /*p27.TUFU*/ hash << TUFU_WIN_Y3.commit_reg();
-  /*p27.TAXA*/ hash << TAXA_WIN_Y4.commit_reg();
-  /*p27.TOZO*/ hash << TOZO_WIN_Y5.commit_reg();
-  /*p27.TATE*/ hash << TATE_WIN_Y6.commit_reg();
-  /*p27.TEKE*/ hash << TEKE_WIN_Y7.commit_reg();
+  /*p27.WYKA*/ hash << WYKA_WIN_X3.commit();
+  /*p27.WODY*/ hash << WODY_WIN_X4.commit();
+  /*p27.WOBO*/ hash << WOBO_WIN_X5.commit();
+  /*p27.WYKO*/ hash << WYKO_WIN_X6.commit();
+  /*p27.XOLO*/ hash << XOLO_WIN_X7.commit();
+  /*p27.VYNO*/ hash << VYNO_WIN_Y0.commit();
+  /*p27.VUJO*/ hash << VUJO_WIN_Y1.commit();
+  /*p27.VYMU*/ hash << VYMU_WIN_Y2.commit();
+  /*p27.TUFU*/ hash << TUFU_WIN_Y3.commit();
+  /*p27.TAXA*/ hash << TAXA_WIN_Y4.commit();
+  /*p27.TOZO*/ hash << TOZO_WIN_Y5.commit();
+  /*p27.TATE*/ hash << TATE_WIN_Y6.commit();
+  /*p27.TEKE*/ hash << TEKE_WIN_Y7.commit();
 
-  /*p23.MYPA*/ hash << MYPA_WX0.commit_reg();
-  /*p23.NOFE*/ hash << NOFE_WX1.commit_reg();
-  /*p23.NOKE*/ hash << NOKE_WX2.commit_reg();
-  /*p23.MEBY*/ hash << MEBY_WX3.commit_reg();
-  /*p23.MYPU*/ hash << MYPU_WX4.commit_reg();
-  /*p23.MYCE*/ hash << MYCE_WX5.commit_reg();
-  /*p23.MUVO*/ hash << MUVO_WX6.commit_reg();
-  /*p23.NUKU*/ hash << NUKU_WX7.commit_reg();
+  /*p23.MYPA*/ hash << MYPA_WX0.commit();
+  /*p23.NOFE*/ hash << NOFE_WX1.commit();
+  /*p23.NOKE*/ hash << NOKE_WX2.commit();
+  /*p23.MEBY*/ hash << MEBY_WX3.commit();
+  /*p23.MYPU*/ hash << MYPU_WX4.commit();
+  /*p23.MYCE*/ hash << MYCE_WX5.commit();
+  /*p23.MUVO*/ hash << MUVO_WX6.commit();
+  /*p23.NUKU*/ hash << NUKU_WX7.commit();
 
-  /*p23.NESO*/ hash << NESO_WY0.commit_reg();
-  /*p23.NYRO*/ hash << NYRO_WY1.commit_reg();
-  /*p23.NAGA*/ hash << NAGA_WY2.commit_reg();
-  /*p23.MELA*/ hash << MELA_WY3.commit_reg();
-  /*p23.NULO*/ hash << NULO_WY4.commit_reg();
-  /*p23.NENE*/ hash << NENE_WY5.commit_reg();
-  /*p23.NUKA*/ hash << NUKA_WY6.commit_reg();
-  /*p23.NAFU*/ hash << NAFU_WY7.commit_reg();
+  /*p23.NESO*/ hash << NESO_WY0.commit();
+  /*p23.NYRO*/ hash << NYRO_WY1.commit();
+  /*p23.NAGA*/ hash << NAGA_WY2.commit();
+  /*p23.MELA*/ hash << MELA_WY3.commit();
+  /*p23.NULO*/ hash << NULO_WY4.commit();
+  /*p23.NENE*/ hash << NENE_WY5.commit();
+  /*p23.NUKA*/ hash << NUKA_WY6.commit();
+  /*p23.NAFU*/ hash << NAFU_WY7.commit();
 
 
 

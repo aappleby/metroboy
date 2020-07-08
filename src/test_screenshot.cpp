@@ -1,12 +1,11 @@
 #include "Gameboy.h"
+#include "File.h"
 
 #ifdef _MSC_VER
 #include <include/SDL.h>
 #else
 #include <SDL2/SDL.h>
 #endif
-
-#include <string>
 
 #pragma warning(disable : 4996)
 

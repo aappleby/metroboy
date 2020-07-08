@@ -1,6 +1,7 @@
 #include "GBBlitter.h"
 #include "GLBase.h"
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 //-----------------------------------------------------------------------------
 

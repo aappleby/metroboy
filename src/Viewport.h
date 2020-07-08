@@ -1,5 +1,4 @@
 #pragma once
-#include <stdint.h>
 #include <glm/glm.hpp>
 
 using namespace glm;

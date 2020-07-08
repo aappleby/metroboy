@@ -12,12 +12,6 @@ struct SerialRegisters {
   void tick(SchematicTop& gb);
   SignalHash commit();
 
-  uint8_t ser_cnt() { return (uint8_t)pack(SER_CNT0.q(), SER_CNT1.q(), SER_CNT2.q(), CALY_INT_SERIALp.q()); }
-  uint8_t ser_data() { return (uint8_t)pack(SER_DATA0.q(), SER_DATA1.q(), SER_DATA2.q(), SER_DATA3.q(), SER_DATA4.q(), SER_DATA5.q(), SER_DATA6.q(), SER_DATA7.q()); }
-
-  void dump_regs(TextPainter& text_painter);
-  void dump_pins(TextPainter& text_painter);
-
 private:
   friend SchematicTop;
 

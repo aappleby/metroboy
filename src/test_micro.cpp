@@ -1,6 +1,5 @@
 #include "Gameboy.h"
-
-#include <string>
+#include "File.h"
 
 #ifdef _MSC_VER
 #include <include/SDL.h>

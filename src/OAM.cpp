@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include <assert.h>
+#include <memory.h>
 
 //-----------------------------------------------------------------------------
 
@@ -36,25 +37,23 @@ void OAM::tick(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void OAM::dump(std::string& d) const {
-  sprintf(d, "\002--------------OAM--------------\001\n");
+void OAM::dump(Dumper& d) const {
+  d("\002--------------OAM--------------\001\n");
 
   uint8_t* flat = (uint8_t*)ram;
   for (int y = 0; y < 20; y++) {
-    sprintf(d, "%04x: ", y * 8 + ADDR_OAM_BEGIN);
+    d("%04x: ", y * 8 + ADDR_OAM_BEGIN);
     for (int x = 0; x < 8; x++) {
       uint8_t b = flat[x + y * 8];
       uint8_t l = (b >> 0) & 0x0F;
       uint8_t h = (b >> 4) & 0x0F;
 
-      d.push_back(h > 9 ? '7' + h : '0' + h);
-      d.push_back(l > 9 ? '7' + l : '0' + l);
-      d.push_back(' ');
+      d("%c%c ", h > 9 ? '7' + h : '0' + h, l > 9 ? '7' + l : '0' + l);
     }
-    d.push_back('\n');
+    d("\n");
   }
 
-  sprintf(d, "\n");
+  d("\n");
 }
 
 //-----------------------------------------------------------------------------

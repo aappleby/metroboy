@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <include/SDL.h>
+#include <glad/glad.h>
 
 #include "GLBase.h"
 

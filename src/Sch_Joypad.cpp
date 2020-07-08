@@ -8,11 +8,11 @@ using namespace Schematics;
 
 void JoypadRegisters::tick(SchematicTop& top) {
 
-  PSignal ACAT_FF00_RDp;
-  NSignal ATOZ_FF00_WRn;
+  Signal ACAT_FF00_RDp;
+  Signal ATOZ_FF00_WRn;
   {
-    /*p07.TEDO*/ pwire TEDO_CPU_RDp = not(top.UJYV_CPU_RDn());
-    /*p07.TAPU*/ nwire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
+    /*p07.TEDO*/ wire TEDO_CPU_RDp = not(top.UJYV_CPU_RDn());
+    /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
 
     /*p10.BYKO*/ wire BYKO_A05n = not(top.CPU_PIN_A05);
     /*p10.AKUG*/ wire AKUG_A06n = not(top.CPU_PIN_A06);
@@ -29,7 +29,7 @@ void JoypadRegisters::tick(SchematicTop& top) {
   {
     /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
     /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
-    /*p02.KERY*/ pwire KERY_ANY_BUTTONp = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
+    /*p02.KERY*/ wire KERY_ANY_BUTTONp = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
 
     /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(BOGA_AxCDEFGH, KERY_ANY_BUTTONp);
     // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
@@ -48,7 +48,7 @@ void JoypadRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p05.BYZO*/ nwire BYZO_FF00_RDn = not(ACAT_FF00_RDp);
+    /*p05.BYZO*/ wire BYZO_FF00_RDn = not(ACAT_FF00_RDp);
 
     /*p05.KEVU*/ KEVU_JOYP_L0.tp_latch(BYZO_FF00_RDn, top.JOY_PIN_P10_C);
     /*p05.KAPA*/ KAPA_JOYP_L1.tp_latch(BYZO_FF00_RDn, top.JOY_PIN_P11_C);
@@ -67,14 +67,14 @@ void JoypadRegisters::tick(SchematicTop& top) {
 
   {
     /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-    /*p05.JUTE*/ JUTE_JOYP_RA    .set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D0);
-    /*p05.KECY*/ KECY_JOYP_LB    .set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D1);
-    /*p05.JALE*/ JALE_JOYP_UC    .set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D2);
-    /*p05.KYME*/ KYME_JOYP_DS    .set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D3);
-    /*p05.KELY*/ KELY_JOYP_UDLR  .set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D4);
-    /*p05.COFY*/ COFY_JOYP_ABCS  .set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D5);
-    /*p05.KUKO*/ KUKO_DBG_FF00_D6.set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D6);
-    /*p05.KERU*/ KERU_DBG_FF00_D7.set(ATOZ_FF00_WRn.as_pwire(), ALUR_RSTn, top.CPU_TRI_D7);
+    /*p05.JUTE*/ JUTE_JOYP_RA    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D0);
+    /*p05.KECY*/ KECY_JOYP_LB    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D1);
+    /*p05.JALE*/ JALE_JOYP_UC    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D2);
+    /*p05.KYME*/ KYME_JOYP_DS    .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D3);
+    /*p05.KELY*/ KELY_JOYP_UDLR  .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D4);
+    /*p05.COFY*/ COFY_JOYP_ABCS  .set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D5);
+    /*p05.KUKO*/ KUKO_DBG_FF00_D6.set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D6);
+    /*p05.KERU*/ KERU_DBG_FF00_D7.set(ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D7);
   }
 
   {
@@ -107,23 +107,23 @@ void JoypadRegisters::tick(SchematicTop& top) {
 
 SignalHash JoypadRegisters::commit() {
   SignalHash hash;
-  /*p02.BATU*/ hash << BATU_JP_GLITCH0.commit_reg();
-  /*p02.ACEF*/ hash << ACEF_JP_GLITCH1.commit_reg();
-  /*p02.AGEM*/ hash << AGEM_JP_GLITCH2.commit_reg();
-  /*p02.APUG*/ hash << APUG_JP_GLITCH3.commit_reg();
-  /*p05.JUTE*/ hash << JUTE_JOYP_RA.commit_reg();
-  /*p05.KECY*/ hash << KECY_JOYP_LB.commit_reg();
-  /*p05.JALE*/ hash << JALE_JOYP_UC.commit_reg();
-  /*p05.KYME*/ hash << KYME_JOYP_DS.commit_reg();
-  /*p05.KELY*/ hash << KELY_JOYP_UDLR.commit_reg();
-  /*p05.COFY*/ hash << COFY_JOYP_ABCS.commit_reg();
-  /*p05.KUKO*/ hash << KUKO_DBG_FF00_D6.commit_reg();
-  /*p05.KERU*/ hash << KERU_DBG_FF00_D7.commit_reg();
-  /*p05.KEVU*/ hash << KEVU_JOYP_L0.commit_latch();
-  /*p05.KAPA*/ hash << KAPA_JOYP_L1.commit_latch();
-  /*p05.KEJA*/ hash << KEJA_JOYP_L2.commit_latch();
-  /*p05.KOLO*/ hash << KOLO_JOYP_L3.commit_latch();
-  /*p02.AWOB*/ hash << AWOB_WAKE_CPU.commit_latch();
+  /*p02.BATU*/ hash << BATU_JP_GLITCH0.commit();
+  /*p02.ACEF*/ hash << ACEF_JP_GLITCH1.commit();
+  /*p02.AGEM*/ hash << AGEM_JP_GLITCH2.commit();
+  /*p02.APUG*/ hash << APUG_JP_GLITCH3.commit();
+  /*p05.JUTE*/ hash << JUTE_JOYP_RA.commit();
+  /*p05.KECY*/ hash << KECY_JOYP_LB.commit();
+  /*p05.JALE*/ hash << JALE_JOYP_UC.commit();
+  /*p05.KYME*/ hash << KYME_JOYP_DS.commit();
+  /*p05.KELY*/ hash << KELY_JOYP_UDLR.commit();
+  /*p05.COFY*/ hash << COFY_JOYP_ABCS.commit();
+  /*p05.KUKO*/ hash << KUKO_DBG_FF00_D6.commit();
+  /*p05.KERU*/ hash << KERU_DBG_FF00_D7.commit();
+  /*p05.KEVU*/ hash << KEVU_JOYP_L0.commit();
+  /*p05.KAPA*/ hash << KAPA_JOYP_L1.commit();
+  /*p05.KEJA*/ hash << KEJA_JOYP_L2.commit();
+  /*p05.KOLO*/ hash << KOLO_JOYP_L3.commit();
+  /*p02.AWOB*/ hash << AWOB_WAKE_CPU.commit();
 
   return hash;
 }

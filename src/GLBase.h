@@ -1,6 +1,6 @@
 #pragma once
-#include <glad/glad.h>
-#include <stdint.h>
+
+#include "Types.h"
 
 void* init_gl(void* window);
 void  check_gl_error();

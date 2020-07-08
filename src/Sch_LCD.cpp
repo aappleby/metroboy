@@ -19,19 +19,19 @@ void LcdRegisters::tick(SchematicTop& top) {
   /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
   /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);
 
-  /*p01.ALUR*/ nwire ALUR_RSTn = not(top.AVOR_RSTp());
-  /*p01.DULA*/ pwire DULA_RSTp = not(ALUR_RSTn);
-  /*p01.CUNU*/ nwire CUNU_RSTn = not(DULA_RSTp);
-  /*p01.XORE*/ pwire XORE_RSTp = not(CUNU_RSTn);
-  /*p01.WESY*/ nwire WESY_RSTn = not(XORE_RSTp);
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
+  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+  /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
+  /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
 
-  /*p01.LYHA*/ pwire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p01.ATAR*/ pwire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p01.LYFE*/ nwire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
-  /*p01.ABEZ*/ nwire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+  /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
 
-  /*p21.XYVO*/ pwire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
-  /*p29.ALES*/ nwire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
+  /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
+  /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
 
   /*p24.KEDY*/ wire _KEDY_LCDC_ENn = not(top.XONA_LCDC_EN);
 
@@ -39,7 +39,7 @@ void LcdRegisters::tick(SchematicTop& top) {
 
   // LCD main timer
   {
-    /*p21.MUDE*/ nwire _MUDE_X_RSTn = nor(RUTU_LINE_END_F.q(), LYHA_VID_RSTp);
+    /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_LINE_END_F.q(), LYHA_VID_RSTp);
     /*p21.SAXO*/ XEHO_X0.set(TALU_xBCDExxx, _MUDE_X_RSTn, !XEHO_X0.q());
     /*p21.TYPO*/ SAVY_X1.set(!XEHO_X0.q(),  _MUDE_X_RSTn, !SAVY_X1.q());
     /*p21.VYZO*/ XODU_X2.set(!SAVY_X1.q(),  _MUDE_X_RSTn, !XODU_X2.q());
@@ -50,7 +50,7 @@ void LcdRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p21.LAMA*/ nwire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
+    /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
     /*p21.MUWY*/ MUWY_Y0.set(RUTU_LINE_END_F.q(), _LAMA_FRAME_RSTn, !MUWY_Y0.q());
     /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),        _LAMA_FRAME_RSTn, !MYRO_Y1.q());
     /*p21.LEXA*/ LEXA_Y2.set(!MYRO_Y1.q(),        _LAMA_FRAME_RSTn, !LEXA_Y2.q());
@@ -136,7 +136,7 @@ void LcdRegisters::tick(SchematicTop& top) {
   {
     /*p24.NERU*/ wire _LINE_000n = nor(MUWY_Y0, MYRO_Y1, LEXA_Y2, LYDO_Y3, LOVU_Y4, LEMA_Y5, MATO_Y6, LAFO_Y7);
     
-    /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(pwire(NYPE_LINE_END_B), LYFE_VID_RSTn, _LINE_000n);
+    /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(wire(NYPE_LINE_END_B), LYFE_VID_RSTn, _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn);
     top.LCD_PIN_S.set(_MURE_PIN_S);
   }
@@ -175,14 +175,14 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
     /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
     /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
-    /*p22.WYLE*/ nwire FF44n = nand(top.WERO_FF4Xp(), XOLA_A00n, XENO_A01n, WALO_A02p, XERA_A03n);
-    /*p22.XOGY*/ pwire FF44p = not(FF44n);
+    /*p22.WYLE*/ wire FF44n = nand(top.WERO_FF4Xp(), XOLA_A00n, XENO_A01n, WALO_A02p, XERA_A03n);
+    /*p22.XOGY*/ wire FF44p = not(FF44n);
 
-    /*p07.TEDO*/ pwire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-    /*p07.AJAS*/ nwire AJAS_CPU_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ pwire ASOT_CPU_RD = not(AJAS_CPU_RD);
-    /*p23.WAFU*/ pwire FF44_RDp = and (ASOT_CPU_RD, FF44p);
-    /*p23.VARO*/ nwire FF44_RDn = not(FF44_RDp);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
+    /*p23.WAFU*/ wire FF44_RDp = and (ASOT_CPU_RD, FF44p);
+    /*p23.VARO*/ wire FF44_RDn = not(FF44_RDp);
 
     /*p23.WURY*/ wire LY0n = not(MUWY_Y0.q());
     /*p23.XEPO*/ wire LY1n = not(MYRO_Y1.q());
@@ -211,14 +211,14 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
     /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
     /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
-    /*p22.WETY*/ nwire WETY_FF45n = nand(top.WERO_FF4Xp(), WADO_A00p, XENO_A01n, WALO_A02p, XERA_A03n);
-    /*p22.XAYU*/ pwire XAYU_FF45p = not(WETY_FF45n);
+    /*p22.WETY*/ wire WETY_FF45n = nand(top.WERO_FF4Xp(), WADO_A00p, XENO_A01n, WALO_A02p, XERA_A03n);
+    /*p22.XAYU*/ wire XAYU_FF45p = not(WETY_FF45n);
 
-    /*p07.TEDO*/ pwire TEDO_CPU_RDp  = not(top.UJYV_CPU_RDn());
-    /*p07.AJAS*/ nwire AJAS_CPU_RDn  = not(TEDO_CPU_RDp);
-    /*p07.ASOT*/ pwire ASOT_CPU_RDp  = not(AJAS_CPU_RDn);
-    /*p23.XYLY*/ pwire XYLY_FF45_RDp = and(ASOT_CPU_RDp, XAYU_FF45p);
-    /*p23.WEKU*/ nwire WEKU_FF45_RDn = not(XYLY_FF45_RDp);
+    /*p07.TEDO*/ wire TEDO_CPU_RDp  = not(top.UJYV_CPU_RDn());
+    /*p07.AJAS*/ wire AJAS_CPU_RDn  = not(TEDO_CPU_RDp);
+    /*p07.ASOT*/ wire ASOT_CPU_RDp  = not(AJAS_CPU_RDn);
+    /*p23.XYLY*/ wire XYLY_FF45_RDp = and(ASOT_CPU_RDp, XAYU_FF45p);
+    /*p23.WEKU*/ wire WEKU_FF45_RDn = not(XYLY_FF45_RDp);
 
     /*p23.RETU*/ top.CPU_TRI_D0.set_tribuf_6n(WEKU_FF45_RDn, SYRY_LYC0.q());
     /*p23.VOJO*/ top.CPU_TRI_D1.set_tribuf_6n(WEKU_FF45_RDn, VUCE_LYC1.q());
@@ -229,11 +229,11 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p23.VAFE*/ top.CPU_TRI_D6.set_tribuf_6n(WEKU_FF45_RDn, VEVO_LYC6.q());
     /*p23.PUFY*/ top.CPU_TRI_D7.set_tribuf_6n(WEKU_FF45_RDn, RAHA_LYC7.q());
 
-    /*p07.TAPU*/ nwire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.DYKY*/ pwire DYKY_CPU_WRp_ABCDExxx = not(TAPU_CPU_WRn_xxxxxFGH);
-    /*p07.CUPA*/ nwire CUPA_CPU_WRn_xxxxxFGH = not(DYKY_CPU_WRp_ABCDExxx);
-    /*p23.XUFA*/ nwire XUFA_FF45_WRn = and (CUPA_CPU_WRn_xxxxxFGH, XAYU_FF45p);
-    /*p23.WANE*/ pwire WANE_FF45_WRp = not(XUFA_FF45_WRn);
+    /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
+    /*p07.DYKY*/ wire DYKY_CPU_WRp_ABCDExxx = not(TAPU_CPU_WRn_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WRn_xxxxxFGH = not(DYKY_CPU_WRp_ABCDExxx);
+    /*p23.XUFA*/ wire XUFA_FF45_WRn = and (CUPA_CPU_WRn_xxxxxFGH, XAYU_FF45p);
+    /*p23.WANE*/ wire WANE_FF45_WRp = not(XUFA_FF45_WRn);
 
     /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D0);
     /*p23.VUCE*/ VUCE_LYC1.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D1);
@@ -250,42 +250,42 @@ void LcdRegisters::tick(SchematicTop& top) {
 
 SignalHash LcdRegisters::commit() {
   SignalHash hash;
-  /*p21.SAXO*/ hash << XEHO_X0.commit_reg(); // increments at phase 1, reset to 0 at p909.
-  /*p21.TYPO*/ hash << SAVY_X1.commit_reg();
-  /*p21.VYZO*/ hash << XODU_X2.commit_reg();
-  /*p21.TELU*/ hash << XYDO_X3.commit_reg();
-  /*p21.SUDE*/ hash << TUHU_X4.commit_reg();
-  /*p21.TAHA*/ hash << TUKY_X5.commit_reg();
-  /*p21.TYRY*/ hash << TAKO_X6.commit_reg();
-  /*p21.MUWY*/ hash << MUWY_Y0.commit_reg(); // increments at p909, reset to 0 at p153:001
-  /*p21.MYRO*/ hash << MYRO_Y1.commit_reg();
-  /*p21.LEXA*/ hash << LEXA_Y2.commit_reg();
-  /*p21.LYDO*/ hash << LYDO_Y3.commit_reg();
-  /*p21.LOVU*/ hash << LOVU_Y4.commit_reg();
-  /*p21.LEMA*/ hash << LEMA_Y5.commit_reg();
-  /*p21.MATO*/ hash << MATO_Y6.commit_reg();
-  /*p21.LAFO*/ hash << LAFO_Y7.commit_reg();
-  /*p21.RUTU*/ hash << RUTU_LINE_END_F.commit_reg(); // p909+8
-  /*p29.CATU*/ hash << CATU_LINE_END_B.commit_reg();  // p001+8
-  /*p21.NYPE*/ hash << NYPE_LINE_END_B.commit_reg(); // p001+8
-  /*p28.ANEL*/ hash << ANEL_LINE_END_D.commit_reg();  // p003+8
-  /*p21.MYTA*/ hash << MYTA_LINE_153_d4.commit_reg();  // p153:001 - p000:001
-  /*p21.POPU*/ hash << POPU_VBLANK_d4.commit_reg();    // p144:001 - p000:001
-  /*p21.SYGU*/ hash << SYGU_LINE_STROBE.commit_reg();
-  /*p24.MEDA*/ hash << MEDA_VSYNC_OUTn.commit_reg();
-  /*p24.LUCA*/ hash << LUCA_LINE_EVEN.commit_reg();
-  /*p21.NAPO*/ hash << NAPO_FRAME_EVEN.commit_reg();
+  /*p21.SAXO*/ hash << XEHO_X0.commit(); // increments at phase 1, reset to 0 at p909.
+  /*p21.TYPO*/ hash << SAVY_X1.commit();
+  /*p21.VYZO*/ hash << XODU_X2.commit();
+  /*p21.TELU*/ hash << XYDO_X3.commit();
+  /*p21.SUDE*/ hash << TUHU_X4.commit();
+  /*p21.TAHA*/ hash << TUKY_X5.commit();
+  /*p21.TYRY*/ hash << TAKO_X6.commit();
+  /*p21.MUWY*/ hash << MUWY_Y0.commit(); // increments at p909, reset to 0 at p153:001
+  /*p21.MYRO*/ hash << MYRO_Y1.commit();
+  /*p21.LEXA*/ hash << LEXA_Y2.commit();
+  /*p21.LYDO*/ hash << LYDO_Y3.commit();
+  /*p21.LOVU*/ hash << LOVU_Y4.commit();
+  /*p21.LEMA*/ hash << LEMA_Y5.commit();
+  /*p21.MATO*/ hash << MATO_Y6.commit();
+  /*p21.LAFO*/ hash << LAFO_Y7.commit();
+  /*p21.RUTU*/ hash << RUTU_LINE_END_F.commit(); // p909+8
+  /*p29.CATU*/ hash << CATU_LINE_END_B.commit();  // p001+8
+  /*p21.NYPE*/ hash << NYPE_LINE_END_B.commit(); // p001+8
+  /*p28.ANEL*/ hash << ANEL_LINE_END_D.commit();  // p003+8
+  /*p21.MYTA*/ hash << MYTA_LINE_153_d4.commit();  // p153:001 - p000:001
+  /*p21.POPU*/ hash << POPU_VBLANK_d4.commit();    // p144:001 - p000:001
+  /*p21.SYGU*/ hash << SYGU_LINE_STROBE.commit();
+  /*p24.MEDA*/ hash << MEDA_VSYNC_OUTn.commit();
+  /*p24.LUCA*/ hash << LUCA_LINE_EVEN.commit();
+  /*p21.NAPO*/ hash << NAPO_FRAME_EVEN.commit();
 
-  /*p23.SYRY*/ hash << SYRY_LYC0.commit_reg();
-  /*p23.VUCE*/ hash << VUCE_LYC1.commit_reg();
-  /*p23.SEDY*/ hash << SEDY_LYC2.commit_reg();
-  /*p23.SALO*/ hash << SALO_LYC3.commit_reg();
-  /*p23.SOTA*/ hash << SOTA_LYC4.commit_reg();
-  /*p23.VAFA*/ hash << VAFA_LYC5.commit_reg();
-  /*p23.VEVO*/ hash << VEVO_LYC6.commit_reg();
-  /*p23.RAHA*/ hash << RAHA_LYC7.commit_reg();
+  /*p23.SYRY*/ hash << SYRY_LYC0.commit();
+  /*p23.VUCE*/ hash << VUCE_LYC1.commit();
+  /*p23.SEDY*/ hash << SEDY_LYC2.commit();
+  /*p23.SALO*/ hash << SALO_LYC3.commit();
+  /*p23.SOTA*/ hash << SOTA_LYC4.commit();
+  /*p23.VAFA*/ hash << VAFA_LYC5.commit();
+  /*p23.VEVO*/ hash << VEVO_LYC6.commit();
+  /*p23.RAHA*/ hash << RAHA_LYC7.commit();
 
-  /*p21.ROPO*/ hash << ROPO_LY_MATCH_SYNCp.commit_reg();
+  /*p21.ROPO*/ hash << ROPO_LY_MATCH_SYNCp.commit();
   return hash;
 }
 

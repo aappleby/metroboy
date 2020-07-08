@@ -7,7 +7,7 @@ struct DMA2 {
 
   void tick(const Req& req, Ack& ack);
   void tock(int phase, const Req& req);
-  void dump(std::string& d);
+  void dump(Dumper& dump) const;
 
   uint16_t addr = 0;
 

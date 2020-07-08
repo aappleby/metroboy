@@ -4,6 +4,7 @@
 #include "Opcodes.h"
 
 #include <assert.h>
+#include <stdarg.h>
 
 #pragma warning(disable : 4996)
 
@@ -84,10 +85,26 @@ void Assembler::link() {
   */
 }
 
+
 void Assembler::write_source() {
-  std::string source(source_header);
-  disassemble(source);
-  save_array(name + ".s", source);
+  struct StringDumper : public Dumper {
+    std::string s;
+    virtual void operator()(const char* format, ...) {
+      char source_buf[1024];
+      va_list args;
+      va_start (args, format);
+      vsnprintf (source_buf, 1024 ,format, args);
+      va_end (args);
+      s.append(source_buf);
+    }
+    void clear() { s.clear(); }
+  };
+
+  StringDumper dump;
+  dump("%s", source_header);
+  disassemble(dump);
+
+  save_array((name + ".s").c_str(), dump.s);
 }
 
 void Assembler::begin_label(std::string label) {
@@ -149,29 +166,29 @@ void copy_line(const char*& source, char* dest) {
 
 //-----------------------------------------------------------------------------
 
-void Assembler::disassemble_one(const uint8_t* code, std::string& out) {
+void Assembler::disassemble_one(const uint8_t* code, Dumper& dump) {
   uint8_t op0 = code[0];
 
   if (op0 == 0xCB) {
     uint8_t op1 = code[1];
     const char* op_string = cb_strings[op1];
-    sprintf(out, "%s", op_string);
+    dump("%s", op_string);
   }
 
   const char* op_string = op_strings[op0];
   int size = op_sizes[op0];
 
   if (size == 1) {
-    sprintf(out, "%s", op_string);
+    dump("%s", op_string);
   }
   if (size == 2) {
     uint8_t op1 = code[1];
-    sprintf(out, op_string, op1);
+    dump(op_string, op1);
   }
   if (size == 3) {
     uint8_t op1 = code[1];
     uint8_t op2 = code[2];
-    sprintf(out, op_string, (op2 << 8) | op1);
+    dump(op_string, (op2 << 8) | op1);
   }
 }
 
@@ -179,7 +196,7 @@ void Assembler::disassemble_one(const uint8_t* code, std::string& out) {
 
 void Assembler::disassemble(
     const uint8_t* code, size_t code_size, uint16_t code_base,
-    int opcount, std::string& out, bool /*collapse_nops*/) {
+    int opcount, Dumper& dump, bool /*collapse_nops*/) {
   int code_cursor = 0;
   for (int i = 0; i < opcount; i++) {
     if (code_cursor >= code_size) return;
@@ -197,65 +214,65 @@ void Assembler::disassemble(
         if (code_cursor >= code_size) break;
       }
       if (nop_count > 1) {
-        //sprintf(out, "%04x:        ", code_base + code_cursor, op0);
-        sprintf(out, "nops %d", nop_count);
-        sprintf(out, "\n");
+        //dump("%04x:        ", code_base + code_cursor, op0);
+        dump("nops %d", nop_count);
+        dump("\n");
       }
       else {
-        //sprintf(out, "%04x: 00     ", code_base + code_cursor, op0);
-        sprintf(out, "nop");
-        sprintf(out, "\n");
+        //dump("%04x: 00     ", code_base + code_cursor, op0);
+        dump("nop");
+        dump("\n");
       }
       continue;
     }
     */
 
-    sprintf(out, "%04x: ", code_base + code_cursor);
+    dump("%04x: ", code_base + code_cursor);
 
     int arg = 0;
 
     if (op0 == 0xCB) {
-      sprintf(out, "%02x", op0);
+      dump("%02x", op0);
       uint8_t op1 = code[code_cursor + 1];
-      sprintf(out, "%02x   ", op1);
+      dump("%02x   ", op1);
       op_string = cb_strings[op1];
       size = 2;
     }
     else if (size == 1) {
-      sprintf(out, "%02x     ", op0);
+      dump("%02x     ", op0);
       arg = 0;
     }
     else if (size == 2) {
-      sprintf(out, "%02x", op0);
+      dump("%02x", op0);
       uint8_t lo = code[code_cursor + 1];
-      sprintf(out, "%02x   ", lo);
+      dump("%02x   ", lo);
       arg = lo;
     }
     else if (size == 3) {
-      sprintf(out, "%02x", op0);
+      dump("%02x", op0);
       uint8_t lo = code[code_cursor + 1];
-      sprintf(out, "%02x", lo);
+      dump("%02x", lo);
       uint8_t hi = code[code_cursor + 2];
-      sprintf(out, "%02x ", hi);
+      dump("%02x ", hi);
       arg = ((hi << 8) | lo);
 
     }
 
-    sprintf(out, op_string, arg);
-    sprintf(out, "\n");
+    dump(op_string, arg);
+    dump("\n");
     code_cursor += size;
   }
 }
 
 //-----------------------------------------------------------------------------
 
-void Assembler::disassemble(std::string& out) {
+void Assembler::disassemble(Dumper& dump) {
   for (const auto& block : block_map) {
     uint16_t addr = block.first;
-    sprintf(out, ".org $%04x\n", addr);
+    dump(".org $%04x\n", addr);
 
     const blob& code = block.second;
-    disassemble(code.data(), code.size(), addr, 100000, out);
+    disassemble(code.data(), code.size(), addr, 100000, dump);
   }
 }
 

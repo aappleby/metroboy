@@ -42,6 +42,8 @@
     <TargetName>$(ProjectName)_debug</TargetName>
     <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL;$(SolutionDir)glm;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDL\VisualC\x64\Debug;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL;$(SolutionDir)glm;$(IncludePath)</IncludePath>
@@ -61,6 +63,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;dwmapi.lib;ucrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -105,7 +108,9 @@
     <ClInclude Include="src\Blitter.h" />
     <ClInclude Include="src\Bootrom.h" />
     <ClInclude Include="src\BusDump.h" />
+    <ClInclude Include="src\Cells.h" />
     <ClInclude Include="src\DMA.h" />
+    <ClInclude Include="src\File.h" />
     <ClInclude Include="src\GateBoy.h" />
     <ClInclude Include="src\Joypad.h" />
     <ClInclude Include="src\Constants.h" />
@@ -115,6 +120,7 @@
     <ClInclude Include="src\GLBase.h" />
     <ClInclude Include="src\GridPainter.h" />
     <ClInclude Include="src\LCD.h" />
+    <ClInclude Include="src\Logic.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\Cart.h" />
     <ClInclude Include="src\OAM.h" />
@@ -146,6 +152,7 @@
     <ClInclude Include="src\Sch_Top.h" />
     <ClInclude Include="src\Sch_Window.h" />
     <ClInclude Include="src\Serial.h" />
+    <ClInclude Include="src\Signals.h" />
     <ClInclude Include="src\SPU.h" />
     <ClInclude Include="src\StateManager.h" />
     <ClInclude Include="src\StateManager2.h" />
@@ -175,7 +182,9 @@
     <ClCompile Include="src\Blitter.cpp" />
     <ClCompile Include="src\Bootrom.cpp" />
     <ClCompile Include="src\BusDump.cpp" />
+    <ClCompile Include="src\Cells.cpp" />
     <ClCompile Include="src\DMA.cpp" />
+    <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\GateBoy.cpp" />
     <ClCompile Include="src\Joypad.cpp" />
     <ClCompile Include="src\Constants.cpp" />
@@ -185,6 +194,7 @@
     <ClCompile Include="src\GLBase.cpp" />
     <ClCompile Include="src\GridPainter.cpp" />
     <ClCompile Include="src\LCD.cpp" />
+    <ClCompile Include="src\Logic.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\Cart.cpp" />
@@ -216,6 +226,7 @@
     <ClCompile Include="src\Sch_Top.cpp" />
     <ClCompile Include="src\Sch_Window.cpp" />
     <ClCompile Include="src\Serial.cpp" />
+    <ClCompile Include="src\Signals.cpp" />
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\StateManager.cpp" />
     <ClCompile Include="src\StateManager2.cpp" />

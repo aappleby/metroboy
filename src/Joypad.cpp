@@ -35,9 +35,9 @@ void Joypad::set(uint8_t new_val) {
   }
 }
 
-void Joypad::dump(std::string& d) const {
-  sprintf(d, "\002--------------JOYPAD----------\001\n");
-  sprintf(d, "%c %c %c %c %c %c %c %c\n",
+void Joypad::dump(Dumper& dump) const {
+  dump("\002--------------JOYPAD----------\001\n");
+  dump("%c %c %c %c %c %c %c %c\n",
           val & 0x01 ? '-' : 'R',
           val & 0x02 ? '-' : 'L',
           val & 0x04 ? '-' : 'U',

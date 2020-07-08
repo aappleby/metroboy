@@ -806,94 +806,94 @@ const char* fetch_names2[] = {
 };
 
 
-void PPU::dump(std::string& d) const {
-  sprintf(d, "\002--------------PPU--------------\001\n");
+void PPU::dump(Dumper& d) const {
+  d("\002--------------PPU--------------\001\n");
 
-  sprintf(d, "LCDC      %s\n", byte_to_bits(lcdc));
-  sprintf(d, "STAT      %s\n", byte_to_bits(stat));
-  sprintf(d, "SCY       %d\n", scy);
-  sprintf(d, "SCX       %d\n", scx);
-  sprintf(d, "LY        %d\n", ly);
-  sprintf(d, "LYC       %d\n", lyc);
-  //sprintf(d, "DMA       %d\n", dma);
-  sprintf(d, "BGP       0x%02x\n", bgp);
-  sprintf(d, "OBP0      0x%02x\n", obp0);
-  sprintf(d, "OBP1      0x%02x\n", obp1);
-  sprintf(d, "WY        %d\n", wy);
-  sprintf(d, "WX        %d\n", wx);
-  sprintf(d, "wyc       %d\n", win_y_counter);
-  sprintf(d, "\n");
+  d("LCDC      %s\n", byte_to_bits(lcdc));
+  d("STAT      %s\n", byte_to_bits(stat));
+  d("SCY       %d\n", scy);
+  d("SCX       %d\n", scx);
+  d("LY        %d\n", ly);
+  d("LYC       %d\n", lyc);
+  //d("DMA       %d\n", dma);
+  d("BGP       0x%02x\n", bgp);
+  d("OBP0      0x%02x\n", obp0);
+  d("OBP1      0x%02x\n", obp1);
+  d("WY        %d\n", wy);
+  d("WX        %d\n", wx);
+  d("wyc       %d\n", win_y_counter);
+  d("\n");
 
-  sprintf(d, "frame     %d\n", frame_count);
-  sprintf(d, "line      %d\n", line);
-  sprintf(d, "state     %s\n", state_names[state]);
-  sprintf(d, "counter   %d\n", counter);
-  sprintf(d, "hdelay    %d\n", hblank_delay2);
-  sprintf(d, "\n");
+  d("frame     %d\n", frame_count);
+  d("line      %d\n", line);
+  d("state     %s\n", state_names[state]);
+  d("counter   %d\n", counter);
+  d("hdelay    %d\n", hblank_delay2);
+  d("\n");
 
-  sprintf(d, "compare_line  %d\n", compare_line);
-  sprintf(d, "stat_int1     %d\n", stat_int1);
-  sprintf(d, "stat_int2     %d\n", stat_int2);
-  sprintf(d, "old_stat_int1 %d\n", old_stat_int1);
-  sprintf(d, "old_stat_int2 %d\n", old_stat_int2);
-  sprintf(d, "scx_latch     %d\n", scx_latch);
-  sprintf(d, "win_y_latch   %d\n", win_y_latch);
-  sprintf(d, "win_y_counter %d\n", win_y_counter);
-  sprintf(d, "\n");
+  d("compare_line  %d\n", compare_line);
+  d("stat_int1     %d\n", stat_int1);
+  d("stat_int2     %d\n", stat_int2);
+  d("old_stat_int1 %d\n", old_stat_int1);
+  d("old_stat_int2 %d\n", old_stat_int2);
+  d("scx_latch     %d\n", scx_latch);
+  d("win_y_latch   %d\n", win_y_latch);
+  d("win_y_counter %d\n", win_y_counter);
+  d("\n");
 
   //----------
   // Sprites
 
-  sprintf(d, "sprite_count %d\n",     sprite_count);
-  sprintf(d, "sprite_index %d\n",     sprite_index);
-  sprintf(d, "sprite_hit   %d\n",     sprite_hit);
-  sprintf(d, "spriteY      %d\n",     spriteY);
-  sprintf(d, "spriteX      %d\n",     spriteX);
-  sprintf(d, "spriteP      %d\n",     spriteP);
-  sprintf(d, "spriteF      %d\n",     spriteF);
-  sprintf(d, "sprite_lo    0x%02x\n", sprite_lo);
-  sprintf(d, "sprite_hi    0x%02x\n", sprite_hi);
+  d("sprite_count %d\n",     sprite_count);
+  d("sprite_index %d\n",     sprite_index);
+  d("sprite_hit   %d\n",     sprite_hit);
+  d("spriteY      %d\n",     spriteY);
+  d("spriteX      %d\n",     spriteX);
+  d("spriteP      %d\n",     spriteP);
+  d("spriteF      %d\n",     spriteF);
+  d("sprite_lo    0x%02x\n", sprite_lo);
+  d("sprite_hi    0x%02x\n", sprite_hi);
 
   for (int i = 0; i < 10; i++) {
-    sprintf(d, "sprite %d %d %d\n", sprite_i[i], sprite_x[i], sprite_y[i]);
+    d("sprite %d %d %d\n", sprite_i[i], sprite_x[i], sprite_y[i]);
   }
 
-  sprintf(d, "\n");
+  d("\n");
 
   //----------
   // Vram Fetcher
 
-  sprintf(d, "fetch_type      %s\n", fetch_names1[fetch_type]);
-  sprintf(d, "fetch_state     %s\n", fetch_names2[fetch_state]);
-  sprintf(d, "fetch_delay     %d\n", fetch_delay);
-  sprintf(d, "in_window_old   %d\n", in_window_old);
-  sprintf(d, "in_window_new   %d\n", in_window_new);
-  sprintf(d, "in_window_early %d\n", in_window_early);
-  sprintf(d, "in_window_late  %d\n", in_window_late);
-  sprintf(d, "win_retrig_old  %d\n", win_retrig_old);
-  sprintf(d, "win_retrig_new  %d\n", win_retrig_new);
-  sprintf(d, "\n");
+  d("fetch_type      %s\n", fetch_names1[fetch_type]);
+  d("fetch_state     %s\n", fetch_names2[fetch_state]);
+  d("fetch_delay     %d\n", fetch_delay);
+  d("in_window_old   %d\n", in_window_old);
+  d("in_window_new   %d\n", in_window_new);
+  d("in_window_early %d\n", in_window_early);
+  d("in_window_late  %d\n", in_window_late);
+  d("win_retrig_old  %d\n", win_retrig_old);
+  d("win_retrig_new  %d\n", win_retrig_new);
+  d("\n");
 
   //----------
   // Pixel pipe
 
-  sprintf(d, "map_x           %d\n", map_x);
+  d("map_x           %d\n", map_x);
 
-  sprintf(d, "tile_map        %d\n", tile_map);
-  sprintf(d, "tile_lo         %d\n", tile_lo);
-  sprintf(d, "tile_hi         %d\n", tile_hi);
-  sprintf(d, "tile_latched    %d\n", tile_latched);
+  d("tile_map        %d\n", tile_map);
+  d("tile_lo         %d\n", tile_lo);
+  d("tile_hi         %d\n", tile_hi);
+  d("tile_latched    %d\n", tile_latched);
 
-  sprintf(d, "pix_count       %d\n", pix_count);
-  sprintf(d, "pix_discard_scx %d\n", pix_discard_scx);
-  sprintf(d, "pix_discard_pad %d\n", pix_discard_pad);
-  sprintf(d, "pipe_count      %d\n", pipe_count);
-  sprintf(d, "\n");
+  d("pix_count       %d\n", pix_count);
+  d("pix_discard_scx %d\n", pix_discard_scx);
+  d("pix_discard_pad %d\n", pix_discard_pad);
+  d("pipe_count      %d\n", pipe_count);
+  d("\n");
 
-  sprintf(d, "bg_pix_lo       %s\n", byte_to_bits(bg_pix_lo));
-  sprintf(d, "bg_pix_hi       %s\n", byte_to_bits(bg_pix_hi));
-  sprintf(d, "bg_pal_lo       %s\n", byte_to_bits(bg_pal_lo));
-  sprintf(d, "bg_pal_hi       %s\n", byte_to_bits(bg_pal_hi));
+  d("bg_pix_lo       %s\n", byte_to_bits(bg_pix_lo));
+  d("bg_pix_hi       %s\n", byte_to_bits(bg_pix_hi));
+  d("bg_pal_lo       %s\n", byte_to_bits(bg_pal_lo));
+  d("bg_pal_hi       %s\n", byte_to_bits(bg_pal_hi));
 
   {
     /*
@@ -901,18 +901,18 @@ void PPU::dump(std::string& d) const {
 
     pribus(d, "bus_to_ppu",  bus_to_ppu);
     pribus(d, "ppu_to_bus",  out.ppu_to_bus);
-    sprintf(d, "\n");
+    d("\n");
 
     pribus(d, "ppu_to_vram", out.ppu_to_vram);
     pribus(d, "vram_to_ppu", vram_to_ppu);
-    sprintf(d, "\n");
+    d("\n");
 
     pribus(d, "ppu_to_oam",  out.ppu_to_oam);
     pribus(d, "oam_to_ppu",  oam_to_ppu);
-    sprintf(d, "\n");
+    d("\n");
     */
 
-#define dumpit(a, b) sprintf(d, "%-14s " b "\n", #a, a);
+#define dumpit(a, b) d("%-14s " b "\n", #a, a);
 
     dumpit(pix_count ,"%d");
     dumpit(line      ,"%d");

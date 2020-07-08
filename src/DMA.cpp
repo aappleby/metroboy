@@ -1,6 +1,7 @@
 #include "DMA.h"
 #include "Constants.h"
 #include <assert.h>
+#include <stdio.h>
 
 #if 0
 //-----------------------------------------------------------------------------
@@ -82,14 +83,14 @@ void DMA2::tock(int phase, const Req& req) {
   }
 }
 
-void DMA2::dump(std::string& d) {
-  sprintf(d, "\002--------------DMA2--------------\001\n");
+void DMA2::dump(Dumper& d) const {
+  d("\002--------------DMA2--------------\001\n");
 
-  sprintf(d, "DMA_WR_LATCH    %d\n", (bool)DMA_WR_LATCH);
-  sprintf(d, "DMA_RUN_TRIG_d0 %d\n", (bool)DMA_RUN_TRIG_d0);
-  sprintf(d, "DMA_RUN_TRIG_d4 %d\n", (bool)DMA_RUN_TRIG_d4);
-  sprintf(d, "DMA_RUN_READ    %d\n", (bool)DMA_RUN_READ);
-  sprintf(d, "DMA_RUN_WRITE   %d\n", (bool)DMA_RUN_WRITE);
-  sprintf(d, "DMA_DONE        %d\n", (bool)DMA_DONE);
-  sprintf(d, "addr            0x%04x\n", addr);
+  d("DMA_WR_LATCH    %d\n", (bool)DMA_WR_LATCH);
+  d("DMA_RUN_TRIG_d0 %d\n", (bool)DMA_RUN_TRIG_d0);
+  d("DMA_RUN_TRIG_d4 %d\n", (bool)DMA_RUN_TRIG_d4);
+  d("DMA_RUN_READ    %d\n", (bool)DMA_RUN_READ);
+  d("DMA_RUN_WRITE   %d\n", (bool)DMA_RUN_WRITE);
+  d("DMA_DONE        %d\n", (bool)DMA_DONE);
+  d("addr            0x%04x\n", addr);
 }

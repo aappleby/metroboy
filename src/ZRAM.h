@@ -8,7 +8,7 @@ struct ZRAM {
 
   void tock(const Req& req);
   void tick(const Req& req, Ack& ack) const;
-  void dump(std::string& d);
+  void dump(Dumper& dump) const;
   uint8_t* get() { return ram; }
 
 private:

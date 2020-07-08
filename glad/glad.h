@@ -2595,9 +2595,9 @@ GLAPI PFNGLACCUMPROC glad_glAccum;
 typedef void (APIENTRYP PFNGLPOPATTRIBPROC)(void);
 GLAPI PFNGLPOPATTRIBPROC glad_glPopAttrib;
 #define glPopAttrib glad_glPopAttrib
-typedef void (APIENTRYP PFNGLPUSHATTRIBPROC)(GLbitfield mask);
-GLAPI PFNGLPUSHATTRIBPROC glad_glPushAttrib;
-#define glPushAttrib glad_glPushAttrib
+//typedef void (APIENTRYP PFNGLPUSHATTRIBPROC)(GLbitfield mask);
+//GLAPI PFNGLPUSHATTRIBPROC glad_glPushAttrib;
+//#define glPushAttrib glad_glPushAttrib
 typedef void (APIENTRYP PFNGLMAP1DPROC)(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order, const GLdouble *points);
 GLAPI PFNGLMAP1DPROC glad_glMap1d;
 #define glMap1d glad_glMap1d

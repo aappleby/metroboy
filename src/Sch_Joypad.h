@@ -3,6 +3,7 @@
 
 namespace Schematics {
 
+struct SchematicTop;
 struct ResetSignals;
 struct ClockSignals;
 struct CpuBus;

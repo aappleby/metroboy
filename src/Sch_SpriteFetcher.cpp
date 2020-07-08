@@ -109,9 +109,9 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p29.TULY*/ TULY_SFETCH_S1.set(!TOXE_SFETCH_S0,          SECA_SPRITE_FETCHne, !TULY_SFETCH_S1);
     /*p29.TESE*/ TESE_SFETCH_S2.set(!TULY_SFETCH_S1,          SECA_SPRITE_FETCHne, !TESE_SFETCH_S2);
 
-    /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(TAVA_xBxDxFxH, top.XYMU_RENDERINGp().as_nwire(), TULY_SFETCH_S1);    // note input is seq 1 not 2
-    /*p29.VONU*/ VONU_SFETCH_S1_D4.set(TAVA_xBxDxFxH, top.XYMU_RENDERINGp().as_nwire(), TOBU_SFETCH_S1_D2);
-    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(LAPE_AxCxExGx, top.XYMU_RENDERINGp().as_nwire(), VONU_SFETCH_S1_D4);
+    /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(TAVA_xBxDxFxH, top.XYMU_RENDERINGp(), TULY_SFETCH_S1);    // note input is seq 1 not 2
+    /*p29.VONU*/ VONU_SFETCH_S1_D4.set(TAVA_xBxDxFxH, top.XYMU_RENDERINGp(), TOBU_SFETCH_S1_D2);
+    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(LAPE_AxCxExGx, top.XYMU_RENDERINGp(), VONU_SFETCH_S1_D4);
   }
 
   {
@@ -194,34 +194,34 @@ void SpriteFetcher::tick(SchematicTop& top) {
 SignalHash SpriteFetcher::commit() {
   SignalHash hash;
 
-  /*p27.TAKA*/ hash << TAKA_SFETCH_RUNNINGp.commit_latch();
-  /*p27.SOBU*/ hash << SOBU_SPRITE_FETCH_A.commit_reg();
-  /*p27.SUDA*/ hash << SUDA_SPRITE_FETCH_B.commit_reg();
+  /*p27.TAKA*/ hash << TAKA_SFETCH_RUNNINGp.commit();
+  /*p27.SOBU*/ hash << SOBU_SPRITE_FETCH_A.commit();
+  /*p27.SUDA*/ hash << SUDA_SPRITE_FETCH_B.commit();
 
-  /*p29.TOXE*/ hash << TOXE_SFETCH_S0.commit_reg();
-  /*p29.TULY*/ hash << TULY_SFETCH_S1.commit_reg();
-  /*p29.TESE*/ hash << TESE_SFETCH_S2.commit_reg();
-  /*p29.TOBU*/ hash << TOBU_SFETCH_S1_D2.commit_reg();
-  /*p29.VONU*/ hash << VONU_SFETCH_S1_D4.commit_reg();
-  /*p29.SEBA*/ hash << SEBA_SFETCH_S1_D5.commit_reg();
-  /*p29.TYFO*/ hash << TYFO_SFETCH_S0_D1.commit_reg();
+  /*p29.TOXE*/ hash << TOXE_SFETCH_S0.commit();
+  /*p29.TULY*/ hash << TULY_SFETCH_S1.commit();
+  /*p29.TESE*/ hash << TESE_SFETCH_S2.commit();
+  /*p29.TOBU*/ hash << TOBU_SFETCH_S1_D2.commit();
+  /*p29.VONU*/ hash << VONU_SFETCH_S1_D4.commit();
+  /*p29.SEBA*/ hash << SEBA_SFETCH_S1_D5.commit();
+  /*p29.TYFO*/ hash << TYFO_SFETCH_S0_D1.commit();
 
-  /*p33.PEFO*/ hash << SPR_PIX_A0.commit_reg();
-  /*p33.ROKA*/ hash << SPR_PIX_A1.commit_reg();
-  /*p33.MYTU*/ hash << SPR_PIX_A2.commit_reg();
-  /*p33.RAMU*/ hash << SPR_PIX_A3.commit_reg();
-  /*p33.SELE*/ hash << SPR_PIX_A4.commit_reg();
-  /*p33.SUTO*/ hash << SPR_PIX_A5.commit_reg();
-  /*p33.RAMA*/ hash << SPR_PIX_A6.commit_reg();
-  /*p33.RYDU*/ hash << SPR_PIX_A7.commit_reg();
-  /*p33.REWO*/ hash << SPR_PIX_B0.commit_reg();
-  /*p33.PEBA*/ hash << SPR_PIX_B1.commit_reg();
-  /*p33.MOFO*/ hash << SPR_PIX_B2.commit_reg();
-  /*p33.PUDU*/ hash << SPR_PIX_B3.commit_reg();
-  /*p33.SAJA*/ hash << SPR_PIX_B4.commit_reg();
-  /*p33.SUNY*/ hash << SPR_PIX_B5.commit_reg();
-  /*p33.SEMO*/ hash << SPR_PIX_B6.commit_reg();
-  /*p33.SEGA*/ hash << SPR_PIX_B7.commit_reg();
+  /*p33.PEFO*/ hash << SPR_PIX_A0.commit();
+  /*p33.ROKA*/ hash << SPR_PIX_A1.commit();
+  /*p33.MYTU*/ hash << SPR_PIX_A2.commit();
+  /*p33.RAMU*/ hash << SPR_PIX_A3.commit();
+  /*p33.SELE*/ hash << SPR_PIX_A4.commit();
+  /*p33.SUTO*/ hash << SPR_PIX_A5.commit();
+  /*p33.RAMA*/ hash << SPR_PIX_A6.commit();
+  /*p33.RYDU*/ hash << SPR_PIX_A7.commit();
+  /*p33.REWO*/ hash << SPR_PIX_B0.commit();
+  /*p33.PEBA*/ hash << SPR_PIX_B1.commit();
+  /*p33.MOFO*/ hash << SPR_PIX_B2.commit();
+  /*p33.PUDU*/ hash << SPR_PIX_B3.commit();
+  /*p33.SAJA*/ hash << SPR_PIX_B4.commit();
+  /*p33.SUNY*/ hash << SPR_PIX_B5.commit();
+  /*p33.SEMO*/ hash << SPR_PIX_B6.commit();
+  /*p33.SEGA*/ hash << SPR_PIX_B7.commit();
 
   return hash;
 }

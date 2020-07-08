@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <include/SDL.h>
 #include <vector>
+#include <glad/glad.h>
 
 extern const char* terminus;
 extern const char* terminus_hex;

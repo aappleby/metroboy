@@ -11,33 +11,6 @@ struct SpriteStoreRegisters {
   void tick(SchematicTop& gb);
   SignalHash commit();
 
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf("----- SPR_STORE -----\n");
-    text_painter.dprintf("SPRITE_COUNT %d\n", pack(SPRITE_COUNT0.q(), SPRITE_COUNT1.q(), SPRITE_COUNT2.q(), SPRITE_COUNT3.q()));
-
-    /*
-    text_painter.dprintf("STORE0 %d %d %d %d\n",
-                 SPRITE0_GET_SYNC.a.val,
-                 pack(STORE0_X0,    STORE0_X1,    STORE0_X2,    STORE0_X3,   STORE0_X4,   STORE0_X5, STORE0_X6, STORE0_X7),
-                 pack(STORE0_IDX0,  STORE0_IDX1,  STORE0_IDX2,  STORE0_IDX3, STORE0_IDX4, STORE0_IDX5),
-                 pack(STORE0_LINE0, STORE0_LINE1, STORE0_LINE2, STORE0_LINE3));
-
-    text_painter.dprintf("STORE1 %d %d %d %d\n",
-                 SPRITE1_GET_SYNCn.a.val,
-                 pack(STORE1_X0,    STORE1_X1,    STORE1_X2,    STORE1_X3,   STORE1_X4,   STORE1_X5, STORE1_X6, STORE1_X7),
-                 pack(STORE1_IDX0,  STORE1_IDX1,  STORE1_IDX2,  STORE1_IDX3, STORE1_IDX4, STORE1_IDX5),
-                 pack(STORE1_LINE0, STORE1_LINE1, STORE1_LINE2, STORE1_LINE3));
-
-    text_painter.dprintf("STORE2 %d %d %d %d\n",
-                 SPRITE2_GET_SYNCn.a.val,
-                 pack(STORE2_X0,    STORE2_X1,    STORE2_X2,    STORE2_X3,   STORE2_X4,   STORE2_X5, STORE2_X6, STORE2_X7),
-                 pack(STORE2_IDX0,  STORE2_IDX1,  STORE2_IDX2,  STORE2_IDX3, STORE2_IDX4, STORE2_IDX5),
-                 pack(STORE2_LINE0, STORE2_LINE1, STORE2_LINE2, STORE2_LINE3));
-    text_painter.dprintf("...\n");
-    */
-    text_painter.newline();
-  }
-
 private:
   friend struct SchematicTop;
 

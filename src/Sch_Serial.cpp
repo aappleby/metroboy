@@ -121,54 +121,33 @@ void SerialRegisters::tick(SchematicTop& top) {
 SignalHash SerialRegisters::commit() {
   SignalHash hash;
 
-  /*p06.ETAF*/ hash << XFER_START.commit_reg();
-  /*p06.CULY*/ hash << XFER_DIR.commit_reg();
-  /*p06.COTY*/ hash << SER_CLK.commit_reg();
-  /*p06.CAFA*/ hash << SER_CNT0.commit_reg();
-  /*p06.CYLO*/ hash << SER_CNT1.commit_reg();
-  /*p06.CYDE*/ hash << SER_CNT2.commit_reg();
-  /*p06.CALY*/ hash << CALY_INT_SERIALp.commit_reg();
-  /*p06.CUBA*/ hash << SER_DATA0.commit_reg();
-  /*p06.DEGU*/ hash << SER_DATA1.commit_reg();
-  /*p06.DYRA*/ hash << SER_DATA2.commit_reg();
-  /*p06.DOJO*/ hash << SER_DATA3.commit_reg();
-  /*p06.DOVU*/ hash << SER_DATA4.commit_reg();
-  /*p06.EJAB*/ hash << SER_DATA5.commit_reg();
-  /*p06.EROD*/ hash << SER_DATA6.commit_reg();
-  /*p06.EDER*/ hash << SER_DATA7.commit_reg();
-  /*p06.ELYS*/ hash << SER_OUT.commit_reg();
+  /*p06.ETAF*/ hash << XFER_START.commit();
+  /*p06.CULY*/ hash << XFER_DIR.commit();
+  /*p06.COTY*/ hash << SER_CLK.commit();
+  /*p06.CAFA*/ hash << SER_CNT0.commit();
+  /*p06.CYLO*/ hash << SER_CNT1.commit();
+  /*p06.CYDE*/ hash << SER_CNT2.commit();
+  /*p06.CALY*/ hash << CALY_INT_SERIALp.commit();
+  /*p06.CUBA*/ hash << SER_DATA0.commit();
+  /*p06.DEGU*/ hash << SER_DATA1.commit();
+  /*p06.DYRA*/ hash << SER_DATA2.commit();
+  /*p06.DOJO*/ hash << SER_DATA3.commit();
+  /*p06.DOVU*/ hash << SER_DATA4.commit();
+  /*p06.EJAB*/ hash << SER_DATA5.commit();
+  /*p06.EROD*/ hash << SER_DATA6.commit();
+  /*p06.EDER*/ hash << SER_DATA7.commit();
+  /*p06.ELYS*/ hash << SER_OUT.commit();
 
-  /* PIN_68 */ hash << SCK_A.commit_pinout();   // <- P06.KEXU
-  /* PIN_68 */ hash << SCK_B.commit_pinout();   // <- P06.CULY
-  /* PIN_68 */ hash << SCK_C.clear_preset();   // -> P06.CAVE
-  /* PIN_68 */ hash << SCK_D.commit_pinout();   // <- P06.KUJO
+  /* PIN_68 */ hash << SCK_A.commit();   // <- P06.KEXU
+  /* PIN_68 */ hash << SCK_B.commit();   // <- P06.CULY
+  /* PIN_68 */ hash << SCK_C;   // -> P06.CAVE
+  /* PIN_68 */ hash << SCK_D.commit();   // <- P06.KUJO
   ///* PIN_69 */ hash << SIN_A.commit();   // nc?
   ///* PIN_69 */ hash << SIN_B.commit();   // nc?
-  /* PIN_69 */ hash << SIN_C.clear_preset();   // -> P06.CAGE
+  /* PIN_69 */ hash << SIN_C;   // -> P06.CAGE
   ///* PIN_69 */ hash << SIN_D.commit();   // nc?
-  /* PIN_70 */ hash << SOUT.commit_pinout();    // <- P05.KENA
+  /* PIN_70 */ hash << SOUT.commit();    // <- P05.KENA
   return hash;
-}
-
-//------------------------------------------------------------------------------
-
-void SerialRegisters::dump_regs(TextPainter& text_painter) {
-  text_painter.dprintf("----- SER_REG -----\n");
-  text_painter.dprintf("SER_CLK    %d\n", SER_CLK.prev().val);
-  text_painter.dprintf("XFER_START %d\n", XFER_START.prev().val);
-  text_painter.dprintf("XFER_DIR   %d\n", XFER_DIR.prev().val);
-  text_painter.dprintf("SER_OUT    %d\n", SER_OUT.prev().val);
-  text_painter.dprintf("SER_CNT    %d\n", ser_cnt());
-  text_painter.dprintf("SER_DATA   %d\n", ser_data());
-  text_painter.newline();
-}
-
-void SerialRegisters::dump_pins(TextPainter& text_painter) {
-  text_painter.dprintf("----- SER_PINS -----\n");
-  text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.prev().val, SCK_B.prev().val, (bool)SCK_C, SCK_D.prev().val);
-  text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.prev().val, SIN_B.prev().val, (bool)SIN_C, SIN_D.prev().val);
-  text_painter.dprintf("SOUT %d\n", SOUT.prev().val);
-  text_painter.newline();
 }
 
 //------------------------------------------------------------------------------

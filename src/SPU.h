@@ -12,7 +12,7 @@ struct SPU {
   sample_t get_l() const { return out_l; }
   sample_t get_r() const { return out_r; }
 
-  void  dump(std::string& out) const;
+  void dump(Dumper& d) const;
   const uint8_t* get_wave() const { return s3_wave; }
   
 private:

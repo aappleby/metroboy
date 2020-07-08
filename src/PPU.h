@@ -1,5 +1,4 @@
 #pragma once
-#include <stdint.h>
 #include "OAM.h"
 #include "VRAM.h"
 #include "Constants.h"
@@ -34,7 +33,7 @@ struct PPU {
   void on_obus_ack(const Ack& obus_ack);
 
 
-  void dump(std::string& out) const;
+  void dump(Dumper& dump) const;
 
   uint8_t get_stat()       const { return stat; }
 

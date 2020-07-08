@@ -8,7 +8,7 @@ struct NewTimer {
 
   void tick(const Req& req, Ack& ack);
   void tock(int phase, const Req& req);
-  void dump(std::string& d);
+  void dump(Dumper& dump) const;
 
   void update_tima();
 

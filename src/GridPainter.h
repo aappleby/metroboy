@@ -1,8 +1,6 @@
 #pragma once
 #include "Viewport.h"
 
-#include <stdint.h>
-
 struct Rect {
   float x = 0;
   float y = 0;

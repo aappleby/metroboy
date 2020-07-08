@@ -77,18 +77,18 @@ void NewTimer::update_tima() {
 
 //-----------------------------------------------------------------------------
 
-void NewTimer::dump(std::string& d) {
-  sprintf(d, "\002--------------TIMER2------------\001\n");
-  sprintf(d, "cnt         0x%04x\n", div);
-  sprintf(d, "div         0x%02x\n", uint8_t(div >> 6));
-  sprintf(d, "tima        0x%02x\n", tima);
-  sprintf(d, "tma         0x%02x\n", tma);
-  sprintf(d, "tac         %s\n",     byte_to_bits(tac));
-  sprintf(d, "tima_7_sync %d\n",     tima_7_sync);
-  sprintf(d, "timer_int        %d\n",     timer_int);
-  sprintf(d, "tima_clk    %d\n",     tima_clk);
+void NewTimer::dump(Dumper& d) const {
+  d("\002--------------TIMER2------------\001\n");
+  d("cnt         0x%04x\n", div);
+  d("div         0x%02x\n", uint8_t(div >> 6));
+  d("tima        0x%02x\n", tima);
+  d("tma         0x%02x\n", tma);
+  d("tac         %s\n",     byte_to_bits(tac));
+  d("tima_7_sync %d\n",     tima_7_sync);
+  d("timer_int        %d\n",     timer_int);
+  d("tima_clk    %d\n",     tima_clk);
 
-  sprintf(d, "\n");
+  d("\n");
 }
 
 //-----------------------------------------------------------------------------

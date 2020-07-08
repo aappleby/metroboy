@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include <assert.h>
+#include <memory.h>
 
 //-----------------------------------------------------------------------------
 // the nintendo logo as it appears in vram

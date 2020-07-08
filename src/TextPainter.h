@@ -1,5 +1,4 @@
 #pragma once
-#include <stdint.h>
 #include <string>
 
 #include "Viewport.h"

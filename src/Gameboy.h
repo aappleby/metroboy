@@ -86,15 +86,15 @@ struct Gameboy {
   void tock(int phase, const Req& req);
   void tick(const Req& req, Ack& ibus_ack) const;
 
-  void dump_cpu   (std::string& out);
-  void dump_bus   (std::string& out);
-  void dump_zram  (std::string& out);
-  void dump_timer (std::string& out);
-  void dump_cart  (std::string& out);
-  void dump_oam   (std::string& out);
-  void dump_joypad(std::string& out);
-  void dump_serial(std::string& out);
-  void dump_disasm(std::string& out);
+  void dump_cpu   (Dumper& d);
+  void dump_bus   (Dumper& d);
+  void dump_zram  (Dumper& d);
+  void dump_timer (Dumper& d);
+  void dump_cart  (Dumper& d);
+  void dump_oam   (Dumper& d);
+  void dump_joypad(Dumper& d);
+  void dump_serial(Dumper& d);
+  void dump_disasm(Dumper& d);
 
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }

@@ -80,26 +80,26 @@ using namespace Schematics;
 
 void DmaRegisters::tick(SchematicTop& top) {
   
-  /*p01.ALUR*/ nwire ALUR_RSTn = not(top.AVOR_RSTp());
-  /*p01.DULA*/ pwire DULA_RSTp = not(ALUR_RSTn);
-  /*p01.CUNU*/ nwire CUNU_RSTn = not(DULA_RSTp);
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
+  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
 
-  PSignal MOLU_FF46_RDp;
-  PSignal LAVY_FF46_WRp;
+  Signal MOLU_FF46_RDp;
+  Signal LAVY_FF46_WRp;
   {
-    /*p22.XOLA*/ nwire XOLA_A00n = not(top.CPU_PIN_A00);
-    /*p22.XENO*/ nwire XENO_A01n = not(top.CPU_PIN_A01);
-    /*p22.XUSY*/ nwire XUSY_A02n = not(top.CPU_PIN_A02);
-    /*p22.XERA*/ nwire XERA_A03n = not(top.CPU_PIN_A03);
+    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
+    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
+    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
+    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
 
-    /*p22.WESA*/ pwire WESA_A01p = not(XENO_A01n);
-    /*p22.WALO*/ pwire WALO_A02p = not(XUSY_A02n);
+    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
+    /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
 
-    /*p22.WATE*/ nwire WATE_FF46n = nand(top.WERO_FF4Xp(), XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
-    /*p22.XEDA*/ pwire XEDA_FF46p = not(WATE_FF46n);
-    /*p07.TEDO*/ pwire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-    /*p07.AJAS*/ nwire AJAS_CPU_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ pwire ASOT_CPU_RD = not(AJAS_CPU_RD);
+    /*p22.WATE*/ wire WATE_FF46n = nand(top.WERO_FF4Xp(), XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
+    /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p04.MOLU*/ MOLU_FF46_RDp = and(XEDA_FF46p, ASOT_CPU_RD);
 
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
@@ -112,7 +112,7 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
-    /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor((pwire)LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
+    /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
 
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
@@ -169,9 +169,9 @@ void DmaRegisters::tick(SchematicTop& top) {
 
   {
     // DMA vram read
-    /*p04.MUHO*/ nwire MUHO_DMA_READ_VRAMn   = nand(top.MATU_DMA_RUNNINGp(), top.MUDA_DMA_SRC_VRAMp());
-    /*p04.LUFA*/ pwire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
-    /*p04.AHOC*/ nwire AHOC_DMA_VRAM_RDn = not(LUFA_DMA_READ_VRAMp);
+    /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn   = nand(top.MATU_DMA_RUNNINGp(), top.MUDA_DMA_SRC_VRAMp());
+    /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
+    /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn = not(LUFA_DMA_READ_VRAMp);
 
     /*p04.ECAL*/ top.VRM_TRI_A00.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A00());
     /*p04.EGEZ*/ top.VRM_TRI_A01.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A01());
@@ -190,8 +190,8 @@ void DmaRegisters::tick(SchematicTop& top) {
 
   // FF46 DMA
   {
-    /*p04.NYGO*/ nwire NYGO_FF46_RDn = not(MOLU_FF46_RDp);
-    /*p04.PUSY*/ pwire PUSY_FF46_RDp = not(NYGO_FF46_RDn);
+    /*p04.NYGO*/ wire NYGO_FF46_RDn = not(MOLU_FF46_RDp);
+    /*p04.PUSY*/ wire PUSY_FF46_RDp = not(NYGO_FF46_RDn);
 
     // FIXME polarity
     /*p04.POLY*/ top.CPU_TRI_D0.set_tribuf_6p(PUSY_FF46_RDp, DMA_A08);
@@ -203,17 +203,17 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p04.RESU*/ top.CPU_TRI_D6.set_tribuf_6p(PUSY_FF46_RDp, DMA_A14);
     /*p04.NUVY*/ top.CPU_TRI_D7.set_tribuf_6p(PUSY_FF46_RDp, DMA_A15);
 
-    /*p04.LORU*/ nwire LORU_FF46_WRn = not(LAVY_FF46_WRp);
-    /*p??.PYSU*/ pwire PYSU_FF46_WRp = not(LORU_FF46_WRn); // not on schematic
+    /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
+    /*p??.PYSU*/ wire PYSU_FF46_WRp = not(LORU_FF46_WRn); // not on schematic
 
-    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D0);
-    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D1);
-    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D2);
-    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D3);
-    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D4);
-    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D5);
-    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D6);
-    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn.as_pwire(), PYSU_FF46_WRp.as_nwire(), top.CPU_TRI_D7);
+    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D0);
+    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D1);
+    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D2);
+    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D3);
+    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D4);
+    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D5);
+    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D6);
+    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D7);
   }
 }
 
@@ -221,27 +221,27 @@ void DmaRegisters::tick(SchematicTop& top) {
 
 SignalHash DmaRegisters::commit() {
   SignalHash hash;
-  /*p04.MATU*/ hash << MATU_DMA_RUNNINGp.commit_reg(); // -> p25,p28
-  /*p04.MYTE*/ hash << MYTE_DMA_DONE.commit_reg();
-  /*p04.LUVY*/ hash << LUVY_DMA_TRIG_d0.commit_reg();
-  /*p04.LENE*/ hash << LENE_DMA_TRIG_d4.commit_reg();
-  /*p04.NAKY*/ hash << DMA_A00.commit_reg();
-  /*p04.PYRO*/ hash << DMA_A01.commit_reg(); 
-  /*p04.NEFY*/ hash << DMA_A02.commit_reg(); 
-  /*p04.MUTY*/ hash << DMA_A03.commit_reg(); 
-  /*p04.NYKO*/ hash << DMA_A04.commit_reg(); 
-  /*p04.PYLO*/ hash << DMA_A05.commit_reg(); 
-  /*p04.NUTO*/ hash << DMA_A06.commit_reg(); 
-  /*p04.MUGU*/ hash << DMA_A07.commit_reg(); 
-  /*p04.NAFA*/ hash << DMA_A08.commit_reg(); 
-  /*p04.PYNE*/ hash << DMA_A09.commit_reg(); 
-  /*p04.PARA*/ hash << DMA_A10.commit_reg(); 
-  /*p04.NYDO*/ hash << DMA_A11.commit_reg(); 
-  /*p04.NYGY*/ hash << DMA_A12.commit_reg(); 
-  /*p04.PULA*/ hash << DMA_A13.commit_reg(); 
-  /*p04.POKU*/ hash << DMA_A14.commit_reg(); 
-  /*p04.MARU*/ hash << DMA_A15.commit_reg(); 
-  /*p04.LYXE*/ hash << LYXE_DMA_LATCHn.commit_latch();
+  /*p04.MATU*/ hash << MATU_DMA_RUNNINGp.commit(); // -> p25,p28
+  /*p04.MYTE*/ hash << MYTE_DMA_DONE.commit();
+  /*p04.LUVY*/ hash << LUVY_DMA_TRIG_d0.commit();
+  /*p04.LENE*/ hash << LENE_DMA_TRIG_d4.commit();
+  /*p04.NAKY*/ hash << DMA_A00.commit();
+  /*p04.PYRO*/ hash << DMA_A01.commit(); 
+  /*p04.NEFY*/ hash << DMA_A02.commit(); 
+  /*p04.MUTY*/ hash << DMA_A03.commit(); 
+  /*p04.NYKO*/ hash << DMA_A04.commit(); 
+  /*p04.PYLO*/ hash << DMA_A05.commit(); 
+  /*p04.NUTO*/ hash << DMA_A06.commit(); 
+  /*p04.MUGU*/ hash << DMA_A07.commit(); 
+  /*p04.NAFA*/ hash << DMA_A08.commit(); 
+  /*p04.PYNE*/ hash << DMA_A09.commit(); 
+  /*p04.PARA*/ hash << DMA_A10.commit(); 
+  /*p04.NYDO*/ hash << DMA_A11.commit(); 
+  /*p04.NYGY*/ hash << DMA_A12.commit(); 
+  /*p04.PULA*/ hash << DMA_A13.commit(); 
+  /*p04.POKU*/ hash << DMA_A14.commit(); 
+  /*p04.MARU*/ hash << DMA_A15.commit(); 
+  /*p04.LYXE*/ hash << LYXE_DMA_LATCHn.commit();
 
   // NAND latch
   /*p04.LARA*/ hash << LARA_DMA_LATCHn.commit_gate();

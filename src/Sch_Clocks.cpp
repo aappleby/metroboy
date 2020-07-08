@@ -18,11 +18,11 @@ void ClockRegisters::tick(SchematicTop& top) {
     wire APUK_xxxDEFGx_ = APUK_xxxDEFGx;
     wire ADYK_xxxxEFGH_ = ADYK_xxxxEFGH;
 
-    /*p07.UBET*/ nwire UBET_T1n = not(top.SYS_PIN_T1p);
-    /*p07.UVAR*/ nwire UVAR_T2n = not(top.SYS_PIN_T2p);
+    /*p07.UBET*/ wire UBET_T1n = not(top.SYS_PIN_T1);
+    /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2);
 
     // FIXME polarity issues again?
-    /*p07.UPOJ*/ pwire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTn);
+    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RST);
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
@@ -68,14 +68,14 @@ void ClockRegisters::tick(SchematicTop& top) {
 SignalHash ClockRegisters::commit() {
   SignalHash hash;
 
-  hash << AFUR_xBCDExxx.commit_reg();
-  hash << ALEF_xxCDEFxx.commit_reg();
-  hash << APUK_xxxDEFGx.commit_reg();
-  hash << ADYK_xxxxEFGH.commit_reg();
+  hash << AFUR_xBCDExxx.commit();
+  hash << ALEF_xxCDEFxx.commit();
+  hash << APUK_xxxDEFGx.commit();
+  hash << ADYK_xxxxEFGH.commit();
 
-  hash << WUVU_AxxDExxH.commit_reg();
-  hash << VENA_xBCDExxx.commit_reg();
-  hash << WOSU_xxCDxxGH.commit_reg();
+  hash << WUVU_AxxDExxH.commit();
+  hash << VENA_xBCDExxx.commit();
+  hash << WOSU_xxCDxxGH.commit();
   return hash;
 }
 

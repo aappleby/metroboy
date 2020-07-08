@@ -10,7 +10,7 @@ struct OAM {
   void tock(const Req& req);
   void tick(const Req& req, Ack& ack) const;
 
-  void dump(std::string& out) const;
+  void dump(Dumper& dump) const;
 
   const uint8_t* get() const { return (uint8_t*)ram; }
 

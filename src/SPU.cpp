@@ -511,40 +511,40 @@ void SPU::bus_write(const Req& req) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::dump(std::string& d) const {
-  sprintf(d, "\002--------------SPU--------------\001\n");
+void SPU::dump(Dumper& d) const {
+  d("\002--------------SPU--------------\001\n");
 
-  sprintf(d, "NR10 %s\n", byte_to_bits(nr10));
-  sprintf(d, "NR11 %s\n", byte_to_bits(nr11));
-  sprintf(d, "NR12 %s\n", byte_to_bits(nr12));
-  sprintf(d, "NR13 %s\n", byte_to_bits(nr13));
-  sprintf(d, "NR14 %s\n", byte_to_bits(nr14));
-  sprintf(d, "NR20 %s\n", byte_to_bits(nr20));
-  sprintf(d, "NR21 %s\n", byte_to_bits(nr21));
-  sprintf(d, "NR22 %s\n", byte_to_bits(nr22));
-  sprintf(d, "NR23 %s\n", byte_to_bits(nr23));
-  sprintf(d, "NR24 %s\n", byte_to_bits(nr24));
-  sprintf(d, "NR30 %s\n", byte_to_bits(nr30));
-  sprintf(d, "NR31 %s\n", byte_to_bits(nr31));
-  sprintf(d, "NR32 %s\n", byte_to_bits(nr32));
-  sprintf(d, "NR33 %s\n", byte_to_bits(nr33));
-  sprintf(d, "NR34 %s\n", byte_to_bits(nr34));
-  sprintf(d, "NR40 %s\n", byte_to_bits(nr40));
-  sprintf(d, "NR41 %s\n", byte_to_bits(nr41));
-  sprintf(d, "NR42 %s\n", byte_to_bits(nr42));
-  sprintf(d, "NR43 %s\n", byte_to_bits(nr43));
-  sprintf(d, "NR44 %s\n", byte_to_bits(nr44));
-  sprintf(d, "NR50 %s\n", byte_to_bits(nr50));
-  sprintf(d, "NR51 %s\n", byte_to_bits(nr51));
-  sprintf(d, "NR52 %s\n", byte_to_bits(nr52));
+  d("NR10 %s\n", byte_to_bits(nr10));
+  d("NR11 %s\n", byte_to_bits(nr11));
+  d("NR12 %s\n", byte_to_bits(nr12));
+  d("NR13 %s\n", byte_to_bits(nr13));
+  d("NR14 %s\n", byte_to_bits(nr14));
+  d("NR20 %s\n", byte_to_bits(nr20));
+  d("NR21 %s\n", byte_to_bits(nr21));
+  d("NR22 %s\n", byte_to_bits(nr22));
+  d("NR23 %s\n", byte_to_bits(nr23));
+  d("NR24 %s\n", byte_to_bits(nr24));
+  d("NR30 %s\n", byte_to_bits(nr30));
+  d("NR31 %s\n", byte_to_bits(nr31));
+  d("NR32 %s\n", byte_to_bits(nr32));
+  d("NR33 %s\n", byte_to_bits(nr33));
+  d("NR34 %s\n", byte_to_bits(nr34));
+  d("NR40 %s\n", byte_to_bits(nr40));
+  d("NR41 %s\n", byte_to_bits(nr41));
+  d("NR42 %s\n", byte_to_bits(nr42));
+  d("NR43 %s\n", byte_to_bits(nr43));
+  d("NR44 %s\n", byte_to_bits(nr44));
+  d("NR50 %s\n", byte_to_bits(nr50));
+  d("NR51 %s\n", byte_to_bits(nr51));
+  d("NR52 %s\n", byte_to_bits(nr52));
 
   const char* bar = "===============";
 
   uint8_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
-  sprintf(d, "s1 vol %s\n", bar + (15 - s1_volume));
+  d("s1 vol %s\n", bar + (15 - s1_volume));
 
   uint8_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
-  sprintf(d, "s2 vol %s\n", bar + (15 - s2_volume));
+  d("s2 vol %s\n", bar + (15 - s2_volume));
 
   uint8_t s3_volume = 0;
   switch ((nr32 & 0b01100000) >> 5) {
@@ -553,10 +553,10 @@ void SPU::dump(std::string& d) const {
   case 2: s3_volume = 7; break;
   case 3: s3_volume = 3; break;
   }
-  sprintf(d, "s3 vol %s\n", bar + (15 - s3_volume));
+  d("s3 vol %s\n", bar + (15 - s3_volume));
 
   uint8_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
-  sprintf(d, "s4 vol %s\n", bar + (15 - s4_volume));
+  d("s4 vol %s\n", bar + (15 - s4_volume));
 
   /*
   char buf[33];
@@ -569,7 +569,7 @@ void SPU::dump(std::string& d) const {
   }
 
   buf[32] = 0;
-  sprintf(d, "[%s]\n", buf);
+  d("[%s]\n", buf);
   */
 }
 

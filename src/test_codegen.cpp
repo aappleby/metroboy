@@ -62,6 +62,7 @@ void emit_test_scx_sprite(Assembler& l, int spriteX, int spriteY, int scroll, in
   l.test_finish_stat(result);
 }
 
+/*
 void test_scx_sprite() {
   Assembler* l = new Assembler();
   Gameboy* g = new Gameboy();
@@ -105,3 +106,4 @@ void test_scx_sprite() {
 void test_codegen() {
   test_scx_sprite();
 }
+*/

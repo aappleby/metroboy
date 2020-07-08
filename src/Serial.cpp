@@ -28,10 +28,10 @@ void Serial::tick(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void Serial::dump(std::string& d) {
-  sprintf(d, "\002--------------SERIAL-----------\001\n");
-  sprintf(d, "SB 0x%02x\n", sb);
-  sprintf(d, "SC 0x%02x\n", sc);
+void Serial::dump(Dumper& d) const {
+  d("\002--------------SERIAL-----------\001\n");
+  d("SB 0x%02x\n", sb);
+  d("SC 0x%02x\n", sc);
 }
 
 //-----------------------------------------------------------------------------

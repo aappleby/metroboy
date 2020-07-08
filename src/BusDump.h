@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include "Types.h"
 
 struct BusDump {
   int phase;

@@ -127,8 +127,8 @@ void SpriteScanner::tick(SchematicTop& top) {
 SignalHash SpriteScanner::commit() {
   SignalHash hash;
 
-  /*p28.BESU*/ hash << BESU_SCANNINGp.commit_latch();
-  /*p29.CENO*/ hash << CENO_SCANNINGp.commit_reg();
+  /*p28.BESU*/ hash << BESU_SCANNINGp.commit();
+  /*p29.CENO*/ hash << CENO_SCANNINGp.commit();
 
   /*p29.DEGE*/ hash << DEGE_SPRITE_DELTA0.reset();
   /*p29.DABY*/ hash << DABY_SPRITE_DELTA1.reset();
@@ -136,14 +136,14 @@ SignalHash SpriteScanner::commit() {
   /*p29.GYSA*/ hash << GYSA_SPRITE_DELTA3.reset();
   /*p29.CARE*/ hash << CARE_STORE_ENp_ABxxEFxx.reset();
 
-  /*p28.YFEL*/ hash << YFEL_SCAN0.commit_reg();
-  /*p28.WEWY*/ hash << WEWY_SCAN1.commit_reg();
-  /*p28.GOSO*/ hash << GOSO_SCAN2.commit_reg();
-  /*p28.ELYN*/ hash << ELYN_SCAN3.commit_reg();
-  /*p28.FAHA*/ hash << FAHA_SCAN4.commit_reg();
-  /*p28.FONY*/ hash << FONY_SCAN5.commit_reg();
-  /*p29.BYBA*/ hash << BYBA_SCAN_DONE_A.commit_reg();
-  /*p29.DOBA*/ hash << DOBA_SCAN_DONE_B.commit_reg();
+  /*p28.YFEL*/ hash << YFEL_SCAN0.commit();
+  /*p28.WEWY*/ hash << WEWY_SCAN1.commit();
+  /*p28.GOSO*/ hash << GOSO_SCAN2.commit();
+  /*p28.ELYN*/ hash << ELYN_SCAN3.commit();
+  /*p28.FAHA*/ hash << FAHA_SCAN4.commit();
+  /*p28.FONY*/ hash << FONY_SCAN5.commit();
+  /*p29.BYBA*/ hash << BYBA_SCAN_DONE_A.commit();
+  /*p29.DOBA*/ hash << DOBA_SCAN_DONE_B.commit();
 
   return hash;
 }

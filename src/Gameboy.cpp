@@ -276,13 +276,13 @@ void Gameboy::tock_gb() {
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::dump_cpu(std::string& d) {
-  sprintf(d, "\002------------- CPU --------------\001\n");
+void Gameboy::dump_cpu(Dumper& d) {
+  d("\002------------- CPU --------------\001\n");
   z80.dump(d, cpu_ack);
 }
 
-void Gameboy::dump_bus(std::string& d) {
-  sprintf(d, "\002------------- BUS --------------\001\n");
+void Gameboy::dump_bus(Dumper& d) {
+  d("\002------------- BUS --------------\001\n");
 
   const char* phases[] = {
     "\002A_______\001",
@@ -295,53 +295,53 @@ void Gameboy::dump_bus(std::string& d) {
     "\003_______H\001",
   };
 
-  sprintf(d, "phase %s\n", phases[phase & 7]);
-  sprintf(d, "tphase %lld\n", phase);
-  sprintf(d, "tcycle %lld\n", phase >> 1);
-  sprintf(d, "mcycle %lld\n", phase >> 3);
-  sprintf(d, "bgb cycle      0x%08x\n", ((phase / 2) * 8) + 0x00B2D5E6);
-  sprintf(d, "imask  %s\n", byte_to_bits(imask));
-  sprintf(d, "intf   %s\n", byte_to_bits(intf));
-  sprintf(d, "boot   %d\n", boot.disable_bootrom);
-  sprintf(d, "\n");
+  d("phase %s\n", phases[phase & 7]);
+  d("tphase %lld\n", phase);
+  d("tcycle %lld\n", phase >> 1);
+  d("mcycle %lld\n", phase >> 3);
+  d("bgb cycle      0x%08x\n", ((phase / 2) * 8) + 0x00B2D5E6);
+  d("imask  %s\n", byte_to_bits(imask));
+  d("intf   %s\n", byte_to_bits(intf));
+  d("boot   %d\n", boot.disable_bootrom);
+  d("\n");
 
-  sprintf(d, "---IBUS req:    "); print_req(d, ibus_req);
-  sprintf(d, "---IBUS ack:    "); print_ack(d, ibus_ack);
-  sprintf(d, "---EBUS req:    "); print_req(d, ebus_req);
-  sprintf(d, "---EBUS ack:    "); print_ack(d, ebus_ack);
-  sprintf(d, "---VBUS req:    "); print_req(d, vbus_req);
-  sprintf(d, "---VBUS ack:    "); print_ack(d, vbus_ack);
-  sprintf(d, "---OBUS req:    "); print_req(d, obus_req);
-  sprintf(d, "---OBUS ack:    "); print_ack(d, obus_ack);
-  sprintf(d, "---CPU  ack:    "); print_ack(d, cpu_ack);
+  d("---IBUS req:    "); dump_req(d, ibus_req);
+  d("---IBUS ack:    "); dump_ack(d, ibus_ack);
+  d("---EBUS req:    "); dump_req(d, ebus_req);
+  d("---EBUS ack:    "); dump_ack(d, ebus_ack);
+  d("---VBUS req:    "); dump_req(d, vbus_req);
+  d("---VBUS ack:    "); dump_ack(d, vbus_ack);
+  d("---OBUS req:    "); dump_req(d, obus_req);
+  d("---OBUS ack:    "); dump_ack(d, obus_ack);
+  d("---CPU  ack:    "); dump_ack(d, cpu_ack);
 }
 
-void Gameboy::dump_zram(std::string& d) {
+void Gameboy::dump_zram(Dumper& d) {
   zram.dump(d);
 }
 
-void Gameboy::dump_timer(std::string& d) {
+void Gameboy::dump_timer(Dumper& d) {
   timer2.dump(d);
 }
 
-void Gameboy::dump_cart(std::string& d) {
+void Gameboy::dump_cart(Dumper& d) {
   cart.dump(d);
 }
 
-void Gameboy::dump_oam(std::string& d) {
+void Gameboy::dump_oam(Dumper& d) {
   oam.dump(d);
 }
 
-void Gameboy::dump_joypad(std::string& d) {
+void Gameboy::dump_joypad(Dumper& d) {
   joypad.dump(d);
 }
 
-void Gameboy::dump_serial(std::string& d) {
+void Gameboy::dump_serial(Dumper& d) {
   serial.dump(d);
 }
 
-void Gameboy::dump_disasm(std::string& d) {
-  sprintf(d, "\002--------------DISASM-----------\001\n");
+void Gameboy::dump_disasm(Dumper& d) {
+  d("\002--------------DISASM-----------\001\n");
 
   uint16_t pc = z80.get_op_addr();
   const uint8_t* segment;
@@ -362,10 +362,10 @@ void Gameboy::dump_disasm(std::string& d) {
   if (segment) {
     Assembler a;
     a.disassemble(segment, 65536, pc, 30, d, false);
-    sprintf(d, "\n");
+    d("\n");
   }
   else {
-    sprintf(d, "(bad pc)\n");
+    d("(bad pc)\n");
   }
 }
 

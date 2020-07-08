@@ -66,10 +66,3 @@ void Bootrom::tick(const Req& req, Ack& ack) const {
 }
 
 //-----------------------------------------------------------------------------
-
-void Bootrom::dump(std::string& d) {
-  sprintf(d, "\002---------------Bootrom-------------\001\n");
-  sprintf(d, "DISABLE_BOOTROM %d\n", disable_bootrom);
-}
-
-//-----------------------------------------------------------------------------

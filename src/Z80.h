@@ -18,7 +18,7 @@ struct Z80 {
   void    tock_g(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
   void    tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
 
-  void    dump(std::string& d, const Ack& bus_ack);
+  void    dump(Dumper& d, const Ack& bus_ack) const;
 
   uint16_t get_op_addr() const { return op_addr; }
   uint8_t  get_a()  const { return a; }

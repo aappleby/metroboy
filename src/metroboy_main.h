@@ -80,5 +80,4 @@ public:
   // debug
 
   uint8_t golden[160 * 144] = {};
-  std::string text_buf;
 };

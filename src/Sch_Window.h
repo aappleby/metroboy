@@ -12,9 +12,6 @@ struct WindowRegisters {
   void tick(SchematicTop& gb);
   SignalHash commit();
 
-  int get_wy()   const { return pack(NESO_WY0, NYRO_WY1, NAGA_WY2, MELA_WY3, NULO_WY4, NENE_WY5, NUKA_WY6, NAFU_WY7); }
-  int get_wx()   const { return pack(MYPA_WX0, NOFE_WX1, NOKE_WX2, MEBY_WX3, MYPU_WX4, MYCE_WX5, MUVO_WX6, NUKU_WX7); }
-
 private:
   friend SchematicTop;
 

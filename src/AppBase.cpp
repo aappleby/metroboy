@@ -3,6 +3,7 @@
 #include "GLBase.h"
 
 #include <imgui.h>
+#include <glad/glad.h>
 
 #ifdef _MSC_VER
 #include <include/SDL.h>

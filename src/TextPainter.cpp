@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <include/SDL.h>
+#include <glad/glad.h>
 
 extern const char* terminus;
 

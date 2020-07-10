@@ -14,8 +14,8 @@ void SpriteScanner::tick(SchematicTop& top) {
   /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
   /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
 
-  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
-  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
+  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_AxxDExxH());
+  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_ABxxEFxx());
 
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);

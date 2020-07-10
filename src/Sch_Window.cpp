@@ -15,7 +15,7 @@ void WindowRegisters::tick(SchematicTop& top) {
   /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
   /*p27.MEHE*/ wire MEHE_AxCxExGx = not(ALET_xBxDxFxH);
 
-  /*p21.TALU*/ wire TALU_xBCDExxx = not(top.VENA_xBCDExxx());
+  /*p21.TALU*/ wire TALU_xBCDExxx = not(top.VENA_ABxxxxGH());
 
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
   /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);

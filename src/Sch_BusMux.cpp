@@ -99,10 +99,10 @@ void BusMux::tick(SchematicTop& top) {
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
   /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
 
-  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
+  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_AxxDExxH());
 
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_READYp);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_ABCDxxxx());
   /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
   /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
   /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
@@ -110,10 +110,10 @@ void BusMux::tick(SchematicTop& top) {
   /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
   /*p28.XYNY*/ wire XYNY_xBCDExxx = not(MOPA_AxxxxFGH);
 
-  /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!top.WUVU_AxxDExxH(), !top.WOSU_xxCDxxGH());
+  /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!top.WUVU_ABxxEFxx(), !top.WOSU_AxxDExxH());
   /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);
 
-  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(top.ADYK_xxxxEFGH());
+  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(top.ADYK_xxxDEFGx());
   /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
 
   // Reset tree

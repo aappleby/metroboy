@@ -246,6 +246,7 @@
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />
     <ClCompile Include="src\metroboy_main.cpp" />
+    <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MetroBoy.ruleset" />

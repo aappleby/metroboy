@@ -13,10 +13,10 @@ using namespace Schematics;
 
 void LcdRegisters::tick(SchematicTop& top) {
 
-  /*p21.TALU*/ wire TALU_xBCDExxx = not(top.VENA_xBCDExxx());
+  /*p21.TALU*/ wire TALU_xBCDExxx = not(top.VENA_ABxxxxGH());
   /*p21.SONO*/ wire SONO_AxxxxFGH = not(TALU_xBCDExxx);
 
-  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
+  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_ABxxEFxx());
   /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);
 
   /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
@@ -178,7 +178,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p22.WYLE*/ wire FF44n = nand(top.WERO_FF4Xp(), XOLA_A00n, XENO_A01n, WALO_A02p, XERA_A03n);
     /*p22.XOGY*/ wire FF44p = not(FF44n);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn()); // TEDO is weird, might be wrong
     /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.WAFU*/ wire FF44_RDp = and (ASOT_CPU_RD, FF44p);

@@ -21,9 +21,55 @@ public:
     return state_manager.state();
   }
 
-  SignalHash cycle(Schematics::SchematicTop* top, uint16_t addr, uint8_t data, bool read, bool write);
-  SignalHash phase(Schematics::SchematicTop* top);
-  SignalHash pass (Schematics::SchematicTop* top);
+  SignalHash mcycle(
+    Schematics::SchematicTop* top,
+    bool RST,
+    bool CLK_GOOD,
+    bool T1,
+    bool T2,
+    uint16_t addr,
+    uint8_t data,
+    bool read,
+    bool write
+  );
+
+  SignalHash tcycle(
+    Schematics::SchematicTop* top,
+    bool RST,
+    bool CLK_GOOD,
+    bool T1,
+    bool T2,
+    uint16_t addr,
+    uint8_t data,
+    bool read,
+    bool write
+  );
+
+  SignalHash phase(
+    Schematics::SchematicTop* top,
+    bool RST,
+    bool CLK_GOOD,
+    bool CLK,
+    bool T1,
+    bool T2,
+    uint16_t addr,
+    uint8_t data,
+    bool read,
+    bool write
+  );
+
+  SignalHash pass(
+    Schematics::SchematicTop* top,
+    bool CLK_GOOD,
+    bool CLK,
+    bool RST,
+    bool T1,
+    bool T2,
+    uint16_t addr,
+    uint8_t data,
+    bool read,
+    bool write
+  );
 
   StateManager2<Schematics::SchematicTop> state_manager;
 

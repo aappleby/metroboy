@@ -72,9 +72,9 @@ void Bootrom::tick(SchematicTop& top) {
     /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_CPU_WR_xxxxxFGH, SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (top.CPU_TRI_D0, BOOT_BITn);
 
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
 
     // In run mode, BOOT_BITn must _not_ be reset.
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
     /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, ALUR_RSTn, BOOT_BIT_IN);
   }
 

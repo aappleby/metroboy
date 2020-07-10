@@ -12,10 +12,11 @@ struct ResetRegisters {
   void tick(SchematicTop& gb);
   SignalHash commit();
 
-private:
+//private:
   friend SchematicTop;
 
-  /*p01.TUBO*/ NorLatch TUBO;
+  // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
+  /*p01.TUBO*/ NorLatch TUBO_CPU_READYn;
 
   // If AVOR_RSTp was 1 in run mode
   // then ALUR_RSTn = 0
@@ -24,8 +25,8 @@ private:
   // Therefore AVOR_RSTp = 0 in run mode
   // Therefore ASOL|AFER = 0 in run mode
 
-  /*p01.ASOL*/ NorLatch ASOL; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ Reg13    AFER; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
+  /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
+  /*p01.AFER*/ Reg13    AFER_POR_DONEn_SYNC; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
 };
 
 

@@ -4,12 +4,12 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::set_sys(wire CLK_GOOD, wire CLK, wire RST, wire T1, wire T2) {
+void SchematicTop::set_sys(wire RST, wire CLK_GOOD, wire CLK, wire T1, wire T2) {
+  SYS_PIN_RSTn.set(RST);
   SYS_PIN_CLK_A.set(CLK_GOOD);
   SYS_PIN_CLK_B.set(CLK);
-  SYS_PIN_RST.set(RST);
-  SYS_PIN_T1.set(T1);
-  SYS_PIN_T2.set(T2);
+  SYS_PIN_T1n.set(T1);
+  SYS_PIN_T2n.set(T2);
 }
 
 //-----------------------------------------------------------------------------
@@ -57,10 +57,9 @@ void SchematicTop::set_cpu(uint16_t addr, uint8_t data, bool read, bool write) {
     CPU_TRI_D7.preset(HIZ);
   }
 
-  CPU_PIN5.set(HIZ);
+  //CPU_PIN5.set(HIZ);
   CPU_PIN6.set(HIZ);
   CPU_PIN_ADDR_VALID.set(HIZ);
-  CPU_PIN_CLKREQ.set(HIZ);
 
   CPU_PIN_ACK_JOYPAD.set(HIZ);
   CPU_PIN_ACK_SERIAL.set(HIZ);
@@ -72,8 +71,8 @@ void SchematicTop::set_cpu(uint16_t addr, uint8_t data, bool read, bool write) {
 //-----------------------------------------------------------------------------
 
 void SchematicTop::set_ext() {
-  EXT_PIN_RDn_C.set(HIZ);
-  EXT_PIN_WRn_C.set(HIZ);
+  //EXT_PIN_RDn_C.set(HIZ);
+  //EXT_PIN_WRp_C.set(HIZ);
 
   EXT_PIN_A00_C.set(HIZ);
   EXT_PIN_A01_C.set(HIZ);
@@ -168,10 +167,9 @@ SignalHash SchematicTop::tick() {
   SignalHash hash;
 
   clk_reg.tick(*this);
-
-  //dbg_reg.tick(*this);
-  //rst_reg.tick(*this);
-  //tim_reg.tick(*this);
+  dbg_reg.tick(*this);
+  rst_reg.tick(*this);
+  tim_reg.tick(*this);
 
   //tick_vram_pins();
   //tick_top_regs();
@@ -196,10 +194,13 @@ SignalHash SchematicTop::tick() {
 
   hash << commit_io();
   hash << clk_reg.commit();
+  hash << dbg_reg.commit();
+  hash << rst_reg.commit();
+  hash << tim_reg.commit();
 
-  //hash << dbg_reg.commit();
-  //hash << rst_reg.commit();
-  //hash << tim_reg.commit();
+  hash << CPU_PIN_POR_DONEn.commit();
+  hash << CPU_PIN_DBG.commit();
+
   //hash << lcd_reg.commit();
   //hash << pxp_reg.commit();
   //hash << sst_reg.commit();
@@ -245,14 +246,14 @@ void SchematicTop::tick_cpu_bus() {
   auto& top = *this;
 
   {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_READYp);
     /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
 
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_ABCDxxxx());
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!top.APUK_xxxDEFGx());
+    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!top.APUK_xxCDEFxx());
     /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(top.ALEF_xxCDEFxx());
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(top.ALEF_xBCDExxx());
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
     /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
@@ -285,8 +286,8 @@ void SchematicTop::tick_cpu_bus() {
   }
 
   {
-    wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(top.AFUR_xBCDExxx());
+    wire ABOL_CLKREQn  = not(top.CPU_PIN_READYp);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(top.AFUR_ABCDxxxx());
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
@@ -294,7 +295,7 @@ void SchematicTop::tick_cpu_bus() {
   }
 
   {
-    top.CPU_PIN_EXT_RESET.set(top.SYS_PIN_RST);
+    top.CPU_PIN_EXT_RST.set(top.SYS_PIN_RSTn);
   }
 
   {
@@ -405,8 +406,8 @@ if (top.VYPO_GND) bus_out.set_data(
 #if 0
 void dump_pins(TextPainter& text_painter) {
   text_painter.dprintf("----- CPU DBG/PIN_RST -----\n");
-  text_painter.dprintf("CPU_PIN_EXT_RESET     %d\n", CPU_PIN_EXT_RESET.a.val);
-  text_painter.dprintf("CPU_PIN_DBG     %d\n", CPU_PIN_DBG.a.val);
+  text_painter.dprintf("CPU_PIN_EXT_RST     %d\n", CPU_PIN_EXT_RST.a.val);
+  text_painter.dprintf("CPU_PIN_POR_DONEp     %d\n", CPU_PIN_POR_DONEp.a.val);
   text_painter.dprintf("CPU_PIN_EXT_CLKGOOD   %d\n", CPU_PIN_EXT_CLKGOOD.a.val);
 
   text_painter.dprintf("----- CPU CLOCKS -----\n");
@@ -426,7 +427,7 @@ void dump_pins(TextPainter& text_painter) {
   //text_painter.dprintf("CPU_PIN6     %d\n", CPU_PIN6.a.val);
 
   text_painter.dprintf("----- TO CPU -----\n");
-  text_painter.dprintf("CPU_PIN_PROD     %d\n", CPU_PIN_PROD.a.val);
+  text_painter.dprintf("CPU_PIN_POR_DONEn     %d\n", CPU_PIN_POR_DONEn.a.val);
   text_painter.dprintf("CPU_PIN_WAKE          %d\n", CPU_PIN_WAKE.a.val);
   text_painter.dprintf("CPU_PIN_ADDR_HI          %d\n", CPU_PIN_ADDR_HI.a.val);
   text_painter.dprintf("CPU_PIN_BOOTp    %d\n", CPU_PIN_BOOTp.a.val);
@@ -598,8 +599,8 @@ void SchematicTop::tick_vram_pins() {
   /*p25.TUTO*/ wire TUTO_DBG_VRAMp = and (UNOR_MODE_DBG2p(), !dbg_reg.SOTO_DBG);
   /*p25.RACO*/ wire RACO_DBG_VRAMn = not(TUTO_DBG_VRAMp);
 
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx());
-  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxxEFGH());
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_ABCDxxxx());
+  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxDEFGx());
   /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(CPU_PIN_WR, AFAS_xxxxxFGH);
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
@@ -893,11 +894,11 @@ void SchematicTop::tick_top_regs() {
 SignalHash SchematicTop::commit_io() {
   SignalHash hash;
 
-  hash << SYS_PIN_RST;
+  hash << SYS_PIN_RSTn;
   hash << SYS_PIN_CLK_B; // PIN_74
   hash << SYS_PIN_CLK_A;     // PIN_74
-  hash << SYS_PIN_T2;           // PIN_76
-  hash << SYS_PIN_T1;           // PIN_77
+  hash << SYS_PIN_T2n;           // PIN_76
+  hash << SYS_PIN_T1n;           // PIN_77
 
   //----------------------------------------
 
@@ -910,7 +911,7 @@ SignalHash SchematicTop::commit_io() {
   hash << CPU_PIN_ACK_TIMER;      // PORTB_09: -> LESA, timer int ack
   hash << CPU_PIN_ACK_SERIAL;     // PORTB_13: -> LUFE, serial int ack
   hash << CPU_PIN_ACK_JOYPAD;     // PORTB_17: -> LAMO, joypad int ack
-  hash << CPU_PIN_CLKREQ;         // PORTC_00: -> ABOL
+  hash << CPU_PIN_READYp;         // PORTC_00: -> ABOL
   hash << CPU_PIN6;               // PORTD_00: -> LEXY, doesn't do anything
   hash << CPU_PIN5;               // PORTD_06: -> FROM_CPU5
 
@@ -958,7 +959,7 @@ SignalHash SchematicTop::commit_io() {
   //----------------------------------------
 
   hash << EXT_PIN_RDn_C;     // PIN_79 -> UJYV
-  hash << EXT_PIN_WRn_C;     // PIN_78 -> UBAL
+  hash << EXT_PIN_WRp_C;     // PIN_78 -> UBAL
 
   hash << EXT_PIN_A00_C;     // PIN_01 -> KOVA
   hash << EXT_PIN_A01_C;     // PIN_02 -> CAMU
@@ -1032,8 +1033,8 @@ SignalHash SchematicTop::commit_ibus() {
   hash << CPU_PIN_INT_SERIAL.commit();    // PORTB_15: <- UBUL, serial int
   hash << CPU_PIN_INT_JOYPAD.commit();    // PORTB_19: <- ULAK, joypad int
 
-  hash << CPU_PIN_PROD.commit();     // PORTC_01: <- AFER
-  hash << CPU_PIN_EXT_RESET.commit();     // PORTC_02: <- PIN_RESET directly connected to the pad
+  hash << CPU_PIN_POR_DONEn.commit();     // PORTC_01: <- AFER
+  hash << CPU_PIN_EXT_RST.commit();     // PORTC_02: <- PIN_RESET directly connected to the pad
   hash << CPU_PIN_EXT_CLKGOOD.commit();   // PORTC_03: <- CLKIN_A
   hash << CPU_PIN_DBG.commit();     // PORTC_04: <- TABA
 
@@ -1330,14 +1331,14 @@ SignalHash SchematicTop::commit_top_regs() {
 // Debug signals
 
 wire SchematicTop::UMUT_MODE_DBG1p() const {
-  /*p07.UVAR*/ wire UVAR_T2n = not(SYS_PIN_T2);
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p = and (SYS_PIN_T1, UVAR_T2n);
+  /*p07.UVAR*/ wire UVAR_T2p = not(SYS_PIN_T2n);
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p = and (SYS_PIN_T1n, UVAR_T2p);
   return UMUT_MODE_DBG1p;
 }
 
 wire SchematicTop::UNOR_MODE_DBG2p() const {
-  /*p07.UBET*/ wire UBET_T1n = not(SYS_PIN_T1);
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (SYS_PIN_T2, UBET_T1n);
+  /*p07.UBET*/ wire UBET_T1p = not(SYS_PIN_T1n);
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (SYS_PIN_T2n, UBET_T1p);
   return UNOR_MODE_DBG2p;
 }
 
@@ -1349,19 +1350,19 @@ wire SchematicTop::TOVA_MODE_DBG2n() const {
 //-----------------------------------------------------------------------------
 // Clock signals
 
-wire SchematicTop::AFUR_xBCDExxx() const { return clk_reg.AFUR_xBCDExxx; }
-wire SchematicTop::ALEF_xxCDEFxx() const { return clk_reg.ALEF_xxCDEFxx; }
-wire SchematicTop::APUK_xxxDEFGx() const { return clk_reg.APUK_xxxDEFGx; }
-wire SchematicTop::ADYK_xxxxEFGH() const { return clk_reg.ADYK_xxxxEFGH; }
-wire SchematicTop::WUVU_AxxDExxH() const { return clk_reg.WUVU_AxxDExxH; }
-wire SchematicTop::VENA_xBCDExxx() const { return clk_reg.VENA_xBCDExxx; }
-wire SchematicTop::WOSU_xxCDxxGH() const { return clk_reg.WOSU_xxCDxxGH; }
+wire SchematicTop::AFUR_ABCDxxxx() const { return clk_reg.AFUR_ABCDxxxx; }
+wire SchematicTop::ALEF_xBCDExxx() const { return clk_reg.ALEF_xBCDExxx; }
+wire SchematicTop::APUK_xxCDEFxx() const { return clk_reg.APUK_xxCDEFxx; }
+wire SchematicTop::ADYK_xxxDEFGx() const { return clk_reg.ADYK_xxxDEFGx; }
+wire SchematicTop::WUVU_ABxxEFxx() const { return clk_reg.WUVU_ABxxEFxx; }
+wire SchematicTop::VENA_ABxxxxGH() const { return clk_reg.VENA_ABxxxxGH; }
+wire SchematicTop::WOSU_AxxDExxH() const { return clk_reg.WOSU_AxxDExxH; }
 
 wire SchematicTop::BELE_xBxxxxxx() const {
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx());
-  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!APUK_xxxDEFGx());
-  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_xxCDEFxx());
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_CLKREQ);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_ABCDxxxx());
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!APUK_xxCDEFxx());
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_xBCDExxx());
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_READYp);
   /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
   /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
   /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
@@ -1399,7 +1400,7 @@ wire SchematicTop::MOBA_INT_TIMERp() const { return tim_reg.MOBA_INT_TIMERp; }
 // Reset signals
 
 wire SchematicTop::AVOR_RSTp() const {
-  /*p01.AVOR*/ wire AVOR_RSTp = or(rst_reg.AFER.q(), rst_reg.ASOL.q());
+  /*p01.AVOR*/ wire AVOR_RSTp = or(rst_reg.AFER_POR_DONEn_SYNC.q(), rst_reg.ASOL_POR_DONEn.q());
   return AVOR_RSTp;
 }
 
@@ -1425,14 +1426,14 @@ wire SchematicTop::UJYV_CPU_RDn() const {
 }
 
 wire SchematicTop::UBAL_CPU_WRp_ABCDExxx() const {
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx());
-  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxxEFGH());
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_ABCDxxxx());
+  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxDEFGx());
   /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(CPU_PIN_WR, AFAS_xxxxxFGH);
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
 
-  // polarity of EXT_PIN_WRn_C wrong?
-  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDExxx = mux2_n(EXT_PIN_WRn_C, APOV_CPU_WRp_xxxxxFGH, UNOR_MODE_DBG2p());
+  // polarity of EXT_PIN_WRp_C wrong?
+  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDExxx = mux2_n(EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxxFGH, UNOR_MODE_DBG2p());
   return UBAL_CPU_WRp_ABCDExxx;
 }
 
@@ -1911,7 +1912,7 @@ PIN_D7_C.preset(oe, d & 0x80);
 
 #if 0
 void ExtPinsOut::preset() {
-  EXT_PIN_WRn_C.preset(true, 0);   // -> P07.UBAL
+  EXT_PIN_WRp_C.preset(true, 0);   // -> P07.UBAL
   EXT_PIN_RDn_C.preset(true, 0);   // -> P07.UJYV
   EXT_PIN_A00_C.preset(true, 0);   // -> P08.KOVA
   EXT_PIN_A01_C.preset(true, 0);   // -> P08.CAMU

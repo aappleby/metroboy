@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Signals.h"
+#include <stdio.h>
 
 //-----------------------------------------------------------------------------
 // I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
@@ -13,6 +14,8 @@ struct PinIn {
     if (a.hiz)   __debugbreak();
     return a.val;
   }
+
+  bool q()  const { return a.val; }
 
   operator SignalState() const { return a; }
 
@@ -89,11 +92,24 @@ struct PinOut : public RegisterBase {
 // TRIBUF_05 NC
 // TRIBUF_06
 
-struct Tribuf : public RegisterBase {
+struct Tribuf {
 
   Tribuf() {
     a = HIZ;
     b = ERROR;
+  }
+
+  operator bool() const {
+    if (a.error)  __debugbreak();
+    if (a.hiz)    {
+      printf("reading hiz\n");
+      return 1;
+    }
+    return a.val;
+  }
+
+  operator SignalState() const {
+    return a;
   }
 
   void preset(SignalFlags f) {
@@ -171,6 +187,9 @@ struct Tribuf : public RegisterBase {
     b = ERROR;
     return a;
   }
+
+  SignalState a = HIZ;
+  SignalState b = HIZ;
 };
 
 //-----------------------------------------------------------------------------
@@ -311,44 +330,12 @@ struct Reg8 : public RegisterBase {
 // XEPE_08 >> ZOGY_02  (q)
 // XEPE_09 >> nc
 
-struct Reg9p : public RegisterBase {
-
-  void set(wire CLKp, wire CLKn, wire RSTp, bool D) {
-    if (CLKp == CLKn) __debugbreak();
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = D;
-    b.hiz = 0;
-    b.clk = CLKp;
-    b.set = 0;
-    b.rst = RSTp;
-    b.error = 0;
-  }
-
-  SignalState commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return a;
-  }
-};
-
-
 struct Reg9 : public RegisterBase {
+
+  void preset(bool D) {
+    a = D ? SET_1 : SET_0;
+    b = ERROR;
+  }
 
   void set(wire CLKp, wire CLKn, wire RSTn, bool D) {
     if (CLKp == CLKn) __debugbreak();
@@ -497,7 +484,7 @@ struct Reg11 : public RegisterBase {
 // AFER_10 nc
 // AFER_11 nc
 // AFER_12 >> nc
-// AFER_13 >> AVOR_01
+// AFER_13 >> AVOR_01 // Must be Q, see resets
 
 // XADU_01 nc
 // XADU_02 << WEFE_02 (RSTp?)
@@ -510,8 +497,8 @@ struct Reg11 : public RegisterBase {
 // XADU_09 << WEFE_02 (RSTp?)
 // XADU_10 nc
 // XADU_11 nc
-// XADU_12 >> WUZY_04 (Q)    // might have these switched, but there's not many of these regs
-// XADU_13 >> nc      (QN)
+// XADU_12 >> WUZY_04 (Qn)
+// XADU_13 >> nc      (Q)
 
 struct Reg13 : public RegisterBase {
 
@@ -577,14 +564,21 @@ struct Reg17 : public RegisterBase {
 
   // must be RSTn, see WUVU/VENA/WOSU
 
-  void set(wire CLKp, wire RSTn, bool val) {
+  void set(wire CLKp, wire RSTn, SignalState D) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = val;
+    b.val = D.val;
     b.hiz = 0;
     b.clk = CLKp;
     b.set = 0;
     b.rst = !RSTn;
+
+    if (!a.clk && b.clk) {
+      if (D.error) __debugbreak();
+      //if (D.hiz) __debugbreak();
+      //if (D.hiz) printf("hiz");
+    }
+
     b.error = 0;
   }
 

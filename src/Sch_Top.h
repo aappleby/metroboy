@@ -26,7 +26,7 @@ namespace Schematics {
 
 struct SchematicTop {
 
-  void set_sys(wire CLK_GOOD, wire CLK, wire RST, wire T1, wire T2);
+  void set_sys(wire RST, wire CLK_GOOD, wire CLK, wire T1, wire T2);
   void set_cpu(uint16_t addr, uint8_t data, bool read, bool write);
   void set_ext();
   void set_joy(uint8_t buttons);
@@ -64,14 +64,14 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Clock signals
 
-  wire AFUR_xBCDExxx() const;
-  wire ALEF_xxCDEFxx() const;
-  wire APUK_xxxDEFGx() const;
-  wire ADYK_xxxxEFGH() const;
+  wire AFUR_ABCDxxxx() const;
+  wire ALEF_xBCDExxx() const;
+  wire APUK_xxCDEFxx() const;
+  wire ADYK_xxxDEFGx() const;
 
-  wire WUVU_AxxDExxH() const;
-  wire VENA_xBCDExxx() const;
-  wire WOSU_xxCDxxGH() const;
+  wire WUVU_ABxxEFxx() const;
+  wire VENA_ABxxxxGH() const;
+  wire WOSU_AxxDExxH() const;
 
   wire BELE_xBxxxxxx() const;
   wire BYJU_AxCDEFGH() const;
@@ -296,7 +296,7 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Internal state for debugging
 
-  int phase_counter = 0;
+  int phase_counter = -16;
 
   //-----------------------------------------------------------------------------
   // Top level registers
@@ -332,16 +332,31 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Sys pins
 
-  // In reset, T1/2 and RSn are the _same_.
-  // In run, T1/2 and RSTn are _different_.
-  // UPOJ_MODE_PRODn must be _different_ in the two modes.
-  // Therefore in run mode, T1 == 0, T2 == 0, RSTn == 1
+#if 0
+  if (RST) {
+    // This can't be run mode, TAPE doesn't affect UKUP
+    ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or(T1, T2), APUK_xxCDEFxx.q());
+    UKUP_DIV_00.set(BOGA_AxCDEFGH, 0, UKUP_DIV_00.qn());
+  }
+  else {
+    if (CLKIN_A) {
+      // So this must be run mode, and ADYK must have _negative_ reset
+      // RST = 0
+      // CLKIN_A = 1
+      ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
+      UKUP_DIV_00.set(BOGA_AxCDEFGH, !TAPE, UKUP_DIV_00.qn());  
+    }
+    else {
+      // This also can't be run mode
+      ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
+      UKUP_DIV_00.set(BOGA_AxCDEFGH, 0, UKUP_DIV_00.qn());  
+    }
+  }
+#endif
 
-  // UPOJ = nand(!T1, !T2, RSTn);
-  // In run mode, UPOJ = nand(!0, !0, 1) = 0
-  // UPOJ goes to the reset pin of AFUR/ALEF/APUK/ADYK.
-  // Therefore the reset pin of AFUR/ALEF/APUK/ADYK _must_ be active high or they
-  // would be stuck in reset in run mode.
+  PinIn  SYS_PIN_RSTn;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  PinIn  SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
+  PinIn  SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   // In run mode:
   // if SYS_PIN_CLK_A was tied low
@@ -350,11 +365,12 @@ struct SchematicTop {
   // then TAPE_FF04_WR would not affect DIV
   // Therefore SYS_PIN_CLK_A = 1 in run mode
 
-  PinIn  SYS_PIN_RST;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  PinIn  SYS_PIN_CLK_A;  // PIN_74 -> ATEZ, UCOB
-  PinIn  SYS_PIN_CLK_B;  // PIN_74 
-  PinIn  SYS_PIN_T2;    // PIN_76, tied to 0 on board
-  PinIn  SYS_PIN_T1;    // PIN_77, tied to 0 on board
+  PinIn  SYS_PIN_CLK_A; // PIN_74 -> ATEZ, UCOB
+
+  // SYS_PIN_CLK_A -> ATEZ -> BYJU
+  // SYS_PIN_CLK_A -> UCOB -> UFOL, UPYF
+
+  PinIn  SYS_PIN_CLK_B; // PIN_74 
 
   // Ground ties - VYPO, RUNY, WEFE, unlabeled cell between BONE and BUFY.
 
@@ -390,14 +406,14 @@ struct SchematicTop {
   // then NULE = 0, BYRY = 1, BUDE = 0, UVYT = 1, and MATU would be stuck.
   // Therefore CPU_PIN_CLKREQ must be 1 in run mode
 
-  PinIn  CPU_PIN_CLKREQ;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  PinIn  CPU_PIN_READYp;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
 
   // At boot,
   // CPU_PIN_DBG = T1 ^ T2
-  // CPU_PIN_PROD = !T1 && !T2 && RSTn;
+  // CPU_PIN_INT_RST = !T1 && !T2 && RSTn;
 
-  PinOut CPU_PIN_PROD;          // top center port PORTC_01: <- P01.AFER , reset related reg
-  PinOut CPU_PIN_EXT_RESET;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  PinOut CPU_PIN_POR_DONEn;          // top center port PORTC_01: <- P01.AFER , reset related reg
+  PinOut CPU_PIN_EXT_RST;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
   PinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   PinOut CPU_PIN_DBG;           // top center port PORTC_04: <- P01.CPU_RESET
 
@@ -530,7 +546,7 @@ struct SchematicTop {
   PinOut EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
 
   PinOut EXT_PIN_WRn_A;   // PIN_78 <- P08.UVER
-  PinIn  EXT_PIN_WRn_C;   // PIN_78 -> P07.UBAL
+  PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
   PinOut EXT_PIN_WRn_D;   // PIN_78 <- P08.USUF
 
   PinOut EXT_PIN_RDn_A;   // PIN_79 <- P08.UGAC

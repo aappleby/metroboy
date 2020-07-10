@@ -29,6 +29,7 @@ union SignalState {
     bool error   : 1;
   };
 
+  SignalState(wire w) : state(w) {}
   SignalState(SignalFlags s) : state(uint8_t(s)) {}
   bool operator != (SignalState s) const { return state != s.state; }
 
@@ -72,6 +73,45 @@ inline int pack(SignalState a, SignalState b, SignalState c, SignalState d,
 
 //-----------------------------------------------------------------------------
 
+// Six-rung mux cells are _non_inverting_. m = 1 selects input _ZERO_
+inline const wire mux2_p(wire a, wire b, wire m) {
+  return m ? a : b;
+}
+
+// Five-rung mux cells are _inverting_. m = 1 selects input _ZERO_
+/*
+inline const wire mux2_n(wire a, wire b, wire m) {
+  return !(m ? a : b);
+}
+*/
+inline const wire mux2_n(SignalState a, SignalState b, SignalState m) {
+  if (m.error)  __debugbreak();
+  if (m.hiz)    __debugbreak();
+  SignalState c = m.val ? a : b;
+  if (c.error)  __debugbreak();
+  if (c.hiz)    __debugbreak();
+  return c.val;
+}
+
+inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
+  return (b0 & a0) | (b1 & a1);
+}
+
+inline wire amux3(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2) {
+  return (b0 & a0) | (b1 & a1) | (b2 & a2);
+}
+
+inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3) {
+  return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3);
+}
+
+inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3, wire a4, wire b4, wire a5, wire b5) {
+  return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
+}
+
+
+//-----------------------------------------------------------------------------
+
 struct SignalHash {
   void operator << (SignalState s) { h ^= s.state; mix(); }
   void operator << (SignalHash h2) { h ^= h2.h;    mix(); }
@@ -98,6 +138,11 @@ struct Signal {
   operator wire() const {
     if (a.error) __debugbreak();
     return a.val;
+  }
+
+  operator SignalState() const {
+    if (a.error) __debugbreak();
+    return a;
   }
 
   void operator = (wire val) {

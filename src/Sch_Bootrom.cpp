@@ -61,21 +61,17 @@ void Bootrom::tick(SchematicTop& top) {
     /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A03, top.CPU_PIN_A02, top.CPU_PIN_A01, top.CPU_PIN_A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(top.CPU_PIN_A04, top.CPU_PIN_A06);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
     /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.TEXE*/ wire FF50_RDp = and(TEDO_CPU_RD, SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TEXE*/ wire FF50_RDp = and(top.TEDO_CPU_RDp(), SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_CPU_WR_xxxxxFGH, SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TUGE*/ wire FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (top.CPU_TRI_D0, BOOT_BITn);
 
-
     // In run mode, BOOT_BITn must _not_ be reset.
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-    /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, ALUR_RSTn, BOOT_BIT_IN);
+    /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, top.ALUR_SYS_RSTn(), BOOT_BIT_IN);
   }
 
   {
@@ -112,9 +108,8 @@ void Bootrom::tick(SchematicTop& top) {
     /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
     /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
 
-    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(top.UMUT_MODE_DBG1p()); // suggests UMUTp
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-    /*p07.YULA*/ wire _YULA_BOOT_RD = and (TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
+    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
+    /*p07.YULA*/ wire _YULA_BOOT_RD = and (top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
 
     // this is kind of a hack
     /*

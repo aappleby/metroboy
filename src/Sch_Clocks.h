@@ -20,9 +20,9 @@ struct ClockRegisters {
   /*p01.APUK*/ Reg9 APUK_xxCDEFxx;
   /*p01.ADYK*/ Reg9 ADYK_xxxDEFGx;
 
-  /*p29.WUVU*/ Reg17 WUVU_ABxxEFxx;
-  /*p21.VENA*/ Reg17 VENA_ABxxxxGH;
-  /*p29.WOSU*/ Reg17 WOSU_AxxDExxH;
+  /*p29.WUVU*/ Reg17 WUVU_xxCDxxGH;
+  /*p21.VENA*/ Reg17 VENA_xxxxEFGH;
+  /*p29.WOSU*/ Reg17 WOSU_xBCxxFGx;
 };
 
 //-----------------------------------------------------------------------------

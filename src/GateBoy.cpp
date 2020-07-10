@@ -18,15 +18,16 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   top->EXT_PIN_RDn_C.set(0);
   top->CPU_PIN5.set(0);
 
+  top->SYS_PIN_T1n.set(1);
+  top->SYS_PIN_T2n.set(1);
+
   SignalHash hash;
 
-  for (int i = 0; i < 1; i++) {
+  for (int i = 0; i < 2; i++) {
     hash = gateboy.mcycle(
       top,
       /*RST*/   1,
       /*CLK_GOOD*/ 0,
-      /*T1*/    0,
-      /*T2*/    0,
       /*addr*/  0,
       /*data*/  0,
       /*read*/  0,
@@ -34,13 +35,13 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
     );
   }
 
-  for (int i = 0; i < 1; i++) {
+  printf("\n");
+
+  for (int i = 0; i < 2; i++) {
     hash = gateboy.mcycle(
       top,
       /*RST*/   1,
       /*CLK_GOOD*/ 1,
-      /*T1*/    0,
-      /*T2*/    0,
       /*addr*/  0,
       /*data*/  0,
       /*read*/  0,
@@ -48,13 +49,13 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
     );
   }
 
-  for (int i = 0; i < 1; i++) {
+  printf("\n");
+
+  for (int i = 0; i < 2; i++) {
     hash = gateboy.mcycle(
       top,
       /*RST*/   0,
       /*CLK_GOOD*/ 1,
-      /*T1*/    0,
-      /*T2*/    0,
       /*addr*/  0,
       /*data*/  0,
       /*read*/  0,
@@ -62,21 +63,43 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
     );
   }
 
-  top->CPU_PIN_READYp.set(1);
+  printf("\n");
+
   top->XONA_LCDC_EN.preset(1);
 
-  for (int phase = 0; phase < 24; phase++) {
+  gateboy.verbose = false;
+
+  while(1) {
     wire RST = 0;
     wire CLK_GOOD = 1;
     wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    wire T1 = 0;
-    wire T2 = 0;
     uint16_t addr = 0;
     uint8_t data = 0;
     bool read = false;
     bool write = false;
 
-    hash = gateboy.phase(top, RST, CLK_GOOD, CLK, T1, T2, addr, data, read, write);
+    hash = gateboy.phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
+    top->phase_counter++;
+
+    if (top->tim_reg.get_div() == 65535) break;
+  }
+
+  gateboy.verbose = true;
+
+  for (int phase = 0; phase < 24; phase++) {
+    wire RST = 0;
+    wire CLK_GOOD = 1;
+    wire CLK = (top->phase_counter & 1) & CLK_GOOD;
+    uint16_t addr = 0;
+    uint8_t data = 0;
+    bool read = false;
+    bool write = false;
+
+    if (top->CPU_PIN_STARTp.q()) {
+      top->CPU_PIN_READYp.set(1);
+    }
+
+    hash = gateboy.phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
     top->phase_counter++;
   }
 
@@ -89,8 +112,6 @@ SignalHash GateBoy::mcycle(
   SchematicTop* top,
   bool RST,
   bool CLK_GOOD,
-  bool T1,
-  bool T2,
   uint16_t addr,
   uint8_t data,
   bool read,
@@ -99,7 +120,7 @@ SignalHash GateBoy::mcycle(
   SignalHash hash;
   for (int i = 0; i < 8; i++) {
     wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    hash = phase(top, RST, CLK_GOOD, CLK, T1, T2, addr, data, read, write);
+    hash = phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
     top->phase_counter++;
   }
   return hash;
@@ -111,8 +132,6 @@ SignalHash GateBoy::tcycle(
   SchematicTop* top,
   bool RST,
   bool CLK_GOOD,
-  bool T1,
-  bool T2,
   uint16_t addr,
   uint8_t data,
   bool read,
@@ -121,7 +140,7 @@ SignalHash GateBoy::tcycle(
   SignalHash hash;
   for (int i = 0; i < 2; i++) {
     wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    hash = phase(top, RST, CLK_GOOD, CLK, T1, T2, addr, data, read, write);
+    hash = phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
     top->phase_counter++;
   }
   return hash;
@@ -134,8 +153,6 @@ SignalHash GateBoy::phase(
   bool RST,
   bool CLK_GOOD,
   bool CLK,
-  bool T1,
-  bool T2,
   uint16_t addr,
   uint8_t data,
   bool read,
@@ -144,31 +161,37 @@ SignalHash GateBoy::phase(
   SignalHash hash;
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
-    SignalHash new_hash = pass(top, RST, CLK_GOOD, CLK, T1, T2, addr, data, read, write);
+    SignalHash new_hash = pass(top, RST, CLK_GOOD, CLK, addr, data, read, write);
     if (new_hash.h == hash.h) break;
     hash = new_hash;
     if (pass_count == 199) printf("stuck!\n");
     if (pass_count == 200) __debugbreak();
   }
 
-  printf("Phase %4d %c pass %2d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d TUBO %d ASOL %d AFER %d hash 0x%016llx\n",
-    top->phase_counter,
-    'A' + (top->phase_counter & 7),
-    pass_count,
-    CLK_GOOD,
-    CLK,
-    RST,
-    top->clk_reg.AFUR_ABCDxxxx.q(),
-    top->clk_reg.ALEF_xBCDExxx.q(),
-    top->clk_reg.APUK_xxCDEFxx.q(),
-    top->clk_reg.ADYK_xxxDEFGx.q(),
-    top->clk_reg.WUVU_ABxxEFxx.q(),
-    top->clk_reg.VENA_ABxxxxGH.q(),
-    top->clk_reg.WOSU_AxxDExxH.q(),
-    top->rst_reg.TUBO_CPU_READYn.q(),
-    top->rst_reg.ASOL_POR_DONEn.q(),
-    top->rst_reg.AFER_POR_DONEn_SYNC.q(),
-    hash.h);
+  if (verbose) {
+    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d BELE %d CPU_RDY %d DIV %05d TUBO %d ASOL %d AFER %d\n",  //hash 0x%016llx\n",
+      top->phase_counter,
+      'A' + (top->phase_counter & 7),
+      pass_count,
+      CLK_GOOD,
+      CLK,
+      RST,
+      top->clk_reg.AFUR_ABCDxxxx.q(),
+      top->clk_reg.ALEF_xBCDExxx.q(),
+      top->clk_reg.APUK_xxCDEFxx.q(),
+      top->clk_reg.ADYK_xxxDEFGx.q(),
+      top->clk_reg.WUVU_xxCDxxGH.q(),
+      top->clk_reg.VENA_xxxxEFGH.q(),
+      top->clk_reg.WOSU_xBCxxFGx.q(),
+      top->BELE_Axxxxxxx(),
+      top->CPU_PIN_READYp.a.val,
+      top->tim_reg.get_div(),
+      top->rst_reg._TUBO_CPU_READYn.q(),
+      top->rst_reg.ASOL_POR_DONEn.q(),
+      top->rst_reg.AFER_SYS_RSTp.q()
+      //hash.h);
+      );
+  }
 
   return hash;
 }
@@ -180,14 +203,15 @@ SignalHash GateBoy::pass(
   bool RST,
   bool CLK_GOOD,
   bool CLK,
-  bool T1,
-  bool T2,
   uint16_t addr,
   uint8_t data,
   bool read,
   bool write)
 {
-  top->set_sys(RST, CLK_GOOD, CLK, T1, T2);
+  top->SYS_PIN_RSTp.set(RST);
+  top->SYS_PIN_CLK_A.set(CLK_GOOD);
+  top->SYS_PIN_CLK_B.set(CLK);
+
   top->set_cpu(addr, data, read, write);
   top->set_ext();
   top->set_joy(0);
@@ -208,13 +232,11 @@ void GateBoy::init() {
     bool CLK_GOOD = 1;
     bool CLK = top->phase_counter & 1;
     bool RST = 0;
-    bool T1 = 1;
-    bool T2 = 1;
     uint16_t addr = 0;
     uint8_t data = 0;
     bool read = 0;
     bool write = 0;
-    phase(top, CLK_GOOD, CLK, RST, T1, T2, addr, data, read, write);
+    phase(top, CLK_GOOD, CLK, RST, addr, data, read, write);
   };
   state_manager.init(top_step);
 

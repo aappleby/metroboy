@@ -21,12 +21,12 @@ public:
     return state_manager.state();
   }
 
+  bool verbose = true;
+
   SignalHash mcycle(
     Schematics::SchematicTop* top,
     bool RST,
     bool CLK_GOOD,
-    bool T1,
-    bool T2,
     uint16_t addr,
     uint8_t data,
     bool read,
@@ -37,8 +37,6 @@ public:
     Schematics::SchematicTop* top,
     bool RST,
     bool CLK_GOOD,
-    bool T1,
-    bool T2,
     uint16_t addr,
     uint8_t data,
     bool read,
@@ -50,8 +48,6 @@ public:
     bool RST,
     bool CLK_GOOD,
     bool CLK,
-    bool T1,
-    bool T2,
     uint16_t addr,
     uint8_t data,
     bool read,
@@ -63,8 +59,6 @@ public:
     bool CLK_GOOD,
     bool CLK,
     bool RST,
-    bool T1,
-    bool T2,
     uint16_t addr,
     uint8_t data,
     bool read,

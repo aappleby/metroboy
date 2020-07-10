@@ -47,7 +47,7 @@ struct Sandbox {
   PinIn  CPU_PIN_WRp;            // top right port PORTA_01: ->
   PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
-  PinOut CPU_PIN_POR_DONEn;
+  PinOut CPU_PIN_SYS_RSTp;
   PinOut CPU_PIN_EXT_RST;
   PinOut CPU_PIN_EXT_CLKGOOD;
   PinOut CPU_PIN_POR_DONEp;
@@ -71,7 +71,7 @@ struct Sandbox {
 
   /*p01.TUBO*/ NorLatch TUBO_CPU_READYn;
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ Reg13    AFER_POR_DONEn_SYNC; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
+  /*p01.AFER*/ Reg13    AFER_SYS_RSTp; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
 
   /*p01.AFUR*/ Reg9 AFUR_ABCDxxxx;
   /*p01.ALEF*/ Reg9 ALEF_xBCDExxx;
@@ -115,189 +115,9 @@ struct Sandbox {
   }
 
   //--------------------------------------------------------------------------------
-  // RSTP CLKA
-
-  void tick_rstn_clkan_t1n_t2n() {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(SYS_PIN_CLK_B);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-
-    /*p01.ADYK*/ ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-    /*p01.APUK*/ APUK_xxCDEFxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, 1, ALEF_xBCDExxx.q());
-    /*p01.ALEF*/ ALEF_xBCDExxx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, AFUR_ABCDxxxx.q());
-    /*p01.AFUR*/ AFUR_ABCDxxxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, 1, ADYK_xxxDEFGx.qn());
-
-    /*p01.TUBO*/ TUBO_CPU_READYn.nor_latch(1, CPU_PIN_READYp);
-
-    /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(0, 0);
-
-    /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(1, 0, 1, ASOL_POR_DONEn);
-
-
-    /*p01.AVOR*/ wire AVOR_RST = or(AFER_POR_DONEn_SYNC, ASOL_POR_DONEn);
-    (void)AVOR_RST;
-
-    /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), 0, UPOF_DIV_15.qn());
-    /*p01.UKET*/ UKET_DIV_14.set(TEKA_DIV_13.qn(), 0, UKET_DIV_14.qn());
-    /*p01.TEKA*/ TEKA_DIV_13.set(SUBU_DIV_12.qn(), 0, TEKA_DIV_13.qn());
-    /*p01.SUBU*/ SUBU_DIV_12.set(SOLA_DIV_11.qn(), 0, SUBU_DIV_12.qn());
-    /*p01.SOLA*/ SOLA_DIV_11.set(TERU_DIV_10.qn(), 0, SOLA_DIV_11.qn());
-    /*p01.TERU*/ TERU_DIV_10.set(TOFE_DIV_09.qn(), 0, TERU_DIV_10.qn());
-    /*p01.TOFE*/ TOFE_DIV_09.set(TUGO_DIV_08.qn(), 0, TOFE_DIV_09.qn());
-    /*p01.TUGO*/ TUGO_DIV_08.set(TULU_DIV_07.qn(), 0, TUGO_DIV_08.qn());
-    /*p01.TULU*/ TULU_DIV_07.set(UGOT_DIV_06.qn(), 0, TULU_DIV_07.qn());
-    /*p01.UGOT*/ UGOT_DIV_06.set(TAMA_DIV_05.qn(), 0, UGOT_DIV_06.qn());
-    /*p01.TAMA*/ TAMA_DIV_05.set(UNYK_DIV_04.qn(), 0, TAMA_DIV_05.qn());
-    /*p01.UNYK*/ UNYK_DIV_04.set(TERO_DIV_03.qn(), 0, UNYK_DIV_04.qn());
-    /*p01.TERO*/ TERO_DIV_03.set(UNER_DIV_02.qn(), 0, TERO_DIV_03.qn());
-    /*p01.UNER*/ UNER_DIV_02.set(UFOR_DIV_01.qn(), 0, UNER_DIV_02.qn());
-    /*p01.UFOR*/ UFOR_DIV_01.set(UKUP_DIV_00.qn(), 0, UFOR_DIV_01.qn());
-    /*p01.UKUP*/ UKUP_DIV_00.set(1,                0, UKUP_DIV_00.qn());
-
-    CPU_PIN_EXT_RST.set(0);
-    CPU_PIN_POR_DONEp.set(and(TUBO_CPU_READYn, UPOF_DIV_15));
-    CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-    CPU_PIN_EXT_CLKGOOD.set(0);
-  }
-
-
-  void tick_rstn_clkan() {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(SYS_PIN_CLK_B);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-
-    /*p01.ADYK*/ ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-    /*p01.APUK*/ APUK_xxCDEFxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, 1, ALEF_xBCDExxx.q());
-    /*p01.ALEF*/ ALEF_xBCDExxx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, AFUR_ABCDxxxx.q());
-    /*p01.AFUR*/ AFUR_ABCDxxxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, 1, ADYK_xxxDEFGx.qn());
-
-    /*p01.TUBO*/ TUBO_CPU_READYn.nor_latch(1, CPU_PIN_READYp);
-
-    /*p01.TABA*/ wire TABA_RSTp = or(and(SYS_PIN_T2, not(SYS_PIN_T1)),
-                                     and(SYS_PIN_T1, not(SYS_PIN_T2)),
-                                     and(TUBO_CPU_READYn, UPOF_DIV_15));
-
-    /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(0, TABA_RSTp);
-
-    /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(1, 0, 1, ASOL_POR_DONEn);
-
-
-    /*p01.AVOR*/ wire AVOR_RST = or(AFER_POR_DONEn_SYNC, ASOL_POR_DONEn);
-    (void)AVOR_RST;
-
-    /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), 0, UPOF_DIV_15.qn());
-    /*p01.UKET*/ UKET_DIV_14.set(TEKA_DIV_13.qn(), 0, UKET_DIV_14.qn());
-    /*p01.TEKA*/ TEKA_DIV_13.set(SUBU_DIV_12.qn(), 0, TEKA_DIV_13.qn());
-    /*p01.SUBU*/ SUBU_DIV_12.set(SOLA_DIV_11.qn(), 0, SUBU_DIV_12.qn());
-    /*p01.SOLA*/ SOLA_DIV_11.set(TERU_DIV_10.qn(), 0, SOLA_DIV_11.qn());
-    /*p01.TERU*/ TERU_DIV_10.set(TOFE_DIV_09.qn(), 0, TERU_DIV_10.qn());
-    /*p01.TOFE*/ TOFE_DIV_09.set(TUGO_DIV_08.qn(), 0, TOFE_DIV_09.qn());
-    /*p01.TUGO*/ TUGO_DIV_08.set(TULU_DIV_07.qn(), 0, TUGO_DIV_08.qn());
-    /*p01.TULU*/ TULU_DIV_07.set(UGOT_DIV_06.qn(), 0, TULU_DIV_07.qn());
-    /*p01.UGOT*/ UGOT_DIV_06.set(TAMA_DIV_05.qn(), 0, UGOT_DIV_06.qn());
-    /*p01.TAMA*/ TAMA_DIV_05.set(UNYK_DIV_04.qn(), 0, TAMA_DIV_05.qn());
-    /*p01.UNYK*/ UNYK_DIV_04.set(TERO_DIV_03.qn(), 0, UNYK_DIV_04.qn());
-    /*p01.TERO*/ TERO_DIV_03.set(UNER_DIV_02.qn(), 0, TERO_DIV_03.qn());
-    /*p01.UNER*/ UNER_DIV_02.set(UFOR_DIV_01.qn(), 0, UNER_DIV_02.qn());
-    /*p01.UFOR*/ UFOR_DIV_01.set(UKUP_DIV_00.qn(), 0, UFOR_DIV_01.qn());
-    /*p01.UKUP*/ UKUP_DIV_00.set(1,                0, UKUP_DIV_00.qn());
-
-    CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
-    CPU_PIN_POR_DONEp.set(TABA_RSTp);
-    CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-    CPU_PIN_EXT_CLKGOOD.set(0);
-  }
-
-  //--------------------------------------------------------------------------------
-
-  void tick_simplified_prod() {
-
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(SYS_PIN_CLK_B);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-
-    /*p01.ADYK*/ ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-    /*p01.APUK*/ APUK_xxCDEFxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, 1, ALEF_xBCDExxx.q());
-    /*p01.ALEF*/ ALEF_xBCDExxx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, AFUR_ABCDxxxx.q());
-    /*p01.AFUR*/ AFUR_ABCDxxxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, 1, ADYK_xxxDEFGx.qn());
-
-    if (!SYS_PIN_CLK_A) {
-      if (CPU_PIN_READYp) {
-        /*p01.TUBO*/ TUBO_CPU_READYn.nor_latch(1, 1);
-        /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), 0, UPOF_DIV_15.qn());
-        /*p01.UKUP*/ UKUP_DIV_00.set(1,                0, UKUP_DIV_00.qn());
-        CPU_PIN_POR_DONEp.set(0);
-        CPU_PIN_EXT_CLKGOOD.set(0);
-
-        if (SYS_PIN_RSTp) {
-          /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(1, 0);
-          /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(1, 0, 1, 1);
-          /*p01.AVOR*/ wire AVOR_RST = 1; (void)AVOR_RST;
-          CPU_PIN_EXT_RST.set(1);
-          CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-        }
-        else {
-          /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(0, 0);
-          /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(1, 0, 1, ASOL_POR_DONEn);
-          /*p01.AVOR*/ wire AVOR_RST = or(AFER_POR_DONEn_SYNC, ASOL_POR_DONEn); (void)AVOR_RST;
-          CPU_PIN_EXT_RST.set(0);
-          CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-        }
-      }
-      else {
-        /*p01.TUBO*/ TUBO_CPU_READYn.nor_latch(1, 0);
-        /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), 0, UPOF_DIV_15.qn());
-        /*p01.UKUP*/ UKUP_DIV_00.set(1,                0, UKUP_DIV_00.qn());
-        CPU_PIN_POR_DONEp.set(0);
-        CPU_PIN_EXT_CLKGOOD.set(0);
-
-        if (SYS_PIN_RSTp) {
-          /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(1, 0);
-          /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(1, 0, 1, 1);
-          /*p01.AVOR*/ wire AVOR_RST = 1; (void)AVOR_RST;
-          CPU_PIN_EXT_RST.set(1);
-          CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-        }
-        else {
-          /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(0, 0);
-          /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(1, 0, 1, ASOL_POR_DONEn);
-          /*p01.AVOR*/ wire AVOR_RST = or(AFER_POR_DONEn_SYNC, ASOL_POR_DONEn); (void)AVOR_RST;
-          CPU_PIN_EXT_RST.set(0);
-          CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-        }
-      }
-    }
-    else {
-      /*p01.BOLO*/ wire BOLO_xBCDEFGx = or(not(CPU_PIN_READYp),  APUK_xxCDEFxx, AFUR_ABCDxxxx);
-      /*p01.BAZE*/ wire BAZE_xBCDExxx = and(BOLO_xBCDEFGx, nand(CPU_PIN_READYp,  !AFUR_ABCDxxxx));
-      /*p01.BELE*/ wire BELE_xBxxxxxx = and(!ALEF_xBCDExxx, AFUR_ABCDxxxx, BAZE_xBCDExxx);
-
-      /*p01.TUBO*/ TUBO_CPU_READYn.nor_latch(or(SYS_PIN_RSTp, not(1)), CPU_PIN_READYp);
-
-      /*p01.TABA*/ wire TABA_RSTp = and(TUBO_CPU_READYn, UPOF_DIV_15);
-
-      /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(SYS_PIN_RSTp, and(TABA_RSTp, !SYS_PIN_RSTp));
-      /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(BELE_xBxxxxxx, !BELE_xBxxxxxx, 1, ASOL_POR_DONEn);
-      /*p01.AVOR*/ wire AVOR_RST = or(AFER_POR_DONEn_SYNC, ASOL_POR_DONEn);
-      (void)AVOR_RST;
-
-      wire ADDR_FF04p = false;
-
-      /*p07.TAPU*/ wire TAPU_CPU_WRp = and(CPU_PIN_WRp, ADYK_xxxDEFGx, !AFUR_ABCDxxxx);
-      /*p01.UFOL*/ wire UFOL_DIV_RST = and(1, !SYS_PIN_RSTp, !and(TAPU_CPU_WRp, ADDR_FF04p));
-
-      /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), UFOL_DIV_RST, UPOF_DIV_15.qn());
-      /*p01.UKUP*/ UKUP_DIV_00.set(BELE_xBxxxxxx,    UFOL_DIV_RST, UKUP_DIV_00.qn());
-
-      CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
-      CPU_PIN_POR_DONEp.set(TABA_RSTp);
-      CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
-      CPU_PIN_EXT_CLKGOOD.set(1);
-    }
-  }
-
-  //--------------------------------------------------------------------------------
 
   void tick_simplified() {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(SYS_PIN_CLK_B);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = SYS_PIN_CLK_B;
 
     /*p01.ADYK*/ ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, nand(not(SYS_PIN_T1), not(SYS_PIN_T2), SYS_PIN_RSTp), APUK_xxCDEFxx.q());
     /*p01.APUK*/ APUK_xxCDEFxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, nand(not(SYS_PIN_T1), not(SYS_PIN_T2), SYS_PIN_RSTp), ALEF_xBCDExxx.q());
@@ -306,9 +126,9 @@ struct Sandbox {
 
     /*p01.BOLO*/ wire BOLO_xBCDEFGx = or(not(CPU_PIN_READYp),  APUK_xxCDEFxx, AFUR_ABCDxxxx);
     /*p01.BAZE*/ wire BAZE_xBCDExxx = and(BOLO_xBCDEFGx, nand(CPU_PIN_READYp,  !AFUR_ABCDxxxx));
-    /*p01.BELE*/ wire BELE_xBxxxxxx = and(!ALEF_xBCDExxx, AFUR_ABCDxxxx, BAZE_xBCDExxx);
-    /*p01.BOGA*/ wire BOGA_AxCDEFGH = or(BELE_xBxxxxxx, not(SYS_PIN_CLK_A));
-    /*p01.BOMA*/ wire BOMA_xBxxxxxx = !or(BELE_xBxxxxxx, not(SYS_PIN_CLK_A));
+    /*p01.BELE*/ wire BELE_Axxxxxxx = and(!ALEF_xBCDExxx, AFUR_ABCDxxxx, BAZE_xBCDExxx);
+    /*p01.BOGA*/ wire BOGA_xBCDEFGH = or(BELE_Axxxxxxx, not(SYS_PIN_CLK_A));
+    /*p01.BOMA*/ wire BOMA_Axxxxxxx = !or(BELE_Axxxxxxx, not(SYS_PIN_CLK_A));
 
     /*p01.TUBO*/ TUBO_CPU_READYn.nor_latch(or(SYS_PIN_RSTp, not(SYS_PIN_CLK_A)), CPU_PIN_READYp);
 
@@ -318,13 +138,13 @@ struct Sandbox {
 
     /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(SYS_PIN_RSTp, and(TABA_RSTp, !SYS_PIN_RSTp));
 
-    /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(BOGA_AxCDEFGH,
-                                         BOMA_xBxxxxxx,
+    /*p01.AFER*/ AFER_SYS_RSTp.set(BOGA_xBCDEFGH,
+                                         BOMA_Axxxxxxx,
                                          nand(not(SYS_PIN_T1), not(SYS_PIN_T2), SYS_PIN_RSTp),
                                          ASOL_POR_DONEn);
 
 
-    /*p01.AVOR*/ wire AVOR_RST = or(AFER_POR_DONEn_SYNC, ASOL_POR_DONEn);
+    /*p01.AVOR*/ wire AVOR_RST = or(AFER_SYS_RSTp, ASOL_POR_DONEn);
     (void)AVOR_RST;
 
     wire ADDR_FF04p = false;
@@ -347,11 +167,11 @@ struct Sandbox {
     /*p01.TERO*/ TERO_DIV_03.set(UNER_DIV_02.qn(), UFOL_DIV_RST, TERO_DIV_03.qn());
     /*p01.UNER*/ UNER_DIV_02.set(UFOR_DIV_01.qn(), UFOL_DIV_RST, UNER_DIV_02.qn());
     /*p01.UFOR*/ UFOR_DIV_01.set(UKUP_DIV_00.qn(), UFOL_DIV_RST, UFOR_DIV_01.qn());
-    /*p01.UKUP*/ UKUP_DIV_00.set(BOGA_AxCDEFGH,    UFOL_DIV_RST, UKUP_DIV_00.qn());
+    /*p01.UKUP*/ UKUP_DIV_00.set(BOGA_xBCDEFGH,    UFOL_DIV_RST, UKUP_DIV_00.qn());
 
     CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
     CPU_PIN_POR_DONEp.set(TABA_RSTp);
-    CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
+    CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp);
     CPU_PIN_EXT_CLKGOOD.set(SYS_PIN_CLK_A);
   }
 
@@ -360,8 +180,7 @@ struct Sandbox {
 
   void tick() {
 
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(SYS_PIN_CLK_B);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = SYS_PIN_CLK_B;
 
     // UBET - tadpole points at VCC
     // UVAR - tadpole points at VCC
@@ -380,20 +199,20 @@ struct Sandbox {
       /*p01.AFUR*/ AFUR_ABCDxxxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, UPOJ_STOP_CLOCKn, ADYK_xxxDEFGx.qn());
     }
 
-    bool BELE_xBxxxxxx;
+    bool BELE_Axxxxxxx;
     {
 #if 0
       // CPU_PIN_CLKREQ does not actually affect BELE
 
       if (CPU_PIN_READYp) {
-        /*p01.BELE*/ BELE_xBxxxxxx = and(!ALEF_xxCDEFx,
+        /*p01.BELE*/ BELE_Axxxxxxx = and(!ALEF_xxCDEFx,
                                          AFUR_ABCDxxxx,
                                          or(APUK_xxCDEFxx, AFUR_ABCDxxxx)
                                          AFUR_ABCDxxxx);
       }
       else {
 
-        /*p01.BELE*/ BELE_xBxxxxxx = and(!ALEF_xBCDExxx, AFUR_ABCDxxxx);
+        /*p01.BELE*/ BELE_Axxxxxxx = and(!ALEF_xBCDExxx, AFUR_ABCDxxxx);
       }
       ///*p01.BELE*/ BELE_xBxxxxxx = xBxxxxxx;
 
@@ -419,7 +238,7 @@ struct Sandbox {
       /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
       /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
       /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
-      /*p01.BELE*/ BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
+      /*p01.BELE*/ BELE_Axxxxxxx = not(BUTO_AxCDEFGH);
 
     }
 
@@ -448,15 +267,15 @@ struct Sandbox {
       /*p07.UPOJ*/ wire UPOJ = nand(UBET_T1n, UVAR_T2n, SYS_PIN_RSTp);
 
       /*p01.ATEZ*/ wire ATEZ_CLKBAD  = not(SYS_PIN_CLK_A);
-      /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
-      /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
-      /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
-      /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
-      /*p01.AFER*/ AFER_POR_DONEn_SYNC.set(BOGA_AxCDEFGH, BOMA_xBxxxxxx, UPOJ, ASOL_POR_DONEn);
-      /*p01.AVOR*/ wire AVOR_TOP_RST = or(AFER_POR_DONEn_SYNC.q(), ASOL_POR_DONEn.q());
+      /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx, ATEZ_CLKBAD);
+      /*p01.BALY*/ wire BALY_Axxxxxxx = not(BYJU_xBCDEFGH);
+      /*p01.BOGA*/ wire BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
+      /*p01.BOMA*/ wire BOMA_Axxxxxxx = not(BOGA_xBCDEFGH);
+      /*p01.AFER*/ AFER_SYS_RSTp.set(BOGA_xBCDEFGH, BOMA_Axxxxxxx, UPOJ, ASOL_POR_DONEn);
+      /*p01.AVOR*/ wire AVOR_TOP_RST = or(AFER_SYS_RSTp.q(), ASOL_POR_DONEn.q());
       (void)AVOR_TOP_RST;
 
-      CPU_PIN_POR_DONEn.set(AFER_POR_DONEn_SYNC);
+      CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp);
     }
 
     CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
@@ -464,12 +283,12 @@ struct Sandbox {
     {
       /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_ABCDxxxx.qn());
       /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxDEFGx.q());
-      /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);  // outline black on overlay
+      /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);  // outline black on overlay
 
       /*p01.ATEZ*/ wire ATEZ_CLKBAD  = not(SYS_PIN_CLK_A);
-      /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
-      /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
-      /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+      /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx, ATEZ_CLKBAD);
+      /*p01.BALY*/ wire BALY_Axxxxxxx = not(BYJU_xBCDEFGH);
+      /*p01.BOGA*/ wire BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
 
       /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
       /*p07.TONA*/ wire TONA_A08n = not(CPU_PIN_A08);
@@ -481,7 +300,7 @@ struct Sandbox {
 
       // And this makes no sense either - CPU_PIN_WR must gate the write clock when _not_ writing, which means it has to be WRp
 
-      /*p01.AREV*/ wire AREV_CPU_WRn = nand(CPU_PIN_WRp, AFAS_xxxxxFGH);
+      /*p01.AREV*/ wire AREV_CPU_WRn = nand(CPU_PIN_WRp, AFAS_xxxxEFGx);
       /*p01.APOV*/ wire APOV_CPU_WRp = not(AREV_CPU_WRn);
 
       /*p07.UBAL*/ wire UBAL_CPU_WRn = mux2_n(EXT_PIN_WRp_C, APOV_CPU_WRp, UNOR_MODE_DBG2p);
@@ -490,7 +309,7 @@ struct Sandbox {
       /*p01.TAPE*/ wire TAPE_FF04_WR = and(TAPU_CPU_WRp, RYFO_FF04_FF07p, TOLA_A01n, TOVY_A00n);
       /*p01.UCOB*/ wire UCOB_CLKBAD  = not(SYS_PIN_CLK_A);
       /*p01.UFOL*/ wire UFOL_DIV_RST = nor(UCOB_CLKBAD, SYS_PIN_RSTp, TAPE_FF04_WR);
-      /*p01.UKUP*/ UKUP_DIV_00.set(BOGA_AxCDEFGH, UFOL_DIV_RST, UKUP_DIV_00.qn());
+      /*p01.UKUP*/ UKUP_DIV_00.set(BOGA_xBCDEFGH, UFOL_DIV_RST, UKUP_DIV_00.qn());
 
       /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), UFOL_DIV_RST, UPOF_DIV_15.qn());
       /*p01.UKET*/ UKET_DIV_14.set(TEKA_DIV_13.qn(), UFOL_DIV_RST, UKET_DIV_14.qn());
@@ -560,14 +379,14 @@ struct Sandbox {
     hash << EXT_PIN_RDn_C;
     hash << EXT_PIN_WRp_C;
 
-    hash << CPU_PIN_POR_DONEn.commit();
+    hash << CPU_PIN_SYS_RSTp.commit();
     hash << CPU_PIN_EXT_RST.commit();
     hash << CPU_PIN_EXT_CLKGOOD.commit();
     hash << CPU_PIN_POR_DONEp.commit();
 
     hash << TUBO_CPU_READYn.commit();
     hash << ASOL_POR_DONEn.commit();
-    hash << AFER_POR_DONEn_SYNC.commit();
+    hash << AFER_SYS_RSTp.commit();
 
     hash << AFUR_ABCDxxxx.commit();
     hash << ALEF_xBCDExxx.commit();

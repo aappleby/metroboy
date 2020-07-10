@@ -16,6 +16,14 @@ int main(int argc, char** argv) {
 
   /*
   int ret = 0;
+  AppBase* app = new AppBase();
+  ret = app->app_main(argc, argv);
+  delete app;
+  return ret;
+  */
+
+  /*
+  int ret = 0;
   MetroBoyApp* app = new MetroBoyApp();
   ret = app->app_main(argc, argv);
   delete app;

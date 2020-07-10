@@ -13,23 +13,6 @@ using namespace Schematics;
 
 void LcdRegisters::tick(SchematicTop& top) {
 
-  /*p21.TALU*/ wire TALU_xBCDExxx = not(top.VENA_ABxxxxGH());
-  /*p21.SONO*/ wire SONO_AxxxxFGH = not(TALU_xBCDExxx);
-
-  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_ABxxEFxx());
-  /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);
-
-  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-  /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
-  /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
-
-  /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
-  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
-
   /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
   /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
 
@@ -39,8 +22,8 @@ void LcdRegisters::tick(SchematicTop& top) {
 
   // LCD main timer
   {
-    /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_LINE_END_F.q(), LYHA_VID_RSTp);
-    /*p21.SAXO*/ XEHO_X0.set(TALU_xBCDExxx, _MUDE_X_RSTn, !XEHO_X0.q());
+    /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_LINE_END_F.q(), top.LYHA_VID_RSTp());
+    /*p21.SAXO*/ XEHO_X0.set(top.TALU_ABCDxxxx(), _MUDE_X_RSTn, !XEHO_X0.q());
     /*p21.TYPO*/ SAVY_X1.set(!XEHO_X0.q(),  _MUDE_X_RSTn, !SAVY_X1.q());
     /*p21.VYZO*/ XODU_X2.set(!SAVY_X1.q(),  _MUDE_X_RSTn, !XODU_X2.q());
     /*p21.TELU*/ XYDO_X3.set(!XODU_X2.q(),  _MUDE_X_RSTn, !XYDO_X3.q());
@@ -50,7 +33,7 @@ void LcdRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
+    /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), top.LYHA_VID_RSTp());
     /*p21.MUWY*/ MUWY_Y0.set(RUTU_LINE_END_F.q(), _LAMA_FRAME_RSTn, !MUWY_Y0.q());
     /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),        _LAMA_FRAME_RSTn, !MYRO_Y1.q());
     /*p21.LEXA*/ LEXA_Y2.set(!MYRO_Y1.q(),        _LAMA_FRAME_RSTn, !LEXA_Y2.q());
@@ -62,34 +45,34 @@ void LcdRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p21.POPU*/ POPU_VBLANK_d4.set(NYPE_LINE_END_B.q(), LYFE_VID_RSTn, _XYVO_IN_VBLANKp);
+    /*p21.POPU*/ POPU_VBLANK_d4.set(NYPE_LINE_END_B.q(), top.LYFE_VID_RSTn(), _XYVO_IN_VBLANKp);
   }
 
   {
     /*p21.SANU*/ wire SANU_LINE_END = and(TAKO_X6.q(), TUKY_X5.q(), TUHU_X4.q(), XEHO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*p21.RUTU*/ RUTU_LINE_END_F.set(SONO_AxxxxFGH, LYFE_VID_RSTn, SANU_LINE_END);
-    /*p21.NYPE*/ NYPE_LINE_END_B.set(TALU_xBCDExxx, LYFE_VID_RSTn, RUTU_LINE_END_F.q());
+    /*p21.RUTU*/ RUTU_LINE_END_F.set(top.SONO_xxxxEFGH(), top.LYFE_VID_RSTn(), SANU_LINE_END);
+    /*p21.NYPE*/ NYPE_LINE_END_B.set(top.TALU_ABCDxxxx(), top.LYFE_VID_RSTn(), RUTU_LINE_END_F.q());
   }
 
   {
     /*p21.PURE*/ wire PURE_LINE_END_Fn = not(RUTU_LINE_END_F);
     /*p21.SELA*/ wire SELA_LINE_END_Fp = not(PURE_LINE_END_Fn);
     /*p29.ABOV*/ wire ABOV_LINE_END_Fp = and(SELA_LINE_END_Fp, _ALES_IN_VBLANKn);
-    /*p29.CATU*/ CATU_LINE_END_B.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, ABOV_LINE_END_Fp);
-    /*p28.ANEL*/ ANEL_LINE_END_D.set(AWOH_AxxDExxH, ABEZ_VID_RSTn, CATU_LINE_END_B.q());
+    /*p29.CATU*/ CATU_LINE_END_B.set(top.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), ABOV_LINE_END_Fp);
+    /*p28.ANEL*/ ANEL_LINE_END_D.set(top.AWOH_xxCDxxGH(), top.ABEZ_VID_RSTn(), CATU_LINE_END_B.q());
   }
 
   {
     /*p21.NOKO*/ wire _NOKO_LINE_153 = and(LAFO_Y7.q(), LOVU_Y4.q(), LYDO_Y3.q(), MUWY_Y0.q()); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-    /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_LINE_END_B.q(), LYFE_VID_RSTn, _NOKO_LINE_153);
+    /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_LINE_END_B.q(), top.LYFE_VID_RSTn(), _NOKO_LINE_153);
   }
 
   {
     // if LCDC_ENn, LCD_PIN_FR = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
     
     /*p24.LOFU*/ wire _LOFU_CLKn = not(RUTU_LINE_END_F);
-    /*p24.LUCA*/ LUCA_LINE_EVEN.set(_LOFU_CLKn,          LYFE_VID_RSTn, !LUCA_LINE_EVEN.q());
-    /*p21.NAPO*/ NAPO_FRAME_EVEN.set(POPU_VBLANK_d4.q(), LYFE_VID_RSTn, !NAPO_FRAME_EVEN.q());
+    /*p24.LUCA*/ LUCA_LINE_EVEN.set(_LOFU_CLKn,          top.LYFE_VID_RSTn(), !LUCA_LINE_EVEN.q());
+    /*p21.NAPO*/ NAPO_FRAME_EVEN.set(POPU_VBLANK_d4.q(), top.LYFE_VID_RSTn(), !NAPO_FRAME_EVEN.q());
     /*p24.MAGU*/ wire _MAGU = xor(NAPO_FRAME_EVEN, LUCA_LINE_EVEN.q());
     /*p24.MECO*/ wire _MECO = not(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not(_MECO);
@@ -116,7 +99,7 @@ void LcdRegisters::tick(SchematicTop& top) {
 
     /*p21.TEGY*/ wire _TEGY_LINE_STROBE = nand(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
     
-    /*p21.SYGU*/ SYGU_LINE_STROBE.set(SONO_AxxxxFGH, LYFE_VID_RSTn, _TEGY_LINE_STROBE);
+    /*p21.SYGU*/ SYGU_LINE_STROBE.set(top.SONO_xxxxEFGH(), top.LYFE_VID_RSTn(), _TEGY_LINE_STROBE);
     /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, RUTU_LINE_END_F);
     /*p21.POGU*/ wire _POGU = not(_RYNO);
     top.LCD_PIN_CPG.set(_POGU);
@@ -136,7 +119,7 @@ void LcdRegisters::tick(SchematicTop& top) {
   {
     /*p24.NERU*/ wire _LINE_000n = nor(MUWY_Y0, MYRO_Y1, LEXA_Y2, LYDO_Y3, LOVU_Y4, LEMA_Y5, MATO_Y6, LAFO_Y7);
     
-    /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(wire(NYPE_LINE_END_B), LYFE_VID_RSTn, _LINE_000n);
+    /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(wire(NYPE_LINE_END_B), top.LYFE_VID_RSTn(), _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn);
     top.LCD_PIN_S.set(_MURE_PIN_S);
   }
@@ -165,7 +148,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p21.RAPE*/ wire RAPE_LY_MATCHn  = nand(SOVU_LY_MATCHA,  SUBO_LY_MATCHB); // def nand
     /*p21.PALY*/ wire PALY_LY_MATCHa  = not (RAPE_LY_MATCHn); // def not
 
-    /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(TALU_xBCDExxx, WESY_RSTn, PALY_LY_MATCHa);
+    /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(top.TALU_ABCDxxxx(), top.WESY_SYS_RSTn(), PALY_LY_MATCHa);
   }
 
   // FF44 LY
@@ -178,10 +161,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p22.WYLE*/ wire FF44n = nand(top.WERO_FF4Xp(), XOLA_A00n, XENO_A01n, WALO_A02p, XERA_A03n);
     /*p22.XOGY*/ wire FF44p = not(FF44n);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn()); // TEDO is weird, might be wrong
-    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
-    /*p23.WAFU*/ wire FF44_RDp = and (ASOT_CPU_RD, FF44p);
+    /*p23.WAFU*/ wire FF44_RDp = and (top.ASOT_CPU_RDp(), FF44p);
     /*p23.VARO*/ wire FF44_RDn = not(FF44_RDp);
 
     /*p23.WURY*/ wire LY0n = not(MUWY_Y0.q());
@@ -214,10 +194,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p22.WETY*/ wire WETY_FF45n = nand(top.WERO_FF4Xp(), WADO_A00p, XENO_A01n, WALO_A02p, XERA_A03n);
     /*p22.XAYU*/ wire XAYU_FF45p = not(WETY_FF45n);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RDp  = not(top.UJYV_CPU_RDn());
-    /*p07.AJAS*/ wire AJAS_CPU_RDn  = not(TEDO_CPU_RDp);
-    /*p07.ASOT*/ wire ASOT_CPU_RDp  = not(AJAS_CPU_RDn);
-    /*p23.XYLY*/ wire XYLY_FF45_RDp = and(ASOT_CPU_RDp, XAYU_FF45p);
+    /*p23.XYLY*/ wire XYLY_FF45_RDp = and(top.ASOT_CPU_RDp(), XAYU_FF45p);
     /*p23.WEKU*/ wire WEKU_FF45_RDn = not(XYLY_FF45_RDp);
 
     /*p23.RETU*/ top.CPU_TRI_D0.set_tribuf_6n(WEKU_FF45_RDn, SYRY_LYC0.q());
@@ -229,20 +206,17 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p23.VAFE*/ top.CPU_TRI_D6.set_tribuf_6n(WEKU_FF45_RDn, VEVO_LYC6.q());
     /*p23.PUFY*/ top.CPU_TRI_D7.set_tribuf_6n(WEKU_FF45_RDn, RAHA_LYC7.q());
 
-    /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.DYKY*/ wire DYKY_CPU_WRp_ABCDExxx = not(TAPU_CPU_WRn_xxxxxFGH);
-    /*p07.CUPA*/ wire CUPA_CPU_WRn_xxxxxFGH = not(DYKY_CPU_WRp_ABCDExxx);
-    /*p23.XUFA*/ wire XUFA_FF45_WRn = and (CUPA_CPU_WRn_xxxxxFGH, XAYU_FF45p);
+    /*p23.XUFA*/ wire XUFA_FF45_WRn = and (top.CUPA_CPU_WRp_xxxxEFGx(), XAYU_FF45p);
     /*p23.WANE*/ wire WANE_FF45_WRp = not(XUFA_FF45_WRn);
 
-    /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D0);
-    /*p23.VUCE*/ VUCE_LYC1.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D1);
-    /*p23.SEDY*/ SEDY_LYC2.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D2);
-    /*p23.SALO*/ SALO_LYC3.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D3);
-    /*p23.SOTA*/ SOTA_LYC4.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D4);
-    /*p23.VAFA*/ VAFA_LYC5.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D5);
-    /*p23.VEVO*/ VEVO_LYC6.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D6);
-    /*p23.RAHA*/ RAHA_LYC7.set(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_RSTn, top.CPU_TRI_D7);
+    /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D0);
+    /*p23.VUCE*/ VUCE_LYC1.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D1);
+    /*p23.SEDY*/ SEDY_LYC2.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D2);
+    /*p23.SALO*/ SALO_LYC3.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D3);
+    /*p23.SOTA*/ SOTA_LYC4.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D4);
+    /*p23.VAFA*/ VAFA_LYC5.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D5);
+    /*p23.VEVO*/ VEVO_LYC6.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D6);
+    /*p23.RAHA*/ RAHA_LYC7.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D7);
   }
 }
 

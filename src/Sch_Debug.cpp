@@ -8,10 +8,7 @@ using namespace Schematics;
 
 void DebugRegisters::tick(const SchematicTop& top) {
   /*p25.SYCY*/ wire SYCY_DBG_CLOCKn = not(top.UNOR_MODE_DBG2p());
-  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-  /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKn, CUNU_RSTn, !SOTO_DBG);
+  /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKn, top.CUNU_SYS_RSTn(), !SOTO_DBG);
 
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);
   //cpu_pins.UNOR_MODE_DBG2.set(dbg_sig.UNOR_MODE_DBG2n);

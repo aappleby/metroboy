@@ -80,68 +80,34 @@ using namespace Schematics;
 
 void DmaRegisters::tick(SchematicTop& top) {
   
-  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-
   Signal MOLU_FF46_RDp;
   Signal LAVY_FF46_WRp;
   {
-    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
-    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
-    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
-    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
-
-    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
-    /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
-
-    /*p22.WATE*/ wire WATE_FF46n = nand(top.WERO_FF4Xp(), XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
+    /*p22.WATE*/ wire WATE_FF46n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.WESA_A01p(), top.WALO_A02p(), top.XERA_A03n());
     /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
-    /*p04.MOLU*/ MOLU_FF46_RDp = and(XEDA_FF46p, ASOT_CPU_RD);
-
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
-    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
-    /*p04.LAVY*/ LAVY_FF46_WRp = and (XEDA_FF46p, CUPA_CPU_WR_xxxxxFGH);
+    /*p04.MOLU*/ MOLU_FF46_RDp = and(XEDA_FF46p, top.ASOT_CPU_RDp());
+    /*p04.LAVY*/ LAVY_FF46_WRp = and(XEDA_FF46p, top.CUPA_CPU_WRp_xxxxEFGx());
   }
 
   {
-    /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
+    /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(top.CUNU_SYS_RSTn(), !LENE_DMA_TRIG_d4.q());
 
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
 
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_READYp);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_ABCDxxxx());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
-    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
-
-    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(UVYT_xBCDExxx, CUNU_RSTn, LUPA_DMA_TRIG);
-    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(MOPA_AxxxxFGH, CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
+    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(top.UVYT_ABCDxxxx(), top.CUNU_SYS_RSTn(), LUPA_DMA_TRIG);
+    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(top.MOPA_xxxxEFGH(), top.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.q());
   }
 
   {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_READYp);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_ABCDxxxx());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
-
     // NAND latch
     /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
-    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, CUNU_RSTn, !MYTE_DMA_DONE.q());
-    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(UVYT_xBCDExxx, CUNU_RSTn, LOKY_DMA_LATCHp);
+    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp,    top.CUNU_SYS_RSTn(), !MYTE_DMA_DONE.q());
+    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(top.UVYT_ABCDxxxx(), top.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp);
   }
 
   {
-    /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
+    /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(top.CUNU_SYS_RSTn(), !LENE_DMA_TRIG_d4.q());
 
     /*p04.LAPA*/ wire LAPA_DMA_RSTn = not(LOKO_DMA_RSTp);
     /*p04.NAVO*/ wire NAVO_DMA_DONEn = nand(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A07.q()); // 128+16+8+4+2+1 = 159, this must be "dma done"
@@ -169,9 +135,9 @@ void DmaRegisters::tick(SchematicTop& top) {
 
   {
     // DMA vram read
-    /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn   = nand(top.MATU_DMA_RUNNINGp(), top.MUDA_DMA_SRC_VRAMp());
-    /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
-    /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn = not(LUFA_DMA_READ_VRAMp);
+    /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand(top.MATU_DMA_RUNNINGp(), top.MUDA_DMA_SRC_VRAMp());
+    /*p04.LUFA*/ wire LUFA_DMA_VRAM_RDp = not(MUHO_DMA_VRAM_RDn);
+    /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn = not(LUFA_DMA_VRAM_RDp);
 
     /*p04.ECAL*/ top.VRM_TRI_A00.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A00());
     /*p04.EGEZ*/ top.VRM_TRI_A01.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A01());

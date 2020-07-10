@@ -94,17 +94,8 @@ using namespace Schematics;
 
 void PpuRegisters::tick(SchematicTop& top) {
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-  /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-  /*p27.MOXE*/ wire MOXE_AxCxExGx = not(ALET_xBxDxFxH);
-
-  /*p01.TOFU*/ wire TOFU_VID_RSTp       = not(top.XAPO_VID_RSTn());
-  /*p21.TADY*/ wire TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), TOFU_VID_RSTp);
-  /*p21.WEGO*/ wire WEGO_LINE_END_RST   = or(TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
+  /*p21.TADY*/ wire TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), top.TOFU_VID_RSTp());
+  /*p21.WEGO*/ wire WEGO_LINE_END_RST   = or(top.TOFU_VID_RSTp(), VOGA_RENDER_DONE_SYNC);
 
   /*p24.SEGU*/ wire SEGU_CLKPIPEn = top.SEGU_CLKPIPEn();
   /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(SEGU_CLKPIPEn);
@@ -115,7 +106,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167);
     /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(top.FEPO_STORE_MATCHp());
     /*p21.WODU*/ WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
-    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(ALET_xBxDxFxH, TADY_LINE_START_RST, WODU_RENDER_DONEp);
+    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.ALET_xBxDxFxH(), TADY_LINE_START_RST, WODU_RENDER_DONEp);
   }
 
   {
@@ -135,8 +126,8 @@ void PpuRegisters::tick(SchematicTop& top) {
   {
     // There's a feedback loop here of sorts
 
-    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp, XYMU_RENDERINGp, POHU_FINE_MATCHp);
-    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(MOXE_AxCxExGx, XYMU_RENDERINGp, PUXA_FINE_MATCH_A);
+    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp,      XYMU_RENDERINGp, POHU_FINE_MATCHp);
+    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), XYMU_RENDERINGp, PUXA_FINE_MATCH_A);
 
     /*p27.POVA*/ wire POVA_FINE_MATCHpe = and (PUXA_FINE_MATCH_A, !NYZE_FINE_MATCH_B);
     /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(XYMU_RENDERINGp);
@@ -162,7 +153,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     // if PAHO or TOFU go high, POFY goes low.
 
     /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3);
-    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC || TOFU_VID_RSTp);
+    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC || top.TOFU_VID_RSTp());
     /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH);
     top.LCD_PIN_ST.set(RUZE_PIN_ST);
   }
@@ -227,32 +218,21 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p22.WOFA*/ wire WOFA_FF41n = nand(top.WERO_FF4Xp(), WADO_A00p, XENO_A01n, XUSY_A02n, XERA_A03n);
     /*p22.VARY*/ wire VARY_FF41p = not(WOFA_FF41n);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
-    /*p21.TOBE*/ wire TOBE_FF41_RDp = and (ASOT_CPU_RD, VARY_FF41p); // die AND
+    /*p21.TOBE*/ wire TOBE_FF41_RDp = and (VARY_FF41p, top.ASOT_CPU_RDp()); // die AND
     /*p21.VAVE*/ wire VAVE_FF41_RDn = not(TOBE_FF41_RDp); // die INV
 
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
-    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
-    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (CUPA_CPU_WR_xxxxxFGH, VARY_FF41p);
+    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (VARY_FF41p, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not(SEPA_FF41_WRp);
 
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not(SEPA_FF41_WRp);
     
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());
-    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
-    /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
-    /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RSTn, RYJU_FF41_WRn);  // schematic wrong, this is NOR
+    /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(top.WESY_SYS_RSTn(), RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, top.ROPO_LY_MATCH_SYNCp());
 
-    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D0);
-    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D1);
-    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D2);
-    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, WESY_RSTn, top.CPU_TRI_D3);
+    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D0);
+    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D1);
+    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2);
+    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3);
 
     /*p21.PARU*/ wire PARU_IN_VBLANK = not(!top.POPU_VBLANK_d4());
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp, top.ACYL_SCANNINGp()); // die NOR

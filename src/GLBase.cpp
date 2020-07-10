@@ -4,6 +4,12 @@
 #include <include/SDL.h>
 #include <glad/glad.h>
 
+// using an OpenGL ES 3.0 context causes the gamma to be wrong due to some
+// incorrect SRGB conversion (I think). So, we use OpenGL 4.3 (which supports glDebugMessageCallback).
+
+// es broken right now
+//#define USE_OPENGL_ES
+
 /*
 extern "C" {
 _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
@@ -12,9 +18,18 @@ _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
 
 //-----------------------------------------------------------------------------
 
-void debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
+void debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
                  GLsizei /*length*/, const GLchar* message, const GLvoid* /*userParam*/) {
-	printf("GLDEBUG: %s\n", message);
+
+  if (severity == GL_DEBUG_TYPE_ERROR ||
+      severity == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR ||
+      severity == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR ||
+      severity == GL_DEBUG_TYPE_PORTABILITY ||
+      severity == GL_DEBUG_TYPE_PERFORMANCE) {
+  	printf("GLDEBUG: %s\n", message);
+  }
+  //#define GL_DEBUG_TYPE_OTHER 0x8251
+
 }
 
 //-----------------------------------------------------------------------------
@@ -25,18 +40,15 @@ void* init_gl(void* window) {
                           SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
                           SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 
-  // using an OpenGL ES 3.0 context causes the gamma to be wrong due to some
-  // incorrect SRGB conversion (I think). So, we use OpenGL 4.3 (which supports glDebugMessageCallback).
-
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-
-  /*
+#ifdef USE_OPENGL_ES
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  */
+#else
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#endif
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -55,10 +67,12 @@ void* init_gl(void* window) {
   printf("Version:  %s\n", glGetString(GL_VERSION));
   printf("GLSL:     %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+#ifndef USE_OPENGL_ES
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   glDebugMessageCallback(debugOutput, nullptr);
+#endif
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
@@ -78,7 +92,12 @@ void* init_gl(void* window) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glClearColor(0.1f, 0.1f, 0.2f, 0.f);
+
+#ifdef USE_OPENGL_ES
+  glClearDepth(1.0);
+#else
   glClearDepthf(1.0);
+#endif
 
   return (void*)gl_context;
 }

@@ -502,7 +502,9 @@ struct Reg11 : public RegisterBase {
 
 struct Reg13 : public RegisterBase {
 
-  void set(wire CLKp, wire CLKn, wire RSTp, bool D) {
+  // Almost definitely RSTn - see UPOJ/AFER on boot
+
+  void set(wire CLKp, wire CLKn, wire RSTn, bool D) {
     if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
@@ -510,7 +512,7 @@ struct Reg13 : public RegisterBase {
     b.hiz = 0;
     b.clk = CLKp;
     b.set = 0;
-    b.rst = RSTp;
+    b.rst = !RSTn;
     b.error = 0;
   }
 

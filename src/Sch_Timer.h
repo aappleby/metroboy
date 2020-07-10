@@ -12,6 +12,27 @@ struct TimerRegisters {
   void tick(SchematicTop& gb);
   SignalHash commit();
 
+  int get_div() {
+    return pack(UKUP_DIV_00, UFOR_DIV_01, UNER_DIV_02, TERO_DIV_03,
+                UNYK_DIV_04, TAMA_DIV_05, UGOT_DIV_06, TULU_DIV_07,
+                TUGO_DIV_08, TOFE_DIV_09, TERU_DIV_10, SOLA_DIV_11,
+                SUBU_DIV_12, TEKA_DIV_13, UKET_DIV_14, UPOF_DIV_15);
+  }
+
+  int get_tima() {
+    return pack(REGA_TIMA_0, POVY_TIMA_1, PERU_TIMA_2, RATE_TIMA_3,
+                RUBY_TIMA_4, RAGE_TIMA_5, PEDA_TIMA_6, NUGA_TIMA_7);
+  }
+
+  int get_tma() {
+    return pack(SABU_TMA_0, NYKE_TMA_1, MURU_TMA_2, TYVA_TMA_3,
+                TYRU_TMA_4, SUFY_TMA_5, PETO_TMA_6, SETA_TMA_7);
+  }
+
+  int get_tac() {
+    return pack(SOPU_TAC_0, SAMY_TAC_1, SABO_TAC_2, 0);
+  }
+
 private:
   friend SchematicTop;
 

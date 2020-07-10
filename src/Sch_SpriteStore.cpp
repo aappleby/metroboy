@@ -41,13 +41,8 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf(top.FEPO_STORE_MATCHp(), top.DABU_SPRITE_DELTA2());
     /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf(top.FEPO_STORE_MATCHp(), top.GYSA_SPRITE_DELTA3());
 
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
     /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(ZEME_AxCxExGx, top.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
+    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
   }
 
   {
@@ -235,8 +230,8 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     ///*p30.CYKE*/ wire _CYKE_AxxDExxH = not(_XUPY_xBCxxFGx); // inverted clock
     ///*p30.WUDA*/ wire _WUDA_xBCxxFGx = not(_CYKE_AxxDExxH);
 
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_ABxxEFxx());
-    /*p30.CYKE*/ wire CYKE_AxxDExxH = not(XUPY_xBCxxFGx);
+    /*p29.XUPY*/ wire XUPY_ABxxEFxx = not(top.WUVU_xxCDxxGH());
+    /*p30.CYKE*/ wire CYKE_AxxDExxH = not(XUPY_ABxxEFxx);
     /*p30.WUDA*/ wire WUDA_xBCxxFGx = not(CYKE_AxxDExxH);
 
     // XADU_01 nc

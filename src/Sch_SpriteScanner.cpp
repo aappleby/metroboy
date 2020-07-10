@@ -7,21 +7,9 @@ using namespace Schematics;
 
 void SpriteScanner::tick(SchematicTop& top) {
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_B);
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-  /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-
-  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_AxxDExxH());
-  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_ABxxEFxx());
-
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
 
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, top.ATAR_VID_RSTp());
   /*p29.BALU*/ wire BALU_LINE_RSTp = not(ANOM_LINE_RSTn);
   /*p29.BAGY*/ wire BAGY_LINE_RSTn = not(BALU_LINE_RSTp);
 
@@ -32,8 +20,8 @@ void SpriteScanner::tick(SchematicTop& top) {
 
   {
 
-    /*p29.BYBA*/ BYBA_SCAN_DONE_A.set(XUPY_xBCxxFGx, BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ DOBA_SCAN_DONE_B.set(ALET_xBxDxFxH, BAGY_LINE_RSTn, BYBA_SCAN_DONE_A);
+    /*p29.BYBA*/ BYBA_SCAN_DONE_A.set(top.XUPY_ABxxEFxx(), BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*p29.DOBA*/ DOBA_SCAN_DONE_B.set(top.ALET_xBxDxFxH(), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A);
 
     // BEBU_01 << DOBA_17
     // BEBU_02 << BALU_02
@@ -44,7 +32,7 @@ void SpriteScanner::tick(SchematicTop& top) {
 
     /*p29.BEBU*/ wire BEBU_SCAN_DONE_PEn = or (BALU_LINE_RSTp, DOBA_SCAN_DONE_B.q(), !BYBA_SCAN_DONE_A.q());
     /*p29.AVAP*/ wire AVAP_SCAN_DONE_PE = not(BEBU_SCAN_DONE_PEn);
-    /*p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or (ATAR_VID_RSTp, AVAP_SCAN_DONE_PE);
+    /*p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or (top.ATAR_VID_RSTp(), AVAP_SCAN_DONE_PE);
 
     // Arms on ground, nor latch
     // BESU01 << CATU17
@@ -58,7 +46,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     // When ASEN goes high, BESU goes low.
 
     /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_LINE_END_B(), ASEN_SCAN_DONE_PE);
-    /*p29.CENO*/ CENO_SCANNINGp.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
+    /*p29.CENO*/ CENO_SCANNINGp.set(top.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), BESU_SCANNINGp);
   }
 
   //----------------------------------------
@@ -66,7 +54,7 @@ void SpriteScanner::tick(SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or(_FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
+    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or(_FETO_SCAN_DONE_d0,   top.XUPY_ABxxEFxx());
     /*p28.YFEL*/ YFEL_SCAN0.set(_GAVA_SCAN_CLK, ANOM_LINE_RSTn, !YFEL_SCAN0);
     /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0,    ANOM_LINE_RSTn, !WEWY_SCAN1);
     /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1,    ANOM_LINE_RSTn, !GOSO_SCAN2);
@@ -118,7 +106,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and (top.XOCE_AxxDExxH(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 }
 

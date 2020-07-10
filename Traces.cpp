@@ -1,3 +1,48 @@
+// ASOL_01 << AFAR_03
+// ASOL_02 nc
+// ASOL_03 >> AVOR_02
+// ASOL_04 >> nc
+// ASOL_05 nc
+// ASOL_06 << SYS_PIN_RST
+
+// AFAR_03 high = ASOL_03 low
+// SYS_PIN_RST high = ASOL_03 high
+
+// AFER_01 nc
+// AFER_02 << UPOJ_04 (RSTp?)
+// AFER_03 << ASOL_03 (D)
+// AFER_04 nc
+// AFER_05 << BOGA_07 (CLKp?)
+// AFER_06 nc
+// AFER_07 nc
+// AFER_08 << BOMA_07 (CLKn?)
+// AFER_09 << UPOJ_04 (RSTp?)
+// AFER_10 nc
+// AFER_11 nc
+// AFER_12 >> nc
+// AFER_13 >> AVOR_01
+
+// Latch w/ arms on the ground side, output on the top rung - nor latch with inverted output
+    
+// UCOB_01 << SYS_PIN_CLK_GOOD
+// UCOB_02 >> UPYF_02, UFOL_01
+
+// UPYF_01 << SYS_PIN_RST
+// UPYF_02 << UCOB_02
+// UPYF_03 nc
+// UPYF_04 >> TUBO_06
+
+// TUBO_00 << CLKREQ
+// TUBO_01 nc
+// TUBO_02 >> UNUT 
+// TUBO_03 == nc
+// TUBO_04 nc
+// TUBO_05 << UPYF
+
+// UPYF high, TUBO_02 high
+// CLKREQ high, TUBO_02 low
+
+
 // UNUT_01 << TUBO_03
 // UNUT_02 << UPOF_17 (Q)
 // UNUT_03 nc

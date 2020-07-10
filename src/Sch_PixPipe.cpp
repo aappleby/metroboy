@@ -362,14 +362,6 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
   //----------------------------------------
 
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RDn());
-  /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
-  /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
-
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-  /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
-  /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
-
   /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
   /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
   /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
@@ -384,7 +376,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     /*p22.WYBO*/ wire WYBO_FF47n = nand(top.WERO_FF4Xp(), WADO_A00p, WESA_A01p, WALO_A02p, XERA_A03n);
     /*p22.WERA*/ wire WERA_FF47 = not(WYBO_FF47n);
-    /*p36.VELY*/ wire VELY_FF47_WR = and (CUPA_CPU_WR_xxxxxFGH, WERA_FF47);
+    /*p36.VELY*/ wire VELY_FF47_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), WERA_FF47);
     /*p36.TEPO*/ wire TEPO_FF47_WRn = not(VELY_FF47_WR);
 
     /*p36.PAVO*/ PAVO_BGP0.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D0);
@@ -396,7 +388,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p36.MOGY*/ MOGY_BGP6.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D6);
     /*p36.MENA*/ MENA_BGP7.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D7);
 
-    /*p36.VUSO*/ wire FF47_RD = and (ASOT_CPU_RD, WERA_FF47);
+    /*p36.VUSO*/ wire FF47_RD = and (top.ASOT_CPU_RDp(), WERA_FF47);
     /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
 
     /*p36.RARO*/ top.CPU_TRI_D0.set_tribuf_6n(FF47_RDn, PAVO_BGP0.q());
@@ -413,7 +405,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     /*p22.WETA*/ wire WETA_FF48n = nand(top.WERO_FF4Xp(), XOLA_A00n, XENO_A01n, XUSY_A02n, WEPO_A03p);
     /*p22.XAYO*/ wire XAYO_FF48 = not(WETA_FF48n);
-    /*p36.XOMA*/ wire XOMA_FF48_WR = and (CUPA_CPU_WR_xxxxxFGH, XAYO_FF48);
+    /*p36.XOMA*/ wire XOMA_FF48_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), XAYO_FF48);
     /*p36.XELO*/ wire XELO_FF48_WRn = not(XOMA_FF48_WR);
 
     /*p36.XUFU*/ OBP00.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D0);
@@ -425,7 +417,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p36.XUPO*/ OBP06.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D6);
     /*p36.XANA*/ OBP07.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D7);
 
-    /*p36.XUFY*/ wire FF48_RD = and (ASOT_CPU_RD, XAYO_FF48);
+    /*p36.XUFY*/ wire FF48_RD = and (top.ASOT_CPU_RDp(), XAYO_FF48);
     /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
 
     /*p36.XARY*/ top.CPU_TRI_D0.set_tribuf_6n(FF48_RDn, OBP00.q());
@@ -442,7 +434,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     /*p22.VAMA*/ wire VAMA_FF49n = nand(top.WERO_FF4Xp(), WADO_A00p, XENO_A01n, XUSY_A02n, WEPO_A03p);
     /*p22.TEGO*/ wire TEGO_FF49 = not(VAMA_FF49n);
-    /*p36.MYXE*/ wire MYXE_FF49_WR = and (CUPA_CPU_WR_xxxxxFGH, TEGO_FF49);
+    /*p36.MYXE*/ wire MYXE_FF49_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), TEGO_FF49);
     /*p36.LEHO*/ wire LEHO_FF49_WRn = not(MYXE_FF49_WR);
 
     /*p36.MOXY*/ OBP10.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D0);
@@ -454,7 +446,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p36.LEPU*/ OBP16.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D6);
     /*p36.LUXO*/ OBP17.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D7);
 
-    /*p36.MUMY*/ wire FF49_RD = and (ASOT_CPU_RD, TEGO_FF49);
+    /*p36.MUMY*/ wire FF49_RD = and (top.ASOT_CPU_RDp(), TEGO_FF49);
     /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD);
 
     /*p36.LAJU*/ top.CPU_TRI_D0.set_tribuf_6n(FF49_RDn, OBP10.q());

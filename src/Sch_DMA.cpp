@@ -139,19 +139,19 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p04.LUFA*/ wire LUFA_DMA_VRAM_RDp = not(MUHO_DMA_VRAM_RDn);
     /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn = not(LUFA_DMA_VRAM_RDp);
 
-    /*p04.ECAL*/ top.VRM_TRI_A00.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A00());
-    /*p04.EGEZ*/ top.VRM_TRI_A01.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A01());
-    /*p04.FUHE*/ top.VRM_TRI_A02.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A02());
-    /*p04.FYZY*/ top.VRM_TRI_A03.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A03());
-    /*p04.DAMU*/ top.VRM_TRI_A04.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A04());
-    /*p04.DAVA*/ top.VRM_TRI_A05.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A05());
-    /*p04.ETEG*/ top.VRM_TRI_A06.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A06());
-    /*p04.EREW*/ top.VRM_TRI_A07.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A07());
-    /*p04.EVAX*/ top.VRM_TRI_A08.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A08());
-    /*p04.DUVE*/ top.VRM_TRI_A09.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A09());
-    /*p04.ERAF*/ top.VRM_TRI_A10.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A10());
-    /*p04.FUSY*/ top.VRM_TRI_A11.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A11());
-    /*p04.EXYF*/ top.VRM_TRI_A12.set_tribuf_6n(AHOC_DMA_VRAM_RDn, top.DMA_A12());
+    /*p04.ECAL*/ top.VRM_TRI_A00.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A00.q());
+    /*p04.EGEZ*/ top.VRM_TRI_A01.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A01.q());
+    /*p04.FUHE*/ top.VRM_TRI_A02.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A02.q());
+    /*p04.FYZY*/ top.VRM_TRI_A03.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A03.q());
+    /*p04.DAMU*/ top.VRM_TRI_A04.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A04.q());
+    /*p04.DAVA*/ top.VRM_TRI_A05.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A05.q());
+    /*p04.ETEG*/ top.VRM_TRI_A06.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A06.q());
+    /*p04.EREW*/ top.VRM_TRI_A07.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A07.q());
+    /*p04.EVAX*/ top.VRM_TRI_A08.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A08.q());
+    /*p04.DUVE*/ top.VRM_TRI_A09.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A09.q());
+    /*p04.ERAF*/ top.VRM_TRI_A10.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A10.q());
+    /*p04.FUSY*/ top.VRM_TRI_A11.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A11.q());
+    /*p04.EXYF*/ top.VRM_TRI_A12.set_tribuf_6n(AHOC_DMA_VRAM_RDn, DMA_A12.q());
   }
 
   // FF46 DMA
@@ -160,14 +160,14 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p04.PUSY*/ wire PUSY_FF46_RDp = not(NYGO_FF46_RDn);
 
     // FIXME polarity
-    /*p04.POLY*/ top.CPU_TRI_D0.set_tribuf_6p(PUSY_FF46_RDp, DMA_A08);
-    /*p04.ROFO*/ top.CPU_TRI_D1.set_tribuf_6p(PUSY_FF46_RDp, DMA_A09);
-    /*p04.REMA*/ top.CPU_TRI_D2.set_tribuf_6p(PUSY_FF46_RDp, DMA_A10);
-    /*p04.PANE*/ top.CPU_TRI_D3.set_tribuf_6p(PUSY_FF46_RDp, DMA_A11);
-    /*p04.PARE*/ top.CPU_TRI_D4.set_tribuf_6p(PUSY_FF46_RDp, DMA_A12);
-    /*p04.RALY*/ top.CPU_TRI_D5.set_tribuf_6p(PUSY_FF46_RDp, DMA_A13);
-    /*p04.RESU*/ top.CPU_TRI_D6.set_tribuf_6p(PUSY_FF46_RDp, DMA_A14);
-    /*p04.NUVY*/ top.CPU_TRI_D7.set_tribuf_6p(PUSY_FF46_RDp, DMA_A15);
+    /*p04.POLY*/ top.CPU_TRI_D0.set_tribuf_6p(PUSY_FF46_RDp, DMA_A08.q());
+    /*p04.ROFO*/ top.CPU_TRI_D1.set_tribuf_6p(PUSY_FF46_RDp, DMA_A09.q());
+    /*p04.REMA*/ top.CPU_TRI_D2.set_tribuf_6p(PUSY_FF46_RDp, DMA_A10.q());
+    /*p04.PANE*/ top.CPU_TRI_D3.set_tribuf_6p(PUSY_FF46_RDp, DMA_A11.q());
+    /*p04.PARE*/ top.CPU_TRI_D4.set_tribuf_6p(PUSY_FF46_RDp, DMA_A12.q());
+    /*p04.RALY*/ top.CPU_TRI_D5.set_tribuf_6p(PUSY_FF46_RDp, DMA_A13.q());
+    /*p04.RESU*/ top.CPU_TRI_D6.set_tribuf_6p(PUSY_FF46_RDp, DMA_A14.q());
+    /*p04.NUVY*/ top.CPU_TRI_D7.set_tribuf_6p(PUSY_FF46_RDp, DMA_A15.q());
 
     /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
     /*p??.PYSU*/ wire PYSU_FF46_WRp = not(LORU_FF46_WRn); // not on schematic

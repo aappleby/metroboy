@@ -16,6 +16,9 @@ private:
   friend SchematicTop;
 
   /*p25.SOTO*/ Reg17 SOTO_DBG;
+
+  CpuPinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  CpuPinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 };
 
 //-----------------------------------------------------------------------------

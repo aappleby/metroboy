@@ -40,6 +40,8 @@ private:
   /*p05.KAPA*/ TpLatch KAPA_JOYP_L1; // 10-rung, looks like pass gate or something
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3; // 10-rung, looks like pass gate or something
+
+  CpuPinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
 };
 
 //-----------------------------------------------------------------------------

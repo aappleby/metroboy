@@ -20,7 +20,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.ETAF*/ XFER_START.set(_FF02_WRn_xxxxxFGH, _XFER_RESET, top.CPU_TRI_D0);
   /*p06.CULY*/ XFER_DIR.set(_FF02_WRn_xxxxxFGH, top.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
 
-  /*p06.COTY*/ SER_CLK.set(top.UVYN_DIV_05n(), _FF02_WRn_xxxxxFGH, !SER_CLK);
+  /*p06.COTY*/ SER_CLK.set(top.UVYN_DIV_05n(), _FF02_WRn_xxxxxFGH, SER_CLK.qn());
 
   // XFER_DIR 0 = ext clk
   // XFER DIR 1 = int clk
@@ -31,7 +31,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   // CAVE04 nc
   // CAVE05 >> DAWA01
 
-  /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(SER_CLK, SCK_C, XFER_DIR);
+  /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(SER_CLK.q(), SCK_C, XFER_DIR.q());
 
   /*p06.DAWA*/ wire _DAWA_SER_CLK = or(_SER_CLK_MUXn, !XFER_START.q()); // this must stop the clock or something when the transmit's done
   /*p06.EDYL*/ wire _EDYL_SER_CLK = not(_DAWA_SER_CLK);

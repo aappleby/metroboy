@@ -9,7 +9,7 @@ struct SchematicTop;
 
 struct TileFetcher {
   void tick(SchematicTop& gb);
-  SignalHash commit();
+  SignalHash commit(SchematicTop& top);
 
 private:
   friend SchematicTop;

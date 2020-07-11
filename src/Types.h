@@ -23,7 +23,7 @@ struct Req {
       uint8_t data_lo;
       uint8_t data_hi;
     };
-    uint16_t data2 = 0;
+    uint16_t data = 0;
   };
   uint8_t  read = 0;
   uint8_t  write = 0;
@@ -43,7 +43,7 @@ struct Ack {
       uint8_t data_lo;
       uint8_t data_hi;
     };
-    uint16_t data2 = 0;
+    uint16_t data = 0;
   };
   uint8_t  read = 0;
   uint8_t  pad1 = 0;

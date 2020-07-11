@@ -123,7 +123,7 @@ void PPU::get_obus_req(Req& r) const {
   // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
   if (counter < 80) {
     r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
-    r.data2 = 0;
+    r.data  = 0;
     r.read  = 1;
     r.write = 0;
     return;
@@ -139,7 +139,7 @@ void PPU::get_obus_req(Req& r) const {
 
   if (fetch_addr != 0) {
     r.addr  = fetch_addr;
-    r.data2 = 0;
+    r.data  = 0;
     r.read  = 1;
     r.write = 0;
   }

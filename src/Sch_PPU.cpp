@@ -95,11 +95,11 @@ using namespace Schematics;
 void PpuRegisters::tick(SchematicTop& top) {
 
   /*p21.TADY*/ wire TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), top.TOFU_VID_RSTp());
-  /*p21.WEGO*/ wire WEGO_LINE_END_RST   = or(top.TOFU_VID_RSTp(), VOGA_RENDER_DONE_SYNC);
+  /*p21.WEGO*/ wire WEGO_LINE_END_RST   = or(top.TOFU_VID_RSTp(), VOGA_RENDER_DONE_SYNC.q());
 
   /*p24.SEGU*/ wire SEGU_CLKPIPEn = top.SEGU_CLKPIPEn();
   /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(SEGU_CLKPIPEn);
-  /*p24.SACU*/ wire SACU_CLKPIPEp = nor(SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn);
+  /*p24.SACU*/ wire SACU_CLKPIPEp = nor(SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn.q());
 
   {
     /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.ALET_xBxDxFxH(), TADY_LINE_START_RST, top.WODU_RENDER_DONEp());
@@ -110,34 +110,34 @@ void PpuRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
+    /*p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand(RYKU_FINE_CNT0.q(), ROGA_FINE_CNT1.q(), RUBU_FINE_CNT2.q());
     /*p27.PECU*/ wire PECU_FINE_CLK = nand(ROXO_CLKPIPEp, ROZE_FINE_COUNT_7n);
-    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
+    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp.q());
     /*p27.PASO*/ wire PASO_FINE_RST = nor(top.TEVO_FINE_RSTp(), ROPY_RENDERINGn);
-    /*p27.RYKU*/ RYKU_FINE_CNT0.set(PECU_FINE_CLK,   PASO_FINE_RST, !RYKU_FINE_CNT0);
-    /*p27.ROGA*/ ROGA_FINE_CNT1.set(!RYKU_FINE_CNT0, PASO_FINE_RST, !ROGA_FINE_CNT1);
-    /*p27.RUBU*/ RUBU_FINE_CNT2.set(!ROGA_FINE_CNT1, PASO_FINE_RST, !RUBU_FINE_CNT2);
+    /*p27.RYKU*/ RYKU_FINE_CNT0.set(PECU_FINE_CLK,       PASO_FINE_RST, RYKU_FINE_CNT0.qn());
+    /*p27.ROGA*/ ROGA_FINE_CNT1.set(RYKU_FINE_CNT0.qn(), PASO_FINE_RST, ROGA_FINE_CNT1.qn());
+    /*p27.RUBU*/ RUBU_FINE_CNT2.set(ROGA_FINE_CNT1.qn(), PASO_FINE_RST, RUBU_FINE_CNT2.qn());
   }
 
   {
     // There's a feedback loop here of sorts
 
-    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.DATY_SCX0(), RYKU_FINE_CNT0); // Arms on the ground side, XNOR
-    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.DUZU_SCX1(), ROGA_FINE_CNT1);
-    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.CYXU_SCX2(), RUBU_FINE_CNT2);
-    /*p27.RONE*/ wire _RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn, _SUHA_FINE_MATCHp, _SYBY_FINE_MATCHp, _SOZU_FINE_MATCHp);
+    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.DATY_SCX0(), RYKU_FINE_CNT0.q()); // Arms on the ground side, XNOR
+    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.DUZU_SCX1(), ROGA_FINE_CNT1.q());
+    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.CYXU_SCX2(), RUBU_FINE_CNT2.q());
+    /*p27.RONE*/ wire _RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn.q(), _SUHA_FINE_MATCHp, _SYBY_FINE_MATCHp, _SOZU_FINE_MATCHp);
     /*p27.POHU*/ wire _POHU_FINE_MATCHp = not(_RONE_FINE_MATCHn);
 
-    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp,       XYMU_RENDERINGp, _POHU_FINE_MATCHp);
-    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), XYMU_RENDERINGp, PUXA_FINE_MATCH_A);
+    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp,       XYMU_RENDERINGp.q(), _POHU_FINE_MATCHp);
+    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), XYMU_RENDERINGp.q(), PUXA_FINE_MATCH_A.q());
 
-    /*p27.POVA*/ wire POVA_FINE_MATCHpe = and (PUXA_FINE_MATCH_A, !NYZE_FINE_MATCH_B);
-    /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(XYMU_RENDERINGp);
+    /*p27.POVA*/ wire POVA_FINE_MATCHpe = and(PUXA_FINE_MATCH_A.q(), NYZE_FINE_MATCH_B.qn());
+    /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(XYMU_RENDERINGp.q());
     /*p27.ROXY*/ ROXY_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn, POVA_FINE_MATCHpe);
 
     /*p21.XAJO*/ wire _XAJO_X_009 = and (XEHO_X0.q(), XYDO_X3.q());
     /*p21.WUSA*/ _WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009, WEGO_LINE_END_RST);
-    /*p21.TOBA*/ wire _TOBA_LCD_CLOCK = and (SACU_CLKPIPEp, _WUSA_LCD_CLOCK_GATE);
+    /*p21.TOBA*/ wire _TOBA_LCD_CLOCK = and (SACU_CLKPIPEp, _WUSA_LCD_CLOCK_GATE.q());
     /*p21.SEMU*/ wire _SEMU_LCD_CLOCK = or(_TOBA_LCD_CLOCK, POVA_FINE_MATCHpe);
     /*p21.RYPO*/ wire _RYPO_LCD_CLOCK = not(_SEMU_LCD_CLOCK);
     top.LCD_PIN_CP.set(_RYPO_LCD_CLOCK);
@@ -148,9 +148,9 @@ void PpuRegisters::tick(SchematicTop& top) {
     // if AVAP goes high, POFY goes high.
     // if PAHO or TOFU go high, POFY goes low.
 
-    /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3);
-    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC || top.TOFU_VID_RSTp());
-    /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH);
+    /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3.q());
+    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || top.TOFU_VID_RSTp());
+    /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH.q());
     top.LCD_PIN_ST.set(RUZE_PIN_ST);
   }
 
@@ -158,27 +158,27 @@ void PpuRegisters::tick(SchematicTop& top) {
 
   {
     // vid x position, has carry lookahead because this increments every tcycle
-    /*p21.RYBO*/ wire RYBO = xor(XEHO_X0, SAVY_X1);
-    /*p21.XUKE*/ wire XUKE = and(XEHO_X0, SAVY_X1);
+    /*p21.RYBO*/ wire RYBO = xor(XEHO_X0.q(), SAVY_X1.q());
+    /*p21.XUKE*/ wire XUKE = and(XEHO_X0.q(), SAVY_X1.q());
 
-    /*p21.XYLE*/ wire XYLE = and(XODU_X2, XUKE);
-    /*p21.XEGY*/ wire XEGY = xor(XODU_X2, XUKE);
-    /*p21.XORA*/ wire XORA = xor(XYDO_X3, XYLE);
+    /*p21.XYLE*/ wire XYLE = and(XODU_X2.q(), XUKE);
+    /*p21.XEGY*/ wire XEGY = xor(XODU_X2.q(), XUKE);
+    /*p21.XORA*/ wire XORA = xor(XYDO_X3.q(), XYLE);
 
-    /*p21.SAKE*/ wire SAKE = xor(TUHU_X4, TUKY_X5);
-    /*p21.TYBA*/ wire TYBA = and(TUHU_X4, TUKY_X5);
-    /*p21.SURY*/ wire SURY = and(TAKO_X6, TYBA);
-    /*p21.TYGE*/ wire TYGE = xor(TAKO_X6, TYBA);
-    /*p21.ROKU*/ wire ROKU = xor(SYBE_X7, SURY);
+    /*p21.SAKE*/ wire SAKE = xor(TUHU_X4.q(), TUKY_X5.q());
+    /*p21.TYBA*/ wire TYBA = and(TUHU_X4.q(), TUKY_X5.q());
+    /*p21.SURY*/ wire SURY = and(TAKO_X6.q(), TYBA);
+    /*p21.TYGE*/ wire TYGE = xor(TAKO_X6.q(), TYBA);
+    /*p21.ROKU*/ wire ROKU = xor(SYBE_X7.q(), SURY);
 
     
-    /*p24.TOCA*/ wire TOCA_CLKPIPE_HI = not(XYDO_X3);
+    /*p24.TOCA*/ wire TOCA_CLKPIPE_HI = not(XYDO_X3.q());
 
-    /*p21.XEHO*/ XEHO_X0.set(SACU_CLKPIPEp,   TADY_LINE_START_RST, !XEHO_X0);
+    /*p21.XEHO*/ XEHO_X0.set(SACU_CLKPIPEp,   TADY_LINE_START_RST, XEHO_X0.qn());
     /*p21.SAVY*/ SAVY_X1.set(SACU_CLKPIPEp,   TADY_LINE_START_RST, RYBO);
     /*p21.XODU*/ XODU_X2.set(SACU_CLKPIPEp,   TADY_LINE_START_RST, XEGY);
     /*p21.XYDO*/ XYDO_X3.set(SACU_CLKPIPEp,   TADY_LINE_START_RST, XORA);
-    /*p21.TUHU*/ TUHU_X4.set(TOCA_CLKPIPE_HI, TADY_LINE_START_RST, !TUHU_X4);
+    /*p21.TUHU*/ TUHU_X4.set(TOCA_CLKPIPE_HI, TADY_LINE_START_RST, TUHU_X4.qn());
     /*p21.TUKY*/ TUKY_X5.set(TOCA_CLKPIPE_HI, TADY_LINE_START_RST, SAKE);
     /*p21.TAKO*/ TAKO_X6.set(TOCA_CLKPIPE_HI, TADY_LINE_START_RST, TYGE);
     /*p21.SYBE*/ SYBE_X7.set(TOCA_CLKPIPE_HI, TADY_LINE_START_RST, ROKU);
@@ -225,8 +225,8 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2);
     /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3);
 
-    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp, top.ACYL_SCANNINGp()); // die NOR
-    /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp, top.PARU_VBLANKp_d4()); // die NOR
+    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
+    /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp.q(), top.PARU_VBLANKp_d4()); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.
 

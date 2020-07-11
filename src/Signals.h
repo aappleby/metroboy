@@ -113,15 +113,15 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 //-----------------------------------------------------------------------------
 
 struct SignalHash {
-  void operator << (SignalState s) { h ^= s.state; mix(); }
-  void operator << (SignalHash h2) { h ^= h2.h;    mix(); }
-
-  void mix() {
-    h ^= h >> 33;
+  void operator << (SignalState s) {
+    h ^= s.state;
     h *= 0xff51afd7ed558ccd;
-    h ^= h >> 33;
-    h *= 0xc4ceb9fe1a85ec53;
-    h ^= h >> 33;
+    h ^= h >> 32;
+  }
+  void operator << (SignalHash h2) {
+    h ^= h2.h;
+    h *= 0xff51afd7ed558ccd;
+    h ^= h >> 32;
   }
 
   uint64_t h = 0x12345678;
@@ -150,7 +150,7 @@ struct Signal {
     a = val ? SET_1 : SET_0;
   }
 
-  SignalState reset() {
+  SignalState commit() {
     auto old_a = a;
     a = ERROR;
     return old_a;

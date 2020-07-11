@@ -16,15 +16,6 @@ private:
 
   /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
 
-  /*p28.GEKA*/ Signal GEKA_OAM_A0p;
-  /*p28.ZYFO*/ Signal ZYFO_OAM_A1p;
-  /*p28.YFOT*/ Signal YFOT_OAM_A2p;
-  /*p28.YFOC*/ Signal YFOC_OAM_A3p;
-  /*p28.YVOM*/ Signal YVOM_OAM_A4p;
-  /*p28.YMEV*/ Signal YMEV_OAM_A5p;
-  /*p28.XEMU*/ Signal XEMU_OAM_A6p;
-  /*p28.YZET*/ Signal YZET_OAM_A7p;
-
   /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
   /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
   /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
@@ -69,6 +60,50 @@ private:
   /*p29.WYSO*/ Reg8 WYSO_SPRITE_Y5;
   /*p29.XOTE*/ Reg8 XOTE_SPRITE_Y6;
   /*p29.YZAB*/ Reg8 YZAB_SPRITE_Y7;
+
+  //-----------------------------------------------------------------------------
+  // OAM bus
+
+  CpuPinOut OAM_PIN_CLK;
+  CpuPinOut OAM_PIN_OE;
+  CpuPinOut OAM_PIN_WR_A;
+  CpuPinOut OAM_PIN_WR_B;
+
+  CpuPinOut OAM_PIN_A0;
+  CpuPinOut OAM_PIN_A1;
+  CpuPinOut OAM_PIN_A2;
+  CpuPinOut OAM_PIN_A3;
+  CpuPinOut OAM_PIN_A4;
+  CpuPinOut OAM_PIN_A5;
+  CpuPinOut OAM_PIN_A6;
+  CpuPinOut OAM_PIN_A7;
+
+  Tribuf OAM_PIN_DA0;
+  Tribuf OAM_PIN_DA1;
+  Tribuf OAM_PIN_DA2;
+  Tribuf OAM_PIN_DA3;
+  Tribuf OAM_PIN_DA4;
+  Tribuf OAM_PIN_DA5;
+  Tribuf OAM_PIN_DA6;
+  Tribuf OAM_PIN_DA7;
+
+  Tribuf OAM_PIN_DB0;
+  Tribuf OAM_PIN_DB1;
+  Tribuf OAM_PIN_DB2;
+  Tribuf OAM_PIN_DB3;
+  Tribuf OAM_PIN_DB4;
+  Tribuf OAM_PIN_DB5;
+  Tribuf OAM_PIN_DB6;
+  Tribuf OAM_PIN_DB7;
+
+  /*p28.GEKA*/ Signal GEKA_OAM_A0p;
+  /*p28.ZYFO*/ Signal ZYFO_OAM_A1p;
+  /*p28.YFOT*/ Signal YFOT_OAM_A2p;
+  /*p28.YFOC*/ Signal YFOC_OAM_A3p;
+  /*p28.YVOM*/ Signal YVOM_OAM_A4p;
+  /*p28.YMEV*/ Signal YMEV_OAM_A5p;
+  /*p28.XEMU*/ Signal XEMU_OAM_A6p;
+  /*p28.YZET*/ Signal YZET_OAM_A7p;
 
   /*p31.XYKY*/ TpLatch XYKY_LATCH_OAM_A0;
   /*p31.YRUM*/ TpLatch YRUM_LATCH_OAM_A1;

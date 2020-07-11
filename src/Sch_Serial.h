@@ -39,17 +39,17 @@ private:
   //----------
   // Serial pins
 
-  /* PIN_68 */ PinOut SCK_A;   // <- P06.KEXU
-  /* PIN_68 */ PinOut SCK_B;   // <- P06.CULY
-  /* PIN_68 */ PinIn  SCK_C;   // -> P06.CAVE
-  /* PIN_68 */ PinOut SCK_D;   // <- P06.KUJO
+  /* PIN_68 */ ExtPinOut SCK_A;   // <- P06.KEXU
+  /* PIN_68 */ ExtPinOut SCK_B;   // <- P06.CULY
+  /* PIN_68 */ ExtPinIn  SCK_C;   // -> P06.CAVE
+  /* PIN_68 */ ExtPinOut SCK_D;   // <- P06.KUJO
 
-  /* PIN_69 */ PinOut SIN_A;   // nc?
-  /* PIN_69 */ PinOut SIN_B;   // nc?
-  /* PIN_69 */ PinIn  SIN_C;   // -> P06.CAGE
-  /* PIN_69 */ PinOut SIN_D;   // nc?
+  /* PIN_69 */ ExtPinOut SIN_A;   // nc?
+  /* PIN_69 */ ExtPinOut SIN_B;   // nc?
+  /* PIN_69 */ ExtPinIn  SIN_C;   // -> P06.CAGE
+  /* PIN_69 */ ExtPinOut SIN_D;   // nc?
 
-  /* PIN_70 */ PinOut SOUT;    // <- P05.KENA
+  /* PIN_70 */ ExtPinOut SOUT;    // <- P05.KENA
 };
 
 //-----------------------------------------------------------------------------

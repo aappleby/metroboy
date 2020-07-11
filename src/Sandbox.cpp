@@ -33,41 +33,41 @@ struct Sandbox {
     EXT_PIN_WRp_C.set(1);
   }
 
-  PinIn  SYS_PIN_CLK_A;
-  PinIn  SYS_PIN_CLK_B;
-  PinIn  SYS_PIN_T1;
-  PinIn  SYS_PIN_T2;
-  PinIn  SYS_PIN_RSTp;
+  ExtPinIn  SYS_PIN_CLK_A;
+  ExtPinIn  SYS_PIN_CLK_B;
+  ExtPinIn  SYS_PIN_T1;
+  ExtPinIn  SYS_PIN_T2;
+  ExtPinIn  SYS_PIN_RSTp;
 
-  PinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
-  PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
+  ExtPinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
+  ExtPinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
 
-  PinIn  CPU_PIN_READYp;
-  PinIn  CPU_PIN_RDp;            // top right port PORTA_00: ->
-  PinIn  CPU_PIN_WRp;            // top right port PORTA_01: ->
-  PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  CpuPinIn  CPU_PIN_READYp;
+  CpuPinIn  CPU_PIN_RDp;            // top right port PORTA_00: ->
+  CpuPinIn  CPU_PIN_WRp;            // top right port PORTA_01: ->
+  CpuPinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
-  PinOut CPU_PIN_SYS_RSTp;
-  PinOut CPU_PIN_EXT_RST;
-  PinOut CPU_PIN_EXT_CLKGOOD;
-  PinOut CPU_PIN_POR_DONEp;
+  CpuPinOut CPU_PIN_SYS_RSTp;
+  CpuPinOut CPU_PIN_EXT_RST;
+  CpuPinOut CPU_PIN_EXT_CLKGOOD;
+  CpuPinOut CPU_PIN_POR_DONEp;
 
-  PinIn  CPU_PIN_A00;           // bottom right port PORTB_00: -> A00
-  PinIn  CPU_PIN_A01;           // bottom right port PORTB_04: -> A01
-  PinIn  CPU_PIN_A02;           // bottom right port PORTB_08: -> A02
-  PinIn  CPU_PIN_A03;           // bottom right port PORTB_12: -> A03
-  PinIn  CPU_PIN_A04;           // bottom right port PORTB_16: -> A04
-  PinIn  CPU_PIN_A05;           // bottom right port PORTB_20: -> A05
-  PinIn  CPU_PIN_A06;           // bottom right port PORTB_24: -> A06
-  PinIn  CPU_PIN_A07;           // bottom right port PORTB_28: -> A07
-  PinIn  CPU_PIN_A08;           // bottom right port PORTB_02: -> A08
-  PinIn  CPU_PIN_A09;           // bottom right port PORTB_06: -> A09
-  PinIn  CPU_PIN_A10;           // bottom right port PORTB_10: -> A10
-  PinIn  CPU_PIN_A11;           // bottom right port PORTB_14: -> A11
-  PinIn  CPU_PIN_A12;           // bottom right port PORTB_18: -> A12
-  PinIn  CPU_PIN_A13;           // bottom right port PORTB_22: -> A13
-  PinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
-  PinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
+  CpuPinIn  CPU_PIN_A00;           // bottom right port PORTB_00: -> A00
+  CpuPinIn  CPU_PIN_A01;           // bottom right port PORTB_04: -> A01
+  CpuPinIn  CPU_PIN_A02;           // bottom right port PORTB_08: -> A02
+  CpuPinIn  CPU_PIN_A03;           // bottom right port PORTB_12: -> A03
+  CpuPinIn  CPU_PIN_A04;           // bottom right port PORTB_16: -> A04
+  CpuPinIn  CPU_PIN_A05;           // bottom right port PORTB_20: -> A05
+  CpuPinIn  CPU_PIN_A06;           // bottom right port PORTB_24: -> A06
+  CpuPinIn  CPU_PIN_A07;           // bottom right port PORTB_28: -> A07
+  CpuPinIn  CPU_PIN_A08;           // bottom right port PORTB_02: -> A08
+  CpuPinIn  CPU_PIN_A09;           // bottom right port PORTB_06: -> A09
+  CpuPinIn  CPU_PIN_A10;           // bottom right port PORTB_10: -> A10
+  CpuPinIn  CPU_PIN_A11;           // bottom right port PORTB_14: -> A11
+  CpuPinIn  CPU_PIN_A12;           // bottom right port PORTB_18: -> A12
+  CpuPinIn  CPU_PIN_A13;           // bottom right port PORTB_22: -> A13
+  CpuPinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
+  CpuPinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
 
   /*p01.TUBO*/ NorLatch TUBO_CPU_READYn;
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
@@ -124,9 +124,9 @@ struct Sandbox {
     /*p01.ALEF*/ ALEF_xBCDExxx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, nand(not(SYS_PIN_T1), not(SYS_PIN_T2), SYS_PIN_RSTp), AFUR_ABCDxxxx.q());
     /*p01.AFUR*/ AFUR_ABCDxxxx.set(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, nand(not(SYS_PIN_T1), not(SYS_PIN_T2), SYS_PIN_RSTp), ADYK_xxxDEFGx.qn());
 
-    /*p01.BOLO*/ wire BOLO_xBCDEFGx = or(not(CPU_PIN_READYp),  APUK_xxCDEFxx, AFUR_ABCDxxxx);
-    /*p01.BAZE*/ wire BAZE_xBCDExxx = and(BOLO_xBCDEFGx, nand(CPU_PIN_READYp,  !AFUR_ABCDxxxx));
-    /*p01.BELE*/ wire BELE_Axxxxxxx = and(!ALEF_xBCDExxx, AFUR_ABCDxxxx, BAZE_xBCDExxx);
+    /*p01.BOLO*/ wire BOLO_xBCDEFGx = or(not(CPU_PIN_READYp),  APUK_xxCDEFxx.q(), AFUR_ABCDxxxx.q());
+    /*p01.BAZE*/ wire BAZE_xBCDExxx = and(BOLO_xBCDEFGx, nand(CPU_PIN_READYp,  AFUR_ABCDxxxx.qn()));
+    /*p01.BELE*/ wire BELE_Axxxxxxx = and(ALEF_xBCDExxx.qn(), AFUR_ABCDxxxx.q(), BAZE_xBCDExxx);
     /*p01.BOGA*/ wire BOGA_xBCDEFGH = or(BELE_Axxxxxxx, not(SYS_PIN_CLK_A));
     /*p01.BOMA*/ wire BOMA_Axxxxxxx = !or(BELE_Axxxxxxx, not(SYS_PIN_CLK_A));
 
@@ -134,22 +134,22 @@ struct Sandbox {
 
     /*p01.TABA*/ wire TABA_RSTp = or(and(SYS_PIN_T2, not(SYS_PIN_T1)),
                                      and(SYS_PIN_T1, not(SYS_PIN_T2)),
-                                     and(TUBO_CPU_READYn, UPOF_DIV_15));
+                                     and(TUBO_CPU_READYn.q(), UPOF_DIV_15.q()));
 
     /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(SYS_PIN_RSTp, and(TABA_RSTp, !SYS_PIN_RSTp));
 
     /*p01.AFER*/ AFER_SYS_RSTp.set(BOGA_xBCDEFGH,
                                          BOMA_Axxxxxxx,
                                          nand(not(SYS_PIN_T1), not(SYS_PIN_T2), SYS_PIN_RSTp),
-                                         ASOL_POR_DONEn);
+                                         ASOL_POR_DONEn.q());
 
 
-    /*p01.AVOR*/ wire AVOR_RST = or(AFER_SYS_RSTp, ASOL_POR_DONEn);
+    /*p01.AVOR*/ wire AVOR_RST = or(AFER_SYS_RSTp.q(), ASOL_POR_DONEn.q());
     (void)AVOR_RST;
 
     wire ADDR_FF04p = false;
 
-    /*p07.TAPU*/ wire TAPU_CPU_WRp = mux2_p(EXT_PIN_WRp_C, and(CPU_PIN_WRp, ADYK_xxxDEFGx, !AFUR_ABCDxxxx), and(SYS_PIN_T2, not(SYS_PIN_T1)));
+    /*p07.TAPU*/ wire TAPU_CPU_WRp = mux2_p(EXT_PIN_WRp_C, and(CPU_PIN_WRp, ADYK_xxxDEFGx.q(), AFUR_ABCDxxxx.qn()), and(SYS_PIN_T2, not(SYS_PIN_T1)));
     /*p01.UFOL*/ wire UFOL_DIV_RST = and(SYS_PIN_CLK_A, !SYS_PIN_RSTp, !and(TAPU_CPU_WRp, ADDR_FF04p));
 
     /*p01.UPOF*/ UPOF_DIV_15.set(UKET_DIV_14.qn(), UFOL_DIV_RST, UPOF_DIV_15.qn());
@@ -171,7 +171,7 @@ struct Sandbox {
 
     CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
     CPU_PIN_POR_DONEp.set(TABA_RSTp);
-    CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp);
+    CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp.q());
     CPU_PIN_EXT_CLKGOOD.set(SYS_PIN_CLK_A);
   }
 
@@ -254,7 +254,7 @@ struct Sandbox {
 
 
     {
-      /*p01.UNUT*/ wire UNUT_POR_DONEp      = and(TUBO_CPU_READYn, UPOF_DIV_15);
+      /*p01.UNUT*/ wire UNUT_POR_DONEp      = and(TUBO_CPU_READYn.q(), UPOF_DIV_15.q());
       /*p01.TABA*/ wire TABA_POR_DONEp      = or(UNOR_MODE_DBG2p, UMUT_MODE_DBG1p, UNUT_POR_DONEp);
       /*p01.ALYP*/ wire ALYP_POR_DONEn      = not(TABA_POR_DONEp);
       /*p01.AFAR*/ wire AFAR_POR_DONE_RSTp  = nor(ALYP_POR_DONEn, SYS_PIN_RSTp);
@@ -271,11 +271,11 @@ struct Sandbox {
       /*p01.BALY*/ wire BALY_Axxxxxxx = not(BYJU_xBCDEFGH);
       /*p01.BOGA*/ wire BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
       /*p01.BOMA*/ wire BOMA_Axxxxxxx = not(BOGA_xBCDEFGH);
-      /*p01.AFER*/ AFER_SYS_RSTp.set(BOGA_xBCDEFGH, BOMA_Axxxxxxx, UPOJ, ASOL_POR_DONEn);
+      /*p01.AFER*/ AFER_SYS_RSTp.set(BOGA_xBCDEFGH, BOMA_Axxxxxxx, UPOJ, ASOL_POR_DONEn.q());
       /*p01.AVOR*/ wire AVOR_TOP_RST = or(AFER_SYS_RSTp.q(), ASOL_POR_DONEn.q());
       (void)AVOR_TOP_RST;
 
-      CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp);
+      CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp.q());
     }
 
     CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
@@ -339,10 +339,10 @@ struct Sandbox {
   }
 
   int get_div() {
-    return pack(UKUP_DIV_00, UFOR_DIV_01, UNER_DIV_02, TERO_DIV_03,
-                UNYK_DIV_04, TAMA_DIV_05, UGOT_DIV_06, TULU_DIV_07,
-                TUGO_DIV_08, TOFE_DIV_09, TERU_DIV_10, SOLA_DIV_11,
-                SUBU_DIV_12, TEKA_DIV_13, UKET_DIV_14, UPOF_DIV_15);
+    return pack(UKUP_DIV_00.q(), UFOR_DIV_01.q(), UNER_DIV_02.q(), TERO_DIV_03.q(),
+                UNYK_DIV_04.q(), TAMA_DIV_05.q(), UGOT_DIV_06.q(), TULU_DIV_07.q(),
+                TUGO_DIV_08.q(), TOFE_DIV_09.q(), TERU_DIV_10.q(), SOLA_DIV_11.q(),
+                SUBU_DIV_12.q(), TEKA_DIV_13.q(), UKET_DIV_14.q(), UPOF_DIV_15.q());
   }
 
   SignalHash commit() {

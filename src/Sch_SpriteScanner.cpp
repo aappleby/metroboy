@@ -12,7 +12,7 @@ void SpriteScanner::tick(SchematicTop& top) {
   /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, top.ATAR_VID_RSTp());
   /*p29.BALU*/ wire BALU_LINE_RSTp = not(ANOM_LINE_RSTn);
 
-  /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // die AND. 32 + 4 + 2 + 1 = 39
+  /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and (YFEL_SCAN0.q(), WEWY_SCAN1.q(), GOSO_SCAN2.q(), FONY_SCAN5.q()); // die AND. 32 + 4 + 2 + 1 = 39
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -20,7 +20,7 @@ void SpriteScanner::tick(SchematicTop& top) {
   {
     /*p29.BAGY*/ wire BAGY_LINE_RSTn = not(BALU_LINE_RSTp);
     /*p29.BYBA*/ BYBA_SCAN_DONE_A.set(top.XUPY_ABxxEFxx(), BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ DOBA_SCAN_DONE_B.set(top.ALET_xBxDxFxH(), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A);
+    /*p29.DOBA*/ DOBA_SCAN_DONE_B.set(top.ALET_xBxDxFxH(), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.q());
 
     // BEBU_01 << DOBA_17
     // BEBU_02 << BALU_02
@@ -45,7 +45,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     // When ASEN goes high, BESU goes low.
 
     /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_LINE_END(), ASEN_SCAN_DONE_PE);
-    /*p29.CENO*/ CENO_SCANNINGp.set(top.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), BESU_SCANNINGp);
+    /*p29.CENO*/ CENO_SCANNINGp.set(top.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), BESU_SCANNINGp.q());
   }
 
   //----------------------------------------
@@ -54,12 +54,12 @@ void SpriteScanner::tick(SchematicTop& top) {
 
   {
     /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or(_FETO_SCAN_DONE_d0,   top.XUPY_ABxxEFxx());
-    /*p28.YFEL*/ YFEL_SCAN0.set(_GAVA_SCAN_CLK, ANOM_LINE_RSTn, !YFEL_SCAN0);
-    /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0,    ANOM_LINE_RSTn, !WEWY_SCAN1);
-    /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1,    ANOM_LINE_RSTn, !GOSO_SCAN2);
-    /*p28.ELYN*/ ELYN_SCAN3.set(!GOSO_SCAN2,    ANOM_LINE_RSTn, !ELYN_SCAN3);
-    /*p28.FAHA*/ FAHA_SCAN4.set(!ELYN_SCAN3,    ANOM_LINE_RSTn, !FAHA_SCAN4);
-    /*p28.FONY*/ FONY_SCAN5.set(!FAHA_SCAN4,    ANOM_LINE_RSTn, !FONY_SCAN5);
+    /*p28.YFEL*/ YFEL_SCAN0.set(_GAVA_SCAN_CLK,  ANOM_LINE_RSTn, YFEL_SCAN0.qn());
+    /*p28.WEWY*/ WEWY_SCAN1.set(YFEL_SCAN0.qn(), ANOM_LINE_RSTn, WEWY_SCAN1.qn());
+    /*p28.GOSO*/ GOSO_SCAN2.set(WEWY_SCAN1.qn(), ANOM_LINE_RSTn, GOSO_SCAN2.qn());
+    /*p28.ELYN*/ ELYN_SCAN3.set(GOSO_SCAN2.qn(), ANOM_LINE_RSTn, ELYN_SCAN3.qn());
+    /*p28.FAHA*/ FAHA_SCAN4.set(ELYN_SCAN3.qn(), ANOM_LINE_RSTn, FAHA_SCAN4.qn());
+    /*p28.FONY*/ FONY_SCAN5.set(FAHA_SCAN4.qn(), ANOM_LINE_RSTn, FONY_SCAN5.qn());
   }
 
   //----------------------------------------
@@ -101,7 +101,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not(YDIFF_S6);
     /*p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not(YDIFF_S7);
 
-    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, top.XYMO_LCDC_SPSIZE);
+    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, top.XYMO_LCDC_SPSIZE.q());
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
@@ -117,11 +117,11 @@ SignalHash SpriteScanner::commit() {
   /*p28.BESU*/ hash << BESU_SCANNINGp.commit();
   /*p29.CENO*/ hash << CENO_SCANNINGp.commit();
 
-  /*p29.DEGE*/ hash << DEGE_SPRITE_DELTA0.reset();
-  /*p29.DABY*/ hash << DABY_SPRITE_DELTA1.reset();
-  /*p29.DABU*/ hash << DABU_SPRITE_DELTA2.reset();
-  /*p29.GYSA*/ hash << GYSA_SPRITE_DELTA3.reset();
-  /*p29.CARE*/ hash << CARE_STORE_ENp_ABxxEFxx.reset();
+  /*p29.DEGE*/ hash << DEGE_SPRITE_DELTA0.commit();
+  /*p29.DABY*/ hash << DABY_SPRITE_DELTA1.commit();
+  /*p29.DABU*/ hash << DABU_SPRITE_DELTA2.commit();
+  /*p29.GYSA*/ hash << GYSA_SPRITE_DELTA3.commit();
+  /*p29.CARE*/ hash << CARE_STORE_ENp_ABxxEFxx.commit();
 
   /*p28.YFEL*/ hash << YFEL_SCAN0.commit();
   /*p28.WEWY*/ hash << WEWY_SCAN1.commit();

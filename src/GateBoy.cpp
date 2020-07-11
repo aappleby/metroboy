@@ -22,14 +22,15 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   top->SYS_PIN_T2n.set(0);
 
   SignalHash hash;
-  Req req{};
 
-  // 16 phases w/ reset high, clock not running.
-  top->SYS_PIN_RSTp.set(1);
-  top->SYS_PIN_CLK_A.set(0);
-  gateboy.run(top, 16, req);
+  // Just read DIV forever.
+  Req req{
+    .addr = 0xFF04,
+    .data = 0,
+    .read = 1,
+    .write = 0
+  };
 
-#if 0
   // 16 phases w/ reset high, clock not running.
   top->SYS_PIN_RSTp.set(1);
   top->SYS_PIN_CLK_A.set(0);
@@ -49,11 +50,12 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 16, req);
   printf("\n");
 
+#if 0
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
   top->XONA_LCDC_EN.preset(1);
   gateboy.verbose = false;
-  while(!top->CPU_PIN_STARTp.q()) {
+  while(!top->CPU_PIN_STARTp.get()) {
     gateboy.run(top, 1, req);
   }
 
@@ -74,7 +76,7 @@ SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
   SignalHash hash;
   for (int i = 0; i < phase_count; i++) {
     top->phase_counter++;
-    wire CLK = (top->phase_counter & 1) & (top->SYS_PIN_CLK_A.q());
+    wire CLK = (top->phase_counter & 1) & (top->SYS_PIN_CLK_A);
     top->SYS_PIN_CLK_B.set(CLK);
     hash = phase(top, req);
   }
@@ -106,9 +108,9 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       pass_count,
-      top->SYS_PIN_CLK_A.q(),
-      top->SYS_PIN_CLK_B.q(),
-      top->SYS_PIN_RSTp.q(),
+      top->SYS_PIN_CLK_A.get(),
+      top->SYS_PIN_CLK_B.get(),
+      top->SYS_PIN_RSTp.get(),
       top->clk_reg.AFUR_ABCDxxxx.q(),
       top->clk_reg.ALEF_xBCDExxx.q(),
       top->clk_reg.APUK_xxCDEFxx.q(),
@@ -117,7 +119,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.VENA_xxxxEFGH.q(),
       top->clk_reg.WOSU_xBCxxFGx.q(),
       top->BELE_Axxxxxxx(),
-      top->CPU_PIN_READYp.a.val,
+      top->CPU_PIN_READYp.get(),
       top->tim_reg.get_div(),
       top->rst_reg._TUBO_CPU_READYn.q(),
       top->rst_reg.ASOL_POR_DONEn.q(),

@@ -13,24 +13,24 @@ struct TimerRegisters {
   SignalHash commit();
 
   int get_div() {
-    return pack(UKUP_DIV_00, UFOR_DIV_01, UNER_DIV_02, TERO_DIV_03,
-                UNYK_DIV_04, TAMA_DIV_05, UGOT_DIV_06, TULU_DIV_07,
-                TUGO_DIV_08, TOFE_DIV_09, TERU_DIV_10, SOLA_DIV_11,
-                SUBU_DIV_12, TEKA_DIV_13, UKET_DIV_14, UPOF_DIV_15);
+    return pack(UKUP_DIV_00.q(), UFOR_DIV_01.q(), UNER_DIV_02.q(), TERO_DIV_03.q(),
+                UNYK_DIV_04.q(), TAMA_DIV_05.q(), UGOT_DIV_06.q(), TULU_DIV_07.q(),
+                TUGO_DIV_08.q(), TOFE_DIV_09.q(), TERU_DIV_10.q(), SOLA_DIV_11.q(),
+                SUBU_DIV_12.q(), TEKA_DIV_13.q(), UKET_DIV_14.q(), UPOF_DIV_15.q());
   }
 
   int get_tima() {
-    return pack(REGA_TIMA_0, POVY_TIMA_1, PERU_TIMA_2, RATE_TIMA_3,
-                RUBY_TIMA_4, RAGE_TIMA_5, PEDA_TIMA_6, NUGA_TIMA_7);
+    return pack(REGA_TIMA_0.q(), POVY_TIMA_1.q(), PERU_TIMA_2.q(), RATE_TIMA_3.q(),
+                RUBY_TIMA_4.q(), RAGE_TIMA_5.q(), PEDA_TIMA_6.q(), NUGA_TIMA_7.q());
   }
 
   int get_tma() {
-    return pack(SABU_TMA_0, NYKE_TMA_1, MURU_TMA_2, TYVA_TMA_3,
-                TYRU_TMA_4, SUFY_TMA_5, PETO_TMA_6, SETA_TMA_7);
+    return pack(SABU_TMA_0.q(), NYKE_TMA_1.q(), MURU_TMA_2.q(), TYVA_TMA_3.q(),
+                TYRU_TMA_4.q(), SUFY_TMA_5.q(), PETO_TMA_6.q(), SETA_TMA_7.q());
   }
 
   int get_tac() {
-    return pack(SOPU_TAC_0, SAMY_TAC_1, SABO_TAC_2, 0);
+    return pack(SOPU_TAC_0.q(), SAMY_TAC_1.q(), SABO_TAC_2.q(), 0);
   }
 
 private:

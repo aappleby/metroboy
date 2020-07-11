@@ -25,6 +25,15 @@ private:
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
   /*p27.RYDY*/ NorLatch RYDY_WIN_FIRST_TILE_A;
 
+  /*p27.NOPA*/ Reg17 _NOPA_WIN_MODE_B;
+  /*p27.SOVY*/ Reg17 _SOVY_WIN_FIRST_TILE_B;
+  /*p27.REJO*/ NorLatch _REJO_WY_MATCH_LATCH;
+  /*p27.SARY*/ Reg17 _SARY_WY_MATCH;
+  /*p27.RYFA*/ Reg17 _RYFA_WX_MATCHn_A;
+  /*p27.RENE*/ Reg17 _RENE_WX_MATCHn_B;
+  /*p27.PYCO*/ Reg17 _PYCO_WX_MATCH_A;
+  /*p27.NUNU*/ Reg17 _NUNU_WX_MATCH_B;
+
   /*p27.WYKA*/ Reg17 WYKA_WIN_X3;
   /*p27.WODY*/ Reg17 WODY_WIN_X4;
   /*p27.WOBO*/ Reg17 WOBO_WIN_X5;
@@ -39,15 +48,6 @@ private:
   /*p27.TOZO*/ Reg17 TOZO_WIN_Y5;
   /*p27.TATE*/ Reg17 TATE_WIN_Y6;
   /*p27.TEKE*/ Reg17 TEKE_WIN_Y7;
-
-  /*p27.NOPA*/ Reg17 _NOPA_WIN_MODE_B;
-  /*p27.SOVY*/ Reg17 _SOVY_WIN_FIRST_TILE_B;
-  /*p27.REJO*/ NorLatch _REJO_WY_MATCH_LATCH;
-  /*p27.SARY*/ Reg17 _SARY_WY_MATCH;
-  /*p27.RYFA*/ Reg17 _RYFA_WX_MATCHn_A;
-  /*p27.RENE*/ Reg17 _RENE_WX_MATCHn_B;
-  /*p27.PYCO*/ Reg17 _PYCO_WX_MATCH_A;
-  /*p27.NUNU*/ Reg17 _NUNU_WX_MATCH_B;
 
   // FF4A - WY
   /*p23.NESO*/ Reg9 NESO_WY0;

@@ -30,6 +30,13 @@ private:
   /*p02.NUTY*/ TpLatch NUTY_FF0F_L2;
   /*p02.MOPO*/ TpLatch MOPO_FF0F_L3;
   /*p02.PAVY*/ TpLatch PAVY_FF0F_L4;
+
+  // Interrupts
+  CpuPinOut CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
+  CpuPinOut CPU_PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
+  CpuPinOut CPU_PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
+  CpuPinOut CPU_PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
+  CpuPinOut CPU_PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
 };
 
 //-----------------------------------------------------------------------------

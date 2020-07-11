@@ -9,10 +9,10 @@ void ClockRegisters::tick(SchematicTop& top) {
   // ignoring the deglitcher here
 
   {
-    wire AFUR_xBCDExxx_ = AFUR_ABCDxxxx;
-    wire ALEF_xxCDEFxx_ = ALEF_xBCDExxx;
-    wire APUK_xxxDEFGx_ = APUK_xxCDEFxx;
-    wire ADYK_xxxxEFGH_ = ADYK_xxxDEFGx;
+    wire AFUR_xBCDExxx_ = AFUR_ABCDxxxx.q();
+    wire ALEF_xxCDEFxx_ = ALEF_xBCDExxx.q();
+    wire APUK_xxxDEFGx_ = APUK_xxCDEFxx.q();
+    wire ADYK_xxxxEFGH_ = ADYK_xxxDEFGx.q();
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
@@ -27,8 +27,8 @@ void ClockRegisters::tick(SchematicTop& top) {
     /*p29.XOTA*/ wire _XOTA_AxCxExGx = not(_XYVA_xBxDxFxH);
     /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not(_XOTA_AxCxExGx);
 
-    wire WUVU_xxCDxxGH_ = WUVU_xxCDxxGH;
-    wire VENA_xxxxEFGH_ = VENA_xxxxEFGH;
+    wire WUVU_xxCDxxGH_ = WUVU_xxCDxxGH.q();
+    wire VENA_xxxxEFGH_ = VENA_xxxxEFGH.q();
 
     /*p29.WUVU*/ WUVU_xxCDxxGH.set( _XOTA_AxCxExGx, top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
     /*p21.VENA*/ VENA_xxxxEFGH.set(!WUVU_xxCDxxGH_, top.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);

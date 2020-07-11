@@ -24,7 +24,7 @@ void JoypadRegisters::tick(SchematicTop& top) {
     /*p02.KERY*/ wire KERY_ANY_BUTTONp = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
 
     /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(top.BOGA_xBCDEFGH(), KERY_ANY_BUTTONp);
-    // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
+    CPU_PIN_WAKE.set(AWOB_WAKE_CPU.q());
   }
 
   {
@@ -130,6 +130,8 @@ SignalHash JoypadRegisters::commit(SchematicTop& top) {
   /*p05.KEJA*/ hash << KEJA_JOYP_L2.commit();
   /*p05.KOLO*/ hash << KOLO_JOYP_L3.commit();
   /*p02.AWOB*/ hash << AWOB_WAKE_CPU.commit();
+
+  hash << CPU_PIN_WAKE.commit();          // <- P02.AWOB
 
   return hash;
 }

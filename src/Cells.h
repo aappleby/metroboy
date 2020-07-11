@@ -4,75 +4,103 @@
 #include <stdio.h>
 
 //-----------------------------------------------------------------------------
-// I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
-// Not sure how that doesn't break in harware, but whatev.
 
-struct PinIn {
+struct ExtPinIn {
 
-  operator const bool() const {
-    if (a.error) __debugbreak();
-    if (a.hiz)   __debugbreak();
-    return a.val;
+  operator SignalState() const {
+    return a;
   }
 
-  bool q()  const { return a.val; }
+  operator bool() const {
+    if (a == ERROR) __debugbreak();
+    return (bool)a;
+  }
 
-  operator SignalState() const { return a; }
+  bool get() const {
+    if (a == ERROR) __debugbreak();
+    return (bool)a;
+  }
 
   void set(bool c) {
-    a = c ? SET_1 : SET_0;
+    a = c;
   }
 
-  SignalState a = ERROR;
+  uint8_t a = ERROR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct RegisterBase {
+struct CpuPinIn {
 
-  operator SignalState() const { return a; }
-
-  operator const bool() const { return get(); }
-  bool q()  const             { return get(); }
-  bool qn() const             { return !get(); }
-
-  wire get() const {
-    if (a.error)  __debugbreak();
-    if (a.hiz)    __debugbreak();
-    //if (!b.error) __debugbreak();
-    //if (a.hiz) return 1;
-    return a.val;
+  operator SignalState() const {
+    return a;
   }
 
-//protected:
+  operator bool() const {
+    if (a == ERROR) __debugbreak();
+    return (bool)a;
+  }
 
-  SignalState a = SET_0;
-  SignalState b = ERROR;
+  bool get() const {
+    if (a == ERROR) __debugbreak();
+    return (bool)a;
+  }
+
+  void set(bool c) {
+    a = c;
+  }
+
+  uint8_t a = ERROR;
 };
-
-static_assert(sizeof(RegisterBase) == 2, "RegisterBase size != 2");
 
 //-----------------------------------------------------------------------------
 
-struct PinOut : public RegisterBase {
+struct ExtPinOut {
+
+  bool get() const {
+    if (a == ERROR) __debugbreak();
+    return a;
+  }
 
   void set(wire val) {
-    if (!b.error) __debugbreak();
-    b.val = val;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = 0;
-    b.rst = 0;
-    b.error = 0;
+    if (b != ERROR) __debugbreak();
+    b = val;
   }
 
-  SignalState commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
+  uint8_t commit() {
+    if (b == ERROR) __debugbreak();
     a = b;
     b = ERROR;
     return a;
   }
+
+  uint8_t a = ERROR;
+  uint8_t b = ERROR;
+};
+
+//-----------------------------------------------------------------------------
+
+struct CpuPinOut {
+
+  bool get() const {
+    if (a == ERROR) __debugbreak();
+    return a;
+  }
+
+  void set(wire val) {
+    if (b != ERROR) __debugbreak();
+    b = val;
+  }
+
+  uint8_t commit() {
+    if (b == ERROR) __debugbreak();
+    a = b;
+    b = ERROR;
+    return a;
+  }
+
+  uint8_t a = ERROR;
+  uint8_t b = ERROR;
 };
 
 //-----------------------------------------------------------------------------
@@ -96,7 +124,8 @@ struct Tribuf {
   operator bool() const {
     if (a.error)  __debugbreak();
     if (a.hiz)    {
-      printf("reading hiz\n");
+      // FIXME this is spammy until everything's ticking
+      //printf("reading hiz\n");
       return 1;
     }
     return a.val;
@@ -106,6 +135,23 @@ struct Tribuf {
     return a;
   }
 
+  void preset_a(SignalFlags f) {
+    a = f;
+  }
+
+  void preset_a(bool x) {
+    a = x ? SET_1 : SET_0;
+  }
+
+  void preset_b(SignalFlags f) {
+    b = f;
+  }
+
+  void preset_b(bool x) {
+    b = x ? SET_1 : SET_0;
+  }
+
+  /*
   void preset(SignalFlags f) {
     a.state = uint8_t(f);
     b.state = uint8_t(f);
@@ -115,6 +161,7 @@ struct Tribuf {
     a = x ? SET_1 : SET_0;
     b = x ? SET_1 : SET_0;
   }
+  */
 
   // top rung tadpole facing second rung dot
   void set_tribuf_6p(wire OEp, SignalState D) {
@@ -157,7 +204,7 @@ struct Tribuf {
     b.error = 0;
   }
 
-  SignalState commit_tribuf() {
+  SignalState commit() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
     a = b;
@@ -172,7 +219,16 @@ struct Tribuf {
 //-----------------------------------------------------------------------------
 // Persistent gate, used for nand latches
 
-struct Gate : public RegisterBase {
+struct Gate {
+
+  operator bool() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  operator SignalState() const {
+    return a;
+  }
 
   void preset(bool val) {
     if (!b.error) __debugbreak();
@@ -193,7 +249,39 @@ struct Gate : public RegisterBase {
     b = ERROR;
     return a;
   }
+
+  SignalState a = SET_0;
+  SignalState b = ERROR;
 };
+
+//-----------------------------------------------------------------------------
+
+struct RegisterBase {
+
+  //operator SignalState() const { return a; }
+
+  //operator const bool() const { return get(); }
+  bool q()  const             { return get(); }
+  bool qn() const             { return !get(); }
+
+
+protected:
+  SignalState a = SET_0;
+  SignalState b = ERROR;
+
+  wire get() const {
+    if (a.error)  __debugbreak();
+    if (a.hiz)    __debugbreak();
+    //if (!b.error) __debugbreak();
+    //if (a.hiz) return 1;
+    return a.val;
+  }
+
+private:
+  bool operator!() const;
+};
+
+static_assert(sizeof(RegisterBase) == 2, "RegisterBase size != 2");
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset and dual outputs
@@ -232,13 +320,14 @@ struct Gate : public RegisterBase {
 
 struct Reg8 : public RegisterBase {
 
+  // Maybe this ticks on the falling edge?
   void set(wire CLKp, wire CLKn, bool val) {
     if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
-    b.clk = CLKp;
+    b.clk = CLKn;
     b.set = 0;
     b.rst = 0;
     b.error = 0;
@@ -384,7 +473,7 @@ struct Reg9 : public RegisterBase {
 
 struct Reg11 : public RegisterBase {
 
-  void setQ(wire CLKp, wire CLKn, wire RSTp, wire D) {
+  void set(wire CLKp, wire CLKn, wire RSTp, wire D) {
     if (CLKp == CLKn) __debugbreak();
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();

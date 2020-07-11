@@ -68,19 +68,6 @@ struct SchematicTop {
   void tick_cpu_bus();
 
   //-----------------------------------------------------------------------------
-
-  SignalHash commit_io();
-  SignalHash commit_ibus();
-  SignalHash commit_vbus();
-  SignalHash commit_ebus();
-  SignalHash commit_obus();
-
-  SignalHash commit_lcd_pins();
-  SignalHash commit_joy_pins();
-
-  SignalHash commit_top_regs();
-
-  //-----------------------------------------------------------------------------
   // Debug signals
 
   /*p07.UBET*/ wire UBET_T1p() const { return not(SYS_PIN_T1n); }
@@ -114,10 +101,10 @@ struct SchematicTop {
   //----------------------------------------
   // Root chains
 
-  /*p01.AFUR*/ wire AFUR_ABCDxxxx() const { return clk_reg.AFUR_ABCDxxxx; }
-  /*p01.ALEF*/ wire ALEF_xBCDExxx() const { return clk_reg.ALEF_xBCDExxx; }
-  /*p01.APUK*/ wire APUK_xxCDEFxx() const { return clk_reg.APUK_xxCDEFxx; }
-  /*p01.ADYK*/ wire ADYK_xxxDEFGx() const { return clk_reg.ADYK_xxxDEFGx; }
+  /*p01.AFUR*/ wire AFUR_ABCDxxxx() const { return clk_reg.AFUR_ABCDxxxx.q(); }
+  /*p01.ALEF*/ wire ALEF_xBCDExxx() const { return clk_reg.ALEF_xBCDExxx.q(); }
+  /*p01.APUK*/ wire APUK_xxCDEFxx() const { return clk_reg.APUK_xxCDEFxx.q(); }
+  /*p01.ADYK*/ wire ADYK_xxxDEFGx() const { return clk_reg.ADYK_xxxDEFGx.q(); }
 
   /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!AFUR_ABCDxxxx()); }
   /*p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not( ALEF_xBCDExxx()); }
@@ -127,9 +114,11 @@ struct SchematicTop {
   //----------------------------------------
   // Video chains
 
-  /*p29.WUVU*/ wire WUVU_xxCDxxGH() const { return clk_reg.WUVU_xxCDxxGH; }
-  /*p21.VENA*/ wire VENA_xxxxEFGH() const { return clk_reg.VENA_xxxxEFGH; }
-  /*p29.WOSU*/ wire WOSU_xBCxxFGx() const { return clk_reg.WOSU_xBCxxFGx; }
+  /*p29.WUVU*/ wire WUVU_xxCDxxGH() const {
+    return clk_reg.WUVU_xxCDxxGH.q();
+  }
+  /*p21.VENA*/ wire VENA_xxxxEFGH() const { return clk_reg.VENA_xxxxEFGH.q(); }
+  /*p29.WOSU*/ wire WOSU_xBCxxFGx() const { return clk_reg.WOSU_xBCxxFGx.q(); }
 
   /*p29.XOCE*/ wire XOCE_AxxDExxH() const { return not(WOSU_xBCxxFGx()); }
   /*p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not(WUVU_xxCDxxGH()); }
@@ -306,20 +295,20 @@ struct SchematicTop {
 
   /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4() const;
 
-  /*p21.RUTU*/ wire RUTU_LINE_END()       const { return lcd_reg.RUTU_LINE_END; }
-  /*p29.CATU*/ wire CATU_LINE_END()       const { return lcd_reg.CATU_LINE_END; }
-  /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp; }
-  /*p21.POPU*/ wire POPU_VBLANKp_d4()     const { return lcd_reg.POPU_VBLANKp_d4; }
+  /*p21.RUTU*/ wire RUTU_LINE_END()       const { return lcd_reg.RUTU_LINE_END.q(); }
+  /*p29.CATU*/ wire CATU_LINE_END()       const { return lcd_reg.CATU_LINE_END.q(); }
+  /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp.q(); }
+  /*p21.POPU*/ wire POPU_VBLANKp_d4()     const { return lcd_reg.POPU_VBLANKp_d4.q(); }
   /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(lcd_reg.POPU_VBLANKp_d4.qn()); }
 
-  /*p21.MUWY*/ wire MUWY_Y0() const { return lcd_reg.MUWY_Y0; }
-  /*p21.MYRO*/ wire MYRO_Y1() const { return lcd_reg.MYRO_Y1; }
-  /*p21.LEXA*/ wire LEXA_Y2() const { return lcd_reg.LEXA_Y2; }
-  /*p21.LYDO*/ wire LYDO_Y3() const { return lcd_reg.LYDO_Y3; }
-  /*p21.LOVU*/ wire LOVU_Y4() const { return lcd_reg.LOVU_Y4; }
-  /*p21.LEMA*/ wire LEMA_Y5() const { return lcd_reg.LEMA_Y5; }
-  /*p21.MATO*/ wire MATO_Y6() const { return lcd_reg.MATO_Y6; }
-  /*p21.LAFO*/ wire LAFO_Y7() const { return lcd_reg.LAFO_Y7; }
+  /*p21.MUWY*/ wire MUWY_Y0() const { return lcd_reg.MUWY_Y0.q(); }
+  /*p21.MYRO*/ wire MYRO_Y1() const { return lcd_reg.MYRO_Y1.q(); }
+  /*p21.LEXA*/ wire LEXA_Y2() const { return lcd_reg.LEXA_Y2.q(); }
+  /*p21.LYDO*/ wire LYDO_Y3() const { return lcd_reg.LYDO_Y3.q(); }
+  /*p21.LOVU*/ wire LOVU_Y4() const { return lcd_reg.LOVU_Y4.q(); }
+  /*p21.LEMA*/ wire LEMA_Y5() const { return lcd_reg.LEMA_Y5.q(); }
+  /*p21.MATO*/ wire MATO_Y6() const { return lcd_reg.MATO_Y6.q(); }
+  /*p21.LAFO*/ wire LAFO_Y7() const { return lcd_reg.LAFO_Y7.q(); }
 
   //-----------------------------------------------------------------------------
   // Address decoder signals
@@ -360,14 +349,14 @@ struct SchematicTop {
   wire VOTY_INT_STATp() const;
   wire VEKU_SFETCH_RUNNING_RSTn() const;
 
-  /*p21.XEHO*/ wire XEHO_X0() const { return ppu_reg.XEHO_X0; }
-  /*p21.SAVY*/ wire SAVY_X1() const { return ppu_reg.SAVY_X1; }
-  /*p21.XODU*/ wire XODU_X2() const { return ppu_reg.XODU_X2; }
-  /*p21.XYDO*/ wire XYDO_X3() const { return ppu_reg.XYDO_X3; }
-  /*p21.TUHU*/ wire TUHU_X4() const { return ppu_reg.TUHU_X4; }
-  /*p21.TUKY*/ wire TUKY_X5() const { return ppu_reg.TUKY_X5; }
-  /*p21.TAKO*/ wire TAKO_X6() const { return ppu_reg.TAKO_X6; }
-  /*p21.SYBE*/ wire SYBE_X7() const { return ppu_reg.SYBE_X7; }
+  /*p21.XEHO*/ wire XEHO_X0() const { return ppu_reg.XEHO_X0.q(); }
+  /*p21.SAVY*/ wire SAVY_X1() const { return ppu_reg.SAVY_X1.q(); }
+  /*p21.XODU*/ wire XODU_X2() const { return ppu_reg.XODU_X2.q(); }
+  /*p21.XYDO*/ wire XYDO_X3() const { return ppu_reg.XYDO_X3.q(); }
+  /*p21.TUHU*/ wire TUHU_X4() const { return ppu_reg.TUHU_X4.q(); }
+  /*p21.TUKY*/ wire TUKY_X5() const { return ppu_reg.TUKY_X5.q(); }
+  /*p21.TAKO*/ wire TAKO_X6() const { return ppu_reg.TAKO_X6.q(); }
+  /*p21.SYBE*/ wire SYBE_X7() const { return ppu_reg.SYBE_X7.q(); }
 
   //-----------------------------------------------------------------------------
   // Tile fetcher signals
@@ -492,11 +481,11 @@ struct SchematicTop {
   }
 #endif
 
-  PinIn  SYS_PIN_RSTp;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  PinIn  SYS_PIN_CLK_A; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  PinIn  SYS_PIN_CLK_B; // PIN_74 
-  PinIn  SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
-  PinIn  SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
+  ExtPinIn  SYS_PIN_RSTp;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  ExtPinIn  SYS_PIN_CLK_A; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
+  ExtPinIn  SYS_PIN_CLK_B; // PIN_74 
+  ExtPinIn  SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
+  ExtPinIn  SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   // Ground ties - VYPO, RUNY, WEFE, unlabeled cell between BONE and BUFY.
 
@@ -507,41 +496,60 @@ struct SchematicTop {
   wire PESU_GND = 0;
 
   //-----------------------------------------------------------------------------
-  // Internal bus to CPU
+  // SOC-to-CPU control signals
 
+  CpuPinOut CPU_PIN_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related reg
+  CpuPinOut CPU_PIN_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  CpuPinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  CpuPinOut CPU_PIN_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
+  CpuPinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  CpuPinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
+
+  // Clocks
+  CpuPinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
+  CpuPinOut CPU_PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
+  CpuPinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  CpuPinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
+  CpuPinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
+  CpuPinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
+  CpuPinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
+  CpuPinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+
+  //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
-  PinIn  CPU_PIN_READYp;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-  PinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  PinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
+
+  CpuPinIn  CPU_PIN_READYp;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  CpuPinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  CpuPinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
 
   // Interrupt acks
-  PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
-  PinIn  CPU_PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
-  PinIn  CPU_PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
-  PinIn  CPU_PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
-  PinIn  CPU_PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
+  CpuPinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
+  CpuPinIn  CPU_PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
+  CpuPinIn  CPU_PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
+  CpuPinIn  CPU_PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
+  CpuPinIn  CPU_PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
 
   // Main bus
-  PinIn  CPU_PIN_RDp;           // top right port PORTA_00: ->
-  PinIn  CPU_PIN_WRp;           // top right port PORTA_01: ->
-  PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  CpuPinIn  CPU_PIN_RDp;           // top right port PORTA_00: ->
+  CpuPinIn  CPU_PIN_WRp;           // top right port PORTA_01: ->
+  CpuPinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
-  PinIn  CPU_PIN_A00;           // bottom right port PORTB_00: -> A00
-  PinIn  CPU_PIN_A01;           // bottom right port PORTB_04: -> A01
-  PinIn  CPU_PIN_A02;           // bottom right port PORTB_08: -> A02
-  PinIn  CPU_PIN_A03;           // bottom right port PORTB_12: -> A03
-  PinIn  CPU_PIN_A04;           // bottom right port PORTB_16: -> A04
-  PinIn  CPU_PIN_A05;           // bottom right port PORTB_20: -> A05
-  PinIn  CPU_PIN_A06;           // bottom right port PORTB_24: -> A06
-  PinIn  CPU_PIN_A07;           // bottom right port PORTB_28: -> A07
-  PinIn  CPU_PIN_A08;           // bottom right port PORTB_02: -> A08
-  PinIn  CPU_PIN_A09;           // bottom right port PORTB_06: -> A09
-  PinIn  CPU_PIN_A10;           // bottom right port PORTB_10: -> A10
-  PinIn  CPU_PIN_A11;           // bottom right port PORTB_14: -> A11
-  PinIn  CPU_PIN_A12;           // bottom right port PORTB_18: -> A12
-  PinIn  CPU_PIN_A13;           // bottom right port PORTB_22: -> A13
-  PinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
-  PinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
+  CpuPinIn  CPU_PIN_A00;           // bottom right port PORTB_00: -> A00
+  CpuPinIn  CPU_PIN_A01;           // bottom right port PORTB_04: -> A01
+  CpuPinIn  CPU_PIN_A02;           // bottom right port PORTB_08: -> A02
+  CpuPinIn  CPU_PIN_A03;           // bottom right port PORTB_12: -> A03
+  CpuPinIn  CPU_PIN_A04;           // bottom right port PORTB_16: -> A04
+  CpuPinIn  CPU_PIN_A05;           // bottom right port PORTB_20: -> A05
+  CpuPinIn  CPU_PIN_A06;           // bottom right port PORTB_24: -> A06
+  CpuPinIn  CPU_PIN_A07;           // bottom right port PORTB_28: -> A07
+  CpuPinIn  CPU_PIN_A08;           // bottom right port PORTB_02: -> A08
+  CpuPinIn  CPU_PIN_A09;           // bottom right port PORTB_06: -> A09
+  CpuPinIn  CPU_PIN_A10;           // bottom right port PORTB_10: -> A10
+  CpuPinIn  CPU_PIN_A11;           // bottom right port PORTB_14: -> A11
+  CpuPinIn  CPU_PIN_A12;           // bottom right port PORTB_18: -> A12
+  CpuPinIn  CPU_PIN_A13;           // bottom right port PORTB_22: -> A13
+  CpuPinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
+  CpuPinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
                                 
   Tribuf CPU_TRI_D0;            // bottom left port: <>
   Tribuf CPU_TRI_D1;            // bottom left port: <>
@@ -552,277 +560,212 @@ struct SchematicTop {
   Tribuf CPU_TRI_D6;            // bottom left port: <>
   Tribuf CPU_TRI_D7;            // bottom left port: <>
 
-  // SOC-to-CPU control signals
-  PinOut CPU_PIN_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related reg
-  PinOut CPU_PIN_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  PinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut CPU_PIN_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
-  PinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
-  PinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  PinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-
-  // Interrupts
-  PinOut CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
-  PinOut CPU_PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
-  PinOut CPU_PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
-  PinOut CPU_PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
-  PinOut CPU_PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
-
-  // Not really sure why this is here
-  PinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO
-
-  // Clocks
-  PinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
-  PinOut CPU_PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
-  PinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  PinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
-  PinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  PinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
-  PinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-  PinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
-
-  //-----------------------------------------------------------------------------
-  // OAM bus
-
-  PinOut OAM_PIN_CLK;
-  PinOut OAM_PIN_OE;
-  PinOut OAM_PIN_WR_A;
-  PinOut OAM_PIN_WR_B;
-
-  PinOut OAM_PIN_A0;
-  PinOut OAM_PIN_A1;
-  PinOut OAM_PIN_A2;
-  PinOut OAM_PIN_A3;
-  PinOut OAM_PIN_A4;
-  PinOut OAM_PIN_A5;
-  PinOut OAM_PIN_A6;
-  PinOut OAM_PIN_A7;
-
-  Tribuf OAM_PIN_DA0;
-  Tribuf OAM_PIN_DA1;
-  Tribuf OAM_PIN_DA2;
-  Tribuf OAM_PIN_DA3;
-  Tribuf OAM_PIN_DA4;
-  Tribuf OAM_PIN_DA5;
-  Tribuf OAM_PIN_DA6;
-  Tribuf OAM_PIN_DA7;
-
-  Tribuf OAM_PIN_DB0;
-  Tribuf OAM_PIN_DB1;
-  Tribuf OAM_PIN_DB2;
-  Tribuf OAM_PIN_DB3;
-  Tribuf OAM_PIN_DB4;
-  Tribuf OAM_PIN_DB5;
-  Tribuf OAM_PIN_DB6;
-  Tribuf OAM_PIN_DB7;
-
   //-----------------------------------------------------------------------------
   // LCD pins
 
-  PinOut LCD_PIN_LD1;  // PIN_50 
-  PinOut LCD_PIN_LD0;  // PIN_51 
-  PinOut LCD_PIN_CPG;  // PIN_52 
-  PinOut LCD_PIN_CP;   // PIN_53 
-  PinOut LCD_PIN_ST;   // PIN_54 
-  PinOut LCD_PIN_CPL;  // PIN_55 
-  PinOut LCD_PIN_FR;   // PIN_56 
-  PinOut LCD_PIN_S;    // PIN_57 
+  ExtPinOut LCD_PIN_LD1;  // PIN_50 
+  ExtPinOut LCD_PIN_LD0;  // PIN_51 
+  ExtPinOut LCD_PIN_CPG;  // PIN_52 
+  ExtPinOut LCD_PIN_CP;   // PIN_53 
+  ExtPinOut LCD_PIN_ST;   // PIN_54 
+  ExtPinOut LCD_PIN_CPL;  // PIN_55 
+  ExtPinOut LCD_PIN_FR;   // PIN_56 
+  ExtPinOut LCD_PIN_S;    // PIN_57 
 
   //-----------------------------------------------------------------------------
   // Joypad pins
 
-  PinOut JOY_PIN_P10_A;   // PIN_67 <- P05.KOLE
-  PinOut JOY_PIN_P10_B;   // PIN_67 <- tied low between BONE and BUFY
-  PinIn  JOY_PIN_P10_C;   // PIN_67 -> P02.KERY, P05.KEVU
-  PinOut JOY_PIN_P10_D;   // PIN_67 <- P05.KYBU
+  ExtPinOut JOY_PIN_P10_A;   // PIN_67 <- P05.KOLE
+  ExtPinOut JOY_PIN_P10_B;   // PIN_67 <- tied low between BONE and BUFY
+  ExtPinIn  JOY_PIN_P10_C;   // PIN_67 -> P02.KERY, P05.KEVU
+  ExtPinOut JOY_PIN_P10_D;   // PIN_67 <- P05.KYBU
 
-  PinOut JOY_PIN_P11_A;   // PIN_66 <- P05.KYTO
-  PinOut JOY_PIN_P11_B;   // PIN_66 <- tied low between BONE and BUFY
-  PinIn  JOY_PIN_P11_C;   // PIN_66 -> P02.KERY, P05.KAPA
-  PinOut JOY_PIN_P11_D;   // PIN_66 <- P05.KABU
+  ExtPinOut JOY_PIN_P11_A;   // PIN_66 <- P05.KYTO
+  ExtPinOut JOY_PIN_P11_B;   // PIN_66 <- tied low between BONE and BUFY
+  ExtPinIn  JOY_PIN_P11_C;   // PIN_66 -> P02.KERY, P05.KAPA
+  ExtPinOut JOY_PIN_P11_D;   // PIN_66 <- P05.KABU
 
-  PinOut JOY_PIN_P12_A;   // PIN_65 <- P05.KYHU
-  PinOut JOY_PIN_P12_B;   // PIN_65 <- tied low between BONE and BUFY
-  PinIn  JOY_PIN_P12_C;   // PIN_65 -> P02.KERY, P05.KEJA
-  PinOut JOY_PIN_P12_D;   // PIN_65 <- P05.KASY
+  ExtPinOut JOY_PIN_P12_A;   // PIN_65 <- P05.KYHU
+  ExtPinOut JOY_PIN_P12_B;   // PIN_65 <- tied low between BONE and BUFY
+  ExtPinIn  JOY_PIN_P12_C;   // PIN_65 -> P02.KERY, P05.KEJA
+  ExtPinOut JOY_PIN_P12_D;   // PIN_65 <- P05.KASY
 
-  PinOut JOY_PIN_P13_A;   // PIN_64 <- P05.KORY
-  PinOut JOY_PIN_P13_B;   // PIN_64 <- tied low between BONE and BUFY
-  PinIn  JOY_PIN_P13_C;   // PIN_64 -> P02.KERY, P05.KOLO
-  PinOut JOY_PIN_P13_D;   // PIN_64 <- P05.KALE
+  ExtPinOut JOY_PIN_P13_A;   // PIN_64 <- P05.KORY
+  ExtPinOut JOY_PIN_P13_B;   // PIN_64 <- tied low between BONE and BUFY
+  ExtPinIn  JOY_PIN_P13_C;   // PIN_64 -> P02.KERY, P05.KOLO
+  ExtPinOut JOY_PIN_P13_D;   // PIN_64 <- P05.KALE
 
-  PinOut JOY_PIN_P14_A;   // PIN_63 <- p05.KARU
-  PinOut JOY_PIN_P14_D;   // PIN_63 <- p05.KELY
+  ExtPinOut JOY_PIN_P14_A;   // PIN_63 <- p05.KARU
+  ExtPinOut JOY_PIN_P14_D;   // PIN_63 <- p05.KELY
 
-  PinOut JOY_PIN_P15_A;   // PIN_62 <- p05.CELA
-  PinOut JOY_PIN_P15_D;   // PIN_62 <- p05.COFY
+  ExtPinOut JOY_PIN_P15_A;   // PIN_62 <- p05.CELA
+  ExtPinOut JOY_PIN_P15_D;   // PIN_62 <- p05.COFY
 
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
 
-  PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
-  PinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
+  ExtPinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
+  ExtPinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
 
-  PinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
-  PinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU
-  PinIn  EXT_PIN_A02_C;   // PIN_03 -> P08.BUXU
-  PinIn  EXT_PIN_A03_C;   // PIN_04 -> P08.BASE
-  PinIn  EXT_PIN_A04_C;   // PIN_05 -> P08.AFEC
-  PinIn  EXT_PIN_A05_C;   // PIN_06 -> P08.ABUP
-  PinIn  EXT_PIN_A06_C;   // PIN_07 -> P08.CYGU
-  PinIn  EXT_PIN_A07_C;   // PIN_08 -> P08.COGO
-  PinIn  EXT_PIN_A08_C;   // PIN_09 -> P08.MUJY
-  PinIn  EXT_PIN_A09_C;   // PIN_10 -> P08.NENA
-  PinIn  EXT_PIN_A10_C;   // PIN_11 -> P08.SURA
-  PinIn  EXT_PIN_A11_C;   // PIN_12 -> P08.MADY
-  PinIn  EXT_PIN_A12_C;   // PIN_13 -> P08.LAHE
-  PinIn  EXT_PIN_A13_C;   // PIN_14 -> P08.LURA
-  PinIn  EXT_PIN_A14_C;   // PIN_15 -> P08.PEVO
-  PinIn  EXT_PIN_A15_C;   // PIN_16 -> P08.RAZA
+  ExtPinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
+  ExtPinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU
+  ExtPinIn  EXT_PIN_A02_C;   // PIN_03 -> P08.BUXU
+  ExtPinIn  EXT_PIN_A03_C;   // PIN_04 -> P08.BASE
+  ExtPinIn  EXT_PIN_A04_C;   // PIN_05 -> P08.AFEC
+  ExtPinIn  EXT_PIN_A05_C;   // PIN_06 -> P08.ABUP
+  ExtPinIn  EXT_PIN_A06_C;   // PIN_07 -> P08.CYGU
+  ExtPinIn  EXT_PIN_A07_C;   // PIN_08 -> P08.COGO
+  ExtPinIn  EXT_PIN_A08_C;   // PIN_09 -> P08.MUJY
+  ExtPinIn  EXT_PIN_A09_C;   // PIN_10 -> P08.NENA
+  ExtPinIn  EXT_PIN_A10_C;   // PIN_11 -> P08.SURA
+  ExtPinIn  EXT_PIN_A11_C;   // PIN_12 -> P08.MADY
+  ExtPinIn  EXT_PIN_A12_C;   // PIN_13 -> P08.LAHE
+  ExtPinIn  EXT_PIN_A13_C;   // PIN_14 -> P08.LURA
+  ExtPinIn  EXT_PIN_A14_C;   // PIN_15 -> P08.PEVO
+  ExtPinIn  EXT_PIN_A15_C;   // PIN_16 -> P08.RAZA
 
   //-----------------------------------------------------------------------------
   // External bus
 
-  PinOut EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
-  PinOut EXT_PIN_RDn_A;   // PIN_79 <- P08.UGAC
-  PinOut EXT_PIN_RDn_D;   // PIN_79 <- P08.URUN
-  PinOut EXT_PIN_WRn_A;   // PIN_78 <- P08.UVER
-  PinOut EXT_PIN_WRn_D;   // PIN_78 <- P08.USUF
-  PinOut EXT_PIN_CSn_A;   // PIN_80 <- P08.TYHO
+  ExtPinOut EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
+  ExtPinOut EXT_PIN_RDn_A;   // PIN_79 <- P08.UGAC
+  ExtPinOut EXT_PIN_RDn_D;   // PIN_79 <- P08.URUN
+  ExtPinOut EXT_PIN_WRn_A;   // PIN_78 <- P08.UVER
+  ExtPinOut EXT_PIN_WRn_D;   // PIN_78 <- P08.USUF
+  ExtPinOut EXT_PIN_CSn_A;   // PIN_80 <- P08.TYHO
 
-  PinOut EXT_PIN_A00_A;   // PIN_01 <- P08.KUPO
-  PinOut EXT_PIN_A00_D;   // PIN_01 <- P08.KOTY
-  PinOut EXT_PIN_A01_A;   // PIN_02 <- P08.CABA
-  PinOut EXT_PIN_A01_D;   // PIN_02 <- P08.COTU
-  PinOut EXT_PIN_A02_A;   // PIN_03 <- P08.BOKU
-  PinOut EXT_PIN_A02_D;   // PIN_03 <- P08.BAJO
-  PinOut EXT_PIN_A03_A;   // PIN_04 <- P08.BOTY
-  PinOut EXT_PIN_A03_D;   // PIN_04 <- P08.BOLA
-  PinOut EXT_PIN_A04_A;   // PIN_05 <- P08.BYLA
-  PinOut EXT_PIN_A04_D;   // PIN_05 <- P08.BEVO
-  PinOut EXT_PIN_A05_A;   // PIN_06 <- P08.BADU
-  PinOut EXT_PIN_A05_D;   // PIN_06 <- P08.AJAV
-  PinOut EXT_PIN_A06_A;   // PIN_07 <- P08.CEPU
-  PinOut EXT_PIN_A06_D;   // PIN_07 <- P08.CYKA
-  PinOut EXT_PIN_A07_A;   // PIN_08 <- P08.DEFY
-  PinOut EXT_PIN_A07_D;   // PIN_08 <- P08.COLO
-  PinOut EXT_PIN_A08_A;   // PIN_09 <- P08.MYNY
-  PinOut EXT_PIN_A08_D;   // PIN_09 <- P08.MEGO
-  PinOut EXT_PIN_A09_A;   // PIN_10 <- P08.MUNE
-  PinOut EXT_PIN_A09_D;   // PIN_10 <- P08.MENY
-  PinOut EXT_PIN_A10_A;   // PIN_11 <- P08.ROXU
-  PinOut EXT_PIN_A10_D;   // PIN_11 <- P08.RORE
-  PinOut EXT_PIN_A11_A;   // PIN_12 <- P08.LEPY
-  PinOut EXT_PIN_A11_D;   // PIN_12 <- P08.LYNY
-  PinOut EXT_PIN_A12_A;   // PIN_13 <- P08.LUCE
-  PinOut EXT_PIN_A12_D;   // PIN_13 <- P08.LOSO
-  PinOut EXT_PIN_A13_A;   // PIN_14 <- P08.LABE
-  PinOut EXT_PIN_A13_D;   // PIN_14 <- P08.LEVA
-  PinOut EXT_PIN_A14_A;   // PIN_15 <- P08.PUHE
-  PinOut EXT_PIN_A14_D;   // PIN_15 <- P08.PAHY
-  PinOut EXT_PIN_A15_A;   // PIN_16 <- P08.SUZE
-  PinOut EXT_PIN_A15_D;   // PIN_16 <- P08.RULO
+  ExtPinOut EXT_PIN_A00_A;   // PIN_01 <- P08.KUPO
+  ExtPinOut EXT_PIN_A00_D;   // PIN_01 <- P08.KOTY
+  ExtPinOut EXT_PIN_A01_A;   // PIN_02 <- P08.CABA
+  ExtPinOut EXT_PIN_A01_D;   // PIN_02 <- P08.COTU
+  ExtPinOut EXT_PIN_A02_A;   // PIN_03 <- P08.BOKU
+  ExtPinOut EXT_PIN_A02_D;   // PIN_03 <- P08.BAJO
+  ExtPinOut EXT_PIN_A03_A;   // PIN_04 <- P08.BOTY
+  ExtPinOut EXT_PIN_A03_D;   // PIN_04 <- P08.BOLA
+  ExtPinOut EXT_PIN_A04_A;   // PIN_05 <- P08.BYLA
+  ExtPinOut EXT_PIN_A04_D;   // PIN_05 <- P08.BEVO
+  ExtPinOut EXT_PIN_A05_A;   // PIN_06 <- P08.BADU
+  ExtPinOut EXT_PIN_A05_D;   // PIN_06 <- P08.AJAV
+  ExtPinOut EXT_PIN_A06_A;   // PIN_07 <- P08.CEPU
+  ExtPinOut EXT_PIN_A06_D;   // PIN_07 <- P08.CYKA
+  ExtPinOut EXT_PIN_A07_A;   // PIN_08 <- P08.DEFY
+  ExtPinOut EXT_PIN_A07_D;   // PIN_08 <- P08.COLO
+  ExtPinOut EXT_PIN_A08_A;   // PIN_09 <- P08.MYNY
+  ExtPinOut EXT_PIN_A08_D;   // PIN_09 <- P08.MEGO
+  ExtPinOut EXT_PIN_A09_A;   // PIN_10 <- P08.MUNE
+  ExtPinOut EXT_PIN_A09_D;   // PIN_10 <- P08.MENY
+  ExtPinOut EXT_PIN_A10_A;   // PIN_11 <- P08.ROXU
+  ExtPinOut EXT_PIN_A10_D;   // PIN_11 <- P08.RORE
+  ExtPinOut EXT_PIN_A11_A;   // PIN_12 <- P08.LEPY
+  ExtPinOut EXT_PIN_A11_D;   // PIN_12 <- P08.LYNY
+  ExtPinOut EXT_PIN_A12_A;   // PIN_13 <- P08.LUCE
+  ExtPinOut EXT_PIN_A12_D;   // PIN_13 <- P08.LOSO
+  ExtPinOut EXT_PIN_A13_A;   // PIN_14 <- P08.LABE
+  ExtPinOut EXT_PIN_A13_D;   // PIN_14 <- P08.LEVA
+  ExtPinOut EXT_PIN_A14_A;   // PIN_15 <- P08.PUHE
+  ExtPinOut EXT_PIN_A14_D;   // PIN_15 <- P08.PAHY
+  ExtPinOut EXT_PIN_A15_A;   // PIN_16 <- P08.SUZE
+  ExtPinOut EXT_PIN_A15_D;   // PIN_16 <- P08.RULO
 
-  PinOut EXT_PIN_D0_A;    // PIN_17 <- P08.RUXA
-  PinOut EXT_PIN_D1_A;    // PIN_18 <- P08.RUJA
-  PinOut EXT_PIN_D2_A;    // PIN_19 <- P08.RABY
-  PinOut EXT_PIN_D3_A;    // PIN_20 <- P08.RERA
-  PinOut EXT_PIN_D4_A;    // PIN_21 <- P08.RORY
-  PinOut EXT_PIN_D5_A;    // PIN_22 <- P08.RYVO
-  PinOut EXT_PIN_D6_A;    // PIN_23 <- P08.RAFY
-  PinOut EXT_PIN_D7_A;    // PIN_24 <- P08.RAVU
+  ExtPinOut EXT_PIN_D0_A;    // PIN_17 <- P08.RUXA
+  ExtPinOut EXT_PIN_D1_A;    // PIN_18 <- P08.RUJA
+  ExtPinOut EXT_PIN_D2_A;    // PIN_19 <- P08.RABY
+  ExtPinOut EXT_PIN_D3_A;    // PIN_20 <- P08.RERA
+  ExtPinOut EXT_PIN_D4_A;    // PIN_21 <- P08.RORY
+  ExtPinOut EXT_PIN_D5_A;    // PIN_22 <- P08.RYVO
+  ExtPinOut EXT_PIN_D6_A;    // PIN_23 <- P08.RAFY
+  ExtPinOut EXT_PIN_D7_A;    // PIN_24 <- P08.RAVU
 
-  PinOut EXT_PIN_D0_B;    // PIN_17 <- P08.LULA
-  PinOut EXT_PIN_D1_B;    // PIN_18 <- P08.LULA
-  PinOut EXT_PIN_D2_B;    // PIN_19 <- P08.LULA
-  PinOut EXT_PIN_D3_B;    // PIN_20 <- P08.LULA
-  PinOut EXT_PIN_D4_B;    // PIN_21 <- P08.LULA
-  PinOut EXT_PIN_D5_B;    // PIN_22 <- P08.LULA
-  PinOut EXT_PIN_D6_B;    // PIN_23 <- P08.LULA
-  PinOut EXT_PIN_D7_B;    // PIN_24 <- P08.LULA
+  ExtPinOut EXT_PIN_D0_B;    // PIN_17 <- P08.LULA
+  ExtPinOut EXT_PIN_D1_B;    // PIN_18 <- P08.LULA
+  ExtPinOut EXT_PIN_D2_B;    // PIN_19 <- P08.LULA
+  ExtPinOut EXT_PIN_D3_B;    // PIN_20 <- P08.LULA
+  ExtPinOut EXT_PIN_D4_B;    // PIN_21 <- P08.LULA
+  ExtPinOut EXT_PIN_D5_B;    // PIN_22 <- P08.LULA
+  ExtPinOut EXT_PIN_D6_B;    // PIN_23 <- P08.LULA
+  ExtPinOut EXT_PIN_D7_B;    // PIN_24 <- P08.LULA
 
-  PinIn  EXT_PIN_D0_C;    // PIN_17 -> P08.TOVO,SOMA
-  PinIn  EXT_PIN_D1_C;    // PIN_18 -> P08.RUZY,RONY
-  PinIn  EXT_PIN_D2_C;    // PIN_19 -> P08.ROME,RAXY
-  PinIn  EXT_PIN_D3_C;    // PIN_20 -> P08.SAZA,SELO
-  PinIn  EXT_PIN_D4_C;    // PIN_21 -> P08.TEHE,SODY
-  PinIn  EXT_PIN_D5_C;    // PIN_22 -> P08.RATU,SAGO
-  PinIn  EXT_PIN_D6_C;    // PIN_23 -> P08.SOCA,RUPA
-  PinIn  EXT_PIN_D7_C;    // PIN_24 -> P08.RYBA,SAZY
+  ExtPinIn  EXT_PIN_D0_C;    // PIN_17 -> P08.TOVO,SOMA
+  ExtPinIn  EXT_PIN_D1_C;    // PIN_18 -> P08.RUZY,RONY
+  ExtPinIn  EXT_PIN_D2_C;    // PIN_19 -> P08.ROME,RAXY
+  ExtPinIn  EXT_PIN_D3_C;    // PIN_20 -> P08.SAZA,SELO
+  ExtPinIn  EXT_PIN_D4_C;    // PIN_21 -> P08.TEHE,SODY
+  ExtPinIn  EXT_PIN_D5_C;    // PIN_22 -> P08.RATU,SAGO
+  ExtPinIn  EXT_PIN_D6_C;    // PIN_23 -> P08.SOCA,RUPA
+  ExtPinIn  EXT_PIN_D7_C;    // PIN_24 -> P08.RYBA,SAZY
 
-  PinOut EXT_PIN_D0_D;    // PIN_17 <- P08.RUNE
-  PinOut EXT_PIN_D1_D;    // PIN_18 <- P08.RYPU
-  PinOut EXT_PIN_D2_D;    // PIN_19 <- P08.SULY
-  PinOut EXT_PIN_D3_D;    // PIN_20 <- P08.SEZE
-  PinOut EXT_PIN_D4_D;    // PIN_21 <- P08.RESY
-  PinOut EXT_PIN_D5_D;    // PIN_22 <- P08.TAMU
-  PinOut EXT_PIN_D6_D;    // PIN_23 <- P08.ROGY
-  PinOut EXT_PIN_D7_D;    // PIN_24 <- P08.RYDA
+  ExtPinOut EXT_PIN_D0_D;    // PIN_17 <- P08.RUNE
+  ExtPinOut EXT_PIN_D1_D;    // PIN_18 <- P08.RYPU
+  ExtPinOut EXT_PIN_D2_D;    // PIN_19 <- P08.SULY
+  ExtPinOut EXT_PIN_D3_D;    // PIN_20 <- P08.SEZE
+  ExtPinOut EXT_PIN_D4_D;    // PIN_21 <- P08.RESY
+  ExtPinOut EXT_PIN_D5_D;    // PIN_22 <- P08.TAMU
+  ExtPinOut EXT_PIN_D6_D;    // PIN_23 <- P08.ROGY
+  ExtPinOut EXT_PIN_D7_D;    // PIN_24 <- P08.RYDA
 
   //-----------------------------------------------------------------------------
   // VRAM bus
 
-  PinOut VRAM_PIN_MCSn_A;   // PIN_43 <- P25.SOKY
-  PinOut VRAM_PIN_MCSn_D;   // PIN_43 <- P25.SETY
-  PinOut VRAM_PIN_MOEn_A;   // PIN_45 <- P25.REFO
-  PinOut VRAM_PIN_MOEn_D;   // PIN_45 <- P25.SAHA
-  PinOut VRAM_PIN_MWRn_A;   // PIN_49 <- P25.SYSY
-  PinOut VRAM_PIN_MWRn_D;   // PIN_49 <- P25.RAGU
+  ExtPinOut VRAM_PIN_MCSn_A;   // PIN_43 <- P25.SOKY
+  ExtPinOut VRAM_PIN_MCSn_D;   // PIN_43 <- P25.SETY
+  ExtPinOut VRAM_PIN_MOEn_A;   // PIN_45 <- P25.REFO
+  ExtPinOut VRAM_PIN_MOEn_D;   // PIN_45 <- P25.SAHA
+  ExtPinOut VRAM_PIN_MWRn_A;   // PIN_49 <- P25.SYSY
+  ExtPinOut VRAM_PIN_MWRn_D;   // PIN_49 <- P25.RAGU
 
-  PinOut VRAM_PIN_MA00_AD;  // PIN_34 <- P04.ECAL
-  PinOut VRAM_PIN_MA01_AD;  // PIN_35 <- P04.EGEZ
-  PinOut VRAM_PIN_MA02_AD;  // PIN_36 <- P04.FUHE
-  PinOut VRAM_PIN_MA03_AD;  // PIN_37 <- P04.FYZY
-  PinOut VRAM_PIN_MA04_AD;  // PIN_38 <- P04.DAMU
-  PinOut VRAM_PIN_MA05_AD;  // PIN_39 <- P04.DAVA
-  PinOut VRAM_PIN_MA06_AD;  // PIN_40 <- P04.ETEG
-  PinOut VRAM_PIN_MA07_AD;  // PIN_41 <- P04.EREW
-  PinOut VRAM_PIN_MA08_AD;  // PIN_48 <- P04.EVAX
-  PinOut VRAM_PIN_MA09_AD;  // PIN_47 <- P04.DUVE
-  PinOut VRAM_PIN_MA10_AD;  // PIN_44 <- P04.ERAF
-  PinOut VRAM_PIN_MA11_AD;  // PIN_46 <- P04.FUSY
-  PinOut VRAM_PIN_MA12_AD;  // PIN_42 <- P04.EXYF
+  ExtPinOut VRAM_PIN_MA00_AD;  // PIN_34 <- P04.ECAL
+  ExtPinOut VRAM_PIN_MA01_AD;  // PIN_35 <- P04.EGEZ
+  ExtPinOut VRAM_PIN_MA02_AD;  // PIN_36 <- P04.FUHE
+  ExtPinOut VRAM_PIN_MA03_AD;  // PIN_37 <- P04.FYZY
+  ExtPinOut VRAM_PIN_MA04_AD;  // PIN_38 <- P04.DAMU
+  ExtPinOut VRAM_PIN_MA05_AD;  // PIN_39 <- P04.DAVA
+  ExtPinOut VRAM_PIN_MA06_AD;  // PIN_40 <- P04.ETEG
+  ExtPinOut VRAM_PIN_MA07_AD;  // PIN_41 <- P04.EREW
+  ExtPinOut VRAM_PIN_MA08_AD;  // PIN_48 <- P04.EVAX
+  ExtPinOut VRAM_PIN_MA09_AD;  // PIN_47 <- P04.DUVE
+  ExtPinOut VRAM_PIN_MA10_AD;  // PIN_44 <- P04.ERAF
+  ExtPinOut VRAM_PIN_MA11_AD;  // PIN_46 <- P04.FUSY
+  ExtPinOut VRAM_PIN_MA12_AD;  // PIN_42 <- P04.EXYF
 
-  PinOut VRAM_PIN_MD0_A;    // PIN_33 <- P25.REGE
-  PinOut VRAM_PIN_MD1_A;    // PIN_31 <- P25.RYKY
-  PinOut VRAM_PIN_MD2_A;    // PIN_30 <- P25.RAZO
-  PinOut VRAM_PIN_MD3_A;    // PIN_29 <- P25.RADA
-  PinOut VRAM_PIN_MD4_A;    // PIN_28 <- P25.RYRO
-  PinOut VRAM_PIN_MD5_A;    // PIN_27 <- P25.REVU
-  PinOut VRAM_PIN_MD6_A;    // PIN_26 <- P25.REKU
-  PinOut VRAM_PIN_MD7_A;    // PIN_25 <- P25.RYZE
+  ExtPinOut VRAM_PIN_MD0_A;    // PIN_33 <- P25.REGE
+  ExtPinOut VRAM_PIN_MD1_A;    // PIN_31 <- P25.RYKY
+  ExtPinOut VRAM_PIN_MD2_A;    // PIN_30 <- P25.RAZO
+  ExtPinOut VRAM_PIN_MD3_A;    // PIN_29 <- P25.RADA
+  ExtPinOut VRAM_PIN_MD4_A;    // PIN_28 <- P25.RYRO
+  ExtPinOut VRAM_PIN_MD5_A;    // PIN_27 <- P25.REVU
+  ExtPinOut VRAM_PIN_MD6_A;    // PIN_26 <- P25.REKU
+  ExtPinOut VRAM_PIN_MD7_A;    // PIN_25 <- P25.RYZE
 
-  PinOut VRAM_PIN_MD0_B;    // PIN_33 <- P25.ROFA
-  PinOut VRAM_PIN_MD1_B;    // PIN_31 <- P25.ROFA
-  PinOut VRAM_PIN_MD2_B;    // PIN_30 <- P25.ROFA
-  PinOut VRAM_PIN_MD3_B;    // PIN_29 <- P25.ROFA
-  PinOut VRAM_PIN_MD4_B;    // PIN_28 <- P25.ROFA
-  PinOut VRAM_PIN_MD5_B;    // PIN_27 <- P25.ROFA
-  PinOut VRAM_PIN_MD6_B;    // PIN_26 <- P25.ROFA
-  PinOut VRAM_PIN_MD7_B;    // PIN_25 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD0_B;    // PIN_33 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD1_B;    // PIN_31 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD2_B;    // PIN_30 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD3_B;    // PIN_29 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD4_B;    // PIN_28 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD5_B;    // PIN_27 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD6_B;    // PIN_26 <- P25.ROFA
+  ExtPinOut VRAM_PIN_MD7_B;    // PIN_25 <- P25.ROFA
 
-  PinOut VRAM_PIN_MD0_D;    // PIN_33 <- P25.RURA
-  PinOut VRAM_PIN_MD1_D;    // PIN_31 <- P25.RULY
-  PinOut VRAM_PIN_MD2_D;    // PIN_30 <- P25.RARE
-  PinOut VRAM_PIN_MD3_D;    // PIN_29 <- P25.RODU
-  PinOut VRAM_PIN_MD4_D;    // PIN_28 <- P25.RUBE
-  PinOut VRAM_PIN_MD5_D;    // PIN_27 <- P25.RUMU
-  PinOut VRAM_PIN_MD6_D;    // PIN_26 <- P25.RYTY
-  PinOut VRAM_PIN_MD7_D;    // PIN_25 <- P25.RADY
+  ExtPinOut VRAM_PIN_MD0_D;    // PIN_33 <- P25.RURA
+  ExtPinOut VRAM_PIN_MD1_D;    // PIN_31 <- P25.RULY
+  ExtPinOut VRAM_PIN_MD2_D;    // PIN_30 <- P25.RARE
+  ExtPinOut VRAM_PIN_MD3_D;    // PIN_29 <- P25.RODU
+  ExtPinOut VRAM_PIN_MD4_D;    // PIN_28 <- P25.RUBE
+  ExtPinOut VRAM_PIN_MD5_D;    // PIN_27 <- P25.RUMU
+  ExtPinOut VRAM_PIN_MD6_D;    // PIN_26 <- P25.RYTY
+  ExtPinOut VRAM_PIN_MD7_D;    // PIN_25 <- P25.RADY
 
-  PinIn  VRAM_PIN_MCSn_C;   // PIN_43 -> P25.TEFY
-  PinIn  VRAM_PIN_MOEn_C;   // PIN_45 -> P25.TAVY
-  PinIn  VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
+  ExtPinIn  VRAM_PIN_MCSn_C;   // PIN_43 -> P25.TEFY
+  ExtPinIn  VRAM_PIN_MOEn_C;   // PIN_45 -> P25.TAVY
+  ExtPinIn  VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
 
-  PinIn  VRAM_PIN_MD0_C;    // PIN_33 -> P25.RODY
-  PinIn  VRAM_PIN_MD1_C;    // PIN_31 -> P25.REBA
-  PinIn  VRAM_PIN_MD2_C;    // PIN_30 -> P25.RYDO
-  PinIn  VRAM_PIN_MD3_C;    // PIN_29 -> P25.REMO
-  PinIn  VRAM_PIN_MD4_C;    // PIN_28 -> P25.ROCE
-  PinIn  VRAM_PIN_MD5_C;    // PIN_27 -> P25.ROPU
-  PinIn  VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
-  PinIn  VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
+  ExtPinIn  VRAM_PIN_MD0_C;    // PIN_33 -> P25.RODY
+  ExtPinIn  VRAM_PIN_MD1_C;    // PIN_31 -> P25.REBA
+  ExtPinIn  VRAM_PIN_MD2_C;    // PIN_30 -> P25.RYDO
+  ExtPinIn  VRAM_PIN_MD3_C;    // PIN_29 -> P25.REMO
+  ExtPinIn  VRAM_PIN_MD4_C;    // PIN_28 -> P25.ROCE
+  ExtPinIn  VRAM_PIN_MD5_C;    // PIN_27 -> P25.ROPU
+  ExtPinIn  VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
+  ExtPinIn  VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
 
   Tribuf VRM_TRI_A00;
   Tribuf VRM_TRI_A01;
@@ -850,12 +793,12 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Sprite store tribufs
 
-  Tribuf SPR_TRI_IDX_0;
-  Tribuf SPR_TRI_IDX_1;
-  Tribuf SPR_TRI_IDX_2;
-  Tribuf SPR_TRI_IDX_3;
-  Tribuf SPR_TRI_IDX_4;
-  Tribuf SPR_TRI_IDX_5;
+  Tribuf SPR_TRI_INDX_0;
+  Tribuf SPR_TRI_INDX_1;
+  Tribuf SPR_TRI_INDX_2;
+  Tribuf SPR_TRI_INDX_3;
+  Tribuf SPR_TRI_INDX_4;
+  Tribuf SPR_TRI_INDX_5;
 
   Tribuf SPR_TRI_LINE_0;
   Tribuf SPR_TRI_LINE_1;

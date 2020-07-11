@@ -41,8 +41,8 @@ void Gameboy::reset(uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
-  ebus_req = {.addr = new_pc, .data2 = 0x00, .read = 1, .write = 0 };
-  ebus_ack = {.addr = new_pc, .data2 = 0x00, .read = 1 };
+  ebus_req = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
+  ebus_ack = {.addr = new_pc, .data = 0x00, .read = 1 };
 
   sentinel = 0xDEADBEEF;
 }
@@ -249,7 +249,7 @@ void Gameboy::tock_gb() {
   if (dma_src_vbus) {
     vbus_req = {
       .addr = dma2.addr,
-      .data2 = 0,
+      .data = 0,
       .read = 1,
       .write = 0,
     };
@@ -258,7 +258,7 @@ void Gameboy::tock_gb() {
   if (dma_src_ebus) {
     ebus_req = {
       .addr = dma2.addr,
-      .data2 = 0,
+      .data = 0,
       .read = 1,
       .write = 0,
     };
@@ -267,7 +267,7 @@ void Gameboy::tock_gb() {
   if (PHASE_E && dma2.DMA_RUN_WRITE) {
     obus_req = {
       .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
-      .data2 = dma_data_latch,
+      .data = dma_data_latch,
       .read = 0,
       .write = 1,
     };

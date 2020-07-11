@@ -25,18 +25,18 @@ void InterruptRegisters::tick(SchematicTop& top) {
     // MATY is connected to cpu int pin...CPU_PIN_INT_VBLANK?
     // schematic says LOPE also connected to CPU_PIN_INT_VBLANK?
 
-    /*p02.MATY*/ MATY_FF0F_L0.tp_latch(_ROLO_FF0F_RDn, LOPE_FF0F_0); // OUTPUT ON RUNG 10
-    /*p02.NEJY*/ NEJY_FF0F_L1.tp_latch(_ROLO_FF0F_RDn, UBUL_FF0F_3); // OUTPUT ON RUNG 10
-    /*p02.NUTY*/ NUTY_FF0F_L2.tp_latch(_ROLO_FF0F_RDn, ULAK_FF0F_4); // OUTPUT ON RUNG 10
-    /*p02.MOPO*/ MOPO_FF0F_L3.tp_latch(_ROLO_FF0F_RDn, LALU_FF0F_1); // OUTPUT ON RUNG 10
-    /*p02.PAVY*/ PAVY_FF0F_L4.tp_latch(_ROLO_FF0F_RDn, NYBO_FF0F_2); // OUTPUT ON RUNG 10
+    /*p02.MATY*/ MATY_FF0F_L0.tp_latch(_ROLO_FF0F_RDn, LOPE_FF0F_0.q()); // OUTPUT ON RUNG 10
+    /*p02.NEJY*/ NEJY_FF0F_L1.tp_latch(_ROLO_FF0F_RDn, UBUL_FF0F_3.q()); // OUTPUT ON RUNG 10
+    /*p02.NUTY*/ NUTY_FF0F_L2.tp_latch(_ROLO_FF0F_RDn, ULAK_FF0F_4.q()); // OUTPUT ON RUNG 10
+    /*p02.MOPO*/ MOPO_FF0F_L3.tp_latch(_ROLO_FF0F_RDn, LALU_FF0F_1.q()); // OUTPUT ON RUNG 10
+    /*p02.PAVY*/ PAVY_FF0F_L4.tp_latch(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not(_ROLO_FF0F_RDn);
-    /*p02.NELA*/ top.CPU_TRI_D0.set_tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0);
-    /*p02.NABO*/ top.CPU_TRI_D1.set_tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1);
-    /*p02.ROVA*/ top.CPU_TRI_D2.set_tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2);
-    /*p02.PADO*/ top.CPU_TRI_D3.set_tribuf_6p(_POLA_FF0F_RD, MOPO_FF0F_L3);
-    /*p02.PEGY*/ top.CPU_TRI_D4.set_tribuf_6p(_POLA_FF0F_RD, PAVY_FF0F_L4);
+    /*p02.NELA*/ top.CPU_TRI_D0.set_tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.q());
+    /*p02.NABO*/ top.CPU_TRI_D1.set_tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1.q());
+    /*p02.ROVA*/ top.CPU_TRI_D2.set_tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2.q());
+    /*p02.PADO*/ top.CPU_TRI_D3.set_tribuf_6p(_POLA_FF0F_RD, MOPO_FF0F_L3.q());
+    /*p02.PEGY*/ top.CPU_TRI_D4.set_tribuf_6p(_POLA_FF0F_RD, PAVY_FF0F_L4.q());
   }
 
   {
@@ -110,11 +110,11 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.UBUL*/ UBUL_FF0F_3.set(CALY_INT_SERIALp, TOME_FF0F_SET3n, TUNY_FF0F_RST3n, top.PESU_GND);
     /*p02.ULAK*/ ULAK_FF0F_4.set(ASOK_INT_JOYPADp, TOGA_FF0F_SET4n, TYME_FF0F_RST4n, top.PESU_GND);
 
-    top.CPU_PIN_INT_VBLANK.set(LOPE_FF0F_0);
-    top.CPU_PIN_INT_STAT  .set(LALU_FF0F_1);
-    top.CPU_PIN_INT_TIMER .set(NYBO_FF0F_2);
-    top.CPU_PIN_INT_SERIAL.set(UBUL_FF0F_3);
-    top.CPU_PIN_INT_JOYPAD.set(ULAK_FF0F_4);
+    CPU_PIN_INT_VBLANK.set(LOPE_FF0F_0.q());
+    CPU_PIN_INT_STAT  .set(LALU_FF0F_1.q());
+    CPU_PIN_INT_TIMER .set(NYBO_FF0F_2.q());
+    CPU_PIN_INT_SERIAL.set(UBUL_FF0F_3.q());
+    CPU_PIN_INT_JOYPAD.set(ULAK_FF0F_4.q());
   }
 }
 
@@ -132,6 +132,13 @@ SignalHash InterruptRegisters::commit() {
   hash << NUTY_FF0F_L2.commit();
   hash << MOPO_FF0F_L3.commit();
   hash << PAVY_FF0F_L4.commit();
+
+  hash << CPU_PIN_INT_VBLANK.commit();    // PORTB_03: <- LOPE, vblank int
+  hash << CPU_PIN_INT_STAT.commit();      // PORTB_07: <- LALU, stat int
+  hash << CPU_PIN_INT_TIMER.commit();     // PORTB_11: <- NYBO, timer int
+  hash << CPU_PIN_INT_SERIAL.commit();    // PORTB_15: <- UBUL, serial int
+  hash << CPU_PIN_INT_JOYPAD.commit();    // PORTB_19: <- ULAK, joypad int
+
   return hash;
 }
 

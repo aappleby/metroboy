@@ -452,7 +452,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash PixelPipeRegisters::commit() {
+SignalHash PixelPipeRegisters::commit(SchematicTop& top) {
   SignalHash hash;
 
   /*p32.MYDE*/ hash << BG_PIPE_A0.commit();
@@ -528,6 +528,9 @@ SignalHash PixelPipeRegisters::commit() {
   /*p36.LUGU*/ hash << OBP15.commit();
   /*p36.LEPU*/ hash << OBP16.commit();
   /*p36.LUXO*/ hash << OBP17.commit();
+
+  hash << top.LCD_PIN_LD1.commit();
+  hash << top.LCD_PIN_LD0.commit();
 
   return hash;
 }

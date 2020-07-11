@@ -9,14 +9,11 @@ struct SchematicTop;
 
 struct PpuRegisters {
 
-  void tick(SchematicTop& gb);
-  SignalHash commit();
+  void tick(SchematicTop& top);
+  SignalHash commit(SchematicTop& top);
 
 private:
   friend struct SchematicTop;
-
-  /*p27.POHU*/ Signal POHU_FINE_MATCHp;
-  /*p21.WODU*/ Signal WODU_RENDER_DONEp;
 
   /*p21.XEHO*/ Reg17 XEHO_X0;
   /*p21.SAVY*/ Reg17 SAVY_X1;

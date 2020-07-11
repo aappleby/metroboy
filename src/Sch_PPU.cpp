@@ -102,11 +102,7 @@ void PpuRegisters::tick(SchematicTop& top) {
   /*p24.SACU*/ wire SACU_CLKPIPEp = nor(SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn);
 
   {
-    /*p21.XUGU*/ wire _XUGU_X_167 = nand(XEHO_X0, SAVY_X1, XODU_X2, TUKY_X5, SYBE_X7); // 128 + 32 + 4 + 2 + 1 = 167
-    /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167);
-    /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(top.FEPO_STORE_MATCHp());
-    /*p21.WODU*/ WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
-    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.ALET_xBxDxFxH(), TADY_LINE_START_RST, WODU_RENDER_DONEp);
+    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.ALET_xBxDxFxH(), TADY_LINE_START_RST, top.WODU_RENDER_DONEp());
   }
 
   {
@@ -126,18 +122,18 @@ void PpuRegisters::tick(SchematicTop& top) {
   {
     // There's a feedback loop here of sorts
 
-    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp,      XYMU_RENDERINGp, POHU_FINE_MATCHp);
+    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.DATY_SCX0(), RYKU_FINE_CNT0); // Arms on the ground side, XNOR
+    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.DUZU_SCX1(), ROGA_FINE_CNT1);
+    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.CYXU_SCX2(), RUBU_FINE_CNT2);
+    /*p27.RONE*/ wire _RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn, _SUHA_FINE_MATCHp, _SYBY_FINE_MATCHp, _SOZU_FINE_MATCHp);
+    /*p27.POHU*/ wire _POHU_FINE_MATCHp = not(_RONE_FINE_MATCHn);
+
+    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(ROXO_CLKPIPEp,       XYMU_RENDERINGp, _POHU_FINE_MATCHp);
     /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), XYMU_RENDERINGp, PUXA_FINE_MATCH_A);
 
     /*p27.POVA*/ wire POVA_FINE_MATCHpe = and (PUXA_FINE_MATCH_A, !NYZE_FINE_MATCH_B);
     /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(XYMU_RENDERINGp);
     /*p27.ROXY*/ ROXY_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn, POVA_FINE_MATCHpe);
-
-    /*p27.SUHA*/ wire SUHA_FINE_MATCH0p = xnor(top.DATY_SCX0(), RYKU_FINE_CNT0); // Arms on the ground side, XNOR
-    /*p27.SYBY*/ wire SYBY_FINE_MATCH1p = xnor(top.DUZU_SCX1(), ROGA_FINE_CNT1);
-    /*p27.SOZU*/ wire SOZU_FINE_MATCH2p = xnor(top.CYXU_SCX2(), RUBU_FINE_CNT2);
-    /*p27.RONE*/ wire RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn, SUHA_FINE_MATCH0p, SYBY_FINE_MATCH1p, SOZU_FINE_MATCH2p);
-    /*p27.POHU*/ POHU_FINE_MATCHp = not(RONE_FINE_MATCHn);
 
     /*p21.XAJO*/ wire _XAJO_X_009 = and (XEHO_X0.q(), XYDO_X3.q());
     /*p21.WUSA*/ _WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009, WEGO_LINE_END_RST);
@@ -256,7 +252,7 @@ void PpuRegisters::tick(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash PpuRegisters::commit() {
+SignalHash PpuRegisters::commit(SchematicTop& top) {
   SignalHash hash;
   /*p??.ROXY*/ hash << ROXY_FINE_MATCH_LATCHn.commit();
   /*p??.PUXA*/ hash << PUXA_FINE_MATCH_A.commit();
@@ -287,6 +283,9 @@ SignalHash PpuRegisters::commit() {
   /*p21.RUFO*/ hash << RUFO_INT_VBL_EN.commit();
   /*p21.REFE*/ hash << REFE_INT_OAM_EN.commit();
   /*p21.RUGU*/ hash << RUGU_INT_LYC_EN.commit();
+
+  hash << top.LCD_PIN_CP.commit();
+  hash << top.LCD_PIN_ST.commit();
 
   return hash;
 }

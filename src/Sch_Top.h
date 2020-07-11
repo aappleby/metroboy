@@ -349,6 +349,7 @@ struct SchematicTop {
   // PPU signals
 
   wire XYMU_RENDERINGp() const;
+  wire WODU_RENDER_DONEp() const;
   wire TEVO_FINE_RSTp() const;
   wire NYXU_TILE_FETCHER_RSTn() const;
   wire ACYL_SCANNINGp() const;
@@ -359,14 +360,14 @@ struct SchematicTop {
   wire VOTY_INT_STATp() const;
   wire VEKU_SFETCH_RUNNING_RSTn() const;
 
-  wire XEHO_X0() const;
-  wire SAVY_X1() const;
-  wire XODU_X2() const;
-  wire XYDO_X3() const;
-  wire TUHU_X4() const;
-  wire TUKY_X5() const;
-  wire TAKO_X6() const;
-  wire SYBE_X7() const;
+  /*p21.XEHO*/ wire XEHO_X0() const { return ppu_reg.XEHO_X0; }
+  /*p21.SAVY*/ wire SAVY_X1() const { return ppu_reg.SAVY_X1; }
+  /*p21.XODU*/ wire XODU_X2() const { return ppu_reg.XODU_X2; }
+  /*p21.XYDO*/ wire XYDO_X3() const { return ppu_reg.XYDO_X3; }
+  /*p21.TUHU*/ wire TUHU_X4() const { return ppu_reg.TUHU_X4; }
+  /*p21.TUKY*/ wire TUKY_X5() const { return ppu_reg.TUKY_X5; }
+  /*p21.TAKO*/ wire TAKO_X6() const { return ppu_reg.TAKO_X6; }
+  /*p21.SYBE*/ wire SYBE_X7() const { return ppu_reg.SYBE_X7; }
 
   //-----------------------------------------------------------------------------
   // Tile fetcher signals
@@ -907,7 +908,7 @@ struct SchematicTop {
   PixelPipeRegisters pxp_reg;
   ResetRegisters rst_reg;
   SerialRegisters ser_reg;
-  SpriteStoreRegisters sst_reg;
+  SpriteStoreRegisters sprite_store;
   TimerRegisters tim_reg;
   PpuRegisters ppu_reg;
   WindowRegisters win_reg;

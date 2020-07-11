@@ -35,17 +35,6 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
   // Sprite scan Y matcher
 
   {
-    // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
-    /*p30.WENU*/ top.SPR_TRI_LINE_0.set_tribuf(top.FEPO_STORE_MATCHp(), top.DEGE_SPRITE_DELTA0());
-    /*p30.CUCU*/ top.SPR_TRI_LINE_1.set_tribuf(top.FEPO_STORE_MATCHp(), top.DABY_SPRITE_DELTA1());
-    /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf(top.FEPO_STORE_MATCHp(), top.DABU_SPRITE_DELTA2());
-    /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf(top.FEPO_STORE_MATCHp(), top.GYSA_SPRITE_DELTA3());
-
-    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
-  }
-
-  {
     // Sprite store counter.
     // The sprite count clock stops ticking once we have 10 sprites.
 
@@ -210,6 +199,17 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     /*p29.FEFY*/ wire FEFY = nand(STORE4_MATCHn, STORE3_MATCHn, STORE2_MATCHn, STORE1_MATCHn, STORE0_MATCHn);
     /*p29.FOVE*/ wire FOVE = nand(STORE9_MATCHn, STORE8_MATCHn, STORE7_MATCHn, STORE6_MATCHn, STORE5_MATCHn);
     /*p29.FEPO*/ FEPO_STORE_MATCHp = or(FEFY, FOVE);
+  }
+
+  {
+    // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
+    /*p30.WENU*/ top.SPR_TRI_LINE_0.set_tribuf(top.FEPO_STORE_MATCHp(), top.DEGE_SPRITE_DELTA0());
+    /*p30.CUCU*/ top.SPR_TRI_LINE_1.set_tribuf(top.FEPO_STORE_MATCHp(), top.DABY_SPRITE_DELTA1());
+    /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf(top.FEPO_STORE_MATCHp(), top.DABU_SPRITE_DELTA2());
+    /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf(top.FEPO_STORE_MATCHp(), top.GYSA_SPRITE_DELTA3());
+
+    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
+    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
   }
 
   //----------------------------------------

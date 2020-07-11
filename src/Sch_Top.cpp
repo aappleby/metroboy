@@ -229,6 +229,18 @@ void SchematicTop::set_ext_bus(wire OE, uint16_t data) {
 
 //-----------------------------------------------------------------------------
 
+/*
+InterruptRegisters int_reg;
+LcdRegisters lcd_reg;
+PixelPipeRegisters pxp_reg;
+SpriteStoreRegisters sprite_store;
+PpuRegisters ppu_reg;
+WindowRegisters win_reg;
+TileFetcher tile_fetcher;
+SpriteFetcher sprite_fetcher;
+BusMux bus_mux;
+*/
+
 SignalHash SchematicTop::tick() {
   SignalHash hash;
 
@@ -240,24 +252,13 @@ SignalHash SchematicTop::tick() {
   dma_reg.tick(*this);
   ser_reg.tick(*this);
   joy_reg.tick(*this);
-
-  //tick_vram_pins();
-  //tick_top_regs();
-
-  /*
-  tim_reg.tick(*this);
-  ser_reg.tick(*this);
-
-  joy_reg.tick(rst_sig, clk_reg, cpu_bus, cpu_sig);
-
-  ppu_reg.tick(*this);
-  sst_reg.tick(*this);
+  sprite_scanner.tick(*this);
   lcd_reg.tick(*this);
-  pxp_reg.tick(*this);
-  //cpu_sig.tick(*this);
-  cpu_pins_out.tick(*this);
-  vram_pins.tick(*this);
-  */
+
+  //sprite_store.tick(*this);  // after bus mux
+  //win_reg.tick(*this); // after sprite store
+  //sprite_fetcher.tick(*this); // after window
+  //int_reg.tick(*this);
 
   //----------
 
@@ -270,26 +271,17 @@ SignalHash SchematicTop::tick() {
   hash << dma_reg.commit();
   hash << ser_reg.commit();
   hash << joy_reg.commit(*this);
+  hash << sprite_scanner.commit();
+  hash << lcd_reg.commit(*this);
+ 
+  //hash << sprite_store.commit(); // after bus mux
+  //hash << win_reg.commit(); // after sprite store
+  //hash << sprite_fetcher.commit(); // after window
+  //hash << int_reg.commit();
 
   hash << CPU_PIN_SYS_RSTp.commit();
   hash << CPU_PIN_STARTp.commit();
   hash << CPU_PIN_BOOTp.commit();         // PORTA_04: <- TUTU
-
-  //hash << lcd_reg.commit();
-  //hash << pxp_reg.commit();
-  //hash << sst_reg.commit();
-  //hash << ppu_reg.commit();
-  //hash << win_reg.commit();
-  //hash << lcd_reg.commit();
-  //hash << ser_reg.commit();
-  //hash << commit_ibus();
-  //hash << commit_vbus();
-  //hash << commit_ebus();
-  //hash << commit_obus();
-  //hash << commit_sys_pins();
-  //hash << commit_lcd_pins();
-  //hash << commit_joy_pins();
-  //hash << commit_top_regs();
 
   return hash;
 }
@@ -1537,14 +1529,13 @@ wire SchematicTop::WERO_FF4Xp() const {
 
 wire SchematicTop::XYMU_RENDERINGp() const { /*p21.XYMU*/ return ppu_reg.XYMU_RENDERINGp; }
 
-wire SchematicTop::XEHO_X0() const { /*p21.XEHO*/ return ppu_reg.XEHO_X0; }
-wire SchematicTop::SAVY_X1() const { /*p21.SAVY*/ return ppu_reg.SAVY_X1; }
-wire SchematicTop::XODU_X2() const { /*p21.XODU*/ return ppu_reg.XODU_X2; }
-wire SchematicTop::XYDO_X3() const { /*p21.XYDO*/ return ppu_reg.XYDO_X3; }
-wire SchematicTop::TUHU_X4() const { /*p21.TUHU*/ return ppu_reg.TUHU_X4; }
-wire SchematicTop::TUKY_X5() const { /*p21.TUKY*/ return ppu_reg.TUKY_X5; }
-wire SchematicTop::TAKO_X6() const { /*p21.TAKO*/ return ppu_reg.TAKO_X6; }
-wire SchematicTop::SYBE_X7() const { /*p21.SYBE*/ return ppu_reg.SYBE_X7; }
+wire SchematicTop::WODU_RENDER_DONEp() const {
+  /*p21.XUGU*/ wire _XUGU_X_167 = nand(ppu_reg.XEHO_X0, ppu_reg.SAVY_X1, ppu_reg.XODU_X2, ppu_reg.TUKY_X5, ppu_reg.SYBE_X7); // 128 + 32 + 4 + 2 + 1 = 167
+  /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167);
+  /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(FEPO_STORE_MATCHp());
+  /*p21.WODU*/ wire WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
+  return WODU_RENDER_DONEp;
+}
 
 wire SchematicTop::TEVO_FINE_RSTp() const {
   
@@ -1576,7 +1567,7 @@ wire SchematicTop::LYRY_BFETCH_DONEp() const {
 }
 
 wire SchematicTop::SEGU_CLKPIPEn() const {
-  /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sst_reg.FEPO_STORE_MATCHp, ppu_reg.WODU_RENDER_DONEp, MYVO_AxCxExGx());
+  /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), MYVO_AxCxExGx());
 
   /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_FIRST_TILE_A);
   /*p24.TOMU*/ wire TOMU_WIN_HITp = not(SYLO_WIN_HITn);
@@ -1601,7 +1592,7 @@ wire SchematicTop::VOTY_INT_STATp() const {
   /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
   /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp_d4());
   /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_VBLANKn, SELA_NEW_LINE_d0p);
-  /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_VBLANKn, ppu_reg.WODU_RENDER_DONEp);
+  /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_VBLANKn, WODU_RENDER_DONEp());
   /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN, ROPO_LY_MATCH_SYNCp(),
                                            ppu_reg.REFE_INT_OAM_EN, TAPA_INT_OAM,
                                            ppu_reg.RUFO_INT_VBL_EN, PARU_VBLANKp_d4(), // polarity?
@@ -1667,7 +1658,7 @@ wire SchematicTop::FONY_SCAN5() const { /*p28.FONY*/ return sprite_scanner.FONY_
 //-----------------------------------------------------------------------------
 // Sprite store signals
 
-wire SchematicTop::FEPO_STORE_MATCHp() const { /*p29.FEPO*/ return sst_reg.FEPO_STORE_MATCHp; }
+wire SchematicTop::FEPO_STORE_MATCHp() const { /*p29.FEPO*/ return sprite_store.FEPO_STORE_MATCHp; }
 
 //-----------------------------------------------------------------------------
 // Sprite fetcher signals

@@ -202,8 +202,9 @@ void LcdRegisters::tick(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash LcdRegisters::commit() {
+SignalHash LcdRegisters::commit(SchematicTop& top) {
   SignalHash hash;
+
   /*p21.SAXO*/ hash << XEHO_X0.commit(); // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ hash << SAVY_X1.commit();
   /*p21.VYZO*/ hash << XODU_X2.commit();
@@ -240,6 +241,12 @@ SignalHash LcdRegisters::commit() {
   /*p23.RAHA*/ hash << RAHA_LYC7.commit();
 
   /*p21.ROPO*/ hash << ROPO_LY_MATCH_SYNCp.commit();
+
+  hash << top.LCD_PIN_CPG.commit();
+  hash << top.LCD_PIN_CPL.commit();
+  hash << top.LCD_PIN_FR.commit();
+  hash << top.LCD_PIN_S.commit();
+
   return hash;
 }
 

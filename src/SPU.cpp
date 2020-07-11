@@ -319,44 +319,44 @@ void SPU::bus_read(const Req& req, Ack& ack) const {
   if (req.addr > 0xFF3F) return;
 
   ack.addr = req.addr;
-  ack.data = 0;
+  ack.data_lo = 0;
   ack.read++;
 
   //----------
   // wavetable
 
   if (req.addr >= 0xFF30 && req.addr <= 0xFF3F) {
-    ack.data = s3_wave[req.addr & 0xF];
+    ack.data_lo = s3_wave[req.addr & 0xF];
     return;
   }
 
   switch (req.addr) {
-  case 0xFF10: ack.data = nr10 | 0x80; break;
-  case 0xFF11: ack.data = nr11 | 0x3F; break;
-  case 0xFF12: ack.data = nr12 | 0x00; break;
-  case 0xFF13: ack.data = nr13 | 0xFF; break;
-  case 0xFF14: ack.data = nr14 | 0xBF; break;
+  case 0xFF10: ack.data_lo = nr10 | 0x80; break;
+  case 0xFF11: ack.data_lo = nr11 | 0x3F; break;
+  case 0xFF12: ack.data_lo = nr12 | 0x00; break;
+  case 0xFF13: ack.data_lo = nr13 | 0xFF; break;
+  case 0xFF14: ack.data_lo = nr14 | 0xBF; break;
 
-  case 0xFF15: ack.data = nr20 | 0xFF; break;
-  case 0xFF16: ack.data = nr21 | 0x3F; break;
-  case 0xFF17: ack.data = nr22 | 0x00; break;
-  case 0xFF18: ack.data = nr23 | 0xFF; break;
-  case 0xFF19: ack.data = nr24 | 0xBF; break;
+  case 0xFF15: ack.data_lo = nr20 | 0xFF; break;
+  case 0xFF16: ack.data_lo = nr21 | 0x3F; break;
+  case 0xFF17: ack.data_lo = nr22 | 0x00; break;
+  case 0xFF18: ack.data_lo = nr23 | 0xFF; break;
+  case 0xFF19: ack.data_lo = nr24 | 0xBF; break;
 
-  case 0xFF1A: ack.data = nr30 | 0x7F; break;
-  case 0xFF1B: ack.data = nr31 | 0xFF; break;
-  case 0xFF1C: ack.data = nr32 | 0x9F; break;
-  case 0xFF1D: ack.data = nr33 | 0xFF; break;
-  case 0xFF1E: ack.data = nr34 | 0xBF; break;
+  case 0xFF1A: ack.data_lo = nr30 | 0x7F; break;
+  case 0xFF1B: ack.data_lo = nr31 | 0xFF; break;
+  case 0xFF1C: ack.data_lo = nr32 | 0x9F; break;
+  case 0xFF1D: ack.data_lo = nr33 | 0xFF; break;
+  case 0xFF1E: ack.data_lo = nr34 | 0xBF; break;
 
-  case 0xFF1F: ack.data = nr40 | 0xFF; break;
-  case 0xFF20: ack.data = nr41 | 0xFF; break;
-  case 0xFF21: ack.data = nr42 | 0x00; break;
-  case 0xFF22: ack.data = nr43 | 0x00; break;
-  case 0xFF23: ack.data = nr44 | 0xBF; break;
+  case 0xFF1F: ack.data_lo = nr40 | 0xFF; break;
+  case 0xFF20: ack.data_lo = nr41 | 0xFF; break;
+  case 0xFF21: ack.data_lo = nr42 | 0x00; break;
+  case 0xFF22: ack.data_lo = nr43 | 0x00; break;
+  case 0xFF23: ack.data_lo = nr44 | 0xBF; break;
 
-  case 0xFF24: ack.data = nr50 | 0x00; break;
-  case 0xFF25: ack.data = nr51 | 0x00; break;
+  case 0xFF24: ack.data_lo = nr50 | 0x00; break;
+  case 0xFF25: ack.data_lo = nr51 | 0x00; break;
 
   case 0xFF26: {
     uint8_t bus_out_ = (nr52 & 0x80) | 0x70;
@@ -364,7 +364,7 @@ void SPU::bus_read(const Req& req, Ack& ack) const {
     if (s2_enable) bus_out_ |= 0b00000010;
     if (s3_enable) bus_out_ |= 0b00000100;
     if (s4_enable) bus_out_ |= 0b00001000;
-    ack.data = bus_out_;
+    ack.data_lo = bus_out_;
     break;
   }
   }
@@ -377,7 +377,7 @@ void SPU::bus_write(const Req& req) {
 
   if (!sound_on) {
     if (req.addr == 0xFF26) {
-      nr52 = (uint8_t)req.data | 0b01110000;
+      nr52 = (uint8_t)req.data_lo | 0b01110000;
       if (nr52 & 0x80) reset();
     }
     return;
@@ -387,7 +387,7 @@ void SPU::bus_write(const Req& req) {
   // wavetable
 
   if (req.addr >= 0xFF30 && req.addr <= 0xFF3F) {
-    s3_wave[req.addr & 0xF] = (uint8_t)req.data;
+    s3_wave[req.addr & 0xF] = (uint8_t)req.data_lo;
     return;
   }
 
@@ -396,44 +396,44 @@ void SPU::bus_write(const Req& req) {
 
   if (req.addr == 0xFF12) {
     if ((nr12 & 0x08) && s1_enable) s1_env_volume = (s1_env_volume + 1) & 15;
-    if ((req.data & 0xF8) == 0) s1_enable = false;
+    if ((req.data_lo & 0xF8) == 0) s1_enable = false;
   }
 
   if (req.addr == 0xFF17) {
     if ((nr22 & 0x08) && s2_enable) s2_env_volume = (s2_env_volume + 1) & 15;
-    if ((req.data & 0xF8) == 0) s2_enable = false;
+    if ((req.data_lo & 0xF8) == 0) s2_enable = false;
   }
 
   if (req.addr == 0xFF21) {
     if ((nr42 & 0x08) && s4_enable) s4_env_volume = (s4_env_volume + 1) & 15;
-    if ((req.data & 0xF8) == 0) s4_enable = false;
+    if ((req.data_lo & 0xF8) == 0) s4_enable = false;
   }
 
   //----------
   // registers
 
   switch (req.addr) {
-  case 0xFF10: nr10 = (uint8_t)req.data | 0b10000000; break;
-  case 0xFF11: nr11 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF12: nr12 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF13: nr13 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF14: nr14 = (uint8_t)req.data | 0b00111000; break;
-  case 0xFF16: nr21 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF17: nr22 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF18: nr23 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF19: nr24 = (uint8_t)req.data | 0b00111000; break;
-  case 0xFF1A: nr30 = (uint8_t)req.data | 0b01111111; break;
-  case 0xFF1B: nr31 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF1C: nr32 = (uint8_t)req.data | 0b10011111; break;
-  case 0xFF1D: nr33 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF1E: nr34 = (uint8_t)req.data | 0b00111000; break;
-  case 0xFF20: nr41 = (uint8_t)req.data | 0b11000000; break;
-  case 0xFF21: nr42 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF22: nr43 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF23: nr44 = (uint8_t)req.data | 0b00111111; break;
-  case 0xFF24: nr50 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF25: nr51 = (uint8_t)req.data | 0b00000000; break;
-  case 0xFF26: nr52 = (uint8_t)req.data | 0b01110000; break;
+  case 0xFF10: nr10 = (uint8_t)req.data_lo | 0b10000000; break;
+  case 0xFF11: nr11 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF12: nr12 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF13: nr13 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF14: nr14 = (uint8_t)req.data_lo | 0b00111000; break;
+  case 0xFF16: nr21 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF17: nr22 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF18: nr23 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF19: nr24 = (uint8_t)req.data_lo | 0b00111000; break;
+  case 0xFF1A: nr30 = (uint8_t)req.data_lo | 0b01111111; break;
+  case 0xFF1B: nr31 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF1C: nr32 = (uint8_t)req.data_lo | 0b10011111; break;
+  case 0xFF1D: nr33 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF1E: nr34 = (uint8_t)req.data_lo | 0b00111000; break;
+  case 0xFF20: nr41 = (uint8_t)req.data_lo | 0b11000000; break;
+  case 0xFF21: nr42 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF22: nr43 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF23: nr44 = (uint8_t)req.data_lo | 0b00111111; break;
+  case 0xFF24: nr50 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF25: nr51 = (uint8_t)req.data_lo | 0b00000000; break;
+  case 0xFF26: nr52 = (uint8_t)req.data_lo | 0b01110000; break;
   default: return;
   }
 
@@ -441,10 +441,10 @@ void SPU::bus_write(const Req& req) {
   // triggers
 
   {
-    bool s1_trigger_ = req.addr == 0xFF14 && (req.data & 0x80);
-    bool s2_trigger_ = req.addr == 0xFF19 && (req.data & 0x80);
-    bool s3_trigger_ = req.addr == 0xFF1E && (req.data & 0x80);
-    bool s4_trigger_ = req.addr == 0xFF23 && (req.data & 0x80);
+    bool s1_trigger_ = req.addr == 0xFF14 && (req.data_lo & 0x80);
+    bool s2_trigger_ = req.addr == 0xFF19 && (req.data_lo & 0x80);
+    bool s3_trigger_ = req.addr == 0xFF1E && (req.data_lo & 0x80);
+    bool s4_trigger_ = req.addr == 0xFF23 && (req.data_lo & 0x80);
 
     if (s1_trigger_) {
       uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;

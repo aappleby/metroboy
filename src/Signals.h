@@ -74,23 +74,23 @@ inline int pack(SignalState a, SignalState b, SignalState c, SignalState d,
 //-----------------------------------------------------------------------------
 
 // Six-rung mux cells are _non_inverting_. m = 1 selects input _ZERO_
-inline const wire mux2_p(wire a, wire b, wire m) {
-  return m ? a : b;
-}
-
-// Five-rung mux cells are _inverting_. m = 1 selects input _ZERO_
-/*
-inline const wire mux2_n(wire a, wire b, wire m) {
-  return !(m ? a : b);
-}
-*/
-inline const wire mux2_n(SignalState a, SignalState b, SignalState m) {
+inline const wire mux2_p(SignalState a, SignalState b, SignalState m) {
   if (m.error)  __debugbreak();
   if (m.hiz)    __debugbreak();
   SignalState c = m.val ? a : b;
   if (c.error)  __debugbreak();
   if (c.hiz)    __debugbreak();
   return c.val;
+}
+
+// Five-rung mux cells are _inverting_. m = 1 selects input _ZERO_
+inline const wire mux2_n(SignalState a, SignalState b, SignalState m) {
+  if (m.error)  __debugbreak();
+  if (m.hiz)    __debugbreak();
+  SignalState c = m.val ? a : b;
+  if (c.error)  __debugbreak();
+  if (c.hiz)    __debugbreak();
+  return !c.val;
 }
 
 inline wire amux2(wire a0, wire b0, wire a1, wire b1) {

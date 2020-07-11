@@ -26,11 +26,38 @@ namespace Schematics {
 
 struct SchematicTop {
 
-  void set_cpu(uint16_t addr, uint8_t data, bool read, bool write);
-  void set_ext();
-  void set_joy(uint8_t buttons);
-  void set_vram(wire OE, uint8_t data);
-  void set_oam();
+  SchematicTop();
+
+  void set_cpu_bus(Req req);
+  void set_buttons(uint8_t buttons);
+  void set_vram_bus(wire OE, uint8_t data);
+  void set_oam_bus(wire OE, uint16_t data);
+  void set_ext_bus(wire OE, uint16_t data);
+
+  int get_addr() const {
+    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
+                CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
+                CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11,
+                CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
+  }
+
+  int get_data() const {
+    return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3,
+                CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
+  }
+
+  /*
+  void set_data(bool oe, uint8_t data) {
+    CPU_TRI_D0.set_tribuf(oe, data & 0x01);
+    CPU_TRI_D1.set_tribuf(oe, data & 0x02);
+    CPU_TRI_D2.set_tribuf(oe, data & 0x04);
+    CPU_TRI_D3.set_tribuf(oe, data & 0x08);
+    CPU_TRI_D4.set_tribuf(oe, data & 0x10);
+    CPU_TRI_D5.set_tribuf(oe, data & 0x20);
+    CPU_TRI_D6.set_tribuf(oe, data & 0x40);
+    CPU_TRI_D7.set_tribuf(oe, data & 0x80);
+  }
+  */
 
   SignalHash tick();
 
@@ -59,8 +86,12 @@ struct SchematicTop {
   /*p07.UBET*/ wire UBET_T1p() const { return not(SYS_PIN_T1n); }
   /*p07.UVAR*/ wire UVAR_T2p() const { return not(SYS_PIN_T2n); }
 
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and(SYS_PIN_T1n, UVAR_T2p()); }
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and(SYS_PIN_T2n, UBET_T1p()); }
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const {
+    return and(SYS_PIN_T1n, UVAR_T2p());
+  }
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const {
+    return and(SYS_PIN_T2n, UBET_T1p());
+  }
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
 
@@ -216,10 +247,6 @@ struct SchematicTop {
   /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxEFGx() const { return not(UBAL_CPU_WRp_ABCDxxxH()); }
   /*p07.DYKY*/ wire DYKY_CPU_WRp_ABCDxxxH() const { return not(TAPU_CPU_WRn_xxxxEFGx()); }
   /*p07.CUPA*/ wire CUPA_CPU_WRn_xxxxEFGx() const { return not(DYKY_CPU_WRp_ABCDxxxH()); }
-
-  int get_addr() const;
-  int get_data() const;
-  void set_data(bool oe, uint8_t data);
 
   //-----------------------------------------------------------------------------
   // Bus mux signals
@@ -437,38 +464,7 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Internal state for debugging
 
-  int phase_counter = -16;
-
-  //-----------------------------------------------------------------------------
-  // Top level registers
-
-  // FF40 - LCDC (in top because it's used everywhere)
-  /*p23.VYXE*/ Reg9 VYXE_LCDC_BGEN;
-  /*p23.XYLO*/ Reg9 XYLO_LCDC_SPEN;
-  /*p23.XYMO*/ Reg9 XYMO_LCDC_SPSIZE;
-  /*p23.XAFO*/ Reg9 XAFO_LCDC_BGMAP;
-  /*p23.WEXU*/ Reg9 WEXU_LCDC_BGTILE;
-  /*p23.WYMO*/ Reg9 WYMO_LCDC_WINEN;
-  /*p23.WOKY*/ Reg9 WOKY_LCDC_WINMAP;
-  /*p23.XONA*/ Reg9 XONA_LCDC_EN;
-
-  /*p32.LEGU*/ Reg8 LEGU_BG_PIX_A0;
-  /*p32.NUDU*/ Reg8 NUDU_BG_PIX_A1;
-  /*p32.MUKU*/ Reg8 MUKU_BG_PIX_A2;
-  /*p32.LUZO*/ Reg8 LUZO_BG_PIX_A3;
-  /*p32.MEGU*/ Reg8 MEGU_BG_PIX_A4;
-  /*p32.MYJY*/ Reg8 MYJY_BG_PIX_A5;
-  /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
-  /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
-
-  /*p32.RAWU*/ Reg11 RAWU_BG_PIX_B0; // also holds tile index during fetch
-  /*p32.POZO*/ Reg11 POZO_BG_PIX_B1;
-  /*p32.PYZO*/ Reg11 PYZO_BG_PIX_B2; 
-  /*p32.POXA*/ Reg11 POXA_BG_PIX_B3; 
-  /*p32.PULO*/ Reg11 PULO_BG_PIX_B4; 
-  /*p32.POJU*/ Reg11 POJU_BG_PIX_B5; 
-  /*p32.POWY*/ Reg11 POWY_BG_PIX_B6; 
-  /*p32.PYJU*/ Reg11 PYJU_BG_PIX_B7;
+  int phase_counter = -17;
 
   //-----------------------------------------------------------------------------
   // Sys pins
@@ -496,22 +492,10 @@ struct SchematicTop {
 #endif
 
   PinIn  SYS_PIN_RSTp;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  PinIn  SYS_PIN_CLK_A; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
+  PinIn  SYS_PIN_CLK_B; // PIN_74 
   PinIn  SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
   PinIn  SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
-
-  // In run mode:
-  // if SYS_PIN_CLK_A was tied low
-  // then UCOB would be tied high
-  // then UFOL would be tied low
-  // then TAPE_FF04_WR would not affect DIV
-  // Therefore SYS_PIN_CLK_A = 1 in run mode
-
-  PinIn  SYS_PIN_CLK_A; // PIN_74 -> ATEZ, UCOB
-
-  // SYS_PIN_CLK_A -> ATEZ -> BYJU
-  // SYS_PIN_CLK_A -> UCOB -> UFOL, UPYF
-
-  PinIn  SYS_PIN_CLK_B; // PIN_74 
 
   // Ground ties - VYPO, RUNY, WEFE, unlabeled cell between BONE and BUFY.
 
@@ -524,60 +508,22 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Internal bus to CPU
 
-  PinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
-
-  PinIn  CPU_PIN_RD;            // top right port PORTA_00: ->
-  PinIn  CPU_PIN_WRp;            // top right port PORTA_01: ->
-  PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
-
-  PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
-  PinOut CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
-  PinIn  CPU_PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
-  PinOut CPU_PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
-  PinIn  CPU_PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
-  PinOut CPU_PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
-  PinIn  CPU_PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
-  PinOut CPU_PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
-  PinIn  CPU_PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
-  PinOut CPU_PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
-
-  // In run mode, MATU (a Reg17) must _not_ be stuck.
-  // If CPU_PIN_CLKREQ was 0 in run mode
-  // then ABOL = 1
-  // then NULE = 0, BYRY = 1, BUDE = 0, UVYT = 1, and MATU would be stuck.
-  // Therefore CPU_PIN_CLKREQ must be 1 in run mode
-
+  // CPU-to-SOC control signals
   PinIn  CPU_PIN_READYp;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-
-  // At boot,
-  // CPU_PIN_DBG = T1 ^ T2
-  // CPU_PIN_INT_RST = !T1 && !T2 && RSTn;
-
-  PinOut CPU_PIN_SYS_RSTp;          // top center port PORTC_01: <- P01.AFER , reset related reg
-  PinOut CPU_PIN_EXT_RST;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  PinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut CPU_PIN_STARTp;           // top center port PORTC_04: <- P01.CPU_RESET
-
-  PinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  PinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO
-  PinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-
-
-
-
-
-
   PinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  PinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
-  PinOut CPU_PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
-  PinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  PinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
-  PinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
   PinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
-  PinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
-  PinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-  PinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+
+  // Interrupt acks
+  PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
+  PinIn  CPU_PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
+  PinIn  CPU_PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
+  PinIn  CPU_PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
+  PinIn  CPU_PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
+
+  // Main bus
+  PinIn  CPU_PIN_RDp;           // top right port PORTA_00: ->
+  PinIn  CPU_PIN_WRp;           // top right port PORTA_01: ->
+  PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
   PinIn  CPU_PIN_A00;           // bottom right port PORTB_00: -> A00
   PinIn  CPU_PIN_A01;           // bottom right port PORTB_04: -> A01
@@ -604,6 +550,36 @@ struct SchematicTop {
   Tribuf CPU_TRI_D5;            // bottom left port: <>
   Tribuf CPU_TRI_D6;            // bottom left port: <>
   Tribuf CPU_TRI_D7;            // bottom left port: <>
+
+  // SOC-to-CPU control signals
+  PinOut CPU_PIN_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related reg
+  PinOut CPU_PIN_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  PinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  PinOut CPU_PIN_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
+  PinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
+  PinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  PinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  PinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+
+  // Interrupts
+  PinOut CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
+  PinOut CPU_PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
+  PinOut CPU_PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
+  PinOut CPU_PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
+  PinOut CPU_PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
+
+  // Not really sure why this is here
+  PinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO
+
+  // Clocks
+  PinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
+  PinOut CPU_PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
+  PinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  PinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
+  PinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
+  PinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
+  PinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
+  PinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
 
   //-----------------------------------------------------------------------------
   // OAM bus
@@ -682,137 +658,115 @@ struct SchematicTop {
   PinOut JOY_PIN_P15_D;   // PIN_62 <- p05.COFY
 
   //-----------------------------------------------------------------------------
-  // Ext bus
+  // Ext bus debug inputs
+
+  PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
+  PinIn  EXT_PIN_RDn_C;   // PIN_79 -> P07.UJYV
+
+  PinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
+  PinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU
+  PinIn  EXT_PIN_A02_C;   // PIN_03 -> P08.BUXU
+  PinIn  EXT_PIN_A03_C;   // PIN_04 -> P08.BASE
+  PinIn  EXT_PIN_A04_C;   // PIN_05 -> P08.AFEC
+  PinIn  EXT_PIN_A05_C;   // PIN_06 -> P08.ABUP
+  PinIn  EXT_PIN_A06_C;   // PIN_07 -> P08.CYGU
+  PinIn  EXT_PIN_A07_C;   // PIN_08 -> P08.COGO
+  PinIn  EXT_PIN_A08_C;   // PIN_09 -> P08.MUJY
+  PinIn  EXT_PIN_A09_C;   // PIN_10 -> P08.NENA
+  PinIn  EXT_PIN_A10_C;   // PIN_11 -> P08.SURA
+  PinIn  EXT_PIN_A11_C;   // PIN_12 -> P08.MADY
+  PinIn  EXT_PIN_A12_C;   // PIN_13 -> P08.LAHE
+  PinIn  EXT_PIN_A13_C;   // PIN_14 -> P08.LURA
+  PinIn  EXT_PIN_A14_C;   // PIN_15 -> P08.PEVO
+  PinIn  EXT_PIN_A15_C;   // PIN_16 -> P08.RAZA
+
+  //-----------------------------------------------------------------------------
+  // External bus
 
   PinOut EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
-
-  PinOut EXT_PIN_WRn_A;   // PIN_78 <- P08.UVER
-  PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
-  PinOut EXT_PIN_WRn_D;   // PIN_78 <- P08.USUF
-
   PinOut EXT_PIN_RDn_A;   // PIN_79 <- P08.UGAC
-  PinIn  EXT_PIN_RDn_C;   // PIN_79 -> P07.UJYV
   PinOut EXT_PIN_RDn_D;   // PIN_79 <- P08.URUN
-
+  PinOut EXT_PIN_WRn_A;   // PIN_78 <- P08.UVER
+  PinOut EXT_PIN_WRn_D;   // PIN_78 <- P08.USUF
   PinOut EXT_PIN_CSn_A;   // PIN_80 <- P08.TYHO
 
   PinOut EXT_PIN_A00_A;   // PIN_01 <- P08.KUPO
-  PinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
   PinOut EXT_PIN_A00_D;   // PIN_01 <- P08.KOTY
-
   PinOut EXT_PIN_A01_A;   // PIN_02 <- P08.CABA
-  PinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU
   PinOut EXT_PIN_A01_D;   // PIN_02 <- P08.COTU
-
   PinOut EXT_PIN_A02_A;   // PIN_03 <- P08.BOKU
-  PinIn  EXT_PIN_A02_C;   // PIN_03 -> P08.BUXU
   PinOut EXT_PIN_A02_D;   // PIN_03 <- P08.BAJO
-
   PinOut EXT_PIN_A03_A;   // PIN_04 <- P08.BOTY
-  PinIn  EXT_PIN_A03_C;   // PIN_04 -> P08.BASE
   PinOut EXT_PIN_A03_D;   // PIN_04 <- P08.BOLA
-
   PinOut EXT_PIN_A04_A;   // PIN_05 <- P08.BYLA
-  PinIn  EXT_PIN_A04_C;   // PIN_05 -> P08.AFEC
   PinOut EXT_PIN_A04_D;   // PIN_05 <- P08.BEVO
-
   PinOut EXT_PIN_A05_A;   // PIN_06 <- P08.BADU
-  PinIn  EXT_PIN_A05_C;   // PIN_06 -> P08.ABUP
   PinOut EXT_PIN_A05_D;   // PIN_06 <- P08.AJAV
-
   PinOut EXT_PIN_A06_A;   // PIN_07 <- P08.CEPU
-  PinIn  EXT_PIN_A06_C;   // PIN_07 -> P08.CYGU
   PinOut EXT_PIN_A06_D;   // PIN_07 <- P08.CYKA
-
   PinOut EXT_PIN_A07_A;   // PIN_08 <- P08.DEFY
-  PinIn  EXT_PIN_A07_C;   // PIN_08 -> P08.COGO
   PinOut EXT_PIN_A07_D;   // PIN_08 <- P08.COLO
-
   PinOut EXT_PIN_A08_A;   // PIN_09 <- P08.MYNY
-  PinIn  EXT_PIN_A08_C;   // PIN_09 -> P08.MUJY
   PinOut EXT_PIN_A08_D;   // PIN_09 <- P08.MEGO
-
   PinOut EXT_PIN_A09_A;   // PIN_10 <- P08.MUNE
-  PinIn  EXT_PIN_A09_C;   // PIN_10 -> P08.NENA
   PinOut EXT_PIN_A09_D;   // PIN_10 <- P08.MENY
-
   PinOut EXT_PIN_A10_A;   // PIN_11 <- P08.ROXU
-  PinIn  EXT_PIN_A10_C;   // PIN_11 -> P08.SURA
   PinOut EXT_PIN_A10_D;   // PIN_11 <- P08.RORE
-
   PinOut EXT_PIN_A11_A;   // PIN_12 <- P08.LEPY
-  PinIn  EXT_PIN_A11_C;   // PIN_12 -> P08.MADY
   PinOut EXT_PIN_A11_D;   // PIN_12 <- P08.LYNY
-
   PinOut EXT_PIN_A12_A;   // PIN_13 <- P08.LUCE
-  PinIn  EXT_PIN_A12_C;   // PIN_13 -> P08.LAHE
   PinOut EXT_PIN_A12_D;   // PIN_13 <- P08.LOSO
-
   PinOut EXT_PIN_A13_A;   // PIN_14 <- P08.LABE
-  PinIn  EXT_PIN_A13_C;   // PIN_14 -> P08.LURA
   PinOut EXT_PIN_A13_D;   // PIN_14 <- P08.LEVA
-
   PinOut EXT_PIN_A14_A;   // PIN_15 <- P08.PUHE
-  PinIn  EXT_PIN_A14_C;   // PIN_15 -> P08.PEVO
   PinOut EXT_PIN_A14_D;   // PIN_15 <- P08.PAHY
-
   PinOut EXT_PIN_A15_A;   // PIN_16 <- P08.SUZE
-  PinIn  EXT_PIN_A15_C;   // PIN_16 -> P08.RAZA
   PinOut EXT_PIN_A15_D;   // PIN_16 <- P08.RULO
 
   PinOut EXT_PIN_D0_A;    // PIN_17 <- P08.RUXA
-  PinOut EXT_PIN_D0_B;    // PIN_17 <- P08.LULA
-  PinIn  EXT_PIN_D0_C;    // PIN_17 -> P08.TOVO,SOMA
-  PinOut EXT_PIN_D0_D;    // PIN_17 <- P08.RUNE
-
   PinOut EXT_PIN_D1_A;    // PIN_18 <- P08.RUJA
-  PinOut EXT_PIN_D1_B;    // PIN_18 <- P08.LULA
-  PinIn  EXT_PIN_D1_C;    // PIN_18 -> P08.RUZY,RONY
-  PinOut EXT_PIN_D1_D;    // PIN_18 <- P08.RYPU
-
   PinOut EXT_PIN_D2_A;    // PIN_19 <- P08.RABY
-  PinOut EXT_PIN_D2_B;    // PIN_19 <- P08.LULA
-  PinIn  EXT_PIN_D2_C;    // PIN_19 -> P08.ROME,RAXY
-  PinOut EXT_PIN_D2_D;    // PIN_19 <- P08.SULY
-
   PinOut EXT_PIN_D3_A;    // PIN_20 <- P08.RERA
-  PinOut EXT_PIN_D3_B;    // PIN_20 <- P08.LULA
-  PinIn  EXT_PIN_D3_C;    // PIN_20 -> P08.SAZA,SELO
-  PinOut EXT_PIN_D3_D;    // PIN_20 <- P08.SEZE
-
   PinOut EXT_PIN_D4_A;    // PIN_21 <- P08.RORY
-  PinOut EXT_PIN_D4_B;    // PIN_21 <- P08.LULA
-  PinIn  EXT_PIN_D4_C;    // PIN_21 -> P08.TEHE,SODY
-  PinOut EXT_PIN_D4_D;    // PIN_21 <- P08.RESY
-
   PinOut EXT_PIN_D5_A;    // PIN_22 <- P08.RYVO
-  PinOut EXT_PIN_D5_B;    // PIN_22 <- P08.LULA
-  PinIn  EXT_PIN_D5_C;    // PIN_22 -> P08.RATU,SAGO
-  PinOut EXT_PIN_D5_D;    // PIN_22 <- P08.TAMU
-
   PinOut EXT_PIN_D6_A;    // PIN_23 <- P08.RAFY
-  PinOut EXT_PIN_D6_B;    // PIN_23 <- P08.LULA
-  PinIn  EXT_PIN_D6_C;    // PIN_23 -> P08.SOCA,RUPA
-  PinOut EXT_PIN_D6_D;    // PIN_23 <- P08.ROGY
-
   PinOut EXT_PIN_D7_A;    // PIN_24 <- P08.RAVU
+
+  PinOut EXT_PIN_D0_B;    // PIN_17 <- P08.LULA
+  PinOut EXT_PIN_D1_B;    // PIN_18 <- P08.LULA
+  PinOut EXT_PIN_D2_B;    // PIN_19 <- P08.LULA
+  PinOut EXT_PIN_D3_B;    // PIN_20 <- P08.LULA
+  PinOut EXT_PIN_D4_B;    // PIN_21 <- P08.LULA
+  PinOut EXT_PIN_D5_B;    // PIN_22 <- P08.LULA
+  PinOut EXT_PIN_D6_B;    // PIN_23 <- P08.LULA
   PinOut EXT_PIN_D7_B;    // PIN_24 <- P08.LULA
+
+  PinIn  EXT_PIN_D0_C;    // PIN_17 -> P08.TOVO,SOMA
+  PinIn  EXT_PIN_D1_C;    // PIN_18 -> P08.RUZY,RONY
+  PinIn  EXT_PIN_D2_C;    // PIN_19 -> P08.ROME,RAXY
+  PinIn  EXT_PIN_D3_C;    // PIN_20 -> P08.SAZA,SELO
+  PinIn  EXT_PIN_D4_C;    // PIN_21 -> P08.TEHE,SODY
+  PinIn  EXT_PIN_D5_C;    // PIN_22 -> P08.RATU,SAGO
+  PinIn  EXT_PIN_D6_C;    // PIN_23 -> P08.SOCA,RUPA
   PinIn  EXT_PIN_D7_C;    // PIN_24 -> P08.RYBA,SAZY
+
+  PinOut EXT_PIN_D0_D;    // PIN_17 <- P08.RUNE
+  PinOut EXT_PIN_D1_D;    // PIN_18 <- P08.RYPU
+  PinOut EXT_PIN_D2_D;    // PIN_19 <- P08.SULY
+  PinOut EXT_PIN_D3_D;    // PIN_20 <- P08.SEZE
+  PinOut EXT_PIN_D4_D;    // PIN_21 <- P08.RESY
+  PinOut EXT_PIN_D5_D;    // PIN_22 <- P08.TAMU
+  PinOut EXT_PIN_D6_D;    // PIN_23 <- P08.ROGY
   PinOut EXT_PIN_D7_D;    // PIN_24 <- P08.RYDA
 
   //-----------------------------------------------------------------------------
   // VRAM bus
 
   PinOut VRAM_PIN_MCSn_A;   // PIN_43 <- P25.SOKY
-  PinIn  VRAM_PIN_MCSn_C;   // PIN_43 -> P25.TEFY
   PinOut VRAM_PIN_MCSn_D;   // PIN_43 <- P25.SETY
-
   PinOut VRAM_PIN_MOEn_A;   // PIN_45 <- P25.REFO
-  PinIn  VRAM_PIN_MOEn_C;   // PIN_45 -> P25.TAVY
   PinOut VRAM_PIN_MOEn_D;   // PIN_45 <- P25.SAHA
-
   PinOut VRAM_PIN_MWRn_A;   // PIN_49 <- P25.SYSY
-  PinIn  VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
   PinOut VRAM_PIN_MWRn_D;   // PIN_49 <- P25.RAGU
 
   PinOut VRAM_PIN_MA00_AD;  // PIN_34 <- P04.ECAL
@@ -847,15 +801,6 @@ struct SchematicTop {
   PinOut VRAM_PIN_MD6_B;    // PIN_26 <- P25.ROFA
   PinOut VRAM_PIN_MD7_B;    // PIN_25 <- P25.ROFA
 
-  PinIn  VRAM_PIN_MD0_C;    // PIN_33 -> P25.RODY
-  PinIn  VRAM_PIN_MD1_C;    // PIN_31 -> P25.REBA
-  PinIn  VRAM_PIN_MD2_C;    // PIN_30 -> P25.RYDO
-  PinIn  VRAM_PIN_MD3_C;    // PIN_29 -> P25.REMO
-  PinIn  VRAM_PIN_MD4_C;    // PIN_28 -> P25.ROCE
-  PinIn  VRAM_PIN_MD5_C;    // PIN_27 -> P25.ROPU
-  PinIn  VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
-  PinIn  VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
-
   PinOut VRAM_PIN_MD0_D;    // PIN_33 <- P25.RURA
   PinOut VRAM_PIN_MD1_D;    // PIN_31 <- P25.RULY
   PinOut VRAM_PIN_MD2_D;    // PIN_30 <- P25.RARE
@@ -864,6 +809,19 @@ struct SchematicTop {
   PinOut VRAM_PIN_MD5_D;    // PIN_27 <- P25.RUMU
   PinOut VRAM_PIN_MD6_D;    // PIN_26 <- P25.RYTY
   PinOut VRAM_PIN_MD7_D;    // PIN_25 <- P25.RADY
+
+  PinIn  VRAM_PIN_MCSn_C;   // PIN_43 -> P25.TEFY
+  PinIn  VRAM_PIN_MOEn_C;   // PIN_45 -> P25.TAVY
+  PinIn  VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
+
+  PinIn  VRAM_PIN_MD0_C;    // PIN_33 -> P25.RODY
+  PinIn  VRAM_PIN_MD1_C;    // PIN_31 -> P25.REBA
+  PinIn  VRAM_PIN_MD2_C;    // PIN_30 -> P25.RYDO
+  PinIn  VRAM_PIN_MD3_C;    // PIN_29 -> P25.REMO
+  PinIn  VRAM_PIN_MD4_C;    // PIN_28 -> P25.ROCE
+  PinIn  VRAM_PIN_MD5_C;    // PIN_27 -> P25.ROPU
+  PinIn  VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
+  PinIn  VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
 
   Tribuf VRM_TRI_A00;
   Tribuf VRM_TRI_A01;
@@ -902,6 +860,38 @@ struct SchematicTop {
   Tribuf SPR_TRI_LINE_1;
   Tribuf SPR_TRI_LINE_2;
   Tribuf SPR_TRI_LINE_3;
+
+  //-----------------------------------------------------------------------------
+  // Top level registers
+
+  // FF40 - LCDC (in top because it's used everywhere)
+  /*p23.VYXE*/ Reg9 VYXE_LCDC_BGEN;
+  /*p23.XYLO*/ Reg9 XYLO_LCDC_SPEN;
+  /*p23.XYMO*/ Reg9 XYMO_LCDC_SPSIZE;
+  /*p23.XAFO*/ Reg9 XAFO_LCDC_BGMAP;
+  /*p23.WEXU*/ Reg9 WEXU_LCDC_BGTILE;
+  /*p23.WYMO*/ Reg9 WYMO_LCDC_WINEN;
+  /*p23.WOKY*/ Reg9 WOKY_LCDC_WINMAP;
+  /*p23.XONA*/ Reg9 XONA_LCDC_EN;
+
+  // Temp pix storage
+  /*p32.LEGU*/ Reg8 LEGU_BG_PIX_A0;
+  /*p32.NUDU*/ Reg8 NUDU_BG_PIX_A1;
+  /*p32.MUKU*/ Reg8 MUKU_BG_PIX_A2;
+  /*p32.LUZO*/ Reg8 LUZO_BG_PIX_A3;
+  /*p32.MEGU*/ Reg8 MEGU_BG_PIX_A4;
+  /*p32.MYJY*/ Reg8 MYJY_BG_PIX_A5;
+  /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
+  /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
+
+  /*p32.RAWU*/ Reg11 RAWU_BG_PIX_B0; // also holds tile index during fetch
+  /*p32.POZO*/ Reg11 POZO_BG_PIX_B1;
+  /*p32.PYZO*/ Reg11 PYZO_BG_PIX_B2; 
+  /*p32.POXA*/ Reg11 POXA_BG_PIX_B3; 
+  /*p32.PULO*/ Reg11 PULO_BG_PIX_B4; 
+  /*p32.POJU*/ Reg11 POJU_BG_PIX_B5; 
+  /*p32.POWY*/ Reg11 POWY_BG_PIX_B6; 
+  /*p32.PYJU*/ Reg11 PYJU_BG_PIX_B7;
 
   //-----------------------------------------------------------------------------
   // Sub-modules

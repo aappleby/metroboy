@@ -13,22 +13,46 @@ typedef int16_t sample_t;
 
 //-----------------------------------------------------------------------------
 
+#pragma warning(push)
+#pragma warning(disable:4201)
+
 struct Req {
   uint16_t addr = 0;
-  uint8_t  data = 0;
+  union {
+    struct {
+      uint8_t data_lo;
+      uint8_t data_hi;
+    };
+    uint16_t data2 = 0;
+  };
   uint8_t  read = 0;
   uint8_t  write = 0;
+  uint16_t pad1 = 0;
 
   operator bool() const {
     return read || write;
   }
 };
 
+static_assert(sizeof(Req) == 8, "Req size != 8");
+
 struct Ack {
   uint16_t addr = 0;
-  uint16_t data = 0;
+  union {
+    struct {
+      uint8_t data_lo;
+      uint8_t data_hi;
+    };
+    uint16_t data2 = 0;
+  };
   uint8_t  read = 0;
+  uint8_t  pad1 = 0;
+  uint16_t pad2 = 0;
 };
+
+static_assert(sizeof(Ack) == 8, "Ack size != 8");
+
+#pragma warning(pop)
 
 //-----------------------------------------------------------------------------
 

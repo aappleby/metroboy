@@ -23,10 +23,10 @@ void NewTimer::reset() {
 
 void NewTimer::tick(const Req& req, Ack& ack) {
   if (req.read) switch(req.addr) {
-  case ADDR_DIV:  ack.read++; ack.data += uint8_t(div >> 6); break;
-  case ADDR_TIMA: ack.read++; ack.data += tima;              break;
-  case ADDR_TMA:  ack.read++; ack.data += tma;               break;
-  case ADDR_TAC:  ack.read++; ack.data += tac | 0b11111000;  break;
+  case ADDR_DIV:  ack.read++; ack.data_lo += uint8_t(div >> 6); break;
+  case ADDR_TIMA: ack.read++; ack.data_lo += tima;              break;
+  case ADDR_TMA:  ack.read++; ack.data_lo += tma;               break;
+  case ADDR_TAC:  ack.read++; ack.data_lo += tac | 0b11111000;  break;
   };
 }
 
@@ -46,9 +46,9 @@ void NewTimer::tock(int phase, const Req& req) {
   if (PHASE_F && req.write) {
     switch(req.addr) {
     case ADDR_DIV:  div  = 0; break;
-    case ADDR_TIMA: tima = req.data; tima_7_sync = false; break;
-    case ADDR_TMA:  tma  = req.data; break;
-    case ADDR_TAC:  tac  = req.data; break;
+    case ADDR_TIMA: tima = req.data_lo; tima_7_sync = false; break;
+    case ADDR_TMA:  tma  = req.data_lo; break;
+    case ADDR_TAC:  tac  = req.data_lo; break;
     }
     update_tima();
   }

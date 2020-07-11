@@ -106,10 +106,10 @@ void PPU::get_vbus_req(Req& r) const {
   }
 
   if (fetch_type != FETCH_NONE) {
-    r.addr  = fetch_addr;
-    r.data  = 0;
-    r.read  = 1;
-    r.write = 0;
+    r.addr    = fetch_addr;
+    r.data_lo = 0;
+    r.read    = 1;
+    r.write   = 0;
   }
 }
 
@@ -123,7 +123,7 @@ void PPU::get_obus_req(Req& r) const {
   // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
   if (counter < 80) {
     r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
-    r.data  = 0;
+    r.data2 = 0;
     r.read  = 1;
     r.write = 0;
     return;
@@ -139,7 +139,7 @@ void PPU::get_obus_req(Req& r) const {
 
   if (fetch_addr != 0) {
     r.addr  = fetch_addr;
-    r.data  = 0;
+    r.data2 = 0;
     r.read  = 1;
     r.write = 0;
   }
@@ -148,7 +148,7 @@ void PPU::get_obus_req(Req& r) const {
 //-----------------------------------------------------------------------------
 
 void PPU::on_vbus_ack(const Ack& vbus_ack) {
-  uint8_t data = (uint8_t)vbus_ack.data;
+  uint8_t data = (uint8_t)vbus_ack.data_lo;
 
   if (vbus_ack.read) {
     if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
@@ -171,8 +171,8 @@ void PPU::on_vbus_ack(const Ack& vbus_ack) {
 // this is probably gonna break if cpu tries to read obus during rendering...
 
 void PPU::on_obus_ack(const Ack& obus_ack) {
-  uint8_t lo = uint8_t(obus_ack.data >> 0);
-  uint8_t hi = uint8_t(obus_ack.data >> 8);
+  uint8_t lo = obus_ack.data_lo;
+  uint8_t hi = obus_ack.data_hi;
 
   if (obus_ack.read) {
     //printf("fetch oam 0x%04x\n", obus_ack.data);
@@ -211,7 +211,7 @@ void PPU::tick(const Req& req, Ack& ack) const {
   if (req.addr == ADDR_LY) return;
 
   if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
-    uint8_t data = (uint8_t)req.data;
+    uint8_t data = (uint8_t)req.data_lo;
     switch (req.addr) {
     case ADDR_LCDC: data = lcdc; break;
     case ADDR_STAT: data = stat; break;
@@ -229,7 +229,7 @@ void PPU::tick(const Req& req, Ack& ack) const {
     }
 
     ack.addr = req.addr;
-    ack.data = data;
+    ack.data_lo = data;
     ack.read++;
   }
 }
@@ -241,7 +241,7 @@ void PPU::tock(int phase, const Req& req) {
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
   if (req.write && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
-    uint8_t data = (uint8_t)req.data;
+    uint8_t data = (uint8_t)req.data_lo;
     switch (req.addr) {
     case ADDR_LCDC: lcdc = data; break;
     case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;

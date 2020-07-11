@@ -24,7 +24,7 @@ struct Sandbox {
     SYS_PIN_T2.set(0);
 
     CPU_PIN_READYp.set(0);
-    CPU_PIN_RD.set(0);
+    CPU_PIN_RDp.set(0);
     CPU_PIN_WRp.set(0);
     CPU_PIN_ADDR_VALID.set(0);
     set_addr(0);
@@ -43,7 +43,7 @@ struct Sandbox {
   PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
 
   PinIn  CPU_PIN_READYp;
-  PinIn  CPU_PIN_RD;            // top right port PORTA_00: ->
+  PinIn  CPU_PIN_RDp;            // top right port PORTA_00: ->
   PinIn  CPU_PIN_WRp;            // top right port PORTA_01: ->
   PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
@@ -355,7 +355,7 @@ struct Sandbox {
     hash << SYS_PIN_RSTp;
 
     hash << CPU_PIN_READYp;
-    hash << CPU_PIN_RD;
+    hash << CPU_PIN_RDp;
     hash << CPU_PIN_WRp;
     hash << CPU_PIN_ADDR_VALID;
 

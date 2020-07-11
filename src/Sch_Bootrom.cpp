@@ -73,64 +73,58 @@ void Bootrom::tick(SchematicTop& top) {
 
   {
     // Bootrom -> CPU
-    ///*p07.ZORO*/ wire ADDR_0XXX = nor(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12);
-    ///*p07.ZADU*/ wire ADDR_X0XX = nor(cpu_pins.A11, cpu_pins.A10, cpu_pins.A09, cpu_pins.A08);
-    ///*p07.ZUFA*/ wire ADDR_00XX2 = and(ADDR_0XXX, ADDR_X0XX);
-    ///*p07.ZADO*/ wire BOOT_CSn   = nand(BOOT_RD, ADDR_00XX2);
-    ///*p07.ZERY*/ wire BOOT_CS    = not(BOOT_CSn);
 
-    ///*p07.ZYBA*/ wire ADDR_00n = not(cpu_pins.A00);
-    ///*p07.ZUVY*/ wire ADDR_01n = not(cpu_pins.A01);
-    ///*p07.ZUFY*/ wire ADDR_04n = not(cpu_pins.A04);
-    ///*p07.ZERA*/ wire ADDR_05n = not(cpu_pins.A05);
-    ///*p07.ZOLE*/ wire ADDR_00  = and(ADDR_01n, ADDR_00n);
-    ///*p07.ZAJE*/ wire ADDR_01  = and(ADDR_01n, cpu_pins.A00);
-    ///*p07.ZUBU*/ wire ADDR_10  = and(cpu_pins.A01, ADDR_00n);
-    ///*p07.ZAPY*/ wire ADDR_11  = and(cpu_pins.A01, cpu_pins.A00);
-
-    ///*p07.ZETE*/ wire BOOTROM_A1nA0n = not(ADDR_00);
-    ///*p07.ZEFU*/ wire BOOTROM_A1nA0  = not(ADDR_01);
-    ///*p07.ZYRO*/ wire BOOTROM_A1A0n  = not(ADDR_10);
-    ///*p07.ZAPA*/ wire BOOTROM_A1A0   = not(ADDR_11);
-    ///*p07.ZYGA*/ wire BOOTROM_A2n    = not(cpu_pins.A02);
-    ///*p07.ZYKY*/ wire BOOTROM_A3n    = not(cpu_pins.A03);
-    ///*p07.ZYKY*/ wire BOOTROM_A5nA4n = and(ADDR_05n, ADDR_04n);
-    ///*p07.ZYGA*/ wire BOOTROM_A5nA4  = and(ADDR_05n, cpu_pins.A04);
-    ///*p07.ZOVY*/ wire BOOTROM_A5A4n  = and(cpu_pins.A05, ADDR_04n);
-    ///*p07.ZUKO*/ wire BOOTROM_A5A4   = and(cpu_pins.A05, cpu_pins.A04);
-    ///*p07.ZAGE*/ wire BOOTROM_A6n    = not(cpu_pins.A06);
-    ///*p07.ZYRA*/ wire BOOTROM_A7n    = not(cpu_pins.A07);
-
-    /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(BOOT_BITn.q());
-    /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
-    /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
-
+    wire TEDO_CPU_RDp = top.TEDO_CPU_RDp();
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
-    /*p07.YULA*/ wire _YULA_BOOT_RD = and (top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
+    /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(BOOT_BITn.q());
+    /*p07.TULO*/ wire _TULO_ADDR_00XX = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
+    /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XX);
+
+    /*p07.YULA*/ wire _YULA_BOOT_RDp = and (TEDO_CPU_RDp, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
+
+    /*p07.ZORO*/ wire ZORO_ADDR_0XXX = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12);
+    /*p07.ZADU*/ wire ZADU_ADDR_X0XX = nor(top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
+    /*p07.ZUFA*/ wire ZUFA_ADDR_00XX = and(ZORO_ADDR_0XXX, ZADU_ADDR_X0XX);
+
+    /*p07.ZADO*/ wire ZADO_BOOT_CSn  = nand(_YULA_BOOT_RDp, ZUFA_ADDR_00XX);
+    /*p07.ZERY*/ wire ZERY_BOOT_CSp  = not(ZADO_BOOT_CSn);
+
+#if 0
+    /*p07.ZYBA*/ wire ZYBA_ADDR_00n = not(top.CPU_PIN_A00);
+    /*p07.ZUVY*/ wire ZUVY_ADDR_01n = not(top.CPU_PIN_A01);
+    /*p07.ZUFY*/ wire ZUFY_ADDR_04n = not(top.CPU_PIN_A04);
+    /*p07.ZERA*/ wire ZERA_ADDR_05n = not(top.CPU_PIN_A05);
+    /*p07.ZOLE*/ wire ZOLE_ADDR_00  = and(ZUVY_ADDR_01n, ZYBA_ADDR_00n);
+    /*p07.ZAJE*/ wire ZAJE_ADDR_01  = and(ZUVY_ADDR_01n, top.CPU_PIN_A00);
+    /*p07.ZUBU*/ wire ZUBU_ADDR_10  = and(top.CPU_PIN_A01, ZYBA_ADDR_00n);
+    /*p07.ZAPY*/ wire ZAPY_ADDR_11  = and(top.CPU_PIN_A01, top.CPU_PIN_A00);
+
+    /*p07.ZETE*/ wire BOOTROM_A1nA0n = not(ZOLE_ADDR_00);
+    /*p07.ZEFU*/ wire BOOTROM_A1nA0p  = not(ZAJE_ADDR_01);
+    /*p07.ZYRO*/ wire BOOTROM_A1pA0n  = not(ZUBU_ADDR_10);
+    /*p07.ZAPA*/ wire BOOTROM_A1pA0p   = not(ZAPY_ADDR_11);
+    /*p07.ZYGA*/ wire BOOTROM_A2n    = not(top.CPU_PIN_A02);
+    /*p07.ZYKY*/ wire BOOTROM_A3n    = not(top.CPU_PIN_A03);
+    /*p07.ZYKY*/ wire BOOTROM_A5nA4n = and(ZERA_ADDR_05n, ZUFY_ADDR_04n);
+    /*p07.ZYGA*/ wire BOOTROM_A5nA4p  = and(ZERA_ADDR_05n, top.CPU_PIN_A04);
+    /*p07.ZOVY*/ wire BOOTROM_A5pA4n  = and(top.CPU_PIN_A05, ZUFY_ADDR_04n);
+    /*p07.ZUKO*/ wire BOOTROM_A5pA4p   = and(top.CPU_PIN_A05, top.CPU_PIN_A04);
+    /*p07.ZAGE*/ wire BOOTROM_A6n    = not(top.CPU_PIN_A06);
+    /*p07.ZYRA*/ wire BOOTROM_A7n    = not(top.CPU_PIN_A07);
+#endif
 
     // this is kind of a hack
-    /*
     uint16_t addr = (uint16_t)top.get_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    top.CPU_TRI_D1.set_tribuf_6p(_YULA_BOOT_RD, data & 0x02);
-    top.CPU_TRI_D0.set_tribuf_6p(_YULA_BOOT_RD, data & 0x01);
-    top.CPU_TRI_D2.set_tribuf_6p(_YULA_BOOT_RD, data & 0x04);
-    top.CPU_TRI_D3.set_tribuf_6p(_YULA_BOOT_RD, data & 0x08);
-    top.CPU_TRI_D4.set_tribuf_6p(_YULA_BOOT_RD, data & 0x10);
-    top.CPU_TRI_D5.set_tribuf_6p(_YULA_BOOT_RD, data & 0x20);
-    top.CPU_TRI_D6.set_tribuf_6p(_YULA_BOOT_RD, data & 0x40);
-    top.CPU_TRI_D7.set_tribuf_6p(_YULA_BOOT_RD, data & 0x80);
-    */
-
-    top.CPU_TRI_D1.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D0.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D2.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D3.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D4.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D5.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D6.set_tribuf_6p(_YULA_BOOT_RD, 0);
-    top.CPU_TRI_D7.set_tribuf_6p(_YULA_BOOT_RD, 0);
+    top.CPU_TRI_D0.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x01);
+    top.CPU_TRI_D1.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x02);
+    top.CPU_TRI_D2.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x04);
+    top.CPU_TRI_D3.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x08);
+    top.CPU_TRI_D4.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x10);
+    top.CPU_TRI_D5.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x20);
+    top.CPU_TRI_D6.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x40);
+    top.CPU_TRI_D7.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x80);
   }
 }
 

@@ -4,65 +4,9 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::set_cpu(uint16_t addr, uint8_t data, bool read, bool write) {
-
-  CPU_PIN_A00.set(addr & 0x0001);
-  CPU_PIN_A01.set(addr & 0x0002);
-  CPU_PIN_A02.set(addr & 0x0004);
-  CPU_PIN_A03.set(addr & 0x0008);
-  CPU_PIN_A04.set(addr & 0x0010);
-  CPU_PIN_A05.set(addr & 0x0020);
-  CPU_PIN_A06.set(addr & 0x0040);
-  CPU_PIN_A07.set(addr & 0x0080);
-  CPU_PIN_A08.set(addr & 0x0100);
-  CPU_PIN_A09.set(addr & 0x0200);
-  CPU_PIN_A10.set(addr & 0x0400);
-  CPU_PIN_A11.set(addr & 0x0800);
-  CPU_PIN_A12.set(addr & 0x1000);
-  CPU_PIN_A13.set(addr & 0x2000);
-  CPU_PIN_A14.set(addr & 0x4000);
-  CPU_PIN_A15.set(addr & 0x8000);
-
-  CPU_PIN_RD.set(read);
-  CPU_PIN_WRp.set(write);
-
-  if (write) {
-    CPU_TRI_D0.preset(data & 0x01);
-    CPU_TRI_D1.preset(data & 0x02);
-    CPU_TRI_D2.preset(data & 0x04);
-    CPU_TRI_D3.preset(data & 0x08);
-    CPU_TRI_D4.preset(data & 0x10);
-    CPU_TRI_D5.preset(data & 0x20);
-    CPU_TRI_D6.preset(data & 0x40);
-    CPU_TRI_D7.preset(data & 0x80);
-  }
-  else {
-    CPU_TRI_D0.preset(HIZ);
-    CPU_TRI_D1.preset(HIZ);
-    CPU_TRI_D2.preset(HIZ);
-    CPU_TRI_D3.preset(HIZ);
-    CPU_TRI_D4.preset(HIZ);
-    CPU_TRI_D5.preset(HIZ);
-    CPU_TRI_D6.preset(HIZ);
-    CPU_TRI_D7.preset(HIZ);
-  }
-
-  //CPU_PIN5.set(HIZ);
-  CPU_PIN6.set(HIZ);
-  CPU_PIN_ADDR_VALID.set(HIZ);
-
-  CPU_PIN_ACK_JOYPAD.set(HIZ);
-  CPU_PIN_ACK_SERIAL.set(HIZ);
-  CPU_PIN_ACK_STAT.set(HIZ);
-  CPU_PIN_ACK_TIMER.set(HIZ);
-  CPU_PIN_ACK_VBLANK.set(HIZ);
-}
-
-//-----------------------------------------------------------------------------
-
-void SchematicTop::set_ext() {
-  //EXT_PIN_RDn_C.set(HIZ);
-  //EXT_PIN_WRp_C.set(HIZ);
+SchematicTop::SchematicTop() {
+  EXT_PIN_WRp_C.set(HIZ);
+  EXT_PIN_RDn_C.set(HIZ);
 
   EXT_PIN_A00_C.set(HIZ);
   EXT_PIN_A01_C.set(HIZ);
@@ -89,20 +33,105 @@ void SchematicTop::set_ext() {
   EXT_PIN_D5_C.set(HIZ);
   EXT_PIN_D6_C.set(HIZ);
   EXT_PIN_D7_C.set(HIZ);
+
+  // HACK preset these so we don't read hiz
+  ser_reg.SIN_C.set(0);
+  ser_reg.SCK_C.set(0);
+
+  JOY_PIN_P10_C.set(0);
+  JOY_PIN_P11_C.set(0);
+  JOY_PIN_P12_C.set(0);
+  JOY_PIN_P13_C.set(0);
 }
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::set_joy(uint8_t buttons) {
-  JOY_PIN_P10_C.set(buttons & 0x01);
-  JOY_PIN_P11_C.set(buttons & 0x02);
-  JOY_PIN_P12_C.set(buttons & 0x04);
-  JOY_PIN_P13_C.set(buttons & 0x08);
+void SchematicTop::set_cpu_bus(Req req) {
+
+  CPU_PIN_RDp.set(req.read);
+  CPU_PIN_WRp.set(req.write);
+
+  CPU_PIN_A00.set(req.addr & 0x0001);
+  CPU_PIN_A01.set(req.addr & 0x0002);
+  CPU_PIN_A02.set(req.addr & 0x0004);
+  CPU_PIN_A03.set(req.addr & 0x0008);
+  CPU_PIN_A04.set(req.addr & 0x0010);
+  CPU_PIN_A05.set(req.addr & 0x0020);
+  CPU_PIN_A06.set(req.addr & 0x0040);
+  CPU_PIN_A07.set(req.addr & 0x0080);
+  CPU_PIN_A08.set(req.addr & 0x0100);
+  CPU_PIN_A09.set(req.addr & 0x0200);
+  CPU_PIN_A10.set(req.addr & 0x0400);
+  CPU_PIN_A11.set(req.addr & 0x0800);
+  CPU_PIN_A12.set(req.addr & 0x1000);
+  CPU_PIN_A13.set(req.addr & 0x2000);
+  CPU_PIN_A14.set(req.addr & 0x4000);
+  CPU_PIN_A15.set(req.addr & 0x8000);
+
+  if (req.write) {
+    CPU_TRI_D0.preset(req.data_lo & 0x01);
+    CPU_TRI_D1.preset(req.data_lo & 0x02);
+    CPU_TRI_D2.preset(req.data_lo & 0x04);
+    CPU_TRI_D3.preset(req.data_lo & 0x08);
+    CPU_TRI_D4.preset(req.data_lo & 0x10);
+    CPU_TRI_D5.preset(req.data_lo & 0x20);
+    CPU_TRI_D6.preset(req.data_lo & 0x40);
+    CPU_TRI_D7.preset(req.data_lo & 0x80);
+  }
+  else {
+    /*
+    CPU_TRI_D0.preset(HIZ);
+    CPU_TRI_D1.preset(HIZ);
+    CPU_TRI_D2.preset(HIZ);
+    CPU_TRI_D3.preset(HIZ);
+    CPU_TRI_D4.preset(HIZ);
+    CPU_TRI_D5.preset(HIZ);
+    CPU_TRI_D6.preset(HIZ);
+    CPU_TRI_D7.preset(HIZ);
+    */
+    // HAAAAAACK force something on to dbus so it's always driven
+    CPU_TRI_D0.preset(0);
+    CPU_TRI_D1.preset(0);
+    CPU_TRI_D2.preset(0);
+    CPU_TRI_D3.preset(0);
+    CPU_TRI_D4.preset(0);
+    CPU_TRI_D5.preset(0);
+    CPU_TRI_D6.preset(0);
+    CPU_TRI_D7.preset(0);
+  }
+
+  //CPU_PIN5.set(HIZ);
+  CPU_PIN6.set(HIZ);
+  CPU_PIN_ADDR_VALID.set(HIZ);
+
+  CPU_PIN_ACK_JOYPAD.set(HIZ);
+  CPU_PIN_ACK_SERIAL.set(HIZ);
+  CPU_PIN_ACK_STAT.set(HIZ);
+  CPU_PIN_ACK_TIMER.set(HIZ);
+  CPU_PIN_ACK_VBLANK.set(HIZ);
 }
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::set_vram(wire OE, uint8_t data) {
+void SchematicTop::set_buttons(uint8_t buttons) {
+  if (joy_reg.KELY_JOYP_UDLR.q()) {
+    JOY_PIN_P10_C.set(buttons & 0x01);
+    JOY_PIN_P11_C.set(buttons & 0x02);
+    JOY_PIN_P12_C.set(buttons & 0x04);
+    JOY_PIN_P13_C.set(buttons & 0x08);
+  }
+
+  if (joy_reg.COFY_JOYP_ABCS.q()) {
+    JOY_PIN_P10_C.set(buttons & 0x10);
+    JOY_PIN_P11_C.set(buttons & 0x20);
+    JOY_PIN_P12_C.set(buttons & 0x40);
+    JOY_PIN_P13_C.set(buttons & 0x80);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::set_vram_bus(wire OE, uint8_t data) {
   VRAM_PIN_MCSn_C.set(HIZ);
   VRAM_PIN_MOEn_C.set(HIZ);
   VRAM_PIN_MWRn_C.set(HIZ);
@@ -131,24 +160,71 @@ void SchematicTop::set_vram(wire OE, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::set_oam() {
-  OAM_PIN_DA0.preset(HIZ);
-  OAM_PIN_DA1.preset(HIZ);
-  OAM_PIN_DA2.preset(HIZ);
-  OAM_PIN_DA3.preset(HIZ);
-  OAM_PIN_DA4.preset(HIZ);
-  OAM_PIN_DA5.preset(HIZ);
-  OAM_PIN_DA6.preset(HIZ);
-  OAM_PIN_DA7.preset(HIZ);
+void SchematicTop::set_oam_bus(wire OE, uint16_t data) {
 
-  OAM_PIN_DB0.preset(HIZ);
-  OAM_PIN_DB1.preset(HIZ);
-  OAM_PIN_DB2.preset(HIZ);
-  OAM_PIN_DB3.preset(HIZ);
-  OAM_PIN_DB4.preset(HIZ);
-  OAM_PIN_DB5.preset(HIZ);
-  OAM_PIN_DB6.preset(HIZ);
-  OAM_PIN_DB7.preset(HIZ);
+  if (OE) {
+    OAM_PIN_DA0.preset(data & 0x0001);
+    OAM_PIN_DA1.preset(data & 0x0002);
+    OAM_PIN_DA2.preset(data & 0x0004);
+    OAM_PIN_DA3.preset(data & 0x0008);
+    OAM_PIN_DA4.preset(data & 0x0010);
+    OAM_PIN_DA5.preset(data & 0x0020);
+    OAM_PIN_DA6.preset(data & 0x0040);
+    OAM_PIN_DA7.preset(data & 0x0080);
+
+    OAM_PIN_DB0.preset(data & 0x0100);
+    OAM_PIN_DB1.preset(data & 0x0200);
+    OAM_PIN_DB2.preset(data & 0x0400);
+    OAM_PIN_DB3.preset(data & 0x0800);
+    OAM_PIN_DB4.preset(data & 0x1000);
+    OAM_PIN_DB5.preset(data & 0x2000);
+    OAM_PIN_DB6.preset(data & 0x4000);
+    OAM_PIN_DB7.preset(data & 0x8000);
+  }
+  else {
+    OAM_PIN_DA0.preset(HIZ);
+    OAM_PIN_DA1.preset(HIZ);
+    OAM_PIN_DA2.preset(HIZ);
+    OAM_PIN_DA3.preset(HIZ);
+    OAM_PIN_DA4.preset(HIZ);
+    OAM_PIN_DA5.preset(HIZ);
+    OAM_PIN_DA6.preset(HIZ);
+    OAM_PIN_DA7.preset(HIZ);
+
+    OAM_PIN_DB0.preset(HIZ);
+    OAM_PIN_DB1.preset(HIZ);
+    OAM_PIN_DB2.preset(HIZ);
+    OAM_PIN_DB3.preset(HIZ);
+    OAM_PIN_DB4.preset(HIZ);
+    OAM_PIN_DB5.preset(HIZ);
+    OAM_PIN_DB6.preset(HIZ);
+    OAM_PIN_DB7.preset(HIZ);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::set_ext_bus(wire OE, uint16_t data) {
+  if (OE) {
+    EXT_PIN_D0_C.set(data & 0x01);
+    EXT_PIN_D1_C.set(data & 0x02);
+    EXT_PIN_D2_C.set(data & 0x04);
+    EXT_PIN_D3_C.set(data & 0x08);
+    EXT_PIN_D4_C.set(data & 0x10);
+    EXT_PIN_D5_C.set(data & 0x20);
+    EXT_PIN_D6_C.set(data & 0x40);
+    EXT_PIN_D7_C.set(data & 0x80);
+  }
+  else {
+    EXT_PIN_D0_C.set(HIZ);
+    EXT_PIN_D1_C.set(HIZ);
+    EXT_PIN_D2_C.set(HIZ);
+    EXT_PIN_D3_C.set(HIZ);
+    EXT_PIN_D4_C.set(HIZ);
+    EXT_PIN_D5_C.set(HIZ);
+    EXT_PIN_D6_C.set(HIZ);
+    EXT_PIN_D7_C.set(HIZ);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -160,12 +236,15 @@ SignalHash SchematicTop::tick() {
   dbg_reg.tick(*this);
   rst_reg.tick(*this);
   tim_reg.tick(*this);
+  bootrom.tick(*this);
+  dma_reg.tick(*this);
+  ser_reg.tick(*this);
+  joy_reg.tick(*this);
 
   //tick_vram_pins();
   //tick_top_regs();
 
   /*
-  dma_reg.tick(*this);
   tim_reg.tick(*this);
   ser_reg.tick(*this);
 
@@ -187,9 +266,14 @@ SignalHash SchematicTop::tick() {
   hash << dbg_reg.commit();
   hash << rst_reg.commit();
   hash << tim_reg.commit();
+  hash << bootrom.commit();
+  hash << dma_reg.commit();
+  hash << ser_reg.commit();
+  hash << joy_reg.commit(*this);
 
   hash << CPU_PIN_SYS_RSTp.commit();
   hash << CPU_PIN_STARTp.commit();
+  hash << CPU_PIN_BOOTp.commit();         // PORTA_04: <- TUTU
 
   //hash << lcd_reg.commit();
   //hash << pxp_reg.commit();
@@ -878,7 +962,7 @@ SignalHash SchematicTop::commit_io() {
 
   //----------------------------------------
 
-  hash << CPU_PIN_RD;             // PORTA_00: -> UJYV, LAGU, LAVO
+  hash << CPU_PIN_RDp;             // PORTA_00: -> UJYV, LAGU, LAVO
   hash << CPU_PIN_WRp;             // PORTA_01: -> AREV, LAGU.
   hash << CPU_PIN_ADDR_VALID;     // PORTA_06: -> APAP, TEXO
 
@@ -1001,7 +1085,6 @@ SignalHash SchematicTop::commit_ibus() {
 
   hash << CPU_PIN_UNOR_DBG.commit();      // PORTA_02: <- P07.UNOR_MODE_DBG2
   hash << CPU_PIN_ADDR_HI.commit();          // PORTA_03: <- SYRO
-  hash << CPU_PIN_BOOTp.commit();         // PORTA_04: <- TUTU
   hash << CPU_PIN_UMUT_DBG.commit();      // PORTA_05: <- P07.UMUT_MODE_DBG1
   hash << CPU_PIN_INT_VBLANK.commit();    // PORTB_03: <- LOPE, vblank int
   hash << CPU_PIN_INT_STAT.commit();      // PORTB_07: <- LALU, stat int
@@ -1332,32 +1415,23 @@ wire SchematicTop::XAPO_VID_RSTn() const {
 // CPU signals
 
 wire SchematicTop::UJYV_CPU_RDn() const {
-  /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(EXT_PIN_RDn_C, CPU_PIN_RD, UNOR_MODE_DBG2p());
+  wire UNOR_MODE_DBG2p = this->UNOR_MODE_DBG2p();
+  /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(EXT_PIN_RDn_C, CPU_PIN_RDp, UNOR_MODE_DBG2p);
   return UJYV_CPU_RDn;
 }
 
 wire SchematicTop::AREV_CPU_WRn_ABCDxxxH() const {
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(CPU_PIN_WRp, AFAS_xxxxEFGx());
-  return AREV_CPU_WRn_ABCDExxx;
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand(CPU_PIN_WRp, AFAS_xxxxEFGx());
+  return AREV_CPU_WRn_ABCDxxxH;
 }
 
 wire SchematicTop::UBAL_CPU_WRp_ABCDxxxH() const {
+  wire UNOR_MODE_DBG2p = this->UNOR_MODE_DBG2p();
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(AREV_CPU_WRn_ABCDxxxH());
 
   // polarity of EXT_PIN_WRp_C wrong?
-  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDxxxH = mux2_n(EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p());
+  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDxxxH = mux2_n(EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
   return UBAL_CPU_WRp_ABCDxxxH;
-}
-
-void SchematicTop::set_data(bool oe, uint8_t data) {
-  CPU_TRI_D0.set_tribuf(oe, data & 0x01);
-  CPU_TRI_D1.set_tribuf(oe, data & 0x02);
-  CPU_TRI_D2.set_tribuf(oe, data & 0x04);
-  CPU_TRI_D3.set_tribuf(oe, data & 0x08);
-  CPU_TRI_D4.set_tribuf(oe, data & 0x10);
-  CPU_TRI_D5.set_tribuf(oe, data & 0x20);
-  CPU_TRI_D6.set_tribuf(oe, data & 0x40);
-  CPU_TRI_D7.set_tribuf(oe, data & 0x80);
 }
 
 //-----------------------------------------------------------------------------

@@ -23,47 +23,8 @@ public:
 
   bool verbose = true;
 
-  SignalHash mcycle(
-    Schematics::SchematicTop* top,
-    bool RST,
-    bool CLK_GOOD,
-    uint16_t addr,
-    uint8_t data,
-    bool read,
-    bool write
-  );
-
-  SignalHash tcycle(
-    Schematics::SchematicTop* top,
-    bool RST,
-    bool CLK_GOOD,
-    uint16_t addr,
-    uint8_t data,
-    bool read,
-    bool write
-  );
-
-  SignalHash phase(
-    Schematics::SchematicTop* top,
-    bool RST,
-    bool CLK_GOOD,
-    bool CLK,
-    uint16_t addr,
-    uint8_t data,
-    bool read,
-    bool write
-  );
-
-  SignalHash pass(
-    Schematics::SchematicTop* top,
-    bool CLK_GOOD,
-    bool CLK,
-    bool RST,
-    uint16_t addr,
-    uint8_t data,
-    bool read,
-    bool write
-  );
+  SignalHash run   (Schematics::SchematicTop* top, int phase_count, Req req);
+  SignalHash phase (Schematics::SchematicTop* top, Req req);
 
   StateManager2<Schematics::SchematicTop> state_manager;
 

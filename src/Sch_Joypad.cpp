@@ -93,8 +93,28 @@ void JoypadRegisters::tick(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash JoypadRegisters::commit() {
+SignalHash JoypadRegisters::commit(SchematicTop& top) {
   SignalHash hash;
+
+  hash << top.JOY_PIN_P10_B.commit();
+  hash << top.JOY_PIN_P11_B.commit();
+  hash << top.JOY_PIN_P12_B.commit();
+  hash << top.JOY_PIN_P13_B.commit();
+
+  hash << top.JOY_PIN_P10_A.commit();
+  hash << top.JOY_PIN_P10_D.commit();
+  hash << top.JOY_PIN_P11_A.commit();
+  hash << top.JOY_PIN_P11_D.commit();
+  hash << top.JOY_PIN_P12_A.commit();
+  hash << top.JOY_PIN_P12_D.commit();
+  hash << top.JOY_PIN_P13_A.commit();
+  hash << top.JOY_PIN_P13_D.commit();
+
+  hash << top.JOY_PIN_P14_A.commit();
+  hash << top.JOY_PIN_P14_D.commit();
+  hash << top.JOY_PIN_P15_A.commit();
+  hash << top.JOY_PIN_P15_D.commit();
+
   /*p02.BATU*/ hash << BATU_JP_GLITCH0.commit();
   /*p02.ACEF*/ hash << ACEF_JP_GLITCH1.commit();
   /*p02.AGEM*/ hash << AGEM_JP_GLITCH2.commit();

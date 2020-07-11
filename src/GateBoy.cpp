@@ -18,150 +18,76 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   top->EXT_PIN_RDn_C.set(0);
   top->CPU_PIN5.set(0);
 
-  top->SYS_PIN_T1n.set(1);
-  top->SYS_PIN_T2n.set(1);
+  top->SYS_PIN_T1n.set(0);
+  top->SYS_PIN_T2n.set(0);
 
   SignalHash hash;
+  Req req{};
 
-  for (int i = 0; i < 2; i++) {
-    hash = gateboy.mcycle(
-      top,
-      /*RST*/   1,
-      /*CLK_GOOD*/ 0,
-      /*addr*/  0,
-      /*data*/  0,
-      /*read*/  0,
-      /*write*/ 0
-    );
-  }
-
+  // 16 phases w/ reset high, clock not running.
+  top->SYS_PIN_RSTp.set(1);
+  top->SYS_PIN_CLK_A.set(0);
+  gateboy.run(top, 16, req);
   printf("\n");
 
-  for (int i = 0; i < 2; i++) {
-    hash = gateboy.mcycle(
-      top,
-      /*RST*/   1,
-      /*CLK_GOOD*/ 1,
-      /*addr*/  0,
-      /*data*/  0,
-      /*read*/  0,
-      /*write*/ 0
-    );
-  }
-
+  // 16 phases w/ reset high, clock running.
+  top->SYS_PIN_RSTp.set(1);
+  top->SYS_PIN_CLK_A.set(1);
+  gateboy.run(top, 16, req);
   printf("\n");
 
-  for (int i = 0; i < 2; i++) {
-    hash = gateboy.mcycle(
-      top,
-      /*RST*/   0,
-      /*CLK_GOOD*/ 1,
-      /*addr*/  0,
-      /*data*/  0,
-      /*read*/  0,
-      /*write*/ 0
-    );
-  }
+  // 16 phases w/ reset low, clock running.
 
+  top->SYS_PIN_RSTp.set(0);
+  top->SYS_PIN_CLK_A.set(1);
+  gateboy.run(top, 16, req);
   printf("\n");
+
+  // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
   top->XONA_LCDC_EN.preset(1);
-
   gateboy.verbose = false;
-
-  while(1) {
-    wire RST = 0;
-    wire CLK_GOOD = 1;
-    wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    uint16_t addr = 0;
-    uint8_t data = 0;
-    bool read = false;
-    bool write = false;
-
-    hash = gateboy.phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
-    top->phase_counter++;
-
-    if (top->tim_reg.get_div() == 32767) break;
+  while(!top->CPU_PIN_STARTp.q()) {
+    gateboy.run(top, 1, req);
   }
+
+  // Ack the start request and run another 24 phases.
+  // We should see AFER (global reset) clear and the video clocks start up.
 
   gateboy.verbose = true;
-
-  for (int phase = 0; phase < 24; phase++) {
-    wire RST = 0;
-    wire CLK_GOOD = 1;
-    wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    uint16_t addr = 0;
-    uint8_t data = 0;
-    bool read = false;
-    bool write = false;
-
-    if (top->CPU_PIN_STARTp.q()) {
-      top->CPU_PIN_READYp.set(1);
-    }
-
-    hash = gateboy.phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
-    top->phase_counter++;
-  }
+  top->CPU_PIN_READYp.set(1);
+  gateboy.run(top, 24, req);
 
   return 0;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
-SignalHash GateBoy::mcycle(
-  SchematicTop* top,
-  bool RST,
-  bool CLK_GOOD,
-  uint16_t addr,
-  uint8_t data,
-  bool read,
-  bool write)
-{
+SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
   SignalHash hash;
-  for (int i = 0; i < 8; i++) {
-    wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    hash = phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
+  for (int i = 0; i < phase_count; i++) {
     top->phase_counter++;
+    wire CLK = (top->phase_counter & 1) & (top->SYS_PIN_CLK_A.q());
+    top->SYS_PIN_CLK_B.set(CLK);
+    hash = phase(top, req);
   }
   return hash;
 }
 
 //----------------------------------------
 
-SignalHash GateBoy::tcycle(
-  SchematicTop* top,
-  bool RST,
-  bool CLK_GOOD,
-  uint16_t addr,
-  uint8_t data,
-  bool read,
-  bool write)
-{
-  SignalHash hash;
-  for (int i = 0; i < 2; i++) {
-    wire CLK = (top->phase_counter & 1) & CLK_GOOD;
-    hash = phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
-    top->phase_counter++;
-  }
-  return hash;
-}
-
-//----------------------------------------
-
-SignalHash GateBoy::phase(
-  SchematicTop* top,
-  bool RST,
-  bool CLK_GOOD,
-  bool CLK,
-  uint16_t addr,
-  uint8_t data,
-  bool read,
-  bool write)
-{
+SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   SignalHash hash;
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
-    SignalHash new_hash = pass(top, RST, CLK_GOOD, CLK, addr, data, read, write);
+    top->set_cpu_bus(req);
+    top->set_vram_bus(0, 0);
+    top->set_oam_bus(0, 0);
+    top->set_ext_bus(0, 0);
+    top->set_buttons(0);
+    
+    SignalHash new_hash = top->tick();
+    
     if (new_hash.h == hash.h) break;
     hash = new_hash;
     if (pass_count == 199) printf("stuck!\n");
@@ -173,9 +99,9 @@ SignalHash GateBoy::phase(
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       pass_count,
-      CLK_GOOD,
-      CLK,
-      RST,
+      top->SYS_PIN_CLK_A.q(),
+      top->SYS_PIN_CLK_B.q(),
+      top->SYS_PIN_RSTp.q(),
       top->clk_reg.AFUR_ABCDxxxx.q(),
       top->clk_reg.ALEF_xBCDExxx.q(),
       top->clk_reg.APUK_xxCDEFxx.q(),
@@ -196,47 +122,13 @@ SignalHash GateBoy::phase(
   return hash;
 }
 
-//----------------------------------------
-
-SignalHash GateBoy::pass(
-  SchematicTop* top,
-  bool RST,
-  bool CLK_GOOD,
-  bool CLK,
-  uint16_t addr,
-  uint8_t data,
-  bool read,
-  bool write)
-{
-  top->SYS_PIN_RSTp.set(RST);
-  top->SYS_PIN_CLK_A.set(CLK_GOOD);
-  top->SYS_PIN_CLK_B.set(CLK);
-
-  top->set_cpu(addr, data, read, write);
-  top->set_ext();
-  top->set_joy(0);
-  top->set_vram(0, 0);
-  top->set_oam();
-    
-  SignalHash hash = top->tick();
-
-  //printf("PASS COMPLETE\n");
-
-  return hash;
-}
-
 //-----------------------------------------------------------------------------
 
 void GateBoy::init() {
   auto top_step = [this](Schematics::SchematicTop* top) {
-    bool CLK_GOOD = 1;
-    bool CLK = top->phase_counter & 1;
-    bool RST = 0;
-    uint16_t addr = 0;
-    uint8_t data = 0;
-    bool read = 0;
-    bool write = 0;
-    phase(top, CLK_GOOD, CLK, RST, addr, data, read, write);
+    top->SYS_PIN_CLK_A.set(1);
+    top->SYS_PIN_CLK_B.set(top->phase_counter & 1);
+    phase(top, {0});
   };
   state_manager.init(top_step);
 

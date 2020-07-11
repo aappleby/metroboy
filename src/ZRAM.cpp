@@ -13,14 +13,14 @@ void ZRAM::reset() {
 
 void ZRAM::tock(const Req& req) {
   if (req.write && (req.addr >= 0xFF80) && (req.addr <= 0xFFFE)) {
-    ram[req.addr & 0x007F] = (uint8_t)req.data;
+    ram[req.addr & 0x007F] = (uint8_t)req.data_lo;
   }
 }
 
 void ZRAM::tick(const Req& req, Ack& ack) const {
   if (req.read && (req.addr >= 0xFF80) && (req.addr <= 0xFFFE)) {
     ack.addr = req.addr;
-    ack.data = ram[req.addr & 0x007F];
+    ack.data_lo = ram[req.addr & 0x007F];
     ack.read++;
   }
 }

@@ -13,8 +13,8 @@ struct CpuBusSignals;
 
 struct JoypadRegisters {
 
-  void tick(SchematicTop& gb);
-  SignalHash commit();
+  void tick(SchematicTop& top);
+  SignalHash commit(SchematicTop& top);
 
 private:
   friend struct SchematicTop;
@@ -25,10 +25,12 @@ private:
   /*p02.ACEF*/ Reg17 ACEF_JP_GLITCH1;
   /*p02.AGEM*/ Reg17 AGEM_JP_GLITCH2;
   /*p02.APUG*/ Reg17 APUG_JP_GLITCH3;
+  
   /*p05.JUTE*/ Reg17 JUTE_JOYP_RA;
   /*p05.KECY*/ Reg17 KECY_JOYP_LB;
   /*p05.JALE*/ Reg17 JALE_JOYP_UC;
   /*p05.KYME*/ Reg17 KYME_JOYP_DS;
+
   /*p05.KELY*/ Reg17 KELY_JOYP_UDLR;
   /*p05.COFY*/ Reg17 COFY_JOYP_ABCS;
   /*p05.KUKO*/ Reg17 KUKO_DBG_FF00_D6;

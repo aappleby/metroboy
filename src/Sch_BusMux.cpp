@@ -533,7 +533,7 @@ void BusMux::tick(SchematicTop& top) {
     // So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
 
-    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WRp);
+    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RDp, LEVO_8000_9FFFp), top.CPU_PIN_WRp);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
@@ -583,7 +583,7 @@ void BusMux::tick(SchematicTop& top) {
 
     // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
 
-    /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAn = nand(top.CPU_PIN_RD, TEXO_8000_9FFFn, top.CPU_PIN5);
+    /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAn = nand(top.CPU_PIN_RDp, TEXO_8000_9FFFn, top.CPU_PIN5);
 
     /*p08.SOMA*/ SOMA_EXT_DATA_LATCH_00.tp_latch(LAVO_LATCH_CPU_DATAn, top.EXT_PIN_D0_C);
     /*p08.RONY*/ RONY_EXT_DATA_LATCH_01.tp_latch(LAVO_LATCH_CPU_DATAn, top.EXT_PIN_D1_C);
@@ -636,7 +636,7 @@ void BusMux::tick(SchematicTop& top) {
   }
 
   {
-    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WRp);
+    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RDp, LEVO_8000_9FFFp), top.CPU_PIN_WRp);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);

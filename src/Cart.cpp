@@ -76,11 +76,11 @@ void Cart::tick(const Req& req, Ack& ack) const {
       ack.addr = req.addr;
       ack.read++;
       if (mode == 0) {
-        ack.data = cart_rom[rom_addr];
+        ack.data_lo = cart_rom[rom_addr];
       }
       else {
         const int rom_bank = rom_bank_count ? (bank_latch2 << 5) & (rom_bank_count - 1) : 0;
-        ack.data = cart_rom[(rom_addr & 0x3FFF) | (rom_bank << 14)];
+        ack.data_lo = cart_rom[(rom_addr & 0x3FFF) | (rom_bank << 14)];
       }
     }
     else if (region == 2 || region == 3) {
@@ -94,7 +94,7 @@ void Cart::tick(const Req& req, Ack& ack) const {
       }
       rom_bank &= (rom_bank_count - 1);
 
-      ack.data = cart_rom[(rom_addr & 0x3FFF) | (rom_bank << 14)];
+      ack.data_lo = cart_rom[(rom_addr & 0x3FFF) | (rom_bank << 14)];
     }
     else if (region == 4) {
       // vram
@@ -107,14 +107,14 @@ void Cart::tick(const Req& req, Ack& ack) const {
         int ram_bank = mode ? bank_latch2 : 0;
         ram_bank &= (ram_bank_count - 1);
         if (ram_bank_count == 0) ram_bank = 0;
-        ack.data = cart_ram[(ram_bank << 13) | ram_addr];
+        ack.data_lo = cart_ram[(ram_bank << 13) | ram_addr];
       }
     }
     else if (region == 6 || region == 7) {
       // main_ram
       ack.addr = req.addr;
       ack.read++;
-      ack.data = main_ram[ram_addr];
+      ack.data_lo = main_ram[ram_addr];
     }
   }
 }
@@ -129,19 +129,19 @@ void Cart::tock(const Req& req) {
   if (req.write) {
     if (region == 0) {
       // cart_rom
-      ram_enable = (req.data & 0x0F) == 0x0A;
+      ram_enable = (req.data_lo & 0x0F) == 0x0A;
     }
     else if (region == 1) {
       // cart_rom
-      bank_latch1 = req.data & 0b00011111;
+      bank_latch1 = req.data_lo & 0b00011111;
     }
     else if (region == 2) {
       // banked cart_rom
-      bank_latch2 = req.data & 0b00000011;
+      bank_latch2 = req.data_lo & 0b00000011;
     }
     else if (region == 3) {
       // banked cart_rom
-      mode = req.data & 1;
+      mode = req.data_lo & 1;
     }
     else if (region == 4) {
       // vram
@@ -151,12 +151,12 @@ void Cart::tock(const Req& req) {
       if (ram_enable && ram_bank_count) {
         int ram_bank = mode ? bank_latch2 : 0;
         ram_bank &= (ram_bank_count - 1);
-        cart_ram[(ram_bank << 13) | ram_addr] = static_cast<uint8_t>(req.data);
+        cart_ram[(ram_bank << 13) | ram_addr] = static_cast<uint8_t>(req.data_lo);
       }
     }
     else if (region == 6 || region == 7) {
       // main_ram
-      main_ram[ram_addr] = static_cast<uint8_t>(req.data);
+      main_ram[ram_addr] = static_cast<uint8_t>(req.data_lo);
     }
   }
 }

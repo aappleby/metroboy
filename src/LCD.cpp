@@ -29,7 +29,7 @@ void LCD::reset() {
 void LCD::tick(const Req& req, Ack& ack) {
   if (req.read && req.addr == 0xFF44) {
     ack.addr = req.addr;
-    ack.data = Y;
+    ack.data_lo = Y;
     ack.read++;
   }
 }

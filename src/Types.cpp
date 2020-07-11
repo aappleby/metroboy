@@ -18,7 +18,7 @@ void sprintf(std::string& out, const char* format, Args ... args)
 
 void dump_req(Dumper& d, const Req& req) {
   if (req.write)  {
-    d("%04x:%04x %s%s\n", req.addr, req.data,
+    d("%04x:%04x %s%s\n", req.addr, req.data2,
       req.read  ? "\003R \001" : "- ",
       req.write ? "\002W \001" : "- ");
   }
@@ -30,7 +30,7 @@ void dump_req(Dumper& d, const Req& req) {
 }
 
 void dump_ack(Dumper& d, const Ack& ack) {
-  d("%04x:%04x %s%s\n", ack.addr, ack.data,
+  d("%04x:%04x %s%s\n", ack.addr, ack.data2,
     ack.read  ? "\003R \001" : "- ",
     "- ");
 }

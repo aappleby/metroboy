@@ -17,7 +17,7 @@ void JoypadRegisters::tick(SchematicTop& top) {
     /*p10.ANAP*/ wire ANAP_FF_0xx00000 = and (AMUS_0xx00000, top.SYKE_FF00_FFFFp());
 
     /*p10.ACAT*/ ACAT_FF00_RDp = and (top.TEDO_CPU_RDp(),          ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
-    /*p10.ATOZ*/ ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRn_xxxxEFGx(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+    /*p10.ATOZ*/ ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
   }
 
   {
@@ -96,24 +96,22 @@ void JoypadRegisters::tick(SchematicTop& top) {
 SignalHash JoypadRegisters::commit(SchematicTop& top) {
   SignalHash hash;
 
-  hash << top.JOY_PIN_P10_B.commit();
-  hash << top.JOY_PIN_P11_B.commit();
-  hash << top.JOY_PIN_P12_B.commit();
-  hash << top.JOY_PIN_P13_B.commit();
-
-  hash << top.JOY_PIN_P10_A.commit();
-  hash << top.JOY_PIN_P10_D.commit();
-  hash << top.JOY_PIN_P11_A.commit();
-  hash << top.JOY_PIN_P11_D.commit();
-  hash << top.JOY_PIN_P12_A.commit();
-  hash << top.JOY_PIN_P12_D.commit();
-  hash << top.JOY_PIN_P13_A.commit();
-  hash << top.JOY_PIN_P13_D.commit();
-
-  hash << top.JOY_PIN_P14_A.commit();
-  hash << top.JOY_PIN_P14_D.commit();
-  hash << top.JOY_PIN_P15_A.commit();
-  hash << top.JOY_PIN_P15_D.commit();
+  hash << top.JOY_PIN_P10_A.commit();    // PIN_67<- KOLE
+  hash << top.JOY_PIN_P10_B.commit();    // PIN_67
+  hash << top.JOY_PIN_P10_D.commit();    // PIN_67<- KYBU
+  hash << top.JOY_PIN_P11_A.commit();    // PIN_66<- KYTO
+  hash << top.JOY_PIN_P11_B.commit();    // PIN_66
+  hash << top.JOY_PIN_P11_D.commit();    // PIN_66<- KABU
+  hash << top.JOY_PIN_P12_A.commit();    // PIN_65<- KYHU
+  hash << top.JOY_PIN_P12_B.commit();    // PIN_65
+  hash << top.JOY_PIN_P12_D.commit();    // PIN_65<- KASY
+  hash << top.JOY_PIN_P13_A.commit();    // PIN_64<- KORY
+  hash << top.JOY_PIN_P13_B.commit();    // PIN_64
+  hash << top.JOY_PIN_P13_D.commit();    // PIN_64<- KALE
+  hash << top.JOY_PIN_P14_A.commit();    // PIN_63<- KARU
+  hash << top.JOY_PIN_P14_D.commit();    // PIN_63<- KELY
+  hash << top.JOY_PIN_P15_A.commit();    // PIN_62<- CELA
+  hash << top.JOY_PIN_P15_D.commit();    // PIN_62<- COFY
 
   /*p02.BATU*/ hash << BATU_JP_GLITCH0.commit();
   /*p02.ACEF*/ hash << ACEF_JP_GLITCH1.commit();

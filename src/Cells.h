@@ -20,13 +20,7 @@ struct PinIn {
   operator SignalState() const { return a; }
 
   void set(bool c) {
-    set(c ? SET_1 : SET_0);
-  }
-  void set(SignalFlags c) {
-    set(SignalState(c));
-  }
-  void set(SignalState c) {
-    a = c;
+    a = c ? SET_1 : SET_0;
   }
 
   SignalState a = ERROR;
@@ -122,29 +116,14 @@ struct Tribuf {
     b = x ? SET_1 : SET_0;
   }
 
-  void set_tribuf(wire OEp, bool val) {
-    if (!b.error && !b.hiz) {
-      if (OEp) __debugbreak();
-      return;
-    }
-
-    b.val = val && OEp;
-    b.hiz = OEp;
-    b.clk = 0;
-    b.set = 0;
-    b.rst = 0;
-    b.error = 0;
-  }
-
   // top rung tadpole facing second rung dot
-  void set_tribuf_6p(wire OEp, bool val) {
-    if (!b.error && !b.hiz) {
-      if (OEp) __debugbreak();
-      return;
-    }
+  void set_tribuf_6p(wire OEp, SignalState D) {
+    if (!OEp) return;
+    if (D.hiz) __debugbreak();
+    if (!b.error && !b.hiz) __debugbreak();
 
-    b.val = val && OEp;
-    b.hiz = OEp;
+    b.val = D.val;
+    b.hiz = 0;
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
@@ -152,28 +131,26 @@ struct Tribuf {
   }
 
   // top rung tadpole not facing second rung dot
-  void set_tribuf_6n(wire OEn, bool val) {
-    if (!b.error && !b.hiz) {
-      if (!OEn) __debugbreak();
-      return;
-    }
+  void set_tribuf_6n(wire OEn, SignalState D) {
+    if (OEn) return;
+    if (D.hiz) __debugbreak();
+    if (!b.error && !b.hiz) __debugbreak();
 
-    b.val = val && !OEn;
-    b.hiz = !OEn;
+    b.val = D.val;
+    b.hiz = 0;
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
     b.error = 0;
   }
 
-  void set_tribuf_10(wire OEn, bool val) {
-    if (!b.error && !b.hiz) {
-      if (!OEn) __debugbreak();
-      return;
-    }
+  void set_tribuf_10n(wire OEn, SignalState D) {
+    if (OEn) return;
+    if (D.hiz) __debugbreak();
+    if (!b.error && !b.hiz) __debugbreak();
 
-    b.val = val && (!OEn);
-    b.hiz = !OEn;
+    b.val = D.val;
+    b.hiz = 0;
     b.clk = 0;
     b.set = 0;
     b.rst = 0;

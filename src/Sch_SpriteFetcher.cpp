@@ -167,19 +167,19 @@ void SpriteFetcher::tick(SchematicTop& top) {
 
     /*p29.ABON*/ wire ABON_SPRITE_READn = not(top.TEXY_SPR_READ_VRAMp());
 
-    /*p29.ABEM*/ top.VRM_TRI_A00.set_tribuf(ABON_SPRITE_READn, _XUQU_SPRITE_AB);
-    /*p29.BAXE*/ top.VRM_TRI_A01.set_tribuf(ABON_SPRITE_READn, _CYVU_SPRITE_Y0);
-    /*p29.ARAS*/ top.VRM_TRI_A02.set_tribuf(ABON_SPRITE_READn, _BORE_SPRITE_Y1);
-    /*p29.AGAG*/ top.VRM_TRI_A03.set_tribuf(ABON_SPRITE_READn, _BUVY_SPRITE_Y2);
-    /*p29.FAMU*/ top.VRM_TRI_A04.set_tribuf(ABON_SPRITE_READn, _GEJY_SPRITE_Y3);
-    /*p29.FUGY*/ top.VRM_TRI_A05.set_tribuf(ABON_SPRITE_READn, top.XEGU_SPRITE_Y1());
-    /*p29.GAVO*/ top.VRM_TRI_A06.set_tribuf(ABON_SPRITE_READn, top.YJEX_SPRITE_Y2());
-    /*p29.WYGA*/ top.VRM_TRI_A07.set_tribuf(ABON_SPRITE_READn, top.XYJU_SPRITE_Y3());
-    /*p29.WUNE*/ top.VRM_TRI_A08.set_tribuf(ABON_SPRITE_READn, top.YBOG_SPRITE_Y4());
-    /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf(ABON_SPRITE_READn, top.WYSO_SPRITE_Y5());
-    /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf(ABON_SPRITE_READn, top.XOTE_SPRITE_Y6());
-    /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf(ABON_SPRITE_READn, top.YZAB_SPRITE_Y7());
-    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf(ABON_SPRITE_READn, top.GND);   // sprites always in low half of tile store
+    /*p29.ABEM*/ top.VRM_TRI_A00.set_tribuf_6n(ABON_SPRITE_READn, _XUQU_SPRITE_AB);
+    /*p29.BAXE*/ top.VRM_TRI_A01.set_tribuf_6n(ABON_SPRITE_READn, _CYVU_SPRITE_Y0);
+    /*p29.ARAS*/ top.VRM_TRI_A02.set_tribuf_6n(ABON_SPRITE_READn, _BORE_SPRITE_Y1);
+    /*p29.AGAG*/ top.VRM_TRI_A03.set_tribuf_6n(ABON_SPRITE_READn, _BUVY_SPRITE_Y2);
+    /*p29.FAMU*/ top.VRM_TRI_A04.set_tribuf_6n(ABON_SPRITE_READn, _GEJY_SPRITE_Y3);
+    /*p29.FUGY*/ top.VRM_TRI_A05.set_tribuf_6n(ABON_SPRITE_READn, top.XEGU_SPRITE_Y1());
+    /*p29.GAVO*/ top.VRM_TRI_A06.set_tribuf_6n(ABON_SPRITE_READn, top.YJEX_SPRITE_Y2());
+    /*p29.WYGA*/ top.VRM_TRI_A07.set_tribuf_6n(ABON_SPRITE_READn, top.XYJU_SPRITE_Y3());
+    /*p29.WUNE*/ top.VRM_TRI_A08.set_tribuf_6n(ABON_SPRITE_READn, top.YBOG_SPRITE_Y4());
+    /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf_6n(ABON_SPRITE_READn, top.WYSO_SPRITE_Y5());
+    /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf_6n(ABON_SPRITE_READn, top.XOTE_SPRITE_Y6());
+    /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf_6n(ABON_SPRITE_READn, top.YZAB_SPRITE_Y7());
+    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf_6n(ABON_SPRITE_READn, top.GND);   // sprites always in low half of tile store
   }
 }
 

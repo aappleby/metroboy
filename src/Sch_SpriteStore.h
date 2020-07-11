@@ -9,7 +9,7 @@ struct SchematicTop;
 
 struct SpriteStoreRegisters {
   void tick(SchematicTop& gb);
-  SignalHash commit();
+  SignalHash commit(SchematicTop& top);
 
 private:
   friend struct SchematicTop;

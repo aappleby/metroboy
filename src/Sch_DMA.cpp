@@ -86,7 +86,7 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p22.WATE*/ wire WATE_FF46n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.WESA_A01p(), top.WALO_A02p(), top.XERA_A03n());
     /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
     /*p04.MOLU*/ MOLU_FF46_RDp = and(XEDA_FF46p, top.ASOT_CPU_RDp());
-    /*p04.LAVY*/ LAVY_FF46_WRp = and(XEDA_FF46p, top.CUPA_CPU_WRn_xxxxEFGx());
+    /*p04.LAVY*/ LAVY_FF46_WRp = and(XEDA_FF46p, top.CUPA_CPU_WRp_xxxxEFGx());
   }
 
   {

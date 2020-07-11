@@ -14,7 +14,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and (top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03);
 
     /*p07.ROLO*/ _ROLO_FF0F_RDn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
-    /*p07.REFA*/ _REFA_FF0F_WRn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRn_xxxxEFGx()); // schematic wrong, is NAND
+    /*p07.REFA*/ _REFA_FF0F_WRn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
   }
 
   // FF0F INT

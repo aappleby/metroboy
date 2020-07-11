@@ -15,7 +15,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   top->CPU_PIN_READYp.set(0);
   top->EXT_PIN_WRp_C.set(0);
-  top->EXT_PIN_RDn_C.set(0);
+  top->EXT_PIN_RDp_C.set(0);
   top->CPU_PIN5.set(0);
 
   top->SYS_PIN_T1n.set(0);
@@ -24,6 +24,12 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   SignalHash hash;
   Req req{};
 
+  // 16 phases w/ reset high, clock not running.
+  top->SYS_PIN_RSTp.set(1);
+  top->SYS_PIN_CLK_A.set(0);
+  gateboy.run(top, 16, req);
+
+#if 0
   // 16 phases w/ reset high, clock not running.
   top->SYS_PIN_RSTp.set(1);
   top->SYS_PIN_CLK_A.set(0);
@@ -57,6 +63,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.verbose = true;
   top->CPU_PIN_READYp.set(1);
   gateboy.run(top, 24, req);
+#endif
 
   return 0;
 }
@@ -81,9 +88,9 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
     top->set_cpu_bus(req);
-    top->set_vram_bus(0, 0);
+    top->set_vram_bus(0);
     top->set_oam_bus(0, 0);
-    top->set_ext_bus(0, 0);
+    top->set_ext_bus(0);
     top->set_buttons(0);
     
     SignalHash new_hash = top->tick();

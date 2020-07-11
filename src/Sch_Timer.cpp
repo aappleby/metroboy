@@ -14,10 +14,10 @@ void TimerRegisters::tick(SchematicTop& top) {
   /*p03.TUBY*/ wire TUBY_FF06_RD = and (top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.CPU_PIN_A01, top.TOVY_A00n());
   /*p03.SORA*/ wire SORA_FF07_RD = and (top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.CPU_PIN_A01, top.CPU_PIN_A00);
 
-  /*p01.TAPE*/ wire TAPE_FF04_WRp =  and(top.TAPU_CPU_WRn_xxxxEFGx(), RYFO_FF04_FF07p, top.TOLA_A01n(), top.TOVY_A00n());
-  /*p03.TOPE*/ wire TOPE_FF05_WRn = nand(top.TAPU_CPU_WRn_xxxxEFGx(), RYFO_FF04_FF07p, top.TOLA_A01n(), top.CPU_PIN_A00);
-  /*p03.TYJU*/ wire TYJU_FF06_WRn = nand(top.TAPU_CPU_WRn_xxxxEFGx(), RYFO_FF04_FF07p, top.CPU_PIN_A01, top.TOVY_A00n());
-  /*p03.SARA*/ wire SARA_FF07_WRn = nand(top.TAPU_CPU_WRn_xxxxEFGx(), RYFO_FF04_FF07p, top.CPU_PIN_A01, top.CPU_PIN_A00);
+  /*p01.TAPE*/ wire TAPE_FF04_WRp =  and(top.TAPU_CPU_WRp_xxxxEFGx(), RYFO_FF04_FF07p, top.TOLA_A01n(), top.TOVY_A00n());
+  /*p03.TOPE*/ wire TOPE_FF05_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), RYFO_FF04_FF07p, top.TOLA_A01n(), top.CPU_PIN_A00);
+  /*p03.TYJU*/ wire TYJU_FF06_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), RYFO_FF04_FF07p, top.CPU_PIN_A01, top.TOVY_A00n());
+  /*p03.SARA*/ wire SARA_FF07_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), RYFO_FF04_FF07p, top.CPU_PIN_A01, top.CPU_PIN_A00);
 
   // FF04 DIV
   {
@@ -51,14 +51,14 @@ void TimerRegisters::tick(SchematicTop& top) {
     /*p01.RAVE*/ wire DIV_11n = not(SOLA_DIV_11.q());
     /*p01.RYSO*/ wire DIV_12n = not(SUBU_DIV_12.q());
     /*p01.UDOR*/ wire DIV_13n = not(TEKA_DIV_13.q());
-    /*p01.TAWU*/ top.CPU_TRI_D0.set_tribuf(TAGY_FF04_RD, not(top.UMEK_DIV_06n()));
-    /*p01.TAKU*/ top.CPU_TRI_D1.set_tribuf(TAGY_FF04_RD, not(top.UREK_DIV_07n()));
-    /*p01.TEMU*/ top.CPU_TRI_D2.set_tribuf(TAGY_FF04_RD, not(DIV_08n));
-    /*p01.TUSE*/ top.CPU_TRI_D3.set_tribuf(TAGY_FF04_RD, not(DIV_09n));
-    /*p01.UPUG*/ top.CPU_TRI_D4.set_tribuf(TAGY_FF04_RD, not(DIV_10n));
-    /*p01.SEPU*/ top.CPU_TRI_D5.set_tribuf(TAGY_FF04_RD, not(DIV_11n));
-    /*p01.SAWA*/ top.CPU_TRI_D6.set_tribuf(TAGY_FF04_RD, not(DIV_12n));
-    /*p01.TATU*/ top.CPU_TRI_D7.set_tribuf(TAGY_FF04_RD, not(DIV_13n));
+    /*p01.TAWU*/ top.CPU_TRI_D0.set_tribuf_6p(TAGY_FF04_RD, not(top.UMEK_DIV_06n()));
+    /*p01.TAKU*/ top.CPU_TRI_D1.set_tribuf_6p(TAGY_FF04_RD, not(top.UREK_DIV_07n()));
+    /*p01.TEMU*/ top.CPU_TRI_D2.set_tribuf_6p(TAGY_FF04_RD, not(DIV_08n));
+    /*p01.TUSE*/ top.CPU_TRI_D3.set_tribuf_6p(TAGY_FF04_RD, not(DIV_09n));
+    /*p01.UPUG*/ top.CPU_TRI_D4.set_tribuf_6p(TAGY_FF04_RD, not(DIV_10n));
+    /*p01.SEPU*/ top.CPU_TRI_D5.set_tribuf_6p(TAGY_FF04_RD, not(DIV_11n));
+    /*p01.SAWA*/ top.CPU_TRI_D6.set_tribuf_6p(TAGY_FF04_RD, not(DIV_12n));
+    /*p01.TATU*/ top.CPU_TRI_D7.set_tribuf_6p(TAGY_FF04_RD, not(DIV_13n));
   }
 
   // FF05 TIMA
@@ -103,14 +103,14 @@ void TimerRegisters::tick(SchematicTop& top) {
     /*p03.PEDA*/ PEDA_TIMA_6.clk_n(RAGE_TIMA_5.q(), MEXU_TIMA_LOADp, PYMA_TIMA_LD_6);
     /*p03.NUGA*/ NUGA_TIMA_7.clk_n(PEDA_TIMA_6.q(), MEXU_TIMA_LOADp, PAGU_TIMA_LD_7);
 
-    /*p03.SOKU*/ top.CPU_TRI_D0.set_tribuf(TEDA_FF05_RD, REGA_TIMA_0.q());
-    /*p03.RACY*/ top.CPU_TRI_D1.set_tribuf(TEDA_FF05_RD, POVY_TIMA_1.q());
-    /*p03.RAVY*/ top.CPU_TRI_D2.set_tribuf(TEDA_FF05_RD, PERU_TIMA_2.q());
-    /*p03.SOSY*/ top.CPU_TRI_D3.set_tribuf(TEDA_FF05_RD, RATE_TIMA_3.q());
-    /*p03.SOMU*/ top.CPU_TRI_D4.set_tribuf(TEDA_FF05_RD, RUBY_TIMA_4.q());
-    /*p03.SURO*/ top.CPU_TRI_D5.set_tribuf(TEDA_FF05_RD, RAGE_TIMA_5.q());
-    /*p03.ROWU*/ top.CPU_TRI_D6.set_tribuf(TEDA_FF05_RD, PEDA_TIMA_6.q());
-    /*p03.PUSO*/ top.CPU_TRI_D7.set_tribuf(TEDA_FF05_RD, NUGA_TIMA_7.q());
+    /*p03.SOKU*/ top.CPU_TRI_D0.set_tribuf_6p(TEDA_FF05_RD, REGA_TIMA_0.q());
+    /*p03.RACY*/ top.CPU_TRI_D1.set_tribuf_6p(TEDA_FF05_RD, POVY_TIMA_1.q());
+    /*p03.RAVY*/ top.CPU_TRI_D2.set_tribuf_6p(TEDA_FF05_RD, PERU_TIMA_2.q());
+    /*p03.SOSY*/ top.CPU_TRI_D3.set_tribuf_6p(TEDA_FF05_RD, RATE_TIMA_3.q());
+    /*p03.SOMU*/ top.CPU_TRI_D4.set_tribuf_6p(TEDA_FF05_RD, RUBY_TIMA_4.q());
+    /*p03.SURO*/ top.CPU_TRI_D5.set_tribuf_6p(TEDA_FF05_RD, RAGE_TIMA_5.q());
+    /*p03.ROWU*/ top.CPU_TRI_D6.set_tribuf_6p(TEDA_FF05_RD, PEDA_TIMA_6.q());
+    /*p03.PUSO*/ top.CPU_TRI_D7.set_tribuf_6p(TEDA_FF05_RD, NUGA_TIMA_7.q());
 
     /*p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn = not(MEXU_TIMA_LOADp);
 
@@ -134,14 +134,14 @@ void TimerRegisters::tick(SchematicTop& top) {
     /*p03.PETO*/ PETO_TMA_6.set(TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D6);
     /*p03.SETA*/ SETA_TMA_7.set(TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D7);
 
-    /*p03.SETE*/ top.CPU_TRI_D0.set_tribuf(TUBY_FF06_RD, SABU_TMA_0.q());
-    /*p03.PYRE*/ top.CPU_TRI_D1.set_tribuf(TUBY_FF06_RD, NYKE_TMA_1.q());
-    /*p03.NOLA*/ top.CPU_TRI_D2.set_tribuf(TUBY_FF06_RD, MURU_TMA_2.q());
-    /*p03.SALU*/ top.CPU_TRI_D3.set_tribuf(TUBY_FF06_RD, TYVA_TMA_3.q());
-    /*p03.SUPO*/ top.CPU_TRI_D4.set_tribuf(TUBY_FF06_RD, TYRU_TMA_4.q());
-    /*p03.SOTU*/ top.CPU_TRI_D5.set_tribuf(TUBY_FF06_RD, SUFY_TMA_5.q());
-    /*p03.REVA*/ top.CPU_TRI_D6.set_tribuf(TUBY_FF06_RD, PETO_TMA_6.q());
-    /*p03.SAPU*/ top.CPU_TRI_D7.set_tribuf(TUBY_FF06_RD, SETA_TMA_7.q());
+    /*p03.SETE*/ top.CPU_TRI_D0.set_tribuf_6p(TUBY_FF06_RD, SABU_TMA_0.q());
+    /*p03.PYRE*/ top.CPU_TRI_D1.set_tribuf_6p(TUBY_FF06_RD, NYKE_TMA_1.q());
+    /*p03.NOLA*/ top.CPU_TRI_D2.set_tribuf_6p(TUBY_FF06_RD, MURU_TMA_2.q());
+    /*p03.SALU*/ top.CPU_TRI_D3.set_tribuf_6p(TUBY_FF06_RD, TYVA_TMA_3.q());
+    /*p03.SUPO*/ top.CPU_TRI_D4.set_tribuf_6p(TUBY_FF06_RD, TYRU_TMA_4.q());
+    /*p03.SOTU*/ top.CPU_TRI_D5.set_tribuf_6p(TUBY_FF06_RD, SUFY_TMA_5.q());
+    /*p03.REVA*/ top.CPU_TRI_D6.set_tribuf_6p(TUBY_FF06_RD, PETO_TMA_6.q());
+    /*p03.SAPU*/ top.CPU_TRI_D7.set_tribuf_6p(TUBY_FF06_RD, SETA_TMA_7.q());
   }
 
   // FF07 TAC
@@ -150,9 +150,9 @@ void TimerRegisters::tick(SchematicTop& top) {
     /*p03.SAMY*/ SAMY_TAC_1.set(SARA_FF07_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
     /*p03.SABO*/ SABO_TAC_2.set(SARA_FF07_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D2);
 
-    /*p03.RYLA*/ top.CPU_TRI_D0.set_tribuf(SORA_FF07_RD, SOPU_TAC_0.q());
-    /*p03.ROTE*/ top.CPU_TRI_D1.set_tribuf(SORA_FF07_RD, SAMY_TAC_1.q());
-    /*p03.SUPE*/ top.CPU_TRI_D2.set_tribuf(SORA_FF07_RD, SABO_TAC_2.q());
+    /*p03.RYLA*/ top.CPU_TRI_D0.set_tribuf_6p(SORA_FF07_RD, SOPU_TAC_0.q());
+    /*p03.ROTE*/ top.CPU_TRI_D1.set_tribuf_6p(SORA_FF07_RD, SAMY_TAC_1.q());
+    /*p03.SUPE*/ top.CPU_TRI_D2.set_tribuf_6p(SORA_FF07_RD, SABO_TAC_2.q());
   }
 }
 

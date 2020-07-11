@@ -10,8 +10,8 @@ void SerialRegisters::tick(SchematicTop& top) {
 
   //----------------------------------------
   /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (top.SARE_XX00_XX07p(), top.SEFY_A02n(), top.SYKE_FF00_FFFFp());
-  /*p06.URYS*/ wire _FF01_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRn_xxxxEFGx(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
-  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRn_xxxxEFGx(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
+  /*p06.URYS*/ wire _FF01_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
+  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
   /*p06.UFEG*/ wire _FF01_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
   /*p06.UCOM*/ wire _FF02_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
 
@@ -90,17 +90,17 @@ void SerialRegisters::tick(SchematicTop& top) {
   SCK_B.set(XFER_DIR.q());
   /*p06.KUJO*/ SCK_D.set(nor(SER_CLK.q(), /*p06.JAGO*/ not(XFER_DIR.q())));
 
-  /*p06.CUGY*/ top.CPU_TRI_D0.set_tribuf(_FF01_RD, SER_DATA0.q());
-  /*p06.DUDE*/ top.CPU_TRI_D1.set_tribuf(_FF01_RD, SER_DATA1.q());
-  /*p06.DETU*/ top.CPU_TRI_D2.set_tribuf(_FF01_RD, SER_DATA2.q());
-  /*p06.DASO*/ top.CPU_TRI_D3.set_tribuf(_FF01_RD, SER_DATA3.q());
-  /*p06.DAME*/ top.CPU_TRI_D4.set_tribuf(_FF01_RD, SER_DATA4.q());
-  /*p06.EVOK*/ top.CPU_TRI_D5.set_tribuf(_FF01_RD, SER_DATA5.q());
-  /*p06.EFAB*/ top.CPU_TRI_D6.set_tribuf(_FF01_RD, SER_DATA6.q());
-  /*p06.ETAK*/ top.CPU_TRI_D7.set_tribuf(_FF01_RD, SER_DATA7.q());
+  /*p06.CUGY*/ top.CPU_TRI_D0.set_tribuf_6p(_FF01_RD, SER_DATA0.q());
+  /*p06.DUDE*/ top.CPU_TRI_D1.set_tribuf_6p(_FF01_RD, SER_DATA1.q());
+  /*p06.DETU*/ top.CPU_TRI_D2.set_tribuf_6p(_FF01_RD, SER_DATA2.q());
+  /*p06.DASO*/ top.CPU_TRI_D3.set_tribuf_6p(_FF01_RD, SER_DATA3.q());
+  /*p06.DAME*/ top.CPU_TRI_D4.set_tribuf_6p(_FF01_RD, SER_DATA4.q());
+  /*p06.EVOK*/ top.CPU_TRI_D5.set_tribuf_6p(_FF01_RD, SER_DATA5.q());
+  /*p06.EFAB*/ top.CPU_TRI_D6.set_tribuf_6p(_FF01_RD, SER_DATA6.q());
+  /*p06.ETAK*/ top.CPU_TRI_D7.set_tribuf_6p(_FF01_RD, SER_DATA7.q());
 
-  /*p06.CORE*/ top.CPU_TRI_D0.set_tribuf(_FF02_RD, XFER_DIR.q());
-  /*p06.ELUV*/ top.CPU_TRI_D1.set_tribuf(_FF02_RD, XFER_START.q());
+  /*p06.CORE*/ top.CPU_TRI_D0.set_tribuf_6p(_FF02_RD, XFER_DIR.q());
+  /*p06.ELUV*/ top.CPU_TRI_D1.set_tribuf_6p(_FF02_RD, XFER_START.q());
 }
 
 //------------------------------------------------------------------------------

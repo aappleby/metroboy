@@ -366,7 +366,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     /*p22.WYBO*/ wire WYBO_FF47n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.WESA_A01p(), top.WALO_A02p(), top.XERA_A03n());
     /*p22.WERA*/ wire WERA_FF47 = not(WYBO_FF47n);
-    /*p36.VELY*/ wire VELY_FF47_WR = and (top.CUPA_CPU_WRn_xxxxEFGx(), WERA_FF47);
+    /*p36.VELY*/ wire VELY_FF47_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), WERA_FF47);
     /*p36.TEPO*/ wire TEPO_FF47_WRn = not(VELY_FF47_WR);
 
     /*p36.PAVO*/ PAVO_BGP0.set(TEPO_FF47_WRn, !TEPO_FF47_WRn, top.CPU_TRI_D0);
@@ -395,7 +395,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     /*p22.WETA*/ wire WETA_FF48n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.XENO_A01n(), top.XUSY_A02n(), top.WEPO_A03p());
     /*p22.XAYO*/ wire XAYO_FF48 = not(WETA_FF48n);
-    /*p36.XOMA*/ wire XOMA_FF48_WR = and (top.CUPA_CPU_WRn_xxxxEFGx(), XAYO_FF48);
+    /*p36.XOMA*/ wire XOMA_FF48_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), XAYO_FF48);
     /*p36.XELO*/ wire XELO_FF48_WRn = not(XOMA_FF48_WR);
 
     /*p36.XUFU*/ OBP00.set(XELO_FF48_WRn, !XELO_FF48_WRn, top.CPU_TRI_D0);
@@ -424,7 +424,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     /*p22.VAMA*/ wire VAMA_FF49n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.XENO_A01n(), top.XUSY_A02n(), top.WEPO_A03p());
     /*p22.TEGO*/ wire TEGO_FF49 = not(VAMA_FF49n);
-    /*p36.MYXE*/ wire MYXE_FF49_WR = and (top.CUPA_CPU_WRn_xxxxEFGx(), TEGO_FF49);
+    /*p36.MYXE*/ wire MYXE_FF49_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), TEGO_FF49);
     /*p36.LEHO*/ wire LEHO_FF49_WRn = not(MYXE_FF49_WR);
 
     /*p36.MOXY*/ OBP10.set(LEHO_FF49_WRn, !LEHO_FF49_WRn, top.CPU_TRI_D0);

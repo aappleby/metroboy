@@ -186,7 +186,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p23.VAFE*/ top.CPU_TRI_D6.set_tribuf_6n(WEKU_FF45_RDn, VEVO_LYC6.q());
     /*p23.PUFY*/ top.CPU_TRI_D7.set_tribuf_6n(WEKU_FF45_RDn, RAHA_LYC7.q());
 
-    /*p23.XUFA*/ wire XUFA_FF45_WRn = and (top.CUPA_CPU_WRn_xxxxEFGx(), XAYU_FF45p);
+    /*p23.XUFA*/ wire XUFA_FF45_WRn = and (top.CUPA_CPU_WRp_xxxxEFGx(), XAYU_FF45p);
     /*p23.WANE*/ wire WANE_FF45_WRp = not(XUFA_FF45_WRn);
 
     /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D0);

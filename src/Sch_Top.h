@@ -30,9 +30,9 @@ struct SchematicTop {
 
   void set_cpu_bus(Req req);
   void set_buttons(uint8_t buttons);
-  void set_vram_bus(wire OE, uint8_t data);
+  void set_vram_bus(uint8_t data);
   void set_oam_bus(wire OE, uint16_t data);
-  void set_ext_bus(wire OE, uint16_t data);
+  void set_ext_bus(uint16_t data);
 
   int get_addr() const {
     return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
@@ -243,10 +243,10 @@ struct SchematicTop {
   /*p07.ASOT*/ wire ASOT_CPU_RDp() const { return not(AJAS_CPU_RDn()); }
 
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const;
-  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDxxxH() const;
-  /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxEFGx() const { return not(UBAL_CPU_WRp_ABCDxxxH()); }
-  /*p07.DYKY*/ wire DYKY_CPU_WRp_ABCDxxxH() const { return not(TAPU_CPU_WRn_xxxxEFGx()); }
-  /*p07.CUPA*/ wire CUPA_CPU_WRn_xxxxEFGx() const { return not(DYKY_CPU_WRp_ABCDxxxH()); }
+  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const;
+  /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
+  /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH() const { return not(TAPU_CPU_WRp_xxxxEFGx()); }
+  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const { return not(DYKY_CPU_WRn_ABCDxxxH()); }
 
   //-----------------------------------------------------------------------------
   // Bus mux signals
@@ -662,7 +662,7 @@ struct SchematicTop {
   // Ext bus debug inputs
 
   PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
-  PinIn  EXT_PIN_RDn_C;   // PIN_79 -> P07.UJYV
+  PinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
 
   PinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
   PinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU

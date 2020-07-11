@@ -8,8 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct BusMux {
-  void tick(SchematicTop& gb);
-  SignalHash commit();
+  void tick(SchematicTop& top);
+  SignalHash commit(SchematicTop& top);
 
 private:
   friend SchematicTop;

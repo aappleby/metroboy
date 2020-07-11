@@ -212,7 +212,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.TOBE*/ wire TOBE_FF41_RDp = and (VARY_FF41p, top.ASOT_CPU_RDp()); // die AND
     /*p21.VAVE*/ wire VAVE_FF41_RDn = not(TOBE_FF41_RDp); // die INV
 
-    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (VARY_FF41p, top.CUPA_CPU_WRn_xxxxEFGx());
+    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (VARY_FF41p, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not(SEPA_FF41_WRp);
 
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not(SEPA_FF41_WRp);

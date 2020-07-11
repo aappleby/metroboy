@@ -29,7 +29,7 @@ struct Sandbox {
     CPU_PIN_ADDR_VALID.set(0);
     set_addr(0);
 
-    EXT_PIN_RDn_C.set(1);
+    EXT_PIN_RDp_C.set(1);
     EXT_PIN_WRp_C.set(1);
   }
 
@@ -39,7 +39,7 @@ struct Sandbox {
   PinIn  SYS_PIN_T2;
   PinIn  SYS_PIN_RSTp;
 
-  PinIn  EXT_PIN_RDn_C;   // PIN_79 -> P07.UJYV
+  PinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
   PinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
 
   PinIn  CPU_PIN_READYp;
@@ -376,7 +376,7 @@ struct Sandbox {
     hash << CPU_PIN_A14;
     hash << CPU_PIN_A15;
 
-    hash << EXT_PIN_RDn_C;
+    hash << EXT_PIN_RDp_C;
     hash << EXT_PIN_WRp_C;
 
     hash << CPU_PIN_SYS_RSTp.commit();

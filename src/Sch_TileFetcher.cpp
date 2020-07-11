@@ -228,18 +228,13 @@ void TileFetcher::tick(SchematicTop& top) {
 
   // FF42 SCY
   {
-    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
-    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
-    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
-    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
-    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
-    /*p22.WEBU*/ wire WEBU_FF42n = nand(top.WERO_FF4Xp(), XOLA_A00n, WESA_A01p, XUSY_A02n, XERA_A03n);
+    /*p22.WEBU*/ wire WEBU_FF42n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.WESA_A01p(), top.XUSY_A02n(), top.XERA_A03n());
     /*p22.XARO*/ wire XARO_FF42p = not(WEBU_FF42n);
 
     /*p23.ANYP*/ wire ANYP_FF42_RDp = and(XARO_FF42p, top.ASOT_CPU_RDp());
     /*p23.BUWY*/ wire BUWY_FF42_RDn = not(ANYP_FF42_RDp);
 
-    /*p23.BEDY*/ wire BEDY_FF42_WRp = and(XARO_FF42p, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p23.BEDY*/ wire BEDY_FF42_WRp = and(XARO_FF42p, top.CUPA_CPU_WRn_xxxxEFGx());
     /*p23.CAVO*/ wire CAVO_FF42_WRn = not(BEDY_FF42_WRp);
 
     /*p23.GAVE*/ GAVE_SCY0.set(CAVO_FF42_WRn, !CAVO_FF42_WRn, top.CUNU_SYS_RSTn(), top.CPU_TRI_D0);
@@ -263,19 +258,13 @@ void TileFetcher::tick(SchematicTop& top) {
 
   // FF43 SCX
   {
-    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
-    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
-    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
-    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
-    /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
-    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
-    /*p22.WAVU*/ wire WAVU_FF43n = nand(top.WERO_FF4Xp(), WADO_A00p, WESA_A01p, XUSY_A02n, XERA_A03n);
+    /*p22.WAVU*/ wire WAVU_FF43n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.WESA_A01p(), top.XUSY_A02n(), top.XERA_A03n());
     /*p22.XAVY*/ wire XAVY_FF43p = not(WAVU_FF43n);
 
     /*p23.AVOG*/ wire AVOG_FF43_RDp = and (XAVY_FF43p, top.ASOT_CPU_RDp());
     /*p23.BEBA*/ wire BEBA_FF43_RDn = not(AVOG_FF43_RDp);
 
-    /*p23.ARUR*/ wire ARUR_FF43_WRp = and (XAVY_FF43p, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p23.ARUR*/ wire ARUR_FF43_WRp = and (XAVY_FF43p, top.CUPA_CPU_WRn_xxxxEFGx());
     /*p23.AMUN*/ wire AMUN_FF43_WRn = not(ARUR_FF43_WRp);
 
     /*p23.DATY*/ DATY_SCX0.set(AMUN_FF43_WRn, !AMUN_FF43_WRn, top.CUNU_SYS_RSTn(), top.CPU_TRI_D0);

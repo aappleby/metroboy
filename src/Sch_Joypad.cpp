@@ -14,13 +14,10 @@ void JoypadRegisters::tick(SchematicTop& top) {
     /*p10.BYKO*/ wire BYKO_A05n = not(top.CPU_PIN_A05);
     /*p10.AKUG*/ wire AKUG_A06n = not(top.CPU_PIN_A06);
     /*p10.AMUS*/ wire AMUS_0xx00000 = nor(top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03, top.CPU_PIN_A04, top.CPU_PIN_A07);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p10.ANAP*/ wire ANAP_FF_0xx00000 = and (AMUS_0xx00000, SYKE_FF00_FFFFp);
+    /*p10.ANAP*/ wire ANAP_FF_0xx00000 = and (AMUS_0xx00000, top.SYKE_FF00_FFFFp());
 
     /*p10.ACAT*/ ACAT_FF00_RDp = and (top.TEDO_CPU_RDp(),          ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
-    /*p10.ATOZ*/ ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+    /*p10.ATOZ*/ ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRn_xxxxEFGx(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
   }
 
   {

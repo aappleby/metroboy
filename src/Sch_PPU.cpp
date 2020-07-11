@@ -210,18 +210,13 @@ void PpuRegisters::tick(SchematicTop& top) {
     // when PAGO03 goes high, RUPO02 goes high
     // when ROPO16 goes high, RUPO02 goes low.
 
-    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
-    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
-    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
-    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
-    /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
-    /*p22.WOFA*/ wire WOFA_FF41n = nand(top.WERO_FF4Xp(), WADO_A00p, XENO_A01n, XUSY_A02n, XERA_A03n);
+    /*p22.WOFA*/ wire WOFA_FF41n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.XENO_A01n(), top.XUSY_A02n(), top.XERA_A03n());
     /*p22.VARY*/ wire VARY_FF41p = not(WOFA_FF41n);
 
     /*p21.TOBE*/ wire TOBE_FF41_RDp = and (VARY_FF41p, top.ASOT_CPU_RDp()); // die AND
     /*p21.VAVE*/ wire VAVE_FF41_RDn = not(TOBE_FF41_RDp); // die INV
 
-    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (VARY_FF41p, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (VARY_FF41p, top.CUPA_CPU_WRn_xxxxEFGx());
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not(SEPA_FF41_WRp);
 
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not(SEPA_FF41_WRp);
@@ -234,9 +229,8 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2);
     /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3);
 
-    /*p21.PARU*/ wire PARU_IN_VBLANK = not(!top.POPU_VBLANK_d4());
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp, top.ACYL_SCANNINGp()); // die NOR
-    /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp, PARU_IN_VBLANK); // die NOR
+    /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp, top.PARU_VBLANKp_d4()); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.
 

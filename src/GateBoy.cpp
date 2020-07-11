@@ -81,7 +81,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
     hash = gateboy.phase(top, RST, CLK_GOOD, CLK, addr, data, read, write);
     top->phase_counter++;
 
-    if (top->tim_reg.get_div() == 65535) break;
+    if (top->tim_reg.get_div() == 32767) break;
   }
 
   gateboy.verbose = true;

@@ -32,13 +32,13 @@ private:
   /*p21.MATO*/ Reg17 MATO_Y6;
   /*p21.LAFO*/ Reg17 LAFO_Y7;
 
-  /*p21.RUTU*/ Reg17 RUTU_LINE_END_F; // p909+8
-  /*p29.CATU*/ Reg17 CATU_LINE_END_B; // p001+8
+  /*p21.RUTU*/ Reg17 RUTU_LINE_END; // p909+8
+  /*p29.CATU*/ Reg17 CATU_LINE_END; // p001+8
   /*p21.NYPE*/ Reg17 NYPE_LINE_END_B; // p001+8
   /*p28.ANEL*/ Reg17 ANEL_LINE_END_D; // p003+8
 
   /*p21.MYTA*/ Reg17 MYTA_LINE_153_d4;  // p153:001 - p000:001
-  /*p21.POPU*/ Reg17 POPU_VBLANK_d4; // p144:001 - p000:001
+  /*p21.POPU*/ Reg17 POPU_VBLANKp_d4; // p144:001 - p000:001
 
   /*p21.SYGU*/ Reg17 SYGU_LINE_STROBE;
 

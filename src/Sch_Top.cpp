@@ -826,7 +826,7 @@ void SchematicTop::tick_top_regs() {
   /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
   /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
 
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(UBAL_CPU_WRn_ABCDxxxH());
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(UBAL_CPU_WRp_ABCDxxxH());
   /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
   /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
 
@@ -1304,26 +1304,6 @@ SignalHash SchematicTop::commit_top_regs() {
 }
 
 //-----------------------------------------------------------------------------
-// Debug signals
-
-wire SchematicTop::UMUT_MODE_DBG1p() const {
-  /*p07.UVAR*/ wire UVAR_T2p = not(SYS_PIN_T2n);
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p = and (SYS_PIN_T1n, UVAR_T2p);
-  return UMUT_MODE_DBG1p;
-}
-
-wire SchematicTop::UNOR_MODE_DBG2p() const {
-  /*p07.UBET*/ wire UBET_T1p = not(SYS_PIN_T1n);
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (SYS_PIN_T2n, UBET_T1p);
-  return UNOR_MODE_DBG2p;
-}
-
-wire SchematicTop::TOVA_MODE_DBG2n() const {
-  /*p08.TOVA*/ wire TOVA_MODE_DBG2n = not(UNOR_MODE_DBG2p());
-  return TOVA_MODE_DBG2n;
-}
-
-//-----------------------------------------------------------------------------
 // Timer signals
 
 wire SchematicTop::UVYN_DIV_05n() const    { return not(tim_reg.TAMA_DIV_05); }
@@ -1361,12 +1341,12 @@ wire SchematicTop::AREV_CPU_WRn_ABCDxxxH() const {
   return AREV_CPU_WRn_ABCDExxx;
 }
 
-wire SchematicTop::UBAL_CPU_WRn_ABCDxxxH() const {
+wire SchematicTop::UBAL_CPU_WRp_ABCDxxxH() const {
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(AREV_CPU_WRn_ABCDxxxH());
 
   // polarity of EXT_PIN_WRp_C wrong?
-  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p());
-  return UBAL_CPU_WRn_ABCDxxxH;
+  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDxxxH = mux2_n(EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p());
+  return UBAL_CPU_WRp_ABCDxxxH;
 }
 
 void SchematicTop::set_data(bool oe, uint8_t data) {
@@ -1445,7 +1425,7 @@ wire SchematicTop::DMA_A15() const { return dma_reg.DMA_A15; }
 // LCD signals
 
 wire SchematicTop::BYHA_VID_LINE_TRIG_d4() const {
-  /*p28.ABAF*/ wire ABAF_LINE_END_Bn = not(lcd_reg.CATU_LINE_END_B.q());
+  /*p28.ABAF*/ wire ABAF_LINE_END_Bn = not(lcd_reg.CATU_LINE_END.q());
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
   /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4 = and (or (lcd_reg.ANEL_LINE_END_D, ABAF_LINE_END_Bn), ABEZ_VID_RSTn);
@@ -1543,15 +1523,14 @@ wire SchematicTop::ROZE_FINE_COUNT_7n() const {
 }
 
 wire SchematicTop::VOTY_INT_STATp() const {
-  /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_LINE_END_F());
+  /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_LINE_END());
   /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
-  /*p21.PARU*/ wire PARU_VBLANKp = not(!POPU_VBLANK_d4());
-  /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp);
+  /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp_d4());
   /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_VBLANKn, SELA_NEW_LINE_d0p);
   /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_VBLANKn, ppu_reg.WODU_RENDER_DONEp);
   /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN, ROPO_LY_MATCH_SYNCp(),
                                            ppu_reg.REFE_INT_OAM_EN, TAPA_INT_OAM,
-                                           ppu_reg.RUFO_INT_VBL_EN, PARU_VBLANKp, // polarity?
+                                           ppu_reg.RUFO_INT_VBL_EN, PARU_VBLANKp_d4(), // polarity?
                                            ppu_reg.ROXE_INT_HBL_EN, TARU_INT_HBL);
   /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
   /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);

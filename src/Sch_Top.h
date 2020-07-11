@@ -56,9 +56,13 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Debug signals
 
-  wire UMUT_MODE_DBG1p() const;
-  wire UNOR_MODE_DBG2p() const;
-  wire TOVA_MODE_DBG2n() const;
+  /*p07.UBET*/ wire UBET_T1p() const { return not(SYS_PIN_T1n); }
+  /*p07.UVAR*/ wire UVAR_T2p() const { return not(SYS_PIN_T2n); }
+
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and(SYS_PIN_T1n, UVAR_T2p()); }
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and(SYS_PIN_T2n, UBET_T1p()); }
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp); }
+  /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------
   // Clock signals
@@ -208,10 +212,10 @@ struct SchematicTop {
   /*p07.ASOT*/ wire ASOT_CPU_RDp() const { return not(AJAS_CPU_RDn()); }
 
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const;
-  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const;
-  /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
-  /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH() const { return not(TAPU_CPU_WRp_xxxxEFGx()); }
-  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const { return not(DYKY_CPU_WRn_ABCDxxxH()); }
+  /*p07.UBAL*/ wire UBAL_CPU_WRp_ABCDxxxH() const;
+  /*p07.TAPU*/ wire TAPU_CPU_WRn_xxxxEFGx() const { return not(UBAL_CPU_WRp_ABCDxxxH()); }
+  /*p07.DYKY*/ wire DYKY_CPU_WRp_ABCDxxxH() const { return not(TAPU_CPU_WRn_xxxxEFGx()); }
+  /*p07.CUPA*/ wire CUPA_CPU_WRn_xxxxEFGx() const { return not(DYKY_CPU_WRp_ABCDxxxH()); }
 
   int get_addr() const;
   int get_data() const;
@@ -273,31 +277,22 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // LCD signals
 
-  wire BYHA_VID_LINE_TRIG_d4() const;
+  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4() const;
 
-  wire RUTU_LINE_END_F() const;
-  wire CATU_LINE_END_B() const;
+  /*p21.RUTU*/ wire RUTU_LINE_END()       const { return lcd_reg.RUTU_LINE_END; }
+  /*p29.CATU*/ wire CATU_LINE_END()       const { return lcd_reg.CATU_LINE_END; }
+  /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp; }
+  /*p21.POPU*/ wire POPU_VBLANKp_d4()     const { return lcd_reg.POPU_VBLANKp_d4; }
+  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(lcd_reg.POPU_VBLANKp_d4.qn()); }
 
-  wire POPU_VBLANK_d4() const;
-
-  wire ROPO_LY_MATCH_SYNCp() const;
-
-
-  wire RUTU_LINE_END_F()     const { return lcd_reg.RUTU_LINE_END_F; }
-  wire CATU_LINE_END_B()     const { return lcd_reg.CATU_LINE_END_B; }
-  wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp; }
-
-  /*p21.POPU*/ wire POPU_VBLANK_d4() const { return lcd_reg.POPU_VBLANK_d4; }
-  /*p21.PARU*/ wire PARU_VBLANKp()   const { not(lcd_reg.POPU_VBLANK_d4.qn()); }
-
-  wire MUWY_Y0() const { return lcd_reg.MUWY_Y0; }
-  wire MYRO_Y1() const { return lcd_reg.MYRO_Y1; }
-  wire LEXA_Y2() const { return lcd_reg.LEXA_Y2; }
-  wire LYDO_Y3() const { return lcd_reg.LYDO_Y3; }
-  wire LOVU_Y4() const { return lcd_reg.LOVU_Y4; }
-  wire LEMA_Y5() const { return lcd_reg.LEMA_Y5; }
-  wire MATO_Y6() const { return lcd_reg.MATO_Y6; }
-  wire LAFO_Y7() const { return lcd_reg.LAFO_Y7; }
+  /*p21.MUWY*/ wire MUWY_Y0() const { return lcd_reg.MUWY_Y0; }
+  /*p21.MYRO*/ wire MYRO_Y1() const { return lcd_reg.MYRO_Y1; }
+  /*p21.LEXA*/ wire LEXA_Y2() const { return lcd_reg.LEXA_Y2; }
+  /*p21.LYDO*/ wire LYDO_Y3() const { return lcd_reg.LYDO_Y3; }
+  /*p21.LOVU*/ wire LOVU_Y4() const { return lcd_reg.LOVU_Y4; }
+  /*p21.LEMA*/ wire LEMA_Y5() const { return lcd_reg.LEMA_Y5; }
+  /*p21.MATO*/ wire MATO_Y6() const { return lcd_reg.MATO_Y6; }
+  /*p21.LAFO*/ wire LAFO_Y7() const { return lcd_reg.LAFO_Y7; }
 
   //-----------------------------------------------------------------------------
   // Address decoder signals
@@ -308,13 +303,20 @@ struct SchematicTop {
   /*p22.XERA*/ wire XERA_A03n() const { return not(CPU_PIN_A03); }
   /*p07.TONA*/ wire TONA_A08n() const { return not(CPU_PIN_A08); }
 
+  /*p22.WADO*/ wire WADO_A00p() const { return not(XOLA_A00n()); }
   /*p22.WESA*/ wire WESA_A01p() const { return not(XENO_A01n()); }
   /*p22.WALO*/ wire WALO_A02p() const { return not(XUSY_A02n()); }
+  /*p22.WEPO*/ wire WEPO_A03p() const { return not(XERA_A03n()); }
+
+  /*p03.TOVY*/ wire TOVY_A00n() const { return not(CPU_PIN_A00); }
+  /*p08.TOLA*/ wire TOLA_A01n() const { return not(CPU_PIN_A01); }
+  /*p06.SEFY*/ wire SEFY_A02n() const { return not(CPU_PIN_A02); }
 
   /*p07.TUNA*/ wire TUNA_0000_FDFFp() const;
   /*p22.WERO*/ wire WERO_FF4Xp() const;
 
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp() const { return nor(TUNA_0000_FDFFp(), TONA_A08n()); }
+  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor(CPU_PIN_A07, CPU_PIN_A06, CPU_PIN_A05, CPU_PIN_A04, CPU_PIN_A03); }
 
   //-----------------------------------------------------------------------------
   // PPU signals

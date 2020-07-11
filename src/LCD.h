@@ -15,13 +15,13 @@ struct LCD {
 
   // states
 
-  /*p21.RUTU*/ bool RUTU_LINE_END_F  = 0;
+  /*p21.RUTU*/ bool RUTU_LINE_END  = 0;
   /*p21.NYPE*/ bool NYPE_LINE_END_B  = 0;
-  /*p29.CATU*/ bool CATU_LINE_END_B  = 0;
+  /*p29.CATU*/ bool CATU_LINE_END  = 0;
   /*p28.ANEL*/ bool ANEL_LINE_END_D  = 0;
   /*p21.MYTA*/ bool MYTA_LINE_153_d4  = 0;
   /*p24.MEDA*/ bool MEDA_VSYNC_OUTn   = 0;
-  /*p24.MEDA*/ bool POPU_VBLANK_d4 = 0;
+  /*p24.MEDA*/ bool POPU_VBLANKp_d4 = 0;
   /*p24.PAHO*/ bool PAHO_X_8_SYNC     = 0;
 
   // signals

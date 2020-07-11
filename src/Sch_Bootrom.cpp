@@ -61,13 +61,10 @@ void Bootrom::tick(SchematicTop& top) {
     /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A03, top.CPU_PIN_A02, top.CPU_PIN_A01, top.CPU_PIN_A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(top.CPU_PIN_A04, top.CPU_PIN_A06);
 
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.TEXE*/ wire FF50_RDp = and(top.TEDO_CPU_RDp(), SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TEXE*/ wire FF50_RDp = and(top.TEDO_CPU_RDp(), top.SYKE_FF00_FFFFp(), ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
-    /*p07.TUGE*/ wire FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TUGE*/ wire FF50_WRn = nand(top.TAPU_CPU_WRn_xxxxEFGx(), top.SYKE_FF00_FFFFp(), ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (top.CPU_TRI_D0, BOOT_BITn);
 
     // In run mode, BOOT_BITn must _not_ be reset.

@@ -12,6 +12,8 @@ struct ClockRegisters {
   void tick(SchematicTop& top);
   SignalHash commit();
 
+  void dump(Dumper& d);
+
 //private:
   //friend SchematicTop;
 

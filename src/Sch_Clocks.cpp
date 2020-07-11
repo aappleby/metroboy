@@ -14,18 +14,12 @@ void ClockRegisters::tick(SchematicTop& top) {
     wire APUK_xxxDEFGx_ = APUK_xxCDEFxx;
     wire ADYK_xxxxEFGH_ = ADYK_xxxDEFGx;
 
-    /*p07.UBET*/ wire UBET_T1n = not(top.SYS_PIN_T1n);
-    /*p07.UVAR*/ wire UVAR_T2n = not(top.SYS_PIN_T2n);
-
-    // FIXME polarity issues again?
-    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, top.SYS_PIN_RSTp);
-
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
-    /*p01.AFUR*/ AFUR_ABCDxxxx.set(!top.ATAL_xBxDxFxH(),  top.ATAL_xBxDxFxH(), UPOJ_MODE_PRODn, !ADYK_xxxxEFGH_);
-    /*p01.ALEF*/ ALEF_xBCDExxx.set( top.ATAL_xBxDxFxH(), !top.ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  AFUR_xBCDExxx_);
-    /*p01.APUK*/ APUK_xxCDEFxx.set(!top.ATAL_xBxDxFxH(),  top.ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  ALEF_xxCDEFxx_);
-    /*p01.ADYK*/ ADYK_xxxDEFGx.set( top.ATAL_xBxDxFxH(), !top.ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  APUK_xxxDEFGx_);
+    /*p01.AFUR*/ AFUR_ABCDxxxx.set(!top.ATAL_xBxDxFxH(),  top.ATAL_xBxDxFxH(), top.UPOJ_MODE_PRODn(), !ADYK_xxxxEFGH_);
+    /*p01.ALEF*/ ALEF_xBCDExxx.set( top.ATAL_xBxDxFxH(), !top.ATAL_xBxDxFxH(), top.UPOJ_MODE_PRODn(),  AFUR_xBCDExxx_);
+    /*p01.APUK*/ APUK_xxCDEFxx.set(!top.ATAL_xBxDxFxH(),  top.ATAL_xBxDxFxH(), top.UPOJ_MODE_PRODn(),  ALEF_xxCDEFxx_);
+    /*p01.ADYK*/ ADYK_xxxDEFGx.set( top.ATAL_xBxDxFxH(), !top.ATAL_xBxDxFxH(), top.UPOJ_MODE_PRODn(),  APUK_xxxDEFGx_);
   }
 
   {
@@ -36,9 +30,9 @@ void ClockRegisters::tick(SchematicTop& top) {
     wire WUVU_xxCDxxGH_ = WUVU_xxCDxxGH;
     wire VENA_xxxxEFGH_ = VENA_xxxxEFGH;
 
-    /*p29.WUVU*/ WUVU_xxCDxxGH.set( _XOTA_AxCxExGx,  top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p29.WUVU*/ WUVU_xxCDxxGH.set( _XOTA_AxCxExGx, top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
     /*p21.VENA*/ VENA_xxxxEFGH.set(!WUVU_xxCDxxGH_, top.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-    /*p29.WOSU*/ WOSU_xBCxxFGx.set( _XYFY_xBxDxFxH,  top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p29.WOSU*/ WOSU_xBCxxFGx.set( _XYFY_xBxDxFxH, top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
   }
 }
 
@@ -56,6 +50,16 @@ SignalHash ClockRegisters::commit() {
   hash << VENA_xxxxEFGH.commit();
   hash << WOSU_xBCxxFGx.commit();
   return hash;
+}
+
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::dump(Dumper& d) {
+  d("----------ClockRegisters----------\n");
+  d("AFUR_ABCDxxxx %d\n", AFUR_ABCDxxxx);
+  d("ALEF_xBCDExxx %d\n", ALEF_xBCDExxx);
+  d("APUK_xxCDEFxx %d\n", APUK_xxCDEFxx);
+  d("ADYK_xxxDEFGx %d\n", ADYK_xxxDEFGx);
 }
 
 //-----------------------------------------------------------------------------

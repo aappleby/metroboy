@@ -93,11 +93,8 @@ using namespace Schematics;
 void BusMux::tick(SchematicTop& top) {
 
   // Address decoder
-  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-  /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-  /*p07.RYCU*/ wire RYCU_0000_FDFFn = not(TUNA_0000_FDFFp);
-  /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
+  /*p07.RYCU*/ wire RYCU_0000_FDFFn = not(top.TUNA_0000_FDFFp());
+  /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(top.SYKE_FF00_FFFFp());
   /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_0000_FDFFn, SOHA_FF00_FFFFn);
   /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn = not(SARO_FE00_FEFFp);
@@ -197,7 +194,7 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
     /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor(top.UVYT_ABCDxxxx(), MAKA_FROM_CPU5_SYNC); // def nor
     /*p04.POWU*/ wire POWU_DMA_OAM_WRp = and (top.MATU_DMA_RUNNINGp(), NAXY_DMA_OAM_WENp); // def and
-    /*p04.WYJA*/ wire WYJA_OAM_WRp = or (and (AMAB_OAM_LOCKn, top.CUPA_CPU_WRp_xxxxEFGx()), POWU_DMA_OAM_WRp);
+    /*p04.WYJA*/ wire WYJA_OAM_WRp = or (and (AMAB_OAM_LOCKn, top.CUPA_CPU_WRn_xxxxEFGx()), POWU_DMA_OAM_WRp);
     /*p28.WAFO*/ wire WAFO_OAM_A0n = not(top.GEKA_OAM_A0p()); // def not
     /*p28.YNYC*/ wire YNYC_OAM_B_WRn = and (WYJA_OAM_WRp, WAFO_OAM_A0n); // def and
     /*p28.YLYC*/ wire YLYC_OAM_A_WRn = and (WYJA_OAM_WRp, top.GEKA_OAM_A0p()); // def and
@@ -313,7 +310,7 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(top.MATU_DMA_RUNNINGp(), top.ACYL_SCANNINGp(), AJON_OAM_BUSY); // def nor
 
     // Polarity her seems wrong. Should be NOR or something?
-    /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and (SARO_FE00_FEFFp, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and (SARO_FE00_FEFFp, top.CUPA_CPU_WRn_xxxxEFGx());
     /*p28.WUJE*/ wire WUJE_CPU_OAM_WR = or (top.XYNY_ABCDxxxx(), XUTO_CPU_OAM_WR);
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WR = not(WUJE_CPU_OAM_WR);
 
@@ -684,7 +681,7 @@ void BusMux::tick(SchematicTop& top) {
     /*p01.ABUZ*/ wire ABUZ = not(AWOD);
 
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(top.CPU_PIN_A15, top.CPU_PIN_A14), _TUMA_CART_RAM);
-    /*p08.TOZA*/ wire _TOZA = and(ABUZ, _TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
+    /*p08.TOZA*/ wire _TOZA = and(ABUZ, _TYNU_ADDR_RAM, top.TUNA_0000_FDFFp()); // suggests ABUZp
 
     /*p08.TYHO*/ wire TYHO_CS_A = mux2_p(top.DMA_A15(), _TOZA, LUMA_DMA_READ_CARTp); // ABxxxxxx
 

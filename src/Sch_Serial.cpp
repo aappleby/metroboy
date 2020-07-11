@@ -9,21 +9,11 @@ using namespace Schematics;
 void SerialRegisters::tick(SchematicTop& top) {
 
   //----------------------------------------
-  /*p03.TOVY*/ wire TOVY_A00n = not(top.CPU_PIN_A00);
-  /*p08.TOLA*/ wire TOLA_A01n = not(top.CPU_PIN_A01);
-  /*p06.SEFY*/ wire SEFY_A02n = not(top.CPU_PIN_A02);
-
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-  /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-
-  /*p06.SARE*/ wire SARE_XX00_XX07p = nor(top.CPU_PIN_A07, top.CPU_PIN_A06, top.CPU_PIN_A05, top.CPU_PIN_A04, top.CPU_PIN_A03);
-  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (SARE_XX00_XX07p, SEFY_A02n, SYKE_FF00_FFFFp);
-  /*p06.URYS*/ wire _FF01_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.CPU_PIN_A00, TOLA_A01n);
-  /*p06.DAKU*/ wire _FF01_WRp_xxxxxFGH = not (_FF01_WRn_xxxxxFGH);
-  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
-  /*p06.UFEG*/ wire _FF01_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.CPU_PIN_A00, TOLA_A01n);
-  /*p06.UCOM*/ wire _FF02_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
+  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (top.SARE_XX00_XX07p(), top.SEFY_A02n(), top.SYKE_FF00_FFFFp());
+  /*p06.URYS*/ wire _FF01_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRn_xxxxEFGx(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
+  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRn_xxxxEFGx(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
+  /*p06.UFEG*/ wire _FF01_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
+  /*p06.UCOM*/ wire _FF02_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
 
   /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIALp.q());
   /*p06.CABY*/ wire _XFER_RESET = and (_SER_CNT3n, top.ALUR_SYS_RSTn());
@@ -55,6 +45,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.CYDE*/ SER_CNT2.set(!SER_CNT1.q(), _SER_RST, !SER_CNT2.q());
   /*p06.CALY*/ CALY_INT_SERIALp.set(!SER_CNT2.q(), _SER_RST, !CALY_INT_SERIALp.q());
 
+  /*p06.DAKU*/ wire _FF01_WRp_xxxxxFGH = not (_FF01_WRn_xxxxxFGH);
   /*p06.CUFU*/ wire _SER_DATA0_SETn = nand(top.CPU_TRI_D0, _FF01_WRp_xxxxxFGH);
   /*p06.DOCU*/ wire _SER_DATA1_SETn = nand(top.CPU_TRI_D1, _FF01_WRp_xxxxxFGH);
   /*p06.DELA*/ wire _SER_DATA2_SETn = nand(top.CPU_TRI_D2, _FF01_WRp_xxxxxFGH);

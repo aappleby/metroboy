@@ -11,7 +11,6 @@ void SpriteScanner::tick(SchematicTop& top) {
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
   /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, top.ATAR_VID_RSTp());
   /*p29.BALU*/ wire BALU_LINE_RSTp = not(ANOM_LINE_RSTn);
-  /*p29.BAGY*/ wire BAGY_LINE_RSTn = not(BALU_LINE_RSTp);
 
   /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // die AND. 32 + 4 + 2 + 1 = 39
 
@@ -19,7 +18,7 @@ void SpriteScanner::tick(SchematicTop& top) {
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
-
+    /*p29.BAGY*/ wire BAGY_LINE_RSTn = not(BALU_LINE_RSTp);
     /*p29.BYBA*/ BYBA_SCAN_DONE_A.set(top.XUPY_ABxxEFxx(), BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
     /*p29.DOBA*/ DOBA_SCAN_DONE_B.set(top.ALET_xBxDxFxH(), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A);
 
@@ -45,7 +44,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     // When CATU goes high, BESU goes high
     // When ASEN goes high, BESU goes low.
 
-    /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_LINE_END_B(), ASEN_SCAN_DONE_PE);
+    /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_LINE_END(), ASEN_SCAN_DONE_PE);
     /*p29.CENO*/ CENO_SCANNINGp.set(top.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), BESU_SCANNINGp);
   }
 

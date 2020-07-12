@@ -244,10 +244,9 @@ void BusMux::tock(SchematicTop& top) {
   // OAM data -> internal latch
   {
     /*p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand(top.ACYL_SCANNINGp(), top.clk_reg.XOCE_AxxDExxH()); // schematic wrong, is def nand
-    /*p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not(top.WEFY_SPR_READp());
     /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand(top.DECY_FROM_CPU5n(), top.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp()); // Schematic wrong, this is NAND
 
-    /*p28.ASYT*/ wire _ASYT_OAM_LATCHn      = and(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_LATCHn); // def and
+    /*p28.ASYT*/ wire _ASYT_OAM_LATCHn      = and(_AJEP_SCAN_OAM_LATCHn, top.sprite_fetcher.XUJA_SPR_OAM_LATCHn(), _BOTA_CPU_OAM_LATCHn); // def and
     /*p28.BODE*/ wire _BODE_OAM_LATCHp      = not(_ASYT_OAM_LATCHn);
 
     /*p28.YVAL*/ wire _YVAL_OAM_LATCHn  = not(_BODE_OAM_LATCHp);
@@ -257,7 +256,7 @@ void BusMux::tock(SchematicTop& top) {
 
     /*p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABCxDEFx()); 
     /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK  = and (or (top.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_xxxxEFGH());
-    /*p25.BYCU*/ wire _BYCU_OAM_CLK      = nand(_AVER_SCAN_OAM_CLK, top.sprite_fetcher.XUJY_PPU_OAM_CLK(top.ppu_reg.TEPA_RENDERINGn()), _CUFE_DMA_OAM_CLK);
+    /*p25.BYCU*/ wire _BYCU_OAM_CLK      = nand(_AVER_SCAN_OAM_CLK, top.sprite_fetcher.XUJY_PPU_OAM_CLK(), _CUFE_DMA_OAM_CLK);
     /*p25.COTA*/ wire _COTA_OAM_CLKn     = not(_BYCU_OAM_CLK);
 
     OAM_PIN_CLK.set(_COTA_OAM_CLKn);

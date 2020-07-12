@@ -5,7 +5,8 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void SpriteFetcher::tick(SchematicTop& /*top*/) {
+void SpriteFetcher::tick(SchematicTop& top) {
+  _TEPA_RENDERINGn = top.ppu_reg.TEPA_RENDERINGn();
 }
 
 //------------------------------------------------------------------------------
@@ -23,26 +24,26 @@ void SpriteFetcher::tock(SchematicTop& top) {
   {
 
     /*p27.TUKU*/ wire _TUKU_WIN_HITn = not(top.win_reg.TOMU_WIN_HITp());
-    /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not(TAKA_SFETCH_RUNNINGp.q());
+    /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not(_TAKA_SFETCH_RUNNINGp.q());
     /*p27.TEKY*/ wire _TEKY_SPRITE_FETCH = and (top.sprite_store.FEPO_STORE_MATCHp, _TUKU_WIN_HITn, top.tile_fetcher.LYRY_BFETCH_DONEp(), _SOWO_SFETCH_RUNNINGn);
 
-    /*p27.SOBU*/ SOBU_SPRITE_FETCH_A.set(_TAVA_xBxDxFxH, top.VYPO_GND, _TEKY_SPRITE_FETCH);
-    /*p27.SUDA*/ SUDA_SPRITE_FETCH_B.set(_LAPE_AxCxExGx, top.VYPO_GND, SOBU_SPRITE_FETCH_A.q());
-    /*p27.RYCE*/ wire _RYCE_SPRITE_FETCHpe = and (SOBU_SPRITE_FETCH_A.q(),  SUDA_SPRITE_FETCH_B.qn());
+    /*p27.SOBU*/ _SOBU_SPRITE_FETCH_A.set(_TAVA_xBxDxFxH, top.VYPO_GND, _TEKY_SPRITE_FETCH);
+    /*p27.SUDA*/ _SUDA_SPRITE_FETCH_B.set(_LAPE_AxCxExGx, top.VYPO_GND, _SOBU_SPRITE_FETCH_A.q());
+    /*p27.RYCE*/ wire _RYCE_SPRITE_FETCHpe = and (_SOBU_SPRITE_FETCH_A.q(),  _SUDA_SPRITE_FETCH_B.qn());
     /*p27.SECA*/ wire _SECA_SPRITE_FETCHne = nor(_RYCE_SPRITE_FETCHpe, top.rst_reg.ROSY_VID_RSTp(), top.lcd_reg.BYHA_VID_LINE_TRIG_d4()); // def nor
 
-    /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SPRITE_FETCHne, top.VEKU_SFETCH_RUNNING_RSTn());
+    /*p27.TAKA*/ _TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SPRITE_FETCHne, top.VEKU_SFETCH_RUNNING_RSTn());
 
-    /*p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2.q(), TOXE_SFETCH_S0.q());
+    /*p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand(_TESE_SFETCH_S2.q(), _TOXE_SFETCH_S0.q());
     /*p29.TOMA*/ wire _TOMA_SFETCH_CLK_xBxDxFxH = nand(_LAPE_AxCxExGx, _TAME_SFETCH_CLK_GATE);
 
-    /*p29.TOXE*/ TOXE_SFETCH_S0.set(_TOMA_SFETCH_CLK_xBxDxFxH, _SECA_SPRITE_FETCHne, TOXE_SFETCH_S0.qn());
-    /*p29.TULY*/ TULY_SFETCH_S1.set(TOXE_SFETCH_S0.qn(),      _SECA_SPRITE_FETCHne, TULY_SFETCH_S1.qn());
-    /*p29.TESE*/ TESE_SFETCH_S2.set(TULY_SFETCH_S1.qn(),      _SECA_SPRITE_FETCHne, TESE_SFETCH_S2.qn());
+    /*p29.TOXE*/ _TOXE_SFETCH_S0.set(_TOMA_SFETCH_CLK_xBxDxFxH, _SECA_SPRITE_FETCHne, _TOXE_SFETCH_S0.qn());
+    /*p29.TULY*/ _TULY_SFETCH_S1.set(_TOXE_SFETCH_S0.qn(),      _SECA_SPRITE_FETCHne, _TULY_SFETCH_S1.qn());
+    /*p29.TESE*/ _TESE_SFETCH_S2.set(_TULY_SFETCH_S1.qn(),      _SECA_SPRITE_FETCHne, _TESE_SFETCH_S2.qn());
 
-    /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(_TAVA_xBxDxFxH, top.ppu_reg.XYMU_RENDERINGp(), TULY_SFETCH_S1.q());    // note input is seq 1 not 2
-    /*p29.VONU*/ VONU_SFETCH_S1_D4.set(_TAVA_xBxDxFxH, top.ppu_reg.XYMU_RENDERINGp(), TOBU_SFETCH_S1_D2.q());
-    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(_LAPE_AxCxExGx, top.ppu_reg.XYMU_RENDERINGp(), VONU_SFETCH_S1_D4.q());
+    /*p29.TOBU*/ _TOBU_SFETCH_S1_D2.set(_TAVA_xBxDxFxH, top.ppu_reg.XYMU_RENDERINGp(), _TULY_SFETCH_S1.q());    // note input is seq 1 not 2
+    /*p29.VONU*/ _VONU_SFETCH_S1_D4.set(_TAVA_xBxDxFxH, top.ppu_reg.XYMU_RENDERINGp(), _TOBU_SFETCH_S1_D2.q());
+    /*p29.SEBA*/ _SEBA_SFETCH_S1_D5.set(_LAPE_AxCxExGx, top.ppu_reg.XYMU_RENDERINGp(), _VONU_SFETCH_S1_D4.q());
   }
 
   {
@@ -57,10 +58,10 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p33.PAWE*/ wire _PAWE_FLIP7 = mux2_p(top.VRM_TRI_D0, top.VRM_TRI_D7, _XONO_FLIP_X);
 
 
-    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(_LAPE_AxCxExGx, top.VYPO_GND, TOXE_SFETCH_S0.q());
-    /*p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor(top.sprite_fetcher.TYTU_SFETCH_S0n(), top.ppu_reg.LOBY_RENDERINGn(), TYFO_SFETCH_S0_D1.q());
+    /*p29.TYFO*/ _TYFO_SFETCH_S0_D1.set(_LAPE_AxCxExGx, top.VYPO_GND, _TOXE_SFETCH_S0.q());
+    /*p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor(top.sprite_fetcher.TYTU_SFETCH_S0n(), top.ppu_reg.LOBY_RENDERINGn(), _TYFO_SFETCH_S0_D1.q());
 
-    /*p29.RACA*/ wire _RACA_LATCH_SPPIXB = and(VONU_SFETCH_S1_D4.q(), _SYCU_SFETCH_S0pe);
+    /*p29.RACA*/ wire _RACA_LATCH_SPPIXB = and(_VONU_SFETCH_S1_D4.q(), _SYCU_SFETCH_S0pe);
     /*p29.PEBY*/ wire _PEBY_CLKp = not(_RACA_LATCH_SPPIXB);
     /*p29.NYBE*/ wire _NYBE_CLKn = not(_PEBY_CLKp);
     /*p29.PUCO*/ wire _PUCO_CLKb = not(_NYBE_CLKn);
@@ -74,7 +75,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p33.RAMA*/ SPR_PIX_A6.set(_PUCO_CLKb, !_PUCO_CLKb, _PELO_FLIP6);
     /*p33.RYDU*/ SPR_PIX_A7.set(_PUCO_CLKb, !_PUCO_CLKb, _PAWE_FLIP7);
 
-    /*p29.TOPU*/ wire _TOPU_LATCH_SPPIXA = and(TULY_SFETCH_S1.q(), _SYCU_SFETCH_S0pe);
+    /*p29.TOPU*/ wire _TOPU_LATCH_SPPIXA = and(_TULY_SFETCH_S1.q(), _SYCU_SFETCH_S0pe);
     /*p29.VYWA*/ wire _VYWA_CLKp = not(_TOPU_LATCH_SPPIXA);
     /*p29.WENY*/ wire _WENY_CLKn = not(_VYWA_CLKp);
     /*p29.XADO*/ wire _XADO_CLKp = not(_WENY_CLKn);
@@ -93,7 +94,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(top.XYMO_LCDC_SPSIZE.q());
     /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.bus_mux.YZOS_SPRITE_X6.q());
 
-    /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!VONU_SFETCH_S1_D4.q());
+    /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!_VONU_SFETCH_S1_D4.q());
     /*p29.CYVU*/ wire _CYVU_SPRITE_Y0 = xor (_WUKY_FLIP_Y, top.SPR_TRI_LINE_1.q());
     /*p29.BORE*/ wire _BORE_SPRITE_Y1 = xor (_WUKY_FLIP_Y, top.SPR_TRI_LINE_2.q());
     /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, top.SPR_TRI_LINE_3.q());
@@ -122,17 +123,19 @@ void SpriteFetcher::tock(SchematicTop& top) {
 SignalHash SpriteFetcher::commit() {
   SignalHash hash;
 
-  /*p27.TAKA*/ hash << TAKA_SFETCH_RUNNINGp.commit();
-  /*p27.SOBU*/ hash << SOBU_SPRITE_FETCH_A.commit();
-  /*p27.SUDA*/ hash << SUDA_SPRITE_FETCH_B.commit();
+  hash << _TEPA_RENDERINGn.commit();
 
-  /*p29.TOXE*/ hash << TOXE_SFETCH_S0.commit();
-  /*p29.TULY*/ hash << TULY_SFETCH_S1.commit();
-  /*p29.TESE*/ hash << TESE_SFETCH_S2.commit();
-  /*p29.TOBU*/ hash << TOBU_SFETCH_S1_D2.commit();
-  /*p29.VONU*/ hash << VONU_SFETCH_S1_D4.commit();
-  /*p29.SEBA*/ hash << SEBA_SFETCH_S1_D5.commit();
-  /*p29.TYFO*/ hash << TYFO_SFETCH_S0_D1.commit();
+  /*p27.TAKA*/ hash << _TAKA_SFETCH_RUNNINGp.commit();
+  /*p27.SOBU*/ hash << _SOBU_SPRITE_FETCH_A.commit();
+  /*p27.SUDA*/ hash << _SUDA_SPRITE_FETCH_B.commit();
+
+  /*p29.TOXE*/ hash << _TOXE_SFETCH_S0.commit();
+  /*p29.TULY*/ hash << _TULY_SFETCH_S1.commit();
+  /*p29.TESE*/ hash << _TESE_SFETCH_S2.commit();
+  /*p29.TOBU*/ hash << _TOBU_SFETCH_S1_D2.commit();
+  /*p29.VONU*/ hash << _VONU_SFETCH_S1_D4.commit();
+  /*p29.SEBA*/ hash << _SEBA_SFETCH_S1_D5.commit();
+  /*p29.TYFO*/ hash << _TYFO_SFETCH_S0_D1.commit();
 
   /*p33.PEFO*/ hash << SPR_PIX_A0.commit();
   /*p33.ROKA*/ hash << SPR_PIX_A1.commit();

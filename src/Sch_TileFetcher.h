@@ -36,6 +36,12 @@ struct TileFetcher {
 
   /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn() const { return not(_LONY_BG_READ_VRAM_LATCHp.q()); }
 
+  /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp() const {
+    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(_POKY_PORCH_DONEp.q());
+    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(_XYMU_RENDERINGp, ROMO_AFTER_PORCHn, _NYKA_TILE_FETCH_DONE_Ap.q(), _PORY_TILE_FETCH_DONE_Bp.q());
+    return not(SUVU_PORCH_ENDn);
+  }
+
 private:
 
   Signal _XYMU_RENDERINGp;

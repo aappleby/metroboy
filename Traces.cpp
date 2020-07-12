@@ -1,3 +1,13 @@
+// TYNO_01 << TOXE_17
+// TYNO_02 << SEBA_17
+// TYNO_03 << VONU_17
+// TYNO_04 >> VUSA_02
+
+// VUSA_01 << TYFO_16
+// VUSA_02 << TYNO_04
+// VUSA_03 nc
+// VUSA_04 >>
+
 // stat read
 // hblank  = stat 0 = 00
 // vblank  = stat 1 = 01

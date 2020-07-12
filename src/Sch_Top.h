@@ -28,6 +28,8 @@ struct SchematicTop {
 
   SchematicTop();
 
+  const SchematicTop& top = *this;
+
   void set_cpu_bus(Req req);
   void set_buttons(uint8_t buttons);
   void set_vram_bus(uint8_t data);
@@ -46,331 +48,77 @@ struct SchematicTop {
                 CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
   }
 
-  /*
-  void set_data(bool oe, uint8_t data) {
-    CPU_TRI_D0.set_tribuf(oe, data & 0x01);
-    CPU_TRI_D1.set_tribuf(oe, data & 0x02);
-    CPU_TRI_D2.set_tribuf(oe, data & 0x04);
-    CPU_TRI_D3.set_tribuf(oe, data & 0x08);
-    CPU_TRI_D4.set_tribuf(oe, data & 0x10);
-    CPU_TRI_D5.set_tribuf(oe, data & 0x20);
-    CPU_TRI_D6.set_tribuf(oe, data & 0x40);
-    CPU_TRI_D7.set_tribuf(oe, data & 0x80);
-  }
-  */
-
   SignalHash tick();
 
   //-----------------------------------------------------------------------------
 
   void tick_vram_pins();
 
-  wire ABUZ_CPU_ADDR_VALIDp() const {
+  /*p01.ABUZ*/ wire ABUZ_CPU_ADDR_VALIDp() const {
     /*p??.APAP*/ wire APAP_CPU_ADDR_VALIDp = not(CPU_PIN_ADDR_VALID); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_CPU_ADDR_VALIDn = nor(UNOR_MODE_DBG2p(), APAP_CPU_ADDR_VALIDp);
-    /*p01.ABUZ*/ wire ABUZ_CPU_ADDR_VALIDp = not(AWOD_CPU_ADDR_VALIDn);
-    return ABUZ_CPU_ADDR_VALIDp;
+    return not(AWOD_CPU_ADDR_VALIDn);
   }
 
-  wire TUTU_ADDR_BOOTp() const {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(BOOT_BITn());
+  /*p07.TUTU*/ wire TUTU_ADDR_BOOTp() const {
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(bootrom.BOOT_BITn());
     /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09, CPU_PIN_A08);
-    /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
-    return TUTU_ADDR_BOOTp;
+    return and(TERA_BOOT_BITp, TULO_ADDR_00XXp);
   }
 
-  wire LUFA_DMA_VRAM_RDp() const {
-    /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn   = nand(MATU_DMA_RUNNINGp(), MUDA_DMA_SRC_VRAMp());
-    /*p04.LUFA*/ wire LUFA_DMA_VRAM_RDp = not(MUHO_DMA_VRAM_RDn);
-    return LUFA_DMA_VRAM_RDp;
-  }
+  /*p25.XANE*/ wire XANE_VRAM_LOCKn() const { return nor(dma_reg.LUFA_DMA_VRAM_RDp(), ppu_reg.XYMU_RENDERINGp()); } // def nor
 
-  wire XANE_VRAM_LOCKn() const {
-    /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(LUFA_DMA_VRAM_RDp(), ppu_reg.XYMU_RENDERINGp()); // def nor
-    return XANE_VRAM_LOCKn;
-  }
-
-  wire AJON_OAM_BUSY() const {
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(MATU_DMA_RUNNINGp());
-    /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_reg.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
-    return AJON_OAM_BUSY;
-  }
-
-
-  wire LENA_BGW_VRM_RDp() const {
-    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(tile_fetcher.LONY_BG_READ_VRAM_LATCHp.q());
-    /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not(LUSU_BGW_VRAM_RDn);
-    return LENA_BGW_VRM_RDp;
+  /*p28.AJON*/ wire AJON_OAM_BUSY() const {
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_reg.MATU_DMA_RUNNINGp());
+    return and(BOGE_DMA_RUNNINGn, ppu_reg.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
   }
 
   /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(AVAP_RENDER_START_RST(), win_reg.MOSU_WIN_MODE_TRIGp(), TEVO_FINE_RSTp()); }
-
-  /*p21.PURE*/ wire PURE_NEW_LINE_d0n() const { return not(RUTU_LINE_END()); }
-
-  /*p21.SELA*/ wire SELA_LINE_END_Fp() const { return not(PURE_NEW_LINE_d0n()); }
-
-  /*p01.UCOB*/ wire UCOB_CLKBADp() const { return not(SYS_PIN_CLK_A); }
-
-  /*p29.ABON*/ wire ABON_SPR_VRM_RDn() const { return not(TEXY_SPR_READ_VRAMp()); }
-
-  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(sprite_scanner.CENO_SCANNINGp.qn()); }
-
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p() const { return not(lcd_reg.BYHA_VID_LINE_TRIG_d4(*this)); }
+  /*p01.UCOB*/ wire UCOB_CLKBADp()           const { return not(clk_reg.SYS_PIN_CLK_A); }
+  /*p29.ABON*/ wire ABON_SPR_VRM_RDn()       const { return not(TEXY_SPR_READ_VRAMp()); }
 
   //-----------------------------------------------------------------------------
   // Debug signals
 
-  /*p07.UBET*/ wire UBET_T1p() const { return not(SYS_PIN_T1n); }
-  /*p07.UVAR*/ wire UVAR_T2p() const { return not(SYS_PIN_T2n); }
-
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const {
-    return and(SYS_PIN_T1n, UVAR_T2p());
-  }
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const {
-    return and(SYS_PIN_T2n, UBET_T1p());
-  }
+  /*p07.UBET*/ wire UBET_T1p()        const { return not(SYS_PIN_T1n); }
+  /*p07.UVAR*/ wire UVAR_T2p()        const { return not(SYS_PIN_T2n); }
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and(SYS_PIN_T1n, UVAR_T2p()); }
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and(SYS_PIN_T2n, UBET_T1p()); }
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------
-  // Clock signals
 
-  //----------------------------------------
-  // ATAL 4 mhz chain
-
-  // ignoring the deglitcher here
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B; }
-  /*p01.AZOF*/ wire AZOF_AxCxExGx() const { return not(ATAL_xBxDxFxH()); }
-  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not(AZOF_AxCxExGx()); }
-  /*p01.ZEME*/ wire ZEME_AxCxExGx() const { return not(ZAXY_xBxDxFxH()); }
-  /*p01.ALET*/ wire ALET_xBxDxFxH() const { return not(ZEME_AxCxExGx()); }
-  /*p27.MOXE*/ wire MOXE_AxCxExGx() const { return not(ALET_xBxDxFxH()); }
-  /*p27.MEHE*/ wire MEHE_AxCxExGx() const { return not(ALET_xBxDxFxH()); }
-  /*p27.MYVO*/ wire MYVO_AxCxExGx() const { return not(ALET_xBxDxFxH()); }
-
-  //----------------------------------------
-  // Root chains
-
-  /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!clk_reg.AFUR_ABCDxxxx.q()); }
-  /*p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not( clk_reg.ALEF_xBCDExxx.q()); }
-  /*p01.AROV*/ wire AROV_xxCDEFxx() const { return not(!clk_reg.APUK_xxCDEFxx.q()); }
-  /*p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not( clk_reg.ADYK_xxxDEFGx.q()); }
-
-  //----------------------------------------
-  // Video chains
-
-  /*p29.WUVU*/ wire WUVU_xxCDxxGH() const {
-    return clk_reg.WUVU_xxCDxxGH.q();
-  }
-  /*p21.VENA*/ wire VENA_xxxxEFGH() const { return clk_reg.VENA_xxxxEFGH.q(); }
-  /*p29.WOSU*/ wire WOSU_xBCxxFGx() const { return clk_reg.WOSU_xBCxxFGx.q(); }
-
-  /*p29.XOCE*/ wire XOCE_AxxDExxH() const { return not(WOSU_xBCxxFGx()); }
-  /*p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not(WUVU_xxCDxxGH()); }
-  /*p28.AWOH*/ wire AWOH_xxCDxxGH() const { return not(XUPY_ABxxEFxx()); }
-  /*p21.TALU*/ wire TALU_ABCDxxxx() const { return not(VENA_xxxxEFGH()); }
-  /*p21.SONO*/ wire SONO_xxxxEFGH() const { return not(TALU_ABCDxxxx()); }
-
-  //----------------------------------------
-  // NULE chain
-  wire NULE_xxxxEFGH() const {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_READYp);
-    /*p01.NULE*/ wire NULE_xxxxEFGH = nor(ABOL_CLKREQn,  ATYP_ABCDxxxx());
-    return NULE_xxxxEFGH;
-  }
-  /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not(NULE_xxxxEFGH()); }
-  /*p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not(BYRY_ABCDxxxx()); }
-  /*p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not(BUDE_xxxxEFGH()); }
-  /*p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not(BUDE_xxxxEFGH()); }
-  /*p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not(UVYT_ABCDxxxx()); }
-  /*p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not(MOPA_xxxxEFGH()); }
-
-  //----------------------------------------
-  // BAPY chain
-  wire BAPY_xxxxxxGH() const {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_READYp);
-    /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor(ABOL_CLKREQn, AROV_xxCDEFxx(), ATYP_ABCDxxxx());
-    return BAPY_xxxxxxGH;
-  }
-  /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not(BAPY_xxxxxxGH()); }
-  /*p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not(BERU_ABCDEFxx()); }
-  /*p01.BOLO*/ wire BOLO_ABCDEFxx() const { return not(BUFA_xxxxxxGH()); }
-
-  //----------------------------------------
-  // BEJA chain
-
-  wire BEJA_xxxxEFGH() const {
-    /*p01.BEJA*/ wire BEJA_xxxxEFGH = nand(BOLO_ABCDEFxx(), BEKO_ABCDxxxx());
-    return BEJA_xxxxEFGH;
-  }
-  /*p01.BANE*/ wire BANE_ABCDxxxx() const { return not(BEJA_xxxxEFGH()); }
-  /*p01.BELO*/ wire BELO_xxxxEFGH() const { return not(BANE_ABCDxxxx()); }
-  /*p01.BAZE*/ wire BAZE_ABCDxxxx() const { return not(BELO_xxxxEFGH()); }
-
-  //----------------------------------------
-  // BUTO chain
-
-  wire BUTO_xBCDEFGH() const {
-    /*p01.BUTO*/ wire BUTO_xBCDEFGH = nand(AFEP_AxxxxFGH(), ATYP_ABCDxxxx(), BAZE_ABCDxxxx());
-    return BUTO_xBCDEFGH;
-  }
-  /*p01.BELE*/ wire BELE_Axxxxxxx() const { return not(BUTO_xBCDEFGH()); }
-
-  //----------------------------------------
-  // BYJU chain
-
-  wire BYJU_xBCDEFGH() const {
-    /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(SYS_PIN_CLK_A);
-    /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx(), ATEZ_CLKBAD);
-    return BYJU_xBCDEFGH;
-  }
-  /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not(BYJU_xBCDEFGH()); }
-  /*p01.BOGA*/ wire BOGA_xBCDEFGH() const { return not(BALY_Axxxxxxx()); }
-  /*p01.BOMA*/ wire BOMA_Axxxxxxx() const { return not(BOGA_xBCDEFGH()); }
-
-  //----------------------------------------
-  // AFAS chain
-
-  wire AFAS_xxxxEFGx() const {
-    /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor(ADAR_ABCxxxxH(), ATYP_ABCDxxxx());
-    return AFAS_xxxxEFGx;
+  wire XAPO_VID_RSTn() const {
+    /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not(rst_reg.XORE_SYS_RSTp());
+    /*p01.XODO*/ wire _XODO_VID_RSTp = nand(_XEBE_SYS_RSTn, XONA_LCDC_EN.q());
+    /*p01.XAPO*/ wire _XAPO_VID_RSTn = not(_XODO_VID_RSTp);
+    return _XAPO_VID_RSTn;
   }
 
-  //-----------------------------------------------------------------------------
-  // Timer signals
-
-  wire UVYN_DIV_05n() const    { return not(tim_reg.TAMA_DIV_05.q()); }
-  wire UMEK_DIV_06n() const    { return not(tim_reg.UGOT_DIV_06.q()); }
-  wire UREK_DIV_07n() const    { return not(tim_reg.TULU_DIV_07.q()); }
-
-  wire UKUP_DIV_00() const { return tim_reg.UKUP_DIV_00.q(); }
-  wire UFOR_DIV_01() const { return tim_reg.UFOR_DIV_01.q(); }
-  wire UNER_DIV_02() const { return tim_reg.UNER_DIV_02.q(); }
-  wire TERO_DIV_03() const { return tim_reg.TERO_DIV_03.q(); }
-  wire UNYK_DIV_04() const { return tim_reg.UNYK_DIV_04.q(); }
-  wire TERU_DIV_10() const { return tim_reg.TERU_DIV_10.q(); }
-  wire UPOF_DIV_15() const { return tim_reg.UPOF_DIV_15.q(); }
-
-  wire MOBA_INT_TIMERp() const { return tim_reg.MOBA_INT_TIMERp.q(); }
-
-  //-----------------------------------------------------------------------------
-  // Reset signals
-
-  //----------------------------------------
-  // AVOR sys reset chain
-
-  wire ALUR_SYS_RSTn() const { // used everywhere
-    /*p01.AVOR*/ wire AVOR_SYS_RSTp = or(rst_reg.AFER_SYS_RSTp.q(), rst_reg.ASOL_POR_DONEn.q());
-    /*p01.ALUR*/ wire ALUR_SYS_RSTn = not(AVOR_SYS_RSTp);
-    return ALUR_SYS_RSTn;
-  }
-
-  wire CUNU_SYS_RSTn() const { // tile fetcher, dma, maka, soto
-    /*p01.DULA*/ wire DULA_SYS_RSTp = not(ALUR_SYS_RSTn());
-    /*p01.CUNU*/ wire CUNU_SYS_RSTn = not(DULA_SYS_RSTp);
-    return CUNU_SYS_RSTn;
-  }
-
-  /*p01.XORE*/ wire XORE_SYS_RSTp() const { return not(CUNU_SYS_RSTn()); }
-  /*p01.WALU*/ wire WALU_SYS_RSTn() const { return not(XORE_SYS_RSTp()); }
-  /*p01.WESY*/ wire WESY_SYS_RSTn() const { return not(XORE_SYS_RSTp()); }
-
-  /*p01.XAPO*/ wire XAPO_VID_RSTn() const;
   /*p01.ATAR*/ wire ATAR_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not(ATAR_VID_RSTp()); }
 
-  //-----------------------------------------------------------------------------
-  // CPU signals
-
-  /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    wire UNOR_MODE_DBG2p = this->UNOR_MODE_DBG2p();
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(bus_mux.EXT_PIN_RDp_C, CPU_PIN_RDp, UNOR_MODE_DBG2p);
-    return not(UJYV_CPU_RDn);
-  }
+  /*p07.TEDO*/ wire TEDO_CPU_RDp() const { return mux2_n(bus_mux.EXT_PIN_RDp_C, CPU_PIN_RDp, UNOR_MODE_DBG2p()); }
 
   /*p07.AJAS*/ wire AJAS_CPU_RDn() const { return not(TEDO_CPU_RDp()); }
   /*p07.ASOT*/ wire ASOT_CPU_RDp() const { return not(AJAS_CPU_RDn()); }
 
   /*p04.DECY*/ wire DECY_FROM_CPU5n() const { return not(CPU_PIN5); }
 
-  wire LEKO_CPU_RDp() const {
+  /*p28.LEKO*/ wire LEKO_CPU_RDp() const {
     /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n());
     /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RDp(), CATY_FROM_CPU5p);
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
-    return LEKO_CPU_RDp;
+    return not(MYNU_CPU_RDn);
   }
 
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const;
-  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const { return not(AREV_CPU_WRn_ABCDxxxH()); }
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const { return nand(CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx()); }
+  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const { return mux2_n(bus_mux.EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx(), UNOR_MODE_DBG2p()); }
 
-  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const;
+  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const { return not(AREV_CPU_WRn_ABCDxxxH()); }
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
   /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH() const { return not(TAPU_CPU_WRp_xxxxEFGx()); }
   /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const { return not(DYKY_CPU_WRn_ABCDxxxH()); }
-
-  //-----------------------------------------------------------------------------
-  // Bus mux signals
-
-  /*p31.YLOR*/ wire YLOR_SPRITE_X0() const { return bus_mux.YLOR_SPRITE_X0.q(); }
-  /*p31.ZYTY*/ wire ZYTY_SPRITE_X1() const { return bus_mux.ZYTY_SPRITE_X1.q(); }
-  /*p31.ZYVE*/ wire ZYVE_SPRITE_X2() const { return bus_mux.ZYVE_SPRITE_X2.q(); }
-  /*p31.ZEZY*/ wire ZEZY_SPRITE_X3() const { return bus_mux.ZEZY_SPRITE_X3.q(); }
-  /*p31.GOMO*/ wire GOMO_SPRITE_X4() const { return bus_mux.GOMO_SPRITE_X4.q(); }
-  /*p31.BAXO*/ wire BAXO_SPRITE_X5() const { return bus_mux.BAXO_SPRITE_X5.q(); }
-  /*p31.YZOS*/ wire YZOS_SPRITE_X6() const { return bus_mux.YZOS_SPRITE_X6.q(); }
-  /*p31.DEPO*/ wire DEPO_SPRITE_X7() const { return bus_mux.DEPO_SPRITE_X7.q(); }
-
-  /*p29.XUSO*/ wire XUSO_SPRITE_Y0() const { return bus_mux.XUSO_SPRITE_Y0.q(); }
-  /*p29.XEGU*/ wire XEGU_SPRITE_Y1() const { return bus_mux.XEGU_SPRITE_Y1.q(); }
-  /*p29.YJEX*/ wire YJEX_SPRITE_Y2() const { return bus_mux.YJEX_SPRITE_Y2.q(); }
-  /*p29.XYJU*/ wire XYJU_SPRITE_Y3() const { return bus_mux.XYJU_SPRITE_Y3.q(); }
-  /*p29.YBOG*/ wire YBOG_SPRITE_Y4() const { return bus_mux.YBOG_SPRITE_Y4.q(); }
-  /*p29.WYSO*/ wire WYSO_SPRITE_Y5() const { return bus_mux.WYSO_SPRITE_Y5.q(); }
-  /*p29.XOTE*/ wire XOTE_SPRITE_Y6() const { return bus_mux.XOTE_SPRITE_Y6.q(); }
-  /*p29.YZAB*/ wire YZAB_SPRITE_Y7() const { return bus_mux.YZAB_SPRITE_Y7.q(); }
-
-  //-----------------------------------------------------------------------------
-  // DMA signals
-
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const;
-  /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp() const;
-
-  /*p04.NAKY*/ wire DMA_A00() const { return dma_reg.DMA_A00.q(); }
-  /*p04.PYRO*/ wire DMA_A01() const { return dma_reg.DMA_A01.q(); }
-  /*p04.NEFY*/ wire DMA_A02() const { return dma_reg.DMA_A02.q(); }
-  /*p04.MUTY*/ wire DMA_A03() const { return dma_reg.DMA_A03.q(); }
-  /*p04.NYKO*/ wire DMA_A04() const { return dma_reg.DMA_A04.q(); }
-  /*p04.PYLO*/ wire DMA_A05() const { return dma_reg.DMA_A05.q(); }
-  /*p04.NUTO*/ wire DMA_A06() const { return dma_reg.DMA_A06.q(); }
-  /*p04.MUGU*/ wire DMA_A07() const { return dma_reg.DMA_A07.q(); }
-  /*p04.NAFA*/ wire DMA_A08() const { return dma_reg.DMA_A08.q(); }
-  /*p04.PYNE*/ wire DMA_A09() const { return dma_reg.DMA_A09.q(); }
-  /*p04.PARA*/ wire DMA_A10() const { return dma_reg.DMA_A10.q(); }
-  /*p04.NYDO*/ wire DMA_A11() const { return dma_reg.DMA_A11.q(); }
-  /*p04.NYGY*/ wire DMA_A12() const { return dma_reg.DMA_A12.q(); }
-  /*p04.PULA*/ wire DMA_A13() const { return dma_reg.DMA_A13.q(); }
-  /*p04.POKU*/ wire DMA_A14() const { return dma_reg.DMA_A14.q(); }
-  /*p04.MARU*/ wire DMA_A15() const { return dma_reg.DMA_A15.q(); }
-
-  //-----------------------------------------------------------------------------
-  // LCD signals
-
-  /*p21.RUTU*/ wire RUTU_LINE_END()       const { return lcd_reg.RUTU_LINE_END.q(); }
-  /*p29.CATU*/ wire CATU_LINE_END()       const { return lcd_reg.CATU_LINE_END.q(); }
-  /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp.q(); }
-  /*p21.POPU*/ wire POPU_VBLANKp_d4()     const { return lcd_reg.POPU_VBLANKp_d4.q(); }
-  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(lcd_reg.POPU_VBLANKp_d4.qn()); }
-  /*p21.TOLU*/ wire TOLU_VBLANKn()        const { return not(PARU_VBLANKp_d4()); }
-
-
-  /*p21.MUWY*/ wire MUWY_Y0() const { return lcd_reg.MUWY_Y0.q(); }
-  /*p21.MYRO*/ wire MYRO_Y1() const { return lcd_reg.MYRO_Y1.q(); }
-  /*p21.LEXA*/ wire LEXA_Y2() const { return lcd_reg.LEXA_Y2.q(); }
-  /*p21.LYDO*/ wire LYDO_Y3() const { return lcd_reg.LYDO_Y3.q(); }
-  /*p21.LOVU*/ wire LOVU_Y4() const { return lcd_reg.LOVU_Y4.q(); }
-  /*p21.LEMA*/ wire LEMA_Y5() const { return lcd_reg.LEMA_Y5.q(); }
-  /*p21.MATO*/ wire MATO_Y6() const { return lcd_reg.MATO_Y6.q(); }
-  /*p21.LAFO*/ wire LAFO_Y7() const { return lcd_reg.LAFO_Y7.q(); }
 
   //-----------------------------------------------------------------------------
   // Address decoder signals
@@ -401,96 +149,84 @@ struct SchematicTop {
   /*p08.TOLA*/ wire TOLA_A01n() const { return not(CPU_PIN_A01); }
   /*p06.SEFY*/ wire SEFY_A02n() const { return not(CPU_PIN_A02); }
 
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp() const;
-  /*p22.WERO*/ wire WERO_FF4Xp() const;
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp() const { return nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09); }
+
+  /*p22.WERO*/ wire WERO_FF4Xp() const {
+    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor(CPU_PIN_A07, CPU_PIN_A05, CPU_PIN_A04);
+    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp(), TONA_A08n());
+    /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_FF00_FFFFp, CPU_PIN_A06, XALY_0x00xxxxp);
+    return not(WUTU_FF4Xn);
+  }
 
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp() const { return nor(TUNA_0000_FDFFp(), TONA_A08n()); }
   /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor(CPU_PIN_A07, CPU_PIN_A06, CPU_PIN_A05, CPU_PIN_A04, CPU_PIN_A03); }
 
+
   //-----------------------------------------------------------------------------
   // PPU signals
 
-  wire WODU_RENDER_DONEp() const;
-  wire TEVO_FINE_RSTp() const;
-  wire ACYL_SCANNINGp() const;
-  wire SEGU_CLKPIPEn() const;
-  wire SACU_CLKPIPEp() const;
-  wire ROZE_FINE_COUNT_7n() const;
-  wire VOTY_INT_STATp() const;
-  wire VEKU_SFETCH_RUNNING_RSTn() const;
+  /*p21.WODU*/ wire WODU_RENDER_DONEp() const { return and(sprite_store.XENA_STORE_MATCHn(), ppu_reg.XANO_X_167p()); }
 
-  /*p21.XEHO*/ wire XEHO_X0() const { return ppu_reg.XEHO_X0.q(); }
-  /*p21.SAVY*/ wire SAVY_X1() const { return ppu_reg.SAVY_X1.q(); }
-  /*p21.XODU*/ wire XODU_X2() const { return ppu_reg.XODU_X2.q(); }
-  /*p21.XYDO*/ wire XYDO_X3() const { return ppu_reg.XYDO_X3.q(); }
-  /*p21.TUHU*/ wire TUHU_X4() const { return ppu_reg.TUHU_X4.q(); }
-  /*p21.TUKY*/ wire TUKY_X5() const { return ppu_reg.TUKY_X5.q(); }
-  /*p21.TAKO*/ wire TAKO_X6() const { return ppu_reg.TAKO_X6.q(); }
-  /*p21.SYBE*/ wire SYBE_X7() const { return ppu_reg.SYBE_X7.q(); }
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp() const {
+  
+    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
+    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
+    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
+    return nor(win_reg.SEKO_WX_MATCHne, win_reg.SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
+  }
 
-  //-----------------------------------------------------------------------------
-  // Tile fetcher signals
+  /*p28.ACYL*/ wire ACYL_SCANNINGp() const { return and(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp()); } // so dma stops oam scan?
 
-  wire PORY_TILE_FETCH_DONE_Bp() const;
+  /*p24.SEGU*/ wire SEGU_CLKPIPEn() const {
+    /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, top.WODU_RENDER_DONEp(), clk_reg.MYVO_AxCxExGx());
+
+    /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(win_reg.TOMU_WIN_HITp());
+    /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp.q(), _VYBO_PIX_CLK_xBxDxFxH);
+
+    return not(_TYFA_CLKPIPEp_xBxDxFxH);
+  }
+
+  /*p24.SACU*/ wire SACU_CLKPIPEp() const { return nor(SEGU_CLKPIPEn(), ppu_reg.ROXY_FINE_MATCH_LATCHn.q()); }
+
+  /*p21.VOTY*/ wire VOTY_INT_STATp() const {
+    /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_reg.TOLU_VBLANKn(), top.WODU_RENDER_DONEp());
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN.q(), lcd_reg.ROPO_LY_MATCH_SYNCp.q(),
+                                             ppu_reg.REFE_INT_OAM_EN.q(), lcd_reg.TAPA_INT_OAM(),
+                                             ppu_reg.RUFO_INT_VBL_EN.q(), lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             ppu_reg.ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
+    /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
+    return not(TUVA_INT_STATn);
+  }
+
+  // And this is the topmost "reset sprite fetcher" signal
+  wire VEKU_SFETCH_RUNNING_RSTn() const {
+    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
+    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
+    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
+    /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(sprite_fetcher.WUTY_SPRITE_DONEp(), TAVE_PORCH_DONE_TRIGp); // def nor
+    return VEKU_SFETCH_RUNNING_RSTn;
+  }
 
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn() const { return nand(tile_fetcher.LAXU_BFETCH_S0.q(), tile_fetcher.NYVA_BFETCH_S2.q(), NYXU_TILE_FETCHER_RSTn()); }
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp() const { return not(MOCE_BFETCH_DONEn()); }
 
-  //-----------------------------------------------------------------------------
-  // Sprite scanner signals
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn() const { return nor(lcd_reg.ATEJ_VID_LINE_TRIG_d4p(*this), ATAR_VID_RSTp()); }
+  /*p29.BALU*/ wire BALU_LINE_RSTp() const { return not(ANOM_LINE_RSTn()); }
 
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn() const;
-  /*p29.BALU*/ wire BALU_LINE_RSTp() const;
-
-  wire AVAP_RENDER_START_RST() const;
-
-  //-----------------------------------------------------------------------------
-  // Sprite fetcher signals
-
-  wire WEFY_SPR_READp() const;
-  wire VAPE_FETCH_OAM_CLK() const;
-  wire VUSA_SPRITE_DONEn() const;
-  wire TEXY_SPR_READ_VRAMp() const;
-  wire SOHO_SPR_VRAM_RDp() const;
-
-  /*p29.WUTY*/ wire WUTY_SPRITE_DONEp() const { return not(VUSA_SPRITE_DONEn()); }
-
-
-  //-----------------------------------------------------------------------------
-  // Window signals
-
-  wire RYDY_WIN_FIRST_TILE_A() const;
-  wire NOCU_WIN_MODEn() const;
-
-  wire PORE_WIN_MODEp() const {
-    /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn());
-    return PORE_WIN_MODEp;
+  /*p29.AVAP*/ wire AVAP_RENDER_START_RST() const {
+    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(BALU_LINE_RSTp(), sprite_scanner.DOBA_SCAN_DONE_B(), !sprite_scanner.BYBA_SCAN_DONE_A());
+    return not(_BEBU_SCAN_DONE_TRIGn);
   }
 
-  /*p27.SYLO*/ wire SYLO_WIN_HITn() const { return not(win_reg.RYDY_WIN_FIRST_TILE_A.q()); }
-  /*p24.TOMU*/ wire TOMU_WIN_HITp() const { return not(SYLO_WIN_HITn()); }
+  /*p28.WEFY*/ wire WEFY_SPR_READp() const {
+    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(ppu_reg.TEPA_RENDERINGn(), sprite_fetcher.TULY_SFETCH_S1.q(), sprite_fetcher.TESE_SFETCH_S2.q());
+    return and(TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1.q());
+  }
 
-  /*p27.WYKA*/ wire WYKA_WIN_X3() const { return win_reg.WYKA_WIN_X3.q(); }
-  /*p27.WODY*/ wire WODY_WIN_X4() const { return win_reg.WODY_WIN_X4.q(); }
-  /*p27.WOBO*/ wire WOBO_WIN_X5() const { return win_reg.WOBO_WIN_X5.q(); }
-  /*p27.WYKO*/ wire WYKO_WIN_X6() const { return win_reg.WYKO_WIN_X6.q(); }
-  /*p27.XOLO*/ wire XOLO_WIN_X7() const { return win_reg.XOLO_WIN_X7.q(); }
-
-  /*p27.VYNO*/ wire VYNO_WIN_Y0() const { return win_reg.VYNO_WIN_Y0.q(); }
-  /*p27.VUJO*/ wire VUJO_WIN_Y1() const { return win_reg.VUJO_WIN_Y1.q(); }
-  /*p27.VYMU*/ wire VYMU_WIN_Y2() const { return win_reg.VYMU_WIN_Y2.q(); }
-  /*p27.TUFU*/ wire TUFU_WIN_Y3() const { return win_reg.TUFU_WIN_Y3.q(); }
-  /*p27.TAXA*/ wire TAXA_WIN_Y4() const { return win_reg.TAXA_WIN_Y4.q(); }
-  /*p27.TOZO*/ wire TOZO_WIN_Y5() const { return win_reg.TOZO_WIN_Y5.q(); }
-  /*p27.TATE*/ wire TATE_WIN_Y6() const { return win_reg.TATE_WIN_Y6.q(); }
-  /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return win_reg.TEKE_WIN_Y7.q(); }
-
-  //-----------------------------------------------------------------------------
-  // Misc signals
-
-  wire BOOT_BITn() const;
-  wire ASOK_INT_JOYPADp() const;
-  wire CALY_INT_SERIALp() const;
+  /*p29.TEXY*/ wire TEXY_SPR_READ_VRAMp() const {
+    /*p29.TYSO*/ wire TYSO_SPRITE_READn = or(sprite_fetcher.SAKY(), ppu_reg.TEPA_RENDERINGn());
+    return not(TYSO_SPRITE_READn);
+  }
 
   //-----------------------------------------------------------------------------
   // Internal state for debugging
@@ -523,8 +259,6 @@ struct SchematicTop {
 #endif
 
   ExtPinIn  SYS_PIN_RSTp;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  ExtPinIn  SYS_PIN_CLK_A; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  ExtPinIn  SYS_PIN_CLK_B; // PIN_74 
   ExtPinIn  SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
   ExtPinIn  SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
@@ -541,25 +275,13 @@ struct SchematicTop {
 
   CpuPinOut CPU_PIN_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related reg
   CpuPinOut CPU_PIN_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  CpuPinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   CpuPinOut CPU_PIN_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
   CpuPinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   CpuPinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
 
-  // Clocks
-  CpuPinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
-  CpuPinOut CPU_PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
-  CpuPinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  CpuPinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
-  CpuPinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  CpuPinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
-  CpuPinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-  CpuPinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
-
   //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
-  CpuPinIn  CPU_PIN_READYp;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   CpuPinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   CpuPinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
 
@@ -635,10 +357,6 @@ struct SchematicTop {
   ExtPinOut JOY_PIN_P15_A;   // PIN_62 <- p05.CELA
   ExtPinOut JOY_PIN_P15_D;   // PIN_62 <- p05.COFY
 
-  //-----------------------------------------------------------------------------
-  // External bus
-
-  ExtPinOut EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
   //-----------------------------------------------------------------------------
   // VRAM bus
 

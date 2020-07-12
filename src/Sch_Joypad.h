@@ -17,6 +17,8 @@ struct JoypadRegisters {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
+  /*p02.ASOK*/ wire ASOK_INT_JOYPADp() const { return and(APUG_JP_GLITCH3.q(), BATU_JP_GLITCH0.q()); }
+
 private:
   friend struct SchematicTop;
 

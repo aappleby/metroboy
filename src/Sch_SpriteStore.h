@@ -14,6 +14,8 @@ struct SpriteStoreRegisters {
 
   /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
 
+  /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
+
 private:
   friend struct SchematicTop;
 

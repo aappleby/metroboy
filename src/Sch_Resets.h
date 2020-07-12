@@ -13,6 +13,23 @@ struct ResetRegisters {
   void tock(SchematicTop& top);
   SignalHash commit();
 
+  wire ALUR_SYS_RSTn() const { // used everywhere
+    /*p01.AVOR*/ wire AVOR_SYS_RSTp = or(AFER_SYS_RSTp.q(), ASOL_POR_DONEn.q());
+    /*p01.ALUR*/ wire ALUR_SYS_RSTn = not(AVOR_SYS_RSTp);
+    return ALUR_SYS_RSTn;
+  }
+
+  wire CUNU_SYS_RSTn() const { // tile fetcher, dma, maka, soto
+    /*p01.DULA*/ wire DULA_SYS_RSTp = not(ALUR_SYS_RSTn());
+    /*p01.CUNU*/ wire CUNU_SYS_RSTn = not(DULA_SYS_RSTp);
+    return CUNU_SYS_RSTn;
+  }
+
+  /*p01.XORE*/ wire XORE_SYS_RSTp() const { return not(CUNU_SYS_RSTn()); }
+  /*p01.WALU*/ wire WALU_SYS_RSTn() const { return not(XORE_SYS_RSTp()); }
+  /*p01.WESY*/ wire WESY_SYS_RSTn() const { return not(XORE_SYS_RSTp()); }
+
+
 //private:
   friend SchematicTop;
 

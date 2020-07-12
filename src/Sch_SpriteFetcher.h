@@ -15,7 +15,37 @@ struct SpriteFetcher {
   /*p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not(TOXE_SFETCH_S0.q()); }
   /*p29.SAKY*/ wire SAKY() const            { return nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q()); }
 
+  wire VUSA_SPRITE_DONEn() const {
+    // TYNO_01 << TOXE_17
+    // TYNO_02 << SEBA_17
+    // TYNO_03 << VONU_17
+    // TYNO_04 >> VUSA_02
 
+    // VUSA_01 << TYFO_16
+    // VUSA_02 << TYNO_04
+    // VUSA_03 nc
+    // VUSA_04 >>
+
+    /*p29.TYNO*/ wire TYNO = nand(TOXE_SFETCH_S0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
+    /*p29.VUSA*/ wire VUSA_SPRITE_DONEn = or(TYFO_SFETCH_S0_D1.qn(), TYNO);
+    return VUSA_SPRITE_DONEn;
+  }
+
+  /*p29.WUTY*/ wire WUTY_SPRITE_DONEp() const { return not(VUSA_SPRITE_DONEn()); }
+  /*p29.XEFY*/ wire XEPY_SPRITE_DONEn() const { return not(WUTY_SPRITE_DONEp()); }
+
+  wire VAPE_FETCH_OAM_CLK(wire TEPA_RENDERINGn) const {
+    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
+    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n());
+    /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
+    return VAPE_FETCH_OAM_CLK;
+  }
+
+  /*p25.XUJY*/ wire XUJY_PPU_OAM_CLK(wire TEPA_RENDERINGn) const { 
+    return not(VAPE_FETCH_OAM_CLK(TEPA_RENDERINGn));
+  }
+
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG() const { return nand(TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n()); }
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp;
   /*p27.SOBU*/ Reg17 SOBU_SPRITE_FETCH_A;

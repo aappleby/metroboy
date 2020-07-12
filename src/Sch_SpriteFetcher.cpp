@@ -12,7 +12,7 @@ void SpriteFetcher::tick(SchematicTop& /*top*/) {
 
 void SpriteFetcher::tock(SchematicTop& top) {
 
-  /*p01.LAPE*/ wire _LAPE_AxCxExGx = not(top.ALET_xBxDxFxH());
+  /*p01.LAPE*/ wire _LAPE_AxCxExGx = not(top.clk_reg.ALET_xBxDxFxH());
   /*p27.TAVA*/ wire _TAVA_xBxDxFxH = not(_LAPE_AxCxExGx);
 
 
@@ -22,7 +22,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   {
 
-    /*p27.TUKU*/ wire _TUKU_WIN_HITn = not(top.TOMU_WIN_HITp());
+    /*p27.TUKU*/ wire _TUKU_WIN_HITn = not(top.win_reg.TOMU_WIN_HITp());
     /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not(TAKA_SFETCH_RUNNINGp.q());
     /*p27.TEKY*/ wire _TEKY_SPRITE_FETCH = and (top.sprite_store.FEPO_STORE_MATCHp, _TUKU_WIN_HITn, top.LYRY_BFETCH_DONEp(), _SOWO_SFETCH_RUNNINGn);
 
@@ -47,7 +47,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
   }
 
   {
-    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.BAXO_SPRITE_X5(), top.TEXY_SPR_READ_VRAMp());
+    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.bus_mux.BAXO_SPRITE_X5.q(), top.TEXY_SPR_READ_VRAMp());
     /*p33.POBE*/ wire _POBE_FLIP0 = mux2_p(top.VRM_TRI_D7, top.VRM_TRI_D0, _XONO_FLIP_X);
     /*p33.PACY*/ wire _PACY_FLIP1 = mux2_p(top.VRM_TRI_D6, top.VRM_TRI_D1, _XONO_FLIP_X);
     /*p33.PONO*/ wire _PONO_FLIP2 = mux2_p(top.VRM_TRI_D5, top.VRM_TRI_D2, _XONO_FLIP_X);
@@ -92,7 +92,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   {
     /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(top.XYMO_LCDC_SPSIZE.q());
-    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.YZOS_SPRITE_X6());
+    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.bus_mux.YZOS_SPRITE_X6.q());
 
     /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!VONU_SFETCH_S1_D4.q());
     /*p29.CYVU*/ wire _CYVU_SPRITE_Y0 = xor (_WUKY_FLIP_Y, top.SPR_TRI_LINE_1.q());
@@ -100,20 +100,20 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, top.SPR_TRI_LINE_3.q());
 
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, top.SPR_TRI_LINE_0.q());
-    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !top.XUSO_SPRITE_Y0(), top.XYMO_LCDC_SPSIZE.q(), _WAGO);
+    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !top.bus_mux.XUSO_SPRITE_Y0.q(), top.XYMO_LCDC_SPSIZE.q(), _WAGO);
 
     /*p29.ABEM*/ top.VRM_TRI_A00.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _XUQU_SPRITE_AB);
     /*p29.BAXE*/ top.VRM_TRI_A01.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _CYVU_SPRITE_Y0);
     /*p29.ARAS*/ top.VRM_TRI_A02.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _BORE_SPRITE_Y1);
     /*p29.AGAG*/ top.VRM_TRI_A03.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _BUVY_SPRITE_Y2);
     /*p29.FAMU*/ top.VRM_TRI_A04.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _GEJY_SPRITE_Y3);
-    /*p29.FUGY*/ top.VRM_TRI_A05.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.XEGU_SPRITE_Y1());
-    /*p29.GAVO*/ top.VRM_TRI_A06.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.YJEX_SPRITE_Y2());
-    /*p29.WYGA*/ top.VRM_TRI_A07.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.XYJU_SPRITE_Y3());
-    /*p29.WUNE*/ top.VRM_TRI_A08.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.YBOG_SPRITE_Y4());
-    /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.WYSO_SPRITE_Y5());
-    /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.XOTE_SPRITE_Y6());
-    /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.YZAB_SPRITE_Y7());
+    /*p29.FUGY*/ top.VRM_TRI_A05.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.XEGU_SPRITE_Y1.q());
+    /*p29.GAVO*/ top.VRM_TRI_A06.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.YJEX_SPRITE_Y2.q());
+    /*p29.WYGA*/ top.VRM_TRI_A07.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.XYJU_SPRITE_Y3.q());
+    /*p29.WUNE*/ top.VRM_TRI_A08.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.YBOG_SPRITE_Y4.q());
+    /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.WYSO_SPRITE_Y5.q());
+    /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.XOTE_SPRITE_Y6.q());
+    /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.YZAB_SPRITE_Y7.q());
     /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.GND);   // sprites always in low half of tile store
   }
 }

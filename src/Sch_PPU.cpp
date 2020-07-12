@@ -21,7 +21,7 @@ void PpuRegisters::tock(SchematicTop& top) {
   /*p24.ROXO*/ wire _ROXO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
 
   {
-    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.ALET_xBxDxFxH(), _TADY_LINE_START_RST, top.WODU_RENDER_DONEp());
+    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, top.WODU_RENDER_DONEp());
   }
 
   {
@@ -29,7 +29,7 @@ void PpuRegisters::tock(SchematicTop& top) {
   }
 
   {
-    /*p27.PECU*/ wire _PECU_FINE_CLK = nand(_ROXO_CLKPIPEp, top.ROZE_FINE_COUNT_7n());
+    /*p27.PECU*/ wire _PECU_FINE_CLK = nand(_ROXO_CLKPIPEp, ROZE_FINE_COUNT_7n());
     /*p27.PASO*/ wire _PASO_FINE_RST = nor(top.TEVO_FINE_RSTp(), top.ppu_reg.ROPY_RENDERINGn());
     /*p27.RYKU*/ RYKU_FINE_CNT0.set(_PECU_FINE_CLK,       _PASO_FINE_RST, RYKU_FINE_CNT0.qn());
     /*p27.ROGA*/ ROGA_FINE_CNT1.set(RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn());
@@ -46,7 +46,7 @@ void PpuRegisters::tock(SchematicTop& top) {
     /*p27.POHU*/ wire _POHU_FINE_MATCHp = not(_RONE_FINE_MATCHn);
 
     /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(_ROXO_CLKPIPEp,      _XYMU_RENDERINGp.q(), _POHU_FINE_MATCHp);
-    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), _XYMU_RENDERINGp.q(), PUXA_FINE_MATCH_A.q());
+    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.clk_reg.MOXE_AxCxExGx(), _XYMU_RENDERINGp.q(), PUXA_FINE_MATCH_A.q());
 
     /*p27.POVA*/ wire _POVA_FINE_MATCHpe = and(PUXA_FINE_MATCH_A.q(), NYZE_FINE_MATCH_B.qn());
     /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(_XYMU_RENDERINGp.q());
@@ -116,16 +116,16 @@ void PpuRegisters::tock(SchematicTop& top) {
 
     /*p21.RYJU*/ wire _RYJU_FF41_WRn = not(_SEPA_FF41_WRp);
     
-    /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(top.WESY_SYS_RSTn(), _RYJU_FF41_WRn);  // schematic wrong, this is NOR
-    /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, top.ROPO_LY_MATCH_SYNCp());
+    /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(top.rst_reg.WESY_SYS_RSTn(), _RYJU_FF41_WRn);  // schematic wrong, this is NOR
+    /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp.q());
 
-    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
-    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());
-    /*p21.REFE*/ REFE_INT_OAM_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
-    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
+    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
+    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());
+    /*p21.REFE*/ REFE_INT_OAM_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
+    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
 
     /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor(_XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
-    /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(_XYMU_RENDERINGp.q(), top.PARU_VBLANKp_d4()); // die NOR
+    /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(_XYMU_RENDERINGp.q(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.
 

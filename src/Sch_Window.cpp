@@ -12,14 +12,14 @@ void WindowRegisters::tick(SchematicTop& /*top*/) {
 
 void WindowRegisters::tock(SchematicTop& top) {
 
-  /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.ATEJ_VID_LINE_TRIG_d4p());
+  /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p(top));
   /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.XAPO_VID_RSTn());
 
   /*p01.PYRY*/ wire _PYRY_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.PARU_VBLANKp_d4(), _PYRY_VID_RSTp);
+  /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), _PYRY_VID_RSTp);
 
   {
-    /*p27.SARY*/ _SARY_WY_MATCH.set(top.TALU_ABCDxxxx(), top.XAPO_VID_RSTn(), ROGE_WY_MATCHp(top));
+    /*p27.SARY*/ _SARY_WY_MATCH.set(top.clk_reg.TALU_ABCDxxxx(), top.XAPO_VID_RSTn(), ROGE_WY_MATCHp(top));
     /*p27.REJO*/ _REJO_WY_MATCH_LATCH.nor_latch(_SARY_WY_MATCH.q(), _REPU_VBLANK_RSTp);
   }
 
@@ -27,17 +27,17 @@ void WindowRegisters::tock(SchematicTop& top) {
     // This trigger fires on the pixel _at_ WX
     /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
     /*p27.PYCO*/ _PYCO_WX_MATCH_A.set(_ROCO_CLKPIPEp, top.XAPO_VID_RSTn(), NUKO_WX_MATCHp(top));
-    /*p27.NUNU*/ _NUNU_WX_MATCH_B.set(top.MEHE_AxCxExGx(), top.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
+    /*p27.NUNU*/ _NUNU_WX_MATCH_B.set(top.clk_reg.MEHE_AxCxExGx(), top.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
 
-    /*p27.PYNU*/ PYNU_WIN_MODE_A.nor_latch(_NUNU_WX_MATCH_B.q(), _XOFO_WIN_RSTp);
-    /*p27.NOPA*/ NOPA_WIN_MODE_B.set(top.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), PYNU_WIN_MODE_A.q());
+    /*p27.PYNU*/ _PYNU_WIN_MODE_A.nor_latch(_NUNU_WX_MATCH_B.q(), _XOFO_WIN_RSTp);
+    /*p27.NOPA*/ _NOPA_WIN_MODE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), _PYNU_WIN_MODE_A.q());
   }
 
   {
     // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
-    /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ROZE_FINE_COUNT_7n());
+    /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ppu_reg.ROZE_FINE_COUNT_7n());
     /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.ppu_reg.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
-    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
+    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.clk_reg.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
     /*p27.SEKO*/ SEKO_WX_MATCHne = nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q());
   }
 
@@ -46,9 +46,9 @@ void WindowRegisters::tock(SchematicTop& top) {
     ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
     ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-    /*p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), _PYRY_VID_RSTp || top.PORY_TILE_FETCH_DONE_Bp());
-    /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(top.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), RYDY_WIN_FIRST_TILE_A.q());
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(top.SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
+    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), _PYRY_VID_RSTp || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
+    /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.q());
+    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
     /*p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not(_TUXY_WIN_FIRST_TILE_NE);
   }
 
@@ -56,30 +56,30 @@ void WindowRegisters::tock(SchematicTop& top) {
   {
     // something weird here, PORE doesn't look like a clock
 
-    /*p27.VETU*/ wire _VETU_WIN_MAP_CLK = and (top.TEVO_FINE_RSTp(), top.PORE_WIN_MODEp());
+    /*p27.VETU*/ wire _VETU_WIN_MAP_CLK = and (top.TEVO_FINE_RSTp(), PORE_WIN_MODEp());
     /*p27.XACO*/ wire _XACO_WIN_RSTn = not(_XOFO_WIN_RSTp);
 
-    /*p27.WYKA*/ WYKA_WIN_X3.set(_VETU_WIN_MAP_CLK, _XACO_WIN_RSTn, WYKA_WIN_X3.qn());
-    /*p27.WODY*/ WODY_WIN_X4.set(WYKA_WIN_X3.qn(),  _XACO_WIN_RSTn, WODY_WIN_X4.qn());
-    /*p27.WOBO*/ WOBO_WIN_X5.set(WODY_WIN_X4.qn(),  _XACO_WIN_RSTn, WOBO_WIN_X5.qn());
-    /*p27.WYKO*/ WYKO_WIN_X6.set(WOBO_WIN_X5.qn(),  _XACO_WIN_RSTn, WYKO_WIN_X6.qn());
-    /*p27.XOLO*/ XOLO_WIN_X7.set(WYKO_WIN_X6.qn(),  _XACO_WIN_RSTn, XOLO_WIN_X7.qn());
+    /*p27.WYKA*/ _WYKA_WIN_X3.set(_VETU_WIN_MAP_CLK,  _XACO_WIN_RSTn, _WYKA_WIN_X3.qn());
+    /*p27.WODY*/ _WODY_WIN_X4.set(_WYKA_WIN_X3.qn(),  _XACO_WIN_RSTn, _WODY_WIN_X4.qn());
+    /*p27.WOBO*/ _WOBO_WIN_X5.set(_WODY_WIN_X4.qn(),  _XACO_WIN_RSTn, _WOBO_WIN_X5.qn());
+    /*p27.WYKO*/ _WYKO_WIN_X6.set(_WOBO_WIN_X5.qn(),  _XACO_WIN_RSTn, _WYKO_WIN_X6.qn());
+    /*p27.XOLO*/ _XOLO_WIN_X7.set(_WYKO_WIN_X6.qn(),  _XACO_WIN_RSTn, _XOLO_WIN_X7.qn());
   }
 
   // window y coordinate
   // every time we leave win mode we increment win_y
   {
-    /*p27.WAZY*/ wire _WAZY_WIN_Y_CLK = not(top.PORE_WIN_MODEp());
+    /*p27.WAZY*/ wire _WAZY_WIN_Y_CLK = not(PORE_WIN_MODEp());
     /*p27.SYNY*/ wire _SYNY_VBLANK_RSTn = not(_REPU_VBLANK_RSTp);
 
-    /*p27.VYNO*/ VYNO_WIN_Y0.set(_WAZY_WIN_Y_CLK,  _SYNY_VBLANK_RSTn, VYNO_WIN_Y0.qn());
-    /*p27.VUJO*/ VUJO_WIN_Y1.set(VYNO_WIN_Y0.qn(), _SYNY_VBLANK_RSTn, VUJO_WIN_Y1.qn());
-    /*p27.VYMU*/ VYMU_WIN_Y2.set(VUJO_WIN_Y1.qn(), _SYNY_VBLANK_RSTn, VYMU_WIN_Y2.qn());
-    /*p27.TUFU*/ TUFU_WIN_Y3.set(VYMU_WIN_Y2.qn(), _SYNY_VBLANK_RSTn, TUFU_WIN_Y3.qn());
-    /*p27.TAXA*/ TAXA_WIN_Y4.set(TUFU_WIN_Y3.qn(), _SYNY_VBLANK_RSTn, TAXA_WIN_Y4.qn());
-    /*p27.TOZO*/ TOZO_WIN_Y5.set(TAXA_WIN_Y4.qn(), _SYNY_VBLANK_RSTn, TOZO_WIN_Y5.qn());
-    /*p27.TATE*/ TATE_WIN_Y6.set(TOZO_WIN_Y5.qn(), _SYNY_VBLANK_RSTn, TATE_WIN_Y6.qn());
-    /*p27.TEKE*/ TEKE_WIN_Y7.set(TATE_WIN_Y6.qn(), _SYNY_VBLANK_RSTn, TEKE_WIN_Y7.qn());
+    /*p27.VYNO*/ _VYNO_WIN_Y0.set(_WAZY_WIN_Y_CLK,   _SYNY_VBLANK_RSTn, _VYNO_WIN_Y0.qn());
+    /*p27.VUJO*/ _VUJO_WIN_Y1.set(_VYNO_WIN_Y0.qn(), _SYNY_VBLANK_RSTn, _VUJO_WIN_Y1.qn());
+    /*p27.VYMU*/ _VYMU_WIN_Y2.set(_VUJO_WIN_Y1.qn(), _SYNY_VBLANK_RSTn, _VYMU_WIN_Y2.qn());
+    /*p27.TUFU*/ _TUFU_WIN_Y3.set(_VYMU_WIN_Y2.qn(), _SYNY_VBLANK_RSTn, _TUFU_WIN_Y3.qn());
+    /*p27.TAXA*/ _TAXA_WIN_Y4.set(_TUFU_WIN_Y3.qn(), _SYNY_VBLANK_RSTn, _TAXA_WIN_Y4.qn());
+    /*p27.TOZO*/ _TOZO_WIN_Y5.set(_TAXA_WIN_Y4.qn(), _SYNY_VBLANK_RSTn, _TOZO_WIN_Y5.qn());
+    /*p27.TATE*/ _TATE_WIN_Y6.set(_TOZO_WIN_Y5.qn(), _SYNY_VBLANK_RSTn, _TATE_WIN_Y6.qn());
+    /*p27.TEKE*/ _TEKE_WIN_Y7.set(_TATE_WIN_Y6.qn(), _SYNY_VBLANK_RSTn, _TEKE_WIN_Y7.qn());
   }
 
   // FF4A
@@ -93,24 +93,24 @@ void WindowRegisters::tock(SchematicTop& top) {
     /*p23.WEKO*/ wire _WEKO_FF4A_WRn = and (_FF4Ap, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p23.VEFU*/ wire _VEFU_FF4A_WRp = not(_WEKO_FF4A_WRn);
 
-    /*p23.NESO*/ NESO_WY0.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D0.q());
-    /*p23.NYRO*/ NYRO_WY1.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D1.q());
-    /*p23.NAGA*/ NAGA_WY2.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D2.q());
-    /*p23.MELA*/ MELA_WY3.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D3.q());
-    /*p23.NULO*/ NULO_WY4.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D4.q());
-    /*p23.NENE*/ NENE_WY5.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D5.q());
-    /*p23.NUKA*/ NUKA_WY6.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D6.q());
-    /*p23.NAFU*/ NAFU_WY7.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D7.q());
+    /*p23.NESO*/ _NESO_WY0.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D0.q());
+    /*p23.NYRO*/ _NYRO_WY1.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D1.q());
+    /*p23.NAGA*/ _NAGA_WY2.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D2.q());
+    /*p23.MELA*/ _MELA_WY3.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D3.q());
+    /*p23.NULO*/ _NULO_WY4.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D4.q());
+    /*p23.NENE*/ _NENE_WY5.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D5.q());
+    /*p23.NUKA*/ _NUKA_WY6.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D6.q());
+    /*p23.NAFU*/ _NAFU_WY7.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D7.q());
 
 
-    /*p23.PUNU*/ top.CPU_TRI_D0.set_tribuf_6n(_FF4A_RDn, NESO_WY0.q());
-    /*p23.PODA*/ top.CPU_TRI_D1.set_tribuf_6n(_FF4A_RDn, NYRO_WY1.q());
-    /*p23.PYGU*/ top.CPU_TRI_D2.set_tribuf_6n(_FF4A_RDn, NAGA_WY2.q());
-    /*p23.LOKA*/ top.CPU_TRI_D3.set_tribuf_6n(_FF4A_RDn, MELA_WY3.q());
-    /*p23.MEGA*/ top.CPU_TRI_D4.set_tribuf_6n(_FF4A_RDn, NULO_WY4.q());
-    /*p23.PELA*/ top.CPU_TRI_D5.set_tribuf_6n(_FF4A_RDn, NENE_WY5.q());
-    /*p23.POLO*/ top.CPU_TRI_D6.set_tribuf_6n(_FF4A_RDn, NUKA_WY6.q());
-    /*p23.MERA*/ top.CPU_TRI_D7.set_tribuf_6n(_FF4A_RDn, NAFU_WY7.q());
+    /*p23.PUNU*/ top.CPU_TRI_D0.set_tribuf_6n(_FF4A_RDn, _NESO_WY0.q());
+    /*p23.PODA*/ top.CPU_TRI_D1.set_tribuf_6n(_FF4A_RDn, _NYRO_WY1.q());
+    /*p23.PYGU*/ top.CPU_TRI_D2.set_tribuf_6n(_FF4A_RDn, _NAGA_WY2.q());
+    /*p23.LOKA*/ top.CPU_TRI_D3.set_tribuf_6n(_FF4A_RDn, _MELA_WY3.q());
+    /*p23.MEGA*/ top.CPU_TRI_D4.set_tribuf_6n(_FF4A_RDn, _NULO_WY4.q());
+    /*p23.PELA*/ top.CPU_TRI_D5.set_tribuf_6n(_FF4A_RDn, _NENE_WY5.q());
+    /*p23.POLO*/ top.CPU_TRI_D6.set_tribuf_6n(_FF4A_RDn, _NUKA_WY6.q());
+    /*p23.MERA*/ top.CPU_TRI_D7.set_tribuf_6n(_FF4A_RDn, _NAFU_WY7.q());
   }
 
   // FF4B
@@ -124,38 +124,38 @@ void WindowRegisters::tock(SchematicTop& top) {
     /*p23.WUZA*/ wire _WUZA_FF4B_WRn = and (_FF4Bp, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p23.VOXU*/ wire _VOXU_FF4B_WRp = not(_WUZA_FF4B_WRn);
 
-    /*p23.MYPA*/ MYPA_WX0.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D0.q());
-    /*p23.NOFE*/ NOFE_WX1.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D1.q());
-    /*p23.NOKE*/ NOKE_WX2.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D2.q());
-    /*p23.MEBY*/ MEBY_WX3.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D3.q());
-    /*p23.MYPU*/ MYPU_WX4.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D4.q());
-    /*p23.MYCE*/ MYCE_WX5.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D5.q());
-    /*p23.MUVO*/ MUVO_WX6.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D6.q());
-    /*p23.NUKU*/ NUKU_WX7.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.WALU_SYS_RSTn(), top.CPU_TRI_D7.q());
+    /*p23.MYPA*/ _MYPA_WX0.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D0.q());
+    /*p23.NOFE*/ _NOFE_WX1.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D1.q());
+    /*p23.NOKE*/ _NOKE_WX2.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D2.q());
+    /*p23.MEBY*/ _MEBY_WX3.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D3.q());
+    /*p23.MYPU*/ _MYPU_WX4.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D4.q());
+    /*p23.MYCE*/ _MYCE_WX5.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D5.q());
+    /*p23.MUVO*/ _MUVO_WX6.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D6.q());
+    /*p23.NUKU*/ _NUKU_WX7.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.CPU_TRI_D7.q());
 
 
-    /*p23.LOVA*/ top.CPU_TRI_D0.set_tribuf_6n(_FF4B_RDn, MYPA_WX0.q());
-    /*p23.MUKA*/ top.CPU_TRI_D1.set_tribuf_6n(_FF4B_RDn, NOFE_WX1.q());
-    /*p23.MOKO*/ top.CPU_TRI_D2.set_tribuf_6n(_FF4B_RDn, NOKE_WX2.q());
-    /*p23.LOLE*/ top.CPU_TRI_D3.set_tribuf_6n(_FF4B_RDn, MEBY_WX3.q());
-    /*p23.MELE*/ top.CPU_TRI_D4.set_tribuf_6n(_FF4B_RDn, MYPU_WX4.q());
-    /*p23.MUFE*/ top.CPU_TRI_D5.set_tribuf_6n(_FF4B_RDn, MYCE_WX5.q());
-    /*p23.MULY*/ top.CPU_TRI_D6.set_tribuf_6n(_FF4B_RDn, MUVO_WX6.q());
-    /*p23.MARA*/ top.CPU_TRI_D7.set_tribuf_6n(_FF4B_RDn, NUKU_WX7.q());
+    /*p23.LOVA*/ top.CPU_TRI_D0.set_tribuf_6n(_FF4B_RDn, _MYPA_WX0.q());
+    /*p23.MUKA*/ top.CPU_TRI_D1.set_tribuf_6n(_FF4B_RDn, _NOFE_WX1.q());
+    /*p23.MOKO*/ top.CPU_TRI_D2.set_tribuf_6n(_FF4B_RDn, _NOKE_WX2.q());
+    /*p23.LOLE*/ top.CPU_TRI_D3.set_tribuf_6n(_FF4B_RDn, _MEBY_WX3.q());
+    /*p23.MELE*/ top.CPU_TRI_D4.set_tribuf_6n(_FF4B_RDn, _MYPU_WX4.q());
+    /*p23.MUFE*/ top.CPU_TRI_D5.set_tribuf_6n(_FF4B_RDn, _MYCE_WX5.q());
+    /*p23.MULY*/ top.CPU_TRI_D6.set_tribuf_6n(_FF4B_RDn, _MUVO_WX6.q());
+    /*p23.MARA*/ top.CPU_TRI_D7.set_tribuf_6n(_FF4B_RDn, _NUKU_WX7.q());
   }
 }
 
 //------------------------------------------------------------------------------
 
 wire WindowRegisters::ROGE_WY_MATCHp(const SchematicTop& top) const {
-  /*p27.NAZE*/ wire _WY_MATCH0 = xnor(top.MUWY_Y0(), NESO_WY0.q());
-  /*p27.PEBO*/ wire _WY_MATCH1 = xnor(top.MYRO_Y1(), NYRO_WY1.q());
-  /*p27.POMO*/ wire _WY_MATCH2 = xnor(top.LEXA_Y2(), NAGA_WY2.q());
-  /*p27.NEVU*/ wire _WY_MATCH3 = xnor(top.LYDO_Y3(), MELA_WY3.q());
-  /*p27.NOJO*/ wire _WY_MATCH4 = xnor(top.LOVU_Y4(), NULO_WY4.q());
-  /*p27.PAGA*/ wire _WY_MATCH5 = xnor(top.LEMA_Y5(), NENE_WY5.q());
-  /*p27.PEZO*/ wire _WY_MATCH6 = xnor(top.MATO_Y6(), NUKA_WY6.q());
-  /*p27.NUPA*/ wire _WY_MATCH7 = xnor(top.LAFO_Y7(), NAFU_WY7.q());
+  /*p27.NAZE*/ wire _WY_MATCH0 = xnor(top.lcd_reg.MUWY_Y0.q(), _NESO_WY0.q());
+  /*p27.PEBO*/ wire _WY_MATCH1 = xnor(top.lcd_reg.MYRO_Y1.q(), _NYRO_WY1.q());
+  /*p27.POMO*/ wire _WY_MATCH2 = xnor(top.lcd_reg.LEXA_Y2.q(), _NAGA_WY2.q());
+  /*p27.NEVU*/ wire _WY_MATCH3 = xnor(top.lcd_reg.LYDO_Y3.q(), _MELA_WY3.q());
+  /*p27.NOJO*/ wire _WY_MATCH4 = xnor(top.lcd_reg.LOVU_Y4.q(), _NULO_WY4.q());
+  /*p27.PAGA*/ wire _WY_MATCH5 = xnor(top.lcd_reg.LEMA_Y5.q(), _NENE_WY5.q());
+  /*p27.PEZO*/ wire _WY_MATCH6 = xnor(top.lcd_reg.MATO_Y6.q(), _NUKA_WY6.q());
+  /*p27.NUPA*/ wire _WY_MATCH7 = xnor(top.lcd_reg.LAFO_Y7.q(), _NAFU_WY7.q());
 
   /*p27.PALO*/ wire _WY_MATCH_HIn  = nand(top.WYMO_LCDC_WINEN.q(), _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
   /*p27.NELE*/ wire _WY_MATCH_HI   = not(_WY_MATCH_HIn);
@@ -165,14 +165,14 @@ wire WindowRegisters::ROGE_WY_MATCHp(const SchematicTop& top) const {
 }
 
 wire WindowRegisters::NUKO_WX_MATCHp(const SchematicTop& top) const {
-  /*p27.MYLO*/ wire _WX_MATCH0 = xnor(top.XEHO_X0(), MYPA_WX0.q());
-  /*p27.PUWU*/ wire _WX_MATCH1 = xnor(top.SAVY_X1(), NOFE_WX1.q());
-  /*p27.PUHO*/ wire _WX_MATCH2 = xnor(top.XODU_X2(), NOKE_WX2.q());
-  /*p27.NYTU*/ wire _WX_MATCH3 = xnor(top.XYDO_X3(), MEBY_WX3.q());
-  /*p27.NEZO*/ wire _WX_MATCH4 = xnor(top.TUHU_X4(), MYPU_WX4.q());
-  /*p27.NORY*/ wire _WX_MATCH5 = xnor(top.TUKY_X5(), MYCE_WX5.q());
-  /*p27.NONO*/ wire _WX_MATCH6 = xnor(top.TAKO_X6(), MUVO_WX6.q());
-  /*p27.PASE*/ wire _WX_MATCH7 = xnor(top.SYBE_X7(), NUKU_WX7.q());
+  /*p27.MYLO*/ wire _WX_MATCH0 = xnor(top.ppu_reg.XEHO_X0.q(), _MYPA_WX0.q());
+  /*p27.PUWU*/ wire _WX_MATCH1 = xnor(top.ppu_reg.SAVY_X1.q(), _NOFE_WX1.q());
+  /*p27.PUHO*/ wire _WX_MATCH2 = xnor(top.ppu_reg.XODU_X2.q(), _NOKE_WX2.q());
+  /*p27.NYTU*/ wire _WX_MATCH3 = xnor(top.ppu_reg.XYDO_X3.q(), _MEBY_WX3.q());
+  /*p27.NEZO*/ wire _WX_MATCH4 = xnor(top.ppu_reg.TUHU_X4.q(), _MYPU_WX4.q());
+  /*p27.NORY*/ wire _WX_MATCH5 = xnor(top.ppu_reg.TUKY_X5.q(), _MYCE_WX5.q());
+  /*p27.NONO*/ wire _WX_MATCH6 = xnor(top.ppu_reg.TAKO_X6.q(), _MUVO_WX6.q());
+  /*p27.PASE*/ wire _WX_MATCH7 = xnor(top.ppu_reg.SYBE_X7.q(), _NUKU_WX7.q());
 
   /*p27.PUKY*/ wire _WX_MATCH_HIn  = nand(_REJO_WY_MATCH_LATCH.q(), _WX_MATCH4, _WX_MATCH5, _WX_MATCH6, _WX_MATCH7);
   /*p27.NUFA*/ wire _WX_MATCH_HI   = not (_WX_MATCH_HIn);
@@ -189,10 +189,10 @@ SignalHash WindowRegisters::commit() {
   /*p27.SEKO*/ hash << SEKO_WX_MATCHne.commit();
   /*p27.SUZU*/ hash << SUZU_WIN_FIRST_TILEne.commit();
 
-  /*p27.PYNU*/ hash << PYNU_WIN_MODE_A.commit();
-  /*p27.RYDY*/ hash << RYDY_WIN_FIRST_TILE_A.commit();
+  /*p27.PYNU*/ hash << _PYNU_WIN_MODE_A.commit();
+  /*p27.RYDY*/ hash << _RYDY_WIN_FIRST_TILE_A.commit();
 
-  /*p27.NOPA*/ hash << NOPA_WIN_MODE_B.commit();
+  /*p27.NOPA*/ hash << _NOPA_WIN_MODE_B.commit();
   /*p27.SOVY*/ hash << _SOVY_WIN_FIRST_TILE_B.commit();
   /*p27.REJO*/ hash << _REJO_WY_MATCH_LATCH.commit();
   /*p27.SARY*/ hash << _SARY_WY_MATCH.commit();
@@ -201,40 +201,38 @@ SignalHash WindowRegisters::commit() {
   /*p27.PYCO*/ hash << _PYCO_WX_MATCH_A.commit();
   /*p27.NUNU*/ hash << _NUNU_WX_MATCH_B.commit();
 
-  /*p27.WYKA*/ hash << WYKA_WIN_X3.commit();
-  /*p27.WODY*/ hash << WODY_WIN_X4.commit();
-  /*p27.WOBO*/ hash << WOBO_WIN_X5.commit();
-  /*p27.WYKO*/ hash << WYKO_WIN_X6.commit();
-  /*p27.XOLO*/ hash << XOLO_WIN_X7.commit();
+  /*p27.WYKA*/ hash << _WYKA_WIN_X3.commit();
+  /*p27.WODY*/ hash << _WODY_WIN_X4.commit();
+  /*p27.WOBO*/ hash << _WOBO_WIN_X5.commit();
+  /*p27.WYKO*/ hash << _WYKO_WIN_X6.commit();
+  /*p27.XOLO*/ hash << _XOLO_WIN_X7.commit();
 
-  /*p27.VYNO*/ hash << VYNO_WIN_Y0.commit();
-  /*p27.VUJO*/ hash << VUJO_WIN_Y1.commit();
-  /*p27.VYMU*/ hash << VYMU_WIN_Y2.commit();
-  /*p27.TUFU*/ hash << TUFU_WIN_Y3.commit();
-  /*p27.TAXA*/ hash << TAXA_WIN_Y4.commit();
-  /*p27.TOZO*/ hash << TOZO_WIN_Y5.commit();
-  /*p27.TATE*/ hash << TATE_WIN_Y6.commit();
-  /*p27.TEKE*/ hash << TEKE_WIN_Y7.commit();
+  /*p27.VYNO*/ hash << _VYNO_WIN_Y0.commit();
+  /*p27.VUJO*/ hash << _VUJO_WIN_Y1.commit();
+  /*p27.VYMU*/ hash << _VYMU_WIN_Y2.commit();
+  /*p27.TUFU*/ hash << _TUFU_WIN_Y3.commit();
+  /*p27.TAXA*/ hash << _TAXA_WIN_Y4.commit();
+  /*p27.TOZO*/ hash << _TOZO_WIN_Y5.commit();
+  /*p27.TATE*/ hash << _TATE_WIN_Y6.commit();
+  /*p27.TEKE*/ hash << _TEKE_WIN_Y7.commit();
 
-  /*p23.NESO*/ hash << NESO_WY0.commit();
-  /*p23.NYRO*/ hash << NYRO_WY1.commit();
-  /*p23.NAGA*/ hash << NAGA_WY2.commit();
-  /*p23.MELA*/ hash << MELA_WY3.commit();
-  /*p23.NULO*/ hash << NULO_WY4.commit();
-  /*p23.NENE*/ hash << NENE_WY5.commit();
-  /*p23.NUKA*/ hash << NUKA_WY6.commit();
-  /*p23.NAFU*/ hash << NAFU_WY7.commit();
+  /*p23.NESO*/ hash << _NESO_WY0.commit();
+  /*p23.NYRO*/ hash << _NYRO_WY1.commit();
+  /*p23.NAGA*/ hash << _NAGA_WY2.commit();
+  /*p23.MELA*/ hash << _MELA_WY3.commit();
+  /*p23.NULO*/ hash << _NULO_WY4.commit();
+  /*p23.NENE*/ hash << _NENE_WY5.commit();
+  /*p23.NUKA*/ hash << _NUKA_WY6.commit();
+  /*p23.NAFU*/ hash << _NAFU_WY7.commit();
 
-  /*p23.MYPA*/ hash << MYPA_WX0.commit();
-  /*p23.NOFE*/ hash << NOFE_WX1.commit();
-  /*p23.NOKE*/ hash << NOKE_WX2.commit();
-  /*p23.MEBY*/ hash << MEBY_WX3.commit();
-  /*p23.MYPU*/ hash << MYPU_WX4.commit();
-  /*p23.MYCE*/ hash << MYCE_WX5.commit();
-  /*p23.MUVO*/ hash << MUVO_WX6.commit();
-  /*p23.NUKU*/ hash << NUKU_WX7.commit();
-
-
+  /*p23.MYPA*/ hash << _MYPA_WX0.commit();
+  /*p23.NOFE*/ hash << _NOFE_WX1.commit();
+  /*p23.NOKE*/ hash << _NOKE_WX2.commit();
+  /*p23.MEBY*/ hash << _MEBY_WX3.commit();
+  /*p23.MYPU*/ hash << _MYPU_WX4.commit();
+  /*p23.MYCE*/ hash << _MYCE_WX5.commit();
+  /*p23.MUVO*/ hash << _MUVO_WX6.commit();
+  /*p23.NUKU*/ hash << _NUKU_WX7.commit();
 
   return hash;
 }

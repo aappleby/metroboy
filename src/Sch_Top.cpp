@@ -6,8 +6,6 @@ using namespace Schematics;
 
 SchematicTop::SchematicTop() {
   // HACK preset these so we don't read hiz
-  ser_reg.SIN_C.set(0);
-  ser_reg.SCK_C.set(0);
 
   JOY_PIN_P10_C.set(0);
   JOY_PIN_P11_C.set(0);
@@ -275,48 +273,7 @@ SignalHash SchematicTop::tick() {
   int_reg.tick(*this);
   int_reg.tock(*this);
 
-  {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_READYp);
-    /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
-    /*p01.BUVU*/ wire BUVU_Axxxxxxx = and(BUTY_CLKREQ, BALY_Axxxxxxx());
-    /*p01.BYXO*/ wire BYXO_xBCDEFGH = not(BUVU_Axxxxxxx);
-    /*p01.BEDO*/ wire BEDO_Axxxxxxx = not(BYXO_xBCDEFGH);
-    /*p01.BOWA*/ wire BOWA_xBCDEFGH = not(BEDO_Axxxxxxx);
-    CPU_PIN_BOWA_AxCDEFGH.set(BOWA_xBCDEFGH);
-    CPU_PIN_BEDO_xBxxxxxx.set(BEDO_Axxxxxxx);
-  }
-    
-  CPU_PIN_BEKO_xBCDExxx.set(BEKO_ABCDxxxx());
-  CPU_PIN_BUDE_AxxxxFGH.set(BUDE_xxxxEFGH());
-  CPU_PIN_BOLO_xBCDEFGx.set(BOLO_ABCDEFxx());
-    
-  {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_READYp);
-    /*p01.AROV*/ wire AROV_xxCDEFxx = not(clk_reg.APUK_xxCDEFxx.qn());
-    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not(clk_reg.ALEF_xBCDExxx.q());
-    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(AFEP_AxxxxFGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(ABOL_CLKREQn,
-                                          BUGO_xBCDExxx,
-                                          AROV_xxCDEFxx);
-    /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
-    /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
-    CPU_PIN_BUKE_ABxxxxxH.set(BUKE_AxxxxxGH);
-  }
-
-  CPU_PIN_BOMA_xBxxxxxx.set(BOMA_Axxxxxxx());
-  CPU_PIN_BOGA_AxCDEFGH.set(BOGA_xBCDEFGH());
-
-  {
-    wire ABOL_CLKREQn  = not(CPU_PIN_READYp);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_ABCDxxxx.q());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /* PIN_75 */ EXT_PIN_CLK.set(BUDE_AxxxxFGH);
-  }
-
   CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
-  CPU_PIN_EXT_CLKGOOD.set(SYS_PIN_CLK_A);
 
   {
     CPU_PIN_ADDR_HI.set(SYRO_FE00_FFFFp());
@@ -343,7 +300,7 @@ SignalHash SchematicTop::tick() {
     /*p23.WARU*/ wire _WARU_FF40_WRp = and (_VOCA_FF40p, CUPA_CPU_WRp_xxxxEFGx());
     /*p23.XUBO*/ wire _XUBO_FF40_WRn = not(_WARU_FF40_WRp);
 
-    /*p01.XARE*/ wire _XARE_RSTn = not(XORE_SYS_RSTp());
+    /*p01.XARE*/ wire _XARE_RSTn = not(rst_reg.XORE_SYS_RSTp());
     /*p23.VYXE*/ VYXE_LCDC_BGEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D0.q());
     /*p23.XYLO*/ XYLO_LCDC_SPEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D1.q());
     /*p23.XYMO*/ XYMO_LCDC_SPSIZE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D2.q());
@@ -379,8 +336,6 @@ SignalHash SchematicTop::tick() {
   hash << int_reg.commit();
 
   hash << SYS_PIN_RSTp.commit();
-  hash << SYS_PIN_CLK_B.commit();
-  hash << SYS_PIN_CLK_A.commit();
   hash << SYS_PIN_T2n.commit();
   hash << SYS_PIN_T1n.commit();
 
@@ -389,24 +344,13 @@ SignalHash SchematicTop::tick() {
 
   hash << CPU_PIN_SYS_RSTp.commit();
   hash << CPU_PIN_EXT_RST.commit();       // PORTC_02: <- PIN_RESET directly connected to the pad
-  hash << CPU_PIN_EXT_CLKGOOD.commit();   // PORTC_03: <- CLKIN_A
   hash << CPU_PIN_STARTp.commit();
   hash << CPU_PIN_BOOTp.commit();         // PORTA_04: <- TUTU
   hash << CPU_PIN_ADDR_HI.commit();       // PORTA_03: <- SYRO
 
-  hash << CPU_PIN_BOWA_AxCDEFGH.commit(); // PORTD_01: <- BOWA
-  hash << CPU_PIN_BEDO_xBxxxxxx.commit(); // PORTD_02: <- BEDO _____fgh
-  hash << CPU_PIN_BEKO_xBCDExxx.commit(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
-  hash << CPU_PIN_BUDE_AxxxxFGH.commit(); // PORTD_04: <- BUDE abcd____
-  hash << CPU_PIN_BOLO_xBCDEFGx.commit(); // PORTD_05: <- BOLO
-  hash << CPU_PIN_BUKE_ABxxxxxH.commit(); // PORTD_07: <- BUKE _____f__
-  hash << CPU_PIN_BOMA_xBxxxxxx.commit(); // PORTD_08: <- BOMA _____fgh
-  hash << CPU_PIN_BOGA_AxCDEFGH.commit(); // PORTD_09: <- BOGA abcde___
-
   //----------------------------------------
   // CPU-to-SOC
 
-  hash << CPU_PIN_READYp.commit();         // PORTC_00: -> ABOL
   hash << CPU_PIN6.commit();               // PORTD_00: -> LEXY, doesn't do anything
   hash << CPU_PIN5.commit();               // PORTD_06: -> FROM_CPU5
 
@@ -478,8 +422,6 @@ SignalHash SchematicTop::tick() {
   hash << VRM_TRI_A10.commit();
   hash << VRM_TRI_A11.commit();
   hash << VRM_TRI_A12.commit();
-
-  hash << EXT_PIN_CLK.commit();      // PIN_75 <- BUDE/BEVA
 
   hash << VRAM_PIN_MCSn_A.commit();   // PIN_43 <- SOKY
   hash << VRAM_PIN_MCSn_D.commit();   // PIN_43 <- SETY
@@ -695,15 +637,15 @@ if (top.VYPO_GND) bus_out.set_data(
 
 void SchematicTop::tick_vram_pins() {
 
-  /*p25.TUTO*/ wire _TUTO_DBG_VRAMp = and (UNOR_MODE_DBG2p(), dbg_reg.SOTO_DBG.qn());
+  /*p25.TUTO*/ wire _TUTO_DBG_VRAMp = and (top.UNOR_MODE_DBG2p(), dbg_reg.SOTO_DBG.qn());
   /*p25.RACO*/ wire _RACO_DBG_VRAMn = not(_TUTO_DBG_VRAMp);
 
   // the logic here is kinda weird, still seems to select vram.
 
-  /*p25.TEFA*/ wire _TEFA_8000_9FFFp = nor(SYRO_FE00_FFFFp(), TEXO_8000_9FFFn());
+  /*p25.TEFA*/ wire _TEFA_8000_9FFFp = nor(top.SYRO_FE00_FFFFp(), top.TEXO_8000_9FFFn());
   /*p25.SOSE*/ wire _SOSE_8000_9FFFp = and (CPU_PIN_A15, _TEFA_8000_9FFFp);
 
-  /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and (_SOSE_8000_9FFFp, ABUZ_CPU_ADDR_VALIDp());
+  /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and (_SOSE_8000_9FFFp, top.ABUZ_CPU_ADDR_VALIDp());
   /*p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not(VRAM_PIN_MCSn_C);
   /*p25.TOLE*/ wire _TOLE_VRAM_RDp     = mux2_p(_TEFY_VRAM_MCSp, _TUCA_CPU_VRAM_RDp, _TUTO_DBG_VRAMp);
   /*p25.SERE*/ wire _SERE_CPU_VRM_RDp   = and (_TOLE_VRAM_RDp, ppu_reg.ROPY_RENDERINGn());
@@ -728,11 +670,11 @@ void SchematicTop::tick_vram_pins() {
 
   {
     /*p25.RYLU*/ wire _RYLU_DBG_VRAM_RDn = nand(_SALE_VRAM_WRn, XANE_VRAM_LOCKn());
-    /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not(SOHO_SPR_VRAM_RDp());
+    /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and(sprite_fetcher.TACU_SPR_SEQ_5_TRIG(), ABON_SPR_VRM_RDn());
+    /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not(_SOHO_SPR_VRAM_RDp);
     /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not(tile_fetcher.LONY_BG_READ_VRAM_LATCHp.q()); // this should be correct
-    /*p25.APAM*/ wire _APAM_DMA_VRAM_RDn = not(LUFA_DMA_VRAM_RDp());
 
-    /*p25.RACU*/ wire _RACU_MOEn   = and (_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAM_RDn); // def and
+    /*p25.RACU*/ wire _RACU_MOEn   = and (_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, top.dma_reg.APAM_DMA_VRAM_RDn()); // def and
     /*p25.SEMA*/ wire _SEMA_MOEn_A = and(_RACU_MOEn, _RACO_DBG_VRAMn);
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or (_RACU_MOEn, _TUTO_DBG_VRAMp); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire _REFO_MOEn_A = not(_SEMA_MOEn_A);
@@ -745,8 +687,8 @@ void SchematicTop::tick_vram_pins() {
     // Polarity issues here, ABON should be P
     // ABON = not(TEXY)
     // SUTU = nor(LENA, LUFA, ABON, SERE);
-    /*p25.SUTU*/ wire _SUTU_MCSn = nor(LENA_BGW_VRM_RDp(),
-                                       LUFA_DMA_VRAM_RDp(),
+    /*p25.SUTU*/ wire _SUTU_MCSn = nor(top.tile_fetcher.LENA_BGW_VRM_RDp(),
+                                       top.dma_reg.LUFA_DMA_VRAM_RDp(),
                                        ABON_SPR_VRM_RDn(),
                                        _SERE_CPU_VRM_RDp);
     /*p25.TODE*/ wire _TODE_MCSn_A = and(_SUTU_MCSn, _RACO_DBG_VRAMn);
@@ -915,241 +857,6 @@ void SchematicTop::tick_vram_pins() {
 }
 
 //-----------------------------------------------------------------------------
-// Reset signals
-
-wire SchematicTop::XAPO_VID_RSTn() const {
-  /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not(XORE_SYS_RSTp());
-  /*p01.XODO*/ wire _XODO_VID_RSTp = nand(_XEBE_SYS_RSTn, XONA_LCDC_EN.q());
-  /*p01.XAPO*/ wire _XAPO_VID_RSTn = not(_XODO_VID_RSTp);
-  return _XAPO_VID_RSTn;
-}
-
-//-----------------------------------------------------------------------------
-// CPU signals
-
-wire SchematicTop::AREV_CPU_WRn_ABCDxxxH() const {
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand(CPU_PIN_WRp, AFAS_xxxxEFGx());
-  return AREV_CPU_WRn_ABCDxxxH;
-}
-
-wire SchematicTop::UBAL_CPU_WRn_ABCDxxxH() const {
-  wire UNOR_MODE_DBG2p = this->UNOR_MODE_DBG2p();
-
-  // polarity of EXT_PIN_WRp_C wrong?
-  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(bus_mux.EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx(), UNOR_MODE_DBG2p);
-  return UBAL_CPU_WRn_ABCDxxxH;
-}
-
-//-----------------------------------------------------------------------------
-// DMA signals
-
-wire SchematicTop::MATU_DMA_RUNNINGp() const {
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp = dma_reg.MATU_DMA_RUNNINGp.q();
-  return MATU_DMA_RUNNINGp;
-}
-
-wire SchematicTop::MUDA_DMA_SRC_VRAMp() const {
-  /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not(dma_reg.DMA_A15.q());
-  /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor(dma_reg.DMA_A13.q(), dma_reg.DMA_A14.q(), LEBU_DMA_ADDR_A15n);
-  return MUDA_DMA_SRC_VRAMp;
-}
-
-//------------------------------------------------------------------------------
-// LCD signals
-
-//-----------------------------------------------------------------------------
-// Address decoder signals
-
-wire SchematicTop::TUNA_0000_FDFFp() const {
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12,
-                                           CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
-  return TUNA_0000_FDFFp;
-}
-
-wire SchematicTop::WERO_FF4Xp() const {
-#if 0
-
-  /*p22.WERO*/ wire WERO_FF4Xp = and( CPU_PIN_A15, CPU_PIN_A14,  CPU_PIN_A13,  CPU_PIN_A12,
-                                      CPU_PIN_A11, CPU_PIN_A10,  CPU_PIN_A09,  CPU_PIN_A08,
-                                     !CPU_PIN_A07, CPU_PIN_A06, !CPU_PIN_A05, !CPU_PIN_A04);
-
-#endif
-
-  /*p22.XALY*/ wire XALY_0x00xxxxp  = nor(CPU_PIN_A07, CPU_PIN_A05, CPU_PIN_A04);
-  /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp(), TONA_A08n());
-  /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_FF00_FFFFp, CPU_PIN_A06, XALY_0x00xxxxp);
-  /*p22.WERO*/ wire WERO_FF4Xp = not(WUTU_FF4Xn);
-
-  return WERO_FF4Xp;
-}
-
-//-----------------------------------------------------------------------------
-// PPU signals
-
-wire SchematicTop::WODU_RENDER_DONEp() const {
-  /*p21.XUGU*/ wire _XUGU_X_167 = nand(ppu_reg.XEHO_X0.q(), ppu_reg.SAVY_X1.q(), ppu_reg.XODU_X2.q(), ppu_reg.TUKY_X5.q(), ppu_reg.SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
-  /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167);
-  /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(sprite_store.FEPO_STORE_MATCHp);
-  /*p21.WODU*/ wire WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
-  return WODU_RENDER_DONEp;
-}
-
-wire SchematicTop::TEVO_FINE_RSTp() const {
-  
-  /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
-  /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), PORY_TILE_FETCH_DONE_Bp());
-  /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp = nor(win_reg.SEKO_WX_MATCHne, win_reg.SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
-  return TEVO_FINE_RSTp;
-}
-
-
-// so dma stops oam scan?
-wire SchematicTop::ACYL_SCANNINGp() const {
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(MATU_DMA_RUNNINGp());
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and (BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.q());
-  return ACYL_SCANNINGp;
-}
-
-wire SchematicTop::SEGU_CLKPIPEn() const {
-  /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), MYVO_AxCxExGx());
-
-  /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(TOMU_WIN_HITp());
-  /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp.q(), _VYBO_PIX_CLK_xBxDxFxH);
-
-  /*p24.SEGU*/ wire SEGU_CLKPIPEn = not(_TYFA_CLKPIPEp_xBxDxFxH);
-  return SEGU_CLKPIPEn;
-}
-
-wire SchematicTop::SACU_CLKPIPEp() const {
-  /*p24.SACU*/ return nor(SEGU_CLKPIPEn(), ppu_reg.ROXY_FINE_MATCH_LATCHn.q());
-}
-
-wire SchematicTop::ROZE_FINE_COUNT_7n() const {
-  /*p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand(ppu_reg.RYKU_FINE_CNT0.q(), ppu_reg.ROGA_FINE_CNT1.q(), ppu_reg.RUBU_FINE_CNT2.q());
-  return ROZE_FINE_COUNT_7n;
-}
-
-wire SchematicTop::VOTY_INT_STATp() const {
-  /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_VBLANKn(), SELA_LINE_END_Fp());
-  /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_VBLANKn(), WODU_RENDER_DONEp());
-  /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN.q(), ROPO_LY_MATCH_SYNCp(),
-                                           ppu_reg.REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
-                                           ppu_reg.RUFO_INT_VBL_EN.q(), PARU_VBLANKp_d4(), // polarity?
-                                           ppu_reg.ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
-  /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
-  /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);
-  return VOTY_INT_STATp;
-}
-
-// And this is the topmost "reset sprite fetcher" signal
-wire SchematicTop::VEKU_SFETCH_RUNNING_RSTn() const {
-  /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
-  /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
-  /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
-  /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_SPRITE_DONEp(), TAVE_PORCH_DONE_TRIGp); // def nor
-  return VEKU_SFETCH_RUNNING_RSTn;
-}
-
-//-----------------------------------------------------------------------------
-// Tile fetcher signals
-
-wire SchematicTop::PORY_TILE_FETCH_DONE_Bp() const {
-  /*p24.PORY*/ return tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q();
-}
-
-//-----------------------------------------------------------------------------
-// Sprite scanner signals
-
-wire SchematicTop::ANOM_LINE_RSTn() const {
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p(), ATAR_VID_RSTp());
-  return ANOM_LINE_RSTn;
-}
-
-wire SchematicTop::BALU_LINE_RSTp() const {
-  /*p29.BALU*/ wire BALU_LINE_RSTp = not(ANOM_LINE_RSTn());
-  return BALU_LINE_RSTp;
-}
-
-wire SchematicTop::AVAP_RENDER_START_RST() const {
-  /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(BALU_LINE_RSTp(), sprite_scanner.DOBA_SCAN_DONE_B.q(), !sprite_scanner.BYBA_SCAN_DONE_A.q());
-  /*p29.AVAP*/ wire _AVAP_RENDER_START_RST = not(_BEBU_SCAN_DONE_TRIGn);
-  return _AVAP_RENDER_START_RST;
-}
-
-//-----------------------------------------------------------------------------
-// Sprite fetcher signals
-
-wire SchematicTop::WEFY_SPR_READp() const {
-  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(ppu_reg.TEPA_RENDERINGn(), sprite_fetcher.TULY_SFETCH_S1.q(), sprite_fetcher.TESE_SFETCH_S2.q());
-  /*p28.WEFY*/ wire WEFY_SPR_READp = and(TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1.q());
-  return WEFY_SPR_READp;
-}
-
-wire SchematicTop::VAPE_FETCH_OAM_CLK() const {
-  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(ppu_reg.TEPA_RENDERINGn(), sprite_fetcher.TULY_SFETCH_S1.q(), sprite_fetcher.TESE_SFETCH_S2.q());
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), sprite_fetcher.TYTU_SFETCH_S0n());
-  /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
-  return VAPE_FETCH_OAM_CLK;
-}
-
-wire SchematicTop::VUSA_SPRITE_DONEn() const {
-  // TYNO_01 << TOXE_17
-  // TYNO_02 << SEBA_17
-  // TYNO_03 << VONU_17
-  // TYNO_04 >> VUSA_02
-
-  // VUSA_01 << TYFO_16
-  // VUSA_02 << TYNO_04
-  // VUSA_03 nc
-  // VUSA_04 >>
-
-  /*p29.TYNO*/ wire TYNO = nand(sprite_fetcher.TOXE_SFETCH_S0.q(), sprite_fetcher.SEBA_SFETCH_S1_D5.q(), sprite_fetcher.VONU_SFETCH_S1_D4.q());
-  /*p29.VUSA*/ wire VUSA_SPRITE_DONEn = or(sprite_fetcher.TYFO_SFETCH_S0_D1.qn(), TYNO);
-  return VUSA_SPRITE_DONEn;
-}
-
-wire SchematicTop::TEXY_SPR_READ_VRAMp() const {
-  /*p29.TYSO*/ wire TYSO_SPRITE_READn = or(sprite_fetcher.SAKY(), ppu_reg.TEPA_RENDERINGn());
-  /*p29.TEXY*/ wire TEXY_SPR_READ_VRAMp = not(TYSO_SPRITE_READn);
-  return TEXY_SPR_READ_VRAMp;
-}
-
-wire SchematicTop::SOHO_SPR_VRAM_RDp() const {
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), sprite_fetcher.TYTU_SFETCH_S0n());
-  /*p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and (TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRM_RDn());
-  return SOHO_SPR_VRAM_RDp;
-}
-
-//-----------------------------------------------------------------------------
-// Window signals
-
-wire SchematicTop::RYDY_WIN_FIRST_TILE_A() const {
-  wire RYDY_WIN_FIRST_TILE_A = win_reg.RYDY_WIN_FIRST_TILE_A.q();
-  return RYDY_WIN_FIRST_TILE_A;
-}
-
-wire SchematicTop::NOCU_WIN_MODEn() const {
-  /*p27.NOCU*/ return not(win_reg.PYNU_WIN_MODE_A.q());
-}
-
-//------------------------------------------------------------------------------
-// Misc signals
-
-wire SchematicTop::ASOK_INT_JOYPADp() const {
-  /*p02.ASOK*/ wire ASOK_INT_JOYPADp = and (joy_reg.APUG_JP_GLITCH3.q(), joy_reg.BATU_JP_GLITCH0.q());
-  return ASOK_INT_JOYPADp;
-}
-
-wire SchematicTop::BOOT_BITn() const {
-  /*p07.TEPU*/ return bootrom.BOOT_BITn.q();
-}
-
-wire SchematicTop::CALY_INT_SERIALp() const {
-  return ser_reg.CALY_INT_SERIALp.q();
-}
-
-//------------------------------------------------------------------------------
 
 
 

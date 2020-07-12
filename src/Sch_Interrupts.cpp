@@ -50,7 +50,7 @@ void InterruptRegisters::tock(SchematicTop& top) {
 
     /*p02.ROTU*/ wire _ROTU_FF0F_WRp = not(_REFA_FF0F_WRn);
 
-    /*p21.VYPU*/ wire _VYPU_VBLANKp       = not(top.TOLU_VBLANKn());     
+    /*p21.VYPU*/ wire _VYPU_VBLANKp       = not(top.lcd_reg.TOLU_VBLANKn());     
 
     /*p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not(CPU_PIN_ACK_VBLANK);
     /*p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not(CPU_PIN_ACK_STAT);
@@ -70,11 +70,11 @@ void InterruptRegisters::tock(SchematicTop& top) {
     /*p02.SULO*/ wire _SULO_INT3_WRn = or (top.CPU_TRI_D3.q(), _REFA_FF0F_WRn);
     /*p02.SEME*/ wire _SEME_INT4_WRn = or (top.CPU_TRI_D4.q(), _REFA_FF0F_WRn);
 
-    /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and (_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.ALUR_SYS_RSTn());
-    /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and (_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.ALUR_SYS_RSTn());
-    /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and (_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.ALUR_SYS_RSTn());
-    /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and (_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.ALUR_SYS_RSTn());
-    /*p02.TYME*/ wire _TYME_FF0F_RST4n = and (_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.ALUR_SYS_RSTn());
+    /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and (_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
+    /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and (_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.rst_reg.ALUR_SYS_RSTn());
+    /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and (_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
+    /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and (_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
+    /*p02.TYME*/ wire _TYME_FF0F_RST4n = and (_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
 
 
     // LOPE_01 SC
@@ -102,9 +102,9 @@ void InterruptRegisters::tock(SchematicTop& top) {
 
     /*p02.LOPE*/ LOPE_FF0F_0.set(_VYPU_VBLANKp,     _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, top.PESU_GND);
     /*p02.LALU*/ LALU_FF0F_1.set(top.VOTY_INT_STATp(),   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, top.PESU_GND);
-    /*p02.NYBO*/ NYBO_FF0F_2.set(top.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, top.PESU_GND);
-    /*p02.UBUL*/ UBUL_FF0F_3.set(top.CALY_INT_SERIALp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, top.PESU_GND);
-    /*p02.ULAK*/ ULAK_FF0F_4.set(top.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, top.PESU_GND);
+    /*p02.NYBO*/ NYBO_FF0F_2.set(top.tim_reg.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, top.PESU_GND);
+    /*p02.UBUL*/ UBUL_FF0F_3.set(top.ser_reg.CALY_INT_SERIALp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, top.PESU_GND);
+    /*p02.ULAK*/ ULAK_FF0F_4.set(top.joy_reg.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, top.PESU_GND);
 
     CPU_PIN_INT_VBLANK.set(LOPE_FF0F_0.q());
     CPU_PIN_INT_STAT  .set(LALU_FF0F_1.q());

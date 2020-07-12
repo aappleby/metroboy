@@ -8,34 +8,35 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
-
-  void tick(SchematicTop& gb);
-  void tock(SchematicTop& gb);
+  SerialRegisters();
+  void tick(SchematicTop& top);
+  void tock(SchematicTop& top);
   SignalHash commit();
 
+  /*p06.CALY*/ wire CALY_INT_SERIALp() const { return _CALY_INT_SERIALp.q(); }
+
 private:
-  friend SchematicTop;
 
-  /*p06.ETAF*/ Reg17 XFER_START;
-  /*p06.CULY*/ Reg17 XFER_DIR;
+  /*p06.ETAF*/ Reg17 _XFER_START;
+  /*p06.CULY*/ Reg17 _XFER_DIR;
 
-  /*p06.COTY*/ Reg17 SER_CLK;
+  /*p06.COTY*/ Reg17 _SER_CLK;
 
-  /*p06.CAFA*/ Reg17 SER_CNT0;
-  /*p06.CYLO*/ Reg17 SER_CNT1;
-  /*p06.CYDE*/ Reg17 SER_CNT2;
-  /*p06.CALY*/ Reg17 CALY_INT_SERIALp;
+  /*p06.CAFA*/ Reg17 _SER_CNT0;
+  /*p06.CYLO*/ Reg17 _SER_CNT1;
+  /*p06.CYDE*/ Reg17 _SER_CNT2;
+  /*p06.CALY*/ Reg17 _CALY_INT_SERIALp;
 
-  /*p06.CUBA*/ Reg22 SER_DATA0;
-  /*p06.DEGU*/ Reg22 SER_DATA1;
-  /*p06.DYRA*/ Reg22 SER_DATA2;
-  /*p06.DOJO*/ Reg22 SER_DATA3;
-  /*p06.DOVU*/ Reg22 SER_DATA4;
-  /*p06.EJAB*/ Reg22 SER_DATA5;
-  /*p06.EROD*/ Reg22 SER_DATA6;
-  /*p06.EDER*/ Reg22 SER_DATA7;
+  /*p06.CUBA*/ Reg22 _SER_DATA0;
+  /*p06.DEGU*/ Reg22 _SER_DATA1;
+  /*p06.DYRA*/ Reg22 _SER_DATA2;
+  /*p06.DOJO*/ Reg22 _SER_DATA3;
+  /*p06.DOVU*/ Reg22 _SER_DATA4;
+  /*p06.EJAB*/ Reg22 _SER_DATA5;
+  /*p06.EROD*/ Reg22 _SER_DATA6;
+  /*p06.EDER*/ Reg22 _SER_DATA7;
 
-  /*p06.ELYS*/ Reg17 SER_OUT;
+  /*p06.ELYS*/ Reg17 _SER_OUT;
 
   //----------
   // Serial pins

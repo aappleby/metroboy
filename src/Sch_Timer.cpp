@@ -26,35 +26,35 @@ void TimerRegisters::tock(SchematicTop& top) {
   {
     /*p01.UFOL*/ wire _UFOL_DIV_RSTn = nor(top.UCOB_CLKBADp(), top.SYS_PIN_RSTp, _TAPE_FF04_WRp);
 
-    /*p01.UKUP*/ UKUP_DIV_00.set(top.BOGA_xBCDEFGH(), _UFOL_DIV_RSTn, !UKUP_DIV_00.q());
-    /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(),    _UFOL_DIV_RSTn, !UFOR_DIV_01.q());
-    /*p01.UNER*/ UNER_DIV_02.set(!UFOR_DIV_01.q(),    _UFOL_DIV_RSTn, !UNER_DIV_02.q());
-   
-    /*p01.TERO*/ TERO_DIV_03.set(!UNER_DIV_02.q(), _UFOL_DIV_RSTn, !TERO_DIV_03.q());
-    /*p01.UNYK*/ UNYK_DIV_04.set(!TERO_DIV_03.q(), _UFOL_DIV_RSTn, !UNYK_DIV_04.q());
-    /*p01.TAMA*/ TAMA_DIV_05.set(!UNYK_DIV_04.q(), _UFOL_DIV_RSTn, !TAMA_DIV_05.q());
+    /*p01.UKUP*/ _UKUP_DIV_00.set(top.clk_reg.BOGA_xBCDEFGH(), _UFOL_DIV_RSTn, !_UKUP_DIV_00.q());
+    /*p01.UFOR*/ _UFOR_DIV_01.set(!_UKUP_DIV_00.q(),           _UFOL_DIV_RSTn, !_UFOR_DIV_01.q());
+    /*p01.UNER*/ _UNER_DIV_02.set(!_UFOR_DIV_01.q(),           _UFOL_DIV_RSTn, !_UNER_DIV_02.q());
+    /*p01.TERO*/ _TERO_DIV_03.set(!_UNER_DIV_02.q(),           _UFOL_DIV_RSTn, !_TERO_DIV_03.q());
+    /*p01.UNYK*/ _UNYK_DIV_04.set(!_TERO_DIV_03.q(),           _UFOL_DIV_RSTn, !_UNYK_DIV_04.q());
+    /*p01.TAMA*/ _TAMA_DIV_05.set(!_UNYK_DIV_04.q(),           _UFOL_DIV_RSTn, !_TAMA_DIV_05.q());
+
     ///*p01.ULUR*/ wire DIV_06_CLK = mux2(BOGA_AxCDEFGH, DIV_05, FF60_1);
-    /*p01.ULUR*/ wire _DIV_06_CLK = TAMA_DIV_05.q();
-    /*p01.UGOT*/ UGOT_DIV_06.set(!_DIV_06_CLK, _UFOL_DIV_RSTn, !UGOT_DIV_06.q());
-    /*p01.TULU*/ TULU_DIV_07.set(!UGOT_DIV_06.q(), _UFOL_DIV_RSTn, !TULU_DIV_07.q());
-    /*p01.TUGO*/ TUGO_DIV_08.set(!TULU_DIV_07.q(), _UFOL_DIV_RSTn, !TUGO_DIV_08.q());
-    /*p01.TOFE*/ TOFE_DIV_09.set(!TUGO_DIV_08.q(), _UFOL_DIV_RSTn, !TOFE_DIV_09.q());
-    /*p01.TERU*/ TERU_DIV_10.set(!TOFE_DIV_09.q(), _UFOL_DIV_RSTn, !TERU_DIV_10.q());
-    /*p01.SOLA*/ SOLA_DIV_11.set(!TERU_DIV_10.q(), _UFOL_DIV_RSTn, !SOLA_DIV_11.q());
-    /*p01.SUBU*/ SUBU_DIV_12.set(!SOLA_DIV_11.q(), _UFOL_DIV_RSTn, !SUBU_DIV_12.q());
-    /*p01.TEKA*/ TEKA_DIV_13.set(!SUBU_DIV_12.q(), _UFOL_DIV_RSTn, !TEKA_DIV_13.q());
-    /*p01.UKET*/ UKET_DIV_14.set(!TEKA_DIV_13.q(), _UFOL_DIV_RSTn, !UKET_DIV_14.q());
-    /*p01.UPOF*/ UPOF_DIV_15.set(!UKET_DIV_14.q(), _UFOL_DIV_RSTn, !UPOF_DIV_15.q());
+    /*p01.ULUR*/ wire _DIV_06_CLK = _TAMA_DIV_05.q();
+    /*p01.UGOT*/ _UGOT_DIV_06.set(!_DIV_06_CLK,     _UFOL_DIV_RSTn, !_UGOT_DIV_06.q());
+    /*p01.TULU*/ _TULU_DIV_07.set(!_UGOT_DIV_06.q(), _UFOL_DIV_RSTn, !_TULU_DIV_07.q());
+    /*p01.TUGO*/ _TUGO_DIV_08.set(!_TULU_DIV_07.q(), _UFOL_DIV_RSTn, !_TUGO_DIV_08.q());
+    /*p01.TOFE*/ _TOFE_DIV_09.set(!_TUGO_DIV_08.q(), _UFOL_DIV_RSTn, !_TOFE_DIV_09.q());
+    /*p01.TERU*/ _TERU_DIV_10.set(!_TOFE_DIV_09.q(), _UFOL_DIV_RSTn, !_TERU_DIV_10.q());
+    /*p01.SOLA*/ _SOLA_DIV_11.set(!_TERU_DIV_10.q(), _UFOL_DIV_RSTn, !_SOLA_DIV_11.q());
+    /*p01.SUBU*/ _SUBU_DIV_12.set(!_SOLA_DIV_11.q(), _UFOL_DIV_RSTn, !_SUBU_DIV_12.q());
+    /*p01.TEKA*/ _TEKA_DIV_13.set(!_SUBU_DIV_12.q(), _UFOL_DIV_RSTn, !_TEKA_DIV_13.q());
+    /*p01.UKET*/ _UKET_DIV_14.set(!_TEKA_DIV_13.q(), _UFOL_DIV_RSTn, !_UKET_DIV_14.q());
+    /*p01.UPOF*/ _UPOF_DIV_15.set(!_UKET_DIV_14.q(), _UFOL_DIV_RSTn, !_UPOF_DIV_15.q());
 
 
-    /*p01.UTOK*/ wire _UTOK_DIV_08n = not(TUGO_DIV_08.q());
-    /*p01.SAPY*/ wire _SAPY_DIV_09n = not(TOFE_DIV_09.q());
-    /*p01.UMER*/ wire _UMER_DIV_10n = not(TERU_DIV_10.q());
-    /*p01.RAVE*/ wire _RAVE_DIV_11n = not(SOLA_DIV_11.q());
-    /*p01.RYSO*/ wire _RYSO_DIV_12n = not(SUBU_DIV_12.q());
-    /*p01.UDOR*/ wire _UDOR_DIV_13n = not(TEKA_DIV_13.q());
-    /*p01.TAWU*/ top.CPU_TRI_D0.set_tribuf_6p(_TAGY_FF04_RD, not(top.UMEK_DIV_06n()));
-    /*p01.TAKU*/ top.CPU_TRI_D1.set_tribuf_6p(_TAGY_FF04_RD, not(top.UREK_DIV_07n()));
+    /*p01.UTOK*/ wire _UTOK_DIV_08n = not(_TUGO_DIV_08.q());
+    /*p01.SAPY*/ wire _SAPY_DIV_09n = not(_TOFE_DIV_09.q());
+    /*p01.UMER*/ wire _UMER_DIV_10n = not(_TERU_DIV_10.q());
+    /*p01.RAVE*/ wire _RAVE_DIV_11n = not(_SOLA_DIV_11.q());
+    /*p01.RYSO*/ wire _RYSO_DIV_12n = not(_SUBU_DIV_12.q());
+    /*p01.UDOR*/ wire _UDOR_DIV_13n = not(_TEKA_DIV_13.q());
+    /*p01.TAWU*/ top.CPU_TRI_D0.set_tribuf_6p(_TAGY_FF04_RD, not(UMEK_DIV_06n()));
+    /*p01.TAKU*/ top.CPU_TRI_D1.set_tribuf_6p(_TAGY_FF04_RD, not(UREK_DIV_07n()));
     /*p01.TEMU*/ top.CPU_TRI_D2.set_tribuf_6p(_TAGY_FF04_RD, not(_UTOK_DIV_08n));
     /*p01.TUSE*/ top.CPU_TRI_D3.set_tribuf_6p(_TAGY_FF04_RD, not(_SAPY_DIV_09n));
     /*p01.UPUG*/ top.CPU_TRI_D4.set_tribuf_6p(_TAGY_FF04_RD, not(_UMER_DIV_10n));
@@ -65,12 +65,12 @@ void TimerRegisters::tock(SchematicTop& top) {
 
   // FF05 TIMA
   {
-    /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not(MOBA_INT_TIMERp.q());
-    /*p03.UBOT*/ wire _UBOT_CLK_256Kn = not(UFOR_DIV_01.q());
-    /*p03.UVYR*/ wire _UVYR_CLK_64Kn = not(TERO_DIV_03.q());
+    /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not(_MOBA_INT_TIMERp.q());
+    /*p03.UBOT*/ wire _UBOT_CLK_256Kn = not(_UFOR_DIV_01.q());
+    /*p03.UVYR*/ wire _UVYR_CLK_64Kn = not(_TERO_DIV_03.q());
 
-    /*p03.UKAP*/ wire _UKAP_CLK_MUXa = mux2_n(top.UVYN_DIV_05n(), _UVYR_CLK_64Kn, SOPU_TAC_0.q());
-    /*p03.TEKO*/ wire _TEKO_CLK_MUXb = mux2_n(_UBOT_CLK_256Kn, top.UREK_DIV_07n(), SOPU_TAC_0.q());
+    /*p03.UKAP*/ wire _UKAP_CLK_MUXa = mux2_n(UVYN_DIV_05n(), _UVYR_CLK_64Kn, SOPU_TAC_0.q());
+    /*p03.TEKO*/ wire _TEKO_CLK_MUXb = mux2_n(_UBOT_CLK_256Kn, UREK_DIV_07n(), SOPU_TAC_0.q());
     /*p03.TECY*/ wire _TECY_CLK_MUXc = mux2_n(_UKAP_CLK_MUXa, _TEKO_CLK_MUXb, SAMY_TAC_1.q());
 
     /*p03.SOGU*/ wire _SOGU_TIMA_CLK = nor(_TECY_CLK_MUXc, SABO_TAC_2.qn());
@@ -83,7 +83,7 @@ void TimerRegisters::tock(SchematicTop& top) {
     /*p03.REFU*/ wire _REFU_TIMA_MUX_6 = mux2_n(PETO_TMA_6.q(), top.CPU_TRI_D6, _TOPE_FF05_WRn);
     /*p03.RATO*/ wire _RATO_TIMA_MUX_7 = mux2_n(SETA_TMA_7.q(), top.CPU_TRI_D7, _TOPE_FF05_WRn);
 
-    /*p03.MULO*/ wire _MULO_TIMA_RST  = not(top.ALUR_SYS_RSTn());
+    /*p03.MULO*/ wire _MULO_TIMA_RST  = not(top.rst_reg.ALUR_SYS_RSTn());
     /*p03.PUXY*/ wire _PUXY_TIMA_LD_0 = nor(_MULO_TIMA_RST, _ROKE_TIMA_MUX_0);
     /*p03.NERO*/ wire _NERO_TIMA_LD_1 = nor(_MULO_TIMA_RST, _PETU_TIMA_MUX_1);
     /*p03.NADA*/ wire _NADA_TIMA_LD_2 = nor(_MULO_TIMA_RST, _NYKU_TIMA_MUX_2);
@@ -94,7 +94,7 @@ void TimerRegisters::tock(SchematicTop& top) {
     /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor(_MULO_TIMA_RST, _RATO_TIMA_MUX_7);
 
     /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.CPU_PIN5, _TOPE_FF05_WRn); // suggests CPU_PIN5 = DATA_VALIDn
-    /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
+    /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.rst_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
 
     /*p03.REGA*/ REGA_TIMA_0.clk_n(_SOGU_TIMA_CLK,   _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);
     /*p03.POVY*/ POVY_TIMA_1.clk_n(REGA_TIMA_0.q(), _MEXU_TIMA_LOADp, _NERO_TIMA_LD_1);
@@ -116,25 +116,25 @@ void TimerRegisters::tock(SchematicTop& top) {
 
     /*p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn = not(_MEXU_TIMA_LOADp);
 
-    /*p03.NYDU*/ NYDU_TIMA_MAX.set(top.BOGA_xBCDEFGH(), _MUGY_TIMA_MAX_RSTn, NUGA_TIMA_7.q());
+    /*p03.NYDU*/ NYDU_TIMA_MAX.set(top.clk_reg.BOGA_xBCDEFGH(), _MUGY_TIMA_MAX_RSTn, NUGA_TIMA_7.q());
   }
 
   {
     /*p03.MERY*/ wire _MERY_INT_TIMER_IN = nor(!NYDU_TIMA_MAX.q(), NUGA_TIMA_7.q());
 
-    /*p03.MOBA*/ MOBA_INT_TIMERp.set(top.BOGA_xBCDEFGH(), top.ALUR_SYS_RSTn(), _MERY_INT_TIMER_IN);
+    /*p03.MOBA*/ _MOBA_INT_TIMERp.set(top.clk_reg.BOGA_xBCDEFGH(), top.rst_reg.ALUR_SYS_RSTn(), _MERY_INT_TIMER_IN);
   }
 
   // FF06 TMA
   {
-    /*p03.SABU*/ SABU_TMA_0.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D0);
-    /*p03.NYKE*/ NYKE_TMA_1.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
-    /*p03.MURU*/ MURU_TMA_2.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D2);
-    /*p03.TYVA*/ TYVA_TMA_3.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D3);
-    /*p03.TYRU*/ TYRU_TMA_4.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D4);
-    /*p03.SUFY*/ SUFY_TMA_5.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D5);
-    /*p03.PETO*/ PETO_TMA_6.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D6);
-    /*p03.SETA*/ SETA_TMA_7.set(_TYJU_FF06_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D7);
+    /*p03.SABU*/ SABU_TMA_0.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D0);
+    /*p03.NYKE*/ NYKE_TMA_1.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
+    /*p03.MURU*/ MURU_TMA_2.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D2);
+    /*p03.TYVA*/ TYVA_TMA_3.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D3);
+    /*p03.TYRU*/ TYRU_TMA_4.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D4);
+    /*p03.SUFY*/ SUFY_TMA_5.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D5);
+    /*p03.PETO*/ PETO_TMA_6.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D6);
+    /*p03.SETA*/ SETA_TMA_7.set(_TYJU_FF06_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D7);
 
     /*p03.SETE*/ top.CPU_TRI_D0.set_tribuf_6p(_TUBY_FF06_RD, SABU_TMA_0.q());
     /*p03.PYRE*/ top.CPU_TRI_D1.set_tribuf_6p(_TUBY_FF06_RD, NYKE_TMA_1.q());
@@ -148,9 +148,9 @@ void TimerRegisters::tock(SchematicTop& top) {
 
   // FF07 TAC
   {
-    /*p03.SOPU*/ SOPU_TAC_0.set(_SARA_FF07_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D0);
-    /*p03.SAMY*/ SAMY_TAC_1.set(_SARA_FF07_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
-    /*p03.SABO*/ SABO_TAC_2.set(_SARA_FF07_WRn, top.ALUR_SYS_RSTn(), top.CPU_TRI_D2);
+    /*p03.SOPU*/ SOPU_TAC_0.set(_SARA_FF07_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D0);
+    /*p03.SAMY*/ SAMY_TAC_1.set(_SARA_FF07_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
+    /*p03.SABO*/ SABO_TAC_2.set(_SARA_FF07_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D2);
 
     /*p03.RYLA*/ top.CPU_TRI_D0.set_tribuf_6p(_SORA_FF07_RD, SOPU_TAC_0.q());
     /*p03.ROTE*/ top.CPU_TRI_D1.set_tribuf_6p(_SORA_FF07_RD, SAMY_TAC_1.q());
@@ -162,22 +162,22 @@ void TimerRegisters::tock(SchematicTop& top) {
 
 SignalHash TimerRegisters::commit() {
   SignalHash hash;
-  /*p01.UKUP*/ hash << UKUP_DIV_00.commit();
-  /*p01.UFOR*/ hash << UFOR_DIV_01.commit();
-  /*p01.UNER*/ hash << UNER_DIV_02.commit();
-  /*p01.TERO*/ hash << TERO_DIV_03.commit();
-  /*p01.UNYK*/ hash << UNYK_DIV_04.commit();
-  /*p01.TAMA*/ hash << TAMA_DIV_05.commit();
-  /*p01.UGOT*/ hash << UGOT_DIV_06.commit();
-  /*p01.TULU*/ hash << TULU_DIV_07.commit();
-  /*p01.TUGO*/ hash << TUGO_DIV_08.commit();
-  /*p01.TOFE*/ hash << TOFE_DIV_09.commit();
-  /*p01.TERU*/ hash << TERU_DIV_10.commit();
-  /*p01.SOLA*/ hash << SOLA_DIV_11.commit();
-  /*p01.SUBU*/ hash << SUBU_DIV_12.commit();
-  /*p01.TEKA*/ hash << TEKA_DIV_13.commit();
-  /*p01.UKET*/ hash << UKET_DIV_14.commit();
-  /*p01.UPOF*/ hash << UPOF_DIV_15.commit();
+  /*p01.UKUP*/ hash << _UKUP_DIV_00.commit();
+  /*p01.UFOR*/ hash << _UFOR_DIV_01.commit();
+  /*p01.UNER*/ hash << _UNER_DIV_02.commit();
+  /*p01.TERO*/ hash << _TERO_DIV_03.commit();
+  /*p01.UNYK*/ hash << _UNYK_DIV_04.commit();
+  /*p01.TAMA*/ hash << _TAMA_DIV_05.commit();
+  /*p01.UGOT*/ hash << _UGOT_DIV_06.commit();
+  /*p01.TULU*/ hash << _TULU_DIV_07.commit();
+  /*p01.TUGO*/ hash << _TUGO_DIV_08.commit();
+  /*p01.TOFE*/ hash << _TOFE_DIV_09.commit();
+  /*p01.TERU*/ hash << _TERU_DIV_10.commit();
+  /*p01.SOLA*/ hash << _SOLA_DIV_11.commit();
+  /*p01.SUBU*/ hash << _SUBU_DIV_12.commit();
+  /*p01.TEKA*/ hash << _TEKA_DIV_13.commit();
+  /*p01.UKET*/ hash << _UKET_DIV_14.commit();
+  /*p01.UPOF*/ hash << _UPOF_DIV_15.commit();
   /*p03.REGA*/ hash << REGA_TIMA_0.commit();
   /*p03.POVY*/ hash << POVY_TIMA_1.commit();
   /*p03.PERU*/ hash << PERU_TIMA_2.commit();
@@ -187,7 +187,7 @@ SignalHash TimerRegisters::commit() {
   /*p03.PEDA*/ hash << PEDA_TIMA_6.commit();
   /*p03.NUGA*/ hash << NUGA_TIMA_7.commit();
   /*p03.NYDU*/ hash << NYDU_TIMA_MAX.commit();
-  /*p03.MOBA*/ hash << MOBA_INT_TIMERp.commit();
+  /*p03.MOBA*/ hash << _MOBA_INT_TIMERp.commit();
   /*p03.SABU*/ hash << SABU_TMA_0.commit();
   /*p03.NYKE*/ hash << NYKE_TMA_1.commit();
   /*p03.MURU*/ hash << MURU_TMA_2.commit();

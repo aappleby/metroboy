@@ -13,9 +13,16 @@ struct LcdRegisters {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
-  wire BYHA_VID_LINE_TRIG_d4(const SchematicTop& top) const;
+  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4(const SchematicTop& top) const;
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p(const SchematicTop& top) const { return not(BYHA_VID_LINE_TRIG_d4(top)); }
 
-private:
+
+  /*p21.PARU*/ wire PARU_VBLANKp_d4()   const { return not(POPU_VBLANKp_d4.qn()); }
+  /*p21.TOLU*/ wire TOLU_VBLANKn()      const { return not(PARU_VBLANKp_d4()); }
+  /*p21.PURE*/ wire PURE_NEW_LINE_d0n() const { return not(RUTU_LINE_END.q()); }
+  /*p21.SELA*/ wire SELA_LINE_END_Fp()  const { return not(PURE_NEW_LINE_d0n()); }
+  /*p21.TAPA*/ wire TAPA_INT_OAM()      const { return and (TOLU_VBLANKn(), SELA_LINE_END_Fp()); }
+
   friend SchematicTop;
 
   /*p21.SAXO*/ Reg17 XEHO_X0; // increments at phase 1, reset to 0 at p909.

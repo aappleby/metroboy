@@ -12,6 +12,12 @@ struct TileFetcher {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
+  wire LENA_BGW_VRM_RDp() const {
+    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(LONY_BG_READ_VRAM_LATCHp.q());
+    /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not(LUSU_BGW_VRAM_RDn);
+    return LENA_BGW_VRM_RDp;
+  }
+
   /*p27.LAXU*/ Reg17 LAXU_BFETCH_S0;
   /*p27.MESU*/ Reg17 MESU_BFETCH_S1;
   /*p27.NYVA*/ Reg17 NYVA_BFETCH_S2;

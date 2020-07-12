@@ -63,12 +63,12 @@ void Bootrom::tock(SchematicTop& top) {
     /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and(top.CPU_PIN_A04, top.CPU_PIN_A06);
 
     /*p07.TEXE*/ wire _TEXE_FF50_RDp = and(top.TEDO_CPU_RDp(), top.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf_6p(_TEXE_FF50_RDp, BOOT_BITn.q()); // does the rung of the tribuf control polarity?
+    /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf_6p(_TEXE_FF50_RDp, _BOOT_BITn.q()); // does the rung of the tribuf control polarity?
 
     /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), top.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or (top.CPU_TRI_D0.q(), BOOT_BITn.q());
+    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or (top.CPU_TRI_D0.q(), _BOOT_BITn.q());
 
-    /*p07.TEPU*/ BOOT_BITn.set(_TUGE_FF50_WRn, top.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
+    /*p07.TEPU*/ _BOOT_BITn.set(_TUGE_FF50_WRn, top.rst_reg.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
   }
 
   {
@@ -127,7 +127,7 @@ void Bootrom::tock(SchematicTop& top) {
 
 SignalHash Bootrom::commit() {
   SignalHash hash;
-  hash << BOOT_BITn.commit();
+  hash << _BOOT_BITn.commit();
   return hash;
 }
 

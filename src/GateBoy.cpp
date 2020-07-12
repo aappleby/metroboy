@@ -15,7 +15,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   auto top = gateboy.top();
 
-  top->CPU_PIN_READYp.set(0);
+  top->clk_reg.CPU_PIN_READYp.set(0);
   top->bus_mux.EXT_PIN_WRp_C.set(0);
   top->bus_mux.EXT_PIN_RDp_C.set(0);
   top->CPU_PIN5.set(0);
@@ -30,19 +30,19 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   // 16 phases w/ reset high, clock not running.
   top->SYS_PIN_RSTp.set(1);
-  top->SYS_PIN_CLK_A.set(0);
+  top->clk_reg.SYS_PIN_CLK_A.set(0);
   gateboy.run(top, 16, req);
   printf("\n");
 
   // 16 phases w/ reset high, clock running.
   top->SYS_PIN_RSTp.set(1);
-  top->SYS_PIN_CLK_A.set(1);
+  top->clk_reg.SYS_PIN_CLK_A.set(1);
   gateboy.run(top, 16, req);
   printf("\n");
 
   // 32 phases w/ reset low, clock running.
   top->SYS_PIN_RSTp.set(0);
-  top->SYS_PIN_CLK_A.set(1);
+  top->clk_reg.SYS_PIN_CLK_A.set(1);
   gateboy.run(top, 16, req);
   printf("\n");
 
@@ -57,7 +57,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   // We should see AFER (global reset) clear and the video clocks start up.
   // FIXME why are the video clocks not running...
 
-  top->CPU_PIN_READYp.set(1);
+  top->clk_reg.CPU_PIN_READYp.set(1);
   gateboy.run(top, 24, req);
   printf("\n");
 
@@ -113,8 +113,8 @@ SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
   SignalHash hash;
   for (int i = 0; i < phase_count; i++) {
     top->phase_counter++;
-    wire CLK = (top->phase_counter & 1) & (top->SYS_PIN_CLK_A);
-    top->SYS_PIN_CLK_B.set(CLK);
+    wire CLK = (top->phase_counter & 1) & (top->clk_reg.SYS_PIN_CLK_A);
+    top->clk_reg.SYS_PIN_CLK_B.set(CLK);
     hash = phase(top, req);
   }
   return hash;
@@ -145,19 +145,19 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       pass_count,
-      top->SYS_PIN_CLK_A.get(),
-      top->SYS_PIN_CLK_B.get(),
+      top->clk_reg.SYS_PIN_CLK_A.get(),
+      top->clk_reg.SYS_PIN_CLK_B.get(),
       top->SYS_PIN_RSTp.get(),
-      top->clk_reg.AFUR_ABCDxxxx.q(),
-      top->clk_reg.ALEF_xBCDExxx.q(),
-      top->clk_reg.APUK_xxCDEFxx.q(),
-      top->clk_reg.ADYK_xxxDEFGx.q(),
-      top->clk_reg.WUVU_xxCDxxGH.q(),
-      top->clk_reg.VENA_xxxxEFGH.q(),
-      top->clk_reg.WOSU_xBCxxFGx.q(),
+      1, //top->clk_reg.AFUR_ABCDxxxx(),
+      1, //top->clk_reg.ALEF_xBCDExxx(),
+      1, //top->clk_reg.APUK_xxCDEFxx(),
+      1, //top->clk_reg.ADYK_xxxDEFGx(),
+      1, //top->clk_reg.WUVU_xxCDxxGH(),
+      1, //top->clk_reg.VENA_xxxxEFGH(),
+      1, //top->clk_reg.WOSU_xBCxxFGx(),
       //top->BELE_Axxxxxxx(),
       top->CPU_PIN_STARTp.get(),
-      top->CPU_PIN_READYp.get(),
+      top->clk_reg.CPU_PIN_READYp.get(),
       top->tim_reg.get_div(),
       top->rst_reg.AFER_SYS_RSTp.q()
       //hash.h);
@@ -171,8 +171,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
 
 void GateBoy::init() {
   auto top_step = [this](Schematics::SchematicTop* top) {
-    top->SYS_PIN_CLK_A.set(1);
-    top->SYS_PIN_CLK_B.set(top->phase_counter & 1);
+    top->clk_reg.SYS_PIN_CLK_A.set(1);
+    top->clk_reg.SYS_PIN_CLK_B.set(top->phase_counter & 1);
     phase(top, {0});
   };
   state_manager.init(top_step);

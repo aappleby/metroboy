@@ -7,110 +7,79 @@
 
 struct ExtPinIn {
 
-  operator bool() const {
-    if (a == ERROR) __debugbreak();
-    return (bool)a;
+  bool get() const {
+    if (a.error) __debugbreak();
+    return a.val;
   }
+  void set(bool c) { a = c; }
 
+  operator bool()        const {
+    return get();
+  }
   operator SignalState() const {
     return a;
   }
 
-  bool get() const {
-    if (a == ERROR) __debugbreak();
-    return (bool)a;
-  }
-
-  void set(bool c) {
-    a = c;
-  }
-
   SignalHash commit() {
-    if (a == ERROR) __debugbreak();
-    return {a};
+    if (a.error) __debugbreak();
+    return {a.state};
   }
 
-  uint8_t a = ERROR;
+  SignalState a = ERROR;
 };
 
 //-----------------------------------------------------------------------------
 
 struct CpuPinIn {
 
-  operator bool() const {
-    if (a == ERROR) __debugbreak();
-    return (bool)a;
-  }
+  bool get() const { if (a.error) __debugbreak(); return a.val; }
+  void set(bool c) { a = c; }
 
-  operator SignalState() const {
-    return a;
-  }
-
-  bool get() const {
-    if (a == ERROR) __debugbreak();
-    return (bool)a;
-  }
-
-  void set(bool c) {
-    a = c;
-  }
+  operator bool()        const { return get(); }
+  operator SignalState() const { return a; }
 
   SignalHash commit() {
-    if (a == ERROR) __debugbreak();
-    return {a};
+    if (a.state == ERROR) __debugbreak();
+    return {a.state};
   }
 
-  uint8_t a = ERROR;
+  SignalState a = ERROR;
 };
 
 //-----------------------------------------------------------------------------
 
 struct ExtPinOut {
 
-  bool get() const {
-    if (a == ERROR) __debugbreak();
-    return a;
-  }
-
-  void set(wire val) {
-    if (b != ERROR) __debugbreak();
-    b = val;
-  }
+  bool get() const   { if (a.error)  __debugbreak(); return a.val; }
+  void set(wire val) { if (!b.error) __debugbreak(); b = val; }
 
   SignalHash commit() {
-    if (b == ERROR) __debugbreak();
+    if (b.error) __debugbreak();
     a = b;
     b = ERROR;
-    return {a};
+    return {a.state};
   }
 
-  uint8_t a = ERROR;
-  uint8_t b = ERROR;
+  SignalState a = ERROR;
+  SignalState b = ERROR;
 };
 
 //-----------------------------------------------------------------------------
 
 struct CpuPinOut {
 
-  bool get() const {
-    if (a == ERROR) __debugbreak();
-    return a;
-  }
-
-  void set(wire val) {
-    if (b != ERROR) __debugbreak();
-    b = val;
-  }
+  bool get() const   { if (a.error)  __debugbreak(); return a.val; }
+  void set(wire val) { if (!b.error) __debugbreak(); b = val; }
 
   SignalHash commit() {
-    if (b == ERROR) __debugbreak();
+    if (b.error) __debugbreak();
     a = b;
     b = ERROR;
-    return {a};
+    return {a.state};
   }
 
-  uint8_t a = ERROR;
-  uint8_t b = ERROR;
+  SignalState a = ERROR;
+  SignalState b = ERROR;
 };
 
 //-----------------------------------------------------------------------------

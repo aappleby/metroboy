@@ -99,7 +99,10 @@ struct SchematicTop {
   /*p01.ATAR*/ wire ATAR_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not(ATAR_VID_RSTp()); }
 
-  /*p07.TEDO*/ wire TEDO_CPU_RDp() const { return mux2_n(bus_mux.EXT_PIN_RDp_C, CPU_PIN_RDp, UNOR_MODE_DBG2p()); }
+  /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
+      /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(bus_mux.EXT_PIN_RDp_C, CPU_PIN_RDp, UNOR_MODE_DBG2p());
+      return not(UJYV_CPU_RDn);
+  }
 
   /*p07.AJAS*/ wire AJAS_CPU_RDn() const { return not(TEDO_CPU_RDp()); }
   /*p07.ASOT*/ wire ASOT_CPU_RDp() const { return not(AJAS_CPU_RDn()); }
@@ -286,7 +289,7 @@ struct SchematicTop {
   CpuPinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
 
   // Main bus
-  CpuPinIn  CPU_PIN_RDp;           // top right port PORTA_00: ->
+  CpuPinIn  CPU_PIN_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
   CpuPinIn  CPU_PIN_WRp;           // top right port PORTA_01: ->
   CpuPinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 

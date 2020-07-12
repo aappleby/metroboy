@@ -25,6 +25,8 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   SignalHash hash;
 
+  gateboy.verbose = true;
+
   // Just read DIV forever.
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
@@ -61,6 +63,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
+  /*
   printf("Running a bunch of phases for perf test\n");
   gateboy.verbose = false;
 
@@ -72,6 +75,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   std::chrono::duration<double> elapsed = finish - start;
   printf("Done - %f sec, %f phases/sec\n", elapsed.count(), double(phase_count) / elapsed.count());
   printf("\n");
+  */
 
   /*
   printf("DIV  %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
@@ -148,13 +152,13 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.SYS_PIN_CLK_A.get(),
       top->clk_reg.SYS_PIN_CLK_B.get(),
       top->SYS_PIN_RSTp.get(),
-      1, //top->clk_reg.AFUR_ABCDxxxx(),
-      1, //top->clk_reg.ALEF_xBCDExxx(),
-      1, //top->clk_reg.APUK_xxCDEFxx(),
-      1, //top->clk_reg.ADYK_xxxDEFGx(),
-      1, //top->clk_reg.WUVU_xxCDxxGH(),
-      1, //top->clk_reg.VENA_xxxxEFGH(),
-      1, //top->clk_reg.WOSU_xBCxxFGx(),
+      top->clk_reg.AFUR_ABCDxxxx(),
+      top->clk_reg.ALEF_xBCDExxx(),
+      top->clk_reg.APUK_xxCDEFxx(),
+      top->clk_reg.ADYK_xxxDEFGx(),
+      top->clk_reg.WUVU_xxCDxxGH(),
+      top->clk_reg.VENA_xxxxEFGH(),
+      top->clk_reg.WOSU_xBCxxFGx(),
       //top->BELE_Axxxxxxx(),
       top->CPU_PIN_STARTp.get(),
       top->clk_reg.CPU_PIN_READYp.get(),

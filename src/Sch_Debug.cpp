@@ -10,9 +10,8 @@ void DebugRegisters::tick(const SchematicTop& /*top*/) {
 }
 
 void DebugRegisters::tock(const SchematicTop& top) {
-  /*p25.SYCY*/ wire SYCY_DBG_CLOCKn = not(top.UNOR_MODE_DBG2p());
-  /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKn, top.CUNU_SYS_RSTn(), SOTO_DBG.qn());
-
+  /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(top.UNOR_MODE_DBG2p());
+  /*p25.SOTO*/ SOTO_DBG.set(_SYCY_DBG_CLOCKn, top.CUNU_SYS_RSTn(), SOTO_DBG.qn());
 
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);
   //cpu_pins.UNOR_MODE_DBG2.set(dbg_sig.UNOR_MODE_DBG2n);

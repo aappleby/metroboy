@@ -17,8 +17,6 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   /*p01.ROSY*/ wire ROSY_VID_RSTp = not(top.XAPO_VID_RSTn());
 
-  /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
-
   //----------------------------------------
   // So this is def the chunk that watches FEPO_STORE_MATCHp and triggers a sprite fetch...
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
@@ -64,7 +62,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
     /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(_LAPE_AxCxExGx, top.VYPO_GND, TOXE_SFETCH_S0.q());
     /*p29.TYTU*/ wire TYTU_SFETCH_S0n = not(TOXE_SFETCH_S0.q());
-    /*p29.SYCU*/ wire SYCU_SFETCH_S0pe = nor(TYTU_SFETCH_S0n, LOBY_RENDERINGn, TYFO_SFETCH_S0_D1.q());
+    /*p29.SYCU*/ wire SYCU_SFETCH_S0pe = nor(TYTU_SFETCH_S0n, top.LOBY_RENDERINGn(), TYFO_SFETCH_S0_D1.q());
 
     /*p29.RACA*/ wire RACA_LATCH_SPPIXB = and(VONU_SFETCH_S1_D4.q(), SYCU_SFETCH_S0pe);
     /*p29.PEBY*/ wire PEBY_CLKp = not(RACA_LATCH_SPPIXB);

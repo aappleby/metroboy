@@ -223,49 +223,13 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
 
 
   {
-    // BUZA def AND
-    // BUZA01 << CENO16
-    // BUZA02 << XYMU03
-    // BUZA03 nc
-    // BUZA04 >> WUZY01, WYSE01, ZYSU01, WYDA01, WUCO01, WEZA01
-
-    // polarity seems wrong or something
-    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX = and (top.CENO_SCANNINGp(), top.XYMU_RENDERINGp());
-
-    ///*p30.CYKE*/ wire _CYKE_AxxDExxH = not(_XUPY_xBCxxFGx); // inverted clock
-    ///*p30.WUDA*/ wire _WUDA_xBCxxFGx = not(_CYKE_AxxDExxH);
-
-    /*p29.XUPY*/ wire XUPY_ABxxEFxx = not(top.WUVU_xxCDxxGH());
-    /*p30.CYKE*/ wire CYKE_AxxDExxH = not(XUPY_ABxxEFxx);
-    /*p30.WUDA*/ wire WUDA_xBCxxFGx = not(CYKE_AxxDExxH);
-
-    // XADU_01 nc
-    // XADU_02 << WEFE_02 (RSTp?)
-    // XADU_03 << YFOT_02 (D)
-    // XADU_04 nc
-    // XADU_05 << WUDA_03 (CLKp?)
-    // XADU_06 nc
-    // XADU_07 nc
-    // XADU_08 << CYKE_02 (CLKn?)
-    // XADU_09 << WEFE_02 (RSTp?)
-    // XADU_10 nc
-    // XADU_11 nc
-    // XADU_12 >> WUZY_04 (Q)    // might have these switched, but there's not many of these regs
-    // XADU_13 >> nc      (QN)
-
-    /*p30.XADU*/ XADU_SPRITE_INDX0.set(WUDA_xBCxxFGx, CYKE_AxxDExxH, top.WEFE_GND, top.YFOT_OAM_A2p());
-    /*p30.XEDY*/ XEDY_SPRITE_INDX1.set(WUDA_xBCxxFGx, CYKE_AxxDExxH, top.WEFE_GND, top.YFOC_OAM_A3p());
-    /*p30.ZUZE*/ ZUZE_SPRITE_INDX2.set(WUDA_xBCxxFGx, CYKE_AxxDExxH, top.WEFE_GND, top.YVOM_OAM_A4p());
-    /*p30.XOBE*/ XOBE_SPRITE_INDX3.set(WUDA_xBCxxFGx, CYKE_AxxDExxH, top.WEFE_GND, top.YMEV_OAM_A5p());
-    /*p30.YDUF*/ YDUF_SPRITE_INDX4.set(WUDA_xBCxxFGx, CYKE_AxxDExxH, top.WEFE_GND, top.XEMU_OAM_A6p());
-    /*p30.XECU*/ XECU_SPRITE_INDX5.set(WUDA_xBCxxFGx, CYKE_AxxDExxH, top.WEFE_GND, top.YZET_OAM_A7p());
-
-    /*p30.WUZY*/ top.SPR_TRI_INDX_0.set_tribuf_6n(BUZA_STORE_SPRITE_INDX, XADU_SPRITE_INDX0.q());
-    /*p30.WYSE*/ top.SPR_TRI_INDX_1.set_tribuf_6n(BUZA_STORE_SPRITE_INDX, XEDY_SPRITE_INDX1.q());
-    /*p30.ZYSU*/ top.SPR_TRI_INDX_2.set_tribuf_6n(BUZA_STORE_SPRITE_INDX, ZUZE_SPRITE_INDX2.q());
-    /*p30.WYDA*/ top.SPR_TRI_INDX_3.set_tribuf_6n(BUZA_STORE_SPRITE_INDX, XOBE_SPRITE_INDX3.q());
-    /*p30.WUCO*/ top.SPR_TRI_INDX_4.set_tribuf_6n(BUZA_STORE_SPRITE_INDX, YDUF_SPRITE_INDX4.q());
-    /*p30.WEZA*/ top.SPR_TRI_INDX_5.set_tribuf_6n(BUZA_STORE_SPRITE_INDX, XECU_SPRITE_INDX5.q());
+    /*p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDX = and(top.CENO_SCANNINGqn(), top.XYMU_RENDERINGp());
+    /*p30.WUZY*/ top.SPR_TRI_INDX_0.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.XADU_SPRITE_INDX0.q());
+    /*p30.WYSE*/ top.SPR_TRI_INDX_1.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.XEDY_SPRITE_INDX1.q());
+    /*p30.ZYSU*/ top.SPR_TRI_INDX_2.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.ZUZE_SPRITE_INDX2.q());
+    /*p30.WYDA*/ top.SPR_TRI_INDX_3.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.XOBE_SPRITE_INDX3.q());
+    /*p30.WUCO*/ top.SPR_TRI_INDX_4.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.YDUF_SPRITE_INDX4.q());
+    /*p30.WEZA*/ top.SPR_TRI_INDX_5.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.XECU_SPRITE_INDX5.q());
   }
 
   //----------------------------------------
@@ -758,12 +722,6 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
 SignalHash SpriteStoreRegisters::commit(SchematicTop& top) {
   SignalHash hash;
   /*p29.FEPO*/ hash << FEPO_STORE_MATCHp.commit();
-  /*p30.XADU*/ hash << XADU_SPRITE_INDX0.commit();
-  /*p30.XEDY*/ hash << XEDY_SPRITE_INDX1.commit();
-  /*p30.ZUZE*/ hash << ZUZE_SPRITE_INDX2.commit();
-  /*p30.XOBE*/ hash << XOBE_SPRITE_INDX3.commit();
-  /*p30.YDUF*/ hash << YDUF_SPRITE_INDX4.commit();
-  /*p30.XECU*/ hash << XECU_SPRITE_INDX5.commit();
   /*p29.DEZY*/ hash << DEZY_STORE_ENn_SYNC.commit();
   /*p29.BESE*/ hash << SPRITE_COUNT0.commit();
   /*p29.CUXY*/ hash << SPRITE_COUNT1.commit();

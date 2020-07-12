@@ -8,11 +8,22 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct BusMux {
+  BusMux();
+
   void tick(SchematicTop& top);
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
-private:
+  /*p28.GEKA*/ Signal GEKA_OAM_A0p;
+  /*p28.ZYFO*/ Signal ZYFO_OAM_A1p;
+  /*p28.YFOT*/ Signal YFOT_OAM_A2p;
+  /*p28.YFOC*/ Signal YFOC_OAM_A3p;
+  /*p28.YVOM*/ Signal YVOM_OAM_A4p;
+  /*p28.YMEV*/ Signal YMEV_OAM_A5p;
+  /*p28.XEMU*/ Signal XEMU_OAM_A6p;
+  /*p28.YZET*/ Signal YZET_OAM_A7p;
+
+//private:
   friend SchematicTop;
 
   /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
@@ -63,6 +74,107 @@ private:
   /*p29.YZAB*/ Reg8 YZAB_SPRITE_Y7;
 
   //-----------------------------------------------------------------------------
+  // Ext bus debug inputs
+
+  ExtPinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
+  ExtPinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
+
+  ExtPinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
+  ExtPinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU
+  ExtPinIn  EXT_PIN_A02_C;   // PIN_03 -> P08.BUXU
+  ExtPinIn  EXT_PIN_A03_C;   // PIN_04 -> P08.BASE
+  ExtPinIn  EXT_PIN_A04_C;   // PIN_05 -> P08.AFEC
+  ExtPinIn  EXT_PIN_A05_C;   // PIN_06 -> P08.ABUP
+  ExtPinIn  EXT_PIN_A06_C;   // PIN_07 -> P08.CYGU
+  ExtPinIn  EXT_PIN_A07_C;   // PIN_08 -> P08.COGO
+  ExtPinIn  EXT_PIN_A08_C;   // PIN_09 -> P08.MUJY
+  ExtPinIn  EXT_PIN_A09_C;   // PIN_10 -> P08.NENA
+  ExtPinIn  EXT_PIN_A10_C;   // PIN_11 -> P08.SURA
+  ExtPinIn  EXT_PIN_A11_C;   // PIN_12 -> P08.MADY
+  ExtPinIn  EXT_PIN_A12_C;   // PIN_13 -> P08.LAHE
+  ExtPinIn  EXT_PIN_A13_C;   // PIN_14 -> P08.LURA
+  ExtPinIn  EXT_PIN_A14_C;   // PIN_15 -> P08.PEVO
+  ExtPinIn  EXT_PIN_A15_C;   // PIN_16 -> P08.RAZA
+
+  //-----------------------------------------------------------------------------
+  // Ext bus
+
+  ExtPinOut EXT_PIN_RDn_A;   // PIN_79 <- P08.UGAC
+  ExtPinOut EXT_PIN_RDn_D;   // PIN_79 <- P08.URUN
+  ExtPinOut EXT_PIN_WRn_A;   // PIN_78 <- P08.UVER
+  ExtPinOut EXT_PIN_WRn_D;   // PIN_78 <- P08.USUF
+  ExtPinOut EXT_PIN_CSn_A;   // PIN_80 <- P08.TYHO
+
+  ExtPinOut EXT_PIN_A00_A;   // PIN_01 <- P08.KUPO
+  ExtPinOut EXT_PIN_A00_D;   // PIN_01 <- P08.KOTY
+  ExtPinOut EXT_PIN_A01_A;   // PIN_02 <- P08.CABA
+  ExtPinOut EXT_PIN_A01_D;   // PIN_02 <- P08.COTU
+  ExtPinOut EXT_PIN_A02_A;   // PIN_03 <- P08.BOKU
+  ExtPinOut EXT_PIN_A02_D;   // PIN_03 <- P08.BAJO
+  ExtPinOut EXT_PIN_A03_A;   // PIN_04 <- P08.BOTY
+  ExtPinOut EXT_PIN_A03_D;   // PIN_04 <- P08.BOLA
+  ExtPinOut EXT_PIN_A04_A;   // PIN_05 <- P08.BYLA
+  ExtPinOut EXT_PIN_A04_D;   // PIN_05 <- P08.BEVO
+  ExtPinOut EXT_PIN_A05_A;   // PIN_06 <- P08.BADU
+  ExtPinOut EXT_PIN_A05_D;   // PIN_06 <- P08.AJAV
+  ExtPinOut EXT_PIN_A06_A;   // PIN_07 <- P08.CEPU
+  ExtPinOut EXT_PIN_A06_D;   // PIN_07 <- P08.CYKA
+  ExtPinOut EXT_PIN_A07_A;   // PIN_08 <- P08.DEFY
+  ExtPinOut EXT_PIN_A07_D;   // PIN_08 <- P08.COLO
+  ExtPinOut EXT_PIN_A08_A;   // PIN_09 <- P08.MYNY
+  ExtPinOut EXT_PIN_A08_D;   // PIN_09 <- P08.MEGO
+  ExtPinOut EXT_PIN_A09_A;   // PIN_10 <- P08.MUNE
+  ExtPinOut EXT_PIN_A09_D;   // PIN_10 <- P08.MENY
+  ExtPinOut EXT_PIN_A10_A;   // PIN_11 <- P08.ROXU
+  ExtPinOut EXT_PIN_A10_D;   // PIN_11 <- P08.RORE
+  ExtPinOut EXT_PIN_A11_A;   // PIN_12 <- P08.LEPY
+  ExtPinOut EXT_PIN_A11_D;   // PIN_12 <- P08.LYNY
+  ExtPinOut EXT_PIN_A12_A;   // PIN_13 <- P08.LUCE
+  ExtPinOut EXT_PIN_A12_D;   // PIN_13 <- P08.LOSO
+  ExtPinOut EXT_PIN_A13_A;   // PIN_14 <- P08.LABE
+  ExtPinOut EXT_PIN_A13_D;   // PIN_14 <- P08.LEVA
+  ExtPinOut EXT_PIN_A14_A;   // PIN_15 <- P08.PUHE
+  ExtPinOut EXT_PIN_A14_D;   // PIN_15 <- P08.PAHY
+  ExtPinOut EXT_PIN_A15_A;   // PIN_16 <- P08.SUZE
+  ExtPinOut EXT_PIN_A15_D;   // PIN_16 <- P08.RULO
+
+  ExtPinOut EXT_PIN_D0_A;    // PIN_17 <- P08.RUXA
+  ExtPinOut EXT_PIN_D1_A;    // PIN_18 <- P08.RUJA
+  ExtPinOut EXT_PIN_D2_A;    // PIN_19 <- P08.RABY
+  ExtPinOut EXT_PIN_D3_A;    // PIN_20 <- P08.RERA
+  ExtPinOut EXT_PIN_D4_A;    // PIN_21 <- P08.RORY
+  ExtPinOut EXT_PIN_D5_A;    // PIN_22 <- P08.RYVO
+  ExtPinOut EXT_PIN_D6_A;    // PIN_23 <- P08.RAFY
+  ExtPinOut EXT_PIN_D7_A;    // PIN_24 <- P08.RAVU
+
+  ExtPinOut EXT_PIN_D0_B;    // PIN_17 <- P08.LULA
+  ExtPinOut EXT_PIN_D1_B;    // PIN_18 <- P08.LULA
+  ExtPinOut EXT_PIN_D2_B;    // PIN_19 <- P08.LULA
+  ExtPinOut EXT_PIN_D3_B;    // PIN_20 <- P08.LULA
+  ExtPinOut EXT_PIN_D4_B;    // PIN_21 <- P08.LULA
+  ExtPinOut EXT_PIN_D5_B;    // PIN_22 <- P08.LULA
+  ExtPinOut EXT_PIN_D6_B;    // PIN_23 <- P08.LULA
+  ExtPinOut EXT_PIN_D7_B;    // PIN_24 <- P08.LULA
+
+  ExtPinIn  EXT_PIN_D0_C;    // PIN_17 -> P08.TOVO,SOMA
+  ExtPinIn  EXT_PIN_D1_C;    // PIN_18 -> P08.RUZY,RONY
+  ExtPinIn  EXT_PIN_D2_C;    // PIN_19 -> P08.ROME,RAXY
+  ExtPinIn  EXT_PIN_D3_C;    // PIN_20 -> P08.SAZA,SELO
+  ExtPinIn  EXT_PIN_D4_C;    // PIN_21 -> P08.TEHE,SODY
+  ExtPinIn  EXT_PIN_D5_C;    // PIN_22 -> P08.RATU,SAGO
+  ExtPinIn  EXT_PIN_D6_C;    // PIN_23 -> P08.SOCA,RUPA
+  ExtPinIn  EXT_PIN_D7_C;    // PIN_24 -> P08.RYBA,SAZY
+
+  ExtPinOut EXT_PIN_D0_D;    // PIN_17 <- P08.RUNE
+  ExtPinOut EXT_PIN_D1_D;    // PIN_18 <- P08.RYPU
+  ExtPinOut EXT_PIN_D2_D;    // PIN_19 <- P08.SULY
+  ExtPinOut EXT_PIN_D3_D;    // PIN_20 <- P08.SEZE
+  ExtPinOut EXT_PIN_D4_D;    // PIN_21 <- P08.RESY
+  ExtPinOut EXT_PIN_D5_D;    // PIN_22 <- P08.TAMU
+  ExtPinOut EXT_PIN_D6_D;    // PIN_23 <- P08.ROGY
+  ExtPinOut EXT_PIN_D7_D;    // PIN_24 <- P08.RYDA
+
+  //-----------------------------------------------------------------------------
   // OAM bus
 
   CpuPinOut OAM_PIN_CLK;
@@ -96,15 +208,6 @@ private:
   Tribuf OAM_PIN_DB5;
   Tribuf OAM_PIN_DB6;
   Tribuf OAM_PIN_DB7;
-
-  /*p28.GEKA*/ Signal GEKA_OAM_A0p;
-  /*p28.ZYFO*/ Signal ZYFO_OAM_A1p;
-  /*p28.YFOT*/ Signal YFOT_OAM_A2p;
-  /*p28.YFOC*/ Signal YFOC_OAM_A3p;
-  /*p28.YVOM*/ Signal YVOM_OAM_A4p;
-  /*p28.YMEV*/ Signal YMEV_OAM_A5p;
-  /*p28.XEMU*/ Signal XEMU_OAM_A6p;
-  /*p28.YZET*/ Signal YZET_OAM_A7p;
 
   /*p31.XYKY*/ TpLatch XYKY_LATCH_OAM_A0;
   /*p31.YRUM*/ TpLatch YRUM_LATCH_OAM_A1;

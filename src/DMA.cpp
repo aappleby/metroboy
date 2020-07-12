@@ -51,15 +51,15 @@ void DMA2::tick(const Req& req, Ack& ack) {
 void DMA2::tock(int phase, const Req& req) {
 
 
-  /*p04.LAVY*/ bool DMA_WR = (req.addr == 0xFF46) && req.write && (PHASE_F || PHASE_G || PHASE_H);
-  /*p04.LOKO*/ bool DMA_RST = DMA_RUN_TRIG_d4;
+  bool DMA_WR = (req.addr == 0xFF46) && req.write && (PHASE_F || PHASE_G || PHASE_H);
+  bool DMA_RST = DMA_RUN_TRIG_d4;
 
   if (PHASE_B) {
     // something wrong here, inverting this until we figure it out.
-    ///*p04.LUPA*/ bool LUPA = nor(DMA_WR, DMA_WR_LATCH);
-    /*p04.LUPA*/ bool LUPA = DMA_WR || DMA_WR_LATCH;
-    /*p04.LUVY*/ DMA_RUN_TRIG_d0 = LUPA;
-    /*p04.MATU*/ DMA_RUN_WRITE = DMA_RUN_READ;
+    // bool LUPA = nor(DMA_WR, DMA_WR_LATCH);
+    bool LUPA = DMA_WR || DMA_WR_LATCH;
+    DMA_RUN_TRIG_d0 = LUPA;
+    DMA_RUN_WRITE = DMA_RUN_READ;
     if (DMA_RUN_READ) addr++;
   }
 

@@ -15,6 +15,7 @@ struct ClockRegisters {
 
   void dump(Dumper& d);
 
+  // hacked for debugging
 //private:
   //friend SchematicTop;
 

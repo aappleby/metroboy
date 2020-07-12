@@ -16,8 +16,8 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   auto top = gateboy.top();
 
   top->CPU_PIN_READYp.set(0);
-  top->EXT_PIN_WRp_C.set(0);
-  top->EXT_PIN_RDp_C.set(0);
+  top->bus_mux.EXT_PIN_WRp_C.set(0);
+  top->bus_mux.EXT_PIN_RDp_C.set(0);
   top->CPU_PIN5.set(0);
 
   top->SYS_PIN_T1n.set(0);

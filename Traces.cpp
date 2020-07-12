@@ -1,3 +1,153 @@
+// Clock polarity wrong? Check regs on die.
+
+// BFETCH_000 - LABU_BG_PIX_B_CLKp = 1;
+// BFETCH_001 - LABU_BG_PIX_B_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_010 - LABU_BG_PIX_B_CLKp = 1;
+// BFETCH_011 - LABU_BG_PIX_B_CLKp = 1;
+// BFETCH_100 - LABU_BG_PIX_B_CLKp = 1;
+// BFETCH_101 - LABU_BG_PIX_B_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+
+// BFETCH_000 - LOMA_BG_LATCHn = 1;
+// BFETCH_001 - LOMA_BG_LATCHn = 1;
+// BFETCH_010 - LOMA_BG_LATCHn = 1;
+// BFETCH_011 - LOMA_BG_LATCHn = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q());
+// BFETCH_100 - LOMA_BG_LATCHn = 1;
+// BFETCH_101 - LOMA_BG_LATCHn = 1;
+
+// LEGU_01 << LOMA_02    CLKp
+// LEGU_02 << VRM_TRI_D0 D
+// LEGU_03 nc
+// LEGU_04 << COMP_CLK   CLKn
+// LEGU_05 nc
+// LEGU_06 nc
+// LEGU_07 >> LUHE_01, LAKY_02 Q
+// LEGU_08 >> NC         Qn
+
+
+
+// BEBU_01 << DOBA_17
+// BEBU_02 << BALU_02
+// BEBU_03 << BYBA_16
+// BEBU_04 nc
+// BEBU_05 >> AVAP_01
+
+// Arms on ground, nor latch
+// BESU01 << CATU17
+// BESU02 nc
+// BESU03 >> nc
+// BESU04 >> ACYL02
+// BESU05 nc
+// BESU06 << ASEN04
+
+// When CATU goes high, BESU goes high
+// When ASEN goes high, BESU goes low.
+
+
+// if TYNU is and(or()) things don't make sense.
+///*p08.TYNU*/ wire TYNU_ADDR_RAM = and(ADDR >= 0x4000, TUMA_CART_RAM);
+
+// Die trace:
+// TOZA = and(TYNU, ABUZ, TUNA);
+// TYHO = mux2_p(LUMA, MARU.QN?, TOZA);
+
+// TOZA = address valid, address ram, address not highmem
+// The A15 in the other half of the mux is weird.
+
+// SOMA01 << LAVO04
+// SOMA02 nc
+// SOMA03 << D0_C
+// SOMA04 nc
+// SOMA05 nc
+// SOMA06 nc
+// SOMA07 >> RYMA04
+// SOMA08 nc
+// SOMA09 == nc
+
+/*
+0b000xxxxx_xxxxxxxx - 0x0000 to 0x1FFF (cart rom)
+0b001xxxxx_xxxxxxxx - 0x2000 to 0x3FFF (cart rom)
+0b010xxxxx_xxxxxxxx - 0x4000 to 0x5FFF (cart rom banked)
+0b011xxxxx_xxxxxxxx - 0x6000 to 0x7FFF (cart rom banked)
+0b100xxxxx_xxxxxxxx - 0x8000 to 0x9FFF (vram)
+0b101xxxxx_xxxxxxxx - 0xA000 to 0xBFFF (cart ram)
+0b110xxxxx_xxxxxxxx - 0xC000 to 0xDFFF (internal ram)
+0b111xxxxx_xxxxxxxx - 0xE000 to 0xFFFF (echo ram, oam, high ram, io)
+0b11111110_00000000 - 0xFE00 - OAM begin
+0b11111110_10011111 - 0xFE9F - OAM end
+0b11111111_00000000 - 0xFF00 - IO begin
+0b11111111_01111111 - 0xFF7F - IO end
+0b11111111_10000000 - 0xFF80 - Zeropage begin
+0b11111111_11111110 - 0xFFFE - Zeropage end
+0b11111111_11111111 - 0xFFFF - Interrupt enable
+*/
+
+// MORY00 << MATU17
+// MORY01
+// MORY02 
+// -> MORY reads DMA_RUNNING.q
+
+// arm on vcc side
+// LOXO01 << MULE02
+// LOXO02 << TEXO04
+// LOXO03 nc
+// LOXO04 << UMUT04
+// LOXO05 >> LASY01
+
+// Schematic wrong, AVER is def nand
+// AVER01 << ACYL03
+// AVER02 << XYSO02
+// AVER03 >> BYCU03
+
+// VAPE is def and
+// VAPE01 << TACU03
+// VAPE02 << TUVO04
+// VAPE03 nc
+
+
+// Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())
+
+// 4-rung whereas the or(and()) were 5 rung?
+// Arm on left (gnd) side
+// CUFE01 << SARO03
+// CUFE02 << MATU17
+// CUFE03 >> BYCU01
+// CUFE04 << MOPA03
+
+// Schematic very wrong
+// TUVO01 << TEPA02
+// TUVO02 << TULY17
+// TUVO03 << TESE17
+// TUVO04 >> VAPE02
+
+// WEFY01
+// WEFY02
+// WEFY03
+// WEFY04
+
+// AJEP def nand
+// XUJA def not
+// BOTA def nand
+// ASYT def and
+// BODE def not
+// YVAL def not
+// YRYV def not
+// ZODO def not
+
+//------------------------------------------------------------------------------
+
+// cpu can read oam when there's no parsing, rendering, or dma
+// so byte 0 is the palette number? something wrong here...
+// this is 8 sets of 4 tribuffers feeding into an inverter, which we'll model as an amux4n
+// except the inputs are negated or something?
+
+// NAXY01 << UVYT02
+// NAXY02 << MAKA17
+// NAXY03 >> POWU02
+
+// schematic says naxy = nor(maka, luvy), but wrong
+// naxy = nor(uvyt, maka)
+
+
 // NOR latch
 // POKY00 << PYGO
 // POKY01 nc

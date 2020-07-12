@@ -8,7 +8,27 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void tick(SchematicTop& gb);
+  /*p29.ERUC*/ Signal ERUC_YDIFF_S0;
+  /*p29.ERUC*/ Signal ERUC_YDIFF_C0;
+  /*p29.ENEF*/ Signal ENEF_YDIFF_S1;
+  /*p29.ENEF*/ Signal ENEF_YDIFF_C1;
+  /*p29.FECO*/ Signal FECO_YDIFF_S2;
+  /*p29.FECO*/ Signal FECO_YDIFF_C2;
+  /*p29.GYKY*/ Signal GYKY_YDIFF_S3;
+  /*p29.GYKY*/ Signal GYKY_YDIFF_C3;
+  /*p29.GOPU*/ Signal GOPU_YDIFF_S4;
+  /*p29.GOPU*/ Signal GOPU_YDIFF_C4;
+  /*p29.FUWA*/ Signal FUWA_YDIFF_S5;
+  /*p29.FUWA*/ Signal FUWA_YDIFF_C5;
+  /*p29.GOJU*/ Signal GOJU_YDIFF_S6;
+  /*p29.GOJU*/ Signal GOJU_YDIFF_C6;
+  /*p29.WUHU*/ Signal WUHU_YDIFF_S7;
+  /*p29.WUHU*/ Signal WUHU_YDIFF_C7;
+
+  /*p29.CARE*/ Signal CARE_STORE_ENp_ABxxEFxx; // to sprite store
+
+  void tick_ymatch(SchematicTop& gb);
+
   void tock(SchematicTop& gb);
   SignalHash commit();
 
@@ -17,12 +37,6 @@ private:
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp;
   /*p29.CENO*/ Reg17    CENO_SCANNINGp;
-
-  /*p29.DEGE*/ Signal DEGE_SPRITE_DELTA0;      // to sprite store
-  /*p29.DABY*/ Signal DABY_SPRITE_DELTA1;      // to sprite store
-  /*p29.DABU*/ Signal DABU_SPRITE_DELTA2;      // to sprite store
-  /*p29.GYSA*/ Signal GYSA_SPRITE_DELTA3;      // to sprite store
-  /*p29.CARE*/ Signal CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
   /*p28.YFEL*/ Reg17 YFEL_SCAN0;
   /*p28.WEWY*/ Reg17 WEWY_SCAN1;

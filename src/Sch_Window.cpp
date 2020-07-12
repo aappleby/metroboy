@@ -18,7 +18,6 @@ void WindowRegisters::tock(SchematicTop& top) {
 
   /*p01.PYRY*/ wire _PYRY_VID_RSTp = not(top.XAPO_VID_RSTn());
   /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.PARU_VBLANKp_d4(), _PYRY_VID_RSTp);
-  /*p27.SYNY*/ wire _SYNY_VBLANK_RSTn = not(_REPU_VBLANK_RSTp);
 
   {
     /*p27.SARY*/ _SARY_WY_MATCH.set(top.TALU_ABCDxxxx(), top.XAPO_VID_RSTn(), ROGE_WY_MATCHp(top));
@@ -60,33 +59,30 @@ void WindowRegisters::tock(SchematicTop& top) {
   {
     // something weird here, PORE doesn't look like a clock
 
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(PYNU_WIN_MODE_A.q());
-    /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn);
-    /*p27.VETU*/ wire VETU_WIN_MAP_CLK = and (top.TEVO_FINE_RSTp(), PORE_WIN_MODEp);
-    /*p27.XACO*/ wire XACO_WIN_RSTn = not(_XOFO_WIN_RSTp);
+    /*p27.VETU*/ wire _VETU_WIN_MAP_CLK = and (top.TEVO_FINE_RSTp(), top.PORE_WIN_MODEp());
+    /*p27.XACO*/ wire _XACO_WIN_RSTn = not(_XOFO_WIN_RSTp);
 
-    /*p27.WYKA*/ WYKA_WIN_X3.set(VETU_WIN_MAP_CLK, XACO_WIN_RSTn, WYKA_WIN_X3.qn());
-    /*p27.WODY*/ WODY_WIN_X4.set(WYKA_WIN_X3.qn(), XACO_WIN_RSTn, WODY_WIN_X4.qn());
-    /*p27.WOBO*/ WOBO_WIN_X5.set(WODY_WIN_X4.qn(), XACO_WIN_RSTn, WOBO_WIN_X5.qn());
-    /*p27.WYKO*/ WYKO_WIN_X6.set(WOBO_WIN_X5.qn(), XACO_WIN_RSTn, WYKO_WIN_X6.qn());
-    /*p27.XOLO*/ XOLO_WIN_X7.set(WYKO_WIN_X6.qn(), XACO_WIN_RSTn, XOLO_WIN_X7.qn());
+    /*p27.WYKA*/ WYKA_WIN_X3.set(_VETU_WIN_MAP_CLK, _XACO_WIN_RSTn, WYKA_WIN_X3.qn());
+    /*p27.WODY*/ WODY_WIN_X4.set(WYKA_WIN_X3.qn(),  _XACO_WIN_RSTn, WODY_WIN_X4.qn());
+    /*p27.WOBO*/ WOBO_WIN_X5.set(WODY_WIN_X4.qn(),  _XACO_WIN_RSTn, WOBO_WIN_X5.qn());
+    /*p27.WYKO*/ WYKO_WIN_X6.set(WOBO_WIN_X5.qn(),  _XACO_WIN_RSTn, WYKO_WIN_X6.qn());
+    /*p27.XOLO*/ XOLO_WIN_X7.set(WYKO_WIN_X6.qn(),  _XACO_WIN_RSTn, XOLO_WIN_X7.qn());
   }
 
   // window y coordinate
   // every time we leave win mode we increment win_y
   {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(PYNU_WIN_MODE_A.q());
-    /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn);
-    /*p27.WAZY*/ wire WAZY_WIN_Y_CLK = not(PORE_WIN_MODEp);
+    /*p27.WAZY*/ wire _WAZY_WIN_Y_CLK = not(top.PORE_WIN_MODEp());
+    /*p27.SYNY*/ wire _SYNY_VBLANK_RSTn = not(_REPU_VBLANK_RSTp);
 
-    /*p27.VYNO*/ VYNO_WIN_Y0.set(WAZY_WIN_Y_CLK, _SYNY_VBLANK_RSTn,     VYNO_WIN_Y0.qn());
-    /*p27.VUJO*/ VUJO_WIN_Y1.set(VYNO_WIN_Y0.qn(),   _SYNY_VBLANK_RSTn, VUJO_WIN_Y1.qn());
-    /*p27.VYMU*/ VYMU_WIN_Y2.set(VUJO_WIN_Y1.qn(),   _SYNY_VBLANK_RSTn, VYMU_WIN_Y2.qn());
-    /*p27.TUFU*/ TUFU_WIN_Y3.set(VYMU_WIN_Y2.qn(),   _SYNY_VBLANK_RSTn, TUFU_WIN_Y3.qn());
-    /*p27.TAXA*/ TAXA_WIN_Y4.set(TUFU_WIN_Y3.qn(),   _SYNY_VBLANK_RSTn, TAXA_WIN_Y4.qn());
-    /*p27.TOZO*/ TOZO_WIN_Y5.set(TAXA_WIN_Y4.qn(),   _SYNY_VBLANK_RSTn, TOZO_WIN_Y5.qn());
-    /*p27.TATE*/ TATE_WIN_Y6.set(TOZO_WIN_Y5.qn(),   _SYNY_VBLANK_RSTn, TATE_WIN_Y6.qn());
-    /*p27.TEKE*/ TEKE_WIN_Y7.set(TATE_WIN_Y6.qn(),   _SYNY_VBLANK_RSTn, TEKE_WIN_Y7.qn());
+    /*p27.VYNO*/ VYNO_WIN_Y0.set(_WAZY_WIN_Y_CLK,  _SYNY_VBLANK_RSTn, VYNO_WIN_Y0.qn());
+    /*p27.VUJO*/ VUJO_WIN_Y1.set(VYNO_WIN_Y0.qn(), _SYNY_VBLANK_RSTn, VUJO_WIN_Y1.qn());
+    /*p27.VYMU*/ VYMU_WIN_Y2.set(VUJO_WIN_Y1.qn(), _SYNY_VBLANK_RSTn, VYMU_WIN_Y2.qn());
+    /*p27.TUFU*/ TUFU_WIN_Y3.set(VYMU_WIN_Y2.qn(), _SYNY_VBLANK_RSTn, TUFU_WIN_Y3.qn());
+    /*p27.TAXA*/ TAXA_WIN_Y4.set(TUFU_WIN_Y3.qn(), _SYNY_VBLANK_RSTn, TAXA_WIN_Y4.qn());
+    /*p27.TOZO*/ TOZO_WIN_Y5.set(TAXA_WIN_Y4.qn(), _SYNY_VBLANK_RSTn, TOZO_WIN_Y5.qn());
+    /*p27.TATE*/ TATE_WIN_Y6.set(TOZO_WIN_Y5.qn(), _SYNY_VBLANK_RSTn, TATE_WIN_Y6.qn());
+    /*p27.TEKE*/ TEKE_WIN_Y7.set(TATE_WIN_Y6.qn(), _SYNY_VBLANK_RSTn, TEKE_WIN_Y7.qn());
   }
 
   // FF4A

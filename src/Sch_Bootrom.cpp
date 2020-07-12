@@ -54,45 +54,35 @@ void Bootrom::tick(SchematicTop& /*top*/) {
 void Bootrom::tock(SchematicTop& top) {
 
   {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(top.BOOT_BITn());
-    /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
-    /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
-    /*p07.TUTU*/ wire TUTU_BOOTp = TUTU_ADDR_BOOTp;
-    top.CPU_PIN_BOOTp.set(TUTU_BOOTp);
+    top.CPU_PIN_BOOTp.set(top.TUTU_ADDR_BOOTp());
   }
 
   // FF50
   {
-    /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A03, top.CPU_PIN_A02, top.CPU_PIN_A01, top.CPU_PIN_A00);
-    /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(top.CPU_PIN_A04, top.CPU_PIN_A06);
+    /*p07.TYRO*/ wire _TYFO_ADDR_0x0x0000p = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A03, top.CPU_PIN_A02, top.CPU_PIN_A01, top.CPU_PIN_A00);
+    /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and(top.CPU_PIN_A04, top.CPU_PIN_A06);
 
-    /*p07.TEXE*/ wire FF50_RDp = and(top.TEDO_CPU_RDp(), top.SYKE_FF00_FFFFp(), ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf_6p(FF50_RDp, BOOT_BITn.q()); // does the rung of the tribuf control polarity?
+    /*p07.TEXE*/ wire _TEXE_FF50_RDp = and(top.TEDO_CPU_RDp(), top.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf_6p(_TEXE_FF50_RDp, BOOT_BITn.q()); // does the rung of the tribuf control polarity?
 
-    /*p07.TUGE*/ wire FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), top.SYKE_FF00_FFFFp(), ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire BOOT_BIT_IN = or (top.CPU_TRI_D0.q(), BOOT_BITn.q());
+    /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), top.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or (top.CPU_TRI_D0.q(), BOOT_BITn.q());
 
-    // In run mode, BOOT_BITn must _not_ be reset.
-    /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, top.ALUR_SYS_RSTn(), BOOT_BIT_IN);
+    /*p07.TEPU*/ BOOT_BITn.set(_TUGE_FF50_WRn, top.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
   }
 
   {
     // Bootrom -> CPU
 
-    wire TEDO_CPU_RDp = top.TEDO_CPU_RDp();
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
-    /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(BOOT_BITn.q());
-    /*p07.TULO*/ wire _TULO_ADDR_00XX = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
-    /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XX);
+    /*p07.YULA*/ wire _YULA_BOOT_RDp = and (top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
 
-    /*p07.YULA*/ wire _YULA_BOOT_RDp = and (TEDO_CPU_RDp, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
+    /*p07.ZORO*/ wire _ZORO_ADDR_0XXX = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12);
+    /*p07.ZADU*/ wire _ZADU_ADDR_X0XX = nor(top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
+    /*p07.ZUFA*/ wire _ZUFA_ADDR_00XX = and(_ZORO_ADDR_0XXX, _ZADU_ADDR_X0XX);
 
-    /*p07.ZORO*/ wire ZORO_ADDR_0XXX = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12);
-    /*p07.ZADU*/ wire ZADU_ADDR_X0XX = nor(top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
-    /*p07.ZUFA*/ wire ZUFA_ADDR_00XX = and(ZORO_ADDR_0XXX, ZADU_ADDR_X0XX);
-
-    /*p07.ZADO*/ wire ZADO_BOOT_CSn  = nand(_YULA_BOOT_RDp, ZUFA_ADDR_00XX);
-    /*p07.ZERY*/ wire ZERY_BOOT_CSp  = not(ZADO_BOOT_CSn);
+    /*p07.ZADO*/ wire _ZADO_BOOT_CSn  = nand(_YULA_BOOT_RDp, _ZUFA_ADDR_00XX);
+    /*p07.ZERY*/ wire _ZERY_BOOT_CSp  = not(_ZADO_BOOT_CSn);
 
 #if 0
     /*p07.ZYBA*/ wire ZYBA_ADDR_00n = not(top.CPU_PIN_A00);
@@ -122,14 +112,14 @@ void Bootrom::tock(SchematicTop& top) {
     uint16_t addr = (uint16_t)top.get_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    top.CPU_TRI_D0.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x01);
-    top.CPU_TRI_D1.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x02);
-    top.CPU_TRI_D2.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x04);
-    top.CPU_TRI_D3.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x08);
-    top.CPU_TRI_D4.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x10);
-    top.CPU_TRI_D5.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x20);
-    top.CPU_TRI_D6.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x40);
-    top.CPU_TRI_D7.set_tribuf_6p(ZERY_BOOT_CSp, data & 0x80);
+    top.CPU_TRI_D0.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x01);
+    top.CPU_TRI_D1.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x02);
+    top.CPU_TRI_D2.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x04);
+    top.CPU_TRI_D3.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x08);
+    top.CPU_TRI_D4.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x10);
+    top.CPU_TRI_D5.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x20);
+    top.CPU_TRI_D6.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x40);
+    top.CPU_TRI_D7.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x80);
   }
 }
 

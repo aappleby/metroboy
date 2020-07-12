@@ -13,20 +13,30 @@ struct WindowRegisters {
   void tock(SchematicTop& gb);
   SignalHash commit();
 
+  wire NUNY_WX_MATCHpe() const {
+    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and (PYNU_WIN_MODE_A.q(), NOPA_WIN_MODE_B.qn());
+    return NUNY_WX_MATCHpe;
+  }
+
+  wire MOSU_WIN_MODE_TRIGp() const {
+    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WX_MATCHpe());
+    /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
+    return MOSU_WIN_MODE_TRIGp;
+  }
+
 private:
   friend SchematicTop;
 
   wire ROGE_WY_MATCHp(const SchematicTop& top) const;
   wire NUKO_WX_MATCHp(const SchematicTop& top) const;
 
-  /*p27.NUNY*/ Signal NUNY_WX_MATCHpe;
   /*p27.SEKO*/ Signal SEKO_WX_MATCHne;
   /*p27.SUZU*/ Signal SUZU_WIN_FIRST_TILEne;
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
   /*p27.RYDY*/ NorLatch RYDY_WIN_FIRST_TILE_A;
 
-  /*p27.NOPA*/ Reg17 _NOPA_WIN_MODE_B;
+  /*p27.NOPA*/ Reg17 NOPA_WIN_MODE_B;
   /*p27.SOVY*/ Reg17 _SOVY_WIN_FIRST_TILE_B;
   /*p27.REJO*/ NorLatch _REJO_WY_MATCH_LATCH;
   /*p27.SARY*/ Reg17 _SARY_WY_MATCH;

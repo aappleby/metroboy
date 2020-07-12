@@ -13,6 +13,11 @@ struct PpuRegisters {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
+  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.q(); }
+  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
+  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
+
 private:
   friend struct SchematicTop;
 
@@ -37,7 +42,7 @@ private:
   /*p??.PUXA*/ Reg17 PUXA_FINE_MATCH_A;
   /*p27.NYZE*/ Reg17 NYZE_FINE_MATCH_B;
 
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ NorLatch _XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
 
   /*p21.VOGA*/ Reg17 VOGA_RENDER_DONE_SYNC;
 

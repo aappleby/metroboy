@@ -12,9 +12,6 @@ struct TileFetcher {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
-private:
-  friend SchematicTop;
-
   /*p27.LAXU*/ Reg17 LAXU_BFETCH_S0;
   /*p27.MESU*/ Reg17 MESU_BFETCH_S1;
   /*p27.NYVA*/ Reg17 NYVA_BFETCH_S2;

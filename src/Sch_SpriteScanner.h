@@ -32,7 +32,7 @@ struct SpriteScanner {
   void tock(SchematicTop& gb);
   SignalHash commit();
 
-private:
+//private:
   friend struct SchematicTop;
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp;

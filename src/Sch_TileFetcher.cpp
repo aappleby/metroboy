@@ -16,7 +16,7 @@ void TileFetcher::tock(SchematicTop& top) {
   /*p27.NOFU*/ wire _NOFU_BFETCH_S2n = not(NYVA_BFETCH_S2.q());
 
   {
-    /*p27.LURY*/ wire _LURY_BG_READ_VRAM_LATCH_RSTn = and(LOVY_FETCH_DONEp.qn(), top.XYMU_RENDERINGp());
+    /*p27.LURY*/ wire _LURY_BG_READ_VRAM_LATCH_RSTn = and(LOVY_FETCH_DONEp.qn(), top.ppu_reg.XYMU_RENDERINGp());
     /*p27.LONY*/ LONY_BG_READ_VRAM_LATCHp.nand_latch(top.NYXU_TILE_FETCHER_RSTn(), _LURY_BG_READ_VRAM_LATCH_RSTn);
   }
 
@@ -28,17 +28,17 @@ void TileFetcher::tock(SchematicTop& top) {
     /*p27.MESU*/ MESU_BFETCH_S1.set(LAXU_BFETCH_S0.qn(), top.NYXU_TILE_FETCHER_RSTn(), MESU_BFETCH_S1.qn());
     /*p27.NYVA*/ NYVA_BFETCH_S2.set(MESU_BFETCH_S1.qn(), top.NYXU_TILE_FETCHER_RSTn(), NYVA_BFETCH_S2.qn());
 
-    /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (top.ALET_xBxDxFxH(), top.XYMU_RENDERINGp(), LAXU_BFETCH_S0.q());
+    /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (top.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), LAXU_BFETCH_S0.q());
   }
 
   {
-    /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(top.MOSU_WIN_MODE_TRIGp(), top.LOBY_RENDERINGn());
+    /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(top.win_reg.MOSU_WIN_MODE_TRIGp(), top.ppu_reg.LOBY_RENDERINGn());
 
     /*p24.NYKA*/ NYKA_TILE_FETCH_DONE_Ap.set(top.ALET_xBxDxFxH(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, top.LYRY_BFETCH_DONEp());
     /*p24.PORY*/ PORY_TILE_FETCH_DONE_Bp.set(top.MYVO_AxCxExGx(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_TILE_FETCH_DONE_Ap.q());
-    /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.     set(top.ALET_xBxDxFxH(), top.XYMU_RENDERINGp(),           PORY_TILE_FETCH_DONE_Bp.q());
+    /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.     set(top.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(),           PORY_TILE_FETCH_DONE_Bp.q());
 
-    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch(PYGO_FETCH_DONE_Cp.q(), top.LOBY_RENDERINGn());
+    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch(PYGO_FETCH_DONE_Cp.q(), top.ppu_reg.LOBY_RENDERINGn());
   }
 
   //----------------------------------------
@@ -167,7 +167,7 @@ void TileFetcher::tock(SchematicTop& top) {
   }
 
   {
-    /*p27.MYSO*/ wire _MYSO_BG_TRIGp        = nor(top.LOBY_RENDERINGn(), _LAXE_BFETCH_S0n, LYZU_BFETCH_S0_DELAY.q());
+    /*p27.MYSO*/ wire _MYSO_BG_TRIGp        = nor(top.ppu_reg.LOBY_RENDERINGn(), _LAXE_BFETCH_S0n, LYZU_BFETCH_S0_DELAY.q());
 
     /*p27.NYDY*/ wire _NYDY_LATCH_BG_PIX_Ap = nand(_MYSO_BG_TRIGp, MESU_BFETCH_S1.q(), _NOFU_BFETCH_S2n);
     /*p32.METE*/ wire _METE_LATCH_BG_PIX_An = not(_NYDY_LATCH_BG_PIX_Ap);

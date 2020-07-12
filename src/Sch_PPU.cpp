@@ -13,8 +13,10 @@ void PpuRegisters::tick(SchematicTop& /*top*/) {
 
 void PpuRegisters::tock(SchematicTop& top) {
 
-  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), top.TOFU_VID_RSTp());
-  /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(top.TOFU_VID_RSTp(), VOGA_RENDER_DONE_SYNC.q());
+  /*p01.TOFU*/ wire _TOFU_VID_RSTp = not(top.XAPO_VID_RSTn());
+
+  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(top), _TOFU_VID_RSTp);
+  /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(_TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC.q());
 
   /*p24.ROXO*/ wire _ROXO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
 
@@ -23,12 +25,12 @@ void PpuRegisters::tock(SchematicTop& top) {
   }
 
   {
-    /*p21.XYMU*/ XYMU_RENDERINGp.nor_latch(top.AVAP_RENDER_START_RST(), _WEGO_LINE_END_RST);
+    /*p21.XYMU*/ _XYMU_RENDERINGp.nor_latch(top.AVAP_RENDER_START_RST(), _WEGO_LINE_END_RST);
   }
 
   {
     /*p27.PECU*/ wire _PECU_FINE_CLK = nand(_ROXO_CLKPIPEp, top.ROZE_FINE_COUNT_7n());
-    /*p27.PASO*/ wire _PASO_FINE_RST = nor(top.TEVO_FINE_RSTp(), top.ROPY_RENDERINGn());
+    /*p27.PASO*/ wire _PASO_FINE_RST = nor(top.TEVO_FINE_RSTp(), top.ppu_reg.ROPY_RENDERINGn());
     /*p27.RYKU*/ RYKU_FINE_CNT0.set(_PECU_FINE_CLK,       _PASO_FINE_RST, RYKU_FINE_CNT0.qn());
     /*p27.ROGA*/ ROGA_FINE_CNT1.set(RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn());
     /*p27.RUBU*/ RUBU_FINE_CNT2.set(ROGA_FINE_CNT1.qn(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn());
@@ -37,17 +39,17 @@ void PpuRegisters::tock(SchematicTop& top) {
   {
     // There's a feedback loop here of sorts
 
-    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.DATY_SCX0(), RYKU_FINE_CNT0.q()); // Arms on the ground side, XNOR
-    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.DUZU_SCX1(), ROGA_FINE_CNT1.q());
-    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.CYXU_SCX2(), RUBU_FINE_CNT2.q());
+    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.tile_fetcher.DATY_SCX0.q(), RYKU_FINE_CNT0.q()); // Arms on the ground side, XNOR
+    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.tile_fetcher.DUZU_SCX1.q(), ROGA_FINE_CNT1.q());
+    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.tile_fetcher.CYXU_SCX2.q(), RUBU_FINE_CNT2.q());
     /*p27.RONE*/ wire _RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn.q(), _SUHA_FINE_MATCHp, _SYBY_FINE_MATCHp, _SOZU_FINE_MATCHp);
     /*p27.POHU*/ wire _POHU_FINE_MATCHp = not(_RONE_FINE_MATCHn);
 
-    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(_ROXO_CLKPIPEp,       XYMU_RENDERINGp.q(), _POHU_FINE_MATCHp);
-    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), XYMU_RENDERINGp.q(), PUXA_FINE_MATCH_A.q());
+    /*p27.PUXA*/ PUXA_FINE_MATCH_A.set(_ROXO_CLKPIPEp,      _XYMU_RENDERINGp.q(), _POHU_FINE_MATCHp);
+    /*p27.NYZE*/ NYZE_FINE_MATCH_B.set(top.MOXE_AxCxExGx(), _XYMU_RENDERINGp.q(), PUXA_FINE_MATCH_A.q());
 
     /*p27.POVA*/ wire _POVA_FINE_MATCHpe = and(PUXA_FINE_MATCH_A.q(), NYZE_FINE_MATCH_B.qn());
-    /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(XYMU_RENDERINGp.q());
+    /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(_XYMU_RENDERINGp.q());
     /*p27.ROXY*/ ROXY_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCHpe);
 
     /*p21.XAJO*/ wire _XAJO_X_009 = and (XEHO_X0.q(), XYDO_X3.q());
@@ -63,8 +65,8 @@ void PpuRegisters::tock(SchematicTop& top) {
     // if AVAP goes high, POFY goes high.
     // if PAHO or TOFU go high, POFY goes low.
 
-    /*p24.PAHO*/ PAHO_X_8_SYNC.set(_ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3.q());
-    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || top.TOFU_VID_RSTp());
+    /*p24.PAHO*/ PAHO_X_8_SYNC.set(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.q(), XYDO_X3.q());
+    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || _TOFU_VID_RSTp);
     /*p24.RUZE*/ wire _RUZE_PIN_ST = not(POFY_ST_LATCH.q());
     top.LCD_PIN_ST.set(_RUZE_PIN_ST);
   }
@@ -122,8 +124,8 @@ void PpuRegisters::tock(SchematicTop& top) {
     /*p21.REFE*/ REFE_INT_OAM_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
     /*p21.RUGU*/ RUGU_INT_LYC_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
 
-    /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor(XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
-    /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(XYMU_RENDERINGp.q(), top.PARU_VBLANKp_d4()); // die NOR
+    /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor(_XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
+    /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(_XYMU_RENDERINGp.q(), top.PARU_VBLANKp_d4()); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.
 
@@ -165,7 +167,7 @@ SignalHash PpuRegisters::commit(SchematicTop& top) {
   /*p21.TUKY*/ hash << TUKY_X5.commit();
   /*p21.TAKO*/ hash << TAKO_X6.commit();
   /*p21.SYBE*/ hash << SYBE_X7.commit();
-  /*p21.XYMU*/ hash << XYMU_RENDERINGp.commit();
+  /*p21.XYMU*/ hash << _XYMU_RENDERINGp.commit();
   /*p21.VOGA*/ hash << VOGA_RENDER_DONE_SYNC.commit();
 
   /*p21.RUPO*/ hash << RUPO_LYC_MATCH_LATCHn.commit();

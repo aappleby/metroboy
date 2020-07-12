@@ -12,8 +12,10 @@ struct SpriteFetcher {
   void tock(SchematicTop& gb);
   SignalHash commit();
 
-private:
-  friend struct SchematicTop;
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not(TOXE_SFETCH_S0.q()); }
+  /*p29.SAKY*/ wire SAKY() const            { return nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q()); }
+
+
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp;
   /*p27.SOBU*/ Reg17 SOBU_SPRITE_FETCH_A;

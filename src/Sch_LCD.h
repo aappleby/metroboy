@@ -13,6 +13,8 @@ struct LcdRegisters {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
+  wire BYHA_VID_LINE_TRIG_d4(const SchematicTop& top) const;
+
 private:
   friend SchematicTop;
 

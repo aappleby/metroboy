@@ -30,15 +30,14 @@ void WindowRegisters::tock(SchematicTop& top) {
     /*p27.NUNU*/ _NUNU_WX_MATCH_B.set(top.MEHE_AxCxExGx(), top.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
 
     /*p27.PYNU*/ PYNU_WIN_MODE_A.nor_latch(_NUNU_WX_MATCH_B.q(), _XOFO_WIN_RSTp);
-    /*p27.NOPA*/ _NOPA_WIN_MODE_B.set(top.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), PYNU_WIN_MODE_A.q());
-    /*p27.NUNY*/ NUNY_WX_MATCHpe = and (PYNU_WIN_MODE_A.q(), _NOPA_WIN_MODE_B.qn());
+    /*p27.NOPA*/ NOPA_WIN_MODE_B.set(top.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), PYNU_WIN_MODE_A.q());
   }
 
   {
     // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
     /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ROZE_FINE_COUNT_7n());
-    /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
-    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.ALET_xBxDxFxH(), top.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
+    /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.ppu_reg.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
+    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
     /*p27.SEKO*/ SEKO_WX_MATCHne = nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q());
   }
 
@@ -47,7 +46,7 @@ void WindowRegisters::tock(SchematicTop& top) {
     ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
     ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-    /*p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe, _PYRY_VID_RSTp || top.PORY_TILE_FETCH_DONE_Bp());
+    /*p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), _PYRY_VID_RSTp || top.PORY_TILE_FETCH_DONE_Bp());
     /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(top.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), RYDY_WIN_FIRST_TILE_A.q());
     /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(top.SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
     /*p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not(_TUXY_WIN_FIRST_TILE_NE);
@@ -187,14 +186,13 @@ wire WindowRegisters::NUKO_WX_MATCHp(const SchematicTop& top) const {
 SignalHash WindowRegisters::commit() {
   SignalHash hash;
 
-  /*p27.NUNY*/ hash << NUNY_WX_MATCHpe.commit();
   /*p27.SEKO*/ hash << SEKO_WX_MATCHne.commit();
   /*p27.SUZU*/ hash << SUZU_WIN_FIRST_TILEne.commit();
 
   /*p27.PYNU*/ hash << PYNU_WIN_MODE_A.commit();
   /*p27.RYDY*/ hash << RYDY_WIN_FIRST_TILE_A.commit();
 
-  /*p27.NOPA*/ hash << _NOPA_WIN_MODE_B.commit();
+  /*p27.NOPA*/ hash << NOPA_WIN_MODE_B.commit();
   /*p27.SOVY*/ hash << _SOVY_WIN_FIRST_TILE_B.commit();
   /*p27.REJO*/ hash << _REJO_WY_MATCH_LATCH.commit();
   /*p27.SARY*/ hash << _SARY_WY_MATCH.commit();

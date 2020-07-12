@@ -24,13 +24,13 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
     /*p27.TUKU*/ wire _TUKU_WIN_HITn = not(top.TOMU_WIN_HITp());
     /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not(TAKA_SFETCH_RUNNINGp.q());
-    /*p27.TEKY*/ wire _TEKY_SPRITE_FETCH = and (top.FEPO_STORE_MATCHp(), _TUKU_WIN_HITn, top.LYRY_BFETCH_DONEp(), _SOWO_SFETCH_RUNNINGn);
+    /*p27.TEKY*/ wire _TEKY_SPRITE_FETCH = and (top.sprite_store.FEPO_STORE_MATCHp, _TUKU_WIN_HITn, top.LYRY_BFETCH_DONEp(), _SOWO_SFETCH_RUNNINGn);
 
     /*p27.SOBU*/ SOBU_SPRITE_FETCH_A.set(_TAVA_xBxDxFxH, top.VYPO_GND, _TEKY_SPRITE_FETCH);
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_B.set(_LAPE_AxCxExGx, top.VYPO_GND, SOBU_SPRITE_FETCH_A.q());
     /*p27.RYCE*/ wire _RYCE_SPRITE_FETCHpe = and (SOBU_SPRITE_FETCH_A.q(),  SUDA_SPRITE_FETCH_B.qn());
     /*p01.ROSY*/ wire _ROSY_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p27.SECA*/ wire _SECA_SPRITE_FETCHne = nor(_RYCE_SPRITE_FETCHpe, _ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4()); // def nor
+    /*p27.SECA*/ wire _SECA_SPRITE_FETCHne = nor(_RYCE_SPRITE_FETCHpe, _ROSY_VID_RSTp, top.lcd_reg.BYHA_VID_LINE_TRIG_d4(top)); // def nor
 
     /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SPRITE_FETCHne, top.VEKU_SFETCH_RUNNING_RSTn());
 
@@ -41,9 +41,9 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p29.TULY*/ TULY_SFETCH_S1.set(TOXE_SFETCH_S0.qn(),      _SECA_SPRITE_FETCHne, TULY_SFETCH_S1.qn());
     /*p29.TESE*/ TESE_SFETCH_S2.set(TULY_SFETCH_S1.qn(),      _SECA_SPRITE_FETCHne, TESE_SFETCH_S2.qn());
 
-    /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(_TAVA_xBxDxFxH, top.XYMU_RENDERINGp(), TULY_SFETCH_S1.q());    // note input is seq 1 not 2
-    /*p29.VONU*/ VONU_SFETCH_S1_D4.set(_TAVA_xBxDxFxH, top.XYMU_RENDERINGp(), TOBU_SFETCH_S1_D2.q());
-    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(_LAPE_AxCxExGx, top.XYMU_RENDERINGp(), VONU_SFETCH_S1_D4.q());
+    /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(_TAVA_xBxDxFxH, top.ppu_reg.XYMU_RENDERINGp(), TULY_SFETCH_S1.q());    // note input is seq 1 not 2
+    /*p29.VONU*/ VONU_SFETCH_S1_D4.set(_TAVA_xBxDxFxH, top.ppu_reg.XYMU_RENDERINGp(), TOBU_SFETCH_S1_D2.q());
+    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(_LAPE_AxCxExGx, top.ppu_reg.XYMU_RENDERINGp(), VONU_SFETCH_S1_D4.q());
   }
 
   {
@@ -59,7 +59,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
 
     /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(_LAPE_AxCxExGx, top.VYPO_GND, TOXE_SFETCH_S0.q());
-    /*p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor(top.TYTU_SFETCH_S0n(), top.LOBY_RENDERINGn(), TYFO_SFETCH_S0_D1.q());
+    /*p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor(top.sprite_fetcher.TYTU_SFETCH_S0n(), top.ppu_reg.LOBY_RENDERINGn(), TYFO_SFETCH_S0_D1.q());
 
     /*p29.RACA*/ wire _RACA_LATCH_SPPIXB = and(VONU_SFETCH_S1_D4.q(), _SYCU_SFETCH_S0pe);
     /*p29.PEBY*/ wire _PEBY_CLKp = not(_RACA_LATCH_SPPIXB);

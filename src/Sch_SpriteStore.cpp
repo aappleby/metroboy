@@ -152,7 +152,7 @@ void SpriteStoreRegisters::tick_match(SchematicTop& top) {
     /*p31.YTUB*/ wire STORE9_MATCHB = nor(STORE9_MATCH4n, STORE9_MATCH5n, STORE9_MATCH6n, STORE9_MATCH7n);
 
     /*p29.BYJO*/ wire _BYJO_SCANNINGn = not(top.CEHA_SCANNINGp());
-    /*p29.AZEM*/ wire _AZEM_RENDERINGp = and (_BYJO_SCANNINGn, top.XYMU_RENDERINGp());
+    /*p29.AZEM*/ wire _AZEM_RENDERINGp = and (_BYJO_SCANNINGn, top.ppu_reg.XYMU_RENDERINGp());
     /*p29.AROR*/ wire _AROR_MATCH_ENp = and (_AZEM_RENDERINGp, top.XYLO_LCDC_SPEN.q());
 
     /*p29.YDUG*/ STORE0_MATCHn = nand(_AROR_MATCH_ENp, STORE0_MATCHBp, STORE0_MATCHAp);
@@ -176,7 +176,7 @@ void SpriteStoreRegisters::tick_match(SchematicTop& top) {
 
 void SpriteStoreRegisters::tock(SchematicTop& top) {
 
-  /*p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
+  /*p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not(top.sprite_scanner.CARE_STORE_ENp_ABxxEFxx);
 
   /*p01.AMYG*/ wire _AMYG_VID_RSTp = not(top.XAPO_VID_RSTn());
   /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (top.ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp);
@@ -193,7 +193,7 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p29.BAKY*/ wire _BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
     /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn_SYNC.q());
     
-    /*p28.AZYB*/ wire _AZYB_RST = not(top.BYHA_VID_LINE_TRIG_d4());
+    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(top));
     /*p29.BESE*/ SPRITE_COUNT0.set(_CAKE_CLKp,         _AZYB_RST, SPRITE_COUNT0.qn());
     /*p29.CUXY*/ SPRITE_COUNT1.set(SPRITE_COUNT0.q(), _AZYB_RST, SPRITE_COUNT1.qn());
     /*p29.BEGO*/ SPRITE_COUNT2.set(SPRITE_COUNT1.q(), _AZYB_RST, SPRITE_COUNT2.qn());
@@ -204,10 +204,16 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
 
   {
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
-    /*p30.WENU*/ top.SPR_TRI_LINE_0.set_tribuf_6n(top.FEPO_STORE_MATCHp(), top.DEGE_SPRITE_DELTA0());
-    /*p30.CUCU*/ top.SPR_TRI_LINE_1.set_tribuf_6n(top.FEPO_STORE_MATCHp(), top.DABY_SPRITE_DELTA1());
-    /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf_6n(top.FEPO_STORE_MATCHp(), top.DABU_SPRITE_DELTA2());
-    /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf_6n(top.FEPO_STORE_MATCHp(), top.GYSA_SPRITE_DELTA3());
+
+    wire DEGE_SPRITE_DELTA0 = not(top.sprite_scanner.ERUC_YDIFF_S0);
+    wire DABY_SPRITE_DELTA1 = not(top.sprite_scanner.ENEF_YDIFF_S1);
+    wire DABU_SPRITE_DELTA2 = not(top.sprite_scanner.FECO_YDIFF_S2);
+    wire GYSA_SPRITE_DELTA3 = not(top.sprite_scanner.GYKY_YDIFF_S3);
+
+    /*p30.WENU*/ top.SPR_TRI_LINE_0.set_tribuf_6n(top.sprite_store.FEPO_STORE_MATCHp, DEGE_SPRITE_DELTA0);
+    /*p30.CUCU*/ top.SPR_TRI_LINE_1.set_tribuf_6n(top.sprite_store.FEPO_STORE_MATCHp, DABY_SPRITE_DELTA1);
+    /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf_6n(top.sprite_store.FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
+    /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf_6n(top.sprite_store.FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
 
     /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), _DYTY_STORE_ENn_xxCDxxGH);
   }
@@ -218,7 +224,7 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
 
 
   {
-    /*p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDX = and(top.CENO_SCANNINGqn(), top.XYMU_RENDERINGp());
+    /*p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDX = and(top.sprite_scanner.CENO_SCANNINGp.qn(), top.ppu_reg.XYMU_RENDERINGp());
     /*p30.WUZY*/ top.SPR_TRI_INDX_0.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.XADU_SPRITE_INDX0.q());
     /*p30.WYSE*/ top.SPR_TRI_INDX_1.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.XEDY_SPRITE_INDX1.q());
     /*p30.ZYSU*/ top.SPR_TRI_INDX_2.set_tribuf_6n(_BUZA_STORE_SPRITE_INDX, top.ZUZE_SPRITE_INDX2.q());

@@ -40,7 +40,7 @@ BusMux::BusMux() {
 void BusMux::tick(SchematicTop& top) {
   {
     // CPU controls OAM bus if there's no scanning, rendering, or dmaing.
-    /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or (top.ACYL_SCANNINGp(), top.XYMU_RENDERINGp(), top.MATU_DMA_RUNNINGp());
+    /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or (top.ACYL_SCANNINGp(), top.ppu_reg.XYMU_RENDERINGp(), top.MATU_DMA_RUNNINGp());
     /*p28.GARO*/ wire _GARO_A0n = not(top.CPU_PIN_A00);
     /*p28.WACU*/ wire _WACU_A1n = not(top.CPU_PIN_A01);
     /*p28.GOSE*/ wire _GOSE_A2n = not(top.CPU_PIN_A02);
@@ -61,12 +61,12 @@ void BusMux::tick(SchematicTop& top) {
 
     // Scanner controls OAM address if it's running (collision w/ DMA?)
     /*p28.APAR*/ wire _APAR_SCAN_OAM_RDn  = not(top.ACYL_SCANNINGp());
-    /*p28.GUSE*/ wire _GUSE_SCAN0n = not(top.YFEL_SCAN0());
-    /*p28.GEMA*/ wire _GEMA_SCAN1n = not(top.WEWY_SCAN1());
-    /*p28.FUTO*/ wire _FUTO_SCAN2n = not(top.GOSO_SCAN2());
-    /*p28.FAKU*/ wire _FAKU_SCAN3n = not(top.ELYN_SCAN3());
-    /*p28.GAMA*/ wire _GAMA_SCAN4n = not(top.FAHA_SCAN4());
-    /*p28.GOBY*/ wire _GOBY_SCAN5n = not(top.FONY_SCAN5());
+    /*p28.GUSE*/ wire _GUSE_SCAN0n = not(top.sprite_scanner.YFEL_SCAN0.q());
+    /*p28.GEMA*/ wire _GEMA_SCAN1n = not(top.sprite_scanner.WEWY_SCAN1.q());
+    /*p28.FUTO*/ wire _FUTO_SCAN2n = not(top.sprite_scanner.GOSO_SCAN2.q());
+    /*p28.FAKU*/ wire _FAKU_SCAN3n = not(top.sprite_scanner.ELYN_SCAN3.q());
+    /*p28.GAMA*/ wire _GAMA_SCAN4n = not(top.sprite_scanner.FAHA_SCAN4.q());
+    /*p28.GOBY*/ wire _GOBY_SCAN5n = not(top.sprite_scanner.FONY_SCAN5.q());
 
     // DMA controls OAM address if it's running.
     /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn  = not(top.MATU_DMA_RUNNINGp());

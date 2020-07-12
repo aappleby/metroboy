@@ -12,10 +12,10 @@ struct SpriteStoreRegisters {
   void tock(SchematicTop& gb);
   SignalHash commit(SchematicTop& top);
 
+  /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
+
 private:
   friend struct SchematicTop;
-
-  /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
 
   /*p29.YDUG*/ Signal STORE0_MATCHn;
   /*p29.DYDU*/ Signal STORE1_MATCHn;

@@ -5,9 +5,8 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 void LcdRegisters::tick(SchematicTop& top) {
+  _ATAR_VID_RSTp = top.rst_reg.ATAR_VID_RSTp();
   _ABEZ_VID_RSTn = top.rst_reg.ABEZ_VID_RSTn();
 }
 
@@ -201,6 +200,7 @@ void LcdRegisters::tock(SchematicTop& top) {
 SignalHash LcdRegisters::commit(SchematicTop& top) {
   SignalHash hash;
 
+  hash << _ATAR_VID_RSTp.commit();
   hash << _ABEZ_VID_RSTn.commit();
 
   /*p21.SAXO*/ hash << XEHO_X0.commit(); // increments at phase 1, reset to 0 at p909.

@@ -21,7 +21,6 @@ struct SpriteScanner {
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not(_CARE_STORE_ENp_ABxxEFxx); }
 
   /*p29.BYJO*/ wire BYJO_SCANNINGn() const { return not(CEHA_SCANNINGp()); }
-
   /*p29.CENO*/ wire CENO_SCANNINGp() const { return _CENO_SCANNINGp.q(); }
   /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }
 

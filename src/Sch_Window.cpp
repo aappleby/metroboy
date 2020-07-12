@@ -5,7 +5,19 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void WindowRegisters::tick(SchematicTop& /*top*/) {
+void WindowRegisters::tick(SchematicTop& top) {
+  {
+    // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
+    /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ppu_reg.ROZE_FINE_COUNT_7n());
+    /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.ppu_reg.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
+    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.clk_reg.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
+    /*p27.SEKO*/ SEKO_WX_MATCHne = nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q());
+  }
+
+  {
+    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
+    /*p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not(_TUXY_WIN_FIRST_TILE_NE);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -33,22 +45,12 @@ void WindowRegisters::tock(SchematicTop& top) {
   }
 
   {
-    // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
-    /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ppu_reg.ROZE_FINE_COUNT_7n());
-    /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.ppu_reg.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
-    /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.clk_reg.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
-    /*p27.SEKO*/ SEKO_WX_MATCHne = nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q());
-  }
-
-  {
     // PUKU/RYDY form a NOR latch. WIN_MODE_TRIG is SET, (VID_RESET | BFETCH_DONE_SYNC_DELAY) is RESET.
     ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
     ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), top.rst_reg.PYRY_VID_RSTp() || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
+    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), top.rst_reg.PYRY_VID_RSTp() || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp());
     /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.rst_reg.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.q());
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
-    /*p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not(_TUXY_WIN_FIRST_TILE_NE);
   }
 
   // window x coordinate

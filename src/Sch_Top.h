@@ -153,17 +153,14 @@ struct SchematicTop {
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp() const { return nor(TUNA_0000_FDFFp(), TONA_A08n()); }
   /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor(CPU_PIN_A07, CPU_PIN_A06, CPU_PIN_A05, CPU_PIN_A04, CPU_PIN_A03); }
 
-
   //-----------------------------------------------------------------------------
   // PPU signals
 
   /*p21.WODU*/ wire WODU_RENDER_DONEp() const { return and(sprite_store.XENA_STORE_MATCHn(), ppu_reg.XANO_X_167p()); }
 
   /*p27.TEVO*/ wire TEVO_FINE_RSTp() const {
-  
-    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
-    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
-    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
+ 
+    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(tile_fetcher.SUVU_PORCH_ENDn());
     return nor(win_reg.SEKO_WX_MATCHne, win_reg.SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
   }
 
@@ -173,7 +170,7 @@ struct SchematicTop {
     /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, top.WODU_RENDER_DONEp(), clk_reg.MYVO_AxCxExGx());
 
     /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(win_reg.TOMU_WIN_HITp());
-    /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp.q(), _VYBO_PIX_CLK_xBxDxFxH);
+    /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp(), _VYBO_PIX_CLK_xBxDxFxH);
 
     return not(_TYFA_CLKPIPEp_xBxDxFxH);
   }
@@ -192,21 +189,15 @@ struct SchematicTop {
 
   // And this is the topmost "reset sprite fetcher" signal
   wire VEKU_SFETCH_RUNNING_RSTn() const {
-    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
-    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
+    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp());
+    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(ppu_reg.XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp());
     /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
     /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(sprite_fetcher.WUTY_SPRITE_DONEp(), TAVE_PORCH_DONE_TRIGp); // def nor
     return VEKU_SFETCH_RUNNING_RSTn;
   }
 
-  /*p27.MOCE*/ wire MOCE_BFETCH_DONEn() const { return nand(tile_fetcher.LAXU_BFETCH_S0.q(), tile_fetcher.NYVA_BFETCH_S2.q(), NYXU_TILE_FETCHER_RSTn()); }
-  /*p27.LYRY*/ wire LYRY_BFETCH_DONEp() const { return not(MOCE_BFETCH_DONEn()); }
-
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn() const { return nor(lcd_reg.ATEJ_VID_LINE_TRIG_d4p(), rst_reg.ATAR_VID_RSTp()); }
-  /*p29.BALU*/ wire BALU_LINE_RSTp() const { return not(ANOM_LINE_RSTn()); }
-
   /*p29.AVAP*/ wire AVAP_RENDER_START_RST() const {
-    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(BALU_LINE_RSTp(), sprite_scanner.DOBA_SCAN_DONE_B(), !sprite_scanner.BYBA_SCAN_DONE_A());
+    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(lcd_reg.BALU_LINE_RSTp(), sprite_scanner.DOBA_SCAN_DONE_B(), !sprite_scanner.BYBA_SCAN_DONE_A());
     return not(_BEBU_SCAN_DONE_TRIGn);
   }
 

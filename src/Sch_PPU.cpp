@@ -37,9 +37,9 @@ void PpuRegisters::tock(SchematicTop& top) {
   {
     // There's a feedback loop here of sorts
 
-    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.tile_fetcher.DATY_SCX0.q(), RYKU_FINE_CNT0.q()); // Arms on the ground side, XNOR
-    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.tile_fetcher.DUZU_SCX1.q(), ROGA_FINE_CNT1.q());
-    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.tile_fetcher.CYXU_SCX2.q(), RUBU_FINE_CNT2.q());
+    /*p27.SUHA*/ wire _SUHA_FINE_MATCHp = xnor(top.tile_fetcher.DATY_SCX0(), RYKU_FINE_CNT0.q()); // Arms on the ground side, XNOR
+    /*p27.SYBY*/ wire _SYBY_FINE_MATCHp = xnor(top.tile_fetcher.DUZU_SCX1(), ROGA_FINE_CNT1.q());
+    /*p27.SOZU*/ wire _SOZU_FINE_MATCHp = xnor(top.tile_fetcher.CYXU_SCX2(), RUBU_FINE_CNT2.q());
     /*p27.RONE*/ wire _RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn.q(), _SUHA_FINE_MATCHp, _SYBY_FINE_MATCHp, _SOZU_FINE_MATCHp);
     /*p27.POHU*/ wire _POHU_FINE_MATCHp = not(_RONE_FINE_MATCHn);
 

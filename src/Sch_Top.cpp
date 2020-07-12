@@ -217,69 +217,47 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
-  rst_reg.tick(*this);
-
-  clk_reg.tick(*this);
-  clk_reg.tock(*this);
-
-  dbg_reg.tick(*this);
-  dbg_reg.tock(*this);
-
-  rst_reg.tock(*this);
-
-  tim_reg.tick(*this);
-  tim_reg.tock(*this);
-
-  bootrom.tick(*this);
-  bootrom.tock(*this);
-
-  dma_reg.tick(*this);
-  dma_reg.tock(*this);
-
-  ser_reg.tick(*this);
-  ser_reg.tock(*this);
-
-  joy_reg.tick(*this);
-  joy_reg.tock(*this);
-
-  lcd_reg.tick(*this);
-
-  sprite_scanner.tick_ymatch(*this);
-  sprite_scanner.tock(*this);
-
-  lcd_reg.tock(*this);
-
-  bus_mux.tick(*this);
-  bus_mux.tock(*this);
-
   sprite_store.tick_match(*this);  // after bus mux
-  sprite_store.tock(*this);  // after bus mux
-
   win_reg.tick(*this); // after sprite store
-  win_reg.tock(*this); // after sprite store
-
-  ppu_reg.tick(*this); // after window
-  ppu_reg.tock(*this); // after window
-
-  tick_vram_pins(); // before sprite fetcher
-
-  sprite_fetcher.tick(*this); // after window
-  sprite_fetcher.tock(*this); // after window
-
-  pxp_reg.tick(*this); // after window
-  pxp_reg.tock(*this); // after window
-
+  rst_reg.tick(*this);
+  lcd_reg.tick(*this);
   tile_fetcher.tick(*this); // after window
-  tile_fetcher.tock(*this); // after window
-
+  clk_reg.tick(*this);
+  dbg_reg.tick(*this);
+  tim_reg.tick(*this);
+  bootrom.tick(*this);
+  dma_reg.tick(*this);
+  ser_reg.tick(*this);
+  joy_reg.tick(*this);
+  sprite_scanner.tick_ymatch(*this);
+  bus_mux.tick(*this);
+  ppu_reg.tick(*this); // after window
+  sprite_fetcher.tick(*this); // after window
+  pxp_reg.tick(*this); // after window
   int_reg.tick(*this);
+
+  clk_reg.tock(*this);
+  dbg_reg.tock(*this);
+  rst_reg.tock(*this);
+  tim_reg.tock(*this);
+  bootrom.tock(*this);
+  dma_reg.tock(*this);
+  ser_reg.tock(*this);
+  joy_reg.tock(*this);
+  sprite_scanner.tock(*this);
+  lcd_reg.tock(*this);
+  bus_mux.tock(*this);
+  sprite_store.tock(*this);  // after bus mux
+  win_reg.tock(*this); // after sprite store
+  ppu_reg.tock(*this); // after window
+  tick_vram_pins(); // before sprite fetcher
+  sprite_fetcher.tock(*this); // after window
+  pxp_reg.tock(*this); // after window
+  tile_fetcher.tock(*this); // after window
   int_reg.tock(*this);
 
   CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
-
-  {
-    CPU_PIN_ADDR_HI.set(SYRO_FE00_FFFFp());
-  }
+  CPU_PIN_ADDR_HI.set(SYRO_FE00_FFFFp());
 
   //----------
   // FF40 LCDC
@@ -674,9 +652,8 @@ void SchematicTop::tick_vram_pins() {
     /*p25.RYLU*/ wire _RYLU_DBG_VRAM_RDn = nand(_SALE_VRAM_WRn, XANE_VRAM_LOCKn());
     /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and(sprite_fetcher.TACU_SPR_SEQ_5_TRIG(), ABON_SPR_VRM_RDn());
     /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not(_SOHO_SPR_VRAM_RDp);
-    /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not(tile_fetcher.LONY_BG_READ_VRAM_LATCHp.q()); // this should be correct
 
-    /*p25.RACU*/ wire _RACU_MOEn   = and (_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, top.dma_reg.APAM_DMA_VRAM_RDn()); // def and
+    /*p25.RACU*/ wire _RACU_MOEn   = and (_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn, top.tile_fetcher.MYMA_BGW_VRAM_RDn(), top.dma_reg.APAM_DMA_VRAM_RDn()); // def and
     /*p25.SEMA*/ wire _SEMA_MOEn_A = and(_RACU_MOEn, _RACO_DBG_VRAMn);
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or (_RACU_MOEn, _TUTO_DBG_VRAMp); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire _REFO_MOEn_A = not(_SEMA_MOEn_A);

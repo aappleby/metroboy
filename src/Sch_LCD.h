@@ -19,7 +19,9 @@ struct LcdRegisters {
   }
 
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p() const { return not(BYHA_VID_LINE_TRIG_d4()); }
-
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn()         const { return nor(ATEJ_VID_LINE_TRIG_d4p(), _ATAR_VID_RSTp); }
+  /*p29.BALU*/ wire BALU_LINE_RSTp()         const { return not(ANOM_LINE_RSTn()); }
+  /*p29.BAGY*/ wire BAGY_LINE_RSTn()         const { return not(BALU_LINE_RSTp()); }
 
   /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(POPU_VBLANKp_d4.qn()); }
   /*p21.TOLU*/ wire TOLU_VBLANKn()        const { return not(PARU_VBLANKp_d4()); }
@@ -28,6 +30,8 @@ struct LcdRegisters {
   /*p21.TAPA*/ wire TAPA_INT_OAM()        const { return and (TOLU_VBLANKn(), SELA_LINE_END_Fp()); }
   /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return _ROPO_LY_MATCH_SYNCp.q(); }
   /*p29.CATU*/ wire CATU_LINE_END()       const { return _CATU_LINE_END.q(); }
+
+
 
   /*p21.SAXO*/ Reg17 XEHO_X0; // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ Reg17 SAVY_X1;
@@ -48,6 +52,7 @@ struct LcdRegisters {
 
 private:
 
+  Signal _ATAR_VID_RSTp;
   Signal _ABEZ_VID_RSTn;
 
   /*p21.RUTU*/ Reg17 RUTU_LINE_END; // p909+8

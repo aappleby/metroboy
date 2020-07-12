@@ -6,7 +6,10 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void TimerRegisters::tick(SchematicTop& top) {
+void TimerRegisters::tick(SchematicTop& /*top*/) {
+}
+
+void TimerRegisters::tock(SchematicTop& top) {
   /*p03.RYFO*/ wire RYFO_FF04_FF07p = and (top.CPU_PIN_A02, top.SARE_XX00_XX07p(), top.SYKE_FF00_FFFFp());
 
   /*p01.TAGY*/ wire TAGY_FF04_RD = and (top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.TOLA_A01n(), top.TOVY_A00n());
@@ -176,14 +179,14 @@ SignalHash TimerRegisters::commit() {
   /*p01.TEKA*/ hash << TEKA_DIV_13.commit();
   /*p01.UKET*/ hash << UKET_DIV_14.commit();
   /*p01.UPOF*/ hash << UPOF_DIV_15.commit();
-  /*p03.REGA*/ hash << REGA_TIMA_0.commit_counter();
-  /*p03.POVY*/ hash << POVY_TIMA_1.commit_counter();
-  /*p03.PERU*/ hash << PERU_TIMA_2.commit_counter();
-  /*p03.RATE*/ hash << RATE_TIMA_3.commit_counter();
-  /*p03.RUBY*/ hash << RUBY_TIMA_4.commit_counter();
-  /*p03.RAGE*/ hash << RAGE_TIMA_5.commit_counter();
-  /*p03.PEDA*/ hash << PEDA_TIMA_6.commit_counter();
-  /*p03.NUGA*/ hash << NUGA_TIMA_7.commit_counter();
+  /*p03.REGA*/ hash << REGA_TIMA_0.commit();
+  /*p03.POVY*/ hash << POVY_TIMA_1.commit();
+  /*p03.PERU*/ hash << PERU_TIMA_2.commit();
+  /*p03.RATE*/ hash << RATE_TIMA_3.commit();
+  /*p03.RUBY*/ hash << RUBY_TIMA_4.commit();
+  /*p03.RAGE*/ hash << RAGE_TIMA_5.commit();
+  /*p03.PEDA*/ hash << PEDA_TIMA_6.commit();
+  /*p03.NUGA*/ hash << NUGA_TIMA_7.commit();
   /*p03.NYDU*/ hash << NYDU_TIMA_MAX.commit();
   /*p03.MOBA*/ hash << MOBA_INT_TIMERp.commit();
   /*p03.SABU*/ hash << SABU_TMA_0.commit();

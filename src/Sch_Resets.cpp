@@ -1,11 +1,18 @@
 #include "Sch_Resets.h"
 #include "Sch_Top.h"
 
+#define FAST_BOOT
+
 using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tick(SchematicTop& top) {
+void ResetRegisters::tick(SchematicTop& /*top*/) {
+}
+
+//-----------------------------------------------------------------------------
+
+void ResetRegisters::tock(SchematicTop& top) {
   wire SYS_PIN_CLK_A = top.SYS_PIN_CLK_A;
   wire SYS_PIN_RSTp = top.SYS_PIN_RSTp;
   wire CPU_PIN_READYp = top.CPU_PIN_READYp;
@@ -16,7 +23,12 @@ void ResetRegisters::tick(SchematicTop& top) {
   // Are we _sure_ this is a nor latch?
   /*p01.TUBO*/ _TUBO_CPU_READYn.nor_latch(UPYF, CPU_PIN_READYp);
 
+#ifdef FAST_BOOT
+  // Just wait until DIV = 4 instead of DIV = 32768
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_CPU_READYn.q(), top.UNER_DIV_02());
+#else
   /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_CPU_READYn.q(), top.UPOF_DIV_15());
+#endif
   /*p01.TABA*/ wire _TABA_POR_TRIGn = or(top.UNOR_MODE_DBG2p(), top.UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
   /*p01.ALYP*/ wire _ALYP_RSTn = not(_TABA_POR_TRIGn);
   /*p01.AFAR*/ wire _AFAR_RST  = nor(_ALYP_RSTn, top.SYS_PIN_RSTp);

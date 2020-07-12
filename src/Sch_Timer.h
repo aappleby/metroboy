@@ -10,6 +10,8 @@ struct SchematicTop;
 struct TimerRegisters {
 
   void tick(SchematicTop& gb);
+  void tock(SchematicTop& gb);
+
   SignalHash commit();
 
   int get_div() {

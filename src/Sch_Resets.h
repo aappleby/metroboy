@@ -10,6 +10,7 @@ struct SchematicTop;
 struct ResetRegisters {
 
   void tick(SchematicTop& gb);
+  void tock(SchematicTop& top);
   SignalHash commit();
 
 //private:

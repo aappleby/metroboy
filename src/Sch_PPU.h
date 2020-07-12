@@ -10,6 +10,7 @@ struct SchematicTop;
 struct PpuRegisters {
 
   void tick(SchematicTop& top);
+  void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
 private:

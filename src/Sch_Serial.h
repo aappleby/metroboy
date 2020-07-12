@@ -10,6 +10,7 @@ struct SchematicTop;
 struct SerialRegisters {
 
   void tick(SchematicTop& gb);
+  void tock(SchematicTop& gb);
   SignalHash commit();
 
 private:

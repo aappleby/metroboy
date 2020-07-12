@@ -64,8 +64,6 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
 
   void tick_vram_pins();
-  void tick_top_regs();
-  void tick_cpu_bus();
 
   //-----------------------------------------------------------------------------
   // Debug signals
@@ -196,11 +194,19 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Timer signals
 
-  wire UVYN_DIV_05n() const;
-  wire UMEK_DIV_06n() const;
-  wire UREK_DIV_07n() const;
-  wire UPOF_DIV_15() const;
-  wire MOBA_INT_TIMERp() const;
+  wire UVYN_DIV_05n() const    { return not(tim_reg.TAMA_DIV_05.q()); }
+  wire UMEK_DIV_06n() const    { return not(tim_reg.UGOT_DIV_06.q()); }
+  wire UREK_DIV_07n() const    { return not(tim_reg.TULU_DIV_07.q()); }
+
+  wire UKUP_DIV_00() const { return tim_reg.UKUP_DIV_00.q(); }
+  wire UFOR_DIV_01() const { return tim_reg.UFOR_DIV_01.q(); }
+  wire UNER_DIV_02() const { return tim_reg.UNER_DIV_02.q(); }
+  wire TERO_DIV_03() const { return tim_reg.TERO_DIV_03.q(); }
+  wire UNYK_DIV_04() const { return tim_reg.UNYK_DIV_04.q(); }
+  wire TERU_DIV_10() const { return tim_reg.TERU_DIV_10.q(); }
+  wire UPOF_DIV_15() const { return tim_reg.UPOF_DIV_15.q(); }
+
+  wire MOBA_INT_TIMERp() const { return tim_reg.MOBA_INT_TIMERp.q(); }
 
   //-----------------------------------------------------------------------------
   // Reset signals
@@ -231,6 +237,15 @@ struct SchematicTop {
   /*p07.AJAS*/ wire AJAS_CPU_RDn() const { return not(TEDO_CPU_RDp()); }
   /*p07.ASOT*/ wire ASOT_CPU_RDp() const { return not(AJAS_CPU_RDn()); }
 
+  wire LEKO_CPU_RDp() const {
+    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(CPU_PIN5);
+    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
+    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RDp(), CATY_FROM_CPU5p);
+    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
+    return LEKO_CPU_RDp;
+  }
+
+
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const;
   /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const;
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
@@ -240,32 +255,32 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Bus mux signals
 
-  /*p28.GEKA*/ wire GEKA_OAM_A0p() const;
-  /*p28.ZYFO*/ wire ZYFO_OAM_A1p() const;
-  /*p28.YFOT*/ wire YFOT_OAM_A2p() const;
-  /*p28.YFOC*/ wire YFOC_OAM_A3p() const;
-  /*p28.YVOM*/ wire YVOM_OAM_A4p() const;
-  /*p28.YMEV*/ wire YMEV_OAM_A5p() const;
-  /*p28.XEMU*/ wire XEMU_OAM_A6p() const;
-  /*p28.YZET*/ wire YZET_OAM_A7p() const;
+  /*p28.GEKA*/ wire GEKA_OAM_A0p() const { return bus_mux.GEKA_OAM_A0p; }
+  /*p28.ZYFO*/ wire ZYFO_OAM_A1p() const { return bus_mux.ZYFO_OAM_A1p; }
+  /*p28.YFOT*/ wire YFOT_OAM_A2p() const { return bus_mux.YFOT_OAM_A2p; }
+  /*p28.YFOC*/ wire YFOC_OAM_A3p() const { return bus_mux.YFOC_OAM_A3p; }
+  /*p28.YVOM*/ wire YVOM_OAM_A4p() const { return bus_mux.YVOM_OAM_A4p; }
+  /*p28.YMEV*/ wire YMEV_OAM_A5p() const { return bus_mux.YMEV_OAM_A5p; }
+  /*p28.XEMU*/ wire XEMU_OAM_A6p() const { return bus_mux.XEMU_OAM_A6p; }
+  /*p28.YZET*/ wire YZET_OAM_A7p() const { return bus_mux.YZET_OAM_A7p; }
 
-  /*p31.YLOR*/ wire YLOR_SPRITE_X0() const;
-  /*p31.ZYTY*/ wire ZYTY_SPRITE_X1() const;
-  /*p31.ZYVE*/ wire ZYVE_SPRITE_X2() const;
-  /*p31.ZEZY*/ wire ZEZY_SPRITE_X3() const;
-  /*p31.GOMO*/ wire GOMO_SPRITE_X4() const;
-  /*p31.BAXO*/ wire BAXO_SPRITE_X5() const;
-  /*p31.YZOS*/ wire YZOS_SPRITE_X6() const;
-  /*p31.DEPO*/ wire DEPO_SPRITE_X7() const;
+  /*p31.YLOR*/ wire YLOR_SPRITE_X0() const { return bus_mux.YLOR_SPRITE_X0.q(); }
+  /*p31.ZYTY*/ wire ZYTY_SPRITE_X1() const { return bus_mux.ZYTY_SPRITE_X1.q(); }
+  /*p31.ZYVE*/ wire ZYVE_SPRITE_X2() const { return bus_mux.ZYVE_SPRITE_X2.q(); }
+  /*p31.ZEZY*/ wire ZEZY_SPRITE_X3() const { return bus_mux.ZEZY_SPRITE_X3.q(); }
+  /*p31.GOMO*/ wire GOMO_SPRITE_X4() const { return bus_mux.GOMO_SPRITE_X4.q(); }
+  /*p31.BAXO*/ wire BAXO_SPRITE_X5() const { return bus_mux.BAXO_SPRITE_X5.q(); }
+  /*p31.YZOS*/ wire YZOS_SPRITE_X6() const { return bus_mux.YZOS_SPRITE_X6.q(); }
+  /*p31.DEPO*/ wire DEPO_SPRITE_X7() const { return bus_mux.DEPO_SPRITE_X7.q(); }
 
-  /*p29.XUSO*/ wire XUSO_SPRITE_Y0() const;
-  /*p29.XEGU*/ wire XEGU_SPRITE_Y1() const;
-  /*p29.YJEX*/ wire YJEX_SPRITE_Y2() const;
-  /*p29.XYJU*/ wire XYJU_SPRITE_Y3() const;
-  /*p29.YBOG*/ wire YBOG_SPRITE_Y4() const;
-  /*p29.WYSO*/ wire WYSO_SPRITE_Y5() const;
-  /*p29.XOTE*/ wire XOTE_SPRITE_Y6() const;
-  /*p29.YZAB*/ wire YZAB_SPRITE_Y7() const;
+  /*p29.XUSO*/ wire XUSO_SPRITE_Y0() const { return bus_mux.XUSO_SPRITE_Y0.q(); }
+  /*p29.XEGU*/ wire XEGU_SPRITE_Y1() const { return bus_mux.XEGU_SPRITE_Y1.q(); }
+  /*p29.YJEX*/ wire YJEX_SPRITE_Y2() const { return bus_mux.YJEX_SPRITE_Y2.q(); }
+  /*p29.XYJU*/ wire XYJU_SPRITE_Y3() const { return bus_mux.XYJU_SPRITE_Y3.q(); }
+  /*p29.YBOG*/ wire YBOG_SPRITE_Y4() const { return bus_mux.YBOG_SPRITE_Y4.q(); }
+  /*p29.WYSO*/ wire WYSO_SPRITE_Y5() const { return bus_mux.WYSO_SPRITE_Y5.q(); }
+  /*p29.XOTE*/ wire XOTE_SPRITE_Y6() const { return bus_mux.XOTE_SPRITE_Y6.q(); }
+  /*p29.YZAB*/ wire YZAB_SPRITE_Y7() const { return bus_mux.YZAB_SPRITE_Y7.q(); }
 
   //-----------------------------------------------------------------------------
   // DMA signals
@@ -273,22 +288,22 @@ struct SchematicTop {
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const;
   /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp() const;
 
-  /*p04.NAKY*/ wire DMA_A00() const;
-  /*p04.PYRO*/ wire DMA_A01() const;
-  /*p04.NEFY*/ wire DMA_A02() const;
-  /*p04.MUTY*/ wire DMA_A03() const;
-  /*p04.NYKO*/ wire DMA_A04() const;
-  /*p04.PYLO*/ wire DMA_A05() const;
-  /*p04.NUTO*/ wire DMA_A06() const;
-  /*p04.MUGU*/ wire DMA_A07() const;
-  /*p04.NAFA*/ wire DMA_A08() const;
-  /*p04.PYNE*/ wire DMA_A09() const;
-  /*p04.PARA*/ wire DMA_A10() const;
-  /*p04.NYDO*/ wire DMA_A11() const;
-  /*p04.NYGY*/ wire DMA_A12() const;
-  /*p04.PULA*/ wire DMA_A13() const;
-  /*p04.POKU*/ wire DMA_A14() const;
-  /*p04.MARU*/ wire DMA_A15() const;
+  /*p04.NAKY*/ wire DMA_A00() const { return dma_reg.DMA_A00.q(); }
+  /*p04.PYRO*/ wire DMA_A01() const { return dma_reg.DMA_A01.q(); }
+  /*p04.NEFY*/ wire DMA_A02() const { return dma_reg.DMA_A02.q(); }
+  /*p04.MUTY*/ wire DMA_A03() const { return dma_reg.DMA_A03.q(); }
+  /*p04.NYKO*/ wire DMA_A04() const { return dma_reg.DMA_A04.q(); }
+  /*p04.PYLO*/ wire DMA_A05() const { return dma_reg.DMA_A05.q(); }
+  /*p04.NUTO*/ wire DMA_A06() const { return dma_reg.DMA_A06.q(); }
+  /*p04.MUGU*/ wire DMA_A07() const { return dma_reg.DMA_A07.q(); }
+  /*p04.NAFA*/ wire DMA_A08() const { return dma_reg.DMA_A08.q(); }
+  /*p04.PYNE*/ wire DMA_A09() const { return dma_reg.DMA_A09.q(); }
+  /*p04.PARA*/ wire DMA_A10() const { return dma_reg.DMA_A10.q(); }
+  /*p04.NYDO*/ wire DMA_A11() const { return dma_reg.DMA_A11.q(); }
+  /*p04.NYGY*/ wire DMA_A12() const { return dma_reg.DMA_A12.q(); }
+  /*p04.PULA*/ wire DMA_A13() const { return dma_reg.DMA_A13.q(); }
+  /*p04.POKU*/ wire DMA_A14() const { return dma_reg.DMA_A14.q(); }
+  /*p04.MARU*/ wire DMA_A15() const { return dma_reg.DMA_A15.q(); }
 
   //-----------------------------------------------------------------------------
   // LCD signals
@@ -404,23 +419,23 @@ struct SchematicTop {
   wire TEXY_SPR_READ_VRAMp() const;
   wire SOHO_SPR_VRAM_RDp() const;
 
-  wire SPR_PIX_A0() const;
-  wire SPR_PIX_A1() const;
-  wire SPR_PIX_A2() const;
-  wire SPR_PIX_A3() const;
-  wire SPR_PIX_A4() const;
-  wire SPR_PIX_A5() const;
-  wire SPR_PIX_A6() const;
-  wire SPR_PIX_A7() const;
+  /*p33.PEFO*/ wire SPR_PIX_A0() const { return sprite_fetcher.SPR_PIX_A0.q(); }
+  /*p33.ROKA*/ wire SPR_PIX_A1() const { return sprite_fetcher.SPR_PIX_A1.q(); }
+  /*p33.MYTU*/ wire SPR_PIX_A2() const { return sprite_fetcher.SPR_PIX_A2.q(); }
+  /*p33.RAMU*/ wire SPR_PIX_A3() const { return sprite_fetcher.SPR_PIX_A3.q(); }
+  /*p33.SELE*/ wire SPR_PIX_A4() const { return sprite_fetcher.SPR_PIX_A4.q(); }
+  /*p33.SUTO*/ wire SPR_PIX_A5() const { return sprite_fetcher.SPR_PIX_A5.q(); }
+  /*p33.RAMA*/ wire SPR_PIX_A6() const { return sprite_fetcher.SPR_PIX_A6.q(); }
+  /*p33.RYDU*/ wire SPR_PIX_A7() const { return sprite_fetcher.SPR_PIX_A7.q(); }
 
-  wire SPR_PIX_B0() const;
-  wire SPR_PIX_B1() const;
-  wire SPR_PIX_B2() const;
-  wire SPR_PIX_B3() const;
-  wire SPR_PIX_B4() const;
-  wire SPR_PIX_B5() const;
-  wire SPR_PIX_B6() const;
-  wire SPR_PIX_B7() const;
+  /*p33.REWO*/ wire SPR_PIX_B0() const { return sprite_fetcher.SPR_PIX_B0.q(); }
+  /*p33.PEBA*/ wire SPR_PIX_B1() const { return sprite_fetcher.SPR_PIX_B1.q(); }
+  /*p33.MOFO*/ wire SPR_PIX_B2() const { return sprite_fetcher.SPR_PIX_B2.q(); }
+  /*p33.PUDU*/ wire SPR_PIX_B3() const { return sprite_fetcher.SPR_PIX_B3.q(); }
+  /*p33.SAJA*/ wire SPR_PIX_B4() const { return sprite_fetcher.SPR_PIX_B4.q(); }
+  /*p33.SUNY*/ wire SPR_PIX_B5() const { return sprite_fetcher.SPR_PIX_B5.q(); }
+  /*p33.SEMO*/ wire SPR_PIX_B6() const { return sprite_fetcher.SPR_PIX_B6.q(); }
+  /*p33.SEGA*/ wire SPR_PIX_B7() const { return sprite_fetcher.SPR_PIX_B7.q(); }
 
   //-----------------------------------------------------------------------------
   // Window signals
@@ -429,20 +444,20 @@ struct SchematicTop {
   wire NOCU_WIN_MODEn() const;
   wire NUNY_WX_MATCHpe() const;
 
-  wire WYKA_WIN_X3() const;
-  wire WODY_WIN_X4() const;
-  wire WOBO_WIN_X5() const;
-  wire WYKO_WIN_X6() const;
-  wire XOLO_WIN_X7() const;
+  /*p27.WYKA*/ wire WYKA_WIN_X3() const { return win_reg.WYKA_WIN_X3.q(); }
+  /*p27.WODY*/ wire WODY_WIN_X4() const { return win_reg.WODY_WIN_X4.q(); }
+  /*p27.WOBO*/ wire WOBO_WIN_X5() const { return win_reg.WOBO_WIN_X5.q(); }
+  /*p27.WYKO*/ wire WYKO_WIN_X6() const { return win_reg.WYKO_WIN_X6.q(); }
+  /*p27.XOLO*/ wire XOLO_WIN_X7() const { return win_reg.XOLO_WIN_X7.q(); }
 
-  wire VYNO_WIN_Y0() const;
-  wire VUJO_WIN_Y1() const;
-  wire VYMU_WIN_Y2() const;
-  wire TUFU_WIN_Y3() const;
-  wire TAXA_WIN_Y4() const;
-  wire TOZO_WIN_Y5() const;
-  wire TATE_WIN_Y6() const;
-  wire TEKE_WIN_Y7() const;
+  /*p27.VYNO*/ wire VYNO_WIN_Y0() const { return win_reg.VYNO_WIN_Y0.q(); }
+  /*p27.VUJO*/ wire VUJO_WIN_Y1() const { return win_reg.VUJO_WIN_Y1.q(); }
+  /*p27.VYMU*/ wire VYMU_WIN_Y2() const { return win_reg.VYMU_WIN_Y2.q(); }
+  /*p27.TUFU*/ wire TUFU_WIN_Y3() const { return win_reg.TUFU_WIN_Y3.q(); }
+  /*p27.TAXA*/ wire TAXA_WIN_Y4() const { return win_reg.TAXA_WIN_Y4.q(); }
+  /*p27.TOZO*/ wire TOZO_WIN_Y5() const { return win_reg.TOZO_WIN_Y5.q(); }
+  /*p27.TATE*/ wire TATE_WIN_Y6() const { return win_reg.TATE_WIN_Y6.q(); }
+  /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return win_reg.TEKE_WIN_Y7.q(); }
 
   //-----------------------------------------------------------------------------
   // Misc signals

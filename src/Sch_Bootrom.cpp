@@ -46,7 +46,12 @@ static const uint8_t DMG_ROM_bin[] = {
 
 //-----------------------------------------------------------------------------
 
-void Bootrom::tick(SchematicTop& top) {
+void Bootrom::tick(SchematicTop& /*top*/) {
+}
+
+//-----------------------------------------------------------------------------
+
+void Bootrom::tock(SchematicTop& top) {
 
   {
     /*p07.TERA*/ wire TERA_BOOT_BITp  = not(top.BOOT_BITn());
@@ -65,7 +70,7 @@ void Bootrom::tick(SchematicTop& top) {
     /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf_6p(FF50_RDp, BOOT_BITn.q()); // does the rung of the tribuf control polarity?
 
     /*p07.TUGE*/ wire FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), top.SYKE_FF00_FFFFp(), ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire BOOT_BIT_IN = or (top.CPU_TRI_D0, BOOT_BITn.q());
+    /*p07.SATO*/ wire BOOT_BIT_IN = or (top.CPU_TRI_D0.q(), BOOT_BITn.q());
 
     // In run mode, BOOT_BITn must _not_ be reset.
     /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, top.ALUR_SYS_RSTn(), BOOT_BIT_IN);

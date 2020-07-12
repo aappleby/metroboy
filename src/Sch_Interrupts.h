@@ -14,6 +14,7 @@ struct SchematicTop;
 
 struct InterruptRegisters {
   void tick(SchematicTop& gb);
+  void tock(SchematicTop& gb);
   SignalHash commit();
 
 private:

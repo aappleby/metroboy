@@ -5,8 +5,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tick(SchematicTop& top) {
+void SpriteScanner::tick(SchematicTop& /*top*/) {
+}
 
+//------------------------------------------------------------------------------
+
+void SpriteScanner::tock(SchematicTop& top) {
 
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
   /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, top.ATAR_VID_RSTp());

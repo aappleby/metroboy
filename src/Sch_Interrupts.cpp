@@ -6,7 +6,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void InterruptRegisters::tick(SchematicTop& top) {
+void InterruptRegisters::tick(SchematicTop& /*top*/) {
+}
+
+//------------------------------------------------------------------------------
+
+void InterruptRegisters::tock(SchematicTop& top) {
   Signal _ROLO_FF0F_RDn;
   Signal _REFA_FF0F_WRn;
   {
@@ -62,17 +67,17 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not(top.CPU_PIN_ACK_SERIAL);
     /*p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not(top.CPU_PIN_ACK_JOYPAD);
 
-    /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0, _REFA_FF0F_WRn);
-    /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1, _REFA_FF0F_WRn);
-    /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2, _REFA_FF0F_WRn);
-    /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3, _REFA_FF0F_WRn);
-    /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4, _REFA_FF0F_WRn);
+    /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0.q(), _REFA_FF0F_WRn);
+    /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1.q(), _REFA_FF0F_WRn);
+    /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2.q(), _REFA_FF0F_WRn);
+    /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3.q(), _REFA_FF0F_WRn);
+    /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4.q(), _REFA_FF0F_WRn);
 
-    /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(_ROTU_FF0F_WRp, LETY_INT_VBL_ACKn,  top.CPU_TRI_D0);
-    /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(_ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, top.CPU_TRI_D1);
-    /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(_ROTU_FF0F_WRp, LESA_INT_TIM_ACKn,  top.CPU_TRI_D2);
-    /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(_ROTU_FF0F_WRp, LUFE_INT_SER_ACKn,  top.CPU_TRI_D3);
-    /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(_ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn,  top.CPU_TRI_D4);
+    /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(_ROTU_FF0F_WRp, LETY_INT_VBL_ACKn,  top.CPU_TRI_D0.q());
+    /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(_ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, top.CPU_TRI_D1.q());
+    /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(_ROTU_FF0F_WRp, LESA_INT_TIM_ACKn,  top.CPU_TRI_D2.q());
+    /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(_ROTU_FF0F_WRp, LUFE_INT_SER_ACKn,  top.CPU_TRI_D3.q());
+    /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(_ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn,  top.CPU_TRI_D4.q());
 
     /*p02.LYTA*/ wire LYTA_FF0F_RST0n    = and (MUXE_INT0_WRn, LETY_INT_VBL_ACKn,  top.ALUR_SYS_RSTn());
     /*p02.MOVU*/ wire MOVU_FF0F_RST1n    = and (NABE,          LEJA_INT_STAT_ACKn, top.ALUR_SYS_RSTn());

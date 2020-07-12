@@ -1,3 +1,168 @@
+// NOR latch
+// POKY00 << PYGO
+// POKY01 nc
+// POKY02 >> nc
+// POKY03 >> ROMO00, others
+// POKY04 nc
+// POKY05 << LOBY01
+// If PYGO goes high, POKY03 goes high
+// if LOBY goes high, POKY03 goes low.
+
+// SOBU_01 SC
+// SOBU_02 << TAVA_02 CLKp
+// SOBU_03 SC
+// SOBU_04 NC
+// SOBU_05 NC
+// SOBU_06 << VYPO    RSTn 
+// SOBU_07 << TEKY_06 D
+// SOBU_08 NC
+// SOBU_09 SC
+// SOBU_10 NC
+// SOBU_11 NC
+// SOBU_12 SC
+// SOBU_13 << VYPO    RSTn
+// SOBU_14 NC
+// SOBU_15 NC
+// SOBU_16 >> NC      QN
+// SOBU_17 >> SUDA_07 Q
+
+// TAKA has arms on the VCC side - nand latch
+// TAKA01 << VEKU02
+// TAKA02 nc
+// TAKA03 >> nc
+// TAKA04 >> SOWO00
+// TAKA05 nc
+// TAKA06 << SECA03
+// if SECA03 goes low, TAKA04 goes high
+// if VEKU02 goes low, TAKA04 goes low
+
+// VAPE04 >> XUJY01
+// SAKY = nor(TULY17, VONU17)
+// TEPA = not(XYMU)
+// TYSO = or(SAKY, TEPA)
+// TEXY = not(TYSO)
+
+// TEVY box color wrong on die trace, but schematic correct.
+
+// Die trace:
+// SORE = not(A15)
+// TEVY = or(A13, A13, SORE) // A13 line not fully drawn
+// TEXO = and(ADDR_VALIDx?, TEVY)
+
+// UJYV01 << UNOR04
+// UJYV02 << (mux 1) RD_C
+// UJYV03 << (mux 0) CPU_RAW_RD
+// UJYV04 nc
+// UJYV05 >> TEDO01
+
+// UBAL1 << UNOR04
+// UBAL2 << (mux1) << WR_C
+// UBAL3 << (mux0) << APOV04
+// UBAL4 nc
+// UBAL5 >>
+
+// Die trace
+
+// BYHA = weirdgate
+// BYHA01 << ANEL17
+// BYHA02 << ABAF02
+// BYHA03 xx CATU17 (crossover?)
+// BYHA04 << ABEZ02
+// BYHA05 >> ATEJ01
+
+// ATEJ03 = not(BYHA05)
+// ANOM03 = nor(ATEJ03, ATAR02)
+// BALU02 = not(ANOM03)
+// BEBU05 = or(DOBA17, BALU02, BYBA16)
+// AVAP03 = not(BEBU05)
+// NYXU04 = nor(AVAP03, MOSU03, TEVO05)
+
+// Die trace:
+
+// WUSA arms on the ground side, nor latch
+// WUSA00 << XAJO03
+// WUSA01 nc
+// WUSA02 >> nc
+// WUSA03 >> TOBA00
+// WUSA04 nc 
+// WUSA05 << WEGO03
+
+// When XAJO03 goes high, WUSA03 goes high.
+// When WEGO03 goes high, WUSA03 goes low.
+
+// XEHO01 <> XEHO12
+// XEHO02 << SACU04
+// XEHO03 <> XEHO09
+// XEHO04 nc
+// XEHO05 nc
+// XEHO06 << XYMU03
+// XEHO07 << XEHO16 // so it's a counter
+// XEHO08 nc
+// XEHO09 <> XEHO03
+// XEHO10 nc
+// XEHO11 ?? RUMA01
+// XEHO12 <> XEHO01
+// XEHO13 << XYMU03
+// XEHO14 nc
+// XEHO15 nc
+// XEHO16
+// XEHO17 >> XAJO01
+
+// ROXY = NOR latch
+// ROXY00 << PAHA
+// ROXY01 nc
+// ROXY02 >> nc
+// ROXY03 >> RONE00
+// ROXY04 nc
+// ROXY05 << POVA
+
+// If PAHA goes high, ROXY03 goes high.
+// If POVA goes high, ROXY03 goes low
+
+// LURY01 << LOVY15 (next to bottom rung)
+// LURY02 << XYMU02
+// LURY03 nc
+// LURY04 >> LONY01
+
+// LONY has "arms" on the VCC side - different from the other latches?
+// Probably a NAND latch instead of NOR
+// LONY01 << LURY03
+// LONY02 nc
+// LONY03 == nc
+// LONY04 >> LUSU01, MYMA01
+// LONY05 nc
+// LONY06 << NYXU03
+
+// if LURY goes low, LONY goes low
+// if NYXU goes low, LONY goes high
+
+// XYMU has "arms" on the ground side
+// XYMU00 << WEGO03
+// XYMU01 nc
+// XYMU02 >> bunch of stuff
+// XYMU03 >> nc
+// XYMU04 nc
+// XYMU05 << AVAP02
+
+// if AVAP02 goes high, XYMU02 goes high.
+// if WEGO03 goes high, XYMU02 goes low.
+
+
+// Die trace:
+// VYBO = nor(FEPO04, WODU04, MYVO02)
+// TYFA = and(SOCY02, POKY04, VYBO04)
+// SEGU = not(TYFA05) // 5 rung inverter, because fanout?
+// ROXO = not(SEGU05)
+
+// NEFO_01 << LOMA_02    (clk)
+// NEFO_02 << CPU_TRI_D7     (d)
+// NEFO_03 nc
+// NEFO_04 << COMP_CLOCK (clkn)
+// NEFO_05 nc
+// NEFO_06 nc
+// NEFO_07 >> NAJA_02    (Q)
+// NEFO_08 nc
+
 // ASOL_01 << AFAR_03
 // ASOL_02 nc
 // ASOL_03 >> AVOR_02

@@ -8,7 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void tick(SchematicTop& gb);
+  void tick(SchematicTop& top);
+  void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
 private:

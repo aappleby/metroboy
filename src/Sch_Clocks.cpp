@@ -4,8 +4,10 @@
 using namespace Schematics;
 
 //-----------------------------------------------------------------------------
+void ClockRegisters::tick(SchematicTop& /*top*/) {
+}
 
-void ClockRegisters::tick(SchematicTop& top) {
+void ClockRegisters::tock(SchematicTop& top) {
   // ignoring the deglitcher here
 
   {

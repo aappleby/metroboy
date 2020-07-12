@@ -348,36 +348,36 @@ struct Sandbox {
   SignalHash commit() {
     SignalHash hash;
 
-    hash << SYS_PIN_CLK_A;
-    hash << SYS_PIN_CLK_B;
-    hash << SYS_PIN_T1;
-    hash << SYS_PIN_T2;
-    hash << SYS_PIN_RSTp;
+    hash << SYS_PIN_CLK_A.commit();
+    hash << SYS_PIN_CLK_B.commit();
+    hash << SYS_PIN_T1.commit();
+    hash << SYS_PIN_T2.commit();
+    hash << SYS_PIN_RSTp.commit();
 
-    hash << CPU_PIN_READYp;
-    hash << CPU_PIN_RDp;
-    hash << CPU_PIN_WRp;
-    hash << CPU_PIN_ADDR_VALID;
+    hash << CPU_PIN_READYp.commit();
+    hash << CPU_PIN_RDp.commit();
+    hash << CPU_PIN_WRp.commit();
+    hash << CPU_PIN_ADDR_VALID.commit();
 
-    hash << CPU_PIN_A00;
-    hash << CPU_PIN_A01;
-    hash << CPU_PIN_A02;
-    hash << CPU_PIN_A03;
-    hash << CPU_PIN_A04;
-    hash << CPU_PIN_A05;
-    hash << CPU_PIN_A06;
-    hash << CPU_PIN_A07;
-    hash << CPU_PIN_A08;
-    hash << CPU_PIN_A09;
-    hash << CPU_PIN_A10;
-    hash << CPU_PIN_A11;
-    hash << CPU_PIN_A12;
-    hash << CPU_PIN_A13;
-    hash << CPU_PIN_A14;
-    hash << CPU_PIN_A15;
+    hash << CPU_PIN_A00.commit();
+    hash << CPU_PIN_A01.commit();
+    hash << CPU_PIN_A02.commit();
+    hash << CPU_PIN_A03.commit();
+    hash << CPU_PIN_A04.commit();
+    hash << CPU_PIN_A05.commit();
+    hash << CPU_PIN_A06.commit();
+    hash << CPU_PIN_A07.commit();
+    hash << CPU_PIN_A08.commit();
+    hash << CPU_PIN_A09.commit();
+    hash << CPU_PIN_A10.commit();
+    hash << CPU_PIN_A11.commit();
+    hash << CPU_PIN_A12.commit();
+    hash << CPU_PIN_A13.commit();
+    hash << CPU_PIN_A14.commit();
+    hash << CPU_PIN_A15.commit();
 
-    hash << EXT_PIN_RDp_C;
-    hash << EXT_PIN_WRp_C;
+    hash << EXT_PIN_RDp_C.commit();
+    hash << EXT_PIN_WRp_C.commit();
 
     hash << CPU_PIN_SYS_RSTp.commit();
     hash << CPU_PIN_EXT_RST.commit();

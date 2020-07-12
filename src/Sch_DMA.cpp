@@ -78,7 +78,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void DmaRegisters::tick(SchematicTop& top) {
+void DmaRegisters::tick(SchematicTop& /*top*/) {
+}
+
+//------------------------------------------------------------------------------
+
+void DmaRegisters::tock(SchematicTop& top) {
   
   Signal MOLU_FF46_RDp;
   Signal LAVY_FF46_WRp;
@@ -172,14 +177,14 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
     /*p??.PYSU*/ wire PYSU_FF46_WRp = not(LORU_FF46_WRn); // not on schematic
 
-    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D0);
-    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D1);
-    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D2);
-    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D3);
-    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D4);
-    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D5);
-    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D6);
-    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D7);
+    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D0.q());
+    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D1.q());
+    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D2.q());
+    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D3.q());
+    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D4.q());
+    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D5.q());
+    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D6.q());
+    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, PYSU_FF46_WRp, top.CPU_TRI_D7.q());
   }
 }
 
@@ -210,8 +215,8 @@ SignalHash DmaRegisters::commit() {
   /*p04.LYXE*/ hash << LYXE_DMA_LATCHn.commit();
 
   // NAND latch
-  /*p04.LARA*/ hash << LARA_DMA_LATCHn.commit_gate();
-  /*p04.LOKY*/ hash << LOKY_DMA_LATCHp.commit_gate();
+  /*p04.LARA*/ hash << LARA_DMA_LATCHn.commit();
+  /*p04.LOKY*/ hash << LOKY_DMA_LATCHp.commit();
 
   return hash;
 }

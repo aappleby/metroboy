@@ -4,95 +4,14 @@
 
 using namespace Schematics;
 
-// Die trace
+//------------------------------------------------------------------------------
 
-// BYHA = weirdgate
-// BYHA01 << ANEL17
-// BYHA02 << ABAF02
-// BYHA03 xx CATU17 (crossover?)
-// BYHA04 << ABEZ02
-// BYHA05 >> ATEJ01
-
-// ATEJ03 = not(BYHA05)
-// ANOM03 = nor(ATEJ03, ATAR02)
-// BALU02 = not(ANOM03)
-// BEBU05 = or(DOBA17, BALU02, BYBA16)
-// AVAP03 = not(BEBU05)
-// NYXU04 = nor(AVAP03, MOSU03, TEVO05)
-
-// Die trace:
-
-// WUSA arms on the ground side, nor latch
-// WUSA00 << XAJO03
-// WUSA01 nc
-// WUSA02 >> nc
-// WUSA03 >> TOBA00
-// WUSA04 nc 
-// WUSA05 << WEGO03
-
-// When XAJO03 goes high, WUSA03 goes high.
-// When WEGO03 goes high, WUSA03 goes low.
-
-// XEHO01 <> XEHO12
-// XEHO02 << SACU04
-// XEHO03 <> XEHO09
-// XEHO04 nc
-// XEHO05 nc
-// XEHO06 << XYMU03
-// XEHO07 << XEHO16 // so it's a counter
-// XEHO08 nc
-// XEHO09 <> XEHO03
-// XEHO10 nc
-// XEHO11 ?? RUMA01
-// XEHO12 <> XEHO01
-// XEHO13 << XYMU03
-// XEHO14 nc
-// XEHO15 nc
-// XEHO16
-// XEHO17 >> XAJO01
-
-// ROXY = NOR latch
-// ROXY00 << PAHA
-// ROXY01 nc
-// ROXY02 >> nc
-// ROXY03 >> RONE00
-// ROXY04 nc
-// ROXY05 << POVA
-
-// If PAHA goes high, ROXY03 goes high.
-// If POVA goes high, ROXY03 goes low
-
-// LURY01 << LOVY15 (next to bottom rung)
-// LURY02 << XYMU02
-// LURY03 nc
-// LURY04 >> LONY01
-
-// LONY has "arms" on the VCC side - different from the other latches?
-// Probably a NAND latch instead of NOR
-// LONY01 << LURY03
-// LONY02 nc
-// LONY03 == nc
-// LONY04 >> LUSU01, MYMA01
-// LONY05 nc
-// LONY06 << NYXU03
-
-// if LURY goes low, LONY goes low
-// if NYXU goes low, LONY goes high
-
-// XYMU has "arms" on the ground side
-// XYMU00 << WEGO03
-// XYMU01 nc
-// XYMU02 >> bunch of stuff
-// XYMU03 >> nc
-// XYMU04 nc
-// XYMU05 << AVAP02
-
-// if AVAP02 goes high, XYMU02 goes high.
-// if WEGO03 goes high, XYMU02 goes low.
+void PpuRegisters::tick(SchematicTop& /*top*/) {
+}
 
 //------------------------------------------------------------------------------
 
-void PpuRegisters::tick(SchematicTop& top) {
+void PpuRegisters::tock(SchematicTop& top) {
 
   /*p21.TADY*/ wire TADY_LINE_START_RST = nor(top.BYHA_VID_LINE_TRIG_d4(), top.TOFU_VID_RSTp());
   /*p21.WEGO*/ wire WEGO_LINE_END_RST   = or(top.TOFU_VID_RSTp(), VOGA_RENDER_DONE_SYNC.q());
@@ -220,10 +139,10 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(top.WESY_SYS_RSTn(), RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, top.ROPO_LY_MATCH_SYNCp());
 
-    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D0);
-    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D1);
-    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2);
-    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3);
+    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
+    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());
+    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
+    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, !RYVE_FF41_WRn, top.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
 
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
     /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp.q(), top.PARU_VBLANKp_d4()); // die NOR

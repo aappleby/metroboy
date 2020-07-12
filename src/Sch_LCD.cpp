@@ -3,15 +3,14 @@
 
 using namespace Schematics;
 
-// Die trace:
-// VYBO = nor(FEPO04, WODU04, MYVO02)
-// TYFA = and(SOCY02, POKY04, VYBO04)
-// SEGU = not(TYFA05) // 5 rung inverter, because fanout?
-// ROXO = not(SEGU05)
+//------------------------------------------------------------------------------
+
+void LcdRegisters::tick(SchematicTop& /*top*/) {
+}
 
 //------------------------------------------------------------------------------
 
-void LcdRegisters::tick(SchematicTop& top) {
+void LcdRegisters::tock(SchematicTop& top) {
 
   /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
   /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
@@ -189,14 +188,14 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p23.XUFA*/ wire XUFA_FF45_WRn = and (top.CUPA_CPU_WRp_xxxxEFGx(), XAYU_FF45p);
     /*p23.WANE*/ wire WANE_FF45_WRp = not(XUFA_FF45_WRn);
 
-    /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D0);
-    /*p23.VUCE*/ VUCE_LYC1.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D1);
-    /*p23.SEDY*/ SEDY_LYC2.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D2);
-    /*p23.SALO*/ SALO_LYC3.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D3);
-    /*p23.SOTA*/ SOTA_LYC4.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D4);
-    /*p23.VAFA*/ VAFA_LYC5.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D5);
-    /*p23.VEVO*/ VEVO_LYC6.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D6);
-    /*p23.RAHA*/ RAHA_LYC7.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D7);
+    /*p23.SYRY*/ SYRY_LYC0.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
+    /*p23.VUCE*/ VUCE_LYC1.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());
+    /*p23.SEDY*/ SEDY_LYC2.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
+    /*p23.SALO*/ SALO_LYC3.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
+    /*p23.SOTA*/ SOTA_LYC4.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D4.q());
+    /*p23.VAFA*/ VAFA_LYC5.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D5.q());
+    /*p23.VEVO*/ VEVO_LYC6.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D6.q());
+    /*p23.RAHA*/ RAHA_LYC7.set(WANE_FF45_WRp, !WANE_FF45_WRp, top.WESY_SYS_RSTn(), top.CPU_TRI_D7.q());
   }
 }
 

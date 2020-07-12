@@ -2,6 +2,8 @@
 #include "Types.h"
 #include "Logic.h"
 
+#include <stdlib.h>
+
 //-----------------------------------------------------------------------------
 
 enum SignalFlags {
@@ -10,7 +12,8 @@ enum SignalFlags {
 
   VAL     = 0b00000001,
   HIZ     = 0b00000010,
-  CLK     = 0b00000100,
+  CLK_HI  = 0b00000100,
+  CLK_LO  = 0b00000000,
   SET     = 0b00001000,
   RST     = 0b00010000,
   ERROR   = 0b00100000,
@@ -52,6 +55,13 @@ union SignalState {
     c.rst     = rst;
     c.error   = error;
     return c;
+  }
+
+  char as_char() const {
+    if (error) return 'E';
+    if (hiz)   return 'Z';
+    if (val)   return '1';
+    else       return '0';
   }
 };
 
@@ -113,15 +123,9 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 //-----------------------------------------------------------------------------
 
 struct SignalHash {
-  void operator << (SignalState s) {
-    h ^= s.state;
-    h *= 0xff51afd7ed558ccd;
-    h ^= h >> 32;
-  }
-  void operator << (SignalHash h2) {
-    h ^= h2.h;
-    h *= 0xff51afd7ed558ccd;
-    h ^= h >> 32;
+
+  __forceinline void operator << (SignalHash h2) {
+    h = _byteswap_uint64((h ^ h2.h) * 0xff51afd7ed558ccd);
   }
 
   uint64_t h = 0x12345678;
@@ -150,10 +154,10 @@ struct Signal {
     a = val ? SET_1 : SET_0;
   }
 
-  SignalState commit() {
+  SignalHash commit() {
     auto old_a = a;
     a = ERROR;
-    return old_a;
+    return {old_a.state};
   }
 
 private:

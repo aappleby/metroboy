@@ -90,7 +90,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void BusMux::tick(SchematicTop& top) {
+void BusMux::tick(SchematicTop& /*top*/) {
+}
+
+//------------------------------------------------------------------------------
+
+void BusMux::tock(SchematicTop& top) {
 
   // Address decoder
   /*p07.RYCU*/ wire RYCU_0000_FDFFn = not(top.TUNA_0000_FDFFp());
@@ -134,12 +139,13 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
     /*p28.AJON*/ wire AJON_OAM_BUSY     = and (BOGE_DMA_RUNNINGn, top.XYMU_RENDERINGp());
     /*p28.BETE*/ wire BETE_PPU_OAM_RDn  = not(AJON_OAM_BUSY);
-    /*p28.GYBU*/ wire GYBU_IDX_0n = not(top.SPR_TRI_INDX_0);
-    /*p28.GYKA*/ wire GYKA_IDX_1n = not(top.SPR_TRI_INDX_1);
-    /*p28.FABY*/ wire FABY_IDX_2n = not(top.SPR_TRI_INDX_2);
-    /*p28.FACO*/ wire FACO_IDX_3n = not(top.SPR_TRI_INDX_3);
-    /*p28.FUGU*/ wire FUGU_IDX_4n = not(top.SPR_TRI_INDX_4);
-    /*p28.FYKE*/ wire FYKE_IDX_5n = not(top.SPR_TRI_INDX_5);
+
+    /*p28.GYBU*/ wire GYBU_IDX_0n = not(top.SPR_TRI_INDX_0.q());
+    /*p28.GYKA*/ wire GYKA_IDX_1n = not(top.SPR_TRI_INDX_1.q());
+    /*p28.FABY*/ wire FABY_IDX_2n = not(top.SPR_TRI_INDX_2.q());
+    /*p28.FACO*/ wire FACO_IDX_3n = not(top.SPR_TRI_INDX_3.q());
+    /*p28.FUGU*/ wire FUGU_IDX_4n = not(top.SPR_TRI_INDX_4.q());
+    /*p28.FYKE*/ wire FYKE_IDX_5n = not(top.SPR_TRI_INDX_5.q());
 
     // Scanner controls OAM address if it's running (collision w/ DMA?)
     /*p28.APAR*/ wire APAR_SCAN_OAM_RDn  = not(top.ACYL_SCANNINGp());
@@ -581,23 +587,23 @@ void BusMux::tick(SchematicTop& top) {
     top.EXT_PIN_D6_B.set(_LULA_IBUS_TO_EBUSp);
     top.EXT_PIN_D7_B.set(_LULA_IBUS_TO_EBUSp);
 
-    /*p25.RUXA*/ top.EXT_PIN_D0_A.set(nand(top.CPU_TRI_D0, _LULA_IBUS_TO_EBUSp));
-    /*p25.RUJA*/ top.EXT_PIN_D1_A.set(nand(top.CPU_TRI_D1, _LULA_IBUS_TO_EBUSp));
-    /*p25.RABY*/ top.EXT_PIN_D2_A.set(nand(top.CPU_TRI_D2, _LULA_IBUS_TO_EBUSp));
-    /*p25.RERA*/ top.EXT_PIN_D3_A.set(nand(top.CPU_TRI_D3, _LULA_IBUS_TO_EBUSp));
-    /*p25.RORY*/ top.EXT_PIN_D4_A.set(nand(top.CPU_TRI_D4, _LULA_IBUS_TO_EBUSp));
-    /*p25.RYVO*/ top.EXT_PIN_D5_A.set(nand(top.CPU_TRI_D5, _LULA_IBUS_TO_EBUSp));
-    /*p25.RAFY*/ top.EXT_PIN_D6_A.set(nand(top.CPU_TRI_D6, _LULA_IBUS_TO_EBUSp));
-    /*p25.RAVU*/ top.EXT_PIN_D7_A.set(nand(top.CPU_TRI_D7, _LULA_IBUS_TO_EBUSp));
+    /*p25.RUXA*/ top.EXT_PIN_D0_A.set(nand(top.CPU_TRI_D0.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RUJA*/ top.EXT_PIN_D1_A.set(nand(top.CPU_TRI_D1.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RABY*/ top.EXT_PIN_D2_A.set(nand(top.CPU_TRI_D2.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RERA*/ top.EXT_PIN_D3_A.set(nand(top.CPU_TRI_D3.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RORY*/ top.EXT_PIN_D4_A.set(nand(top.CPU_TRI_D4.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RYVO*/ top.EXT_PIN_D5_A.set(nand(top.CPU_TRI_D5.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RAFY*/ top.EXT_PIN_D6_A.set(nand(top.CPU_TRI_D6.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RAVU*/ top.EXT_PIN_D7_A.set(nand(top.CPU_TRI_D7.q(), _LULA_IBUS_TO_EBUSp));
 
-    /*p08.RUNE*/ top.EXT_PIN_D0_D.set(nor(top.CPU_TRI_D0, _RORU_IBUS_TO_EBUSn));
-    /*p08.RYPU*/ top.EXT_PIN_D1_D.set(nor(top.CPU_TRI_D1, _RORU_IBUS_TO_EBUSn));
-    /*p08.SULY*/ top.EXT_PIN_D2_D.set(nor(top.CPU_TRI_D2, _RORU_IBUS_TO_EBUSn));
-    /*p08.SEZE*/ top.EXT_PIN_D3_D.set(nor(top.CPU_TRI_D3, _RORU_IBUS_TO_EBUSn));
-    /*p08.RESY*/ top.EXT_PIN_D4_D.set(nor(top.CPU_TRI_D4, _RORU_IBUS_TO_EBUSn));
-    /*p08.TAMU*/ top.EXT_PIN_D5_D.set(nor(top.CPU_TRI_D5, _RORU_IBUS_TO_EBUSn));
-    /*p08.ROGY*/ top.EXT_PIN_D6_D.set(nor(top.CPU_TRI_D6, _RORU_IBUS_TO_EBUSn));
-    /*p08.RYDA*/ top.EXT_PIN_D7_D.set(nor(top.CPU_TRI_D7, _RORU_IBUS_TO_EBUSn));
+    /*p08.RUNE*/ top.EXT_PIN_D0_D.set(nor (top.CPU_TRI_D0.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ top.EXT_PIN_D1_D.set(nor (top.CPU_TRI_D1.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ top.EXT_PIN_D2_D.set(nor (top.CPU_TRI_D2.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ top.EXT_PIN_D3_D.set(nor (top.CPU_TRI_D3.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ top.EXT_PIN_D4_D.set(nor (top.CPU_TRI_D4.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ top.EXT_PIN_D5_D.set(nor (top.CPU_TRI_D5.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ top.EXT_PIN_D6_D.set(nor (top.CPU_TRI_D6.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ top.EXT_PIN_D7_D.set(nor (top.CPU_TRI_D7.q(), _RORU_IBUS_TO_EBUSn));
   }
 
   // External data bus -> CPU data bus

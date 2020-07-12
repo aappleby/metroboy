@@ -10,6 +10,7 @@ struct SchematicTop;
 struct ClockRegisters {
 
   void tick(SchematicTop& top);
+  void tock(SchematicTop& top);
   SignalHash commit();
 
   void dump(Dumper& d);

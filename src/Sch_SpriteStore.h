@@ -9,6 +9,7 @@ struct SchematicTop;
 
 struct SpriteStoreRegisters {
   void tick(SchematicTop& gb);
+  void tock(SchematicTop& gb);
   SignalHash commit(SchematicTop& top);
 
 private:

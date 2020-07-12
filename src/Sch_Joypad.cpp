@@ -6,7 +6,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tick(SchematicTop& top) {
+void JoypadRegisters::tick(SchematicTop& /*top*/) {
+}
+
+//------------------------------------------------------------------------------
+
+void JoypadRegisters::tock(SchematicTop& top) {
 
   Signal ACAT_FF00_RDp;
   Signal ATOZ_FF00_WRn;

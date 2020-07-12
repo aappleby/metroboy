@@ -6,7 +6,10 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void DebugRegisters::tick(const SchematicTop& top) {
+void DebugRegisters::tick(const SchematicTop& /*top*/) {
+}
+
+void DebugRegisters::tock(const SchematicTop& top) {
   /*p25.SYCY*/ wire SYCY_DBG_CLOCKn = not(top.UNOR_MODE_DBG2p());
   /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKn, top.CUNU_SYS_RSTn(), SOTO_DBG.qn());
 

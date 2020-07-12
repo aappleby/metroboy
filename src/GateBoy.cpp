@@ -1,5 +1,7 @@
 #include "GateBoy.h"
 
+#include <chrono>
+
 using namespace Schematics;
 
 //-----------------------------------------------------------------------------
@@ -24,12 +26,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   SignalHash hash;
 
   // Just read DIV forever.
-  Req req{
-    .addr = 0xFF04,
-    .data = 0,
-    .read = 1,
-    .write = 0
-  };
+  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
   // 16 phases w/ reset high, clock not running.
   top->SYS_PIN_RSTp.set(1);
@@ -43,29 +40,69 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 16, req);
   printf("\n");
 
-  // 16 phases w/ reset low, clock running.
-
+  // 32 phases w/ reset low, clock running.
   top->SYS_PIN_RSTp.set(0);
   top->SYS_PIN_CLK_A.set(1);
   gateboy.run(top, 16, req);
   printf("\n");
 
-#if 0
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
   top->XONA_LCDC_EN.preset(1);
-  gateboy.verbose = false;
   while(!top->CPU_PIN_STARTp.get()) {
     gateboy.run(top, 1, req);
   }
 
   // Ack the start request and run another 24 phases.
   // We should see AFER (global reset) clear and the video clocks start up.
+  // FIXME why are the video clocks not running...
 
-  gateboy.verbose = true;
   top->CPU_PIN_READYp.set(1);
   gateboy.run(top, 24, req);
-#endif
+  printf("\n");
+
+  printf("Running a bunch of phases for perf test\n");
+  gateboy.verbose = false;
+
+  const int phase_count = 31415;
+  auto start = std::chrono::high_resolution_clock::now();
+  gateboy.run(top, phase_count, req);
+  auto finish = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> elapsed = finish - start;
+  printf("Done - %f sec, %f phases/sec\n", elapsed.count(), double(phase_count) / elapsed.count());
+  printf("\n");
+
+  /*
+  printf("DIV  %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+         top->tim_reg.UPOF_DIV_15.as_char(),
+         top->tim_reg.UKET_DIV_14.as_char(),
+         top->tim_reg.TEKA_DIV_13.as_char(),
+         top->tim_reg.SUBU_DIV_12.as_char(),
+         top->tim_reg.SOLA_DIV_11.as_char(),
+         top->tim_reg.TERU_DIV_10.as_char(),
+         top->tim_reg.TOFE_DIV_09.as_char(),
+         top->tim_reg.TUGO_DIV_08.as_char(),
+         top->tim_reg.TULU_DIV_07.as_char(),
+         top->tim_reg.UGOT_DIV_06.as_char(),
+         top->tim_reg.TAMA_DIV_05.as_char(),
+         top->tim_reg.UNYK_DIV_04.as_char(),
+         top->tim_reg.TERO_DIV_03.as_char(),
+         top->tim_reg.UNER_DIV_02.as_char(),
+         top->tim_reg.UFOR_DIV_01.as_char(),
+         top->tim_reg.UKUP_DIV_00.as_char());
+
+
+  printf("CPUD   %c%c%c%c%c%c%c%c\n",
+         top->CPU_TRI_D7.as_char(),
+         top->CPU_TRI_D6.as_char(),
+         top->CPU_TRI_D5.as_char(),
+         top->CPU_TRI_D4.as_char(),
+         top->CPU_TRI_D3.as_char(),
+         top->CPU_TRI_D2.as_char(),
+         top->CPU_TRI_D1.as_char(),
+         top->CPU_TRI_D0.as_char());
+  */
 
   return 0;
 }
@@ -104,7 +141,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   }
 
   if (verbose) {
-    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d BELE %d CPU_RDY %d DIV %05d TUBO %d ASOL %d AFER %d\n",  //hash 0x%016llx\n",
+    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d CPU_START %d CPU_RDY %d DIV %05d AFER %d\n",
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       pass_count,
@@ -118,11 +155,10 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.WUVU_xxCDxxGH.q(),
       top->clk_reg.VENA_xxxxEFGH.q(),
       top->clk_reg.WOSU_xBCxxFGx.q(),
-      top->BELE_Axxxxxxx(),
+      //top->BELE_Axxxxxxx(),
+      top->CPU_PIN_STARTp.get(),
       top->CPU_PIN_READYp.get(),
       top->tim_reg.get_div(),
-      top->rst_reg._TUBO_CPU_READYn.q(),
-      top->rst_reg.ASOL_POR_DONEn.q(),
       top->rst_reg.AFER_SYS_RSTp.q()
       //hash.h);
       );

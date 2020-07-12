@@ -10,6 +10,7 @@ struct SchematicTop;
 struct DebugRegisters {
 
   void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top);
   SignalHash commit();
 
 private:

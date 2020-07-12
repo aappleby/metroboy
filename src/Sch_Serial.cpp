@@ -6,7 +6,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void SerialRegisters::tick(SchematicTop& top) {
+void SerialRegisters::tick(SchematicTop& /*top*/) {
+}
+
+//------------------------------------------------------------------------------
+
+void SerialRegisters::tock(SchematicTop& top) {
 
   //----------------------------------------
   /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (top.SARE_XX00_XX07p(), top.SEFY_A02n(), top.SYKE_FF00_FFFFp());
@@ -46,14 +51,14 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.CALY*/ CALY_INT_SERIALp.set(!SER_CNT2.q(), _SER_RST, !CALY_INT_SERIALp.q());
 
   /*p06.DAKU*/ wire _FF01_WRp_xxxxxFGH = not (_FF01_WRn_xxxxxFGH);
-  /*p06.CUFU*/ wire _SER_DATA0_SETn = nand(top.CPU_TRI_D0, _FF01_WRp_xxxxxFGH);
-  /*p06.DOCU*/ wire _SER_DATA1_SETn = nand(top.CPU_TRI_D1, _FF01_WRp_xxxxxFGH);
-  /*p06.DELA*/ wire _SER_DATA2_SETn = nand(top.CPU_TRI_D2, _FF01_WRp_xxxxxFGH);
-  /*p06.DYGE*/ wire _SER_DATA3_SETn = nand(top.CPU_TRI_D3, _FF01_WRp_xxxxxFGH);
-  /*p06.DOLA*/ wire _SER_DATA4_SETn = nand(top.CPU_TRI_D4, _FF01_WRp_xxxxxFGH);
-  /*p06.ELOK*/ wire _SER_DATA5_SETn = nand(top.CPU_TRI_D5, _FF01_WRp_xxxxxFGH);
-  /*p06.EDEL*/ wire _SER_DATA6_SETn = nand(top.CPU_TRI_D6, _FF01_WRp_xxxxxFGH);
-  /*p06.EFEF*/ wire _SER_DATA7_SETn = nand(top.CPU_TRI_D7, _FF01_WRp_xxxxxFGH);
+  /*p06.CUFU*/ wire _SER_DATA0_SETn = nand(top.CPU_TRI_D0.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.DOCU*/ wire _SER_DATA1_SETn = nand(top.CPU_TRI_D1.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.DELA*/ wire _SER_DATA2_SETn = nand(top.CPU_TRI_D2.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.DYGE*/ wire _SER_DATA3_SETn = nand(top.CPU_TRI_D3.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.DOLA*/ wire _SER_DATA4_SETn = nand(top.CPU_TRI_D4.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.ELOK*/ wire _SER_DATA5_SETn = nand(top.CPU_TRI_D5.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.EDEL*/ wire _SER_DATA6_SETn = nand(top.CPU_TRI_D6.q(), _FF01_WRp_xxxxxFGH);
+  /*p06.EFEF*/ wire _SER_DATA7_SETn = nand(top.CPU_TRI_D7.q(), _FF01_WRp_xxxxxFGH);
 
   // COHY 5-rung
   // DUMO 5-rung
@@ -64,14 +69,14 @@ void SerialRegisters::tick(SchematicTop& top) {
   // EFAK 5-rung
   // EGUV 5-rung
 
-  /*p06.COHY*/ wire _SER_DATA0_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D0), top.ALUR_SYS_RSTn());
-  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D1), top.ALUR_SYS_RSTn());
-  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D2), top.ALUR_SYS_RSTn());
-  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D3), top.ALUR_SYS_RSTn());
-  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D4), top.ALUR_SYS_RSTn());
-  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D5), top.ALUR_SYS_RSTn());
-  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D6), top.ALUR_SYS_RSTn());
-  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D7), top.ALUR_SYS_RSTn());
+  /*p06.COHY*/ wire _SER_DATA0_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D0.q()), top.ALUR_SYS_RSTn());
+  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D1.q()), top.ALUR_SYS_RSTn());
+  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D2.q()), top.ALUR_SYS_RSTn());
+  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D3.q()), top.ALUR_SYS_RSTn());
+  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D4.q()), top.ALUR_SYS_RSTn());
+  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D5.q()), top.ALUR_SYS_RSTn());
+  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D6.q()), top.ALUR_SYS_RSTn());
+  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or(and(_FF01_WRn_xxxxxFGH, top.CPU_TRI_D7.q()), top.ALUR_SYS_RSTn());
 
   /*p06.CAGE*/ wire _SIN_Cn = not(SIN_C);
   /*p06.CUBA*/ SER_DATA0.set(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);
@@ -127,11 +132,11 @@ SignalHash SerialRegisters::commit() {
 
   /* PIN_68 */ hash << SCK_A.commit();   // <- P06.KEXU
   /* PIN_68 */ hash << SCK_B.commit();   // <- P06.CULY
-  /* PIN_68 */ hash << SCK_C;   // -> P06.CAVE
+  /* PIN_68 */ hash << SCK_C.commit();   // -> P06.CAVE
   /* PIN_68 */ hash << SCK_D.commit();   // <- P06.KUJO
   ///* PIN_69 */ hash << SIN_A.commit();   // nc?
   ///* PIN_69 */ hash << SIN_B.commit();   // nc?
-  /* PIN_69 */ hash << SIN_C;   // -> P06.CAGE
+  /* PIN_69 */ hash << SIN_C.commit();   // -> P06.CAGE
   ///* PIN_69 */ hash << SIN_D.commit();   // nc?
   /* PIN_70 */ hash << SOUT.commit();    // <- P05.KENA
   return hash;

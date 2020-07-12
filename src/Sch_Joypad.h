@@ -14,6 +14,7 @@ struct CpuBusSignals;
 struct JoypadRegisters {
 
   void tick(SchematicTop& top);
+  void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
 private:

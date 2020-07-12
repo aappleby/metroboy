@@ -9,6 +9,7 @@ struct SchematicTop;
 
 struct Bootrom {
   void tick(SchematicTop& gb);
+  void tock(SchematicTop& gb);
   SignalHash commit();
 
 private:

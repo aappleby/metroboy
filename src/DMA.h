@@ -1,8 +1,6 @@
 #pragma once
 #include "Types.h"
 
-#include "Sch_Common.h"
-
 struct DMA2 {
 
   void tick(const Req& req, Ack& ack);

@@ -7,44 +7,43 @@ using namespace Schematics;
 
 void SpriteScanner::tick_ymatch(SchematicTop& top) {
   {
-    /*p29.EBOS*/ wire Y0n = not(top.MUWY_Y0());
-    /*p29.DASA*/ wire Y1n = not(top.MYRO_Y1());
-    /*p29.FUKY*/ wire Y2n = not(top.LEXA_Y2());
-    /*p29.FUVE*/ wire Y3n = not(top.LYDO_Y3());
-    /*p29.FEPU*/ wire Y4n = not(top.LOVU_Y4());
-    /*p29.FOFA*/ wire Y5n = not(top.LEMA_Y5());
-    /*p29.FEMO*/ wire Y6n = not(top.MATO_Y6());
-    /*p29.GUSU*/ wire Y7n = not(top.LAFO_Y7());
+    /*p29.EBOS*/ wire _EBOS_Y0n = not(top.MUWY_Y0());
+    /*p29.DASA*/ wire _DASA_Y1n = not(top.MYRO_Y1());
+    /*p29.FUKY*/ wire _FUKY_Y2n = not(top.LEXA_Y2());
+    /*p29.FUVE*/ wire _FUVE_Y3n = not(top.LYDO_Y3());
+    /*p29.FEPU*/ wire _FEPU_Y4n = not(top.LOVU_Y4());
+    /*p29.FOFA*/ wire _FOFA_Y5n = not(top.LEMA_Y5());
+    /*p29.FEMO*/ wire _FEMO_Y6n = not(top.MATO_Y6());
+    /*p29.GUSU*/ wire _GUSU_Y7n = not(top.LAFO_Y7());
 
-    /*p29.ERUC*/ ERUC_YDIFF_S0 = add_c(Y0n, top.XUSO_SPRITE_Y0(), top.GND);
-    /*p29.ERUC*/ ERUC_YDIFF_C0 = add_s(Y0n, top.XUSO_SPRITE_Y0(), top.GND);
-    /*p29.ENEF*/ ENEF_YDIFF_S1 = add_s(Y1n, top.XEGU_SPRITE_Y1(), ERUC_YDIFF_C0);
-    /*p29.ENEF*/ ENEF_YDIFF_C1 = add_c(Y1n, top.XEGU_SPRITE_Y1(), ERUC_YDIFF_C0);
-    /*p29.FECO*/ FECO_YDIFF_S2 = add_s(Y2n, top.YJEX_SPRITE_Y2(), ENEF_YDIFF_C1);
-    /*p29.FECO*/ FECO_YDIFF_C2 = add_c(Y2n, top.YJEX_SPRITE_Y2(), ENEF_YDIFF_C1);
-    /*p29.GYKY*/ GYKY_YDIFF_S3 = add_s(Y3n, top.XYJU_SPRITE_Y3(), FECO_YDIFF_C2);
-    /*p29.GYKY*/ GYKY_YDIFF_C3 = add_c(Y3n, top.XYJU_SPRITE_Y3(), FECO_YDIFF_C2);
-    /*p29.GOPU*/ GOPU_YDIFF_S4 = add_s(Y4n, top.YBOG_SPRITE_Y4(), GYKY_YDIFF_C3);
-    /*p29.GOPU*/ GOPU_YDIFF_C4 = add_c(Y4n, top.YBOG_SPRITE_Y4(), GYKY_YDIFF_C3);
-    /*p29.FUWA*/ FUWA_YDIFF_S5 = add_s(Y5n, top.WYSO_SPRITE_Y5(), GOPU_YDIFF_C4);
-    /*p29.FUWA*/ FUWA_YDIFF_C5 = add_c(Y5n, top.WYSO_SPRITE_Y5(), GOPU_YDIFF_C4);
-    /*p29.GOJU*/ GOJU_YDIFF_S6 = add_s(Y6n, top.XOTE_SPRITE_Y6(), FUWA_YDIFF_C5);
-    /*p29.GOJU*/ GOJU_YDIFF_C6 = add_c(Y6n, top.XOTE_SPRITE_Y6(), FUWA_YDIFF_C5);
-    /*p29.WUHU*/ WUHU_YDIFF_S7 = add_s(Y7n, top.YZAB_SPRITE_Y7(), GOJU_YDIFF_C6);
-    /*p29.WUHU*/ WUHU_YDIFF_C7 = add_c(Y7n, top.YZAB_SPRITE_Y7(), GOJU_YDIFF_C6);
+    /*p29.ERUC*/ ERUC_YDIFF_S0 = add_c(_EBOS_Y0n, top.XUSO_SPRITE_Y0(), top.GND);
+    /*p29.ERUC*/ ERUC_YDIFF_C0 = add_s(_EBOS_Y0n, top.XUSO_SPRITE_Y0(), top.GND);
+    /*p29.ENEF*/ ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.XEGU_SPRITE_Y1(), ERUC_YDIFF_C0);
+    /*p29.ENEF*/ ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.XEGU_SPRITE_Y1(), ERUC_YDIFF_C0);
+    /*p29.FECO*/ FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.YJEX_SPRITE_Y2(), ENEF_YDIFF_C1);
+    /*p29.FECO*/ FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.YJEX_SPRITE_Y2(), ENEF_YDIFF_C1);
+    /*p29.GYKY*/ GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.XYJU_SPRITE_Y3(), FECO_YDIFF_C2);
+    /*p29.GYKY*/ GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.XYJU_SPRITE_Y3(), FECO_YDIFF_C2);
+    /*p29.GOPU*/ GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.YBOG_SPRITE_Y4(), GYKY_YDIFF_C3);
+    /*p29.GOPU*/ GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.YBOG_SPRITE_Y4(), GYKY_YDIFF_C3);
+    /*p29.FUWA*/ FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.WYSO_SPRITE_Y5(), GOPU_YDIFF_C4);
+    /*p29.FUWA*/ FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.WYSO_SPRITE_Y5(), GOPU_YDIFF_C4);
+    /*p29.GOJU*/ GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.XOTE_SPRITE_Y6(), FUWA_YDIFF_C5);
+    /*p29.GOJU*/ GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.XOTE_SPRITE_Y6(), FUWA_YDIFF_C5);
+    /*p29.WUHU*/ WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.YZAB_SPRITE_Y7(), GOJU_YDIFF_C6);
+    /*p29.WUHU*/ WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.YZAB_SPRITE_Y7(), GOJU_YDIFF_C6);
   }
 
   {
-    /*p29.GACE*/ wire GACE_SPRITE_DELTA4 = not(GOPU_YDIFF_S4);
-    /*p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not(FUWA_YDIFF_S5);
-    /*p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not(GOJU_YDIFF_S6);
-    /*p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not(WUHU_YDIFF_S7);
+    /*p29.GACE*/ wire _GACE_SPRITE_DELTA4 = not(GOPU_YDIFF_S4);
+    /*p29.GUVU*/ wire _GUVU_SPRITE_DELTA5 = not(FUWA_YDIFF_S5);
+    /*p29.GYDA*/ wire _GYDA_SPRITE_DELTA6 = not(GOJU_YDIFF_S6);
+    /*p29.GEWY*/ wire _GEWY_SPRITE_DELTA7 = not(WUHU_YDIFF_S7);
 
-    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (GYKY_YDIFF_S3, top.XYMO_LCDC_SPSIZE.q());
-    /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, WUHU_YDIFF_C7, GOVU_SPSIZE_MATCH);
-    /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
-    /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and (top.XOCE_AxxDExxH(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*p29.GOVU*/ wire _GOVU_SPSIZE_MATCH = or (GYKY_YDIFF_S3, top.XYMO_LCDC_SPSIZE.q());
+    /*p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand(_GACE_SPRITE_DELTA4, _GUVU_SPRITE_DELTA5, _GYDA_SPRITE_DELTA6, _GEWY_SPRITE_DELTA7, WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
+    /*p29.GESE*/ wire _GESE_SCAN_MATCH_Y = not(_WOTA_SCAN_MATCH_Yn);
+    /*p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and (top.XOCE_AxxDExxH(), top.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 }
 

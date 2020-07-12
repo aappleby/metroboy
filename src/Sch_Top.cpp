@@ -252,7 +252,7 @@ SignalHash SchematicTop::tick() {
   bus_mux.tick(*this);
   bus_mux.tock(*this);
 
-  sprite_store.tick(*this);  // after bus mux
+  sprite_store.tick_match(*this);  // after bus mux
   sprite_store.tock(*this);  // after bus mux
 
   win_reg.tick(*this); // after sprite store
@@ -711,16 +711,14 @@ void SchematicTop::tick_vram_pins() {
   /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and (SOSE_8000_9FFFp, ABUZ_CPU_ADDR_VALIDp());
   /*p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not(VRAM_PIN_MCSn_C);
   /*p25.TOLE*/ wire _TOLE_VRAM_RDp     = mux2_p(_TEFY_VRAM_MCSp, _TUCA_CPU_VRAM_RDp, TUTO_DBG_VRAMp);
-  /*p25.ROPY*/ wire ROPY_RENDERINGn    = not(XYMU_RENDERINGp());
-  /*p25.SERE*/ wire SERE_CPU_VRM_RDp   = and (_TOLE_VRAM_RDp, ROPY_RENDERINGn);
+  /*p25.SERE*/ wire SERE_CPU_VRM_RDp   = and (_TOLE_VRAM_RDp, ROPY_RENDERINGn());
 
   /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(SOSE_8000_9FFFp, CPU_PIN_WRp); // Schematic wrong, second input is CPU_RAW_WR
   /*p25.TAVY*/ wire TAVY_MOEp = not(VRAM_PIN_MOEn_C);
   /*p25.SALE*/ wire SALE_VRAM_WRn = mux2_p(TAVY_MOEp, TEGU_CPU_VRAM_WRn, TUTO_DBG_VRAMp);
 
   {
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH = not(AREV_CPU_WRn_ABCDxxxH());
-    /*p25.TUJA*/ wire TUJA_CPU_VRAM_WRp = and(SOSE_8000_9FFFp, APOV_CPU_WRp_xxxxxFGH);
+    /*p25.TUJA*/ wire TUJA_CPU_VRAM_WRp = and(SOSE_8000_9FFFp, APOV_CPU_WRp_xxxxEFGx());
     /*p25.SUDO*/ wire SUDO_MWRp_C = not(VRAM_PIN_MWRn_C);
     /*p25.TYJY*/ wire TYJY_DBG_VRAM_WRp = mux2_p(SUDO_MWRp_C, TUJA_CPU_VRAM_WRp, TUTO_DBG_VRAMp);
     /*p25.SOHY*/ wire SOHY_MWRn    = nand(TYJY_DBG_VRAM_WRp, SERE_CPU_VRM_RDp);
@@ -751,14 +749,13 @@ void SchematicTop::tick_vram_pins() {
   {
     /*p04.MUHO*/ wire MUHO_DMA_VRM_RDn = nand(MATU_DMA_RUNNINGp(), MUDA_DMA_SRC_VRAMp());
     /*p04.LUFA*/ wire LUFA_DMA_VRM_RDp = not(MUHO_DMA_VRM_RDn);
-    /*p29.ABON*/ wire ABON_SPR_VRM_RDn = not(TEXY_SPR_READ_VRAMp());
 
     // Polarity issues here, ABON should be P
     // ABON = not(TEXY)
     // SUTU = nor(LENA, LUFA, ABON, SERE);
     /*p25.SUTU*/ wire _SUTU_MCSn = nor(LENA_BGW_VRM_RDp(),
                                        LUFA_DMA_VRM_RDp,
-                                       ABON_SPR_VRM_RDn,
+                                       ABON_SPR_VRM_RDn(),
                                        SERE_CPU_VRM_RDp);
     /*p25.TODE*/ wire _TODE_MCSn_A = and(_SUTU_MCSn, RACO_DBG_VRAMn);
     /*p25.SEWO*/ wire _SEWO_MCSn_D = or (_SUTU_MCSn, TUTO_DBG_VRAMp);
@@ -956,10 +953,9 @@ wire SchematicTop::AREV_CPU_WRn_ABCDxxxH() const {
 
 wire SchematicTop::UBAL_CPU_WRn_ABCDxxxH() const {
   wire UNOR_MODE_DBG2p = this->UNOR_MODE_DBG2p();
-  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(AREV_CPU_WRn_ABCDxxxH());
 
   // polarity of EXT_PIN_WRp_C wrong?
-  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(bus_mux.EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
+  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(bus_mux.EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx(), UNOR_MODE_DBG2p);
   return UBAL_CPU_WRn_ABCDxxxH;
 }
 
@@ -1047,9 +1043,7 @@ wire SchematicTop::ACYL_SCANNINGp() const {
 wire SchematicTop::SEGU_CLKPIPEn() const {
   /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), MYVO_AxCxExGx());
 
-  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_FIRST_TILE_A.q());
-  /*p24.TOMU*/ wire TOMU_WIN_HITp = not(SYLO_WIN_HITn);
-  /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(TOMU_WIN_HITp);
+  /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(TOMU_WIN_HITp());
   /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp.q(), _VYBO_PIX_CLK_xBxDxFxH);
 
   /*p24.SEGU*/ wire SEGU_CLKPIPEn = not(_TYFA_CLKPIPEp_xBxDxFxH);
@@ -1066,9 +1060,7 @@ wire SchematicTop::ROZE_FINE_COUNT_7n() const {
 }
 
 wire SchematicTop::VOTY_INT_STATp() const {
-  /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_LINE_END());
-  /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
-  /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_VBLANKn(), SELA_NEW_LINE_d0p);
+  /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_VBLANKn(), SELA_LINE_END_Fp());
   /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_VBLANKn(), WODU_RENDER_DONEp());
   /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN.q(), ROPO_LY_MATCH_SYNCp(),
                                            ppu_reg.REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
@@ -1081,11 +1073,10 @@ wire SchematicTop::VOTY_INT_STATp() const {
 
 // And this is the topmost "reset sprite fetcher" signal
 wire SchematicTop::VEKU_SFETCH_RUNNING_RSTn() const {
-  /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(VUSA_SPRITE_DONEn());
   /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp.q());
   /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_TILE_FETCH_DONE_Ap.q(), tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
   /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
-  /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_PIPE_LOAD_SPRITEp, TAVE_PORCH_DONE_TRIGp); // def nor
+  /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_SPRITE_DONEp(), TAVE_PORCH_DONE_TRIGp); // def nor
   return VEKU_SFETCH_RUNNING_RSTn;
 }
 
@@ -1105,14 +1096,9 @@ wire SchematicTop::CYXU_SCX2() const { /*p23.CYXU*/ return tile_fetcher.CYXU_SCX
 //-----------------------------------------------------------------------------
 // Sprite scanner signals
 
-wire SchematicTop::CEHA_SCANNINGp() const { /*p29.CEHA*/ return not(sprite_scanner.CENO_SCANNINGp.qn()); }
-wire SchematicTop::BESU_SCANNINGp() const { /*p28.BESU*/ return sprite_scanner.BESU_SCANNINGp.q(); }
-wire SchematicTop::CENO_SCANNINGqn() const { /*p29.CENO*/ return sprite_scanner.CENO_SCANNINGp.q(); }
-
 wire SchematicTop::ANOM_LINE_RSTn() const {
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4());
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p(), ATAR_VID_RSTp);
   return ANOM_LINE_RSTn;
 }
 
@@ -1158,8 +1144,7 @@ wire SchematicTop::WEFY_SPR_READp() const {
 wire SchematicTop::VAPE_FETCH_OAM_CLK() const {
   /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
   /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, sprite_fetcher.TULY_SFETCH_S1.q(), sprite_fetcher.TESE_SFETCH_S2.q());
-  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(sprite_fetcher.TOXE_SFETCH_S0.q());
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n());
   /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
   return VAPE_FETCH_OAM_CLK;
 }
@@ -1199,10 +1184,8 @@ wire SchematicTop::TEXY_SPR_READ_VRAMp() const {
 }
 
 wire SchematicTop::SOHO_SPR_VRAM_RDp() const {
-  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(sprite_fetcher.TOXE_SFETCH_S0.q());
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
-  /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(TEXY_SPR_READ_VRAMp());
-  /*p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and (TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n());
+  /*p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and (TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRM_RDn());
   return SOHO_SPR_VRAM_RDp;
 }
 

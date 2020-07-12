@@ -1,3 +1,21 @@
+// stat read
+// hblank  = stat 0 = 00
+// vblank  = stat 1 = 01
+// oamscan = stat 2 = 10
+// render  = stat 3 = 11
+
+// RUPO arms on ground side, nor latch
+// RUPO00 << ROPO16
+// RUPO01 nc
+// RUPO02 >> SEGO03
+// RUPO03 >> nc
+// RUPO04 nc
+// RUPO05 << PAGO03
+
+// when PAGO03 goes high, RUPO02 goes high
+// when ROPO16 goes high, RUPO02 goes low.
+
+
 // Clock polarity wrong? Check regs on die.
 
 // BFETCH_000 - LABU_BG_PIX_B_CLKp = 1;

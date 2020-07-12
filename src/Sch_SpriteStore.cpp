@@ -29,141 +29,106 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void SpriteStoreRegisters::tick(SchematicTop& /*top*/) {
-}
-
-  //------------------------------------------------------------------------------
-
-void SpriteStoreRegisters::tock(SchematicTop& top) {
-
-  //----------------------------------------
-  // Sprite scan Y matcher
-
+void SpriteStoreRegisters::tick_match(SchematicTop& top) {
   {
-    // Sprite store counter.
-    // The sprite count clock stops ticking once we have 10 sprites.
+    /*p21.ACAM*/ wire _ACAM_X0n = not(top.XEHO_X0());
+    /*p21.AZUB*/ wire _AZUB_X1n = not(top.SAVY_X1());
+    /*p21.AMEL*/ wire _AMEL_X2n = not(top.XODU_X2());
+    /*p21.AHAL*/ wire _AHAL_X3n = not(top.XYDO_X3());
+    /*p21.APUX*/ wire _APUX_X4n = not(top.TUHU_X4());
+    /*p21.ABEF*/ wire _ABEF_X5n = not(top.TUKY_X5());
+    /*p21.ADAZ*/ wire _ADAZ_X6n = not(top.TAKO_X6());
+    /*p21.ASAH*/ wire _ASAH_X7n = not(top.SYBE_X7());
 
-    /*p29.BAKY*/ wire BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
-    /*p29.CAKE*/ wire CAKE_CLKp = or (BAKY_SPRITES_FULL, DEZY_STORE_ENn_SYNC.q());
-    
-    /*p28.AZYB*/ wire AZYB_RST = not(top.BYHA_VID_LINE_TRIG_d4());
-    /*p29.BESE*/ SPRITE_COUNT0.set(CAKE_CLKp,         AZYB_RST, SPRITE_COUNT0.qn());
-    /*p29.CUXY*/ SPRITE_COUNT1.set(SPRITE_COUNT0.q(), AZYB_RST, SPRITE_COUNT1.qn());
-    /*p29.BEGO*/ SPRITE_COUNT2.set(SPRITE_COUNT1.q(), AZYB_RST, SPRITE_COUNT2.qn());
-    /*p29.DYBE*/ SPRITE_COUNT3.set(SPRITE_COUNT2.q(), AZYB_RST, SPRITE_COUNT3.qn());
-  }
+    /*p31.ZOGY*/ wire STORE0_MATCH0n = xor (XEPE_STORE0_X0.q(), _ACAM_X0n);
+    /*p31.ZEBA*/ wire STORE0_MATCH1n = xor (YLAH_STORE0_X1.q(), _AZUB_X1n);
+    /*p31.ZAHA*/ wire STORE0_MATCH2n = xor (ZOLA_STORE0_X2.q(), _AMEL_X2n);
+    /*p31.ZOKY*/ wire STORE0_MATCH3n = xor (ZULU_STORE0_X3.q(), _AHAL_X3n);
+    /*p31.WOJU*/ wire STORE0_MATCH4n = xor (WELO_STORE0_X4.q(), _APUX_X4n);
+    /*p31.YFUN*/ wire STORE0_MATCH5n = xor (XUNY_STORE0_X5.q(), _ABEF_X5n);
+    /*p31.WYZA*/ wire STORE0_MATCH6n = xor (WOTE_STORE0_X6.q(), _ADAZ_X6n);
+    /*p31.YPUK*/ wire STORE0_MATCH7n = xor (XAKO_STORE0_X7.q(), _ASAH_X7n);
 
-  //----------------------------------------
+    /*p31.EDYM*/ wire STORE1_MATCH0n = xor (STORE1_X0.q(), _ACAM_X0n);
+    /*p31.EMYB*/ wire STORE1_MATCH1n = xor (STORE1_X1.q(), _AZUB_X1n);
+    /*p31.EBEF*/ wire STORE1_MATCH2n = xor (STORE1_X2.q(), _AMEL_X2n);
+    /*p31.EWOK*/ wire STORE1_MATCH3n = xor (STORE1_X3.q(), _AHAL_X3n);
+    /*p31.COLA*/ wire STORE1_MATCH4n = xor (STORE1_X4.q(), _APUX_X4n);
+    /*p31.BOBA*/ wire STORE1_MATCH5n = xor (STORE1_X5.q(), _ABEF_X5n);
+    /*p31.COLU*/ wire STORE1_MATCH6n = xor (STORE1_X6.q(), _ADAZ_X6n);
+    /*p31.BAHU*/ wire STORE1_MATCH7n = xor (STORE1_X7.q(), _ASAH_X7n);
 
-  /*p29.YDUG*/ Signal STORE0_MATCHn;
-  /*p29.DYDU*/ Signal STORE1_MATCHn;
-  /*p29.DEGO*/ Signal STORE2_MATCHn;
-  /*p29.YLOZ*/ Signal STORE3_MATCHn;
-  /*p29.XAGE*/ Signal STORE4_MATCHn;
-  /*p29.EGOM*/ Signal STORE5_MATCHn;
-  /*p29.YBEZ*/ Signal STORE6_MATCHn;
-  /*p29.DYKA*/ Signal STORE7_MATCHn;
-  /*p29.EFYL*/ Signal STORE8_MATCHn;
-  /*p29.YGEM*/ Signal STORE9_MATCHn;
-  {
-    /*p21.ACAM*/ wire X0n = not(top.XEHO_X0());
-    /*p21.AZUB*/ wire X1n = not(top.SAVY_X1());
-    /*p21.AMEL*/ wire X2n = not(top.XODU_X2());
-    /*p21.AHAL*/ wire X3n = not(top.XYDO_X3());
-    /*p21.APUX*/ wire X4n = not(top.TUHU_X4());
-    /*p21.ABEF*/ wire X5n = not(top.TUKY_X5());
-    /*p21.ADAZ*/ wire X6n = not(top.TAKO_X6());
-    /*p21.ASAH*/ wire X7n = not(top.SYBE_X7());
+    /*p31.FUZU*/ wire STORE2_MATCH0n = xor (STORE2_X0.q(), _ACAM_X0n);
+    /*p31.FESO*/ wire STORE2_MATCH1n = xor (STORE2_X1.q(), _AZUB_X1n);
+    /*p31.FOKY*/ wire STORE2_MATCH2n = xor (STORE2_X2.q(), _AMEL_X2n);
+    /*p31.FYVA*/ wire STORE2_MATCH3n = xor (STORE2_X3.q(), _AHAL_X3n);
+    /*p31.CEKO*/ wire STORE2_MATCH4n = xor (STORE2_X4.q(), _APUX_X4n);
+    /*p31.DETY*/ wire STORE2_MATCH5n = xor (STORE2_X5.q(), _ABEF_X5n);
+    /*p31.DOZO*/ wire STORE2_MATCH6n = xor (STORE2_X6.q(), _ADAZ_X6n);
+    /*p31.CONY*/ wire STORE2_MATCH7n = xor (STORE2_X7.q(), _ASAH_X7n);
 
-    /*p31.ZOGY*/ wire STORE0_MATCH0n = xor (XEPE_STORE0_X0.q(), X0n);
-    /*p31.ZEBA*/ wire STORE0_MATCH1n = xor (YLAH_STORE0_X1.q(), X1n);
-    /*p31.ZAHA*/ wire STORE0_MATCH2n = xor (ZOLA_STORE0_X2.q(), X2n);
-    /*p31.ZOKY*/ wire STORE0_MATCH3n = xor (ZULU_STORE0_X3.q(), X3n);
-    /*p31.WOJU*/ wire STORE0_MATCH4n = xor (WELO_STORE0_X4.q(), X4n);
-    /*p31.YFUN*/ wire STORE0_MATCH5n = xor (XUNY_STORE0_X5.q(), X5n);
-    /*p31.WYZA*/ wire STORE0_MATCH6n = xor (WOTE_STORE0_X6.q(), X6n);
-    /*p31.YPUK*/ wire STORE0_MATCH7n = xor (XAKO_STORE0_X7.q(), X7n);
+    /*p31.YHOK*/ wire STORE3_MATCH0n = xor (STORE3_X0.q(), _ACAM_X0n);
+    /*p31.YCAH*/ wire STORE3_MATCH1n = xor (STORE3_X1.q(), _AZUB_X1n);
+    /*p31.YDAJ*/ wire STORE3_MATCH2n = xor (STORE3_X2.q(), _AMEL_X2n);
+    /*p31.YVUZ*/ wire STORE3_MATCH3n = xor (STORE3_X3.q(), _AHAL_X3n);
+    /*p31.YVAP*/ wire STORE3_MATCH4n = xor (STORE3_X4.q(), _APUX_X4n);
+    /*p31.XENY*/ wire STORE3_MATCH5n = xor (STORE3_X5.q(), _ABEF_X5n);
+    /*p31.XAVU*/ wire STORE3_MATCH6n = xor (STORE3_X6.q(), _ADAZ_X6n);
+    /*p31.XEVA*/ wire STORE3_MATCH7n = xor (STORE3_X7.q(), _ASAH_X7n);
 
-    /*p31.EDYM*/ wire STORE1_MATCH0n = xor (STORE1_X0.q(), X0n);
-    /*p31.EMYB*/ wire STORE1_MATCH1n = xor (STORE1_X1.q(), X1n);
-    /*p31.EBEF*/ wire STORE1_MATCH2n = xor (STORE1_X2.q(), X2n);
-    /*p31.EWOK*/ wire STORE1_MATCH3n = xor (STORE1_X3.q(), X3n);
-    /*p31.COLA*/ wire STORE1_MATCH4n = xor (STORE1_X4.q(), X4n);
-    /*p31.BOBA*/ wire STORE1_MATCH5n = xor (STORE1_X5.q(), X5n);
-    /*p31.COLU*/ wire STORE1_MATCH6n = xor (STORE1_X6.q(), X6n);
-    /*p31.BAHU*/ wire STORE1_MATCH7n = xor (STORE1_X7.q(), X7n);
+    /*p31.XEJU*/ wire STORE4_MATCH0n = xor (STORE4_X0.q(), _ACAM_X0n);
+    /*p31.ZATE*/ wire STORE4_MATCH1n = xor (STORE4_X1.q(), _AZUB_X1n);
+    /*p31.ZAKU*/ wire STORE4_MATCH2n = xor (STORE4_X2.q(), _AMEL_X2n);
+    /*p31.YBOX*/ wire STORE4_MATCH3n = xor (STORE4_X3.q(), _AHAL_X3n);
+    /*p31.ZYKU*/ wire STORE4_MATCH4n = xor (STORE4_X4.q(), _APUX_X4n);
+    /*p31.ZYPU*/ wire STORE4_MATCH5n = xor (STORE4_X5.q(), _ABEF_X5n);
+    /*p31.XAHA*/ wire STORE4_MATCH6n = xor (STORE4_X6.q(), _ADAZ_X6n);
+    /*p31.ZEFE*/ wire STORE4_MATCH7n = xor (STORE4_X7.q(), _ASAH_X7n);
 
-    /*p31.FUZU*/ wire STORE2_MATCH0n = xor (STORE2_X0.q(), X0n);
-    /*p31.FESO*/ wire STORE2_MATCH1n = xor (STORE2_X1.q(), X1n);
-    /*p31.FOKY*/ wire STORE2_MATCH2n = xor (STORE2_X2.q(), X2n);
-    /*p31.FYVA*/ wire STORE2_MATCH3n = xor (STORE2_X3.q(), X3n);
-    /*p31.CEKO*/ wire STORE2_MATCH4n = xor (STORE2_X4.q(), X4n);
-    /*p31.DETY*/ wire STORE2_MATCH5n = xor (STORE2_X5.q(), X5n);
-    /*p31.DOZO*/ wire STORE2_MATCH6n = xor (STORE2_X6.q(), X6n);
-    /*p31.CONY*/ wire STORE2_MATCH7n = xor (STORE2_X7.q(), X7n);
+    /*p31.GUZO*/ wire STORE5_MATCH0n = xor (STORE5_X0.q(), _ACAM_X0n);
+    /*p31.GOLA*/ wire STORE5_MATCH1n = xor (STORE5_X1.q(), _AZUB_X1n);
+    /*p31.GEVE*/ wire STORE5_MATCH2n = xor (STORE5_X2.q(), _AMEL_X2n);
+    /*p31.GUDE*/ wire STORE5_MATCH3n = xor (STORE5_X3.q(), _AHAL_X3n);
+    /*p31.BAZY*/ wire STORE5_MATCH4n = xor (STORE5_X4.q(), _APUX_X4n);
+    /*p31.CYLE*/ wire STORE5_MATCH5n = xor (STORE5_X5.q(), _ABEF_X5n);
+    /*p31.CEVA*/ wire STORE5_MATCH6n = xor (STORE5_X6.q(), _ADAZ_X6n);
+    /*p31.BUMY*/ wire STORE5_MATCH7n = xor (STORE5_X7.q(), _ASAH_X7n);
 
-    /*p31.YHOK*/ wire STORE3_MATCH0n = xor (STORE3_X0.q(), X0n);
-    /*p31.YCAH*/ wire STORE3_MATCH1n = xor (STORE3_X1.q(), X1n);
-    /*p31.YDAJ*/ wire STORE3_MATCH2n = xor (STORE3_X2.q(), X2n);
-    /*p31.YVUZ*/ wire STORE3_MATCH3n = xor (STORE3_X3.q(), X3n);
-    /*p31.YVAP*/ wire STORE3_MATCH4n = xor (STORE3_X4.q(), X4n);
-    /*p31.XENY*/ wire STORE3_MATCH5n = xor (STORE3_X5.q(), X5n);
-    /*p31.XAVU*/ wire STORE3_MATCH6n = xor (STORE3_X6.q(), X6n);
-    /*p31.XEVA*/ wire STORE3_MATCH7n = xor (STORE3_X7.q(), X7n);
+    /*p31.XOSU*/ wire STORE6_MATCH0n = xor (STORE6_X0.q(), _ACAM_X0n);
+    /*p31.ZUVU*/ wire STORE6_MATCH1n = xor (STORE6_X1.q(), _AZUB_X1n);
+    /*p31.XUCO*/ wire STORE6_MATCH2n = xor (STORE6_X2.q(), _AMEL_X2n);
+    /*p31.ZULO*/ wire STORE6_MATCH3n = xor (STORE6_X3.q(), _AHAL_X3n);
+    /*p31.ZARE*/ wire STORE6_MATCH4n = xor (STORE6_X4.q(), _APUX_X4n);
+    /*p31.ZEMU*/ wire STORE6_MATCH5n = xor (STORE6_X5.q(), _ABEF_X5n);
+    /*p31.ZYGO*/ wire STORE6_MATCH6n = xor (STORE6_X6.q(), _ADAZ_X6n);
+    /*p31.ZUZY*/ wire STORE6_MATCH7n = xor (STORE6_X7.q(), _ASAH_X7n);
 
-    /*p31.XEJU*/ wire STORE4_MATCH0n = xor (STORE4_X0.q(), X0n);
-    /*p31.ZATE*/ wire STORE4_MATCH1n = xor (STORE4_X1.q(), X1n);
-    /*p31.ZAKU*/ wire STORE4_MATCH2n = xor (STORE4_X2.q(), X2n);
-    /*p31.YBOX*/ wire STORE4_MATCH3n = xor (STORE4_X3.q(), X3n);
-    /*p31.ZYKU*/ wire STORE4_MATCH4n = xor (STORE4_X4.q(), X4n);
-    /*p31.ZYPU*/ wire STORE4_MATCH5n = xor (STORE4_X5.q(), X5n);
-    /*p31.XAHA*/ wire STORE4_MATCH6n = xor (STORE4_X6.q(), X6n);
-    /*p31.ZEFE*/ wire STORE4_MATCH7n = xor (STORE4_X7.q(), X7n);
+    /*p31.DUSE*/ wire STORE7_MATCH0n = xor (STORE7_X0.q(), _ACAM_X0n);
+    /*p31.DAGU*/ wire STORE7_MATCH1n = xor (STORE7_X1.q(), _AZUB_X1n);
+    /*p31.DYZE*/ wire STORE7_MATCH2n = xor (STORE7_X2.q(), _AMEL_X2n);
+    /*p31.DESO*/ wire STORE7_MATCH3n = xor (STORE7_X3.q(), _AHAL_X3n);
+    /*p31.EJOT*/ wire STORE7_MATCH4n = xor (STORE7_X4.q(), _APUX_X4n);
+    /*p31.ESAJ*/ wire STORE7_MATCH5n = xor (STORE7_X5.q(), _ABEF_X5n);
+    /*p31.DUCU*/ wire STORE7_MATCH6n = xor (STORE7_X6.q(), _ADAZ_X6n);
+    /*p31.EWUD*/ wire STORE7_MATCH7n = xor (STORE7_X7.q(), _ASAH_X7n);
 
-    /*p31.GUZO*/ wire STORE5_MATCH0n = xor (STORE5_X0.q(), X0n);
-    /*p31.GOLA*/ wire STORE5_MATCH1n = xor (STORE5_X1.q(), X1n);
-    /*p31.GEVE*/ wire STORE5_MATCH2n = xor (STORE5_X2.q(), X2n);
-    /*p31.GUDE*/ wire STORE5_MATCH3n = xor (STORE5_X3.q(), X3n);
-    /*p31.BAZY*/ wire STORE5_MATCH4n = xor (STORE5_X4.q(), X4n);
-    /*p31.CYLE*/ wire STORE5_MATCH5n = xor (STORE5_X5.q(), X5n);
-    /*p31.CEVA*/ wire STORE5_MATCH6n = xor (STORE5_X6.q(), X6n);
-    /*p31.BUMY*/ wire STORE5_MATCH7n = xor (STORE5_X7.q(), X7n);
+    /*p31.DUZE*/ wire STORE8_MATCH0n = xor (STORE8_X0.q(), _APUX_X4n);
+    /*p31.DAGA*/ wire STORE8_MATCH1n = xor (STORE8_X1.q(), _ABEF_X5n);
+    /*p31.DAWU*/ wire STORE8_MATCH2n = xor (STORE8_X2.q(), _ADAZ_X6n);
+    /*p31.EJAW*/ wire STORE8_MATCH3n = xor (STORE8_X3.q(), _ASAH_X7n);
+    /*p31.GOHO*/ wire STORE8_MATCH4n = xor (STORE8_X4.q(), _ACAM_X0n);
+    /*p31.GASU*/ wire STORE8_MATCH5n = xor (STORE8_X5.q(), _AZUB_X1n);
+    /*p31.GABU*/ wire STORE8_MATCH6n = xor (STORE8_X6.q(), _AMEL_X2n);
+    /*p31.GAFE*/ wire STORE8_MATCH7n = xor (STORE8_X7.q(), _AHAL_X3n);
 
-    /*p31.XOSU*/ wire STORE6_MATCH0n = xor (STORE6_X0.q(), X0n);
-    /*p31.ZUVU*/ wire STORE6_MATCH1n = xor (STORE6_X1.q(), X1n);
-    /*p31.XUCO*/ wire STORE6_MATCH2n = xor (STORE6_X2.q(), X2n);
-    /*p31.ZULO*/ wire STORE6_MATCH3n = xor (STORE6_X3.q(), X3n);
-    /*p31.ZARE*/ wire STORE6_MATCH4n = xor (STORE6_X4.q(), X4n);
-    /*p31.ZEMU*/ wire STORE6_MATCH5n = xor (STORE6_X5.q(), X5n);
-    /*p31.ZYGO*/ wire STORE6_MATCH6n = xor (STORE6_X6.q(), X6n);
-    /*p31.ZUZY*/ wire STORE6_MATCH7n = xor (STORE6_X7.q(), X7n);
-
-    /*p31.DUSE*/ wire STORE7_MATCH0n = xor (STORE7_X0.q(), X0n);
-    /*p31.DAGU*/ wire STORE7_MATCH1n = xor (STORE7_X1.q(), X1n);
-    /*p31.DYZE*/ wire STORE7_MATCH2n = xor (STORE7_X2.q(), X2n);
-    /*p31.DESO*/ wire STORE7_MATCH3n = xor (STORE7_X3.q(), X3n);
-    /*p31.EJOT*/ wire STORE7_MATCH4n = xor (STORE7_X4.q(), X4n);
-    /*p31.ESAJ*/ wire STORE7_MATCH5n = xor (STORE7_X5.q(), X5n);
-    /*p31.DUCU*/ wire STORE7_MATCH6n = xor (STORE7_X6.q(), X6n);
-    /*p31.EWUD*/ wire STORE7_MATCH7n = xor (STORE7_X7.q(), X7n);
-
-    /*p31.DUZE*/ wire STORE8_MATCH0n = xor (STORE8_X0.q(), X4n);
-    /*p31.DAGA*/ wire STORE8_MATCH1n = xor (STORE8_X1.q(), X5n);
-    /*p31.DAWU*/ wire STORE8_MATCH2n = xor (STORE8_X2.q(), X6n);
-    /*p31.EJAW*/ wire STORE8_MATCH3n = xor (STORE8_X3.q(), X7n);
-    /*p31.GOHO*/ wire STORE8_MATCH4n = xor (STORE8_X4.q(), X0n);
-    /*p31.GASU*/ wire STORE8_MATCH5n = xor (STORE8_X5.q(), X1n);
-    /*p31.GABU*/ wire STORE8_MATCH6n = xor (STORE8_X6.q(), X2n);
-    /*p31.GAFE*/ wire STORE8_MATCH7n = xor (STORE8_X7.q(), X3n);
-
-    /*p31.YMAM*/ wire STORE9_MATCH0n = xor (STORE9_X0.q(), X0n);
-    /*p31.YTYP*/ wire STORE9_MATCH1n = xor (STORE9_X1.q(), X1n);
-    /*p31.YFOP*/ wire STORE9_MATCH2n = xor (STORE9_X2.q(), X2n);
-    /*p31.YVAC*/ wire STORE9_MATCH3n = xor (STORE9_X3.q(), X3n);
-    /*p31.ZYWU*/ wire STORE9_MATCH4n = xor (STORE9_X4.q(), X4n);
-    /*p31.ZUZA*/ wire STORE9_MATCH5n = xor (STORE9_X5.q(), X5n);
-    /*p31.ZEJO*/ wire STORE9_MATCH6n = xor (STORE9_X6.q(), X6n);
-    /*p31.ZEDA*/ wire STORE9_MATCH7n = xor (STORE9_X7.q(), X7n);
+    /*p31.YMAM*/ wire STORE9_MATCH0n = xor (STORE9_X0.q(), _ACAM_X0n);
+    /*p31.YTYP*/ wire STORE9_MATCH1n = xor (STORE9_X1.q(), _AZUB_X1n);
+    /*p31.YFOP*/ wire STORE9_MATCH2n = xor (STORE9_X2.q(), _AMEL_X2n);
+    /*p31.YVAC*/ wire STORE9_MATCH3n = xor (STORE9_X3.q(), _AHAL_X3n);
+    /*p31.ZYWU*/ wire STORE9_MATCH4n = xor (STORE9_X4.q(), _APUX_X4n);
+    /*p31.ZUZA*/ wire STORE9_MATCH5n = xor (STORE9_X5.q(), _ABEF_X5n);
+    /*p31.ZEJO*/ wire STORE9_MATCH6n = xor (STORE9_X6.q(), _ADAZ_X6n);
+    /*p31.ZEDA*/ wire STORE9_MATCH7n = xor (STORE9_X7.q(), _ASAH_X7n);
 
     /*p31.ZAKO*/ wire STORE0_MATCHAp = nor(STORE0_MATCH0n, STORE0_MATCH1n, STORE0_MATCH2n, STORE0_MATCH3n);
     /*p31.XEBA*/ wire STORE0_MATCHBp = nor(STORE0_MATCH4n, STORE0_MATCH5n, STORE0_MATCH6n, STORE0_MATCH7n);
@@ -186,25 +151,56 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p31.YLEV*/ wire STORE9_MATCHA = nor(STORE9_MATCH0n, STORE9_MATCH1n, STORE9_MATCH2n, STORE9_MATCH3n);
     /*p31.YTUB*/ wire STORE9_MATCHB = nor(STORE9_MATCH4n, STORE9_MATCH5n, STORE9_MATCH6n, STORE9_MATCH7n);
 
-    /*p29.BYJO*/ wire BYJO_SCANNINGn = not(top.CEHA_SCANNINGp());
-    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, top.XYMU_RENDERINGp());
-    /*p29.AROR*/ wire AROR_MATCH_ENp = and (AZEM_RENDERINGp, top.XYLO_LCDC_SPEN.q());
+    /*p29.BYJO*/ wire _BYJO_SCANNINGn = not(top.CEHA_SCANNINGp());
+    /*p29.AZEM*/ wire _AZEM_RENDERINGp = and (_BYJO_SCANNINGn, top.XYMU_RENDERINGp());
+    /*p29.AROR*/ wire _AROR_MATCH_ENp = and (_AZEM_RENDERINGp, top.XYLO_LCDC_SPEN.q());
 
-    /*p29.YDUG*/ STORE0_MATCHn = nand(AROR_MATCH_ENp, STORE0_MATCHBp, STORE0_MATCHAp);
-    /*p29.DYDU*/ STORE1_MATCHn = nand(AROR_MATCH_ENp, STORE1_MATCHA, STORE1_MATCHB);
-    /*p29.DEGO*/ STORE2_MATCHn = nand(AROR_MATCH_ENp, STORE2_MATCHB, STORE2_MATCHA);
-    /*p29.YLOZ*/ STORE3_MATCHn = nand(AROR_MATCH_ENp, STORE3_MATCHA, STORE3_MATCHB);
-    /*p29.XAGE*/ STORE4_MATCHn = nand(AROR_MATCH_ENp, STORE4_MATCHB, STORE4_MATCHA);
-    /*p29.EGOM*/ STORE5_MATCHn = nand(AROR_MATCH_ENp, STORE5_MATCHB, STORE5_MATCHA);
-    /*p29.YBEZ*/ STORE6_MATCHn = nand(AROR_MATCH_ENp, STORE6_MATCHB, STORE6_MATCHA);
-    /*p29.DYKA*/ STORE7_MATCHn = nand(AROR_MATCH_ENp, STORE7_MATCHA, STORE7_MATCHB);
-    /*p29.EFYL*/ STORE8_MATCHn = nand(AROR_MATCH_ENp, STORE8_MATCHB, STORE8_MATCHA);
-    /*p29.YGEM*/ STORE9_MATCHn = nand(AROR_MATCH_ENp, STORE9_MATCHA, STORE9_MATCHB);
+    /*p29.YDUG*/ STORE0_MATCHn = nand(_AROR_MATCH_ENp, STORE0_MATCHBp, STORE0_MATCHAp);
+    /*p29.DYDU*/ STORE1_MATCHn = nand(_AROR_MATCH_ENp, STORE1_MATCHA, STORE1_MATCHB);
+    /*p29.DEGO*/ STORE2_MATCHn = nand(_AROR_MATCH_ENp, STORE2_MATCHB, STORE2_MATCHA);
+    /*p29.YLOZ*/ STORE3_MATCHn = nand(_AROR_MATCH_ENp, STORE3_MATCHA, STORE3_MATCHB);
+    /*p29.XAGE*/ STORE4_MATCHn = nand(_AROR_MATCH_ENp, STORE4_MATCHB, STORE4_MATCHA);
+    /*p29.EGOM*/ STORE5_MATCHn = nand(_AROR_MATCH_ENp, STORE5_MATCHB, STORE5_MATCHA);
+    /*p29.YBEZ*/ STORE6_MATCHn = nand(_AROR_MATCH_ENp, STORE6_MATCHB, STORE6_MATCHA);
+    /*p29.DYKA*/ STORE7_MATCHn = nand(_AROR_MATCH_ENp, STORE7_MATCHA, STORE7_MATCHB);
+    /*p29.EFYL*/ STORE8_MATCHn = nand(_AROR_MATCH_ENp, STORE8_MATCHB, STORE8_MATCHA);
+    /*p29.YGEM*/ STORE9_MATCHn = nand(_AROR_MATCH_ENp, STORE9_MATCHA, STORE9_MATCHB);
 
-    /*p29.FEFY*/ wire FEFY = nand(STORE4_MATCHn, STORE3_MATCHn, STORE2_MATCHn, STORE1_MATCHn, STORE0_MATCHn);
-    /*p29.FOVE*/ wire FOVE = nand(STORE9_MATCHn, STORE8_MATCHn, STORE7_MATCHn, STORE6_MATCHn, STORE5_MATCHn);
-    /*p29.FEPO*/ FEPO_STORE_MATCHp = or(FEFY, FOVE);
+    /*p29.FEFY*/ wire _FEFY = nand(STORE4_MATCHn, STORE3_MATCHn, STORE2_MATCHn, STORE1_MATCHn, STORE0_MATCHn);
+    /*p29.FOVE*/ wire _FOVE = nand(STORE9_MATCHn, STORE8_MATCHn, STORE7_MATCHn, STORE6_MATCHn, STORE5_MATCHn);
+    /*p29.FEPO*/ FEPO_STORE_MATCHp = or(_FEFY, _FOVE);
   }
+}
+
+  //------------------------------------------------------------------------------
+
+void SpriteStoreRegisters::tock(SchematicTop& top) {
+
+  /*p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
+
+  /*p01.AMYG*/ wire _AMYG_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (top.ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp);
+  /*p28.BYVA*/ wire _BYVA_VID_LINE_TRIG_d4n = not(_ABAK_VID_LINE_TRIG_d4p);
+  /*p29.DYBA*/ wire _DYBA_VID_LINE_TRIG_d4p = not(_BYVA_VID_LINE_TRIG_d4n);
+
+  //----------------------------------------
+  // Sprite scan Y matcher
+
+  {
+    // Sprite store counter.
+    // The sprite count clock stops ticking once we have 10 sprites.
+
+    /*p29.BAKY*/ wire _BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
+    /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn_SYNC.q());
+    
+    /*p28.AZYB*/ wire _AZYB_RST = not(top.BYHA_VID_LINE_TRIG_d4());
+    /*p29.BESE*/ SPRITE_COUNT0.set(_CAKE_CLKp,         _AZYB_RST, SPRITE_COUNT0.qn());
+    /*p29.CUXY*/ SPRITE_COUNT1.set(SPRITE_COUNT0.q(), _AZYB_RST, SPRITE_COUNT1.qn());
+    /*p29.BEGO*/ SPRITE_COUNT2.set(SPRITE_COUNT1.q(), _AZYB_RST, SPRITE_COUNT2.qn());
+    /*p29.DYBE*/ SPRITE_COUNT3.set(SPRITE_COUNT2.q(), _AZYB_RST, SPRITE_COUNT3.qn());
+  }
+
+  //----------------------------------------
 
   {
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
@@ -213,8 +209,7 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf_6n(top.FEPO_STORE_MATCHp(), top.DABU_SPRITE_DELTA2());
     /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf_6n(top.FEPO_STORE_MATCHp(), top.GYSA_SPRITE_DELTA3());
 
-    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
+    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), _DYTY_STORE_ENn_xxCDxxGH);
   }
 
   //----------------------------------------
@@ -258,44 +253,39 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p29.FAVO*/ wire STORE7_MATCH_OUT = or(STORE7_MATCH, STORE6_MATCH_OUT);
     /*p29.GYGA*/ wire STORE8_MATCH_OUT = or(STORE8_MATCH, STORE7_MATCH_OUT);
 
-    /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor(STORE0_MATCHn, top.GND);
-    /*p29.ENUT*/ wire ENUT_SPRITE1_GETp = nor(STORE1_MATCHn, STORE0_MATCH_OUT);
-    /*p29.EMOL*/ wire EMOL_SPRITE2_GETp = nor(STORE2_MATCHn, STORE1_MATCH_OUT);
-    /*p29.GYFY*/ wire GYFY_SPRITE3_GETp = nor(STORE3_MATCHn, STORE2_MATCH_OUT);
-    /*p29.GONO*/ wire GONO_SPRITE4_GETp = nor(STORE4_MATCHn, STORE3_MATCH_OUT);
-    /*p29.GEGA*/ wire GEGA_SPRITE5_GETp = nor(STORE5_MATCHn, STORE4_MATCH_OUT);
-    /*p29.XOJA*/ wire XOJA_SPRITE6_GETp = nor(STORE6_MATCHn, STORE5_MATCH_OUT);
-    /*p29.GUTU*/ wire GUTU_SPRITE7_GETp = nor(STORE7_MATCHn, STORE6_MATCH_OUT);
-    /*p29.FOXA*/ wire FOXA_SPRITE8_GETp = nor(STORE8_MATCHn, STORE7_MATCH_OUT);
-    /*p29.GUZE*/ wire GUZE_SPRITE9_GETp = nor(STORE9_MATCHn, STORE8_MATCH_OUT);
+    /*p29.GUVA*/ wire _GUVA_SPRITE0_GETp = nor(STORE0_MATCHn, top.GND);
+    /*p29.ENUT*/ wire _ENUT_SPRITE1_GETp = nor(STORE1_MATCHn, STORE0_MATCH_OUT);
+    /*p29.EMOL*/ wire _EMOL_SPRITE2_GETp = nor(STORE2_MATCHn, STORE1_MATCH_OUT);
+    /*p29.GYFY*/ wire _GYFY_SPRITE3_GETp = nor(STORE3_MATCHn, STORE2_MATCH_OUT);
+    /*p29.GONO*/ wire _GONO_SPRITE4_GETp = nor(STORE4_MATCHn, STORE3_MATCH_OUT);
+    /*p29.GEGA*/ wire _GEGA_SPRITE5_GETp = nor(STORE5_MATCHn, STORE4_MATCH_OUT);
+    /*p29.XOJA*/ wire _XOJA_SPRITE6_GETp = nor(STORE6_MATCHn, STORE5_MATCH_OUT);
+    /*p29.GUTU*/ wire _GUTU_SPRITE7_GETp = nor(STORE7_MATCHn, STORE6_MATCH_OUT);
+    /*p29.FOXA*/ wire _FOXA_SPRITE8_GETp = nor(STORE8_MATCHn, STORE7_MATCH_OUT);
+    /*p29.GUZE*/ wire _GUZE_SPRITE9_GETp = nor(STORE9_MATCHn, STORE8_MATCH_OUT);
 
     // Delayed reset signal for the selected store
-    /*p29.WUTY*/ wire WUTY_SPRITE_DONEp = not(top.VUSA_SPRITE_DONEn());
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
-    /*p01.AMYG*/ wire AMYG_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p, AMYG_VID_RSTp);
-    /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4p);
-    /*p29.EBOJ*/ EBOJ_STORE0_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, GUVA_SPRITE0_GETp);
-    /*p29.CEDY*/ CEDY_STORE1_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, ENUT_SPRITE1_GETp);
-    /*p29.EGAV*/ EGAV_STORE2_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, EMOL_SPRITE2_GETp);
-    /*p29.GOTA*/ GOTA_STORE3_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, GYFY_SPRITE3_GETp);
-    /*p29.XUDY*/ XUDY_STORE4_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, GONO_SPRITE4_GETp);
-    /*p29.WAFY*/ WAFY_STORE5_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, GEGA_SPRITE5_GETp);
-    /*p29.WOMY*/ WOMY_STORE6_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, XOJA_SPRITE6_GETp);
-    /*p29.WAPO*/ WAPO_STORE7_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, GUTU_SPRITE7_GETp);
-    /*p29.EXUQ*/ EXUQ_STORE8_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, FOXA_SPRITE8_GETp);
-    /*p29.FONO*/ FONO_STORE9_RSTp.set(WUTY_SPRITE_DONEp, BYVA_VID_LINE_TRIG_d4n, GUZE_SPRITE9_GETp);
+    /*p29.EBOJ*/ EBOJ_STORE0_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _GUVA_SPRITE0_GETp);
+    /*p29.CEDY*/ CEDY_STORE1_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _ENUT_SPRITE1_GETp);
+    /*p29.EGAV*/ EGAV_STORE2_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _EMOL_SPRITE2_GETp);
+    /*p29.GOTA*/ GOTA_STORE3_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _GYFY_SPRITE3_GETp);
+    /*p29.XUDY*/ XUDY_STORE4_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _GONO_SPRITE4_GETp);
+    /*p29.WAFY*/ WAFY_STORE5_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _GEGA_SPRITE5_GETp);
+    /*p29.WOMY*/ WOMY_STORE6_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _XOJA_SPRITE6_GETp);
+    /*p29.WAPO*/ WAPO_STORE7_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _GUTU_SPRITE7_GETp);
+    /*p29.EXUQ*/ EXUQ_STORE8_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _FOXA_SPRITE8_GETp);
+    /*p29.FONO*/ FONO_STORE9_RSTp.set(top.WUTY_SPRITE_DONEp(), _BYVA_VID_LINE_TRIG_d4n, _GUZE_SPRITE9_GETp);
 
-    /*p29.FURO*/ wire FURO_SPRITE0_GETn = not(GUVA_SPRITE0_GETp);
-    /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not(ENUT_SPRITE1_GETp);
-    /*p29.FAME*/ wire FAME_SPRITE2_GETn = not(EMOL_SPRITE2_GETp);
-    /*p29.GYMA*/ wire GYMA_SPRITE3_GETn = not(GYFY_SPRITE3_GETp);
-    /*p29.GOWO*/ wire GOWO_SPRITE4_GETn = not(GONO_SPRITE4_GETp);
-    /*p29.GYGY*/ wire GYGY_SPRITE5_GETn = not(GEGA_SPRITE5_GETp);
-    /*p29.XYME*/ wire XYME_SPRITE6_GETn = not(XOJA_SPRITE6_GETp);
-    /*p29.GUGY*/ wire GUGY_SPRITE7_GETn = not(GUTU_SPRITE7_GETp);
-    /*p29.DENY*/ wire DENY_SPRITE8_GETn = not(FOXA_SPRITE8_GETp);
-    /*p29.FADO*/ wire FADO_SPRITE9_GETn = not(GUZE_SPRITE9_GETp);
+    /*p29.FURO*/ wire FURO_SPRITE0_GETn = not(_GUVA_SPRITE0_GETp);
+    /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not(_ENUT_SPRITE1_GETp);
+    /*p29.FAME*/ wire FAME_SPRITE2_GETn = not(_EMOL_SPRITE2_GETp);
+    /*p29.GYMA*/ wire GYMA_SPRITE3_GETn = not(_GYFY_SPRITE3_GETp);
+    /*p29.GOWO*/ wire GOWO_SPRITE4_GETn = not(_GONO_SPRITE4_GETp);
+    /*p29.GYGY*/ wire GYGY_SPRITE5_GETn = not(_GEGA_SPRITE5_GETp);
+    /*p29.XYME*/ wire XYME_SPRITE6_GETn = not(_XOJA_SPRITE6_GETp);
+    /*p29.GUGY*/ wire GUGY_SPRITE7_GETn = not(_GUTU_SPRITE7_GETp);
+    /*p29.DENY*/ wire DENY_SPRITE8_GETn = not(_FOXA_SPRITE8_GETp);
+    /*p29.FADO*/ wire FADO_SPRITE9_GETn = not(_GUZE_SPRITE9_GETp);
 
     /*p30.ZEDY*/ top.SPR_TRI_INDX_0.set_tribuf_6n(FURO_SPRITE0_GETn, YWAK_STORE0_INDX0.q());
     /*p30.ZUMU*/ top.SPR_TRI_INDX_1.set_tribuf_6n(FURO_SPRITE0_GETn, ZONY_STORE0_INDX1.q());
@@ -412,21 +402,16 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
   // Sprite store setter
 
   {
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4());
-    /*p01.AMYG*/ wire AMYG_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p, AMYG_VID_RSTp);
-    /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4p);
-    /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4p = not(BYVA_VID_LINE_TRIG_d4n);
-    /*p29.DYWE*/ wire DYWE_STORE0_RSTp = or(DYBA_VID_LINE_TRIG_d4p, EBOJ_STORE0_RSTp.q());
-    /*p29.EFEV*/ wire EFEV_STORE1_RSTp = or(DYBA_VID_LINE_TRIG_d4p, CEDY_STORE1_RSTp.q());
-    /*p29.FOKO*/ wire FOKO_STORE2_RSTp = or(DYBA_VID_LINE_TRIG_d4p, EGAV_STORE2_RSTp.q());
-    /*p29.GAKE*/ wire GAKE_STORE3_RSTp = or(DYBA_VID_LINE_TRIG_d4p, GOTA_STORE3_RSTp.q());
-    /*p29.WOHU*/ wire WOHU_STORE4_RSTp = or(DYBA_VID_LINE_TRIG_d4p, XUDY_STORE4_RSTp.q());
-    /*p29.FEVE*/ wire FEVE_STORE5_RSTp = or(DYBA_VID_LINE_TRIG_d4p, WAFY_STORE5_RSTp.q());
-    /*p29.WACY*/ wire WACY_STORE6_RSTp = or(DYBA_VID_LINE_TRIG_d4p, WOMY_STORE6_RSTp.q());
-    /*p29.GUKY*/ wire GUKY_STORE7_RSTp = or(DYBA_VID_LINE_TRIG_d4p, WAPO_STORE7_RSTp.q());
-    /*p29.GORO*/ wire GORO_STORE8_RSTp = or(DYBA_VID_LINE_TRIG_d4p, EXUQ_STORE8_RSTp.q());
-    /*p29.DUBU*/ wire DUBU_STORE9_RSTp = or(DYBA_VID_LINE_TRIG_d4p, FONO_STORE9_RSTp.q());
+    /*p29.DYWE*/ wire DYWE_STORE0_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, EBOJ_STORE0_RSTp.q());
+    /*p29.EFEV*/ wire EFEV_STORE1_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, CEDY_STORE1_RSTp.q());
+    /*p29.FOKO*/ wire FOKO_STORE2_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, EGAV_STORE2_RSTp.q());
+    /*p29.GAKE*/ wire GAKE_STORE3_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, GOTA_STORE3_RSTp.q());
+    /*p29.WOHU*/ wire WOHU_STORE4_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, XUDY_STORE4_RSTp.q());
+    /*p29.FEVE*/ wire FEVE_STORE5_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, WAFY_STORE5_RSTp.q());
+    /*p29.WACY*/ wire WACY_STORE6_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, WOMY_STORE6_RSTp.q());
+    /*p29.GUKY*/ wire GUKY_STORE7_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, WAPO_STORE7_RSTp.q());
+    /*p29.GORO*/ wire GORO_STORE8_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, EXUQ_STORE8_RSTp.q());
+    /*p29.DUBU*/ wire DUBU_STORE9_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, FONO_STORE9_RSTp.q());
 
     /*p29.DYNA*/ wire DYNA_STORE0_RSTn = not(DYWE_STORE0_RSTp);
     /*p29.DOKU*/ wire DOKU_STORE1_RSTn = not(EFEV_STORE1_RSTp);
@@ -461,17 +446,16 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p29.DOGU*/ wire DOGU_STORE9_SELn = nand(FYCU_SPRITE_COUNT0p, CYPY_SPRITE_COUNT1n, CAPE_SPRITE_COUNT2n, ELYG_SPRITE_COUNT3p);
 
     // Sprite stores latch their input when their SELn signal goes _high_
-    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
-    /*p29.CEMY*/ wire CEMY_STORE0_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DEZO_STORE0_SELn);
-    /*p29.BYBY*/ wire BYBY_STORE1_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUVA_STORE1_SELn);
-    /*p29.WYXO*/ wire WYXO_STORE2_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, GEBU_STORE2_SELn);
-    /*p29.GUVE*/ wire GUVE_STORE3_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, FOCO_STORE3_SELn);
-    /*p29.CECU*/ wire CECU_STORE4_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUPE_STORE4_SELn);
-    /*p29.CADO*/ wire CADO_STORE5_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUGU_STORE5_SELn);
-    /*p29.XUJO*/ wire XUJO_STORE6_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, WOMU_STORE6_SELn);
-    /*p29.GAPE*/ wire GAPE_STORE7_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, GUNA_STORE7_SELn);
-    /*p29.CAHO*/ wire CAHO_STORE8_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DEWY_STORE8_SELn);
-    /*p29.CATO*/ wire CATO_STORE9_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DOGU_STORE9_SELn);
+    /*p29.CEMY*/ wire CEMY_STORE0_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, DEZO_STORE0_SELn);
+    /*p29.BYBY*/ wire BYBY_STORE1_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, CUVA_STORE1_SELn);
+    /*p29.WYXO*/ wire WYXO_STORE2_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, GEBU_STORE2_SELn);
+    /*p29.GUVE*/ wire GUVE_STORE3_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, FOCO_STORE3_SELn);
+    /*p29.CECU*/ wire CECU_STORE4_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, CUPE_STORE4_SELn);
+    /*p29.CADO*/ wire CADO_STORE5_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, CUGU_STORE5_SELn);
+    /*p29.XUJO*/ wire XUJO_STORE6_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, WOMU_STORE6_SELn);
+    /*p29.GAPE*/ wire GAPE_STORE7_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, GUNA_STORE7_SELn);
+    /*p29.CAHO*/ wire CAHO_STORE8_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, DEWY_STORE8_SELn);
+    /*p29.CATO*/ wire CATO_STORE9_CLKp = or(_DYTY_STORE_ENn_xxCDxxGH, DOGU_STORE9_SELn);
 
     /*p29.DYHU*/ wire DYHU_STORE0_CLKn = not(CEMY_STORE0_CLKp);
     /*p29.BUCO*/ wire BUCO_STORE1_CLKn = not(BYBY_STORE1_CLKp);
@@ -722,6 +706,18 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
 SignalHash SpriteStoreRegisters::commit(SchematicTop& top) {
   SignalHash hash;
   /*p29.FEPO*/ hash << FEPO_STORE_MATCHp.commit();
+
+  /*p29.YDUG*/ hash << STORE0_MATCHn.commit();
+  /*p29.DYDU*/ hash << STORE1_MATCHn.commit();
+  /*p29.DEGO*/ hash << STORE2_MATCHn.commit();
+  /*p29.YLOZ*/ hash << STORE3_MATCHn.commit();
+  /*p29.XAGE*/ hash << STORE4_MATCHn.commit();
+  /*p29.EGOM*/ hash << STORE5_MATCHn.commit();
+  /*p29.YBEZ*/ hash << STORE6_MATCHn.commit();
+  /*p29.DYKA*/ hash << STORE7_MATCHn.commit();
+  /*p29.EFYL*/ hash << STORE8_MATCHn.commit();
+  /*p29.YGEM*/ hash << STORE9_MATCHn.commit();
+
   /*p29.DEZY*/ hash << DEZY_STORE_ENn_SYNC.commit();
   /*p29.BESE*/ hash << SPRITE_COUNT0.commit();
   /*p29.CUXY*/ hash << SPRITE_COUNT1.commit();

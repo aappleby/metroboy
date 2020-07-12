@@ -1,5 +1,5 @@
 #pragma once
-#include "Sch_Common.h"
+#include "Cells.h"
 
 namespace Schematics {
 
@@ -8,7 +8,7 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreRegisters {
-  void tick(SchematicTop& gb);
+  void tick_match(SchematicTop& gb);
   void tock(SchematicTop& gb);
   SignalHash commit(SchematicTop& top);
 
@@ -16,6 +16,17 @@ private:
   friend struct SchematicTop;
 
   /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
+
+  /*p29.YDUG*/ Signal STORE0_MATCHn;
+  /*p29.DYDU*/ Signal STORE1_MATCHn;
+  /*p29.DEGO*/ Signal STORE2_MATCHn;
+  /*p29.YLOZ*/ Signal STORE3_MATCHn;
+  /*p29.XAGE*/ Signal STORE4_MATCHn;
+  /*p29.EGOM*/ Signal STORE5_MATCHn;
+  /*p29.YBEZ*/ Signal STORE6_MATCHn;
+  /*p29.DYKA*/ Signal STORE7_MATCHn;
+  /*p29.EFYL*/ Signal STORE8_MATCHn;
+  /*p29.YGEM*/ Signal STORE9_MATCHn;
 
   /*p29.DEZY*/ Reg17 DEZY_STORE_ENn_SYNC;
   /*p29.BESE*/ Reg17 SPRITE_COUNT0;

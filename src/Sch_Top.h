@@ -111,6 +111,22 @@ struct SchematicTop {
 
   /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(AVAP_RENDER_START_RST(), MOSU_WIN_MODE_TRIGp(), TEVO_FINE_RSTp()); }
 
+  /*p21.PURE*/ wire PURE_NEW_LINE_d0n() const { return not(RUTU_LINE_END()); }
+
+  /*p21.SELA*/ wire SELA_LINE_END_Fp() const { return not(PURE_NEW_LINE_d0n()); }
+
+  /*p01.UCOB*/ wire UCOB_CLKBADp() const { return not(SYS_PIN_CLK_A); }
+
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not(sprite_fetcher.TOXE_SFETCH_S0.q()); }
+
+  /*p29.ABON*/ wire ABON_SPR_VRM_RDn() const { return not(TEXY_SPR_READ_VRAMp()); }
+
+  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(sprite_scanner.CENO_SCANNINGp.qn()); }
+  /*p28.BESU*/ wire BESU_SCANNINGp() const { return sprite_scanner.BESU_SCANNINGp.q(); }
+  /*p29.CENO*/ wire CENO_SCANNINGqn() const { return sprite_scanner.CENO_SCANNINGp.q(); }
+
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p() const { return not(BYHA_VID_LINE_TRIG_d4()); }
+
   //-----------------------------------------------------------------------------
   // Debug signals
 
@@ -293,6 +309,8 @@ struct SchematicTop {
   }
 
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const;
+  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const { return not(AREV_CPU_WRn_ABCDxxxH()); }
+
   /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const;
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
   /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH() const { return not(TAPU_CPU_WRp_xxxxEFGx()); }
@@ -403,6 +421,7 @@ struct SchematicTop {
 
   wire XYMU_RENDERINGp() const;
   /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not(XYMU_RENDERINGp()); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not(XYMU_RENDERINGp()); }
 
 
   wire WODU_RENDER_DONEp() const;
@@ -439,10 +458,6 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Sprite scanner signals
 
-  wire CEHA_SCANNINGp() const;
-  wire BESU_SCANNINGp() const;
-  wire CENO_SCANNINGqn() const;
-
   /*p28.ANOM*/ wire ANOM_LINE_RSTn() const;
   /*p29.BALU*/ wire BALU_LINE_RSTp() const;
 
@@ -475,6 +490,9 @@ struct SchematicTop {
   wire TEXY_SPR_READ_VRAMp() const;
   wire SOHO_SPR_VRAM_RDp() const;
 
+  /*p29.WUTY*/ wire WUTY_SPRITE_DONEp() const { return not(VUSA_SPRITE_DONEn()); }
+
+
   /*p33.PEFO*/ wire SPR_PIX_A0() const { return sprite_fetcher.SPR_PIX_A0.q(); }
   /*p33.ROKA*/ wire SPR_PIX_A1() const { return sprite_fetcher.SPR_PIX_A1.q(); }
   /*p33.MYTU*/ wire SPR_PIX_A2() const { return sprite_fetcher.SPR_PIX_A2.q(); }
@@ -504,6 +522,9 @@ struct SchematicTop {
     /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn());
     return PORE_WIN_MODEp;
   }
+
+  /*p27.SYLO*/ wire SYLO_WIN_HITn() const { return not(win_reg.RYDY_WIN_FIRST_TILE_A.q()); }
+  /*p24.TOMU*/ wire TOMU_WIN_HITp() const { return not(SYLO_WIN_HITn()); }
 
   /*p27.WYKA*/ wire WYKA_WIN_X3() const { return win_reg.WYKA_WIN_X3.q(); }
   /*p27.WODY*/ wire WODY_WIN_X4() const { return win_reg.WODY_WIN_X4.q(); }

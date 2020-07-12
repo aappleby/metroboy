@@ -13,15 +13,10 @@ void ResetRegisters::tick(SchematicTop& /*top*/) {
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tock(SchematicTop& top) {
-  wire SYS_PIN_CLK_A = top.SYS_PIN_CLK_A;
-  wire SYS_PIN_RSTp = top.SYS_PIN_RSTp;
-  wire CPU_PIN_READYp = top.CPU_PIN_READYp;
-
-  /*p01.UCOB*/ wire UCOB = not(SYS_PIN_CLK_A);
-  /*p01.UPYF*/ wire UPYF = or(SYS_PIN_RSTp, UCOB);
+  /*p01.UPYF*/ wire _UPYF = or(top.SYS_PIN_RSTp, top.UCOB_CLKBADp());
 
   // Are we _sure_ this is a nor latch?
-  /*p01.TUBO*/ _TUBO_CPU_READYn.nor_latch(UPYF, CPU_PIN_READYp);
+  /*p01.TUBO*/ _TUBO_CPU_READYn.nor_latch(_UPYF, top.CPU_PIN_READYp);
 
 #ifdef FAST_BOOT
   // Just wait until DIV = 4 instead of DIV = 32768

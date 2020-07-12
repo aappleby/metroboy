@@ -5,7 +5,11 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tick_ymatch(SchematicTop& top) {
+void SpriteScanner::tick(SchematicTop& top) {
+  {
+    _BALU_LINE_RSTp = top.lcd_reg.BALU_LINE_RSTp();
+  }
+
   {
     /*p29.EBOS*/ wire _EBOS_Y0n = not(top.lcd_reg.MUWY_Y0.q());
     /*p29.DASA*/ wire _DASA_Y1n = not(top.lcd_reg.MYRO_Y1.q());
@@ -60,7 +64,7 @@ void SpriteScanner::tock(SchematicTop& top) {
     /*p29.BYBA*/ _BYBA_SCAN_DONE_A.set(top.clk_reg.XUPY_ABxxEFxx(), top.lcd_reg.BAGY_LINE_RSTn(), _FETO_SCAN_DONE_d0);
     /*p29.DOBA*/ _DOBA_SCAN_DONE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.lcd_reg.BAGY_LINE_RSTn(), _BYBA_SCAN_DONE_A.q());
 
-    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.rst_reg.ATAR_VID_RSTp(), top.AVAP_RENDER_START_RST());
+    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.rst_reg.ATAR_VID_RSTp(), top.sprite_scanner.AVAP_RENDER_START_RST());
     /*p28.BESU*/ _BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_LINE_END(), _ASEN_SCAN_DONE_PE);
     /*p29.CENO*/ _CENO_SCANNINGp.set(top.clk_reg.XUPY_ABxxEFxx(), top.rst_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
   }
@@ -84,6 +88,8 @@ void SpriteScanner::tock(SchematicTop& top) {
 
 SignalHash SpriteScanner::commit() {
   SignalHash hash;
+
+  hash << _BALU_LINE_RSTp.commit();
 
   /*p28.BESU*/ hash << _BESU_SCANNINGp.commit();
   /*p29.CENO*/ hash << _CENO_SCANNINGp.commit();

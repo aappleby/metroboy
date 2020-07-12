@@ -154,49 +154,6 @@ void SchematicTop::set_vram_bus(uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::set_oam_bus(wire OE, uint16_t data) {
-  if (OE) {
-    bus_mux.OAM_PIN_DA0.preset_a(data & 0x0001);
-    bus_mux.OAM_PIN_DA1.preset_a(data & 0x0002);
-    bus_mux.OAM_PIN_DA2.preset_a(data & 0x0004);
-    bus_mux.OAM_PIN_DA3.preset_a(data & 0x0008);
-    bus_mux.OAM_PIN_DA4.preset_a(data & 0x0010);
-    bus_mux.OAM_PIN_DA5.preset_a(data & 0x0020);
-    bus_mux.OAM_PIN_DA6.preset_a(data & 0x0040);
-    bus_mux.OAM_PIN_DA7.preset_a(data & 0x0080);
-
-    bus_mux.OAM_PIN_DB0.preset_a(data & 0x0100);
-    bus_mux.OAM_PIN_DB1.preset_a(data & 0x0200);
-    bus_mux.OAM_PIN_DB2.preset_a(data & 0x0400);
-    bus_mux.OAM_PIN_DB3.preset_a(data & 0x0800);
-    bus_mux.OAM_PIN_DB4.preset_a(data & 0x1000);
-    bus_mux.OAM_PIN_DB5.preset_a(data & 0x2000);
-    bus_mux.OAM_PIN_DB6.preset_a(data & 0x4000);
-    bus_mux.OAM_PIN_DB7.preset_a(data & 0x8000);
-  }
-  else {
-    bus_mux.OAM_PIN_DA0.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA1.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA2.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA3.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA4.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA5.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA6.preset_a(HIZ);
-    bus_mux.OAM_PIN_DA7.preset_a(HIZ);
-
-    bus_mux.OAM_PIN_DB0.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB1.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB2.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB3.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB4.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB5.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB6.preset_a(HIZ);
-    bus_mux.OAM_PIN_DB7.preset_a(HIZ);
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 void SchematicTop::set_ext_bus(uint16_t data) {
   bus_mux.EXT_PIN_D0_C.set(data & 0x01);
   bus_mux.EXT_PIN_D1_C.set(data & 0x02);
@@ -221,6 +178,7 @@ SignalHash SchematicTop::tick() {
   win_reg.tick(*this); // after sprite store
   rst_reg.tick(*this);
   lcd_reg.tick(*this);
+  sprite_scanner.tick(*this);
   tile_fetcher.tick(*this); // after window
   clk_reg.tick(*this);
   dbg_reg.tick(*this);
@@ -229,7 +187,6 @@ SignalHash SchematicTop::tick() {
   dma_reg.tick(*this);
   ser_reg.tick(*this);
   joy_reg.tick(*this);
-  sprite_scanner.tick_ymatch(*this);
   bus_mux.tick(*this);
   ppu_reg.tick(*this); // after window
   sprite_fetcher.tick(*this); // after window

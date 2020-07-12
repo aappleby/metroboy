@@ -33,7 +33,6 @@ struct SchematicTop {
   void set_cpu_bus(Req req);
   void set_buttons(uint8_t buttons);
   void set_vram_bus(uint8_t data);
-  void set_oam_bus(wire OE, uint16_t data);
   void set_ext_bus(uint16_t data);
 
   int get_addr() const {
@@ -73,7 +72,7 @@ struct SchematicTop {
     return and(BOGE_DMA_RUNNINGn, ppu_reg.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
   }
 
-  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(AVAP_RENDER_START_RST(), win_reg.MOSU_WIN_MODE_TRIGp(), TEVO_FINE_RSTp()); }
+  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(top.sprite_scanner.AVAP_RENDER_START_RST(), win_reg.MOSU_WIN_MODE_TRIGp(), TEVO_FINE_RSTp()); }
   /*p29.ABON*/ wire ABON_SPR_VRM_RDn()       const { return not(TEXY_SPR_READ_VRAMp()); }
 
   //-----------------------------------------------------------------------------
@@ -186,11 +185,6 @@ struct SchematicTop {
   // And this is the topmost "reset sprite fetcher" signal
   /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn() const {
     return nor(sprite_fetcher.WUTY_SPRITE_DONEp(), tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // def nor
-  }
-
-  /*p29.AVAP*/ wire AVAP_RENDER_START_RST() const {
-    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(lcd_reg.BALU_LINE_RSTp(), sprite_scanner.DOBA_SCAN_DONE_B(), !sprite_scanner.BYBA_SCAN_DONE_A());
-    return not(_BEBU_SCAN_DONE_TRIGn);
   }
 
   /*p29.TEXY*/ wire TEXY_SPR_READ_VRAMp() const {

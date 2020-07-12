@@ -24,7 +24,6 @@ struct BusMux {
   /*p28.YZET*/ Signal YZET_OAM_A7p;
 
 //private:
-  friend SchematicTop;
 
   /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
 
@@ -208,6 +207,49 @@ struct BusMux {
   Tribuf OAM_PIN_DB5;
   Tribuf OAM_PIN_DB6;
   Tribuf OAM_PIN_DB7;
+
+  void preset_oam_bus(wire OE, uint16_t data) {
+    if (OE) {
+      OAM_PIN_DA0.preset_a(data & 0x0001);
+      OAM_PIN_DA1.preset_a(data & 0x0002);
+      OAM_PIN_DA2.preset_a(data & 0x0004);
+      OAM_PIN_DA3.preset_a(data & 0x0008);
+      OAM_PIN_DA4.preset_a(data & 0x0010);
+      OAM_PIN_DA5.preset_a(data & 0x0020);
+      OAM_PIN_DA6.preset_a(data & 0x0040);
+      OAM_PIN_DA7.preset_a(data & 0x0080);
+
+      OAM_PIN_DB0.preset_a(data & 0x0100);
+      OAM_PIN_DB1.preset_a(data & 0x0200);
+      OAM_PIN_DB2.preset_a(data & 0x0400);
+      OAM_PIN_DB3.preset_a(data & 0x0800);
+      OAM_PIN_DB4.preset_a(data & 0x1000);
+      OAM_PIN_DB5.preset_a(data & 0x2000);
+      OAM_PIN_DB6.preset_a(data & 0x4000);
+      OAM_PIN_DB7.preset_a(data & 0x8000);
+    }
+    else {
+      OAM_PIN_DA0.preset_a(HIZ);
+      OAM_PIN_DA1.preset_a(HIZ);
+      OAM_PIN_DA2.preset_a(HIZ);
+      OAM_PIN_DA3.preset_a(HIZ);
+      OAM_PIN_DA4.preset_a(HIZ);
+      OAM_PIN_DA5.preset_a(HIZ);
+      OAM_PIN_DA6.preset_a(HIZ);
+      OAM_PIN_DA7.preset_a(HIZ);
+
+      OAM_PIN_DB0.preset_a(HIZ);
+      OAM_PIN_DB1.preset_a(HIZ);
+      OAM_PIN_DB2.preset_a(HIZ);
+      OAM_PIN_DB3.preset_a(HIZ);
+      OAM_PIN_DB4.preset_a(HIZ);
+      OAM_PIN_DB5.preset_a(HIZ);
+      OAM_PIN_DB6.preset_a(HIZ);
+      OAM_PIN_DB7.preset_a(HIZ);
+    }
+  }
+
+private:
 
   /*p31.XYKY*/ TpLatch XYKY_LATCH_OAM_A0;
   /*p31.YRUM*/ TpLatch YRUM_LATCH_OAM_A1;

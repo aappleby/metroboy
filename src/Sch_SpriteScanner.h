@@ -9,7 +9,7 @@ struct SchematicTop;
 
 struct SpriteScanner {
 
-  void tick_ymatch(SchematicTop& gb);
+  void tick(SchematicTop& gb);
   void tock(SchematicTop& gb);
   SignalHash commit();
 
@@ -34,7 +34,14 @@ struct SpriteScanner {
   /*p28.GAMA*/ wire GAMA_SCAN4n() const { return not(_FAHA_SCAN4.q()); }
   /*p28.GOBY*/ wire GOBY_SCAN5n() const { return not(_FONY_SCAN5.q()); }
 
+  /*p29.AVAP*/ wire AVAP_RENDER_START_RST() const {
+    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B(), !BYBA_SCAN_DONE_A());
+    return not(_BEBU_SCAN_DONE_TRIGn);
+  }
+
 private:
+
+  Signal _BALU_LINE_RSTp;
 
   /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(_CENO_SCANNINGp.qn()); }
 

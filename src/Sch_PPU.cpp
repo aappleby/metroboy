@@ -23,7 +23,7 @@ void PpuRegisters::tock(SchematicTop& top) {
   }
 
   {
-    /*p21.XYMU*/ _XYMU_RENDERINGp.nor_latch(top.AVAP_RENDER_START_RST(), _WEGO_LINE_END_RST);
+    /*p21.XYMU*/ _XYMU_RENDERINGp.nor_latch(top.sprite_scanner.AVAP_RENDER_START_RST(), _WEGO_LINE_END_RST);
   }
 
   {
@@ -64,7 +64,7 @@ void PpuRegisters::tock(SchematicTop& top) {
     // if PAHO or TOFU go high, POFY goes low.
 
     /*p24.PAHO*/ PAHO_X_8_SYNC.set(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.q(), XYDO_X3.q());
-    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || top.rst_reg.TOFU_VID_RSTp());
+    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.sprite_scanner.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || top.rst_reg.TOFU_VID_RSTp());
     /*p24.RUZE*/ wire _RUZE_PIN_ST = not(POFY_ST_LATCH.q());
     top.LCD_PIN_ST.set(_RUZE_PIN_ST);
   }

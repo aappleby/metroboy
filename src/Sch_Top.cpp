@@ -217,13 +217,14 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
+  rst_reg.tick(*this);
+
   clk_reg.tick(*this);
   clk_reg.tock(*this);
 
   dbg_reg.tick(*this);
   dbg_reg.tock(*this);
 
-  rst_reg.tick(*this);
   rst_reg.tock(*this);
 
   tim_reg.tick(*this);
@@ -241,10 +242,11 @@ SignalHash SchematicTop::tick() {
   joy_reg.tick(*this);
   joy_reg.tock(*this);
 
+  lcd_reg.tick(*this);
+
   sprite_scanner.tick_ymatch(*this);
   sprite_scanner.tock(*this);
 
-  lcd_reg.tick(*this);
   lcd_reg.tock(*this);
 
   bus_mux.tick(*this);

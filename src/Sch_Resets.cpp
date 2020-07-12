@@ -7,13 +7,14 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tick(SchematicTop& /*top*/) {
+void ResetRegisters::tick(SchematicTop& top) {
+  _XONA_LCDC_EN = top.XONA_LCDC_EN.q();
 }
 
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tock(SchematicTop& top) {
-  /*p01.UPYF*/ wire _UPYF = or(top.SYS_PIN_RSTp, top.UCOB_CLKBADp());
+  /*p01.UPYF*/ wire _UPYF = or(top.SYS_PIN_RSTp, top.clk_reg.UCOB_CLKBADp());
 
   // Are we _sure_ this is a nor latch?
   /*p01.TUBO*/ _TUBO_CPU_READYn.nor_latch(_UPYF, top.clk_reg.CPU_PIN_READYp);
@@ -40,6 +41,7 @@ void ResetRegisters::tock(SchematicTop& top) {
 SignalHash ResetRegisters::commit() {
   SignalHash hash;
 
+  /*p23.XONA*/ hash << _XONA_LCDC_EN.commit();
   /*p01.TUBO*/ hash << _TUBO_CPU_READYn.commit();
   /*p01.ASOL*/ hash << ASOL_POR_DONEn.commit(); // Schematic wrong, this is a latch.
   /*p01.AFER*/ hash << AFER_SYS_RSTp.commit();

@@ -74,7 +74,6 @@ struct SchematicTop {
   }
 
   /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(AVAP_RENDER_START_RST(), win_reg.MOSU_WIN_MODE_TRIGp(), TEVO_FINE_RSTp()); }
-  /*p01.UCOB*/ wire UCOB_CLKBADp()           const { return not(clk_reg.SYS_PIN_CLK_A); }
   /*p29.ABON*/ wire ABON_SPR_VRM_RDn()       const { return not(TEXY_SPR_READ_VRAMp()); }
 
   //-----------------------------------------------------------------------------
@@ -88,16 +87,6 @@ struct SchematicTop {
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------
-
-  wire XAPO_VID_RSTn() const {
-    /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not(rst_reg.XORE_SYS_RSTp());
-    /*p01.XODO*/ wire _XODO_VID_RSTp = nand(_XEBE_SYS_RSTn, XONA_LCDC_EN.q());
-    /*p01.XAPO*/ wire _XAPO_VID_RSTn = not(_XODO_VID_RSTp);
-    return _XAPO_VID_RSTn;
-  }
-
-  /*p01.ATAR*/ wire ATAR_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
-  /*p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not(ATAR_VID_RSTp()); }
 
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
       /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(bus_mux.EXT_PIN_RDp_C, CPU_PIN_RDp, UNOR_MODE_DBG2p());
@@ -193,7 +182,7 @@ struct SchematicTop {
 
   /*p21.VOTY*/ wire VOTY_INT_STATp() const {
     /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_reg.TOLU_VBLANKn(), top.WODU_RENDER_DONEp());
-    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN.q(), lcd_reg.ROPO_LY_MATCH_SYNCp.q(),
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN.q(), lcd_reg.ROPO_LY_MATCH_SYNCp(),
                                              ppu_reg.REFE_INT_OAM_EN.q(), lcd_reg.TAPA_INT_OAM(),
                                              ppu_reg.RUFO_INT_VBL_EN.q(), lcd_reg.PARU_VBLANKp_d4(), // polarity?
                                              ppu_reg.ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
@@ -213,7 +202,7 @@ struct SchematicTop {
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn() const { return nand(tile_fetcher.LAXU_BFETCH_S0.q(), tile_fetcher.NYVA_BFETCH_S2.q(), NYXU_TILE_FETCHER_RSTn()); }
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp() const { return not(MOCE_BFETCH_DONEn()); }
 
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn() const { return nor(lcd_reg.ATEJ_VID_LINE_TRIG_d4p(*this), ATAR_VID_RSTp()); }
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn() const { return nor(lcd_reg.ATEJ_VID_LINE_TRIG_d4p(), rst_reg.ATAR_VID_RSTp()); }
   /*p29.BALU*/ wire BALU_LINE_RSTp() const { return not(ANOM_LINE_RSTn()); }
 
   /*p29.AVAP*/ wire AVAP_RENDER_START_RST() const {

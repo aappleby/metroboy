@@ -163,7 +163,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->CPU_PIN_STARTp.get(),
       top->clk_reg.CPU_PIN_READYp.get(),
       top->tim_reg.get_div(),
-      top->rst_reg.AFER_SYS_RSTp.q()
+      1//top->rst_reg.AFER_SYS_RSTp.q()
       //hash.h);
       );
   }

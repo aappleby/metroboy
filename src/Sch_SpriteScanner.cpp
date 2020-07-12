@@ -61,9 +61,9 @@ void SpriteScanner::tock(SchematicTop& top) {
     /*p29.BYBA*/ _BYBA_SCAN_DONE_A.set(top.clk_reg.XUPY_ABxxEFxx(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
     /*p29.DOBA*/ _DOBA_SCAN_DONE_B.set(top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, _BYBA_SCAN_DONE_A.q());
 
-    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.ATAR_VID_RSTp(), top.AVAP_RENDER_START_RST());
-    /*p28.BESU*/ _BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_LINE_END.q(), _ASEN_SCAN_DONE_PE);
-    /*p29.CENO*/ _CENO_SCANNINGp.set(top.clk_reg.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
+    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.rst_reg.ATAR_VID_RSTp(), top.AVAP_RENDER_START_RST());
+    /*p28.BESU*/ _BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_LINE_END(), _ASEN_SCAN_DONE_PE);
+    /*p29.CENO*/ _CENO_SCANNINGp.set(top.clk_reg.XUPY_ABxxEFxx(), top.rst_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
   }
 
   //----------------------------------------

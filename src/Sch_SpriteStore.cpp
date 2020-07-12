@@ -175,8 +175,7 @@ void SpriteStoreRegisters::tick_match(SchematicTop& top) {
 
 void SpriteStoreRegisters::tock(SchematicTop& top) {
 
-  /*p01.AMYG*/ wire _AMYG_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p(top), _AMYG_VID_RSTp);
+  /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p(), top.rst_reg.AMYG_VID_RSTp());
   /*p28.BYVA*/ wire _BYVA_VID_LINE_TRIG_d4n = not(_ABAK_VID_LINE_TRIG_d4p);
   /*p29.DYBA*/ wire _DYBA_VID_LINE_TRIG_d4p = not(_BYVA_VID_LINE_TRIG_d4n);
 
@@ -190,7 +189,7 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p29.BAKY*/ wire _BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
     /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn_SYNC.q());
     
-    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(top));
+    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIG_d4());
     /*p29.BESE*/ SPRITE_COUNT0.set(_CAKE_CLKp,         _AZYB_RST, SPRITE_COUNT0.qn());
     /*p29.CUXY*/ SPRITE_COUNT1.set(SPRITE_COUNT0.q(), _AZYB_RST, SPRITE_COUNT1.qn());
     /*p29.BEGO*/ SPRITE_COUNT2.set(SPRITE_COUNT1.q(), _AZYB_RST, SPRITE_COUNT2.qn());
@@ -207,7 +206,7 @@ void SpriteStoreRegisters::tock(SchematicTop& top) {
     /*p30.CUCA*/ top.SPR_TRI_LINE_2.set_tribuf_6n(top.sprite_store.FEPO_STORE_MATCHp, top.sprite_scanner.DABU_SPRITE_DELTA2());
     /*p30.CEGA*/ top.SPR_TRI_LINE_3.set_tribuf_6n(top.sprite_store.FEPO_STORE_MATCHp, top.sprite_scanner.GYSA_SPRITE_DELTA3());
 
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.clk_reg.ZEME_AxCxExGx(), top.XAPO_VID_RSTn(), top.sprite_scanner.DYTY_STORE_ENn_xxCDxxGH());
+    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.clk_reg.ZEME_AxCxExGx(), top.rst_reg.XAPO_VID_RSTn(), top.sprite_scanner.DYTY_STORE_ENn_xxCDxxGH());
   }
 
   //----------------------------------------

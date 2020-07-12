@@ -24,7 +24,7 @@ void TimerRegisters::tock(SchematicTop& top) {
 
   // FF04 DIV
   {
-    /*p01.UFOL*/ wire _UFOL_DIV_RSTn = nor(top.UCOB_CLKBADp(), top.SYS_PIN_RSTp, _TAPE_FF04_WRp);
+    /*p01.UFOL*/ wire _UFOL_DIV_RSTn = nor(top.clk_reg.UCOB_CLKBADp(), top.SYS_PIN_RSTp, _TAPE_FF04_WRp);
 
     /*p01.UKUP*/ _UKUP_DIV_00.set(top.clk_reg.BOGA_xBCDEFGH(), _UFOL_DIV_RSTn, !_UKUP_DIV_00.q());
     /*p01.UFOR*/ _UFOR_DIV_01.set(!_UKUP_DIV_00.q(),           _UFOL_DIV_RSTn, !_UFOR_DIV_01.q());
@@ -83,15 +83,14 @@ void TimerRegisters::tock(SchematicTop& top) {
     /*p03.REFU*/ wire _REFU_TIMA_MUX_6 = mux2_n(PETO_TMA_6.q(), top.CPU_TRI_D6, _TOPE_FF05_WRn);
     /*p03.RATO*/ wire _RATO_TIMA_MUX_7 = mux2_n(SETA_TMA_7.q(), top.CPU_TRI_D7, _TOPE_FF05_WRn);
 
-    /*p03.MULO*/ wire _MULO_TIMA_RST  = not(top.rst_reg.ALUR_SYS_RSTn());
-    /*p03.PUXY*/ wire _PUXY_TIMA_LD_0 = nor(_MULO_TIMA_RST, _ROKE_TIMA_MUX_0);
-    /*p03.NERO*/ wire _NERO_TIMA_LD_1 = nor(_MULO_TIMA_RST, _PETU_TIMA_MUX_1);
-    /*p03.NADA*/ wire _NADA_TIMA_LD_2 = nor(_MULO_TIMA_RST, _NYKU_TIMA_MUX_2);
-    /*p03.REPA*/ wire _REPA_TIMA_LD_3 = nor(_MULO_TIMA_RST, _SOCE_TIMA_MUX_3);
-    /*p03.ROLU*/ wire _ROLU_TIMA_LD_4 = nor(_MULO_TIMA_RST, _SALA_TIMA_MUX_4);
-    /*p03.RUGY*/ wire _RUGY_TIMA_LD_5 = nor(_MULO_TIMA_RST, _SYRU_TIMA_MUX_5);
-    /*p03.PYMA*/ wire _PYMA_TIMA_LD_6 = nor(_MULO_TIMA_RST, _REFU_TIMA_MUX_6);
-    /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor(_MULO_TIMA_RST, _RATO_TIMA_MUX_7);
+    /*p03.PUXY*/ wire _PUXY_TIMA_LD_0 = nor(top.rst_reg.MULO_TIMA_RST(), _ROKE_TIMA_MUX_0);
+    /*p03.NERO*/ wire _NERO_TIMA_LD_1 = nor(top.rst_reg.MULO_TIMA_RST(), _PETU_TIMA_MUX_1);
+    /*p03.NADA*/ wire _NADA_TIMA_LD_2 = nor(top.rst_reg.MULO_TIMA_RST(), _NYKU_TIMA_MUX_2);
+    /*p03.REPA*/ wire _REPA_TIMA_LD_3 = nor(top.rst_reg.MULO_TIMA_RST(), _SOCE_TIMA_MUX_3);
+    /*p03.ROLU*/ wire _ROLU_TIMA_LD_4 = nor(top.rst_reg.MULO_TIMA_RST(), _SALA_TIMA_MUX_4);
+    /*p03.RUGY*/ wire _RUGY_TIMA_LD_5 = nor(top.rst_reg.MULO_TIMA_RST(), _SYRU_TIMA_MUX_5);
+    /*p03.PYMA*/ wire _PYMA_TIMA_LD_6 = nor(top.rst_reg.MULO_TIMA_RST(), _REFU_TIMA_MUX_6);
+    /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor(top.rst_reg.MULO_TIMA_RST(), _RATO_TIMA_MUX_7);
 
     /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.CPU_PIN5, _TOPE_FF05_WRn); // suggests CPU_PIN5 = DATA_VALIDn
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.rst_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);

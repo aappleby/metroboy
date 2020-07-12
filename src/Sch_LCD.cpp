@@ -5,15 +5,10 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-wire LcdRegisters::BYHA_VID_LINE_TRIG_d4(const SchematicTop& top) const {
-  /*p28.ABAF*/ wire ABAF_LINE_END_Bn = not(CATU_LINE_END.q());
-  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4 = and (or (ANEL_LINE_END_D.q(), ABAF_LINE_END_Bn), top.ABEZ_VID_RSTn());
-  return BYHA_VID_LINE_TRIG_d4;
-}
-
 //------------------------------------------------------------------------------
 
-void LcdRegisters::tick(SchematicTop& /*top*/) {
+void LcdRegisters::tick(SchematicTop& top) {
+  _ABEZ_VID_RSTn = top.rst_reg.ABEZ_VID_RSTn();
 }
 
 //------------------------------------------------------------------------------
@@ -24,12 +19,9 @@ void LcdRegisters::tock(SchematicTop& top) {
   /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
   /*p24.KEDY*/ wire _KEDY_LCDC_ENn = not(top.XONA_LCDC_EN.q());
 
-  /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
-
   // LCD main timer
   {
-    /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_LINE_END.q(), LYHA_VID_RSTp);
+    /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_LINE_END.q(), top.rst_reg.LYHA_VID_RSTp());
     /*p21.SAXO*/ XEHO_X0.set(top.clk_reg.TALU_ABCDxxxx(), _MUDE_X_RSTn, !XEHO_X0.q());
     /*p21.TYPO*/ SAVY_X1.set(!XEHO_X0.q(),        _MUDE_X_RSTn, !SAVY_X1.q());
     /*p21.VYZO*/ XODU_X2.set(!SAVY_X1.q(),        _MUDE_X_RSTn, !XODU_X2.q());
@@ -40,7 +32,7 @@ void LcdRegisters::tock(SchematicTop& top) {
   }
 
   {
-    /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
+    /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), top.rst_reg.LYHA_VID_RSTp());
     /*p21.MUWY*/ MUWY_Y0.set(RUTU_LINE_END.q(), _LAMA_FRAME_RSTn, !MUWY_Y0.q());
     /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),      _LAMA_FRAME_RSTn, !MYRO_Y1.q());
     /*p21.LEXA*/ LEXA_Y2.set(!MYRO_Y1.q(),      _LAMA_FRAME_RSTn, !LEXA_Y2.q());
@@ -52,32 +44,32 @@ void LcdRegisters::tock(SchematicTop& top) {
   }
 
   {
-    /*p21.POPU*/ POPU_VBLANKp_d4.set(NYPE_LINE_END_B.q(), LYFE_VID_RSTn, _XYVO_IN_VBLANKp);
+    /*p21.POPU*/ POPU_VBLANKp_d4.set(NYPE_LINE_END_B.q(), top.rst_reg.LYFE_VID_RSTn(), _XYVO_IN_VBLANKp);
   }
 
   {
     /*p21.SANU*/ wire _SANU_LINE_END = and(TAKO_X6.q(), TUKY_X5.q(), TUHU_X4.q(), XEHO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*p21.RUTU*/ RUTU_LINE_END.set(top.clk_reg.SONO_xxxxEFGH(), LYFE_VID_RSTn, _SANU_LINE_END);
-    /*p21.NYPE*/ NYPE_LINE_END_B.set(top.clk_reg.TALU_ABCDxxxx(), LYFE_VID_RSTn, RUTU_LINE_END.q());
+    /*p21.RUTU*/ RUTU_LINE_END.set(top.clk_reg.SONO_xxxxEFGH(), top.rst_reg.LYFE_VID_RSTn(), _SANU_LINE_END);
+    /*p21.NYPE*/ NYPE_LINE_END_B.set(top.clk_reg.TALU_ABCDxxxx(), top.rst_reg.LYFE_VID_RSTn(), RUTU_LINE_END.q());
   }
 
   {
     /*p29.ABOV*/ wire _ABOV_LINE_END_Fp = and(top.lcd_reg.SELA_LINE_END_Fp(), _ALES_IN_VBLANKn);
-    /*p29.CATU*/ CATU_LINE_END.set(top.clk_reg.XUPY_ABxxEFxx(), top.ABEZ_VID_RSTn(), _ABOV_LINE_END_Fp);
-    /*p28.ANEL*/ ANEL_LINE_END_D.set(top.clk_reg.AWOH_xxCDxxGH(), top.ABEZ_VID_RSTn(), CATU_LINE_END.q());
+    /*p29.CATU*/ _CATU_LINE_END.set(top.clk_reg.XUPY_ABxxEFxx(), top.rst_reg.ABEZ_VID_RSTn(), _ABOV_LINE_END_Fp);
+    /*p28.ANEL*/ ANEL_LINE_END_D.set(top.clk_reg.AWOH_xxCDxxGH(), top.rst_reg.ABEZ_VID_RSTn(), _CATU_LINE_END.q());
   }
 
   {
     /*p21.NOKO*/ wire _NOKO_LINE_153 = and(LAFO_Y7.q(), LOVU_Y4.q(), LYDO_Y3.q(), MUWY_Y0.q()); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-    /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_LINE_END_B.q(), LYFE_VID_RSTn, _NOKO_LINE_153);
+    /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_LINE_END_B.q(), top.rst_reg.LYFE_VID_RSTn(), _NOKO_LINE_153);
   }
 
   {
     // if LCDC_ENn, LCD_PIN_FR = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
     
     /*p24.LOFU*/ wire _LOFU_CLKn = not(RUTU_LINE_END.q());
-    /*p24.LUCA*/ LUCA_LINE_EVEN.set(_LOFU_CLKn,          LYFE_VID_RSTn, !LUCA_LINE_EVEN.q());
-    /*p21.NAPO*/ NAPO_FRAME_EVEN.set(POPU_VBLANKp_d4.q(), LYFE_VID_RSTn, !NAPO_FRAME_EVEN.q());
+    /*p24.LUCA*/ LUCA_LINE_EVEN.set(_LOFU_CLKn,          top.rst_reg.LYFE_VID_RSTn(), !LUCA_LINE_EVEN.q());
+    /*p21.NAPO*/ NAPO_FRAME_EVEN.set(POPU_VBLANKp_d4.q(), top.rst_reg.LYFE_VID_RSTn(), !NAPO_FRAME_EVEN.q());
     /*p24.MAGU*/ wire _MAGU = xor(NAPO_FRAME_EVEN.q(), LUCA_LINE_EVEN.q());
     /*p24.MECO*/ wire _MECO = not(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not(_MECO);
@@ -104,7 +96,7 @@ void LcdRegisters::tock(SchematicTop& top) {
 
     /*p21.TEGY*/ wire _TEGY_LINE_STROBE = nand(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
     
-    /*p21.SYGU*/ SYGU_LINE_STROBE.set(top.clk_reg.SONO_xxxxEFGH(), LYFE_VID_RSTn, _TEGY_LINE_STROBE);
+    /*p21.SYGU*/ SYGU_LINE_STROBE.set(top.clk_reg.SONO_xxxxEFGH(), top.rst_reg.LYFE_VID_RSTn(), _TEGY_LINE_STROBE);
     /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, RUTU_LINE_END.q());
     /*p21.POGU*/ wire _POGU = not(_RYNO);
     top.LCD_PIN_CPG.set(_POGU);
@@ -123,7 +115,7 @@ void LcdRegisters::tock(SchematicTop& top) {
   {
     /*p24.NERU*/ wire _LINE_000n = nor(MUWY_Y0.q(), MYRO_Y1.q(), LEXA_Y2.q(), LYDO_Y3.q(), LOVU_Y4.q(), LEMA_Y5.q(), MATO_Y6.q(), LAFO_Y7.q());
     
-    /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(wire(NYPE_LINE_END_B.q()), LYFE_VID_RSTn, _LINE_000n);
+    /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(wire(NYPE_LINE_END_B.q()), top.rst_reg.LYFE_VID_RSTn(), _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn.q());
     top.LCD_PIN_S.set(_MURE_PIN_S);
   }
@@ -143,7 +135,7 @@ void LcdRegisters::tock(SchematicTop& top) {
     /*p21.RAPE*/ wire _RAPE_LY_MATCHn  = nand(_SOVU_LY_MATCHA,  _SUBO_LY_MATCHB); // def nand
     /*p21.PALY*/ wire _PALY_LY_MATCHa  = not (_RAPE_LY_MATCHn); // def not
 
-    /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(top.clk_reg.TALU_ABCDxxxx(), top.rst_reg.WESY_SYS_RSTn(), _PALY_LY_MATCHa);
+    /*p21.ROPO*/ _ROPO_LY_MATCH_SYNCp.set(top.clk_reg.TALU_ABCDxxxx(), top.rst_reg.WESY_SYS_RSTn(), _PALY_LY_MATCHa);
   }
 
   // FF44 LY
@@ -209,6 +201,8 @@ void LcdRegisters::tock(SchematicTop& top) {
 SignalHash LcdRegisters::commit(SchematicTop& top) {
   SignalHash hash;
 
+  hash << _ABEZ_VID_RSTn.commit();
+
   /*p21.SAXO*/ hash << XEHO_X0.commit(); // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ hash << SAVY_X1.commit();
   /*p21.VYZO*/ hash << XODU_X2.commit();
@@ -225,7 +219,7 @@ SignalHash LcdRegisters::commit(SchematicTop& top) {
   /*p21.MATO*/ hash << MATO_Y6.commit();
   /*p21.LAFO*/ hash << LAFO_Y7.commit();
   /*p21.RUTU*/ hash << RUTU_LINE_END.commit(); // p909+8
-  /*p29.CATU*/ hash << CATU_LINE_END.commit();  // p001+8
+  /*p29.CATU*/ hash << _CATU_LINE_END.commit();  // p001+8
   /*p21.NYPE*/ hash << NYPE_LINE_END_B.commit(); // p001+8
   /*p28.ANEL*/ hash << ANEL_LINE_END_D.commit();  // p003+8
   /*p21.MYTA*/ hash << MYTA_LINE_153_d4.commit();  // p153:001 - p000:001
@@ -244,7 +238,7 @@ SignalHash LcdRegisters::commit(SchematicTop& top) {
   /*p23.VEVO*/ hash << VEVO_LYC6.commit();
   /*p23.RAHA*/ hash << RAHA_LYC7.commit();
 
-  /*p21.ROPO*/ hash << ROPO_LY_MATCH_SYNCp.commit();
+  /*p21.ROPO*/ hash << _ROPO_LY_MATCH_SYNCp.commit();
 
   hash << top.LCD_PIN_CPG.commit();
   hash << top.LCD_PIN_CPL.commit();

@@ -13,10 +13,8 @@ void PpuRegisters::tick(SchematicTop& /*top*/) {
 
 void PpuRegisters::tock(SchematicTop& top) {
 
-  /*p01.TOFU*/ wire _TOFU_VID_RSTp = not(top.XAPO_VID_RSTn());
-
-  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(top), _TOFU_VID_RSTp);
-  /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(_TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC.q());
+  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(), top.rst_reg.TOFU_VID_RSTp());
+  /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(top.rst_reg.TOFU_VID_RSTp(), VOGA_RENDER_DONE_SYNC.q());
 
   /*p24.ROXO*/ wire _ROXO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
 
@@ -31,7 +29,7 @@ void PpuRegisters::tock(SchematicTop& top) {
   {
     /*p27.PECU*/ wire _PECU_FINE_CLK = nand(_ROXO_CLKPIPEp, ROZE_FINE_COUNT_7n());
     /*p27.PASO*/ wire _PASO_FINE_RST = nor(top.TEVO_FINE_RSTp(), top.ppu_reg.ROPY_RENDERINGn());
-    /*p27.RYKU*/ RYKU_FINE_CNT0.set(_PECU_FINE_CLK,       _PASO_FINE_RST, RYKU_FINE_CNT0.qn());
+    /*p27.RYKU*/ RYKU_FINE_CNT0.set(_PECU_FINE_CLK,      _PASO_FINE_RST, RYKU_FINE_CNT0.qn());
     /*p27.ROGA*/ ROGA_FINE_CNT1.set(RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn());
     /*p27.RUBU*/ RUBU_FINE_CNT2.set(ROGA_FINE_CNT1.qn(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn());
   }
@@ -66,7 +64,7 @@ void PpuRegisters::tock(SchematicTop& top) {
     // if PAHO or TOFU go high, POFY goes low.
 
     /*p24.PAHO*/ PAHO_X_8_SYNC.set(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.q(), XYDO_X3.q());
-    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || _TOFU_VID_RSTp);
+    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_RENDER_START_RST(), PAHO_X_8_SYNC.q() || top.rst_reg.TOFU_VID_RSTp());
     /*p24.RUZE*/ wire _RUZE_PIN_ST = not(POFY_ST_LATCH.q());
     top.LCD_PIN_ST.set(_RUZE_PIN_ST);
   }
@@ -74,7 +72,7 @@ void PpuRegisters::tock(SchematicTop& top) {
   //----------
 
   {
-    // vid x position, has carry lookahead because this increments every tcycle
+    // vid x position, has carry lookahead because this can increment every tcycle
     /*p21.RYBO*/ wire _RYBO = xor(XEHO_X0.q(), SAVY_X1.q());
     /*p21.XUKE*/ wire _XUKE = and(XEHO_X0.q(), SAVY_X1.q());
 
@@ -117,7 +115,7 @@ void PpuRegisters::tock(SchematicTop& top) {
     /*p21.RYJU*/ wire _RYJU_FF41_WRn = not(_SEPA_FF41_WRp);
     
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(top.rst_reg.WESY_SYS_RSTn(), _RYJU_FF41_WRn);  // schematic wrong, this is NOR
-    /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp.q());
+    /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp());
 
     /*p21.ROXE*/ ROXE_INT_HBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
     /*p21.RUFO*/ RUFO_INT_VBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());

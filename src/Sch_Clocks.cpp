@@ -32,9 +32,9 @@ void ClockRegisters::tock(SchematicTop& top) {
     wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
     wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
 
-    /*p29.WUVU*/ _WUVU_xxCDxxGH.set( _XOTA_AxCxExGx, top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-    /*p21.VENA*/ _VENA_xxxxEFGH.set(!WUVU_xxCDxxGH_, top.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-    /*p29.WOSU*/ _WOSU_xBCxxFGx.set( _XYFY_xBxDxFxH, top.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p29.WUVU*/ _WUVU_xxCDxxGH.set( _XOTA_AxCxExGx, top.rst_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p21.VENA*/ _VENA_xxxxEFGH.set(!WUVU_xxCDxxGH_, top.rst_reg.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
+    /*p29.WOSU*/ _WOSU_xBCxxFGx.set( _XYFY_xBxDxFxH, top.rst_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
   }
 
   {

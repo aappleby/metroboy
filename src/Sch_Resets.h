@@ -28,10 +28,27 @@ struct ResetRegisters {
   /*p01.XORE*/ wire XORE_SYS_RSTp() const { return not(CUNU_SYS_RSTn()); }
   /*p01.WALU*/ wire WALU_SYS_RSTn() const { return not(XORE_SYS_RSTp()); }
   /*p01.WESY*/ wire WESY_SYS_RSTn() const { return not(XORE_SYS_RSTp()); }
+  /*p03.MULO*/ wire MULO_TIMA_RST() const { return not(ALUR_SYS_RSTn()); }
 
+  wire XAPO_VID_RSTn() const {
+    /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not(XORE_SYS_RSTp());
+    /*p01.XODO*/ wire _XODO_VID_RSTp = nand(_XEBE_SYS_RSTn, _XONA_LCDC_EN);
+    /*p01.XAPO*/ wire _XAPO_VID_RSTn = not(_XODO_VID_RSTp);
+    return _XAPO_VID_RSTn;
+  }
 
-//private:
-  friend SchematicTop;
+  /*p01.ATAR*/ wire ATAR_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not(ATAR_VID_RSTp()); }
+  /*p01.TOFU*/ wire TOFU_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
+  /*p01.ROSY*/ wire ROSY_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
+  /*p01.AMYG*/ wire AMYG_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
+  /*p01.LYHA*/ wire LYHA_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
+  /*p01.LYFE*/ wire LYFE_VID_RSTn() const { return not(LYHA_VID_RSTp()); }
+  /*p01.PYRY*/ wire PYRY_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
+
+private:
+
+  Signal _XONA_LCDC_EN;
 
   // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
   /*p01.TUBO*/ NorLatch _TUBO_CPU_READYn;

@@ -12,25 +12,24 @@ void WindowRegisters::tick(SchematicTop& /*top*/) {
 
 void WindowRegisters::tock(SchematicTop& top) {
 
-  /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p(top));
-  /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.XAPO_VID_RSTn());
+  /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p());
+  /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.rst_reg.XAPO_VID_RSTn());
 
-  /*p01.PYRY*/ wire _PYRY_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), _PYRY_VID_RSTp);
+  /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), top.rst_reg.PYRY_VID_RSTp());
 
   {
-    /*p27.SARY*/ _SARY_WY_MATCH.set(top.clk_reg.TALU_ABCDxxxx(), top.XAPO_VID_RSTn(), ROGE_WY_MATCHp(top));
+    /*p27.SARY*/ _SARY_WY_MATCH.set(top.clk_reg.TALU_ABCDxxxx(), top.rst_reg.XAPO_VID_RSTn(), ROGE_WY_MATCHp(top));
     /*p27.REJO*/ _REJO_WY_MATCH_LATCH.nor_latch(_SARY_WY_MATCH.q(), _REPU_VBLANK_RSTp);
   }
 
   {
     // This trigger fires on the pixel _at_ WX
     /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
-    /*p27.PYCO*/ _PYCO_WX_MATCH_A.set(_ROCO_CLKPIPEp, top.XAPO_VID_RSTn(), NUKO_WX_MATCHp(top));
-    /*p27.NUNU*/ _NUNU_WX_MATCH_B.set(top.clk_reg.MEHE_AxCxExGx(), top.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
+    /*p27.PYCO*/ _PYCO_WX_MATCH_A.set(_ROCO_CLKPIPEp, top.rst_reg.XAPO_VID_RSTn(), NUKO_WX_MATCHp(top));
+    /*p27.NUNU*/ _NUNU_WX_MATCH_B.set(top.clk_reg.MEHE_AxCxExGx(), top.rst_reg.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
 
     /*p27.PYNU*/ _PYNU_WIN_MODE_A.nor_latch(_NUNU_WX_MATCH_B.q(), _XOFO_WIN_RSTp);
-    /*p27.NOPA*/ _NOPA_WIN_MODE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), _PYNU_WIN_MODE_A.q());
+    /*p27.NOPA*/ _NOPA_WIN_MODE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.rst_reg.XAPO_VID_RSTn(), _PYNU_WIN_MODE_A.q());
   }
 
   {
@@ -46,8 +45,8 @@ void WindowRegisters::tock(SchematicTop& top) {
     ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
     ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), _PYRY_VID_RSTp || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
-    /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.q());
+    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCHpe(), top.rst_reg.PYRY_VID_RSTp() || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp.q());
+    /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.rst_reg.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.q());
     /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
     /*p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not(_TUXY_WIN_FIRST_TILE_NE);
   }

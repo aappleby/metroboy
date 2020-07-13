@@ -12,11 +12,11 @@ void InterruptRegisters::tick(SchematicTop& /*top*/) {
 //------------------------------------------------------------------------------
 
 void InterruptRegisters::tock(SchematicTop& top) {
-  /*p07.SEMY*/ wire _SEMY_ADDR_XX0X = nor(top.CPU_PIN_A07, top.CPU_PIN_A06, top.CPU_PIN_A05, top.CPU_PIN_A04);
-  /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and (top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03);
+  /*p07.SEMY*/ wire _SEMY_ADDR_XX0X = nor(top.int_bus.CPU_PIN_A07, top.int_bus.CPU_PIN_A06, top.int_bus.CPU_PIN_A05, top.int_bus.CPU_PIN_A04);
+  /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and (top.int_bus.CPU_PIN_A00, top.int_bus.CPU_PIN_A01, top.int_bus.CPU_PIN_A02, top.int_bus.CPU_PIN_A03);
 
-  /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
-  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
+  /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.int_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
+  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.int_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
 
   // FIXME FIXME FIXME order wrong!!!
 

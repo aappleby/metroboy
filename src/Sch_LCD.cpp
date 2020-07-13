@@ -140,7 +140,7 @@ void LcdRegisters::tock(SchematicTop& top) {
 
   // FF44 LY
   {
-    /*p22.WYLE*/ wire _WYLE_FF44n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.XENO_A01n(), top.WALO_A02p(), top.XERA_A03n());
+    /*p22.WYLE*/ wire _WYLE_FF44n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.XOLA_A00n(), top.int_bus.XENO_A01n(), top.int_bus.WALO_A02p(), top.int_bus.XERA_A03n());
     /*p22.XOGY*/ wire _XOGY_FF44p = not(_WYLE_FF44n);
 
     /*p23.WAFU*/ wire _WAFU_FF44_RDp = and (top.ASOT_CPU_RDp(), _XOGY_FF44p);
@@ -167,7 +167,7 @@ void LcdRegisters::tock(SchematicTop& top) {
 
   // FF45 LYC
   {
-    /*p22.WETY*/ wire _WETY_FF45n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.XENO_A01n(), top.WALO_A02p(), top.XERA_A03n());
+    /*p22.WETY*/ wire _WETY_FF45n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.XENO_A01n(), top.int_bus.WALO_A02p(), top.int_bus.XERA_A03n());
     /*p22.XAYU*/ wire _XAYU_FF45p = not(_WETY_FF45n);
 
     /*p23.XYLY*/ wire _XYLY_FF45_RDp = and(top.ASOT_CPU_RDp(), _XAYU_FF45p);

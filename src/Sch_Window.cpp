@@ -87,7 +87,7 @@ void WindowRegisters::tock(SchematicTop& top) {
 
   // FF4A
   {
-    /*p22.WYVO*/ wire _FF4An = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.WESA_A01p(), top.XUSY_A02n(), top.WEPO_A03p());
+    /*p22.WYVO*/ wire _FF4An = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.XOLA_A00n(), top.int_bus.WESA_A01p(), top.int_bus.XUSY_A02n(), top.int_bus.WEPO_A03p());
     /*p22.VYGA*/ wire _FF4Ap = not(_FF4An);
 
     /*p23.WAXU*/ wire _FF4A_RD = and (_FF4Ap, top.ASOT_CPU_RDp());
@@ -118,7 +118,7 @@ void WindowRegisters::tock(SchematicTop& top) {
 
   // FF4B
   {
-    /*p22.WAGE*/ wire _FF4Bn = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.WESA_A01p(), top.XUSY_A02n(), top.WEPO_A03p());
+    /*p22.WAGE*/ wire _FF4Bn = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.WESA_A01p(), top.int_bus.XUSY_A02n(), top.int_bus.WEPO_A03p());
     /*p22.VUMY*/ wire _FF4Bp = not(_FF4Bn);
 
     /*p23.WYZE*/ wire _FF4B_RDp = and (_FF4Bp, top.ASOT_CPU_RDp());

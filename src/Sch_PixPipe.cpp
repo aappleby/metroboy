@@ -366,7 +366,7 @@ void PixelPipe::tock(SchematicTop& top) {
 
   // FF47 BGP
   {
-    /*p22.WYBO*/ wire _WYBO_FF47n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.WESA_A01p(), top.WALO_A02p(), top.XERA_A03n());
+    /*p22.WYBO*/ wire _WYBO_FF47n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.WESA_A01p(), top.int_bus.WALO_A02p(), top.int_bus.XERA_A03n());
     /*p22.WERA*/ wire _WERA_FF47 = not(_WYBO_FF47n);
     /*p36.VELY*/ wire _VELY_FF47_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), _WERA_FF47);
     /*p36.TEPO*/ wire _TEPO_FF47_WRn = not(_VELY_FF47_WR);
@@ -395,7 +395,7 @@ void PixelPipe::tock(SchematicTop& top) {
 
   // FF48 OBP0
   {
-    /*p22.WETA*/ wire _WETA_FF48n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.XENO_A01n(), top.XUSY_A02n(), top.WEPO_A03p());
+    /*p22.WETA*/ wire _WETA_FF48n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.XOLA_A00n(), top.int_bus.XENO_A01n(), top.int_bus.XUSY_A02n(), top.int_bus.WEPO_A03p());
     /*p22.XAYO*/ wire _XAYO_FF48 = not(_WETA_FF48n);
     /*p36.XOMA*/ wire _XOMA_FF48_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), _XAYO_FF48);
     /*p36.XELO*/ wire _XELO_FF48_WRn = not(_XOMA_FF48_WR);
@@ -424,7 +424,7 @@ void PixelPipe::tock(SchematicTop& top) {
 
   // FF49 OBP1
   {
-    /*p22.VAMA*/ wire _VAMA_FF49n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.XENO_A01n(), top.XUSY_A02n(), top.WEPO_A03p());
+    /*p22.VAMA*/ wire _VAMA_FF49n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.XENO_A01n(), top.int_bus.XUSY_A02n(), top.int_bus.WEPO_A03p());
     /*p22.TEGO*/ wire _TEGO_FF49 = not(_VAMA_FF49n);
     /*p36.MYXE*/ wire _MYXE_FF49_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), _TEGO_FF49);
     /*p36.LEHO*/ wire _LEHO_FF49_WRn = not(_MYXE_FF49_WR);

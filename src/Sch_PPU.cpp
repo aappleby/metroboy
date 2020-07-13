@@ -104,7 +104,7 @@ void PpuRegisters::tock(SchematicTop& top) {
 
   // FF41 STAT
   {
-    /*p22.WOFA*/ wire _WOFA_FF41n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.XENO_A01n(), top.XUSY_A02n(), top.XERA_A03n());
+    /*p22.WOFA*/ wire _WOFA_FF41n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.XENO_A01n(), top.int_bus.XUSY_A02n(), top.int_bus.XERA_A03n());
     /*p22.VARY*/ wire _VARY_FF41p = not(_WOFA_FF41n);
 
     /*p21.TOBE*/ wire _TOBE_FF41_RDp = and (_VARY_FF41p, top.ASOT_CPU_RDp()); // die AND

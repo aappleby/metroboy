@@ -203,7 +203,7 @@ void TileFetcher::tock(SchematicTop& top) {
 
   // FF42 SCY
   {
-    /*p22.WEBU*/ wire _WEBU_FF42n = nand(top.WERO_FF4Xp(), top.XOLA_A00n(), top.WESA_A01p(), top.XUSY_A02n(), top.XERA_A03n());
+    /*p22.WEBU*/ wire _WEBU_FF42n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.XOLA_A00n(), top.int_bus.WESA_A01p(), top.int_bus.XUSY_A02n(), top.int_bus.XERA_A03n());
     /*p22.XARO*/ wire _XARO_FF42p = not(_WEBU_FF42n);
 
     /*p23.ANYP*/ wire _ANYP_FF42_RDp = and(_XARO_FF42p, top.ASOT_CPU_RDp());
@@ -233,7 +233,7 @@ void TileFetcher::tock(SchematicTop& top) {
 
   // FF43 SCX
   {
-    /*p22.WAVU*/ wire _WAVU_FF43n = nand(top.WERO_FF4Xp(), top.WADO_A00p(), top.WESA_A01p(), top.XUSY_A02n(), top.XERA_A03n());
+    /*p22.WAVU*/ wire _WAVU_FF43n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.WESA_A01p(), top.int_bus.XUSY_A02n(), top.int_bus.XERA_A03n());
     /*p22.XAVY*/ wire _XAVY_FF43p = not(_WAVU_FF43n);
 
     /*p23.AVOG*/ wire _AVOG_FF43_RDp = and (_XAVY_FF43p, top.ASOT_CPU_RDp());

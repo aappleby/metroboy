@@ -13,10 +13,10 @@ void Joypad::tick(SchematicTop& /*top*/) {
 
 void Joypad::tock(SchematicTop& top) {
 
-  /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03, top.CPU_PIN_A04, top.CPU_PIN_A07);
-  /*p10.ANAP*/ wire _ANAP_FF_0xx00000 = and (_AMUS_0xx00000, top.SYKE_FF00_FFFFp());
-  /*p10.AKUG*/ wire _AKUG_A06n = not(top.CPU_PIN_A06);
-  /*p10.BYKO*/ wire _BYKO_A05n = not(top.CPU_PIN_A05);
+  /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(top.int_bus.CPU_PIN_A00, top.int_bus.CPU_PIN_A01, top.int_bus.CPU_PIN_A02, top.int_bus.CPU_PIN_A03, top.int_bus.CPU_PIN_A04, top.int_bus.CPU_PIN_A07);
+  /*p10.ANAP*/ wire _ANAP_FF_0xx00000 = and (_AMUS_0xx00000, top.int_bus.SYKE_FF00_FFFFp());
+  /*p10.AKUG*/ wire _AKUG_A06n = not(top.int_bus.CPU_PIN_A06);
+  /*p10.BYKO*/ wire _BYKO_A05n = not(top.int_bus.CPU_PIN_A05);
   /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
 
   {

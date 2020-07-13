@@ -19,11 +19,11 @@ void SerialRegisters::tick(SchematicTop& /*top*/) {
 void SerialRegisters::tock(SchematicTop& top) {
 
   //----------------------------------------
-  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (top.SARE_XX00_XX07p(), top.SEFY_A02n(), top.SYKE_FF00_FFFFp());
-  /*p06.URYS*/ wire _FF01_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
-  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
-  /*p06.UFEG*/ wire _FF01_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.CPU_PIN_A00, top.TOLA_A01n());
-  /*p06.UCOM*/ wire _FF02_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.TOVY_A00n(), top.CPU_PIN_A01);
+  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (top.int_bus.SARE_XX00_XX07p(), top.int_bus.SEFY_A02n(), top.int_bus.SYKE_FF00_FFFFp());
+  /*p06.URYS*/ wire _FF01_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.int_bus.CPU_PIN_A00, top.int_bus.TOLA_A01n());
+  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ADDR_FF00_FF03, top.int_bus.TOVY_A00n(), top.int_bus.CPU_PIN_A01);
+  /*p06.UFEG*/ wire _FF01_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.int_bus.CPU_PIN_A00, top.int_bus.TOLA_A01n());
+  /*p06.UCOM*/ wire _FF02_RD = and (top.TEDO_CPU_RDp(), _ADDR_FF00_FF03, top.int_bus.TOVY_A00n(), top.int_bus.CPU_PIN_A01);
 
   /*p06.COBA*/ wire _SER_CNT3n = not(_CALY_INT_SERIALp.q());
   /*p06.CABY*/ wire _XFER_RESET = and (_SER_CNT3n, top.rst_reg.ALUR_SYS_RSTn());

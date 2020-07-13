@@ -34,22 +34,13 @@ struct SchematicTop {
 
   SchematicTop& top = *this;
 
-  void set_cpu_bus(Req req);
   void set_buttons(uint8_t buttons);
-  void set_vram_bus(uint8_t data);
-
-  int get_addr() const {
-    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
-                CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
-                CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11,
-                CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
-  }
 
   SignalHash tick();
 
   /*p25.COTA*/ wire COTA_OAM_CLKn() const {
     /*p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABCxDEFx()); 
-    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK  = and (or (top.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_xxxxEFGH());
+    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK  = and (or (top.int_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_xxxxEFGH());
     /*p25.BYCU*/ wire _BYCU_OAM_CLK      = nand(_AVER_SCAN_OAM_CLK, top.sprite_fetcher.XUJY_PPU_OAM_CLK(), _CUFE_DMA_OAM_CLK);
     return not(_BYCU_OAM_CLK);
   }
@@ -59,18 +50,18 @@ struct SchematicTop {
   }
 
   /*p28.AMAB*/ wire AMAB_OAM_LOCKn() const {
-    return and (top.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
+    return and (top.int_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
   }
 
   /*p04.WYJA*/ wire WYJA_OAM_WRp() const { // -> oam_bus
-    /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp = nor(top.clk_reg.UVYT_ABCDxxxx(), MAKA_FROM_CPU5_SYNC.q()); // def nor
+    /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp = nor(top.clk_reg.UVYT_ABCDxxxx(), top.int_bus.MAKA_FROM_CPU5_SYNC.q()); // def nor
     /*p04.POWU*/ wire _POWU_DMA_OAM_WRp = and (top.dma_reg.MATU_DMA_RUNNINGp(), _NAXY_DMA_OAM_WENp); // def and
     return or (and (AMAB_OAM_LOCKn(), top.CUPA_CPU_WRp_xxxxEFGx()), _POWU_DMA_OAM_WRp);
   }
 
   /*p28.BODE*/ wire BODE_OAM_LATCHp() const { // -> oam_bus
     /*p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand(top.ACYL_SCANNINGp(), top.clk_reg.XOCE_AxxDExxH()); // schematic wrong, is def nand
-    /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand(top.DECY_FROM_CPU5n(), top.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp()); // Schematic wrong, this is NAND
+    /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand(top.DECY_FROM_CPU5n(), top.int_bus.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp()); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire _ASYT_OAM_LATCHn      = and(_AJEP_SCAN_OAM_LATCHn, top.sprite_fetcher.XUJA_SPR_OAM_LATCHn(), _BOTA_CPU_OAM_LATCHn); // def and
     return not(_ASYT_OAM_LATCHn);
   }
@@ -85,19 +76,17 @@ struct SchematicTop {
     return not(_GUKO_OAM_B_CPU_RD);
   }
 
-  /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAn() const { return nand(top.CPU_PIN_RDp, top.TEXO_8000_9FFFn(), top.CPU_PIN5); }
-
   /*p08.MATE*/ wire MATE_LATCH_CPU_ADDRp() const {
     /*p08.MULE*/ wire _MULE_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
-    /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, top.TEXO_8000_9FFFn()), top.UMUT_MODE_DBG1p());
+    /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, top.int_bus.TEXO_8000_9FFFn()), top.UMUT_MODE_DBG1p());
     /*p08.LASY*/ wire _LASY_LATCH_CPU_ADDRn = not(_LOXO_LATCH_CPU_ADDRp);
     return not(_LASY_LATCH_CPU_ADDRn);
   }
 
-  /*p08.MOCA*/ wire MOCA_DBG_EXT_RD() const { return nor(top.TEXO_8000_9FFFn(), top.UMUT_MODE_DBG1p()); }
+  /*p08.MOCA*/ wire MOCA_DBG_EXT_RD() const { return nor(top.int_bus.TEXO_8000_9FFFn(), top.UMUT_MODE_DBG1p()); }
 
   /*p08.MOTY*/ wire MOTY_CPU_EXT_RD() const {
-    /*p08.LAGU*/ wire _LAGU = or(and(top.CPU_PIN_RDp, top.LEVO_8000_9FFFp()), top.CPU_PIN_WRp);
+    /*p08.LAGU*/ wire _LAGU = or(and(top.int_bus.CPU_PIN_RDp, top.int_bus.LEVO_8000_9FFFp()), top.int_bus.CPU_PIN_WRp);
     /*p08.LYWE*/ wire _LYWE = not(_LAGU);
     return or(MOCA_DBG_EXT_RD(), _LYWE);
   }
@@ -123,33 +112,79 @@ struct SchematicTop {
     // AGUT = nor(AROV, AJAX)
     // AGUT looks unused
 
-    /*p08.SOBY*/ wire _SOBY_A15n = nor(top.CPU_PIN_A15, top.TUTU_ADDR_BOOTp());
+    /*p08.SOBY*/ wire _SOBY_A15n = nor(top.int_bus.CPU_PIN_A15, top.TUTU_ADDR_BOOTp());
     /*p08.SEPY*/ wire _SEPY_A15p = nand(top.ABUZ_CPU_ADDR_VALIDp(), _SOBY_A15n);
     return mux2_p(top.dma_reg.DMA_A15.q(), _SEPY_A15p, top.dma_reg.LUMA_DMA_READ_CARTp());
   }
 
-  /*p08.TOZA*/ wire TOZA_CPU_RAM_RDp() const { 
-    /*p08.SOGY*/ wire _SOGY_A14n = not(top.CPU_PIN_A14);
-    /*p08.TUMA*/ wire _TUMA_CART_RAM = and(top.CPU_PIN_A13, _SOGY_A14n, top.CPU_PIN_A15);
-    /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(top.CPU_PIN_A15, top.CPU_PIN_A14), _TUMA_CART_RAM);
-    return and(top.ABUZ_CPU_ADDR_VALIDp(), _TYNU_ADDR_RAM, top.TUNA_0000_FDFFp()); // suggests ABUZp
+  /*p25.SEBY*/ wire SEBY_VRM_TO_CPUp() const {
+    /*p25.TYVY*/ wire _TYVY_VRM_TO_CPUn = nand(SERE_CPU_VRM_RDp(), LEKO_CPU_RDp());
+    return not(_TYVY_VRM_TO_CPUn);
   }
 
+  /*p25.TUTO*/ wire TUTO_DBG_VRAMp() const { return and (top.UNOR_MODE_DBG2p(), dbg_reg.SOTO_DBG.qn()); }
+  /*p25.RACO*/ wire RACO_DBG_VRAMn() const { return not(TUTO_DBG_VRAMp()); }
+
+  /*p25.SERE*/ wire SERE_CPU_VRM_RDp() const {
+    /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and (top.int_bus.SOSE_8000_9FFFp(), top.ABUZ_CPU_ADDR_VALIDp());
+    /*p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not(vram_bus.VRAM_PIN_MCSn_C());
+    /*p25.TOLE*/ wire _TOLE_VRAM_RDp     = mux2_p(_TEFY_VRAM_MCSp, _TUCA_CPU_VRAM_RDp, TUTO_DBG_VRAMp());
+    return and (_TOLE_VRAM_RDp, ppu_reg.ROPY_RENDERINGn());
+  }
+
+  /*p25.SOHY*/ wire SOHY_MWRn() const {
+    /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and(top.int_bus.SOSE_8000_9FFFp(), APOV_CPU_WRp_xxxxEFGx());
+    /*p25.SUDO*/ wire _SUDO_MWRp_C = not(vram_bus.VRAM_PIN_MWRn_C());
+    /*p25.TYJY*/ wire _TYJY_DBG_VRAM_WRp = mux2_p(_SUDO_MWRp_C, _TUJA_CPU_VRAM_WRp, TUTO_DBG_VRAMp());
+    return nand(_TYJY_DBG_VRAM_WRp, SERE_CPU_VRM_RDp());
+  }
+
+  /*p25.SALE*/ wire SALE_VRAM_WRn() const {
+    /*p25.TAVY*/ wire _TAVY_MOEp = not(vram_bus.VRAM_PIN_MOEn_C());
+    return mux2_p(_TAVY_MOEp, top.int_bus.TEGU_CPU_VRAM_WRn(), TUTO_DBG_VRAMp());
+  }
+
+  /*p25.RUVY*/ wire RUVY_VRAM_WR() const { return not(SALE_VRAM_WRn()); }
+  /*p25.SAZO*/ wire SAZO_VRAM_RD() const { return and (RUVY_VRAM_WR(), SERE_CPU_VRM_RDp()); }
+  /*p25.RYJE*/ wire RYJE_VRAM_RDn() const { return not(SAZO_VRAM_RD()); }
+  /*p25.REVO*/ wire REVO_VRAM_RDp() const { return not(RYJE_VRAM_RDn()); }
+  /*p25.RELA*/ wire RELA_VRM_TO_CPUn() const { return or (REVO_VRAM_RDp(), SAZO_VRAM_RD()); }
+  /*p25.RENA*/ wire RENA_VRM_TO_CPUp() const { return not(RELA_VRM_TO_CPUn()); }
+  /*p25.ROCY*/ wire ROCY_CPU_TO_VRMp() const { return and (REVO_VRAM_RDp(), SAZO_VRAM_RD()); }
+  /*p25.RAHU*/ wire RAHU_CPU_TO_VRMn() const { return not(ROCY_CPU_TO_VRMp()); }
+
+  /*p25.RACU*/ wire RACU_MOEn() const {
+    /*p25.RYLU*/ wire _RYLU_DBG_VRAM_RDn = nand(top.SALE_VRAM_WRn(), XANE_VRAM_LOCKn());
+    /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and(sprite_fetcher.TACU_SPR_SEQ_5_TRIG(), ABON_SPR_VRM_RDn());
+    /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not(_SOHO_SPR_VRAM_RDp);
+    return and (_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn, top.tile_fetcher.MYMA_BGW_VRAM_RDn(), top.dma_reg.APAM_DMA_VRAM_RDn()); // def and
+  }
+
+  /*p25.SUTU*/ wire SUTU_MCSn() const {
+    // Polarity issues here, ABON should be P
+    // ABON = not(TEXY)
+    // SUTU = nor(LENA, LUFA, ABON, SERE);
+    return nor(top.tile_fetcher.LENA_BGW_VRM_RDp(),
+               top.dma_reg.LUFA_DMA_VRAM_RDp(),
+               ABON_SPR_VRM_RDn(),
+               SERE_CPU_VRM_RDp());
+  }
 
   //-----------------------------------------------------------------------------
 
-  void tick_vram_pins();
+  /*p08.TOZA*/ wire TOZA_CPU_RAM_RDp() const { 
+    return and(top.ABUZ_CPU_ADDR_VALIDp(), top.int_bus.TYNU_ADDR_RAM(), top.int_bus.TUNA_0000_FDFFp()); // suggests ABUZp
+  }
 
   /*p01.ABUZ*/ wire ABUZ_CPU_ADDR_VALIDp() const {
-    /*p??.APAP*/ wire APAP_CPU_ADDR_VALIDp = not(CPU_PIN_ADDR_VALID); // Missing from schematic
+    /*p??.APAP*/ wire APAP_CPU_ADDR_VALIDp = not(int_bus.CPU_PIN_ADDR_VALID); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_CPU_ADDR_VALIDn = nor(UNOR_MODE_DBG2p(), APAP_CPU_ADDR_VALIDp);
     return not(AWOD_CPU_ADDR_VALIDn);
   }
 
   /*p07.TUTU*/ wire TUTU_ADDR_BOOTp() const {
     /*p07.TERA*/ wire TERA_BOOT_BITp  = not(bootrom.BOOT_BITn());
-    /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09, CPU_PIN_A08);
-    return and(TERA_BOOT_BITp, TULO_ADDR_00XXp);
+    return and(TERA_BOOT_BITp, top.int_bus.TULO_ADDR_00XXp());
   }
 
   /*p25.XANE*/ wire XANE_VRAM_LOCKn() const { return nor(dma_reg.LUFA_DMA_VRAM_RDp(), ppu_reg.XYMU_RENDERINGp()); } // def nor
@@ -175,14 +210,14 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
 
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-      /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C(), CPU_PIN_RDp, UNOR_MODE_DBG2p());
+      /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C(), int_bus.CPU_PIN_RDp, UNOR_MODE_DBG2p());
       return not(UJYV_CPU_RDn);
   }
 
   /*p07.AJAS*/ wire AJAS_CPU_RDn() const { return not(TEDO_CPU_RDp()); }
   /*p07.ASOT*/ wire ASOT_CPU_RDp() const { return not(AJAS_CPU_RDn()); }
 
-  /*p04.DECY*/ wire DECY_FROM_CPU5n() const { return not(CPU_PIN5); }
+  /*p04.DECY*/ wire DECY_FROM_CPU5n() const { return not(int_bus.CPU_PIN5); }
 
   /*p28.LEKO*/ wire LEKO_CPU_RDp() const {
     /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n());
@@ -190,55 +225,13 @@ struct SchematicTop {
     return not(MYNU_CPU_RDn);
   }
 
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const { return nand(CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx()); }
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const { return nand(int_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx()); }
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const { return not(AREV_CPU_WRn_ABCDxxxH()); }
   /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const { return mux2_n(ext_bus.EXT_PIN_WRp_C(), APOV_CPU_WRp_xxxxEFGx(), UNOR_MODE_DBG2p()); }
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
   /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH() const { return not(TAPU_CPU_WRp_xxxxEFGx()); }
   /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const { return not(DYKY_CPU_WRn_ABCDxxxH()); }
   /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH() const { return not(APOV_CPU_WRp_xxxxEFGx()); }
-
-
-  //-----------------------------------------------------------------------------
-  // Address decoder signals
-
-  /*p25.SYRO*/ wire SYRO_FE00_FFFFp() const { return not(TUNA_0000_FDFFp()); }
-  /*p07.RYCU*/ wire RYCU_0000_FDFFn() const { return not(TUNA_0000_FDFFp()); }
-  /*p07.SOHA*/ wire SOHA_FF00_FFFFn() const { return not(SYKE_FF00_FFFFp()); }
-  /*p07.ROPE*/ wire ROPE_FE00_FEFFn() const { return nand(RYCU_0000_FDFFn(), SOHA_FF00_FFFFn()); }
-  /*p07.SARO*/ wire SARO_FE00_FEFFp() const { return not(ROPE_FE00_FEFFn()); }
-  /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not(SARO_FE00_FEFFp()); }
-  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not(CPU_PIN_A15); }
-  /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or(CPU_PIN_A13, CPU_PIN_A14, SORE_0000_7FFFp()); }
-  /*p08.TEXO*/ wire TEXO_8000_9FFFn() const { return and(CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn()); }
-  /*p08.LEVO*/ wire LEVO_8000_9FFFp() const { return not(TEXO_8000_9FFFn()); }
-
-  /*p22.XOLA*/ wire XOLA_A00n() const { return not(CPU_PIN_A00); }
-  /*p22.XENO*/ wire XENO_A01n() const { return not(CPU_PIN_A01); }
-  /*p22.XUSY*/ wire XUSY_A02n() const { return not(CPU_PIN_A02); }
-  /*p22.XERA*/ wire XERA_A03n() const { return not(CPU_PIN_A03); }
-  /*p07.TONA*/ wire TONA_A08n() const { return not(CPU_PIN_A08); }
-
-  /*p22.WADO*/ wire WADO_A00p() const { return not(XOLA_A00n()); }
-  /*p22.WESA*/ wire WESA_A01p() const { return not(XENO_A01n()); }
-  /*p22.WALO*/ wire WALO_A02p() const { return not(XUSY_A02n()); }
-  /*p22.WEPO*/ wire WEPO_A03p() const { return not(XERA_A03n()); }
-
-  /*p03.TOVY*/ wire TOVY_A00n() const { return not(CPU_PIN_A00); }
-  /*p08.TOLA*/ wire TOLA_A01n() const { return not(CPU_PIN_A01); }
-  /*p06.SEFY*/ wire SEFY_A02n() const { return not(CPU_PIN_A02); }
-
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp() const { return nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09); }
-
-  /*p22.WERO*/ wire WERO_FF4Xp() const {
-    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor(CPU_PIN_A07, CPU_PIN_A05, CPU_PIN_A04);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp(), TONA_A08n());
-    /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_FF00_FFFFp, CPU_PIN_A06, XALY_0x00xxxxp);
-    return not(WUTU_FF4Xn);
-  }
-
-  /*p07.SYKE*/ wire SYKE_FF00_FFFFp() const { return nor(TUNA_0000_FDFFp(), TONA_A08n()); }
-  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor(CPU_PIN_A07, CPU_PIN_A06, CPU_PIN_A05, CPU_PIN_A04, CPU_PIN_A03); }
 
   //-----------------------------------------------------------------------------
   // PPU signals
@@ -318,45 +311,6 @@ struct SchematicTop {
   wire WEFE_VCC = 1;
 
   //-----------------------------------------------------------------------------
-  // SOC-to-CPU control signals
-
-  CpuPinOut CPU_PIN_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related reg
-  CpuPinOut CPU_PIN_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  CpuPinOut CPU_PIN_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
-  CpuPinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  CpuPinOut CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
-
-  //-----------------------------------------------------------------------------
-  // CPU-to-SOC control signals
-
-  CpuPinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  CpuPinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
-
-  /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
-
-  // Main bus
-  CpuPinIn  CPU_PIN_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  CpuPinIn  CPU_PIN_WRp;           // top right port PORTA_01: ->
-  CpuPinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
-
-  CpuPinIn  CPU_PIN_A00;           // bottom right port PORTB_00: -> A00
-  CpuPinIn  CPU_PIN_A01;           // bottom right port PORTB_04: -> A01
-  CpuPinIn  CPU_PIN_A02;           // bottom right port PORTB_08: -> A02
-  CpuPinIn  CPU_PIN_A03;           // bottom right port PORTB_12: -> A03
-  CpuPinIn  CPU_PIN_A04;           // bottom right port PORTB_16: -> A04
-  CpuPinIn  CPU_PIN_A05;           // bottom right port PORTB_20: -> A05
-  CpuPinIn  CPU_PIN_A06;           // bottom right port PORTB_24: -> A06
-  CpuPinIn  CPU_PIN_A07;           // bottom right port PORTB_28: -> A07
-  CpuPinIn  CPU_PIN_A08;           // bottom right port PORTB_02: -> A08
-  CpuPinIn  CPU_PIN_A09;           // bottom right port PORTB_06: -> A09
-  CpuPinIn  CPU_PIN_A10;           // bottom right port PORTB_10: -> A10
-  CpuPinIn  CPU_PIN_A11;           // bottom right port PORTB_14: -> A11
-  CpuPinIn  CPU_PIN_A12;           // bottom right port PORTB_18: -> A12
-  CpuPinIn  CPU_PIN_A13;           // bottom right port PORTB_22: -> A13
-  CpuPinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
-  CpuPinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
-                                
-  //-----------------------------------------------------------------------------
   // LCD pins
 
   ExtPinOut LCD_PIN_LD1;  // PIN_50 
@@ -396,70 +350,6 @@ struct SchematicTop {
 
   ExtPinOut JOY_PIN_P15_A;   // PIN_62 <- p05.CELA
   ExtPinOut JOY_PIN_P15_D;   // PIN_62 <- p05.COFY
-
-  //-----------------------------------------------------------------------------
-  // VRAM bus
-
-  ExtPinOut VRAM_PIN_MCSn_A;   // PIN_43 <- P25.SOKY
-  ExtPinOut VRAM_PIN_MCSn_D;   // PIN_43 <- P25.SETY
-  ExtPinOut VRAM_PIN_MOEn_A;   // PIN_45 <- P25.REFO
-  ExtPinOut VRAM_PIN_MOEn_D;   // PIN_45 <- P25.SAHA
-  ExtPinOut VRAM_PIN_MWRn_A;   // PIN_49 <- P25.SYSY
-  ExtPinOut VRAM_PIN_MWRn_D;   // PIN_49 <- P25.RAGU
-
-  ExtPinOut VRAM_PIN_MA00_AD;  // PIN_34 <- P04.ECAL
-  ExtPinOut VRAM_PIN_MA01_AD;  // PIN_35 <- P04.EGEZ
-  ExtPinOut VRAM_PIN_MA02_AD;  // PIN_36 <- P04.FUHE
-  ExtPinOut VRAM_PIN_MA03_AD;  // PIN_37 <- P04.FYZY
-  ExtPinOut VRAM_PIN_MA04_AD;  // PIN_38 <- P04.DAMU
-  ExtPinOut VRAM_PIN_MA05_AD;  // PIN_39 <- P04.DAVA
-  ExtPinOut VRAM_PIN_MA06_AD;  // PIN_40 <- P04.ETEG
-  ExtPinOut VRAM_PIN_MA07_AD;  // PIN_41 <- P04.EREW
-  ExtPinOut VRAM_PIN_MA08_AD;  // PIN_48 <- P04.EVAX
-  ExtPinOut VRAM_PIN_MA09_AD;  // PIN_47 <- P04.DUVE
-  ExtPinOut VRAM_PIN_MA10_AD;  // PIN_44 <- P04.ERAF
-  ExtPinOut VRAM_PIN_MA11_AD;  // PIN_46 <- P04.FUSY
-  ExtPinOut VRAM_PIN_MA12_AD;  // PIN_42 <- P04.EXYF
-
-  ExtPinOut VRAM_PIN_MD0_A;    // PIN_33 <- P25.REGE
-  ExtPinOut VRAM_PIN_MD1_A;    // PIN_31 <- P25.RYKY
-  ExtPinOut VRAM_PIN_MD2_A;    // PIN_30 <- P25.RAZO
-  ExtPinOut VRAM_PIN_MD3_A;    // PIN_29 <- P25.RADA
-  ExtPinOut VRAM_PIN_MD4_A;    // PIN_28 <- P25.RYRO
-  ExtPinOut VRAM_PIN_MD5_A;    // PIN_27 <- P25.REVU
-  ExtPinOut VRAM_PIN_MD6_A;    // PIN_26 <- P25.REKU
-  ExtPinOut VRAM_PIN_MD7_A;    // PIN_25 <- P25.RYZE
-
-  ExtPinOut VRAM_PIN_MD0_B;    // PIN_33 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD1_B;    // PIN_31 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD2_B;    // PIN_30 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD3_B;    // PIN_29 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD4_B;    // PIN_28 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD5_B;    // PIN_27 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD6_B;    // PIN_26 <- P25.ROFA
-  ExtPinOut VRAM_PIN_MD7_B;    // PIN_25 <- P25.ROFA
-
-  ExtPinOut VRAM_PIN_MD0_D;    // PIN_33 <- P25.RURA
-  ExtPinOut VRAM_PIN_MD1_D;    // PIN_31 <- P25.RULY
-  ExtPinOut VRAM_PIN_MD2_D;    // PIN_30 <- P25.RARE
-  ExtPinOut VRAM_PIN_MD3_D;    // PIN_29 <- P25.RODU
-  ExtPinOut VRAM_PIN_MD4_D;    // PIN_28 <- P25.RUBE
-  ExtPinOut VRAM_PIN_MD5_D;    // PIN_27 <- P25.RUMU
-  ExtPinOut VRAM_PIN_MD6_D;    // PIN_26 <- P25.RYTY
-  ExtPinOut VRAM_PIN_MD7_D;    // PIN_25 <- P25.RADY
-
-  ExtPinIn  VRAM_PIN_MCSn_C;   // PIN_43 -> P25.TEFY
-  ExtPinIn  VRAM_PIN_MOEn_C;   // PIN_45 -> P25.TAVY
-  ExtPinIn  VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
-
-  ExtPinIn  VRAM_PIN_MD0_C;    // PIN_33 -> P25.RODY
-  ExtPinIn  VRAM_PIN_MD1_C;    // PIN_31 -> P25.REBA
-  ExtPinIn  VRAM_PIN_MD2_C;    // PIN_30 -> P25.RYDO
-  ExtPinIn  VRAM_PIN_MD3_C;    // PIN_29 -> P25.REMO
-  ExtPinIn  VRAM_PIN_MD4_C;    // PIN_28 -> P25.ROCE
-  ExtPinIn  VRAM_PIN_MD5_C;    // PIN_27 -> P25.ROPU
-  ExtPinIn  VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
-  ExtPinIn  VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
 
   //-----------------------------------------------------------------------------
   // Top level registers

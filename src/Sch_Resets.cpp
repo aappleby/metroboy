@@ -32,8 +32,8 @@ void ResetRegisters::tock(SchematicTop& top) {
   /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(top.SYS_PIN_RSTp, _AFAR_RST); // Schematic wrong, this is a latch.
   /*p01.AFER*/ AFER_SYS_RSTp.set(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.BOMA_Axxxxxxx(), top.UPOJ_MODE_PRODn(), ASOL_POR_DONEn.q());
 
-  top.CPU_PIN_STARTp.set(_TABA_POR_TRIGn);
-  top.CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp.q());
+  top.int_bus.CPU_PIN_STARTp.set(_TABA_POR_TRIGn);
+  top.int_bus.CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp.q());
 }
 
 //-----------------------------------------------------------------------------

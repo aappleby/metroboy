@@ -10,17 +10,17 @@ void Timer::tick(SchematicTop& /*top*/) {
 }
 
 void Timer::tock(SchematicTop& top) {
-  /*p03.RYFO*/ wire _RYFO_FF04_FF07p = and (top.CPU_PIN_A02, top.SARE_XX00_XX07p(), top.SYKE_FF00_FFFFp());
+  /*p03.RYFO*/ wire _RYFO_FF04_FF07p = and (top.int_bus.CPU_PIN_A02, top.int_bus.SARE_XX00_XX07p(), top.int_bus.SYKE_FF00_FFFFp());
 
-  /*p01.TAGY*/ wire _TAGY_FF04_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.TOLA_A01n(), top.TOVY_A00n());
-  /*p03.TEDA*/ wire _TEDA_FF05_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.TOLA_A01n(), top.CPU_PIN_A00);
-  /*p03.TUBY*/ wire _TUBY_FF06_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.CPU_PIN_A01, top.TOVY_A00n());
-  /*p03.SORA*/ wire _SORA_FF07_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.CPU_PIN_A01, top.CPU_PIN_A00);
+  /*p01.TAGY*/ wire _TAGY_FF04_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.int_bus.TOLA_A01n(), top.int_bus.TOVY_A00n());
+  /*p03.TEDA*/ wire _TEDA_FF05_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.int_bus.TOLA_A01n(), top.int_bus.CPU_PIN_A00);
+  /*p03.TUBY*/ wire _TUBY_FF06_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.int_bus.CPU_PIN_A01, top.int_bus.TOVY_A00n());
+  /*p03.SORA*/ wire _SORA_FF07_RD = and (top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.int_bus.CPU_PIN_A01, top.int_bus.CPU_PIN_A00);
 
-  /*p01.TAPE*/ wire _TAPE_FF04_WRp =  and(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.TOLA_A01n(), top.TOVY_A00n());
-  /*p03.TOPE*/ wire _TOPE_FF05_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.TOLA_A01n(), top.CPU_PIN_A00);
-  /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.CPU_PIN_A01, top.TOVY_A00n());
-  /*p03.SARA*/ wire _SARA_FF07_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.CPU_PIN_A01, top.CPU_PIN_A00);
+  /*p01.TAPE*/ wire _TAPE_FF04_WRp =  and(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.int_bus.TOLA_A01n(), top.int_bus.TOVY_A00n());
+  /*p03.TOPE*/ wire _TOPE_FF05_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.int_bus.TOLA_A01n(), top.int_bus.CPU_PIN_A00);
+  /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.int_bus.CPU_PIN_A01, top.int_bus.TOVY_A00n());
+  /*p03.SARA*/ wire _SARA_FF07_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _RYFO_FF04_FF07p, top.int_bus.CPU_PIN_A01, top.int_bus.CPU_PIN_A00);
 
   // FF04 DIV
   {
@@ -92,7 +92,7 @@ void Timer::tock(SchematicTop& top) {
     /*p03.PYMA*/ wire _PYMA_TIMA_LD_6 = nor(top.rst_reg.MULO_TIMA_RST(), _REFU_TIMA_MUX_6);
     /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor(top.rst_reg.MULO_TIMA_RST(), _RATO_TIMA_MUX_7);
 
-    /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.CPU_PIN5, _TOPE_FF05_WRn); // suggests CPU_PIN5 = DATA_VALIDn
+    /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.int_bus.CPU_PIN5, _TOPE_FF05_WRn); // suggests CPU_PIN5 = DATA_VALIDn
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.rst_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
 
     /*p03.REGA*/ REGA_TIMA_0.clk_n(_SOGU_TIMA_CLK,   _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);

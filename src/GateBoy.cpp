@@ -17,7 +17,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   top->clk_reg.CPU_PIN_READYp.set(0);
   top->ext_bus.set_ext_rdwr(0, 0);
-  top->CPU_PIN5.set(0);
+  top->int_bus.CPU_PIN5.set(0);
 
   top->SYS_PIN_T1n.set(0);
   top->SYS_PIN_T2n.set(0);
@@ -50,7 +50,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
   top->XONA_LCDC_EN.preset(1);
-  while(!top->CPU_PIN_STARTp.get()) {
+  while(!top->int_bus.CPU_PIN_STARTp.get()) {
     gateboy.run(top, 1, req);
   }
 
@@ -129,8 +129,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   SignalHash hash;
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
-    top->set_cpu_bus(req);
-    top->set_vram_bus(0);
+    top->int_bus.set_cpu_req(req);
+    top->vram_bus.set_vram_data(0);
     top->oam_bus.set_oam_data(0, 0);
     top->ext_bus.set_ext_data(0);
     top->set_buttons(0);
@@ -159,7 +159,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.VENA_xxxxEFGH(),
       top->clk_reg.WOSU_xBCxxFGx(),
       //top->BELE_Axxxxxxx(),
-      top->CPU_PIN_STARTp.get(),
+      top->int_bus.CPU_PIN_STARTp.get(),
       top->clk_reg.CPU_PIN_READYp.get(),
       top->tim_reg.get_div(),
       1//top->rst_reg.AFER_SYS_RSTp.q()

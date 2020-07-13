@@ -12,13 +12,17 @@
 #include "Sch_PixPipe.h"
 #include "Sch_Joypad.h"
 #include "Sch_Serial.h"
-
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
 #include "Sch_Bootrom.h"
 #include "Sch_SpriteFetcher.h"
 #include "Sch_TileFetcher.h"
 #include "Sch_SpriteScanner.h"
+
+#include "Sch_OamBus.h"
+#include "Sch_ExtBus.h"
+#include "Sch_IntBus.h"
+#include "Sch_VramBus.h"
 
 namespace Schematics {
 
@@ -28,7 +32,7 @@ struct SchematicTop {
 
   SchematicTop();
 
-  const SchematicTop& top = *this;
+  SchematicTop& top = *this;
 
   void set_cpu_bus(Req req);
   void set_buttons(uint8_t buttons);
@@ -41,12 +45,96 @@ struct SchematicTop {
                 CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
   }
 
-  int get_data() const {
-    return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3,
-                CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
+  SignalHash tick();
+
+  /*p25.COTA*/ wire COTA_OAM_CLKn() const {
+    /*p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABCxDEFx()); 
+    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK  = and (or (top.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_xxxxEFGH());
+    /*p25.BYCU*/ wire _BYCU_OAM_CLK      = nand(_AVER_SCAN_OAM_CLK, top.sprite_fetcher.XUJY_PPU_OAM_CLK(), _CUFE_DMA_OAM_CLK);
+    return not(_BYCU_OAM_CLK);
   }
 
-  SignalHash tick();
+  /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn() const {
+     return nor(top.dma_reg.MATU_DMA_RUNNINGp(), top.ACYL_SCANNINGp(), top.AJON_OAM_BUSY()); // def nor
+  }
+
+  /*p28.AMAB*/ wire AMAB_OAM_LOCKn() const {
+    return and (top.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
+  }
+
+  /*p04.WYJA*/ wire WYJA_OAM_WRp() const { // -> oam_bus
+    /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp = nor(top.clk_reg.UVYT_ABCDxxxx(), MAKA_FROM_CPU5_SYNC.q()); // def nor
+    /*p04.POWU*/ wire _POWU_DMA_OAM_WRp = and (top.dma_reg.MATU_DMA_RUNNINGp(), _NAXY_DMA_OAM_WENp); // def and
+    return or (and (AMAB_OAM_LOCKn(), top.CUPA_CPU_WRp_xxxxEFGx()), _POWU_DMA_OAM_WRp);
+  }
+
+  /*p28.BODE*/ wire BODE_OAM_LATCHp() const { // -> oam_bus
+    /*p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand(top.ACYL_SCANNINGp(), top.clk_reg.XOCE_AxxDExxH()); // schematic wrong, is def nand
+    /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand(top.DECY_FROM_CPU5n(), top.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp()); // Schematic wrong, this is NAND
+    /*p28.ASYT*/ wire _ASYT_OAM_LATCHn      = and(_AJEP_SCAN_OAM_LATCHn, top.sprite_fetcher.XUJA_SPR_OAM_LATCHn(), _BOTA_CPU_OAM_LATCHn); // def and
+    return not(_ASYT_OAM_LATCHn);
+  }
+
+  /*p28.WEWU*/ wire WEWU_OAM_A_CPU_RDn() const {
+    /*p28.WUKU*/ wire _WUKU_OAM_A_CPU_RD  = and (top.LEKO_CPU_RDp(), top.AMAB_OAM_LOCKn(), top.oam_bus.GEKA_OAM_A0p());
+    return not(_WUKU_OAM_A_CPU_RD);
+  }
+
+  /*p28.WUME*/ wire WUME_OAM_B_CPU_RDn() const {
+    /*p28.GUKO*/ wire _GUKO_OAM_B_CPU_RD  = and (top.LEKO_CPU_RDp(), top.AMAB_OAM_LOCKn(), top.oam_bus.WAFO_OAM_A0n());
+    return not(_GUKO_OAM_B_CPU_RD);
+  }
+
+  /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAn() const { return nand(top.CPU_PIN_RDp, top.TEXO_8000_9FFFn(), top.CPU_PIN5); }
+
+  /*p08.MATE*/ wire MATE_LATCH_CPU_ADDRp() const {
+    /*p08.MULE*/ wire _MULE_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
+    /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, top.TEXO_8000_9FFFn()), top.UMUT_MODE_DBG1p());
+    /*p08.LASY*/ wire _LASY_LATCH_CPU_ADDRn = not(_LOXO_LATCH_CPU_ADDRp);
+    return not(_LASY_LATCH_CPU_ADDRn);
+  }
+
+  /*p08.MOCA*/ wire MOCA_DBG_EXT_RD() const { return nor(top.TEXO_8000_9FFFn(), top.UMUT_MODE_DBG1p()); }
+
+  /*p08.MOTY*/ wire MOTY_CPU_EXT_RD() const {
+    /*p08.LAGU*/ wire _LAGU = or(and(top.CPU_PIN_RDp, top.LEVO_8000_9FFFp()), top.CPU_PIN_WRp);
+    /*p08.LYWE*/ wire _LYWE = not(_LAGU);
+    return or(MOCA_DBG_EXT_RD(), _LYWE);
+  }
+  
+  /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn() const {
+    /*p08.REDU*/ wire _REDU_CPU_RDn = not(top.TEDO_CPU_RDp());
+    return mux2_p(_REDU_CPU_RDn, MOTY_CPU_EXT_RD(), top.UNOR_MODE_DBG2p());
+  }
+
+  /*p08.TYMU*/ wire TYMU_RD_OUTn() const { return nor(top.dma_reg.LUMA_DMA_READ_CARTp(), MOTY_CPU_EXT_RD()); }
+
+  /*p08.PUVA*/ wire PUVA_EXT_WRn() const {
+    /*p08.NEVY*/ wire _NEVY = or(top.MEXO_CPU_WRn_ABCDxxxH(), MOCA_DBG_EXT_RD());
+    return or(_NEVY, top.dma_reg.LUMA_DMA_READ_CARTp());
+  }
+
+  /*p08.TAZY*/ wire TAZY_A15p() const {
+    // This whole section is screwy
+    // Where did AGUT go?
+    // Where did AJAX go?
+
+    // AJAX = not(ATYP)
+    // AGUT = nor(AROV, AJAX)
+    // AGUT looks unused
+
+    /*p08.SOBY*/ wire _SOBY_A15n = nor(top.CPU_PIN_A15, top.TUTU_ADDR_BOOTp());
+    /*p08.SEPY*/ wire _SEPY_A15p = nand(top.ABUZ_CPU_ADDR_VALIDp(), _SOBY_A15n);
+    return mux2_p(top.dma_reg.DMA_A15.q(), _SEPY_A15p, top.dma_reg.LUMA_DMA_READ_CARTp());
+  }
+
+  /*p08.TOZA*/ wire TOZA_CPU_RAM_RDp() const { 
+    /*p08.SOGY*/ wire _SOGY_A14n = not(top.CPU_PIN_A14);
+    /*p08.TUMA*/ wire _TUMA_CART_RAM = and(top.CPU_PIN_A13, _SOGY_A14n, top.CPU_PIN_A15);
+    /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(top.CPU_PIN_A15, top.CPU_PIN_A14), _TUMA_CART_RAM);
+    return and(top.ABUZ_CPU_ADDR_VALIDp(), _TYNU_ADDR_RAM, top.TUNA_0000_FDFFp()); // suggests ABUZp
+  }
+
 
   //-----------------------------------------------------------------------------
 
@@ -71,7 +159,7 @@ struct SchematicTop {
     return and(BOGE_DMA_RUNNINGn, ppu_reg.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
   }
 
-  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(top.sprite_scanner.AVAP_RENDER_START_RST(), win_reg.MOSU_WIN_MODE_TRIGp(), TEVO_FINE_RSTp()); }
+  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(top.sprite_scanner.AVAP_RENDER_START_RST(), win_reg.MOSU_WIN_MODE_TRIGp(), win_reg.TEVO_FINE_RSTp()); }
   /*p29.ABON*/ wire ABON_SPR_VRM_RDn()       const { return not(TEXY_SPR_READ_VRAMp()); }
 
   //-----------------------------------------------------------------------------
@@ -87,7 +175,7 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
 
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-      /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(bus_mux.EXT_PIN_RDp_C, CPU_PIN_RDp, UNOR_MODE_DBG2p());
+      /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C(), CPU_PIN_RDp, UNOR_MODE_DBG2p());
       return not(UJYV_CPU_RDn);
   }
 
@@ -104,10 +192,12 @@ struct SchematicTop {
 
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH() const { return nand(CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx()); }
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const { return not(AREV_CPU_WRn_ABCDxxxH()); }
-  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const { return mux2_n(bus_mux.EXT_PIN_WRp_C, APOV_CPU_WRp_xxxxEFGx(), UNOR_MODE_DBG2p()); }
+  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH() const { return mux2_n(ext_bus.EXT_PIN_WRp_C(), APOV_CPU_WRp_xxxxEFGx(), UNOR_MODE_DBG2p()); }
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const { return not(UBAL_CPU_WRn_ABCDxxxH()); }
   /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH() const { return not(TAPU_CPU_WRp_xxxxEFGx()); }
   /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const { return not(DYKY_CPU_WRn_ABCDxxxH()); }
+  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH() const { return not(APOV_CPU_WRp_xxxxEFGx()); }
+
 
   //-----------------------------------------------------------------------------
   // Address decoder signals
@@ -153,17 +243,10 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // PPU signals
 
-  /*p21.WODU*/ wire WODU_RENDER_DONEp() const { return and(sprite_store.XENA_STORE_MATCHn(), ppu_reg.XANO_X_167p()); }
-
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp() const {
-    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(tile_fetcher.SUVU_PORCH_ENDn());
-    return nor(win_reg.SEKO_WX_MATCHne, win_reg.SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
-  }
-
   /*p28.ACYL*/ wire ACYL_SCANNINGp() const { return and(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp()); } // so dma stops oam scan?
 
   /*p24.SEGU*/ wire SEGU_CLKPIPEn() const {
-    /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, top.WODU_RENDER_DONEp(), clk_reg.MYVO_AxCxExGx());
+    /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, ppu_reg.WODU_RENDER_DONEp(), clk_reg.MYVO_AxCxExGx());
     /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(win_reg.TOMU_WIN_HITp());
     /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp(), _VYBO_PIX_CLK_xBxDxFxH);
     return not(_TYFA_CLKPIPEp_xBxDxFxH);
@@ -172,7 +255,7 @@ struct SchematicTop {
   /*p24.SACU*/ wire SACU_CLKPIPEp() const { return nor(SEGU_CLKPIPEn(), ppu_reg.ROXY_FINE_MATCH_LATCHn.q()); }
 
   /*p21.VOTY*/ wire VOTY_INT_STATp() const {
-    /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_reg.TOLU_VBLANKn(), top.WODU_RENDER_DONEp());
+    /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_reg.TOLU_VBLANKn(), ppu_reg.WODU_RENDER_DONEp());
     /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN.q(), lcd_reg.ROPO_LY_MATCH_SYNCp(),
                                              ppu_reg.REFE_INT_OAM_EN.q(), lcd_reg.TAPA_INT_OAM(),
                                              ppu_reg.RUFO_INT_VBL_EN.q(), lcd_reg.PARU_VBLANKp_d4(), // polarity?
@@ -225,13 +308,14 @@ struct SchematicTop {
   ExtPinIn  SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
   ExtPinIn  SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
-  // Ground ties - VYPO, RUNY, WEFE, unlabeled cell between BONE and BUFY.
+  // Ground/vcc ties - VYPO, RUNY, WEFE, unlabeled cell between BONE and BUFY.
 
   wire GND = 0;
   wire VYPO_GND = 0;
   wire RUNY_GND = 0;
-  wire WEFE_GND = 0;
   wire PESU_GND = 0;
+
+  wire WEFE_VCC = 1;
 
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
@@ -247,6 +331,8 @@ struct SchematicTop {
 
   CpuPinIn  CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   CpuPinIn  CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
+
+  /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
 
   // Main bus
   CpuPinIn  CPU_PIN_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
@@ -270,15 +356,6 @@ struct SchematicTop {
   CpuPinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
   CpuPinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
                                 
-  Tribuf CPU_TRI_D0;            // bottom left port: <>
-  Tribuf CPU_TRI_D1;            // bottom left port: <>
-  Tribuf CPU_TRI_D2;            // bottom left port: <>
-  Tribuf CPU_TRI_D3;            // bottom left port: <>
-  Tribuf CPU_TRI_D4;            // bottom left port: <>
-  Tribuf CPU_TRI_D5;            // bottom left port: <>
-  Tribuf CPU_TRI_D6;            // bottom left port: <>
-  Tribuf CPU_TRI_D7;            // bottom left port: <>
-
   //-----------------------------------------------------------------------------
   // LCD pins
 
@@ -384,38 +461,8 @@ struct SchematicTop {
   ExtPinIn  VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
   ExtPinIn  VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
 
-  Tribuf VRM_TRI_A00;
-  Tribuf VRM_TRI_A01;
-  Tribuf VRM_TRI_A02;
-  Tribuf VRM_TRI_A03;
-  Tribuf VRM_TRI_A04;
-  Tribuf VRM_TRI_A05;
-  Tribuf VRM_TRI_A06;
-  Tribuf VRM_TRI_A07;
-  Tribuf VRM_TRI_A08;
-  Tribuf VRM_TRI_A09;
-  Tribuf VRM_TRI_A10;
-  Tribuf VRM_TRI_A11;
-  Tribuf VRM_TRI_A12;
-
-  Tribuf VRM_TRI_D0;
-  Tribuf VRM_TRI_D1;
-  Tribuf VRM_TRI_D2;
-  Tribuf VRM_TRI_D3;
-  Tribuf VRM_TRI_D4;
-  Tribuf VRM_TRI_D5;
-  Tribuf VRM_TRI_D6;
-  Tribuf VRM_TRI_D7;
-
   //-----------------------------------------------------------------------------
   // Top level registers
-
-  /*p30.XADU*/ Reg13 XADU_SPRITE_INDX0;
-  /*p30.XEDY*/ Reg13 XEDY_SPRITE_INDX1;
-  /*p30.ZUZE*/ Reg13 ZUZE_SPRITE_INDX2;
-  /*p30.XOBE*/ Reg13 XOBE_SPRITE_INDX3;
-  /*p30.YDUF*/ Reg13 YDUF_SPRITE_INDX4;
-  /*p30.XECU*/ Reg13 XECU_SPRITE_INDX5;
 
   // FF40 - LCDC (in top because it's used everywhere)
   /*p23.VYXE*/ Reg9 VYXE_LCDC_BGEN;
@@ -427,41 +474,27 @@ struct SchematicTop {
   /*p23.WOKY*/ Reg9 WOKY_LCDC_WINMAP;
   /*p23.XONA*/ Reg9 XONA_LCDC_EN;
 
-  // Temp pix storage
-  /*p32.LEGU*/ Reg8 LEGU_BG_PIX_A0;
-  /*p32.NUDU*/ Reg8 NUDU_BG_PIX_A1;
-  /*p32.MUKU*/ Reg8 MUKU_BG_PIX_A2;
-  /*p32.LUZO*/ Reg8 LUZO_BG_PIX_A3;
-  /*p32.MEGU*/ Reg8 MEGU_BG_PIX_A4;
-  /*p32.MYJY*/ Reg8 MYJY_BG_PIX_A5;
-  /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
-  /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
-
-  /*p32.RAWU*/ Reg11 RAWU_BG_PIX_B0; // also holds tile index during fetch
-  /*p32.POZO*/ Reg11 POZO_BG_PIX_B1;
-  /*p32.PYZO*/ Reg11 PYZO_BG_PIX_B2; 
-  /*p32.POXA*/ Reg11 POXA_BG_PIX_B3; 
-  /*p32.PULO*/ Reg11 PULO_BG_PIX_B4; 
-  /*p32.POJU*/ Reg11 POJU_BG_PIX_B5; 
-  /*p32.POWY*/ Reg11 POWY_BG_PIX_B6; 
-  /*p32.PYJU*/ Reg11 PYJU_BG_PIX_B7;
-
   //-----------------------------------------------------------------------------
   // Sub-modules
 
 //private:
 
+  OamBus oam_bus;
+  ExtBus ext_bus;
+  IntBus int_bus;
+  VramBus vram_bus;
+
   ClockRegisters clk_reg;
   DebugRegisters dbg_reg;
   DmaRegisters dma_reg;
   InterruptRegisters int_reg;
-  JoypadRegisters joy_reg;
+  Joypad joypad;
   LcdRegisters lcd_reg;
-  PixelPipeRegisters pxp_reg;
+  PixelPipe pix_pipe;
   ResetRegisters rst_reg;
   SerialRegisters ser_reg;
-  SpriteStoreRegisters sprite_store;
-  TimerRegisters tim_reg;
+  SpriteStore sprite_store;
+  Timer tim_reg;
   PpuRegisters ppu_reg;
   WindowRegisters win_reg;
   TileFetcher tile_fetcher;

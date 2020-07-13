@@ -7,7 +7,7 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct PixelPipeRegisters {
+struct PixelPipe {
   void tick(SchematicTop& top);
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);

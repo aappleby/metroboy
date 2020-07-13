@@ -11,7 +11,7 @@ struct CpuBusSignals;
 
 //-----------------------------------------------------------------------------
 
-struct JoypadRegisters {
+struct Joypad {
 
   void tick(SchematicTop& top);
   void tock(SchematicTop& top);

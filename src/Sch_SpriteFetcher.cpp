@@ -47,15 +47,15 @@ void SpriteFetcher::tock(SchematicTop& top) {
   }
 
   {
-    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.bus_mux.BAXO_SPRITE_X5.q(), top.TEXY_SPR_READ_VRAMp());
-    /*p33.POBE*/ wire _POBE_FLIP0 = mux2_p(top.VRM_TRI_D7, top.VRM_TRI_D0, _XONO_FLIP_X);
-    /*p33.PACY*/ wire _PACY_FLIP1 = mux2_p(top.VRM_TRI_D6, top.VRM_TRI_D1, _XONO_FLIP_X);
-    /*p33.PONO*/ wire _PONO_FLIP2 = mux2_p(top.VRM_TRI_D5, top.VRM_TRI_D2, _XONO_FLIP_X);
-    /*p33.PUGU*/ wire _PUGU_FLIP3 = mux2_p(top.VRM_TRI_D4, top.VRM_TRI_D3, _XONO_FLIP_X);
-    /*p33.PUTE*/ wire _PUTE_FLIP4 = mux2_p(top.VRM_TRI_D3, top.VRM_TRI_D4, _XONO_FLIP_X);
-    /*p33.PULY*/ wire _PULY_FLIP5 = mux2_p(top.VRM_TRI_D2, top.VRM_TRI_D5, _XONO_FLIP_X);
-    /*p33.PELO*/ wire _PELO_FLIP6 = mux2_p(top.VRM_TRI_D1, top.VRM_TRI_D6, _XONO_FLIP_X);
-    /*p33.PAWE*/ wire _PAWE_FLIP7 = mux2_p(top.VRM_TRI_D0, top.VRM_TRI_D7, _XONO_FLIP_X);
+    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.oam_bus.BAXO_SPRITE_X5.q(), top.TEXY_SPR_READ_VRAMp());
+    /*p33.POBE*/ wire _POBE_FLIP0 = mux2_p(top.vram_bus.VRM_TRI_D7, top.vram_bus.VRM_TRI_D0, _XONO_FLIP_X);
+    /*p33.PACY*/ wire _PACY_FLIP1 = mux2_p(top.vram_bus.VRM_TRI_D6, top.vram_bus.VRM_TRI_D1, _XONO_FLIP_X);
+    /*p33.PONO*/ wire _PONO_FLIP2 = mux2_p(top.vram_bus.VRM_TRI_D5, top.vram_bus.VRM_TRI_D2, _XONO_FLIP_X);
+    /*p33.PUGU*/ wire _PUGU_FLIP3 = mux2_p(top.vram_bus.VRM_TRI_D4, top.vram_bus.VRM_TRI_D3, _XONO_FLIP_X);
+    /*p33.PUTE*/ wire _PUTE_FLIP4 = mux2_p(top.vram_bus.VRM_TRI_D3, top.vram_bus.VRM_TRI_D4, _XONO_FLIP_X);
+    /*p33.PULY*/ wire _PULY_FLIP5 = mux2_p(top.vram_bus.VRM_TRI_D2, top.vram_bus.VRM_TRI_D5, _XONO_FLIP_X);
+    /*p33.PELO*/ wire _PELO_FLIP6 = mux2_p(top.vram_bus.VRM_TRI_D1, top.vram_bus.VRM_TRI_D6, _XONO_FLIP_X);
+    /*p33.PAWE*/ wire _PAWE_FLIP7 = mux2_p(top.vram_bus.VRM_TRI_D0, top.vram_bus.VRM_TRI_D7, _XONO_FLIP_X);
 
 
     /*p29.TYFO*/ _TYFO_SFETCH_S0_D1.set(_LAPE_AxCxExGx, top.VYPO_GND, _TOXE_SFETCH_S0.q());
@@ -92,7 +92,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   {
     /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(top.XYMO_LCDC_SPSIZE.q());
-    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.bus_mux.YZOS_SPRITE_X6.q());
+    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.oam_bus.YZOS_SPRITE_X6.q());
 
     /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!_VONU_SFETCH_S1_D4.q());
     /*p29.CYVU*/ wire _CYVU_SPRITE_Y0 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_1.q());
@@ -100,21 +100,21 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_3.q());
 
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_0.q());
-    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !top.bus_mux.XUSO_SPRITE_Y0.q(), top.XYMO_LCDC_SPSIZE.q(), _WAGO);
+    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !top.oam_bus.XUSO_SPRITE_Y0.q(), top.XYMO_LCDC_SPSIZE.q(), _WAGO);
 
-    /*p29.ABEM*/ top.VRM_TRI_A00.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _XUQU_SPRITE_AB);
-    /*p29.BAXE*/ top.VRM_TRI_A01.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _CYVU_SPRITE_Y0);
-    /*p29.ARAS*/ top.VRM_TRI_A02.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _BORE_SPRITE_Y1);
-    /*p29.AGAG*/ top.VRM_TRI_A03.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _BUVY_SPRITE_Y2);
-    /*p29.FAMU*/ top.VRM_TRI_A04.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _GEJY_SPRITE_Y3);
-    /*p29.FUGY*/ top.VRM_TRI_A05.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.XEGU_SPRITE_Y1.q());
-    /*p29.GAVO*/ top.VRM_TRI_A06.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.YJEX_SPRITE_Y2.q());
-    /*p29.WYGA*/ top.VRM_TRI_A07.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.XYJU_SPRITE_Y3.q());
-    /*p29.WUNE*/ top.VRM_TRI_A08.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.YBOG_SPRITE_Y4.q());
-    /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.WYSO_SPRITE_Y5.q());
-    /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.XOTE_SPRITE_Y6.q());
-    /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.bus_mux.YZAB_SPRITE_Y7.q());
-    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.GND);   // sprites always in low half of tile store
+    /*p29.ABEM*/ top.vram_bus.VRM_TRI_A00.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _XUQU_SPRITE_AB);
+    /*p29.BAXE*/ top.vram_bus.VRM_TRI_A01.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _CYVU_SPRITE_Y0);
+    /*p29.ARAS*/ top.vram_bus.VRM_TRI_A02.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _BORE_SPRITE_Y1);
+    /*p29.AGAG*/ top.vram_bus.VRM_TRI_A03.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _BUVY_SPRITE_Y2);
+    /*p29.FAMU*/ top.vram_bus.VRM_TRI_A04.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), _GEJY_SPRITE_Y3);
+    /*p29.FUGY*/ top.vram_bus.VRM_TRI_A05.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.XEGU_SPRITE_Y1.q());
+    /*p29.GAVO*/ top.vram_bus.VRM_TRI_A06.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.YJEX_SPRITE_Y2.q());
+    /*p29.WYGA*/ top.vram_bus.VRM_TRI_A07.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.XYJU_SPRITE_Y3.q());
+    /*p29.WUNE*/ top.vram_bus.VRM_TRI_A08.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.YBOG_SPRITE_Y4.q());
+    /*p29.GOTU*/ top.vram_bus.VRM_TRI_A09.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.WYSO_SPRITE_Y5.q());
+    /*p29.GEGU*/ top.vram_bus.VRM_TRI_A10.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.XOTE_SPRITE_Y6.q());
+    /*p29.XEHE*/ top.vram_bus.VRM_TRI_A11.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.oam_bus.YZAB_SPRITE_Y7.q());
+    /*p29.DYSO*/ top.vram_bus.VRM_TRI_A12.set_tribuf_6n(top.ABON_SPR_VRM_RDn(), top.GND);   // sprites always in low half of tile store
   }
 }
 

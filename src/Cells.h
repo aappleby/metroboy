@@ -350,7 +350,7 @@ struct Reg9 : public RegisterBase {
 // Reg11 is used by the background pixel temp reg
 // Not sure why it's special. Could be dual-edge.
 
-///*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, top.VYPO_GND, top.VRM_TRI_D0);
+///*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, top.VYPO_GND, top.vram_bus.VRM_TRI_D0);
 
 // wire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
 // wire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
@@ -443,9 +443,6 @@ struct Reg11 : public RegisterBase {
 /*p30.XOBE*/ // out on 12
 /*p30.YDUF*/ // out on 12
 /*p30.XECU*/ // out on 12
-
-///*p01.AFER*/ AFER_RSTp.set(BOMA_xBxxxxxx, UPOJ_MODE_PRODn, ASOL_RST_LATCHp);
-///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_reg.WUDA_xBCxxFGx, top.WEFE_GND, bus_sig.YFOT_OAM_A2p);
 
 // AFER_01 nc
 // AFER_02 << UPOJ_04 (RSTp?)

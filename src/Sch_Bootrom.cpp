@@ -63,10 +63,10 @@ void Bootrom::tock(SchematicTop& top) {
     /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and(top.CPU_PIN_A04, top.CPU_PIN_A06);
 
     /*p07.TEXE*/ wire _TEXE_FF50_RDp = and(top.TEDO_CPU_RDp(), top.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ top.CPU_TRI_D0.set_tribuf_6p(_TEXE_FF50_RDp, _BOOT_BITn.q()); // does the rung of the tribuf control polarity?
+    /*p07.SYPU*/ top.int_bus.INT_TRI_D0.set_tribuf_6p(_TEXE_FF50_RDp, _BOOT_BITn.q()); // does the rung of the tribuf control polarity?
 
     /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), top.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or (top.CPU_TRI_D0.q(), _BOOT_BITn.q());
+    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or (top.int_bus.INT_TRI_D0.q(), _BOOT_BITn.q());
 
     /*p07.TEPU*/ _BOOT_BITn.set(_TUGE_FF50_WRn, top.rst_reg.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
   }
@@ -112,14 +112,14 @@ void Bootrom::tock(SchematicTop& top) {
     uint16_t addr = (uint16_t)top.get_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    top.CPU_TRI_D0.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x01);
-    top.CPU_TRI_D1.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x02);
-    top.CPU_TRI_D2.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x04);
-    top.CPU_TRI_D3.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x08);
-    top.CPU_TRI_D4.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x10);
-    top.CPU_TRI_D5.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x20);
-    top.CPU_TRI_D6.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x40);
-    top.CPU_TRI_D7.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x80);
+    top.int_bus.INT_TRI_D0.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x01);
+    top.int_bus.INT_TRI_D1.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x02);
+    top.int_bus.INT_TRI_D2.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x04);
+    top.int_bus.INT_TRI_D3.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x08);
+    top.int_bus.INT_TRI_D4.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x10);
+    top.int_bus.INT_TRI_D5.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x20);
+    top.int_bus.INT_TRI_D6.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x40);
+    top.int_bus.INT_TRI_D7.set_tribuf_6p(_ZERY_BOOT_CSp, data & 0x80);
   }
 }
 

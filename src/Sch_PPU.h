@@ -18,10 +18,10 @@ struct PpuRegisters {
   /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
   /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
 
-  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
-  /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }
 
   /*p27.ROZE*/ wire ROZE_FINE_COUNT_7n() const { return nand(RYKU_FINE_CNT0.q(), ROGA_FINE_CNT1.q(), RUBU_FINE_CNT2.q()); }
+
+  /*p21.WODU*/ wire WODU_RENDER_DONEp() const { return and(_XENA_STORE_MATCHn, XANO_X_167p()); }
 
   /*p21.XEHO*/ Reg17 XEHO_X0;
   /*p21.SAVY*/ Reg17 SAVY_X1;
@@ -32,8 +32,12 @@ struct PpuRegisters {
   /*p21.TAKO*/ Reg17 TAKO_X6;
   /*p21.SYBE*/ Reg17 SYBE_X7;
 
-private:
-  friend struct SchematicTop;
+//private:
+
+  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
+  /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }
+
+  Signal _XENA_STORE_MATCHn;
 
   /*p27.RYKU*/ Reg17 RYKU_FINE_CNT0;
   /*p27.ROGA*/ Reg17 ROGA_FINE_CNT1;

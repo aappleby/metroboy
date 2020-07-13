@@ -42,6 +42,24 @@ struct TileFetcher {
     return not(SUVU_PORCH_ENDn);
   }
 
+  /*p32.LEGU*/ Reg8 LEGU_BG_PIX_A0;
+  /*p32.NUDU*/ Reg8 NUDU_BG_PIX_A1;
+  /*p32.MUKU*/ Reg8 MUKU_BG_PIX_A2;
+  /*p32.LUZO*/ Reg8 LUZO_BG_PIX_A3;
+  /*p32.MEGU*/ Reg8 MEGU_BG_PIX_A4;
+  /*p32.MYJY*/ Reg8 MYJY_BG_PIX_A5;
+  /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
+  /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
+
+  /*p32.RAWU*/ Reg11 RAWU_BG_PIX_B0; // also holds tile index during fetch
+  /*p32.POZO*/ Reg11 POZO_BG_PIX_B1;
+  /*p32.PYZO*/ Reg11 PYZO_BG_PIX_B2; 
+  /*p32.POXA*/ Reg11 POXA_BG_PIX_B3; 
+  /*p32.PULO*/ Reg11 PULO_BG_PIX_B4; 
+  /*p32.POJU*/ Reg11 POJU_BG_PIX_B5; 
+  /*p32.POWY*/ Reg11 POWY_BG_PIX_B6; 
+  /*p32.PYJU*/ Reg11 PYJU_BG_PIX_B7;
+
 private:
 
   Signal _XYMU_RENDERINGp;

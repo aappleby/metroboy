@@ -7,7 +7,7 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct TimerRegisters {
+struct Timer {
 
   void tick(SchematicTop& gb);
   void tock(SchematicTop& gb);

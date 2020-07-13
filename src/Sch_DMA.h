@@ -36,20 +36,10 @@ struct DmaRegisters {
     return LUFA_DMA_VRAM_RDp;
   }
 
-  /*p25.CEDE*/ wire CEDE_DMA_OAM_WRn()    const { return not(LUMA_DMA_READ_CARTp()); }
+  /*p25.CEDE*/ wire CEDE_DMA_EXT_TO_OAMn()    const { return not(LUMA_DMA_READ_CARTp()); } // -> bus mux
 
-  /*p28.AZAR*/ wire AZAR_DMA_READ_VRAMn() const { return not(LUFA_DMA_VRAM_RDp()); }
-  /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn()   const { return not(LUFA_DMA_VRAM_RDp()); }
-  /*p25.APAM*/ wire APAM_DMA_VRAM_RDn()   const { return not(LUFA_DMA_VRAM_RDp()); }
-
-public:
-  friend struct SchematicTop;
-
-  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
-  /*p04.MATU*/ Reg17 _MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
-  /*p04.MYTE*/ Reg17 MYTE_DMA_DONE;
-  /*p04.LUVY*/ Reg17 LUVY_DMA_TRIG_d0;
-  /*p04.LENE*/ Reg17 LENE_DMA_TRIG_d4;
+  /*p28.AZAR*/ wire AZAR_DMA_VRM_TO_OAMn() const { return not(LUFA_DMA_VRAM_RDp()); } // -> bus mux
+  /*p25.APAM*/ wire APAM_DMA_VRAM_RDn()   const { return not(LUFA_DMA_VRAM_RDp()); } // -> RACU_MOEn
 
   /*p04.NAKY*/ Reg17 DMA_A00;
   /*p04.PYRO*/ Reg17 DMA_A01;
@@ -68,6 +58,15 @@ public:
   /*p04.PULA*/ Reg8 DMA_A13;
   /*p04.POKU*/ Reg8 DMA_A14;
   /*p04.MARU*/ Reg8 DMA_A15;
+
+private:
+  /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn()   const { return not(LUFA_DMA_VRAM_RDp()); }
+
+  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
+  /*p04.MATU*/ Reg17 _MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
+  /*p04.MYTE*/ Reg17 MYTE_DMA_DONE;
+  /*p04.LUVY*/ Reg17 LUVY_DMA_TRIG_d0;
+  /*p04.LENE*/ Reg17 LENE_DMA_TRIG_d4;
 
   // NAND latch
   /*p04.LARA*/ Gate LARA_DMA_LATCHn;

@@ -18,37 +18,11 @@ SchematicTop::SchematicTop() {
 
   CPU_PIN6.set(0);
 
-  CPU_TRI_D0.preset_a(0);
-  CPU_TRI_D1.preset_a(0);
-  CPU_TRI_D2.preset_a(0);
-  CPU_TRI_D3.preset_a(0);
-  CPU_TRI_D4.preset_a(0);
-  CPU_TRI_D5.preset_a(0);
-  CPU_TRI_D6.preset_a(0);
-  CPU_TRI_D7.preset_a(0);
-
-  VRM_TRI_A00.preset_a(0);
-  VRM_TRI_A01.preset_a(0);
-  VRM_TRI_A02.preset_a(0);
-  VRM_TRI_A03.preset_a(0);
-  VRM_TRI_A04.preset_a(0);
-  VRM_TRI_A05.preset_a(0);
-  VRM_TRI_A06.preset_a(0);
-  VRM_TRI_A07.preset_a(0);
-  VRM_TRI_A08.preset_a(0);
-  VRM_TRI_A09.preset_a(0);
-  VRM_TRI_A10.preset_a(0);
-  VRM_TRI_A11.preset_a(0);
-  VRM_TRI_A12.preset_a(0);
-
-  VRM_TRI_D0.preset_a(0);
-  VRM_TRI_D1.preset_a(0);
-  VRM_TRI_D2.preset_a(0);
-  VRM_TRI_D3.preset_a(0);
-  VRM_TRI_D4.preset_a(0);
-  VRM_TRI_D5.preset_a(0);
-  VRM_TRI_D6.preset_a(0);
-  VRM_TRI_D7.preset_a(0);
+  int_reg.CPU_PIN_ACK_JOYPAD.set(0);
+  int_reg.CPU_PIN_ACK_SERIAL.set(0);
+  int_reg.CPU_PIN_ACK_STAT.set(0);
+  int_reg.CPU_PIN_ACK_TIMER.set(0);
+  int_reg.CPU_PIN_ACK_VBLANK.set(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -79,42 +53,36 @@ void SchematicTop::set_cpu_bus(Req req) {
   CPU_PIN_A15.set(req.addr & 0x8000);
 
   if (req.write) {
-    CPU_TRI_D0.preset_a(req.data_lo & 0x01);
-    CPU_TRI_D1.preset_a(req.data_lo & 0x02);
-    CPU_TRI_D2.preset_a(req.data_lo & 0x04);
-    CPU_TRI_D3.preset_a(req.data_lo & 0x08);
-    CPU_TRI_D4.preset_a(req.data_lo & 0x10);
-    CPU_TRI_D5.preset_a(req.data_lo & 0x20);
-    CPU_TRI_D6.preset_a(req.data_lo & 0x40);
-    CPU_TRI_D7.preset_a(req.data_lo & 0x80);
+    int_bus.INT_TRI_D0.preset_a(req.data_lo & 0x01);
+    int_bus.INT_TRI_D1.preset_a(req.data_lo & 0x02);
+    int_bus.INT_TRI_D2.preset_a(req.data_lo & 0x04);
+    int_bus.INT_TRI_D3.preset_a(req.data_lo & 0x08);
+    int_bus.INT_TRI_D4.preset_a(req.data_lo & 0x10);
+    int_bus.INT_TRI_D5.preset_a(req.data_lo & 0x20);
+    int_bus.INT_TRI_D6.preset_a(req.data_lo & 0x40);
+    int_bus.INT_TRI_D7.preset_a(req.data_lo & 0x80);
 
-    CPU_TRI_D0.preset_b(req.data_lo & 0x01);
-    CPU_TRI_D1.preset_b(req.data_lo & 0x02);
-    CPU_TRI_D2.preset_b(req.data_lo & 0x04);
-    CPU_TRI_D3.preset_b(req.data_lo & 0x08);
-    CPU_TRI_D4.preset_b(req.data_lo & 0x10);
-    CPU_TRI_D5.preset_b(req.data_lo & 0x20);
-    CPU_TRI_D6.preset_b(req.data_lo & 0x40);
-    CPU_TRI_D7.preset_b(req.data_lo & 0x80);
+    int_bus.INT_TRI_D0.preset_b(req.data_lo & 0x01);
+    int_bus.INT_TRI_D1.preset_b(req.data_lo & 0x02);
+    int_bus.INT_TRI_D2.preset_b(req.data_lo & 0x04);
+    int_bus.INT_TRI_D3.preset_b(req.data_lo & 0x08);
+    int_bus.INT_TRI_D4.preset_b(req.data_lo & 0x10);
+    int_bus.INT_TRI_D5.preset_b(req.data_lo & 0x20);
+    int_bus.INT_TRI_D6.preset_b(req.data_lo & 0x40);
+    int_bus.INT_TRI_D7.preset_b(req.data_lo & 0x80);
   }
-
-  int_reg.CPU_PIN_ACK_JOYPAD.set(0);
-  int_reg.CPU_PIN_ACK_SERIAL.set(0);
-  int_reg.CPU_PIN_ACK_STAT.set(0);
-  int_reg.CPU_PIN_ACK_TIMER.set(0);
-  int_reg.CPU_PIN_ACK_VBLANK.set(0);
 }
 
 //-----------------------------------------------------------------------------
 
 void SchematicTop::set_buttons(uint8_t buttons) {
-  if (joy_reg.KELY_JOYP_UDLR.q()) {
+  if (joypad.KELY_JOYP_UDLR.q()) {
     JOY_PIN_P10_C.set(buttons & 0x01);
     JOY_PIN_P11_C.set(buttons & 0x02);
     JOY_PIN_P12_C.set(buttons & 0x04);
     JOY_PIN_P13_C.set(buttons & 0x08);
   }
-  else if (joy_reg.COFY_JOYP_ABCS.q()) {
+  else if (joypad.COFY_JOYP_ABCS.q()) {
     JOY_PIN_P10_C.set(buttons & 0x10);
     JOY_PIN_P11_C.set(buttons & 0x20);
     JOY_PIN_P12_C.set(buttons & 0x40);
@@ -162,11 +130,11 @@ SignalHash SchematicTop::tick() {
   bootrom.tick(*this);
   dma_reg.tick(*this);
   ser_reg.tick(*this);
-  joy_reg.tick(*this);
+  joypad.tick(*this);
   bus_mux.tick(*this);
   ppu_reg.tick(*this); // after window
   sprite_fetcher.tick(*this); // after window
-  pxp_reg.tick(*this); // after window
+  pix_pipe.tick(*this); // after window
   int_reg.tick(*this);
 
   clk_reg.tock(*this);
@@ -176,7 +144,7 @@ SignalHash SchematicTop::tick() {
   bootrom.tock(*this);
   dma_reg.tock(*this);
   ser_reg.tock(*this);
-  joy_reg.tock(*this);
+  joypad.tock(*this);
   sprite_scanner.tock(*this);
   lcd_reg.tock(*this);
   bus_mux.tock(*this);
@@ -185,12 +153,14 @@ SignalHash SchematicTop::tick() {
   ppu_reg.tock(*this); // after window
   tick_vram_pins(); // before sprite fetcher
   sprite_fetcher.tock(*this); // after window
-  pxp_reg.tock(*this); // after window
+  pix_pipe.tock(*this); // after window
   tile_fetcher.tock(*this); // after window
   int_reg.tock(*this);
 
   CPU_PIN_EXT_RST.set(SYS_PIN_RSTp);
   CPU_PIN_ADDR_HI.set(SYRO_FE00_FFFFp());
+
+  /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(top.clk_reg.ZEME_AxCxExGx(), top.rst_reg.CUNU_SYS_RSTn(), top.CPU_PIN5);
 
   //----------
   // FF40 LCDC
@@ -201,27 +171,27 @@ SignalHash SchematicTop::tick() {
     /*p23.VYRE*/ wire _VYRE_FF40_RDp = and (_VOCA_FF40p, ASOT_CPU_RDp());
     /*p23.WYCE*/ wire _WYCE_FF40_RDn = not(_VYRE_FF40_RDp);
 
-    /*p23.WYPO*/ CPU_TRI_D0.set_tribuf_6n(_WYCE_FF40_RDn, VYXE_LCDC_BGEN.q());
-    /*p23.XERO*/ CPU_TRI_D1.set_tribuf_6n(_WYCE_FF40_RDn, XYLO_LCDC_SPEN.q());
-    /*p23.WYJU*/ CPU_TRI_D2.set_tribuf_6n(_WYCE_FF40_RDn, XYMO_LCDC_SPSIZE.q());
-    /*p23.WUKA*/ CPU_TRI_D3.set_tribuf_6n(_WYCE_FF40_RDn, XAFO_LCDC_BGMAP.q());
-    /*p23.VOKE*/ CPU_TRI_D4.set_tribuf_6n(_WYCE_FF40_RDn, WEXU_LCDC_BGTILE.q());
-    /*p23.VATO*/ CPU_TRI_D5.set_tribuf_6n(_WYCE_FF40_RDn, WYMO_LCDC_WINEN.q());
-    /*p23.VAHA*/ CPU_TRI_D6.set_tribuf_6n(_WYCE_FF40_RDn, WOKY_LCDC_WINMAP.q());
-    /*p23.XEBU*/ CPU_TRI_D7.set_tribuf_6n(_WYCE_FF40_RDn, XONA_LCDC_EN.q());
+    /*p23.WYPO*/ int_bus.INT_TRI_D0.set_tribuf_6n(_WYCE_FF40_RDn, VYXE_LCDC_BGEN.q());
+    /*p23.XERO*/ int_bus.INT_TRI_D1.set_tribuf_6n(_WYCE_FF40_RDn, XYLO_LCDC_SPEN.q());
+    /*p23.WYJU*/ int_bus.INT_TRI_D2.set_tribuf_6n(_WYCE_FF40_RDn, XYMO_LCDC_SPSIZE.q());
+    /*p23.WUKA*/ int_bus.INT_TRI_D3.set_tribuf_6n(_WYCE_FF40_RDn, XAFO_LCDC_BGMAP.q());
+    /*p23.VOKE*/ int_bus.INT_TRI_D4.set_tribuf_6n(_WYCE_FF40_RDn, WEXU_LCDC_BGTILE.q());
+    /*p23.VATO*/ int_bus.INT_TRI_D5.set_tribuf_6n(_WYCE_FF40_RDn, WYMO_LCDC_WINEN.q());
+    /*p23.VAHA*/ int_bus.INT_TRI_D6.set_tribuf_6n(_WYCE_FF40_RDn, WOKY_LCDC_WINMAP.q());
+    /*p23.XEBU*/ int_bus.INT_TRI_D7.set_tribuf_6n(_WYCE_FF40_RDn, XONA_LCDC_EN.q());
 
     /*p23.WARU*/ wire _WARU_FF40_WRp = and (_VOCA_FF40p, CUPA_CPU_WRp_xxxxEFGx());
     /*p23.XUBO*/ wire _XUBO_FF40_WRn = not(_WARU_FF40_WRp);
 
     /*p01.XARE*/ wire _XARE_RSTn = not(rst_reg.XORE_SYS_RSTp());
-    /*p23.VYXE*/ VYXE_LCDC_BGEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D0.q());
-    /*p23.XYLO*/ XYLO_LCDC_SPEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D1.q());
-    /*p23.XYMO*/ XYMO_LCDC_SPSIZE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D2.q());
-    /*p23.XAFO*/ XAFO_LCDC_BGMAP  .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D3.q());
-    /*p23.WEXU*/ WEXU_LCDC_BGTILE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D4.q());
-    /*p23.WYMO*/ WYMO_LCDC_WINEN  .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D5.q());
-    /*p23.WOKY*/ WOKY_LCDC_WINMAP .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D6.q());
-    /*p23.XONA*/ XONA_LCDC_EN     .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, CPU_TRI_D7.q());
+    /*p23.VYXE*/ VYXE_LCDC_BGEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D0.q());
+    /*p23.XYLO*/ XYLO_LCDC_SPEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D1.q());
+    /*p23.XYMO*/ XYMO_LCDC_SPSIZE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D2.q());
+    /*p23.XAFO*/ XAFO_LCDC_BGMAP  .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D3.q());
+    /*p23.WEXU*/ WEXU_LCDC_BGTILE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D4.q());
+    /*p23.WYMO*/ WYMO_LCDC_WINEN  .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D5.q());
+    /*p23.WOKY*/ WOKY_LCDC_WINMAP .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D6.q());
+    /*p23.XONA*/ XONA_LCDC_EN     .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D7.q());
   }
 
   //----------
@@ -235,7 +205,7 @@ SignalHash SchematicTop::tick() {
   hash << bootrom.commit();
   hash << dma_reg.commit();
   hash << ser_reg.commit();
-  hash << joy_reg.commit(*this);
+  hash << joypad.commit(*this);
   hash << sprite_scanner.commit();
   hash << lcd_reg.commit(*this);
   hash << bus_mux.commit(*this);
@@ -244,7 +214,7 @@ SignalHash SchematicTop::tick() {
   hash << win_reg.commit(); // after sprite store
   hash << ppu_reg.commit(*this); // after sprite store
   hash << sprite_fetcher.commit(); // after window
-  hash << pxp_reg.commit(*this); // after window
+  hash << pix_pipe.commit(*this); // after window
   hash << tile_fetcher.commit(*this); // after window
   hash << int_reg.commit();
 
@@ -267,6 +237,8 @@ SignalHash SchematicTop::tick() {
   hash << CPU_PIN6.commit();               // PORTD_00: -> LEXY, doesn't do anything
   hash << CPU_PIN5.commit();               // PORTD_06: -> FROM_CPU5
 
+  hash << MAKA_FROM_CPU5_SYNC.commit();
+
   hash << CPU_PIN_RDp.commit();            // PORTA_00: -> UJYV, LAGU, LAVO
   hash << CPU_PIN_WRp.commit();            // PORTA_01: -> AREV, LAGU.
   hash << CPU_PIN_ADDR_VALID.commit();     // PORTA_06: -> APAP, TEXO
@@ -287,15 +259,6 @@ SignalHash SchematicTop::tick() {
   hash << CPU_PIN_A13.commit();
   hash << CPU_PIN_A14.commit();
   hash << CPU_PIN_A15.commit();
-
-  hash << CPU_TRI_D0.commit();
-  hash << CPU_TRI_D1.commit();
-  hash << CPU_TRI_D2.commit();
-  hash << CPU_TRI_D3.commit();
-  hash << CPU_TRI_D4.commit();
-  hash << CPU_TRI_D5.commit();
-  hash << CPU_TRI_D6.commit();
-  hash << CPU_TRI_D7.commit();
 
   //----------------------------------------
 
@@ -320,21 +283,6 @@ SignalHash SchematicTop::tick() {
   hash << JOY_PIN_P11_C.commit();     // PIN_66-> KERY, P05.KAPA
   hash << JOY_PIN_P12_C.commit();     // PIN_65-> KERY, P05.KEJA
   hash << JOY_PIN_P13_C.commit();     // PIN_64-> KERY, P05.KOLO
-
-
-  hash << VRM_TRI_A00.commit();
-  hash << VRM_TRI_A01.commit();
-  hash << VRM_TRI_A02.commit();
-  hash << VRM_TRI_A03.commit();
-  hash << VRM_TRI_A04.commit();
-  hash << VRM_TRI_A05.commit();
-  hash << VRM_TRI_A06.commit();
-  hash << VRM_TRI_A07.commit();
-  hash << VRM_TRI_A08.commit();
-  hash << VRM_TRI_A09.commit();
-  hash << VRM_TRI_A10.commit();
-  hash << VRM_TRI_A11.commit();
-  hash << VRM_TRI_A12.commit();
 
   hash << VRAM_PIN_MCSn_A.commit();   // PIN_43 <- SOKY
   hash << VRAM_PIN_MCSn_D.commit();   // PIN_43 <- SETY
@@ -383,15 +331,6 @@ SignalHash SchematicTop::tick() {
   hash << VRAM_PIN_MD7_A.commit();    // PIN_25 <- RYZE
   hash << VRAM_PIN_MD7_B.commit();    // PIN_25 <- ROFA
   hash << VRAM_PIN_MD7_D.commit();    // PIN_25 <- RADY
-
-  hash << VRM_TRI_D0.commit();
-  hash << VRM_TRI_D1.commit();
-  hash << VRM_TRI_D2.commit();
-  hash << VRM_TRI_D3.commit();
-  hash << VRM_TRI_D4.commit();
-  hash << VRM_TRI_D5.commit();
-  hash << VRM_TRI_D6.commit();
-  hash << VRM_TRI_D7.commit();
 
   //----------
   // LCDC
@@ -473,14 +412,14 @@ if (top.VYPO_GND) bus_out.set_data(
 ///*p05.KYWE*/ wire P05_NC1 = nor (KERU_DBG_FF00_D7, FF60_0o);
 
 /*p08.LYRA*/ wire DBG_D_RDn = nand(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/*p08.TUTY*/ if (!DBG_D_RDn) CPU_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
-/*p08.SYWA*/ if (!DBG_D_RDn) CPU_TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
-/*p08.SUGU*/ if (!DBG_D_RDn) CPU_TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
-/*p08.TAWO*/ if (!DBG_D_RDn) CPU_TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
-/*p08.TUTE*/ if (!DBG_D_RDn) CPU_TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
-/*p08.SAJO*/ if (!DBG_D_RDn) CPU_TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
-/*p08.TEMY*/ if (!DBG_D_RDn) CPU_TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
-/*p08.ROPA*/ if (!DBG_D_RDn) CPU_TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
+/*p08.TUTY*/ if (!DBG_D_RDn) INT_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
+/*p08.SYWA*/ if (!DBG_D_RDn) INT_TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
+/*p08.SUGU*/ if (!DBG_D_RDn) INT_TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
+/*p08.TAWO*/ if (!DBG_D_RDn) INT_TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
+/*p08.TUTE*/ if (!DBG_D_RDn) INT_TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
+/*p08.SAJO*/ if (!DBG_D_RDn) INT_TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
+/*p08.TEMY*/ if (!DBG_D_RDn) INT_TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
+/*p08.ROPA*/ if (!DBG_D_RDn) INT_TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
 #endif
 
 // hack, not correct
@@ -492,13 +431,13 @@ if (top.VYPO_GND) bus_out.set_data(
 
   /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
-  /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D0);
-  /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D1);
+  /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, INT_TRI_D0);
+  /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, INT_TRI_D1);
 
   ///*p05.KURA*/ wire FF60_0n = not(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not(FF60);
-  /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D0);
-  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D1);
+  /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, INT_TRI_D0);
+  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, INT_TRI_D1);
 }
 #endif
 
@@ -612,19 +551,19 @@ void SchematicTop::tick_vram_pins() {
   }
 
   {
-    /*p25.MYFU*/ wire _MYFU = not(VRM_TRI_A00.q());
-    /*p25.MASA*/ wire _MASA = not(VRM_TRI_A01.q());
-    /*p25.MYRE*/ wire _MYRE = not(VRM_TRI_A02.q());
-    /*p25.MAVU*/ wire _MAVU = not(VRM_TRI_A03.q());
-    /*p25.MEPA*/ wire _MEPA = not(VRM_TRI_A04.q());
-    /*p25.MYSA*/ wire _MYSA = not(VRM_TRI_A05.q());
-    /*p25.MEWY*/ wire _MEWY = not(VRM_TRI_A06.q());
-    /*p25.MUME*/ wire _MUME = not(VRM_TRI_A07.q());
-    /*p25.VOVA*/ wire _VOVA = not(VRM_TRI_A08.q());
-    /*p25.VODE*/ wire _VODE = not(VRM_TRI_A09.q());
-    /*p25.RUKY*/ wire _RUKY = not(VRM_TRI_A10.q());
-    /*p25.RUMA*/ wire _RUMA = not(VRM_TRI_A11.q());
-    /*p25.REHO*/ wire _REHO = not(VRM_TRI_A12.q());
+    /*p25.MYFU*/ wire _MYFU = not(vram_bus.VRM_TRI_A00.q());
+    /*p25.MASA*/ wire _MASA = not(vram_bus.VRM_TRI_A01.q());
+    /*p25.MYRE*/ wire _MYRE = not(vram_bus.VRM_TRI_A02.q());
+    /*p25.MAVU*/ wire _MAVU = not(vram_bus.VRM_TRI_A03.q());
+    /*p25.MEPA*/ wire _MEPA = not(vram_bus.VRM_TRI_A04.q());
+    /*p25.MYSA*/ wire _MYSA = not(vram_bus.VRM_TRI_A05.q());
+    /*p25.MEWY*/ wire _MEWY = not(vram_bus.VRM_TRI_A06.q());
+    /*p25.MUME*/ wire _MUME = not(vram_bus.VRM_TRI_A07.q());
+    /*p25.VOVA*/ wire _VOVA = not(vram_bus.VRM_TRI_A08.q());
+    /*p25.VODE*/ wire _VODE = not(vram_bus.VRM_TRI_A09.q());
+    /*p25.RUKY*/ wire _RUKY = not(vram_bus.VRM_TRI_A10.q());
+    /*p25.RUMA*/ wire _RUMA = not(vram_bus.VRM_TRI_A11.q());
+    /*p25.REHO*/ wire _REHO = not(vram_bus.VRM_TRI_A12.q());
 
     /*p25.LEXE*/ VRAM_PIN_MA00_AD.set(_MYFU);
     /*p25.LOZU*/ VRAM_PIN_MA01_AD.set(_MASA);
@@ -649,25 +588,25 @@ void SchematicTop::tick_vram_pins() {
 
     /*p25.ROCY*/ wire _ROCY_CPU_TO_VRMp = and (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
     /*p25.RAHU*/ wire _RAHU_CPU_TO_VRMn = not(_ROCY_CPU_TO_VRMp);
-    /*p25.TEME*/ VRM_TRI_D0.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D0.q());
-    /*p25.TEWU*/ VRM_TRI_D1.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D1.q());
-    /*p25.TYGO*/ VRM_TRI_D2.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D2.q());
-    /*p25.SOTE*/ VRM_TRI_D3.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D3.q());
-    /*p25.SEKE*/ VRM_TRI_D4.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D4.q());
-    /*p25.RUJO*/ VRM_TRI_D5.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D5.q());
-    /*p25.TOFA*/ VRM_TRI_D6.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D6.q());
-    /*p25.SUZA*/ VRM_TRI_D7.set_tribuf_10n(_RAHU_CPU_TO_VRMn, CPU_TRI_D7.q());
+    /*p25.TEME*/ vram_bus.VRM_TRI_D0.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D0.q());
+    /*p25.TEWU*/ vram_bus.VRM_TRI_D1.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D1.q());
+    /*p25.TYGO*/ vram_bus.VRM_TRI_D2.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D2.q());
+    /*p25.SOTE*/ vram_bus.VRM_TRI_D3.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D3.q());
+    /*p25.SEKE*/ vram_bus.VRM_TRI_D4.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D4.q());
+    /*p25.RUJO*/ vram_bus.VRM_TRI_D5.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D5.q());
+    /*p25.TOFA*/ vram_bus.VRM_TRI_D6.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D6.q());
+    /*p25.SUZA*/ vram_bus.VRM_TRI_D7.set_tribuf_10n(_RAHU_CPU_TO_VRMn, int_bus.INT_TRI_D7.q());
 
 
     {
-      /*p25.SYNU*/ wire _SYNU = or (VRM_TRI_D0.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.SYMA*/ wire _SYMA = or (VRM_TRI_D1.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.ROKO*/ wire _ROKO = or (VRM_TRI_D2.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.SYBU*/ wire _SYBU = or (VRM_TRI_D3.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.SAKO*/ wire _SAKO = or (VRM_TRI_D4.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.SEJY*/ wire _SEJY = or (VRM_TRI_D5.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.SEDO*/ wire _SEDO = or (VRM_TRI_D6.q(), _RAHU_CPU_TO_VRMn);
-      /*p25.SAWU*/ wire _SAWU = or (VRM_TRI_D7.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SYNU*/ wire _SYNU = or (vram_bus.VRM_TRI_D0.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SYMA*/ wire _SYMA = or (vram_bus.VRM_TRI_D1.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.ROKO*/ wire _ROKO = or (vram_bus.VRM_TRI_D2.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SYBU*/ wire _SYBU = or (vram_bus.VRM_TRI_D3.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SAKO*/ wire _SAKO = or (vram_bus.VRM_TRI_D4.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SEJY*/ wire _SEJY = or (vram_bus.VRM_TRI_D5.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SEDO*/ wire _SEDO = or (vram_bus.VRM_TRI_D6.q(), _RAHU_CPU_TO_VRMn);
+      /*p25.SAWU*/ wire _SAWU = or (vram_bus.VRM_TRI_D7.q(), _RAHU_CPU_TO_VRMn);
 
       /*p25.RURA*/ wire _RURA = not(_SYNU);
       /*p25.RULY*/ wire _RULY = not(_SYMA);
@@ -691,14 +630,14 @@ void SchematicTop::tick_vram_pins() {
 
     {
       /*p25.ROVE*/ wire _ROVE_CPU_TO_VRMp = not(_RAHU_CPU_TO_VRMn);
-      /*p25.SEFA*/ wire _SEFA = and(VRM_TRI_D0.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SOGO*/ wire _SOGO = and(VRM_TRI_D1.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SEFU*/ wire _SEFU = and(VRM_TRI_D2.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SUNA*/ wire _SUNA = and(VRM_TRI_D3.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SUMO*/ wire _SUMO = and(VRM_TRI_D4.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SAZU*/ wire _SAZU = and(VRM_TRI_D5.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SAMO*/ wire _SAMO = and(VRM_TRI_D6.q(), _ROVE_CPU_TO_VRMp);
-      /*p25.SUKE*/ wire _SUKE = and(VRM_TRI_D7.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SEFA*/ wire _SEFA = and(vram_bus.VRM_TRI_D0.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SOGO*/ wire _SOGO = and(vram_bus.VRM_TRI_D1.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SEFU*/ wire _SEFU = and(vram_bus.VRM_TRI_D2.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SUNA*/ wire _SUNA = and(vram_bus.VRM_TRI_D3.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SUMO*/ wire _SUMO = and(vram_bus.VRM_TRI_D4.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SAZU*/ wire _SAZU = and(vram_bus.VRM_TRI_D5.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SAMO*/ wire _SAMO = and(vram_bus.VRM_TRI_D6.q(), _ROVE_CPU_TO_VRMp);
+      /*p25.SUKE*/ wire _SUKE = and(vram_bus.VRM_TRI_D7.q(), _ROVE_CPU_TO_VRMp);
 
       /*p25.REGE*/ wire _REGE = not(_SEFA);
       /*p25.RYKY*/ wire _RYKY = not(_SOGO);
@@ -723,14 +662,14 @@ void SchematicTop::tick_vram_pins() {
     // this is ORing a signal with a delayed version of itself?
     /*p25.RELA*/ wire _RELA_VRM_TO_CPUn = or (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
     /*p25.RENA*/ wire _RENA_VRM_TO_CPUp = not(_RELA_VRM_TO_CPUn);
-    /*p25.RODY*/ VRM_TRI_D0.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD0_C);
-    /*p25.REBA*/ VRM_TRI_D1.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD1_C);
-    /*p25.RYDO*/ VRM_TRI_D2.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD2_C);
-    /*p25.REMO*/ VRM_TRI_D3.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD3_C);
-    /*p25.ROCE*/ VRM_TRI_D4.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD4_C);
-    /*p25.ROPU*/ VRM_TRI_D5.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD5_C);
-    /*p25.RETA*/ VRM_TRI_D6.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD6_C);
-    /*p25.RAKU*/ VRM_TRI_D7.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD7_C);
+    /*p25.RODY*/ vram_bus.VRM_TRI_D0.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD0_C);
+    /*p25.REBA*/ vram_bus.VRM_TRI_D1.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD1_C);
+    /*p25.RYDO*/ vram_bus.VRM_TRI_D2.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD2_C);
+    /*p25.REMO*/ vram_bus.VRM_TRI_D3.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD3_C);
+    /*p25.ROCE*/ vram_bus.VRM_TRI_D4.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD4_C);
+    /*p25.ROPU*/ vram_bus.VRM_TRI_D5.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD5_C);
+    /*p25.RETA*/ vram_bus.VRM_TRI_D6.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD6_C);
+    /*p25.RAKU*/ vram_bus.VRM_TRI_D7.set_tribuf_6p(_RENA_VRM_TO_CPUp, VRAM_PIN_MD7_C);
 
     /*p25.ROFA*/ wire _ROFA_VRM_TO_CPUn = not(_RENA_VRM_TO_CPUp);
     VRAM_PIN_MD0_B.set(_ROFA_VRM_TO_CPUn);
@@ -747,23 +686,23 @@ void SchematicTop::tick_vram_pins() {
     /*p25.TYVY*/ wire _TYVY_VRM_TO_CPUn = nand(_SERE_CPU_VRM_RDp, LEKO_CPU_RDp());
     /*p25.SEBY*/ wire _SEBY_VRM_TO_CPUp = not(_TYVY_VRM_TO_CPUn);
 
-    /*p25.RERY*/ wire _RERY = not(VRM_TRI_D0.q());
-    /*p25.RUNA*/ wire _RUNA = not(VRM_TRI_D1.q());
-    /*p25.RONA*/ wire _RONA = not(VRM_TRI_D2.q());
-    /*p25.RUNO*/ wire _RUNO = not(VRM_TRI_D3.q());
-    /*p25.SANA*/ wire _SANA = not(VRM_TRI_D4.q());
-    /*p25.RORO*/ wire _RORO = not(VRM_TRI_D5.q());
-    /*p25.RABO*/ wire _RABO = not(VRM_TRI_D6.q());
-    /*p25.SAME*/ wire _SAME = not(VRM_TRI_D7.q());
+    /*p25.RERY*/ wire _RERY = not(vram_bus.VRM_TRI_D0.q());
+    /*p25.RUNA*/ wire _RUNA = not(vram_bus.VRM_TRI_D1.q());
+    /*p25.RONA*/ wire _RONA = not(vram_bus.VRM_TRI_D2.q());
+    /*p25.RUNO*/ wire _RUNO = not(vram_bus.VRM_TRI_D3.q());
+    /*p25.SANA*/ wire _SANA = not(vram_bus.VRM_TRI_D4.q());
+    /*p25.RORO*/ wire _RORO = not(vram_bus.VRM_TRI_D5.q());
+    /*p25.RABO*/ wire _RABO = not(vram_bus.VRM_TRI_D6.q());
+    /*p25.SAME*/ wire _SAME = not(vram_bus.VRM_TRI_D7.q());
 
-    /*p25.RUGA*/ CPU_TRI_D0.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RERY);
-    /*p25.ROTA*/ CPU_TRI_D1.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNA);
-    /*p25.RYBU*/ CPU_TRI_D2.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RONA);
-    /*p25.RAJU*/ CPU_TRI_D3.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNO);
-    /*p25.TYJA*/ CPU_TRI_D4.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _SANA);
-    /*p25.REXU*/ CPU_TRI_D5.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RORO);
-    /*p25.RUPY*/ CPU_TRI_D6.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RABO);
-    /*p25.TOKU*/ CPU_TRI_D7.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _SAME);
+    /*p25.RUGA*/ int_bus.INT_TRI_D0.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RERY);
+    /*p25.ROTA*/ int_bus.INT_TRI_D1.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNA);
+    /*p25.RYBU*/ int_bus.INT_TRI_D2.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RONA);
+    /*p25.RAJU*/ int_bus.INT_TRI_D3.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNO);
+    /*p25.TYJA*/ int_bus.INT_TRI_D4.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _SANA);
+    /*p25.REXU*/ int_bus.INT_TRI_D5.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RORO);
+    /*p25.RUPY*/ int_bus.INT_TRI_D6.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RABO);
+    /*p25.TOKU*/ int_bus.INT_TRI_D7.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _SAME);
   }
 
 }

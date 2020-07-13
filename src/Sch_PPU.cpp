@@ -6,7 +6,8 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void PpuRegisters::tick(SchematicTop& /*top*/) {
+void PpuRegisters::tick(SchematicTop& top) {
+  _XENA_STORE_MATCHn = top.sprite_store.XENA_STORE_MATCHn();
 }
 
 //------------------------------------------------------------------------------
@@ -19,7 +20,7 @@ void PpuRegisters::tock(SchematicTop& top) {
   /*p24.ROXO*/ wire _ROXO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
 
   {
-    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, top.WODU_RENDER_DONEp());
+    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, WODU_RENDER_DONEp());
   }
 
   {
@@ -28,7 +29,7 @@ void PpuRegisters::tock(SchematicTop& top) {
 
   {
     /*p27.PECU*/ wire _PECU_FINE_CLK = nand(_ROXO_CLKPIPEp, ROZE_FINE_COUNT_7n());
-    /*p27.PASO*/ wire _PASO_FINE_RST = nor(top.TEVO_FINE_RSTp(), top.ppu_reg.ROPY_RENDERINGn());
+    /*p27.PASO*/ wire _PASO_FINE_RST = nor(top.win_reg.TEVO_FINE_RSTp(), top.ppu_reg.ROPY_RENDERINGn());
     /*p27.RYKU*/ RYKU_FINE_CNT0.set(_PECU_FINE_CLK,      _PASO_FINE_RST, RYKU_FINE_CNT0.qn());
     /*p27.ROGA*/ ROGA_FINE_CNT1.set(RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn());
     /*p27.RUBU*/ RUBU_FINE_CNT2.set(ROGA_FINE_CNT1.qn(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn());
@@ -117,10 +118,10 @@ void PpuRegisters::tock(SchematicTop& top) {
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(top.rst_reg.WESY_SYS_RSTn(), _RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp());
 
-    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
-    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());
-    /*p21.REFE*/ REFE_INT_OAM_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
-    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
+    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D0.q());
+    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D1.q());
+    /*p21.REFE*/ REFE_INT_OAM_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D2.q());
+    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D3.q());
 
     /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor(_XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
     /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(_XYMU_RENDERINGp.q(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
@@ -131,19 +132,19 @@ void PpuRegisters::tock(SchematicTop& top) {
     // WUGA facing dot
     // SEGO facing dot
 
-    /*p21.TEBY*/ top.CPU_TRI_D0.set_tribuf_6p(_TOBE_FF41_RDp, not(_SADU_STAT_MODE0n));
-    /*p21.WUGA*/ top.CPU_TRI_D1.set_tribuf_6p(_TOBE_FF41_RDp, not(_XATY_STAT_MODE1n));
-    /*p21.SEGO*/ top.CPU_TRI_D2.set_tribuf_6p(_TOBE_FF41_RDp, not(RUPO_LYC_MATCH_LATCHn.q()));
+    /*p21.TEBY*/ top.int_bus.INT_TRI_D0.set_tribuf_6p(_TOBE_FF41_RDp, not(_SADU_STAT_MODE0n));
+    /*p21.WUGA*/ top.int_bus.INT_TRI_D1.set_tribuf_6p(_TOBE_FF41_RDp, not(_XATY_STAT_MODE1n));
+    /*p21.SEGO*/ top.int_bus.INT_TRI_D2.set_tribuf_6p(_TOBE_FF41_RDp, not(RUPO_LYC_MATCH_LATCHn.q()));
 
     // PUZO not facing dot
     // POFO not facing dot
     // SASY not facing dot
     // POTE not facing dot
 
-    /*p21.PUZO*/ top.CPU_TRI_D3.set_tribuf_6n(_VAVE_FF41_RDn, ROXE_INT_HBL_EN.q());
-    /*p21.POFO*/ top.CPU_TRI_D4.set_tribuf_6n(_VAVE_FF41_RDn, RUFO_INT_VBL_EN.q());
-    /*p21.SASY*/ top.CPU_TRI_D5.set_tribuf_6n(_VAVE_FF41_RDn, REFE_INT_OAM_EN.q());
-    /*p21.POTE*/ top.CPU_TRI_D6.set_tribuf_6n(_VAVE_FF41_RDn, RUGU_INT_LYC_EN.q());
+    /*p21.PUZO*/ top.int_bus.INT_TRI_D3.set_tribuf_6n(_VAVE_FF41_RDn, ROXE_INT_HBL_EN.q());
+    /*p21.POFO*/ top.int_bus.INT_TRI_D4.set_tribuf_6n(_VAVE_FF41_RDn, RUFO_INT_VBL_EN.q());
+    /*p21.SASY*/ top.int_bus.INT_TRI_D5.set_tribuf_6n(_VAVE_FF41_RDn, REFE_INT_OAM_EN.q());
+    /*p21.POTE*/ top.int_bus.INT_TRI_D6.set_tribuf_6n(_VAVE_FF41_RDn, RUGU_INT_LYC_EN.q());
   }
 }
 
@@ -151,6 +152,9 @@ void PpuRegisters::tock(SchematicTop& top) {
 
 SignalHash PpuRegisters::commit(SchematicTop& top) {
   SignalHash hash;
+
+  hash << _XENA_STORE_MATCHn.commit();
+
   /*p??.ROXY*/ hash << ROXY_FINE_MATCH_LATCHn.commit();
   /*p??.PUXA*/ hash << PUXA_FINE_MATCH_A.commit();
   /*p27.NYZE*/ hash << NYZE_FINE_MATCH_B.commit();

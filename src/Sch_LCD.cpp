@@ -155,14 +155,14 @@ void LcdRegisters::tock(SchematicTop& top) {
     /*p23.XUCE*/ wire _XUCE_LY6n = not(MATO_Y6.q());
     /*p23.XOWO*/ wire _XOWO_LY7n = not(LAFO_Y7.q());
 
-    /*p23.VEGA*/ top.CPU_TRI_D0.set_tribuf_6n(_VARO_FF44_RDn, not(_WURY_LY0n));
-    /*p23.WUVA*/ top.CPU_TRI_D1.set_tribuf_6n(_VARO_FF44_RDn, not(_XEPO_LY1n));
-    /*p23.LYCO*/ top.CPU_TRI_D2.set_tribuf_6n(_VARO_FF44_RDn, not(_MYFA_LY2n));
-    /*p23.WOJY*/ top.CPU_TRI_D3.set_tribuf_6n(_VARO_FF44_RDn, not(_XUHY_LY3n));
-    /*p23.VYNE*/ top.CPU_TRI_D4.set_tribuf_6n(_VARO_FF44_RDn, not(_WATA_LY4n));
-    /*p23.WAMA*/ top.CPU_TRI_D5.set_tribuf_6n(_VARO_FF44_RDn, not(_XAGA_LY5n));
-    /*p23.WAVO*/ top.CPU_TRI_D6.set_tribuf_6n(_VARO_FF44_RDn, not(_XUCE_LY6n));
-    /*p23.WEZE*/ top.CPU_TRI_D7.set_tribuf_6n(_VARO_FF44_RDn, not(_XOWO_LY7n));
+    /*p23.VEGA*/ top.int_bus.INT_TRI_D0.set_tribuf_6n(_VARO_FF44_RDn, not(_WURY_LY0n));
+    /*p23.WUVA*/ top.int_bus.INT_TRI_D1.set_tribuf_6n(_VARO_FF44_RDn, not(_XEPO_LY1n));
+    /*p23.LYCO*/ top.int_bus.INT_TRI_D2.set_tribuf_6n(_VARO_FF44_RDn, not(_MYFA_LY2n));
+    /*p23.WOJY*/ top.int_bus.INT_TRI_D3.set_tribuf_6n(_VARO_FF44_RDn, not(_XUHY_LY3n));
+    /*p23.VYNE*/ top.int_bus.INT_TRI_D4.set_tribuf_6n(_VARO_FF44_RDn, not(_WATA_LY4n));
+    /*p23.WAMA*/ top.int_bus.INT_TRI_D5.set_tribuf_6n(_VARO_FF44_RDn, not(_XAGA_LY5n));
+    /*p23.WAVO*/ top.int_bus.INT_TRI_D6.set_tribuf_6n(_VARO_FF44_RDn, not(_XUCE_LY6n));
+    /*p23.WEZE*/ top.int_bus.INT_TRI_D7.set_tribuf_6n(_VARO_FF44_RDn, not(_XOWO_LY7n));
   }
 
   // FF45 LYC
@@ -173,26 +173,26 @@ void LcdRegisters::tock(SchematicTop& top) {
     /*p23.XYLY*/ wire _XYLY_FF45_RDp = and(top.ASOT_CPU_RDp(), _XAYU_FF45p);
     /*p23.WEKU*/ wire _WEKU_FF45_RDn = not(_XYLY_FF45_RDp);
 
-    /*p23.RETU*/ top.CPU_TRI_D0.set_tribuf_6n(_WEKU_FF45_RDn, SYRY_LYC0.q());
-    /*p23.VOJO*/ top.CPU_TRI_D1.set_tribuf_6n(_WEKU_FF45_RDn, VUCE_LYC1.q());
-    /*p23.RAZU*/ top.CPU_TRI_D2.set_tribuf_6n(_WEKU_FF45_RDn, SEDY_LYC2.q());
-    /*p23.REDY*/ top.CPU_TRI_D3.set_tribuf_6n(_WEKU_FF45_RDn, SALO_LYC3.q());
-    /*p23.RACE*/ top.CPU_TRI_D4.set_tribuf_6n(_WEKU_FF45_RDn, SOTA_LYC4.q());
-    /*p23.VAZU*/ top.CPU_TRI_D5.set_tribuf_6n(_WEKU_FF45_RDn, VAFA_LYC5.q());
-    /*p23.VAFE*/ top.CPU_TRI_D6.set_tribuf_6n(_WEKU_FF45_RDn, VEVO_LYC6.q());
-    /*p23.PUFY*/ top.CPU_TRI_D7.set_tribuf_6n(_WEKU_FF45_RDn, RAHA_LYC7.q());
+    /*p23.RETU*/ top.int_bus.INT_TRI_D0.set_tribuf_6n(_WEKU_FF45_RDn, SYRY_LYC0.q());
+    /*p23.VOJO*/ top.int_bus.INT_TRI_D1.set_tribuf_6n(_WEKU_FF45_RDn, VUCE_LYC1.q());
+    /*p23.RAZU*/ top.int_bus.INT_TRI_D2.set_tribuf_6n(_WEKU_FF45_RDn, SEDY_LYC2.q());
+    /*p23.REDY*/ top.int_bus.INT_TRI_D3.set_tribuf_6n(_WEKU_FF45_RDn, SALO_LYC3.q());
+    /*p23.RACE*/ top.int_bus.INT_TRI_D4.set_tribuf_6n(_WEKU_FF45_RDn, SOTA_LYC4.q());
+    /*p23.VAZU*/ top.int_bus.INT_TRI_D5.set_tribuf_6n(_WEKU_FF45_RDn, VAFA_LYC5.q());
+    /*p23.VAFE*/ top.int_bus.INT_TRI_D6.set_tribuf_6n(_WEKU_FF45_RDn, VEVO_LYC6.q());
+    /*p23.PUFY*/ top.int_bus.INT_TRI_D7.set_tribuf_6n(_WEKU_FF45_RDn, RAHA_LYC7.q());
 
     /*p23.XUFA*/ wire _XUFA_FF45_WRn = and (top.CUPA_CPU_WRp_xxxxEFGx(), _XAYU_FF45p);
     /*p23.WANE*/ wire _WANE_FF45_WRp = not(_XUFA_FF45_WRn);
 
-    /*p23.SYRY*/ SYRY_LYC0.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D0.q());
-    /*p23.VUCE*/ VUCE_LYC1.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D1.q());
-    /*p23.SEDY*/ SEDY_LYC2.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D2.q());
-    /*p23.SALO*/ SALO_LYC3.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D3.q());
-    /*p23.SOTA*/ SOTA_LYC4.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D4.q());
-    /*p23.VAFA*/ VAFA_LYC5.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D5.q());
-    /*p23.VEVO*/ VEVO_LYC6.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D6.q());
-    /*p23.RAHA*/ RAHA_LYC7.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.CPU_TRI_D7.q());
+    /*p23.SYRY*/ SYRY_LYC0.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D0.q());
+    /*p23.VUCE*/ VUCE_LYC1.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D1.q());
+    /*p23.SEDY*/ SEDY_LYC2.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D2.q());
+    /*p23.SALO*/ SALO_LYC3.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D3.q());
+    /*p23.SOTA*/ SOTA_LYC4.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D4.q());
+    /*p23.VAFA*/ VAFA_LYC5.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D5.q());
+    /*p23.VEVO*/ VEVO_LYC6.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D6.q());
+    /*p23.RAHA*/ RAHA_LYC7.set(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.rst_reg.WESY_SYS_RSTn(), top.int_bus.INT_TRI_D7.q());
   }
 }
 

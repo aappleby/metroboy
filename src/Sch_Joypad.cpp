@@ -6,12 +6,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tick(SchematicTop& /*top*/) {
+void Joypad::tick(SchematicTop& /*top*/) {
 }
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tock(SchematicTop& top) {
+void Joypad::tock(SchematicTop& top) {
 
   /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03, top.CPU_PIN_A04, top.CPU_PIN_A07);
   /*p10.ANAP*/ wire _ANAP_FF_0xx00000 = and (_AMUS_0xx00000, top.SYKE_FF00_FFFFp());
@@ -39,26 +39,26 @@ void JoypadRegisters::tock(SchematicTop& top) {
     /*p05.KEJA*/ KEJA_JOYP_L2.tp_latch(_BYZO_FF00_RDn, top.JOY_PIN_P12_C);
     /*p05.KOLO*/ KOLO_JOYP_L3.tp_latch(_BYZO_FF00_RDn, top.JOY_PIN_P13_C);
 
-    /*p05.KEMA*/ top.CPU_TRI_D0.set_tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
-    /*p05.KURO*/ top.CPU_TRI_D1.set_tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
-    /*p05.KUVE*/ top.CPU_TRI_D2.set_tribuf_6n(_BYZO_FF00_RDn, KEJA_JOYP_L2.q());
-    /*p05.JEKU*/ top.CPU_TRI_D3.set_tribuf_6n(_BYZO_FF00_RDn, KOLO_JOYP_L3.q());
-    /*p05.KOCE*/ top.CPU_TRI_D4.set_tribuf_6n(_BYZO_FF00_RDn, KELY_JOYP_UDLR.q());
-    /*p05.CUDY*/ top.CPU_TRI_D5.set_tribuf_6n(_BYZO_FF00_RDn, COFY_JOYP_ABCS.q());
-    /*p??.????*/ top.CPU_TRI_D6.set_tribuf_6n(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.q());
-    /*p??.????*/ top.CPU_TRI_D7.set_tribuf_6n(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.q());
+    /*p05.KEMA*/ top.int_bus.INT_TRI_D0.set_tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
+    /*p05.KURO*/ top.int_bus.INT_TRI_D1.set_tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
+    /*p05.KUVE*/ top.int_bus.INT_TRI_D2.set_tribuf_6n(_BYZO_FF00_RDn, KEJA_JOYP_L2.q());
+    /*p05.JEKU*/ top.int_bus.INT_TRI_D3.set_tribuf_6n(_BYZO_FF00_RDn, KOLO_JOYP_L3.q());
+    /*p05.KOCE*/ top.int_bus.INT_TRI_D4.set_tribuf_6n(_BYZO_FF00_RDn, KELY_JOYP_UDLR.q());
+    /*p05.CUDY*/ top.int_bus.INT_TRI_D5.set_tribuf_6n(_BYZO_FF00_RDn, COFY_JOYP_ABCS.q());
+    /*p??.????*/ top.int_bus.INT_TRI_D6.set_tribuf_6n(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.q());
+    /*p??.????*/ top.int_bus.INT_TRI_D7.set_tribuf_6n(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.q());
   }
 
   {
     /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-    /*p05.JUTE*/ JUTE_JOYP_RA    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D0);
-    /*p05.KECY*/ KECY_JOYP_LB    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D1);
-    /*p05.JALE*/ JALE_JOYP_UC    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D2);
-    /*p05.KYME*/ KYME_JOYP_DS    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D3);
-    /*p05.KELY*/ KELY_JOYP_UDLR  .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D4);
-    /*p05.COFY*/ COFY_JOYP_ABCS  .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D5);
-    /*p05.KUKO*/ KUKO_DBG_FF00_D6.set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D6);
-    /*p05.KERU*/ KERU_DBG_FF00_D7.set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.CPU_TRI_D7);
+    /*p05.JUTE*/ JUTE_JOYP_RA    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D0);
+    /*p05.KECY*/ KECY_JOYP_LB    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D1);
+    /*p05.JALE*/ JALE_JOYP_UC    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D2);
+    /*p05.KYME*/ KYME_JOYP_DS    .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D3);
+    /*p05.KELY*/ KELY_JOYP_UDLR  .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D4);
+    /*p05.COFY*/ COFY_JOYP_ABCS  .set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D5);
+    /*p05.KUKO*/ KUKO_DBG_FF00_D6.set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D6);
+    /*p05.KERU*/ KERU_DBG_FF00_D7.set(_ATOZ_FF00_WRn, top.rst_reg.ALUR_SYS_RSTn(), top.int_bus.INT_TRI_D7);
   }
 
   {
@@ -89,7 +89,7 @@ void JoypadRegisters::tock(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash JoypadRegisters::commit(SchematicTop& top) {
+SignalHash Joypad::commit(SchematicTop& top) {
   SignalHash hash;
 
   hash << top.JOY_PIN_P10_A.commit();    // PIN_67<- KOLE

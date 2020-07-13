@@ -16,8 +16,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   auto top = gateboy.top();
 
   top->clk_reg.CPU_PIN_READYp.set(0);
-  top->bus_mux.EXT_PIN_WRp_C.set(0);
-  top->bus_mux.EXT_PIN_RDp_C.set(0);
+  top->ext_bus.set_ext_rdwr(0, 0);
   top->CPU_PIN5.set(0);
 
   top->SYS_PIN_T1n.set(0);
@@ -132,8 +131,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   for (; pass_count < 256; pass_count++) {
     top->set_cpu_bus(req);
     top->set_vram_bus(0);
-    top->bus_mux.set_oam_bus(0, 0);
-    top->bus_mux.set_ext_bus(0);
+    top->oam_bus.set_oam_data(0, 0);
+    top->ext_bus.set_ext_data(0);
     top->set_buttons(0);
     
     SignalHash new_hash = top->tick();

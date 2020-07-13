@@ -7,8 +7,8 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct SpriteStoreRegisters {
-  SpriteStoreRegisters();
+struct SpriteStore {
+  SpriteStore();
 
   void tick_match(SchematicTop& gb);
   void tock(SchematicTop& gb);
@@ -31,6 +31,13 @@ struct SpriteStoreRegisters {
 
 private:
   friend struct SchematicTop;
+
+  /*p30.XADU*/ Reg13 XADU_SPRITE_INDX0;
+  /*p30.XEDY*/ Reg13 XEDY_SPRITE_INDX1;
+  /*p30.ZUZE*/ Reg13 ZUZE_SPRITE_INDX2;
+  /*p30.XOBE*/ Reg13 XOBE_SPRITE_INDX3;
+  /*p30.YDUF*/ Reg13 YDUF_SPRITE_INDX4;
+  /*p30.XECU*/ Reg13 XECU_SPRITE_INDX5;
 
   /*p29.YDUG*/ Signal STORE0_MATCHn;
   /*p29.DYDU*/ Signal STORE1_MATCHn;

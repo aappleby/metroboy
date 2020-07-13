@@ -13,15 +13,19 @@ struct WindowRegisters {
   void tock(SchematicTop& gb);
   SignalHash commit();
 
-  wire MOSU_WIN_MODE_TRIGp() const {
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { // -> ppu, top
+    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(_SUVU_PORCH_ENDn);
+    return nor(SEKO_WX_MATCHne, SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
+  }
+
+  wire MOSU_WIN_MODE_TRIGp() const { // -> top, tile fetcher
     /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WX_MATCHpe());
     /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
     return MOSU_WIN_MODE_TRIGp;
   }
 
-  /*p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not(_PYNU_WIN_MODE_A.q()); }
-  /*p27.PORE*/ wire PORE_WIN_MODEp() const { return not(NOCU_WIN_MODEn()); }
-  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not(SYLO_WIN_HITn()); }
+  /*p27.PORE*/ wire PORE_WIN_MODEp() const { return not(NOCU_WIN_MODEn()); }     // -> tile fetcher
+  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not(SYLO_WIN_HITn()); }      // -> sprite fetcher
 
   /*p27.WYKA*/ wire WYKA_WIN_X3() const { return _WYKA_WIN_X3.q(); }
   /*p27.WODY*/ wire WODY_WIN_X4() const { return _WODY_WIN_X4.q(); }
@@ -38,11 +42,13 @@ struct WindowRegisters {
   /*p27.TATE*/ wire TATE_WIN_Y6() const { return _TATE_WIN_Y6.q(); }
   /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return _TEKE_WIN_Y7.q(); }
 
+private:
   /*p27.SEKO*/ Signal SEKO_WX_MATCHne;
   /*p27.SUZU*/ Signal SUZU_WIN_FIRST_TILEne;
 
-private:
+  Signal _SUVU_PORCH_ENDn;
 
+  /*p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not(_PYNU_WIN_MODE_A.q()); }
   /*p27.NUNY*/ wire NUNY_WX_MATCHpe() const { return and(_PYNU_WIN_MODE_A.q(), _NOPA_WIN_MODE_B.qn()); }
   /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not(_RYDY_WIN_FIRST_TILE_A.q()); }
 

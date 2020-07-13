@@ -132,8 +132,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   for (; pass_count < 256; pass_count++) {
     top->set_cpu_bus(req);
     top->set_vram_bus(0);
-    top->bus_mux.preset_oam_bus(0, 0);
-    top->set_ext_bus(0);
+    top->bus_mux.set_oam_bus(0, 0);
+    top->bus_mux.set_ext_bus(0);
     top->set_buttons(0);
     
     SignalHash new_hash = top->tick();

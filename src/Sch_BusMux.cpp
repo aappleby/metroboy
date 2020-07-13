@@ -52,12 +52,12 @@ void BusMux::tick(SchematicTop& top) {
 
     // PPU controls OAM bus if it's rendering and there's no DMA running.
     /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not(top.AJON_OAM_BUSY());
-    /*p28.GYBU*/ wire _GYBU_IDX_0n = not(top.SPR_TRI_INDX_0.q());
-    /*p28.GYKA*/ wire _GYKA_IDX_1n = not(top.SPR_TRI_INDX_1.q());
-    /*p28.FABY*/ wire _FABY_IDX_2n = not(top.SPR_TRI_INDX_2.q());
-    /*p28.FACO*/ wire _FACO_IDX_3n = not(top.SPR_TRI_INDX_3.q());
-    /*p28.FUGU*/ wire _FUGU_IDX_4n = not(top.SPR_TRI_INDX_4.q());
-    /*p28.FYKE*/ wire _FYKE_IDX_5n = not(top.SPR_TRI_INDX_5.q());
+    /*p28.GYBU*/ wire _GYBU_IDX_0n = not(top.sprite_store.SPR_TRI_INDX_0.q());
+    /*p28.GYKA*/ wire _GYKA_IDX_1n = not(top.sprite_store.SPR_TRI_INDX_1.q());
+    /*p28.FABY*/ wire _FABY_IDX_2n = not(top.sprite_store.SPR_TRI_INDX_2.q());
+    /*p28.FACO*/ wire _FACO_IDX_3n = not(top.sprite_store.SPR_TRI_INDX_3.q());
+    /*p28.FUGU*/ wire _FUGU_IDX_4n = not(top.sprite_store.SPR_TRI_INDX_4.q());
+    /*p28.FYKE*/ wire _FYKE_IDX_5n = not(top.sprite_store.SPR_TRI_INDX_5.q());
 
     // Scanner controls OAM address if it's running (collision w/ DMA?)
     /*p28.APAR*/ wire _APAR_SCAN_OAM_RDn  = not(top.ACYL_SCANNINGp());

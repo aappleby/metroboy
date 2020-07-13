@@ -14,6 +14,88 @@ struct BusMux {
   void tock(SchematicTop& top);
   SignalHash commit(SchematicTop& top);
 
+  //-----------------------------------------------------------------------------
+
+  void set_ext_bus(uint16_t data) {
+    EXT_PIN_D0_C.set(data & 0x01);
+    EXT_PIN_D1_C.set(data & 0x02);
+    EXT_PIN_D2_C.set(data & 0x04);
+    EXT_PIN_D3_C.set(data & 0x08);
+    EXT_PIN_D4_C.set(data & 0x10);
+    EXT_PIN_D5_C.set(data & 0x20);
+    EXT_PIN_D6_C.set(data & 0x40);
+    EXT_PIN_D7_C.set(data & 0x80);
+  }
+
+  void set_oam_bus(wire OE, uint16_t data) {
+    if (OE) {
+      OAM_PIN_DA0.preset_a(data & 0x0001);
+      OAM_PIN_DA1.preset_a(data & 0x0002);
+      OAM_PIN_DA2.preset_a(data & 0x0004);
+      OAM_PIN_DA3.preset_a(data & 0x0008);
+      OAM_PIN_DA4.preset_a(data & 0x0010);
+      OAM_PIN_DA5.preset_a(data & 0x0020);
+      OAM_PIN_DA6.preset_a(data & 0x0040);
+      OAM_PIN_DA7.preset_a(data & 0x0080);
+
+      OAM_PIN_DB0.preset_a(data & 0x0100);
+      OAM_PIN_DB1.preset_a(data & 0x0200);
+      OAM_PIN_DB2.preset_a(data & 0x0400);
+      OAM_PIN_DB3.preset_a(data & 0x0800);
+      OAM_PIN_DB4.preset_a(data & 0x1000);
+      OAM_PIN_DB5.preset_a(data & 0x2000);
+      OAM_PIN_DB6.preset_a(data & 0x4000);
+      OAM_PIN_DB7.preset_a(data & 0x8000);
+    }
+    else {
+      OAM_PIN_DA0.preset_a(HIZ);
+      OAM_PIN_DA1.preset_a(HIZ);
+      OAM_PIN_DA2.preset_a(HIZ);
+      OAM_PIN_DA3.preset_a(HIZ);
+      OAM_PIN_DA4.preset_a(HIZ);
+      OAM_PIN_DA5.preset_a(HIZ);
+      OAM_PIN_DA6.preset_a(HIZ);
+      OAM_PIN_DA7.preset_a(HIZ);
+
+      OAM_PIN_DB0.preset_a(HIZ);
+      OAM_PIN_DB1.preset_a(HIZ);
+      OAM_PIN_DB2.preset_a(HIZ);
+      OAM_PIN_DB3.preset_a(HIZ);
+      OAM_PIN_DB4.preset_a(HIZ);
+      OAM_PIN_DB5.preset_a(HIZ);
+      OAM_PIN_DB6.preset_a(HIZ);
+      OAM_PIN_DB7.preset_a(HIZ);
+    }
+  }
+
+  /*p31.YLOR*/ Reg8 YLOR_SPRITE_X0;
+  /*p31.ZYTY*/ Reg8 ZYTY_SPRITE_X1;
+  /*p31.ZYVE*/ Reg8 ZYVE_SPRITE_X2;
+  /*p31.ZEZY*/ Reg8 ZEZY_SPRITE_X3;
+  /*p31.GOMO*/ Reg8 GOMO_SPRITE_X4;
+  /*p31.BAXO*/ Reg8 BAXO_SPRITE_X5;
+  /*p31.YZOS*/ Reg8 YZOS_SPRITE_X6;
+  /*p31.DEPO*/ Reg8 DEPO_SPRITE_X7;
+
+  /*p29.XUSO*/ Reg8 XUSO_SPRITE_Y0;
+  /*p29.XEGU*/ Reg8 XEGU_SPRITE_Y1;
+  /*p29.YJEX*/ Reg8 YJEX_SPRITE_Y2;
+  /*p29.XYJU*/ Reg8 XYJU_SPRITE_Y3;
+  /*p29.YBOG*/ Reg8 YBOG_SPRITE_Y4;
+  /*p29.WYSO*/ Reg8 WYSO_SPRITE_Y5;
+  /*p29.XOTE*/ Reg8 XOTE_SPRITE_Y6;
+  /*p29.YZAB*/ Reg8 YZAB_SPRITE_Y7;
+
+  //-----------------------------------------------------------------------------
+  // Ext bus debug inputs
+
+  ExtPinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
+  ExtPinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
+
+private:
+
+  /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
+
   /*p28.GEKA*/ Signal GEKA_OAM_A0p;
   /*p28.ZYFO*/ Signal ZYFO_OAM_A1p;
   /*p28.YFOT*/ Signal YFOT_OAM_A2p;
@@ -23,9 +105,6 @@ struct BusMux {
   /*p28.XEMU*/ Signal XEMU_OAM_A6p;
   /*p28.YZET*/ Signal YZET_OAM_A7p;
 
-//private:
-
-  /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
 
   /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
   /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
@@ -54,29 +133,8 @@ struct BusMux {
   /*p08.RUPA*/ TpLatch RUPA_EXT_DATA_LATCH_06;
   /*p08.SAZY*/ TpLatch SAZY_EXT_DATA_LATCH_07;
 
-  /*p31.YLOR*/ Reg8 YLOR_SPRITE_X0;
-  /*p31.ZYTY*/ Reg8 ZYTY_SPRITE_X1;
-  /*p31.ZYVE*/ Reg8 ZYVE_SPRITE_X2;
-  /*p31.ZEZY*/ Reg8 ZEZY_SPRITE_X3;
-  /*p31.GOMO*/ Reg8 GOMO_SPRITE_X4;
-  /*p31.BAXO*/ Reg8 BAXO_SPRITE_X5;
-  /*p31.YZOS*/ Reg8 YZOS_SPRITE_X6;
-  /*p31.DEPO*/ Reg8 DEPO_SPRITE_X7;
-
-  /*p29.XUSO*/ Reg8 XUSO_SPRITE_Y0;
-  /*p29.XEGU*/ Reg8 XEGU_SPRITE_Y1;
-  /*p29.YJEX*/ Reg8 YJEX_SPRITE_Y2;
-  /*p29.XYJU*/ Reg8 XYJU_SPRITE_Y3;
-  /*p29.YBOG*/ Reg8 YBOG_SPRITE_Y4;
-  /*p29.WYSO*/ Reg8 WYSO_SPRITE_Y5;
-  /*p29.XOTE*/ Reg8 XOTE_SPRITE_Y6;
-  /*p29.YZAB*/ Reg8 YZAB_SPRITE_Y7;
-
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
-
-  ExtPinIn  EXT_PIN_WRp_C;   // PIN_78 -> P07.UBAL
-  ExtPinIn  EXT_PIN_RDp_C;   // PIN_79 -> P07.UJYV
 
   ExtPinIn  EXT_PIN_A00_C;   // PIN_01 -> P08.KOVA
   ExtPinIn  EXT_PIN_A01_C;   // PIN_02 -> P08.CAMU
@@ -207,49 +265,6 @@ struct BusMux {
   Tribuf OAM_PIN_DB5;
   Tribuf OAM_PIN_DB6;
   Tribuf OAM_PIN_DB7;
-
-  void preset_oam_bus(wire OE, uint16_t data) {
-    if (OE) {
-      OAM_PIN_DA0.preset_a(data & 0x0001);
-      OAM_PIN_DA1.preset_a(data & 0x0002);
-      OAM_PIN_DA2.preset_a(data & 0x0004);
-      OAM_PIN_DA3.preset_a(data & 0x0008);
-      OAM_PIN_DA4.preset_a(data & 0x0010);
-      OAM_PIN_DA5.preset_a(data & 0x0020);
-      OAM_PIN_DA6.preset_a(data & 0x0040);
-      OAM_PIN_DA7.preset_a(data & 0x0080);
-
-      OAM_PIN_DB0.preset_a(data & 0x0100);
-      OAM_PIN_DB1.preset_a(data & 0x0200);
-      OAM_PIN_DB2.preset_a(data & 0x0400);
-      OAM_PIN_DB3.preset_a(data & 0x0800);
-      OAM_PIN_DB4.preset_a(data & 0x1000);
-      OAM_PIN_DB5.preset_a(data & 0x2000);
-      OAM_PIN_DB6.preset_a(data & 0x4000);
-      OAM_PIN_DB7.preset_a(data & 0x8000);
-    }
-    else {
-      OAM_PIN_DA0.preset_a(HIZ);
-      OAM_PIN_DA1.preset_a(HIZ);
-      OAM_PIN_DA2.preset_a(HIZ);
-      OAM_PIN_DA3.preset_a(HIZ);
-      OAM_PIN_DA4.preset_a(HIZ);
-      OAM_PIN_DA5.preset_a(HIZ);
-      OAM_PIN_DA6.preset_a(HIZ);
-      OAM_PIN_DA7.preset_a(HIZ);
-
-      OAM_PIN_DB0.preset_a(HIZ);
-      OAM_PIN_DB1.preset_a(HIZ);
-      OAM_PIN_DB2.preset_a(HIZ);
-      OAM_PIN_DB3.preset_a(HIZ);
-      OAM_PIN_DB4.preset_a(HIZ);
-      OAM_PIN_DB5.preset_a(HIZ);
-      OAM_PIN_DB6.preset_a(HIZ);
-      OAM_PIN_DB7.preset_a(HIZ);
-    }
-  }
-
-private:
 
   /*p31.XYKY*/ TpLatch XYKY_LATCH_OAM_A0;
   /*p31.YRUM*/ TpLatch YRUM_LATCH_OAM_A1;

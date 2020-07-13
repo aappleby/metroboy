@@ -31,7 +31,9 @@ struct LcdRegisters {
   /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return _ROPO_LY_MATCH_SYNCp.q(); }
   /*p29.CATU*/ wire CATU_LINE_END()       const { return _CATU_LINE_END.q(); }
 
-
+  /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p() const { return or (ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp); }
+  /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n() const { return not(ABAK_VID_LINE_TRIG_d4p()); }
+  /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4p() const { return not(BYVA_VID_LINE_TRIG_d4n()); }
 
   /*p21.SAXO*/ Reg17 XEHO_X0; // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ Reg17 SAVY_X1;
@@ -52,6 +54,7 @@ struct LcdRegisters {
 
 private:
 
+  Signal _AMYG_VID_RSTp;
   Signal _ATAR_VID_RSTp;
   Signal _ABEZ_VID_RSTn;
 

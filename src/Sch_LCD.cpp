@@ -6,6 +6,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void LcdRegisters::tick(SchematicTop& top) {
+  _AMYG_VID_RSTp = top.rst_reg.AMYG_VID_RSTp();
   _ATAR_VID_RSTp = top.rst_reg.ATAR_VID_RSTp();
   _ABEZ_VID_RSTn = top.rst_reg.ABEZ_VID_RSTn();
 }
@@ -200,6 +201,7 @@ void LcdRegisters::tock(SchematicTop& top) {
 SignalHash LcdRegisters::commit(SchematicTop& top) {
   SignalHash hash;
 
+  hash << _AMYG_VID_RSTp.commit();
   hash << _ATAR_VID_RSTp.commit();
   hash << _ABEZ_VID_RSTn.commit();
 

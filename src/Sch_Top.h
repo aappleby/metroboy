@@ -33,7 +33,6 @@ struct SchematicTop {
   void set_cpu_bus(Req req);
   void set_buttons(uint8_t buttons);
   void set_vram_bus(uint8_t data);
-  void set_ext_bus(uint16_t data);
 
   int get_addr() const {
     return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
@@ -407,21 +406,6 @@ struct SchematicTop {
   Tribuf VRM_TRI_D5;
   Tribuf VRM_TRI_D6;
   Tribuf VRM_TRI_D7;
-
-  //-----------------------------------------------------------------------------
-  // Sprite store tribufs
-
-  Tribuf SPR_TRI_INDX_0;
-  Tribuf SPR_TRI_INDX_1;
-  Tribuf SPR_TRI_INDX_2;
-  Tribuf SPR_TRI_INDX_3;
-  Tribuf SPR_TRI_INDX_4;
-  Tribuf SPR_TRI_INDX_5;
-
-  Tribuf SPR_TRI_LINE_0;
-  Tribuf SPR_TRI_LINE_1;
-  Tribuf SPR_TRI_LINE_2;
-  Tribuf SPR_TRI_LINE_3;
 
   //-----------------------------------------------------------------------------
   // Top level registers

@@ -39,8 +39,11 @@ struct SpriteScanner {
     return not(_BEBU_SCAN_DONE_TRIGn);
   }
 
+  /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX() const { return and(_CENO_SCANNINGp.qn(), _XYMU_RENDERINGp); }
+
 private:
 
+  Signal _XYMU_RENDERINGp;
   Signal _BALU_LINE_RSTp;
 
   /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(_CENO_SCANNINGp.qn()); }

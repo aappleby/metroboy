@@ -8,13 +8,26 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreRegisters {
+  SpriteStoreRegisters();
+
   void tick_match(SchematicTop& gb);
   void tock(SchematicTop& gb);
   SignalHash commit(SchematicTop& top);
 
   /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
-
   /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
+
+  Tribuf SPR_TRI_INDX_0;
+  Tribuf SPR_TRI_INDX_1;
+  Tribuf SPR_TRI_INDX_2;
+  Tribuf SPR_TRI_INDX_3;
+  Tribuf SPR_TRI_INDX_4;
+  Tribuf SPR_TRI_INDX_5;
+
+  Tribuf SPR_TRI_LINE_0;
+  Tribuf SPR_TRI_LINE_1;
+  Tribuf SPR_TRI_LINE_2;
+  Tribuf SPR_TRI_LINE_3;
 
 private:
   friend struct SchematicTop;

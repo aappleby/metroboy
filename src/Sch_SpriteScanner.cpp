@@ -7,6 +7,7 @@ using namespace Schematics;
 
 void SpriteScanner::tick(SchematicTop& top) {
   {
+    _XYMU_RENDERINGp = top.ppu_reg.XYMU_RENDERINGp();
     _BALU_LINE_RSTp = top.lcd_reg.BALU_LINE_RSTp();
   }
 
@@ -89,6 +90,7 @@ void SpriteScanner::tock(SchematicTop& top) {
 SignalHash SpriteScanner::commit() {
   SignalHash hash;
 
+  hash << _XYMU_RENDERINGp.commit();
   hash << _BALU_LINE_RSTp.commit();
 
   /*p28.BESU*/ hash << _BESU_SCANNINGp.commit();

@@ -27,17 +27,6 @@ SchematicTop::SchematicTop() {
   CPU_TRI_D6.preset_a(0);
   CPU_TRI_D7.preset_a(0);
 
-  SPR_TRI_INDX_0.preset_a(0);
-  SPR_TRI_INDX_1.preset_a(0);
-  SPR_TRI_INDX_2.preset_a(0);
-  SPR_TRI_INDX_3.preset_a(0);
-  SPR_TRI_INDX_4.preset_a(0);
-  SPR_TRI_INDX_5.preset_a(0);
-  SPR_TRI_LINE_0.preset_a(0);
-  SPR_TRI_LINE_1.preset_a(0);
-  SPR_TRI_LINE_2.preset_a(0);
-  SPR_TRI_LINE_3.preset_a(0);
-
   VRM_TRI_A00.preset_a(0);
   VRM_TRI_A01.preset_a(0);
   VRM_TRI_A02.preset_a(0);
@@ -150,19 +139,6 @@ void SchematicTop::set_vram_bus(uint8_t data) {
   VRAM_PIN_MD5_C.set(data & 0x20);
   VRAM_PIN_MD6_C.set(data & 0x40);
   VRAM_PIN_MD7_C.set(data & 0x80);
-}
-
-//-----------------------------------------------------------------------------
-
-void SchematicTop::set_ext_bus(uint16_t data) {
-  bus_mux.EXT_PIN_D0_C.set(data & 0x01);
-  bus_mux.EXT_PIN_D1_C.set(data & 0x02);
-  bus_mux.EXT_PIN_D2_C.set(data & 0x04);
-  bus_mux.EXT_PIN_D3_C.set(data & 0x08);
-  bus_mux.EXT_PIN_D4_C.set(data & 0x10);
-  bus_mux.EXT_PIN_D5_C.set(data & 0x20);
-  bus_mux.EXT_PIN_D6_C.set(data & 0x40);
-  bus_mux.EXT_PIN_D7_C.set(data & 0x80);
 }
 
 //-----------------------------------------------------------------------------

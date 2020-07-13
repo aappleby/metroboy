@@ -150,11 +150,11 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
-  sprite_store.tick_match(*this);  // after bus mux
-  win_reg.tick(*this); // after sprite store
   rst_reg.tick(*this);
   lcd_reg.tick(*this);
   sprite_scanner.tick(*this);
+  sprite_store.tick_match(*this);  // after bus mux
+  win_reg.tick(*this); // after sprite store
   tile_fetcher.tick(*this); // after window
   clk_reg.tick(*this);
   dbg_reg.tick(*this);

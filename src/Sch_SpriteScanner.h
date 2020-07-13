@@ -20,12 +20,10 @@ struct SpriteScanner {
 
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not(_CARE_STORE_ENp_ABxxEFxx); }
 
-  /*p29.BYJO*/ wire BYJO_SCANNINGn() const { return not(CEHA_SCANNINGp()); }
-  /*p29.CENO*/ wire CENO_SCANNINGp() const { return _CENO_SCANNINGp.q(); }
-  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }
+  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }  // top
+  /*p29.AZEM*/ wire AZEM_RENDERINGp() const { return and(BYJO_SCANNINGn(), _XYMU_RENDERINGp); }
+  /*p29.AROR*/ wire AROR_MATCH_ENp() const { return and(AZEM_RENDERINGp(), _XYLO_LCDC_SPEN); }
 
-  /*p29.DOBA*/ wire DOBA_SCAN_DONE_B() const { return _DOBA_SCAN_DONE_B.q(); }
-  /*p29.BYBA*/ wire BYBA_SCAN_DONE_A() const { return _BYBA_SCAN_DONE_A.q(); }
 
   /*p28.GUSE*/ wire GUSE_SCAN0n() const { return not(_YFEL_SCAN0.q()); }
   /*p28.GEMA*/ wire GEMA_SCAN1n() const { return not(_WEWY_SCAN1.q()); }
@@ -43,10 +41,14 @@ struct SpriteScanner {
 
 private:
 
+  /*p29.BYJO*/ wire BYJO_SCANNINGn() const { return not(CEHA_SCANNINGp()); }
+  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(_CENO_SCANNINGp.qn()); }
+  /*p29.DOBA*/ wire DOBA_SCAN_DONE_B() const { return _DOBA_SCAN_DONE_B.q(); }
+  /*p29.BYBA*/ wire BYBA_SCAN_DONE_A() const { return _BYBA_SCAN_DONE_A.q(); }
+
+  Signal _XYLO_LCDC_SPEN;
   Signal _XYMU_RENDERINGp;
   Signal _BALU_LINE_RSTp;
-
-  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(_CENO_SCANNINGp.qn()); }
 
   /*p29.ERUC*/ Signal _ERUC_YDIFF_S0;
   /*p29.ERUC*/ Signal _ERUC_YDIFF_C0;

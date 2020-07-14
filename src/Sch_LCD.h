@@ -4,37 +4,50 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
 struct LcdRegisters {
 
-  void tick(SchematicTop& top);
-  void tock(SchematicTop& top);
-  SignalHash commit(SchematicTop& top);
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top, CpuBus& cpu_bus);
+  SignalHash commit();
 
   /*p28.BYHA*/ wire LcdRegisters::BYHA_VID_LINE_TRIG_d4() const {
-    /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_LINE_END.q());
-    return and (or (ANEL_LINE_END_D.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
+    /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_VID_LINE_ENDp.q());
+    return and (or (_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
   }
 
+  // -> lcd, window
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p() const { return not(BYHA_VID_LINE_TRIG_d4()); }
+
+  // -> sprite scanner
   /*p28.ANOM*/ wire ANOM_LINE_RSTn()         const { return nor(ATEJ_VID_LINE_TRIG_d4p(), _ATAR_VID_RSTp); }
-  /*p29.BALU*/ wire BALU_LINE_RSTp()         const { return not(ANOM_LINE_RSTn()); }
-  /*p29.BAGY*/ wire BAGY_LINE_RSTn()         const { return not(BALU_LINE_RSTp()); }
 
-  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(POPU_VBLANKp_d4.qn()); }
-  /*p21.TOLU*/ wire TOLU_VBLANKn()        const { return not(PARU_VBLANKp_d4()); }
-  /*p21.PURE*/ wire PURE_NEW_LINE_d0n()   const { return not(RUTU_LINE_END.q()); }
-  /*p21.SELA*/ wire SELA_LINE_END_Fp()    const { return not(PURE_NEW_LINE_d0n()); }
-  /*p21.TAPA*/ wire TAPA_INT_OAM()        const { return and (TOLU_VBLANKn(), SELA_LINE_END_Fp()); }
+  // -> interrupts, ppu
+  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(POPU_IN_VBLANKp.qn()); }
+
+  // -> lcd
+  /*p21.PURE*/ wire PURE_LINE_ENDn()   const { return not(_RUTU_LINE_ENDp.q()); }
+
+  // -> interrupts, lcd
+  /*p21.SELA*/ wire SELA_LINE_ENDp()    const { return not(PURE_LINE_ENDn()); }
+
+  // -> sprite scanner
+  /*p29.CATU*/ wire CATU_VID_LINE_ENDp()       const { return _CATU_VID_LINE_ENDp.q(); }
+
+  // -> sprite store, lcd
+  /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n() const {
+    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp);
+    return not(_ABAK_VID_LINE_TRIG_d4p);
+  }
+
+  // -> interrupts, lcd, ppu
   /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return _ROPO_LY_MATCH_SYNCp.q(); }
-  /*p29.CATU*/ wire CATU_LINE_END()       const { return _CATU_LINE_END.q(); }
+  
 
-  /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p() const { return or (ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp); }
-  /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n() const { return not(ABAK_VID_LINE_TRIG_d4p()); }
-  /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4p() const { return not(BYVA_VID_LINE_TRIG_d4n()); }
-
+  // -> sprite store
   /*p21.SAXO*/ Reg17 XEHO_X0; // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ Reg17 SAVY_X1;
   /*p21.VYZO*/ Reg17 XODU_X2;
@@ -58,13 +71,13 @@ private:
   Signal _ATAR_VID_RSTp;
   Signal _ABEZ_VID_RSTn;
 
-  /*p21.RUTU*/ Reg17 RUTU_LINE_END; // p909+8
-  /*p29.CATU*/ Reg17 _CATU_LINE_END; // p001+8
-  /*p21.NYPE*/ Reg17 NYPE_LINE_END_B; // p001+8
-  /*p28.ANEL*/ Reg17 ANEL_LINE_END_D; // p003+8
+  /*p21.RUTU*/ Reg17 _RUTU_LINE_ENDp; // p909+8
+  /*p29.CATU*/ Reg17 _CATU_VID_LINE_ENDp;     // p001+8
+  /*p21.NYPE*/ Reg17 NYPE_LINE_STARTp;    // p001+8
+  /*p28.ANEL*/ Reg17 _ANEL_VID_LINE_ENDp;    // p003+8
 
-  /*p21.MYTA*/ Reg17 MYTA_LINE_153_d4;  // p153:001 - p000:001
-  /*p21.POPU*/ Reg17 POPU_VBLANKp_d4; // p144:001 - p000:001
+  /*p21.MYTA*/ Reg17 MYTA_LINE_153p;   // p153:001 - p000:001
+  /*p21.POPU*/ Reg17 POPU_IN_VBLANKp;    // p144:001 - p000:001
 
   /*p21.SYGU*/ Reg17 SYGU_LINE_STROBE;
 
@@ -83,6 +96,11 @@ private:
   /*p23.RAHA*/ Reg9 RAHA_LYC7;
 
   /*p21.ROPO*/ Reg17 _ROPO_LY_MATCH_SYNCp;
+
+  ExtPinOut LCD_PIN_CPG;  // PIN_52 
+  ExtPinOut LCD_PIN_CPL;  // PIN_55 
+  ExtPinOut LCD_PIN_FR;   // PIN_56 
+  ExtPinOut LCD_PIN_S;    // PIN_57 
 };
 
 //-----------------------------------------------------------------------------

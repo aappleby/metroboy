@@ -298,7 +298,7 @@ struct Reg8 : public RegisterBase {
 // REG9_08 >> Q
 // REG9_09 >> QN
 
-///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPRITE_X0);
+///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DA0);
 
 // XEPE_01 nc
 // XEPE_02 << FUXU_02  (clk)
@@ -350,10 +350,10 @@ struct Reg9 : public RegisterBase {
 // Reg11 is used by the background pixel temp reg
 // Not sure why it's special. Could be dual-edge.
 
-///*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, top.VYPO_GND, top.vram_bus.VRM_TRI_D0);
+///*p32.RAWU*/ top.RAWU_TILE_DB0.set(LABU_LATCH_TILE_DBp, top.VYPO_GND, top.vram_bus.VRM_TRI_D0);
 
-// wire LUVE_MATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp); // Schematic wrong, was labeled AJAR
-// wire LABU_LATCH_BG_PIX_Bp = not(LUVE_MATCH_BG_PIX_Bn);
+// wire LUVE_MATCH_TILE_DBn = not(LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
+// wire LABU_LATCH_TILE_DBp = not(LUVE_MATCH_TILE_DBn);
 
 // RAWU_01 nc
 // RAWU_02 << VYPO_02 (RSTp?)

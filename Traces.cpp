@@ -28,12 +28,12 @@
 
 // Clock polarity wrong? Check regs on die.
 
-// BFETCH_000 - LABU_BG_PIX_B_CLKp = 1;
-// BFETCH_001 - LABU_BG_PIX_B_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
-// BFETCH_010 - LABU_BG_PIX_B_CLKp = 1;
-// BFETCH_011 - LABU_BG_PIX_B_CLKp = 1;
-// BFETCH_100 - LABU_BG_PIX_B_CLKp = 1;
-// BFETCH_101 - LABU_BG_PIX_B_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_000 - LABU_TILE_DB_CLKp = 1;
+// BFETCH_001 - LABU_TILE_DB_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_010 - LABU_TILE_DB_CLKp = 1;
+// BFETCH_011 - LABU_TILE_DB_CLKp = 1;
+// BFETCH_100 - LABU_TILE_DB_CLKp = 1;
+// BFETCH_101 - LABU_TILE_DB_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
 
 // BFETCH_000 - LOMA_BG_LATCHn = 1;
 // BFETCH_001 - LOMA_BG_LATCHn = 1;
@@ -185,6 +185,7 @@
 // POKY05 << LOBY01
 // If PYGO goes high, POKY03 goes high
 // if LOBY goes high, POKY03 goes low.
+// POKY = nor_latch(PYGO, LOBY)
 
 // SOBU_01 SC
 // SOBU_02 << TAVA_02 CLKp

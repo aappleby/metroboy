@@ -4,13 +4,14 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
   SerialRegisters();
-  void tick(SchematicTop& top);
-  void tock(SchematicTop& top);
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top, CpuBus& cpu_bus);
   SignalHash commit();
 
   /*p06.CALY*/ wire CALY_INT_SERIALp() const { return _CALY_INT_SERIALp.q(); }

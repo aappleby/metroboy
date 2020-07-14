@@ -4,13 +4,14 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct OamBus;
 
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
 
-  void tick(SchematicTop& gb);
-  void tock(SchematicTop& gb);
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top);
   SignalHash commit();
 
   wire DEGE_SPRITE_DELTA0() const { return not(_ERUC_YDIFF_S0); }
@@ -23,12 +24,19 @@ struct SpriteScanner {
   /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }  // top
   /*p29.AROR*/ wire AROR_MATCH_ENp() const { return and(AZEM_RENDERINGp(), _XYLO_LCDC_SPEN); }
 
-  /*p29.AVAP*/ wire AVAP_RENDER_START_RST() const {
+  /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
     /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B(), !BYBA_SCAN_DONE_A());
     return not(_BEBU_SCAN_DONE_TRIGn);
   }
 
   /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX() const { return and(_CENO_SCANNINGp.qn(), _XYMU_RENDERINGp); }
+
+  /*p28.YFEL*/ wire YFEL_SCAN0() const { return _YFEL_SCAN0.q(); }
+  /*p28.WEWY*/ wire WEWY_SCAN1() const { return _WEWY_SCAN1.q(); }
+  /*p28.GOSO*/ wire GOSO_SCAN2() const { return _GOSO_SCAN2.q(); }
+  /*p28.ELYN*/ wire ELYN_SCAN3() const { return _ELYN_SCAN3.q(); }
+  /*p28.FAHA*/ wire FAHA_SCAN4() const { return _FAHA_SCAN4.q(); }
+  /*p28.FONY*/ wire FONY_SCAN5() const { return _FONY_SCAN5.q(); }
 
 private:
 
@@ -41,6 +49,7 @@ private:
   Signal _XYLO_LCDC_SPEN;
   Signal _XYMU_RENDERINGp;
   Signal _BALU_LINE_RSTp;
+  Signal _BAGY_LINE_RSTn;
 
   /*p29.ERUC*/ Signal _ERUC_YDIFF_S0;
   /*p29.ERUC*/ Signal _ERUC_YDIFF_C0;

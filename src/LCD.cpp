@@ -14,14 +14,14 @@ bool posedge(bool& old_v, bool new_v) {
 void LCD::reset() {
   X = 99;
   Y = 0;
-  RUTU_LINE_END = 0;
-  NYPE_LINE_END_B = 0;
-  CATU_LINE_END = 0;
-  ANEL_LINE_END_D = 0;
-  MYTA_LINE_153_d4 = 1;
+  _RUTU_LINE_ENDp = 0;
+  NYPE_LINE_STARTp = 0;
+  CATU_VID_LINE_ENDp = 0;
+  _ANEL_VID_LINE_ENDp = 0;
+  MYTA_LINE_153p = 1;
   MEDA_VSYNC_OUTn = 0;
-  POPU_VBLANKp_d4 = 0;
-  PAHO_X_8_SYNC = 0;
+  POPU_IN_VBLANKp = 0;
+  _PAHO_X_8_SYNC = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -38,49 +38,49 @@ void LCD::tick(const Req& req, Ack& ack) {
 
 void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_EN) {
   bool IN_VBLANK = (Y & 144) == 144;
-  bool VID_LINE_d0 = RUTU_LINE_END && !IN_VBLANK;
+  bool VID_LINE_d0 = _RUTU_LINE_ENDp && !IN_VBLANK;
   bool LINE_000n = Y != 0;
   bool LINE_153 = (Y & 153) == 153;
   bool LINE_END = (X & 113) == 113;
 
   if (PHASE_B) {
     X++;
-    if (RUTU_LINE_END && !NYPE_LINE_END_B) {
-      MYTA_LINE_153_d4 = LINE_153;
+    if (_RUTU_LINE_ENDp && !NYPE_LINE_STARTp) {
+      MYTA_LINE_153p = LINE_153;
       MEDA_VSYNC_OUTn = LINE_000n;
-      POPU_VBLANKp_d4 = IN_VBLANK;
+      POPU_IN_VBLANKp = IN_VBLANK;
     }
-    NYPE_LINE_END_B = RUTU_LINE_END;
+    NYPE_LINE_STARTp = _RUTU_LINE_ENDp;
   }
 
   if (PHASE_F) {
-    if (LINE_END && !RUTU_LINE_END) Y++;
-    RUTU_LINE_END = LINE_END;
+    if (LINE_END && !_RUTU_LINE_ENDp) Y++;
+    _RUTU_LINE_ENDp = LINE_END;
   }
 
   if (PHASE_B || PHASE_F) {
-    CATU_LINE_END = VID_LINE_d0;
+    CATU_VID_LINE_ENDp = VID_LINE_d0;
   }
 
   if (PHASE_D || PHASE_H) {
-    ANEL_LINE_END_D = CATU_LINE_END;
+    _ANEL_VID_LINE_ENDp = CATU_VID_LINE_ENDp;
   }
 
-  if (RUTU_LINE_END) X = 0;
-  if (MYTA_LINE_153_d4) Y = 0;
+  if (_RUTU_LINE_ENDp) X = 0;
+  if (MYTA_LINE_153p) Y = 0;
 
   if (!XONA_LCDC_EN) {
     X = 0;
     Y = 0;
-    RUTU_LINE_END = 0;
-    NYPE_LINE_END_B = 0;
-    MYTA_LINE_153_d4 = 0;
+    _RUTU_LINE_ENDp = 0;
+    NYPE_LINE_STARTp = 0;
+    MYTA_LINE_153p = 0;
     MEDA_VSYNC_OUTn = 0;
-    POPU_VBLANKp_d4 = 0;
+    POPU_IN_VBLANKp = 0;
   }
 
   // the !LCDC_EN here seems weird
-  VID_LINE_TRIG_d4 = (CATU_LINE_END && !ANEL_LINE_END_D) || !XONA_LCDC_EN;
+  VID_LINE_TRIG_d4 = (CATU_VID_LINE_ENDp && !_ANEL_VID_LINE_ENDp) || !XONA_LCDC_EN;
 }
 
 //-----------------------------------------------------------------------------
@@ -90,13 +90,13 @@ void LCD::dump(Dumper& dump) const {
 
   dump("X            = %d\n", X);
   dump("Y            = %d\n", Y);
-  dump("RUTU_LINE_END  = %d\n", RUTU_LINE_END);
-  dump("NYPE_LINE_END_B  = %d\n", NYPE_LINE_END_B);
-  dump("CATU_LINE_END  = %d\n", CATU_LINE_END);
-  dump("ANEL_LINE_END_D  = %d\n", ANEL_LINE_END_D);
-  dump("MYTA_LINE_153_d4  = %d\n", MYTA_LINE_153_d4);
+  dump("_RUTU_LINE_ENDp  = %d\n", _RUTU_LINE_ENDp);
+  dump("NYPE_LINE_STARTp  = %d\n", NYPE_LINE_STARTp);
+  dump("CATU_VID_LINE_ENDp  = %d\n", CATU_VID_LINE_ENDp);
+  dump("_ANEL_VID_LINE_ENDp  = %d\n", _ANEL_VID_LINE_ENDp);
+  dump("MYTA_LINE_153p  = %d\n", MYTA_LINE_153p);
   dump("MEDA_VSYNC_OUTn   = %d\n", MEDA_VSYNC_OUTn);
-  dump("POPU_VBLANKp_d4 = %d\n", POPU_VBLANKp_d4);
+  dump("POPU_IN_VBLANKp = %d\n", POPU_IN_VBLANKp);
 }
 
 //-----------------------------------------------------------------------------

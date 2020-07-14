@@ -15,12 +15,10 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   auto top = gateboy.top();
 
-  top->clk_reg.CPU_PIN_READYp.set(0);
+  top->rst_reg.set_cpu_ready(0);
   top->ext_bus.set_ext_rdwr(0, 0);
-  top->int_bus.CPU_PIN5.set(0);
 
-  top->SYS_PIN_T1n.set(0);
-  top->SYS_PIN_T2n.set(0);
+  top->rst_reg.set_t1t2(0,0);
 
   SignalHash hash;
 
@@ -30,27 +28,27 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
   // 16 phases w/ reset high, clock not running.
-  top->SYS_PIN_RSTp.set(1);
-  top->clk_reg.SYS_PIN_CLK_A.set(0);
+  top->rst_reg.set_rst(1);
+  top->clk_reg.set_clk_a(0);
   gateboy.run(top, 16, req);
   printf("\n");
 
   // 16 phases w/ reset high, clock running.
-  top->SYS_PIN_RSTp.set(1);
-  top->clk_reg.SYS_PIN_CLK_A.set(1);
+  top->rst_reg.set_rst(1);
+  top->clk_reg.set_clk_a(1);
   gateboy.run(top, 16, req);
   printf("\n");
 
   // 32 phases w/ reset low, clock running.
-  top->SYS_PIN_RSTp.set(0);
-  top->clk_reg.SYS_PIN_CLK_A.set(1);
+  top->rst_reg.set_rst(0);
+  top->clk_reg.set_clk_a(1);
   gateboy.run(top, 16, req);
   printf("\n");
 
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
-  top->XONA_LCDC_EN.preset(1);
-  while(!top->int_bus.CPU_PIN_STARTp.get()) {
+  top->ppu_reg.XONA_LCDC_EN.preset(1);
+  while(!top->rst_reg.CPU_PIN_STARTp()) {
     gateboy.run(top, 1, req);
   }
 
@@ -58,7 +56,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   // We should see AFER (global reset) clear and the video clocks start up.
   // FIXME why are the video clocks not running...
 
-  top->clk_reg.CPU_PIN_READYp.set(1);
+  top->rst_reg.set_cpu_ready(1);
   gateboy.run(top, 24, req);
   printf("\n");
 
@@ -116,8 +114,8 @@ SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
   SignalHash hash;
   for (int i = 0; i < phase_count; i++) {
     top->phase_counter++;
-    wire CLK = (top->phase_counter & 1) & (top->clk_reg.SYS_PIN_CLK_A);
-    top->clk_reg.SYS_PIN_CLK_B.set(CLK);
+    wire CLK = (top->phase_counter & 1) & (top->clk_reg.get_clk_a());
+    top->clk_reg.set_clk_b(CLK);
     hash = phase(top, req);
   }
   return hash;
@@ -129,11 +127,11 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   SignalHash hash;
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
-    top->int_bus.set_cpu_req(req);
+    top->cpu_bus.set_cpu_req(req);
     top->vram_bus.set_vram_data(0);
     top->oam_bus.set_oam_data(0, 0);
     top->ext_bus.set_ext_data(0);
-    top->set_buttons(0);
+    top->joypad.set_buttons(0);
     
     SignalHash new_hash = top->tick();
     
@@ -148,9 +146,9 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       pass_count,
-      top->clk_reg.SYS_PIN_CLK_A.get(),
-      top->clk_reg.SYS_PIN_CLK_B.get(),
-      top->SYS_PIN_RSTp.get(),
+      top->clk_reg.get_clk_a(),
+      top->clk_reg.get_clk_b(),
+      top->rst_reg.SYS_PIN_RSTp(),
       top->clk_reg.AFUR_ABCDxxxx(),
       top->clk_reg.ALEF_xBCDExxx(),
       top->clk_reg.APUK_xxCDEFxx(),
@@ -159,8 +157,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.VENA_xxxxEFGH(),
       top->clk_reg.WOSU_xBCxxFGx(),
       //top->BELE_Axxxxxxx(),
-      top->int_bus.CPU_PIN_STARTp.get(),
-      top->clk_reg.CPU_PIN_READYp.get(),
+      top->rst_reg.CPU_PIN_STARTp(),
+      top->rst_reg.CPU_PIN_READYp(),
       top->tim_reg.get_div(),
       1//top->rst_reg.AFER_SYS_RSTp.q()
       //hash.h);
@@ -174,8 +172,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
 
 void GateBoy::init() {
   auto top_step = [this](Schematics::SchematicTop* top) {
-    top->clk_reg.SYS_PIN_CLK_A.set(1);
-    top->clk_reg.SYS_PIN_CLK_B.set(top->phase_counter & 1);
+    top->clk_reg.set_clk_a(1);
+    top->clk_reg.set_clk_b(top->phase_counter & 1);
     phase(top, {0});
   };
   state_manager.init(top_step);

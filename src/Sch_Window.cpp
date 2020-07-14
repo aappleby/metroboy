@@ -5,29 +5,21 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void WindowRegisters::tick(SchematicTop& top) {
-  _SUVU_PORCH_ENDn = top.tile_fetcher.SUVU_PORCH_ENDn();
-
+void WindowRegisters::tick(const SchematicTop& top) {
   {
     // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
     /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp(top), top.ppu_reg.ROZE_FINE_COUNT_7n());
     /*p27.RYFA*/ _RYFA_WX_MATCHn_A.set(top.SEGU_CLKPIPEn(), top.ppu_reg.XYMU_RENDERINGp(), _PANY_WX_MATCHn);
     /*p27.RENE*/ _RENE_WX_MATCHn_B.set(top.clk_reg.ALET_xBxDxFxH(), top.ppu_reg.XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
-    /*p27.SEKO*/ SEKO_WX_MATCHne = nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q());
-  }
-
-  {
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
-    /*p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not(_TUXY_WIN_FIRST_TILE_NE);
   }
 }
 
 //------------------------------------------------------------------------------
 
-void WindowRegisters::tock(SchematicTop& top) {
+void WindowRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p());
-  /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.rst_reg.XAPO_VID_RSTn());
+  /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(top.ppu_reg.WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.rst_reg.XAPO_VID_RSTn());
 
   /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), top.rst_reg.PYRY_VID_RSTp());
 
@@ -59,7 +51,7 @@ void WindowRegisters::tock(SchematicTop& top) {
   {
     // something weird here, PORE doesn't look like a clock
 
-    /*p27.VETU*/ wire _VETU_WIN_MAP_CLK = and (TEVO_FINE_RSTp(), PORE_WIN_MODEp());
+    /*p27.VETU*/ wire _VETU_WIN_MAP_CLK = and (top.TEVO_FINE_RSTp(), PORE_WIN_MODEp());
     /*p27.XACO*/ wire _XACO_WIN_RSTn = not(_XOFO_WIN_RSTp);
 
     /*p27.WYKA*/ _WYKA_WIN_X3.set(_VETU_WIN_MAP_CLK,  _XACO_WIN_RSTn, _WYKA_WIN_X3.qn());
@@ -87,64 +79,64 @@ void WindowRegisters::tock(SchematicTop& top) {
 
   // FF4A
   {
-    /*p22.WYVO*/ wire _FF4An = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.XOLA_A00n(), top.int_bus.WESA_A01p(), top.int_bus.XUSY_A02n(), top.int_bus.WEPO_A03p());
+    /*p22.WYVO*/ wire _FF4An = nand(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.WEPO_A03p());
     /*p22.VYGA*/ wire _FF4Ap = not(_FF4An);
 
-    /*p23.WAXU*/ wire _FF4A_RD = and (_FF4Ap, top.ASOT_CPU_RDp());
-    /*p23.VOMY*/ wire _FF4A_RDn = not(_FF4A_RD);
+    /*p23.WAXU*/ wire _FF4A_RDp = and (_FF4Ap, top.ASOT_CPU_RDp());
+    /*p23.VOMY*/ wire _FF4A_RDn = not(_FF4A_RDp);
 
-    /*p23.WEKO*/ wire _WEKO_FF4A_WRn = and (_FF4Ap, top.CUPA_CPU_WRp_xxxxEFGx());
-    /*p23.VEFU*/ wire _VEFU_FF4A_WRp = not(_WEKO_FF4A_WRn);
+    /*p23.WEKO*/ wire _WEKO_FF4A_WRp = and (_FF4Ap, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p23.VEFU*/ wire _VEFU_FF4A_WRn = not(_WEKO_FF4A_WRp);
 
-    /*p23.NESO*/ _NESO_WY0.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D0.q());
-    /*p23.NYRO*/ _NYRO_WY1.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D1.q());
-    /*p23.NAGA*/ _NAGA_WY2.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D2.q());
-    /*p23.MELA*/ _MELA_WY3.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D3.q());
-    /*p23.NULO*/ _NULO_WY4.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D4.q());
-    /*p23.NENE*/ _NENE_WY5.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D5.q());
-    /*p23.NUKA*/ _NUKA_WY6.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D6.q());
-    /*p23.NAFU*/ _NAFU_WY7.set(_VEFU_FF4A_WRp, !_VEFU_FF4A_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D7.q());
+    /*p23.NESO*/ _NESO_WY0.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0.q());
+    /*p23.NYRO*/ _NYRO_WY1.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1.q());
+    /*p23.NAGA*/ _NAGA_WY2.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2.q());
+    /*p23.MELA*/ _MELA_WY3.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3.q());
+    /*p23.NULO*/ _NULO_WY4.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4.q());
+    /*p23.NENE*/ _NENE_WY5.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5.q());
+    /*p23.NUKA*/ _NUKA_WY6.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
+    /*p23.NAFU*/ _NAFU_WY7.set(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
 
 
-    /*p23.PUNU*/ top.int_bus.INT_TRI_D0.set_tribuf_6n(_FF4A_RDn, _NESO_WY0.q());
-    /*p23.PODA*/ top.int_bus.INT_TRI_D1.set_tribuf_6n(_FF4A_RDn, _NYRO_WY1.q());
-    /*p23.PYGU*/ top.int_bus.INT_TRI_D2.set_tribuf_6n(_FF4A_RDn, _NAGA_WY2.q());
-    /*p23.LOKA*/ top.int_bus.INT_TRI_D3.set_tribuf_6n(_FF4A_RDn, _MELA_WY3.q());
-    /*p23.MEGA*/ top.int_bus.INT_TRI_D4.set_tribuf_6n(_FF4A_RDn, _NULO_WY4.q());
-    /*p23.PELA*/ top.int_bus.INT_TRI_D5.set_tribuf_6n(_FF4A_RDn, _NENE_WY5.q());
-    /*p23.POLO*/ top.int_bus.INT_TRI_D6.set_tribuf_6n(_FF4A_RDn, _NUKA_WY6.q());
-    /*p23.MERA*/ top.int_bus.INT_TRI_D7.set_tribuf_6n(_FF4A_RDn, _NAFU_WY7.q());
+    /*p23.PUNU*/ cpu_bus.CPU_TRI_D0.set_tribuf_6n(_FF4A_RDn, _NESO_WY0.q());
+    /*p23.PODA*/ cpu_bus.CPU_TRI_D1.set_tribuf_6n(_FF4A_RDn, _NYRO_WY1.q());
+    /*p23.PYGU*/ cpu_bus.CPU_TRI_D2.set_tribuf_6n(_FF4A_RDn, _NAGA_WY2.q());
+    /*p23.LOKA*/ cpu_bus.CPU_TRI_D3.set_tribuf_6n(_FF4A_RDn, _MELA_WY3.q());
+    /*p23.MEGA*/ cpu_bus.CPU_TRI_D4.set_tribuf_6n(_FF4A_RDn, _NULO_WY4.q());
+    /*p23.PELA*/ cpu_bus.CPU_TRI_D5.set_tribuf_6n(_FF4A_RDn, _NENE_WY5.q());
+    /*p23.POLO*/ cpu_bus.CPU_TRI_D6.set_tribuf_6n(_FF4A_RDn, _NUKA_WY6.q());
+    /*p23.MERA*/ cpu_bus.CPU_TRI_D7.set_tribuf_6n(_FF4A_RDn, _NAFU_WY7.q());
   }
 
   // FF4B
   {
-    /*p22.WAGE*/ wire _FF4Bn = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.WADO_A00p(), top.int_bus.WESA_A01p(), top.int_bus.XUSY_A02n(), top.int_bus.WEPO_A03p());
+    /*p22.WAGE*/ wire _FF4Bn = nand(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.WEPO_A03p());
     /*p22.VUMY*/ wire _FF4Bp = not(_FF4Bn);
 
     /*p23.WYZE*/ wire _FF4B_RDp = and (_FF4Bp, top.ASOT_CPU_RDp());
     /*p23.VYCU*/ wire _FF4B_RDn = not(_FF4B_RDp);
 
-    /*p23.WUZA*/ wire _WUZA_FF4B_WRn = and (_FF4Bp, top.CUPA_CPU_WRp_xxxxEFGx());
-    /*p23.VOXU*/ wire _VOXU_FF4B_WRp = not(_WUZA_FF4B_WRn);
+    /*p23.WUZA*/ wire _WUZA_FF4B_WRp = and (_FF4Bp, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p23.VOXU*/ wire _VOXU_FF4B_WRn = not(_WUZA_FF4B_WRp);
 
-    /*p23.MYPA*/ _MYPA_WX0.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D0.q());
-    /*p23.NOFE*/ _NOFE_WX1.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D1.q());
-    /*p23.NOKE*/ _NOKE_WX2.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D2.q());
-    /*p23.MEBY*/ _MEBY_WX3.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D3.q());
-    /*p23.MYPU*/ _MYPU_WX4.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D4.q());
-    /*p23.MYCE*/ _MYCE_WX5.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D5.q());
-    /*p23.MUVO*/ _MUVO_WX6.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D6.q());
-    /*p23.NUKU*/ _NUKU_WX7.set(_VOXU_FF4B_WRp, !_VOXU_FF4B_WRp, top.rst_reg.WALU_SYS_RSTn(), top.int_bus.INT_TRI_D7.q());
+    /*p23.MYPA*/ _MYPA_WX0.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0.q());
+    /*p23.NOFE*/ _NOFE_WX1.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1.q());
+    /*p23.NOKE*/ _NOKE_WX2.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2.q());
+    /*p23.MEBY*/ _MEBY_WX3.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3.q());
+    /*p23.MYPU*/ _MYPU_WX4.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4.q());
+    /*p23.MYCE*/ _MYCE_WX5.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5.q());
+    /*p23.MUVO*/ _MUVO_WX6.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
+    /*p23.NUKU*/ _NUKU_WX7.set(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.rst_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
 
 
-    /*p23.LOVA*/ top.int_bus.INT_TRI_D0.set_tribuf_6n(_FF4B_RDn, _MYPA_WX0.q());
-    /*p23.MUKA*/ top.int_bus.INT_TRI_D1.set_tribuf_6n(_FF4B_RDn, _NOFE_WX1.q());
-    /*p23.MOKO*/ top.int_bus.INT_TRI_D2.set_tribuf_6n(_FF4B_RDn, _NOKE_WX2.q());
-    /*p23.LOLE*/ top.int_bus.INT_TRI_D3.set_tribuf_6n(_FF4B_RDn, _MEBY_WX3.q());
-    /*p23.MELE*/ top.int_bus.INT_TRI_D4.set_tribuf_6n(_FF4B_RDn, _MYPU_WX4.q());
-    /*p23.MUFE*/ top.int_bus.INT_TRI_D5.set_tribuf_6n(_FF4B_RDn, _MYCE_WX5.q());
-    /*p23.MULY*/ top.int_bus.INT_TRI_D6.set_tribuf_6n(_FF4B_RDn, _MUVO_WX6.q());
-    /*p23.MARA*/ top.int_bus.INT_TRI_D7.set_tribuf_6n(_FF4B_RDn, _NUKU_WX7.q());
+    /*p23.LOVA*/ cpu_bus.CPU_TRI_D0.set_tribuf_6n(_FF4B_RDn, _MYPA_WX0.q());
+    /*p23.MUKA*/ cpu_bus.CPU_TRI_D1.set_tribuf_6n(_FF4B_RDn, _NOFE_WX1.q());
+    /*p23.MOKO*/ cpu_bus.CPU_TRI_D2.set_tribuf_6n(_FF4B_RDn, _NOKE_WX2.q());
+    /*p23.LOLE*/ cpu_bus.CPU_TRI_D3.set_tribuf_6n(_FF4B_RDn, _MEBY_WX3.q());
+    /*p23.MELE*/ cpu_bus.CPU_TRI_D4.set_tribuf_6n(_FF4B_RDn, _MYPU_WX4.q());
+    /*p23.MUFE*/ cpu_bus.CPU_TRI_D5.set_tribuf_6n(_FF4B_RDn, _MYCE_WX5.q());
+    /*p23.MULY*/ cpu_bus.CPU_TRI_D6.set_tribuf_6n(_FF4B_RDn, _MUVO_WX6.q());
+    /*p23.MARA*/ cpu_bus.CPU_TRI_D7.set_tribuf_6n(_FF4B_RDn, _NUKU_WX7.q());
   }
 }
 
@@ -160,7 +152,7 @@ wire WindowRegisters::ROGE_WY_MATCHp(const SchematicTop& top) const {
   /*p27.PEZO*/ wire _WY_MATCH6 = xnor(top.lcd_reg.MATO_Y6.q(), _NUKA_WY6.q());
   /*p27.NUPA*/ wire _WY_MATCH7 = xnor(top.lcd_reg.LAFO_Y7.q(), _NAFU_WY7.q());
 
-  /*p27.PALO*/ wire _WY_MATCH_HIn  = nand(top.WYMO_LCDC_WINEN.q(), _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
+  /*p27.PALO*/ wire _WY_MATCH_HIn  = nand(top.ppu_reg.WYMO_LCDC_WINEN.q(), _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
   /*p27.NELE*/ wire _WY_MATCH_HI   = not(_WY_MATCH_HIn);
   /*p27.PAFU*/ wire _WY_MATCHn     = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
   /*p27.ROGE*/ wire _ROGE_WY_MATCHp = not(_WY_MATCHn);
@@ -188,11 +180,6 @@ wire WindowRegisters::NUKO_WX_MATCHp(const SchematicTop& top) const {
 
 SignalHash WindowRegisters::commit() {
   SignalHash hash;
-
-  hash << _SUVU_PORCH_ENDn.commit();
-
-  /*p27.SEKO*/ hash << SEKO_WX_MATCHne.commit();
-  /*p27.SUZU*/ hash << SUZU_WIN_FIRST_TILEne.commit();
 
   /*p27.PYNU*/ hash << _PYNU_WIN_MODE_A.commit();
   /*p27.RYDY*/ hash << _RYDY_WIN_FIRST_TILE_A.commit();

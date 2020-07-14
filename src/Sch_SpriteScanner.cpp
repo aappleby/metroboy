@@ -5,11 +5,15 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tick(SchematicTop& top) {
+void SpriteScanner::tick(const SchematicTop& top) {
+  wire GND = 0;
+
   {
-    _XYLO_LCDC_SPEN = top.XYLO_LCDC_SPEN.q();
+    _XYLO_LCDC_SPEN = top.ppu_reg.XYLO_LCDC_SPEN.q();
     _XYMU_RENDERINGp = top.ppu_reg.XYMU_RENDERINGp();
-    _BALU_LINE_RSTp = top.lcd_reg.BALU_LINE_RSTp();
+
+    /*p29.BALU*/ _BALU_LINE_RSTp = not(top.lcd_reg.ANOM_LINE_RSTn());
+    /*p29.BAGY*/ _BAGY_LINE_RSTn = not(_BALU_LINE_RSTp);
   }
 
   {
@@ -22,22 +26,22 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.FEMO*/ wire _FEMO_Y6n = not(top.lcd_reg.MATO_Y6.q());
     /*p29.GUSU*/ wire _GUSU_Y7n = not(top.lcd_reg.LAFO_Y7.q());
 
-    /*p29.ERUC*/ _ERUC_YDIFF_S0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_SPRITE_Y0.q(), top.GND);
-    /*p29.ERUC*/ _ERUC_YDIFF_C0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_SPRITE_Y0.q(), top.GND);
-    /*p29.ENEF*/ _ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.oam_bus.XEGU_SPRITE_Y1.q(), _ERUC_YDIFF_C0);
-    /*p29.ENEF*/ _ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.oam_bus.XEGU_SPRITE_Y1.q(), _ERUC_YDIFF_C0);
-    /*p29.FECO*/ _FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.oam_bus.YJEX_SPRITE_Y2.q(), _ENEF_YDIFF_C1);
-    /*p29.FECO*/ _FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.oam_bus.YJEX_SPRITE_Y2.q(), _ENEF_YDIFF_C1);
-    /*p29.GYKY*/ _GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.oam_bus.XYJU_SPRITE_Y3.q(), _FECO_YDIFF_C2);
-    /*p29.GYKY*/ _GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.oam_bus.XYJU_SPRITE_Y3.q(), _FECO_YDIFF_C2);
-    /*p29.GOPU*/ _GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.oam_bus.YBOG_SPRITE_Y4.q(), _GYKY_YDIFF_C3);
-    /*p29.GOPU*/ _GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.oam_bus.YBOG_SPRITE_Y4.q(), _GYKY_YDIFF_C3);
-    /*p29.FUWA*/ _FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.oam_bus.WYSO_SPRITE_Y5.q(), _GOPU_YDIFF_C4);
-    /*p29.FUWA*/ _FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.oam_bus.WYSO_SPRITE_Y5.q(), _GOPU_YDIFF_C4);
-    /*p29.GOJU*/ _GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.oam_bus.XOTE_SPRITE_Y6.q(), _FUWA_YDIFF_C5);
-    /*p29.GOJU*/ _GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.oam_bus.XOTE_SPRITE_Y6.q(), _FUWA_YDIFF_C5);
-    /*p29.WUHU*/ _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.oam_bus.YZAB_SPRITE_Y7.q(), _GOJU_YDIFF_C6);
-    /*p29.WUHU*/ _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.oam_bus.YZAB_SPRITE_Y7.q(), _GOJU_YDIFF_C6);
+    /*p29.ERUC*/ _ERUC_YDIFF_S0 = add_c(_EBOS_Y0n, top.XUSO_OAM_DB0.q(), GND);
+    /*p29.ERUC*/ _ERUC_YDIFF_C0 = add_s(_EBOS_Y0n, top.XUSO_OAM_DB0.q(), GND);
+    /*p29.ENEF*/ _ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.XEGU_OAM_DB1.q(), _ERUC_YDIFF_C0);
+    /*p29.ENEF*/ _ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.XEGU_OAM_DB1.q(), _ERUC_YDIFF_C0);
+    /*p29.FECO*/ _FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.YJEX_OAM_DB2.q(), _ENEF_YDIFF_C1);
+    /*p29.FECO*/ _FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.YJEX_OAM_DB2.q(), _ENEF_YDIFF_C1);
+    /*p29.GYKY*/ _GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.XYJU_OAM_DB3.q(), _FECO_YDIFF_C2);
+    /*p29.GYKY*/ _GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.XYJU_OAM_DB3.q(), _FECO_YDIFF_C2);
+    /*p29.GOPU*/ _GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.YBOG_OAM_DB4.q(), _GYKY_YDIFF_C3);
+    /*p29.GOPU*/ _GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.YBOG_OAM_DB4.q(), _GYKY_YDIFF_C3);
+    /*p29.FUWA*/ _FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.WYSO_OAM_DB5.q(), _GOPU_YDIFF_C4);
+    /*p29.FUWA*/ _FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.WYSO_OAM_DB5.q(), _GOPU_YDIFF_C4);
+    /*p29.GOJU*/ _GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.XOTE_OAM_DB6.q(), _FUWA_YDIFF_C5);
+    /*p29.GOJU*/ _GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.XOTE_OAM_DB6.q(), _FUWA_YDIFF_C5);
+    /*p29.WUHU*/ _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.YZAB_OAM_DB7.q(), _GOJU_YDIFF_C6);
+    /*p29.WUHU*/ _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.YZAB_OAM_DB7.q(), _GOJU_YDIFF_C6);
   }
 
   {
@@ -46,7 +50,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.GYDA*/ wire _GYDA_SPRITE_DELTA6 = not(_GOJU_YDIFF_S6);
     /*p29.GEWY*/ wire _GEWY_SPRITE_DELTA7 = not(_WUHU_YDIFF_S7);
 
-    /*p29.GOVU*/ wire _GOVU_SPSIZE_MATCH = or (_GYKY_YDIFF_S3, top.XYMO_LCDC_SPSIZE.q());
+    /*p29.GOVU*/ wire _GOVU_SPSIZE_MATCH = or (_GYKY_YDIFF_S3, top.ppu_reg.XYMO_LCDC_SPSIZE.q());
     /*p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand(_GACE_SPRITE_DELTA4, _GUVU_SPRITE_DELTA5, _GYDA_SPRITE_DELTA6, _GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire _GESE_SCAN_MATCH_Y = not(_WOTA_SCAN_MATCH_Yn);
     /*p29.CARE*/ _CARE_STORE_ENp_ABxxEFxx = and (top.clk_reg.XOCE_AxxDExxH(), top.sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
@@ -55,7 +59,7 @@ void SpriteScanner::tick(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tock(SchematicTop& top) {
+void SpriteScanner::tock(const SchematicTop& top) {
 
   /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and (_YFEL_SCAN0.q(), _WEWY_SCAN1.q(), _GOSO_SCAN2.q(), _FONY_SCAN5.q()); // die AND. 32 + 4 + 2 + 1 = 39
 
@@ -63,11 +67,11 @@ void SpriteScanner::tock(SchematicTop& top) {
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
-    /*p29.BYBA*/ _BYBA_SCAN_DONE_A.set(top.clk_reg.XUPY_ABxxEFxx(), top.lcd_reg.BAGY_LINE_RSTn(), _FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ _DOBA_SCAN_DONE_B.set(top.clk_reg.ALET_xBxDxFxH(), top.lcd_reg.BAGY_LINE_RSTn(), _BYBA_SCAN_DONE_A.q());
+    /*p29.BYBA*/ _BYBA_SCAN_DONE_A.set(top.clk_reg.XUPY_ABxxEFxx(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*p29.DOBA*/ _DOBA_SCAN_DONE_B.set(top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, _BYBA_SCAN_DONE_A.q());
 
-    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.rst_reg.ATAR_VID_RSTp(), top.sprite_scanner.AVAP_RENDER_START_RST());
-    /*p28.BESU*/ _BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_LINE_END(), _ASEN_SCAN_DONE_PE);
+    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.rst_reg.ATAR_VID_RSTp(), top.sprite_scanner.AVAP_RENDER_START_TRIGp());
+    /*p28.BESU*/ _BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_VID_LINE_ENDp(), _ASEN_SCAN_DONE_PE);
     /*p29.CENO*/ _CENO_SCANNINGp.set(top.clk_reg.XUPY_ABxxEFxx(), top.rst_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
   }
 
@@ -83,19 +87,6 @@ void SpriteScanner::tock(SchematicTop& top) {
     /*p28.ELYN*/ _ELYN_SCAN3.set(_GOSO_SCAN2.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _ELYN_SCAN3.qn());
     /*p28.FAHA*/ _FAHA_SCAN4.set(_ELYN_SCAN3.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _FAHA_SCAN4.qn());
     /*p28.FONY*/ _FONY_SCAN5.set(_FAHA_SCAN4.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _FONY_SCAN5.qn());
-  }
-
-  {
-    // Scanner controls OAM address if it's running (collision w/ DMA?)
-    /*p28.APAR*/ wire _APAR_SCAN_OAM_RDn  = not(top.ACYL_SCANNINGp());
-    /*p28.GEFY*/ top.oam_bus.OAM_TRI_A0.set_tribuf_6n(_APAR_SCAN_OAM_RDn, top.GND);
-    /*p28.WUWE*/ top.oam_bus.OAM_TRI_A1.set_tribuf_6n(_APAR_SCAN_OAM_RDn, top.GND);
-    /*p28.GUSE*/ top.oam_bus.OAM_TRI_A2.set_tribuf_6n(_APAR_SCAN_OAM_RDn, _YFEL_SCAN0.q());
-    /*p28.GEMA*/ top.oam_bus.OAM_TRI_A3.set_tribuf_6n(_APAR_SCAN_OAM_RDn, _WEWY_SCAN1.q());
-    /*p28.FUTO*/ top.oam_bus.OAM_TRI_A4.set_tribuf_6n(_APAR_SCAN_OAM_RDn, _GOSO_SCAN2.q());
-    /*p28.FAKU*/ top.oam_bus.OAM_TRI_A5.set_tribuf_6n(_APAR_SCAN_OAM_RDn, _ELYN_SCAN3.q());
-    /*p28.GAMA*/ top.oam_bus.OAM_TRI_A6.set_tribuf_6n(_APAR_SCAN_OAM_RDn, _FAHA_SCAN4.q());
-    /*p28.GOBY*/ top.oam_bus.OAM_TRI_A7.set_tribuf_6n(_APAR_SCAN_OAM_RDn, _FONY_SCAN5.q());
   }
 }
 

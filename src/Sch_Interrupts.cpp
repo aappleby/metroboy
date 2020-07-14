@@ -6,17 +6,17 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void InterruptRegisters::tick(SchematicTop& /*top*/) {
+void InterruptRegisters::tick(const SchematicTop& /*top*/) {
 }
 
 //------------------------------------------------------------------------------
 
-void InterruptRegisters::tock(SchematicTop& top) {
-  /*p07.SEMY*/ wire _SEMY_ADDR_XX0X = nor(top.int_bus.CPU_PIN_A07, top.int_bus.CPU_PIN_A06, top.int_bus.CPU_PIN_A05, top.int_bus.CPU_PIN_A04);
-  /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and (top.int_bus.CPU_PIN_A00, top.int_bus.CPU_PIN_A01, top.int_bus.CPU_PIN_A02, top.int_bus.CPU_PIN_A03);
+void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
+  /*p07.SEMY*/ wire _SEMY_ADDR_XX0X = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A06, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+  /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and (cpu_bus.CPU_PIN_A00, cpu_bus.CPU_PIN_A01, cpu_bus.CPU_PIN_A02, cpu_bus.CPU_PIN_A03);
 
-  /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.int_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
-  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, top.int_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
+  /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
+  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
 
   // FIXME FIXME FIXME order wrong!!!
 
@@ -34,11 +34,11 @@ void InterruptRegisters::tock(SchematicTop& top) {
     /*p02.PAVY*/ PAVY_FF0F_L4.tp_latch(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not(_ROLO_FF0F_RDn);
-    /*p02.NELA*/ top.int_bus.INT_TRI_D0.set_tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.q());
-    /*p02.NABO*/ top.int_bus.INT_TRI_D1.set_tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1.q());
-    /*p02.ROVA*/ top.int_bus.INT_TRI_D2.set_tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2.q());
-    /*p02.PADO*/ top.int_bus.INT_TRI_D3.set_tribuf_6p(_POLA_FF0F_RD, MOPO_FF0F_L3.q());
-    /*p02.PEGY*/ top.int_bus.INT_TRI_D4.set_tribuf_6p(_POLA_FF0F_RD, PAVY_FF0F_L4.q());
+    /*p02.NELA*/ cpu_bus.CPU_TRI_D0.set_tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.q());
+    /*p02.NABO*/ cpu_bus.CPU_TRI_D1.set_tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1.q());
+    /*p02.ROVA*/ cpu_bus.CPU_TRI_D2.set_tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2.q());
+    /*p02.PADO*/ cpu_bus.CPU_TRI_D3.set_tribuf_6p(_POLA_FF0F_RD, MOPO_FF0F_L3.q());
+    /*p02.PEGY*/ cpu_bus.CPU_TRI_D4.set_tribuf_6p(_POLA_FF0F_RD, PAVY_FF0F_L4.q());
   }
 
   {
@@ -50,7 +50,8 @@ void InterruptRegisters::tock(SchematicTop& top) {
 
     /*p02.ROTU*/ wire _ROTU_FF0F_WRp = not(_REFA_FF0F_WRn);
 
-    /*p21.VYPU*/ wire _VYPU_VBLANKp       = not(top.lcd_reg.TOLU_VBLANKn());     
+    /*p21.TOLU*/ wire _TOLU_VBLANKn       = not(top.lcd_reg.PARU_VBLANKp_d4());
+    /*p21.VYPU*/ wire _VYPU_VBLANKp       = not(_TOLU_VBLANKn);     
 
     /*p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not(CPU_PIN_ACK_VBLANK);
     /*p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not(CPU_PIN_ACK_STAT);
@@ -58,23 +59,32 @@ void InterruptRegisters::tock(SchematicTop& top) {
     /*p02.LUFE*/ wire _LUFE_INT_SER_ACKn  = not(CPU_PIN_ACK_SERIAL);
     /*p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not(CPU_PIN_ACK_JOYPAD);
 
-    /*p02.MYZU*/ wire _MYZU_FF0F_SET0n    = nand(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  top.int_bus.INT_TRI_D0.q());
-    /*p02.MODY*/ wire _MODY_FF0F_SET1n    = nand(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, top.int_bus.INT_TRI_D1.q());
-    /*p02.PYHU*/ wire _PYHU_FF0F_SET2n    = nand(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  top.int_bus.INT_TRI_D2.q());
-    /*p02.TOME*/ wire _TOME_FF0F_SET3n    = nand(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  top.int_bus.INT_TRI_D3.q());
-    /*p02.TOGA*/ wire _TOGA_FF0F_SET4n    = nand(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  top.int_bus.INT_TRI_D4.q());
+    /*p02.MYZU*/ wire _MYZU_FF0F_SET0n    = nand(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.CPU_TRI_D0.q());
+    /*p02.MODY*/ wire _MODY_FF0F_SET1n    = nand(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.CPU_TRI_D1.q());
+    /*p02.PYHU*/ wire _PYHU_FF0F_SET2n    = nand(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.CPU_TRI_D2.q());
+    /*p02.TOME*/ wire _TOME_FF0F_SET3n    = nand(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.CPU_TRI_D3.q());
+    /*p02.TOGA*/ wire _TOGA_FF0F_SET4n    = nand(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.CPU_TRI_D4.q());
 
-    /*p02.MUXE*/ wire _MUXE_INT0_WRn = or (top.int_bus.INT_TRI_D0.q(), _REFA_FF0F_WRn);
-    /*p02.NABE*/ wire _NABE_INT1_WRn = or (top.int_bus.INT_TRI_D1.q(), _REFA_FF0F_WRn);
-    /*p02.RAKE*/ wire _RAKE_INT2_WRn = or (top.int_bus.INT_TRI_D2.q(), _REFA_FF0F_WRn);
-    /*p02.SULO*/ wire _SULO_INT3_WRn = or (top.int_bus.INT_TRI_D3.q(), _REFA_FF0F_WRn);
-    /*p02.SEME*/ wire _SEME_INT4_WRn = or (top.int_bus.INT_TRI_D4.q(), _REFA_FF0F_WRn);
+    /*p02.MUXE*/ wire _MUXE_INT0_WRn = or (cpu_bus.CPU_TRI_D0.q(), _REFA_FF0F_WRn);
+    /*p02.NABE*/ wire _NABE_INT1_WRn = or (cpu_bus.CPU_TRI_D1.q(), _REFA_FF0F_WRn);
+    /*p02.RAKE*/ wire _RAKE_INT2_WRn = or (cpu_bus.CPU_TRI_D2.q(), _REFA_FF0F_WRn);
+    /*p02.SULO*/ wire _SULO_INT3_WRn = or (cpu_bus.CPU_TRI_D3.q(), _REFA_FF0F_WRn);
+    /*p02.SEME*/ wire _SEME_INT4_WRn = or (cpu_bus.CPU_TRI_D4.q(), _REFA_FF0F_WRn);
 
     /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and (_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
     /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and (_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.rst_reg.ALUR_SYS_RSTn());
     /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and (_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
     /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and (_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
     /*p02.TYME*/ wire _TYME_FF0F_RST4n = and (_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
+
+    /*p21.TAPA*/ wire TAPA_INT_OAM = and (_TOLU_VBLANKn, top.lcd_reg.SELA_LINE_ENDp());
+    /*p21.TARU*/ wire TARU_INT_HBL = and (_TOLU_VBLANKn, top.ppu_reg.WODU_RENDER_DONEp());
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.ppu_reg._RUGU_INT_LYC_EN.q(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
+                                             top.ppu_reg._REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
+                                             top.ppu_reg._RUFO_INT_VBL_EN.q(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             top.ppu_reg._ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
+    /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
+    /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);
 
 
     // LOPE_01 SC
@@ -100,11 +110,12 @@ void InterruptRegisters::tock(SchematicTop& top) {
     // LOPE_21 SC
     // LOPE_22 << CLKp VYPU_03
 
-    /*p02.LOPE*/ LOPE_FF0F_0.set(_VYPU_VBLANKp,     _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, top.PESU_GND);
-    /*p02.LALU*/ LALU_FF0F_1.set(top.VOTY_INT_STATp(),   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, top.PESU_GND);
-    /*p02.NYBO*/ NYBO_FF0F_2.set(top.tim_reg.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, top.PESU_GND);
-    /*p02.UBUL*/ UBUL_FF0F_3.set(top.ser_reg.CALY_INT_SERIALp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, top.PESU_GND);
-    /*p02.ULAK*/ ULAK_FF0F_4.set(top.joypad.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, top.PESU_GND);
+    wire PESU_GND = 0;
+    /*p02.LOPE*/ LOPE_FF0F_0.set(_VYPU_VBLANKp,     _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_GND);
+    /*p02.LALU*/ LALU_FF0F_1.set(VOTY_INT_STATp,   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_GND);
+    /*p02.NYBO*/ NYBO_FF0F_2.set(top.tim_reg.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_GND);
+    /*p02.UBUL*/ UBUL_FF0F_3.set(top.ser_reg.CALY_INT_SERIALp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_GND);
+    /*p02.ULAK*/ ULAK_FF0F_4.set(top.joypad.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_GND);
 
     CPU_PIN_INT_VBLANK.set(LOPE_FF0F_0.q());
     CPU_PIN_INT_STAT  .set(LALU_FF0F_1.q());

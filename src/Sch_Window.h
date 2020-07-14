@@ -4,24 +4,29 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
 struct WindowRegisters {
 
-  void tick(SchematicTop& gb);
-  void tock(SchematicTop& gb);
+  void tick(const SchematicTop& gb);
+  void tock(const SchematicTop& gb, CpuBus& cpu_bus);
   SignalHash commit();
 
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { // -> ppu, top
-    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(_SUVU_PORCH_ENDn);
-    return nor(SEKO_WX_MATCHne, SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
+  // -> top, tile fetcher
+  /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp() const { 
+    /*p27.NYFO*/ wire NYFO_TILE_FETCHER_RSTn = not(NUNY_WX_MATCHpe());
+    return not(NYFO_TILE_FETCHER_RSTn);
   }
 
-  wire MOSU_WIN_MODE_TRIGp() const { // -> top, tile fetcher
-    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WX_MATCHpe());
-    /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
-    return MOSU_WIN_MODE_TRIGp;
+  // -> top.TEVO
+  /*p27.SEKO*/ wire SEKO_WX_MATCHne() const { return nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q()); }
+
+  // -> top.TEVO
+  /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne() const {
+    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
+    return not(_TUXY_WIN_FIRST_TILE_NE);
   }
 
   /*p27.PORE*/ wire PORE_WIN_MODEp() const { return not(NOCU_WIN_MODEn()); }     // -> tile fetcher
@@ -43,17 +48,12 @@ struct WindowRegisters {
   /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return _TEKE_WIN_Y7.q(); }
 
 private:
-  /*p27.SEKO*/ Signal SEKO_WX_MATCHne;
-  /*p27.SUZU*/ Signal SUZU_WIN_FIRST_TILEne;
-
-  Signal _SUVU_PORCH_ENDn;
-
-  /*p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not(_PYNU_WIN_MODE_A.q()); }
+  /*p27.NOCU*/ wire NOCU_WIN_MODEn()  const { return not(_PYNU_WIN_MODE_A.q()); }
   /*p27.NUNY*/ wire NUNY_WX_MATCHpe() const { return and(_PYNU_WIN_MODE_A.q(), _NOPA_WIN_MODE_B.qn()); }
   /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not(_RYDY_WIN_FIRST_TILE_A.q()); }
 
-  wire ROGE_WY_MATCHp(const SchematicTop& top) const;
-  wire NUKO_WX_MATCHp(const SchematicTop& top) const;
+  /*p27.ROGE*/ wire ROGE_WY_MATCHp(const SchematicTop& top) const;
+  /*p27.NUKO*/ wire NUKO_WX_MATCHp(const SchematicTop& top) const;
 
   /*p27.PYNU*/ NorLatch _PYNU_WIN_MODE_A;
   /*p27.RYDY*/ NorLatch _RYDY_WIN_FIRST_TILE_A;

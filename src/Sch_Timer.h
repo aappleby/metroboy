@@ -4,14 +4,14 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
 struct Timer {
 
-  void tick(SchematicTop& gb);
-  void tock(SchematicTop& gb);
-
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top, CpuBus& cpu_bus);
   SignalHash commit();
 
   int get_div() {

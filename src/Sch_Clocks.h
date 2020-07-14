@@ -9,15 +9,19 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
-  void tick(SchematicTop& top);
-  void tock(SchematicTop& top);
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top);
   SignalHash commit();
 
   void dump(Dumper& d);
 
-  ExtPinIn  SYS_PIN_CLK_A;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  ExtPinIn  SYS_PIN_CLK_B;  // PIN_74 
-  CpuPinIn  CPU_PIN_READYp; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  wire get_clk_a() const { return SYS_PIN_CLK_A.get(); }
+  wire get_clk_b() const { return SYS_PIN_CLK_B.get(); }
+
+  void set_clk_a(wire clk_a) { SYS_PIN_CLK_A.set(clk_a); }
+  void set_clk_b(wire clk_b) { SYS_PIN_CLK_B.set(clk_b); }
+
+  //----------------------------------------
 
   /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not(SYS_PIN_CLK_A); }
 
@@ -59,21 +63,23 @@ struct ClockRegisters {
   /*p21.VENA*/ wire VENA_xxxxEFGH() const { return _VENA_xxxxEFGH.q(); }
   /*p29.WOSU*/ wire WOSU_xBCxxFGx() const { return _WOSU_xBCxxFGx.q(); }
 
-private:
+  //----------------------------------------
 
-  /*p01.ABOL*/ wire ABOL_CLKREQn()  const { return not(CPU_PIN_READYp); }
+private:
+  Signal _ABOL_CLKREQn;
+
   /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!_AFUR_ABCDxxxx.q()); }
   /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B; } // ignoring the deglitcher here
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not(AZOF_AxCxExGx()); }
 
-  /*p01.NULE*/ wire NULE_xxxxEFGH() const { return nor(ABOL_CLKREQn(),  ATYP_ABCDxxxx()); }
+  /*p01.NULE*/ wire NULE_xxxxEFGH() const { return nor(_ABOL_CLKREQn,  ATYP_ABCDxxxx()); }
   /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not(NULE_xxxxEFGH()); }
   /*p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not(BYRY_ABCDxxxx()); }
   /*p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not(BUDE_xxxxEFGH()); }
   
   /*p01.BAPY*/ wire BAPY_xxxxxxGH() const {
     /*p01.AROV*/ wire _AROV_xxCDEFxx = not(!_APUK_xxCDEFxx.q());
-    return nor(ABOL_CLKREQn(), _AROV_xxCDEFxx, ATYP_ABCDxxxx());
+    return nor(_ABOL_CLKREQn, _AROV_xxCDEFxx, ATYP_ABCDxxxx());
   }
   /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not(BAPY_xxxxxxGH()); }
   /*p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not(BERU_ABCDEFxx()); }
@@ -103,15 +109,18 @@ private:
   /*p21.VENA*/ Reg17 _VENA_xxxxEFGH;
   /*p29.WOSU*/ Reg17 _WOSU_xBCxxFGx;
 
+  ExtPinIn  SYS_PIN_CLK_A;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
+  ExtPinIn  SYS_PIN_CLK_B;  // PIN_74 
+
   CpuPinOut CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  CpuPinOut CPU_PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
-  CpuPinOut CPU_PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
-  CpuPinOut CPU_PIN_BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  CpuPinOut CPU_PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
-  CpuPinOut CPU_PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  CpuPinOut CPU_PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
-  CpuPinOut CPU_PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-  CpuPinOut CPU_PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+  CpuPinOut CPU_PIN_BOWA_xBCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
+  CpuPinOut CPU_PIN_BEDO_Axxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
+  CpuPinOut CPU_PIN_BEKO_ABCDxxxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  CpuPinOut CPU_PIN_BUDE_xxxxEFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
+  CpuPinOut CPU_PIN_BOLO_ABCDEFxx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
+  CpuPinOut CPU_PIN_BUKE_AxxxxxGH; // top left port PORTD_07: <- BUKE_ABxxxxxH
+  CpuPinOut CPU_PIN_BOMA_Axxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
+  CpuPinOut CPU_PIN_BOGA_xBCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
   ExtPinOut EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
 };
 

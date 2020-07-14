@@ -7,39 +7,11 @@ using namespace Schematics;
 SchematicTop::SchematicTop() {
   // HACK preset these so we don't read hiz
 
-  JOY_PIN_P10_C.set(0);
-  JOY_PIN_P11_C.set(0);
-  JOY_PIN_P12_C.set(0);
-  JOY_PIN_P13_C.set(0);
-
   int_reg.CPU_PIN_ACK_JOYPAD.set(0);
   int_reg.CPU_PIN_ACK_SERIAL.set(0);
   int_reg.CPU_PIN_ACK_STAT.set(0);
   int_reg.CPU_PIN_ACK_TIMER.set(0);
   int_reg.CPU_PIN_ACK_VBLANK.set(0);
-}
-
-//-----------------------------------------------------------------------------
-
-void SchematicTop::set_buttons(uint8_t buttons) {
-  if (joypad.KELY_JOYP_UDLR.q()) {
-    JOY_PIN_P10_C.set(buttons & 0x01);
-    JOY_PIN_P11_C.set(buttons & 0x02);
-    JOY_PIN_P12_C.set(buttons & 0x04);
-    JOY_PIN_P13_C.set(buttons & 0x08);
-  }
-  else if (joypad.COFY_JOYP_ABCS.q()) {
-    JOY_PIN_P10_C.set(buttons & 0x10);
-    JOY_PIN_P11_C.set(buttons & 0x20);
-    JOY_PIN_P12_C.set(buttons & 0x40);
-    JOY_PIN_P13_C.set(buttons & 0x80);
-  }
-  else {
-    JOY_PIN_P10_C.set(1);
-    JOY_PIN_P11_C.set(1);
-    JOY_PIN_P12_C.set(1);
-    JOY_PIN_P13_C.set(1);
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -51,122 +23,126 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
-  rst_reg.tick(*this);
-  lcd_reg.tick(*this);
-  sprite_scanner.tick(*this);
-  sprite_store.tick_match(*this);  // after bus mux
-  win_reg.tick(*this); // after sprite store
-  tile_fetcher.tick(*this); // after window
-  clk_reg.tick(*this);
-  dbg_reg.tick(*this);
-  tim_reg.tick(*this);
-  bootrom.tick(*this);
-  dma_reg.tick(*this);
-  ser_reg.tick(*this);
-  joypad.tick(*this);
-  bus_mux.tick(*this);
-  ppu_reg.tick(*this); // after window
-  sprite_fetcher.tick(*this); // after window
-  pix_pipe.tick(*this); // after window
-  int_reg.tick(*this);
+  rst_reg.tick(top);
+  lcd_reg.tick(top);
+  sprite_scanner.tick(top);
+  sprite_store.tick(top);
+  win_reg.tick(top);
+  tile_fetcher.tick(top);
+  clk_reg.tick(top);
+  tim_reg.tick(top);
+  bootrom.tick(top);
+  dma_reg.tick(top);
+  ser_reg.tick(top);
+  joypad.tick(top);
+  ppu_reg.tick(top);
+  sprite_fetcher.tick(top);
+  pix_pipe.tick(top);
+  int_reg.tick(top);
 
-  clk_reg.tock(*this);
-  dbg_reg.tock(*this);
-  rst_reg.tock(*this);
-  tim_reg.tock(*this);
-  bootrom.tock(*this);
-  dma_reg.tock(*this);
-  ser_reg.tock(*this);
-  joypad.tock(*this);
-  sprite_scanner.tock(*this);
-  lcd_reg.tock(*this);
-  bus_mux.tock(*this);
-  sprite_store.tock(*this);  // after bus mux
-  win_reg.tock(*this); // after sprite store
-  ppu_reg.tock(*this); // after window
-  sprite_fetcher.tock(*this); // after window
-  pix_pipe.tock(*this); // after window
-  tile_fetcher.tock(*this); // after window
-  int_reg.tock(*this);
 
-  //----------
-  // FF40 LCDC
-  {
-    /*p22.WORU*/ wire _WORU_FF40n = nand(top.int_bus.WERO_FF4Xp(), top.int_bus.XOLA_A00n(), top.int_bus.XENO_A01n(), top.int_bus.XUSY_A02n(), top.int_bus.XERA_A03n());
-    /*p22.VOCA*/ wire _VOCA_FF40p = not(_WORU_FF40n);
+  clk_reg.tock(top);
+  rst_reg.tock(top);
+  tim_reg.tock(top, cpu_bus);
+  bootrom.tock(top, cpu_bus);
+  dma_reg.tock(top, cpu_bus);
+  ser_reg.tock(top, cpu_bus);
+  joypad.tock(top, cpu_bus);
+  sprite_scanner.tock(top);
+  lcd_reg.tock(top, cpu_bus);
+  sprite_store.tock(top);
+  win_reg.tock(top, cpu_bus);
+  ppu_reg.tock(top, cpu_bus);
+  sprite_fetcher.tock(top);
+  pix_pipe.tock(top, cpu_bus);
+  tile_fetcher.tock(top, cpu_bus);
+  int_reg.tock(top, cpu_bus);
 
-    /*p23.VYRE*/ wire _VYRE_FF40_RDp = and (_VOCA_FF40p, ASOT_CPU_RDp());
-    /*p23.WYCE*/ wire _WYCE_FF40_RDn = not(_VYRE_FF40_RDp);
-
-    /*p23.WYPO*/ int_bus.INT_TRI_D0.set_tribuf_6n(_WYCE_FF40_RDn, VYXE_LCDC_BGEN.q());
-    /*p23.XERO*/ int_bus.INT_TRI_D1.set_tribuf_6n(_WYCE_FF40_RDn, XYLO_LCDC_SPEN.q());
-    /*p23.WYJU*/ int_bus.INT_TRI_D2.set_tribuf_6n(_WYCE_FF40_RDn, XYMO_LCDC_SPSIZE.q());
-    /*p23.WUKA*/ int_bus.INT_TRI_D3.set_tribuf_6n(_WYCE_FF40_RDn, XAFO_LCDC_BGMAP.q());
-    /*p23.VOKE*/ int_bus.INT_TRI_D4.set_tribuf_6n(_WYCE_FF40_RDn, WEXU_LCDC_BGTILE.q());
-    /*p23.VATO*/ int_bus.INT_TRI_D5.set_tribuf_6n(_WYCE_FF40_RDn, WYMO_LCDC_WINEN.q());
-    /*p23.VAHA*/ int_bus.INT_TRI_D6.set_tribuf_6n(_WYCE_FF40_RDn, WOKY_LCDC_WINMAP.q());
-    /*p23.XEBU*/ int_bus.INT_TRI_D7.set_tribuf_6n(_WYCE_FF40_RDn, XONA_LCDC_EN.q());
-
-    /*p23.WARU*/ wire _WARU_FF40_WRp = and (_VOCA_FF40p, CUPA_CPU_WRp_xxxxEFGx());
-    /*p23.XUBO*/ wire _XUBO_FF40_WRn = not(_WARU_FF40_WRp);
-
-    /*p01.XARE*/ wire _XARE_RSTn = not(rst_reg.XORE_SYS_RSTp());
-    /*p23.VYXE*/ VYXE_LCDC_BGEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D0.q());
-    /*p23.XYLO*/ XYLO_LCDC_SPEN   .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D1.q());
-    /*p23.XYMO*/ XYMO_LCDC_SPSIZE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D2.q());
-    /*p23.XAFO*/ XAFO_LCDC_BGMAP  .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D3.q());
-    /*p23.WEXU*/ WEXU_LCDC_BGTILE .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D4.q());
-    /*p23.WYMO*/ WYMO_LCDC_WINEN  .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D5.q());
-    /*p23.WOKY*/ WOKY_LCDC_WINMAP .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D6.q());
-    /*p23.XONA*/ XONA_LCDC_EN     .set(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, top.int_bus.INT_TRI_D7.q());
-  }
+  cpu_bus.tock(top);
+  ext_bus.tock(top);
+  oam_bus.tock(top);
+  vram_bus.tock(top);
 
   //----------
 
   if (verbose) printf("SchematicTop::commit\n");
 
   hash << clk_reg.commit();
-  hash << dbg_reg.commit();
   hash << rst_reg.commit();
   hash << tim_reg.commit();
   hash << bootrom.commit();
   hash << dma_reg.commit();
   hash << ser_reg.commit();
-  hash << joypad.commit(*this);
+  hash << joypad.commit();
   hash << sprite_scanner.commit();
-  hash << lcd_reg.commit(*this);
-  hash << bus_mux.commit(*this);
+  hash << lcd_reg.commit();
  
-  hash << sprite_store.commit(*this); // after bus mux
-  hash << win_reg.commit(); // after sprite store
-  hash << ppu_reg.commit(*this); // after sprite store
-  hash << sprite_fetcher.commit(); // after window
-  hash << pix_pipe.commit(*this); // after window
-  hash << tile_fetcher.commit(*this); // after window
+  hash << sprite_store.commit();
+  hash << win_reg.commit();
+  hash << ppu_reg.commit();
+  hash << sprite_fetcher.commit();
+  hash << pix_pipe.commit();
+  hash << tile_fetcher.commit();
   hash << int_reg.commit();
 
-  hash << SYS_PIN_RSTp.commit();
-  hash << SYS_PIN_T2n.commit();
-  hash << SYS_PIN_T1n.commit();
+  hash << cpu_bus.commit();
+  hash << ext_bus.commit();
+  hash << oam_bus.commit();
+  hash << vram_bus.commit();
 
-  //----------------------------------------
+  hash << YLOR_OAM_DA0.commit();
+  hash << ZYTY_OAM_DA1.commit();
+  hash << ZYVE_OAM_DA2.commit();
+  hash << ZEZY_OAM_DA3.commit();
+  hash << GOMO_OAM_DA4.commit();
+  hash << BAXO_OAM_DA5.commit();
+  hash << YZOS_OAM_DA6.commit();
+  hash << DEPO_OAM_DA7.commit();
 
-  hash << JOY_PIN_P10_C.commit();     // PIN_67-> KERY, KEVU
-  hash << JOY_PIN_P11_C.commit();     // PIN_66-> KERY, P05.KAPA
-  hash << JOY_PIN_P12_C.commit();     // PIN_65-> KERY, P05.KEJA
-  hash << JOY_PIN_P13_C.commit();     // PIN_64-> KERY, P05.KOLO
+  hash << XUSO_OAM_DB0.commit();
+  hash << XEGU_OAM_DB1.commit();
+  hash << YJEX_OAM_DB2.commit();
+  hash << XYJU_OAM_DB3.commit();
+  hash << YBOG_OAM_DB4.commit();
+  hash << WYSO_OAM_DB5.commit();
+  hash << XOTE_OAM_DB6.commit();
+  hash << YZAB_OAM_DB7.commit();
 
-  //----------
-  // LCDC
+  hash << LEGU_TILE_DA0.commit();
+  hash << NUDU_TILE_DA1.commit();
+  hash << MUKU_TILE_DA2.commit();
+  hash << LUZO_TILE_DA3.commit();
+  hash << MEGU_TILE_DA4.commit();
+  hash << MYJY_TILE_DA5.commit();
+  hash << NASA_TILE_DA6.commit();
+  hash << NEFO_TILE_DA7.commit();
 
-  hash << VYXE_LCDC_BGEN.commit();
-  hash << XYLO_LCDC_SPEN.commit();
-  hash << XYMO_LCDC_SPSIZE.commit();
-  hash << XAFO_LCDC_BGMAP.commit();
-  hash << WEXU_LCDC_BGTILE.commit();
-  hash << WYMO_LCDC_WINEN.commit();
-  hash << WOKY_LCDC_WINMAP.commit();
-  hash << XONA_LCDC_EN.commit();
+  hash << RAWU_TILE_DB0.commit();
+  hash << POZO_TILE_DB1.commit();
+  hash << PYZO_TILE_DB2.commit(); 
+  hash << POXA_TILE_DB3.commit(); 
+  hash << PULO_TILE_DB4.commit(); 
+  hash << POJU_TILE_DB5.commit(); 
+  hash << POWY_TILE_DB6.commit(); 
+  hash << PYJU_TILE_DB7.commit();
+
+  hash << PEFO_SPRITE_DA0.commit();
+  hash << ROKA_SPRITE_DA1.commit();
+  hash << MYTU_SPRITE_DA2.commit();
+  hash << RAMU_SPRITE_DA3.commit();
+  hash << SELE_SPRITE_DA4.commit();
+  hash << SUTO_SPRITE_DA5.commit();
+  hash << RAMA_SPRITE_DA6.commit();
+  hash << RYDU_SPRITE_DA7.commit();
+
+  hash << REWO_SPRITE_DB0.commit();
+  hash << PEBA_SPRITE_DB1.commit();
+  hash << MOFO_SPRITE_DB2.commit();
+  hash << PUDU_SPRITE_DB3.commit();
+  hash << SAJA_SPRITE_DB4.commit();
+  hash << SUNY_SPRITE_DB5.commit();
+  hash << SEMO_SPRITE_DB6.commit();
+  hash << SEGA_SPRITE_DB7.commit();
 
   if (verbose) printf("SchematicTop::commit done\n");
 
@@ -178,7 +154,7 @@ SignalHash SchematicTop::tick() {
 #if 0
 // Debug stuff I disabled
 
-/*p07.APET*/ wire APET_MODE_DBG = or(top.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
+/*p07.APET*/ wire APET_MODE_DBG = or(top.rst_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
 /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_PIN_A05, CPU_PIN_A06, TAPU_CPUWR, ADDR_111111110xx00000);
 
 //----------
@@ -217,7 +193,7 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, clk.CPU_PIN_BOGA_AxCDEFGH);
+/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, clk.CPU_PIN_BOGA_xBCDEFGH);
 /*p25.SOLE*/ wire SOLE = not(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(
@@ -236,14 +212,14 @@ if (top.VYPO_GND) bus_out.set_data(
 ///*p05.KYWE*/ wire P05_NC1 = nor (KERU_DBG_FF00_D7, FF60_0o);
 
 /*p08.LYRA*/ wire DBG_D_RDn = nand(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/*p08.TUTY*/ if (!DBG_D_RDn) INT_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
-/*p08.SYWA*/ if (!DBG_D_RDn) INT_TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
-/*p08.SUGU*/ if (!DBG_D_RDn) INT_TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
-/*p08.TAWO*/ if (!DBG_D_RDn) INT_TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
-/*p08.TUTE*/ if (!DBG_D_RDn) INT_TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
-/*p08.SAJO*/ if (!DBG_D_RDn) INT_TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
-/*p08.TEMY*/ if (!DBG_D_RDn) INT_TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
-/*p08.ROPA*/ if (!DBG_D_RDn) INT_TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
+/*p08.TUTY*/ if (!DBG_D_RDn) CPU_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
+/*p08.SYWA*/ if (!DBG_D_RDn) CPU_TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
+/*p08.SUGU*/ if (!DBG_D_RDn) CPU_TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
+/*p08.TAWO*/ if (!DBG_D_RDn) CPU_TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
+/*p08.TUTE*/ if (!DBG_D_RDn) CPU_TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
+/*p08.SAJO*/ if (!DBG_D_RDn) CPU_TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
+/*p08.TEMY*/ if (!DBG_D_RDn) CPU_TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
+/*p08.ROPA*/ if (!DBG_D_RDn) CPU_TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
 #endif
 
 // hack, not correct
@@ -255,13 +231,13 @@ if (top.VYPO_GND) bus_out.set_data(
 
   /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
-  /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, INT_TRI_D0);
-  /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, INT_TRI_D1);
+  /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D0);
+  /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D1);
 
   ///*p05.KURA*/ wire FF60_0n = not(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not(FF60);
-  /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, INT_TRI_D0);
-  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, INT_TRI_D1);
+  /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D0);
+  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D1);
 }
 #endif
 
@@ -290,22 +266,22 @@ if (top.VYPO_GND) bus_out.set_data(
 /*p08.PEVO*/ wire A14_Cn = not(EXT_PIN_A14_C);
 /*p08.RAZA*/ wire A15_Cn = not(EXT_PIN_A15_C);
 
-/*p08.KEJO*/ top.int_bus.CPU_PIN_A00.set_tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
-/*p08.BYXE*/ top.int_bus.CPU_PIN_A01.set_tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);
-/*p08.AKAN*/ top.int_bus.CPU_PIN_A02.set_tribuf_10n(TOVA_MODE_DBG2n, A02_Cn);
-/*p08.ANAR*/ top.int_bus.CPU_PIN_A03.set_tribuf_10n(TOVA_MODE_DBG2n, A03_Cn);
-/*p08.AZUV*/ top.int_bus.CPU_PIN_A04.set_tribuf_10n(TOVA_MODE_DBG2n, A04_Cn);
-/*p08.AJOV*/ top.int_bus.CPU_PIN_A05.set_tribuf_10n(TOVA_MODE_DBG2n, A05_Cn);
-/*p08.BYNE*/ top.int_bus.CPU_PIN_A06.set_tribuf_10n(TOVA_MODE_DBG2n, A06_Cn);
-/*p08.BYNA*/ top.int_bus.CPU_PIN_A07.set_tribuf_10n(TOVA_MODE_DBG2n, A07_Cn);
-/*p08.LOFA*/ top.int_bus.CPU_PIN_A08.set_tribuf_10n(TOVA_MODE_DBG2n, A08_Cn);
-/*p08.MAPU*/ top.int_bus.CPU_PIN_A09.set_tribuf_10n(TOVA_MODE_DBG2n, A09_Cn);
-/*p08.RALA*/ top.int_bus.CPU_PIN_A10.set_tribuf_10n(TOVA_MODE_DBG2n, A10_Cn);
-/*p08.LORA*/ top.int_bus.CPU_PIN_A11.set_tribuf_10n(TOVA_MODE_DBG2n, A11_Cn);
-/*p08.LYNA*/ top.int_bus.CPU_PIN_A12.set_tribuf_10n(TOVA_MODE_DBG2n, A12_Cn);
-/*p08.LEFY*/ top.int_bus.CPU_PIN_A13.set_tribuf_10n(TOVA_MODE_DBG2n, A13_Cn);
-/*p08.NEFE*/ top.int_bus.CPU_PIN_A14.set_tribuf_10n(TOVA_MODE_DBG2n, A14_Cn);
-/*p08.SYZU*/ top.int_bus.CPU_PIN_A15.set_tribuf_10n(TOVA_MODE_DBG2n, A15_Cn);
+/*p08.KEJO*/ top.cpu_bus.CPU_PIN_A00.set_tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
+/*p08.BYXE*/ top.cpu_bus.CPU_PIN_A01.set_tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);
+/*p08.AKAN*/ top.cpu_bus.CPU_PIN_A02.set_tribuf_10n(TOVA_MODE_DBG2n, A02_Cn);
+/*p08.ANAR*/ top.cpu_bus.CPU_PIN_A03.set_tribuf_10n(TOVA_MODE_DBG2n, A03_Cn);
+/*p08.AZUV*/ top.cpu_bus.CPU_PIN_A04.set_tribuf_10n(TOVA_MODE_DBG2n, A04_Cn);
+/*p08.AJOV*/ top.cpu_bus.CPU_PIN_A05.set_tribuf_10n(TOVA_MODE_DBG2n, A05_Cn);
+/*p08.BYNE*/ top.cpu_bus.CPU_PIN_A06.set_tribuf_10n(TOVA_MODE_DBG2n, A06_Cn);
+/*p08.BYNA*/ top.cpu_bus.CPU_PIN_A07.set_tribuf_10n(TOVA_MODE_DBG2n, A07_Cn);
+/*p08.LOFA*/ top.cpu_bus.CPU_PIN_A08.set_tribuf_10n(TOVA_MODE_DBG2n, A08_Cn);
+/*p08.MAPU*/ top.cpu_bus.CPU_PIN_A09.set_tribuf_10n(TOVA_MODE_DBG2n, A09_Cn);
+/*p08.RALA*/ top.cpu_bus.CPU_PIN_A10.set_tribuf_10n(TOVA_MODE_DBG2n, A10_Cn);
+/*p08.LORA*/ top.cpu_bus.CPU_PIN_A11.set_tribuf_10n(TOVA_MODE_DBG2n, A11_Cn);
+/*p08.LYNA*/ top.cpu_bus.CPU_PIN_A12.set_tribuf_10n(TOVA_MODE_DBG2n, A12_Cn);
+/*p08.LEFY*/ top.cpu_bus.CPU_PIN_A13.set_tribuf_10n(TOVA_MODE_DBG2n, A13_Cn);
+/*p08.NEFE*/ top.cpu_bus.CPU_PIN_A14.set_tribuf_10n(TOVA_MODE_DBG2n, A14_Cn);
+/*p08.SYZU*/ top.cpu_bus.CPU_PIN_A15.set_tribuf_10n(TOVA_MODE_DBG2n, A15_Cn);
 }
 #endif
 

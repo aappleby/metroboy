@@ -4,15 +4,19 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
 struct PixelPipe {
-  void tick(SchematicTop& top);
-  void tock(SchematicTop& top);
-  SignalHash commit(SchematicTop& top);
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top, CpuBus& cpu_bus);
+  SignalHash commit();
 
 private:
+
+  ExtPinOut LCD_PIN_LD1;  // PIN_50 
+  ExtPinOut LCD_PIN_LD0;  // PIN_51 
 
   /*p32.MYDE*/ Reg22 BG_PIPE_A0;
   /*p32.NOZO*/ Reg22 BG_PIPE_A1;

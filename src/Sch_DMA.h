@@ -4,13 +4,16 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
+struct OamBus;
+struct VramBus;
 
 //-----------------------------------------------------------------------------
 
 struct DmaRegisters {
 
-  void tick(SchematicTop& gb);
-  void tock(SchematicTop& gb);
+  void tick(const SchematicTop& top);
+  void tock(const SchematicTop& top, CpuBus& cpu_bus);
   SignalHash commit();
 
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.q(); }
@@ -30,16 +33,11 @@ struct DmaRegisters {
 
   /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not(MATU_DMA_RUNNINGp()); }
 
-  wire LUFA_DMA_VRAM_RDp() const {
+  wire LUFA_DMA_VRM_RDp() const {
     /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand(MATU_DMA_RUNNINGp(), MUDA_DMA_SRC_VRAMp());
-    /*p04.LUFA*/ wire LUFA_DMA_VRAM_RDp = not(MUHO_DMA_VRAM_RDn);
-    return LUFA_DMA_VRAM_RDp;
+    /*p04.LUFA*/ wire LUFA_DMA_VRM_RDp = not(MUHO_DMA_VRAM_RDn);
+    return LUFA_DMA_VRM_RDp;
   }
-
-  /*p25.CEDE*/ wire CEDE_DMA_EXT_TO_OAMn()    const { return not(LUMA_DMA_READ_CARTp()); } // -> bus mux
-
-  /*p28.AZAR*/ wire AZAR_DMA_VRM_TO_OAMn() const { return not(LUFA_DMA_VRAM_RDp()); } // -> bus mux
-  /*p25.APAM*/ wire APAM_DMA_VRAM_RDn()   const { return not(LUFA_DMA_VRAM_RDp()); } // -> RACU_MOEn
 
   /*p04.NAKY*/ Reg17 DMA_A00;
   /*p04.PYRO*/ Reg17 DMA_A01;
@@ -60,7 +58,6 @@ struct DmaRegisters {
   /*p04.MARU*/ Reg8 DMA_A15;
 
 private:
-  /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn()   const { return not(LUFA_DMA_VRAM_RDp()); }
 
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
   /*p04.MATU*/ Reg17 _MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.

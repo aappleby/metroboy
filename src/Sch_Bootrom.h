@@ -4,12 +4,13 @@
 namespace Schematics {
 
 struct SchematicTop;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
 struct Bootrom {
-  void tick(SchematicTop& gb);
-  void tock(SchematicTop& gb);
+  void tick(const SchematicTop& gb);
+  void tock(const SchematicTop& gb, CpuBus& cpu_bus);
   SignalHash commit();
 
   /*p07.TEPU*/ wire BOOT_BITn() const { return _BOOT_BITn.q(); }

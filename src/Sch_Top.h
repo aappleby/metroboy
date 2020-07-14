@@ -4,10 +4,7 @@
 #include "Sch_LCD.h"
 #include "Sch_DMA.h"
 #include "Sch_SpriteStore.h"
-#include "Sch_PPU.h"
-#include "Sch_Window.h"
 #include "Sch_Clocks.h"
-#include "Sch_Resets.h"
 #include "Sch_PixPipe.h"
 #include "Sch_Joypad.h"
 #include "Sch_Serial.h"
@@ -38,7 +35,7 @@ struct SchematicTop {
   // top.BETE, top.AJUJ
   /*p28.AJON*/ wire AJON_OAM_BUSY() const {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_reg.MATU_DMA_RUNNINGp());
-    return and(BOGE_DMA_RUNNINGn, ppu_reg.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
+    return and(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
   }
 
   // -> top.AMAB, top.APAG
@@ -51,42 +48,11 @@ struct SchematicTop {
     return and (top.cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
   }
 
-  /*p25.SERE*/ wire SERE_CPU_VRM_RDp() const {
-    /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and (top.cpu_bus.SOSE_8000_9FFFp(), top.ABUZ_CPU_ADDR_VALIDp());
-    /*p25.TOLE*/ wire _TOLE_VRAM_RDp     = mux2_p(top.vram_bus.TEFY_VRAM_MCSp(), _TUCA_CPU_VRAM_RDp, top.rst_reg.TUTO_DBG_VRAMp());
-    return and (_TOLE_VRAM_RDp, top.ppu_reg.ROPY_RENDERINGn());
-  }
-
-  /*p25.SALE*/ wire SALE_VRAM_WRn() const {
-    /*p25.TAVY*/ wire _TAVY_MOEp = not(top.vram_bus.VRAM_PIN_MOEn_C());
-    return mux2_p(_TAVY_MOEp, top.cpu_bus.TEGU_CPU_VRAM_WRn(), top.rst_reg.TUTO_DBG_VRAMp());
-  }
-
-  /*p25.SAZO*/ wire SAZO_VRAM_RD() const {
-    /*p25.RUVY*/ wire _RUVY_VRAM_WR = not(SALE_VRAM_WRn());
-    return and (_RUVY_VRAM_WR, top.SERE_CPU_VRM_RDp());
-  }
-
-  /*p25.REVO*/ wire REVO_VRAM_RDp() const {
-    /*p25.RYJE*/ wire _RYJE_VRAM_RDn = not(SAZO_VRAM_RD());
-    return not(_RYJE_VRAM_RDn);
-  }
-
-  /*p25.RENA*/ wire RENA_VRM_TO_CPUp() const {
-    /*p25.RELA*/ wire _RELA_VRM_TO_CPUn = or (REVO_VRAM_RDp(), SAZO_VRAM_RD());
-    return not(_RELA_VRM_TO_CPUn);
-  }
-
-  /*p25.RAHU*/ wire RAHU_CPU_TO_VRMn() const {
-    /*p25.ROCY*/ wire _ROCY_CPU_TO_VRMp = and (REVO_VRAM_RDp(), SAZO_VRAM_RD());
-    return not(_ROCY_CPU_TO_VRMp);
-  }
-
   //-----------------------------------------------------------------------------
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_CPU_ADDR_VALIDp() const {
-    /*p01.AWOD*/ wire AWOD_CPU_ADDR_VALIDn = nor(top.rst_reg.UNOR_MODE_DBG2p(), top.cpu_bus.APAP_CPU_ADDR_VALIDp());
+    /*p01.AWOD*/ wire AWOD_CPU_ADDR_VALIDn = nor(top.clk_reg.UNOR_MODE_DBG2p(), top.cpu_bus.APAP_CPU_ADDR_VALIDp());
     return not(AWOD_CPU_ADDR_VALIDn);
   }
 
@@ -96,17 +62,14 @@ struct SchematicTop {
     return and(TERA_BOOT_BITp, top.cpu_bus.TULO_ADDR_00XXp());
   }
 
-  // top.XEDU, vram.RYLU
-  /*p25.XANE*/ wire XANE_VRAM_LOCKn() const { return nor(dma_reg.LUFA_DMA_VRM_RDp(), ppu_reg.XYMU_RENDERINGp()); } // def nor
-
   // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
-  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(sprite_scanner.AVAP_RENDER_START_TRIGp(), win_reg.MOSU_TILE_FETCHER_RSTp(), top.TEVO_FINE_RSTp()); }
+  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(sprite_scanner.AVAP_RENDER_START_TRIGp(), pix_pipe.MOSU_TILE_FETCHER_RSTp(), top.TEVO_FINE_RSTp()); }
 
   //-----------------------------------------------------------------------------
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C(), cpu_bus.CPU_PIN_RDp(), top.rst_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C(), cpu_bus.CPU_PIN_RDp(), top.clk_reg.UNOR_MODE_DBG2p());
     return not(UJYV_CPU_RDn);
   }
 
@@ -131,7 +94,7 @@ struct SchematicTop {
 
   // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
-    /*p07.UBAL*/ wire _UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WRp_C(), APOV_CPU_WRp_xxxxEFGx(), top.rst_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire _UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WRp_C(), APOV_CPU_WRp_xxxxEFGx(), top.clk_reg.UNOR_MODE_DBG2p());
     return not(_UBAL_CPU_WRn_ABCDxxxH);
   }
 
@@ -150,27 +113,10 @@ struct SchematicTop {
   // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
   /*p28.ACYL*/ wire ACYL_SCANNINGp() const { return and(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp()); } // so dma stops oam scan?
 
-  // ppu.roxo, top.sacu, win.ryfa/roco
-  /*p24.SEGU*/ wire SEGU_CLKPIPEn() const {
-    /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(sprite_store.FEPO_STORE_MATCHp, ppu_reg.WODU_RENDER_DONEp(), clk_reg.MYVO_AxCxExGx());
-    /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(win_reg.TOMU_WIN_HITp());
-    /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp(), _VYBO_PIX_CLK_xBxDxFxH);
-    return not(_TYFA_CLKPIPEp_xBxDxFxH);
-  }
 
-  // ppu.TOBA/XEHO/SAVY/XODU/XYDO
-  /*p24.SACU*/ wire SACU_CLKPIPEp() const { return nor(SEGU_CLKPIPEn(), ppu_reg._ROXY_FINE_SCROLL_DONEn.q()); }
-
-  // -> ppu.PASO, window.VETU
+  // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
   /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { 
-    return nor(top.win_reg.SEKO_WX_MATCHne(), top.win_reg.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PORCH_DONE_TRIGp());
-  }
-
-  /*p28.APAG*/ wire APAG_CPU_OAM_WRp() const {
-    /*p28.XUTO*/ wire _XUTO_CPU_OAM_WRp = and (top.cpu_bus.SARO_FE00_FEFFp(), top.CUPA_CPU_WRp_xxxxEFGx());
-    /*p28.WUJE*/ wire _WUJE_CPU_OAM_WRp = or (top.clk_reg.XYNY_ABCDxxxx(), _XUTO_CPU_OAM_WRp);
-    /*p28.XUPA*/ wire _XUPA_CPU_OAM_WRn = not(_WUJE_CPU_OAM_WRp);
-    return amux2(_XUPA_CPU_OAM_WRn, top.AMAB_OAM_LOCKn(), top.AJUJ_OAM_BUSYn(), top.cpu_bus.ADAH_FE00_FEFFn());
+    return nor(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PORCH_DONE_TRIGp());
   }
 
   //-----------------------------------------------------------------------------
@@ -205,9 +151,6 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
   // Top level registers
-
-  //-----------------------------------------------------------------------------
-  // Sub-modules
 
   /*p31.YLOR*/ Reg8 YLOR_OAM_DA0; // sprite x bit 0, 
   /*p31.ZYTY*/ Reg8 ZYTY_OAM_DA1; // sprite x bit 1, 
@@ -263,6 +206,9 @@ struct SchematicTop {
   /*p33.SEMO*/ Reg8 SEMO_SPRITE_DB6;
   /*p33.SEGA*/ Reg8 SEGA_SPRITE_DB7;
 
+  //-----------------------------------------------------------------------------
+  // Sub-modules
+
   //private:
 
   OamBus oam_bus;
@@ -276,12 +222,9 @@ struct SchematicTop {
   Joypad joypad;
   LcdRegisters lcd_reg;
   PixelPipe pix_pipe;
-  ResetRegisters rst_reg;
   SerialRegisters ser_reg;
   SpriteStore sprite_store;
   Timer tim_reg;
-  PpuRegisters ppu_reg;
-  WindowRegisters win_reg;
   TileFetcher tile_fetcher;
   SpriteFetcher sprite_fetcher;
   SpriteScanner sprite_scanner;

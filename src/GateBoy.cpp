@@ -15,10 +15,10 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   auto top = gateboy.top();
 
-  top->rst_reg.set_cpu_ready(0);
+  top->clk_reg.set_cpu_ready(0);
   top->ext_bus.set_ext_rdwr(0, 0);
 
-  top->rst_reg.set_t1t2(0,0);
+  top->clk_reg.set_t1t2(0,0);
 
   SignalHash hash;
 
@@ -27,28 +27,27 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   // Just read DIV forever.
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
-  // 16 phases w/ reset high, clock not running.
-  top->rst_reg.set_rst(1);
+  // 8 phases w/ reset high, clock not running.
+  top->clk_reg.set_rst(1);
   top->clk_reg.set_clk_a(0);
-  gateboy.run(top, 16, req);
+  gateboy.run(top, 8, req);
   printf("\n");
 
-  // 16 phases w/ reset high, clock running.
-  top->rst_reg.set_rst(1);
+  // 8 phases w/ reset high, clock running.
+  top->clk_reg.set_rst(1);
   top->clk_reg.set_clk_a(1);
-  gateboy.run(top, 16, req);
+  gateboy.run(top, 8, req);
   printf("\n");
 
-  // 32 phases w/ reset low, clock running.
-  top->rst_reg.set_rst(0);
+  // 8 phases w/ reset low, clock running.
+  top->clk_reg.set_rst(0);
   top->clk_reg.set_clk_a(1);
-  gateboy.run(top, 16, req);
+  gateboy.run(top, 8, req);
   printf("\n");
 
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
-  top->ppu_reg.XONA_LCDC_EN.preset(1);
-  while(!top->rst_reg.CPU_PIN_STARTp()) {
+  while(!top->clk_reg.CPU_PIN_STARTp()) {
     gateboy.run(top, 1, req);
   }
 
@@ -56,7 +55,11 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   // We should see AFER (global reset) clear and the video clocks start up.
   // FIXME why are the video clocks not running...
 
-  top->rst_reg.set_cpu_ready(1);
+  top->clk_reg.set_cpu_ready(1);
+  gateboy.run(top, 8, req);
+  printf("\n");
+
+  top->pix_pipe.XONA_LCDC_EN.preset(1);
   gateboy.run(top, 24, req);
   printf("\n");
 
@@ -142,13 +145,13 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   }
 
   if (verbose) {
-    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d CPU_START %d CPU_RDY %d DIV %05d AFER %d\n",
+    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       pass_count,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),
-      top->rst_reg.SYS_PIN_RSTp(),
+      top->clk_reg.SYS_PIN_RSTp(),
       top->clk_reg.AFUR_ABCDxxxx(),
       top->clk_reg.ALEF_xBCDExxx(),
       top->clk_reg.APUK_xxCDEFxx(),
@@ -156,11 +159,12 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.WUVU_xxCDxxGH(),
       top->clk_reg.VENA_xxxxEFGH(),
       top->clk_reg.WOSU_xBCxxFGx(),
-      //top->BELE_Axxxxxxx(),
-      top->rst_reg.CPU_PIN_STARTp(),
-      top->rst_reg.CPU_PIN_READYp(),
+      top->clk_reg.BOMA_Axxxxxxx(),
+      top->clk_reg.CPU_PIN_STARTp(),
+      top->clk_reg.CPU_PIN_READYp(),
       top->tim_reg.get_div(),
-      1//top->rst_reg.AFER_SYS_RSTp.q()
+      top->clk_reg.AFER_SYS_RSTp(),
+      top->clk_reg._ASOL_POR_DONEn.q()
       //hash.h);
       );
   }
@@ -302,7 +306,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
 
   text_painter.newline();
   //gb.ext_bus.dump_pins(text_painter);
-  //gb.rst_reg.dump_regs(text_painter);
+  //gb.clk_reg.dump_regs(text_painter);
   //.dump_regs(text_painter);
   //gb.vck_reg.dump_regs(text_painter);
   //gb.cpu_bus.dump_pins(text_painter);
@@ -328,9 +332,9 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
-  //gb.ppu_reg.dump_regs(text_painter);
+  //gb.pix_pipe.dump_regs(text_painter);
   //gb.sst_reg.dump_regs(text_painter);
-  //gb.ppu_reg.dump_regs(text_painter);
+  //gb.pix_pipe.dump_regs(text_painter);
   //gb.oam_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;

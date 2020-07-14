@@ -71,18 +71,18 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.SULO*/ wire _SULO_INT3_WRn = or (cpu_bus.CPU_TRI_D3.q(), _REFA_FF0F_WRn);
     /*p02.SEME*/ wire _SEME_INT4_WRn = or (cpu_bus.CPU_TRI_D4.q(), _REFA_FF0F_WRn);
 
-    /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and (_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
-    /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and (_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.rst_reg.ALUR_SYS_RSTn());
-    /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and (_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
-    /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and (_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
-    /*p02.TYME*/ wire _TYME_FF0F_RST4n = and (_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.rst_reg.ALUR_SYS_RSTn());
+    /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and (_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
+    /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and (_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.clk_reg.ALUR_SYS_RSTn());
+    /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and (_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
+    /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and (_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
+    /*p02.TYME*/ wire _TYME_FF0F_RST4n = and (_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
 
     /*p21.TAPA*/ wire TAPA_INT_OAM = and (_TOLU_VBLANKn, top.lcd_reg.SELA_LINE_ENDp());
-    /*p21.TARU*/ wire TARU_INT_HBL = and (_TOLU_VBLANKn, top.ppu_reg.WODU_RENDER_DONEp());
-    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.ppu_reg._RUGU_INT_LYC_EN.q(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
-                                             top.ppu_reg._REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
-                                             top.ppu_reg._RUFO_INT_VBL_EN.q(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
-                                             top.ppu_reg._ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
+    /*p21.TARU*/ wire TARU_INT_HBL = and (_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp());
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe._RUGU_INT_LYC_EN.q(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
+                                             top.pix_pipe._REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
+                                             top.pix_pipe._RUFO_INT_VBL_EN.q(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             top.pix_pipe._ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
     /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
     /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);
 

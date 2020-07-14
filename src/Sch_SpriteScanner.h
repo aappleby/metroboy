@@ -14,23 +14,31 @@ struct SpriteScanner {
   void tock(const SchematicTop& top);
   SignalHash commit();
 
+  // -> sprite store
   wire DEGE_SPRITE_DELTA0() const { return not(_ERUC_YDIFF_S0); }
   wire DABY_SPRITE_DELTA1() const { return not(_ENEF_YDIFF_S1); }
   wire DABU_SPRITE_DELTA2() const { return not(_FECO_YDIFF_S2); }
   wire GYSA_SPRITE_DELTA3() const { return not(_GYKY_YDIFF_S3); }
 
+  // -> sprite store
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not(_CARE_STORE_ENp_ABxxEFxx); }
 
-  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }  // top
+  // -> top.ACYL
+  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }
+
+  // -> sprite store
   /*p29.AROR*/ wire AROR_MATCH_ENp() const { return and(AZEM_RENDERINGp(), _XYLO_LCDC_SPEN); }
 
+  // -> ppu.XYMU/POFY, scanner.ASEN, top.NYXU
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
     /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B(), !BYBA_SCAN_DONE_A());
     return not(_BEBU_SCAN_DONE_TRIGn);
   }
 
+  // -> sprite store
   /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX() const { return and(_CENO_SCANNINGp.qn(), _XYMU_RENDERINGp); }
 
+  // -> oam bus
   /*p28.YFEL*/ wire YFEL_SCAN0() const { return _YFEL_SCAN0.q(); }
   /*p28.WEWY*/ wire WEWY_SCAN1() const { return _WEWY_SCAN1.q(); }
   /*p28.GOSO*/ wire GOSO_SCAN2() const { return _GOSO_SCAN2.q(); }
@@ -45,6 +53,9 @@ private:
   /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(_CENO_SCANNINGp.qn()); }
   /*p29.DOBA*/ wire DOBA_SCAN_DONE_B() const { return _DOBA_SCAN_DONE_B.q(); }
   /*p29.BYBA*/ wire BYBA_SCAN_DONE_A() const { return _BYBA_SCAN_DONE_A.q(); }
+
+  //----------------------------------------
+  // Signals
 
   Signal _XYLO_LCDC_SPEN;
   Signal _XYMU_RENDERINGp;
@@ -69,6 +80,9 @@ private:
   /*p29.WUHU*/ Signal _WUHU_YDIFF_C7;
 
   /*p29.CARE*/ Signal _CARE_STORE_ENp_ABxxEFxx; // to sprite store
+
+  //----------------------------------------
+  // States
 
   /*p28.BESU*/ NorLatch _BESU_SCANNINGp;
   /*p29.CENO*/ Reg17    _CENO_SCANNINGp;

@@ -64,13 +64,13 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or (top.cpu_bus.CPU_TRI_D0.q(), _BOOT_BITn.q());
 
-    /*p07.TEPU*/ _BOOT_BITn.set(_TUGE_FF50_WRn, top.rst_reg.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
+    /*p07.TEPU*/ _BOOT_BITn.set(_TUGE_FF50_WRn, top.clk_reg.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
   }
 
   {
     // Bootrom -> CPU
 
-    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(top.rst_reg.UMUT_MODE_DBG1p());
+    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(top.clk_reg.UMUT_MODE_DBG1p());
     /*p07.YULA*/ wire _YULA_BOOT_RDp = and (top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
 
     /*p07.ZADO*/ wire _ZADO_BOOT_CSn  = nand(_YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());

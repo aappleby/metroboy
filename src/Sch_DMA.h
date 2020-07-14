@@ -16,27 +16,23 @@ struct DmaRegisters {
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
   SignalHash commit();
 
+  // -> bunch of stuff
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.q(); }
 
-  wire MUDA_DMA_SRC_VRAMp() const {
-    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not(DMA_A15.q());
-    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), LEBU_DMA_ADDR_A15n);
-    return MUDA_DMA_SRC_VRAMp;
-  }
-
-  wire LUMA_DMA_READ_CARTp() const {
+  // -> ext bus, oam bus
+  /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp() const {
     /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not(MUDA_DMA_SRC_VRAMp());
     /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand(MATU_DMA_RUNNINGp(), _LOGO_DMA_VRAMn);
-    /*p04.LUMA*/ wire _LUMA_DMA_READ_CARTp = not(_MORY_DMA_READ_CARTn);
-    return _LUMA_DMA_READ_CARTp;
+    return not(_MORY_DMA_READ_CARTn);
   }
 
+  // -> top.ACYL, top.AJON
   /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not(MATU_DMA_RUNNINGp()); }
 
-  wire LUFA_DMA_VRM_RDp() const {
+  // -> oam bus, vram bus
+  /*p04.LUFA*/ wire LUFA_DMA_VRM_RDp() const {
     /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand(MATU_DMA_RUNNINGp(), MUDA_DMA_SRC_VRAMp());
-    /*p04.LUFA*/ wire LUFA_DMA_VRM_RDp = not(MUHO_DMA_VRAM_RDn);
-    return LUFA_DMA_VRM_RDp;
+    return not(MUHO_DMA_VRAM_RDn);
   }
 
   /*p04.NAKY*/ Reg17 DMA_A00;
@@ -58,6 +54,13 @@ struct DmaRegisters {
   /*p04.MARU*/ Reg8 DMA_A15;
 
 private:
+
+  wire MUDA_DMA_SRC_VRAMp() const {
+    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not(DMA_A15.q());
+    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), LEBU_DMA_ADDR_A15n);
+    return MUDA_DMA_SRC_VRAMp;
+  }
+
 
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
   /*p04.MATU*/ Reg17 _MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.

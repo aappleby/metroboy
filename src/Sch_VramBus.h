@@ -13,7 +13,6 @@ struct VramBus {
   void tock(SchematicTop& top);
   SignalHash commit();
 
-
   void set_vram_data(uint8_t data) {
     _VRAM_PIN_MD0_C.set(data & 0x01);
     _VRAM_PIN_MD1_C.set(data & 0x02);
@@ -24,12 +23,6 @@ struct VramBus {
     _VRAM_PIN_MD6_C.set(data & 0x40);
     _VRAM_PIN_MD7_C.set(data & 0x80);
   }
-
-  /*p25.TEFY*/ wire TEFY_VRAM_MCSp() const { return not(_VRAM_PIN_MCSn_C); }
-
-  wire VRAM_PIN_MWRn_C() const { return _VRAM_PIN_MWRn_C.get(); }
-  wire VRAM_PIN_MOEn_C() const { return _VRAM_PIN_MOEn_C.get(); }
-  wire VRAM_PIN_MCSn_C() const { return _VRAM_PIN_MCSn_C.get(); }
 
   // -> oam data tri
   /*p25.RERY*/ wire VRM_TRI_D0() const { return _VRM_TRI_D0.q(); }

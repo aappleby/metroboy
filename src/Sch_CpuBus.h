@@ -93,7 +93,10 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // Bus control
 
+  // -> ext bus
   /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAn() const { return nand(_CPU_PIN_RDp, TEXO_8000_9FFFn(), _CPU_PIN5); }
+
+  // -> top.SALE
   /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn() const { return nand(SOSE_8000_9FFFp(), _CPU_PIN_WRp); } // Schematic wrong, second input is CPU_RAW_WR
 
   /*p08.TYNU*/ wire TYNU_ADDR_RAM() const { 

@@ -14,16 +14,13 @@ struct OamBus {
   SignalHash commit();
   void set_oam_data(wire OE, uint16_t data);
 
-  /*p28.GEKA*/ wire GEKA_OAM_A0p() const { return not(OAM_TRI_A0.q()); }
-  /*p28.ZYFO*/ wire ZYFO_OAM_A1p() const { return not(OAM_TRI_A1.q()); }
+  // -> sprite store
   /*p28.YFOT*/ wire YFOT_OAM_A2p() const { return not(OAM_TRI_A2.q()); }
   /*p28.YFOC*/ wire YFOC_OAM_A3p() const { return not(OAM_TRI_A3.q()); }
   /*p28.YVOM*/ wire YVOM_OAM_A4p() const { return not(OAM_TRI_A4.q()); }
   /*p28.YMEV*/ wire YMEV_OAM_A5p() const { return not(OAM_TRI_A5.q()); }
   /*p28.XEMU*/ wire XEMU_OAM_A6p() const { return not(OAM_TRI_A6.q()); }
   /*p28.YZET*/ wire YZET_OAM_A7p() const { return not(OAM_TRI_A7.q()); }
-
-  /*p28.WAFO*/ wire WAFO_OAM_A0n() const { return not(GEKA_OAM_A0p()); }
 
 private:
 

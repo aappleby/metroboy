@@ -23,26 +23,22 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
-  rst_reg.tick(top);
+  clk_reg.tick(top);
   lcd_reg.tick(top);
   sprite_scanner.tick(top);
   sprite_store.tick(top);
-  win_reg.tick(top);
+  pix_pipe.tick(top);
   tile_fetcher.tick(top);
-  clk_reg.tick(top);
   tim_reg.tick(top);
   bootrom.tick(top);
   dma_reg.tick(top);
   ser_reg.tick(top);
   joypad.tick(top);
-  ppu_reg.tick(top);
   sprite_fetcher.tick(top);
-  pix_pipe.tick(top);
   int_reg.tick(top);
 
 
   clk_reg.tock(top);
-  rst_reg.tock(top);
   tim_reg.tock(top, cpu_bus);
   bootrom.tock(top, cpu_bus);
   dma_reg.tock(top, cpu_bus);
@@ -51,10 +47,8 @@ SignalHash SchematicTop::tick() {
   sprite_scanner.tock(top);
   lcd_reg.tock(top, cpu_bus);
   sprite_store.tock(top);
-  win_reg.tock(top, cpu_bus);
-  ppu_reg.tock(top, cpu_bus);
-  sprite_fetcher.tock(top);
   pix_pipe.tock(top, cpu_bus);
+  sprite_fetcher.tock(top);
   tile_fetcher.tock(top, cpu_bus);
   int_reg.tock(top, cpu_bus);
 
@@ -68,7 +62,6 @@ SignalHash SchematicTop::tick() {
   if (verbose) printf("SchematicTop::commit\n");
 
   hash << clk_reg.commit();
-  hash << rst_reg.commit();
   hash << tim_reg.commit();
   hash << bootrom.commit();
   hash << dma_reg.commit();
@@ -78,8 +71,6 @@ SignalHash SchematicTop::tick() {
   hash << lcd_reg.commit();
  
   hash << sprite_store.commit();
-  hash << win_reg.commit();
-  hash << ppu_reg.commit();
   hash << sprite_fetcher.commit();
   hash << pix_pipe.commit();
   hash << tile_fetcher.commit();
@@ -154,7 +145,7 @@ SignalHash SchematicTop::tick() {
 #if 0
 // Debug stuff I disabled
 
-/*p07.APET*/ wire APET_MODE_DBG = or(top.rst_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
+/*p07.APET*/ wire APET_MODE_DBG = or(top.clk_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
 /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_PIN_A05, CPU_PIN_A06, TAPU_CPUWR, ADDR_111111110xx00000);
 
 //----------

@@ -143,8 +143,6 @@
     <ClInclude Include="src\Sch_LCD.h" />
     <ClInclude Include="src\Sch_OamBus.h" />
     <ClInclude Include="src\Sch_PixPipe.h" />
-    <ClInclude Include="src\Sch_PPU.h" />
-    <ClInclude Include="src\Sch_Resets.h" />
     <ClInclude Include="src\Sch_Serial.h" />
     <ClInclude Include="src\Sch_SpriteFetcher.h" />
     <ClInclude Include="src\Sch_SpriteScanner.h" />
@@ -153,7 +151,6 @@
     <ClInclude Include="src\Sch_Timer.h" />
     <ClInclude Include="src\Sch_Top.h" />
     <ClInclude Include="src\Sch_VramBus.h" />
-    <ClInclude Include="src\Sch_Window.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\Signals.h" />
     <ClInclude Include="src\SPU.h" />
@@ -218,8 +215,6 @@
     <ClCompile Include="src\Sch_LCD.cpp" />
     <ClCompile Include="src\Sch_OamBus.cpp" />
     <ClCompile Include="src\Sch_PixPipe.cpp" />
-    <ClCompile Include="src\Sch_PPU.cpp" />
-    <ClCompile Include="src\Sch_Resets.cpp" />
     <ClCompile Include="src\Sch_Serial.cpp" />
     <ClCompile Include="src\Sch_SpriteFetcher.cpp" />
     <ClCompile Include="src\Sch_SpriteScanner.cpp" />
@@ -228,7 +223,6 @@
     <ClCompile Include="src\Sch_Timer.cpp" />
     <ClCompile Include="src\Sch_Top.cpp" />
     <ClCompile Include="src\Sch_VramBus.cpp" />
-    <ClCompile Include="src\Sch_Window.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\Signals.cpp" />
     <ClCompile Include="src\SPU.cpp" />

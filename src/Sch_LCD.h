@@ -48,14 +48,15 @@ struct LcdRegisters {
   
 
   // -> sprite store
-  /*p21.SAXO*/ Reg17 XEHO_X0; // increments at phase 1, reset to 0 at p909.
-  /*p21.TYPO*/ Reg17 SAVY_X1;
-  /*p21.VYZO*/ Reg17 XODU_X2;
-  /*p21.TELU*/ Reg17 XYDO_X3;
-  /*p21.SUDE*/ Reg17 TUHU_X4;
-  /*p21.TAHA*/ Reg17 TUKY_X5;
-  /*p21.TYRY*/ Reg17 TAKO_X6;
+  /*p21.SAXO*/ Reg17 SAXO_X0; // increments at phase 1, reset to 0 at p909.
+  /*p21.TYPO*/ Reg17 TYPO_X1;
+  /*p21.VYZO*/ Reg17 VYZO_X2;
+  /*p21.TELU*/ Reg17 TELU_X3;
+  /*p21.SUDE*/ Reg17 SUDE_X4;
+  /*p21.TAHA*/ Reg17 TAHA_X5;
+  /*p21.TYRY*/ Reg17 TYRY_X6;
 
+  // -> pix pipe, sprite scanner, vram bus
   /*p21.MUWY*/ Reg17 MUWY_Y0; // increments at p909, reset to 0 at p153:001
   /*p21.MYRO*/ Reg17 MYRO_Y1;
   /*p21.LEXA*/ Reg17 LEXA_Y2;

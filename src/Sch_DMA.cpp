@@ -89,20 +89,20 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p22.XEDA*/ wire _XEDA_FF46p = not(_WATE_FF46n);
   /*p04.MOLU*/ wire _MOLU_FF46_RDp = and(_XEDA_FF46p, top.ASOT_CPU_RDp());
   /*p04.LAVY*/ wire _LAVY_FF46_WRp = and(_XEDA_FF46p, top.CUPA_CPU_WRp_xxxxEFGx());
-  /*p04.LOKO*/ wire _LOKO_DMA_RSTp = nand(top.rst_reg.CUNU_SYS_RSTn(), !LENE_DMA_TRIG_d4.q());
+  /*p04.LOKO*/ wire _LOKO_DMA_RSTp = nand(top.clk_reg.CUNU_SYS_RSTn(), !LENE_DMA_TRIG_d4.q());
 
   {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(_LOKO_DMA_RSTp, _LAVY_FF46_WRp);
     /*p04.LUPA*/ wire _LUPA_DMA_TRIG = nor(_LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
-    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(top.clk_reg.UVYT_ABCDxxxx(), top.rst_reg.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG);
-    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(top.clk_reg.MOPA_xxxxEFGH(), top.rst_reg.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.q());
+    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG);
+    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(top.clk_reg.MOPA_xxxxEFGH(), top.clk_reg.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.q());
   }
 
   {
     // NAND latch
     /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
-    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp,    top.rst_reg.CUNU_SYS_RSTn(), !MYTE_DMA_DONE.q());
-    /*p04.MATU*/ _MATU_DMA_RUNNINGp.set(top.clk_reg.UVYT_ABCDxxxx(), top.rst_reg.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp);
+    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp,    top.clk_reg.CUNU_SYS_RSTn(), !MYTE_DMA_DONE.q());
+    /*p04.MATU*/ _MATU_DMA_RUNNINGp.set(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp);
   }
 
   {

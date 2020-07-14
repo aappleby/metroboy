@@ -313,8 +313,7 @@ struct Reg8 : public RegisterBase {
 struct Reg9 : public RegisterBase {
 
   void preset(bool D) {
-    a = D ? SET_1 : SET_0;
-    b = ERROR;
+    a.val = D ? SET_1 : SET_0;
   }
 
   void set(wire CLKp, wire CLKn, wire RSTn, bool D) {

@@ -44,14 +44,14 @@ SpriteStore::SpriteStore() {
 
 void SpriteStore::tick(const SchematicTop& top) {
   {
-    /*p21.ACAM*/ wire _ACAM_X0n = not(top.ppu_reg.XEHO_X0.q());
-    /*p21.AZUB*/ wire _AZUB_X1n = not(top.ppu_reg.SAVY_X1.q());
-    /*p21.AMEL*/ wire _AMEL_X2n = not(top.ppu_reg.XODU_X2.q());
-    /*p21.AHAL*/ wire _AHAL_X3n = not(top.ppu_reg.XYDO_X3.q());
-    /*p21.APUX*/ wire _APUX_X4n = not(top.ppu_reg.TUHU_X4.q());
-    /*p21.ABEF*/ wire _ABEF_X5n = not(top.ppu_reg.TUKY_X5.q());
-    /*p21.ADAZ*/ wire _ADAZ_X6n = not(top.ppu_reg.TAKO_X6.q());
-    /*p21.ASAH*/ wire _ASAH_X7n = not(top.ppu_reg.SYBE_X7.q());
+    /*p21.ACAM*/ wire _ACAM_X0n = not(top.pix_pipe.XEHO_X0.q());
+    /*p21.AZUB*/ wire _AZUB_X1n = not(top.pix_pipe.SAVY_X1.q());
+    /*p21.AMEL*/ wire _AMEL_X2n = not(top.pix_pipe.XODU_X2.q());
+    /*p21.AHAL*/ wire _AHAL_X3n = not(top.pix_pipe.XYDO_X3.q());
+    /*p21.APUX*/ wire _APUX_X4n = not(top.pix_pipe.TUHU_X4.q());
+    /*p21.ABEF*/ wire _ABEF_X5n = not(top.pix_pipe.TUKY_X5.q());
+    /*p21.ADAZ*/ wire _ADAZ_X6n = not(top.pix_pipe.TAKO_X6.q());
+    /*p21.ASAH*/ wire _ASAH_X7n = not(top.pix_pipe.SYBE_X7.q());
 
     /*p31.ZOGY*/ wire STORE0_MATCH0n = xor (XEPE_STORE0_X0.q(), _ACAM_X0n);
     /*p31.ZEBA*/ wire STORE0_MATCH1n = xor (YLAH_STORE0_X1.q(), _AZUB_X1n);
@@ -213,7 +213,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p30.CUCA*/ SPR_TRI_LINE_2.set_tribuf_6n(FEPO_STORE_MATCHp, top.sprite_scanner.DABU_SPRITE_DELTA2());
     /*p30.CEGA*/ SPR_TRI_LINE_3.set_tribuf_6n(FEPO_STORE_MATCHp, top.sprite_scanner.GYSA_SPRITE_DELTA3());
 
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.clk_reg.ZEME_AxCxExGx(), top.rst_reg.XAPO_VID_RSTn(), top.sprite_scanner.DYTY_STORE_ENn_xxCDxxGH());
+    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), top.sprite_scanner.DYTY_STORE_ENn_xxCDxxGH());
   }
 
   //----------------------------------------

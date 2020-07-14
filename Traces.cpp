@@ -1,3 +1,27 @@
+
+// Die trace:
+// VETU = and(TEVO, PORE);
+// XACO = not(XOFO)
+// WYKA =
+
+// WYKA01 <> WYKA12
+// WYKA02 << VETU
+// WYKA03 <> WYKA09
+// WYKA04 nc
+// WYKA05 nc
+// WYKA06 << XACO
+// WYKA07 << WYKA16
+// WYKA08 nc
+// WYKA09 <> WYKA03
+// WYKA10 nc
+// WYKA11 nc
+// WYKA12 <> WYKA01
+// WYKA13 << XACO
+// WYKA14 nc
+// WYKA15 nc
+// WYKA16 >> WYKA07, WODY02
+// WYKA17 >> XEJA
+
 // TYNO_01 << TOXE_17
 // TYNO_02 << SEBA_17
 // TYNO_03 << VONU_17

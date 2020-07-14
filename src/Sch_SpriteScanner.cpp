@@ -9,8 +9,8 @@ void SpriteScanner::tick(const SchematicTop& top) {
   wire GND = 0;
 
   {
-    _XYLO_LCDC_SPEN = top.ppu_reg.XYLO_LCDC_SPEN.q();
-    _XYMU_RENDERINGp = top.ppu_reg.XYMU_RENDERINGp();
+    _XYLO_LCDC_SPEN = top.pix_pipe.XYLO_LCDC_SPEN.q();
+    _XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp();
 
     /*p29.BALU*/ _BALU_LINE_RSTp = not(top.lcd_reg.ANOM_LINE_RSTn());
     /*p29.BAGY*/ _BAGY_LINE_RSTn = not(_BALU_LINE_RSTp);
@@ -50,7 +50,7 @@ void SpriteScanner::tick(const SchematicTop& top) {
     /*p29.GYDA*/ wire _GYDA_SPRITE_DELTA6 = not(_GOJU_YDIFF_S6);
     /*p29.GEWY*/ wire _GEWY_SPRITE_DELTA7 = not(_WUHU_YDIFF_S7);
 
-    /*p29.GOVU*/ wire _GOVU_SPSIZE_MATCH = or (_GYKY_YDIFF_S3, top.ppu_reg.XYMO_LCDC_SPSIZE.q());
+    /*p29.GOVU*/ wire _GOVU_SPSIZE_MATCH = or (_GYKY_YDIFF_S3, top.pix_pipe.XYMO_LCDC_SPSIZE.q());
     /*p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand(_GACE_SPRITE_DELTA4, _GUVU_SPRITE_DELTA5, _GYDA_SPRITE_DELTA6, _GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire _GESE_SCAN_MATCH_Y = not(_WOTA_SCAN_MATCH_Yn);
     /*p29.CARE*/ _CARE_STORE_ENp_ABxxEFxx = and (top.clk_reg.XOCE_AxxDExxH(), top.sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
@@ -70,9 +70,9 @@ void SpriteScanner::tock(const SchematicTop& top) {
     /*p29.BYBA*/ _BYBA_SCAN_DONE_A.set(top.clk_reg.XUPY_ABxxEFxx(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
     /*p29.DOBA*/ _DOBA_SCAN_DONE_B.set(top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, _BYBA_SCAN_DONE_A.q());
 
-    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.rst_reg.ATAR_VID_RSTp(), top.sprite_scanner.AVAP_RENDER_START_TRIGp());
+    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.clk_reg.ATAR_VID_RSTp(), top.sprite_scanner.AVAP_RENDER_START_TRIGp());
     /*p28.BESU*/ _BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_VID_LINE_ENDp(), _ASEN_SCAN_DONE_PE);
-    /*p29.CENO*/ _CENO_SCANNINGp.set(top.clk_reg.XUPY_ABxxEFxx(), top.rst_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
+    /*p29.CENO*/ _CENO_SCANNINGp.set(top.clk_reg.XUPY_ABxxEFxx(), top.clk_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
   }
 
   //----------------------------------------
@@ -98,6 +98,7 @@ SignalHash SpriteScanner::commit() {
   hash << _XYLO_LCDC_SPEN.commit();
   hash << _XYMU_RENDERINGp.commit();
   hash << _BALU_LINE_RSTp.commit();
+  hash << _BAGY_LINE_RSTn.commit();
 
   /*p28.BESU*/ hash << _BESU_SCANNINGp.commit();
   /*p29.CENO*/ hash << _CENO_SCANNINGp.commit();

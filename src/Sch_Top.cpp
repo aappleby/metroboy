@@ -17,7 +17,6 @@ SchematicTop::SchematicTop() {
 //-----------------------------------------------------------------------------
 
 SignalHash SchematicTop::tick() {
-  SignalHash hash;
 
   bool verbose = false;
 
@@ -61,6 +60,7 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::commit_input\n");
 
+  SignalHash hash;
   hash << clk_reg.commit();
   hash << tim_reg.commit();
   hash << bootrom.commit();
@@ -136,6 +136,11 @@ SignalHash SchematicTop::tick() {
   hash << SEGA_SPRITE_DB7.commit();
 
   if (verbose) printf("SchematicTop::commit_input done\n");
+
+  //exit(1);
+
+  commit_hash = hash;
+  combined_hash << hash;
 
   return hash;
 }

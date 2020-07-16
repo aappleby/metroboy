@@ -74,7 +74,7 @@ void ClockRegisters::tock(const SchematicTop& top) {
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn(), ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /* PIN_75 */ EXT_PIN_CLK.set(BUDE_AxxxxFGH);
+    /* PIN_75 */ EXT_PIN_CLK.set_pin_out(BUDE_AxxxxFGH);
   }
 
   CPU_PIN_EXT_CLKGOOD.set(SYS_PIN_CLK_A);

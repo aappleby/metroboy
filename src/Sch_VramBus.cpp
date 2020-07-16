@@ -72,8 +72,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SOFY*/ wire _SOFY_MWRn_D = or (_SOHY_MWRn, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SYSY*/ wire _SYSY_MWRp_A = not(_TAXY_MWRn_A);
     /*p25.RAGU*/ wire _RAGU_MWRp_D = not(_SOFY_MWRn_D);
-    _VRAM_PIN_MWRn_A.set(_SYSY_MWRp_A);
-    _VRAM_PIN_MWRn_D.set(_RAGU_MWRp_D);
+    _VRAM_PIN_MWRn_A.set_pin_out(_SYSY_MWRp_A);
+    _VRAM_PIN_MWRn_D.set_pin_out(_RAGU_MWRp_D);
   }
 
 
@@ -88,8 +88,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or (_RACU_MOEn, top.clk_reg.TUTO_DBG_VRAMp()); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire _REFO_MOEn_A = not(_SEMA_MOEn_A);
     /*p25.SAHA*/ wire _SAHA_MOEn_D = not(_RUTE_MOEn_D);
-    _VRAM_PIN_MOEn_A.set(_REFO_MOEn_A);
-    _VRAM_PIN_MOEn_D.set(_SAHA_MOEn_D);
+    _VRAM_PIN_MOEn_A.set_pin_out(_REFO_MOEn_A);
+    _VRAM_PIN_MOEn_D.set_pin_out(_SAHA_MOEn_D);
   }
 
   {
@@ -104,8 +104,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SEWO*/ wire _SEWO_MCSn_D = or (_SUTU_MCSn, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SOKY*/ wire _SOKY_MCSp_A = not(_TODE_MCSn_A);
     /*p25.SETY*/ wire _SETY_MCSp_D = not(_SEWO_MCSn_D);
-    _VRAM_PIN_MCSn_A.set(_SOKY_MCSp_A);
-    _VRAM_PIN_MCSn_D.set(_SETY_MCSp_D);
+    _VRAM_PIN_MCSn_A.set_pin_out(_SOKY_MCSp_A);
+    _VRAM_PIN_MCSn_D.set_pin_out(_SETY_MCSp_D);
   }
 
   //----------------------------------------
@@ -305,19 +305,19 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUMA*/ wire _RUMA = not(_VRM_TRI_A11.q());
     /*p25.REHO*/ wire _REHO = not(_VRM_TRI_A12.q());
 
-    /*p25.LEXE*/ _VRAM_PIN_MA00_AD.set(_MYFU);
-    /*p25.LOZU*/ _VRAM_PIN_MA01_AD.set(_MASA);
-    /*p25.LACA*/ _VRAM_PIN_MA02_AD.set(_MYRE);
-    /*p25.LUVO*/ _VRAM_PIN_MA03_AD.set(_MAVU);
-    /*p25.LOLY*/ _VRAM_PIN_MA04_AD.set(_MEPA);
-    /*p25.LALO*/ _VRAM_PIN_MA05_AD.set(_MYSA);
-    /*p25.LEFA*/ _VRAM_PIN_MA06_AD.set(_MEWY);
-    /*p25.LUBY*/ _VRAM_PIN_MA07_AD.set(_MUME);
-    /*p25.TUJY*/ _VRAM_PIN_MA08_AD.set(_VOVA);
-    /*p25.TAGO*/ _VRAM_PIN_MA09_AD.set(_VODE);
-    /*p25.NUVA*/ _VRAM_PIN_MA10_AD.set(_RUKY);
-    /*p25.PEDU*/ _VRAM_PIN_MA11_AD.set(_RUMA);
-    /*p25.PONY*/ _VRAM_PIN_MA12_AD.set(_REHO);
+    /*p25.LEXE*/ _VRAM_PIN_MA00_AD.set_pin_out(_MYFU);
+    /*p25.LOZU*/ _VRAM_PIN_MA01_AD.set_pin_out(_MASA);
+    /*p25.LACA*/ _VRAM_PIN_MA02_AD.set_pin_out(_MYRE);
+    /*p25.LUVO*/ _VRAM_PIN_MA03_AD.set_pin_out(_MAVU);
+    /*p25.LOLY*/ _VRAM_PIN_MA04_AD.set_pin_out(_MEPA);
+    /*p25.LALO*/ _VRAM_PIN_MA05_AD.set_pin_out(_MYSA);
+    /*p25.LEFA*/ _VRAM_PIN_MA06_AD.set_pin_out(_MEWY);
+    /*p25.LUBY*/ _VRAM_PIN_MA07_AD.set_pin_out(_MUME);
+    /*p25.TUJY*/ _VRAM_PIN_MA08_AD.set_pin_out(_VOVA);
+    /*p25.TAGO*/ _VRAM_PIN_MA09_AD.set_pin_out(_VODE);
+    /*p25.NUVA*/ _VRAM_PIN_MA10_AD.set_pin_out(_RUKY);
+    /*p25.PEDU*/ _VRAM_PIN_MA11_AD.set_pin_out(_RUMA);
+    /*p25.PONY*/ _VRAM_PIN_MA12_AD.set_pin_out(_REHO);
   }
 
   //----------------------------------------
@@ -362,24 +362,24 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.REKU*/ wire _REKU = not(_SAMO);
     /*p25.RYZE*/ wire _RYZE = not(_SUKE);
 
-    _VRAM_PIN_MD0_A.set(_REGE);
-    _VRAM_PIN_MD1_A.set(_RYKY);
-    _VRAM_PIN_MD2_A.set(_RAZO);
-    _VRAM_PIN_MD3_A.set(_RADA);
-    _VRAM_PIN_MD4_A.set(_RYRO);
-    _VRAM_PIN_MD5_A.set(_REVU);
-    _VRAM_PIN_MD6_A.set(_REKU);
-    _VRAM_PIN_MD7_A.set(_RYZE);
+    _VRAM_PIN_MD0_A.set_pin_out(_REGE);
+    _VRAM_PIN_MD1_A.set_pin_out(_RYKY);
+    _VRAM_PIN_MD2_A.set_pin_out(_RAZO);
+    _VRAM_PIN_MD3_A.set_pin_out(_RADA);
+    _VRAM_PIN_MD4_A.set_pin_out(_RYRO);
+    _VRAM_PIN_MD5_A.set_pin_out(_REVU);
+    _VRAM_PIN_MD6_A.set_pin_out(_REKU);
+    _VRAM_PIN_MD7_A.set_pin_out(_RYZE);
 
     /*p25.ROFA*/ wire _ROFA_VRM_TO_CPUn = not(_RENA_VRM_TO_CPUp);
-    _VRAM_PIN_MD0_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD1_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD2_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD3_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD4_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD5_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD6_B.set(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD7_B.set(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD0_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD1_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD2_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD3_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD4_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD5_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD6_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD7_B.set_pin_out(_ROFA_VRM_TO_CPUn);
 
     /*p25.SYNU*/ wire _SYNU = or (_VRM_TRI_D0.q(), _RAHU_CPU_TO_VRMn);
     /*p25.SYMA*/ wire _SYMA = or (_VRM_TRI_D1.q(), _RAHU_CPU_TO_VRMn);
@@ -399,14 +399,14 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RYTY*/ wire _RYTY = not(_SEDO);
     /*p25.RADY*/ wire _RADY = not(_SAWU);
 
-    _VRAM_PIN_MD0_D.set(_RURA);
-    _VRAM_PIN_MD1_D.set(_RULY);
-    _VRAM_PIN_MD2_D.set(_RARE);
-    _VRAM_PIN_MD3_D.set(_RODU);
-    _VRAM_PIN_MD4_D.set(_RUBE);
-    _VRAM_PIN_MD5_D.set(_RUMU);
-    _VRAM_PIN_MD6_D.set(_RYTY);
-    _VRAM_PIN_MD7_D.set(_RADY);
+    _VRAM_PIN_MD0_D.set_pin_out(_RURA);
+    _VRAM_PIN_MD1_D.set_pin_out(_RULY);
+    _VRAM_PIN_MD2_D.set_pin_out(_RARE);
+    _VRAM_PIN_MD3_D.set_pin_out(_RODU);
+    _VRAM_PIN_MD4_D.set_pin_out(_RUBE);
+    _VRAM_PIN_MD5_D.set_pin_out(_RUMU);
+    _VRAM_PIN_MD6_D.set_pin_out(_RYTY);
+    _VRAM_PIN_MD7_D.set_pin_out(_RADY);
   }
 
   //----------------------------------------

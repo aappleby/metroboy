@@ -98,24 +98,24 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     wire _KURO_FF60_0n = 1;
     wire GND = 0;
 
-    JOY_PIN_P10_B.set(GND);
-    JOY_PIN_P11_B.set(GND);
-    JOY_PIN_P12_B.set(GND);
-    JOY_PIN_P13_B.set(GND);
+    JOY_PIN_P10_B.set_pin_out(GND);
+    JOY_PIN_P11_B.set_pin_out(GND);
+    JOY_PIN_P12_B.set_pin_out(GND);
+    JOY_PIN_P13_B.set_pin_out(GND);
 
-    /*p05.KOLE*/ JOY_PIN_P10_A.set(nand(JUTE_JOYP_RA.q(), _BURO_FF60_0p));
-    /*p05.KYBU*/ JOY_PIN_P10_D.set(nor (JUTE_JOYP_RA.q(), _KURO_FF60_0n));
-    /*p05.KYTO*/ JOY_PIN_P11_A.set(nand(KECY_JOYP_LB.q(), _BURO_FF60_0p));
-    /*p05.KABU*/ JOY_PIN_P11_D.set(nor (KECY_JOYP_LB.q(), _KURO_FF60_0n));
-    /*p05.KYHU*/ JOY_PIN_P12_A.set(nand(JALE_JOYP_UC.q(), _BURO_FF60_0p));
-    /*p05.KASY*/ JOY_PIN_P12_D.set(nor (JALE_JOYP_UC.q(), _KURO_FF60_0n)); // schematic wrong
-    /*p05.KORY*/ JOY_PIN_P13_A.set(nand(KYME_JOYP_DS.q(), _BURO_FF60_0p));
-    /*p05.KALE*/ JOY_PIN_P13_D.set(nor (KYME_JOYP_DS.q(), _KURO_FF60_0n));
+    /*p05.KOLE*/ JOY_PIN_P10_A.set_pin_out(nand(JUTE_JOYP_RA.q(), _BURO_FF60_0p));
+    /*p05.KYBU*/ JOY_PIN_P10_D.set_pin_out(nor (JUTE_JOYP_RA.q(), _KURO_FF60_0n));
+    /*p05.KYTO*/ JOY_PIN_P11_A.set_pin_out(nand(KECY_JOYP_LB.q(), _BURO_FF60_0p));
+    /*p05.KABU*/ JOY_PIN_P11_D.set_pin_out(nor (KECY_JOYP_LB.q(), _KURO_FF60_0n));
+    /*p05.KYHU*/ JOY_PIN_P12_A.set_pin_out(nand(JALE_JOYP_UC.q(), _BURO_FF60_0p));
+    /*p05.KASY*/ JOY_PIN_P12_D.set_pin_out(nor (JALE_JOYP_UC.q(), _KURO_FF60_0n)); // schematic wrong
+    /*p05.KORY*/ JOY_PIN_P13_A.set_pin_out(nand(KYME_JOYP_DS.q(), _BURO_FF60_0p));
+    /*p05.KALE*/ JOY_PIN_P13_D.set_pin_out(nor (KYME_JOYP_DS.q(), _KURO_FF60_0n));
 
-    /*p05.KARU*/ JOY_PIN_P14_A.set(or (!KELY_JOYP_UDLR.q(), _KURO_FF60_0n));
-    /*p05.KARU*/ JOY_PIN_P14_D.set(KELY_JOYP_UDLR.q());
-    /*p05.CELA*/ JOY_PIN_P15_A.set(or (!COFY_JOYP_ABCS.q(), _KURO_FF60_0n));
-    /*p05.CELA*/ JOY_PIN_P15_D.set(!COFY_JOYP_ABCS.q()); // double check these
+    /*p05.KARU*/ JOY_PIN_P14_A.set_pin_out(or (!KELY_JOYP_UDLR.q(), _KURO_FF60_0n));
+    /*p05.KARU*/ JOY_PIN_P14_D.set_pin_out(KELY_JOYP_UDLR.q());
+    /*p05.CELA*/ JOY_PIN_P15_A.set_pin_out(or (!COFY_JOYP_ABCS.q(), _KURO_FF60_0n));
+    /*p05.CELA*/ JOY_PIN_P15_D.set_pin_out(!COFY_JOYP_ABCS.q()); // double check these
   }
 }
 

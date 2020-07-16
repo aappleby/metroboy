@@ -3,6 +3,7 @@
 #include "Logic.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 //-----------------------------------------------------------------------------
 
@@ -15,7 +16,7 @@ enum SignalFlags {
 #pragma warning(disable:4201) // nameless struct/union
 
 union SignalState {
-  uint8_t state;
+  uint8_t state = 0;
   struct {
     bool val     : 1;
     bool hiz     : 1;
@@ -23,6 +24,8 @@ union SignalState {
     bool set     : 1;
     bool rst     : 1;
     bool error   : 1;
+    bool pad1    : 1;
+    bool pad2    : 1;
   };
 
   SignalState(wire w) {
@@ -66,6 +69,8 @@ union SignalState {
     else       return '0';
   }
 };
+
+static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
 
 inline int pack(SignalState a, SignalState b, SignalState c, SignalState d) {
   return (a.q() << 0) | (b.q() << 1) | (c.q() << 2) | (d.q() << 3);
@@ -127,13 +132,13 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 struct SignalHash {
 
   __forceinline void operator << (SignalHash h2) {
+
     h = _byteswap_uint64((h ^ h2.h) * 0xff51afd7ed558ccd);
+    //printf("hash 0x%016llx\n", h);
   }
 
   uint64_t h = 0x12345678;
 };
-
-static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
 
 //-----------------------------------------------------------------------------
 
@@ -163,5 +168,5 @@ struct Signal {
   }
 
 private:
-  SignalState a;
+  SignalState a = ERROR;
 };

@@ -50,8 +50,8 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYMU*/ wire _TYMU_EXT_PIN_RDn = nor(top.dma_reg.LUMA_DMA_READ_CARTp(), _MOTY_CPU_EXT_RD);
     /*p08.UGAC*/ wire _UGAC_RDp_A = nand(_TYMU_EXT_PIN_RDn, top.clk_reg.TOVA_MODE_DBG2n());
     /*p08.URUN*/ wire _URUN_RDp_D = nor (_TYMU_EXT_PIN_RDn, top.clk_reg.UNOR_MODE_DBG2p());
-    _EXT_PIN_RDn_A.set(_UGAC_RDp_A);
-    _EXT_PIN_RDn_D.set(_URUN_RDp_D);
+    _EXT_PIN_RDn_A.set_pin_out(_UGAC_RDp_A);
+    _EXT_PIN_RDn_D.set_pin_out(_URUN_RDp_D);
   }
 
   {
@@ -61,14 +61,14 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.PUVA*/ wire _PUVA_EXT_PIN_WRn = or(_NEVY, top.dma_reg.LUMA_DMA_READ_CARTp());
     /*p08.UVER*/ wire _UVER_WRp_A = nand(_PUVA_EXT_PIN_WRn, top.clk_reg.TOVA_MODE_DBG2n());
     /*p08.USUF*/ wire _USUF_WRp_D = nor (_PUVA_EXT_PIN_WRn, top.clk_reg.UNOR_MODE_DBG2p());
-    _EXT_PIN_WRn_A.set(_UVER_WRp_A);
-    _EXT_PIN_WRn_D.set(_USUF_WRp_D);
+    _EXT_PIN_WRn_A.set_pin_out(_UVER_WRp_A);
+    _EXT_PIN_WRn_D.set_pin_out(_USUF_WRp_D);
   }
 
   {
     /*p08.TOZA*/ wire _TOZA_EXT_PIN_CSn_A = and(top.ABUZ_CPU_ADDR_VALIDp(), top.cpu_bus.TYNU_ADDR_RAM(), top.cpu_bus.TUNA_0000_FDFFp()); // suggests ABUZp
     /*p08.TYHO*/ wire _TYHO_EXT_PIN_CSn_A = mux2_p(top.dma_reg.DMA_A15.q(), _TOZA_EXT_PIN_CSn_A, top.dma_reg.LUMA_DMA_READ_CARTp());
-    _EXT_PIN_CSn_A.set(_TYHO_EXT_PIN_CSn_A);
+    _EXT_PIN_CSn_A.set_pin_out(_TYHO_EXT_PIN_CSn_A);
   }
 
   //----------------------------------------
@@ -115,37 +115,37 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.MUCE*/ wire _EXT_ADDR_13 = mux2_p(top.dma_reg.DMA_A13.q(), _LONU_EXT_ADDR_LATCH_13.q(), top.dma_reg.LUMA_DMA_READ_CARTp());
     /*p08.PEGE*/ wire _EXT_ADDR_14 = mux2_p(top.dma_reg.DMA_A14.q(), _NYRE_EXT_ADDR_LATCH_14.q(), top.dma_reg.LUMA_DMA_READ_CARTp());
 
-    /*p08.KUPO*/ _EXT_PIN_A00_A.set(nand(_EXT_ADDR_00, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.CABA*/ _EXT_PIN_A01_A.set(nand(_EXT_ADDR_01, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.BOKU*/ _EXT_PIN_A02_A.set(nand(_EXT_ADDR_02, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.BOTY*/ _EXT_PIN_A03_A.set(nand(_EXT_ADDR_03, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.BYLA*/ _EXT_PIN_A04_A.set(nand(_EXT_ADDR_04, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.BADU*/ _EXT_PIN_A05_A.set(nand(_EXT_ADDR_05, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.CEPU*/ _EXT_PIN_A06_A.set(nand(_EXT_ADDR_06, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.DEFY*/ _EXT_PIN_A07_A.set(nand(_EXT_ADDR_07, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.MYNY*/ _EXT_PIN_A08_A.set(nand(_EXT_ADDR_08, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.MUNE*/ _EXT_PIN_A09_A.set(nand(_EXT_ADDR_09, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.ROXU*/ _EXT_PIN_A10_A.set(nand(_EXT_ADDR_10, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.LEPY*/ _EXT_PIN_A11_A.set(nand(_EXT_ADDR_11, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.LUCE*/ _EXT_PIN_A12_A.set(nand(_EXT_ADDR_12, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.LABE*/ _EXT_PIN_A13_A.set(nand(_EXT_ADDR_13, top.clk_reg.TOVA_MODE_DBG2n()));
-    /*p08.PUHE*/ _EXT_PIN_A14_A.set(nand(_EXT_ADDR_14, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.KUPO*/ _EXT_PIN_A00_A.set_pin_out(nand(_EXT_ADDR_00, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.CABA*/ _EXT_PIN_A01_A.set_pin_out(nand(_EXT_ADDR_01, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.BOKU*/ _EXT_PIN_A02_A.set_pin_out(nand(_EXT_ADDR_02, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.BOTY*/ _EXT_PIN_A03_A.set_pin_out(nand(_EXT_ADDR_03, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.BYLA*/ _EXT_PIN_A04_A.set_pin_out(nand(_EXT_ADDR_04, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.BADU*/ _EXT_PIN_A05_A.set_pin_out(nand(_EXT_ADDR_05, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.CEPU*/ _EXT_PIN_A06_A.set_pin_out(nand(_EXT_ADDR_06, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.DEFY*/ _EXT_PIN_A07_A.set_pin_out(nand(_EXT_ADDR_07, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.MYNY*/ _EXT_PIN_A08_A.set_pin_out(nand(_EXT_ADDR_08, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.MUNE*/ _EXT_PIN_A09_A.set_pin_out(nand(_EXT_ADDR_09, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.ROXU*/ _EXT_PIN_A10_A.set_pin_out(nand(_EXT_ADDR_10, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.LEPY*/ _EXT_PIN_A11_A.set_pin_out(nand(_EXT_ADDR_11, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.LUCE*/ _EXT_PIN_A12_A.set_pin_out(nand(_EXT_ADDR_12, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.LABE*/ _EXT_PIN_A13_A.set_pin_out(nand(_EXT_ADDR_13, top.clk_reg.TOVA_MODE_DBG2n()));
+    /*p08.PUHE*/ _EXT_PIN_A14_A.set_pin_out(nand(_EXT_ADDR_14, top.clk_reg.TOVA_MODE_DBG2n()));
 
-    /*p08.KOTY*/ _EXT_PIN_A00_D.set(nor (_EXT_ADDR_00, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.COTU*/ _EXT_PIN_A01_D.set(nor (_EXT_ADDR_01, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.BAJO*/ _EXT_PIN_A02_D.set(nor (_EXT_ADDR_02, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.BOLA*/ _EXT_PIN_A03_D.set(nor (_EXT_ADDR_03, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.BEVO*/ _EXT_PIN_A04_D.set(nor (_EXT_ADDR_04, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.AJAV*/ _EXT_PIN_A05_D.set(nor (_EXT_ADDR_05, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.CYKA*/ _EXT_PIN_A06_D.set(nor (_EXT_ADDR_06, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.COLO*/ _EXT_PIN_A07_D.set(nor (_EXT_ADDR_07, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.MEGO*/ _EXT_PIN_A08_D.set(nor (_EXT_ADDR_08, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.MENY*/ _EXT_PIN_A09_D.set(nor (_EXT_ADDR_09, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.RORE*/ _EXT_PIN_A10_D.set(nor (_EXT_ADDR_10, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.LYNY*/ _EXT_PIN_A11_D.set(nor (_EXT_ADDR_11, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.LOSO*/ _EXT_PIN_A12_D.set(nor (_EXT_ADDR_12, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.LEVA*/ _EXT_PIN_A13_D.set(nor (_EXT_ADDR_13, top.clk_reg.UNOR_MODE_DBG2p()));
-    /*p08.PAHY*/ _EXT_PIN_A14_D.set(nor (_EXT_ADDR_14, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.KOTY*/ _EXT_PIN_A00_D.set_pin_out(nor (_EXT_ADDR_00, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.COTU*/ _EXT_PIN_A01_D.set_pin_out(nor (_EXT_ADDR_01, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.BAJO*/ _EXT_PIN_A02_D.set_pin_out(nor (_EXT_ADDR_02, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.BOLA*/ _EXT_PIN_A03_D.set_pin_out(nor (_EXT_ADDR_03, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.BEVO*/ _EXT_PIN_A04_D.set_pin_out(nor (_EXT_ADDR_04, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.AJAV*/ _EXT_PIN_A05_D.set_pin_out(nor (_EXT_ADDR_05, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.CYKA*/ _EXT_PIN_A06_D.set_pin_out(nor (_EXT_ADDR_06, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.COLO*/ _EXT_PIN_A07_D.set_pin_out(nor (_EXT_ADDR_07, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.MEGO*/ _EXT_PIN_A08_D.set_pin_out(nor (_EXT_ADDR_08, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.MENY*/ _EXT_PIN_A09_D.set_pin_out(nor (_EXT_ADDR_09, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.RORE*/ _EXT_PIN_A10_D.set_pin_out(nor (_EXT_ADDR_10, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.LYNY*/ _EXT_PIN_A11_D.set_pin_out(nor (_EXT_ADDR_11, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.LOSO*/ _EXT_PIN_A12_D.set_pin_out(nor (_EXT_ADDR_12, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.LEVA*/ _EXT_PIN_A13_D.set_pin_out(nor (_EXT_ADDR_13, top.clk_reg.UNOR_MODE_DBG2p()));
+    /*p08.PAHY*/ _EXT_PIN_A14_D.set_pin_out(nor (_EXT_ADDR_14, top.clk_reg.UNOR_MODE_DBG2p()));
   }
 
   {
@@ -157,8 +157,8 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.SUZE*/ wire _SUZE_EXT_PIN_A15n = nand(_TAZY_A15p, _RYCA_MODE_DBG2n);
     /*p08.RULO*/ wire _RULO_EXT_PIN_A15n = nor (_TAZY_A15p, top.clk_reg.UNOR_MODE_DBG2p());
 
-    _EXT_PIN_A15_A.set(_SUZE_EXT_PIN_A15n);
-    _EXT_PIN_A15_D.set(_RULO_EXT_PIN_A15n);
+    _EXT_PIN_A15_A.set_pin_out(_SUZE_EXT_PIN_A15n);
+    _EXT_PIN_A15_D.set_pin_out(_RULO_EXT_PIN_A15n);
   }
 
   //----------------------------------------
@@ -176,32 +176,32 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RDn, _MOTY_CPU_EXT_RD, top.clk_reg.UNOR_MODE_DBG2p());
     /*p08.LULA*/ wire _LULA_IBUS_TO_EBUSp = not(_RORU_IBUS_TO_EBUSn);
 
-    _EXT_PIN_D0_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D1_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D2_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D3_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D4_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D5_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D6_B.set(_LULA_IBUS_TO_EBUSp);
-    _EXT_PIN_D7_B.set(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D0_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D1_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D2_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D3_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D4_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D5_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D6_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
+    _EXT_PIN_D7_B.set_pin_out(_LULA_IBUS_TO_EBUSp);
 
-    /*p25.RUXA*/ _EXT_PIN_D0_A.set(nand(top.cpu_bus.CPU_TRI_D0.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RUJA*/ _EXT_PIN_D1_A.set(nand(top.cpu_bus.CPU_TRI_D1.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RABY*/ _EXT_PIN_D2_A.set(nand(top.cpu_bus.CPU_TRI_D2.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RERA*/ _EXT_PIN_D3_A.set(nand(top.cpu_bus.CPU_TRI_D3.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RORY*/ _EXT_PIN_D4_A.set(nand(top.cpu_bus.CPU_TRI_D4.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RYVO*/ _EXT_PIN_D5_A.set(nand(top.cpu_bus.CPU_TRI_D5.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RAFY*/ _EXT_PIN_D6_A.set(nand(top.cpu_bus.CPU_TRI_D6.q(), _LULA_IBUS_TO_EBUSp));
-    /*p25.RAVU*/ _EXT_PIN_D7_A.set(nand(top.cpu_bus.CPU_TRI_D7.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RUXA*/ _EXT_PIN_D0_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D0.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RUJA*/ _EXT_PIN_D1_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D1.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RABY*/ _EXT_PIN_D2_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D2.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RERA*/ _EXT_PIN_D3_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D3.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RORY*/ _EXT_PIN_D4_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D4.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RYVO*/ _EXT_PIN_D5_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D5.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RAFY*/ _EXT_PIN_D6_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D6.q(), _LULA_IBUS_TO_EBUSp));
+    /*p25.RAVU*/ _EXT_PIN_D7_A.set_pin_out(nand(top.cpu_bus.CPU_TRI_D7.q(), _LULA_IBUS_TO_EBUSp));
 
-    /*p08.RUNE*/ _EXT_PIN_D0_D.set(nor (top.cpu_bus.CPU_TRI_D0.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.RYPU*/ _EXT_PIN_D1_D.set(nor (top.cpu_bus.CPU_TRI_D1.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.SULY*/ _EXT_PIN_D2_D.set(nor (top.cpu_bus.CPU_TRI_D2.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.SEZE*/ _EXT_PIN_D3_D.set(nor (top.cpu_bus.CPU_TRI_D3.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.RESY*/ _EXT_PIN_D4_D.set(nor (top.cpu_bus.CPU_TRI_D4.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.TAMU*/ _EXT_PIN_D5_D.set(nor (top.cpu_bus.CPU_TRI_D5.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.ROGY*/ _EXT_PIN_D6_D.set(nor (top.cpu_bus.CPU_TRI_D6.q(), _RORU_IBUS_TO_EBUSn));
-    /*p08.RYDA*/ _EXT_PIN_D7_D.set(nor (top.cpu_bus.CPU_TRI_D7.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RUNE*/ _EXT_PIN_D0_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D0.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ _EXT_PIN_D1_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D1.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ _EXT_PIN_D2_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D2.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ _EXT_PIN_D3_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D3.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ _EXT_PIN_D4_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D4.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ _EXT_PIN_D5_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D5.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ _EXT_PIN_D6_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D6.q(), _RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ _EXT_PIN_D7_D.set_pin_out(nor (top.cpu_bus.CPU_TRI_D7.q(), _RORU_IBUS_TO_EBUSn));
   }
 
   //----------------------------------------

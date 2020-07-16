@@ -78,7 +78,7 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.USEC*/ wire _USEC = not(top.tim_reg.UREK_DIV_07n());
     /*p24.KUPA*/ wire _KUPA = amux2(top.pix_pipe.XONA_LCDC_EN.q(), _KEBO, _KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not(_KUPA);
-    LCD_PIN_FR.set(_KOFO);
+    LCD_PIN_FR.set_pin_out(_KOFO);
   }
 
   // LCD line strobe
@@ -101,7 +101,7 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.SYGU*/ SYGU_LINE_STROBE = ff17(top.clk_reg.SONO_xxxxEFGH(), top.clk_reg.LYFE_VID_RSTn(), _TEGY_LINE_STROBE);
     /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, _RUTU_LINE_ENDp.q());
     /*p21.POGU*/ wire _POGU = not(_RYNO);
-    LCD_PIN_CPG.set(_POGU);
+    LCD_PIN_CPG.set_pin_out(_POGU);
   }
 
   // LCD LCD_PIN_CPL pin
@@ -110,7 +110,7 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.UMOB*/ wire _UMOB_DIV_06p = not(top.tim_reg.UMEK_DIV_06n());
     /*p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(top.pix_pipe.XONA_LCDC_EN.q(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, _UMOB_DIV_06p);
     /*p24.KYMO*/ wire _KYMO_LINE_ENDn = not(_KAHE_LINE_ENDp);
-    LCD_PIN_CPL.set(_KYMO_LINE_ENDn);
+    LCD_PIN_CPL.set_pin_out(_KYMO_LINE_ENDn);
   }
 
   // LCD vertical sync pin
@@ -119,7 +119,7 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     
     /*p24.MEDA*/ MEDA_VSYNC_OUTn = ff17(NYPE_LINE_STARTp.q(), top.clk_reg.LYFE_VID_RSTn(), _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn.q());
-    LCD_PIN_S.set(_MURE_PIN_S);
+    LCD_PIN_S.set_pin_out(_MURE_PIN_S);
   }
 
   // ly match

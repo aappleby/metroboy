@@ -198,7 +198,8 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   std::chrono::duration<double> elapsed = finish - start;
   printf("Done - %f sec, %f phases/sec\n", elapsed.count(), double(phase_count) / elapsed.count());
-  printf("\n");
+  printf("Commit hash   %016llx\n", top->commit_hash.h);
+  printf("Combined hash %016llx\n", top->combined_hash.h);
 
   /*
   printf("DIV  %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
@@ -250,6 +251,8 @@ SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
 //----------------------------------------
 
 SignalHash GateBoy::phase(SchematicTop* top, Req req) {
+  //printf("phase\n");
+
   SignalHash hash;
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
@@ -260,6 +263,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
     top->joypad.set_buttons(0);
     
     SignalHash new_hash = top->tick();
+
+    //printf("hash 0x%016llx\n", new_hash.h);
     
     if (new_hash.h == hash.h) break;
     hash = new_hash;
@@ -268,9 +273,10 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   }
 
   if (verbose) {
-    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
+    printf("Phase %08d:%c hash %016llx pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
       top->phase_counter,
       'A' + (top->phase_counter & 7),
+      hash.h,
       pass_count,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),

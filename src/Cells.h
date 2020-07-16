@@ -118,7 +118,12 @@ inline SignalState tribuf_10n(wire OEn, SignalState D) {
 struct ExtPinOut {
 
   bool get() const   { CHECKn(a.error); return a.val; }
-  void set(wire val) { CHECKp(b.error); b = val; }
+  void set_pin_out(wire val) { CHECKp(b.error); b = val; }
+
+  void operator = (SignalState c) {
+    CHECKp(b.error || c.hiz);
+    if (!c.hiz) b = c;
+  }
 
   SignalHash commit() {
     CHECKn(b.error);

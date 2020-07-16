@@ -91,14 +91,14 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.cpu_bus.CPU_PIN5(), _TOPE_FF05_WRn); // suggests CPU_PIN5 = DATA_VALIDn
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
 
-    /*p03.REGA*/ REGA_TIMA_0.clk_n(_SOGU_TIMA_CLK,   _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);
-    /*p03.POVY*/ POVY_TIMA_1.clk_n(REGA_TIMA_0.q(), _MEXU_TIMA_LOADp, _NERO_TIMA_LD_1);
-    /*p03.PERU*/ PERU_TIMA_2.clk_n(POVY_TIMA_1.q(), _MEXU_TIMA_LOADp, _NADA_TIMA_LD_2);
-    /*p03.RATE*/ RATE_TIMA_3.clk_n(PERU_TIMA_2.q(), _MEXU_TIMA_LOADp, _REPA_TIMA_LD_3);
-    /*p03.RUBY*/ RUBY_TIMA_4.clk_n(RATE_TIMA_3.q(), _MEXU_TIMA_LOADp, _ROLU_TIMA_LD_4);
-    /*p03.RAGE*/ RAGE_TIMA_5.clk_n(RUBY_TIMA_4.q(), _MEXU_TIMA_LOADp, _RUGY_TIMA_LD_5);
-    /*p03.PEDA*/ PEDA_TIMA_6.clk_n(RAGE_TIMA_5.q(), _MEXU_TIMA_LOADp, _PYMA_TIMA_LD_6);
-    /*p03.NUGA*/ NUGA_TIMA_7.clk_n(PEDA_TIMA_6.q(), _MEXU_TIMA_LOADp, _PAGU_TIMA_LD_7);
+    /*p03.REGA*/ REGA_TIMA_0 = ff20(_SOGU_TIMA_CLK,  _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);
+    /*p03.POVY*/ POVY_TIMA_1 = ff20(REGA_TIMA_0.qn(), _MEXU_TIMA_LOADp, _NERO_TIMA_LD_1);
+    /*p03.PERU*/ PERU_TIMA_2 = ff20(POVY_TIMA_1.qn(), _MEXU_TIMA_LOADp, _NADA_TIMA_LD_2);
+    /*p03.RATE*/ RATE_TIMA_3 = ff20(PERU_TIMA_2.qn(), _MEXU_TIMA_LOADp, _REPA_TIMA_LD_3);
+    /*p03.RUBY*/ RUBY_TIMA_4 = ff20(RATE_TIMA_3.qn(), _MEXU_TIMA_LOADp, _ROLU_TIMA_LD_4);
+    /*p03.RAGE*/ RAGE_TIMA_5 = ff20(RUBY_TIMA_4.qn(), _MEXU_TIMA_LOADp, _RUGY_TIMA_LD_5);
+    /*p03.PEDA*/ PEDA_TIMA_6 = ff20(RAGE_TIMA_5.qn(), _MEXU_TIMA_LOADp, _PYMA_TIMA_LD_6);
+    /*p03.NUGA*/ NUGA_TIMA_7 = ff20(PEDA_TIMA_6.qn(), _MEXU_TIMA_LOADp, _PAGU_TIMA_LD_7);
 
     /*p03.SOKU*/ cpu_bus.CPU_TRI_D0.set_tribuf_6p(_TEDA_FF05_RDp, REGA_TIMA_0.q());
     /*p03.RACY*/ cpu_bus.CPU_TRI_D1.set_tribuf_6p(_TEDA_FF05_RDp, POVY_TIMA_1.q());

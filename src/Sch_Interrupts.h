@@ -21,17 +21,17 @@ struct InterruptRegisters {
 private:
   friend SchematicTop;
 
-  /*p02.LOPE*/ Reg22 LOPE_FF0F_0;
-  /*p02.UBUL*/ Reg22 UBUL_FF0F_3;
-  /*p02.ULAK*/ Reg22 ULAK_FF0F_4;
-  /*p02.LALU*/ Reg22 LALU_FF0F_1;
-  /*p02.NYBO*/ Reg22 NYBO_FF0F_2;
+  /*p02.LOPE*/ Reg LOPE_FF0F_0;
+  /*p02.UBUL*/ Reg UBUL_FF0F_3;
+  /*p02.ULAK*/ Reg ULAK_FF0F_4;
+  /*p02.LALU*/ Reg LALU_FF0F_1;
+  /*p02.NYBO*/ Reg NYBO_FF0F_2;
 
-  /*p02.MATY*/ TpLatch MATY_FF0F_L0;
-  /*p02.NEJY*/ TpLatch NEJY_FF0F_L1;
-  /*p02.NUTY*/ TpLatch NUTY_FF0F_L2;
-  /*p02.MOPO*/ TpLatch MOPO_FF0F_L3;
-  /*p02.PAVY*/ TpLatch PAVY_FF0F_L4;
+  /*p02.MATY*/ Reg MATY_FF0F_L0;
+  /*p02.NEJY*/ Reg NEJY_FF0F_L1;
+  /*p02.NUTY*/ Reg NUTY_FF0F_L2;
+  /*p02.MOPO*/ Reg MOPO_FF0F_L3;
+  /*p02.PAVY*/ Reg PAVY_FF0F_L4;
 
   // Interrupts
   CpuPinOut CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int

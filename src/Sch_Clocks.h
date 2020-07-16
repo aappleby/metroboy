@@ -153,7 +153,7 @@ struct ClockRegisters {
   ExtPinIn  _SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
-  /*p01.TUBO*/ NorLatch _TUBO_CPU_READYn;
+  /*p01.TUBO*/ Reg _TUBO_CPU_READYn;
 
   // If AVOR_RSTp was 1 in run mode
   // then ALUR_RSTn = 0
@@ -162,8 +162,8 @@ struct ClockRegisters {
   // Therefore AVOR_RSTp = 0 in run mode
   // Therefore ASOL|AFER = 0 in run mode
 
-  /*p01.ASOL*/ NorLatch _ASOL_POR_DONEn; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ Reg13    _AFER_SYS_RSTp; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
+  /*p01.ASOL*/ Reg _ASOL_POR_DONEn; // Schematic wrong, this is a latch.
+  /*p01.AFER*/ Reg    _AFER_SYS_RSTp; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
 
   CpuPinOut _CPU_PIN_STARTp;    // top center port PORTC_04: <- P01.CPU_RESET
   CpuPinIn  _CPU_PIN_READYp;    // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
@@ -171,7 +171,7 @@ struct ClockRegisters {
   CpuPinOut _CPU_PIN_SYS_RSTp;  // top center port PORTC_01: <- P01.AFER , reset related reg
   CpuPinOut _CPU_PIN_EXT_RST;   // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
 
-  /*p25.SOTO*/ Reg17 SOTO_DBG;
+  /*p25.SOTO*/ Reg SOTO_DBG;
 
   CpuPinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   CpuPinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
@@ -209,14 +209,14 @@ struct ClockRegisters {
   /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not(BYJU_xBCDEFGH()); }
   /*p29.WOJO*/ wire WOJO_xxxDxxxH() const { return nor(_WUVU_xxCDxxGH.qn(), _WOSU_xBCxxFGx.qn()); }
 
-  /*p01.AFUR*/ Reg9 _AFUR_ABCDxxxx;
-  /*p01.ALEF*/ Reg9 _ALEF_xBCDExxx;
-  /*p01.APUK*/ Reg9 _APUK_xxCDEFxx;
-  /*p01.ADYK*/ Reg9 _ADYK_xxxDEFGx;
+  /*p01.AFUR*/ Reg _AFUR_ABCDxxxx;
+  /*p01.ALEF*/ Reg _ALEF_xBCDExxx;
+  /*p01.APUK*/ Reg _APUK_xxCDEFxx;
+  /*p01.ADYK*/ Reg _ADYK_xxxDEFGx;
 
-  /*p29.WUVU*/ Reg17 _WUVU_xxCDxxGH;
-  /*p21.VENA*/ Reg17 _VENA_xxxxEFGH;
-  /*p29.WOSU*/ Reg17 _WOSU_xBCxxFGx;
+  /*p29.WUVU*/ Reg _WUVU_xxCDxxGH;
+  /*p21.VENA*/ Reg _VENA_xxxxEFGH;
+  /*p29.WOSU*/ Reg _WOSU_xBCxxFGx;
 
   ExtPinIn  SYS_PIN_CLK_A;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
   ExtPinIn  SYS_PIN_CLK_B;  // PIN_74 

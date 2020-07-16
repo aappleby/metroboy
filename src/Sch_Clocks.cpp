@@ -81,7 +81,7 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
   /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, top.clk_reg.UCOB_CLKBADp());
 
-  /*p01.TUBO*/ _TUBO_CPU_READYn.nor_latch(_UPYF, CPU_PIN_READYp());
+  /*p01.TUBO*/ _TUBO_CPU_READYn = nor_latch(_UPYF, CPU_PIN_READYp());
 
 #ifdef FAST_BOOT
   // Just wait until DIV = 4 instead of DIV = 32768
@@ -95,7 +95,7 @@ void ClockRegisters::tock(const SchematicTop& top) {
   /*p01.ALYP*/ wire _ALYP_RSTn = not(_TABA_POR_TRIGn);
   /*p01.AFAR*/ wire _AFAR_RST  = nor(_ALYP_RSTn, _SYS_PIN_RSTp);
 
-  /*p01.ASOL*/ _ASOL_POR_DONEn.nor_latch(_SYS_PIN_RSTp, _AFAR_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(_SYS_PIN_RSTp, _AFAR_RST); // Schematic wrong, this is a latch.
 
   wire boga = top.clk_reg.BOGA_xBCDEFGH();
 
@@ -131,7 +131,7 @@ SignalHash ClockRegisters::commit() {
   /*p01.AFER*/ hash << _AFER_SYS_RSTp.commit();
 
   hash << _CPU_PIN_STARTp.commit();
-  hash << _CPU_PIN_READYp.commit();
+  hash << _CPU_PIN_READYp.commit_input();
   hash << _CPU_PIN_SYS_RSTp.commit();
   hash << _CPU_PIN_EXT_RST.commit();
 
@@ -142,12 +142,12 @@ SignalHash ClockRegisters::commit() {
   hash << CPU_PIN_UNOR_DBG.commit();      // PORTA_02: <- P07.UNOR_MODE_DBG2
   hash << CPU_PIN_UMUT_DBG.commit();      // PORTA_05: <- P07.UMUT_MODE_DBG1
 
-  hash << _SYS_PIN_RSTp.commit();
-  hash << _SYS_PIN_T2n.commit();
-  hash << _SYS_PIN_T1n.commit();
+  hash << _SYS_PIN_RSTp.commit_input();
+  hash << _SYS_PIN_T2n.commit_input();
+  hash << _SYS_PIN_T1n.commit_input();
 
-  hash << SYS_PIN_CLK_B.commit();
-  hash << SYS_PIN_CLK_A.commit();
+  hash << SYS_PIN_CLK_B.commit_input();
+  hash << SYS_PIN_CLK_A.commit_input();
 
   hash << _AFUR_ABCDxxxx.commit();
   hash << _ALEF_xBCDExxx.commit();

@@ -15,7 +15,7 @@ void TileFetcher::tick(const SchematicTop& top) {
 void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p27.LURY*/ wire _LURY_BG_READ_VRAM_LATCH_RSTn = and(_LOVY_FETCH_DONEp.qn(), top.pix_pipe.XYMU_RENDERINGp());
-    /*p27.LONY*/ _LONY_BG_READ_VRAM_LATCHp.nand_latch(top.NYXU_TILE_FETCHER_RSTn(), _LURY_BG_READ_VRAM_LATCH_RSTn);
+    /*p27.LONY*/ _LONY_BG_READ_VRAM_LATCHp = nand_latch(top.NYXU_TILE_FETCHER_RSTn(), _LURY_BG_READ_VRAM_LATCH_RSTn);
   }
 
   {
@@ -36,7 +36,7 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.PORY*/ _PORY_FETCH_DONE_Bp = ff17(top.clk_reg.MYVO_AxCxExGx(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, _NYKA_FETCH_DONE_Ap.q());
     /*p24.PYGO*/ _PYGO_FETCH_DONE_Cp = ff17(top.clk_reg.ALET_xBxDxFxH(), _XYMU_RENDERINGp,                 _PORY_FETCH_DONE_Bp.q());
 
-    /*p24.POKY*/ _POKY_PORCH_DONEp.nor_latch(_PYGO_FETCH_DONE_Cp.q(), top.pix_pipe.LOBY_RENDERINGn());
+    /*p24.POKY*/ _POKY_PORCH_DONEp = nor_latch(_PYGO_FETCH_DONE_Cp.q(), top.pix_pipe.LOBY_RENDERINGn());
   }
 
   {

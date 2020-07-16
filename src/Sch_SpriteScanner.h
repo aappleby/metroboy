@@ -84,17 +84,17 @@ private:
   //----------------------------------------
   // States
 
-  /*p28.BESU*/ NorLatch _BESU_SCANNINGp;
-  /*p29.CENO*/ Reg17    _CENO_SCANNINGp;
+  /*p28.BESU*/ Reg _BESU_SCANNINGp;
+  /*p29.CENO*/ Reg    _CENO_SCANNINGp;
 
-  /*p28.YFEL*/ Reg17 _YFEL_SCAN0;
-  /*p28.WEWY*/ Reg17 _WEWY_SCAN1;
-  /*p28.GOSO*/ Reg17 _GOSO_SCAN2;
-  /*p28.ELYN*/ Reg17 _ELYN_SCAN3;
-  /*p28.FAHA*/ Reg17 _FAHA_SCAN4;
-  /*p28.FONY*/ Reg17 _FONY_SCAN5;
-  /*p29.BYBA*/ Reg17 _BYBA_SCAN_DONE_A;
-  /*p29.DOBA*/ Reg17 _DOBA_SCAN_DONE_B;
+  /*p28.YFEL*/ Reg _YFEL_SCAN0;
+  /*p28.WEWY*/ Reg _WEWY_SCAN1;
+  /*p28.GOSO*/ Reg _GOSO_SCAN2;
+  /*p28.ELYN*/ Reg _ELYN_SCAN3;
+  /*p28.FAHA*/ Reg _FAHA_SCAN4;
+  /*p28.FONY*/ Reg _FONY_SCAN5;
+  /*p29.BYBA*/ Reg _BYBA_SCAN_DONE_A;
+  /*p29.DOBA*/ Reg _DOBA_SCAN_DONE_B;
 };
 
 //-----------------------------------------------------------------------------

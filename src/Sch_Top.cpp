@@ -59,7 +59,7 @@ SignalHash SchematicTop::tick() {
 
   //----------
 
-  if (verbose) printf("SchematicTop::commit\n");
+  if (verbose) printf("SchematicTop::commit_input\n");
 
   hash << clk_reg.commit();
   hash << tim_reg.commit();
@@ -135,7 +135,7 @@ SignalHash SchematicTop::tick() {
   hash << SEMO_SPRITE_DB6.commit();
   hash << SEGA_SPRITE_DB7.commit();
 
-  if (verbose) printf("SchematicTop::commit done\n");
+  if (verbose) printf("SchematicTop::commit_input done\n");
 
   return hash;
 }
@@ -184,7 +184,7 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, clk.CPU_PIN_BOGA_xBCDEFGH);
+/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, ff20.CPU_PIN_BOGA_xBCDEFGH);
 /*p25.SOLE*/ wire SOLE = not(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(

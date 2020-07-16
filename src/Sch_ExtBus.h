@@ -45,32 +45,32 @@ struct ExtBus {
 
 private:
 
-  /*p08.ALOR*/ TpLatch _ALOR_EXT_ADDR_LATCH_00;
-  /*p08.APUR*/ TpLatch _APUR_EXT_ADDR_LATCH_01;
-  /*p08.ALYR*/ TpLatch _ALYR_EXT_ADDR_LATCH_02;
-  /*p08.ARET*/ TpLatch _ARET_EXT_ADDR_LATCH_03;
-  /*p08.AVYS*/ TpLatch _AVYS_EXT_ADDR_LATCH_04;
-  /*p08.ATEV*/ TpLatch _ATEV_EXT_ADDR_LATCH_05;
-  /*p08.AROS*/ TpLatch _AROS_EXT_ADDR_LATCH_06;
-  /*p08.ARYM*/ TpLatch _ARYM_EXT_ADDR_LATCH_07;
-  /*p08.LUNO*/ TpLatch _LUNO_EXT_ADDR_LATCH_08;
-  /*p08.LYSA*/ TpLatch _LYSA_EXT_ADDR_LATCH_09;
-  /*p08.PATE*/ TpLatch _PATE_EXT_ADDR_LATCH_10;
-  /*p08.LUMY*/ TpLatch _LUMY_EXT_ADDR_LATCH_11;
-  /*p08.LOBU*/ TpLatch _LOBU_EXT_ADDR_LATCH_12;
-  /*p08.LONU*/ TpLatch _LONU_EXT_ADDR_LATCH_13;
-  /*p08.NYRE*/ TpLatch _NYRE_EXT_ADDR_LATCH_14;
+  /*p08.ALOR*/ Reg _ALOR_EXT_ADDR_LATCH_00;
+  /*p08.APUR*/ Reg _APUR_EXT_ADDR_LATCH_01;
+  /*p08.ALYR*/ Reg _ALYR_EXT_ADDR_LATCH_02;
+  /*p08.ARET*/ Reg _ARET_EXT_ADDR_LATCH_03;
+  /*p08.AVYS*/ Reg _AVYS_EXT_ADDR_LATCH_04;
+  /*p08.ATEV*/ Reg _ATEV_EXT_ADDR_LATCH_05;
+  /*p08.AROS*/ Reg _AROS_EXT_ADDR_LATCH_06;
+  /*p08.ARYM*/ Reg _ARYM_EXT_ADDR_LATCH_07;
+  /*p08.LUNO*/ Reg _LUNO_EXT_ADDR_LATCH_08;
+  /*p08.LYSA*/ Reg _LYSA_EXT_ADDR_LATCH_09;
+  /*p08.PATE*/ Reg _PATE_EXT_ADDR_LATCH_10;
+  /*p08.LUMY*/ Reg _LUMY_EXT_ADDR_LATCH_11;
+  /*p08.LOBU*/ Reg _LOBU_EXT_ADDR_LATCH_12;
+  /*p08.LONU*/ Reg _LONU_EXT_ADDR_LATCH_13;
+  /*p08.NYRE*/ Reg _NYRE_EXT_ADDR_LATCH_14;
 
   // Ext-to-cpu "latch" - looks more like a pass gate really
 
-  /*p08.SOMA*/ TpLatch _SOMA_EXT_DATA_LATCH_00;
-  /*p08.RONY*/ TpLatch _RONY_EXT_DATA_LATCH_01;
-  /*p08.RAXY*/ TpLatch _RAXY_EXT_DATA_LATCH_02;
-  /*p08.SELO*/ TpLatch _SELO_EXT_DATA_LATCH_03;
-  /*p08.SODY*/ TpLatch _SODY_EXT_DATA_LATCH_04;
-  /*p08.SAGO*/ TpLatch _SAGO_EXT_DATA_LATCH_05;
-  /*p08.RUPA*/ TpLatch _RUPA_EXT_DATA_LATCH_06;
-  /*p08.SAZY*/ TpLatch _SAZY_EXT_DATA_LATCH_07;
+  /*p08.SOMA*/ Reg _SOMA_EXT_DATA_LATCH_00;
+  /*p08.RONY*/ Reg _RONY_EXT_DATA_LATCH_01;
+  /*p08.RAXY*/ Reg _RAXY_EXT_DATA_LATCH_02;
+  /*p08.SELO*/ Reg _SELO_EXT_DATA_LATCH_03;
+  /*p08.SODY*/ Reg _SODY_EXT_DATA_LATCH_04;
+  /*p08.SAGO*/ Reg _SAGO_EXT_DATA_LATCH_05;
+  /*p08.RUPA*/ Reg _RUPA_EXT_DATA_LATCH_06;
+  /*p08.SAZY*/ Reg _SAZY_EXT_DATA_LATCH_07;
 
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs

@@ -86,3 +86,10 @@ void dump_req(Dumper& d, const Req& req);
 void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
+
+#define CHECK(A) do { if (!(A)) __debugbreak(); } while(0);
+
+#define CHECKp(A) do { if (!(A)) __debugbreak(); } while(0);
+#define CHECKn(A) do { if ((A)) __debugbreak(); } while(0);
+
+//-----------------------------------------------------------------------------

@@ -182,7 +182,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 8, req);
   printf("\n");
 
-  top->pix_pipe.XONA_LCDC_EN.preset(1);
+  top->pix_pipe.XONA_LCDC_EN.preset_a(1);
   gateboy.run(top, 24, req);
   printf("\n");
 

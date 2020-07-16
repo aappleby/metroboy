@@ -51,7 +51,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or(JOY_PIN_P13_C, JOY_PIN_P12_C, JOY_PIN_P11_C, JOY_PIN_P10_C);
 
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
+    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
     CPU_PIN_WAKE.set(AWOB_WAKE_CPU.q());
   }
 
@@ -65,10 +65,10 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p10.ACAT*/ wire _ACAT_FF00_RDp = and (top.TEDO_CPU_RDp(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RDp);
-    /*p05.KEVU*/ KEVU_JOYP_L0.tp_latch(_BYZO_FF00_RDn, JOY_PIN_P10_C);
-    /*p05.KAPA*/ KAPA_JOYP_L1.tp_latch(_BYZO_FF00_RDn, JOY_PIN_P11_C);
-    /*p05.KEJA*/ KEJA_JOYP_L2.tp_latch(_BYZO_FF00_RDn, JOY_PIN_P12_C);
-    /*p05.KOLO*/ KOLO_JOYP_L3.tp_latch(_BYZO_FF00_RDn, JOY_PIN_P13_C);
+    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P10_C);
+    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P11_C);
+    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P12_C);
+    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P13_C);
 
     /*p05.KEMA*/ cpu_bus.CPU_TRI_D0.set_tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
     /*p05.KURO*/ cpu_bus.CPU_TRI_D1.set_tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
@@ -141,10 +141,10 @@ SignalHash Joypad::commit() {
   hash << JOY_PIN_P15_A.commit();    // PIN_62<- CELA
   hash << JOY_PIN_P15_D.commit();    // PIN_62<- COFY
 
-  hash << JOY_PIN_P10_C.commit();     // PIN_67-> KERY, KEVU
-  hash << JOY_PIN_P11_C.commit();     // PIN_66-> KERY, P05.KAPA
-  hash << JOY_PIN_P12_C.commit();     // PIN_65-> KERY, P05.KEJA
-  hash << JOY_PIN_P13_C.commit();     // PIN_64-> KERY, P05.KOLO
+  hash << JOY_PIN_P10_C.commit_input();     // PIN_67-> KERY, KEVU
+  hash << JOY_PIN_P11_C.commit_input();     // PIN_66-> KERY, P05.KAPA
+  hash << JOY_PIN_P12_C.commit_input();     // PIN_65-> KERY, P05.KEJA
+  hash << JOY_PIN_P13_C.commit_input();     // PIN_64-> KERY, P05.KOLO
 
   /*p02.BATU*/ hash << BATU_JP_GLITCH0.commit();
   /*p02.ACEF*/ hash << ACEF_JP_GLITCH1.commit();

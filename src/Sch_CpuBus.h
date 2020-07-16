@@ -162,7 +162,7 @@ private:
   CpuPinIn  _CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   CpuPinIn  _CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
 
-  /*p04.MAKA*/ Reg17 _MAKA_FROM_CPU5_SYNC;
+  /*p04.MAKA*/ Reg _MAKA_FROM_CPU5_SYNC;
 
   // Main bus
   CpuPinIn  _CPU_PIN_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO

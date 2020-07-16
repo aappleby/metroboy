@@ -18,26 +18,26 @@ struct SerialRegisters {
 
 private:
 
-  /*p06.ETAF*/ Reg17 _XFER_START;
-  /*p06.CULY*/ Reg17 _XFER_DIR;
+  /*p06.ETAF*/ Reg _XFER_START;
+  /*p06.CULY*/ Reg _XFER_DIR;
 
-  /*p06.COTY*/ Reg17 _SER_CLK;
+  /*p06.COTY*/ Reg _SER_CLK;
 
-  /*p06.CAFA*/ Reg17 _SER_CNT0;
-  /*p06.CYLO*/ Reg17 _SER_CNT1;
-  /*p06.CYDE*/ Reg17 _SER_CNT2;
-  /*p06.CALY*/ Reg17 _CALY_INT_SERIALp;
+  /*p06.CAFA*/ Reg _SER_CNT0;
+  /*p06.CYLO*/ Reg _SER_CNT1;
+  /*p06.CYDE*/ Reg _SER_CNT2;
+  /*p06.CALY*/ Reg _CALY_INT_SERIALp;
 
-  /*p06.CUBA*/ Reg22 _SER_DATA0;
-  /*p06.DEGU*/ Reg22 _SER_DATA1;
-  /*p06.DYRA*/ Reg22 _SER_DATA2;
-  /*p06.DOJO*/ Reg22 _SER_DATA3;
-  /*p06.DOVU*/ Reg22 _SER_DATA4;
-  /*p06.EJAB*/ Reg22 _SER_DATA5;
-  /*p06.EROD*/ Reg22 _SER_DATA6;
-  /*p06.EDER*/ Reg22 _SER_DATA7;
+  /*p06.CUBA*/ Reg _SER_DATA0;
+  /*p06.DEGU*/ Reg _SER_DATA1;
+  /*p06.DYRA*/ Reg _SER_DATA2;
+  /*p06.DOJO*/ Reg _SER_DATA3;
+  /*p06.DOVU*/ Reg _SER_DATA4;
+  /*p06.EJAB*/ Reg _SER_DATA5;
+  /*p06.EROD*/ Reg _SER_DATA6;
+  /*p06.EDER*/ Reg _SER_DATA7;
 
-  /*p06.ELYS*/ Reg17 _SER_OUT;
+  /*p06.ELYS*/ Reg _SER_OUT;
 
   //----------
   // Serial pins

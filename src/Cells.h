@@ -8,7 +8,7 @@
 struct ExtPinIn {
 
   bool get() const {
-    if (a.error) __debugbreak();
+    CHECKn(a.error);
     return a.val;
   }
   void set(bool c) { a = c; }
@@ -20,8 +20,8 @@ struct ExtPinIn {
     return a;
   }
 
-  SignalHash commit() {
-    if (a.error) __debugbreak();
+  SignalHash commit_input() {
+    CHECKn(a.error);
     return {a.state};
   }
 
@@ -32,13 +32,13 @@ struct ExtPinIn {
 
 struct CpuPinIn {
 
-  bool get() const { if (a.error) __debugbreak(); return a.val; }
+  bool get() const { CHECKn(a.error); return a.val; }
   void set(bool c) { a = c; }
 
   operator bool()        const { return get(); }
   operator SignalState() const { return a; }
 
-  SignalHash commit() {
+  SignalHash commit_input() {
     if (a.state == ERROR) __debugbreak();
     return {a.state};
   }
@@ -50,11 +50,11 @@ struct CpuPinIn {
 
 struct ExtPinOut {
 
-  bool get() const   { if (a.error)  __debugbreak(); return a.val; }
-  void set(wire val) { if (!b.error) __debugbreak(); b = val; }
+  bool get() const   { CHECKn(a.error); return a.val; }
+  void set(wire val) { CHECKp(b.error); b = val; }
 
   SignalHash commit() {
-    if (b.error) __debugbreak();
+    CHECKn(b.error);
     a = b;
     b = ERROR;
     return {a.state};
@@ -68,11 +68,11 @@ struct ExtPinOut {
 
 struct CpuPinOut {
 
-  bool get() const   { if (a.error)  __debugbreak(); return a.val; }
-  void set(wire val) { if (!b.error) __debugbreak(); b = val; }
+  bool get() const   { CHECKn(a.error); return a.val; }
+  void set(wire val) { CHECKp(b.error); b = val; }
 
   SignalHash commit() {
-    if (b.error) __debugbreak();
+    CHECKn(b.error);
     a = b;
     b = ERROR;
     return {a.state};
@@ -101,7 +101,7 @@ struct Tribuf {
   }
 
   bool q() const {
-    if (a.error)  __debugbreak();
+    CHECKn(a.error);
     if (a.hiz)    __debugbreak();
     return a.val;
   }
@@ -119,7 +119,7 @@ struct Tribuf {
   void set_tribuf_6p(wire OEp, SignalState D) {
     if (!OEp) return;
     if (D.hiz) __debugbreak();
-    if (!b.error && !b.hiz) __debugbreak();
+    CHECKp(b.error || b.hiz);
     b = D.q();
   }
 
@@ -139,8 +139,8 @@ struct Tribuf {
   }
 
   SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
+    CHECKn(a.error);
+    CHECKn(b.error);
     a = b;
     b = ERROR;
     return {a.state};
@@ -155,56 +155,61 @@ struct Tribuf {
 };
 
 //-----------------------------------------------------------------------------
-// Persistent gate, used for nand latches
 
-struct Gate {
+struct Reg {
 
-  operator bool() const {
-    if (a.error) __debugbreak();
-    if (b != ERROR) {
-      //printf("Gate read-after-write\n");
-    }
-    return a.val;
-  }
-
-  operator SignalState() const {
-    return a;
-  }
-
-  void preset_a(bool val) {
-    a = val;
-  }
-
-  void operator = (wire val) {
-    if ( a.error) __debugbreak();
-    if (!b.error) __debugbreak();
-    b = val;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-    a = b;
-    b = ERROR;
-    return {a.state};
-  }
-
-  SignalState a = SET_0;
-  SignalState b = ERROR;
-};
-
-//-----------------------------------------------------------------------------
-
-struct RegisterBase {
+  operator wire() const { return get(); }
+  operator SignalState() const { return a; }
 
   bool q()  const { return get(); }
   bool qn() const { return !get(); }
   char as_char() const { return a.as_char(); }
 
   void operator = (SignalState c) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
+    CHECKn(a.error);
+    CHECKp(b.error);
     b = c;
+  }
+
+  void operator = (wire c) {
+    CHECKn(a.error);
+    b.state = 0;
+    b.set = c;
+    b.rst = !c;
+  }
+
+  SignalHash commit() {
+    CHECKn(a.error);
+    CHECKn(b.error);
+
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.error = 0;
+
+    b = ERROR;
+
+    return {a.state};
+  }
+
+  void dbg_set_b(bool val) {
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = val;
+    b.rst = !val;
+    b.error = 0;
+  }
+
+  void preset_a(bool D) {
+    a = D;
   }
 
 protected:
@@ -212,7 +217,7 @@ protected:
   SignalState b = ERROR;
 
   wire get() const {
-    if (a.error)  __debugbreak();
+    CHECKn(a.error);
     if (a.hiz)    __debugbreak();
 
     if (b != ERROR) {
@@ -226,7 +231,7 @@ private:
   bool operator!() const;
 };
 
-static_assert(sizeof(RegisterBase) == 2, "RegisterBase size != 2");
+static_assert(sizeof(Reg) == 2, "Reg size != 2");
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset and dual outputs
@@ -260,25 +265,6 @@ inline SignalState ff8(wire CLKp, wire CLKn, bool val) {
   b.clk = CLKn;
   return b;
 }
-
-struct Reg8 : public RegisterBase {
-
-  void operator = (SignalState c) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b = c;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    if (!a.clk && b.clk) a = b;
-    b = ERROR;
-
-    return {a.state};
-  }
-};
 
 //-----------------------------------------------------------------------------
 // 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
@@ -330,36 +316,6 @@ inline SignalState ff9(wire CLKp, wire CLKn, wire RSTn, bool D) {
   return b;
 }
 
-struct Reg9 : public RegisterBase {
-
-  void preset(bool D) {
-    a.val = D ? SET_1 : SET_0;
-  }
-
-  void operator = (SignalState c) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b = c;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.clk = b.clk;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
-
 //-----------------------------------------------------------------------------
 // Reg11 is used by the background pixel temp reg
 // Not sure why it's special. Could be dual-edge.
@@ -402,37 +358,6 @@ inline SignalState ff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
   b.rst = RSTp;
   return b;
 }
-
-struct Reg11 : public RegisterBase {
-
-  void operator = (SignalState c) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b = c;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
-
 
 //-----------------------------------------------------------------------------
 // Reg13
@@ -499,36 +424,6 @@ inline SignalState ff13(wire CLKp, wire CLKn, wire RSTn, bool D) {
   return b;
 }
 
-struct Reg13 : public RegisterBase {
-
-  void operator = (SignalState c) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b = c;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
-
 //-----------------------------------------------------------------------------
 // set and reset must be async (see interrupts)
 // reset must take priority over set (see interrupts ALUR_RSTn)
@@ -564,37 +459,6 @@ inline SignalState ff17(wire CLKp, wire RSTn, SignalState D) {
   b.rst = !RSTn;
   return b;
 }
-
-struct Reg17 : public RegisterBase {
-
-  void operator = (SignalState c) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b = c;
-  }
-
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
 
 //-----------------------------------------------------------------------------
 
@@ -646,40 +510,14 @@ struct Reg17 : public RegisterBase {
 // UBUL_21 == UBUL_06
 // UBUL_22 << CALY_INT_SERIALp
 
-struct Reg22 : public RegisterBase {
-
-  void set(wire CLKp, wire SETn, wire RSTn, bool val) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = val;
-    b.hiz = 0;
-    b.clk = CLKp;
-    b.set = !SETn;
-    b.rst = !RSTn;
-    b.error = 0;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
+inline SignalState ff22(wire CLKp, wire SETn, wire RSTn, bool val) {
+  SignalState b = 0;
+  b.val = val;
+  b.clk = CLKp;
+  b.set = !SETn;
+  b.rst = !RSTn;
+  return b;
+}
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
@@ -694,49 +532,13 @@ struct Reg22 : public RegisterBase {
 // NORLATCH_01 NC
 // NORLATCH_01 << RST
 
-struct NorLatch : public RegisterBase {
 
-  void dbg_set(bool val) {
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = val;
-    b.rst = !val;
-    b.error = 0;
-  }
-
-  void nor_latch(wire SETp, wire RSTp) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = SETp;
-    b.rst = RSTp;
-    b.error = 0;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
+inline SignalState nor_latch(wire SETp, wire RSTp) {
+  SignalState b = 0;
+  b.set = SETp;
+  b.rst = RSTp;
+  return b;
+}
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on VCC side
@@ -750,40 +552,13 @@ struct NorLatch : public RegisterBase {
 // NANDLATCH_01 NC
 // NANDLATCH_01 << RSTn
 
-struct NandLatch : public RegisterBase {
+inline SignalState nand_latch(wire SETn, wire RSTn) {
+  SignalState b = 0;
+  b.set = !SETn;
+  b.rst = !RSTn;
+  return b;
+}
 
-  void nand_latch(wire SETn, wire RSTn) {
-    if (a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = !SETn;
-    b.rst = !RSTn;
-    b.error = 0;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};
 
 //-----------------------------------------------------------------------------
 // Yellow 10-rung cells on die. Implementation might be wrong.
@@ -837,7 +612,7 @@ struct NandLatch : public RegisterBase {
 // ALOR_10
 
 ///*p31.WYNO*/ TpLatch WYNO_LATCH_OAM_A4;
-///*p31.WYNO*/ WYNO_LATCH_OAM_A4.tp_latch(BODE_OAM_LATCH, top.OAM_PIN_DA4);
+///*p31.WYNO*/ WYNO_LATCH_OAM_A4 = tp_latch(BODE_OAM_LATCH, top.OAM_PIN_DA4);
 
 // WYNO_01 << BODE_02
 // WYNO_02 NC
@@ -850,28 +625,17 @@ struct NandLatch : public RegisterBase {
 // WYNO_09 NC
 // WYNO_10 >> XUNA_01
 
-struct TpLatch : public RegisterBase {
-
-  void tp_latch(wire LATCHp, SignalState val) {
-    if (a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b = LATCHp ? val.q() : a;
-  }
-
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    a = b;
-    b = ERROR;
-
-    return {a.state};
-  }
-};
-
+inline SignalState tp_latch(wire LATCHp, SignalState D) {
+  CHECKn((LATCHp && D.hiz));
+  CHECKn(D.error);
+  SignalState b = 0;
+  b.set = D.val;
+  b.rst = !D.val;
+  return b;
+}
 
 //-----------------------------------------------------------------------------
-// FIXME ticks on the NEGATIVE EDGE of the clock (see timer.cpp)
+// FIXME ticks on the NEGATIVE EDGE of the clock? (see timer.cpp)
 
 // 20-rung
 
@@ -898,37 +662,34 @@ struct TpLatch : public RegisterBase {
 // REGA_19 <> REGA_11 sc
 // REGA_20 << SOGU_03
 
-struct Counter : public RegisterBase {
+// POVY_01 >> PERU_20 Q
+// POVY_02 nc
+// POVY_03 <<  NERO_03
+// POVY_04 <<  LOADp
+// POVY_05 nc
+// POVY_06 <>  sc
+// POVY_07 nc
+// POVY_08 nc
+// POVY_09 nc
+// POVY_10 nc
+// POVY_11 <>  sc
+// POVY_12 nc
+// POVY_13 nc
+// POVY_14 <<  MEXU_04 LOADp
+// POVY_15 nc
+// POVY_16 <<  NERO_03 D
+// POVY_17 >>  RACY_04 Qn? Not sure.
+// POVY_18 <>  sc
+// POVY_19 <>  sc
+// POVY_20 << REGA_01
 
-  void clk_n(wire CLKp, wire LOADp, bool val) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = val;
-    b.hiz = 0;
-    b.clk = CLKp;
-    b.set = LOADp && val;
-    b.rst = LOADp && !val;
-    b.error = 0;
-  }
+inline SignalState ff20(wire CLKp, wire LOADp, bool val) {
+  SignalState b = 0;
+  b.val = val;
+  b.clk = CLKp;
+  b.set = LOADp && val;
+  b.rst = LOADp && !val;
+  return b;
+}
 
-  SignalHash commit() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
 
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.error = 0;
-
-    b = ERROR;
-
-    return {a.state};
-  }
-};

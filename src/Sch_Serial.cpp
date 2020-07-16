@@ -84,14 +84,14 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.EGUV*/ wire _SER_DATA7_RSTn = or(and(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_TRI_D7.q()), top.clk_reg.ALUR_SYS_RSTn());
 
   /*p06.CAGE*/ wire _SIN_Cn = not(SIN_C);
-  /*p06.CUBA*/ _SER_DATA0.set(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);
-  /*p06.DEGU*/ _SER_DATA1.set(_DAWE_SER_CLK, _SER_DATA1_SETn, _SER_DATA1_RSTn, _SER_DATA0.q());
-  /*p06.DYRA*/ _SER_DATA2.set(_DAWE_SER_CLK, _SER_DATA2_SETn, _SER_DATA2_RSTn, _SER_DATA1.q());
-  /*p06.DOJO*/ _SER_DATA3.set(_DAWE_SER_CLK, _SER_DATA3_SETn, _SER_DATA3_RSTn, _SER_DATA2.q());
-  /*p06.DOVU*/ _SER_DATA4.set(_EPYT_SER_CLK, _SER_DATA4_SETn, _SER_DATA4_RSTn, _SER_DATA3.q());
-  /*p06.EJAB*/ _SER_DATA5.set(_EPYT_SER_CLK, _SER_DATA5_SETn, _SER_DATA5_RSTn, _SER_DATA4.q());
-  /*p06.EROD*/ _SER_DATA6.set(_EPYT_SER_CLK, _SER_DATA6_SETn, _SER_DATA6_RSTn, _SER_DATA5.q());
-  /*p06.EDER*/ _SER_DATA7.set(_EPYT_SER_CLK, _SER_DATA7_SETn, _SER_DATA7_RSTn, _SER_DATA6.q());
+  /*p06.CUBA*/ _SER_DATA0 = ff22(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);
+  /*p06.DEGU*/ _SER_DATA1 = ff22(_DAWE_SER_CLK, _SER_DATA1_SETn, _SER_DATA1_RSTn, _SER_DATA0.q());
+  /*p06.DYRA*/ _SER_DATA2 = ff22(_DAWE_SER_CLK, _SER_DATA2_SETn, _SER_DATA2_RSTn, _SER_DATA1.q());
+  /*p06.DOJO*/ _SER_DATA3 = ff22(_DAWE_SER_CLK, _SER_DATA3_SETn, _SER_DATA3_RSTn, _SER_DATA2.q());
+  /*p06.DOVU*/ _SER_DATA4 = ff22(_EPYT_SER_CLK, _SER_DATA4_SETn, _SER_DATA4_RSTn, _SER_DATA3.q());
+  /*p06.EJAB*/ _SER_DATA5 = ff22(_EPYT_SER_CLK, _SER_DATA5_SETn, _SER_DATA5_RSTn, _SER_DATA4.q());
+  /*p06.EROD*/ _SER_DATA6 = ff22(_EPYT_SER_CLK, _SER_DATA6_SETn, _SER_DATA6_RSTn, _SER_DATA5.q());
+  /*p06.EDER*/ _SER_DATA7 = ff22(_EPYT_SER_CLK, _SER_DATA7_SETn, _SER_DATA7_RSTn, _SER_DATA6.q());
   /*p06.ELYS*/ _SER_OUT = ff17(_EDYL_SER_CLK, top.clk_reg.ALUR_SYS_RSTn(), _SER_DATA7.q());
 
   ///*p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
@@ -137,11 +137,11 @@ SignalHash SerialRegisters::commit() {
 
   /* PIN_68 */ hash << SCK_A.commit();   // <- P06.KEXU
   /* PIN_68 */ hash << SCK_B.commit();   // <- P06.CULY
-  /* PIN_68 */ hash << SCK_C.commit();   // -> P06.CAVE
+  /* PIN_68 */ hash << SCK_C.commit_input();   // -> P06.CAVE
   /* PIN_68 */ hash << SCK_D.commit();   // <- P06.KUJO
   ///* PIN_69 */ hash << SIN_A.commit();   // nc?
   ///* PIN_69 */ hash << SIN_B.commit();   // nc?
-  /* PIN_69 */ hash << SIN_C.commit();   // -> P06.CAGE
+  /* PIN_69 */ hash << SIN_C.commit_input();   // -> P06.CAGE
   ///* PIN_69 */ hash << SIN_D.commit();   // nc?
   /* PIN_70 */ hash << SOUT.commit();    // <- P05.KENA
   return hash;

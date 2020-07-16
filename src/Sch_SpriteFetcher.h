@@ -61,21 +61,21 @@ private:
   Signal _TEPA_RENDERINGn;
   Signal _LOBY_RENDERINGn;
 
-  /*p27.TAKA*/ NandLatch _TAKA_SFETCH_RUNNINGp;
-  /*p27.SOBU*/ Reg17 _SOBU_SFETCH_REQp;
-  /*p27.SUDA*/ Reg17 _SUDA_SFETCH_REQp;
+  /*p27.TAKA*/ Reg _TAKA_SFETCH_RUNNINGp;
+  /*p27.SOBU*/ Reg _SOBU_SFETCH_REQp;
+  /*p27.SUDA*/ Reg _SUDA_SFETCH_REQp;
 
   // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
 
-  /*p29.TOXE*/ Reg17 _TOXE_SFETCH_S0;
-  /*p29.TYFO*/ Reg17 _TYFO_SFETCH_S0_D1;
+  /*p29.TOXE*/ Reg _TOXE_SFETCH_S0;
+  /*p29.TYFO*/ Reg _TYFO_SFETCH_S0_D1;
 
-  /*p29.TULY*/ Reg17 _TULY_SFETCH_S1;
-  /*p29.TESE*/ Reg17 _TESE_SFETCH_S2;
+  /*p29.TULY*/ Reg _TULY_SFETCH_S1;
+  /*p29.TESE*/ Reg _TESE_SFETCH_S2;
 
-  /*p29.TOBU*/ Reg17 _TOBU_SFETCH_S1_D2;
-  /*p29.VONU*/ Reg17 _VONU_SFETCH_S1_D4;
-  /*p29.SEBA*/ Reg17 _SEBA_SFETCH_S1_D5;
+  /*p29.TOBU*/ Reg _TOBU_SFETCH_S1_D2;
+  /*p29.VONU*/ Reg _VONU_SFETCH_S1_D4;
+  /*p29.SEBA*/ Reg _SEBA_SFETCH_S1_D5;
 
 };
 

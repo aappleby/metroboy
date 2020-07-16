@@ -544,15 +544,15 @@ SignalHash VramBus::commit() {
   hash << _VRM_TRI_D7.commit();
 
   hash << _VRAM_PIN_MCSn_A.commit();   // PIN_43 <- SOKY
-  hash << _VRAM_PIN_MCSn_C.commit();   // PIN_43 -> TEFY
+  hash << _VRAM_PIN_MCSn_C.commit_input();   // PIN_43 -> TEFY
   hash << _VRAM_PIN_MCSn_D.commit();   // PIN_43 <- SETY
 
   hash << _VRAM_PIN_MOEn_A.commit();   // PIN_45 <- REFO
-  hash << _VRAM_PIN_MOEn_C.commit();   // PIN_45 -> TAVY
+  hash << _VRAM_PIN_MOEn_C.commit_input();   // PIN_45 -> TAVY
   hash << _VRAM_PIN_MOEn_D.commit();   // PIN_45 <- SAHA
 
   hash << _VRAM_PIN_MWRn_A.commit();   // PIN_49 <- SYSY
-  hash << _VRAM_PIN_MWRn_C.commit();   // PIN_49 -> SUDOs
+  hash << _VRAM_PIN_MWRn_C.commit_input();   // PIN_49 -> SUDOs
   hash << _VRAM_PIN_MWRn_D.commit();   // PIN_49 <- RAGU
 
   hash << _VRAM_PIN_MA00_AD.commit();  // PIN_34 <- ECAL
@@ -594,14 +594,14 @@ SignalHash VramBus::commit() {
   hash << _VRAM_PIN_MD7_B.commit();    // PIN_25 <- ROFA
   hash << _VRAM_PIN_MD7_D.commit();    // PIN_25 <- RADY
 
-  hash << _VRAM_PIN_MD0_C.commit();    // PIN_33 -> RODY
-  hash << _VRAM_PIN_MD1_C.commit();    // PIN_31 -> REBA
-  hash << _VRAM_PIN_MD2_C.commit();    // PIN_30 -> RYDO
-  hash << _VRAM_PIN_MD3_C.commit();    // PIN_29 -> REMO
-  hash << _VRAM_PIN_MD4_C.commit();    // PIN_28 -> ROCE
-  hash << _VRAM_PIN_MD5_C.commit();    // PIN_27 -> ROPU
-  hash << _VRAM_PIN_MD6_C.commit();    // PIN_26 -> RETA
-  hash << _VRAM_PIN_MD7_C.commit();    // PIN_25 -> RAKU
+  hash << _VRAM_PIN_MD0_C.commit_input();    // PIN_33 -> RODY
+  hash << _VRAM_PIN_MD1_C.commit_input();    // PIN_31 -> REBA
+  hash << _VRAM_PIN_MD2_C.commit_input();    // PIN_30 -> RYDO
+  hash << _VRAM_PIN_MD3_C.commit_input();    // PIN_29 -> REMO
+  hash << _VRAM_PIN_MD4_C.commit_input();    // PIN_28 -> ROCE
+  hash << _VRAM_PIN_MD5_C.commit_input();    // PIN_27 -> ROPU
+  hash << _VRAM_PIN_MD6_C.commit_input();    // PIN_26 -> RETA
+  hash << _VRAM_PIN_MD7_C.commit_input();    // PIN_25 -> RAKU
 
 
   return hash;

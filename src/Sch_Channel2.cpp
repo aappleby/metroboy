@@ -10,9 +10,9 @@ namespace Schematics {
 
 void P14_Ch2Regs_tick(const Gameboy& a,
                       const Gameboy& b,
-                      const ClkSignals& clk,
+                      const ClkSignals& ff20,
                       Gameboy& next) {
-  /*p15.AZEG*/ next.ch2.AZEG = not(clk.AMUK_xBxDxFxH);
+  /*p15.AZEG*/ next.ch2.AZEG = not(ff20.AMUK_xBxDxFxH);
 
   /*p14.HUDE*/ next.ch2.APU_RESETn1 = not(b.apu.APU_RESET1);
 

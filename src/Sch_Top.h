@@ -152,59 +152,59 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Top level registers
 
-  /*p31.YLOR*/ Reg8 YLOR_OAM_DA0; // sprite x bit 0, 
-  /*p31.ZYTY*/ Reg8 ZYTY_OAM_DA1; // sprite x bit 1, 
-  /*p31.ZYVE*/ Reg8 ZYVE_OAM_DA2; // sprite x bit 2, 
-  /*p31.ZEZY*/ Reg8 ZEZY_OAM_DA3; // sprite x bit 3, 
-  /*p31.GOMO*/ Reg8 GOMO_OAM_DA4; // sprite x bit 4, sprite palette
-  /*p31.BAXO*/ Reg8 BAXO_OAM_DA5; // sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ Reg8 YZOS_OAM_DA6; // sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ Reg8 DEPO_OAM_DA7; // sprite x bit 7, sprite priority
+  /*p31.YLOR*/ Reg YLOR_OAM_DA0; // sprite x bit 0, 
+  /*p31.ZYTY*/ Reg ZYTY_OAM_DA1; // sprite x bit 1, 
+  /*p31.ZYVE*/ Reg ZYVE_OAM_DA2; // sprite x bit 2, 
+  /*p31.ZEZY*/ Reg ZEZY_OAM_DA3; // sprite x bit 3, 
+  /*p31.GOMO*/ Reg GOMO_OAM_DA4; // sprite x bit 4, sprite palette
+  /*p31.BAXO*/ Reg BAXO_OAM_DA5; // sprite x bit 5, sprite x flip
+  /*p31.YZOS*/ Reg YZOS_OAM_DA6; // sprite x bit 6, sprite y flip
+  /*p31.DEPO*/ Reg DEPO_OAM_DA7; // sprite x bit 7, sprite priority
 
-  /*p29.XUSO*/ Reg8 XUSO_OAM_DB0; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ Reg8 XEGU_OAM_DB1; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ Reg8 YJEX_OAM_DB2; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ Reg8 XYJU_OAM_DB3; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ Reg8 YBOG_OAM_DB4; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ Reg8 WYSO_OAM_DB5; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ Reg8 XOTE_OAM_DB6; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ Reg8 YZAB_OAM_DB7; // sprite y bit 7, sprite tile index bit 7
+  /*p29.XUSO*/ Reg XUSO_OAM_DB0; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ Reg XEGU_OAM_DB1; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ Reg YJEX_OAM_DB2; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ Reg XYJU_OAM_DB3; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ Reg YBOG_OAM_DB4; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ Reg WYSO_OAM_DB5; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ Reg XOTE_OAM_DB6; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ Reg YZAB_OAM_DB7; // sprite y bit 7, sprite tile index bit 7
 
-  /*p32.LEGU*/ Reg8 LEGU_TILE_DA0;
-  /*p32.NUDU*/ Reg8 NUDU_TILE_DA1;
-  /*p32.MUKU*/ Reg8 MUKU_TILE_DA2;
-  /*p32.LUZO*/ Reg8 LUZO_TILE_DA3;
-  /*p32.MEGU*/ Reg8 MEGU_TILE_DA4;
-  /*p32.MYJY*/ Reg8 MYJY_TILE_DA5;
-  /*p32.NASA*/ Reg8 NASA_TILE_DA6;
-  /*p32.NEFO*/ Reg8 NEFO_TILE_DA7; // color wrong on die
+  /*p32.LEGU*/ Reg LEGU_TILE_DA0;
+  /*p32.NUDU*/ Reg NUDU_TILE_DA1;
+  /*p32.MUKU*/ Reg MUKU_TILE_DA2;
+  /*p32.LUZO*/ Reg LUZO_TILE_DA3;
+  /*p32.MEGU*/ Reg MEGU_TILE_DA4;
+  /*p32.MYJY*/ Reg MYJY_TILE_DA5;
+  /*p32.NASA*/ Reg NASA_TILE_DA6;
+  /*p32.NEFO*/ Reg NEFO_TILE_DA7; // color wrong on die
 
-  /*p32.RAWU*/ Reg11 RAWU_TILE_DB0; // also holds tile index during fetch
-  /*p32.POZO*/ Reg11 POZO_TILE_DB1;
-  /*p32.PYZO*/ Reg11 PYZO_TILE_DB2; 
-  /*p32.POXA*/ Reg11 POXA_TILE_DB3; 
-  /*p32.PULO*/ Reg11 PULO_TILE_DB4; 
-  /*p32.POJU*/ Reg11 POJU_TILE_DB5; 
-  /*p32.POWY*/ Reg11 POWY_TILE_DB6; 
-  /*p32.PYJU*/ Reg11 PYJU_TILE_DB7;
+  /*p32.RAWU*/ Reg RAWU_TILE_DB0; // also holds tile index during fetch
+  /*p32.POZO*/ Reg POZO_TILE_DB1;
+  /*p32.PYZO*/ Reg PYZO_TILE_DB2; 
+  /*p32.POXA*/ Reg POXA_TILE_DB3; 
+  /*p32.PULO*/ Reg PULO_TILE_DB4; 
+  /*p32.POJU*/ Reg POJU_TILE_DB5; 
+  /*p32.POWY*/ Reg POWY_TILE_DB6; 
+  /*p32.PYJU*/ Reg PYJU_TILE_DB7;
 
-  /*p33.PEFO*/ Reg8 PEFO_SPRITE_DA0;
-  /*p33.ROKA*/ Reg8 ROKA_SPRITE_DA1;
-  /*p33.MYTU*/ Reg8 MYTU_SPRITE_DA2;
-  /*p33.RAMU*/ Reg8 RAMU_SPRITE_DA3;
-  /*p33.SELE*/ Reg8 SELE_SPRITE_DA4;
-  /*p33.SUTO*/ Reg8 SUTO_SPRITE_DA5;
-  /*p33.RAMA*/ Reg8 RAMA_SPRITE_DA6;
-  /*p33.RYDU*/ Reg8 RYDU_SPRITE_DA7;
+  /*p33.PEFO*/ Reg PEFO_SPRITE_DA0;
+  /*p33.ROKA*/ Reg ROKA_SPRITE_DA1;
+  /*p33.MYTU*/ Reg MYTU_SPRITE_DA2;
+  /*p33.RAMU*/ Reg RAMU_SPRITE_DA3;
+  /*p33.SELE*/ Reg SELE_SPRITE_DA4;
+  /*p33.SUTO*/ Reg SUTO_SPRITE_DA5;
+  /*p33.RAMA*/ Reg RAMA_SPRITE_DA6;
+  /*p33.RYDU*/ Reg RYDU_SPRITE_DA7;
 
-  /*p33.REWO*/ Reg8 REWO_SPRITE_DB0;
-  /*p33.PEBA*/ Reg8 PEBA_SPRITE_DB1;
-  /*p33.MOFO*/ Reg8 MOFO_SPRITE_DB2;
-  /*p33.PUDU*/ Reg8 PUDU_SPRITE_DB3;
-  /*p33.SAJA*/ Reg8 SAJA_SPRITE_DB4;
-  /*p33.SUNY*/ Reg8 SUNY_SPRITE_DB5;
-  /*p33.SEMO*/ Reg8 SEMO_SPRITE_DB6;
-  /*p33.SEGA*/ Reg8 SEGA_SPRITE_DB7;
+  /*p33.REWO*/ Reg REWO_SPRITE_DB0;
+  /*p33.PEBA*/ Reg PEBA_SPRITE_DB1;
+  /*p33.MOFO*/ Reg MOFO_SPRITE_DB2;
+  /*p33.PUDU*/ Reg PUDU_SPRITE_DB3;
+  /*p33.SAJA*/ Reg SAJA_SPRITE_DB4;
+  /*p33.SUNY*/ Reg SUNY_SPRITE_DB5;
+  /*p33.SEMO*/ Reg SEMO_SPRITE_DB6;
+  /*p33.SEGA*/ Reg SEGA_SPRITE_DB7;
 
   //-----------------------------------------------------------------------------
   // Sub-modules

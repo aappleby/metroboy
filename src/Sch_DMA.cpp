@@ -92,7 +92,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p04.LOKO*/ wire _LOKO_DMA_RSTp = nand(top.clk_reg.CUNU_SYS_RSTn(), !LENE_DMA_TRIG_d4.q());
 
   {
-    /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(_LOKO_DMA_RSTp, _LAVY_FF46_WRp);
+    /*p04.LYXE*/ LYXE_DMA_LATCHn = nor_latch(_LOKO_DMA_RSTp, _LAVY_FF46_WRp);
     /*p04.LUPA*/ wire _LUPA_DMA_TRIG = nor(_LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
     /*p04.LUVY*/ LUVY_DMA_TRIG_d0 = ff17(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG);
     /*p04.LENE*/ LENE_DMA_TRIG_d4 = ff17(top.clk_reg.MOPA_xxxxEFGH(), top.clk_reg.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.q());

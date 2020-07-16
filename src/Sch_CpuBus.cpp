@@ -103,31 +103,31 @@ SignalHash CpuBus::commit() {
   //----------------------------------------
   // CPU-to-SOC
 
-  hash << _CPU_PIN6.commit();               // PORTD_00: -> LEXY, doesn't do anything
-  hash << _CPU_PIN5.commit();               // PORTD_06: -> FROM_CPU5
+  hash << _CPU_PIN6.commit_input();               // PORTD_00: -> LEXY, doesn't do anything
+  hash << _CPU_PIN5.commit_input();               // PORTD_06: -> FROM_CPU5
 
   hash << _MAKA_FROM_CPU5_SYNC.commit();
 
-  hash << _CPU_PIN_RDp.commit();            // PORTA_00: -> UJYV, LAGU, LAVO
-  hash << _CPU_PIN_WRp.commit();            // PORTA_01: -> AREV, LAGU.
-  hash << _CPU_PIN_ADDR_VALID.commit();     // PORTA_06: -> APAP, TEXO
+  hash << _CPU_PIN_RDp.commit_input();            // PORTA_00: -> UJYV, LAGU, LAVO
+  hash << _CPU_PIN_WRp.commit_input();            // PORTA_01: -> AREV, LAGU.
+  hash << _CPU_PIN_ADDR_VALID.commit_input();     // PORTA_06: -> APAP, TEXO
 
-  hash << CPU_PIN_A00.commit();
-  hash << CPU_PIN_A01.commit();
-  hash << CPU_PIN_A02.commit();
-  hash << CPU_PIN_A03.commit();
-  hash << CPU_PIN_A04.commit();
-  hash << CPU_PIN_A05.commit();
-  hash << CPU_PIN_A06.commit();
-  hash << CPU_PIN_A07.commit();
-  hash << CPU_PIN_A08.commit();
-  hash << CPU_PIN_A09.commit();
-  hash << CPU_PIN_A10.commit();
-  hash << CPU_PIN_A11.commit();
-  hash << CPU_PIN_A12.commit();
-  hash << CPU_PIN_A13.commit();
-  hash << CPU_PIN_A14.commit();
-  hash << CPU_PIN_A15.commit();
+  hash << CPU_PIN_A00.commit_input();
+  hash << CPU_PIN_A01.commit_input();
+  hash << CPU_PIN_A02.commit_input();
+  hash << CPU_PIN_A03.commit_input();
+  hash << CPU_PIN_A04.commit_input();
+  hash << CPU_PIN_A05.commit_input();
+  hash << CPU_PIN_A06.commit_input();
+  hash << CPU_PIN_A07.commit_input();
+  hash << CPU_PIN_A08.commit_input();
+  hash << CPU_PIN_A09.commit_input();
+  hash << CPU_PIN_A10.commit_input();
+  hash << CPU_PIN_A11.commit_input();
+  hash << CPU_PIN_A12.commit_input();
+  hash << CPU_PIN_A13.commit_input();
+  hash << CPU_PIN_A14.commit_input();
+  hash << CPU_PIN_A15.commit_input();
 
   return hash;
 }

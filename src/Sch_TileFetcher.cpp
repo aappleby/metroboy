@@ -69,14 +69,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.FOHA*/ FOHA_SCY6 = ff9(_CAVO_FF42_WRn, !_CAVO_FF42_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
     /*p23.FUNY*/ FUNY_SCY7 = ff9(_CAVO_FF42_WRn, !_CAVO_FF42_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
 
-    /*p23.WARE*/ cpu_bus.CPU_TRI_D0.set_tribuf_6n(_BUWY_FF42_RDn, GAVE_SCY0.q());
-    /*p23.GOBA*/ cpu_bus.CPU_TRI_D1.set_tribuf_6n(_BUWY_FF42_RDn, FYMO_SCY1.q());
-    /*p23.GONU*/ cpu_bus.CPU_TRI_D2.set_tribuf_6n(_BUWY_FF42_RDn, FEZU_SCY2.q());
-    /*p23.GODO*/ cpu_bus.CPU_TRI_D3.set_tribuf_6n(_BUWY_FF42_RDn, FUJO_SCY3.q());
-    /*p23.CUSA*/ cpu_bus.CPU_TRI_D4.set_tribuf_6n(_BUWY_FF42_RDn, DEDE_SCY4.q());
-    /*p23.GYZO*/ cpu_bus.CPU_TRI_D5.set_tribuf_6n(_BUWY_FF42_RDn, FOTY_SCY5.q());
-    /*p23.GUNE*/ cpu_bus.CPU_TRI_D6.set_tribuf_6n(_BUWY_FF42_RDn, FOHA_SCY6.q());
-    /*p23.GYZA*/ cpu_bus.CPU_TRI_D7.set_tribuf_6n(_BUWY_FF42_RDn, FUNY_SCY7.q());
+    /*p23.WARE*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_BUWY_FF42_RDn, GAVE_SCY0.q());
+    /*p23.GOBA*/ cpu_bus.CPU_TRI_D1 = tribuf_6n(_BUWY_FF42_RDn, FYMO_SCY1.q());
+    /*p23.GONU*/ cpu_bus.CPU_TRI_D2 = tribuf_6n(_BUWY_FF42_RDn, FEZU_SCY2.q());
+    /*p23.GODO*/ cpu_bus.CPU_TRI_D3 = tribuf_6n(_BUWY_FF42_RDn, FUJO_SCY3.q());
+    /*p23.CUSA*/ cpu_bus.CPU_TRI_D4 = tribuf_6n(_BUWY_FF42_RDn, DEDE_SCY4.q());
+    /*p23.GYZO*/ cpu_bus.CPU_TRI_D5 = tribuf_6n(_BUWY_FF42_RDn, FOTY_SCY5.q());
+    /*p23.GUNE*/ cpu_bus.CPU_TRI_D6 = tribuf_6n(_BUWY_FF42_RDn, FOHA_SCY6.q());
+    /*p23.GYZA*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_BUWY_FF42_RDn, FUNY_SCY7.q());
   }
 
   // FF43 SCX
@@ -99,14 +99,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.CABU*/ CABU_SCX6 = ff9(_AMUN_FF43_WRn, !_AMUN_FF43_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
     /*p23.BAKE*/ BAKE_SCX7 = ff9(_AMUN_FF43_WRn, !_AMUN_FF43_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
 
-    /*p23.EDOS*/ cpu_bus.CPU_TRI_D0.set_tribuf_6n(_BEBA_FF43_RDn, DATY_SCX0.q());
-    /*p23.EKOB*/ cpu_bus.CPU_TRI_D1.set_tribuf_6n(_BEBA_FF43_RDn, DUZU_SCX1.q());
-    /*p23.CUGA*/ cpu_bus.CPU_TRI_D2.set_tribuf_6n(_BEBA_FF43_RDn, CYXU_SCX2.q());
-    /*p23.WONY*/ cpu_bus.CPU_TRI_D3.set_tribuf_6n(_BEBA_FF43_RDn, GUBO_SCX3.q());
-    /*p23.CEDU*/ cpu_bus.CPU_TRI_D4.set_tribuf_6n(_BEBA_FF43_RDn, BEMY_SCX4.q());
-    /*p23.CATA*/ cpu_bus.CPU_TRI_D5.set_tribuf_6n(_BEBA_FF43_RDn, CUZY_SCX5.q());
-    /*p23.DOXE*/ cpu_bus.CPU_TRI_D6.set_tribuf_6n(_BEBA_FF43_RDn, CABU_SCX6.q());
-    /*p23.CASY*/ cpu_bus.CPU_TRI_D7.set_tribuf_6n(_BEBA_FF43_RDn, BAKE_SCX7.q());
+    /*p23.EDOS*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_BEBA_FF43_RDn, DATY_SCX0.q());
+    /*p23.EKOB*/ cpu_bus.CPU_TRI_D1 = tribuf_6n(_BEBA_FF43_RDn, DUZU_SCX1.q());
+    /*p23.CUGA*/ cpu_bus.CPU_TRI_D2 = tribuf_6n(_BEBA_FF43_RDn, CYXU_SCX2.q());
+    /*p23.WONY*/ cpu_bus.CPU_TRI_D3 = tribuf_6n(_BEBA_FF43_RDn, GUBO_SCX3.q());
+    /*p23.CEDU*/ cpu_bus.CPU_TRI_D4 = tribuf_6n(_BEBA_FF43_RDn, BEMY_SCX4.q());
+    /*p23.CATA*/ cpu_bus.CPU_TRI_D5 = tribuf_6n(_BEBA_FF43_RDn, CUZY_SCX5.q());
+    /*p23.DOXE*/ cpu_bus.CPU_TRI_D6 = tribuf_6n(_BEBA_FF43_RDn, CABU_SCX6.q());
+    /*p23.CASY*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_BEBA_FF43_RDn, BAKE_SCX7.q());
   }
 }
 

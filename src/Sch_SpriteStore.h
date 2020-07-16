@@ -17,17 +17,17 @@ struct SpriteStore {
   /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
   /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
 
-  Tribuf SPR_TRI_INDX_0;
-  Tribuf SPR_TRI_INDX_1;
-  Tribuf SPR_TRI_INDX_2;
-  Tribuf SPR_TRI_INDX_3;
-  Tribuf SPR_TRI_INDX_4;
-  Tribuf SPR_TRI_INDX_5;
+  Reg SPR_TRI_INDX_0;
+  Reg SPR_TRI_INDX_1;
+  Reg SPR_TRI_INDX_2;
+  Reg SPR_TRI_INDX_3;
+  Reg SPR_TRI_INDX_4;
+  Reg SPR_TRI_INDX_5;
 
-  Tribuf SPR_TRI_LINE_0;
-  Tribuf SPR_TRI_LINE_1;
-  Tribuf SPR_TRI_LINE_2;
-  Tribuf SPR_TRI_LINE_3;
+  Reg SPR_TRI_LINE_0;
+  Reg SPR_TRI_LINE_1;
+  Reg SPR_TRI_LINE_2;
+  Reg SPR_TRI_LINE_3;
 
 private:
   friend struct SchematicTop;

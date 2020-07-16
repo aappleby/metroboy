@@ -115,37 +115,37 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*p25.XANE*/ wire _XANE_VRAM_LOCKn = nor(top.dma_reg.LUFA_DMA_VRM_RDp(), top.pix_pipe.XYMU_RENDERINGp()); // def nor
     /*p25.XEDU*/ wire _XEDU_VRAM_UNLOCKEDn = not(_XANE_VRAM_LOCKn);
-    /*p25.XAKY*/ _VRM_TRI_A00.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A00);
-    /*p25.XUXU*/ _VRM_TRI_A01.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A01);
-    /*p25.XYNE*/ _VRM_TRI_A02.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A02);
-    /*p25.XODY*/ _VRM_TRI_A03.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A03);
-    /*p25.XECA*/ _VRM_TRI_A04.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A04);
-    /*p25.XOBA*/ _VRM_TRI_A05.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A05);
-    /*p25.XOPO*/ _VRM_TRI_A06.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A06);
-    /*p25.XYBO*/ _VRM_TRI_A07.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A07);
-    /*p25.RYSU*/ _VRM_TRI_A08.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A08);
-    /*p25.RESE*/ _VRM_TRI_A09.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A09);
-    /*p25.RUSE*/ _VRM_TRI_A10.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A10);
-    /*p25.RYNA*/ _VRM_TRI_A11.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A11);
-    /*p25.RUMO*/ _VRM_TRI_A12.set_tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A12);
+    /*p25.XAKY*/ _VRM_TRI_A00 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A00);
+    /*p25.XUXU*/ _VRM_TRI_A01 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A01);
+    /*p25.XYNE*/ _VRM_TRI_A02 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A02);
+    /*p25.XODY*/ _VRM_TRI_A03 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A03);
+    /*p25.XECA*/ _VRM_TRI_A04 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A04);
+    /*p25.XOBA*/ _VRM_TRI_A05 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A05);
+    /*p25.XOPO*/ _VRM_TRI_A06 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A06);
+    /*p25.XYBO*/ _VRM_TRI_A07 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A07);
+    /*p25.RYSU*/ _VRM_TRI_A08 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A08);
+    /*p25.RESE*/ _VRM_TRI_A09 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A09);
+    /*p25.RUSE*/ _VRM_TRI_A10 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A10);
+    /*p25.RYNA*/ _VRM_TRI_A11 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A11);
+    /*p25.RUMO*/ _VRM_TRI_A12 = tribuf_6n(_XEDU_VRAM_UNLOCKEDn, top.cpu_bus.CPU_PIN_A12);
   }
 
   // DMA address -> vram address
   {
     /*p04.AHOC*/ wire _AHOC_DMA_VRAM_RDn = not(top.dma_reg.LUFA_DMA_VRM_RDp());
-    /*p04.ECAL*/ _VRM_TRI_A00.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A00.q());
-    /*p04.EGEZ*/ _VRM_TRI_A01.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A01.q());
-    /*p04.FUHE*/ _VRM_TRI_A02.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A02.q());
-    /*p04.FYZY*/ _VRM_TRI_A03.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A03.q());
-    /*p04.DAMU*/ _VRM_TRI_A04.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A04.q());
-    /*p04.DAVA*/ _VRM_TRI_A05.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A05.q());
-    /*p04.ETEG*/ _VRM_TRI_A06.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A06.q());
-    /*p04.EREW*/ _VRM_TRI_A07.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A07.q());
-    /*p04.EVAX*/ _VRM_TRI_A08.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A08.q());
-    /*p04.DUVE*/ _VRM_TRI_A09.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A09.q());
-    /*p04.ERAF*/ _VRM_TRI_A10.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A10.q());
-    /*p04.FUSY*/ _VRM_TRI_A11.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A11.q());
-    /*p04.EXYF*/ _VRM_TRI_A12.set_tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A12.q());
+    /*p04.ECAL*/ _VRM_TRI_A00 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A00.q());
+    /*p04.EGEZ*/ _VRM_TRI_A01 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A01.q());
+    /*p04.FUHE*/ _VRM_TRI_A02 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A02.q());
+    /*p04.FYZY*/ _VRM_TRI_A03 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A03.q());
+    /*p04.DAMU*/ _VRM_TRI_A04 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A04.q());
+    /*p04.DAVA*/ _VRM_TRI_A05 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A05.q());
+    /*p04.ETEG*/ _VRM_TRI_A06 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A06.q());
+    /*p04.EREW*/ _VRM_TRI_A07 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A07.q());
+    /*p04.EVAX*/ _VRM_TRI_A08 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A08.q());
+    /*p04.DUVE*/ _VRM_TRI_A09 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A09.q());
+    /*p04.ERAF*/ _VRM_TRI_A10 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A10.q());
+    /*p04.FUSY*/ _VRM_TRI_A11 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A11.q());
+    /*p04.EXYF*/ _VRM_TRI_A12 = tribuf_6n(_AHOC_DMA_VRAM_RDn, top.dma_reg.DMA_A12.q());
   }
 
   // Sprite fetcher read
@@ -158,19 +158,19 @@ void VramBus::tock(SchematicTop& top) {
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_0.q());
     /*p29.GEJY*/ wire _GEJY_OAM_DB3 = amux2(_FUFO_LCDC_SPSIZEn, !top.XUSO_OAM_DB0.q(), top.pix_pipe.XYMO_LCDC_SPSIZE.q(), _WAGO);
 
-    /*p29.ABEM*/ _VRM_TRI_A00.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.sprite_fetcher.XUQU_SPRITE_AB());
-    /*p29.BAXE*/ _VRM_TRI_A01.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _CYVU_OAM_DB0);
-    /*p29.ARAS*/ _VRM_TRI_A02.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _BORE_OAM_DB1);
-    /*p29.AGAG*/ _VRM_TRI_A03.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _BUVY_OAM_DB2);
-    /*p29.FAMU*/ _VRM_TRI_A04.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _GEJY_OAM_DB3);
-    /*p29.FUGY*/ _VRM_TRI_A05.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XEGU_OAM_DB1.q());
-    /*p29.GAVO*/ _VRM_TRI_A06.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YJEX_OAM_DB2.q());
-    /*p29.WYGA*/ _VRM_TRI_A07.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XYJU_OAM_DB3.q());
-    /*p29.WUNE*/ _VRM_TRI_A08.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YBOG_OAM_DB4.q());
-    /*p29.GOTU*/ _VRM_TRI_A09.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.WYSO_OAM_DB5.q());
-    /*p29.GEGU*/ _VRM_TRI_A10.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XOTE_OAM_DB6.q());
-    /*p29.XEHE*/ _VRM_TRI_A11.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YZAB_OAM_DB7.q());
-    /*p29.DYSO*/ _VRM_TRI_A12.set_tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), 0);   // sprites always in low half of tile store
+    /*p29.ABEM*/ _VRM_TRI_A00 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.sprite_fetcher.XUQU_SPRITE_AB());
+    /*p29.BAXE*/ _VRM_TRI_A01 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _CYVU_OAM_DB0);
+    /*p29.ARAS*/ _VRM_TRI_A02 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _BORE_OAM_DB1);
+    /*p29.AGAG*/ _VRM_TRI_A03 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _BUVY_OAM_DB2);
+    /*p29.FAMU*/ _VRM_TRI_A04 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _GEJY_OAM_DB3);
+    /*p29.FUGY*/ _VRM_TRI_A05 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XEGU_OAM_DB1.q());
+    /*p29.GAVO*/ _VRM_TRI_A06 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YJEX_OAM_DB2.q());
+    /*p29.WYGA*/ _VRM_TRI_A07 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XYJU_OAM_DB3.q());
+    /*p29.WUNE*/ _VRM_TRI_A08 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YBOG_OAM_DB4.q());
+    /*p29.GOTU*/ _VRM_TRI_A09 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.WYSO_OAM_DB5.q());
+    /*p29.GEGU*/ _VRM_TRI_A10 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XOTE_OAM_DB6.q());
+    /*p29.XEHE*/ _VRM_TRI_A11 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YZAB_OAM_DB7.q());
+    /*p29.DYSO*/ _VRM_TRI_A12 = tribuf_6n(top.sprite_fetcher.ABON_SPR_VRM_RDn(), 0);   // sprites always in low half of tile store
   }
 
   {
@@ -224,38 +224,38 @@ void VramBus::tock(SchematicTop& top) {
     {
       /*p26.ACEN*/ wire _ACEN_BG_MAP_READp = and (_POTU_BG_MAP_READp, _AXAD_WIN_MODEn);
       /*p26.BAFY*/ wire _BAFY_BG_MAP_READn = not(_ACEN_BG_MAP_READp);
-      /*p26.AXEP*/ _VRM_TRI_A00.set_tribuf_6n(_BAFY_BG_MAP_READn, _BABE_MAP_X0S);
-      /*p26.AFEB*/ _VRM_TRI_A01.set_tribuf_6n(_BAFY_BG_MAP_READn, _ABOD_MAP_X1S);
-      /*p26.ALEL*/ _VRM_TRI_A02.set_tribuf_6n(_BAFY_BG_MAP_READn, _BEWY_MAP_X2S);
-      /*p26.COLY*/ _VRM_TRI_A03.set_tribuf_6n(_BAFY_BG_MAP_READn, _BYCA_MAP_X3S);
-      /*p26.AJAN*/ _VRM_TRI_A04.set_tribuf_6n(_BAFY_BG_MAP_READn, _ACUL_MAP_X4S);
-      /*p26.DUHO*/ _VRM_TRI_A05.set_tribuf_6n(_BAFY_BG_MAP_READn, _ETAM_MAP_Y0S);
-      /*p26.CASE*/ _VRM_TRI_A06.set_tribuf_6n(_BAFY_BG_MAP_READn, _DOTO_MAP_Y1S);
-      /*p26.CYPO*/ _VRM_TRI_A07.set_tribuf_6n(_BAFY_BG_MAP_READn, _DABA_MAP_Y2S);
-      /*p26.CETA*/ _VRM_TRI_A08.set_tribuf_6n(_BAFY_BG_MAP_READn, _EFYK_MAP_Y3S);
-      /*p26.DAFE*/ _VRM_TRI_A09.set_tribuf_6n(_BAFY_BG_MAP_READn, _EJOK_MAP_Y4S);
-      /*p26.AMUV*/ _VRM_TRI_A10.set_tribuf_6n(_BAFY_BG_MAP_READn, top.pix_pipe.XAFO_LCDC_BGMAP.q());
-      /*p26.COVE*/ _VRM_TRI_A11.set_tribuf_6n(_BAFY_BG_MAP_READn, 0);
-      /*p26.COXO*/ _VRM_TRI_A12.set_tribuf_6n(_BAFY_BG_MAP_READn, 0);
+      /*p26.AXEP*/ _VRM_TRI_A00 = tribuf_6n(_BAFY_BG_MAP_READn, _BABE_MAP_X0S);
+      /*p26.AFEB*/ _VRM_TRI_A01 = tribuf_6n(_BAFY_BG_MAP_READn, _ABOD_MAP_X1S);
+      /*p26.ALEL*/ _VRM_TRI_A02 = tribuf_6n(_BAFY_BG_MAP_READn, _BEWY_MAP_X2S);
+      /*p26.COLY*/ _VRM_TRI_A03 = tribuf_6n(_BAFY_BG_MAP_READn, _BYCA_MAP_X3S);
+      /*p26.AJAN*/ _VRM_TRI_A04 = tribuf_6n(_BAFY_BG_MAP_READn, _ACUL_MAP_X4S);
+      /*p26.DUHO*/ _VRM_TRI_A05 = tribuf_6n(_BAFY_BG_MAP_READn, _ETAM_MAP_Y0S);
+      /*p26.CASE*/ _VRM_TRI_A06 = tribuf_6n(_BAFY_BG_MAP_READn, _DOTO_MAP_Y1S);
+      /*p26.CYPO*/ _VRM_TRI_A07 = tribuf_6n(_BAFY_BG_MAP_READn, _DABA_MAP_Y2S);
+      /*p26.CETA*/ _VRM_TRI_A08 = tribuf_6n(_BAFY_BG_MAP_READn, _EFYK_MAP_Y3S);
+      /*p26.DAFE*/ _VRM_TRI_A09 = tribuf_6n(_BAFY_BG_MAP_READn, _EJOK_MAP_Y4S);
+      /*p26.AMUV*/ _VRM_TRI_A10 = tribuf_6n(_BAFY_BG_MAP_READn, top.pix_pipe.XAFO_LCDC_BGMAP.q());
+      /*p26.COVE*/ _VRM_TRI_A11 = tribuf_6n(_BAFY_BG_MAP_READn, 0);
+      /*p26.COXO*/ _VRM_TRI_A12 = tribuf_6n(_BAFY_BG_MAP_READn, 0);
     }
 
     // Window map read
     {
       /*p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and (_POTU_BG_MAP_READp, top.pix_pipe.PORE_WIN_MODEp());
       /*p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not(_XEZE_WIN_MAP_READp);
-      /*p27.XEJA*/ _VRM_TRI_A00.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WYKA_WIN_X3());
-      /*p27.XAMO*/ _VRM_TRI_A01.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WODY_WIN_X4());
-      /*p27.XAHE*/ _VRM_TRI_A02.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WOBO_WIN_X5());
-      /*p27.XULO*/ _VRM_TRI_A03.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WYKO_WIN_X6());
-      /*p27.WUJU*/ _VRM_TRI_A04.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.XOLO_WIN_X7());
-      /*p27.VYTO*/ _VRM_TRI_A05.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TUFU_WIN_Y3());
-      /*p27.VEHA*/ _VRM_TRI_A06.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TAXA_WIN_Y4());
-      /*p27.VACE*/ _VRM_TRI_A07.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TOZO_WIN_Y5());
-      /*p27.VOVO*/ _VRM_TRI_A08.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TATE_WIN_Y6());
-      /*p27.VULO*/ _VRM_TRI_A09.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TEKE_WIN_Y7());
-      /*p27.VEVY*/ _VRM_TRI_A10.set_tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAP.q());
-      /*p27.VEZA*/ _VRM_TRI_A11.set_tribuf_6n(_WUKO_WIN_MAP_READn, 0);
-      /*p27.VOGU*/ _VRM_TRI_A12.set_tribuf_6n(_WUKO_WIN_MAP_READn, 0);
+      /*p27.XEJA*/ _VRM_TRI_A00 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WYKA_WIN_X3());
+      /*p27.XAMO*/ _VRM_TRI_A01 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WODY_WIN_X4());
+      /*p27.XAHE*/ _VRM_TRI_A02 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WOBO_WIN_X5());
+      /*p27.XULO*/ _VRM_TRI_A03 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WYKO_WIN_X6());
+      /*p27.WUJU*/ _VRM_TRI_A04 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.XOLO_WIN_X7());
+      /*p27.VYTO*/ _VRM_TRI_A05 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TUFU_WIN_Y3());
+      /*p27.VEHA*/ _VRM_TRI_A06 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TAXA_WIN_Y4());
+      /*p27.VACE*/ _VRM_TRI_A07 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TOZO_WIN_Y5());
+      /*p27.VOVO*/ _VRM_TRI_A08 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TATE_WIN_Y6());
+      /*p27.VULO*/ _VRM_TRI_A09 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.TEKE_WIN_Y7());
+      /*p27.VEVY*/ _VRM_TRI_A10 = tribuf_6n(_WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAP.q());
+      /*p27.VEZA*/ _VRM_TRI_A11 = tribuf_6n(_WUKO_WIN_MAP_READn, 0);
+      /*p27.VOGU*/ _VRM_TRI_A12 = tribuf_6n(_WUKO_WIN_MAP_READn, 0);
     }
 
     // Background/window tile read
@@ -267,25 +267,25 @@ void VramBus::tock(SchematicTop& top) {
       /*p25.XUCY*/ wire _XUCY_WIN_TILE_READn = nand(_NETA_TILE_READp, top.pix_pipe.PORE_WIN_MODEp());
       /*p25.VUZA*/ wire _VUZA_TILE_BANKp = nor(top.pix_pipe.WEXU_LCDC_BGTILE.q(), top.PYJU_TILE_DB7.q()); // register reused
       
-      /*p26.ASUM*/ _VRM_TRI_A00.set_tribuf_6n(_BEJE_BGD_TILE_READn, _XUHA_FETCH_S2p);
-      /*p26.EVAD*/ _VRM_TRI_A01.set_tribuf_6n(_BEJE_BGD_TILE_READn, _FAFO_TILE_Y0S);
-      /*p26.DAHU*/ _VRM_TRI_A02.set_tribuf_6n(_BEJE_BGD_TILE_READn, _EMUX_TILE_Y1S);
-      /*p26.DODE*/ _VRM_TRI_A03.set_tribuf_6n(_BEJE_BGD_TILE_READn, _ECAB_TILE_Y2S);
+      /*p26.ASUM*/ _VRM_TRI_A00 = tribuf_6n(_BEJE_BGD_TILE_READn, _XUHA_FETCH_S2p);
+      /*p26.EVAD*/ _VRM_TRI_A01 = tribuf_6n(_BEJE_BGD_TILE_READn, _FAFO_TILE_Y0S);
+      /*p26.DAHU*/ _VRM_TRI_A02 = tribuf_6n(_BEJE_BGD_TILE_READn, _EMUX_TILE_Y1S);
+      /*p26.DODE*/ _VRM_TRI_A03 = tribuf_6n(_BEJE_BGD_TILE_READn, _ECAB_TILE_Y2S);
 
-      /*p25.XONU*/ _VRM_TRI_A00.set_tribuf_6n(_XUCY_WIN_TILE_READn, _XUHA_FETCH_S2p);
-      /*p25.WUDO*/ _VRM_TRI_A01.set_tribuf_6n(_XUCY_WIN_TILE_READn, top.pix_pipe.VYNO_WIN_Y0());
-      /*p25.WAWE*/ _VRM_TRI_A02.set_tribuf_6n(_XUCY_WIN_TILE_READn, top.pix_pipe.VUJO_WIN_Y1());
-      /*p25.WOLU*/ _VRM_TRI_A03.set_tribuf_6n(_XUCY_WIN_TILE_READn, top.pix_pipe.VYMU_WIN_Y2());
+      /*p25.XONU*/ _VRM_TRI_A00 = tribuf_6n(_XUCY_WIN_TILE_READn, _XUHA_FETCH_S2p);
+      /*p25.WUDO*/ _VRM_TRI_A01 = tribuf_6n(_XUCY_WIN_TILE_READn, top.pix_pipe.VYNO_WIN_Y0());
+      /*p25.WAWE*/ _VRM_TRI_A02 = tribuf_6n(_XUCY_WIN_TILE_READn, top.pix_pipe.VUJO_WIN_Y1());
+      /*p25.WOLU*/ _VRM_TRI_A03 = tribuf_6n(_XUCY_WIN_TILE_READn, top.pix_pipe.VYMU_WIN_Y2());
 
-      /*p25.VAPY*/ _VRM_TRI_A04.set_tribuf_6p(_NETA_TILE_READp, top.RAWU_TILE_DB0.q());
-      /*p25.SEZU*/ _VRM_TRI_A05.set_tribuf_6p(_NETA_TILE_READp, top.POZO_TILE_DB1.q());
-      /*p25.VEJY*/ _VRM_TRI_A06.set_tribuf_6p(_NETA_TILE_READp, top.PYZO_TILE_DB2.q());
-      /*p25.RUSA*/ _VRM_TRI_A07.set_tribuf_6p(_NETA_TILE_READp, top.POXA_TILE_DB3.q());
-      /*p25.ROHA*/ _VRM_TRI_A08.set_tribuf_6p(_NETA_TILE_READp, top.PULO_TILE_DB4.q());
-      /*p25.RESO*/ _VRM_TRI_A09.set_tribuf_6p(_NETA_TILE_READp, top.POJU_TILE_DB5.q());
-      /*p25.SUVO*/ _VRM_TRI_A10.set_tribuf_6p(_NETA_TILE_READp, top.POWY_TILE_DB6.q());
-      /*p25.TOBO*/ _VRM_TRI_A11.set_tribuf_6p(_NETA_TILE_READp, top.PYJU_TILE_DB7.q());
-      /*p25.VURY*/ _VRM_TRI_A12.set_tribuf_6p(_NETA_TILE_READp, _VUZA_TILE_BANKp);
+      /*p25.VAPY*/ _VRM_TRI_A04 = tribuf_6p(_NETA_TILE_READp, top.RAWU_TILE_DB0.q());
+      /*p25.SEZU*/ _VRM_TRI_A05 = tribuf_6p(_NETA_TILE_READp, top.POZO_TILE_DB1.q());
+      /*p25.VEJY*/ _VRM_TRI_A06 = tribuf_6p(_NETA_TILE_READp, top.PYZO_TILE_DB2.q());
+      /*p25.RUSA*/ _VRM_TRI_A07 = tribuf_6p(_NETA_TILE_READp, top.POXA_TILE_DB3.q());
+      /*p25.ROHA*/ _VRM_TRI_A08 = tribuf_6p(_NETA_TILE_READp, top.PULO_TILE_DB4.q());
+      /*p25.RESO*/ _VRM_TRI_A09 = tribuf_6p(_NETA_TILE_READp, top.POJU_TILE_DB5.q());
+      /*p25.SUVO*/ _VRM_TRI_A10 = tribuf_6p(_NETA_TILE_READp, top.POWY_TILE_DB6.q());
+      /*p25.TOBO*/ _VRM_TRI_A11 = tribuf_6p(_NETA_TILE_READp, top.PYJU_TILE_DB7.q());
+      /*p25.VURY*/ _VRM_TRI_A12 = tribuf_6p(_NETA_TILE_READp, _VUZA_TILE_BANKp);
     }
   }
 
@@ -327,14 +327,14 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*p25.ROCY*/ wire _ROCY_CPU_TO_VRMp = and (_REVO_VRAM_RDp, _SAZO_VRAM_RD);
     /*p25.RAHU*/ wire _RAHU_CPU_TO_VRMn = not(_ROCY_CPU_TO_VRMp);
-    /*p25.TEME*/ _VRM_TRI_D0.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D0.q());
-    /*p25.TEWU*/ _VRM_TRI_D1.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D1.q());
-    /*p25.TYGO*/ _VRM_TRI_D2.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D2.q());
-    /*p25.SOTE*/ _VRM_TRI_D3.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D3.q());
-    /*p25.SEKE*/ _VRM_TRI_D4.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D4.q());
-    /*p25.RUJO*/ _VRM_TRI_D5.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D5.q());
-    /*p25.TOFA*/ _VRM_TRI_D6.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D6.q());
-    /*p25.SUZA*/ _VRM_TRI_D7.set_tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D7.q());
+    /*p25.TEME*/ _VRM_TRI_D0 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D0.q());
+    /*p25.TEWU*/ _VRM_TRI_D1 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D1.q());
+    /*p25.TYGO*/ _VRM_TRI_D2 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D2.q());
+    /*p25.SOTE*/ _VRM_TRI_D3 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D3.q());
+    /*p25.SEKE*/ _VRM_TRI_D4 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D4.q());
+    /*p25.RUJO*/ _VRM_TRI_D5 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D5.q());
+    /*p25.TOFA*/ _VRM_TRI_D6 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D6.q());
+    /*p25.SUZA*/ _VRM_TRI_D7 = tribuf_10n(_RAHU_CPU_TO_VRMn, top.cpu_bus.CPU_TRI_D7.q());
   }
 
   // VRAM dtri -> VRAM pin
@@ -414,14 +414,14 @@ void VramBus::tock(SchematicTop& top) {
 
   // VRAM pin -> VRAM tri
   {
-    /*p25.RODY*/ _VRM_TRI_D0.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD0_C);
-    /*p25.REBA*/ _VRM_TRI_D1.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD1_C);
-    /*p25.RYDO*/ _VRM_TRI_D2.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD2_C);
-    /*p25.REMO*/ _VRM_TRI_D3.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD3_C);
-    /*p25.ROCE*/ _VRM_TRI_D4.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD4_C);
-    /*p25.ROPU*/ _VRM_TRI_D5.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD5_C);
-    /*p25.RETA*/ _VRM_TRI_D6.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD6_C);
-    /*p25.RAKU*/ _VRM_TRI_D7.set_tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD7_C);
+    /*p25.RODY*/ _VRM_TRI_D0 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD0_C);
+    /*p25.REBA*/ _VRM_TRI_D1 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD1_C);
+    /*p25.RYDO*/ _VRM_TRI_D2 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD2_C);
+    /*p25.REMO*/ _VRM_TRI_D3 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD3_C);
+    /*p25.ROCE*/ _VRM_TRI_D4 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD4_C);
+    /*p25.ROPU*/ _VRM_TRI_D5 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD5_C);
+    /*p25.RETA*/ _VRM_TRI_D6 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD6_C);
+    /*p25.RAKU*/ _VRM_TRI_D7 = tribuf_6p(_RENA_VRM_TO_CPUp, _VRAM_PIN_MD7_C);
   }
 
   // VRAM tri -> int bus
@@ -438,14 +438,14 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RABO*/ wire _RABO_VBUS_D6 = not(_VRM_TRI_D6.q());
     /*p25.SAME*/ wire _SAME_VBUS_D7 = not(_VRM_TRI_D7.q());
 
-    /*p25.RUGA*/ top.cpu_bus.CPU_TRI_D0.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RERY_VBUS_D0);
-    /*p25.ROTA*/ top.cpu_bus.CPU_TRI_D1.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNA_VBUS_D1);
-    /*p25.RYBU*/ top.cpu_bus.CPU_TRI_D2.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RONA_VBUS_D2);
-    /*p25.RAJU*/ top.cpu_bus.CPU_TRI_D3.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNO_VBUS_D3);
-    /*p25.TYJA*/ top.cpu_bus.CPU_TRI_D4.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _SANA_VBUS_D4);
-    /*p25.REXU*/ top.cpu_bus.CPU_TRI_D5.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RORO_VBUS_D5);
-    /*p25.RUPY*/ top.cpu_bus.CPU_TRI_D6.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _RABO_VBUS_D6);
-    /*p25.TOKU*/ top.cpu_bus.CPU_TRI_D7.set_tribuf_6p(_SEBY_VRM_TO_CPUp, _SAME_VBUS_D7);
+    /*p25.RUGA*/ top.cpu_bus.CPU_TRI_D0 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RERY_VBUS_D0);
+    /*p25.ROTA*/ top.cpu_bus.CPU_TRI_D1 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNA_VBUS_D1);
+    /*p25.RYBU*/ top.cpu_bus.CPU_TRI_D2 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RONA_VBUS_D2);
+    /*p25.RAJU*/ top.cpu_bus.CPU_TRI_D3 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNO_VBUS_D3);
+    /*p25.TYJA*/ top.cpu_bus.CPU_TRI_D4 = tribuf_6p(_SEBY_VRM_TO_CPUp, _SANA_VBUS_D4);
+    /*p25.REXU*/ top.cpu_bus.CPU_TRI_D5 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RORO_VBUS_D5);
+    /*p25.RUPY*/ top.cpu_bus.CPU_TRI_D6 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RABO_VBUS_D6);
+    /*p25.TOKU*/ top.cpu_bus.CPU_TRI_D7 = tribuf_6p(_SEBY_VRM_TO_CPUp, _SAME_VBUS_D7);
   }
 
   // VRAM tri -> tile pix temp

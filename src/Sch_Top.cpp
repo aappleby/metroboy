@@ -257,22 +257,22 @@ if (top.VYPO_GND) bus_out.set_data(
 /*p08.PEVO*/ wire A14_Cn = not(EXT_PIN_A14_C);
 /*p08.RAZA*/ wire A15_Cn = not(EXT_PIN_A15_C);
 
-/*p08.KEJO*/ top.cpu_bus.CPU_PIN_A00.set_tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
-/*p08.BYXE*/ top.cpu_bus.CPU_PIN_A01.set_tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);
-/*p08.AKAN*/ top.cpu_bus.CPU_PIN_A02.set_tribuf_10n(TOVA_MODE_DBG2n, A02_Cn);
-/*p08.ANAR*/ top.cpu_bus.CPU_PIN_A03.set_tribuf_10n(TOVA_MODE_DBG2n, A03_Cn);
-/*p08.AZUV*/ top.cpu_bus.CPU_PIN_A04.set_tribuf_10n(TOVA_MODE_DBG2n, A04_Cn);
-/*p08.AJOV*/ top.cpu_bus.CPU_PIN_A05.set_tribuf_10n(TOVA_MODE_DBG2n, A05_Cn);
-/*p08.BYNE*/ top.cpu_bus.CPU_PIN_A06.set_tribuf_10n(TOVA_MODE_DBG2n, A06_Cn);
-/*p08.BYNA*/ top.cpu_bus.CPU_PIN_A07.set_tribuf_10n(TOVA_MODE_DBG2n, A07_Cn);
-/*p08.LOFA*/ top.cpu_bus.CPU_PIN_A08.set_tribuf_10n(TOVA_MODE_DBG2n, A08_Cn);
-/*p08.MAPU*/ top.cpu_bus.CPU_PIN_A09.set_tribuf_10n(TOVA_MODE_DBG2n, A09_Cn);
-/*p08.RALA*/ top.cpu_bus.CPU_PIN_A10.set_tribuf_10n(TOVA_MODE_DBG2n, A10_Cn);
-/*p08.LORA*/ top.cpu_bus.CPU_PIN_A11.set_tribuf_10n(TOVA_MODE_DBG2n, A11_Cn);
-/*p08.LYNA*/ top.cpu_bus.CPU_PIN_A12.set_tribuf_10n(TOVA_MODE_DBG2n, A12_Cn);
-/*p08.LEFY*/ top.cpu_bus.CPU_PIN_A13.set_tribuf_10n(TOVA_MODE_DBG2n, A13_Cn);
-/*p08.NEFE*/ top.cpu_bus.CPU_PIN_A14.set_tribuf_10n(TOVA_MODE_DBG2n, A14_Cn);
-/*p08.SYZU*/ top.cpu_bus.CPU_PIN_A15.set_tribuf_10n(TOVA_MODE_DBG2n, A15_Cn);
+/*p08.KEJO*/ top.cpu_bus.CPU_PIN_A00 = tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
+/*p08.BYXE*/ top.cpu_bus.CPU_PIN_A01 = tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);
+/*p08.AKAN*/ top.cpu_bus.CPU_PIN_A02 = tribuf_10n(TOVA_MODE_DBG2n, A02_Cn);
+/*p08.ANAR*/ top.cpu_bus.CPU_PIN_A03 = tribuf_10n(TOVA_MODE_DBG2n, A03_Cn);
+/*p08.AZUV*/ top.cpu_bus.CPU_PIN_A04 = tribuf_10n(TOVA_MODE_DBG2n, A04_Cn);
+/*p08.AJOV*/ top.cpu_bus.CPU_PIN_A05 = tribuf_10n(TOVA_MODE_DBG2n, A05_Cn);
+/*p08.BYNE*/ top.cpu_bus.CPU_PIN_A06 = tribuf_10n(TOVA_MODE_DBG2n, A06_Cn);
+/*p08.BYNA*/ top.cpu_bus.CPU_PIN_A07 = tribuf_10n(TOVA_MODE_DBG2n, A07_Cn);
+/*p08.LOFA*/ top.cpu_bus.CPU_PIN_A08 = tribuf_10n(TOVA_MODE_DBG2n, A08_Cn);
+/*p08.MAPU*/ top.cpu_bus.CPU_PIN_A09 = tribuf_10n(TOVA_MODE_DBG2n, A09_Cn);
+/*p08.RALA*/ top.cpu_bus.CPU_PIN_A10 = tribuf_10n(TOVA_MODE_DBG2n, A10_Cn);
+/*p08.LORA*/ top.cpu_bus.CPU_PIN_A11 = tribuf_10n(TOVA_MODE_DBG2n, A11_Cn);
+/*p08.LYNA*/ top.cpu_bus.CPU_PIN_A12 = tribuf_10n(TOVA_MODE_DBG2n, A12_Cn);
+/*p08.LEFY*/ top.cpu_bus.CPU_PIN_A13 = tribuf_10n(TOVA_MODE_DBG2n, A13_Cn);
+/*p08.NEFE*/ top.cpu_bus.CPU_PIN_A14 = tribuf_10n(TOVA_MODE_DBG2n, A14_Cn);
+/*p08.SYZU*/ top.cpu_bus.CPU_PIN_A15 = tribuf_10n(TOVA_MODE_DBG2n, A15_Cn);
 }
 #endif
 

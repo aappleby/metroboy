@@ -125,12 +125,14 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 int GateBoy::main(int /*argc*/, char** /*argv*/) {
   printf("GateBoy sim starting\n");
 
+  /*
   for (int phase_a = 0; phase_a <= 8; phase_a++) 
   for (int phase_b = 1; phase_b <= 8; phase_b++)
   for (int phase_c = 0; phase_c <= 8; phase_c++)
   for (int phase_d = 8; phase_d <= 16; phase_d++)
     test_reset_timing(phase_a, phase_b, phase_c, phase_d);
   return 0;
+  */
 
   GateBoy gateboy;
   gateboy.init();
@@ -186,7 +188,6 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
-  /*
   printf("Running a bunch of phases for perf test\n");
   gateboy.verbose = false;
 
@@ -198,7 +199,6 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   std::chrono::duration<double> elapsed = finish - start;
   printf("Done - %f sec, %f phases/sec\n", elapsed.count(), double(phase_count) / elapsed.count());
   printf("\n");
-  */
 
   /*
   printf("DIV  %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",

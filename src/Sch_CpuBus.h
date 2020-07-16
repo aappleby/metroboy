@@ -139,14 +139,14 @@ struct CpuBus {
   CpuPinIn  CPU_PIN_A14;  // bottom right port PORTB_26: -> A14
   CpuPinIn  CPU_PIN_A15;  // bottom right port PORTB_30: -> A15                               
 
-  Tribuf    CPU_TRI_D0;   // bottom left port: <>
-  Tribuf    CPU_TRI_D1;   // bottom left port: <>
-  Tribuf    CPU_TRI_D2;   // bottom left port: <>
-  Tribuf    CPU_TRI_D3;   // bottom left port: <>
-  Tribuf    CPU_TRI_D4;   // bottom left port: <>
-  Tribuf    CPU_TRI_D5;   // bottom left port: <>
-  Tribuf    CPU_TRI_D6;   // bottom left port: <>
-  Tribuf    CPU_TRI_D7;   // bottom left port: <>
+  Reg    CPU_TRI_D0;   // bottom left port: <>
+  Reg    CPU_TRI_D1;   // bottom left port: <>
+  Reg    CPU_TRI_D2;   // bottom left port: <>
+  Reg    CPU_TRI_D3;   // bottom left port: <>
+  Reg    CPU_TRI_D4;   // bottom left port: <>
+  Reg    CPU_TRI_D5;   // bottom left port: <>
+  Reg    CPU_TRI_D6;   // bottom left port: <>
+  Reg    CPU_TRI_D7;   // bottom left port: <>
 
 private:
 

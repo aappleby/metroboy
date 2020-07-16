@@ -48,24 +48,6 @@ struct CpuPinIn {
 
 //-----------------------------------------------------------------------------
 
-struct ExtPinOut {
-
-  bool get() const   { CHECKn(a.error); return a.val; }
-  void set(wire val) { CHECKp(b.error); b = val; }
-
-  SignalHash commit() {
-    CHECKn(b.error);
-    a = b;
-    b = ERROR;
-    return {a.state};
-  }
-
-  SignalState a = ERROR;
-  SignalState b = ERROR;
-};
-
-//-----------------------------------------------------------------------------
-
 struct CpuPinOut {
 
   bool get() const   { CHECKn(a.error); return a.val; }
@@ -93,64 +75,59 @@ struct CpuPinOut {
 // TRIBUF_05 NC
 // TRIBUF_06
 
-struct Tribuf {
+// top rung tadpole facing second rung dot
+inline SignalState tribuf_6p(wire OEp, SignalState D) {
+  if (D.hiz) __debugbreak();
+  if (D.error) __debugbreak();
 
-  Tribuf() {
-    a = HIZ;
-    b = ERROR;
-  }
+  SignalState c = 0;
+  c.val = D.val;
+  c.set = OEp && D.val;
+  c.rst = OEp && !D.val;
+  c.hiz = !OEp;
+  return c;
+}
 
-  bool q() const {
-    CHECKn(a.error);
-    if (a.hiz)    __debugbreak();
-    return a.val;
-  }
+// top rung tadpole not facing second rung dot
+inline SignalState tribuf_6n(wire OEn, SignalState D) {
+  if (D.hiz) __debugbreak();
+  if (D.error) __debugbreak();
 
-  operator SignalState() const {
-    return a;
-  }
+  SignalState c = 0;
+  c.val = D.val;
+  c.set = !OEn && D.val;
+  c.rst = !OEn && !D.val;
+  c.hiz = OEn;
+  return c;
+}
 
-  void preset_a(SignalFlags f) { a = f; }
-  void preset_a(bool x)        { a = x; }
-  void preset_b(SignalFlags f) { b = f; }
-  void preset_b(bool x)        { b = x; }
+inline SignalState tribuf_10n(wire OEn, SignalState D) {
+  if (D.hiz) __debugbreak();
+  if (D.error) __debugbreak();
 
-  // top rung tadpole facing second rung dot
-  void set_tribuf_6p(wire OEp, SignalState D) {
-    if (!OEp) return;
-    if (D.hiz) __debugbreak();
-    CHECKp(b.error || b.hiz);
-    b = D.q();
-  }
+  SignalState c = 0;
+  c.val = D.val;
+  c.set = !OEn && D.val;
+  c.rst = !OEn && !D.val;
+  c.hiz = OEn;
+  return c;
+}
 
-  // top rung tadpole not facing second rung dot
-  void set_tribuf_6n(wire OEn, SignalState D) {
-    if (OEn) return;
-    if (D.hiz) __debugbreak();
-    if (!b.error && !b.hiz) __debugbreak();
-    b = D.q();
-  }
+//-----------------------------------------------------------------------------
 
-  void set_tribuf_10n(wire OEn, SignalState D) {
-    if (OEn) return;
-    if (D.hiz) __debugbreak();
-    if (!b.error && !b.hiz) __debugbreak();
-    b = D.q();
-  }
+struct ExtPinOut {
+
+  bool get() const   { CHECKn(a.error); return a.val; }
+  void set(wire val) { CHECKp(b.error); b = val; }
 
   SignalHash commit() {
-    CHECKn(a.error);
     CHECKn(b.error);
     a = b;
     b = ERROR;
     return {a.state};
   }
 
-  char as_char() const {
-    return a.as_char();
-  }
-
-  SignalState a = HIZ;
+  SignalState a = 0;
   SignalState b = ERROR;
 };
 
@@ -166,21 +143,13 @@ struct Reg {
   char as_char() const { return a.as_char(); }
 
   void operator = (SignalState c) {
-    CHECKn(a.error);
-    CHECKp(b.error);
-    b = c;
-  }
-
-  void operator = (wire c) {
-    CHECKn(a.error);
-    b.state = 0;
-    b.set = c;
-    b.rst = !c;
+    CHECKp(b.error || c.hiz);
+    if (!c.hiz) b = c;
   }
 
   SignalHash commit() {
-    CHECKn(a.error);
     CHECKn(b.error);
+    CHECKn(b.hiz);
 
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
@@ -199,21 +168,22 @@ struct Reg {
     return {a.state};
   }
 
-  void dbg_set_b(bool val) {
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = val;
-    b.rst = !val;
-    b.error = 0;
-  }
+  void preset_a(SignalFlags f) { a = f; }
+  void preset_a(bool x)        { a = x; }
+  void preset_b(SignalFlags f) { b = f; }
+  void preset_b(bool x)        { b = x; }
 
-  void preset_a(bool D) {
-    a = D;
+  void preset_hiz() {
+    a.val = 0;
+    a.hiz = 1;
+    a.clk = 0;
+    a.set = 0;
+    a.rst = 0;
+    a.error = 0;
   }
 
 protected:
-  SignalState a = SET_0;
+  SignalState a = 0;
   SignalState b = ERROR;
 
   wire get() const {
@@ -629,8 +599,8 @@ inline SignalState tp_latch(wire LATCHp, SignalState D) {
   CHECKn((LATCHp && D.hiz));
   CHECKn(D.error);
   SignalState b = 0;
-  b.set = D.val;
-  b.rst = !D.val;
+  b.set = LATCHp && D.val;
+  b.rst = LATCHp && !D.val;
   return b;
 }
 

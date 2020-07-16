@@ -24,23 +24,23 @@ struct OamBus {
 
 private:
 
-  Tribuf OAM_TRI_DA0;
-  Tribuf OAM_TRI_DA1;
-  Tribuf OAM_TRI_DA2;
-  Tribuf OAM_TRI_DA3;
-  Tribuf OAM_TRI_DA4;
-  Tribuf OAM_TRI_DA5;
-  Tribuf OAM_TRI_DA6;
-  Tribuf OAM_TRI_DA7;
+  Reg OAM_TRI_DA0;
+  Reg OAM_TRI_DA1;
+  Reg OAM_TRI_DA2;
+  Reg OAM_TRI_DA3;
+  Reg OAM_TRI_DA4;
+  Reg OAM_TRI_DA5;
+  Reg OAM_TRI_DA6;
+  Reg OAM_TRI_DA7;
 
-  Tribuf OAM_TRI_DB0;
-  Tribuf OAM_TRI_DB1;
-  Tribuf OAM_TRI_DB2;
-  Tribuf OAM_TRI_DB3;
-  Tribuf OAM_TRI_DB4;
-  Tribuf OAM_TRI_DB5;
-  Tribuf OAM_TRI_DB6;
-  Tribuf OAM_TRI_DB7;
+  Reg OAM_TRI_DB0;
+  Reg OAM_TRI_DB1;
+  Reg OAM_TRI_DB2;
+  Reg OAM_TRI_DB3;
+  Reg OAM_TRI_DB4;
+  Reg OAM_TRI_DB5;
+  Reg OAM_TRI_DB6;
+  Reg OAM_TRI_DB7;
 
   /*p31.XYKY*/ Reg XYKY_LATCH_OAM_DA0;
   /*p31.YRUM*/ Reg YRUM_LATCH_OAM_DA1;
@@ -60,14 +60,14 @@ private:
   /*p29.YSES*/ Reg YSES_LATCH_OAM_DB6;
   /*p29.ZECA*/ Reg ZECA_LATCH_OAM_DB7;
 
-  Tribuf OAM_TRI_A0;
-  Tribuf OAM_TRI_A1;
-  Tribuf OAM_TRI_A2;
-  Tribuf OAM_TRI_A3;
-  Tribuf OAM_TRI_A4;
-  Tribuf OAM_TRI_A5;
-  Tribuf OAM_TRI_A6;
-  Tribuf OAM_TRI_A7;
+  Reg OAM_TRI_A0;
+  Reg OAM_TRI_A1;
+  Reg OAM_TRI_A2;
+  Reg OAM_TRI_A3;
+  Reg OAM_TRI_A4;
+  Reg OAM_TRI_A5;
+  Reg OAM_TRI_A6;
+  Reg OAM_TRI_A7;
 
   CpuPinOut OAM_PIN_CLK;
   CpuPinOut OAM_PIN_OE;

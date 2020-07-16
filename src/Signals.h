@@ -7,17 +7,10 @@
 //-----------------------------------------------------------------------------
 
 enum SignalFlags {
-  SET_0   = 0b00000000,
-  SET_1   = 0b00000001,
-
-  VAL     = 0b00000001,
-  HIZ     = 0b00000010,
-  CLK_HI  = 0b00000100,
-  CLK_LO  = 0b00000000,
-  SET     = 0b00001000,
-  RST     = 0b00010000,
   ERROR   = 0b00100000,
 };
+
+//-----------------------------------------------------------------------------
 
 #pragma warning(disable:4201) // nameless struct/union
 
@@ -32,8 +25,17 @@ union SignalState {
     bool error   : 1;
   };
 
-  SignalState(wire w) : state(w) {}
+  SignalState(wire w) {
+    val = w;
+    hiz = 0;
+    clk = 0;
+    set = w;
+    rst = !w;
+    error = 0;
+  }
+
   SignalState(SignalFlags s) : state(uint8_t(s)) {}
+
   bool operator != (SignalState s) const { return state != s.state; }
 
   bool q() const {
@@ -47,7 +49,7 @@ union SignalState {
   }
 
   SignalState operator!() const {
-    SignalState c = SET_0;
+    SignalState c = 0;
     c.val     = !val;
     c.hiz     = hiz;
     c.clk     = clk;
@@ -151,7 +153,7 @@ struct Signal {
 
   void operator = (wire val) {
     if (!a.error) __debugbreak();
-    a = val ? SET_1 : SET_0;
+    a = val;
   }
 
   SignalHash commit() {

@@ -221,14 +221,14 @@ void ExtBus::tock(SchematicTop& top) {
 
   // Ext latch -> int bus
   {
-    /*p08.RYMA*/ top.cpu_bus.CPU_TRI_D0.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SOMA_EXT_DATA_LATCH_00.q());
-    /*p08.RUVO*/ top.cpu_bus.CPU_TRI_D1.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _RONY_EXT_DATA_LATCH_01.q());
-    /*p08.RYKO*/ top.cpu_bus.CPU_TRI_D2.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _RAXY_EXT_DATA_LATCH_02.q());
-    /*p08.TAVO*/ top.cpu_bus.CPU_TRI_D3.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SELO_EXT_DATA_LATCH_03.q());
-    /*p08.TEPE*/ top.cpu_bus.CPU_TRI_D4.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SODY_EXT_DATA_LATCH_04.q());
-    /*p08.SAFO*/ top.cpu_bus.CPU_TRI_D5.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SAGO_EXT_DATA_LATCH_05.q());
-    /*p08.SEVU*/ top.cpu_bus.CPU_TRI_D6.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _RUPA_EXT_DATA_LATCH_06.q());
-    /*p08.TAJU*/ top.cpu_bus.CPU_TRI_D7.set_tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SAZY_EXT_DATA_LATCH_07.q());
+    /*p08.RYMA*/ top.cpu_bus.CPU_TRI_D0 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SOMA_EXT_DATA_LATCH_00.q());
+    /*p08.RUVO*/ top.cpu_bus.CPU_TRI_D1 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _RONY_EXT_DATA_LATCH_01.q());
+    /*p08.RYKO*/ top.cpu_bus.CPU_TRI_D2 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _RAXY_EXT_DATA_LATCH_02.q());
+    /*p08.TAVO*/ top.cpu_bus.CPU_TRI_D3 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SELO_EXT_DATA_LATCH_03.q());
+    /*p08.TEPE*/ top.cpu_bus.CPU_TRI_D4 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SODY_EXT_DATA_LATCH_04.q());
+    /*p08.SAFO*/ top.cpu_bus.CPU_TRI_D5 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SAGO_EXT_DATA_LATCH_05.q());
+    /*p08.SEVU*/ top.cpu_bus.CPU_TRI_D6 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _RUPA_EXT_DATA_LATCH_06.q());
+    /*p08.TAJU*/ top.cpu_bus.CPU_TRI_D7 = tribuf_6n(top.cpu_bus.LAVO_LATCH_CPU_DATAn(), _SAZY_EXT_DATA_LATCH_07.q());
   }
 }
 

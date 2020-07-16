@@ -130,21 +130,21 @@ struct SchematicTop {
 #if 0
   if (RST) {
     // This can't be run mode, TAPE doesn't affect UKUP
-    ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or(T1, T2), APUK_xxCDEFxx.q());
-    UKUP_DIV_00.set(BOGA_xBCDEFGH, 0, UKUP_DIV_00.qn());
+    ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or(T1, T2), APUK_xxCDEFxx.q());
+    UKUP_DIV_00 = ff9(BOGA_xBCDEFGH, 0, UKUP_DIV_00.qn());
   }
   else {
     if (CLKIN_A) {
       // So this must be run mode, and ADYK must have _negative_ reset
       // RST = 0
       // CLKIN_A = 1
-      ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-      UKUP_DIV_00.set(BOGA_xBCDEFGH, !TAPE, UKUP_DIV_00.qn());  
+      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
+      UKUP_DIV_00 = ff9(BOGA_xBCDEFGH, !TAPE, UKUP_DIV_00.qn());  
     }
     else {
       // This also can't be run mode
-      ADYK_xxxDEFGx.set( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-      UKUP_DIV_00.set(BOGA_xBCDEFGH, 0, UKUP_DIV_00.qn());  
+      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
+      UKUP_DIV_00 = ff9(BOGA_xBCDEFGH, 0, UKUP_DIV_00.qn());  
     }
   }
 #endif

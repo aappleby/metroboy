@@ -28,8 +28,8 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not(_TAKA_SFETCH_RUNNINGp.q());
     
     /*p27.TEKY*/ wire _TEKY_SFETCH_REQp = and (top.sprite_store.FEPO_STORE_MATCHp, _TUKU_WIN_HITn, top.tile_fetcher.LYRY_BFETCH_DONEp(), _SOWO_SFETCH_RUNNINGn);
-    /*p27.SOBU*/ _SOBU_SFETCH_REQp.set(_TAVA_xBxDxFxH, VYPO_GND, _TEKY_SFETCH_REQp);
-    /*p27.SUDA*/ _SUDA_SFETCH_REQp.set(_LAPE_AxCxExGx, VYPO_GND, _SOBU_SFETCH_REQp.q());
+    /*p27.SOBU*/ _SOBU_SFETCH_REQp = ff17(_TAVA_xBxDxFxH, VYPO_GND, _TEKY_SFETCH_REQp);
+    /*p27.SUDA*/ _SUDA_SFETCH_REQp = ff17(_LAPE_AxCxExGx, VYPO_GND, _SOBU_SFETCH_REQp.q());
     /*p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and (_SOBU_SFETCH_REQp.q(),  _SUDA_SFETCH_REQp.qn());
 
     /*p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor(_RYCE_SFETCH_TRIGp, top.clk_reg.ROSY_VID_RSTp(), top.lcd_reg.BYHA_VID_LINE_TRIG_d4()); // def nor
@@ -38,15 +38,15 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
     /*p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand(_TESE_SFETCH_S2.q(), _TOXE_SFETCH_S0.q());
     /*p29.TOMA*/ wire _TOMA_SFETCH_CLK_xBxDxFxH = nand(_LAPE_AxCxExGx, _TAME_SFETCH_CLK_GATE);
-    /*p29.TOXE*/ _TOXE_SFETCH_S0.set(_TOMA_SFETCH_CLK_xBxDxFxH, _SECA_SFETCH_RUNNING_SETn, _TOXE_SFETCH_S0.qn());
-    /*p29.TULY*/ _TULY_SFETCH_S1.set(_TOXE_SFETCH_S0.qn(),      _SECA_SFETCH_RUNNING_SETn, _TULY_SFETCH_S1.qn());
-    /*p29.TESE*/ _TESE_SFETCH_S2.set(_TULY_SFETCH_S1.qn(),      _SECA_SFETCH_RUNNING_SETn, _TESE_SFETCH_S2.qn());
+    /*p29.TOXE*/ _TOXE_SFETCH_S0 = ff17(_TOMA_SFETCH_CLK_xBxDxFxH, _SECA_SFETCH_RUNNING_SETn, _TOXE_SFETCH_S0.qn());
+    /*p29.TULY*/ _TULY_SFETCH_S1 = ff17(_TOXE_SFETCH_S0.qn(),      _SECA_SFETCH_RUNNING_SETn, _TULY_SFETCH_S1.qn());
+    /*p29.TESE*/ _TESE_SFETCH_S2 = ff17(_TULY_SFETCH_S1.qn(),      _SECA_SFETCH_RUNNING_SETn, _TESE_SFETCH_S2.qn());
 
-    /*p29.TYFO*/ _TYFO_SFETCH_S0_D1.set(_LAPE_AxCxExGx, VYPO_GND, _TOXE_SFETCH_S0.q());
+    /*p29.TYFO*/ _TYFO_SFETCH_S0_D1 = ff17(_LAPE_AxCxExGx, VYPO_GND, _TOXE_SFETCH_S0.q());
 
-    /*p29.TOBU*/ _TOBU_SFETCH_S1_D2.set(_TAVA_xBxDxFxH, top.pix_pipe.XYMU_RENDERINGp(), _TULY_SFETCH_S1.q());    // note input is seq 1 not 2
-    /*p29.VONU*/ _VONU_SFETCH_S1_D4.set(_TAVA_xBxDxFxH, top.pix_pipe.XYMU_RENDERINGp(), _TOBU_SFETCH_S1_D2.q());
-    /*p29.SEBA*/ _SEBA_SFETCH_S1_D5.set(_LAPE_AxCxExGx, top.pix_pipe.XYMU_RENDERINGp(), _VONU_SFETCH_S1_D4.q());
+    /*p29.TOBU*/ _TOBU_SFETCH_S1_D2 = ff17(_TAVA_xBxDxFxH, top.pix_pipe.XYMU_RENDERINGp(), _TULY_SFETCH_S1.q());    // note input is seq 1 not 2
+    /*p29.VONU*/ _VONU_SFETCH_S1_D4 = ff17(_TAVA_xBxDxFxH, top.pix_pipe.XYMU_RENDERINGp(), _TOBU_SFETCH_S1_D2.q());
+    /*p29.SEBA*/ _SEBA_SFETCH_S1_D5 = ff17(_LAPE_AxCxExGx, top.pix_pipe.XYMU_RENDERINGp(), _VONU_SFETCH_S1_D4.q());
   }
 }
 

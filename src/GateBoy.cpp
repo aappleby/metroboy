@@ -4,10 +4,133 @@
 
 using namespace Schematics;
 
+#pragma warning(disable:4702)
+
+SignalHash phase(SchematicTop* top, Req req, bool verbose) {
+  SignalHash hash;
+  int pass_count = 0;
+  for (; pass_count < 256; pass_count++) {
+    top->cpu_bus.set_cpu_req(req);
+    top->vram_bus.set_vram_data(0);
+    top->oam_bus.set_oam_data(0, 0);
+    top->ext_bus.set_ext_data(0);
+    top->joypad.set_buttons(0);
+    
+    SignalHash new_hash = top->tick();
+    
+    if (new_hash.h == hash.h) break;
+    hash = new_hash;
+    if (pass_count == 199) printf("stuck!\n");
+    if (pass_count == 200) __debugbreak();
+  }
+
+  if (verbose) {
+    printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
+      top->phase_counter,
+      'A' + (top->phase_counter & 7),
+      pass_count,
+      top->clk_reg.get_clk_a(),
+      top->clk_reg.get_clk_b(),
+      top->clk_reg.SYS_PIN_RSTp(),
+      top->clk_reg.AFUR_ABCDxxxx(),
+      top->clk_reg.ALEF_xBCDExxx(),
+      top->clk_reg.APUK_xxCDEFxx(),
+      top->clk_reg.ADYK_xxxDEFGx(),
+      top->clk_reg.WUVU_xxCDxxGH(),
+      top->clk_reg.VENA_xxxxEFGH(),
+      top->clk_reg.WOSU_xBCxxFGx(),
+      top->clk_reg.BOMA_Axxxxxxx(),
+      top->clk_reg.CPU_PIN_STARTp(),
+      top->clk_reg.CPU_PIN_READYp(),
+      top->tim_reg.get_div(),
+      top->clk_reg.AFER_SYS_RSTp(),
+      top->clk_reg._ASOL_POR_DONEn.q()
+      //hash.h);
+      );
+  }
+
+  return hash;
+}
+
+
+SignalHash run(SchematicTop* top, int phase_count, Req req, bool verbose) {
+  SignalHash hash;
+  for (int i = 0; i < phase_count; i++) {
+    top->phase_counter++;
+    wire CLK = (top->phase_counter & 1) & (top->clk_reg.get_clk_a());
+    top->clk_reg.set_clk_b(CLK);
+    hash = phase(top, req, verbose);
+  }
+  return hash;
+}
+
+//----------------------------------------
+
+//-----------------------------------------------------------------------------
+
+void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
+  SchematicTop* top = new SchematicTop();
+
+  top->clk_reg.set_cpu_ready(0);
+  top->ext_bus.set_ext_rdwr(0, 0);
+
+  top->clk_reg.set_t1t2(0,0);
+
+  SignalHash hash;
+
+  // Just read DIV forever.
+  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
+
+  // 8 phases w/ reset high, clock not running.
+  top->clk_reg.set_rst(1);
+  top->clk_reg.set_clk_a(0);
+  run(top, phase_a, req, false);
+
+  // 8 phases w/ reset high, clock running.
+  top->clk_reg.set_rst(1);
+  top->clk_reg.set_clk_a(1);
+  run(top, phase_b, req, false);
+
+  // 8 phases w/ reset low, clock running.
+  top->clk_reg.set_rst(0);
+  top->clk_reg.set_clk_a(1);
+  run(top, phase_c, req, false);
+
+  // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
+
+  while(!top->clk_reg.CPU_PIN_STARTp()) {
+    run(top, 1, req, false);
+  }
+
+  // Ack the start request and run another 24 phases.
+  // We should see AFER (global reset) clear and the video clocks start up.
+  // FIXME why are the video clocks not running...
+
+  top->clk_reg.set_cpu_ready(1);
+  run(top, phase_d, req, false);
+
+  top->clk_reg.set_cpu_ready(0);
+  if (top->clk_reg.AFER_SYS_RSTp() || top->clk_reg._ASOL_POR_DONEn.q()) {
+    printf("\nX %d %d %d %d\n", phase_a, phase_b, phase_c, phase_d);
+  }
+  else {
+    printf(".");
+  }
+
+  //run(top, 1, req, true);
+}
+
 //-----------------------------------------------------------------------------
 
 int GateBoy::main(int /*argc*/, char** /*argv*/) {
   printf("GateBoy sim starting\n");
+
+  for (int phase_a = 0; phase_a <= 8; phase_a++) 
+  for (int phase_b = 1; phase_b <= 8; phase_b++)
+  for (int phase_c = 0; phase_c <= 8; phase_c++)
+  for (int phase_d = 8; phase_d <= 16; phase_d++)
+    test_reset_timing(phase_a, phase_b, phase_c, phase_d);
+  return 0;
 
   GateBoy gateboy;
   gateboy.init();

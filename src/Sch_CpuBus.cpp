@@ -72,7 +72,7 @@ CpuBus::CpuBus() {
 
 void CpuBus::tock(const SchematicTop& top) {
 
-  /*p04.MAKA*/ _MAKA_FROM_CPU5_SYNC.set(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.CUNU_SYS_RSTn(), _CPU_PIN5);
+  /*p04.MAKA*/ _MAKA_FROM_CPU5_SYNC = ff17(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.CUNU_SYS_RSTn(), _CPU_PIN5);
 
   _CPU_PIN_ADDR_HI.set(SYRO_FE00_FFFFp());
   _CPU_PIN_BOOTp.set(top.TUTU_ADDR_BOOTp());

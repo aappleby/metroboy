@@ -201,6 +201,12 @@ struct RegisterBase {
   bool qn() const { return !get(); }
   char as_char() const { return a.as_char(); }
 
+  void operator = (SignalState c) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b = c;
+  }
+
 protected:
   SignalState a = SET_0;
   SignalState b = ERROR;
@@ -247,15 +253,20 @@ static_assert(sizeof(RegisterBase) == 2, "RegisterBase size != 2");
 // REG8_07 >> Q
 // REG8_08 >> Qn
 
+inline SignalState ff8(wire CLKp, wire CLKn, bool val) {
+  if (CLKp == CLKn) __debugbreak();
+  SignalState b = 0;
+  b.val = val;
+  b.clk = CLKn;
+  return b;
+}
+
 struct Reg8 : public RegisterBase {
 
-  void set(wire CLKp, wire CLKn, bool val) {
-    if (CLKp == CLKn) __debugbreak();
+  void operator = (SignalState c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = val;
-    b.clk = CLKn;
-    b.error = 0;
+    b = c;
   }
 
   SignalHash commit() {
@@ -310,21 +321,25 @@ struct Reg8 : public RegisterBase {
 // XEPE_08 >> ZOGY_02  (q)
 // XEPE_09 >> nc
 
+inline SignalState ff9(wire CLKp, wire CLKn, wire RSTn, bool D) {
+  if (CLKp == CLKn) __debugbreak();
+  SignalState b = 0;
+  b.val = D;
+  b.clk = CLKp;
+  b.rst = !RSTn;
+  return b;
+}
+
 struct Reg9 : public RegisterBase {
 
   void preset(bool D) {
     a.val = D ? SET_1 : SET_0;
   }
 
-  void set(wire CLKp, wire CLKn, wire RSTn, bool D) {
-    if (CLKp == CLKn) __debugbreak();
+  void operator = (SignalState c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-
-    b.val = D;
-    b.clk = CLKp;
-    b.rst = !RSTn;
-    b.error = 0;
+    b = c;
   }
 
   SignalHash commit() {
@@ -379,18 +394,21 @@ struct Reg9 : public RegisterBase {
 /*p32.POWY*/
 /*p32.PYJU*/
 
+inline SignalState ff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
+  if (CLKp == CLKn) __debugbreak();
+  SignalState b = 0;
+  b.val = D;
+  b.clk = CLKp;
+  b.rst = RSTp;
+  return b;
+}
+
 struct Reg11 : public RegisterBase {
 
-  void set(wire CLKp, wire CLKn, wire RSTp, wire D) {
-    if (CLKp == CLKn) __debugbreak();
+  void operator = (SignalState c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = D;
-    b.hiz = 0;
-    b.clk = CLKp;
-    b.set = 0;
-    b.rst = RSTp;
-    b.error = 0;
+    b = c;
   }
 
   SignalHash commit() {
@@ -471,20 +489,22 @@ struct Reg11 : public RegisterBase {
 // XADU_12 >> WUZY_04 (Qn)
 // XADU_13 >> nc      (Q)
 
+// Almost definitely RSTn - see UPOJ/AFER on boot
+inline SignalState ff13(wire CLKp, wire CLKn, wire RSTn, bool D) {
+  if (CLKp == CLKn) __debugbreak();
+  SignalState b = 0;
+  b.val = D;
+  b.clk = CLKp;
+  b.rst = !RSTn;
+  return b;
+}
+
 struct Reg13 : public RegisterBase {
 
-  // Almost definitely RSTn - see UPOJ/AFER on boot
-
-  void set(wire CLKp, wire CLKn, wire RSTn, bool D) {
-    if (CLKp == CLKn) __debugbreak();
+  void operator = (SignalState c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = D;
-    b.hiz = 0;
-    b.clk = CLKp;
-    b.set = 0;
-    b.rst = !RSTn;
-    b.error = 0;
+    b = c;
   }
 
   SignalHash commit() {
@@ -533,27 +553,26 @@ struct Reg13 : public RegisterBase {
 // REG17_16 >> QN   _MUST_ be QN - see TERO
 // REG17_17 >> Q    _MUST_ be Q  - see TERO
 
+// must be RSTn, see WUVU/VENA/WOSU
+inline SignalState ff17(wire CLKp, wire RSTn, SignalState D) {
+  if (D.error) __debugbreak();
+  if (D.hiz) __debugbreak();
+
+  SignalState b = 0;
+  b.val = D.val;
+  b.clk = CLKp;
+  b.rst = !RSTn;
+  return b;
+}
+
 struct Reg17 : public RegisterBase {
 
-  // must be RSTn, see WUVU/VENA/WOSU
-
-  void set(wire CLKp, wire RSTn, SignalState D) {
+  void operator = (SignalState c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = D.val;
-    b.hiz = 0;
-    b.clk = CLKp;
-    b.set = 0;
-    b.rst = !RSTn;
-
-    if (!a.clk && b.clk) {
-      if (D.error) __debugbreak();
-      //if (D.hiz) __debugbreak();
-      //if (D.hiz) printf("hiz");
-    }
-
-    b.error = 0;
+    b = c;
   }
+
 
   SignalHash commit() {
     if (a.error) __debugbreak();

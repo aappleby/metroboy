@@ -21,10 +21,10 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
-    /*p01.AFUR*/ _AFUR_ABCDxxxx.set(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(), !ADYK_xxxxEFGH_);
-    /*p01.ALEF*/ _ALEF_xBCDExxx.set( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  AFUR_xBCDExxx_);
-    /*p01.APUK*/ _APUK_xxCDEFxx.set(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  ALEF_xxCDEFxx_);
-    /*p01.ADYK*/ _ADYK_xxxDEFGx.set( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  APUK_xxxDEFGx_);
+    /*p01.AFUR*/ _AFUR_ABCDxxxx = ff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(), !ADYK_xxxxEFGH_);
+    /*p01.ALEF*/ _ALEF_xBCDExxx = ff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  AFUR_xBCDExxx_);
+    /*p01.APUK*/ _APUK_xxCDEFxx = ff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  ALEF_xxCDEFxx_);
+    /*p01.ADYK*/ _ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  APUK_xxxDEFGx_);
   }
 
   {
@@ -35,9 +35,9 @@ void ClockRegisters::tock(const SchematicTop& top) {
     wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
     wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
 
-    /*p29.WUVU*/ _WUVU_xxCDxxGH.set( _XOTA_AxCxExGx, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-    /*p21.VENA*/ _VENA_xxxxEFGH.set(!WUVU_xxCDxxGH_, top.clk_reg.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-    /*p29.WOSU*/ _WOSU_xBCxxFGx.set( _XYFY_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17( _XOTA_AxCxExGx, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p21.VENA*/ _VENA_xxxxEFGH = ff17(!WUVU_xxCDxxGH_, top.clk_reg.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
+    /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17( _XYFY_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
   }
 
   {
@@ -99,14 +99,14 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
   wire boga = top.clk_reg.BOGA_xBCDEFGH();
 
-  /*p01.AFER*/ _AFER_SYS_RSTp.set(boga, top.clk_reg.BOMA_Axxxxxxx(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
+  /*p01.AFER*/ _AFER_SYS_RSTp = ff13(boga, top.clk_reg.BOMA_Axxxxxxx(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
 
   _CPU_PIN_STARTp.set(_TABA_POR_TRIGn);
   _CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp());
   _CPU_PIN_EXT_RST.set(_SYS_PIN_RSTp);
 
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
-  /*p25.SOTO*/ SOTO_DBG.set(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());
+  /*p25.SOTO*/ SOTO_DBG = ff17(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());
 
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);
   //cpu_pins.UNOR_MODE_DBG2.set(dbg_sig.UNOR_MODE_DBG2n);

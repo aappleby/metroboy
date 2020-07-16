@@ -81,14 +81,14 @@ extern const char* cb_strings[256] = {
   "res 6, b", "res 6, c", "res 6, d", "res 6, e", "res 6, h", "res 6, l", "res 6, (hl)", "res 6, a",
   "res 7, b", "res 7, c", "res 7, d", "res 7, e", "res 7, h", "res 7, l", "res 7, (hl)", "res 7, a",
 
-  "set 0, b", "set 0, c", "set 0, d", "set 0, e", "set 0, h", "set 0, l", "set 0, (hl)", "set 0, a",
-  "set 1, b", "set 1, c", "set 1, d", "set 1, e", "set 1, h", "set 1, l", "set 1, (hl)", "set 1, a",
-  "set 2, b", "set 2, c", "set 2, d", "set 2, e", "set 2, h", "set 2, l", "set 2, (hl)", "set 2, a",
-  "set 3, b", "set 3, c", "set 3, d", "set 3, e", "set 3, h", "set 3, l", "set 3, (hl)", "set 3, a",
-  "set 4, b", "set 4, c", "set 4, d", "set 4, e", "set 4, h", "set 4, l", "set 4, (hl)", "set 4, a",
-  "set 5, b", "set 5, c", "set 5, d", "set 5, e", "set 5, h", "set 5, l", "set 5, (hl)", "set 5, a",
-  "set 6, b", "set 6, c", "set 6, d", "set 6, e", "set 6, h", "set 6, l", "set 6, (hl)", "set 6, a",
-  "set 7, b", "set 7, c", "set 7, d", "set 7, e", "set 7, h", "set 7, l", "set 7, (hl)", "set 7, a",
+  "set_ff9 0, b", "set_ff9 0, c", "set_ff9 0, d", "set_ff9 0, e", "set_ff9 0, h", "set_ff9 0, l", "set_ff9 0, (hl)", "set_ff9 0, a",
+  "set_ff9 1, b", "set_ff9 1, c", "set_ff9 1, d", "set_ff9 1, e", "set_ff9 1, h", "set_ff9 1, l", "set_ff9 1, (hl)", "set_ff9 1, a",
+  "set_ff9 2, b", "set_ff9 2, c", "set_ff9 2, d", "set_ff9 2, e", "set_ff9 2, h", "set_ff9 2, l", "set_ff9 2, (hl)", "set_ff9 2, a",
+  "set_ff9 3, b", "set_ff9 3, c", "set_ff9 3, d", "set_ff9 3, e", "set_ff9 3, h", "set_ff9 3, l", "set_ff9 3, (hl)", "set_ff9 3, a",
+  "set_ff9 4, b", "set_ff9 4, c", "set_ff9 4, d", "set_ff9 4, e", "set_ff9 4, h", "set_ff9 4, l", "set_ff9 4, (hl)", "set_ff9 4, a",
+  "set_ff9 5, b", "set_ff9 5, c", "set_ff9 5, d", "set_ff9 5, e", "set_ff9 5, h", "set_ff9 5, l", "set_ff9 5, (hl)", "set_ff9 5, a",
+  "set_ff9 6, b", "set_ff9 6, c", "set_ff9 6, d", "set_ff9 6, e", "set_ff9 6, h", "set_ff9 6, l", "set_ff9 6, (hl)", "set_ff9 6, a",
+  "set_ff9 7, b", "set_ff9 7, c", "set_ff9 7, d", "set_ff9 7, e", "set_ff9 7, h", "set_ff9 7, l", "set_ff9 7, (hl)", "set_ff9 7, a",
 };
 
 extern const int op_sizes[256] = {

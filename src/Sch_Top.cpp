@@ -222,13 +222,13 @@ if (top.VYPO_GND) bus_out.set_data(
 
   /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
-  /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D0);
-  /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D1);
+  /*p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D0);
+  /*p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D1);
 
   ///*p05.KURA*/ wire FF60_0n = not(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not(FF60);
-  /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D0);
-  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D1);
+  /*p07.BURO*/ dbg_reg.BURO_FF60_0 = ff9(1, rst_sig.ALUR_RSTn, CPU_TRI_D0);
+  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1 = ff9(1, rst_sig.ALUR_RSTn, CPU_TRI_D1);
 }
 #endif
 

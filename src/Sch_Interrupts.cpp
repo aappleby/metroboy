@@ -117,11 +117,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.UBUL*/ UBUL_FF0F_3 = ff22(top.ser_reg.CALY_INT_SERIALp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_GND);
     /*p02.ULAK*/ ULAK_FF0F_4 = ff22(top.joypad.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_GND);
 
-    CPU_PIN_INT_VBLANK.set(LOPE_FF0F_0.q());
-    CPU_PIN_INT_STAT  .set(LALU_FF0F_1.q());
-    CPU_PIN_INT_TIMER .set(NYBO_FF0F_2.q());
-    CPU_PIN_INT_SERIAL.set(UBUL_FF0F_3.q());
-    CPU_PIN_INT_JOYPAD.set(ULAK_FF0F_4.q());
+    CPU_PIN_INT_VBLANK = SignalState::from_wire(LOPE_FF0F_0.q());
+    CPU_PIN_INT_STAT   = SignalState::from_wire(LALU_FF0F_1.q());
+    CPU_PIN_INT_TIMER  = SignalState::from_wire(NYBO_FF0F_2.q());
+    CPU_PIN_INT_SERIAL = SignalState::from_wire(UBUL_FF0F_3.q());
+    CPU_PIN_INT_JOYPAD = SignalState::from_wire(ULAK_FF0F_4.q());
   }
 }
 

@@ -25,9 +25,12 @@ union SignalState {
     bool rst     : 1;
     bool error   : 1;
     bool pad1    : 1;
-    bool pad2    : 1;
+    bool dirty   : 1;
   };
 
+  SignalState() {}
+
+  /*
   SignalState(wire w) {
     val = w;
     hiz = 0;
@@ -35,24 +38,46 @@ union SignalState {
     set = w;
     rst = !w;
     error = 0;
+    pad1 = 0;
+    dirty = 0;
+  }
+  */
+
+  static SignalState from_wire(wire w) {
+    SignalState c;
+    c.val = w;
+    c.hiz = 0;
+    c.clk = 0;
+    c.set = w;
+    c.rst = !w;
+    c.error = 0;
+    c.pad1 = 0;
+    c.dirty = 0;
+    return c;
   }
 
-  SignalState(SignalFlags s) : state(uint8_t(s)) {}
+  static SignalState from_flag(SignalFlags f) {
+    SignalState c;
+    c.state = uint8_t(f);
+    return c;
+  }
+
+  //SignalState(SignalFlags s) : state(uint8_t(s)) {}
 
   bool operator != (SignalState s) const { return state != s.state; }
 
   bool q() const {
-    if (hiz || error) __debugbreak();
+    CHECKn(hiz || error);
     return val;
   }
 
   bool qn() const {
-    if (hiz || error) __debugbreak();
+    CHECKn(hiz || error);
     return !val;
   }
 
   SignalState operator!() const {
-    SignalState c = 0;
+    SignalState c;
     c.val     = !val;
     c.hiz     = hiz;
     c.clk     = clk;
@@ -72,19 +97,19 @@ union SignalState {
 
 static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
 
-inline int pack(SignalState a, SignalState b, SignalState c, SignalState d) {
-  return (a.q() << 0) | (b.q() << 1) | (c.q() << 2) | (d.q() << 3);
+inline int pack(wire a, wire b, wire c, wire d) {
+  return (a << 0) | (b << 1) | (c << 2) | (d << 3);
 }
 
-inline int pack(SignalState a, SignalState b, SignalState c, SignalState d,
-                SignalState e, SignalState f, SignalState g, SignalState h) {
+inline int pack(wire a, wire b, wire c, wire d,
+                wire e, wire f, wire g, wire h) {
   return (pack(a, b, c, d) << 0) | (pack(e, f, g, h) << 4);
 }
 
-inline int pack(SignalState a, SignalState b, SignalState c, SignalState d,
-                SignalState e, SignalState f, SignalState g, SignalState h,
-                SignalState i, SignalState j, SignalState k, SignalState l,
-                SignalState m, SignalState n, SignalState o, SignalState p) {
+inline int pack(wire a, wire b, wire c, wire d,
+                wire e, wire f, wire g, wire h,
+                wire i, wire j, wire k, wire l,
+                wire m, wire n, wire o, wire p) {
   return (pack(a, b, c, d, e, f, g, h) << 0) | (pack(i, j, k, l, m, n, o, p) << 8);
 }
 
@@ -92,22 +117,31 @@ inline int pack(SignalState a, SignalState b, SignalState c, SignalState d,
 
 // Six-rung mux cells are _non_inverting_. c = 1 selects input _ZERO_
 inline const wire mux2_p(SignalState a, SignalState b, SignalState c) {
-  if (c.error)  __debugbreak();
-  if (c.hiz)    __debugbreak();
+  CHECKn(c.error);
+  CHECKn(c.hiz);
   SignalState m = c.val ? a : b;
-  if (m.error)  __debugbreak();
-  if (m.hiz)    __debugbreak();
+  CHECKn(m.error);
+  CHECKn(m.hiz);
   return m.val;
 }
 
+inline const wire mux2_p(wire a, wire b, wire c) {
+  return c ? a : b;
+}
+
+
 // Five-rung mux cells are _inverting_. c = 1 selects input _ZERO_
 inline const wire mux2_n(SignalState a, SignalState b, SignalState c) {
-  if (c.error)  __debugbreak();
-  if (c.hiz)    __debugbreak();
+  CHECKn(c.error);
+  CHECKn(c.hiz);
   SignalState m = c.val ? a : b;
-  if (m.error)  __debugbreak();
-  if (m.hiz)    __debugbreak();
+  CHECKn(m.error);
+  CHECKn(m.hiz);
   return !m.val;
+}
+
+inline const wire mux2_n(wire a, wire b, wire c) {
+  return c ? !a : !b;
 }
 
 inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
@@ -131,10 +165,16 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 struct SignalHash {
 
-  __forceinline void operator << (SignalHash h2) {
+  __forceinline void operator << (uint8_t h2) {
+    h ^= h2;
+    h *= 0xff51afd7ed558ccd;
+    h = _byteswap_uint64(h);
+  }
 
-    h = _byteswap_uint64((h ^ h2.h) * 0xff51afd7ed558ccd);
-    //printf("hash 0x%016llx\n", h);
+  __forceinline void operator << (SignalHash h2) {
+    h ^= h2.h;
+    h *= 0xff51afd7ed558ccd;
+    h = _byteswap_uint64(h);
   }
 
   uint64_t h = 0x12345678;
@@ -144,29 +184,29 @@ struct SignalHash {
 
 struct Signal {
 
-  Signal() : a(ERROR) {}
+  Signal() : a(SignalState::from_flag(ERROR)) {}
 
   operator wire() const {
-    if (a.error) __debugbreak();
+    CHECKn(a.error);
     return a.val;
   }
 
   operator SignalState() const {
-    if (a.error) __debugbreak();
+    CHECKn(a.error);
     return a;
   }
 
   void operator = (wire val) {
-    if (!a.error) __debugbreak();
-    a = val;
+    CHECKp(a.error);
+    a = SignalState::from_wire(val);
   }
 
   SignalHash commit() {
     auto old_a = a;
-    a = ERROR;
+    a = SignalState::from_flag(ERROR);
     return {old_a.state};
   }
 
 private:
-  SignalState a = ERROR;
+  SignalState a = SignalState::from_flag(ERROR);
 };

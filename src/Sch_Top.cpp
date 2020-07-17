@@ -7,11 +7,11 @@ using namespace Schematics;
 SchematicTop::SchematicTop() {
   // HACK preset these so we don't read hiz
 
-  int_reg.CPU_PIN_ACK_JOYPAD.set(0);
-  int_reg.CPU_PIN_ACK_SERIAL.set(0);
-  int_reg.CPU_PIN_ACK_STAT.set(0);
-  int_reg.CPU_PIN_ACK_TIMER.set(0);
-  int_reg.CPU_PIN_ACK_VBLANK.set(0);
+  int_reg.CPU_PIN_ACK_JOYPAD.set_pin_in(0);
+  int_reg.CPU_PIN_ACK_SERIAL.set_pin_in(0);
+  int_reg.CPU_PIN_ACK_STAT.set_pin_in(0);
+  int_reg.CPU_PIN_ACK_TIMER.set_pin_in(0);
+  int_reg.CPU_PIN_ACK_VBLANK.set_pin_in(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -232,8 +232,6 @@ if (top.VYPO_GND) bus_out.set_data(
 
   ///*p05.KURA*/ wire FF60_0n = not(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not(FF60);
-  /*p07.BURO*/ dbg_reg.BURO_FF60_0 = ff9(1, rst_sig.ALUR_RSTn, CPU_TRI_D0);
-  /*p07.AMUT*/ dbg_reg.AMUT_FF60_1 = ff9(1, rst_sig.ALUR_RSTn, CPU_TRI_D1);
 }
 #endif
 

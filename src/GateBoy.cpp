@@ -21,7 +21,7 @@ SignalHash phase(SchematicTop* top, Req req, bool verbose) {
     if (new_hash.h == hash.h) break;
     hash = new_hash;
     if (pass_count == 199) printf("stuck!\n");
-    if (pass_count == 200) __debugbreak();
+    CHECKn(pass_count == 200);
   }
 
   if (verbose) {
@@ -188,16 +188,33 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
-  printf("Running a bunch of phases for perf test\n");
-  gateboy.verbose = false;
+  const int iter_count = 8;
+  const int phase_count = 1024;
+  double sum1 = 0;
+  double sum2 = 0;
 
-  const int phase_count = 31415;
-  auto start = std::chrono::high_resolution_clock::now();
-  gateboy.run(top, phase_count, req);
-  auto finish = std::chrono::high_resolution_clock::now();
+  printf("Running perf test");
+  for (int iter = 0; iter < iter_count; iter++) {
+    gateboy.verbose = false;
 
-  std::chrono::duration<double> elapsed = finish - start;
-  printf("Done - %f sec, %f phases/sec\n", elapsed.count(), double(phase_count) / elapsed.count());
+    auto start = std::chrono::high_resolution_clock::now();
+    gateboy.run(top, phase_count, req);
+    auto finish = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> elapsed = finish - start;
+    double time = elapsed.count();
+    double rate = double(phase_count) / time;
+    sum1 += rate;
+    sum2 += rate*rate;
+    //printf("Done - %f sec, %f phases/sec\n", time, rate);
+    printf(".");
+  }
+  printf("\n");
+
+  double mean = sum1 / iter_count;
+  double variance = (sum2 / iter_count) - (mean * mean);
+  double sigma = sqrt(variance);
+  printf("Done, mean phase/sec %f sigma %f\n", mean, sigma);
   printf("Commit hash   %016llx\n", top->commit_hash.h);
   printf("Combined hash %016llx\n", top->combined_hash.h);
 
@@ -269,7 +286,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
     if (new_hash.h == hash.h) break;
     hash = new_hash;
     if (pass_count == 199) printf("stuck!\n");
-    if (pass_count == 200) __debugbreak();
+    CHECKn(pass_count == 200);
   }
 
   if (verbose) {

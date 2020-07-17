@@ -5,8 +5,8 @@
 using namespace Schematics;
 
 SerialRegisters::SerialRegisters() {
-  SIN_C.set(0);
-  SCK_C.set(0);
+  SIN_C.set_pin_in(0);
+  SCK_C.set_pin_in(0);
 }
 
 //------------------------------------------------------------------------------
@@ -95,10 +95,10 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.ELYS*/ _SER_OUT = ff17(_EDYL_SER_CLK, top.clk_reg.ALUR_SYS_RSTn(), _SER_DATA7.q());
 
   ///*p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
-  /*p05.KENA*/ SOUT.set_pin_out(_SER_OUT.q());
-  /*p06.KEXU*/ SCK_A.set_pin_out(nand(_SER_CLK.q(), _XFER_DIR.q()));
-  SCK_B.set_pin_out(_XFER_DIR.q());
-  /*p06.KUJO*/ SCK_D.set_pin_out(nor(_SER_CLK.q(), /*p06.JAGO*/ not(_XFER_DIR.q())));
+  /*p05.KENA*/ SOUT = SignalState::from_wire(_SER_OUT.q());
+  /*p06.KEXU*/ SCK_A = SignalState::from_wire(nand(_SER_CLK.q(), _XFER_DIR.q()));
+  SCK_B = SignalState::from_wire(_XFER_DIR.q());
+  /*p06.KUJO*/ SCK_D = SignalState::from_wire(nor(_SER_CLK.q(), /*p06.JAGO*/ not(_XFER_DIR.q())));
 
   /*p06.CUGY*/ cpu_bus.CPU_TRI_D0 = tribuf_6p(_FF01_RD, _SER_DATA0.q());
   /*p06.DUDE*/ cpu_bus.CPU_TRI_D1 = tribuf_6p(_FF01_RD, _SER_DATA1.q());

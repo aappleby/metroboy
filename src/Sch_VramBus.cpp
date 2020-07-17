@@ -28,18 +28,18 @@ VramBus::VramBus(){
   _VRM_TRI_D6.preset_a(0);
   _VRM_TRI_D7.preset_a(0);
   
-  _VRAM_PIN_MCSn_C.set(0);
-  _VRAM_PIN_MOEn_C.set(0);
-  _VRAM_PIN_MWRn_C.set(0);
+  _VRAM_PIN_MCSn_C.set_pin_in(0);
+  _VRAM_PIN_MOEn_C.set_pin_in(0);
+  _VRAM_PIN_MWRn_C.set_pin_in(0);
   
-  _VRAM_PIN_MD0_C.set(0);
-  _VRAM_PIN_MD1_C.set(0);
-  _VRAM_PIN_MD2_C.set(0);
-  _VRAM_PIN_MD3_C.set(0);
-  _VRAM_PIN_MD4_C.set(0);
-  _VRAM_PIN_MD5_C.set(0);
-  _VRAM_PIN_MD6_C.set(0);
-  _VRAM_PIN_MD7_C.set(0);
+  _VRAM_PIN_MD0_C.set_pin_in(0);
+  _VRAM_PIN_MD1_C.set_pin_in(0);
+  _VRAM_PIN_MD2_C.set_pin_in(0);
+  _VRAM_PIN_MD3_C.set_pin_in(0);
+  _VRAM_PIN_MD4_C.set_pin_in(0);
+  _VRAM_PIN_MD5_C.set_pin_in(0);
+  _VRAM_PIN_MD6_C.set_pin_in(0);
+  _VRAM_PIN_MD7_C.set_pin_in(0);
 }
 
 //------------------------------------------------------------------------------
@@ -72,8 +72,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SOFY*/ wire _SOFY_MWRn_D = or (_SOHY_MWRn, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SYSY*/ wire _SYSY_MWRp_A = not(_TAXY_MWRn_A);
     /*p25.RAGU*/ wire _RAGU_MWRp_D = not(_SOFY_MWRn_D);
-    _VRAM_PIN_MWRn_A.set_pin_out(_SYSY_MWRp_A);
-    _VRAM_PIN_MWRn_D.set_pin_out(_RAGU_MWRp_D);
+    _VRAM_PIN_MWRn_A = SignalState::from_wire(_SYSY_MWRp_A);
+    _VRAM_PIN_MWRn_D = SignalState::from_wire(_RAGU_MWRp_D);
   }
 
 
@@ -88,8 +88,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or (_RACU_MOEn, top.clk_reg.TUTO_DBG_VRAMp()); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire _REFO_MOEn_A = not(_SEMA_MOEn_A);
     /*p25.SAHA*/ wire _SAHA_MOEn_D = not(_RUTE_MOEn_D);
-    _VRAM_PIN_MOEn_A.set_pin_out(_REFO_MOEn_A);
-    _VRAM_PIN_MOEn_D.set_pin_out(_SAHA_MOEn_D);
+    _VRAM_PIN_MOEn_A = SignalState::from_wire(_REFO_MOEn_A);
+    _VRAM_PIN_MOEn_D = SignalState::from_wire(_SAHA_MOEn_D);
   }
 
   {
@@ -104,8 +104,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SEWO*/ wire _SEWO_MCSn_D = or (_SUTU_MCSn, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SOKY*/ wire _SOKY_MCSp_A = not(_TODE_MCSn_A);
     /*p25.SETY*/ wire _SETY_MCSp_D = not(_SEWO_MCSn_D);
-    _VRAM_PIN_MCSn_A.set_pin_out(_SOKY_MCSp_A);
-    _VRAM_PIN_MCSn_D.set_pin_out(_SETY_MCSp_D);
+    _VRAM_PIN_MCSn_A = SignalState::from_wire(_SOKY_MCSp_A);
+    _VRAM_PIN_MCSn_D = SignalState::from_wire(_SETY_MCSp_D);
   }
 
   //----------------------------------------
@@ -305,19 +305,19 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUMA*/ wire _RUMA = not(_VRM_TRI_A11.q());
     /*p25.REHO*/ wire _REHO = not(_VRM_TRI_A12.q());
 
-    /*p25.LEXE*/ _VRAM_PIN_MA00_AD.set_pin_out(_MYFU);
-    /*p25.LOZU*/ _VRAM_PIN_MA01_AD.set_pin_out(_MASA);
-    /*p25.LACA*/ _VRAM_PIN_MA02_AD.set_pin_out(_MYRE);
-    /*p25.LUVO*/ _VRAM_PIN_MA03_AD.set_pin_out(_MAVU);
-    /*p25.LOLY*/ _VRAM_PIN_MA04_AD.set_pin_out(_MEPA);
-    /*p25.LALO*/ _VRAM_PIN_MA05_AD.set_pin_out(_MYSA);
-    /*p25.LEFA*/ _VRAM_PIN_MA06_AD.set_pin_out(_MEWY);
-    /*p25.LUBY*/ _VRAM_PIN_MA07_AD.set_pin_out(_MUME);
-    /*p25.TUJY*/ _VRAM_PIN_MA08_AD.set_pin_out(_VOVA);
-    /*p25.TAGO*/ _VRAM_PIN_MA09_AD.set_pin_out(_VODE);
-    /*p25.NUVA*/ _VRAM_PIN_MA10_AD.set_pin_out(_RUKY);
-    /*p25.PEDU*/ _VRAM_PIN_MA11_AD.set_pin_out(_RUMA);
-    /*p25.PONY*/ _VRAM_PIN_MA12_AD.set_pin_out(_REHO);
+    /*p25.LEXE*/ _VRAM_PIN_MA00_AD = SignalState::from_wire(_MYFU);
+    /*p25.LOZU*/ _VRAM_PIN_MA01_AD = SignalState::from_wire(_MASA);
+    /*p25.LACA*/ _VRAM_PIN_MA02_AD = SignalState::from_wire(_MYRE);
+    /*p25.LUVO*/ _VRAM_PIN_MA03_AD = SignalState::from_wire(_MAVU);
+    /*p25.LOLY*/ _VRAM_PIN_MA04_AD = SignalState::from_wire(_MEPA);
+    /*p25.LALO*/ _VRAM_PIN_MA05_AD = SignalState::from_wire(_MYSA);
+    /*p25.LEFA*/ _VRAM_PIN_MA06_AD = SignalState::from_wire(_MEWY);
+    /*p25.LUBY*/ _VRAM_PIN_MA07_AD = SignalState::from_wire(_MUME);
+    /*p25.TUJY*/ _VRAM_PIN_MA08_AD = SignalState::from_wire(_VOVA);
+    /*p25.TAGO*/ _VRAM_PIN_MA09_AD = SignalState::from_wire(_VODE);
+    /*p25.NUVA*/ _VRAM_PIN_MA10_AD = SignalState::from_wire(_RUKY);
+    /*p25.PEDU*/ _VRAM_PIN_MA11_AD = SignalState::from_wire(_RUMA);
+    /*p25.PONY*/ _VRAM_PIN_MA12_AD = SignalState::from_wire(_REHO);
   }
 
   //----------------------------------------
@@ -362,24 +362,24 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.REKU*/ wire _REKU = not(_SAMO);
     /*p25.RYZE*/ wire _RYZE = not(_SUKE);
 
-    _VRAM_PIN_MD0_A.set_pin_out(_REGE);
-    _VRAM_PIN_MD1_A.set_pin_out(_RYKY);
-    _VRAM_PIN_MD2_A.set_pin_out(_RAZO);
-    _VRAM_PIN_MD3_A.set_pin_out(_RADA);
-    _VRAM_PIN_MD4_A.set_pin_out(_RYRO);
-    _VRAM_PIN_MD5_A.set_pin_out(_REVU);
-    _VRAM_PIN_MD6_A.set_pin_out(_REKU);
-    _VRAM_PIN_MD7_A.set_pin_out(_RYZE);
+    _VRAM_PIN_MD0_A = SignalState::from_wire(_REGE);
+    _VRAM_PIN_MD1_A = SignalState::from_wire(_RYKY);
+    _VRAM_PIN_MD2_A = SignalState::from_wire(_RAZO);
+    _VRAM_PIN_MD3_A = SignalState::from_wire(_RADA);
+    _VRAM_PIN_MD4_A = SignalState::from_wire(_RYRO);
+    _VRAM_PIN_MD5_A = SignalState::from_wire(_REVU);
+    _VRAM_PIN_MD6_A = SignalState::from_wire(_REKU);
+    _VRAM_PIN_MD7_A = SignalState::from_wire(_RYZE);
 
     /*p25.ROFA*/ wire _ROFA_VRM_TO_CPUn = not(_RENA_VRM_TO_CPUp);
-    _VRAM_PIN_MD0_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD1_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD2_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD3_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD4_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD5_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD6_B.set_pin_out(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD7_B.set_pin_out(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD0_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD1_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD2_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD3_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD4_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD5_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD6_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD7_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
 
     /*p25.SYNU*/ wire _SYNU = or (_VRM_TRI_D0.q(), _RAHU_CPU_TO_VRMn);
     /*p25.SYMA*/ wire _SYMA = or (_VRM_TRI_D1.q(), _RAHU_CPU_TO_VRMn);
@@ -399,14 +399,14 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RYTY*/ wire _RYTY = not(_SEDO);
     /*p25.RADY*/ wire _RADY = not(_SAWU);
 
-    _VRAM_PIN_MD0_D.set_pin_out(_RURA);
-    _VRAM_PIN_MD1_D.set_pin_out(_RULY);
-    _VRAM_PIN_MD2_D.set_pin_out(_RARE);
-    _VRAM_PIN_MD3_D.set_pin_out(_RODU);
-    _VRAM_PIN_MD4_D.set_pin_out(_RUBE);
-    _VRAM_PIN_MD5_D.set_pin_out(_RUMU);
-    _VRAM_PIN_MD6_D.set_pin_out(_RYTY);
-    _VRAM_PIN_MD7_D.set_pin_out(_RADY);
+    _VRAM_PIN_MD0_D = SignalState::from_wire(_RURA);
+    _VRAM_PIN_MD1_D = SignalState::from_wire(_RULY);
+    _VRAM_PIN_MD2_D = SignalState::from_wire(_RARE);
+    _VRAM_PIN_MD3_D = SignalState::from_wire(_RODU);
+    _VRAM_PIN_MD4_D = SignalState::from_wire(_RUBE);
+    _VRAM_PIN_MD5_D = SignalState::from_wire(_RUMU);
+    _VRAM_PIN_MD6_D = SignalState::from_wire(_RYTY);
+    _VRAM_PIN_MD7_D = SignalState::from_wire(_RADY);
   }
 
   //----------------------------------------

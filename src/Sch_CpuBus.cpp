@@ -8,31 +8,31 @@ using namespace Schematics;
 
 void CpuBus::set_cpu_req(Req req) {
 
-  _CPU_PIN_RDp.set(req.read);
-  _CPU_PIN_WRp.set(req.write);
+  _CPU_PIN_RDp.set_pin_in(req.read);
+  _CPU_PIN_WRp.set_pin_in(req.write);
 
-  _CPU_PIN5.set(0);
-  _CPU_PIN6.set(0);
+  _CPU_PIN5.set_pin_in(0);
+  _CPU_PIN6.set_pin_in(0);
 
   // this probably isn't right
-  _CPU_PIN_ADDR_VALID.set(req.read || req.write);
+  _CPU_PIN_ADDR_VALID.set_pin_in(req.read || req.write);
 
-  CPU_PIN_A00.set(req.addr & 0x0001);
-  CPU_PIN_A01.set(req.addr & 0x0002);
-  CPU_PIN_A02.set(req.addr & 0x0004);
-  CPU_PIN_A03.set(req.addr & 0x0008);
-  CPU_PIN_A04.set(req.addr & 0x0010);
-  CPU_PIN_A05.set(req.addr & 0x0020);
-  CPU_PIN_A06.set(req.addr & 0x0040);
-  CPU_PIN_A07.set(req.addr & 0x0080);
-  CPU_PIN_A08.set(req.addr & 0x0100);
-  CPU_PIN_A09.set(req.addr & 0x0200);
-  CPU_PIN_A10.set(req.addr & 0x0400);
-  CPU_PIN_A11.set(req.addr & 0x0800);
-  CPU_PIN_A12.set(req.addr & 0x1000);
-  CPU_PIN_A13.set(req.addr & 0x2000);
-  CPU_PIN_A14.set(req.addr & 0x4000);
-  CPU_PIN_A15.set(req.addr & 0x8000);
+  CPU_PIN_A00.set_pin_in(req.addr & 0x0001);
+  CPU_PIN_A01.set_pin_in(req.addr & 0x0002);
+  CPU_PIN_A02.set_pin_in(req.addr & 0x0004);
+  CPU_PIN_A03.set_pin_in(req.addr & 0x0008);
+  CPU_PIN_A04.set_pin_in(req.addr & 0x0010);
+  CPU_PIN_A05.set_pin_in(req.addr & 0x0020);
+  CPU_PIN_A06.set_pin_in(req.addr & 0x0040);
+  CPU_PIN_A07.set_pin_in(req.addr & 0x0080);
+  CPU_PIN_A08.set_pin_in(req.addr & 0x0100);
+  CPU_PIN_A09.set_pin_in(req.addr & 0x0200);
+  CPU_PIN_A10.set_pin_in(req.addr & 0x0400);
+  CPU_PIN_A11.set_pin_in(req.addr & 0x0800);
+  CPU_PIN_A12.set_pin_in(req.addr & 0x1000);
+  CPU_PIN_A13.set_pin_in(req.addr & 0x2000);
+  CPU_PIN_A14.set_pin_in(req.addr & 0x4000);
+  CPU_PIN_A15.set_pin_in(req.addr & 0x8000);
 
   if (req.write) {
     CPU_TRI_D0.preset_a(req.data_lo & 0x01);
@@ -74,8 +74,8 @@ void CpuBus::tock(const SchematicTop& top) {
 
   /*p04.MAKA*/ _MAKA_FROM_CPU5_SYNC = ff17(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.CUNU_SYS_RSTn(), _CPU_PIN5);
 
-  _CPU_PIN_ADDR_HI.set(SYRO_FE00_FFFFp());
-  _CPU_PIN_BOOTp.set(top.TUTU_ADDR_BOOTp());
+  _CPU_PIN_ADDR_HI = SignalState::from_wire(SYRO_FE00_FFFFp());
+  _CPU_PIN_BOOTp = SignalState::from_wire(top.TUTU_ADDR_BOOTp());
 
 
 }

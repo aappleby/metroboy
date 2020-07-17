@@ -69,19 +69,19 @@ private:
   Reg OAM_TRI_A6;
   Reg OAM_TRI_A7;
 
-  CpuPinOut OAM_PIN_CLK;
-  CpuPinOut OAM_PIN_OE;
-  CpuPinOut OAM_PIN_WR_A;
-  CpuPinOut OAM_PIN_WR_B;
+  Reg OAM_PIN_CLK;
+  Reg OAM_PIN_OE;
+  Reg OAM_PIN_WR_A;
+  Reg OAM_PIN_WR_B;
 
-  CpuPinOut OAM_PIN_A0;
-  CpuPinOut OAM_PIN_A1;
-  CpuPinOut OAM_PIN_A2;
-  CpuPinOut OAM_PIN_A3;
-  CpuPinOut OAM_PIN_A4;
-  CpuPinOut OAM_PIN_A5;
-  CpuPinOut OAM_PIN_A6;
-  CpuPinOut OAM_PIN_A7;
+  Reg OAM_PIN_A0;
+  Reg OAM_PIN_A1;
+  Reg OAM_PIN_A2;
+  Reg OAM_PIN_A3;
+  Reg OAM_PIN_A4;
+  Reg OAM_PIN_A5;
+  Reg OAM_PIN_A6;
+  Reg OAM_PIN_A7;
 };
 
 //-----------------------------------------------------------------------------

@@ -142,11 +142,11 @@ private:
   /*p24.PAHO*/ Reg _PAHO_X_8_SYNC;
   /*p24.RUJU*/ Reg _POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
 
-  ExtPinOut _LCD_PIN_CP;   // PIN_53 
-  ExtPinOut _LCD_PIN_ST;   // PIN_54 
+  Reg _LCD_PIN_CP;   // PIN_53 
+  Reg _LCD_PIN_ST;   // PIN_54 
 
-  ExtPinOut LCD_PIN_LD1;  // PIN_50 
-  ExtPinOut LCD_PIN_LD0;  // PIN_51 
+  Reg LCD_PIN_LD1;  // PIN_50 
+  Reg LCD_PIN_LD0;  // PIN_51 
 
   /*p32.MYDE*/ Reg BG_PIPE_A0;
   /*p32.NOZO*/ Reg BG_PIPE_A1;

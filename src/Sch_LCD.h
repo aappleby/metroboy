@@ -98,10 +98,10 @@ private:
 
   /*p21.ROPO*/ Reg _ROPO_LY_MATCH_SYNCp;
 
-  ExtPinOut LCD_PIN_CPG;  // PIN_52 
-  ExtPinOut LCD_PIN_CPL;  // PIN_55 
-  ExtPinOut LCD_PIN_FR;   // PIN_56 
-  ExtPinOut LCD_PIN_S;    // PIN_57 
+  Reg LCD_PIN_CPG;  // PIN_52 
+  Reg LCD_PIN_CPL;  // PIN_55 
+  Reg LCD_PIN_FR;   // PIN_56 
+  Reg LCD_PIN_S;    // PIN_57 
 };
 
 //-----------------------------------------------------------------------------

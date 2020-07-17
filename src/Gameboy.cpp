@@ -130,10 +130,10 @@ void Gameboy::tock_gb() {
   if (dma_src_vbus) dma_data_latch = vbus_ack.data_lo;
   if (dma_src_ebus) dma_data_latch = ebus_ack.data_lo;
 
-  if (ibus_ack.read > 1) __debugbreak();
-  if (ebus_ack.read > 1) __debugbreak();
-  if (vbus_ack.read > 1) __debugbreak();
-  if (obus_ack.read > 1) __debugbreak();
+  CHECKn(ibus_ack.read > 1);
+  CHECKn(ebus_ack.read > 1);
+  CHECKn(vbus_ack.read > 1);
+  CHECKn(obus_ack.read > 1);
 
   ppu.on_vbus_ack(vbus_ack);
   ppu.on_obus_ack(obus_ack);

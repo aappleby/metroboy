@@ -67,7 +67,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.POVA*/ wire _POVA_FINE_MATCHpe = and(_PUXA_FINE_MATCH_A.q(), _NYZE_FINE_MATCH_B.qn());
     /*p21.SEMU*/ wire _SEMU_LCD_CLOCK = or(_TOBA_LCD_CLOCK, _POVA_FINE_MATCHpe);
     /*p21.RYPO*/ wire _RYPO_LCD_CLOCK = not(_SEMU_LCD_CLOCK);
-    _LCD_PIN_CP.set_pin_out(_RYPO_LCD_CLOCK);
+    _LCD_PIN_CP = SignalState::from_wire(_RYPO_LCD_CLOCK);
   }
 
   {
@@ -79,7 +79,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.PAHO*/ _PAHO_X_8_SYNC = ff17(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.q(), XYDO_X3.q());
     /*p24.RUJU*/ _POFY_ST_LATCH = nor_latch(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), _PAHO_X_8_SYNC.q() || top.clk_reg.TOFU_VID_RSTp());
     /*p24.RUZE*/ wire _RUZE_PIN_ST = not(_POFY_ST_LATCH.q());
-    _LCD_PIN_ST.set_pin_out(_RUZE_PIN_ST);
+    _LCD_PIN_ST = SignalState::from_wire(_RUZE_PIN_ST);
   }
 
   //----------------------------------------
@@ -570,8 +570,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p35.REMY*/ wire _REMY_LD0n = not(_PATY_PIX_OUT_LO);
     /*p35.RAVO*/ wire _RAVO_LD1n = not(_PERO_PIX_OUT_HI);
-    LCD_PIN_LD0.set_pin_out(not(_REMY_LD0n));
-    LCD_PIN_LD1.set_pin_out(not(_RAVO_LD1n));
+    LCD_PIN_LD0 = SignalState::from_wire(not(_REMY_LD0n));
+    LCD_PIN_LD1 = SignalState::from_wire(not(_RAVO_LD1n));
   }
 
   //----------------------------------------

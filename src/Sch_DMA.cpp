@@ -100,8 +100,8 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     // NAND latch
-    /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
-    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp,    top.clk_reg.CUNU_SYS_RSTn(), !MYTE_DMA_DONE.q());
+    /*p04.LOKY*/ LOKY_DMA_LATCHp = SignalState::from_wire(nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q()));
+    /*p04.LARA*/ LARA_DMA_LATCHn = SignalState::from_wire(nand(LOKY_DMA_LATCHp,    top.clk_reg.CUNU_SYS_RSTn(), !MYTE_DMA_DONE.q()));
     /*p04.MATU*/ _MATU_DMA_RUNNINGp = ff17(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp);
   }
 

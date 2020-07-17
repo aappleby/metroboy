@@ -46,13 +46,13 @@ void ClockRegisters::tock(const SchematicTop& top) {
     /*p01.BYXO*/ wire BYXO_xBCDEFGH = not(BUVU_Axxxxxxx);
     /*p01.BEDO*/ wire BEDO_Axxxxxxx = not(BYXO_xBCDEFGH);
     /*p01.BOWA*/ wire BOWA_xBCDEFGH = not(BEDO_Axxxxxxx);
-    CPU_PIN_BOWA_xBCDEFGH.set(BOWA_xBCDEFGH);
-    CPU_PIN_BEDO_Axxxxxxx.set(BEDO_Axxxxxxx);
+    CPU_PIN_BOWA_xBCDEFGH = SignalState::from_wire(BOWA_xBCDEFGH);
+    CPU_PIN_BEDO_Axxxxxxx = SignalState::from_wire(BEDO_Axxxxxxx);
   }
     
-  CPU_PIN_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx());
-  CPU_PIN_BUDE_xxxxEFGH.set(BUDE_xxxxEFGH());
-  CPU_PIN_BOLO_ABCDEFxx.set(BOLO_ABCDEFxx());
+  CPU_PIN_BEKO_ABCDxxxx = SignalState::from_wire(BEKO_ABCDxxxx());
+  CPU_PIN_BUDE_xxxxEFGH = SignalState::from_wire(BUDE_xxxxEFGH());
+  CPU_PIN_BOLO_ABCDEFxx = SignalState::from_wire(BOLO_ABCDEFxx());
     
   {
     /*p01.AROV*/ wire AROV_xxCDEFxx = not(!APUK_xxCDEFxx());
@@ -63,23 +63,23 @@ void ClockRegisters::tock(const SchematicTop& top) {
                                           AROV_xxCDEFxx);
     /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
     /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
-    CPU_PIN_BUKE_AxxxxxGH.set(BUKE_AxxxxxGH);
+    CPU_PIN_BUKE_AxxxxxGH = SignalState::from_wire(BUKE_AxxxxxGH);
   }
 
-  CPU_PIN_BOMA_Axxxxxxx.set(BOMA_Axxxxxxx());
-  CPU_PIN_BOGA_xBCDEFGH.set(BOGA_xBCDEFGH());
+  CPU_PIN_BOMA_Axxxxxxx = SignalState::from_wire(BOMA_Axxxxxxx());
+  CPU_PIN_BOGA_xBCDEFGH = SignalState::from_wire(BOGA_xBCDEFGH());
 
   {
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_ABCDxxxx());
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn(), ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /* PIN_75 */ EXT_PIN_CLK.set_pin_out(BUDE_AxxxxFGH);
+    /* PIN_75 */ EXT_PIN_CLK = SignalState::from_wire(BUDE_AxxxxFGH);
   }
 
-  CPU_PIN_EXT_CLKGOOD.set(SYS_PIN_CLK_A);
+  CPU_PIN_EXT_CLKGOOD = SignalState::from_wire(SYS_PIN_CLK_A.as_wire());
 
-  /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, top.clk_reg.UCOB_CLKBADp());
+  /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp.as_wire(), top.clk_reg.UCOB_CLKBADp());
 
   /*p01.TUBO*/ _TUBO_CPU_READYn = nor_latch(_UPYF, CPU_PIN_READYp());
 
@@ -101,9 +101,9 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
   /*p01.AFER*/ _AFER_SYS_RSTp = ff13(boga, top.clk_reg.BOMA_Axxxxxxx(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
 
-  _CPU_PIN_STARTp.set(_TABA_POR_TRIGn);
-  _CPU_PIN_SYS_RSTp.set(AFER_SYS_RSTp());
-  _CPU_PIN_EXT_RST.set(_SYS_PIN_RSTp);
+  _CPU_PIN_STARTp = SignalState::from_wire(_TABA_POR_TRIGn);
+  _CPU_PIN_SYS_RSTp = SignalState::from_wire(AFER_SYS_RSTp());
+  _CPU_PIN_EXT_RST = SignalState::from_wire(_SYS_PIN_RSTp.as_wire());
 
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
   /*p25.SOTO*/ SOTO_DBG = ff17(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());
@@ -111,8 +111,8 @@ void ClockRegisters::tock(const SchematicTop& top) {
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);
   //cpu_pins.UNOR_MODE_DBG2.set(dbg_sig.UNOR_MODE_DBG2n);
 
-  CPU_PIN_UNOR_DBG.set(UNOR_MODE_DBG2p());
-  CPU_PIN_UMUT_DBG.set(UMUT_MODE_DBG1p());
+  CPU_PIN_UNOR_DBG = SignalState::from_wire(UNOR_MODE_DBG2p());
+  CPU_PIN_UMUT_DBG = SignalState::from_wire(UMUT_MODE_DBG1p());
 
   //cpu_pins.UPOJ_MODE_PRODn = UPOJ_MODE_PRODn;
   //cpu_pins.TOVA_MODE_DBG2n = TOVA_MODE_DBG2n;

@@ -7,27 +7,11 @@
 
 struct ExtPinIn {
 
-  bool get() const {
-    //CHECKn(a.error);
-    //return a.val;
-    return a;
-  }
-  //void set_pin_in(bool c) { a = SignalState::from_wire(c); }
-
+  bool get() const { return a; }
   void set_pin_in(bool c) { a = c; }
-
   operator wire() const { return get(); }
-  wire as_wire() const { return get(); }
+  uint8_t commit_input() { return a; }
 
-  //operator SignalState() const { return a; }
-  //SignalState as_signal() const { return a; }
-
-  uint8_t commit_input() {
-    //CHECKn(a.error);
-    return a;
-  }
-
-  //SignalState a = SignalState::from_flag(ERROR);
   bool a = 0;
 };
 
@@ -35,20 +19,12 @@ struct ExtPinIn {
 
 struct CpuPinIn {
 
-  bool get() const { CHECKn(a.error); return a.val; }
-  void set_pin_in(bool c) { a = SignalState::from_wire(c); }
-
+  bool get() const { return a; }
+  void set_pin_in(bool c) { a = c; }
   operator wire() const { return get(); }
-  wire as_wire() const { return get(); }
-  operator SignalState() const { return a; }
-  SignalState as_signal() const { return a; }
+  uint8_t commit_input() { return a; }
 
-  SignalHash commit_input() {
-    CHECKn(a.state == ERROR);
-    return {a.state};
-  }
-
-  SignalState a = SignalState::from_flag(ERROR);
+  bool a = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -126,7 +102,7 @@ struct Reg {
   SignalHash commit() {
     CHECKn(b.error);
     //CHECKn(b.hiz);
-    //CHECKp(b.dirty);
+    CHECKp(b.dirty);
 
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
@@ -142,14 +118,14 @@ struct Reg {
     a.pad1 = 0;
     a.dirty = 0;
 
-    b = SignalState::from_flag(ERROR);
+    b = SignalState::make_error();
 
     return {a.state};
   }
 
   // Commit reg w/ pulldown - if b is hi-z, value becomes 0
   SignalHash commit_pd() {
-    CHECKn(b.error);
+    CHECKp(b.dirty);
     if (b.hiz) {
       a.val = 0;
       a.hiz = 0;
@@ -159,7 +135,7 @@ struct Reg {
       a.error = 0;
       a.pad1 = 0;
       a.dirty = 0;
-      b = SignalState::from_flag(ERROR);
+      b = SignalState::make_error();
       return {a.state};
     }
     else {
@@ -167,10 +143,20 @@ struct Reg {
     }
   }
 
-  void preset_a(SignalFlags f) { a = SignalState::from_flag(f); }
-  void preset_a(bool x)        { a = SignalState::from_wire(x); }
-  void preset_b(SignalFlags f) { b = SignalState::from_flag(f); }
-  void preset_b(bool x)        { b = SignalState::from_wire(x); }
+  void preset_a(bool c) {
+    a.val = c;
+    a.hiz = 0;
+    a.clk = 0;
+    a.set = 0;
+    a.rst = 0;
+    a.error = 0;
+    a.pad1 = 0;
+    a.dirty = 0;
+  }
+
+  void preset_b(bool c) {
+    b = SignalState::from_wire(c);
+  }
 
   void preset_hiz() {
     a.val = 0;
@@ -185,10 +171,10 @@ struct Reg {
 
 protected:
   SignalState a;
-  SignalState b = SignalState::from_flag(ERROR);
+  SignalState b = SignalState::make_error();
 
   wire get() const {
-    CHECKn(a.error);
+    CHECKn(a.dirty);
     CHECKn(a.hiz);
 
     if (!b.error) {

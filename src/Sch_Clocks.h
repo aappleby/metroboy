@@ -40,7 +40,7 @@ struct ClockRegisters {
 
   //----------------------------------------
 
-  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not(SYS_PIN_CLK_A.as_wire()); }
+  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not(SYS_PIN_CLK_A); }
 
   /*p01.AFAS*/ wire AFAS_xxxxEFGx() const {  // AREV_CPU_WRn
     /*p01.ADAR*/ wire _ADAR_ABCxxxxH = not( _ADYK_xxxDEFGx.q());
@@ -122,25 +122,25 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Debug stuff
 
-  wire CPU_PIN_STARTp() const { return _CPU_PIN_STARTp.as_wire(); }
-  wire CPU_PIN_READYp() const { return _CPU_PIN_READYp.as_wire(); }
+  wire CPU_PIN_STARTp() const { return _CPU_PIN_STARTp; }
+  wire CPU_PIN_READYp() const { return _CPU_PIN_READYp; }
 
   /*p01.ABOL*/ wire ABOL_CLKREQn() const { return not(_CPU_PIN_READYp.get()); }
 
   /*p25.TUTO*/ wire TUTO_DBG_VRAMp() const { return and (UNOR_MODE_DBG2p(), SOTO_DBG.qn()); }
   /*p25.RACO*/ wire RACO_DBG_VRAMn() const { return not(TUTO_DBG_VRAMp()); }
 
-  /*p07.UBET*/ wire UBET_T1p()        const { return not(_SYS_PIN_T1n.as_wire()); }
-  /*p07.UVAR*/ wire UVAR_T2p()        const { return not(_SYS_PIN_T2n.as_wire()); }
+  /*p07.UBET*/ wire UBET_T1p()        const { return not(_SYS_PIN_T1n); }
+  /*p07.UVAR*/ wire UVAR_T2p()        const { return not(_SYS_PIN_T2n); }
   /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const {
-    wire ret = and(_SYS_PIN_T1n.as_wire(), UVAR_T2p());
+    wire ret = and(_SYS_PIN_T1n, UVAR_T2p());
     return ret;
   }
   /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const {
-    wire ret = and(_SYS_PIN_T2n.as_wire(), UBET_T1p());
+    wire ret = and(_SYS_PIN_T2n, UBET_T1p());
     return ret;
   }
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), _SYS_PIN_RSTp.as_wire()); }
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), _SYS_PIN_RSTp); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------
@@ -178,7 +178,7 @@ struct ClockRegisters {
 
 
   /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!_AFUR_ABCDxxxx.q()); }
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B.as_wire(); } // ignoring the deglitcher here
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B; } // ignoring the deglitcher here
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not(AZOF_AxCxExGx()); }
 
   /*p01.NULE*/ wire NULE_xxxxEFGH() const { return nor(ABOL_CLKREQn(),  ATYP_ABCDxxxx()); }
@@ -203,7 +203,7 @@ struct ClockRegisters {
   }
   /*p01.BELE*/ wire BELE_Axxxxxxx() const { return not(BUTO_xBCDEFGH()); }
   /*p01.BYJU*/ wire BYJU_xBCDEFGH() const {
-    /*p01.ATEZ*/ wire _ATEZ_CLKBAD   = not(SYS_PIN_CLK_A.as_wire());
+    /*p01.ATEZ*/ wire _ATEZ_CLKBAD   = not(SYS_PIN_CLK_A);
     return nor(BELE_Axxxxxxx(), _ATEZ_CLKBAD);
   }
   /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not(BYJU_xBCDEFGH()); }

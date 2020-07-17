@@ -17,10 +17,10 @@ struct CpuBus {
   void set_cpu_req(Req req);
 
   int get_addr() const {
-    return pack(CPU_PIN_A00.as_wire(), CPU_PIN_A01.as_wire(), CPU_PIN_A02.as_wire(), CPU_PIN_A03.as_wire(),
-                CPU_PIN_A04.as_wire(), CPU_PIN_A05.as_wire(), CPU_PIN_A06.as_wire(), CPU_PIN_A07.as_wire(),
-                CPU_PIN_A08.as_wire(), CPU_PIN_A09.as_wire(), CPU_PIN_A10.as_wire(), CPU_PIN_A11.as_wire(),
-                CPU_PIN_A12.as_wire(), CPU_PIN_A13.as_wire(), CPU_PIN_A14.as_wire(), CPU_PIN_A15.as_wire());
+    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
+                CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
+                CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11,
+                CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
   }
 
   int get_data() const {
@@ -37,30 +37,30 @@ struct CpuBus {
   /*p07.ROPE*/ wire ROPE_FE00_FEFFn() const { return nand(RYCU_0000_FDFFn(), SOHA_FF00_FFFFn()); }
   /*p07.SARO*/ wire SARO_FE00_FEFFp() const { return not(ROPE_FE00_FEFFn()); }
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not(SARO_FE00_FEFFp()); }
-  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not(CPU_PIN_A15.as_wire()); }
+  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not(CPU_PIN_A15); }
   /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or(CPU_PIN_A13, CPU_PIN_A14, SORE_0000_7FFFp()); }
   /*p08.TEXO*/ wire TEXO_8000_9FFFn() const { return and(_CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn()); }
   /*p08.LEVO*/ wire LEVO_8000_9FFFp() const { return not(TEXO_8000_9FFFn()); }
 
-  /*p22.XOLA*/ wire XOLA_A00n() const { return not(CPU_PIN_A00.as_wire()); }
-  /*p22.XENO*/ wire XENO_A01n() const { return not(CPU_PIN_A01.as_wire()); }
-  /*p22.XUSY*/ wire XUSY_A02n() const { return not(CPU_PIN_A02.as_wire()); }
-  /*p22.XERA*/ wire XERA_A03n() const { return not(CPU_PIN_A03.as_wire()); }
-  /*p07.TONA*/ wire TONA_A08n() const { return not(CPU_PIN_A08.as_wire()); }
+  /*p22.XOLA*/ wire XOLA_A00n() const { return not(CPU_PIN_A00); }
+  /*p22.XENO*/ wire XENO_A01n() const { return not(CPU_PIN_A01); }
+  /*p22.XUSY*/ wire XUSY_A02n() const { return not(CPU_PIN_A02); }
+  /*p22.XERA*/ wire XERA_A03n() const { return not(CPU_PIN_A03); }
+  /*p07.TONA*/ wire TONA_A08n() const { return not(CPU_PIN_A08); }
 
   /*p22.WADO*/ wire WADO_A00p() const { return not(XOLA_A00n()); }
   /*p22.WESA*/ wire WESA_A01p() const { return not(XENO_A01n()); }
   /*p22.WALO*/ wire WALO_A02p() const { return not(XUSY_A02n()); }
   /*p22.WEPO*/ wire WEPO_A03p() const { return not(XERA_A03n()); }
 
-  /*p03.TOVY*/ wire TOVY_A00n() const { return not(CPU_PIN_A00.as_wire()); }
-  /*p08.TOLA*/ wire TOLA_A01n() const { return not(CPU_PIN_A01.as_wire()); }
-  /*p06.SEFY*/ wire SEFY_A02n() const { return not(CPU_PIN_A02.as_wire()); }
+  /*p03.TOVY*/ wire TOVY_A00n() const { return not(CPU_PIN_A00); }
+  /*p08.TOLA*/ wire TOLA_A01n() const { return not(CPU_PIN_A01); }
+  /*p06.SEFY*/ wire SEFY_A02n() const { return not(CPU_PIN_A02); }
 
   /*p07.TUNA*/ wire TUNA_0000_FDFFp() const {
-    return nand(CPU_PIN_A15.as_wire(), CPU_PIN_A14.as_wire(), CPU_PIN_A13.as_wire(),
-                CPU_PIN_A12.as_wire(), CPU_PIN_A11.as_wire(), CPU_PIN_A10.as_wire(),
-                CPU_PIN_A09.as_wire());
+    return nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13,
+                CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10,
+                CPU_PIN_A09);
   }
 
   /*p22.WERO*/ wire WERO_FF4Xp() const {

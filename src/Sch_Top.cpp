@@ -137,12 +137,14 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::commit_input done\n");
 
-  //exit(1);
+  exit(1);
 
+  /*
   commit_hash = hash;
   combined_hash << hash;
 
   return hash;
+  */
 }
 
 //------------------------------------------------------------------------------

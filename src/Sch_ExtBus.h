@@ -30,18 +30,18 @@ struct ExtBus {
     _EXT_PIN_RDp_C.set_pin_in(wr);
   }
 
-  wire EXT_PIN_RDp_C() const { return _EXT_PIN_RDp_C.as_wire(); }
-  wire EXT_PIN_WRp_C() const { return _EXT_PIN_WRp_C.as_wire(); }
+  wire EXT_PIN_RDp_C() const { return _EXT_PIN_RDp_C; }
+  wire EXT_PIN_WRp_C() const { return _EXT_PIN_WRp_C; }
 
   // -> oam data tri
-  /*p25.RALO*/ wire RALO_EXT_D0p() const { return not(_EXT_PIN_D0_C.as_wire()); }
-  /*p25.TUNE*/ wire TUNE_EXT_D1p() const { return not(_EXT_PIN_D1_C.as_wire()); }
-  /*p25.SERA*/ wire SERA_EXT_D2p() const { return not(_EXT_PIN_D2_C.as_wire()); }
-  /*p25.TENU*/ wire TENU_EXT_D3p() const { return not(_EXT_PIN_D3_C.as_wire()); }
-  /*p25.SYSA*/ wire SYSA_EXT_D4p() const { return not(_EXT_PIN_D4_C.as_wire()); }
-  /*p25.SUGY*/ wire SUGY_EXT_D5p() const { return not(_EXT_PIN_D5_C.as_wire()); }
-  /*p25.TUBE*/ wire TUBE_EXT_D6p() const { return not(_EXT_PIN_D6_C.as_wire()); }
-  /*p25.SYZO*/ wire SYZO_EXT_D7p() const { return not(_EXT_PIN_D7_C.as_wire()); }
+  /*p25.RALO*/ wire RALO_EXT_D0p() const { return not(_EXT_PIN_D0_C); }
+  /*p25.TUNE*/ wire TUNE_EXT_D1p() const { return not(_EXT_PIN_D1_C); }
+  /*p25.SERA*/ wire SERA_EXT_D2p() const { return not(_EXT_PIN_D2_C); }
+  /*p25.TENU*/ wire TENU_EXT_D3p() const { return not(_EXT_PIN_D3_C); }
+  /*p25.SYSA*/ wire SYSA_EXT_D4p() const { return not(_EXT_PIN_D4_C); }
+  /*p25.SUGY*/ wire SUGY_EXT_D5p() const { return not(_EXT_PIN_D5_C); }
+  /*p25.TUBE*/ wire TUBE_EXT_D6p() const { return not(_EXT_PIN_D6_C); }
+  /*p25.SYZO*/ wire SYZO_EXT_D7p() const { return not(_EXT_PIN_D7_C); }
 
 private:
 

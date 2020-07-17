@@ -77,9 +77,9 @@ void ClockRegisters::tock(const SchematicTop& top) {
     /* PIN_75 */ EXT_PIN_CLK = SignalState::from_wire(BUDE_AxxxxFGH);
   }
 
-  CPU_PIN_EXT_CLKGOOD = SignalState::from_wire(SYS_PIN_CLK_A.as_wire());
+  CPU_PIN_EXT_CLKGOOD = SignalState::from_wire(SYS_PIN_CLK_A);
 
-  /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp.as_wire(), top.clk_reg.UCOB_CLKBADp());
+  /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, top.clk_reg.UCOB_CLKBADp());
 
   /*p01.TUBO*/ _TUBO_CPU_READYn = nor_latch(_UPYF, CPU_PIN_READYp());
 
@@ -103,7 +103,7 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
   _CPU_PIN_STARTp = SignalState::from_wire(_TABA_POR_TRIGn);
   _CPU_PIN_SYS_RSTp = SignalState::from_wire(AFER_SYS_RSTp());
-  _CPU_PIN_EXT_RST = SignalState::from_wire(_SYS_PIN_RSTp.as_wire());
+  _CPU_PIN_EXT_RST = SignalState::from_wire(_SYS_PIN_RSTp);
 
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
   /*p25.SOTO*/ SOTO_DBG = ff17(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());

@@ -7,12 +7,6 @@
 
 //-----------------------------------------------------------------------------
 
-enum SignalFlags {
-  ERROR   = 0b00100000,
-};
-
-//-----------------------------------------------------------------------------
-
 #pragma warning(disable:4201) // nameless struct/union
 
 union SignalState {
@@ -30,19 +24,6 @@ union SignalState {
 
   SignalState() {}
 
-  /*
-  SignalState(wire w) {
-    val = w;
-    hiz = 0;
-    clk = 0;
-    set = w;
-    rst = !w;
-    error = 0;
-    pad1 = 0;
-    dirty = 0;
-  }
-  */
-
   static SignalState from_wire(wire w) {
     SignalState c;
     c.val = w;
@@ -52,13 +33,20 @@ union SignalState {
     c.rst = !w;
     c.error = 0;
     c.pad1 = 0;
-    c.dirty = 0;
+    c.dirty = 1;
     return c;
   }
 
-  static SignalState from_flag(SignalFlags f) {
+  static SignalState make_error() {
     SignalState c;
-    c.state = uint8_t(f);
+    c.val = 0;
+    c.hiz = 0;
+    c.clk = 0;
+    c.set = 0;
+    c.rst = 0;
+    c.error = 1;
+    c.pad1 = 0;
+    c.dirty = 0;
     return c;
   }
 
@@ -169,12 +157,14 @@ struct SignalHash {
     h ^= h2;
     h *= 0xff51afd7ed558ccd;
     h = _byteswap_uint64(h);
+    printf("%016llx\n", h);
   }
 
   __forceinline void operator << (SignalHash h2) {
     h ^= h2.h;
     h *= 0xff51afd7ed558ccd;
     h = _byteswap_uint64(h);
+    printf("%016llx\n", h);
   }
 
   uint64_t h = 0x12345678;
@@ -184,7 +174,7 @@ struct SignalHash {
 
 struct Signal {
 
-  Signal() : a(SignalState::from_flag(ERROR)) {}
+  Signal() : a(SignalState::make_error()) {}
 
   operator wire() const {
     CHECKn(a.error);
@@ -198,15 +188,22 @@ struct Signal {
 
   void operator = (wire val) {
     CHECKp(a.error);
-    a = SignalState::from_wire(val);
+    a.val = val;
+    a.hiz = 0;
+    a.clk = 0;
+    a.set = 0;
+    a.rst = 0;
+    a.error = 0;
+    a.pad1 = 0;
+    a.dirty = 0;
   }
 
   SignalHash commit() {
     auto old_a = a;
-    a = SignalState::from_flag(ERROR);
+    a = SignalState::make_error();
     return {old_a.state};
   }
 
 private:
-  SignalState a = SignalState::from_flag(ERROR);
+  SignalState a = SignalState::make_error();
 };

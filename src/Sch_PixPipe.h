@@ -124,7 +124,7 @@ private:
 
   /*p??.ROXY*/ Reg _ROXY_FINE_SCROLL_DONEn;
 
-  Signal _XENA_STORE_MATCHn;
+  Sig2 _XENA_STORE_MATCHn;
 
   /*p27.RYKU*/ Reg2 _RYKU_FINE_CNT0 = Reg2::D0C0;
   /*p27.ROGA*/ Reg2 _ROGA_FINE_CNT1 = Reg2::D0C0;

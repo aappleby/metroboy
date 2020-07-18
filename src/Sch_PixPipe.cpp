@@ -151,27 +151,27 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     // This trigger fires on the pixel _at_ WX
     /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not(_SEGU_CLKPIPEn);
-    /*p27.PYCO*/ _PYCO_WX_MATCH_A = ff17(_ROCO_CLKPIPEp, top.clk_reg.XAPO_VID_RSTn(), _NUKO_WX_MATCHp);
-    /*p27.NUNU*/ _NUNU_WX_MATCH_B = ff17(top.clk_reg.MEHE_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
+    /*p27.PYCO*/ _PYCO_WX_MATCH_A = ff17_r2(_ROCO_CLKPIPEp, top.clk_reg.XAPO_VID_RSTn(), _NUKO_WX_MATCHp);
+    /*p27.NUNU*/ _NUNU_WX_MATCH_B = ff17_r2(top.clk_reg.MEHE_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
 
     /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.lcd_reg.ATEJ_VID_LINE_TRIG_d4p());
     /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.clk_reg.XAPO_VID_RSTn());
     /*p27.PYNU*/ _PYNU_WIN_MODE_A = nor_latch(_NUNU_WX_MATCH_B.q(), _XOFO_WIN_RSTp);
-    /*p27.NOPA*/ _NOPA_WIN_MODE_B = ff17(top.clk_reg.ALET_xBxDxFxH(), top.clk_reg.XAPO_VID_RSTn(), _PYNU_WIN_MODE_A.q());
+    /*p27.NOPA*/ _NOPA_WIN_MODE_B = ff17_r2(top.clk_reg.ALET_xBxDxFxH(), top.clk_reg.XAPO_VID_RSTn(), _PYNU_WIN_MODE_A.q());
   }
 
   {
     // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
     /*p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand(_RYKU_FINE_CNT0.q(), _ROGA_FINE_CNT1.q(), _RUBU_FINE_CNT2.q());
     /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(_NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
-    /*p27.RYFA*/ _RYFA_WX_MATCHn_A = ff17(_SEGU_CLKPIPEn, XYMU_RENDERINGp(), _PANY_WX_MATCHn);
-    /*p27.RENE*/ _RENE_WX_MATCHn_B = ff17(top.clk_reg.ALET_xBxDxFxH(), XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
+    /*p27.RYFA*/ _RYFA_WX_MATCHn_A = ff17_r2(_SEGU_CLKPIPEn, XYMU_RENDERINGp(), _PANY_WX_MATCHn);
+    /*p27.RENE*/ _RENE_WX_MATCHn_B = ff17_r2(top.clk_reg.ALET_xBxDxFxH(), XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
   }
 
   {
     /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), top.clk_reg.PYRY_VID_RSTp());
-    /*p27.SARY*/ _SARY_WY_MATCH = ff17(top.clk_reg.TALU_ABCDxxxx(), top.clk_reg.XAPO_VID_RSTn(), _ROGE_WY_MATCHp);
-    /*p27.REJO*/ _REJO_WY_MATCH_LATCH = nor_latch(_SARY_WY_MATCH.q(), _REPU_VBLANK_RSTp);
+    /*p27.SARY*/ _SARY_WY_MATCH = ff17_r2(top.clk_reg.TALU_ABCDxxxx(), top.clk_reg.XAPO_VID_RSTn(), _ROGE_WY_MATCHp);
+    /*p27.REJO*/ _REJO_WY_MATCH_LATCH = nor_latch_r2(_SARY_WY_MATCH.q(), _REPU_VBLANK_RSTp);
   }
 
   {
@@ -180,7 +180,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     ///*p27.RYDY*/ RYDY = nor(PUKU, clk_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
     /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A = nor_latch(NUNY_WX_MATCHpe(), top.clk_reg.PYRY_VID_RSTp() || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp());
-    /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B = ff17(top.clk_reg.ALET_xBxDxFxH(), top.clk_reg.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.q());
+    /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B = ff17_r2(top.clk_reg.ALET_xBxDxFxH(), top.clk_reg.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.q());
   }
 
   // window x coordinate

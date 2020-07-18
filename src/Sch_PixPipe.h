@@ -98,14 +98,14 @@ private:
   /*p27.PYNU*/ Reg _PYNU_WIN_MODE_A;
   /*p27.RYDY*/ Reg _RYDY_WIN_FIRST_TILE_A;
 
-  /*p27.NOPA*/ Reg _NOPA_WIN_MODE_B;
-  /*p27.SOVY*/ Reg _SOVY_WIN_FIRST_TILE_B;
-  /*p27.REJO*/ Reg _REJO_WY_MATCH_LATCH;
-  /*p27.SARY*/ Reg _SARY_WY_MATCH;
-  /*p27.RYFA*/ Reg _RYFA_WX_MATCHn_A;
-  /*p27.RENE*/ Reg _RENE_WX_MATCHn_B;
-  /*p27.PYCO*/ Reg _PYCO_WX_MATCH_A;
-  /*p27.NUNU*/ Reg _NUNU_WX_MATCH_B;
+  /*p27.NOPA*/ Reg2 _NOPA_WIN_MODE_B = Reg2::D0C0;
+  /*p27.SOVY*/ Reg2 _SOVY_WIN_FIRST_TILE_B = Reg2::D0C0;
+  /*p27.REJO*/ Reg2 _REJO_WY_MATCH_LATCH = Reg2::D0C0;
+  /*p27.SARY*/ Reg2 _SARY_WY_MATCH = Reg2::D0C0;
+  /*p27.RYFA*/ Reg2 _RYFA_WX_MATCHn_A = Reg2::D0C0;
+  /*p27.RENE*/ Reg2 _RENE_WX_MATCHn_B = Reg2::D0C0;
+  /*p27.PYCO*/ Reg2 _PYCO_WX_MATCH_A = Reg2::D0C0;
+  /*p27.NUNU*/ Reg2 _NUNU_WX_MATCH_B = Reg2::D0C0;
 
   /*p27.WYKA*/ Reg2 _WYKA_WIN_X3 = Reg2::D0C0;
   /*p27.WODY*/ Reg2 _WODY_WIN_X4 = Reg2::D0C0;

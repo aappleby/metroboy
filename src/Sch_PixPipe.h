@@ -82,10 +82,10 @@ struct PixelPipe {
   /*p23.XONA*/ Reg XONA_LCDC_EN;
 
   // FF41 - STAT
-  /*p21.ROXE*/ Reg _ROXE_INT_HBL_EN;
-  /*p21.RUFO*/ Reg _RUFO_INT_VBL_EN;
-  /*p21.REFE*/ Reg _REFE_INT_OAM_EN;
-  /*p21.RUGU*/ Reg _RUGU_INT_LYC_EN;
+  /*p21.ROXE*/ Reg2 _ROXE_INT_HBL_EN = Reg2::D0C0;
+  /*p21.RUFO*/ Reg2 _RUFO_INT_VBL_EN = Reg2::D0C0;
+  /*p21.REFE*/ Reg2 _REFE_INT_OAM_EN = Reg2::D0C0;
+  /*p21.RUGU*/ Reg2 _RUGU_INT_LYC_EN = Reg2::D0C0;
 
 private:
 

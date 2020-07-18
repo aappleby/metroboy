@@ -625,10 +625,10 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(top.clk_reg.WESY_SYS_RSTn(), _RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ _RUPO_LYC_MATCH_LATCHn = nor_latch_r2(_PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp());
 
-    /*p21.ROXE*/ _ROXE_INT_HBL_EN = ff9(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D0.q());
-    /*p21.RUFO*/ _RUFO_INT_VBL_EN = ff9(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D1.q());
-    /*p21.REFE*/ _REFE_INT_OAM_EN = ff9(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D2.q());
-    /*p21.RUGU*/ _RUGU_INT_LYC_EN = ff9(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D3.q());
+    /*p21.ROXE*/ _ROXE_INT_HBL_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D0.q());
+    /*p21.RUFO*/ _RUFO_INT_VBL_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D1.q());
+    /*p21.REFE*/ _REFE_INT_OAM_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D2.q());
+    /*p21.RUGU*/ _RUGU_INT_LYC_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D3.q());
 
     /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor(_XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
     /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(_XYMU_RENDERINGp.q(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR

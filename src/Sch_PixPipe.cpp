@@ -43,14 +43,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(), top.clk_reg.TOFU_VID_RSTp());
 
-    /*p21.XEHO*/ XEHO_X0 = ff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, XEHO_X0.qn());
-    /*p21.SAVY*/ SAVY_X1 = ff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _RYBO);
-    /*p21.XODU*/ XODU_X2 = ff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _XEGY);
-    /*p21.XYDO*/ XYDO_X3 = ff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _XORA);
-    /*p21.TUHU*/ TUHU_X4 = ff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, TUHU_X4.qn());
-    /*p21.TUKY*/ TUKY_X5 = ff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _SAKE);
-    /*p21.TAKO*/ TAKO_X6 = ff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _TYGE);
-    /*p21.SYBE*/ SYBE_X7 = ff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _ROKU);
+    /*p21.XEHO*/ XEHO_X0 = ff17_r2(_SACU_CLKPIPEp, _TADY_LINE_START_RST, XEHO_X0.qn());
+    /*p21.SAVY*/ SAVY_X1 = ff17_r2(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _RYBO);
+    /*p21.XODU*/ XODU_X2 = ff17_r2(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _XEGY);
+    /*p21.XYDO*/ XYDO_X3 = ff17_r2(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _XORA);
+    /*p21.TUHU*/ TUHU_X4 = ff17_r2(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, TUHU_X4.qn());
+    /*p21.TUKY*/ TUKY_X5 = ff17_r2(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _SAKE);
+    /*p21.TAKO*/ TAKO_X6 = ff17_r2(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _TYGE);
+    /*p21.SYBE*/ SYBE_X7 = ff17_r2(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _ROKU);
   }
 
   //----------------------------------------
@@ -807,176 +807,174 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash PixelPipe::commit() {
-  SignalHash hash;
+  _PYNU_WIN_MODE_A.commit();
+  _RYDY_WIN_FIRST_TILE_A.commit();
 
-  hash << _PYNU_WIN_MODE_A.commit();
-  hash << _RYDY_WIN_FIRST_TILE_A.commit();
+  _NOPA_WIN_MODE_B.commit();
+  _SOVY_WIN_FIRST_TILE_B.commit();
+  _REJO_WY_MATCH_LATCH.commit();
+  _SARY_WY_MATCH.commit();
+  _RYFA_WX_MATCHn_A.commit();
+  _RENE_WX_MATCHn_B.commit();
+  _PYCO_WX_MATCH_A.commit();
+  _NUNU_WX_MATCH_B.commit();
 
-  hash << _NOPA_WIN_MODE_B.commit();
-  hash << _SOVY_WIN_FIRST_TILE_B.commit();
-  hash << _REJO_WY_MATCH_LATCH.commit();
-  hash << _SARY_WY_MATCH.commit();
-  hash << _RYFA_WX_MATCHn_A.commit();
-  hash << _RENE_WX_MATCHn_B.commit();
-  hash << _PYCO_WX_MATCH_A.commit();
-  hash << _NUNU_WX_MATCH_B.commit();
+  _WYKA_WIN_X3.commit();
+  _WODY_WIN_X4.commit();
+  _WOBO_WIN_X5.commit();
+  _WYKO_WIN_X6.commit();
+  _XOLO_WIN_X7.commit();
 
-  hash << _WYKA_WIN_X3.commit();
-  hash << _WODY_WIN_X4.commit();
-  hash << _WOBO_WIN_X5.commit();
-  hash << _WYKO_WIN_X6.commit();
-  hash << _XOLO_WIN_X7.commit();
+  _VYNO_WIN_Y0.commit();
+  _VUJO_WIN_Y1.commit();
+  _VYMU_WIN_Y2.commit();
+  _TUFU_WIN_Y3.commit();
+  _TAXA_WIN_Y4.commit();
+  _TOZO_WIN_Y5.commit();
+  _TATE_WIN_Y6.commit();
+  _TEKE_WIN_Y7.commit();
 
-  hash << _VYNO_WIN_Y0.commit();
-  hash << _VUJO_WIN_Y1.commit();
-  hash << _VYMU_WIN_Y2.commit();
-  hash << _TUFU_WIN_Y3.commit();
-  hash << _TAXA_WIN_Y4.commit();
-  hash << _TOZO_WIN_Y5.commit();
-  hash << _TATE_WIN_Y6.commit();
-  hash << _TEKE_WIN_Y7.commit();
+  _NESO_WY0.commit();
+  _NYRO_WY1.commit();
+  _NAGA_WY2.commit();
+  _MELA_WY3.commit();
+  _NULO_WY4.commit();
+  _NENE_WY5.commit();
+  _NUKA_WY6.commit();
+  _NAFU_WY7.commit();
 
-  hash << _NESO_WY0.commit();
-  hash << _NYRO_WY1.commit();
-  hash << _NAGA_WY2.commit();
-  hash << _MELA_WY3.commit();
-  hash << _NULO_WY4.commit();
-  hash << _NENE_WY5.commit();
-  hash << _NUKA_WY6.commit();
-  hash << _NAFU_WY7.commit();
+  _MYPA_WX0.commit();
+  _NOFE_WX1.commit();
+  _NOKE_WX2.commit();
+  _MEBY_WX3.commit();
+  _MYPU_WX4.commit();
+  _MYCE_WX5.commit();
+  _MUVO_WX6.commit();
+  _NUKU_WX7.commit();
 
-  hash << _MYPA_WX0.commit();
-  hash << _NOFE_WX1.commit();
-  hash << _NOKE_WX2.commit();
-  hash << _MEBY_WX3.commit();
-  hash << _MYPU_WX4.commit();
-  hash << _MYCE_WX5.commit();
-  hash << _MUVO_WX6.commit();
-  hash << _NUKU_WX7.commit();
+  _XENA_STORE_MATCHn.commit();
 
-  hash << _XENA_STORE_MATCHn.commit();
+  _ROXY_FINE_SCROLL_DONEn.commit();
+  _PUXA_FINE_MATCH_A.commit();
+  _NYZE_FINE_MATCH_B.commit();
+  _RYKU_FINE_CNT0.commit();
+  _ROGA_FINE_CNT1.commit();
+  _RUBU_FINE_CNT2.commit();
 
-  hash << _ROXY_FINE_SCROLL_DONEn.commit();
-  hash << _PUXA_FINE_MATCH_A.commit();
-  hash << _NYZE_FINE_MATCH_B.commit();
-  hash << _RYKU_FINE_CNT0.commit();
-  hash << _ROGA_FINE_CNT1.commit();
-  hash << _RUBU_FINE_CNT2.commit();
+  VYXE_LCDC_BGEN.commit();
+  XYLO_LCDC_SPEN.commit();
+  XYMO_LCDC_SPSIZE.commit();
+  XAFO_LCDC_BGMAP.commit();
+  WEXU_LCDC_BGTILE.commit();
+  WYMO_LCDC_WINEN.commit();
+  WOKY_LCDC_WINMAP.commit();
+  XONA_LCDC_EN.commit();
 
-  hash << VYXE_LCDC_BGEN.commit();
-  hash << XYLO_LCDC_SPEN.commit();
-  hash << XYMO_LCDC_SPSIZE.commit();
-  hash << XAFO_LCDC_BGMAP.commit();
-  hash << WEXU_LCDC_BGTILE.commit();
-  hash << WYMO_LCDC_WINEN.commit();
-  hash << WOKY_LCDC_WINMAP.commit();
-  hash << XONA_LCDC_EN.commit();
+  _XYMU_RENDERINGp.commit();
+  _VOGA_RENDER_DONE_SYNC.commit();
 
-  hash << _XYMU_RENDERINGp.commit();
-  hash << _VOGA_RENDER_DONE_SYNC.commit();
-
-  hash << _RUPO_LYC_MATCH_LATCHn.commit();
+  _RUPO_LYC_MATCH_LATCHn.commit();
 
 
-  hash << _PAHO_X_8_SYNC.commit();
-  hash << _POFY_ST_LATCH.commit(); // nor latch with p24.RUJU, p24.POME
-  hash << _WUSA_LCD_CLOCK_GATE.commit();
+  _PAHO_X_8_SYNC.commit();
+  _POFY_ST_LATCH.commit(); // nor latch with p24.RUJU, p24.POME
+  _WUSA_LCD_CLOCK_GATE.commit();
 
-  hash << _ROXE_INT_HBL_EN.commit();
-  hash << _RUFO_INT_VBL_EN.commit();
-  hash << _REFE_INT_OAM_EN.commit();
-  hash << _RUGU_INT_LYC_EN.commit();
+  _ROXE_INT_HBL_EN.commit();
+  _RUFO_INT_VBL_EN.commit();
+  _REFE_INT_OAM_EN.commit();
+  _RUGU_INT_LYC_EN.commit();
 
-  hash << _LCD_PIN_CP.commit();
-  hash << _LCD_PIN_ST.commit();
+  _LCD_PIN_CP.commit();
+  _LCD_PIN_ST.commit();
 
-  hash << XEHO_X0.commit();
-  hash << SAVY_X1.commit();
-  hash << XODU_X2.commit();
-  hash << XYDO_X3.commit();
-  hash << TUHU_X4.commit();
-  hash << TUKY_X5.commit();
-  hash << TAKO_X6.commit();
-  hash << SYBE_X7.commit();
+  XEHO_X0.commit();
+  SAVY_X1.commit();
+  XODU_X2.commit();
+  XYDO_X3.commit();
+  TUHU_X4.commit();
+  TUKY_X5.commit();
+  TAKO_X6.commit();
+  SYBE_X7.commit();
 
-  hash << BG_PIPE_A0.commit();
-  hash << BG_PIPE_A1.commit();
-  hash << BG_PIPE_A2.commit();
-  hash << BG_PIPE_A3.commit();
-  hash << BG_PIPE_A4.commit();
-  hash << BG_PIPE_A5.commit();
-  hash << BG_PIPE_A6.commit();
-  hash << BG_PIPE_A7.commit();
-  hash << BG_PIPE_B0.commit();
-  hash << BG_PIPE_B1.commit();
-  hash << BG_PIPE_B2.commit();
-  hash << BG_PIPE_B3.commit();
-  hash << BG_PIPE_B4.commit();
-  hash << BG_PIPE_B5.commit();
-  hash << BG_PIPE_B6.commit();
-  hash << BG_PIPE_B7.commit();
-  hash << SPR_PIPE_B0.commit();
-  hash << SPR_PIPE_B1.commit();
-  hash << SPR_PIPE_B2.commit();
-  hash << SPR_PIPE_B3.commit();
-  hash << SPR_PIPE_B4.commit();
-  hash << SPR_PIPE_B5.commit();
-  hash << SPR_PIPE_B6.commit();
-  hash << SPR_PIPE_B7.commit();
-  hash << SPR_PIPE_A0.commit();
-  hash << SPR_PIPE_A1.commit();
-  hash << SPR_PIPE_A2.commit();
-  hash << SPR_PIPE_A3.commit();
-  hash << SPR_PIPE_A4.commit();
-  hash << SPR_PIPE_A5.commit();
-  hash << SPR_PIPE_A6.commit();
-  hash << SPR_PIPE_A7.commit();
-  hash << PAL_PIPE_0.commit();
-  hash << PAL_PIPE_1.commit();
-  hash << PAL_PIPE_2.commit();
-  hash << PAL_PIPE_3.commit();
-  hash << PAL_PIPE_4.commit();
-  hash << PAL_PIPE_5.commit();
-  hash << PAL_PIPE_6.commit();
-  hash << PAL_PIPE_7.commit();
-  hash << MASK_PIPE_0.commit();
-  hash << MASK_PIPE_1.commit();
-  hash << MASK_PIPE_2.commit();
-  hash << MASK_PIPE_3.commit();
-  hash << MASK_PIPE_4.commit();
-  hash << MASK_PIPE_5.commit();
-  hash << MASK_PIPE_6.commit();
-  hash << MASK_PIPE_7.commit();
+  BG_PIPE_A0.commit();
+  BG_PIPE_A1.commit();
+  BG_PIPE_A2.commit();
+  BG_PIPE_A3.commit();
+  BG_PIPE_A4.commit();
+  BG_PIPE_A5.commit();
+  BG_PIPE_A6.commit();
+  BG_PIPE_A7.commit();
+  BG_PIPE_B0.commit();
+  BG_PIPE_B1.commit();
+  BG_PIPE_B2.commit();
+  BG_PIPE_B3.commit();
+  BG_PIPE_B4.commit();
+  BG_PIPE_B5.commit();
+  BG_PIPE_B6.commit();
+  BG_PIPE_B7.commit();
+  SPR_PIPE_B0.commit();
+  SPR_PIPE_B1.commit();
+  SPR_PIPE_B2.commit();
+  SPR_PIPE_B3.commit();
+  SPR_PIPE_B4.commit();
+  SPR_PIPE_B5.commit();
+  SPR_PIPE_B6.commit();
+  SPR_PIPE_B7.commit();
+  SPR_PIPE_A0.commit();
+  SPR_PIPE_A1.commit();
+  SPR_PIPE_A2.commit();
+  SPR_PIPE_A3.commit();
+  SPR_PIPE_A4.commit();
+  SPR_PIPE_A5.commit();
+  SPR_PIPE_A6.commit();
+  SPR_PIPE_A7.commit();
+  PAL_PIPE_0.commit();
+  PAL_PIPE_1.commit();
+  PAL_PIPE_2.commit();
+  PAL_PIPE_3.commit();
+  PAL_PIPE_4.commit();
+  PAL_PIPE_5.commit();
+  PAL_PIPE_6.commit();
+  PAL_PIPE_7.commit();
+  MASK_PIPE_0.commit();
+  MASK_PIPE_1.commit();
+  MASK_PIPE_2.commit();
+  MASK_PIPE_3.commit();
+  MASK_PIPE_4.commit();
+  MASK_PIPE_5.commit();
+  MASK_PIPE_6.commit();
+  MASK_PIPE_7.commit();
 
-  hash << _PAVO_BGP0.commit();
-  hash << _NUSY_BGP1.commit();
-  hash << _PYLU_BGP2.commit();
-  hash << _MAXY_BGP3.commit();
-  hash << _MUKE_BGP4.commit();
-  hash << _MORU_BGP5.commit();
-  hash << _MOGY_BGP6.commit();
-  hash << _MENA_BGP7.commit();
-  hash << _XUFU_OBP00.commit();
-  hash << _XUKY_OBP01.commit();
-  hash << _XOVA_OBP02.commit();
-  hash << _XALO_OBP03.commit();
-  hash << _XERU_OBP04.commit();
-  hash << _XYZE_OBP05.commit();
-  hash << _XUPO_OBP06.commit();
-  hash << _XANA_OBP07.commit();
-  hash << _MOXY_OBP10.commit();
-  hash << _LAWO_OBP11.commit();
-  hash << _MOSA_OBP12.commit();
-  hash << _LOSE_OBP13.commit();
-  hash << _LUNE_OBP14.commit();
-  hash << _LUGU_OBP15.commit();
-  hash << _LEPU_OBP16.commit();
-  hash << _LUXO_OBP17.commit();
+  _PAVO_BGP0.commit();
+  _NUSY_BGP1.commit();
+  _PYLU_BGP2.commit();
+  _MAXY_BGP3.commit();
+  _MUKE_BGP4.commit();
+  _MORU_BGP5.commit();
+  _MOGY_BGP6.commit();
+  _MENA_BGP7.commit();
+  _XUFU_OBP00.commit();
+  _XUKY_OBP01.commit();
+  _XOVA_OBP02.commit();
+  _XALO_OBP03.commit();
+  _XERU_OBP04.commit();
+  _XYZE_OBP05.commit();
+  _XUPO_OBP06.commit();
+  _XANA_OBP07.commit();
+  _MOXY_OBP10.commit();
+  _LAWO_OBP11.commit();
+  _MOSA_OBP12.commit();
+  _LOSE_OBP13.commit();
+  _LUNE_OBP14.commit();
+  _LUGU_OBP15.commit();
+  _LEPU_OBP16.commit();
+  _LUXO_OBP17.commit();
 
-  hash << _LCD_PIN_LD1.commit();
-  hash << _LCD_PIN_LD0.commit();
+  _LCD_PIN_LD1.commit();
+  _LCD_PIN_LD0.commit();
 
-  return hash;
+  return {SignalHash::hash_blob(this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

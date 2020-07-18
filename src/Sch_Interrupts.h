@@ -21,31 +21,31 @@ struct InterruptRegisters {
 private:
   friend SchematicTop;
 
-  /*p02.LOPE*/ Reg LOPE_FF0F_0;
-  /*p02.UBUL*/ Reg UBUL_FF0F_3;
-  /*p02.ULAK*/ Reg ULAK_FF0F_4;
-  /*p02.LALU*/ Reg LALU_FF0F_1;
-  /*p02.NYBO*/ Reg NYBO_FF0F_2;
+  /*p02.LOPE*/ Reg2 LOPE_FF0F_0 = Reg2::D0C0;
+  /*p02.UBUL*/ Reg2 UBUL_FF0F_3 = Reg2::D0C0;
+  /*p02.ULAK*/ Reg2 ULAK_FF0F_4 = Reg2::D0C0;
+  /*p02.LALU*/ Reg2 LALU_FF0F_1 = Reg2::D0C0;
+  /*p02.NYBO*/ Reg2 NYBO_FF0F_2 = Reg2::D0C0;
 
-  /*p02.MATY*/ Reg MATY_FF0F_L0;
-  /*p02.NEJY*/ Reg NEJY_FF0F_L1;
-  /*p02.NUTY*/ Reg NUTY_FF0F_L2;
-  /*p02.MOPO*/ Reg MOPO_FF0F_L3;
-  /*p02.PAVY*/ Reg PAVY_FF0F_L4;
+  /*p02.MATY*/ Reg2 MATY_FF0F_L0 = Reg2::D0C0;
+  /*p02.NEJY*/ Reg2 NEJY_FF0F_L1 = Reg2::D0C0;
+  /*p02.NUTY*/ Reg2 NUTY_FF0F_L2 = Reg2::D0C0;
+  /*p02.MOPO*/ Reg2 MOPO_FF0F_L3 = Reg2::D0C0;
+  /*p02.PAVY*/ Reg2 PAVY_FF0F_L4 = Reg2::D0C0;
 
   // Interrupts
-  Reg CPU_PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
-  Reg CPU_PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
-  Reg CPU_PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
-  Reg CPU_PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
-  Reg CPU_PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
+  Pin2 CPU_PIN_INT_VBLANK  = Pin2::HIZ_NP;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
+  Pin2 CPU_PIN_INT_STAT    = Pin2::HIZ_NP;    // bottom right port PORTB_07: <-        P02.LALU, stat int
+  Pin2 CPU_PIN_INT_TIMER   = Pin2::HIZ_NP;    // bottom right port PORTB_11: <-        P02.NYBO, timer int
+  Pin2 CPU_PIN_INT_SERIAL  = Pin2::HIZ_NP;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
+  Pin2 CPU_PIN_INT_JOYPAD  = Pin2::HIZ_NP;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
 
   // Interrupt acks
-  CpuPinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
-  CpuPinIn  CPU_PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
-  CpuPinIn  CPU_PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
-  CpuPinIn  CPU_PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
-  CpuPinIn  CPU_PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
+  Pin2  CPU_PIN_ACK_VBLANK = Pin2::HOLD_0;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
+  Pin2  CPU_PIN_ACK_STAT   = Pin2::HOLD_0;    // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
+  Pin2  CPU_PIN_ACK_TIMER  = Pin2::HOLD_0;    // bottom right port PORTB_09: ->        P02.LESA, timer int ack
+  Pin2  CPU_PIN_ACK_SERIAL = Pin2::HOLD_0;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
+  Pin2  CPU_PIN_ACK_JOYPAD = Pin2::HOLD_0;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
 };
 
 //-----------------------------------------------------------------------------

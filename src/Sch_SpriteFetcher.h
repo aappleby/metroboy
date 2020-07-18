@@ -58,24 +58,24 @@ private:
     return or(_TYFO_SFETCH_S0_D1.qn(), TYNO);
   }
 
-  Signal _TEPA_RENDERINGn;
-  Signal _LOBY_RENDERINGn;
+  Sig2 _TEPA_RENDERINGn;
+  Sig2 _LOBY_RENDERINGn;
 
-  /*p27.TAKA*/ Reg _TAKA_SFETCH_RUNNINGp;
-  /*p27.SOBU*/ Reg _SOBU_SFETCH_REQp;
-  /*p27.SUDA*/ Reg _SUDA_SFETCH_REQp;
+  /*p27.TAKA*/ Reg2 _TAKA_SFETCH_RUNNINGp = Reg2::D0C0;
+  /*p27.SOBU*/ Reg2 _SOBU_SFETCH_REQp = Reg2::D0C0;
+  /*p27.SUDA*/ Reg2 _SUDA_SFETCH_REQp = Reg2::D0C0;
 
   // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
 
-  /*p29.TOXE*/ Reg _TOXE_SFETCH_S0;
-  /*p29.TYFO*/ Reg _TYFO_SFETCH_S0_D1;
+  /*p29.TOXE*/ Reg2 _TOXE_SFETCH_S0 = Reg2::D0C0;
+  /*p29.TYFO*/ Reg2 _TYFO_SFETCH_S0_D1 = Reg2::D0C0;
 
-  /*p29.TULY*/ Reg _TULY_SFETCH_S1;
-  /*p29.TESE*/ Reg _TESE_SFETCH_S2;
+  /*p29.TULY*/ Reg2 _TULY_SFETCH_S1 = Reg2::D0C0;
+  /*p29.TESE*/ Reg2 _TESE_SFETCH_S2 = Reg2::D0C0;
 
-  /*p29.TOBU*/ Reg _TOBU_SFETCH_S1_D2;
-  /*p29.VONU*/ Reg _VONU_SFETCH_S1_D4;
-  /*p29.SEBA*/ Reg _SEBA_SFETCH_S1_D5;
+  /*p29.TOBU*/ Reg2 _TOBU_SFETCH_S1_D2 = Reg2::D0C0;
+  /*p29.VONU*/ Reg2 _VONU_SFETCH_S1_D4 = Reg2::D0C0;
+  /*p29.SEBA*/ Reg2 _SEBA_SFETCH_S1_D5 = Reg2::D0C0;
 
 };
 

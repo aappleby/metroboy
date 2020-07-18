@@ -4,18 +4,6 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-SchematicTop::SchematicTop() {
-  // HACK preset these so we don't read hiz
-
-  int_reg.CPU_PIN_ACK_JOYPAD.set_pin_in(0);
-  int_reg.CPU_PIN_ACK_SERIAL.set_pin_in(0);
-  int_reg.CPU_PIN_ACK_STAT.set_pin_in(0);
-  int_reg.CPU_PIN_ACK_TIMER.set_pin_in(0);
-  int_reg.CPU_PIN_ACK_VBLANK.set_pin_in(0);
-}
-
-//-----------------------------------------------------------------------------
-
 SignalHash SchematicTop::tick() {
 
   bool verbose = false;

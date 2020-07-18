@@ -52,14 +52,14 @@ struct PixelPipe {
   /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return _TEKE_WIN_Y7.q(); }
 
   // Pixel counter
-  /*p21.XEHO*/ Reg XEHO_X0;
-  /*p21.SAVY*/ Reg SAVY_X1;
-  /*p21.XODU*/ Reg XODU_X2;
-  /*p21.XYDO*/ Reg XYDO_X3;
-  /*p21.TUHU*/ Reg TUHU_X4;
-  /*p21.TUKY*/ Reg TUKY_X5;
-  /*p21.TAKO*/ Reg TAKO_X6;
-  /*p21.SYBE*/ Reg SYBE_X7;
+  /*p21.XEHO*/ Reg2 XEHO_X0 = Reg2::D0C0;
+  /*p21.SAVY*/ Reg2 SAVY_X1 = Reg2::D0C0;
+  /*p21.XODU*/ Reg2 XODU_X2 = Reg2::D0C0;
+  /*p21.XYDO*/ Reg2 XYDO_X3 = Reg2::D0C0;
+  /*p21.TUHU*/ Reg2 TUHU_X4 = Reg2::D0C0;
+  /*p21.TUKY*/ Reg2 TUKY_X5 = Reg2::D0C0;
+  /*p21.TAKO*/ Reg2 TAKO_X6 = Reg2::D0C0;
+  /*p21.SYBE*/ Reg2 SYBE_X7 = Reg2::D0C0;
 
   // -> interrupts
   /*p21.WODU*/ wire WODU_RENDER_DONEp() const { return and(_XENA_STORE_MATCHn, XANO_X_167p()); }

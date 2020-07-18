@@ -27,11 +27,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // MATY is connected to cpu int pin...CPU_PIN_INT_VBLANK?
     // schematic says LOPE also connected to CPU_PIN_INT_VBLANK?
 
-    /*p02.MATY*/ MATY_FF0F_L0 = tp_latch(_ROLO_FF0F_RDn, LOPE_FF0F_0.q()); // OUTPUT ON RUNG 10
-    /*p02.NEJY*/ NEJY_FF0F_L1 = tp_latch(_ROLO_FF0F_RDn, UBUL_FF0F_3.q()); // OUTPUT ON RUNG 10
-    /*p02.NUTY*/ NUTY_FF0F_L2 = tp_latch(_ROLO_FF0F_RDn, ULAK_FF0F_4.q()); // OUTPUT ON RUNG 10
-    /*p02.MOPO*/ MOPO_FF0F_L3 = tp_latch(_ROLO_FF0F_RDn, LALU_FF0F_1.q()); // OUTPUT ON RUNG 10
-    /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
+    /*p02.MATY*/ MATY_FF0F_L0 = tp_latch_r2(_ROLO_FF0F_RDn, LOPE_FF0F_0.q()); // OUTPUT ON RUNG 10
+    /*p02.NEJY*/ NEJY_FF0F_L1 = tp_latch_r2(_ROLO_FF0F_RDn, UBUL_FF0F_3.q()); // OUTPUT ON RUNG 10
+    /*p02.NUTY*/ NUTY_FF0F_L2 = tp_latch_r2(_ROLO_FF0F_RDn, ULAK_FF0F_4.q()); // OUTPUT ON RUNG 10
+    /*p02.MOPO*/ MOPO_FF0F_L3 = tp_latch_r2(_ROLO_FF0F_RDn, LALU_FF0F_1.q()); // OUTPUT ON RUNG 10
+    /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch_r2(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not(_ROLO_FF0F_RDn);
     /*p02.NELA*/ cpu_bus.CPU_TRI_D0 = tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.q());
@@ -111,17 +111,17 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // LOPE_22 << CLKp VYPU_03
 
     wire PESU_GND = 0;
-    /*p02.LOPE*/ LOPE_FF0F_0 = ff22(_VYPU_VBLANKp,     _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_GND);
-    /*p02.LALU*/ LALU_FF0F_1 = ff22(VOTY_INT_STATp,   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_GND);
-    /*p02.NYBO*/ NYBO_FF0F_2 = ff22(top.tim_reg.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_GND);
-    /*p02.UBUL*/ UBUL_FF0F_3 = ff22(top.ser_reg.CALY_SER_INTp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_GND);
-    /*p02.ULAK*/ ULAK_FF0F_4 = ff22(top.joypad.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_GND);
+    /*p02.LOPE*/ LOPE_FF0F_0 = ff22_r2(_VYPU_VBLANKp,     _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_GND);
+    /*p02.LALU*/ LALU_FF0F_1 = ff22_r2(VOTY_INT_STATp,   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_GND);
+    /*p02.NYBO*/ NYBO_FF0F_2 = ff22_r2(top.tim_reg.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_GND);
+    /*p02.UBUL*/ UBUL_FF0F_3 = ff22_r2(top.ser_reg.CALY_SER_INTp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_GND);
+    /*p02.ULAK*/ ULAK_FF0F_4 = ff22_r2(top.joypad.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_GND);
 
-    CPU_PIN_INT_VBLANK = SignalState::from_wire(LOPE_FF0F_0.q());
-    CPU_PIN_INT_STAT   = SignalState::from_wire(LALU_FF0F_1.q());
-    CPU_PIN_INT_TIMER  = SignalState::from_wire(NYBO_FF0F_2.q());
-    CPU_PIN_INT_SERIAL = SignalState::from_wire(UBUL_FF0F_3.q());
-    CPU_PIN_INT_JOYPAD = SignalState::from_wire(ULAK_FF0F_4.q());
+    CPU_PIN_INT_VBLANK = LOPE_FF0F_0.q();
+    CPU_PIN_INT_STAT   = LALU_FF0F_1.q();
+    CPU_PIN_INT_TIMER  = NYBO_FF0F_2.q();
+    CPU_PIN_INT_SERIAL = UBUL_FF0F_3.q();
+    CPU_PIN_INT_JOYPAD = ULAK_FF0F_4.q();
   }
 }
 
@@ -147,11 +147,11 @@ SignalHash InterruptRegisters::commit() {
   hash << CPU_PIN_INT_SERIAL.commit();    // PORTB_15: <- UBUL, serial int
   hash << CPU_PIN_INT_JOYPAD.commit();    // PORTB_19: <- ULAK, joypad int
 
-  hash << CPU_PIN_ACK_VBLANK.commit_input();     // PORTB_01: -> LETY, vblank int ack
-  hash << CPU_PIN_ACK_STAT.commit_input();       // PORTB_05: -> LEJA, stat int ack
-  hash << CPU_PIN_ACK_TIMER.commit_input();      // PORTB_09: -> LESA, timer int ack
-  hash << CPU_PIN_ACK_SERIAL.commit_input();     // PORTB_13: -> LUFE, serial int ack
-  hash << CPU_PIN_ACK_JOYPAD.commit_input();     // PORTB_17: -> LAMO, joypad int ack
+  hash << CPU_PIN_ACK_VBLANK.commit();     // PORTB_01: -> LETY, vblank int ack
+  hash << CPU_PIN_ACK_STAT.commit();       // PORTB_05: -> LEJA, stat int ack
+  hash << CPU_PIN_ACK_TIMER.commit();      // PORTB_09: -> LESA, timer int ack
+  hash << CPU_PIN_ACK_SERIAL.commit();     // PORTB_13: -> LUFE, serial int ack
+  hash << CPU_PIN_ACK_JOYPAD.commit();     // PORTB_17: -> LAMO, joypad int ack
 
   return hash;
 }

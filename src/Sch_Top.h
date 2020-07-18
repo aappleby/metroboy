@@ -25,8 +25,6 @@ namespace Schematics {
 
 struct SchematicTop {
 
-  SchematicTop();
-
   SchematicTop& top = *this;
 
   SignalHash tick();

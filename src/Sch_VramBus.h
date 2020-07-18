@@ -62,17 +62,17 @@ private:
   //-----------------------------------------------------------------------------
   // VRAM bus
 
-  Reg _VRAM_PIN_MCSn_A;   // PIN_43 <- P25.SOKY
-  ExtPinIn  _VRAM_PIN_MCSn_C;   // PIN_43 -> P25.TEFY
-  Reg _VRAM_PIN_MCSn_D;   // PIN_43 <- P25.SETY
+  Pin2 _VRAM_PIN_MCSn_A = Pin2::HIZ_NP;   // PIN_43 <- P25.SOKY
+  Pin2 _VRAM_PIN_MCSn_C = Pin2::HOLD_0;   // PIN_43 -> P25.TEFY
+  Pin2 _VRAM_PIN_MCSn_D = Pin2::HIZ_NP;   // PIN_43 <- P25.SETY
 
-  Reg _VRAM_PIN_MOEn_A;   // PIN_45 <- P25.REFO
-  ExtPinIn  _VRAM_PIN_MOEn_C;   // PIN_45 -> P25.TAVY
-  Reg _VRAM_PIN_MOEn_D;   // PIN_45 <- P25.SAHA
+  Pin2 _VRAM_PIN_MOEn_A = Pin2::HIZ_NP;   // PIN_45 <- P25.REFO
+  Pin2 _VRAM_PIN_MOEn_C = Pin2::HOLD_0;   // PIN_45 -> P25.TAVY
+  Pin2 _VRAM_PIN_MOEn_D = Pin2::HIZ_NP;   // PIN_45 <- P25.SAHA
 
-  Reg _VRAM_PIN_MWRn_A;   // PIN_49 <- P25.SYSY
-  ExtPinIn  _VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
-  Reg _VRAM_PIN_MWRn_D;   // PIN_49 <- P25.RAGU
+  Pin2 _VRAM_PIN_MWRn_A = Pin2::HIZ_NP;   // PIN_49 <- P25.SYSY
+  Pin2 _VRAM_PIN_MWRn_C = Pin2::HOLD_0;   // PIN_49 -> P25.SUDO
+  Pin2 _VRAM_PIN_MWRn_D = Pin2::HIZ_NP;   // PIN_49 <- P25.RAGU
 
   Pin2 _VRAM_PIN_MA00_AD = Pin2::HIZ_NP;  // PIN_34 <- P04.ECAL
   Pin2 _VRAM_PIN_MA01_AD = Pin2::HIZ_NP;  // PIN_35 <- P04.EGEZ

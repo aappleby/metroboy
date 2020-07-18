@@ -27,10 +27,6 @@ VramBus::VramBus(){
   _VRM_TRI_D5.preset_a(0);
   _VRM_TRI_D6.preset_a(0);
   _VRM_TRI_D7.preset_a(0);
-  
-  _VRAM_PIN_MCSn_C.set_pin_in(0);
-  _VRAM_PIN_MOEn_C.set_pin_in(0);
-  _VRAM_PIN_MWRn_C.set_pin_in(0);
 }
 
 //------------------------------------------------------------------------------
@@ -63,8 +59,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SOFY*/ wire _SOFY_MWRn_D = or (_SOHY_MWRn, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SYSY*/ wire _SYSY_MWRp_A = not(_TAXY_MWRn_A);
     /*p25.RAGU*/ wire _RAGU_MWRp_D = not(_SOFY_MWRn_D);
-    _VRAM_PIN_MWRn_A = SignalState::from_wire(_SYSY_MWRp_A);
-    _VRAM_PIN_MWRn_D = SignalState::from_wire(_RAGU_MWRp_D);
+    _VRAM_PIN_MWRn_A = _SYSY_MWRp_A;
+    _VRAM_PIN_MWRn_D = _RAGU_MWRp_D;
   }
 
 
@@ -79,8 +75,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or (_RACU_MOEn, top.clk_reg.TUTO_DBG_VRAMp()); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire _REFO_MOEn_A = not(_SEMA_MOEn_A);
     /*p25.SAHA*/ wire _SAHA_MOEn_D = not(_RUTE_MOEn_D);
-    _VRAM_PIN_MOEn_A = SignalState::from_wire(_REFO_MOEn_A);
-    _VRAM_PIN_MOEn_D = SignalState::from_wire(_SAHA_MOEn_D);
+    _VRAM_PIN_MOEn_A = _REFO_MOEn_A;
+    _VRAM_PIN_MOEn_D = _SAHA_MOEn_D;
   }
 
   {
@@ -95,8 +91,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SEWO*/ wire _SEWO_MCSn_D = or (_SUTU_MCSn, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SOKY*/ wire _SOKY_MCSp_A = not(_TODE_MCSn_A);
     /*p25.SETY*/ wire _SETY_MCSp_D = not(_SEWO_MCSn_D);
-    _VRAM_PIN_MCSn_A = SignalState::from_wire(_SOKY_MCSp_A);
-    _VRAM_PIN_MCSn_D = SignalState::from_wire(_SETY_MCSp_D);
+    _VRAM_PIN_MCSn_A = _SOKY_MCSp_A;
+    _VRAM_PIN_MCSn_D = _SETY_MCSp_D;
   }
 
   //----------------------------------------
@@ -535,15 +531,15 @@ SignalHash VramBus::commit() {
   hash << _VRM_TRI_D7.commit_pd();
 
   hash << _VRAM_PIN_MCSn_A.commit();   // PIN_43 <- SOKY
-  hash << _VRAM_PIN_MCSn_C.commit_input();   // PIN_43 -> TEFY
+  hash << _VRAM_PIN_MCSn_C.commit();   // PIN_43 -> TEFY
   hash << _VRAM_PIN_MCSn_D.commit();   // PIN_43 <- SETY
 
   hash << _VRAM_PIN_MOEn_A.commit();   // PIN_45 <- REFO
-  hash << _VRAM_PIN_MOEn_C.commit_input();   // PIN_45 -> TAVY
+  hash << _VRAM_PIN_MOEn_C.commit();   // PIN_45 -> TAVY
   hash << _VRAM_PIN_MOEn_D.commit();   // PIN_45 <- SAHA
 
   hash << _VRAM_PIN_MWRn_A.commit();   // PIN_49 <- SYSY
-  hash << _VRAM_PIN_MWRn_C.commit_input();   // PIN_49 -> SUDOs
+  hash << _VRAM_PIN_MWRn_C.commit();   // PIN_49 -> SUDOs
   hash << _VRAM_PIN_MWRn_D.commit();   // PIN_49 <- RAGU
 
   hash << _VRAM_PIN_MA00_AD.commit();  // PIN_34 <- ECAL

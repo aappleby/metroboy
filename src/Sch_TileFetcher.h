@@ -58,24 +58,24 @@ struct TileFetcher {
   /*p27.NOFU*/ wire NOFU_BFETCH_S2n() const { return not(_NYVA_BFETCH_S2.q()); }
 
   // FF42 - SCY -> vram bus
-  /*p23.GAVE*/ Reg GAVE_SCY0;
-  /*p23.FYMO*/ Reg FYMO_SCY1;
-  /*p23.FEZU*/ Reg FEZU_SCY2;
-  /*p23.FUJO*/ Reg FUJO_SCY3;
-  /*p23.DEDE*/ Reg DEDE_SCY4;
-  /*p23.FOTY*/ Reg FOTY_SCY5;
-  /*p23.FOHA*/ Reg FOHA_SCY6;
-  /*p23.FUNY*/ Reg FUNY_SCY7;
+  /*p23.GAVE*/ Reg2 GAVE_SCY0 = Reg2::D0C0;
+  /*p23.FYMO*/ Reg2 FYMO_SCY1 = Reg2::D0C0;
+  /*p23.FEZU*/ Reg2 FEZU_SCY2 = Reg2::D0C0;
+  /*p23.FUJO*/ Reg2 FUJO_SCY3 = Reg2::D0C0;
+  /*p23.DEDE*/ Reg2 DEDE_SCY4 = Reg2::D0C0;
+  /*p23.FOTY*/ Reg2 FOTY_SCY5 = Reg2::D0C0;
+  /*p23.FOHA*/ Reg2 FOHA_SCY6 = Reg2::D0C0;
+  /*p23.FUNY*/ Reg2 FUNY_SCY7 = Reg2::D0C0;
 
   // FF43 - SCX -> ppu, vram bus
-  /*p23.DATY*/ Reg DATY_SCX0;
-  /*p23.DUZU*/ Reg DUZU_SCX1;
-  /*p23.CYXU*/ Reg CYXU_SCX2;
-  /*p23.GUBO*/ Reg GUBO_SCX3;
-  /*p23.BEMY*/ Reg BEMY_SCX4;
-  /*p23.CUZY*/ Reg CUZY_SCX5;
-  /*p23.CABU*/ Reg CABU_SCX6;
-  /*p23.BAKE*/ Reg BAKE_SCX7;
+  /*p23.DATY*/ Reg2 DATY_SCX0 = Reg2::D0C0;
+  /*p23.DUZU*/ Reg2 DUZU_SCX1 = Reg2::D0C0;
+  /*p23.CYXU*/ Reg2 CYXU_SCX2 = Reg2::D0C0;
+  /*p23.GUBO*/ Reg2 GUBO_SCX3 = Reg2::D0C0;
+  /*p23.BEMY*/ Reg2 BEMY_SCX4 = Reg2::D0C0;
+  /*p23.CUZY*/ Reg2 CUZY_SCX5 = Reg2::D0C0;
+  /*p23.CABU*/ Reg2 CABU_SCX6 = Reg2::D0C0;
+  /*p23.BAKE*/ Reg2 BAKE_SCX7 = Reg2::D0C0;
 
 private:
   /*p27.LAXE*/ wire LAXE_BFETCH_S0n() const { return not(_LAXU_BFETCH_S0.q()); }

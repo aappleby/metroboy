@@ -95,8 +95,8 @@ private:
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }
 
-  /*p27.PYNU*/ Reg _PYNU_WIN_MODE_A;
-  /*p27.RYDY*/ Reg _RYDY_WIN_FIRST_TILE_A;
+  /*p27.PYNU*/ Reg2 _PYNU_WIN_MODE_A = Reg2::D0C0;
+  /*p27.RYDY*/ Reg2 _RYDY_WIN_FIRST_TILE_A = Reg2::D0C0;
 
   /*p27.NOPA*/ Reg2 _NOPA_WIN_MODE_B = Reg2::D0C0;
   /*p27.SOVY*/ Reg2 _SOVY_WIN_FIRST_TILE_B = Reg2::D0C0;

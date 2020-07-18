@@ -737,4 +737,8 @@ inline SignalState ff20(wire CLKp, wire LOADp, wire D) {
   return c;
 }
 
+inline uint8_t ff20_r2(wire CLKp, wire LOADp, bool D) {
+  if (LOADp) return SIG_A0C0 | (CLKp << 5) | (D << 4);
+  return SIG_D0C0 | (D << 4) | (CLKp << 5);
+}
 

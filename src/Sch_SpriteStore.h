@@ -14,7 +14,7 @@ struct SpriteStore {
   void tock(const SchematicTop& top);
   SignalHash commit();
 
-  /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
+  /*p29.FEPO*/ Sig2 FEPO_STORE_MATCHp;
   /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
 
   Reg SPR_TRI_INDX_0;
@@ -39,16 +39,16 @@ private:
   /*p30.YDUF*/ Reg YDUF_SPRITE_INDX4;
   /*p30.XECU*/ Reg XECU_SPRITE_INDX5;
 
-  /*p29.YDUG*/ Signal STORE0_MATCHn;
-  /*p29.DYDU*/ Signal STORE1_MATCHn;
-  /*p29.DEGO*/ Signal STORE2_MATCHn;
-  /*p29.YLOZ*/ Signal STORE3_MATCHn;
-  /*p29.XAGE*/ Signal STORE4_MATCHn;
-  /*p29.EGOM*/ Signal STORE5_MATCHn;
-  /*p29.YBEZ*/ Signal STORE6_MATCHn;
-  /*p29.DYKA*/ Signal STORE7_MATCHn;
-  /*p29.EFYL*/ Signal STORE8_MATCHn;
-  /*p29.YGEM*/ Signal STORE9_MATCHn;
+  /*p29.YDUG*/ Sig2 STORE0_MATCHn;
+  /*p29.DYDU*/ Sig2 STORE1_MATCHn;
+  /*p29.DEGO*/ Sig2 STORE2_MATCHn;
+  /*p29.YLOZ*/ Sig2 STORE3_MATCHn;
+  /*p29.XAGE*/ Sig2 STORE4_MATCHn;
+  /*p29.EGOM*/ Sig2 STORE5_MATCHn;
+  /*p29.YBEZ*/ Sig2 STORE6_MATCHn;
+  /*p29.DYKA*/ Sig2 STORE7_MATCHn;
+  /*p29.EFYL*/ Sig2 STORE8_MATCHn;
+  /*p29.YGEM*/ Sig2 STORE9_MATCHn;
 
   /*p29.DEZY*/ Reg DEZY_STORE_ENn_SYNC;
   /*p29.BESE*/ Reg SPRITE_COUNT0;

@@ -126,13 +126,13 @@ private:
 
   Signal _XENA_STORE_MATCHn;
 
-  /*p27.RYKU*/ Reg _RYKU_FINE_CNT0;
-  /*p27.ROGA*/ Reg _ROGA_FINE_CNT1;
-  /*p27.RUBU*/ Reg _RUBU_FINE_CNT2;
+  /*p27.RYKU*/ Reg2 _RYKU_FINE_CNT0 = Reg2::D0C0;
+  /*p27.ROGA*/ Reg2 _ROGA_FINE_CNT1 = Reg2::D0C0;
+  /*p27.RUBU*/ Reg2 _RUBU_FINE_CNT2 = Reg2::D0C0;
 
-  /*p21.XYMU*/ Reg _XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ Reg2 _XYMU_RENDERINGp = Reg2::D0C0; // this must be positive polarity, or stat read doesn't work
 
-  /*p21.RUPO*/ Reg _RUPO_LYC_MATCH_LATCHn;
+  /*p21.RUPO*/ Reg2 _RUPO_LYC_MATCH_LATCHn = Reg2::D0C0;
 
   /*p21.WUSA*/ Reg2 _WUSA_LCD_CLOCK_GATE = Reg2::D0C0;
   /*p21.VOGA*/ Reg2 _VOGA_RENDER_DONE_SYNC = Reg2::D0C0;

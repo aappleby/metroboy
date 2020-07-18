@@ -79,7 +79,9 @@ struct PixelPipe {
   /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE;
   /*p23.WYMO*/ Reg WYMO_LCDC_WINEN;
   /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
-  /*p23.XONA*/ Reg XONA_LCDC_EN;
+
+  /*p23.XONA*/ Reg XONA_LCDC_EN1;
+  /*p23.XONA*/ Reg2 XONA_LCDC_EN2 = Reg2::D0C0;
 
   // FF41 - STAT
   /*p21.ROXE*/ Reg2 _ROXE_INT_HBL_EN = Reg2::D0C0;

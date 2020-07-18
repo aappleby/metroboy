@@ -7,7 +7,7 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 void ClockRegisters::tick(const SchematicTop& top) {
-  _XONA_LCDC_EN = top.pix_pipe.XONA_LCDC_EN.q();
+  _XONA_LCDC_EN = top.pix_pipe.XONA_LCDC_EN1.q();
 }
 
 void ClockRegisters::tock(const SchematicTop& top) {

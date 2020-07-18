@@ -22,11 +22,6 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
-  if (phase_counter == 176 && pass_counter == 6) {
-    int x = 1;
-    (void)x;
-  }
-
   clk_reg.tick(top);
   lcd_reg.tick(top);
   sprite_scanner.tick(top);
@@ -51,6 +46,13 @@ SignalHash SchematicTop::tick() {
   sprite_scanner.tock(top);
   lcd_reg.tock(top, cpu_bus);
   sprite_store.tock(top);
+
+  if (phase_counter == 18 && pass_counter == 0) {
+    int x = 1;
+    (void)x;
+  }
+
+
   pix_pipe.tock(top, cpu_bus);
   sprite_fetcher.tock(top);
   tile_fetcher.tock(top, cpu_bus);
@@ -77,6 +79,7 @@ SignalHash SchematicTop::tick() {
  
   hash << sprite_store.commit();
   hash << sprite_fetcher.commit();
+
   hash << pix_pipe.commit();
   hash << tile_fetcher.commit();
   hash << int_reg.commit();

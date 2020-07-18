@@ -145,6 +145,10 @@ struct Reg {
     }
   }
 
+  void hax_a(bool c) {
+    a.val = c;
+  }
+
   void preset_a(bool c) {
     a.val = c;
     a.hiz = 0;
@@ -167,7 +171,7 @@ struct Reg {
     a.dirty = 0;
   }
 
-protected:
+//protected:
   SignalState a;
   SignalState b = SignalState::make_error();
 

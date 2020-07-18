@@ -184,7 +184,15 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 8, req);
   printf("\n");
 
-  top->pix_pipe.XONA_LCDC_EN.preset_a(1);
+  // sumtin brokn
+  /*
+  top->pix_pipe.XONA_LCDC_EN1.hax_a(1);
+  top->pix_pipe.XONA_LCDC_EN2.preset_a(1);
+  */
+
+  CHECKp(top->pix_pipe.XONA_LCDC_EN1.q() == top->pix_pipe.XONA_LCDC_EN2.q());
+  CHECKp(top->pix_pipe.XONA_LCDC_EN1.a.clk == top->pix_pipe.XONA_LCDC_EN2.reg_clk);
+
   gateboy.run(top, 24, req);
   printf("\n");
 

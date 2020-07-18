@@ -452,27 +452,27 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*p32.METE*/ wire _METE_LATCH_TILE_DAn = not(top.tile_fetcher.NYDY_LATCH_TILE_DAp());
     /*p32.LOMA*/ wire _LOMA_LATCH_TILE_DAp = not(_METE_LATCH_TILE_DAn);
-    /*p32.LEGU*/ top.LEGU_TILE_DA0 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D0.q());
-    /*p32.NUDU*/ top.NUDU_TILE_DA1 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D1.q());
-    /*p32.MUKU*/ top.MUKU_TILE_DA2 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D2.q());
-    /*p32.LUZO*/ top.LUZO_TILE_DA3 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D3.q());
-    /*p32.MEGU*/ top.MEGU_TILE_DA4 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D4.q());
-    /*p32.MYJY*/ top.MYJY_TILE_DA5 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D5.q());
-    /*p32.NASA*/ top.NASA_TILE_DA6 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D6.q());
-    /*p32.NEFO*/ top.NEFO_TILE_DA7 = ff8(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D7.q());
+    /*p32.LEGU*/ top.LEGU_TILE_DA0 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D0.q());
+    /*p32.NUDU*/ top.NUDU_TILE_DA1 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D1.q());
+    /*p32.MUKU*/ top.MUKU_TILE_DA2 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D2.q());
+    /*p32.LUZO*/ top.LUZO_TILE_DA3 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D3.q());
+    /*p32.MEGU*/ top.MEGU_TILE_DA4 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D4.q());
+    /*p32.MYJY*/ top.MYJY_TILE_DA5 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D5.q());
+    /*p32.NASA*/ top.NASA_TILE_DA6 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D6.q());
+    /*p32.NEFO*/ top.NEFO_TILE_DA7 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D7.q());
 
     // Why are the clocks swapped?
     /*p32.LESO*/ wire _LESO_LATCH_TILE_DBp = not(top.tile_fetcher.MOFU_LATCH_TILE_DBn());
     /*p??.LUVE*/ wire _LUVE_MATCH_TILE_DBn = not(_LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
     /*p32.LABU*/ wire _LABU_LATCH_TILE_DBp = not(_LUVE_MATCH_TILE_DBn);
-    /*p32.RAWU*/ top.RAWU_TILE_DB0 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D0.q());
-    /*p32.POZO*/ top.POZO_TILE_DB1 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D1.q());
-    /*p32.PYZO*/ top.PYZO_TILE_DB2 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D2.q());
-    /*p32.POXA*/ top.POXA_TILE_DB3 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D3.q());
-    /*p32.PULO*/ top.PULO_TILE_DB4 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D4.q());
-    /*p32.POJU*/ top.POJU_TILE_DB5 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D5.q());
-    /*p32.POWY*/ top.POWY_TILE_DB6 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D6.q());
-    /*p32.PYJU*/ top.PYJU_TILE_DB7 = ff11(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D7.q());
+    /*p32.RAWU*/ top.RAWU_TILE_DB0 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D0.q());
+    /*p32.POZO*/ top.POZO_TILE_DB1 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D1.q());
+    /*p32.PYZO*/ top.PYZO_TILE_DB2 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D2.q());
+    /*p32.POXA*/ top.POXA_TILE_DB3 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D3.q());
+    /*p32.PULO*/ top.PULO_TILE_DB4 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D4.q());
+    /*p32.POJU*/ top.POJU_TILE_DB5 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D5.q());
+    /*p32.POWY*/ top.POWY_TILE_DB6 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D6.q());
+    /*p32.PYJU*/ top.PYJU_TILE_DB7 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D7.q());
   }
 
   // VRAM tri -> sprite pix temp + x flip
@@ -491,27 +491,27 @@ void VramBus::tock(SchematicTop& top) {
     /*p29.NYBE*/ wire _NYBE_CLKn = not(_PEBY_CLKp);
     /*p29.PUCO*/ wire _PUCO_CLKp = not(_NYBE_CLKn);
 
-    /*p33.PEFO*/ top.PEFO_SPRITE_DA0 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _POBE_FLIP0);
-    /*p33.ROKA*/ top.ROKA_SPRITE_DA1 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PACY_FLIP1);
-    /*p33.MYTU*/ top.MYTU_SPRITE_DA2 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PONO_FLIP2);
-    /*p33.RAMU*/ top.RAMU_SPRITE_DA3 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PUGU_FLIP3);
-    /*p33.SELE*/ top.SELE_SPRITE_DA4 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PUTE_FLIP4);
-    /*p33.SUTO*/ top.SUTO_SPRITE_DA5 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PULY_FLIP5);
-    /*p33.RAMA*/ top.RAMA_SPRITE_DA6 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PELO_FLIP6);
-    /*p33.RYDU*/ top.RYDU_SPRITE_DA7 = ff8(_PUCO_CLKp, !_PUCO_CLKp, _PAWE_FLIP7);
+    /*p33.PEFO*/ top.PEFO_SPRITE_DA0 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _POBE_FLIP0);
+    /*p33.ROKA*/ top.ROKA_SPRITE_DA1 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PACY_FLIP1);
+    /*p33.MYTU*/ top.MYTU_SPRITE_DA2 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PONO_FLIP2);
+    /*p33.RAMU*/ top.RAMU_SPRITE_DA3 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PUGU_FLIP3);
+    /*p33.SELE*/ top.SELE_SPRITE_DA4 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PUTE_FLIP4);
+    /*p33.SUTO*/ top.SUTO_SPRITE_DA5 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PULY_FLIP5);
+    /*p33.RAMA*/ top.RAMA_SPRITE_DA6 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PELO_FLIP6);
+    /*p33.RYDU*/ top.RYDU_SPRITE_DA7 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PAWE_FLIP7);
 
     /*p29.VYWA*/ wire _VYWA_CLKp = not(top.sprite_fetcher.TOPU_LATCH_SPPIXA());
     /*p29.WENY*/ wire _WENY_CLKn = not(_VYWA_CLKp);
     /*p29.XADO*/ wire _XADO_CLKp = not(_WENY_CLKn);
 
-    /*p33.REWO*/ top.REWO_SPRITE_DB0 = ff8(_XADO_CLKp, !_XADO_CLKp, _POBE_FLIP0);
-    /*p33.PEBA*/ top.PEBA_SPRITE_DB1 = ff8(_XADO_CLKp, !_XADO_CLKp, _PACY_FLIP1);
-    /*p33.MOFO*/ top.MOFO_SPRITE_DB2 = ff8(_XADO_CLKp, !_XADO_CLKp, _PONO_FLIP2);
-    /*p33.PUDU*/ top.PUDU_SPRITE_DB3 = ff8(_XADO_CLKp, !_XADO_CLKp, _PUGU_FLIP3);
-    /*p33.SAJA*/ top.SAJA_SPRITE_DB4 = ff8(_XADO_CLKp, !_XADO_CLKp, _PUTE_FLIP4);
-    /*p33.SUNY*/ top.SUNY_SPRITE_DB5 = ff8(_XADO_CLKp, !_XADO_CLKp, _PULY_FLIP5);
-    /*p33.SEMO*/ top.SEMO_SPRITE_DB6 = ff8(_XADO_CLKp, !_XADO_CLKp, _PELO_FLIP6);
-    /*p33.SEGA*/ top.SEGA_SPRITE_DB7 = ff8(_XADO_CLKp, !_XADO_CLKp, _PAWE_FLIP7);
+    /*p33.REWO*/ top.REWO_SPRITE_DB0 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _POBE_FLIP0);
+    /*p33.PEBA*/ top.PEBA_SPRITE_DB1 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PACY_FLIP1);
+    /*p33.MOFO*/ top.MOFO_SPRITE_DB2 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PONO_FLIP2);
+    /*p33.PUDU*/ top.PUDU_SPRITE_DB3 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PUGU_FLIP3);
+    /*p33.SAJA*/ top.SAJA_SPRITE_DB4 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PUTE_FLIP4);
+    /*p33.SUNY*/ top.SUNY_SPRITE_DB5 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PULY_FLIP5);
+    /*p33.SEMO*/ top.SEMO_SPRITE_DB6 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PELO_FLIP6);
+    /*p33.SEGA*/ top.SEGA_SPRITE_DB7 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PAWE_FLIP7);
   }
 }
 

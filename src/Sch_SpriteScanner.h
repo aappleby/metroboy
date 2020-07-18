@@ -57,44 +57,44 @@ private:
   //----------------------------------------
   // Signals
 
-  Signal _XYLO_LCDC_SPEN;
-  Signal _XYMU_RENDERINGp;
-  Signal _BALU_LINE_RSTp;
-  Signal _BAGY_LINE_RSTn;
+  Sig2 _XYLO_LCDC_SPEN;
+  Sig2 _XYMU_RENDERINGp;
+  Sig2 _BALU_LINE_RSTp;
+  Sig2 _BAGY_LINE_RSTn;
 
-  /*p29.ERUC*/ Signal _ERUC_YDIFF_S0;
-  /*p29.ERUC*/ Signal _ERUC_YDIFF_C0;
-  /*p29.ENEF*/ Signal _ENEF_YDIFF_S1;
-  /*p29.ENEF*/ Signal _ENEF_YDIFF_C1;
-  /*p29.FECO*/ Signal _FECO_YDIFF_S2;
-  /*p29.FECO*/ Signal _FECO_YDIFF_C2;
-  /*p29.GYKY*/ Signal _GYKY_YDIFF_S3;
-  /*p29.GYKY*/ Signal _GYKY_YDIFF_C3;
-  /*p29.GOPU*/ Signal _GOPU_YDIFF_S4;
-  /*p29.GOPU*/ Signal _GOPU_YDIFF_C4;
-  /*p29.FUWA*/ Signal _FUWA_YDIFF_S5;
-  /*p29.FUWA*/ Signal _FUWA_YDIFF_C5;
-  /*p29.GOJU*/ Signal _GOJU_YDIFF_S6;
-  /*p29.GOJU*/ Signal _GOJU_YDIFF_C6;
-  /*p29.WUHU*/ Signal _WUHU_YDIFF_S7;
-  /*p29.WUHU*/ Signal _WUHU_YDIFF_C7;
+  /*p29.ERUC*/ Sig2 _ERUC_YDIFF_S0;
+  /*p29.ERUC*/ Sig2 _ERUC_YDIFF_C0;
+  /*p29.ENEF*/ Sig2 _ENEF_YDIFF_S1;
+  /*p29.ENEF*/ Sig2 _ENEF_YDIFF_C1;
+  /*p29.FECO*/ Sig2 _FECO_YDIFF_S2;
+  /*p29.FECO*/ Sig2 _FECO_YDIFF_C2;
+  /*p29.GYKY*/ Sig2 _GYKY_YDIFF_S3;
+  /*p29.GYKY*/ Sig2 _GYKY_YDIFF_C3;
+  /*p29.GOPU*/ Sig2 _GOPU_YDIFF_S4;
+  /*p29.GOPU*/ Sig2 _GOPU_YDIFF_C4;
+  /*p29.FUWA*/ Sig2 _FUWA_YDIFF_S5;
+  /*p29.FUWA*/ Sig2 _FUWA_YDIFF_C5;
+  /*p29.GOJU*/ Sig2 _GOJU_YDIFF_S6;
+  /*p29.GOJU*/ Sig2 _GOJU_YDIFF_C6;
+  /*p29.WUHU*/ Sig2 _WUHU_YDIFF_S7;
+  /*p29.WUHU*/ Sig2 _WUHU_YDIFF_C7;
 
-  /*p29.CARE*/ Signal _CARE_STORE_ENp_ABxxEFxx; // to sprite store
+  /*p29.CARE*/ Sig2 _CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
   //----------------------------------------
   // States
 
-  /*p28.BESU*/ Reg _BESU_SCANNINGp;
-  /*p29.CENO*/ Reg    _CENO_SCANNINGp;
+  /*p28.BESU*/ Reg2 _BESU_SCANNINGp = Reg2::D0C0;
+  /*p29.CENO*/ Reg2 _CENO_SCANNINGp = Reg2::D0C0;
 
-  /*p28.YFEL*/ Reg _YFEL_SCAN0;
-  /*p28.WEWY*/ Reg _WEWY_SCAN1;
-  /*p28.GOSO*/ Reg _GOSO_SCAN2;
-  /*p28.ELYN*/ Reg _ELYN_SCAN3;
-  /*p28.FAHA*/ Reg _FAHA_SCAN4;
-  /*p28.FONY*/ Reg _FONY_SCAN5;
-  /*p29.BYBA*/ Reg _BYBA_SCAN_DONE_A;
-  /*p29.DOBA*/ Reg _DOBA_SCAN_DONE_B;
+  /*p28.YFEL*/ Reg2 _YFEL_SCAN0 = Reg2::D0C0;
+  /*p28.WEWY*/ Reg2 _WEWY_SCAN1 = Reg2::D0C0;
+  /*p28.GOSO*/ Reg2 _GOSO_SCAN2 = Reg2::D0C0;
+  /*p28.ELYN*/ Reg2 _ELYN_SCAN3 = Reg2::D0C0;
+  /*p28.FAHA*/ Reg2 _FAHA_SCAN4 = Reg2::D0C0;
+  /*p28.FONY*/ Reg2 _FONY_SCAN5 = Reg2::D0C0;
+  /*p29.BYBA*/ Reg2 _BYBA_SCAN_DONE_A = Reg2::D0C0;
+  /*p29.DOBA*/ Reg2 _DOBA_SCAN_DONE_B = Reg2::D0C0;
 };
 
 //-----------------------------------------------------------------------------

@@ -81,25 +81,25 @@ private:
   /*p27.LAXE*/ wire LAXE_BFETCH_S0n() const { return not(_LAXU_BFETCH_S0.q()); }
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn() const { return nand(_LAXU_BFETCH_S0.q(), _NYVA_BFETCH_S2.q(), _NYXU_TILE_FETCHER_RSTn); }
 
-  Signal _NYDY_LATCH_TILE_DAp;
-  Signal _MOFU_LATCH_TILE_DBn;
+  Sig2 _NYDY_LATCH_TILE_DAp;
+  Sig2 _MOFU_LATCH_TILE_DBn;
 
-  Signal _XYMU_RENDERINGp;
-  Signal _NYXU_TILE_FETCHER_RSTn;
+  Sig2 _XYMU_RENDERINGp;
+  Sig2 _NYXU_TILE_FETCHER_RSTn;
 
-  /*p27.LAXU*/ Reg _LAXU_BFETCH_S0;
-  /*p27.MESU*/ Reg _MESU_BFETCH_S1;
-  /*p27.NYVA*/ Reg _NYVA_BFETCH_S2;
+  /*p27.LAXU*/ Reg2 _LAXU_BFETCH_S0 = Reg2::D0C0;
+  /*p27.MESU*/ Reg2 _MESU_BFETCH_S1 = Reg2::D0C0;
+  /*p27.NYVA*/ Reg2 _NYVA_BFETCH_S2 = Reg2::D0C0;
 
-  /*p27.LOVY*/ Reg _LOVY_FETCH_DONEp;
+  /*p27.LOVY*/ Reg2 _LOVY_FETCH_DONEp = Reg2::D0C0;
 
-  /*p24.NYKA*/ Reg _NYKA_FETCH_DONE_Ap;
-  /*p24.PORY*/ Reg _PORY_FETCH_DONE_Bp;
-  /*p27.LYZU*/ Reg _LYZU_BFETCH_S0_DELAY;
+  /*p24.NYKA*/ Reg2 _NYKA_FETCH_DONE_Ap = Reg2::D0C0;
+  /*p24.PORY*/ Reg2 _PORY_FETCH_DONE_Bp = Reg2::D0C0;
+  /*p27.LYZU*/ Reg2 _LYZU_BFETCH_S0_DELAY = Reg2::D0C0;
 
-  /*p24.PYGO*/ Reg _PYGO_FETCH_DONE_Cp;
-  /*p24.POKY*/ Reg _POKY_PORCH_DONEp;            // stops clkpipe until after first tile fetch
-  /*p27.LONY*/ Reg _LONY_BG_READ_VRAM_LATCHp;
+  /*p24.PYGO*/ Reg2 _PYGO_FETCH_DONE_Cp = Reg2::D0C0;
+  /*p24.POKY*/ Reg2 _POKY_PORCH_DONEp = Reg2::D0C0;            // stops clkpipe until after first tile fetch
+  /*p27.LONY*/ Reg2 _LONY_BG_READ_VRAM_LATCHp = Reg2::D0C0;
 
 };
 

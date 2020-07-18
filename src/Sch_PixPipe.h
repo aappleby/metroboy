@@ -107,22 +107,22 @@ private:
   /*p27.PYCO*/ Reg _PYCO_WX_MATCH_A;
   /*p27.NUNU*/ Reg _NUNU_WX_MATCH_B;
 
-  /*p27.WYKA*/ Reg _WYKA_WIN_X3;
-  /*p27.WODY*/ Reg _WODY_WIN_X4;
-  /*p27.WOBO*/ Reg _WOBO_WIN_X5;
-  /*p27.WYKO*/ Reg _WYKO_WIN_X6;
-  /*p27.XOLO*/ Reg _XOLO_WIN_X7;
+  /*p27.WYKA*/ Reg2 _WYKA_WIN_X3 = Reg2::D0C0;
+  /*p27.WODY*/ Reg2 _WODY_WIN_X4 = Reg2::D0C0;
+  /*p27.WOBO*/ Reg2 _WOBO_WIN_X5 = Reg2::D0C0;
+  /*p27.WYKO*/ Reg2 _WYKO_WIN_X6 = Reg2::D0C0;
+  /*p27.XOLO*/ Reg2 _XOLO_WIN_X7 = Reg2::D0C0;
 
-  /*p27.VYNO*/ Reg _VYNO_WIN_Y0;
-  /*p27.VUJO*/ Reg _VUJO_WIN_Y1;
-  /*p27.VYMU*/ Reg _VYMU_WIN_Y2;
-  /*p27.TUFU*/ Reg _TUFU_WIN_Y3;
-  /*p27.TAXA*/ Reg _TAXA_WIN_Y4;
-  /*p27.TOZO*/ Reg _TOZO_WIN_Y5;
-  /*p27.TATE*/ Reg _TATE_WIN_Y6;
-  /*p27.TEKE*/ Reg _TEKE_WIN_Y7;
+  /*p27.VYNO*/ Reg2 _VYNO_WIN_Y0 = Reg2::D0C0;
+  /*p27.VUJO*/ Reg2 _VUJO_WIN_Y1 = Reg2::D0C0;
+  /*p27.VYMU*/ Reg2 _VYMU_WIN_Y2 = Reg2::D0C0;
+  /*p27.TUFU*/ Reg2 _TUFU_WIN_Y3 = Reg2::D0C0;
+  /*p27.TAXA*/ Reg2 _TAXA_WIN_Y4 = Reg2::D0C0;
+  /*p27.TOZO*/ Reg2 _TOZO_WIN_Y5 = Reg2::D0C0;
+  /*p27.TATE*/ Reg2 _TATE_WIN_Y6 = Reg2::D0C0;
+  /*p27.TEKE*/ Reg2 _TEKE_WIN_Y7 = Reg2::D0C0;
 
-  /*p??.ROXY*/ Reg _ROXY_FINE_SCROLL_DONEn;
+  /*p??.ROXY*/ Reg2 _ROXY_FINE_SCROLL_DONEn = Reg2::D0C0;
 
   Sig2 _XENA_STORE_MATCHn;
 

@@ -107,7 +107,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(_XYMU_RENDERINGp.q());
     /*p27.POVA*/ wire _POVA_FINE_MATCHpe = and(_PUXA_FINE_MATCH_A.q(), _NYZE_FINE_MATCH_B.qn());
-    /*p27.ROXY*/ _ROXY_FINE_SCROLL_DONEn = nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCHpe);
+    /*p27.ROXY*/ _ROXY_FINE_SCROLL_DONEn = nor_latch_r2(_PAHA_RENDERINGn, _POVA_FINE_MATCHpe);
   }
 
   //----------------------------------------
@@ -192,11 +192,11 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.XOFO*/ wire _XOFO_WIN_RSTp = nand(WYMO_LCDC_WINEN.q(), _XAHY_VID_LINE_TRIG_d4n, top.clk_reg.XAPO_VID_RSTn());
     /*p27.XACO*/ wire _XACO_WIN_RSTn = not(_XOFO_WIN_RSTp);
 
-    /*p27.WYKA*/ _WYKA_WIN_X3 = ff17(_VETU_WIN_MAP_CLK,  _XACO_WIN_RSTn, _WYKA_WIN_X3.qn());
-    /*p27.WODY*/ _WODY_WIN_X4 = ff17(_WYKA_WIN_X3.qn(),  _XACO_WIN_RSTn, _WODY_WIN_X4.qn());
-    /*p27.WOBO*/ _WOBO_WIN_X5 = ff17(_WODY_WIN_X4.qn(),  _XACO_WIN_RSTn, _WOBO_WIN_X5.qn());
-    /*p27.WYKO*/ _WYKO_WIN_X6 = ff17(_WOBO_WIN_X5.qn(),  _XACO_WIN_RSTn, _WYKO_WIN_X6.qn());
-    /*p27.XOLO*/ _XOLO_WIN_X7 = ff17(_WYKO_WIN_X6.qn(),  _XACO_WIN_RSTn, _XOLO_WIN_X7.qn());
+    /*p27.WYKA*/ _WYKA_WIN_X3 = ff17_r2(_VETU_WIN_MAP_CLK,  _XACO_WIN_RSTn, _WYKA_WIN_X3.qn());
+    /*p27.WODY*/ _WODY_WIN_X4 = ff17_r2(_WYKA_WIN_X3.qn(),  _XACO_WIN_RSTn, _WODY_WIN_X4.qn());
+    /*p27.WOBO*/ _WOBO_WIN_X5 = ff17_r2(_WODY_WIN_X4.qn(),  _XACO_WIN_RSTn, _WOBO_WIN_X5.qn());
+    /*p27.WYKO*/ _WYKO_WIN_X6 = ff17_r2(_WOBO_WIN_X5.qn(),  _XACO_WIN_RSTn, _WYKO_WIN_X6.qn());
+    /*p27.XOLO*/ _XOLO_WIN_X7 = ff17_r2(_WYKO_WIN_X6.qn(),  _XACO_WIN_RSTn, _XOLO_WIN_X7.qn());
   }
 
   // window y coordinate
@@ -206,14 +206,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), top.clk_reg.PYRY_VID_RSTp());
     /*p27.SYNY*/ wire _SYNY_VBLANK_RSTn = not(_REPU_VBLANK_RSTp);
 
-    /*p27.VYNO*/ _VYNO_WIN_Y0 = ff17(_WAZY_WIN_Y_CLK,   _SYNY_VBLANK_RSTn, _VYNO_WIN_Y0.qn());
-    /*p27.VUJO*/ _VUJO_WIN_Y1 = ff17(_VYNO_WIN_Y0.qn(), _SYNY_VBLANK_RSTn, _VUJO_WIN_Y1.qn());
-    /*p27.VYMU*/ _VYMU_WIN_Y2 = ff17(_VUJO_WIN_Y1.qn(), _SYNY_VBLANK_RSTn, _VYMU_WIN_Y2.qn());
-    /*p27.TUFU*/ _TUFU_WIN_Y3 = ff17(_VYMU_WIN_Y2.qn(), _SYNY_VBLANK_RSTn, _TUFU_WIN_Y3.qn());
-    /*p27.TAXA*/ _TAXA_WIN_Y4 = ff17(_TUFU_WIN_Y3.qn(), _SYNY_VBLANK_RSTn, _TAXA_WIN_Y4.qn());
-    /*p27.TOZO*/ _TOZO_WIN_Y5 = ff17(_TAXA_WIN_Y4.qn(), _SYNY_VBLANK_RSTn, _TOZO_WIN_Y5.qn());
-    /*p27.TATE*/ _TATE_WIN_Y6 = ff17(_TOZO_WIN_Y5.qn(), _SYNY_VBLANK_RSTn, _TATE_WIN_Y6.qn());
-    /*p27.TEKE*/ _TEKE_WIN_Y7 = ff17(_TATE_WIN_Y6.qn(), _SYNY_VBLANK_RSTn, _TEKE_WIN_Y7.qn());
+    /*p27.VYNO*/ _VYNO_WIN_Y0 = ff17_r2(_WAZY_WIN_Y_CLK,   _SYNY_VBLANK_RSTn, _VYNO_WIN_Y0.qn());
+    /*p27.VUJO*/ _VUJO_WIN_Y1 = ff17_r2(_VYNO_WIN_Y0.qn(), _SYNY_VBLANK_RSTn, _VUJO_WIN_Y1.qn());
+    /*p27.VYMU*/ _VYMU_WIN_Y2 = ff17_r2(_VUJO_WIN_Y1.qn(), _SYNY_VBLANK_RSTn, _VYMU_WIN_Y2.qn());
+    /*p27.TUFU*/ _TUFU_WIN_Y3 = ff17_r2(_VYMU_WIN_Y2.qn(), _SYNY_VBLANK_RSTn, _TUFU_WIN_Y3.qn());
+    /*p27.TAXA*/ _TAXA_WIN_Y4 = ff17_r2(_TUFU_WIN_Y3.qn(), _SYNY_VBLANK_RSTn, _TAXA_WIN_Y4.qn());
+    /*p27.TOZO*/ _TOZO_WIN_Y5 = ff17_r2(_TAXA_WIN_Y4.qn(), _SYNY_VBLANK_RSTn, _TOZO_WIN_Y5.qn());
+    /*p27.TATE*/ _TATE_WIN_Y6 = ff17_r2(_TOZO_WIN_Y5.qn(), _SYNY_VBLANK_RSTn, _TATE_WIN_Y6.qn());
+    /*p27.TEKE*/ _TEKE_WIN_Y7 = ff17_r2(_TATE_WIN_Y6.qn(), _SYNY_VBLANK_RSTn, _TEKE_WIN_Y7.qn());
   }
 
   {

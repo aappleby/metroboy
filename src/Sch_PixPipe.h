@@ -142,11 +142,11 @@ private:
   /*p24.PAHO*/ Reg _PAHO_X_8_SYNC;
   /*p24.RUJU*/ Reg _POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
 
-  Reg _LCD_PIN_CP;   // PIN_53 
-  Reg _LCD_PIN_ST;   // PIN_54 
+  Pin2 _LCD_PIN_CP = Pin2::HIZ_NP;   // PIN_53 
+  Pin2 _LCD_PIN_ST = Pin2::HIZ_NP;   // PIN_54 
 
-  Reg LCD_PIN_LD1;  // PIN_50 
-  Reg LCD_PIN_LD0;  // PIN_51 
+  Pin2 _LCD_PIN_LD1 = Pin2::HIZ_NP;  // PIN_50 
+  Pin2 _LCD_PIN_LD0 = Pin2::HIZ_NP;  // PIN_51 
 
   /*p32.MYDE*/ Reg2 BG_PIPE_A0 = Reg2::D0C0;
   /*p32.NOZO*/ Reg2 BG_PIPE_A1 = Reg2::D0C0;

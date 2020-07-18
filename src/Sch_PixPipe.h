@@ -203,54 +203,54 @@ private:
   /*p26.VAVA*/ Reg MASK_PIPE_7;
 
   // FF47 - BGP
-  /*p36.PAVO*/ Reg _PAVO_BGP0;
-  /*p36.NUSY*/ Reg _NUSY_BGP1;
-  /*p36.PYLU*/ Reg _PYLU_BGP2;
-  /*p36.MAXY*/ Reg _MAXY_BGP3;
-  /*p36.MUKE*/ Reg _MUKE_BGP4;
-  /*p36.MORU*/ Reg _MORU_BGP5;
-  /*p36.MOGY*/ Reg _MOGY_BGP6;
-  /*p36.MENA*/ Reg _MENA_BGP7;
+  /*p36.PAVO*/ Reg2 _PAVO_BGP0 = Reg2::D0C0;
+  /*p36.NUSY*/ Reg2 _NUSY_BGP1 = Reg2::D0C0;
+  /*p36.PYLU*/ Reg2 _PYLU_BGP2 = Reg2::D0C0;
+  /*p36.MAXY*/ Reg2 _MAXY_BGP3 = Reg2::D0C0;
+  /*p36.MUKE*/ Reg2 _MUKE_BGP4 = Reg2::D0C0;
+  /*p36.MORU*/ Reg2 _MORU_BGP5 = Reg2::D0C0;
+  /*p36.MOGY*/ Reg2 _MOGY_BGP6 = Reg2::D0C0;
+  /*p36.MENA*/ Reg2 _MENA_BGP7 = Reg2::D0C0;
 
   // FF48 - OBP0
-  /*p36.XUFU*/ Reg _XUFU_OBP00;
-  /*p36.XUKY*/ Reg _XUKY_OBP01;
-  /*p36.XOVA*/ Reg _XOVA_OBP02;
-  /*p36.XALO*/ Reg _XALO_OBP03;
-  /*p36.XERU*/ Reg _XERU_OBP04;
-  /*p36.XYZE*/ Reg _XYZE_OBP05;
-  /*p36.XUPO*/ Reg _XUPO_OBP06;
-  /*p36.XANA*/ Reg _XANA_OBP07;
+  /*p36.XUFU*/ Reg2 _XUFU_OBP00 = Reg2::D0C0;
+  /*p36.XUKY*/ Reg2 _XUKY_OBP01 = Reg2::D0C0;
+  /*p36.XOVA*/ Reg2 _XOVA_OBP02 = Reg2::D0C0;
+  /*p36.XALO*/ Reg2 _XALO_OBP03 = Reg2::D0C0;
+  /*p36.XERU*/ Reg2 _XERU_OBP04 = Reg2::D0C0;
+  /*p36.XYZE*/ Reg2 _XYZE_OBP05 = Reg2::D0C0;
+  /*p36.XUPO*/ Reg2 _XUPO_OBP06 = Reg2::D0C0;
+  /*p36.XANA*/ Reg2 _XANA_OBP07 = Reg2::D0C0;
 
   // FF49 - OBP1
-  /*p36.MOXY*/ Reg _MOXY_OBP10;
-  /*p36.LAWO*/ Reg _LAWO_OBP11;
-  /*p36.MOSA*/ Reg _MOSA_OBP12;
-  /*p36.LOSE*/ Reg _LOSE_OBP13;
-  /*p36.LUNE*/ Reg _LUNE_OBP14;
-  /*p36.LUGU*/ Reg _LUGU_OBP15;
-  /*p36.LEPU*/ Reg _LEPU_OBP16;
-  /*p36.LUXO*/ Reg _LUXO_OBP17;
+  /*p36.MOXY*/ Reg2 _MOXY_OBP10 = Reg2::D0C0;
+  /*p36.LAWO*/ Reg2 _LAWO_OBP11 = Reg2::D0C0;
+  /*p36.MOSA*/ Reg2 _MOSA_OBP12 = Reg2::D0C0;
+  /*p36.LOSE*/ Reg2 _LOSE_OBP13 = Reg2::D0C0;
+  /*p36.LUNE*/ Reg2 _LUNE_OBP14 = Reg2::D0C0;
+  /*p36.LUGU*/ Reg2 _LUGU_OBP15 = Reg2::D0C0;
+  /*p36.LEPU*/ Reg2 _LEPU_OBP16 = Reg2::D0C0;
+  /*p36.LUXO*/ Reg2 _LUXO_OBP17 = Reg2::D0C0;
 
   // FF4A - WY
-  /*p23.NESO*/ Reg _NESO_WY0;
-  /*p23.NYRO*/ Reg _NYRO_WY1;
-  /*p23.NAGA*/ Reg _NAGA_WY2;
-  /*p23.MELA*/ Reg _MELA_WY3;
-  /*p23.NULO*/ Reg _NULO_WY4;
-  /*p23.NENE*/ Reg _NENE_WY5;
-  /*p23.NUKA*/ Reg _NUKA_WY6;
-  /*p23.NAFU*/ Reg _NAFU_WY7;
+  /*p23.NESO*/ Reg2 _NESO_WY0 = Reg2::D0C0;
+  /*p23.NYRO*/ Reg2 _NYRO_WY1 = Reg2::D0C0;
+  /*p23.NAGA*/ Reg2 _NAGA_WY2 = Reg2::D0C0;
+  /*p23.MELA*/ Reg2 _MELA_WY3 = Reg2::D0C0;
+  /*p23.NULO*/ Reg2 _NULO_WY4 = Reg2::D0C0;
+  /*p23.NENE*/ Reg2 _NENE_WY5 = Reg2::D0C0;
+  /*p23.NUKA*/ Reg2 _NUKA_WY6 = Reg2::D0C0;
+  /*p23.NAFU*/ Reg2 _NAFU_WY7 = Reg2::D0C0;
 
   // FF4B - WX
-  /*p23.MYPA*/ Reg _MYPA_WX0;
-  /*p23.NOFE*/ Reg _NOFE_WX1;
-  /*p23.NOKE*/ Reg _NOKE_WX2;
-  /*p23.MEBY*/ Reg _MEBY_WX3;
-  /*p23.MYPU*/ Reg _MYPU_WX4;
-  /*p23.MYCE*/ Reg _MYCE_WX5;
-  /*p23.MUVO*/ Reg _MUVO_WX6;
-  /*p23.NUKU*/ Reg _NUKU_WX7;
+  /*p23.MYPA*/ Reg2 _MYPA_WX0 = Reg2::D0C0;
+  /*p23.NOFE*/ Reg2 _NOFE_WX1 = Reg2::D0C0;
+  /*p23.NOKE*/ Reg2 _NOKE_WX2 = Reg2::D0C0;
+  /*p23.MEBY*/ Reg2 _MEBY_WX3 = Reg2::D0C0;
+  /*p23.MYPU*/ Reg2 _MYPU_WX4 = Reg2::D0C0;
+  /*p23.MYCE*/ Reg2 _MYCE_WX5 = Reg2::D0C0;
+  /*p23.MUVO*/ Reg2 _MUVO_WX6 = Reg2::D0C0;
+  /*p23.NUKU*/ Reg2 _NUKU_WX7 = Reg2::D0C0;
 
 };
 

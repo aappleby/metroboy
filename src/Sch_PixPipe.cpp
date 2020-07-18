@@ -653,14 +653,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.VELY*/ wire _VELY_FF47_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), _WERA_FF47);
     /*p36.TEPO*/ wire _TEPO_FF47_WRn = not(_VELY_FF47_WR);
 
-    /*p36.PAVO*/ _PAVO_BGP0 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D0.q());
-    /*p36.NUSY*/ _NUSY_BGP1 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D1.q());
-    /*p36.PYLU*/ _PYLU_BGP2 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D2.q());
-    /*p36.MAXY*/ _MAXY_BGP3 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D3.q());
-    /*p36.MUKE*/ _MUKE_BGP4 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D4.q());
-    /*p36.MORU*/ _MORU_BGP5 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D5.q());
-    /*p36.MOGY*/ _MOGY_BGP6 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D6.q());
-    /*p36.MENA*/ _MENA_BGP7 = ff8(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D7.q());
+    /*p36.PAVO*/ _PAVO_BGP0 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D0.q());
+    /*p36.NUSY*/ _NUSY_BGP1 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D1.q());
+    /*p36.PYLU*/ _PYLU_BGP2 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D2.q());
+    /*p36.MAXY*/ _MAXY_BGP3 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D3.q());
+    /*p36.MUKE*/ _MUKE_BGP4 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D4.q());
+    /*p36.MORU*/ _MORU_BGP5 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D5.q());
+    /*p36.MOGY*/ _MOGY_BGP6 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D6.q());
+    /*p36.MENA*/ _MENA_BGP7 = ff8_r2(_TEPO_FF47_WRn, !_TEPO_FF47_WRn, top.cpu_bus.CPU_TRI_D7.q());
 
     /*p36.VUSO*/ wire _VUSO_FF47_RD = and (top.ASOT_CPU_RDp(), _WERA_FF47);
     /*p36.TEPY*/ wire _TEPY_FF47_RDn = not(_VUSO_FF47_RD);
@@ -684,14 +684,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.XOMA*/ wire _XOMA_FF48_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), _XAYO_FF48);
     /*p36.XELO*/ wire _XELO_FF48_WRn = not(_XOMA_FF48_WR);
 
-    /*p36.XUFU*/ _XUFU_OBP00 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D0.q());
-    /*p36.XUKY*/ _XUKY_OBP01 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D1.q());
-    /*p36.XOVA*/ _XOVA_OBP02 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D2.q());
-    /*p36.XALO*/ _XALO_OBP03 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D3.q());
-    /*p36.XERU*/ _XERU_OBP04 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D4.q());
-    /*p36.XYZE*/ _XYZE_OBP05 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D5.q());
-    /*p36.XUPO*/ _XUPO_OBP06 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D6.q());
-    /*p36.XANA*/ _XANA_OBP07 = ff8(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D7.q());
+    /*p36.XUFU*/ _XUFU_OBP00 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D0.q());
+    /*p36.XUKY*/ _XUKY_OBP01 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D1.q());
+    /*p36.XOVA*/ _XOVA_OBP02 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D2.q());
+    /*p36.XALO*/ _XALO_OBP03 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D3.q());
+    /*p36.XERU*/ _XERU_OBP04 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D4.q());
+    /*p36.XYZE*/ _XYZE_OBP05 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D5.q());
+    /*p36.XUPO*/ _XUPO_OBP06 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D6.q());
+    /*p36.XANA*/ _XANA_OBP07 = ff8_r2(_XELO_FF48_WRn, !_XELO_FF48_WRn, top.cpu_bus.CPU_TRI_D7.q());
 
     /*p36.XUFY*/ wire _XUFY_FF48_RD = and (top.ASOT_CPU_RDp(), _XAYO_FF48);
     /*p36.XOZY*/ wire _XOZY_FF48_RDn = not(_XUFY_FF48_RD);
@@ -715,14 +715,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.MYXE*/ wire _MYXE_FF49_WR = and (top.CUPA_CPU_WRp_xxxxEFGx(), _TEGO_FF49);
     /*p36.LEHO*/ wire _LEHO_FF49_WRn = not(_MYXE_FF49_WR);
 
-    /*p36.MOXY*/ _MOXY_OBP10 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D0.q());
-    /*p36.LAWO*/ _LAWO_OBP11 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D1.q());
-    /*p36.MOSA*/ _MOSA_OBP12 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D2.q());
-    /*p36.LOSE*/ _LOSE_OBP13 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D3.q());
-    /*p36.LUNE*/ _LUNE_OBP14 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D4.q());
-    /*p36.LUGU*/ _LUGU_OBP15 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D5.q());
-    /*p36.LEPU*/ _LEPU_OBP16 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D6.q());
-    /*p36.LUXO*/ _LUXO_OBP17 = ff8(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D7.q());
+    /*p36.MOXY*/ _MOXY_OBP10 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D0.q());
+    /*p36.LAWO*/ _LAWO_OBP11 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D1.q());
+    /*p36.MOSA*/ _MOSA_OBP12 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D2.q());
+    /*p36.LOSE*/ _LOSE_OBP13 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D3.q());
+    /*p36.LUNE*/ _LUNE_OBP14 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D4.q());
+    /*p36.LUGU*/ _LUGU_OBP15 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D5.q());
+    /*p36.LEPU*/ _LEPU_OBP16 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D6.q());
+    /*p36.LUXO*/ _LUXO_OBP17 = ff8_r2(_LEHO_FF49_WRn, !_LEHO_FF49_WRn, top.cpu_bus.CPU_TRI_D7.q());
 
     /*p36.MUMY*/ wire _MUMY_FF49_RD = and (top.ASOT_CPU_RDp(), _TEGO_FF49);
     /*p36.LOTE*/ wire _LOTE_FF49_RDn = not(_MUMY_FF49_RD);
@@ -750,14 +750,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.WEKO*/ wire _WEKO_FF4A_WRp = and (_FF4Ap, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p23.VEFU*/ wire _VEFU_FF4A_WRn = not(_WEKO_FF4A_WRp);
 
-    /*p23.NESO*/ _NESO_WY0 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0.q());
-    /*p23.NYRO*/ _NYRO_WY1 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1.q());
-    /*p23.NAGA*/ _NAGA_WY2 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2.q());
-    /*p23.MELA*/ _MELA_WY3 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3.q());
-    /*p23.NULO*/ _NULO_WY4 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4.q());
-    /*p23.NENE*/ _NENE_WY5 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5.q());
-    /*p23.NUKA*/ _NUKA_WY6 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
-    /*p23.NAFU*/ _NAFU_WY7 = ff9(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
+    /*p23.NESO*/ _NESO_WY0 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0.q());
+    /*p23.NYRO*/ _NYRO_WY1 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1.q());
+    /*p23.NAGA*/ _NAGA_WY2 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2.q());
+    /*p23.MELA*/ _MELA_WY3 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3.q());
+    /*p23.NULO*/ _NULO_WY4 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4.q());
+    /*p23.NENE*/ _NENE_WY5 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5.q());
+    /*p23.NUKA*/ _NUKA_WY6 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
+    /*p23.NAFU*/ _NAFU_WY7 = ff9_r2(_VEFU_FF4A_WRn, !_VEFU_FF4A_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
 
 
     /*p23.PUNU*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_FF4A_RDn, _NESO_WY0.q());
@@ -783,14 +783,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.WUZA*/ wire _WUZA_FF4B_WRp = and (_FF4Bp, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p23.VOXU*/ wire _VOXU_FF4B_WRn = not(_WUZA_FF4B_WRp);
 
-    /*p23.MYPA*/ _MYPA_WX0 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0.q());
-    /*p23.NOFE*/ _NOFE_WX1 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1.q());
-    /*p23.NOKE*/ _NOKE_WX2 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2.q());
-    /*p23.MEBY*/ _MEBY_WX3 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3.q());
-    /*p23.MYPU*/ _MYPU_WX4 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4.q());
-    /*p23.MYCE*/ _MYCE_WX5 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5.q());
-    /*p23.MUVO*/ _MUVO_WX6 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
-    /*p23.NUKU*/ _NUKU_WX7 = ff9(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
+    /*p23.MYPA*/ _MYPA_WX0 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0.q());
+    /*p23.NOFE*/ _NOFE_WX1 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1.q());
+    /*p23.NOKE*/ _NOKE_WX2 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2.q());
+    /*p23.MEBY*/ _MEBY_WX3 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3.q());
+    /*p23.MYPU*/ _MYPU_WX4 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4.q());
+    /*p23.MYCE*/ _MYCE_WX5 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5.q());
+    /*p23.MUVO*/ _MUVO_WX6 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6.q());
+    /*p23.NUKU*/ _NUKU_WX7 = ff9_r2(_VOXU_FF4B_WRn, !_VOXU_FF4B_WRn, top.clk_reg.WALU_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7.q());
 
 
     /*p23.LOVA*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_FF4B_RDn, _MYPA_WX0.q());

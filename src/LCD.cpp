@@ -91,12 +91,12 @@ void LCD::dump(Dumper& dump) const {
   dump("X            = %d\n", X);
   dump("Y            = %d\n", Y);
   dump("_RUTU_LINE_ENDp  = %d\n", _RUTU_LINE_ENDp);
-  dump("NYPE_LINE_STARTp  = %d\n", NYPE_LINE_STARTp);
+  dump("_NYPE_LINE_STARTp  = %d\n", NYPE_LINE_STARTp);
   dump("CATU_VID_LINE_ENDp  = %d\n", CATU_VID_LINE_ENDp);
   dump("_ANEL_VID_LINE_ENDp  = %d\n", _ANEL_VID_LINE_ENDp);
-  dump("MYTA_LINE_153p  = %d\n", MYTA_LINE_153p);
-  dump("MEDA_VSYNC_OUTn   = %d\n", MEDA_VSYNC_OUTn);
-  dump("POPU_IN_VBLANKp = %d\n", POPU_IN_VBLANKp);
+  dump("_MYTA_LINE_153p  = %d\n", MYTA_LINE_153p);
+  dump("_MEDA_VSYNC_OUTn   = %d\n", MEDA_VSYNC_OUTn);
+  dump("_POPU_IN_VBLANKp = %d\n", POPU_IN_VBLANKp);
 }
 
 //-----------------------------------------------------------------------------

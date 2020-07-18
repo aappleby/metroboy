@@ -114,7 +114,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.LOPE*/ LOPE_FF0F_0 = ff22(_VYPU_VBLANKp,     _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_GND);
     /*p02.LALU*/ LALU_FF0F_1 = ff22(VOTY_INT_STATp,   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_GND);
     /*p02.NYBO*/ NYBO_FF0F_2 = ff22(top.tim_reg.MOBA_INT_TIMERp(),  _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_GND);
-    /*p02.UBUL*/ UBUL_FF0F_3 = ff22(top.ser_reg.CALY_INT_SERIALp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_GND);
+    /*p02.UBUL*/ UBUL_FF0F_3 = ff22(top.ser_reg.CALY_SER_INTp(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_GND);
     /*p02.ULAK*/ ULAK_FF0F_4 = ff22(top.joypad.ASOK_INT_JOYPADp(), _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_GND);
 
     CPU_PIN_INT_VBLANK = SignalState::from_wire(LOPE_FF0F_0.q());

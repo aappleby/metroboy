@@ -35,23 +35,23 @@ struct DmaRegisters {
     return not(MUHO_DMA_VRAM_RDn);
   }
 
-  /*p04.NAKY*/ Reg DMA_A00;
-  /*p04.PYRO*/ Reg DMA_A01;
-  /*p04.NEFY*/ Reg DMA_A02;
-  /*p04.MUTY*/ Reg DMA_A03;
-  /*p04.NYKO*/ Reg DMA_A04;
-  /*p04.PYLO*/ Reg DMA_A05;
-  /*p04.NUTO*/ Reg DMA_A06;
-  /*p04.MUGU*/ Reg DMA_A07;
+  /*p04.NAKY*/ Reg2 DMA_A00 = Reg2::D0C0;
+  /*p04.PYRO*/ Reg2 DMA_A01 = Reg2::D0C0;
+  /*p04.NEFY*/ Reg2 DMA_A02 = Reg2::D0C0;
+  /*p04.MUTY*/ Reg2 DMA_A03 = Reg2::D0C0;
+  /*p04.NYKO*/ Reg2 DMA_A04 = Reg2::D0C0;
+  /*p04.PYLO*/ Reg2 DMA_A05 = Reg2::D0C0;
+  /*p04.NUTO*/ Reg2 DMA_A06 = Reg2::D0C0;
+  /*p04.MUGU*/ Reg2 DMA_A07 = Reg2::D0C0;
 
-  /*p04.NAFA*/ Reg DMA_A08;
-  /*p04.PYNE*/ Reg DMA_A09;
-  /*p04.PARA*/ Reg DMA_A10;
-  /*p04.NYDO*/ Reg DMA_A11;
-  /*p04.NYGY*/ Reg DMA_A12;
-  /*p04.PULA*/ Reg DMA_A13;
-  /*p04.POKU*/ Reg DMA_A14;
-  /*p04.MARU*/ Reg DMA_A15;
+  /*p04.NAFA*/ Reg2 DMA_A08 = Reg2::D0C0;
+  /*p04.PYNE*/ Reg2 DMA_A09 = Reg2::D0C0;
+  /*p04.PARA*/ Reg2 DMA_A10 = Reg2::D0C0;
+  /*p04.NYDO*/ Reg2 DMA_A11 = Reg2::D0C0;
+  /*p04.NYGY*/ Reg2 DMA_A12 = Reg2::D0C0;
+  /*p04.PULA*/ Reg2 DMA_A13 = Reg2::D0C0;
+  /*p04.POKU*/ Reg2 DMA_A14 = Reg2::D0C0;
+  /*p04.MARU*/ Reg2 DMA_A15 = Reg2::D0C0;
 
 private:
 
@@ -61,16 +61,12 @@ private:
     return MUDA_DMA_SRC_VRAMp;
   }
 
-
-  /*p04.LYXE*/ Reg LYXE_DMA_LATCHn;
-  /*p04.MATU*/ Reg _MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
-  /*p04.MYTE*/ Reg MYTE_DMA_DONE;
-  /*p04.LUVY*/ Reg LUVY_DMA_TRIG_d0;
-  /*p04.LENE*/ Reg LENE_DMA_TRIG_d4;
-
-  // NAND latch
-  /*p04.LARA*/ Reg LARA_DMA_LATCHn;
-  /*p04.LOKY*/ Reg LOKY_DMA_LATCHp;
+  /*p04.LYXE*/ Reg2 _LYXE_DMA_LATCHn   = Reg2::D0C0;
+  /*p04.MATU*/ Reg2 _MATU_DMA_RUNNINGp = Reg2::D0C0;
+  /*p04.MYTE*/ Reg2 _MYTE_DMA_DONE     = Reg2::D0C0;
+  /*p04.LUVY*/ Reg2 _LUVY_DMA_TRIG_d0  = Reg2::D0C0;
+  /*p04.LENE*/ Reg2 _LENE_DMA_TRIG_d4  = Reg2::D0C0;
+  /*p04.LOKY*/ Reg2 _LOKY_DMA_LATCHp   = Reg2::D0C0;
 };
 
 //-----------------------------------------------------------------------------

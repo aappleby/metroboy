@@ -22,6 +22,11 @@ SignalHash SchematicTop::tick() {
 
   if (verbose) printf("SchematicTop::tick\n");
 
+  if (phase_counter == 176 && pass_counter == 6) {
+    int x = 1;
+    (void)x;
+  }
+
   clk_reg.tick(top);
   lcd_reg.tick(top);
   sprite_scanner.tick(top);
@@ -141,6 +146,8 @@ SignalHash SchematicTop::tick() {
 
   commit_hash = hash;
   combined_hash << hash;
+
+  pass_counter++;
 
   return hash;
 }

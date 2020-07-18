@@ -82,7 +82,7 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
   /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, top.clk_reg.UCOB_CLKBADp());
 
-  /*p01.TUBO*/ _TUBO_CPU_READYn = nor_latch(_UPYF, CPU_PIN_READYp());
+  /*p01.TUBO*/ _TUBO_CPU_READYn = nor_latch_r2(_UPYF, CPU_PIN_READYp());
 
 #ifdef FAST_BOOT
   // Just wait until DIV = 4 instead of DIV = 32768

@@ -122,6 +122,11 @@ struct Reg {
     return {a.state};
   }
 
+  SignalHash commit_loz() {
+    CHECKn(b.hiz);
+    return commit();
+  }
+
   // Commit reg w/ pulldown - if b is hi-z, value becomes 0
   SignalHash commit_pd() {
     CHECKp(b.dirty);
@@ -216,6 +221,12 @@ inline SignalState ff8(wire CLKp, wire CLKn, bool D) {
   c.clk = CLKn;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t ff8_r2(wire CLKp, wire CLKn, bool D) {
+  CHECKn(CLKp == CLKn);
+  (void)CLKp;
+  return SIG_D0C0 | (D << 4) | (CLKn << 5);
 }
 
 //-----------------------------------------------------------------------------
@@ -491,14 +502,20 @@ inline uint8_t ff17_r2(wire CLKp, wire RSTn, wire D) {
 // UBUL_21 == UBUL_06
 // UBUL_22 << CALY_INT_SERIALp
 
-inline SignalState ff22(wire CLKp, wire SETn, wire RSTn, bool val) {
+inline SignalState ff22(wire CLKp, wire SETn, wire RSTn, bool D) {
   SignalState c;
-  c.val = val;
+  c.val = D;
   c.clk = CLKp;
   c.set = !SETn;
   c.rst = !RSTn;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
+  if (!RSTn) return SIG_A0C0 | (CLKp << 5);
+  if (!SETn) return SIG_A1C0 | (CLKp << 5);
+  return SIG_D0C0 | (D << 4) | (CLKp << 5);
 }
 
 //-----------------------------------------------------------------------------
@@ -549,6 +566,11 @@ inline SignalState nand_latch(wire SETn, wire RSTn) {
   return c;
 }
 
+inline uint8_t  nand_latch_r2(wire SETn, wire RSTn) {
+  if (!RSTn) return SIG_A0C0;
+  if (!SETn) return SIG_A1C0;
+  else       return SIG_PASS;
+}
 
 //-----------------------------------------------------------------------------
 // Yellow 10-rung cells on die. Implementation might be wrong.
@@ -647,6 +669,10 @@ inline SignalState tp_latch(wire LATCHp, SignalState D) {
   }
 }
 
+inline uint8_t  tp_latch_r2(wire LATCHp, wire D) {
+  if (!LATCHp) return SIG_PASS;
+  return SIG_A0C0 | (D << 4);
+}
 
 //-----------------------------------------------------------------------------
 // FIXME ticks on the NEGATIVE EDGE of the clock? (see timer.cpp)

@@ -21,55 +21,56 @@ struct Joypad {
 private:
   friend struct SchematicTop;
 
-  /*p02.AWOB*/ Reg AWOB_WAKE_CPU; // 10-rung, looks like pass gate or something
+  // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
+  /*p02.AWOB*/ Pin2 AWOB_WAKE_CPU    = Pin2::HIZ_PD;
 
-  /*p02.BATU*/ Reg BATU_JP_GLITCH0;
-  /*p02.ACEF*/ Reg ACEF_JP_GLITCH1;
-  /*p02.AGEM*/ Reg AGEM_JP_GLITCH2;
-  /*p02.APUG*/ Reg APUG_JP_GLITCH3;
+  /*p02.BATU*/ Reg2 BATU_JP_GLITCH0  = Reg2::D0C0;
+  /*p02.ACEF*/ Reg2 ACEF_JP_GLITCH1  = Reg2::D0C0;
+  /*p02.AGEM*/ Reg2 AGEM_JP_GLITCH2  = Reg2::D0C0;
+  /*p02.APUG*/ Reg2 APUG_JP_GLITCH3  = Reg2::D0C0;
   
-  /*p05.JUTE*/ Reg JUTE_JOYP_RA;
-  /*p05.KECY*/ Reg KECY_JOYP_LB;
-  /*p05.JALE*/ Reg JALE_JOYP_UC;
-  /*p05.KYME*/ Reg KYME_JOYP_DS;
+  /*p05.JUTE*/ Reg2 JUTE_JOYP_RA     = Reg2::D0C0;
+  /*p05.KECY*/ Reg2 KECY_JOYP_LB     = Reg2::D0C0;
+  /*p05.JALE*/ Reg2 JALE_JOYP_UC     = Reg2::D0C0;
+  /*p05.KYME*/ Reg2 KYME_JOYP_DS     = Reg2::D0C0;
 
-  /*p05.KELY*/ Reg KELY_JOYP_UDLR;
-  /*p05.COFY*/ Reg COFY_JOYP_ABCS;
-  /*p05.KUKO*/ Reg KUKO_DBG_FF00_D6;
-  /*p05.KERU*/ Reg KERU_DBG_FF00_D7;
+  /*p05.KELY*/ Reg2 KELY_JOYP_UDLR   = Reg2::D0C0;
+  /*p05.COFY*/ Reg2 COFY_JOYP_ABCS   = Reg2::D0C0;
+  /*p05.KUKO*/ Reg2 KUKO_DBG_FF00_D6 = Reg2::D0C0;
+  /*p05.KERU*/ Reg2 KERU_DBG_FF00_D7 = Reg2::D0C0;
 
-  /*p05.KEVU*/ Reg KEVU_JOYP_L0; // 10-rung, looks like pass gate or something
-  /*p05.KAPA*/ Reg KAPA_JOYP_L1; // 10-rung, looks like pass gate or something
-  /*p05.KEJA*/ Reg KEJA_JOYP_L2; // 10-rung, looks like pass gate or something
-  /*p05.KOLO*/ Reg KOLO_JOYP_L3; // 10-rung, looks like pass gate or something
+  /*p05.KEVU*/ Reg2 KEVU_JOYP_L0     = Reg2::D0C0; // 10-rung, looks like pass gate or something
+  /*p05.KAPA*/ Reg2 KAPA_JOYP_L1     = Reg2::D0C0; // 10-rung, looks like pass gate or something
+  /*p05.KEJA*/ Reg2 KEJA_JOYP_L2     = Reg2::D0C0; // 10-rung, looks like pass gate or something
+  /*p05.KOLO*/ Reg2 KOLO_JOYP_L3     = Reg2::D0C0; // 10-rung, looks like pass gate or something
 
-  Reg JOY_PIN_P10_A;   // PIN_67 <- P05.KOLE
-  Reg JOY_PIN_P10_B;   // PIN_67 <- tied low between BONE and BUFY
-  ExtPinIn  JOY_PIN_P10_C;   // PIN_67 -> P02.KERY, P05.KEVU
-  Reg JOY_PIN_P10_D;   // PIN_67 <- P05.KYBU
+  Pin2 JOY_PIN_P10_A = Pin2::HIZ_NP;   // PIN_67 <- P05.KOLE
+  Pin2 JOY_PIN_P10_B = Pin2::HIZ_NP;   // PIN_67 <- tied low between BONE and BUFY
+  Pin2 JOY_PIN_P10_C = Pin2::HOLD_0;   // PIN_67 -> P02.KERY, P05.KEVU
+  Pin2 JOY_PIN_P10_D = Pin2::HIZ_NP;   // PIN_67 <- P05.KYBU
 
-  Reg JOY_PIN_P11_A;   // PIN_66 <- P05.KYTO
-  Reg JOY_PIN_P11_B;   // PIN_66 <- tied low between BONE and BUFY
-  ExtPinIn  JOY_PIN_P11_C;   // PIN_66 -> P02.KERY, P05.KAPA
-  Reg JOY_PIN_P11_D;   // PIN_66 <- P05.KABU
+  Pin2 JOY_PIN_P11_A = Pin2::HIZ_NP;   // PIN_66 <- P05.KYTO
+  Pin2 JOY_PIN_P11_B = Pin2::HIZ_NP;   // PIN_66 <- tied low between BONE and BUFY
+  Pin2 JOY_PIN_P11_C = Pin2::HOLD_0;   // PIN_66 -> P02.KERY, P05.KAPA
+  Pin2 JOY_PIN_P11_D = Pin2::HIZ_NP;   // PIN_66 <- P05.KABU
 
-  Reg JOY_PIN_P12_A;   // PIN_65 <- P05.KYHU
-  Reg JOY_PIN_P12_B;   // PIN_65 <- tied low between BONE and BUFY
-  ExtPinIn  JOY_PIN_P12_C;   // PIN_65 -> P02.KERY, P05.KEJA
-  Reg JOY_PIN_P12_D;   // PIN_65 <- P05.KASY
+  Pin2 JOY_PIN_P12_A = Pin2::HIZ_NP;   // PIN_65 <- P05.KYHU
+  Pin2 JOY_PIN_P12_B = Pin2::HIZ_NP;   // PIN_65 <- tied low between BONE and BUFY
+  Pin2 JOY_PIN_P12_C = Pin2::HOLD_0;   // PIN_65 -> P02.KERY, P05.KEJA
+  Pin2 JOY_PIN_P12_D = Pin2::HIZ_NP;   // PIN_65 <- P05.KASY
 
-  Reg JOY_PIN_P13_A;   // PIN_64 <- P05.KORY
-  Reg JOY_PIN_P13_B;   // PIN_64 <- tied low between BONE and BUFY
-  ExtPinIn  JOY_PIN_P13_C;   // PIN_64 -> P02.KERY, P05.KOLO
-  Reg JOY_PIN_P13_D;   // PIN_64 <- P05.KALE
+  Pin2 JOY_PIN_P13_A = Pin2::HIZ_NP;   // PIN_64 <- P05.KORY
+  Pin2 JOY_PIN_P13_B = Pin2::HIZ_NP;   // PIN_64 <- tied low between BONE and BUFY
+  Pin2 JOY_PIN_P13_C = Pin2::HOLD_0;   // PIN_64 -> P02.KERY, P05.KOLO
+  Pin2 JOY_PIN_P13_D = Pin2::HIZ_NP;   // PIN_64 <- P05.KALE
 
-  Reg JOY_PIN_P14_A;   // PIN_63 <- p05.KARU
-  Reg JOY_PIN_P14_D;   // PIN_63 <- p05.KELY
+  Pin2 JOY_PIN_P14_A = Pin2::HIZ_NP;   // PIN_63 <- p05.KARU
+  Pin2 JOY_PIN_P14_D = Pin2::HIZ_NP;   // PIN_63 <- p05.KELY
 
-  Reg JOY_PIN_P15_A;   // PIN_62 <- p05.CELA
-  Reg JOY_PIN_P15_D;   // PIN_62 <- p05.COFY
+  Pin2 JOY_PIN_P15_A = Pin2::HIZ_NP;   // PIN_62 <- p05.CELA
+  Pin2 JOY_PIN_P15_D = Pin2::HIZ_NP;   // PIN_62 <- p05.COFY
 
-  Reg CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
+  Pin2 CPU_PIN_WAKE  = Pin2::HIZ_NP;   // top right wire by itself <- P02.AWOB
 };
 
 //-----------------------------------------------------------------------------

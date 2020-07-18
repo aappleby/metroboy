@@ -123,6 +123,7 @@ struct SchematicTop {
   // Internal state for debugging
 
   int phase_counter = -17;
+  int pass_counter = 0;
   
   SignalHash commit_hash;
   SignalHash combined_hash;

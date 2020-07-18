@@ -29,21 +29,21 @@ constexpr uint8_t PIN_HZNP = 0b00001100; // 12: pin floating
 // ERROR STATES
 constexpr uint8_t REG_XXXX = 0b00001101; // 13: bad reg state
 constexpr uint8_t PIN_XXXX = 0b00001110; // 14: bad pin state
-constexpr uint8_t ERR_XXXX = 0b00001111; // 15: uninitialized state
+constexpr uint8_t SIG_XXXX = 0b00001111; // 15: uninitialized signal
 
 //-----------------------------------------------------------------------------
 
 // X SIGNALS
-constexpr uint8_t SIG_XXXX = 0b00000000; // 0: signal missing or invalid
+constexpr uint8_t SIG_NONE = 0b00000000; // 0: signal missing or invalid
 constexpr uint8_t SIG_HOLD = 0b00010000; // 1: signal hold, do not change register when committed, sticky
 constexpr uint8_t SIG_PASS = 0b00100000; // 2: signal pass, do not change register when committed, not sticky
-constexpr uint8_t SIG_X1C1 = 0b00110000; // 3: meaningless, free slot
+constexpr uint8_t SIG_SSSS = 0b00110000; // 3: meaningless, free slot
 
 // Z SIGNALS
 constexpr uint8_t SIG_ZZZZ = 0b01000000; // 4: signal hi-z
-constexpr uint8_t SIG_Z1C0 = 0b01010000; // 5: meaningless, free slot
-constexpr uint8_t SIG_Z0C1 = 0b01100000; // 6: meaningless, free slot
-constexpr uint8_t SIG_Z1C1 = 0b01110000; // 7: meaningless, free slot
+constexpr uint8_t SIG_RRRR = 0b01010000; // 5: meaningless, free slot
+constexpr uint8_t SIG_TEMP = 0b01100000; // 6: ephemeral 0
+constexpr uint8_t SIG_QQQQ = 0b01110000; // 7: meaningless, free slot
 
 // CLOCKED SIGNALS
 constexpr uint8_t SIG_D0C0 = 0b10000000; // 8:  signal 0 + clock 0
@@ -67,9 +67,8 @@ constexpr uint8_t logic_lut1[256] = {
   //           REG_D0C0, REG_D1C0, REG_D0C1, REG_D1C1, **** PIN_D0PD, PIN_D1PD, PIN_D0PU, PIN_D1PU, PIN_D0NP, PIN_D1NP, **** PIN_HZPD, PIN_HZPU, PIN_HZNP, **** REG_XXXX, PIN_XXXX, ERR_XXXX,
 
   // X signals
-  /*SIG_XXXX*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, /**/ PIN_XXXX, PIN_XXXX, PIN_XXXX, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
+  /*SIG_XXXX*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, /**/ PIN_XXXX, PIN_XXXX, PIN_XXXX, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX,
 
-  // SIG_HOLD
   /*REG_D0C0 + SIG_HOLD*/ SIG_HOLD | REG_D0C0,
   /*REG_D1C0 + SIG_HOLD*/ SIG_HOLD | REG_D1C0,
   /*REG_D0C1 + SIG_HOLD*/ SIG_HOLD | REG_D0C1,
@@ -85,9 +84,8 @@ constexpr uint8_t logic_lut1[256] = {
   /*PIN_HZNP + SIG_HOLD*/ SIG_HOLD | PIN_HZNP,
   /*REG_XXXX + SIG_HOLD*/ SIG_HOLD | REG_XXXX,
   /*PIN_XXXX + SIG_HOLD*/ SIG_HOLD | PIN_XXXX,
-  /*ERR_XXXX + SIG_HOLD*/ SIG_HOLD | ERR_XXXX,
+  /*ERR_XXXX + SIG_HOLD*/ SIG_HOLD | SIG_XXXX,
 
-  // SIG_PASS
   /*REG_D0C0 + SIG_PASS*/ REG_D0C0,
   /*REG_D1C0 + SIG_PASS*/ REG_D1C0,
   /*REG_D0C1 + SIG_PASS*/ REG_D0C1,
@@ -103,27 +101,61 @@ constexpr uint8_t logic_lut1[256] = {
   /*PIN_HZNP + SIG_PASS*/ PIN_HZNP,
   /*REG_XXXX + SIG_PASS*/ REG_XXXX,
   /*PIN_XXXX + SIG_PASS*/ PIN_XXXX,
-  /*ERR_XXXX + SIG_PASS*/ ERR_XXXX,
+  /*ERR_XXXX + SIG_PASS*/ SIG_XXXX,
 
-  /*SIG_X1C1*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, PIN_XXXX, /**/ PIN_XXXX, PIN_XXXX, PIN_XXXX, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
+  /*SIG_SSSS*/ SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, /**/ SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, /**/ SIG_XXXX, SIG_XXXX, SIG_XXXX, /**/ SIG_XXXX, SIG_XXXX, SIG_XXXX,
 
   // Z signals
-  /*SIG_ZZZZ*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_HZPD, PIN_HZPD, PIN_HZPU, PIN_HZPU, PIN_HZNP, PIN_HZNP, /**/ PIN_HZPD, PIN_HZPU, PIN_HZNP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
-  /*SIG_Z1C0*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_HZPD, PIN_HZPD, PIN_HZPU, PIN_HZPU, PIN_HZNP, PIN_HZNP, /**/ PIN_HZPD, PIN_HZPU, PIN_HZNP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
-  /*SIG_Z0C1*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_HZPD, PIN_HZPD, PIN_HZPU, PIN_HZPU, PIN_HZNP, PIN_HZNP, /**/ PIN_HZPD, PIN_HZPU, PIN_HZNP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
-  /*SIG_Z1C1*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_HZPD, PIN_HZPD, PIN_HZPU, PIN_HZPU, PIN_HZNP, PIN_HZNP, /**/ PIN_HZPD, PIN_HZPU, PIN_HZNP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
+  /*SIG_ZZZZ*/ REG_XXXX, REG_XXXX, REG_XXXX, REG_XXXX, /**/ PIN_HZPD, PIN_HZPD, PIN_HZPU, PIN_HZPU, PIN_HZNP, PIN_HZNP, /**/ PIN_HZPD, PIN_HZPU, PIN_HZNP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX,
+
+  /*SIG_RRRR*/ SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, /**/ SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, SIG_XXXX, /**/ SIG_XXXX, SIG_XXXX, SIG_XXXX, /**/ SIG_XXXX, SIG_XXXX, SIG_XXXX,
+
+  // SIG_TEMP
+  /*REG_D0C0 + SIG_TEMP*/ SIG_XXXX,
+  /*REG_D1C0 + SIG_TEMP*/ SIG_XXXX,
+  /*REG_D0C1 + SIG_TEMP*/ SIG_XXXX,
+  /*REG_D1C1 + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_D0PD + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_D1PD + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_D0PU + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_D1PU + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_D0NP + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_D1NP + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_HZPD + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_HZPU + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_HZNP + SIG_TEMP*/ SIG_XXXX,
+  /*REG_XXXX + SIG_TEMP*/ SIG_XXXX,
+  /*PIN_XXXX + SIG_TEMP*/ SIG_XXXX,
+  /*ERR_XXXX + SIG_TEMP*/ SIG_XXXX,
+
+  /*REG_D0C0 + SIG_QQQQ*/ SIG_XXXX,
+  /*REG_D1C0 + SIG_QQQQ*/ SIG_XXXX,
+  /*REG_D0C1 + SIG_QQQQ*/ SIG_XXXX,
+  /*REG_D1C1 + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_D0PD + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_D1PD + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_D0PU + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_D1PU + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_D0NP + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_D1NP + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_HZPD + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_HZPU + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_HZNP + SIG_QQQQ*/ SIG_XXXX,
+  /*REG_XXXX + SIG_QQQQ*/ SIG_XXXX,
+  /*PIN_XXXX + SIG_QQQQ*/ SIG_XXXX,
+  /*ERR_XXXX + SIG_QQQQ*/ SIG_XXXX,
 
   // Clocked signals
-  /*SIG_D0C0*/ REG_D0C0, REG_D1C0, REG_D0C0, REG_D1C0, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
-  /*SIG_D1C0*/ REG_D0C0, REG_D1C0, REG_D0C0, REG_D1C0, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX,
-  /*SIG_D0C1*/ REG_D0C1, REG_D0C1, REG_D0C1, REG_D1C1, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX, 
-  /*SIG_D1C1*/ REG_D1C1, REG_D1C1, REG_D0C1, REG_D1C1, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX, 
+  /*SIG_D0C0*/ REG_D0C0, REG_D1C0, REG_D0C0, REG_D1C0, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX,
+  /*SIG_D1C0*/ REG_D0C0, REG_D1C0, REG_D0C0, REG_D1C0, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX,
+  /*SIG_D0C1*/ REG_D0C1, REG_D0C1, REG_D0C1, REG_D1C1, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX, 
+  /*SIG_D1C1*/ REG_D1C1, REG_D1C1, REG_D0C1, REG_D1C1, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX, 
 
   // Async signals
-  /*SIG_A0C0*/ REG_D0C0, REG_D0C0, REG_D0C0, REG_D0C0, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX, 
-  /*SIG_A1C0*/ REG_D1C0, REG_D1C0, REG_D1C0, REG_D1C0, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX, 
-  /*SIG_A0C1*/ REG_D0C1, REG_D0C1, REG_D0C1, REG_D0C1, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX, 
-  /*SIG_A1C1*/ REG_D1C1, REG_D1C1, REG_D1C1, REG_D1C1, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, ERR_XXXX, 
+  /*SIG_A0C0*/ REG_D0C0, REG_D0C0, REG_D0C0, REG_D0C0, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX, 
+  /*SIG_A1C0*/ REG_D1C0, REG_D1C0, REG_D1C0, REG_D1C0, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX, 
+  /*SIG_A0C1*/ REG_D0C1, REG_D0C1, REG_D0C1, REG_D0C1, /**/ PIN_D0PD, PIN_D0PD, PIN_D0PU, PIN_D0PU, PIN_D0NP, PIN_D0NP, /**/ PIN_D0PD, PIN_D0PU, PIN_D0NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX, 
+  /*SIG_A1C1*/ REG_D1C1, REG_D1C1, REG_D1C1, REG_D1C1, /**/ PIN_D1PD, PIN_D1PD, PIN_D1PU, PIN_D1PU, PIN_D1NP, PIN_D1NP, /**/ PIN_D1PD, PIN_D1PU, PIN_D1NP, /**/ REG_XXXX, PIN_XXXX, SIG_XXXX, 
 };
 
 #pragma warning(pop)
@@ -147,6 +179,10 @@ union Reg2 {
   inline bool is_reg()    const { return ((state & 0x0F) >= REG_D0C0) && ((state & 0x0F) <= REG_D1C1); }
   inline bool is_held()   const { return (state & 0xF0) == SIG_HOLD; }
   inline bool is_driven() const { return sig_hzn; }
+
+  inline void preset_a(bool a) {
+    state = (state & 0xFE) | uint8_t(a);
+  }
 
   inline wire q() const {
     CHECKn(state & 0b00001100); // must be reg state
@@ -202,12 +238,22 @@ union Reg2 {
 
 static_assert(sizeof(Reg2) == 1, "Reg2 size != 1");
 
+#pragma warning(pop)
+
+//-----------------------------------------------------------------------------
+
+#pragma warning(push)
+#pragma warning(disable:4201) // nameless struct/union
+
 union Pin2 {
   Pin2() = delete;
   Pin2& operator=(const Pin2&) = delete;
   Pin2(uint8_t state_) : state(state_) {}
   
-  static const Pin2 HZNP;
+  static const Pin2 HIZ_NP;
+  static const Pin2 HIZ_PU;
+  static const Pin2 HIZ_PD;
+
   static const Pin2 HOLD_0;
   static const Pin2 HOLD_1;
   static const Pin2 HOLD_Z;
@@ -278,6 +324,49 @@ union Pin2 {
 };
 
 static_assert(sizeof(Reg2) == 1, "Reg2 size != 1");
+
+#pragma warning(pop)
+
+//-----------------------------------------------------------------------------
+
+#pragma warning(push)
+#pragma warning(disable:4201) // nameless struct/union
+
+union Sig2 {
+  Sig2& operator=(const Sig2&) = delete;
+  
+  inline bool is_sig() const { return (state & 0xF0) == SIG_TEMP; }
+
+  inline operator wire() const {
+    CHECKp(is_sig());
+    return wire(state & 1);
+  }
+
+  inline void operator = (wire s) {
+    CHECKn(state);
+    state = s ? (REG_D1C0 | SIG_TEMP) : (REG_D0C0 | SIG_TEMP);
+  }
+
+  inline bool commit() {
+    CHECKp(state);
+    CHECKp((state & 0xF0) == SIG_TEMP);
+    wire ret = wire(state & 1);
+    state = 0;
+    return ret;
+  }
+
+  uint8_t state = 0;
+  struct {
+    uint8_t pin_val : 1;
+    uint8_t pin_clk : 1;
+    uint8_t pin_pul : 1;
+    uint8_t pin_hiz : 1;
+    uint8_t sig_val : 1;
+    uint8_t sig_clk : 1;
+    uint8_t sig_set : 1;
+    uint8_t sig_hzn : 1;
+  };
+};
 
 #pragma warning(pop)
 
@@ -413,6 +502,19 @@ struct SignalHash {
     h *= 0xff51afd7ed558ccd;
     h = _byteswap_uint64(h);
     //printf("%016llx\n", h);
+  }
+
+  // not a fast hash, but it's good quality and compiles down to only 6
+  // instructions when inlined (load, xor, mul, swap, inc, loop).
+  inline static uint64_t hash_blob(void* blob, int size) {
+    uint8_t* base = (uint8_t*)blob + size;
+    uint64_t h = 0x12345678;
+    for (int i = -size; i; i++) {
+      h ^= base[i];
+      h *= 0xff51afd7ed558ccd;
+      h = _byteswap_uint64(h);
+    }
+    return h;
   }
 
   uint64_t h = 0x12345678;

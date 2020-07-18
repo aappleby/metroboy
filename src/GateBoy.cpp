@@ -8,8 +8,8 @@ using namespace Schematics;
 
 SignalHash phase(SchematicTop* top, Req req, bool verbose) {
   SignalHash hash;
-  int pass_count = 0;
-  for (; pass_count < 256; pass_count++) {
+
+  for (top->pass_counter = 0; top->pass_counter < 256; top->pass_counter++) {
     top->cpu_bus.set_cpu_req(req);
     top->vram_bus.set_vram_data(0);
     top->oam_bus.set_oam_data(0, 0);
@@ -20,15 +20,15 @@ SignalHash phase(SchematicTop* top, Req req, bool verbose) {
     
     if (new_hash.h == hash.h) break;
     hash = new_hash;
-    if (pass_count == 199) printf("stuck!\n");
-    CHECKn(pass_count == 200);
+    if (top->pass_counter == 199) printf("stuck!\n");
+    CHECKn(top->pass_counter == 200);
   }
 
   if (verbose) {
     printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
       top->phase_counter,
       'A' + (top->phase_counter & 7),
-      pass_count,
+      top->pass_counter,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),
       top->clk_reg.SYS_PIN_RSTp(),
@@ -44,7 +44,7 @@ SignalHash phase(SchematicTop* top, Req req, bool verbose) {
       top->clk_reg.CPU_PIN_READYp(),
       top->tim_reg.get_div(),
       top->clk_reg.AFER_SYS_RSTp(),
-      top->clk_reg._ASOL_POR_DONEn.q()
+      top->clk_reg.ASOL_POR_DONEn()
       //hash.h);
       );
   }
@@ -110,7 +110,7 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
   run(top, phase_d, req, false);
 
   top->clk_reg.set_cpu_ready(0);
-  if (top->clk_reg.AFER_SYS_RSTp() || top->clk_reg._ASOL_POR_DONEn.q()) {
+  if (top->clk_reg.AFER_SYS_RSTp() || top->clk_reg.ASOL_POR_DONEn()) {
     printf("\nX %d %d %d %d\n", phase_a, phase_b, phase_c, phase_d);
   }
   else {
@@ -188,8 +188,8 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
-  const int iter_count = 8;
-  const int phase_count = 1024;
+  const int iter_count = 16;
+  const int phase_count = 512;
   double sum1 = 0;
   double sum2 = 0;
 
@@ -271,8 +271,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
   //printf("phase\n");
 
   SignalHash hash;
-  int pass_count = 0;
-  for (; pass_count < 256; pass_count++) {
+  for (top->pass_counter = 0; top->pass_counter < 256; top->pass_counter++) {
     top->cpu_bus.set_cpu_req(req);
     top->vram_bus.set_vram_data(0);
     top->oam_bus.set_oam_data(0, 0);
@@ -285,8 +284,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
     
     if (new_hash.h == hash.h) break;
     hash = new_hash;
-    if (pass_count == 199) printf("stuck!\n");
-    CHECKn(pass_count == 200);
+    if (top->pass_counter == 199) printf("stuck!\n");
+    CHECKn(top->pass_counter == 200);
   }
 
   if (verbose) {
@@ -294,7 +293,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->phase_counter,
       'A' + (top->phase_counter & 7),
       hash.h,
-      pass_count,
+      top->pass_counter,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),
       top->clk_reg.SYS_PIN_RSTp(),
@@ -310,7 +309,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.CPU_PIN_READYp(),
       top->tim_reg.get_div(),
       top->clk_reg.AFER_SYS_RSTp(),
-      top->clk_reg._ASOL_POR_DONEn.q()
+      top->clk_reg.ASOL_POR_DONEn()
       //hash.h);
       );
   }

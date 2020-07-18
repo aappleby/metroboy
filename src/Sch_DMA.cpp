@@ -89,20 +89,23 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p22.XEDA*/ wire _XEDA_FF46p = not(_WATE_FF46n);
   /*p04.MOLU*/ wire _MOLU_FF46_RDp = and(_XEDA_FF46p, top.ASOT_CPU_RDp());
   /*p04.LAVY*/ wire _LAVY_FF46_WRp = and(_XEDA_FF46p, top.CUPA_CPU_WRp_xxxxEFGx());
-  /*p04.LOKO*/ wire _LOKO_DMA_RSTp = nand(top.clk_reg.CUNU_SYS_RSTn(), !LENE_DMA_TRIG_d4.q());
+  /*p04.LOKO*/ wire _LOKO_DMA_RSTp = nand(top.clk_reg.CUNU_SYS_RSTn(), !_LENE_DMA_TRIG_d4.q());
 
   {
-    /*p04.LYXE*/ LYXE_DMA_LATCHn = nor_latch(_LOKO_DMA_RSTp, _LAVY_FF46_WRp);
-    /*p04.LUPA*/ wire _LUPA_DMA_TRIG = nor(_LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
-    /*p04.LUVY*/ LUVY_DMA_TRIG_d0 = ff17(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG);
-    /*p04.LENE*/ LENE_DMA_TRIG_d4 = ff17(top.clk_reg.MOPA_xxxxEFGH(), top.clk_reg.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.q());
+    /*p04.LYXE*/ _LYXE_DMA_LATCHn = nor_latch_r2(_LOKO_DMA_RSTp, _LAVY_FF46_WRp);
+    /*p04.LUPA*/ wire _LUPA_DMA_TRIG = nor(_LAVY_FF46_WRp, _LYXE_DMA_LATCHn.q());
+    /*p04.LUVY*/ _LUVY_DMA_TRIG_d0 = ff17_r2(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG);
+    /*p04.LENE*/ _LENE_DMA_TRIG_d4 = ff17_r2(top.clk_reg.MOPA_xxxxEFGH(), top.clk_reg.CUNU_SYS_RSTn(), _LUVY_DMA_TRIG_d0.q());
   }
 
   {
     // NAND latch
-    /*p04.LOKY*/ LOKY_DMA_LATCHp = SignalState::from_wire(nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q()));
-    /*p04.LARA*/ LARA_DMA_LATCHn = SignalState::from_wire(nand(LOKY_DMA_LATCHp,    top.clk_reg.CUNU_SYS_RSTn(), !MYTE_DMA_DONE.q()));
-    /*p04.MATU*/ _MATU_DMA_RUNNINGp = ff17(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp);
+    /*p04.LOKY*/ _LOKY_DMA_LATCHp = nand_latch_r2(
+      _LENE_DMA_TRIG_d4.qn(),
+      and(top.clk_reg.CUNU_SYS_RSTn(), _MYTE_DMA_DONE.qn())
+    ); 
+
+    /*p04.MATU*/ _MATU_DMA_RUNNINGp = ff17_r2(top.clk_reg.UVYT_ABCDxxxx(), top.clk_reg.CUNU_SYS_RSTn(), _LOKY_DMA_LATCHp.q());
   }
 
   {
@@ -110,17 +113,17 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p04.NAVO*/ wire _NAVO_DMA_DONEn = nand(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A07.q()); // 128+16+8+4+2+1 = 159, this must be "dma done"
     /*p04.NOLO*/ wire _NOLO_DMA_DONEp = not(_NAVO_DMA_DONEn);
 
-    /*p04.MYTE*/ MYTE_DMA_DONE = ff17(top.clk_reg.MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp);
+    /*p04.MYTE*/ _MYTE_DMA_DONE = ff17_r2(top.clk_reg.MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp);
 
-    /*p04.META*/ wire _META_DMA_CLKp = and(top.clk_reg.UVYT_ABCDxxxx(), LOKY_DMA_LATCHp);
-    /*p04.NAKY*/ DMA_A00 = ff17(_META_DMA_CLKp, _LAPA_DMA_RSTn, !DMA_A00.q());
-    /*p04.PYRO*/ DMA_A01 = ff17(DMA_A00.qn(),  _LAPA_DMA_RSTn, DMA_A01.qn());
-    /*p04.NEFY*/ DMA_A02 = ff17(DMA_A01.qn(),  _LAPA_DMA_RSTn, DMA_A02.qn());
-    /*p04.MUTY*/ DMA_A03 = ff17(DMA_A02.qn(),  _LAPA_DMA_RSTn, DMA_A03.qn());
-    /*p04.NYKO*/ DMA_A04 = ff17(DMA_A03.qn(),  _LAPA_DMA_RSTn, DMA_A04.qn());
-    /*p04.PYLO*/ DMA_A05 = ff17(DMA_A04.qn(),  _LAPA_DMA_RSTn, DMA_A05.qn());
-    /*p04.NUTO*/ DMA_A06 = ff17(DMA_A05.qn(),  _LAPA_DMA_RSTn, DMA_A06.qn());
-    /*p04.MUGU*/ DMA_A07 = ff17(DMA_A06.qn(),  _LAPA_DMA_RSTn, DMA_A07.qn());
+    /*p04.META*/ wire _META_DMA_CLKp = and(top.clk_reg.UVYT_ABCDxxxx(), _LOKY_DMA_LATCHp.q());
+    /*p04.NAKY*/ DMA_A00 = ff17_r2(_META_DMA_CLKp, _LAPA_DMA_RSTn, !DMA_A00.q());
+    /*p04.PYRO*/ DMA_A01 = ff17_r2(DMA_A00.qn(),  _LAPA_DMA_RSTn, DMA_A01.qn());
+    /*p04.NEFY*/ DMA_A02 = ff17_r2(DMA_A01.qn(),  _LAPA_DMA_RSTn, DMA_A02.qn());
+    /*p04.MUTY*/ DMA_A03 = ff17_r2(DMA_A02.qn(),  _LAPA_DMA_RSTn, DMA_A03.qn());
+    /*p04.NYKO*/ DMA_A04 = ff17_r2(DMA_A03.qn(),  _LAPA_DMA_RSTn, DMA_A04.qn());
+    /*p04.PYLO*/ DMA_A05 = ff17_r2(DMA_A04.qn(),  _LAPA_DMA_RSTn, DMA_A05.qn());
+    /*p04.NUTO*/ DMA_A06 = ff17_r2(DMA_A05.qn(),  _LAPA_DMA_RSTn, DMA_A06.qn());
+    /*p04.MUGU*/ DMA_A07 = ff17_r2(DMA_A06.qn(),  _LAPA_DMA_RSTn, DMA_A07.qn());
   }
 
   // FF46 DMA
@@ -141,49 +144,45 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     ///*p04.NAFA*/ DMA_A08.set(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D0.q());
 
-    /*p04.NAFA*/ DMA_A08 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D0.q());
-
-    /*p04.PYNE*/ DMA_A09 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D1.q());
-    /*p04.PARA*/ DMA_A10 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D2.q());
-    /*p04.NYDO*/ DMA_A11 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D3.q());
-    /*p04.NYGY*/ DMA_A12 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D4.q());
-    /*p04.PULA*/ DMA_A13 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D5.q());
-    /*p04.POKU*/ DMA_A14 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D6.q());
-    /*p04.MARU*/ DMA_A15 = ff8(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D7.q());
+    /*p04.NAFA*/ DMA_A08 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D0.q());
+    /*p04.PYNE*/ DMA_A09 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D1.q());
+    /*p04.PARA*/ DMA_A10 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D2.q());
+    /*p04.NYDO*/ DMA_A11 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D3.q());
+    /*p04.NYGY*/ DMA_A12 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D4.q());
+    /*p04.PULA*/ DMA_A13 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D5.q());
+    /*p04.POKU*/ DMA_A14 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D6.q());
+    /*p04.MARU*/ DMA_A15 = ff8_r2(_LORU_FF46_WRn, _PYSU_FF46_WRp, top.cpu_bus.CPU_TRI_D7.q());
   }
 }
 
 //-----------------------------------------------------------------------------
 
 SignalHash DmaRegisters::commit() {
-  SignalHash hash;
-  /*p04.MATU*/ hash << _MATU_DMA_RUNNINGp.commit(); // -> p25,p28
-  /*p04.MYTE*/ hash << MYTE_DMA_DONE.commit();
-  /*p04.LUVY*/ hash << LUVY_DMA_TRIG_d0.commit();
-  /*p04.LENE*/ hash << LENE_DMA_TRIG_d4.commit();
-  /*p04.NAKY*/ hash << DMA_A00.commit();
-  /*p04.PYRO*/ hash << DMA_A01.commit(); 
-  /*p04.NEFY*/ hash << DMA_A02.commit(); 
-  /*p04.MUTY*/ hash << DMA_A03.commit(); 
-  /*p04.NYKO*/ hash << DMA_A04.commit(); 
-  /*p04.PYLO*/ hash << DMA_A05.commit(); 
-  /*p04.NUTO*/ hash << DMA_A06.commit(); 
-  /*p04.MUGU*/ hash << DMA_A07.commit(); 
-  /*p04.NAFA*/ hash << DMA_A08.commit(); 
-  /*p04.PYNE*/ hash << DMA_A09.commit(); 
-  /*p04.PARA*/ hash << DMA_A10.commit(); 
-  /*p04.NYDO*/ hash << DMA_A11.commit(); 
-  /*p04.NYGY*/ hash << DMA_A12.commit(); 
-  /*p04.PULA*/ hash << DMA_A13.commit(); 
-  /*p04.POKU*/ hash << DMA_A14.commit(); 
-  /*p04.MARU*/ hash << DMA_A15.commit(); 
-  /*p04.LYXE*/ hash << LYXE_DMA_LATCHn.commit();
+  DMA_A00.commit();
+  DMA_A01.commit(); 
+  DMA_A02.commit(); 
+  DMA_A03.commit(); 
+  DMA_A04.commit(); 
+  DMA_A05.commit(); 
+  DMA_A06.commit(); 
+  DMA_A07.commit(); 
+  DMA_A08.commit(); 
+  DMA_A09.commit(); 
+  DMA_A10.commit(); 
+  DMA_A11.commit(); 
+  DMA_A12.commit(); 
+  DMA_A13.commit(); 
+  DMA_A14.commit(); 
+  DMA_A15.commit(); 
 
-  // NAND latch
-  /*p04.LARA*/ hash << LARA_DMA_LATCHn.commit();
-  /*p04.LOKY*/ hash << LOKY_DMA_LATCHp.commit();
+  _LYXE_DMA_LATCHn.commit();
+  _MATU_DMA_RUNNINGp.commit(); // -> p25,p28
+  _MYTE_DMA_DONE.commit();
+  _LUVY_DMA_TRIG_d0.commit();
+  _LENE_DMA_TRIG_d4.commit();
+  _LOKY_DMA_LATCHp.commit();
 
-  return hash;
+  return {SignalHash::hash_blob(this, sizeof(*this))};
 }
 
 //-----------------------------------------------------------------------------
@@ -194,11 +193,11 @@ void dump_regs(TextPainter& text_painter) {
   text_painter.dprintf(" ----- DMA REG -----\n");
   //FROM_CPU5_SYNC.dump(text_painter, "FROM_CPU5_SYNC   ");
   MATU_DMA_RUNNINGp.dump(text_painter, "DMA_RUNNING  ");
-  MYTE_DMA_DONE.dump(text_painter, "MYTE_DMA_DONE    ");
-  LUVY_DMA_TRIG_d0.dump(text_painter, "LUVY    ");
-  LENE_DMA_TRIG_d4.dump(text_painter, "LENE    ");
-  LYXE_DMA_LATCHn.dump(text_painter, "LYXE ");
-  LOKY_DMA_LATCHp.dump(text_painter, "LOKY  ");
+  _MYTE_DMA_DONE.dump(text_painter, "_MYTE_DMA_DONE    ");
+  _LUVY_DMA_TRIG_d0.dump(text_painter, "LUVY    ");
+  _LENE_DMA_TRIG_d4.dump(text_painter, "LENE    ");
+  _LYXE_DMA_LATCHn.dump(text_painter, "LYXE ");
+  _LOKY_DMA_LATCHp.dump(text_painter, "LOKY  ");
   text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
   text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
   text_painter.newline();

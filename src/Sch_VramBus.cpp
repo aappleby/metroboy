@@ -520,28 +520,28 @@ void VramBus::tock(SchematicTop& top) {
 SignalHash VramBus::commit() {
   SignalHash hash;
 
-  hash << _VRM_TRI_A00.commit();
-  hash << _VRM_TRI_A01.commit();
-  hash << _VRM_TRI_A02.commit();
-  hash << _VRM_TRI_A03.commit();
-  hash << _VRM_TRI_A04.commit();
-  hash << _VRM_TRI_A05.commit();
-  hash << _VRM_TRI_A06.commit();
-  hash << _VRM_TRI_A07.commit();
-  hash << _VRM_TRI_A08.commit();
-  hash << _VRM_TRI_A09.commit();
-  hash << _VRM_TRI_A10.commit();
-  hash << _VRM_TRI_A11.commit();
-  hash << _VRM_TRI_A12.commit();
+  hash << _VRM_TRI_A00.commit_pd();
+  hash << _VRM_TRI_A01.commit_pd();
+  hash << _VRM_TRI_A02.commit_pd();
+  hash << _VRM_TRI_A03.commit_pd();
+  hash << _VRM_TRI_A04.commit_pd();
+  hash << _VRM_TRI_A05.commit_pd();
+  hash << _VRM_TRI_A06.commit_pd();
+  hash << _VRM_TRI_A07.commit_pd();
+  hash << _VRM_TRI_A08.commit_pd();
+  hash << _VRM_TRI_A09.commit_pd();
+  hash << _VRM_TRI_A10.commit_pd();
+  hash << _VRM_TRI_A11.commit_pd();
+  hash << _VRM_TRI_A12.commit_pd();
 
-  hash << _VRM_TRI_D0.commit();
-  hash << _VRM_TRI_D1.commit();
-  hash << _VRM_TRI_D2.commit();
-  hash << _VRM_TRI_D3.commit();
-  hash << _VRM_TRI_D4.commit();
-  hash << _VRM_TRI_D5.commit();
-  hash << _VRM_TRI_D6.commit();
-  hash << _VRM_TRI_D7.commit();
+  hash << _VRM_TRI_D0.commit_pd();
+  hash << _VRM_TRI_D1.commit_pd();
+  hash << _VRM_TRI_D2.commit_pd();
+  hash << _VRM_TRI_D3.commit_pd();
+  hash << _VRM_TRI_D4.commit_pd();
+  hash << _VRM_TRI_D5.commit_pd();
+  hash << _VRM_TRI_D6.commit_pd();
+  hash << _VRM_TRI_D7.commit_pd();
 
   hash << _VRAM_PIN_MCSn_A.commit();   // PIN_43 <- SOKY
   hash << _VRAM_PIN_MCSn_C.commit_input();   // PIN_43 -> TEFY

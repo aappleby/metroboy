@@ -7,32 +7,32 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 Joypad::Joypad() {
-  JOY_PIN_P10_C.set_pin_in(0);
-  JOY_PIN_P11_C.set_pin_in(0);
-  JOY_PIN_P12_C.set_pin_in(0);
-  JOY_PIN_P13_C.set_pin_in(0);
+  JOY_PIN_P10_C.hold(0);
+  JOY_PIN_P11_C.hold(0);
+  JOY_PIN_P12_C.hold(0);
+  JOY_PIN_P13_C.hold(0);
 }
 
 //-----------------------------------------------------------------------------
 
 void Joypad::set_buttons(uint8_t buttons) {
   if (KELY_JOYP_UDLR.q()) {
-    JOY_PIN_P10_C.set_pin_in(buttons & 0x01);
-    JOY_PIN_P11_C.set_pin_in(buttons & 0x02);
-    JOY_PIN_P12_C.set_pin_in(buttons & 0x04);
-    JOY_PIN_P13_C.set_pin_in(buttons & 0x08);
+    JOY_PIN_P10_C.hold(buttons & 0x01);
+    JOY_PIN_P11_C.hold(buttons & 0x02);
+    JOY_PIN_P12_C.hold(buttons & 0x04);
+    JOY_PIN_P13_C.hold(buttons & 0x08);
   }
   else if (COFY_JOYP_ABCS.q()) {
-    JOY_PIN_P10_C.set_pin_in(buttons & 0x10);
-    JOY_PIN_P11_C.set_pin_in(buttons & 0x20);
-    JOY_PIN_P12_C.set_pin_in(buttons & 0x40);
-    JOY_PIN_P13_C.set_pin_in(buttons & 0x80);
+    JOY_PIN_P10_C.hold(buttons & 0x10);
+    JOY_PIN_P11_C.hold(buttons & 0x20);
+    JOY_PIN_P12_C.hold(buttons & 0x40);
+    JOY_PIN_P13_C.hold(buttons & 0x80);
   }
   else {
-    JOY_PIN_P10_C.set_pin_in(1);
-    JOY_PIN_P11_C.set_pin_in(1);
-    JOY_PIN_P12_C.set_pin_in(1);
-    JOY_PIN_P13_C.set_pin_in(1);
+    JOY_PIN_P10_C.hold(1);
+    JOY_PIN_P11_C.hold(1);
+    JOY_PIN_P12_C.hold(1);
+    JOY_PIN_P13_C.hold(1);
   }
 }
 //------------------------------------------------------------------------------
@@ -51,24 +51,24 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or(JOY_PIN_P13_C, JOY_PIN_P12_C, JOY_PIN_P11_C, JOY_PIN_P10_C);
 
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
-    CPU_PIN_WAKE = SignalState::from_wire(AWOB_WAKE_CPU.q());
+    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_r2(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
+    CPU_PIN_WAKE = AWOB_WAKE_CPU.q();
   }
 
   {
-    /*p02.BATU*/ BATU_JP_GLITCH0 = ff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1 = ff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.q());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2 = ff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.q());
-    /*p02.APUG*/ APUG_JP_GLITCH3 = ff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.q());
+    /*p02.BATU*/ BATU_JP_GLITCH0 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
+    /*p02.ACEF*/ ACEF_JP_GLITCH1 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.q());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.q());
+    /*p02.APUG*/ APUG_JP_GLITCH3 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.q());
   }
 
   {
     /*p10.ACAT*/ wire _ACAT_FF00_RDp = and (top.TEDO_CPU_RDp(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RDp);
-    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P10_C);
-    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P11_C);
-    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P12_C);
-    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P13_C);
+    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P10_C);
+    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P11_C);
+    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P12_C);
+    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P13_C);
 
     /*p05.KEMA*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
     /*p05.KURO*/ cpu_bus.CPU_TRI_D1 = tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
@@ -82,14 +82,14 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-    /*p05.JUTE*/ JUTE_JOYP_RA     = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0);
-    /*p05.KECY*/ KECY_JOYP_LB     = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1);
-    /*p05.JALE*/ JALE_JOYP_UC     = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2);
-    /*p05.KYME*/ KYME_JOYP_DS     = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3);
-    /*p05.KELY*/ KELY_JOYP_UDLR   = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4);
-    /*p05.COFY*/ COFY_JOYP_ABCS   = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5);
-    /*p05.KUKO*/ KUKO_DBG_FF00_D6 = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6);
-    /*p05.KERU*/ KERU_DBG_FF00_D7 = ff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7);
+    /*p05.JUTE*/ JUTE_JOYP_RA     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D0);
+    /*p05.KECY*/ KECY_JOYP_LB     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D1);
+    /*p05.JALE*/ JALE_JOYP_UC     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D2);
+    /*p05.KYME*/ KYME_JOYP_DS     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D3);
+    /*p05.KELY*/ KELY_JOYP_UDLR   = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D4);
+    /*p05.COFY*/ COFY_JOYP_ABCS   = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D5);
+    /*p05.KUKO*/ KUKO_DBG_FF00_D6 = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D6);
+    /*p05.KERU*/ KERU_DBG_FF00_D7 = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_TRI_D7);
   }
 
   {
@@ -99,80 +99,78 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p05.KURA*/ wire KURA = not(_BURO_FF60_0p);
 
-    JOY_PIN_P10_B = SignalState::from_wire(GND);
-    JOY_PIN_P11_B = SignalState::from_wire(GND);
-    JOY_PIN_P12_B = SignalState::from_wire(GND);
-    JOY_PIN_P13_B = SignalState::from_wire(GND);
+    JOY_PIN_P10_B = GND;
+    JOY_PIN_P11_B = GND;
+    JOY_PIN_P12_B = GND;
+    JOY_PIN_P13_B = GND;
 
-    /*p05.KOLE*/ JOY_PIN_P10_A = SignalState::from_wire(nand(JUTE_JOYP_RA.q(), _BURO_FF60_0p));
-    /*p05.KYBU*/ JOY_PIN_P10_D = SignalState::from_wire(nor (JUTE_JOYP_RA.q(), KURA));
+    /*p05.KOLE*/ JOY_PIN_P10_A = nand(JUTE_JOYP_RA.q(), _BURO_FF60_0p);
+    /*p05.KYBU*/ JOY_PIN_P10_D = nor (JUTE_JOYP_RA.q(), KURA);
 
-    /*p05.KYTO*/ JOY_PIN_P11_A = SignalState::from_wire(nand(KECY_JOYP_LB.q(), _BURO_FF60_0p));
-    /*p05.KABU*/ JOY_PIN_P11_D = SignalState::from_wire(nor (KECY_JOYP_LB.q(), KURA));
-    /*p05.KYHU*/ JOY_PIN_P12_A = SignalState::from_wire(nand(JALE_JOYP_UC.q(), _BURO_FF60_0p));
-    /*p05.KASY*/ JOY_PIN_P12_D = SignalState::from_wire(nor (JALE_JOYP_UC.q(), KURA));
-    /*p05.KORY*/ JOY_PIN_P13_A = SignalState::from_wire(nand(KYME_JOYP_DS.q(), _BURO_FF60_0p));
-    /*p05.KALE*/ JOY_PIN_P13_D = SignalState::from_wire(nor (KYME_JOYP_DS.q(), KURA));
+    /*p05.KYTO*/ JOY_PIN_P11_A = nand(KECY_JOYP_LB.q(), _BURO_FF60_0p);
+    /*p05.KABU*/ JOY_PIN_P11_D = nor (KECY_JOYP_LB.q(), KURA);
+    /*p05.KYHU*/ JOY_PIN_P12_A = nand(JALE_JOYP_UC.q(), _BURO_FF60_0p);
+    /*p05.KASY*/ JOY_PIN_P12_D = nor (JALE_JOYP_UC.q(), KURA);
+    /*p05.KORY*/ JOY_PIN_P13_A = nand(KYME_JOYP_DS.q(), _BURO_FF60_0p);
+    /*p05.KALE*/ JOY_PIN_P13_D = nor (KYME_JOYP_DS.q(), KURA);
 
     /*p05.KARU*/ wire KARU = or(KELY_JOYP_UDLR.qn(), KURA);
     /*p05.CELA*/ wire CELA = or(COFY_JOYP_ABCS.qn(), KURA);
 
-    JOY_PIN_P14_A = SignalState::from_wire(KARU);
-    JOY_PIN_P14_D = SignalState::from_wire(KELY_JOYP_UDLR.qn());
+    JOY_PIN_P14_A = KARU;
+    JOY_PIN_P14_D = KELY_JOYP_UDLR.qn();
 
-    JOY_PIN_P15_A = SignalState::from_wire(CELA);
-    JOY_PIN_P15_D = SignalState::from_wire(COFY_JOYP_ABCS.qn());
+    JOY_PIN_P15_A = CELA;
+    JOY_PIN_P15_D = COFY_JOYP_ABCS.qn();
   }
 }
 
 //------------------------------------------------------------------------------
 
 SignalHash Joypad::commit() {
-  SignalHash hash;
+  JOY_PIN_P10_A.commit();
+  JOY_PIN_P10_B.commit();
+  JOY_PIN_P10_D.commit();
+  JOY_PIN_P11_A.commit();
+  JOY_PIN_P11_B.commit();
+  JOY_PIN_P11_D.commit();
+  JOY_PIN_P12_A.commit();
+  JOY_PIN_P12_B.commit();
+  JOY_PIN_P12_D.commit();
+  JOY_PIN_P13_A.commit();
+  JOY_PIN_P13_B.commit();
+  JOY_PIN_P13_D.commit();
+  JOY_PIN_P14_A.commit();
+  JOY_PIN_P14_D.commit();
+  JOY_PIN_P15_A.commit();
+  JOY_PIN_P15_D.commit();
 
-  hash << JOY_PIN_P10_A.commit();    // PIN_67<- KOLE
-  hash << JOY_PIN_P10_B.commit();    // PIN_67
-  hash << JOY_PIN_P10_D.commit();    // PIN_67<- KYBU
-  hash << JOY_PIN_P11_A.commit();    // PIN_66<- KYTO
-  hash << JOY_PIN_P11_B.commit();    // PIN_66
-  hash << JOY_PIN_P11_D.commit();    // PIN_66<- KABU
-  hash << JOY_PIN_P12_A.commit();    // PIN_65<- KYHU
-  hash << JOY_PIN_P12_B.commit();    // PIN_65
-  hash << JOY_PIN_P12_D.commit();    // PIN_65<- KASY
-  hash << JOY_PIN_P13_A.commit();    // PIN_64<- KORY
-  hash << JOY_PIN_P13_B.commit();    // PIN_64
-  hash << JOY_PIN_P13_D.commit();    // PIN_64<- KALE
-  hash << JOY_PIN_P14_A.commit();    // PIN_63<- KARU
-  hash << JOY_PIN_P14_D.commit();    // PIN_63<- KELY
-  hash << JOY_PIN_P15_A.commit();    // PIN_62<- CELA
-  hash << JOY_PIN_P15_D.commit();    // PIN_62<- COFY
+  JOY_PIN_P10_C.commit();
+  JOY_PIN_P11_C.commit();
+  JOY_PIN_P12_C.commit();
+  JOY_PIN_P13_C.commit();
 
-  hash << JOY_PIN_P10_C.commit_input();     // PIN_67-> KERY, KEVU
-  hash << JOY_PIN_P11_C.commit_input();     // PIN_66-> KERY, P05.KAPA
-  hash << JOY_PIN_P12_C.commit_input();     // PIN_65-> KERY, P05.KEJA
-  hash << JOY_PIN_P13_C.commit_input();     // PIN_64-> KERY, P05.KOLO
+  BATU_JP_GLITCH0.commit();
+  ACEF_JP_GLITCH1.commit();
+  AGEM_JP_GLITCH2.commit();
+  APUG_JP_GLITCH3.commit();
+  JUTE_JOYP_RA.commit();
+  KECY_JOYP_LB.commit();
+  JALE_JOYP_UC.commit();
+  KYME_JOYP_DS.commit();
+  KELY_JOYP_UDLR.commit();
+  COFY_JOYP_ABCS.commit();
+  KUKO_DBG_FF00_D6.commit();
+  KERU_DBG_FF00_D7.commit();
+  KEVU_JOYP_L0.commit();
+  KAPA_JOYP_L1.commit();
+  KEJA_JOYP_L2.commit();
+  KOLO_JOYP_L3.commit();
+  AWOB_WAKE_CPU.commit();
 
-  /*p02.BATU*/ hash << BATU_JP_GLITCH0.commit();
-  /*p02.ACEF*/ hash << ACEF_JP_GLITCH1.commit();
-  /*p02.AGEM*/ hash << AGEM_JP_GLITCH2.commit();
-  /*p02.APUG*/ hash << APUG_JP_GLITCH3.commit();
-  /*p05.JUTE*/ hash << JUTE_JOYP_RA.commit();
-  /*p05.KECY*/ hash << KECY_JOYP_LB.commit();
-  /*p05.JALE*/ hash << JALE_JOYP_UC.commit();
-  /*p05.KYME*/ hash << KYME_JOYP_DS.commit();
-  /*p05.KELY*/ hash << KELY_JOYP_UDLR.commit();
-  /*p05.COFY*/ hash << COFY_JOYP_ABCS.commit();
-  /*p05.KUKO*/ hash << KUKO_DBG_FF00_D6.commit();
-  /*p05.KERU*/ hash << KERU_DBG_FF00_D7.commit();
-  /*p05.KEVU*/ hash << KEVU_JOYP_L0.commit();
-  /*p05.KAPA*/ hash << KAPA_JOYP_L1.commit();
-  /*p05.KEJA*/ hash << KEJA_JOYP_L2.commit();
-  /*p05.KOLO*/ hash << KOLO_JOYP_L3.commit();
-  /*p02.AWOB*/ hash << AWOB_WAKE_CPU.commit_pd();
+  CPU_PIN_WAKE.commit();          // <- P02.AWOB
 
-  hash << CPU_PIN_WAKE.commit();          // <- P02.AWOB
-
-  return hash;
+  return {SignalHash::hash_blob(this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

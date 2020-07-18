@@ -31,15 +31,6 @@ VramBus::VramBus(){
   _VRAM_PIN_MCSn_C.set_pin_in(0);
   _VRAM_PIN_MOEn_C.set_pin_in(0);
   _VRAM_PIN_MWRn_C.set_pin_in(0);
-  
-  _VRAM_PIN_MD0_C.set_pin_in(0);
-  _VRAM_PIN_MD1_C.set_pin_in(0);
-  _VRAM_PIN_MD2_C.set_pin_in(0);
-  _VRAM_PIN_MD3_C.set_pin_in(0);
-  _VRAM_PIN_MD4_C.set_pin_in(0);
-  _VRAM_PIN_MD5_C.set_pin_in(0);
-  _VRAM_PIN_MD6_C.set_pin_in(0);
-  _VRAM_PIN_MD7_C.set_pin_in(0);
 }
 
 //------------------------------------------------------------------------------
@@ -305,19 +296,19 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUMA*/ wire _RUMA = not(_VRM_TRI_A11.q());
     /*p25.REHO*/ wire _REHO = not(_VRM_TRI_A12.q());
 
-    /*p25.LEXE*/ _VRAM_PIN_MA00_AD = SignalState::from_wire(_MYFU);
-    /*p25.LOZU*/ _VRAM_PIN_MA01_AD = SignalState::from_wire(_MASA);
-    /*p25.LACA*/ _VRAM_PIN_MA02_AD = SignalState::from_wire(_MYRE);
-    /*p25.LUVO*/ _VRAM_PIN_MA03_AD = SignalState::from_wire(_MAVU);
-    /*p25.LOLY*/ _VRAM_PIN_MA04_AD = SignalState::from_wire(_MEPA);
-    /*p25.LALO*/ _VRAM_PIN_MA05_AD = SignalState::from_wire(_MYSA);
-    /*p25.LEFA*/ _VRAM_PIN_MA06_AD = SignalState::from_wire(_MEWY);
-    /*p25.LUBY*/ _VRAM_PIN_MA07_AD = SignalState::from_wire(_MUME);
-    /*p25.TUJY*/ _VRAM_PIN_MA08_AD = SignalState::from_wire(_VOVA);
-    /*p25.TAGO*/ _VRAM_PIN_MA09_AD = SignalState::from_wire(_VODE);
-    /*p25.NUVA*/ _VRAM_PIN_MA10_AD = SignalState::from_wire(_RUKY);
-    /*p25.PEDU*/ _VRAM_PIN_MA11_AD = SignalState::from_wire(_RUMA);
-    /*p25.PONY*/ _VRAM_PIN_MA12_AD = SignalState::from_wire(_REHO);
+    /*p25.LEXE*/ _VRAM_PIN_MA00_AD = _MYFU;
+    /*p25.LOZU*/ _VRAM_PIN_MA01_AD = _MASA;
+    /*p25.LACA*/ _VRAM_PIN_MA02_AD = _MYRE;
+    /*p25.LUVO*/ _VRAM_PIN_MA03_AD = _MAVU;
+    /*p25.LOLY*/ _VRAM_PIN_MA04_AD = _MEPA;
+    /*p25.LALO*/ _VRAM_PIN_MA05_AD = _MYSA;
+    /*p25.LEFA*/ _VRAM_PIN_MA06_AD = _MEWY;
+    /*p25.LUBY*/ _VRAM_PIN_MA07_AD = _MUME;
+    /*p25.TUJY*/ _VRAM_PIN_MA08_AD = _VOVA;
+    /*p25.TAGO*/ _VRAM_PIN_MA09_AD = _VODE;
+    /*p25.NUVA*/ _VRAM_PIN_MA10_AD = _RUKY;
+    /*p25.PEDU*/ _VRAM_PIN_MA11_AD = _RUMA;
+    /*p25.PONY*/ _VRAM_PIN_MA12_AD = _REHO;
   }
 
   //----------------------------------------
@@ -362,24 +353,24 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.REKU*/ wire _REKU = not(_SAMO);
     /*p25.RYZE*/ wire _RYZE = not(_SUKE);
 
-    _VRAM_PIN_MD0_A = SignalState::from_wire(_REGE);
-    _VRAM_PIN_MD1_A = SignalState::from_wire(_RYKY);
-    _VRAM_PIN_MD2_A = SignalState::from_wire(_RAZO);
-    _VRAM_PIN_MD3_A = SignalState::from_wire(_RADA);
-    _VRAM_PIN_MD4_A = SignalState::from_wire(_RYRO);
-    _VRAM_PIN_MD5_A = SignalState::from_wire(_REVU);
-    _VRAM_PIN_MD6_A = SignalState::from_wire(_REKU);
-    _VRAM_PIN_MD7_A = SignalState::from_wire(_RYZE);
+    _VRAM_PIN_MD0_A = _REGE;
+    _VRAM_PIN_MD1_A = _RYKY;
+    _VRAM_PIN_MD2_A = _RAZO;
+    _VRAM_PIN_MD3_A = _RADA;
+    _VRAM_PIN_MD4_A = _RYRO;
+    _VRAM_PIN_MD5_A = _REVU;
+    _VRAM_PIN_MD6_A = _REKU;
+    _VRAM_PIN_MD7_A = _RYZE;
 
     /*p25.ROFA*/ wire _ROFA_VRM_TO_CPUn = not(_RENA_VRM_TO_CPUp);
-    _VRAM_PIN_MD0_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD1_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD2_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD3_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD4_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD5_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD6_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
-    _VRAM_PIN_MD7_B = SignalState::from_wire(_ROFA_VRM_TO_CPUn);
+    _VRAM_PIN_MD0_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD1_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD2_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD3_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD4_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD5_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD6_B = _ROFA_VRM_TO_CPUn;
+    _VRAM_PIN_MD7_B = _ROFA_VRM_TO_CPUn;
 
     /*p25.SYNU*/ wire _SYNU = or (_VRM_TRI_D0.q(), _RAHU_CPU_TO_VRMn);
     /*p25.SYMA*/ wire _SYMA = or (_VRM_TRI_D1.q(), _RAHU_CPU_TO_VRMn);
@@ -399,14 +390,14 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RYTY*/ wire _RYTY = not(_SEDO);
     /*p25.RADY*/ wire _RADY = not(_SAWU);
 
-    _VRAM_PIN_MD0_D = SignalState::from_wire(_RURA);
-    _VRAM_PIN_MD1_D = SignalState::from_wire(_RULY);
-    _VRAM_PIN_MD2_D = SignalState::from_wire(_RARE);
-    _VRAM_PIN_MD3_D = SignalState::from_wire(_RODU);
-    _VRAM_PIN_MD4_D = SignalState::from_wire(_RUBE);
-    _VRAM_PIN_MD5_D = SignalState::from_wire(_RUMU);
-    _VRAM_PIN_MD6_D = SignalState::from_wire(_RYTY);
-    _VRAM_PIN_MD7_D = SignalState::from_wire(_RADY);
+    _VRAM_PIN_MD0_D = _RURA;
+    _VRAM_PIN_MD1_D = _RULY;
+    _VRAM_PIN_MD2_D = _RARE;
+    _VRAM_PIN_MD3_D = _RODU;
+    _VRAM_PIN_MD4_D = _RUBE;
+    _VRAM_PIN_MD5_D = _RUMU;
+    _VRAM_PIN_MD6_D = _RYTY;
+    _VRAM_PIN_MD7_D = _RADY;
   }
 
   //----------------------------------------
@@ -594,14 +585,14 @@ SignalHash VramBus::commit() {
   hash << _VRAM_PIN_MD7_B.commit();    // PIN_25 <- ROFA
   hash << _VRAM_PIN_MD7_D.commit();    // PIN_25 <- RADY
 
-  hash << _VRAM_PIN_MD0_C.commit_input();    // PIN_33 -> RODY
-  hash << _VRAM_PIN_MD1_C.commit_input();    // PIN_31 -> REBA
-  hash << _VRAM_PIN_MD2_C.commit_input();    // PIN_30 -> RYDO
-  hash << _VRAM_PIN_MD3_C.commit_input();    // PIN_29 -> REMO
-  hash << _VRAM_PIN_MD4_C.commit_input();    // PIN_28 -> ROCE
-  hash << _VRAM_PIN_MD5_C.commit_input();    // PIN_27 -> ROPU
-  hash << _VRAM_PIN_MD6_C.commit_input();    // PIN_26 -> RETA
-  hash << _VRAM_PIN_MD7_C.commit_input();    // PIN_25 -> RAKU
+  hash << _VRAM_PIN_MD0_C.commit();    // PIN_33 -> RODY
+  hash << _VRAM_PIN_MD1_C.commit();    // PIN_31 -> REBA
+  hash << _VRAM_PIN_MD2_C.commit();    // PIN_30 -> RYDO
+  hash << _VRAM_PIN_MD3_C.commit();    // PIN_29 -> REMO
+  hash << _VRAM_PIN_MD4_C.commit();    // PIN_28 -> ROCE
+  hash << _VRAM_PIN_MD5_C.commit();    // PIN_27 -> ROPU
+  hash << _VRAM_PIN_MD6_C.commit();    // PIN_26 -> RETA
+  hash << _VRAM_PIN_MD7_C.commit();    // PIN_25 -> RAKU
 
 
   return hash;

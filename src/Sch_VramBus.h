@@ -14,14 +14,14 @@ struct VramBus {
   SignalHash commit();
 
   void set_vram_data(uint8_t data) {
-    _VRAM_PIN_MD0_C.set_pin_in(data & 0x01);
-    _VRAM_PIN_MD1_C.set_pin_in(data & 0x02);
-    _VRAM_PIN_MD2_C.set_pin_in(data & 0x04);
-    _VRAM_PIN_MD3_C.set_pin_in(data & 0x08);
-    _VRAM_PIN_MD4_C.set_pin_in(data & 0x10);
-    _VRAM_PIN_MD5_C.set_pin_in(data & 0x20);
-    _VRAM_PIN_MD6_C.set_pin_in(data & 0x40);
-    _VRAM_PIN_MD7_C.set_pin_in(data & 0x80);
+    _VRAM_PIN_MD0_C.hold(data & 0x01);
+    _VRAM_PIN_MD1_C.hold(data & 0x02);
+    _VRAM_PIN_MD2_C.hold(data & 0x04);
+    _VRAM_PIN_MD3_C.hold(data & 0x08);
+    _VRAM_PIN_MD4_C.hold(data & 0x10);
+    _VRAM_PIN_MD5_C.hold(data & 0x20);
+    _VRAM_PIN_MD6_C.hold(data & 0x40);
+    _VRAM_PIN_MD7_C.hold(data & 0x80);
   }
 
   // -> oam data tri
@@ -74,55 +74,55 @@ private:
   ExtPinIn  _VRAM_PIN_MWRn_C;   // PIN_49 -> P25.SUDO
   Reg _VRAM_PIN_MWRn_D;   // PIN_49 <- P25.RAGU
 
-  Reg _VRAM_PIN_MA00_AD;  // PIN_34 <- P04.ECAL
-  Reg _VRAM_PIN_MA01_AD;  // PIN_35 <- P04.EGEZ
-  Reg _VRAM_PIN_MA02_AD;  // PIN_36 <- P04.FUHE
-  Reg _VRAM_PIN_MA03_AD;  // PIN_37 <- P04.FYZY
-  Reg _VRAM_PIN_MA04_AD;  // PIN_38 <- P04.DAMU
-  Reg _VRAM_PIN_MA05_AD;  // PIN_39 <- P04.DAVA
-  Reg _VRAM_PIN_MA06_AD;  // PIN_40 <- P04.ETEG
-  Reg _VRAM_PIN_MA07_AD;  // PIN_41 <- P04.EREW
-  Reg _VRAM_PIN_MA08_AD;  // PIN_48 <- P04.EVAX
-  Reg _VRAM_PIN_MA09_AD;  // PIN_47 <- P04.DUVE
-  Reg _VRAM_PIN_MA10_AD;  // PIN_44 <- P04.ERAF
-  Reg _VRAM_PIN_MA11_AD;  // PIN_46 <- P04.FUSY
-  Reg _VRAM_PIN_MA12_AD;  // PIN_42 <- P04.EXYF
+  Pin2 _VRAM_PIN_MA00_AD = Pin2::HIZ_NP;  // PIN_34 <- P04.ECAL
+  Pin2 _VRAM_PIN_MA01_AD = Pin2::HIZ_NP;  // PIN_35 <- P04.EGEZ
+  Pin2 _VRAM_PIN_MA02_AD = Pin2::HIZ_NP;  // PIN_36 <- P04.FUHE
+  Pin2 _VRAM_PIN_MA03_AD = Pin2::HIZ_NP;  // PIN_37 <- P04.FYZY
+  Pin2 _VRAM_PIN_MA04_AD = Pin2::HIZ_NP;  // PIN_38 <- P04.DAMU
+  Pin2 _VRAM_PIN_MA05_AD = Pin2::HIZ_NP;  // PIN_39 <- P04.DAVA
+  Pin2 _VRAM_PIN_MA06_AD = Pin2::HIZ_NP;  // PIN_40 <- P04.ETEG
+  Pin2 _VRAM_PIN_MA07_AD = Pin2::HIZ_NP;  // PIN_41 <- P04.EREW
+  Pin2 _VRAM_PIN_MA08_AD = Pin2::HIZ_NP;  // PIN_48 <- P04.EVAX
+  Pin2 _VRAM_PIN_MA09_AD = Pin2::HIZ_NP;  // PIN_47 <- P04.DUVE
+  Pin2 _VRAM_PIN_MA10_AD = Pin2::HIZ_NP;  // PIN_44 <- P04.ERAF
+  Pin2 _VRAM_PIN_MA11_AD = Pin2::HIZ_NP;  // PIN_46 <- P04.FUSY
+  Pin2 _VRAM_PIN_MA12_AD = Pin2::HIZ_NP;  // PIN_42 <- P04.EXYF
 
-  Reg _VRAM_PIN_MD0_A;    // PIN_33 <- P25.REGE
-  Reg _VRAM_PIN_MD1_A;    // PIN_31 <- P25.RYKY
-  Reg _VRAM_PIN_MD2_A;    // PIN_30 <- P25.RAZO
-  Reg _VRAM_PIN_MD3_A;    // PIN_29 <- P25.RADA
-  Reg _VRAM_PIN_MD4_A;    // PIN_28 <- P25.RYRO
-  Reg _VRAM_PIN_MD5_A;    // PIN_27 <- P25.REVU
-  Reg _VRAM_PIN_MD6_A;    // PIN_26 <- P25.REKU
-  Reg _VRAM_PIN_MD7_A;    // PIN_25 <- P25.RYZE
+  Pin2 _VRAM_PIN_MD0_A = Pin2::HIZ_NP;    // PIN_33 <- P25.REGE
+  Pin2 _VRAM_PIN_MD1_A = Pin2::HIZ_NP;    // PIN_31 <- P25.RYKY
+  Pin2 _VRAM_PIN_MD2_A = Pin2::HIZ_NP;    // PIN_30 <- P25.RAZO
+  Pin2 _VRAM_PIN_MD3_A = Pin2::HIZ_NP;    // PIN_29 <- P25.RADA
+  Pin2 _VRAM_PIN_MD4_A = Pin2::HIZ_NP;    // PIN_28 <- P25.RYRO
+  Pin2 _VRAM_PIN_MD5_A = Pin2::HIZ_NP;    // PIN_27 <- P25.REVU
+  Pin2 _VRAM_PIN_MD6_A = Pin2::HIZ_NP;    // PIN_26 <- P25.REKU
+  Pin2 _VRAM_PIN_MD7_A = Pin2::HIZ_NP;    // PIN_25 <- P25.RYZE
 
-  Reg _VRAM_PIN_MD0_B;    // PIN_33 <- P25.ROFA
-  Reg _VRAM_PIN_MD1_B;    // PIN_31 <- P25.ROFA
-  Reg _VRAM_PIN_MD2_B;    // PIN_30 <- P25.ROFA
-  Reg _VRAM_PIN_MD3_B;    // PIN_29 <- P25.ROFA
-  Reg _VRAM_PIN_MD4_B;    // PIN_28 <- P25.ROFA
-  Reg _VRAM_PIN_MD5_B;    // PIN_27 <- P25.ROFA
-  Reg _VRAM_PIN_MD6_B;    // PIN_26 <- P25.ROFA
-  Reg _VRAM_PIN_MD7_B;    // PIN_25 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD0_B = Pin2::HIZ_NP;    // PIN_33 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD1_B = Pin2::HIZ_NP;    // PIN_31 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD2_B = Pin2::HIZ_NP;    // PIN_30 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD3_B = Pin2::HIZ_NP;    // PIN_29 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD4_B = Pin2::HIZ_NP;    // PIN_28 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD5_B = Pin2::HIZ_NP;    // PIN_27 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD6_B = Pin2::HIZ_NP;    // PIN_26 <- P25.ROFA
+  Pin2 _VRAM_PIN_MD7_B = Pin2::HIZ_NP;    // PIN_25 <- P25.ROFA
 
-  ExtPinIn  _VRAM_PIN_MD0_C;    // PIN_33 -> P25.RODY
-  ExtPinIn  _VRAM_PIN_MD1_C;    // PIN_31 -> P25.REBA
-  ExtPinIn  _VRAM_PIN_MD2_C;    // PIN_30 -> P25.RYDO
-  ExtPinIn  _VRAM_PIN_MD3_C;    // PIN_29 -> P25.REMO
-  ExtPinIn  _VRAM_PIN_MD4_C;    // PIN_28 -> P25.ROCE
-  ExtPinIn  _VRAM_PIN_MD5_C;    // PIN_27 -> P25.ROPU
-  ExtPinIn  _VRAM_PIN_MD6_C;    // PIN_26 -> P25.RETA
-  ExtPinIn  _VRAM_PIN_MD7_C;    // PIN_25 -> P25.RAKU
+  Pin2 _VRAM_PIN_MD0_C = Pin2::HOLD_0;    // PIN_33 -> P25.RODY
+  Pin2 _VRAM_PIN_MD1_C = Pin2::HOLD_0;    // PIN_31 -> P25.REBA
+  Pin2 _VRAM_PIN_MD2_C = Pin2::HOLD_0;    // PIN_30 -> P25.RYDO
+  Pin2 _VRAM_PIN_MD3_C = Pin2::HOLD_0;    // PIN_29 -> P25.REMO
+  Pin2 _VRAM_PIN_MD4_C = Pin2::HOLD_0;    // PIN_28 -> P25.ROCE
+  Pin2 _VRAM_PIN_MD5_C = Pin2::HOLD_0;    // PIN_27 -> P25.ROPU
+  Pin2 _VRAM_PIN_MD6_C = Pin2::HOLD_0;    // PIN_26 -> P25.RETA
+  Pin2 _VRAM_PIN_MD7_C = Pin2::HOLD_0;    // PIN_25 -> P25.RAKU
 
-  Reg _VRAM_PIN_MD0_D;    // PIN_33 <- P25.RURA
-  Reg _VRAM_PIN_MD1_D;    // PIN_31 <- P25.RULY
-  Reg _VRAM_PIN_MD2_D;    // PIN_30 <- P25.RARE
-  Reg _VRAM_PIN_MD3_D;    // PIN_29 <- P25.RODU
-  Reg _VRAM_PIN_MD4_D;    // PIN_28 <- P25.RUBE
-  Reg _VRAM_PIN_MD5_D;    // PIN_27 <- P25.RUMU
-  Reg _VRAM_PIN_MD6_D;    // PIN_26 <- P25.RYTY
-  Reg _VRAM_PIN_MD7_D;    // PIN_25 <- P25.RADY
+  Pin2 _VRAM_PIN_MD0_D = Pin2::HIZ_NP;    // PIN_33 <- P25.RURA
+  Pin2 _VRAM_PIN_MD1_D = Pin2::HIZ_NP;    // PIN_31 <- P25.RULY
+  Pin2 _VRAM_PIN_MD2_D = Pin2::HIZ_NP;    // PIN_30 <- P25.RARE
+  Pin2 _VRAM_PIN_MD3_D = Pin2::HIZ_NP;    // PIN_29 <- P25.RODU
+  Pin2 _VRAM_PIN_MD4_D = Pin2::HIZ_NP;    // PIN_28 <- P25.RUBE
+  Pin2 _VRAM_PIN_MD5_D = Pin2::HIZ_NP;    // PIN_27 <- P25.RUMU
+  Pin2 _VRAM_PIN_MD6_D = Pin2::HIZ_NP;    // PIN_26 <- P25.RYTY
+  Pin2 _VRAM_PIN_MD7_D = Pin2::HIZ_NP;    // PIN_25 <- P25.RADY
 };
 
 //-----------------------------------------------------------------------------

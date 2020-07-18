@@ -77,6 +77,8 @@ struct Reg {
   operator wire() const { return get(); }
   wire as_wire() const { return get(); }
 
+  wire as_clock() const { return a.clk; }
+
   operator SignalState() const { return a; }
   SignalState as_signal() const { return a; }
 
@@ -85,7 +87,8 @@ struct Reg {
   char as_char() const { return a.as_char(); }
 
   void operator = (SignalState c) {
-    if (b.error) {
+    CHECKp(c.dirty);
+    if (!b.dirty) {
       // reg not driven, new signal drives it.
       b = c;
     }
@@ -100,8 +103,6 @@ struct Reg {
   }
 
   SignalHash commit() {
-    CHECKn(b.error);
-    //CHECKn(b.hiz);
     CHECKp(b.dirty);
 
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
@@ -114,8 +115,6 @@ struct Reg {
     a.clk = b.clk;
     a.set = 0;
     a.rst = 0;
-    a.error = 0;
-    a.pad1 = 0;
     a.dirty = 0;
 
     b = SignalState::make_error();
@@ -132,8 +131,6 @@ struct Reg {
       a.clk = b.clk;
       a.set = 0;
       a.rst = 0;
-      a.error = 0;
-      a.pad1 = 0;
       a.dirty = 0;
       b = SignalState::make_error();
       return {a.state};
@@ -149,8 +146,6 @@ struct Reg {
     a.clk = 0;
     a.set = 0;
     a.rst = 0;
-    a.error = 0;
-    a.pad1 = 0;
     a.dirty = 0;
   }
 
@@ -164,8 +159,6 @@ struct Reg {
     a.clk = 0;
     a.set = 0;
     a.rst = 0;
-    a.error = 0;
-    a.pad1 = 0;
     a.dirty = 0;
   }
 
@@ -177,7 +170,7 @@ protected:
     CHECKn(a.dirty);
     CHECKn(a.hiz);
 
-    if (!b.error) {
+    if (b.dirty) {
       //printf("RegisterBase read-after-write\n");
     }
 
@@ -266,7 +259,7 @@ inline SignalState ff8(wire CLKp, wire CLKn, bool D) {
 // XEPE_08 >> ZOGY_02  (q)
 // XEPE_09 >> nc
 
-inline SignalState ff9(wire CLKp, wire CLKn, wire RSTn, bool D) {
+inline SignalState ff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
   SignalState c;
@@ -275,6 +268,13 @@ inline SignalState ff9(wire CLKp, wire CLKn, wire RSTn, bool D) {
   c.rst = !RSTn;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECKn(CLKp == CLKn);
+  (void)CLKn;
+
+  return SIG_D0C0 | ((D & RSTn) << 4) | (CLKp << 5) | ((!RSTn) << 6);
 }
 
 //-----------------------------------------------------------------------------
@@ -320,6 +320,13 @@ inline SignalState ff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
   c.rst = RSTp;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
+  CHECKn(CLKp == CLKn);
+  (void)CLKn;
+
+  return SIG_D0C0 | ((D & !RSTp) << 4) | (CLKp << 5) | ((RSTp) << 6);
 }
 
 //-----------------------------------------------------------------------------
@@ -378,7 +385,7 @@ inline SignalState ff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
 // XADU_13 >> nc      (Q)
 
 // Almost definitely RSTn - see UPOJ/AFER on boot
-inline SignalState ff13(wire CLKp, wire CLKn, wire RSTn, bool D) {
+inline SignalState ff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
   SignalState c;
@@ -387,6 +394,13 @@ inline SignalState ff13(wire CLKp, wire CLKn, wire RSTn, bool D) {
   c.rst = !RSTn;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECKn(CLKp == CLKn);
+  (void)CLKn;
+
+  return SIG_D0C0 | ((D & RSTn) << 4) | (CLKp << 5) | ((!RSTn) << 6);
 }
 
 //-----------------------------------------------------------------------------
@@ -421,6 +435,10 @@ inline SignalState ff17(wire CLKp, wire RSTn, wire D) {
   c.rst = !RSTn;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t ff17_r2(wire CLKp, wire RSTn, wire D) {
+  return SIG_D0C0 | ((D & RSTn) << 4) | (CLKp << 5) | ((!RSTn) << 6);
 }
 
 //-----------------------------------------------------------------------------
@@ -503,6 +521,12 @@ inline SignalState nor_latch(wire SETp, wire RSTp) {
   c.rst = RSTp;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t nor_latch_r2(wire SETp, wire RSTp) {
+  if (RSTp) return SIG_A0C0;
+  if (SETp) return SIG_A1C0;
+  else      return SIG_PASS;
 }
 
 //-----------------------------------------------------------------------------
@@ -610,8 +634,8 @@ inline SignalState tp_latch(wire LATCHp, wire D) {
 inline SignalState tp_latch(wire LATCHp, SignalState D) {
   if (LATCHp) {
     SignalState c;
-    c.set = LATCHp && D.q();
-    c.rst = LATCHp && !D.q();
+    c.set = LATCHp && D.as_wire();
+    c.rst = LATCHp && !D.as_wire();
     c.dirty = 1;
     return c;
   }

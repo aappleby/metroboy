@@ -21,10 +21,10 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
-    /*p01.AFUR*/ _AFUR_ABCDxxxx = ff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(), !ADYK_xxxxEFGH_);
-    /*p01.ALEF*/ _ALEF_xBCDExxx = ff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  AFUR_xBCDExxx_);
-    /*p01.APUK*/ _APUK_xxCDEFxx = ff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  ALEF_xxCDEFxx_);
-    /*p01.ADYK*/ _ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  APUK_xxxDEFGx_);
+    /*p01.AFUR*/ _AFUR_ABCDxxxx = ff9_r2(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(), !ADYK_xxxxEFGH_);
+    /*p01.ALEF*/ _ALEF_xBCDExxx = ff9_r2( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  AFUR_xBCDExxx_);
+    /*p01.APUK*/ _APUK_xxCDEFxx = ff9_r2(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  ALEF_xxCDEFxx_);
+    /*p01.ADYK*/ _ADYK_xxxDEFGx = ff9_r2( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), top.clk_reg.UPOJ_MODE_PRODn(),  APUK_xxxDEFGx_);
   }
 
   {
@@ -35,9 +35,9 @@ void ClockRegisters::tock(const SchematicTop& top) {
     wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
     wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
 
-    /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17( _XOTA_AxCxExGx, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-    /*p21.VENA*/ _VENA_xxxxEFGH = ff17(!WUVU_xxCDxxGH_, top.clk_reg.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-    /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17( _XYFY_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17_r2( _XOTA_AxCxExGx, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+    /*p21.VENA*/ _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, top.clk_reg.XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
+    /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17_r2( _XYFY_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
   }
 
   {
@@ -46,13 +46,13 @@ void ClockRegisters::tock(const SchematicTop& top) {
     /*p01.BYXO*/ wire BYXO_xBCDEFGH = not(BUVU_Axxxxxxx);
     /*p01.BEDO*/ wire BEDO_Axxxxxxx = not(BYXO_xBCDEFGH);
     /*p01.BOWA*/ wire BOWA_xBCDEFGH = not(BEDO_Axxxxxxx);
-    CPU_PIN_BOWA_xBCDEFGH = SignalState::from_wire(BOWA_xBCDEFGH);
-    CPU_PIN_BEDO_Axxxxxxx = SignalState::from_wire(BEDO_Axxxxxxx);
+    CPU_PIN_BOWA_xBCDEFGH = BOWA_xBCDEFGH;
+    CPU_PIN_BEDO_Axxxxxxx = BEDO_Axxxxxxx;
   }
     
-  CPU_PIN_BEKO_ABCDxxxx = SignalState::from_wire(BEKO_ABCDxxxx());
-  CPU_PIN_BUDE_xxxxEFGH = SignalState::from_wire(BUDE_xxxxEFGH());
-  CPU_PIN_BOLO_ABCDEFxx = SignalState::from_wire(BOLO_ABCDEFxx());
+  CPU_PIN_BEKO_ABCDxxxx = BEKO_ABCDxxxx();
+  CPU_PIN_BUDE_xxxxEFGH = BUDE_xxxxEFGH();
+  CPU_PIN_BOLO_ABCDEFxx = BOLO_ABCDEFxx();
     
   {
     /*p01.AROV*/ wire AROV_xxCDEFxx = not(!APUK_xxCDEFxx());
@@ -63,21 +63,22 @@ void ClockRegisters::tock(const SchematicTop& top) {
                                           AROV_xxCDEFxx);
     /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
     /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
-    CPU_PIN_BUKE_AxxxxxGH = SignalState::from_wire(BUKE_AxxxxxGH);
+    CPU_PIN_BUKE_AxxxxxGH = BUKE_AxxxxxGH;
   }
 
-  CPU_PIN_BOMA_Axxxxxxx = SignalState::from_wire(BOMA_Axxxxxxx());
-  CPU_PIN_BOGA_xBCDEFGH = SignalState::from_wire(BOGA_xBCDEFGH());
+  CPU_PIN_BOMA_Axxxxxxx = BOMA_Axxxxxxx();
+
+  CPU_PIN_BOGA_xBCDEFGH = BOGA_xBCDEFGH();
 
   {
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_ABCDxxxx());
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn(), ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /* PIN_75 */ EXT_PIN_CLK = SignalState::from_wire(BUDE_AxxxxFGH);
+    /* PIN_75 */ EXT_PIN_CLK = BUDE_AxxxxFGH;
   }
 
-  CPU_PIN_EXT_CLKGOOD = SignalState::from_wire(SYS_PIN_CLK_A);
+  CPU_PIN_EXT_CLKGOOD = SYS_PIN_CLK_A.as_wire();
 
   /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, top.clk_reg.UCOB_CLKBADp());
 
@@ -95,24 +96,24 @@ void ClockRegisters::tock(const SchematicTop& top) {
   /*p01.ALYP*/ wire _ALYP_RSTn = not(_TABA_POR_TRIGn);
   /*p01.AFAR*/ wire _AFAR_RST  = nor(_ALYP_RSTn, _SYS_PIN_RSTp);
 
-  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(_SYS_PIN_RSTp, _AFAR_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch_r2(_SYS_PIN_RSTp, _AFAR_RST); // Schematic wrong, this is a latch.
 
   wire boga = top.clk_reg.BOGA_xBCDEFGH();
 
-  /*p01.AFER*/ _AFER_SYS_RSTp = ff13(boga, top.clk_reg.BOMA_Axxxxxxx(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
+  /*p01.AFER*/ _AFER_SYS_RSTp = ff13_r2(boga, top.clk_reg.BOMA_Axxxxxxx(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
 
-  _CPU_PIN_STARTp = SignalState::from_wire(_TABA_POR_TRIGn);
-  _CPU_PIN_SYS_RSTp = SignalState::from_wire(AFER_SYS_RSTp());
-  _CPU_PIN_EXT_RST = SignalState::from_wire(_SYS_PIN_RSTp);
+  _CPU_PIN_STARTp   = _TABA_POR_TRIGn;
+  _CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
+  _CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.as_wire();
 
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
-  /*p25.SOTO*/ SOTO_DBG = ff17(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());
+  /*p25.SOTO*/ SOTO_DBG = ff17_r2(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());
 
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);
   //cpu_pins.UNOR_MODE_DBG2.set(dbg_sig.UNOR_MODE_DBG2n);
 
-  CPU_PIN_UNOR_DBG = SignalState::from_wire(UNOR_MODE_DBG2p());
-  CPU_PIN_UMUT_DBG = SignalState::from_wire(UMUT_MODE_DBG1p());
+  _CPU_PIN_UNOR_DBG = UNOR_MODE_DBG2p();
+  _CPU_PIN_UMUT_DBG = UMUT_MODE_DBG1p();
 
   //cpu_pins.UPOJ_MODE_PRODn = UPOJ_MODE_PRODn;
   //cpu_pins.TOVA_MODE_DBG2n = TOVA_MODE_DBG2n;
@@ -131,7 +132,7 @@ SignalHash ClockRegisters::commit() {
   /*p01.AFER*/ hash << _AFER_SYS_RSTp.commit();
 
   hash << _CPU_PIN_STARTp.commit();
-  hash << _CPU_PIN_READYp.commit_input();
+  hash << _CPU_PIN_READYp.commit();
   hash << _CPU_PIN_SYS_RSTp.commit();
   hash << _CPU_PIN_EXT_RST.commit();
 
@@ -139,15 +140,15 @@ SignalHash ClockRegisters::commit() {
   ///*p07.BURO*/ hash << BURO_FF60_0.commit();
   ///*p07.AMUT*/ hash << AMUT_FF60_1.commit();
 
-  hash << CPU_PIN_UNOR_DBG.commit();      // PORTA_02: <- P07.UNOR_MODE_DBG2
-  hash << CPU_PIN_UMUT_DBG.commit();      // PORTA_05: <- P07.UMUT_MODE_DBG1
+  hash << _CPU_PIN_UNOR_DBG.commit();      // PORTA_02: <- P07.UNOR_MODE_DBG2
+  hash << _CPU_PIN_UMUT_DBG.commit();      // PORTA_05: <- P07.UMUT_MODE_DBG1
 
-  hash << _SYS_PIN_RSTp.commit_input();
-  hash << _SYS_PIN_T2n.commit_input();
-  hash << _SYS_PIN_T1n.commit_input();
+  hash << _SYS_PIN_RSTp.commit();
+  hash << _SYS_PIN_T2n.commit();
+  hash << _SYS_PIN_T1n.commit();
 
-  hash << SYS_PIN_CLK_B.commit_input();
-  hash << SYS_PIN_CLK_A.commit_input();
+  hash << SYS_PIN_CLK_B.commit();
+  hash << SYS_PIN_CLK_A.commit();
 
   hash << _AFUR_ABCDxxxx.commit();
   hash << _ALEF_xBCDExxx.commit();
@@ -173,7 +174,6 @@ SignalHash ClockRegisters::commit() {
 
   hash << CPU_PIN_BOLO_ABCDEFxx.commit(); // PORTD_05: <- BOLO
   hash << CPU_PIN_BUKE_AxxxxxGH.commit(); // PORTD_07: <- BUKE
-
   hash << CPU_PIN_BOMA_Axxxxxxx.commit(); // PORTD_08: <- BOMA
   hash << CPU_PIN_BOGA_xBCDEFGH.commit(); // PORTD_09: <- BOGA
 

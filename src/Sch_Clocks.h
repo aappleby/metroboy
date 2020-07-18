@@ -15,27 +15,27 @@ struct ClockRegisters {
 
   void dump(Dumper& d);
 
-  wire get_clk_a() const { return SYS_PIN_CLK_A.get(); }
-  wire get_clk_b() const { return SYS_PIN_CLK_B.get(); }
+  wire get_clk_a() const { return SYS_PIN_CLK_A; }
+  wire get_clk_b() const { return SYS_PIN_CLK_B; }
 
-  void set_clk_a(wire clk_a) { SYS_PIN_CLK_A.set_pin_in(clk_a); }
-  void set_clk_b(wire clk_b) { SYS_PIN_CLK_B.set_pin_in(clk_b); }
+  void set_clk_a(wire clk_a) { SYS_PIN_CLK_A.hold(clk_a); }
+  void set_clk_b(wire clk_b) { SYS_PIN_CLK_B.hold(clk_b); }
 
   wire get_rst() const {
-    return _SYS_PIN_RSTp.get();
+    return _SYS_PIN_RSTp;
   }
 
   void set_rst(bool rst) {
-    _SYS_PIN_RSTp.set_pin_in(rst);
+    _SYS_PIN_RSTp.hold(rst);
   }
 
   void set_cpu_ready(bool ready) {
-    _CPU_PIN_READYp.set_pin_in(ready);
+    _CPU_PIN_READYp.hold(ready);
   }
 
   void set_t1t2(bool t1, bool t2) {
-    _SYS_PIN_T1n.set_pin_in(t1);
-    _SYS_PIN_T2n.set_pin_in(t2);
+    _SYS_PIN_T1n.hold(t1);
+    _SYS_PIN_T2n.hold(t2);
   }
 
   //----------------------------------------
@@ -83,7 +83,7 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Resets
 
-  wire SYS_PIN_RSTp() const { return _SYS_PIN_RSTp.get(); }
+  wire SYS_PIN_RSTp() const { return _SYS_PIN_RSTp; }
 
   wire ALUR_SYS_RSTn() const { // used everywhere
     /*p01.AVOR*/ wire AVOR_SYS_RSTp = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn.q());
@@ -125,7 +125,7 @@ struct ClockRegisters {
   wire CPU_PIN_STARTp() const { return _CPU_PIN_STARTp; }
   wire CPU_PIN_READYp() const { return _CPU_PIN_READYp; }
 
-  /*p01.ABOL*/ wire ABOL_CLKREQn() const { return not(_CPU_PIN_READYp.get()); }
+  /*p01.ABOL*/ wire ABOL_CLKREQn() const { return not(_CPU_PIN_READYp); }
 
   /*p25.TUTO*/ wire TUTO_DBG_VRAMp() const { return and (UNOR_MODE_DBG2p(), SOTO_DBG.qn()); }
   /*p25.RACO*/ wire RACO_DBG_VRAMn() const { return not(TUTO_DBG_VRAMp()); }
@@ -148,9 +148,9 @@ struct ClockRegisters {
 //private:
   Signal _XONA_LCDC_EN;
 
-  ExtPinIn  _SYS_PIN_RSTp;   // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  ExtPinIn  _SYS_PIN_T2n;    // PIN_76, tied to 0 on board - but there's probably an implicit inverter
-  ExtPinIn  _SYS_PIN_T1n;    // PIN_77, tied to 0 on board - but there's probably an implicit inverter
+  Pin2  _SYS_PIN_RSTp = Pin2::HOLD_1; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  Pin2  _SYS_PIN_T2n  = Pin2::HOLD_0; // PIN_76, tied to 0 on board - but there's probably an implicit inverter
+  Pin2  _SYS_PIN_T1n  = Pin2::HOLD_0; // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
   /*p01.TUBO*/ Reg _TUBO_CPU_READYn;
@@ -162,19 +162,16 @@ struct ClockRegisters {
   // Therefore AVOR_RSTp = 0 in run mode
   // Therefore ASOL|AFER = 0 in run mode
 
-  /*p01.ASOL*/ Reg _ASOL_POR_DONEn; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ Reg    _AFER_SYS_RSTp; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
+  /*p01.ASOL*/ Reg2 _ASOL_POR_DONEn = Reg2::D0C0; // Schematic wrong, this is a latch.
+  /*p01.AFER*/ Reg2 _AFER_SYS_RSTp  = Reg2::D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
+  /*p25.SOTO*/ Reg2 SOTO_DBG        = Reg2::D0C0;
 
-  Reg _CPU_PIN_STARTp;    // top center port PORTC_04: <- P01.CPU_RESET
-  CpuPinIn  _CPU_PIN_READYp;    // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-
-  Reg _CPU_PIN_SYS_RSTp;  // top center port PORTC_01: <- P01.AFER , reset related reg
-  Reg _CPU_PIN_EXT_RST;   // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
-
-  /*p25.SOTO*/ Reg SOTO_DBG;
-
-  Reg CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  Reg CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  Pin2 _CPU_PIN_STARTp   = Pin2::HZNP;   // top center port PORTC_04: <- P01.CPU_RESET
+  Pin2 _CPU_PIN_READYp   = Pin2::HOLD_0; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  Pin2 _CPU_PIN_SYS_RSTp = Pin2::HZNP;   // top center port PORTC_01: <- P01.AFER , reset related reg
+  Pin2 _CPU_PIN_EXT_RST  = Pin2::HZNP;   // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
+  Pin2 _CPU_PIN_UNOR_DBG = Pin2::HZNP;   // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  Pin2 _CPU_PIN_UMUT_DBG = Pin2::HZNP;   // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 
 
   /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!_AFUR_ABCDxxxx.q()); }
@@ -209,28 +206,30 @@ struct ClockRegisters {
   /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not(BYJU_xBCDEFGH()); }
   /*p29.WOJO*/ wire WOJO_xxxDxxxH() const { return nor(_WUVU_xxCDxxGH.qn(), _WOSU_xBCxxFGx.qn()); }
 
-  /*p01.AFUR*/ Reg _AFUR_ABCDxxxx;
-  /*p01.ALEF*/ Reg _ALEF_xBCDExxx;
-  /*p01.APUK*/ Reg _APUK_xxCDEFxx;
-  /*p01.ADYK*/ Reg _ADYK_xxxDEFGx;
+  /*p01.AFUR*/ Reg2 _AFUR_ABCDxxxx = Reg2::D0C0;
+  /*p01.ALEF*/ Reg2 _ALEF_xBCDExxx = Reg2::D0C0;
+  /*p01.APUK*/ Reg2 _APUK_xxCDEFxx = Reg2::D0C0;
+  /*p01.ADYK*/ Reg2 _ADYK_xxxDEFGx = Reg2::D0C0;
 
-  /*p29.WUVU*/ Reg _WUVU_xxCDxxGH;
-  /*p21.VENA*/ Reg _VENA_xxxxEFGH;
-  /*p29.WOSU*/ Reg _WOSU_xBCxxFGx;
+  /*p29.WUVU*/ Reg2 _WUVU_xxCDxxGH = Reg2::D0C0;
+  /*p21.VENA*/ Reg2 _VENA_xxxxEFGH = Reg2::D0C0;
+  /*p29.WOSU*/ Reg2 _WOSU_xBCxxFGx = Reg2::D0C0;
 
-  ExtPinIn  SYS_PIN_CLK_A;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  ExtPinIn  SYS_PIN_CLK_B;  // PIN_74 
+  Pin2 SYS_PIN_CLK_A = Pin2::HOLD_0;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
+  Pin2 SYS_PIN_CLK_B = Pin2::HOLD_0;  // PIN_74 
 
-  Reg CPU_PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  Reg CPU_PIN_BOWA_xBCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
-  Reg CPU_PIN_BEDO_Axxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
-  Reg CPU_PIN_BEKO_ABCDxxxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  Reg CPU_PIN_BUDE_xxxxEFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
-  Reg CPU_PIN_BOLO_ABCDEFxx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  Reg CPU_PIN_BUKE_AxxxxxGH; // top left port PORTD_07: <- BUKE_ABxxxxxH
-  Reg CPU_PIN_BOMA_Axxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-  Reg CPU_PIN_BOGA_xBCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
-  Reg EXT_PIN_CLK;     // PIN_75 <- P01.BUDE/BEVA
+  Pin2 CPU_PIN_EXT_CLKGOOD = Pin2::HZNP;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+
+  Pin2 CPU_PIN_BOWA_xBCDEFGH = Pin2::HZNP; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
+  Pin2 CPU_PIN_BEDO_Axxxxxxx = Pin2::HZNP; // top left port PORTD_02: <- BEDO_xBxxxxxx
+  Pin2 CPU_PIN_BEKO_ABCDxxxx = Pin2::HZNP; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  Pin2 CPU_PIN_BUDE_xxxxEFGH = Pin2::HZNP; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
+  Pin2 CPU_PIN_BOLO_ABCDEFxx = Pin2::HZNP; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
+  Pin2 CPU_PIN_BUKE_AxxxxxGH = Pin2::HZNP; // top left port PORTD_07: <- BUKE_ABxxxxxH
+  Pin2 CPU_PIN_BOMA_Axxxxxxx = Pin2::HZNP; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
+
+  Pin2 CPU_PIN_BOGA_xBCDEFGH = Pin2::HZNP; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+  Pin2 EXT_PIN_CLK = Pin2::HZNP;     // PIN_75 <- P01.BUDE/BEVA
 };
 
 //-----------------------------------------------------------------------------

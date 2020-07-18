@@ -72,16 +72,14 @@ struct PixelPipe {
   /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }   // sfetch.tuvo/tyso
 
   // FF40 - LCDC
-  /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;
-  /*p23.XYLO*/ Reg XYLO_LCDC_SPEN;
-  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZE;
-  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAP;
-  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE;
-  /*p23.WYMO*/ Reg WYMO_LCDC_WINEN;
-  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
-
-  /*p23.XONA*/ Reg XONA_LCDC_EN1;
-  /*p23.XONA*/ Reg2 XONA_LCDC_EN2 = Reg2::D0C0;
+  /*p23.VYXE*/ Reg2 VYXE_LCDC_BGEN   = Reg2::D0C0;
+  /*p23.XYLO*/ Reg2 XYLO_LCDC_SPEN   = Reg2::D0C0;
+  /*p23.XYMO*/ Reg2 XYMO_LCDC_SPSIZE = Reg2::D0C0;
+  /*p23.XAFO*/ Reg2 XAFO_LCDC_BGMAP  = Reg2::D0C0;
+  /*p23.WEXU*/ Reg2 WEXU_LCDC_BGTILE = Reg2::D0C0;
+  /*p23.WYMO*/ Reg2 WYMO_LCDC_WINEN  = Reg2::D0C0;
+  /*p23.WOKY*/ Reg2 WOKY_LCDC_WINMAP = Reg2::D0C0;
+  /*p23.XONA*/ Reg2 XONA_LCDC_EN     = Reg2::D0C0;
 
   // FF41 - STAT
   /*p21.ROXE*/ Reg2 _ROXE_INT_HBL_EN = Reg2::D0C0;

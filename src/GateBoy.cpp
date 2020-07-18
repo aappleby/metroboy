@@ -190,9 +190,6 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   top->pix_pipe.XONA_LCDC_EN2.preset_a(1);
   */
 
-  CHECKp(top->pix_pipe.XONA_LCDC_EN1.q() == top->pix_pipe.XONA_LCDC_EN2.q());
-  CHECKp(top->pix_pipe.XONA_LCDC_EN1.a.clk == top->pix_pipe.XONA_LCDC_EN2.reg_clk);
-
   gateboy.run(top, 24, req);
   printf("\n");
 

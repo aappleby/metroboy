@@ -591,22 +591,20 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.VOKE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n(_WYCE_FF40_RDn, WEXU_LCDC_BGTILE.q());
     /*p23.VATO*/ cpu_bus.CPU_TRI_D5 = tribuf_6n(_WYCE_FF40_RDn, WYMO_LCDC_WINEN.q());
     /*p23.VAHA*/ cpu_bus.CPU_TRI_D6 = tribuf_6n(_WYCE_FF40_RDn, WOKY_LCDC_WINMAP.q());
-    /*p23.XEBU*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_WYCE_FF40_RDn, XONA_LCDC_EN1.q());
+    /*p23.XEBU*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_WYCE_FF40_RDn, XONA_LCDC_EN.q());
 
     /*p23.WARU*/ wire _WARU_FF40_WRp = and (_VOCA_FF40p, top.CUPA_CPU_WRp_xxxxEFGx());
     /*p23.XUBO*/ wire _XUBO_FF40_WRn = not(_WARU_FF40_WRp);
 
     /*p01.XARE*/ wire _XARE_RSTn = not(top.clk_reg.XORE_SYS_RSTp());
-    /*p23.VYXE*/ VYXE_LCDC_BGEN    = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D0.q());
-    /*p23.XYLO*/ XYLO_LCDC_SPEN    = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D1.q());
-    /*p23.XYMO*/ XYMO_LCDC_SPSIZE  = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D2.q());
-    /*p23.XAFO*/ XAFO_LCDC_BGMAP   = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D3.q());
-    /*p23.WEXU*/ WEXU_LCDC_BGTILE  = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D4.q());
-    /*p23.WYMO*/ WYMO_LCDC_WINEN   = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D5.q());
-    /*p23.WOKY*/ WOKY_LCDC_WINMAP  = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D6.q());
-
-    /*p23.XONA*/ XONA_LCDC_EN1      = ff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D7.q());
-    /*p23.XONA*/ XONA_LCDC_EN2      = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D7.q());
+    /*p23.VYXE*/ VYXE_LCDC_BGEN    = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D0.q());
+    /*p23.XYLO*/ XYLO_LCDC_SPEN    = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D1.q());
+    /*p23.XYMO*/ XYMO_LCDC_SPSIZE  = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D2.q());
+    /*p23.XAFO*/ XAFO_LCDC_BGMAP   = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D3.q());
+    /*p23.WEXU*/ WEXU_LCDC_BGTILE  = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D4.q());
+    /*p23.WYMO*/ WYMO_LCDC_WINEN   = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D5.q());
+    /*p23.WOKY*/ WOKY_LCDC_WINMAP  = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D6.q());
+    /*p23.XONA*/ XONA_LCDC_EN      = ff9_r2(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_TRI_D7.q());
   }
 
   //----------------------------------------
@@ -872,16 +870,7 @@ SignalHash PixelPipe::commit() {
   hash << WEXU_LCDC_BGTILE.commit();
   hash << WYMO_LCDC_WINEN.commit();
   hash << WOKY_LCDC_WINMAP.commit();
-
-  CHECKp(XONA_LCDC_EN1.q() == XONA_LCDC_EN2.q());
-  CHECKp(XONA_LCDC_EN1.a.clk == XONA_LCDC_EN2.reg_clk);
-
-  hash << XONA_LCDC_EN1.commit();
-  XONA_LCDC_EN2.commit();
-
-  CHECKp(XONA_LCDC_EN1.q() == XONA_LCDC_EN2.q());
-  CHECKp(XONA_LCDC_EN1.a.clk == XONA_LCDC_EN2.reg_clk);
-
+  hash << XONA_LCDC_EN.commit();
 
   hash << _XYMU_RENDERINGp.commit();
   hash << _VOGA_RENDER_DONE_SYNC.commit();

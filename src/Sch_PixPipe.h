@@ -203,34 +203,34 @@ private:
   /*p26.VAVA*/ Reg MASK_PIPE_7;
 
   // FF47 - BGP
-  /*p36.PAVO*/ Reg PAVO_BGP0;
-  /*p36.NUSY*/ Reg NUSY_BGP1;
-  /*p36.PYLU*/ Reg PYLU_BGP2;
-  /*p36.MAXY*/ Reg MAXY_BGP3;
-  /*p36.MUKE*/ Reg MUKE_BGP4;
-  /*p36.MORU*/ Reg MORU_BGP5;
-  /*p36.MOGY*/ Reg MOGY_BGP6;
-  /*p36.MENA*/ Reg MENA_BGP7;
+  /*p36.PAVO*/ Reg _PAVO_BGP0;
+  /*p36.NUSY*/ Reg _NUSY_BGP1;
+  /*p36.PYLU*/ Reg _PYLU_BGP2;
+  /*p36.MAXY*/ Reg _MAXY_BGP3;
+  /*p36.MUKE*/ Reg _MUKE_BGP4;
+  /*p36.MORU*/ Reg _MORU_BGP5;
+  /*p36.MOGY*/ Reg _MOGY_BGP6;
+  /*p36.MENA*/ Reg _MENA_BGP7;
 
   // FF48 - OBP0
-  /*p36.XUFU*/ Reg OBP00;
-  /*p36.XUKY*/ Reg OBP01;
-  /*p36.XOVA*/ Reg OBP02;
-  /*p36.XALO*/ Reg OBP03;
-  /*p36.XERU*/ Reg OBP04;
-  /*p36.XYZE*/ Reg OBP05;
-  /*p36.XUPO*/ Reg OBP06;
-  /*p36.XANA*/ Reg OBP07;
+  /*p36.XUFU*/ Reg _XUFU_OBP00;
+  /*p36.XUKY*/ Reg _XUKY_OBP01;
+  /*p36.XOVA*/ Reg _XOVA_OBP02;
+  /*p36.XALO*/ Reg _XALO_OBP03;
+  /*p36.XERU*/ Reg _XERU_OBP04;
+  /*p36.XYZE*/ Reg _XYZE_OBP05;
+  /*p36.XUPO*/ Reg _XUPO_OBP06;
+  /*p36.XANA*/ Reg _XANA_OBP07;
 
   // FF49 - OBP1
-  /*p36.MOXY*/ Reg OBP10;
-  /*p36.LAWO*/ Reg OBP11;
-  /*p36.MOSA*/ Reg OBP12;
-  /*p36.LOSE*/ Reg OBP13;
-  /*p36.LUNE*/ Reg OBP14;
-  /*p36.LUGU*/ Reg OBP15;
-  /*p36.LEPU*/ Reg OBP16;
-  /*p36.LUXO*/ Reg OBP17;
+  /*p36.MOXY*/ Reg _MOXY_OBP10;
+  /*p36.LAWO*/ Reg _LAWO_OBP11;
+  /*p36.MOSA*/ Reg _MOSA_OBP12;
+  /*p36.LOSE*/ Reg _LOSE_OBP13;
+  /*p36.LUNE*/ Reg _LUNE_OBP14;
+  /*p36.LUGU*/ Reg _LUGU_OBP15;
+  /*p36.LEPU*/ Reg _LEPU_OBP16;
+  /*p36.LUXO*/ Reg _LUXO_OBP17;
 
   // FF4A - WY
   /*p23.NESO*/ Reg _NESO_WY0;

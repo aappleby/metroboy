@@ -59,7 +59,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p21.XAJO*/ wire _XAJO_X_009 = and (XEHO_X0.q(), XYDO_X3.q());
     /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(top.clk_reg.TOFU_VID_RSTp(), _VOGA_RENDER_DONE_SYNC.q());
-    /*p21.WUSA*/ _WUSA_LCD_CLOCK_GATE = nor_latch(_XAJO_X_009, _WEGO_LINE_END_RST);
+    /*p21.WUSA*/ _WUSA_LCD_CLOCK_GATE = nor_latch_r2(_XAJO_X_009, _WEGO_LINE_END_RST);
   }
 
   {
@@ -76,8 +76,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // if PAHO or TOFU go high, POFY goes low.
 
     /*p24.ROXO*/ wire _ROXO_CLKPIPEp = not(_SEGU_CLKPIPEn);
-    /*p24.PAHO*/ _PAHO_X_8_SYNC = ff17(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.q(), XYDO_X3.q());
-    /*p24.RUJU*/ _POFY_ST_LATCH = nor_latch(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), _PAHO_X_8_SYNC.q() || top.clk_reg.TOFU_VID_RSTp());
+    /*p24.PAHO*/ _PAHO_X_8_SYNC = ff17_r2(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.q(), XYDO_X3.q());
+    /*p24.RUJU*/ _POFY_ST_LATCH = nor_latch_r2(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), _PAHO_X_8_SYNC.q() || top.clk_reg.TOFU_VID_RSTp());
     /*p24.RUZE*/ wire _RUZE_PIN_ST = not(_POFY_ST_LATCH.q());
     _LCD_PIN_ST = _RUZE_PIN_ST;
   }
@@ -102,8 +102,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.RONE*/ wire _RONE_FINE_MATCHn = nand(_ROXY_FINE_SCROLL_DONEn.q(), _SUHA_FINE_MATCHp, _SYBY_FINE_MATCHp, _SOZU_FINE_MATCHp);
     /*p27.POHU*/ wire _POHU_FINE_MATCHp = not(_RONE_FINE_MATCHn);
 
-    /*p27.PUXA*/ _PUXA_FINE_MATCH_A = ff17(_ROXO_CLKPIPEp,              _XYMU_RENDERINGp.q(), _POHU_FINE_MATCHp);
-    /*p27.NYZE*/ _NYZE_FINE_MATCH_B = ff17(top.clk_reg.MOXE_AxCxExGx(), _XYMU_RENDERINGp.q(), _PUXA_FINE_MATCH_A.q());
+    /*p27.PUXA*/ _PUXA_FINE_MATCH_A = ff17_r2(_ROXO_CLKPIPEp,              _XYMU_RENDERINGp.q(), _POHU_FINE_MATCHp);
+    /*p27.NYZE*/ _NYZE_FINE_MATCH_B = ff17_r2(top.clk_reg.MOXE_AxCxExGx(), _XYMU_RENDERINGp.q(), _PUXA_FINE_MATCH_A.q());
 
     /*p27.PAHA*/ wire _PAHA_RENDERINGn = not(_XYMU_RENDERINGp.q());
     /*p27.POVA*/ wire _POVA_FINE_MATCHpe = and(_PUXA_FINE_MATCH_A.q(), _NYZE_FINE_MATCH_B.qn());
@@ -218,7 +218,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIG_d4(), top.clk_reg.TOFU_VID_RSTp());
-    /*p21.VOGA*/ _VOGA_RENDER_DONE_SYNC = ff17(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, WODU_RENDER_DONEp());
+    /*p21.VOGA*/ _VOGA_RENDER_DONE_SYNC = ff17_r2(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, WODU_RENDER_DONEp());
   }
 
   {

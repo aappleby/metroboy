@@ -134,13 +134,13 @@ private:
 
   /*p21.RUPO*/ Reg _RUPO_LYC_MATCH_LATCHn;
 
-  /*p21.WUSA*/ Reg _WUSA_LCD_CLOCK_GATE;
-  /*p21.VOGA*/ Reg _VOGA_RENDER_DONE_SYNC;
-  /*p??.PUXA*/ Reg _PUXA_FINE_MATCH_A;
-  /*p27.NYZE*/ Reg _NYZE_FINE_MATCH_B;
+  /*p21.WUSA*/ Reg2 _WUSA_LCD_CLOCK_GATE = Reg2::D0C0;
+  /*p21.VOGA*/ Reg2 _VOGA_RENDER_DONE_SYNC = Reg2::D0C0;
+  /*p??.PUXA*/ Reg2 _PUXA_FINE_MATCH_A = Reg2::D0C0;
+  /*p27.NYZE*/ Reg2 _NYZE_FINE_MATCH_B = Reg2::D0C0;
 
-  /*p24.PAHO*/ Reg _PAHO_X_8_SYNC;
-  /*p24.RUJU*/ Reg _POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
+  /*p24.PAHO*/ Reg2 _PAHO_X_8_SYNC = Reg2::D0C0;
+  /*p24.RUJU*/ Reg2 _POFY_ST_LATCH = Reg2::D0C0; // nor latch with p24.RUJU, p24.POME
 
   Pin2 _LCD_PIN_CP = Pin2::HIZ_NP;   // PIN_53 
   Pin2 _LCD_PIN_ST = Pin2::HIZ_NP;   // PIN_54 

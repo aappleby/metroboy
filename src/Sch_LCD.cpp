@@ -200,13 +200,8 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------
 
-__declspec(noinline) SignalHash LcdRegisters::commit() {
+__declspec(noinline) uint64_t LcdRegisters::commit() {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-
-  _AMYG_VID_RSTp.state = 0;
-  _ATAR_VID_RSTp.state = 0;
-  _ABEZ_VID_RSTn.state = 0;
-
   return {ret};
 }
 

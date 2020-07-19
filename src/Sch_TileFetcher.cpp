@@ -112,14 +112,8 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------
 
-SignalHash TileFetcher::commit() {
+uint64_t TileFetcher::commit() {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-
-  _XYMU_RENDERINGp.state = 0;
-  _NYXU_TILE_FETCHER_RSTn.state = 0;
-  _NYDY_LATCH_TILE_DAp.state = 0;
-  _MOFU_LATCH_TILE_DBn.state = 0;
-
   return {ret};
 }
 

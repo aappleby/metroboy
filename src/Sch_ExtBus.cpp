@@ -201,7 +201,7 @@ void ExtBus::tock(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash ExtBus::commit() {
+uint64_t ExtBus::commit() {
   return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 

@@ -12,7 +12,7 @@ struct SpriteScanner {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
-  SignalHash commit();
+  uint64_t commit();
 
   // -> sprite store
   wire DEGE_SPRITE_DELTA0() const { return not(_ERUC_YDIFF_S0); }
@@ -84,7 +84,7 @@ private:
   //----------------------------------------
   // States
 
-  /*p28.BESU*/ Reg2 _BESU_SCANNINGp = Reg2::D0C0;
+  /*p28.BESU*/ Pin2 _BESU_SCANNINGp = Pin2::LATCH_0;
   /*p29.CENO*/ Reg2 _CENO_SCANNINGp = Reg2::D0C0;
 
   /*p28.YFEL*/ Reg2 _YFEL_SCAN0 = Reg2::D0C0;

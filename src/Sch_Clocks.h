@@ -11,7 +11,7 @@ struct ClockRegisters {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
-  SignalHash commit();
+  uint64_t commit();
 
   void dump(Dumper& d);
 
@@ -182,7 +182,7 @@ private:
   Pin2  _SYS_PIN_T1n  = Pin2::HOLD_0; // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
-  /*p01.TUBO*/ Reg2 _TUBO_CPU_READYn = Reg2::D0C0;
+  /*p01.TUBO*/ Pin2 _TUBO_CPU_READYn = Pin2::LATCH_1;
 
   // If AVOR_RSTp was 1 in run mode
   // then ALUR_RSTn = 0
@@ -191,7 +191,7 @@ private:
   // Therefore AVOR_RSTp = 0 in run mode
   // Therefore ASOL|AFER = 0 in run mode
 
-  /*p01.ASOL*/ Reg2 _ASOL_POR_DONEn = Reg2::D0C0; // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ Pin2 _ASOL_POR_DONEn = Pin2::LATCH_1; // Schematic wrong, this is a latch.
   /*p01.AFER*/ Reg2 _AFER_SYS_RSTp  = Reg2::D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
   /*p25.SOTO*/ Reg2 SOTO_DBG        = Reg2::D0C0;
 

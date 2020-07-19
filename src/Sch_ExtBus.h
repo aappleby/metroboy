@@ -11,7 +11,7 @@ struct OamBus;
 
 struct ExtBus {
   void tock(SchematicTop& top);
-  SignalHash commit();
+  uint64_t commit();
 
   void set_ext_data(uint16_t data) {
     _EXT_PIN_D0_C.hold(data & 0x01);
@@ -44,32 +44,32 @@ struct ExtBus {
 
 private:
 
-  /*p08.ALOR*/ Reg2 _ALOR_EXT_ADDR_LATCH_00 = Reg2::D0C0;
-  /*p08.APUR*/ Reg2 _APUR_EXT_ADDR_LATCH_01 = Reg2::D0C0;
-  /*p08.ALYR*/ Reg2 _ALYR_EXT_ADDR_LATCH_02 = Reg2::D0C0;
-  /*p08.ARET*/ Reg2 _ARET_EXT_ADDR_LATCH_03 = Reg2::D0C0;
-  /*p08.AVYS*/ Reg2 _AVYS_EXT_ADDR_LATCH_04 = Reg2::D0C0;
-  /*p08.ATEV*/ Reg2 _ATEV_EXT_ADDR_LATCH_05 = Reg2::D0C0;
-  /*p08.AROS*/ Reg2 _AROS_EXT_ADDR_LATCH_06 = Reg2::D0C0;
-  /*p08.ARYM*/ Reg2 _ARYM_EXT_ADDR_LATCH_07 = Reg2::D0C0;
-  /*p08.LUNO*/ Reg2 _LUNO_EXT_ADDR_LATCH_08 = Reg2::D0C0;
-  /*p08.LYSA*/ Reg2 _LYSA_EXT_ADDR_LATCH_09 = Reg2::D0C0;
-  /*p08.PATE*/ Reg2 _PATE_EXT_ADDR_LATCH_10 = Reg2::D0C0;
-  /*p08.LUMY*/ Reg2 _LUMY_EXT_ADDR_LATCH_11 = Reg2::D0C0;
-  /*p08.LOBU*/ Reg2 _LOBU_EXT_ADDR_LATCH_12 = Reg2::D0C0;
-  /*p08.LONU*/ Reg2 _LONU_EXT_ADDR_LATCH_13 = Reg2::D0C0;
-  /*p08.NYRE*/ Reg2 _NYRE_EXT_ADDR_LATCH_14 = Reg2::D0C0;
+  /*p08.ALOR*/ Pin2 _ALOR_EXT_ADDR_LATCH_00 = Pin2::LATCH_0;
+  /*p08.APUR*/ Pin2 _APUR_EXT_ADDR_LATCH_01 = Pin2::LATCH_0;
+  /*p08.ALYR*/ Pin2 _ALYR_EXT_ADDR_LATCH_02 = Pin2::LATCH_0;
+  /*p08.ARET*/ Pin2 _ARET_EXT_ADDR_LATCH_03 = Pin2::LATCH_0;
+  /*p08.AVYS*/ Pin2 _AVYS_EXT_ADDR_LATCH_04 = Pin2::LATCH_0;
+  /*p08.ATEV*/ Pin2 _ATEV_EXT_ADDR_LATCH_05 = Pin2::LATCH_0;
+  /*p08.AROS*/ Pin2 _AROS_EXT_ADDR_LATCH_06 = Pin2::LATCH_0;
+  /*p08.ARYM*/ Pin2 _ARYM_EXT_ADDR_LATCH_07 = Pin2::LATCH_0;
+  /*p08.LUNO*/ Pin2 _LUNO_EXT_ADDR_LATCH_08 = Pin2::LATCH_0;
+  /*p08.LYSA*/ Pin2 _LYSA_EXT_ADDR_LATCH_09 = Pin2::LATCH_0;
+  /*p08.PATE*/ Pin2 _PATE_EXT_ADDR_LATCH_10 = Pin2::LATCH_0;
+  /*p08.LUMY*/ Pin2 _LUMY_EXT_ADDR_LATCH_11 = Pin2::LATCH_0;
+  /*p08.LOBU*/ Pin2 _LOBU_EXT_ADDR_LATCH_12 = Pin2::LATCH_0;
+  /*p08.LONU*/ Pin2 _LONU_EXT_ADDR_LATCH_13 = Pin2::LATCH_0;
+  /*p08.NYRE*/ Pin2 _NYRE_EXT_ADDR_LATCH_14 = Pin2::LATCH_0;
 
   // Ext-to-cpu "latch" - looks more like a pass gate really
 
-  /*p08.SOMA*/ Reg2 _SOMA_EXT_DATA_LATCH_00 = Reg2::D0C0;
-  /*p08.RONY*/ Reg2 _RONY_EXT_DATA_LATCH_01 = Reg2::D0C0;
-  /*p08.RAXY*/ Reg2 _RAXY_EXT_DATA_LATCH_02 = Reg2::D0C0;
-  /*p08.SELO*/ Reg2 _SELO_EXT_DATA_LATCH_03 = Reg2::D0C0;
-  /*p08.SODY*/ Reg2 _SODY_EXT_DATA_LATCH_04 = Reg2::D0C0;
-  /*p08.SAGO*/ Reg2 _SAGO_EXT_DATA_LATCH_05 = Reg2::D0C0;
-  /*p08.RUPA*/ Reg2 _RUPA_EXT_DATA_LATCH_06 = Reg2::D0C0;
-  /*p08.SAZY*/ Reg2 _SAZY_EXT_DATA_LATCH_07 = Reg2::D0C0;
+  /*p08.SOMA*/ Pin2 _SOMA_EXT_DATA_LATCH_00 = Pin2::LATCH_0;
+  /*p08.RONY*/ Pin2 _RONY_EXT_DATA_LATCH_01 = Pin2::LATCH_0;
+  /*p08.RAXY*/ Pin2 _RAXY_EXT_DATA_LATCH_02 = Pin2::LATCH_0;
+  /*p08.SELO*/ Pin2 _SELO_EXT_DATA_LATCH_03 = Pin2::LATCH_0;
+  /*p08.SODY*/ Pin2 _SODY_EXT_DATA_LATCH_04 = Pin2::LATCH_0;
+  /*p08.SAGO*/ Pin2 _SAGO_EXT_DATA_LATCH_05 = Pin2::LATCH_0;
+  /*p08.RUPA*/ Pin2 _RUPA_EXT_DATA_LATCH_06 = Pin2::LATCH_0;
+  /*p08.SAZY*/ Pin2 _SAZY_EXT_DATA_LATCH_07 = Pin2::LATCH_0;
 
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs

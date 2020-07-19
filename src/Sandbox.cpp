@@ -24,12 +24,11 @@ struct Sandbox {
   void tick() {
   }
 
-  SignalHash commit() {
-    SignalHash hash;
-    return hash;
+  uint64_t commit() {
+    return 0;
   }
 
-  void dump(SignalHash hash, int passes) {
+  void dump(uint64_t hash, int passes) {
     /*
     auto dec = [](SignalState s) {
       if (s.error) return "ERR";
@@ -50,12 +49,12 @@ struct Sandbox {
 //------------------------------------------------------------------------------
 
 void phase(Sandbox& sandbox) {
-  SignalHash hash;
+  uint64_t hash = 0;
   int pass = 0;
   for (pass = 0; pass < 100; pass++) {
     sandbox.tick();
-    SignalHash new_hash = sandbox.commit();
-    if (new_hash.h == hash.h) break;
+    uint64_t new_hash = sandbox.commit();
+    if (new_hash == hash) break;
     hash = new_hash;
   }
 
@@ -109,7 +108,7 @@ int main() {
   /*
   Sandbox sandbox;
 
-  SignalHash hash;
+  uint64_t hash;
   sandbox.dump(hash, 0);
 
   tphase_rst(sandbox);

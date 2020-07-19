@@ -161,7 +161,7 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------
 
-SignalHash Timer::commit() {
+uint64_t Timer::commit() {
   return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 

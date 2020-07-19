@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct OamBus {
   void tock(SchematicTop& top);
-  SignalHash commit();
+  uint64_t commit();
   void set_oam_data(wire OE, uint16_t data);
 
   // -> sprite store
@@ -50,23 +50,23 @@ private:
   Pin2 OAM_TRI_A6 = Pin2::HIZ_NP;
   Pin2 OAM_TRI_A7 = Pin2::HIZ_NP;
 
-  /*p31.XYKY*/ Reg2 XYKY_LATCH_OAM_DA0 = Reg2::D0C0;
-  /*p31.YRUM*/ Reg2 YRUM_LATCH_OAM_DA1 = Reg2::D0C0;
-  /*p31.YSEX*/ Reg2 YSEX_LATCH_OAM_DA2 = Reg2::D0C0;
-  /*p31.YVEL*/ Reg2 YVEL_LATCH_OAM_DA3 = Reg2::D0C0;
-  /*p31.WYNO*/ Reg2 WYNO_LATCH_OAM_DA4 = Reg2::D0C0;
-  /*p31.CYRA*/ Reg2 CYRA_LATCH_OAM_DA5 = Reg2::D0C0;
-  /*p31.ZUVE*/ Reg2 ZUVE_LATCH_OAM_DA6 = Reg2::D0C0;
-  /*p31.ECED*/ Reg2 ECED_LATCH_OAM_DA7 = Reg2::D0C0;
+  /*p31.XYKY*/ Pin2 XYKY_LATCH_OAM_DA0 = Pin2::LATCH_0;
+  /*p31.YRUM*/ Pin2 YRUM_LATCH_OAM_DA1 = Pin2::LATCH_0;
+  /*p31.YSEX*/ Pin2 YSEX_LATCH_OAM_DA2 = Pin2::LATCH_0;
+  /*p31.YVEL*/ Pin2 YVEL_LATCH_OAM_DA3 = Pin2::LATCH_0;
+  /*p31.WYNO*/ Pin2 WYNO_LATCH_OAM_DA4 = Pin2::LATCH_0;
+  /*p31.CYRA*/ Pin2 CYRA_LATCH_OAM_DA5 = Pin2::LATCH_0;
+  /*p31.ZUVE*/ Pin2 ZUVE_LATCH_OAM_DA6 = Pin2::LATCH_0;
+  /*p31.ECED*/ Pin2 ECED_LATCH_OAM_DA7 = Pin2::LATCH_0;
 
-  /*p29.YDYV*/ Reg2 YDYV_LATCH_OAM_DB0 = Reg2::D0C0;
-  /*p29.YCEB*/ Reg2 YCEB_LATCH_OAM_DB1 = Reg2::D0C0;
-  /*p29.ZUCA*/ Reg2 ZUCA_LATCH_OAM_DB2 = Reg2::D0C0;
-  /*p29.WONE*/ Reg2 WONE_LATCH_OAM_DB3 = Reg2::D0C0;
-  /*p29.ZAXE*/ Reg2 ZAXE_LATCH_OAM_DB4 = Reg2::D0C0;
-  /*p29.XAFU*/ Reg2 XAFU_LATCH_OAM_DB5 = Reg2::D0C0;
-  /*p29.YSES*/ Reg2 YSES_LATCH_OAM_DB6 = Reg2::D0C0;
-  /*p29.ZECA*/ Reg2 ZECA_LATCH_OAM_DB7 = Reg2::D0C0;
+  /*p29.YDYV*/ Pin2 YDYV_LATCH_OAM_DB0 = Pin2::LATCH_0;
+  /*p29.YCEB*/ Pin2 YCEB_LATCH_OAM_DB1 = Pin2::LATCH_0;
+  /*p29.ZUCA*/ Pin2 ZUCA_LATCH_OAM_DB2 = Pin2::LATCH_0;
+  /*p29.WONE*/ Pin2 WONE_LATCH_OAM_DB3 = Pin2::LATCH_0;
+  /*p29.ZAXE*/ Pin2 ZAXE_LATCH_OAM_DB4 = Pin2::LATCH_0;
+  /*p29.XAFU*/ Pin2 XAFU_LATCH_OAM_DB5 = Pin2::LATCH_0;
+  /*p29.YSES*/ Pin2 YSES_LATCH_OAM_DB6 = Pin2::LATCH_0;
+  /*p29.ZECA*/ Pin2 ZECA_LATCH_OAM_DB7 = Pin2::LATCH_0;
 
   Pin2 OAM_PIN_CLK  = Pin2::HIZ_NP;
   Pin2 OAM_PIN_OE   = Pin2::HIZ_NP;

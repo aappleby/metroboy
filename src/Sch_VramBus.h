@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct VramBus {
   void tock(SchematicTop& top);
-  SignalHash commit();
+  uint64_t commit();
 
   void set_vram_data(uint8_t data) {
     _VRAM_PIN_MD0_C.hold(data & 0x01);

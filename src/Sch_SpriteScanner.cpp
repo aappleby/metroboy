@@ -92,33 +92,8 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash SpriteScanner::commit() {
+uint64_t SpriteScanner::commit() {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-
-  _XYLO_LCDC_SPEN.state = 0;
-  _XYMU_RENDERINGp.state = 0;
-  _BALU_LINE_RSTp.state = 0;
-  _BAGY_LINE_RSTn.state = 0;
-
-  _ERUC_YDIFF_S0.state = 0;
-  _ERUC_YDIFF_C0.state = 0;
-  _ENEF_YDIFF_S1.state = 0;
-  _ENEF_YDIFF_C1.state = 0;
-  _FECO_YDIFF_S2.state = 0;
-  _FECO_YDIFF_C2.state = 0;
-  _GYKY_YDIFF_S3.state = 0;
-  _GYKY_YDIFF_C3.state = 0;
-  _GOPU_YDIFF_S4.state = 0;
-  _GOPU_YDIFF_C4.state = 0;
-  _FUWA_YDIFF_S5.state = 0;
-  _FUWA_YDIFF_C5.state = 0;
-  _GOJU_YDIFF_S6.state = 0;
-  _GOJU_YDIFF_C6.state = 0;
-  _WUHU_YDIFF_S7.state = 0;
-  _WUHU_YDIFF_C7.state = 0;
-
-  _CARE_STORE_ENp_ABxxEFxx.state = 0;
-
   return {ret};
 }
 

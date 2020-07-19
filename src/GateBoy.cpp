@@ -6,10 +6,11 @@ using namespace Schematics;
 
 #pragma warning(disable:4702)
 
-SignalHash phase(SchematicTop* top, Req req, bool verbose) {
-  SignalHash hash;
+#if 0
+uint64_t phase(SchematicTop* top, Req req, bool verbose) {
+  uint64_t hash;
 
-  for (top->pass_counter = 0; top->pass_counter < 256; top->pass_counter++) {
+  for (top->pass_count = 0; top->pass_count < 256; top->pass_count++) {
     top->cpu_bus.set_cpu_req(req);
     top->vram_bus.set_vram_data(0);
     top->oam_bus.set_oam_data(0, 0);
@@ -17,19 +18,19 @@ SignalHash phase(SchematicTop* top, Req req, bool verbose) {
     top->joypad.set_buttons(0);
     
     top->tick();
-    SignalHash new_hash = top->commit();
+    uint64_t new_hash = top->commit();
     
     if (new_hash.h == hash.h) break;
     hash = new_hash;
-    if (top->pass_counter == 199) printf("stuck!\n");
-    CHECKn(top->pass_counter == 200);
+    if (top->pass_count == 199) printf("stuck!\n");
+    CHECKn(top->pass_count == 200);
   }
 
   if (verbose) {
     printf("Phase %08d %c pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
-      top->phase_counter,
-      'A' + (top->phase_counter & 7),
-      top->pass_counter,
+      top->phase_count,
+      'A' + (top->phase_count & 7),
+      top->pass_count,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),
       top->clk_reg.SYS_PIN_RSTp(),
@@ -54,18 +55,16 @@ SignalHash phase(SchematicTop* top, Req req, bool verbose) {
 }
 
 
-SignalHash run(SchematicTop* top, int phase_count, Req req, bool verbose) {
-  SignalHash hash;
+uint64_t run(SchematicTop* top, int phase_count, Req req, bool verbose) {
+  uint64_t hash;
   for (int i = 0; i < phase_count; i++) {
-    top->phase_counter++;
-    wire CLK = (top->phase_counter & 1) & (top->clk_reg.get_clk_a());
+    top->phase_count++;
+    wire CLK = (top->phase_count & 1) & (top->clk_reg.get_clk_a());
     top->clk_reg.set_clk_b(CLK);
     hash = phase(top, req, verbose);
   }
   return hash;
 }
-
-//----------------------------------------
 
 //-----------------------------------------------------------------------------
 
@@ -77,7 +76,7 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 
   top->clk_reg.set_t1t2(0,0);
 
-  SignalHash hash;
+  uint64_t hash;
 
   // Just read DIV forever.
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
@@ -120,11 +119,12 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 
   //run(top, 1, req, true);
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
 int GateBoy::main(int /*argc*/, char** /*argv*/) {
-  printf("GateBoy sim starting\n");
+  printf("GateBoy sim starting!\n");
 
   /*
   for (int phase_a = 0; phase_a <= 8; phase_a++) 
@@ -145,8 +145,6 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   top->ext_bus.set_ext_rdwr(0, 0);
 
   top->clk_reg.set_t1t2(0,0);
-
-  SignalHash hash;
 
   gateboy.verbose = true;
 
@@ -194,42 +192,65 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
+#if _DEBUG
   const int iter_count = 16;
-  const int phase_count = 1024;
+  const int phase_per_iter = 1024;
   const int warmup = 0;
+#else
+  const int iter_count = 10;
+  const int phase_per_iter = 1024;
+  const int warmup = 0;
+#endif
 
-  double sum1 = 0;
-  double sum2 = 0;
-  double count = 0;
+  double phase_rate_sum1 = 0;
+  double phase_rate_sum2 = 0;
+  double phase_rate_n = 0;
+
+  double pass_rate_sum1 = 0;
+  double pass_rate_sum2 = 0;
+  double pass_rate_n = 0;
 
   printf("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     gateboy.verbose = false;
 
+    top->phase_count = 0;
+    top->pass_count = 0;
+
     auto start = std::chrono::high_resolution_clock::now();
-    gateboy.run(top, phase_count, req);
+    gateboy.run(top, phase_per_iter, req);
     auto finish = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<double> elapsed = finish - start;
-    double time = elapsed.count();
-    double rate = double(phase_count) / time;
-
     if (iter >= warmup) {
-      sum1 += rate;
-      sum2 += rate*rate;
-      count++;
+      std::chrono::duration<double> elapsed = finish - start;
+      double time = elapsed.count();
+
+      double phase_rate = double(top->phase_count) / time;
+      phase_rate_sum1 += phase_rate;
+      phase_rate_sum2 += phase_rate * phase_rate;
+      phase_rate_n++;
+
+      double pass_rate = double(top->pass_count) / time;
+      pass_rate_sum1 += pass_rate;
+      pass_rate_sum2 += pass_rate * pass_rate;
+      pass_rate_n++;
     }
-    //printf("Done - %f sec, %f phases/sec\n", time, rate);
     printf(".");
   }
-  printf("\n");
+  printf("Done\n");
 
-  double mean = sum1 / count;
-  double variance = (sum2 / count) - (mean * mean);
-  double sigma = sqrt(variance);
-  printf("Done, mean phase/sec %f sigma %f\n", mean, sigma);
-  printf("Commit hash   %016llx\n", top->commit_hash.h);
-  printf("Combined hash %016llx\n", top->combined_hash.h);
+  double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
+  double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);
+  double phase_rate_sigma    = sqrt(phase_rate_variance);
+  printf("Mean phase/sec %f sigma %f\n", phase_rate_mean, phase_rate_sigma);
+
+  double pass_rate_mean     = pass_rate_sum1 / pass_rate_n;
+  double pass_rate_variance = (pass_rate_sum2 / pass_rate_n) - (pass_rate_mean * pass_rate_mean);
+  double pass_rate_sigma    = sqrt(pass_rate_variance);
+  printf("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
+
+  printf("Commit hash   %016llx\n", top->commit_hash);
+  printf("Combined hash %016llx\n", top->combined_hash);
 
   /*
   printf("DIV  %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
@@ -267,11 +288,11 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
 //----------------------------------------
 
-SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
-  SignalHash hash;
+uint64_t GateBoy::run(SchematicTop* top, int phase_count, Req req) {
+  uint64_t hash = 0;
   for (int i = 0; i < phase_count; i++) {
-    top->phase_counter++;
-    wire CLK = (top->phase_counter & 1) & (top->clk_reg.get_clk_a());
+    top->phase_count++;
+    wire CLK = (top->phase_count & 1) & (top->clk_reg.get_clk_a());
     top->clk_reg.set_clk_b(CLK);
     hash = phase(top, req);
   }
@@ -280,11 +301,12 @@ SignalHash GateBoy::run(SchematicTop* top, int phase_count, Req req) {
 
 //----------------------------------------
 
-SignalHash GateBoy::phase(SchematicTop* top, Req req) {
+uint64_t GateBoy::phase(SchematicTop* top, Req req) {
   //printf("phase\n");
 
-  SignalHash hash;
-  for (top->pass_counter = 0; top->pass_counter < 256; top->pass_counter++) {
+  uint64_t hash = 0;
+  int pass_count = 0;
+  for (; pass_count < 256; pass_count++) {
     top->cpu_bus.set_cpu_req(req);
     top->vram_bus.set_vram_data(0);
     top->oam_bus.set_oam_data(0, 0);
@@ -292,22 +314,22 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
     top->joypad.set_buttons(0);
     
     top->tick();
-    SignalHash new_hash = top->commit();
+    uint64_t new_hash = top->commit();
 
     //printf("hash 0x%016llx\n", new_hash.h);
     
-    if (new_hash.h == hash.h) break;
+    if (new_hash == hash) break;
     hash = new_hash;
-    if (top->pass_counter == 199) printf("stuck!\n");
-    CHECKn(top->pass_counter == 200);
+    if (pass_count == 199) printf("stuck!\n");
+    CHECKn(pass_count == 200);
   }
 
   if (verbose) {
     printf("Phase %08d:%c hash %016llx pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
-      top->phase_counter,
-      'A' + (top->phase_counter & 7),
-      hash.h,
-      top->pass_counter,
+      top->phase_count,
+      'A' + (top->phase_count & 7),
+      hash,
+      pass_count,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),
       top->clk_reg.SYS_PIN_RSTp(),
@@ -336,7 +358,7 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
 void GateBoy::init() {
   auto top_step = [this](Schematics::SchematicTop* top) {
     top->clk_reg.set_clk_a(1);
-    top->clk_reg.set_clk_b(top->phase_counter & 1);
+    top->clk_reg.set_clk_b(top->phase_count & 1);
     phase(top, {0});
   };
   state_manager.init(top_step);
@@ -447,9 +469,9 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   Schematics::SchematicTop& top = *state_manager.state();
 
   text_painter.dprintf(" ----- SYS_REG -----\n");
-  text_painter.dprintf("PHASE    %08d\n", top.phase_counter);
+  text_painter.dprintf("PHASE    %08d\n", top.phase_rate_n);
 
-  int p = top.phase_counter & 7;
+  int p = top.phase_rate_n & 7;
   text_painter.dprintf("PHASE    %c%c%c%c%c%c%c%c\n",
                p == 0 ? 'A' : '_',
                p == 1 ? 'B' : '_',

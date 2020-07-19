@@ -11,7 +11,7 @@ struct VramBus;
 struct SpriteFetcher {
   void tick(const SchematicTop& gb);
   void tock(SchematicTop& gb);
-  SignalHash commit();
+  uint64_t commit();
 
 
   // sfetch.veku, sst.store*_rstp, pxp.XEPY
@@ -61,7 +61,7 @@ private:
   Sig2 _TEPA_RENDERINGn;
   Sig2 _LOBY_RENDERINGn;
 
-  /*p27.TAKA*/ Reg2 _TAKA_SFETCH_RUNNINGp = Reg2::D0C0;
+  /*p27.TAKA*/ Pin2 _TAKA_SFETCH_RUNNINGp = Pin2::LATCH_0;
   /*p27.SOBU*/ Reg2 _SOBU_SFETCH_REQp = Reg2::D0C0;
   /*p27.SUDA*/ Reg2 _SUDA_SFETCH_REQp = Reg2::D0C0;
 

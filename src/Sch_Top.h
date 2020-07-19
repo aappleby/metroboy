@@ -28,7 +28,7 @@ struct SchematicTop {
   SchematicTop& top = *this;
 
   void tick();
-  SignalHash commit();
+  uint64_t commit();
 
   // top.BETE, top.AJUJ
   /*p28.AJON*/ wire AJON_OAM_BUSY() const {
@@ -120,11 +120,11 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Internal state for debugging
 
-  int phase_counter = -17;
-  int pass_counter = 0;
+  int phase_count = -17;
+  int pass_count = 0;
   
-  SignalHash commit_hash;
-  SignalHash combined_hash;
+  uint64_t commit_hash = 0;
+  uint64_t combined_hash = 0;
 
   //-----------------------------------------------------------------------------
   // Sys pins

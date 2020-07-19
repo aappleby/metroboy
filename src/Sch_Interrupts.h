@@ -16,7 +16,7 @@ struct CpuBus;
 struct InterruptRegisters {
   void tick(const SchematicTop& gb);
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
 private:
   friend SchematicTop;
@@ -27,11 +27,11 @@ private:
   /*p02.LALU*/ Reg2 LALU_FF0F_1 = Reg2::D0C0;
   /*p02.NYBO*/ Reg2 NYBO_FF0F_2 = Reg2::D0C0;
 
-  /*p02.MATY*/ Reg2 MATY_FF0F_L0 = Reg2::D0C0;
-  /*p02.NEJY*/ Reg2 NEJY_FF0F_L1 = Reg2::D0C0;
-  /*p02.NUTY*/ Reg2 NUTY_FF0F_L2 = Reg2::D0C0;
-  /*p02.MOPO*/ Reg2 MOPO_FF0F_L3 = Reg2::D0C0;
-  /*p02.PAVY*/ Reg2 PAVY_FF0F_L4 = Reg2::D0C0;
+  /*p02.MATY*/ Pin2 MATY_FF0F_L0 = Pin2::LATCH_0;
+  /*p02.NEJY*/ Pin2 NEJY_FF0F_L1 = Pin2::LATCH_0;
+  /*p02.NUTY*/ Pin2 NUTY_FF0F_L2 = Pin2::LATCH_0;
+  /*p02.MOPO*/ Pin2 MOPO_FF0F_L3 = Pin2::LATCH_0;
+  /*p02.PAVY*/ Pin2 PAVY_FF0F_L4 = Pin2::LATCH_0;
 
   // Interrupts
   Pin2 CPU_PIN_INT_VBLANK  = Pin2::HIZ_NP;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int

@@ -286,7 +286,7 @@ void OamBus::tock(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash OamBus::commit() {
+uint64_t OamBus::commit() {
   return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 

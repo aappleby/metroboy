@@ -35,7 +35,7 @@ void SchematicTop::tick() {
   lcd_reg.tock(top, cpu_bus);
   sprite_store.tock(top);
 
-  if (phase_counter == 18 && pass_counter == 0) {
+  if (phase_count == 18 && pass_count == 0) {
     int x = 1;
     (void)x;
   }
@@ -52,35 +52,32 @@ void SchematicTop::tick() {
   vram_bus.tock(top);
 }
 
-SignalHash SchematicTop::commit() {
+uint64_t SchematicTop::commit() {
 
-  SignalHash hash;
+  uint64_t hash = 0x12345678;
 
-  hash << clk_reg.commit();
-  hash << tim_reg.commit();
-  hash << bootrom.commit();
-  hash << dma_reg.commit();
-  hash << ser_reg.commit();
-  hash << joypad.commit();
-  hash << sprite_scanner.commit();
-  hash << lcd_reg.commit();
- 
-  hash << sprite_store.commit();
-  hash << sprite_fetcher.commit();
-
-  hash << pix_pipe.commit();
-  hash << tile_fetcher.commit();
-  hash << int_reg.commit();
-
-  hash << cpu_bus.commit();
-  hash << ext_bus.commit();
-  hash << oam_bus.commit();
-  hash << vram_bus.commit();
+  combine_hash(hash, clk_reg.commit());
+  combine_hash(hash, tim_reg.commit());
+  combine_hash(hash, bootrom.commit());
+  combine_hash(hash, dma_reg.commit());
+  combine_hash(hash, ser_reg.commit());
+  combine_hash(hash, joypad.commit());
+  combine_hash(hash, sprite_scanner.commit());
+  combine_hash(hash, lcd_reg.commit());
+  combine_hash(hash, sprite_store.commit());
+  combine_hash(hash, sprite_fetcher.commit());
+  combine_hash(hash, pix_pipe.commit());
+  combine_hash(hash, tile_fetcher.commit());
+  combine_hash(hash, int_reg.commit());
+  combine_hash(hash, cpu_bus.commit());
+  combine_hash(hash, ext_bus.commit());
+  combine_hash(hash, oam_bus.commit());
+  combine_hash(hash, vram_bus.commit());
 
   commit_hash = hash;
-  combined_hash << hash;
+  combine_hash(combined_hash, hash);
 
-  pass_counter++;
+  pass_count++;
 
   return hash;
 }

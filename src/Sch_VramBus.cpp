@@ -479,7 +479,7 @@ void VramBus::tock(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash VramBus::commit() {
+uint64_t VramBus::commit() {
   return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 

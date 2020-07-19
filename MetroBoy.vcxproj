@@ -44,12 +44,14 @@
     <LibraryPath>$(SolutionDir)SDL\VisualC\x64\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL;$(SolutionDir)glm;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDL\VisualC\x64\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -66,6 +68,11 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ShowIncludes>false</ShowIncludes>
+      <CompileAsManaged>false</CompileAsManaged>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;dwmapi.lib;ucrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -79,7 +86,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile>
@@ -87,6 +94,14 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAsManaged>false</CompileAsManaged>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableModules>false</EnableModules>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;dwmapi.lib;ucrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -122,7 +137,6 @@
     <ClInclude Include="src\GLBase.h" />
     <ClInclude Include="src\GridPainter.h" />
     <ClInclude Include="src\LCD.h" />
-    <ClInclude Include="src\Logic.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\Cart.h" />
     <ClInclude Include="src\OAM.h" />
@@ -194,7 +208,6 @@
     <ClCompile Include="src\GLBase.cpp" />
     <ClCompile Include="src\GridPainter.cpp" />
     <ClCompile Include="src\LCD.cpp" />
-    <ClCompile Include="src\Logic.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\Cart.cpp" />

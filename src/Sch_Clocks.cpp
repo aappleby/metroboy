@@ -122,9 +122,8 @@ void ClockRegisters::tock(const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-SignalHash ClockRegisters::commit() {
+uint64_t ClockRegisters::commit() {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  _XONA_LCDC_EN.state = 0;
   return {ret};
 }
 

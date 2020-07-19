@@ -11,7 +11,7 @@ struct CpuBus;
 struct PixelPipe {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
   // -> top, tile fetcher
   /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp() const { 
@@ -95,12 +95,12 @@ private:
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }
 
-  /*p27.PYNU*/ Reg2 _PYNU_WIN_MODE_A = Reg2::D0C0;
-  /*p27.RYDY*/ Reg2 _RYDY_WIN_FIRST_TILE_A = Reg2::D0C0;
+  /*p27.PYNU*/ Pin2 _PYNU_WIN_MODE_A = Pin2::LATCH_0;
+  /*p27.RYDY*/ Pin2 _RYDY_WIN_FIRST_TILE_A = Pin2::LATCH_0;
 
   /*p27.NOPA*/ Reg2 _NOPA_WIN_MODE_B = Reg2::D0C0;
   /*p27.SOVY*/ Reg2 _SOVY_WIN_FIRST_TILE_B = Reg2::D0C0;
-  /*p27.REJO*/ Reg2 _REJO_WY_MATCH_LATCH = Reg2::D0C0;
+  /*p27.REJO*/ Pin2 _REJO_WY_MATCH_LATCH = Pin2::LATCH_0;
   /*p27.SARY*/ Reg2 _SARY_WY_MATCH = Reg2::D0C0;
   /*p27.RYFA*/ Reg2 _RYFA_WX_MATCHn_A = Reg2::D0C0;
   /*p27.RENE*/ Reg2 _RENE_WX_MATCHn_B = Reg2::D0C0;
@@ -122,7 +122,7 @@ private:
   /*p27.TATE*/ Reg2 _TATE_WIN_Y6 = Reg2::D0C0;
   /*p27.TEKE*/ Reg2 _TEKE_WIN_Y7 = Reg2::D0C0;
 
-  /*p??.ROXY*/ Reg2 _ROXY_FINE_SCROLL_DONEn = Reg2::D0C0;
+  /*p??.ROXY*/ Pin2 _ROXY_FINE_SCROLL_DONEn = Pin2::LATCH_1;
 
   Sig2 _XENA_STORE_MATCHn;
 
@@ -130,17 +130,17 @@ private:
   /*p27.ROGA*/ Reg2 _ROGA_FINE_CNT1 = Reg2::D0C0;
   /*p27.RUBU*/ Reg2 _RUBU_FINE_CNT2 = Reg2::D0C0;
 
-  /*p21.XYMU*/ Reg2 _XYMU_RENDERINGp = Reg2::D0C0; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ Pin2 _XYMU_RENDERINGp = Pin2::LATCH_0; // this must be positive polarity, or stat read doesn't work
 
-  /*p21.RUPO*/ Reg2 _RUPO_LYC_MATCH_LATCHn = Reg2::D0C0;
+  /*p21.RUPO*/ Pin2 _RUPO_LYC_MATCH_LATCHn = Pin2::LATCH_0;
 
-  /*p21.WUSA*/ Reg2 _WUSA_LCD_CLOCK_GATE = Reg2::D0C0;
+  /*p21.WUSA*/ Pin2 _WUSA_LCD_CLOCK_GATE = Pin2::LATCH_0;
   /*p21.VOGA*/ Reg2 _VOGA_RENDER_DONE_SYNC = Reg2::D0C0;
   /*p??.PUXA*/ Reg2 _PUXA_FINE_MATCH_A = Reg2::D0C0;
   /*p27.NYZE*/ Reg2 _NYZE_FINE_MATCH_B = Reg2::D0C0;
 
   /*p24.PAHO*/ Reg2 _PAHO_X_8_SYNC = Reg2::D0C0;
-  /*p24.RUJU*/ Reg2 _POFY_ST_LATCH = Reg2::D0C0; // nor latch with p24.RUJU, p24.POME
+  /*p24.RUJU*/ Pin2 _POFY_ST_LATCH = Pin2::LATCH_0; // nor latch with p24.RUJU, p24.POME
 
   Pin2 _LCD_PIN_CP = Pin2::HIZ_NP;   // PIN_53 
   Pin2 _LCD_PIN_ST = Pin2::HIZ_NP;   // PIN_54 

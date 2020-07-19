@@ -12,7 +12,7 @@ struct Timer {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
   int get_div() {
     return pack(_UKUP_DIV_00.q(), _UFOR_DIV_01.q(), _UNER_DIV_02.q(), _TERO_DIV_03.q(),

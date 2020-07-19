@@ -127,7 +127,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------
 
-SignalHash InterruptRegisters::commit() {
+uint64_t InterruptRegisters::commit() {
   return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 

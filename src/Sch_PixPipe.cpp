@@ -113,8 +113,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   //----------------------------------------
   // Window matcher
 
-  Signal _NUKO_WX_MATCHp;
-  Signal _ROGE_WY_MATCHp;
+  bool _NUKO_WX_MATCHp;
+  bool _ROGE_WY_MATCHp;
   {
     /*p27.MYLO*/ wire _WX_MATCH0 = xnor(XEHO_X0.q(), _MYPA_WX0.q());
     /*p27.PUWU*/ wire _WX_MATCH1 = xnor(SAVY_X1.q(), _NOFE_WX1.q());
@@ -806,9 +806,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------
 
-SignalHash PixelPipe::commit() {
+uint64_t PixelPipe::commit() {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  _XENA_STORE_MATCHn.state = 0;
   return {ret};
 }
 

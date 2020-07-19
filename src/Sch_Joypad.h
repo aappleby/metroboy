@@ -13,7 +13,7 @@ struct Joypad {
   Joypad();
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
   void set_buttons(uint8_t buttons);
   /*p02.ASOK*/ wire ASOK_INT_JOYPADp() const { return and(APUG_JP_GLITCH3.q(), BATU_JP_GLITCH0.q()); }
@@ -39,10 +39,10 @@ private:
   /*p05.KUKO*/ Reg2 KUKO_DBG_FF00_D6 = Reg2::D0C0;
   /*p05.KERU*/ Reg2 KERU_DBG_FF00_D7 = Reg2::D0C0;
 
-  /*p05.KEVU*/ Reg2 KEVU_JOYP_L0     = Reg2::D0C0; // 10-rung, looks like pass gate or something
-  /*p05.KAPA*/ Reg2 KAPA_JOYP_L1     = Reg2::D0C0; // 10-rung, looks like pass gate or something
-  /*p05.KEJA*/ Reg2 KEJA_JOYP_L2     = Reg2::D0C0; // 10-rung, looks like pass gate or something
-  /*p05.KOLO*/ Reg2 KOLO_JOYP_L3     = Reg2::D0C0; // 10-rung, looks like pass gate or something
+  /*p05.KEVU*/ Pin2 KEVU_JOYP_L0     = Pin2::LATCH_0; // 10-rung, looks like pass gate or something
+  /*p05.KAPA*/ Pin2 KAPA_JOYP_L1     = Pin2::LATCH_0; // 10-rung, looks like pass gate or something
+  /*p05.KEJA*/ Pin2 KEJA_JOYP_L2     = Pin2::LATCH_0; // 10-rung, looks like pass gate or something
+  /*p05.KOLO*/ Pin2 KOLO_JOYP_L3     = Pin2::LATCH_0; // 10-rung, looks like pass gate or something
 
   Pin2 JOY_PIN_P10_A = Pin2::HIZ_NP;   // PIN_67 <- P05.KOLE
   Pin2 JOY_PIN_P10_B = Pin2::HIZ_NP;   // PIN_67 <- tied low between BONE and BUFY

@@ -11,7 +11,7 @@ struct CpuBus;
 struct SerialRegisters {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
   /*p06.CALY*/ wire CALY_SER_INTp() const { return _CALY_SER_INTp.q(); }
 
@@ -46,10 +46,10 @@ private:
   /* PIN_68 */ Pin2 SCK_C = Pin2::HOLD_0;   // -> P06.CAVE
   /* PIN_68 */ Pin2 SCK_D = Pin2::HIZ_NP;   // <- P06.KUJO
 
-  /* PIN_69 */ Pin2 SIN_A = Pin2::HIZ_NP;   // nc?
-  /* PIN_69 */ Pin2 SIN_B = Pin2::HIZ_NP;   // nc?
+  ///* PIN_69 */ Pin2 SIN_A = Pin2::HIZ_NP;   // nc?
+  ///* PIN_69 */ Pin2 SIN_B = Pin2::HIZ_NP;   // nc?
   /* PIN_69 */ Pin2 SIN_C = Pin2::HOLD_0;   // -> P06.CAGE
-  /* PIN_69 */ Pin2 SIN_D = Pin2::HIZ_NP;   // nc?
+  ///* PIN_69 */ Pin2 SIN_D = Pin2::HIZ_NP;   // nc?
 
   /* PIN_70 */ Pin2 SOUT  = Pin2::HIZ_NP;   // <- P05.KENA
 };

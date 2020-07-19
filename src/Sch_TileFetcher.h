@@ -13,7 +13,7 @@ struct OamBus;
 struct TileFetcher {
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
   // not sure about this one
   // ROMO = not(POKY_04)
@@ -98,8 +98,8 @@ private:
   /*p27.LYZU*/ Reg2 _LYZU_BFETCH_S0_DELAY = Reg2::D0C0;
 
   /*p24.PYGO*/ Reg2 _PYGO_FETCH_DONE_Cp = Reg2::D0C0;
-  /*p24.POKY*/ Reg2 _POKY_PORCH_DONEp = Reg2::D0C0;            // stops clkpipe until after first tile fetch
-  /*p27.LONY*/ Reg2 _LONY_BG_READ_VRAM_LATCHp = Reg2::D0C0;
+  /*p24.POKY*/ Pin2 _POKY_PORCH_DONEp = Pin2::LATCH_0;            // stops clkpipe until after first tile fetch
+  /*p27.LONY*/ Pin2 _LONY_BG_READ_VRAM_LATCHp = Pin2::LATCH_0;
 
 };
 

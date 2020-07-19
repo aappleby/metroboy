@@ -11,6 +11,9 @@ typedef unsigned long long uint64_t;
 
 typedef int16_t sample_t;
 
+//typedef const bool wire;
+typedef bool wire;
+
 //-----------------------------------------------------------------------------
 
 #pragma warning(push)
@@ -87,7 +90,7 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 
-#if 1
+#if _DEBUG
 
 #define CHECKp(A) do { if (!(A)) __debugbreak(); } while(0);
 #define CHECKn(A) do { if ((A)) __debugbreak(); } while(0);

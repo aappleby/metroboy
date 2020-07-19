@@ -23,8 +23,8 @@ public:
 
   bool verbose = true;
 
-  SignalHash run   (Schematics::SchematicTop* top, int phase_count, Req req);
-  SignalHash phase (Schematics::SchematicTop* top, Req req);
+  uint64_t run   (Schematics::SchematicTop* top, int phase_count, Req req);
+  uint64_t phase (Schematics::SchematicTop* top, Req req);
 
   StateManager2<Schematics::SchematicTop> state_manager;
 

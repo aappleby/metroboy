@@ -10,7 +10,7 @@ struct SchematicTop;
 struct SpriteStore {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
-  SignalHash commit();
+  uint64_t commit();
 
   /*p29.FEPO*/ Sig2 FEPO_STORE_MATCHp;
   /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }

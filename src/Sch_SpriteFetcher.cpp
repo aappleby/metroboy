@@ -52,12 +52,8 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash SpriteFetcher::commit() {
+uint64_t SpriteFetcher::commit() {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-
-  _TEPA_RENDERINGn.state = 0;
-  _LOBY_RENDERINGn.state = 0;
-
   return {ret};
 }
 

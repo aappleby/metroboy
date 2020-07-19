@@ -14,7 +14,7 @@ struct DmaRegisters {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  SignalHash commit();
+  uint64_t commit();
 
   // -> bunch of stuff
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.q(); }
@@ -61,12 +61,12 @@ private:
     return MUDA_DMA_SRC_VRAMp;
   }
 
-  /*p04.LYXE*/ Reg2 _LYXE_DMA_LATCHn   = Reg2::D0C0;
+  /*p04.LYXE*/ Pin2 _LYXE_DMA_LATCHn   = Pin2::LATCH_0;
   /*p04.MATU*/ Reg2 _MATU_DMA_RUNNINGp = Reg2::D0C0;
   /*p04.MYTE*/ Reg2 _MYTE_DMA_DONE     = Reg2::D0C0;
   /*p04.LUVY*/ Reg2 _LUVY_DMA_TRIG_d0  = Reg2::D0C0;
   /*p04.LENE*/ Reg2 _LENE_DMA_TRIG_d4  = Reg2::D0C0;
-  /*p04.LOKY*/ Reg2 _LOKY_DMA_LATCHp   = Reg2::D0C0;
+  /*p04.LOKY*/ Pin2 _LOKY_DMA_LATCHp   = Pin2::LATCH_0;
 };
 
 //-----------------------------------------------------------------------------

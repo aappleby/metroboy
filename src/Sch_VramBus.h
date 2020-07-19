@@ -9,7 +9,6 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct VramBus {
-  VramBus();
   void tock(SchematicTop& top);
   SignalHash commit();
 
@@ -36,28 +35,28 @@ struct VramBus {
 
 private:
 
-  Reg _VRM_TRI_D0;
-  Reg _VRM_TRI_D1;
-  Reg _VRM_TRI_D2;
-  Reg _VRM_TRI_D3;
-  Reg _VRM_TRI_D4;
-  Reg _VRM_TRI_D5;
-  Reg _VRM_TRI_D6;
-  Reg _VRM_TRI_D7;
+  Pin2 _VRM_TRI_D0 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D1 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D2 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D3 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D4 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D5 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D6 = Pin2::HIZ_PU;
+  Pin2 _VRM_TRI_D7 = Pin2::HIZ_PU;
 
-  Reg _VRM_TRI_A00;
-  Reg _VRM_TRI_A01;
-  Reg _VRM_TRI_A02;
-  Reg _VRM_TRI_A03;
-  Reg _VRM_TRI_A04;
-  Reg _VRM_TRI_A05;
-  Reg _VRM_TRI_A06;
-  Reg _VRM_TRI_A07;
-  Reg _VRM_TRI_A08;
-  Reg _VRM_TRI_A09;
-  Reg _VRM_TRI_A10;
-  Reg _VRM_TRI_A11;
-  Reg _VRM_TRI_A12;
+  Pin2 _VRM_TRI_A00 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A01 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A02 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A03 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A04 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A05 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A06 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A07 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A08 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A09 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A10 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A11 = Pin2::HIZ_NP;
+  Pin2 _VRM_TRI_A12 = Pin2::HIZ_NP;
 
   //-----------------------------------------------------------------------------
   // VRAM bus

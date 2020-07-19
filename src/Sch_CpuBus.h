@@ -122,31 +122,31 @@ struct CpuBus {
 
   //-----------------------------------------------------------------------------
 
-  CpuPinIn  CPU_PIN_A00;  // bottom right port PORTB_00: -> A00
-  CpuPinIn  CPU_PIN_A01;  // bottom right port PORTB_04: -> A01
-  CpuPinIn  CPU_PIN_A02;  // bottom right port PORTB_08: -> A02
-  CpuPinIn  CPU_PIN_A03;  // bottom right port PORTB_12: -> A03
-  CpuPinIn  CPU_PIN_A04;  // bottom right port PORTB_16: -> A04
-  CpuPinIn  CPU_PIN_A05;  // bottom right port PORTB_20: -> A05
-  CpuPinIn  CPU_PIN_A06;  // bottom right port PORTB_24: -> A06
-  CpuPinIn  CPU_PIN_A07;  // bottom right port PORTB_28: -> A07
-  CpuPinIn  CPU_PIN_A08;  // bottom right port PORTB_02: -> A08
-  CpuPinIn  CPU_PIN_A09;  // bottom right port PORTB_06: -> A09
-  CpuPinIn  CPU_PIN_A10;  // bottom right port PORTB_10: -> A10
-  CpuPinIn  CPU_PIN_A11;  // bottom right port PORTB_14: -> A11
-  CpuPinIn  CPU_PIN_A12;  // bottom right port PORTB_18: -> A12
-  CpuPinIn  CPU_PIN_A13;  // bottom right port PORTB_22: -> A13
-  CpuPinIn  CPU_PIN_A14;  // bottom right port PORTB_26: -> A14
-  CpuPinIn  CPU_PIN_A15;  // bottom right port PORTB_30: -> A15                               
+  Pin2 CPU_PIN_A00 = Pin2::HOLD_0;  // bottom right port PORTB_00: -> A00
+  Pin2 CPU_PIN_A01 = Pin2::HOLD_0;  // bottom right port PORTB_04: -> A01
+  Pin2 CPU_PIN_A02 = Pin2::HOLD_0;  // bottom right port PORTB_08: -> A02
+  Pin2 CPU_PIN_A03 = Pin2::HOLD_0;  // bottom right port PORTB_12: -> A03
+  Pin2 CPU_PIN_A04 = Pin2::HOLD_0;  // bottom right port PORTB_16: -> A04
+  Pin2 CPU_PIN_A05 = Pin2::HOLD_0;  // bottom right port PORTB_20: -> A05
+  Pin2 CPU_PIN_A06 = Pin2::HOLD_0;  // bottom right port PORTB_24: -> A06
+  Pin2 CPU_PIN_A07 = Pin2::HOLD_0;  // bottom right port PORTB_28: -> A07
+  Pin2 CPU_PIN_A08 = Pin2::HOLD_0;  // bottom right port PORTB_02: -> A08
+  Pin2 CPU_PIN_A09 = Pin2::HOLD_0;  // bottom right port PORTB_06: -> A09
+  Pin2 CPU_PIN_A10 = Pin2::HOLD_0;  // bottom right port PORTB_10: -> A10
+  Pin2 CPU_PIN_A11 = Pin2::HOLD_0;  // bottom right port PORTB_14: -> A11
+  Pin2 CPU_PIN_A12 = Pin2::HOLD_0;  // bottom right port PORTB_18: -> A12
+  Pin2 CPU_PIN_A13 = Pin2::HOLD_0;  // bottom right port PORTB_22: -> A13
+  Pin2 CPU_PIN_A14 = Pin2::HOLD_0;  // bottom right port PORTB_26: -> A14
+  Pin2 CPU_PIN_A15 = Pin2::HOLD_0;  // bottom right port PORTB_30: -> A15                               
 
-  Reg    CPU_TRI_D0;   // bottom left port: <>
-  Reg    CPU_TRI_D1;   // bottom left port: <>
-  Reg    CPU_TRI_D2;   // bottom left port: <>
-  Reg    CPU_TRI_D3;   // bottom left port: <>
-  Reg    CPU_TRI_D4;   // bottom left port: <>
-  Reg    CPU_TRI_D5;   // bottom left port: <>
-  Reg    CPU_TRI_D6;   // bottom left port: <>
-  Reg    CPU_TRI_D7;   // bottom left port: <>
+  Pin2 CPU_TRI_D0 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D1 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D2 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D3 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D4 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D5 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D6 = Pin2::HIZ_PU;   // bottom left port: <>
+  Pin2 CPU_TRI_D7 = Pin2::HIZ_PU;   // bottom left port: <>
 
 private:
 

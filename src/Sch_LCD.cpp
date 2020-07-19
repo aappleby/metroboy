@@ -157,14 +157,14 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.XUCE*/ wire _XUCE_LY6n = not(MATO_Y6.q());
     /*p23.XOWO*/ wire _XOWO_LY7n = not(LAFO_Y7.q());
 
-    /*p23.VEGA*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_VARO_FF44_RDn, not(_WURY_LY0n));
-    /*p23.WUVA*/ cpu_bus.CPU_TRI_D1 = tribuf_6n(_VARO_FF44_RDn, not(_XEPO_LY1n));
-    /*p23.LYCO*/ cpu_bus.CPU_TRI_D2 = tribuf_6n(_VARO_FF44_RDn, not(_MYFA_LY2n));
-    /*p23.WOJY*/ cpu_bus.CPU_TRI_D3 = tribuf_6n(_VARO_FF44_RDn, not(_XUHY_LY3n));
-    /*p23.VYNE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n(_VARO_FF44_RDn, not(_WATA_LY4n));
-    /*p23.WAMA*/ cpu_bus.CPU_TRI_D5 = tribuf_6n(_VARO_FF44_RDn, not(_XAGA_LY5n));
-    /*p23.WAVO*/ cpu_bus.CPU_TRI_D6 = tribuf_6n(_VARO_FF44_RDn, not(_XUCE_LY6n));
-    /*p23.WEZE*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_VARO_FF44_RDn, not(_XOWO_LY7n));
+    /*p23.VEGA*/ cpu_bus.CPU_TRI_D0 = tribuf_6n_r2(_VARO_FF44_RDn, not(_WURY_LY0n));
+    /*p23.WUVA*/ cpu_bus.CPU_TRI_D1 = tribuf_6n_r2(_VARO_FF44_RDn, not(_XEPO_LY1n));
+    /*p23.LYCO*/ cpu_bus.CPU_TRI_D2 = tribuf_6n_r2(_VARO_FF44_RDn, not(_MYFA_LY2n));
+    /*p23.WOJY*/ cpu_bus.CPU_TRI_D3 = tribuf_6n_r2(_VARO_FF44_RDn, not(_XUHY_LY3n));
+    /*p23.VYNE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n_r2(_VARO_FF44_RDn, not(_WATA_LY4n));
+    /*p23.WAMA*/ cpu_bus.CPU_TRI_D5 = tribuf_6n_r2(_VARO_FF44_RDn, not(_XAGA_LY5n));
+    /*p23.WAVO*/ cpu_bus.CPU_TRI_D6 = tribuf_6n_r2(_VARO_FF44_RDn, not(_XUCE_LY6n));
+    /*p23.WEZE*/ cpu_bus.CPU_TRI_D7 = tribuf_6n_r2(_VARO_FF44_RDn, not(_XOWO_LY7n));
   }
 
   // FF45 LYC
@@ -175,14 +175,14 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.XYLY*/ wire _XYLY_FF45_RDp = and(top.ASOT_CPU_RDp(), _XAYU_FF45p);
     /*p23.WEKU*/ wire _WEKU_FF45_RDn = not(_XYLY_FF45_RDp);
 
-    /*p23.RETU*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_WEKU_FF45_RDn, _SYRY_LYC0.q());
-    /*p23.VOJO*/ cpu_bus.CPU_TRI_D1 = tribuf_6n(_WEKU_FF45_RDn, _VUCE_LYC1.q());
-    /*p23.RAZU*/ cpu_bus.CPU_TRI_D2 = tribuf_6n(_WEKU_FF45_RDn, _SEDY_LYC2.q());
-    /*p23.REDY*/ cpu_bus.CPU_TRI_D3 = tribuf_6n(_WEKU_FF45_RDn, _SALO_LYC3.q());
-    /*p23.RACE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n(_WEKU_FF45_RDn, _SOTA_LYC4.q());
-    /*p23.VAZU*/ cpu_bus.CPU_TRI_D5 = tribuf_6n(_WEKU_FF45_RDn, _VAFA_LYC5.q());
-    /*p23.VAFE*/ cpu_bus.CPU_TRI_D6 = tribuf_6n(_WEKU_FF45_RDn, _VEVO_LYC6.q());
-    /*p23.PUFY*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_WEKU_FF45_RDn, _RAHA_LYC7.q());
+    /*p23.RETU*/ cpu_bus.CPU_TRI_D0 = tribuf_6n_r2(_WEKU_FF45_RDn, _SYRY_LYC0.q());
+    /*p23.VOJO*/ cpu_bus.CPU_TRI_D1 = tribuf_6n_r2(_WEKU_FF45_RDn, _VUCE_LYC1.q());
+    /*p23.RAZU*/ cpu_bus.CPU_TRI_D2 = tribuf_6n_r2(_WEKU_FF45_RDn, _SEDY_LYC2.q());
+    /*p23.REDY*/ cpu_bus.CPU_TRI_D3 = tribuf_6n_r2(_WEKU_FF45_RDn, _SALO_LYC3.q());
+    /*p23.RACE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n_r2(_WEKU_FF45_RDn, _SOTA_LYC4.q());
+    /*p23.VAZU*/ cpu_bus.CPU_TRI_D5 = tribuf_6n_r2(_WEKU_FF45_RDn, _VAFA_LYC5.q());
+    /*p23.VAFE*/ cpu_bus.CPU_TRI_D6 = tribuf_6n_r2(_WEKU_FF45_RDn, _VEVO_LYC6.q());
+    /*p23.PUFY*/ cpu_bus.CPU_TRI_D7 = tribuf_6n_r2(_WEKU_FF45_RDn, _RAHA_LYC7.q());
 
     /*p23.XUFA*/ wire _XUFA_FF45_WRn = and (top.CUPA_CPU_WRp_xxxxEFGx(), _XAYU_FF45p);
     /*p23.WANE*/ wire _WANE_FF45_WRp = not(_XUFA_FF45_WRn);

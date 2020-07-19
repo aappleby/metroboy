@@ -17,23 +17,24 @@ void CpuBus::set_cpu_req(Req req) {
   // this probably isn't right
   _CPU_PIN_ADDR_VALID.set_pin_in(req.read || req.write);
 
-  CPU_PIN_A00.set_pin_in(req.addr & 0x0001);
-  CPU_PIN_A01.set_pin_in(req.addr & 0x0002);
-  CPU_PIN_A02.set_pin_in(req.addr & 0x0004);
-  CPU_PIN_A03.set_pin_in(req.addr & 0x0008);
-  CPU_PIN_A04.set_pin_in(req.addr & 0x0010);
-  CPU_PIN_A05.set_pin_in(req.addr & 0x0020);
-  CPU_PIN_A06.set_pin_in(req.addr & 0x0040);
-  CPU_PIN_A07.set_pin_in(req.addr & 0x0080);
-  CPU_PIN_A08.set_pin_in(req.addr & 0x0100);
-  CPU_PIN_A09.set_pin_in(req.addr & 0x0200);
-  CPU_PIN_A10.set_pin_in(req.addr & 0x0400);
-  CPU_PIN_A11.set_pin_in(req.addr & 0x0800);
-  CPU_PIN_A12.set_pin_in(req.addr & 0x1000);
-  CPU_PIN_A13.set_pin_in(req.addr & 0x2000);
-  CPU_PIN_A14.set_pin_in(req.addr & 0x4000);
-  CPU_PIN_A15.set_pin_in(req.addr & 0x8000);
+  CPU_PIN_A00.hold(req.addr & 0x0001);
+  CPU_PIN_A01.hold(req.addr & 0x0002);
+  CPU_PIN_A02.hold(req.addr & 0x0004);
+  CPU_PIN_A03.hold(req.addr & 0x0008);
+  CPU_PIN_A04.hold(req.addr & 0x0010);
+  CPU_PIN_A05.hold(req.addr & 0x0020);
+  CPU_PIN_A06.hold(req.addr & 0x0040);
+  CPU_PIN_A07.hold(req.addr & 0x0080);
+  CPU_PIN_A08.hold(req.addr & 0x0100);
+  CPU_PIN_A09.hold(req.addr & 0x0200);
+  CPU_PIN_A10.hold(req.addr & 0x0400);
+  CPU_PIN_A11.hold(req.addr & 0x0800);
+  CPU_PIN_A12.hold(req.addr & 0x1000);
+  CPU_PIN_A13.hold(req.addr & 0x2000);
+  CPU_PIN_A14.hold(req.addr & 0x4000);
+  CPU_PIN_A15.hold(req.addr & 0x8000);
 
+  /*
   if (req.write) {
     CPU_TRI_D0.preset_a(req.data_lo & 0x01);
     CPU_TRI_D1.preset_a(req.data_lo & 0x02);
@@ -53,11 +54,13 @@ void CpuBus::set_cpu_req(Req req) {
     CPU_TRI_D6.preset_b(req.data_lo & 0x40);
     CPU_TRI_D7.preset_b(req.data_lo & 0x80);
   }
+  */
 }
 
 //------------------------------------------------------------------------------
 
 CpuBus::CpuBus() {
+  /*
   CPU_TRI_D0.preset_a(0);
   CPU_TRI_D1.preset_a(0);
   CPU_TRI_D2.preset_a(0);
@@ -66,6 +69,7 @@ CpuBus::CpuBus() {
   CPU_TRI_D5.preset_a(0);
   CPU_TRI_D6.preset_a(0);
   CPU_TRI_D7.preset_a(0);
+  */
 }
 
 //------------------------------------------------------------------------------
@@ -112,22 +116,22 @@ SignalHash CpuBus::commit() {
   hash << _CPU_PIN_WRp.commit_input();            // PORTA_01: -> AREV, LAGU.
   hash << _CPU_PIN_ADDR_VALID.commit_input();     // PORTA_06: -> APAP, TEXO
 
-  hash << CPU_PIN_A00.commit_input();
-  hash << CPU_PIN_A01.commit_input();
-  hash << CPU_PIN_A02.commit_input();
-  hash << CPU_PIN_A03.commit_input();
-  hash << CPU_PIN_A04.commit_input();
-  hash << CPU_PIN_A05.commit_input();
-  hash << CPU_PIN_A06.commit_input();
-  hash << CPU_PIN_A07.commit_input();
-  hash << CPU_PIN_A08.commit_input();
-  hash << CPU_PIN_A09.commit_input();
-  hash << CPU_PIN_A10.commit_input();
-  hash << CPU_PIN_A11.commit_input();
-  hash << CPU_PIN_A12.commit_input();
-  hash << CPU_PIN_A13.commit_input();
-  hash << CPU_PIN_A14.commit_input();
-  hash << CPU_PIN_A15.commit_input();
+  hash << CPU_PIN_A00.commit();
+  hash << CPU_PIN_A01.commit();
+  hash << CPU_PIN_A02.commit();
+  hash << CPU_PIN_A03.commit();
+  hash << CPU_PIN_A04.commit();
+  hash << CPU_PIN_A05.commit();
+  hash << CPU_PIN_A06.commit();
+  hash << CPU_PIN_A07.commit();
+  hash << CPU_PIN_A08.commit();
+  hash << CPU_PIN_A09.commit();
+  hash << CPU_PIN_A10.commit();
+  hash << CPU_PIN_A11.commit();
+  hash << CPU_PIN_A12.commit();
+  hash << CPU_PIN_A13.commit();
+  hash << CPU_PIN_A14.commit();
+  hash << CPU_PIN_A15.commit();
 
   return hash;
 }

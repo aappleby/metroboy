@@ -178,7 +178,7 @@ union Reg2 {
   inline bool is_pin()    const { return ((state & 0x0F) >= PIN_D0PD) && ((state & 0x0F) <= PIN_HZNP); }
   inline bool is_reg()    const { return ((state & 0x0F) >= REG_D0C0) && ((state & 0x0F) <= REG_D1C1); }
   inline bool is_held()   const { return (state & 0xF0) == SIG_HOLD; }
-  inline bool is_driven() const { return sig_hzn; }
+  inline bool is_driven() const { return state & 0x80; }
 
   inline void preset_a(bool a) {
     state = (state & 0xFE) | uint8_t(a);
@@ -225,14 +225,8 @@ union Reg2 {
 
   uint8_t state = 0;
   struct {
-    uint8_t reg_val : 1;
-    uint8_t reg_clk : 1;
-    uint8_t reg_pul : 1;
-    uint8_t reg_hiz : 1;
-    uint8_t sig_val : 1;
-    uint8_t sig_clk : 1;
-    uint8_t sig_set : 1;
-    uint8_t sig_hzn : 1;
+    uint8_t reg : 4;
+    uint8_t sig : 4;
   };
 };
 
@@ -261,12 +255,17 @@ union Pin2 {
   inline bool is_pin()    const { return ((state & 0x0F) >= PIN_D0PD) && ((state & 0x0F) <= PIN_HZNP); }
   inline bool is_reg()    const { return ((state & 0x0F) >= REG_D0C0) && ((state & 0x0F) <= REG_D1C1); }
   inline bool is_held()   const { return (state & 0xF0) == SIG_HOLD; }
-  inline bool is_driven() const { return sig_hzn; }
+  inline bool is_driven() const { return state & 0x80; }
 
 
   inline void hold(bool D) {
     CHECKp(is_pin() && is_held());
-    state = (state & 0xFE) | uint8_t(D); // set the low bit
+    state = (state & 0xF0) | PIN_D0NP | uint8_t(D);
+  }
+
+  inline void hold_z() {
+    CHECKp(is_pin() && is_held());
+    state = (state & 0xF0) | PIN_HZNP;
   }
 
   inline operator wire() const {
@@ -290,12 +289,16 @@ union Pin2 {
   }
 
   inline void operator = (wire s) {
-    CHECKp(is_pin() && !is_held() && !is_driven());
+    CHECKp(is_pin());
+    CHECKp(!is_held());
+    CHECKp(!is_driven());
     state |= SIG_D0C0 | (s << 4);
   }
 
   inline void operator = (uint8_t ss) {
-    CHECKp(is_pin() && !is_held() && !is_driven());
+    CHECKp(is_pin());
+    CHECKp(!is_held());
+    CHECKp(!is_driven() || (ss == SIG_ZZZZ));
     CHECKn(ss & 0x0F);    // sig must be just sig
     CHECKp(ss);           // sig must not be invalid sig
     state |= ss;
@@ -312,14 +315,8 @@ union Pin2 {
 
   uint8_t state = 0;
   struct {
-    uint8_t pin_val : 1;
-    uint8_t pin_clk : 1;
-    uint8_t pin_pul : 1;
-    uint8_t pin_hiz : 1;
-    uint8_t sig_val : 1;
-    uint8_t sig_clk : 1;
-    uint8_t sig_set : 1;
-    uint8_t sig_hzn : 1;
+    uint8_t reg : 4;
+    uint8_t sig : 4;
   };
 };
 

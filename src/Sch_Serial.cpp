@@ -95,17 +95,17 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   SCK_B = _XFER_DIR.q();
   /*p06.KUJO*/ SCK_D = nor(_SER_CLK.q(), /*p06.JAGO*/ not(_XFER_DIR.q()));
 
-  /*p06.CUGY*/ cpu_bus.CPU_TRI_D0 = tribuf_6p(_FF01_RD, _SER_DATA0.q());
-  /*p06.DUDE*/ cpu_bus.CPU_TRI_D1 = tribuf_6p(_FF01_RD, _SER_DATA1.q());
-  /*p06.DETU*/ cpu_bus.CPU_TRI_D2 = tribuf_6p(_FF01_RD, _SER_DATA2.q());
-  /*p06.DASO*/ cpu_bus.CPU_TRI_D3 = tribuf_6p(_FF01_RD, _SER_DATA3.q());
-  /*p06.DAME*/ cpu_bus.CPU_TRI_D4 = tribuf_6p(_FF01_RD, _SER_DATA4.q());
-  /*p06.EVOK*/ cpu_bus.CPU_TRI_D5 = tribuf_6p(_FF01_RD, _SER_DATA5.q());
-  /*p06.EFAB*/ cpu_bus.CPU_TRI_D6 = tribuf_6p(_FF01_RD, _SER_DATA6.q());
-  /*p06.ETAK*/ cpu_bus.CPU_TRI_D7 = tribuf_6p(_FF01_RD, _SER_DATA7.q());
+  /*p06.CUGY*/ cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_FF01_RD, _SER_DATA0.q());
+  /*p06.DUDE*/ cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_FF01_RD, _SER_DATA1.q());
+  /*p06.DETU*/ cpu_bus.CPU_TRI_D2 = tribuf_6p_r2(_FF01_RD, _SER_DATA2.q());
+  /*p06.DASO*/ cpu_bus.CPU_TRI_D3 = tribuf_6p_r2(_FF01_RD, _SER_DATA3.q());
+  /*p06.DAME*/ cpu_bus.CPU_TRI_D4 = tribuf_6p_r2(_FF01_RD, _SER_DATA4.q());
+  /*p06.EVOK*/ cpu_bus.CPU_TRI_D5 = tribuf_6p_r2(_FF01_RD, _SER_DATA5.q());
+  /*p06.EFAB*/ cpu_bus.CPU_TRI_D6 = tribuf_6p_r2(_FF01_RD, _SER_DATA6.q());
+  /*p06.ETAK*/ cpu_bus.CPU_TRI_D7 = tribuf_6p_r2(_FF01_RD, _SER_DATA7.q());
 
-  /*p06.CORE*/ cpu_bus.CPU_TRI_D0 = tribuf_6p(_FF02_RD, _XFER_DIR.q());
-  /*p06.ELUV*/ cpu_bus.CPU_TRI_D1 = tribuf_6p(_FF02_RD, _XFER_START.q());
+  /*p06.CORE*/ cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_FF02_RD, _XFER_DIR.q());
+  /*p06.ELUV*/ cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_FF02_RD, _XFER_START.q());
 }
 
 //------------------------------------------------------------------------------

@@ -70,14 +70,14 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P12_C);
     /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P13_C);
 
-    /*p05.KEMA*/ cpu_bus.CPU_TRI_D0 = tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
-    /*p05.KURO*/ cpu_bus.CPU_TRI_D1 = tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
-    /*p05.KUVE*/ cpu_bus.CPU_TRI_D2 = tribuf_6n(_BYZO_FF00_RDn, KEJA_JOYP_L2.q());
-    /*p05.JEKU*/ cpu_bus.CPU_TRI_D3 = tribuf_6n(_BYZO_FF00_RDn, KOLO_JOYP_L3.q());
-    /*p05.KOCE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n(_BYZO_FF00_RDn, KELY_JOYP_UDLR.q());
-    /*p05.CUDY*/ cpu_bus.CPU_TRI_D5 = tribuf_6n(_BYZO_FF00_RDn, COFY_JOYP_ABCS.q());
-    /*p??.????*/ cpu_bus.CPU_TRI_D6 = tribuf_6n(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.q());
-    /*p??.????*/ cpu_bus.CPU_TRI_D7 = tribuf_6n(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.q());
+    /*p05.KEMA*/ cpu_bus.CPU_TRI_D0 = tribuf_6n_r2(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
+    /*p05.KURO*/ cpu_bus.CPU_TRI_D1 = tribuf_6n_r2(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
+    /*p05.KUVE*/ cpu_bus.CPU_TRI_D2 = tribuf_6n_r2(_BYZO_FF00_RDn, KEJA_JOYP_L2.q());
+    /*p05.JEKU*/ cpu_bus.CPU_TRI_D3 = tribuf_6n_r2(_BYZO_FF00_RDn, KOLO_JOYP_L3.q());
+    /*p05.KOCE*/ cpu_bus.CPU_TRI_D4 = tribuf_6n_r2(_BYZO_FF00_RDn, KELY_JOYP_UDLR.q());
+    /*p05.CUDY*/ cpu_bus.CPU_TRI_D5 = tribuf_6n_r2(_BYZO_FF00_RDn, COFY_JOYP_ABCS.q());
+    /*p??.????*/ cpu_bus.CPU_TRI_D6 = tribuf_6n_r2(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.q());
+    /*p??.????*/ cpu_bus.CPU_TRI_D7 = tribuf_6n_r2(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.q());
   }
 
   {

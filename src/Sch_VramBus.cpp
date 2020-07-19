@@ -425,14 +425,14 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RABO*/ wire _RABO_VBUS_D6 = not(_VRM_TRI_D6.q());
     /*p25.SAME*/ wire _SAME_VBUS_D7 = not(_VRM_TRI_D7.q());
 
-    /*p25.RUGA*/ top.cpu_bus.CPU_TRI_D0 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RERY_VBUS_D0);
-    /*p25.ROTA*/ top.cpu_bus.CPU_TRI_D1 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNA_VBUS_D1);
-    /*p25.RYBU*/ top.cpu_bus.CPU_TRI_D2 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RONA_VBUS_D2);
-    /*p25.RAJU*/ top.cpu_bus.CPU_TRI_D3 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RUNO_VBUS_D3);
-    /*p25.TYJA*/ top.cpu_bus.CPU_TRI_D4 = tribuf_6p(_SEBY_VRM_TO_CPUp, _SANA_VBUS_D4);
-    /*p25.REXU*/ top.cpu_bus.CPU_TRI_D5 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RORO_VBUS_D5);
-    /*p25.RUPY*/ top.cpu_bus.CPU_TRI_D6 = tribuf_6p(_SEBY_VRM_TO_CPUp, _RABO_VBUS_D6);
-    /*p25.TOKU*/ top.cpu_bus.CPU_TRI_D7 = tribuf_6p(_SEBY_VRM_TO_CPUp, _SAME_VBUS_D7);
+    /*p25.RUGA*/ top.cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _RERY_VBUS_D0);
+    /*p25.ROTA*/ top.cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _RUNA_VBUS_D1);
+    /*p25.RYBU*/ top.cpu_bus.CPU_TRI_D2 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _RONA_VBUS_D2);
+    /*p25.RAJU*/ top.cpu_bus.CPU_TRI_D3 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _RUNO_VBUS_D3);
+    /*p25.TYJA*/ top.cpu_bus.CPU_TRI_D4 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _SANA_VBUS_D4);
+    /*p25.REXU*/ top.cpu_bus.CPU_TRI_D5 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _RORO_VBUS_D5);
+    /*p25.RUPY*/ top.cpu_bus.CPU_TRI_D6 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _RABO_VBUS_D6);
+    /*p25.TOKU*/ top.cpu_bus.CPU_TRI_D7 = tribuf_6p_r2(_SEBY_VRM_TO_CPUp, _SAME_VBUS_D7);
   }
 
   // VRAM tri -> tile pix temp

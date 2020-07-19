@@ -34,11 +34,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch_r2(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not(_ROLO_FF0F_RDn);
-    /*p02.NELA*/ cpu_bus.CPU_TRI_D0 = tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.q());
-    /*p02.NABO*/ cpu_bus.CPU_TRI_D1 = tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1.q());
-    /*p02.ROVA*/ cpu_bus.CPU_TRI_D2 = tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2.q());
-    /*p02.PADO*/ cpu_bus.CPU_TRI_D3 = tribuf_6p(_POLA_FF0F_RD, MOPO_FF0F_L3.q());
-    /*p02.PEGY*/ cpu_bus.CPU_TRI_D4 = tribuf_6p(_POLA_FF0F_RD, PAVY_FF0F_L4.q());
+    /*p02.NELA*/ cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_POLA_FF0F_RD, MATY_FF0F_L0.q());
+    /*p02.NABO*/ cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_POLA_FF0F_RD, NEJY_FF0F_L1.q());
+    /*p02.ROVA*/ cpu_bus.CPU_TRI_D2 = tribuf_6p_r2(_POLA_FF0F_RD, NUTY_FF0F_L2.q());
+    /*p02.PADO*/ cpu_bus.CPU_TRI_D3 = tribuf_6p_r2(_POLA_FF0F_RD, MOPO_FF0F_L3.q());
+    /*p02.PEGY*/ cpu_bus.CPU_TRI_D4 = tribuf_6p_r2(_POLA_FF0F_RD, PAVY_FF0F_L4.q());
   }
 
   {

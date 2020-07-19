@@ -49,6 +49,20 @@ inline SignalState tribuf_6p(wire OEp, wire D) {
   return c;
 }
 
+inline uint8_t tribuf_6p_r2(wire OEp, wire D) {
+  if (!OEp) {
+    return SIG_ZZZZ;
+  }
+  else {
+    if (D) {
+      return SIG_A1C0;
+    }
+    else {
+      return SIG_A0C0;
+    }
+  }
+}
+
 // top rung tadpole not facing second rung dot
 inline SignalState tribuf_6n(wire OEn, wire D) {
   SignalState c;
@@ -60,6 +74,20 @@ inline SignalState tribuf_6n(wire OEn, wire D) {
   return c;
 }
 
+inline uint8_t tribuf_6n_r2(wire OEn, wire D) {
+  if (OEn) {
+    return SIG_ZZZZ;
+  }
+  else {
+    if (D) {
+      return SIG_A1C0;
+    }
+    else {
+      return SIG_A0C0;
+    }
+  }
+}
+
 inline SignalState tribuf_10n(wire OEn, wire D) {
   SignalState c;
   c.val = D;
@@ -68,6 +96,20 @@ inline SignalState tribuf_10n(wire OEn, wire D) {
   c.hiz = OEn;
   c.dirty = 1;
   return c;
+}
+
+inline uint8_t tribuf_10n_r2(wire OEn, wire D) {
+  if (OEn) {
+    return SIG_ZZZZ;
+  }
+  else {
+    if (D) {
+      return SIG_A1C0;
+    }
+    else {
+      return SIG_A0C0;
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -153,21 +153,21 @@ private:
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
-  Reg _CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Reg _CPU_PIN_ADDR_HI;       // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
+  Pin2 _CPU_PIN_BOOTp   = Pin2::HIZ_NP;       // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Pin2 _CPU_PIN_ADDR_HI = Pin2::HIZ_NP;       // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
 
   //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
-  CpuPinIn  _CPU_PIN6;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  CpuPinIn  _CPU_PIN5;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
+  Pin2 _CPU_PIN6 = Pin2::HOLD_0;              // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  Pin2 _CPU_PIN5 = Pin2::HOLD_0;              // top left port PORTD_06: -> ANUJ (FROM_CPU5). Probably "DATA_VALIDn"
 
-  /*p04.MAKA*/ Reg _MAKA_FROM_CPU5_SYNC;
+  /*p04.MAKA*/ Reg2 _MAKA_FROM_CPU5_SYNC = Reg2::D0C0;
 
   // Main bus
-  CpuPinIn  _CPU_PIN_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  CpuPinIn  _CPU_PIN_WRp;           // top right port PORTA_01: ->
-  CpuPinIn  _CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  Pin2 _CPU_PIN_RDp        = Pin2::HOLD_0;    // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Pin2 _CPU_PIN_WRp        = Pin2::HOLD_0;    // top right port PORTA_01: ->
+  Pin2 _CPU_PIN_ADDR_VALID = Pin2::HOLD_0;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
 };
 

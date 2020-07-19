@@ -93,45 +93,33 @@ void SpriteScanner::tock(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 SignalHash SpriteScanner::commit() {
-  SignalHash hash;
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
 
-  hash << _XYLO_LCDC_SPEN.commit();
-  hash << _XYMU_RENDERINGp.commit();
-  hash << _BALU_LINE_RSTp.commit();
-  hash << _BAGY_LINE_RSTn.commit();
+  _XYLO_LCDC_SPEN.state = 0;
+  _XYMU_RENDERINGp.state = 0;
+  _BALU_LINE_RSTp.state = 0;
+  _BAGY_LINE_RSTn.state = 0;
 
-  /*p28.BESU*/ hash << _BESU_SCANNINGp.commit();
-  /*p29.CENO*/ hash << _CENO_SCANNINGp.commit();
+  _ERUC_YDIFF_S0.state = 0;
+  _ERUC_YDIFF_C0.state = 0;
+  _ENEF_YDIFF_S1.state = 0;
+  _ENEF_YDIFF_C1.state = 0;
+  _FECO_YDIFF_S2.state = 0;
+  _FECO_YDIFF_C2.state = 0;
+  _GYKY_YDIFF_S3.state = 0;
+  _GYKY_YDIFF_C3.state = 0;
+  _GOPU_YDIFF_S4.state = 0;
+  _GOPU_YDIFF_C4.state = 0;
+  _FUWA_YDIFF_S5.state = 0;
+  _FUWA_YDIFF_C5.state = 0;
+  _GOJU_YDIFF_S6.state = 0;
+  _GOJU_YDIFF_C6.state = 0;
+  _WUHU_YDIFF_S7.state = 0;
+  _WUHU_YDIFF_C7.state = 0;
 
-  /*p29.ERUC*/ hash << _ERUC_YDIFF_S0.commit();
-  /*p29.ERUC*/ hash << _ERUC_YDIFF_C0.commit();
-  /*p29.ENEF*/ hash << _ENEF_YDIFF_S1.commit();
-  /*p29.ENEF*/ hash << _ENEF_YDIFF_C1.commit();
-  /*p29.FECO*/ hash << _FECO_YDIFF_S2.commit();
-  /*p29.FECO*/ hash << _FECO_YDIFF_C2.commit();
-  /*p29.GYKY*/ hash << _GYKY_YDIFF_S3.commit();
-  /*p29.GYKY*/ hash << _GYKY_YDIFF_C3.commit();
-  /*p29.GOPU*/ hash << _GOPU_YDIFF_S4.commit();
-  /*p29.GOPU*/ hash << _GOPU_YDIFF_C4.commit();
-  /*p29.FUWA*/ hash << _FUWA_YDIFF_S5.commit();
-  /*p29.FUWA*/ hash << _FUWA_YDIFF_C5.commit();
-  /*p29.GOJU*/ hash << _GOJU_YDIFF_S6.commit();
-  /*p29.GOJU*/ hash << _GOJU_YDIFF_C6.commit();
-  /*p29.WUHU*/ hash << _WUHU_YDIFF_S7.commit();
-  /*p29.WUHU*/ hash << _WUHU_YDIFF_C7.commit();
+  _CARE_STORE_ENp_ABxxEFxx.state = 0;
 
-  /*p29.CARE*/ hash << _CARE_STORE_ENp_ABxxEFxx.commit();
-
-  /*p28.YFEL*/ hash << _YFEL_SCAN0.commit();
-  /*p28.WEWY*/ hash << _WEWY_SCAN1.commit();
-  /*p28.GOSO*/ hash << _GOSO_SCAN2.commit();
-  /*p28.ELYN*/ hash << _ELYN_SCAN3.commit();
-  /*p28.FAHA*/ hash << _FAHA_SCAN4.commit();
-  /*p28.FONY*/ hash << _FONY_SCAN5.commit();
-  /*p29.BYBA*/ hash << _BYBA_SCAN_DONE_A.commit();
-  /*p29.DOBA*/ hash << _DOBA_SCAN_DONE_B.commit();
-
-  return hash;
+  return {ret};
 }
 
 //------------------------------------------------------------------------------

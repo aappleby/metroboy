@@ -683,7 +683,22 @@ void SpriteStore::tock(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 SignalHash SpriteStore::commit() {
-  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
+
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
+
+  FEPO_STORE_MATCHp.state = 0;
+  STORE0_MATCHn.state = 0;
+  STORE1_MATCHn.state = 0;
+  STORE2_MATCHn.state = 0;
+  STORE3_MATCHn.state = 0;
+  STORE4_MATCHn.state = 0;
+  STORE5_MATCHn.state = 0;
+  STORE6_MATCHn.state = 0;
+  STORE7_MATCHn.state = 0;
+  STORE8_MATCHn.state = 0;
+  STORE9_MATCHn.state = 0;
+
+  return {ret};
 }
 
 //------------------------------------------------------------------------------

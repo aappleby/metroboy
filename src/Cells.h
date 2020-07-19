@@ -399,8 +399,7 @@ inline uint8_t  nand_latch_r2(wire SETn, wire RSTn) {
 // WYNO_10 >> XUNA_01
 
 inline uint8_t  tp_latch_r2(wire LATCHp, wire D) {
-  if (!LATCHp) return SIG_PASS;
-  return SIG_A0C0 | (D << 4);
+  return LATCHp ? SIG_A0C0 | (D << 4) : SIG_PASS;
 }
 
 //-----------------------------------------------------------------------------

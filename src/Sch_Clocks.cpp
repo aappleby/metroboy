@@ -123,63 +123,9 @@ void ClockRegisters::tock(const SchematicTop& top) {
 //-----------------------------------------------------------------------------
 
 SignalHash ClockRegisters::commit() {
-  SignalHash hash;
-
-  hash << _XONA_LCDC_EN.commit();
-
-  /*p01.TUBO*/ hash << _TUBO_CPU_READYn.commit();
-  /*p01.ASOL*/ hash << _ASOL_POR_DONEn.commit(); // Schematic wrong, this is a latch.
-  /*p01.AFER*/ hash << _AFER_SYS_RSTp.commit();
-
-  hash << _CPU_PIN_STARTp.commit();
-  hash << _CPU_PIN_READYp.commit();
-  hash << _CPU_PIN_SYS_RSTp.commit();
-  hash << _CPU_PIN_EXT_RST.commit();
-
-  /*p25.SOTO*/ hash << SOTO_DBG.commit();
-  ///*p07.BURO*/ hash << BURO_FF60_0.commit();
-  ///*p07.AMUT*/ hash << AMUT_FF60_1.commit();
-
-  hash << _CPU_PIN_UNOR_DBG.commit();      // PORTA_02: <- P07.UNOR_MODE_DBG2
-  hash << _CPU_PIN_UMUT_DBG.commit();      // PORTA_05: <- P07.UMUT_MODE_DBG1
-
-  hash << _SYS_PIN_RSTp.commit();
-  hash << _SYS_PIN_T2n.commit();
-  hash << _SYS_PIN_T1n.commit();
-
-  hash << SYS_PIN_CLK_B.commit();
-  hash << SYS_PIN_CLK_A.commit();
-
-  hash << _AFUR_ABCDxxxx.commit();
-  hash << _ALEF_xBCDExxx.commit();
-  hash << _APUK_xxCDEFxx.commit();
-  hash << _ADYK_xxxDEFGx.commit();
-
-  hash << _WUVU_xxCDxxGH.commit();
-  hash << _VENA_xxxxEFGH.commit();
-  hash << _WOSU_xBCxxFGx.commit();
-
-  // Edges on ABxxExGx
-
-  // If pairs are differential and same sense
-  // Pos edges on AB
-  // Neg edges on ABEG
-
-  hash << CPU_PIN_EXT_CLKGOOD.commit();   // PORTC_03: <- CLKIN_A
-  hash << CPU_PIN_BOWA_xBCDEFGH.commit(); // PORTD_01: <- BOWA
-  hash << CPU_PIN_BEDO_Axxxxxxx.commit(); // PORTD_02: <- BEDO
-
-  hash << CPU_PIN_BEKO_ABCDxxxx.commit(); // PORTD_03: <- BEKO connection not indicated on P01
-  hash << CPU_PIN_BUDE_xxxxEFGH.commit(); // PORTD_04: <- BUDE
-
-  hash << CPU_PIN_BOLO_ABCDEFxx.commit(); // PORTD_05: <- BOLO
-  hash << CPU_PIN_BUKE_AxxxxxGH.commit(); // PORTD_07: <- BUKE
-  hash << CPU_PIN_BOMA_Axxxxxxx.commit(); // PORTD_08: <- BOMA
-  hash << CPU_PIN_BOGA_xBCDEFGH.commit(); // PORTD_09: <- BOGA
-
-  hash << EXT_PIN_CLK.commit();      // PIN_75 <- BUDE/BEVA
-
-  return hash;
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
+  _XONA_LCDC_EN.state = 0;
+  return {ret};
 }
 
 //-----------------------------------------------------------------------------

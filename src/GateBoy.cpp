@@ -196,8 +196,10 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   const int iter_count = 64;
   const int phase_count = 65536;
+
   double sum1 = 0;
   double sum2 = 0;
+  double count = 0;
 
   printf("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
@@ -210,15 +212,19 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
     std::chrono::duration<double> elapsed = finish - start;
     double time = elapsed.count();
     double rate = double(phase_count) / time;
-    sum1 += rate;
-    sum2 += rate*rate;
+
+    if (iter > 10) {
+      sum1 += rate;
+      sum2 += rate*rate;
+      count++;
+    }
     //printf("Done - %f sec, %f phases/sec\n", time, rate);
     printf(".");
   }
   printf("\n");
 
-  double mean = sum1 / iter_count;
-  double variance = (sum2 / iter_count) - (mean * mean);
+  double mean = sum1 / count;
+  double variance = (sum2 / count) - (mean * mean);
   double sigma = sqrt(variance);
   printf("Done, mean phase/sec %f sigma %f\n", mean, sigma);
   printf("Commit hash   %016llx\n", top->commit_hash.h);

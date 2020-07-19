@@ -53,22 +53,12 @@ void SpriteFetcher::tock(SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 SignalHash SpriteFetcher::commit() {
-  _TEPA_RENDERINGn.commit();
-  _LOBY_RENDERINGn.commit();
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
 
-  _TAKA_SFETCH_RUNNINGp.commit();
-  _SOBU_SFETCH_REQp.commit();
-  _SUDA_SFETCH_REQp.commit();
+  _TEPA_RENDERINGn.state = 0;
+  _LOBY_RENDERINGn.state = 0;
 
-  _TOXE_SFETCH_S0.commit();
-  _TULY_SFETCH_S1.commit();
-  _TESE_SFETCH_S2.commit();
-  _TOBU_SFETCH_S1_D2.commit();
-  _VONU_SFETCH_S1_D4.commit();
-  _SEBA_SFETCH_S1_D5.commit();
-  _TYFO_SFETCH_S0_D1.commit();
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {ret};
 }
 
 //------------------------------------------------------------------------------

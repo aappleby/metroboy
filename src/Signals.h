@@ -215,6 +215,7 @@ union Reg2 {
     state |= ss;
   }
  
+  /*
   inline uint8_t commit() {
     CHECKp(state & 0xF0); // must have signal before commit
     state = logic_lut1[state];
@@ -222,6 +223,7 @@ union Reg2 {
     CHECKp(is_reg());
     return state;
   }
+  */
 
   uint8_t state = 0;
   struct {
@@ -304,6 +306,7 @@ union Pin2 {
     state |= ss;
   }
  
+  /*
   inline bool commit() {
     // must have signal before commit
     CHECKp(state & 0xF0);
@@ -312,6 +315,7 @@ union Pin2 {
     CHECKp((state & 0xF0) == 0 || (state & 0xF0) == SIG_HOLD);
     return state;
   }
+  */
 
   uint8_t state = 0;
   struct {

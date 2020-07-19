@@ -113,45 +113,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash TileFetcher::commit() {
-  _XYMU_RENDERINGp.commit();
-  _NYXU_TILE_FETCHER_RSTn.commit();
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
 
-  _NYDY_LATCH_TILE_DAp.commit();
-  _MOFU_LATCH_TILE_DBn.commit();
+  _XYMU_RENDERINGp.state = 0;
+  _NYXU_TILE_FETCHER_RSTn.state = 0;
+  _NYDY_LATCH_TILE_DAp.state = 0;
+  _MOFU_LATCH_TILE_DBn.state = 0;
 
-  _PYGO_FETCH_DONE_Cp.commit();
-  _POKY_PORCH_DONEp.commit();
-
-  _LAXU_BFETCH_S0.commit();
-  _MESU_BFETCH_S1.commit();
-  _NYVA_BFETCH_S2.commit();
-
-  _LOVY_FETCH_DONEp.commit();
-  _LONY_BG_READ_VRAM_LATCHp.commit();
-
-  _NYKA_FETCH_DONE_Ap.commit();
-  _PORY_FETCH_DONE_Bp.commit();
-  _LYZU_BFETCH_S0_DELAY.commit();
-
-  GAVE_SCY0.commit();
-  FYMO_SCY1.commit();
-  FEZU_SCY2.commit();
-  FUJO_SCY3.commit();
-  DEDE_SCY4.commit();
-  FOTY_SCY5.commit();
-  FOHA_SCY6.commit();
-  FUNY_SCY7.commit();
-
-  DATY_SCX0.commit();
-  DUZU_SCX1.commit();
-  CYXU_SCX2.commit();
-  GUBO_SCX3.commit();
-  BEMY_SCX4.commit();
-  CUZY_SCX5.commit();
-  CABU_SCX6.commit();
-  BAKE_SCX7.commit();
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {ret};
 }
 
 //------------------------------------------------------------------------------

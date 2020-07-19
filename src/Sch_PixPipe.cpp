@@ -807,7 +807,9 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash PixelPipe::commit() {
-  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
+  _XENA_STORE_MATCHn.state = 0;
+  return {ret};
 }
 
 //------------------------------------------------------------------------------

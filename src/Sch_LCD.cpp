@@ -201,53 +201,13 @@ void LcdRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 __declspec(noinline) SignalHash LcdRegisters::commit() {
-  SAXO_X0.commit(); // increments at phase 1, reset to 0 at p909.
-  TYPO_X1.commit();
-  VYZO_X2.commit();
-  TELU_X3.commit();
-  SUDE_X4.commit();
-  TAHA_X5.commit();
-  TYRY_X6.commit();
-  MUWY_Y0.commit(); // increments at p909, reset to 0 at p153:001
-  MYRO_Y1.commit();
-  LEXA_Y2.commit();
-  LYDO_Y3.commit();
-  LOVU_Y4.commit();
-  LEMA_Y5.commit();
-  MATO_Y6.commit();
-  LAFO_Y7.commit();
+  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
 
-  _AMYG_VID_RSTp.commit();
-  _ATAR_VID_RSTp.commit();
-  _ABEZ_VID_RSTn.commit();
+  _AMYG_VID_RSTp.state = 0;
+  _ATAR_VID_RSTp.state = 0;
+  _ABEZ_VID_RSTn.state = 0;
 
-  _RUTU_LINE_ENDp.commit(); // p909+8
-  _CATU_VID_LINE_ENDp.commit();  // p001+8
-  _NYPE_LINE_STARTp.commit(); // p001+8
-  _ANEL_VID_LINE_ENDp.commit();  // p003+8
-  _MYTA_LINE_153p.commit();  // p153:001 - p000:001
-  _POPU_IN_VBLANKp.commit();    // p144:001 - p000:001
-  _SYGU_LINE_STROBE.commit();
-  _MEDA_VSYNC_OUTn.commit();
-  _LUCA_LINE_EVEN.commit();
-  _NAPO_FRAME_EVEN.commit();
-  _ROPO_LY_MATCH_SYNCp.commit();
-
-  _SYRY_LYC0.commit();
-  _VUCE_LYC1.commit();
-  _SEDY_LYC2.commit();
-  _SALO_LYC3.commit();
-  _SOTA_LYC4.commit();
-  _VAFA_LYC5.commit();
-  _VEVO_LYC6.commit();
-  _RAHA_LYC7.commit();
-
-  _LCD_PIN_CPG.commit();
-  _LCD_PIN_CPL.commit();
-  _LCD_PIN_FR.commit();
-  _LCD_PIN_S.commit();
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {ret};
 }
 
 //------------------------------------------------------------------------------

@@ -86,52 +86,8 @@ void CpuBus::tock(const SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-SignalHash CpuBus::commit() {
-  CPU_TRI_D0.commit();
-  CPU_TRI_D1.commit();
-  CPU_TRI_D2.commit();
-  CPU_TRI_D3.commit();
-  CPU_TRI_D4.commit();
-  CPU_TRI_D5.commit();
-  CPU_TRI_D6.commit();
-  CPU_TRI_D7.commit();
-
-  //----------------------------------------
-  // SOC-to-CPU
-
-  _CPU_PIN_BOOTp.commit();         // PORTA_04: <- TUTU
-  _CPU_PIN_ADDR_HI.commit();       // PORTA_03: <- SYRO
-
-  //----------------------------------------
-  // CPU-to-SOC
-
-  _CPU_PIN6.commit();               // PORTD_00: -> LEXY, doesn't do anything
-  _CPU_PIN5.commit();               // PORTD_06: -> FROM_CPU5
-
-  _MAKA_FROM_CPU5_SYNC.commit();
-
-  _CPU_PIN_RDp.commit();            // PORTA_00: -> UJYV, LAGU, LAVO
-  _CPU_PIN_WRp.commit();            // PORTA_01: -> AREV, LAGU.
-  _CPU_PIN_ADDR_VALID.commit();     // PORTA_06: -> APAP, TEXO
-
-  CPU_PIN_A00.commit();
-  CPU_PIN_A01.commit();
-  CPU_PIN_A02.commit();
-  CPU_PIN_A03.commit();
-  CPU_PIN_A04.commit();
-  CPU_PIN_A05.commit();
-  CPU_PIN_A06.commit();
-  CPU_PIN_A07.commit();
-  CPU_PIN_A08.commit();
-  CPU_PIN_A09.commit();
-  CPU_PIN_A10.commit();
-  CPU_PIN_A11.commit();
-  CPU_PIN_A12.commit();
-  CPU_PIN_A13.commit();
-  CPU_PIN_A14.commit();
-  CPU_PIN_A15.commit();
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+__declspec(noinline) SignalHash CpuBus::commit() {
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

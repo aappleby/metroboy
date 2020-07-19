@@ -517,6 +517,17 @@ struct SignalHash {
   uint64_t h = 0x12345678;
 };
 
+inline uint64_t commit_and_hash(uint8_t* blob, int size) {
+  uint64_t h = 0x12345678;
+  for (int i = 0; i < size; i++) {
+    blob[i] = logic_lut1[blob[i]];
+    h ^= blob[i];
+    h *= 0xff51afd7ed558ccd;
+    h = _byteswap_uint64(h);
+  }
+  return h;
+}
+
 //-----------------------------------------------------------------------------
 
 struct Signal {

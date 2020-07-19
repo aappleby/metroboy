@@ -128,49 +128,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash Joypad::commit() {
-  JOY_PIN_P10_A.commit();
-  JOY_PIN_P10_B.commit();
-  JOY_PIN_P10_D.commit();
-  JOY_PIN_P11_A.commit();
-  JOY_PIN_P11_B.commit();
-  JOY_PIN_P11_D.commit();
-  JOY_PIN_P12_A.commit();
-  JOY_PIN_P12_B.commit();
-  JOY_PIN_P12_D.commit();
-  JOY_PIN_P13_A.commit();
-  JOY_PIN_P13_B.commit();
-  JOY_PIN_P13_D.commit();
-  JOY_PIN_P14_A.commit();
-  JOY_PIN_P14_D.commit();
-  JOY_PIN_P15_A.commit();
-  JOY_PIN_P15_D.commit();
-
-  JOY_PIN_P10_C.commit();
-  JOY_PIN_P11_C.commit();
-  JOY_PIN_P12_C.commit();
-  JOY_PIN_P13_C.commit();
-
-  BATU_JP_GLITCH0.commit();
-  ACEF_JP_GLITCH1.commit();
-  AGEM_JP_GLITCH2.commit();
-  APUG_JP_GLITCH3.commit();
-  JUTE_JOYP_RA.commit();
-  KECY_JOYP_LB.commit();
-  JALE_JOYP_UC.commit();
-  KYME_JOYP_DS.commit();
-  KELY_JOYP_UDLR.commit();
-  COFY_JOYP_ABCS.commit();
-  KUKO_DBG_FF00_D6.commit();
-  KERU_DBG_FF00_D7.commit();
-  KEVU_JOYP_L0.commit();
-  KAPA_JOYP_L1.commit();
-  KEJA_JOYP_L2.commit();
-  KOLO_JOYP_L3.commit();
-  AWOB_WAKE_CPU.commit();
-
-  CPU_PIN_WAKE.commit();          // <- P02.AWOB
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

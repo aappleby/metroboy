@@ -5,30 +5,6 @@
 
 //-----------------------------------------------------------------------------
 
-struct ExtPinIn {
-
-  bool get() const { return a; }
-  void set_pin_in(bool c) { a = c; }
-  operator wire() const { return get(); }
-  uint8_t commit_input() { return a; }
-
-  bool a = 0;
-};
-
-//-----------------------------------------------------------------------------
-
-struct CpuPinIn {
-
-  bool get() const { return a; }
-  void set_pin_in(bool c) { a = c; }
-  operator wire() const { return get(); }
-  uint8_t commit_input() { return a; }
-
-  bool a = 0;
-};
-
-//-----------------------------------------------------------------------------
-
 // RYMA 6-rung green tribuf
 
 // TRIBUF_01
@@ -39,170 +15,18 @@ struct CpuPinIn {
 // TRIBUF_06
 
 // top rung tadpole facing second rung dot
-inline SignalState tribuf_6p(wire OEp, wire D) {
-  SignalState c;
-  c.val = D;
-  c.set = OEp && D;
-  c.rst = OEp && !D;
-  c.hiz = !OEp;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t tribuf_6p_r2(wire OEp, wire D) {
   return SIG_ZZZZ | (OEp << 7) | ((D & OEp) << 4);
 }
 
 // top rung tadpole not facing second rung dot
-inline SignalState tribuf_6n(wire OEn, wire D) {
-  SignalState c;
-  c.val = D;
-  c.set = !OEn && D;
-  c.rst = !OEn && !D;
-  c.hiz = OEn;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t tribuf_6n_r2(wire OEn, wire D) {
   return SIG_ZZZZ | ((!OEn) << 7) | ((D & !OEn) << 4);
-}
-
-inline SignalState tribuf_10n(wire OEn, wire D) {
-  SignalState c;
-  c.val = D;
-  c.set = !OEn && D;
-  c.rst = !OEn && !D;
-  c.hiz = OEn;
-  c.dirty = 1;
-  return c;
 }
 
 inline uint8_t tribuf_10n_r2(wire OEn, wire D) {
   return SIG_ZZZZ | ((!OEn) << 7) | ((D & !OEn) << 4);
 }
-
-//-----------------------------------------------------------------------------
-
-struct Reg {
-
-  operator wire() const { return get(); }
-  wire as_wire() const { return get(); }
-
-  wire as_clock() const { return a.clk; }
-
-  operator SignalState() const { return a; }
-  SignalState as_signal() const { return a; }
-
-  bool q()  const { return get(); }
-  bool qn() const { return !get(); }
-  char as_char() const { return a.as_char(); }
-
-  void operator = (SignalState c) {
-    CHECKp(c.dirty);
-    if (!b.dirty) {
-      // reg not driven, new signal drives it.
-      b = c;
-    }
-    else if (b.hiz) {
-      // reg driven but signal is hiz, new signal overrides it
-      b = c;
-    }
-    else {
-      // reg driven, c must be hiz and reg doesn't change
-      CHECKp(c.hiz)
-    }
-  }
-
-  SignalHash commit() {
-    CHECKp(b.dirty);
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = b.hiz;
-    a.clk = b.clk;
-    a.set = 0;
-    a.rst = 0;
-    a.dirty = 0;
-
-    b = SignalState::make_error();
-
-    return {a.state};
-  }
-
-  SignalHash commit_loz() {
-    CHECKn(b.hiz);
-    return commit();
-  }
-
-  // Commit reg w/ pulldown - if b is hi-z, value becomes 0
-  SignalHash commit_pd() {
-    CHECKp(b.dirty);
-    if (b.hiz) {
-      a.val = 0;
-      a.hiz = 0;
-      a.clk = b.clk;
-      a.set = 0;
-      a.rst = 0;
-      a.dirty = 0;
-      b = SignalState::make_error();
-      return {a.state};
-    }
-    else {
-      return commit();
-    }
-  }
-
-  void hax_a(bool c) {
-    a.val = c;
-  }
-
-  void preset_a(bool c) {
-    a.val = c;
-    a.hiz = 0;
-    a.clk = 0;
-    a.set = 0;
-    a.rst = 0;
-    a.dirty = 0;
-  }
-
-  void preset_b(bool c) {
-    b = SignalState::from_wire(c);
-  }
-
-  void preset_hiz() {
-    a.val = 0;
-    a.hiz = 1;
-    a.clk = 0;
-    a.set = 0;
-    a.rst = 0;
-    a.dirty = 0;
-  }
-
-//protected:
-  SignalState a;
-  SignalState b = SignalState::make_error();
-
-  wire get() const {
-    CHECKn(a.dirty);
-    CHECKn(a.hiz);
-
-    if (b.dirty) {
-      //printf("RegisterBase read-after-write\n");
-    }
-
-    return a.val;
-  }
-
-private:
-  bool operator!() const;
-};
-
-static_assert(sizeof(Reg) == 2, "Reg size != 2");
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset and dual outputs
@@ -228,16 +52,6 @@ static_assert(sizeof(Reg) == 2, "Reg size != 2");
 // REG8_06 nc
 // REG8_07 >> Q
 // REG8_08 >> Qn
-
-inline SignalState ff8(wire CLKp, wire CLKn, bool D) {
-  CHECKn(CLKp == CLKn);
-  (void)CLKp;
-  SignalState c;
-  c.val = D;
-  c.clk = CLKn;
-  c.dirty = 1;
-  return c;
-}
 
 inline uint8_t ff8_r2(wire CLKp, wire CLKn, bool D) {
   CHECKn(CLKp == CLKn);
@@ -286,17 +100,6 @@ inline uint8_t ff8_r2(wire CLKp, wire CLKn, bool D) {
 // XEPE_08 >> ZOGY_02  (q)
 // XEPE_09 >> nc
 
-inline SignalState ff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECKn(CLKp == CLKn);
-  (void)CLKn;
-  SignalState c;
-  c.val = D;
-  c.clk = CLKp;
-  c.rst = !RSTn;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
@@ -337,17 +140,6 @@ inline uint8_t ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
 /*p32.POJU*/
 /*p32.POWY*/
 /*p32.PYJU*/
-
-inline SignalState ff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
-  CHECKn(CLKp == CLKn);
-  (void)CLKn;
-  SignalState c;
-  c.val = D;
-  c.clk = CLKp;
-  c.rst = RSTp;
-  c.dirty = 1;
-  return c;
-}
 
 inline uint8_t ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
   CHECKn(CLKp == CLKn);
@@ -412,17 +204,6 @@ inline uint8_t ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
 // XADU_13 >> nc      (Q)
 
 // Almost definitely RSTn - see UPOJ/AFER on boot
-inline SignalState ff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECKn(CLKp == CLKn);
-  (void)CLKn;
-  SignalState c;
-  c.val = D;
-  c.clk = CLKp;
-  c.rst = !RSTn;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
@@ -455,15 +236,6 @@ inline uint8_t ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // REG17_17 >> Q    _MUST_ be Q  - see TERO
 
 // must be RSTn, see WUVU/VENA/WOSU
-inline SignalState ff17(wire CLKp, wire RSTn, wire D) {
-  SignalState c;
-  c.val = D;
-  c.clk = CLKp;
-  c.rst = !RSTn;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t ff17_r2(wire CLKp, wire RSTn, wire D) {
   return SIG_D0C0 | ((D & RSTn) << 4) | (CLKp << 5) | ((!RSTn) << 6);
 }
@@ -518,16 +290,6 @@ inline uint8_t ff17_r2(wire CLKp, wire RSTn, wire D) {
 // UBUL_21 == UBUL_06
 // UBUL_22 << CALY_INT_SERIALp
 
-inline SignalState ff22(wire CLKp, wire SETn, wire RSTn, bool D) {
-  SignalState c;
-  c.val = D;
-  c.clk = CLKp;
-  c.set = !SETn;
-  c.rst = !RSTn;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
   if (!RSTn) return SIG_A0C0 | (CLKp << 5);
   if (!SETn) return SIG_A1C0 | (CLKp << 5);
@@ -547,15 +309,6 @@ inline uint8_t ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
 // NORLATCH_01 NC
 // NORLATCH_01 << RST
 
-
-inline SignalState nor_latch(wire SETp, wire RSTp) {
-  SignalState c;
-  c.set = SETp;
-  c.rst = RSTp;
-  c.dirty = 1;
-  return c;
-}
-
 inline uint8_t nor_latch_r2(wire SETp, wire RSTp) {
   if (RSTp) return SIG_A0C0;
   if (SETp) return SIG_A1C0;
@@ -573,14 +326,6 @@ inline uint8_t nor_latch_r2(wire SETp, wire RSTp) {
 // NANDLATCH_01 >> QN
 // NANDLATCH_01 NC
 // NANDLATCH_01 << RSTn
-
-inline SignalState nand_latch(wire SETn, wire RSTn) {
-  SignalState c;
-  c.set = !SETn;
-  c.rst = !RSTn;
-  c.dirty = 1;
-  return c;
-}
 
 inline uint8_t  nand_latch_r2(wire SETn, wire RSTn) {
   if (!RSTn) return SIG_A0C0;
@@ -653,38 +398,6 @@ inline uint8_t  nand_latch_r2(wire SETn, wire RSTn) {
 // WYNO_09 NC
 // WYNO_10 >> XUNA_01
 
-inline SignalState tp_latch(wire LATCHp, wire D) {
-  if (LATCHp) {
-    SignalState c;
-    c.set = D;
-    c.rst = !D;
-    c.dirty = 1;
-    return c;
-  }
-  else {
-    SignalState c;
-    c.hiz = 1;
-    c.dirty = 1;
-    return c;
-  }
-}
-
-inline SignalState tp_latch(wire LATCHp, SignalState D) {
-  if (LATCHp) {
-    SignalState c;
-    c.set = LATCHp && D.as_wire();
-    c.rst = LATCHp && !D.as_wire();
-    c.dirty = 1;
-    return c;
-  }
-  else {
-    SignalState c;
-    c.hiz = 1;
-    c.dirty = 1;
-    return c;
-  }
-}
-
 inline uint8_t  tp_latch_r2(wire LATCHp, wire D) {
   if (!LATCHp) return SIG_PASS;
   return SIG_A0C0 | (D << 4);
@@ -738,16 +451,6 @@ inline uint8_t  tp_latch_r2(wire LATCHp, wire D) {
 // POVY_18 <>  sc
 // POVY_19 <>  sc
 // POVY_20 << REGA_01
-
-inline SignalState ff20(wire CLKp, wire LOADp, wire D) {
-  SignalState c;
-  c.val = D;
-  c.clk = CLKp;
-  c.set = LOADp && D;
-  c.rst = LOADp && !D;
-  c.dirty = 1;
-  return c;
-}
 
 inline uint8_t ff20_r2(wire CLKp, wire LOADp, bool D) {
   if (LOADp) return SIG_A0C0 | (CLKp << 5) | (D << 4);

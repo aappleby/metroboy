@@ -118,8 +118,7 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //-----------------------------------------------------------------------------
 
 SignalHash Bootrom::commit() {
-  _BOOT_BITn.commit();
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //-----------------------------------------------------------------------------

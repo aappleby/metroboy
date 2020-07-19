@@ -162,44 +162,7 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash Timer::commit() {
-  _UKUP_DIV_00.commit();
-  _UFOR_DIV_01.commit();
-  _UNER_DIV_02.commit();
-  _TERO_DIV_03.commit();
-  _UNYK_DIV_04.commit();
-  _TAMA_DIV_05.commit();
-  _UGOT_DIV_06.commit();
-  _TULU_DIV_07.commit();
-  _TUGO_DIV_08.commit();
-  _TOFE_DIV_09.commit();
-  _TERU_DIV_10.commit();
-  _SOLA_DIV_11.commit();
-  _SUBU_DIV_12.commit();
-  _TEKA_DIV_13.commit();
-  _UKET_DIV_14.commit();
-  _UPOF_DIV_15.commit();
-  REGA_TIMA_0.commit();
-  POVY_TIMA_1.commit();
-  PERU_TIMA_2.commit();
-  RATE_TIMA_3.commit();
-  RUBY_TIMA_4.commit();
-  RAGE_TIMA_5.commit();
-  PEDA_TIMA_6.commit();
-  NUGA_TIMA_7.commit();
-  NYDU_TIMA_MAX.commit();
-  _MOBA_INT_TIMERp.commit();
-  SABU_TMA_0.commit();
-  NYKE_TMA_1.commit();
-  MURU_TMA_2.commit();
-  TYVA_TMA_3.commit();
-  TYRU_TMA_4.commit();
-  SUFY_TMA_5.commit();
-  PETO_TMA_6.commit();
-  SETA_TMA_7.commit();
-  SOPU_TAC_0.commit();
-  SAMY_TAC_1.commit();
-  SABO_TAC_2.commit();
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

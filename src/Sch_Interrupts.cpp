@@ -128,32 +128,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash InterruptRegisters::commit() {
-  SignalHash hash;
-  hash << LOPE_FF0F_0.commit();
-  hash << UBUL_FF0F_3.commit();
-  hash << ULAK_FF0F_4.commit();
-  hash << LALU_FF0F_1.commit();
-  hash << NYBO_FF0F_2.commit();
-
-  hash << MATY_FF0F_L0.commit();
-  hash << NEJY_FF0F_L1.commit();
-  hash << NUTY_FF0F_L2.commit();
-  hash << MOPO_FF0F_L3.commit();
-  hash << PAVY_FF0F_L4.commit();
-
-  hash << CPU_PIN_INT_VBLANK.commit();    // PORTB_03: <- LOPE, vblank int
-  hash << CPU_PIN_INT_STAT.commit();      // PORTB_07: <- LALU, stat int
-  hash << CPU_PIN_INT_TIMER.commit();     // PORTB_11: <- NYBO, timer int
-  hash << CPU_PIN_INT_SERIAL.commit();    // PORTB_15: <- UBUL, serial int
-  hash << CPU_PIN_INT_JOYPAD.commit();    // PORTB_19: <- ULAK, joypad int
-
-  hash << CPU_PIN_ACK_VBLANK.commit();     // PORTB_01: -> LETY, vblank int ack
-  hash << CPU_PIN_ACK_STAT.commit();       // PORTB_05: -> LEJA, stat int ack
-  hash << CPU_PIN_ACK_TIMER.commit();      // PORTB_09: -> LESA, timer int ack
-  hash << CPU_PIN_ACK_SERIAL.commit();     // PORTB_13: -> LUFE, serial int ack
-  hash << CPU_PIN_ACK_JOYPAD.commit();     // PORTB_17: -> LAMO, joypad int ack
-
-  return hash;
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

@@ -158,56 +158,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //-----------------------------------------------------------------------------
 
 SignalHash DmaRegisters::commit() {
-  DMA_A00.commit();
-  DMA_A01.commit(); 
-  DMA_A02.commit(); 
-  DMA_A03.commit(); 
-  DMA_A04.commit(); 
-  DMA_A05.commit(); 
-  DMA_A06.commit(); 
-  DMA_A07.commit(); 
-  DMA_A08.commit(); 
-  DMA_A09.commit(); 
-  DMA_A10.commit(); 
-  DMA_A11.commit(); 
-  DMA_A12.commit(); 
-  DMA_A13.commit(); 
-  DMA_A14.commit(); 
-  DMA_A15.commit(); 
-
-  _LYXE_DMA_LATCHn.commit();
-  _MATU_DMA_RUNNINGp.commit(); // -> p25,p28
-  _MYTE_DMA_DONE.commit();
-  _LUVY_DMA_TRIG_d0.commit();
-  _LENE_DMA_TRIG_d4.commit();
-  _LOKY_DMA_LATCHp.commit();
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //-----------------------------------------------------------------------------
-
-
-#if 0
-void dump_regs(TextPainter& text_painter) {
-  text_painter.dprintf(" ----- DMA REG -----\n");
-  //FROM_CPU5_SYNC.dump(text_painter, "FROM_CPU5_SYNC   ");
-  MATU_DMA_RUNNINGp.dump(text_painter, "DMA_RUNNING  ");
-  _MYTE_DMA_DONE.dump(text_painter, "_MYTE_DMA_DONE    ");
-  _LUVY_DMA_TRIG_d0.dump(text_painter, "LUVY    ");
-  _LENE_DMA_TRIG_d4.dump(text_painter, "LENE    ");
-  _LYXE_DMA_LATCHn.dump(text_painter, "LYXE ");
-  _LOKY_DMA_LATCHp.dump(text_painter, "LOKY  ");
-  text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
-  text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
-  text_painter.newline();
-}
-
-int get_addr_lo() {
-  return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
-}
-int get_addr_hi() {
-  return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
-}
-
-#endif

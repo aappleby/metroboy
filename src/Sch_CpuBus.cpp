@@ -86,7 +86,7 @@ void CpuBus::tock(const SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-__declspec(noinline) SignalHash CpuBus::commit() {
+SignalHash CpuBus::commit() {
   return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 

@@ -113,25 +113,25 @@ void VramBus::tock(SchematicTop& top) {
   // Sprite fetcher read
   {
     /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(top.pix_pipe.XYMO_LCDC_SPSIZE.q());
-    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.YZOS_OAM_DA6.q());
+    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.oam_bus.YZOS_OAM_DA6.q());
     /*p29.CYVU*/ wire _CYVU_OAM_DB0 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_1.q());
     /*p29.BORE*/ wire _BORE_OAM_DB1 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_2.q());
     /*p29.BUVY*/ wire _BUVY_OAM_DB2 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_3.q());
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_0.q());
-    /*p29.GEJY*/ wire _GEJY_OAM_DB3 = amux2(_FUFO_LCDC_SPSIZEn, !top.XUSO_OAM_DB0.q(), top.pix_pipe.XYMO_LCDC_SPSIZE.q(), _WAGO);
+    /*p29.GEJY*/ wire _GEJY_OAM_DB3 = amux2(_FUFO_LCDC_SPSIZEn, !top.oam_bus.XUSO_OAM_DB0.q(), top.pix_pipe.XYMO_LCDC_SPSIZE.q(), _WAGO);
 
     /*p29.ABEM*/ _VRM_TRI_A00 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.sprite_fetcher.XUQU_SPRITE_AB());
     /*p29.BAXE*/ _VRM_TRI_A01 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _CYVU_OAM_DB0);
     /*p29.ARAS*/ _VRM_TRI_A02 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _BORE_OAM_DB1);
     /*p29.AGAG*/ _VRM_TRI_A03 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _BUVY_OAM_DB2);
     /*p29.FAMU*/ _VRM_TRI_A04 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), _GEJY_OAM_DB3);
-    /*p29.FUGY*/ _VRM_TRI_A05 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XEGU_OAM_DB1.q());
-    /*p29.GAVO*/ _VRM_TRI_A06 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YJEX_OAM_DB2.q());
-    /*p29.WYGA*/ _VRM_TRI_A07 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XYJU_OAM_DB3.q());
-    /*p29.WUNE*/ _VRM_TRI_A08 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YBOG_OAM_DB4.q());
-    /*p29.GOTU*/ _VRM_TRI_A09 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.WYSO_OAM_DB5.q());
-    /*p29.GEGU*/ _VRM_TRI_A10 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.XOTE_OAM_DB6.q());
-    /*p29.XEHE*/ _VRM_TRI_A11 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.YZAB_OAM_DB7.q());
+    /*p29.FUGY*/ _VRM_TRI_A05 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.XEGU_OAM_DB1.q());
+    /*p29.GAVO*/ _VRM_TRI_A06 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.YJEX_OAM_DB2.q());
+    /*p29.WYGA*/ _VRM_TRI_A07 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.XYJU_OAM_DB3.q());
+    /*p29.WUNE*/ _VRM_TRI_A08 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.YBOG_OAM_DB4.q());
+    /*p29.GOTU*/ _VRM_TRI_A09 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.WYSO_OAM_DB5.q());
+    /*p29.GEGU*/ _VRM_TRI_A10 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.XOTE_OAM_DB6.q());
+    /*p29.XEHE*/ _VRM_TRI_A11 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), top.oam_bus.YZAB_OAM_DB7.q());
     /*p29.DYSO*/ _VRM_TRI_A12 = tribuf_6n_r2(top.sprite_fetcher.ABON_SPR_VRM_RDn(), 0);   // sprites always in low half of tile store
   }
 
@@ -227,7 +227,7 @@ void VramBus::tock(SchematicTop& top) {
       /*p26.ASUL*/ wire _ASUL_TILE_READp = and (_NETA_TILE_READp, _AXAD_WIN_MODEn);
       /*p26.BEJE*/ wire _BEJE_BGD_TILE_READn = not (_ASUL_TILE_READp);
       /*p25.XUCY*/ wire _XUCY_WIN_TILE_READn = nand(_NETA_TILE_READp, top.pix_pipe.PORE_WIN_MODEp());
-      /*p25.VUZA*/ wire _VUZA_TILE_BANKp = nor(top.pix_pipe.WEXU_LCDC_BGTILE.q(), top.PYJU_TILE_DB7.q()); // register reused
+      /*p25.VUZA*/ wire _VUZA_TILE_BANKp = nor(top.pix_pipe.WEXU_LCDC_BGTILE.q(), top.vram_bus.PYJU_TILE_DB7.q()); // register reused
       
       /*p26.ASUM*/ _VRM_TRI_A00 = tribuf_6n_r2(_BEJE_BGD_TILE_READn, _XUHA_FETCH_S2p);
       /*p26.EVAD*/ _VRM_TRI_A01 = tribuf_6n_r2(_BEJE_BGD_TILE_READn, _FAFO_TILE_Y0S);
@@ -239,14 +239,14 @@ void VramBus::tock(SchematicTop& top) {
       /*p25.WAWE*/ _VRM_TRI_A02 = tribuf_6n_r2(_XUCY_WIN_TILE_READn, top.pix_pipe.VUJO_WIN_Y1());
       /*p25.WOLU*/ _VRM_TRI_A03 = tribuf_6n_r2(_XUCY_WIN_TILE_READn, top.pix_pipe.VYMU_WIN_Y2());
 
-      /*p25.VAPY*/ _VRM_TRI_A04 = tribuf_6p_r2(_NETA_TILE_READp, top.RAWU_TILE_DB0.q());
-      /*p25.SEZU*/ _VRM_TRI_A05 = tribuf_6p_r2(_NETA_TILE_READp, top.POZO_TILE_DB1.q());
-      /*p25.VEJY*/ _VRM_TRI_A06 = tribuf_6p_r2(_NETA_TILE_READp, top.PYZO_TILE_DB2.q());
-      /*p25.RUSA*/ _VRM_TRI_A07 = tribuf_6p_r2(_NETA_TILE_READp, top.POXA_TILE_DB3.q());
-      /*p25.ROHA*/ _VRM_TRI_A08 = tribuf_6p_r2(_NETA_TILE_READp, top.PULO_TILE_DB4.q());
-      /*p25.RESO*/ _VRM_TRI_A09 = tribuf_6p_r2(_NETA_TILE_READp, top.POJU_TILE_DB5.q());
-      /*p25.SUVO*/ _VRM_TRI_A10 = tribuf_6p_r2(_NETA_TILE_READp, top.POWY_TILE_DB6.q());
-      /*p25.TOBO*/ _VRM_TRI_A11 = tribuf_6p_r2(_NETA_TILE_READp, top.PYJU_TILE_DB7.q());
+      /*p25.VAPY*/ _VRM_TRI_A04 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.RAWU_TILE_DB0.q());
+      /*p25.SEZU*/ _VRM_TRI_A05 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.POZO_TILE_DB1.q());
+      /*p25.VEJY*/ _VRM_TRI_A06 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.PYZO_TILE_DB2.q());
+      /*p25.RUSA*/ _VRM_TRI_A07 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.POXA_TILE_DB3.q());
+      /*p25.ROHA*/ _VRM_TRI_A08 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.PULO_TILE_DB4.q());
+      /*p25.RESO*/ _VRM_TRI_A09 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.POJU_TILE_DB5.q());
+      /*p25.SUVO*/ _VRM_TRI_A10 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.POWY_TILE_DB6.q());
+      /*p25.TOBO*/ _VRM_TRI_A11 = tribuf_6p_r2(_NETA_TILE_READp, top.vram_bus.PYJU_TILE_DB7.q());
       /*p25.VURY*/ _VRM_TRI_A12 = tribuf_6p_r2(_NETA_TILE_READp, _VUZA_TILE_BANKp);
     }
   }
@@ -414,32 +414,32 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*p32.METE*/ wire _METE_LATCH_TILE_DAn = not(top.tile_fetcher.NYDY_LATCH_TILE_DAp());
     /*p32.LOMA*/ wire _LOMA_LATCH_TILE_DAp = not(_METE_LATCH_TILE_DAn);
-    /*p32.LEGU*/ top.LEGU_TILE_DA0 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D0.q());
-    /*p32.NUDU*/ top.NUDU_TILE_DA1 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D1.q());
-    /*p32.MUKU*/ top.MUKU_TILE_DA2 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D2.q());
-    /*p32.LUZO*/ top.LUZO_TILE_DA3 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D3.q());
-    /*p32.MEGU*/ top.MEGU_TILE_DA4 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D4.q());
-    /*p32.MYJY*/ top.MYJY_TILE_DA5 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D5.q());
-    /*p32.NASA*/ top.NASA_TILE_DA6 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D6.q());
-    /*p32.NEFO*/ top.NEFO_TILE_DA7 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D7.q());
+    /*p32.LEGU*/ top.vram_bus.LEGU_TILE_DA0 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D0.q());
+    /*p32.NUDU*/ top.vram_bus.NUDU_TILE_DA1 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D1.q());
+    /*p32.MUKU*/ top.vram_bus.MUKU_TILE_DA2 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D2.q());
+    /*p32.LUZO*/ top.vram_bus.LUZO_TILE_DA3 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D3.q());
+    /*p32.MEGU*/ top.vram_bus.MEGU_TILE_DA4 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D4.q());
+    /*p32.MYJY*/ top.vram_bus.MYJY_TILE_DA5 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D5.q());
+    /*p32.NASA*/ top.vram_bus.NASA_TILE_DA6 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D6.q());
+    /*p32.NEFO*/ top.vram_bus.NEFO_TILE_DA7 = ff8_r2(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRM_TRI_D7.q());
 
     // Why are the clocks swapped?
     /*p32.LESO*/ wire _LESO_LATCH_TILE_DBp = not(top.tile_fetcher.MOFU_LATCH_TILE_DBn());
     /*p??.LUVE*/ wire _LUVE_MATCH_TILE_DBn = not(_LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
     /*p32.LABU*/ wire _LABU_LATCH_TILE_DBp = not(_LUVE_MATCH_TILE_DBn);
-    /*p32.RAWU*/ top.RAWU_TILE_DB0 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D0.q());
-    /*p32.POZO*/ top.POZO_TILE_DB1 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D1.q());
-    /*p32.PYZO*/ top.PYZO_TILE_DB2 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D2.q());
-    /*p32.POXA*/ top.POXA_TILE_DB3 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D3.q());
-    /*p32.PULO*/ top.PULO_TILE_DB4 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D4.q());
-    /*p32.POJU*/ top.POJU_TILE_DB5 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D5.q());
-    /*p32.POWY*/ top.POWY_TILE_DB6 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D6.q());
-    /*p32.PYJU*/ top.PYJU_TILE_DB7 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D7.q());
+    /*p32.RAWU*/ top.vram_bus.RAWU_TILE_DB0 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D0.q());
+    /*p32.POZO*/ top.vram_bus.POZO_TILE_DB1 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D1.q());
+    /*p32.PYZO*/ top.vram_bus.PYZO_TILE_DB2 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D2.q());
+    /*p32.POXA*/ top.vram_bus.POXA_TILE_DB3 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D3.q());
+    /*p32.PULO*/ top.vram_bus.PULO_TILE_DB4 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D4.q());
+    /*p32.POJU*/ top.vram_bus.POJU_TILE_DB5 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D5.q());
+    /*p32.POWY*/ top.vram_bus.POWY_TILE_DB6 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D6.q());
+    /*p32.PYJU*/ top.vram_bus.PYJU_TILE_DB7 = ff11_r2(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, 0, _VRM_TRI_D7.q());
   }
 
   // VRAM tri -> sprite pix temp + x flip
   {
-    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.BAXO_OAM_DA5.q(), top.sprite_fetcher.TEXY_SPR_READ_VRAMp());
+    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.oam_bus.BAXO_OAM_DA5.q(), top.sprite_fetcher.TEXY_SPR_READ_VRAMp());
     /*p33.POBE*/ wire _POBE_FLIP0 = mux2_p(_VRM_TRI_D7.q(), _VRM_TRI_D0.q(), _XONO_FLIP_X);
     /*p33.PACY*/ wire _PACY_FLIP1 = mux2_p(_VRM_TRI_D6.q(), _VRM_TRI_D1.q(), _XONO_FLIP_X);
     /*p33.PONO*/ wire _PONO_FLIP2 = mux2_p(_VRM_TRI_D5.q(), _VRM_TRI_D2.q(), _XONO_FLIP_X);
@@ -453,121 +453,34 @@ void VramBus::tock(SchematicTop& top) {
     /*p29.NYBE*/ wire _NYBE_CLKn = not(_PEBY_CLKp);
     /*p29.PUCO*/ wire _PUCO_CLKp = not(_NYBE_CLKn);
 
-    /*p33.PEFO*/ top.PEFO_SPRITE_DA0 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _POBE_FLIP0);
-    /*p33.ROKA*/ top.ROKA_SPRITE_DA1 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PACY_FLIP1);
-    /*p33.MYTU*/ top.MYTU_SPRITE_DA2 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PONO_FLIP2);
-    /*p33.RAMU*/ top.RAMU_SPRITE_DA3 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PUGU_FLIP3);
-    /*p33.SELE*/ top.SELE_SPRITE_DA4 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PUTE_FLIP4);
-    /*p33.SUTO*/ top.SUTO_SPRITE_DA5 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PULY_FLIP5);
-    /*p33.RAMA*/ top.RAMA_SPRITE_DA6 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PELO_FLIP6);
-    /*p33.RYDU*/ top.RYDU_SPRITE_DA7 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PAWE_FLIP7);
+    /*p33.PEFO*/ top.vram_bus.PEFO_SPRITE_DA0 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _POBE_FLIP0);
+    /*p33.ROKA*/ top.vram_bus.ROKA_SPRITE_DA1 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PACY_FLIP1);
+    /*p33.MYTU*/ top.vram_bus.MYTU_SPRITE_DA2 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PONO_FLIP2);
+    /*p33.RAMU*/ top.vram_bus.RAMU_SPRITE_DA3 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PUGU_FLIP3);
+    /*p33.SELE*/ top.vram_bus.SELE_SPRITE_DA4 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PUTE_FLIP4);
+    /*p33.SUTO*/ top.vram_bus.SUTO_SPRITE_DA5 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PULY_FLIP5);
+    /*p33.RAMA*/ top.vram_bus.RAMA_SPRITE_DA6 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PELO_FLIP6);
+    /*p33.RYDU*/ top.vram_bus.RYDU_SPRITE_DA7 = ff8_r2(_PUCO_CLKp, !_PUCO_CLKp, _PAWE_FLIP7);
 
     /*p29.VYWA*/ wire _VYWA_CLKp = not(top.sprite_fetcher.TOPU_LATCH_SPPIXA());
     /*p29.WENY*/ wire _WENY_CLKn = not(_VYWA_CLKp);
     /*p29.XADO*/ wire _XADO_CLKp = not(_WENY_CLKn);
 
-    /*p33.REWO*/ top.REWO_SPRITE_DB0 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _POBE_FLIP0);
-    /*p33.PEBA*/ top.PEBA_SPRITE_DB1 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PACY_FLIP1);
-    /*p33.MOFO*/ top.MOFO_SPRITE_DB2 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PONO_FLIP2);
-    /*p33.PUDU*/ top.PUDU_SPRITE_DB3 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PUGU_FLIP3);
-    /*p33.SAJA*/ top.SAJA_SPRITE_DB4 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PUTE_FLIP4);
-    /*p33.SUNY*/ top.SUNY_SPRITE_DB5 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PULY_FLIP5);
-    /*p33.SEMO*/ top.SEMO_SPRITE_DB6 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PELO_FLIP6);
-    /*p33.SEGA*/ top.SEGA_SPRITE_DB7 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PAWE_FLIP7);
+    /*p33.REWO*/ top.vram_bus.REWO_SPRITE_DB0 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _POBE_FLIP0);
+    /*p33.PEBA*/ top.vram_bus.PEBA_SPRITE_DB1 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PACY_FLIP1);
+    /*p33.MOFO*/ top.vram_bus.MOFO_SPRITE_DB2 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PONO_FLIP2);
+    /*p33.PUDU*/ top.vram_bus.PUDU_SPRITE_DB3 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PUGU_FLIP3);
+    /*p33.SAJA*/ top.vram_bus.SAJA_SPRITE_DB4 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PUTE_FLIP4);
+    /*p33.SUNY*/ top.vram_bus.SUNY_SPRITE_DB5 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PULY_FLIP5);
+    /*p33.SEMO*/ top.vram_bus.SEMO_SPRITE_DB6 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PELO_FLIP6);
+    /*p33.SEGA*/ top.vram_bus.SEGA_SPRITE_DB7 = ff8_r2(_XADO_CLKp, !_XADO_CLKp, _PAWE_FLIP7);
   }
 }
 
 //------------------------------------------------------------------------------
 
 SignalHash VramBus::commit() {
-  SignalHash hash;
-
-  hash << _VRM_TRI_A00.commit();
-  hash << _VRM_TRI_A01.commit();
-  hash << _VRM_TRI_A02.commit();
-  hash << _VRM_TRI_A03.commit();
-  hash << _VRM_TRI_A04.commit();
-  hash << _VRM_TRI_A05.commit();
-  hash << _VRM_TRI_A06.commit();
-  hash << _VRM_TRI_A07.commit();
-  hash << _VRM_TRI_A08.commit();
-  hash << _VRM_TRI_A09.commit();
-  hash << _VRM_TRI_A10.commit();
-  hash << _VRM_TRI_A11.commit();
-  hash << _VRM_TRI_A12.commit();
-
-  hash << _VRM_TRI_D0.commit();
-  hash << _VRM_TRI_D1.commit();
-  hash << _VRM_TRI_D2.commit();
-  hash << _VRM_TRI_D3.commit();
-  hash << _VRM_TRI_D4.commit();
-  hash << _VRM_TRI_D5.commit();
-  hash << _VRM_TRI_D6.commit();
-  hash << _VRM_TRI_D7.commit();
-
-  hash << _VRAM_PIN_MCSn_A.commit();   // PIN_43 <- SOKY
-  hash << _VRAM_PIN_MCSn_C.commit();   // PIN_43 -> TEFY
-  hash << _VRAM_PIN_MCSn_D.commit();   // PIN_43 <- SETY
-
-  hash << _VRAM_PIN_MOEn_A.commit();   // PIN_45 <- REFO
-  hash << _VRAM_PIN_MOEn_C.commit();   // PIN_45 -> TAVY
-  hash << _VRAM_PIN_MOEn_D.commit();   // PIN_45 <- SAHA
-
-  hash << _VRAM_PIN_MWRn_A.commit();   // PIN_49 <- SYSY
-  hash << _VRAM_PIN_MWRn_C.commit();   // PIN_49 -> SUDOs
-  hash << _VRAM_PIN_MWRn_D.commit();   // PIN_49 <- RAGU
-
-  hash << _VRAM_PIN_MA00_AD.commit();  // PIN_34 <- ECAL
-  hash << _VRAM_PIN_MA01_AD.commit();  // PIN_35 <- EGEZ
-  hash << _VRAM_PIN_MA02_AD.commit();  // PIN_36 <- FUHE
-  hash << _VRAM_PIN_MA03_AD.commit();  // PIN_37 <- FYZY
-  hash << _VRAM_PIN_MA04_AD.commit();  // PIN_38 <- DAMU
-  hash << _VRAM_PIN_MA05_AD.commit();  // PIN_39 <- DAVA
-  hash << _VRAM_PIN_MA06_AD.commit();  // PIN_40 <- ETEG
-  hash << _VRAM_PIN_MA07_AD.commit();  // PIN_41 <- EREW
-  hash << _VRAM_PIN_MA08_AD.commit();  // PIN_48 <- EVAX
-  hash << _VRAM_PIN_MA09_AD.commit();  // PIN_47 <- DUVE
-  hash << _VRAM_PIN_MA10_AD.commit();  // PIN_44 <- ERAF
-  hash << _VRAM_PIN_MA11_AD.commit();  // PIN_46 <- FUSY
-  hash << _VRAM_PIN_MA12_AD.commit();  // PIN_42 <- EXYF
-
-  hash << _VRAM_PIN_MD0_A.commit();    // PIN_33 <- REGE
-  hash << _VRAM_PIN_MD0_B.commit();    // PIN_33 <- ROFA
-  hash << _VRAM_PIN_MD0_D.commit();    // PIN_33 <- RURA
-  hash << _VRAM_PIN_MD1_A.commit();    // PIN_31 <- RYKY
-  hash << _VRAM_PIN_MD1_B.commit();    // PIN_31 <- ROFA
-  hash << _VRAM_PIN_MD1_D.commit();    // PIN_31 <- RULY
-  hash << _VRAM_PIN_MD2_A.commit();    // PIN_30 <- RAZO
-  hash << _VRAM_PIN_MD2_B.commit();    // PIN_30 <- ROFA
-  hash << _VRAM_PIN_MD2_D.commit();    // PIN_30 <- RARE
-  hash << _VRAM_PIN_MD3_A.commit();    // PIN_29 <- RADA
-  hash << _VRAM_PIN_MD3_B.commit();    // PIN_29 <- ROFA
-  hash << _VRAM_PIN_MD3_D.commit();    // PIN_29 <- RODU
-  hash << _VRAM_PIN_MD4_A.commit();    // PIN_28 <- RYRO
-  hash << _VRAM_PIN_MD4_B.commit();    // PIN_28 <- ROFA
-  hash << _VRAM_PIN_MD4_D.commit();    // PIN_28 <- RUBE
-  hash << _VRAM_PIN_MD5_A.commit();    // PIN_27 <- REVU
-  hash << _VRAM_PIN_MD5_B.commit();    // PIN_27 <- ROFA
-  hash << _VRAM_PIN_MD5_D.commit();    // PIN_27 <- RUMU
-  hash << _VRAM_PIN_MD6_A.commit();    // PIN_26 <- REKU
-  hash << _VRAM_PIN_MD6_B.commit();    // PIN_26 <- ROFA
-  hash << _VRAM_PIN_MD6_D.commit();    // PIN_26 <- RYTY
-  hash << _VRAM_PIN_MD7_A.commit();    // PIN_25 <- RYZE
-  hash << _VRAM_PIN_MD7_B.commit();    // PIN_25 <- ROFA
-  hash << _VRAM_PIN_MD7_D.commit();    // PIN_25 <- RADY
-
-  hash << _VRAM_PIN_MD0_C.commit();    // PIN_33 -> RODY
-  hash << _VRAM_PIN_MD1_C.commit();    // PIN_31 -> REBA
-  hash << _VRAM_PIN_MD2_C.commit();    // PIN_30 -> RYDO
-  hash << _VRAM_PIN_MD3_C.commit();    // PIN_29 -> REMO
-  hash << _VRAM_PIN_MD4_C.commit();    // PIN_28 -> ROCE
-  hash << _VRAM_PIN_MD5_C.commit();    // PIN_27 -> ROPU
-  hash << _VRAM_PIN_MD6_C.commit();    // PIN_26 -> RETA
-  hash << _VRAM_PIN_MD7_C.commit();    // PIN_25 -> RAKU
-
-
-  return hash;
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
-
 
 //------------------------------------------------------------------------------

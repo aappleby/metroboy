@@ -21,6 +21,24 @@ struct OamBus {
   /*p28.XEMU*/ wire XEMU_OAM_A6p() const { return not(OAM_TRI_A6.q()); }
   /*p28.YZET*/ wire YZET_OAM_A7p() const { return not(OAM_TRI_A7.q()); }
 
+  /*p31.YLOR*/ Reg2 YLOR_OAM_DA0 = Reg2::D0C0; // sprite x bit 0, 
+  /*p31.ZYTY*/ Reg2 ZYTY_OAM_DA1 = Reg2::D0C0; // sprite x bit 1, 
+  /*p31.ZYVE*/ Reg2 ZYVE_OAM_DA2 = Reg2::D0C0; // sprite x bit 2, 
+  /*p31.ZEZY*/ Reg2 ZEZY_OAM_DA3 = Reg2::D0C0; // sprite x bit 3, 
+  /*p31.GOMO*/ Reg2 GOMO_OAM_DA4 = Reg2::D0C0; // sprite x bit 4, sprite palette
+  /*p31.BAXO*/ Reg2 BAXO_OAM_DA5 = Reg2::D0C0; // sprite x bit 5, sprite x flip
+  /*p31.YZOS*/ Reg2 YZOS_OAM_DA6 = Reg2::D0C0; // sprite x bit 6, sprite y flip
+  /*p31.DEPO*/ Reg2 DEPO_OAM_DA7 = Reg2::D0C0; // sprite x bit 7, sprite priority
+
+  /*p29.XUSO*/ Reg2 XUSO_OAM_DB0 = Reg2::D0C0; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ Reg2 XEGU_OAM_DB1 = Reg2::D0C0; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ Reg2 YJEX_OAM_DB2 = Reg2::D0C0; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ Reg2 XYJU_OAM_DB3 = Reg2::D0C0; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ Reg2 YBOG_OAM_DB4 = Reg2::D0C0; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ Reg2 WYSO_OAM_DB5 = Reg2::D0C0; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ Reg2 XOTE_OAM_DB6 = Reg2::D0C0; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ Reg2 YZAB_OAM_DB7 = Reg2::D0C0; // sprite y bit 7, sprite tile index bit 7
+
 private:
 
   Pin2 OAM_TRI_A0 = Pin2::HIZ_NP;

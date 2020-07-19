@@ -1,3 +1,26 @@
+// XECU01 nc
+// XECU02 << WEFE02
+// XECU03 << YZET02 (oam a7)
+// XECU04 nc
+// XECU05 << WUDA03
+// XECU06 ==
+// XECU07 ==
+// XECU08 << CYKE01???? - is this a dual-edge ff? I guess that would make it latch the address every tcycle?
+// XECU09 << WEFE02
+// XECU10 ==
+// XECU11 nc
+// XECU12 >> WEZA04
+// XECU13 >> nc
+
+// BUZA04 = and(CENO16, XYMU03)
+
+// WEZA01 << BUZA04
+// WEZA02 ==
+// WEZA03 ==
+// WEZA04 << XECU12
+// WEZA05 nc
+// WEZA06 
+
 
 // Die trace:
 // VETU = and(TEVO, PORE);

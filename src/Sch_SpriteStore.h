@@ -8,8 +8,6 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteStore {
-  SpriteStore();
-
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
   SignalHash commit();
@@ -17,17 +15,17 @@ struct SpriteStore {
   /*p29.FEPO*/ Sig2 FEPO_STORE_MATCHp;
   /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
 
-  Reg SPR_TRI_INDX_0;
-  Reg SPR_TRI_INDX_1;
-  Reg SPR_TRI_INDX_2;
-  Reg SPR_TRI_INDX_3;
-  Reg SPR_TRI_INDX_4;
-  Reg SPR_TRI_INDX_5;
+  Pin2 SPR_TRI_INDX_0 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_INDX_1 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_INDX_2 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_INDX_3 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_INDX_4 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_INDX_5 = Pin2::HIZ_PU;
 
-  Reg SPR_TRI_LINE_0;
-  Reg SPR_TRI_LINE_1;
-  Reg SPR_TRI_LINE_2;
-  Reg SPR_TRI_LINE_3;
+  Pin2 SPR_TRI_LINE_0 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_LINE_1 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_LINE_2 = Pin2::HIZ_PU;
+  Pin2 SPR_TRI_LINE_3 = Pin2::HIZ_PU;
 
 private:
   friend struct SchematicTop;

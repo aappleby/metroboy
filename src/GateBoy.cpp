@@ -16,7 +16,8 @@ SignalHash phase(SchematicTop* top, Req req, bool verbose) {
     top->ext_bus.set_ext_data(0);
     top->joypad.set_buttons(0);
     
-    SignalHash new_hash = top->tick();
+    top->tick();
+    SignalHash new_hash = top->commit();
     
     if (new_hash.h == hash.h) break;
     hash = new_hash;
@@ -193,8 +194,8 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
-  const int iter_count = 16;
-  const int phase_count = 512;
+  const int iter_count = 64;
+  const int phase_count = 65536;
   double sum1 = 0;
   double sum2 = 0;
 
@@ -283,7 +284,8 @@ SignalHash GateBoy::phase(SchematicTop* top, Req req) {
     top->ext_bus.set_ext_data(0);
     top->joypad.set_buttons(0);
     
-    SignalHash new_hash = top->tick();
+    top->tick();
+    SignalHash new_hash = top->commit();
 
     //printf("hash 0x%016llx\n", new_hash.h);
     

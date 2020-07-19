@@ -4,7 +4,7 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-SignalHash SchematicTop::tick() {
+void SchematicTop::tick() {
 
   bool verbose = false;
 
@@ -50,12 +50,12 @@ SignalHash SchematicTop::tick() {
   ext_bus.tock(top);
   oam_bus.tock(top);
   vram_bus.tock(top);
+}
 
-  //----------
-
-  if (verbose) printf("SchematicTop::commit_input\n");
+SignalHash SchematicTop::commit() {
 
   SignalHash hash;
+
   hash << clk_reg.commit();
   hash << tim_reg.commit();
   hash << bootrom.commit();
@@ -76,64 +76,6 @@ SignalHash SchematicTop::tick() {
   hash << ext_bus.commit();
   hash << oam_bus.commit();
   hash << vram_bus.commit();
-
-  hash << YLOR_OAM_DA0.commit();
-  hash << ZYTY_OAM_DA1.commit();
-  hash << ZYVE_OAM_DA2.commit();
-  hash << ZEZY_OAM_DA3.commit();
-  hash << GOMO_OAM_DA4.commit();
-  hash << BAXO_OAM_DA5.commit();
-  hash << YZOS_OAM_DA6.commit();
-  hash << DEPO_OAM_DA7.commit();
-
-  hash << XUSO_OAM_DB0.commit();
-  hash << XEGU_OAM_DB1.commit();
-  hash << YJEX_OAM_DB2.commit();
-  hash << XYJU_OAM_DB3.commit();
-  hash << YBOG_OAM_DB4.commit();
-  hash << WYSO_OAM_DB5.commit();
-  hash << XOTE_OAM_DB6.commit();
-  hash << YZAB_OAM_DB7.commit();
-
-  hash << LEGU_TILE_DA0.commit();
-  hash << NUDU_TILE_DA1.commit();
-  hash << MUKU_TILE_DA2.commit();
-  hash << LUZO_TILE_DA3.commit();
-  hash << MEGU_TILE_DA4.commit();
-  hash << MYJY_TILE_DA5.commit();
-  hash << NASA_TILE_DA6.commit();
-  hash << NEFO_TILE_DA7.commit();
-
-  hash << RAWU_TILE_DB0.commit();
-  hash << POZO_TILE_DB1.commit();
-  hash << PYZO_TILE_DB2.commit(); 
-  hash << POXA_TILE_DB3.commit(); 
-  hash << PULO_TILE_DB4.commit(); 
-  hash << POJU_TILE_DB5.commit(); 
-  hash << POWY_TILE_DB6.commit(); 
-  hash << PYJU_TILE_DB7.commit();
-
-  hash << PEFO_SPRITE_DA0.commit();
-  hash << ROKA_SPRITE_DA1.commit();
-  hash << MYTU_SPRITE_DA2.commit();
-  hash << RAMU_SPRITE_DA3.commit();
-  hash << SELE_SPRITE_DA4.commit();
-  hash << SUTO_SPRITE_DA5.commit();
-  hash << RAMA_SPRITE_DA6.commit();
-  hash << RYDU_SPRITE_DA7.commit();
-
-  hash << REWO_SPRITE_DB0.commit();
-  hash << PEBA_SPRITE_DB1.commit();
-  hash << MOFO_SPRITE_DB2.commit();
-  hash << PUDU_SPRITE_DB3.commit();
-  hash << SAJA_SPRITE_DB4.commit();
-  hash << SUNY_SPRITE_DB5.commit();
-  hash << SEMO_SPRITE_DB6.commit();
-  hash << SEGA_SPRITE_DB7.commit();
-
-  if (verbose) printf("SchematicTop::commit_input done\n");
-
-  //exit(1);
 
   commit_hash = hash;
   combined_hash << hash;

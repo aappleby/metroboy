@@ -233,24 +233,24 @@ void OamBus::tock(SchematicTop& top) {
 
     // Internal latch -> sprite fetcher/matcher
     /*p31.XEGA*/ wire _XEGA_OAM_CLKp = not(_COTA_OAM_CLKn);
-    /*p31.YLOR*/ top.YLOR_OAM_DA0 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), XYKY_LATCH_OAM_DA0.q());
-    /*p31.ZYTY*/ top.ZYTY_OAM_DA1 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YRUM_LATCH_OAM_DA1.q());
-    /*p31.ZYVE*/ top.ZYVE_OAM_DA2 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YSEX_LATCH_OAM_DA2.q());
-    /*p31.ZEZY*/ top.ZEZY_OAM_DA3 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YVEL_LATCH_OAM_DA3.q());
-    /*p31.GOMO*/ top.GOMO_OAM_DA4 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), WYNO_LATCH_OAM_DA4.q());
-    /*p31.BAXO*/ top.BAXO_OAM_DA5 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), CYRA_LATCH_OAM_DA5.q());
-    /*p31.YZOS*/ top.YZOS_OAM_DA6 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), ZUVE_LATCH_OAM_DA6.q());
-    /*p31.DEPO*/ top.DEPO_OAM_DA7 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), ECED_LATCH_OAM_DA7.q());
+    /*p31.YLOR*/ YLOR_OAM_DA0 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), XYKY_LATCH_OAM_DA0.q());
+    /*p31.ZYTY*/ ZYTY_OAM_DA1 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YRUM_LATCH_OAM_DA1.q());
+    /*p31.ZYVE*/ ZYVE_OAM_DA2 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YSEX_LATCH_OAM_DA2.q());
+    /*p31.ZEZY*/ ZEZY_OAM_DA3 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YVEL_LATCH_OAM_DA3.q());
+    /*p31.GOMO*/ GOMO_OAM_DA4 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), WYNO_LATCH_OAM_DA4.q());
+    /*p31.BAXO*/ BAXO_OAM_DA5 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), CYRA_LATCH_OAM_DA5.q());
+    /*p31.YZOS*/ YZOS_OAM_DA6 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), ZUVE_LATCH_OAM_DA6.q());
+    /*p31.DEPO*/ DEPO_OAM_DA7 = ff8_r2(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), ECED_LATCH_OAM_DA7.q());
 
     /*p29.YWOK*/ wire _YWOK_OAM_CLKn = not(_COTA_OAM_CLKn);
-    /*p29.XUSO*/ top.XUSO_OAM_DB0 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YDYV_LATCH_OAM_DB0.q());
-    /*p29.XEGU*/ top.XEGU_OAM_DB1 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YCEB_LATCH_OAM_DB1.q());
-    /*p29.YJEX*/ top.YJEX_OAM_DB2 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZUCA_LATCH_OAM_DB2.q());
-    /*p29.XYJU*/ top.XYJU_OAM_DB3 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), WONE_LATCH_OAM_DB3.q());
-    /*p29.YBOG*/ top.YBOG_OAM_DB4 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZAXE_LATCH_OAM_DB4.q());
-    /*p29.WYSO*/ top.WYSO_OAM_DB5 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), XAFU_LATCH_OAM_DB5.q());
-    /*p29.XOTE*/ top.XOTE_OAM_DB6 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YSES_LATCH_OAM_DB6.q());
-    /*p29.YZAB*/ top.YZAB_OAM_DB7 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZECA_LATCH_OAM_DB7.q());
+    /*p29.XUSO*/ XUSO_OAM_DB0 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YDYV_LATCH_OAM_DB0.q());
+    /*p29.XEGU*/ XEGU_OAM_DB1 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YCEB_LATCH_OAM_DB1.q());
+    /*p29.YJEX*/ YJEX_OAM_DB2 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZUCA_LATCH_OAM_DB2.q());
+    /*p29.XYJU*/ XYJU_OAM_DB3 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), WONE_LATCH_OAM_DB3.q());
+    /*p29.YBOG*/ YBOG_OAM_DB4 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZAXE_LATCH_OAM_DB4.q());
+    /*p29.WYSO*/ WYSO_OAM_DB5 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), XAFU_LATCH_OAM_DB5.q());
+    /*p29.XOTE*/ XOTE_OAM_DB6 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YSES_LATCH_OAM_DB6.q());
+    /*p29.YZAB*/ YZAB_OAM_DB7 = ff8_r2(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZECA_LATCH_OAM_DB7.q());
   }
 
   // OAM latch -> Int bus
@@ -287,68 +287,7 @@ void OamBus::tock(SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 SignalHash OamBus::commit() {
-  SignalHash hash;
-
-  hash << OAM_TRI_A0.commit();
-  hash << OAM_TRI_A1.commit();
-  hash << OAM_TRI_A2.commit();
-  hash << OAM_TRI_A3.commit();
-  hash << OAM_TRI_A4.commit();
-  hash << OAM_TRI_A5.commit();
-  hash << OAM_TRI_A6.commit();
-  hash << OAM_TRI_A7.commit();
-
-  hash << OAM_PIN_DA0.commit();
-  hash << OAM_PIN_DA1.commit();
-  hash << OAM_PIN_DA2.commit();
-  hash << OAM_PIN_DA3.commit();
-  hash << OAM_PIN_DA4.commit();
-  hash << OAM_PIN_DA5.commit();
-  hash << OAM_PIN_DA6.commit();
-  hash << OAM_PIN_DA7.commit();
-
-  hash << OAM_PIN_DB0.commit();
-  hash << OAM_PIN_DB1.commit();
-  hash << OAM_PIN_DB2.commit();
-  hash << OAM_PIN_DB3.commit();
-  hash << OAM_PIN_DB4.commit();
-  hash << OAM_PIN_DB5.commit();
-  hash << OAM_PIN_DB6.commit();
-  hash << OAM_PIN_DB7.commit();
-
-  hash << XYKY_LATCH_OAM_DA0.commit();
-  hash << YRUM_LATCH_OAM_DA1.commit();
-  hash << YSEX_LATCH_OAM_DA2.commit();
-  hash << YVEL_LATCH_OAM_DA3.commit();
-  hash << WYNO_LATCH_OAM_DA4.commit();
-  hash << CYRA_LATCH_OAM_DA5.commit();
-  hash << ZUVE_LATCH_OAM_DA6.commit();
-  hash << ECED_LATCH_OAM_DA7.commit();
-
-  hash << YDYV_LATCH_OAM_DB0.commit();
-  hash << YCEB_LATCH_OAM_DB1.commit();
-  hash << ZUCA_LATCH_OAM_DB2.commit();
-  hash << WONE_LATCH_OAM_DB3.commit();
-  hash << ZAXE_LATCH_OAM_DB4.commit();
-  hash << XAFU_LATCH_OAM_DB5.commit();
-  hash << YSES_LATCH_OAM_DB6.commit();
-  hash << ZECA_LATCH_OAM_DB7.commit();
-
-  hash << OAM_PIN_CLK.commit();
-  hash << OAM_PIN_OE.commit();
-  hash << OAM_PIN_WR_A.commit();
-  hash << OAM_PIN_WR_B.commit();
-
-  hash << OAM_PIN_A0.commit();
-  hash << OAM_PIN_A1.commit();
-  hash << OAM_PIN_A2.commit();
-  hash << OAM_PIN_A3.commit();
-  hash << OAM_PIN_A4.commit();
-  hash << OAM_PIN_A5.commit();
-  hash << OAM_PIN_A6.commit();
-  hash << OAM_PIN_A7.commit();
-
-  return hash;
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

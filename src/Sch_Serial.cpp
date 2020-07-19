@@ -111,34 +111,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 //------------------------------------------------------------------------------
 
 SignalHash SerialRegisters::commit() {
-  _XFER_START.commit();
-  _XFER_DIR.commit();
-  _SER_CLK.commit();
-  _SER_CNT0.commit();
-  _SER_CNT1.commit();
-  _SER_CNT2.commit();
-  _CALY_SER_INTp.commit();
-  _SER_DATA0.commit();
-  _SER_DATA1.commit();
-  _SER_DATA2.commit();
-  _SER_DATA3.commit();
-  _SER_DATA4.commit();
-  _SER_DATA5.commit();
-  _SER_DATA6.commit();
-  _SER_DATA7.commit();
-  _SER_OUT.commit();
-
-  SCK_A.commit();   // <- P06.KEXU
-  SCK_B.commit();   // <- P06.CULY
-  SCK_C.commit();   // -> P06.CAVE
-  SCK_D.commit();   // <- P06.KUJO
-  //SIN_A.commit();   // nc?
-  //SIN_B.commit();   // nc?
-  SIN_C.commit();   // -> P06.CAGE
-  //SIN_D.commit();   // nc?
-  SOUT.commit();    // <- P05.KENA
-
-  return {SignalHash::hash_blob(this, sizeof(*this))};
+  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
 }
 
 //------------------------------------------------------------------------------

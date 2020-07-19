@@ -190,6 +190,8 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   */
 
   gateboy.run(top, 24, req);
+  printf("Commit hash   %016llx\n", top->commit_hash);
+  printf("Combined hash %016llx\n", top->combined_hash);
   printf("\n");
 
 #if _DEBUG
@@ -197,9 +199,9 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   const int phase_per_iter = 1024;
   const int warmup = 0;
 #else
-  const int iter_count = 10;
-  const int phase_per_iter = 1024;
-  const int warmup = 0;
+  const int iter_count = 74;
+  const int phase_per_iter = 8192;
+  const int warmup = 10;
 #endif
 
   double phase_rate_sum1 = 0;

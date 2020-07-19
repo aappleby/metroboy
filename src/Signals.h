@@ -11,18 +11,18 @@ enum RegMode : uint8_t {
   REG_D1C0 = 0b0001, // 01: reg 1 + clock 0
   REG_D0C1 = 0b0010, // 02: reg 0 + clock 1
   REG_D1C1 = 0b0011, // 03: reg 1 + clock 1
-  SIG_0000 = 0b0100, // 04: high signal
-  SIG_1111 = 0b0101, // 05: low signal
+  SIG_0000 = 0b0100, // 04: signal driven low
+  SIG_1111 = 0b0101, // 05: signal driven high
   PIN_D0PD = 0b0110, // 06: pin driven 0 + pull down
   PIN_D1PD = 0b0111, // 07: pin driven 1 + pull down
   PIN_D0PU = 0b1000, // 08: pin driven 0 + pull up
   PIN_D1PU = 0b1001, // 09: pin driven 1 + pull up
   PIN_D0NP = 0b1010, // 10: pin driven 0 + no pull
   PIN_D1NP = 0b1011, // 11: pin driven 1 + no pull
-  PIN_HZPD = 0b1100, // 12: pin pulled down
-  PIN_HZPU = 0b1101, // 13: pin pulled up
-  PIN_HZNP = 0b1110, // 14: pin floating
-  ERR_XXXX = 0b1111, // 15: unused
+  PIN_HZPD = 0b1100, // 12: pin driven Z + pulled down
+  PIN_HZPU = 0b1101, // 13: pin driven Z + pulled up
+  PIN_HZNP = 0b1110, // 14: pin driven Z + floating
+  ERR_XXXX = 0b1111, // 15: combined error state
 };
 
 //-----------------------------------------------------------------------------
@@ -222,6 +222,7 @@ struct Sig2 : public RegBase2 {
   
   inline operator wire() const {
     CHECKp(is_sig());
+    CHECKp(has_delta());
     return wire(reg & 1);
   }
 

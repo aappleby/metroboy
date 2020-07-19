@@ -109,31 +109,43 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 // top rung tadpole facing second rung dot
 inline Delta tribuf_6p_r2(wire OEp, wire D) {
+#if 0
+  return Delta(DELTA_SIGZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
+#else
   if (OEp) {
     return D ? DELTA_SIG1 : DELTA_SIG0;
   }
   else {
     return DELTA_SIGZ;
   }
+#endif
 }
 
 // top rung tadpole not facing second rung dot
 inline Delta tribuf_6n_r2(wire OEn, wire D) {
+#if 0
+  return Delta(DELTA_SIGZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
+#else
   if (!OEn) {
     return D ? DELTA_SIG1 : DELTA_SIG0;
   }
   else {
     return DELTA_SIGZ;
   }
+#endif
 }
 
 inline Delta tribuf_10n_r2(wire OEn, wire D) {
+#if 0
+  return Delta(DELTA_SIGZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
+#else
   if (!OEn) {
     return D ? DELTA_SIG1 : DELTA_SIG0;
   }
   else {
     return DELTA_SIGZ;
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -165,19 +177,12 @@ inline Delta ff8_r2(wire CLKp, wire CLKn, bool D) {
   CHECKn(CLKp == CLKn);
   (void)CLKp;
 
-  if (CLKn) {
-    return D ? DELTA_D1C1 : DELTA_D0C1;
-  }
-  else {
-    return D ? DELTA_D1C0 : DELTA_D0C0;
-  }
+  return Delta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
 }
 
 //-----------------------------------------------------------------------------
 // 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
 // Four vias in center column
-
-// The cell layout looks pretty much identical to Reg9Duo - so probably dual-edge?
 
 // Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
 // store, SCY, SCX, LCDC, WX, WY
@@ -218,17 +223,16 @@ inline Delta ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
 
+#if 0
+  return Delta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
   if (!RSTn) {
-    return CLKp ? DELTA_A0C1 : DELTA_A0C0;
+    return Delta(DELTA_A0C0 | (CLKp << 1));
   }
   else {
-    if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
-    }
+    return Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -269,17 +273,16 @@ inline Delta ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
 
+#if 0
+  return Delta(DELTA_D0C0 | (RSTp << 2) | (CLKp << 1) | ((D && !RSTp) << 0));
+#else
   if (RSTp) {
-    return CLKp ? DELTA_A0C1 : DELTA_A0C0;
+    return Delta(DELTA_A0C0 | (CLKp << 1));
   }
   else {
-    if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
-    }
+    return Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -341,17 +344,16 @@ inline Delta ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECKn(CLKp == CLKn);
   (void)CLKn;
 
+#if 0
+  return Delta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
   if (!RSTn) {
-    return CLKp ? DELTA_A0C1 : DELTA_A0C0;
+    return Delta(DELTA_A0C0 | (CLKp << 1));
   }
   else {
-    if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
-    }
+    return Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -380,17 +382,16 @@ inline Delta ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
 
 // must be RSTn, see WUVU/VENA/WOSU
 inline Delta ff17_r2(wire CLKp, wire RSTn, wire D) {
+#if 0
+  return Delta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
   if (!RSTn) {
-    return CLKp ? DELTA_A0C1 : DELTA_A0C0;
+    return Delta(DELTA_A0C0 | (CLKp << 1));
   }
   else {
-    if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
-    }
+    return Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -444,20 +445,21 @@ inline Delta ff17_r2(wire CLKp, wire RSTn, wire D) {
 // UBUL_22 << CALY_INT_SERIALp
 
 inline Delta ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
+#if 1
+  bool async = !SETn || !RSTn;
+  bool val = (D || !SETn) && RSTn;
+  return Delta(DELTA_D0C0 | (async << 2) | (CLKp << 1) | (val << 0));
+#else
   if (!RSTn) {
-    return CLKp ? DELTA_A0C1 : DELTA_A0C0;
+    return Delta(DELTA_A0C0 | (CLKp << 1));
   }
   else if (!SETn) {
-    return CLKp ? DELTA_A1C1 : DELTA_A1C0;
+    return Delta(DELTA_A1C0 | (CLKp << 1));
   }
   else {
-    if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
-    }
+    return Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -474,6 +476,12 @@ inline Delta ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
 // NORLATCH_01 << RST
 
 inline Delta nor_latch_r2(wire SETp, wire RSTp) {
+#if 1
+  bool b2 = RSTp || SETp;
+  bool b1 = RSTp || !SETp;
+  bool b0 = SETp && !RSTp;
+  return Delta((b2 << 2) | (b1 << 1) | (b0 << 0));
+#else
   if (RSTp) {
     return DELTA_SIG0;
   }
@@ -483,6 +491,7 @@ inline Delta nor_latch_r2(wire SETp, wire RSTp) {
   else {
     return DELTA_PASS;
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -498,6 +507,12 @@ inline Delta nor_latch_r2(wire SETp, wire RSTp) {
 // NANDLATCH_01 << RSTn
 
 inline Delta  nand_latch_r2(wire SETn, wire RSTn) {
+#if 1
+  bool b2 = !RSTn || !SETn;
+  bool b1 = !RSTn || SETn;
+  bool b0 = !SETn && RSTn;
+  return Delta((b2 << 2) | (b1 << 1) | (b0 << 0));
+#else
   if (!RSTn) {
     return DELTA_SIG0;
   }
@@ -507,6 +522,7 @@ inline Delta  nand_latch_r2(wire SETn, wire RSTn) {
   else {
     return DELTA_PASS;
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -575,13 +591,19 @@ inline Delta  nand_latch_r2(wire SETn, wire RSTn) {
 // WYNO_10 >> XUNA_01
 
 inline Delta  tp_latch_r2(wire LATCHp, wire D) {
-
+#if 1
+  bool b2 = LATCHp;
+  bool b1 = !LATCHp || !D;
+  bool b0 = LATCHp && D;
+  return Delta((b2 << 2) | (b1 << 1) | (b0 << 0));
+#else
   if (LATCHp) {
     return D ? DELTA_SIG1 : DELTA_SIG0;
   }
   else {
     return DELTA_PASS;
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -634,7 +656,13 @@ inline Delta  tp_latch_r2(wire LATCHp, wire D) {
 // POVY_20 << REGA_01
 
 inline Delta ff20_r2(wire CLKp, wire LOADp, bool D) {
-
+#if 1
+  bool b3 = 1;
+  bool b2 = LOADp;
+  bool b1 = CLKp;
+  bool b0 = D;
+  return Delta((b3 << 3) | (b2 << 2) | (b1 << 1) | (b0 << 0));
+#else
   if (LOADp) {
     if (CLKp) {
       return D ? DELTA_A1C1 : DELTA_A0C1;
@@ -651,5 +679,6 @@ inline Delta ff20_r2(wire CLKp, wire LOADp, bool D) {
       return D ? DELTA_D1C0 : DELTA_D0C0;
     }
   }
+#endif
 }
 

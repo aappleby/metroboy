@@ -194,8 +194,9 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   gateboy.run(top, 24, req);
   printf("\n");
 
-  const int iter_count = 64;
-  const int phase_count = 65536;
+  const int iter_count = 16;
+  const int phase_count = 1024;
+  const int warmup = 0;
 
   double sum1 = 0;
   double sum2 = 0;
@@ -213,7 +214,7 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
     double time = elapsed.count();
     double rate = double(phase_count) / time;
 
-    if (iter > 10) {
+    if (iter >= warmup) {
       sum1 += rate;
       sum2 += rate*rate;
       count++;

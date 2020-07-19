@@ -87,7 +87,7 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 
-#if 0
+#if 1
 
 #define CHECKp(A) do { if (!(A)) __debugbreak(); } while(0);
 #define CHECKn(A) do { if ((A)) __debugbreak(); } while(0);

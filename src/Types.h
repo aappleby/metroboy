@@ -14,6 +14,17 @@ typedef int16_t sample_t;
 //typedef const bool wire;
 typedef bool wire;
 
+#define PHASE_A  ((phase & 7) == 0)
+#define PHASE_B  ((phase & 7) == 1)
+#define PHASE_C  ((phase & 7) == 2)
+#define PHASE_D  ((phase & 7) == 3)
+#define PHASE_E  ((phase & 7) == 4)
+#define PHASE_F  ((phase & 7) == 5)
+#define PHASE_G  ((phase & 7) == 6)
+#define PHASE_H  ((phase & 7) == 7)
+#define PHASE_HI ((phase & 1) == 1)
+#define PHASE_LO ((phase & 1) == 0)
+
 //-----------------------------------------------------------------------------
 
 #pragma warning(push)
@@ -92,13 +103,13 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 #if _DEBUG
 
-#define CHECKp(A) do { if (!(A)) __debugbreak(); } while(0);
-#define CHECKn(A) do { if ((A)) __debugbreak(); } while(0);
+#define CHECK_P(A) do { if (!(A)) __debugbreak(); } while(0);
+#define CHECK_N(A) do { if ((A)) __debugbreak(); } while(0);
 
 #else 
 
-#define CHECKp(A)
-#define CHECKn(A)
+#define CHECK_P(A)
+#define CHECK_N(A)
 
 #endif
 

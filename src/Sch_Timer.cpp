@@ -39,15 +39,16 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p01.UKET*/ _UKET_DIV_14 = ff17_r2(!_TEKA_DIV_13.q(), _UFOL_DIV_RSTn, !_UKET_DIV_14.q());
     /*p01.UPOF*/ _UPOF_DIV_15 = ff17_r2(!_UKET_DIV_14.q(), _UFOL_DIV_RSTn, !_UPOF_DIV_15.q());
 
-
+    /*p01.UTOK*/ wire _UMEK_DIV_06n = not(_UGOT_DIV_06.q());
+    /*p01.SAPY*/ wire _UREK_DIV_07n = not(_TULU_DIV_07.q());
     /*p01.UTOK*/ wire _UTOK_DIV_08n = not(_TUGO_DIV_08.q());
     /*p01.SAPY*/ wire _SAPY_DIV_09n = not(_TOFE_DIV_09.q());
     /*p01.UMER*/ wire _UMER_DIV_10n = not(_TERU_DIV_10.q());
     /*p01.RAVE*/ wire _RAVE_DIV_11n = not(_SOLA_DIV_11.q());
     /*p01.RYSO*/ wire _RYSO_DIV_12n = not(_SUBU_DIV_12.q());
     /*p01.UDOR*/ wire _UDOR_DIV_13n = not(_TEKA_DIV_13.q());
-    /*p01.TAWU*/ cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_TAGY_FF04_RDp, not(UMEK_DIV_06n()));
-    /*p01.TAKU*/ cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_TAGY_FF04_RDp, not(UREK_DIV_07n()));
+    /*p01.TAWU*/ cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_TAGY_FF04_RDp, not(_UMEK_DIV_06n));
+    /*p01.TAKU*/ cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_TAGY_FF04_RDp, not(_UREK_DIV_07n));
     /*p01.TEMU*/ cpu_bus.CPU_TRI_D2 = tribuf_6p_r2(_TAGY_FF04_RDp, not(_UTOK_DIV_08n));
     /*p01.TUSE*/ cpu_bus.CPU_TRI_D3 = tribuf_6p_r2(_TAGY_FF04_RDp, not(_SAPY_DIV_09n));
     /*p01.UPUG*/ cpu_bus.CPU_TRI_D4 = tribuf_6p_r2(_TAGY_FF04_RDp, not(_UMER_DIV_10n));

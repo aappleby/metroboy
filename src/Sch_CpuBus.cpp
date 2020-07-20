@@ -15,7 +15,7 @@ void CpuBus::set_cpu_req(Req req) {
   _CPU_PIN6.hold(0);
 
   // this probably isn't right
-  _CPU_PIN_ADDR_VALID.hold(req.read || req.write);
+  _CPU_PIN_ADDR_VALIDn.hold(!(req.read || req.write));
 
   CPU_PIN_A00.hold(req.addr & 0x0001);
   CPU_PIN_A01.hold(req.addr & 0x0002);
@@ -33,6 +33,17 @@ void CpuBus::set_cpu_req(Req req) {
   CPU_PIN_A13.hold(req.addr & 0x2000);
   CPU_PIN_A14.hold(req.addr & 0x4000);
   CPU_PIN_A15.hold(req.addr & 0x8000);
+
+  /*
+  CPU_TRI_D0.hold(req.data_lo & 0x01);
+  CPU_TRI_D1.hold(req.data_lo & 0x02);
+  CPU_TRI_D2.hold(req.data_lo & 0x04);
+  CPU_TRI_D3.hold(req.data_lo & 0x08);
+  CPU_TRI_D4.hold(req.data_lo & 0x10);
+  CPU_TRI_D5.hold(req.data_lo & 0x20);
+  CPU_TRI_D6.hold(req.data_lo & 0x40);
+  CPU_TRI_D7.hold(req.data_lo & 0x80);
+  */
 
   /*
   if (req.write) {

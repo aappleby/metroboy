@@ -123,7 +123,7 @@ struct SchematicTop {
   int phase_count = -17;
   int pass_count = 0;
   
-  uint64_t commit_hash = 0;
+  uint64_t phase_hash = 0;
   uint64_t combined_hash = 0;
 
   //-----------------------------------------------------------------------------

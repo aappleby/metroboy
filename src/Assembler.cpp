@@ -2,6 +2,7 @@
 #include "Types.h"
 #include "Constants.h"
 #include "Opcodes.h"
+#include "Debug.h"
 
 #include <assert.h>
 #include <stdarg.h>
@@ -87,19 +88,6 @@ void Assembler::link() {
 
 
 void Assembler::write_source() {
-  struct StringDumper : public Dumper {
-    std::string s;
-    virtual void operator()(const char* format, ...) {
-      char source_buf[1024];
-      va_list args;
-      va_start (args, format);
-      vsnprintf (source_buf, 1024 ,format, args);
-      va_end (args);
-      s.append(source_buf);
-    }
-    void clear() { s.clear(); }
-  };
-
   StringDumper dump;
   dump("%s", source_header);
   disassemble(dump);

@@ -24,14 +24,14 @@ struct VramBus {
   }
 
   // -> oam data tri
-  /*p25.RERY*/ wire VRM_TRI_D0() const { return _VRM_TRI_D0.q(); }
-  /*p25.RUNA*/ wire VRM_TRI_D1() const { return _VRM_TRI_D1.q(); }
-  /*p25.RONA*/ wire VRM_TRI_D2() const { return _VRM_TRI_D2.q(); }
-  /*p25.RUNO*/ wire VRM_TRI_D3() const { return _VRM_TRI_D3.q(); }
-  /*p25.SANA*/ wire VRM_TRI_D4() const { return _VRM_TRI_D4.q(); }
-  /*p25.RORO*/ wire VRM_TRI_D5() const { return _VRM_TRI_D5.q(); }
-  /*p25.RABO*/ wire VRM_TRI_D6() const { return _VRM_TRI_D6.q(); }
-  /*p25.SAME*/ wire VRM_TRI_D7() const { return _VRM_TRI_D7.q(); }
+  /*p25.RERY*/ wire VRM_TRI_D0() const { return _VRAM_TRI_D0.q(); }
+  /*p25.RUNA*/ wire VRM_TRI_D1() const { return _VRAM_TRI_D1.q(); }
+  /*p25.RONA*/ wire VRM_TRI_D2() const { return _VRAM_TRI_D2.q(); }
+  /*p25.RUNO*/ wire VRM_TRI_D3() const { return _VRAM_TRI_D3.q(); }
+  /*p25.SANA*/ wire VRM_TRI_D4() const { return _VRAM_TRI_D4.q(); }
+  /*p25.RORO*/ wire VRM_TRI_D5() const { return _VRAM_TRI_D5.q(); }
+  /*p25.RABO*/ wire VRM_TRI_D6() const { return _VRAM_TRI_D6.q(); }
+  /*p25.SAME*/ wire VRM_TRI_D7() const { return _VRAM_TRI_D7.q(); }
 
   /*p32.LEGU*/ Reg2 LEGU_TILE_DA0 = Reg2::D0C0;
   /*p32.NUDU*/ Reg2 NUDU_TILE_DA1 = Reg2::D0C0;
@@ -69,30 +69,65 @@ struct VramBus {
   /*p33.SEMO*/ Reg2 SEMO_SPRITE_DB6 = Reg2::D0C0;
   /*p33.SEGA*/ Reg2 SEGA_SPRITE_DB7 = Reg2::D0C0;
 
+  int bus_addr() const {
+    return pack(_VRAM_TRI_D00, _VRAM_TRI_D01, _VRAM_TRI_D02, _VRAM_TRI_D03,
+                _VRAM_TRI_D04, _VRAM_TRI_D05, _VRAM_TRI_D06, _VRAM_TRI_D07,
+                _VRAM_TRI_D08, _VRAM_TRI_D09, _VRAM_TRI_D10, _VRAM_TRI_D11,
+                _VRAM_TRI_D12, 0, 0, 0);
+  }
+
+  int bus_data() const {
+    return pack(_VRAM_TRI_D0, _VRAM_TRI_D1, _VRAM_TRI_D2, _VRAM_TRI_D3,
+                _VRAM_TRI_D4, _VRAM_TRI_D5, _VRAM_TRI_D6, _VRAM_TRI_D7);
+  }
+
+  void dump(Dumper& d) {
+    int addr = pack(_VRAM_PIN_MA00_AD, _VRAM_PIN_MA01_AD, _VRAM_PIN_MA02_AD, _VRAM_PIN_MA03_AD,
+                    _VRAM_PIN_MA04_AD, _VRAM_PIN_MA05_AD, _VRAM_PIN_MA06_AD, _VRAM_PIN_MA07_AD,
+                    _VRAM_PIN_MA08_AD, _VRAM_PIN_MA09_AD, _VRAM_PIN_MA10_AD, _VRAM_PIN_MA11_AD,
+                    _VRAM_PIN_MA12_AD, 0, 0, 0);
+    int data_a = pack(_VRAM_PIN_MD0_A, _VRAM_PIN_MD1_A, _VRAM_PIN_MD2_A, _VRAM_PIN_MD3_A,
+                      _VRAM_PIN_MD4_A, _VRAM_PIN_MD5_A, _VRAM_PIN_MD6_A, _VRAM_PIN_MD7_A);
+    int data_b = pack(_VRAM_PIN_MD0_B, _VRAM_PIN_MD1_B, _VRAM_PIN_MD2_B, _VRAM_PIN_MD3_B,
+                      _VRAM_PIN_MD4_B, _VRAM_PIN_MD5_B, _VRAM_PIN_MD6_B, _VRAM_PIN_MD7_B);
+    int data_c = pack(_VRAM_PIN_MD0_C, _VRAM_PIN_MD1_C, _VRAM_PIN_MD2_C, _VRAM_PIN_MD3_C,
+                      _VRAM_PIN_MD4_C, _VRAM_PIN_MD5_C, _VRAM_PIN_MD6_C, _VRAM_PIN_MD7_C);
+    int data_d = pack(_VRAM_PIN_MD0_D, _VRAM_PIN_MD1_D, _VRAM_PIN_MD2_D, _VRAM_PIN_MD3_D,
+                      _VRAM_PIN_MD4_D, _VRAM_PIN_MD5_D, _VRAM_PIN_MD6_D, _VRAM_PIN_MD7_D);
+
+    addr = (~addr) & 0x1FFF;
+
+    d("VRAM BUS:%04x:%02x MCS %d MOE %d MWR %d ADDR 0x%04x DATA %02x %02x %02x %02x\n",
+      bus_addr(), bus_data(),
+      _VRAM_PIN_MCSn_A.as_wire(), _VRAM_PIN_MOEn_A.as_wire(), _VRAM_PIN_MWRn_A.as_wire(),
+      addr, data_a, data_b, data_c, data_d);
+  }
+
+
 private:
 
-  Pin2 _VRM_TRI_D0 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D1 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D2 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D3 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D4 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D5 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D6 = Pin2::HIZ_PU;
-  Pin2 _VRM_TRI_D7 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D0 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D1 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D2 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D3 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D4 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D5 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D6 = Pin2::HIZ_PU;
+  Pin2 _VRAM_TRI_D7 = Pin2::HIZ_PU;
 
-  Pin2 _VRM_TRI_A00 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A01 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A02 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A03 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A04 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A05 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A06 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A07 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A08 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A09 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A10 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A11 = Pin2::HIZ_NP;
-  Pin2 _VRM_TRI_A12 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D00 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D01 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D02 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D03 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D04 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D05 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D06 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D07 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D08 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D09 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D10 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D11 = Pin2::HIZ_NP;
+  Pin2 _VRAM_TRI_D12 = Pin2::HIZ_NP;
 
   //-----------------------------------------------------------------------------
   // VRAM bus

@@ -3,6 +3,7 @@
 #include "MetroBoy.h"
 #include "Audio.h"
 #include "GLBase.h"
+#include "Debug.h"
 
 #include "test_codegen.h"
 #include "test_micro.h"
@@ -518,20 +519,6 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::render_ui(int screen_w, int screen_h) {
-  
-  struct StringDumper : public Dumper {
-    std::string s;
-    virtual void operator()(const char* format, ...) {
-      char source_buf[1024];
-      va_list args;
-      va_start (args, format);
-      vsnprintf (source_buf, 1024 ,format, args);
-      va_end (args);
-      s.append(source_buf);
-    }
-    virtual void clear() { s.clear(); }
-  };
-
   StringDumper dump;
 
   //----------------------------------------

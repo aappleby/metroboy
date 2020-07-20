@@ -1,5 +1,7 @@
 #include "GateBoy.h"
 
+#include "Debug.h"
+
 #include <chrono>
 
 using namespace Schematics;
@@ -8,7 +10,7 @@ using namespace Schematics;
 
 #if 0
 uint64_t phase(SchematicTop* top, Req req, bool verbose) {
-  uint64_t hash;
+  uint64_t phase_hash;
 
   for (top->pass_count = 0; top->pass_count < 256; top->pass_count++) {
     top->cpu_bus.set_cpu_req(req);
@@ -18,12 +20,12 @@ uint64_t phase(SchematicTop* top, Req req, bool verbose) {
     top->joypad.set_buttons(0);
     
     top->tick();
-    uint64_t new_hash = top->commit();
+    uint64_t pass_hash = top->commit();
     
-    if (new_hash.h == hash.h) break;
-    hash = new_hash;
+    if (pass_hash.h == phase_hash.h) break;
+    phase_hash = pass_hash;
     if (top->pass_count == 199) printf("stuck!\n");
-    CHECKn(top->pass_count == 200);
+    CHECK_N(top->pass_count == 200);
   }
 
   if (verbose) {
@@ -51,19 +53,19 @@ uint64_t phase(SchematicTop* top, Req req, bool verbose) {
       );
   }
 
-  return hash;
+  return phase_hash;
 }
 
 
 uint64_t run(SchematicTop* top, int phase_count, Req req, bool verbose) {
-  uint64_t hash;
+  uint64_t phase_hash;
   for (int i = 0; i < phase_count; i++) {
     top->phase_count++;
     wire CLK = (top->phase_count & 1) & (top->clk_reg.get_clk_a());
     top->clk_reg.set_clk_b(CLK);
-    hash = phase(top, req, verbose);
+    phase_hash = phase(top, req, verbose);
   }
-  return hash;
+  return phase_hash;
 }
 
 //-----------------------------------------------------------------------------
@@ -76,7 +78,7 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 
   top->clk_reg.set_t1t2(0,0);
 
-  uint64_t hash;
+  uint64_t phase_hash;
 
   // Just read DIV forever.
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
@@ -119,21 +121,22 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 
   //run(top, 1, req, true);
 }
+
+/*
+for (int phase_a = 0; phase_a <= 8; phase_a++) 
+for (int phase_b = 1; phase_b <= 8; phase_b++)
+for (int phase_c = 0; phase_c <= 8; phase_c++)
+for (int phase_d = 8; phase_d <= 16; phase_d++)
+  test_reset_timing(phase_a, phase_b, phase_c, phase_d);
+return 0;
+*/
+
 #endif
 
 //-----------------------------------------------------------------------------
 
 int GateBoy::main(int /*argc*/, char** /*argv*/) {
   printf("GateBoy sim starting!\n");
-
-  /*
-  for (int phase_a = 0; phase_a <= 8; phase_a++) 
-  for (int phase_b = 1; phase_b <= 8; phase_b++)
-  for (int phase_c = 0; phase_c <= 8; phase_c++)
-  for (int phase_d = 8; phase_d <= 16; phase_d++)
-    test_reset_timing(phase_a, phase_b, phase_c, phase_d);
-  return 0;
-  */
 
   GateBoy gateboy;
   gateboy.init();
@@ -146,54 +149,77 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   top->clk_reg.set_t1t2(0,0);
 
-  gateboy.verbose = true;
-
   // Just read DIV forever.
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
+  //Req req = {.addr = 0x9456, .data = 0x45, .read = 0, .write = 0 };
+
+  //----------
   // 8 phases w/ reset high, clock not running.
+
   top->clk_reg.set_rst(1);
   top->clk_reg.set_clk_a(0);
-  gateboy.run(top, 8, req);
+  gateboy.run(top, 8, req, true);
   printf("\n");
 
+  //----------
   // 8 phases w/ reset high, clock running.
+
   top->clk_reg.set_rst(1);
   top->clk_reg.set_clk_a(1);
-  gateboy.run(top, 8, req);
+  gateboy.run(top, 8, req, true);
   printf("\n");
 
+  //----------
   // 8 phases w/ reset low, clock running.
+
   top->clk_reg.set_rst(0);
   top->clk_reg.set_clk_a(1);
-  gateboy.run(top, 8, req);
+  gateboy.run(top, 8, req, true);
   printf("\n");
 
+  //----------
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
+  //gateboy.verbose = false;
   while(!top->clk_reg.CPU_PIN_STARTp()) {
-    gateboy.run(top, 1, req);
+    gateboy.run(top, 8, req, true);
+    printf("\n");
   }
+  //gateboy.verbose = true;
 
+  //----------
   // Ack the start request and run another 24 phases.
   // We should see AFER (global reset) clear and the video clocks start up.
   // FIXME why are the video clocks not running...
 
+  gateboy.run(top, 8, req, true);
   top->clk_reg.set_cpu_ready(1);
-  gateboy.run(top, 8, req);
+  gateboy.run(top, 16, req, true);
   printf("\n");
 
-  // sumtin brokn
-  /*
-  top->pix_pipe.XONA_LCDC_EN1.hax_a(1);
-  top->pix_pipe.XONA_LCDC_EN2.preset_a(1);
-  */
+  //----------
+  // Dump buses
 
-  gateboy.run(top, 24, req);
-  printf("Commit hash   %016llx\n", top->commit_hash);
-  printf("Combined hash %016llx\n", top->combined_hash);
+#if 0
+  for (int i = 0; i < 8; i++) {
+    StringDumper d;
+    
+    top->cpu_bus.dump(d);
+    top->vram_bus.dump(d);
+    
+    d.print();
+    gateboy.run(top, 1, req, true);
+  }
+#endif
+
+  //----------
+
+  printf("Commit phase_hash   %016llx\n", top->phase_hash);
+  printf("Combined phase_hash %016llx\n", top->combined_hash);
   printf("\n");
 
+#if 0
 #if _DEBUG
   const int iter_count = 16;
   const int phase_per_iter = 1024;
@@ -214,13 +240,11 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
 
   printf("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
-    gateboy.verbose = false;
-
     top->phase_count = 0;
     top->pass_count = 0;
 
     auto start = std::chrono::high_resolution_clock::now();
-    gateboy.run(top, phase_per_iter, req);
+    gateboy.run(top, phase_per_iter, req, false);
     auto finish = std::chrono::high_resolution_clock::now();
 
     if (iter >= warmup) {
@@ -251,62 +275,31 @@ int GateBoy::main(int /*argc*/, char** /*argv*/) {
   double pass_rate_sigma    = sqrt(pass_rate_variance);
   printf("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
 
-  printf("Commit hash   %016llx\n", top->commit_hash);
-  printf("Combined hash %016llx\n", top->combined_hash);
+  printf("Commit phase_hash   %016llx\n", top->phase_hash);
+  printf("Combined phase_hash %016llx\n", top->combined_hash);
 
-  /*
-  printf("DIV  %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
-         top->tim_reg.UPOF_DIV_15.as_char(),
-         top->tim_reg.UKET_DIV_14.as_char(),
-         top->tim_reg.TEKA_DIV_13.as_char(),
-         top->tim_reg.SUBU_DIV_12.as_char(),
-         top->tim_reg.SOLA_DIV_11.as_char(),
-         top->tim_reg.TERU_DIV_10.as_char(),
-         top->tim_reg.TOFE_DIV_09.as_char(),
-         top->tim_reg.TUGO_DIV_08.as_char(),
-         top->tim_reg.TULU_DIV_07.as_char(),
-         top->tim_reg.UGOT_DIV_06.as_char(),
-         top->tim_reg.TAMA_DIV_05.as_char(),
-         top->tim_reg.UNYK_DIV_04.as_char(),
-         top->tim_reg.TERO_DIV_03.as_char(),
-         top->tim_reg.UNER_DIV_02.as_char(),
-         top->tim_reg.UFOR_DIV_01.as_char(),
-         top->tim_reg.UKUP_DIV_00.as_char());
-
-
-  printf("CPUD   %c%c%c%c%c%c%c%c\n",
-         top->CPU_TRI_D7.as_char(),
-         top->CPU_TRI_D6.as_char(),
-         top->CPU_TRI_D5.as_char(),
-         top->CPU_TRI_D4.as_char(),
-         top->CPU_TRI_D3.as_char(),
-         top->CPU_TRI_D2.as_char(),
-         top->CPU_TRI_D1.as_char(),
-         top->CPU_TRI_D0.as_char());
-  */
+#endif
 
   return 0;
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
-uint64_t GateBoy::run(SchematicTop* top, int phase_count, Req req) {
-  uint64_t hash = 0;
+void GateBoy::run(SchematicTop* top, int phase_count, Req req, bool verbose) {
   for (int i = 0; i < phase_count; i++) {
     top->phase_count++;
     wire CLK = (top->phase_count & 1) & (top->clk_reg.get_clk_a());
     top->clk_reg.set_clk_b(CLK);
-    hash = phase(top, req);
+    phase(top, req, verbose);
   }
-  return hash;
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
-uint64_t GateBoy::phase(SchematicTop* top, Req req) {
+void GateBoy::phase(SchematicTop* top, Req req, bool verbose) {
   //printf("phase\n");
 
-  uint64_t hash = 0;
+  uint64_t phase_hash = 0;
   int pass_count = 0;
   for (; pass_count < 256; pass_count++) {
     top->cpu_bus.set_cpu_req(req);
@@ -316,22 +309,25 @@ uint64_t GateBoy::phase(SchematicTop* top, Req req) {
     top->joypad.set_buttons(0);
     
     top->tick();
-    uint64_t new_hash = top->commit();
+    uint64_t pass_hash = top->commit();
 
     //printf("hash 0x%016llx\n", new_hash.h);
     
-    if (new_hash == hash) break;
-    hash = new_hash;
+    if (pass_hash == phase_hash) break;
+    phase_hash = pass_hash;
     if (pass_count == 199) printf("stuck!\n");
-    CHECKn(pass_count == 200);
+    CHECK_N(pass_count == 200);
   }
 
+  top->phase_hash = phase_hash;
+  combine_hash(top->combined_hash, phase_hash);
+
   if (verbose) {
-    printf("Phase %08d:%c hash %016llx pass %02d CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d %d CPU_START %d CPU_RDY %d DIV %05d AFER %d ASOL %d\n",
-      top->phase_count,
+    printf("Phase %c @ %08d:%02d phase_hash %016llx CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d BOMA %d CPU_START %d CPU_RDY %d DIV %05d TUBO %d AFER %d ASOL %d\n",
       'A' + (top->phase_count & 7),
-      hash,
+      top->phase_count,
       pass_count,
+      phase_hash,
       top->clk_reg.get_clk_a(),
       top->clk_reg.get_clk_b(),
       top->clk_reg.SYS_PIN_RSTp(),
@@ -346,13 +342,12 @@ uint64_t GateBoy::phase(SchematicTop* top, Req req) {
       top->clk_reg.CPU_PIN_STARTp(),
       top->clk_reg.CPU_PIN_READYp(),
       top->tim_reg.get_div(),
+      top->clk_reg.TUBO_CPU_READYn(),
       top->clk_reg.AFER_SYS_RSTp(),
       top->clk_reg.ASOL_POR_DONEn()
       //hash.h);
       );
   }
-
-  return hash;
 }
 
 //-----------------------------------------------------------------------------
@@ -361,7 +356,7 @@ void GateBoy::init() {
   auto top_step = [this](Schematics::SchematicTop* top) {
     top->clk_reg.set_clk_a(1);
     top->clk_reg.set_clk_b(top->phase_count & 1);
-    phase(top, {0});
+    phase(top, {0}, false);
   };
   state_manager.init(top_step);
 
@@ -402,40 +397,6 @@ void GateBoy::init() {
 
 void GateBoy::reset(uint16_t /*new_pc*/) {
   state_manager.reset();
-
-  /*
-  Schematics::SchematicTop* gb = state_manager.state();
-  gb->SYS_PIN_RST.preset(true, 1);
-  gb->SYS_PIN_CLK_GOOD.preset(true, 0);
-  gb->preset_t1t2(0,0);
-
-  gb->CPU_PIN_CLKREQ.preset(true, 0);
-  gb->CPU_PIN_RD.preset(true, 0);
-  gb->CPU_PIN_WR.preset(true, 0);
-  gb->CPU_PIN_ADDR_VALID.preset(true, 1);
-  gb->CPU_PIN5.preset(true, 0);
-  gb->CPU_PIN6.preset(true, 0);
-  */
-
-  /*
-  gb->int_reg.CPU_PIN_ACK_SERIAL.preset(true, 0);
-  gb->int_reg.CPU_PIN_ACK_STAT.preset(true, 0);
-  gb->int_reg.CPU_PIN_ACK_VBLANK.preset(true, 0);
-  gb->int_reg.CPU_PIN_ACK_TIMER.preset(true, 0);
-  gb->int_reg.CPU_PIN_ACK_JOYPAD.preset(true, 0);
-  */
-
-  //gb->ext_pins_in.preset();
-
-  /*
-  cycle();
-  gb->SYS_PIN_RST.preset(true, 0);
-  cycle();
-  gb->SYS_PIN_CLK_GOOD.preset(true, 1);
-  cycle();
-  gb->CPU_PIN_CLKREQ.preset(true, 1);
-  cycle();
-  */
 }
 
 //-----------------------------------------------------------------------------

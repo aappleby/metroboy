@@ -101,7 +101,7 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 #endif
 
     // this is kind of a hack
-    uint16_t addr = (uint16_t)top.cpu_bus.get_addr();
+    uint16_t addr = (uint16_t)top.cpu_bus.bus_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
     cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_ZERY_BOOT_CSp, bool(data & 0x01));

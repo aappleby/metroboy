@@ -21,10 +21,8 @@ public:
     return state_manager.state();
   }
 
-  bool verbose = true;
-
-  uint64_t run   (Schematics::SchematicTop* top, int phase_count, Req req);
-  uint64_t phase (Schematics::SchematicTop* top, Req req);
+  void run   (Schematics::SchematicTop* top, int phase_count, Req req, bool verbose);
+  void phase (Schematics::SchematicTop* top, Req req, bool verbose);
 
   StateManager2<Schematics::SchematicTop> state_manager;
 

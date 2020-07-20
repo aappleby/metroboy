@@ -18,18 +18,6 @@ constexpr int samples_per_frame = output_hz / 60;
 
 #define HBLANK_DELAY_START  8
 
-#define PHASE_A ((phase & 7) == 0)
-#define PHASE_B ((phase & 7) == 1)
-#define PHASE_C ((phase & 7) == 2)
-#define PHASE_D ((phase & 7) == 3)
-#define PHASE_E ((phase & 7) == 4)
-#define PHASE_F ((phase & 7) == 5)
-#define PHASE_G ((phase & 7) == 6)
-#define PHASE_H ((phase & 7) == 7)
-
-#define PHASE_HI ((phase & 1) == 1)
-#define PHASE_LO ((phase & 1) == 0)
-
 //-----------------------------------------------------------------------------
 // Memory map
 

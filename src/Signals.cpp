@@ -70,6 +70,14 @@ const Lut8 logic_lut1 = []() -> Lut8 {
   temp.tab[REG_D1C1 | (DELTA_A1C1 << 4)] = REG_D1C1;
 
   //----------------------------------------
+  // register holds for fast impl
+
+  temp.tab[REG_D0C0 | (DELTA_HOLD << 4)] = REG_D0C0 | (DELTA_HOLD << 4);
+  temp.tab[REG_D1C0 | (DELTA_HOLD << 4)] = REG_D1C0 | (DELTA_HOLD << 4);
+  temp.tab[REG_D0C1 | (DELTA_HOLD << 4)] = REG_D0C1 | (DELTA_HOLD << 4);
+  temp.tab[REG_D1C1 | (DELTA_HOLD << 4)] = REG_D1C1 | (DELTA_HOLD << 4);
+
+  //----------------------------------------
   // signals
 
   temp.tab[SIG_0000 | (DELTA_SIG0 << 4)] = SIG_0000;

@@ -174,7 +174,7 @@ inline Delta tribuf_10n_r2(wire OEn, wire D) {
 // REG8_08 >> Qn
 
 inline Delta ff8_r2(wire CLKp, wire CLKn, bool D) {
-  CHECKn(CLKp == CLKn);
+  CHECK_N(CLKp == CLKn);
   (void)CLKp;
 
   return Delta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
@@ -220,7 +220,7 @@ inline Delta ff8_r2(wire CLKp, wire CLKn, bool D) {
 // XEPE_09 >> nc
 
 inline Delta ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECKn(CLKp == CLKn);
+  CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
 #if 0
@@ -270,7 +270,7 @@ inline Delta ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
 /*p32.PYJU*/
 
 inline Delta ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
-  CHECKn(CLKp == CLKn);
+  CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
 #if 0
@@ -341,7 +341,7 @@ inline Delta ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
 
 // Almost definitely RSTn - see UPOJ/AFER on boot
 inline Delta ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECKn(CLKp == CLKn);
+  CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
 #if 0

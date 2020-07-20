@@ -35,16 +35,25 @@ struct Timer {
     return pack(SOPU_TAC_0.q(), SAMY_TAC_1.q(), SABO_TAC_2.q(), 0);
   }
 
-  wire UVYN_DIV_05n() const { return not(_TAMA_DIV_05.q()); }
-  wire UMEK_DIV_06n() const { return not(_UGOT_DIV_06.q()); }
-  wire UREK_DIV_07n() const { return not(_TULU_DIV_07.q()); }
+  wire UVYN_DIV_05n() const { return _TAMA_DIV_05.qn(); }
+  wire UMEK_DIV_06n() const { return _UGOT_DIV_06.qn(); }
+  wire UREK_DIV_07n() const { return _TULU_DIV_07.qn(); }
 
   wire UKUP_DIV_00()  const { return _UKUP_DIV_00.q(); }
   wire UFOR_DIV_01()  const { return _UFOR_DIV_01.q(); }
   wire UNER_DIV_02()  const { return _UNER_DIV_02.q(); }
   wire TERO_DIV_03()  const { return _TERO_DIV_03.q(); }
   wire UNYK_DIV_04()  const { return _UNYK_DIV_04.q(); }
+  wire TAMA_DIV_05()  const { return _TAMA_DIV_05.q(); }
+  wire UGOT_DIV_06()  const { return _UGOT_DIV_06.q(); }
+  wire TULU_DIV_07()  const { return _TULU_DIV_07.q(); }
+  wire TUGO_DIV_08()  const { return _TUGO_DIV_08.q(); }
+  wire TOFE_DIV_09()  const { return _TOFE_DIV_09.q(); }
   wire TERU_DIV_10()  const { return _TERU_DIV_10.q(); }
+  wire SOLA_DIV_11()  const { return _SOLA_DIV_11.q(); }
+  wire SUBU_DIV_12()  const { return _SUBU_DIV_12.q(); }
+  wire TEKA_DIV_13()  const { return _TEKA_DIV_13.q(); }
+  wire UKET_DIV_14()  const { return _UKET_DIV_14.q(); }
   wire UPOF_DIV_15()  const { return _UPOF_DIV_15.q(); }
 
   wire MOBA_INT_TIMERp() const { return _MOBA_INT_TIMERp.q(); }

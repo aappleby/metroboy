@@ -38,7 +38,8 @@ struct ClockRegisters {
     _SYS_PIN_T2n.hold(t2);
   }
 
-  //----------------------------------------
+  //-----------------------------------------------------------------------------
+  // Main clocks
 
   /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not(SYS_PIN_CLK_A); }
 
@@ -76,9 +77,19 @@ struct ClockRegisters {
   /*p01.APUK*/ wire APUK_xxCDEFxx() const { return _APUK_xxCDEFxx.q(); }
   /*p01.ADYK*/ wire ADYK_xxxDEFGx() const { return _ADYK_xxxDEFGx.q(); }
 
+  //-----------------------------------------------------------------------------
+  // Vid clocks
+
   /*p29.WUVU*/ wire WUVU_xxCDxxGH() const { return _WUVU_xxCDxxGH.q(); }
   /*p21.VENA*/ wire VENA_xxxxEFGH() const { return _VENA_xxxxEFGH.q(); }
   /*p29.WOSU*/ wire WOSU_xBCxxFGx() const { return _WOSU_xBCxxFGx.q(); }
+
+  //-----------------------------------------------------------------------------
+  // POR state
+
+  /*p01.TUBO*/ wire TUBO_CPU_READYn() const { return _TUBO_CPU_READYn.q(); }
+  /*p01.ASOL*/ wire ASOL_POR_DONEn()  const { return _ASOL_POR_DONEn.q(); }
+  /*p01.AFER*/ wire AFER_SYS_RSTp()   const { return _AFER_SYS_RSTp.q(); }
 
   //-----------------------------------------------------------------------------
   // Resets
@@ -117,8 +128,6 @@ struct ClockRegisters {
   /*p01.LYFE*/ wire LYFE_VID_RSTn() const { return not(LYHA_VID_RSTp()); }
   /*p01.PYRY*/ wire PYRY_VID_RSTp() const { return not(XAPO_VID_RSTn()); }
 
-  /*p01.AFER*/ wire AFER_SYS_RSTp() const { return _AFER_SYS_RSTp.q(); }
-
   //-----------------------------------------------------------------------------
   // Debug stuff
 
@@ -135,8 +144,6 @@ struct ClockRegisters {
   /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and(_SYS_PIN_T2n, UBET_T1p()); }
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), _SYS_PIN_RSTp); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
-
-  /*p01.ASOL*/ wire ASOL_POR_DONEn()  const { return _ASOL_POR_DONEn.q(); }
 
   //-----------------------------------------------------------------------------
 
@@ -223,8 +230,8 @@ private:
   Pin2 CPU_PIN_BOLO_ABCDEFxx = Pin2::HIZ_NP; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
   Pin2 CPU_PIN_BUKE_AxxxxxGH = Pin2::HIZ_NP; // top left port PORTD_07: <- BUKE_ABxxxxxH
   Pin2 CPU_PIN_BOMA_Axxxxxxx = Pin2::HIZ_NP; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-
   Pin2 CPU_PIN_BOGA_xBCDEFGH = Pin2::HIZ_NP; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+
   Pin2 EXT_PIN_CLK = Pin2::HIZ_NP;     // PIN_75 <- P01.BUDE/BEVA
 };
 

@@ -126,6 +126,7 @@
     <ClInclude Include="src\Bootrom.h" />
     <ClInclude Include="src\BusDump.h" />
     <ClInclude Include="src\Cells.h" />
+    <ClInclude Include="src\Debug.h" />
     <ClInclude Include="src\DMA.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\GateBoy.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="src\Bootrom.cpp" />
     <ClCompile Include="src\BusDump.cpp" />
     <ClCompile Include="src\Cells.cpp" />
+    <ClCompile Include="src\Debug.cpp" />
     <ClCompile Include="src\DMA.cpp" />
     <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\GateBoy.cpp" />

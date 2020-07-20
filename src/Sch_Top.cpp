@@ -74,9 +74,6 @@ uint64_t SchematicTop::commit() {
   combine_hash(hash, oam_bus.commit());
   combine_hash(hash, vram_bus.commit());
 
-  commit_hash = hash;
-  combine_hash(combined_hash, hash);
-
   pass_count++;
 
   return hash;

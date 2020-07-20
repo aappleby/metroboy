@@ -16,18 +16,6 @@ struct CpuBus {
 
   void set_cpu_req(Req req);
 
-  int get_addr() const {
-    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
-                CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
-                CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11,
-                CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
-  }
-
-  int get_data() const {
-    return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3,
-                CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
-  }
-
   //-----------------------------------------------------------------------------
   // Address decoders
 
@@ -39,7 +27,7 @@ struct CpuBus {
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not(SARO_FE00_FEFFp()); }
   /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not(CPU_PIN_A15); }
   /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or(CPU_PIN_A13, CPU_PIN_A14, SORE_0000_7FFFp()); }
-  /*p08.TEXO*/ wire TEXO_8000_9FFFn() const { return and(_CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn()); }
+  /*p08.TEXO*/ wire TEXO_8000_9FFFn() const { return and(_CPU_PIN_ADDR_VALIDn, TEVY_8000_9FFFn()); }
   /*p08.LEVO*/ wire LEVO_8000_9FFFp() const { return not(TEXO_8000_9FFFn()); }
 
   /*p22.XOLA*/ wire XOLA_A00n() const { return not(CPU_PIN_A00); }
@@ -105,7 +93,7 @@ struct CpuBus {
     return or(and(CPU_PIN_A15, CPU_PIN_A14), _TUMA_CART_RAM);
   }
 
-  /*p??.APAP*/ wire APAP_CPU_ADDR_VALIDp() const { return not(_CPU_PIN_ADDR_VALID); } // Missing from schematic
+  /*p??.APAP*/ wire APAP_CPU_ADDR_VALIDp() const { return not(_CPU_PIN_ADDR_VALIDn); } // Missing from schematic
 
   /*p04.MAKA*/ wire MAKA_FROM_CPU5_SYNC() const { return _MAKA_FROM_CPU5_SYNC.q(); }
 
@@ -119,6 +107,29 @@ struct CpuBus {
   wire CPU_PIN_RDp() const { return _CPU_PIN_RDp; }
   wire CPU_PIN_WRp() const { return _CPU_PIN_WRp; }
   wire CPU_PIN5() const { return _CPU_PIN5; }
+
+  //-----------------------------------------------------------------------------
+
+  int bus_addr() const {
+    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03,
+                CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
+                CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11,
+                CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
+  }
+
+  int bus_data() const {
+    return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3,
+                CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
+  }
+
+  void dump(Dumper& d) {
+    d("CPU BUS:%04x:%02x RDp %d WRp %d ADDR_VALIDn %d\n",
+      bus_addr(),
+      bus_data(),
+      _CPU_PIN_RDp.as_wire(),
+      _CPU_PIN_WRp.as_wire(),
+      _CPU_PIN_ADDR_VALIDn.as_wire());
+  }
 
   //-----------------------------------------------------------------------------
 
@@ -165,9 +176,9 @@ private:
   /*p04.MAKA*/ Reg2 _MAKA_FROM_CPU5_SYNC = Reg2::D0C0;
 
   // Main bus
-  Pin2 _CPU_PIN_RDp        = Pin2::HOLD_0;    // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  Pin2 _CPU_PIN_WRp        = Pin2::HOLD_0;    // top right port PORTA_01: ->
-  Pin2 _CPU_PIN_ADDR_VALID = Pin2::HOLD_0;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  Pin2 _CPU_PIN_RDp         = Pin2::HOLD_0;    // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Pin2 _CPU_PIN_WRp         = Pin2::HOLD_0;    // top right port PORTA_01: ->
+  Pin2 _CPU_PIN_ADDR_VALIDn = Pin2::HOLD_1;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
 };
 

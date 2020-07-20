@@ -7,7 +7,7 @@ using namespace Schematics;
 
 #define FAST_IMPL
 
-#define PHASE(A) (((A) >> (7 - phase)) & 1)
+#define PHASE(A) ((A) & (1 << (7 - phase)))
 
 //-----------------------------------------------------------------------------
 
@@ -19,163 +19,138 @@ void ClockRegisters::tick(const SchematicTop& top) {
 
 #ifdef FAST_IMPL
 
-void ClockRegisters::tock(const SchematicTop& top) {
+void ClockRegisters::tock_clk(const SchematicTop& top) {
   const int phase = top.phase_count & 7;
-  // ignoring the deglitcher here
 
-  _AFUR_ABCDxxxx.hold_d(PHASE(0b11110000));
-  _ALEF_xBCDExxx.hold_d(PHASE(0b01111000));
-  _APUK_xxCDEFxx.hold_d(PHASE(0b00111100));
-  _ADYK_xxxDEFGx.hold_d(PHASE(0b00011110));
+  wire upoj_run = _SYS_PIN_T1n || _SYS_PIN_T2n || !_SYS_PIN_RSTp;
 
-  CPU_PIN_BEKO_ABCDxxxx.hold(PHASE(0b11110000));
-  CPU_PIN_BUDE_xxxxEFGH.hold(PHASE(0b00001111));
-  CPU_PIN_BOLO_ABCDEFxx.hold(PHASE(0b11111100));
-  CPU_PIN_BUKE_AxxxxxGH.hold(PHASE(0b10000011));
+  _AFUR_ABCDxxxx.hold_d(PHASE(0b11110000) && upoj_run);
+  _ALEF_xBCDExxx.hold_d(PHASE(0b01111000) && upoj_run);
+  _APUK_xxCDEFxx.hold_d(PHASE(0b00111100) && upoj_run);
+  _ADYK_xxxDEFGx.hold_d(PHASE(0b00011110) && upoj_run);
 
-  CPU_PIN_BOWA_xBCDEFGH.hold(!PHASE_A);
-  CPU_PIN_BEDO_Axxxxxxx.hold( PHASE_A);
-  CPU_PIN_BOMA_Axxxxxxx.hold( PHASE_A);
+  bool beko = PHASE(0b11110000);
+  bool bedo = PHASE(0b10000000);
+  bool boma = PHASE(0b10000000);
+  bool bolo = PHASE(0b11111100);
+  bool buke = PHASE(0b10000011); // buke high on phase a is probably a hardware bug
+
+  if (!upoj_run) beko = 0;
+  if (!upoj_run) bedo = 0;
+  if (!upoj_run) boma = 0;
+  if (!upoj_run) bolo = 0;
+  if (!upoj_run) buke = 1;
+
+  if (!_SYS_PIN_CLK_A) bedo = 1;
+  if (!_SYS_PIN_CLK_A) boma = 1;
+ 
+  if (!_CPU_PIN_READYp) beko = 1;
+  if (!_CPU_PIN_READYp) bedo = 0;
+  if (!_CPU_PIN_READYp) bolo = 1;
+  if (!_CPU_PIN_READYp) buke = 0;
+
+  _CPU_PIN_BEKO_ABCDxxxx.hold( beko); // stopped if !upoj_run, cpu not ready
+  _CPU_PIN_BUDE_xxxxEFGH.hold(!beko); // stopped if !upoj_run, cpu not ready
+  _CPU_PIN_BEDO_Axxxxxxx.hold( bedo); // stopped if !upoj_run, cpu not ready, !CLK_GOOD
+  _CPU_PIN_BOWA_xBCDEFGH.hold(!bedo); // stopped if !upoj_run, cpu not ready, !CLK_GOOD
+  _CPU_PIN_BOMA_Axxxxxxx.hold( boma); // stopped if !upoj_run,                !CLK_GOOD
+  _CPU_PIN_BOGA_xBCDEFGH.hold(!boma); // stopped if !upoj_run,                !CLK_GOOD 
+  _CPU_PIN_BOLO_ABCDEFxx.hold( bolo); // stopped if !upoj_run, cpu not ready
+  _CPU_PIN_BUKE_AxxxxxGH.hold( buke); // stopped if !upoj_run, cpu not ready
+
+  _EXT_PIN_CLK_xxxxEFGH.hold(!beko);
+  _CPU_PIN_EXT_CLKGOOD = _SYS_PIN_CLK_A.as_wire();
+}
+
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::tock_rst(const SchematicTop& top) {
+  const int phase = top.phase_count & 7;
 
   wire upoj_run = _SYS_PIN_T1n || _SYS_PIN_T2n || !_SYS_PIN_RSTp;
   wire unor_dbg = _SYS_PIN_T2n && !_SYS_PIN_T1n;
   wire umut_dbg = _SYS_PIN_T1n && !_SYS_PIN_T2n;
 
-  if (!upoj_run) {
-    _AFUR_ABCDxxxx.hold_d(0);
-    _ALEF_xBCDExxx.hold_d(0);
-    _APUK_xxCDEFxx.hold_d(0);
-    _ADYK_xxxDEFGx.hold_d(0);
-
-    CPU_PIN_BEKO_ABCDxxxx.hold(0);
-    CPU_PIN_BUDE_xxxxEFGH.hold(1);
-    CPU_PIN_BOLO_ABCDEFxx.hold(0);
-    CPU_PIN_BUKE_AxxxxxGH.hold(1);
-
-    CPU_PIN_BOWA_xBCDEFGH.hold(1);
-    CPU_PIN_BEDO_Axxxxxxx.hold(0);
-    CPU_PIN_BOMA_Axxxxxxx.hold(0);
+  if (_SYS_PIN_RSTp || !_SYS_PIN_CLK_A) {
+    _TUBO_WAITING_FOR_CPU_READY.hold(1);
+  }
+  else if (_CPU_PIN_READYp) {
+    _TUBO_WAITING_FOR_CPU_READY.hold(0);
   }
 
-  if (!SYS_PIN_CLK_A) {
-    CPU_PIN_BOWA_xBCDEFGH.hold(0);
-    CPU_PIN_BEDO_Axxxxxxx.hold(1);
-    CPU_PIN_BOMA_Axxxxxxx.hold(1);
+  wire por_done = _TUBO_WAITING_FOR_CPU_READY.q() && top.tim_reg.TERO_DIV_03();
+
+  if (_SYS_PIN_RSTp) {
+    _ASOL_POR_DONEn.hold(1);
+  }
+  else if (unor_dbg || umut_dbg || por_done) {
+    _ASOL_POR_DONEn.hold(0);
   }
 
-  if (!_CPU_PIN_READYp) {
-    CPU_PIN_BEKO_ABCDxxxx.hold(1);
-    CPU_PIN_BUDE_xxxxEFGH.hold(0);
-    CPU_PIN_BOLO_ABCDEFxx.hold(1);
-    CPU_PIN_BUKE_AxxxxxGH.hold(0);
-    CPU_PIN_BOWA_xBCDEFGH.hold(1);
-    CPU_PIN_BEDO_Axxxxxxx.hold(0);
-  }
+  bool boma = PHASE(0b10000000);
+  if (!upoj_run) boma = 0;
+  if (!_SYS_PIN_CLK_A) boma = 1;
+  _AFER_SYS_RSTp = ff13_r2(!boma, boma, upoj_run, _ASOL_POR_DONEn.q());
 
-  CPU_PIN_BOGA_xBCDEFGH.hold((!PHASE_A | !upoj_run) & SYS_PIN_CLK_A);
-
-  EXT_PIN_CLK.hold(PHASE(0b11110000));
-  if (!_CPU_PIN_READYp) EXT_PIN_CLK.hold(0);
-
-  CPU_PIN_EXT_CLKGOOD = SYS_PIN_CLK_A.as_wire();
-
-  if (_SYS_PIN_RSTp || !SYS_PIN_CLK_A) _TUBO_CPU_READYn.hold(1);
-  if (_CPU_PIN_READYp) _TUBO_CPU_READYn.hold(0);
-
-
-  if (unor_dbg || umut_dbg) {
-    _CPU_PIN_STARTp = 1;
-    _ASOL_POR_DONEn.hold(_SYS_PIN_RSTp);
-  }
-  else {
-    wire start = _TUBO_CPU_READYn.q() && top.tim_reg.TERO_DIV_03();
-    _CPU_PIN_STARTp = start;
-
-    if ( _SYS_PIN_RSTp)          _ASOL_POR_DONEn.hold(1);
-    if (!_SYS_PIN_RSTp && start) _ASOL_POR_DONEn.hold(0);
-  }
-
-
+  _CPU_PIN_STARTp   = por_done || unor_dbg || umut_dbg;
   _CPU_PIN_SYS_RSTp = _AFER_SYS_RSTp.q();
-  _CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.as_wire();
+  _CPU_PIN_EXT_RST  = (wire)_SYS_PIN_RSTp;
+}
 
+//-----------------------------------------------------------------------------
 
+void ClockRegisters::tock_dbg(const SchematicTop& /*top*/) {
+  wire unor_dbg = _SYS_PIN_T2n && !_SYS_PIN_T1n;
+  wire umut_dbg = _SYS_PIN_T1n && !_SYS_PIN_T2n;
+
+  wire _SYCY_DBG_CLOCKn = not(unor_dbg);
   if (_AFER_SYS_RSTp.q() || _ASOL_POR_DONEn.q()) {
-    /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(unor_dbg);
-    /*p25.SOTO*/ SOTO_DBG = ff17_r2(_SYCY_DBG_CLOCKn, 0, SOTO_DBG.qn());
+    _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, 0, _SOTO_DBG_VRAM.qn());
   }
   else {
-    /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(unor_dbg);
-    /*p25.SOTO*/ SOTO_DBG = ff17_r2(_SYCY_DBG_CLOCKn, 1, SOTO_DBG.qn());
+    _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, 1, _SOTO_DBG_VRAM.qn());
   }
 
+  _CPU_PIN_UNOR_DBG = unor_dbg;
+  _CPU_PIN_UMUT_DBG = umut_dbg;
+}
 
-  {
-    if (upoj_run) {
-      if (!SYS_PIN_CLK_A) {
-        _AFER_SYS_RSTp = ff13_r2(0, 1, 1, _ASOL_POR_DONEn.q());
-        //_AFER_SYS_RSTp.hold_clk(0);
-      }
-      else {
-        wire clk1 = _AFER_SYS_RSTp.clk();
-        wire clk2 = !PHASE_A;
+//-----------------------------------------------------------------------------
 
-        if (!clk1 && clk2) {
-          _AFER_SYS_RSTp = ff13_r2(clk2, !clk2, 1, _ASOL_POR_DONEn.q());
-        }
-        else {
-          _AFER_SYS_RSTp = ff13_r2(clk2, !clk2, 1, _ASOL_POR_DONEn.q());
-        }
+// can't do fast mode for this until vid clock is running
+void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
+  wire ATAL_xBxDxFxH = _SYS_PIN_CLK_B;
+  wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+  wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+  wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+  wire XYVA_xBxDxFxH = not(ZEME_AxCxExGx);
+  wire XOTA_AxCxExGx = not(XYVA_xBxDxFxH);
+  wire XYFY_xBxDxFxH = not(XOTA_AxCxExGx);
 
-        //if (PHASE_B) _AFER_SYS_RSTp.hold_d(_ASOL_POR_DONEn.q());
-        //_AFER_SYS_RSTp.hold_clk(!PHASE_A);
-      }
-    }
-    else {
-      if (!SYS_PIN_CLK_A) {
-        _AFER_SYS_RSTp = ff13_r2(0, 1, 0, _ASOL_POR_DONEn.q());
-        //_AFER_SYS_RSTp.hold_d(0);
-        //_AFER_SYS_RSTp.hold_clk(0);
-      }
-      else {
-        //wire clk = _AFER_SYS_RSTp.clk();
-        _AFER_SYS_RSTp = ff13_r2(1, 0, 0, _ASOL_POR_DONEn.q());
+  wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
+  wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
 
-        //_AFER_SYS_RSTp.hold_d(0);
-        //_AFER_SYS_RSTp.hold_clk(1);
-      }
-    }
+  wire AVOR_SYS_RSTp = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn.q());
+  wire ALUR_SYS_RSTn = not(AVOR_SYS_RSTp);
+  wire DULA_SYS_RSTp = not(ALUR_SYS_RSTn);
+  wire CUNU_SYS_RSTn = not(DULA_SYS_RSTp);
+  wire XORE_SYS_RSTp = not(CUNU_SYS_RSTn);
+  wire XEBE_SYS_RSTn = not(XORE_SYS_RSTp);
+  wire XODO_VID_RSTp = nand(XEBE_SYS_RSTn, _XONA_LCDC_EN);
+  wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
 
-
-  }
-
-
-  _CPU_PIN_UNOR_DBG = _SYS_PIN_T2n && !_SYS_PIN_T1n;
-  _CPU_PIN_UMUT_DBG = _SYS_PIN_T1n && !_SYS_PIN_T2n;
-
-  // can't do fast mode for this until vid clock is running
-  {
-    /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not(ZEME_AxCxExGx());
-    /*p29.XOTA*/ wire _XOTA_AxCxExGx = not(_XYVA_xBxDxFxH);
-    /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not(_XOTA_AxCxExGx);
-
-    wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
-    wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
-
-    /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17_r2( _XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-    /*p21.VENA*/ _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-    /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17_r2( _XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-  }
+  _WUVU_xxCDxxGH = ff17_r2( XOTA_AxCxExGx,  XAPO_VID_RSTn, !WUVU_xxCDxxGH_);
+  _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, XAPO_VID_RSTn, !VENA_xxxxEFGH_);
+  _WOSU_xBCxxFGx = ff17_r2( XYFY_xBxDxFxH,  XAPO_VID_RSTn, !WUVU_xxCDxxGH_);
 }
 
 #endif
-
 
 //-----------------------------------------------------------------------------
 
 #ifndef FAST_IMPL
 
-void ClockRegisters::tock(const SchematicTop& top) {
+void ClockRegisters::tock_clk(const SchematicTop& top) {
   const int phase = top.phase_count & 7;
   // ignoring the deglitcher here
 
@@ -199,11 +174,37 @@ void ClockRegisters::tock(const SchematicTop& top) {
   }
 
   {
-    /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(SYS_PIN_CLK_A);
+    /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(_SYS_PIN_CLK_A);
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(_CPU_PIN_READYp);
 
+    // AROV = !APUK_9
+    // AFEP = !ALEF_8
+    // ATYP = !AFUR_9
+    // ADAR = !ADYK_8
+
+#if 0
+
+    {
+      // AFEP = not(ALEF)
+      // BUGO = not(AFEP)
+      // BATE = nor(BUGO, AROV, ABOL)
+      // BASU = not(BATE)
+      // BUKE = not(BASU)
+
+      /*p01.AROV*/ wire AROV_xxCDEFxx = not(_APUK_xxCDEFxx.qn());
+      /*p01.AFEP*/ wire AFEP_AxxxxFGH = not(_ALEF_xBCDExxx.q());
+      /*p01.BUGO*/ wire BUGO_xBCDExxx = not(AFEP_AxxxxFGH);
+      /*p01.BATE*/ wire BATE_AxxxxxGH = nor(ABOL_CLKREQn,
+                                            BUGO_xBCDExxx,
+                                            AROV_xxCDEFxx);
+      /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
+      /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
+    }
+
+#endif
+
     /*p01.AROV*/ wire AROV_xxCDEFxx = not(_APUK_xxCDEFxx.qn());
-    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( _ALEF_xBCDExxx.q());
+    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not(_ALEF_xBCDExxx.q());
     /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(_AFUR_ABCDxxxx.qn());
 
     /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
@@ -239,48 +240,28 @@ void ClockRegisters::tock(const SchematicTop& top) {
     /*p01.BOGA*/ wire BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
     /*p01.BOMA*/ wire BOMA_Axxxxxxx = not(BOGA_xBCDEFGH);
 
-    CPU_PIN_BOWA_xBCDEFGH = BOWA_xBCDEFGH;
-    CPU_PIN_BEDO_Axxxxxxx = BEDO_Axxxxxxx;
-    CPU_PIN_BEKO_ABCDxxxx = BEKO_ABCDxxxx;
-    CPU_PIN_BUDE_xxxxEFGH = BUDE_xxxxEFGH;
-    CPU_PIN_BOLO_ABCDEFxx = BOLO_ABCDEFxx;
-    CPU_PIN_BUKE_AxxxxxGH = BUKE_AxxxxxGH;
-    CPU_PIN_BOMA_Axxxxxxx = BOMA_Axxxxxxx;
-    CPU_PIN_BOGA_xBCDEFGH = BOGA_xBCDEFGH;
+    _CPU_PIN_BOWA_xBCDEFGH = BOWA_xBCDEFGH;
+    _CPU_PIN_BEDO_Axxxxxxx = BEDO_Axxxxxxx;
+    _CPU_PIN_BEKO_ABCDxxxx = BEKO_ABCDxxxx;
+    _CPU_PIN_BUDE_xxxxEFGH = BUDE_xxxxEFGH;
+    _CPU_PIN_BOLO_ABCDEFxx = BOLO_ABCDEFxx;
+    _CPU_PIN_BUKE_AxxxxxGH = BUKE_AxxxxxGH;
+    _CPU_PIN_BOMA_Axxxxxxx = BOMA_Axxxxxxx;
+    _CPU_PIN_BOGA_xBCDEFGH = BOGA_xBCDEFGH;
+
+    /* PIN_75 */ _EXT_PIN_CLK_xxxxEFGH = BUDE_xxxxEFGH;
   }
 
-  // can't do fast mode for this until vid clock is running
-  {
-    /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not(ZEME_AxCxExGx());
-    /*p29.XOTA*/ wire _XOTA_AxCxExGx = not(_XYVA_xBxDxFxH);
-    /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not(_XOTA_AxCxExGx);
-
-    wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
-    wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
-
-    /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17_r2( _XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-    /*p21.VENA*/ _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-    /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17_r2( _XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-  }
-
-  {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_ABCDxxxx());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn(), ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /* PIN_75 */ EXT_PIN_CLK = BUDE_AxxxxFGH;
-  }
-
-  CPU_PIN_EXT_CLKGOOD = SYS_PIN_CLK_A.as_wire();
+  _CPU_PIN_EXT_CLKGOOD = _SYS_PIN_CLK_A.as_wire();
   /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, UCOB_CLKBADp());
 
-  /*p01.TUBO*/ _TUBO_CPU_READYn = nor_latch_r2(_UPYF, CPU_PIN_READYp());
+  /*p01.TUBO*/ _TUBO_WAITING_FOR_CPU_READY = nor_latch_r2(_UPYF, CPU_PIN_READYp());
 
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_CPU_READYn.q(), top.tim_reg.TERO_DIV_03());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_WAITING_FOR_CPU_READY.q(), top.tim_reg.TERO_DIV_03());
 #else
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_CPU_READYn.q(), top.tim_reg.UPOF_DIV_15());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_WAITING_FOR_CPU_READY.q(), top.tim_reg.UPOF_DIV_15());
 #endif
 
   /*p01.TABA*/ wire _TABA_POR_TRIGn = or(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
@@ -298,18 +279,45 @@ void ClockRegisters::tock(const SchematicTop& top) {
   _CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.as_wire();
 
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
-  /*p25.SOTO*/ SOTO_DBG = ff17_r2(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), SOTO_DBG.qn());
+  /*p25.SOTO*/ _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), _SOTO_DBG_VRAM.qn());
 
   _CPU_PIN_UNOR_DBG = UNOR_MODE_DBG2p();
   _CPU_PIN_UMUT_DBG = UMUT_MODE_DBG1p();
 }
 
 
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::tock_rst(const SchematicTop& /*top*/) {
+}
+
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::tock_dbg(const SchematicTop& /*top*/) {
+}
+
+
+//-----------------------------------------------------------------------------
+
+// can't do fast mode for this until vid clock is running
+void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
+  /*p29.XYVA*/ wire XYVA_xBxDxFxH = not(ZEME_AxCxExGx());
+  /*p29.XOTA*/ wire _XOTA_AxCxExGx = not(XYVA_xBxDxFxH);
+  /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not(_XOTA_AxCxExGx);
+
+  wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
+  wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
+
+  /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17_r2( _XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+  /*p21.VENA*/ _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
+  /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17_r2( _XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+}
+
 #endif
 
 //-----------------------------------------------------------------------------
 
-uint64_t ClockRegisters::commit() {
+uint64_t ClockRegisters::commit(const SchematicTop& /*top*/) {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
   return {ret};
 }

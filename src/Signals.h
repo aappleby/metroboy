@@ -125,6 +125,11 @@ struct Reg2 : public RegBase2 {
     return wire(reg & 2);
   }
 
+  inline void set_delta(bool CLKp, bool D) {
+    CHECK_N(has_delta());
+    delta = Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+  }
+
   inline void hold(bool CLK, bool D) {
     CHECK_P(is_reg());
 

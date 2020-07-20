@@ -25,7 +25,11 @@ void SchematicTop::tick() {
   int_reg.tick(top);
 
 
-  clk_reg.tock(top);
+  clk_reg.tock_clk(top);
+  clk_reg.tock_rst(top);
+  clk_reg.tock_dbg(top);
+  clk_reg.tock_vid(top);
+
   tim_reg.tock(top, cpu_bus);
   bootrom.tock(top, cpu_bus);
   dma_reg.tock(top, cpu_bus);
@@ -56,7 +60,7 @@ uint64_t SchematicTop::commit() {
 
   uint64_t hash = 0x12345678;
 
-  combine_hash(hash, clk_reg.commit());
+  combine_hash(hash, clk_reg.commit(top));
   combine_hash(hash, tim_reg.commit());
   combine_hash(hash, bootrom.commit());
   combine_hash(hash, dma_reg.commit());
@@ -123,7 +127,7 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, ff20.CPU_PIN_BOGA_xBCDEFGH);
+/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, ff20._CPU_PIN_BOGA_xBCDEFGH);
 /*p25.SOLE*/ wire SOLE = not(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(

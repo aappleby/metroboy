@@ -10,16 +10,20 @@ struct SchematicTop;
 struct ClockRegisters {
 
   void tick(const SchematicTop& top);
-  void tock(const SchematicTop& top);
-  uint64_t commit();
+  void tock_clk(const SchematicTop& top);
+  void tock_rst(const SchematicTop& top);
+  void tock_dbg(const SchematicTop& top);
+  void tock_vid(const SchematicTop& top);
+
+  uint64_t commit(const SchematicTop& top);
 
   void dump(Dumper& d);
 
-  wire get_clk_a() const { return SYS_PIN_CLK_A; }
-  wire get_clk_b() const { return SYS_PIN_CLK_B; }
+  wire get_clk_a() const { return _SYS_PIN_CLK_A; }
+  wire get_clk_b() const { return _SYS_PIN_CLK_B; }
 
-  void set_clk_a(wire clk_a) { SYS_PIN_CLK_A.hold(clk_a); }
-  void set_clk_b(wire clk_b) { SYS_PIN_CLK_B.hold(clk_b); }
+  void set_clk_a(wire clk_a) { _SYS_PIN_CLK_A.hold(clk_a); }
+  void set_clk_b(wire clk_b) { _SYS_PIN_CLK_B.hold(clk_b); }
 
   wire get_rst() const {
     return _SYS_PIN_RSTp;
@@ -41,7 +45,7 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Main clocks
 
-  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not(SYS_PIN_CLK_A); }
+  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not(_SYS_PIN_CLK_A); }
 
   /*p01.AFAS*/ wire AFAS_xxxxEFGx() const {  // AREV_CPU_WRn
     /*p01.ADAR*/ wire _ADAR_ABCxxxxH = not( _ADYK_xxxDEFGx.q());
@@ -87,7 +91,7 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // POR state
 
-  /*p01.TUBO*/ wire TUBO_CPU_READYn() const { return _TUBO_CPU_READYn.q(); }
+  /*p01.TUBO*/ wire TUBO_CPU_READYn() const { return _TUBO_WAITING_FOR_CPU_READY.q(); }
   /*p01.ASOL*/ wire ASOL_POR_DONEn()  const { return _ASOL_POR_DONEn.q(); }
   /*p01.AFER*/ wire AFER_SYS_RSTp()   const { return _AFER_SYS_RSTp.q(); }
 
@@ -135,7 +139,7 @@ struct ClockRegisters {
   wire CPU_PIN_READYp() const { return _CPU_PIN_READYp; }
 
   /*p01.ABOL*/ wire ABOL_CLKREQn()    const { return not(_CPU_PIN_READYp); }
-  /*p25.TUTO*/ wire TUTO_DBG_VRAMp()  const { return and (UNOR_MODE_DBG2p(), SOTO_DBG.qn()); }
+  /*p25.TUTO*/ wire TUTO_DBG_VRAMp()  const { return and (UNOR_MODE_DBG2p(), _SOTO_DBG_VRAM.qn()); }
   /*p25.RACO*/ wire RACO_DBG_VRAMn()  const { return not(TUTO_DBG_VRAMp()); }
 
   /*p07.UBET*/ wire UBET_T1p()        const { return not(_SYS_PIN_T1n); }
@@ -149,7 +153,7 @@ struct ClockRegisters {
 
 private:
   /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!_AFUR_ABCDxxxx.q()); }
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B; } // ignoring the deglitcher here
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return _SYS_PIN_CLK_B; } // ignoring the deglitcher here
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not(AZOF_AxCxExGx()); }
 
   /*p01.NULE*/ wire NULE_xxxxEFGH() const { return nor(ABOL_CLKREQn(),  ATYP_ABCDxxxx()); }
@@ -174,7 +178,7 @@ private:
   }
   /*p01.BELE*/ wire BELE_Axxxxxxx() const { return not(BUTO_xBCDEFGH()); }
   /*p01.BYJU*/ wire BYJU_xBCDEFGH() const {
-    /*p01.ATEZ*/ wire _ATEZ_CLKBAD   = not(SYS_PIN_CLK_A);
+    /*p01.ATEZ*/ wire _ATEZ_CLKBAD   = not(_SYS_PIN_CLK_A);
     return nor(BELE_Axxxxxxx(), _ATEZ_CLKBAD);
   }
   /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not(BYJU_xBCDEFGH()); }
@@ -189,7 +193,7 @@ private:
   Pin2  _SYS_PIN_T1n  = Pin2::HOLD_0; // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
-  /*p01.TUBO*/ Pin2 _TUBO_CPU_READYn = Pin2::LATCH_1;
+  /*p01.TUBO*/ Pin2 _TUBO_WAITING_FOR_CPU_READY = Pin2::LATCH_1;
 
   // If AVOR_RSTp was 1 in run mode
   // then ALUR_RSTn = 0
@@ -200,7 +204,7 @@ private:
 
   /*p01.ASOL*/ Pin2 _ASOL_POR_DONEn = Pin2::LATCH_1; // Schematic wrong, this is a latch.
   /*p01.AFER*/ Reg2 _AFER_SYS_RSTp  = Reg2::D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
-  /*p25.SOTO*/ Reg2 SOTO_DBG        = Reg2::D0C0;
+  /*p25.SOTO*/ Reg2 _SOTO_DBG_VRAM        = Reg2::D0C0;
 
   /*p01.AFUR*/ Reg2 _AFUR_ABCDxxxx = Reg2::D0C0;
   /*p01.ALEF*/ Reg2 _ALEF_xBCDExxx = Reg2::D0C0;
@@ -211,8 +215,8 @@ private:
   /*p21.VENA*/ Reg2 _VENA_xxxxEFGH = Reg2::D0C0;
   /*p29.WOSU*/ Reg2 _WOSU_xBCxxFGx = Reg2::D0C0;
 
-  Pin2 SYS_PIN_CLK_A = Pin2::HOLD_0;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  Pin2 SYS_PIN_CLK_B = Pin2::HOLD_0;  // PIN_74 
+  Pin2 _SYS_PIN_CLK_A = Pin2::HOLD_0;  // PIN_74 -> ATEZ, UCOB. Basically "clock good".
+  Pin2 _SYS_PIN_CLK_B = Pin2::HOLD_0;  // PIN_74 
 
   Pin2 _CPU_PIN_STARTp   = Pin2::HIZ_NP;   // top center port PORTC_04: <- P01.CPU_RESET
   Pin2 _CPU_PIN_READYp   = Pin2::HOLD_0; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
@@ -221,18 +225,21 @@ private:
   Pin2 _CPU_PIN_UNOR_DBG = Pin2::HIZ_NP;   // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   Pin2 _CPU_PIN_UMUT_DBG = Pin2::HIZ_NP;   // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 
-  Pin2 CPU_PIN_EXT_CLKGOOD = Pin2::HIZ_NP;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  Pin2 _CPU_PIN_EXT_CLKGOOD = Pin2::HIZ_NP;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
 
-  Pin2 CPU_PIN_BOWA_xBCDEFGH = Pin2::HIZ_NP; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
-  Pin2 CPU_PIN_BEDO_Axxxxxxx = Pin2::HIZ_NP; // top left port PORTD_02: <- BEDO_xBxxxxxx
-  Pin2 CPU_PIN_BEKO_ABCDxxxx = Pin2::HIZ_NP; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  Pin2 CPU_PIN_BUDE_xxxxEFGH = Pin2::HIZ_NP; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
-  Pin2 CPU_PIN_BOLO_ABCDEFxx = Pin2::HIZ_NP; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  Pin2 CPU_PIN_BUKE_AxxxxxGH = Pin2::HIZ_NP; // top left port PORTD_07: <- BUKE_ABxxxxxH
-  Pin2 CPU_PIN_BOMA_Axxxxxxx = Pin2::HIZ_NP; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
-  Pin2 CPU_PIN_BOGA_xBCDEFGH = Pin2::HIZ_NP; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+  Pin2 _CPU_PIN_BOWA_xBCDEFGH = Pin2::HIZ_NP; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
+  Pin2 _CPU_PIN_BEDO_Axxxxxxx = Pin2::HIZ_NP; // top left port PORTD_02: <- BEDO_xBxxxxxx
 
-  Pin2 EXT_PIN_CLK = Pin2::HIZ_NP;     // PIN_75 <- P01.BUDE/BEVA
+  Pin2 _CPU_PIN_BEKO_ABCDxxxx = Pin2::HIZ_NP; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  Pin2 _CPU_PIN_BUDE_xxxxEFGH = Pin2::HIZ_NP; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
+
+  Pin2 _CPU_PIN_BOLO_ABCDEFxx = Pin2::HIZ_NP; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
+  Pin2 _CPU_PIN_BUKE_AxxxxxGH = Pin2::HIZ_NP; // top left port PORTD_07: <- BUKE_ABxxxxxH
+
+  Pin2 _CPU_PIN_BOMA_Axxxxxxx = Pin2::HIZ_NP; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
+  Pin2 _CPU_PIN_BOGA_xBCDEFGH = Pin2::HIZ_NP; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
+
+  Pin2 _EXT_PIN_CLK_xxxxEFGH = Pin2::HIZ_NP;     // PIN_75 <- P01.BUDE/BEVA
 };
 
 //-----------------------------------------------------------------------------

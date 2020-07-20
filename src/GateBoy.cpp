@@ -44,7 +44,7 @@ uint64_t phase(SchematicTop* top, Req req, bool verbose) {
       top->clk_reg.VENA_xxxxEFGH(),
       top->clk_reg.WOSU_xBCxxFGx(),
       top->clk_reg.BOMA_Axxxxxxx(),
-      top->clk_reg.CPU_PIN_STARTp(),
+      top->clk_reg._CPU_PIN_STARTp(),
       top->clk_reg.CPU_PIN_READYp(),
       top->tim_reg.get_div(),
       top->clk_reg.AFER_SYS_RSTp(),
@@ -100,7 +100,7 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
-  while(!top->clk_reg.CPU_PIN_STARTp()) {
+  while(!top->clk_reg._CPU_PIN_STARTp()) {
     run(top, 1, req, false);
   }
 

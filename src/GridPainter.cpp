@@ -35,12 +35,22 @@ void main() {
   gl_Position = vec4(2.0 * vert_pos.x - 1.0, -2.0 * vert_pos.y + 1.0, 1.0, 1.0);
 }
 
-#else
+#endif
+
+#ifdef _FRAGMENT_
 
 in  vec2 world_pos;
 out vec4 frag_col;
 
 void main() {
+  if (world_pos.x < -32768.0 ||
+      world_pos.x >  32768.0 ||
+      world_pos.y < -32768.0 ||
+      world_pos.y >  32768.0) {
+    frag_col = vec4(0.4, 0.0, 0.0, 1.0);
+    return;
+  }
+
   bool bx = fract(world_pos.x * (1.0 / 64.0)) > 0.5;
   bool by = fract(world_pos.y * (1.0 / 64.0)) > 0.5;
   bool b = bx ^^ by;
@@ -80,10 +90,10 @@ void GridPainter::init() {
 
 #pragma warning(disable:4189)
 
-void GridPainter::render() {
+void GridPainter::render(Viewport view) {
   bind_shader(grid_prog);
 
-  grid_uniforms.viewport = {(float)viewport.mx(), (float)viewport.my(), (float)viewport.dx(), (float)viewport.dy() };
+  grid_uniforms.viewport = {(float)view.mx(), (float)view.my(), (float)view.dx(), (float)view.dy() };
   update_ubo(grid_ubo, sizeof(grid_uniforms), &grid_uniforms);
   bind_ubo(grid_prog, "GridUniforms", 0, grid_ubo);
 

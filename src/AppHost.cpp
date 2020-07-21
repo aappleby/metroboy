@@ -1,4 +1,4 @@
-#include "AppBase.h"
+#include "AppHost.h"
 
 #include "GLBase.h"
 
@@ -62,7 +62,7 @@ void main() {
 
 //-----------------------------------------------------------------------------
 
-int AppBase::app_main(int, char**) {
+int AppHost::app_main(int, char**) {
 
   //----------------------------------------
   // Create window
@@ -74,13 +74,12 @@ int AppBase::app_main(int, char**) {
   int initial_screen_w = 1664;
   int initial_screen_h = 1024;
 
-  window = SDL_CreateWindow(get_title(),
+  window = SDL_CreateWindow(app->get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                             initial_screen_w, initial_screen_h,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
 
   keyboard_state = SDL_GetKeyboardState(nullptr);
-  app_start = SDL_GetPerformanceCounter();
 
   gl_context = (SDL_GLContext)init_gl(window);
 
@@ -119,11 +118,7 @@ int AppBase::app_main(int, char**) {
   view_smooth = view_raw;
   view_snap = view_raw;
 
-  blitter.init();
-  grid_painter.init();
-  text_painter.init();
-
-  init();
+  app->init();
 
   //----------------------------------------
   // Loop forever
@@ -206,22 +201,29 @@ int AppBase::app_main(int, char**) {
     io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
 
-    //io.MousePos = ImVec2((float)mx, (float)my);
     const auto world_mouse = view_snap.screenToWorld({mouse_x, mouse_y});
-    io.MousePos = {
-      (float)world_mouse.x,
-      (float)world_mouse.y
-    };
+    io.MousePos = { (float)world_mouse.x, (float)world_mouse.y };
+
+    /*
+    io.DeltaTime = 1.0f/60.0f;              // set the time elapsed since the previous frame (in seconds)
+    io.DisplaySize.x = 1920.0f;             // set the current display width
+    io.DisplaySize.y = 1280.0f;             // set the current display height here
+    io.MousePos = my_mouse_pos;             // set the mouse position
+    io.MouseDown[0] = my_mouse_buttons[0];  // set the mouse button states
+    io.MouseDown[1] = my_mouse_buttons[1];
+    */
 
     io.DeltaTime = (float)delta;
     io.DisplaySize.x = float(screen_w);
     io.DisplaySize.y = float(screen_h);
+
+
     ImGui::NewFrame();
 
     //----------------------------------------
     // Client app update
 
-    update(delta);
+    app->update(delta);
 
     Viewport snapped = view_raw.snap();
     view_smooth = view_smooth.ease(view_raw, delta);
@@ -236,17 +238,13 @@ int AppBase::app_main(int, char**) {
     // Client app render
 
     glViewport(0, 0, screen_w, screen_h);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    text_painter.begin_frame(get_viewport());
-    grid_painter.set_viewport(get_viewport());
-    grid_painter.render();
+    app->render_frame(view_snap);
 
-    render_frame(screen_w, screen_h);
+    app->render_ui(view_snap);
 
-    render_ui(screen_w, screen_h);
-
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 
     //----------------------------------------
     // Render ImGui
@@ -302,14 +300,12 @@ int AppBase::app_main(int, char**) {
 
     SDL_GL_SwapWindow((SDL_Window*)window);
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-    frame_count++;
-    if (redraw_count) redraw_count--;
   }
 
   //----------------------------------------
   // App exit
 
-  close();
+  app->close();
 
   ImGui::DestroyContext();
   SDL_GL_DeleteContext(gl_context);

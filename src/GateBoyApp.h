@@ -1,12 +1,24 @@
 #pragma once
 
+#include "App.h"
 #include "Sch_Top.h"
 #include "StateManager2.h"
 
-class GateBoy {
+class GateBoyApp : public App {
 public:
 
-  void init();
+  //----------
+
+  ~GateBoyApp() override;
+  const char* get_title() override;
+  void init() override;
+  void close() override;
+  void update(double delta) override;
+  void render_frame(Viewport view) override;
+  void render_ui(Viewport view) override;
+
+  //----------
+
   void reset(uint16_t new_pc);
   
   void step(int count) {
@@ -27,5 +39,4 @@ public:
   StateManager2<Schematics::SchematicTop> state_manager;
 
   static int main(int argc, char** argv);
-  //void render_frame(int screen_w, int screen_h, TextPainter& text_painter);
 };

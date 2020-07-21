@@ -119,7 +119,8 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="src\AppBase.h" />
+    <ClInclude Include="src\App.h" />
+    <ClInclude Include="src\AppHost.h" />
     <ClInclude Include="src\Assembler.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Blitter.h" />
@@ -128,8 +129,9 @@
     <ClInclude Include="src\Cells.h" />
     <ClInclude Include="src\Debug.h" />
     <ClInclude Include="src\DMA.h" />
+    <ClInclude Include="src\DummyApp.h" />
     <ClInclude Include="src\File.h" />
-    <ClInclude Include="src\GateBoy.h" />
+    <ClInclude Include="src\GateBoyApp.h" />
     <ClInclude Include="src\Joypad.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\DumpPainter.h" />
@@ -183,7 +185,7 @@
     <ClInclude Include="src\VRAM.h" />
     <ClInclude Include="src\Z80.h" />
     <ClInclude Include="src\ZRAM.h" />
-    <ClInclude Include="src\metroboy_main.h" />
+    <ClInclude Include="src\MetroBoyApp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c" />
@@ -191,7 +193,7 @@
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\AppBase.cpp" />
+    <ClCompile Include="src\AppHost.cpp" />
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Blitter.cpp" />
@@ -200,8 +202,9 @@
     <ClCompile Include="src\Cells.cpp" />
     <ClCompile Include="src\Debug.cpp" />
     <ClCompile Include="src\DMA.cpp" />
+    <ClCompile Include="src\DummyApp.cpp" />
     <ClCompile Include="src\File.cpp" />
-    <ClCompile Include="src\GateBoy.cpp" />
+    <ClCompile Include="src\GateBoyApp.cpp" />
     <ClCompile Include="src\Joypad.cpp" />
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\DumpPainter.cpp" />
@@ -258,7 +261,7 @@
     <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />
-    <ClCompile Include="src\metroboy_main.cpp" />
+    <ClCompile Include="src\MetroBoyApp.cpp" />
     <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>

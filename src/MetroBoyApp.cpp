@@ -1,4 +1,4 @@
-#include "metroboy_main.h"
+#include "MetroBoyApp.h"
 
 #include "MetroBoy.h"
 #include "Audio.h"
@@ -66,6 +66,12 @@ void MetroBoyApp::post() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::init() {
+
+  app_start = SDL_GetPerformanceCounter();
+
+  blitter.init();
+  grid_painter.init();
+  text_painter.init();
 
   keyboard_state = SDL_GetKeyboardState(nullptr);
   audio_init();
@@ -368,16 +374,16 @@ void MetroBoyApp::update(double /*delta*/) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
+void MetroBoyApp::render_frame(Viewport view) {
 
-  auto view = get_viewport();
+  (void)view;
+
+  grid_painter.render(view);
 
   static bool CLKIN_A = 0;
   static bool CLKIN_B = 0;
 
   ImGui::Begin("GB_sys_reset");
-  //ImGui::Checkbox("CLKIN_A", &CLKIN_A); 
-  //CLKIN_A = ImGui::Button("CLKIN_A");
   CLKIN_A = ImGui::ButtonEx("CLKIN_A", ImVec2(0,0), ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_Repeat);
   if (CLKIN_A) {
     ImGui::TextColored(ImVec4(0.0f,1.0f,0.0f,1.0f), "CLKIN_A");
@@ -518,7 +524,7 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::render_ui(int screen_w, int screen_h) {
+void MetroBoyApp::render_ui(Viewport view) {
   StringDumper dump;
 
   //----------------------------------------
@@ -541,7 +547,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     gameboy.dma2.dump(dump);
     dump("\n");
 
-    text_painter.render(dump.s, column, 0);
+    text_painter.render(view, dump.s, (float)column, 0);
     dump.clear();
     column += 32 * 8;
   }
@@ -562,7 +568,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     gameboy.dump_serial(dump);
     dump("\n");
 
-    text_painter.render(dump.s, column, 0);
+    text_painter.render(view, dump.s, (float)column, 0);
     dump.clear();
     column += 32 * 8;
   }
@@ -574,7 +580,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     gameboy.get_ppu().dump(dump);
     dump("\n");
 
-    text_painter.render(dump.s, column, 0);
+    text_painter.render(view, dump.s, (float)column, 0);
     dump.clear();
     column += 32 * 8;
   }
@@ -586,7 +592,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     gameboy.get_spu().dump(dump);
     dump("\n");
 
-    text_painter.render(dump.s, column, 0);
+    text_painter.render(view, dump.s, (float)column, 0);
     dump.clear();
     column += 32 * 8;
   }
@@ -605,7 +611,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     text_painter.dprintf("sim rate   %7d cycles/frame\n", last_mcycles);
     text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
     
-    text_painter.render(screen_w - 300 + 96, screen_h - 64);
+    text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
   }
 }
 

@@ -14,7 +14,6 @@ class TextPainter {
 public:
 
   void init();
-  void begin_frame(Viewport view);
 
   void add_char(const char c);
   void add_char(const char c, const char d);
@@ -23,19 +22,11 @@ public:
   void add_string(const std::string& text_painter);
   void dprintf(const char* format, ...);
 
-  void render(float x, float y, float scale = 1.0f);
-  void render(int x, int y, int scale = 1) {
-    render((float)x, (float)y, (float)scale);
-  }
+  void render(Viewport view, float x, float y, float scale = 1.0f);
 
-  void render(const std::string& text_painter, float x, float y, float scale = 1.0f) {
-    add_string(text_painter);
-    render(x, y, scale);
-  }
-
-  void render(const std::string& text_painter, int x, int y) {
-    add_string(text_painter);
-    render(x, y, 1);
+  void render(Viewport view, const std::string& text, float x, float y, float scale = 1.0f) {
+    add_string(text);
+    render(view, x, y, scale);
   }
 
   void newline() { add_char(1, '\n'); }
@@ -43,8 +34,6 @@ public:
   void set_pal(int index, float r, float g, float b, float a);
 
 private:
-
-  Viewport viewport = {};
 
   uint32_t text_prog = 0;
   uint32_t font_tex = 0;

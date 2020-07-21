@@ -13,6 +13,10 @@ public:
             int sx, int sy, int sw, int sh,
             int dx, int dy, int dw, int dh);
 
+  void blit(Viewport view, uint32_t tex, int x, int y, int w, int h) {
+    blit(view, tex, w, h, 0, 0, w, h, x, y, w, h);
+  }
+
   void blit_mono(Viewport view,
                  uint32_t tex, int tw, int th,
                  int sx, int sy, int sw, int sh,

@@ -103,45 +103,27 @@ void ClockRegisters::tock_dbg(const SchematicTop& /*top*/) {
   wire unor_dbg = _SYS_PIN_T2n && !_SYS_PIN_T1n;
   wire umut_dbg = _SYS_PIN_T1n && !_SYS_PIN_T2n;
 
-  wire _SYCY_DBG_CLOCKn = not(unor_dbg);
-  if (_AFER_SYS_RSTp.q() || _ASOL_POR_DONEn.q()) {
-    _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, 0, _SOTO_DBG_VRAM.qn());
-  }
-  else {
-    _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, 1, _SOTO_DBG_VRAM.qn());
-  }
+  wire soto_clk = not(unor_dbg);
+  wire soto_rst = _AFER_SYS_RSTp.q() || _ASOL_POR_DONEn.q();
+
+  _SOTO_DBG_VRAM = ff17_r2(soto_clk, !soto_rst, _SOTO_DBG_VRAM.qn());
 
   _CPU_PIN_UNOR_DBG = unor_dbg;
   _CPU_PIN_UMUT_DBG = umut_dbg;
 }
 
 //-----------------------------------------------------------------------------
-
 // can't do fast mode for this until vid clock is running
+
 void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
-  wire ATAL_xBxDxFxH = _SYS_PIN_CLK_B;
-  wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-  wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-  wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-  wire XYVA_xBxDxFxH = not(ZEME_AxCxExGx);
-  wire XOTA_AxCxExGx = not(XYVA_xBxDxFxH);
-  wire XYFY_xBxDxFxH = not(XOTA_AxCxExGx);
+  wire vid_reset = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn.q(), !_XONA_LCDC_EN);
 
   wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
   wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
 
-  wire AVOR_SYS_RSTp = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn.q());
-  wire ALUR_SYS_RSTn = not(AVOR_SYS_RSTp);
-  wire DULA_SYS_RSTp = not(ALUR_SYS_RSTn);
-  wire CUNU_SYS_RSTn = not(DULA_SYS_RSTp);
-  wire XORE_SYS_RSTp = not(CUNU_SYS_RSTn);
-  wire XEBE_SYS_RSTn = not(XORE_SYS_RSTp);
-  wire XODO_VID_RSTp = nand(XEBE_SYS_RSTn, _XONA_LCDC_EN);
-  wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
-
-  _WUVU_xxCDxxGH = ff17_r2( XOTA_AxCxExGx,  XAPO_VID_RSTn, !WUVU_xxCDxxGH_);
-  _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, XAPO_VID_RSTn, !VENA_xxxxEFGH_);
-  _WOSU_xBCxxFGx = ff17_r2( XYFY_xBxDxFxH,  XAPO_VID_RSTn, !WUVU_xxCDxxGH_);
+  _WUVU_xxCDxxGH = ff17_r2(!_SYS_PIN_CLK_B,  !vid_reset, !WUVU_xxCDxxGH_);
+  _WOSU_xBCxxFGx = ff17_r2( _SYS_PIN_CLK_B,  !vid_reset, !WUVU_xxCDxxGH_);
+  _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_,  !vid_reset, !VENA_xxxxEFGH_);
 }
 
 #endif

@@ -132,16 +132,16 @@ void TextPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::render(float x, float y, float scale) {
+void TextPainter::render(Viewport view, float x, float y, float scale) {
 
   bind_shader(text_prog);
 
   text_uniforms.text_pos = {x, y, scale, scale};
   text_uniforms.viewport = {
-    (float)viewport.min.x,
-    (float)viewport.min.y,
-    (float)viewport.max.x,
-    (float)viewport.max.y,
+    (float)view.min.x,
+    (float)view.min.y,
+    (float)view.max.x,
+    (float)view.max.y,
   };
   update_ubo(text_ubo, sizeof(text_uniforms), &text_uniforms);
   bind_ubo(text_prog, "TextUniforms", 0, text_ubo);
@@ -157,14 +157,6 @@ void TextPainter::render(float x, float y, float scale) {
   text_x = 0;
   text_y = 0;
   inst_begin = inst_end = 0;
-}
-
-//-----------------------------------------------------------------------------
-
-void TextPainter::begin_frame(Viewport view) {
-  inst_begin = 0;
-  inst_end = 0;
-  viewport = view;
 }
 
 //-----------------------------------------------------------------------------

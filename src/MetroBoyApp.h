@@ -1,15 +1,17 @@
 #pragma once
 
-#include "AppBase.h"
+#include "App.h"
 #include "MetroBoy.h"
 #include "GridPainter.h"
 #include "GBBlitter.h"
 #include "DumpPainter.h"
-#include "GateBoy.h"
+#include "Blitter.h"
+#include "GridPainter.h"
+#include "TextPainter.h"
 
 #include <string>
 
-class MetroBoyApp : public AppBase {
+class MetroBoyApp : public App {
 public:
 
   MetroBoyApp() {}
@@ -18,8 +20,8 @@ public:
   virtual void init();
   virtual void close();
   virtual void update(double delta);
-  virtual void render_frame(int screen_w, int screen_h);
-  virtual void render_ui(int screen_w, int screen_h);
+  virtual void render_frame(Viewport view);
+  virtual void render_ui(Viewport view);
 
   void load(const std::string& prefix, const std::string& name);
   void load(const std::string& name) { load("./", name); }
@@ -33,6 +35,12 @@ public:
     STEP_LINE,
     STEP_PHASE
   };
+
+  uint64_t app_start = 0;
+
+  Blitter     blitter;
+  GridPainter grid_painter;
+  TextPainter text_painter;
 
   //----------
   // controls

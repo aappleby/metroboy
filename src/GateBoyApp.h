@@ -3,6 +3,8 @@
 #include "App.h"
 #include "Sch_Top.h"
 #include "StateManager2.h"
+#include "GridPainter.h"
+#include "TextPainter.h"
 
 class GateBoyApp : public App {
 public:
@@ -29,7 +31,7 @@ public:
     state_manager.unstep(count);
   }
 
-  Schematics::SchematicTop* top() {
+  Schematics::SchematicTop* get_top() {
     return state_manager.state();
   }
 
@@ -39,4 +41,7 @@ public:
   StateManager2<Schematics::SchematicTop> state_manager;
 
   static int main(int argc, char** argv);
+
+  GridPainter grid_painter;
+  TextPainter text_painter;
 };

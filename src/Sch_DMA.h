@@ -35,6 +35,20 @@ struct DmaRegisters {
     return not(MUHO_DMA_VRAM_RDn);
   }
 
+  void dump(Dumper& d) {
+    d("---------- DMA Reg  ----------\n");
+    d("DMA Addr 0x%02x:%02x\n", 
+      pack(DMA_A15.q(), DMA_A14.q(), DMA_A13.q(), DMA_A12.q(), DMA_A11.q(), DMA_A10.q(), DMA_A09.q(), DMA_A08.q()),
+      pack(DMA_A07.q(), DMA_A06.q(), DMA_A05.q(), DMA_A04.q(), DMA_A03.q(), DMA_A02.q(), DMA_A01.q(), DMA_A00.q()));
+    d("LYXE_DMA_LATCHn   %d\n", _LYXE_DMA_LATCHn.q());
+    d("MATU_DMA_RUNNINGp %d\n", _MATU_DMA_RUNNINGp.q());
+    d("MYTE_DMA_DONE     %d\n", _MYTE_DMA_DONE.q());
+    d("LUVY_DMA_TRIG_d0  %d\n", _LUVY_DMA_TRIG_d0.q());
+    d("LENE_DMA_TRIG_d4  %d\n", _LENE_DMA_TRIG_d4.q());
+    d("LOKY_DMA_LATCHp   %d\n", _LOKY_DMA_LATCHp.q());
+    d("\n");
+  }
+
   /*p04.NAKY*/ Reg2 DMA_A00 = Reg2::D0C0;
   /*p04.PYRO*/ Reg2 DMA_A01 = Reg2::D0C0;
   /*p04.NEFY*/ Reg2 DMA_A02 = Reg2::D0C0;

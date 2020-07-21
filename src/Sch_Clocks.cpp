@@ -72,13 +72,13 @@ void ClockRegisters::tock_rst(const SchematicTop& top) {
   wire umut_dbg = _SYS_PIN_T1n && !_SYS_PIN_T2n;
 
   if (_SYS_PIN_RSTp || !_SYS_PIN_CLK_A) {
-    _TUBO_WAITING_FOR_CPU_READY.hold(1);
+    _TUBO_WAITINGp.hold(1);
   }
   else if (_CPU_PIN_READYp) {
-    _TUBO_WAITING_FOR_CPU_READY.hold(0);
+    _TUBO_WAITINGp.hold(0);
   }
 
-  wire por_done = _TUBO_WAITING_FOR_CPU_READY.q() && top.tim_reg.TERO_DIV_03();
+  wire por_done = _TUBO_WAITINGp.q() && top.tim_reg.TERO_DIV_03();
 
   if (_SYS_PIN_RSTp) {
     _ASOL_POR_DONEn.hold(1);
@@ -237,13 +237,13 @@ void ClockRegisters::tock_clk(const SchematicTop& top) {
   _CPU_PIN_EXT_CLKGOOD = _SYS_PIN_CLK_A.as_wire();
   /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, UCOB_CLKBADp());
 
-  /*p01.TUBO*/ _TUBO_WAITING_FOR_CPU_READY = nor_latch_r2(_UPYF, CPU_PIN_READYp());
+  /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch_r2(_UPYF, CPU_PIN_READYp());
 
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_WAITING_FOR_CPU_READY.q(), top.tim_reg.TERO_DIV_03());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_WAITINGp.q(), top.tim_reg.TERO_DIV_03());
 #else
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_WAITING_FOR_CPU_READY.q(), top.tim_reg.UPOF_DIV_15());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and (_TUBO_WAITINGp.q(), top.tim_reg.UPOF_DIV_15());
 #endif
 
   /*p01.TABA*/ wire _TABA_POR_TRIGn = or(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
@@ -302,16 +302,6 @@ void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
 uint64_t ClockRegisters::commit(const SchematicTop& /*top*/) {
   uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
   return {ret};
-}
-
-//-----------------------------------------------------------------------------
-
-void ClockRegisters::dump(Dumper& d) {
-  d("----------ClockRegisters----------\n");
-  d("AFUR_ABCDxxxx %d\n", _AFUR_ABCDxxxx);
-  d("ALEF_xBCDExxx %d\n", _ALEF_xBCDExxx);
-  d("APUK_xxCDEFxx %d\n", _APUK_xxCDEFxx);
-  d("ADYK_xxxDEFGx %d\n", _ADYK_xxxDEFGx);
 }
 
 //-----------------------------------------------------------------------------

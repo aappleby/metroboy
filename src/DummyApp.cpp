@@ -41,7 +41,6 @@ void DummyApp::update(double delta) {
 //-----------------------------------------------------------------------------
 
 void DummyApp::render_frame(Viewport view) {
-  (void)view;
   grid_painter.render(view);
 
   static int count = 0;

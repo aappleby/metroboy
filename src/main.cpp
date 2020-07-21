@@ -15,19 +15,12 @@ int main(int argc, char** argv) {
 
   //return GateBoy::main(argc, argv);
 
-  App* app = new DummyApp();
+  App* app = new GateBoyApp();
+  //App* app = new DummyApp();
+  //App* app = new MetroBoyApp();
 
-  int ret = 0;
   AppHost* app_host = new AppHost(app);
-  ret = app_host->app_main(argc, argv);
+  int ret = app_host->app_main(argc, argv);
   delete app;
   return ret;
-
-  /*
-  int ret = 0;
-  MetroBoyApp* app = new MetroBoyApp();
-  ret = app->app_main(argc, argv);
-  delete app;
-  return ret;
-  */
 }

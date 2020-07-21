@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------
 
-enum RegMode : uint8_t {
+enum RegState : uint8_t {
   REG_D0C0 = 0b0000, // 00: reg 0 + clock 0
   REG_D1C0 = 0b0001, // 01: reg 1 + clock 0
   REG_D0C1 = 0b0010, // 02: reg 0 + clock 1
@@ -27,7 +27,7 @@ enum RegMode : uint8_t {
 
 //-----------------------------------------------------------------------------
 
-enum Delta : uint8_t {
+enum RegDelta : uint8_t {
   DELTA_NONE = 0b0000, // 00: delta not set yet
   DELTA_HOLD = 0b0001, // 01: delta hold, do not change register when committed, sticky
   DELTA_PASS = 0b0010, // 02: delta pass, do not change register when committed, not sticky
@@ -94,24 +94,64 @@ inline uint64_t commit_and_hash(void* blob, int size) {
 struct RegBase2 {
   RegBase2() = delete;
   RegBase2& operator=(const RegBase2&) = delete;
-  RegBase2(RegMode r, Delta d) : reg(r), delta(d) {}
+  RegBase2(RegState r, RegDelta d) : reg(r), delta(d) {}
 
-  inline bool is_reg()    const {
-    return (reg >= REG_D0C0) && (reg <= REG_D1C1);
+  char c() const {
+    switch(reg) {
+      case REG_D0C0: return '0';
+      case REG_D1C0: return '1';
+      case REG_D0C1: return '0';
+      case REG_D1C1: return '1';
+      case SIG_0000: return '0';
+      case SIG_1111: return '1';
+      case PIN_D0PD: return '0';
+      case PIN_D1PD: return '1';
+      case PIN_D0PU: return '0';
+      case PIN_D1PU: return '1';
+      case PIN_D0NP: return '0';
+      case PIN_D1NP: return '1';
+      case PIN_HZPD: return 'v';
+      case PIN_HZPU: return '^';
+      case PIN_HZNP: return 'Z';
+      default:       return 'E';
+    }
   }
+
+  char cn() const {
+    switch(reg) {
+      case REG_D0C0: return '1';
+      case REG_D1C0: return '0';
+      case REG_D0C1: return '1';
+      case REG_D1C1: return '0';
+      case SIG_0000: return '1';
+      case SIG_1111: return '0';
+      case PIN_D0PD: return '1';
+      case PIN_D1PD: return '0';
+      case PIN_D0PU: return '1';
+      case PIN_D1PU: return '0';
+      case PIN_D0NP: return '1';
+      case PIN_D1NP: return '0';
+      case PIN_HZPD: return '^';
+      case PIN_HZPU: return 'v';
+      case PIN_HZNP: return 'Z';
+      default:       return 'E';
+    }
+  }
+
+  inline bool is_reg()    const { return (reg >= REG_D0C0) && (reg <= REG_D1C1); }
   inline bool is_sig()    const { return (reg >= SIG_0000) && (reg <= SIG_1111); }
   inline bool is_pin()    const { return (reg >= PIN_D0PD) && (reg <= PIN_HZNP); }
   inline bool is_held()   const { return delta == DELTA_HOLD; }
   inline bool has_delta() const { return delta != DELTA_NONE; }
 
-  RegMode reg : 4;
-  Delta delta : 4;
+  RegState reg : 4;
+  RegDelta delta : 4;
 };
 
 //-----------------------------------------------------------------------------
 
 struct Reg2 : public RegBase2 {
-  Reg2(RegMode r, Delta d) : RegBase2(r, d) {
+  Reg2(RegState r, RegDelta d) : RegBase2(r, d) {
     CHECK_P(is_reg());
     CHECK_P(delta == DELTA_NONE);
   }
@@ -127,27 +167,27 @@ struct Reg2 : public RegBase2 {
 
   inline void set_delta(bool CLKp, bool D) {
     CHECK_N(has_delta());
-    delta = Delta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
 
   inline void hold(bool CLK, bool D) {
     CHECK_P(is_reg());
 
-    reg = RegMode(REG_D0C0 | (CLK << 1) | (D << 0));
+    reg = RegState(REG_D0C0 | (CLK << 1) | (D << 0));
     delta = DELTA_HOLD;
   }
 
   inline void hold_d(bool D) {
     CHECK_P(is_reg());
 
-    reg = RegMode((reg & 0b1110) | int(D));
+    reg = RegState((reg & 0b1110) | int(D));
     delta = DELTA_HOLD;
   }
 
   inline void hold_clk(bool clk) {
     CHECK_P(is_reg());
 
-    reg = RegMode((reg & 0b1101) | (clk << 1));
+    reg = RegState((reg & 0b1101) | (clk << 1));
     delta = DELTA_HOLD;
   }
 
@@ -157,7 +197,7 @@ struct Reg2 : public RegBase2 {
   }
 
   inline void preset_a(bool a) {
-    reg = RegMode((reg & 0b1110) | uint8_t(a));
+    reg = RegState((reg & 0b1110) | uint8_t(a));
   }
 
   inline wire q() const {
@@ -178,7 +218,7 @@ struct Reg2 : public RegBase2 {
     return wire(reg & 1);
   }
 
-  inline void operator = (Delta d) {
+  inline void operator = (RegDelta d) {
     CHECK_P(is_reg()); // must be reg state
     CHECK_N(d == DELTA_NONE); // must not be invalid sig
     CHECK_N(has_delta());     // reg must not already be driven
@@ -186,11 +226,10 @@ struct Reg2 : public RegBase2 {
   }
 };
 
-
 //-----------------------------------------------------------------------------
 
 struct Pin2 : public RegBase2 {
-  Pin2(RegMode r, Delta d) : RegBase2(r, d) {
+  Pin2(RegState r, RegDelta d) : RegBase2(r, d) {
     CHECK_P(is_pin());
     CHECK_P((d == DELTA_NONE) || (d == DELTA_HOLD));
   }
@@ -247,11 +286,11 @@ struct Pin2 : public RegBase2 {
     delta = w ? DELTA_SIG1 : DELTA_SIG0;
   }
 
-  inline void operator = (Delta D) {
+  inline void operator = (RegDelta D) {
     CHECK_P(is_pin());
     CHECK_P((delta == DELTA_NONE) || (delta == DELTA_SIGZ) || (D == DELTA_SIGZ));
     CHECK_P(D == DELTA_SIGZ || D == DELTA_SIG0 || D == DELTA_SIG1 || D == DELTA_PASS);
-    delta = Delta(delta | D);
+    delta = RegDelta(delta | D);
   }
 };
 
@@ -270,7 +309,7 @@ struct Sig2 : public RegBase2 {
     CHECK_P(is_sig());
     CHECK_N(has_delta());
 
-    reg = RegMode(SIG_0000 | int(s));
+    reg = RegState(SIG_0000 | int(s));
     delta = s ? DELTA_SIG1 : DELTA_SIG0;
   }
 };

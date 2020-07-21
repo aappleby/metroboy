@@ -122,13 +122,31 @@ struct CpuBus {
                 CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
   }
 
+  //-----------------------------------------------------------------------------
+
   void dump(Dumper& d) {
-    d("CPU BUS:%04x:%02x RDp %d WRp %d ADDR_VALIDn %d\n",
-      bus_addr(),
-      bus_data(),
-      _CPU_PIN_RDp.as_wire(),
-      _CPU_PIN_WRp.as_wire(),
-      _CPU_PIN_ADDR_VALIDn.as_wire());
+    d("---------- CPU Bus  ----------\n");
+    d("CPU BOOT : %d\n", _CPU_PIN_BOOTp.as_wire());
+    d("CPU AHI  : %d\n", _CPU_PIN_ADDR_HI.as_wire());
+    d("CPU RDp  : %d\n", _CPU_PIN_RDp.as_wire());
+    d("CPU WRp  : %d\n", _CPU_PIN_WRp.as_wire());
+    d("CPU AVn  : %d\n", _CPU_PIN_ADDR_VALIDn.as_wire());
+
+    d("CPU ADDR : %04x\n", bus_addr());
+
+    d("CPU DATA : %02x\n", bus_data());
+
+    d("CPU PIN ADDR    : %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+      CPU_PIN_A15.c(), CPU_PIN_A14.c(), CPU_PIN_A13.c(), CPU_PIN_A12.c(),
+      CPU_PIN_A11.c(), CPU_PIN_A10.c(), CPU_PIN_A09.c(), CPU_PIN_A08.c(),
+      CPU_PIN_A07.c(), CPU_PIN_A06.c(), CPU_PIN_A05.c(), CPU_PIN_A04.c(),
+      CPU_PIN_A03.c(), CPU_PIN_A02.c(), CPU_PIN_A01.c(), CPU_PIN_A00.c());
+
+    d("CPU PIN DATA    : %c%c%c%c%c%c%c%c\n",
+      CPU_TRI_D7.c(), CPU_TRI_D6.c(), CPU_TRI_D5.c(), CPU_TRI_D4.c(),
+      CPU_TRI_D3.c(), CPU_TRI_D2.c(), CPU_TRI_D1.c(), CPU_TRI_D0.c());
+
+    d("\n");
   }
 
   //-----------------------------------------------------------------------------

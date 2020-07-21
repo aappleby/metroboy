@@ -20,6 +20,9 @@ const char* GateBoyApp::get_title() {
 //----------------------------------------
 
 void GateBoyApp::init() {
+  grid_painter.init();
+  text_painter.init();
+
   auto top_step = [this](Schematics::SchematicTop* top) {
     top->clk_reg.set_clk_a(1);
     top->clk_reg.set_clk_b(top->phase_count & 1);
@@ -36,7 +39,25 @@ void GateBoyApp::update(double delta) {
 }
 
 void GateBoyApp::render_frame(Viewport view) {
-  (void)view;
+  grid_painter.render(view);
+
+  auto top = get_top();
+
+  StringDumper dumper;
+
+  top->clk_reg.dump(dumper);
+  top->cpu_bus.dump(dumper);
+  top->ext_bus.dump(dumper);
+  top->vram_bus.dump(dumper);
+  top->oam_bus.dump(dumper);
+
+  text_painter.render(view, dumper.s.c_str(), 0, 0);
+
+  dumper.clear();
+  top->dma_reg.dump(dumper);
+  top->int_reg.dump(dumper);
+
+  text_painter.render(view, dumper.s.c_str(), 256, 0);
 
 #if 0
   //uint64_t begin = SDL_GetPerformanceCounter();
@@ -263,7 +284,7 @@ int GateBoyApp::main(int /*argc*/, char** /*argv*/) {
   gateboy.init();
   //gateboy.reset(0x100);
 
-  auto top = gateboy.top();
+  auto top = gateboy.get_top();
 
   top->clk_reg.set_cpu_ready(0);
   top->ext_bus.set_ext_rdwr(0, 0);

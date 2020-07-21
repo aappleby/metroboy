@@ -25,12 +25,12 @@ struct ExtBus {
   }
 
   void set_ext_rdwr(wire rd, wire wr) {
-    _EXT_PIN_WRp_C.hold(rd);
-    _EXT_PIN_RDp_C.hold(wr);
+    _EXT_PIN_WRn_C.hold(rd);
+    _EXT_PIN_RDn_C.hold(wr);
   }
 
-  wire EXT_PIN_RDp_C() const { return _EXT_PIN_RDp_C; }
-  wire EXT_PIN_WRp_C() const { return _EXT_PIN_WRp_C; }
+  wire EXT_PIN_RDp_C() const { return _EXT_PIN_RDn_C; }
+  wire EXT_PIN_WRp_C() const { return _EXT_PIN_WRn_C; }
 
   // -> oam data tri
   /*p25.RALO*/ wire RALO_EXT_D0p() const { return not(_EXT_PIN_D0_C); }
@@ -41,6 +41,43 @@ struct ExtBus {
   /*p25.SUGY*/ wire SUGY_EXT_D5p() const { return not(_EXT_PIN_D5_C); }
   /*p25.TUBE*/ wire TUBE_EXT_D6p() const { return not(_EXT_PIN_D6_C); }
   /*p25.SYZO*/ wire SYZO_EXT_D7p() const { return not(_EXT_PIN_D7_C); }
+
+  void dump(Dumper& d) {
+    d("---------- Ext Bus  ----------\n");
+    d("EXT BUS ADDR    : _%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+      _NYRE_EXT_ADDR_LATCH_14.c(), _LONU_EXT_ADDR_LATCH_13.c(), _LOBU_EXT_ADDR_LATCH_12.c(), _LUMY_EXT_ADDR_LATCH_11.c(),
+      _PATE_EXT_ADDR_LATCH_10.c(), _LYSA_EXT_ADDR_LATCH_09.c(), _LUNO_EXT_ADDR_LATCH_08.c(), _ARYM_EXT_ADDR_LATCH_07.c(),
+      _AROS_EXT_ADDR_LATCH_06.c(), _ATEV_EXT_ADDR_LATCH_05.c(), _AVYS_EXT_ADDR_LATCH_04.c(), _ARET_EXT_ADDR_LATCH_03.c(),
+      _ALYR_EXT_ADDR_LATCH_02.c(), _APUR_EXT_ADDR_LATCH_01.c(), _ALOR_EXT_ADDR_LATCH_00.c());
+    d("EXT BUS DATA    : %c%c%c%c%c%c%c%c\n",
+      _SAZY_EXT_DATA_LATCH_07.c(), _RUPA_EXT_DATA_LATCH_06.c(), _SAGO_EXT_DATA_LATCH_05.c(), _SODY_EXT_DATA_LATCH_04.c(),
+      _SELO_EXT_DATA_LATCH_03.c(), _RAXY_EXT_DATA_LATCH_02.c(), _RONY_EXT_DATA_LATCH_01.c(), _SOMA_EXT_DATA_LATCH_00.c());
+
+    d("EXT PIN RDn     : %c%c%c\n", _EXT_PIN_RDn_A.c(), _EXT_PIN_RDn_C.c(), _EXT_PIN_RDn_D.c());
+    d("EXT PIN WRn     : %c%c%c\n", _EXT_PIN_WRn_A.c(), _EXT_PIN_WRn_C.c(), _EXT_PIN_WRn_D.c());
+    d("EXT PIN CSn     : %c\n",     _EXT_PIN_CSn_A.c());
+
+    d("EXT PIN ADDR    : %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+      _EXT_PIN_A15_A.c(), _EXT_PIN_A14_A.c(), _EXT_PIN_A13_A.c(), _EXT_PIN_A12_A.c(),
+      _EXT_PIN_A11_A.c(), _EXT_PIN_A10_A.c(), _EXT_PIN_A09_A.c(), _EXT_PIN_A08_A.c(),
+      _EXT_PIN_A07_A.c(), _EXT_PIN_A06_A.c(), _EXT_PIN_A05_A.c(), _EXT_PIN_A04_A.c(),
+      _EXT_PIN_A03_A.c(), _EXT_PIN_A02_A.c(), _EXT_PIN_A01_A.c(), _EXT_PIN_A00_A.c());
+
+    d("EXT PIN DATA A  : %c%c%c%c%c%c%c%c\n",
+      _EXT_PIN_D7_A.c(), _EXT_PIN_D6_A.c(), _EXT_PIN_D5_A.c(), _EXT_PIN_D4_A.c(),
+      _EXT_PIN_D3_A.c(), _EXT_PIN_D2_A.c(), _EXT_PIN_D1_A.c(), _EXT_PIN_D0_A.c());
+    d("EXT PIN DATA B  : %c%c%c%c%c%c%c%c\n",
+      _EXT_PIN_D7_B.c(), _EXT_PIN_D6_B.c(), _EXT_PIN_D5_B.c(), _EXT_PIN_D4_B.c(),
+      _EXT_PIN_D3_B.c(), _EXT_PIN_D2_B.c(), _EXT_PIN_D1_B.c(), _EXT_PIN_D0_B.c());
+    d("EXT PIN DATA C  : %c%c%c%c%c%c%c%c\n",
+      _EXT_PIN_D7_C.c(), _EXT_PIN_D6_C.c(), _EXT_PIN_D5_C.c(), _EXT_PIN_D4_C.c(),
+      _EXT_PIN_D3_C.c(), _EXT_PIN_D2_C.c(), _EXT_PIN_D1_C.c(), _EXT_PIN_D0_C.c());
+    d("EXT PIN DATA D  : %c%c%c%c%c%c%c%c\n",
+      _EXT_PIN_D7_D.c(), _EXT_PIN_D6_D.c(), _EXT_PIN_D5_D.c(), _EXT_PIN_D4_D.c(),
+      _EXT_PIN_D3_D.c(), _EXT_PIN_D2_D.c(), _EXT_PIN_D1_D.c(), _EXT_PIN_D0_D.c());
+
+    d("\n");
+  }
 
 private:
 
@@ -74,8 +111,8 @@ private:
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
 
-  Pin2  _EXT_PIN_WRp_C = Pin2::HOLD_0;   // PIN_78 -> P07.UBAL
-  Pin2  _EXT_PIN_RDp_C = Pin2::HOLD_0;   // PIN_79 -> P07.UJYV
+  Pin2  _EXT_PIN_WRn_C = Pin2::HOLD_0;   // PIN_78 -> P07.UBAL
+  Pin2  _EXT_PIN_RDn_C = Pin2::HOLD_0;   // PIN_79 -> P07.UJYV
 
   Pin2  _EXT_PIN_A00_C = Pin2::HOLD_0;   // PIN_01 -> P08.KOVA
   Pin2  _EXT_PIN_A01_C = Pin2::HOLD_0;   // PIN_02 -> P08.CAMU

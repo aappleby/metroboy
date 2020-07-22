@@ -25,48 +25,18 @@ int main(int argc, char** argv) {
   gateboy2.run_benchmark(true);
   printf("\n");
 
-  if (gateboy1.phase_hash_bits != gateboy2.phase_hash_bits) {
-    printf("XXXXXXXXXX FAIL PHASE BITS  XXXXXXXXXX\n");
+  if (gateboy1.phase_hash != gateboy2.phase_hash) {
+    printf("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
   }
   else {
-    printf("---------- PASS PHASE BITS  ----------\n");
+    printf("---------- PASS PHASE HASH ----------\n");
   }
 
-  if (gateboy1.phase_hash_regs != gateboy2.phase_hash_regs) {
-    printf("XXXXXXXXXX FAIL PHASE REGS  XXXXXXXXXX\n");
+  if (gateboy1.total_hash != gateboy2.total_hash) {
+    printf("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
   }
   else {
-    printf("---------- PASS PHASE REGS  ----------\n");
-  }
-
-  if (gateboy1.phase_hash_bytes != gateboy2.phase_hash_bytes) {
-    printf("XXXXXXXXXX FAIL PHASE BYTES XXXXXXXXXX\n");
-  }
-  else {
-    printf("---------- PASS PHASE BYTES ----------\n");
-  }
-
-
-
-  if (gateboy1.combined_hash_bits != gateboy2.combined_hash_bits) {
-    printf("XXXXXXXXXX FAIL COMBINED BITS  XXXXXXXXXX\n");
-  }
-  else {
-    printf("---------- PASS COMBINED BITS  ----------\n");
-  }
-
-  if (gateboy1.combined_hash_regs != gateboy2.combined_hash_regs) {
-    printf("XXXXXXXXXX FAIL COMBINED REGS  XXXXXXXXXX\n");
-  }
-  else {
-    printf("---------- PASS COMBINED REGS  ----------\n");
-  }
-
-  if (gateboy1.combined_hash_bytes != gateboy2.combined_hash_bytes) {
-    printf("XXXXXXXXXX FAIL COMBINED BYTES XXXXXXXXXX\n");
-  }
-  else {
-    printf("---------- PASS COMBINED BYTES ----------\n");
+    printf("---------- PASS TOTAL HASH ----------\n");
   }
 
 #else

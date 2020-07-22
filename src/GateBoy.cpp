@@ -149,7 +149,7 @@ void dump_blob(T& blob) {
 
 void GateBoy::run_benchmark(bool use_fast_impl) {
   run_reset_sequence(false, use_fast_impl);
-  printf("Hash 1 after reset: 0x%016llx : 0x%016llx : 0x%016llx\n", phase_hash_bytes, phase_hash_regs, phase_hash_bits);
+  printf("Hash 1 after reset: 0x%016llx\n", phase_hash);
 
   /*
   uint64_t hash_bytes2 = HASH_INIT;
@@ -226,8 +226,8 @@ void GateBoy::run_benchmark(bool use_fast_impl) {
   double pass_rate_sigma    = sqrt(pass_rate_variance);
   printf("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
 
-  printf("Commit phase_hash   0x%016llx : 0x%016llx : 0x%016llx\n", phase_hash_bytes, phase_hash_regs, phase_hash_bits);
-  printf("Combined phase_hash 0x%016llx : 0x%016llx : 0x%016llx\n", combined_hash_bytes, combined_hash_regs, combined_hash_bits);
+  printf("Commit phase_hash   0x%016llx\n", phase_hash);
+  printf("Combined phase_hash 0x%016llx\n", total_hash);
 }
 
 //------------------------------------------------------------------------------
@@ -249,9 +249,7 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 
   pass_count = 0;
 
-  uint64_t hash_bytes_old = HASH_INIT;
   uint64_t hash_regs_old  = HASH_INIT;
-  uint64_t hash_bits_old  = HASH_INIT;
 
   for (int i = 0; i < 256; i++) {
     pass_count++;
@@ -272,13 +270,11 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
       top.tick_slow(phase);
     }
 
-    uint64_t hash_bytes_new = HASH_INIT;
     uint64_t hash_regs_new  = HASH_INIT;
-    uint64_t hash_bits_new  = HASH_INIT;
 
 #ifdef FAST_HASH
     //if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(top, hash_bytes_new, hash_regs_new, hash_bits_new);
+    commit_and_hash(top, hash_regs_new);
     //if (verbose) printf("0x%016llx\n", _pass_hash);
 #else
     if (verbose) printf("0x%016llx\n", _pass_hash);
@@ -320,31 +316,22 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
     
     //printf("hash 0x%016llx\n", new_hash.h);
     
-    if (hash_bytes_old == hash_bytes_new) break;
-    hash_bytes_old = hash_bytes_new;
+    if (hash_regs_old == hash_regs_new) break;
     hash_regs_old = hash_regs_new;
-    hash_bits_old = hash_bits_new;
     if (i == 199) printf("stuck!\n");
     CHECK_N(i == 200);
   }
 
-  phase_hash_bytes = hash_bytes_old;
-  phase_hash_regs  = hash_regs_old;
-  phase_hash_bits  = hash_bits_old;
-
-  combine_hash(combined_hash_bytes, phase_hash_bytes);
-  combine_hash(combined_hash_regs,  phase_hash_regs);
-  combine_hash(combined_hash_bits,  phase_hash_bits);
+  phase_hash = hash_regs_old;
+  combine_hash(total_hash, phase_hash);
 
 #if 1
   if (verbose) {
-    printf("Phase %c @ %08d:%02d phase_hash %016llx : %016llx : %016llx\n",
+    printf("Phase %c @ %08d:%02d phase_hash %016llx\n",
       'A' + (phase_total & 7),
       phase_total,
       pass_count,
-      phase_hash_bytes,
-      phase_hash_regs,
-      phase_hash_bits);
+      phase_hash);
   }
 #else
   if (verbose) {

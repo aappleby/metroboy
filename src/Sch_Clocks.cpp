@@ -60,27 +60,12 @@ void ClockRegisters::tock_clk_fast(int phase, const SchematicTop& top) {
 
   wire upoj_run = _SYS_PIN_T1n || _SYS_PIN_T2n || !_SYS_PIN_RSTp;
 
-  wire AFUR_ABCDxxxx_ = _AFUR_ABCDxxxx.q();
-  wire ALEF_xBCDExxx_ = _ALEF_xBCDExxx.q();
-  wire APUK_xxCDEFxx_ = _APUK_xxCDEFxx.q();
-  wire ADYK_xxxDEFGx_ = _ADYK_xxxDEFGx.q();
+  wire clk = _SYS_PIN_CLK_B;
 
-  {
-    wire clk = _SYS_PIN_CLK_B;
-
-    if (upoj_run) {
-      /*p01.AFUR*/ _AFUR_ABCDxxxx = RegDelta(DELTA_D0C0 | (!clk << 1) | (!ADYK_xxxDEFGx_ << 0));
-      /*p01.ALEF*/ _ALEF_xBCDExxx = RegDelta(DELTA_D0C0 | ( clk << 1) | ( AFUR_ABCDxxxx_ << 0));
-      /*p01.APUK*/ _APUK_xxCDEFxx = RegDelta(DELTA_D0C0 | (!clk << 1) | ( ALEF_xBCDExxx_ << 0));
-      /*p01.ADYK*/ _ADYK_xxxDEFGx = RegDelta(DELTA_D0C0 | ( clk << 1) | ( APUK_xxCDEFxx_ << 0));
-    }
-    else {
-      /*p01.AFUR*/ _AFUR_ABCDxxxx.delta = RegDelta(DELTA_A0C0 | (!clk << 1));
-      /*p01.ALEF*/ _ALEF_xBCDExxx.delta = RegDelta(DELTA_A0C0 | ( clk << 1));
-      /*p01.APUK*/ _APUK_xxCDEFxx.delta = RegDelta(DELTA_A0C0 | (!clk << 1));
-      /*p01.ADYK*/ _ADYK_xxxDEFGx.delta = RegDelta(DELTA_A0C0 | ( clk << 1));
-    }
-  }
+  wire AFUR_ABCDxxxx_ = _AFUR_ABCDxxxx.q() & upoj_run;
+  wire ALEF_xBCDExxx_ = _ALEF_xBCDExxx.q() & upoj_run;
+  wire APUK_xxCDEFxx_ = _APUK_xxCDEFxx.q() & upoj_run;
+  wire ADYK_xxxDEFGx_ = _ADYK_xxxDEFGx.q() & upoj_run;
 
   {
     bool BAPY_xxxxxxGH;
@@ -125,7 +110,20 @@ void ClockRegisters::tock_clk_fast(int phase, const SchematicTop& top) {
     /* PIN_75 */ _EXT_PIN_CLK_xxxxEFGH = NULE_xxxxEFGH;
   }
 
-  _CPU_PIN_EXT_CLKGOOD = _SYS_PIN_CLK_A.as_wire();
+  _CPU_PIN_EXT_CLKGOOD = _SYS_PIN_CLK_A;
+
+  /*p01.AFUR*/ _AFUR_ABCDxxxx.delta = RegDelta(DELTA_D0C0 | (!clk << 1) | (!ADYK_xxxDEFGx_ << 0));
+  /*p01.ALEF*/ _ALEF_xBCDExxx.delta = RegDelta(DELTA_D0C0 | ( clk << 1) | ( AFUR_ABCDxxxx_ << 0));
+  /*p01.APUK*/ _APUK_xxCDEFxx.delta = RegDelta(DELTA_D0C0 | (!clk << 1) | ( ALEF_xBCDExxx_ << 0));
+  /*p01.ADYK*/ _ADYK_xxxDEFGx.delta = RegDelta(DELTA_D0C0 | ( clk << 1) | ( APUK_xxCDEFxx_ << 0));
+
+  if (!upoj_run) {
+    /*p01.AFUR*/ _AFUR_ABCDxxxx.delta = RegDelta(DELTA_A0C0 | (!clk << 1));
+    /*p01.ALEF*/ _ALEF_xBCDExxx.delta = RegDelta(DELTA_A0C0 | ( clk << 1));
+    /*p01.APUK*/ _APUK_xxCDEFxx.delta = RegDelta(DELTA_A0C0 | (!clk << 1));
+    /*p01.ADYK*/ _ADYK_xxxDEFGx.delta = RegDelta(DELTA_A0C0 | ( clk << 1));
+  }
+
 #endif
 }
 

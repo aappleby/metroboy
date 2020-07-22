@@ -57,20 +57,22 @@ extern const Lut8 logic_lut1;
 
 //-----------------------------------------------------------------------------
 
+inline void mix(uint64_t& h) {
+  h *= 0xff51afd7ed558ccd;
+  h = _byteswap_uint64(h);
+}
+
 inline void combine_hash(uint64_t& a, uint64_t b) {
   a ^= b;
-  a *= 0xff51afd7ed558ccd;
-  a = _byteswap_uint64(a);
+  mix(a);
 }
 
 //-----------------------------------------------------------------------------
 
 constexpr uint64_t HASH_INIT = 0x12345678;
 
-inline void commit_and_hash(void* blob, int size, uint64_t& hash_bytes, uint64_t& hash_regs, uint64_t& hash_bits) {
-  uint64_t h1 = hash_bytes;
-  uint64_t h2 = hash_regs;
-  uint64_t h3 = hash_bits;
+inline void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
+  uint64_t h = hash_regs;
 
   uint8_t* base = (uint8_t*)blob;
 
@@ -87,39 +89,29 @@ inline void commit_and_hash(void* blob, int size, uint64_t& hash_bytes, uint64_t
       __debugbreak();
     }
 
-    combine_hash(h1, s2);
-    combine_hash(h2, s2 & 0x0F);
-    combine_hash(h3, s2 & 0x01);
+    combine_hash(h, s2 & 0x0F);
 
     base[i] = s2;
   }
 
-  hash_bytes = h1;
-  hash_regs  = h2;
-  hash_bits  = h3;
+  hash_regs = h;
 }
 
 template<typename T>
-inline void commit_and_hash(T& obj, uint64_t& hash_bytes, uint64_t& hash_regs, uint64_t& hash_bits) {
-  commit_and_hash(&obj, sizeof(T), hash_bytes, hash_regs, hash_bits);
+inline void commit_and_hash(T& obj, uint64_t& hash_regs) {
+  commit_and_hash(&obj, sizeof(T), hash_regs);
 }
 
-inline void hash_blob(void* blob, int size, uint64_t& hash_bytes, uint64_t& hash_regs, uint64_t& hash_bits) {
-  uint64_t h1 = hash_bytes;
-  uint64_t h2 = hash_regs;
-  uint64_t h3 = hash_bits;
+inline void hash_blob(void* blob, int size, uint64_t& hash_regs) {
+  uint64_t h = hash_regs;
 
   uint8_t* base = (uint8_t*)blob;
   for (int i = 0; i < size; i++) {
     uint8_t s2 = base[i];
-    combine_hash(hash_bytes, s2);
     combine_hash(hash_regs,  s2 & 0x0F);
-    combine_hash(hash_bits,  s2 & 0x01);
   }
 
-  hash_bytes = h1;
-  hash_regs  = h2;
-  hash_bits  = h3;
+  hash_regs  = h;
 }
 
 //-----------------------------------------------------------------------------
@@ -317,6 +309,10 @@ struct Pin2 : public RegBase2 {
     CHECK_P(is_pin());
     CHECK_P(!has_delta());
     delta = w ? DELTA_SIG1 : DELTA_SIG0;
+  }
+
+  inline void operator = (Pin2& p) {
+    (*this) = (wire)p;
   }
 
   inline void operator = (RegDelta D) {

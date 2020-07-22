@@ -14,13 +14,8 @@ public:
   int pass_count = 0;
   int pass_total = 0;
 
-  uint64_t phase_hash_bytes = 0;
-  uint64_t phase_hash_regs  = 0;
-  uint64_t phase_hash_bits  = 0;
-
-  uint64_t combined_hash_bytes = 0;
-  uint64_t combined_hash_regs  = 0;
-  uint64_t combined_hash_bits  = 0;
+  uint64_t phase_hash = 0;
+  uint64_t total_hash = 0;
 
   Schematics::SchematicTop top;
 };

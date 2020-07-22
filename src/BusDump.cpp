@@ -4,7 +4,6 @@
 using namespace Schematics;
 
 #if 0
-
 void test_bus_dump(BusDump* dump_log, int len) {
 
   SchematicTop gb;
@@ -34,13 +33,31 @@ void test_bus_dump(BusDump* dump_log, int len) {
     if (new_addr != dump.bus_addr) printf("bus_addr mismatch\n");
     if (new_data != dump.bus_data) printf("bus_data mismatch\n");
   }
+}
 
+#endif
+
+void dump_bus_dump(Dumper& d, BusDump* dump, int start, int count) {
+  for (int i = start; i < start + count; i++) {
+
+    if (dump[i].phase == -1) return;
+    d("%05d: CPU 0x%04x:0x%02x:R%d:W%d BUS 0x%04x:0x%02x:R%d:W%d\n",
+      dump[i].phase,
+      dump[i].cpu_addr,
+      dump[i].cpu_data,
+      dump[i].cpu_rd,
+      dump[i].cpu_wr,
+      dump[i].bus_addr,
+      dump[i].bus_data,
+      dump[i].bus_rd,
+      dump[i].bus_wr);
+  }
 }
 
 
 
-
 BusDump poweron_000_div[] = {
+  {.phase=     0, .cpu_addr=0x0100, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0x0000, .bus_data=0xff, .bus_rd=0, .bus_wr=0, .bus_ack=0},
   {.phase=     4, .cpu_addr=0x0100, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0x0100, .bus_data=0x00, .bus_rd=1, .bus_wr=0, .bus_ack=1},
   {.phase=    12, .cpu_addr=0x0101, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0x0101, .bus_data=0xc3, .bus_rd=1, .bus_wr=0, .bus_ack=1},
   {.phase=    20, .cpu_addr=0x0102, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0x0102, .bus_data=0x50, .bus_rd=1, .bus_wr=0, .bus_ack=1},
@@ -50,6 +67,7 @@ BusDump poweron_000_div[] = {
   {.phase=    52, .cpu_addr=0x0151, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0x0151, .bus_data=0x04, .bus_rd=1, .bus_wr=0, .bus_ack=1},
   {.phase=    60, .cpu_addr=0x0152, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0x0152, .bus_data=0xff, .bus_rd=1, .bus_wr=0, .bus_ack=1},
   {.phase=    68, .cpu_addr=0xff04, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0xff04, .bus_data=0xab, .bus_rd=1, .bus_wr=0, .bus_ack=1},
+  {.phase = -1}
 };
 
 BusDump poweron_004_div[] = {
@@ -104,10 +122,6 @@ BusDump poweron_004_div[] = {
   {.phase=    96, .cpu_addr=0xff04, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0xff04, .bus_data=0xab, .bus_rd=1, .bus_wr=0, .bus_ack=1},
   {.phase=    98, .cpu_addr=0xff04, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0xff04, .bus_data=0xab, .bus_rd=1, .bus_wr=0, .bus_ack=1},
   {.phase=   100, .cpu_addr=0xff04, .cpu_data=0x00, .cpu_rd=1, .cpu_wr=0, .bus_addr=0xff04, .bus_data=0x00, .bus_rd=1, .bus_wr=0, .bus_ack=1},
+  {.phase = -1}
 };
 
-void test_bus_dumps() {
-  test_bus_dump(poweron_000_div, sizeof(poweron_000_div) / sizeof(poweron_000_div[0]));
-}
-
-#endif

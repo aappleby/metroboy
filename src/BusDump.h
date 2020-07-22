@@ -13,3 +13,6 @@ struct BusDump {
   bool bus_wr;
   bool bus_ack;
 };
+
+
+void dump_bus_dump(Dumper& d, BusDump* dump, int start, int count);

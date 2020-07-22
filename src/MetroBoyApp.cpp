@@ -65,7 +65,7 @@ void MetroBoyApp::post() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::init() {
+void MetroBoyApp::app_init() {
 
   app_start = SDL_GetPerformanceCounter();
 
@@ -140,7 +140,7 @@ void MetroBoyApp::init() {
 
 //----------------------------------------
 
-void MetroBoyApp::close() {
+void MetroBoyApp::app_close() {
   audio_stop();
 };
 
@@ -235,7 +235,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::update(double /*delta*/) {
+void MetroBoyApp::app_update(double /*delta*/) {
   ImGuiIO& io = ImGui::GetIO();
 
   SDL_Event event;
@@ -374,7 +374,7 @@ void MetroBoyApp::update(double /*delta*/) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::render_frame(Viewport view) {
+void MetroBoyApp::app_render_frame(Viewport view) {
 
   (void)view;
 
@@ -524,7 +524,7 @@ void MetroBoyApp::render_frame(Viewport view) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::render_ui(Viewport view) {
+void MetroBoyApp::app_render_ui(Viewport view) {
   StringDumper dump;
 
   //----------------------------------------

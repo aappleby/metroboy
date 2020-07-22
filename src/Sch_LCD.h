@@ -12,7 +12,6 @@ struct LcdRegisters {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  uint64_t commit();
 
   /*p28.BYHA*/ wire LcdRegisters::BYHA_VID_LINE_TRIG_d4() const {
     /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_VID_LINE_ENDp.q());
@@ -41,6 +40,38 @@ struct LcdRegisters {
   /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n() const {
     /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp);
     return not(_ABAK_VID_LINE_TRIG_d4p);
+  }
+
+  void dump(Dumper& d) {
+    d("----------   LCD    ----------\n");
+    d("LCD X               %03d\n", pack(0,           TYRY_X6.q(), TAHA_X5.q(), SUDE_X4.q(), TELU_X3.q(), VYZO_X2.q(), TYPO_X1.q(), SAXO_X0.q()));
+    d("LCD Y               %03d\n", pack(LAFO_Y7.q(), MATO_Y6.q(), LEMA_Y5.q(), LOVU_Y4.q(), LYDO_Y3.q(), LEXA_Y2.q(), MYRO_Y1.q(), MUWY_Y0.q()));
+
+    d("RUTU_LINE_ENDp      %c\n", _RUTU_LINE_ENDp     .c());
+    d("CATU_VID_LINE_ENDp  %c\n", _CATU_VID_LINE_ENDp .c());
+    d("NYPE_LINE_STARTp    %c\n", _NYPE_LINE_STARTp   .c());
+    d("ANEL_VID_LINE_ENDp  %c\n", _ANEL_VID_LINE_ENDp .c());
+    d("MYTA_LINE_153p      %c\n", _MYTA_LINE_153p     .c());
+    d("POPU_IN_VBLANKp     %c\n", _POPU_IN_VBLANKp    .c());
+    d("SYGU_LINE_STROBE    %c\n", _SYGU_LINE_STROBE   .c());
+    d("MEDA_VSYNC_OUTn     %c\n", _MEDA_VSYNC_OUTn    .c());
+    d("LUCA_LINE_EVEN      %c\n", _LUCA_LINE_EVEN     .c());
+    d("NAPO_FRAME_EVEN     %c\n", _NAPO_FRAME_EVEN    .c());
+    d("ROPO_LY_MATCH_SYNCp %c\n", _ROPO_LY_MATCH_SYNCp.c());
+    
+    d("SYRY_LYC0           %c\n", _SYRY_LYC0.c());
+    d("VUCE_LYC1           %c\n", _VUCE_LYC1.c());
+    d("SEDY_LYC2           %c\n", _SEDY_LYC2.c());
+    d("SALO_LYC3           %c\n", _SALO_LYC3.c());
+    d("SOTA_LYC4           %c\n", _SOTA_LYC4.c());
+    d("VAFA_LYC5           %c\n", _VAFA_LYC5.c());
+    d("VEVO_LYC6           %c\n", _VEVO_LYC6.c());
+    d("RAHA_LYC7           %c\n", _RAHA_LYC7.c());
+                           
+    d("LCD_PIN_CPG         %c\n", _LCD_PIN_CPG.c());
+    d("LCD_PIN_CPL         %c\n", _LCD_PIN_CPL.c());
+    d("LCD_PIN_FR          %c\n", _LCD_PIN_FR .c());
+    d("LCD_PIN_S           %c\n", _LCD_PIN_S  .c());
   }
 
   // -> interrupts, lcd, ppu

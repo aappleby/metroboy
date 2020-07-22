@@ -11,7 +11,6 @@ struct OamBus;
 
 struct ExtBus {
   void tock(SchematicTop& top);
-  uint64_t commit();
 
   void set_ext_data(uint16_t data) {
     _EXT_PIN_D0_C.hold(data & 0x01);

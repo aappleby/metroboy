@@ -158,7 +158,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     // The sprite count clock stops ticking once we have 10 sprites.
 
     /*p29.BAKY*/ wire _BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
-    /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn_SYNC.q());
+    /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn.q());
     
     /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIG_d4());
     /*p29.BESE*/ SPRITE_COUNT0 = ff17_r2(_CAKE_CLKp,         _AZYB_RST, SPRITE_COUNT0.qn());
@@ -177,7 +177,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p30.CUCA*/ SPR_TRI_LINE_2 = tribuf_6n_r2(FEPO_STORE_MATCHp, top.sprite_scanner.DABU_SPRITE_DELTA2());
     /*p30.CEGA*/ SPR_TRI_LINE_3 = tribuf_6n_r2(FEPO_STORE_MATCHp, top.sprite_scanner.GYSA_SPRITE_DELTA3());
 
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC = ff17_r2(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), top.sprite_scanner.DYTY_STORE_ENn_xxCDxxGH());
+    /*p29.DEZY*/ DEZY_STORE_ENn = ff17_r2(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), top.sprite_scanner.DYTY_STORE_ENn_xxCDxxGH());
   }
 
   //----------------------------------------
@@ -678,13 +678,6 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p31.YNEP*/ STORE9_X6    = ff9_r2(STORE9_CLKa, !STORE9_CLKa, DOSY_STORE9_RSTn, XATU_OAM_DA6);
     /*p31.YZOF*/ STORE9_X7    = ff9_r2(STORE9_CLKa, !STORE9_CLKa, DOSY_STORE9_RSTn, BADY_OAM_DA7);
   }
-}
-
-//------------------------------------------------------------------------------
-
-uint64_t SpriteStore::commit() {
-  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  return {ret};
 }
 
 //------------------------------------------------------------------------------

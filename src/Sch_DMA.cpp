@@ -156,9 +156,3 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 }
 
 //-----------------------------------------------------------------------------
-
-uint64_t DmaRegisters::commit() {
-  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
-}
-
-//-----------------------------------------------------------------------------

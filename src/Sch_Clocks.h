@@ -9,13 +9,17 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
-  void tick(const SchematicTop& top);
-  void tock_clk(const SchematicTop& top);
-  void tock_rst(const SchematicTop& top);
-  void tock_dbg(const SchematicTop& top);
-  void tock_vid(const SchematicTop& top);
+  void tick_slow(const SchematicTop& top);
+  void tock_clk_slow(int phase, const SchematicTop& top);
+  void tock_rst_slow(int phase, const SchematicTop& top);
+  void tock_dbg_slow(int phase, const SchematicTop& top);
+  void tock_vid_slow(int phase, const SchematicTop& top);
 
-  uint64_t commit(const SchematicTop& top);
+  void tick_fast(const SchematicTop& top);
+  void tock_clk_fast(int phase, const SchematicTop& top);
+  void tock_rst_fast(int phase, const SchematicTop& top);
+  void tock_dbg_fast(int phase, const SchematicTop& top);
+  void tock_vid_fast(int phase, const SchematicTop& top);
 
   wire get_clk_a() const { return _SYS_PIN_CLK_A; }
   wire get_clk_b() const { return _SYS_PIN_CLK_B; }

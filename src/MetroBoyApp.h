@@ -16,13 +16,14 @@ public:
 
   MetroBoyApp() {}
 
-  void post();
-  virtual void init();
-  virtual void close();
-  virtual void update(double delta);
-  virtual void render_frame(Viewport view);
-  virtual void render_ui(Viewport view);
+  virtual const char* app_get_title();
+  virtual void app_init();
+  virtual void app_close();
+  virtual void app_update(double delta);
+  virtual void app_render_frame(Viewport view);
+  virtual void app_render_ui(Viewport view);
 
+  void post();
   void load(const std::string& prefix, const std::string& name);
   void load(const std::string& name) { load("./", name); }
 

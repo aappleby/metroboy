@@ -79,10 +79,10 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p21.TAPA*/ wire TAPA_INT_OAM = and (_TOLU_VBLANKn, top.lcd_reg.SELA_LINE_ENDp());
     /*p21.TARU*/ wire TARU_INT_HBL = and (_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp());
-    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe._RUGU_INT_LYC_EN.q(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
-                                             top.pix_pipe._REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
-                                             top.pix_pipe._RUFO_INT_VBL_EN.q(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
-                                             top.pix_pipe._ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_INT_LYC_EN.q(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
+                                             top.pix_pipe.REFE_INT_OAM_EN.q(), TAPA_INT_OAM,
+                                             top.pix_pipe.RUFO_INT_VBL_EN.q(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             top.pix_pipe.ROXE_INT_HBL_EN.q(), TARU_INT_HBL);
     /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
     /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);
 
@@ -126,26 +126,3 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 }
 
 //------------------------------------------------------------------------------
-
-uint64_t InterruptRegisters::commit() {
-  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
-}
-
-//------------------------------------------------------------------------------
-
-#if 0
-void dump_regs(TextPainter& text_painter) {
-  text_painter.dprintf(" ----- INT REG -----\n");
-  LOPE_FF0F_0.dump(text_painter, "LOPE_FF0F_0  ");
-  UBUL_FF0F_3.dump(text_painter, "UBUL_FF0F_3  ");
-  ULAK_FF0F_4.dump(text_painter, "ULAK_FF0F_4  ");
-  LALU_FF0F_1.dump(text_painter, "LALU_FF0F_1  ");
-  NYBO_FF0F_2.dump(text_painter, "NYBO_FF0F_2  ");
-  MATY_FF0F_L0.dump(text_painter, "MATY_FF0F_L0 ");
-  NEJY_FF0F_L1.dump(text_painter, "NEJY_FF0F_L1 ");
-  NUTY_FF0F_L2.dump(text_painter, "NUTY_FF0F_L2 ");
-  MOPO_FF0F_L3.dump(text_painter, "MOPO_FF0F_L3 ");
-  PAVY_FF0F_L4.dump(text_painter, "PAVY_FF0F_L4 ");
-  text_painter.newline();
-}
-#endif

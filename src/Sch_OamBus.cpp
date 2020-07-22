@@ -286,12 +286,6 @@ void OamBus::tock(SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-uint64_t OamBus::commit() {
-  return {commit_and_hash((uint8_t*)this, sizeof(*this))};
-}
-
-//------------------------------------------------------------------------------
-
 void OamBus::set_oam_data(wire /*OE*/, uint16_t /*data*/) {
   /*
   if (OE) {

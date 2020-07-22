@@ -74,7 +74,7 @@ int AppHost::app_main(int, char**) {
   int initial_screen_w = 1664;
   int initial_screen_h = 1024;
 
-  window = SDL_CreateWindow(app->get_title(),
+  window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                             initial_screen_w, initial_screen_h,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
@@ -118,7 +118,7 @@ int AppHost::app_main(int, char**) {
   view_smooth = view_raw;
   view_snap = view_raw;
 
-  app->init();
+  app->app_init();
 
   //----------------------------------------
   // Loop forever
@@ -223,7 +223,7 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // Client app update
 
-    app->update(delta);
+    app->app_update(delta);
 
     Viewport snapped = view_raw.snap();
     view_smooth = view_smooth.ease(view_raw, delta);
@@ -240,11 +240,11 @@ int AppHost::app_main(int, char**) {
     glViewport(0, 0, screen_w, screen_h);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    app->render_frame(view_snap);
+    app->app_render_frame(view_snap);
 
-    app->render_ui(view_snap);
+    app->app_render_ui(view_snap);
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 
     //----------------------------------------
     // Render ImGui
@@ -305,7 +305,7 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // App exit
 
-  app->close();
+  app->app_close();
 
   ImGui::DestroyContext();
   SDL_GL_DeleteContext(gl_context);

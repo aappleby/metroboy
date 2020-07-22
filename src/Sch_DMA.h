@@ -14,7 +14,6 @@ struct DmaRegisters {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  uint64_t commit();
 
   // -> bunch of stuff
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.q(); }

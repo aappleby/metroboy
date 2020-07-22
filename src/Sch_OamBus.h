@@ -10,7 +10,6 @@ struct CpuBus;
 
 struct OamBus {
   void tock(SchematicTop& top);
-  uint64_t commit();
   void set_oam_data(wire OE, uint16_t data);
 
   // -> sprite store

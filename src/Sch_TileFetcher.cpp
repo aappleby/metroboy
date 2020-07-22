@@ -111,10 +111,3 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
 }
 
 //------------------------------------------------------------------------------
-
-uint64_t TileFetcher::commit() {
-  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  return {ret};
-}
-
-//------------------------------------------------------------------------------

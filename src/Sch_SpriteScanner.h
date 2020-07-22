@@ -12,7 +12,6 @@ struct SpriteScanner {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
-  uint64_t commit();
 
   // -> sprite store
   wire DEGE_SPRITE_DELTA0() const { return not(_ERUC_YDIFF_S0); }
@@ -45,6 +44,18 @@ struct SpriteScanner {
   /*p28.ELYN*/ wire ELYN_SCAN3() const { return _ELYN_SCAN3.q(); }
   /*p28.FAHA*/ wire FAHA_SCAN4() const { return _FAHA_SCAN4.q(); }
   /*p28.FONY*/ wire FONY_SCAN5() const { return _FONY_SCAN5.q(); }
+
+  void dump(Dumper& d) {
+    d("----------SpriteScan ---------\n");
+    d("_BESU_SCANNINGp   %c\n", _BESU_SCANNINGp  .c());
+    d("_CENO_SCANNINGp   %c\n", _CENO_SCANNINGp  .c());
+    d("_BYBA_SCAN_DONE_A %c\n", _BYBA_SCAN_DONE_A.c());
+    d("_DOBA_SCAN_DONE_B %c\n", _DOBA_SCAN_DONE_B.c());
+    d("SCAN INDEX        %02d\n", 
+      pack(0, 0, _FONY_SCAN5.q(), _FAHA_SCAN4.q(),
+          _ELYN_SCAN3.q(), _GOSO_SCAN2.q(), _WEWY_SCAN1.q(), _YFEL_SCAN0.q()));
+    d("\n");
+  }
 
 private:
 

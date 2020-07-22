@@ -625,10 +625,10 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(top.clk_reg.WESY_SYS_RSTn(), _RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ _RUPO_LYC_MATCH_LATCHn = nor_latch_r2(_PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp());
 
-    /*p21.ROXE*/ _ROXE_INT_HBL_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D0.q());
-    /*p21.RUFO*/ _RUFO_INT_VBL_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D1.q());
-    /*p21.REFE*/ _REFE_INT_OAM_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D2.q());
-    /*p21.RUGU*/ _RUGU_INT_LYC_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D3.q());
+    /*p21.ROXE*/ ROXE_INT_HBL_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D0.q());
+    /*p21.RUFO*/ RUFO_INT_VBL_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D1.q());
+    /*p21.REFE*/ REFE_INT_OAM_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D2.q());
+    /*p21.RUGU*/ RUGU_INT_LYC_EN = ff9_r2(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, top.clk_reg.WESY_SYS_RSTn(), cpu_bus.CPU_TRI_D3.q());
 
     /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor(_XYMU_RENDERINGp.q(), top.ACYL_SCANNINGp()); // die NOR
     /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor(_XYMU_RENDERINGp.q(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
@@ -638,10 +638,10 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.TEBY*/ cpu_bus.CPU_TRI_D0 = tribuf_6p_r2(_TOBE_FF41_RDp, not(_SADU_STAT_MODE0n));
     /*p21.WUGA*/ cpu_bus.CPU_TRI_D1 = tribuf_6p_r2(_TOBE_FF41_RDp, not(_XATY_STAT_MODE1n));
     /*p21.SEGO*/ cpu_bus.CPU_TRI_D2 = tribuf_6p_r2(_TOBE_FF41_RDp, not(_RUPO_LYC_MATCH_LATCHn.q()));
-    /*p21.PUZO*/ cpu_bus.CPU_TRI_D3 = tribuf_6n_r2(_VAVE_FF41_RDn, _ROXE_INT_HBL_EN.q());
-    /*p21.POFO*/ cpu_bus.CPU_TRI_D4 = tribuf_6n_r2(_VAVE_FF41_RDn, _RUFO_INT_VBL_EN.q());
-    /*p21.SASY*/ cpu_bus.CPU_TRI_D5 = tribuf_6n_r2(_VAVE_FF41_RDn, _REFE_INT_OAM_EN.q());
-    /*p21.POTE*/ cpu_bus.CPU_TRI_D6 = tribuf_6n_r2(_VAVE_FF41_RDn, _RUGU_INT_LYC_EN.q());
+    /*p21.PUZO*/ cpu_bus.CPU_TRI_D3 = tribuf_6n_r2(_VAVE_FF41_RDn, ROXE_INT_HBL_EN.q());
+    /*p21.POFO*/ cpu_bus.CPU_TRI_D4 = tribuf_6n_r2(_VAVE_FF41_RDn, RUFO_INT_VBL_EN.q());
+    /*p21.SASY*/ cpu_bus.CPU_TRI_D5 = tribuf_6n_r2(_VAVE_FF41_RDn, REFE_INT_OAM_EN.q());
+    /*p21.POTE*/ cpu_bus.CPU_TRI_D6 = tribuf_6n_r2(_VAVE_FF41_RDn, RUGU_INT_LYC_EN.q());
   }
 
   //----------------------------------------
@@ -802,13 +802,6 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.MULY*/ cpu_bus.CPU_TRI_D6 = tribuf_6n_r2(_FF4B_RDn, _MUVO_WX6.q());
     /*p23.MARA*/ cpu_bus.CPU_TRI_D7 = tribuf_6n_r2(_FF4B_RDn, _NUKU_WX7.q());
   }
-}
-
-//------------------------------------------------------------------------------
-
-uint64_t PixelPipe::commit() {
-  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  return {ret};
 }
 
 //------------------------------------------------------------------------------

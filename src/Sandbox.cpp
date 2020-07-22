@@ -24,10 +24,6 @@ struct Sandbox {
   void tick() {
   }
 
-  uint64_t commit() {
-    return 0;
-  }
-
   void dump(uint64_t hash, int passes) {
     /*
     auto dec = [](SignalState s) {
@@ -53,7 +49,9 @@ void phase(Sandbox& sandbox) {
   int pass = 0;
   for (pass = 0; pass < 100; pass++) {
     sandbox.tick();
-    uint64_t new_hash = sandbox.commit();
+
+    uint64_t new_hash = 0x12345678;
+    //commit_and_hash(hash, sandbox); needs logic_lut1
     if (new_hash == hash) break;
     hash = new_hash;
   }

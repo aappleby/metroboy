@@ -11,7 +11,6 @@ struct CpuBus;
 struct Bootrom {
   void tick(const SchematicTop& gb);
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
-  uint64_t commit();
 
   /*p07.TEPU*/ wire BOOT_BITn() const { return _BOOT_BITn.q(); }
 

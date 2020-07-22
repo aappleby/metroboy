@@ -5,23 +5,17 @@ using namespace Schematics;
 
 #define FAST_BOOT
 
-#define FAST_IMPL
-
 #define PHASE(A) ((A) & (1 << (7 - phase)))
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tick(const SchematicTop& top) {
+void ClockRegisters::tick_fast(const SchematicTop& top) {
   _XONA_LCDC_EN = top.pix_pipe.XONA_LCDC_EN.q();
 }
 
 //-----------------------------------------------------------------------------
 
-#ifdef FAST_IMPL
-
-void ClockRegisters::tock_clk(const SchematicTop& top) {
-  const int phase = top.phase_count & 7;
-
+void ClockRegisters::tock_clk_fast(int phase, const SchematicTop& /*top*/) {
   wire upoj_run = _SYS_PIN_T1n || _SYS_PIN_T2n || !_SYS_PIN_RSTp;
 
   _AFUR_ABCDxxxx.hold_d(PHASE(0b11110000) && upoj_run);
@@ -64,9 +58,7 @@ void ClockRegisters::tock_clk(const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_rst(const SchematicTop& top) {
-  const int phase = top.phase_count & 7;
-
+void ClockRegisters::tock_rst_fast(int phase, const SchematicTop& top) {
   wire upoj_run = _SYS_PIN_T1n || _SYS_PIN_T2n || !_SYS_PIN_RSTp;
   wire unor_dbg = _SYS_PIN_T2n && !_SYS_PIN_T1n;
   wire umut_dbg = _SYS_PIN_T1n && !_SYS_PIN_T2n;
@@ -99,7 +91,7 @@ void ClockRegisters::tock_rst(const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_dbg(const SchematicTop& /*top*/) {
+void ClockRegisters::tock_dbg_fast(int /*phase*/, const SchematicTop& /*top*/) {
   wire unor_dbg = _SYS_PIN_T2n && !_SYS_PIN_T1n;
   wire umut_dbg = _SYS_PIN_T1n && !_SYS_PIN_T2n;
 
@@ -115,7 +107,7 @@ void ClockRegisters::tock_dbg(const SchematicTop& /*top*/) {
 //-----------------------------------------------------------------------------
 // can't do fast mode for this until vid clock is running
 
-void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
+void ClockRegisters::tock_vid_fast(int /*phase*/, const SchematicTop& /*top*/) {
   wire vid_reset = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn.q(), !_XONA_LCDC_EN);
 
   wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
@@ -126,14 +118,13 @@ void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
   _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_,  !vid_reset, !VENA_xxxxEFGH_);
 }
 
-#endif
-
 //-----------------------------------------------------------------------------
 
-#ifndef FAST_IMPL
+void ClockRegisters::tick_slow(const SchematicTop& top) {
+  _XONA_LCDC_EN = top.pix_pipe.XONA_LCDC_EN.q();
+}
 
-void ClockRegisters::tock_clk(const SchematicTop& top) {
-  const int phase = top.phase_count & 7;
+void ClockRegisters::tock_clk_slow(int /*phase*/, const SchematicTop& /*top*/) {
   // ignoring the deglitcher here
 
   {
@@ -235,6 +226,12 @@ void ClockRegisters::tock_clk(const SchematicTop& top) {
   }
 
   _CPU_PIN_EXT_CLKGOOD = _SYS_PIN_CLK_A.as_wire();
+}
+
+
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::tock_rst_slow(int /*phase*/, const SchematicTop& top) {
   /*p01.UPYF*/ wire _UPYF = or(_SYS_PIN_RSTp, UCOB_CLKBADp());
 
   /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch_r2(_UPYF, CPU_PIN_READYp());
@@ -259,7 +256,11 @@ void ClockRegisters::tock_clk(const SchematicTop& top) {
 
   _CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
   _CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.as_wire();
+}
 
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::tock_dbg_slow(int /*phase*/, const SchematicTop& /*top*/) {
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
   /*p25.SOTO*/ _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), _SOTO_DBG_VRAM.qn());
 
@@ -270,19 +271,8 @@ void ClockRegisters::tock_clk(const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_rst(const SchematicTop& /*top*/) {
-}
-
-//-----------------------------------------------------------------------------
-
-void ClockRegisters::tock_dbg(const SchematicTop& /*top*/) {
-}
-
-
-//-----------------------------------------------------------------------------
-
 // can't do fast mode for this until vid clock is running
-void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
+void ClockRegisters::tock_vid_slow(int /*phase*/, const SchematicTop& /*top*/) {
   /*p29.XYVA*/ wire XYVA_xBxDxFxH = not(ZEME_AxCxExGx());
   /*p29.XOTA*/ wire _XOTA_AxCxExGx = not(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not(_XOTA_AxCxExGx);
@@ -293,15 +283,6 @@ void ClockRegisters::tock_vid(const SchematicTop& /*top*/) {
   /*p29.WUVU*/ _WUVU_xxCDxxGH = ff17_r2( _XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
   /*p21.VENA*/ _VENA_xxxxEFGH = ff17_r2(!WUVU_xxCDxxGH_, XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
   /*p29.WOSU*/ _WOSU_xBCxxFGx = ff17_r2( _XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-}
-
-#endif
-
-//-----------------------------------------------------------------------------
-
-uint64_t ClockRegisters::commit(const SchematicTop& /*top*/) {
-  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  return {ret};
 }
 
 //-----------------------------------------------------------------------------

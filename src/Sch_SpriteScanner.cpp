@@ -91,10 +91,3 @@ void SpriteScanner::tock(const SchematicTop& top) {
 }
 
 //------------------------------------------------------------------------------
-
-uint64_t SpriteScanner::commit() {
-  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  return {ret};
-}
-
-//------------------------------------------------------------------------------

@@ -6,13 +6,13 @@
 DummyApp::~DummyApp() {
 };
 
-const char* DummyApp::get_title() {
+const char* DummyApp::app_get_title() {
   return "DummyApp";
 }
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::init() {
+void DummyApp::app_init() {
   grid_painter.init();
   text_painter.init();
   blitter.init();
@@ -29,18 +29,18 @@ void DummyApp::init() {
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::close() {
+void DummyApp::app_close() {
 }
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::update(double delta) {
+void DummyApp::app_update(double delta) {
   (void)delta;
 }
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::render_frame(Viewport view) {
+void DummyApp::app_render_frame(Viewport view) {
   grid_painter.render(view);
 
   static int count = 0;
@@ -52,7 +52,7 @@ void DummyApp::render_frame(Viewport view) {
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::render_ui(Viewport view) {
+void DummyApp::app_render_ui(Viewport view) {
   (void)view;
 }
 

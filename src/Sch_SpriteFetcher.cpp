@@ -51,10 +51,3 @@ void SpriteFetcher::tock(SchematicTop& top) {
 }
 
 //------------------------------------------------------------------------------
-
-uint64_t SpriteFetcher::commit() {
-  uint64_t ret = commit_and_hash((uint8_t*)this, sizeof(*this));
-  return {ret};
-}
-
-//------------------------------------------------------------------------------

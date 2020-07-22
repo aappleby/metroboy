@@ -131,7 +131,9 @@
     <ClInclude Include="src\DMA.h" />
     <ClInclude Include="src\DummyApp.h" />
     <ClInclude Include="src\File.h" />
+    <ClInclude Include="src\GateBoy.h" />
     <ClInclude Include="src\GateBoyApp.h" />
+    <ClInclude Include="src\GateBoyTests.h" />
     <ClInclude Include="src\Joypad.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\DumpPainter.h" />
@@ -204,7 +206,9 @@
     <ClCompile Include="src\DMA.cpp" />
     <ClCompile Include="src\DummyApp.cpp" />
     <ClCompile Include="src\File.cpp" />
+    <ClCompile Include="src\GateBoy.cpp" />
     <ClCompile Include="src\GateBoyApp.cpp" />
+    <ClCompile Include="src\GateBoyTests.cpp" />
     <ClCompile Include="src\Joypad.cpp" />
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\DumpPainter.cpp" />

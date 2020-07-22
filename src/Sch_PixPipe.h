@@ -11,7 +11,6 @@ struct CpuBus;
 struct PixelPipe {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  uint64_t commit();
 
   // -> top, tile fetcher
   /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp() const { 
@@ -51,6 +50,107 @@ struct PixelPipe {
   /*p27.TATE*/ wire TATE_WIN_Y6() const { return _TATE_WIN_Y6.q(); }
   /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return _TEKE_WIN_Y7.q(); }
 
+  void dump(Dumper& d) {
+    d("---------- Pix Pipe ----------\n");
+    d("PIX COUNT   %03d\n", pack(SYBE_X7.q(), TAKO_X6.q(), TUKY_X5.q(), TUHU_X4.q(), XYDO_X3.q(), XODU_X2.q(), SAVY_X1.q(), XEHO_X0.q()));
+    d("LCDC_BGEN   %c\n", VYXE_LCDC_BGEN  .c());
+    d("LCDC_SPEN   %c\n", XYLO_LCDC_SPEN  .c());
+    d("LCDC_SPSIZE %c\n", XYMO_LCDC_SPSIZE.c());
+    d("LCDC_BGMAP  %c\n", XAFO_LCDC_BGMAP .c());
+    d("LCDC_BGTILE %c\n", WEXU_LCDC_BGTILE.c());
+    d("LCDC_WINEN  %c\n", WYMO_LCDC_WINEN .c());
+    d("LCDC_WINMAP %c\n", WOKY_LCDC_WINMAP.c());
+    d("LCDC_EN     %c\n", XONA_LCDC_EN    .c());
+
+    d("INT_HBL_EN  %c\n", ROXE_INT_HBL_EN.c());
+    d("INT_VBL_EN  %c\n", RUFO_INT_VBL_EN.c());
+    d("INT_OAM_EN  %c\n", REFE_INT_OAM_EN.c());
+    d("INT_LYC_EN  %c\n", RUGU_INT_LYC_EN.c());
+
+    int win_x = pack(_XOLO_WIN_X7.q(), _WYKO_WIN_X6.q(), _WOBO_WIN_X5.q(), _WODY_WIN_X4.q(),
+                     _WYKA_WIN_X3.q(), 0, 0, 0);
+
+    int win_y = pack(_TEKE_WIN_Y7.q(), _TATE_WIN_Y6.q(), _TOZO_WIN_Y5.q(), _TAXA_WIN_Y4.q(),
+                     _TUFU_WIN_Y3.q(), _VYMU_WIN_Y2.q(), _VUJO_WIN_Y1.q(), _VYNO_WIN_Y0.q());
+
+    d("WIN X   %03d\n", win_x);
+    d("WIN_Y   %03d\n", win_y);
+
+    d("WIN_MODE_A       %c\n", _PYNU_WIN_MODE_A      .c());
+    d("WIN_FIRST_TILE_A %c\n", _RYDY_WIN_FIRST_TILE_A.c());
+    d("WIN_MODE_B       %c\n", _NOPA_WIN_MODE_B      .c());
+    d("WIN_FIRST_TILE_B %c\n", _SOVY_WIN_FIRST_TILE_B.c());
+    d("WY_MATCH_LATCH   %c\n", _REJO_WY_MATCH_LATCH  .c());
+    d("WY_MATCH         %c\n", _SARY_WY_MATCH        .c());
+    d("WX_MATCHn_A      %c\n", _RYFA_WX_MATCHn_A     .c());
+    d("WX_MATCHn_B      %c\n", _RENE_WX_MATCHn_B     .c());
+    d("WX_MATCH_A       %c\n", _PYCO_WX_MATCH_A      .c());
+    d("WX_MATCH_B       %c\n", _NUNU_WX_MATCH_B      .c());
+
+    d("ROXY_FINE_SCROLL_DONEn %c\n", _ROXY_FINE_SCROLL_DONEn.c());
+    d("RYKU_FINE_CNT0         %c\n", _RYKU_FINE_CNT0        .c());
+    d("ROGA_FINE_CNT1         %c\n", _ROGA_FINE_CNT1        .c());
+    d("RUBU_FINE_CNT2         %c\n", _RUBU_FINE_CNT2        .c());
+    d("XYMU_RENDERINGp        %c\n", _XYMU_RENDERINGp       .c());
+    d("RUPO_LYC_MATCH_LATCHn  %c\n", _RUPO_LYC_MATCH_LATCHn .c());
+    d("WUSA_LCD_CLOCK_GATE    %c\n", _WUSA_LCD_CLOCK_GATE   .c());
+    d("VOGA_RENDER_DONE_SYNC  %c\n", _VOGA_RENDER_DONE_SYNC .c());
+    d("PUXA_FINE_MATCH_A      %c\n", _PUXA_FINE_MATCH_A     .c());
+    d("NYZE_FINE_MATCH_B      %c\n", _NYZE_FINE_MATCH_B     .c());
+    d("PAHO_X_8_SYNC          %c\n", _PAHO_X_8_SYNC         .c());
+    d("POFY_ST_LATCH          %c\n", _POFY_ST_LATCH         .c());
+    d("LCD_PIN_CP             %c\n", _LCD_PIN_CP            .c());
+    d("LCD_PIN_ST             %c\n", _LCD_PIN_ST            .c());
+    d("LCD_PIN_LD1            %c\n", _LCD_PIN_LD1           .c());
+    d("LCD_PIN_LD0            %c\n", _LCD_PIN_LD0           .c());
+
+    d("BG_PIPE_A  %c%c%c%c%c%c%c%c\n", 
+      BG_PIPE_A0.c(), BG_PIPE_A1.c(), BG_PIPE_A2.c(), BG_PIPE_A3.c(),
+      BG_PIPE_A4.c(), BG_PIPE_A5.c(), BG_PIPE_A6.c(), BG_PIPE_A7.c());
+
+    d("BG_PIPE_B  %c%c%c%c%c%c%c%c\n", 
+      BG_PIPE_B0.c(), BG_PIPE_B1.c(), BG_PIPE_B2.c(), BG_PIPE_B3.c(),
+      BG_PIPE_B4.c(), BG_PIPE_B5.c(), BG_PIPE_B6.c(), BG_PIPE_B7.c());
+
+    d("SPR_PIPE_A %c%c%c%c%c%c%c%c\n", 
+      SPR_PIPE_A0.c(), SPR_PIPE_A1.c(), SPR_PIPE_A2.c(), SPR_PIPE_A3.c(),
+      SPR_PIPE_A4.c(), SPR_PIPE_A5.c(), SPR_PIPE_A6.c(), SPR_PIPE_A7.c());
+
+    d("SPR_PIPE_B %c%c%c%c%c%c%c%c\n", 
+      SPR_PIPE_B0.c(), SPR_PIPE_B1.c(), SPR_PIPE_B2.c(), SPR_PIPE_B3.c(),
+      SPR_PIPE_B4.c(), SPR_PIPE_B5.c(), SPR_PIPE_B6.c(), SPR_PIPE_B7.c());
+
+    d("PAL_PIPE   %c%c%c%c%c%c%c%c\n", 
+      PAL_PIPE_0.c(), PAL_PIPE_1.c(), PAL_PIPE_2.c(), PAL_PIPE_3.c(), 
+      PAL_PIPE_4.c(), PAL_PIPE_5.c(), PAL_PIPE_6.c(), PAL_PIPE_7.c());
+
+    d("MASK_PIPE  %c%c%c%c%c%c%c%c\n", 
+      MASK_PIPE_0.c(), MASK_PIPE_1.c(), MASK_PIPE_2.c(), MASK_PIPE_3.c(),
+      MASK_PIPE_4.c(), MASK_PIPE_5.c(), MASK_PIPE_6.c(), MASK_PIPE_7.c());
+
+    d("BGP  %c%c %c%c %c%c %c%c\n",
+      _MENA_BGP7.c(), _MOGY_BGP6.c(), _MORU_BGP5.c(), _MUKE_BGP4.c(),
+      _MAXY_BGP3.c(), _PYLU_BGP2.c(), _NUSY_BGP1.c(), _PAVO_BGP0.c());
+
+    d("OBP0 %c%c %c%c %c%c %c%c\n",
+      _XANA_OBP07.c(), _XUPO_OBP06.c(), _XYZE_OBP05.c(), _XERU_OBP04.c(),
+      _XALO_OBP03.c(), _XOVA_OBP02.c(), _XUKY_OBP01.c(), _XUFU_OBP00.c());
+
+    d("OBP1 %c%c %c%c %c%c %c%c\n",
+      _LUXO_OBP17.c(), _LEPU_OBP16.c(), _LUGU_OBP15.c(), _LUNE_OBP14.c(),
+      _LOSE_OBP13.c(), _MOSA_OBP12.c(), _LAWO_OBP11.c(), _MOXY_OBP10.c());
+
+    d("WY %03d\n",
+      pack(_NAFU_WY7.q(), _NUKA_WY6.q(), _NENE_WY5.q(), _NULO_WY4.q(),
+          _MELA_WY3.q(), _NAGA_WY2.q(), _NYRO_WY1.q(), _NESO_WY0.q()));
+
+    d("WX %03d\n",
+      pack(_NUKU_WX7.q(), _MUVO_WX6.q(), _MYCE_WX5.q(), _MYPU_WX4.q(),
+           _MEBY_WX3.q(), _NOKE_WX2.q(), _NOFE_WX1.q(), _MYPA_WX0.q()));
+
+    d("\n");
+  }
+
   // Pixel counter
   /*p21.XEHO*/ Reg2 XEHO_X0 = Reg2::D0C0;
   /*p21.SAVY*/ Reg2 SAVY_X1 = Reg2::D0C0;
@@ -82,10 +182,10 @@ struct PixelPipe {
   /*p23.XONA*/ Reg2 XONA_LCDC_EN     = Reg2::D0C0;
 
   // FF41 - STAT
-  /*p21.ROXE*/ Reg2 _ROXE_INT_HBL_EN = Reg2::D0C0;
-  /*p21.RUFO*/ Reg2 _RUFO_INT_VBL_EN = Reg2::D0C0;
-  /*p21.REFE*/ Reg2 _REFE_INT_OAM_EN = Reg2::D0C0;
-  /*p21.RUGU*/ Reg2 _RUGU_INT_LYC_EN = Reg2::D0C0;
+  /*p21.ROXE*/ Reg2 ROXE_INT_HBL_EN = Reg2::D0C0;
+  /*p21.RUFO*/ Reg2 RUFO_INT_VBL_EN = Reg2::D0C0;
+  /*p21.REFE*/ Reg2 REFE_INT_OAM_EN = Reg2::D0C0;
+  /*p21.RUGU*/ Reg2 RUGU_INT_LYC_EN = Reg2::D0C0;
 
 private:
 

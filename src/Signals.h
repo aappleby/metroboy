@@ -63,9 +63,9 @@ inline void combine_hash(uint64_t& a, uint64_t b) {
   a = _byteswap_uint64(a);
 }
 
-inline uint64_t commit_and_hash(void* blob, int size) {
-  uint64_t h = 0x12345678;
+//-----------------------------------------------------------------------------
 
+inline void commit_and_hash(uint64_t& h, void* blob, int size, uint8_t mask) {
   uint8_t* base = (uint8_t*)blob;
 
   for (int i = 0; i < size; i++) {
@@ -81,12 +81,22 @@ inline uint64_t commit_and_hash(void* blob, int size) {
       __debugbreak();
     }
 
-    combine_hash(h, s2 & 1);
+    combine_hash(h, s2 & mask);
 
     base[i] = s2;
   }
+}
 
-  return h;
+template<typename T>
+inline void commit_and_hash(uint64_t& h, T& obj, uint8_t mask) {
+  commit_and_hash(h, &obj, sizeof(T), mask);
+}
+
+inline void hash_blob(uint64_t& hash, void* blob, int size, uint8_t mask) {
+  uint8_t* base = (uint8_t*)blob;
+  for (int i = 0; i < size; i++) {
+    combine_hash(hash, base[i] & mask);
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -12,7 +12,6 @@ struct VramBus;
 struct CpuBus {
   CpuBus();
   void tock(const SchematicTop& top);
-  uint64_t commit();
 
   void set_cpu_req(Req req);
 

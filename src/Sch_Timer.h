@@ -12,7 +12,6 @@ struct Timer {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  uint64_t commit();
 
   int get_div() {
     return pack(_UKUP_DIV_00.q(), _UFOR_DIV_01.q(), _UNER_DIV_02.q(), _TERO_DIV_03.q(),
@@ -57,6 +56,17 @@ struct Timer {
   wire UPOF_DIV_15()  const { return _UPOF_DIV_15.q(); }
 
   wire MOBA_INT_TIMERp() const { return _MOBA_INT_TIMERp.q(); }
+
+  void dump(Dumper& d) {
+    d("----------  Timer   ----------\n");
+    d("DIV        %05d\n", get_div());
+    d("TIMA       %03d\n", get_tima());
+    d("TMA        %03d\n", get_tma());
+    d("TAC        %03d\n", get_tac());
+    d("TIMA_MAX   %c\n", NYDU_TIMA_MAX.c());
+    d("INT_TIMERp %c\n", _MOBA_INT_TIMERp.c());
+    d("\n");
+  }
 
 private:
   friend SchematicTop;

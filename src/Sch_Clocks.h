@@ -31,15 +31,15 @@ struct ClockRegisters {
     return _SYS_PIN_RSTp;
   }
 
-  void set_rst(bool rst) {
+  void set_rst(wire rst) {
     _SYS_PIN_RSTp.hold(rst);
   }
 
-  void set_cpu_ready(bool ready) {
+  void set_cpu_ready(wire ready) {
     _CPU_PIN_READYp.hold(ready);
   }
 
-  void set_t1t2(bool t1, bool t2) {
+  void set_t1t2(wire t1, wire t2) {
     _SYS_PIN_T1n.hold(t1);
     _SYS_PIN_T2n.hold(t2);
   }

@@ -169,8 +169,8 @@ struct RegBase2 {
   inline bool is_held()   const { return delta == DELTA_HOLD; }
   inline bool has_delta() const { return delta != DELTA_NONE; }
 
-  RegState reg : 4;
-  RegDelta delta : 4;
+  uint8_t reg : 4;
+  uint8_t delta : 4;
 };
 
 //-----------------------------------------------------------------------------

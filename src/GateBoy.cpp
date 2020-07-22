@@ -134,6 +134,37 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
 
 //-----------------------------------------------------------------------------
 
+void GateBoy::fuzz_reset_sequence(bool use_fast_impl) {
+  printf("GateBoy::fuzz_reset_sequence %s\n", use_fast_impl ? "fast" : "slow");
+
+  uint64_t rng = 1;
+
+  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
+
+#ifdef _DEBUG
+  const int fuzz_count = 128;
+#else
+  const int fuzz_count = 65536;
+#endif
+
+  for (int i = 0; i < fuzz_count; i++) {
+    mix(rng);
+
+    top.clk_reg.set_rst(wire(rng & 0x01));
+    top.clk_reg.set_clk_a(wire(rng & 0x02));
+    top.clk_reg.set_cpu_ready(wire(rng & 0x04));
+    top.clk_reg.set_t1t2(wire(rng & 0x08), wire(rng & 0x10));
+
+    int phase_count = (rng >> 8) & 0x0F;
+    run(phase_count, req, false, use_fast_impl);
+
+    if ((i & 0xFF) == 0xFF) printf(".");
+  }
+  printf("\n");
+}
+
+//-----------------------------------------------------------------------------
+
 template<typename T>
 void dump_blob(T& blob) {
   uint8_t* base = (uint8_t*)(&blob);

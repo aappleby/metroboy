@@ -14,6 +14,33 @@ void run_microtests();
 int main(int argc, char** argv) {
 
 #if 1
+  printf("Running reset fuzz test in slow mode\n");
+  GateBoy gateboy1;
+  gateboy1.fuzz_reset_sequence(false);
+  printf("\n");
+
+  printf("Running reset fuzz test in fast mode\n");
+  GateBoy gateboy2;
+  gateboy2.fuzz_reset_sequence(true);
+  printf("\n");
+
+  if (gateboy1.phase_hash != gateboy2.phase_hash) {
+    printf("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
+  }
+  else {
+    printf("---------- PASS PHASE HASH ----------\n");
+  }
+
+  if (gateboy1.total_hash != gateboy2.total_hash) {
+    printf("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
+  }
+  else {
+    printf("---------- PASS TOTAL HASH ----------\n");
+  }
+#endif
+
+
+#if 0
 
   printf("Running benchmark in slow mode\n");
   GateBoy gateboy1;
@@ -38,8 +65,9 @@ int main(int argc, char** argv) {
   else {
     printf("---------- PASS TOTAL HASH ----------\n");
   }
+#endif
 
-#else
+#if 0
   App* app = new GateBoyApp();
   //App* app = new DummyApp();
   //App* app = new MetroBoyApp();

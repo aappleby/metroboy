@@ -129,10 +129,23 @@ void GateBoyApp::app_render_frame(Viewport view) {
   float col_width = 224;
 
   dumper("----------   Top    ----------\n");
-  dumper("Phase count    %05d\n",  gateboy->phase_count);
-  dumper("Pass count     %05d\n",  gateboy->pass_total);
-  dumper("Phase hash     %016llx\n", gateboy->phase_hash);
-  dumper("Combined hash  %016llx\n", gateboy->combined_hash);
+
+  size_t state_size = state_manager.state_size_bytes();
+
+  if (state_size < 1024 * 1024) {
+    dumper("State size          %d K\n",      state_size / 1024);
+  }
+  else {
+    dumper("State size          %d M\n",      state_size / (1024 * 1024));
+  }
+  dumper("Phase count         %05d\n",    gateboy->phase_total);
+  dumper("Pass count          %05d\n",    gateboy->pass_total);
+  dumper("Phase hash bytes    %016llx\n", gateboy->phase_hash_bytes);
+  dumper("Phase hash regs     %016llx\n", gateboy->phase_hash_regs);
+  dumper("Phase hash bits     %016llx\n", gateboy->phase_hash_bits);
+  dumper("Combined hash bytes %016llx\n", gateboy->combined_hash_bytes);
+  dumper("Combined hash regs  %016llx\n", gateboy->combined_hash_regs);
+  dumper("Combined hash bits  %016llx\n", gateboy->combined_hash_bits);
   dumper("\n");
 
   gateboy->top.clk_reg.dump(dumper);

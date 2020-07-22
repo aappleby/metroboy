@@ -65,7 +65,13 @@ inline void combine_hash(uint64_t& a, uint64_t b) {
 
 //-----------------------------------------------------------------------------
 
-inline void commit_and_hash(uint64_t& h, void* blob, int size, uint8_t mask) {
+constexpr uint64_t HASH_INIT = 0x12345678;
+
+inline void commit_and_hash(void* blob, int size, uint64_t& hash_bytes, uint64_t& hash_regs, uint64_t& hash_bits) {
+  uint64_t h1 = hash_bytes;
+  uint64_t h2 = hash_regs;
+  uint64_t h3 = hash_bits;
+
   uint8_t* base = (uint8_t*)blob;
 
   for (int i = 0; i < size; i++) {
@@ -81,22 +87,39 @@ inline void commit_and_hash(uint64_t& h, void* blob, int size, uint8_t mask) {
       __debugbreak();
     }
 
-    combine_hash(h, s2 & mask);
+    combine_hash(h1, s2);
+    combine_hash(h2, s2 & 0x0F);
+    combine_hash(h3, s2 & 0x01);
 
     base[i] = s2;
   }
+
+  hash_bytes = h1;
+  hash_regs  = h2;
+  hash_bits  = h3;
 }
 
 template<typename T>
-inline void commit_and_hash(uint64_t& h, T& obj, uint8_t mask) {
-  commit_and_hash(h, &obj, sizeof(T), mask);
+inline void commit_and_hash(T& obj, uint64_t& hash_bytes, uint64_t& hash_regs, uint64_t& hash_bits) {
+  commit_and_hash(&obj, sizeof(T), hash_bytes, hash_regs, hash_bits);
 }
 
-inline void hash_blob(uint64_t& hash, void* blob, int size, uint8_t mask) {
+inline void hash_blob(void* blob, int size, uint64_t& hash_bytes, uint64_t& hash_regs, uint64_t& hash_bits) {
+  uint64_t h1 = hash_bytes;
+  uint64_t h2 = hash_regs;
+  uint64_t h3 = hash_bits;
+
   uint8_t* base = (uint8_t*)blob;
   for (int i = 0; i < size; i++) {
-    combine_hash(hash, base[i] & mask);
+    uint8_t s2 = base[i];
+    combine_hash(hash_bytes, s2);
+    combine_hash(hash_regs,  s2 & 0x0F);
+    combine_hash(hash_bits,  s2 & 0x01);
   }
+
+  hash_bytes = h1;
+  hash_regs  = h2;
+  hash_bits  = h3;
 }
 
 //-----------------------------------------------------------------------------

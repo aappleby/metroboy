@@ -13,6 +13,14 @@ public:
 
   typedef std::function<void(T*)> step_func;
 
+  size_t state_count() const {
+    return states.size();
+  }
+
+  size_t state_size_bytes() const {
+    return states.size() * sizeof(T);
+  }
+
   void init(step_func s) {
     states.push_back(new T());
     step_callback = s;

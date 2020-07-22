@@ -79,47 +79,56 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
   //----------
-  // 8 phases w/ reset high, clock not running.
+  // RST = 1, CLK_A = 0, CPU_READY = 0
 
   top.clk_reg.set_rst(1);
   top.clk_reg.set_clk_a(0);
+  top.clk_reg.set_cpu_ready(0);
   run(8, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
   //----------
-  // 8 phases w/ reset high, clock running.
+  // RST = 0, CLK_A = 0, CPU_READY = 0
 
-  top.clk_reg.set_rst(1);
-  top.clk_reg.set_clk_a(1);
+  top.clk_reg.set_rst(0);
+  top.clk_reg.set_clk_a(0);
+  top.clk_reg.set_cpu_ready(0);
   run(8, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
   //----------
-  // 8 phases w/ reset low, clock running.
+  // RST = 0, CLK_A = 1, CPU_READY = 0
 
   top.clk_reg.set_rst(0);
   top.clk_reg.set_clk_a(1);
+  top.clk_reg.set_cpu_ready(0);
   run(8, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
   //----------
-  // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
+  // Wait for START
 
-  //gateboy.verbose = false;
   while(!top.clk_reg.CPU_PIN_STARTp()) {
     run(8, req, verbose, use_fast_impl);
     if (verbose) printf("\n");
   }
-  //gateboy.verbose = true;
 
   //----------
-  // Ack the start request and run another 24 phases.
-  // We should see AFER (global reset) clear and the video clocks start up.
-  // FIXME why are the video clocks not running...
+  // RST = 0, CLK_A = 1, CPU_READY = 0
 
+  top.clk_reg.set_rst(0);
+  top.clk_reg.set_clk_a(1);
+  top.clk_reg.set_cpu_ready(0);
   run(8, req, verbose, use_fast_impl);
+
+  //----------
+  // RST = 0, CLK_A = 1, CPU_READY = 1
+
+  top.clk_reg.set_rst(0);
+  top.clk_reg.set_clk_a(1);
   top.clk_reg.set_cpu_ready(1);
-  run(16, req, verbose, use_fast_impl);
+  run(24, req, verbose, use_fast_impl);
+
   if (verbose) printf("\n");
 }
 
@@ -139,18 +148,21 @@ void dump_blob(T& blob) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::run_benchmark(bool use_fast_impl) {
-  run_reset_sequence(true, use_fast_impl);
-  printf("Hash 1 after reset: 0x%016llx\n", phase_hash);
-  uint64_t hash2 = 0x12345678;
+  run_reset_sequence(false, use_fast_impl);
+  printf("Hash 1 after reset: 0x%016llx : 0x%016llx : 0x%016llx\n", phase_hash_bytes, phase_hash_regs, phase_hash_bits);
 
-  uint8_t byte_mask = 0xFF;
+  /*
+  uint64_t hash_bytes2 = HASH_INIT;
+  uint64_t hash_regs2  = HASH_INIT;
+  uint64_t hash_bits2  = HASH_INIT;
 
-  hash_blob(hash2, &top, sizeof(top), byte_mask);
-  printf("Hash 2 after reset: 0x%016llx\n", hash2);
+  hash_blob(&top, sizeof(top), hash_bytes2, hash_regs2, hash_bits2);
+  printf("Hash 2 after reset: 0x%016llx : 0x%016llx : 0x%016llx\n", hash_bytes2, hash_regs2, hash_bits2);
+  */
 
 #if _DEBUG
-  const int iter_count = 1;
-  const int phase_per_iter = 1;
+  const int iter_count = 16;
+  const int phase_per_iter = 128;
   const int warmup = 0;
 #else
   const int iter_count = 74;
@@ -168,26 +180,26 @@ void GateBoy::run_benchmark(bool use_fast_impl) {
 
   Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
 
-  bool verbose = true;
+  bool verbose = false;
 
   printf("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
-    phase_count = 0;
+    phase_total = 0;
     pass_total = 0;
 
-    dump_blob(top);
+    //dump_blob(top);
 
     auto start = std::chrono::high_resolution_clock::now();
     run(phase_per_iter, req, verbose, use_fast_impl);
     auto finish = std::chrono::high_resolution_clock::now();
 
-    dump_blob(top);
+    //dump_blob(top);
 
     if (iter >= warmup) {
       std::chrono::duration<double> elapsed = finish - start;
       double time = elapsed.count();
 
-      double phase_rate = double(phase_count) / time;
+      double phase_rate = double(phase_total) / time;
       phase_rate_sum1 += phase_rate;
       phase_rate_sum2 += phase_rate * phase_rate;
       phase_rate_n++;
@@ -201,6 +213,9 @@ void GateBoy::run_benchmark(bool use_fast_impl) {
   }
   printf("Done\n");
 
+  printf("Phase total %d\n", phase_total);
+  printf("Pass total %d\n", pass_total);
+
   double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
   double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);
   double phase_rate_sigma    = sqrt(phase_rate_variance);
@@ -211,8 +226,8 @@ void GateBoy::run_benchmark(bool use_fast_impl) {
   double pass_rate_sigma    = sqrt(pass_rate_variance);
   printf("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
 
-  printf("Commit phase_hash   %016llx\n", phase_hash);
-  printf("Combined phase_hash %016llx\n", combined_hash);
+  printf("Commit phase_hash   0x%016llx : 0x%016llx : 0x%016llx\n", phase_hash_bytes, phase_hash_regs, phase_hash_bits);
+  printf("Combined phase_hash 0x%016llx : 0x%016llx : 0x%016llx\n", combined_hash_bytes, combined_hash_regs, combined_hash_bits);
 }
 
 //------------------------------------------------------------------------------
@@ -228,13 +243,16 @@ void GateBoy::run(int _phase_count, Req req, bool verbose, bool use_fast_impl) {
 void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   //printf("phase\n");
 
-  phase_count++;
-  wire CLK = (phase_count & 1) & (top.clk_reg.get_clk_a());
+  phase_total++;
+  wire CLK = (phase_total & 1) & (top.clk_reg.get_clk_a());
   top.clk_reg.set_clk_b(CLK);
 
   pass_count = 0;
 
-  uint64_t _phase_hash = 0;
+  uint64_t hash_bytes_old = HASH_INIT;
+  uint64_t hash_regs_old  = HASH_INIT;
+  uint64_t hash_bits_old  = HASH_INIT;
+
   for (int i = 0; i < 256; i++) {
     pass_count++;
     pass_total++;
@@ -245,7 +263,7 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
     top.ext_bus.set_ext_data(0);
     top.joypad.set_buttons(0);
     
-    const int phase = phase_count & 7;
+    const int phase = phase_total & 7;
 
     if (use_fast_impl) {
       top.tick_fast(phase);
@@ -254,12 +272,13 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
       top.tick_slow(phase);
     }
 
-    uint64_t _pass_hash = 0x12345678;
-    uint8_t byte_mask = 0xFF;
-   
+    uint64_t hash_bytes_new = HASH_INIT;
+    uint64_t hash_regs_new  = HASH_INIT;
+    uint64_t hash_bits_new  = HASH_INIT;
+
 #ifdef FAST_HASH
     //if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top, byte_mask);
+    commit_and_hash(top, hash_bytes_new, hash_regs_new, hash_bits_new);
     //if (verbose) printf("0x%016llx\n", _pass_hash);
 #else
     if (verbose) printf("0x%016llx\n", _pass_hash);
@@ -301,21 +320,39 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
     
     //printf("hash 0x%016llx\n", new_hash.h);
     
-    if (_pass_hash == _phase_hash) break;
-    _phase_hash = _pass_hash;
+    if (hash_bytes_old == hash_bytes_new) break;
+    hash_bytes_old = hash_bytes_new;
+    hash_regs_old = hash_regs_new;
+    hash_bits_old = hash_bits_new;
     if (i == 199) printf("stuck!\n");
     CHECK_N(i == 200);
   }
 
-  this->phase_hash = _phase_hash;
-  combine_hash(this->combined_hash, _phase_hash);
+  phase_hash_bytes = hash_bytes_old;
+  phase_hash_regs  = hash_regs_old;
+  phase_hash_bits  = hash_bits_old;
 
+  combine_hash(combined_hash_bytes, phase_hash_bytes);
+  combine_hash(combined_hash_regs,  phase_hash_regs);
+  combine_hash(combined_hash_bits,  phase_hash_bits);
+
+#if 1
+  if (verbose) {
+    printf("Phase %c @ %08d:%02d phase_hash %016llx : %016llx : %016llx\n",
+      'A' + (phase_total & 7),
+      phase_total,
+      pass_count,
+      phase_hash_bytes,
+      phase_hash_regs,
+      phase_hash_bits);
+  }
+#else
   if (verbose) {
     printf("Phase %c @ %08d:%02d phase_hash %016llx CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d BOMA %d CPU_START %d CPU_RDY %d DIV %05d TUBO %d AFER %d ASOL %d\n",
-      'A' + (phase_count & 7),
-      phase_count,
+      'A' + (phase_total & 7),
+      phase_total,
       pass_count,
-      phase_hash,
+      phase_hash_bytes,
       top.clk_reg.get_clk_a(),
       top.clk_reg.get_clk_b(),
       top.clk_reg.SYS_PIN_RSTp(),
@@ -336,6 +373,7 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
       //hash.h);
       );
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

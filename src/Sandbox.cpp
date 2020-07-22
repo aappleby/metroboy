@@ -50,7 +50,7 @@ void phase(Sandbox& sandbox) {
   for (pass = 0; pass < 100; pass++) {
     sandbox.tick();
 
-    uint64_t new_hash = 0x12345678;
+    uint64_t new_hash = 0;
     //commit_and_hash(hash, sandbox); needs logic_lut1
     if (new_hash == hash) break;
     hash = new_hash;

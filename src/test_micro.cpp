@@ -566,8 +566,8 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   }
   else if (result == 0x55) {
     //printf(".");
+    printf("%s 0x%02x PASS @ %d\n", name.c_str(), result, i);
     return true;
-    //printf("  0x%02x PASS @ %d\n", result, i);
   }
   else {
     printf("%-50s X 0x%02x FAIL @ %d\n", name.c_str(), result, i);

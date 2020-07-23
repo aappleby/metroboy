@@ -13,7 +13,7 @@ void run_microtests();
 
 int main(int argc, char** argv) {
 
-#if 1
+#if 0
   printf("Running reset fuzz test in slow mode\n");
   GateBoy gateboy1;
   gateboy1.fuzz_reset_sequence(false);
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
-#if 0
+#if 1
   App* app = new GateBoyApp();
   //App* app = new DummyApp();
   //App* app = new MetroBoyApp();

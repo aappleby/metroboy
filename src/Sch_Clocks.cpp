@@ -85,9 +85,16 @@ void ClockRegisters::tock_clk_fast(int phase, const SchematicTop& top) {
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_rst_fast(int phase, const SchematicTop& top) {
+  wire unor = and(!_SYS_PIN_T1n,  _SYS_PIN_T2n);
+  wire umut = and( _SYS_PIN_T1n, !_SYS_PIN_T2n);
+  wire upoj = _SYS_PIN_T1n || _SYS_PIN_T2n || !_SYS_PIN_RSTp;
+
   _TUBO_WAITINGp.delta = DELTA_PASS;
-  if (_SYS_PIN_RSTp || !_SYS_PIN_CLK_A) _TUBO_WAITINGp.delta = DELTA_SIG1;
-  if (_CPU_PIN_READYp)                  _TUBO_WAITINGp.delta = DELTA_SIG0;
+  _ASOL_POR_DONEn.delta = DELTA_PASS;
+
+  if (_SYS_PIN_RSTp)   _TUBO_WAITINGp.delta = DELTA_SIG1;
+  if (!_SYS_PIN_CLK_A) _TUBO_WAITINGp.delta = DELTA_SIG1;
+  if (_CPU_PIN_READYp) _TUBO_WAITINGp.delta = DELTA_SIG0;
 
 #ifdef FAST_BOOT
   wire _UNUT_POR_TRIGn = and (_TUBO_WAITINGp.q(), top.tim_reg.TERO_DIV_03());
@@ -95,27 +102,29 @@ void ClockRegisters::tock_rst_fast(int phase, const SchematicTop& top) {
   wire _UNUT_POR_TRIGn = and (_TUBO_WAITINGp.q(), top.tim_reg.UPOF_DIV_15());
 #endif
 
-  wire _TABA_POR_TRIGn = or(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
+  wire _TABA_POR_TRIGn = or(unor, umut, _UNUT_POR_TRIGn);
   _CPU_PIN_STARTp = _TABA_POR_TRIGn;
 
-  _ASOL_POR_DONEn.delta = DELTA_PASS;
   if (_SYS_PIN_RSTp) _ASOL_POR_DONEn.delta = DELTA_SIG1;
   if (and(_TABA_POR_TRIGn, !_SYS_PIN_RSTp))     _ASOL_POR_DONEn.delta = DELTA_SIG0;
 
-  _AFER_SYS_RSTp = ff13_r2(BOGA_xBCDEFGH(), BOMA_Axxxxxxx(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
+  _AFER_SYS_RSTp = ff13_r2(BOGA_xBCDEFGH(), BOMA_Axxxxxxx(), upoj, _ASOL_POR_DONEn.q());
 
-  _CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
+  _CPU_PIN_SYS_RSTp = _AFER_SYS_RSTp.q();
   _CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.as_wire();
 }
 
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_dbg_fast(int phase, const SchematicTop& top) {
-  /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not(UNOR_MODE_DBG2p());
-  /*p25.SOTO*/ _SOTO_DBG_VRAM = ff17_r2(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), _SOTO_DBG_VRAM.qn());
+  wire unor = and(!_SYS_PIN_T1n,  _SYS_PIN_T2n);
+  wire umut = and( _SYS_PIN_T1n, !_SYS_PIN_T2n);
 
-  _CPU_PIN_UNOR_DBG = UNOR_MODE_DBG2p();
-  _CPU_PIN_UMUT_DBG = UMUT_MODE_DBG1p();
+  wire soto_rst = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn.q());
+  _SOTO_DBG_VRAM = ff17_r2(!unor, !soto_rst, _SOTO_DBG_VRAM.qn());
+
+  _CPU_PIN_UNOR_DBG = unor;
+  _CPU_PIN_UMUT_DBG = umut;
 }
 
 //-----------------------------------------------------------------------------

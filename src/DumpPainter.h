@@ -24,6 +24,9 @@ private:
   uint32_t ruler_x_tab = 0;
   uint32_t ruler_y_tab = 0;
 
+  int highlight_x = 0;
+  int highlight_y = 0;
+
   static const int tile_w = 16;
   static const int tile_h = 12;
   static const int cell_w = 6;

@@ -35,7 +35,7 @@ void Gameboy::reset(uint16_t new_pc) {
   boot.reset(new_pc);
   lcd.reset();
 
-  phase = 0;
+  phase = -1;
   trace_val = 0;
 
   intf = 0xE1;
@@ -272,6 +272,11 @@ void Gameboy::tock_gb() {
       .write = 1,
     };
   }
+
+  printf("phase %05lld %c REQ 0x%04x 0x%02x %d %d ACK 0x%04x 0x%02x %d 0\n",
+    phase, int('A' + (phase & 7)),
+    cpu_req.addr, cpu_req.data, cpu_req.read, cpu_req.write,
+    cpu_ack.addr, cpu_ack.data, cpu_ack.read);
 }
 
 //-----------------------------------------------------------------------------

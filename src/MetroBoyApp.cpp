@@ -28,6 +28,12 @@ void run_wpol_test(const std::string& prefix, const std::string& name);
 
 //-----------------------------------------------------------------------------
 
+MetroBoyApp::MetroBoyApp() {
+  post();
+}
+
+//-----------------------------------------------------------------------------
+
 void MetroBoyApp::post() {
   double freq = (double)SDL_GetPerformanceFrequency();
   double begin = (double)SDL_GetPerformanceCounter();
@@ -35,7 +41,11 @@ void MetroBoyApp::post() {
 
   printf("\n");
   printf("---------- POST begin ----------\n");
-  printf("Timer");
+
+  pass &= run_microtest("microtests/build/dmg", "poweron_000_div");
+
+#if 0
+  printf("Timer\n");
   pass &= run_microtest("microtests/build/dmg", "div_inc_timing_a");
   pass &= run_microtest("microtests/build/dmg", "div_inc_timing_b");
   pass &= run_microtest("microtests/build/dmg", "poweron_000_div");
@@ -44,8 +54,10 @@ void MetroBoyApp::post() {
   pass &= run_microtest("microtests/build/dmg", "timer_div_phase_c");
   pass &= run_microtest("microtests/build/dmg", "timer_div_phase_d");
   printf("\n");
+#endif
 
-  printf("PIN_RST");
+#if 0
+  printf("Reset\n");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x00");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x08");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x10");
@@ -55,12 +67,19 @@ void MetroBoyApp::post() {
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x30");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x38");
   printf("\n");
+#endif
 
   if (!pass) exit(1);
 
   double end = (double)SDL_GetPerformanceCounter();
   printf("---------- POST done in %f seconds ----------\n", (end - begin) / freq);
   printf("\n");
+}
+
+//-----------------------------------------------------------------------------
+
+const char* MetroBoyApp::app_get_title() {
+  return "MetroBoy";
 }
 
 //-----------------------------------------------------------------------------
@@ -90,8 +109,6 @@ void MetroBoyApp::app_init() {
   //run_mealybug_tests();
   //return 0;
 
-  //post();
-
   //---------
 
   //load("oh"); // broken eye
@@ -111,18 +128,17 @@ void MetroBoyApp::app_init() {
 
   //load("roms/tetris"); // tetris brokennnn
 
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_restart");
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_start");
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
+  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
+  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
+  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
+  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_restart");
+  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_start");
+  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
 
   //load_memdump("roms", "LinksAwakening_house");
-  //load_memdump("roms", "LinksAwakening_dog");
+  load_memdump("roms", "LinksAwakening_dog");
   //load_memdump("roms", "tetris");
 
-  //load("micro_cpu/build/dmg", "rst_0x38");
   //load("micro_cpu/build/dmg", "cpu_zeropage");
 
   //load("microtests/build/dmg", "dma_basic");
@@ -376,10 +392,9 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
 void MetroBoyApp::app_render_frame(Viewport view) {
 
-  (void)view;
-
   grid_painter.render(view);
 
+  /*
   static bool CLKIN_A = 0;
   static bool CLKIN_B = 0;
 
@@ -396,8 +411,7 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   ImGui::Text("T2");
   ImGui::Text("RST");
   ImGui::End();
-
-  ImGui::ShowDemoWindow();
+  */
 
   //----------------------------------------
   // Wave thingy
@@ -416,7 +430,6 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
   // Gameboy screen
 
-  /*
   update_texture_u8(ram_tex, 0, 0*32, 256, 128, metroboy.get_cart_rom());
   update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
   update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cart_ram());
@@ -424,7 +437,6 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_main_ram());
 
   gb_blitter.blit_screen(view, 32 * 32, 32 * 1, 2, metroboy.fb());
-  */
 
   /*
   #define FLAG_BG_ON        0x01

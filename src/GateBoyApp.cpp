@@ -1,5 +1,6 @@
 #include "GateBoyApp.h"
 
+#include "File.h"
 #include "Debug.h"
 #include "BusDump.h"
 #ifdef _MSC_VER
@@ -23,6 +24,9 @@ GateBoyApp::GateBoyApp() {
     gateboy->run(1, get_req(), verbose, use_fast_impl);
   };
   state_manager.init(top_step);
+
+  auto gateboy = state_manager.state();
+  load_blob("microtests/build/dmg/poweron_000_div.gb", gateboy->mem, 65536);
 }
 
 GateBoyApp::~GateBoyApp() {
@@ -53,6 +57,7 @@ const char* GateBoyApp::app_get_title() {
 void GateBoyApp::app_init() {
   grid_painter.init();
   text_painter.init();
+  dump_painter.init();
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   auto gateboy = state_manager.state();
@@ -186,6 +191,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);
   text_painter.render(view, dumper.s.c_str(), col_width * 6, 64);
   dumper.clear();
+
+  dump_painter.render(view, 1024, 512, 16, 32, gateboy->mem);
 }
 
 void GateBoyApp::app_render_ui(Viewport view) {

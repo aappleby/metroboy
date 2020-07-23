@@ -19,5 +19,7 @@ public:
   uint64_t phase_hash = 0;
   uint64_t total_hash = 0;
 
+  uint8_t mem[65536];
+
   Schematics::SchematicTop top;
 };

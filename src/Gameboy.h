@@ -57,7 +57,7 @@ struct Gameboy {
   }
   
   void mcycle() {
-    assert((phase & 7) == 0);
+    assert((phase & 7) == 7);
     tick_gb();
     tock_gb();
     tick_gb();
@@ -131,7 +131,7 @@ struct Gameboy {
 
   //----------
 
-  int64_t phase = 0;
+  int64_t phase = -1;
 
   HostOut gb_to_host;
   uint32_t trace_val = 0;

@@ -15,9 +15,12 @@ extern const char* terminus_hex;
 const char* dump_glsl = R"(
 uniform vec4  fg_color;
 uniform vec4  bg_color;
+uniform vec4  highlight_color;
 
 uniform vec4  screen_to_win;
 uniform vec4  corner_to_clip;
+
+uniform uvec4 highlight;
 
 uniform sampler2D  atlas_tex;
 uniform usampler2D dump_tab;
@@ -29,6 +32,8 @@ uniform uint masks[16];
 
 const float inv_atlas_w = 1.0 / 256.0;
 const float inv_atlas_h = 1.0 / 128.0;
+
+uniform vec4 blah;
 
 #ifdef _VERTEX_
 
@@ -92,7 +97,13 @@ void main() {
   // Read atlas and emit color.
   float pix = texelFetch(atlas_tex, ivec2(atlas_tex_x, atlas_tex_y), 0).r;
   //float pix = texture(atlas_tex, vec2(atlas_tex_x * inv_atlas_w, atlas_tex_y * inv_atlas_h)).r;
-  fs_out = mix(bg_color, fg_color, pix);
+  
+  if (tile_xi == highlight.x && tile_yi == highlight.y) {
+    fs_out = mix(bg_color, highlight_color, pix);
+  }
+  else {
+    fs_out = mix(bg_color, fg_color, pix);
+  }
 }
 
 #endif
@@ -195,9 +206,10 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
     glUniform4f(glGetUniformLocation(dump_prog, "corner_to_clip"), float(ax), float(ay), float(bx), float(by));
   }
 
-
+  glUniform4ui(glGetUniformLocation(dump_prog, "highlight"), highlight_x, highlight_y, 0, 0);
   glUniform4f(glGetUniformLocation(dump_prog, "fg_color"), 0.8f, 0.8f, 0.8f, 1.0f);
   glUniform4f(glGetUniformLocation(dump_prog, "bg_color"), 0.0f, 0.0f, 0.0f, 0.5f);
+  glUniform4f(glGetUniformLocation(dump_prog, "highlight_color"), 1.0f, 1.0f, 0.0f, 1.0f);
 
   bind_texture(dump_prog, "dump_tab", 0, dump_tab);
   //bind_texture(dump_prog, "atlas_tex", 1, atlas_tex);

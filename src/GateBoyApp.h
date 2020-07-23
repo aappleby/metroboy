@@ -5,6 +5,7 @@
 #include "StateManager2.h"
 #include "GridPainter.h"
 #include "TextPainter.h"
+#include "DumpPainter.h"
 
 class GateBoyApp : public App {
 public:
@@ -43,6 +44,7 @@ public:
 
   GridPainter grid_painter;
   TextPainter text_painter;
+  DumpPainter dump_painter;
 
   int frame_count = 0;
   int replay_cursor = 0;

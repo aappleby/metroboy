@@ -14,7 +14,7 @@
 class MetroBoyApp : public App {
 public:
 
-  MetroBoyApp() {}
+  MetroBoyApp();
 
   virtual const char* app_get_title();
   virtual void app_init();

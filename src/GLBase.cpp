@@ -28,6 +28,9 @@ void debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum sever
       severity == GL_DEBUG_TYPE_PERFORMANCE) {
   	printf("GLDEBUG: %s\n", message);
   }
+  else {
+  	//printf("GLDEBUG: %s\n", message);
+  }
   //#define GL_DEBUG_TYPE_OTHER 0x8251
 
 }
@@ -312,10 +315,10 @@ void bind_table(int prog, const char* name, int index, int tex) {
 //-----------------------------------------------------------------------------
 
 int create_shader(const char* name, const char* src) {
-  static bool info = true;
-  static bool verbose = false;
+  static bool verbose = true;
 
   printf("Compiling %s\n", name);
+
   auto vert_srcs = {
     "#version 300 es\n",
     "#define _VERTEX_\n",
@@ -332,7 +335,7 @@ int create_shader(const char* name, const char* src) {
     char buf[1024];
     int len = 0;
     glGetShaderInfoLog(vertexShader, 1024, &len, buf);
-    if (info || len) printf("  Vert shader log %s\n", buf);
+    if (verbose) printf("  Vert shader log %s\n", buf);
   }
 
 
@@ -351,7 +354,7 @@ int create_shader(const char* name, const char* src) {
     char buf[1024];
     int len = 0;
     glGetShaderInfoLog(fragmentShader, 1024, &len, buf);
-    if (info || len) printf("  Frag shader log %s\n", buf);
+    if (verbose) printf("  Frag shader log %s\n", buf);
   }
 
   int shaderProgram = glCreateProgram();
@@ -364,7 +367,7 @@ int create_shader(const char* name, const char* src) {
     char buf[1024];
     int len = 0;
     glGetProgramInfoLog(shaderProgram, 1024, &len, buf);
-    if (info || len) printf("  Shader program log %s\n", buf);
+    if (verbose) printf("  Shader program log %s\n", buf);
 
   }
 
@@ -373,7 +376,7 @@ int create_shader(const char* name, const char* src) {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
-  if (info) {
+  if (verbose) {
     int program = shaderProgram;
     int count = 0;
 
@@ -381,32 +384,28 @@ int create_shader(const char* name, const char* src) {
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
     printf("  Active Attributes: %d\n", count);
 
-    if (verbose) {
-      for (int i = 0; i < count; i++) {
-        const int bufSize = 16;
-        GLenum type;
-        GLchar var_name[bufSize];
-        GLsizei length;
-        GLint size;
-        glGetActiveAttrib(program, (GLuint)i, bufSize, &length, &size, &type, var_name);
-        printf("    Attribute #%d Type: %u Name: %s\n", i, type, var_name);
-      }
+    for (int i = 0; i < count; i++) {
+      const int bufSize = 16;
+      GLenum type;
+      GLchar var_name[bufSize];
+      GLsizei length;
+      GLint size;
+      glGetActiveAttrib(program, (GLuint)i, bufSize, &length, &size, &type, var_name);
+      printf("    Attribute #%d Type: %u Name: %s\n", i, type, var_name);
     }
 
     glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
     printf("  Active Uniforms: %d\n", count);
 
-    if (verbose) {
-      for (int i = 0; i < count; i++) {
-        const int bufSize = 16;
-        GLenum type;
-        GLchar var_name[bufSize];
-        GLsizei length;
-        GLint size;
-        glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, var_name);
-        int loc = glGetUniformLocation(program, var_name);
-        printf("    Uniform '%16s' @ %2d Type: 0x%04x\n", var_name, loc, type);
-      }
+    for (int i = 0; i < count; i++) {
+      const int bufSize = 16;
+      GLenum type;
+      GLchar var_name[bufSize];
+      GLsizei length;
+      GLint size;
+      glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, var_name);
+      int loc = glGetUniformLocation(program, var_name);
+      printf("    Uniform '%16s' @ %2d Type: 0x%04x\n", var_name, loc, type);
     }
 
     glGetProgramiv(program, GL_ATTACHED_SHADERS, &count);
@@ -415,37 +414,35 @@ int create_shader(const char* name, const char* src) {
     glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count);
     printf("  Uniform blocks: %d\n", count);
 
-    if (verbose) {
-      for (int i = 0; i < count; i++) {
-        const int bufSize = 16;
-        GLchar var_name[bufSize];
-        GLsizei length;
+    for (int i = 0; i < count; i++) {
+      const int bufSize = 16;
+      GLchar var_name[bufSize];
+      GLsizei length;
 
-        glGetActiveUniformBlockName(program, i, bufSize, &length, var_name);
-        printf("  Uniform block #%d Name: %s\n", i, var_name);
+      glGetActiveUniformBlockName(program, i, bufSize, &length, var_name);
+      printf("  Uniform block #%d Name: %s\n", i, var_name);
 
-        int temp[16];
+      int temp[16];
 
-        glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_BINDING, temp);
-        printf("    GL_UNIFORM_BLOCK_BINDING %d\n", temp[0]);
+      glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_BINDING, temp);
+      printf("    GL_UNIFORM_BLOCK_BINDING %d\n", temp[0]);
 
-        glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_DATA_SIZE, temp);
-        printf("    GL_UNIFORM_BLOCK_DATA_SIZE %d\n", temp[0]);
+      glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_DATA_SIZE, temp);
+      printf("    GL_UNIFORM_BLOCK_DATA_SIZE %d\n", temp[0]);
 
-        glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, temp);
-        printf("    GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS %d\n", temp[0]);
+      glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, temp);
+      printf("    GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS %d\n", temp[0]);
 
-        glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER, temp);
-        printf("    GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER %d\n", temp[0]);
+      glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER, temp);
+      printf("    GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER %d\n", temp[0]);
 
-        glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER, temp);
-        printf("    GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER %d\n", temp[0]);
-      }
+      glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER, temp);
+      printf("    GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER %d\n", temp[0]);
     }
   }
 
   printf("Compiling %s done\n", name);
-  printf("\n");
+  if (verbose) printf("\n");
 
   return shaderProgram;
 }

@@ -32,7 +32,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
     /*p27.SUDA*/ _SUDA_SFETCH_REQp = ff17_r2(_LAPE_AxCxExGx, VYPO_GND, _SOBU_SFETCH_REQp.q());
     /*p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and (_SOBU_SFETCH_REQp.q(),  _SUDA_SFETCH_REQp.qn());
 
-    /*p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor(_RYCE_SFETCH_TRIGp, top.clk_reg.ROSY_VID_RSTp(), top.lcd_reg.BYHA_VID_LINE_TRIG_d4()); // def nor
+    /*p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor(_RYCE_SFETCH_TRIGp, top.clk_reg.ROSY_VID_RSTp(), top.lcd_reg.BYHA_VID_LINE_TRIGn()); // def nor
     /*p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_SPRITE_DONEp(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // def nor
     /*p27.TAKA*/ _TAKA_SFETCH_RUNNINGp = nand_latch_r2(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
 

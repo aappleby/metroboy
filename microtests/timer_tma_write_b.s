@@ -31,7 +31,7 @@ main:
 
   // this load fires on the same cycle as TIMA is set to TMA
   ldh a, (TIMA)
-  xor($55 ~ $81)
+  xor ($55 ~ $81)
   
 end:
   ld ($8000), a

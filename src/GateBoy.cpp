@@ -1,82 +1,24 @@
 #include "GateBoy.h"
+#include <memory.h>
 
-#include <chrono>
+#include "Debug.h"
 
-#define FAST_HASH
+constexpr bool FAST_HASH = 0;
 
 //-----------------------------------------------------------------------------
 
-#if 0
-void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
-  SchematicTop* top = new SchematicTop();
-
-  top.clk_reg.set_cpu_ready(0);
-  top.ext_bus.set_ext_rdwr(0, 0);
-
-  top.clk_reg.set_t1t2(0,0);
-
-  uint64_t phase_hash;
-
-  // Just read DIV forever.
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
-
-  // 8 phases w/ reset high, clock not running.
-  top.clk_reg.set_rst(1);
-  top.clk_reg.set_clk_a(0);
-  run(top, phase_a, req, false);
-
-  // 8 phases w/ reset high, clock running.
-  top.clk_reg.set_rst(1);
-  top.clk_reg.set_clk_a(1);
-  run(top, phase_b, req, false);
-
-  // 8 phases w/ reset low, clock running.
-  top.clk_reg.set_rst(0);
-  top.clk_reg.set_clk_a(1);
-  run(top, phase_c, req, false);
-
-  // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
-
-  while(!top.clk_reg._CPU_PIN_STARTp()) {
-    run(top, 1, req, false);
-  }
-
-  // Ack the start request and run another 24 phases.
-  // We should see AFER (global reset) clear and the video clocks start up.
-  // FIXME why are the video clocks not running...
-
-  top.clk_reg.set_cpu_ready(1);
-  run(top, phase_d, req, false);
-
-  top.clk_reg.set_cpu_ready(0);
-  if (top.clk_reg.AFER_SYS_RSTp() || top.clk_reg.ASOL_POR_DONEn()) {
-    printf("\nX %d %d %d %d\n", phase_a, phase_b, phase_c, phase_d);
-  }
-  else {
-    printf(".");
-  }
+GateBoy::GateBoy() {
+  memset(mem2, 0x55, 65536);
 }
-
-/*
-for (int phase_a = 0; phase_a <= 8; phase_a++) 
-for (int phase_b = 1; phase_b <= 8; phase_b++)
-for (int phase_c = 0; phase_c <= 8; phase_c++)
-for (int phase_d = 8; phase_d <= 16; phase_d++)
-  test_reset_timing(phase_a, phase_b, phase_c, phase_d);
-return 0;
-*/
-
-#endif
 
 //-----------------------------------------------------------------------------
 
 void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   top.clk_reg.set_cpu_ready(0);
-  top.ext_bus.set_ext_rdwr(0, 0);
   top.clk_reg.set_t1t2(0,0);
 
   // Just read DIV forever.
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
+  Req req = {.addr = 0x0100, .data = 0, .read = 1, .write = 0 };
 
   //----------
   // RST = 1, CLK_A = 0, CPU_READY = 0
@@ -132,135 +74,6 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   if (verbose) printf("\n");
 }
 
-//-----------------------------------------------------------------------------
-
-void GateBoy::fuzz_reset_sequence(bool use_fast_impl) {
-  printf("GateBoy::fuzz_reset_sequence %s\n", use_fast_impl ? "fast" : "slow");
-
-  uint64_t rng = 1;
-
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
-
-#ifdef _DEBUG
-  const int fuzz_count = 128;
-#else
-  const int fuzz_count = 65536;
-#endif
-
-  for (int i = 0; i < fuzz_count; i++) {
-    mix(rng);
-
-    top.clk_reg.set_rst(wire(rng & 0x01));
-    top.clk_reg.set_clk_a(wire(rng & 0x02));
-    top.clk_reg.set_cpu_ready(wire(rng & 0x04));
-    top.clk_reg.set_t1t2(wire(rng & 0x08), wire(rng & 0x10));
-
-    int phase_count = (rng >> 8) & 0x0F;
-    run(phase_count, req, false, use_fast_impl);
-
-    if ((i & 0xFF) == 0xFF) printf(".");
-  }
-  printf("\n");
-}
-
-//-----------------------------------------------------------------------------
-
-template<typename T>
-void dump_blob(T& blob) {
-  uint8_t* base = (uint8_t*)(&blob);
-
-  for (int i = 0; i < sizeof(T); i++) {
-    printf("%02x ", base[i]);
-    if ((i % 32) == 31) printf("\n");
-  }
-  printf("\n");
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::run_benchmark(bool use_fast_impl) {
-  run_reset_sequence(false, use_fast_impl);
-  printf("Hash 1 after reset: 0x%016llx\n", phase_hash);
-
-  /*
-  uint64_t hash_bytes2 = HASH_INIT;
-  uint64_t hash_regs2  = HASH_INIT;
-  uint64_t hash_bits2  = HASH_INIT;
-
-  hash_blob(&top, sizeof(top), hash_bytes2, hash_regs2, hash_bits2);
-  printf("Hash 2 after reset: 0x%016llx : 0x%016llx : 0x%016llx\n", hash_bytes2, hash_regs2, hash_bits2);
-  */
-
-#if _DEBUG
-  const int iter_count = 16;
-  const int phase_per_iter = 128;
-  const int warmup = 0;
-#else
-  const int iter_count = 74;
-  const int phase_per_iter = 8192;
-  const int warmup = 10;
-#endif
-
-  double phase_rate_sum1 = 0;
-  double phase_rate_sum2 = 0;
-  double phase_rate_n = 0;
-
-  double pass_rate_sum1 = 0;
-  double pass_rate_sum2 = 0;
-  double pass_rate_n = 0;
-
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
-
-  bool verbose = false;
-
-  printf("Running perf test");
-  for (int iter = 0; iter < iter_count; iter++) {
-    phase_total = 0;
-    pass_total = 0;
-
-    //dump_blob(top);
-
-    auto start = std::chrono::high_resolution_clock::now();
-    run(phase_per_iter, req, verbose, use_fast_impl);
-    auto finish = std::chrono::high_resolution_clock::now();
-
-    //dump_blob(top);
-
-    if (iter >= warmup) {
-      std::chrono::duration<double> elapsed = finish - start;
-      double time = elapsed.count();
-
-      double phase_rate = double(phase_total) / time;
-      phase_rate_sum1 += phase_rate;
-      phase_rate_sum2 += phase_rate * phase_rate;
-      phase_rate_n++;
-
-      double pass_rate = double(pass_total) / time;
-      pass_rate_sum1 += pass_rate;
-      pass_rate_sum2 += pass_rate * pass_rate;
-      pass_rate_n++;
-    }
-    printf(".");
-  }
-  printf("Done\n");
-
-  printf("Phase total %d\n", phase_total);
-  printf("Pass total %d\n", pass_total);
-
-  double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
-  double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);
-  double phase_rate_sigma    = sqrt(phase_rate_variance);
-  printf("Mean phase/sec %f sigma %f\n", phase_rate_mean, phase_rate_sigma);
-
-  double pass_rate_mean     = pass_rate_sum1 / pass_rate_n;
-  double pass_rate_variance = (pass_rate_sum2 / pass_rate_n) - (pass_rate_mean * pass_rate_mean);
-  double pass_rate_sigma    = sqrt(pass_rate_variance);
-  printf("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
-
-  printf("Commit phase_hash   0x%016llx\n", phase_hash);
-  printf("Combined phase_hash 0x%016llx\n", total_hash);
-}
-
 //------------------------------------------------------------------------------
 
 void GateBoy::run(int _phase_count, Req req, bool verbose, bool use_fast_impl) {
@@ -271,28 +84,40 @@ void GateBoy::run(int _phase_count, Req req, bool verbose, bool use_fast_impl) {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
-  //printf("phase\n");
+uint8_t GateBoy::dbg_read(uint16_t addr, bool use_fast_impl) {
+  Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
+  run(8, req, false, use_fast_impl);
+  return top.cpu_bus.bus_data();
+}
 
+//------------------------------------------------------------------------------
+
+void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   phase_total++;
+  const int phase = phase_total & 7;
+
+  //----------
+  // Update clock and buses
+
   wire CLK = (phase_total & 1) & (top.clk_reg.get_clk_a());
   top.clk_reg.set_clk_b(CLK);
 
-  pass_count = 0;
+  update_cpu_bus(phase, req);
+  update_ext_bus(phase);
+  update_vrm_bus(phase);
+  update_oam_bus(phase);
+
+  top.joypad.set_buttons(0);
+
+  //----------
+  // Run passes until we stabilize
 
   uint64_t hash_regs_old  = HASH_INIT;
+  uint64_t hash_regs_new  = HASH_INIT;
 
-  for (int i = 0; i < 256; i++) {
-    pass_count++;
-    pass_total++;
+  StringDumper d;
 
-    top.cpu_bus.set_cpu_req(req);
-    top.vram_bus.set_vram_data(0);
-    top.oam_bus.set_oam_data(0, 0);
-    top.ext_bus.set_ext_data(0);
-    top.joypad.set_buttons(0);
-    
-    const int phase = phase_total & 7;
+  for (pass_count = 0; pass_count < 100; pass_count++) {
 
     if (use_fast_impl) {
       top.tick_fast(phase);
@@ -301,62 +126,41 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
       top.tick_slow(phase);
     }
 
-    uint64_t hash_regs_new  = HASH_INIT;
-
-#ifdef FAST_HASH
-    //if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(top, hash_regs_new);
-    //if (verbose) printf("0x%016llx\n", _pass_hash);
-#else
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.oam_bus, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.ext_bus, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.cpu_bus, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.vram_bus, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.clk_reg, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.dma_reg, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.int_reg, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.joypad, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.lcd_reg, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.pix_pipe, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.ser_reg, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.sprite_store, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.tim_reg, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.tile_fetcher, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.sprite_fetcher, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.sprite_scanner, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-    commit_and_hash(_pass_hash, top.bootrom, byte_mask);
-    if (verbose) printf("0x%016llx\n", _pass_hash);
-#endif
-    
-    //printf("hash 0x%016llx\n", new_hash.h);
-    
-    if (hash_regs_old == hash_regs_new) break;
     hash_regs_old = hash_regs_new;
-    if (i == 199) printf("stuck!\n");
-    CHECK_N(i == 200);
+    hash_regs_new  = HASH_INIT;
+    if (FAST_HASH) {
+      commit_and_hash(top, hash_regs_new);
+    }
+    else {
+      commit_and_hash(top.oam_bus, hash_regs_new);
+      commit_and_hash(top.ext_bus, hash_regs_new);
+      commit_and_hash(top.cpu_bus, hash_regs_new);
+      commit_and_hash(top.vram_bus, hash_regs_new);
+      commit_and_hash(top.clk_reg, hash_regs_new);
+      commit_and_hash(top.dma_reg, hash_regs_new);
+      commit_and_hash(top.int_reg, hash_regs_new);
+      commit_and_hash(top.joypad, hash_regs_new);
+      commit_and_hash(top.lcd_reg, hash_regs_new);
+      commit_and_hash(top.pix_pipe, hash_regs_new);
+      commit_and_hash(top.ser_reg, hash_regs_new);
+      commit_and_hash(top.sprite_store, hash_regs_new);
+      commit_and_hash(top.tim_reg, hash_regs_new);
+      commit_and_hash(top.tile_fetcher, hash_regs_new);
+      commit_and_hash(top.sprite_fetcher, hash_regs_new);
+      commit_and_hash(top.sprite_scanner, hash_regs_new);
+      commit_and_hash(top.bootrom, hash_regs_new);
+    }
+    if (hash_regs_new == hash_regs_old) break;
   }
+
+  CHECK_P(pass_count < 100);
+
+  //----------
+  // Done
 
   phase_hash = hash_regs_old;
   combine_hash(total_hash, phase_hash);
 
-#if 1
   if (verbose) {
     printf("Phase %c @ %08d:%02d phase_hash %016llx\n",
       'A' + (phase_total & 7),
@@ -364,34 +168,110 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
       pass_count,
       phase_hash);
   }
-#else
-  if (verbose) {
-    printf("Phase %c @ %08d:%02d phase_hash %016llx CLK_GOOD %d CLK %d RST %d phz %d%d%d%d vid %d%d%d BOMA %d CPU_START %d CPU_RDY %d DIV %05d TUBO %d AFER %d ASOL %d\n",
-      'A' + (phase_total & 7),
-      phase_total,
-      pass_count,
-      phase_hash_bytes,
-      top.clk_reg.get_clk_a(),
-      top.clk_reg.get_clk_b(),
-      top.clk_reg.SYS_PIN_RSTp(),
-      top.clk_reg.AFUR_ABCDxxxx(),
-      top.clk_reg.ALEF_xBCDExxx(),
-      top.clk_reg.APUK_xxCDEFxx(),
-      top.clk_reg.ADYK_xxxDEFGx(),
-      top.clk_reg.WUVU_xxCDxxGH(),
-      top.clk_reg.VENA_xxxxEFGH(),
-      top.clk_reg.WOSU_xBCxxFGx(),
-      top.clk_reg.BOMA_Axxxxxxx(),
-      top.clk_reg.CPU_PIN_STARTp(),
-      top.clk_reg.CPU_PIN_READYp(),
-      top.tim_reg.get_div(),
-      top.clk_reg.TUBO_CPU_READYn(),
-      top.clk_reg.AFER_SYS_RSTp(),
-      top.clk_reg.ASOL_POR_DONEn()
-      //hash.h);
-      );
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::update_cpu_bus(int phase, Req req) {
+  auto& bus = top.cpu_bus;
+
+  if (PHASE_A) {
+    bus._CPU_PIN_RDp.hold(0);
+    bus._CPU_PIN_WRp.hold(0);
+    bus._CPU_PIN_AV .hold(0);
   }
-#endif
+  else {
+    bus._CPU_PIN_RDp.hold(req.read);
+    bus._CPU_PIN_WRp.hold(req.write);
+    bus._CPU_PIN_AV .hold((req.read || req.write));
+  }
+
+  if (PHASE_B) {
+    bus.CPU_BUS_A00.hold(req.addr & 0x0001);
+    bus.CPU_BUS_A01.hold(req.addr & 0x0002);
+    bus.CPU_BUS_A02.hold(req.addr & 0x0004);
+    bus.CPU_BUS_A03.hold(req.addr & 0x0008);
+    bus.CPU_BUS_A04.hold(req.addr & 0x0010);
+    bus.CPU_BUS_A05.hold(req.addr & 0x0020);
+    bus.CPU_BUS_A06.hold(req.addr & 0x0040);
+    bus.CPU_BUS_A07.hold(req.addr & 0x0080);
+    bus.CPU_BUS_A08.hold(req.addr & 0x0100);
+    bus.CPU_BUS_A09.hold(req.addr & 0x0200);
+    bus.CPU_BUS_A10.hold(req.addr & 0x0400);
+    bus.CPU_BUS_A11.hold(req.addr & 0x0800);
+    bus.CPU_BUS_A12.hold(req.addr & 0x1000);
+    bus.CPU_BUS_A13.hold(req.addr & 0x2000);
+    bus.CPU_BUS_A14.hold(req.addr & 0x4000);
+    bus.CPU_BUS_A15.hold(req.addr & 0x8000);
+  }
+
+  if (PHASE(0b00001111) && req.write) {
+    bus.CPU_BUS_D0.hold(req.data_lo & 0x01);
+    bus.CPU_BUS_D1.hold(req.data_lo & 0x02);
+    bus.CPU_BUS_D2.hold(req.data_lo & 0x04);
+    bus.CPU_BUS_D3.hold(req.data_lo & 0x08);
+    bus.CPU_BUS_D4.hold(req.data_lo & 0x10);
+    bus.CPU_BUS_D5.hold(req.data_lo & 0x20);
+    bus.CPU_BUS_D6.hold(req.data_lo & 0x40);
+    bus.CPU_BUS_D7.hold(req.data_lo & 0x80);
+  }
+  else {
+    bus.CPU_BUS_D0.release();
+    bus.CPU_BUS_D1.release();
+    bus.CPU_BUS_D2.release();
+    bus.CPU_BUS_D3.release();
+    bus.CPU_BUS_D4.release();
+    bus.CPU_BUS_D5.release();
+    bus.CPU_BUS_D6.release();
+    bus.CPU_BUS_D7.release();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::update_ext_bus(int phase) {
+  if (PHASE_C && top.ext_bus._EXT_PIN_RD_A) {
+    uint16_t ext_addr = top.ext_bus.get_pin_addr();
+    uint8_t data = mem2[ext_addr & 0x7FFF];
+    top.ext_bus.hold_pin_data_in(data);
+  }
+  else {
+    top.ext_bus.hold_pin_data_z();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::update_vrm_bus(int phase) {
+  (void)phase;
+
+  if (top.vram_bus._VRAM_PIN_OEn_A) {
+    uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
+    uint8_t vram_data = mem2[vram_pin_addr + 0x8000];
+    top.vram_bus.hold_pin_data_in(vram_data);
+  }
+  else {
+    top.vram_bus.hold_pin_data_z();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::update_oam_bus(int phase) {
+  (void)phase;
+
+  /*
+  int oam_addr = top.oam_bus.get_bus_addr();
+  uint16_t* oam_base = (uint16_t*)(&mem2[0xFE00]);
+
+  if (top.oam_bus.OAM_PIN_OE) {
+    top.oam_bus.set_bus_data(true, oam_base[oam_addr >> 1]);
+  }
+  else {
+    top.oam_bus.set_bus_data(false, 0);
+  }
+  */
+  top.oam_bus.set_bus_data(false, 0);
 }
 
 //-----------------------------------------------------------------------------

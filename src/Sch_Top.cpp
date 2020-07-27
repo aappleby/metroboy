@@ -110,7 +110,7 @@ void SchematicTop::tick_fast(int phase) {
 // Debug stuff I disabled
 
 /*p07.APET*/ wire APET_MODE_DBG = or(top.clk_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
-/*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_PIN_A05, CPU_PIN_A06, TAPU_CPUWR, ADDR_111111110xx00000);
+/*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, TAPU_CPUWR, ADDR_111111110xx00000);
 
 //----------
 // weird debug things, probably not right
@@ -167,14 +167,14 @@ if (top.VYPO_GND) bus_out.set_data(
 ///*p05.KYWE*/ wire P05_NC1 = nor (KERU_DBG_FF00_D7, FF60_0o);
 
 /*p08.LYRA*/ wire DBG_D_RDn = nand(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/*p08.TUTY*/ if (!DBG_D_RDn) CPU_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
-/*p08.SYWA*/ if (!DBG_D_RDn) CPU_TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
-/*p08.SUGU*/ if (!DBG_D_RDn) CPU_TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
-/*p08.TAWO*/ if (!DBG_D_RDn) CPU_TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
-/*p08.TUTE*/ if (!DBG_D_RDn) CPU_TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
-/*p08.SAJO*/ if (!DBG_D_RDn) CPU_TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
-/*p08.TEMY*/ if (!DBG_D_RDn) CPU_TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
-/*p08.ROPA*/ if (!DBG_D_RDn) CPU_TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
+/*p08.TUTY*/ if (!DBG_D_RDn) CPU_BUS_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
+/*p08.SYWA*/ if (!DBG_D_RDn) CPU_BUS_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
+/*p08.SUGU*/ if (!DBG_D_RDn) CPU_BUS_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
+/*p08.TAWO*/ if (!DBG_D_RDn) CPU_BUS_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
+/*p08.TUTE*/ if (!DBG_D_RDn) CPU_BUS_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
+/*p08.SAJO*/ if (!DBG_D_RDn) CPU_BUS_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
+/*p08.TEMY*/ if (!DBG_D_RDn) CPU_BUS_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
+/*p08.ROPA*/ if (!DBG_D_RDn) CPU_BUS_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
 #endif
 
 // hack, not correct
@@ -182,12 +182,12 @@ if (top.VYPO_GND) bus_out.set_data(
 {
   // FF60 debug reg
   /*p07.APET*/ wire APET_MODE_DBG = or(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
-  /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_PIN_A05, CPU_PIN_A06, bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
+  /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
 
   /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
-  /*p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D0);
-  /*p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D1);
+  /*p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D0);
+  /*p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D1);
 
   ///*p05.KURA*/ wire FF60_0n = not(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not(FF60);
@@ -219,22 +219,22 @@ if (top.VYPO_GND) bus_out.set_data(
 /*p08.PEVO*/ wire A14_Cn = not(EXT_PIN_A14_C);
 /*p08.RAZA*/ wire A15_Cn = not(EXT_PIN_A15_C);
 
-/*p08.KEJO*/ top.cpu_bus.CPU_PIN_A00 = tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
-/*p08.BYXE*/ top.cpu_bus.CPU_PIN_A01 = tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);
-/*p08.AKAN*/ top.cpu_bus.CPU_PIN_A02 = tribuf_10n(TOVA_MODE_DBG2n, A02_Cn);
-/*p08.ANAR*/ top.cpu_bus.CPU_PIN_A03 = tribuf_10n(TOVA_MODE_DBG2n, A03_Cn);
-/*p08.AZUV*/ top.cpu_bus.CPU_PIN_A04 = tribuf_10n(TOVA_MODE_DBG2n, A04_Cn);
-/*p08.AJOV*/ top.cpu_bus.CPU_PIN_A05 = tribuf_10n(TOVA_MODE_DBG2n, A05_Cn);
-/*p08.BYNE*/ top.cpu_bus.CPU_PIN_A06 = tribuf_10n(TOVA_MODE_DBG2n, A06_Cn);
-/*p08.BYNA*/ top.cpu_bus.CPU_PIN_A07 = tribuf_10n(TOVA_MODE_DBG2n, A07_Cn);
-/*p08.LOFA*/ top.cpu_bus.CPU_PIN_A08 = tribuf_10n(TOVA_MODE_DBG2n, A08_Cn);
-/*p08.MAPU*/ top.cpu_bus.CPU_PIN_A09 = tribuf_10n(TOVA_MODE_DBG2n, A09_Cn);
-/*p08.RALA*/ top.cpu_bus.CPU_PIN_A10 = tribuf_10n(TOVA_MODE_DBG2n, A10_Cn);
-/*p08.LORA*/ top.cpu_bus.CPU_PIN_A11 = tribuf_10n(TOVA_MODE_DBG2n, A11_Cn);
-/*p08.LYNA*/ top.cpu_bus.CPU_PIN_A12 = tribuf_10n(TOVA_MODE_DBG2n, A12_Cn);
-/*p08.LEFY*/ top.cpu_bus.CPU_PIN_A13 = tribuf_10n(TOVA_MODE_DBG2n, A13_Cn);
-/*p08.NEFE*/ top.cpu_bus.CPU_PIN_A14 = tribuf_10n(TOVA_MODE_DBG2n, A14_Cn);
-/*p08.SYZU*/ top.cpu_bus.CPU_PIN_A15 = tribuf_10n(TOVA_MODE_DBG2n, A15_Cn);
+/*p08.KEJO*/ top.cpu_bus.CPU_BUS_A00 = tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
+/*p08.BYXE*/ top.cpu_bus.CPU_BUS_A01 = tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);
+/*p08.AKAN*/ top.cpu_bus.CPU_BUS_A02 = tribuf_10n(TOVA_MODE_DBG2n, A02_Cn);
+/*p08.ANAR*/ top.cpu_bus.CPU_BUS_A03 = tribuf_10n(TOVA_MODE_DBG2n, A03_Cn);
+/*p08.AZUV*/ top.cpu_bus.CPU_BUS_A04 = tribuf_10n(TOVA_MODE_DBG2n, A04_Cn);
+/*p08.AJOV*/ top.cpu_bus.CPU_BUS_A05 = tribuf_10n(TOVA_MODE_DBG2n, A05_Cn);
+/*p08.BYNE*/ top.cpu_bus.CPU_BUS_A06 = tribuf_10n(TOVA_MODE_DBG2n, A06_Cn);
+/*p08.BYNA*/ top.cpu_bus.CPU_BUS_A07 = tribuf_10n(TOVA_MODE_DBG2n, A07_Cn);
+/*p08.LOFA*/ top.cpu_bus.CPU_BUS_A08 = tribuf_10n(TOVA_MODE_DBG2n, A08_Cn);
+/*p08.MAPU*/ top.cpu_bus.CPU_BUS_A09 = tribuf_10n(TOVA_MODE_DBG2n, A09_Cn);
+/*p08.RALA*/ top.cpu_bus.CPU_BUS_A10 = tribuf_10n(TOVA_MODE_DBG2n, A10_Cn);
+/*p08.LORA*/ top.cpu_bus.CPU_BUS_A11 = tribuf_10n(TOVA_MODE_DBG2n, A11_Cn);
+/*p08.LYNA*/ top.cpu_bus.CPU_BUS_A12 = tribuf_10n(TOVA_MODE_DBG2n, A12_Cn);
+/*p08.LEFY*/ top.cpu_bus.CPU_BUS_A13 = tribuf_10n(TOVA_MODE_DBG2n, A13_Cn);
+/*p08.NEFE*/ top.cpu_bus.CPU_BUS_A14 = tribuf_10n(TOVA_MODE_DBG2n, A14_Cn);
+/*p08.SYZU*/ top.cpu_bus.CPU_BUS_A15 = tribuf_10n(TOVA_MODE_DBG2n, A15_Cn);
 }
 #endif
 

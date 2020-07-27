@@ -13,16 +13,13 @@ struct LcdRegisters {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
-  /*p28.BYHA*/ wire LcdRegisters::BYHA_VID_LINE_TRIG_d4() const {
+  /*p28.BYHA*/ wire LcdRegisters::BYHA_VID_LINE_TRIGn() const {
     /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_VID_LINE_ENDp.q());
     return and (or (_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
   }
 
   // -> lcd, window
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p() const { return not(BYHA_VID_LINE_TRIG_d4()); }
-
-  // -> sprite scanner
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn()         const { return nor(ATEJ_VID_LINE_TRIG_d4p(), _ATAR_VID_RSTp); }
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp() const { return not(BYHA_VID_LINE_TRIGn()); }
 
   // -> interrupts, ppu
   /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(_POPU_IN_VBLANKp.qn()); }
@@ -35,12 +32,6 @@ struct LcdRegisters {
 
   // -> sprite scanner
   /*p29.CATU*/ wire CATU_VID_LINE_ENDp()       const { return _CATU_VID_LINE_ENDp.q(); }
-
-  // -> sprite store, lcd
-  /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n() const {
-    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p(), _AMYG_VID_RSTp);
-    return not(_ABAK_VID_LINE_TRIG_d4p);
-  }
 
   void dump(Dumper& d) {
     d("----------   LCD    ----------\n");
@@ -98,8 +89,6 @@ struct LcdRegisters {
 
 private:
 
-  Sig2 _AMYG_VID_RSTp;
-  Sig2 _ATAR_VID_RSTp;
   Sig2 _ABEZ_VID_RSTn;
 
   /*p21.RUTU*/ Reg2 _RUTU_LINE_ENDp     = Reg2::D0C0;         // p909+8

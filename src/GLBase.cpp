@@ -315,7 +315,7 @@ void bind_table(int prog, const char* name, int index, int tex) {
 //-----------------------------------------------------------------------------
 
 int create_shader(const char* name, const char* src) {
-  static bool verbose = true;
+  static bool verbose = false;
 
   printf("Compiling %s\n", name);
 

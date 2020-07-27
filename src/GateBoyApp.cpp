@@ -25,8 +25,8 @@ GateBoyApp::GateBoyApp() {
   };
   state_manager.init(top_step);
 
-  auto gateboy = state_manager.state();
-  load_blob("microtests/build/dmg/poweron_000_div.gb", gateboy->mem, 65536);
+  //auto gateboy = state_manager.state();
+  //load_blob("microtests/build/dmg/poweron_000_div.gb", gateboy->mem, 65536);
 }
 
 GateBoyApp::~GateBoyApp() {
@@ -42,7 +42,13 @@ void GateBoyApp::reset(uint16_t /*new_pc*/) {
 //-----------------------------------------------------------------------------
 
 Req GateBoyApp::get_req() {
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
+  //Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
+  //Req req = {.addr = 0x0100, .data = 0, .read = 1, .write = 0 };
+
+  auto gateboy = state_manager.state();
+  uint16_t addr = (uint16_t)gateboy->phase_total;
+
+  Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
   return req;
 }
 
@@ -131,9 +137,22 @@ void GateBoyApp::app_render_frame(Viewport view) {
   auto gateboy = state_manager.state();
 
   StringDumper dumper;
-  float col_width = 224;
+  float col_width = 256;
 
   dumper("----------   Top    ----------\n");
+
+  const char* phases[] = {
+    "\002A_______\001",
+    "\003_B______\001",
+    "\002__C_____\001",
+    "\003___D____\001",
+    "\002____E___\001",
+    "\003_____F__\001",
+    "\002______G_\001",
+    "\003_______H\001",
+  };
+
+  dumper("phase %s\n", phases[gateboy->phase_total & 7]);
 
   size_t state_size = state_manager.state_size_bytes();
 
@@ -150,49 +169,39 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("\n");
 
   gateboy->top.clk_reg.dump(dumper);
+  gateboy->top.tim_reg.dump(dumper);
+  gateboy->top.int_reg.dump(dumper);
+  text_painter.render(view, dumper.s.c_str(), col_width * 0, 0);
+  dumper.clear();
+
   gateboy->top.cpu_bus.dump(dumper);
   gateboy->top.ext_bus.dump(dumper);
   gateboy->top.vram_bus.dump(dumper);
   gateboy->top.oam_bus.dump(dumper);
-
-  text_painter.render(view, dumper.s.c_str(), col_width * 0, 0);
-  dumper.clear();
-
   gateboy->top.dma_reg.dump(dumper);
-  gateboy->top.int_reg.dump(dumper);
-  gateboy->top.joypad.dump(dumper);
-  gateboy->top.lcd_reg.dump(dumper);
-
   text_painter.render(view, dumper.s.c_str(), col_width * 1, 0);
   dumper.clear();
 
+  gateboy->top.lcd_reg.dump(dumper);
   gateboy->top.pix_pipe.dump(dumper);
-  gateboy->top.sprite_fetcher.dump(dumper);
-  gateboy->top.sprite_scanner.dump(dumper);
-  gateboy->top.sprite_store.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 2, 0);
   dumper.clear();
 
+  gateboy->top.sprite_fetcher.dump(dumper);
+  gateboy->top.sprite_scanner.dump(dumper);
+  gateboy->top.sprite_store.dump(dumper);
   gateboy->top.tile_fetcher.dump(dumper);
-  gateboy->top.tim_reg.dump(dumper);
+  gateboy->top.joypad.dump(dumper);
   gateboy->top.ser_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 3, 0);
   dumper.clear();
 
-  /*
-  int replay_time = frame_count / 20;
-  BusDump* dump = poweron_004_div;
-
-  while(dump[replay_cursor].phase != -1 && dump[replay_cursor].phase < replay_time) {
-    replay_cursor++;
-  }
-  */
+  dump_painter.render(view, col_width * 4, 0, 16, 32, gateboy->mem2);
 
   dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);
-  text_painter.render(view, dumper.s.c_str(), col_width * 6, 64);
+  text_painter.render(view, dumper.s.c_str(), col_width * 5, 0);
   dumper.clear();
 
-  dump_painter.render(view, 1024, 512, 16, 32, gateboy->mem);
 }
 
 void GateBoyApp::app_render_ui(Viewport view) {

@@ -27,7 +27,7 @@ private:
   int highlight_x = 0;
   int highlight_y = 0;
 
-  static const int tile_w = 16;
+  static const int tile_w = 14;
   static const int tile_h = 12;
   static const int cell_w = 6;
   static const int cell_h = 12;

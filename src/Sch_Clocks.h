@@ -197,8 +197,10 @@ struct ClockRegisters {
 
   //-----------------------------------------------------------------------------
 
-private:
+//private:
   /*p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not(!_AFUR_ABCDxxxx.q()); }
+  /*p01.AJAX*/ wire AJAX_xxxxEFGH() const { return not(ATYP_ABCDxxxx()); }
+
   /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return _SYS_PIN_CLK_B; } // ignoring the deglitcher here
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not(AZOF_AxCxExGx()); }
 
@@ -206,10 +208,13 @@ private:
   /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not(NULE_xxxxEFGH()); }
   /*p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not(BYRY_ABCDxxxx()); }
   /*p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not(BUDE_xxxxEFGH()); }
-  
+
+  /*p01.AROV*/ wire AROV_xxCDEFxx() const {
+    return not(_APUK_xxCDEFxx.qn());
+  }
+
   /*p01.BAPY*/ wire BAPY_xxxxxxGH() const {
-    /*p01.AROV*/ wire _AROV_xxCDEFxx = not(!_APUK_xxCDEFxx.q());
-    return nor(ABOL_CLKREQn(), _AROV_xxCDEFxx, ATYP_ABCDxxxx());
+    return nor(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx());
   }
   /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not(BAPY_xxxxxxGH()); }
   /*p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not(BERU_ABCDEFxx()); }

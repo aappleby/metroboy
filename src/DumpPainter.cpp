@@ -96,7 +96,6 @@ void main() {
 
   // Read atlas and emit color.
   float pix = texelFetch(atlas_tex, ivec2(atlas_tex_x, atlas_tex_y), 0).r;
-  //float pix = texture(atlas_tex, vec2(atlas_tex_x * inv_atlas_w, atlas_tex_y * inv_atlas_h)).r;
   
   if (tile_xi == highlight.x && tile_yi == highlight.y) {
     fs_out = mix(bg_color, highlight_color, pix);

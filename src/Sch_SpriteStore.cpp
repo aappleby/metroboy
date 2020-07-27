@@ -160,7 +160,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p29.BAKY*/ wire _BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
     /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn.q());
     
-    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIG_d4());
+    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIGn());
     /*p29.BESE*/ SPRITE_COUNT0 = ff17_r2(_CAKE_CLKp,         _AZYB_RST, SPRITE_COUNT0.qn());
     /*p29.CUXY*/ SPRITE_COUNT1 = ff17_r2(SPRITE_COUNT0.q(), _AZYB_RST, SPRITE_COUNT1.qn());
     /*p29.BEGO*/ SPRITE_COUNT2 = ff17_r2(SPRITE_COUNT1.q(), _AZYB_RST, SPRITE_COUNT2.qn());
@@ -242,16 +242,20 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p29.GUZE*/ wire _GUZE_SPRITE9_GETp = nor(STORE9_MATCHn, STORE8_MATCH_OUT);
 
     // Delayed reset signal for the selected store
-    /*p29.EBOJ*/ EBOJ_STORE0_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _GUVA_SPRITE0_GETp);
-    /*p29.CEDY*/ CEDY_STORE1_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _ENUT_SPRITE1_GETp);
-    /*p29.EGAV*/ EGAV_STORE2_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _EMOL_SPRITE2_GETp);
-    /*p29.GOTA*/ GOTA_STORE3_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _GYFY_SPRITE3_GETp);
-    /*p29.XUDY*/ XUDY_STORE4_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _GONO_SPRITE4_GETp);
-    /*p29.WAFY*/ WAFY_STORE5_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _GEGA_SPRITE5_GETp);
-    /*p29.WOMY*/ WOMY_STORE6_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _XOJA_SPRITE6_GETp);
-    /*p29.WAPO*/ WAPO_STORE7_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _GUTU_SPRITE7_GETp);
-    /*p29.EXUQ*/ EXUQ_STORE8_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _FOXA_SPRITE8_GETp);
-    /*p29.FONO*/ FONO_STORE9_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), top.lcd_reg.BYVA_VID_LINE_TRIG_d4n(), _GUZE_SPRITE9_GETp);
+
+    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or (top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.AMYG_VID_RSTp());
+    /*p28.BYVA*/ wire BYVA_VID_LINE_TRIGn = not(_ABAK_VID_LINE_TRIGp);
+
+    /*p29.EBOJ*/ EBOJ_STORE0_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _GUVA_SPRITE0_GETp);
+    /*p29.CEDY*/ CEDY_STORE1_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _ENUT_SPRITE1_GETp);
+    /*p29.EGAV*/ EGAV_STORE2_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _EMOL_SPRITE2_GETp);
+    /*p29.GOTA*/ GOTA_STORE3_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _GYFY_SPRITE3_GETp);
+    /*p29.XUDY*/ XUDY_STORE4_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _GONO_SPRITE4_GETp);
+    /*p29.WAFY*/ WAFY_STORE5_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _GEGA_SPRITE5_GETp);
+    /*p29.WOMY*/ WOMY_STORE6_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _XOJA_SPRITE6_GETp);
+    /*p29.WAPO*/ WAPO_STORE7_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _GUTU_SPRITE7_GETp);
+    /*p29.EXUQ*/ EXUQ_STORE8_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _FOXA_SPRITE8_GETp);
+    /*p29.FONO*/ FONO_STORE9_RSTp = ff17_r2(top.sprite_fetcher.WUTY_SPRITE_DONEp(), BYVA_VID_LINE_TRIGn, _GUZE_SPRITE9_GETp);
 
     /*p29.FURO*/ wire FURO_SPRITE0_GETn = not(_GUVA_SPRITE0_GETp);
     /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not(_ENUT_SPRITE1_GETp);
@@ -379,18 +383,20 @@ void SpriteStore::tock(const SchematicTop& top) {
   // Sprite store setter
 
   {
-    /*p29.DYBA*/ wire _DYBA_VID_LINE_TRIG_d4p = not(top.lcd_reg.BYVA_VID_LINE_TRIG_d4n());;
+    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or (top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.AMYG_VID_RSTp());
+    /*p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not(_ABAK_VID_LINE_TRIGp);
+    /*p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not(_BYVA_VID_LINE_TRIGn);
 
-    /*p29.DYWE*/ wire DYWE_STORE0_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, EBOJ_STORE0_RSTp.q());
-    /*p29.EFEV*/ wire EFEV_STORE1_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, CEDY_STORE1_RSTp.q());
-    /*p29.FOKO*/ wire FOKO_STORE2_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, EGAV_STORE2_RSTp.q());
-    /*p29.GAKE*/ wire GAKE_STORE3_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, GOTA_STORE3_RSTp.q());
-    /*p29.WOHU*/ wire WOHU_STORE4_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, XUDY_STORE4_RSTp.q());
-    /*p29.FEVE*/ wire FEVE_STORE5_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, WAFY_STORE5_RSTp.q());
-    /*p29.WACY*/ wire WACY_STORE6_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, WOMY_STORE6_RSTp.q());
-    /*p29.GUKY*/ wire GUKY_STORE7_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, WAPO_STORE7_RSTp.q());
-    /*p29.GORO*/ wire GORO_STORE8_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, EXUQ_STORE8_RSTp.q());
-    /*p29.DUBU*/ wire DUBU_STORE9_RSTp = or(_DYBA_VID_LINE_TRIG_d4p, FONO_STORE9_RSTp.q());
+    /*p29.DYWE*/ wire DYWE_STORE0_RSTp = or(_DYBA_VID_LINE_TRIGp, EBOJ_STORE0_RSTp.q());
+    /*p29.EFEV*/ wire EFEV_STORE1_RSTp = or(_DYBA_VID_LINE_TRIGp, CEDY_STORE1_RSTp.q());
+    /*p29.FOKO*/ wire FOKO_STORE2_RSTp = or(_DYBA_VID_LINE_TRIGp, EGAV_STORE2_RSTp.q());
+    /*p29.GAKE*/ wire GAKE_STORE3_RSTp = or(_DYBA_VID_LINE_TRIGp, GOTA_STORE3_RSTp.q());
+    /*p29.WOHU*/ wire WOHU_STORE4_RSTp = or(_DYBA_VID_LINE_TRIGp, XUDY_STORE4_RSTp.q());
+    /*p29.FEVE*/ wire FEVE_STORE5_RSTp = or(_DYBA_VID_LINE_TRIGp, WAFY_STORE5_RSTp.q());
+    /*p29.WACY*/ wire WACY_STORE6_RSTp = or(_DYBA_VID_LINE_TRIGp, WOMY_STORE6_RSTp.q());
+    /*p29.GUKY*/ wire GUKY_STORE7_RSTp = or(_DYBA_VID_LINE_TRIGp, WAPO_STORE7_RSTp.q());
+    /*p29.GORO*/ wire GORO_STORE8_RSTp = or(_DYBA_VID_LINE_TRIGp, EXUQ_STORE8_RSTp.q());
+    /*p29.DUBU*/ wire DUBU_STORE9_RSTp = or(_DYBA_VID_LINE_TRIGp, FONO_STORE9_RSTp.q());
 
     /*p29.DYNA*/ wire DYNA_STORE0_RSTn = not(DYWE_STORE0_RSTp);
     /*p29.DOKU*/ wire DOKU_STORE1_RSTn = not(EFEV_STORE1_RSTp);

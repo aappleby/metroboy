@@ -12,38 +12,44 @@ struct OamBus;
 struct ExtBus {
   void tock(SchematicTop& top);
 
-  void set_ext_data(uint16_t data) {
-    _EXT_PIN_D0_C.hold(data & 0x01);
-    _EXT_PIN_D1_C.hold(data & 0x02);
-    _EXT_PIN_D2_C.hold(data & 0x04);
-    _EXT_PIN_D3_C.hold(data & 0x08);
-    _EXT_PIN_D4_C.hold(data & 0x10);
-    _EXT_PIN_D5_C.hold(data & 0x20);
-    _EXT_PIN_D6_C.hold(data & 0x40);
-    _EXT_PIN_D7_C.hold(data & 0x80);
+  uint16_t get_pin_addr() {
+    return ~(uint16_t)pack(_EXT_PIN_A00_A, _EXT_PIN_A01_A, _EXT_PIN_A02_A, _EXT_PIN_A03_A,
+                           _EXT_PIN_A04_A, _EXT_PIN_A05_A, _EXT_PIN_A06_A, _EXT_PIN_A07_A,
+                           _EXT_PIN_A08_A, _EXT_PIN_A09_A, _EXT_PIN_A10_A, _EXT_PIN_A11_A,
+                           _EXT_PIN_A12_A, _EXT_PIN_A13_A, _EXT_PIN_A14_A, _EXT_PIN_A15_A);
   }
 
-  void set_ext_rdwr(wire rd, wire wr) {
-    _EXT_PIN_WRn_C.hold(rd);
-    _EXT_PIN_RDn_C.hold(wr);
+  uint8_t get_pin_data_out() {
+    return (uint8_t)pack(!_EXT_PIN_D0_A, !_EXT_PIN_D1_A, !_EXT_PIN_D2_A, !_EXT_PIN_D3_A,
+                         !_EXT_PIN_D4_A, !_EXT_PIN_D5_A, !_EXT_PIN_D6_A, !_EXT_PIN_D7_A);
   }
 
-  wire EXT_PIN_RDp_C() const { return _EXT_PIN_RDn_C; }
-  wire EXT_PIN_WRp_C() const { return _EXT_PIN_WRn_C; }
+  void hold_pin_data_in(uint8_t data) {
+    _EXT_PIN_D0_C.hold(!(data & 0x01));
+    _EXT_PIN_D1_C.hold(!(data & 0x02));
+    _EXT_PIN_D2_C.hold(!(data & 0x04));
+    _EXT_PIN_D3_C.hold(!(data & 0x08));
+    _EXT_PIN_D4_C.hold(!(data & 0x10));
+    _EXT_PIN_D5_C.hold(!(data & 0x20));
+    _EXT_PIN_D6_C.hold(!(data & 0x40));
+    _EXT_PIN_D7_C.hold(!(data & 0x80));
+  }
 
-  // -> oam data tri
-  /*p25.RALO*/ wire RALO_EXT_D0p() const { return not(_EXT_PIN_D0_C); }
-  /*p25.TUNE*/ wire TUNE_EXT_D1p() const { return not(_EXT_PIN_D1_C); }
-  /*p25.SERA*/ wire SERA_EXT_D2p() const { return not(_EXT_PIN_D2_C); }
-  /*p25.TENU*/ wire TENU_EXT_D3p() const { return not(_EXT_PIN_D3_C); }
-  /*p25.SYSA*/ wire SYSA_EXT_D4p() const { return not(_EXT_PIN_D4_C); }
-  /*p25.SUGY*/ wire SUGY_EXT_D5p() const { return not(_EXT_PIN_D5_C); }
-  /*p25.TUBE*/ wire TUBE_EXT_D6p() const { return not(_EXT_PIN_D6_C); }
-  /*p25.SYZO*/ wire SYZO_EXT_D7p() const { return not(_EXT_PIN_D7_C); }
+  void hold_pin_data_z() {
+    _EXT_PIN_D0_C.hold_z();
+    _EXT_PIN_D1_C.hold_z();
+    _EXT_PIN_D2_C.hold_z();
+    _EXT_PIN_D3_C.hold_z();
+    _EXT_PIN_D4_C.hold_z();
+    _EXT_PIN_D5_C.hold_z();
+    _EXT_PIN_D6_C.hold_z();
+    _EXT_PIN_D7_C.hold_z();
+  }
+
 
   void dump(Dumper& d) {
     d("---------- Ext Bus  ----------\n");
-    d("EXT BUS ADDR    : _%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+    d("EXT BUS ADDR    : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
       _NYRE_EXT_ADDR_LATCH_14.c(), _LONU_EXT_ADDR_LATCH_13.c(), _LOBU_EXT_ADDR_LATCH_12.c(), _LUMY_EXT_ADDR_LATCH_11.c(),
       _PATE_EXT_ADDR_LATCH_10.c(), _LYSA_EXT_ADDR_LATCH_09.c(), _LUNO_EXT_ADDR_LATCH_08.c(), _ARYM_EXT_ADDR_LATCH_07.c(),
       _AROS_EXT_ADDR_LATCH_06.c(), _ATEV_EXT_ADDR_LATCH_05.c(), _AVYS_EXT_ADDR_LATCH_04.c(), _ARET_EXT_ADDR_LATCH_03.c(),
@@ -52,11 +58,11 @@ struct ExtBus {
       _SAZY_EXT_DATA_LATCH_07.c(), _RUPA_EXT_DATA_LATCH_06.c(), _SAGO_EXT_DATA_LATCH_05.c(), _SODY_EXT_DATA_LATCH_04.c(),
       _SELO_EXT_DATA_LATCH_03.c(), _RAXY_EXT_DATA_LATCH_02.c(), _RONY_EXT_DATA_LATCH_01.c(), _SOMA_EXT_DATA_LATCH_00.c());
 
-    d("EXT PIN RDn     : %c%c%c\n", _EXT_PIN_RDn_A.c(), _EXT_PIN_RDn_C.c(), _EXT_PIN_RDn_D.c());
-    d("EXT PIN WRn     : %c%c%c\n", _EXT_PIN_WRn_A.c(), _EXT_PIN_WRn_C.c(), _EXT_PIN_WRn_D.c());
-    d("EXT PIN CSn     : %c\n",     _EXT_PIN_CSn_A.c());
+    d("EXT PIN RDn     : %c%c%c\n", _EXT_PIN_RD_A.c(), _EXT_PIN_RD_C.c(), _EXT_PIN_RD_D.c());
+    d("EXT PIN WRn     : %c%c%c\n", _EXT_PIN_WR_A.c(), _EXT_PIN_WR_C.c(), _EXT_PIN_WR_D.c());
+    d("EXT PIN CSn     : %c\n",     _EXT_PIN_CS_A.c());
 
-    d("EXT PIN ADDR    : %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
+    d("EXT PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
       _EXT_PIN_A15_A.c(), _EXT_PIN_A14_A.c(), _EXT_PIN_A13_A.c(), _EXT_PIN_A12_A.c(),
       _EXT_PIN_A11_A.c(), _EXT_PIN_A10_A.c(), _EXT_PIN_A09_A.c(), _EXT_PIN_A08_A.c(),
       _EXT_PIN_A07_A.c(), _EXT_PIN_A06_A.c(), _EXT_PIN_A05_A.c(), _EXT_PIN_A04_A.c(),
@@ -78,7 +84,20 @@ struct ExtBus {
     d("\n");
   }
 
-private:
+  // -> oam data tri
+  /*p25.RALO*/ wire RALO_EXT_D0p() const { return not(_EXT_PIN_D0_C); }
+  /*p25.TUNE*/ wire TUNE_EXT_D1p() const { return not(_EXT_PIN_D1_C); }
+  /*p25.SERA*/ wire SERA_EXT_D2p() const { return not(_EXT_PIN_D2_C); }
+  /*p25.TENU*/ wire TENU_EXT_D3p() const { return not(_EXT_PIN_D3_C); }
+  /*p25.SYSA*/ wire SYSA_EXT_D4p() const { return not(_EXT_PIN_D4_C); }
+  /*p25.SUGY*/ wire SUGY_EXT_D5p() const { return not(_EXT_PIN_D5_C); }
+  /*p25.TUBE*/ wire TUBE_EXT_D6p() const { return not(_EXT_PIN_D6_C); }
+  /*p25.SYZO*/ wire SYZO_EXT_D7p() const { return not(_EXT_PIN_D7_C); }
+
+
+//private:
+
+  //-----------------------------------------------------------------------------
 
   /*p08.ALOR*/ Pin2 _ALOR_EXT_ADDR_LATCH_00 = Pin2::LATCH_0;
   /*p08.APUR*/ Pin2 _APUR_EXT_ADDR_LATCH_01 = Pin2::LATCH_0;
@@ -96,8 +115,6 @@ private:
   /*p08.LONU*/ Pin2 _LONU_EXT_ADDR_LATCH_13 = Pin2::LATCH_0;
   /*p08.NYRE*/ Pin2 _NYRE_EXT_ADDR_LATCH_14 = Pin2::LATCH_0;
 
-  // Ext-to-cpu "latch" - looks more like a pass gate really
-
   /*p08.SOMA*/ Pin2 _SOMA_EXT_DATA_LATCH_00 = Pin2::LATCH_0;
   /*p08.RONY*/ Pin2 _RONY_EXT_DATA_LATCH_01 = Pin2::LATCH_0;
   /*p08.RAXY*/ Pin2 _RAXY_EXT_DATA_LATCH_02 = Pin2::LATCH_0;
@@ -110,8 +127,8 @@ private:
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
 
-  Pin2  _EXT_PIN_WRn_C = Pin2::HOLD_0;   // PIN_78 -> P07.UBAL
-  Pin2  _EXT_PIN_RDn_C = Pin2::HOLD_0;   // PIN_79 -> P07.UJYV
+  Pin2  _EXT_PIN_WR_C  = Pin2::HOLD_0;   // PIN_78 -> P07.UBAL
+  Pin2  _EXT_PIN_RD_C  = Pin2::HOLD_0;   // PIN_79 -> P07.UJYV
 
   Pin2  _EXT_PIN_A00_C = Pin2::HOLD_0;   // PIN_01 -> P08.KOVA
   Pin2  _EXT_PIN_A01_C = Pin2::HOLD_0;   // PIN_02 -> P08.CAMU
@@ -133,13 +150,13 @@ private:
   //-----------------------------------------------------------------------------
   // Ext bus
 
-  Pin2 _EXT_PIN_RDn_A = Pin2::HIZ_NP;   // PIN_79 <- P08.UGAC
-  Pin2 _EXT_PIN_RDn_D = Pin2::HIZ_NP;   // PIN_79 <- P08.URUN
-  Pin2 _EXT_PIN_WRn_A = Pin2::HIZ_NP;   // PIN_78 <- P08.UVER
-  Pin2 _EXT_PIN_WRn_D = Pin2::HIZ_NP;   // PIN_78 <- P08.USUF
-  Pin2 _EXT_PIN_CSn_A = Pin2::HIZ_NP;   // PIN_80 <- P08.TYHO
+  Pin2 _EXT_PIN_RD_A  = Pin2::HIZ_NP;   // PIN_79 <- P08.UGAC // RDn idles low, goes high on phase B for an external write
+  Pin2 _EXT_PIN_RD_D  = Pin2::HIZ_NP;   // PIN_79 <- P08.URUN
+  Pin2 _EXT_PIN_WR_A  = Pin2::HIZ_NP;   // PIN_78 <- P08.UVER // WRn idles high, goes low during EFG if there's a write
+  Pin2 _EXT_PIN_WR_D  = Pin2::HIZ_NP;   // PIN_78 <- P08.USUF
+  Pin2 _EXT_PIN_CS_A  = Pin2::HIZ_NP;   // PIN_80 <- P08.TYHO // CS changes on phase C if addr in [A000,FDFF]
 
-  Pin2 _EXT_PIN_A00_A = Pin2::HIZ_NP;   // PIN_01 <- P08.KUPO
+  Pin2 _EXT_PIN_A00_A = Pin2::HIZ_NP;   // PIN_01 <- P08.KUPO // Address changees on B for CPU read/write, on A for DMA read
   Pin2 _EXT_PIN_A00_D = Pin2::HIZ_NP;   // PIN_01 <- P08.KOTY
   Pin2 _EXT_PIN_A01_A = Pin2::HIZ_NP;   // PIN_02 <- P08.CABA
   Pin2 _EXT_PIN_A01_D = Pin2::HIZ_NP;   // PIN_02 <- P08.COTU
@@ -169,7 +186,8 @@ private:
   Pin2 _EXT_PIN_A13_D = Pin2::HIZ_NP;   // PIN_14 <- P08.LEVA
   Pin2 _EXT_PIN_A14_A = Pin2::HIZ_NP;   // PIN_15 <- P08.PUHE
   Pin2 _EXT_PIN_A14_D = Pin2::HIZ_NP;   // PIN_15 <- P08.PAHY
-  Pin2 _EXT_PIN_A15_A = Pin2::HIZ_NP;   // PIN_16 <- P08.SUZE
+
+  Pin2 _EXT_PIN_A15_A = Pin2::HIZ_NP;   // PIN_16 <- P08.SUZE // A15 changes on C
   Pin2 _EXT_PIN_A15_D = Pin2::HIZ_NP;   // PIN_16 <- P08.RULO
 
   Pin2 _EXT_PIN_D0_A = Pin2::HIZ_NP;    // PIN_17 <- P08.RUXA

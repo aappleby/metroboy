@@ -381,7 +381,7 @@
 // ROXO = not(SEGU05)
 
 // NEFO_01 << LOMA_02    (clk)
-// NEFO_02 << CPU_TRI_D7     (d)
+// NEFO_02 << CPU_BUS_D7     (d)
 // NEFO_03 nc
 // NEFO_04 << COMP_CLOCK (clkn)
 // NEFO_05 nc

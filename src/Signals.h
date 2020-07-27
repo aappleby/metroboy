@@ -89,6 +89,11 @@ inline void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
       __debugbreak();
     }
 
+    if ((s1 & 0x0F) != (s2 & 0x0F)) {
+      int x = 1;
+      x++;
+    }
+
     combine_hash(h, s2 & 0x0F);
 
     base[i] = s2;
@@ -102,16 +107,15 @@ inline void commit_and_hash(T& obj, uint64_t& hash_regs) {
   commit_and_hash(&obj, sizeof(T), hash_regs);
 }
 
-inline void hash_blob(void* blob, int size, uint64_t& hash_regs) {
-  uint64_t h = hash_regs;
-
-  uint8_t* base = (uint8_t*)blob;
-  for (int i = 0; i < size; i++) {
+template<typename T>
+inline uint64_t hash_obj(T const& obj) {
+  uint64_t hash = HASH_INIT;
+  const uint8_t* base = (const uint8_t*)(&obj);
+  for (int i = 0; i < sizeof(T); i++) {
     uint8_t s2 = base[i];
-    combine_hash(hash_regs,  s2 & 0x0F);
+    combine_hash(hash, s2);
   }
-
-  hash_regs  = h;
+  return hash;
 }
 
 //-----------------------------------------------------------------------------
@@ -296,8 +300,14 @@ struct Pin2 : public RegBase2 {
 
   inline void release() {
     CHECK_P(is_pin());
-    CHECK_P(is_held());
+    //CHECK_P(is_held());
     delta = DELTA_NONE;
+  }
+
+  inline void pass() {
+    CHECK_P(is_pin());
+    //CHECK_P(is_held());
+    delta = DELTA_PASS;
   }
 
   inline wire as_wire() const  {

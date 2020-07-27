@@ -12,7 +12,9 @@ void SpriteScanner::tick(const SchematicTop& top) {
     _XYLO_LCDC_SPEN = top.pix_pipe.XYLO_LCDC_SPEN.q();
     _XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp();
 
-    /*p29.BALU*/ _BALU_LINE_RSTp = not(top.lcd_reg.ANOM_LINE_RSTn());
+    /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+
+    /*p29.BALU*/ _BALU_LINE_RSTp = not(ANOM_LINE_RSTn);
     /*p29.BAGY*/ _BAGY_LINE_RSTn = not(_BALU_LINE_RSTp);
   }
 
@@ -81,12 +83,14 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
   {
     /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx());
-    /*p28.YFEL*/ _YFEL_SCAN0 = ff17_r2(_GAVA_SCAN_CLK,   top.lcd_reg.ANOM_LINE_RSTn(), _YFEL_SCAN0.qn());
-    /*p28.WEWY*/ _WEWY_SCAN1 = ff17_r2(_YFEL_SCAN0.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _WEWY_SCAN1.qn());
-    /*p28.GOSO*/ _GOSO_SCAN2 = ff17_r2(_WEWY_SCAN1.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _GOSO_SCAN2.qn());
-    /*p28.ELYN*/ _ELYN_SCAN3 = ff17_r2(_GOSO_SCAN2.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _ELYN_SCAN3.qn());
-    /*p28.FAHA*/ _FAHA_SCAN4 = ff17_r2(_ELYN_SCAN3.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _FAHA_SCAN4.qn());
-    /*p28.FONY*/ _FONY_SCAN5 = ff17_r2(_FAHA_SCAN4.qn(), top.lcd_reg.ANOM_LINE_RSTn(), _FONY_SCAN5.qn());
+    /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+
+    /*p28.YFEL*/ _YFEL_SCAN0 = ff17_r2(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, _YFEL_SCAN0.qn());
+    /*p28.WEWY*/ _WEWY_SCAN1 = ff17_r2(_YFEL_SCAN0.qn(), ANOM_LINE_RSTn, _WEWY_SCAN1.qn());
+    /*p28.GOSO*/ _GOSO_SCAN2 = ff17_r2(_WEWY_SCAN1.qn(), ANOM_LINE_RSTn, _GOSO_SCAN2.qn());
+    /*p28.ELYN*/ _ELYN_SCAN3 = ff17_r2(_GOSO_SCAN2.qn(), ANOM_LINE_RSTn, _ELYN_SCAN3.qn());
+    /*p28.FAHA*/ _FAHA_SCAN4 = ff17_r2(_ELYN_SCAN3.qn(), ANOM_LINE_RSTn, _FAHA_SCAN4.qn());
+    /*p28.FONY*/ _FONY_SCAN5 = ff17_r2(_FAHA_SCAN4.qn(), ANOM_LINE_RSTn, _FONY_SCAN5.qn());
   }
 }
 

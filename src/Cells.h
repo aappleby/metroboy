@@ -98,6 +98,19 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 //-----------------------------------------------------------------------------
 
+inline RegDelta tribuf(wire OEp, wire D) {
+#if 0
+  return RegDelta(DELTA_SIGZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
+#else
+  if (OEp) {
+    return D ? DELTA_SIG1 : DELTA_SIG0;
+  }
+  else {
+    return DELTA_SIGZ;
+  }
+#endif
+}
+
 // RYMA 6-rung green tribuf
 
 // TRIBUF_01
@@ -108,6 +121,7 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 // TRIBUF_06
 
 // top rung tadpole facing second rung dot
+
 inline RegDelta tribuf_6p_r2(wire OEp, wire D) {
 #if 0
   return RegDelta(DELTA_SIGZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
@@ -567,7 +581,7 @@ inline RegDelta  nand_latch_r2(wire SETn, wire RSTn) {
 ///*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
 // ALOR_01 << MATE_02
 // ALOR_02 nc
-// ALOR_03 << CPU_PIN_A00
+// ALOR_03 << CPU_BUS_A00
 // ALOR_04 nc
 // ALOR_05 nc
 // ALOR_06 nc
@@ -577,11 +591,11 @@ inline RegDelta  nand_latch_r2(wire SETn, wire RSTn) {
 // ALOR_10
 
 ///*p31.WYNO*/ TpLatch WYNO_LATCH_OAM_A4;
-///*p31.WYNO*/ WYNO_LATCH_OAM_A4 = tp_latch(BODE_OAM_LATCH, top.OAM_PIN_DA4);
+///*p31.WYNO*/ WYNO_LATCH_OAM_A4 = tp_latch(BODE_OAM_LATCH, top.OAM_BUS_DA4);
 
 // WYNO_01 << BODE_02
 // WYNO_02 NC
-// WYNO_03 << OAM_PIN_DA4
+// WYNO_03 << OAM_BUS_DA4
 // WYNO_04 NC
 // WYNO_05 NC
 // WYNO_06 NC
@@ -591,7 +605,7 @@ inline RegDelta  nand_latch_r2(wire SETn, wire RSTn) {
 // WYNO_10 >> XUNA_01
 
 inline RegDelta  tp_latch_r2(wire LATCHp, wire D) {
-#if 1
+#if 0
   bool b2 = LATCHp;
   bool b1 = !LATCHp || !D;
   bool b0 = LATCHp && D;

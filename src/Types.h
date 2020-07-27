@@ -14,6 +14,10 @@ typedef int16_t sample_t;
 //typedef const bool wire;
 typedef bool wire;
 
+//-----------------------------------------------------------------------------
+
+#define PHASE(A) ((A) & (1 << (7 - phase)))
+
 #define PHASE_A  ((phase & 7) == 0)
 #define PHASE_B  ((phase & 7) == 1)
 #define PHASE_C  ((phase & 7) == 2)

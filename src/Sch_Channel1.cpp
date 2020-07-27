@@ -165,7 +165,7 @@ void Channel1_tick(const Pins& pins,
 
     /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.TAPU_CPUWR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
-    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.CPU_PIN5, APU_WR);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.CPU_PIN_DVn, APU_WR);
     /*p11.BAGE*/ next.ch1.NR14_CLKa   = nand(CPU_WR_WEIRD, ADDR_FF14); 
     /*p11.BOKO*/ next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.TS_D6());
 

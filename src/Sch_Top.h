@@ -51,7 +51,7 @@ struct SchematicTop {
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
-    /*p??.APAP*/ wire APAP_AVn = not(cpu_bus._CPU_PIN_AV); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not(cpu_bus._CPU_PIN_AVp); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not(AWOD_AVp);
     return ABUZ_AVn;
@@ -84,7 +84,7 @@ struct SchematicTop {
 
   // oam.WUKU/GUKO, vram.TYVY
   /*p28.LEKO*/ wire LEKO_CPU_RDp() const {
-    /*p04.DECY*/ wire DECY = not(cpu_bus._CPU_PIN_DV);
+    /*p04.DECY*/ wire DECY = not(cpu_bus._CPU_PIN_DVn);
     /*p04.CATY*/ wire CATY = not(DECY);
 
     // MYNU_01 << ASOT

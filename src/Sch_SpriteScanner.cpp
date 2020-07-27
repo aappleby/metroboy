@@ -69,12 +69,12 @@ void SpriteScanner::tock(const SchematicTop& top) {
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
-    /*p29.BYBA*/ _BYBA_SCAN_DONE_A = ff17_r2(top.clk_reg.XUPY_ABxxEFxx(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ _DOBA_SCAN_DONE_B = ff17_r2(top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, _BYBA_SCAN_DONE_A.q());
+    /*p29.BYBA*/ _BYBA_SCAN_DONE_A = dff17(top.clk_reg.XUPY_ABxxEFxx(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*p29.DOBA*/ _DOBA_SCAN_DONE_B = dff17(top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, _BYBA_SCAN_DONE_A.q());
 
     /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or (top.clk_reg.ATAR_VID_RSTp(), top.sprite_scanner.AVAP_RENDER_START_TRIGp());
-    /*p28.BESU*/ _BESU_SCANNINGp = nor_latch_r2(top.lcd_reg.CATU_VID_LINE_ENDp(), _ASEN_SCAN_DONE_PE);
-    /*p29.CENO*/ _CENO_SCANNINGp = ff17_r2(top.clk_reg.XUPY_ABxxEFxx(), top.clk_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
+    /*p28.BESU*/ _BESU_SCANNINGp = nor_latch(top.lcd_reg.CATU_VID_LINE_ENDp(), _ASEN_SCAN_DONE_PE);
+    /*p29.CENO*/ _CENO_SCANNINGp = dff17(top.clk_reg.XUPY_ABxxEFxx(), top.clk_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
   }
 
   //----------------------------------------
@@ -85,12 +85,12 @@ void SpriteScanner::tock(const SchematicTop& top) {
     /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx());
     /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
 
-    /*p28.YFEL*/ _YFEL_SCAN0 = ff17_r2(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, _YFEL_SCAN0.qn());
-    /*p28.WEWY*/ _WEWY_SCAN1 = ff17_r2(_YFEL_SCAN0.qn(), ANOM_LINE_RSTn, _WEWY_SCAN1.qn());
-    /*p28.GOSO*/ _GOSO_SCAN2 = ff17_r2(_WEWY_SCAN1.qn(), ANOM_LINE_RSTn, _GOSO_SCAN2.qn());
-    /*p28.ELYN*/ _ELYN_SCAN3 = ff17_r2(_GOSO_SCAN2.qn(), ANOM_LINE_RSTn, _ELYN_SCAN3.qn());
-    /*p28.FAHA*/ _FAHA_SCAN4 = ff17_r2(_ELYN_SCAN3.qn(), ANOM_LINE_RSTn, _FAHA_SCAN4.qn());
-    /*p28.FONY*/ _FONY_SCAN5 = ff17_r2(_FAHA_SCAN4.qn(), ANOM_LINE_RSTn, _FONY_SCAN5.qn());
+    /*p28.YFEL*/ _YFEL_SCAN0 = dff17(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, _YFEL_SCAN0.qn());
+    /*p28.WEWY*/ _WEWY_SCAN1 = dff17(_YFEL_SCAN0.qn(), ANOM_LINE_RSTn, _WEWY_SCAN1.qn());
+    /*p28.GOSO*/ _GOSO_SCAN2 = dff17(_WEWY_SCAN1.qn(), ANOM_LINE_RSTn, _GOSO_SCAN2.qn());
+    /*p28.ELYN*/ _ELYN_SCAN3 = dff17(_GOSO_SCAN2.qn(), ANOM_LINE_RSTn, _ELYN_SCAN3.qn());
+    /*p28.FAHA*/ _FAHA_SCAN4 = dff17(_ELYN_SCAN3.qn(), ANOM_LINE_RSTn, _FAHA_SCAN4.qn());
+    /*p28.FONY*/ _FONY_SCAN5 = dff17(_FAHA_SCAN4.qn(), ANOM_LINE_RSTn, _FONY_SCAN5.qn());
   }
 }
 

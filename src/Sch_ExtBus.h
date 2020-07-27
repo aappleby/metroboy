@@ -13,10 +13,10 @@ struct ExtBus {
   void tock(SchematicTop& top);
 
   uint16_t get_pin_addr() {
-    return ~(uint16_t)pack(_EXT_PIN_A00_A, _EXT_PIN_A01_A, _EXT_PIN_A02_A, _EXT_PIN_A03_A,
-                           _EXT_PIN_A04_A, _EXT_PIN_A05_A, _EXT_PIN_A06_A, _EXT_PIN_A07_A,
-                           _EXT_PIN_A08_A, _EXT_PIN_A09_A, _EXT_PIN_A10_A, _EXT_PIN_A11_A,
-                           _EXT_PIN_A12_A, _EXT_PIN_A13_A, _EXT_PIN_A14_A, _EXT_PIN_A15_A);
+    return (uint16_t)pack(!_EXT_PIN_A00_A, !_EXT_PIN_A01_A, !_EXT_PIN_A02_A, !_EXT_PIN_A03_A,
+                          !_EXT_PIN_A04_A, !_EXT_PIN_A05_A, !_EXT_PIN_A06_A, !_EXT_PIN_A07_A,
+                          !_EXT_PIN_A08_A, !_EXT_PIN_A09_A, !_EXT_PIN_A10_A, !_EXT_PIN_A11_A,
+                          !_EXT_PIN_A12_A, !_EXT_PIN_A13_A, !_EXT_PIN_A14_A, !_EXT_PIN_A15_A);
   }
 
   uint8_t get_pin_data_out() {
@@ -25,14 +25,14 @@ struct ExtBus {
   }
 
   void hold_pin_data_in(uint8_t data) {
-    _EXT_PIN_D0_C.hold(!(data & 0x01));
-    _EXT_PIN_D1_C.hold(!(data & 0x02));
-    _EXT_PIN_D2_C.hold(!(data & 0x04));
-    _EXT_PIN_D3_C.hold(!(data & 0x08));
-    _EXT_PIN_D4_C.hold(!(data & 0x10));
-    _EXT_PIN_D5_C.hold(!(data & 0x20));
-    _EXT_PIN_D6_C.hold(!(data & 0x40));
-    _EXT_PIN_D7_C.hold(!(data & 0x80));
+    _EXT_PIN_D0_C.hold(data & 0x01);
+    _EXT_PIN_D1_C.hold(data & 0x02);
+    _EXT_PIN_D2_C.hold(data & 0x04);
+    _EXT_PIN_D3_C.hold(data & 0x08);
+    _EXT_PIN_D4_C.hold(data & 0x10);
+    _EXT_PIN_D5_C.hold(data & 0x20);
+    _EXT_PIN_D6_C.hold(data & 0x40);
+    _EXT_PIN_D7_C.hold(data & 0x80);
   }
 
   void hold_pin_data_z() {
@@ -57,43 +57,33 @@ struct ExtBus {
     d("EXT BUS DATA    : %c%c%c%c%c%c%c%c\n",
       _SAZY_EXT_DATA_LATCH_07.c(), _RUPA_EXT_DATA_LATCH_06.c(), _SAGO_EXT_DATA_LATCH_05.c(), _SODY_EXT_DATA_LATCH_04.c(),
       _SELO_EXT_DATA_LATCH_03.c(), _RAXY_EXT_DATA_LATCH_02.c(), _RONY_EXT_DATA_LATCH_01.c(), _SOMA_EXT_DATA_LATCH_00.c());
+    d("\n");
 
-    d("EXT PIN RDn     : %c%c%c\n", _EXT_PIN_RD_A.c(), _EXT_PIN_RD_C.c(), _EXT_PIN_RD_D.c());
-    d("EXT PIN WRn     : %c%c%c\n", _EXT_PIN_WR_A.c(), _EXT_PIN_WR_C.c(), _EXT_PIN_WR_D.c());
-    d("EXT PIN CSn     : %c\n",     _EXT_PIN_CS_A.c());
+    d("EXT PIN RD_A    : %c%c%c\n", _EXT_PIN_RD_A.c(), _EXT_PIN_RD_C.c(), _EXT_PIN_RD_D.c());
+    d("EXT PIN WR_A    : %c%c%c\n", _EXT_PIN_WR_A.c(), _EXT_PIN_WR_C.c(), _EXT_PIN_WR_D.c());
+    d("EXT PIN CS_A    : %c\n",     _EXT_PIN_CS_A.c());
 
-    d("EXT PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+    d("EXT PIN ADDR_A  : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
       _EXT_PIN_A15_A.c(), _EXT_PIN_A14_A.c(), _EXT_PIN_A13_A.c(), _EXT_PIN_A12_A.c(),
       _EXT_PIN_A11_A.c(), _EXT_PIN_A10_A.c(), _EXT_PIN_A09_A.c(), _EXT_PIN_A08_A.c(),
       _EXT_PIN_A07_A.c(), _EXT_PIN_A06_A.c(), _EXT_PIN_A05_A.c(), _EXT_PIN_A04_A.c(),
       _EXT_PIN_A03_A.c(), _EXT_PIN_A02_A.c(), _EXT_PIN_A01_A.c(), _EXT_PIN_A00_A.c());
 
-    d("EXT PIN DATA A  : %c%c%c%c%c%c%c%c\n",
+    d("EXT PIN DATA_A  : %c%c%c%c%c%c%c%c\n",
       _EXT_PIN_D7_A.c(), _EXT_PIN_D6_A.c(), _EXT_PIN_D5_A.c(), _EXT_PIN_D4_A.c(),
       _EXT_PIN_D3_A.c(), _EXT_PIN_D2_A.c(), _EXT_PIN_D1_A.c(), _EXT_PIN_D0_A.c());
-    d("EXT PIN DATA B  : %c%c%c%c%c%c%c%c\n",
+    d("EXT PIN DATA_B  : %c%c%c%c%c%c%c%c\n",
       _EXT_PIN_D7_B.c(), _EXT_PIN_D6_B.c(), _EXT_PIN_D5_B.c(), _EXT_PIN_D4_B.c(),
       _EXT_PIN_D3_B.c(), _EXT_PIN_D2_B.c(), _EXT_PIN_D1_B.c(), _EXT_PIN_D0_B.c());
-    d("EXT PIN DATA C  : %c%c%c%c%c%c%c%c\n",
+    d("EXT PIN DATA_C  : %c%c%c%c%c%c%c%c\n",
       _EXT_PIN_D7_C.c(), _EXT_PIN_D6_C.c(), _EXT_PIN_D5_C.c(), _EXT_PIN_D4_C.c(),
       _EXT_PIN_D3_C.c(), _EXT_PIN_D2_C.c(), _EXT_PIN_D1_C.c(), _EXT_PIN_D0_C.c());
-    d("EXT PIN DATA D  : %c%c%c%c%c%c%c%c\n",
+    d("EXT PIN DATA_D  : %c%c%c%c%c%c%c%c\n",
       _EXT_PIN_D7_D.c(), _EXT_PIN_D6_D.c(), _EXT_PIN_D5_D.c(), _EXT_PIN_D4_D.c(),
       _EXT_PIN_D3_D.c(), _EXT_PIN_D2_D.c(), _EXT_PIN_D1_D.c(), _EXT_PIN_D0_D.c());
 
     d("\n");
   }
-
-  // -> oam data tri
-  /*p25.RALO*/ wire RALO_EXT_D0p() const { return not(_EXT_PIN_D0_C); }
-  /*p25.TUNE*/ wire TUNE_EXT_D1p() const { return not(_EXT_PIN_D1_C); }
-  /*p25.SERA*/ wire SERA_EXT_D2p() const { return not(_EXT_PIN_D2_C); }
-  /*p25.TENU*/ wire TENU_EXT_D3p() const { return not(_EXT_PIN_D3_C); }
-  /*p25.SYSA*/ wire SYSA_EXT_D4p() const { return not(_EXT_PIN_D4_C); }
-  /*p25.SUGY*/ wire SUGY_EXT_D5p() const { return not(_EXT_PIN_D5_C); }
-  /*p25.TUBE*/ wire TUBE_EXT_D6p() const { return not(_EXT_PIN_D6_C); }
-  /*p25.SYZO*/ wire SYZO_EXT_D7p() const { return not(_EXT_PIN_D7_C); }
-
 
 //private:
 

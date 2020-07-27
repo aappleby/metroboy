@@ -11,7 +11,9 @@ void GateBoyTests::test_rom_read() {
 
   bool use_fast_impl = false;
 
-  for (int i = 0; i < 256; i++) {
+  gateboy.mem2[0] =  0x23;
+
+  for (int i = 0; i < 16; i++) {
     uint8_t rom = gateboy.dbg_read((uint16_t)i, use_fast_impl);
     printf("addr 0x%04x data 0x%02x\n", i, rom);
   }

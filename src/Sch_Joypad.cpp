@@ -51,45 +51,45 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or(JOY_PIN_P13_C, JOY_PIN_P12_C, JOY_PIN_P11_C, JOY_PIN_P10_C);
 
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_r2(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
+    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
     CPU_PIN_WAKE = AWOB_WAKE_CPU.q();
   }
 
   {
-    /*p02.BATU*/ BATU_JP_GLITCH0 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.q());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.q());
-    /*p02.APUG*/ APUG_JP_GLITCH3 = ff17_r2(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.q());
+    /*p02.BATU*/ BATU_JP_GLITCH0 = dff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
+    /*p02.ACEF*/ ACEF_JP_GLITCH1 = dff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.q());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2 = dff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.q());
+    /*p02.APUG*/ APUG_JP_GLITCH3 = dff17(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.q());
   }
 
   {
     /*p10.ACAT*/ wire _ACAT_FF00_RDp = and (top.TEDO_CPU_RDp(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RDp);
-    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P10_C);
-    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P11_C);
-    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P12_C);
-    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_r2(_BYZO_FF00_RDn, JOY_PIN_P13_C);
+    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P10_C);
+    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P11_C);
+    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P12_C);
+    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch(_BYZO_FF00_RDn, JOY_PIN_P13_C);
 
-    /*p05.KEMA*/ cpu_bus.CPU_BUS_D0 = tribuf_6n_r2(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
-    /*p05.KURO*/ cpu_bus.CPU_BUS_D1 = tribuf_6n_r2(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
-    /*p05.KUVE*/ cpu_bus.CPU_BUS_D2 = tribuf_6n_r2(_BYZO_FF00_RDn, KEJA_JOYP_L2.q());
-    /*p05.JEKU*/ cpu_bus.CPU_BUS_D3 = tribuf_6n_r2(_BYZO_FF00_RDn, KOLO_JOYP_L3.q());
-    /*p05.KOCE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n_r2(_BYZO_FF00_RDn, KELY_JOYP_UDLR.q());
-    /*p05.CUDY*/ cpu_bus.CPU_BUS_D5 = tribuf_6n_r2(_BYZO_FF00_RDn, COFY_JOYP_ABCS.q());
-    /*p??.????*/ cpu_bus.CPU_BUS_D6 = tribuf_6n_r2(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.q());
-    /*p??.????*/ cpu_bus.CPU_BUS_D7 = tribuf_6n_r2(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.q());
+    /*p05.KEMA*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.q());
+    /*p05.KURO*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.q());
+    /*p05.KUVE*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_BYZO_FF00_RDn, KEJA_JOYP_L2.q());
+    /*p05.JEKU*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_BYZO_FF00_RDn, KOLO_JOYP_L3.q());
+    /*p05.KOCE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_BYZO_FF00_RDn, KELY_JOYP_UDLR.q());
+    /*p05.CUDY*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_BYZO_FF00_RDn, COFY_JOYP_ABCS.q());
+    /*p??.????*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.q());
+    /*p??.????*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.q());
   }
 
   {
     /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(top.TAPU_CPU_WRp_xxxxEFGx(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-    /*p05.JUTE*/ JUTE_JOYP_RA     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0);
-    /*p05.KECY*/ KECY_JOYP_LB     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1);
-    /*p05.JALE*/ JALE_JOYP_UC     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D2);
-    /*p05.KYME*/ KYME_JOYP_DS     = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D3);
-    /*p05.KELY*/ KELY_JOYP_UDLR   = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D4);
-    /*p05.COFY*/ COFY_JOYP_ABCS   = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D5);
-    /*p05.KUKO*/ KUKO_DBG_FF00_D6 = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D6);
-    /*p05.KERU*/ KERU_DBG_FF00_D7 = ff17_r2(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D7);
+    /*p05.JUTE*/ JUTE_JOYP_RA     = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0);
+    /*p05.KECY*/ KECY_JOYP_LB     = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1);
+    /*p05.JALE*/ JALE_JOYP_UC     = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D2);
+    /*p05.KYME*/ KYME_JOYP_DS     = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D3);
+    /*p05.KELY*/ KELY_JOYP_UDLR   = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D4);
+    /*p05.COFY*/ COFY_JOYP_ABCS   = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D5);
+    /*p05.KUKO*/ KUKO_DBG_FF00_D6 = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D6);
+    /*p05.KERU*/ KERU_DBG_FF00_D7 = dff17(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D7);
   }
 
   {

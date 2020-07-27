@@ -25,7 +25,7 @@ struct CpuBus {
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not(SARO_FE00_FEFFp()); }
   /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not(CPU_BUS_A15); }
   /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or(CPU_BUS_A13, CPU_BUS_A14, SORE_0000_7FFFp()); }
-  /*p08.TEXO*/ wire TEXO_8000_9FFFn() const { return and(_CPU_PIN_AV, TEVY_8000_9FFFn()); }
+  /*p08.TEXO*/ wire TEXO_8000_9FFFn() const { return and(_CPU_PIN_AVp, TEVY_8000_9FFFn()); }
   /*p08.LEVO*/ wire LEVO_8000_9FFFp() const { return not(TEXO_8000_9FFFn()); }
 
   /*p22.XOLA*/ wire XOLA_A00n() const { return not(CPU_BUS_A00); }
@@ -99,8 +99,8 @@ struct CpuBus {
     d("CPU AHI  : %d\n", _CPU_PIN_ADDR_HI.as_wire());
     d("CPU RDp  : %d\n", _CPU_PIN_RDp.as_wire());
     d("CPU WRp  : %d\n", _CPU_PIN_WRp.as_wire());
-    d("CPU AVn  : %d\n", _CPU_PIN_AV.as_wire());
-    d("CPU DVn  : %d\n", _CPU_PIN_DV.as_wire());
+    d("CPU AVp  : %d\n", _CPU_PIN_AVp.as_wire());
+    d("CPU DVp  : %d\n", _CPU_PIN_DVn.as_wire());
 
     d("CPU ADDR : %04x\n", bus_addr());
 
@@ -158,12 +158,12 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
-  Pin2 _CPU_PIN6     = Pin2::HOLD_0; // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  Pin2 _CPU_PIN_DV   = Pin2::HOLD_1; // top left port PORTD_06: -> ANUJ, DECY, LAVO
+  Pin2 _CPU_PIN6     = Pin2::HIZ_NP; // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  Pin2 _CPU_PIN_DVn  = Pin2::HIZ_NP; // top left port PORTD_06: -> ANUJ, DECY, LAVO
 
-  Pin2 _CPU_PIN_RDp  = Pin2::HOLD_0; // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  Pin2 _CPU_PIN_WRp  = Pin2::HOLD_0; // top right port PORTA_01: ->
-  Pin2 _CPU_PIN_AV   = Pin2::HOLD_1; // top right port PORTA_06: -> TEXO, APAP
+  Pin2 _CPU_PIN_RDp  = Pin2::HIZ_NP; // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Pin2 _CPU_PIN_WRp  = Pin2::HIZ_NP; // top right port PORTA_01: ->
+  Pin2 _CPU_PIN_AVp  = Pin2::HIZ_NP; // top right port PORTA_06: -> TEXO, APAP
 };
 
 //-----------------------------------------------------------------------------

@@ -26,15 +26,15 @@ struct VramBus {
   }
 
   uint16_t get_pin_addr() const {
-    return ~(uint16_t)pack(_VRAM_PIN_A00, _VRAM_PIN_A01, _VRAM_PIN_A02, _VRAM_PIN_A03,
-                           _VRAM_PIN_A04, _VRAM_PIN_A05, _VRAM_PIN_A06, _VRAM_PIN_A07,
-                           _VRAM_PIN_A08, _VRAM_PIN_A09, _VRAM_PIN_A10, _VRAM_PIN_A11,
-                           _VRAM_PIN_A12, 0, 0, 0);
+    return (uint16_t)pack(!_VRAM_PIN_A00, !_VRAM_PIN_A01, !_VRAM_PIN_A02, !_VRAM_PIN_A03,
+                          !_VRAM_PIN_A04, !_VRAM_PIN_A05, !_VRAM_PIN_A06, !_VRAM_PIN_A07,
+                          !_VRAM_PIN_A08, !_VRAM_PIN_A09, !_VRAM_PIN_A10, !_VRAM_PIN_A11,
+                          !_VRAM_PIN_A12, 0, 0, 0);
   }
 
   uint8_t get_pin_data_out() const {
-    return ~(uint8_t)pack(_VRAM_PIN_D0_A, _VRAM_PIN_D1_A, _VRAM_PIN_D2_A, _VRAM_PIN_D3_A,
-                          _VRAM_PIN_D4_A, _VRAM_PIN_D5_A, _VRAM_PIN_D6_A, _VRAM_PIN_D7_A);
+    return (uint8_t)pack(!_VRAM_PIN_D0_A, !_VRAM_PIN_D1_A, !_VRAM_PIN_D2_A, !_VRAM_PIN_D3_A,
+                         !_VRAM_PIN_D4_A, !_VRAM_PIN_D5_A, !_VRAM_PIN_D6_A, !_VRAM_PIN_D7_A);
   }
 
   void hold_pin_data_in(uint8_t data) {
@@ -89,9 +89,9 @@ struct VramBus {
       _VRAM_BUS_D7.c(), _VRAM_BUS_D6.c(), _VRAM_BUS_D5.c(), _VRAM_BUS_D4.c(),
       _VRAM_BUS_D3.c(), _VRAM_BUS_D2.c(), _VRAM_BUS_D1.c(), _VRAM_BUS_D0.c());
 
-    d("VRAM PIN MCS     : %c%c%c\n", _VRAM_PIN_CSn_A.c(), _VRAM_PIN_CSn_C.c(), _VRAM_PIN_CSn_D.c());
-    d("VRAM PIN MOE     : %c%c%c\n", _VRAM_PIN_OEn_A.c(), _VRAM_PIN_OEn_C.c(), _VRAM_PIN_OEn_D.c());
-    d("VRAM PIN MWR     : %c%c%c\n", _VRAM_PIN_WRn_A.c(), _VRAM_PIN_WRn_C.c(), _VRAM_PIN_WRn_D.c());
+    d("VRAM PIN MCS     : %c%c%c\n", _VRAM_PIN_CS_A.c(), _VRAM_PIN_CS_C.c(), _VRAM_PIN_CS_D.c());
+    d("VRAM PIN MOE     : %c%c%c\n", _VRAM_PIN_OE_A.c(), _VRAM_PIN_OE_C.c(), _VRAM_PIN_OE_D.c());
+    d("VRAM PIN MWR     : %c%c%c\n", _VRAM_PIN_WR_A.c(), _VRAM_PIN_WR_C.c(), _VRAM_PIN_WR_D.c());
 
     d("VRAM PIN ADDR    : %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
       _VRAM_PIN_A12.c(), _VRAM_PIN_A11.c(), _VRAM_PIN_A10.c(), _VRAM_PIN_A09.c(),
@@ -166,14 +166,14 @@ struct VramBus {
 
 //private:
 
-  Pin2 _VRAM_BUS_D0 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D1 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D2 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D3 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D4 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D5 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D6 = Pin2::HIZ_PU;
-  Pin2 _VRAM_BUS_D7 = Pin2::HIZ_PU;
+  Pin2 _VRAM_BUS_D0 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D1 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D2 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D3 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D4 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D5 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D6 = Pin2::HIZ_NP;
+  Pin2 _VRAM_BUS_D7 = Pin2::HIZ_NP;
 
   Pin2 _VRAM_BUS_A00 = Pin2::HIZ_NP;
   Pin2 _VRAM_BUS_A01 = Pin2::HIZ_NP;
@@ -192,17 +192,17 @@ struct VramBus {
   //-----------------------------------------------------------------------------
   // VRAM bus
 
-  Pin2 _VRAM_PIN_CSn_A = Pin2::HIZ_NP;   // PIN_43 <- P25.SOKY
-  Pin2 _VRAM_PIN_CSn_C = Pin2::HOLD_0;   // PIN_43 -> P25.TEFY
-  Pin2 _VRAM_PIN_CSn_D = Pin2::HIZ_NP;   // PIN_43 <- P25.SETY
+  Pin2 _VRAM_PIN_CS_A = Pin2::HIZ_NP;   // PIN_43 <- P25.SOKY
+  Pin2 _VRAM_PIN_CS_C = Pin2::HIZ_NP;   // PIN_43 -> P25.TEFY
+  Pin2 _VRAM_PIN_CS_D = Pin2::HIZ_NP;   // PIN_43 <- P25.SETY
 
-  Pin2 _VRAM_PIN_OEn_A = Pin2::HIZ_NP;   // PIN_45 <- P25.REFO
-  Pin2 _VRAM_PIN_OEn_C = Pin2::HOLD_0;   // PIN_45 -> P25.TAVY
-  Pin2 _VRAM_PIN_OEn_D = Pin2::HIZ_NP;   // PIN_45 <- P25.SAHA
+  Pin2 _VRAM_PIN_OE_A = Pin2::HIZ_NP;   // PIN_45 <- P25.REFO
+  Pin2 _VRAM_PIN_OE_C = Pin2::HIZ_NP;   // PIN_45 -> P25.TAVY
+  Pin2 _VRAM_PIN_OE_D = Pin2::HIZ_NP;   // PIN_45 <- P25.SAHA
 
-  Pin2 _VRAM_PIN_WRn_A = Pin2::HIZ_NP;   // PIN_49 <- P25.SYSY
-  Pin2 _VRAM_PIN_WRn_C = Pin2::HOLD_0;   // PIN_49 -> P25.SUDO
-  Pin2 _VRAM_PIN_WRn_D = Pin2::HIZ_NP;   // PIN_49 <- P25.RAGU
+  Pin2 _VRAM_PIN_WR_A = Pin2::HIZ_NP;   // PIN_49 <- P25.SYSY
+  Pin2 _VRAM_PIN_WR_C = Pin2::HIZ_NP;   // PIN_49 -> P25.SUDO
+  Pin2 _VRAM_PIN_WR_D = Pin2::HIZ_NP;   // PIN_49 <- P25.RAGU
 
   Pin2 _VRAM_PIN_A00  = Pin2::HIZ_NP;  // PIN_34 <- P04.ECAL
   Pin2 _VRAM_PIN_A01  = Pin2::HIZ_NP;  // PIN_35 <- P04.EGEZ

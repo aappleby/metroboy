@@ -106,10 +106,10 @@ struct OamBus {
 
   /*p04.MAKA*/ Reg2 _MAKA_DV_SYNC = Reg2::D0C0;
 
-  Pin2 OAM_PIN_CLK  = Pin2::HIZ_NP;
-  Pin2 OAM_PIN_OE   = Pin2::HIZ_NP;
-  Pin2 OAM_PIN_WR_A = Pin2::HIZ_NP;
-  Pin2 OAM_PIN_WR_B = Pin2::HIZ_NP;
+  Pin2 OAM_PIN_CLK  = Pin2::HIZ_PU;
+  Pin2 OAM_PIN_OE   = Pin2::HIZ_PU;
+  Pin2 OAM_PIN_WR_A = Pin2::HIZ_PU;
+  Pin2 OAM_PIN_WR_B = Pin2::HIZ_PU;
 
   Pin2 OAM_TRI_A0 = Pin2::HIZ_NP;
   Pin2 OAM_TRI_A1 = Pin2::HIZ_NP;

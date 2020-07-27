@@ -8,7 +8,9 @@ constexpr bool FAST_HASH = 0;
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
-  memset(mem2, 0x55, 65536);
+  for (int i = 0; i < 65536; i++) {
+    mem2[i] = uint8_t(i);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -90,6 +92,11 @@ uint8_t GateBoy::dbg_read(uint16_t addr, bool use_fast_impl) {
   return top.cpu_bus.bus_data();
 }
 
+void GateBoy::dbg_write(uint16_t addr, uint8_t data, bool use_fast_impl) {
+  Req req = {.addr = addr, .data = data, .read = 0, .write = 1 };
+  run(8, req, false, use_fast_impl);
+}
+
 //------------------------------------------------------------------------------
 
 void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
@@ -102,13 +109,6 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   wire CLK = (phase_total & 1) & (top.clk_reg.get_clk_a());
   top.clk_reg.set_clk_b(CLK);
 
-  update_cpu_bus(phase, req);
-  update_ext_bus(phase);
-  update_vrm_bus(phase);
-  update_oam_bus(phase);
-
-  top.joypad.set_buttons(0);
-
   //----------
   // Run passes until we stabilize
 
@@ -118,6 +118,12 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   StringDumper d;
 
   for (pass_count = 0; pass_count < 100; pass_count++) {
+
+    update_cpu_bus(phase, req);
+    update_ext_bus(phase);
+    update_vrm_bus(phase);
+    update_oam_bus(phase);
+    top.joypad.set_buttons(0);
 
     if (use_fast_impl) {
       top.tick_fast(phase);
@@ -175,15 +181,19 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 void GateBoy::update_cpu_bus(int phase, Req req) {
   auto& bus = top.cpu_bus;
 
+  bus._CPU_PIN6.hold(0);
+
   if (PHASE_A) {
     bus._CPU_PIN_RDp.hold(0);
     bus._CPU_PIN_WRp.hold(0);
-    bus._CPU_PIN_AV .hold(0);
+    bus._CPU_PIN_AVp.hold(0);
+    bus._CPU_PIN_DVn.hold(1);
   }
   else {
     bus._CPU_PIN_RDp.hold(req.read);
     bus._CPU_PIN_WRp.hold(req.write);
-    bus._CPU_PIN_AV .hold((req.read || req.write));
+    bus._CPU_PIN_AVp.hold((req.read || req.write));
+    bus._CPU_PIN_DVn.hold(1);
   }
 
   if (PHASE_B) {
@@ -206,6 +216,7 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
   }
 
   if (PHASE(0b00001111) && req.write) {
+    bus._CPU_PIN_DVn.hold(0);
     bus.CPU_BUS_D0.hold(req.data_lo & 0x01);
     bus.CPU_BUS_D1.hold(req.data_lo & 0x02);
     bus.CPU_BUS_D2.hold(req.data_lo & 0x04);
@@ -216,6 +227,7 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
     bus.CPU_BUS_D7.hold(req.data_lo & 0x80);
   }
   else {
+    bus._CPU_PIN_DVn.hold(1);
     bus.CPU_BUS_D0.release();
     bus.CPU_BUS_D1.release();
     bus.CPU_BUS_D2.release();
@@ -230,14 +242,17 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::update_ext_bus(int phase) {
-  if (PHASE_C && top.ext_bus._EXT_PIN_RD_A) {
-    uint16_t ext_addr = top.ext_bus.get_pin_addr();
-    uint8_t data = mem2[ext_addr & 0x7FFF];
-    top.ext_bus.hold_pin_data_in(data);
-  }
-  else {
-    top.ext_bus.hold_pin_data_z();
-  }
+  (void)phase;
+  //if (PHASE_C) {
+    if (top.ext_bus._EXT_PIN_RD_A) {
+      uint16_t ext_addr = top.ext_bus.get_pin_addr();
+      uint8_t data = mem2[ext_addr & 0x7FFF];
+      top.ext_bus.hold_pin_data_in(~data);
+    }
+    else {
+      top.ext_bus.hold_pin_data_z();
+    }
+  //}
 }
 
 //-----------------------------------------------------------------------------
@@ -245,7 +260,11 @@ void GateBoy::update_ext_bus(int phase) {
 void GateBoy::update_vrm_bus(int phase) {
   (void)phase;
 
-  if (top.vram_bus._VRAM_PIN_OEn_A) {
+  top.vram_bus._VRAM_PIN_CS_C.hold(0);
+  top.vram_bus._VRAM_PIN_OE_C.hold(0);
+  top.vram_bus._VRAM_PIN_WR_C.hold(0);
+
+  if (top.vram_bus._VRAM_PIN_OE_A) {
     uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
     uint8_t vram_data = mem2[vram_pin_addr + 0x8000];
     top.vram_bus.hold_pin_data_in(vram_data);
@@ -260,18 +279,14 @@ void GateBoy::update_vrm_bus(int phase) {
 void GateBoy::update_oam_bus(int phase) {
   (void)phase;
 
-  /*
-  int oam_addr = top.oam_bus.get_bus_addr();
-  uint16_t* oam_base = (uint16_t*)(&mem2[0xFE00]);
-
-  if (top.oam_bus.OAM_PIN_OE) {
+  if (!top.oam_bus.OAM_PIN_OE) {
+    int oam_addr = top.oam_bus.get_bus_addr();
+    uint16_t* oam_base = (uint16_t*)(&mem2[0xFE00]);
     top.oam_bus.set_bus_data(true, oam_base[oam_addr >> 1]);
   }
   else {
     top.oam_bus.set_bus_data(false, 0);
   }
-  */
-  top.oam_bus.set_bus_data(false, 0);
 }
 
 //-----------------------------------------------------------------------------

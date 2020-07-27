@@ -122,12 +122,15 @@ inline RegDelta tribuf(wire OEp, wire D) {
 
 // top rung tadpole facing second rung dot
 
-inline RegDelta tribuf_6p_r2(wire OEp, wire D) {
+// i suspect these invert the data when they put it on the bus...
+
+inline RegDelta tribuf_6p(wire OEp, wire D) {
 #if 0
   return RegDelta(DELTA_SIGZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
 #else
   if (OEp) {
-    return D ? DELTA_SIG1 : DELTA_SIG0;
+    //return D ? DELTA_SIG1 : DELTA_SIG0;
+    return D ? DELTA_SIG0 : DELTA_SIG1;
   }
   else {
     return DELTA_SIGZ;
@@ -136,12 +139,13 @@ inline RegDelta tribuf_6p_r2(wire OEp, wire D) {
 }
 
 // top rung tadpole not facing second rung dot
-inline RegDelta tribuf_6n_r2(wire OEn, wire D) {
+inline RegDelta tribuf_6n(wire OEn, wire D) {
 #if 0
   return RegDelta(DELTA_SIGZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
 #else
   if (!OEn) {
-    return D ? DELTA_SIG1 : DELTA_SIG0;
+    //return D ? DELTA_SIG1 : DELTA_SIG0;
+    return D ? DELTA_SIG0 : DELTA_SIG1;
   }
   else {
     return DELTA_SIGZ;
@@ -149,12 +153,13 @@ inline RegDelta tribuf_6n_r2(wire OEn, wire D) {
 #endif
 }
 
-inline RegDelta tribuf_10n_r2(wire OEn, wire D) {
+inline RegDelta tribuf_10n(wire OEn, wire D) {
 #if 0
   return RegDelta(DELTA_SIGZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
 #else
   if (!OEn) {
-    return D ? DELTA_SIG1 : DELTA_SIG0;
+    //return D ? DELTA_SIG1 : DELTA_SIG0;
+    return D ? DELTA_SIG0 : DELTA_SIG1;
   }
   else {
     return DELTA_SIGZ;
@@ -187,7 +192,7 @@ inline RegDelta tribuf_10n_r2(wire OEn, wire D) {
 // REG8_07 >> Q
 // REG8_08 >> Qn
 
-inline RegDelta ff8_r2(wire CLKp, wire CLKn, bool D) {
+inline RegDelta dff8(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
 
@@ -233,7 +238,7 @@ inline RegDelta ff8_r2(wire CLKp, wire CLKn, bool D) {
 // XEPE_08 >> ZOGY_02  (q)
 // XEPE_09 >> nc
 
-inline RegDelta ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
+inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -283,7 +288,7 @@ inline RegDelta ff9_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
 /*p32.POWY*/
 /*p32.PYJU*/
 
-inline RegDelta ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
+inline RegDelta dff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -354,7 +359,7 @@ inline RegDelta ff11_r2(wire CLKp, wire CLKn, wire RSTp, wire D) {
 // XADU_13 >> nc      (Q)
 
 // Almost definitely RSTn - see UPOJ/AFER on boot
-inline RegDelta ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
+inline RegDelta dff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -395,7 +400,7 @@ inline RegDelta ff13_r2(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // REG17_17 >> Q    _MUST_ be Q  - see TERO
 
 // must be RSTn, see WUVU/VENA/WOSU
-inline RegDelta ff17_r2(wire CLKp, wire RSTn, wire D) {
+inline RegDelta dff17(wire CLKp, wire RSTn, wire D) {
 #if 0
   return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
 #else
@@ -458,7 +463,7 @@ inline RegDelta ff17_r2(wire CLKp, wire RSTn, wire D) {
 // UBUL_21 == UBUL_06
 // UBUL_22 << CALY_INT_SERIALp
 
-inline RegDelta ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
+inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
 #if 1
   bool async = !SETn || !RSTn;
   bool val = (D || !SETn) && RSTn;
@@ -489,7 +494,7 @@ inline RegDelta ff22_r2(wire CLKp, wire SETn, wire RSTn, bool D) {
 // NORLATCH_01 NC
 // NORLATCH_01 << RST
 
-inline RegDelta nor_latch_r2(wire SETp, wire RSTp) {
+inline RegDelta nor_latch(wire SETp, wire RSTp) {
 #if 1
   bool b2 = RSTp || SETp;
   bool b1 = RSTp || !SETp;
@@ -520,7 +525,7 @@ inline RegDelta nor_latch_r2(wire SETp, wire RSTp) {
 // NANDLATCH_01 NC
 // NANDLATCH_01 << RSTn
 
-inline RegDelta  nand_latch_r2(wire SETn, wire RSTn) {
+inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 #if 1
   bool b2 = !RSTn || !SETn;
   bool b1 = !RSTn || SETn;
@@ -604,7 +609,7 @@ inline RegDelta  nand_latch_r2(wire SETn, wire RSTn) {
 // WYNO_09 NC
 // WYNO_10 >> XUNA_01
 
-inline RegDelta  tp_latch_r2(wire LATCHp, wire D) {
+inline RegDelta  tp_latch(wire LATCHp, wire D) {
 #if 0
   bool b2 = LATCHp;
   bool b1 = !LATCHp || !D;
@@ -621,8 +626,6 @@ inline RegDelta  tp_latch_r2(wire LATCHp, wire D) {
 }
 
 //-----------------------------------------------------------------------------
-// FIXME ticks on the NEGATIVE EDGE of the clock? (see timer.cpp)
-
 // 20-rung
 
 // REGA_TIMA_0.clk_n(SOGU_TIMA_CLK,   MEXU_TIMA_LOAD, PUXY_TIMA_LD_0);
@@ -669,7 +672,7 @@ inline RegDelta  tp_latch_r2(wire LATCHp, wire D) {
 // POVY_19 <>  sc
 // POVY_20 << REGA_01
 
-inline RegDelta ff20_r2(wire CLKp, wire LOADp, bool D) {
+inline RegDelta ff20(wire CLKp, wire LOADp, bool D) {
 #if 1
   bool b3 = 1;
   bool b2 = LOADp;

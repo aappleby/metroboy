@@ -46,7 +46,7 @@ Req GateBoyApp::get_req() {
   //Req req = {.addr = 0x0100, .data = 0, .read = 1, .write = 0 };
 
   auto gateboy = state_manager.state();
-  uint16_t addr = (uint16_t)gateboy->phase_total;
+  uint16_t addr = (uint16_t)((gateboy->phase_total - 87) >> 3);
 
   Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
   return req;

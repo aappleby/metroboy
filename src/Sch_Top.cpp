@@ -42,7 +42,7 @@ void SchematicTop::tick_slow(int phase) {
   ser_reg.tock(*this, cpu_bus);
   joypad.tock(*this, cpu_bus);
   sprite_scanner.tock(*this);
-  lcd_reg.tock(*this, cpu_bus);
+  lcd_reg.tock(phase, *this, cpu_bus);
   sprite_store.tock(*this);
 
   pix_pipe.tock(*this, cpu_bus);
@@ -90,7 +90,7 @@ void SchematicTop::tick_fast(int phase) {
   ser_reg.tock(*this, cpu_bus);
   joypad.tock(*this, cpu_bus);
   sprite_scanner.tock(*this);
-  lcd_reg.tock(*this, cpu_bus);
+  lcd_reg.tock(phase, *this, cpu_bus);
   sprite_store.tock(*this);
 
   pix_pipe.tock(*this, cpu_bus);
@@ -180,7 +180,7 @@ if (top.VYPO_GND) bus_out.set_data(
 // hack, not correct
 #if 0
 {
-  // FF60 debug reg
+  // FF60 debug state
   /*p07.APET*/ wire APET_MODE_DBG = or(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
   /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
 

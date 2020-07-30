@@ -112,8 +112,8 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 #else 
 
-#define CHECK_P(A)
-#define CHECK_N(A)
+#define CHECK_P(A) do {} while(0);
+#define CHECK_N(A) do {} while(0);
 
 #endif
 

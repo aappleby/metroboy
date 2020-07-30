@@ -24,26 +24,26 @@ struct ExtBus {
                          !_EXT_PIN_D4_A, !_EXT_PIN_D5_A, !_EXT_PIN_D6_A, !_EXT_PIN_D7_A);
   }
 
-  void hold_pin_data_in(uint8_t data) {
-    _EXT_PIN_D0_C.hold(data & 0x01);
-    _EXT_PIN_D1_C.hold(data & 0x02);
-    _EXT_PIN_D2_C.hold(data & 0x04);
-    _EXT_PIN_D3_C.hold(data & 0x08);
-    _EXT_PIN_D4_C.hold(data & 0x10);
-    _EXT_PIN_D5_C.hold(data & 0x20);
-    _EXT_PIN_D6_C.hold(data & 0x40);
-    _EXT_PIN_D7_C.hold(data & 0x80);
+  void preset_pin_data_in(uint8_t data) {
+    _EXT_PIN_D0_C.preset(!(data & 0x01));
+    _EXT_PIN_D1_C.preset(!(data & 0x02));
+    _EXT_PIN_D2_C.preset(!(data & 0x04));
+    _EXT_PIN_D3_C.preset(!(data & 0x08));
+    _EXT_PIN_D4_C.preset(!(data & 0x10));
+    _EXT_PIN_D5_C.preset(!(data & 0x20));
+    _EXT_PIN_D6_C.preset(!(data & 0x40));
+    _EXT_PIN_D7_C.preset(!(data & 0x80));
   }
 
-  void hold_pin_data_z() {
-    _EXT_PIN_D0_C.hold_z();
-    _EXT_PIN_D1_C.hold_z();
-    _EXT_PIN_D2_C.hold_z();
-    _EXT_PIN_D3_C.hold_z();
-    _EXT_PIN_D4_C.hold_z();
-    _EXT_PIN_D5_C.hold_z();
-    _EXT_PIN_D6_C.hold_z();
-    _EXT_PIN_D7_C.hold_z();
+  void preset_pin_data_z() {
+    _EXT_PIN_D0_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D1_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D2_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D3_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D4_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D5_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D6_C.preset(DELTA_TRIZ);
+    _EXT_PIN_D7_C.preset(DELTA_TRIZ);
   }
 
 
@@ -89,132 +89,132 @@ struct ExtBus {
 
   //-----------------------------------------------------------------------------
 
-  /*p08.ALOR*/ Pin2 _ALOR_EXT_ADDR_LATCH_00 = Pin2::LATCH_0;
-  /*p08.APUR*/ Pin2 _APUR_EXT_ADDR_LATCH_01 = Pin2::LATCH_0;
-  /*p08.ALYR*/ Pin2 _ALYR_EXT_ADDR_LATCH_02 = Pin2::LATCH_0;
-  /*p08.ARET*/ Pin2 _ARET_EXT_ADDR_LATCH_03 = Pin2::LATCH_0;
-  /*p08.AVYS*/ Pin2 _AVYS_EXT_ADDR_LATCH_04 = Pin2::LATCH_0;
-  /*p08.ATEV*/ Pin2 _ATEV_EXT_ADDR_LATCH_05 = Pin2::LATCH_0;
-  /*p08.AROS*/ Pin2 _AROS_EXT_ADDR_LATCH_06 = Pin2::LATCH_0;
-  /*p08.ARYM*/ Pin2 _ARYM_EXT_ADDR_LATCH_07 = Pin2::LATCH_0;
-  /*p08.LUNO*/ Pin2 _LUNO_EXT_ADDR_LATCH_08 = Pin2::LATCH_0;
-  /*p08.LYSA*/ Pin2 _LYSA_EXT_ADDR_LATCH_09 = Pin2::LATCH_0;
-  /*p08.PATE*/ Pin2 _PATE_EXT_ADDR_LATCH_10 = Pin2::LATCH_0;
-  /*p08.LUMY*/ Pin2 _LUMY_EXT_ADDR_LATCH_11 = Pin2::LATCH_0;
-  /*p08.LOBU*/ Pin2 _LOBU_EXT_ADDR_LATCH_12 = Pin2::LATCH_0;
-  /*p08.LONU*/ Pin2 _LONU_EXT_ADDR_LATCH_13 = Pin2::LATCH_0;
-  /*p08.NYRE*/ Pin2 _NYRE_EXT_ADDR_LATCH_14 = Pin2::LATCH_0;
+  /*p08.ALOR*/ Tri _ALOR_EXT_ADDR_LATCH_00 = TRI_D0NP;
+  /*p08.APUR*/ Tri _APUR_EXT_ADDR_LATCH_01 = TRI_D0NP;
+  /*p08.ALYR*/ Tri _ALYR_EXT_ADDR_LATCH_02 = TRI_D0NP;
+  /*p08.ARET*/ Tri _ARET_EXT_ADDR_LATCH_03 = TRI_D0NP;
+  /*p08.AVYS*/ Tri _AVYS_EXT_ADDR_LATCH_04 = TRI_D0NP;
+  /*p08.ATEV*/ Tri _ATEV_EXT_ADDR_LATCH_05 = TRI_D0NP;
+  /*p08.AROS*/ Tri _AROS_EXT_ADDR_LATCH_06 = TRI_D0NP;
+  /*p08.ARYM*/ Tri _ARYM_EXT_ADDR_LATCH_07 = TRI_D0NP;
+  /*p08.LUNO*/ Tri _LUNO_EXT_ADDR_LATCH_08 = TRI_D0NP;
+  /*p08.LYSA*/ Tri _LYSA_EXT_ADDR_LATCH_09 = TRI_D0NP;
+  /*p08.PATE*/ Tri _PATE_EXT_ADDR_LATCH_10 = TRI_D0NP;
+  /*p08.LUMY*/ Tri _LUMY_EXT_ADDR_LATCH_11 = TRI_D0NP;
+  /*p08.LOBU*/ Tri _LOBU_EXT_ADDR_LATCH_12 = TRI_D0NP;
+  /*p08.LONU*/ Tri _LONU_EXT_ADDR_LATCH_13 = TRI_D0NP;
+  /*p08.NYRE*/ Tri _NYRE_EXT_ADDR_LATCH_14 = TRI_D0NP;
 
-  /*p08.SOMA*/ Pin2 _SOMA_EXT_DATA_LATCH_00 = Pin2::LATCH_0;
-  /*p08.RONY*/ Pin2 _RONY_EXT_DATA_LATCH_01 = Pin2::LATCH_0;
-  /*p08.RAXY*/ Pin2 _RAXY_EXT_DATA_LATCH_02 = Pin2::LATCH_0;
-  /*p08.SELO*/ Pin2 _SELO_EXT_DATA_LATCH_03 = Pin2::LATCH_0;
-  /*p08.SODY*/ Pin2 _SODY_EXT_DATA_LATCH_04 = Pin2::LATCH_0;
-  /*p08.SAGO*/ Pin2 _SAGO_EXT_DATA_LATCH_05 = Pin2::LATCH_0;
-  /*p08.RUPA*/ Pin2 _RUPA_EXT_DATA_LATCH_06 = Pin2::LATCH_0;
-  /*p08.SAZY*/ Pin2 _SAZY_EXT_DATA_LATCH_07 = Pin2::LATCH_0;
+  /*p08.SOMA*/ Tri _SOMA_EXT_DATA_LATCH_00 = TRI_D0NP;
+  /*p08.RONY*/ Tri _RONY_EXT_DATA_LATCH_01 = TRI_D0NP;
+  /*p08.RAXY*/ Tri _RAXY_EXT_DATA_LATCH_02 = TRI_D0NP;
+  /*p08.SELO*/ Tri _SELO_EXT_DATA_LATCH_03 = TRI_D0NP;
+  /*p08.SODY*/ Tri _SODY_EXT_DATA_LATCH_04 = TRI_D0NP;
+  /*p08.SAGO*/ Tri _SAGO_EXT_DATA_LATCH_05 = TRI_D0NP;
+  /*p08.RUPA*/ Tri _RUPA_EXT_DATA_LATCH_06 = TRI_D0NP;
+  /*p08.SAZY*/ Tri _SAZY_EXT_DATA_LATCH_07 = TRI_D0NP;
 
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
 
-  Pin2  _EXT_PIN_WR_C  = Pin2::HOLD_0;   // PIN_78 -> P07.UBAL
-  Pin2  _EXT_PIN_RD_C  = Pin2::HOLD_0;   // PIN_79 -> P07.UJYV
+  Tri  _EXT_PIN_WR_C  = TRI_D0NP;   // PIN_78 -> P07.UBAL
+  Tri  _EXT_PIN_RD_C  = TRI_D0NP;   // PIN_79 -> P07.UJYV
 
-  Pin2  _EXT_PIN_A00_C = Pin2::HOLD_0;   // PIN_01 -> P08.KOVA
-  Pin2  _EXT_PIN_A01_C = Pin2::HOLD_0;   // PIN_02 -> P08.CAMU
-  Pin2  _EXT_PIN_A02_C = Pin2::HOLD_0;   // PIN_03 -> P08.BUXU
-  Pin2  _EXT_PIN_A03_C = Pin2::HOLD_0;   // PIN_04 -> P08.BASE
-  Pin2  _EXT_PIN_A04_C = Pin2::HOLD_0;   // PIN_05 -> P08.AFEC
-  Pin2  _EXT_PIN_A05_C = Pin2::HOLD_0;   // PIN_06 -> P08.ABUP
-  Pin2  _EXT_PIN_A06_C = Pin2::HOLD_0;   // PIN_07 -> P08.CYGU
-  Pin2  _EXT_PIN_A07_C = Pin2::HOLD_0;   // PIN_08 -> P08.COGO
-  Pin2  _EXT_PIN_A08_C = Pin2::HOLD_0;   // PIN_09 -> P08.MUJY
-  Pin2  _EXT_PIN_A09_C = Pin2::HOLD_0;   // PIN_10 -> P08.NENA
-  Pin2  _EXT_PIN_A10_C = Pin2::HOLD_0;   // PIN_11 -> P08.SURA
-  Pin2  _EXT_PIN_A11_C = Pin2::HOLD_0;   // PIN_12 -> P08.MADY
-  Pin2  _EXT_PIN_A12_C = Pin2::HOLD_0;   // PIN_13 -> P08.LAHE
-  Pin2  _EXT_PIN_A13_C = Pin2::HOLD_0;   // PIN_14 -> P08.LURA
-  Pin2  _EXT_PIN_A14_C = Pin2::HOLD_0;   // PIN_15 -> P08.PEVO
-  Pin2  _EXT_PIN_A15_C = Pin2::HOLD_0;   // PIN_16 -> P08.RAZA
+  Tri  _EXT_PIN_A00_C = TRI_D0NP;   // PIN_01 -> P08.KOVA
+  Tri  _EXT_PIN_A01_C = TRI_D0NP;   // PIN_02 -> P08.CAMU
+  Tri  _EXT_PIN_A02_C = TRI_D0NP;   // PIN_03 -> P08.BUXU
+  Tri  _EXT_PIN_A03_C = TRI_D0NP;   // PIN_04 -> P08.BASE
+  Tri  _EXT_PIN_A04_C = TRI_D0NP;   // PIN_05 -> P08.AFEC
+  Tri  _EXT_PIN_A05_C = TRI_D0NP;   // PIN_06 -> P08.ABUP
+  Tri  _EXT_PIN_A06_C = TRI_D0NP;   // PIN_07 -> P08.CYGU
+  Tri  _EXT_PIN_A07_C = TRI_D0NP;   // PIN_08 -> P08.COGO
+  Tri  _EXT_PIN_A08_C = TRI_D0NP;   // PIN_09 -> P08.MUJY
+  Tri  _EXT_PIN_A09_C = TRI_D0NP;   // PIN_10 -> P08.NENA
+  Tri  _EXT_PIN_A10_C = TRI_D0NP;   // PIN_11 -> P08.SURA
+  Tri  _EXT_PIN_A11_C = TRI_D0NP;   // PIN_12 -> P08.MADY
+  Tri  _EXT_PIN_A12_C = TRI_D0NP;   // PIN_13 -> P08.LAHE
+  Tri  _EXT_PIN_A13_C = TRI_D0NP;   // PIN_14 -> P08.LURA
+  Tri  _EXT_PIN_A14_C = TRI_D0NP;   // PIN_15 -> P08.PEVO
+  Tri  _EXT_PIN_A15_C = TRI_D0NP;   // PIN_16 -> P08.RAZA
 
   //-----------------------------------------------------------------------------
   // Ext bus
 
-  Pin2 _EXT_PIN_RD_A  = Pin2::HIZ_NP;   // PIN_79 <- P08.UGAC // RDn idles low, goes high on phase B for an external write
-  Pin2 _EXT_PIN_RD_D  = Pin2::HIZ_NP;   // PIN_79 <- P08.URUN
-  Pin2 _EXT_PIN_WR_A  = Pin2::HIZ_NP;   // PIN_78 <- P08.UVER // WRn idles high, goes low during EFG if there's a write
-  Pin2 _EXT_PIN_WR_D  = Pin2::HIZ_NP;   // PIN_78 <- P08.USUF
-  Pin2 _EXT_PIN_CS_A  = Pin2::HIZ_NP;   // PIN_80 <- P08.TYHO // CS changes on phase C if addr in [A000,FDFF]
+  Tri _EXT_PIN_RD_A  = TRI_HZNP;   // PIN_79 <- P08.UGAC // RDn idles low, goes high on phase B for an external write
+  Tri _EXT_PIN_RD_D  = TRI_HZNP;   // PIN_79 <- P08.URUN
+  Tri _EXT_PIN_WR_A  = TRI_HZNP;   // PIN_78 <- P08.UVER // WRn idles high, goes low during EFG if there's a write
+  Tri _EXT_PIN_WR_D  = TRI_HZNP;   // PIN_78 <- P08.USUF
+  Tri _EXT_PIN_CS_A  = TRI_HZNP;   // PIN_80 <- P08.TYHO // CS changes on phase C if addr in [A000,FDFF]
 
-  Pin2 _EXT_PIN_A00_A = Pin2::HIZ_NP;   // PIN_01 <- P08.KUPO // Address changees on B for CPU read/write, on A for DMA read
-  Pin2 _EXT_PIN_A00_D = Pin2::HIZ_NP;   // PIN_01 <- P08.KOTY
-  Pin2 _EXT_PIN_A01_A = Pin2::HIZ_NP;   // PIN_02 <- P08.CABA
-  Pin2 _EXT_PIN_A01_D = Pin2::HIZ_NP;   // PIN_02 <- P08.COTU
-  Pin2 _EXT_PIN_A02_A = Pin2::HIZ_NP;   // PIN_03 <- P08.BOKU
-  Pin2 _EXT_PIN_A02_D = Pin2::HIZ_NP;   // PIN_03 <- P08.BAJO
-  Pin2 _EXT_PIN_A03_A = Pin2::HIZ_NP;   // PIN_04 <- P08.BOTY
-  Pin2 _EXT_PIN_A03_D = Pin2::HIZ_NP;   // PIN_04 <- P08.BOLA
-  Pin2 _EXT_PIN_A04_A = Pin2::HIZ_NP;   // PIN_05 <- P08.BYLA
-  Pin2 _EXT_PIN_A04_D = Pin2::HIZ_NP;   // PIN_05 <- P08.BEVO
-  Pin2 _EXT_PIN_A05_A = Pin2::HIZ_NP;   // PIN_06 <- P08.BADU
-  Pin2 _EXT_PIN_A05_D = Pin2::HIZ_NP;   // PIN_06 <- P08.AJAV
-  Pin2 _EXT_PIN_A06_A = Pin2::HIZ_NP;   // PIN_07 <- P08.CEPU
-  Pin2 _EXT_PIN_A06_D = Pin2::HIZ_NP;   // PIN_07 <- P08.CYKA
-  Pin2 _EXT_PIN_A07_A = Pin2::HIZ_NP;   // PIN_08 <- P08.DEFY
-  Pin2 _EXT_PIN_A07_D = Pin2::HIZ_NP;   // PIN_08 <- P08.COLO
-  Pin2 _EXT_PIN_A08_A = Pin2::HIZ_NP;   // PIN_09 <- P08.MYNY
-  Pin2 _EXT_PIN_A08_D = Pin2::HIZ_NP;   // PIN_09 <- P08.MEGO
-  Pin2 _EXT_PIN_A09_A = Pin2::HIZ_NP;   // PIN_10 <- P08.MUNE
-  Pin2 _EXT_PIN_A09_D = Pin2::HIZ_NP;   // PIN_10 <- P08.MENY
-  Pin2 _EXT_PIN_A10_A = Pin2::HIZ_NP;   // PIN_11 <- P08.ROXU
-  Pin2 _EXT_PIN_A10_D = Pin2::HIZ_NP;   // PIN_11 <- P08.RORE
-  Pin2 _EXT_PIN_A11_A = Pin2::HIZ_NP;   // PIN_12 <- P08.LEPY
-  Pin2 _EXT_PIN_A11_D = Pin2::HIZ_NP;   // PIN_12 <- P08.LYNY
-  Pin2 _EXT_PIN_A12_A = Pin2::HIZ_NP;   // PIN_13 <- P08.LUCE
-  Pin2 _EXT_PIN_A12_D = Pin2::HIZ_NP;   // PIN_13 <- P08.LOSO
-  Pin2 _EXT_PIN_A13_A = Pin2::HIZ_NP;   // PIN_14 <- P08.LABE
-  Pin2 _EXT_PIN_A13_D = Pin2::HIZ_NP;   // PIN_14 <- P08.LEVA
-  Pin2 _EXT_PIN_A14_A = Pin2::HIZ_NP;   // PIN_15 <- P08.PUHE
-  Pin2 _EXT_PIN_A14_D = Pin2::HIZ_NP;   // PIN_15 <- P08.PAHY
+  Tri _EXT_PIN_A00_A = TRI_HZNP;   // PIN_01 <- P08.KUPO // Address changees on B for CPU read/write, on A for DMA read
+  Tri _EXT_PIN_A00_D = TRI_HZNP;   // PIN_01 <- P08.KOTY
+  Tri _EXT_PIN_A01_A = TRI_HZNP;   // PIN_02 <- P08.CABA
+  Tri _EXT_PIN_A01_D = TRI_HZNP;   // PIN_02 <- P08.COTU
+  Tri _EXT_PIN_A02_A = TRI_HZNP;   // PIN_03 <- P08.BOKU
+  Tri _EXT_PIN_A02_D = TRI_HZNP;   // PIN_03 <- P08.BAJO
+  Tri _EXT_PIN_A03_A = TRI_HZNP;   // PIN_04 <- P08.BOTY
+  Tri _EXT_PIN_A03_D = TRI_HZNP;   // PIN_04 <- P08.BOLA
+  Tri _EXT_PIN_A04_A = TRI_HZNP;   // PIN_05 <- P08.BYLA
+  Tri _EXT_PIN_A04_D = TRI_HZNP;   // PIN_05 <- P08.BEVO
+  Tri _EXT_PIN_A05_A = TRI_HZNP;   // PIN_06 <- P08.BADU
+  Tri _EXT_PIN_A05_D = TRI_HZNP;   // PIN_06 <- P08.AJAV
+  Tri _EXT_PIN_A06_A = TRI_HZNP;   // PIN_07 <- P08.CEPU
+  Tri _EXT_PIN_A06_D = TRI_HZNP;   // PIN_07 <- P08.CYKA
+  Tri _EXT_PIN_A07_A = TRI_HZNP;   // PIN_08 <- P08.DEFY
+  Tri _EXT_PIN_A07_D = TRI_HZNP;   // PIN_08 <- P08.COLO
+  Tri _EXT_PIN_A08_A = TRI_HZNP;   // PIN_09 <- P08.MYNY
+  Tri _EXT_PIN_A08_D = TRI_HZNP;   // PIN_09 <- P08.MEGO
+  Tri _EXT_PIN_A09_A = TRI_HZNP;   // PIN_10 <- P08.MUNE
+  Tri _EXT_PIN_A09_D = TRI_HZNP;   // PIN_10 <- P08.MENY
+  Tri _EXT_PIN_A10_A = TRI_HZNP;   // PIN_11 <- P08.ROXU
+  Tri _EXT_PIN_A10_D = TRI_HZNP;   // PIN_11 <- P08.RORE
+  Tri _EXT_PIN_A11_A = TRI_HZNP;   // PIN_12 <- P08.LEPY
+  Tri _EXT_PIN_A11_D = TRI_HZNP;   // PIN_12 <- P08.LYNY
+  Tri _EXT_PIN_A12_A = TRI_HZNP;   // PIN_13 <- P08.LUCE
+  Tri _EXT_PIN_A12_D = TRI_HZNP;   // PIN_13 <- P08.LOSO
+  Tri _EXT_PIN_A13_A = TRI_HZNP;   // PIN_14 <- P08.LABE
+  Tri _EXT_PIN_A13_D = TRI_HZNP;   // PIN_14 <- P08.LEVA
+  Tri _EXT_PIN_A14_A = TRI_HZNP;   // PIN_15 <- P08.PUHE
+  Tri _EXT_PIN_A14_D = TRI_HZNP;   // PIN_15 <- P08.PAHY
 
-  Pin2 _EXT_PIN_A15_A = Pin2::HIZ_NP;   // PIN_16 <- P08.SUZE // A15 changes on C
-  Pin2 _EXT_PIN_A15_D = Pin2::HIZ_NP;   // PIN_16 <- P08.RULO
+  Tri _EXT_PIN_A15_A = TRI_HZNP;   // PIN_16 <- P08.SUZE // A15 changes on C
+  Tri _EXT_PIN_A15_D = TRI_HZNP;   // PIN_16 <- P08.RULO
 
-  Pin2 _EXT_PIN_D0_A = Pin2::HIZ_NP;    // PIN_17 <- P08.RUXA
-  Pin2 _EXT_PIN_D1_A = Pin2::HIZ_NP;    // PIN_18 <- P08.RUJA
-  Pin2 _EXT_PIN_D2_A = Pin2::HIZ_NP;    // PIN_19 <- P08.RABY
-  Pin2 _EXT_PIN_D3_A = Pin2::HIZ_NP;    // PIN_20 <- P08.RERA
-  Pin2 _EXT_PIN_D4_A = Pin2::HIZ_NP;    // PIN_21 <- P08.RORY
-  Pin2 _EXT_PIN_D5_A = Pin2::HIZ_NP;    // PIN_22 <- P08.RYVO
-  Pin2 _EXT_PIN_D6_A = Pin2::HIZ_NP;    // PIN_23 <- P08.RAFY
-  Pin2 _EXT_PIN_D7_A = Pin2::HIZ_NP;    // PIN_24 <- P08.RAVU
+  Tri _EXT_PIN_D0_A = TRI_HZNP;    // PIN_17 <- P08.RUXA
+  Tri _EXT_PIN_D1_A = TRI_HZNP;    // PIN_18 <- P08.RUJA
+  Tri _EXT_PIN_D2_A = TRI_HZNP;    // PIN_19 <- P08.RABY
+  Tri _EXT_PIN_D3_A = TRI_HZNP;    // PIN_20 <- P08.RERA
+  Tri _EXT_PIN_D4_A = TRI_HZNP;    // PIN_21 <- P08.RORY
+  Tri _EXT_PIN_D5_A = TRI_HZNP;    // PIN_22 <- P08.RYVO
+  Tri _EXT_PIN_D6_A = TRI_HZNP;    // PIN_23 <- P08.RAFY
+  Tri _EXT_PIN_D7_A = TRI_HZNP;    // PIN_24 <- P08.RAVU
 
-  Pin2 _EXT_PIN_D0_B = Pin2::HIZ_NP;    // PIN_17 <- P08.LULA
-  Pin2 _EXT_PIN_D1_B = Pin2::HIZ_NP;    // PIN_18 <- P08.LULA
-  Pin2 _EXT_PIN_D2_B = Pin2::HIZ_NP;    // PIN_19 <- P08.LULA
-  Pin2 _EXT_PIN_D3_B = Pin2::HIZ_NP;    // PIN_20 <- P08.LULA
-  Pin2 _EXT_PIN_D4_B = Pin2::HIZ_NP;    // PIN_21 <- P08.LULA
-  Pin2 _EXT_PIN_D5_B = Pin2::HIZ_NP;    // PIN_22 <- P08.LULA
-  Pin2 _EXT_PIN_D6_B = Pin2::HIZ_NP;    // PIN_23 <- P08.LULA
-  Pin2 _EXT_PIN_D7_B = Pin2::HIZ_NP;    // PIN_24 <- P08.LULA
+  Tri _EXT_PIN_D0_B = TRI_HZNP;    // PIN_17 <- P08.LULA
+  Tri _EXT_PIN_D1_B = TRI_HZNP;    // PIN_18 <- P08.LULA
+  Tri _EXT_PIN_D2_B = TRI_HZNP;    // PIN_19 <- P08.LULA
+  Tri _EXT_PIN_D3_B = TRI_HZNP;    // PIN_20 <- P08.LULA
+  Tri _EXT_PIN_D4_B = TRI_HZNP;    // PIN_21 <- P08.LULA
+  Tri _EXT_PIN_D5_B = TRI_HZNP;    // PIN_22 <- P08.LULA
+  Tri _EXT_PIN_D6_B = TRI_HZNP;    // PIN_23 <- P08.LULA
+  Tri _EXT_PIN_D7_B = TRI_HZNP;    // PIN_24 <- P08.LULA
 
-  Pin2 _EXT_PIN_D0_C = Pin2::HOLD_0;    // PIN_17 -> P08.TOVO,SOMA
-  Pin2 _EXT_PIN_D1_C = Pin2::HOLD_0;    // PIN_18 -> P08.RUZY,RONY
-  Pin2 _EXT_PIN_D2_C = Pin2::HOLD_0;    // PIN_19 -> P08.ROME,RAXY
-  Pin2 _EXT_PIN_D3_C = Pin2::HOLD_0;    // PIN_20 -> P08.SAZA,SELO
-  Pin2 _EXT_PIN_D4_C = Pin2::HOLD_0;    // PIN_21 -> P08.TEHE,SODY
-  Pin2 _EXT_PIN_D5_C = Pin2::HOLD_0;    // PIN_22 -> P08.RATU,SAGO
-  Pin2 _EXT_PIN_D6_C = Pin2::HOLD_0;    // PIN_23 -> P08.SOCA,RUPA
-  Pin2 _EXT_PIN_D7_C = Pin2::HOLD_0;    // PIN_24 -> P08.RYBA,SAZY
+  Tri _EXT_PIN_D0_C = TRI_D0NP;    // PIN_17 -> P08.TOVO,SOMA
+  Tri _EXT_PIN_D1_C = TRI_D0NP;    // PIN_18 -> P08.RUZY,RONY
+  Tri _EXT_PIN_D2_C = TRI_D0NP;    // PIN_19 -> P08.ROME,RAXY
+  Tri _EXT_PIN_D3_C = TRI_D0NP;    // PIN_20 -> P08.SAZA,SELO
+  Tri _EXT_PIN_D4_C = TRI_D0NP;    // PIN_21 -> P08.TEHE,SODY
+  Tri _EXT_PIN_D5_C = TRI_D0NP;    // PIN_22 -> P08.RATU,SAGO
+  Tri _EXT_PIN_D6_C = TRI_D0NP;    // PIN_23 -> P08.SOCA,RUPA
+  Tri _EXT_PIN_D7_C = TRI_D0NP;    // PIN_24 -> P08.RYBA,SAZY
 
-  Pin2 _EXT_PIN_D0_D = Pin2::HIZ_NP;    // PIN_17 <- P08.RUNE
-  Pin2 _EXT_PIN_D1_D = Pin2::HIZ_NP;    // PIN_18 <- P08.RYPU
-  Pin2 _EXT_PIN_D2_D = Pin2::HIZ_NP;    // PIN_19 <- P08.SULY
-  Pin2 _EXT_PIN_D3_D = Pin2::HIZ_NP;    // PIN_20 <- P08.SEZE
-  Pin2 _EXT_PIN_D4_D = Pin2::HIZ_NP;    // PIN_21 <- P08.RESY
-  Pin2 _EXT_PIN_D5_D = Pin2::HIZ_NP;    // PIN_22 <- P08.TAMU
-  Pin2 _EXT_PIN_D6_D = Pin2::HIZ_NP;    // PIN_23 <- P08.ROGY
-  Pin2 _EXT_PIN_D7_D = Pin2::HIZ_NP;    // PIN_24 <- P08.RYDA
+  Tri _EXT_PIN_D0_D = TRI_HZNP;    // PIN_17 <- P08.RUNE
+  Tri _EXT_PIN_D1_D = TRI_HZNP;    // PIN_18 <- P08.RYPU
+  Tri _EXT_PIN_D2_D = TRI_HZNP;    // PIN_19 <- P08.SULY
+  Tri _EXT_PIN_D3_D = TRI_HZNP;    // PIN_20 <- P08.SEZE
+  Tri _EXT_PIN_D4_D = TRI_HZNP;    // PIN_21 <- P08.RESY
+  Tri _EXT_PIN_D5_D = TRI_HZNP;    // PIN_22 <- P08.TAMU
+  Tri _EXT_PIN_D6_D = TRI_HZNP;    // PIN_23 <- P08.ROGY
+  Tri _EXT_PIN_D7_D = TRI_HZNP;    // PIN_24 <- P08.RYDA
 };
 
 //-----------------------------------------------------------------------------

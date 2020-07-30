@@ -42,16 +42,16 @@ struct SchematicTop {
   }
 
   // -> oam.WYJA, oam.WUKU, oam.GUKO, top.APAG
-  /*p28.AMAB*/ wire AMAB_OAM_LOCKn() const { 
-      /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
-      return AMAB_OAM_LOCKn;
+  /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp() const { 
+      /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and (cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
+      return AMAB_CPU_READ_OAMp;
   }
 
   //-----------------------------------------------------------------------------
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
-    /*p??.APAP*/ wire APAP_AVn = not(cpu_bus._CPU_PIN_AVp); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not(cpu_bus.CPU_PIN_ADDR_EXT); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not(AWOD_AVp);
     return ABUZ_AVn;
@@ -70,7 +70,7 @@ struct SchematicTop {
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus._EXT_PIN_RD_C, cpu_bus._CPU_PIN_RDp, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus._EXT_PIN_RD_C, cpu_bus.CPU_PIN_RDp, clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not(UJYV_CPU_RDn);
     return TEDO_CPU_RDp;
   }
@@ -82,37 +82,35 @@ struct SchematicTop {
     return ASOT_CPU_RDp;
   }
 
-  // oam.WUKU/GUKO, vram.TYVY
-  /*p28.LEKO*/ wire LEKO_CPU_RDp() const {
-    /*p04.DECY*/ wire DECY = not(cpu_bus._CPU_PIN_DVn);
-    /*p04.CATY*/ wire CATY = not(DECY);
-
-    // MYNU_01 << ASOT
-    // MYNU_02 << CATY
-    // MYNU_03 >> LEKO_01
-
-    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RDp(), CATY);
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
-    return LEKO_CPU_RDp;
-  }
-
   // vram.TUJA, top.UBAL/MEXO
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const {
-    /*p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand(cpu_bus._CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(_AREV_CPU_WRn_ABCDxxxH);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(AREV_CPU_WRn_ABCDxxxH);
     return APOV_CPU_WRp_xxxxEFGx;
   }
 
   // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
-    /*p07.UBAL*/ wire _UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus._EXT_PIN_WR_C, APOV_CPU_WRp_xxxxEFGx(), clk_reg.UNOR_MODE_DBG2p());
-    return not(_UBAL_CPU_WRn_ABCDxxxH);
+#if 0
+    TAPU_CPU_WRp_xxxxEFGx = and(CPU_PIN_WRp, xxxxEFGx);
+#endif
+
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(AREV_CPU_WRn_ABCDxxxH);
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus._EXT_PIN_WR_C, APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not(UBAL_CPU_WRn_ABCDxxxH);
+    return TAPU_CPU_WRp_xxxxEFGx;
   }
 
   // dma.lavy, lcd.xufa, oam.wyja, pxp.vely/xoma/myxe, ppu.waru/sepa, tile.bedy/arur, top.xuto, win.weko/wuza (most all the FF4X regs)
   /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const {
-    /*p07.DYKY*/ wire _DYKY_CPU_WRn_ABCDxxxH = not(TAPU_CPU_WRp_xxxxEFGx());
-    return not(_DYKY_CPU_WRn_ABCDxxxH);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not(AREV_CPU_WRn_ABCDxxxH);
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus._EXT_PIN_WR_C, APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not(UBAL_CPU_WRn_ABCDxxxH);
+    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not(TAPU_CPU_WRp_xxxxEFGx);
+    /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not(DYKY_CPU_WRn_ABCDxxxH);
+    return CUPA_CPU_WRp_xxxxEFGx;
   }
 
   // ext.NEVY

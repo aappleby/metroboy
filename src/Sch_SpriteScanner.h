@@ -23,7 +23,7 @@ struct SpriteScanner {
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not(_CARE_STORE_ENp_ABxxEFxx); }
 
   // -> top.ACYL
-  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }
+  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp; }
 
   // -> sprite store
   /*p29.AROR*/ wire AROR_MATCH_ENp() const { return and(AZEM_RENDERINGp(), _XYLO_LCDC_SPEN); }
@@ -68,44 +68,44 @@ private:
   //----------------------------------------
   // Signals
 
-  Sig2 _XYLO_LCDC_SPEN;
-  Sig2 _XYMU_RENDERINGp;
-  Sig2 _BALU_LINE_RSTp;
-  Sig2 _BAGY_LINE_RSTn;
+  Sig _XYLO_LCDC_SPEN;
+  Sig _XYMU_RENDERINGp;
+  Sig _BALU_LINE_RSTp;
+  Sig _BAGY_LINE_RSTn;
 
-  /*p29.ERUC*/ Sig2 _ERUC_YDIFF_S0;
-  /*p29.ERUC*/ Sig2 _ERUC_YDIFF_C0;
-  /*p29.ENEF*/ Sig2 _ENEF_YDIFF_S1;
-  /*p29.ENEF*/ Sig2 _ENEF_YDIFF_C1;
-  /*p29.FECO*/ Sig2 _FECO_YDIFF_S2;
-  /*p29.FECO*/ Sig2 _FECO_YDIFF_C2;
-  /*p29.GYKY*/ Sig2 _GYKY_YDIFF_S3;
-  /*p29.GYKY*/ Sig2 _GYKY_YDIFF_C3;
-  /*p29.GOPU*/ Sig2 _GOPU_YDIFF_S4;
-  /*p29.GOPU*/ Sig2 _GOPU_YDIFF_C4;
-  /*p29.FUWA*/ Sig2 _FUWA_YDIFF_S5;
-  /*p29.FUWA*/ Sig2 _FUWA_YDIFF_C5;
-  /*p29.GOJU*/ Sig2 _GOJU_YDIFF_S6;
-  /*p29.GOJU*/ Sig2 _GOJU_YDIFF_C6;
-  /*p29.WUHU*/ Sig2 _WUHU_YDIFF_S7;
-  /*p29.WUHU*/ Sig2 _WUHU_YDIFF_C7;
+  /*p29.ERUC*/ Sig _ERUC_YDIFF_S0;
+  /*p29.ERUC*/ Sig _ERUC_YDIFF_C0;
+  /*p29.ENEF*/ Sig _ENEF_YDIFF_S1;
+  /*p29.ENEF*/ Sig _ENEF_YDIFF_C1;
+  /*p29.FECO*/ Sig _FECO_YDIFF_S2;
+  /*p29.FECO*/ Sig _FECO_YDIFF_C2;
+  /*p29.GYKY*/ Sig _GYKY_YDIFF_S3;
+  /*p29.GYKY*/ Sig _GYKY_YDIFF_C3;
+  /*p29.GOPU*/ Sig _GOPU_YDIFF_S4;
+  /*p29.GOPU*/ Sig _GOPU_YDIFF_C4;
+  /*p29.FUWA*/ Sig _FUWA_YDIFF_S5;
+  /*p29.FUWA*/ Sig _FUWA_YDIFF_C5;
+  /*p29.GOJU*/ Sig _GOJU_YDIFF_S6;
+  /*p29.GOJU*/ Sig _GOJU_YDIFF_C6;
+  /*p29.WUHU*/ Sig _WUHU_YDIFF_S7;
+  /*p29.WUHU*/ Sig _WUHU_YDIFF_C7;
 
-  /*p29.CARE*/ Sig2 _CARE_STORE_ENp_ABxxEFxx; // to sprite store
+  /*p29.CARE*/ Sig _CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
   //----------------------------------------
   // States
 
-  /*p28.BESU*/ Pin2 _BESU_SCANNINGp = Pin2::LATCH_0;
-  /*p29.CENO*/ Reg2 _CENO_SCANNINGp = Reg2::D0C0;
+  /*p28.BESU*/ Tri _BESU_SCANNINGp = TRI_D0NP;
+  /*p29.CENO*/ Reg _CENO_SCANNINGp = REG_D0C0;
 
-  /*p28.YFEL*/ Reg2 _YFEL_SCAN0 = Reg2::D0C0;
-  /*p28.WEWY*/ Reg2 _WEWY_SCAN1 = Reg2::D0C0;
-  /*p28.GOSO*/ Reg2 _GOSO_SCAN2 = Reg2::D0C0;
-  /*p28.ELYN*/ Reg2 _ELYN_SCAN3 = Reg2::D0C0;
-  /*p28.FAHA*/ Reg2 _FAHA_SCAN4 = Reg2::D0C0;
-  /*p28.FONY*/ Reg2 _FONY_SCAN5 = Reg2::D0C0;
-  /*p29.BYBA*/ Reg2 _BYBA_SCAN_DONE_A = Reg2::D0C0;
-  /*p29.DOBA*/ Reg2 _DOBA_SCAN_DONE_B = Reg2::D0C0;
+  /*p28.YFEL*/ Reg _YFEL_SCAN0 = REG_D0C0;
+  /*p28.WEWY*/ Reg _WEWY_SCAN1 = REG_D0C0;
+  /*p28.GOSO*/ Reg _GOSO_SCAN2 = REG_D0C0;
+  /*p28.ELYN*/ Reg _ELYN_SCAN3 = REG_D0C0;
+  /*p28.FAHA*/ Reg _FAHA_SCAN4 = REG_D0C0;
+  /*p28.FONY*/ Reg _FONY_SCAN5 = REG_D0C0;
+  /*p29.BYBA*/ Reg _BYBA_SCAN_DONE_A = REG_D0C0;
+  /*p29.DOBA*/ Reg _DOBA_SCAN_DONE_B = REG_D0C0;
 };
 
 //-----------------------------------------------------------------------------

@@ -7,21 +7,21 @@
 //-----------------------------------------------------------------------------
 
 enum RegState : uint8_t {
-  REG_D0C0 = 0b0000, // 00: reg 0 + clock 0
-  REG_D1C0 = 0b0001, // 01: reg 1 + clock 0
-  REG_D0C1 = 0b0010, // 02: reg 0 + clock 1
-  REG_D1C1 = 0b0011, // 03: reg 1 + clock 1
+  REG_D0C0 = 0b0000, // 00: state 0 + clock 0
+  REG_D1C0 = 0b0001, // 01: state 1 + clock 0
+  REG_D0C1 = 0b0010, // 02: state 0 + clock 1
+  REG_D1C1 = 0b0011, // 03: state 1 + clock 1
   SIG_0000 = 0b0100, // 04: signal driven low
   SIG_1111 = 0b0101, // 05: signal driven high
-  PIN_D0PD = 0b0110, // 06: pin driven 0 + pull down
-  PIN_D1PD = 0b0111, // 07: pin driven 1 + pull down
-  PIN_D0PU = 0b1000, // 08: pin driven 0 + pull up
-  PIN_D1PU = 0b1001, // 09: pin driven 1 + pull up
-  PIN_D0NP = 0b1010, // 10: pin driven 0 + no pull
-  PIN_D1NP = 0b1011, // 11: pin driven 1 + no pull
-  PIN_HZPD = 0b1100, // 12: pin driven Z + pulled down
-  PIN_HZPU = 0b1101, // 13: pin driven Z + pulled up
-  PIN_HZNP = 0b1110, // 14: pin driven Z + floating
+  TRI_D0PD = 0b0110, // 06: pin driven 0 + pull down
+  TRI_D1PD = 0b0111, // 07: pin driven 1 + pull down
+  TRI_D0PU = 0b1000, // 08: pin driven 0 + pull up
+  TRI_D1PU = 0b1001, // 09: pin driven 1 + pull up
+  TRI_D0NP = 0b1010, // 10: pin driven 0 + no pull
+  TRI_D1NP = 0b1011, // 11: pin driven 1 + no pull
+  TRI_HZPD = 0b1100, // 12: pin driven Z + pull down
+  TRI_HZPU = 0b1101, // 13: pin driven Z + pull up
+  TRI_HZNP = 0b1110, // 14: pin driven Z + no pull
   ERR_XXXX = 0b1111, // 15: combined error state
 };
 
@@ -29,20 +29,20 @@ enum RegState : uint8_t {
 
 enum RegDelta : uint8_t {
   DELTA_NONE = 0b0000, // 00: delta not set yet
-  DELTA_HOLD = 0b0001, // 01: delta hold, do not change register when committed, sticky
-  DELTA_PASS = 0b0010, // 02: delta pass, do not change register when committed, not sticky
+  DELTA_TTTT = 0b0001, // 01: unused slot
+  DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches
   DELTA_SSSS = 0b0011, // 03: meaningless, free slot
-  DELTA_SIGZ = 0b0100, // 04: 
-  DELTA_SIG1 = 0b0101, // 05: 
-  DELTA_SIG0 = 0b0110, // 06: 
-  DELTA_SIGX = 0b0111, // 07: 
-  DELTA_D0C0 = 0b1000, // 08: delta 0 + clock 0
-  DELTA_D1C0 = 0b1001, // 09: delta 1 + clock 0
-  DELTA_D0C1 = 0b1010, // 10: delta 0 + clock 1
-  DELTA_D1C1 = 0b1011, // 11: delta 1 + clock 1
-  DELTA_A0C0 = 0b1100, // 12: async reset + clock 0
+  DELTA_TRIZ = 0b0100, // 04: 
+  DELTA_TRI1 = 0b0101, // 05: 
+  DELTA_TRI0 = 0b0110, // 06: 
+  DELTA_TRIX = 0b0111, // 07: 
+  DELTA_D0C0 = 0b1000, // 08: data 0    + clock 0
+  DELTA_D1C0 = 0b1001, // 09: data 1    + clock 0
+  DELTA_D0C1 = 0b1010, // 10: data 0    + clock 1
+  DELTA_D1C1 = 0b1011, // 11: data 1    + clock 1
+  DELTA_A0C0 = 0b1100, // 12: async rst + clock 0
   DELTA_A1C0 = 0b1101, // 13: async set + clock 0
-  DELTA_A0C1 = 0b1110, // 14: async reset + clock 1
+  DELTA_A0C1 = 0b1110, // 14: async rst + clock 1
   DELTA_A1C1 = 0b1111, // 15: async set + clock 1
 };
 
@@ -71,31 +71,27 @@ inline void combine_hash(uint64_t& a, uint64_t b) {
 
 constexpr uint64_t HASH_INIT = 0x12345678;
 
+inline uint8_t commit(uint8_t s1) {
+  if ((s1 & 0x0F) == ERR_XXXX) {
+    __debugbreak();
+  }
+
+  uint8_t s2 = logic_lut1[s1];
+
+  if ((s2 & 0x0F) == ERR_XXXX) {
+    __debugbreak();
+  }
+  return s2;
+}
+
 inline void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
   uint64_t h = hash_regs;
 
   uint8_t* base = (uint8_t*)blob;
 
   for (int i = 0; i < size; i++) {
-    uint8_t s1 = base[i];
-
-    if ((s1 & 0x0F) == ERR_XXXX) {
-      __debugbreak();
-    }
-
-    uint8_t s2 = logic_lut1[s1];
-
-    if ((s2 & 0x0F) == ERR_XXXX) {
-      __debugbreak();
-    }
-
-    if ((s1 & 0x0F) != (s2 & 0x0F)) {
-      int x = 1;
-      x++;
-    }
-
+    uint8_t s2 = commit(base[i]);
     combine_hash(h, s2 & 0x0F);
-
     base[i] = s2;
   }
 
@@ -120,243 +116,160 @@ inline uint64_t hash_obj(T const& obj) {
 
 //-----------------------------------------------------------------------------
 
-struct RegBase2 {
-  RegBase2() = delete;
-  RegBase2& operator=(const RegBase2&) = delete;
-  RegBase2(RegState r, RegDelta d) : reg(r), delta(d) {}
+#pragma warning(push)
+#pragma warning(disable:4201)
+
+struct RegBase {
+  RegBase() = delete;
+  RegBase& operator=(const RegBase&) = delete;
+  RegBase(RegState s) : state(s), delta(DELTA_NONE) {}
 
   char c() const {
-    switch(reg) {
+    switch(state) {
       case REG_D0C0: return '0';
       case REG_D1C0: return '1';
       case REG_D0C1: return '0';
       case REG_D1C1: return '1';
       case SIG_0000: return '0';
       case SIG_1111: return '1';
-      case PIN_D0PD: return '0';
-      case PIN_D1PD: return '1';
-      case PIN_D0PU: return '0';
-      case PIN_D1PU: return '1';
-      case PIN_D0NP: return '0';
-      case PIN_D1NP: return '1';
-      case PIN_HZPD: return 'v';
-      case PIN_HZPU: return '^';
-      case PIN_HZNP: return 'Z';
+      case TRI_D0PD: return '0';
+      case TRI_D1PD: return '1';
+      case TRI_D0PU: return '0';
+      case TRI_D1PU: return '1';
+      case TRI_D0NP: return '0';
+      case TRI_D1NP: return '1';
+      case TRI_HZPD: return 'v';
+      case TRI_HZPU: return '^';
+      case TRI_HZNP: return 'Z';
       default:       return 'E';
     }
   }
 
   char cn() const {
-    switch(reg) {
+    switch(state) {
       case REG_D0C0: return '1';
       case REG_D1C0: return '0';
       case REG_D0C1: return '1';
       case REG_D1C1: return '0';
       case SIG_0000: return '1';
       case SIG_1111: return '0';
-      case PIN_D0PD: return '1';
-      case PIN_D1PD: return '0';
-      case PIN_D0PU: return '1';
-      case PIN_D1PU: return '0';
-      case PIN_D0NP: return '1';
-      case PIN_D1NP: return '0';
-      case PIN_HZPD: return '^';
-      case PIN_HZPU: return 'v';
-      case PIN_HZNP: return 'Z';
+      case TRI_D0PD: return '1';
+      case TRI_D1PD: return '0';
+      case TRI_D0PU: return '1';
+      case TRI_D1PU: return '0';
+      case TRI_D0NP: return '1';
+      case TRI_D1NP: return '0';
+      case TRI_HZPD: return '^';
+      case TRI_HZPU: return 'v';
+      case TRI_HZNP: return 'Z';
       default:       return 'E';
     }
   }
 
-  inline bool is_reg()    const { return (reg >= REG_D0C0) && (reg <= REG_D1C1); }
-  inline bool is_sig()    const { return (reg >= SIG_0000) && (reg <= SIG_1111); }
-  inline bool is_pin()    const { return (reg >= PIN_D0PD) && (reg <= PIN_HZNP); }
-  inline bool is_held()   const { return delta == DELTA_HOLD; }
+  inline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_D1C1); }
+  inline bool is_sig()    const { return (state >= SIG_0000) && (state <= SIG_1111); }
+  inline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
   inline bool has_delta() const { return delta != DELTA_NONE; }
+  inline wire as_wire()   const { /*CHECKn(has_delta());*/ return wire(state & 1); }
 
-  uint8_t reg : 4;
-  uint8_t delta : 4;
+  union {
+    struct {
+      RegState state : 4;
+      RegDelta delta : 4;
+    };
+    uint8_t value;
+  };
 };
+
+#pragma warning(pop)
 
 //-----------------------------------------------------------------------------
 
-struct Reg2 : public RegBase2 {
-  Reg2(RegState r, RegDelta d) : RegBase2(r, d) {
-    CHECK_P(is_reg());
-    CHECK_P(delta == DELTA_NONE);
-  }
+struct Reg : private RegBase {
+  Reg(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
 
-  static const Reg2 D0C0;
-  static const Reg2 D1C0;
-  static const Reg2 D0C1;
-  static const Reg2 D1C1;
+  using RegBase::c;
 
-  inline wire clk() {
-    return wire(reg & 2);
-  }
-
-  inline void set_delta(bool CLKp, bool D) {
-    CHECK_N(has_delta());
-    delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-  }
-
-  inline void hold(bool CLK, bool D) {
-    CHECK_P(is_reg());
-
-    reg = RegState(REG_D0C0 | (CLK << 1) | (D << 0));
-    delta = DELTA_HOLD;
-  }
-
-  inline void hold_d(bool D) {
-    CHECK_P(is_reg());
-
-    reg = RegState((reg & 0b1110) | int(D));
-    delta = DELTA_HOLD;
-  }
-
-  inline void hold_clk(bool clk) {
-    CHECK_P(is_reg());
-
-    reg = RegState((reg & 0b1101) | (clk << 1));
-    delta = DELTA_HOLD;
-  }
-
-  inline void release() {
-    CHECK_P(is_reg());
-    if (delta == DELTA_HOLD) delta = DELTA_NONE;
-  }
-
-  inline void preset_a(bool a) {
-    reg = RegState((reg & 0b1110) | uint8_t(a));
-  }
-
-  inline wire q() const {
-    CHECK_P(is_reg());
-    //CHECKn(has_delta()); // read-after-write
-    return wire(reg & 1);
-  }
-
-  inline wire qn() const {
-    CHECK_P(is_reg());
-    //CHECKn(has_delta()); // read-after-write
-    return !wire(reg & 1);
-  }
-
-  inline wire as_wire() const  {
-    CHECK_P(is_reg());
-    //CHECKn(has_delta()); // read-after-write
-    return wire(reg & 1);
-  }
+  inline wire q()  const { return  as_wire(); }
+  inline wire qn() const { return !as_wire(); }
+  inline wire clk() const { return wire(state & 0x02); }
 
   inline void operator = (RegDelta d) {
-    CHECK_P(is_reg()); // must be reg state
+    CHECK_P(is_reg()); // must be state state
     CHECK_N(d == DELTA_NONE); // must not be invalid sig
-    CHECK_N(has_delta());     // reg must not already be driven
+    CHECK_N(has_delta());     // state must not already be driven
     delta = d;
   }
 };
 
 //-----------------------------------------------------------------------------
 
-struct Pin2 : public RegBase2 {
-  Pin2(RegState r, RegDelta d) : RegBase2(r, d) {
-    CHECK_P(is_pin());
-    CHECK_P((d == DELTA_NONE) || (d == DELTA_HOLD));
-  }
-  
-  static const Pin2 HIZ_NP;
-  static const Pin2 HIZ_PU;
-  static const Pin2 HIZ_PD;
+struct Sig : private RegBase {
+  Sig() : RegBase(SIG_0000) {}
 
-  static const Pin2 HOLD_0;
-  static const Pin2 HOLD_1;
-  static const Pin2 HOLD_Z;
-
-  static const Pin2 LATCH_0;
-  static const Pin2 LATCH_1;
-
-  inline operator wire()  const { return as_wire(); }
-  inline wire q()         const { return as_wire(); }
-  inline wire qn()        const { return !as_wire(); }
-
-  inline void hold(bool D) {
-    CHECK_P(is_pin());
-    CHECK_P(is_held() || !has_delta());
-
-    if ((reg == PIN_D0PD) || (reg == PIN_D1PD) || (reg == PIN_HZPD)) reg = D ? PIN_D1PD : PIN_D0PD;
-    if ((reg == PIN_D0PU) || (reg == PIN_D1PU) || (reg == PIN_HZPU)) reg = D ? PIN_D1PU : PIN_D0PU;
-    if ((reg == PIN_D0NP) || (reg == PIN_D1NP) || (reg == PIN_HZNP)) reg = D ? PIN_D1NP : PIN_D0NP;
-    delta = DELTA_HOLD;
-  }
-
-  inline void hold_z() {
-    CHECK_P(is_pin());
-    CHECK_P(is_held() || !has_delta());
-
-    if ((reg == PIN_D0PD) || (reg == PIN_D1PD) || (reg == PIN_HZPD)) reg = PIN_HZPD;
-    if ((reg == PIN_D0PU) || (reg == PIN_D1PU) || (reg == PIN_HZPU)) reg = PIN_HZPU;
-    if ((reg == PIN_D0NP) || (reg == PIN_D1NP) || (reg == PIN_HZNP)) reg = PIN_HZNP;
-    delta = DELTA_HOLD;
-  }
-
-  inline void release() {
-    CHECK_P(is_pin());
-    //CHECK_P(is_held());
-    delta = DELTA_NONE;
-  }
-
-  inline void pass() {
-    CHECK_P(is_pin());
-    //CHECK_P(is_held());
-    delta = DELTA_PASS;
-  }
-
-  inline wire as_wire() const  {
-    CHECK_P(is_pin());
-    return wire(reg & 1);
-  }
-
-  inline void operator = (wire w) {
-    CHECK_P(is_pin());
-    CHECK_P(!has_delta());
-    delta = w ? DELTA_SIG1 : DELTA_SIG0;
-  }
-
-  inline void operator = (Pin2& p) {
-    (*this) = (wire)p;
-  }
-
-  inline void operator = (RegDelta D) {
-    CHECK_P(is_pin());
-    CHECK_P((delta == DELTA_NONE) || (delta == DELTA_SIGZ) || (D == DELTA_SIGZ));
-    CHECK_P(D == DELTA_SIGZ || D == DELTA_SIG0 || D == DELTA_SIG1 || D == DELTA_PASS);
-    delta = RegDelta(delta | D);
-  }
-};
-
-//-----------------------------------------------------------------------------
-
-struct Sig2 : public RegBase2 {
-  Sig2() : RegBase2(SIG_0000, DELTA_NONE) {}
+  using RegBase::c;
   
   inline operator wire() const {
     CHECK_P(is_sig());
     CHECK_P(has_delta());
-    return wire(reg & 1);
+    return wire(state & 1);
   }
 
   inline void operator = (wire s) {
     CHECK_P(is_sig());
     CHECK_N(has_delta());
 
-    reg = RegState(SIG_0000 | int(s));
-    delta = s ? DELTA_SIG1 : DELTA_SIG0;
+    state = RegState(SIG_0000 | int(s));
+    delta = s ? DELTA_TRI1 : DELTA_TRI0;
   }
 };
 
 //-----------------------------------------------------------------------------
 
-static_assert(sizeof(Reg2) == 1, "Reg2 size != 1");
-static_assert(sizeof(Pin2) == 1, "Pin2 size != 1");
-static_assert(sizeof(Sig2) == 1, "Sig2 size != 1");
+struct Tri : private RegBase {
+  Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+
+  using RegBase::c;
+
+  inline operator wire()  const { return as_wire(); }
+  inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
+
+  inline void preset(RegDelta d) {
+    CHECK_P(is_tri());
+    CHECK_P(delta == DELTA_NONE);
+    delta = d;
+    value = logic_lut1[value];
+    delta = d;
+    CHECK_P(is_tri());
+  }
+
+  inline void preset(wire d) {
+    preset(d ? DELTA_TRI1 : DELTA_TRI0);
+  }
+
+  inline void operator = (RegDelta d) {
+    CHECK_P(is_tri());
+
+    if (delta == DELTA_NONE) {
+      delta = d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
+      delta = d;
+    }
+    else {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+static_assert(sizeof(Reg) == 1, "Reg size != 1");
+static_assert(sizeof(Sig) == 1, "Sig size != 1");
+static_assert(sizeof(Tri) == 1, "Tri size != 1");
 
 //-----------------------------------------------------------------------------

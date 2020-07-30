@@ -100,13 +100,13 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 inline RegDelta tribuf(wire OEp, wire D) {
 #if 0
-  return RegDelta(DELTA_SIGZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
+  return RegDelta(DELTA_TRIZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
 #else
   if (OEp) {
-    return D ? DELTA_SIG1 : DELTA_SIG0;
+    return D ? DELTA_TRI1 : DELTA_TRI0;
   }
   else {
-    return DELTA_SIGZ;
+    return DELTA_TRIZ;
   }
 #endif
 }
@@ -126,14 +126,14 @@ inline RegDelta tribuf(wire OEp, wire D) {
 
 inline RegDelta tribuf_6p(wire OEp, wire D) {
 #if 0
-  return RegDelta(DELTA_SIGZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
+  return RegDelta(DELTA_TRIZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
 #else
   if (OEp) {
-    //return D ? DELTA_SIG1 : DELTA_SIG0;
-    return D ? DELTA_SIG0 : DELTA_SIG1;
+    //return D ? DELTA_TRI1 : DELTA_TRI0;
+    return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
-    return DELTA_SIGZ;
+    return DELTA_TRIZ;
   }
 #endif
 }
@@ -141,28 +141,44 @@ inline RegDelta tribuf_6p(wire OEp, wire D) {
 // top rung tadpole not facing second rung dot
 inline RegDelta tribuf_6n(wire OEn, wire D) {
 #if 0
-  return RegDelta(DELTA_SIGZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
+  return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
 #else
   if (!OEn) {
-    //return D ? DELTA_SIG1 : DELTA_SIG0;
-    return D ? DELTA_SIG0 : DELTA_SIG1;
+    //return D ? DELTA_TRI1 : DELTA_TRI0;
+    return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
-    return DELTA_SIGZ;
+    return DELTA_TRIZ;
   }
 #endif
 }
 
 inline RegDelta tribuf_10n(wire OEn, wire D) {
 #if 0
-  return RegDelta(DELTA_SIGZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
+  return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
 #else
   if (!OEn) {
-    //return D ? DELTA_SIG1 : DELTA_SIG0;
-    return D ? DELTA_SIG0 : DELTA_SIG1;
+    //return D ? DELTA_TRI1 : DELTA_TRI0;
+    return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
-    return DELTA_SIGZ;
+    return DELTA_TRIZ;
+  }
+#endif
+}
+
+//-----------------------------------------------------------------------------
+// Generic DFF
+
+inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return RegDelta(DELTA_A0C0 | (CLKp << 1));
+  }
+  else {
+    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
 #endif
 }
@@ -255,17 +271,17 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 }
 
 //-----------------------------------------------------------------------------
-// Reg11 is used by the background pixel temp reg
+// Reg11 is used by the background pixel temp state
 // Not sure why it's special. Could be dual-edge.
 
-///*p32.RAWU*/ top.RAWU_TILE_DB0.set(LABU_LATCH_TILE_DBp, top.VYPO_GND, top.vram_bus.VRM_TRI_D0);
+///*p32.RAWU*/ top.RAWU_TILE_DB0.set(LABU_LATCH_TILE_DBp, top.VYPO_GND, top.vram_bus.VRM_BUS_D0);
 
 // wire LUVE_MATCH_TILE_DBn = not(LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
 // wire LABU_LATCH_TILE_DBp = not(LUVE_MATCH_TILE_DBn);
 
 // RAWU_01 nc
 // RAWU_02 << VYPO_02 (RSTp?)
-// RAWU_03 << VRM_TRI_D0
+// RAWU_03 << VRM_BUS_D0
 // RAWU_04 nc
 // RAWU_05 << LABU_03 (CLKp?)
 // RAWU_06 nc
@@ -379,7 +395,7 @@ inline RegDelta dff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // set and reset must be async (see interrupts)
 // reset must take priority over set (see interrupts ALUR_RSTn)
 
-// This reg is really 3 pieces - clock edge detector, latch, and output buffer.
+// This state is really 3 pieces - clock edge detector, latch, and output buffer.
 
 // REG17_01 == REG17_12
 // REG17_02 << CLKp
@@ -502,13 +518,13 @@ inline RegDelta nor_latch(wire SETp, wire RSTp) {
   return RegDelta((b2 << 2) | (b1 << 1) | (b0 << 0));
 #else
   if (RSTp) {
-    return DELTA_SIG0;
+    return DELTA_TRI0;
   }
   else if (SETp) {
-    return DELTA_SIG1;
+    return DELTA_TRI1;
   }
   else {
-    return DELTA_PASS;
+    return DELTA_HOLD;
   }
 #endif
 }
@@ -533,13 +549,13 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
   return RegDelta((b2 << 2) | (b1 << 1) | (b0 << 0));
 #else
   if (!RSTn) {
-    return DELTA_SIG0;
+    return DELTA_TRI0;
   }
   else if (!SETn) {
-    return DELTA_SIG1;
+    return DELTA_TRI1;
   }
   else {
-    return DELTA_PASS;
+    return DELTA_HOLD;
   }
 #endif
 }
@@ -609,20 +625,13 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // WYNO_09 NC
 // WYNO_10 >> XUNA_01
 
-inline RegDelta  tp_latch(wire LATCHp, wire D) {
-#if 0
-  bool b2 = LATCHp;
-  bool b1 = !LATCHp || !D;
-  bool b0 = LATCHp && D;
-  return RegDelta((b2 << 2) | (b1 << 1) | (b0 << 0));
-#else
-  if (LATCHp) {
-    return D ? DELTA_SIG1 : DELTA_SIG0;
+inline RegDelta  tp_latch(wire LATCHn, wire D) {
+  if (!LATCHn) {
+    return DELTA_HOLD;
   }
   else {
-    return DELTA_PASS;
+    return D ? DELTA_TRI1 : DELTA_TRI0;
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------

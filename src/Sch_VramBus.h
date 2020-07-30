@@ -37,26 +37,26 @@ struct VramBus {
                          !_VRAM_PIN_D4_A, !_VRAM_PIN_D5_A, !_VRAM_PIN_D6_A, !_VRAM_PIN_D7_A);
   }
 
-  void hold_pin_data_in(uint8_t data) {
-    _VRAM_PIN_D0_C.hold(!(data & 0x01));
-    _VRAM_PIN_D1_C.hold(!(data & 0x02));
-    _VRAM_PIN_D2_C.hold(!(data & 0x04));
-    _VRAM_PIN_D3_C.hold(!(data & 0x08));
-    _VRAM_PIN_D4_C.hold(!(data & 0x10));
-    _VRAM_PIN_D5_C.hold(!(data & 0x20));
-    _VRAM_PIN_D6_C.hold(!(data & 0x40));
-    _VRAM_PIN_D7_C.hold(!(data & 0x80));
+  void preset_pin_data_in(uint8_t data) {
+    _VRAM_PIN_D0_C.preset(!(data & 0x01));
+    _VRAM_PIN_D1_C.preset(!(data & 0x02));
+    _VRAM_PIN_D2_C.preset(!(data & 0x04));
+    _VRAM_PIN_D3_C.preset(!(data & 0x08));
+    _VRAM_PIN_D4_C.preset(!(data & 0x10));
+    _VRAM_PIN_D5_C.preset(!(data & 0x20));
+    _VRAM_PIN_D6_C.preset(!(data & 0x40));
+    _VRAM_PIN_D7_C.preset(!(data & 0x80));
   }
 
-  void hold_pin_data_z() {
-    _VRAM_PIN_D0_C.hold_z();
-    _VRAM_PIN_D1_C.hold_z();
-    _VRAM_PIN_D2_C.hold_z();
-    _VRAM_PIN_D3_C.hold_z();
-    _VRAM_PIN_D4_C.hold_z();
-    _VRAM_PIN_D5_C.hold_z();
-    _VRAM_PIN_D6_C.hold_z();
-    _VRAM_PIN_D7_C.hold_z();
+  void preset_pin_data_z() {
+    _VRAM_PIN_D0_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D1_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D2_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D3_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D4_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D5_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D6_C.preset(DELTA_TRIZ);
+    _VRAM_PIN_D7_C.preset(DELTA_TRIZ);
   }
 
   //----------------------------------------
@@ -117,142 +117,142 @@ struct VramBus {
   //----------------------------------------
 
   // -> oam data tri
-  /*p25.RERY*/ wire VRM_TRI_D0() const { return _VRAM_BUS_D0.q(); }
-  /*p25.RUNA*/ wire VRM_TRI_D1() const { return _VRAM_BUS_D1.q(); }
-  /*p25.RONA*/ wire VRM_TRI_D2() const { return _VRAM_BUS_D2.q(); }
-  /*p25.RUNO*/ wire VRM_TRI_D3() const { return _VRAM_BUS_D3.q(); }
-  /*p25.SANA*/ wire VRM_TRI_D4() const { return _VRAM_BUS_D4.q(); }
-  /*p25.RORO*/ wire VRM_TRI_D5() const { return _VRAM_BUS_D5.q(); }
-  /*p25.RABO*/ wire VRM_TRI_D6() const { return _VRAM_BUS_D6.q(); }
-  /*p25.SAME*/ wire VRM_TRI_D7() const { return _VRAM_BUS_D7.q(); }
+  /*p25.RERY*/ wire VRM_BUS_D0() const { return _VRAM_BUS_D0; }
+  /*p25.RUNA*/ wire VRM_BUS_D1() const { return _VRAM_BUS_D1; }
+  /*p25.RONA*/ wire VRM_BUS_D2() const { return _VRAM_BUS_D2; }
+  /*p25.RUNO*/ wire VRM_BUS_D3() const { return _VRAM_BUS_D3; }
+  /*p25.SANA*/ wire VRM_BUS_D4() const { return _VRAM_BUS_D4; }
+  /*p25.RORO*/ wire VRM_BUS_D5() const { return _VRAM_BUS_D5; }
+  /*p25.RABO*/ wire VRM_BUS_D6() const { return _VRAM_BUS_D6; }
+  /*p25.SAME*/ wire VRM_BUS_D7() const { return _VRAM_BUS_D7; }
 
-  /*p32.LEGU*/ Reg2 LEGU_TILE_DA0 = Reg2::D0C0;
-  /*p32.NUDU*/ Reg2 NUDU_TILE_DA1 = Reg2::D0C0;
-  /*p32.MUKU*/ Reg2 MUKU_TILE_DA2 = Reg2::D0C0;
-  /*p32.LUZO*/ Reg2 LUZO_TILE_DA3 = Reg2::D0C0;
-  /*p32.MEGU*/ Reg2 MEGU_TILE_DA4 = Reg2::D0C0;
-  /*p32.MYJY*/ Reg2 MYJY_TILE_DA5 = Reg2::D0C0;
-  /*p32.NASA*/ Reg2 NASA_TILE_DA6 = Reg2::D0C0;
-  /*p32.NEFO*/ Reg2 NEFO_TILE_DA7 = Reg2::D0C0; // color wrong on die
+  /*p32.LEGU*/ Reg LEGU_TILE_DA0 = REG_D0C0;
+  /*p32.NUDU*/ Reg NUDU_TILE_DA1 = REG_D0C0;
+  /*p32.MUKU*/ Reg MUKU_TILE_DA2 = REG_D0C0;
+  /*p32.LUZO*/ Reg LUZO_TILE_DA3 = REG_D0C0;
+  /*p32.MEGU*/ Reg MEGU_TILE_DA4 = REG_D0C0;
+  /*p32.MYJY*/ Reg MYJY_TILE_DA5 = REG_D0C0;
+  /*p32.NASA*/ Reg NASA_TILE_DA6 = REG_D0C0;
+  /*p32.NEFO*/ Reg NEFO_TILE_DA7 = REG_D0C0; // color wrong on die
 
-  /*p32.RAWU*/ Reg2 RAWU_TILE_DB0 = Reg2::D0C0; // also holds tile index during fetch
-  /*p32.POZO*/ Reg2 POZO_TILE_DB1 = Reg2::D0C0;
-  /*p32.PYZO*/ Reg2 PYZO_TILE_DB2 = Reg2::D0C0; 
-  /*p32.POXA*/ Reg2 POXA_TILE_DB3 = Reg2::D0C0; 
-  /*p32.PULO*/ Reg2 PULO_TILE_DB4 = Reg2::D0C0; 
-  /*p32.POJU*/ Reg2 POJU_TILE_DB5 = Reg2::D0C0; 
-  /*p32.POWY*/ Reg2 POWY_TILE_DB6 = Reg2::D0C0; 
-  /*p32.PYJU*/ Reg2 PYJU_TILE_DB7 = Reg2::D0C0;
+  /*p32.RAWU*/ Reg RAWU_TILE_DB0 = REG_D0C0; // also holds tile index during fetch
+  /*p32.POZO*/ Reg POZO_TILE_DB1 = REG_D0C0;
+  /*p32.PYZO*/ Reg PYZO_TILE_DB2 = REG_D0C0; 
+  /*p32.POXA*/ Reg POXA_TILE_DB3 = REG_D0C0; 
+  /*p32.PULO*/ Reg PULO_TILE_DB4 = REG_D0C0; 
+  /*p32.POJU*/ Reg POJU_TILE_DB5 = REG_D0C0; 
+  /*p32.POWY*/ Reg POWY_TILE_DB6 = REG_D0C0; 
+  /*p32.PYJU*/ Reg PYJU_TILE_DB7 = REG_D0C0;
 
-  /*p33.PEFO*/ Reg2 PEFO_SPRITE_DA0 = Reg2::D0C0;
-  /*p33.ROKA*/ Reg2 ROKA_SPRITE_DA1 = Reg2::D0C0;
-  /*p33.MYTU*/ Reg2 MYTU_SPRITE_DA2 = Reg2::D0C0;
-  /*p33.RAMU*/ Reg2 RAMU_SPRITE_DA3 = Reg2::D0C0;
-  /*p33.SELE*/ Reg2 SELE_SPRITE_DA4 = Reg2::D0C0;
-  /*p33.SUTO*/ Reg2 SUTO_SPRITE_DA5 = Reg2::D0C0;
-  /*p33.RAMA*/ Reg2 RAMA_SPRITE_DA6 = Reg2::D0C0;
-  /*p33.RYDU*/ Reg2 RYDU_SPRITE_DA7 = Reg2::D0C0;
+  /*p33.PEFO*/ Reg PEFO_SPRITE_DA0 = REG_D0C0;
+  /*p33.ROKA*/ Reg ROKA_SPRITE_DA1 = REG_D0C0;
+  /*p33.MYTU*/ Reg MYTU_SPRITE_DA2 = REG_D0C0;
+  /*p33.RAMU*/ Reg RAMU_SPRITE_DA3 = REG_D0C0;
+  /*p33.SELE*/ Reg SELE_SPRITE_DA4 = REG_D0C0;
+  /*p33.SUTO*/ Reg SUTO_SPRITE_DA5 = REG_D0C0;
+  /*p33.RAMA*/ Reg RAMA_SPRITE_DA6 = REG_D0C0;
+  /*p33.RYDU*/ Reg RYDU_SPRITE_DA7 = REG_D0C0;
 
-  /*p33.REWO*/ Reg2 REWO_SPRITE_DB0 = Reg2::D0C0;
-  /*p33.PEBA*/ Reg2 PEBA_SPRITE_DB1 = Reg2::D0C0;
-  /*p33.MOFO*/ Reg2 MOFO_SPRITE_DB2 = Reg2::D0C0;
-  /*p33.PUDU*/ Reg2 PUDU_SPRITE_DB3 = Reg2::D0C0;
-  /*p33.SAJA*/ Reg2 SAJA_SPRITE_DB4 = Reg2::D0C0;
-  /*p33.SUNY*/ Reg2 SUNY_SPRITE_DB5 = Reg2::D0C0;
-  /*p33.SEMO*/ Reg2 SEMO_SPRITE_DB6 = Reg2::D0C0;
-  /*p33.SEGA*/ Reg2 SEGA_SPRITE_DB7 = Reg2::D0C0;
+  /*p33.REWO*/ Reg REWO_SPRITE_DB0 = REG_D0C0;
+  /*p33.PEBA*/ Reg PEBA_SPRITE_DB1 = REG_D0C0;
+  /*p33.MOFO*/ Reg MOFO_SPRITE_DB2 = REG_D0C0;
+  /*p33.PUDU*/ Reg PUDU_SPRITE_DB3 = REG_D0C0;
+  /*p33.SAJA*/ Reg SAJA_SPRITE_DB4 = REG_D0C0;
+  /*p33.SUNY*/ Reg SUNY_SPRITE_DB5 = REG_D0C0;
+  /*p33.SEMO*/ Reg SEMO_SPRITE_DB6 = REG_D0C0;
+  /*p33.SEGA*/ Reg SEGA_SPRITE_DB7 = REG_D0C0;
 
   //----------------------------------------
 
 //private:
 
-  Pin2 _VRAM_BUS_D0 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D1 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D2 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D3 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D4 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D5 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D6 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_D7 = Pin2::HIZ_NP;
+  Tri _VRAM_BUS_D0 = TRI_HZNP;
+  Tri _VRAM_BUS_D1 = TRI_HZNP;
+  Tri _VRAM_BUS_D2 = TRI_HZNP;
+  Tri _VRAM_BUS_D3 = TRI_HZNP;
+  Tri _VRAM_BUS_D4 = TRI_HZNP;
+  Tri _VRAM_BUS_D5 = TRI_HZNP;
+  Tri _VRAM_BUS_D6 = TRI_HZNP;
+  Tri _VRAM_BUS_D7 = TRI_HZNP;
 
-  Pin2 _VRAM_BUS_A00 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A01 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A02 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A03 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A04 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A05 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A06 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A07 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A08 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A09 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A10 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A11 = Pin2::HIZ_NP;
-  Pin2 _VRAM_BUS_A12 = Pin2::HIZ_NP;
+  Tri _VRAM_BUS_A00 = TRI_HZNP;
+  Tri _VRAM_BUS_A01 = TRI_HZNP;
+  Tri _VRAM_BUS_A02 = TRI_HZNP;
+  Tri _VRAM_BUS_A03 = TRI_HZNP;
+  Tri _VRAM_BUS_A04 = TRI_HZNP;
+  Tri _VRAM_BUS_A05 = TRI_HZNP;
+  Tri _VRAM_BUS_A06 = TRI_HZNP;
+  Tri _VRAM_BUS_A07 = TRI_HZNP;
+  Tri _VRAM_BUS_A08 = TRI_HZNP;
+  Tri _VRAM_BUS_A09 = TRI_HZNP;
+  Tri _VRAM_BUS_A10 = TRI_HZNP;
+  Tri _VRAM_BUS_A11 = TRI_HZNP;
+  Tri _VRAM_BUS_A12 = TRI_HZNP;
 
   //-----------------------------------------------------------------------------
   // VRAM bus
 
-  Pin2 _VRAM_PIN_CS_A = Pin2::HIZ_NP;   // PIN_43 <- P25.SOKY
-  Pin2 _VRAM_PIN_CS_C = Pin2::HIZ_NP;   // PIN_43 -> P25.TEFY
-  Pin2 _VRAM_PIN_CS_D = Pin2::HIZ_NP;   // PIN_43 <- P25.SETY
+  Tri _VRAM_PIN_CS_A = TRI_HZNP;   // PIN_43 <- P25.SOKY
+  Tri _VRAM_PIN_CS_C = TRI_HZNP;   // PIN_43 -> P25.TEFY
+  Tri _VRAM_PIN_CS_D = TRI_HZNP;   // PIN_43 <- P25.SETY
 
-  Pin2 _VRAM_PIN_OE_A = Pin2::HIZ_NP;   // PIN_45 <- P25.REFO
-  Pin2 _VRAM_PIN_OE_C = Pin2::HIZ_NP;   // PIN_45 -> P25.TAVY
-  Pin2 _VRAM_PIN_OE_D = Pin2::HIZ_NP;   // PIN_45 <- P25.SAHA
+  Tri _VRAM_PIN_OE_A = TRI_HZNP;   // PIN_45 <- P25.REFO
+  Tri _VRAM_PIN_OE_C = TRI_HZNP;   // PIN_45 -> P25.TAVY
+  Tri _VRAM_PIN_OE_D = TRI_HZNP;   // PIN_45 <- P25.SAHA
 
-  Pin2 _VRAM_PIN_WR_A = Pin2::HIZ_NP;   // PIN_49 <- P25.SYSY
-  Pin2 _VRAM_PIN_WR_C = Pin2::HIZ_NP;   // PIN_49 -> P25.SUDO
-  Pin2 _VRAM_PIN_WR_D = Pin2::HIZ_NP;   // PIN_49 <- P25.RAGU
+  Tri _VRAM_PIN_WR_A = TRI_HZNP;   // PIN_49 <- P25.SYSY
+  Tri _VRAM_PIN_WR_C = TRI_HZNP;   // PIN_49 -> P25.SUDO
+  Tri _VRAM_PIN_WR_D = TRI_HZNP;   // PIN_49 <- P25.RAGU
 
-  Pin2 _VRAM_PIN_A00  = Pin2::HIZ_NP;  // PIN_34 <- P04.ECAL
-  Pin2 _VRAM_PIN_A01  = Pin2::HIZ_NP;  // PIN_35 <- P04.EGEZ
-  Pin2 _VRAM_PIN_A02  = Pin2::HIZ_NP;  // PIN_36 <- P04.FUHE
-  Pin2 _VRAM_PIN_A03  = Pin2::HIZ_NP;  // PIN_37 <- P04.FYZY
-  Pin2 _VRAM_PIN_A04  = Pin2::HIZ_NP;  // PIN_38 <- P04.DAMU
-  Pin2 _VRAM_PIN_A05  = Pin2::HIZ_NP;  // PIN_39 <- P04.DAVA
-  Pin2 _VRAM_PIN_A06  = Pin2::HIZ_NP;  // PIN_40 <- P04.ETEG
-  Pin2 _VRAM_PIN_A07  = Pin2::HIZ_NP;  // PIN_41 <- P04.EREW
-  Pin2 _VRAM_PIN_A08  = Pin2::HIZ_NP;  // PIN_48 <- P04.EVAX
-  Pin2 _VRAM_PIN_A09  = Pin2::HIZ_NP;  // PIN_47 <- P04.DUVE
-  Pin2 _VRAM_PIN_A10  = Pin2::HIZ_NP;  // PIN_44 <- P04.ERAF
-  Pin2 _VRAM_PIN_A11  = Pin2::HIZ_NP;  // PIN_46 <- P04.FUSY
-  Pin2 _VRAM_PIN_A12  = Pin2::HIZ_NP;  // PIN_42 <- P04.EXYF
+  Tri _VRAM_PIN_A00  = TRI_HZNP;  // PIN_34 <- P04.ECAL
+  Tri _VRAM_PIN_A01  = TRI_HZNP;  // PIN_35 <- P04.EGEZ
+  Tri _VRAM_PIN_A02  = TRI_HZNP;  // PIN_36 <- P04.FUHE
+  Tri _VRAM_PIN_A03  = TRI_HZNP;  // PIN_37 <- P04.FYZY
+  Tri _VRAM_PIN_A04  = TRI_HZNP;  // PIN_38 <- P04.DAMU
+  Tri _VRAM_PIN_A05  = TRI_HZNP;  // PIN_39 <- P04.DAVA
+  Tri _VRAM_PIN_A06  = TRI_HZNP;  // PIN_40 <- P04.ETEG
+  Tri _VRAM_PIN_A07  = TRI_HZNP;  // PIN_41 <- P04.EREW
+  Tri _VRAM_PIN_A08  = TRI_HZNP;  // PIN_48 <- P04.EVAX
+  Tri _VRAM_PIN_A09  = TRI_HZNP;  // PIN_47 <- P04.DUVE
+  Tri _VRAM_PIN_A10  = TRI_HZNP;  // PIN_44 <- P04.ERAF
+  Tri _VRAM_PIN_A11  = TRI_HZNP;  // PIN_46 <- P04.FUSY
+  Tri _VRAM_PIN_A12  = TRI_HZNP;  // PIN_42 <- P04.EXYF
 
-  Pin2 _VRAM_PIN_D0_A = Pin2::HIZ_NP;    // PIN_33 <- P25.REGE
-  Pin2 _VRAM_PIN_D1_A = Pin2::HIZ_NP;    // PIN_31 <- P25.RYKY
-  Pin2 _VRAM_PIN_D2_A = Pin2::HIZ_NP;    // PIN_30 <- P25.RAZO
-  Pin2 _VRAM_PIN_D3_A = Pin2::HIZ_NP;    // PIN_29 <- P25.RADA
-  Pin2 _VRAM_PIN_D4_A = Pin2::HIZ_NP;    // PIN_28 <- P25.RYRO
-  Pin2 _VRAM_PIN_D5_A = Pin2::HIZ_NP;    // PIN_27 <- P25.REVU
-  Pin2 _VRAM_PIN_D6_A = Pin2::HIZ_NP;    // PIN_26 <- P25.REKU
-  Pin2 _VRAM_PIN_D7_A = Pin2::HIZ_NP;    // PIN_25 <- P25.RYZE
+  Tri _VRAM_PIN_D0_A = TRI_HZNP;    // PIN_33 <- P25.REGE
+  Tri _VRAM_PIN_D1_A = TRI_HZNP;    // PIN_31 <- P25.RYKY
+  Tri _VRAM_PIN_D2_A = TRI_HZNP;    // PIN_30 <- P25.RAZO
+  Tri _VRAM_PIN_D3_A = TRI_HZNP;    // PIN_29 <- P25.RADA
+  Tri _VRAM_PIN_D4_A = TRI_HZNP;    // PIN_28 <- P25.RYRO
+  Tri _VRAM_PIN_D5_A = TRI_HZNP;    // PIN_27 <- P25.REVU
+  Tri _VRAM_PIN_D6_A = TRI_HZNP;    // PIN_26 <- P25.REKU
+  Tri _VRAM_PIN_D7_A = TRI_HZNP;    // PIN_25 <- P25.RYZE
 
-  Pin2 _VRAM_PIN_D0_B = Pin2::HIZ_NP;    // PIN_33 <- P25.ROFA
-  Pin2 _VRAM_PIN_D1_B = Pin2::HIZ_NP;    // PIN_31 <- P25.ROFA
-  Pin2 _VRAM_PIN_D2_B = Pin2::HIZ_NP;    // PIN_30 <- P25.ROFA
-  Pin2 _VRAM_PIN_D3_B = Pin2::HIZ_NP;    // PIN_29 <- P25.ROFA
-  Pin2 _VRAM_PIN_D4_B = Pin2::HIZ_NP;    // PIN_28 <- P25.ROFA
-  Pin2 _VRAM_PIN_D5_B = Pin2::HIZ_NP;    // PIN_27 <- P25.ROFA
-  Pin2 _VRAM_PIN_D6_B = Pin2::HIZ_NP;    // PIN_26 <- P25.ROFA
-  Pin2 _VRAM_PIN_D7_B = Pin2::HIZ_NP;    // PIN_25 <- P25.ROFA
+  Tri _VRAM_PIN_D0_B = TRI_HZNP;    // PIN_33 <- P25.ROFA
+  Tri _VRAM_PIN_D1_B = TRI_HZNP;    // PIN_31 <- P25.ROFA
+  Tri _VRAM_PIN_D2_B = TRI_HZNP;    // PIN_30 <- P25.ROFA
+  Tri _VRAM_PIN_D3_B = TRI_HZNP;    // PIN_29 <- P25.ROFA
+  Tri _VRAM_PIN_D4_B = TRI_HZNP;    // PIN_28 <- P25.ROFA
+  Tri _VRAM_PIN_D5_B = TRI_HZNP;    // PIN_27 <- P25.ROFA
+  Tri _VRAM_PIN_D6_B = TRI_HZNP;    // PIN_26 <- P25.ROFA
+  Tri _VRAM_PIN_D7_B = TRI_HZNP;    // PIN_25 <- P25.ROFA
 
-  Pin2 _VRAM_PIN_D0_C = Pin2::HIZ_PU;    // PIN_33 -> P25.RODY
-  Pin2 _VRAM_PIN_D1_C = Pin2::HIZ_PU;    // PIN_31 -> P25.REBA
-  Pin2 _VRAM_PIN_D2_C = Pin2::HIZ_PU;    // PIN_30 -> P25.RYDO
-  Pin2 _VRAM_PIN_D3_C = Pin2::HIZ_PU;    // PIN_29 -> P25.REMO
-  Pin2 _VRAM_PIN_D4_C = Pin2::HIZ_PU;    // PIN_28 -> P25.ROCE
-  Pin2 _VRAM_PIN_D5_C = Pin2::HIZ_PU;    // PIN_27 -> P25.ROPU
-  Pin2 _VRAM_PIN_D6_C = Pin2::HIZ_PU;    // PIN_26 -> P25.RETA
-  Pin2 _VRAM_PIN_D7_C = Pin2::HIZ_PU;    // PIN_25 -> P25.RAKU
+  Tri _VRAM_PIN_D0_C = TRI_HZPU;    // PIN_33 -> P25.RODY
+  Tri _VRAM_PIN_D1_C = TRI_HZPU;    // PIN_31 -> P25.REBA
+  Tri _VRAM_PIN_D2_C = TRI_HZPU;    // PIN_30 -> P25.RYDO
+  Tri _VRAM_PIN_D3_C = TRI_HZPU;    // PIN_29 -> P25.REMO
+  Tri _VRAM_PIN_D4_C = TRI_HZPU;    // PIN_28 -> P25.ROCE
+  Tri _VRAM_PIN_D5_C = TRI_HZPU;    // PIN_27 -> P25.ROPU
+  Tri _VRAM_PIN_D6_C = TRI_HZPU;    // PIN_26 -> P25.RETA
+  Tri _VRAM_PIN_D7_C = TRI_HZPU;    // PIN_25 -> P25.RAKU
 
-  Pin2 _VRAM_PIN_D0_D = Pin2::HIZ_NP;    // PIN_33 <- P25.RURA
-  Pin2 _VRAM_PIN_D1_D = Pin2::HIZ_NP;    // PIN_31 <- P25.RULY
-  Pin2 _VRAM_PIN_D2_D = Pin2::HIZ_NP;    // PIN_30 <- P25.RARE
-  Pin2 _VRAM_PIN_D3_D = Pin2::HIZ_NP;    // PIN_29 <- P25.RODU
-  Pin2 _VRAM_PIN_D4_D = Pin2::HIZ_NP;    // PIN_28 <- P25.RUBE
-  Pin2 _VRAM_PIN_D5_D = Pin2::HIZ_NP;    // PIN_27 <- P25.RUMU
-  Pin2 _VRAM_PIN_D6_D = Pin2::HIZ_NP;    // PIN_26 <- P25.RYTY
-  Pin2 _VRAM_PIN_D7_D = Pin2::HIZ_NP;    // PIN_25 <- P25.RADY
+  Tri _VRAM_PIN_D0_D = TRI_HZNP;    // PIN_33 <- P25.RURA
+  Tri _VRAM_PIN_D1_D = TRI_HZNP;    // PIN_31 <- P25.RULY
+  Tri _VRAM_PIN_D2_D = TRI_HZNP;    // PIN_30 <- P25.RARE
+  Tri _VRAM_PIN_D3_D = TRI_HZNP;    // PIN_29 <- P25.RODU
+  Tri _VRAM_PIN_D4_D = TRI_HZNP;    // PIN_28 <- P25.RUBE
+  Tri _VRAM_PIN_D5_D = TRI_HZNP;    // PIN_27 <- P25.RUMU
+  Tri _VRAM_PIN_D6_D = TRI_HZNP;    // PIN_26 <- P25.RYTY
+  Tri _VRAM_PIN_D7_D = TRI_HZNP;    // PIN_25 <- P25.RADY
 };
 
 //-----------------------------------------------------------------------------

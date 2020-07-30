@@ -89,10 +89,23 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.PYMA*/ wire _PYMA_TIMA_LD_6 = nor(top.clk_reg.MULO_SYS_RSTn(), _REFU_TIMA_MUX_6);
     /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor(top.clk_reg.MULO_SYS_RSTn(), _RATO_TIMA_MUX_7);
 
-    /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.cpu_bus._CPU_PIN_DVn, _TOPE_FF05_WRn);
+#if 0
+
+    TIMA_LOADp = or(and(!CPU_PIN_READ_MEM, CPU_PIN_WRp, xxxxEFGx, FF05), !ALUR_SYS_RSTn, !MEKE_INT_TIMERn);
+
+    MUZU := or2
+    MUZU_01 << CPU_PIN_READ_MEM
+    MUZU_02 << TOPE
+    MUZU_03 nc 
+    MUZU_04 >> 
+
+
+#endif
+
+    /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.cpu_bus.CPU_PIN_READ_MEM, _TOPE_FF05_WRn);
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
 
-    /*p03.REGA*/ REGA_TIMA_0 = ff20(_SOGU_TIMA_CLK,  _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);
+    /*p03.REGA*/ REGA_TIMA_0 = ff20(_SOGU_TIMA_CLK,   _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);
     /*p03.POVY*/ POVY_TIMA_1 = ff20(REGA_TIMA_0.qn(), _MEXU_TIMA_LOADp, _NERO_TIMA_LD_1);
     /*p03.PERU*/ PERU_TIMA_2 = ff20(POVY_TIMA_1.qn(), _MEXU_TIMA_LOADp, _NADA_TIMA_LD_2);
     /*p03.RATE*/ RATE_TIMA_3 = ff20(PERU_TIMA_2.qn(), _MEXU_TIMA_LOADp, _REPA_TIMA_LD_3);

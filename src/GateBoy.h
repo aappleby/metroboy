@@ -18,7 +18,14 @@ public:
   void update_vrm_bus(int phase);
   void update_oam_bus(int phase);
 
-  int phase_total = -17;
+  bool sys_rst = 1;
+  bool sys_t1 = 0;
+  bool sys_t2 = 0;
+  bool sys_clken = 0;
+  bool sys_clkgood = 0;
+  bool sys_cpuready = 0;
+
+  int phase_total = -19;
   int pass_count = 0;
   int pass_total = 0;
 

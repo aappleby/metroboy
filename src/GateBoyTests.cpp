@@ -101,10 +101,10 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy, bool use_fast_impl) {
   for (int i = 0; i < fuzz_count; i++) {
     mix(rng);
 
-    gateboy.top.clk_reg.set_rst(wire(rng & 0x01));
-    gateboy.top.clk_reg.set_clk_a(wire(rng & 0x02));
-    gateboy.top.clk_reg.set_cpu_ready(wire(rng & 0x04));
-    gateboy.top.clk_reg.set_t1t2(wire(rng & 0x08), wire(rng & 0x10));
+    gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
+    gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
+    gateboy.top.clk_reg.preset_cpu_ready(wire(rng & 0x04));
+    gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
 
     int phase_count = (rng >> 8) & 0x0F;
     gateboy.run(phase_count, req, false, use_fast_impl);

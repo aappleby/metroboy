@@ -42,34 +42,34 @@ struct InterruptRegisters {
     d("\n");
   }
 
-private:
+//private:
   friend SchematicTop;
 
-  /*p02.LOPE*/ Reg2 LOPE_FF0F_0 = Reg2::D0C0;
-  /*p02.UBUL*/ Reg2 UBUL_FF0F_3 = Reg2::D0C0;
-  /*p02.ULAK*/ Reg2 ULAK_FF0F_4 = Reg2::D0C0;
-  /*p02.LALU*/ Reg2 LALU_FF0F_1 = Reg2::D0C0;
-  /*p02.NYBO*/ Reg2 NYBO_FF0F_2 = Reg2::D0C0;
+  /*p02.LOPE*/ Reg LOPE_FF0F_0 = REG_D0C0;
+  /*p02.UBUL*/ Reg UBUL_FF0F_3 = REG_D0C0;
+  /*p02.ULAK*/ Reg ULAK_FF0F_4 = REG_D0C0;
+  /*p02.LALU*/ Reg LALU_FF0F_1 = REG_D0C0;
+  /*p02.NYBO*/ Reg NYBO_FF0F_2 = REG_D0C0;
 
-  /*p02.MATY*/ Pin2 MATY_FF0F_L0 = Pin2::LATCH_0;
-  /*p02.NEJY*/ Pin2 NEJY_FF0F_L1 = Pin2::LATCH_0;
-  /*p02.NUTY*/ Pin2 NUTY_FF0F_L2 = Pin2::LATCH_0;
-  /*p02.MOPO*/ Pin2 MOPO_FF0F_L3 = Pin2::LATCH_0;
-  /*p02.PAVY*/ Pin2 PAVY_FF0F_L4 = Pin2::LATCH_0;
+  /*p02.MATY*/ Tri MATY_FF0F_L0 = TRI_D0NP;
+  /*p02.NEJY*/ Tri NEJY_FF0F_L1 = TRI_D0NP;
+  /*p02.NUTY*/ Tri NUTY_FF0F_L2 = TRI_D0NP;
+  /*p02.MOPO*/ Tri MOPO_FF0F_L3 = TRI_D0NP;
+  /*p02.PAVY*/ Tri PAVY_FF0F_L4 = TRI_D0NP;
 
   // Interrupts
-  Pin2 CPU_PIN_INT_VBLANK  = Pin2::HIZ_NP;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
-  Pin2 CPU_PIN_INT_STAT    = Pin2::HIZ_NP;    // bottom right port PORTB_07: <-        P02.LALU, stat int
-  Pin2 CPU_PIN_INT_TIMER   = Pin2::HIZ_NP;    // bottom right port PORTB_11: <-        P02.NYBO, timer int
-  Pin2 CPU_PIN_INT_SERIAL  = Pin2::HIZ_NP;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
-  Pin2 CPU_PIN_INT_JOYPAD  = Pin2::HIZ_NP;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
+  Tri CPU_PIN_INT_VBLANK  = TRI_HZNP;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
+  Tri CPU_PIN_INT_STAT    = TRI_HZNP;    // bottom right port PORTB_07: <-        P02.LALU, stat int
+  Tri CPU_PIN_INT_TIMER   = TRI_HZNP;    // bottom right port PORTB_11: <-        P02.NYBO, timer int
+  Tri CPU_PIN_INT_SERIAL  = TRI_HZNP;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
+  Tri CPU_PIN_INT_JOYPAD  = TRI_HZNP;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
 
   // Interrupt acks
-  Pin2 CPU_PIN_ACK_VBLANK = Pin2::HOLD_0;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
-  Pin2 CPU_PIN_ACK_STAT   = Pin2::HOLD_0;    // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
-  Pin2 CPU_PIN_ACK_TIMER  = Pin2::HOLD_0;    // bottom right port PORTB_09: ->        P02.LESA, timer int ack
-  Pin2 CPU_PIN_ACK_SERIAL = Pin2::HOLD_0;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
-  Pin2 CPU_PIN_ACK_JOYPAD = Pin2::HOLD_0;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
+  Tri CPU_PIN_ACK_VBLANK = TRI_D0NP;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
+  Tri CPU_PIN_ACK_STAT   = TRI_D0NP;    // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
+  Tri CPU_PIN_ACK_TIMER  = TRI_D0NP;    // bottom right port PORTB_09: ->        P02.LESA, timer int ack
+  Tri CPU_PIN_ACK_SERIAL = TRI_D0NP;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
+  Tri CPU_PIN_ACK_JOYPAD = TRI_D0NP;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
 };
 
 //-----------------------------------------------------------------------------

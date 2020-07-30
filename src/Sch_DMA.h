@@ -39,34 +39,34 @@ struct DmaRegisters {
     d("DMA Addr 0x%02x:%02x\n", 
       pack(MARU_DMA_A15.q(), POKU_DMA_A14.q(), PULA_DMA_A13.q(), NYGY_DMA_A12.q(), NYDO_DMA_A11.q(), PARA_DMA_A10.q(), PYNE_DMA_A09.q(), NAFA_DMA_A08.q()),
       pack(MUGU_DMA_A07.q(), NUTO_DMA_A06.q(), PYLO_DMA_A05.q(), NYKO_DMA_A04.q(), MUTY_DMA_A03.q(), NEFY_DMA_A02.q(), PYRO_DMA_A01.q(), NAKY_DMA_A00.q()));
-    d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHn.q());
+    d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHn);
     d("MATU_DMA_RUNNINGp   %d\n", _MATU_DMA_RUNNINGp.q());
     d("MYTE_DMA_DONE       %d\n", _MYTE_DMA_DONE.q());
     d("LUVY_DMA_TRIG_d0    %d\n", _LUVY_DMA_TRIG_d0.q());
     d("LENE_DMA_TRIG_d4    %d\n", _LENE_DMA_TRIG_d4.q());
-    d("LOKY_DMA_LATCHp     %d\n", _LOKY_DMA_LATCHp.q());
+    d("LOKY_DMA_LATCHp     %d\n", _LOKY_DMA_LATCHp);
     d("MUDA_DMA_SRC_VRAMp  %d\n", MUDA_DMA_SRC_VRAMp());
     d("LUMA_DMA_READ_CARTp %d\n", LUMA_DMA_READ_CARTp());
     d("\n");
   }
 
-  /*p04.NAKY*/ Reg2 NAKY_DMA_A00 = Reg2::D0C0;
-  /*p04.PYRO*/ Reg2 PYRO_DMA_A01 = Reg2::D0C0;
-  /*p04.NEFY*/ Reg2 NEFY_DMA_A02 = Reg2::D0C0;
-  /*p04.MUTY*/ Reg2 MUTY_DMA_A03 = Reg2::D0C0;
-  /*p04.NYKO*/ Reg2 NYKO_DMA_A04 = Reg2::D0C0;
-  /*p04.PYLO*/ Reg2 PYLO_DMA_A05 = Reg2::D0C0;
-  /*p04.NUTO*/ Reg2 NUTO_DMA_A06 = Reg2::D0C0;
-  /*p04.MUGU*/ Reg2 MUGU_DMA_A07 = Reg2::D0C0;
+  /*p04.NAKY*/ Reg NAKY_DMA_A00 = REG_D0C0;
+  /*p04.PYRO*/ Reg PYRO_DMA_A01 = REG_D0C0;
+  /*p04.NEFY*/ Reg NEFY_DMA_A02 = REG_D0C0;
+  /*p04.MUTY*/ Reg MUTY_DMA_A03 = REG_D0C0;
+  /*p04.NYKO*/ Reg NYKO_DMA_A04 = REG_D0C0;
+  /*p04.PYLO*/ Reg PYLO_DMA_A05 = REG_D0C0;
+  /*p04.NUTO*/ Reg NUTO_DMA_A06 = REG_D0C0;
+  /*p04.MUGU*/ Reg MUGU_DMA_A07 = REG_D0C0;
 
-  /*p04.NAFA*/ Reg2 NAFA_DMA_A08 = Reg2::D0C0;
-  /*p04.PYNE*/ Reg2 PYNE_DMA_A09 = Reg2::D0C0;
-  /*p04.PARA*/ Reg2 PARA_DMA_A10 = Reg2::D0C0;
-  /*p04.NYDO*/ Reg2 NYDO_DMA_A11 = Reg2::D0C0;
-  /*p04.NYGY*/ Reg2 NYGY_DMA_A12 = Reg2::D0C0;
-  /*p04.PULA*/ Reg2 PULA_DMA_A13 = Reg2::D0C0;
-  /*p04.POKU*/ Reg2 POKU_DMA_A14 = Reg2::D0C0;
-  /*p04.MARU*/ Reg2 MARU_DMA_A15 = Reg2::D0C0;
+  /*p04.NAFA*/ Reg NAFA_DMA_A08 = REG_D0C0;
+  /*p04.PYNE*/ Reg PYNE_DMA_A09 = REG_D0C0;
+  /*p04.PARA*/ Reg PARA_DMA_A10 = REG_D0C0;
+  /*p04.NYDO*/ Reg NYDO_DMA_A11 = REG_D0C0;
+  /*p04.NYGY*/ Reg NYGY_DMA_A12 = REG_D0C0;
+  /*p04.PULA*/ Reg PULA_DMA_A13 = REG_D0C0;
+  /*p04.POKU*/ Reg POKU_DMA_A14 = REG_D0C0;
+  /*p04.MARU*/ Reg MARU_DMA_A15 = REG_D0C0;
 
 private:
 
@@ -76,12 +76,12 @@ private:
     return MUDA_DMA_SRC_VRAMp;
   }
 
-  /*p04.LYXE*/ Pin2 _LYXE_DMA_LATCHn   = Pin2::LATCH_0;
-  /*p04.MATU*/ Reg2 _MATU_DMA_RUNNINGp = Reg2::D0C0;
-  /*p04.MYTE*/ Reg2 _MYTE_DMA_DONE     = Reg2::D0C0;
-  /*p04.LUVY*/ Reg2 _LUVY_DMA_TRIG_d0  = Reg2::D0C0;
-  /*p04.LENE*/ Reg2 _LENE_DMA_TRIG_d4  = Reg2::D0C0;
-  /*p04.LOKY*/ Pin2 _LOKY_DMA_LATCHp   = Pin2::LATCH_0;
+  /*p04.LYXE*/ Tri _LYXE_DMA_LATCHn   = TRI_D0NP;
+  /*p04.MATU*/ Reg _MATU_DMA_RUNNINGp = REG_D0C0;
+  /*p04.MYTE*/ Reg _MYTE_DMA_DONE     = REG_D0C0;
+  /*p04.LUVY*/ Reg _LUVY_DMA_TRIG_d0  = REG_D0C0;
+  /*p04.LENE*/ Reg _LENE_DMA_TRIG_d4  = REG_D0C0;
+  /*p04.LOKY*/ Tri _LOKY_DMA_LATCHp   = TRI_D0NP;
 };
 
 //-----------------------------------------------------------------------------

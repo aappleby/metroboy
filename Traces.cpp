@@ -1,3 +1,23 @@
+    // MAKA_01 sc
+    // MAKA_02 << ZEME
+    // MAKA_03 sc
+    // MAKA_04 NC
+    // MAKA_05 NC
+    // MAKA_06 << CUNU
+    // MAKA_07 << CATY
+    // MAKA_08 NC
+    // MAKA_09 sc
+    // MAKA_10 NC
+    // MAKA_11 NC
+    // MAKA_12 sc
+    // MAKA_13 << CUNU
+    // MAKA_14 NC
+    // MAKA_15 NC
+    // MAKA_16 >> QN NC
+    // MAKA_17 >> NAXY_02
+
+
+
 // XECU01 nc
 // XECU02 << WEFE02
 // XECU03 << YZET02 (oam a7)
@@ -90,7 +110,7 @@
 // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
 // LEGU_01 << LOMA_02    CLKp
-// LEGU_02 << VRM_TRI_D0 D
+// LEGU_02 << VRM_BUS_D0 D
 // LEGU_03 nc
 // LEGU_04 << COMP_CLK   CLKn
 // LEGU_05 nc

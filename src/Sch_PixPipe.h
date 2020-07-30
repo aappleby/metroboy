@@ -152,205 +152,205 @@ struct PixelPipe {
   }
 
   // Pixel counter
-  /*p21.XEHO*/ Reg2 XEHO_X0 = Reg2::D0C0;
-  /*p21.SAVY*/ Reg2 SAVY_X1 = Reg2::D0C0;
-  /*p21.XODU*/ Reg2 XODU_X2 = Reg2::D0C0;
-  /*p21.XYDO*/ Reg2 XYDO_X3 = Reg2::D0C0;
-  /*p21.TUHU*/ Reg2 TUHU_X4 = Reg2::D0C0;
-  /*p21.TUKY*/ Reg2 TUKY_X5 = Reg2::D0C0;
-  /*p21.TAKO*/ Reg2 TAKO_X6 = Reg2::D0C0;
-  /*p21.SYBE*/ Reg2 SYBE_X7 = Reg2::D0C0;
+  /*p21.XEHO*/ Reg XEHO_X0 = REG_D0C0;
+  /*p21.SAVY*/ Reg SAVY_X1 = REG_D0C0;
+  /*p21.XODU*/ Reg XODU_X2 = REG_D0C0;
+  /*p21.XYDO*/ Reg XYDO_X3 = REG_D0C0;
+  /*p21.TUHU*/ Reg TUHU_X4 = REG_D0C0;
+  /*p21.TUKY*/ Reg TUKY_X5 = REG_D0C0;
+  /*p21.TAKO*/ Reg TAKO_X6 = REG_D0C0;
+  /*p21.SYBE*/ Reg SYBE_X7 = REG_D0C0;
 
   // -> interrupts
   /*p21.WODU*/ wire WODU_RENDER_DONEp() const { return and(_XENA_STORE_MATCHn, XANO_X_167p()); }
 
   //----------------------------------------
 
-  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.q(); }
-  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
-  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }
-  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not(_XYMU_RENDERINGp.q()); }   // sfetch.tuvo/tyso
+  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp; }
+  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not(_XYMU_RENDERINGp); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not(_XYMU_RENDERINGp); }
+  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not(_XYMU_RENDERINGp); }   // sfetch.tuvo/tyso
 
   // FF40 - LCDC
-  /*p23.VYXE*/ Reg2 VYXE_LCDC_BGEN   = Reg2::D0C0;
-  /*p23.XYLO*/ Reg2 XYLO_LCDC_SPEN   = Reg2::D0C0;
-  /*p23.XYMO*/ Reg2 XYMO_LCDC_SPSIZE = Reg2::D0C0;
-  /*p23.XAFO*/ Reg2 XAFO_LCDC_BGMAP  = Reg2::D0C0;
-  /*p23.WEXU*/ Reg2 WEXU_LCDC_BGTILE = Reg2::D0C0;
-  /*p23.WYMO*/ Reg2 WYMO_LCDC_WINEN  = Reg2::D0C0;
-  /*p23.WOKY*/ Reg2 WOKY_LCDC_WINMAP = Reg2::D0C0;
-  /*p23.XONA*/ Reg2 XONA_LCDC_EN     = Reg2::D0C0;
+  /*p23.VYXE*/ Reg VYXE_LCDC_BGEN   = REG_D0C0;
+  /*p23.XYLO*/ Reg XYLO_LCDC_SPEN   = REG_D0C0;
+  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZE = REG_D0C0;
+  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAP  = REG_D0C0;
+  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE = REG_D0C0;
+  /*p23.WYMO*/ Reg WYMO_LCDC_WINEN  = REG_D0C0;
+  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP = REG_D0C0;
+  /*p23.XONA*/ Reg XONA_LCDC_EN     = REG_D0C0;
 
   // FF41 - STAT
-  /*p21.ROXE*/ Reg2 ROXE_INT_HBL_EN = Reg2::D0C0;
-  /*p21.RUFO*/ Reg2 RUFO_INT_VBL_EN = Reg2::D0C0;
-  /*p21.REFE*/ Reg2 REFE_INT_OAM_EN = Reg2::D0C0;
-  /*p21.RUGU*/ Reg2 RUGU_INT_LYC_EN = Reg2::D0C0;
+  /*p21.ROXE*/ Reg ROXE_INT_HBL_EN = REG_D0C0;
+  /*p21.RUFO*/ Reg RUFO_INT_VBL_EN = REG_D0C0;
+  /*p21.REFE*/ Reg REFE_INT_OAM_EN = REG_D0C0;
+  /*p21.RUGU*/ Reg RUGU_INT_LYC_EN = REG_D0C0;
 
 private:
 
-  /*p27.NOCU*/ wire NOCU_WIN_MODEn()  const { return not(_PYNU_WIN_MODE_A.q()); }
-  /*p27.NUNY*/ wire NUNY_WX_MATCHpe() const { return and(_PYNU_WIN_MODE_A.q(), _NOPA_WIN_MODE_B.qn()); }
-  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not(_RYDY_WIN_FIRST_TILE_A.q()); }
+  /*p27.NOCU*/ wire NOCU_WIN_MODEn()  const { return not(_PYNU_WIN_MODE_A); }
+  /*p27.NUNY*/ wire NUNY_WX_MATCHpe() const { return and(_PYNU_WIN_MODE_A, _NOPA_WIN_MODE_B.qn()); }
+  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not(_RYDY_WIN_FIRST_TILE_A); }
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }
 
-  /*p27.PYNU*/ Pin2 _PYNU_WIN_MODE_A = Pin2::LATCH_0;
-  /*p27.RYDY*/ Pin2 _RYDY_WIN_FIRST_TILE_A = Pin2::LATCH_0;
+  /*p27.PYNU*/ Tri _PYNU_WIN_MODE_A = TRI_D0NP;
+  /*p27.RYDY*/ Tri _RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
 
-  /*p27.NOPA*/ Reg2 _NOPA_WIN_MODE_B = Reg2::D0C0;
-  /*p27.SOVY*/ Reg2 _SOVY_WIN_FIRST_TILE_B = Reg2::D0C0;
-  /*p27.REJO*/ Pin2 _REJO_WY_MATCH_LATCH = Pin2::LATCH_0;
-  /*p27.SARY*/ Reg2 _SARY_WY_MATCH = Reg2::D0C0;
-  /*p27.RYFA*/ Reg2 _RYFA_WX_MATCHn_A = Reg2::D0C0;
-  /*p27.RENE*/ Reg2 _RENE_WX_MATCHn_B = Reg2::D0C0;
-  /*p27.PYCO*/ Reg2 _PYCO_WX_MATCH_A = Reg2::D0C0;
-  /*p27.NUNU*/ Reg2 _NUNU_WX_MATCH_B = Reg2::D0C0;
+  /*p27.NOPA*/ Reg _NOPA_WIN_MODE_B = REG_D0C0;
+  /*p27.SOVY*/ Reg _SOVY_WIN_FIRST_TILE_B = REG_D0C0;
+  /*p27.REJO*/ Tri _REJO_WY_MATCH_LATCH = TRI_D0NP;
+  /*p27.SARY*/ Reg _SARY_WY_MATCH = REG_D0C0;
+  /*p27.RYFA*/ Reg _RYFA_WX_MATCHn_A = REG_D0C0;
+  /*p27.RENE*/ Reg _RENE_WX_MATCHn_B = REG_D0C0;
+  /*p27.PYCO*/ Reg _PYCO_WX_MATCH_A = REG_D0C0;
+  /*p27.NUNU*/ Reg _NUNU_WX_MATCH_B = REG_D0C0;
 
-  /*p27.WYKA*/ Reg2 _WYKA_WIN_X3 = Reg2::D0C0;
-  /*p27.WODY*/ Reg2 _WODY_WIN_X4 = Reg2::D0C0;
-  /*p27.WOBO*/ Reg2 _WOBO_WIN_X5 = Reg2::D0C0;
-  /*p27.WYKO*/ Reg2 _WYKO_WIN_X6 = Reg2::D0C0;
-  /*p27.XOLO*/ Reg2 _XOLO_WIN_X7 = Reg2::D0C0;
+  /*p27.WYKA*/ Reg _WYKA_WIN_X3 = REG_D0C0;
+  /*p27.WODY*/ Reg _WODY_WIN_X4 = REG_D0C0;
+  /*p27.WOBO*/ Reg _WOBO_WIN_X5 = REG_D0C0;
+  /*p27.WYKO*/ Reg _WYKO_WIN_X6 = REG_D0C0;
+  /*p27.XOLO*/ Reg _XOLO_WIN_X7 = REG_D0C0;
 
-  /*p27.VYNO*/ Reg2 _VYNO_WIN_Y0 = Reg2::D0C0;
-  /*p27.VUJO*/ Reg2 _VUJO_WIN_Y1 = Reg2::D0C0;
-  /*p27.VYMU*/ Reg2 _VYMU_WIN_Y2 = Reg2::D0C0;
-  /*p27.TUFU*/ Reg2 _TUFU_WIN_Y3 = Reg2::D0C0;
-  /*p27.TAXA*/ Reg2 _TAXA_WIN_Y4 = Reg2::D0C0;
-  /*p27.TOZO*/ Reg2 _TOZO_WIN_Y5 = Reg2::D0C0;
-  /*p27.TATE*/ Reg2 _TATE_WIN_Y6 = Reg2::D0C0;
-  /*p27.TEKE*/ Reg2 _TEKE_WIN_Y7 = Reg2::D0C0;
+  /*p27.VYNO*/ Reg _VYNO_WIN_Y0 = REG_D0C0;
+  /*p27.VUJO*/ Reg _VUJO_WIN_Y1 = REG_D0C0;
+  /*p27.VYMU*/ Reg _VYMU_WIN_Y2 = REG_D0C0;
+  /*p27.TUFU*/ Reg _TUFU_WIN_Y3 = REG_D0C0;
+  /*p27.TAXA*/ Reg _TAXA_WIN_Y4 = REG_D0C0;
+  /*p27.TOZO*/ Reg _TOZO_WIN_Y5 = REG_D0C0;
+  /*p27.TATE*/ Reg _TATE_WIN_Y6 = REG_D0C0;
+  /*p27.TEKE*/ Reg _TEKE_WIN_Y7 = REG_D0C0;
 
-  /*p??.ROXY*/ Pin2 _ROXY_FINE_SCROLL_DONEn = Pin2::LATCH_1;
+  /*p??.ROXY*/ Tri _ROXY_FINE_SCROLL_DONEn = TRI_D1NP;
 
-  Sig2 _XENA_STORE_MATCHn;
+  Sig _XENA_STORE_MATCHn;
 
-  /*p27.RYKU*/ Reg2 _RYKU_FINE_CNT0 = Reg2::D0C0;
-  /*p27.ROGA*/ Reg2 _ROGA_FINE_CNT1 = Reg2::D0C0;
-  /*p27.RUBU*/ Reg2 _RUBU_FINE_CNT2 = Reg2::D0C0;
+  /*p27.RYKU*/ Reg _RYKU_FINE_CNT0 = REG_D0C0;
+  /*p27.ROGA*/ Reg _ROGA_FINE_CNT1 = REG_D0C0;
+  /*p27.RUBU*/ Reg _RUBU_FINE_CNT2 = REG_D0C0;
 
-  /*p21.XYMU*/ Pin2 _XYMU_RENDERINGp = Pin2::LATCH_0; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ Tri _XYMU_RENDERINGp = TRI_D0NP; // this must be positive polarity, or stat read doesn't work
 
-  /*p21.RUPO*/ Pin2 _RUPO_LYC_MATCH_LATCHn = Pin2::LATCH_0;
+  /*p21.RUPO*/ Tri _RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
 
-  /*p21.WUSA*/ Pin2 _WUSA_LCD_CLOCK_GATE = Pin2::LATCH_0;
-  /*p21.VOGA*/ Reg2 _VOGA_RENDER_DONE_SYNC = Reg2::D0C0;
-  /*p??.PUXA*/ Reg2 _PUXA_FINE_MATCH_A = Reg2::D0C0;
-  /*p27.NYZE*/ Reg2 _NYZE_FINE_MATCH_B = Reg2::D0C0;
+  /*p21.WUSA*/ Tri _WUSA_LCD_CLOCK_GATE = TRI_D0NP;
+  /*p21.VOGA*/ Reg _VOGA_RENDER_DONE_SYNC = REG_D0C0;
+  /*p??.PUXA*/ Reg _PUXA_FINE_MATCH_A = REG_D0C0;
+  /*p27.NYZE*/ Reg _NYZE_FINE_MATCH_B = REG_D0C0;
 
-  /*p24.PAHO*/ Reg2 _PAHO_X_8_SYNC = Reg2::D0C0;
-  /*p24.RUJU*/ Pin2 _POFY_ST_LATCH = Pin2::LATCH_0; // nor latch with p24.RUJU, p24.POME
+  /*p24.PAHO*/ Reg _PAHO_X_8_SYNC = REG_D0C0;
+  /*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor latch with p24.RUJU, p24.POME
 
-  Pin2 _LCD_PIN_CP = Pin2::HIZ_NP;   // PIN_53 
-  Pin2 _LCD_PIN_ST = Pin2::HIZ_NP;   // PIN_54 
+  Tri _LCD_PIN_CP = TRI_HZNP;   // PIN_53 
+  Tri _LCD_PIN_ST = TRI_HZNP;   // PIN_54 
 
-  Pin2 _LCD_PIN_LD1 = Pin2::HIZ_NP;  // PIN_50 
-  Pin2 _LCD_PIN_LD0 = Pin2::HIZ_NP;  // PIN_51 
+  Tri _LCD_PIN_LD1 = TRI_HZNP;  // PIN_50 
+  Tri _LCD_PIN_LD0 = TRI_HZNP;  // PIN_51 
 
-  /*p32.MYDE*/ Reg2 BG_PIPE_A0 = Reg2::D0C0;
-  /*p32.NOZO*/ Reg2 BG_PIPE_A1 = Reg2::D0C0;
-  /*p32.MOJU*/ Reg2 BG_PIPE_A2 = Reg2::D0C0;
-  /*p32.MACU*/ Reg2 BG_PIPE_A3 = Reg2::D0C0;
-  /*p32.NEPO*/ Reg2 BG_PIPE_A4 = Reg2::D0C0;
-  /*p32.MODU*/ Reg2 BG_PIPE_A5 = Reg2::D0C0;
-  /*p32.NEDA*/ Reg2 BG_PIPE_A6 = Reg2::D0C0;
-  /*p32.PYBO*/ Reg2 BG_PIPE_A7 = Reg2::D0C0;
+  /*p32.MYDE*/ Reg BG_PIPE_A0 = REG_D0C0;
+  /*p32.NOZO*/ Reg BG_PIPE_A1 = REG_D0C0;
+  /*p32.MOJU*/ Reg BG_PIPE_A2 = REG_D0C0;
+  /*p32.MACU*/ Reg BG_PIPE_A3 = REG_D0C0;
+  /*p32.NEPO*/ Reg BG_PIPE_A4 = REG_D0C0;
+  /*p32.MODU*/ Reg BG_PIPE_A5 = REG_D0C0;
+  /*p32.NEDA*/ Reg BG_PIPE_A6 = REG_D0C0;
+  /*p32.PYBO*/ Reg BG_PIPE_A7 = REG_D0C0;
 
-  /*p32.TOMY*/ Reg2 BG_PIPE_B0 = Reg2::D0C0;
-  /*p32.TACA*/ Reg2 BG_PIPE_B1 = Reg2::D0C0;
-  /*p32.SADY*/ Reg2 BG_PIPE_B2 = Reg2::D0C0;
-  /*p32.RYSA*/ Reg2 BG_PIPE_B3 = Reg2::D0C0;
-  /*p32.SOBO*/ Reg2 BG_PIPE_B4 = Reg2::D0C0;
-  /*p32.SETU*/ Reg2 BG_PIPE_B5 = Reg2::D0C0;
-  /*p32.RALU*/ Reg2 BG_PIPE_B6 = Reg2::D0C0;
-  /*p32.SOHU*/ Reg2 BG_PIPE_B7 = Reg2::D0C0;
+  /*p32.TOMY*/ Reg BG_PIPE_B0 = REG_D0C0;
+  /*p32.TACA*/ Reg BG_PIPE_B1 = REG_D0C0;
+  /*p32.SADY*/ Reg BG_PIPE_B2 = REG_D0C0;
+  /*p32.RYSA*/ Reg BG_PIPE_B3 = REG_D0C0;
+  /*p32.SOBO*/ Reg BG_PIPE_B4 = REG_D0C0;
+  /*p32.SETU*/ Reg BG_PIPE_B5 = REG_D0C0;
+  /*p32.RALU*/ Reg BG_PIPE_B6 = REG_D0C0;
+  /*p32.SOHU*/ Reg BG_PIPE_B7 = REG_D0C0;
 
-  /*p33.NURO*/ Reg2 SPR_PIPE_B0 = Reg2::D0C0;
-  /*p33.MASO*/ Reg2 SPR_PIPE_B1 = Reg2::D0C0;
-  /*p33.LEFE*/ Reg2 SPR_PIPE_B2 = Reg2::D0C0;
-  /*p33.LESU*/ Reg2 SPR_PIPE_B3 = Reg2::D0C0;
-  /*p33.WYHO*/ Reg2 SPR_PIPE_B4 = Reg2::D0C0;
-  /*p33.WORA*/ Reg2 SPR_PIPE_B5 = Reg2::D0C0;
-  /*p33.VAFO*/ Reg2 SPR_PIPE_B6 = Reg2::D0C0;
-  /*p33.WUFY*/ Reg2 SPR_PIPE_B7 = Reg2::D0C0;
+  /*p33.NURO*/ Reg SPR_PIPE_B0 = REG_D0C0;
+  /*p33.MASO*/ Reg SPR_PIPE_B1 = REG_D0C0;
+  /*p33.LEFE*/ Reg SPR_PIPE_B2 = REG_D0C0;
+  /*p33.LESU*/ Reg SPR_PIPE_B3 = REG_D0C0;
+  /*p33.WYHO*/ Reg SPR_PIPE_B4 = REG_D0C0;
+  /*p33.WORA*/ Reg SPR_PIPE_B5 = REG_D0C0;
+  /*p33.VAFO*/ Reg SPR_PIPE_B6 = REG_D0C0;
+  /*p33.WUFY*/ Reg SPR_PIPE_B7 = REG_D0C0;
 
-  /*p33.NYLU*/ Reg2 SPR_PIPE_A0 = Reg2::D0C0;
-  /*p33.PEFU*/ Reg2 SPR_PIPE_A1 = Reg2::D0C0;
-  /*p33.NATY*/ Reg2 SPR_PIPE_A2 = Reg2::D0C0;
-  /*p33.PYJO*/ Reg2 SPR_PIPE_A3 = Reg2::D0C0;
-  /*p33.VARE*/ Reg2 SPR_PIPE_A4 = Reg2::D0C0;
-  /*p33.WEBA*/ Reg2 SPR_PIPE_A5 = Reg2::D0C0;
-  /*p33.VANU*/ Reg2 SPR_PIPE_A6 = Reg2::D0C0;
-  /*p33.VUPY*/ Reg2 SPR_PIPE_A7 = Reg2::D0C0;
+  /*p33.NYLU*/ Reg SPR_PIPE_A0 = REG_D0C0;
+  /*p33.PEFU*/ Reg SPR_PIPE_A1 = REG_D0C0;
+  /*p33.NATY*/ Reg SPR_PIPE_A2 = REG_D0C0;
+  /*p33.PYJO*/ Reg SPR_PIPE_A3 = REG_D0C0;
+  /*p33.VARE*/ Reg SPR_PIPE_A4 = REG_D0C0;
+  /*p33.WEBA*/ Reg SPR_PIPE_A5 = REG_D0C0;
+  /*p33.VANU*/ Reg SPR_PIPE_A6 = REG_D0C0;
+  /*p33.VUPY*/ Reg SPR_PIPE_A7 = REG_D0C0;
 
-  /*p34.RUGO*/ Reg2 PAL_PIPE_0 = Reg2::D0C0;
-  /*p34.SATA*/ Reg2 PAL_PIPE_1 = Reg2::D0C0;
-  /*p34.ROSA*/ Reg2 PAL_PIPE_2 = Reg2::D0C0;
-  /*p34.SOMY*/ Reg2 PAL_PIPE_3 = Reg2::D0C0;
-  /*p34.PALU*/ Reg2 PAL_PIPE_4 = Reg2::D0C0;
-  /*p34.NUKE*/ Reg2 PAL_PIPE_5 = Reg2::D0C0;
-  /*p34.MODA*/ Reg2 PAL_PIPE_6 = Reg2::D0C0;
-  /*p34.LYME*/ Reg2 PAL_PIPE_7 = Reg2::D0C0;
+  /*p34.RUGO*/ Reg PAL_PIPE_0 = REG_D0C0;
+  /*p34.SATA*/ Reg PAL_PIPE_1 = REG_D0C0;
+  /*p34.ROSA*/ Reg PAL_PIPE_2 = REG_D0C0;
+  /*p34.SOMY*/ Reg PAL_PIPE_3 = REG_D0C0;
+  /*p34.PALU*/ Reg PAL_PIPE_4 = REG_D0C0;
+  /*p34.NUKE*/ Reg PAL_PIPE_5 = REG_D0C0;
+  /*p34.MODA*/ Reg PAL_PIPE_6 = REG_D0C0;
+  /*p34.LYME*/ Reg PAL_PIPE_7 = REG_D0C0;
 
-  /*p26.VEZO*/ Reg2 MASK_PIPE_0 = Reg2::D0C0;
-  /*p26.WURU*/ Reg2 MASK_PIPE_1 = Reg2::D0C0;
-  /*p26.VOSA*/ Reg2 MASK_PIPE_2 = Reg2::D0C0;
-  /*p26.WYFU*/ Reg2 MASK_PIPE_3 = Reg2::D0C0;
-  /*p26.XETE*/ Reg2 MASK_PIPE_4 = Reg2::D0C0;
-  /*p26.WODA*/ Reg2 MASK_PIPE_5 = Reg2::D0C0;
-  /*p26.VUMO*/ Reg2 MASK_PIPE_6 = Reg2::D0C0;
-  /*p26.VAVA*/ Reg2 MASK_PIPE_7 = Reg2::D0C0;
+  /*p26.VEZO*/ Reg MASK_PIPE_0 = REG_D0C0;
+  /*p26.WURU*/ Reg MASK_PIPE_1 = REG_D0C0;
+  /*p26.VOSA*/ Reg MASK_PIPE_2 = REG_D0C0;
+  /*p26.WYFU*/ Reg MASK_PIPE_3 = REG_D0C0;
+  /*p26.XETE*/ Reg MASK_PIPE_4 = REG_D0C0;
+  /*p26.WODA*/ Reg MASK_PIPE_5 = REG_D0C0;
+  /*p26.VUMO*/ Reg MASK_PIPE_6 = REG_D0C0;
+  /*p26.VAVA*/ Reg MASK_PIPE_7 = REG_D0C0;
 
   // FF47 - BGP
-  /*p36.PAVO*/ Reg2 _PAVO_BGP0 = Reg2::D0C0;
-  /*p36.NUSY*/ Reg2 _NUSY_BGP1 = Reg2::D0C0;
-  /*p36.PYLU*/ Reg2 _PYLU_BGP2 = Reg2::D0C0;
-  /*p36.MAXY*/ Reg2 _MAXY_BGP3 = Reg2::D0C0;
-  /*p36.MUKE*/ Reg2 _MUKE_BGP4 = Reg2::D0C0;
-  /*p36.MORU*/ Reg2 _MORU_BGP5 = Reg2::D0C0;
-  /*p36.MOGY*/ Reg2 _MOGY_BGP6 = Reg2::D0C0;
-  /*p36.MENA*/ Reg2 _MENA_BGP7 = Reg2::D0C0;
+  /*p36.PAVO*/ Reg _PAVO_BGP0 = REG_D0C0;
+  /*p36.NUSY*/ Reg _NUSY_BGP1 = REG_D0C0;
+  /*p36.PYLU*/ Reg _PYLU_BGP2 = REG_D0C0;
+  /*p36.MAXY*/ Reg _MAXY_BGP3 = REG_D0C0;
+  /*p36.MUKE*/ Reg _MUKE_BGP4 = REG_D0C0;
+  /*p36.MORU*/ Reg _MORU_BGP5 = REG_D0C0;
+  /*p36.MOGY*/ Reg _MOGY_BGP6 = REG_D0C0;
+  /*p36.MENA*/ Reg _MENA_BGP7 = REG_D0C0;
 
   // FF48 - OBP0
-  /*p36.XUFU*/ Reg2 _XUFU_OBP00 = Reg2::D0C0;
-  /*p36.XUKY*/ Reg2 _XUKY_OBP01 = Reg2::D0C0;
-  /*p36.XOVA*/ Reg2 _XOVA_OBP02 = Reg2::D0C0;
-  /*p36.XALO*/ Reg2 _XALO_OBP03 = Reg2::D0C0;
-  /*p36.XERU*/ Reg2 _XERU_OBP04 = Reg2::D0C0;
-  /*p36.XYZE*/ Reg2 _XYZE_OBP05 = Reg2::D0C0;
-  /*p36.XUPO*/ Reg2 _XUPO_OBP06 = Reg2::D0C0;
-  /*p36.XANA*/ Reg2 _XANA_OBP07 = Reg2::D0C0;
+  /*p36.XUFU*/ Reg _XUFU_OBP00 = REG_D0C0;
+  /*p36.XUKY*/ Reg _XUKY_OBP01 = REG_D0C0;
+  /*p36.XOVA*/ Reg _XOVA_OBP02 = REG_D0C0;
+  /*p36.XALO*/ Reg _XALO_OBP03 = REG_D0C0;
+  /*p36.XERU*/ Reg _XERU_OBP04 = REG_D0C0;
+  /*p36.XYZE*/ Reg _XYZE_OBP05 = REG_D0C0;
+  /*p36.XUPO*/ Reg _XUPO_OBP06 = REG_D0C0;
+  /*p36.XANA*/ Reg _XANA_OBP07 = REG_D0C0;
 
   // FF49 - OBP1
-  /*p36.MOXY*/ Reg2 _MOXY_OBP10 = Reg2::D0C0;
-  /*p36.LAWO*/ Reg2 _LAWO_OBP11 = Reg2::D0C0;
-  /*p36.MOSA*/ Reg2 _MOSA_OBP12 = Reg2::D0C0;
-  /*p36.LOSE*/ Reg2 _LOSE_OBP13 = Reg2::D0C0;
-  /*p36.LUNE*/ Reg2 _LUNE_OBP14 = Reg2::D0C0;
-  /*p36.LUGU*/ Reg2 _LUGU_OBP15 = Reg2::D0C0;
-  /*p36.LEPU*/ Reg2 _LEPU_OBP16 = Reg2::D0C0;
-  /*p36.LUXO*/ Reg2 _LUXO_OBP17 = Reg2::D0C0;
+  /*p36.MOXY*/ Reg _MOXY_OBP10 = REG_D0C0;
+  /*p36.LAWO*/ Reg _LAWO_OBP11 = REG_D0C0;
+  /*p36.MOSA*/ Reg _MOSA_OBP12 = REG_D0C0;
+  /*p36.LOSE*/ Reg _LOSE_OBP13 = REG_D0C0;
+  /*p36.LUNE*/ Reg _LUNE_OBP14 = REG_D0C0;
+  /*p36.LUGU*/ Reg _LUGU_OBP15 = REG_D0C0;
+  /*p36.LEPU*/ Reg _LEPU_OBP16 = REG_D0C0;
+  /*p36.LUXO*/ Reg _LUXO_OBP17 = REG_D0C0;
 
   // FF4A - WY
-  /*p23.NESO*/ Reg2 _NESO_WY0 = Reg2::D0C0;
-  /*p23.NYRO*/ Reg2 _NYRO_WY1 = Reg2::D0C0;
-  /*p23.NAGA*/ Reg2 _NAGA_WY2 = Reg2::D0C0;
-  /*p23.MELA*/ Reg2 _MELA_WY3 = Reg2::D0C0;
-  /*p23.NULO*/ Reg2 _NULO_WY4 = Reg2::D0C0;
-  /*p23.NENE*/ Reg2 _NENE_WY5 = Reg2::D0C0;
-  /*p23.NUKA*/ Reg2 _NUKA_WY6 = Reg2::D0C0;
-  /*p23.NAFU*/ Reg2 _NAFU_WY7 = Reg2::D0C0;
+  /*p23.NESO*/ Reg _NESO_WY0 = REG_D0C0;
+  /*p23.NYRO*/ Reg _NYRO_WY1 = REG_D0C0;
+  /*p23.NAGA*/ Reg _NAGA_WY2 = REG_D0C0;
+  /*p23.MELA*/ Reg _MELA_WY3 = REG_D0C0;
+  /*p23.NULO*/ Reg _NULO_WY4 = REG_D0C0;
+  /*p23.NENE*/ Reg _NENE_WY5 = REG_D0C0;
+  /*p23.NUKA*/ Reg _NUKA_WY6 = REG_D0C0;
+  /*p23.NAFU*/ Reg _NAFU_WY7 = REG_D0C0;
 
   // FF4B - WX
-  /*p23.MYPA*/ Reg2 _MYPA_WX0 = Reg2::D0C0;
-  /*p23.NOFE*/ Reg2 _NOFE_WX1 = Reg2::D0C0;
-  /*p23.NOKE*/ Reg2 _NOKE_WX2 = Reg2::D0C0;
-  /*p23.MEBY*/ Reg2 _MEBY_WX3 = Reg2::D0C0;
-  /*p23.MYPU*/ Reg2 _MYPU_WX4 = Reg2::D0C0;
-  /*p23.MYCE*/ Reg2 _MYCE_WX5 = Reg2::D0C0;
-  /*p23.MUVO*/ Reg2 _MUVO_WX6 = Reg2::D0C0;
-  /*p23.NUKU*/ Reg2 _NUKU_WX7 = Reg2::D0C0;
+  /*p23.MYPA*/ Reg _MYPA_WX0 = REG_D0C0;
+  /*p23.NOFE*/ Reg _NOFE_WX1 = REG_D0C0;
+  /*p23.NOKE*/ Reg _NOKE_WX2 = REG_D0C0;
+  /*p23.MEBY*/ Reg _MEBY_WX3 = REG_D0C0;
+  /*p23.MYPU*/ Reg _MYPU_WX4 = REG_D0C0;
+  /*p23.MYCE*/ Reg _MYCE_WX5 = REG_D0C0;
+  /*p23.MUVO*/ Reg _MUVO_WX6 = REG_D0C0;
+  /*p23.NUKU*/ Reg _NUKU_WX7 = REG_D0C0;
 
 };
 

@@ -74,56 +74,56 @@ private:
   //----------
   // FF04 DIV
 
-  /*p01.UKUP*/ Reg2 _UKUP_DIV_00 = Reg2::D0C0;
-  /*p01.UFOR*/ Reg2 _UFOR_DIV_01 = Reg2::D0C0;
-  /*p01.UNER*/ Reg2 _UNER_DIV_02 = Reg2::D0C0;
-  /*p01.TERO*/ Reg2 _TERO_DIV_03 = Reg2::D0C0;
-  /*p01.UNYK*/ Reg2 _UNYK_DIV_04 = Reg2::D0C0;
-  /*p01.TAMA*/ Reg2 _TAMA_DIV_05 = Reg2::D0C0;
-  /*p01.UGOT*/ Reg2 _UGOT_DIV_06 = Reg2::D0C0;
-  /*p01.TULU*/ Reg2 _TULU_DIV_07 = Reg2::D0C0;
-  /*p01.TUGO*/ Reg2 _TUGO_DIV_08 = Reg2::D0C0;
-  /*p01.TOFE*/ Reg2 _TOFE_DIV_09 = Reg2::D0C0;
-  /*p01.TERU*/ Reg2 _TERU_DIV_10 = Reg2::D0C0;
-  /*p01.SOLA*/ Reg2 _SOLA_DIV_11 = Reg2::D0C0;
-  /*p01.SUBU*/ Reg2 _SUBU_DIV_12 = Reg2::D0C0;
-  /*p01.TEKA*/ Reg2 _TEKA_DIV_13 = Reg2::D0C0;
-  /*p01.UKET*/ Reg2 _UKET_DIV_14 = Reg2::D0C0;
-  /*p01.UPOF*/ Reg2 _UPOF_DIV_15 = Reg2::D0C0;
+  /*p01.UKUP*/ Reg _UKUP_DIV_00 = REG_D0C0;
+  /*p01.UFOR*/ Reg _UFOR_DIV_01 = REG_D0C0;
+  /*p01.UNER*/ Reg _UNER_DIV_02 = REG_D0C0;
+  /*p01.TERO*/ Reg _TERO_DIV_03 = REG_D0C0;
+  /*p01.UNYK*/ Reg _UNYK_DIV_04 = REG_D0C0;
+  /*p01.TAMA*/ Reg _TAMA_DIV_05 = REG_D0C0;
+  /*p01.UGOT*/ Reg _UGOT_DIV_06 = REG_D0C0;
+  /*p01.TULU*/ Reg _TULU_DIV_07 = REG_D0C0;
+  /*p01.TUGO*/ Reg _TUGO_DIV_08 = REG_D0C0;
+  /*p01.TOFE*/ Reg _TOFE_DIV_09 = REG_D0C0;
+  /*p01.TERU*/ Reg _TERU_DIV_10 = REG_D0C0;
+  /*p01.SOLA*/ Reg _SOLA_DIV_11 = REG_D0C0;
+  /*p01.SUBU*/ Reg _SUBU_DIV_12 = REG_D0C0;
+  /*p01.TEKA*/ Reg _TEKA_DIV_13 = REG_D0C0;
+  /*p01.UKET*/ Reg _UKET_DIV_14 = REG_D0C0;
+  /*p01.UPOF*/ Reg _UPOF_DIV_15 = REG_D0C0;
 
   //----------
   // FF05 TIMA
 
-  /*p03.REGA*/ Reg2 REGA_TIMA_0 = Reg2::D0C0;
-  /*p03.POVY*/ Reg2 POVY_TIMA_1 = Reg2::D0C0;
-  /*p03.PERU*/ Reg2 PERU_TIMA_2 = Reg2::D0C0;
-  /*p03.RATE*/ Reg2 RATE_TIMA_3 = Reg2::D0C0;
-  /*p03.RUBY*/ Reg2 RUBY_TIMA_4 = Reg2::D0C0;
-  /*p03.RAGE*/ Reg2 RAGE_TIMA_5 = Reg2::D0C0;
-  /*p03.PEDA*/ Reg2 PEDA_TIMA_6 = Reg2::D0C0;
-  /*p03.NUGA*/ Reg2 NUGA_TIMA_7 = Reg2::D0C0;
+  /*p03.REGA*/ Reg REGA_TIMA_0 = REG_D0C0;
+  /*p03.POVY*/ Reg POVY_TIMA_1 = REG_D0C0;
+  /*p03.PERU*/ Reg PERU_TIMA_2 = REG_D0C0;
+  /*p03.RATE*/ Reg RATE_TIMA_3 = REG_D0C0;
+  /*p03.RUBY*/ Reg RUBY_TIMA_4 = REG_D0C0;
+  /*p03.RAGE*/ Reg RAGE_TIMA_5 = REG_D0C0;
+  /*p03.PEDA*/ Reg PEDA_TIMA_6 = REG_D0C0;
+  /*p03.NUGA*/ Reg NUGA_TIMA_7 = REG_D0C0;
 
-  /*p03.NYDU*/ Reg2 NYDU_TIMA_MAX = Reg2::D0C0;
-  /*p03.MOBA*/ Reg2 _MOBA_INT_TIMERp = Reg2::D0C0;
+  /*p03.NYDU*/ Reg NYDU_TIMA_MAX = REG_D0C0;
+  /*p03.MOBA*/ Reg _MOBA_INT_TIMERp = REG_D0C0;
 
   //----------
   // FF06 TMA
 
-  /*p03.SABU*/ Reg2 SABU_TMA_0 = Reg2::D0C0;
-  /*p03.NYKE*/ Reg2 NYKE_TMA_1 = Reg2::D0C0;
-  /*p03.MURU*/ Reg2 MURU_TMA_2 = Reg2::D0C0;
-  /*p03.TYVA*/ Reg2 TYVA_TMA_3 = Reg2::D0C0;
-  /*p03.TYRU*/ Reg2 TYRU_TMA_4 = Reg2::D0C0;
-  /*p03.SUFY*/ Reg2 SUFY_TMA_5 = Reg2::D0C0;
-  /*p03.PETO*/ Reg2 PETO_TMA_6 = Reg2::D0C0;
-  /*p03.SETA*/ Reg2 SETA_TMA_7 = Reg2::D0C0;
+  /*p03.SABU*/ Reg SABU_TMA_0 = REG_D0C0;
+  /*p03.NYKE*/ Reg NYKE_TMA_1 = REG_D0C0;
+  /*p03.MURU*/ Reg MURU_TMA_2 = REG_D0C0;
+  /*p03.TYVA*/ Reg TYVA_TMA_3 = REG_D0C0;
+  /*p03.TYRU*/ Reg TYRU_TMA_4 = REG_D0C0;
+  /*p03.SUFY*/ Reg SUFY_TMA_5 = REG_D0C0;
+  /*p03.PETO*/ Reg PETO_TMA_6 = REG_D0C0;
+  /*p03.SETA*/ Reg SETA_TMA_7 = REG_D0C0;
 
   //----------
   // FF07 TAC
 
-  /*p03.SOPU*/ Reg2 SOPU_TAC_0 = Reg2::D0C0;
-  /*p03.SAMY*/ Reg2 SAMY_TAC_1 = Reg2::D0C0;
-  /*p03.SABO*/ Reg2 SABO_TAC_2 = Reg2::D0C0;
+  /*p03.SOPU*/ Reg SOPU_TAC_0 = REG_D0C0;
+  /*p03.SAMY*/ Reg SAMY_TAC_1 = REG_D0C0;
+  /*p03.SABO*/ Reg SABO_TAC_2 = REG_D0C0;
 };
 
 

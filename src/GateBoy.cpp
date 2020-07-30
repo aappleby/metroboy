@@ -5,6 +5,50 @@
 
 constexpr bool FAST_HASH = 0;
 
+#if 0
+  // these are all "normal operating mode" w/o rendering or dma 
+
+  OAM_PIN_OE     = nand(CPU_PIN_RDp, !CPU_PIN_READ_MEM,               ADDR_OAM);
+  OPD_TO_OBD     = nand(CPU_PIN_RDp, !CPU_PIN_READ_MEM,               ADDR_OAM);
+  OBD_TO_OBL     =  and(CPU_PIN_RDp, !CPU_PIN_READ_MEM,               ADDR_OAM);
+  OBL_TO_CBD     =  and(CPU_PIN_RDp,  CPU_PIN_READ_MEM,               ADDR_OAM);
+  EPD_TO_CBD     =  and(CPU_PIN_RDp,  CPU_PIN_READ_MEM,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  VBD_TO_CBD     =  and(CPU_PIN_RDp,  CPU_PIN_READ_MEM, !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  OAM_PIN_WRn    = nand(CPU_PIN_WRp,                                  ADDR_OAM,    xxxxEFGx);
+  TIMA_LOADp     =  and(CPU_PIN_WRp, !CPU_PIN_READ_MEM,               FF05,        xxxxEFGx);
+  VRAM_PIN_WR    = nand(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
+  VRAM_PIN_CS    = nand(                                !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  VRAM_PIN_OE    = nand(CPU_PIN_WRp,                                  ADDR_VRAM);
+  EXT_PIN_RD     = nand(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EXT_PIN_WR     =  and(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
+  EXT_PIN_CS     =  and(                                !CPU_PIN_ADDR_EXT,  ADDR_ERAM);
+  EXT_PIN_A15_A  =  and(                                !CPU_PIN_ADDR_EXT, !A15);
+  EXT_PIN_A15_D  =  and(                                !CPU_PIN_ADDR_EXT, !A15);
+  CBD_TO_VPD     =  and(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  CBD_TO_EPD     =  and(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  CBA_TO_EPA     =  and(                                 CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+
+
+  /*read  rom */ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write rom */ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  vram*/ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = false;
+  /*write vram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+  /*read  cram*/ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write cram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  eram*/ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write eram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  oam */ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = false;
+  /*write oam */ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+  /*read  hram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = dc;
+  /*write hram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+#endif
+
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
@@ -16,36 +60,42 @@ GateBoy::GateBoy() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
-  top.clk_reg.set_cpu_ready(0);
-  top.clk_reg.set_t1t2(0,0);
 
-  // Just read DIV forever.
-  Req req = {.addr = 0x0100, .data = 0, .read = 1, .write = 0 };
+  // No bus activity during reset
+  Req req = {.addr = 0x0100, .data = 0, .read = 0, .write = 0 };
 
   //----------
-  // RST = 1, CLK_A = 0, CPU_READY = 0
+  // 8 phases in reset
 
-  top.clk_reg.set_rst(1);
-  top.clk_reg.set_clk_a(0);
-  top.clk_reg.set_cpu_ready(0);
   run(8, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
   //----------
-  // RST = 0, CLK_A = 0, CPU_READY = 0
+  // 8 phases out of reset
 
-  top.clk_reg.set_rst(0);
-  top.clk_reg.set_clk_a(0);
-  top.clk_reg.set_cpu_ready(0);
+  sys_rst = 0;
   run(8, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
   //----------
-  // RST = 0, CLK_A = 1, CPU_READY = 0
+  // 11 phases with enabled clock, which should put us in phase A
 
-  top.clk_reg.set_rst(0);
-  top.clk_reg.set_clk_a(1);
-  top.clk_reg.set_cpu_ready(0);
+  sys_clken = 1;
+  run(11, req, verbose, use_fast_impl);
+  if (verbose) printf("\n");
+
+  CHECK_P(top.clk_reg._AFUR_ABCDxxxx.q());
+  CHECK_N(top.clk_reg._ALEF_xBCDExxx.q());
+  CHECK_N(top.clk_reg._APUK_xxCDEFxx.q());
+  CHECK_N(top.clk_reg._ADYK_xxxDEFGx.q());
+
+  CHECK_P((phase_total & 7) == 0);
+
+
+  //----------
+  // 8 phases with "good" clock (still not really sure what the CLKIN_A circuit does)
+
+  sys_clkgood = 1;
   run(8, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
@@ -58,20 +108,23 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   }
 
   //----------
-  // RST = 0, CLK_A = 1, CPU_READY = 0
+  // 8 phases after START
 
-  top.clk_reg.set_rst(0);
-  top.clk_reg.set_clk_a(1);
-  top.clk_reg.set_cpu_ready(0);
   run(8, req, verbose, use_fast_impl);
 
   //----------
-  // RST = 0, CLK_A = 1, CPU_READY = 1
+  // 24 phases with CPU ready
 
-  top.clk_reg.set_rst(0);
-  top.clk_reg.set_clk_a(1);
-  top.clk_reg.set_cpu_ready(1);
-  run(24, req, verbose, use_fast_impl);
+  sys_cpuready = 1;
+  run(8, req, verbose, use_fast_impl);
+
+  dbg_write(0xFF45, 123, use_fast_impl);
+
+  //run(8, req, verbose, use_fast_impl);
+
+  uint8_t lyc = dbg_read(0xFF45, use_fast_impl);
+
+  printf("LYC is %d\n", lyc);
 
   if (verbose) printf("\n");
 }
@@ -87,12 +140,14 @@ void GateBoy::run(int _phase_count, Req req, bool verbose, bool use_fast_impl) {
 //------------------------------------------------------------------------------
 
 uint8_t GateBoy::dbg_read(uint16_t addr, bool use_fast_impl) {
+  CHECK_P((phase_total & 7) == 0);
   Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
   run(8, req, false, use_fast_impl);
   return top.cpu_bus.bus_data();
 }
 
 void GateBoy::dbg_write(uint16_t addr, uint8_t data, bool use_fast_impl) {
+  CHECK_P((phase_total & 7) == 0);
   Req req = {.addr = addr, .data = data, .read = 0, .write = 1 };
   run(8, req, false, use_fast_impl);
 }
@@ -106,8 +161,7 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   //----------
   // Update clock and buses
 
-  wire CLK = (phase_total & 1) & (top.clk_reg.get_clk_a());
-  top.clk_reg.set_clk_b(CLK);
+  wire CLK = (phase_total & 1) & sys_clken;
 
   //----------
   // Run passes until we stabilize
@@ -118,12 +172,16 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   StringDumper d;
 
   for (pass_count = 0; pass_count < 100; pass_count++) {
-
+    top.clk_reg.preset_rst(sys_rst);
+    top.clk_reg.preset_t1t2(sys_t1, sys_t2);
+    top.clk_reg.preset_cpu_ready(sys_cpuready);
+    top.clk_reg.preset_clk_a(sys_clkgood);
+    top.clk_reg.preset_clk_b(CLK);
+    top.joypad.preset_buttons(0);
     update_cpu_bus(phase, req);
     update_ext_bus(phase);
     update_vrm_bus(phase);
     update_oam_bus(phase);
-    top.joypad.set_buttons(0);
 
     if (use_fast_impl) {
       top.tick_fast(phase);
@@ -161,6 +219,19 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 
   CHECK_P(pass_count < 100);
 
+  uint8_t phase_clock = top.clk_reg.get_phase_clock();
+
+  if (sys_clken && sys_clkgood) {
+    if (PHASE_A) CHECK_P(phase_clock == 0b0001);
+    if (PHASE_B) CHECK_P(phase_clock == 0b0011);
+    if (PHASE_C) CHECK_P(phase_clock == 0b0111);
+    if (PHASE_D) CHECK_P(phase_clock == 0b1111);
+    if (PHASE_E) CHECK_P(phase_clock == 0b1110);
+    if (PHASE_F) CHECK_P(phase_clock == 0b1100);
+    if (PHASE_G) CHECK_P(phase_clock == 0b1000);
+    if (PHASE_H) CHECK_P(phase_clock == 0b0000);
+  }
+
   //----------
   // Done
 
@@ -181,76 +252,116 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 void GateBoy::update_cpu_bus(int phase, Req req) {
   auto& bus = top.cpu_bus;
 
-  bus._CPU_PIN6.hold(0);
+  bus.CPU_PIN6.preset(0);
+
+#if 0
+  /*read  rom */ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write rom */ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  vram*/ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = false;
+  /*write vram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+  /*read  cram*/ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write cram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  eram*/ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write eram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  oam */ CPU_PIN_READ_MEM = true;  CPU_PIN_ADDR_EXT = false;
+  /*write oam */ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+  /*read  hram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = dc;
+  /*write hram*/ CPU_PIN_READ_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+#endif
 
   if (PHASE_A) {
-    bus._CPU_PIN_RDp.hold(0);
-    bus._CPU_PIN_WRp.hold(0);
-    bus._CPU_PIN_AVp.hold(0);
-    bus._CPU_PIN_DVn.hold(1);
+    bus.preset_addr_z();
+    bus.CPU_PIN_RDp.preset(0);
+    bus.CPU_PIN_WRp.preset(0);
+    bus.CPU_PIN_ADDR_EXT.preset(0);
+    bus.CPU_PIN_READ_MEM.preset(0);
   }
   else {
-    bus._CPU_PIN_RDp.hold(req.read);
-    bus._CPU_PIN_WRp.hold(req.write);
-    bus._CPU_PIN_AVp.hold((req.read || req.write));
-    bus._CPU_PIN_DVn.hold(1);
-  }
+    bus.preset_addr(req.addr);
+    bus.CPU_PIN_RDp.preset(req.read);
+    bus.CPU_PIN_WRp.preset(req.write);
 
-  if (PHASE_B) {
-    bus.CPU_BUS_A00.hold(req.addr & 0x0001);
-    bus.CPU_BUS_A01.hold(req.addr & 0x0002);
-    bus.CPU_BUS_A02.hold(req.addr & 0x0004);
-    bus.CPU_BUS_A03.hold(req.addr & 0x0008);
-    bus.CPU_BUS_A04.hold(req.addr & 0x0010);
-    bus.CPU_BUS_A05.hold(req.addr & 0x0020);
-    bus.CPU_BUS_A06.hold(req.addr & 0x0040);
-    bus.CPU_BUS_A07.hold(req.addr & 0x0080);
-    bus.CPU_BUS_A08.hold(req.addr & 0x0100);
-    bus.CPU_BUS_A09.hold(req.addr & 0x0200);
-    bus.CPU_BUS_A10.hold(req.addr & 0x0400);
-    bus.CPU_BUS_A11.hold(req.addr & 0x0800);
-    bus.CPU_BUS_A12.hold(req.addr & 0x1000);
-    bus.CPU_BUS_A13.hold(req.addr & 0x2000);
-    bus.CPU_BUS_A14.hold(req.addr & 0x4000);
-    bus.CPU_BUS_A15.hold(req.addr & 0x8000);
+    if (req.read) {
+      /*erom*/ if      (req.addr <= 0x7FFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*vram*/ else if (req.addr <= 0x9FFF) { bus.CPU_PIN_ADDR_EXT.preset(0); }
+      /*cram*/ else if (req.addr <= 0xBFFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*eram*/ else if (req.addr <= 0xDFFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*eram*/ else if (req.addr <= 0xFDFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*oram*/ else if (req.addr <= 0xFEFF) { bus.CPU_PIN_ADDR_EXT.preset(0); }
+      /*hram*/ else if (req.addr <= 0xFFFF) { bus.CPU_PIN_ADDR_EXT.preset(0); }
+    }
+    else if (req.write) {
+      /*erom*/ if      (req.addr <= 0x7FFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*vram*/ else if (req.addr <= 0x9FFF) { bus.CPU_PIN_ADDR_EXT.preset(0); }
+      /*cram*/ else if (req.addr <= 0xBFFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*eram*/ else if (req.addr <= 0xDFFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*eram*/ else if (req.addr <= 0xFDFF) { bus.CPU_PIN_ADDR_EXT.preset(1); }
+      /*oram*/ else if (req.addr <= 0xFEFF) { bus.CPU_PIN_ADDR_EXT.preset(0); }
+      /*hram*/ else if (req.addr <= 0xFFFF) { bus.CPU_PIN_ADDR_EXT.preset(0); }
+    }
+    else {
+      bus.CPU_PIN_ADDR_EXT.preset(0);
+    }
+
+    bus.CPU_PIN_READ_MEM.preset(req.read && (req.addr < 0xFF00));
   }
 
   if (PHASE(0b00001111) && req.write) {
-    bus._CPU_PIN_DVn.hold(0);
-    bus.CPU_BUS_D0.hold(req.data_lo & 0x01);
-    bus.CPU_BUS_D1.hold(req.data_lo & 0x02);
-    bus.CPU_BUS_D2.hold(req.data_lo & 0x04);
-    bus.CPU_BUS_D3.hold(req.data_lo & 0x08);
-    bus.CPU_BUS_D4.hold(req.data_lo & 0x10);
-    bus.CPU_BUS_D5.hold(req.data_lo & 0x20);
-    bus.CPU_BUS_D6.hold(req.data_lo & 0x40);
-    bus.CPU_BUS_D7.hold(req.data_lo & 0x80);
+    bus.preset_data(req.data_lo);
   }
   else {
-    bus._CPU_PIN_DVn.hold(1);
-    bus.CPU_BUS_D0.release();
-    bus.CPU_BUS_D1.release();
-    bus.CPU_BUS_D2.release();
-    bus.CPU_BUS_D3.release();
-    bus.CPU_BUS_D4.release();
-    bus.CPU_BUS_D5.release();
-    bus.CPU_BUS_D6.release();
-    bus.CPU_BUS_D7.release();
+    bus.preset_data_z();
   }
+
+  top.int_reg.CPU_PIN_ACK_VBLANK.preset(0);
+  top.int_reg.CPU_PIN_ACK_STAT.preset(0);
+  top.int_reg.CPU_PIN_ACK_TIMER.preset(0);
+  top.int_reg.CPU_PIN_ACK_SERIAL.preset(0);
+  top.int_reg.CPU_PIN_ACK_JOYPAD.preset(0);
+
+  top.ser_reg.SCK_C.preset(0);
+  top.ser_reg.SIN_C.preset(0);
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoy::update_ext_bus(int phase) {
   (void)phase;
+
+  top.ext_bus._EXT_PIN_WR_C.preset(top.ext_bus._EXT_PIN_WR_A);
+  top.ext_bus._EXT_PIN_RD_C.preset(top.ext_bus._EXT_PIN_RD_A);
+
+  top.ext_bus._EXT_PIN_A00_C.preset(top.ext_bus._EXT_PIN_A00_A);
+  top.ext_bus._EXT_PIN_A01_C.preset(top.ext_bus._EXT_PIN_A01_A);
+  top.ext_bus._EXT_PIN_A02_C.preset(top.ext_bus._EXT_PIN_A02_A);
+  top.ext_bus._EXT_PIN_A03_C.preset(top.ext_bus._EXT_PIN_A03_A);
+  top.ext_bus._EXT_PIN_A04_C.preset(top.ext_bus._EXT_PIN_A04_A);
+  top.ext_bus._EXT_PIN_A05_C.preset(top.ext_bus._EXT_PIN_A05_A);
+  top.ext_bus._EXT_PIN_A06_C.preset(top.ext_bus._EXT_PIN_A06_A);
+  top.ext_bus._EXT_PIN_A07_C.preset(top.ext_bus._EXT_PIN_A07_A);
+  top.ext_bus._EXT_PIN_A08_C.preset(top.ext_bus._EXT_PIN_A08_A);
+  top.ext_bus._EXT_PIN_A09_C.preset(top.ext_bus._EXT_PIN_A09_A);
+  top.ext_bus._EXT_PIN_A10_C.preset(top.ext_bus._EXT_PIN_A10_A);
+  top.ext_bus._EXT_PIN_A11_C.preset(top.ext_bus._EXT_PIN_A11_A);
+  top.ext_bus._EXT_PIN_A12_C.preset(top.ext_bus._EXT_PIN_A12_A);
+  top.ext_bus._EXT_PIN_A13_C.preset(top.ext_bus._EXT_PIN_A13_A);
+  top.ext_bus._EXT_PIN_A14_C.preset(top.ext_bus._EXT_PIN_A14_A);
+  top.ext_bus._EXT_PIN_A15_C.preset(top.ext_bus._EXT_PIN_A15_A);
+
   //if (PHASE_C) {
     if (top.ext_bus._EXT_PIN_RD_A) {
       uint16_t ext_addr = top.ext_bus.get_pin_addr();
       uint8_t data = mem2[ext_addr & 0x7FFF];
-      top.ext_bus.hold_pin_data_in(~data);
+      top.ext_bus.preset_pin_data_in(data);
     }
     else {
-      top.ext_bus.hold_pin_data_z();
+      top.ext_bus.preset_pin_data_z();
     }
   //}
 }
@@ -260,17 +371,17 @@ void GateBoy::update_ext_bus(int phase) {
 void GateBoy::update_vrm_bus(int phase) {
   (void)phase;
 
-  top.vram_bus._VRAM_PIN_CS_C.hold(0);
-  top.vram_bus._VRAM_PIN_OE_C.hold(0);
-  top.vram_bus._VRAM_PIN_WR_C.hold(0);
+  top.vram_bus._VRAM_PIN_CS_C.preset(0);
+  top.vram_bus._VRAM_PIN_OE_C.preset(0);
+  top.vram_bus._VRAM_PIN_WR_C.preset(0);
 
   if (top.vram_bus._VRAM_PIN_OE_A) {
     uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
     uint8_t vram_data = mem2[vram_pin_addr + 0x8000];
-    top.vram_bus.hold_pin_data_in(vram_data);
+    top.vram_bus.preset_pin_data_in(vram_data);
   }
   else {
-    top.vram_bus.hold_pin_data_z();
+    top.vram_bus.preset_pin_data_z();
   }
 }
 
@@ -282,10 +393,10 @@ void GateBoy::update_oam_bus(int phase) {
   if (!top.oam_bus.OAM_PIN_OE) {
     int oam_addr = top.oam_bus.get_bus_addr();
     uint16_t* oam_base = (uint16_t*)(&mem2[0xFE00]);
-    top.oam_bus.set_bus_data(true, oam_base[oam_addr >> 1]);
+    top.oam_bus.preset_bus_data(true, oam_base[oam_addr >> 1]);
   }
   else {
-    top.oam_bus.set_bus_data(false, 0);
+    top.oam_bus.preset_bus_data(false, 0);
   }
 }
 

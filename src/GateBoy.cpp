@@ -118,15 +118,55 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   sys_cpuready = 1;
   run(8, req, verbose, use_fast_impl);
 
-  dbg_write(0xFF45, 123, use_fast_impl);
+  test_reg("JOYP", 0xFF00, 177, use_fast_impl);
 
-  //run(8, req, verbose, use_fast_impl);
+  test_reg("SB",   0xFF01, 177, use_fast_impl);
+  test_reg("SC",   0xFF02, 177, use_fast_impl);
 
-  uint8_t lyc = dbg_read(0xFF45, use_fast_impl);
+  test_reg("DIV",  0xFF04, 177, use_fast_impl);
+  test_reg("TIMA", 0xFF05, 177, use_fast_impl);
+  test_reg("TMA",  0xFF06, 177, use_fast_impl);
+  test_reg("TAC",  0xFF07, 177, use_fast_impl);
 
-  printf("LYC is %d\n", lyc);
+  //test_reg("LCDC", 0xFF40, 177, use_fast_impl);
+  test_reg("STAT", 0xFF41, 177, use_fast_impl);
+  test_reg("SCY",  0xFF42, 177, use_fast_impl);
+  test_reg("SCX",  0xFF43, 177, use_fast_impl);
+  test_reg("LY",   0xFF44, 177, use_fast_impl);
+  test_reg("LYC",  0xFF45, 177, use_fast_impl);
+
+  //test_reg("DMA", 0xFF46, 177, use_fast_impl); // does not work
+  test_reg("BGP",  0xFF47, 177, use_fast_impl);
+  test_reg("OBP0", 0xFF48, 177, use_fast_impl);
+  test_reg("OBP1", 0xFF49, 177, use_fast_impl);
+  test_reg("WY",   0xFF4A, 177, use_fast_impl);
+  test_reg("WX",   0xFF4B, 177, use_fast_impl);
+
+  test_reg("IF",   0xFF0F, 177, use_fast_impl);
+  test_reg("IE",   0xFFFF, 177, use_fast_impl);
+
+  mem2[0x000] = 177;
+  test_reg("ROM",  0x0000, 177, use_fast_impl);
+  test_reg("VRAM", 0x8000, 177, use_fast_impl);
+  test_reg("CRAM", 0xA000, 177, use_fast_impl);
+  test_reg("IRAM", 0xC000, 177, use_fast_impl);
+  test_reg("ERAM", 0xE000, 177, use_fast_impl);
+
+  mem2[0xFE00] = 177;
+
+  test_reg("ORAM", 0xFE00, 177, use_fast_impl);
+  test_reg("ZP00", 0xFF80, 177, use_fast_impl);
 
   if (verbose) printf("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::test_reg(const char* regname, uint16_t addr, uint8_t data_in, bool use_fast_impl) {
+  printf("%5s @ %04x <= %d\n", regname, addr, data_in);
+  dbg_write(addr, data_in, use_fast_impl);
+  uint8_t data_out = dbg_read(addr, use_fast_impl);
+  printf("%5s @ %04x => %d\n", regname, addr, data_out);
 }
 
 //------------------------------------------------------------------------------
@@ -142,8 +182,10 @@ void GateBoy::run(int _phase_count, Req req, bool verbose, bool use_fast_impl) {
 uint8_t GateBoy::dbg_read(uint16_t addr, bool use_fast_impl) {
   CHECK_P((phase_total & 7) == 0);
   Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
-  run(8, req, false, use_fast_impl);
-  return top.cpu_bus.bus_data();
+  run(4, req, false, use_fast_impl);
+  uint8_t res = top.cpu_bus.bus_data();
+  run(4, req, false, use_fast_impl);
+  return res;
 }
 
 void GateBoy::dbg_write(uint16_t addr, uint8_t data, bool use_fast_impl) {
@@ -354,16 +396,15 @@ void GateBoy::update_ext_bus(int phase) {
   top.ext_bus._EXT_PIN_A14_C.preset(top.ext_bus._EXT_PIN_A14_A);
   top.ext_bus._EXT_PIN_A15_C.preset(top.ext_bus._EXT_PIN_A15_A);
 
-  //if (PHASE_C) {
-    if (top.ext_bus._EXT_PIN_RD_A) {
-      uint16_t ext_addr = top.ext_bus.get_pin_addr();
-      uint8_t data = mem2[ext_addr & 0x7FFF];
-      top.ext_bus.preset_pin_data_in(data);
-    }
-    else {
-      top.ext_bus.preset_pin_data_z();
-    }
-  //}
+  if (top.ext_bus._EXT_PIN_RD_A) {
+    uint16_t ext_addr = top.ext_bus.get_pin_addr();
+    uint8_t data = mem2[ext_addr & 0x7FFF];
+    top.ext_bus.preset_pin_data_in(data);
+    //top.ext_bus.preset_pin_data_in(55);
+  }
+  else {
+    top.ext_bus.preset_pin_data_z();
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -375,8 +416,15 @@ void GateBoy::update_vrm_bus(int phase) {
   top.vram_bus._VRAM_PIN_OE_C.preset(0);
   top.vram_bus._VRAM_PIN_WR_C.preset(0);
 
+  uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
+
+  if (top.vram_bus._VRAM_PIN_WR_A) {
+    uint8_t data = ~top.vram_bus.get_pin_data_out();
+    //printf("vram[%04x] = %d\n", vram_pin_addr, data);
+    mem2[vram_pin_addr + 0x8000] = data;
+  }
+
   if (top.vram_bus._VRAM_PIN_OE_A) {
-    uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
     uint8_t vram_data = mem2[vram_pin_addr + 0x8000];
     top.vram_bus.preset_pin_data_in(vram_data);
   }

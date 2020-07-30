@@ -12,6 +12,7 @@ void LcdRegisters::tick(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
+  (void)phase;
 
   /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
   /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
@@ -185,9 +186,11 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.XUFA*/ wire _XUFA_FF45_WRn = and (top.CUPA_CPU_WRp_xxxxEFGx(), _XAYU_FF45p);
     /*p23.WANE*/ wire _WANE_FF45_WRp = not(_XUFA_FF45_WRn);
 
+    /*
     if (!_SYRY_LYC0.clk() && _WANE_FF45_WRp && top.clk_reg.WESY_SYS_RSTn()) {
       printf("Phase %c : Setting LYC!\n", 'A' + phase);
     }
+    */
 
     /*p23.SYRY*/ _SYRY_LYC0 = dff9(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.clk_reg.WESY_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0);
     /*p23.VUCE*/ _VUCE_LYC1 = dff9(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.clk_reg.WESY_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1);

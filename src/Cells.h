@@ -129,8 +129,9 @@ inline RegDelta tribuf_6p(wire OEp, wire D) {
   return RegDelta(DELTA_TRIZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
 #else
   if (OEp) {
-    //return D ? DELTA_TRI1 : DELTA_TRI0;
-    return D ? DELTA_TRI0 : DELTA_TRI1;
+    // also has to be positive sense because SB
+    return D ? DELTA_TRI1 : DELTA_TRI0;
+    //return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
     return DELTA_TRIZ;
@@ -144,8 +145,9 @@ inline RegDelta tribuf_6n(wire OEn, wire D) {
   return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
 #else
   if (!OEn) {
-    //return D ? DELTA_TRI1 : DELTA_TRI0;
-    return D ? DELTA_TRI0 : DELTA_TRI1;
+    // this one is used by LYC, has to be positive sense out
+    return D ? DELTA_TRI1 : DELTA_TRI0;
+    //return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
     return DELTA_TRIZ;

@@ -18,6 +18,8 @@ public:
   void update_vrm_bus(int phase);
   void update_oam_bus(int phase);
 
+  void test_reg(const char* regname, uint16_t addr, uint8_t data_in, bool use_fast_impl);
+
   bool sys_rst = 1;
   bool sys_t1 = 0;
   bool sys_t2 = 0;

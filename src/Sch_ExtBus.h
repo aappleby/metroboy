@@ -25,14 +25,14 @@ struct ExtBus {
   }
 
   void preset_pin_data_in(uint8_t data) {
-    _EXT_PIN_D0_C.preset(!(data & 0x01));
-    _EXT_PIN_D1_C.preset(!(data & 0x02));
-    _EXT_PIN_D2_C.preset(!(data & 0x04));
-    _EXT_PIN_D3_C.preset(!(data & 0x08));
-    _EXT_PIN_D4_C.preset(!(data & 0x10));
-    _EXT_PIN_D5_C.preset(!(data & 0x20));
-    _EXT_PIN_D6_C.preset(!(data & 0x40));
-    _EXT_PIN_D7_C.preset(!(data & 0x80));
+    _EXT_PIN_D0_C.preset(data & 0x01);
+    _EXT_PIN_D1_C.preset(data & 0x02);
+    _EXT_PIN_D2_C.preset(data & 0x04);
+    _EXT_PIN_D3_C.preset(data & 0x08);
+    _EXT_PIN_D4_C.preset(data & 0x10);
+    _EXT_PIN_D5_C.preset(data & 0x20);
+    _EXT_PIN_D6_C.preset(data & 0x40);
+    _EXT_PIN_D7_C.preset(data & 0x80);
   }
 
   void preset_pin_data_z() {

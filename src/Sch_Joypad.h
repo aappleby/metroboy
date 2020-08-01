@@ -12,40 +12,10 @@ struct Joypad {
 
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
+  void dump(Dumper& d) const;
 
   void preset_buttons(uint8_t buttons);
   /*p02.ASOK*/ wire ASOK_INT_JOYPADp() const { return and(APUG_JP_GLITCH3.q(), BATU_JP_GLITCH0.q()); }
-
-  void dump(Dumper& d) {
-    d("----------  Joypad  ----------\n");
-    d("AWOB_WAKE_CPU %c\n", AWOB_WAKE_CPU.c());
-    d("CPU_PIN_WAKE  %c\n", CPU_PIN_WAKE .c()); 
-
-    d("BATU_JP_GLITCH0  %c\n", BATU_JP_GLITCH0  .c());
-    d("ACEF_JP_GLITCH1  %c\n", ACEF_JP_GLITCH1  .c());
-    d("AGEM_JP_GLITCH2  %c\n", AGEM_JP_GLITCH2  .c());
-    d("APUG_JP_GLITCH3  %c\n", APUG_JP_GLITCH3  .c());
-    d("JUTE_JOYP_RA     %c\n", JUTE_JOYP_RA     .c());
-    d("KECY_JOYP_LB     %c\n", KECY_JOYP_LB     .c());
-    d("JALE_JOYP_UC     %c\n", JALE_JOYP_UC     .c());
-    d("KYME_JOYP_DS     %c\n", KYME_JOYP_DS     .c());
-    d("KELY_JOYP_UDLR   %c\n", KELY_JOYP_UDLR   .c());
-    d("COFY_JOYP_ABCS   %c\n", COFY_JOYP_ABCS   .c());
-    d("KUKO_DBG_FF00_D6 %c\n", KUKO_DBG_FF00_D6 .c());
-    d("KERU_DBG_FF00_D7 %c\n", KERU_DBG_FF00_D7 .c());
-    d("KEVU_JOYP_L0     %c\n", KEVU_JOYP_L0     .c());
-    d("KAPA_JOYP_L1     %c\n", KAPA_JOYP_L1     .c());
-    d("KEJA_JOYP_L2     %c\n", KEJA_JOYP_L2     .c());
-    d("KOLO_JOYP_L3     %c\n", KOLO_JOYP_L3     .c());
-
-    d("JOY_PIN_P10 %c%c%c%c\n", JOY_PIN_P10_A.c(), JOY_PIN_P10_B.c(), JOY_PIN_P10_C.c(), JOY_PIN_P10_D.c()); 
-    d("JOY_PIN_P11 %c%c%c%c\n", JOY_PIN_P11_A.c(), JOY_PIN_P11_B.c(), JOY_PIN_P11_C.c(), JOY_PIN_P11_D.c()); 
-    d("JOY_PIN_P12 %c%c%c%c\n", JOY_PIN_P12_A.c(), JOY_PIN_P12_B.c(), JOY_PIN_P12_C.c(), JOY_PIN_P12_D.c()); 
-    d("JOY_PIN_P13 %c%c%c%c\n", JOY_PIN_P13_A.c(), JOY_PIN_P13_B.c(), JOY_PIN_P13_C.c(), JOY_PIN_P13_D.c()); 
-    d("JOY_PIN_P14 %c%c%c%c\n", JOY_PIN_P14_A.c(), '_',               '_',               JOY_PIN_P14_D.c());
-    d("JOY_PIN_P15 %c%c%c%c\n", JOY_PIN_P15_A.c(), '_',               '_',               JOY_PIN_P15_D.c());
-    d("\n");
-  }
 
 private:
   friend struct SchematicTop;

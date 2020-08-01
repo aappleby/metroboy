@@ -13,6 +13,7 @@ struct OamBus;
 struct TileFetcher {
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top, CpuBus& cpu_bus);
+  void dump(Dumper& d, const SchematicTop& top) const;
 
   // not sure about this one
   // ROMO = not(POKY_04)
@@ -55,27 +56,6 @@ struct TileFetcher {
 
   // -> vram bus
   /*p27.NOFU*/ wire NOFU_BFETCH_S2n() const { return not(_NYVA_BFETCH_S2.q()); }
-
-  void dump(Dumper& d) {
-    d("----------TileFetcher---------\n");
-    int scx = pack(BAKE_SCX7.q(), CABU_SCX6.q(), CUZY_SCX5.q(), BEMY_SCX4.q(), GUBO_SCX3.q(), CYXU_SCX2.q(), DUZU_SCX1.q(), DATY_SCX0.q());
-    int scy = pack(FUNY_SCY7.q(), FOHA_SCY6.q(), FOTY_SCY5.q(), DEDE_SCY4.q(), FUJO_SCY3.q(), FEZU_SCY2.q(), FYMO_SCY1.q(), GAVE_SCY0.q());
-
-    d("SCX  %03d\n", scx);
-    d("SCY  %03d\n", scy);
-    d("LAXU_BFETCH_S0           %c\n", _LAXU_BFETCH_S0          .c());
-    d("MESU_BFETCH_S1           %c\n", _MESU_BFETCH_S1          .c());
-    d("NYVA_BFETCH_S2           %c\n", _NYVA_BFETCH_S2          .c());
-    d("LOVY_FETCH_DONEp         %c\n", _LOVY_FETCH_DONEp        .c());
-    d("NYKA_FETCH_DONE_Ap       %c\n", _NYKA_FETCH_DONE_Ap      .c());
-    d("PORY_FETCH_DONE_Bp       %c\n", _PORY_FETCH_DONE_Bp      .c());
-    d("LYZU_BFETCH_S0_DELAY     %c\n", _LYZU_BFETCH_S0_DELAY    .c());
-    d("PYGO_FETCH_DONE_Cp       %c\n", _PYGO_FETCH_DONE_Cp      .c());
-    d("POKY_PORCH_DONEp         %c\n", _POKY_PORCH_DONEp        .c());
-    d("LONY_BG_READ_VRAM_LATCHp %c\n", _LONY_BG_READ_VRAM_LATCHp.c());
-
-    d("\n");
-  }
 
   // FF42 - SCY -> vram bus
   /*p23.GAVE*/ Reg GAVE_SCY0 = REG_D0C0;

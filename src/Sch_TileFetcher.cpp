@@ -5,6 +5,46 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
+void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
+  d("----------TileFetcher---------\n");
+  int scx = pack(BAKE_SCX7.q(), CABU_SCX6.q(), CUZY_SCX5.q(), BEMY_SCX4.q(), GUBO_SCX3.q(), CYXU_SCX2.q(), DUZU_SCX1.q(), DATY_SCX0.q());
+  int scy = pack(FUNY_SCY7.q(), FOHA_SCY6.q(), FOTY_SCY5.q(), DEDE_SCY4.q(), FUJO_SCY3.q(), FEZU_SCY2.q(), FYMO_SCY1.q(), GAVE_SCY0.q());
+
+  d("SCX  %03d\n", scx);
+  d("SCY  %03d\n", scy);
+
+  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
+
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
+  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
+
+  d("SEKO_WX_MATCHne          %d\n", top.pix_pipe.SEKO_WX_MATCHne());
+  d("SUZU_WIN_FIRST_TILEne    %d\n", top.pix_pipe.SUZU_WIN_FIRST_TILEne());
+  d("TAVE_PORCH_DONE_TRIGp    %d\n", top.tile_fetcher.TAVE_PORCH_DONE_TRIGp());
+  d("_LEBO_AxCxExGx           %d\n", _LEBO_AxCxExGx);
+
+  d("TEVO_FINE_RSTp           %d\n", TEVO_FINE_RSTp);
+
+  d("AVAP_RENDER_START_TRIGp  %d\n", top.sprite_scanner.AVAP_RENDER_START_TRIGp());
+  d("MOSU_TILE_FETCHER_RSTp   %d\n", top.pix_pipe.MOSU_TILE_FETCHER_RSTp());
+  d("NYXU_TILE_FETCHER_RSTn   %d\n", NYXU_TILE_FETCHER_RSTn);
+  d("LAXU_BFETCH_S0           %c\n", _LAXU_BFETCH_S0          .c());
+  d("MESU_BFETCH_S1           %c\n", _MESU_BFETCH_S1          .c());
+  d("NYVA_BFETCH_S2           %c\n", _NYVA_BFETCH_S2          .c());
+
+  d("LOVY_FETCH_DONEp         %c\n", _LOVY_FETCH_DONEp        .c());
+  d("NYKA_FETCH_DONE_Ap       %c\n", _NYKA_FETCH_DONE_Ap      .c());
+  d("PORY_FETCH_DONE_Bp       %c\n", _PORY_FETCH_DONE_Bp      .c());
+  d("LYZU_BFETCH_S0_DELAY     %c\n", _LYZU_BFETCH_S0_DELAY    .c());
+  d("PYGO_FETCH_DONE_Cp       %c\n", _PYGO_FETCH_DONE_Cp      .c());
+  d("POKY_PORCH_DONEp         %c\n", _POKY_PORCH_DONEp        .c());
+  d("LONY_BG_READ_VRAM_LATCHp %c\n", _LONY_BG_READ_VRAM_LATCHp.c());
+
+  d("\n");
+}
+
+//------------------------------------------------------------------------------
+
 void TileFetcher::tick(const SchematicTop& top) {
   _XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp();
   _NYXU_TILE_FETCHER_RSTn = top.NYXU_TILE_FETCHER_RSTn();
@@ -22,9 +62,16 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.LOVY*/ _LOVY_FETCH_DONEp = dff17(top.clk_reg.MYVO_AxCxExGx(), top.NYXU_TILE_FETCHER_RSTn(), LYRY_BFETCH_DONEp());
 
     /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
-    /*p27.LAXU*/ _LAXU_BFETCH_S0 = dff17(_LEBO_AxCxExGx,       top.NYXU_TILE_FETCHER_RSTn(), _LAXU_BFETCH_S0.qn());
-    /*p27.MESU*/ _MESU_BFETCH_S1 = dff17(_LAXU_BFETCH_S0.qn(), top.NYXU_TILE_FETCHER_RSTn(), _MESU_BFETCH_S1.qn());
-    /*p27.NYVA*/ _NYVA_BFETCH_S2 = dff17(_MESU_BFETCH_S1.qn(), top.NYXU_TILE_FETCHER_RSTn(), _NYVA_BFETCH_S2.qn());
+
+    wire NYXU_TILE_FETCHER_RSTn1 = top.NYXU_TILE_FETCHER_RSTn();
+    wire TEVO_FINE_RSTp = or(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
+    wire NYXU_TILE_FETCHER_RSTn2 = nor(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
+
+    CHECK_P(NYXU_TILE_FETCHER_RSTn1 == NYXU_TILE_FETCHER_RSTn2);
+
+    /*p27.LAXU*/ _LAXU_BFETCH_S0 = dff17(_LEBO_AxCxExGx,       NYXU_TILE_FETCHER_RSTn2, _LAXU_BFETCH_S0.qn());
+    /*p27.MESU*/ _MESU_BFETCH_S1 = dff17(_LAXU_BFETCH_S0.qn(), NYXU_TILE_FETCHER_RSTn2, _MESU_BFETCH_S1.qn());
+    /*p27.NYVA*/ _NYVA_BFETCH_S2 = dff17(_MESU_BFETCH_S1.qn(), NYXU_TILE_FETCHER_RSTn2, _NYVA_BFETCH_S2.qn());
 
     /*p27.LYZU*/ _LYZU_BFETCH_S0_DELAY = dff17(top.clk_reg.ALET_xBxDxFxH(), top.pix_pipe.XYMU_RENDERINGp(), _LAXU_BFETCH_S0.q());
   }

@@ -86,50 +86,100 @@ void OamBus::tock(SchematicTop& top) {
     wire GND = 0;
     wire WEFE_VCC = 1;
 
-    /*p28.APAR*/ wire _APAR_SCAN_OAM_RDn  = not(top.ACYL_SCANNINGp());
-    /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn  = not(top.dma_reg.MATU_DMA_RUNNINGp());
-    /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or (top.ACYL_SCANNINGp(), top.pix_pipe.XYMU_RENDERINGp(), top.dma_reg.MATU_DMA_RUNNINGp());
-    /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not(top.AJON_OAM_BUSY());
+#if 0
+    /*p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe._XYMU_RENDERINGp;
+    /*p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg._MATU_DMA_RUNNINGp.q();
+    /*p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner._BESU_SCANNINGp;
+
+    // BOGE := not(MATU);
+    // AJON := and(XYMU, BOGE)
+    // ACYL := and(BOGE, BESU);
+    // APAR := not(ACYL);
+    // DUGA := not(MATU_17);
+    // ASAM := or(ACYL, XYMU, MATU_17);
+    // BETE := not(AJON);
+
+    // APAR := or(MATU, !BESU);
+    // DUGA := !MATU;
+    // ASAM := or(and(!MATU, BESU), XYMU, MATU);
+    // BETE := or(!XYMU, MATU);
+
+    // dma 0
+    // APAR := !BESU;
+    // DUGA := !0;
+    // ASAM := or(BESU, XYMU);
+    // BETE := !XYMU;
+
+    // dma 1
+    // APAR := 1;
+    // DUGA := 0;
+    // ASAM := 1;
+    // BETE := 1;
+
+    // ok, BESU and XYMU must _not_ be active at the same time
+    // and so XYMU is probably firing early, or staying stuck after line end
+
+
+#endif
+    /*p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe._XYMU_RENDERINGp;
+    /*p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg._MATU_DMA_RUNNINGp.q();
+    /*p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner._BESU_SCANNINGp;
+
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(MATU_DMA_RUNNINGp);
+    /*p28.ACYL*/ wire ACYL_SCANNINGp = and(BOGE_DMA_RUNNINGn, BESU_SCANNINGp);
+    /*p28.AJON*/ wire AJON_OAM_BUSY = and(BOGE_DMA_RUNNINGn, XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
+
+    // AJON := and(XYMU, BOGE)
+    // ACYL := and(BOGE, BESU);
+    // APAR := not(ACYL);
+    // DUGA := not(MATU_17);
+    // ASAM := or(ACYL, XYMU, MATU_17);
+    // BETE := not(AJON);
+
+    /*p28.APAR*/ wire APAR_SCAN_OAM_RDn  = not(ACYL_SCANNINGp);
+    /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn  = not(MATU_DMA_RUNNINGp);
+    /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn  = or (ACYL_SCANNINGp, XYMU_RENDERINGp, MATU_DMA_RUNNINGp);
+    /*p28.BETE*/ wire BETE_PPU_OAM_RDn  = not(AJON_OAM_BUSY);
 
     // Scanner addr -> OAM addr
-    /*p28.GEFY*/ OAM_TRI_A0 = tribuf_6n(_APAR_SCAN_OAM_RDn, GND);
-    /*p28.WUWE*/ OAM_TRI_A1 = tribuf_6n(_APAR_SCAN_OAM_RDn, GND);
-    /*p28.GUSE*/ OAM_TRI_A2 = tribuf_6n(_APAR_SCAN_OAM_RDn, top.sprite_scanner.YFEL_SCAN0());
-    /*p28.GEMA*/ OAM_TRI_A3 = tribuf_6n(_APAR_SCAN_OAM_RDn, top.sprite_scanner.WEWY_SCAN1());
-    /*p28.FUTO*/ OAM_TRI_A4 = tribuf_6n(_APAR_SCAN_OAM_RDn, top.sprite_scanner.GOSO_SCAN2());
-    /*p28.FAKU*/ OAM_TRI_A5 = tribuf_6n(_APAR_SCAN_OAM_RDn, top.sprite_scanner.ELYN_SCAN3());
-    /*p28.GAMA*/ OAM_TRI_A6 = tribuf_6n(_APAR_SCAN_OAM_RDn, top.sprite_scanner.FAHA_SCAN4());
-    /*p28.GOBY*/ OAM_TRI_A7 = tribuf_6n(_APAR_SCAN_OAM_RDn, top.sprite_scanner.FONY_SCAN5());
+    /*p28.GEFY*/ OAM_TRI_A0 = tribuf_6n(APAR_SCAN_OAM_RDn, GND);
+    /*p28.WUWE*/ OAM_TRI_A1 = tribuf_6n(APAR_SCAN_OAM_RDn, GND);
+    /*p28.GUSE*/ OAM_TRI_A2 = tribuf_6n(APAR_SCAN_OAM_RDn, top.sprite_scanner.YFEL_SCAN0());
+    /*p28.GEMA*/ OAM_TRI_A3 = tribuf_6n(APAR_SCAN_OAM_RDn, top.sprite_scanner.WEWY_SCAN1());
+    /*p28.FUTO*/ OAM_TRI_A4 = tribuf_6n(APAR_SCAN_OAM_RDn, top.sprite_scanner.GOSO_SCAN2());
+    /*p28.FAKU*/ OAM_TRI_A5 = tribuf_6n(APAR_SCAN_OAM_RDn, top.sprite_scanner.ELYN_SCAN3());
+    /*p28.GAMA*/ OAM_TRI_A6 = tribuf_6n(APAR_SCAN_OAM_RDn, top.sprite_scanner.FAHA_SCAN4());
+    /*p28.GOBY*/ OAM_TRI_A7 = tribuf_6n(APAR_SCAN_OAM_RDn, top.sprite_scanner.FONY_SCAN5());
 
     // DMA addr -> OAM addr
-    /*p28.FODO*/ OAM_TRI_A0 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.NAKY_DMA_A00.q());
-    /*p28.FESA*/ OAM_TRI_A1 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.PYRO_DMA_A01.q());
-    /*p28.FAGO*/ OAM_TRI_A2 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.NEFY_DMA_A02.q());
-    /*p28.FYKY*/ OAM_TRI_A3 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.MUTY_DMA_A03.q());
-    /*p28.ELUG*/ OAM_TRI_A4 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.NYKO_DMA_A04.q());
-    /*p28.EDOL*/ OAM_TRI_A5 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.PYLO_DMA_A05.q());
-    /*p28.FYDU*/ OAM_TRI_A6 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.NUTO_DMA_A06.q());
-    /*p28.FETU*/ OAM_TRI_A7 = tribuf_6n(_DUGA_DMA_OAM_RDn, top.dma_reg.MUGU_DMA_A07.q());
+    /*p28.FODO*/ OAM_TRI_A0 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.NAKY_DMA_A00.q());
+    /*p28.FESA*/ OAM_TRI_A1 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.PYRO_DMA_A01.q());
+    /*p28.FAGO*/ OAM_TRI_A2 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.NEFY_DMA_A02.q());
+    /*p28.FYKY*/ OAM_TRI_A3 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.MUTY_DMA_A03.q());
+    /*p28.ELUG*/ OAM_TRI_A4 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.NYKO_DMA_A04.q());
+    /*p28.EDOL*/ OAM_TRI_A5 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.PYLO_DMA_A05.q());
+    /*p28.FYDU*/ OAM_TRI_A6 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.NUTO_DMA_A06.q());
+    /*p28.FETU*/ OAM_TRI_A7 = tribuf_6n(DUGA_DMA_OAM_RDn, top.dma_reg.MUGU_DMA_A07.q());
 
     // CPU addr -> OAM addr
-    /*p28.GARO*/ OAM_TRI_A0 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A00);
-    /*p28.WACU*/ OAM_TRI_A1 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A01);
-    /*p28.GOSE*/ OAM_TRI_A2 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A02);
-    /*p28.WAPE*/ OAM_TRI_A3 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A03);
-    /*p28.FEVU*/ OAM_TRI_A4 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A04);
-    /*p28.GERA*/ OAM_TRI_A5 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A05);
-    /*p28.WAXA*/ OAM_TRI_A6 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A06);
-    /*p28.FOBY*/ OAM_TRI_A7 = tribuf_6n(_ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A07);
+    /*p28.GARO*/ OAM_TRI_A0 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A00);
+    /*p28.WACU*/ OAM_TRI_A1 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A01);
+    /*p28.GOSE*/ OAM_TRI_A2 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A02);
+    /*p28.WAPE*/ OAM_TRI_A3 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A03);
+    /*p28.FEVU*/ OAM_TRI_A4 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A04);
+    /*p28.GERA*/ OAM_TRI_A5 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A05);
+    /*p28.WAXA*/ OAM_TRI_A6 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A06);
+    /*p28.FOBY*/ OAM_TRI_A7 = tribuf_6n(ASAM_CPU_OAM_RDn, top.cpu_bus.CPU_BUS_A07);
 
     // PPU addr -> OAM addr
-    /*p28.GECA*/ OAM_TRI_A0 = tribuf_6n(_BETE_PPU_OAM_RDn, WEFE_VCC);
-    /*p28.WYDU*/ OAM_TRI_A1 = tribuf_6n(_BETE_PPU_OAM_RDn, WEFE_VCC);
-    /*p28.GYBU*/ OAM_TRI_A2 = tribuf_6n(_BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_0);
-    /*p28.GYKA*/ OAM_TRI_A3 = tribuf_6n(_BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_1);
-    /*p28.FABY*/ OAM_TRI_A4 = tribuf_6n(_BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_2);
-    /*p28.FACO*/ OAM_TRI_A5 = tribuf_6n(_BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_3);
-    /*p28.FUGU*/ OAM_TRI_A6 = tribuf_6n(_BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_4);
-    /*p28.FYKE*/ OAM_TRI_A7 = tribuf_6n(_BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_5);
+    /*p28.GECA*/ OAM_TRI_A0 = tribuf_6n(BETE_PPU_OAM_RDn, WEFE_VCC);
+    /*p28.WYDU*/ OAM_TRI_A1 = tribuf_6n(BETE_PPU_OAM_RDn, WEFE_VCC);
+    /*p28.GYBU*/ OAM_TRI_A2 = tribuf_6n(BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_0);
+    /*p28.GYKA*/ OAM_TRI_A3 = tribuf_6n(BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_1);
+    /*p28.FABY*/ OAM_TRI_A4 = tribuf_6n(BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_2);
+    /*p28.FACO*/ OAM_TRI_A5 = tribuf_6n(BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_3);
+    /*p28.FUGU*/ OAM_TRI_A6 = tribuf_6n(BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_4);
+    /*p28.FYKE*/ OAM_TRI_A7 = tribuf_6n(BETE_PPU_OAM_RDn, top.sprite_store.SPR_TRI_INDX_5);
   }
 
 

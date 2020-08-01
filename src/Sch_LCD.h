@@ -13,6 +13,19 @@ struct LcdRegisters {
   void tick(const SchematicTop& top);
   void tock(int phase, const SchematicTop& top, CpuBus& cpu_bus);
 
+  int get_x() const {
+    return pack(SAXO_X0.q(), TYPO_X1.q(), VYZO_X2.q(), TELU_X3.q(), SUDE_X4.q(), TAHA_X5.q(), TYRY_X6.q(), 0);
+  }
+
+  int get_y() const {
+    return pack(MUWY_Y0.q(), MYRO_Y1.q(), LEXA_Y2.q(), LYDO_Y3.q(), LOVU_Y4.q(), LEMA_Y5.q(), MATO_Y6.q(), LAFO_Y7.q());
+  }
+
+  int get_lyc() const {
+    return pack(_SYRY_LYC0.q(), _VUCE_LYC1.q(), _SEDY_LYC2.q(), _SALO_LYC3.q(),
+                _SOTA_LYC4.q(), _VAFA_LYC5.q(), _VEVO_LYC6.q(), _RAHA_LYC7.q());
+  }
+
   /*p28.BYHA*/ wire LcdRegisters::BYHA_VID_LINE_TRIGn() const {
     /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_VID_LINE_ENDp.q());
     return and (or (_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
@@ -33,11 +46,11 @@ struct LcdRegisters {
   // -> sprite scanner
   /*p29.CATU*/ wire CATU_VID_LINE_ENDp()       const { return _CATU_VID_LINE_ENDp.q(); }
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("----------   LCD    ----------\n");
-    d("LCD X               %03d\n", pack(0,           TYRY_X6.q(), TAHA_X5.q(), SUDE_X4.q(), TELU_X3.q(), VYZO_X2.q(), TYPO_X1.q(), SAXO_X0.q()));
-    d("LCD Y               %03d\n", pack(LAFO_Y7.q(), MATO_Y6.q(), LEMA_Y5.q(), LOVU_Y4.q(), LYDO_Y3.q(), LEXA_Y2.q(), MYRO_Y1.q(), MUWY_Y0.q()));
-    d("LYC                 %03d\n", pack(_SYRY_LYC0.q(), _VUCE_LYC1.q(), _SEDY_LYC2.q(), _SALO_LYC3.q(), _SOTA_LYC4.q(), _VAFA_LYC5.q(), _VEVO_LYC6.q(), _RAHA_LYC7.q()));
+    d("LCD X               %03d\n", get_x());
+    d("LCD Y               %03d\n", get_y());
+    d("LYC                 %03d\n", get_lyc());
 
     d("RUTU_LINE_ENDp      %c\n", _RUTU_LINE_ENDp     .c());
     d("CATU_VID_LINE_ENDp  %c\n", _CATU_VID_LINE_ENDp .c());

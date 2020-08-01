@@ -4,6 +4,136 @@
 
 using namespace Schematics;
 
+void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
+  d("---------- Pix Pipe ----------\n");
+
+  /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor(top.sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), top.clk_reg.MYVO_AxCxExGx());
+  /*p24.SOCY*/ wire _SOCY_WIN_HITn = not(TOMU_WIN_HITp());
+  /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and (_SOCY_WIN_HITn, top.tile_fetcher.POKY_PORCH_DONEp(), _VYBO_PIX_CLK_xBxDxFxH);
+  /*p24.SEGU*/ wire _SEGU_CLKPIPEn = not(_TYFA_CLKPIPEp_xBxDxFxH);
+  /*p24.SACU*/ wire _SACU_CLKPIPEp = nor(_SEGU_CLKPIPEn, _ROXY_FINE_SCROLL_DONEn);
+
+  d("_VYBO_PIX_CLK_xBxDxFxH  %d\n", _VYBO_PIX_CLK_xBxDxFxH);
+  d("_SOCY_WIN_HITn          %d\n", _SOCY_WIN_HITn);
+  d("_TYFA_CLKPIPEp_xBxDxFxH %d\n", _TYFA_CLKPIPEp_xBxDxFxH);
+  d("_SEGU_CLKPIPEn          %d\n", _SEGU_CLKPIPEn);
+  d("_SACU_CLKPIPEp          %d\n", _SACU_CLKPIPEp);
+
+  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIGn(), top.clk_reg.TOFU_VID_RSTp());
+  d("BYHA_VID_LINE_TRIGn     %d\n", top.lcd_reg.BYHA_VID_LINE_TRIGn());
+  d("TOFU_VID_RSTp           %d\n", top.clk_reg.TOFU_VID_RSTp());
+  d("_TADY_LINE_START_RST    %d\n", _TADY_LINE_START_RST);
+
+
+  d("PIX COUNT   %03d\n", pack(
+    XEHO_X0.q(),
+    SAVY_X1.q(),
+    XODU_X2.q(),
+    XYDO_X3.q(),
+    TUHU_X4.q(),
+    TUKY_X5.q(),
+    TAKO_X6.q(),
+    SYBE_X7.q()
+  ));
+
+  d("LCDC_BGEN   %c\n", VYXE_LCDC_BGEN  .c());
+  d("LCDC_SPEN   %c\n", XYLO_LCDC_SPEN  .c());
+  d("LCDC_SPSIZE %c\n", XYMO_LCDC_SPSIZE.c());
+  d("LCDC_BGMAP  %c\n", XAFO_LCDC_BGMAP .c());
+  d("LCDC_BGTILE %c\n", WEXU_LCDC_BGTILE.c());
+  d("LCDC_WINEN  %c\n", WYMO_LCDC_WINEN .c());
+  d("LCDC_WINMAP %c\n", WOKY_LCDC_WINMAP.c());
+  d("LCDC_EN     %c\n", XONA_LCDC_EN    .c());
+
+  d("INT_HBL_EN  %c\n", ROXE_INT_HBL_EN.c());
+  d("INT_VBL_EN  %c\n", RUFO_INT_VBL_EN.c());
+  d("INT_OAM_EN  %c\n", REFE_INT_OAM_EN.c());
+  d("INT_LYC_EN  %c\n", RUGU_INT_LYC_EN.c());
+
+  int win_x = pack(_XOLO_WIN_X7.q(), _WYKO_WIN_X6.q(), _WOBO_WIN_X5.q(), _WODY_WIN_X4.q(),
+                    _WYKA_WIN_X3.q(), 0, 0, 0);
+
+  int win_y = pack(_TEKE_WIN_Y7.q(), _TATE_WIN_Y6.q(), _TOZO_WIN_Y5.q(), _TAXA_WIN_Y4.q(),
+                    _TUFU_WIN_Y3.q(), _VYMU_WIN_Y2.q(), _VUJO_WIN_Y1.q(), _VYNO_WIN_Y0.q());
+
+  d("WIN X   %03d\n", win_x);
+  d("WIN_Y   %03d\n", win_y);
+
+  d("WIN_MODE_A       %c\n", _PYNU_WIN_MODE_A      .c());
+  d("WIN_FIRST_TILE_A %c\n", _RYDY_WIN_FIRST_TILE_A.c());
+  d("WIN_MODE_B       %c\n", _NOPA_WIN_MODE_B      .c());
+  d("WIN_FIRST_TILE_B %c\n", _SOVY_WIN_FIRST_TILE_B.c());
+  d("WY_MATCH_LATCH   %c\n", _REJO_WY_MATCH_LATCH  .c());
+  d("WY_MATCH         %c\n", _SARY_WY_MATCH        .c());
+  d("WX_MATCHn_A      %c\n", _RYFA_WX_MATCHn_A     .c());
+  d("WX_MATCHn_B      %c\n", _RENE_WX_MATCHn_B     .c());
+  d("WX_MATCH_A       %c\n", _PYCO_WX_MATCH_A      .c());
+  d("WX_MATCH_B       %c\n", _NUNU_WX_MATCH_B      .c());
+
+  d("ROXY_FINE_SCROLL_DONEn %c\n", _ROXY_FINE_SCROLL_DONEn.c());
+  d("RYKU_FINE_CNT0         %c\n", _RYKU_FINE_CNT0        .c());
+  d("ROGA_FINE_CNT1         %c\n", _ROGA_FINE_CNT1        .c());
+  d("RUBU_FINE_CNT2         %c\n", _RUBU_FINE_CNT2        .c());
+  d("XYMU_RENDERINGp        %c\n", _XYMU_RENDERINGp       .c());
+  d("RUPO_LYC_MATCH_LATCHn  %c\n", _RUPO_LYC_MATCH_LATCHn .c());
+  d("WUSA_LCD_CLOCK_GATE    %c\n", _WUSA_LCD_CLOCK_GATE   .c());
+  d("VOGA_RENDER_DONE_SYNC  %c\n", _VOGA_RENDER_DONE_SYNC .c());
+  d("PUXA_FINE_MATCH_A      %c\n", _PUXA_FINE_MATCH_A     .c());
+  d("NYZE_FINE_MATCH_B      %c\n", _NYZE_FINE_MATCH_B     .c());
+  d("PAHO_X_8_SYNC          %c\n", _PAHO_X_8_SYNC         .c());
+  d("POFY_ST_LATCH          %c\n", _POFY_ST_LATCH         .c());
+  d("LCD_PIN_CP             %c\n", _LCD_PIN_CP            .c());
+  d("LCD_PIN_ST             %c\n", _LCD_PIN_ST            .c());
+  d("LCD_PIN_LD1            %c\n", _LCD_PIN_LD1           .c());
+  d("LCD_PIN_LD0            %c\n", _LCD_PIN_LD0           .c());
+
+  d("BG_PIPE_A  %c%c%c%c%c%c%c%c\n", 
+    BG_PIPE_A0.c(), BG_PIPE_A1.c(), BG_PIPE_A2.c(), BG_PIPE_A3.c(),
+    BG_PIPE_A4.c(), BG_PIPE_A5.c(), BG_PIPE_A6.c(), BG_PIPE_A7.c());
+
+  d("BG_PIPE_B  %c%c%c%c%c%c%c%c\n", 
+    BG_PIPE_B0.c(), BG_PIPE_B1.c(), BG_PIPE_B2.c(), BG_PIPE_B3.c(),
+    BG_PIPE_B4.c(), BG_PIPE_B5.c(), BG_PIPE_B6.c(), BG_PIPE_B7.c());
+
+  d("SPR_PIPE_A %c%c%c%c%c%c%c%c\n", 
+    SPR_PIPE_A0.c(), SPR_PIPE_A1.c(), SPR_PIPE_A2.c(), SPR_PIPE_A3.c(),
+    SPR_PIPE_A4.c(), SPR_PIPE_A5.c(), SPR_PIPE_A6.c(), SPR_PIPE_A7.c());
+
+  d("SPR_PIPE_B %c%c%c%c%c%c%c%c\n", 
+    SPR_PIPE_B0.c(), SPR_PIPE_B1.c(), SPR_PIPE_B2.c(), SPR_PIPE_B3.c(),
+    SPR_PIPE_B4.c(), SPR_PIPE_B5.c(), SPR_PIPE_B6.c(), SPR_PIPE_B7.c());
+
+  d("PAL_PIPE   %c%c%c%c%c%c%c%c\n", 
+    PAL_PIPE_0.c(), PAL_PIPE_1.c(), PAL_PIPE_2.c(), PAL_PIPE_3.c(), 
+    PAL_PIPE_4.c(), PAL_PIPE_5.c(), PAL_PIPE_6.c(), PAL_PIPE_7.c());
+
+  d("MASK_PIPE  %c%c%c%c%c%c%c%c\n", 
+    MASK_PIPE_0.c(), MASK_PIPE_1.c(), MASK_PIPE_2.c(), MASK_PIPE_3.c(),
+    MASK_PIPE_4.c(), MASK_PIPE_5.c(), MASK_PIPE_6.c(), MASK_PIPE_7.c());
+
+  d("BGP  %c%c %c%c %c%c %c%c\n",
+    _MENA_BGP7.c(), _MOGY_BGP6.c(), _MORU_BGP5.c(), _MUKE_BGP4.c(),
+    _MAXY_BGP3.c(), _PYLU_BGP2.c(), _NUSY_BGP1.c(), _PAVO_BGP0.c());
+
+  d("OBP0 %c%c %c%c %c%c %c%c\n",
+    _XANA_OBP07.c(), _XUPO_OBP06.c(), _XYZE_OBP05.c(), _XERU_OBP04.c(),
+    _XALO_OBP03.c(), _XOVA_OBP02.c(), _XUKY_OBP01.c(), _XUFU_OBP00.c());
+
+  d("OBP1 %c%c %c%c %c%c %c%c\n",
+    _LUXO_OBP17.c(), _LEPU_OBP16.c(), _LUGU_OBP15.c(), _LUNE_OBP14.c(),
+    _LOSE_OBP13.c(), _MOSA_OBP12.c(), _LAWO_OBP11.c(), _MOXY_OBP10.c());
+
+  d("WY %03d\n",
+    pack(_NAFU_WY7.q(), _NUKA_WY6.q(), _NENE_WY5.q(), _NULO_WY4.q(),
+        _MELA_WY3.q(), _NAGA_WY2.q(), _NYRO_WY1.q(), _NESO_WY0.q()));
+
+  d("WX %03d\n",
+    pack(_NUKU_WX7.q(), _MUVO_WX6.q(), _MYCE_WX5.q(), _MYPU_WX4.q(),
+          _MEBY_WX3.q(), _NOKE_WX2.q(), _NOFE_WX1.q(), _MYPA_WX0.q()));
+
+  d("\n");
+}
+
 //------------------------------------------------------------------------------
 
 void PixelPipe::tick(const SchematicTop& top) {
@@ -41,16 +171,16 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p24.TOCA*/ wire _TOCA_CLKPIPE_HI = not(XYDO_X3.q());
 
-    /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIGn(), top.clk_reg.TOFU_VID_RSTp());
+    /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.TOFU_VID_RSTp());
 
-    /*p21.XEHO*/ XEHO_X0 = dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, XEHO_X0.qn());
-    /*p21.SAVY*/ SAVY_X1 = dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _RYBO);
-    /*p21.XODU*/ XODU_X2 = dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _XEGY);
-    /*p21.XYDO*/ XYDO_X3 = dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RST, _XORA);
-    /*p21.TUHU*/ TUHU_X4 = dff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, TUHU_X4.qn());
-    /*p21.TUKY*/ TUKY_X5 = dff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _SAKE);
-    /*p21.TAKO*/ TAKO_X6 = dff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _TYGE);
-    /*p21.SYBE*/ SYBE_X7 = dff17(_TOCA_CLKPIPE_HI,    _TADY_LINE_START_RST, _ROKU);
+    /*p21.XEHO*/ XEHO_X0 = dff17(_SACU_CLKPIPEp,    _TADY_LINE_START_RST, XEHO_X0.qn());
+    /*p21.SAVY*/ SAVY_X1 = dff17(_SACU_CLKPIPEp,    _TADY_LINE_START_RST, _RYBO);
+    /*p21.XODU*/ XODU_X2 = dff17(_SACU_CLKPIPEp,    _TADY_LINE_START_RST, _XEGY);
+    /*p21.XYDO*/ XYDO_X3 = dff17(_SACU_CLKPIPEp,    _TADY_LINE_START_RST, _XORA);
+    /*p21.TUHU*/ TUHU_X4 = dff17(_TOCA_CLKPIPE_HI,  _TADY_LINE_START_RST, TUHU_X4.qn());
+    /*p21.TUKY*/ TUKY_X5 = dff17(_TOCA_CLKPIPE_HI,  _TADY_LINE_START_RST, _SAKE);
+    /*p21.TAKO*/ TAKO_X6 = dff17(_TOCA_CLKPIPE_HI,  _TADY_LINE_START_RST, _TYGE);
+    /*p21.SYBE*/ SYBE_X7 = dff17(_TOCA_CLKPIPE_HI,  _TADY_LINE_START_RST, _ROKU);
   }
 
   //----------------------------------------
@@ -221,10 +351,16 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.VOGA*/ _VOGA_RENDER_DONE_SYNC = dff17(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, WODU_RENDER_DONEp());
   }
 
+  if (_VOGA_RENDER_DONE_SYNC.posedge()) printf("_VOGA_RENDER_DONE_SYNC ^^^\n");
+  if (_VOGA_RENDER_DONE_SYNC.negedge()) printf("_VOGA_RENDER_DONE_SYNC vvv\n");
+
   {
     /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(top.clk_reg.TOFU_VID_RSTp(), _VOGA_RENDER_DONE_SYNC.q());
     /*p21.XYMU*/ _XYMU_RENDERINGp = nor_latch(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), _WEGO_LINE_END_RST);
   }
+
+  if (_XYMU_RENDERINGp.posedge()) printf("RENDERING BEGIN!\n");
+  if (_XYMU_RENDERINGp.negedge()) printf("RENDERING END!\n");
 
   //----------------------------------------
   // Background pipes

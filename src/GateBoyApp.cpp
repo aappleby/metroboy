@@ -45,10 +45,13 @@ Req GateBoyApp::get_req() {
   //Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
   //Req req = {.addr = 0x0100, .data = 0, .read = 1, .write = 0 };
 
+  /*
   auto gateboy = state_manager.state();
   uint16_t addr = (uint16_t)((gateboy->phase_total - 87) >> 3);
-
   Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
+  */
+
+  Req req = {.addr = 0, .data = 0, .read = 0, .write = 0};
   return req;
 }
 
@@ -74,7 +77,7 @@ void GateBoyApp::app_init() {
   auto gateboy = state_manager.state();
 
   bool verbose = false;
-  bool use_fast_impl = true;
+  bool use_fast_impl = false;
   gateboy->run_reset_sequence(verbose, use_fast_impl);
 }
 
@@ -173,31 +176,33 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Total hash  %016llx\n", gateboy->total_hash);
   dumper("\n");
 
-  gateboy->top.clk_reg.dump(dumper);
-  gateboy->top.tim_reg.dump(dumper);
-  gateboy->top.int_reg.dump(dumper);
+  const auto& top = gateboy->top;
+
+  top.clk_reg.dump(dumper, top);
+  top.tim_reg.dump(dumper);
+  top.int_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 0, 0);
   dumper.clear();
 
-  gateboy->top.cpu_bus.dump(dumper);
-  gateboy->top.ext_bus.dump(dumper);
-  gateboy->top.vram_bus.dump(dumper);
-  gateboy->top.oam_bus.dump(dumper);
-  gateboy->top.dma_reg.dump(dumper);
+  top.cpu_bus.dump(dumper);
+  top.ext_bus.dump(dumper);
+  top.vram_bus.dump(dumper);
+  top.oam_bus.dump(dumper);
+  top.dma_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 1, 0);
   dumper.clear();
 
-  gateboy->top.lcd_reg.dump(dumper);
-  gateboy->top.pix_pipe.dump(dumper);
+  top.lcd_reg.dump(dumper);
+  top.pix_pipe.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), col_width * 2, 0);
   dumper.clear();
 
-  gateboy->top.sprite_fetcher.dump(dumper);
-  gateboy->top.sprite_scanner.dump(dumper);
-  gateboy->top.sprite_store.dump(dumper);
-  gateboy->top.tile_fetcher.dump(dumper);
-  gateboy->top.joypad.dump(dumper);
-  gateboy->top.ser_reg.dump(dumper);
+  top.sprite_fetcher.dump(dumper);
+  top.sprite_scanner.dump(dumper, top);
+  top.sprite_store.dump(dumper);
+  top.tile_fetcher.dump(dumper, top);
+  top.joypad.dump(dumper);
+  top.ser_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 3, 0);
   dumper.clear();
 

@@ -61,7 +61,7 @@ struct VramBus {
 
   //----------------------------------------
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     /*
     int addr = pack(_VRAM_PIN_A00_AD, _VRAM_PIN_A01_AD, _VRAM_PIN_A02_AD, _VRAM_PIN_A03_AD,
                     _VRAM_PIN_A04_AD, _VRAM_PIN_A05_AD, _VRAM_PIN_A06_AD, _VRAM_PIN_A07_AD,

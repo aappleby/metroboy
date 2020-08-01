@@ -10,6 +10,7 @@ struct SchematicTop;
 struct SpriteStore {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
+  void dump(Dumper& d) const;
 
   /*p29.FEPO*/ Sig FEPO_STORE_MATCHp;
   /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
@@ -25,22 +26,6 @@ struct SpriteStore {
   Tri SPR_TRI_LINE_1 = TRI_HZPU;
   Tri SPR_TRI_LINE_2 = TRI_HZPU;
   Tri SPR_TRI_LINE_3 = TRI_HZPU;
-
-  void dump(Dumper& d) {
-    d("----------SpriteStore---------\n");
-    d("DEZY_STORE_ENn %c\n", DEZY_STORE_ENn.c());
-
-    d("SPRITE INDEX %02d\n", 
-      pack(0, 0, XECU_SPRITE_INDX5.q(), YDUF_SPRITE_INDX4.q(),
-           XOBE_SPRITE_INDX3.q(), ZUZE_SPRITE_INDX2.q(), XEDY_SPRITE_INDX1.q(), XADU_SPRITE_INDX0.q()));
-
-    d("STORE MATCH %c%c%c%c%c%c%c%c%c%c\n",
-      STORE0_MATCHn.c(), STORE1_MATCHn.c(), STORE2_MATCHn.c(), STORE3_MATCHn.c(), STORE4_MATCHn.c(),
-      STORE5_MATCHn.c(), STORE6_MATCHn.c(), STORE7_MATCHn.c(), STORE8_MATCHn.c(), STORE9_MATCHn.c());
-
-    d("SPRITE COUNT %02d\n", pack(SPRITE_COUNT3.q(), SPRITE_COUNT2.q(), SPRITE_COUNT1.q(), SPRITE_COUNT0.q()));
-    d("\n");
-  }
 
 private:
   friend struct SchematicTop;

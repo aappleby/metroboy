@@ -11,31 +11,14 @@ struct CpuBus;
 struct SerialRegisters {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
+  void dump(Dumper& d) const;
 
-  int get_data() {
+  int get_data() const {
     return pack(_SER_DATA7.q(), _SER_DATA6.q(), _SER_DATA5.q(), _SER_DATA4.q(),
                 _SER_DATA3.q(), _SER_DATA2.q(), _SER_DATA1.q(), _SER_DATA0.q());
   }
 
   /*p06.CALY*/ wire CALY_SER_INTp() const { return _CALY_SER_INTp.q(); }
-
-  void dump(Dumper& d) {
-    d("----------  Serial  ----------\n");
-    d("XFER_START  %c\n", _XFER_START.c());
-    d("XFER_DIR    %c\n", _XFER_DIR  .c());
-    d("SER_CLK     %c\n", _SER_CLK   .c());
-    d("SER_CNT     %d\n", pack(0, _SER_CNT2.q(), _SER_CNT1.q(), _SER_CNT0.q()));
-    d("SER_DATA    0x%02x\n", get_data());
-    d("SER_OUT     %c\n", _SER_OUT.c());
-    d("SCK_A       %c\n", SCK_A.c());
-    d("SCK_B       %c\n", SCK_B.c());
-    d("SCK_C       %c\n", SCK_C.c());
-    d("SCK_D       %c\n", SCK_D.c());
-    d("SIN_C       %c\n", SIN_C.c());
-    d("SOUT        %c\n", SOUT .c());
-    d("_CALY_SER_INTp %c\n", _CALY_SER_INTp.c());
-    d("\n");
-  }
 
 //private:
 

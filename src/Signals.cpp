@@ -51,8 +51,13 @@ const Lut8 logic_lut1 = []() -> Lut8 {
   //----------------------------------------
   // signals
 
+#if 0
   temp.tab[SIG_0000 | (DELTA_TRI0 << 4)] = SIG_0000;
   temp.tab[SIG_1111 | (DELTA_TRI1 << 4)] = SIG_0000;
+#endif
+  temp.tab[SIG_0000 | (DELTA_TRI0 << 4)] = SIG_0000;
+  temp.tab[SIG_1111 | (DELTA_TRI1 << 4)] = SIG_1111;
+
 
   //----------------------------------------
   // pins / tris

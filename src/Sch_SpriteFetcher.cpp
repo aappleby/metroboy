@@ -3,6 +3,22 @@
 
 using namespace Schematics;
 
+void SpriteFetcher::dump(Dumper& d) const {
+  d("----------SpriteFetch---------\n");
+  d("_TAKA_SFETCH_RUNNINGp %c\n", _TAKA_SFETCH_RUNNINGp.c());
+  d("_SOBU_SFETCH_REQp     %c\n", _SOBU_SFETCH_REQp    .c());
+  d("_SUDA_SFETCH_REQp     %c\n", _SUDA_SFETCH_REQp    .c());
+  d("_TOXE_SFETCH_S0       %c\n", _TOXE_SFETCH_S0      .c());
+  d("_TYFO_SFETCH_S0_D1    %c\n", _TYFO_SFETCH_S0_D1   .c());
+  d("_TULY_SFETCH_S1       %c\n", _TULY_SFETCH_S1      .c());
+  d("_TESE_SFETCH_S2       %c\n", _TESE_SFETCH_S2      .c());
+  d("_TOBU_SFETCH_S1_D2    %c\n", _TOBU_SFETCH_S1_D2   .c());
+  d("_VONU_SFETCH_S1_D4    %c\n", _VONU_SFETCH_S1_D4   .c());
+  d("_SEBA_SFETCH_S1_D5    %c\n", _SEBA_SFETCH_S1_D5   .c());
+  d("\n");
+}
+
+
 //------------------------------------------------------------------------------
 
 void SpriteFetcher::tick(const SchematicTop& top) {

@@ -4,6 +4,25 @@
 
 using namespace Schematics;
 
+void SerialRegisters::dump(Dumper& d) const {
+  d("----------  Serial  ----------\n");
+  d("XFER_START  %c\n", _XFER_START.c());
+  d("XFER_DIR    %c\n", _XFER_DIR  .c());
+  d("SER_CLK     %c\n", _SER_CLK   .c());
+  d("SER_CNT     %d\n", pack(0, _SER_CNT2.q(), _SER_CNT1.q(), _SER_CNT0.q()));
+  d("SER_DATA    0x%02x\n", get_data());
+  d("SER_OUT     %c\n", _SER_OUT.c());
+  d("SCK_A       %c\n", SCK_A.c());
+  d("SCK_B       %c\n", SCK_B.c());
+  d("SCK_C       %c\n", SCK_C.c());
+  d("SCK_D       %c\n", SCK_D.c());
+  d("SIN_C       %c\n", SIN_C.c());
+  d("SOUT        %c\n", SOUT .c());
+  d("_CALY_SER_INTp %c\n", _CALY_SER_INTp.c());
+  d("\n");
+}
+
+
 //------------------------------------------------------------------------------
 
 void SerialRegisters::tick(const SchematicTop& /*top*/) {

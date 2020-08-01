@@ -165,7 +165,7 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   test_reg("TMA",  0xFF06, 177, use_fast_impl);
   test_reg("TAC",  0xFF07, 177, use_fast_impl);
 
-  //test_reg("LCDC", 0xFF40, 177, use_fast_impl);
+  test_reg("LCDC", 0xFF40, 177, use_fast_impl); // so if we enable the ppu, we crash after a while because we get stuck in rendering state because we're not emitting pixels
   test_reg("STAT", 0xFF41, 177, use_fast_impl);
   test_reg("SCY",  0xFF42, 177, use_fast_impl);
   test_reg("SCX",  0xFF43, 177, use_fast_impl);
@@ -181,9 +181,10 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
 
   test_reg("IF",   0xFF0F, 177, use_fast_impl);
   test_reg("IE",   0xFFFF, 177, use_fast_impl);
-#endif
   printf("\n");
+#endif
 
+#if 0
   printf("//----------------------------------------\n");
 
   printf("// Testing Cart ROM read: ");
@@ -213,6 +214,9 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   printf("// Testing ZRAM read/write: ");
   test_mem(0xFF80, 0xFFFE, 1, true, use_fast_impl);
   printf("done\n");
+#endif
+
+  dbg_write(0xFF40, 0x80, use_fast_impl);
 
   if (verbose) printf("\n");
 }
@@ -291,6 +295,8 @@ void GateBoy::dbg_write(uint16_t addr, uint8_t data, bool use_fast_impl) {
 //------------------------------------------------------------------------------
 
 void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
+  (void)use_fast_impl;
+
   phase_total++;
   const int phase = phase_total & 7;
 
@@ -307,6 +313,9 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 
   StringDumper d;
 
+  int old_lcd_x = top.lcd_reg.get_x();
+  int old_lcd_y = top.lcd_reg.get_y();
+
   for (pass_count = 0; pass_count < 100; pass_count++) {
     top.clk_reg.preset_rst(sys_rst);
     top.clk_reg.preset_t1t2(sys_t1, sys_t2);
@@ -320,12 +329,15 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
     update_oam_bus(phase);
     update_zram_bus(phase);
 
+    top.tick_slow(phase);
+    /*
     if (use_fast_impl) {
       top.tick_fast(phase);
     }
     else {
       top.tick_slow(phase);
     }
+    */
 
     hash_regs_old = hash_regs_new;
     hash_regs_new  = HASH_INIT;
@@ -355,6 +367,12 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
   }
 
   CHECK_P(pass_count < 100);
+
+  int new_lcd_x = top.lcd_reg.get_x();
+  int new_lcd_y = top.lcd_reg.get_y();
+
+  if (new_lcd_x != old_lcd_x) printf("LCD X %d\n", new_lcd_x);
+  if (new_lcd_y != old_lcd_y) printf("LCD Y %d\n", new_lcd_y);
 
   uint8_t phase_clock = top.clk_reg.get_phase_clock();
 

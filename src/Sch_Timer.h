@@ -13,24 +13,24 @@ struct Timer {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
-  int get_div() {
+  int get_div() const {
     return pack(_UKUP_DIV_00.q(), _UFOR_DIV_01.q(), _UNER_DIV_02.q(), _TERO_DIV_03.q(),
                 _UNYK_DIV_04.q(), _TAMA_DIV_05.q(), _UGOT_DIV_06.q(), _TULU_DIV_07.q(),
                 _TUGO_DIV_08.q(), _TOFE_DIV_09.q(), _TERU_DIV_10.q(), _SOLA_DIV_11.q(),
                 _SUBU_DIV_12.q(), _TEKA_DIV_13.q(), _UKET_DIV_14.q(), _UPOF_DIV_15.q());
   }
 
-  int get_tima() {
+  int get_tima() const {
     return pack(REGA_TIMA_0.q(), POVY_TIMA_1.q(), PERU_TIMA_2.q(), RATE_TIMA_3.q(),
                 RUBY_TIMA_4.q(), RAGE_TIMA_5.q(), PEDA_TIMA_6.q(), NUGA_TIMA_7.q());
   }
 
-  int get_tma() {
+  int get_tma() const {
     return pack(SABU_TMA_0.q(), NYKE_TMA_1.q(), MURU_TMA_2.q(), TYVA_TMA_3.q(),
                 TYRU_TMA_4.q(), SUFY_TMA_5.q(), PETO_TMA_6.q(), SETA_TMA_7.q());
   }
 
-  int get_tac() {
+  int get_tac() const {
     return pack(SOPU_TAC_0.q(), SAMY_TAC_1.q(), SABO_TAC_2.q(), 0);
   }
 
@@ -57,7 +57,7 @@ struct Timer {
 
   wire MOBA_INT_TIMERp() const { return _MOBA_INT_TIMERp.q(); }
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("----------  Timer   ----------\n");
     d("DIV        %05d\n", get_div());
     d("TIMA       %03d\n", get_tima());

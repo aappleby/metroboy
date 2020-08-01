@@ -34,7 +34,7 @@ struct DmaRegisters {
     return not(MUHO_DMA_VRAM_RDn);
   }
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("---------- DMA Reg  ----------\n");
     d("DMA Addr 0x%02x:%02x\n", 
       pack(MARU_DMA_A15.q(), POKU_DMA_A14.q(), PULA_DMA_A13.q(), NYGY_DMA_A12.q(), NYDO_DMA_A11.q(), PARA_DMA_A10.q(), PYNE_DMA_A09.q(), NAFA_DMA_A08.q()),
@@ -68,7 +68,7 @@ struct DmaRegisters {
   /*p04.POKU*/ Reg POKU_DMA_A14 = REG_D0C0;
   /*p04.MARU*/ Reg MARU_DMA_A15 = REG_D0C0;
 
-private:
+//private:
 
   wire MUDA_DMA_SRC_VRAMp() const {
     /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not(MARU_DMA_A15.q());

@@ -9,6 +9,8 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
+  void dump(Dumper& d, const SchematicTop& top) const;
+
   void tick_slow(const SchematicTop& top);
   void tock_clk_slow(int phase, const SchematicTop& top);
   void tock_rst_slow(int phase, const SchematicTop& top);
@@ -151,50 +153,6 @@ struct ClockRegisters {
   /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and(_SYS_PIN_T2n, UBET_T1p()); }
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand(UBET_T1p(), UVAR_T2p(), _SYS_PIN_RSTp); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not(UNOR_MODE_DBG2p()); }
-
-  //-----------------------------------------------------------------------------
-
-  void dump(Dumper& d) {
-    d("----------  Clock   ----------\n");
-    d("SYS_PIN_CLK_A %d\n", (wire)_SYS_PIN_CLK_A);
-    d("SYS_PIN_CLK_B %d\n", (wire)_SYS_PIN_CLK_B);
-    d("SYS_PIN_RSTp  %d\n", (wire)_SYS_PIN_RSTp);
-    d("SYS_PIN_T2n   %d\n", (wire)_SYS_PIN_T2n);
-    d("SYS_PIN_T1n   %d\n", (wire)_SYS_PIN_T1n);
-
-    d("TUBO %d\n", (wire)_TUBO_WAITINGp);
-    d("ASOL %d\n", (wire)_ASOL_POR_DONEn);
-    d("AFER %d\n", (wire)_AFER_SYS_RSTp.q());
-    d("SOTO %d\n", (wire)_SOTO_DBG_VRAM.q());
-
-    d("AFUR_ABCDxxxx %d\n", _AFUR_ABCDxxxx.q());
-    d("ALEF_xBCDExxx %d\n", _ALEF_xBCDExxx.q());
-    d("APUK_xxCDEFxx %d\n", _APUK_xxCDEFxx.q());
-    d("ADYK_xxxDEFGx %d\n", _ADYK_xxxDEFGx.q());
-
-    d("WUVU_xxCDxxGH %d\n", _WUVU_xxCDxxGH.q());
-    d("VENA_xxxxEFGH %d\n", _VENA_xxxxEFGH.q());
-    d("WOSU_xBCxxFGx %d\n", _WOSU_xBCxxFGx.q());
-  
-    d("CPU_PIN_STARTp........%d\n", (wire)CPU_PIN_STARTp);
-    d("CPU_PIN_READYp........%d\n", (wire)CPU_PIN_READYp);
-    d("CPU_PIN_SYS_RSTp......%d\n", (wire)CPU_PIN_SYS_RSTp);
-    d("CPU_PIN_EXT_RST.......%d\n", (wire)CPU_PIN_EXT_RST);
-    d("CPU_PIN_UNOR_DBG......%d\n", (wire)CPU_PIN_UNOR_DBG);
-    d("CPU_PIN_UMUT_DBG......%d\n", (wire)CPU_PIN_UMUT_DBG);
-    d("CPU_PIN_EXT_CLKGOOD...%d\n", (wire)CPU_PIN_EXT_CLKGOOD);
-    d("CPU_PIN_BOWA_xBCDEFGH.%d\n", (wire)CPU_PIN_BOWA_xBCDEFGH);
-    d("CPU_PIN_BEDO_Axxxxxxx.%d\n", (wire)CPU_PIN_BEDO_Axxxxxxx);
-    d("CPU_PIN_BEKO_ABCDxxxx.%d\n", (wire)CPU_PIN_BEKO_ABCDxxxx);
-    d("CPU_PIN_BUDE_xxxxEFGH.%d\n", (wire)CPU_PIN_BUDE_xxxxEFGH);
-    d("CPU_PIN_BOLO_ABCDEFxx.%d\n", (wire)CPU_PIN_BOLO_ABCDEFxx);
-    d("CPU_PIN_BUKE_AxxxxxGH.%d\n", (wire)CPU_PIN_BUKE_AxxxxxGH);
-    d("CPU_PIN_BOMA_Axxxxxxx.%d\n", (wire)CPU_PIN_BOMA_Axxxxxxx);
-    d("CPU_PIN_BOGA_xBCDEFGH.%d\n", (wire)CPU_PIN_BOGA_xBCDEFGH);
-    d("EXT_PIN_CLK_xxxxEFGH..%d\n", (wire)EXT_PIN_CLK_xxxxEFGH);
-
-    d("\n");
-  }
 
   //-----------------------------------------------------------------------------
 

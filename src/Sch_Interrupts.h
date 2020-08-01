@@ -17,7 +17,7 @@ struct InterruptRegisters {
   void tick(const SchematicTop& gb);
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("----------   Ints   ----------\n");
     d("LOPE_FF0F_0        %c\n", LOPE_FF0F_0        .c());
     d("UBUL_FF0F_3        %c\n", UBUL_FF0F_3        .c());

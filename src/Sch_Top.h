@@ -66,7 +66,9 @@ struct SchematicTop {
   }
 
   // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
-  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const { return nor(sprite_scanner.AVAP_RENDER_START_TRIGp(), pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp()); }
+  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const {
+    return nor(sprite_scanner.AVAP_RENDER_START_TRIGp(), pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp());
+  }
 
   //-----------------------------------------------------------------------------
 
@@ -131,12 +133,16 @@ struct SchematicTop {
   // PPU signals
 
   // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
-  /*p28.ACYL*/ wire ACYL_SCANNINGp() const { return and(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp()); } // so dma stops oam scan?
-
+  // so dma stops oam scan?
+  /*p28.ACYL*/ wire ACYL_SCANNINGp() const {
+    /*p28.ACYL*/ wire ACYL_SCANNINGp = and(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp());
+    return ACYL_SCANNINGp;
+  }
 
   // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
   /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { 
-    return nor(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PORCH_DONE_TRIGp());
+    /*p27.TEVO*/ wire TEVO_FINE_RSTp = or(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
+    return TEVO_FINE_RSTp;
   }
 
   //-----------------------------------------------------------------------------

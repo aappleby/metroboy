@@ -11,6 +11,7 @@ struct VramBus;
 struct SpriteFetcher {
   void tick(const SchematicTop& gb);
   void tock(SchematicTop& gb);
+  void dump(Dumper& d) const;
 
   // sfetch.veku, sst.store*_rstp, pxp.XEPY
   /*p29.WUTY*/ wire WUTY_SPRITE_DONEp() const { return not(VUSA_SPRITE_DONEn()); }
@@ -45,21 +46,6 @@ struct SpriteFetcher {
 
   // -> vram bus
   /*p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not(!_VONU_SFETCH_S1_D4.q()); }
-
-  void dump(Dumper& d) {
-    d("----------SpriteFetch---------\n");
-    d("_TAKA_SFETCH_RUNNINGp %c\n", _TAKA_SFETCH_RUNNINGp.c());
-    d("_SOBU_SFETCH_REQp     %c\n", _SOBU_SFETCH_REQp    .c());
-    d("_SUDA_SFETCH_REQp     %c\n", _SUDA_SFETCH_REQp    .c());
-    d("_TOXE_SFETCH_S0       %c\n", _TOXE_SFETCH_S0      .c());
-    d("_TYFO_SFETCH_S0_D1    %c\n", _TYFO_SFETCH_S0_D1   .c());
-    d("_TULY_SFETCH_S1       %c\n", _TULY_SFETCH_S1      .c());
-    d("_TESE_SFETCH_S2       %c\n", _TESE_SFETCH_S2      .c());
-    d("_TOBU_SFETCH_S1_D2    %c\n", _TOBU_SFETCH_S1_D2   .c());
-    d("_VONU_SFETCH_S1_D4    %c\n", _VONU_SFETCH_S1_D4   .c());
-    d("_SEBA_SFETCH_S1_D5    %c\n", _SEBA_SFETCH_S1_D5   .c());
-    d("\n");
-  }
 
 private:
   /*p29.SYCU*/ wire SYCU_SFETCH_S0pe() const { return nor(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, _TYFO_SFETCH_S0_D1.q()); }

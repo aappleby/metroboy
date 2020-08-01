@@ -1,6 +1,7 @@
 #pragma once
 #include "Types.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 #pragma warning(disable : 5054) // or'ing different enums deprecated
 
@@ -174,6 +175,31 @@ struct RegBase {
   inline bool has_delta() const { return delta != DELTA_NONE; }
   inline wire as_wire()   const { /*CHECKn(has_delta());*/ return wire(state & 1); }
 
+  inline wire posedge() const {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    return !(old_v & 1) && (new_v & 1);
+  }
+
+  inline wire negedge() const {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    return (old_v & 1) && !(new_v & 1);
+  }
+
+  void dump_edge(const char* name) {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    if (!(old_v & 1) && (new_v & 1)) printf("%s ^^^\n", name);
+    if ((old_v & 1) && !(new_v & 1)) printf("%s vvv\n", name);
+  }
+
   union {
     struct {
       RegState state : 4;
@@ -191,10 +217,21 @@ struct Reg : private RegBase {
   Reg(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
 
   using RegBase::c;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  using RegBase::dump_edge;
 
   inline wire q()  const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
   inline wire clk() const { return wire(state & 0x02); }
+
+  inline wire posedge() const {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    return !(old_v & 1) && (new_v & 1);
+  }
 
   inline void operator = (RegDelta d) {
     CHECK_P(is_reg()); // must be state state
@@ -210,10 +247,11 @@ struct Sig : private RegBase {
   Sig() : RegBase(SIG_0000) {}
 
   using RegBase::c;
+  using RegBase::as_wire;
   
   inline operator wire() const {
     CHECK_P(is_sig());
-    CHECK_P(has_delta());
+    //CHECK_P(has_delta());
     return wire(state & 1);
   }
 
@@ -232,6 +270,9 @@ struct Tri : private RegBase {
   Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  using RegBase::dump_edge;
 
   // adding Q/Qn here because latches can have both inverting and
   // non-inverting outputs

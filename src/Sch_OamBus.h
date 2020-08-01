@@ -76,7 +76,7 @@ struct OamBus {
 
   //----------------------------------------
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("---------- OAM Bus  ----------\n");
     d("PIN_CLK    %c\n", OAM_PIN_CLK.c());
     d("PIN_OE     %c\n", OAM_PIN_OE.c()); 

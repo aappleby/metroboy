@@ -47,7 +47,7 @@ struct ExtBus {
   }
 
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("---------- Ext Bus  ----------\n");
     d("EXT BUS ADDR    : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
       _NYRE_EXT_ADDR_LATCH_14.c(), _LONU_EXT_ADDR_LATCH_13.c(), _LOBU_EXT_ADDR_LATCH_12.c(), _LUMY_EXT_ADDR_LATCH_11.c(),

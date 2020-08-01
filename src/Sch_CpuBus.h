@@ -98,7 +98,7 @@ struct CpuBus {
 
   //-----------------------------------------------------------------------------
 
-  void dump(Dumper& d) {
+  void dump(Dumper& d) const {
     d("---------- CPU Bus  ----------\n");
     d("CPU BOOT : %d\n", (wire)CPU_PIN_BOOTp);
     d("CPU AHI  : %d\n", (wire)CPU_PIN_ADDR_HI);

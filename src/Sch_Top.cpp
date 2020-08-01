@@ -148,7 +148,7 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, ff20._CPU_PIN_BOGA_xBCDEFGH);
+/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, ff20.CPU_PIN_BOGA_xBCDEFGH);
 /*p25.SOLE*/ wire SOLE = not(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(

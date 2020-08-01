@@ -22,7 +22,7 @@ void VramBus::tock(SchematicTop& top) {
   {
 #if 0
 
-    VRAM_PIN_WR = !and( CPU_PIN_WRp, AFAS_xxxxEFGx, SOSE_8000_9FFFp, !CPU_PIN_AV, !RENDERING);
+    VRAM_PIN_WR = !and( CPU_PIN_WRp, AFAS_xxxxEFGx, SOSE_8000_9FFFp, !CPU_PIN_ADDR_EXT, !RENDERING);
 #endif
 
     /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and(SOSE_8000_9FFFp, top.APOV_CPU_WRp_xxxxEFGx());
@@ -328,7 +328,7 @@ void VramBus::tock(SchematicTop& top) {
   // CPU bus -> VRAM bus -> VRAM pin
   {
 #if 0
-    CBUS_TO_VPIN = and(SOSE_8000_9FFFp, CPU_PIN_WRp, SOSE_8000_9FFFp, !CPU_PIN_AV, !RENDERING);
+    CBUS_TO_VPIN = and(SOSE_8000_9FFFp, CPU_PIN_WRp, SOSE_8000_9FFFp, !CPU_PIN_ADDR_EXT, !RENDERING);
 #endif
 
     /*p25.TAVY*/ wire _TAVY_MOEp = not(_VRAM_PIN_OE_C);
@@ -436,7 +436,7 @@ void VramBus::tock(SchematicTop& top) {
   {
 #if 0
    
-    VPIN_TO_VBUS = !and (CPU_PIN_WRp, SOSE_8000_9FFFp, !CPU_PIN_AV, ROPY_RENDERINGn);
+    VPD_TO_VBD = !and (CPU_PIN_WRp, SOSE_8000_9FFFp, !CPU_PIN_ADDR_EXT, ROPY_RENDERINGn);
 
 #endif
 
@@ -469,13 +469,32 @@ void VramBus::tock(SchematicTop& top) {
   {
 #if 0
 
-    /*p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = and(SOSE_8000_9FFFp, !CPU_PIN_AV, ROPY_RENDERINGn, CPU_PIN_RDp, CPU_PIN_READ_MEM);
+
+    if (RENDERING) {
+      VRAM_BUS_D0 = VRAM_PIN_D0_C;
+      CPU_BUS_D0  = Z;
+    }
+    else {
+      VPD_TO_VBD = !and(CPU_PIN_WRp, ADDR_VRAM, !CPU_PIN_ADDR_EXT);
+      VBD_TO_CBD =  and(CPU_PIN_RDp, ADDR_VRAM, !CPU_PIN_ADDR_EXT, CPU_PIN_HOLD_MEM);
+
+      VRAM_BUS_D0 = tribuf_6p(VPD_TO_VBD, VRAM_PIN_D0_C);
+      CPU_BUS_D0  = tribuf_6p(VBD_TO_CBD, !VRAM_BUS_D0);
+    }
+
+
+    VPD_TO_VBD = !and(CPU_PIN_WRp, ADDR_VRAM, !CPU_PIN_ADDR_EXT, ROPY_RENDERINGn);
+    VBD_TO_CBD =  and(CPU_PIN_RDp, ADDR_VRAM, !CPU_PIN_ADDR_EXT, ROPY_RENDERINGn, CPU_PIN_HOLD_MEM);
+
+    VRAM_BUS_D0 = tribuf_6p(VPD_TO_VBD, VRAM_PIN_D0_C);
+    CPU_BUS_D0  = tribuf_6p(VBD_TO_CBD, !VRAM_BUS_D0);
+    
 #endif
 
-    /*p04.DECY*/ wire DECY = not(top.cpu_bus.CPU_PIN_READ_MEM);
+    /*p04.DECY*/ wire DECY = not(top.cpu_bus.CPU_PIN_HOLD_MEM);
     /*p04.CATY*/ wire CATY = not(DECY);
 
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(top.ext_bus._EXT_PIN_RD_C, top.cpu_bus.CPU_PIN_RDp, top.clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(top.ext_bus.EXT_PIN_RD_C, top.cpu_bus.CPU_PIN_RDp, top.clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not(UJYV_CPU_RDn);
     /*p07.AJAS*/ wire AJAS_CPU_RDn = not(TEDO_CPU_RDp);
     /*p07.ASOT*/ wire ASOT_CPU_RDp = not(AJAS_CPU_RDn);

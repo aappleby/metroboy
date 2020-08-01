@@ -17,8 +17,10 @@ public:
   void update_ext_bus(int phase);
   void update_vrm_bus(int phase);
   void update_oam_bus(int phase);
+  void update_zram_bus(int phase);
 
   void test_reg(const char* regname, uint16_t addr, uint8_t data_in, bool use_fast_impl);
+  void test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write, bool use_fast_impl);
 
   bool sys_rst = 1;
   bool sys_t1 = 0;
@@ -34,7 +36,7 @@ public:
   uint64_t phase_hash = 0;
   uint64_t total_hash = 0;
 
-  uint8_t mem2[65536];
+  uint8_t mem[65536];
 
   Schematics::SchematicTop top;
 };

@@ -12,7 +12,17 @@ struct VramBus;
 struct CpuBus {
   void tock(const SchematicTop& top);
 
-  void set_cpu_req(int phase, Req req);
+  uint16_t get_bus_addr() const {
+    return (uint16_t)pack(CPU_BUS_A00, CPU_BUS_A01, CPU_BUS_A02, CPU_BUS_A03,
+                          CPU_BUS_A04, CPU_BUS_A05, CPU_BUS_A06, CPU_BUS_A07,
+                          CPU_BUS_A08, CPU_BUS_A09, CPU_BUS_A10, CPU_BUS_A11,
+                          CPU_BUS_A12, CPU_BUS_A13, CPU_BUS_A14, CPU_BUS_A15);
+  }
+
+  uint8_t get_bus_data() const {
+    return (uint8_t)pack(CPU_BUS_D0, CPU_BUS_D1, CPU_BUS_D2, CPU_BUS_D3,
+                         CPU_BUS_D4, CPU_BUS_D5, CPU_BUS_D6, CPU_BUS_D7);
+  }
 
   void preset_addr(uint16_t addr) {
     CPU_BUS_A00.preset(addr & 0x0001);
@@ -52,15 +62,27 @@ struct CpuBus {
     CPU_BUS_A15.preset(DELTA_TRIZ);
   }
 
-  void preset_data(uint8_t data) {
-    CPU_BUS_D0.preset(data & 0x01);
-    CPU_BUS_D1.preset(data & 0x02);
-    CPU_BUS_D2.preset(data & 0x04);
-    CPU_BUS_D3.preset(data & 0x08);
-    CPU_BUS_D4.preset(data & 0x10);
-    CPU_BUS_D5.preset(data & 0x20);
-    CPU_BUS_D6.preset(data & 0x40);
-    CPU_BUS_D7.preset(data & 0x80);
+  void preset_data(bool oe, uint8_t data) {
+    if (oe) {
+      CPU_BUS_D0.preset(data & 0x01);
+      CPU_BUS_D1.preset(data & 0x02);
+      CPU_BUS_D2.preset(data & 0x04);
+      CPU_BUS_D3.preset(data & 0x08);
+      CPU_BUS_D4.preset(data & 0x10);
+      CPU_BUS_D5.preset(data & 0x20);
+      CPU_BUS_D6.preset(data & 0x40);
+      CPU_BUS_D7.preset(data & 0x80);
+    }
+    else {
+      CPU_BUS_D0.preset(DELTA_TRIZ);
+      CPU_BUS_D1.preset(DELTA_TRIZ);
+      CPU_BUS_D2.preset(DELTA_TRIZ);
+      CPU_BUS_D3.preset(DELTA_TRIZ);
+      CPU_BUS_D4.preset(DELTA_TRIZ);
+      CPU_BUS_D5.preset(DELTA_TRIZ);
+      CPU_BUS_D6.preset(DELTA_TRIZ);
+      CPU_BUS_D7.preset(DELTA_TRIZ);
+    }
   }
 
   void preset_data_z() {
@@ -72,6 +94,34 @@ struct CpuBus {
     CPU_BUS_D5.preset(DELTA_TRIZ);
     CPU_BUS_D6.preset(DELTA_TRIZ);
     CPU_BUS_D7.preset(DELTA_TRIZ);
+  }
+
+  //-----------------------------------------------------------------------------
+
+  void dump(Dumper& d) {
+    d("---------- CPU Bus  ----------\n");
+    d("CPU BOOT : %d\n", (wire)CPU_PIN_BOOTp);
+    d("CPU AHI  : %d\n", (wire)CPU_PIN_ADDR_HI);
+    d("CPU RDp  : %d\n", (wire)CPU_PIN_RDp);
+    d("CPU WRp  : %d\n", (wire)CPU_PIN_WRp);
+    d("CPU AVp  : %d\n", (wire)CPU_PIN_ADDR_EXT);
+    d("CPU DVp  : %d\n", (wire)CPU_PIN_HOLD_MEM);
+
+    d("CPU ADDR : %04x\n", get_bus_addr());
+
+    d("CPU DATA : %02x\n", get_bus_data());
+
+    d("CPU PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+      CPU_BUS_A15.c(), CPU_BUS_A14.c(), CPU_BUS_A13.c(), CPU_BUS_A12.c(),
+      CPU_BUS_A11.c(), CPU_BUS_A10.c(), CPU_BUS_A09.c(), CPU_BUS_A08.c(),
+      CPU_BUS_A07.c(), CPU_BUS_A06.c(), CPU_BUS_A05.c(), CPU_BUS_A04.c(),
+      CPU_BUS_A03.c(), CPU_BUS_A02.c(), CPU_BUS_A01.c(), CPU_BUS_A00.c());
+
+    d("CPU PIN DATA    : %c%c%c%c%c%c%c%c\n",
+      CPU_BUS_D7.c(), CPU_BUS_D6.c(), CPU_BUS_D5.c(), CPU_BUS_D4.c(),
+      CPU_BUS_D3.c(), CPU_BUS_D2.c(), CPU_BUS_D1.c(), CPU_BUS_D0.c());
+
+    d("\n");
   }
 
   //-----------------------------------------------------------------------------
@@ -131,48 +181,6 @@ struct CpuBus {
 
   //-----------------------------------------------------------------------------
 
-  uint16_t bus_addr() const {
-    return (uint16_t)pack(CPU_BUS_A00, CPU_BUS_A01, CPU_BUS_A02, CPU_BUS_A03,
-                          CPU_BUS_A04, CPU_BUS_A05, CPU_BUS_A06, CPU_BUS_A07,
-                          CPU_BUS_A08, CPU_BUS_A09, CPU_BUS_A10, CPU_BUS_A11,
-                          CPU_BUS_A12, CPU_BUS_A13, CPU_BUS_A14, CPU_BUS_A15);
-  }
-
-  uint8_t bus_data() const {
-    return (uint8_t)pack(CPU_BUS_D0, CPU_BUS_D1, CPU_BUS_D2, CPU_BUS_D3,
-                         CPU_BUS_D4, CPU_BUS_D5, CPU_BUS_D6, CPU_BUS_D7);
-  }
-
-  //-----------------------------------------------------------------------------
-
-  void dump(Dumper& d) {
-    d("---------- CPU Bus  ----------\n");
-    d("CPU BOOT : %d\n", (wire)_CPU_PIN_BOOTp);
-    d("CPU AHI  : %d\n", (wire)_CPU_PIN_ADDR_HI);
-    d("CPU RDp  : %d\n", (wire)CPU_PIN_RDp);
-    d("CPU WRp  : %d\n", (wire)CPU_PIN_WRp);
-    d("CPU AVp  : %d\n", (wire)CPU_PIN_ADDR_EXT);
-    d("CPU DVp  : %d\n", (wire)CPU_PIN_READ_MEM);
-
-    d("CPU ADDR : %04x\n", bus_addr());
-
-    d("CPU DATA : %02x\n", bus_data());
-
-    d("CPU PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      CPU_BUS_A15.c(), CPU_BUS_A14.c(), CPU_BUS_A13.c(), CPU_BUS_A12.c(),
-      CPU_BUS_A11.c(), CPU_BUS_A10.c(), CPU_BUS_A09.c(), CPU_BUS_A08.c(),
-      CPU_BUS_A07.c(), CPU_BUS_A06.c(), CPU_BUS_A05.c(), CPU_BUS_A04.c(),
-      CPU_BUS_A03.c(), CPU_BUS_A02.c(), CPU_BUS_A01.c(), CPU_BUS_A00.c());
-
-    d("CPU PIN DATA    : %c%c%c%c%c%c%c%c\n",
-      CPU_BUS_D7.c(), CPU_BUS_D6.c(), CPU_BUS_D5.c(), CPU_BUS_D4.c(),
-      CPU_BUS_D3.c(), CPU_BUS_D2.c(), CPU_BUS_D1.c(), CPU_BUS_D0.c());
-
-    d("\n");
-  }
-
-  //-----------------------------------------------------------------------------
-
   Tri CPU_BUS_A00 = TRI_D0NP;  // bottom right port PORTB_00: -> A00
   Tri CPU_BUS_A01 = TRI_D0NP;  // bottom right port PORTB_04: -> A01
   Tri CPU_BUS_A02 = TRI_D0NP;  // bottom right port PORTB_08: -> A02
@@ -204,17 +212,17 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
-  Tri _CPU_PIN_BOOTp   = TRI_HZNP;   // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Tri _CPU_PIN_ADDR_HI = TRI_HZNP;   // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
+  Tri CPU_PIN_BOOTp   = TRI_HZNP;   // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Tri CPU_PIN_ADDR_HI = TRI_HZNP;   // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
 
   //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
-  Tri CPU_PIN6         = TRI_HZNP; // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  Tri CPU_PIN_READ_MEM = TRI_HZNP; // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  Tri CPU_PIN6          = TRI_HZNP; // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  Tri CPU_PIN_HOLD_MEM  = TRI_HZNP; // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
 
-  Tri CPU_PIN_RDp  = TRI_HZNP; // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  Tri CPU_PIN_WRp  = TRI_HZNP; // top right port PORTA_01: ->
+  Tri CPU_PIN_RDp       = TRI_HZNP; // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Tri CPU_PIN_WRp       = TRI_HZNP; // top right port PORTA_01: ->
   Tri CPU_PIN_ADDR_EXT  = TRI_HZNP; // top right port PORTA_06: -> TEXO, APAP
 };
 

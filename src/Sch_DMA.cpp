@@ -128,6 +128,10 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF46 DMA
   {
+#if 0
+    CPU_BUS_D0 = tribuf_6p(and(CPU_PIN_RDp FF46p), NAFA_DMA_A08.q());
+#endif
+
     /*p04.NYGO*/ wire _NYGO_FF46_RDn = not(_MOLU_FF46_RDp);
     /*p04.PUSY*/ wire _PUSY_FF46_RDp = not(_NYGO_FF46_RDn);
     /*p04.POLY*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_PUSY_FF46_RDp, NAFA_DMA_A08.q());

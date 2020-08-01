@@ -91,10 +91,10 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
 #if 0
 
-    TIMA_LOADp = or(and(!CPU_PIN_READ_MEM, CPU_PIN_WRp, xxxxEFGx, FF05), !ALUR_SYS_RSTn, !MEKE_INT_TIMERn);
+    TIMA_LOADp = or(and(!CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF05), !ALUR_SYS_RSTn, !MEKE_INT_TIMERn);
 
     MUZU := or2
-    MUZU_01 << CPU_PIN_READ_MEM
+    MUZU_01 << CPU_PIN_HOLD_MEM
     MUZU_02 << TOPE
     MUZU_03 nc 
     MUZU_04 >> 
@@ -102,7 +102,7 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
 #endif
 
-    /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.cpu_bus.CPU_PIN_READ_MEM, _TOPE_FF05_WRn);
+    /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or(top.cpu_bus.CPU_PIN_HOLD_MEM, _TOPE_FF05_WRn);
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand(_MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
 
     /*p03.REGA*/ REGA_TIMA_0 = ff20(_SOGU_TIMA_CLK,   _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);

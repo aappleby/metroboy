@@ -164,14 +164,14 @@ void Channel1_tick(const Pins& pins,
     /*p13.DADO*/ wire NR14_RSTb = nor(b.apu.APU_RESET1, b.ch1.START);
 
 #if 0
-    NR14_CLKa   = nand(b.cpu.CPU_PIN_READ_MEM, TAPU_CPU_WRp_xxxxEFGx, ADDR_FF14); 
+    NR14_CLKa   = nand(b.cpu.CPU_PIN_HOLD_MEM, TAPU_CPU_WRp_xxxxEFGx, ADDR_FF14); 
     next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.TS_D6());
 
 #endif
 
     /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.TAPU_CPU_WRp_xxxxEFGx);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
-    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.CPU_PIN_READ_MEM, APU_WR);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.CPU_PIN_HOLD_MEM, APU_WR);
 
     /*p11.BAGE*/ next.ch1.NR14_CLKa   = nand(CPU_WR_WEIRD, ADDR_FF14); 
     /*p11.BOKO*/ next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.TS_D6());

@@ -27,11 +27,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // MATY is connected to cpu int pin...CPU_PIN_INT_VBLANK?
     // schematic says LOPE also connected to CPU_PIN_INT_VBLANK?
 
-    /*p02.MATY*/ MATY_FF0F_L0 = tp_latch(_ROLO_FF0F_RDn, LOPE_FF0F_0.q()); // OUTPUT ON RUNG 10
-    /*p02.NEJY*/ NEJY_FF0F_L1 = tp_latch(_ROLO_FF0F_RDn, UBUL_FF0F_3.q()); // OUTPUT ON RUNG 10
-    /*p02.NUTY*/ NUTY_FF0F_L2 = tp_latch(_ROLO_FF0F_RDn, ULAK_FF0F_4.q()); // OUTPUT ON RUNG 10
-    /*p02.MOPO*/ MOPO_FF0F_L3 = tp_latch(_ROLO_FF0F_RDn, LALU_FF0F_1.q()); // OUTPUT ON RUNG 10
-    /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
+    /*p02.MATY*/ MATY_FF0F_L0 = tp_latch_B(_ROLO_FF0F_RDn, LOPE_FF0F_0.q()); // OUTPUT ON RUNG 10
+    /*p02.NEJY*/ NEJY_FF0F_L1 = tp_latch_B(_ROLO_FF0F_RDn, UBUL_FF0F_3.q()); // OUTPUT ON RUNG 10
+    /*p02.NUTY*/ NUTY_FF0F_L2 = tp_latch_B(_ROLO_FF0F_RDn, ULAK_FF0F_4.q()); // OUTPUT ON RUNG 10
+    /*p02.MOPO*/ MOPO_FF0F_L3 = tp_latch_B(_ROLO_FF0F_RDn, LALU_FF0F_1.q()); // OUTPUT ON RUNG 10
+    /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch_B(_ROLO_FF0F_RDn, NYBO_FF0F_2.q()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not(_ROLO_FF0F_RDn);
     /*p02.NELA*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0);

@@ -11,7 +11,7 @@ void GateBoyTests::test_rom_read() {
 
   bool use_fast_impl = false;
 
-  gateboy.mem2[0] =  0x23;
+  gateboy.mem[0] =  0x23;
 
   for (int i = 0; i < 16; i++) {
     uint8_t rom = gateboy.dbg_read((uint16_t)i, use_fast_impl);
@@ -52,7 +52,7 @@ void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
 
   // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
 
-  while(!top.clk_reg._CPU_PIN_STARTp()) {
+  while(!top.clk_reg.CPU_PIN_STARTp()) {
     run(top, 1, req, false);
   }
 

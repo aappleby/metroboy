@@ -120,9 +120,11 @@ inline RegDelta tribuf(wire OEp, wire D) {
 // TRIBUF_05 NC
 // TRIBUF_06
 
+//-----------------------------------------------------------------------------
 // top rung tadpole facing second rung dot
 
-// i suspect these invert the data when they put it on the bus...
+// OE _must_ be active high - see FF46
+// Output _must_ be non-inverting - see FF46
 
 inline RegDelta tribuf_6p(wire OEp, wire D) {
 #if 0
@@ -139,21 +141,22 @@ inline RegDelta tribuf_6p(wire OEp, wire D) {
 #endif
 }
 
+//-----------------------------------------------------------------------------
 // top rung tadpole not facing second rung dot
+
+// OE _must_ be active low - see LY/LYC
+// Output _must_ be non-inverting - see LY/LYC
+
 inline RegDelta tribuf_6n(wire OEn, wire D) {
-#if 0
-  return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
-#else
   if (!OEn) {
-    // this one is used by LYC, has to be positive sense out
     return D ? DELTA_TRI1 : DELTA_TRI0;
-    //return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
     return DELTA_TRIZ;
   }
-#endif
 }
+
+//-----------------------------------------------------------------------------
 
 inline RegDelta tribuf_10n(wire OEn, wire D) {
 #if 0
@@ -627,8 +630,33 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // WYNO_09 NC
 // WYNO_10 >> XUNA_01
 
-inline RegDelta  tp_latch(wire LATCHn, wire D) {
-  if (!LATCHn) {
+// Output A must _not_ be inverting, see EXT_PIN_A00_A
+
+// first output used
+inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
+  if (!HOLDn) {
+    return DELTA_HOLD;
+  }
+  else {
+    return D ? DELTA_TRI1 : DELTA_TRI0;
+  }
+}
+
+// second output used
+
+inline RegDelta  tp_latch_B(wire HOLDn, wire D) {
+  if (!HOLDn) {
+    return DELTA_HOLD;
+  }
+  else {
+    return D ? DELTA_TRI1 : DELTA_TRI0;
+  }
+}
+
+// both outputs used
+
+inline RegDelta  tp_latch_AB(wire HOLDn, wire D) {
+  if (!HOLDn) {
     return DELTA_HOLD;
   }
   else {

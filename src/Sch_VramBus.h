@@ -166,6 +166,7 @@ struct VramBus {
 
 //private:
 
+  // bus looks inverted on reads
   Tri _VRAM_BUS_D0 = TRI_HZNP;
   Tri _VRAM_BUS_D1 = TRI_HZNP;
   Tri _VRAM_BUS_D2 = TRI_HZNP;

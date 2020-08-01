@@ -13,16 +13,26 @@ struct OamBus {
 
   //----------------------------------------
 
-  uint8_t get_bus_addr() {
-    return ~(uint8_t)pack(OAM_BUS_A0, OAM_BUS_A1, OAM_BUS_A2, OAM_BUS_A3,
-                          OAM_BUS_A4, OAM_BUS_A5, OAM_BUS_A6, OAM_BUS_A7);
+  uint8_t get_oam_bus_addr() {
+    return (uint8_t)pack(OAM_BUS_A0, OAM_BUS_A1, OAM_BUS_A2, OAM_BUS_A3,
+                         OAM_BUS_A4, OAM_BUS_A5, OAM_BUS_A6, OAM_BUS_A7);
   }
 
-  uint16_t get_bus_data() {
+  uint16_t get_oam_bus_data() {
     return ~(uint16_t)pack(OAM_BUS_DA0, OAM_BUS_DA1, OAM_BUS_DA2, OAM_BUS_DA3,
                            OAM_BUS_DA4, OAM_BUS_DA5, OAM_BUS_DA6, OAM_BUS_DA7,
                            OAM_BUS_DB0, OAM_BUS_DB1, OAM_BUS_DB2, OAM_BUS_DB3,
                            OAM_BUS_DB4, OAM_BUS_DB5, OAM_BUS_DB6, OAM_BUS_DB7);
+  }
+
+  uint8_t get_oam_bus_data_a() {
+    return ~(uint8_t)pack(OAM_BUS_DA0, OAM_BUS_DA1, OAM_BUS_DA2, OAM_BUS_DA3,
+                          OAM_BUS_DA4, OAM_BUS_DA5, OAM_BUS_DA6, OAM_BUS_DA7);
+  }
+
+  uint8_t get_oam_bus_data_b() {
+    return ~(uint8_t)pack(OAM_BUS_DB0, OAM_BUS_DB1, OAM_BUS_DB2, OAM_BUS_DB3,
+                          OAM_BUS_DB4, OAM_BUS_DB5, OAM_BUS_DB6, OAM_BUS_DB7);
   }
 
   void preset_bus_data(bool oe, uint16_t data) {
@@ -125,6 +135,7 @@ struct OamBus {
 //private:
 
   /*p04.MAKA*/ Reg _MAKA_DV_SYNC = REG_D0C0;
+  /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
 
   Tri OAM_PIN_CLK  = TRI_HZNP;
   Tri OAM_PIN_OE   = TRI_HZPU;

@@ -66,6 +66,11 @@ void GateBoyApp::app_init() {
   dump_painter.init();
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+  printf("\n");
+  printf("//----------------------------------------\n");
+  printf("// GateBoy starting...\n");
+  printf("\n");
+
   auto gateboy = state_manager.state();
 
   bool verbose = false;
@@ -196,7 +201,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), col_width * 3, 0);
   dumper.clear();
 
-  dump_painter.render(view, col_width * 4, 0, 16, 32, gateboy->mem2);
+  dump_painter.render(view, col_width * 4, 0, 16, 32, gateboy->mem);
 
   dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);
   text_painter.render(view, dumper.s.c_str(), col_width * 5, 0);

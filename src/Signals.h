@@ -57,14 +57,16 @@ extern const Lut8 logic_lut1;
 
 //-----------------------------------------------------------------------------
 
-inline void mix(uint64_t& h) {
-  h *= 0xff51afd7ed558ccd;
-  h = _byteswap_uint64(h);
+inline uint64_t mix(uint64_t h) {
+  return _byteswap_uint64(h * 0xff51afd7ed558ccd);
+}
+
+inline uint64_t mix3(uint64_t h) {
+  return mix(mix(mix(h)));
 }
 
 inline void combine_hash(uint64_t& a, uint64_t b) {
-  a ^= b;
-  mix(a);
+  a = mix(a ^ b);
 }
 
 //-----------------------------------------------------------------------------
@@ -231,16 +233,32 @@ struct Tri : private RegBase {
 
   using RegBase::c;
 
+  // adding Q/Qn here because latches can have both inverting and
+  // non-inverting outputs
+  inline wire q()  const { return  as_wire(); }
+  inline wire qn() const { return !as_wire(); }
+
   inline operator wire()  const { return as_wire(); }
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
 
-  inline void preset(RegDelta d) {
-    CHECK_P(is_tri());
-    CHECK_P(delta == DELTA_NONE);
-    delta = d;
-    value = logic_lut1[value];
-    delta = d;
-    CHECK_P(is_tri());
+  inline void preset(RegDelta new_delta) {
+    if (delta == DELTA_NONE) {
+      CHECK_P(is_tri());
+      delta = new_delta;
+      value = logic_lut1[value];
+      delta = new_delta;
+      CHECK_P(is_tri());
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(is_tri());
+      delta = new_delta;
+      value = logic_lut1[value];
+      delta = new_delta;
+      CHECK_P(is_tri());
+    }
+    else {
+      CHECK_P(new_delta == DELTA_TRIZ);
+    }
   }
 
   inline void preset(wire d) {

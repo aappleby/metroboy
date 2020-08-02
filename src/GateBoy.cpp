@@ -1,6 +1,7 @@
 #include "GateBoy.h"
 #include <memory.h>
 
+#include "Constants.h"
 #include "Debug.h"
 
 constexpr bool FAST_HASH = 0;
@@ -63,9 +64,69 @@ constexpr bool FAST_HASH = 0;
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
+  memset(mem, 0, 65536);
+
+  /*
+  for (int i = 0; i <= 0x7FFF; i++) {
+    mem[i] = 0xFF;
+  }
+  */
+
+  /*
+  for (int i = 0x8000; i <= 0x97FF; i++) {
+    mem[i] = uint8_t(i);
+  }
+  */
+
+  mem[0x8000] = 0b00011000;
+  mem[0x8001] = 0b00011000;
+  mem[0x8002] = 0b00111100;
+  mem[0x8003] = 0b00111100;
+  mem[0x8004] = 0b01111110;
+  mem[0x8005] = 0b01111110;
+  mem[0x8006] = 0b11111111;
+  mem[0x8007] = 0b11111111;
+  mem[0x8008] = 0b01111110;
+  mem[0x8009] = 0b01111110;
+  mem[0x800A] = 0b00111100;
+  mem[0x800B] = 0b00111100;
+  mem[0x800C] = 0b00011000;
+  mem[0x800D] = 0b00011000;
+  mem[0x800E] = 0b00000000;
+  mem[0x800F] = 0b00000000;
+
+  mem[0x8010] = 0b00000000;
+  mem[0x8011] = 0b00000000;
+  mem[0x8012] = 0b00000000;
+  mem[0x8013] = 0b00111100;
+  mem[0x8014] = 0b00000000;
+  mem[0x8015] = 0b00111100;
+  mem[0x8016] = 0b00000000;
+  mem[0x8017] = 0b00111100;
+  mem[0x8018] = 0b00000000;
+  mem[0x8019] = 0b00111100;
+  mem[0x801A] = 0b00000000;
+  mem[0x801B] = 0b00111100;
+  mem[0x801C] = 0b00000000;
+  mem[0x801D] = 0b00111100;
+  mem[0x801E] = 0b00000000;
+  mem[0x801F] = 0b00000000;
+
+  for (int i = 0x9800; i <= 0x9BFF; i++) {
+    //mem[i] = uint8_t(i);
+    mem[i] = 0;
+  }
+
+  for (int i = 0x9C00; i <= 0x9FFF; i++) {
+    //mem[i] = uint8_t(i);
+    mem[i] = 1;
+  }
+
+  /*
   for (int i = 0; i < 65536; i++) {
     mem[i] = uint8_t(i);
   }
+  */
 }
 
 //-----------------------------------------------------------------------------
@@ -216,7 +277,35 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   printf("done\n");
 #endif
 
-  dbg_write(0xFF40, 0x80, use_fast_impl);
+  dbg_write(ADDR_BGP,  0b11100100, use_fast_impl);
+  dbg_write(ADDR_OBP0, 0b11100100, use_fast_impl);
+  dbg_write(ADDR_OBP1, 0b11100100, use_fast_impl);
+
+  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
+  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
+  // Bit 5 - Window Display Enable          (0=Off, 1=On)
+  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
+  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
+  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
+  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
+  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
+
+  // #define FLAG_BG_ON        0x01
+  // #define FLAG_OBJ_ON       0x02
+  // #define FLAG_TALL_SPRITES 0x04
+  // #define FLAG_BG_MAP_1     0x08
+  // #define FLAG_TILE_0       0x10
+  // #define FLAG_WIN_ON       0x20
+  // #define FLAG_WIN_MAP_1    0x40
+  // #define FLAG_LCD_ON       0x80
+
+  dbg_write(ADDR_LCDC, FLAG_LCD_ON | FLAG_BG_ON | FLAG_WIN_ON | FLAG_TILE_0 | FLAG_WIN_MAP_1, use_fast_impl);
+
+  dbg_write(ADDR_SCY, 0, use_fast_impl);
+  dbg_write(ADDR_SCX, 0, use_fast_impl);
+
+  dbg_write(ADDR_WY, 30, use_fast_impl);
+  dbg_write(ADDR_WX, 30, use_fast_impl);
 
   if (verbose) printf("\n");
 }
@@ -326,6 +415,7 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
     update_oam_bus(phase);
     update_zram_bus(phase);
 
+    Sig::sim_running = true;
     top.tick_slow(phase);
     /*
     if (use_fast_impl) {
@@ -335,6 +425,16 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
       top.tick_slow(phase);
     }
     */
+    Sig::sim_running = false;
+
+    if (top.pix_pipe._LCD_PIN_CP.posedge()) {
+      int p0 = !(bool)top.pix_pipe._LCD_PIN_LD1;
+      int p1 = !(bool)top.pix_pipe._LCD_PIN_LD0;
+
+      printf("%c", '0' + p0 + p1 * 2);
+    }
+    if (top.pix_pipe._LCD_PIN_ST.negedge()) printf("\n");
+
 
     hash_regs_old = hash_regs_new;
     hash_regs_new  = HASH_INIT;

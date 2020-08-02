@@ -48,6 +48,12 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     /*p21.POPU*/ _POPU_IN_VBLANKp = dff17(_NYPE_LINE_STARTp.q(), top.clk_reg.LYFE_VID_RSTn(), _XYVO_IN_VBLANKp);
+
+    if (_POPU_IN_VBLANKp.posedge()) {
+      printf("\n");
+      printf("VBLANK\n");
+      printf("\n");
+    }
   }
 
   {

@@ -50,26 +50,6 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("INT_OAM_EN  %c\n", REFE_INT_OAM_EN.c());
   d("INT_LYC_EN  %c\n", RUGU_INT_LYC_EN.c());
 
-  int win_x = pack(_XOLO_WIN_X7.q(), _WYKO_WIN_X6.q(), _WOBO_WIN_X5.q(), _WODY_WIN_X4.q(),
-                    _WYKA_WIN_X3.q(), 0, 0, 0);
-
-  int win_y = pack(_TEKE_WIN_Y7.q(), _TATE_WIN_Y6.q(), _TOZO_WIN_Y5.q(), _TAXA_WIN_Y4.q(),
-                    _TUFU_WIN_Y3.q(), _VYMU_WIN_Y2.q(), _VUJO_WIN_Y1.q(), _VYNO_WIN_Y0.q());
-
-  d("WIN X   %03d\n", win_x);
-  d("WIN_Y   %03d\n", win_y);
-
-  d("WIN_MODE_A       %c\n", _PYNU_WIN_MODE_A      .c());
-  d("WIN_FIRST_TILE_A %c\n", _RYDY_WIN_FIRST_TILE_A.c());
-  d("WIN_MODE_B       %c\n", _NOPA_WIN_MODE_B      .c());
-  d("WIN_FIRST_TILE_B %c\n", _SOVY_WIN_FIRST_TILE_B.c());
-  d("WY_MATCH_LATCH   %c\n", _REJO_WY_MATCH_LATCH  .c());
-  d("WY_MATCH         %c\n", _SARY_WY_MATCH        .c());
-  d("WX_MATCHn_A      %c\n", _RYFA_WX_MATCHn_A     .c());
-  d("WX_MATCHn_B      %c\n", _RENE_WX_MATCHn_B     .c());
-  d("WX_MATCH_A       %c\n", _PYCO_WX_MATCH_A      .c());
-  d("WX_MATCH_B       %c\n", _NUNU_WX_MATCH_B      .c());
-
   d("ROXY_FINE_SCROLL_DONEn %c\n", _ROXY_FINE_SCROLL_DONEn.c());
   d("RYKU_FINE_CNT0         %c\n", _RYKU_FINE_CNT0        .c());
   d("ROGA_FINE_CNT1         %c\n", _ROGA_FINE_CNT1        .c());
@@ -87,11 +67,15 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("LCD_PIN_LD1            %c\n", _LCD_PIN_LD1           .c());
   d("LCD_PIN_LD0            %c\n", _LCD_PIN_LD0           .c());
 
-  d("BG_PIPE_A  %c%c%c%c%c%c%c%c\n", 
+  d("BG_PIPE_A 0x%02x %c%c%c%c%c%c%c%c\n", 
+    pack(BG_PIPE_A0.q(), BG_PIPE_A1.q(), BG_PIPE_A2.q(), BG_PIPE_A3.q(),
+         BG_PIPE_A4.q(), BG_PIPE_A5.q(), BG_PIPE_A6.q(), BG_PIPE_A7.q()),
     BG_PIPE_A0.c(), BG_PIPE_A1.c(), BG_PIPE_A2.c(), BG_PIPE_A3.c(),
     BG_PIPE_A4.c(), BG_PIPE_A5.c(), BG_PIPE_A6.c(), BG_PIPE_A7.c());
 
-  d("BG_PIPE_B  %c%c%c%c%c%c%c%c\n", 
+  d("BG_PIPE_B 0x%02x %c%c%c%c%c%c%c%c\n", 
+    pack(BG_PIPE_B0.q(), BG_PIPE_B1.q(), BG_PIPE_B2.q(), BG_PIPE_B3.q(),
+         BG_PIPE_B4.q(), BG_PIPE_B5.q(), BG_PIPE_B6.q(), BG_PIPE_B7.q()),
     BG_PIPE_B0.c(), BG_PIPE_B1.c(), BG_PIPE_B2.c(), BG_PIPE_B3.c(),
     BG_PIPE_B4.c(), BG_PIPE_B5.c(), BG_PIPE_B6.c(), BG_PIPE_B7.c());
 
@@ -131,6 +115,70 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     pack(_NUKU_WX7.q(), _MUVO_WX6.q(), _MYCE_WX5.q(), _MYPU_WX4.q(),
           _MEBY_WX3.q(), _NOKE_WX2.q(), _NOFE_WX1.q(), _MYPA_WX0.q()));
 
+  d("\n");
+
+
+  d("----------  Window  ----------\n");
+  int wx = pack(
+    _MYPA_WX0.q(),
+    _NOFE_WX1.q(),
+    _NOKE_WX2.q(),
+    _MEBY_WX3.q(),
+    _MYPU_WX4.q(),
+    _MYCE_WX5.q(),
+    _MUVO_WX6.q(),
+    _NUKU_WX7.q());
+    
+  int wy = pack(
+    _NESO_WY0.q(),
+    _NYRO_WY1.q(),
+    _NAGA_WY2.q(),
+    _MELA_WY3.q(),
+    _NULO_WY4.q(),
+    _NENE_WY5.q(),
+    _NUKA_WY6.q(),
+    _NAFU_WY7.q()
+  );
+
+  int win_x = pack(
+    0,
+    0,
+    0,
+    _WYKA_WIN_X3.q(),
+    _WODY_WIN_X4.q(),
+    _WOBO_WIN_X5.q(),
+    _WYKO_WIN_X6.q(),
+    _XOLO_WIN_X7.q()
+  );
+
+  int win_y = pack(
+    _VYNO_WIN_Y0.q(),
+    _VUJO_WIN_Y1.q(),
+    _VYMU_WIN_Y2.q(),
+    _TUFU_WIN_Y3.q(),
+    _TAXA_WIN_Y4.q(),
+    _TOZO_WIN_Y5.q(),
+    _TATE_WIN_Y6.q(),
+    _TEKE_WIN_Y7.q()
+  );
+
+  d("WX               : %d\n", wx);
+  d("WY               : %d\n", wy);
+  d("WIN X            : %d\n", win_x);
+  d("WIN_Y            : %d\n", win_y);
+  d("NUKO_WX_MATCHp   : %d\n", wire(NUKO_WX_MATCHp));
+  d("ROGE_WY_MATCHp   : %d\n", wire(ROGE_WY_MATCHp));
+
+  d("WIN_MODE_A       : %c\n", _PYNU_WIN_MODE_A      .c());
+  d("WIN_FIRST_TILE_A : %c\n", _RYDY_WIN_FIRST_TILE_A.c());
+  d("WIN_MODE_B       : %c\n", _NOPA_WIN_MODE_B      .c());
+  d("WIN_FIRST_TILE_B : %c\n", _SOVY_WIN_FIRST_TILE_B.c());
+  d("WY_MATCH_LATCH   : %c\n", _REJO_WY_MATCH_LATCH  .c());
+  d("WY_MATCH         : %c\n", _SARY_WY_MATCH        .c());
+  d("WX_MATCHn_A      : %c\n", _RYFA_WX_MATCHn_A     .c());
+  d("WX_MATCHn_B      : %c\n", _RENE_WX_MATCHn_B     .c());
+  d("WX_MATCH_A       : %c\n", _PYCO_WX_MATCH_A      .c());
+  d("WX_MATCH_B       : %c\n", _NUNU_WX_MATCH_B      .c());
   d("\n");
 }
 
@@ -243,8 +291,6 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   //----------------------------------------
   // Window matcher
 
-  bool _NUKO_WX_MATCHp;
-  bool _ROGE_WY_MATCHp;
   {
     /*p27.MYLO*/ wire _WX_MATCH0 = xnor(XEHO_X0.q(), _MYPA_WX0.q());
     /*p27.PUWU*/ wire _WX_MATCH1 = xnor(SAVY_X1.q(), _NOFE_WX1.q());
@@ -258,7 +304,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.PUKY*/ wire _WX_MATCH_HIn  = nand(_REJO_WY_MATCH_LATCH, _WX_MATCH4, _WX_MATCH5, _WX_MATCH6, _WX_MATCH7);
     /*p27.NUFA*/ wire _WX_MATCH_HI   = not (_WX_MATCH_HIn);
     /*p27.NOGY*/ wire _WX_MATCHn     = nand(_WX_MATCH_HI, _WX_MATCH0, _WX_MATCH1, _WX_MATCH2, _WX_MATCH3);
-    /*p27.NUKO*/ _NUKO_WX_MATCHp = not(_WX_MATCHn);
+    /*p27.NUKO*/ NUKO_WX_MATCHp = not(_WX_MATCHn);
 
     /*p27.NAZE*/ wire _WY_MATCH0 = xnor(top.lcd_reg.MUWY_Y0.q(), _NESO_WY0.q());
     /*p27.PEBO*/ wire _WY_MATCH1 = xnor(top.lcd_reg.MYRO_Y1.q(), _NYRO_WY1.q());
@@ -272,7 +318,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.PALO*/ wire _WY_MATCH_HIn  = nand(WYMO_LCDC_WINEN.q(), _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
     /*p27.NELE*/ wire _WY_MATCH_HI   = not(_WY_MATCH_HIn);
     /*p27.PAFU*/ wire _WY_MATCHn     = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
-    /*p27.ROGE*/ _ROGE_WY_MATCHp = not(_WY_MATCHn);
+    /*p27.ROGE*/ ROGE_WY_MATCHp = not(_WY_MATCHn);
   }
 
   //----------------------------------------
@@ -281,7 +327,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     // This trigger fires on the pixel _at_ WX
     /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not(_SEGU_CLKPIPEn);
-    /*p27.PYCO*/ _PYCO_WX_MATCH_A = dff17(_ROCO_CLKPIPEp, top.clk_reg.XAPO_VID_RSTn(), _NUKO_WX_MATCHp);
+    /*p27.PYCO*/ _PYCO_WX_MATCH_A = dff17(_ROCO_CLKPIPEp, top.clk_reg.XAPO_VID_RSTn(), NUKO_WX_MATCHp);
     /*p27.NUNU*/ _NUNU_WX_MATCH_B = dff17(top.clk_reg.MEHE_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), _PYCO_WX_MATCH_A.q());
 
     /*p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not(top.lcd_reg.ATEJ_VID_LINE_TRIGp());
@@ -293,14 +339,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     // This trigger fires on the pixel _after_ WX. Not sure what the fine count is about.
     /*p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand(_RYKU_FINE_CNT0.q(), _ROGA_FINE_CNT1.q(), _RUBU_FINE_CNT2.q());
-    /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(_NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
+    /*p27.PANY*/ wire _PANY_WX_MATCHn = nor(NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
     /*p27.RYFA*/ _RYFA_WX_MATCHn_A = dff17(_SEGU_CLKPIPEn, XYMU_RENDERINGp(), _PANY_WX_MATCHn);
     /*p27.RENE*/ _RENE_WX_MATCHn_B = dff17(top.clk_reg.ALET_xBxDxFxH(), XYMU_RENDERINGp(), _RYFA_WX_MATCHn_A.q());
   }
 
   {
     /*p27.REPU*/ wire _REPU_VBLANK_RSTp = or(top.lcd_reg.PARU_VBLANKp_d4(), top.clk_reg.PYRY_VID_RSTp());
-    /*p27.SARY*/ _SARY_WY_MATCH = dff17(top.clk_reg.TALU_ABCDxxxx(), top.clk_reg.XAPO_VID_RSTn(), _ROGE_WY_MATCHp);
+    /*p27.SARY*/ _SARY_WY_MATCH = dff17(top.clk_reg.TALU_ABCDxxxx(), top.clk_reg.XAPO_VID_RSTn(), ROGE_WY_MATCHp);
     /*p27.REJO*/ _REJO_WY_MATCH_LATCH = nor_latch(_SARY_WY_MATCH.q(), _REPU_VBLANK_RSTp);
   }
 

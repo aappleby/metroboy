@@ -101,15 +101,19 @@ struct PixelPipe {
   /*p27.PYNU*/ Tri _PYNU_WIN_MODE_A = TRI_D0NP;
   /*p27.RYDY*/ Tri _RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
 
-  /*p27.NOPA*/ Reg _NOPA_WIN_MODE_B = REG_D0C0;
-  /*p27.SOVY*/ Reg _SOVY_WIN_FIRST_TILE_B = REG_D0C0;
-  /*p27.REJO*/ Tri _REJO_WY_MATCH_LATCH = TRI_D0NP;
-  /*p27.SARY*/ Reg _SARY_WY_MATCH = REG_D0C0;
-  /*p27.RYFA*/ Reg _RYFA_WX_MATCHn_A = REG_D0C0;
-  /*p27.RENE*/ Reg _RENE_WX_MATCHn_B = REG_D0C0;
-  /*p27.PYCO*/ Reg _PYCO_WX_MATCH_A = REG_D0C0;
-  /*p27.NUNU*/ Reg _NUNU_WX_MATCH_B = REG_D0C0;
+  /*p27.NUKO*/ Sig NUKO_WX_MATCHp;
+  /*p27.ROGE*/ Sig ROGE_WY_MATCHp;
 
+  /*p27.NOPA*/ Reg _NOPA_WIN_MODE_B       = REG_D0C0;
+  /*p27.SOVY*/ Reg _SOVY_WIN_FIRST_TILE_B = REG_D0C0;
+  /*p27.REJO*/ Tri _REJO_WY_MATCH_LATCH   = TRI_D0NP;
+  /*p27.SARY*/ Reg _SARY_WY_MATCH         = REG_D0C0;
+  /*p27.RYFA*/ Reg _RYFA_WX_MATCHn_A      = REG_D0C0;
+  /*p27.RENE*/ Reg _RENE_WX_MATCHn_B      = REG_D0C0;
+  /*p27.PYCO*/ Reg _PYCO_WX_MATCH_A       = REG_D0C0;
+  /*p27.NUNU*/ Reg _NUNU_WX_MATCH_B       = REG_D0C0;
+
+  // current window pixel coord
   /*p27.WYKA*/ Reg _WYKA_WIN_X3 = REG_D0C0;
   /*p27.WODY*/ Reg _WODY_WIN_X4 = REG_D0C0;
   /*p27.WOBO*/ Reg _WOBO_WIN_X5 = REG_D0C0;

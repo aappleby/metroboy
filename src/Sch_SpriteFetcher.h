@@ -36,9 +36,6 @@ struct SpriteFetcher {
   }
 
   // -> vram bus
-  /*p29.ABON*/ wire ABON_SPR_VRM_RDn() const { return not(TEXY_SPR_READ_VRAMp()); }
-
-  // -> vram bus
   /*p29.RACA*/ wire RACA_LATCH_SPPIXB() const { return and(_VONU_SFETCH_S1_D4.q(), SYCU_SFETCH_S0pe()); }
 
   // -> vram bus

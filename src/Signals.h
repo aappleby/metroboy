@@ -247,11 +247,14 @@ struct Sig : private RegBase {
   Sig() : RegBase(SIG_0000) {}
 
   using RegBase::c;
-  using RegBase::as_wire;
-  
-  inline operator wire() const {
+  //using RegBase::as_wire;
+
+  static bool sim_running;
+
+  inline operator wire() const { return as_wire(); }
+  inline bool as_wire() const {
     CHECK_P(is_sig());
-    //CHECK_P(has_delta());
+    CHECK_P(has_delta() == sim_running);
     return wire(state & 1);
   }
 

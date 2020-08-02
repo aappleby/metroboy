@@ -59,60 +59,9 @@ struct VramBus {
     _VRAM_PIN_D7_C.preset(DELTA_TRIZ);
   }
 
-  //----------------------------------------
-
-  void dump(Dumper& d) const {
-    /*
-    int addr = pack(_VRAM_PIN_A00_AD, _VRAM_PIN_A01_AD, _VRAM_PIN_A02_AD, _VRAM_PIN_A03_AD,
-                    _VRAM_PIN_A04_AD, _VRAM_PIN_A05_AD, _VRAM_PIN_A06_AD, _VRAM_PIN_A07_AD,
-                    _VRAM_PIN_A08_AD, _VRAM_PIN_A09_AD, _VRAM_PIN_A10_AD, _VRAM_PIN_A11_AD,
-                    _VRAM_PIN_A12_AD, 0, 0, 0);
-    int data_a = pack(_VRAM_PIN_D0_A, _VRAM_PIN_D1_A, _VRAM_PIN_D2_A, _VRAM_PIN_D3_A,
-                      _VRAM_PIN_D4_A, _VRAM_PIN_D5_A, _VRAM_PIN_D6_A, _VRAM_PIN_D7_A);
-    int data_b = pack(_VRAM_PIN_D0_B, _VRAM_PIN_D1_B, _VRAM_PIN_D2_B, _VRAM_PIN_D3_B,
-                      _VRAM_PIN_D4_B, _VRAM_PIN_D5_B, _VRAM_PIN_D6_B, _VRAM_PIN_D7_B);
-    int data_c = pack(_VRAM_PIN_D0_C, _VRAM_PIN_D1_C, _VRAM_PIN_D2_C, _VRAM_PIN_D3_C,
-                      _VRAM_PIN_D4_C, _VRAM_PIN_D5_C, _VRAM_PIN_D6_C, _VRAM_PIN_D7_C);
-    int data_d = pack(_VRAM_PIN_D0_D, _VRAM_PIN_D1_D, _VRAM_PIN_D2_D, _VRAM_PIN_D3_D,
-                      _VRAM_PIN_D4_D, _VRAM_PIN_D5_D, _VRAM_PIN_D6_D, _VRAM_PIN_D7_D);
-    addr = (~addr) & 0x1FFF;
-    */
-
-
-    d("---------- VRAM Bus ----------\n");
-    d("VRAM BUS ADDR    : %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      _VRAM_BUS_A12.c(), _VRAM_BUS_A11.c(), _VRAM_BUS_A10.c(), _VRAM_BUS_A09.c(),
-      _VRAM_BUS_A08.c(), _VRAM_BUS_A07.c(), _VRAM_BUS_A06.c(), _VRAM_BUS_A05.c(),
-      _VRAM_BUS_A04.c(), _VRAM_BUS_A03.c(), _VRAM_BUS_A02.c(), _VRAM_BUS_A01.c(),
-      _VRAM_BUS_A00.c());
-    d("VRAM BUS DATA    : %c%c%c%c%c%c%c%c\n",
-      _VRAM_BUS_D7.c(), _VRAM_BUS_D6.c(), _VRAM_BUS_D5.c(), _VRAM_BUS_D4.c(),
-      _VRAM_BUS_D3.c(), _VRAM_BUS_D2.c(), _VRAM_BUS_D1.c(), _VRAM_BUS_D0.c());
-
-    d("VRAM PIN MCS     : %c%c%c\n", _VRAM_PIN_CS_A.c(), _VRAM_PIN_CS_C.c(), _VRAM_PIN_CS_D.c());
-    d("VRAM PIN MOE     : %c%c%c\n", _VRAM_PIN_OE_A.c(), _VRAM_PIN_OE_C.c(), _VRAM_PIN_OE_D.c());
-    d("VRAM PIN MWR     : %c%c%c\n", _VRAM_PIN_WR_A.c(), _VRAM_PIN_WR_C.c(), _VRAM_PIN_WR_D.c());
-
-    d("VRAM PIN ADDR    : %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      _VRAM_PIN_A12.c(), _VRAM_PIN_A11.c(), _VRAM_PIN_A10.c(), _VRAM_PIN_A09.c(),
-      _VRAM_PIN_A08.c(), _VRAM_PIN_A07.c(), _VRAM_PIN_A06.c(), _VRAM_PIN_A05.c(),
-      _VRAM_PIN_A04.c(), _VRAM_PIN_A03.c(), _VRAM_PIN_A02.c(), _VRAM_PIN_A01.c(),
-      _VRAM_PIN_A00.c());
-
-    d("VRAM PIN DATA A  : %c%c%c%c%c%c%c%c\n",
-      _VRAM_PIN_D7_A.c(), _VRAM_PIN_D6_A.c(), _VRAM_PIN_D5_A.c(), _VRAM_PIN_D4_A.c(),
-      _VRAM_PIN_D3_A.c(), _VRAM_PIN_D2_A.c(), _VRAM_PIN_D1_A.c(), _VRAM_PIN_D0_A.c());
-    d("VRAM PIN DATA B  : %c%c%c%c%c%c%c%c\n",
-      _VRAM_PIN_D7_B.c(), _VRAM_PIN_D6_B.c(), _VRAM_PIN_D5_B.c(), _VRAM_PIN_D4_B.c(),
-      _VRAM_PIN_D3_B.c(), _VRAM_PIN_D2_B.c(), _VRAM_PIN_D1_B.c(), _VRAM_PIN_D0_B.c());
-    d("VRAM PIN DATA C  : %c%c%c%c%c%c%c%c\n",
-      _VRAM_PIN_D7_C.c(), _VRAM_PIN_D6_C.c(), _VRAM_PIN_D5_C.c(), _VRAM_PIN_D4_C.c(),
-      _VRAM_PIN_D3_C.c(), _VRAM_PIN_D2_C.c(), _VRAM_PIN_D1_C.c(), _VRAM_PIN_D0_C.c());
-    d("VRAM PIN DATA D  : %c%c%c%c%c%c%c%c\n",
-      _VRAM_PIN_D7_D.c(), _VRAM_PIN_D6_D.c(), _VRAM_PIN_D5_D.c(), _VRAM_PIN_D4_D.c(),
-      _VRAM_PIN_D3_D.c(), _VRAM_PIN_D2_D.c(), _VRAM_PIN_D1_D.c(), _VRAM_PIN_D0_D.c());
-    d("\n");
-  }
+  int get_map_x(const SchematicTop& top) const;
+  int get_map_y(const SchematicTop& top) const;
+  void dump(Dumper& d, const SchematicTop& top) const;
 
   //----------------------------------------
 
@@ -254,6 +203,58 @@ struct VramBus {
   Tri _VRAM_PIN_D5_D = TRI_HZNP;    // PIN_27 <- P25.RUMU
   Tri _VRAM_PIN_D6_D = TRI_HZNP;    // PIN_26 <- P25.RYTY
   Tri _VRAM_PIN_D7_D = TRI_HZNP;    // PIN_25 <- P25.RADY
+
+  //-----------------------------------------------------------------------------
+  // Signals for debugging
+
+  /*p26.FAFO*/ Sig _FAFO_TILE_Y0S; 
+  /*p26.FAFO*/ Sig _FAFO_TILE_Y0C; 
+  /*p26.EMUX*/ Sig _EMUX_TILE_Y1S; 
+  /*p26.EMUX*/ Sig _EMUX_TILE_Y1C; 
+  /*p26.ECAB*/ Sig _ECAB_TILE_Y2S; 
+  /*p26.ECAB*/ Sig _ECAB_TILE_Y2C; 
+  /*p26.ETAM*/ Sig _ETAM_MAP_Y0S;
+  /*p26.ETAM*/ Sig _ETAM_MAP_Y0C;
+  /*p26.DOTO*/ Sig _DOTO_MAP_Y1S;
+  /*p26.DOTO*/ Sig _DOTO_MAP_Y1C;
+  /*p26.DABA*/ Sig _DABA_MAP_Y2S;
+  /*p26.DABA*/ Sig _DABA_MAP_Y2C;
+  /*p26.EFYK*/ Sig _EFYK_MAP_Y3S;
+  /*p26.EFYK*/ Sig _EFYK_MAP_Y3C;
+  /*p26.EJOK*/ Sig _EJOK_MAP_Y4S;
+  /*p26.EJOK*/ Sig _EJOK_MAP_Y4C;
+
+  /*p26.ATAD*/ Sig _ATAD_TILE_X0S; 
+  /*p26.ATAD*/ Sig _ATAD_TILE_X0C; 
+  /*p26.BEHU*/ Sig _BEHU_TILE_X1S; 
+  /*p26.BEHU*/ Sig _BEHU_TILE_X1C; 
+  /*p26.APYH*/ Sig _APYH_TILE_X2S; 
+  /*p26.APYH*/ Sig _APYH_TILE_X2C; 
+  /*p26.BABE*/ Sig _BABE_MAP_X0S;
+  /*p26.BABE*/ Sig _BABE_MAP_X0C;
+  /*p26.ABOD*/ Sig _ABOD_MAP_X1S;
+  /*p26.ABOD*/ Sig _ABOD_MAP_X1C;
+  /*p26.BEWY*/ Sig _BEWY_MAP_X2S;
+  /*p26.BEWY*/ Sig _BEWY_MAP_X2C;
+  /*p26.BYCA*/ Sig _BYCA_MAP_X3S;
+  /*p26.BYCA*/ Sig _BYCA_MAP_X3C;
+  /*p26.ACUL*/ Sig _ACUL_MAP_X4S;
+  /*p26.ACUL*/ Sig _ACUL_MAP_X4C;
+
+  /*p25.XEDU*/ Sig XEDU_CPU_VRAM_RDn;
+  /*p04.AHOC*/ Sig AHOC_DMA_VRAM_RDn;
+  /*p29.ABON*/ Sig ABON_SPR_VRM_RDn;
+  /*p26.BAFY*/ Sig BAFY_BG_MAP_READn;
+  /*p25.WUKO*/ Sig WUKO_WIN_MAP_READn;
+
+  /*p27.NETA*/ Sig NETA_TILE_READp;
+  /*p26.ASUL*/ Sig ASUL_TILE_READp;
+  /*p26.BEJE*/ Sig BEJE_BGD_TILE_READn;
+  /*p25.XUCY*/ Sig XUCY_WIN_TILE_READn;
+  /*p25.VUZA*/ Sig VUZA_TILE_BANKp;
+
+
+
 };
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,8 @@
 #include "Signals.h"
 #include <memory.h>
 
+bool Sig::sim_running = false;
+
 //-----------------------------------------------------------------------------
 
 const Lut8 logic_lut1 = []() -> Lut8 {

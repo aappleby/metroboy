@@ -189,7 +189,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   top.cpu_bus.dump(dumper);
   top.ext_bus.dump(dumper);
-  top.vram_bus.dump(dumper);
+  top.vram_bus.dump(dumper, top);
   top.oam_bus.dump(dumper);
   top.dma_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 1, 0);

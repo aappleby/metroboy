@@ -19,7 +19,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("_SEGU_CLKPIPEn          %d\n", _SEGU_CLKPIPEn);
   d("_SACU_CLKPIPEp          %d\n", _SACU_CLKPIPEp);
 
-  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIGn(), top.clk_reg.TOFU_VID_RSTp());
+  /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.TOFU_VID_RSTp());
   d("BYHA_VID_LINE_TRIGn     %d\n", top.lcd_reg.BYHA_VID_LINE_TRIGn());
   d("TOFU_VID_RSTp           %d\n", top.clk_reg.TOFU_VID_RSTp());
   d("_TADY_LINE_START_RST    %d\n", _TADY_LINE_START_RST);
@@ -347,20 +347,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.BYHA_VID_LINE_TRIGn(), top.clk_reg.TOFU_VID_RSTp());
+    /*p21.TADY*/ wire _TADY_LINE_START_RST = nor(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.TOFU_VID_RSTp());
     /*p21.VOGA*/ _VOGA_RENDER_DONE_SYNC = dff17(top.clk_reg.ALET_xBxDxFxH(), _TADY_LINE_START_RST, WODU_RENDER_DONEp());
   }
-
-  if (_VOGA_RENDER_DONE_SYNC.posedge()) printf("_VOGA_RENDER_DONE_SYNC ^^^\n");
-  if (_VOGA_RENDER_DONE_SYNC.negedge()) printf("_VOGA_RENDER_DONE_SYNC vvv\n");
 
   {
     /*p21.WEGO*/ wire _WEGO_LINE_END_RST   = or(top.clk_reg.TOFU_VID_RSTp(), _VOGA_RENDER_DONE_SYNC.q());
     /*p21.XYMU*/ _XYMU_RENDERINGp = nor_latch(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), _WEGO_LINE_END_RST);
   }
-
-  if (_XYMU_RENDERINGp.posedge()) printf("RENDERING BEGIN!\n");
-  if (_XYMU_RENDERINGp.negedge()) printf("RENDERING END!\n");
 
   //----------------------------------------
   // Background pipes

@@ -10,8 +10,17 @@ void SpriteStore::dump(Dumper& d) const {
   //d("FEPO_STORE_MATCHp %d\n", wire(FEPO_STORE_MATCHp));
 
   d("SPRITE INDEX %02d\n", 
-    pack(0, 0, XECU_SPRITE_INDX5.q(), YDUF_SPRITE_INDX4.q(),
-          XOBE_SPRITE_INDX3.q(), ZUZE_SPRITE_INDX2.q(), XEDY_SPRITE_INDX1.q(), XADU_SPRITE_INDX0.q()));
+    pack(
+      XADU_SPRITE_INDX0.q(),
+      XEDY_SPRITE_INDX1.q(),
+      ZUZE_SPRITE_INDX2.q(),
+      XOBE_SPRITE_INDX3.q(),
+      YDUF_SPRITE_INDX4.q(),
+      XECU_SPRITE_INDX5.q(),
+      0,
+      0
+    )
+  );
 
   d("STORE MATCH %c%c%c%c%c%c%c%c%c%c\n",
     STORE0_MATCHn.c(), STORE1_MATCHn.c(), STORE2_MATCHn.c(), STORE3_MATCHn.c(), STORE4_MATCHn.c(),

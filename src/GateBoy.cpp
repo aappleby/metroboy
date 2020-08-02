@@ -313,9 +313,6 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 
   StringDumper d;
 
-  int old_lcd_x = top.lcd_reg.get_x();
-  int old_lcd_y = top.lcd_reg.get_y();
-
   for (pass_count = 0; pass_count < 100; pass_count++) {
     top.clk_reg.preset_rst(sys_rst);
     top.clk_reg.preset_t1t2(sys_t1, sys_t2);
@@ -368,13 +365,8 @@ void GateBoy::phase(Req req, bool verbose, bool use_fast_impl) {
 
   CHECK_P(pass_count < 100);
 
-  int new_lcd_x = top.lcd_reg.get_x();
-  int new_lcd_y = top.lcd_reg.get_y();
-
-  if (new_lcd_x != old_lcd_x) printf("LCD X %d\n", new_lcd_x);
-  if (new_lcd_y != old_lcd_y) printf("LCD Y %d\n", new_lcd_y);
-
   uint8_t phase_clock = top.clk_reg.get_phase_clock();
+  (void)phase_clock;
 
   if (sys_clken && sys_clkgood) {
     if (PHASE_A) CHECK_P(phase_clock == 0b0001);

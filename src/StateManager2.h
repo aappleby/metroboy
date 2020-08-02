@@ -46,9 +46,9 @@ public:
   }
 
   void step(int count = 1) {
+    auto s = new T(*states.back());
+    states.push_back(s);
     for (int i = 0; i < count; i++) {
-      auto s = new T(*states.back());
-      states.push_back(s);
       step_callback(s);
     }
   }

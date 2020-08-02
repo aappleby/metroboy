@@ -102,17 +102,19 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_v:      runmode = RUN_VSYNC; break;
     case SDLK_s:      runmode = STEP_FRAME; break;
     case SDLK_RIGHT:  {
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_forward = 8;
+      if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
+        step_forward += 16384;
       } else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward = 1024;
+        step_forward += 1024;
+      } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_forward += 8;
       } else {
-        step_forward = 1;
+        step_forward += 1;
       }
       break;
     }
     case SDLK_LEFT:   {
-      step_backward = 1;
+      step_backward += 1;
       break;
     }
     case SDLK_UP:     step_up = true; break;
@@ -124,8 +126,9 @@ void GateBoyApp::app_update(double delta) {
     }
   }
 
-  while(step_forward--) {
-    state_manager.step(1);
+  if (step_forward) {
+    state_manager.step(step_forward);
+    step_forward = 0;
   }
 
   while(step_backward--) {

@@ -63,15 +63,9 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
 
-    wire NYXU_TILE_FETCHER_RSTn1 = top.NYXU_TILE_FETCHER_RSTn();
-    wire TEVO_FINE_RSTp = or(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
-    wire NYXU_TILE_FETCHER_RSTn2 = nor(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
-
-    CHECK_P(NYXU_TILE_FETCHER_RSTn1 == NYXU_TILE_FETCHER_RSTn2);
-
-    /*p27.LAXU*/ _LAXU_BFETCH_S0 = dff17(_LEBO_AxCxExGx,       NYXU_TILE_FETCHER_RSTn2, _LAXU_BFETCH_S0.qn());
-    /*p27.MESU*/ _MESU_BFETCH_S1 = dff17(_LAXU_BFETCH_S0.qn(), NYXU_TILE_FETCHER_RSTn2, _MESU_BFETCH_S1.qn());
-    /*p27.NYVA*/ _NYVA_BFETCH_S2 = dff17(_MESU_BFETCH_S1.qn(), NYXU_TILE_FETCHER_RSTn2, _NYVA_BFETCH_S2.qn());
+    /*p27.LAXU*/ _LAXU_BFETCH_S0 = dff17(_LEBO_AxCxExGx,       top.NYXU_TILE_FETCHER_RSTn(), _LAXU_BFETCH_S0.qn());
+    /*p27.MESU*/ _MESU_BFETCH_S1 = dff17(_LAXU_BFETCH_S0.qn(), top.NYXU_TILE_FETCHER_RSTn(), _MESU_BFETCH_S1.qn());
+    /*p27.NYVA*/ _NYVA_BFETCH_S2 = dff17(_MESU_BFETCH_S1.qn(), top.NYXU_TILE_FETCHER_RSTn(), _NYVA_BFETCH_S2.qn());
 
     /*p27.LYZU*/ _LYZU_BFETCH_S0_DELAY = dff17(top.clk_reg.ALET_xBxDxFxH(), top.pix_pipe.XYMU_RENDERINGp(), _LAXU_BFETCH_S0.q());
   }

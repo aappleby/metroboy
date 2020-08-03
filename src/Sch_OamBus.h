@@ -13,26 +13,36 @@ struct OamBus {
 
   //----------------------------------------
 
-  uint8_t get_oam_bus_addr() {
+  uint8_t get_oam_bus_addr() const {
     return (uint8_t)pack(OAM_BUS_A0, OAM_BUS_A1, OAM_BUS_A2, OAM_BUS_A3,
                          OAM_BUS_A4, OAM_BUS_A5, OAM_BUS_A6, OAM_BUS_A7);
   }
 
-  uint16_t get_oam_bus_data() {
+  uint16_t get_oam_bus_data() const {
     return ~(uint16_t)pack(OAM_BUS_DA0, OAM_BUS_DA1, OAM_BUS_DA2, OAM_BUS_DA3,
                            OAM_BUS_DA4, OAM_BUS_DA5, OAM_BUS_DA6, OAM_BUS_DA7,
                            OAM_BUS_DB0, OAM_BUS_DB1, OAM_BUS_DB2, OAM_BUS_DB3,
                            OAM_BUS_DB4, OAM_BUS_DB5, OAM_BUS_DB6, OAM_BUS_DB7);
   }
 
-  uint8_t get_oam_bus_data_a() {
+  uint8_t get_oam_bus_data_a() const {
     return ~(uint8_t)pack(OAM_BUS_DA0, OAM_BUS_DA1, OAM_BUS_DA2, OAM_BUS_DA3,
                           OAM_BUS_DA4, OAM_BUS_DA5, OAM_BUS_DA6, OAM_BUS_DA7);
   }
 
-  uint8_t get_oam_bus_data_b() {
+  uint8_t get_oam_bus_data_b() const {
     return ~(uint8_t)pack(OAM_BUS_DB0, OAM_BUS_DB1, OAM_BUS_DB2, OAM_BUS_DB3,
                           OAM_BUS_DB4, OAM_BUS_DB5, OAM_BUS_DB6, OAM_BUS_DB7);
+  }
+
+  uint8_t get_temp_a() const {
+    return (uint8_t)pack(YLOR_OAM_DA0.q(), ZYTY_OAM_DA1.q(), ZYVE_OAM_DA2.q(), ZEZY_OAM_DA3.q(),
+                         GOMO_OAM_DA4.q(), BAXO_OAM_DA5.q(), YZOS_OAM_DA6.q(), DEPO_OAM_DA7.q());
+  }
+
+  uint8_t get_temp_b() const {
+    return (uint8_t)pack(YLOR_OAM_DA0.q(), ZYTY_OAM_DA1.q(), ZYVE_OAM_DA2.q(), ZEZY_OAM_DA3.q(),
+                         GOMO_OAM_DA4.q(), BAXO_OAM_DA5.q(), YZOS_OAM_DA6.q(), DEPO_OAM_DA7.q());
   }
 
   void preset_bus_data(bool oe, uint16_t data) {
@@ -78,6 +88,16 @@ struct OamBus {
 
   void dump(Dumper& d) const {
     d("---------- OAM Bus  ----------\n");
+    d("APAR_SCAN_OAM_RDn  : %d\n", wire(APAR_SCAN_OAM_RDn));
+    d("DUGA_DMA_OAM_RDn   : %d\n", wire(DUGA_DMA_OAM_RDn));
+    d("ASAM_CPU_OAM_RDn   : %d\n", wire(ASAM_CPU_OAM_RDn));
+    d("BETE_PPU_OAM_RDn   : %d\n", wire(BETE_PPU_OAM_RDn));
+    d("COTA_OAM_CLKn      : %d\n", wire(COTA_OAM_CLKn));
+    d("AVER_SCAN_OAM_CLK  : %d\n", wire(AVER_SCAN_OAM_CLK));
+    d("XUJY_PPU_OAM_CLK   : %d\n", wire(XUJY_PPU_OAM_CLK));
+    d("CUFE_DMA_OAM_CLK   : %d\n", wire(CUFE_DMA_OAM_CLK));
+    d("BYCU_OAM_CLKp      : %d\n", wire(BYCU_OAM_CLKp));
+
     d("PIN_CLK    %c\n", OAM_PIN_CLK.c());
     d("PIN_OE     %c\n", OAM_PIN_OE.c()); 
     d("PIN_WR_A   %c\n", OAM_PIN_WR_A.c());
@@ -136,6 +156,17 @@ struct OamBus {
 
   /*p04.MAKA*/ Reg _MAKA_DV_SYNC = REG_D0C0;
   /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
+
+  /*p28.APAR*/ Sig APAR_SCAN_OAM_RDn;
+  /*p04.DUGA*/ Sig DUGA_DMA_OAM_RDn;
+  /*p28.ASAM*/ Sig ASAM_CPU_OAM_RDn;
+  /*p28.BETE*/ Sig BETE_PPU_OAM_RDn;
+
+  /*p25.AVER*/ Sig AVER_SCAN_OAM_CLK;
+  /*p25.XUJY*/ Sig XUJY_PPU_OAM_CLK;
+  /*p25.CUFE*/ Sig CUFE_DMA_OAM_CLK;
+  /*p25.BYCU*/ Sig BYCU_OAM_CLKp;
+  /*p25.COTA*/ Sig COTA_OAM_CLKn;
 
   Tri OAM_PIN_CLK  = TRI_HZNP;
   Tri OAM_PIN_OE   = TRI_HZPU;

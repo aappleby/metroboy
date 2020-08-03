@@ -136,10 +136,10 @@ void OamBus::tock(SchematicTop& top) {
     // ASAM := or(ACYL, XYMU, MATU_17);
     // BETE := not(AJON);
 
-    /*p28.APAR*/ wire APAR_SCAN_OAM_RDn  = not(ACYL_SCANNINGp);
-    /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn  = not(MATU_DMA_RUNNINGp);
-    /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn  = or (ACYL_SCANNINGp, XYMU_RENDERINGp, MATU_DMA_RUNNINGp);
-    /*p28.BETE*/ wire BETE_PPU_OAM_RDn  = not(AJON_OAM_BUSY);
+    /*p28.APAR*/ APAR_SCAN_OAM_RDn  = not(ACYL_SCANNINGp);
+    /*p04.DUGA*/ DUGA_DMA_OAM_RDn  = not(MATU_DMA_RUNNINGp);
+    /*p28.ASAM*/ ASAM_CPU_OAM_RDn  = or (ACYL_SCANNINGp, XYMU_RENDERINGp, MATU_DMA_RUNNINGp);
+    /*p28.BETE*/ BETE_PPU_OAM_RDn  = not(AJON_OAM_BUSY);
 
     // Scanner addr -> OAM addr
     /*p28.GEFY*/ OAM_TRI_A0 = tribuf_6n(APAR_SCAN_OAM_RDn, GND);
@@ -387,14 +387,14 @@ void OamBus::tock(SchematicTop& top) {
 
   // OAM latch -> OAM temp
   {
-    /*p25.AVER*/ wire _AVER_SCAN_OAM_CLK    = nand(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABCxDEFx()); 
-    /*p25.XUJY*/ wire _XUJY_PPU_OAM_CLK     = not(top.sprite_fetcher.VAPE_FETCH_OAM_CLK());
-    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK     = and (or (top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_xxxxEFGH());
-    /*p25.BYCU*/ wire _BYCU_OAM_CLKp        = nand(_AVER_SCAN_OAM_CLK, _XUJY_PPU_OAM_CLK, _CUFE_DMA_OAM_CLK);
-    /*p25.COTA*/ wire _COTA_OAM_CLKn        = not(_BYCU_OAM_CLKp);
+    /*p25.AVER*/ AVER_SCAN_OAM_CLK = nand(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABCxDEFx()); 
+    /*p25.XUJY*/ XUJY_PPU_OAM_CLK  = not(top.sprite_fetcher.VAPE_FETCH_OAM_CLK());
+    /*p25.CUFE*/ CUFE_DMA_OAM_CLK  = and (or (top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_xxxxEFGH());
+    /*p25.BYCU*/ BYCU_OAM_CLKp     = nand(AVER_SCAN_OAM_CLK, XUJY_PPU_OAM_CLK, CUFE_DMA_OAM_CLK);
+    /*p25.COTA*/ COTA_OAM_CLKn     = not(BYCU_OAM_CLKp);
 
     // Internal latch -> sprite fetcher/matcher
-    /*p31.XEGA*/ wire _XEGA_OAM_CLKp = not(_COTA_OAM_CLKn);
+    /*p31.XEGA*/ wire _XEGA_OAM_CLKp = not(COTA_OAM_CLKn);
     /*p31.YLOR*/ YLOR_OAM_DA0 = dff8(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), XYKY_LATCH_OAM_DA0);
     /*p31.ZYTY*/ ZYTY_OAM_DA1 = dff8(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YRUM_LATCH_OAM_DA1);
     /*p31.ZYVE*/ ZYVE_OAM_DA2 = dff8(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), YSEX_LATCH_OAM_DA2);
@@ -404,7 +404,7 @@ void OamBus::tock(SchematicTop& top) {
     /*p31.YZOS*/ YZOS_OAM_DA6 = dff8(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), ZUVE_LATCH_OAM_DA6);
     /*p31.DEPO*/ DEPO_OAM_DA7 = dff8(_XEGA_OAM_CLKp, not(_XEGA_OAM_CLKp), ECED_LATCH_OAM_DA7);
 
-    /*p29.YWOK*/ wire _YWOK_OAM_CLKn = not(_COTA_OAM_CLKn);
+    /*p29.YWOK*/ wire _YWOK_OAM_CLKn = not(COTA_OAM_CLKn);
     /*p29.XUSO*/ XUSO_OAM_DB0 = dff8(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YDYV_LATCH_OAM_DB0);
     /*p29.XEGU*/ XEGU_OAM_DB1 = dff8(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), YCEB_LATCH_OAM_DB1);
     /*p29.YJEX*/ YJEX_OAM_DB2 = dff8(_YWOK_OAM_CLKn, not(_YWOK_OAM_CLKn), ZUCA_LATCH_OAM_DB2);

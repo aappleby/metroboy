@@ -16,7 +16,8 @@ struct PixelPipe {
   // -> top, tile fetcher
   /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp() const { 
     /*p27.NYFO*/ wire NYFO_TILE_FETCHER_RSTn = not(NUNY_WX_MATCHpe());
-    return not(NYFO_TILE_FETCHER_RSTn);
+    /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp = not(NYFO_TILE_FETCHER_RSTn);
+    return MOSU_TILE_FETCHER_RSTp;
   }
 
   // -> top.TEVO
@@ -92,8 +93,15 @@ struct PixelPipe {
 
 //private:
 
-  /*p27.NOCU*/ wire NOCU_WIN_MODEn()  const { return not(_PYNU_WIN_MODE_A); }
-  /*p27.NUNY*/ wire NUNY_WX_MATCHpe() const { return and(_PYNU_WIN_MODE_A, _NOPA_WIN_MODE_B.qn()); }
+  wire NOCU_WIN_MODEn()  const {
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(_PYNU_WIN_MODE_A);
+    return NOCU_WIN_MODEn;
+  }
+  
+  wire NUNY_WX_MATCHpe() const {
+    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and(_PYNU_WIN_MODE_A, _NOPA_WIN_MODE_B.qn());
+    return NUNY_WX_MATCHpe;
+  }
   /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not(_RYDY_WIN_FIRST_TILE_A); }
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }

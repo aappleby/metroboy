@@ -19,11 +19,10 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
   /*p24.KEDY*/ wire _KEDY_LCDC_ENn = not(top.pix_pipe.XONA_LCDC_EN.q());
 
   // LCD main timer
+
   {
     // 912 phases per line
 
-    /*p21.SANU*/ wire _SANU_x113p = and(TYRY_X6.q(), TAHA_X5.q(), SUDE_X4.q(), SAXO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*p21.RUTU*/ _RUTU_LINE_ENDp = dff17(top.clk_reg.SONO_xxxxEFGH(), top.clk_reg.LYFE_VID_RSTn(), _SANU_x113p);
     /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(_RUTU_LINE_ENDp.q(), top.clk_reg.LYHA_VID_RSTp());
     /*p21.SAXO*/ SAXO_X0 = dff17(top.clk_reg.TALU_ABCDxxxx(), _MUDE_X_RSTn, !SAXO_X0.q());
     /*p21.TYPO*/ TYPO_X1 = dff17(!SAXO_X0.q(),                _MUDE_X_RSTn, !TYPO_X1.q());
@@ -61,7 +60,12 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p29.ABOV*/ wire _ABOV_VID_LINE_ENDp = and(SELA_LINE_ENDp(), _ALES_IN_VBLANKn);
+    /*p21.SANU*/ wire _SANU_x113p = and(TYRY_X6.q(), TAHA_X5.q(), SUDE_X4.q(), SAXO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+    /*p21.RUTU*/ _RUTU_LINE_ENDp = dff17(top.clk_reg.SONO_xxxxEFGH(), top.clk_reg.LYFE_VID_RSTn(), _SANU_x113p);
+
+    /*p21.PURE*/ wire PURE_LINE_ENDn = not(_RUTU_LINE_ENDp.q());
+    /*p21.SELA*/ wire SELA_LINE_ENDp = not(PURE_LINE_ENDn);
+    /*p29.ABOV*/ wire _ABOV_VID_LINE_ENDp = and(SELA_LINE_ENDp, _ALES_IN_VBLANKn);
     /*p29.CATU*/ _CATU_VID_LINE_ENDp = dff17(top.clk_reg.XUPY_ABxxEFxx(), top.clk_reg.ABEZ_VID_RSTn(), _ABOV_VID_LINE_ENDp);
     /*p28.ANEL*/ _ANEL_VID_LINE_ENDp = dff17(top.clk_reg.AWOH_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), _CATU_VID_LINE_ENDp.q());
   }

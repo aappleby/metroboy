@@ -3,6 +3,8 @@
 
 bool Sig::sim_running = false;
 
+bool bus_collision = false;
+
 //-----------------------------------------------------------------------------
 
 const Lut8 logic_lut1 = []() -> Lut8 {

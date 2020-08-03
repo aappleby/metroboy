@@ -26,13 +26,17 @@ struct LcdRegisters {
                 _SOTA_LYC4.q(), _VAFA_LYC5.q(), _VEVO_LYC6.q(), _RAHA_LYC7.q());
   }
 
-  /*p28.BYHA*/ wire LcdRegisters::BYHA_VID_LINE_TRIGn() const {
+  wire BYHA_VID_LINE_END_TRIGn() const {
     /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_VID_LINE_ENDp.q());
-    return and (or (_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
+    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = and (or (_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
+    return BYHA_VID_LINE_END_TRIGn;
   }
 
   // -> lcd, window
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp() const { return not(BYHA_VID_LINE_TRIGn()); }
+  wire ATEJ_VID_LINE_TRIGp() const {
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp = not(BYHA_VID_LINE_END_TRIGn());
+    return ATEJ_VID_LINE_TRIGp;
+  }
 
   // -> interrupts, ppu
   /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(_POPU_IN_VBLANKp.qn()); }
@@ -93,7 +97,7 @@ struct LcdRegisters {
   /*p21.MATO*/ Reg MATO_Y6 = REG_D0C0;
   /*p21.LAFO*/ Reg LAFO_Y7 = REG_D0C0;
 
-private:
+//private:
 
   Sig _ABEZ_VID_RSTn;
 

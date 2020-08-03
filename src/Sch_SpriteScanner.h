@@ -31,8 +31,10 @@ struct SpriteScanner {
 
   // -> ppu.XYMU/POFY, scanner.ASEN, top.NYXU
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
-    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B(), !BYBA_SCAN_DONE_A());
-    /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not(_BEBU_SCAN_DONE_TRIGn);
+
+    // this seems weird
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(_BALU_LINE_RSTp, !BYBA_SCAN_DONE_A(), DOBA_SCAN_DONE_B());
+    /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
     return AVAP_RENDER_START_TRIGp;
   }
 

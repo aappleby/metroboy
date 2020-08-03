@@ -290,13 +290,12 @@ void VramBus::tock(SchematicTop& top) {
     /*p26.ACUL*/ _ACUL_MAP_X4S  = add_s(top.pix_pipe.SYBE_X7.q(), top.tile_fetcher.BAKE_SCX7.q(), _BYCA_MAP_X3C);
     /*p26.ACUL*/ _ACUL_MAP_X4C  = add_c(top.pix_pipe.SYBE_X7.q(), top.tile_fetcher.BAKE_SCX7.q(), _BYCA_MAP_X3C);
 
-    /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand(top.tile_fetcher.NAKO_BFETCH_S1n(), top.tile_fetcher.NOFU_BFETCH_S2n());
-    /*p27.NENY*/ wire _NENY_FETCH_01n = not(_NOGU_FETCH_01p);
-    /*p27.POTU*/ wire _POTU_BG_MAP_READp = and (top.tile_fetcher.LENA_BGW_VRM_RDp(), _NENY_FETCH_01n);
-    /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not(top.pix_pipe.PORE_WIN_MODEp());
-
     // Background map read
     {
+      /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not(top.pix_pipe.PORE_WIN_MODEp());
+      /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand(top.tile_fetcher.NAKO_BFETCH_S1n(), top.tile_fetcher.NOFU_BFETCH_S2n());
+      /*p27.NENY*/ wire _NENY_FETCH_01n = not(_NOGU_FETCH_01p);
+      /*p27.POTU*/ wire _POTU_BG_MAP_READp = and (top.tile_fetcher.LENA_BGW_VRM_RDp(), _NENY_FETCH_01n);
       /*p26.ACEN*/ wire _ACEN_BG_MAP_READp = and (_POTU_BG_MAP_READp, _AXAD_WIN_MODEn);
       /*p26.BAFY*/ BAFY_BG_MAP_READn = not(_ACEN_BG_MAP_READp);
       /*p26.AXEP*/ _VRAM_BUS_A00 = tribuf_6n(BAFY_BG_MAP_READn, _BABE_MAP_X0S);
@@ -319,7 +318,19 @@ void VramBus::tock(SchematicTop& top) {
 
     // Window map read
     {
-      /*p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and (_POTU_BG_MAP_READp, top.pix_pipe.PORE_WIN_MODEp());
+      /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(top.pix_pipe._PYNU_WIN_MODE_A);
+      /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn);
+      /*p27.NAKO*/ wire NAKO_BFETCH_S1n = not(top.tile_fetcher._MESU_BFETCH_S1.q());
+      /*p27.NOFU*/ wire NOFU_BFETCH_S2n = not(top.tile_fetcher._NYVA_BFETCH_S2.q());
+
+      /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
+      /*p27.NENY*/ wire _NENY_FETCH_01n = not(_NOGU_FETCH_01p);
+
+      /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(top.tile_fetcher._LONY_BG_READ_VRAM_LATCHp);
+      /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not(LUSU_BGW_VRAM_RDn);
+
+      /*p27.POTU*/ wire _POTU_BG_MAP_READp = and (LENA_BGW_VRM_RDp, _NENY_FETCH_01n);
+      /*p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and (_POTU_BG_MAP_READp, PORE_WIN_MODEp);
       /*p25.WUKO*/ WUKO_WIN_MAP_READn = not(_XEZE_WIN_MAP_READp);
       /*p27.XEJA*/ _VRAM_BUS_A00 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WYKA_WIN_X3());
       /*p27.XAMO*/ _VRAM_BUS_A01 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WODY_WIN_X4());
@@ -338,11 +349,35 @@ void VramBus::tock(SchematicTop& top) {
 
     // Background/window tile read
     {
-      /*p27.XUHA*/ wire _XUHA_FETCH_S2p  = not (top.tile_fetcher.NOFU_BFETCH_S2n());
-      /*p27.NETA*/ NETA_TILE_READp = and (top.tile_fetcher.LENA_BGW_VRM_RDp(), _NOGU_FETCH_01p);
+#if 0
+
+      BEBU_SCAN_DONE_TRIGn   = and(!_BALU_LINE_RSTp, BYBA_SCAN_DONE_A(), !DOBA_SCAN_DONE_B());
+      NYXU_TILE_FETCHER_RSTn = nor(BEBU_SCAN_DONE_TRIGn, NUNY_WX_MATCHpe, TEVO_FINE_RSTp);
+      LONY_BG_READ_VRAM_LATCHp = nand_latch(NYXU_TILE_FETCHER_RSTn, and(_LOVY_FETCH_DONEp.qn(), XYMU_RENDERINGp));
+
+      NOGU_FETCH_01p      = or(MESU_BFETCH_S1.q(), NYVA_BFETCH_S2.q());
+      XUCY_WIN_TILE_READn = nand(LONY_BG_READ_VRAM_LATCHp, NOGU_FETCH_01p, PYNU_WIN_MODE_A);
+
+#endif
+
+      /*p27.NAKO*/ wire NAKO_BFETCH_S1n = not(top.tile_fetcher._MESU_BFETCH_S1.q());
+      /*p27.NOFU*/ wire NOFU_BFETCH_S2n = not(top.tile_fetcher._NYVA_BFETCH_S2.q());
+      /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(top.pix_pipe._PYNU_WIN_MODE_A);
+      /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn);
+      /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not(PORE_WIN_MODEp);
+
+      /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
+      /*p27.XUHA*/ wire _XUHA_FETCH_S2p  = not (NOFU_BFETCH_S2n);
+
+      /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(top.tile_fetcher._LONY_BG_READ_VRAM_LATCHp);
+      /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not(LUSU_BGW_VRAM_RDn);
+
+      /*p27.NETA*/ NETA_TILE_READp = and (LENA_BGW_VRM_RDp, _NOGU_FETCH_01p);
       /*p26.ASUL*/ ASUL_TILE_READp = and (NETA_TILE_READp, _AXAD_WIN_MODEn);
       /*p26.BEJE*/ BEJE_BGD_TILE_READn = not (ASUL_TILE_READp);
-      /*p25.XUCY*/ XUCY_WIN_TILE_READn = nand(NETA_TILE_READp, top.pix_pipe.PORE_WIN_MODEp());
+
+
+      /*p25.XUCY*/ XUCY_WIN_TILE_READn = nand(NETA_TILE_READp, PORE_WIN_MODEp);
       /*p25.VUZA*/ VUZA_TILE_BANKp = nor(top.pix_pipe.WEXU_LCDC_BGTILE.q(), top.vram_bus.PYJU_TILE_DB7.q()); // register reused
       
       /*p26.ASUM*/ _VRAM_BUS_A00 = tribuf_6n(BEJE_BGD_TILE_READn, _XUHA_FETCH_S2p);

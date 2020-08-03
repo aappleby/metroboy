@@ -269,6 +269,8 @@ struct Sig : private RegBase {
 
 //-----------------------------------------------------------------------------
 
+extern bool bus_collision;
+
 struct Tri : private RegBase {
   Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
 
@@ -284,6 +286,8 @@ struct Tri : private RegBase {
 
   inline operator wire()  const { return as_wire(); }
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
+
+
 
   inline void preset(RegDelta new_delta) {
     if (delta == DELTA_NONE) {
@@ -323,7 +327,11 @@ struct Tri : private RegBase {
       delta = d;
     }
     else {
-      CHECK_P(d == DELTA_TRIZ);
+      //CHECK_P(d == DELTA_TRIZ);
+      if (d != DELTA_TRIZ) {
+        //printf("Bus collision!\n");
+        bus_collision = true;
+      }
     }
   }
 };

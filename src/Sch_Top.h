@@ -66,8 +66,9 @@ struct SchematicTop {
   }
 
   // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
-  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn() const {
-    return nor(sprite_scanner.AVAP_RENDER_START_TRIGp(), pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp());
+  wire NYXU_TILE_FETCHER_RSTn() const {
+    /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor(sprite_scanner.AVAP_RENDER_START_TRIGp(), pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp());
+    return NYXU_TILE_FETCHER_RSTn;
   }
 
   //-----------------------------------------------------------------------------

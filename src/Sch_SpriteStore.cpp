@@ -187,7 +187,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p29.BAKY*/ wire _BAKY_SPRITES_FULL = and (SPRITE_COUNT1.q(), SPRITE_COUNT3.q());
     /*p29.CAKE*/ wire _CAKE_CLKp = or (_BAKY_SPRITES_FULL, DEZY_STORE_ENn.q());
     
-    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_TRIGn());
+    /*p28.AZYB*/ wire _AZYB_RST = not(top.lcd_reg.BYHA_VID_LINE_END_TRIGn());
     /*p29.BESE*/ SPRITE_COUNT0 = dff17(_CAKE_CLKp,         _AZYB_RST, SPRITE_COUNT0.qn());
     /*p29.CUXY*/ SPRITE_COUNT1 = dff17(SPRITE_COUNT0.q(), _AZYB_RST, SPRITE_COUNT1.qn());
     /*p29.BEGO*/ SPRITE_COUNT2 = dff17(SPRITE_COUNT1.q(), _AZYB_RST, SPRITE_COUNT2.qn());

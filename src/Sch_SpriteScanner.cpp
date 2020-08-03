@@ -39,6 +39,14 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
       0
     )
   );
+
+  int y_diff = pack(_ERUC_YDIFF_S0, _ENEF_YDIFF_S1, _FECO_YDIFF_S2, _GYKY_YDIFF_S3,
+                    _GOPU_YDIFF_S4, _FUWA_YDIFF_S5, _GOJU_YDIFF_S6, _WUHU_YDIFF_S7);
+
+  d("LCD Y    %d\n", top.lcd_reg.get_y());
+  d("SPRITE Y %d\n", top.oam_bus.get_temp_b());
+  d("Y DIFF   %02d\n", y_diff);
+
   d("\n");
 }
 

@@ -77,7 +77,7 @@ struct TileFetcher {
   /*p23.CABU*/ Reg CABU_SCX6 = REG_D0C0;
   /*p23.BAKE*/ Reg BAKE_SCX7 = REG_D0C0;
 
-private:
+//private:
   /*p27.LAXE*/ wire LAXE_BFETCH_S0n() const { return not(_LAXU_BFETCH_S0.q()); }
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn() const { return nand(_LAXU_BFETCH_S0.q(), _NYVA_BFETCH_S2.q(), _NYXU_TILE_FETCHER_RSTn); }
 

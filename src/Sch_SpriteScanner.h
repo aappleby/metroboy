@@ -82,6 +82,15 @@ struct SpriteScanner {
   /*p29.WUHU*/ Sig _WUHU_YDIFF_S7;
   /*p29.WUHU*/ Sig _WUHU_YDIFF_C7;
 
+  /*p29.GACE*/ Sig _GACE_SPRITE_DELTA4;
+  /*p29.GUVU*/ Sig _GUVU_SPRITE_DELTA5;
+  /*p29.GYDA*/ Sig _GYDA_SPRITE_DELTA6;
+  /*p29.GEWY*/ Sig _GEWY_SPRITE_DELTA7;
+
+  /*p29.GOVU*/ Sig _GOVU_SPSIZE_MATCH;
+  /*p29.WOTA*/ Sig _WOTA_SCAN_MATCH_Yn;
+  /*p29.GESE*/ Sig _GESE_SCAN_MATCH_Y;
+
   /*p29.CARE*/ Sig _CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
   //----------------------------------------

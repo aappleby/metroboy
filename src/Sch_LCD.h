@@ -13,16 +13,16 @@ struct LcdRegisters {
   void tick(const SchematicTop& top);
   void tock(int phase, const SchematicTop& top, CpuBus& cpu_bus);
 
-  int get_x() const {
-    return pack(SAXO_X0.q(), TYPO_X1.q(), VYZO_X2.q(), TELU_X3.q(), SUDE_X4.q(), TAHA_X5.q(), TYRY_X6.q(), 0);
+  uint8_t get_x() const {
+    return (uint8_t)pack(SAXO_X0.q(), TYPO_X1.q(), VYZO_X2.q(), TELU_X3.q(), SUDE_X4.q(), TAHA_X5.q(), TYRY_X6.q(), 0);
   }
 
-  int get_y() const {
-    return pack(MUWY_Y0.q(), MYRO_Y1.q(), LEXA_Y2.q(), LYDO_Y3.q(), LOVU_Y4.q(), LEMA_Y5.q(), MATO_Y6.q(), LAFO_Y7.q());
+  uint8_t get_y() const {
+    return (uint8_t)pack(MUWY_Y0.q(), MYRO_Y1.q(), LEXA_Y2.q(), LYDO_Y3.q(), LOVU_Y4.q(), LEMA_Y5.q(), MATO_Y6.q(), LAFO_Y7.q());
   }
 
-  int get_lyc() const {
-    return pack(_SYRY_LYC0.q(), _VUCE_LYC1.q(), _SEDY_LYC2.q(), _SALO_LYC3.q(),
+  uint8_t get_lyc() const {
+    return (uint8_t)pack(_SYRY_LYC0.q(), _VUCE_LYC1.q(), _SEDY_LYC2.q(), _SALO_LYC3.q(),
                 _SOTA_LYC4.q(), _VAFA_LYC5.q(), _VEVO_LYC6.q(), _RAHA_LYC7.q());
   }
 
@@ -34,6 +34,7 @@ struct LcdRegisters {
 
   // -> lcd, window
   wire ATEJ_VID_LINE_TRIGp() const {
+    // ATEJ := not(BYHA);
     /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp = not(BYHA_VID_LINE_END_TRIGn());
     return ATEJ_VID_LINE_TRIGp;
   }

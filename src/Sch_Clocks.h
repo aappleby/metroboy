@@ -60,8 +60,8 @@ struct ClockRegisters {
     return nor(_ADAR_ABCxxxxH, ATYP_ABCDxxxx());
   }
 
-  /*p21.TALU*/ wire TALU_ABCDxxxx() const { return not(VENA_xxxxEFGH()); } // lcd
-  /*p21.SONO*/ wire SONO_xxxxEFGH() const { return not(TALU_ABCDxxxx()); } // lcd
+  /*p21.TALU*/ wire TALU_ABxxxxGH() const { return not(VENA_xxCDEFxx.q()); } // lcd
+  /*p21.SONO*/ wire SONO_xxCDEFxx() const { return not(TALU_ABxxxxGH()); } // lcd
   /*p28.AWOH*/ wire AWOH_xxCDxxGH() const { return not(XUPY_ABxxEFxx()); } // lcd
   
   /*p01.AZOF*/ wire AZOF_AxCxExGx() const { return not(ATAL_xBxDxFxH()); } // apu control
@@ -72,13 +72,13 @@ struct ClockRegisters {
   /*p27.MEHE*/ wire MEHE_AxCxExGx() const { return not(ALET_xBxDxFxH()); } // window
   /*p27.MYVO*/ wire MYVO_AxCxExGx() const { return not(ALET_xBxDxFxH()); } // tile fetcher
 
-  /*p29.XOCE*/ wire XOCE_AxxDExxH() const { return not(WOSU_xBCxxFGx()); } // bus mux
-  /*p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not(WUVU_xxCDxxGH()); } // bus mux, lcd, sprite scanner
+  /*p29.XOCE*/ wire XOCE_AxxDExxH() const { return not(WOSU_AxxDExxH.q()); } // bus mux
+  /*p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not(WUVU_ABxxEFxx.q()); } // bus mux, lcd, sprite scanner
 
   /*p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not(BUDE_xxxxEFGH()); } // bus mux, dma
   /*p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not(UVYT_ABCDxxxx()); } // bus mux, dma
   /*p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not(MOPA_xxxxEFGH()); } // bus mux
-  /*p29.XYSO*/ wire XYSO_ABCxDEFx() const { return not(WOJO_xxxDxxxH()); } // bus mux
+  /*p29.XYSO*/ wire XYSO_ABxDEFxH() const { return not(WOJO_xxCxxxGx()); } // AVER_SCAN_OAM_CLK
 
   /*p01.BOGA*/ wire BOGA_xBCDEFGH() const { return not(BALY_Axxxxxxx()); } // joy rst tim
   /*p01.BOMA*/ wire BOMA_Axxxxxxx() const { return not(BOGA_xBCDEFGH()); } // rst
@@ -92,9 +92,9 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Vid clocks
 
-  /*p29.WUVU*/ wire WUVU_xxCDxxGH() const { return _WUVU_xxCDxxGH.q(); }
-  /*p21.VENA*/ wire VENA_xxxxEFGH() const { return _VENA_xxxxEFGH.q(); }
-  /*p29.WOSU*/ wire WOSU_xBCxxFGx() const { return _WOSU_xBCxxFGx.q(); }
+  ///*p29.WUVU*/ wire WUVU_xxCDxxGH() const { return WUVU_ABxxEFxx.q(); }
+  ///*p21.VENA*/ wire VENA_xxCDEFxx() const { return VENA_xxCDEFxx.q(); }
+  ///*p29.WOSU*/ wire WOSU_AxxDExxH() const { return WOSU_AxxDExxH.q(); }
 
   //-----------------------------------------------------------------------------
   // POR state
@@ -190,7 +190,7 @@ struct ClockRegisters {
     return nor(BELE_Axxxxxxx(), _ATEZ_CLKBAD);
   }
   /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not(BYJU_xBCDEFGH()); }
-  /*p29.WOJO*/ wire WOJO_xxxDxxxH() const { return nor(_WUVU_xxCDxxGH.qn(), _WOSU_xBCxxFGx.qn()); }
+  /*p29.WOJO*/ wire WOJO_xxCxxxGx() const { return nor(WUVU_ABxxEFxx.qn(), WOSU_AxxDExxH.qn()); }
 
   //-----------------------------------------------------------------------------
 
@@ -219,9 +219,9 @@ struct ClockRegisters {
   /*p01.APUK*/ Reg _APUK_xxCDEFxx = REG_D0C0;
   /*p01.ADYK*/ Reg _ADYK_xxxDEFGx = REG_D0C0;
 
-  /*p29.WUVU*/ Reg _WUVU_xxCDxxGH = REG_D0C0;
-  /*p21.VENA*/ Reg _VENA_xxxxEFGH = REG_D0C0;
-  /*p29.WOSU*/ Reg _WOSU_xBCxxFGx = REG_D0C0;
+  /*p29.WUVU*/ Reg WUVU_ABxxEFxx = REG_D0C0;
+  /*p21.VENA*/ Reg VENA_xxCDEFxx = REG_D0C0;
+  /*p29.WOSU*/ Reg WOSU_AxxDExxH = REG_D0C0;
 
   Tri CPU_PIN_STARTp   = TRI_HZNP;   // top center port PORTC_04: <- P01.CPU_RESET
   Tri CPU_PIN_READYp   = TRI_D0NP;   // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?

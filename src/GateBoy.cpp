@@ -68,6 +68,9 @@ GateBoy::GateBoy() {
   memset(mem, 0, 65536);
 
   load_blob("roms/LinksAwakening_dog.dump", mem, 65536);
+
+  memset(mem + 0xFE00, 0, 160);
+
   printf("Dump loaded\n");
 }
 
@@ -219,6 +222,9 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   printf("done\n");
 #endif
 
+
+
+#if 1
   dbg_write(ADDR_BGP,  mem[ADDR_BGP],  use_fast_impl);
   dbg_write(ADDR_OBP0, mem[ADDR_OBP0], use_fast_impl);
   dbg_write(ADDR_OBP1, mem[ADDR_OBP1], use_fast_impl);
@@ -249,6 +255,36 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
 
   //dbg_write(ADDR_LCDC, FLAG_LCD_ON | FLAG_BG_ON | /*FLAG_WIN_ON |*/ /*FLAG_TILE_0 |*/ FLAG_WIN_MAP_1, use_fast_impl);
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC], use_fast_impl);
+#endif
+
+  // put a sprite at (3,3)
+  dbg_write(0xFE00, 19, use_fast_impl);
+  dbg_write(0xFE01, 11, use_fast_impl);
+  dbg_write(0xFE02, 55, use_fast_impl);
+  dbg_write(0xFE03, 0,  use_fast_impl);
+
+  // and another sprite at (23, 3)
+  dbg_write(0xFE04, 19, use_fast_impl);
+  dbg_write(0xFE05, 31, use_fast_impl);
+  dbg_write(0xFE06, 55, use_fast_impl);
+  dbg_write(0xFE07, 0,  use_fast_impl);
+
+  // and another sprite at (43, 3)
+  dbg_write(0xFE08, 19, use_fast_impl);
+  dbg_write(0xFE09, 51, use_fast_impl);
+  dbg_write(0xFE0A, 55, use_fast_impl);
+  dbg_write(0xFE0B, 0,  use_fast_impl);
+
+  // and another sprite at (63, 3)
+  dbg_write(0xFE0C, 19, use_fast_impl);
+  dbg_write(0xFE0D, 71, use_fast_impl);
+  dbg_write(0xFE0E, 55, use_fast_impl);
+  dbg_write(0xFE0F, 0,  use_fast_impl);
+
+  printf("oam byte @ 0xFE00 is %d\n", dbg_read(0xFE00, use_fast_impl));
+  printf("oam byte @ 0xFE01 is %d\n", dbg_read(0xFE01, use_fast_impl));
+  printf("oam byte @ 0xFE02 is %d\n", dbg_read(0xFE02, use_fast_impl));
+  printf("oam byte @ 0xFE03 is %d\n", dbg_read(0xFE03, use_fast_impl));
 
   if (verbose) printf("\n");
 }
@@ -660,20 +696,24 @@ void GateBoy::update_vrm_bus(int phase) {
 void GateBoy::update_oam_bus(int phase) {
   (void)phase;
 
-  int oam_addr = uint8_t(~top.oam_bus.get_oam_bus_addr());
-  uint16_t* oam_base = (uint16_t*)(&mem[0xFE00]);
+  // By default the address _and_ data buses to OAM are inverted. We un-invert
+  // them here to make debugging easier.
+
+  uint16_t  oam_addr = top.oam_bus.get_oam_bus_addr();
+
+  uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
+  uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
+
+  uint8_t oam_data_in_a = top.oam_bus.get_oam_bus_data_a();
+  uint8_t oam_data_in_b = top.oam_bus.get_oam_bus_data_b();
 
   if (!top.oam_bus.OAM_PIN_OE) {
-    top.oam_bus.preset_bus_data(true, oam_base[oam_addr >> 1]);
+    top.oam_bus.preset_bus_data_a(true, oam_data_a);
+    top.oam_bus.preset_bus_data_b(true, oam_data_b);
   }
 
-  if (!top.oam_bus.OAM_PIN_WR_A) {
-    mem[0xFE00 + oam_addr] = top.oam_bus.get_oam_bus_data_a();
-  }
-  
-  if (!top.oam_bus.OAM_PIN_WR_B) {
-    mem[0xFE00 + oam_addr] = top.oam_bus.get_oam_bus_data_b();
-  }
+  if (!top.oam_bus.OAM_PIN_WR_A) oam_data_a = oam_data_in_a;
+  if (!top.oam_bus.OAM_PIN_WR_B) oam_data_b = oam_data_in_b;
 }
 //-----------------------------------------------------------------------------
 

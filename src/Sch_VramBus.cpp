@@ -233,25 +233,25 @@ void VramBus::tock(SchematicTop& top) {
   // Sprite fetcher read
   {
     /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(top.pix_pipe.XYMO_LCDC_SPSIZE.q());
-    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.oam_bus.YZOS_OAM_DA6.q());
+    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.oam_bus.YZOS_OAM_DB6.q());
     /*p29.CYVU*/ wire _CYVU_OAM_DB0 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_1);
     /*p29.BORE*/ wire _BORE_OAM_DB1 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_2);
     /*p29.BUVY*/ wire _BUVY_OAM_DB2 = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_3);
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_LINE_0);
-    /*p29.GEJY*/ wire _GEJY_OAM_DB3 = amux2(_FUFO_LCDC_SPSIZEn, !top.oam_bus.XUSO_OAM_DB0.q(), top.pix_pipe.XYMO_LCDC_SPSIZE.q(), _WAGO);
+    /*p29.GEJY*/ wire _GEJY_OAM_DB3 = amux2(_FUFO_LCDC_SPSIZEn, !top.oam_bus.XUSO_OAM_DA0.q(), top.pix_pipe.XYMO_LCDC_SPSIZE.q(), _WAGO);
 
     /*p29.ABEM*/ _VRAM_BUS_A00 = tribuf_6n(ABON_SPR_VRM_RDn, top.sprite_fetcher.XUQU_SPRITE_AB());
     /*p29.BAXE*/ _VRAM_BUS_A01 = tribuf_6n(ABON_SPR_VRM_RDn, _CYVU_OAM_DB0);
     /*p29.ARAS*/ _VRAM_BUS_A02 = tribuf_6n(ABON_SPR_VRM_RDn, _BORE_OAM_DB1);
     /*p29.AGAG*/ _VRAM_BUS_A03 = tribuf_6n(ABON_SPR_VRM_RDn, _BUVY_OAM_DB2);
     /*p29.FAMU*/ _VRAM_BUS_A04 = tribuf_6n(ABON_SPR_VRM_RDn, _GEJY_OAM_DB3);
-    /*p29.FUGY*/ _VRAM_BUS_A05 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XEGU_OAM_DB1.q());
-    /*p29.GAVO*/ _VRAM_BUS_A06 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YJEX_OAM_DB2.q());
-    /*p29.WYGA*/ _VRAM_BUS_A07 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XYJU_OAM_DB3.q());
-    /*p29.WUNE*/ _VRAM_BUS_A08 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YBOG_OAM_DB4.q());
-    /*p29.GOTU*/ _VRAM_BUS_A09 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.WYSO_OAM_DB5.q());
-    /*p29.GEGU*/ _VRAM_BUS_A10 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XOTE_OAM_DB6.q());
-    /*p29.XEHE*/ _VRAM_BUS_A11 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YZAB_OAM_DB7.q());
+    /*p29.FUGY*/ _VRAM_BUS_A05 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XEGU_OAM_DA1.q());
+    /*p29.GAVO*/ _VRAM_BUS_A06 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YJEX_OAM_DA2.q());
+    /*p29.WYGA*/ _VRAM_BUS_A07 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XYJU_OAM_DA3.q());
+    /*p29.WUNE*/ _VRAM_BUS_A08 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YBOG_OAM_DA4.q());
+    /*p29.GOTU*/ _VRAM_BUS_A09 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.WYSO_OAM_DA5.q());
+    /*p29.GEGU*/ _VRAM_BUS_A10 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XOTE_OAM_DA6.q());
+    /*p29.XEHE*/ _VRAM_BUS_A11 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YZAB_OAM_DA7.q());
     /*p29.DYSO*/ _VRAM_BUS_A12 = tribuf_6n(ABON_SPR_VRM_RDn, 0);   // sprites always in low half of tile store
   }
 
@@ -671,7 +671,7 @@ void VramBus::tock(SchematicTop& top) {
 
   // VRAM tri -> sprite pix temp + x flip
   {
-    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.oam_bus.BAXO_OAM_DA5.q(), top.sprite_fetcher.TEXY_SPR_READ_VRAMp());
+    /*p29.XONO*/ wire _XONO_FLIP_X = and(top.oam_bus.BAXO_OAM_DB5.q(), top.sprite_fetcher.TEXY_SPR_READ_VRAMp());
     /*p33.POBE*/ wire _POBE_FLIP0 = mux2_p(_VRAM_BUS_D7, _VRAM_BUS_D0, _XONO_FLIP_X);
     /*p33.PACY*/ wire _PACY_FLIP1 = mux2_p(_VRAM_BUS_D6, _VRAM_BUS_D1, _XONO_FLIP_X);
     /*p33.PONO*/ wire _PONO_FLIP2 = mux2_p(_VRAM_BUS_D5, _VRAM_BUS_D2, _XONO_FLIP_X);

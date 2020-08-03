@@ -26,9 +26,9 @@ void ClockRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("APUK_xxCDEFxx %d\n", _APUK_xxCDEFxx.q());
   d("ADYK_xxxDEFGx %d\n", _ADYK_xxxDEFGx.q());
 
-  d("WUVU_xxCDxxGH %d\n", _WUVU_xxCDxxGH.q());
-  d("VENA_xxxxEFGH %d\n", _VENA_xxxxEFGH.q());
-  d("WOSU_xBCxxFGx %d\n", _WOSU_xBCxxFGx.q());
+  d("WUVU_ABxxEFxx %d\n", WUVU_ABxxEFxx.q());
+  d("VENA_xxCDEFxx %d\n", VENA_xxCDEFxx.q());
+  d("WOSU_AxxDExxH %d\n", WOSU_AxxDExxH.q());
   
   d("CPU_PIN_STARTp........%d\n", (wire)CPU_PIN_STARTp);
   d("CPU_PIN_READYp........%d\n", (wire)CPU_PIN_READYp);
@@ -169,12 +169,12 @@ void ClockRegisters::tock_dbg_fast(int phase, const SchematicTop& top) {
 void ClockRegisters::tock_vid_fast(int phase, const SchematicTop& top) {
   wire vid_reset = or(_AFER_SYS_RSTp.q(), _ASOL_POR_DONEn, !_XONA_LCDC_EN);
 
-  wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
-  wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
+  wire WUVU = WUVU_ABxxEFxx.q();
+  wire VENA = VENA_xxCDEFxx.q();
 
-  _WUVU_xxCDxxGH = dff17(!_SYS_PIN_CLK_B,  !vid_reset, !WUVU_xxCDxxGH_);
-  _WOSU_xBCxxFGx = dff17( _SYS_PIN_CLK_B,  !vid_reset, !WUVU_xxCDxxGH_);
-  _VENA_xxxxEFGH = dff17(!WUVU_xxCDxxGH_,  !vid_reset, !VENA_xxxxEFGH_);
+  WUVU_ABxxEFxx = dff17(!_SYS_PIN_CLK_B,  !vid_reset, !WUVU);
+  WOSU_AxxDExxH = dff17( _SYS_PIN_CLK_B,  !vid_reset, !WUVU);
+  VENA_xxCDEFxx = dff17(!WUVU,            !vid_reset, !VENA);
 }
 
 //-----------------------------------------------------------------------------
@@ -318,15 +318,15 @@ void ClockRegisters::tock_dbg_slow(int phase, const SchematicTop& top) {
 // can't do fast mode for this until vid clock is running
 void ClockRegisters::tock_vid_slow(int phase, const SchematicTop& top) {
   /*p29.XYVA*/ wire XYVA_xBxDxFxH = not(ZEME_AxCxExGx());
-  /*p29.XOTA*/ wire _XOTA_AxCxExGx = not(XYVA_xBxDxFxH);
-  /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not(_XOTA_AxCxExGx);
+  /*p29.XOTA*/ wire XOTA_AxCxExGx = not(XYVA_xBxDxFxH);
+  /*p29.XYFY*/ wire XYFY_xBxDxFxH = not(XOTA_AxCxExGx);
 
-  wire WUVU_xxCDxxGH_ = _WUVU_xxCDxxGH.q();
-  wire VENA_xxxxEFGH_ = _VENA_xxxxEFGH.q();
+  wire WUVU = WUVU_ABxxEFxx.q();
+  wire VENA = VENA_xxCDEFxx.q();
 
-  /*p29.WUVU*/ _WUVU_xxCDxxGH = dff17( _XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
-  /*p21.VENA*/ _VENA_xxxxEFGH = dff17(!WUVU_xxCDxxGH_, XAPO_VID_RSTn(), !VENA_xxxxEFGH_);
-  /*p29.WOSU*/ _WOSU_xBCxxFGx = dff17( _XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU_xxCDxxGH_);
+  /*p29.WUVU*/ WUVU_ABxxEFxx = dff17( XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU);
+  /*p21.VENA*/ VENA_xxCDEFxx = dff17(!WUVU,          XAPO_VID_RSTn(), !VENA);
+  /*p29.WOSU*/ WOSU_AxxDExxH = dff17( XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU);
 }
 
 //-----------------------------------------------------------------------------

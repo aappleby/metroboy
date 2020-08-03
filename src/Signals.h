@@ -313,6 +313,26 @@ struct Tri : private RegBase {
     preset(d ? DELTA_TRI1 : DELTA_TRI0);
   }
 
+  inline void glitchy_assign(RegDelta d) {
+    CHECK_P(is_tri());
+
+    if (delta == DELTA_NONE) {
+      delta = d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
+      delta = d;
+    }
+    else {
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
+    }
+  }
+
   inline void operator = (RegDelta d) {
     CHECK_P(is_tri());
 
@@ -327,11 +347,13 @@ struct Tri : private RegBase {
       delta = d;
     }
     else {
-      //CHECK_P(d == DELTA_TRIZ);
+      CHECK_P(d == DELTA_TRIZ);
+      /*
       if (d != DELTA_TRIZ) {
         //printf("Bus collision!\n");
         bus_collision = true;
       }
+      */
     }
   }
 };

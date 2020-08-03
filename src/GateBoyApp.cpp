@@ -105,7 +105,7 @@ void GateBoyApp::app_update(double delta) {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
         step_forward += 16384;
       } else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 1024;
+        step_forward += 114 * 8;
       } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
         step_forward += 8;
       } else {
@@ -209,7 +209,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), col_width * 3, 0);
   dumper.clear();
 
-  dump_painter.render(view, col_width * 4, 0, 4, 40, gateboy->mem + 0xFE00);
+  dump_painter.render(view, col_width * 4, 0, 4, 64, gateboy->mem + 0xFE00);
 
   dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);
   text_painter.render(view, dumper.s.c_str(), col_width * 5, 0);

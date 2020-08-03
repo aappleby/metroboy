@@ -24,7 +24,7 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
     // 912 phases per line
 
     /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(_RUTU_LINE_ENDp.q(), top.clk_reg.LYHA_VID_RSTp());
-    /*p21.SAXO*/ SAXO_X0 = dff17(top.clk_reg.TALU_ABCDxxxx(), _MUDE_X_RSTn, !SAXO_X0.q());
+    /*p21.SAXO*/ SAXO_X0 = dff17(top.clk_reg.TALU_ABxxxxGH(), _MUDE_X_RSTn, !SAXO_X0.q());
     /*p21.TYPO*/ TYPO_X1 = dff17(!SAXO_X0.q(),                _MUDE_X_RSTn, !TYPO_X1.q());
     /*p21.VYZO*/ VYZO_X2 = dff17(!TYPO_X1.q(),                _MUDE_X_RSTn, !VYZO_X2.q());
     /*p21.TELU*/ TELU_X3 = dff17(!VYZO_X2.q(),                _MUDE_X_RSTn, !TELU_X3.q());
@@ -56,12 +56,12 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p21.NYPE*/ _NYPE_LINE_STARTp = dff17(top.clk_reg.TALU_ABCDxxxx(), top.clk_reg.LYFE_VID_RSTn(), _RUTU_LINE_ENDp.q());
+    /*p21.NYPE*/ _NYPE_LINE_STARTp = dff17(top.clk_reg.TALU_ABxxxxGH(), top.clk_reg.LYFE_VID_RSTn(), _RUTU_LINE_ENDp.q());
   }
 
   {
     /*p21.SANU*/ wire _SANU_x113p = and(TYRY_X6.q(), TAHA_X5.q(), SUDE_X4.q(), SAXO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*p21.RUTU*/ _RUTU_LINE_ENDp = dff17(top.clk_reg.SONO_xxxxEFGH(), top.clk_reg.LYFE_VID_RSTn(), _SANU_x113p);
+    /*p21.RUTU*/ _RUTU_LINE_ENDp = dff17(top.clk_reg.SONO_xxCDEFxx(), top.clk_reg.LYFE_VID_RSTn(), _SANU_x113p);
 
     /*p21.PURE*/ wire PURE_LINE_ENDn = not(_RUTU_LINE_ENDp.q());
     /*p21.SELA*/ wire SELA_LINE_ENDp = not(PURE_LINE_ENDn);
@@ -107,7 +107,7 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p21.TEGY*/ wire _TEGY_LINE_STROBE = nand(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
     
-    /*p21.SYGU*/ _SYGU_LINE_STROBE = dff17(top.clk_reg.SONO_xxxxEFGH(), top.clk_reg.LYFE_VID_RSTn(), _TEGY_LINE_STROBE);
+    /*p21.SYGU*/ _SYGU_LINE_STROBE = dff17(top.clk_reg.SONO_xxCDEFxx(), top.clk_reg.LYFE_VID_RSTn(), _TEGY_LINE_STROBE);
     /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, _RUTU_LINE_ENDp.q());
     /*p21.POGU*/ wire _POGU = not(_RYNO);
     _LCD_PIN_CPG = _POGU;
@@ -146,7 +146,7 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.RAPE*/ wire _RAPE_LY_MATCHn  = nand(_SOVU_LY_MATCHA,  _SUBO_LY_MATCHB); // def nand
     /*p21.PALY*/ wire _PALY_LY_MATCHa  = not (_RAPE_LY_MATCHn); // def not
 
-    /*p21.ROPO*/ _ROPO_LY_MATCH_SYNCp = dff17(top.clk_reg.TALU_ABCDxxxx(), top.clk_reg.WESY_SYS_RSTn(), _PALY_LY_MATCHa);
+    /*p21.ROPO*/ _ROPO_LY_MATCH_SYNCp = dff17(top.clk_reg.TALU_ABxxxxGH(), top.clk_reg.WESY_SYS_RSTn(), _PALY_LY_MATCHa);
   }
 
   // FF44 LY

@@ -247,7 +247,7 @@ inline RegDelta dff8(wire CLKp, wire CLKn, bool D) {
 // REG9_08 >> Q
 // REG9_09 >> QN
 
-///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DA0);
+///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DB0);
 
 // XEPE_01 nc
 // XEPE_02 << FUXU_02  (clk)
@@ -366,14 +366,14 @@ inline RegDelta dff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
 // AFER_13 >> AVOR_01 // Must be Q, see resets
 
 // XADU_01 nc
-// XADU_02 << WEFE_02 (RSTp?)
+// XADU_02 << WEFE_02 RSTn
 // XADU_03 << YFOT_02 (D)
 // XADU_04 nc
 // XADU_05 << WUDA_03 (CLKp?)
 // XADU_06 nc
 // XADU_07 nc
 // XADU_08 << CYKE_02 (CLKn?)
-// XADU_09 << WEFE_02 (RSTp?)
+// XADU_09 << WEFE_02 RSTn
 // XADU_10 nc
 // XADU_11 nc
 // XADU_12 >> WUZY_04 (Qn)
@@ -642,14 +642,14 @@ inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
   }
 }
 
-// second output used
+// second output used, _must_ be inverting.
 
 inline RegDelta  tp_latch_B(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;
   }
   else {
-    return D ? DELTA_TRI1 : DELTA_TRI0;
+    return D ? DELTA_TRI0 : DELTA_TRI1;
   }
 }
 

@@ -13,10 +13,10 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
   d("SCX  %03d\n", scx);
   d("SCY  %03d\n", scy);
 
-  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
+  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
 
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
-  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
+  /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
 
   d("SEKO_WX_MATCHne          %d\n", top.pix_pipe.SEKO_WX_MATCHne());
   d("SUZU_WIN_FIRST_TILEne    %d\n", top.pix_pipe.SUZU_WIN_FIRST_TILEne());
@@ -54,14 +54,14 @@ void TileFetcher::tick(const SchematicTop& top) {
 
 void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
-    /*p27.LURY*/ wire _LURY_BG_READ_VRAM_LATCH_RSTn = and(_LOVY_FETCH_DONEp.qn(), top.pix_pipe.XYMU_RENDERINGp());
+    /*p27.LURY*/ wire _LURY_BG_READ_VRAM_LATCH_RSTn = and2(_LOVY_FETCH_DONEp.qn(), top.pix_pipe.XYMU_RENDERINGp());
     /*p27.LONY*/ _LONY_BG_READ_VRAM_LATCHp = nand_latch(top.NYXU_TILE_FETCHER_RSTn(), _LURY_BG_READ_VRAM_LATCH_RSTn);
   }
 
   {
     /*p27.LOVY*/ _LOVY_FETCH_DONEp = dff17(top.clk_reg.MYVO_AxCxExGx(), top.NYXU_TILE_FETCHER_RSTn(), LYRY_BFETCH_DONEp());
 
-    /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
+    /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
 
     /*p27.LAXU*/ _LAXU_BFETCH_S0 = dff17(_LEBO_AxCxExGx,       top.NYXU_TILE_FETCHER_RSTn(), _LAXU_BFETCH_S0.qn());
     /*p27.MESU*/ _MESU_BFETCH_S1 = dff17(_LAXU_BFETCH_S0.qn(), top.NYXU_TILE_FETCHER_RSTn(), _MESU_BFETCH_S1.qn());
@@ -71,7 +71,7 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), top.pix_pipe.LOBY_RENDERINGn());
+    /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), top.pix_pipe.LOBY_RENDERINGn());
 
     /*p24.NYKA*/ _NYKA_FETCH_DONE_Ap = dff17(top.clk_reg.ALET_xBxDxFxH(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp());
     /*p24.PORY*/ _PORY_FETCH_DONE_Bp = dff17(top.clk_reg.MYVO_AxCxExGx(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, _NYKA_FETCH_DONE_Ap.q());
@@ -81,9 +81,9 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p27.MYSO*/ wire _MYSO_BG_TRIGp  = nor(top.pix_pipe.LOBY_RENDERINGn(), LAXE_BFETCH_S0n(), _LYZU_BFETCH_S0_DELAY.q());
-    /*p27.NYDY*/ _NYDY_LATCH_TILE_DAp = nand(_MYSO_BG_TRIGp, _MESU_BFETCH_S1.q(), NOFU_BFETCH_S2n());
-    /*p27.MOFU*/ _MOFU_LATCH_TILE_DBn = and(_MYSO_BG_TRIGp, NAKO_BFETCH_S1n());
+    /*p27.MYSO*/ wire _MYSO_BG_TRIGp  = nor3(top.pix_pipe.LOBY_RENDERINGn(), LAXE_BFETCH_S0n(), _LYZU_BFETCH_S0_DELAY.q());
+    /*p27.NYDY*/ _NYDY_LATCH_TILE_DAp = nand3(_MYSO_BG_TRIGp, _MESU_BFETCH_S1.q(), NOFU_BFETCH_S2n());
+    /*p27.MOFU*/ _MOFU_LATCH_TILE_DBn = and2(_MYSO_BG_TRIGp, NAKO_BFETCH_S1n());
   }
 
 
@@ -92,14 +92,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF42 SCY
   {
-    /*p22.WEBU*/ wire _WEBU_FF42n = nand(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.XERA_A03n());
-    /*p22.XARO*/ wire _XARO_FF42p = not(_WEBU_FF42n);
+    /*p22.WEBU*/ wire _WEBU_FF42n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.XERA_A03n());
+    /*p22.XARO*/ wire _XARO_FF42p = not1(_WEBU_FF42n);
 
-    /*p23.ANYP*/ wire _ANYP_FF42_RDp = and(_XARO_FF42p, top.ASOT_CPU_RDp());
-    /*p23.BUWY*/ wire _BUWY_FF42_RDn = not(_ANYP_FF42_RDp);
+    /*p23.ANYP*/ wire _ANYP_FF42_RDp = and2(_XARO_FF42p, top.ASOT_CPU_RDp());
+    /*p23.BUWY*/ wire _BUWY_FF42_RDn = not1(_ANYP_FF42_RDp);
 
-    /*p23.BEDY*/ wire _BEDY_FF42_WRp = and(_XARO_FF42p, top.CUPA_CPU_WRp_xxxxEFGx());
-    /*p23.CAVO*/ wire _CAVO_FF42_WRn = not(_BEDY_FF42_WRp);
+    /*p23.BEDY*/ wire _BEDY_FF42_WRp = and2(_XARO_FF42p, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p23.CAVO*/ wire _CAVO_FF42_WRn = not1(_BEDY_FF42_WRp);
 
     /*p23.GAVE*/ GAVE_SCY0 = dff9(_CAVO_FF42_WRn, !_CAVO_FF42_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0);
     /*p23.FYMO*/ FYMO_SCY1 = dff9(_CAVO_FF42_WRn, !_CAVO_FF42_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1);
@@ -122,14 +122,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF43 SCX
   {
-    /*p22.WAVU*/ wire _WAVU_FF43n = nand(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.XERA_A03n());
-    /*p22.XAVY*/ wire _XAVY_FF43p = not(_WAVU_FF43n);
+    /*p22.WAVU*/ wire _WAVU_FF43n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.XERA_A03n());
+    /*p22.XAVY*/ wire _XAVY_FF43p = not1(_WAVU_FF43n);
 
-    /*p23.AVOG*/ wire _AVOG_FF43_RDp = and (_XAVY_FF43p, top.ASOT_CPU_RDp());
-    /*p23.BEBA*/ wire _BEBA_FF43_RDn = not(_AVOG_FF43_RDp);
+    /*p23.AVOG*/ wire _AVOG_FF43_RDp = and2(_XAVY_FF43p, top.ASOT_CPU_RDp());
+    /*p23.BEBA*/ wire _BEBA_FF43_RDn = not1(_AVOG_FF43_RDp);
 
-    /*p23.ARUR*/ wire _ARUR_FF43_WRp = and (_XAVY_FF43p, top.CUPA_CPU_WRp_xxxxEFGx());
-    /*p23.AMUN*/ wire _AMUN_FF43_WRn = not(_ARUR_FF43_WRp);
+    /*p23.ARUR*/ wire _ARUR_FF43_WRp = and2(_XAVY_FF43p, top.CUPA_CPU_WRp_xxxxEFGx());
+    /*p23.AMUN*/ wire _AMUN_FF43_WRn = not1(_ARUR_FF43_WRp);
 
     /*p23.DATY*/ DATY_SCX0 = dff9(_AMUN_FF43_WRn, !_AMUN_FF43_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0);
     /*p23.DUZU*/ DUZU_SCX1 = dff9(_AMUN_FF43_WRn, !_AMUN_FF43_WRn, top.clk_reg.CUNU_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1);

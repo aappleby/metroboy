@@ -13,27 +13,34 @@ struct PixelPipe {
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;
 
+  //----------------------------------------
+
+  int get_pix_count() const {
+    return pack(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), XYDO_X3.q(),
+                TUHU_X4.q(), TUKY_X5.q(), TAKO_X6.q(), SYBE_X7.q());
+  }
+
   // -> top, tile fetcher
   /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp() const { 
-    /*p27.NYFO*/ wire NYFO_TILE_FETCHER_RSTn = not(NUNY_WX_MATCHpe());
-    /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp = not(NYFO_TILE_FETCHER_RSTn);
+    /*p27.NYFO*/ wire NYFO_TILE_FETCHER_RSTn = not1(NUNY_WX_MATCHpe());
+    /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp = not1(NYFO_TILE_FETCHER_RSTn);
     return MOSU_TILE_FETCHER_RSTp;
   }
 
   // -> top.TEVO
-  /*p27.SEKO*/ wire SEKO_WX_MATCHne() const { return nor(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q()); }
+  /*p27.SEKO*/ wire SEKO_WX_MATCHne() const { return nor2(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q()); }
 
   // -> top.TEVO
   /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne() const {
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
-    return not(_TUXY_WIN_FIRST_TILE_NE);
+    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
+    return not1(_TUXY_WIN_FIRST_TILE_NE);
   }
 
   // -> vram bus
-  /*p27.PORE*/ wire PORE_WIN_MODEp() const { return not(NOCU_WIN_MODEn()); }
+  /*p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
 
   // -> sprite fetcher
-  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not(SYLO_WIN_HITn()); }
+  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not1(SYLO_WIN_HITn()); }
 
   // -> vram bus
   /*p27.WYKA*/ wire WYKA_WIN_X3() const { return _WYKA_WIN_X3.q(); }
@@ -65,15 +72,15 @@ struct PixelPipe {
 
   // -> interrupts
   /*p21.WODU*/ wire WODU_RENDER_DONEp() const {
-    return and(_XENA_STORE_MATCHn, XANO_X_167p());
+    return and2(_XENA_STORE_MATCHn, XANO_X_167p());
   }
 
   //----------------------------------------
 
   /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp; }
-  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not(_XYMU_RENDERINGp); }
-  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not(_XYMU_RENDERINGp); }
-  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not(_XYMU_RENDERINGp); }   // sfetch.tuvo/tyso
+  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp); }
+  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp); }   // sfetch.tuvo/tyso
 
   // FF40 - LCDC
   /*p23.VYXE*/ Reg VYXE_LCDC_BGEN   = REG_D0C0;
@@ -94,17 +101,17 @@ struct PixelPipe {
 //private:
 
   wire NOCU_WIN_MODEn()  const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(_PYNU_WIN_MODE_A);
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(_PYNU_WIN_MODE_A);
     return NOCU_WIN_MODEn;
   }
   
   wire NUNY_WX_MATCHpe() const {
-    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and(_PYNU_WIN_MODE_A, _NOPA_WIN_MODE_B.qn());
+    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and2(_PYNU_WIN_MODE_A, _NOPA_WIN_MODE_B.qn());
     return NUNY_WX_MATCHpe;
   }
-  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not(_RYDY_WIN_FIRST_TILE_A); }
-  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
-  /*p21.XANO*/ wire XANO_X_167p() const { return not(XUGU_X_167n()); }
+  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A); }
+  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
+  /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 
   /*p27.PYNU*/ Tri _PYNU_WIN_MODE_A = TRI_D0NP;
   /*p27.RYDY*/ Tri _RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
@@ -155,7 +162,7 @@ struct PixelPipe {
   /*p27.NYZE*/ Reg _NYZE_FINE_MATCH_B = REG_D0C0;
 
   /*p24.PAHO*/ Reg _PAHO_X_8_SYNC = REG_D0C0;
-  /*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor latch with p24.RUJU, p24.POME
+  /*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor4 latch with p24.RUJU, p24.POME
 
   Tri _LCD_PIN_CP = TRI_HZNP;   // PIN_53 
   Tri _LCD_PIN_ST = TRI_HZNP;   // PIN_54 

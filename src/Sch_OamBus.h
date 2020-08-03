@@ -94,12 +94,12 @@ struct OamBus {
   //----------------------------------------
 
   // -> sprite store
-  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not(OAM_TRI_A2); }
-  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not(OAM_TRI_A3); }
-  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not(OAM_TRI_A4); }
-  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not(OAM_TRI_A5); }
-  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not(OAM_TRI_A6); }
-  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not(OAM_TRI_A7); }
+  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not1(OAM_TRI_A2); }
+  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not1(OAM_TRI_A3); }
+  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not1(OAM_TRI_A4); }
+  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not1(OAM_TRI_A5); }
+  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not1(OAM_TRI_A6); }
+  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7); }
 
   // oam byte 0, byte 2
   /*p29.XUSO*/ Reg XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0

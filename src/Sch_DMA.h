@@ -20,18 +20,18 @@ struct DmaRegisters {
 
   // -> ext bus, oam bus
   /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp() const {
-    /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not(MUDA_DMA_SRC_VRAMp());
-    /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand(MATU_DMA_RUNNINGp(), _LOGO_DMA_VRAMn);
-    return not(_MORY_DMA_READ_CARTn);
+    /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not1(MUDA_DMA_SRC_VRAMp());
+    /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand2(MATU_DMA_RUNNINGp(), _LOGO_DMA_VRAMn);
+    return not1(_MORY_DMA_READ_CARTn);
   }
 
   // -> top.ACYL, top.AJON
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not(MATU_DMA_RUNNINGp()); }
+  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp()); }
 
   // -> oam bus, vram bus
   /*p04.LUFA*/ wire LUFA_DMA_VRM_RDp() const {
-    /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand(MATU_DMA_RUNNINGp(), MUDA_DMA_SRC_VRAMp());
-    return not(MUHO_DMA_VRAM_RDn);
+    /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand2(MATU_DMA_RUNNINGp(), MUDA_DMA_SRC_VRAMp());
+    return not1(MUHO_DMA_VRAM_RDn);
   }
 
   void dump(Dumper& d) const {
@@ -71,8 +71,8 @@ struct DmaRegisters {
 //private:
 
   wire MUDA_DMA_SRC_VRAMp() const {
-    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not(MARU_DMA_A15.q());
-    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor(PULA_DMA_A13.q(), POKU_DMA_A14.q(), LEBU_DMA_ADDR_A15n);
+    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15.q());
+    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13.q(), POKU_DMA_A14.q(), LEBU_DMA_ADDR_A15n);
     return MUDA_DMA_SRC_VRAMp;
   }
 

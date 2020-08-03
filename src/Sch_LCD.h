@@ -27,26 +27,26 @@ struct LcdRegisters {
   }
 
   wire BYHA_VID_LINE_END_TRIGn() const {
-    /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not(_CATU_VID_LINE_ENDp.q());
-    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = and (or (_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
+    /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not1(_CATU_VID_LINE_ENDp.q());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = and2(or2(_ANEL_VID_LINE_ENDp.q(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
     return BYHA_VID_LINE_END_TRIGn;
   }
 
   // -> lcd, window
   wire ATEJ_VID_LINE_TRIGp() const {
-    // ATEJ := not(BYHA);
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp = not(BYHA_VID_LINE_END_TRIGn());
+    // ATEJ := not1(BYHA);
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp = not1(BYHA_VID_LINE_END_TRIGn());
     return ATEJ_VID_LINE_TRIGp;
   }
 
   // -> interrupts, ppu
-  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not(_POPU_IN_VBLANKp.qn()); }
+  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not1(_POPU_IN_VBLANKp.qn()); }
 
   // -> lcd
-  /*p21.PURE*/ wire PURE_LINE_ENDn()   const { return not(_RUTU_LINE_ENDp.q()); }
+  /*p21.PURE*/ wire PURE_LINE_ENDn()   const { return not1(_RUTU_LINE_ENDp.q()); }
 
   // -> interrupts, lcd
-  /*p21.SELA*/ wire SELA_LINE_ENDp()    const { return not(PURE_LINE_ENDn()); }
+  /*p21.SELA*/ wire SELA_LINE_ENDp()    const { return not1(PURE_LINE_ENDn()); }
 
   // -> sprite scanner
   /*p29.CATU*/ wire CATU_VID_LINE_ENDp()       const { return _CATU_VID_LINE_ENDp.q(); }

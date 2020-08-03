@@ -32,7 +32,7 @@
 // XECU12 >> WEZA04
 // XECU13 >> nc
 
-// BUZA04 = and(CENO16, XYMU03)
+// BUZA04 = and2(CENO16, XYMU03)
 
 // WEZA01 << BUZA04
 // WEZA02 ==
@@ -43,8 +43,8 @@
 
 
 // Die trace:
-// VETU = and(TEVO, PORE);
-// XACO = not(XOFO)
+// VETU = and2(TEVO, PORE);
+// XACO = not1(XOFO)
 // WYKA =
 
 // WYKA01 <> WYKA12
@@ -81,7 +81,7 @@
 // oamscan = stat 2 = 10
 // render  = stat 3 = 11
 
-// RUPO arms on ground side, nor latch
+// RUPO arms on ground side, nor4 latch
 // RUPO00 << ROPO16
 // RUPO01 nc
 // RUPO02 >> SEGO03
@@ -96,16 +96,16 @@
 // Clock polarity wrong? Check regs on die.
 
 // BFETCH_000 - LABU_TILE_DB_CLKp = 1;
-// BFETCH_001 - LABU_TILE_DB_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_001 - LABU_TILE_DB_CLKp = or2(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
 // BFETCH_010 - LABU_TILE_DB_CLKp = 1;
 // BFETCH_011 - LABU_TILE_DB_CLKp = 1;
 // BFETCH_100 - LABU_TILE_DB_CLKp = 1;
-// BFETCH_101 - LABU_TILE_DB_CLKp = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_101 - LABU_TILE_DB_CLKp = or2(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
 
 // BFETCH_000 - LOMA_BG_LATCHn = 1;
 // BFETCH_001 - LOMA_BG_LATCHn = 1;
 // BFETCH_010 - LOMA_BG_LATCHn = 1;
-// BFETCH_011 - LOMA_BG_LATCHn = or(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q());
+// BFETCH_011 - LOMA_BG_LATCHn = or2(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q());
 // BFETCH_100 - LOMA_BG_LATCHn = 1;
 // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
@@ -126,7 +126,7 @@
 // BEBU_04 nc
 // BEBU_05 >> AVAP_01
 
-// Arms on ground, nor latch
+// Arms on ground, nor4 latch
 // BESU01 << CATU17
 // BESU02 nc
 // BESU03 >> nc
@@ -138,11 +138,11 @@
 // When ASEN goes high, BESU goes low.
 
 
-// if TYNU is and(or()) things don't make sense.
-///*p08.TYNU*/ wire TYNU_ADDR_RAM = and(ADDR >= 0x4000, TUMA_CART_RAM);
+// if TYNU is and2(or()) things don't make sense.
+///*p08.TYNU*/ wire TYNU_ADDR_RAM = and2(ADDR >= 0x4000, TUMA_CART_RAM);
 
 // Die trace:
-// TOZA = and(TYNU, ABUZ, TUNA);
+// TOZA = and2(TYNU, ABUZ, TUNA);
 // TYHO = mux2_p(LUMA, MARU.QN?, TOZA);
 
 // TOZA = address valid, address ram, address not highmem
@@ -188,7 +188,7 @@
 // LOXO04 << UMUT04
 // LOXO05 >> LASY01
 
-// Schematic wrong, AVER is def nand
+// Schematic wrong, AVER is def nand2
 // AVER01 << ACYL03
 // AVER02 << XYSO02
 // AVER03 >> BYCU03
@@ -199,9 +199,9 @@
 // VAPE03 nc
 
 
-// Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())
+// Possible schematic error - CUFE doesn't make sense as or2(and()), only as and2(or())
 
-// 4-rung whereas the or(and()) were 5 rung?
+// 4-rung whereas the or2(and()) were 5 rung?
 // Arm on left (gnd) side
 // CUFE01 << SARO03
 // CUFE02 << MATU17
@@ -219,9 +219,9 @@
 // WEFY03
 // WEFY04
 
-// AJEP def nand
+// AJEP def nand2
 // XUJA def not
-// BOTA def nand
+// BOTA def nand2
 // ASYT def and
 // BODE def not
 // YVAL def not
@@ -239,8 +239,8 @@
 // NAXY02 << MAKA17
 // NAXY03 >> POWU02
 
-// schematic says naxy = nor(maka, luvy), but wrong
-// naxy = nor(uvyt, maka)
+// schematic says naxy = nor4(maka, luvy), but wrong
+// naxy = nor4(uvyt, maka)
 
 
 // NOR latch
@@ -272,7 +272,7 @@
 // SOBU_16 >> NC      QN
 // SOBU_17 >> SUDA_07 Q
 
-// TAKA has arms on the VCC side - nand latch
+// TAKA has arms on the VCC side - nand2 latch
 // TAKA01 << VEKU02
 // TAKA02 nc
 // TAKA03 >> nc
@@ -283,17 +283,17 @@
 // if VEKU02 goes low, TAKA04 goes low
 
 // VAPE04 >> XUJY01
-// SAKY = nor(TULY17, VONU17)
-// TEPA = not(XYMU)
-// TYSO = or(SAKY, TEPA)
-// TEXY = not(TYSO)
+// SAKY = nor4(TULY17, VONU17)
+// TEPA = not1(XYMU)
+// TYSO = or2(SAKY, TEPA)
+// TEXY = not1(TYSO)
 
 // TEVY box color wrong on die trace, but schematic correct.
 
 // Die trace:
-// SORE = not(A15)
-// TEVY = or(A13, A13, SORE) // A13 line not fully drawn
-// TEXO = and(ADDR_VALIDx?, TEVY)
+// SORE = not1(A15)
+// TEVY = or2(A13, A13, SORE) // A13 line not fully drawn
+// TEXO = and2(ADDR_VALIDx?, TEVY)
 
 // UJYV01 << UNOR04
 // UJYV02 << (mux 1) RD_C
@@ -316,16 +316,16 @@
 // BYHA04 << ABEZ02
 // BYHA05 >> ATEJ01
 
-// ATEJ03 = not(BYHA05)
-// ANOM03 = nor(ATEJ03, ATAR02)
-// BALU02 = not(ANOM03)
-// BEBU05 = or(DOBA17, BALU02, BYBA16)
-// AVAP03 = not(BEBU05)
-// NYXU04 = nor(AVAP03, MOSU03, TEVO05)
+// ATEJ03 = not1(BYHA05)
+// ANOM03 = nor4(ATEJ03, ATAR02)
+// BALU02 = not1(ANOM03)
+// BEBU05 = or2(DOBA17, BALU02, BYBA16)
+// AVAP03 = not1(BEBU05)
+// NYXU04 = nor4(AVAP03, MOSU03, TEVO05)
 
 // Die trace:
 
-// WUSA arms on the ground side, nor latch
+// WUSA arms on the ground side, nor4 latch
 // WUSA00 << XAJO03
 // WUSA01 nc
 // WUSA02 >> nc
@@ -395,10 +395,10 @@
 
 
 // Die trace:
-// VYBO = nor(FEPO04, WODU04, MYVO02)
-// TYFA = and(SOCY02, POKY04, VYBO04)
-// SEGU = not(TYFA05) // 5 rung inverter, because fanout?
-// ROXO = not(SEGU05)
+// VYBO = nor4(FEPO04, WODU04, MYVO02)
+// TYFA = and2(SOCY02, POKY04, VYBO04)
+// SEGU = not1(TYFA05) // 5 rung inverter, because fanout?
+// ROXO = not1(SEGU05)
 
 // NEFO_01 << LOMA_02    (clk)
 // NEFO_02 << CPU_BUS_D7     (d)
@@ -433,7 +433,7 @@
 // AFER_12 >> nc
 // AFER_13 >> AVOR_01
 
-// Latch w/ arms on the ground side, output on the top rung - nor latch with inverted output
+// Latch w/ arms on the ground side, output on the top rung - nor4 latch with inverted output
     
 // UCOB_01 << SYS_PIN_CLK_GOOD
 // UCOB_02 >> UPYF_02, UFOL_01
@@ -464,7 +464,7 @@
 // TABA_03 << UNUT_04
 // TABA_04 nc
 // TABA_05 >> ALYP_01
-// TABA = or(UNOR, UMUT, UNUT)
+// TABA = or2(UNOR, UMUT, UNUT)
 
 // ALYP_01 << TABA_05
 // ALYP_02 >> AFAR_02
@@ -484,7 +484,7 @@
 // UPOJ_02 << UVAR_02
 // UPOJ_03 << SYS_PIN_RST
 // UPOJ_04 >> AFER ADYK APUK ALEF AFUR
-// UPOJ = nand(!T1, !T2, RSTn);
+// UPOJ = nand2(!T1, !T2, RSTn);
 
 // AFER_01 nc
 // AFER_02 << UPOJ_04 (RSTp?)
@@ -515,14 +515,14 @@
 // UPYF high,   TUBO_02 high
 
 
-// UPYF = or(SYS_PIN_RST ,UCOB)
+// UPYF = or2(SYS_PIN_RST ,UCOB)
 // UPYF_01 << SYS_PIN_RST
 // UPYF_02 << UCOB_02
 // UPYF_03 nc
 // UPYF_04 >> TUBO_06
 
 
-// UCOB = not(SYS_PIN_CLK_A)
+// UCOB = not1(SYS_PIN_CLK_A)
 // UCOB_01 << SYS_PIN_CLK_A
 // UCOB_02 >> UPYF_02, UFOL_01
 
@@ -531,7 +531,7 @@
 
 
 
-// UCOB = not(SYS_PIN_CLK_A)
+// UCOB = not1(SYS_PIN_CLK_A)
 // UCOB_01 << SYS_PIN_CLK_A
 
 // UFOL_01 << UCOB_02
@@ -564,7 +564,7 @@
 
 
 
-// UCOB = not(SYS_PIN_CLK_A)
+// UCOB = not1(SYS_PIN_CLK_A)
 // UCOB_01 << SYS_PIN_CLK_A
 
 // UFOL_01 << UCOB_02

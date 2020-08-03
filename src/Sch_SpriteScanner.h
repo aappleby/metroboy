@@ -15,31 +15,28 @@ struct SpriteScanner {
   void dump(Dumper& d, const SchematicTop& top) const;
 
   // -> sprite store
-  wire DEGE_SPRITE_DELTA0() const { return not(_ERUC_YDIFF_S0); }
-  wire DABY_SPRITE_DELTA1() const { return not(_ENEF_YDIFF_S1); }
-  wire DABU_SPRITE_DELTA2() const { return not(_FECO_YDIFF_S2); }
-  wire GYSA_SPRITE_DELTA3() const { return not(_GYKY_YDIFF_S3); }
+  wire DEGE_SPRITE_DELTA0() const { return not1(_ERUC_YDIFF_S0); }
+  wire DABY_SPRITE_DELTA1() const { return not1(_ENEF_YDIFF_S1); }
+  wire DABU_SPRITE_DELTA2() const { return not1(_FECO_YDIFF_S2); }
+  wire GYSA_SPRITE_DELTA3() const { return not1(_GYKY_YDIFF_S3); }
 
   // -> sprite store
-  /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not(_CARE_STORE_ENp_ABxxEFxx); }
+  /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not1(_CARE_STORE_ENp_ABxxEFxx); }
 
   // -> top.ACYL
   /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp; }
-
-  // -> sprite store
-  /*p29.AROR*/ wire AROR_MATCH_ENp() const { return and(AZEM_RENDERINGp(), _XYLO_LCDC_SPEN); }
 
   // -> ppu.XYMU/POFY, scanner.ASEN, top.NYXU
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
 
     // this seems weird
-    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(_BALU_LINE_RSTp, !BYBA_SCAN_DONE_A(), DOBA_SCAN_DONE_B());
-    /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(_BALU_LINE_RSTp, !BYBA_SCAN_DONE_A(), DOBA_SCAN_DONE_B());
+    /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
     return AVAP_RENDER_START_TRIGp;
   }
 
   // -> sprite store
-  /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX() const { return and(_CENO_SCANNINGp.qn(), _XYMU_RENDERINGp); }
+  /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX() const { return and2(_CENO_SCANNINGp.qn(), _XYMU_RENDERINGp); }
 
   // -> oam bus
   /*p28.YFEL*/ wire YFEL_SCAN0() const { return _YFEL_SCAN0.q(); }
@@ -51,9 +48,9 @@ struct SpriteScanner {
 
 //private:
 
-  /*p29.AZEM*/ wire AZEM_RENDERINGp() const { return and(BYJO_SCANNINGn(), _XYMU_RENDERINGp); }
-  /*p29.BYJO*/ wire BYJO_SCANNINGn() const { return not(CEHA_SCANNINGp()); }
-  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(_CENO_SCANNINGp.qn()); }
+  /*p29.AZEM*/ wire AZEM_RENDERINGp() const { return and2(BYJO_SCANNINGn(), _XYMU_RENDERINGp); }
+  /*p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
+  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(_CENO_SCANNINGp.qn()); }
   /*p29.DOBA*/ wire DOBA_SCAN_DONE_B() const { return _DOBA_SCAN_DONE_B.q(); }
   /*p29.BYBA*/ wire BYBA_SCAN_DONE_A() const { return _BYBA_SCAN_DONE_A.q(); }
 

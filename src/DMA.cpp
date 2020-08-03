@@ -56,7 +56,7 @@ void DMA2::tock(int phase, const Req& req) {
 
   if (PHASE_B) {
     // something wrong here, inverting this until we figure it out.
-    // bool LUPA = nor(DMA_WR, DMA_WR_LATCH);
+    // bool LUPA = nor4(DMA_WR, DMA_WR_LATCH);
     bool LUPA = DMA_WR || DMA_WR_LATCH;
     DMA_RUN_TRIG_d0 = LUPA;
     DMA_RUN_WRITE = DMA_RUN_READ;

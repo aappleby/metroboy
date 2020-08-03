@@ -14,43 +14,43 @@ struct SpriteFetcher {
   void dump(Dumper& d) const;
 
   // sfetch.veku, sst.store*_rstp, pxp.XEPY
-  /*p29.WUTY*/ wire WUTY_SPRITE_DONEp() const { return not(VUSA_SPRITE_DONEn()); }
+  /*p29.WUTY*/ wire WUTY_SPRITE_DONEp() const { return not1(VUSA_SPRITE_DONEn()); }
 
   // -> oam bus
   /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK() const {
-    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(_TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n());
-    return and (TUVO_PPU_OAM_RDp(), TACU_SPR_SEQ_5_TRIG);
+    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(_TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n());
+    return and2(TUVO_PPU_OAM_RDp(), TACU_SPR_SEQ_5_TRIG);
   }
 
   // -> oam bus
-  /*p28.WEFY*/ wire WEFY_SPR_READp() const { return and(TUVO_PPU_OAM_RDp(), _TYFO_SFETCH_S0_D1.q()); }
+  /*p28.WEFY*/ wire WEFY_SPR_READp() const { return and2(TUVO_PPU_OAM_RDp(), _TYFO_SFETCH_S0_D1.q()); }
 
   // -> vram bus
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG() const { return nand(_TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n()); }
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG() const { return nand2(_TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0n()); }
 
   // -> vram bus
   /*p29.TEXY*/ wire TEXY_SPR_READ_VRAMp() const {
-    /*p29.SAKY*/ wire _SAKY_SFETCH_MYSTERY = nor(_TULY_SFETCH_S1.q(), _VONU_SFETCH_S1_D4.q());
-    /*p29.TYSO*/ wire TYSO_SPRITE_READn = or(_SAKY_SFETCH_MYSTERY, _TEPA_RENDERINGn); // def or
-    return not(TYSO_SPRITE_READn);
+    /*p29.SAKY*/ wire _SAKY_SFETCH_MYSTERY = nor2(_TULY_SFETCH_S1.q(), _VONU_SFETCH_S1_D4.q());
+    /*p29.TYSO*/ wire TYSO_SPRITE_READn = or2(_SAKY_SFETCH_MYSTERY, _TEPA_RENDERINGn); // def or
+    return not1(TYSO_SPRITE_READn);
   }
 
   // -> vram bus
-  /*p29.RACA*/ wire RACA_LATCH_SPPIXB() const { return and(_VONU_SFETCH_S1_D4.q(), SYCU_SFETCH_S0pe()); }
+  /*p29.RACA*/ wire RACA_LATCH_SPPIXB() const { return and2(_VONU_SFETCH_S1_D4.q(), SYCU_SFETCH_S0pe()); }
 
   // -> vram bus
-  /*p29.TOPU*/ wire TOPU_LATCH_SPPIXA() const { return and(_TULY_SFETCH_S1.q(), SYCU_SFETCH_S0pe()); }
+  /*p29.TOPU*/ wire TOPU_LATCH_SPPIXA() const { return and2(_TULY_SFETCH_S1.q(), SYCU_SFETCH_S0pe()); }
 
   // -> vram bus
-  /*p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not(!_VONU_SFETCH_S1_D4.q()); }
+  /*p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not1(!_VONU_SFETCH_S1_D4.q()); }
 
 private:
-  /*p29.SYCU*/ wire SYCU_SFETCH_S0pe() const { return nor(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, _TYFO_SFETCH_S0_D1.q()); }
-  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp() const { return nor(_TEPA_RENDERINGn, _TULY_SFETCH_S1.q(), _TESE_SFETCH_S2.q()); }
-  /*p29.TYTU*/ wire TYTU_SFETCH_S0n()     const { return not(_TOXE_SFETCH_S0.q()); }
+  /*p29.SYCU*/ wire SYCU_SFETCH_S0pe() const { return nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, _TYFO_SFETCH_S0_D1.q()); }
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp() const { return nor3(_TEPA_RENDERINGn, _TULY_SFETCH_S1.q(), _TESE_SFETCH_S2.q()); }
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0n()     const { return not1(_TOXE_SFETCH_S0.q()); }
   /*p29.VUSA*/ wire VUSA_SPRITE_DONEn() const {
-    /*p29.TYNO*/ wire TYNO = nand(_TOXE_SFETCH_S0.q(), _SEBA_SFETCH_S1_D5.q(), _VONU_SFETCH_S1_D4.q());
-    return or(_TYFO_SFETCH_S0_D1.qn(), TYNO);
+    /*p29.TYNO*/ wire TYNO = nand3(_TOXE_SFETCH_S0.q(), _SEBA_SFETCH_S1_D5.q(), _VONU_SFETCH_S1_D4.q());
+    return or2(_TYFO_SFETCH_S0_D1.qn(), TYNO);
   }
 
   Sig _TEPA_RENDERINGn;

@@ -15,7 +15,7 @@ struct Joypad {
   void dump(Dumper& d) const;
 
   void preset_buttons(uint8_t buttons);
-  /*p02.ASOK*/ wire ASOK_INT_JOYPADp() const { return and(APUG_JP_GLITCH3.q(), BATU_JP_GLITCH0.q()); }
+  /*p02.ASOK*/ wire ASOK_INT_JOYPADp() const { return and2(APUG_JP_GLITCH3.q(), BATU_JP_GLITCH0.q()); }
 
 private:
   friend struct SchematicTop;

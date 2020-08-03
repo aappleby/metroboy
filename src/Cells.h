@@ -23,40 +23,36 @@ inline int pack(wire a, wire b, wire c, wire d,
 
 //-----------------------------------------------------------------------------
 
-inline wire not (wire a) { return !a; }
+inline wire not1(wire a) { return !a; }
 
-inline wire and (wire a) { return a; }
-inline wire and (wire a, wire b) { return a & b; }
-inline wire and (wire a, wire b, wire c) { return  (a & b & c); }
-inline wire and (wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
-inline wire and (wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
-inline wire and (wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
-inline wire and (wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
+inline wire and2(wire a, wire b) { return a & b; }
+inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
+inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
+inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
+inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
+inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
 
-inline wire or  (wire a) { return a; }
-inline wire or  (wire a, wire b) { return a | b; }
-inline wire or  (wire a, wire b, wire c) { return  (a | b | c); }
-inline wire or  (wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
-inline wire or  (wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
+inline wire or2(wire a, wire b) { return a | b; }
+inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
+inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
+inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
 
-inline wire xor (wire a, wire b) { return a ^ b; }
-inline wire xnor(wire a, wire b) { return a == b; }
+inline wire xor2(wire a, wire b) { return a ^ b; }
+inline wire xnor2(wire a, wire b) { return a == b; }
 
-inline wire nor (wire a) { return !a; }
-inline wire nor (wire a, wire b) { return !(a | b); }
-inline wire nor (wire a, wire b, wire c) { return !(a | b | c); }
-inline wire nor (wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
-inline wire nor (wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
-inline wire nor (wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
-inline wire nor (wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
+inline wire nor2(wire a, wire b) { return !(a | b); }
+inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
+inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
+inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
+inline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
+inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
 
-inline wire nand(wire a) { return !a; }
-inline wire nand(wire a, wire b) { return !(a & b); }
-inline wire nand(wire a, wire b, wire c) { return !(a & b & c); }
-inline wire nand(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
-inline wire nand(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
-inline wire nand(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
-inline wire nand(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
+inline wire nand2(wire a, wire b) { return !(a & b); }
+inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
+inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
+inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
+inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
+inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
 
 //-----------------------------------------------------------------------------
 
@@ -227,6 +223,8 @@ inline RegDelta dff8(wire CLKp, wire CLKn, bool D) {
 // Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
 // store, SCY, SCX, LCDC, WX, WY
 
+// FIXME q/qn inconsistent, see sprite store vs phase clock
+
 // | O===--o | 
 // |==--O====| CLKp
 // | ------- | D
@@ -281,8 +279,8 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 
 ///*p32.RAWU*/ top.RAWU_TILE_DB0.set(LABU_LATCH_TILE_DBp, top.VYPO_GND, top.vram_bus.VRM_BUS_D0);
 
-// wire LUVE_MATCH_TILE_DBn = not(LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
-// wire LABU_LATCH_TILE_DBp = not(LUVE_MATCH_TILE_DBn);
+// wire LUVE_MATCH_TILE_DBn = not1(LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
+// wire LABU_LATCH_TILE_DBp = not1(LUVE_MATCH_TILE_DBn);
 
 // RAWU_01 nc
 // RAWU_02 << VYPO_02 (RSTp?)
@@ -296,7 +294,7 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // RAWU_10 nc
 // RAWU_11 >> TUXE_02
 
-// LUVE = not(LESO)
+// LUVE = not1(LESO)
 // 
 
 
@@ -505,7 +503,7 @@ inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
 
-// ASOL seems to break this pattern, it looks like it has to be nand or have
+// ASOL seems to break this pattern, it looks like it has to be nand2 or have
 // an inverted output.
 
 // NORLATCH_01 << SET

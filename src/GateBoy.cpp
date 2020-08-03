@@ -10,36 +10,36 @@ constexpr bool FAST_HASH = 0;
 #if 0
   // these are all "normal operating mode" w/o rendering or dma 
 
-  OAM_PIN_OE     = nand(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OPD_TO_OBD     = nand(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OBD_TO_OBL     =  and(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OBL_TO_CBD     =  and(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OAM_PIN_OE     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OPD_TO_OBD     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OBD_TO_OBL     =  and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OBL_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,                     ADDR_OAM);
 
-  EPD_TO_CBD     =  and(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  EXT_PIN_RD     = nand(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  EXT_PIN_WR     =  and(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
-  CBD_TO_EPD     =  and(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  CBA_TO_EPA     =  and(                                 CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EPD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EXT_PIN_RD     = nand2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EXT_PIN_WR     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
+  CBD_TO_EPD     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  CBA_TO_EPA     =  and2(                                 CPU_PIN_ADDR_EXT, !ADDR_VRAM);
 
-  EXT_PIN_CS     =  and(                                !CPU_PIN_ADDR_EXT,  ADDR_ERAM,   xxCDEFGH);
+  EXT_PIN_CS     =  and2(                                !CPU_PIN_ADDR_EXT,  ADDR_ERAM,   xxCDEFGH);
 
   EXT_PIN_A15_A  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
   EXT_PIN_A15_D  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
 
-  OAM_PIN_WRn    = nand(CPU_PIN_WRp,                                        ADDR_OAM,    xxxxEFGx);
-  TIMA_LOADp     =  and(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,                     FF05,        xxxxEFGx);
+  OAM_PIN_WRn    = nand2(CPU_PIN_WRp,                                        ADDR_OAM,    xxxxEFGx);
+  TIMA_LOADp     =  and2(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,                     FF05,        xxxxEFGx);
 
 
-  VBD_TO_CBD     =  and(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM, !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-  VRAM_PIN_WR    = nand(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
-  VRAM_PIN_CS    = nand(                                !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-  VRAM_PIN_OE    = nand(CPU_PIN_WRp,                                        ADDR_VRAM);
+  VBD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM, !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  VRAM_PIN_WR    = nand2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
+  VRAM_PIN_CS    = nand2(                                !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  VRAM_PIN_OE    = nand2(CPU_PIN_WRp,                                        ADDR_VRAM);
 
 
-  CBD_TO_VPD     =  and(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  CBD_TO_VPD     =  and2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
 
 
-  EXT_PIN_A00_A = not(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+  EXT_PIN_A00_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
 
 
   /*read  rom */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
@@ -101,6 +101,8 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
 
   printf("Sync with phase B\n");
   sys_clken = 1;
+
+#if 0
   run(11, req, verbose, use_fast_impl);
   if (verbose) printf("\n");
 
@@ -153,6 +155,7 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
 
     //printf("%5s @ %04x => %d\n", "BOOT", 0xFF50, boot_bit);
   }
+#endif
 
   // Addr bus on ext pins notes -
   // 0000 - 7FFF : addr on bus, no CSn
@@ -224,7 +227,7 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
 
 
 
-#if 1
+#if 0
   dbg_write(ADDR_BGP,  mem[ADDR_BGP],  use_fast_impl);
   dbg_write(ADDR_OBP0, mem[ADDR_OBP0], use_fast_impl);
   dbg_write(ADDR_OBP1, mem[ADDR_OBP1], use_fast_impl);
@@ -257,6 +260,7 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC], use_fast_impl);
 #endif
 
+#if 0
   // put a sprite at (3,3)
   dbg_write(0xFE00, 19, use_fast_impl);
   dbg_write(0xFE01, 11, use_fast_impl);
@@ -285,6 +289,7 @@ void GateBoy::run_reset_sequence(bool verbose, bool use_fast_impl) {
   printf("oam byte @ 0xFE01 is %d\n", dbg_read(0xFE01, use_fast_impl));
   printf("oam byte @ 0xFE02 is %d\n", dbg_read(0xFE02, use_fast_impl));
   printf("oam byte @ 0xFE03 is %d\n", dbg_read(0xFE03, use_fast_impl));
+#endif
 
   if (verbose) printf("\n");
 }
@@ -519,19 +524,19 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
   bool hold_mem = io && (req.addr < 0xFF00);
 
 #if 0
-    NR14_STOP = dff(nand(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF14), APU_RSTn, TS_D6());
-    NR24_STOP = dff(nand(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF19), APU_RSTn, TS_D3());
-    NR34_STOP = dff(nand(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF1E), APU_RSTn, TS_D3());
-    NR44_STOP = dff(nand(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF23), APU_RSTn, TS_D6());
+    NR14_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF14), APU_RSTn, TS_D6());
+    NR24_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF19), APU_RSTn, TS_D3());
+    NR34_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF1E), APU_RSTn, TS_D3());
+    NR44_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF23), APU_RSTn, TS_D6());
 
-    OAM_PIN_WRp = and(CPU_PIN_WRp,                      ADDR_OAM, xxxxEFGx);
-    OAM_PIN_OEp = and(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,   ADDR_OAM);
-    OBD_TO_OBL  = and(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,   ADDR_OAM);
-    TIMA_LOADp  = and(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,   ADDR_TIMA, xxxxEFGx, );
+    OAM_PIN_WRp = and2(CPU_PIN_WRp,                      ADDR_OAM, xxxxEFGx);
+    OAM_PIN_OEp = and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,   ADDR_OAM);
+    OBD_TO_OBL  = and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,   ADDR_OAM);
+    TIMA_LOADp  = and2(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,   ADDR_TIMA, xxxxEFGx, );
 
-    EPD_TO_CBD  = and(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  !ADDR_VRAM);
-    OBL_TO_CBD  = and(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,   ADDR_OAM);
-    VBD_TO_CBD  = and(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,   ADDR_VRAM, !CPU_PIN_ADDR_EXT);
+    EPD_TO_CBD  = and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  !ADDR_VRAM);
+    OBL_TO_CBD  = and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,   ADDR_OAM);
+    VBD_TO_CBD  = and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,   ADDR_VRAM, !CPU_PIN_ADDR_EXT);
 
     if (TIMA_LOADp) {
       TIMA_7 = TIMA_LD_7);

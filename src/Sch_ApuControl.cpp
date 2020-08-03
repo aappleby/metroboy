@@ -4,9 +4,9 @@ namespace Schematics {
 
 #if 0
 
-///*p01.ATAG*/ wire ATAG_xBxDxFxH = not(AZOF_AxCxExGx);
-///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
-///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
+///*p01.ATAG*/ wire ATAG_xBxDxFxH = not1(AZOF_AxCxExGx);
+///*p01.AMUK*/ wire AMUK_AxCxExGx = not1(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
+///*p01.DOVA*/ wire DOVA_xBCDExxx = not1(BUDE_AxxxxFGH); // and then this goes to channel 1
 
 //-----------------------------------------------------------------------------
 
@@ -17,28 +17,28 @@ void P09_ApuControl_tick(const Gameboy& a,
                          Gameboy& next) {
 
  
-  /*P10.TACE*/ next.apu.AMP_ENn = and(b.ch1.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
+  /*P10.TACE*/ next.apu.AMP_ENn = and2(b.ch1.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
 
   
   {
-    /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst_sig.SYS_RESETn);
-    /*p09.JYRO*/ next.apu.APU_RST = or(SYS_RESET2, !b.apu.NR52_ALL_SOUND_ON);
+    /*P09.HAPO*/ wire SYS_RESET2  = not1(b.rst_sig.SYS_RESETn);
+    /*p09.JYRO*/ next.apu.APU_RST = or2(SYS_RESET2, !b.apu.NR52_ALL_SOUND_ON);
   }
 
   {
-    /*p09.KUBY*/ wire APU_RESETn7 = not(b.apu.APU_RST);
-    /*p09.KEBA*/ next.apu.APU_RESET1  = not(APU_RESETn7);
+    /*p09.KUBY*/ wire APU_RESETn7 = not1(b.apu.APU_RST);
+    /*p09.KEBA*/ next.apu.APU_RESET1  = not1(APU_RESETn7);
   }
 
 
   {
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.TAPU_CPUWR);
-    /*p10.BOGY*/ next.apu.APU_WR  = not(CPU_WRn);
+    /*p10.BAFU*/ wire CPU_WRn = not1(b.ctl.TAPU_CPUWR);
+    /*p10.BOGY*/ next.apu.APU_WR  = not1(CPU_WRn);
   }
 
-  ///*p16.ANUJ*/ wire CPU_WR_WEIRD = and(cpu_in.FROM_CPU5, b.apu.APU_WR);
+  ///*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(cpu_in.FROM_CPU5, b.apu.APU_WR);
 
-  /*p13.CARA*/ next.ch1.CH1_ACTIVEn = not(b.ch1.CH1_ACTIVE);
+  /*p13.CARA*/ next.ch1.CH1_ACTIVEn = not1(b.ch1.CH1_ACTIVE);
 
   //----------
   // APU clocks
@@ -46,84 +46,84 @@ void P09_ApuControl_tick(const Gameboy& a,
 
   // FIXME
   {
-    /*p01.APUV*/ wire APUV = not(ff20.AMUK_xBxDxFxH);
-    /*p01.CYBO*/ wire CYBO = not(ff20.AMUK_xBxDxFxH);
-    /*p01.ARYF*/ wire ARYF = not(ff20.AMUK_xBxDxFxH);
+    /*p01.APUV*/ wire APUV = not1(ff20.AMUK_xBxDxFxH);
+    /*p01.CYBO*/ wire CYBO = not1(ff20.AMUK_xBxDxFxH);
+    /*p01.ARYF*/ wire ARYF = not1(ff20.AMUK_xBxDxFxH);
 
-    /*p09.ATYV*/ wire APU_RESETn3 = not(b.apu.APU_RESET1);
+    /*p09.ATYV*/ wire APU_RESETn3 = not1(b.apu.APU_RESET1);
     ///*p09.AJER*/ next.apu.AJER_2M  = tock_pos(a.apu.APUV, b.apu.APUV, APU_RESETn3, b.apu.AJER_2M, !b.apu.AJER_2M);
-    /*p01.COKE*/ next.apu.COKE = not(b.apu.AJER_2M);
-    /*p01.BELA*/ wire APU_RESETn4 = not(b.apu.APU_RESET1);
+    /*p01.COKE*/ next.apu.COKE = not1(b.apu.AJER_2M);
+    /*p01.BELA*/ wire APU_RESETn4 = not1(b.apu.APU_RESET1);
     ///*p01.CERY*/ next.apu.CERY = tock_pos(a.apu.CYBO, b.apu.CYBO, APU_RESETn4, b.apu.CERY, !b.apu.CERY);
-    ///*p01.BOPO*/ wire RST = not(b.apu.APU_RESET1);
+    ///*p01.BOPO*/ wire RST = not1(b.apu.APU_RESET1);
     ///*p01.ATYK*/ next.apu.ATYK = tock_pos(a.apu.ARYF, b.apu.ARYF, RST, b.apu.ATYK, !b.apu.ATYK);
     ///*p01.AVOK*/ next.apu.AVOK = tock_pos(a.apu.ATYK, b.apu.ATYK, RST, b.apu.AVOK, !b.apu.AVOK);
-    /*p01.BAVU*/ next.apu.BAVU_1M   = not(b.apu.AVOK);
-    /*p09.KAME*/ wire APU_RESETn5 = not(b.apu.APU_RESET1);
+    /*p01.BAVU*/ next.apu.BAVU_1M   = not1(b.apu.AVOK);
+    /*p09.KAME*/ wire APU_RESETn5 = not1(b.apu.APU_RESET1);
     /*p01.JESO*/ next.apu.CLK_512Ka = tock_pos(a.apu.BAVU_1M, b.apu.BAVU_1M, APU_RESETn5,  b.apu.CLK_512Ka, !b.apu.CLK_512Ka);
-    /*p01.HAMA*/ next.apu.CLK_512Kn = not(!b.apu.CLK_512Ka);
+    /*p01.HAMA*/ next.apu.CLK_512Kn = not1(!b.apu.CLK_512Ka);
   }
 
   {
-    /*p01.ATUS*/ wire APU_RESETn = not(b.apu.APU_RESET1);
+    /*p01.ATUS*/ wire APU_RESETn = not1(b.apu.APU_RESET1);
     /*p01.BARA*/ next.apu.CLK_512 = tock_pos( a.apu.COKE,  b.apu.COKE, APU_RESETn, b.apu.CLK_512,  tim_sig.DIV_10n);
-    /*p01.BURE*/ next.apu.CLK_512n = not(!b.apu.CLK_512);
+    /*p01.BURE*/ next.apu.CLK_512n = not1(!b.apu.CLK_512);
     /*p01.CARU*/ next.apu.CLK_256 = tock_pos( a.apu.CLK_512n,  b.apu.CLK_512n, APU_RESETn, b.apu.CLK_256, !b.apu.CLK_256);
     /*p01.BYLU*/ next.apu.CLK_128 = tock_pos(!a.apu.CLK_256,  !b.apu.CLK_256,  APU_RESETn, b.apu.CLK_128, !b.apu.CLK_128);
   }
 
   {
-    /*p01.GALE*/ wire CLK_512b = mux2(b.apu.CLK_512Kn, /*p01.FYNE*/ not (b.apu.CLK_512n), b.apu.NR52_DBG_APUn); // dbg_apu polarity?
-    /*p01.BEZE*/ wire CLK_256b = mux2(b.apu.CLK_512Kn, /*p01.CULO*/ not(!b.apu.CLK_256),  b.apu.NR52_DBG_APUn); // dbg_apu polarity?
-    /*p01.BULE*/ wire CLK_128b = mux2(b.apu.CLK_512Kn, /*p01.APEF*/ not(!b.apu.CLK_128),  b.apu.NR52_DBG_APUn); // dbg_apu polarity?
+    /*p01.GALE*/ wire CLK_512b = mux2(b.apu.CLK_512Kn, /*p01.FYNE*/ not1(b.apu.CLK_512n), b.apu.NR52_DBG_APUn); // dbg_apu polarity?
+    /*p01.BEZE*/ wire CLK_256b = mux2(b.apu.CLK_512Kn, /*p01.CULO*/ not1(!b.apu.CLK_256),  b.apu.NR52_DBG_APUn); // dbg_apu polarity?
+    /*p01.BULE*/ wire CLK_128b = mux2(b.apu.CLK_512Kn, /*p01.APEF*/ not1(!b.apu.CLK_128),  b.apu.NR52_DBG_APUn); // dbg_apu polarity?
 
-    /*p01.HORU*/ next.apu.CLK_512a = not(/*p01.GEXY*/ not(CLK_512b));
-    /*p01.BUFY*/ next.apu.CLK_256a = not(/*p01.COFU*/ not(CLK_256b));
-    /*p01.BYFE*/ next.apu.CLK_128a = not(/*p01.BARU*/ not(CLK_128b));
+    /*p01.HORU*/ next.apu.CLK_512a = not1(/*p01.GEXY*/ not1(CLK_512b));
+    /*p01.BUFY*/ next.apu.CLK_256a = not1(/*p01.COFU*/ not1(CLK_256b));
+    /*p01.BYFE*/ next.apu.CLK_128a = not1(/*p01.BARU*/ not1(CLK_128b));
   }
 
   //---------
   // decodin'
 
   {
-    /*p07.BAKO*/ next.apu.ADDR_FFXXn1 = not(b.dec_sig.ADDR_FFXX);
+    /*p07.BAKO*/ next.apu.ADDR_FFXXn1 = not1(b.dec_sig.ADDR_FFXX);
 
-    /*p10.ATUP*/ wire A04n = not(b.bus.CPU_BUS_A04());
-    /*p10.BOXY*/ wire A05n = not(b.bus.CPU_BUS_A05());
-    /*p10.ASAD*/ wire A06n = not(b.bus.CPU_BUS_A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.CPU_BUS_A07());
+    /*p10.ATUP*/ wire A04n = not1(b.bus.CPU_BUS_A04());
+    /*p10.BOXY*/ wire A05n = not1(b.bus.CPU_BUS_A05());
+    /*p10.ASAD*/ wire A06n = not1(b.bus.CPU_BUS_A06());
+    /*p10.AVUN*/ wire A07n = not1(b.bus.CPU_BUS_A07());
 
-    /*p10.ATEG*/ wire ADDR_XX1Xn = or(b.bus.CPU_BUS_A07(), b.bus.CPU_BUS_A06(), b.bus.CPU_BUS_A05(),  A04n);
-    /*p10.AWET*/ wire ADDR_XX2Xn = or(b.bus.CPU_BUS_A07(), b.bus.CPU_BUS_A06(),  A05n, b.bus.CPU_BUS_A04());
+    /*p10.ATEG*/ wire ADDR_XX1Xn = or2(b.bus.CPU_BUS_A07(), b.bus.CPU_BUS_A06(), b.bus.CPU_BUS_A05(),  A04n);
+    /*p10.AWET*/ wire ADDR_XX2Xn = or2(b.bus.CPU_BUS_A07(), b.bus.CPU_BUS_A06(),  A05n, b.bus.CPU_BUS_A04());
 
-    /*p10.BUNO*/ wire ADDR_FF1X  = nor(b.apu.ADDR_FFXXn1, ADDR_XX1Xn);
-    /*p10.BANU*/ next.apu.ADDR_FF1Xn = not(ADDR_FF1X);
-    /*p10.BEZY*/ next.apu.ADDR_FF2Xn = or(ADDR_XX2Xn, b.apu.ADDR_FFXXn1);
+    /*p10.BUNO*/ wire ADDR_FF1X  = nor4(b.apu.ADDR_FFXXn1, ADDR_XX1Xn);
+    /*p10.BANU*/ next.apu.ADDR_FF1Xn = not1(ADDR_FF1X);
+    /*p10.BEZY*/ next.apu.ADDR_FF2Xn = or2(ADDR_XX2Xn, b.apu.ADDR_FFXXn1);
 
-    /*p10.DYTE*/ next.apu.ADDR_xxx0  = not(b.bus.CPU_BUS_A00());
-    /*p10.AFOB*/ next.apu.ADDR_xx0x  = not(b.bus.CPU_BUS_A01());
-    /*p10.ABUB*/ next.apu.ADDR_x0xx  = not(b.bus.CPU_BUS_A02());
-    /*p10.ACOL*/ next.apu.ADDR_0xxx  = not(b.bus.CPU_BUS_A03());
+    /*p10.DYTE*/ next.apu.ADDR_xxx0  = not1(b.bus.CPU_BUS_A00());
+    /*p10.AFOB*/ next.apu.ADDR_xx0x  = not1(b.bus.CPU_BUS_A01());
+    /*p10.ABUB*/ next.apu.ADDR_x0xx  = not1(b.bus.CPU_BUS_A02());
+    /*p10.ACOL*/ next.apu.ADDR_0xxx  = not1(b.bus.CPU_BUS_A03());
 
-    /*p10.DOSO*/ next.apu.ADDR_xxx1  = not(b.apu.ADDR_xxx0);
-    /*p10.DUPA*/ next.apu.ADDR_xx1x  = not(b.apu.ADDR_xx0x);
-    /*p10.DENO*/ next.apu.ADDR_x1xx  = not(b.apu.ADDR_x0xx);
-    /*p10.DUCE*/ next.apu.ADDR_1xxx  = not(b.apu.ADDR_0xxx);
+    /*p10.DOSO*/ next.apu.ADDR_xxx1  = not1(b.apu.ADDR_xxx0);
+    /*p10.DUPA*/ next.apu.ADDR_xx1x  = not1(b.apu.ADDR_xx0x);
+    /*p10.DENO*/ next.apu.ADDR_x1xx  = not1(b.apu.ADDR_x0xx);
+    /*p10.DUCE*/ next.apu.ADDR_1xxx  = not1(b.apu.ADDR_0xxx);
   }
 
   //----------
   // FF24 NR50
 
   {
-    /*p10.DATU*/ wire ADDR_0100bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
-    /*p10.CAFY*/ wire ADDR_FF24  = nor(b.apu.ADDR_FF2Xn, ADDR_0100bn);
-    /*p09.BYMA*/ wire ADDR_FF24n = not(ADDR_FF24);
-    /*p09.BOSU*/ wire NR50_WRn1 = nand(ADDR_FF24, b.apu.APU_WR);
-    /*p09.BAXY*/ wire NR50_WR1  = not(NR50_WRn1);
-    /*p09.BOWE*/ wire NR50_WR2  = not(NR50_WRn1);
+    /*p10.DATU*/ wire ADDR_0100bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
+    /*p10.CAFY*/ wire ADDR_FF24  = nor4(b.apu.ADDR_FF2Xn, ADDR_0100bn);
+    /*p09.BYMA*/ wire ADDR_FF24n = not1(ADDR_FF24);
+    /*p09.BOSU*/ wire NR50_WRn1 = nand2(ADDR_FF24, b.apu.APU_WR);
+    /*p09.BAXY*/ wire NR50_WR1  = not1(NR50_WRn1);
+    /*p09.BOWE*/ wire NR50_WR2  = not1(NR50_WRn1);
 
-    /*p09.BUBU*/ next.apu.NR50_WRn2 = not(NR50_WR1);
-    /*p09.ATAF*/ next.apu.NR50_WRn3 = not(NR50_WR2);
+    /*p09.BUBU*/ next.apu.NR50_WRn2 = not1(NR50_WR1);
+    /*p09.ATAF*/ next.apu.NR50_WRn3 = not1(NR50_WR2);
     /*p09.APEG*/ next.apu.NR50_VOL_L0   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L0,   b.bus.TS_D0());
     /*p09.BYGA*/ next.apu.NR50_VOL_L1   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L1,   b.bus.TS_D1());
     /*p09.AGER*/ next.apu.NR50_VOL_L2   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L2,   b.bus.TS_D2());
@@ -133,10 +133,10 @@ void P09_ApuControl_tick(const Gameboy& a,
     /*p09.COZU*/ next.apu.NR50_VOL_R2   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R2,   b.bus.TS_D6());
     /*p09.BEDU*/ next.apu.NR50_VIN_TO_R = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VIN_TO_R, b.bus.TS_D7());
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
+    /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
 
-    /*p09.BEFU*/ wire NR50_RDn1 = nor(CPU_RDn, ADDR_FF24n);
-    /*p09.ADAK*/ wire NR50_RD1  = not(NR50_RDn1);
+    /*p09.BEFU*/ wire NR50_RDn1 = nor4(CPU_RDn, ADDR_FF24n);
+    /*p09.ADAK*/ wire NR50_RD1  = not1(NR50_RDn1);
 
     if (NR50_RD1) next.bus.set_data(
       /*p09.AKOD*/ b.apu.NR50_VOL_L0,
@@ -154,12 +154,12 @@ void P09_ApuControl_tick(const Gameboy& a,
   // FF25 NR51
 
   {
-    /*p10.DURA*/ wire ADDR_0101bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
-    /*p10.CORA*/ wire ADDR_FF25  = nor(b.apu.ADDR_FF2Xn, ADDR_0101bn);
-    /*p09.GEPA*/ wire ADDR_FF25n = not(ADDR_FF25);
-    /*p09.BUPO*/ next.apu.NR51_WRn = nand(ADDR_FF25, b.apu.APU_WR);
-    /*p09.BONO*/ next.apu.NR51_WRa = not(b.apu.NR51_WRn);
-    /*p09.BYFA*/ next.apu.NR51_WRb = not(b.apu.NR51_WRn);
+    /*p10.DURA*/ wire ADDR_0101bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.CORA*/ wire ADDR_FF25  = nor4(b.apu.ADDR_FF2Xn, ADDR_0101bn);
+    /*p09.GEPA*/ wire ADDR_FF25n = not1(ADDR_FF25);
+    /*p09.BUPO*/ next.apu.NR51_WRn = nand2(ADDR_FF25, b.apu.APU_WR);
+    /*p09.BONO*/ next.apu.NR51_WRa = not1(b.apu.NR51_WRn);
+    /*p09.BYFA*/ next.apu.NR51_WRb = not1(b.apu.NR51_WRn);
 
     /*p09.ANEV*/ next.apu.NR51_0 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_0, b.bus.TS_D0());
     /*p09.BOGU*/ next.apu.NR51_1 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_1, b.bus.TS_D1());
@@ -170,9 +170,9 @@ void P09_ApuControl_tick(const Gameboy& a,
     /*p09.BEFO*/ next.apu.NR51_6 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_6, b.bus.TS_D6());
     /*p09.BEPU*/ next.apu.NR51_7 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_7, b.bus.TS_D7());
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
-    /*p09.HEFA*/ wire NR51_RDn = nor(ADDR_FF25n, CPU_RDn);
-    /*p09.GUMU*/ wire NR51_RD = not(NR51_RDn);
+    /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
+    /*p09.HEFA*/ wire NR51_RDn = nor4(ADDR_FF25n, CPU_RDn);
+    /*p09.GUMU*/ wire NR51_RD = not1(NR51_RDn);
 
     if (NR51_RD) next.bus.set_data(
       /*p09.CAPU*/ b.apu.NR51_0,
@@ -190,48 +190,48 @@ void P09_ApuControl_tick(const Gameboy& a,
   // FF26 NR52
 
   {
-    /*p10.EKAG*/ wire ADDR_0110bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
-    /*p10.CONA*/ wire ADDR_FF2X  = not(b.apu.ADDR_FF2Xn);
-    /*p10.DOXY*/ wire ADDR_FF26  = and(ADDR_FF2X,  ADDR_0110bn); // something not right here
+    /*p10.EKAG*/ wire ADDR_0110bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
+    /*p10.CONA*/ wire ADDR_FF2X  = not1(b.apu.ADDR_FF2Xn);
+    /*p10.DOXY*/ wire ADDR_FF26  = and2(ADDR_FF2X,  ADDR_0110bn); // something not right here
 
-    /*p09.ETUC*/ wire NR52_WR1  = and(ADDR_FF26, b.apu.APU_WR);
-    /*p09.HAWU*/ next.apu.NR52_WRn1 = nand(ADDR_FF26, b.apu.APU_WR);
-    /*p09.BOPY*/ next.apu.NR52_WRn2 = nand(ADDR_FF26, b.apu.APU_WR);
-    /*p09.FOKU*/ next.apu.NR52_WRn3 = not(NR52_WR1);
+    /*p09.ETUC*/ wire NR52_WR1  = and2(ADDR_FF26, b.apu.APU_WR);
+    /*p09.HAWU*/ next.apu.NR52_WRn1 = nand2(ADDR_FF26, b.apu.APU_WR);
+    /*p09.BOPY*/ next.apu.NR52_WRn2 = nand2(ADDR_FF26, b.apu.APU_WR);
+    /*p09.FOKU*/ next.apu.NR52_WRn3 = not1(NR52_WR1);
 
-    /*p09.KEPY*/ wire APU_RESETn6 = not(b.apu.APU_RST);
-    /*p09.EFOP*/ wire NR52_DBG_APU_IN    = and(b.bus.TS_D4(), b.dbg.MODE_DBG2);
+    /*p09.KEPY*/ wire APU_RESETn6 = not1(b.apu.APU_RST);
+    /*p09.EFOP*/ wire NR52_DBG_APU_IN    = and2(b.bus.TS_D4(), b.dbg.MODE_DBG2);
 
     /*p09.FERO*/ next.apu.NR52_DBG_APUn      = tock_pos(a.apu.NR52_WRn3, b.apu.NR52_WRn3, APU_RESETn6, b.apu.NR52_DBG_APUn,     NR52_DBG_APU_IN);
     /*p09.BOWY*/ next.apu.NR52_DBG_SWEEP     = tock_pos(a.apu.NR52_WRn2, b.apu.NR52_WRn2, APU_RESETn6, b.apu.NR52_DBG_SWEEP,    b.bus.TS_D5());
 
-    /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst_sig.SYS_RESETn);
-    /*P09.GUFO*/ wire SYS_RESETn3 = not(SYS_RESET2);
+    /*P09.HAPO*/ wire SYS_RESET2  = not1(b.rst_sig.SYS_RESETn);
+    /*P09.GUFO*/ wire SYS_RESETn3 = not1(SYS_RESET2);
     /*p09.HADA*/ next.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.bus.TS_D7()); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
-    /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not(!b.apu.NR52_DBG_APUn);
+    /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not1(!b.apu.NR52_DBG_APUn);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
-    /*p09.CETO*/ wire CPU_RDa = not(CPU_RDn);
-    /*p09.KAZO*/ wire CPU_RDb = not(CPU_RDn);
-    /*p09.CURU*/ wire CPU_RDc = not(CPU_RDn);
-    /*p09.GAXO*/ wire CPU_RDd = not(CPU_RDn);
-    /*p09.KYDU*/ wire CPU_RDe = not(CPU_RDn);
+    /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
+    /*p09.CETO*/ wire CPU_RDa = not1(CPU_RDn);
+    /*p09.KAZO*/ wire CPU_RDb = not1(CPU_RDn);
+    /*p09.CURU*/ wire CPU_RDc = not1(CPU_RDn);
+    /*p09.GAXO*/ wire CPU_RDd = not1(CPU_RDn);
+    /*p09.KYDU*/ wire CPU_RDe = not1(CPU_RDn);
 
-    /*p09.DOLE*/ wire NR52_RDna = nand(ADDR_FF26, CPU_RDa);
-    /*p09.KAMU*/ wire NR52_RDnb = nand(ADDR_FF26, CPU_RDb);
-    /*p09.DURU*/ wire NR52_RDnd = nand(ADDR_FF26, CPU_RDc);
-    /*p09.FEWA*/ wire NR52_RDnc = nand(ADDR_FF26, CPU_RDd);
-    /*p09.JURE*/ wire NR52_RDne = nand(ADDR_FF26, CPU_RDe);
+    /*p09.DOLE*/ wire NR52_RDna = nand2(ADDR_FF26, CPU_RDa);
+    /*p09.KAMU*/ wire NR52_RDnb = nand2(ADDR_FF26, CPU_RDb);
+    /*p09.DURU*/ wire NR52_RDnd = nand2(ADDR_FF26, CPU_RDc);
+    /*p09.FEWA*/ wire NR52_RDnc = nand2(ADDR_FF26, CPU_RDd);
+    /*p09.JURE*/ wire NR52_RDne = nand2(ADDR_FF26, CPU_RDe);
 
-    /*p18.COKA*/ wire CH3_ACTIVE = not(!b.ch3.CH3_ACTIVEo);
-    /*p18.ERED*/ wire CH3_ACTIVEn = not(CH3_ACTIVE);
-    /*p20.JUWA*/ wire CH4_ACTIVEn = not(b.ch4.CH4_ACTIVE);
+    /*p18.COKA*/ wire CH3_ACTIVE = not1(!b.ch3.CH3_ACTIVEo);
+    /*p18.ERED*/ wire CH3_ACTIVEn = not1(CH3_ACTIVE);
+    /*p20.JUWA*/ wire CH4_ACTIVEn = not1(b.ch4.CH4_ACTIVE);
 
     if (NR52_RDna) next.bus.set_data(
-      /*p09.COTO*/ not(b.ch1.CH1_ACTIVEn),
-      /*p09.EFUS*/ not(b.ch2.CH2_ACTIVEn),
-      /*p09.FATE*/ not(CH3_ACTIVEn),
-      /*p09.KOGE*/ not(CH4_ACTIVEn),
+      /*p09.COTO*/ not1(b.ch1.CH1_ACTIVEn),
+      /*p09.EFUS*/ not1(b.ch2.CH2_ACTIVEn),
+      /*p09.FATE*/ not1(CH3_ACTIVEn),
+      /*p09.KOGE*/ not1(CH4_ACTIVEn),
       /*p09.HOPE*/ b.apu.NR52_ALL_SOUND_ON
     );
   }

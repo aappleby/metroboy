@@ -13,7 +13,7 @@ struct SpriteStore {
   void dump(Dumper& d) const;
 
   /*p29.FEPO*/ Sig FEPO_STORE_MATCHp;
-  /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not(FEPO_STORE_MATCHp); }
+  /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp); }
 
   Tri SPR_TRI_IDX0n = TRI_HZPU;
   Tri SPR_TRI_IDX1n = TRI_HZPU;

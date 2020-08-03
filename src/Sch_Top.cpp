@@ -109,27 +109,27 @@ void SchematicTop::tick_fast(int phase) {
 #if 0
 // Debug stuff I disabled
 
-/*p07.APET*/ wire APET_MODE_DBG = or(top.clk_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
-/*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, TAPU_CPUWR, ADDR_111111110xx00000);
+/*p07.APET*/ wire APET_MODE_DBG = or2(top.clk_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
+/*p07.APER*/ wire FF60_WRn = nand2(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, TAPU_CPUWR, ADDR_111111110xx00000);
 
 //----------
 // weird debug things, probably not right
 
-/*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clk_reg.BEDO_Axxxxxxx);
-/*p05.ADYR*/ wire ADYR_Axxxxxxx = not(AXYN_xBCDEFGH);
-/*p05.APYS*/ wire APYS_xBCDEFGH = nor(sys_sig.MODE_DBG2, ADYR_Axxxxxxx);
-/*p05.AFOP*/ wire AFOP_Axxxxxxx = not(APYS_xBCDEFGH);
-/*p07.LECO*/ wire LECO_xBCDEFGH = nor(clk_reg.BEDO_Axxxxxxx, sys_sig.MODE_DBG2);
+/*p05.AXYN*/ wire AXYN_xBCDEFGH = not1(clk_reg.BEDO_Axxxxxxx);
+/*p05.ADYR*/ wire ADYR_Axxxxxxx = not1(AXYN_xBCDEFGH);
+/*p05.APYS*/ wire APYS_xBCDEFGH = nor4(sys_sig.MODE_DBG2, ADYR_Axxxxxxx);
+/*p05.AFOP*/ wire AFOP_Axxxxxxx = not1(APYS_xBCDEFGH);
+/*p07.LECO*/ wire LECO_xBCDEFGH = nor4(clk_reg.BEDO_Axxxxxxx, sys_sig.MODE_DBG2);
 
 if (AFOP_Axxxxxxx) set_data(
-  /*p05.ANOC*/ not(top.GND),
-  /*p05.ATAJ*/ not(top.GND),
-  /*p05.AJEC*/ not(top.GND),
-  /*p05.ASUZ*/ not(top.GND),
-  /*p05.BENU*/ not(top.GND),
-  /*p05.AKAJ*/ not(top.GND),
-  /*p05.ARAR*/ not(top.GND),
-  /*p05.BEDA*/ not(top.GND)
+  /*p05.ANOC*/ not1(top.GND),
+  /*p05.ATAJ*/ not1(top.GND),
+  /*p05.AJEC*/ not1(top.GND),
+  /*p05.ASUZ*/ not1(top.GND),
+  /*p05.BENU*/ not1(top.GND),
+  /*p05.AKAJ*/ not1(top.GND),
+  /*p05.ARAR*/ not1(top.GND),
+  /*p05.BEDA*/ not1(top.GND)
 );
 
 if (LECO_xBCDEFGH) set_data(
@@ -148,8 +148,8 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, ff20.CPU_PIN_BOGA_xBCDEFGH);
-/*p25.SOLE*/ wire SOLE = not(TUSO);
+/*p25.TUSO*/ wire TUSO = nor4(MODE_DBG2, ff20.CPU_PIN_BOGA_xBCDEFGH);
+/*p25.SOLE*/ wire SOLE = not1(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(
   /*p25.TOVU*/ SOLE,
@@ -163,34 +163,34 @@ if (top.VYPO_GND) bus_out.set_data(
 );
 
 // FIXME
-///*p05.KORE*/ wire P05_NC0 = nand(KERU_DBG_FF00_D7, FF60_0);
-///*p05.KYWE*/ wire P05_NC1 = nor (KERU_DBG_FF00_D7, FF60_0o);
+///*p05.KORE*/ wire P05_NC0 = nand2(KERU_DBG_FF00_D7, FF60_0);
+///*p05.KYWE*/ wire P05_NC1 = nor4 (KERU_DBG_FF00_D7, FF60_0o);
 
-/*p08.LYRA*/ wire DBG_D_RDn = nand(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/*p08.TUTY*/ if (!DBG_D_RDn) CPU_BUS_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
-/*p08.SYWA*/ if (!DBG_D_RDn) CPU_BUS_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
-/*p08.SUGU*/ if (!DBG_D_RDn) CPU_BUS_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
-/*p08.TAWO*/ if (!DBG_D_RDn) CPU_BUS_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
-/*p08.TUTE*/ if (!DBG_D_RDn) CPU_BUS_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
-/*p08.SAJO*/ if (!DBG_D_RDn) CPU_BUS_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
-/*p08.TEMY*/ if (!DBG_D_RDn) CPU_BUS_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
-/*p08.ROPA*/ if (!DBG_D_RDn) CPU_BUS_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
+/*p08.LYRA*/ wire DBG_D_RDn = nand2(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
+/*p08.TUTY*/ if (!DBG_D_RDn) CPU_BUS_D0 = not1(/*p08.TOVO*/ not1(pins.PIN_D0_C));
+/*p08.SYWA*/ if (!DBG_D_RDn) CPU_BUS_D1 = not1(/*p08.RUZY*/ not1(pins.PIN_D1_C));
+/*p08.SUGU*/ if (!DBG_D_RDn) CPU_BUS_D2 = not1(/*p08.ROME*/ not1(pins.PIN_D2_C));
+/*p08.TAWO*/ if (!DBG_D_RDn) CPU_BUS_D3 = not1(/*p08.SAZA*/ not1(pins.PIN_D3_C));
+/*p08.TUTE*/ if (!DBG_D_RDn) CPU_BUS_D4 = not1(/*p08.TEHE*/ not1(pins.PIN_D4_C));
+/*p08.SAJO*/ if (!DBG_D_RDn) CPU_BUS_D5 = not1(/*p08.RATU*/ not1(pins.PIN_D5_C));
+/*p08.TEMY*/ if (!DBG_D_RDn) CPU_BUS_D6 = not1(/*p08.SOCA*/ not1(pins.PIN_D6_C));
+/*p08.ROPA*/ if (!DBG_D_RDn) CPU_BUS_D7 = not1(/*p08.RYBA*/ not1(pins.PIN_D7_C));
 #endif
 
 // hack, not correct
 #if 0
 {
   // FF60 debug state
-  /*p07.APET*/ wire APET_MODE_DBG = or(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
-  /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
+  /*p07.APET*/ wire APET_MODE_DBG = or2(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
+  /*p07.APER*/ wire FF60_WRn = nand2(APET_MODE_DBG, CPU_BUS_A05, CPU_BUS_A06, bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
 
-  /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
-  /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
+  /*p05.KURA*/ wire FF60_0n = not1(BURO_FF60_0);
+  /*p05.JEVA*/ wire FF60_0o = not1(BURO_FF60_0);
   /*p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D0);
   /*p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D1);
 
-  ///*p05.KURA*/ wire FF60_0n = not(FF60);
-  ///*p05.JEVA*/ wire FF60_0o = not(FF60);
+  ///*p05.KURA*/ wire FF60_0n = not1(FF60);
+  ///*p05.JEVA*/ wire FF60_0o = not1(FF60);
 }
 #endif
 
@@ -202,22 +202,22 @@ if (top.VYPO_GND) bus_out.set_data(
 // If we're in debug mode 2, drive external address bus onto internal address
 // these may be backwards, probably don't want to drive external address onto bus normally...
 
-/*p08.KOVA*/ wire A00_Cn = not(EXT_PIN_A00_C);
-/*p08.CAMU*/ wire A01_Cn = not(EXT_PIN_A01_C);
-/*p08.BUXU*/ wire A02_Cn = not(EXT_PIN_A02_C);
-/*p08.BASE*/ wire A03_Cn = not(EXT_PIN_A03_C);
-/*p08.AFEC*/ wire A04_Cn = not(EXT_PIN_A04_C);
-/*p08.ABUP*/ wire A05_Cn = not(EXT_PIN_A05_C);
-/*p08.CYGU*/ wire A06_Cn = not(EXT_PIN_A06_C);
-/*p08.COGO*/ wire A07_Cn = not(EXT_PIN_A07_C);
-/*p08.MUJY*/ wire A08_Cn = not(EXT_PIN_A08_C);
-/*p08.NENA*/ wire A09_Cn = not(EXT_PIN_A09_C);
-/*p08.SURA*/ wire A10_Cn = not(EXT_PIN_A10_C);
-/*p08.MADY*/ wire A11_Cn = not(EXT_PIN_A11_C);
-/*p08.LAHE*/ wire A12_Cn = not(EXT_PIN_A12_C);
-/*p08.LURA*/ wire A13_Cn = not(EXT_PIN_A13_C);
-/*p08.PEVO*/ wire A14_Cn = not(EXT_PIN_A14_C);
-/*p08.RAZA*/ wire A15_Cn = not(EXT_PIN_A15_C);
+/*p08.KOVA*/ wire A00_Cn = not1(EXT_PIN_A00_C);
+/*p08.CAMU*/ wire A01_Cn = not1(EXT_PIN_A01_C);
+/*p08.BUXU*/ wire A02_Cn = not1(EXT_PIN_A02_C);
+/*p08.BASE*/ wire A03_Cn = not1(EXT_PIN_A03_C);
+/*p08.AFEC*/ wire A04_Cn = not1(EXT_PIN_A04_C);
+/*p08.ABUP*/ wire A05_Cn = not1(EXT_PIN_A05_C);
+/*p08.CYGU*/ wire A06_Cn = not1(EXT_PIN_A06_C);
+/*p08.COGO*/ wire A07_Cn = not1(EXT_PIN_A07_C);
+/*p08.MUJY*/ wire A08_Cn = not1(EXT_PIN_A08_C);
+/*p08.NENA*/ wire A09_Cn = not1(EXT_PIN_A09_C);
+/*p08.SURA*/ wire A10_Cn = not1(EXT_PIN_A10_C);
+/*p08.MADY*/ wire A11_Cn = not1(EXT_PIN_A11_C);
+/*p08.LAHE*/ wire A12_Cn = not1(EXT_PIN_A12_C);
+/*p08.LURA*/ wire A13_Cn = not1(EXT_PIN_A13_C);
+/*p08.PEVO*/ wire A14_Cn = not1(EXT_PIN_A14_C);
+/*p08.RAZA*/ wire A15_Cn = not1(EXT_PIN_A15_C);
 
 /*p08.KEJO*/ top.cpu_bus.CPU_BUS_A00 = tribuf_10n(TOVA_MODE_DBG2n, A00_Cn);
 /*p08.BYXE*/ top.cpu_bus.CPU_BUS_A01 = tribuf_10n(TOVA_MODE_DBG2n, A01_Cn);

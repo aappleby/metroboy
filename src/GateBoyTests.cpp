@@ -7,14 +7,12 @@
 
 void GateBoyTests::test_rom_read() {
   GateBoy gateboy;
-  gateboy.run_reset_sequence(false, false);
-
-  bool use_fast_impl = false;
+  gateboy.run_reset_sequence(false);
 
   gateboy.mem[0] =  0x23;
 
   for (int i = 0; i < 16; i++) {
-    uint8_t rom = gateboy.dbg_read((uint16_t)i, use_fast_impl);
+    uint8_t rom = gateboy.dbg_read((uint16_t)i);
     printf("addr 0x%04x data 0x%02x\n", i, rom);
   }
 }
@@ -85,8 +83,8 @@ return 0;
 
 //-----------------------------------------------------------------------------
 
-void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy, bool use_fast_impl) {
-  printf("GateBoy::fuzz_reset_sequence %s\n", use_fast_impl ? "fast" : "slow");
+void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
+  printf("GateBoy::fuzz_reset_sequence\n");
 
   uint64_t rng = 1;
 
@@ -107,7 +105,7 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy, bool use_fast_impl) {
     gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
 
     int phase_count = (rng >> 8) & 0x0F;
-    gateboy.run(phase_count, req, false, use_fast_impl);
+    gateboy.run(phase_count, req, false);
 
     if ((i & 0xFF) == 0xFF) printf(".");
   }
@@ -115,16 +113,17 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy, bool use_fast_impl) {
 }
 
 //-----------------------------------------------------------------------------
+// FIXME removed fast mode for now
 
 void GateBoyTests::test_reset_sequence() {
   printf("Running reset fuzz test in slow mode\n");
   GateBoy gateboy1;
-  fuzz_reset_sequence(gateboy1, false);
+  fuzz_reset_sequence(gateboy1);
   printf("\n");
 
   printf("Running reset fuzz test in fast mode\n");
   GateBoy gateboy2;
-  fuzz_reset_sequence(gateboy2, true);
+  fuzz_reset_sequence(gateboy2);
   printf("\n");
 
   if (gateboy1.phase_hash != gateboy2.phase_hash) {
@@ -157,8 +156,8 @@ void dump_blob(T& blob) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyTests::run_benchmark(GateBoy& gateboy, bool use_fast_impl) {
-  gateboy.run_reset_sequence(false, use_fast_impl);
+void GateBoyTests::run_benchmark(GateBoy& gateboy) {
+  gateboy.run_reset_sequence(false);
 
   printf("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
 
@@ -192,7 +191,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy, bool use_fast_impl) {
     //dump_blob(top);
 
     auto start = std::chrono::high_resolution_clock::now();
-    gateboy.run(phase_per_iter, req, verbose, use_fast_impl);
+    gateboy.run(phase_per_iter, req, verbose);
     auto finish = std::chrono::high_resolution_clock::now();
 
     //dump_blob(top);
@@ -233,16 +232,17 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy, bool use_fast_impl) {
 }
 
 //-----------------------------------------------------------------------------
+// FIXME removed fast mode for now
 
 void GateBoyTests::run_benchmark() {
   printf("Running benchmark in slow mode\n");
   GateBoy gateboy1;
-  run_benchmark(gateboy1, false);
+  run_benchmark(gateboy1);
   printf("\n");
 
   printf("Running benchmark in fast mode\n");
   GateBoy gateboy2;
-  run_benchmark(gateboy2, true);
+  run_benchmark(gateboy2);
   printf("\n");
 
   if (gateboy1.phase_hash != gateboy2.phase_hash) {

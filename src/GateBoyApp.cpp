@@ -20,8 +20,7 @@ using namespace Schematics;
 GateBoyApp::GateBoyApp() {
   auto top_step = [this](GateBoy* gateboy) { 
     bool verbose = false;
-    bool use_fast_impl = true;
-    gateboy->run(1, get_req(), verbose, use_fast_impl);
+    gateboy->run(1, get_req(), verbose);
   };
   state_manager.init(top_step);
 
@@ -77,8 +76,7 @@ void GateBoyApp::app_init() {
   auto gateboy = state_manager.state();
 
   bool verbose = false;
-  bool use_fast_impl = false;
-  gateboy->run_reset_sequence(verbose, use_fast_impl);
+  gateboy->run_reset_sequence(verbose);
 }
 
 void GateBoyApp::app_close() {

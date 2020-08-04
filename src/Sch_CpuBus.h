@@ -13,15 +13,15 @@ struct CpuBus {
   void tock(const SchematicTop& top);
 
   uint16_t get_bus_addr() const {
-    return (uint16_t)pack(CPU_BUS_A00, CPU_BUS_A01, CPU_BUS_A02, CPU_BUS_A03,
-                          CPU_BUS_A04, CPU_BUS_A05, CPU_BUS_A06, CPU_BUS_A07,
-                          CPU_BUS_A08, CPU_BUS_A09, CPU_BUS_A10, CPU_BUS_A11,
-                          CPU_BUS_A12, CPU_BUS_A13, CPU_BUS_A14, CPU_BUS_A15);
+    return (uint16_t)pack(CPU_BUS_A00.q(), CPU_BUS_A01.q(), CPU_BUS_A02.q(), CPU_BUS_A03.q(),
+                          CPU_BUS_A04.q(), CPU_BUS_A05.q(), CPU_BUS_A06.q(), CPU_BUS_A07.q(),
+                          CPU_BUS_A08.q(), CPU_BUS_A09.q(), CPU_BUS_A10.q(), CPU_BUS_A11.q(),
+                          CPU_BUS_A12.q(), CPU_BUS_A13.q(), CPU_BUS_A14.q(), CPU_BUS_A15.q());
   }
 
   uint8_t get_bus_data() const {
-    return (uint8_t)pack(CPU_BUS_D0, CPU_BUS_D1, CPU_BUS_D2, CPU_BUS_D3,
-                         CPU_BUS_D4, CPU_BUS_D5, CPU_BUS_D6, CPU_BUS_D7);
+    return (uint8_t)pack(CPU_BUS_D0.q(), CPU_BUS_D1.q(), CPU_BUS_D2.q(), CPU_BUS_D3.q(),
+                         CPU_BUS_D4.q(), CPU_BUS_D5.q(), CPU_BUS_D6.q(), CPU_BUS_D7.q());
   }
 
   void preset_addr(uint16_t addr) {
@@ -100,12 +100,12 @@ struct CpuBus {
 
   void dump(Dumper& d) const {
     d("---------- CPU Bus  ----------\n");
-    d("CPU BOOT : %d\n", (wire)CPU_PIN_BOOTp);
-    d("CPU AHI  : %d\n", (wire)CPU_PIN_ADDR_HI);
-    d("CPU RDp  : %d\n", (wire)CPU_PIN_RDp);
-    d("CPU WRp  : %d\n", (wire)CPU_PIN_WRp);
-    d("CPU AVp  : %d\n", (wire)CPU_PIN_ADDR_EXT);
-    d("CPU DVp  : %d\n", (wire)CPU_PIN_HOLD_MEM);
+    d("CPU BOOT : %d\n", CPU_PIN_BOOTp.q());
+    d("CPU AHI  : %d\n", CPU_PIN_ADDR_HI.q());
+    d("CPU RDp  : %d\n", CPU_PIN_RDp.q());
+    d("CPU WRp  : %d\n", CPU_PIN_WRp.q());
+    d("CPU AVp  : %d\n", CPU_PIN_ADDR_EXT.q());
+    d("CPU DVp  : %d\n", CPU_PIN_HOLD_MEM.q());
 
     d("CPU ADDR : %04x\n", get_bus_addr());
 
@@ -134,48 +134,48 @@ struct CpuBus {
   /*p07.ROPE*/ wire ROPE_FE00_FEFFn() const { return nand2(RYCU_0000_FDFFn(), SOHA_FF00_FFFFn()); }
   /*p07.SARO*/ wire SARO_FE00_FEFFp() const { return not1(ROPE_FE00_FEFFn()); }
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not1(SARO_FE00_FEFFp()); }
-  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not1(CPU_BUS_A15); }
-  /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or3(CPU_BUS_A13, CPU_BUS_A14, SORE_0000_7FFFp()); }
+  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not1(CPU_BUS_A15.q()); }
+  /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or3(CPU_BUS_A13.q(), CPU_BUS_A14.q(), SORE_0000_7FFFp()); }
 
-  /*p22.XOLA*/ wire XOLA_A00n() const { return not1(CPU_BUS_A00); }
-  /*p22.XENO*/ wire XENO_A01n() const { return not1(CPU_BUS_A01); }
-  /*p22.XUSY*/ wire XUSY_A02n() const { return not1(CPU_BUS_A02); }
-  /*p22.XERA*/ wire XERA_A03n() const { return not1(CPU_BUS_A03); }
-  /*p07.TONA*/ wire TONA_A08n() const { return not1(CPU_BUS_A08); }
+  /*p22.XOLA*/ wire XOLA_A00n() const { return not1(CPU_BUS_A00.q()); }
+  /*p22.XENO*/ wire XENO_A01n() const { return not1(CPU_BUS_A01.q()); }
+  /*p22.XUSY*/ wire XUSY_A02n() const { return not1(CPU_BUS_A02.q()); }
+  /*p22.XERA*/ wire XERA_A03n() const { return not1(CPU_BUS_A03.q()); }
+  /*p07.TONA*/ wire TONA_A08n() const { return not1(CPU_BUS_A08.q()); }
 
   /*p22.WADO*/ wire WADO_A00p() const { return not1(XOLA_A00n()); }
   /*p22.WESA*/ wire WESA_A01p() const { return not1(XENO_A01n()); }
   /*p22.WALO*/ wire WALO_A02p() const { return not1(XUSY_A02n()); }
   /*p22.WEPO*/ wire WEPO_A03p() const { return not1(XERA_A03n()); }
 
-  /*p03.TOVY*/ wire TOVY_A00n() const { return not1(CPU_BUS_A00); }
-  /*p08.TOLA*/ wire TOLA_A01n() const { return not1(CPU_BUS_A01); }
-  /*p06.SEFY*/ wire SEFY_A02n() const { return not1(CPU_BUS_A02); }
+  /*p03.TOVY*/ wire TOVY_A00n() const { return not1(CPU_BUS_A00.q()); }
+  /*p08.TOLA*/ wire TOLA_A01n() const { return not1(CPU_BUS_A01.q()); }
+  /*p06.SEFY*/ wire SEFY_A02n() const { return not1(CPU_BUS_A02.q()); }
 
   /*p07.TUNA*/ wire TUNA_0000_FDFFp() const {
-    return nand7(CPU_BUS_A15, CPU_BUS_A14, CPU_BUS_A13,
-                CPU_BUS_A12, CPU_BUS_A11, CPU_BUS_A10,
-                CPU_BUS_A09);
+    return nand7(CPU_BUS_A15.q(), CPU_BUS_A14.q(), CPU_BUS_A13.q(),
+                 CPU_BUS_A12.q(), CPU_BUS_A11.q(), CPU_BUS_A10.q(),
+                 CPU_BUS_A09.q());
   }
 
   /*p22.WERO*/ wire WERO_FF4Xp() const {
-    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor3(CPU_BUS_A07, CPU_BUS_A05, CPU_BUS_A04);
+    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor3(CPU_BUS_A07.q(), CPU_BUS_A05.q(), CPU_BUS_A04.q());
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor2(TUNA_0000_FDFFp(), TONA_A08n());
-    /*p22.WUTU*/ wire WUTU_FF4Xn = nand3(SYKE_FF00_FFFFp, CPU_BUS_A06, XALY_0x00xxxxp);
+    /*p22.WUTU*/ wire WUTU_FF4Xn = nand3(SYKE_FF00_FFFFp, CPU_BUS_A06.q(), XALY_0x00xxxxp);
     return not1(WUTU_FF4Xn);
   }
 
-  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor5(CPU_BUS_A07, CPU_BUS_A06, CPU_BUS_A05, CPU_BUS_A04, CPU_BUS_A03); }
+  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor5(CPU_BUS_A07.q(), CPU_BUS_A06.q(), CPU_BUS_A05.q(), CPU_BUS_A04.q(), CPU_BUS_A03.q()); }
 
 
   /*p07.TULO*/ wire TULO_ADDR_00XXp() const {
-    return nor8(CPU_BUS_A15, CPU_BUS_A14, CPU_BUS_A13, CPU_BUS_A12,
-                CPU_BUS_A11, CPU_BUS_A10, CPU_BUS_A09, CPU_BUS_A08);
+    return nor8(CPU_BUS_A15.q(), CPU_BUS_A14.q(), CPU_BUS_A13.q(), CPU_BUS_A12.q(),
+                CPU_BUS_A11.q(), CPU_BUS_A10.q(), CPU_BUS_A09.q(), CPU_BUS_A08.q());
   }
 
   /*p07.ZUFA*/ wire ZUFA_ADDR_00XX() const {
-    /*p07.ZORO*/ wire _ZORO_ADDR_0XXX = nor4(CPU_BUS_A15, CPU_BUS_A14, CPU_BUS_A13, CPU_BUS_A12);
-    /*p07.ZADU*/ wire _ZADU_ADDR_X0XX = nor4(CPU_BUS_A11, CPU_BUS_A10, CPU_BUS_A09, CPU_BUS_A08);
+    /*p07.ZORO*/ wire _ZORO_ADDR_0XXX = nor4(CPU_BUS_A15.q(), CPU_BUS_A14.q(), CPU_BUS_A13.q(), CPU_BUS_A12.q());
+    /*p07.ZADU*/ wire _ZADU_ADDR_X0XX = nor4(CPU_BUS_A11.q(), CPU_BUS_A10.q(), CPU_BUS_A09.q(), CPU_BUS_A08.q());
     return and2(_ZORO_ADDR_0XXX, _ZADU_ADDR_X0XX);
   }
 

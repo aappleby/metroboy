@@ -28,7 +28,6 @@ struct SchematicTop {
   SchematicTop();
 
   void tick_slow(int phase);
-  void tick_fast(int phase);
 
   // top.BETE, top.AJUJ
   /*p28.AJON*/ wire AJON_OAM_BUSY() const {
@@ -53,7 +52,7 @@ struct SchematicTop {
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
-    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT.q()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not1(AWOD_AVp);
     return ABUZ_AVn;
@@ -75,7 +74,7 @@ struct SchematicTop {
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C, cpu_bus.CPU_PIN_RDp, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C.q(), cpu_bus.CPU_PIN_RDp.q(), clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     return TEDO_CPU_RDp;
   }
@@ -88,46 +87,36 @@ struct SchematicTop {
   }
 
   // vram.TUJA, top.UBAL/MEXO
-  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    return APOV_CPU_WRp_xxxxEFGx;
+  /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx() const {
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.q(), clk_reg.AFAS_xxxDxxxx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
+    return APOV_CPU_WRp_xxxDxxxx;
   }
 
   // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
-  /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
+  /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxDxxxx() const {
 #if 0
-    TAPU_CPU_WRp_xxxxEFGx = and2(CPU_PIN_WRp, xxxxEFGx);
+    TAPU_CPU_WRp_xxxDxxxx = and2(CPU_PIN_WRp, xxxxEFGx);
 #endif
 
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WR_C, APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
-    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
-    return TAPU_CPU_WRp_xxxxEFGx;
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.q(), clk_reg.AFAS_xxxDxxxx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(ext_bus.EXT_PIN_WR_C.q(), APOV_CPU_WRp_xxxDxxxx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxDxxxx = not1(UBAL_CPU_WRn_ABCxEFGH);
+    return TAPU_CPU_WRp_xxxDxxxx;
   }
 
   // dma.lavy, lcd.xufa, oam.wyja, pxp.vely/xoma/myxe, ppu.waru/sepa, tile.bedy/arur, top.xuto, win.weko/wuza (most all the FF4X regs)
-  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const {
-#if 0
-    wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
-    wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WR_C, APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
-    wire CUPA_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH));
-#endif
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp, clk_reg.AFAS_xxxxEFGx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WR_C, APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
-    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
-    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(TAPU_CPU_WRp_xxxxEFGx);
-    /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
-    return CUPA_CPU_WRp_xxxxEFGx;
+  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxDxxxx() const {
+    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCxEFGH = not1(TAPU_CPU_WRp_xxxDxxxx());
+    /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxDxxxx = not1(DYKY_CPU_WRn_ABCxEFGH);
+    return CUPA_CPU_WRp_xxxDxxxx;
   }
 
   // ext.NEVY
-  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH() const {
-    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH = not1(APOV_CPU_WRp_xxxxEFGx());
-    return MEXO_CPU_WRn_ABCDxxxH;
+  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCxEFGH() const {
+    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCxEFGH = not1(APOV_CPU_WRp_xxxDxxxx());
+    return MEXO_CPU_WRn_ABCxEFGH;
   }
 
   //-----------------------------------------------------------------------------
@@ -153,7 +142,7 @@ struct SchematicTop {
   if (RST) {
     // This can't be run mode, TAPE doesn't affect UKUP
     ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or2(T1, T2), APUK_xxCDEFxx.q());
-    UKUP_DIV_00 = ff9(BOGA_xBCDEFGH, 0, UKUP_DIV_00.qn());
+    UKUP_DIV_00 = ff9(BOGA_ABCDExxx, 0, UKUP_DIV_00.qn());
   }
   else {
     if (CLKIN_A) {
@@ -161,12 +150,12 @@ struct SchematicTop {
       // RST = 0
       // CLKIN_A = 1
       ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-      UKUP_DIV_00 = ff9(BOGA_xBCDEFGH, !TAPE, UKUP_DIV_00.qn());  
+      UKUP_DIV_00 = ff9(BOGA_ABCDExxx, !TAPE, UKUP_DIV_00.qn());  
     }
     else {
       // This also can't be run mode
       ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
-      UKUP_DIV_00 = ff9(BOGA_xBCDEFGH, 0, UKUP_DIV_00.qn());  
+      UKUP_DIV_00 = ff9(BOGA_ABCDExxx, 0, UKUP_DIV_00.qn());  
     }
   }
 #endif

@@ -66,14 +66,14 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF50
   {
-    /*p07.TYRO*/ wire _TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.CPU_BUS_A07, top.cpu_bus.CPU_BUS_A05, top.cpu_bus.CPU_BUS_A03, top.cpu_bus.CPU_BUS_A02, top.cpu_bus.CPU_BUS_A01, top.cpu_bus.CPU_BUS_A00);
-    /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.CPU_BUS_A04, top.cpu_bus.CPU_BUS_A06);
+    /*p07.TYRO*/ wire _TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.CPU_BUS_A07.q(), top.cpu_bus.CPU_BUS_A05.q(), top.cpu_bus.CPU_BUS_A03.q(), top.cpu_bus.CPU_BUS_A02.q(), top.cpu_bus.CPU_BUS_A01.q(), top.cpu_bus.CPU_BUS_A00.q());
+    /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.CPU_BUS_A04.q(), top.cpu_bus.CPU_BUS_A06.q());
 
     /*p07.TEXE*/ wire _TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
     /*p07.SYPU*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_TEXE_FF50_RDp, _BOOT_BITn.q()); // does the rung of the tribuf control polarity?
 
-    /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(top.cpu_bus.CPU_BUS_D0, _BOOT_BITn.q());
+    /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxDxxxx(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(top.cpu_bus.CPU_BUS_D0.q(), _BOOT_BITn.q());
 
     if(!_BOOT_BITn.clk() && _TUGE_FF50_WRn && top.clk_reg.ALUR_SYS_RSTn()) {
       printf("Setting boot bit to %d\n", _SATO_BOOT_BIT_IN);

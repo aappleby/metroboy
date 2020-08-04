@@ -23,7 +23,7 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("_DOBA_SCAN_DONE_B %c\n", _DOBA_SCAN_DONE_B.c());
 
   /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(_YFEL_SCAN0.q(), _WEWY_SCAN1.q(), _GOSO_SCAN2.q(), _FONY_SCAN5.q()); // die AND. 32 + 4 + 2 + 1 = 39
-  /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx());
+  /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH());
   /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
   d("_GAVA_SCAN_CLK %d\n", _GAVA_SCAN_CLK);
   d("ANOM_LINE_RSTn %d\n", ANOM_LINE_RSTn);
@@ -131,7 +131,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
-    /*p29.BYBA*/ _BYBA_SCAN_DONE_A = dff17(top.clk_reg.XUPY_ABxxEFxx(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*p29.BYBA*/ _BYBA_SCAN_DONE_A = dff17(top.clk_reg.XUPY_xxCDxxGH(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
     /*p29.DOBA*/ _DOBA_SCAN_DONE_B = dff17(top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, _BYBA_SCAN_DONE_A.q());
 
     /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B(), !BYBA_SCAN_DONE_A());
@@ -139,7 +139,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
     /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
     /*p28.BESU*/ _BESU_SCANNINGp = nor_latch(top.lcd_reg.CATU_VID_LINE_ENDp(), _ASEN_SCAN_DONE_PE);
-    /*p29.CENO*/ _CENO_SCANNINGp = dff17(top.clk_reg.XUPY_ABxxEFxx(), top.clk_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp);
+    /*p29.CENO*/ _CENO_SCANNINGp = dff17(top.clk_reg.XUPY_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), _BESU_SCANNINGp.q());
   }
 
   //----------------------------------------
@@ -147,7 +147,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx());
+    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH());
     /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
 
     /*p28.YFEL*/ _YFEL_SCAN0 = dff17(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, _YFEL_SCAN0.qn());

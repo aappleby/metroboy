@@ -24,7 +24,7 @@ struct SpriteScanner {
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not1(_CARE_STORE_ENp_ABxxEFxx); }
 
   // -> top.ACYL
-  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp; }
+  /*p28.BESU*/ wire BESU_SCANNINGp() const { return _BESU_SCANNINGp.q(); }
 
   // -> ppu.XYMU/POFY, scanner.ASEN, top.NYXU
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {

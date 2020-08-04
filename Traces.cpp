@@ -1,4 +1,10 @@
-    // MAKA_01 sc
+  // ATYP := not(AFUR_09);
+  // AJAX := not(ATYP_02);
+  // AROV := not(APUK_09);
+
+
+
+// MAKA_01 sc
     // MAKA_02 << ZEME
     // MAKA_03 sc
     // MAKA_04 NC

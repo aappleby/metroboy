@@ -4,8 +4,12 @@ main:
   //ld a, $55
   //ld ($FF50), a
 
-  ld hl, $FFFF
-- ld a, (hl)
+  ld a, ($FE00)
+  ld ($8000), a
+- jr -
+
+  ld hl, $7FFF
+- ld (hl), a
   jr -
 
 

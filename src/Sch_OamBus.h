@@ -15,24 +15,24 @@ struct OamBus {
   //----------------------------------------
 
   uint8_t get_oam_bus_addr() const {
-    return (uint8_t)pack(OAM_BUS_A1, OAM_BUS_A2, OAM_BUS_A3, OAM_BUS_A4, OAM_BUS_A5, OAM_BUS_A6, OAM_BUS_A7, 0);
+    return (uint8_t)pack(OAM_BUS_A1.q(), OAM_BUS_A2.q(), OAM_BUS_A3.q(), OAM_BUS_A4.q(), OAM_BUS_A5.q(), OAM_BUS_A6.q(), OAM_BUS_A7.q(), 0);
   }
 
   uint16_t get_oam_bus_data() const {
-    return ~(uint16_t)pack(OAM_BUS_DA0, OAM_BUS_DA1, OAM_BUS_DA2, OAM_BUS_DA3,
-                           OAM_BUS_DA4, OAM_BUS_DA5, OAM_BUS_DA6, OAM_BUS_DA7,
-                           OAM_BUS_DB0, OAM_BUS_DB1, OAM_BUS_DB2, OAM_BUS_DB3,
-                           OAM_BUS_DB4, OAM_BUS_DB5, OAM_BUS_DB6, OAM_BUS_DB7);
+    return (uint16_t)pack(OAM_BUS_DA0.qn(), OAM_BUS_DA1.qn(), OAM_BUS_DA2.qn(), OAM_BUS_DA3.qn(),
+                          OAM_BUS_DA4.qn(), OAM_BUS_DA5.qn(), OAM_BUS_DA6.qn(), OAM_BUS_DA7.qn(),
+                          OAM_BUS_DB0.qn(), OAM_BUS_DB1.qn(), OAM_BUS_DB2.qn(), OAM_BUS_DB3.qn(),
+                          OAM_BUS_DB4.qn(), OAM_BUS_DB5.qn(), OAM_BUS_DB6.qn(), OAM_BUS_DB7.qn());
   }
 
   uint8_t get_oam_bus_data_a() const {
-    return ~(uint8_t)pack(OAM_BUS_DA0, OAM_BUS_DA1, OAM_BUS_DA2, OAM_BUS_DA3,
-                          OAM_BUS_DA4, OAM_BUS_DA5, OAM_BUS_DA6, OAM_BUS_DA7);
+    return (uint8_t)pack(OAM_BUS_DA0.qn(), OAM_BUS_DA1.qn(), OAM_BUS_DA2.qn(), OAM_BUS_DA3.qn(),
+                         OAM_BUS_DA4.qn(), OAM_BUS_DA5.qn(), OAM_BUS_DA6.qn(), OAM_BUS_DA7.qn());
   }
 
   uint8_t get_oam_bus_data_b() const {
-    return ~(uint8_t)pack(OAM_BUS_DB0, OAM_BUS_DB1, OAM_BUS_DB2, OAM_BUS_DB3,
-                          OAM_BUS_DB4, OAM_BUS_DB5, OAM_BUS_DB6, OAM_BUS_DB7);
+    return (uint8_t)pack(OAM_BUS_DB0.qn(), OAM_BUS_DB1.qn(), OAM_BUS_DB2.qn(), OAM_BUS_DB3.qn(),
+                         OAM_BUS_DB4.qn(), OAM_BUS_DB5.qn(), OAM_BUS_DB6.qn(), OAM_BUS_DB7.qn());
   }
 
   uint8_t get_temp_a() const {
@@ -94,12 +94,12 @@ struct OamBus {
   //----------------------------------------
 
   // -> sprite store
-  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not1(OAM_TRI_A2); }
-  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not1(OAM_TRI_A3); }
-  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not1(OAM_TRI_A4); }
-  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not1(OAM_TRI_A5); }
-  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not1(OAM_TRI_A6); }
-  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7); }
+  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not1(OAM_TRI_A2.q()); }
+  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not1(OAM_TRI_A3.q()); }
+  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not1(OAM_TRI_A4.q()); }
+  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not1(OAM_TRI_A5.q()); }
+  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not1(OAM_TRI_A6.q()); }
+  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7.q()); }
 
   // oam byte 0, byte 2
   /*p29.XUSO*/ Reg XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0

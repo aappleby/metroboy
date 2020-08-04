@@ -191,14 +191,16 @@ inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
 
 // Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
 
+// This is probably Qn/Q order like the others.
+
 // |o------O | CLKp
 ///|====O====| D
 // |  -----  |
 // |O-------o| CLKn
 // |  -----  |
 // |==     ==|
-// |xxx-O-xxx| Q
-// |xxx-O-xxx| Qn or this rung can be empty
+// |xxx-O-xxx| Qn
+// |xxx-O-xxx| Q  or this rung can be empty
 
 // REG8_01 << CLKp
 // REG8_02 << D
@@ -206,10 +208,24 @@ inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
 // REG8_04 << CLKn
 // REG8_05 nc
 // REG8_06 nc
-// REG8_07 >> Q
-// REG8_08 >> Qn
+// REG8_07 >> Qn
+// REG8_08 >> Q
 
-inline RegDelta dff8(wire CLKp, wire CLKn, bool D) {
+inline RegDelta dff8_A(wire CLKp, wire CLKn, bool D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKp;
+
+  return RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
+}
+
+inline RegDelta dff8_B(wire CLKp, wire CLKn, bool D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKp;
+
+  return RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
+}
+
+inline RegDelta dff8_AB(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
 
@@ -232,8 +248,8 @@ inline RegDelta dff8(wire CLKp, wire CLKn, bool D) {
 // |  -----  | 
 // |--xxOxx--| RSTn
 // |o-------o| 
-// |xxx-O-xxx| Q
-// |xxx-O-xxx| Qn?
+// |xxx-O-xxx| Qn (pretty sure, though AROR is weird)
+// |xxx-O-xxx| Q  (pretty sure)
 
 // REG9_01 NC
 // REG9_02 << CLKp
@@ -242,19 +258,19 @@ inline RegDelta dff8(wire CLKp, wire CLKn, bool D) {
 // REG9_05 NC
 // REG9_06 << RSTp - THIS MUST BE POSITIVE RESET - UPOJ_MODE_PROD is active-low
 // REG9_07 NC
-// REG9_08 >> Q
-// REG9_09 >> QN
+// REG9_08 >> Qn
+// REG9_09 >> Q
 
 ///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DB0);
 
 // XEPE_01 nc
-// XEPE_02 << FUXU_02  (clk)
-// XEPE_03 << ZAGO_02  (d)
-// XEPE_04 << COMP_CLK (clkn)
+// XEPE_02 << FUXU_02  (CLKp)
+// XEPE_03 << ZAGO_02  (D)
+// XEPE_04 << COMP_CLK (CLKn)
 // XEPE_05 nc
-// XEPE_06 << DYNA02   (rst)
+// XEPE_06 << DYNA02   (RST)
 // XEPE_07 nc
-// XEPE_08 >> ZOGY_02  (q)
+// XEPE_08 >> ZOGY_02  (Qn)
 // XEPE_09 >> nc
 
 inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
@@ -292,7 +308,7 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // RAWU_08 << LUVE_03 (CLKn?)
 // RAWU_09 << VYPO_02 (RSTp?)
 // RAWU_10 nc
-// RAWU_11 >> TUXE_02
+// RAWU_11 >> TUXE_02 (Qn probably)
 
 // LUVE = not1(LESO)
 // 
@@ -307,7 +323,7 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 /*p32.POWY*/
 /*p32.PYJU*/
 
-inline RegDelta dff11(wire CLKp, wire CLKn, wire RSTp, wire D) {
+inline RegDelta dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -642,18 +658,18 @@ inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
 
 // second output used, _must_ be inverting.
 
-inline RegDelta  tp_latch_B(wire HOLDn, wire D) {
+inline RegDelta tp_latch_B(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;
   }
   else {
-    return D ? DELTA_TRI0 : DELTA_TRI1;
+    return D ? DELTA_TRI1 : DELTA_TRI0;
   }
 }
 
 // both outputs used
 
-inline RegDelta  tp_latch_AB(wire HOLDn, wire D) {
+inline RegDelta tp_latch_AB(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;
   }

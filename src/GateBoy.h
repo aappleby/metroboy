@@ -6,12 +6,12 @@ public:
 
   GateBoy();
 
-  void run   (int phase_count, Req req, bool verbose, bool use_fast_impl);
-  void phase (Req req, bool verbose, bool use_fast_impl);
-  void run_reset_sequence(bool verbose, bool use_fast_impl);
+  void run   (int phase_count, Req req, bool verbose);
+  void phase (Req req, bool verbose);
+  void run_reset_sequence(bool verbose);
 
-  uint8_t dbg_read(uint16_t addr, bool use_fast_impl);
-  void    dbg_write(uint16_t addr, uint8_t data, bool use_fast_impl);
+  uint8_t dbg_read(uint16_t addr);
+  void    dbg_write(uint16_t addr, uint8_t data);
 
   void update_cpu_bus(int phase, Req req);
   void update_ext_bus(int phase);
@@ -19,8 +19,8 @@ public:
   void update_oam_bus(int phase);
   void update_zram_bus(int phase);
 
-  void test_reg(const char* regname, uint16_t addr, uint8_t data_in, bool use_fast_impl);
-  void test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write, bool use_fast_impl);
+  void test_reg(const char* regname, uint16_t addr, uint8_t data_in);
+  void test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
 
   bool sys_rst = 1;
   bool sys_t1 = 0;

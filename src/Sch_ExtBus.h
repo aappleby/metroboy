@@ -13,15 +13,15 @@ struct ExtBus {
   void tock(SchematicTop& top);
 
   uint16_t get_pin_addr() {
-    return (uint16_t)pack(EXT_PIN_A00_A, EXT_PIN_A01_A, EXT_PIN_A02_A, EXT_PIN_A03_A,
-                          EXT_PIN_A04_A, EXT_PIN_A05_A, EXT_PIN_A06_A, EXT_PIN_A07_A,
-                          EXT_PIN_A08_A, EXT_PIN_A09_A, EXT_PIN_A10_A, EXT_PIN_A11_A,
-                          EXT_PIN_A12_A, EXT_PIN_A13_A, EXT_PIN_A14_A, EXT_PIN_A15_A);
+    return (uint16_t)pack(EXT_PIN_A00_A.q(), EXT_PIN_A01_A.q(), EXT_PIN_A02_A.q(), EXT_PIN_A03_A.q(),
+                          EXT_PIN_A04_A.q(), EXT_PIN_A05_A.q(), EXT_PIN_A06_A.q(), EXT_PIN_A07_A.q(),
+                          EXT_PIN_A08_A.q(), EXT_PIN_A09_A.q(), EXT_PIN_A10_A.q(), EXT_PIN_A11_A.q(),
+                          EXT_PIN_A12_A.q(), EXT_PIN_A13_A.q(), EXT_PIN_A14_A.q(), EXT_PIN_A15_A.q());
   }
 
   uint8_t get_pin_data_out() {
-    return (uint8_t)pack(EXT_PIN_D0_A, EXT_PIN_D1_A, EXT_PIN_D2_A, EXT_PIN_D3_A,
-                         EXT_PIN_D4_A, EXT_PIN_D5_A, EXT_PIN_D6_A, EXT_PIN_D7_A);
+    return (uint8_t)pack(EXT_PIN_D0_A.q(), EXT_PIN_D1_A.q(), EXT_PIN_D2_A.q(), EXT_PIN_D3_A.q(),
+                         EXT_PIN_D4_A.q(), EXT_PIN_D5_A.q(), EXT_PIN_D6_A.q(), EXT_PIN_D7_A.q());
   }
 
   void preset_pin_data_in(uint8_t data) {

@@ -217,6 +217,7 @@ struct Reg : private RegBase {
   Reg(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
 
   using RegBase::c;
+  using RegBase::cn;
   using RegBase::posedge;
   using RegBase::negedge;
   using RegBase::dump_edge;
@@ -249,6 +250,9 @@ struct Sig : private RegBase {
   using RegBase::c;
   //using RegBase::as_wire;
 
+  inline wire q()  const { return  as_wire(); }
+  inline wire qn() const { return !as_wire(); }
+
   static bool sim_running;
 
   inline operator wire() const { return as_wire(); }
@@ -275,6 +279,7 @@ struct Tri : private RegBase {
   Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
+  using RegBase::cn;
   using RegBase::posedge;
   using RegBase::negedge;
   using RegBase::dump_edge;
@@ -284,9 +289,8 @@ struct Tri : private RegBase {
   inline wire q()  const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
 
-  inline operator wire()  const { return as_wire(); }
+  //inline operator wire()  const { return as_wire(); }
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
-
 
 
   inline void preset(RegDelta new_delta) {

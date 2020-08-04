@@ -77,10 +77,10 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp; }
-  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp); }
-  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp); }
-  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp); }   // sfetch.tuvo/tyso
+  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.q(); }
+  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.q()); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.q()); }
+  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp.q()); }   // sfetch.tuvo/tyso
 
   // FF40 - LCDC
   /*p23.VYXE*/ Reg VYXE_LCDC_BGEN   = REG_D0C0;
@@ -101,15 +101,15 @@ struct PixelPipe {
 //private:
 
   wire NOCU_WIN_MODEn()  const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(_PYNU_WIN_MODE_A);
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(_PYNU_WIN_MODE_A.q());
     return NOCU_WIN_MODEn;
   }
   
   wire NUNY_WX_MATCHpe() const {
-    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and2(_PYNU_WIN_MODE_A, _NOPA_WIN_MODE_B.qn());
+    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and2(_PYNU_WIN_MODE_A.q(), _NOPA_WIN_MODE_B.qn());
     return NUNY_WX_MATCHpe;
   }
-  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A); }
+  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A.q()); }
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 

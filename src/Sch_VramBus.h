@@ -14,27 +14,27 @@ struct VramBus {
   //----------------------------------------
 
   int get_bus_addr() const {
-    return pack(_VRAM_BUS_A00, _VRAM_BUS_A01, _VRAM_BUS_A02, _VRAM_BUS_A03,
-                _VRAM_BUS_A04, _VRAM_BUS_A05, _VRAM_BUS_A06, _VRAM_BUS_A07,
-                _VRAM_BUS_A08, _VRAM_BUS_A09, _VRAM_BUS_A10, _VRAM_BUS_A11,
-                _VRAM_BUS_A12, 0, 0, 0);
+    return pack(_VRAM_BUS_A00.q(), _VRAM_BUS_A01.q(), _VRAM_BUS_A02.q(), _VRAM_BUS_A03.q(),
+                _VRAM_BUS_A04.q(), _VRAM_BUS_A05.q(), _VRAM_BUS_A06.q(), _VRAM_BUS_A07.q(),
+                _VRAM_BUS_A08.q(), _VRAM_BUS_A09.q(), _VRAM_BUS_A10.q(), _VRAM_BUS_A11.q(),
+                _VRAM_BUS_A12.q(), 0, 0, 0);
   }
 
   int get_bus_data() const {
-    return pack(_VRAM_BUS_D0, _VRAM_BUS_D1, _VRAM_BUS_D2, _VRAM_BUS_D3,
-                _VRAM_BUS_D4, _VRAM_BUS_D5, _VRAM_BUS_D6, _VRAM_BUS_D7);
+    return pack(_VRAM_BUS_D0.q(), _VRAM_BUS_D1.q(), _VRAM_BUS_D2.q(), _VRAM_BUS_D3.q(),
+                _VRAM_BUS_D4.q(), _VRAM_BUS_D5.q(), _VRAM_BUS_D6.q(), _VRAM_BUS_D7.q());
   }
 
   uint16_t get_pin_addr() const {
-    return (uint16_t)pack(!_VRAM_PIN_A00, !_VRAM_PIN_A01, !_VRAM_PIN_A02, !_VRAM_PIN_A03,
-                          !_VRAM_PIN_A04, !_VRAM_PIN_A05, !_VRAM_PIN_A06, !_VRAM_PIN_A07,
-                          !_VRAM_PIN_A08, !_VRAM_PIN_A09, !_VRAM_PIN_A10, !_VRAM_PIN_A11,
-                          !_VRAM_PIN_A12, 0, 0, 0);
+    return (uint16_t)pack(_VRAM_PIN_A00.qn(), _VRAM_PIN_A01.qn(), _VRAM_PIN_A02.qn(), _VRAM_PIN_A03.qn(),
+                          _VRAM_PIN_A04.qn(), _VRAM_PIN_A05.qn(), _VRAM_PIN_A06.qn(), _VRAM_PIN_A07.qn(),
+                          _VRAM_PIN_A08.qn(), _VRAM_PIN_A09.qn(), _VRAM_PIN_A10.qn(), _VRAM_PIN_A11.qn(),
+                          _VRAM_PIN_A12.qn(), 0, 0, 0);
   }
 
   uint8_t get_pin_data_out() const {
-    return (uint8_t)pack(!_VRAM_PIN_D0_A, !_VRAM_PIN_D1_A, !_VRAM_PIN_D2_A, !_VRAM_PIN_D3_A,
-                         !_VRAM_PIN_D4_A, !_VRAM_PIN_D5_A, !_VRAM_PIN_D6_A, !_VRAM_PIN_D7_A);
+    return (uint8_t)pack(_VRAM_PIN_D0_A.qn(), _VRAM_PIN_D1_A.qn(), _VRAM_PIN_D2_A.qn(), _VRAM_PIN_D3_A.qn(),
+                         _VRAM_PIN_D4_A.qn(), _VRAM_PIN_D5_A.qn(), _VRAM_PIN_D6_A.qn(), _VRAM_PIN_D7_A.qn());
   }
 
   void preset_pin_data_in(uint8_t data) {
@@ -66,14 +66,14 @@ struct VramBus {
   //----------------------------------------
 
   // -> oam data tri
-  /*p25.RERY*/ wire VRM_BUS_D0() const { return _VRAM_BUS_D0; }
-  /*p25.RUNA*/ wire VRM_BUS_D1() const { return _VRAM_BUS_D1; }
-  /*p25.RONA*/ wire VRM_BUS_D2() const { return _VRAM_BUS_D2; }
-  /*p25.RUNO*/ wire VRM_BUS_D3() const { return _VRAM_BUS_D3; }
-  /*p25.SANA*/ wire VRM_BUS_D4() const { return _VRAM_BUS_D4; }
-  /*p25.RORO*/ wire VRM_BUS_D5() const { return _VRAM_BUS_D5; }
-  /*p25.RABO*/ wire VRM_BUS_D6() const { return _VRAM_BUS_D6; }
-  /*p25.SAME*/ wire VRM_BUS_D7() const { return _VRAM_BUS_D7; }
+  /*p25.RERY*/ wire VRM_BUS_D0() const { return _VRAM_BUS_D0.q(); }
+  /*p25.RUNA*/ wire VRM_BUS_D1() const { return _VRAM_BUS_D1.q(); }
+  /*p25.RONA*/ wire VRM_BUS_D2() const { return _VRAM_BUS_D2.q(); }
+  /*p25.RUNO*/ wire VRM_BUS_D3() const { return _VRAM_BUS_D3.q(); }
+  /*p25.SANA*/ wire VRM_BUS_D4() const { return _VRAM_BUS_D4.q(); }
+  /*p25.RORO*/ wire VRM_BUS_D5() const { return _VRAM_BUS_D5.q(); }
+  /*p25.RABO*/ wire VRM_BUS_D6() const { return _VRAM_BUS_D6.q(); }
+  /*p25.SAME*/ wire VRM_BUS_D7() const { return _VRAM_BUS_D7.q(); }
 
   /*p32.LEGU*/ Reg LEGU_TILE_DA0 = REG_D0C0;
   /*p32.NUDU*/ Reg NUDU_TILE_DA1 = REG_D0C0;

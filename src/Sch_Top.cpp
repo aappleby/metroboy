@@ -58,54 +58,6 @@ void SchematicTop::tick_slow(int phase) {
 
 //------------------------------------------------------------------------------
 
-void SchematicTop::tick_fast(int phase) {
-
-  bool verbose = false;
-
-  if (verbose) printf("SchematicTop::tick\n");
-
-  clk_reg.tick_fast(*this);
-  lcd_reg.tick(*this);
-  sprite_scanner.tick(*this);
-  sprite_store.tick(*this);
-  pix_pipe.tick(*this);
-  tile_fetcher.tick(*this);
-  tim_reg.tick(*this);
-  bootrom.tick(*this);
-  dma_reg.tick(*this);
-  ser_reg.tick(*this);
-  joypad.tick(*this);
-  sprite_fetcher.tick(*this);
-  int_reg.tick(*this);
-
-
-  clk_reg.tock_clk_fast(phase, *this);
-  clk_reg.tock_rst_fast(phase, *this);
-  clk_reg.tock_dbg_fast(phase, *this);
-  clk_reg.tock_vid_fast(phase, *this);
-
-  tim_reg.tock(*this, cpu_bus);
-  bootrom.tock(*this, cpu_bus);
-  dma_reg.tock(*this, cpu_bus);
-  ser_reg.tock(*this, cpu_bus);
-  joypad.tock(*this, cpu_bus);
-  sprite_scanner.tock(*this);
-  lcd_reg.tock(phase, *this, cpu_bus);
-  sprite_store.tock(*this);
-
-  pix_pipe.tock(*this, cpu_bus);
-  sprite_fetcher.tock(*this);
-  tile_fetcher.tock(*this, cpu_bus);
-  int_reg.tock(*this, cpu_bus);
-
-  cpu_bus.tock(*this);
-  ext_bus.tock(*this);
-  oam_bus.tock(*this);
-  vram_bus.tock(*this);
-}
-
-//------------------------------------------------------------------------------
-
 #if 0
 // Debug stuff I disabled
 
@@ -148,7 +100,7 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor4(MODE_DBG2, ff20.CPU_PIN_BOGA_xBCDEFGH);
+/*p25.TUSO*/ wire TUSO = nor4(MODE_DBG2, ff20.CPU_PIN_BOGA_ABCDExxx);
 /*p25.SOLE*/ wire SOLE = not1(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(

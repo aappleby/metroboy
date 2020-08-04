@@ -21,13 +21,13 @@ struct TileFetcher {
 
   // -> sprite fetcher, top.TEVO
   /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp() const {
-    /*p27.ROMO*/ wire _ROMO_PORCH_DONEn = not1(_POKY_PORCH_DONEp);
+    /*p27.ROMO*/ wire _ROMO_PORCH_DONEn = not1(_POKY_PORCH_DONEp.q());
     /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand4(_XYMU_RENDERINGp, _ROMO_PORCH_DONEn, _NYKA_FETCH_DONE_Ap.q(), _PORY_FETCH_DONE_Bp.q());
     return  not1(_SUVU_PORCH_ENDn);
   }
 
   // -> top.TYFA
-  /*p24.POKY*/ wire POKY_PORCH_DONEp()        const { return _POKY_PORCH_DONEp; }
+  /*p24.POKY*/ wire POKY_PORCH_DONEp()        const { return _POKY_PORCH_DONEp.q(); }
 
   // -> pix pipe
   /*p24.PORY*/ wire PORY_TILE_FETCH_DONE_Bp() const { return _PORY_FETCH_DONE_Bp.q(); }
@@ -36,11 +36,11 @@ struct TileFetcher {
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp() const { return not1(MOCE_BFETCH_DONEn()); }
 
   // -> vram bus
-  /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn() const { return not1(_LONY_BG_READ_VRAM_LATCHp); }
+  /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn() const { return not1(_LONY_BG_READ_VRAM_LATCHp.q()); }
 
   // -> vram bus
   wire LENA_BGW_VRM_RDp() const {
-    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(_LONY_BG_READ_VRAM_LATCHp);
+    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(_LONY_BG_READ_VRAM_LATCHp.q());
     /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not1(LUSU_BGW_VRAM_RDn);
     return LENA_BGW_VRM_RDp;
   }

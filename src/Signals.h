@@ -242,6 +242,98 @@ struct Reg : private RegBase {
   }
 };
 
+struct RegQPIn { RegDelta d; };
+
+struct RegQP : private RegBase {
+  RegQP(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  using RegBase::dump_edge;
+
+  inline wire q()  const { return  as_wire(); }
+  inline wire clk() const { return wire(state & 0x02); }
+
+  inline wire posedge() const {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    return !(old_v & 1) && (new_v & 1);
+  }
+
+  inline void operator = (RegQPIn in) {
+    CHECK_P(is_reg()); // must be state state
+    CHECK_N(d == DELTA_NONE); // must not be invalid sig
+    CHECK_N(has_delta());     // state must not already be driven
+    delta = in.d;
+  }
+};
+
+struct RegQNIn { RegDelta d; };
+
+struct RegQN : private RegBase {
+  RegQN(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  using RegBase::dump_edge;
+
+  inline wire qn() const { return !as_wire(); }
+  inline wire clk() const { return wire(state & 0x02); }
+
+  inline wire posedge() const {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    return !(old_v & 1) && (new_v & 1);
+  }
+
+  inline void operator = (RegQNIn in) {
+    CHECK_P(is_reg()); // must be state state
+    CHECK_N(d == DELTA_NONE); // must not be invalid sig
+    CHECK_N(has_delta());     // state must not already be driven
+    delta = in.d;
+  }
+};
+
+struct RegQPNIn { RegDelta d; };
+
+struct RegQPN : private RegBase {
+  RegQPN(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  using RegBase::dump_edge;
+
+  inline wire qp() const { return  as_wire(); }
+  inline wire qn() const { return !as_wire(); }
+  inline wire clk() const { return wire(state & 0x02); }
+
+  inline wire posedge() const {
+    uint8_t old_v = value;
+    uint8_t new_v = logic_lut1[value];
+    CHECK_N(old_v == ERR_XXXX);
+    CHECK_N(new_v == ERR_XXXX);
+    return !(old_v & 1) && (new_v & 1);
+  }
+
+  inline void operator = (RegQPNIn in) {
+    CHECK_P(is_reg()); // must be state state
+    CHECK_N(d == DELTA_NONE); // must not be invalid sig
+    CHECK_N(has_delta());     // state must not already be driven
+    delta = in.d;
+  }
+};
+
+
 //-----------------------------------------------------------------------------
 
 struct Sig : private RegBase {

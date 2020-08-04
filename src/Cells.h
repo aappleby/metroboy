@@ -211,25 +211,25 @@ inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
 // REG8_07 >> Qn
 // REG8_08 >> Q
 
-inline RegDelta dff8_A(wire CLKp, wire CLKn, bool D) {
+inline RegQNIn dff8_A(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
 
-  return RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
+  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
 
-inline RegDelta dff8_B(wire CLKp, wire CLKn, bool D) {
+inline RegQPIn dff8_B(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
 
-  return RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
+  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
 
-inline RegDelta dff8_AB(wire CLKp, wire CLKn, bool D) {
+inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
 
-  return RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0));
+  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
 
 //-----------------------------------------------------------------------------
@@ -323,7 +323,7 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 /*p32.POWY*/
 /*p32.PYJU*/
 
-inline RegDelta dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
+inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -331,10 +331,10 @@ inline RegDelta dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
   return RegDelta(DELTA_D0C0 | (RSTp << 2) | (CLKp << 1) | ((D && !RSTp) << 0));
 #else
   if (RSTp) {
-    return RegDelta(DELTA_A0C0 | (CLKp << 1));
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
 #endif
 }

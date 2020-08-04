@@ -441,7 +441,7 @@ void GateBoy::phase(Req req, bool verbose) {
       int p0 = !(bool)top.pix_pipe._LCD_PIN_LD1.q();
       int p1 = !(bool)top.pix_pipe._LCD_PIN_LD0.q();
 
-      printf("%c", "#*. "[p1 + p0 * 2]);
+      printf("%c", " .*#"[p1 + p0 * 2]);
     }
     if (top.pix_pipe._LCD_PIN_ST.negedge()) printf("\n");
 

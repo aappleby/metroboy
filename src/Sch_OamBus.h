@@ -102,24 +102,24 @@ struct OamBus {
   /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7.q()); }
 
   // oam byte 0, byte 2
-  /*p29.XUSO*/ Reg XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ Reg XEGU_OAM_DA1 = REG_D0C0; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ Reg YJEX_OAM_DA2 = REG_D0C0; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ Reg XYJU_OAM_DA3 = REG_D0C0; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ Reg YBOG_OAM_DA4 = REG_D0C0; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ Reg WYSO_OAM_DA5 = REG_D0C0; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ Reg XOTE_OAM_DA6 = REG_D0C0; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ Reg YZAB_OAM_DA7 = REG_D0C0; // sprite y bit 7, sprite tile index bit 7
+  /*p29.XUSO*/ RegQP XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ RegQP XEGU_OAM_DA1 = REG_D0C0; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ RegQP YJEX_OAM_DA2 = REG_D0C0; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ RegQP XYJU_OAM_DA3 = REG_D0C0; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ RegQP YBOG_OAM_DA4 = REG_D0C0; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ RegQP WYSO_OAM_DA5 = REG_D0C0; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ RegQP XOTE_OAM_DA6 = REG_D0C0; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ RegQP YZAB_OAM_DA7 = REG_D0C0; // sprite y bit 7, sprite tile index bit 7
 
   // oam byte 1, byte 3
-  /*p31.YLOR*/ Reg YLOR_OAM_DB0 = REG_D0C0; // sprite x bit 0, 
-  /*p31.ZYTY*/ Reg ZYTY_OAM_DB1 = REG_D0C0; // sprite x bit 1, 
-  /*p31.ZYVE*/ Reg ZYVE_OAM_DB2 = REG_D0C0; // sprite x bit 2, 
-  /*p31.ZEZY*/ Reg ZEZY_OAM_DB3 = REG_D0C0; // sprite x bit 3, 
-  /*p31.GOMO*/ Reg GOMO_OAM_DB4 = REG_D0C0; // sprite x bit 4, sprite palette
-  /*p31.BAXO*/ Reg BAXO_OAM_DB5 = REG_D0C0; // sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ Reg YZOS_OAM_DB6 = REG_D0C0; // sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ Reg DEPO_OAM_DB7 = REG_D0C0; // sprite x bit 7, sprite priority
+  /*p31.YLOR*/ RegQP YLOR_OAM_DB0 = REG_D0C0; // sprite x bit 0, 
+  /*p31.ZYTY*/ RegQP ZYTY_OAM_DB1 = REG_D0C0; // sprite x bit 1, 
+  /*p31.ZYVE*/ RegQP ZYVE_OAM_DB2 = REG_D0C0; // sprite x bit 2, 
+  /*p31.ZEZY*/ RegQP ZEZY_OAM_DB3 = REG_D0C0; // sprite x bit 3, 
+  /*p31.GOMO*/ RegQP GOMO_OAM_DB4 = REG_D0C0; // sprite x bit 4, sprite palette
+  /*p31.BAXO*/ RegQP BAXO_OAM_DB5 = REG_D0C0; // sprite x bit 5, sprite x flip
+  /*p31.YZOS*/ RegQP YZOS_OAM_DB6 = REG_D0C0; // sprite x bit 6, sprite y flip
+  /*p31.DEPO*/ RegQP DEPO_OAM_DB7 = REG_D0C0; // sprite x bit 7, sprite priority
 
 //private:
 

@@ -458,23 +458,23 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p32.LUXA*/ wire _LUXA_PIPE_B_LOAD = not1(top.NYXU_TILE_FETCHER_RSTn());
 
-    /*p32.TOSA*/ wire BG_PIX_B0n = not1(top.vram_bus.RAWU_TILE_DB0.q());
-    /*p32.RUCO*/ wire BG_PIX_B1n = not1(top.vram_bus.POZO_TILE_DB1.q());
-    /*p32.TYCE*/ wire BG_PIX_B2n = not1(top.vram_bus.PYZO_TILE_DB2.q());
-    /*p32.REVY*/ wire BG_PIX_B3n = not1(top.vram_bus.POXA_TILE_DB3.q());
-    /*p32.RYGA*/ wire BG_PIX_B4n = not1(top.vram_bus.PULO_TILE_DB4.q());
-    /*p32.RYLE*/ wire BG_PIX_B5n = not1(top.vram_bus.POJU_TILE_DB5.q());
-    /*p32.RAPU*/ wire BG_PIX_B6n = not1(top.vram_bus.POWY_TILE_DB6.q());
-    /*p32.SOJA*/ wire BG_PIX_B7n = not1(top.vram_bus.PYJU_TILE_DB7.q());
+    /*p32.TOSA*/ wire BG_PIX_B0n = not1(top.vram_bus.RAWU_TILE_DB0.qn());
+    /*p32.RUCO*/ wire BG_PIX_B1n = not1(top.vram_bus.POZO_TILE_DB1.qn());
+    /*p32.TYCE*/ wire BG_PIX_B2n = not1(top.vram_bus.PYZO_TILE_DB2.qn());
+    /*p32.REVY*/ wire BG_PIX_B3n = not1(top.vram_bus.POXA_TILE_DB3.qn());
+    /*p32.RYGA*/ wire BG_PIX_B4n = not1(top.vram_bus.PULO_TILE_DB4.qn());
+    /*p32.RYLE*/ wire BG_PIX_B5n = not1(top.vram_bus.POJU_TILE_DB5.qn());
+    /*p32.RAPU*/ wire BG_PIX_B6n = not1(top.vram_bus.POWY_TILE_DB6.qn());
+    /*p32.SOJA*/ wire BG_PIX_B7n = not1(top.vram_bus.PYJU_TILE_DB7.qn());
 
-    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.RAWU_TILE_DB0.q());
-    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POZO_TILE_DB1.q());
-    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.PYZO_TILE_DB2.q());
-    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POXA_TILE_DB3.q());
-    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.PULO_TILE_DB4.q());
-    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POJU_TILE_DB5.q());
-    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POWY_TILE_DB6.q());
-    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.PYJU_TILE_DB7.q());
+    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.RAWU_TILE_DB0.qn());
+    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POZO_TILE_DB1.qn());
+    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.PYZO_TILE_DB2.qn());
+    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POXA_TILE_DB3.qn());
+    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.PULO_TILE_DB4.qn());
+    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POJU_TILE_DB5.qn());
+    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.POWY_TILE_DB6.qn());
+    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand2(_LUXA_PIPE_B_LOAD, top.vram_bus.PYJU_TILE_DB7.qn());
 
     /*p32.SEJA*/ wire BG_PIPE_B_RST0 = nand2(_LUXA_PIPE_B_LOAD, BG_PIX_B0n);
     /*p32.SENO*/ wire BG_PIPE_B_RST1 = nand2(_LUXA_PIPE_B_LOAD, BG_PIX_B1n);
@@ -709,8 +709,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p35.VOLO*/ wire _PAL_OBP0B = and3(_PIX_SP0n, _PIX_SP1a, _MASK_OPB0); // does not have vcc arm
     /*p35.VUGO*/ wire _PAL_OBP0A = and3(_PIX_SP0n, _PIX_SP1n, _MASK_OPB0); // does not have vcc arm
 
-    /*p35.WUFU*/ wire _COL_OBP00 = amux4(_XANA_OBP07.q(), _PAL_OBP0D, _XYZE_OBP05.q(), _PAL_OBP0C, _XALO_OBP03.q(), _PAL_OBP0B, _XUKY_OBP01.q(), _PAL_OBP0A);
-    /*p35.WALY*/ wire _COL_OBP01 = amux4(_XUPO_OBP06.q(), _PAL_OBP0D, _XERU_OBP04.q(), _PAL_OBP0C, _XOVA_OBP02.q(), _PAL_OBP0B, _XUFU_OBP00.q(), _PAL_OBP0A);
+    /*p35.WUFU*/ wire _COL_OBP00 = amux4(_XANA_OBP07.qn(), _PAL_OBP0D, _XYZE_OBP05.qn(), _PAL_OBP0C, _XALO_OBP03.qn(), _PAL_OBP0B, _XUKY_OBP01.qn(), _PAL_OBP0A);
+    /*p35.WALY*/ wire _COL_OBP01 = amux4(_XUPO_OBP06.qn(), _PAL_OBP0D, _XERU_OBP04.qn(), _PAL_OBP0C, _XOVA_OBP02.qn(), _PAL_OBP0B, _XUFU_OBP00.qn(), _PAL_OBP0A);
 
     //----------
     // Sprite palette 1 lookup
@@ -726,8 +726,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p35.LARU*/ wire _PAL_OBP1B = and3(_PIX_SP1o, _PIX_SP0b, _MASK_OBP1); // does not have vcc arm
     /*p35.LOPU*/ wire _PAL_OBP1A = and3(_PIX_SP1o, _PIX_SP0o, _MASK_OBP1); // does not have vcc arm
 
-    /*p35.MOKA*/ wire _COL_OBP10 = amux4(_LUXO_OBP17.q(), _PAL_OBP1D, _LUGU_OBP15.q(), _PAL_OBP1C, _LOSE_OBP13.q(), _PAL_OBP1B, _LAWO_OBP11.q(), _PAL_OBP1A);
-    /*p35.MUFA*/ wire _COL_OBP11 = amux4(_LEPU_OBP16.q(), _PAL_OBP1D, _LUNE_OBP14.q(), _PAL_OBP1C, _MOSA_OBP12.q(), _PAL_OBP1B, _MOXY_OBP10.q(), _PAL_OBP1A);
+    /*p35.MOKA*/ wire _COL_OBP10 = amux4(_LUXO_OBP17.qn(), _PAL_OBP1D, _LUGU_OBP15.qn(), _PAL_OBP1C, _LOSE_OBP13.qn(), _PAL_OBP1B, _LAWO_OBP11.qn(), _PAL_OBP1A);
+    /*p35.MUFA*/ wire _COL_OBP11 = amux4(_LEPU_OBP16.qn(), _PAL_OBP1D, _LUNE_OBP14.qn(), _PAL_OBP1C, _MOSA_OBP12.qn(), _PAL_OBP1B, _MOXY_OBP10.qn(), _PAL_OBP1A);
 
     //----------
     // Background/window palette lookup
@@ -743,8 +743,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p35.NUXO*/ wire _PAL_BGPC = and3(_PIX_BG1n, _PIX_BG0a, _MASK_BGP); // does not have vcc arm
     /*p35.NYPO*/ wire _PAL_BGPD = and3(_PIX_BG1a, _PIX_BG0a, _MASK_BGP); // does not have vcc arm
 
-    /*p35.NURA*/ wire _COL_BGP1 = amux4(_MENA_BGP7.q(), _PAL_BGPD, _MORU_BGP5.q(), _PAL_BGPC, _MAXY_BGP3.q(), _PAL_BGPB, _NUSY_BGP1.q(), _PAL_BGPA);
-    /*p35.NELO*/ wire _COL_BGP0 = amux4(_MOGY_BGP6.q(), _PAL_BGPD, _MUKE_BGP4.q(), _PAL_BGPC, _PYLU_BGP2.q(), _PAL_BGPB, _PAVO_BGP0.q(), _PAL_BGPA);
+    /*p35.NURA*/ wire _COL_BGP1 = amux4(_MENA_BGP7.qn(), _PAL_BGPD, _MORU_BGP5.qn(), _PAL_BGPC, _MAXY_BGP3.qn(), _PAL_BGPB, _NUSY_BGP1.qn(), _PAL_BGPA);
+    /*p35.NELO*/ wire _COL_BGP0 = amux4(_MOGY_BGP6.qn(), _PAL_BGPD, _MUKE_BGP4.qn(), _PAL_BGPC, _PYLU_BGP2.qn(), _PAL_BGPB, _PAVO_BGP0.qn(), _PAL_BGPA);
 
     //----------
     // Pixel merge and send
@@ -851,14 +851,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.VUSO*/ wire _VUSO_FF47_RD = and2(top.ASOT_CPU_RDp(), _WERA_FF47);
     /*p36.TEPY*/ wire _TEPY_FF47_RDn = not1(_VUSO_FF47_RD);
 
-    /*p36.RARO*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_TEPY_FF47_RDn, _PAVO_BGP0.q());
-    /*p36.PABA*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_TEPY_FF47_RDn, _NUSY_BGP1.q());
-    /*p36.REDO*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_TEPY_FF47_RDn, _PYLU_BGP2.q());
-    /*p36.LOBE*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_TEPY_FF47_RDn, _MAXY_BGP3.q());
-    /*p36.LACE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_TEPY_FF47_RDn, _MUKE_BGP4.q());
-    /*p36.LYKA*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_TEPY_FF47_RDn, _MORU_BGP5.q());
-    /*p36.LODY*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_TEPY_FF47_RDn, _MOGY_BGP6.q());
-    /*p36.LARY*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_TEPY_FF47_RDn, _MENA_BGP7.q());
+    /*p36.RARO*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_TEPY_FF47_RDn, _PAVO_BGP0.qp());
+    /*p36.PABA*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_TEPY_FF47_RDn, _NUSY_BGP1.qp());
+    /*p36.REDO*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_TEPY_FF47_RDn, _PYLU_BGP2.qp());
+    /*p36.LOBE*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_TEPY_FF47_RDn, _MAXY_BGP3.qp());
+    /*p36.LACE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_TEPY_FF47_RDn, _MUKE_BGP4.qp());
+    /*p36.LYKA*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_TEPY_FF47_RDn, _MORU_BGP5.qp());
+    /*p36.LODY*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_TEPY_FF47_RDn, _MOGY_BGP6.qp());
+    /*p36.LARY*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_TEPY_FF47_RDn, _MENA_BGP7.qp());
   }
 
   //----------------------------------------
@@ -882,14 +882,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.XUFY*/ wire _XUFY_FF48_RD = and2(top.ASOT_CPU_RDp(), _XAYO_FF48);
     /*p36.XOZY*/ wire _XOZY_FF48_RDn = not1(_XUFY_FF48_RD);
 
-    /*p36.XARY*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_XOZY_FF48_RDn, _XUFU_OBP00.q());
-    /*p36.XOKE*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_XOZY_FF48_RDn, _XUKY_OBP01.q());
-    /*p36.XUNO*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_XOZY_FF48_RDn, _XOVA_OBP02.q());
-    /*p36.XUBY*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_XOZY_FF48_RDn, _XALO_OBP03.q());
-    /*p36.XAJU*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_XOZY_FF48_RDn, _XERU_OBP04.q());
-    /*p36.XOBO*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_XOZY_FF48_RDn, _XYZE_OBP05.q());
-    /*p36.XAXA*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_XOZY_FF48_RDn, _XUPO_OBP06.q());
-    /*p36.XAWO*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_XOZY_FF48_RDn, _XANA_OBP07.q());
+    /*p36.XARY*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_XOZY_FF48_RDn, _XUFU_OBP00.qp());
+    /*p36.XOKE*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_XOZY_FF48_RDn, _XUKY_OBP01.qp());
+    /*p36.XUNO*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_XOZY_FF48_RDn, _XOVA_OBP02.qp());
+    /*p36.XUBY*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_XOZY_FF48_RDn, _XALO_OBP03.qp());
+    /*p36.XAJU*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_XOZY_FF48_RDn, _XERU_OBP04.qp());
+    /*p36.XOBO*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_XOZY_FF48_RDn, _XYZE_OBP05.qp());
+    /*p36.XAXA*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_XOZY_FF48_RDn, _XUPO_OBP06.qp());
+    /*p36.XAWO*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_XOZY_FF48_RDn, _XANA_OBP07.qp());
   }
 
   //----------------------------------------
@@ -913,14 +913,14 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.MUMY*/ wire _MUMY_FF49_RD = and2(top.ASOT_CPU_RDp(), _TEGO_FF49);
     /*p36.LOTE*/ wire _LOTE_FF49_RDn = not1(_MUMY_FF49_RD);
 
-    /*p36.LAJU*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_LOTE_FF49_RDn, _MOXY_OBP10.q());
-    /*p36.LEPA*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_LOTE_FF49_RDn, _LAWO_OBP11.q());
-    /*p36.LODE*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_LOTE_FF49_RDn, _MOSA_OBP12.q());
-    /*p36.LYZA*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_LOTE_FF49_RDn, _LOSE_OBP13.q());
-    /*p36.LUKY*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_LOTE_FF49_RDn, _LUNE_OBP14.q());
-    /*p36.LUGA*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_LOTE_FF49_RDn, _LUGU_OBP15.q());
-    /*p36.LEBA*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_LOTE_FF49_RDn, _LEPU_OBP16.q());
-    /*p36.LELU*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_LOTE_FF49_RDn, _LUXO_OBP17.q());
+    /*p36.LAJU*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_LOTE_FF49_RDn, _MOXY_OBP10.qp());
+    /*p36.LEPA*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_LOTE_FF49_RDn, _LAWO_OBP11.qp());
+    /*p36.LODE*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_LOTE_FF49_RDn, _MOSA_OBP12.qp());
+    /*p36.LYZA*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_LOTE_FF49_RDn, _LOSE_OBP13.qp());
+    /*p36.LUKY*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_LOTE_FF49_RDn, _LUNE_OBP14.qp());
+    /*p36.LUGA*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_LOTE_FF49_RDn, _LUGU_OBP15.qp());
+    /*p36.LEBA*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_LOTE_FF49_RDn, _LEPU_OBP16.qp());
+    /*p36.LELU*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_LOTE_FF49_RDn, _LUXO_OBP17.qp());
   }
 
   //----------------------------------------

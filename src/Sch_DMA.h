@@ -37,7 +37,7 @@ struct DmaRegisters {
   void dump(Dumper& d) const {
     d("---------- DMA Reg  ----------\n");
     d("DMA Addr 0x%02x:%02x\n", 
-      pack(MARU_DMA_A15.q(), POKU_DMA_A14.q(), PULA_DMA_A13.q(), NYGY_DMA_A12.q(), NYDO_DMA_A11.q(), PARA_DMA_A10.q(), PYNE_DMA_A09.q(), NAFA_DMA_A08.q()),
+      pack(MARU_DMA_A15.qp(), POKU_DMA_A14.qp(), PULA_DMA_A13.qp(), NYGY_DMA_A12.qp(), NYDO_DMA_A11.qp(), PARA_DMA_A10.qp(), PYNE_DMA_A09.qp(), NAFA_DMA_A08.qp()),
       pack(MUGU_DMA_A07.q(), NUTO_DMA_A06.q(), PYLO_DMA_A05.q(), NYKO_DMA_A04.q(), MUTY_DMA_A03.q(), NEFY_DMA_A02.q(), PYRO_DMA_A01.q(), NAKY_DMA_A00.q()));
     d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHn);
     d("MATU_DMA_RUNNINGp   %d\n", _MATU_DMA_RUNNINGp.q());
@@ -59,20 +59,20 @@ struct DmaRegisters {
   /*p04.NUTO*/ Reg NUTO_DMA_A06 = REG_D0C0;
   /*p04.MUGU*/ Reg MUGU_DMA_A07 = REG_D0C0;
 
-  /*p04.NAFA*/ Reg NAFA_DMA_A08 = REG_D0C0;
-  /*p04.PYNE*/ Reg PYNE_DMA_A09 = REG_D0C0;
-  /*p04.PARA*/ Reg PARA_DMA_A10 = REG_D0C0;
-  /*p04.NYDO*/ Reg NYDO_DMA_A11 = REG_D0C0;
-  /*p04.NYGY*/ Reg NYGY_DMA_A12 = REG_D0C0;
-  /*p04.PULA*/ Reg PULA_DMA_A13 = REG_D0C0;
-  /*p04.POKU*/ Reg POKU_DMA_A14 = REG_D0C0;
-  /*p04.MARU*/ Reg MARU_DMA_A15 = REG_D0C0;
+  /*p04.NAFA*/ RegQPN NAFA_DMA_A08 = REG_D0C0;
+  /*p04.PYNE*/ RegQPN PYNE_DMA_A09 = REG_D0C0;
+  /*p04.PARA*/ RegQPN PARA_DMA_A10 = REG_D0C0;
+  /*p04.NYDO*/ RegQPN NYDO_DMA_A11 = REG_D0C0;
+  /*p04.NYGY*/ RegQPN NYGY_DMA_A12 = REG_D0C0;
+  /*p04.PULA*/ RegQPN PULA_DMA_A13 = REG_D0C0;
+  /*p04.POKU*/ RegQPN POKU_DMA_A14 = REG_D0C0;
+  /*p04.MARU*/ RegQPN MARU_DMA_A15 = REG_D0C0;
 
 //private:
 
   wire MUDA_DMA_SRC_VRAMp() const {
-    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15.q());
-    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13.q(), POKU_DMA_A14.q(), LEBU_DMA_ADDR_A15n);
+    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15.qn());
+    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13.qn(), POKU_DMA_A14.qn(), LEBU_DMA_ADDR_A15n);
     return MUDA_DMA_SRC_VRAMp;
   }
 

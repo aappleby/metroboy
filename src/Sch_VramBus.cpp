@@ -44,14 +44,14 @@ void VramBus::dump(Dumper& d, const SchematicTop& top) const {
   /*p25.XUCY*/ DUMP(XUCY_WIN_TILE_READn);
   /*p25.VUZA*/ DUMP(VUZA_TILE_BANKp);
 
-  int temp1 = pack(LEGU_TILE_DA0.q(), NUDU_TILE_DA1.q(), MUKU_TILE_DA2.q(), LUZO_TILE_DA3.q(),
-                   MEGU_TILE_DA4.q(), MYJY_TILE_DA5.q(), NASA_TILE_DA6.q(), NEFO_TILE_DA7.q());
-  int temp2 = pack(RAWU_TILE_DB0.q(), POZO_TILE_DB1.q(), PYZO_TILE_DB2.q(), POXA_TILE_DB3.q(),
-                   PULO_TILE_DB4.q(), POJU_TILE_DB5.q(), POWY_TILE_DB6.q(), PYJU_TILE_DB7.q());
-  int temp3 = pack(PEFO_SPRITE_DA0.q(), ROKA_SPRITE_DA1.q(), MYTU_SPRITE_DA2.q(), RAMU_SPRITE_DA3.q(),
-                   SELE_SPRITE_DA4.q(), SUTO_SPRITE_DA5.q(), RAMA_SPRITE_DA6.q(), RYDU_SPRITE_DA7.q());
-  int temp4 = pack(REWO_SPRITE_DB0.q(), PEBA_SPRITE_DB1.q(), MOFO_SPRITE_DB2.q(), PUDU_SPRITE_DB3.q(),
-                   SAJA_SPRITE_DB4.q(), SUNY_SPRITE_DB5.q(), SEMO_SPRITE_DB6.q(), SEGA_SPRITE_DB7.q());
+  int temp1 = pack(LEGU_TILE_DA0.qn(), NUDU_TILE_DA1.qn(), MUKU_TILE_DA2.qn(), LUZO_TILE_DA3.qn(),
+                   MEGU_TILE_DA4.qn(), MYJY_TILE_DA5.qn(), NASA_TILE_DA6.qn(), NEFO_TILE_DA7.qn());
+  int temp2 = pack(RAWU_TILE_DB0.qn(), POZO_TILE_DB1.qn(), PYZO_TILE_DB2.qn(), POXA_TILE_DB3.qn(),
+                   PULO_TILE_DB4.qn(), POJU_TILE_DB5.qn(), POWY_TILE_DB6.qn(), PYJU_TILE_DB7.qn());
+  int temp3 = pack(PEFO_SPRITE_DA0.qn(), ROKA_SPRITE_DA1.qn(), MYTU_SPRITE_DA2.qn(), RAMU_SPRITE_DA3.qn(),
+                   SELE_SPRITE_DA4.qn(), SUTO_SPRITE_DA5.qn(), RAMA_SPRITE_DA6.qn(), RYDU_SPRITE_DA7.qn());
+  int temp4 = pack(REWO_SPRITE_DB0.qn(), PEBA_SPRITE_DB1.qn(), MOFO_SPRITE_DB2.qn(), PUDU_SPRITE_DB3.qn(),
+                   SAJA_SPRITE_DB4.qn(), SUNY_SPRITE_DB5.qn(), SEMO_SPRITE_DB6.qn(), SEGA_SPRITE_DB7.qn());
 
   d("TEMP DATA 1      : 0x%02x\n", temp1);
   d("TEMP DATA 2      : 0x%02x\n", temp2);
@@ -223,11 +223,11 @@ void VramBus::tock(SchematicTop& top) {
     /*p04.DAVA*/ _VRAM_BUS_A05 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.PYLO_DMA_A05.q());
     /*p04.ETEG*/ _VRAM_BUS_A06 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NUTO_DMA_A06.q());
     /*p04.EREW*/ _VRAM_BUS_A07 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.MUGU_DMA_A07.q());
-    /*p04.EVAX*/ _VRAM_BUS_A08 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NAFA_DMA_A08.q());
-    /*p04.DUVE*/ _VRAM_BUS_A09 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.PYNE_DMA_A09.q());
-    /*p04.ERAF*/ _VRAM_BUS_A10 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.PARA_DMA_A10.q());
-    /*p04.FUSY*/ _VRAM_BUS_A11 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NYDO_DMA_A11.q());
-    /*p04.EXYF*/ _VRAM_BUS_A12 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NYGY_DMA_A12.q());
+    /*p04.EVAX*/ _VRAM_BUS_A08 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NAFA_DMA_A08.qp());
+    /*p04.DUVE*/ _VRAM_BUS_A09 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.PYNE_DMA_A09.qp());
+    /*p04.ERAF*/ _VRAM_BUS_A10 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.PARA_DMA_A10.qp());
+    /*p04.FUSY*/ _VRAM_BUS_A11 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NYDO_DMA_A11.qp());
+    /*p04.EXYF*/ _VRAM_BUS_A12 = tribuf_6n(AHOC_DMA_VRAM_RDn, top.dma_reg.NYGY_DMA_A12.qp());
   }
 
   // Sprite fetcher read
@@ -378,7 +378,7 @@ void VramBus::tock(SchematicTop& top) {
 
 
       /*p25.XUCY*/ XUCY_WIN_TILE_READn = nand2(NETA_TILE_READp, PORE_WIN_MODEp);
-      /*p25.VUZA*/ VUZA_TILE_BANKp = nor2(top.pix_pipe.WEXU_LCDC_BGTILE.q(), top.vram_bus.PYJU_TILE_DB7.q()); // register reused
+      /*p25.VUZA*/ VUZA_TILE_BANKp = nor2(top.pix_pipe.WEXU_LCDC_BGTILE.q(), top.vram_bus.PYJU_TILE_DB7.qn()); // register reused
       
       /*p26.ASUM*/ _VRAM_BUS_A00 = tribuf_6n(BEJE_BGD_TILE_READn, _XUHA_FETCH_S2p);
       /*p26.EVAD*/ _VRAM_BUS_A01 = tribuf_6n(BEJE_BGD_TILE_READn, _FAFO_TILE_Y0S);
@@ -390,14 +390,14 @@ void VramBus::tock(SchematicTop& top) {
       /*p25.WAWE*/ _VRAM_BUS_A02 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VUJO_WIN_Y1());
       /*p25.WOLU*/ _VRAM_BUS_A03 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VYMU_WIN_Y2());
 
-      /*p25.VAPY*/ _VRAM_BUS_A04 = tribuf_6p(NETA_TILE_READp, RAWU_TILE_DB0.q());
-      /*p25.SEZU*/ _VRAM_BUS_A05 = tribuf_6p(NETA_TILE_READp, POZO_TILE_DB1.q());
-      /*p25.VEJY*/ _VRAM_BUS_A06 = tribuf_6p(NETA_TILE_READp, PYZO_TILE_DB2.q());
-      /*p25.RUSA*/ _VRAM_BUS_A07 = tribuf_6p(NETA_TILE_READp, POXA_TILE_DB3.q());
-      /*p25.ROHA*/ _VRAM_BUS_A08 = tribuf_6p(NETA_TILE_READp, PULO_TILE_DB4.q());
-      /*p25.RESO*/ _VRAM_BUS_A09 = tribuf_6p(NETA_TILE_READp, POJU_TILE_DB5.q());
-      /*p25.SUVO*/ _VRAM_BUS_A10 = tribuf_6p(NETA_TILE_READp, POWY_TILE_DB6.q());
-      /*p25.TOBO*/ _VRAM_BUS_A11 = tribuf_6p(NETA_TILE_READp, PYJU_TILE_DB7.q());
+      /*p25.VAPY*/ _VRAM_BUS_A04 = tribuf_6p(NETA_TILE_READp, RAWU_TILE_DB0.qn());
+      /*p25.SEZU*/ _VRAM_BUS_A05 = tribuf_6p(NETA_TILE_READp, POZO_TILE_DB1.qn());
+      /*p25.VEJY*/ _VRAM_BUS_A06 = tribuf_6p(NETA_TILE_READp, PYZO_TILE_DB2.qn());
+      /*p25.RUSA*/ _VRAM_BUS_A07 = tribuf_6p(NETA_TILE_READp, POXA_TILE_DB3.qn());
+      /*p25.ROHA*/ _VRAM_BUS_A08 = tribuf_6p(NETA_TILE_READp, PULO_TILE_DB4.qn());
+      /*p25.RESO*/ _VRAM_BUS_A09 = tribuf_6p(NETA_TILE_READp, POJU_TILE_DB5.qn());
+      /*p25.SUVO*/ _VRAM_BUS_A10 = tribuf_6p(NETA_TILE_READp, POWY_TILE_DB6.qn());
+      /*p25.TOBO*/ _VRAM_BUS_A11 = tribuf_6p(NETA_TILE_READp, PYJU_TILE_DB7.qn());
       /*p25.VURY*/ _VRAM_BUS_A12 = tribuf_6p(NETA_TILE_READp, VUZA_TILE_BANKp);
     }
   }
@@ -643,7 +643,6 @@ void VramBus::tock(SchematicTop& top) {
     /*p32.METE*/ wire _METE_LATCH_TILE_DAn = not1(top.tile_fetcher.NYDY_LATCH_TILE_DAp());
     /*p32.LOMA*/ wire _LOMA_LATCH_TILE_DAp = not1(_METE_LATCH_TILE_DAn);
 
-    // This one also looks like the input is inverted.... or something else is inverted somewhere.
     /*p32.LEGU*/ top.vram_bus.LEGU_TILE_DA0 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D0.q());
     /*p32.NUDU*/ top.vram_bus.NUDU_TILE_DA1 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D1.q());
     /*p32.MUKU*/ top.vram_bus.MUKU_TILE_DA2 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D2.q());

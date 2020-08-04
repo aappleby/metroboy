@@ -272,7 +272,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYNU*/ wire TYNU_ADDR_RAM = or2(and2(top.cpu_bus.CPU_BUS_A15.q(), top.cpu_bus.CPU_BUS_A14.q()), _TUMA_CART_RAM);
 
     /*p08.TOZA*/ wire _TOZA_EXT_PIN_CS_A = and3(ABUZ, TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
-    /*p08.TYHO*/ wire _TYHO_EXT_PIN_CS_A = mux2_p(top.dma_reg.MARU_DMA_A15.q(), _TOZA_EXT_PIN_CS_A, LUMA_DMA_READ_CARTp);
+    /*p08.TYHO*/ wire _TYHO_EXT_PIN_CS_A = mux2_p(top.dma_reg.MARU_DMA_A15.qn(), _TOZA_EXT_PIN_CS_A, LUMA_DMA_READ_CARTp);
     EXT_PIN_CS_A = _TYHO_EXT_PIN_CS_A;
   }
 
@@ -320,13 +320,14 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.ATOV*/ wire _EXT_ADDR_05 = mux2_p(top.dma_reg.PYLO_DMA_A05.q(), _ATEV_EXT_ADDR_LATCH_05.q(), LUMA_DMA_READ_CARTp);
     /*p08.ATYR*/ wire _EXT_ADDR_06 = mux2_p(top.dma_reg.NUTO_DMA_A06.q(), _AROS_EXT_ADDR_LATCH_06.q(), LUMA_DMA_READ_CARTp);
     /*p08.ASUR*/ wire _EXT_ADDR_07 = mux2_p(top.dma_reg.MUGU_DMA_A07.q(), _ARYM_EXT_ADDR_LATCH_07.q(), LUMA_DMA_READ_CARTp);
-    /*p08.MANO*/ wire _EXT_ADDR_08 = mux2_p(top.dma_reg.NAFA_DMA_A08.q(), _LUNO_EXT_ADDR_LATCH_08.q(), LUMA_DMA_READ_CARTp);
-    /*p08.MASU*/ wire _EXT_ADDR_09 = mux2_p(top.dma_reg.PYNE_DMA_A09.q(), _LYSA_EXT_ADDR_LATCH_09.q(), LUMA_DMA_READ_CARTp);
-    /*p08.PAMY*/ wire _EXT_ADDR_10 = mux2_p(top.dma_reg.PARA_DMA_A10.q(), _PATE_EXT_ADDR_LATCH_10.q(), LUMA_DMA_READ_CARTp);
-    /*p08.MALE*/ wire _EXT_ADDR_11 = mux2_p(top.dma_reg.NYDO_DMA_A11.q(), _LUMY_EXT_ADDR_LATCH_11.q(), LUMA_DMA_READ_CARTp);
-    /*p08.MOJY*/ wire _EXT_ADDR_12 = mux2_p(top.dma_reg.NYGY_DMA_A12.q(), _LOBU_EXT_ADDR_LATCH_12.q(), LUMA_DMA_READ_CARTp);
-    /*p08.MUCE*/ wire _EXT_ADDR_13 = mux2_p(top.dma_reg.PULA_DMA_A13.q(), _LONU_EXT_ADDR_LATCH_13.q(), LUMA_DMA_READ_CARTp);
-    /*p08.PEGE*/ wire _EXT_ADDR_14 = mux2_p(top.dma_reg.POKU_DMA_A14.q(), _NYRE_EXT_ADDR_LATCH_14.q(), LUMA_DMA_READ_CARTp);
+
+    /*p08.MANO*/ wire _EXT_ADDR_08 = mux2_p(top.dma_reg.NAFA_DMA_A08.qn(), _LUNO_EXT_ADDR_LATCH_08.q(), LUMA_DMA_READ_CARTp);
+    /*p08.MASU*/ wire _EXT_ADDR_09 = mux2_p(top.dma_reg.PYNE_DMA_A09.qn(), _LYSA_EXT_ADDR_LATCH_09.q(), LUMA_DMA_READ_CARTp);
+    /*p08.PAMY*/ wire _EXT_ADDR_10 = mux2_p(top.dma_reg.PARA_DMA_A10.qn(), _PATE_EXT_ADDR_LATCH_10.q(), LUMA_DMA_READ_CARTp);
+    /*p08.MALE*/ wire _EXT_ADDR_11 = mux2_p(top.dma_reg.NYDO_DMA_A11.qn(), _LUMY_EXT_ADDR_LATCH_11.q(), LUMA_DMA_READ_CARTp);
+    /*p08.MOJY*/ wire _EXT_ADDR_12 = mux2_p(top.dma_reg.NYGY_DMA_A12.qn(), _LOBU_EXT_ADDR_LATCH_12.q(), LUMA_DMA_READ_CARTp);
+    /*p08.MUCE*/ wire _EXT_ADDR_13 = mux2_p(top.dma_reg.PULA_DMA_A13.qn(), _LONU_EXT_ADDR_LATCH_13.q(), LUMA_DMA_READ_CARTp);
+    /*p08.PEGE*/ wire _EXT_ADDR_14 = mux2_p(top.dma_reg.POKU_DMA_A14.qn(), _NYRE_EXT_ADDR_LATCH_14.q(), LUMA_DMA_READ_CARTp);
 
     /*p08.KUPO*/ EXT_PIN_A00_A = nand2(_EXT_ADDR_00, TOVA_MODE_DBG2n);
     /*p08.CABA*/ EXT_PIN_A01_A = nand2(_EXT_ADDR_01, TOVA_MODE_DBG2n);
@@ -378,7 +379,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.RYCA*/ wire _RYCA_MODE_DBG2n = not1(UNOR_MODE_DBG2p);
     /*p08.SOBY*/ wire _SOBY_A15n = nor2(top.cpu_bus.CPU_BUS_A15.q(), TUTU_ADDR_BOOTp);
     /*p08.SEPY*/ wire _SEPY_A15p = nand2(ABUZ, _SOBY_A15n);
-    /*p08.TAZY*/ wire _TAZY_A15p = mux2_p(top.dma_reg.MARU_DMA_A15.q(), _SEPY_A15p, LUMA_DMA_READ_CARTp);
+    /*p08.TAZY*/ wire _TAZY_A15p = mux2_p(top.dma_reg.MARU_DMA_A15.qn(), _SEPY_A15p, LUMA_DMA_READ_CARTp);
     /*p08.SUZE*/ wire _SUZEEXT_PIN_A15n = nand2(_TAZY_A15p, _RYCA_MODE_DBG2n);
     /*p08.RULO*/ wire _RULOEXT_PIN_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p);
 

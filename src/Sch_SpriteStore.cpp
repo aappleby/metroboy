@@ -636,14 +636,14 @@ void SpriteStore::tock(const SchematicTop& top) {
 
     // ZAGO := not(YLOR_08)
 
-    /*p31.ZAGO*/ wire ZAGO_OAM_DB0 = not1(top.oam_bus.YLOR_OAM_DB0.qn());
-    /*p31.ZOCY*/ wire ZOCY_OAM_DB1 = not1(top.oam_bus.ZYTY_OAM_DB1.qn());
-    /*p31.YPUR*/ wire YPUR_OAM_DB2 = not1(top.oam_bus.ZYVE_OAM_DB2.qn());
-    /*p31.YVOK*/ wire YVOK_OAM_DB3 = not1(top.oam_bus.ZEZY_OAM_DB3.qn());
-    /*p31.COSE*/ wire COSE_OAM_DB4 = not1(top.oam_bus.GOMO_OAM_DB4.qn());
-    /*p31.AROP*/ wire AROP_OAM_DB5 = not1(top.oam_bus.BAXO_OAM_DB5.qn());
-    /*p31.XATU*/ wire XATU_OAM_DB6 = not1(top.oam_bus.YZOS_OAM_DB6.qn());
-    /*p31.BADY*/ wire BADY_OAM_DB7 = not1(top.oam_bus.DEPO_OAM_DB7.qn());
+    /*p31.ZAGO*/ wire ZAGO_OAM_DB0 = not1(top.oam_bus.YLOR_OAM_DB0.q());
+    /*p31.ZOCY*/ wire ZOCY_OAM_DB1 = not1(top.oam_bus.ZYTY_OAM_DB1.q());
+    /*p31.YPUR*/ wire YPUR_OAM_DB2 = not1(top.oam_bus.ZYVE_OAM_DB2.q());
+    /*p31.YVOK*/ wire YVOK_OAM_DB3 = not1(top.oam_bus.ZEZY_OAM_DB3.q());
+    /*p31.COSE*/ wire COSE_OAM_DB4 = not1(top.oam_bus.GOMO_OAM_DB4.q());
+    /*p31.AROP*/ wire AROP_OAM_DB5 = not1(top.oam_bus.BAXO_OAM_DB5.q());
+    /*p31.XATU*/ wire XATU_OAM_DB6 = not1(top.oam_bus.YZOS_OAM_DB6.q());
+    /*p31.BADY*/ wire BADY_OAM_DB7 = not1(top.oam_bus.DEPO_OAM_DB7.q());
 
     /*p29.GENY*/ wire GENY_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
     /*p29.ENOB*/ wire ENOB_STORE0_CLKp = not1(DYHU_STORE0_CLKn);

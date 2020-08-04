@@ -102,16 +102,16 @@
 // Clock polarity wrong? Check regs on die.
 
 // BFETCH_000 - LABU_TILE_DB_CLKp = 1;
-// BFETCH_001 - LABU_TILE_DB_CLKp = or2(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_001 - LABU_TILE_DB_CLKp = or2(!vid_reg.RENDERING_LATCHp.qp(), vid_reg.BFETCH_S0_DELAY.qp())
 // BFETCH_010 - LABU_TILE_DB_CLKp = 1;
 // BFETCH_011 - LABU_TILE_DB_CLKp = 1;
 // BFETCH_100 - LABU_TILE_DB_CLKp = 1;
-// BFETCH_101 - LABU_TILE_DB_CLKp = or2(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q())
+// BFETCH_101 - LABU_TILE_DB_CLKp = or2(!vid_reg.RENDERING_LATCHp.qp(), vid_reg.BFETCH_S0_DELAY.qp())
 
 // BFETCH_000 - LOMA_BG_LATCHn = 1;
 // BFETCH_001 - LOMA_BG_LATCHn = 1;
 // BFETCH_010 - LOMA_BG_LATCHn = 1;
-// BFETCH_011 - LOMA_BG_LATCHn = or2(!vid_reg.RENDERING_LATCHp.q(), vid_reg.BFETCH_S0_DELAY.q());
+// BFETCH_011 - LOMA_BG_LATCHn = or2(!vid_reg.RENDERING_LATCHp.qp(), vid_reg.BFETCH_S0_DELAY.qp());
 // BFETCH_100 - LOMA_BG_LATCHn = 1;
 // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
@@ -185,7 +185,7 @@
 // MORY00 << MATU17
 // MORY01
 // MORY02 
-// -> MORY reads DMA_RUNNING.q
+// -> MORY reads DMA_RUNNING.qp
 
 // arm on vcc side
 // LOXO01 << MULE02

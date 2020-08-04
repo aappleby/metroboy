@@ -52,7 +52,7 @@ struct SchematicTop {
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
-    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT.q()); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT.qp()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not1(AWOD_AVp);
     return ABUZ_AVn;
@@ -74,7 +74,7 @@ struct SchematicTop {
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C.q(), cpu_bus.CPU_PIN_RDp.q(), clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C.qp(), cpu_bus.CPU_PIN_RDp.qp(), clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     return TEDO_CPU_RDp;
   }
@@ -88,7 +88,7 @@ struct SchematicTop {
 
   // vram.TUJA, top.UBAL/MEXO
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.q(), clk_reg.AFAS_xxxDxxxx());
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxDxxxx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
     return APOV_CPU_WRp_xxxDxxxx;
   }
@@ -99,9 +99,9 @@ struct SchematicTop {
     TAPU_CPU_WRp_xxxDxxxx = and2(CPU_PIN_WRp, xxxxEFGx);
 #endif
 
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.q(), clk_reg.AFAS_xxxDxxxx());
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxDxxxx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(ext_bus.EXT_PIN_WR_C.q(), APOV_CPU_WRp_xxxDxxxx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(ext_bus.EXT_PIN_WR_C.qp(), APOV_CPU_WRp_xxxDxxxx, clk_reg.UNOR_MODE_DBG2p());
     /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxDxxxx = not1(UBAL_CPU_WRn_ABCxEFGH);
     return TAPU_CPU_WRp_xxxDxxxx;
   }
@@ -125,7 +125,7 @@ struct SchematicTop {
   // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
   // so dma stops oam scan?
   /*p28.ACYL*/ wire ACYL_SCANNINGp() const {
-    /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp());
+    /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp());
     return ACYL_SCANNINGp;
   }
 
@@ -141,7 +141,7 @@ struct SchematicTop {
 #if 0
   if (RST) {
     // This can't be run mode, TAPE doesn't affect UKUP
-    ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or2(T1, T2), APUK_xxCDEFxx.q());
+    ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or2(T1, T2), APUK_xxCDEFxx.qp());
     UKUP_DIV_00 = ff9(BOGA_ABCDExxx, 0, UKUP_DIV_00.qn());
   }
   else {
@@ -149,12 +149,12 @@ struct SchematicTop {
       // So this must be run mode, and ADYK must have _negative_ reset
       // RST = 0
       // CLKIN_A = 1
-      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
+      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.qp());
       UKUP_DIV_00 = ff9(BOGA_ABCDExxx, !TAPE, UKUP_DIV_00.qn());  
     }
     else {
       // This also can't be run mode
-      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.q());
+      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.qp());
       UKUP_DIV_00 = ff9(BOGA_ABCDExxx, 0, UKUP_DIV_00.qn());  
     }
   }

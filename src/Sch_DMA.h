@@ -11,12 +11,12 @@ struct VramBus;
 //-----------------------------------------------------------------------------
 
 struct DmaRegisters {
-
+  void dump(Dumper& d) const;
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
   // -> bunch of stuff
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.q(); }
+  /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.qp(); }
 
   // -> ext bus, oam bus
   /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp() const {
@@ -34,30 +34,14 @@ struct DmaRegisters {
     return not1(MUHO_DMA_VRAM_RDn);
   }
 
-  void dump(Dumper& d) const {
-    d("---------- DMA Reg  ----------\n");
-    d("DMA Addr 0x%02x:%02x\n", 
-      pack(MARU_DMA_A15.qp(), POKU_DMA_A14.qp(), PULA_DMA_A13.qp(), NYGY_DMA_A12.qp(), NYDO_DMA_A11.qp(), PARA_DMA_A10.qp(), PYNE_DMA_A09.qp(), NAFA_DMA_A08.qp()),
-      pack(MUGU_DMA_A07.q(), NUTO_DMA_A06.q(), PYLO_DMA_A05.q(), NYKO_DMA_A04.q(), MUTY_DMA_A03.q(), NEFY_DMA_A02.q(), PYRO_DMA_A01.q(), NAKY_DMA_A00.q()));
-    d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHn);
-    d("MATU_DMA_RUNNINGp   %d\n", _MATU_DMA_RUNNINGp.q());
-    d("MYTE_DMA_DONE       %d\n", _MYTE_DMA_DONE.q());
-    d("LUVY_DMA_TRIG_d0    %d\n", _LUVY_DMA_TRIG_d0.q());
-    d("LENE_DMA_TRIG_d4    %d\n", _LENE_DMA_TRIG_d4.q());
-    d("LOKY_DMA_LATCHp     %d\n", _LOKY_DMA_LATCHp);
-    d("MUDA_DMA_SRC_VRAMp  %d\n", MUDA_DMA_SRC_VRAMp());
-    d("LUMA_DMA_READ_CARTp %d\n", LUMA_DMA_READ_CARTp());
-    d("\n");
-  }
-
-  /*p04.NAKY*/ Reg NAKY_DMA_A00 = REG_D0C0;
-  /*p04.PYRO*/ Reg PYRO_DMA_A01 = REG_D0C0;
-  /*p04.NEFY*/ Reg NEFY_DMA_A02 = REG_D0C0;
-  /*p04.MUTY*/ Reg MUTY_DMA_A03 = REG_D0C0;
-  /*p04.NYKO*/ Reg NYKO_DMA_A04 = REG_D0C0;
-  /*p04.PYLO*/ Reg PYLO_DMA_A05 = REG_D0C0;
-  /*p04.NUTO*/ Reg NUTO_DMA_A06 = REG_D0C0;
-  /*p04.MUGU*/ Reg MUGU_DMA_A07 = REG_D0C0;
+  /*p04.NAKY*/ RegQPN NAKY_DMA_A00 = REG_D0C0;
+  /*p04.PYRO*/ RegQPN PYRO_DMA_A01 = REG_D0C0;
+  /*p04.NEFY*/ RegQPN NEFY_DMA_A02 = REG_D0C0;
+  /*p04.MUTY*/ RegQPN MUTY_DMA_A03 = REG_D0C0;
+  /*p04.NYKO*/ RegQPN NYKO_DMA_A04 = REG_D0C0;
+  /*p04.PYLO*/ RegQPN PYLO_DMA_A05 = REG_D0C0;
+  /*p04.NUTO*/ RegQPN NUTO_DMA_A06 = REG_D0C0;
+  /*p04.MUGU*/ RegQPN MUGU_DMA_A07 = REG_D0C0;
 
   /*p04.NAFA*/ RegQPN NAFA_DMA_A08 = REG_D0C0;
   /*p04.PYNE*/ RegQPN PYNE_DMA_A09 = REG_D0C0;
@@ -76,12 +60,12 @@ struct DmaRegisters {
     return MUDA_DMA_SRC_VRAMp;
   }
 
-  /*p04.LYXE*/ Tri _LYXE_DMA_LATCHn   = TRI_D0NP;
-  /*p04.MATU*/ Reg _MATU_DMA_RUNNINGp = REG_D0C0;
-  /*p04.MYTE*/ Reg _MYTE_DMA_DONE     = REG_D0C0;
-  /*p04.LUVY*/ Reg _LUVY_DMA_TRIG_d0  = REG_D0C0;
-  /*p04.LENE*/ Reg _LENE_DMA_TRIG_d4  = REG_D0C0;
-  /*p04.LOKY*/ Tri _LOKY_DMA_LATCHp   = TRI_D0NP;
+  /*p04.LYXE*/ Tri   _LYXE_DMA_LATCHn   = TRI_D0NP;
+  /*p04.MATU*/ RegQP _MATU_DMA_RUNNINGp = REG_D0C0;
+  /*p04.MYTE*/ RegQN _MYTE_DMA_DONE     = REG_D0C0;
+  /*p04.LUVY*/ RegQP _LUVY_DMA_TRIG_d0  = REG_D0C0;
+  /*p04.LENE*/ RegQN _LENE_DMA_TRIG_d4  = REG_D0C0;
+  /*p04.LOKY*/ Tri   _LOKY_DMA_LATCHp   = TRI_D0NP;
 };
 
 //-----------------------------------------------------------------------------

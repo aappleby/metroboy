@@ -14,15 +14,15 @@ struct VramBus {
   //----------------------------------------
 
   int get_bus_addr() const {
-    return pack(_VRAM_BUS_A00.q(), _VRAM_BUS_A01.q(), _VRAM_BUS_A02.q(), _VRAM_BUS_A03.q(),
-                _VRAM_BUS_A04.q(), _VRAM_BUS_A05.q(), _VRAM_BUS_A06.q(), _VRAM_BUS_A07.q(),
-                _VRAM_BUS_A08.q(), _VRAM_BUS_A09.q(), _VRAM_BUS_A10.q(), _VRAM_BUS_A11.q(),
-                _VRAM_BUS_A12.q(), 0, 0, 0);
+    return pack(_VRAM_BUS_A00.qp(), _VRAM_BUS_A01.qp(), _VRAM_BUS_A02.qp(), _VRAM_BUS_A03.qp(),
+                _VRAM_BUS_A04.qp(), _VRAM_BUS_A05.qp(), _VRAM_BUS_A06.qp(), _VRAM_BUS_A07.qp(),
+                _VRAM_BUS_A08.qp(), _VRAM_BUS_A09.qp(), _VRAM_BUS_A10.qp(), _VRAM_BUS_A11.qp(),
+                _VRAM_BUS_A12.qp(), 0, 0, 0);
   }
 
   int get_bus_data() const {
-    return pack(_VRAM_BUS_D0.q(), _VRAM_BUS_D1.q(), _VRAM_BUS_D2.q(), _VRAM_BUS_D3.q(),
-                _VRAM_BUS_D4.q(), _VRAM_BUS_D5.q(), _VRAM_BUS_D6.q(), _VRAM_BUS_D7.q());
+    return pack(_VRAM_BUS_D0.qp(), _VRAM_BUS_D1.qp(), _VRAM_BUS_D2.qp(), _VRAM_BUS_D3.qp(),
+                _VRAM_BUS_D4.qp(), _VRAM_BUS_D5.qp(), _VRAM_BUS_D6.qp(), _VRAM_BUS_D7.qp());
   }
 
   uint16_t get_pin_addr() const {
@@ -66,14 +66,14 @@ struct VramBus {
   //----------------------------------------
 
   // -> oam data tri
-  /*p25.RERY*/ wire VRM_BUS_D0() const { return _VRAM_BUS_D0.q(); }
-  /*p25.RUNA*/ wire VRM_BUS_D1() const { return _VRAM_BUS_D1.q(); }
-  /*p25.RONA*/ wire VRM_BUS_D2() const { return _VRAM_BUS_D2.q(); }
-  /*p25.RUNO*/ wire VRM_BUS_D3() const { return _VRAM_BUS_D3.q(); }
-  /*p25.SANA*/ wire VRM_BUS_D4() const { return _VRAM_BUS_D4.q(); }
-  /*p25.RORO*/ wire VRM_BUS_D5() const { return _VRAM_BUS_D5.q(); }
-  /*p25.RABO*/ wire VRM_BUS_D6() const { return _VRAM_BUS_D6.q(); }
-  /*p25.SAME*/ wire VRM_BUS_D7() const { return _VRAM_BUS_D7.q(); }
+  /*p25.RERY*/ wire VRM_BUS_D0() const { return _VRAM_BUS_D0.qp(); }
+  /*p25.RUNA*/ wire VRM_BUS_D1() const { return _VRAM_BUS_D1.qp(); }
+  /*p25.RONA*/ wire VRM_BUS_D2() const { return _VRAM_BUS_D2.qp(); }
+  /*p25.RUNO*/ wire VRM_BUS_D3() const { return _VRAM_BUS_D3.qp(); }
+  /*p25.SANA*/ wire VRM_BUS_D4() const { return _VRAM_BUS_D4.qp(); }
+  /*p25.RORO*/ wire VRM_BUS_D5() const { return _VRAM_BUS_D5.qp(); }
+  /*p25.RABO*/ wire VRM_BUS_D6() const { return _VRAM_BUS_D6.qp(); }
+  /*p25.SAME*/ wire VRM_BUS_D7() const { return _VRAM_BUS_D7.qp(); }
 
   /*p32.LEGU*/ RegQN LEGU_TILE_DA0 = REG_D0C0;
   /*p32.NUDU*/ RegQN NUDU_TILE_DA1 = REG_D0C0;

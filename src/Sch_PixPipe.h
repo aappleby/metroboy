@@ -16,8 +16,8 @@ struct PixelPipe {
   //----------------------------------------
 
   int get_pix_count() const {
-    return pack(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), XYDO_X3.q(),
-                TUHU_X4.q(), TUKY_X5.q(), TAKO_X6.q(), SYBE_X7.q());
+    return pack(XEHO_X0.qp(), SAVY_X1.qp(), XODU_X2.qp(), XYDO_X3.qp(),
+                TUHU_X4.qp(), TUKY_X5.qp(), TAKO_X6.qp(), SYBE_X7.qp());
   }
 
   // -> top, tile fetcher
@@ -28,11 +28,11 @@ struct PixelPipe {
   }
 
   // -> top.TEVO
-  /*p27.SEKO*/ wire SEKO_WX_MATCHne() const { return nor2(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.q()); }
+  /*p27.SEKO*/ wire SEKO_WX_MATCHne() const { return nor2(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.qp()); }
 
   // -> top.TEVO
   /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne() const {
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.q());
+    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn(), _SOVY_WIN_FIRST_TILE_B.qp());
     return not1(_TUXY_WIN_FIRST_TILE_NE);
   }
 
@@ -43,32 +43,32 @@ struct PixelPipe {
   /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not1(SYLO_WIN_HITn()); }
 
   // -> vram bus
-  /*p27.WYKA*/ wire WYKA_WIN_X3() const { return _WYKA_WIN_X3.q(); }
-  /*p27.WODY*/ wire WODY_WIN_X4() const { return _WODY_WIN_X4.q(); }
-  /*p27.WOBO*/ wire WOBO_WIN_X5() const { return _WOBO_WIN_X5.q(); }
-  /*p27.WYKO*/ wire WYKO_WIN_X6() const { return _WYKO_WIN_X6.q(); }
-  /*p27.XOLO*/ wire XOLO_WIN_X7() const { return _XOLO_WIN_X7.q(); }
+  /*p27.WYKA*/ wire WYKA_WIN_X3() const { return _WYKA_WIN_X3.qp(); }
+  /*p27.WODY*/ wire WODY_WIN_X4() const { return _WODY_WIN_X4.qp(); }
+  /*p27.WOBO*/ wire WOBO_WIN_X5() const { return _WOBO_WIN_X5.qp(); }
+  /*p27.WYKO*/ wire WYKO_WIN_X6() const { return _WYKO_WIN_X6.qp(); }
+  /*p27.XOLO*/ wire XOLO_WIN_X7() const { return _XOLO_WIN_X7.qp(); }
 
   // -> vram bus
-  /*p27.VYNO*/ wire VYNO_WIN_Y0() const { return _VYNO_WIN_Y0.q(); }
-  /*p27.VUJO*/ wire VUJO_WIN_Y1() const { return _VUJO_WIN_Y1.q(); }
-  /*p27.VYMU*/ wire VYMU_WIN_Y2() const { return _VYMU_WIN_Y2.q(); }
-  /*p27.TUFU*/ wire TUFU_WIN_Y3() const { return _TUFU_WIN_Y3.q(); }
-  /*p27.TAXA*/ wire TAXA_WIN_Y4() const { return _TAXA_WIN_Y4.q(); }
-  /*p27.TOZO*/ wire TOZO_WIN_Y5() const { return _TOZO_WIN_Y5.q(); }
-  /*p27.TATE*/ wire TATE_WIN_Y6() const { return _TATE_WIN_Y6.q(); }
-  /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return _TEKE_WIN_Y7.q(); }
+  /*p27.VYNO*/ wire VYNO_WIN_Y0() const { return _VYNO_WIN_Y0.qp(); }
+  /*p27.VUJO*/ wire VUJO_WIN_Y1() const { return _VUJO_WIN_Y1.qp(); }
+  /*p27.VYMU*/ wire VYMU_WIN_Y2() const { return _VYMU_WIN_Y2.qp(); }
+  /*p27.TUFU*/ wire TUFU_WIN_Y3() const { return _TUFU_WIN_Y3.qp(); }
+  /*p27.TAXA*/ wire TAXA_WIN_Y4() const { return _TAXA_WIN_Y4.qp(); }
+  /*p27.TOZO*/ wire TOZO_WIN_Y5() const { return _TOZO_WIN_Y5.qp(); }
+  /*p27.TATE*/ wire TATE_WIN_Y6() const { return _TATE_WIN_Y6.qp(); }
+  /*p27.TEKE*/ wire TEKE_WIN_Y7() const { return _TEKE_WIN_Y7.qp(); }
 
 
   // Pixel counter
-  /*p21.XEHO*/ Reg XEHO_X0 = REG_D0C0;
-  /*p21.SAVY*/ Reg SAVY_X1 = REG_D0C0;
-  /*p21.XODU*/ Reg XODU_X2 = REG_D0C0;
-  /*p21.XYDO*/ Reg XYDO_X3 = REG_D0C0;
-  /*p21.TUHU*/ Reg TUHU_X4 = REG_D0C0;
-  /*p21.TUKY*/ Reg TUKY_X5 = REG_D0C0;
-  /*p21.TAKO*/ Reg TAKO_X6 = REG_D0C0;
-  /*p21.SYBE*/ Reg SYBE_X7 = REG_D0C0;
+  /*p21.XEHO*/ RegQPN XEHO_X0 = REG_D0C0;
+  /*p21.SAVY*/ RegQP  SAVY_X1 = REG_D0C0;
+  /*p21.XODU*/ RegQP  XODU_X2 = REG_D0C0;
+  /*p21.XYDO*/ RegQP  XYDO_X3 = REG_D0C0;
+  /*p21.TUHU*/ RegQPN TUHU_X4 = REG_D0C0;
+  /*p21.TUKY*/ RegQP  TUKY_X5 = REG_D0C0;
+  /*p21.TAKO*/ RegQP  TAKO_X6 = REG_D0C0;
+  /*p21.SYBE*/ RegQP  SYBE_X7 = REG_D0C0;
 
   // -> interrupts
   /*p21.WODU*/ wire WODU_RENDER_DONEp() const {
@@ -77,10 +77,10 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.q(); }
-  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.q()); }
-  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.q()); }
-  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp.q()); }   // sfetch.tuvo/tyso
+  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.qp(); }
+  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.qp()); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.qp()); }
+  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp.qp()); }   // sfetch.tuvo/tyso
 
   // FF40 - LCDC
   /*p23.VYXE*/ Reg VYXE_LCDC_BGEN   = REG_D0C0;
@@ -101,16 +101,16 @@ struct PixelPipe {
 //private:
 
   wire NOCU_WIN_MODEn()  const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(_PYNU_WIN_MODE_A.q());
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(_PYNU_WIN_MODE_A.qp());
     return NOCU_WIN_MODEn;
   }
   
   wire NUNY_WX_MATCHpe() const {
-    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and2(_PYNU_WIN_MODE_A.q(), _NOPA_WIN_MODE_B.qn());
+    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and2(_PYNU_WIN_MODE_A.qp(), _NOPA_WIN_MODE_B.qn());
     return NUNY_WX_MATCHpe;
   }
-  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A.q()); }
-  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); } // 128 + 32 + 4 + 2 + 1 = 167
+  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A.qp()); }
+  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0.qp(), SAVY_X1.qp(), XODU_X2.qp(), TUKY_X5.qp(), SYBE_X7.qp()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 
   /*p27.PYNU*/ Tri _PYNU_WIN_MODE_A = TRI_D0NP;
@@ -119,49 +119,49 @@ struct PixelPipe {
   /*p27.NUKO*/ Sig NUKO_WX_MATCHp;
   /*p27.ROGE*/ Sig ROGE_WY_MATCHp;
 
-  /*p27.NOPA*/ Reg _NOPA_WIN_MODE_B       = REG_D0C0;
-  /*p27.SOVY*/ Reg _SOVY_WIN_FIRST_TILE_B = REG_D0C0;
-  /*p27.REJO*/ Tri _REJO_WY_MATCH_LATCH   = TRI_D0NP;
-  /*p27.SARY*/ Reg _SARY_WY_MATCH         = REG_D0C0;
-  /*p27.RYFA*/ Reg _RYFA_WX_MATCHn_A      = REG_D0C0;
-  /*p27.RENE*/ Reg _RENE_WX_MATCHn_B      = REG_D0C0;
-  /*p27.PYCO*/ Reg _PYCO_WX_MATCH_A       = REG_D0C0;
-  /*p27.NUNU*/ Reg _NUNU_WX_MATCH_B       = REG_D0C0;
+  /*p27.NOPA*/ RegQN  _NOPA_WIN_MODE_B       = REG_D0C0;
+  /*p27.SOVY*/ RegQP  _SOVY_WIN_FIRST_TILE_B = REG_D0C0;
+  /*p27.REJO*/ Tri    _REJO_WY_MATCH_LATCH   = TRI_D0NP;
+  /*p27.SARY*/ RegQP  _SARY_WY_MATCH         = REG_D0C0;
+  /*p27.RYFA*/ RegQPN _RYFA_WX_MATCHn_A      = REG_D0C0;
+  /*p27.RENE*/ RegQP  _RENE_WX_MATCHn_B      = REG_D0C0;
+  /*p27.PYCO*/ RegQP  _PYCO_WX_MATCH_A       = REG_D0C0;
+  /*p27.NUNU*/ RegQP  _NUNU_WX_MATCH_B       = REG_D0C0;
 
   // current window pixel coord
-  /*p27.WYKA*/ Reg _WYKA_WIN_X3 = REG_D0C0;
-  /*p27.WODY*/ Reg _WODY_WIN_X4 = REG_D0C0;
-  /*p27.WOBO*/ Reg _WOBO_WIN_X5 = REG_D0C0;
-  /*p27.WYKO*/ Reg _WYKO_WIN_X6 = REG_D0C0;
-  /*p27.XOLO*/ Reg _XOLO_WIN_X7 = REG_D0C0;
+  /*p27.WYKA*/ RegQPN _WYKA_WIN_X3 = REG_D0C0;
+  /*p27.WODY*/ RegQPN _WODY_WIN_X4 = REG_D0C0;
+  /*p27.WOBO*/ RegQPN _WOBO_WIN_X5 = REG_D0C0;
+  /*p27.WYKO*/ RegQPN _WYKO_WIN_X6 = REG_D0C0;
+  /*p27.XOLO*/ RegQPN _XOLO_WIN_X7 = REG_D0C0;
 
-  /*p27.VYNO*/ Reg _VYNO_WIN_Y0 = REG_D0C0;
-  /*p27.VUJO*/ Reg _VUJO_WIN_Y1 = REG_D0C0;
-  /*p27.VYMU*/ Reg _VYMU_WIN_Y2 = REG_D0C0;
-  /*p27.TUFU*/ Reg _TUFU_WIN_Y3 = REG_D0C0;
-  /*p27.TAXA*/ Reg _TAXA_WIN_Y4 = REG_D0C0;
-  /*p27.TOZO*/ Reg _TOZO_WIN_Y5 = REG_D0C0;
-  /*p27.TATE*/ Reg _TATE_WIN_Y6 = REG_D0C0;
-  /*p27.TEKE*/ Reg _TEKE_WIN_Y7 = REG_D0C0;
+  /*p27.VYNO*/ RegQPN _VYNO_WIN_Y0 = REG_D0C0;
+  /*p27.VUJO*/ RegQPN _VUJO_WIN_Y1 = REG_D0C0;
+  /*p27.VYMU*/ RegQPN _VYMU_WIN_Y2 = REG_D0C0;
+  /*p27.TUFU*/ RegQPN _TUFU_WIN_Y3 = REG_D0C0;
+  /*p27.TAXA*/ RegQPN _TAXA_WIN_Y4 = REG_D0C0;
+  /*p27.TOZO*/ RegQPN _TOZO_WIN_Y5 = REG_D0C0;
+  /*p27.TATE*/ RegQPN _TATE_WIN_Y6 = REG_D0C0;
+  /*p27.TEKE*/ RegQPN _TEKE_WIN_Y7 = REG_D0C0;
 
   /*p??.ROXY*/ Tri _ROXY_FINE_SCROLL_DONEn = TRI_D1NP;
 
   Sig _XENA_STORE_MATCHn;
 
-  /*p27.RYKU*/ Reg _RYKU_FINE_CNT0 = REG_D0C0;
-  /*p27.ROGA*/ Reg _ROGA_FINE_CNT1 = REG_D0C0;
-  /*p27.RUBU*/ Reg _RUBU_FINE_CNT2 = REG_D0C0;
+  /*p27.RYKU*/ RegQPN _RYKU_FINE_CNT0 = REG_D0C0;
+  /*p27.ROGA*/ RegQPN _ROGA_FINE_CNT1 = REG_D0C0;
+  /*p27.RUBU*/ RegQPN _RUBU_FINE_CNT2 = REG_D0C0;
 
   /*p21.XYMU*/ Tri _XYMU_RENDERINGp = TRI_D0NP; // this must be positive polarity, or stat read doesn't work
 
   /*p21.RUPO*/ Tri _RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
 
   /*p21.WUSA*/ Tri _WUSA_LCD_CLOCK_GATE = TRI_D0NP;
-  /*p21.VOGA*/ Reg _VOGA_RENDER_DONE_SYNC = REG_D0C0;
-  /*p??.PUXA*/ Reg _PUXA_FINE_MATCH_A = REG_D0C0;
-  /*p27.NYZE*/ Reg _NYZE_FINE_MATCH_B = REG_D0C0;
+  /*p21.VOGA*/ RegQP _VOGA_RENDER_DONE_SYNC = REG_D0C0;
+  /*p??.PUXA*/ RegQP _PUXA_FINE_MATCH_A = REG_D0C0;
+  /*p27.NYZE*/ RegQN _NYZE_FINE_MATCH_B = REG_D0C0;
 
-  /*p24.PAHO*/ Reg _PAHO_X_8_SYNC = REG_D0C0;
+  /*p24.PAHO*/ RegQP _PAHO_X_8_SYNC = REG_D0C0;
   /*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor4 latch with p24.RUJU, p24.POME
 
   Tri _LCD_PIN_CP = TRI_HZNP;   // PIN_53 

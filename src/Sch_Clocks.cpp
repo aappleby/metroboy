@@ -10,11 +10,11 @@ using namespace Schematics;
 
 void ClockRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("---------- Sys Pins ----------\n");
-  d("SYS_PIN_CLK_A %d\n", _SYS_PIN_CLK_A.q());
-  d("SYS_PIN_CLK_B %d\n", _SYS_PIN_CLK_B.q());
-  d("SYS_PIN_RSTp  %d\n", _SYS_PIN_RSTp.q());
-  d("SYS_PIN_T2n   %d\n", _SYS_PIN_T2n.q());
-  d("SYS_PIN_T1n   %d\n", _SYS_PIN_T1n.q());
+  d("SYS_PIN_CLK_A %d\n", _SYS_PIN_CLK_A.qp());
+  d("SYS_PIN_CLK_B %d\n", _SYS_PIN_CLK_B.qp());
+  d("SYS_PIN_RSTp  %d\n", _SYS_PIN_RSTp.qp());
+  d("SYS_PIN_T2n   %d\n", _SYS_PIN_T2n.qp());
+  d("SYS_PIN_T1n   %d\n", _SYS_PIN_T1n.qp());
   d("\n");
 
   d("---------- Phase Clock ----------\n");
@@ -22,23 +22,23 @@ void ClockRegisters::dump(Dumper& d, const SchematicTop& top) const {
                                 ALEF_AxxxxFGH.cn(),
                                 APUK_xxCDEFxx.c(),
                                 ADYK_ABCxxxxH.cn());
-  d("ATEZ_CLKBAD   %d\n", ATEZ_CLKBAD.q());
-  d("ABOL_CLKREQn  %d\n", ABOL_CLKREQn.q());
-  d("AFUR_ABCDxxxx %d\n", AFUR_ABCDxxxx.q());
-  d("ALEF_AxxxxFGH %d\n", ALEF_AxxxxFGH.q());
-  d("APUK_xxCDEFxx %d\n", APUK_xxCDEFxx.q());
-  d("ADYK_ABCxxxxH %d\n", ADYK_ABCxxxxH.q());
-  d("AROV_ABxxxxGH %d\n", AROV_ABxxxxGH.q());
-  d("AFEP_AxxxxFGH %d\n", AFEP_AxxxxFGH.q());
-  d("ATYP_xxxxEFGH %d\n", ATYP_xxxxEFGH.q());
-  d("AJAX_ABCDxxxx %d\n", AJAX_ABCDxxxx.q());
+  d("ATEZ_CLKBAD   %d\n", ATEZ_CLKBAD.qp());
+  d("ABOL_CLKREQn  %d\n", ABOL_CLKREQn.qp());
+  d("AFUR_ABCDxxxx %d\n", AFUR_ABCDxxxx.qp());
+  d("ALEF_AxxxxFGH %d\n", ALEF_AxxxxFGH.qp());
+  d("APUK_xxCDEFxx %d\n", APUK_xxCDEFxx.qp());
+  d("ADYK_ABCxxxxH %d\n", ADYK_ABCxxxxH.qp());
+  d("AROV_ABxxxxGH %d\n", AROV_ABxxxxGH.qp());
+  d("AFEP_AxxxxFGH %d\n", AFEP_AxxxxFGH.qp());
+  d("ATYP_xxxxEFGH %d\n", ATYP_xxxxEFGH.qp());
+  d("AJAX_ABCDxxxx %d\n", AJAX_ABCDxxxx.qp());
   d("\n");
 
   d("---------- PPU Clock ----------\n");
   d("MYVO_AxCxExGx %d\n", MYVO_AxCxExGx());
-  d("WUVU_xxCDxxGH %d\n", WUVU_xxCDxxGH.q());
-  d("VENA_ABCDxxxx %d\n", VENA_ABCDxxxx.q());
-  d("WOSU_xBCxxFGx %d\n", WOSU_xBCxxFGx.q());
+  d("WUVU_xxCDxxGH %d\n", !WUVU_xxCDxxGH.qn());
+  d("VENA_ABCDxxxx %d\n", !VENA_ABCDxxxx.qn());
+  d("WOSU_xBCxxFGx %d\n",  WOSU_xBCxxFGx.qp());
   d("XUPY_xxCDxxGH %d\n", XUPY_xxCDxxGH());
   d("TALU_ABCDxxxx %d\n", TALU_ABCDxxxx());
   d("XOCE_AxxDExxH %d\n", XOCE_AxxDExxH());
@@ -49,35 +49,35 @@ void ClockRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("\n");
 
   d("---------- CPU Pins ----------\n");
-  d("CPU_PIN_STARTp        : %d\n", CPU_PIN_STARTp.q());
-  d("CPU_PIN_READYp        : %d\n", CPU_PIN_READYp.q());
-  d("CPU_PIN_SYS_RSTp      : %d\n", CPU_PIN_SYS_RSTp.q());
-  d("CPU_PIN_EXT_RST       : %d\n", CPU_PIN_EXT_RST.q());
-  d("CPU_PIN_UNOR_DBG      : %d\n", CPU_PIN_UNOR_DBG.q());
-  d("CPU_PIN_UMUT_DBG      : %d\n", CPU_PIN_UMUT_DBG.q());
-  d("CPU_PIN_EXT_CLKGOOD   : %d\n", CPU_PIN_EXT_CLKGOOD.q());
-  d("CPU_PIN_BOWA_ABCDExxx : %d\n", CPU_PIN_BOWA_ABCDExxx.q());
-  d("CPU_PIN_BEDO_xxxxxFGH : %d\n", CPU_PIN_BEDO_xxxxxFGH.q());
-  d("CPU_PIN_BEKO_xxxxEFGH : %d\n", CPU_PIN_BEKO_xxxxEFGH.q());
-  d("CPU_PIN_BUDE_ABCDxxxx : %d\n", CPU_PIN_BUDE_ABCDxxxx.q());
-  d("CPU_PIN_BOLO_ABxxEFGH : %d\n", CPU_PIN_BOLO_ABxxEFGH.q());
-  d("CPU_PIN_BUKE_xxxxxFxx : %d\n", CPU_PIN_BUKE_xxxxxFxx.q());
-  d("CPU_PIN_BOMA_xxxxxFGH : %d\n", CPU_PIN_BOMA_xxxxxFGH.q());
-  d("CPU_PIN_BOGA_ABCDExxx : %d\n", CPU_PIN_BOGA_ABCDExxx.q());
-  d("EXT_PIN_CLK_ABCDxxxx  : %d\n", EXT_PIN_CLK_ABCDxxxx.q());
+  d("CPU_PIN_STARTp        : %d\n", CPU_PIN_STARTp.qp());
+  d("CPU_PIN_READYp        : %d\n", CPU_PIN_READYp.qp());
+  d("CPU_PIN_SYS_RSTp      : %d\n", CPU_PIN_SYS_RSTp.qp());
+  d("CPU_PIN_EXT_RST       : %d\n", CPU_PIN_EXT_RST.qp());
+  d("CPU_PIN_UNOR_DBG      : %d\n", CPU_PIN_UNOR_DBG.qp());
+  d("CPU_PIN_UMUT_DBG      : %d\n", CPU_PIN_UMUT_DBG.qp());
+  d("CPU_PIN_EXT_CLKGOOD   : %d\n", CPU_PIN_EXT_CLKGOOD.qp());
+  d("CPU_PIN_BOWA_ABCDExxx : %d\n", CPU_PIN_BOWA_ABCDExxx.qp());
+  d("CPU_PIN_BEDO_xxxxxFGH : %d\n", CPU_PIN_BEDO_xxxxxFGH.qp());
+  d("CPU_PIN_BEKO_xxxxEFGH : %d\n", CPU_PIN_BEKO_xxxxEFGH.qp());
+  d("CPU_PIN_BUDE_ABCDxxxx : %d\n", CPU_PIN_BUDE_ABCDxxxx.qp());
+  d("CPU_PIN_BOLO_ABxxEFGH : %d\n", CPU_PIN_BOLO_ABxxEFGH.qp());
+  d("CPU_PIN_BUKE_xxxxxFxx : %d\n", CPU_PIN_BUKE_xxxxxFxx.qp());
+  d("CPU_PIN_BOMA_xxxxxFGH : %d\n", CPU_PIN_BOMA_xxxxxFGH.qp());
+  d("CPU_PIN_BOGA_ABCDExxx : %d\n", CPU_PIN_BOGA_ABCDExxx.qp());
+  d("EXT_PIN_CLK_ABCDxxxx  : %d\n", EXT_PIN_CLK_ABCDxxxx.qp());
   d("\n");
 
   d("----------  Reset   ----------\n");
   /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp());
-  /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_EN.q());
+  /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_EN.qp());
   /*p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
-  d("TUBO %d\n", _TUBO_WAITINGp.q());
-  d("ASOL %d\n", _ASOL_POR_DONEn.q());
-  d("AFER %d\n", _AFER_SYS_RSTp.q());
-  d("SOTO %d\n", _SOTO_DBG_VRAM.q());
+  d("TUBO %d\n", _TUBO_WAITINGp.qp());
+  d("ASOL %d\n", _ASOL_POR_DONEn.qp());
+  d("AFER %d\n", _AFER_SYS_RSTp.qp());
+  d("SOTO %d\n", !_SOTO_DBG_VRAM.qn());
   d("_XEBE_SYS_RSTn %d\n", _XEBE_SYS_RSTn);
   d("XONA1 %d\n", _XONA_LCDC_EN.as_wire());
-  d("XONA2 %d\n", top.pix_pipe.XONA_LCDC_EN.q());
+  d("XONA2 %d\n", top.pix_pipe.XONA_LCDC_EN.qp());
   d("_XODO_VID_RSTp %d\n", _XODO_VID_RSTp);
   d("_XAPO_VID_RSTn %d\n", _XAPO_VID_RSTn);
   d("\n");
@@ -86,23 +86,23 @@ void ClockRegisters::dump(Dumper& d, const SchematicTop& top) const {
 //======================================================================================================================
 
 void ClockRegisters::tick_slow(const SchematicTop& top) {
-  _XONA_LCDC_EN = top.pix_pipe.XONA_LCDC_EN.q();
+  _XONA_LCDC_EN = top.pix_pipe.XONA_LCDC_EN.qp();
 }
 
 void ClockRegisters::tock_clk_slow(int phase, const SchematicTop& top) {
   // ignoring the deglitcher here
 
   {
-    wire AFUR_ABCDxxxx_ = AFUR_ABCDxxxx.q();
-    wire ALEF_AxxxxFGH_ = ALEF_AxxxxFGH.q();
-    wire APUK_xxCDEFxx_ = APUK_xxCDEFxx.q();
-    wire ADYK_ABCxxxxH_ = ADYK_ABCxxxxH.q();
+    wire AFUR_ABCDxxxx_ = AFUR_ABCDxxxx.qp();
+    wire ALEF_AxxxxFGH_ = ALEF_AxxxxFGH.qp();
+    wire APUK_xxCDEFxx_ = APUK_xxCDEFxx.qp();
+    wire ADYK_ABCxxxxH_ = ADYK_ABCxxxxH.qp();
 
     // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
-    /*p07.UBET*/ wire UBET_T1p        = not1(_SYS_PIN_T1n.q());
-    /*p07.UVAR*/ wire UVAR_T2p        = not1(_SYS_PIN_T2n.q());
-    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, _SYS_PIN_RSTp.q());
+    /*p07.UBET*/ wire UBET_T1p        = not1(_SYS_PIN_T1n.qp());
+    /*p07.UVAR*/ wire UVAR_T2p        = not1(_SYS_PIN_T2n.qp());
+    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, _SYS_PIN_RSTp.qp());
 
     // AFUR_01 NC
     // AFUR_02 << !ATAL_03: CLKp
@@ -157,14 +157,14 @@ void ClockRegisters::tock_clk_slow(int phase, const SchematicTop& top) {
   }
 
   {
-    /*p01.ATEZ*/ ATEZ_CLKBAD   = not1(_SYS_PIN_CLK_A.q());
-    /*p01.ABOL*/ ABOL_CLKREQn  = not1(CPU_PIN_READYp.q());
-    /*p01.BUTY*/ BUTY_CLKREQ   = not1(ABOL_CLKREQn.q());
+    /*p01.ATEZ*/ ATEZ_CLKBAD   = not1(_SYS_PIN_CLK_A.qp());
+    /*p01.ABOL*/ ABOL_CLKREQn  = not1(CPU_PIN_READYp.qp());
+    /*p01.BUTY*/ BUTY_CLKREQ   = not1(ABOL_CLKREQn.qp());
 
-    /*p01.AROV*/ AROV_ABxxxxGH = not1(APUK_xxCDEFxx.q());
+    /*p01.AROV*/ AROV_ABxxxxGH = not1(APUK_xxCDEFxx.qp());
     /*p01.AFEP*/ AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn());
-    /*p01.ATYP*/ ATYP_xxxxEFGH = not1(AFUR_ABCDxxxx.q());
-    /*p01.AJAX*/ AJAX_ABCDxxxx = not1(ATYP_xxxxEFGH.q());
+    /*p01.ATYP*/ ATYP_xxxxEFGH = not1(AFUR_ABCDxxxx.qp());
+    /*p01.AJAX*/ AJAX_ABCDxxxx = not1(ATYP_xxxxEFGH.qp());
 
 
     /*p01.BAPY*/ wire BAPY_xxCDxxxx = nor3(ABOL_CLKREQn,
@@ -220,47 +220,47 @@ void ClockRegisters::tock_clk_slow(int phase, const SchematicTop& top) {
     /* PIN_75 */ EXT_PIN_CLK_ABCDxxxx = BUDE_ABCDxxxx;
   }
 
-  CPU_PIN_EXT_CLKGOOD = (wire)_SYS_PIN_CLK_A.q();
+  CPU_PIN_EXT_CLKGOOD = (wire)_SYS_PIN_CLK_A.qp();
 }
 
 
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_rst_slow(int phase, const SchematicTop& top) {
-  /*p01.UPYF*/ wire _UPYF = or2(_SYS_PIN_RSTp.q(), UCOB_CLKBADp());
+  /*p01.UPYF*/ wire _UPYF = or2(_SYS_PIN_RSTp.qp(), UCOB_CLKBADp());
 
-  /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch(_UPYF, CPU_PIN_READYp.q());
+  /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch(_UPYF, CPU_PIN_READYp.qp());
 
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.q(), top.tim_reg.TERO_DIV_03());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.qp(), top.tim_reg.TERO_DIV_03());
 #else
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.q(), top.tim_reg.UPOF_DIV_15());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.qp(), top.tim_reg.UPOF_DIV_15());
 #endif
 
   /*p01.TABA*/ wire _TABA_POR_TRIGn = or3(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
   CPU_PIN_STARTp   = _TABA_POR_TRIGn;
 
   /*p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
-  /*p01.AFAR*/ wire _AFAR_RST  = nor2(_ALYP_RSTn, _SYS_PIN_RSTp.q());
+  /*p01.AFAR*/ wire _AFAR_RST  = nor2(_ALYP_RSTn, _SYS_PIN_RSTp.qp());
 
-  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(_SYS_PIN_RSTp.q(), _AFAR_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(_SYS_PIN_RSTp.qp(), _AFAR_RST); // Schematic wrong, this is a latch.
 
   _ASOL_POR_DONEn.dump_edge("_ASOL_POR_DONEn");
 
-  /*p01.AFER*/ _AFER_SYS_RSTp = dff13(BOGA_ABCDExxx(), BOMA_xxxxxFGH(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.q());
+  /*p01.AFER*/ _AFER_SYS_RSTp = dff13(BOGA_ABCDExxx(), BOMA_xxxxxFGH(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.qp());
 
   _AFER_SYS_RSTp.dump_edge("_AFER_SYS_RSTp");
 
   CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
-  CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.q();
+  CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.qp();
 }
 
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_dbg_slow(int phase, const SchematicTop& top) {
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p());
-  /*p25.SOTO*/ _SOTO_DBG_VRAM = dff17(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), _SOTO_DBG_VRAM.qn());
+  /*p25.SOTO*/ _SOTO_DBG_VRAM = dff17_A(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), _SOTO_DBG_VRAM.qn());
 
   CPU_PIN_UNOR_DBG = UNOR_MODE_DBG2p();
   CPU_PIN_UMUT_DBG = UMUT_MODE_DBG1p();
@@ -274,12 +274,12 @@ void ClockRegisters::tock_vid_slow(int phase, const SchematicTop& top) {
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
-  wire WUVU = WUVU_xxCDxxGH.q();
-  wire VENA = VENA_ABCDxxxx.q();
+  wire WUVUn = WUVU_xxCDxxGH.qn();
+  wire VENAn = VENA_ABCDxxxx.qn();
 
-  /*p29.WUVU*/ WUVU_xxCDxxGH = dff17( XOTA_AxCxExGx, XAPO_VID_RSTn(), !WUVU);
-  /*p21.VENA*/ VENA_ABCDxxxx = dff17(!WUVU,          XAPO_VID_RSTn(), !VENA);
-  /*p29.WOSU*/ WOSU_xBCxxFGx = dff17( XYFY_xBxDxFxH, XAPO_VID_RSTn(), !WUVU);
+  /*p29.WUVU*/ WUVU_xxCDxxGH = dff17_A (XOTA_AxCxExGx, XAPO_VID_RSTn(), WUVUn);
+  /*p21.VENA*/ VENA_ABCDxxxx = dff17_A (WUVUn,          XAPO_VID_RSTn(), VENAn);
+  /*p29.WOSU*/ WOSU_xBCxxFGx = dff17_AB(XYFY_xBxDxFxH, XAPO_VID_RSTn(), WUVUn);
 }
 
 //-----------------------------------------------------------------------------

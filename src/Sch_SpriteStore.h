@@ -48,15 +48,15 @@ private:
   /*p29.EFYL*/ Sig STORE8_MATCHn;
   /*p29.YGEM*/ Sig STORE9_MATCHn;
 
-  /*p29.DEZY*/ Reg DEZY_STORE_ENn = REG_D0C0;
-  /*p29.BESE*/ Reg SPRITE_COUNT0 = REG_D0C0;
-  /*p29.CUXY*/ Reg SPRITE_COUNT1 = REG_D0C0;
-  /*p29.BEGO*/ Reg SPRITE_COUNT2 = REG_D0C0;
-  /*p29.DYBE*/ Reg SPRITE_COUNT3 = REG_D0C0;
+  /*p29.DEZY*/ RegQP  DEZY_STORE_ENn = REG_D0C0;
+  /*p29.BESE*/ RegQPN SPRITE_COUNT0 = REG_D0C0;
+  /*p29.CUXY*/ RegQPN SPRITE_COUNT1 = REG_D0C0;
+  /*p29.BEGO*/ RegQPN SPRITE_COUNT2 = REG_D0C0;
+  /*p29.DYBE*/ RegQPN SPRITE_COUNT3 = REG_D0C0;
 
   //----------
 
-  /*p29.EBOJ*/ Reg STORE0_RSTp = REG_D0C0;
+  /*p29.EBOJ*/ RegQP STORE0_RSTp = REG_D0C0;
   /*p30.YWAK*/ RegQP STORE0_IDX5n = REG_D0C0;
   /*p30.ZONY*/ RegQP STORE0_IDX4n = REG_D0C0;
   /*p30.WYTE*/ RegQP STORE0_IDX3n = REG_D0C0;
@@ -78,7 +78,7 @@ private:
 
   //----------
 
-  /*p29.CEDY*/ Reg STORE1_RSTp = REG_D0C0;
+  /*p29.CEDY*/ RegQP STORE1_RSTp = REG_D0C0;
   /*p30.CAJY*/ RegQP STORE1_IDX5n = REG_D0C0;
   /*p30.CUZA*/ RegQP STORE1_IDX4n = REG_D0C0;
   /*p30.COMA*/ RegQP STORE1_IDX3n = REG_D0C0;
@@ -98,7 +98,7 @@ private:
   /*p31.DYFU*/ Reg STORE1_X6 = REG_D0C0;
   /*p31.CUSY*/ Reg STORE1_X7 = REG_D0C0;
 
-  /*p29.EGAV*/ Reg STORE2_RSTp = REG_D0C0;
+  /*p29.EGAV*/ RegQP STORE2_RSTp = REG_D0C0;
   /*p30.BOXA*/ RegQP STORE2_IDX5n = REG_D0C0;
   /*p30.BUNA*/ RegQP STORE2_IDX4n = REG_D0C0;
   /*p30.BULU*/ RegQP STORE2_IDX3n = REG_D0C0;
@@ -118,7 +118,7 @@ private:
   /*p31.ENOR*/ Reg STORE2_X6 = REG_D0C0;
   /*p31.DEPY*/ Reg STORE2_X7 = REG_D0C0;
 
-  /*p29.GOTA*/ Reg STORE3_RSTp = REG_D0C0;
+  /*p29.GOTA*/ RegQP STORE3_RSTp = REG_D0C0;
   /*p30.DAFU*/ RegQP STORE3_INDX0 = REG_D0C0;
   /*p30.DEBA*/ RegQP STORE3_INDX1 = REG_D0C0;
   /*p30.DUHA*/ RegQP STORE3_INDX2 = REG_D0C0;
@@ -138,7 +138,7 @@ private:
   /*p31.WYNA*/ Reg STORE3_X6 = REG_D0C0;
   /*p31.WECO*/ Reg STORE3_X7 = REG_D0C0;
 
-  /*p29.XUDY*/ Reg STORE4_RSTp = REG_D0C0;
+  /*p29.XUDY*/ RegQP STORE4_RSTp = REG_D0C0;
   /*p30.????*/ RegQP STORE4_INDX0 = REG_D0C0;
   /*p30.????*/ RegQP STORE4_INDX1 = REG_D0C0;
   /*p30.????*/ RegQP STORE4_INDX2 = REG_D0C0;
@@ -159,7 +159,7 @@ private:
   /*p31.XEPA*/ Reg STORE4_X7 = REG_D0C0;
 
   // store 5
-  /*p29.WAFY*/ Reg STORE5_RSTp = REG_D0C0;
+  /*p29.WAFY*/ RegQP STORE5_RSTp = REG_D0C0;
   /*p30.????*/ RegQP STORE5_INDX0 = REG_D0C0;
   /*p30.????*/ RegQP STORE5_INDX1 = REG_D0C0;
   /*p30.????*/ RegQP STORE5_INDX2 = REG_D0C0;
@@ -180,7 +180,7 @@ private:
   /*p31.CUVY*/ Reg STORE5_X7 = REG_D0C0;
 
   // sprite store 6
-  /*p29.WOMY*/ Reg STORE6_RSTp = REG_D0C0;
+  /*p29.WOMY*/ RegQP STORE6_RSTp = REG_D0C0;
   /*p30.????*/ RegQP STORE6_INDX0 = REG_D0C0;
   /*p30.????*/ RegQP STORE6_INDX1 = REG_D0C0;
   /*p30.????*/ RegQP STORE6_INDX2 = REG_D0C0;
@@ -201,7 +201,7 @@ private:
   /*p31.ZESA*/ Reg STORE6_X7 = REG_D0C0;
 
   // sprite store 7
-  /*p29.WAPO*/ Reg STORE7_RSTp = REG_D0C0;
+  /*p29.WAPO*/ RegQP STORE7_RSTp = REG_D0C0;
   /*p30.????*/ RegQP STORE7_INDX0 = REG_D0C0;
   /*p30.????*/ RegQP STORE7_INDX1 = REG_D0C0;
   /*p30.????*/ RegQP STORE7_INDX2 = REG_D0C0;
@@ -222,7 +222,7 @@ private:
   /*p31.FEDE*/ Reg STORE7_X7 = REG_D0C0;
 
   // sprite store 8
-  /*p29.EXUQ*/ Reg STORE8_RSTp = REG_D0C0;
+  /*p29.EXUQ*/ RegQP STORE8_RSTp = REG_D0C0;
   /*p30.AXUV*/ RegQP STORE8_INDX5 = REG_D0C0;
   /*p30.BADA*/ RegQP STORE8_INDX4 = REG_D0C0;
   /*p30.APEV*/ RegQP STORE8_INDX3 = REG_D0C0;
@@ -243,7 +243,7 @@ private:
   /*p31.FYCA*/ Reg STORE8_X3 = REG_D0C0;
 
   // sprite store 9
-  /*p29.FONO*/ Reg STORE9_RSTp = REG_D0C0;
+  /*p29.FONO*/ RegQP STORE9_RSTp = REG_D0C0;
   /*p30.XUFO*/ RegQP STORE9_INDX0 = REG_D0C0;
   /*p30.XUTE*/ RegQP STORE9_INDX1 = REG_D0C0;
   /*p30.XOTU*/ RegQP STORE9_INDX2 = REG_D0C0;

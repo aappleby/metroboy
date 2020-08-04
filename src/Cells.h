@@ -239,7 +239,7 @@ inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
 // Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
 // store, SCY, SCX, LCDC, WX, WY
 
-// FIXME q/qn inconsistent, see sprite store vs phase clock
+// FIXME qp/qn inconsistent, see sprite store vs phase clock
 
 // | O===--o | 
 // |==--O====| CLKp
@@ -435,15 +435,42 @@ inline RegDelta dff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // REG17_17 >> Q    _MUST_ be Q  - see TERO
 
 // must be RSTn, see WUVU/VENA/WOSU
-inline RegDelta dff17(wire CLKp, wire RSTn, wire D) {
+
+inline RegQNIn dff17_A(wire CLKp, wire RSTn, wire D) {
 #if 0
   return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
 #else
   if (!RSTn) {
-    return RegDelta(DELTA_A0C0 | (CLKp << 1));
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
+  }
+#endif
+}
+
+inline RegQPIn dff17_B(wire CLKp, wire RSTn, wire D) {
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+  }
+  else {
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
+  }
+#endif
+}
+
+inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+  }
+  else {
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
 #endif
 }

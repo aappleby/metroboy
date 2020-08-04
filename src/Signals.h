@@ -222,7 +222,7 @@ struct Reg : private RegBase {
   using RegBase::negedge;
   using RegBase::dump_edge;
 
-  inline wire q()  const { return  as_wire(); }
+  inline wire qp()  const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
   inline wire clk() const { return wire(state & 0x02); }
 
@@ -242,6 +242,8 @@ struct Reg : private RegBase {
   }
 };
 
+//-----------------------------------------------------------------------------
+
 struct RegQPIn { RegDelta d; };
 
 struct RegQP : private RegBase {
@@ -253,7 +255,7 @@ struct RegQP : private RegBase {
   using RegBase::negedge;
   using RegBase::dump_edge;
 
-  inline wire q()  const { return  as_wire(); }
+  inline wire qp()  const { return  as_wire(); }
   inline wire clk() const { return wire(state & 0x02); }
 
   inline wire posedge() const {
@@ -271,6 +273,8 @@ struct RegQP : private RegBase {
     delta = in.d;
   }
 };
+
+//-----------------------------------------------------------------------------
 
 struct RegQNIn { RegDelta d; };
 
@@ -301,6 +305,8 @@ struct RegQN : private RegBase {
     delta = in.d;
   }
 };
+
+//-----------------------------------------------------------------------------
 
 struct RegQPNIn { RegDelta d; };
 
@@ -333,21 +339,19 @@ struct RegQPN : private RegBase {
   }
 };
 
-
 //-----------------------------------------------------------------------------
 
 struct Sig : private RegBase {
   Sig() : RegBase(SIG_0000) {}
 
   using RegBase::c;
-  //using RegBase::as_wire;
 
-  inline wire q()  const { return  as_wire(); }
-  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
 
   static bool sim_running;
 
   inline operator wire() const { return as_wire(); }
+
   inline bool as_wire() const {
     CHECK_P(is_sig());
     CHECK_P(has_delta() == sim_running);
@@ -378,12 +382,10 @@ struct Tri : private RegBase {
 
   // adding Q/Qn here because latches can have both inverting and
   // non-inverting outputs
-  inline wire q()  const { return  as_wire(); }
+  inline wire qp()  const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
 
-  //inline operator wire()  const { return as_wire(); }
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
-
 
   inline void preset(RegDelta new_delta) {
     if (delta == DELTA_NONE) {

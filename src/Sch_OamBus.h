@@ -15,7 +15,7 @@ struct OamBus {
   //----------------------------------------
 
   uint8_t get_oam_bus_addr() const {
-    return (uint8_t)pack(OAM_BUS_A1.q(), OAM_BUS_A2.q(), OAM_BUS_A3.q(), OAM_BUS_A4.q(), OAM_BUS_A5.q(), OAM_BUS_A6.q(), OAM_BUS_A7.q(), 0);
+    return (uint8_t)pack(OAM_BUS_A1.qp(), OAM_BUS_A2.qp(), OAM_BUS_A3.qp(), OAM_BUS_A4.qp(), OAM_BUS_A5.qp(), OAM_BUS_A6.qp(), OAM_BUS_A7.qp(), 0);
   }
 
   uint16_t get_oam_bus_data() const {
@@ -36,13 +36,13 @@ struct OamBus {
   }
 
   uint8_t get_temp_a() const {
-    return (uint8_t)pack(XUSO_OAM_DA0.q(), XEGU_OAM_DA1.q(), YJEX_OAM_DA2.q(), XYJU_OAM_DA3.q(),
-                         YBOG_OAM_DA4.q(), WYSO_OAM_DA5.q(), XOTE_OAM_DA6.q(), YZAB_OAM_DA7.q());
+    return (uint8_t)pack(XUSO_OAM_DA0.qp(), XEGU_OAM_DA1.qp(), YJEX_OAM_DA2.qp(), XYJU_OAM_DA3.qp(),
+                         YBOG_OAM_DA4.qp(), WYSO_OAM_DA5.qp(), XOTE_OAM_DA6.qp(), YZAB_OAM_DA7.qp());
   }
 
   uint8_t get_temp_b() const {
-    return (uint8_t)pack(YLOR_OAM_DB0.q(), ZYTY_OAM_DB1.q(), ZYVE_OAM_DB2.q(), ZEZY_OAM_DB3.q(),
-                         GOMO_OAM_DB4.q(), BAXO_OAM_DB5.q(), YZOS_OAM_DB6.q(), DEPO_OAM_DB7.q());
+    return (uint8_t)pack(YLOR_OAM_DB0.qp(), ZYTY_OAM_DB1.qp(), ZYVE_OAM_DB2.qp(), ZEZY_OAM_DB3.qp(),
+                         GOMO_OAM_DB4.qp(), BAXO_OAM_DB5.qp(), YZOS_OAM_DB6.qp(), DEPO_OAM_DB7.qp());
   }
 
   void preset_bus_data_a(bool oe, uint8_t data) {
@@ -94,12 +94,12 @@ struct OamBus {
   //----------------------------------------
 
   // -> sprite store
-  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not1(OAM_TRI_A2.q()); }
-  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not1(OAM_TRI_A3.q()); }
-  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not1(OAM_TRI_A4.q()); }
-  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not1(OAM_TRI_A5.q()); }
-  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not1(OAM_TRI_A6.q()); }
-  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7.q()); }
+  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not1(OAM_TRI_A2.qp()); }
+  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not1(OAM_TRI_A3.qp()); }
+  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not1(OAM_TRI_A4.qp()); }
+  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not1(OAM_TRI_A5.qp()); }
+  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not1(OAM_TRI_A6.qp()); }
+  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7.qp()); }
 
   // oam byte 0, byte 2
   /*p29.XUSO*/ RegQP XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
@@ -123,7 +123,7 @@ struct OamBus {
 
 //private:
 
-  /*p04.MAKA*/ Reg _MAKA_DV_SYNC = REG_D0C0;
+  /*p04.MAKA*/ RegQP _MAKA_DV_SYNC = REG_D0C0;
   /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
 
   /*p28.APAR*/ Sig APAR_SCAN_OAM_RDn;

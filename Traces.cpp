@@ -1,4 +1,18 @@
-  // ATYP := not(AFUR_09);
+// VYPO -> VEZA VOGU VEZO TYFO SUDA_06 SOBU (RAWU POZO ...)
+
+// XEPE_01 nc
+    // XEPE_02 << FUXU_02  (clk)
+    // XEPE_03 << ZAGO_02  (d)
+    // XEPE_04 << COMP_CLK (clkn)
+    // XEPE_05 nc
+    // XEPE_06 << DYNA02   (rst)
+    // XEPE_07 nc
+    // XEPE_08 >> ZOGY_02  (qn)
+    // XEPE_09 >> nc
+
+
+    
+    // ATYP := not(AFUR_09);
   // AJAX := not(ATYP_02);
   // AROV := not(APUK_09);
 

@@ -9,7 +9,7 @@ void SerialRegisters::dump(Dumper& d) const {
   d("XFER_START  %c\n", ETAF_XFER_START.c());
   d("XFER_DIR    %c\n", CULY_XFER_DIR  .c());
   d("SER_CLK     %c\n", COTY_SER_CLK   .c());
-  d("SER_CNT     %d\n", pack(!_SER_CNT0.qn(), !_SER_CNT1.qn(), !_SER_CNT2.qn(), 0));
+  d("SER_CNT     %d\n", pack_p(!_SER_CNT0.qn(), !_SER_CNT1.qn(), !_SER_CNT2.qn(), 0));
   d("SER_DATA    0x%02x\n", get_data());
   d("SER_OUT     %c\n", _SER_OUT.c());
   d("SCK_A       %c\n", SCK_A.c());

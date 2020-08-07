@@ -5,20 +5,38 @@
 
 //-----------------------------------------------------------------------------
 
-inline int pack(wire a, wire b, wire c, wire d) {
+inline int pack_p(wire a, wire b, wire c, wire d) {
   return (a << 0) | (b << 1) | (c << 2) | (d << 3);
 }
 
-inline int pack(wire a, wire b, wire c, wire d,
+inline int pack_p(wire a, wire b, wire c, wire d,
                 wire e, wire f, wire g, wire h) {
-  return (pack(a, b, c, d) << 0) | (pack(e, f, g, h) << 4);
+  return (pack_p(a, b, c, d) << 0) | (pack_p(e, f, g, h) << 4);
 }
 
-inline int pack(wire a, wire b, wire c, wire d,
+inline int pack_p(wire a, wire b, wire c, wire d,
                 wire e, wire f, wire g, wire h,
                 wire i, wire j, wire k, wire l,
                 wire m, wire n, wire o, wire p) {
-  return (pack(a, b, c, d, e, f, g, h) << 0) | (pack(i, j, k, l, m, n, o, p) << 8);
+  return (pack_p(a, b, c, d, e, f, g, h) << 0) | (pack_p(i, j, k, l, m, n, o, p) << 8);
+}
+
+//-----------------------------------------------------------------------------
+
+inline int pack_n(wire a, wire b, wire c, wire d) {
+  return (!a << 0) | (!b << 1) | (!c << 2) | (!d << 3);
+}
+
+inline int pack_n(wire a, wire b, wire c, wire d,
+                wire e, wire f, wire g, wire h) {
+  return (pack_n(a, b, c, d) << 0) | (pack_n(e, f, g, h) << 4);
+}
+
+inline int pack_n(wire a, wire b, wire c, wire d,
+                  wire e, wire f, wire g, wire h,
+                  wire i, wire j, wire k, wire l,
+                  wire m, wire n, wire o, wire p) {
+  return (pack_n(a, b, c, d, e, f, g, h) << 0) | (pack_n(i, j, k, l, m, n, o, p) << 8);
 }
 
 //-----------------------------------------------------------------------------
@@ -261,7 +279,7 @@ inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
 // REG9_08 >> Qn
 // REG9_09 >> Q
 
-///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DB0);
+///*p31.XEPE*/ XEPE_STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DB0);
 
 // XEPE_01 nc
 // XEPE_02 << FUXU_02  (CLKp)
@@ -289,9 +307,25 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 #endif
 }
 
+inline RegQNIn dff9_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKn;
+
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+  }
+  else {
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
+  }
+#endif
+}
+
 //-----------------------------------------------------------------------------
 // Reg11 is used by the background pixel temp state
-// Not sure why it's special. Could be dual-edge.
+// Not sure why it's special.
 
 ///*p32.RAWU*/ top.RAWU_TILE_DB0.set(LABU_LATCH_TILE_DBp, top.VYPO_GND, top.vram_bus.VRM_BUS_D0);
 
@@ -323,14 +357,14 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 /*p32.POWY*/
 /*p32.PYJU*/
 
-inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
+inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
 #if 0
   return RegDelta(DELTA_D0C0 | (RSTp << 2) | (CLKp << 1) | ((D && !RSTp) << 0));
 #else
-  if (RSTp) {
+  if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
@@ -341,17 +375,16 @@ inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
 
 //-----------------------------------------------------------------------------
 // Reg13
-// Could be dual-edge. Not sure.
 
 // REG13_01 nc
-// REG13_02 << RSTp?
+// REG13_02 << RSTn
 // REG13_03 << D
 // REG13_04 nc
-// REG13_05 << CLKp?
+// REG13_05 << CLKp
 // REG13_06 nc
 // REG13_07 nc
-// REG13_08 << CLKn?
-// REG13_09 << RSTp?
+// REG13_08 << CLKn
+// REG13_09 << RSTn
 // REG13_10 nc
 // REG13_11 nc
 // REG13_12 >> Qn
@@ -383,18 +416,17 @@ inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTp, wire D) {
 // XADU_02 << WEFE_02 RSTn
 // XADU_03 << YFOT_02 (D)
 // XADU_04 nc
-// XADU_05 << WUDA_03 (CLKp?)
+// XADU_05 << WUDA_03 CLKp
 // XADU_06 nc
 // XADU_07 nc
-// XADU_08 << CYKE_02 (CLKn?)
+// XADU_08 << CYKE_02 CLKn
 // XADU_09 << WEFE_02 RSTn
 // XADU_10 nc
 // XADU_11 nc
-// XADU_12 >> WUZY_04 (Qn)
-// XADU_13 >> nc      (Q)
+// XADU_12 >> WUZY_04 Qn
+// XADU_13 >> nc      Q
 
-// Almost definitely RSTn - see UPOJ/AFER on boot
-inline RegDelta dff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
+inline RegQNIn dff13_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -402,10 +434,26 @@ inline RegDelta dff13(wire CLKp, wire CLKn, wire RSTn, wire D) {
   return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
 #else
   if (!RSTn) {
-    return RegDelta(DELTA_A0C0 | (CLKp << 1));
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
+  }
+#endif
+}
+
+inline RegQPIn dff13_B(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKn;
+
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+  }
+  else {
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
 #endif
 }
@@ -526,7 +574,7 @@ inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
 // UBUL_22 << CALY_INT_SERIALp
 
 inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
-#if 1
+#if 0
   bool async = !SETn || !RSTn;
   bool val = (D || !SETn) && RSTn;
   return RegDelta(DELTA_D0C0 | (async << 2) | (CLKp << 1) | (val << 0));

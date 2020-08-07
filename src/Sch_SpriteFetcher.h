@@ -41,16 +41,15 @@ struct SpriteFetcher {
   // -> vram bus
   /*p29.TOPU*/ wire TOPU_LATCH_SPPIXA() const { return and2(_TULY_SFETCH_S1.qp(), SYCU_SFETCH_S0pe()); }
 
-  // -> vram bus
-  /*p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not1(!_VONU_SFETCH_S1_D4.qp()); }
-
-private:
+//private:
   /*p29.SYCU*/ wire SYCU_SFETCH_S0pe() const { return nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, _TYFO_SFETCH_S0_D1.qp()); }
   /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp() const { return nor3(_TEPA_RENDERINGn, _TULY_SFETCH_S1.qp(), _TESE_SFETCH_S2.qp()); }
   /*p29.TYTU*/ wire TYTU_SFETCH_S0n()     const { return not1(_TOXE_SFETCH_S0.qp()); }
+
   /*p29.VUSA*/ wire VUSA_SPRITE_DONEn() const {
     /*p29.TYNO*/ wire TYNO = nand3(_TOXE_SFETCH_S0.qp(), _SEBA_SFETCH_S1_D5.qp(), _VONU_SFETCH_S1_D4.qp());
-    return or2(_TYFO_SFETCH_S0_D1.qn(), TYNO);
+    /*p29.VUSA*/ wire VUSA_SPRITE_DONEn = or2(_TYFO_SFETCH_S0_D1.qn(), TYNO);
+    return VUSA_SPRITE_DONEn;
   }
 
   Sig _TEPA_RENDERINGn;

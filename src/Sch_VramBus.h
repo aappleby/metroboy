@@ -14,27 +14,27 @@ struct VramBus {
   //----------------------------------------
 
   int get_bus_addr() const {
-    return pack(_VRAM_BUS_A00.qp(), _VRAM_BUS_A01.qp(), _VRAM_BUS_A02.qp(), _VRAM_BUS_A03.qp(),
+    return pack_p(_VRAM_BUS_A00.qp(), _VRAM_BUS_A01.qp(), _VRAM_BUS_A02.qp(), _VRAM_BUS_A03.qp(),
                 _VRAM_BUS_A04.qp(), _VRAM_BUS_A05.qp(), _VRAM_BUS_A06.qp(), _VRAM_BUS_A07.qp(),
                 _VRAM_BUS_A08.qp(), _VRAM_BUS_A09.qp(), _VRAM_BUS_A10.qp(), _VRAM_BUS_A11.qp(),
                 _VRAM_BUS_A12.qp(), 0, 0, 0);
   }
 
   int get_bus_data() const {
-    return pack(_VRAM_BUS_D0.qp(), _VRAM_BUS_D1.qp(), _VRAM_BUS_D2.qp(), _VRAM_BUS_D3.qp(),
+    return pack_p(_VRAM_BUS_D0.qp(), _VRAM_BUS_D1.qp(), _VRAM_BUS_D2.qp(), _VRAM_BUS_D3.qp(),
                 _VRAM_BUS_D4.qp(), _VRAM_BUS_D5.qp(), _VRAM_BUS_D6.qp(), _VRAM_BUS_D7.qp());
   }
 
   uint16_t get_pin_addr() const {
-    return (uint16_t)pack(_VRAM_PIN_A00.qn(), _VRAM_PIN_A01.qn(), _VRAM_PIN_A02.qn(), _VRAM_PIN_A03.qn(),
-                          _VRAM_PIN_A04.qn(), _VRAM_PIN_A05.qn(), _VRAM_PIN_A06.qn(), _VRAM_PIN_A07.qn(),
-                          _VRAM_PIN_A08.qn(), _VRAM_PIN_A09.qn(), _VRAM_PIN_A10.qn(), _VRAM_PIN_A11.qn(),
-                          _VRAM_PIN_A12.qn(), 0, 0, 0);
+    return (uint16_t)pack_p(_VRAM_PIN_A00.qp(), _VRAM_PIN_A01.qp(), _VRAM_PIN_A02.qp(), _VRAM_PIN_A03.qp(),
+                            _VRAM_PIN_A04.qp(), _VRAM_PIN_A05.qp(), _VRAM_PIN_A06.qp(), _VRAM_PIN_A07.qp(),
+                            _VRAM_PIN_A08.qp(), _VRAM_PIN_A09.qp(), _VRAM_PIN_A10.qp(), _VRAM_PIN_A11.qp(),
+                            _VRAM_PIN_A12.qp(), 0, 0, 0);
   }
 
   uint8_t get_pin_data_out() const {
-    return (uint8_t)pack(_VRAM_PIN_D0_A.qn(), _VRAM_PIN_D1_A.qn(), _VRAM_PIN_D2_A.qn(), _VRAM_PIN_D3_A.qn(),
-                         _VRAM_PIN_D4_A.qn(), _VRAM_PIN_D5_A.qn(), _VRAM_PIN_D6_A.qn(), _VRAM_PIN_D7_A.qn());
+    return ~(uint8_t)pack_p(_VRAM_PIN_D0_A.qp(), _VRAM_PIN_D1_A.qp(), _VRAM_PIN_D2_A.qp(), _VRAM_PIN_D3_A.qp(),
+                            _VRAM_PIN_D4_A.qp(), _VRAM_PIN_D5_A.qp(), _VRAM_PIN_D6_A.qp(), _VRAM_PIN_D7_A.qp());
   }
 
   void preset_pin_data_in(uint8_t data) {

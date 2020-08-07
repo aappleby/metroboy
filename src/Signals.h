@@ -268,7 +268,7 @@ struct RegQP : private RegBase {
 
   inline void operator = (RegQPIn in) {
     CHECK_P(is_reg()); // must be state state
-    CHECK_N(d == DELTA_NONE); // must not be invalid sig
+    CHECK_N(in.d == DELTA_NONE); // must not be invalid sig
     CHECK_N(has_delta());     // state must not already be driven
     delta = in.d;
   }
@@ -300,7 +300,7 @@ struct RegQN : private RegBase {
 
   inline void operator = (RegQNIn in) {
     CHECK_P(is_reg()); // must be state state
-    CHECK_N(d == DELTA_NONE); // must not be invalid sig
+    CHECK_N(in.d == DELTA_NONE); // must not be invalid sig
     CHECK_N(has_delta());     // state must not already be driven
     delta = in.d;
   }
@@ -333,7 +333,7 @@ struct RegQPN : private RegBase {
 
   inline void operator = (RegQPNIn in) {
     CHECK_P(is_reg()); // must be state state
-    CHECK_N(d == DELTA_NONE); // must not be invalid sig
+    CHECK_N(in.d == DELTA_NONE); // must not be invalid sig
     CHECK_N(has_delta());     // state must not already be driven
     delta = in.d;
   }
@@ -373,6 +373,87 @@ extern bool bus_collision;
 
 struct Tri : private RegBase {
   Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  using RegBase::dump_edge;
+
+  inline wire qp()  const { return  as_wire(); }
+  //inline wire qn() const { return !as_wire(); }
+
+  inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
+
+  inline void preset(RegDelta new_delta) {
+    if (delta == DELTA_NONE) {
+      CHECK_P(is_tri());
+      delta = new_delta;
+      value = logic_lut1[value];
+      delta = new_delta;
+      CHECK_P(is_tri());
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(is_tri());
+      delta = new_delta;
+      value = logic_lut1[value];
+      delta = new_delta;
+      CHECK_P(is_tri());
+    }
+    else {
+      CHECK_P(new_delta == DELTA_TRIZ);
+    }
+  }
+
+  inline void preset(wire d) {
+    preset(d ? DELTA_TRI1 : DELTA_TRI0);
+  }
+
+  inline void glitchy_assign(RegDelta d) {
+    CHECK_P(is_tri());
+
+    if (delta == DELTA_NONE) {
+      delta = d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
+      delta = d;
+    }
+    else {
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
+    }
+  }
+
+  inline void operator = (RegDelta d) {
+    CHECK_P(is_tri());
+
+    if (delta == DELTA_NONE) {
+      delta = d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
+      delta = d;
+    }
+    else {
+      //CHECK_P(d == DELTA_TRIZ);
+      if (d != DELTA_TRIZ) {
+        //printf("Bus collision!\n");
+        bus_collision = true;
+      }
+    }
+  }
+};
+
+struct Latch : private RegBase {
+  Latch(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
   using RegBase::cn;
@@ -445,13 +526,11 @@ struct Tri : private RegBase {
       delta = d;
     }
     else {
-      CHECK_P(d == DELTA_TRIZ);
-      /*
+      //CHECK_P(d == DELTA_TRIZ);
       if (d != DELTA_TRIZ) {
         //printf("Bus collision!\n");
         bus_collision = true;
       }
-      */
     }
   }
 };

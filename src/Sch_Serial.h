@@ -14,7 +14,7 @@ struct SerialRegisters {
   void dump(Dumper& d) const;
 
   int get_data() const {
-    return pack(_SER_DATA7.qp(), _SER_DATA6.qp(), _SER_DATA5.qp(), _SER_DATA4.qp(),
+    return pack_p(_SER_DATA7.qp(), _SER_DATA6.qp(), _SER_DATA5.qp(), _SER_DATA4.qp(),
                 _SER_DATA3.qp(), _SER_DATA2.qp(), _SER_DATA1.qp(), _SER_DATA0.qp());
   }
 

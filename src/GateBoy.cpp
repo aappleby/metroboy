@@ -221,8 +221,10 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
 #if 1
   // Clear OAM
-  for (uint16_t addr = 0xFE00; addr <= 0xFEFF; addr++) {
-    dbg_write(addr, 0xFF);
+  //memset(&mem[0xFE00], 0xFF, 256);
+  for(int i = 0; i < 256; i++) {
+    //dbg_write(uint16_t(0xFE00 + i), uint8_t(i));
+    dbg_write(uint16_t(0xFE00 + i), 0xFF);
   }
 
   dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
@@ -257,40 +259,66 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
 
   // sprites broken, turn them off
-  dbg_write(ADDR_LCDC, mem[ADDR_LCDC] & ~(FLAG_OBJ_ON));
-  //dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
+  //dbg_write(ADDR_LCDC, mem[ADDR_LCDC] & ~(FLAG_OBJ_ON));
+  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 #endif
 
-#if 0
-  // put a sprite at (3,3)
-  dbg_write(0xFE00, 19);
-  dbg_write(0xFE01, 11);
-  dbg_write(0xFE02, 55);
-  dbg_write(0xFE03, 0,  use_fast_impl);
-
-  // and another sprite at (23, 3)
-  dbg_write(0xFE04, 19);
-  dbg_write(0xFE05, 31);
-  dbg_write(0xFE06, 55);
-  dbg_write(0xFE07, 0,  use_fast_impl);
-
-  // and another sprite at (43, 3)
-  dbg_write(0xFE08, 19);
-  dbg_write(0xFE09, 51);
-  dbg_write(0xFE0A, 55);
-  dbg_write(0xFE0B, 0,  use_fast_impl);
-
-  // and another sprite at (63, 3)
-  dbg_write(0xFE0C, 19);
-  dbg_write(0xFE0D, 71);
-  dbg_write(0xFE0E, 55);
-  dbg_write(0xFE0F, 0,  use_fast_impl);
-
-  printf("oam byte @ 0xFE00 is %d\n", dbg_read(0xFE00));
-  printf("oam byte @ 0xFE01 is %d\n", dbg_read(0xFE01));
-  printf("oam byte @ 0xFE02 is %d\n", dbg_read(0xFE02));
-  printf("oam byte @ 0xFE03 is %d\n", dbg_read(0xFE03));
+#if 1
+  dbg_write(0xFE00 + 4 * 7 + 0, 16 + 12);
+  dbg_write(0xFE00 + 4 * 7 + 1, 8  + 12);
+  dbg_write(0xFE00 + 4 * 7 + 2, 0);
+  dbg_write(0xFE00 + 4 * 7 + 3, 0);
 #endif
+
+  /*
+  for (int i = 0; i < 16; i++) {
+    int c = ((i >> 0) & 1) ^ ((i >> 1) & 1);
+    mem[0x8000 + i] = c ? 0x55 : 0xAA;
+  }
+  */
+
+  mem[0x8000] = 0b11111111;
+  mem[0x8001] = 0b11111111;
+
+  mem[0x8002] = 0b10000001;
+  mem[0x8003] = 0b11111111;
+
+  mem[0x8004] = 0b10000001;
+  mem[0x8005] = 0b11111111;
+
+  mem[0x8006] = 0b10000001;
+  mem[0x8007] = 0b11111111;
+
+  mem[0x8008] = 0b10000001;
+  mem[0x8009] = 0b11111111;
+
+  mem[0x800A] = 0b10000001;
+  mem[0x800B] = 0b11111111;
+
+  mem[0x800C] = 0b10000001;
+  mem[0x800D] = 0b11111111;
+
+  mem[0x800E] = 0b11111111;
+  mem[0x800F] = 0b11100111;
+
+
+  mem[0x8010] = 0b11100111;
+  mem[0x8011] = 0b11111111;
+  mem[0x8012] = 0b11000011;
+  mem[0x8013] = 0b11111111;
+  mem[0x8014] = 0b10000001;
+  mem[0x8015] = 0b11111111;
+  mem[0x8016] = 0b00000000;
+  mem[0x8017] = 0b11111111;
+  mem[0x8018] = 0b10000001;
+  mem[0x8019] = 0b11111111;
+  mem[0x801A] = 0b11000011;
+  mem[0x801B] = 0b11111111;
+  mem[0x801C] = 0b11100111;
+  mem[0x801D] = 0b11111111;
+  mem[0x801E] = 0b11111111;
+  mem[0x801F] = 0b11111111;
+
 
   if (verbose) printf("\n");
 }
@@ -533,14 +561,14 @@ void GateBoy::phase(Req req, bool verbose) {
         CHECK_CLK_PHASE(top.clk_reg.BOGA_ABCDExxx(),       0b11111000);
         CHECK_CLK_PHASE(top.clk_reg.BOMA_xxxxxFGH(),       0b00000111);
 
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_ABCDExxx, 0b11111000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_xxxxxFGH, 0b00000111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_xxxxEFGH, 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_ABCDxxxx, 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABxxEFGH, 0b11001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_xxxxxFxx, 0b00000100);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_xxxxxFGH, 0b00000111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_ABCDExxx, 0b11111000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_ABCDExxx.qp(), 0b11111000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_xxxxxFGH.qp(), 0b00000111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_xxxxEFGH.qp(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_ABCDxxxx.qp(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABxxEFGH.qp(), 0b11001111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_xxxxxFxx.qp(), 0b00000100);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_xxxxxFGH.qp(), 0b00000111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_ABCDExxx.qp(), 0b11111000);
       }
     }
   }
@@ -768,6 +796,7 @@ void GateBoy::update_vrm_bus(int phase) {
   top.vram_bus._VRAM_PIN_WR_C.preset(0);
 
   uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
+  vram_pin_addr ^= 0b0001111111111111;
 
   if (top.vram_bus._VRAM_PIN_WR_A.qp()) {
     uint8_t vram_pin_data_out = ~top.vram_bus.get_pin_data_out();
@@ -793,24 +822,22 @@ void GateBoy::update_vrm_bus(int phase) {
 void GateBoy::update_oam_bus(int phase) {
   (void)phase;
 
-  // By default the address _and_ data buses to OAM are inverted. We un-invert
-  // them here to make debugging easier.
-
   uint16_t  oam_addr = top.oam_bus.get_oam_bus_addr();
+  oam_addr ^= 0x7F;
 
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
   uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
 
-  uint8_t oam_data_in_a = top.oam_bus.get_oam_bus_data_a();
-  uint8_t oam_data_in_b = top.oam_bus.get_oam_bus_data_b();
+  uint8_t oam_data_in_a = ~top.oam_bus.get_oam_bus_data_a();
+  uint8_t oam_data_in_b = ~top.oam_bus.get_oam_bus_data_b();
 
   if (!top.oam_bus.OAM_PIN_OE.qp()) {
-    top.oam_bus.preset_bus_data_a(true, oam_data_a);
-    top.oam_bus.preset_bus_data_b(true, oam_data_b);
+    top.oam_bus.preset_bus_data_a(~oam_data_a);
+    top.oam_bus.preset_bus_data_b(~oam_data_b);
   }
 
-  if (!top.oam_bus.OAM_PIN_WR_A.qp()) oam_data_a = oam_data_in_a;
-  if (!top.oam_bus.OAM_PIN_WR_B.qp()) oam_data_b = oam_data_in_b;
+  if (!top.oam_bus.OAM_PIN_WR_A.qp()) oam_data_a = ~oam_data_in_a;
+  if (!top.oam_bus.OAM_PIN_WR_B.qp()) oam_data_b = ~oam_data_in_b;
 }
 //-----------------------------------------------------------------------------
 

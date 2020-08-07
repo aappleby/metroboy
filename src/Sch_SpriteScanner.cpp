@@ -28,7 +28,7 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("_GAVA_SCAN_CLK %d\n", _GAVA_SCAN_CLK);
   d("ANOM_LINE_RSTn %d\n", ANOM_LINE_RSTn);
   d("SCAN INDEX        %02d\n", 
-    pack(
+    pack_p(
       _YFEL_SCAN0.qp(),
       _WEWY_SCAN1.qp(),
       _GOSO_SCAN2.qp(),
@@ -40,18 +40,13 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
     )
   );
 
-  int y_diff = pack(_ERUC_YDIFF_S0, _ENEF_YDIFF_S1, _FECO_YDIFF_S2, _GYKY_YDIFF_S3,
-                    _GOPU_YDIFF_S4, _FUWA_YDIFF_S5, _GOJU_YDIFF_S6, _WUHU_YDIFF_S7);
+  int y_diff = pack_p(_ERUC_YDIFF_S0, _ENEF_YDIFF_S1, _FECO_YDIFF_S2, _GYKY_YDIFF_S3,
+                      _GOPU_YDIFF_S4, _FUWA_YDIFF_S5, _GOJU_YDIFF_S6, _WUHU_YDIFF_S7);
 
   uint8_t lcd_y  = top.lcd_reg.get_y();
-  uint8_t temp_a = top.oam_bus.get_temp_a();
-  uint8_t temp_b = top.oam_bus.get_temp_b();
 
-  d("LCD Y    %d\n", lcd_y);
-  d("TEMP A   %d\n", temp_a);
-  d("TEMP B   %d\n", temp_b);
-  d("diff?    %d\n", uint8_t(temp_a + ~lcd_y));
-  d("Y DIFF   %02d\n", y_diff);
+  d("LCD Y    %03d\n", lcd_y);
+  d("Y DIFF   %03d\n", y_diff);
 
   d("_GACE_SPRITE_DELTA4      %d\n", (wire)_GACE_SPRITE_DELTA4);
   d("_GUVU_SPRITE_DELTA5      %d\n", (wire)_GUVU_SPRITE_DELTA5);
@@ -71,7 +66,6 @@ void SpriteScanner::tick(const SchematicTop& top) {
   wire GND = 0;
 
   {
-    _XYLO_LCDC_SPEN = top.pix_pipe.XYLO_LCDC_SPEN.qp();
     _XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp();
 
     /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());

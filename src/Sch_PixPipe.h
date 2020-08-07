@@ -16,8 +16,8 @@ struct PixelPipe {
   //----------------------------------------
 
   int get_pix_count() const {
-    return pack(XEHO_X0.qp(), SAVY_X1.qp(), XODU_X2.qp(), XYDO_X3.qp(),
-                TUHU_X4.qp(), TUKY_X5.qp(), TAKO_X6.qp(), SYBE_X7.qp());
+    return pack_p(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), XYDO_X3p.qp(),
+                TUHU_X4p.qp(), TUKY_X5p.qp(), TAKO_X6p.qp(), SYBE_X7p.qp());
   }
 
   // -> top, tile fetcher
@@ -61,14 +61,14 @@ struct PixelPipe {
 
 
   // Pixel counter
-  /*p21.XEHO*/ RegQPN XEHO_X0 = REG_D0C0;
-  /*p21.SAVY*/ RegQP  SAVY_X1 = REG_D0C0;
-  /*p21.XODU*/ RegQP  XODU_X2 = REG_D0C0;
-  /*p21.XYDO*/ RegQP  XYDO_X3 = REG_D0C0;
-  /*p21.TUHU*/ RegQPN TUHU_X4 = REG_D0C0;
-  /*p21.TUKY*/ RegQP  TUKY_X5 = REG_D0C0;
-  /*p21.TAKO*/ RegQP  TAKO_X6 = REG_D0C0;
-  /*p21.SYBE*/ RegQP  SYBE_X7 = REG_D0C0;
+  /*p21.XEHO*/ RegQPN XEHO_X0p = REG_D0C0;
+  /*p21.SAVY*/ RegQP  SAVY_X1p = REG_D0C0;
+  /*p21.XODU*/ RegQP  XODU_X2p = REG_D0C0;
+  /*p21.XYDO*/ RegQP  XYDO_X3p = REG_D0C0;
+  /*p21.TUHU*/ RegQPN TUHU_X4p = REG_D0C0;
+  /*p21.TUKY*/ RegQP  TUKY_X5p = REG_D0C0;
+  /*p21.TAKO*/ RegQP  TAKO_X6p = REG_D0C0;
+  /*p21.SYBE*/ RegQP  SYBE_X7p = REG_D0C0;
 
   // -> interrupts
   /*p21.WODU*/ wire WODU_RENDER_DONEp() const {
@@ -110,7 +110,7 @@ struct PixelPipe {
     return NUNY_WX_MATCHpe;
   }
   /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A.qp()); }
-  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0.qp(), SAVY_X1.qp(), XODU_X2.qp(), TUKY_X5.qp(), SYBE_X7.qp()); } // 128 + 32 + 4 + 2 + 1 = 167
+  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), TUKY_X5p.qp(), SYBE_X7p.qp()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 
   /*p27.PYNU*/ Tri _PYNU_WIN_MODE_A = TRI_D0NP;

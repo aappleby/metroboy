@@ -14,15 +14,15 @@ struct LcdRegisters {
   void tock(int phase, const SchematicTop& top, CpuBus& cpu_bus);
 
   uint8_t get_x() const {
-    return (uint8_t)pack(SAXO_X0.qp(), TYPO_X1.qp(), VYZO_X2.qp(), TELU_X3.qp(), SUDE_X4.qp(), TAHA_X5.qp(), TYRY_X6.qp(), 0);
+    return (uint8_t)pack_p(SAXO_X0.qp(), TYPO_X1.qp(), VYZO_X2.qp(), TELU_X3.qp(), SUDE_X4.qp(), TAHA_X5.qp(), TYRY_X6.qp(), 0);
   }
 
   uint8_t get_y() const {
-    return (uint8_t)pack(MUWY_Y0.qp(), MYRO_Y1.qp(), LEXA_Y2.qp(), LYDO_Y3.qp(), LOVU_Y4.qp(), LEMA_Y5.qp(), MATO_Y6.qp(), LAFO_Y7.qp());
+    return (uint8_t)pack_p(MUWY_Y0.qp(), MYRO_Y1.qp(), LEXA_Y2.qp(), LYDO_Y3.qp(), LOVU_Y4.qp(), LEMA_Y5.qp(), MATO_Y6.qp(), LAFO_Y7.qp());
   }
 
   uint8_t get_lyc() const {
-    return (uint8_t)pack(_SYRY_LYC0.qp(), _VUCE_LYC1.qp(), _SEDY_LYC2.qp(), _SALO_LYC3.qp(),
+    return (uint8_t)pack_p(_SYRY_LYC0.qp(), _VUCE_LYC1.qp(), _SEDY_LYC2.qp(), _SALO_LYC3.qp(),
                 _SOTA_LYC4.qp(), _VAFA_LYC5.qp(), _VEVO_LYC6.qp(), _RAHA_LYC7.qp());
   }
 

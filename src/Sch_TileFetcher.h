@@ -20,14 +20,14 @@ struct TileFetcher {
   // SUVU = nand2(XYMU, ROMO, NYKA_17, PORY_17).... hmmmm
 
   // -> sprite fetcher, top.TEVO
-  /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp() const {
-    /*p27.ROMO*/ wire _ROMO_PORCH_DONEn = not1(_POKY_PORCH_DONEp.qp());
-    /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand4(_XYMU_RENDERINGp, _ROMO_PORCH_DONEn, _NYKA_FETCH_DONE_Ap.qp(), _PORY_FETCH_DONE_Bp.qp());
-    return  not1(_SUVU_PORCH_ENDn);
+  /*p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp() const {
+    /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(_POKY_PRELOAD_DONEp.qp());
+    /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(_XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn, _NYKA_FETCH_DONE_Ap.qp(), _PORY_FETCH_DONE_Bp.qp());
+    return  not1(_SUVU_PRELOAD_DONE_TRIGn);
   }
 
   // -> top.TYFA
-  /*p24.POKY*/ wire POKY_PORCH_DONEp()        const { return _POKY_PORCH_DONEp.qp(); }
+  /*p24.POKY*/ wire POKY_PRELOAD_DONEp()        const { return _POKY_PRELOAD_DONEp.qp(); }
 
   // -> pix pipe
   /*p24.PORY*/ wire PORY_TILE_FETCH_DONE_Bp() const { return _PORY_FETCH_DONE_Bp.qp(); }
@@ -79,6 +79,8 @@ struct TileFetcher {
 
 //private:
   /*p27.LAXE*/ wire LAXE_BFETCH_S0n() const { return not1(_LAXU_BFETCH_S0.qp()); }
+
+  // high for 10 phases during fetch, low for 6 phases
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn() const { return nand3(_LAXU_BFETCH_S0.qp(), _NYVA_BFETCH_S2.qp(), _NYXU_TILE_FETCHER_RSTn); }
 
   Sig _NYDY_LATCH_TILE_DAp;
@@ -98,7 +100,7 @@ struct TileFetcher {
   /*p27.LYZU*/ RegQP _LYZU_BFETCH_S0_DELAY = REG_D0C0;
 
   /*p24.PYGO*/ RegQP _PYGO_FETCH_DONE_Cp = REG_D0C0;
-  /*p24.POKY*/ Tri _POKY_PORCH_DONEp = TRI_D0NP;            // stops clkpipe until after first tile fetch
+  /*p24.POKY*/ Tri _POKY_PRELOAD_DONEp = TRI_D0NP;            // stops clkpipe until after first tile fetch
   /*p27.LONY*/ Tri _LONY_BG_READ_VRAM_LATCHp = TRI_D0NP;
 
 };

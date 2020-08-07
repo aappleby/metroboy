@@ -14,24 +14,24 @@ struct Timer {
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
   int get_div() const {
-    return pack(!_UKUP_DIV_00.qn(), _UFOR_DIV_01.qp(), !_UNER_DIV_02.qn(), _TERO_DIV_03.qp(),
+    return pack_p(!_UKUP_DIV_00.qn(), _UFOR_DIV_01.qp(), !_UNER_DIV_02.qn(), _TERO_DIV_03.qp(),
                 !_UNYK_DIV_04.qn(), _TAMA_DIV_05.qp(),  _UGOT_DIV_06.qp(), _TULU_DIV_07.qp(),
                  _TUGO_DIV_08.qp(), _TOFE_DIV_09.qp(),  _TERU_DIV_10.qp(), _SOLA_DIV_11.qp(),
                  _SUBU_DIV_12.qp(), _TEKA_DIV_13.qp(), !_UKET_DIV_14.qn(), _UPOF_DIV_15.qp());
   }
 
   int get_tima() const {
-    return pack(REGA_TIMA_0.qp(), POVY_TIMA_1.qp(), PERU_TIMA_2.qp(), RATE_TIMA_3.qp(),
+    return pack_p(REGA_TIMA_0.qp(), POVY_TIMA_1.qp(), PERU_TIMA_2.qp(), RATE_TIMA_3.qp(),
                 RUBY_TIMA_4.qp(), RAGE_TIMA_5.qp(), PEDA_TIMA_6.qp(), NUGA_TIMA_7.qp());
   }
 
   int get_tma() const {
-    return pack(SABU_TMA_0.qp(), NYKE_TMA_1.qp(), MURU_TMA_2.qp(), TYVA_TMA_3.qp(),
+    return pack_p(SABU_TMA_0.qp(), NYKE_TMA_1.qp(), MURU_TMA_2.qp(), TYVA_TMA_3.qp(),
                 TYRU_TMA_4.qp(), SUFY_TMA_5.qp(), PETO_TMA_6.qp(), SETA_TMA_7.qp());
   }
 
   int get_tac() const {
-    return pack(SOPU_TAC_0.qp(), SAMY_TAC_1.qp(), SABO_TAC_2.qp(), 0);
+    return pack_p(SOPU_TAC_0.qp(), SAMY_TAC_1.qp(), SABO_TAC_2.qp(), 0);
   }
 
   wire UVYN_DIV_05n() const { return _TAMA_DIV_05.qn(); }

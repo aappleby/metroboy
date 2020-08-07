@@ -131,7 +131,7 @@ struct SchematicTop {
 
   // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
   /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { 
-    /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
+    /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
     return TEVO_FINE_RSTp;
   }
 

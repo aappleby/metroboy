@@ -248,7 +248,7 @@ void ClockRegisters::tock_rst_slow(int phase, const SchematicTop& top) {
 
   _ASOL_POR_DONEn.dump_edge("_ASOL_POR_DONEn");
 
-  /*p01.AFER*/ _AFER_SYS_RSTp = dff13(BOGA_ABCDExxx(), BOMA_xxxxxFGH(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.qp());
+  /*p01.AFER*/ _AFER_SYS_RSTp = dff13_B(BOGA_ABCDExxx(), BOMA_xxxxxFGH(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.qp());
 
   _AFER_SYS_RSTp.dump_edge("_AFER_SYS_RSTp");
 

@@ -41,7 +41,7 @@ struct ClockRegisters {
   }
 
   uint8_t get_phase_clock() {
-    return (uint8_t)pack(AFUR_ABCDxxxx.qp(), ALEF_AxxxxFGH.qn(), APUK_xxCDEFxx.qp(), ADYK_ABCxxxxH.qn());
+    return (uint8_t)pack_p(AFUR_ABCDxxxx.qp(), ALEF_AxxxxFGH.qn(), APUK_xxCDEFxx.qp(), ADYK_ABCxxxxH.qn());
   }
 
   //-----------------------------------------------------------------------------
@@ -210,7 +210,7 @@ struct ClockRegisters {
 
   /*p01.TUBO*/ Tri _TUBO_WAITINGp  = TRI_D1NP; // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ Tri _ASOL_POR_DONEn = TRI_D1NP; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ Reg _AFER_SYS_RSTp  = REG_D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
+  /*p01.AFER*/ RegQP _AFER_SYS_RSTp  = REG_D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
   /*p25.SOTO*/ RegQN _SOTO_DBG_VRAM  = REG_D0C0;
 
   /*p01.ATEZ*/ Sig ATEZ_CLKBAD;

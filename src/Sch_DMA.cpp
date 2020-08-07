@@ -79,8 +79,8 @@ using namespace Schematics;
 void DmaRegisters::dump(Dumper& d) const {
   d("---------- DMA Reg  ----------\n");
   d("DMA Addr 0x%02x:%02x\n", 
-    pack(MARU_DMA_A15.qp(), POKU_DMA_A14.qp(), PULA_DMA_A13.qp(), NYGY_DMA_A12.qp(), NYDO_DMA_A11.qp(), PARA_DMA_A10.qp(), PYNE_DMA_A09.qp(), NAFA_DMA_A08.qp()),
-    pack(MUGU_DMA_A07.qp(), NUTO_DMA_A06.qp(), PYLO_DMA_A05.qp(), NYKO_DMA_A04.qp(), MUTY_DMA_A03.qp(), NEFY_DMA_A02.qp(), PYRO_DMA_A01.qp(), NAKY_DMA_A00.qp()));
+    pack_p(MARU_DMA_A15.qp(), POKU_DMA_A14.qp(), PULA_DMA_A13.qp(), NYGY_DMA_A12.qp(), NYDO_DMA_A11.qp(), PARA_DMA_A10.qp(), PYNE_DMA_A09.qp(), NAFA_DMA_A08.qp()),
+    pack_p(MUGU_DMA_A07.qp(), NUTO_DMA_A06.qp(), PYLO_DMA_A05.qp(), NYKO_DMA_A04.qp(), MUTY_DMA_A03.qp(), NEFY_DMA_A02.qp(), PYRO_DMA_A01.qp(), NAKY_DMA_A00.qp()));
   d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHn);
   d("MATU_DMA_RUNNINGp   %d\n", _MATU_DMA_RUNNINGp.qp());
   d("MYTE_DMA_DONE       %d\n", !_MYTE_DMA_DONE.qn());

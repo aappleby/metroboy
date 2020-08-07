@@ -13,14 +13,14 @@ struct CpuBus {
   void tock(const SchematicTop& top);
 
   uint16_t get_bus_addr() const {
-    return (uint16_t)pack(CPU_BUS_A00.qp(), CPU_BUS_A01.qp(), CPU_BUS_A02.qp(), CPU_BUS_A03.qp(),
+    return (uint16_t)pack_p(CPU_BUS_A00.qp(), CPU_BUS_A01.qp(), CPU_BUS_A02.qp(), CPU_BUS_A03.qp(),
                           CPU_BUS_A04.qp(), CPU_BUS_A05.qp(), CPU_BUS_A06.qp(), CPU_BUS_A07.qp(),
                           CPU_BUS_A08.qp(), CPU_BUS_A09.qp(), CPU_BUS_A10.qp(), CPU_BUS_A11.qp(),
                           CPU_BUS_A12.qp(), CPU_BUS_A13.qp(), CPU_BUS_A14.qp(), CPU_BUS_A15.qp());
   }
 
   uint8_t get_bus_data() const {
-    return (uint8_t)pack(CPU_BUS_D0.qp(), CPU_BUS_D1.qp(), CPU_BUS_D2.qp(), CPU_BUS_D3.qp(),
+    return (uint8_t)pack_p(CPU_BUS_D0.qp(), CPU_BUS_D1.qp(), CPU_BUS_D2.qp(), CPU_BUS_D3.qp(),
                          CPU_BUS_D4.qp(), CPU_BUS_D5.qp(), CPU_BUS_D6.qp(), CPU_BUS_D7.qp());
   }
 

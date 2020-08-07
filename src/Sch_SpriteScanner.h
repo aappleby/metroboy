@@ -15,12 +15,6 @@ struct SpriteScanner {
   void dump(Dumper& d, const SchematicTop& top) const;
 
   // -> sprite store
-  wire DEGE_SPRITE_DELTA0() const { return not1(_ERUC_YDIFF_S0); }
-  wire DABY_SPRITE_DELTA1() const { return not1(_ENEF_YDIFF_S1); }
-  wire DABU_SPRITE_DELTA2() const { return not1(_FECO_YDIFF_S2); }
-  wire GYSA_SPRITE_DELTA3() const { return not1(_GYKY_YDIFF_S3); }
-
-  // -> sprite store
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not1(_CARE_STORE_ENp_ABxxEFxx); }
 
   // -> top.ACYL
@@ -54,7 +48,6 @@ struct SpriteScanner {
   //----------------------------------------
   // Signals
 
-  Sig _XYLO_LCDC_SPEN;
   Sig _XYMU_RENDERINGp;
   Sig _BALU_LINE_RSTp;
   Sig _BAGY_LINE_RSTn;

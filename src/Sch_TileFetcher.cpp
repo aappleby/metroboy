@@ -7,37 +7,40 @@ using namespace Schematics;
 
 void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
   d("----------TileFetcher---------\n");
-  int scx = pack(BAKE_SCX7.qp(), CABU_SCX6.qp(), CUZY_SCX5.qp(), BEMY_SCX4.qp(), GUBO_SCX3.qp(), CYXU_SCX2.qp(), DUZU_SCX1.qp(), DATY_SCX0.qp());
-  int scy = pack(FUNY_SCY7.qp(), FOHA_SCY6.qp(), FOTY_SCY5.qp(), DEDE_SCY4.qp(), FUJO_SCY3.qp(), FEZU_SCY2.qp(), FYMO_SCY1.qp(), GAVE_SCY0.qp());
 
+  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
+  d("_LEBO_AxCxExGx           %d\n", _LEBO_AxCxExGx);
+  d("\n");
+
+  int scx = pack_p(BAKE_SCX7.qp(), CABU_SCX6.qp(), CUZY_SCX5.qp(), BEMY_SCX4.qp(), GUBO_SCX3.qp(), CYXU_SCX2.qp(), DUZU_SCX1.qp(), DATY_SCX0.qp());
+  int scy = pack_p(FUNY_SCY7.qp(), FOHA_SCY6.qp(), FOTY_SCY5.qp(), DEDE_SCY4.qp(), FUJO_SCY3.qp(), FEZU_SCY2.qp(), FYMO_SCY1.qp(), GAVE_SCY0.qp());
   d("SCX  %03d\n", scx);
   d("SCY  %03d\n", scy);
 
-  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
-
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PORCH_DONE_TRIGp()); // Schematic wrong, this is OR
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
   /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
 
+  d("POKY_PRELOAD_DONEp         %c\n", _POKY_PRELOAD_DONEp        .c());
+  d("TAVE_PRELOAD_DONE_TRIGp  %d\n", top.tile_fetcher.TAVE_PRELOAD_DONE_TRIGp());
+  d("\n");
   d("SEKO_WX_MATCHne          %d\n", top.pix_pipe.SEKO_WX_MATCHne());
   d("SUZU_WIN_FIRST_TILEne    %d\n", top.pix_pipe.SUZU_WIN_FIRST_TILEne());
-  d("TAVE_PORCH_DONE_TRIGp    %d\n", top.tile_fetcher.TAVE_PORCH_DONE_TRIGp());
-  d("_LEBO_AxCxExGx           %d\n", _LEBO_AxCxExGx);
 
   d("TEVO_FINE_RSTp           %d\n", TEVO_FINE_RSTp);
 
   d("AVAP_RENDER_START_TRIGp  %d\n", top.sprite_scanner.AVAP_RENDER_START_TRIGp());
   d("MOSU_TILE_FETCHER_RSTp   %d\n", top.pix_pipe.MOSU_TILE_FETCHER_RSTp());
   d("NYXU_TILE_FETCHER_RSTn   %d\n", NYXU_TILE_FETCHER_RSTn);
+
   d("LAXU_BFETCH_S0           %c\n", _LAXU_BFETCH_S0          .c());
   d("MESU_BFETCH_S1           %c\n", _MESU_BFETCH_S1          .c());
   d("NYVA_BFETCH_S2           %c\n", _NYVA_BFETCH_S2          .c());
-
+  d("MOCE_BFETCH_DONEn        %d\n", MOCE_BFETCH_DONEn());
   d("LOVY_FETCH_DONEp         %c\n", _LOVY_FETCH_DONEp        .c());
   d("NYKA_FETCH_DONE_Ap       %c\n", _NYKA_FETCH_DONE_Ap      .c());
   d("PORY_FETCH_DONE_Bp       %c\n", _PORY_FETCH_DONE_Bp      .c());
   d("LYZU_BFETCH_S0_DELAY     %c\n", _LYZU_BFETCH_S0_DELAY    .c());
   d("PYGO_FETCH_DONE_Cp       %c\n", _PYGO_FETCH_DONE_Cp      .c());
-  d("POKY_PORCH_DONEp         %c\n", _POKY_PORCH_DONEp        .c());
   d("LONY_BG_READ_VRAM_LATCHp %c\n", _LONY_BG_READ_VRAM_LATCHp.c());
 
   d("\n");
@@ -77,7 +80,7 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.PORY*/ _PORY_FETCH_DONE_Bp = dff17_B(top.clk_reg.MYVO_AxCxExGx(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, _NYKA_FETCH_DONE_Ap.qp());
     /*p24.PYGO*/ _PYGO_FETCH_DONE_Cp = dff17_B(top.clk_reg.ALET_xBxDxFxH(), _XYMU_RENDERINGp,                 _PORY_FETCH_DONE_Bp.qp());
 
-    /*p24.POKY*/ _POKY_PORCH_DONEp = nor_latch(_PYGO_FETCH_DONE_Cp.qp(), top.pix_pipe.LOBY_RENDERINGn());
+    /*p24.POKY*/ _POKY_PRELOAD_DONEp = nor_latch(_PYGO_FETCH_DONE_Cp.qp(), top.pix_pipe.LOBY_RENDERINGn());
   }
 
   {

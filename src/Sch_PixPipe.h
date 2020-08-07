@@ -167,8 +167,8 @@ struct PixelPipe {
   Tri _LCD_PIN_CP = TRI_HZNP;   // PIN_53 
   Tri _LCD_PIN_ST = TRI_HZNP;   // PIN_54 
 
-  Tri _LCD_PIN_LD1 = TRI_HZNP;  // PIN_50 
-  Tri _LCD_PIN_LD0 = TRI_HZNP;  // PIN_51 
+  Tri _LCD_PIN_LD0 = TRI_HZNP;  // PIN_50 
+  Tri _LCD_PIN_LD1 = TRI_HZNP;  // PIN_51 
 
   /*p32.MYDE*/ Reg BG_PIPE_A0 = REG_D0C0;
   /*p32.NOZO*/ Reg BG_PIPE_A1 = REG_D0C0;

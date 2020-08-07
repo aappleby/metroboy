@@ -67,18 +67,14 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("POFY_ST_LATCH          %c\n", _POFY_ST_LATCH         .c());
   d("LCD_PIN_CP             %c\n", _LCD_PIN_CP            .c());
   d("LCD_PIN_ST             %c\n", _LCD_PIN_ST            .c());
-  d("LCD_PIN_LD1            %c\n", _LCD_PIN_LD1           .c());
-  d("LCD_PIN_LD0            %c\n", _LCD_PIN_LD0           .c());
+  d("LCD_PIN_LD1            %c\n", _LCD_PIN_LD0           .c());
+  d("LCD_PIN_LD0            %c\n", _LCD_PIN_LD1           .c());
 
-  d("BG_PIPE_A 0x%02x %c%c%c%c%c%c%c%c\n", 
-    pack_p(BG_PIPE_A0.qp(), BG_PIPE_A1.qp(), BG_PIPE_A2.qp(), BG_PIPE_A3.qp(),
-         BG_PIPE_A4.qp(), BG_PIPE_A5.qp(), BG_PIPE_A6.qp(), BG_PIPE_A7.qp()),
+  d("BG_PIPE_A  %c%c%c%c%c%c%c%c\n", 
     BG_PIPE_A0.c(), BG_PIPE_A1.c(), BG_PIPE_A2.c(), BG_PIPE_A3.c(),
     BG_PIPE_A4.c(), BG_PIPE_A5.c(), BG_PIPE_A6.c(), BG_PIPE_A7.c());
 
-  d("BG_PIPE_B 0x%02x %c%c%c%c%c%c%c%c\n", 
-    pack_p(BG_PIPE_B0.qp(), BG_PIPE_B1.qp(), BG_PIPE_B2.qp(), BG_PIPE_B3.qp(),
-         BG_PIPE_B4.qp(), BG_PIPE_B5.qp(), BG_PIPE_B6.qp(), BG_PIPE_B7.qp()),
+  d("BG_PIPE_B  %c%c%c%c%c%c%c%c\n", 
     BG_PIPE_B0.c(), BG_PIPE_B1.c(), BG_PIPE_B2.c(), BG_PIPE_B3.c(),
     BG_PIPE_B4.c(), BG_PIPE_B5.c(), BG_PIPE_B6.c(), BG_PIPE_B7.c());
 
@@ -90,13 +86,15 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     SPR_PIPE_B0.c(), SPR_PIPE_B1.c(), SPR_PIPE_B2.c(), SPR_PIPE_B3.c(),
     SPR_PIPE_B4.c(), SPR_PIPE_B5.c(), SPR_PIPE_B6.c(), SPR_PIPE_B7.c());
 
-  d("PAL_PIPE   %c%c%c%c%c%c%c%c\n", 
+  d("PAL_PIPE   %c%c%c%c%c%c%c%c     %c\n", 
     PAL_PIPE_0.c(), PAL_PIPE_1.c(), PAL_PIPE_2.c(), PAL_PIPE_3.c(), 
-    PAL_PIPE_4.c(), PAL_PIPE_5.c(), PAL_PIPE_6.c(), PAL_PIPE_7.c());
+    PAL_PIPE_4.c(), PAL_PIPE_5.c(), PAL_PIPE_6.c(), PAL_PIPE_7.c(),
+    _LCD_PIN_LD0.c());
 
-  d("MASK_PIPE  %c%c%c%c%c%c%c%c\n", 
+  d("MASK_PIPE  %c%c%c%c%c%c%c%c     %c\n", 
     MASK_PIPE_0.c(), MASK_PIPE_1.c(), MASK_PIPE_2.c(), MASK_PIPE_3.c(),
-    MASK_PIPE_4.c(), MASK_PIPE_5.c(), MASK_PIPE_6.c(), MASK_PIPE_7.c());
+    MASK_PIPE_4.c(), MASK_PIPE_5.c(), MASK_PIPE_6.c(), MASK_PIPE_7.c(),
+    _LCD_PIN_LD1.c());
 
   d("BGP  %c%c %c%c %c%c %c%c\n",
     _MENA_BGP7.c(), _MOGY_BGP6.c(), _MORU_BGP5.c(), _MUKE_BGP4.c(),
@@ -112,11 +110,11 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
 
   d("WY %03d\n",
     pack_p(_NAFU_WY7.qp(), _NUKA_WY6.qp(), _NENE_WY5.qp(), _NULO_WY4.qp(),
-        _MELA_WY3.qp(), _NAGA_WY2.qp(), _NYRO_WY1.qp(), _NESO_WY0.qp()));
+           _MELA_WY3.qp(), _NAGA_WY2.qp(), _NYRO_WY1.qp(), _NESO_WY0.qp()));
 
   d("WX %03d\n",
     pack_p(_NUKU_WX7.qp(), _MUVO_WX6.qp(), _MYCE_WX5.qp(), _MYPU_WX4.qp(),
-          _MEBY_WX3.qp(), _NOKE_WX2.qp(), _NOFE_WX1.qp(), _MYPA_WX0.qp()));
+           _MEBY_WX3.qp(), _NOKE_WX2.qp(), _NOFE_WX1.qp(), _MYPA_WX0.qp()));
 
   d("\n");
 
@@ -765,8 +763,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p35.REMY*/ wire _REMY_LD0n = not1(_PATY_PIX_OUT_LO);
     /*p35.RAVO*/ wire _RAVO_LD1n = not1(_PERO_PIX_OUT_HI);
-    _LCD_PIN_LD0 = _REMY_LD0n;
-    _LCD_PIN_LD1 = _RAVO_LD1n;
+    _LCD_PIN_LD1 = _REMY_LD0n;
+    _LCD_PIN_LD0 = _RAVO_LD1n;
   }
 
   //----------------------------------------

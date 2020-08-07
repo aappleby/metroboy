@@ -219,7 +219,7 @@ void GateBoy::run_reset_sequence(bool verbose) {
   test_mem(0xFF80, 0xFFFE, 1, true);
 #endif
 
-#if 1
+  /*
   // Clear OAM
   //memset(&mem[0xFE00], 0xFF, 256);
   for(int i = 0; i < 256; i++) {
@@ -227,56 +227,41 @@ void GateBoy::run_reset_sequence(bool verbose) {
     dbg_write(uint16_t(0xFE00 + i), 0xFF);
   }
 
-  dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
-  dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
-  dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
-
-  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
-  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 5 - Window Display Enable          (0=Off, 1=On)
-  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
-  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
-  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
-
-  // #define FLAG_BG_ON        0x01
-  // #define FLAG_OBJ_ON       0x02
-  // #define FLAG_TALL_SPRITES 0x04
-  // #define FLAG_BG_MAP_1     0x08
-  // #define FLAG_TILE_0       0x10
-  // #define FLAG_WIN_ON       0x20
-  // #define FLAG_WIN_MAP_1    0x40
-  // #define FLAG_LCD_ON       0x80
-
-  dbg_write(ADDR_SCY, mem[ADDR_SCY]);
-  dbg_write(ADDR_SCX, mem[ADDR_SCX]);
-
-  dbg_write(ADDR_WY, mem[ADDR_WY]);
-  dbg_write(ADDR_WX, mem[ADDR_WX]);
-
-  //dbg_write(ADDR_LCDC, FLAG_LCD_ON | FLAG_BG_ON | /*FLAG_WIN_ON |*/ /*FLAG_TILE_0 |*/ FLAG_WIN_MAP_1);
-
-
-  // sprites broken, turn them off
-  //dbg_write(ADDR_LCDC, mem[ADDR_LCDC] & ~(FLAG_OBJ_ON));
-  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
-#endif
-
-#if 1
-  dbg_write(0xFE00 + 4 * 7 + 0, 16 + 12);
-  dbg_write(0xFE00 + 4 * 7 + 1, 8  + 12);
+  // Add some sprites
+  dbg_write(0xFE00 + 4 * 7 + 0, 16 + 2);
+  dbg_write(0xFE00 + 4 * 7 + 1, 8  + 11);
   dbg_write(0xFE00 + 4 * 7 + 2, 0);
   dbg_write(0xFE00 + 4 * 7 + 3, 0);
-#endif
+
+  dbg_write(0xFE00 + 4 * 8 + 0, 16 + 2);
+  dbg_write(0xFE00 + 4 * 8 + 1, 8  + 19);
+  dbg_write(0xFE00 + 4 * 8 + 2, 2);
+  dbg_write(0xFE00 + 4 * 8 + 3, 0);
+  */
+
+  // Clear map
 
   /*
-  for (int i = 0; i < 16; i++) {
-    int c = ((i >> 0) & 1) ^ ((i >> 1) & 1);
-    mem[0x8000 + i] = c ? 0x55 : 0xAA;
+  for (int i = 0; i < 1024; i++) {
+    int c = ((i >> 5) & 1) ^ (i & 1);
+    mem[0x9800 + i] = c ? 0x7E : 0x7C;
   }
   */
 
+  /*
+  for (int i = 0; i < 1024; i++) {
+    mem[0x9800 + i] = 0;
+  }
+
+  for (int i = 0; i < 16; i += 2) {
+    //mem[0x9000 + i + 0] = 0b00000000;
+    //mem[0x9000 + i + 1] = 0b00000000;
+    dbg_write(0x9000 + i + 0, 0b11111111);
+    dbg_write(0x9000 + i + 1, 0b11111111);
+  }
+  */
+
+#if 0
   mem[0x8000] = 0b11111111;
   mem[0x8001] = 0b11111111;
 
@@ -318,7 +303,49 @@ void GateBoy::run_reset_sequence(bool verbose) {
   mem[0x801D] = 0b11111111;
   mem[0x801E] = 0b11111111;
   mem[0x801F] = 0b11111111;
+#endif
 
+  dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
+  dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
+  dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
+
+  /*
+  dbg_write(ADDR_BGP,  0b11100100);
+  dbg_write(ADDR_OBP0, 0b11100100);
+  dbg_write(ADDR_OBP1, 0b11100100);
+  */
+  /*
+  dbg_write(ADDR_BGP,  0b10101010);
+  dbg_write(ADDR_OBP0, 0b10101010);
+  dbg_write(ADDR_OBP1, 0b10101010);
+  */
+
+  dbg_write(ADDR_SCY, mem[ADDR_SCY]);
+  dbg_write(ADDR_SCX, mem[ADDR_SCX]);
+
+  dbg_write(ADDR_WY, mem[ADDR_WY]);
+  dbg_write(ADDR_WX, mem[ADDR_WX]);
+
+
+  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
+  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
+  // Bit 5 - Window Display Enable          (0=Off, 1=On)
+  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
+  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
+  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
+  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
+  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
+
+  // #define FLAG_BG_ON        0x01
+  // #define FLAG_OBJ_ON       0x02
+  // #define FLAG_TALL_SPRITES 0x04
+  // #define FLAG_BG_MAP_1     0x08
+  // #define FLAG_TILE_0       0x10
+  // #define FLAG_WIN_ON       0x20
+  // #define FLAG_WIN_MAP_1    0x40
+  // #define FLAG_LCD_ON       0x80
+
+  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 
   if (verbose) printf("\n");
 }
@@ -392,9 +419,9 @@ void GateBoy::run(int _phase_count, Req req, bool verbose) {
 
 //------------------------------------------------------------------------------
 
-uint8_t GateBoy::dbg_read(uint16_t addr) {
+uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
-  Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
+  Req req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
 
   /* A->B */ phase(req, false);
   /* B->C */ phase(req, false);
@@ -412,9 +439,9 @@ uint8_t GateBoy::dbg_read(uint16_t addr) {
   return sample;
 }
 
-void GateBoy::dbg_write(uint16_t addr, uint8_t data) {
+void GateBoy::dbg_write(int addr, uint8_t data) {
   CHECK_P((phase_total & 7) == 0);
-  Req req = {.addr = addr, .data = data, .read = 0, .write = 1 };
+  Req req = {.addr = uint16_t(addr), .data = data, .read = 0, .write = 1 };
 
   /* A->B */ phase(req, false);
   /* B->C */ phase(req, false);
@@ -466,10 +493,17 @@ void GateBoy::phase(Req req, bool verbose) {
     Sig::sim_running = false;
 
     if (top.pix_pipe._LCD_PIN_CP.posedge()) {
-      int p0 = !(bool)top.pix_pipe._LCD_PIN_LD1.qp();
-      int p1 = !(bool)top.pix_pipe._LCD_PIN_LD0.qp();
+      int p0 = (bool)top.pix_pipe._LCD_PIN_LD0.qp();
+      int p1 = (bool)top.pix_pipe._LCD_PIN_LD1.qp();
 
-      printf("%c", " .*#"[p1 + p0 * 2]);
+      int c = p0 + p1 * 2;
+
+      switch(c) {
+      case 0: printf("\u001b[48;2;200;200;200m \u001b[39;49m"); break;
+      case 1: printf("\u001b[48;2;150;150;150m \u001b[39;49m"); break;
+      case 2: printf("\u001b[48;2;100;100;100m \u001b[39;49m"); break;
+      case 3: printf("\u001b[48;2;50;50;50m \u001b[39;49m");    break;
+      }
     }
     if (top.pix_pipe._LCD_PIN_ST.negedge()) printf("\n");
 

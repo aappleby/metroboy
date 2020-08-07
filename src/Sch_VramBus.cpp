@@ -409,12 +409,14 @@ void VramBus::tock(SchematicTop& top) {
       /*p25.XUCY*/ XUCY_WIN_TILE_READn = nand2(NETA_TILE_READp, PORE_WIN_MODEp);
       /*p25.VUZA*/ VUZA_TILE_BANKp = nor2(top.pix_pipe.WEXU_LCDC_BGTILE.qp(), top.vram_bus.PYJU_TILE_DB7.qn()); // register reused
       
-      /*p26.ASUM*/ _VRAM_BUS_A00 = tribuf_6n(BEJE_BGD_TILE_READn, _XUHA_FETCH_S2p);
+      // FIXME why is the low bit inverted?
+
+      /*p26.ASUM*/ _VRAM_BUS_A00 = tribuf_6n(BEJE_BGD_TILE_READn, !_XUHA_FETCH_S2p);
       /*p26.EVAD*/ _VRAM_BUS_A01 = tribuf_6n(BEJE_BGD_TILE_READn, _FAFO_TILE_Y0S);
       /*p26.DAHU*/ _VRAM_BUS_A02 = tribuf_6n(BEJE_BGD_TILE_READn, _EMUX_TILE_Y1S);
       /*p26.DODE*/ _VRAM_BUS_A03 = tribuf_6n(BEJE_BGD_TILE_READn, _ECAB_TILE_Y2S);
 
-      /*p25.XONU*/ _VRAM_BUS_A00 = tribuf_6n(XUCY_WIN_TILE_READn, _XUHA_FETCH_S2p);
+      /*p25.XONU*/ _VRAM_BUS_A00 = tribuf_6n(XUCY_WIN_TILE_READn, !_XUHA_FETCH_S2p);
       /*p25.WUDO*/ _VRAM_BUS_A01 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VYNO_WIN_Y0());
       /*p25.WAWE*/ _VRAM_BUS_A02 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VUJO_WIN_Y1());
       /*p25.WOLU*/ _VRAM_BUS_A03 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VYMU_WIN_Y2());

@@ -10,8 +10,8 @@ public:
   void phase (Req req, bool verbose);
   void run_reset_sequence(bool verbose);
 
-  uint8_t dbg_read(uint16_t addr);
-  void    dbg_write(uint16_t addr, uint8_t data);
+  uint8_t dbg_read (int addr);
+  void    dbg_write(int addr, uint8_t data);
 
   void update_cpu_bus(int phase, Req req);
   void update_ext_bus(int phase);

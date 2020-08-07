@@ -162,7 +162,10 @@ struct PixelPipe {
   /*p27.NYZE*/ RegQN _NYZE_FINE_MATCH_B = REG_D0C0;
 
   /*p24.PAHO*/ RegQP _PAHO_X_8_SYNC = REG_D0C0;
+
   /*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor4 latch with p24.RUJU, p24.POME
+  //Tri RUJU_LCD_PIN_STp = TRI_HZPU;
+  //Tri POME_LCD_PIN_STn = TRI_HZPD;
 
   Tri _LCD_PIN_CP = TRI_HZNP;   // PIN_53 
   Tri _LCD_PIN_ST = TRI_HZNP;   // PIN_54 

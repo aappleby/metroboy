@@ -243,8 +243,9 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
   /*
   for (int i = 0; i < 1024; i++) {
-    int c = ((i >> 5) & 1) ^ (i & 1);
-    mem[0x9800 + i] = c ? 0x7E : 0x7C;
+    //int c = ((i >> 5) & 1) ^ (i & 1);
+    //mem[0x9800 + i] = c ? 0x7E : 0x7C;
+    mem[0x9800 + i] = 0;
   }
   */
 
@@ -262,30 +263,22 @@ void GateBoy::run_reset_sequence(bool verbose) {
   */
 
 #if 0
-  mem[0x8000] = 0b11111111;
-  mem[0x8001] = 0b11111111;
-
-  mem[0x8002] = 0b10000001;
-  mem[0x8003] = 0b11111111;
-
-  mem[0x8004] = 0b10000001;
-  mem[0x8005] = 0b11111111;
-
-  mem[0x8006] = 0b10000001;
-  mem[0x8007] = 0b11111111;
-
-  mem[0x8008] = 0b10000001;
-  mem[0x8009] = 0b11111111;
-
-  mem[0x800A] = 0b10000001;
-  mem[0x800B] = 0b11111111;
-
-  mem[0x800C] = 0b10000001;
-  mem[0x800D] = 0b11111111;
-
-  mem[0x800E] = 0b11111111;
-  mem[0x800F] = 0b11100111;
-
+  mem[0x9000] = 0b01111111;
+  mem[0x9001] = 0b01111111;
+  mem[0x9002] = 0b10000000;
+  mem[0x9003] = 0b11111111;
+  mem[0x9004] = 0b10000000;
+  mem[0x9005] = 0b11111111;
+  mem[0x9006] = 0b10000000;
+  mem[0x9007] = 0b11111111;
+  mem[0x9008] = 0b10000000;
+  mem[0x9009] = 0b11111111;
+  mem[0x900A] = 0b10000000;
+  mem[0x900B] = 0b11111111;
+  mem[0x900C] = 0b10000000;
+  mem[0x900D] = 0b11111111;
+  mem[0x900E] = 0b10000000;
+  mem[0x900F] = 0b11111111;
 
   mem[0x8010] = 0b11100111;
   mem[0x8011] = 0b11111111;
@@ -314,11 +307,11 @@ void GateBoy::run_reset_sequence(bool verbose) {
   dbg_write(ADDR_OBP0, 0b11100100);
   dbg_write(ADDR_OBP1, 0b11100100);
   */
-  /*
-  dbg_write(ADDR_BGP,  0b10101010);
-  dbg_write(ADDR_OBP0, 0b10101010);
-  dbg_write(ADDR_OBP1, 0b10101010);
-  */
+
+  // Palettes for both background and sprites are working. er maybe not pal1
+  //dbg_write(ADDR_BGP,  0b11111111);
+  //dbg_write(ADDR_OBP0, 0b11100100);
+  //dbg_write(ADDR_OBP1, 0b11100100);
 
   dbg_write(ADDR_SCY, mem[ADDR_SCY]);
   dbg_write(ADDR_SCX, mem[ADDR_SCX]);
@@ -346,6 +339,9 @@ void GateBoy::run_reset_sequence(bool verbose) {
   // #define FLAG_LCD_ON       0x80
 
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
+  //dbg_write(ADDR_LCDC, 0b10000001);
+
+  run(100000, {0}, false);
 
   if (verbose) printf("\n");
 }
@@ -419,6 +415,8 @@ void GateBoy::run(int _phase_count, Req req, bool verbose) {
 
 //------------------------------------------------------------------------------
 
+#pragma warning(disable:4189)
+
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
   Req req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
@@ -474,6 +472,12 @@ void GateBoy::phase(Req req, bool verbose) {
 
   StringDumper d;
 
+  bool old_cp = top.pix_pipe._LCD_PIN_CP.qp();
+  bool old_st = top.pix_pipe._LCD_PIN_ST.qp();
+
+  int old_x = top.pix_pipe.get_pix_count();
+  int old_y = top.lcd_reg.get_y();
+
   for (pass_count = 0; pass_count < 100; pass_count++) {
     top.clk_reg.preset_rst(sys_rst);
     top.clk_reg.preset_t1t2(sys_t1, sys_t2);
@@ -491,21 +495,6 @@ void GateBoy::phase(Req req, bool verbose) {
     bus_collision = false;
     top.tick_slow(phase);
     Sig::sim_running = false;
-
-    if (top.pix_pipe._LCD_PIN_CP.posedge()) {
-      int p0 = (bool)top.pix_pipe._LCD_PIN_LD0.qp();
-      int p1 = (bool)top.pix_pipe._LCD_PIN_LD1.qp();
-
-      int c = p0 + p1 * 2;
-
-      switch(c) {
-      case 0: printf("\u001b[48;2;200;200;200m \u001b[39;49m"); break;
-      case 1: printf("\u001b[48;2;150;150;150m \u001b[39;49m"); break;
-      case 2: printf("\u001b[48;2;100;100;100m \u001b[39;49m"); break;
-      case 3: printf("\u001b[48;2;50;50;50m \u001b[39;49m");    break;
-      }
-    }
-    if (top.pix_pipe._LCD_PIN_ST.negedge()) printf("\n");
 
     hash_regs_old = hash_regs_new;
     hash_regs_new  = HASH_INIT;
@@ -540,6 +529,29 @@ void GateBoy::phase(Req req, bool verbose) {
   }
 
   CHECK_P(pass_count < 100);
+
+  bool new_cp = top.pix_pipe._LCD_PIN_CP.qp();
+  bool new_st = top.pix_pipe._LCD_PIN_ST.qp();
+
+  int new_x = top.pix_pipe.get_pix_count();
+  int new_y = top.lcd_reg.get_y();
+
+  //if (new_y != old_y) printf("\n");
+  if (old_st && !new_st) printf("\n");
+
+  if (old_cp && !new_cp) {
+    int p0 = (bool)top.pix_pipe._LCD_PIN_LD0.qp();
+    int p1 = (bool)top.pix_pipe._LCD_PIN_LD1.qp();
+
+    int c = p0 + p1 * 2;
+
+    switch(c) {
+    case 0: printf("\u001b[48;2;200;200;200m \u001b[39;49m"); break;
+    case 1: printf("\u001b[48;2;150;150;150m \u001b[39;49m"); break;
+    case 2: printf("\u001b[48;2;100;100;100m \u001b[39;49m"); break;
+    case 3: printf("\u001b[48;2;50;50;50m \u001b[39;49m");    break;
+    }
+  }
 
 
 #if 1

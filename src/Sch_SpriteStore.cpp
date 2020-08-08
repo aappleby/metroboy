@@ -664,7 +664,7 @@ void SpriteStore::tock(const SchematicTop& top) {
 
     // 10 sprite stores
 
-    // ZAGO := not(YLOR_08)
+    // ZAGO := not(YLOR_Q)
 
     /*p31.ZAGO*/ wire ZAGO_OAM_DB0 = not1(top.oam_bus.YLOR_OAM_DB0.qp());
     /*p31.ZOCY*/ wire ZOCY_OAM_DB1 = not1(top.oam_bus.ZYTY_OAM_DB1.qp());

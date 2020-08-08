@@ -247,6 +247,8 @@ void GateBoy::run_reset_sequence(bool verbose) {
     //mem[0x9800 + i] = c ? 0x7E : 0x7C;
     mem[0x9800 + i] = 0;
   }
+
+  mem[0x9800] = 1;
   */
 
   /*
@@ -263,44 +265,48 @@ void GateBoy::run_reset_sequence(bool verbose) {
   */
 
 #if 0
-  mem[0x9000] = 0b01111111;
-  mem[0x9001] = 0b01111111;
-  mem[0x9002] = 0b10000000;
-  mem[0x9003] = 0b11111111;
-  mem[0x9004] = 0b10000000;
-  mem[0x9005] = 0b11111111;
-  mem[0x9006] = 0b10000000;
-  mem[0x9007] = 0b11111111;
-  mem[0x9008] = 0b10000000;
-  mem[0x9009] = 0b11111111;
-  mem[0x900A] = 0b10000000;
-  mem[0x900B] = 0b11111111;
-  mem[0x900C] = 0b10000000;
-  mem[0x900D] = 0b11111111;
-  mem[0x900E] = 0b10000000;
-  mem[0x900F] = 0b11111111;
+  mem[0x9000] = 0b00000000;
+  mem[0x9001] = 0b00000000;
+  mem[0x9002] = 0b00000000;
+  mem[0x9003] = 0b00000000;
+  mem[0x9004] = 0b00000000;
+  mem[0x9005] = 0b00000000;
+  mem[0x9006] = 0b00000000;
+  mem[0x9007] = 0b00000000;
+  mem[0x9008] = 0b00000000;
+  mem[0x9009] = 0b00000000;
+  mem[0x900A] = 0b00000000;
+  mem[0x900B] = 0b00000000;
+  mem[0x900C] = 0b00000000;
+  mem[0x900D] = 0b00000000;
+  mem[0x900E] = 0b00000000;
+  mem[0x900F] = 0b00000000;
 
-  mem[0x8010] = 0b11100111;
-  mem[0x8011] = 0b11111111;
-  mem[0x8012] = 0b11000011;
-  mem[0x8013] = 0b11111111;
-  mem[0x8014] = 0b10000001;
-  mem[0x8015] = 0b11111111;
-  mem[0x8016] = 0b00000000;
-  mem[0x8017] = 0b11111111;
-  mem[0x8018] = 0b10000001;
-  mem[0x8019] = 0b11111111;
-  mem[0x801A] = 0b11000011;
-  mem[0x801B] = 0b11111111;
-  mem[0x801C] = 0b11100111;
-  mem[0x801D] = 0b11111111;
-  mem[0x801E] = 0b11111111;
-  mem[0x801F] = 0b11111111;
+  mem[0x9010] = 0b10110001;
+  mem[0x9011] = 0b10110001;
+  mem[0x9012] = 0b10110001;
+  mem[0x9013] = 0b10110001;
+  mem[0x9014] = 0b10110001;
+  mem[0x9015] = 0b10110001;
+  mem[0x9016] = 0b10110001;
+  mem[0x9017] = 0b10110001;
+  mem[0x9018] = 0b10110001;
+  mem[0x9019] = 0b10110001;
+  mem[0x901A] = 0b10110001;
+  mem[0x901B] = 0b10110001;
+  mem[0x901C] = 0b10110001;
+  mem[0x901D] = 0b10110001;
+  mem[0x901E] = 0b10110001;
+  mem[0x901F] = 0b10110001;
 #endif
 
   dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
+  
   dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
   dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
+
+  //dbg_write(ADDR_OBP0, 0b11111111);
+  //dbg_write(ADDR_OBP1, 0b11111111);
 
   /*
   dbg_write(ADDR_BGP,  0b11100100);
@@ -315,6 +321,9 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
   dbg_write(ADDR_SCY, mem[ADDR_SCY]);
   dbg_write(ADDR_SCX, mem[ADDR_SCX]);
+
+  //dbg_write(ADDR_SCY, 0);
+  //dbg_write(ADDR_SCX, 3);
 
   dbg_write(ADDR_WY, mem[ADDR_WY]);
   dbg_write(ADDR_WX, mem[ADDR_WX]);
@@ -340,8 +349,6 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
   //dbg_write(ADDR_LCDC, 0b10000001);
-
-  run(100000, {0}, false);
 
   if (verbose) printf("\n");
 }
@@ -536,20 +543,21 @@ void GateBoy::phase(Req req, bool verbose) {
   int new_x = top.pix_pipe.get_pix_count();
   int new_y = top.lcd_reg.get_y();
 
-  //if (new_y != old_y) printf("\n");
-  if (old_st && !new_st) printf("\n");
+  if (top.lcd_reg.get_y() || !top.lcd_reg._LCD_PIN_S.qp()) {
+    if (!old_st && new_st) printf("\n%03d ", top.lcd_reg.get_y());
 
-  if (old_cp && !new_cp) {
-    int p0 = (bool)top.pix_pipe._LCD_PIN_LD0.qp();
-    int p1 = (bool)top.pix_pipe._LCD_PIN_LD1.qp();
+    if (!(old_cp & old_st) && (new_cp & new_st)) {
+      int p0 = (bool)top.pix_pipe.LCD_PIN_LD0.qp();
+      int p1 = (bool)top.pix_pipe.LCD_PIN_LD1.qp();
 
-    int c = p0 + p1 * 2;
+      int c = p0 + p1 * 2;
 
-    switch(c) {
-    case 0: printf("\u001b[48;2;200;200;200m \u001b[39;49m"); break;
-    case 1: printf("\u001b[48;2;150;150;150m \u001b[39;49m"); break;
-    case 2: printf("\u001b[48;2;100;100;100m \u001b[39;49m"); break;
-    case 3: printf("\u001b[48;2;50;50;50m \u001b[39;49m");    break;
+      switch(c) {
+      case 0: printf("\u001b[48;2;200;200;200m \u001b[39;49m"); break;
+      case 1: printf("\u001b[48;2;150;150;150m \u001b[39;49m"); break;
+      case 2: printf("\u001b[48;2;100;100;100m \u001b[39;49m"); break;
+      case 3: printf("\u001b[48;2;50;50;50m \u001b[39;49m");    break;
+      }
     }
   }
 

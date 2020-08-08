@@ -742,23 +742,37 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   // Pixel merge + emit
 
   {
-    // RAJY := and(
+    // RAJY := and(PYBO_Q, VYXE_QN) // WAT
+    // TADE := and(SOHU_Q, VYXE_QN) // WAT
 
     /*p35.RAJY*/ wire RAJY_PIX_BG_LOp  = and2(VYXE_LCDC_BGEN.qp(), PYBO_BG_PIPE_A7.qp());
     /*p35.TADE*/ wire TADE_PIX_BG_HIp  = and2(VYXE_LCDC_BGEN.qp(), SOHU_BG_PIPE_B7.qp());
 
+    // WOXA := and(XYLO_QN, VUPY_Q); // WAT
+    // XULA := and(XYLO_QN, WUFY_Q); // WAT
+
     /*p35.WOXA*/ wire WOXA_PIX_SP_LOp  = and2(XYLO_LCDC_SPEN.qp(), VUPY_SPR_PIPE_A7.qp());
     /*p35.XULA*/ wire XULA_PIX_SP_HIp  = and2(XYLO_LCDC_SPEN.qp(), WUFY_SPR_PIPE_B7.qp());
 
+    // NULY := nor(WOXA, XULA)
+
     /*p35.NULY*/ wire NULY_PIX_SP_MASKn  = nor2(WOXA_PIX_SP_LOp, XULA_PIX_SP_HIp);
+
+    // RYFU := and(RAJY, VAVA_Q);
+    // RUTA := and(TADE, VAVA_Q);
+    // POKA := nor(NULY, RUTA, RYFU)
 
     /*p35.RYFU*/ wire RYFU_MASK_BG0 = and2(RAJY_PIX_BG_LOp, VAVA_MASK_PIPE_7.qp());
     /*p35.RUTA*/ wire RUTA_MASK_BG1 = and2(TADE_PIX_BG_HIp, VAVA_MASK_PIPE_7.qp());
     /*p35.POKA*/ wire POKA_BGPIXELn = nor3(NULY_PIX_SP_MASKn, RYFU_MASK_BG0, RUTA_MASK_BG1);
 
+    // LOME := not(LYME_Q)
+    // LAFU := nand(LOME, POKA)
+    // LEKA := nand(LYME_Q, POKA) // !!!
+
     /*p34.LOME*/ wire LOME_PAL_PIPE_7n = not1(LYME_PAL_PIPE_7.qp());
     /*p34.LAFU*/ wire LAFU_OBP0PIXELn = nand2(LOME_PAL_PIPE_7n, POKA_BGPIXELn);
-    /*p34.LEKA*/ wire LEKA_OBP1PIXELn = nand2(LOME_PAL_PIPE_7n, POKA_BGPIXELn);
+    /*p34.LEKA*/ wire LEKA_OBP1PIXELn = nand2(LYME_PAL_PIPE_7.qp(), POKA_BGPIXELn);
 
     //----------
     // Sprite palette 0 lookup

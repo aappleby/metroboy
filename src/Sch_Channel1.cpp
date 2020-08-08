@@ -11,7 +11,7 @@ namespace Schematics {
 void Channel1_tick(const Pins& pins,
                    const Gameboy& a,
                    const Gameboy& b,
-                   const ClkSignals& ff20,
+                   const ClkSignals& dff20,
                    Gameboy& next) {
 
   //----------
@@ -481,8 +481,8 @@ void Channel1_tick(const Pins& pins,
     // FIXME
     //wire aCLK_1M  = a.clk.DOVA_ABCDxxxx;
     //wire bCLK_1M  = b.clk.DOVA_ABCDxxxx;
-    wire aCLK_1M  = ff20.DOVA_ABCDxxxx;
-    wire bCLK_1M  = ff20.DOVA_ABCDxxxx;
+    wire aCLK_1M  = dff20.DOVA_ABCDxxxx;
+    wire bCLK_1M  = dff20.DOVA_ABCDxxxx;
 
     /*p13.EZEC*/ next.ch1.START = tock_pos(aCLK_1M, bCLK_1M, /*p13.DUKA*/ not1(b.apu.APU_RESET1), b.ch1.START, b.ch1.NR14_START);
 

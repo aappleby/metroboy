@@ -48,10 +48,10 @@ void VramBus::dump(Dumper& d, const SchematicTop& top) const {
                    MEGU_TILE_DA4.qn(), MYJY_TILE_DA5.qn(), NASA_TILE_DA6.qn(), NEFO_TILE_DA7.qn());
   int temp2 = pack_p(RAWU_TILE_DB0.qn(), POZO_TILE_DB1.qn(), PYZO_TILE_DB2.qn(), POXA_TILE_DB3.qn(),
                    PULO_TILE_DB4.qn(), POJU_TILE_DB5.qn(), POWY_TILE_DB6.qn(), PYJU_TILE_DB7.qn());
-  int temp3 = pack_p(PEFO_SPRITE_DA0.qn(), ROKA_SPRITE_DA1.qn(), MYTU_SPRITE_DA2.qn(), RAMU_SPRITE_DA3.qn(),
-                   SELE_SPRITE_DA4.qn(), SUTO_SPRITE_DA5.qn(), RAMA_SPRITE_DA6.qn(), RYDU_SPRITE_DA7.qn());
-  int temp4 = pack_p(REWO_SPRITE_DB0.qn(), PEBA_SPRITE_DB1.qn(), MOFO_SPRITE_DB2.qn(), PUDU_SPRITE_DB3.qn(),
-                   SAJA_SPRITE_DB4.qn(), SUNY_SPRITE_DB5.qn(), SEMO_SPRITE_DB6.qn(), SEGA_SPRITE_DB7.qn());
+  int temp3 = pack_p(PEFO_SPRITE_DB0.qn(), ROKA_SPRITE_DB1.qn(), MYTU_SPRITE_DB2.qn(), RAMU_SPRITE_DB3.qn(),
+                   SELE_SPRITE_DB4.qn(), SUTO_SPRITE_DB5.qn(), RAMA_SPRITE_DB6.qn(), RYDU_SPRITE_DB7.qn());
+  int temp4 = pack_p(REWO_SPRITE_DA0.qn(), PEBA_SPRITE_DA1.qn(), MOFO_SPRITE_DA2.qn(), PUDU_SPRITE_DA3.qn(),
+                   SAJA_SPRITE_DA4.qn(), SUNY_SPRITE_DA5.qn(), SEMO_SPRITE_DA6.qn(), SEGA_SPRITE_DA7.qn());
 
   d("TEMP DATA 1      : 0x%02x\n", temp1);
   d("TEMP DATA 2      : 0x%02x\n", temp2);
@@ -716,27 +716,27 @@ void VramBus::tock(SchematicTop& top) {
     /*p29.NYBE*/ wire _NYBE_CLKn = not1(_PEBY_CLKp);
     /*p29.PUCO*/ wire _PUCO_CLKp = not1(_NYBE_CLKn);
 
-    /*p33.PEFO*/ top.vram_bus.PEFO_SPRITE_DA0 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _POBE_FLIP0);
-    /*p33.ROKA*/ top.vram_bus.ROKA_SPRITE_DA1 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PACY_FLIP1);
-    /*p33.MYTU*/ top.vram_bus.MYTU_SPRITE_DA2 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PONO_FLIP2);
-    /*p33.RAMU*/ top.vram_bus.RAMU_SPRITE_DA3 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PUGU_FLIP3);
-    /*p33.SELE*/ top.vram_bus.SELE_SPRITE_DA4 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PUTE_FLIP4);
-    /*p33.SUTO*/ top.vram_bus.SUTO_SPRITE_DA5 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PULY_FLIP5);
-    /*p33.RAMA*/ top.vram_bus.RAMA_SPRITE_DA6 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PELO_FLIP6);
-    /*p33.RYDU*/ top.vram_bus.RYDU_SPRITE_DA7 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PAWE_FLIP7);
+    /*p33.PEFO*/ top.vram_bus.PEFO_SPRITE_DB0 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _POBE_FLIP0);
+    /*p33.ROKA*/ top.vram_bus.ROKA_SPRITE_DB1 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PACY_FLIP1);
+    /*p33.MYTU*/ top.vram_bus.MYTU_SPRITE_DB2 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PONO_FLIP2);
+    /*p33.RAMU*/ top.vram_bus.RAMU_SPRITE_DB3 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PUGU_FLIP3);
+    /*p33.SELE*/ top.vram_bus.SELE_SPRITE_DB4 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PUTE_FLIP4);
+    /*p33.SUTO*/ top.vram_bus.SUTO_SPRITE_DB5 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PULY_FLIP5);
+    /*p33.RAMA*/ top.vram_bus.RAMA_SPRITE_DB6 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PELO_FLIP6);
+    /*p33.RYDU*/ top.vram_bus.RYDU_SPRITE_DB7 = dff8_A(_PUCO_CLKp, !_PUCO_CLKp, _PAWE_FLIP7);
 
     /*p29.VYWA*/ wire _VYWA_CLKp = not1(top.sprite_fetcher.TOPU_LATCH_SPPIXA());
     /*p29.WENY*/ wire _WENY_CLKn = not1(_VYWA_CLKp);
     /*p29.XADO*/ wire _XADO_CLKp = not1(_WENY_CLKn);
 
-    /*p33.REWO*/ top.vram_bus.REWO_SPRITE_DB0 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _POBE_FLIP0);
-    /*p33.PEBA*/ top.vram_bus.PEBA_SPRITE_DB1 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PACY_FLIP1);
-    /*p33.MOFO*/ top.vram_bus.MOFO_SPRITE_DB2 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PONO_FLIP2);
-    /*p33.PUDU*/ top.vram_bus.PUDU_SPRITE_DB3 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PUGU_FLIP3);
-    /*p33.SAJA*/ top.vram_bus.SAJA_SPRITE_DB4 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PUTE_FLIP4);
-    /*p33.SUNY*/ top.vram_bus.SUNY_SPRITE_DB5 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PULY_FLIP5);
-    /*p33.SEMO*/ top.vram_bus.SEMO_SPRITE_DB6 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PELO_FLIP6);
-    /*p33.SEGA*/ top.vram_bus.SEGA_SPRITE_DB7 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PAWE_FLIP7);
+    /*p33.REWO*/ top.vram_bus.REWO_SPRITE_DA0 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _POBE_FLIP0);
+    /*p33.PEBA*/ top.vram_bus.PEBA_SPRITE_DA1 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PACY_FLIP1);
+    /*p33.MOFO*/ top.vram_bus.MOFO_SPRITE_DA2 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PONO_FLIP2);
+    /*p33.PUDU*/ top.vram_bus.PUDU_SPRITE_DA3 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PUGU_FLIP3);
+    /*p33.SAJA*/ top.vram_bus.SAJA_SPRITE_DA4 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PUTE_FLIP4);
+    /*p33.SUNY*/ top.vram_bus.SUNY_SPRITE_DA5 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PULY_FLIP5);
+    /*p33.SEMO*/ top.vram_bus.SEMO_SPRITE_DA6 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PELO_FLIP6);
+    /*p33.SEGA*/ top.vram_bus.SEGA_SPRITE_DA7 = dff8_A(_XADO_CLKp, !_XADO_CLKp, _PAWE_FLIP7);
   }
 }
 

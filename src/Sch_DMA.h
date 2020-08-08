@@ -55,6 +55,12 @@ struct DmaRegisters {
 //private:
 
   wire MUDA_DMA_SRC_VRAMp() const {
+    // LEBU := not(MARU_QN)
+    // MUDA := nor(PULA_QN, POKU_QN, LEBU)
+
+    // something wrong here... polarity of high addr bits inverted
+    // MUDA = nor(!A13, !A14, A15)
+
     /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15.qn());
     /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13.qn(), POKU_DMA_A14.qn(), LEBU_DMA_ADDR_A15n);
     return MUDA_DMA_SRC_VRAMp;

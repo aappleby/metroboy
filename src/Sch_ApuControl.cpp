@@ -12,7 +12,7 @@ namespace Schematics {
 
 void P09_ApuControl_tick(const Gameboy& a,
                          const Gameboy& b,
-                         const ClkSignals& ff20,
+                         const ClkSignals& dff20,
                          const TimerSignals& tim_sig,
                          Gameboy& next) {
 
@@ -46,9 +46,9 @@ void P09_ApuControl_tick(const Gameboy& a,
 
   // FIXME
   {
-    /*p01.APUV*/ wire APUV = not1(ff20.AMUK_xBxDxFxH);
-    /*p01.CYBO*/ wire CYBO = not1(ff20.AMUK_xBxDxFxH);
-    /*p01.ARYF*/ wire ARYF = not1(ff20.AMUK_xBxDxFxH);
+    /*p01.APUV*/ wire APUV = not1(dff20.AMUK_xBxDxFxH);
+    /*p01.CYBO*/ wire CYBO = not1(dff20.AMUK_xBxDxFxH);
+    /*p01.ARYF*/ wire ARYF = not1(dff20.AMUK_xBxDxFxH);
 
     /*p09.ATYV*/ wire APU_RESETn3 = not1(b.apu.APU_RESET1);
     ///*p09.AJER*/ next.apu.AJER_2M  = tock_pos(a.apu.APUV, b.apu.APUV, APU_RESETn3, b.apu.AJER_2M, !b.apu.AJER_2M);

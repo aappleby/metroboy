@@ -144,16 +144,10 @@ void ClockRegisters::tock_clk_slow(int phase, const SchematicTop& top) {
     // ADYK_08 >> ADAR_01 : Qn?
     // ADYK_09 >> AFUR_03 : Q?
 
-    // does this phase clock actually work?
     /*p01.AFUR*/ AFUR_ABCDxxxx = dff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  ADYK_ABCxxxxH_);
     /*p01.ALEF*/ ALEF_AxxxxFGH = dff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), UPOJ_MODE_PRODn, !AFUR_ABCDxxxx_);
     /*p01.APUK*/ APUK_xxCDEFxx = dff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), UPOJ_MODE_PRODn, !ALEF_AxxxxFGH_);
     /*p01.ADYK*/ ADYK_ABCxxxxH = dff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), UPOJ_MODE_PRODn, !APUK_xxCDEFxx_);
-
-    ///*p01.AFUR*/ AFUR_ABCDxxxx = dff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), UPOJ_MODE_PRODn, !ADYK_ABCxxxxH_);
-    ///*p01.ALEF*/ ALEF_AxxxxFGH = dff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  AFUR_ABCDxxxx_);
-    ///*p01.APUK*/ APUK_xxCDEFxx = dff9(!ATAL_xBxDxFxH(),  ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  ALEF_AxxxxFGH_);
-    ///*p01.ADYK*/ ADYK_ABCxxxxH = dff9( ATAL_xBxDxFxH(), !ATAL_xBxDxFxH(), UPOJ_MODE_PRODn,  APUK_xxCDEFxx_);
   }
 
   {

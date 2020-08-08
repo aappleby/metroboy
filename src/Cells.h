@@ -74,11 +74,11 @@ inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { retu
 
 //-----------------------------------------------------------------------------
 
-__forceinline wire add_c(wire a, wire b, wire c) {
+inline wire add_c(wire a, wire b, wire c) {
   return (a + b + c) & 2;
 }
 
-__forceinline wire add_s(wire a, wire b, wire c) {
+inline wire add_s(wire a, wire b, wire c) {
   return (a + b + c) & 1;
 }
 
@@ -125,7 +125,11 @@ inline RegDelta tribuf(wire OEp, wire D) {
 #endif
 }
 
-// RYMA 6-rung green tribuf
+//-----------------------------------------------------------------------------
+// top rung tadpole facing second rung dot
+
+// OE _must_ be active high - see FF46
+// Output _must_ be non-inverting - see FF46
 
 // TRIBUF_01
 // TRIBUF_02 NC
@@ -133,12 +137,6 @@ inline RegDelta tribuf(wire OEp, wire D) {
 // TRIBUF_04
 // TRIBUF_05 NC
 // TRIBUF_06
-
-//-----------------------------------------------------------------------------
-// top rung tadpole facing second rung dot
-
-// OE _must_ be active high - see FF46
-// Output _must_ be non-inverting - see FF46
 
 inline RegDelta tribuf_6p(wire OEp, wire D) {
 #if 0
@@ -206,9 +204,8 @@ inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
 // 8-rung register with no reset and dual outputs
 // Two or three vias in center column
 // This looks like it ticks on the _falling_ edge of the clock
-
+// Ticking on the rising edge of the clock breaks sprite rendering and stuff.
 // Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
-
 // This is probably Qn/Q order like the others.
 
 // |o------O | CLKp
@@ -232,6 +229,7 @@ inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
 inline RegQNIn dff8_A(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
+  (void)CLKn;
 
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
@@ -239,6 +237,7 @@ inline RegQNIn dff8_A(wire CLKp, wire CLKn, bool D) {
 inline RegQPIn dff8_B(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
+  (void)CLKn;
 
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
@@ -246,6 +245,7 @@ inline RegQPIn dff8_B(wire CLKp, wire CLKn, bool D) {
 inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
+  (void)CLKn;
 
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
@@ -257,8 +257,6 @@ inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
 // Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
 // store, SCY, SCX, LCDC, WX, WY
 
-// FIXME qp/qn inconsistent, see sprite store vs phase clock
-
 // | O===--o | 
 // |==--O====| CLKp
 // | ------- | D
@@ -266,30 +264,18 @@ inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
 // |  -----  | 
 // |--xxOxx--| RSTn
 // |o-------o| 
-// |xxx-O-xxx| Qn (pretty sure, though AROR is weird)
-// |xxx-O-xxx| Q  (pretty sure)
+// |xxx-O-xxx| Qn
+// |xxx-O-xxx| Q
 
 // REG9_01 NC
 // REG9_02 << CLKp
 // REG9_03 << D
 // REG9_04 << CLKn
 // REG9_05 NC
-// REG9_06 << RSTp - THIS MUST BE POSITIVE RESET - UPOJ_MODE_PROD is active-low
+// REG9_06 << RSTn
 // REG9_07 NC
 // REG9_08 >> Qn
 // REG9_09 >> Q
-
-///*p31.XEPE*/ XEPE_STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_OAM_DB0);
-
-// XEPE_01 nc
-// XEPE_02 << FUXU_02  (CLKp)
-// XEPE_03 << ZAGO_02  (D)
-// XEPE_04 << COMP_CLK (CLKn)
-// XEPE_05 nc
-// XEPE_06 << DYNA02   (RST)
-// XEPE_07 nc
-// XEPE_08 >> ZOGY_02  (Qn)
-// XEPE_09 >> nc
 
 inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
@@ -327,11 +313,6 @@ inline RegQNIn dff9_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // Reg11 is used by the background pixel temp state
 // Not sure why it's special.
 
-///*p32.RAWU*/ top.RAWU_TILE_DB0.set(LABU_LATCH_TILE_DBp, top.VYPO_GND, top.vram_bus.VRM_BUS_D0);
-
-// wire LUVE_MATCH_TILE_DBn = not1(LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
-// wire LABU_LATCH_TILE_DBp = not1(LUVE_MATCH_TILE_DBn);
-
 // RAWU_01 nc
 // RAWU_02 << VYPO_02 (RSTp?)
 // RAWU_03 << VRM_BUS_D0
@@ -343,19 +324,6 @@ inline RegQNIn dff9_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // RAWU_09 << VYPO_02 (RSTp?)
 // RAWU_10 nc
 // RAWU_11 >> TUXE_02 (Qn probably)
-
-// LUVE = not1(LESO)
-// 
-
-
-/*p32.RAWU*/
-/*p32.POZO*/
-/*p32.PYZO*/
-/*p32.POXA*/
-/*p32.PULO*/
-/*p32.POJU*/
-/*p32.POWY*/
-/*p32.PYJU*/
 
 inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
@@ -390,42 +358,6 @@ inline RegQNIn dff11_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // REG13_12 >> Qn
 // REG13_13 >> Q
 
-/*p01.AFER*/ // out on 13
-/*p30.XADU*/ // out on 12
-/*p30.XEDY*/ // out on 12
-/*p30.ZUZE*/ // out on 12
-/*p30.XOBE*/ // out on 12
-/*p30.YDUF*/ // out on 12
-/*p30.XECU*/ // out on 12
-
-// AFER_01 nc
-// AFER_02 << UPOJ_04 (RSTp?)
-// AFER_03 << ASOL_03 (D)
-// AFER_04 nc
-// AFER_05 << BOGA_07 (CLKp?)
-// AFER_06 nc
-// AFER_07 nc
-// AFER_08 << BOMA_07 (CLKn?)
-// AFER_09 << UPOJ_04 (RSTp?)
-// AFER_10 nc
-// AFER_11 nc
-// AFER_12 >> nc
-// AFER_13 >> AVOR_01 // Must be Q, see resets
-
-// XADU_01 nc
-// XADU_02 << WEFE_02 RSTn
-// XADU_03 << YFOT_02 (D)
-// XADU_04 nc
-// XADU_05 << WUDA_03 CLKp
-// XADU_06 nc
-// XADU_07 nc
-// XADU_08 << CYKE_02 CLKn
-// XADU_09 << WEFE_02 RSTn
-// XADU_10 nc
-// XADU_11 nc
-// XADU_12 >> WUZY_04 Qn
-// XADU_13 >> nc      Q
-
 inline RegQNIn dff13_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
@@ -459,17 +391,14 @@ inline RegQPIn dff13_B(wire CLKp, wire CLKn, wire RSTn, wire D) {
 }
 
 //-----------------------------------------------------------------------------
-// set and reset must be async (see interrupts)
-// reset must take priority over set (see interrupts ALUR_RSTn)
-
-// This state is really 3 pieces - clock edge detector, latch, and output buffer.
+// This reg is really 3 pieces - clock edge detector, latch, and output buffer.
 
 // REG17_01 == REG17_12
 // REG17_02 << CLKp
 // REG17_03 == REG17_09
 // REG17_04 NC
 // REG17_05 NC
-// REG17_06 << RSTn
+// REG17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
 // REG17_07 << D
 // REG17_08 NC
 // REG17_09 == REG17_03
@@ -481,8 +410,6 @@ inline RegQPIn dff13_B(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // REG17_15 NC
 // REG17_16 >> QN   _MUST_ be QN - see TERO
 // REG17_17 >> Q    _MUST_ be Q  - see TERO
-
-// must be RSTn, see WUVU/VENA/WOSU
 
 inline RegQNIn dff17_A(wire CLKp, wire RSTn, wire D) {
 #if 0
@@ -524,6 +451,58 @@ inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
 }
 
 //-----------------------------------------------------------------------------
+// 20-rung ff with async load. Only used by TIMA and a few audio regs.
+
+// REG20_01 >> Qn
+// REG20_02 nc
+// REG20_03 << D
+// REG20_04 << LOADp
+// REG20_05 nc
+// REG20_06 sc
+// REG20_07 nc
+// REG20_08 nc
+// REG20_09 nc
+// REG20_10 nc
+// REG20_11 sc
+// REG20_12 nc
+// REG20_13 nc
+// REG20_14 << LOADp
+// REG20_15 nc
+// REG20_16 << D
+// REG20_17 >> Q
+// REG20_18 sc
+// REG20_19 sc
+// REG20_20 << CLKp
+
+inline RegDelta dff20(wire CLKp, wire LOADp, bool D) {
+#if 1
+  bool b3 = 1;
+  bool b2 = LOADp;
+  bool b1 = CLKp;
+  bool b0 = D;
+  return RegDelta((b3 << 3) | (b2 << 2) | (b1 << 1) | (b0 << 0));
+#else
+  if (LOADp) {
+    if (CLKp) {
+      return D ? DELTA_A1C1 : DELTA_A0C1;
+    }
+    else {
+      return D ? DELTA_A1C0 : DELTA_A0C0;
+    }
+  }
+  else {
+    if (CLKp) {
+      return D ? DELTA_D1C1 : DELTA_D0C1;
+    }
+    else {
+      return D ? DELTA_D1C0 : DELTA_D0C0;
+    }
+  }
+#endif
+}
+
+//-----------------------------------------------------------------------------
+// DFF with async set/reset. Used by pixel pipes, serial data register.
 
 // REG22_01 SC
 // REG22_02 NC
@@ -548,31 +527,6 @@ inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
 // REG22_21 SC
 // REG22_22 << CLKp
 
-// /*p02.UBUL*/ UBUL_FF0F_3.set(CALY_INT_SERIALp, TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_FF0F_INp);
-
-// UBUL_01 == UBUL_14
-// UBUL_02 NC
-// UBUL_03 NC
-// UBUL_04 NC
-// UBUL_05 == UBUL_11 == UBUL_19
-// UBUL_06 == UBUL_21
-// UBUL_07 << PESU_FF0F_INp
-// UBUL_08 NC
-// UBUL_09 == UBUL_20
-// UBUL_10 NC
-// UBUL_11 == UBUL_05 == UBUL_19
-// UBUL_12 NC
-// UBUL_13 NC
-// UBUL_14 << TOME_FF0F_SET3n, >> UBUL_01
-// UBUL_15 >> NC
-// UBUL_16 >> CPU_PIN_INT_SERIAL
-// UBUL_17 << TUNY_FF0F_RST3n
-// UBUL_18 NC
-// UBUL_19 == UBUL_05 == UBUL_11
-// UBUL_20 == UBUL_09
-// UBUL_21 == UBUL_06
-// UBUL_22 << CALY_INT_SERIALp
-
 inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
 #if 0
   bool async = !SETn || !RSTn;
@@ -593,9 +547,6 @@ inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
-
-// ASOL seems to break this pattern, it looks like it has to be nand2 or have
-// an inverted output.
 
 // NORLATCH_01 << SET
 // NORLATCH_01 NC
@@ -624,9 +575,7 @@ inline RegDelta nor_latch(wire SETp, wire RSTp) {
 }
 
 //-----------------------------------------------------------------------------
-// 6-rung cell, "arms" on VCC side
-
-// Only TAKA/LONY seem to use this cell
+// 6-rung cell, "arms" on VCC side. Only TAKA/LONY seem to use this cell
 
 // NANDLATCH_01 << SETn
 // NANDLATCH_01 NC
@@ -668,60 +617,9 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // TPLATCH_09 NC
 // TPLATCH_10
 
-
-///*p08.RUPA*/ TpLatch RUPA_EXT_DATA_LATCH_06;
-// RUPA_01 << LAVO
-// RUPA_02 NC
-// RUPA_03 << D6_C
-// RUPA_04 NC
-// RUPA_05 NC
-// RUPA_06 NC
-// RUPA_07 NC
-// RUPA_08 >> SEVU
-// RUPA_09 NC
-// RUPA_10 ?? NC
-
-///*p02.MATY*/ TpLatch MATY_FF0F_L0;
-// MATY_01 << ROLO_05
-// MATY_02 nc
-// MATY_03 << CPU_PIN_INT_VBLANK
-// MATY_04 nc
-// MATY_05 nc
-// MATY_06 nc
-// MATY_07 nc
-// MATY_08 ?? nc
-// MATY_09 nc
-// MATY_10 >> NELA_04
-
-///*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
-// ALOR_01 << MATE_02
-// ALOR_02 nc
-// ALOR_03 << CPU_BUS_A00
-// ALOR_04 nc
-// ALOR_05 nc
-// ALOR_06 nc
-// ALOR_07 nc
-// ALOR_08 >> AMET_03
-// ALOR_09 nc
-// ALOR_10
-
-///*p31.WYNO*/ TpLatch WYNO_LATCH_OAM_A4;
-///*p31.WYNO*/ WYNO_LATCH_OAM_A4 = tp_latch(BODE_OAM_LATCH, top.OAM_BUS_DA4);
-
-// WYNO_01 << BODE_02
-// WYNO_02 NC
-// WYNO_03 << OAM_BUS_DA4
-// WYNO_04 NC
-// WYNO_05 NC
-// WYNO_06 NC
-// WYNO_07 NC
-// WYNO_08 >> GOMO_02
-// WYNO_09 NC
-// WYNO_10 >> XUNA_01
-
 // Output A must _not_ be inverting, see EXT_PIN_A00_A
+// Second output _must_ be inverting.
 
-// first output used
 inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;
@@ -730,8 +628,6 @@ inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
     return D ? DELTA_TRI1 : DELTA_TRI0;
   }
 }
-
-// second output used, _must_ be inverting.
 
 inline RegDelta tp_latch_B(wire HOLDn, wire D) {
   if (!HOLDn) {
@@ -742,8 +638,6 @@ inline RegDelta tp_latch_B(wire HOLDn, wire D) {
   }
 }
 
-// both outputs used
-
 inline RegDelta tp_latch_AB(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;
@@ -752,78 +646,3 @@ inline RegDelta tp_latch_AB(wire HOLDn, wire D) {
     return D ? DELTA_TRI1 : DELTA_TRI0;
   }
 }
-
-//-----------------------------------------------------------------------------
-// 20-rung
-
-// REGA_TIMA_0.clk_n(SOGU_TIMA_CLK,   MEXU_TIMA_LOAD, PUXY_TIMA_LD_0);
-
-// REGA_01 >> POVY_20 Q
-// REGA_02 nc
-// REGA_03 << PUXY_03 D
-// REGA_04 << MEXU_04 LOADp
-// REGA_05 nc
-// REGA_06 <> REGA_18 sc
-// REGA_07 nc
-// REGA_08 nc
-// REGA_09 nc
-// REGA_10 nc
-// REGA_11 <> REGA_19 sc
-// REGA_12 nc
-// REGA_13 nc
-// REGA_14 << MEXU_04 LOADp
-// REGA_15 nc
-// REGA_16 << PUXY_03 D
-// REGA_17 >> SOKU_04 Qn? Not sure.
-// REGA_18 <> REGA_06 sc
-// REGA_19 <> REGA_11 sc
-// REGA_20 << SOGU_03
-
-// POVY_01 >> PERU_20 Q
-// POVY_02 nc
-// POVY_03 <<  NERO_03
-// POVY_04 <<  LOADp
-// POVY_05 nc
-// POVY_06 <>  sc
-// POVY_07 nc
-// POVY_08 nc
-// POVY_09 nc
-// POVY_10 nc
-// POVY_11 <>  sc
-// POVY_12 nc
-// POVY_13 nc
-// POVY_14 <<  MEXU_04 LOADp
-// POVY_15 nc
-// POVY_16 <<  NERO_03 D
-// POVY_17 >>  RACY_04 Qn? Not sure.
-// POVY_18 <>  sc
-// POVY_19 <>  sc
-// POVY_20 << REGA_01
-
-inline RegDelta ff20(wire CLKp, wire LOADp, bool D) {
-#if 1
-  bool b3 = 1;
-  bool b2 = LOADp;
-  bool b1 = CLKp;
-  bool b0 = D;
-  return RegDelta((b3 << 3) | (b2 << 2) | (b1 << 1) | (b0 << 0));
-#else
-  if (LOADp) {
-    if (CLKp) {
-      return D ? DELTA_A1C1 : DELTA_A0C1;
-    }
-    else {
-      return D ? DELTA_A1C0 : DELTA_A0C0;
-    }
-  }
-  else {
-    if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
-    }
-  }
-#endif
-}
-

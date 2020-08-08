@@ -65,11 +65,6 @@ constexpr bool FAST_HASH = 0;
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
-  memset(mem, 0, 65536);
-
-  load_blob("roms/LinksAwakening_dog.dump", mem, 65536);
-
-  printf("Dump loaded\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -162,7 +157,7 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
   //run(64, req, verbose);
 
-#if 0
+#if 1
   printf("//----------------------------------------\n");
   printf("// Testing reg read/write\n");
 
@@ -195,7 +190,7 @@ void GateBoy::run_reset_sequence(bool verbose) {
   printf("\n");
 #endif
 
-#if 0
+#if 1
   printf("//----------------------------------------\n");
   printf("// Testing Cart ROM read: ");
   test_mem(0x0000, 0x7FFF, 256, false);
@@ -218,6 +213,13 @@ void GateBoy::run_reset_sequence(bool verbose) {
   printf("// Testing ZRAM read/write: ");
   test_mem(0xFF80, 0xFFFE, 1, true);
 #endif
+
+
+  printf("//----------------------------------------\n");
+  printf("// Loading dump\n");
+  memset(mem, 0, 65536);
+  load_blob("roms/LinksAwakening_dog.dump", mem, 65536);
+  printf("Dump loaded\n");
 
   /*
   // Clear OAM
@@ -328,7 +330,6 @@ void GateBoy::run_reset_sequence(bool verbose) {
   dbg_write(ADDR_WY, mem[ADDR_WY]);
   dbg_write(ADDR_WX, mem[ADDR_WX]);
 
-
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
   // Bit 5 - Window Display Enable          (0=Off, 1=On)
@@ -348,7 +349,6 @@ void GateBoy::run_reset_sequence(bool verbose) {
   // #define FLAG_LCD_ON       0x80
 
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
-  //dbg_write(ADDR_LCDC, 0b10000001);
 
   if (verbose) printf("\n");
 }
@@ -571,7 +571,6 @@ void GateBoy::phase(Req req, bool verbose) {
     CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101); 
     CHECK_CLK_PHASE(top.clk_reg.ZEME_AxCxExGx(), 0b10101010); 
     CHECK_CLK_PHASE(top.clk_reg.ALET_xBxDxFxH(), 0b01010101); 
-    CHECK_CLK_PHASE(top.clk_reg.MOXE_AxCxExGx(), 0b10101010); 
     CHECK_CLK_PHASE(top.clk_reg.MEHE_AxCxExGx(), 0b10101010); 
     CHECK_CLK_PHASE(top.clk_reg.MYVO_AxCxExGx(), 0b10101010); 
 
@@ -702,7 +701,7 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
       TIMA_MAX = 0;
     }
     else {
-      TIMA_7 = ff20(!TIMA_6, TIMA_LD_7);
+      TIMA_7 = dff20(!TIMA_6, TIMA_LD_7);
       TIMA_MAX = dff17(xBCDEFGH, 1, TIMA_7);
     }
 

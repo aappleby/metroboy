@@ -147,6 +147,7 @@
     <ClInclude Include="src\OAM.h" />
     <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\PPU.h" />
+    <ClInclude Include="src\Probe.h" />
     <ClInclude Include="src\Sch_ApuControl.h" />
     <ClInclude Include="src\Sch_Bootrom.h" />
     <ClInclude Include="src\Sch_Channel1.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="src\Cart.cpp" />
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
+    <ClCompile Include="src\Probe.cpp" />
     <ClCompile Include="src\Sch_ApuControl.cpp" />
     <ClCompile Include="src\Sch_Bootrom.cpp" />
     <ClCompile Include="src\Sch_Channel1.cpp" />

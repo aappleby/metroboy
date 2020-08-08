@@ -8,7 +8,10 @@ using namespace Schematics;
 void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
   d("----------TileFetcher---------\n");
 
-  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
+  // high for 10 phases during fetch, low for 6 phases
+  /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(_LAXU_BFETCH_S0.qp(), _NYVA_BFETCH_S2.qp(), top.NYXU_TILE_FETCHER_RSTn());
+
+  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn);
   d("_LEBO_AxCxExGx           %d\n", _LEBO_AxCxExGx);
   d("\n");
 
@@ -17,11 +20,11 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
   d("SCX  %03d\n", scx);
   d("SCY  %03d\n", scy);
 
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.tile_fetcher.TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(top.pix_pipe.SEKO_WX_MATCHne(), top.pix_pipe.SUZU_WIN_FIRST_TILEne(), top.TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
   /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp);
 
   d("POKY_PRELOAD_DONEp         %c\n", _POKY_PRELOAD_DONEp        .c());
-  d("TAVE_PRELOAD_DONE_TRIGp  %d\n", top.tile_fetcher.TAVE_PRELOAD_DONE_TRIGp());
+  d("TAVE_PRELOAD_DONE_TRIGp  %d\n", top.TAVE_PRELOAD_DONE_TRIGp());
   d("\n");
   d("SEKO_WX_MATCHne          %d\n", top.pix_pipe.SEKO_WX_MATCHne());
   d("SUZU_WIN_FIRST_TILEne    %d\n", top.pix_pipe.SUZU_WIN_FIRST_TILEne());
@@ -35,7 +38,7 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
   d("LAXU_BFETCH_S0           %c\n", _LAXU_BFETCH_S0          .c());
   d("MESU_BFETCH_S1           %c\n", _MESU_BFETCH_S1          .c());
   d("NYVA_BFETCH_S2           %c\n", _NYVA_BFETCH_S2          .c());
-  d("MOCE_BFETCH_DONEn        %d\n", MOCE_BFETCH_DONEn());
+  d("MOCE_BFETCH_DONEn        %d\n", MOCE_BFETCH_DONEn);
   d("LOVY_FETCH_DONEp         %c\n", _LOVY_FETCH_DONEp        .c());
   d("NYKA_FETCH_DONE_Ap       %c\n", _NYKA_FETCH_DONE_Ap      .c());
   d("PORY_FETCH_DONE_Bp       %c\n", _PORY_FETCH_DONE_Bp      .c());
@@ -48,9 +51,7 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& top) const {
 
 //------------------------------------------------------------------------------
 
-void TileFetcher::tick(const SchematicTop& top) {
-  _XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp();
-  _NYXU_TILE_FETCHER_RSTn = top.NYXU_TILE_FETCHER_RSTn();
+void TileFetcher::tick(const SchematicTop& /*top*/) {
 }
 
 //------------------------------------------------------------------------------
@@ -61,10 +62,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p27.LONY*/ _LONY_BG_READ_VRAM_LATCHp = nand_latch(top.NYXU_TILE_FETCHER_RSTn(), _LURY_BG_READ_VRAM_LATCH_RSTn);
   }
 
-  {
-    /*p27.LOVY*/ _LOVY_FETCH_DONEp = dff17_A(top.clk_reg.MYVO_AxCxExGx(), top.NYXU_TILE_FETCHER_RSTn(), LYRY_BFETCH_DONEp());
+  /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(_LAXU_BFETCH_S0.qp(), _NYVA_BFETCH_S2.qp(), top.NYXU_TILE_FETCHER_RSTn());
+  /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
-    /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn());
+  {
+    /*p27.LOVY*/ _LOVY_FETCH_DONEp = dff17_A(top.clk_reg.MYVO_AxCxExGx(), top.NYXU_TILE_FETCHER_RSTn(), LYRY_BFETCH_DONEp);
+
+    // high for 10 phases during fetch, low for 6 phases
+    /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn);
 
     /*p27.LAXU*/ _LAXU_BFETCH_S0 = dff17_AB(_LEBO_AxCxExGx,       top.NYXU_TILE_FETCHER_RSTn(), _LAXU_BFETCH_S0.qn());
     /*p27.MESU*/ _MESU_BFETCH_S1 = dff17_AB(_LAXU_BFETCH_S0.qn(), top.NYXU_TILE_FETCHER_RSTn(), _MESU_BFETCH_S1.qn());
@@ -76,22 +81,14 @@ void TileFetcher::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(top.pix_pipe.MOSU_TILE_FETCHER_RSTp(), top.pix_pipe.LOBY_RENDERINGn());
 
-    /*p24.NYKA*/ _NYKA_FETCH_DONE_Ap = dff17_B(top.clk_reg.ALET_xBxDxFxH(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp());
+    /*p24.NYKA*/ _NYKA_FETCH_DONE_Ap = dff17_B(top.clk_reg.ALET_xBxDxFxH(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp);
     /*p24.PORY*/ _PORY_FETCH_DONE_Bp = dff17_B(top.clk_reg.MYVO_AxCxExGx(), _NAFY_RENDERING_AND_NOT_WIN_TRIG, _NYKA_FETCH_DONE_Ap.qp());
-    /*p24.PYGO*/ _PYGO_FETCH_DONE_Cp = dff17_B(top.clk_reg.ALET_xBxDxFxH(), _XYMU_RENDERINGp,                 _PORY_FETCH_DONE_Bp.qp());
+    /*p24.PYGO*/ _PYGO_FETCH_DONE_Cp = dff17_B(top.clk_reg.ALET_xBxDxFxH(), top.pix_pipe.XYMU_RENDERINGp(),   _PORY_FETCH_DONE_Bp.qp());
 
     /*p24.POKY*/ _POKY_PRELOAD_DONEp = nor_latch(_PYGO_FETCH_DONE_Cp.qp(), top.pix_pipe.LOBY_RENDERINGn());
   }
 
-  {
-    /*p27.MYSO*/ wire _MYSO_BG_TRIGp  = nor3(top.pix_pipe.LOBY_RENDERINGn(), LAXE_BFETCH_S0n(), _LYZU_BFETCH_S0_DELAY.qp());
-    /*p27.NYDY*/ _NYDY_LATCH_TILE_DAp = nand3(_MYSO_BG_TRIGp, _MESU_BFETCH_S1.qp(), NOFU_BFETCH_S2n());
-    /*p27.MOFU*/ _MOFU_LATCH_TILE_DBn = and2(_MYSO_BG_TRIGp, NAKO_BFETCH_S1n());
-  }
-
-
   //----------------------------------------
-
 
   // FF42 SCY
   {

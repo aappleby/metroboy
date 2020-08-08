@@ -129,9 +129,16 @@ struct SchematicTop {
     return ACYL_SCANNINGp;
   }
 
+  // -> sprite fetcher, top.TEVO
+  /*p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp() const {
+    /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_DONEp.qp());
+    /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(), _ROMO_PRELOAD_DONEn, tile_fetcher._NYKA_FETCH_DONE_Ap.qp(), tile_fetcher._PORY_FETCH_DONE_Bp.qp());
+    return  not1(_SUVU_PRELOAD_DONE_TRIGn);
+  }
+
   // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
   /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { 
-    /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+    /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
     return TEVO_FINE_RSTp;
   }
 

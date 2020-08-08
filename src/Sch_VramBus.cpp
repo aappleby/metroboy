@@ -1,6 +1,7 @@
 #include "Sch_VramBus.h"
 
 #include "Sch_Top.h"
+#include "Probe.h"
 
 using namespace Schematics;
 
@@ -117,6 +118,9 @@ void VramBus::tock(SchematicTop& top) {
 
   /*p29.ABON*/ ABON_SPR_VRM_RDn = not1(top.sprite_fetcher.TEXY_SPR_READ_VRAMp());
 
+  /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(top.tile_fetcher._LONY_BG_READ_VRAM_LATCHp.qp());
+  /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not1(LUSU_BGW_VRAM_RDn);
+
   //----------------------------------------
   // VRAM pins
 
@@ -159,7 +163,11 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and2(TACU, TEXY);
     /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(_SOHO_SPR_VRAM_RDp);
     /*p25.APAM*/ wire _APAM_DMA_VRAM_RDn = not1(top.dma_reg.LUFA_DMA_VRM_RDp());
-    /*p25.RACU*/ wire _RACU_MOEn = and4(_RYLU_CPU_VRAM_RDn, _RAWA_SPR_VRAM_RDn, top.tile_fetcher.MYMA_BGW_VRAM_RDn(), _APAM_DMA_VRAM_RDn); // def and
+
+    /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not1(top.tile_fetcher._LONY_BG_READ_VRAM_LATCHp.qp());
+
+
+    /*p25.RACU*/ wire _RACU_MOEn = and4(_RYLU_CPU_VRAM_RDn, _RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAM_RDn); // def and
 
     /*p25.SEMA*/ wire _SEMA_MOEn_A = and2(_RACU_MOEn, top.clk_reg.RACO_DBG_VRAMn());
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or2(_RACU_MOEn, top.clk_reg.TUTO_DBG_VRAMp()); // schematic wrong, second input is RACU
@@ -170,7 +178,6 @@ void VramBus::tock(SchematicTop& top) {
   }
 
   {
-    wire LENA = top.tile_fetcher.LENA_BGW_VRM_RDp();
     wire LUFA = top.dma_reg.LUFA_DMA_VRM_RDp();
 
     /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and2(SOSE_8000_9FFFp, top.ABUZ_AVn());
@@ -181,7 +188,7 @@ void VramBus::tock(SchematicTop& top) {
     // SUTU := nor4(LENA, LUFA, TEXY, SERE)
     wire TEXY = top.sprite_fetcher.TEXY_SPR_READ_VRAMp();
 
-    /*p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA, LUFA, TEXY, _SERE_CPU_VRM_RDp);
+    /*p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BGW_VRM_RDp, LUFA, TEXY, _SERE_CPU_VRM_RDp);
 
     wire RACO = top.clk_reg.RACO_DBG_VRAMn();
     wire TUTU = top.clk_reg.TUTO_DBG_VRAMp();
@@ -321,10 +328,14 @@ void VramBus::tock(SchematicTop& top) {
 
     // Background map read
     {
+      /*p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(top.tile_fetcher._MESU_BFETCH_S1.qp());
+      /*p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(top.tile_fetcher._NYVA_BFETCH_S2.qp());
+
+
       /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not1(top.pix_pipe.PORE_WIN_MODEp());
-      /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(top.tile_fetcher.NAKO_BFETCH_S1n(), top.tile_fetcher.NOFU_BFETCH_S2n());
+      /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
       /*p27.NENY*/ wire _NENY_FETCH_01n = not1(_NOGU_FETCH_01p);
-      /*p27.POTU*/ wire _POTU_BG_MAP_READp = and2(top.tile_fetcher.LENA_BGW_VRM_RDp(), _NENY_FETCH_01n);
+      /*p27.POTU*/ wire _POTU_BG_MAP_READp = and2(LENA_BGW_VRM_RDp, _NENY_FETCH_01n);
       /*p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(_POTU_BG_MAP_READp, _AXAD_WIN_MODEn);
       /*p26.BAFY*/ BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
       /*p26.AXEP*/ _VRAM_BUS_A00 = tribuf_6n(BAFY_BG_MAP_READn, _BABE_MAP_X0S);
@@ -354,9 +365,6 @@ void VramBus::tock(SchematicTop& top) {
 
       /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
       /*p27.NENY*/ wire _NENY_FETCH_01n = not1(_NOGU_FETCH_01p);
-
-      /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(top.tile_fetcher._LONY_BG_READ_VRAM_LATCHp.qp());
-      /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not1(LUSU_BGW_VRAM_RDn);
 
       /*p27.POTU*/ wire _POTU_BG_MAP_READp = and2(LENA_BGW_VRM_RDp, _NENY_FETCH_01n);
       /*p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(_POTU_BG_MAP_READp, PORE_WIN_MODEp);
@@ -397,9 +405,6 @@ void VramBus::tock(SchematicTop& top) {
 
       /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
       /*p27.XUHA*/ wire _XUHA_FETCH_S2p  = not1(NOFU_BFETCH_S2n);
-
-      /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(top.tile_fetcher._LONY_BG_READ_VRAM_LATCHp.qp());
-      /*p27.LENA*/ wire LENA_BGW_VRM_RDp = not1(LUSU_BGW_VRAM_RDn);
 
       /*p27.NETA*/ NETA_TILE_READp = and2(LENA_BGW_VRM_RDp, _NOGU_FETCH_01p);
       /*p26.ASUL*/ ASUL_TILE_READp = and2(NETA_TILE_READp, _AXAD_WIN_MODEn);
@@ -669,35 +674,50 @@ void VramBus::tock(SchematicTop& top) {
 
   // VRAM tri -> tile pix temp
   {
-    /*p32.METE*/ wire _METE_LATCH_TILE_DAn = not1(top.tile_fetcher.NYDY_LATCH_TILE_DAp());
-    /*p32.LOMA*/ wire _LOMA_LATCH_TILE_DAp = not1(_METE_LATCH_TILE_DAn);
+    probe("A: BFETCH S0", top.tile_fetcher._LAXU_BFETCH_S0.qp());
+    probe("B: BFETCH S1", top.tile_fetcher._MESU_BFETCH_S1.qp());
+    probe("C: BFETCH S2", top.tile_fetcher._NYVA_BFETCH_S2.qp());
 
-    /*p32.LEGU*/ top.vram_bus.LEGU_TILE_DA0 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D0.qp());
-    /*p32.NUDU*/ top.vram_bus.NUDU_TILE_DA1 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D1.qp());
-    /*p32.MUKU*/ top.vram_bus.MUKU_TILE_DA2 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D2.qp());
-    /*p32.LUZO*/ top.vram_bus.LUZO_TILE_DA3 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D3.qp());
-    /*p32.MEGU*/ top.vram_bus.MEGU_TILE_DA4 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D4.qp());
-    /*p32.MYJY*/ top.vram_bus.MYJY_TILE_DA5 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D5.qp());
-    /*p32.NASA*/ top.vram_bus.NASA_TILE_DA6 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D6.qp());
-    /*p32.NEFO*/ top.vram_bus.NEFO_TILE_DA7 = dff8_A(_LOMA_LATCH_TILE_DAp, !_LOMA_LATCH_TILE_DAp, _VRAM_BUS_D7.qp());
+    /*p27.LAXE*/ wire LAXE_BFETCH_S0n = not1(top.tile_fetcher._LAXU_BFETCH_S0.qp());
+    /*p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(top.tile_fetcher._MESU_BFETCH_S1.qp());
+    /*p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(top.tile_fetcher._NYVA_BFETCH_S2.qp());
+    /*p27.MYSO*/ wire MYSO_BG_TRIGp   = nor3(top.pix_pipe.LOBY_RENDERINGn(), LAXE_BFETCH_S0n, top.tile_fetcher._LYZU_BFETCH_S0_DELAY.qp());
 
-    // Why are the clocks swapped?
-    /*p32.LESO*/ wire _LESO_LATCH_TILE_DBp = not1(top.tile_fetcher.MOFU_LATCH_TILE_DBn());
-    /*p??.LUVE*/ wire _LUVE_MATCH_TILE_DBn = not1(_LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
-    /*p32.LABU*/ wire _LABU_LATCH_TILE_DBp = not1(_LUVE_MATCH_TILE_DBn);
+    probe("D: MYSO_BG_TRIGp", MYSO_BG_TRIGp); // fires on phase 2, 6, 10
 
-    // This is the only block of "dff11" on the chip, is there an extra inverter applied to the D input?
+    /*p27.NYDY*/ wire NYDY_LATCH_TILE_DAp   = nand3(MYSO_BG_TRIGp, top.tile_fetcher._MESU_BFETCH_S1.qp(), NOFU_BFETCH_S2n);
+    /*p32.METE*/ wire METE_LATCH_TILE_DAn   = not1(NYDY_LATCH_TILE_DAp);
+    /*p32.LOMA*/ wire LOMA_LATCH_TILE_DAp   = not1(METE_LATCH_TILE_DAn);
+
+    probe("E: LOMA_LATCH_TILE_DAp", LOMA_LATCH_TILE_DAp); // fires on phase 6
+
+    /*p32.LEGU*/ top.vram_bus.LEGU_TILE_DA0 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D0.qp());
+    /*p32.NUDU*/ top.vram_bus.NUDU_TILE_DA1 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D1.qp());
+    /*p32.MUKU*/ top.vram_bus.MUKU_TILE_DA2 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D2.qp());
+    /*p32.LUZO*/ top.vram_bus.LUZO_TILE_DA3 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D3.qp());
+    /*p32.MEGU*/ top.vram_bus.MEGU_TILE_DA4 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D4.qp());
+    /*p32.MYJY*/ top.vram_bus.MYJY_TILE_DA5 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D5.qp());
+    /*p32.NASA*/ top.vram_bus.NASA_TILE_DA6 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D6.qp());
+    /*p32.NEFO*/ top.vram_bus.NEFO_TILE_DA7 = dff8_A(LOMA_LATCH_TILE_DAp, !LOMA_LATCH_TILE_DAp, _VRAM_BUS_D7.qp());
 
     wire VYPO = 1;
 
-    /*p32.RAWU*/ top.vram_bus.RAWU_TILE_DB0 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D0.qp());
-    /*p32.POZO*/ top.vram_bus.POZO_TILE_DB1 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D1.qp());
-    /*p32.PYZO*/ top.vram_bus.PYZO_TILE_DB2 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D2.qp());
-    /*p32.POXA*/ top.vram_bus.POXA_TILE_DB3 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D3.qp());
-    /*p32.PULO*/ top.vram_bus.PULO_TILE_DB4 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D4.qp());
-    /*p32.POJU*/ top.vram_bus.POJU_TILE_DB5 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D5.qp());
-    /*p32.POWY*/ top.vram_bus.POWY_TILE_DB6 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D6.qp());
-    /*p32.PYJU*/ top.vram_bus.PYJU_TILE_DB7 = dff11_A(_LABU_LATCH_TILE_DBp, _LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D7.qp());
+    // This is the only block of "dff11" on the chip
+    /*p27.MOFU*/ wire MOFU_LATCH_TILE_DBn   = and2(MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
+    /*p32.LESO*/ wire LESO_LATCH_TILE_DBp   = not1(MOFU_LATCH_TILE_DBn);
+    /*p??.LUVE*/ wire LUVE_MATCH_TILE_DBn   = not1(LESO_LATCH_TILE_DBp); // Schematic wrong, was labeled AJAR
+    /*p32.LABU*/ wire LABU_LATCH_TILE_DBp   = not1(LUVE_MATCH_TILE_DBn);
+
+    probe("F: LABU_LATCH_TILE_DBp", LABU_LATCH_TILE_DBp); // fires on phase 2 (bogus) and phase 10
+
+    /*p32.RAWU*/ top.vram_bus.RAWU_TILE_DB0 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D0.qp());
+    /*p32.POZO*/ top.vram_bus.POZO_TILE_DB1 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D1.qp());
+    /*p32.PYZO*/ top.vram_bus.PYZO_TILE_DB2 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D2.qp());
+    /*p32.POXA*/ top.vram_bus.POXA_TILE_DB3 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D3.qp());
+    /*p32.PULO*/ top.vram_bus.PULO_TILE_DB4 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D4.qp());
+    /*p32.POJU*/ top.vram_bus.POJU_TILE_DB5 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D5.qp());
+    /*p32.POWY*/ top.vram_bus.POWY_TILE_DB6 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D6.qp());
+    /*p32.PYJU*/ top.vram_bus.PYJU_TILE_DB7 = dff11_A(LABU_LATCH_TILE_DBp, LUVE_MATCH_TILE_DBn, VYPO, _VRAM_BUS_D7.qp());
   }
 
   // VRAM tri -> sprite pix temp + x flip

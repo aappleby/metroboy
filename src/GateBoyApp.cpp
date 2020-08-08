@@ -3,6 +3,7 @@
 #include "File.h"
 #include "Debug.h"
 #include "BusDump.h"
+#include "Probe.h"
 #ifdef _MSC_VER
 #include <include/SDL.h>
 #else
@@ -198,6 +199,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), col_width * 2, 0);
   dumper.clear();
 
+  dump_probes(dumper);
   top.sprite_fetcher.dump(dumper);
   top.sprite_scanner.dump(dumper, top);
   top.sprite_store.dump(dumper);

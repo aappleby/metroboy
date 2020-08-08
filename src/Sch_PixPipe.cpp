@@ -9,7 +9,8 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
 
   /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), top.clk_reg.MYVO_AxCxExGx());
   /*p24.SOCY*/ wire _SOCY_WIN_HITn = not1(TOMU_WIN_HITp());
-  /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and3(_SOCY_WIN_HITn, top.tile_fetcher.POKY_PRELOAD_DONEp(), _VYBO_PIX_CLK_xBxDxFxH);
+  /*p24.POKY*/ wire POKY_PRELOAD_DONEp = top.tile_fetcher._POKY_PRELOAD_DONEp.qp();
+  /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and3(_SOCY_WIN_HITn, POKY_PRELOAD_DONEp, _VYBO_PIX_CLK_xBxDxFxH);
   /*p24.SEGU*/ wire _SEGU_CLKPIPEn = not1(_TYFA_CLKPIPEp_xBxDxFxH);
   /*p24.SACU*/ wire _SACU_CLKPIPEp = nor2(_SEGU_CLKPIPEn, _ROXY_FINE_SCROLL_DONEn.qp());
 
@@ -203,7 +204,8 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), top.clk_reg.MYVO_AxCxExGx());
   /*p24.SOCY*/ wire _SOCY_WIN_HITn = not1(TOMU_WIN_HITp());
-  /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and3(_SOCY_WIN_HITn, top.tile_fetcher.POKY_PRELOAD_DONEp(), _VYBO_PIX_CLK_xBxDxFxH);
+  /*p24.POKY*/ wire POKY_PRELOAD_DONEp = top.tile_fetcher._POKY_PRELOAD_DONEp.qp();
+  /*p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and3(_SOCY_WIN_HITn, POKY_PRELOAD_DONEp, _VYBO_PIX_CLK_xBxDxFxH);
   /*p24.SEGU*/ wire _SEGU_CLKPIPEn = not1(_TYFA_CLKPIPEp_xBxDxFxH);
   /*p24.SACU*/ wire _SACU_CLKPIPEp = or2(_SEGU_CLKPIPEn, _ROXY_FINE_SCROLL_DONEn.qp()); // Schematic wrong, this is OR
 
@@ -423,7 +425,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     ///*p27.PUKU*/ PUKU = nor4(RYDY, WIN_MODE_TRIG);
     ///*p27.RYDY*/ RYDY = nor4(PUKU, clk_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A = nor_latch(NUNY_WX_MATCHpe(), top.clk_reg.PYRY_VID_RSTp() || top.tile_fetcher.PORY_TILE_FETCH_DONE_Bp());
+    /*p27.RYDY*/ _RYDY_WIN_FIRST_TILE_A = nor_latch(NUNY_WX_MATCHpe(), top.clk_reg.PYRY_VID_RSTp() || top.tile_fetcher._PORY_FETCH_DONE_Bp.qp());
     /*p27.SOVY*/ _SOVY_WIN_FIRST_TILE_B = dff17_B(top.clk_reg.ALET_xBxDxFxH(), top.clk_reg.XAPO_VID_RSTn(), _RYDY_WIN_FIRST_TILE_A.qp());
   }
 

@@ -120,7 +120,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TEXO*/ wire TEXO_8000_9FFFn = and2(top.cpu_bus.CPU_PIN_ADDR_EXT.qp(), TEVY_8000_9FFFn);
     /*p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_8000_9FFFn, UMUT_MODE_DBG1p);
     /*p08.LEVO*/ wire LEVO_8000_9FFFp = not1(TEXO_8000_9FFFn);
-    /*p08.LAGU*/ wire LAGU = or2(and2(top.cpu_bus.CPU_PIN_RDp.qp(), LEVO_8000_9FFFp), top.cpu_bus.CPU_PIN_WRp.qp());
+    /*p08.LAGU*/ wire LAGU = and_or3(top.cpu_bus.CPU_PIN_RDp.qp(), LEVO_8000_9FFFp, top.cpu_bus.CPU_PIN_WRp.qp());
     /*p08.LYWE*/ wire LYWE = not1(LAGU);
     /*p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, LYWE);
     /*p08.TYMU*/ wire _TYMUEXT_PIN_RDn = nor2(LUMA_DMA_READ_CARTp, _MOTY_CPU_EXT_RD);
@@ -258,7 +258,7 @@ void ExtBus::tock(SchematicTop& top) {
 
 #endif
 
-    /*p01.AGUT*/ wire AGUT = and2(or2(top.clk_reg.AROV_ABxxxxGH.qp(), top.clk_reg.AJAX_ABCDxxxx.qp()), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
+    /*p01.AGUT*/ wire AGUT = or_and3(top.clk_reg.AROV_ABxxxxGH.qp(), top.clk_reg.AJAX_ABCDxxxx.qp(), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
     
     // if AFAS is (!A && B), AWOD looks like AFAS, this would be AWOD = (!UNOR_MODE_DBG2p && AGUT). Does that make sense?
     // CSn is definitely ABxxxxxxx relative to ext clock. So let's look at ext clock.
@@ -269,7 +269,7 @@ void ExtBus::tock(SchematicTop& top) {
 
     /*p08.SOGY*/ wire _SOGY_A14n = not1(top.cpu_bus.CPU_BUS_A14.qp());
     /*p08.TUMA*/ wire _TUMA_CART_RAM = and3(top.cpu_bus.CPU_BUS_A13.qp(), _SOGY_A14n, top.cpu_bus.CPU_BUS_A15.qp());
-    /*p08.TYNU*/ wire TYNU_ADDR_RAM = or2(and2(top.cpu_bus.CPU_BUS_A15.qp(), top.cpu_bus.CPU_BUS_A14.qp()), _TUMA_CART_RAM);
+    /*p08.TYNU*/ wire TYNU_ADDR_RAM = and_or3(top.cpu_bus.CPU_BUS_A15.qp(), top.cpu_bus.CPU_BUS_A14.qp(), _TUMA_CART_RAM);
 
     /*p08.TOZA*/ wire _TOZA_EXT_PIN_CS_A = and3(ABUZ, TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
     /*p08.TYHO*/ wire _TYHO_EXT_PIN_CS_A = mux2_p(top.dma_reg.MARU_DMA_A15.qn(), _TOZA_EXT_PIN_CS_A, LUMA_DMA_READ_CARTp);
@@ -290,7 +290,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.SORE*/ wire SORE_0000_7FFFp = not1(top.cpu_bus.CPU_BUS_A15.qp()); 
     /*p08.TEVY*/ wire TEVY_8000_9FFFn = or3(top.cpu_bus.CPU_BUS_A13.qp(), top.cpu_bus.CPU_BUS_A14.qp(), SORE_0000_7FFFp);
     /*p08.TEXO*/ wire TEXO_8000_9FFFn = and2(top.cpu_bus.CPU_PIN_ADDR_EXT.qp(), TEVY_8000_9FFFn);
-    /*p08.LOXO*/ wire _LOXO_CBA_TO_EPAp = or2(and2(_MULE_MODE_DBG1n, TEXO_8000_9FFFn), UMUT_MODE_DBG1p);
+    /*p08.LOXO*/ wire _LOXO_CBA_TO_EPAp = and_or3(_MULE_MODE_DBG1n, TEXO_8000_9FFFn, UMUT_MODE_DBG1p);
     /*p08.LASY*/ wire _LASY_CBA_TO_EPAn = not1(_LOXO_CBA_TO_EPAp);
     /*p08.MATE*/ wire _MATE_CBA_TO_EPAp = not1(_LASY_CBA_TO_EPAn);
 
@@ -372,7 +372,7 @@ void ExtBus::tock(SchematicTop& top) {
 
 #endif
 
-    /*p01.AGUT*/ wire AGUT = and2(or2(top.clk_reg.AROV_ABxxxxGH.qp(), top.clk_reg.AJAX_ABCDxxxx.qp()), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
+    /*p01.AGUT*/ wire AGUT = or_and3(top.clk_reg.AROV_ABxxxxGH.qp(), top.clk_reg.AJAX_ABCDxxxx.qp(), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
     /*p01.AWOD*/ wire AWOD = nor2(UNOR_MODE_DBG2p, AGUT);
     /*p01.ABUZ*/ wire ABUZ = not1(AWOD);
 
@@ -468,7 +468,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TEXO*/ wire TEXO_8000_9FFFn = and2(top.cpu_bus.CPU_PIN_ADDR_EXT.qp(), TEVY_8000_9FFFn);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(TEXO_8000_9FFFn, UMUT_MODE_DBG1p);
     /*p08.LEVO*/ wire LEVO_8000_9FFFp = not1(TEXO_8000_9FFFn);
-    /*p08.LAGU*/ wire LAGU = or2(and2(top.cpu_bus.CPU_PIN_RDp.qp(), LEVO_8000_9FFFp), top.cpu_bus.CPU_PIN_WRp.qp());
+    /*p08.LAGU*/ wire LAGU = and_or3(top.cpu_bus.CPU_PIN_RDp.qp(), LEVO_8000_9FFFp, top.cpu_bus.CPU_PIN_WRp.qp());
     /*p08.LYWE*/ wire LYWE = not1(LAGU);
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
 

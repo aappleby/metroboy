@@ -368,7 +368,7 @@ void GateBoy::test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bo
 
     uint8_t data_rd = dbg_read(addr);
     if (data_rd != data_wr) {
-      printf("FAIL @ 0x%04x : expected 0x%02x, was 0x%02x\n", addr, data_wr, data_rd);
+      printf("XXXXXXXXXXXXXXXXX FAIL XXXXXXXXXXXXXXXXX @ 0x%04x : expected 0x%02x, was 0x%02x\n", addr, data_wr, data_rd);
       return;
     }
   }
@@ -385,7 +385,7 @@ void GateBoy::test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bo
 
     uint8_t data_rd = dbg_read(addr);
     if (data_rd != data_wr) {
-      printf("FAIL @ 0x%04x : expected 0x%02x, was 0x%02x\n", addr, data_wr, data_rd);
+      printf("XXXXXXXXXXXXXXXXX FAIL XXXXXXXXXXXXXXXXX @ 0x%04x : expected 0x%02x, was 0x%02x\n", addr, data_wr, data_rd);
       return;
     }
   }
@@ -405,7 +405,7 @@ void GateBoy::test_reg(const char* regname, uint16_t addr, uint8_t mask) {
     //printf("%5s @ %04x: wrote %02x, read %02x\n", regname, addr, data_in & mask, data_out & mask);
 
     if ((data_in & mask) != (data_out & mask)) {
-      printf("FAIL - wrote 0x%02x, read 0x%02x\n", uint8_t(data_in & mask), uint8_t(data_out & mask));
+      printf("XXXXXXXXXXXXXXXXX FAIL XXXXXXXXXXXXXXXXX - wrote 0x%02x, read 0x%02x\n", uint8_t(data_in & mask), uint8_t(data_out & mask));
       return;
     }
   }

@@ -79,23 +79,14 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.EDEL*/ wire _SER_DATA6_SETn = nand2(cpu_bus.CPU_BUS_D6.qp(), _FF01_WRp_xxxxxFGH);
   /*p06.EFEF*/ wire _SER_DATA7_SETn = nand2(cpu_bus.CPU_BUS_D7.qp(), _FF01_WRp_xxxxxFGH);
 
-  // COHY 5-rung
-  // DUMO 5-rung
-  // DYBO 5-rung
-  // DAJU 5-rung
-  // DYLY 5-rung
-  // EHUJ 5-rung
-  // EFAK 5-rung
-  // EGUV 5-rung
-
-  /*p06.COHY*/ wire _SER_DATA0_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D0.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D1.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D2.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D3.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D4.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D5.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D6.qp()), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or2(and2(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D7.qp()), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.COHY*/ wire _SER_DATA0_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D0.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DUMO*/ wire _SER_DATA1_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D1.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DYBO*/ wire _SER_DATA2_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D2.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DAJU*/ wire _SER_DATA3_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D3.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DYLY*/ wire _SER_DATA4_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D4.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D5.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.EFAK*/ wire _SER_DATA6_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D6.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.EGUV*/ wire _SER_DATA7_RSTn = and_or3(_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D7.qp(), top.clk_reg.ALUR_SYS_RSTn());
 
   /*p06.CAGE*/ wire _SIN_Cn = not1(SIN_C.qp());
   /*p06.CUBA*/ _SER_DATA0 = dff22(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);

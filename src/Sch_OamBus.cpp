@@ -157,7 +157,7 @@ void OamBus::tock(SchematicTop& top) {
   {
     /*p25.AVER*/ wire _AVER_SCAN_OAM_CLK    = nand2(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABxDEFxH()); 
     /*p25.XUJY*/ wire _XUJY_PPU_OAM_CLK     = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK());
-    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK     = and2(or2(top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_ABCDxxxx());
+    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK     = or_and3(top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp(), top.clk_reg.MOPA_ABCDxxxx());
     /*p25.BYCU*/ wire _BYCU_OAM_CLKp        = nand3(_AVER_SCAN_OAM_CLK, _XUJY_PPU_OAM_CLK, _CUFE_DMA_OAM_CLK);
     /*p25.COTA*/ wire _COTA_OAM_CLKn        = not1(_BYCU_OAM_CLKp);
     OAM_PIN_CLK = _COTA_OAM_CLKn;
@@ -212,7 +212,7 @@ void OamBus::tock(SchematicTop& top) {
 
     /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp    = nor2(top.clk_reg.UVYT_xxxxEFGH(), _MAKA_DV_SYNC.qp()); // def nor4
     /*p04.POWU*/ wire _POWU_DMA_OAM_WRp     = and2(top.dma_reg.MATU_DMA_RUNNINGp(), _NAXY_DMA_OAM_WENp); // def and
-    /*p04.WYJA*/ wire _WYJA_OAM_WRp         = or2(and2(AMAB_CPU_READ_OAMp, CUPA_CPU_WRp_xxxDxxxx), _POWU_DMA_OAM_WRp);
+    /*p04.WYJA*/ wire _WYJA_OAM_WRp         = and_or3(AMAB_CPU_READ_OAMp, CUPA_CPU_WRp_xxxDxxxx, _POWU_DMA_OAM_WRp);
 
     /*p28.YLYC*/ wire _YLYC_OAM_A_WRp = and2(_WYJA_OAM_WRp, GEKA_OAM_A0n); // def and
     /*p28.ZONE*/ wire _ZONE = not1(_YLYC_OAM_A_WRp);

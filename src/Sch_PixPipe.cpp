@@ -392,7 +392,7 @@ void PixelPipe::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p28.ABAF*/ wire ABAF_LINE_END_Bn = not1(top.lcd_reg._CATU_LINE_p002p.qp());
 
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = and2(or2(top.lcd_reg._ANEL_LINE_p004p.qp(), ABAF_LINE_END_Bn), top.lcd_reg._ABEZ_VID_RSTn);
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg._ANEL_LINE_p004p.qp(), ABAF_LINE_END_Bn, top.lcd_reg._ABEZ_VID_RSTn);
 
     /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp = not1(BYHA_VID_LINE_TRIGn);
 

@@ -180,11 +180,6 @@ void LcdRegisters::tock(int phase, const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF44 LY
   {
-#if 0
-    /*p23.VEGA*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(nand2(CPU_PIN_RDp, FF44p), MUWY_Y0.qp());
-#endif
-
-
     /*p22.WYLE*/ wire _WYLE_FF44n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.XENO_A01n(), top.cpu_bus.WALO_A02p(), top.cpu_bus.XERA_A03n());
     /*p22.XOGY*/ wire _XOGY_FF44p = not1(_WYLE_FF44n);
 

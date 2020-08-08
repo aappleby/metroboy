@@ -72,6 +72,9 @@ inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c &
 inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
 inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
 
+inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
+inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
+
 //-----------------------------------------------------------------------------
 
 inline wire add_c(wire a, wire b, wire c) {

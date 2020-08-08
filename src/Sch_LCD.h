@@ -31,7 +31,7 @@ struct LcdRegisters {
     /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not1(_CATU_LINE_p002p.qp());
 
     // so we _don't_ trigger the line end if we're in vid reset?
-    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = and2(or2(_ANEL_LINE_p004p.qp(), _ABAF_LINE_END_Bn), _ABEZ_VID_RSTn);
+    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(_ANEL_LINE_p004p.qp(), _ABAF_LINE_END_Bn, _ABEZ_VID_RSTn);
 
     return BYHA_VID_LINE_END_TRIGn;
   }

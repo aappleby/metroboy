@@ -86,7 +86,7 @@
 #define RL_A          (op == 0x17)
 #define RR_A          (op == 0x1F)
 #define DAA           (op == 0x27)
-#define LCD_PIN_CPL           (op == 0x2F)
+#define CPL           (op == 0x2F)
 #define SCF           (op == 0x37)
 #define CCF           (op == 0x3F)
 
@@ -224,6 +224,7 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 //-----------------------------------------------------------------------------
 
 void Z80::tock_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  bus_ack = ack;
   state = state_;
   ime = ime_delay;
 
@@ -241,6 +242,7 @@ void Z80::tock_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 }
 
 void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  bus_ack = ack;
   alu_x = 0;
   alu_y = 0;
 
@@ -376,7 +378,7 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
     if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
     if (state == 0 && DAA)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xB0); }
-    if (state == 0 && LCD_PIN_CPL)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0x60); }
+    if (state == 0 && CPL)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0x60); }
     if (state == 0 && SCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0x70); }
     if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0x70); }
                                                                                                                                                                                       
@@ -643,25 +645,31 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   if (EI)                  {ime = ime_delay;  ime_delay = true;}
 }
 
-void Z80::tock_c(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
+void Z80::tock_c(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
+  bus_ack = ack;
   // Z80 idle this cycle
 }
 
-void Z80::tock_d(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
+void Z80::tock_d(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
+  bus_ack = ack;
   // Z80 idle this cycle
 }
 
-void Z80::tock_e(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
+void Z80::tock_e(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
+  bus_ack = ack;
 }
 
-void Z80::tock_f(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
+void Z80::tock_f(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
+  bus_ack = ack;
   // "first" execution cycle
 }
 
-void Z80::tock_g(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
+void Z80::tock_g(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
+  bus_ack = ack;
 }
 
-void Z80::tock_h(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
+void Z80::tock_h(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
+  bus_ack = ack;
   // "second" execution cycle
 }
 
@@ -896,20 +904,15 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::dump(Dumper& dump, const Ack& bus_ack) const {
+void Z80::dump(Dumper& dump) const {
   dump("state       %d\n", state);
-  dump("\n");
-
   dump("op_addr     0x%04x\n", op_addr);
   dump("OP          0x%02x @ %d\n", op, state);
   dump("CB          0x%02x\n", cb);
   dump("out         0x%02x\n", out);
-  dump("\n");
-
   dump("bus req     "); dump_req(dump, bus_req);
   dump("bus ack     "); dump_ack(dump, bus_ack);
   dump("\n");
-
   dump("PC          0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
   dump("SP          0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
   dump("XY          0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
@@ -918,12 +921,11 @@ void Z80::dump(Dumper& dump, const Ack& bus_ack) const {
   dump("HL          0x%04x 0x%02x 0x%02x\n", hl, h, l);
   dump("AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
   dump("alu_f       0x%02x\n", alu_f);
-  dump("\n");
-
   dump("IME         %d\n", ime);
   dump("IME_        %d\n", ime_delay);
   dump("interrupt   %d\n", INT);
   dump("int_ack     0x%02x\n", int_ack);
+  dump("\n");
 }
 
 //-----------------------------------------------------------------------------

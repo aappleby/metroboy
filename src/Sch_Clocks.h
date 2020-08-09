@@ -131,7 +131,6 @@ struct ClockRegisters {
     return nor2(WUVU_xxCDxxGH.qn(),  // def qn
                 WOSU_xBCxxFGx.qn()); // def qn
   }
-  /*p29.XYSO*/ wire XYSO_ABxDEFxH() const { return not1(WOJO_xxCxxxGx()); } // AVER_SCAN_OAM_CLK
 
   //-----------------------------------------------------------------------------
   // POR state

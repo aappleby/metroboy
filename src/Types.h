@@ -107,13 +107,17 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 #if _DEBUG
 
-#define CHECK_P(A) do { if (!(A)) __debugbreak(); } while(0);
-#define CHECK_N(A) do { if ((A)) __debugbreak(); } while(0);
+inline void CHECK_P (wire A)         { if (!A)     __debugbreak(); }
+inline void CHECK_N (wire A)         { if (A)      __debugbreak(); }
+inline void CHECK_EQ(wire A, wire B) { if (A != B) __debugbreak(); }
+inline void CHECK_NE(wire A, wire B) { if (A == B) __debugbreak(); }
 
 #else 
 
-#define CHECK_P(A) do {} while(0);
-#define CHECK_N(A) do {} while(0);
+#define CHECK_P(A)
+#define CHECK_N(A)
+#define CHECK_EQ(A,B)
+#define CHECK_NE(A,B)
 
 #endif
 

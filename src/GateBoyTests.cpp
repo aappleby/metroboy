@@ -7,7 +7,7 @@
 
 void GateBoyTests::test_rom_read() {
   GateBoy gateboy;
-  gateboy.run_reset_sequence(false);
+  gateboy.run_reset_sequence();
 
   gateboy.mem[0] =  0x23;
 
@@ -105,7 +105,7 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
     gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
 
     int phase_count = (rng >> 8) & 0x0F;
-    gateboy.run(phase_count, req, false);
+    gateboy.run(phase_count);
 
     if ((i & 0xFF) == 0xFF) printf(".");
   }
@@ -157,7 +157,7 @@ void dump_blob(T& blob) {
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::run_benchmark(GateBoy& gateboy) {
-  gateboy.run_reset_sequence(false);
+  gateboy.run_reset_sequence();
 
   printf("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
 
@@ -179,9 +179,8 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   double pass_rate_sum2 = 0;
   double pass_rate_n = 0;
 
-  Req req = {.addr = 0x0150, .data = 0, .read = 1, .write = 0 };
-
-  bool verbose = false;
+  gateboy.dbg_req = {.addr = 0x0150, .data = 0, .read = 1, .write = 0 };
+  gateboy.cpu_en = false;
 
   printf("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
@@ -191,7 +190,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
     //dump_blob(top);
 
     auto start = std::chrono::high_resolution_clock::now();
-    gateboy.run(phase_per_iter, req, verbose);
+    gateboy.run(phase_per_iter);
     auto finish = std::chrono::high_resolution_clock::now();
 
     //dump_blob(top);

@@ -5,8 +5,6 @@
 #include "Debug.h"
 #include "File.h"
 
-constexpr bool FAST_HASH = 0;
-
 #if 0
   // these are all "normal operating mode" w/o rendering or dma 
 
@@ -65,44 +63,41 @@ constexpr bool FAST_HASH = 0;
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
+  memset(fb, 4, 160*144);
+  cpu.reset(0x100);
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::run_reset_sequence(bool verbose) {
+void GateBoy::run_reset_sequence() {
 
   // No bus activity during reset
-  Req req = {.addr = 0x0100, .data = 0, .read = 0, .write = 0 };
+  dbg_req = {.addr = 0x0100, .data = 0, .read = 0, .write = 0 };
 
   //----------
   // 8 phases in reset
 
   printf("In reset\n");
-  run(8, req, verbose);
-  if (verbose) printf("\n");
+  run(8);
 
   //----------
   // 8 phases out of reset
 
   printf("Out of reset\n");
   sys_rst = 0;
-  run(8, req, verbose);
-  if (verbose) printf("\n");
+  run(8);
 
   //----------
   // 11 phases with enabled clock, which should put us in phase A
 
   printf("Sync with phase B\n");
   sys_clken = 1;
-  run(11, req, verbose);
-
-  if (verbose) printf("\n");
+  run(11);
 
   CHECK_P(top.clk_reg.AFUR_ABCDxxxx.qp());
   CHECK_P(top.clk_reg.ALEF_AxxxxFGH.qp());
   CHECK_N(top.clk_reg.APUK_xxCDEFxx.qp());
   CHECK_P(top.clk_reg.ADYK_ABCxxxxH.qp());
-
   CHECK_P((phase_total & 7) == 0);
 
   //----------
@@ -110,30 +105,29 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
   printf("Clock good\n");
   sys_clkgood = 1;
-  run(8, req, verbose);
-  if (verbose) printf("\n");
+  run(8);
 
   //----------
   // Wait for START
 
-  printf("Wait for CPU_PIN_START\n");
+  printf("Wait for CPU_PIN_START");
   while(!top.clk_reg.CPU_PIN_STARTp.qp()) {
-    run(8, req, verbose);
-    if (verbose) printf("\n");
+    printf(".");
+    run(8);
   }
 
   //----------
   // 8 phases after START
 
   printf("Delay\n");
-  run(8, req, verbose);
+  run(8);
 
   //----------
   // 24 phases with CPU ready
 
   printf("Set CPU_READY = 1\n");
   sys_cpuready = 1;
-  run(8, req, verbose);
+  run(8);
 
   //----------
   // Set boot bit, otherwise we can't read rom
@@ -155,9 +149,7 @@ void GateBoy::run_reset_sequence(bool verbose) {
   // A000 - F800 : addr on bus and CSn goes low for a bit
   // FE00 - FFFF : addr on bus but no CSn
 
-  //run(64, req, verbose);
-
-#if 1
+#if !_DEBUG
   printf("//----------------------------------------\n");
   printf("// Testing reg read/write\n");
 
@@ -190,7 +182,7 @@ void GateBoy::run_reset_sequence(bool verbose) {
   printf("\n");
 #endif
 
-#if 1
+#if !_DEBUG
   printf("//----------------------------------------\n");
   printf("// Testing Cart ROM read: ");
   test_mem(0x0000, 0x7FFF, 256, false);
@@ -221,112 +213,11 @@ void GateBoy::run_reset_sequence(bool verbose) {
   load_blob("roms/LinksAwakening_dog.dump", mem, 65536);
   printf("Dump loaded\n");
 
-  /*
-  // Clear OAM
-  //memset(&mem[0xFE00], 0xFF, 256);
-  for(int i = 0; i < 256; i++) {
-    //dbg_write(uint16_t(0xFE00 + i), uint8_t(i));
-    dbg_write(uint16_t(0xFE00 + i), 0xFF);
-  }
-
-  // Add some sprites
-  dbg_write(0xFE00 + 4 * 7 + 0, 16 + 2);
-  dbg_write(0xFE00 + 4 * 7 + 1, 8  + 11);
-  dbg_write(0xFE00 + 4 * 7 + 2, 0);
-  dbg_write(0xFE00 + 4 * 7 + 3, 0);
-
-  dbg_write(0xFE00 + 4 * 8 + 0, 16 + 2);
-  dbg_write(0xFE00 + 4 * 8 + 1, 8  + 19);
-  dbg_write(0xFE00 + 4 * 8 + 2, 2);
-  dbg_write(0xFE00 + 4 * 8 + 3, 0);
-  */
-
-  // Clear map
-
-  /*
-  for (int i = 0; i < 1024; i++) {
-    //int c = ((i >> 5) & 1) ^ (i & 1);
-    //mem[0x9800 + i] = c ? 0x7E : 0x7C;
-    mem[0x9800 + i] = 0;
-  }
-
-  mem[0x9800] = 1;
-  */
-
-  /*
-  for (int i = 0; i < 1024; i++) {
-    mem[0x9800 + i] = 0;
-  }
-
-  for (int i = 0; i < 16; i += 2) {
-    //mem[0x9000 + i + 0] = 0b00000000;
-    //mem[0x9000 + i + 1] = 0b00000000;
-    dbg_write(0x9000 + i + 0, 0b11111111);
-    dbg_write(0x9000 + i + 1, 0b11111111);
-  }
-  */
-
-#if 0
-  mem[0x9000] = 0b00000000;
-  mem[0x9001] = 0b00000000;
-  mem[0x9002] = 0b00000000;
-  mem[0x9003] = 0b00000000;
-  mem[0x9004] = 0b00000000;
-  mem[0x9005] = 0b00000000;
-  mem[0x9006] = 0b00000000;
-  mem[0x9007] = 0b00000000;
-  mem[0x9008] = 0b00000000;
-  mem[0x9009] = 0b00000000;
-  mem[0x900A] = 0b00000000;
-  mem[0x900B] = 0b00000000;
-  mem[0x900C] = 0b00000000;
-  mem[0x900D] = 0b00000000;
-  mem[0x900E] = 0b00000000;
-  mem[0x900F] = 0b00000000;
-
-  mem[0x9010] = 0b10110001;
-  mem[0x9011] = 0b10110001;
-  mem[0x9012] = 0b10110001;
-  mem[0x9013] = 0b10110001;
-  mem[0x9014] = 0b10110001;
-  mem[0x9015] = 0b10110001;
-  mem[0x9016] = 0b10110001;
-  mem[0x9017] = 0b10110001;
-  mem[0x9018] = 0b10110001;
-  mem[0x9019] = 0b10110001;
-  mem[0x901A] = 0b10110001;
-  mem[0x901B] = 0b10110001;
-  mem[0x901C] = 0b10110001;
-  mem[0x901D] = 0b10110001;
-  mem[0x901E] = 0b10110001;
-  mem[0x901F] = 0b10110001;
-#endif
-
   dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
-  
   dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
   dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
-
-  //dbg_write(ADDR_OBP0, 0b11111111);
-  //dbg_write(ADDR_OBP1, 0b11111111);
-
-  /*
-  dbg_write(ADDR_BGP,  0b11100100);
-  dbg_write(ADDR_OBP0, 0b11100100);
-  dbg_write(ADDR_OBP1, 0b11100100);
-  */
-
-  // Palettes for both background and sprites are working. er maybe not pal1
-  //dbg_write(ADDR_BGP,  0b11111111);
-  //dbg_write(ADDR_OBP0, 0b11100100);
-  //dbg_write(ADDR_OBP1, 0b11100100);
-
   dbg_write(ADDR_SCY, mem[ADDR_SCY]);
   dbg_write(ADDR_SCX, mem[ADDR_SCX]);
-
-  //dbg_write(ADDR_SCY, 0);
-  //dbg_write(ADDR_SCX, 3);
-
   dbg_write(ADDR_WY, mem[ADDR_WY]);
   dbg_write(ADDR_WX, mem[ADDR_WX]);
 
@@ -350,7 +241,20 @@ void GateBoy::run_reset_sequence(bool verbose) {
 
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 
-  if (verbose) printf("\n");
+  // 912 * 154 = 140448 phases per frame
+
+  // First frame 
+  //  58808
+  // 190128
+  // 330576
+
+  /*
+#if !_DEBUG
+  run(131320, {}, false);
+#endif
+*/
+
+  //cpu_en = true;
 }
 
 //------------------------------------------------------------------------------
@@ -414,120 +318,98 @@ void GateBoy::test_reg(const char* regname, uint16_t addr, uint8_t mask) {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::run(int _phase_count, Req req, bool verbose) {
-  for (int i = 0; i < _phase_count; i++) {
-    phase(req, verbose);
-  }
-}
-
-//------------------------------------------------------------------------------
-
 #pragma warning(disable:4189)
 
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
-  Req req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
+  dbg_req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
 
-  /* A->B */ phase(req, false);
-  /* B->C */ phase(req, false);
-  /* C->D */ phase(req, false);
-  /* D->E */ phase(req, false);
-  /* E->F */ phase(req, false);
+  /* A->B */ phase();
+  /* B->C */ phase();
+  /* C->D */ phase();
+  /* D->E */ phase();
+  /* E->F */ phase();
 
   // CPU_PIN_BUKE_xxxxxFxx asserted on F, assuming this is "latch bus data".
   uint8_t sample = top.cpu_bus.get_bus_data();
 
-  /* F->G */ phase(req, false);
-  /* G->H */ phase(req, false);
-  /* H->A */ phase(req, false);
+  /* F->G */ phase();
+  /* G->H */ phase();
+  /* H->A */ phase();
 
   return sample;
 }
 
 void GateBoy::dbg_write(int addr, uint8_t data) {
   CHECK_P((phase_total & 7) == 0);
-  Req req = {.addr = uint16_t(addr), .data = data, .read = 0, .write = 1 };
+  dbg_req = {.addr = uint16_t(addr), .data = data, .read = 0, .write = 1 };
 
-  /* A->B */ phase(req, false);
-  /* B->C */ phase(req, false);
-  /* C->D */ phase(req, false);
-  /* D->E */ phase(req, false);
-  /* E->F */ phase(req, false);
-  /* F->G */ phase(req, false);
-  /* G->H */ phase(req, false);
-  /* H->A */ phase(req, false);
+  /* A->B */ phase();
+  /* B->C */ phase();
+  /* C->D */ phase();
+  /* D->E */ phase();
+  /* E->F */ phase();
+  /* F->G */ phase();
+  /* G->H */ phase();
+  /* H->A */ phase();
 }
 
 //------------------------------------------------------------------------------
 
 #define CHECK_CLK_PHASE(A, B) CHECK_P(wire(A) == wire((B) & (1 << (7 - phase))))
 
-void GateBoy::phase(Req req, bool verbose) {
+void GateBoy::phase() {
   phase_total++;
   const int phase = phase_total & 7;
 
   //----------
-  // Update clock and buses
+  // Update CPU
 
-  wire CLK = (phase_total & 1) & sys_clken;
+  cpu_req = cpu_en ? cpu.bus_req : dbg_req;
+
+  if (cpu_en) {
+    uint8_t imask = 0;
+    uint8_t intf = 0;
+
+    //req.addr = 0x1234;
+
+    Ack ack = {0};
+
+    ack.addr    = top.cpu_bus.get_bus_addr();
+    ack.data_lo = top.cpu_bus.get_bus_data();
+
+    switch(phase) {
+    case 0: cpu.tock_a(imask, intf, ack); break;
+    case 1: cpu.tock_b(imask, intf, ack); break;
+    case 2: cpu.tock_c(imask, intf, ack); break;
+    case 3: cpu.tock_d(imask, intf, ack); break;
+    case 4: cpu.tock_e(imask, intf, ack); break;
+    case 5: cpu.tock_f(imask, intf, ack); break;
+    case 6: cpu.tock_g(imask, intf, ack); break;
+    case 7: cpu.tock_h(imask, intf, ack); break;
+    }
+  }
+
 
   //----------
-  // Run passes until we stabilize
+  // Update clock and buses
 
   uint64_t hash_regs_old  = HASH_INIT;
   uint64_t hash_regs_new  = HASH_INIT;
 
   StringDumper d;
 
-  bool old_cp = top.pix_pipe._LCD_PIN_CP.qp();
-  bool old_st = top.pix_pipe._LCD_PIN_ST.qp();
-
-  int old_x = top.pix_pipe.get_pix_count();
-  int old_y = top.lcd_reg.get_y();
+  bool old_clock = top.LCD_PIN_CLOCK.qp();
+  bool old_hsync = top.LCD_PIN_HSYNC.qp();
+  bool old_vsync = top.LCD_PIN_VSYNC.qp();
 
   for (pass_count = 0; pass_count < 100; pass_count++) {
-    top.clk_reg.preset_rst(sys_rst);
-    top.clk_reg.preset_t1t2(sys_t1, sys_t2);
-    top.clk_reg.preset_cpu_ready(sys_cpuready);
-    top.clk_reg.preset_clk_a(sys_clkgood);
-    top.clk_reg.preset_clk_b(CLK);
-    top.joypad.preset_buttons(0);
-    update_cpu_bus(phase, req);
-    update_ext_bus(phase);
-    update_vrm_bus(phase);
-    update_oam_bus(phase);
-    update_zram_bus(phase);
-
-    Sig::sim_running = true;
-    bus_collision = false;
-    top.tick_slow(phase);
-    Sig::sim_running = false;
-
     hash_regs_old = hash_regs_new;
-    hash_regs_new  = HASH_INIT;
-    if (FAST_HASH) {
-      commit_and_hash(top, hash_regs_new);
-    }
-    else {
-      commit_and_hash(top.oam_bus, hash_regs_new);
-      commit_and_hash(top.ext_bus, hash_regs_new);
-      commit_and_hash(top.cpu_bus, hash_regs_new);
-      commit_and_hash(top.vram_bus, hash_regs_new);
-      commit_and_hash(top.clk_reg, hash_regs_new);
-      commit_and_hash(top.dma_reg, hash_regs_new);
-      commit_and_hash(top.int_reg, hash_regs_new);
-      commit_and_hash(top.joypad, hash_regs_new);
-      commit_and_hash(top.lcd_reg, hash_regs_new);
-      commit_and_hash(top.pix_pipe, hash_regs_new);
-      commit_and_hash(top.ser_reg, hash_regs_new);
-      commit_and_hash(top.sprite_store, hash_regs_new);
-      commit_and_hash(top.tim_reg, hash_regs_new);
-      commit_and_hash(top.tile_fetcher, hash_regs_new);
-      commit_and_hash(top.sprite_fetcher, hash_regs_new);
-      commit_and_hash(top.sprite_scanner, hash_regs_new);
-      commit_and_hash(top.bootrom, hash_regs_new);
-    }
+    hash_regs_new  = pass();
     if (hash_regs_new == hash_regs_old) break;
+    if (pass_count == 90) {
+      printf("!!!STUCK!!!\n");
+    }
   }
 
   if (bus_collision) {
@@ -537,30 +419,35 @@ void GateBoy::phase(Req req, bool verbose) {
 
   CHECK_P(pass_count < 100);
 
-  bool new_cp = top.pix_pipe._LCD_PIN_CP.qp();
-  bool new_st = top.pix_pipe._LCD_PIN_ST.qp();
+  bool new_clock = top.LCD_PIN_CLOCK.qp();
+  bool new_hsync = top.LCD_PIN_HSYNC.qp();
+  bool new_vsync = top.LCD_PIN_VSYNC.qp();
 
-  int new_x = top.pix_pipe.get_pix_count();
-  int new_y = top.lcd_reg.get_y();
+  //----------
+  // Pixels _def_ latched on positive clock edge (neg edge inverted)
 
-  if (top.lcd_reg.get_y() || !top.lcd_reg._LCD_PIN_S.qp()) {
-    if (!old_st && new_st) printf("\n%03d ", top.lcd_reg.get_y());
+  // clock phase is ~119.21 nsec (4.19304 mhz crystal)
+  // hsync seems consistently 3.495 - 3.500 us (29 phases?)
+  // hsync to bogus clock pulse 1.465 us
+  // data changes on rising edge of lcd clock
+  // hsync should go low the same phase that lcd clock goes high
+  // vsync 108.720 usec - right on 912 phases
 
-    if (!(old_cp & old_st) && (new_cp & new_st)) {
-      int p0 = (bool)top.pix_pipe.LCD_PIN_LD0.qp();
-      int p1 = (bool)top.pix_pipe.LCD_PIN_LD1.qp();
-
-      int c = p0 + p1 * 2;
-
-      switch(c) {
-      case 0: printf("\u001b[48;2;200;200;200m \u001b[39;49m"); break;
-      case 1: printf("\u001b[48;2;150;150;150m \u001b[39;49m"); break;
-      case 2: printf("\u001b[48;2;100;100;100m \u001b[39;49m"); break;
-      case 3: printf("\u001b[48;2;50;50;50m \u001b[39;49m");    break;
-      }
-    }
+  int p0 = (bool)top.LCD_PIN_DATA0.qp();
+  int p1 = (bool)top.LCD_PIN_DATA1.qp();
+  int c = p0 + p1 * 2;
+      
+  if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
+    fb[fb_x + fb_y * 160] = uint8_t(c);
   }
 
+  if (!new_hsync) fb_x = 0;
+  if (!new_vsync) fb_y = 0;
+
+  if (!old_clock && new_clock) fb_x++;
+  if (!old_hsync && new_hsync) fb_y++;
+
+  //----------
 
 #if 1
 
@@ -632,14 +519,35 @@ void GateBoy::phase(Req req, bool verbose) {
 
   phase_hash = hash_regs_old;
   combine_hash(total_hash, phase_hash);
+}
 
-  if (verbose) {
-    printf("Phase %c @ %08d:%02d phase_hash %016llx\n",
-      'A' + (phase_total & 7),
-      phase_total,
-      pass_count,
-      phase_hash);
-  }
+//-----------------------------------------------------------------------------
+
+uint64_t GateBoy::pass() {
+  const int phase = phase_total & 7;
+  uint64_t hash = HASH_INIT;
+
+  wire CLK = (phase_total & 1) & sys_clken;
+  top.clk_reg.preset_rst(sys_rst);
+  top.clk_reg.preset_t1t2(sys_t1, sys_t2);
+  top.clk_reg.preset_cpu_ready(sys_cpuready);
+  top.clk_reg.preset_clk_a(sys_clkgood);
+  top.clk_reg.preset_clk_b(CLK);
+  top.joypad.preset_buttons(0);
+  update_cpu_bus(phase, cpu_req);
+  update_ext_bus(phase);
+  update_vrm_bus(phase);
+  update_oam_bus(phase);
+  update_zram_bus(phase);
+
+  Sig::sim_running = true;
+  bus_collision = false;
+  top.tick_slow(phase);
+  Sig::sim_running = false;
+
+  commit_and_hash(top, hash);
+
+  return hash;
 }
 
 //-----------------------------------------------------------------------------
@@ -649,64 +557,16 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
 
   bus.CPU_PIN6.preset(0);
 
-#if 0
-  /*read  rom */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write rom */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
-
-  /*read  vram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
-  /*write vram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
-
-  /*read  cram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write cram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
-
-  /*read  eram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write eram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
-
-  /*read  oam */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
-  /*write oam */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
-
-  /*read  hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = dc;
-  /*write hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
-
-#endif
-
   // CPU_PIN_ADDR_EXT latches the cpu bus address into the ext address
 
-  bool read = req.read;
-  bool write = req.write;
-  uint16_t addr = req.addr;
-  uint8_t data = req.data_lo;
+  bool     read  = req.read;
+  bool     write = req.write;
+  uint16_t addr  = req.addr;
+  uint8_t  data  = req.data_lo;
 
   bool io = req.read || req.write;
   bool addr_ext = io && ((req.addr <= 0x7FFF) || (req.addr >= 0xA000 && req.addr < 0xFDFF));
   bool hold_mem = io && (req.addr < 0xFF00);
-
-#if 0
-    NR14_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF14), APU_RSTn, TS_D6());
-    NR24_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF19), APU_RSTn, TS_D3());
-    NR34_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF1E), APU_RSTn, TS_D3());
-    NR44_STOP = dff(nand2(CPU_PIN_HOLD_MEM, CPU_PIN_WRp, xxxxEFGx, FF23), APU_RSTn, TS_D6());
-
-    OAM_PIN_WRp = and2(CPU_PIN_WRp,                      ADDR_OAM, xxxxEFGx);
-    OAM_PIN_OEp = and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,   ADDR_OAM);
-    OBD_TO_OBL  = and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,   ADDR_OAM);
-    TIMA_LOADp  = and2(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,   ADDR_TIMA, xxxxEFGx, );
-
-    EPD_TO_CBD  = and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  !ADDR_VRAM);
-    OBL_TO_CBD  = and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,   ADDR_OAM);
-    VBD_TO_CBD  = and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,   ADDR_VRAM, !CPU_PIN_ADDR_EXT);
-
-    if (TIMA_LOADp) {
-      TIMA_7 = TIMA_LD_7);
-      TIMA_MAX = 0;
-    }
-    else {
-      TIMA_7 = dff20(!TIMA_6, TIMA_LD_7);
-      TIMA_MAX = dff17(xBCDEFGH, 1, TIMA_7);
-    }
-
-
-#endif
 
   // if we set read on phase A, we fail the mem test when we switch from testing OAM to testing ZRAM.
   // these signals are trimmed down as much as they can be without breaking anything.

@@ -23,7 +23,7 @@ struct SpriteScanner {
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
 
     // this seems weird
-    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(_BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn(), DOBA_SCAN_DONE_B.qp());
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn(), DOBA_SCAN_DONE_B.qp());
     /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
     return AVAP_RENDER_START_TRIGp;
   }
@@ -49,8 +49,8 @@ struct SpriteScanner {
   // Signals
 
   Sig _XYMU_RENDERINGp;
-  Sig _BALU_LINE_RSTp;
-  Sig _BAGY_LINE_RSTn;
+  Sig BALU_LINE_RSTp;
+  Sig BAGY_LINE_RSTn;
 
   /*p29.ERUC*/ Sig _ERUC_YDIFF_S0;
   /*p29.ERUC*/ Sig _ERUC_YDIFF_C0;

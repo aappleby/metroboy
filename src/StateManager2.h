@@ -21,9 +21,10 @@ public:
     return states.size() * sizeof(T);
   }
 
-  void init(step_func s) {
+  void init(step_func _step, step_func _unstep) {
     states.push_back(new T());
-    step_callback = s;
+    step_callback = _step;
+    unstep_callback = _unstep;
   }
 
   void reset() {
@@ -58,6 +59,9 @@ public:
     for (int i = 0; i < count; i++) {
       delete states.back();
       states.pop_back();
+      if (unstep_callback) {
+        unstep_callback(states.back());
+      }
     }
   }
 
@@ -72,6 +76,7 @@ public:
 //private:
 
   step_func step_callback = nullptr;
+  step_func unstep_callback = nullptr;
   std::vector<T*> states;
 
   StateManager2(const StateManager2&) = delete;

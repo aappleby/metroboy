@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct PixelPipe {
   void tick(const SchematicTop& top);
-  void tock(const SchematicTop& top, CpuBus& cpu_bus);
+  void tock(SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;
 
   //----------------------------------------
@@ -21,14 +21,16 @@ struct PixelPipe {
   }
 
   // -> top, tile fetcher
-  /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp() const { 
-    /*p27.NYFO*/ wire NYFO_TILE_FETCHER_RSTn = not1(NUNY_WX_MATCHpe());
-    /*p27.MOSU*/ wire MOSU_TILE_FETCHER_RSTp = not1(NYFO_TILE_FETCHER_RSTn);
-    return MOSU_TILE_FETCHER_RSTp;
+  /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp() const { 
+    /*p27.NYFO*/ wire NYFO_WIN_FETCH_TRIGn = not1(NUNY_WX_MATCH_TRIGp());
+    /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp = not1(NYFO_WIN_FETCH_TRIGn);
+    return MOSU_WIN_FETCH_TRIGp;
   }
 
   // -> top.TEVO
-  /*p27.SEKO*/ wire SEKO_WX_MATCHne() const { return nor2(_RYFA_WX_MATCHn_A.qn(), _RENE_WX_MATCHn_B.qp()); }
+  /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG() const {
+    return nor2(_RYFA_FETCHn_A.qn(), _RENE_FETCHn_B.qp());
+  }
 
   // -> top.TEVO
   /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne() const {
@@ -105,9 +107,9 @@ struct PixelPipe {
     return NOCU_WIN_MODEn;
   }
   
-  wire NUNY_WX_MATCHpe() const {
-    /*p27.NUNY*/ wire NUNY_WX_MATCHpe = and2(_PYNU_WIN_MODE_A.qp(), _NOPA_WIN_MODE_B.qn());
-    return NUNY_WX_MATCHpe;
+  wire NUNY_WX_MATCH_TRIGp() const {
+    /*p27.NUNY*/ wire NUNY_WX_MATCH_TRIGp = and2(_PYNU_WIN_MODE_A.qp(), _NOPA_WIN_MODE_B.qn());
+    return NUNY_WX_MATCH_TRIGp;
   }
   /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(_RYDY_WIN_FIRST_TILE_A.qp()); }
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), TUKY_X5p.qp(), SYBE_X7p.qp()); } // 128 + 32 + 4 + 2 + 1 = 167
@@ -123,8 +125,8 @@ struct PixelPipe {
   /*p27.SOVY*/ RegQP  _SOVY_WIN_FIRST_TILE_B = REG_D0C0;
   /*p27.REJO*/ Tri    _REJO_WY_MATCH_LATCH   = TRI_D0NP;
   /*p27.SARY*/ RegQP  _SARY_WY_MATCH         = REG_D0C0;
-  /*p27.RYFA*/ RegQPN _RYFA_WX_MATCHn_A      = REG_D0C0;
-  /*p27.RENE*/ RegQP  _RENE_WX_MATCHn_B      = REG_D0C0;
+  /*p27.RYFA*/ RegQPN _RYFA_FETCHn_A      = REG_D0C0;
+  /*p27.RENE*/ RegQP  _RENE_FETCHn_B      = REG_D0C0;
   /*p27.PYCO*/ RegQP  _PYCO_WX_MATCH_A       = REG_D0C0;
   /*p27.NUNU*/ RegQP  _NUNU_WX_MATCH_B       = REG_D0C0;
 
@@ -144,7 +146,7 @@ struct PixelPipe {
   /*p27.TATE*/ RegQPN _TATE_WIN_Y6 = REG_D0C0;
   /*p27.TEKE*/ RegQPN _TEKE_WIN_Y7 = REG_D0C0;
 
-  /*p??.ROXY*/ Tri _ROXY_FINE_SCROLL_DONEn = TRI_D1NP;
+  /*p??.ROXY*/ Latch _ROXY_SCX_FINE_MATCH_LATCH = TRI_D1NP;
 
   Sig _XENA_STORE_MATCHn;
 
@@ -157,21 +159,15 @@ struct PixelPipe {
   /*p21.RUPO*/ Tri _RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
 
   /*p21.WUSA*/ Tri _WUSA_LCD_CLOCK_GATE = TRI_D0NP;
-  /*p21.VOGA*/ RegQP _VOGA_RENDER_DONE_SYNC = REG_D0C0;
-  /*p??.PUXA*/ RegQP _PUXA_FINE_MATCH_A = REG_D0C0;
-  /*p27.NYZE*/ RegQN _NYZE_FINE_MATCH_B = REG_D0C0;
+  /*p21.VOGA*/ RegQP _VOGA_RENDER_DONEp = REG_D0C0;
+  /*p??.PUXA*/ RegQP _PUXA_SCX_FINE_MATCH_A = REG_D0C0;
+  /*p27.NYZE*/ RegQN _NYZE_SCX_FINE_MATCH_B = REG_D0C0;
 
   /*p24.PAHO*/ RegQP _PAHO_X_8_SYNC = REG_D0C0;
 
-  /*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor4 latch with p24.RUJU, p24.POME
-  //Tri RUJU_LCD_PIN_STp = TRI_HZPU;
-  //Tri POME_LCD_PIN_STn = TRI_HZPD;
-
-  Tri _LCD_PIN_CP = TRI_HZNP;   // PIN_53 
-  Tri _LCD_PIN_ST = TRI_HZNP;   // PIN_54 
-
-  Tri LCD_PIN_LD1 = TRI_HZNP;  // PIN_50 
-  Tri LCD_PIN_LD0 = TRI_HZNP;  // PIN_51 
+  ///*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor4 latch with p24.RUJU, p24.POME
+  Tri RUJU_LCD_PIN_STp = TRI_D0NP;
+  Tri POME_LCD_PIN_STn = TRI_D0NP;
 
   /*p32.MYDE*/ Reg MYDE_BG_PIPE_A0 = REG_D0C0;
   /*p32.NOZO*/ Reg NOZO_BG_PIPE_A1 = REG_D0C0;
@@ -227,6 +223,26 @@ struct PixelPipe {
   /*p26.VUMO*/ Reg VUMO_MASK_PIPE_6 = REG_D0C0;
   /*p26.VAVA*/ Reg VAVA_MASK_PIPE_7 = REG_D0C0;
 
+  // FF42 - SCY -> vram bus
+  /*p23.GAVE*/ Reg GAVE_SCY0 = REG_D0C0;
+  /*p23.FYMO*/ Reg FYMO_SCY1 = REG_D0C0;
+  /*p23.FEZU*/ Reg FEZU_SCY2 = REG_D0C0;
+  /*p23.FUJO*/ Reg FUJO_SCY3 = REG_D0C0;
+  /*p23.DEDE*/ Reg DEDE_SCY4 = REG_D0C0;
+  /*p23.FOTY*/ Reg FOTY_SCY5 = REG_D0C0;
+  /*p23.FOHA*/ Reg FOHA_SCY6 = REG_D0C0;
+  /*p23.FUNY*/ Reg FUNY_SCY7 = REG_D0C0;
+
+  // FF43 - SCX -> ppu, vram bus
+  /*p23.DATY*/ Reg DATY_SCX0 = REG_D0C0;
+  /*p23.DUZU*/ Reg DUZU_SCX1 = REG_D0C0;
+  /*p23.CYXU*/ Reg CYXU_SCX2 = REG_D0C0;
+  /*p23.GUBO*/ Reg GUBO_SCX3 = REG_D0C0;
+  /*p23.BEMY*/ Reg BEMY_SCX4 = REG_D0C0;
+  /*p23.CUZY*/ Reg CUZY_SCX5 = REG_D0C0;
+  /*p23.CABU*/ Reg CABU_SCX6 = REG_D0C0;
+  /*p23.BAKE*/ Reg BAKE_SCX7 = REG_D0C0;
+
   // FF47 - BGP
   /*p36.PAVO*/ RegQPN PAVO_BGP_D0 = REG_D0C0;
   /*p36.NUSY*/ RegQPN NUSY_BGP_D1 = REG_D0C0;
@@ -276,7 +292,6 @@ struct PixelPipe {
   /*p23.MYCE*/ Reg MYCE_WX5 = REG_D0C0;
   /*p23.MUVO*/ Reg MUVO_WX6 = REG_D0C0;
   /*p23.NUKU*/ Reg NUKU_WX7 = REG_D0C0;
-
 };
 
 //-----------------------------------------------------------------------------

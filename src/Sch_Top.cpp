@@ -22,7 +22,6 @@ void SchematicTop::tick_slow(int phase) {
   sprite_scanner.tick(*this);
   sprite_store.tick(*this);
   pix_pipe.tick(*this);
-  tile_fetcher.tick(*this);
   tim_reg.tick(*this);
   bootrom.tick(*this);
   dma_reg.tick(*this);
@@ -47,7 +46,7 @@ void SchematicTop::tick_slow(int phase) {
 
   pix_pipe.tock(*this, cpu_bus);
   sprite_fetcher.tock(*this);
-  tile_fetcher.tock(*this, cpu_bus);
+  tile_fetcher.tock(*this);
   int_reg.tock(*this, cpu_bus);
 
   cpu_bus.tock(*this);

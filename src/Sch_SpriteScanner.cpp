@@ -6,16 +6,14 @@ using namespace Schematics;
 void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("----------SpriteScan ---------\n");
 
-  /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B.qp(), BYBA_SCAN_DONE_A.qn());
+  /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(BALU_LINE_RSTp, DOBA_SCAN_DONE_B.qp(), BYBA_SCAN_DONE_A.qn());
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
-  wire CATU_VID_LINE_ENDp = top.lcd_reg.CATU_VID_LINE_ENDp();
   /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
 
-  d("_BALU_LINE_RSTp         %d\n", _BALU_LINE_RSTp.as_wire());
-  d("_BEBU_SCAN_DONE_TRIGn   %d\n", _BEBU_SCAN_DONE_TRIGn);
+  d("BALU_LINE_RSTp         %d\n", BALU_LINE_RSTp.as_wire());
+  d("BEBU_SCAN_DONE_TRIGn   %d\n", _BEBU_SCAN_DONE_TRIGn);
   d("AVAP_RENDER_START_TRIGp %d\n", AVAP_RENDER_START_TRIGp);
-  d("CATU_VID_LINE_ENDp      %d\n", CATU_VID_LINE_ENDp);
-  d("_ASEN_SCAN_DONE_PE      %d\n", _ASEN_SCAN_DONE_PE);
+  d("ASEN_SCAN_DONE_PE      %d\n", _ASEN_SCAN_DONE_PE);
 
   d("BESU_SCANNINGp   %c\n", BESU_SCANNINGp  .c());
   d("CENO_SCANNINGp   %c\n", CENO_SCANNINGp  .c());
@@ -24,7 +22,7 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
 
   /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(_YFEL_SCAN0.qp(), _WEWY_SCAN1.qp(), _GOSO_SCAN2.qp(), _FONY_SCAN5.qp()); // die AND. 32 + 4 + 2 + 1 = 39
   /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH());
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
   d("_GAVA_SCAN_CLK %d\n", _GAVA_SCAN_CLK);
   d("ANOM_LINE_RSTn %d\n", ANOM_LINE_RSTn);
   d("SCAN INDEX        %02d\n", 
@@ -68,10 +66,13 @@ void SpriteScanner::tick(const SchematicTop& top) {
   {
     _XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp();
 
-    /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+    // ANOM := nor(ATEJ, ATAR);
+    // BALU := not(ANOM);
+    // BAGY := not(BALU);
 
-    /*p29.BALU*/ _BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
-    /*p29.BAGY*/ _BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
+    /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+    /*p29.BALU*/ BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
+    /*p29.BAGY*/ BAGY_LINE_RSTn = not1(BALU_LINE_RSTp);
   }
 
   {
@@ -125,14 +126,75 @@ void SpriteScanner::tock(const SchematicTop& top) {
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
-    /*p29.BYBA*/ BYBA_SCAN_DONE_A = dff17_AB(top.clk_reg.XUPY_xxCDxxGH(), _BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ DOBA_SCAN_DONE_B = dff17_B (top.clk_reg.ALET_xBxDxFxH(), _BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
+    // LGTM
 
-    /*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(_BALU_LINE_RSTp, DOBA_SCAN_DONE_B.qp(), BYBA_SCAN_DONE_A.qn());
-    /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
+    // BYBA_01 == BYBA_12
+    // BYBA_02 << XUPY_03 : CLKp
+    // BYBA_03 == BYBA_09
+    // BYBA_04 NC
+    // BYBA_05 NC
+    // BYBA_06 << BAGY_02 : RSTn
+    // BYBA_07 << FETO_06 : D
+    // BYBA_08 NC
+    // BYBA_09 == BYBA_03
+    // BYBA_10 NC
+    // BYBA_11 NC
+    // BYBA_12 == BYBA_01
+    // BYBA_13 << BAGY_02 : RSTn
+    // BYBA_14 NC
+    // BYBA_15 NC
+    // BYBA_16 >> BEBU_03 : QN
+    // BYBA_17 >> DOBA_07 : Q
 
-    /*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
-    /*p28.BESU*/ BESU_SCANNINGp = nor_latch(top.lcd_reg.CATU_VID_LINE_ENDp(), _ASEN_SCAN_DONE_PE);
+    // DOBA_01 == DOBA_12 : SC
+    // DOBA_02 << ALET_03 : CLKp
+    // DOBA_03 == DOBA_09 : SC
+    // DOBA_04 NC
+    // DOBA_05 NC
+    // DOBA_06 << BAGY_02 : RSTn
+    // DOBA_07 << BYBA_17 : D
+    // DOBA_08 NC
+    // DOBA_09 == DOBA_03 : SC
+    // DOBA_10 NC
+    // DOBA_11 NC
+    // DOBA_12 == DOBA_01 : SC
+    // DOBA_13 << BAGY_02 : RSTn
+    // DOBA_14 NC
+    // DOBA_15 NC
+    // DOBA_16 >> NC      : QN
+    // DOBA_17 >> BEBU_01 : Q
+
+    // BEBU := or3(DOBA_Q, BALU, BYBA_QN);
+    // AVAP := not(BEBU);
+    // ASEN := or(ATAR, AVAP)
+    // BESU := latch(CATU_Q, ASEN)
+    
+    // CENO_01 == CENO_12 : SC
+    // CENO_02 << XUPY_03 : CLKp
+    // CENO_03 == CENO_09 : SC
+    // CENO_04 NC
+    // CENO_05 NC
+    // CENO_06 << ABEZ_02 : RSTn
+    // CENO_07 << BESU_04 : D
+    // CENO_08 NC
+    // CENO_09 == CENO_03 : SC
+    // CENO_10 NC
+    // CENO_11 NC
+    // CENO_12 == CENO_01 : SC
+    // CENO_13 << ABEZ_02 : RSTn
+    // CENO_14 NC
+    // CENO_15 NC
+    // CENO_16 >> CEHA_01 : QN
+    // CENO_17 >> NC      : Q
+
+    /*p29.BYBA*/ BYBA_SCAN_DONE_A = dff17_AB(top.clk_reg.XUPY_xxCDxxGH(), BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*p29.DOBA*/ DOBA_SCAN_DONE_B = dff17_B (top.clk_reg.ALET_xBxDxFxH(), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
+
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn());
+    /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
+
+    /*p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
+    /*p28.BESU*/ BESU_SCANNINGp = nor_latch(top.lcd_reg._CATU_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
     /*p29.CENO*/ CENO_SCANNINGp = dff17_A(top.clk_reg.XUPY_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), BESU_SCANNINGp.qp());
   }
 
@@ -142,7 +204,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
   {
     /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH());
-    /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+    /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
 
     /*p28.YFEL*/ _YFEL_SCAN0 = dff17_AB(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, _YFEL_SCAN0.qn());
     /*p28.WEWY*/ _WEWY_SCAN1 = dff17_AB(_YFEL_SCAN0.qn(), ANOM_LINE_RSTn, _WEWY_SCAN1.qn());

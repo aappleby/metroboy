@@ -124,19 +124,8 @@ struct OamBus {
 
 //private:
 
-  /*p04.MAKA*/ RegQP _MAKA_DV_SYNC = REG_D0C0;
+  /*p04.MAKA*/ RegQP _MAKA_HOLD_MEMp = REG_D0C0;
   /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
-
-  /*p28.APAR*/ Sig APAR_SCAN_OAM_RDn;
-  /*p04.DUGA*/ Sig DUGA_DMA_OAM_RDn;
-  /*p28.ASAM*/ Sig ASAM_CPU_OAM_RDn;
-  /*p28.BETE*/ Sig BETE_PPU_OAM_RDn;
-
-  /*p25.AVER*/ Sig AVER_SCAN_OAM_CLK;
-  /*p25.XUJY*/ Sig XUJY_PPU_OAM_CLK;
-  /*p25.CUFE*/ Sig CUFE_DMA_OAM_CLK;
-  /*p25.BYCU*/ Sig BYCU_OAM_CLKp;
-  /*p25.COTA*/ Sig COTA_OAM_CLKn;
 
   Tri OAM_PIN_CLK  = TRI_HZNP;
   Tri OAM_PIN_OE   = TRI_HZPU;

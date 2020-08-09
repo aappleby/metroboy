@@ -77,7 +77,9 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
     /*p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
 
-    /*p21.TAPA*/ wire TAPA_INT_OAM = and2(_TOLU_VBLANKn, top.lcd_reg.SELA_LINE_ENDp());
+    /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg._RUTU_LINE_P908.qp());
+    /*p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);
+    /*p21.TAPA*/ wire TAPA_INT_OAM = and2(_TOLU_VBLANKn, SELA_LINE_ENDp);
     /*p21.TARU*/ wire TARU_INT_HBL = and2(_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp());
     /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_INT_LYC_EN.qp(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
                                              top.pix_pipe.REFE_INT_OAM_EN.qp(), TAPA_INT_OAM,

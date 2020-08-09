@@ -45,7 +45,6 @@ void ClockRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("AWOH_ABxxEFxx %d\n", AWOH_ABxxEFxx());
   d("SONO_xxxxEFGH %d\n", SONO_xxxxEFGH());
   d("WOJO_xxCxxxGx %d\n", WOJO_xxCxxxGx());
-  d("XYSO_ABxDEFxH %d\n", XYSO_ABxDEFxH());
   d("\n");
 
   d("---------- CPU Pins ----------\n");
@@ -239,12 +238,7 @@ void ClockRegisters::tock_rst_slow(int phase, const SchematicTop& top) {
   /*p01.AFAR*/ wire _AFAR_RST  = nor2(_ALYP_RSTn, _SYS_PIN_RSTp.qp());
 
   /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(_SYS_PIN_RSTp.qp(), _AFAR_RST); // Schematic wrong, this is a latch.
-
-  _ASOL_POR_DONEn.dump_edge("_ASOL_POR_DONEn");
-
   /*p01.AFER*/ _AFER_SYS_RSTp = dff13_B(BOGA_ABCDExxx(), BOMA_xxxxxFGH(), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.qp());
-
-  _AFER_SYS_RSTp.dump_edge("_AFER_SYS_RSTp");
 
   CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
   CPU_PIN_EXT_RST  = _SYS_PIN_RSTp.qp();

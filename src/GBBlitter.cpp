@@ -54,7 +54,7 @@ const char* gb_blit_screen_glsl = R"(
 uniform sampler2D tex;
 uniform vec4 viewport;
 uniform vec4 blit_dst_rect;
-uniform vec4 palette[4];
+uniform vec4 palette[5];
 
 float remap(float x, float a1, float a2, float b1, float b2) {
   x = (x - a1) / (a2 - a1);
@@ -101,7 +101,7 @@ struct GBBlitMapUniforms {
 
   vec4 quad_pos;
   vec4 quad_tex;
-  vec4 palette[4];
+  vec4 palette[5];
   int  which_map;
   int  alt_map;
   int  pad1;
@@ -115,7 +115,7 @@ layout(std140) uniform BlitMapUniforms {
 
   vec4 quad_pos;
   vec4 quad_tex;
-  vec4 palette[4];
+  vec4 palette[5];
   int  which_map;
   int  alt_map;
 };
@@ -209,7 +209,7 @@ struct GBBlitTileUniforms {
   vec4 viewport;
   vec4 quad_pos;
   vec4 quad_tex;
-  vec4 palette[4];
+  vec4 palette[5];
 };
 
 static const char* gb_blit_tile_glsl = R"(
@@ -219,7 +219,7 @@ layout(std140) uniform BlitTileUniforms {
 
   vec4 quad_pos;
   vec4 quad_tex;
-  vec4 palette[4];
+  vec4 palette[5];
 };
 
 layout(std140) uniform vramBuffer {
@@ -324,11 +324,12 @@ void GBBlitter::init() {
 
 //-----------------------------------------------------------------------------
 
-static vec4 default_pal[4] = {
+static vec4 default_pal[5] = {
   {0.48, 0.48, 0.48, 1.0},
   {0.36, 0.36, 0.36, 1.0},
   {0.24, 0.24, 0.24, 1.0},
   {0.12, 0.12, 0.12, 1.0},
+  {0.80, 0.80, 0.00, 1.0},
 };
 
 void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint8_t* vram) {
@@ -344,7 +345,7 @@ void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint
     },
     .quad_pos = {},
     .quad_tex = {},
-    .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
+    .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3], default_pal[4]},
     };
 
     bind_shader(blit_tile_prog);

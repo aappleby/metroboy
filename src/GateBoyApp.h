@@ -6,6 +6,8 @@
 #include "GridPainter.h"
 #include "TextPainter.h"
 #include "DumpPainter.h"
+#include "GBBlitter.h"
+#include "Blitter.h"
 
 class GateBoyApp : public App {
 public:
@@ -16,7 +18,6 @@ public:
   //----------
 
   void reset(uint16_t new_pc);
-  Req get_req();
 
   //----------
 
@@ -45,7 +46,13 @@ public:
   GridPainter grid_painter;
   TextPainter text_painter;
   DumpPainter dump_painter;
+  GBBlitter   gb_blitter;
+  Blitter     blitter;
 
   int frame_count = 0;
   int replay_cursor = 0;
+
+  uint32_t trace[912 * 154];
+  int trace_tex;
+
 };

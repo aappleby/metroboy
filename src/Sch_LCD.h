@@ -9,9 +9,9 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct LcdRegisters {
-  void dump(Dumper& d) const;
+  void dump(Dumper& d, const SchematicTop& top) const;
   void tick(const SchematicTop& top);
-  void tock(int phase, const SchematicTop& top, CpuBus& cpu_bus);
+  void tock(int phase, SchematicTop& top, CpuBus& cpu_bus);
 
   uint8_t get_x() const {
     return (uint8_t)pack_p(SAXO_X0.qp(), TYPO_X1.qp(), VYZO_X2.qp(), TELU_X3.qp(), SUDE_X4.qp(), TAHA_X5.qp(), TYRY_X6.qp(), 0);
@@ -26,35 +26,21 @@ struct LcdRegisters {
                 _SOTA_LYC4.qp(), _VAFA_LYC5.qp(), _VEVO_LYC6.qp(), _RAHA_LYC7.qp());
   }
 
-  // fires on P002 and P003
+  // fires on P910 and P911
   wire BYHA_VID_LINE_END_TRIGn() const {
-    /*p28.ABAF*/ wire _ABAF_LINE_END_Bn = not1(_CATU_LINE_p002p.qp());
-
-    // so we _don't_ trigger the line end if we're in vid reset?
-    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(_ANEL_LINE_p004p.qp(), _ABAF_LINE_END_Bn, _ABEZ_VID_RSTn);
-
+    /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(_CATU_LINE_P910.qp());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(_ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, _ABEZ_VID_RSTn);
     return BYHA_VID_LINE_END_TRIGn;
   }
 
-  // fires on P002 and P003
-  // -> lcd, window
-  wire ATEJ_VID_LINE_TRIGp() const {
-    // ATEJ := not1(BYHA);
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIGp = not1(BYHA_VID_LINE_END_TRIGn());
-    return ATEJ_VID_LINE_TRIGp;
+  // fires on P910 and P911
+  wire ATEJ_VID_LINE_END_TRIGp() const {
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn());
+    return ATEJ_VID_LINE_END_TRIGp;
   }
 
   // -> interrupts, ppu
   /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not1(_POPU_IN_VBLANKp.qn()); }
-
-  // -> lcd
-  /*p21.PURE*/ wire PURE_LINE_ENDn()   const { return not1(_RUTU_LINE_p000p.qp()); }
-
-  // -> interrupts, lcd
-  /*p21.SELA*/ wire SELA_LINE_ENDp()    const { return not1(PURE_LINE_ENDn()); }
-
-  // -> sprite scanner
-  /*p29.CATU*/ wire CATU_VID_LINE_ENDp()       const { return _CATU_LINE_p002p.qp(); }
 
   // -> interrupts, lcd, ppu
   /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return _ROPO_LY_MATCH_SYNCp.qp(); }
@@ -85,10 +71,10 @@ struct LcdRegisters {
 
   Sig _ABEZ_VID_RSTn;
 
-  /*p21.RUTU*/ RegQP  _RUTU_LINE_p000p = REG_D0C0; // fires on line phase 000, high for 8 phases
-  /*p29.CATU*/ RegQP  _CATU_LINE_p002p = REG_D0C0; // fires on line phase 002, high for 8 phases
-  /*p21.NYPE*/ RegQPN _NYPE_LINE_p004p = REG_D0C0; // fires on line phase 004, high for 8 phases
-  /*p28.ANEL*/ RegQP  _ANEL_LINE_p004p = REG_D0C0; // fires on line phase 004, high for 8 phases
+  /*p21.NYPE*/ RegQPN _NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
+  /*p28.ANEL*/ RegQP  _ANEL_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
+  /*p21.RUTU*/ RegQP  _RUTU_LINE_P908 = REG_D0C0; // fires on line phase 908, high for 8 phases
+  /*p29.CATU*/ RegQP  _CATU_LINE_P910 = REG_D0C0; // fires on line phase 910, high for 8 phases
 
   /*p21.MYTA*/ RegQP  _MYTA_LINE_153p      = REG_D0C0; // fires on line 153, phase 004. clears on line 000, phase 004
   /*p21.POPU*/ RegQPN _POPU_IN_VBLANKp     = REG_D0C0; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
@@ -107,11 +93,6 @@ struct LcdRegisters {
   /*p23.VAFA*/ Reg _VAFA_LYC5 = REG_D0C0;
   /*p23.VEVO*/ Reg _VEVO_LYC6 = REG_D0C0;
   /*p23.RAHA*/ Reg _RAHA_LYC7 = REG_D0C0;
-
-  Tri _LCD_PIN_CPG = TRI_HZNP; // PIN_52 
-  Tri _LCD_PIN_CPL = TRI_HZNP; // PIN_55 
-  Tri _LCD_PIN_FR  = TRI_HZNP; // PIN_56 
-  Tri _LCD_PIN_S   = TRI_HZNP; // PIN_57 
 };
 
 //-----------------------------------------------------------------------------

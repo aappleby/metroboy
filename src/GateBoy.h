@@ -1,22 +1,27 @@
 #pragma once
 #include "Sch_Top.h"
+#include "Z80.h"
 
 struct GateBoy {
 public:
 
   GateBoy();
 
-  void run   (int phase_count, Req req, bool verbose);
-  void phase (Req req, bool verbose);
-  void run_reset_sequence(bool verbose);
+  void run(int phase_count) {
+    for (int i = 0; i < phase_count; i++) phase();
+  }
+
+  void phase();
+  uint64_t pass();
+  void run_reset_sequence();
 
   uint8_t dbg_read (int addr);
   void    dbg_write(int addr, uint8_t data);
 
-  void update_cpu_bus(int phase, Req req);
-  void update_ext_bus(int phase);
-  void update_vrm_bus(int phase);
-  void update_oam_bus(int phase);
+  void update_cpu_bus (int phase, Req req);
+  void update_ext_bus (int phase);
+  void update_vrm_bus (int phase);
+  void update_oam_bus (int phase);
   void update_zram_bus(int phase);
 
   void test_reg(const char* regname, uint16_t addr, uint8_t data_in);
@@ -38,5 +43,15 @@ public:
 
   uint8_t mem[65536];
 
+  uint8_t fb[160*144];
+  int fb_x = 0;
+  int fb_y = 0;
+
   Schematics::SchematicTop top;
+
+  Z80 cpu;
+  bool cpu_en = false;
+
+  Req cpu_req;
+  Req dbg_req;
 };

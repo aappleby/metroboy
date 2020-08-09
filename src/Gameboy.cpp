@@ -283,7 +283,8 @@ void Gameboy::tock_gb() {
 
 void Gameboy::dump_cpu(Dumper& d) {
   d("\002------------- CPU --------------\001\n");
-  z80.dump(d, cpu_ack);
+  //z80.dump(d, cpu_ack);
+  z80.dump(d);
 }
 
 void Gameboy::dump_bus(Dumper& d) {

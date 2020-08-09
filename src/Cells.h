@@ -205,8 +205,8 @@ inline RegDelta dff(wire CLKp, wire RSTn, wire D) {
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset and dual outputs
+// ********* This ticks on the _falling_ edge of the clock *********
 // Two or three vias in center column
-// This looks like it ticks on the _falling_ edge of the clock
 // Ticking on the rising edge of the clock breaks sprite rendering and stuff.
 // Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
 // This is probably Qn/Q order like the others.

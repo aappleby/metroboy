@@ -65,9 +65,17 @@ struct SchematicTop {
   }
 
   // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
-  wire NYXU_TILE_FETCHER_RSTn() const {
-    /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor3(sprite_scanner.AVAP_RENDER_START_TRIGp(), pix_pipe.MOSU_TILE_FETCHER_RSTp(), TEVO_FINE_RSTp());
-    return NYXU_TILE_FETCHER_RSTn;
+
+  // low on phase 0 of bg tile fetch
+
+  wire NYXU_FETCH_TRIGn() const {
+    /*p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
+                                             pix_pipe.SUZU_WIN_FIRST_TILEne(),
+                                             TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+    /*p27.NYXU*/ wire NYXU_FETCH_TRIGn = nor3(sprite_scanner.AVAP_RENDER_START_TRIGp(),
+                                              pix_pipe.MOSU_WIN_FETCH_TRIGp(),
+                                              TEVO_FETCH_TRIGp);
+    return NYXU_FETCH_TRIGn;
   }
 
   //-----------------------------------------------------------------------------
@@ -131,15 +139,17 @@ struct SchematicTop {
 
   // -> sprite fetcher, top.TEVO
   /*p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp() const {
-    /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_DONEp.qp());
-    /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(), _ROMO_PRELOAD_DONEn, tile_fetcher._NYKA_FETCH_DONE_Ap.qp(), tile_fetcher._PORY_FETCH_DONE_Bp.qp());
+    /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_LATCHp.qp());
+    /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(), _ROMO_PRELOAD_DONEn, tile_fetcher._NYKA_FETCH_DONE_P11.qp(), tile_fetcher._PORY_FETCH_DONE_P12.qp());
     return  not1(_SUVU_PRELOAD_DONE_TRIGn);
   }
 
   // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { 
-    /*p27.TEVO*/ wire TEVO_FINE_RSTp = or3(pix_pipe.SEKO_WX_MATCHne(), pix_pipe.SUZU_WIN_FIRST_TILEne(), TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
-    return TEVO_FINE_RSTp;
+  /*p27.TEVO*/ wire TEVO_FETCH_TRIGp() const { 
+    /*p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
+                                             pix_pipe.SUZU_WIN_FIRST_TILEne(),
+                                             TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+    return TEVO_FETCH_TRIGp;
   }
 
   //-----------------------------------------------------------------------------
@@ -190,6 +200,15 @@ struct SchematicTop {
   SpriteFetcher sprite_fetcher;
   SpriteScanner sprite_scanner;
   Bootrom bootrom;
+
+  Tri LCD_PIN_DATA1 = TRI_HZNP; // PIN_50 
+  Tri LCD_PIN_DATA0 = TRI_HZNP; // PIN_51 
+  Tri LCD_PIN_CNTRL = TRI_HZNP; // PIN_52 
+  Tri LCD_PIN_CLOCK = TRI_HZNP; // PIN_53 
+  Tri LCD_PIN_HSYNC = TRI_HZNP; // PIN_54 
+  Tri LCD_PIN_LATCH = TRI_HZNP; // PIN_55 
+  Tri LCD_PIN_ALTSG = TRI_HZNP; // PIN_56 
+  Tri LCD_PIN_VSYNC = TRI_HZNP; // PIN_57 
 };
 
 //-----------------------------------------------------------------------------

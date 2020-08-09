@@ -8,16 +8,6 @@ using namespace Schematics;
 
 void OamBus::dump(Dumper& d) const {
   d("---------- OAM Bus  ----------\n");
-  d("APAR_SCAN_OAM_RDn  : %d\n", wire(APAR_SCAN_OAM_RDn));
-  d("DUGA_DMA_OAM_RDn   : %d\n", wire(DUGA_DMA_OAM_RDn));
-  d("ASAM_CPU_OAM_RDn   : %d\n", wire(ASAM_CPU_OAM_RDn));
-  d("BETE_PPU_OAM_RDn   : %d\n", wire(BETE_PPU_OAM_RDn));
-  d("AVER_SCAN_OAM_CLK  : %d\n", wire(AVER_SCAN_OAM_CLK));
-  d("XUJY_PPU_OAM_CLK   : %d\n", wire(XUJY_PPU_OAM_CLK));
-  d("CUFE_DMA_OAM_CLK   : %d\n", wire(CUFE_DMA_OAM_CLK));
-  d("BYCU_OAM_CLKp      : %d\n", wire(BYCU_OAM_CLKp));
-  d("COTA_OAM_CLKn      : %d\n", wire(COTA_OAM_CLKn));
-
   d("PIN_CLK    %c\n", OAM_PIN_CLK.c());
   d("PIN_OE     %c\n", OAM_PIN_OE.c()); 
   d("PIN_WR_A   %c\n", OAM_PIN_WR_A.c());
@@ -151,17 +141,13 @@ void OamBus::tock(SchematicTop& top) {
 
   /*p28.WAFO*/ wire WAFO_OAM_A0p = not1(GEKA_OAM_A0n);
 
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(top.pix_pipe.TEPA_RENDERINGn(), top.sprite_fetcher._TULY_SFETCH_S1.qp(), top.sprite_fetcher._TESE_SFETCH_S2.qp());
+  /*p28.WEFY*/ wire WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp, top.sprite_fetcher._TYFO_SFETCH_S0_D1.qp());
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(top.sprite_fetcher._TOXE_SFETCH_S0.qp());
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(top.sprite_fetcher._TYFO_SFETCH_S0_D1.qp(), TYTU_SFETCH_S0n);
+
   //----------------------------------------
   // OAM pins
-
-  {
-    /*p25.AVER*/ wire _AVER_SCAN_OAM_CLK    = nand2(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABxDEFxH()); 
-    /*p25.XUJY*/ wire _XUJY_PPU_OAM_CLK     = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK());
-    /*p25.CUFE*/ wire _CUFE_DMA_OAM_CLK     = or_and3(top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp(), top.clk_reg.MOPA_ABCDxxxx());
-    /*p25.BYCU*/ wire _BYCU_OAM_CLKp        = nand3(_AVER_SCAN_OAM_CLK, _XUJY_PPU_OAM_CLK, _CUFE_DMA_OAM_CLK);
-    /*p25.COTA*/ wire _COTA_OAM_CLKn        = not1(_BYCU_OAM_CLKp);
-    OAM_PIN_CLK = _COTA_OAM_CLKn;
-  }
 
   {
 #if 0
@@ -173,7 +159,7 @@ void OamBus::tock(SchematicTop& top) {
 #endif
 
     /*p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp(), top.clk_reg.XOCE_AxxDExxH()); // schematic wrong, is def nand2
-    /*p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp());
+    /*p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(WEFY_SPR_READp);
     /*p04.DECY*/ wire DECY = not1(top.cpu_bus.CPU_PIN_HOLD_MEM.qp());
     /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand3(DECY, top.cpu_bus.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp()); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire _ASYT_OAM_LATCHn      = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_LATCHn); // def and
@@ -196,8 +182,8 @@ void OamBus::tock(SchematicTop& top) {
 
 #endif
 
-    /*p04.DECY*/ wire DECY = not1(top.cpu_bus.CPU_PIN_HOLD_MEM.qp());
-    /*p04.CATY*/ wire CATY = not1(DECY);
+    /*p04.DECY*/ wire DECY_HOLD_MEMn = not1(top.cpu_bus.CPU_PIN_HOLD_MEM.qp());
+    /*p04.CATY*/ wire CATY_HOLD_MEMp = not1(DECY_HOLD_MEMn);
 
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.CPU_PIN_WRp.qp(), top.clk_reg.AFAS_xxxDxxxx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
@@ -206,11 +192,11 @@ void OamBus::tock(SchematicTop& top) {
     /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCxEFGH = not1(TAPU_CPU_WRp_xxxDxxxx);
     /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxDxxxx = not1(DYKY_CPU_WRn_ABCxEFGH);
 
-    /*p04.MAKA*/ _MAKA_DV_SYNC = dff17_B(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.CUNU_SYS_RSTn(), CATY);
+    /*p04.MAKA*/ _MAKA_HOLD_MEMp = dff17_B(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.CUNU_SYS_RSTn(), CATY_HOLD_MEMp);
 
     /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(top.cpu_bus.SARO_FE00_FEFFp(), top.AJUJ_OAM_BUSYn()); // def and
 
-    /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp    = nor2(top.clk_reg.UVYT_xxxxEFGH(), _MAKA_DV_SYNC.qp()); // def nor4
+    /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp    = nor2(top.clk_reg.UVYT_xxxxEFGH(), _MAKA_HOLD_MEMp.qp()); // def nor4
     /*p04.POWU*/ wire _POWU_DMA_OAM_WRp     = and2(top.dma_reg.MATU_DMA_RUNNINGp(), _NAXY_DMA_OAM_WENp); // def and
     /*p04.WYJA*/ wire _WYJA_OAM_WRp         = and_or3(AMAB_CPU_READ_OAMp, CUPA_CPU_WRp_xxxDxxxx, _POWU_DMA_OAM_WRp);
 
@@ -247,10 +233,10 @@ void OamBus::tock(SchematicTop& top) {
     // ASAM := or2(ACYL, XYMU, MATU_17);
     // BETE := not1(AJON);
 
-    /*p28.APAR*/ APAR_SCAN_OAM_RDn  = not1(ACYL_SCANNINGp);
-    /*p04.DUGA*/ DUGA_DMA_OAM_RDn  = not1(MATU_DMA_RUNNINGp);
-    /*p28.ASAM*/ ASAM_CPU_OAM_RDn  = or3(ACYL_SCANNINGp, XYMU_RENDERINGp, MATU_DMA_RUNNINGp);
-    /*p28.BETE*/ BETE_PPU_OAM_RDn  = not1(AJON_OAM_BUSY);
+    /*p28.APAR*/ wire APAR_SCAN_OAM_RDn = not1(ACYL_SCANNINGp);
+    /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn  = not1(MATU_DMA_RUNNINGp);
+    /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn  = or3(ACYL_SCANNINGp, XYMU_RENDERINGp, MATU_DMA_RUNNINGp);
+    /*p28.BETE*/ wire BETE_PPU_OAM_RDn  = not1(AJON_OAM_BUSY);
 
     // Scanner addr -> OAM addr
 
@@ -424,7 +410,7 @@ void OamBus::tock(SchematicTop& top) {
     /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
     /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp(), top.clk_reg.XOCE_AxxDExxH()); // schematic wrong, is def nand2
-    /*p28.XUJA*/ wire XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp());
+    /*p28.XUJA*/ wire XUJA_SPR_OAM_LATCHn  = not1(WEFY_SPR_READp);
     /*p04.DECY*/ wire DECY = not1(top.cpu_bus.CPU_PIN_HOLD_MEM.qp());
     /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCHn  = nand3(DECY, top.cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire ASYT_OBD_TO_OBLn     = and3(AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn, BOTA_CPU_OAM_LATCHn); // def and
@@ -455,15 +441,17 @@ void OamBus::tock(SchematicTop& top) {
 
   // OAM latch -> OAM temp
   {
-    /*p25.AVER*/ AVER_SCAN_OAM_CLK = nand2(top.ACYL_SCANNINGp(), top.clk_reg.XYSO_ABxDEFxH()); 
-    /*p25.XUJY*/ XUJY_PPU_OAM_CLK  = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK());
+    /*p29.XYSO*/ wire XYSO_ABxDEFxH = not1(top.clk_reg.WOJO_xxCxxxGx());
+    /*p25.AVER*/ wire AVER_SCAN_OAM_CLK = nand2(top.ACYL_SCANNINGp(), XYSO_ABxDEFxH); 
+    /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and2(TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
+    /*p25.XUJY*/ wire XUJY_PPU_OAM_CLK  = not1(VAPE_FETCH_OAM_CLK);
     
-    ///*p25.CUFE*/ CUFE_DMA_OAM_CLK  = and2(or (top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_ABCDxxxx());
-    ///*p25.CUFE*/ CUFE_DMA_OAM_CLK  = or2(and(top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp()), top.clk_reg.MOPA_ABCDxxxx());
-    CUFE_DMA_OAM_CLK = 1;
+    // CUFE looks like BYHA minus an inverter
+    /*p25.CUFE*/ wire CUFE_DMA_OAM_CLK  = !or_and3(top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp(), top.clk_reg.MOPA_ABCDxxxx());
     
-    /*p25.BYCU*/ BYCU_OAM_CLKp     = nand3(AVER_SCAN_OAM_CLK, XUJY_PPU_OAM_CLK, CUFE_DMA_OAM_CLK);
-    /*p25.COTA*/ COTA_OAM_CLKn     = not1(BYCU_OAM_CLKp);
+    /*p25.BYCU*/ wire BYCU_OAM_CLKp     = nand3(AVER_SCAN_OAM_CLK, XUJY_PPU_OAM_CLK, CUFE_DMA_OAM_CLK);
+    /*p25.COTA*/ wire COTA_OAM_CLKn     = not1(BYCU_OAM_CLKp);
+    OAM_PIN_CLK = COTA_OAM_CLKn;
 
     /*p29.YWOK*/ wire YWOK_OAM_CLKn = not1(COTA_OAM_CLKn);
     /*p29.XUSO*/ XUSO_OAM_DA0 = dff8_B(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), YDYV_LATCH_OAM_DA0.qn());
@@ -514,10 +502,7 @@ void OamBus::tock(SchematicTop& top) {
 
     // GEKA := not1(OAM_TRI_A0);
     // WAFO := not1(GEKA);
-    // WUKU := and2(LEKO, AMAB, GEKA);
-    // WEWU := not1(WUKU);
 
-    // XACA := tri(XYKY, WEWU);
     // GUKO := and2(WAFO, AMAB, LEKO);
     // WUME := not1(GUKO);
 
@@ -532,6 +517,10 @@ void OamBus::tock(SchematicTop& top) {
     /*p29.YWEG*/ top.cpu_bus.CPU_BUS_D5 = tribuf_10n(_WUME_OBL_TO_CBDn, XAFU_LATCH_OAM_DA5.qp());
     /*p29.XABU*/ top.cpu_bus.CPU_BUS_D6 = tribuf_10n(_WUME_OBL_TO_CBDn, YSES_LATCH_OAM_DA6.qp());
     /*p29.YTUX*/ top.cpu_bus.CPU_BUS_D7 = tribuf_10n(_WUME_OBL_TO_CBDn, ZECA_LATCH_OAM_DA7.qp());
+
+    // WUKU := and2(LEKO, AMAB, GEKA);
+    // WEWU := not1(WUKU);
+    // XACA := tri(XYKY, WEWU);
 
     /*p28.WUKU*/ wire _WUKU_OBL_TO_CBDp = and3(LEKO_CPU_RDp, AMAB_CPU_READ_OAMp, GEKA_OAM_A0n);
     /*p28.WEWU*/ wire _WEWU_OBL_TO_CBDn = not1(_WUKU_OBL_TO_CBDp);

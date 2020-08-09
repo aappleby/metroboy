@@ -4,6 +4,7 @@
 #include "Debug.h"
 #include "BusDump.h"
 #include "Probe.h"
+#include "GLBase.h"
 #ifdef _MSC_VER
 #include <include/SDL.h>
 #else
@@ -20,10 +21,13 @@ using namespace Schematics;
 
 GateBoyApp::GateBoyApp() {
   auto top_step = [this](GateBoy* gateboy) { 
-    bool verbose = false;
-    gateboy->run(1, get_req(), verbose);
+    gateboy->phase();
   };
-  state_manager.init(top_step);
+  auto top_unstep = [this](GateBoy* gateboy) {
+    // Run a logic pass after unstep to update our probes
+    gateboy->pass();
+  };
+  state_manager.init(top_step, top_unstep);
 
   //auto gateboy = state_manager.state();
   //load_blob("microtests/build/dmg/poweron_000_div.gb", gateboy->mem, 65536);
@@ -41,22 +45,6 @@ void GateBoyApp::reset(uint16_t /*new_pc*/) {
 
 //-----------------------------------------------------------------------------
 
-Req GateBoyApp::get_req() {
-  //Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
-  //Req req = {.addr = 0x0100, .data = 0, .read = 1, .write = 0 };
-
-  /*
-  auto gateboy = state_manager.state();
-  uint16_t addr = (uint16_t)((gateboy->phase_total - 87) >> 3);
-  Req req = {.addr = addr, .data = 0, .read = 1, .write = 0 };
-  */
-
-  Req req = {.addr = 0, .data = 0, .read = 0, .write = 0};
-  return req;
-}
-
-//-----------------------------------------------------------------------------
-
 const char* GateBoyApp::app_get_title() {
   return "GateBoyApp";
 }
@@ -67,6 +55,11 @@ void GateBoyApp::app_init() {
   grid_painter.init();
   text_painter.init();
   dump_painter.init();
+  gb_blitter.init();
+  blitter.init();
+
+  trace_tex = create_texture_u32(912, 154);
+
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   printf("\n");
@@ -76,14 +69,17 @@ void GateBoyApp::app_init() {
 
   auto gateboy = state_manager.state();
 
-  bool verbose = false;
-  gateboy->run_reset_sequence(verbose);
+  gateboy->run_reset_sequence();
 }
 
 void GateBoyApp::app_close() {
 }
 
+//-----------------------------------------------------------------------------
+
 void GateBoyApp::app_update(double delta) {
+  (void)delta;
+
   SDL_Event event;
 
   int  step_forward = 0;
@@ -134,12 +130,10 @@ void GateBoyApp::app_update(double delta) {
     state_manager.unstep(1);
   }
 
-  //get_top()->phase_count += step_forward;
-  //get_top()->phase_count -= step_backward;
-
   frame_count++;
-  (void)delta;
 }
+
+//-----------------------------------------------------------------------------
 
 void GateBoyApp::app_render_frame(Viewport view) {
   grid_painter.render(view);
@@ -164,6 +158,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("phase %s\n", phases[gateboy->phase_total & 7]);
 
+  dumper("FB_X %03d\n", gateboy->fb_x);
+  dumper("FB_Y %03d\n", gateboy->fb_y);
+
   size_t state_size = state_manager.state_size_bytes();
 
   if (state_size < 1024 * 1024) {
@@ -178,8 +175,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Total hash  %016llx\n", gateboy->total_hash);
   dumper("\n");
 
-  const auto& top = gateboy->top;
+  dumper("----------   CPU    ----------\n");
+  gateboy->cpu.dump(dumper);
 
+  const auto& top = gateboy->top;
   top.clk_reg.dump(dumper, top);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper);
@@ -194,7 +193,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), col_width * 1, 0);
   dumper.clear();
 
-  top.lcd_reg.dump(dumper);
+  top.lcd_reg.dump(dumper, top);
   top.pix_pipe.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), col_width * 2, 0);
   dumper.clear();
@@ -209,14 +208,29 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), col_width * 3, 0);
   dumper.clear();
 
+  /*
   dump_painter.render(view, col_width * 4,       0, 4, 64, gateboy->mem + 0xFE00);
   dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
 
   dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);
   text_painter.render(view, dumper.s.c_str(), col_width * 5, 0);
   dumper.clear();
+  */
+
+  gb_blitter.blit_screen(view, int(view.screen_size.x - 320 - 32), 32, 2, gateboy->fb);
+
+  /*
+  for (int i = 0; i < 912 * 154; i++) {
+    trace[i] = rand() | 0xFF000000;
+  }
+  */
+
+  //update_texture_u32(trace_tex, 912, 154, trace);
+  //blitter.blit(view, trace_tex, 0, 0, 912, 154);
 
 }
+
+//-----------------------------------------------------------------------------
 
 void GateBoyApp::app_render_ui(Viewport view) {
   (void)view;

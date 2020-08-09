@@ -21,7 +21,7 @@ struct CpuBus {
 
   uint8_t get_bus_data() const {
     return (uint8_t)pack_p(CPU_BUS_D0.qp(), CPU_BUS_D1.qp(), CPU_BUS_D2.qp(), CPU_BUS_D3.qp(),
-                         CPU_BUS_D4.qp(), CPU_BUS_D5.qp(), CPU_BUS_D6.qp(), CPU_BUS_D7.qp());
+                           CPU_BUS_D4.qp(), CPU_BUS_D5.qp(), CPU_BUS_D6.qp(), CPU_BUS_D7.qp());
   }
 
   void preset_addr(uint16_t addr) {

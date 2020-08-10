@@ -17,7 +17,7 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p01.TAGY*/ wire _TAGY_FF04_RDp = and4(top.TEDO_CPU_RDp(), _RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
     /*p01.TAPE*/ wire _TAPE_FF04_WRp = and4(top.TAPU_CPU_WRp_xxxDxxxx(), _RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
 
-    /*p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(top.clk_reg.UCOB_CLKBADp(), top.clk_reg.SYS_PIN_RSTp(), _TAPE_FF04_WRp);
+    /*p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(top.clk_reg.UCOB_CLKBADp(), top.clk_reg.SYS_PIN_RSTp.qp(), _TAPE_FF04_WRp);
 
     /*p01.UKUP*/ _UKUP_DIV_00 = dff17_A (top.clk_reg.BOGA_ABCDExxx(), _UFOL_DIV_RSTn, _UKUP_DIV_00.qn());
     /*p01.UFOR*/ _UFOR_DIV_01 = dff17_AB(_UKUP_DIV_00.qn(),           _UFOL_DIV_RSTn, _UFOR_DIV_01.qn());
@@ -47,14 +47,20 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p01.RAVE*/ wire _RAVE_DIV_11n = not1(_SOLA_DIV_11.qp());
     /*p01.RYSO*/ wire _RYSO_DIV_12n = not1(_SUBU_DIV_12.qp());
     /*p01.UDOR*/ wire _UDOR_DIV_13n = not1(_TEKA_DIV_13.qp());
-    /*p01.TAWU*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_TAGY_FF04_RDp, not1(_UMEK_DIV_06n));
-    /*p01.TAKU*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(_TAGY_FF04_RDp, not1(_UREK_DIV_07n));
-    /*p01.TEMU*/ cpu_bus.CPU_BUS_D2 = tribuf_6p(_TAGY_FF04_RDp, not1(_UTOK_DIV_08n));
-    /*p01.TUSE*/ cpu_bus.CPU_BUS_D3 = tribuf_6p(_TAGY_FF04_RDp, not1(_SAPY_DIV_09n));
-    /*p01.UPUG*/ cpu_bus.CPU_BUS_D4 = tribuf_6p(_TAGY_FF04_RDp, not1(_UMER_DIV_10n));
-    /*p01.SEPU*/ cpu_bus.CPU_BUS_D5 = tribuf_6p(_TAGY_FF04_RDp, not1(_RAVE_DIV_11n));
-    /*p01.SAWA*/ cpu_bus.CPU_BUS_D6 = tribuf_6p(_TAGY_FF04_RDp, not1(_RYSO_DIV_12n));
-    /*p01.TATU*/ cpu_bus.CPU_BUS_D7 = tribuf_6p(_TAGY_FF04_RDp, not1(_UDOR_DIV_13n));
+
+
+    // inverter wat?
+
+    // TAWU = tri(TAGY, UMEK)
+
+    /*p01.TAWU*/ cpu_bus.CPU_BUS_D0 = tribuf_6pn(_TAGY_FF04_RDp, _UMEK_DIV_06n);
+    /*p01.TAKU*/ cpu_bus.CPU_BUS_D1 = tribuf_6pn(_TAGY_FF04_RDp, _UREK_DIV_07n);
+    /*p01.TEMU*/ cpu_bus.CPU_BUS_D2 = tribuf_6pn(_TAGY_FF04_RDp, _UTOK_DIV_08n);
+    /*p01.TUSE*/ cpu_bus.CPU_BUS_D3 = tribuf_6pn(_TAGY_FF04_RDp, _SAPY_DIV_09n);
+    /*p01.UPUG*/ cpu_bus.CPU_BUS_D4 = tribuf_6pn(_TAGY_FF04_RDp, _UMER_DIV_10n);
+    /*p01.SEPU*/ cpu_bus.CPU_BUS_D5 = tribuf_6pn(_TAGY_FF04_RDp, _RAVE_DIV_11n);
+    /*p01.SAWA*/ cpu_bus.CPU_BUS_D6 = tribuf_6pn(_TAGY_FF04_RDp, _RYSO_DIV_12n);
+    /*p01.TATU*/ cpu_bus.CPU_BUS_D7 = tribuf_6pn(_TAGY_FF04_RDp, _UDOR_DIV_13n);
   }
 
   // FF05 TIMA
@@ -114,6 +120,8 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.PEDA*/ PEDA_TIMA_6 = dff20(RAGE_TIMA_5.qn(), _MEXU_TIMA_LOADp, _PYMA_TIMA_LD_6);
     /*p03.NUGA*/ NUGA_TIMA_7 = dff20(PEDA_TIMA_6.qn(), _MEXU_TIMA_LOADp, _PAGU_TIMA_LD_7);
 
+    // SOKU := tri(TEDA, REGA_17)
+
     /*p03.SOKU*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_TEDA_FF05_RDp, REGA_TIMA_0.qp());
     /*p03.RACY*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(_TEDA_FF05_RDp, POVY_TIMA_1.qp());
     /*p03.RAVY*/ cpu_bus.CPU_BUS_D2 = tribuf_6p(_TEDA_FF05_RDp, PERU_TIMA_2.qp());
@@ -148,6 +156,9 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.PETO*/ PETO_TMA_6 = dff17_AB(_TYJU_FF06_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D6.qp());
     /*p03.SETA*/ SETA_TMA_7 = dff17_AB(_TYJU_FF06_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D7.qp());
 
+    // SETE := tri(TUBY, SABU_QN) !!!!
+    // PYRE := tri(TUBY, NYKE_QN)
+
     /*p03.SETE*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_TUBY_FF06_RDp, SABU_TMA_0.qp());
     /*p03.PYRE*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(_TUBY_FF06_RDp, NYKE_TMA_1.qp());
     /*p03.NOLA*/ cpu_bus.CPU_BUS_D2 = tribuf_6p(_TUBY_FF06_RDp, MURU_TMA_2.qp());
@@ -166,6 +177,8 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.SOPU*/ SOPU_TAC_0 = dff17_AB(_SARA_FF07_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0.qp());
     /*p03.SAMY*/ SAMY_TAC_1 = dff17_AB(_SARA_FF07_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1.qp());
     /*p03.SABO*/ SABO_TAC_2 = dff17_AB(_SARA_FF07_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D2.qp());
+
+    // RYLA := tri(SORA, SOPU_QN); !!!
 
     /*p03.RYLA*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_SORA_FF07_RDp, SOPU_TAC_0.qp());
     /*p03.ROTE*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(_SORA_FF07_RDp, SAMY_TAC_1.qp());

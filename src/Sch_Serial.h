@@ -15,7 +15,7 @@ struct SerialRegisters {
 
   int get_data() const {
     return pack_p(_SER_DATA7.qp(), _SER_DATA6.qp(), _SER_DATA5.qp(), _SER_DATA4.qp(),
-                _SER_DATA3.qp(), _SER_DATA2.qp(), _SER_DATA1.qp(), _SER_DATA0.qp());
+                _SER_DATA3.qp(), _SER_DATA2.qp(), _SER_DATA1.qp(), CUBA_SER_DATA0.qp());
   }
 
   /*p06.CALY*/ wire CALY_SER_INTp() const { return _CALY_SER_INTp.qp(); }
@@ -31,7 +31,7 @@ struct SerialRegisters {
   /*p06.CYLO*/ RegQN _SER_CNT1      = REG_D0C0;
   /*p06.CYDE*/ RegQN _SER_CNT2      = REG_D0C0;
                                    
-  /*p06.CUBA*/ Reg _SER_DATA0     = REG_D0C0;
+  /*p06.CUBA*/ Reg CUBA_SER_DATA0     = REG_D0C0;
   /*p06.DEGU*/ Reg _SER_DATA1     = REG_D0C0;
   /*p06.DYRA*/ Reg _SER_DATA2     = REG_D0C0;
   /*p06.DOJO*/ Reg _SER_DATA3     = REG_D0C0;

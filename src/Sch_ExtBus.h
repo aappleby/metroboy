@@ -11,6 +11,7 @@ struct OamBus;
 
 struct ExtBus {
   void tock(SchematicTop& top);
+  void dump(Dumper& d) const;
 
   uint16_t get_pin_addr() {
     return (uint16_t)pack_p(EXT_PIN_A00_A.qp(), EXT_PIN_A01_A.qp(), EXT_PIN_A02_A.qp(), EXT_PIN_A03_A.qp(),
@@ -45,47 +46,6 @@ struct ExtBus {
     EXT_PIN_D6_C.preset(DELTA_TRIZ);
     EXT_PIN_D7_C.preset(DELTA_TRIZ);
   }
-
-
-  void dump(Dumper& d) const {
-    d("---------- Ext Bus  ----------\n");
-    d("EXT BUS ADDR    : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      _NYRE_EXT_ADDR_LATCH_14.c(), _LONU_EXT_ADDR_LATCH_13.c(), _LOBU_EXT_ADDR_LATCH_12.c(), _LUMY_EXT_ADDR_LATCH_11.c(),
-      _PATE_EXT_ADDR_LATCH_10.c(), _LYSA_EXT_ADDR_LATCH_09.c(), _LUNO_EXT_ADDR_LATCH_08.c(), _ARYM_EXT_ADDR_LATCH_07.c(),
-      _AROS_EXT_ADDR_LATCH_06.c(), _ATEV_EXT_ADDR_LATCH_05.c(), _AVYS_EXT_ADDR_LATCH_04.c(), _ARET_EXT_ADDR_LATCH_03.c(),
-      _ALYR_EXT_ADDR_LATCH_02.c(), _APUR_EXT_ADDR_LATCH_01.c(), _ALOR_EXT_ADDR_LATCH_00.c());
-    d("EXT BUS DATA    : %c%c%c%c%c%c%c%c\n",
-      _SAZY_EXT_DATA_LATCH_07.c(), _RUPA_EXT_DATA_LATCH_06.c(), _SAGO_EXT_DATA_LATCH_05.c(), _SODY_EXT_DATA_LATCH_04.c(),
-      _SELO_EXT_DATA_LATCH_03.c(), _RAXY_EXT_DATA_LATCH_02.c(), _RONY_EXT_DATA_LATCH_01.c(), _SOMA_EXT_DATA_LATCH_00.c());
-    d("\n");
-
-    d("EXT PIN RD_A    : %c%c%c\n", EXT_PIN_RD_A.c(), EXT_PIN_RD_C.c(), EXT_PIN_RD_D.c());
-    d("EXT PIN WR_A    : %c%c%c\n", EXT_PIN_WR_A.c(), EXT_PIN_WR_C.c(), EXT_PIN_WR_D.c());
-    d("EXT PIN CS_A    : %c\n",     EXT_PIN_CS_A.c());
-
-    d("EXT PIN ADDR_A  : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      EXT_PIN_A15_A.c(), EXT_PIN_A14_A.c(), EXT_PIN_A13_A.c(), EXT_PIN_A12_A.c(),
-      EXT_PIN_A11_A.c(), EXT_PIN_A10_A.c(), EXT_PIN_A09_A.c(), EXT_PIN_A08_A.c(),
-      EXT_PIN_A07_A.c(), EXT_PIN_A06_A.c(), EXT_PIN_A05_A.c(), EXT_PIN_A04_A.c(),
-      EXT_PIN_A03_A.c(), EXT_PIN_A02_A.c(), EXT_PIN_A01_A.c(), EXT_PIN_A00_A.c());
-
-    d("EXT PIN DATA_A  : %c%c%c%c%c%c%c%c\n",
-      EXT_PIN_D7_A.c(), EXT_PIN_D6_A.c(), EXT_PIN_D5_A.c(), EXT_PIN_D4_A.c(),
-      EXT_PIN_D3_A.c(), EXT_PIN_D2_A.c(), EXT_PIN_D1_A.c(), EXT_PIN_D0_A.c());
-    d("EXT PIN DATA_B  : %c%c%c%c%c%c%c%c\n",
-      EXT_PIN_D7_B.c(), EXT_PIN_D6_B.c(), EXT_PIN_D5_B.c(), EXT_PIN_D4_B.c(),
-      EXT_PIN_D3_B.c(), EXT_PIN_D2_B.c(), EXT_PIN_D1_B.c(), EXT_PIN_D0_B.c());
-    d("EXT PIN DATA_C  : %c%c%c%c%c%c%c%c\n",
-      EXT_PIN_D7_C.c(), EXT_PIN_D6_C.c(), EXT_PIN_D5_C.c(), EXT_PIN_D4_C.c(),
-      EXT_PIN_D3_C.c(), EXT_PIN_D2_C.c(), EXT_PIN_D1_C.c(), EXT_PIN_D0_C.c());
-    d("EXT PIN DATA_D  : %c%c%c%c%c%c%c%c\n",
-      EXT_PIN_D7_D.c(), EXT_PIN_D6_D.c(), EXT_PIN_D5_D.c(), EXT_PIN_D4_D.c(),
-      EXT_PIN_D3_D.c(), EXT_PIN_D2_D.c(), EXT_PIN_D1_D.c(), EXT_PIN_D0_D.c());
-
-    d("\n");
-  }
-
-//private:
 
   //-----------------------------------------------------------------------------
 

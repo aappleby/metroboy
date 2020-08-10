@@ -34,6 +34,9 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch_B(_ROLO_FF0F_RDn, NYBO_FF0F_2.qp()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not1(_ROLO_FF0F_RDn);
+
+    // NELA := tri(POLA, MATY_Q)
+
     /*p02.NELA*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.qp());
     /*p02.NABO*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1.qp());
     /*p02.ROVA*/ cpu_bus.CPU_BUS_D2 = tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2.qp());

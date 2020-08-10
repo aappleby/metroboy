@@ -25,29 +25,13 @@ struct OamBus {
   }
 
   uint8_t get_oam_latch_data_a() const {
-    return (uint8_t)pack_p(
-      YDYV_LATCH_OAM_DA0.c(),
-      YCEB_LATCH_OAM_DA1.c(),
-      ZUCA_LATCH_OAM_DA2.c(),
-      WONE_LATCH_OAM_DA3.c(),
-      ZAXE_LATCH_OAM_DA4.c(),
-      XAFU_LATCH_OAM_DA5.c(),
-      YSES_LATCH_OAM_DA6.c(),
-      ZECA_LATCH_OAM_DA7.c()
-    );
+    return (uint8_t)pack_p(YDYV_LATCH_OAM_DA0.c(), YCEB_LATCH_OAM_DA1.c(), ZUCA_LATCH_OAM_DA2.c(), WONE_LATCH_OAM_DA3.c(),
+                           ZAXE_LATCH_OAM_DA4.c(), XAFU_LATCH_OAM_DA5.c(), YSES_LATCH_OAM_DA6.c(), ZECA_LATCH_OAM_DA7.c());
   }
 
   uint8_t get_oam_latch_data_b() const {
-    return (uint8_t)pack_p(
-      XYKY_LATCH_OAM_DB0.c(),
-      YRUM_LATCH_OAM_DB1.c(),
-      YSEX_LATCH_OAM_DB2.c(),
-      YVEL_LATCH_OAM_DB3.c(),
-      WYNO_LATCH_OAM_DB4.c(),
-      CYRA_LATCH_OAM_DB5.c(),
-      ZUVE_LATCH_OAM_DB6.c(),
-      ECED_LATCH_OAM_DB7.c()
-    );
+    return (uint8_t)pack_p(XYKY_LATCH_OAM_DB0.c(), YRUM_LATCH_OAM_DB1.c(), YSEX_LATCH_OAM_DB2.c(), YVEL_LATCH_OAM_DB3.c(),
+                           WYNO_LATCH_OAM_DB4.c(), CYRA_LATCH_OAM_DB5.c(), ZUVE_LATCH_OAM_DB6.c(), ECED_LATCH_OAM_DB7.c());
   }
 
   uint8_t get_oam_bus_data_a() const {
@@ -94,13 +78,26 @@ struct OamBus {
 
   //----------------------------------------
 
-  // -> sprite store
-  /*p28.YFOT*/ wire YFOT_OAM_A2n() const { return not1(OAM_TRI_A2.qp()); }
-  /*p28.YFOC*/ wire YFOC_OAM_A3n() const { return not1(OAM_TRI_A3.qp()); }
-  /*p28.YVOM*/ wire YVOM_OAM_A4n() const { return not1(OAM_TRI_A4.qp()); }
-  /*p28.YMEV*/ wire YMEV_OAM_A5n() const { return not1(OAM_TRI_A5.qp()); }
-  /*p28.XEMU*/ wire XEMU_OAM_A6n() const { return not1(OAM_TRI_A6.qp()); }
-  /*p28.YZET*/ wire YZET_OAM_A7n() const { return not1(OAM_TRI_A7.qp()); }
+  /*p04.MAKA*/ RegQP MAKA_HOLD_MEMp = REG_D0C0;
+  /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
+
+  /*p31.XYKY*/ Latch XYKY_LATCH_OAM_DB0 = TRI_D0NP;
+  /*p31.YRUM*/ Latch YRUM_LATCH_OAM_DB1 = TRI_D0NP;
+  /*p31.YSEX*/ Latch YSEX_LATCH_OAM_DB2 = TRI_D0NP;
+  /*p31.YVEL*/ Latch YVEL_LATCH_OAM_DB3 = TRI_D0NP;
+  /*p31.WYNO*/ Latch WYNO_LATCH_OAM_DB4 = TRI_D0NP;
+  /*p31.CYRA*/ Latch CYRA_LATCH_OAM_DB5 = TRI_D0NP;
+  /*p31.ZUVE*/ Latch ZUVE_LATCH_OAM_DB6 = TRI_D0NP;
+  /*p31.ECED*/ Latch ECED_LATCH_OAM_DB7 = TRI_D0NP;
+
+  /*p29.YDYV*/ Latch YDYV_LATCH_OAM_DA0 = TRI_D0NP;
+  /*p29.YCEB*/ Latch YCEB_LATCH_OAM_DA1 = TRI_D0NP;
+  /*p29.ZUCA*/ Latch ZUCA_LATCH_OAM_DA2 = TRI_D0NP;
+  /*p29.WONE*/ Latch WONE_LATCH_OAM_DA3 = TRI_D0NP;
+  /*p29.ZAXE*/ Latch ZAXE_LATCH_OAM_DA4 = TRI_D0NP;
+  /*p29.XAFU*/ Latch XAFU_LATCH_OAM_DA5 = TRI_D0NP;
+  /*p29.YSES*/ Latch YSES_LATCH_OAM_DA6 = TRI_D0NP;
+  /*p29.ZECA*/ Latch ZECA_LATCH_OAM_DA7 = TRI_D0NP;
 
   // oam byte 0, byte 2
   /*p29.XUSO*/ RegQP XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
@@ -122,11 +119,6 @@ struct OamBus {
   /*p31.YZOS*/ RegQP YZOS_OAM_DB6 = REG_D0C0; // sprite x bit 6, sprite y flip
   /*p31.DEPO*/ RegQP DEPO_OAM_DB7 = REG_D0C0; // sprite x bit 7, sprite priority
 
-//private:
-
-  /*p04.MAKA*/ RegQP _MAKA_HOLD_MEMp = REG_D0C0;
-  /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
-
   Tri OAM_PIN_CLK  = TRI_HZNP;
   Tri OAM_PIN_OE   = TRI_HZPU;
   Tri OAM_PIN_WR_A = TRI_HZPU;
@@ -141,25 +133,6 @@ struct OamBus {
   Tri OAM_TRI_A6 = TRI_HZNP;
   Tri OAM_TRI_A7 = TRI_HZNP;
 
-  /*p31.XYKY*/ Latch XYKY_LATCH_OAM_DB0 = TRI_D0NP;
-  /*p31.YRUM*/ Latch YRUM_LATCH_OAM_DB1 = TRI_D0NP;
-  /*p31.YSEX*/ Latch YSEX_LATCH_OAM_DB2 = TRI_D0NP;
-  /*p31.YVEL*/ Latch YVEL_LATCH_OAM_DB3 = TRI_D0NP;
-  /*p31.WYNO*/ Latch WYNO_LATCH_OAM_DB4 = TRI_D0NP;
-  /*p31.CYRA*/ Latch CYRA_LATCH_OAM_DB5 = TRI_D0NP;
-  /*p31.ZUVE*/ Latch ZUVE_LATCH_OAM_DB6 = TRI_D0NP;
-  /*p31.ECED*/ Latch ECED_LATCH_OAM_DB7 = TRI_D0NP;
-
-  /*p29.YDYV*/ Latch YDYV_LATCH_OAM_DA0 = TRI_D0NP;
-  /*p29.YCEB*/ Latch YCEB_LATCH_OAM_DA1 = TRI_D0NP;
-  /*p29.ZUCA*/ Latch ZUCA_LATCH_OAM_DA2 = TRI_D0NP;
-  /*p29.WONE*/ Latch WONE_LATCH_OAM_DA3 = TRI_D0NP;
-  /*p29.ZAXE*/ Latch ZAXE_LATCH_OAM_DA4 = TRI_D0NP;
-  /*p29.XAFU*/ Latch XAFU_LATCH_OAM_DA5 = TRI_D0NP;
-  /*p29.YSES*/ Latch YSES_LATCH_OAM_DA6 = TRI_D0NP;
-  /*p29.ZECA*/ Latch ZECA_LATCH_OAM_DA7 = TRI_D0NP;
-
-  //Tri OAM_BUS_A0  = TRI_HZNP;
   Tri OAM_BUS_A1  = TRI_HZNP;
   Tri OAM_BUS_A2  = TRI_HZNP;
   Tri OAM_BUS_A3  = TRI_HZNP;

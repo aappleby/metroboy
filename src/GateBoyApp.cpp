@@ -52,6 +52,8 @@ const char* GateBoyApp::app_get_title() {
 //----------------------------------------
 
 void GateBoyApp::app_init() {
+  printf("GateBoyApp::app_init()\n");
+
   grid_painter.init();
   text_painter.init();
   dump_painter.init();
@@ -61,14 +63,9 @@ void GateBoyApp::app_init() {
   trace_tex = create_texture_u32(912, 154);
 
   keyboard_state = SDL_GetKeyboardState(nullptr);
-
-  printf("\n");
-  printf("//----------------------------------------\n");
-  printf("// GateBoy starting...\n");
   printf("\n");
 
   auto gateboy = state_manager.state();
-
   gateboy->run_reset_sequence();
 }
 
@@ -176,7 +173,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gateboy->cpu.dump(dumper);
 
   const auto& top = gateboy->top;
-  top.clk_reg.dump(dumper, top);
+  top.clk_reg.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), col_width * 0, 0);

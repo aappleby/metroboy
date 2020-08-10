@@ -5,61 +5,6 @@
 #include "Debug.h"
 #include "File.h"
 
-#if 0
-  // these are all "normal operating mode" w/o rendering or dma 
-
-  OAM_PIN_OE     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OPD_TO_OBD     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OBD_TO_OBL     =  and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OBL_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-
-  EPD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  EXT_PIN_RD     = nand2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  EXT_PIN_WR     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
-  CBD_TO_EPD     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  CBA_TO_EPA     =  and2(                                 CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-
-  EXT_PIN_CS     =  and2(                                !CPU_PIN_ADDR_EXT,  ADDR_ERAM,   xxCDEFGH);
-
-  EXT_PIN_A15_A  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
-  EXT_PIN_A15_D  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
-
-  OAM_PIN_WRn    = nand2(CPU_PIN_WRp,                                        ADDR_OAM,    xxxxEFGx);
-  TIMA_LOADp     =  and2(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,                     FF05,        xxxxEFGx);
-
-
-  VBD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM, !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-  VRAM_PIN_WR    = nand2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
-  VRAM_PIN_CS    = nand2(                                !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-  VRAM_PIN_OE    = nand2(CPU_PIN_WRp,                                        ADDR_VRAM);
-
-
-  CBD_TO_VPD     =  and2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-
-
-  EXT_PIN_A00_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
-
-
-  /*read  rom */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write rom */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
-
-  /*read  vram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
-  /*write vram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
-
-  /*read  cram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write cram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
-
-  /*read  eram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write eram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
-
-  /*read  oam */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
-  /*write oam */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
-
-  /*read  hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = dc;
-  /*write hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
-
-#endif
-
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
@@ -70,27 +15,21 @@ GateBoy::GateBoy() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::run_reset_sequence() {
+  printf("GateBoy::run_reset_sequence()\n");
+
+  log("Starting GateBoy sim\n");
 
   // No bus activity during reset
   dbg_req = {.addr = 0x0100, .data = 0, .read = 0, .write = 0 };
 
-  //----------
-  // 8 phases in reset
-
-  printf("In reset\n");
+  log("In reset\n");
   run(8);
 
-  //----------
-  // 8 phases out of reset
-
-  printf("Out of reset\n");
+  log("Out of reset\n");
   sys_rst = 0;
   run(8);
 
-  //----------
-  // 11 phases with enabled clock, which should put us in phase A
-
-  printf("Sync with phase B\n");
+  log("Sync with phase A\n");
   sys_clken = 1;
   run(11);
 
@@ -100,56 +39,116 @@ void GateBoy::run_reset_sequence() {
   CHECK_P(top.clk_reg.ADYK_ABCxxxxH.qp());
   CHECK_P((phase_total & 7) == 0);
 
-  //----------
-  // 8 phases with "good" clock (still not really sure what the CLKIN_A circuit does)
-
-  printf("Clock good\n");
+  log("Clock good\n");
   sys_clkgood = 1;
   run(8);
 
-  //----------
-  // Wait for START
-
-  printf("Wait for CPU_PIN_START");
+  log("Wait for CPU_PIN_START");
   while(!top.clk_reg.CPU_PIN_STARTp.qp()) {
-    printf(".");
     run(8);
   }
 
-  //----------
-  // 8 phases after START
-
-  printf("Delay\n");
+  log("Delay\n");
   run(8);
 
-  //----------
-  // 24 phases with CPU ready
-
-  printf("Set CPU_READY = 1\n");
+  log("Set CPU_READY = 1\n");
   sys_cpuready = 1;
   run(8);
 
-  //----------
-  // Set boot bit, otherwise we can't read rom
+  log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
+  log("Set BOOT = 1\n");
+  dbg_write(0xFF50, 0xFF);
+  log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
 
-  printf("Set BOOT = 1\n");
-  {
-    //uint8_t boot_bit = dbg_read(0xFF50);
-    //printf("%5s @ %04x => %d\n", "BOOT", 0xFF50, boot_bit);
-    dbg_write(0xFF50, 0xFF);
-    //boot_bit = dbg_read(0xFF50);
-
-    //printf("%5s @ %04x => %d\n", "BOOT", 0xFF50, boot_bit);
-  }
-  printf("\n");
-
-  // Addr bus on ext pins notes -
-  // 0000 - 7FFF : addr on bus, no CSn
-  // 8800 - 9FFF : only A15 changes
-  // A000 - F800 : addr on bus and CSn goes low for a bit
-  // FE00 - FFFF : addr on bus but no CSn
-
+  /*
 #if !_DEBUG
+  test_all_regs();
+  test_all_mem();
+#endif
+  */
+
+  const char* filename = "roms/LinksAwakening_dog.dump";
+  load(filename);
+
+  dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
+  dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
+  dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
+  dbg_write(ADDR_SCY, mem[ADDR_SCY]);
+  dbg_write(ADDR_SCX, mem[ADDR_SCX]);
+  dbg_write(ADDR_WY, mem[ADDR_WY]);
+  dbg_write(ADDR_WX, mem[ADDR_WX]);
+
+  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
+  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
+  // Bit 5 - Window Display Enable          (0=Off, 1=On)
+  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
+  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
+  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
+  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
+  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
+
+  // #define FLAG_BG_ON        0x01
+  // #define FLAG_OBJ_ON       0x02
+  // #define FLAG_TALL_SPRITES 0x04
+  // #define FLAG_BG_MAP_1     0x08
+  // #define FLAG_TILE_0       0x10
+  // #define FLAG_WIN_ON       0x20
+  // #define FLAG_WIN_MAP_1    0x40
+  // #define FLAG_LCD_ON       0x80
+
+  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
+
+  //cpu_en = true;
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::log(const char* format, ...) {
+  printf("@%06d : ", phase_total);
+  va_list args;
+  va_start (args, format);
+  vprintf (format, args);
+  va_end (args);
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::load(const char* filename) {
+  log("Loading %s\n", filename);
+  memset(mem, 0, 65536);
+  size_t size = load_blob(filename, mem);
+  log("Loaded %zd bytes from %s\n", size, filename);
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::test_all_mem() {
+  printf("//----------------------------------------\n");
+  printf("// Testing Cart ROM read: ");
+  test_mem(0x0000, 0x7FFF, 256, false);
+
+  printf("// Testing VRAM read/write: ");
+  test_mem(0x8000, 0x9FFF, 256, true);
+
+  printf("// Testing Cart RAM read/write: ");
+  test_mem(0xA000, 0xBFFF, 256, true);
+
+  printf("// Testing Main RAM read/write: ");
+  test_mem(0xC000, 0xDFFF, 256, true);
+
+  printf("// Testing Echo RAM read/write: ");
+  test_mem(0xE000, 0xFDFF, 256, true);
+
+  printf("// Testing OAM RAM read/write: ");
+  test_mem(0xFE00, 0xFEFF, 1, true);
+
+  printf("// Testing ZRAM read/write: ");
+  test_mem(0xFF80, 0xFFFE, 1, true);
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::test_all_regs() {
   printf("//----------------------------------------\n");
   printf("// Testing reg read/write\n");
 
@@ -180,81 +179,6 @@ void GateBoy::run_reset_sequence() {
   //test_reg("IF",   0xFF0F, 0b00011111); // broken
   //test_reg("IE",   0xFFFF, 0b00011111);
   printf("\n");
-#endif
-
-#if !_DEBUG
-  printf("//----------------------------------------\n");
-  printf("// Testing Cart ROM read: ");
-  test_mem(0x0000, 0x7FFF, 256, false);
-
-  printf("// Testing VRAM read/write: ");
-  test_mem(0x8000, 0x9FFF, 256, true);
-
-  printf("// Testing Cart RAM read/write: ");
-  test_mem(0xA000, 0xBFFF, 256, true);
-
-  printf("// Testing Main RAM read/write: ");
-  test_mem(0xC000, 0xDFFF, 256, true);
-
-  printf("// Testing Echo RAM read/write: ");
-  test_mem(0xE000, 0xFDFF, 256, true);
-
-  printf("// Testing OAM RAM read/write: ");
-  test_mem(0xFE00, 0xFEFF, 1, true);
-
-  printf("// Testing ZRAM read/write: ");
-  test_mem(0xFF80, 0xFFFE, 1, true);
-#endif
-
-
-  printf("//----------------------------------------\n");
-  printf("// Loading dump\n");
-  memset(mem, 0, 65536);
-  load_blob("roms/LinksAwakening_dog.dump", mem, 65536);
-  printf("Dump loaded\n");
-
-  dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
-  dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
-  dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
-  dbg_write(ADDR_SCY, mem[ADDR_SCY]);
-  dbg_write(ADDR_SCX, mem[ADDR_SCX]);
-  dbg_write(ADDR_WY, mem[ADDR_WY]);
-  dbg_write(ADDR_WX, mem[ADDR_WX]);
-
-  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
-  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 5 - Window Display Enable          (0=Off, 1=On)
-  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
-  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
-  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
-
-  // #define FLAG_BG_ON        0x01
-  // #define FLAG_OBJ_ON       0x02
-  // #define FLAG_TALL_SPRITES 0x04
-  // #define FLAG_BG_MAP_1     0x08
-  // #define FLAG_TILE_0       0x10
-  // #define FLAG_WIN_ON       0x20
-  // #define FLAG_WIN_MAP_1    0x40
-  // #define FLAG_LCD_ON       0x80
-
-  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
-
-  // 912 * 154 = 140448 phases per frame
-
-  // First frame 
-  //  58808
-  // 190128
-  // 330576
-
-  /*
-#if !_DEBUG
-  run(131320, {}, false);
-#endif
-*/
-
-  //cpu_en = true;
 }
 
 //------------------------------------------------------------------------------

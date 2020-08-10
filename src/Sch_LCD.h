@@ -29,7 +29,10 @@ struct LcdRegisters {
   // fires on P910 and P911
   wire BYHA_VID_LINE_END_TRIGn() const {
     /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(_CATU_LINE_P910.qp());
+    
+    // so if this is or_and, BYHA should go low on 910 and 911
     /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(_ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, _ABEZ_VID_RSTn);
+    
     return BYHA_VID_LINE_END_TRIGn;
   }
 

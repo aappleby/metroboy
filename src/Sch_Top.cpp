@@ -23,7 +23,6 @@ void SchematicTop::tick_slow(int phase) {
   sprite_store.tick(*this);
   pix_pipe.tick(*this);
   tim_reg.tick(*this);
-  bootrom.tick(*this);
   dma_reg.tick(*this);
   ser_reg.tick(*this);
   joypad.tick(*this);

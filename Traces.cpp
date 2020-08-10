@@ -1,3 +1,568 @@
+    // AFUR_01 NC
+    // AFUR_02 << !ATAL_03: CLKp
+    // AFUR_03 << ADYK_09 : D
+    // AFUR_04 << ATAL_03 : CLKn
+    // AFUR_05 NC
+    // AFUR_06 << UPOJ_04 : RSTp
+    // AFUR_07 NC
+    // AFUR_08 >> ALEF_03 : Qn?
+    // AFUR_09 >> ATYP_01 : Q?
+
+    // ALEF_01 NC
+    // ALEF_02 << ATAL_03 : CLKp
+    // ALEF_03 << AFUR_08 : D
+    // ALEF_04 << !ATAL_03: CLKn
+    // ALEF_05 NC
+    // ALEF_06 << UPOJ_04 : RSTp
+    // ALEF_07 NC
+    // ALEF_08 >> APUK_03, AFEP_01 : Qn?
+    // ALEF_09 >> NC      : Q?
+
+    // APUK_01 NC
+    // APUK_02 << !ATAL_03: CLKp
+    // APUK_03 << ALEF_08 : D
+    // APUK_04 << ATAL_03 : CLKn
+    // APUK_05 NC
+    // APUK_06 << UPOJ_04 : RSTp
+    // APUK_07 NC
+    // APUK_08 >> ADYK_03 : Qn?
+    // APUK_09 >> AROV_01 : Q?
+
+    // ADYK_01 NC
+    // ADYK_02 << ATAL_03 : CLKp
+    // ADYK_03 << APUK_08 : D
+    // ADYK_04 << !ATAL_03: CLKn
+    // ADYK_05 NC
+    // ADYK_06 << UPOJ_04 : RSTp
+    // ADYK_07 NC
+    // ADYK_08 >> ADAR_01 : Qn?
+    // ADYK_09 >> AFUR_03 : Q?
+
+
+    // NAFA_01 << LORU_02 : CLKp
+// NAFA_02 << CPU_D0  : D
+// NAFA_03 nc
+// NAFA_04 << PYSU_02 : CLKn
+// NAFA_05 nc
+// NAFA_06 nc
+// NAFA_07 >> EVAX_04 : Qn? (tribuf to VRAM_BUS_A08)
+// NAFA_08 >> POLY_04 : Q?  (tribuf to CPU_BUS_D0)
+
+
+// LOKY := nand(LARA, LENE_QN);
+// LARA := nand(LOKY, MYTE_QN, CUNU);
+
+#if 0
+
+// LAVY00 << CUPA04
+// LAVY01 << XEDA02
+// LAVY02 nc
+// LAVY03 >> LORU00
+
+// LYXE00 << LAVY03
+// LYXE01 nc
+// LYXE02 >> LUPA01
+// LYXE03 >> nc
+// LYXE04 nc
+// LYXE05 << LOKO02
+
+// LAVY = and2(FF46, CUPA)
+// NAVO = nand6(dma addr)
+// NOLO = not1(NAVO)
+// LOKO = nand2(CUNU, !LENE) // check neg output?
+// LUPA = nor2(LAVY, LYXE)
+// LUVY = state
+// MATU = state
+// LENE = state
+// MYTE_DMA_DONE = state
+// LYXE = latch(LOKO, LAVY)
+// LARA = nand3(LOKY, CUNU, !MYTE_DMA_DONE)
+// LOKY = nand2(LARA, !LENE)
+// META = and2(UVYT, LOKY)
+// LORU = not1(LAVY)
+
+// LYXE00 << LAVY03
+// LYXE01 nc
+// LYXE02 >> LUPA01
+// LYXE03 >> nc
+// LYXE04 nc
+// LYXE05 << LOKO02
+
+// LUPA00 << LAVY
+// LUPA01 << LYXE
+// LUPA02 >> LUVY
+
+// LOGO = not1(MUDA);
+// MORY = nand2(MATU17, LOGO) MATU17 must be Q
+// LUMA = not1(MORY);
+
+// Die trace:
+// LEBU = not1(MARU06)
+// MUDA = nor4(PULA06, POKU06, LEBU);
+
+// if rung 6 of MARU/PULA/POKU was QN:
+// MUDA = and2(A13, A14, !A15);
+// would select last quarter of ROM, which doesn't make sense
+// so rung 6 of MARU must be Q.
+
+// schematic incorrect.
+// lyxe - weird gate - lavy, loko
+// lupa - nor4 - lavy, lyxe
+
+//----------------------------------------
+
+// Arms on ground, NOR latch
+// LYXE00 << LAVY03
+// LYXE01 nc
+// LYXE02 >> LUPA01
+// LYXE03 >> nc
+// LYXE04 nc
+// LYXE05 << LOKO02
+
+// if LOKO02 goes high, LYXE02 goes high.
+// if LAVY03 goes high, LYXE02 goes low.
+
+#endif
+
+  // If AVOR_RSTp was 1 in run mode
+  // then ALUR_RSTn = 0
+  // then MULO_TIMA_RST = 1
+  // then PUXY/NERO = 0 -> stuck
+  // Therefore AVOR_RSTp = 0 in run mode
+  // Therefore ASOL|AFER = 0 in run mode
+
+    // FUFO := not(XYMO_QN)
+    // WUKY := not(YZOS_QP)
+
+    // WAGO := xor2(WUKY, SPR_TRI_L0)
+
+    // XUQU := not(VONU_QN);
+    // CYVU := xor2(WUKY, SPR_TRI_L1)
+    // BORE := xor2(WUKY, SPR_TRI_L2)
+    // BUVY := xor2(WUKY, SPR_TRI_L3)
+    // GEJY := amux2(XUSO_Q, FUFO, XYMO_QN, WAGO)
+
+    // ABEM := tri(ABON, XUQU) >> VRAM_A00
+    // BAXE := tri(ABON, CYVU) >> VRAM_A01
+    // ARAS := tri(ABON, BORE) >> VRAM_A02
+    // AGAG := tri(ABON, BUVY) >> VRAM_A03
+    // FAMU := tri(ABON, GEJY) >> VRAM_A04
+    // FUGY := tri(ABON, XEGU_Q) >> VRAM_A05
+
+// TEGU_01 << SOSE
+// TEGU_02 << CPU_PIN_WR
+// TEGU_03 >> SALE_03
+
+// APAR := not1(ACYL);
+// DUGA := not1(MATU_17);
+// ASAM := or2(ACYL, XYMU, MATU_17);
+// BETE := not1(AJON);
+
+// BOGE := not1(MATU);
+// ACYL := and2(BOGE, BESU);
+// AJON := and2(XYMU, BOGE)
+
+// DEGE := not(ERUC)
+// DABY := not(ENEF)
+// DABU := not(FECO)
+// GYSA := not(GYKY)
+
+// Schematic has the line tribufs out of order
+
+// CUCU := tri(FEPO, DEGE) >> SPR_TRI_L0
+// CUCA := tri(FEPO, DABY) >> SPR_TRI_L1
+// CEGA := tri(FEPO, DABU) >> SPR_TRI_L2
+// WENU := tri(FEPO, GYSA) >> SPR_TRI_L3
+// XADU := dff(WUDA, CYKE, WEFE, YFOT);
+// WUZY := tri(BUZA, XADU)
+
+// WUKU := and2(LEKO, AMAB, GEKA);
+// WEWU := not1(WUKU);
+// XACA := tri(XYKY, WEWU);
+
+// GEKA := not1(OAM_TRI_A0);
+// WAFO := not1(GEKA);
+
+// GUKO := and2(WAFO, AMAB, LEKO);
+// WUME := not1(GUKO);
+
+// YLOR_01 << XEGA_01 : CLKp
+// YLOR_02 << XYKY_08 : D
+// YLOR_03 nc
+// YLOR_04 << COMP    : CLKn
+// YLOR_05 nc
+// YLOR_06 nc
+// YLOR_07 >> nc      : Qn
+// YLOR_08 >> ZAGO_01 : Q
+
+
+#if   0
+    POWU_DMA_OAM_WRp     = and2(MATU_DMA_RUNNINGp, xxxxEFGH, !CPU_PIN_HOLD_MEM);
+    WYJA_OAM_WRp         = or (and(FE00_FEFFp, AJUJ_OAM_BUSYn, CPU_PIN_WRp, AFAS_xxxDxxxx), POWU_DMA_OAM_WRp);
+    OAM_PIN_WRn_A = nand2(WYJA_OAM_WRp, !OAM_TRI_A0);
+    OAM_PIN_WRn_B = nand2(WYJA_OAM_WRp,  OAM_TRI_A0);
+
+#endif
+
+#if 0
+
+    SCAN_OAM_LATCH = and2(ACYL_SCANNINGp, XOCE_AxxDExxH());
+    CPU_OAM_LATCH  = and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM, FE00_FEFFp)
+    OAM_PIN_OE = !or(SCAN_OAM_LATCH, SPR_READp, BOTA_CPU_OAM_LATCH);
+
+#endif
+
+#if 0
+    // cpu data driven to bus on EFGH during write
+
+EXT_PIN_RD           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+EXT_PIN_WR           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM, AFAS_xxxDxxxx);
+EXT_PIN_CS           = and2(                           !CPU_PIN_ADDR_EXT, A000_FFFF,  TUNA_0000_FDFFp);
+MATE_LATCH_CPU_ADDRp = and2(                            CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+LATCH_CPU_DATA       = and2(CPU_PIN_RDp,                CPU_PIN_ADDR_EXT, !ADDR_VRAM, CPU_PIN_DV);
+IBUS_TO_EBUSp        = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+EXT_PIN_A15_A        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
+EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
+
+#endif
+
+#if 0
+
+    LAVO is NAND3
+
+    LAVO_01 << CPU_PIN_RD
+    LAVO_02 << TEXO_04
+    LAVO_03 << CPU_PIN_DV
+    LAVO_04 >>
+
+    // SOMA = latch(LAVO, EXT_PIN_D0_C)
+    // RYMA = tribuf_6n(LAVO, SOMA_08)
+#endif
+
+#if 0
+
+    SORE = not1(A15);
+    TEVY = or2(A13, A14, SORE);
+    TEXO = and2(CPU_PIN_ADDR_EXT, TEVY);
+    MOCA = nor4(TEXO, UMUT)
+    NEVY = or2(MEXO, MOCA);
+    LAGU = or2(and(CPU_PIN_RD, LEVO), CPU_PIN_WR);
+    LYWE = not1(LAGU)
+    MOTY = or2(MOCA, LYWE)
+
+    UJYV is MUX5
+    UJYV_01 << UNOR_04
+    UJYV_02 << RD_C
+    UJYV_03 << CPU_PIN_RD
+    UJYV_04 nc
+    UJYV_05 >> TEDO_01
+
+    TEDO is NOT4
+    TEDO_01 << UJYV_05
+    TEDO_02 nc
+    TEDO_03 nc
+    TEDO_04 >> TEDA_02, TUBY_02, UFEG_02, REDU_01, SORA_02, *
+
+    REDU is NOT
+    REDU_01 << TEDO_04
+    REDU_02 >> RORU_02
+
+    RORU is MUX6
+    RORU_01 << UNOR_04
+    RORU_02 << REDU_02
+    RORU_03 << MOTY_04
+    RORU_04 nc
+    RORU_05 nc 
+    RORU_06 >> LULA_01, *
+
+    LULA is NOT
+    LULA_01 << RORU_06
+    LULA_02 >> D_B
+
+    RUXA is NAND
+    RUXA_01 << CPU_D0
+    RUXA_02 << LULA_02
+    RUXA_03 >> D0_A
+
+
+    UJYV = mux5n(UNOR, RD_C, CPU_PIN_RD);
+    TEDO = not1(UJYV)
+    REDU = not1(TEDO)
+    RORU = mux6p(UNOR, REDU, MOTY);
+    LULA = not1(RORU)
+    RUXA = nand2(CPU_D0, LULA);
+    D0_A = RUXA;
+    
+
+    // if RORU selects MOTY:
+
+    D0_A = or2(!CPU_D0, !CPU_PIN_WR, ADDR_VRAM, !CPU_PIN_ADDR_EXT);
+
+
+    LULA_CBD_TO_EPDp = CPU_PIN_WRp;
+    if (ADDR_VRAM) LULA_CBD_TO_EPDp = 0;
+    if (!CPU_PIN_ADDR_EXT) LULA_CBD_TO_EPDp = 0;
+
+    D*_B = and2(CPU_PIN_WRp, CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+
+#endif
+
+
+#if 0
+
+    EXT_PIN_A15_A = and2(xxCDEFGH, CPU_PIN_ADDR_EXT, !A15);
+    EXT_PIN_A15_D = and2(xxCDEFGH, CPU_PIN_ADDR_EXT, !A15);
+
+#endif
+
+#if 0
+    EXT_PIN_A00_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+
+#endif
+
+
+#if 0
+    AGUT is (probably) and2(OR())
+    AGUT_01 << AROV
+    AGUT_02 << AJAX
+    AGUT_03 nc
+    AGUT_04 << CPU_PIN_ADDR_EXT
+    AGUT_05 >> AWOD_02
+
+    AWOD is NOR
+    AWOD_01 << UNOR
+    AWOD_02 << AGUT_05
+    AWOD_03 >> ABUZ_01
+
+    ABUZ is NOT4
+    ABUZ_01 << AWOD_03
+    ABUZ_02 nc
+    ABUZ_03 nc
+    ABUZ_04 >> *
+
+    CS_A = and2(xxCDEFGH, CPU_PIN_ADDR_EXT, A000_FDFF);
+
+#endif
+
+#if 0
+
+    AREV is NAND2
+    AREV_01 << AFAS_03
+    AREV_02 << CPU_PIN_WR
+    AREV_03 >> APOV_01
+
+    APOV is NOT4
+    APOV_01 << AREV_03
+    APOV_02 nc
+    APOV_03 nc
+    APOV_04 >> MEXO_01
+
+    MEXO is NOT2
+    MEXO_01 << APOV_04
+    MEXO_02 >> NEVY_01
+
+    SORE is NOT
+    SORE_01 << A15
+    SORE_02 >> TEVY_03
+
+    TEVY is OR3
+    TEVY_01 << A13
+    TEVY_02 << A14
+    TEVY_03 << SORE_02
+    TEVY_04 nc
+    TEVY_05 >> TEXO_02
+
+    TEXO is AND2
+    TEXO_01 << top right cpu port pin 7 
+    TEXO_02 << TEVY_05
+    TEXO_03 nc
+    TEXO_04 >> LAVO_02, MOCA_01, LEVO_01, LOXO_02
+
+    MOCA is NOR2
+    MOCA_01 << TEXO_04
+    MOCA_02 << UMUT_04
+    MOCA_03 >> NEVY_02, MOTY_01
+
+    NEVY is OR2
+    NEVY_01 << MEXO_02
+    NEVY_02 << MOCA_03
+    NEVY_03 nc
+    NEVY_04 >> PUVA_01
+
+    PUVA is OR2
+    PUVA_01 << NEVY_04
+    PUVA_02 << LUMA_02
+    PUVA_03 nc
+    PUVA_04 >> USUF_02, UVER_01
+
+    UVER is NAND2
+    UVER_01 << PUVA_04
+    UVER_02 << TOVA_02
+    UVER_03 >> WR_A
+
+    USUF is NOR2
+    USUF_01 << UNOR_04
+    USUF_02 << PUVA_04
+    USUF_03 >> WR_D
+
+    AREV = nand2(AFAS, CPU_PIN_WR);
+    APOV = not1(AREV);
+    MEXO = not1(APOV);
+    SORE = not1(A15);
+    TEVY = or2(A13, A14, SORE);
+    TEXO = and2(CPU_PIN_ADDR_EXT, TEVY);
+    MOCA = nor4(TEXO, UMUT)
+    NEVY = or2(MEXO, MOCA);
+    PUVA = or2(NEVY, LUMA)
+    UVER = nand2(PUVA, TOVA);
+    USUF = nor4(UNOR, PUVA);
+    WR_A = UVER;
+    WR_D = USUF;
+
+
+    EXT_PIN_WR_A = and2(AFAS_xxxDxxxx, CPU_PIN_WR, CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+
+#endif
+
+
+#if 0
+
+    SORE is NOT
+    SORE_01 << A15
+    SORE_02 >> TEVY_03
+
+    TEVY is OR3
+    TEVY_01 << A13
+    TEVY_02 << A14
+    TEVY_03 << SORE_02
+    TEVY_04 nc
+    TEVY_05 >> TEXO_02
+
+    TEXO is AND2
+    TEXO_01 << top right cpu port pin 7 
+    TEXO_02 << TEVY_05
+    TEXO_03 nc
+    TEXO_04 >> LAVO_02, MOCA_01, LEVO_01, LOXO_02
+
+    MOCA is NOR2
+    MOCA_01 << TEXO_04
+    MOCA_02 << UMUT_04
+    MOCA_03 >> NEVY_02, MOTY_01
+
+    LEVO is NOT
+    LEVO_01 << TEXO_04
+    LEVO_02 >> LAGU_02
+
+    LAGU is (probably) or2(AND())
+    LAGU_01 << CPU_PIN_RD
+    LAGU_02 << LEVO_02
+    LAGU_03 nc
+    LAGU_04 << CPU_PIN_WR
+    LAGU_05 >> LYWE_01
+
+    LYWE is NOT
+    LYWE_01 << LAGU_05
+    LYWE_02 >> MOTY_02
+
+    MOTY is OR
+    MOTY_01 << MOCA_03
+    MOTY_02 << LYWE_02
+    MOTY_03 nc
+    MOTY_04 >> TYMU_02, RORU_03
+
+    TYMU is NOR2
+    TYMU_01 << LUMA_02
+    TYMU_02 << MOTY_03
+    TYMU_03 >> UGAC_01, URUN_02
+
+    UGAC is NAND2
+    UGAC_01 << TYMU_03
+    UGAC_02 << TOVA_02
+    UGAC_03 >> RD_A
+
+    URUN is NOR2
+    URUN_01 << UNOR_04
+    URUN_02 << TYMU_03
+    URUN_03 >> RD_D
+
+    SORE = not1(A15);
+    TEVY = or2(A13, A14, SORE);
+    TEXO = and2(CPU_PIN_ADDR_EXT, TEVY);
+    MOCA = nor4(TEXO, UMUT)
+    LEVO = not1(TEXO)
+    LAGU = or2(and(CPU_PIN_RD, LEVO), CPU_PIN_WR);
+    LYWE = not1(LAGU)
+    MOTY = or2(MOCA, LYWE)
+    TYMU = nor4(LUMA, MOTY)
+    UGAC = nand2(TYMU, TOVA)
+    URUN = nor4(UNOR, TYMU)
+    RD_A = UGAC
+    RD_D = URUN
+
+    // so we're always reading _unless_ we have a valid write to not-vram
+    EXT_PIN_RD_A = or2(!CPU_PIN_WR, !CPU_PIN_ADDR_EXT, ADDR_VRAM);
+
+#endif
+
+
+
+#if 0
+  // these are all "normal operating mode" w/o rendering or dma 
+
+  OAM_PIN_OE     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OPD_TO_OBD     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OBD_TO_OBL     =  and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  OBL_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+
+  EPD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EXT_PIN_RD     = nand2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EXT_PIN_WR     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
+  CBD_TO_EPD     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  CBA_TO_EPA     =  and2(                                 CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+
+  EXT_PIN_CS     =  and2(                                !CPU_PIN_ADDR_EXT,  ADDR_ERAM,   xxCDEFGH);
+
+  EXT_PIN_A15_A  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
+  EXT_PIN_A15_D  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
+
+  OAM_PIN_WRn    = nand2(CPU_PIN_WRp,                                        ADDR_OAM,    xxxxEFGx);
+  TIMA_LOADp     =  and2(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,                     FF05,        xxxxEFGx);
+
+
+  VBD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM, !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  VRAM_PIN_WR    = nand2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
+  VRAM_PIN_CS    = nand2(                                !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  VRAM_PIN_OE    = nand2(CPU_PIN_WRp,                                        ADDR_VRAM);
+
+
+  CBD_TO_VPD     =  and2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+
+
+  EXT_PIN_A00_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+
+
+  /*read  rom */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write rom */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  vram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
+  /*write vram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+  /*read  cram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write cram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  eram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
+  /*write eram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+
+  /*read  oam */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
+  /*write oam */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+  /*read  hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = dc;
+  /*write hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+
+#endif
+
+
+
 // VYPO -> VEZA VOGU VEZO TYFO SUDA_06 SOBU (RAWU POZO ...)
 
 // XEPE_01 nc

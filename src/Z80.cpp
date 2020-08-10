@@ -219,9 +219,6 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 //-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
-// if it always takes a bus move to get something into the incrementer, we can't increment the address in time
-
-//-----------------------------------------------------------------------------
 
 void Z80::tock_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   bus_ack = ack;

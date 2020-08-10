@@ -63,6 +63,7 @@ void main() {
 //-----------------------------------------------------------------------------
 
 int AppHost::app_main(int, char**) {
+  printf("AppHost::app_main()\n");
 
   //----------------------------------------
   // Create window
@@ -117,6 +118,8 @@ int AppHost::app_main(int, char**) {
   view_raw = view_raw.reset(initial_screen_w, initial_screen_h);
   view_smooth = view_raw;
   view_snap = view_raw;
+
+  printf("\n");
 
   app->app_init();
 

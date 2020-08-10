@@ -27,6 +27,13 @@ public:
   void test_reg(const char* regname, uint16_t addr, uint8_t data_in);
   void test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
 
+  void load(const char* filename);
+
+  void test_all_mem();
+  void test_all_regs();
+
+  void log(const char* format, ...);
+
   bool sys_rst = 1;
   bool sys_t1 = 0;
   bool sys_t2 = 0;
@@ -34,7 +41,7 @@ public:
   bool sys_clkgood = 0;
   bool sys_cpuready = 0;
 
-  int phase_total = -19;
+  int phase_total = 5;
   int pass_count = 0;
   int pass_total = 0;
 

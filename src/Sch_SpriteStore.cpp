@@ -322,18 +322,6 @@ void SpriteStore::tock(const SchematicTop& top) {
   {
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
 
-    // DEGE := not(ERUC)
-    // DABY := not(ENEF)
-    // DABU := not(FECO)
-    // GYSA := not(GYKY)
-
-    // Schematic has the line tribufs out of order
-
-    // CUCU := tri(FEPO, DEGE) >> SPR_TRI_L0
-    // CUCA := tri(FEPO, DABY) >> SPR_TRI_L1
-    // CEGA := tri(FEPO, DABU) >> SPR_TRI_L2
-    // WENU := tri(FEPO, GYSA) >> SPR_TRI_L3
-
     wire DEGE_SPRITE_DELTA0 = not1(top.sprite_scanner._ERUC_YDIFF_S0);
     wire DABY_SPRITE_DELTA1 = not1(top.sprite_scanner._ENEF_YDIFF_S1);
     wire DABU_SPRITE_DELTA2 = not1(top.sprite_scanner._FECO_YDIFF_S2);
@@ -354,15 +342,19 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p30.CYKE*/ wire _CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_xxCDxxGH());
     /*p30.WUDA*/ wire _WUDA_xxCDxxGH = not1(_CYKE_ABxxEFxx);
 
-    // XADU := dff(WUDA, CYKE, WEFE, YFOT);
-    // WUZY := tri(BUZA, XADU)
+    /*p28.YFOT*/ wire YFOT_OAM_A2n = not1(top.oam_bus.OAM_TRI_A2.qp());
+    /*p28.YFOC*/ wire YFOC_OAM_A3n = not1(top.oam_bus.OAM_TRI_A3.qp());
+    /*p28.YVOM*/ wire YVOM_OAM_A4n = not1(top.oam_bus.OAM_TRI_A4.qp());
+    /*p28.YMEV*/ wire YMEV_OAM_A5n = not1(top.oam_bus.OAM_TRI_A5.qp());
+    /*p28.XEMU*/ wire XEMU_OAM_A6n = not1(top.oam_bus.OAM_TRI_A6.qp());
+    /*p28.YZET*/ wire YZET_OAM_A7n = not1(top.oam_bus.OAM_TRI_A7.qp());
 
-    /*p30.XADU*/ XADU_SPRITE_IDX0n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, top.oam_bus.YFOT_OAM_A2n());
-    /*p30.XEDY*/ XEDY_SPRITE_IDX1n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, top.oam_bus.YFOC_OAM_A3n());
-    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, top.oam_bus.YVOM_OAM_A4n());
-    /*p30.XOBE*/ XOBE_SPRITE_IDX3n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, top.oam_bus.YMEV_OAM_A5n());
-    /*p30.YDUF*/ YDUF_SPRITE_IDX4n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, top.oam_bus.XEMU_OAM_A6n());
-    /*p30.XECU*/ XECU_SPRITE_IDX5n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, top.oam_bus.YZET_OAM_A7n());
+    /*p30.XADU*/ XADU_SPRITE_IDX0n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YFOT_OAM_A2n);
+    /*p30.XEDY*/ XEDY_SPRITE_IDX1n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YFOC_OAM_A3n);
+    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YVOM_OAM_A4n);
+    /*p30.XOBE*/ XOBE_SPRITE_IDX3n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YMEV_OAM_A5n);
+    /*p30.YDUF*/ YDUF_SPRITE_IDX4n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, XEMU_OAM_A6n);
+    /*p30.XECU*/ XECU_SPRITE_IDX5n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YZET_OAM_A7n);
 
     /*p30.WUZY*/ SPR_TRI_I0 = tribuf_6n(top.sprite_scanner.BUZA_STORE_SPRITE_INDX(), XADU_SPRITE_IDX0n.qn());
     /*p30.WYSE*/ SPR_TRI_I1 = tribuf_6n(top.sprite_scanner.BUZA_STORE_SPRITE_INDX(), XEDY_SPRITE_IDX1n.qn());

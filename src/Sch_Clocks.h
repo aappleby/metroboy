@@ -9,7 +9,7 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
-  void dump(Dumper& d, const SchematicTop& top) const;
+  void dump(Dumper& d) const;
 
   void tick_slow(const SchematicTop& top);
   void tock_clk_slow(int phase, const SchematicTop& top);
@@ -17,18 +17,18 @@ struct ClockRegisters {
   void tock_dbg_slow(int phase, const SchematicTop& top);
   void tock_vid_slow(int phase, const SchematicTop& top);
 
-  wire get_clk_a() const { return _SYS_PIN_CLK_A.qp(); }
-  wire get_clk_b() const { return _SYS_PIN_CLK_B.qp(); }
+  wire get_clk_a() const { return SYS_PIN_CLK_A.qp(); }
+  wire get_clk_b() const { return SYS_PIN_CLK_B.qp(); }
 
-  void preset_clk_a(wire clk_a) { _SYS_PIN_CLK_A.preset(clk_a); }
-  void preset_clk_b(wire clk_b) { _SYS_PIN_CLK_B.preset(clk_b); }
+  void preset_clk_a(wire clk_a) { SYS_PIN_CLK_A.preset(clk_a); }
+  void preset_clk_b(wire clk_b) { SYS_PIN_CLK_B.preset(clk_b); }
 
   wire get_rst() const {
-    return _SYS_PIN_RSTp.qp();
+    return SYS_PIN_RSTp.qp();
   }
 
   void preset_rst(wire rst) {
-    _SYS_PIN_RSTp.preset(rst);
+    SYS_PIN_RSTp.preset(rst);
   }
 
   void preset_cpu_ready(wire ready) {
@@ -36,8 +36,8 @@ struct ClockRegisters {
   }
 
   void preset_t1t2(wire t1, wire t2) {
-    _SYS_PIN_T1n.preset(t1);
-    _SYS_PIN_T2n.preset(t2);
+    SYS_PIN_T1n.preset(t1);
+    SYS_PIN_T2n.preset(t2);
   }
 
   uint8_t get_phase_clock() {
@@ -47,8 +47,8 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Clock input & 4 mhz clocks
 
-  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not1(_SYS_PIN_CLK_A.qp()); }
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return _SYS_PIN_CLK_B.qp(); } // ignoring the deglitcher here
+  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not1(SYS_PIN_CLK_A.qp()); }
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B.qp(); } // ignoring the deglitcher here
   /*p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); } // apu control
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
   /*p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); } // bus mux, sprite store
@@ -64,26 +64,15 @@ struct ClockRegisters {
   /*p01.APUK*/ Reg APUK_xxCDEFxx = REG_D0C0;
   /*p01.ADYK*/ Reg ADYK_ABCxxxxH = REG_D0C0;
 
-  /*p01.BELU*/ wire BELU_ABCDxxxx() const {
-    return nor2(ABOL_CLKREQn,  ATYP_xxxxEFGH);
-  }
-  
-  /*p01.BYRY*/ wire BYRY_xxxxEFGH() const {
-    return not1(BELU_ABCDxxxx());
-  }
-
+  /*p01.BELU*/ wire BELU_ABCDxxxx() const { return nor2(ABOL_CLKREQn,  ATYP_xxxxEFGH); }
+  /*p01.BYRY*/ wire BYRY_xxxxEFGH() const { return not1(BELU_ABCDxxxx()); }
   /*p01.BUDE*/ wire BUDE_ABCDxxxx() const { return not1(BYRY_xxxxEFGH()); }
   /*p01.UVYT*/ wire UVYT_xxxxEFGH() const { return not1(BUDE_ABCDxxxx()); } // bus mux, dma
   /*p01.BEKO*/ wire BEKO_xxxxEFGH() const { return not1(BUDE_ABCDxxxx()); }
   /*p04.MOPA*/ wire MOPA_ABCDxxxx() const { return not1(UVYT_xxxxEFGH()); } // bus mux, dma
   /*p28.XYNY*/ wire XYNY_xxxxEFGH() const { return not1(MOPA_ABCDxxxx()); } // bus mux
 
-  /*p01.BAPY*/ wire BAPY_xxCDxxxx() const {
-    // BAPY := ???(ABOL_02, AROV_02, ATYP_02);
-
-    return nor3(ABOL_CLKREQn, AROV_ABxxxxGH, ATYP_xxxxEFGH);
-  }
-
+  /*p01.BAPY*/ wire BAPY_xxCDxxxx() const { return nor3(ABOL_CLKREQn, AROV_ABxxxxGH, ATYP_xxxxEFGH); }
   /*p01.BERU*/ wire BERU_ABxxEFGH() const { return not1(BAPY_xxCDxxxx()); }
   /*p01.BUFA*/ wire BUFA_xxCDxxxx() const { return not1(BERU_ABxxEFGH()); }
   /*p01.BOLO*/ wire BOLO_ABxxEFGH() const { return not1(BUFA_xxCDxxxx()); }
@@ -142,8 +131,6 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Resets
 
-  wire SYS_PIN_RSTp() const { return _SYS_PIN_RSTp.qp(); }
-
   wire ALUR_SYS_RSTn() const { // used everywhere
     /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(_AFER_SYS_RSTp.qp(), _ASOL_POR_DONEn.qp());
     /*p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
@@ -163,6 +150,8 @@ struct ClockRegisters {
 
   wire XAPO_VID_RSTn() const {
     /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp());
+
+    // XODO := nand2(XONA_QN, XEBE) !!!
     /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, _XONA_LCDC_EN);
     /*p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
     return _XAPO_VID_RSTn;
@@ -182,29 +171,22 @@ struct ClockRegisters {
   /*p25.TUTO*/ wire TUTO_DBG_VRAMp()  const { return and2(UNOR_MODE_DBG2p(), _SOTO_DBG_VRAM.qn()); }
   /*p25.RACO*/ wire RACO_DBG_VRAMn()  const { return not1(TUTO_DBG_VRAMp()); }
 
-  /*p07.UBET*/ wire UBET_T1p()        const { return not1(_SYS_PIN_T1n.qp()); }
-  /*p07.UVAR*/ wire UVAR_T2p()        const { return not1(_SYS_PIN_T2n.qp()); }
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(_SYS_PIN_T1n.qp(), UVAR_T2p()); }
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(_SYS_PIN_T2n.qp(), UBET_T1p()); }
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBET_T1p(), UVAR_T2p(), _SYS_PIN_RSTp.qp()); }
+  /*p07.UBET*/ wire UBET_T1p()        const { return not1(SYS_PIN_T1n.qp()); }
+  /*p07.UVAR*/ wire UVAR_T2p()        const { return not1(SYS_PIN_T2n.qp()); }
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(SYS_PIN_T1n.qp(), UVAR_T2p()); }
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(SYS_PIN_T2n.qp(), UBET_T1p()); }
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp.qp()); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------
 
   Sig _XONA_LCDC_EN;
 
-  Tri _SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  Tri _SYS_PIN_CLK_B = TRI_D0NP; // PIN_74 
-  Tri _SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  Tri _SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board - but there's probably an implicit inverter
-  Tri _SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board - but there's probably an implicit inverter
-
-  // If AVOR_RSTp was 1 in run mode
-  // then ALUR_RSTn = 0
-  // then MULO_TIMA_RST = 1
-  // then PUXY/NERO = 0 -> stuck
-  // Therefore AVOR_RSTp = 0 in run mode
-  // Therefore ASOL|AFER = 0 in run mode
+  Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
+  Tri SYS_PIN_CLK_B = TRI_D0NP; // PIN_74 
+  Tri SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  Tri SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board - but there's probably an implicit inverter
+  Tri SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board - but there's probably an implicit inverter
 
   /*p01.TUBO*/ Tri _TUBO_WAITINGp  = TRI_D1NP; // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ Tri _ASOL_POR_DONEn = TRI_D1NP; // Schematic wrong, this is a latch.
@@ -213,21 +195,20 @@ struct ClockRegisters {
 
   /*p01.ATEZ*/ Sig ATEZ_CLKBAD;
   /*p01.ABOL*/ Sig ABOL_CLKREQn;
-  /*p01.BUTY*/ Sig BUTY_CLKREQ;
 
   /*p01.AROV*/ Sig AROV_ABxxxxGH;
   /*p01.AFEP*/ Sig AFEP_AxxxxFGH;
   /*p01.ATYP*/ Sig ATYP_xxxxEFGH;
   /*p01.AJAX*/ Sig AJAX_ABCDxxxx;
 
-  Tri CPU_PIN_STARTp   = TRI_HZNP;   // top center port PORTC_04: <- P01.CPU_RESET
-  Tri CPU_PIN_READYp   = TRI_D0NP;   // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-  Tri CPU_PIN_SYS_RSTp = TRI_HZNP;   // top center port PORTC_01: <- P01.AFER , reset related state
-  Tri CPU_PIN_EXT_RST  = TRI_HZNP;   // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
-  Tri CPU_PIN_UNOR_DBG = TRI_HZNP;   // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  Tri CPU_PIN_UMUT_DBG = TRI_HZNP;   // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  Tri CPU_PIN_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
+  Tri CPU_PIN_READYp        = TRI_D0NP; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  Tri CPU_PIN_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state
+  Tri CPU_PIN_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
+  Tri CPU_PIN_UNOR_DBG      = TRI_HZNP; // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  Tri CPU_PIN_UMUT_DBG      = TRI_HZNP; // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 
-  Tri CPU_PIN_EXT_CLKGOOD = TRI_HZNP;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  Tri CPU_PIN_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   
   Tri CPU_PIN_BOWA_ABCDExxx = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
   Tri CPU_PIN_BEDO_xxxxxFGH = TRI_HZNP; // top left port PORTD_02:
@@ -242,7 +223,7 @@ struct ClockRegisters {
   Tri CPU_PIN_BOMA_xxxxxFGH = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
   Tri CPU_PIN_BOGA_ABCDExxx = TRI_HZNP; // top left port PORTD_09: - test pad 3
   
-  Tri EXT_PIN_CLK_ABCDxxxx = TRI_HZNP;     // PIN_75 <- P01.BUDE/BEVA
+  Tri EXT_PIN_CLK_ABCDxxxx  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
 };
 
 //-----------------------------------------------------------------------------

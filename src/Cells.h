@@ -92,6 +92,10 @@ inline const wire mux2_p(wire a, wire b, wire c) {
   return c ? a : b;
 }
 
+inline const wire mux2_p2(wire a, wire b, wire c) {
+  return a ? b : c;
+}
+
 // Five-rung mux cells are _inverting_. c = 1 selects input _ZERO_
 inline const wire mux2_n(wire a, wire b, wire c) {
   return c ? !a : !b;
@@ -149,6 +153,21 @@ inline RegDelta tribuf_6p(wire OEp, wire D) {
     // also has to be positive sense because SB
     return D ? DELTA_TRI1 : DELTA_TRI0;
     //return D ? DELTA_TRI0 : DELTA_TRI1;
+  }
+  else {
+    return DELTA_TRIZ;
+  }
+#endif
+}
+
+// But see DIV read - tri6p def looks inverting
+
+inline RegDelta tribuf_6pn(wire OEp, wire D) {
+#if 0
+  return RegDelta(DELTA_TRIZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
+#else
+  if (OEp) {
+    return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
     return DELTA_TRIZ;
@@ -507,6 +526,8 @@ inline RegDelta dff20(wire CLKp, wire LOADp, bool D) {
 //-----------------------------------------------------------------------------
 // DFF with async set/reset. Used by pixel pipes, serial data register.
 
+// SETn/RSTn are correct and not swapped, see serial + ALUR_RSTn
+
 // REG22_01 SC
 // REG22_02 NC
 // REG22_03 NC
@@ -520,10 +541,10 @@ inline RegDelta dff20(wire CLKp, wire LOADp, bool D) {
 // REG22_11 SC
 // REG22_12 NC
 // REG22_13 NC
-// REG22_14 << SETn
-// REG22_15 >> Qn
+// REG22_14 << SETn _MUST_ be SETn, see serial
+// REG22_15 >> Qn  // Am I positive I don't have Q/Qn swapped?
 // REG22_16 >> Q
-// REG22_17 << RSTn
+// REG22_17 << RSTn _MUST_ be RSTn, see serial
 // REG22_18 NC
 // REG22_19 SC
 // REG22_20 SC

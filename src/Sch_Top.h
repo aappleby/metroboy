@@ -60,7 +60,7 @@ struct SchematicTop {
 
   // boot.YULA, ext.SOBY, CPU_PIN_BOOTp
   /*p07.TUTU*/ wire TUTU_ADDR_BOOTp() const {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn());
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp());
     return and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
   }
 
@@ -103,10 +103,6 @@ struct SchematicTop {
 
   // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxDxxxx() const {
-#if 0
-    TAPU_CPU_WRp_xxxDxxxx = and2(CPU_PIN_WRp, xxxxEFGx);
-#endif
-
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxDxxxx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
     /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(ext_bus.EXT_PIN_WR_C.qp(), APOV_CPU_WRp_xxxDxxxx, clk_reg.UNOR_MODE_DBG2p());
@@ -153,34 +149,7 @@ struct SchematicTop {
   }
 
   //-----------------------------------------------------------------------------
-  // Sys pins
-
-#if 0
-  if (RST) {
-    // This can't be run mode, TAPE doesn't affect UKUP
-    ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, or2(T1, T2), APUK_xxCDEFxx.qp());
-    UKUP_DIV_00 = ff9(BOGA_ABCDExxx, 0, UKUP_DIV_00.qn());
-  }
-  else {
-    if (CLKIN_A) {
-      // So this must be run mode, and ADYK must have _negative_ reset
-      // RST = 0
-      // CLKIN_A = 1
-      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.qp());
-      UKUP_DIV_00 = ff9(BOGA_ABCDExxx, !TAPE, UKUP_DIV_00.qn());  
-    }
-    else {
-      // This also can't be run mode
-      ADYK_xxxDEFGx = ff9( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, 1, APUK_xxCDEFxx.qp());
-      UKUP_DIV_00 = ff9(BOGA_ABCDExxx, 0, UKUP_DIV_00.qn());  
-    }
-  }
-#endif
-
-  //-----------------------------------------------------------------------------
   // Sub-modules
-
-  //private:
 
   OamBus oam_bus;
   ExtBus ext_bus;

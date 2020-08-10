@@ -14,24 +14,18 @@ struct SpriteScanner {
   void tock(const SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
-  // -> sprite store
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH() const { return not1(_CARE_STORE_ENp_ABxxEFxx); }
 
-  // -> top.ACYL
-  
-  // -> ppu.XYMU/POFY, scanner.ASEN, top.NYXU
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
-
-    // this seems weird
-    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn(), DOBA_SCAN_DONE_B.qp());
+    // BEBU := or3(DOBA_Q, BALU, BYBA_QN);
+    // AVAP := not(BEBU);
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn());
     /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
     return AVAP_RENDER_START_TRIGp;
   }
 
-  // -> sprite store
   /*p29.BUZA*/ wire BUZA_STORE_SPRITE_INDX() const { return and2(CENO_SCANNINGp.qn(), _XYMU_RENDERINGp); }
 
-  // -> oam bus
   /*p28.YFEL*/ wire YFEL_SCAN0() const { return _YFEL_SCAN0.qp(); }
   /*p28.WEWY*/ wire WEWY_SCAN1() const { return _WEWY_SCAN1.qp(); }
   /*p28.GOSO*/ wire GOSO_SCAN2() const { return _GOSO_SCAN2.qp(); }

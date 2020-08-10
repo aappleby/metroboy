@@ -158,9 +158,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("phase %s\n", phases[gateboy->phase_total & 7]);
 
-  dumper("FB_X %03d\n", gateboy->fb_x);
-  dumper("FB_Y %03d\n", gateboy->fb_y);
-
   size_t state_size = state_manager.state_size_bytes();
 
   if (state_size < 1024 * 1024) {

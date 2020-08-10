@@ -166,8 +166,8 @@ struct PixelPipe {
   /*p24.PAHO*/ RegQP _PAHO_X_8_SYNC = REG_D0C0;
 
   ///*p24.RUJU*/ Tri _POFY_ST_LATCH = TRI_D0NP; // nor4 latch with p24.RUJU, p24.POME
-  Tri RUJU_LCD_PIN_STp = TRI_D0NP;
-  Tri POME_LCD_PIN_STn = TRI_D0NP;
+  Tri RUJU_HSYNCn = TRI_D0NP;
+  Tri POME_HSYNCn = TRI_D0NP;
 
   /*p32.MYDE*/ Reg MYDE_BG_PIPE_A0 = REG_D0C0;
   /*p32.NOZO*/ Reg NOZO_BG_PIPE_A1 = REG_D0C0;

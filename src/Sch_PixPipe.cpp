@@ -295,13 +295,13 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // LCD pins that are controlled by the pixel counter
 
   {
-    // XAJO := and(XEHO_Q, XYDO_Q)
-    // WEGO := or(TOFU, VOGA_Q)
-    // WUSA := latch(XAJO, WEGO)
-    // TOBA := and(WUSA_04, SACU)
-    // POVA := and(NYZE_QN, PUXA_Q)
-    // SEMU := or(TOBA, POVA)
-    // RYPO := not(SEMU)
+    // XAJO := and(XEHO_Q, XYDO_Q)   // def AND
+    // WEGO := or(TOFU, VOGA_Q)      // def OR
+    // WUSA := latch(XAJO, WEGO)     // def latch
+    // TOBA := and(WUSA_04, SACU)    // def AND
+    // POVA := and(NYZE_QN, PUXA_Q)  // def AND
+    // SEMU := or(TOBA, POVA)        // def OR
+    // RYPO := not(SEMU)             // big NOT with two crosses. 
     // LCD_CP := RYPO
 
     /*p21.XAJO*/ wire _XAJO_X_009p = and2(XEHO_X0p.qp(), XYDO_X3p.qp());
@@ -324,6 +324,16 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     // RYPO another big NOT with things crossing it, but it has a long wire to LCD_CP so I guess that's reasonable.
 
     /*p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
+
+    probe("A: XAJO", _XAJO_X_009p);
+    probe("B: WEGO", _WEGO_LINE_END_RSTp);
+    probe("C: WUSA", _WUSA_LCD_CLOCK_GATE.qp());
+    probe("D: TOBA", _TOBA_LCD_CLOCK);
+    probe("E: POVA", _POVA_FINE_MATCHpe);
+    probe("F: SEMU", _SEMU_LCD_CLOCK);
+    probe("G: RYPO", _RYPO_LCD_CLOCK);
+    probe("H: ----", 0);
+
     top.LCD_PIN_CLOCK = _RYPO_LCD_CLOCK;
   }
 
@@ -332,26 +342,34 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     // AVAP high         -> LCD_PIN_ST = 1
     // PAHO or TOFU high -> LCD_PIN_ST = 0
 
-    // ROXO := not(SEGU)
-    // PAHO := dff17(ROXO, XYMU, XYDO_Q)
-    // RUJU := or(PAHO_Q, TOFU, POME) // RUJU is OR!
-    // POME := nor(AVAP, POFY)
-    // POFY := not(RUJU)
-    // RUZE := not(POFY)
+    // ROXO := not(SEGU)                   // def not
+    // PAHO := dff17(ROXO, XYMU, XYDO_Q)   // def dff17
+    // RUJU := or(PAHO_Q, TOFU, POME)      // RUJU is OR!
+    // POME := nor(AVAP, POFY)             // def nor
+    // POFY := not(RUJU)                   // def not
+    // RUZE := not(POFY)                   // big not with 1 cross
 
     /*p24.ROXO*/ wire _ROXO_CLKPIPEp = not1(_SEGU_CLKPIPEn);
-    /*p24.PAHO*/ _PAHO_X_8_SYNC = dff17_B(_ROXO_CLKPIPEp, _XYMU_RENDERINGp.qp(), XYDO_X3p.qp());
     
-    /*p24.POFY*/ wire POFY_LCD_PIN_STn = not1(RUJU_LCD_PIN_STp.qp());
+    // FIXME I don't know why ROXO has to be inverted here but it extends hblank by one phase, which
+    // seems to be correct and makes it match the trace. With that change, HBLANK is 30 phases.
 
-    /*p24.RUJU*/ RUJU_LCD_PIN_STp = or3(_PAHO_X_8_SYNC.qp(), top.clk_reg.TOFU_VID_RSTp(), POME_LCD_PIN_STn.qp());
-    /*p24.POME*/ POME_LCD_PIN_STn = nor2(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), POFY_LCD_PIN_STn);
-    /*p24.RUZE*/ wire RUZE_LCD_PIN_STp = not1(POFY_LCD_PIN_STn);
-   
-    ///*p24.RUJU*/ _POFY_ST_LATCH = nor_latch(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), _PAHO_X_8_SYNC.qp() || top.clk_reg.TOFU_VID_RSTp());
-    ///*p24.RUZE*/ wire RUZE_LCD_PIN_STp = not1(_POFY_ST_LATCH.qp());
+    /*p24.PAHO*/ _PAHO_X_8_SYNC = dff17_B(!_ROXO_CLKPIPEp, _XYMU_RENDERINGp.qp(), XYDO_X3p.qp());
+    
+    /*p24.POFY*/ wire POFY_HSYNCp = not1(RUJU_HSYNCn.qp());
+    /*p24.RUZE*/ wire RUZE_HSYNCn = not1(POFY_HSYNCp);
 
-    top.LCD_PIN_HSYNC = RUZE_LCD_PIN_STp;
+    /*p24.RUJU*/ RUJU_HSYNCn = or3(_PAHO_X_8_SYNC.qp(), top.clk_reg.TOFU_VID_RSTp(), POME_HSYNCn.qp());
+    /*p24.POME*/ POME_HSYNCn = nor2(top.sprite_scanner.AVAP_RENDER_START_TRIGp(), POFY_HSYNCp);
+
+    probe("I: ROXO", _ROXO_CLKPIPEp);
+    probe("J: PAHO", _PAHO_X_8_SYNC.qp());
+    probe("K: POFY", POFY_HSYNCp);
+    probe("L: RUJU", RUJU_HSYNCn.qp());
+    probe("M: POME", POME_HSYNCn.qp());
+    probe("N: RUZE", RUZE_HSYNCn);
+
+    top.LCD_PIN_HSYNC = RUZE_HSYNCn;
   }
 
   //----------------------------------------

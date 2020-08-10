@@ -42,10 +42,7 @@ public:
   uint64_t total_hash = 0;
 
   uint8_t mem[65536];
-
   uint8_t fb[160*144];
-  int fb_x = 0;
-  int fb_y = 0;
 
   Schematics::SchematicTop top;
 

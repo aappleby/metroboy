@@ -399,10 +399,6 @@ void GateBoy::phase() {
 
   StringDumper d;
 
-  bool old_clock = top.LCD_PIN_CLOCK.qp();
-  bool old_hsync = top.LCD_PIN_HSYNC.qp();
-  bool old_vsync = top.LCD_PIN_VSYNC.qp();
-
   for (pass_count = 0; pass_count < 100; pass_count++) {
     hash_regs_old = hash_regs_new;
     hash_regs_new  = pass();
@@ -419,10 +415,6 @@ void GateBoy::phase() {
 
   CHECK_P(pass_count < 100);
 
-  bool new_clock = top.LCD_PIN_CLOCK.qp();
-  bool new_hsync = top.LCD_PIN_HSYNC.qp();
-  bool new_vsync = top.LCD_PIN_VSYNC.qp();
-
   //----------
   // Pixels _def_ latched on positive clock edge (neg edge inverted)
 
@@ -433,19 +425,14 @@ void GateBoy::phase() {
   // hsync should go low the same phase that lcd clock goes high
   // vsync 108.720 usec - right on 912 phases
 
-  int p0 = (bool)top.LCD_PIN_DATA0.qp();
-  int p1 = (bool)top.LCD_PIN_DATA1.qp();
-  int c = p0 + p1 * 2;
-      
+  int fb_x = top.pix_pipe.get_pix_count() - 8;
+  int fb_y = top.lcd_reg.get_y();
+
   if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-    fb[fb_x + fb_y * 160] = uint8_t(c);
+    int p0 = top.LCD_PIN_DATA0.qp();
+    int p1 = top.LCD_PIN_DATA1.qp();
+    fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
   }
-
-  if (!new_hsync) fb_x = 0;
-  if (!new_vsync) fb_y = 0;
-
-  if (!old_clock && new_clock) fb_x++;
-  if (!old_hsync && new_hsync) fb_y++;
 
   //----------
 

@@ -14,11 +14,11 @@ struct LcdRegisters {
   void tock(int phase, SchematicTop& top, CpuBus& cpu_bus);
 
   uint8_t get_x() const {
-    return (uint8_t)pack_p(SAXO_X0.qp(), TYPO_X1.qp(), VYZO_X2.qp(), TELU_X3.qp(), SUDE_X4.qp(), TAHA_X5.qp(), TYRY_X6.qp(), 0);
+    return (uint8_t)pack_p(SAXO_X0p.qp(), TYPO_X1p.qp(), VYZO_X2p.qp(), TELU_X3p.qp(), SUDE_X4p.qp(), TAHA_X5p.qp(), TYRY_X6p.qp(), 0);
   }
 
   uint8_t get_y() const {
-    return (uint8_t)pack_p(MUWY_Y0.qp(), MYRO_Y1.qp(), LEXA_Y2.qp(), LYDO_Y3.qp(), LOVU_Y4.qp(), LEMA_Y5.qp(), MATO_Y6.qp(), LAFO_Y7.qp());
+    return (uint8_t)pack_p(MUWY_Y0p.qp(), MYRO_Y1p.qp(), LEXA_Y2p.qp(), LYDO_Y3p.qp(), LOVU_Y4p.qp(), LEMA_Y5p.qp(), MATO_Y6p.qp(), LAFO_Y7p.qp());
   }
 
   uint8_t get_lyc() const {
@@ -51,24 +51,24 @@ struct LcdRegisters {
   // -> sprite store
 
   // Stays at 0 for 12 phases, 113 for 4 phases, all others for 8 phases
-  /*p21.SAXO*/ RegQPN SAXO_X0 = REG_D0C0; // increments at line pase 012 (because of RUTU holding it in reset) and then at every A phase.
-  /*p21.TYPO*/ RegQPN TYPO_X1 = REG_D0C0;
-  /*p21.VYZO*/ RegQPN VYZO_X2 = REG_D0C0;
-  /*p21.TELU*/ RegQPN TELU_X3 = REG_D0C0;
-  /*p21.SUDE*/ RegQPN SUDE_X4 = REG_D0C0;
-  /*p21.TAHA*/ RegQPN TAHA_X5 = REG_D0C0;
-  /*p21.TYRY*/ RegQPN TYRY_X6 = REG_D0C0;
+  /*p21.SAXO*/ RegQPN SAXO_X0p = REG_D0C0; // increments at line pase 012 (because of RUTU holding it in reset) and then at every A phase.
+  /*p21.TYPO*/ RegQPN TYPO_X1p = REG_D0C0;
+  /*p21.VYZO*/ RegQPN VYZO_X2p = REG_D0C0;
+  /*p21.TELU*/ RegQPN TELU_X3p = REG_D0C0;
+  /*p21.SUDE*/ RegQPN SUDE_X4p = REG_D0C0;
+  /*p21.TAHA*/ RegQPN TAHA_X5p = REG_D0C0;
+  /*p21.TYRY*/ RegQPN TYRY_X6p = REG_D0C0;
 
   // -> pix pipe, sprite scanner, vram bus
   // Increments when RUTU goes high.
-  /*p21.MUWY*/ RegQPN MUWY_Y0 = REG_D0C0;
-  /*p21.MYRO*/ RegQPN MYRO_Y1 = REG_D0C0;
-  /*p21.LEXA*/ RegQPN LEXA_Y2 = REG_D0C0;
-  /*p21.LYDO*/ RegQPN LYDO_Y3 = REG_D0C0;
-  /*p21.LOVU*/ RegQPN LOVU_Y4 = REG_D0C0;
-  /*p21.LEMA*/ RegQPN LEMA_Y5 = REG_D0C0;
-  /*p21.MATO*/ RegQPN MATO_Y6 = REG_D0C0;
-  /*p21.LAFO*/ RegQPN LAFO_Y7 = REG_D0C0;
+  /*p21.MUWY*/ RegQPN MUWY_Y0p = REG_D0C0;
+  /*p21.MYRO*/ RegQPN MYRO_Y1p = REG_D0C0;
+  /*p21.LEXA*/ RegQPN LEXA_Y2p = REG_D0C0;
+  /*p21.LYDO*/ RegQPN LYDO_Y3p = REG_D0C0;
+  /*p21.LOVU*/ RegQPN LOVU_Y4p = REG_D0C0;
+  /*p21.LEMA*/ RegQPN LEMA_Y5p = REG_D0C0;
+  /*p21.MATO*/ RegQPN MATO_Y6p = REG_D0C0;
+  /*p21.LAFO*/ RegQPN LAFO_Y7p = REG_D0C0;
 
 //private:
 

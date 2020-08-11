@@ -45,13 +45,13 @@ struct OamBus {
   }
 
   uint8_t get_oam_temp_a() const {
-    return (uint8_t)pack_p(XUSO_OAM_DA0.qp(), XEGU_OAM_DA1.qp(), YJEX_OAM_DA2.qp(), XYJU_OAM_DA3.qp(),
-                           YBOG_OAM_DA4.qp(), WYSO_OAM_DA5.qp(), XOTE_OAM_DA6.qp(), YZAB_OAM_DA7.qp());
+    return (uint8_t)pack_p(XUSO_OAM_DA0n.qp(), XEGU_OAM_DA1n.qp(), YJEX_OAM_DA2n.qp(), XYJU_OAM_DA3n.qp(),
+                           YBOG_OAM_DA4n.qp(), WYSO_OAM_DA5n.qp(), XOTE_OAM_DA6n.qp(), YZAB_OAM_DA7n.qp());
   }
 
   uint8_t get_oam_temp_b() const {
-    return (uint8_t)pack_p(YLOR_OAM_DB0.qp(), ZYTY_OAM_DB1.qp(), ZYVE_OAM_DB2.qp(), ZEZY_OAM_DB3.qp(),
-                           GOMO_OAM_DB4.qp(), BAXO_OAM_DB5.qp(), YZOS_OAM_DB6.qp(), DEPO_OAM_DB7.qp());
+    return (uint8_t)pack_p(YLOR_OAM_DB0n.qp(), ZYTY_OAM_DB1n.qp(), ZYVE_OAM_DB2n.qp(), ZEZY_OAM_DB3n.qp(),
+                           GOMO_OAM_DB4n.qp(), BAXO_OAM_DB5n.qp(), YZOS_OAM_DB6n.qp(), DEPO_OAM_DB7n.qp());
   }
 
   void preset_bus_data_a(uint8_t data) {
@@ -100,24 +100,24 @@ struct OamBus {
   /*p29.ZECA*/ Latch ZECA_LATCH_OAM_DA7 = TRI_D0NP;
 
   // oam byte 0, byte 2
-  /*p29.XUSO*/ RegQP XUSO_OAM_DA0 = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ RegQP XEGU_OAM_DA1 = REG_D0C0; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ RegQP YJEX_OAM_DA2 = REG_D0C0; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ RegQP XYJU_OAM_DA3 = REG_D0C0; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ RegQP YBOG_OAM_DA4 = REG_D0C0; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ RegQP WYSO_OAM_DA5 = REG_D0C0; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ RegQP XOTE_OAM_DA6 = REG_D0C0; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ RegQP YZAB_OAM_DA7 = REG_D0C0; // sprite y bit 7, sprite tile index bit 7
+  /*p29.XUSO*/ RegQP XUSO_OAM_DA0n = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ RegQP XEGU_OAM_DA1n = REG_D0C0; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ RegQP YJEX_OAM_DA2n = REG_D0C0; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ RegQP XYJU_OAM_DA3n = REG_D0C0; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ RegQP YBOG_OAM_DA4n = REG_D0C0; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ RegQP WYSO_OAM_DA5n = REG_D0C0; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ RegQP XOTE_OAM_DA6n = REG_D0C0; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ RegQP YZAB_OAM_DA7n = REG_D0C0; // sprite y bit 7, sprite tile index bit 7
 
   // oam byte 1, byte 3
-  /*p31.YLOR*/ RegQP YLOR_OAM_DB0 = REG_D0C0; // sprite x bit 0, 
-  /*p31.ZYTY*/ RegQP ZYTY_OAM_DB1 = REG_D0C0; // sprite x bit 1, 
-  /*p31.ZYVE*/ RegQP ZYVE_OAM_DB2 = REG_D0C0; // sprite x bit 2, 
-  /*p31.ZEZY*/ RegQP ZEZY_OAM_DB3 = REG_D0C0; // sprite x bit 3, 
-  /*p31.GOMO*/ RegQP GOMO_OAM_DB4 = REG_D0C0; // sprite x bit 4, sprite palette
-  /*p31.BAXO*/ RegQP BAXO_OAM_DB5 = REG_D0C0; // sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ RegQP YZOS_OAM_DB6 = REG_D0C0; // sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ RegQP DEPO_OAM_DB7 = REG_D0C0; // sprite x bit 7, sprite priority
+  /*p31.YLOR*/ RegQP YLOR_OAM_DB0n = REG_D0C0; // sprite x bit 0, 
+  /*p31.ZYTY*/ RegQP ZYTY_OAM_DB1n = REG_D0C0; // sprite x bit 1, 
+  /*p31.ZYVE*/ RegQP ZYVE_OAM_DB2n = REG_D0C0; // sprite x bit 2, 
+  /*p31.ZEZY*/ RegQP ZEZY_OAM_DB3n = REG_D0C0; // sprite x bit 3, 
+  /*p31.GOMO*/ RegQP GOMO_OAM_DB4n = REG_D0C0; // sprite x bit 4, sprite palette
+  /*p31.BAXO*/ RegQP BAXO_OAM_DB5n = REG_D0C0; // sprite x bit 5, sprite x flip
+  /*p31.YZOS*/ RegQP YZOS_OAM_DB6n = REG_D0C0; // sprite x bit 6, sprite y flip
+  /*p31.DEPO*/ RegQP DEPO_OAM_DB7n = REG_D0C0; // sprite x bit 7, sprite priority
 
   Tri OAM_PIN_CLK  = TRI_HZNP;
   Tri OAM_PIN_OE   = TRI_HZPU;

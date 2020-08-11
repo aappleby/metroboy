@@ -342,6 +342,22 @@ inline RegQNIn dff9_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
 #endif
 }
 
+inline RegQNIn dff9_A2(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKn;
+
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return {RegDelta(DELTA_A1C0 | (CLKp << 1))};
+  }
+  else {
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0))};
+  }
+#endif
+}
+
 //-----------------------------------------------------------------------------
 // Reg11 is used by the background pixel temp state
 // Not sure why it's special.

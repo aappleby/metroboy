@@ -380,14 +380,14 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Window matcher
 
   {
-    /*p27.NAZE*/ wire _WY_MATCH0 = xnor2(top.lcd_reg.MUWY_Y0.qp(), NESO_WY0.qp());
-    /*p27.PEBO*/ wire _WY_MATCH1 = xnor2(top.lcd_reg.MYRO_Y1.qp(), NYRO_WY1.qp());
-    /*p27.POMO*/ wire _WY_MATCH2 = xnor2(top.lcd_reg.LEXA_Y2.qp(), NAGA_WY2.qp());
-    /*p27.NEVU*/ wire _WY_MATCH3 = xnor2(top.lcd_reg.LYDO_Y3.qp(), MELA_WY3.qp());
-    /*p27.NOJO*/ wire _WY_MATCH4 = xnor2(top.lcd_reg.LOVU_Y4.qp(), NULO_WY4.qp());
-    /*p27.PAGA*/ wire _WY_MATCH5 = xnor2(top.lcd_reg.LEMA_Y5.qp(), NENE_WY5.qp());
-    /*p27.PEZO*/ wire _WY_MATCH6 = xnor2(top.lcd_reg.MATO_Y6.qp(), NUKA_WY6.qp());
-    /*p27.NUPA*/ wire _WY_MATCH7 = xnor2(top.lcd_reg.LAFO_Y7.qp(), NAFU_WY7.qp());
+    /*p27.NAZE*/ wire _WY_MATCH0 = xnor2(top.lcd_reg.MUWY_Y0p.qp(), NESO_WY0.qp());
+    /*p27.PEBO*/ wire _WY_MATCH1 = xnor2(top.lcd_reg.MYRO_Y1p.qp(), NYRO_WY1.qp());
+    /*p27.POMO*/ wire _WY_MATCH2 = xnor2(top.lcd_reg.LEXA_Y2p.qp(), NAGA_WY2.qp());
+    /*p27.NEVU*/ wire _WY_MATCH3 = xnor2(top.lcd_reg.LYDO_Y3p.qp(), MELA_WY3.qp());
+    /*p27.NOJO*/ wire _WY_MATCH4 = xnor2(top.lcd_reg.LOVU_Y4p.qp(), NULO_WY4.qp());
+    /*p27.PAGA*/ wire _WY_MATCH5 = xnor2(top.lcd_reg.LEMA_Y5p.qp(), NENE_WY5.qp());
+    /*p27.PEZO*/ wire _WY_MATCH6 = xnor2(top.lcd_reg.MATO_Y6p.qp(), NUKA_WY6.qp());
+    /*p27.NUPA*/ wire _WY_MATCH7 = xnor2(top.lcd_reg.LAFO_Y7p.qp(), NAFU_WY7.qp());
 
     /*p27.PALO*/ wire _WY_MATCH_HIn  = nand5(WYMO_LCDC_WINEN.qp(), _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
     /*p27.NELE*/ wire _WY_MATCH_HI   = not1(_WY_MATCH_HIn);
@@ -703,7 +703,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     // Palette pipe
     {
-      wire GOMO_OBP = top.oam_bus.GOMO_OAM_DB4.qp();
+      wire GOMO_OBP = top.oam_bus.GOMO_OAM_DB4n.qp();
 
       /*p34.SYPY*/ wire _SYPY = not1(GOMO_OBP);
       /*p34.TOTU*/ wire _TOTU = not1(GOMO_OBP);
@@ -745,7 +745,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     // Background mask pipe
     {
-      wire DEPO = top.oam_bus.DEPO_OAM_DB7.qp();
+      wire DEPO = top.oam_bus.DEPO_OAM_DB7n.qp();
 
       /*p26.XOGA*/ wire _XOGA = not1(DEPO);
       /*p26.XURA*/ wire _XURA = not1(DEPO);

@@ -57,8 +57,7 @@ void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
   /*p29.ALES*/ wire _ALES_IN_VBLANKn = not1(_XYVO_IN_VBLANKp);
   /*p21.POPU*/ _POPU_IN_VBLANKp = dff17_AB(_NYPE_LINE_P000.qp(), top.clk_reg.LYFE_VID_RSTn(), _XYVO_IN_VBLANKp);
 
-  // KEDY := not(XONA_QN)
-  /*p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(top.pix_pipe.XONA_LCDC_EN.qp());
+  /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(top.pix_pipe.XONA_LCDC_ENn.qn());
 
   // LCD main timer
 
@@ -115,10 +114,7 @@ void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.KEBO*/ wire _KEBO = not1(_MECO);
     /*p24.USEC*/ wire _USEC = not1(top.tim_reg.UREK_DIV_07n());
 
-    // FIXME
-    // KUPA := amux(XONA_QN, KEBO, KEDY, USEC) !!!
-
-    /*p24.KUPA*/ wire _KUPA = amux2(top.pix_pipe.XONA_LCDC_EN.qp(), _KEBO, _KEDY_LCDC_ENn, _USEC);
+    /*#p24.KUPA*/ wire _KUPA = amux2(top.pix_pipe.XONA_LCDC_ENn.qn(), _KEBO, _KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not1(_KUPA);
     top.LCD_PIN_ALTSG = _KOFO;
   }
@@ -153,9 +149,7 @@ void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.KASA*/ wire KASA_LINE_ENDp = not1(PURE_LINE_ENDn);
     /*p24.UMOB*/ wire UMOB_DIV_06p   = not1(top.tim_reg.UMEK_DIV_06n());
 
-    // KAHE = amux(XONA_QN, KASA, KEDY, UMOB) !!!
-
-    /*p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(top.pix_pipe.XONA_LCDC_EN.qp(), KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
+    /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(top.pix_pipe.XONA_LCDC_ENn.qn(), KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
     /*p24.KYMO*/ wire KYMO_LINE_ENDn = not1(KAHE_LINE_ENDp);
     top.LCD_PIN_LATCH = KYMO_LINE_ENDn;
   }

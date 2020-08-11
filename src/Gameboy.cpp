@@ -184,7 +184,7 @@ void Gameboy::tock_gb() {
     boot.  tock(phase, ibus_req);
   }
 
-  bool XONA_LCDC_EN = ppu.lcdc & FLAG_LCD_ON;
+  bool XONA_LCDC_ENn = ppu.lcdc & FLAG_LCD_ON;
 
   if (PHASE_HI) {
     zram.  tock(ibus_req);
@@ -194,7 +194,7 @@ void Gameboy::tock_gb() {
     cart.  tock(ebus_req);
     vram.  tock(vbus_req);
     oam.   tock(obus_req);
-    lcd.tock(phase, ibus_req, XONA_LCDC_EN);
+    lcd.tock(phase, ibus_req, XONA_LCDC_ENn);
 
     //----------
 

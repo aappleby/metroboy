@@ -260,15 +260,10 @@ void SpriteStore::tick(const SchematicTop& top) {
     /*p31.YLEV*/ wire STORE9_MATCHA = nor4(STORE9_MATCH0n, STORE9_MATCH1n, STORE9_MATCH2n, STORE9_MATCH3n);
     /*p31.YTUB*/ wire STORE9_MATCHB = nor4(STORE9_MATCH4n, STORE9_MATCH5n, STORE9_MATCH6n, STORE9_MATCH7n);
 
-    // CEHA := not(CENO_16.qn)
-    // BYHO := not(CEHA);
-    // AZEM := and2(BYJO, XYMU)
-    // AROR := and2(AZEM, XYLO_08 (qn?) );
-
-    /*p29.CEHA*/ wire CEHA_SCANNINGp = not1(top.sprite_scanner.CENO_SCANNINGp.qn());
-    /*p29.BYJO*/ wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
-    /*p29.AZEM*/ wire AZEM_RENDERINGp = and2(BYJO_SCANNINGn, top.pix_pipe._XYMU_RENDERINGp.qp());
-    /*p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, top.pix_pipe.XYLO_LCDC_SPEN.qp());
+    /*#p29.CEHA*/ wire CEHA_SCANNINGp = not1(top.sprite_scanner.CENO_SCANNINGp.qn());
+    /*#p29.BYJO*/ wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
+    /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(BYJO_SCANNINGn, top.pix_pipe._XYMU_RENDERINGp.qp());
+    /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, top.pix_pipe.XYLO_LCDC_SPENn.qn());
 
     /*p29.YDUG*/ STORE0_MATCHn = nand3(AROR_MATCH_ENp, STORE0_MATCHA, STORE0_MATCHB);
     /*p29.DYDU*/ STORE1_MATCHn = nand3(AROR_MATCH_ENp, STORE1_MATCHA, STORE1_MATCHB);

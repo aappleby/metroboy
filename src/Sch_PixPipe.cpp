@@ -11,14 +11,14 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& /*top*/) const {
   d("PIX COUNT   %03d\n", get_pix_count());
   d("\n");
 
-  d("VYXE_LCDC_BGEN   %c\n", VYXE_LCDC_BGEN  .c());
-  d("XYLO_LCDC_SPEN   %c\n", XYLO_LCDC_SPEN  .c());
+  d("VYXE_LCDC_BGENn   %c\n", VYXE_LCDC_BGENn  .c());
+  d("XYLO_LCDC_SPENn   %c\n", XYLO_LCDC_SPENn  .c());
   d("XYMO_LCDC_SPSIZE %c\n", XYMO_LCDC_SPSIZE.c());
   d("XAFO_LCDC_BGMAP  %c\n", XAFO_LCDC_BGMAP .c());
   d("WEXU_LCDC_BGTILE %c\n", WEXU_LCDC_BGTILE.c());
   d("WYMO_LCDC_WINEN  %c\n", WYMO_LCDC_WINEN .c());
   d("WOKY_LCDC_WINMAP %c\n", WOKY_LCDC_WINMAP.c());
-  d("XONA_LCDC_EN     %c\n", XONA_LCDC_EN    .c());
+  d("XONA_LCDC_ENn     %c\n", XONA_LCDC_ENn    .c());
   d("\n");
 
   d("INT_HBL_EN  %c\n", ROXE_INT_HBL_EN.c());
@@ -791,17 +791,10 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Pixel merge + emit
 
   {
-    // RAJY := and(PYBO_Q, VYXE_QN) // Fixme BGEN.qn WAT
-    // TADE := and(SOHU_Q, VYXE_QN) // Fixme BGEN.qn WAT
-
-    /*p35.RAJY*/ wire RAJY_PIX_BG_LOp  = and2(PYBO_BG_PIPE_A7.qp(), VYXE_LCDC_BGEN.qp());
-    /*p35.TADE*/ wire TADE_PIX_BG_HIp  = and2(SOHU_BG_PIPE_B7.qp(), VYXE_LCDC_BGEN.qp());
-
-    // XULA := and(XYLO_QN, WUFY_Q); // Fixme SPEN.qn WAT
-    // WOXA := and(XYLO_QN, VUPY_Q); // Fixme SPEN.qn WAT
-
-    /*#p35.XULA*/ wire XULA_PIX_SP_LOp  = and2(XYLO_LCDC_SPEN.qp(), WUFY_SPR_PIPE_A7.qp());
-    /*#p35.WOXA*/ wire WOXA_PIX_SP_HIp  = and2(XYLO_LCDC_SPEN.qp(), VUPY_SPR_PIPE_B7.qp());
+    /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp  = and2(PYBO_BG_PIPE_A7.qp(), VYXE_LCDC_BGENn.qn());
+    /*#p35.TADE*/ wire TADE_PIX_BG_HIp  = and2(SOHU_BG_PIPE_B7.qp(), VYXE_LCDC_BGENn.qn());
+    /*#p35.XULA*/ wire XULA_PIX_SP_LOp  = and2(XYLO_LCDC_SPENn.qn(), WUFY_SPR_PIPE_A7.qp());
+    /*#p35.WOXA*/ wire WOXA_PIX_SP_HIp  = and2(XYLO_LCDC_SPENn.qn(), VUPY_SPR_PIPE_B7.qp());
 
     /*#p35.NULY*/ wire NULY_PIX_SP_MASKn = nor2(WOXA_PIX_SP_HIp, XULA_PIX_SP_LOp);
 
@@ -928,8 +921,10 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     // VYXE_QN >> TADE, RAJY
     // VYXE_QP >> WYPO
 
-    /*p23.VYXE*/ VYXE_LCDC_BGEN    = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D0.qp());
-    /*p23.XYLO*/ XYLO_LCDC_SPEN    = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D1.qp());
+    // FIXME not sure why these are inverted
+
+    /*p23.VYXE*/ VYXE_LCDC_BGENn    = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, !cpu_bus.CPU_BUS_D0.qp());
+    /*p23.XYLO*/ XYLO_LCDC_SPENn    = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, !cpu_bus.CPU_BUS_D1.qp());
     /*p23.XYMO*/ XYMO_LCDC_SPSIZE  = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D2.qp());
     /*p23.XAFO*/ XAFO_LCDC_BGMAP   = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D3.qp());
     /*p23.WEXU*/ WEXU_LCDC_BGTILE  = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D4.qp());
@@ -937,19 +932,19 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.WOKY*/ WOKY_LCDC_WINMAP  = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D6.qp());
 
     // XONA := dff9(...
-    /*p23.XONA*/ XONA_LCDC_EN      = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.CPU_BUS_D7.qp());
+    /*p23.XONA*/ XONA_LCDC_ENn      = dff9(_XUBO_FF40_WRn, !_XUBO_FF40_WRn, _XARE_RSTn, !cpu_bus.CPU_BUS_D7.qp());
 
     /*p23.VYRE*/ wire _VYRE_FF40_RDp = and2(_VOCA_FF40p, top.ASOT_CPU_RDp());
     /*p23.WYCE*/ wire _WYCE_FF40_RDn = not1(_VYRE_FF40_RDp);
 
-    /*#p23.WYPO*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_WYCE_FF40_RDn, VYXE_LCDC_BGEN.qp());
-    /*#p23.XERO*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_WYCE_FF40_RDn, XYLO_LCDC_SPEN.qp());
-    /*p23.WYJU*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_WYCE_FF40_RDn, XYMO_LCDC_SPSIZE.qp());
-    /*p23.WUKA*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_WYCE_FF40_RDn, XAFO_LCDC_BGMAP.qp());
-    /*p23.VOKE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_WYCE_FF40_RDn, WEXU_LCDC_BGTILE.qp());
-    /*p23.VATO*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_WYCE_FF40_RDn, WYMO_LCDC_WINEN.qp());
-    /*#p23.VAHA*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_WYCE_FF40_RDn, WOKY_LCDC_WINMAP.qp());
-    /*#p23.XEBU*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_WYCE_FF40_RDn, XONA_LCDC_EN.qp());
+    /*#p23.WYPO*/ cpu_bus.CPU_BUS_D0 = tribuf_6nn(_WYCE_FF40_RDn, VYXE_LCDC_BGENn.qp());
+    /*#p23.XERO*/ cpu_bus.CPU_BUS_D1 = tribuf_6nn(_WYCE_FF40_RDn, XYLO_LCDC_SPENn.qp());
+    /* p23.WYJU*/ cpu_bus.CPU_BUS_D2 = tribuf_6n (_WYCE_FF40_RDn, XYMO_LCDC_SPSIZE.qp());
+    /* p23.WUKA*/ cpu_bus.CPU_BUS_D3 = tribuf_6n (_WYCE_FF40_RDn, XAFO_LCDC_BGMAP.qp());
+    /* p23.VOKE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n (_WYCE_FF40_RDn, WEXU_LCDC_BGTILE.qp());
+    /* p23.VATO*/ cpu_bus.CPU_BUS_D5 = tribuf_6n (_WYCE_FF40_RDn, WYMO_LCDC_WINEN.qp());
+    /*#p23.VAHA*/ cpu_bus.CPU_BUS_D6 = tribuf_6n (_WYCE_FF40_RDn, WOKY_LCDC_WINMAP.qp());
+    /*#p23.XEBU*/ cpu_bus.CPU_BUS_D7 = tribuf_6nn(_WYCE_FF40_RDn, XONA_LCDC_ENn.qp());
   }
 
   //----------------------------------------

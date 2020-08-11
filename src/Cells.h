@@ -190,6 +190,17 @@ inline RegDelta tribuf_6n(wire OEn, wire D) {
   }
 }
 
+// OEn, Dn
+
+inline RegDelta tribuf_6nn(wire OEn, wire D) {
+  if (!OEn) {
+    return D ? DELTA_TRI0 : DELTA_TRI1;
+  }
+  else {
+    return DELTA_TRIZ;
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 inline RegDelta tribuf_10n(wire OEn, wire D) {

@@ -66,7 +66,7 @@ struct DmaRegisters {
     return MUDA_DMA_SRC_VRAMp;
   }
 
-  /*p04.LYXE*/ Tri   _LYXE_DMA_LATCHn   = TRI_D0NP;
+  /*p04.LYXE*/ Latch _LYXE_DMA_LATCHp   = TRI_D0NP;
   /*p04.MATU*/ RegQP _MATU_DMA_RUNNINGp = REG_D0C0;
   /*p04.MYTE*/ RegQN _MYTE_DMA_DONE     = REG_D0C0;
   /*p04.LUVY*/ RegQP _LUVY_DMA_TRIG_d0  = REG_D0C0;

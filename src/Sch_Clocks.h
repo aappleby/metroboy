@@ -152,7 +152,7 @@ struct ClockRegisters {
     /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp());
 
     // XODO := nand2(XONA_QN, XEBE) !!!
-    /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, _XONA_LCDC_EN);
+    /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, _XONA_LCDC_ENn_qn);
     /*p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
     return _XAPO_VID_RSTn;
   }
@@ -180,7 +180,7 @@ struct ClockRegisters {
 
   //-----------------------------------------------------------------------------
 
-  Sig _XONA_LCDC_EN;
+  Sig _XONA_LCDC_ENn_qn;
 
   Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
   Tri SYS_PIN_CLK_B = TRI_D0NP; // PIN_74 

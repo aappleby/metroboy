@@ -84,10 +84,12 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);
     /*p21.TAPA*/ wire TAPA_INT_OAM = and2(_TOLU_VBLANKn, SELA_LINE_ENDp);
     /*p21.TARU*/ wire TARU_INT_HBL = and2(_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp());
-    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_INT_LYC_EN.qp(), top.lcd_reg.ROPO_LY_MATCH_SYNCp(),
-                                             top.pix_pipe.REFE_INT_OAM_EN.qp(), TAPA_INT_OAM,
-                                             top.pix_pipe.RUFO_INT_VBL_EN.qp(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
-                                             top.pix_pipe.ROXE_INT_HBL_EN.qp(), TARU_INT_HBL);
+
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_INT_LYC_EN.qn(), top.lcd_reg._ROPO_LY_MATCH_SYNCp.qp(),
+                                             top.pix_pipe.REFE_INT_OAM_EN.qn(), TAPA_INT_OAM,
+                                             top.pix_pipe.RUFO_INT_VBL_EN.qn(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             top.pix_pipe.ROXE_INT_HBL_EN.qn(), TARU_INT_HBL);
+
     /*p21.TUVA*/ wire TUVA_INT_STATn = not1(SUKO_INT_STATb);
     /*p21.VOTY*/ wire VOTY_INT_STATp = not1(TUVA_INT_STATn);
 

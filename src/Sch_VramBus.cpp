@@ -226,20 +226,20 @@ void VramBus::tock(SchematicTop& top) {
 
     /*#p29.XUQU*/ wire XUQU_SPRITE_AB = not1(top.sprite_fetcher._VONU_SFETCH_S1_D4.qn());
 
-    /*p29.ABEM*/ _VRAM_BUS_A00 = tribuf_6n(ABON_SPR_VRM_RDn, XUQU_SPRITE_AB);
-    /*p29.BAXE*/ _VRAM_BUS_A01 = tribuf_6n(ABON_SPR_VRM_RDn, _CYVU_L0);
-    /*p29.ARAS*/ _VRAM_BUS_A02 = tribuf_6n(ABON_SPR_VRM_RDn, _BORE_L1);
-    /*p29.AGAG*/ _VRAM_BUS_A03 = tribuf_6n(ABON_SPR_VRM_RDn, _BUVY_L2);
-    /*p29.FAMU*/ _VRAM_BUS_A04 = tribuf_6n(ABON_SPR_VRM_RDn, _GEJY_L3);
+    /* p29.ABEM*/ _VRAM_BUS_A00 = tribuf_6n(ABON_SPR_VRM_RDn, XUQU_SPRITE_AB);
+    /* p29.BAXE*/ _VRAM_BUS_A01 = tribuf_6n(ABON_SPR_VRM_RDn, _CYVU_L0);
+    /* p29.ARAS*/ _VRAM_BUS_A02 = tribuf_6n(ABON_SPR_VRM_RDn, _BORE_L1);
+    /* p29.AGAG*/ _VRAM_BUS_A03 = tribuf_6n(ABON_SPR_VRM_RDn, _BUVY_L2);
+    /* p29.FAMU*/ _VRAM_BUS_A04 = tribuf_6n(ABON_SPR_VRM_RDn, _GEJY_L3);
 
     /*#p29.FUGY*/ _VRAM_BUS_A05 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XEGU_OAM_DA1n.qp());
-    /*p29.GAVO*/ _VRAM_BUS_A06 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YJEX_OAM_DA2n.qp());
-    /*p29.WYGA*/ _VRAM_BUS_A07 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XYJU_OAM_DA3n.qp());
-    /*p29.WUNE*/ _VRAM_BUS_A08 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YBOG_OAM_DA4n.qp());
-    /*p29.GOTU*/ _VRAM_BUS_A09 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.WYSO_OAM_DA5n.qp());
-    /*p29.GEGU*/ _VRAM_BUS_A10 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XOTE_OAM_DA6n.qp());
-    /*p29.XEHE*/ _VRAM_BUS_A11 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YZAB_OAM_DA7n.qp());
-    /*p29.DYSO*/ _VRAM_BUS_A12 = tribuf_6n(ABON_SPR_VRM_RDn, 0);   // sprites always in low half of tile store
+    /* p29.GAVO*/ _VRAM_BUS_A06 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YJEX_OAM_DA2n.qp());
+    /* p29.WYGA*/ _VRAM_BUS_A07 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XYJU_OAM_DA3n.qp());
+    /* p29.WUNE*/ _VRAM_BUS_A08 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YBOG_OAM_DA4n.qp());
+    /* p29.GOTU*/ _VRAM_BUS_A09 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.WYSO_OAM_DA5n.qp());
+    /* p29.GEGU*/ _VRAM_BUS_A10 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.XOTE_OAM_DA6n.qp());
+    /* p29.XEHE*/ _VRAM_BUS_A11 = tribuf_6n(ABON_SPR_VRM_RDn, top.oam_bus.YZAB_OAM_DA7n.qp());
+    /* p29.DYSO*/ _VRAM_BUS_A12 = tribuf_6n(ABON_SPR_VRM_RDn, 0);   // sprites always in low half of tile store
   }
 
   {
@@ -323,18 +323,18 @@ void VramBus::tock(SchematicTop& top) {
       /*#p25.XEZE*/ wire XEZE_WIN_MAP_READp = and2(POTU_BG_MAP_READp, PORE_WIN_MODEp);
       /*#p25.WUKO*/ WUKO_WIN_MAP_READn = not1(XEZE_WIN_MAP_READp);
       /*#p27.XEJA*/ _VRAM_BUS_A00 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WYKA_WIN_X3.qp());
-      /*p27.XAMO*/ _VRAM_BUS_A01 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WODY_WIN_X4.qp());
-      /*p27.XAHE*/ _VRAM_BUS_A02 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WOBO_WIN_X5.qp());
-      /*p27.XULO*/ _VRAM_BUS_A03 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WYKO_WIN_X6.qp());
-      /*p27.WUJU*/ _VRAM_BUS_A04 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.XOLO_WIN_X7.qp());
+      /* p27.XAMO*/ _VRAM_BUS_A01 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WODY_WIN_X4.qp());
+      /* p27.XAHE*/ _VRAM_BUS_A02 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WOBO_WIN_X5.qp());
+      /* p27.XULO*/ _VRAM_BUS_A03 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WYKO_WIN_X6.qp());
+      /* p27.WUJU*/ _VRAM_BUS_A04 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.XOLO_WIN_X7.qp());
       /*#p27.VYTO*/ _VRAM_BUS_A05 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TUFU_WIN_Y3.qp());
-      /*p27.VEHA*/ _VRAM_BUS_A06 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TAXA_WIN_Y4.qp());
-      /*p27.VACE*/ _VRAM_BUS_A07 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TOZO_WIN_Y5.qp());
-      /*p27.VOVO*/ _VRAM_BUS_A08 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TATE_WIN_Y6.qp());
-      /*p27.VULO*/ _VRAM_BUS_A09 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TEKE_WIN_Y7.qp());
+      /* p27.VEHA*/ _VRAM_BUS_A06 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TAXA_WIN_Y4.qp());
+      /* p27.VACE*/ _VRAM_BUS_A07 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TOZO_WIN_Y5.qp());
+      /* p27.VOVO*/ _VRAM_BUS_A08 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TATE_WIN_Y6.qp());
+      /* p27.VULO*/ _VRAM_BUS_A09 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TEKE_WIN_Y7.qp());
       /*#p27.VEVY*/ _VRAM_BUS_A10 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAP.qn());
-      /*p27.VEZA*/ _VRAM_BUS_A11 = tribuf_6n(WUKO_WIN_MAP_READn, 1);
-      /*p27.VOGU*/ _VRAM_BUS_A12 = tribuf_6n(WUKO_WIN_MAP_READn, 1);
+      /* p27.VEZA*/ _VRAM_BUS_A11 = tribuf_6n(WUKO_WIN_MAP_READn, 1);
+      /* p27.VOGU*/ _VRAM_BUS_A12 = tribuf_6n(WUKO_WIN_MAP_READn, 1);
     }
 
     // Background/window tile read

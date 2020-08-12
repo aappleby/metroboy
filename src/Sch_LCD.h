@@ -22,8 +22,8 @@ struct LcdRegisters {
   }
 
   uint8_t get_lyc() const {
-    return (uint8_t)pack_p(_SYRY_LYC0.qp(), _VUCE_LYC1.qp(), _SEDY_LYC2.qp(), _SALO_LYC3.qp(),
-                _SOTA_LYC4.qp(), _VAFA_LYC5.qp(), _VEVO_LYC6.qp(), _RAHA_LYC7.qp());
+    return (uint8_t)pack_p(SYRY_LYC0.qp(), VUCE_LYC1.qp(), SEDY_LYC2.qp(), SALO_LYC3.qp(),
+                SOTA_LYC4.qp(), VAFA_LYC5.qp(), VEVO_LYC6.qp(), RAHA_LYC7.qp());
   }
 
   // fires on P910 and P911
@@ -45,9 +45,6 @@ struct LcdRegisters {
   // -> interrupts, ppu
   /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not1(_POPU_IN_VBLANKp.qn()); }
 
-  // -> interrupts, lcd, ppu
-  /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp() const { return _ROPO_LY_MATCH_SYNCp.qp(); }
-  
   // -> sprite store
 
   // Stays at 0 for 12 phases, 113 for 4 phases, all others for 8 phases
@@ -88,14 +85,14 @@ struct LcdRegisters {
   /*p21.ROPO*/ RegQP  _ROPO_LY_MATCH_SYNCp = REG_D0C0;
 
   // FF45 - LYC
-  /*p23.SYRY*/ Reg _SYRY_LYC0 = REG_D0C0;
-  /*p23.VUCE*/ Reg _VUCE_LYC1 = REG_D0C0;
-  /*p23.SEDY*/ Reg _SEDY_LYC2 = REG_D0C0;
-  /*p23.SALO*/ Reg _SALO_LYC3 = REG_D0C0;
-  /*p23.SOTA*/ Reg _SOTA_LYC4 = REG_D0C0;
-  /*p23.VAFA*/ Reg _VAFA_LYC5 = REG_D0C0;
-  /*p23.VEVO*/ Reg _VEVO_LYC6 = REG_D0C0;
-  /*p23.RAHA*/ Reg _RAHA_LYC7 = REG_D0C0;
+  /*p23.SYRY*/ Reg SYRY_LYC0 = REG_D0C0;
+  /*p23.VUCE*/ Reg VUCE_LYC1 = REG_D0C0;
+  /*p23.SEDY*/ Reg SEDY_LYC2 = REG_D0C0;
+  /*p23.SALO*/ Reg SALO_LYC3 = REG_D0C0;
+  /*p23.SOTA*/ Reg SOTA_LYC4 = REG_D0C0;
+  /*p23.VAFA*/ Reg VAFA_LYC5 = REG_D0C0;
+  /*p23.VEVO*/ Reg VEVO_LYC6 = REG_D0C0;
+  /*p23.RAHA*/ Reg RAHA_LYC7 = REG_D0C0;
 };
 
 //-----------------------------------------------------------------------------

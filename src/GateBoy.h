@@ -19,10 +19,10 @@ public:
   void    dbg_write(int addr, uint8_t data);
 
   void update_cpu_bus (int phase, Req req);
-  void update_ext_bus (int phase);
-  void update_vrm_bus (int phase);
-  void update_oam_bus (int phase);
-  void update_zram_bus(int phase);
+  void update_ext_bus ();
+  void update_vrm_bus ();
+  void update_oam_bus ();
+  void update_zram_bus();
 
   void test_reg(const char* regname, uint16_t addr, uint8_t data_in);
   void test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
@@ -41,7 +41,7 @@ public:
   bool sys_clkgood = 0;
   bool sys_cpuready = 0;
 
-  int phase_total = 5;
+  int phase_total = 6;
   int pass_count = 0;
   int pass_total = 0;
 

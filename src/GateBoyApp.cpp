@@ -136,9 +136,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   grid_painter.render(view);
 
   auto gateboy = state_manager.state();
+  const auto& top = gateboy->top;
 
   StringDumper dumper;
   float col_width = 256;
+  float cursor_y = 0;
 
   dumper("----------   Top    ----------\n");
 
@@ -171,12 +173,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("----------   CPU    ----------\n");
   gateboy->cpu.dump(dumper);
+  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
+  cursor_y += col_width;
+  dumper.clear();
 
-  const auto& top = gateboy->top;
   top.clk_reg.dump(dumper);
-  top.tim_reg.dump(dumper);
-  top.int_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), col_width * 0, 0);
+  //top.tim_reg.dump(dumper);
+  //top.int_reg.dump(dumper);
+  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
+  cursor_y += col_width;
   dumper.clear();
 
   top.cpu_bus.dump(dumper);
@@ -184,12 +189,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.vram_bus.dump(dumper, top);
   top.oam_bus.dump(dumper);
   top.dma_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), col_width * 1, 0);
+  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
+  cursor_y += col_width;
   dumper.clear();
 
   top.lcd_reg.dump(dumper, top);
   top.pix_pipe.dump(dumper, top);
-  text_painter.render(view, dumper.s.c_str(), col_width * 2, 0);
+  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
+  cursor_y += col_width;
   dumper.clear();
 
   dump_probes(dumper);
@@ -199,7 +206,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.tile_fetcher.dump(dumper, top);
   top.joypad.dump(dumper);
   top.ser_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), col_width * 3, 0);
+  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
+  cursor_y += col_width;
   dumper.clear();
 
   /*

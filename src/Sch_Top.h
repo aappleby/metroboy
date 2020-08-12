@@ -103,32 +103,32 @@ struct SchematicTop {
   }
 
   // vram.TUJA, top.UBAL/MEXO
-  /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxDxxxx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
-    return APOV_CPU_WRp_xxxDxxxx;
+  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const {
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxxEFGx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
+    return APOV_CPU_WRp_xxxxEFGx;
   }
 
   // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
-  /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxDxxxx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxDxxxx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(ext_bus.EXT_PIN_WR_C.qp(), APOV_CPU_WRp_xxxDxxxx, clk_reg.UNOR_MODE_DBG2p());
-    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxDxxxx = not1(UBAL_CPU_WRn_ABCxEFGH);
-    return TAPU_CPU_WRp_xxxDxxxx;
+  /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxxEFGx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WR_C.qp(), APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
+    return TAPU_CPU_WRp_xxxxEFGx;
   }
 
   // dma.lavy, lcd.xufa, oam.wyja, pxp.vely/xoma/myxe, ppu.waru/sepa, tile.bedy/arur, top.xuto, win.weko/wuza (most all the FF4X regs)
-  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxDxxxx() const {
-    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCxEFGH = not1(TAPU_CPU_WRp_xxxDxxxx());
-    /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxDxxxx = not1(DYKY_CPU_WRn_ABCxEFGH);
-    return CUPA_CPU_WRp_xxxDxxxx;
+  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const {
+    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(TAPU_CPU_WRp_xxxxEFGx());
+    /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
+    return CUPA_CPU_WRp_xxxxEFGx;
   }
 
   // ext.NEVY
-  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCxEFGH() const {
-    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCxEFGH = not1(APOV_CPU_WRp_xxxDxxxx());
-    return MEXO_CPU_WRn_ABCxEFGH;
+  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH() const {
+    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH = not1(APOV_CPU_WRp_xxxxEFGx());
+    return MEXO_CPU_WRn_ABCDxxxH;
   }
 
   //-----------------------------------------------------------------------------
@@ -164,7 +164,8 @@ struct SchematicTop {
   CpuBus cpu_bus;
   VramBus vram_bus;
 
-  ClockRegisters clk_reg;
+  ClockRegisters  clk_reg;
+
   DmaRegisters dma_reg;
   InterruptRegisters int_reg;
   Joypad joypad;

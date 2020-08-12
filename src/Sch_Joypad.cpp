@@ -74,19 +74,19 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(JOY_PIN_P13_C.qp(), JOY_PIN_P12_C.qp(), JOY_PIN_P11_C.qp(), JOY_PIN_P10_C.qp());
 
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_A(top.clk_reg.BOGA_ABCDExxx(), _KERY_ANY_BUTTONp);
+    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_A(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
     CPU_PIN_WAKE = AWOB_WAKE_CPU.qp();
   }
 
   {
-    /*p02.BATU*/ BATU_JP_GLITCH0 = dff17_B(top.clk_reg.BOGA_ABCDExxx(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1 = dff17_B(top.clk_reg.BOGA_ABCDExxx(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.qp());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2 = dff17_B(top.clk_reg.BOGA_ABCDExxx(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp());
-    /*p02.APUG*/ APUG_JP_GLITCH3 = dff17_B(top.clk_reg.BOGA_ABCDExxx(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp());
+    /*p02.BATU*/ BATU_JP_GLITCH0 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
+    /*p02.ACEF*/ ACEF_JP_GLITCH1 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.qp());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp());
+    /*p02.APUG*/ APUG_JP_GLITCH3 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp());
   }
 
   {
-    /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(top.TAPU_CPU_WRp_xxxDxxxx(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
+    /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.JUTE*/ JUTE_JOYP_RA     = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0.qp());
     /*p05.KECY*/ KECY_JOYP_LB     = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1.qp());
     /*p05.JALE*/ JALE_JOYP_UC     = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D2.qp());

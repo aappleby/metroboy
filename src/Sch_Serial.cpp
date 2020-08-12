@@ -34,8 +34,8 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   //----------------------------------------
   /*p06.SANO*/ wire SANO_ADDR_FF00_FF03 = and3(cpu_bus.SARE_XX00_XX07p(), cpu_bus.SEFY_A02n(), cpu_bus.SYKE_FF00_FFFFp());
-  /*p06.URYS*/ wire URYS_FF01_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxDxxxx(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.qp(), cpu_bus.TOLA_A01n());
-  /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxDxxxx(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.qp());
+  /*p06.URYS*/ wire URYS_FF01_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.qp(), cpu_bus.TOLA_A01n());
+  /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.qp());
   /*p06.UFEG*/ wire UFEG_FF01_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.qp(), cpu_bus.TOLA_A01n());
   /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.qp());
 

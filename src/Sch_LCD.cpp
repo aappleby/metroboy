@@ -225,7 +225,7 @@ void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.XYLY*/ wire _XYLY_FF45_RDp = and2(top.ASOT_CPU_RDp(), _XAYU_FF45p);
     /*p23.WEKU*/ wire _WEKU_FF45_RDn = not1(_XYLY_FF45_RDp);
 
-    /*p23.XUFA*/ wire _XUFA_FF45_WRn = and2(top.CUPA_CPU_WRp_xxxDxxxx(), _XAYU_FF45p);
+    /*p23.XUFA*/ wire _XUFA_FF45_WRn = and2(top.CUPA_CPU_WRp_xxxxEFGx(), _XAYU_FF45p);
     /*p23.WANE*/ wire _WANE_FF45_WRp = not1(_XUFA_FF45_WRn);
 
     /*p23.SYRY*/ SYRY_LYC0 = dff9_inv(_WANE_FF45_WRp, !_WANE_FF45_WRp, top.clk_reg.WESY_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0.qp());

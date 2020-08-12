@@ -40,10 +40,6 @@ struct ClockRegisters {
     SYS_PIN_T2n.preset(t2);
   }
 
-  uint8_t get_phase_clock() {
-    return (uint8_t)pack_p(AFUR_ABCDxxxx.qp(), ALEF_AxxxxFGH.qn(), APUK_xxCDEFxx.qp(), ADYK_ABCxxxxH.qn());
-  }
-
   //-----------------------------------------------------------------------------
   // Clock input & 4 mhz clocks
 
@@ -59,40 +55,41 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Phase clocks
 
-  /*p01.AFUR*/ Reg AFUR_ABCDxxxx = REG_D0C0;
-  /*p01.ALEF*/ Reg ALEF_AxxxxFGH = REG_D0C0;
-  /*p01.APUK*/ Reg APUK_xxCDEFxx = REG_D0C0;
-  /*p01.ADYK*/ Reg ADYK_ABCxxxxH = REG_D0C0;
+  /*p01.BELU*/ wire BELU_xxxxEFGH() const { return nor2(ABOL_CLKREQn,  ATYP_ABCDxxxx); }
+  /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH()); }
+  /*p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not1(BYRY_ABCDxxxx()); }
+  /*p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // bus mux, dma
+  /*p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); }
+  /*p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); } // bus mux, dma
+  /*p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not1(MOPA_xxxxEFGH()); } // bus mux
 
-  /*p01.BELU*/ wire BELU_ABCDxxxx() const { return nor2(ABOL_CLKREQn,  ATYP_xxxxEFGH); }
-  /*p01.BYRY*/ wire BYRY_xxxxEFGH() const { return not1(BELU_ABCDxxxx()); }
-  /*p01.BUDE*/ wire BUDE_ABCDxxxx() const { return not1(BYRY_xxxxEFGH()); }
-  /*p01.UVYT*/ wire UVYT_xxxxEFGH() const { return not1(BUDE_ABCDxxxx()); } // bus mux, dma
-  /*p01.BEKO*/ wire BEKO_xxxxEFGH() const { return not1(BUDE_ABCDxxxx()); }
-  /*p04.MOPA*/ wire MOPA_ABCDxxxx() const { return not1(UVYT_xxxxEFGH()); } // bus mux, dma
-  /*p28.XYNY*/ wire XYNY_xxxxEFGH() const { return not1(MOPA_ABCDxxxx()); } // bus mux
+  /*p01.BAPY*/ wire BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn,
+                                                        AROV_xxCDEFxx,
+                                                        ATYP_ABCDxxxx); }
 
-  /*p01.BAPY*/ wire BAPY_xxCDxxxx() const { return nor3(ABOL_CLKREQn, AROV_ABxxxxGH, ATYP_xxxxEFGH); }
-  /*p01.BERU*/ wire BERU_ABxxEFGH() const { return not1(BAPY_xxCDxxxx()); }
-  /*p01.BUFA*/ wire BUFA_xxCDxxxx() const { return not1(BERU_ABxxEFGH()); }
-  /*p01.BOLO*/ wire BOLO_ABxxEFGH() const { return not1(BUFA_xxCDxxxx()); }
+  /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not1(BAPY_xxxxxxGH()); }
+  /*p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not1(BERU_ABCDEFxx()); }
+  /*p01.BOLO*/ wire BOLO_ABCDEFxx() const { return not1(BUFA_xxxxxxGH()); }
 
-  /*p01.BEJA*/ wire BEJA_ABCDxxxx() const { return nand2(BOLO_ABxxEFGH(), BEKO_xxxxEFGH()); }
-  /*p01.BANE*/ wire BANE_xxxxEFGH() const { return not1(BEJA_ABCDxxxx()); }
-  /*p01.BELO*/ wire BELO_ABCDxxxx() const { return not1(BANE_xxxxEFGH()); }
-  /*p01.BAZE*/ wire BAZE_xxxxEFGH() const { return not1(BELO_ABCDxxxx()); }
+  /*p01.BEJA*/ wire BEJA_xxxxEFGH() const { return nand2(BOLO_ABCDEFxx(),
+                                                         BEKO_ABCDxxxx()); }
+  /*p01.BANE*/ wire BANE_ABCDxxxx() const { return not1(BEJA_xxxxEFGH()); }
+  /*p01.BELO*/ wire BELO_xxxxEFGH() const { return not1(BANE_ABCDxxxx()); }
+  /*p01.BAZE*/ wire BAZE_ABCDxxxx() const { return not1(BELO_xxxxEFGH()); }
 
-  /*p01.BUTO*/ wire BUTO_ABCDExxx() const { return nand3(AFEP_AxxxxFGH, ATYP_xxxxEFGH, BAZE_xxxxEFGH()); }
-  /*p01.BELE*/ wire BELE_xxxxxFGH() const { return not1(BUTO_ABCDExxx()); }
-  /*p01.BYJU*/ wire BYJU_ABCDExxx() const { return nor2(BELE_xxxxxFGH(), ATEZ_CLKBAD); }
-  /*p01.BALY*/ wire BALY_xxxxxFGH() const { return not1(BYJU_ABCDExxx()); }
-  /*p01.BOGA*/ wire BOGA_ABCDExxx() const { return not1(BALY_xxxxxFGH()); } // joy rst tim
-  /*p01.BOMA*/ wire BOMA_xxxxxFGH() const { return not1(BOGA_ABCDExxx()); } // rst
+  /*p01.BUTO*/ wire BUTO_xBCDEFGH() const { return nand3(AFEP_AxxxxFGH,
+                                                         ATYP_ABCDxxxx,
+                                                         BAZE_ABCDxxxx()); }
+  /*p01.BELE*/ wire BELE_Axxxxxxx() const { return not1(BUTO_xBCDEFGH()); }
+  /*p01.BYJU*/ wire BYJU_xBCDEFGH() const { return nor2(BELE_Axxxxxxx(), ATEZ_CLKBAD); }
+  /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not1(BYJU_xBCDEFGH()); }
+  /*p01.BOGA*/ wire BOGA_xBCDEFGH() const { return not1(BALY_Axxxxxxx()); } // joy rst tim
+  /*p01.BOMA*/ wire BOMA_Axxxxxxx() const { return not1(BOGA_xBCDEFGH()); } // rst
 
-  /*p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(ADYK_ABCxxxxH.qn()); }
+  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(ADYK_ABCxxxxH.qn()); }
 
   // ext_pin_wr, arev_cpu_wrn
-  /*p01.AFAS*/ wire AFAS_xxxDxxxx() const {
+  /*p01.AFAS*/ wire AFAS_xxxxEFGx() const {
 
     // AFAS := ???(ADAR_02, ATYP_02);
 
@@ -100,7 +97,7 @@ struct ClockRegisters {
     // like the inverse of the WRn signal on the cart...
 
     return nor2(ADAR_ABCxxxxH(),
-                ATYP_xxxxEFGH);
+                ATYP_ABCDxxxx);
   }
 
   //-----------------------------------------------------------------------------
@@ -196,10 +193,15 @@ struct ClockRegisters {
   /*p01.ATEZ*/ Sig ATEZ_CLKBAD;
   /*p01.ABOL*/ Sig ABOL_CLKREQn;
 
-  /*p01.AROV*/ Sig AROV_ABxxxxGH;
+  /*p01.AFUR*/ Reg AFUR_xxxxEFGH = REG_D0C0;
+  /*p01.ALEF*/ Reg ALEF_AxxxxFGH = REG_D0C0;
+  /*p01.APUK*/ Reg APUK_ABxxxxGH = REG_D0C0;
+  /*p01.ADYK*/ Reg ADYK_ABCxxxxH = REG_D0C0;
+
+  /*p01.AROV*/ Sig AROV_xxCDEFxx;
   /*p01.AFEP*/ Sig AFEP_AxxxxFGH;
-  /*p01.ATYP*/ Sig ATYP_xxxxEFGH;
-  /*p01.AJAX*/ Sig AJAX_ABCDxxxx;
+  /*p01.ATYP*/ Sig ATYP_ABCDxxxx;
+  /*p01.AJAX*/ Sig AJAX_xxxxEFGH;
 
   Tri CPU_PIN_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
   Tri CPU_PIN_READYp        = TRI_D0NP; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
@@ -210,20 +212,20 @@ struct ClockRegisters {
 
   Tri CPU_PIN_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   
-  Tri CPU_PIN_BOWA_ABCDExxx = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
-  Tri CPU_PIN_BEDO_xxxxxFGH = TRI_HZNP; // top left port PORTD_02:
+  Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
+  Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
 
-  Tri CPU_PIN_BEKO_xxxxEFGH = TRI_HZNP; // top left port PORTD_03:
-  Tri CPU_PIN_BUDE_ABCDxxxx = TRI_HZNP; // top left port PORTD_04: 
+  Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
+  Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
 
-  Tri CPU_PIN_BOLO_ABxxEFGH = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxDxxxx as "WRen" I guess
-  Tri CPU_PIN_BUKE_xxxxxFxx = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxxEFGx as "WRen" I guess
+  Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
 
   // These two clocks are the only ones that run before CPU_PIN_READYp is asserted.
-  Tri CPU_PIN_BOMA_xxxxxFGH = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  Tri CPU_PIN_BOGA_ABCDExxx = TRI_HZNP; // top left port PORTD_09: - test pad 3
+  Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
+  Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
   
-  Tri EXT_PIN_CLK_ABCDxxxx  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
+  Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
 };
 
 //-----------------------------------------------------------------------------

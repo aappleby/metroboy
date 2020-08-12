@@ -31,22 +31,25 @@ void GateBoy::run_reset_sequence() {
 
   log("Sync with phase A\n");
   sys_clken = 1;
-  run(11);
 
-  CHECK_P(top.clk_reg.AFUR_ABCDxxxx.qp());
-  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.qp());
-  CHECK_N(top.clk_reg.APUK_xxCDEFxx.qp());
-  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.qp());
-  CHECK_P((phase_total & 7) == 0);
+  while(1) {
+    run(1);
+    if (top.clk_reg.AFUR_xxxxEFGH.qn() &&
+        top.clk_reg.ALEF_AxxxxFGH.qp() &&
+        top.clk_reg.APUK_ABxxxxGH.qp() &&
+        top.clk_reg.ADYK_ABCxxxxH.qp()) break;
+  }
 
   log("Clock good\n");
   sys_clkgood = 1;
   run(8);
 
+
   log("Wait for CPU_PIN_START");
   while(!top.clk_reg.CPU_PIN_STARTp.qp()) {
     run(8);
   }
+  log("\n");
 
   log("Delay\n");
   run(8);
@@ -59,15 +62,14 @@ void GateBoy::run_reset_sequence() {
   log("Set BOOT = 1\n");
   dbg_write(0xFF50, 0xFF);
   log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
-
   log("LCDC = 0x%02x\n", dbg_read(ADDR_LCDC));
-
-  dbg_write(ADDR_LCDC, 0);
 
 #if !_DEBUG
   test_all_regs();
   test_all_mem();
 #endif
+
+#if 1
 
   const char* filename = "roms/LinksAwakening_dog.dump";
   load(filename);
@@ -101,6 +103,9 @@ void GateBoy::run_reset_sequence() {
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 
   //cpu_en = true;
+#endif
+
+  //exit(0);
 }
 
 //------------------------------------------------------------------------------
@@ -262,7 +267,6 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* D->E */ phase();
   /* E->F */ phase();
 
-  // CPU_PIN_BUKE_xxxxxFxx asserted on F, assuming this is "latch bus data".
   uint8_t sample = top.cpu_bus.get_bus_data();
 
   /* F->G */ phase();
@@ -292,7 +296,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 
 void GateBoy::phase() {
   phase_total++;
-  const int phase = phase_total & 7;
 
   //----------
   // Update CPU
@@ -310,6 +313,7 @@ void GateBoy::phase() {
     ack.addr    = top.cpu_bus.get_bus_addr();
     ack.data_lo = top.cpu_bus.get_bus_data();
 
+    const int phase = phase_total & 7;
     switch(phase) {
     case 0: cpu.tock_a(imask, intf, ack); break;
     case 1: cpu.tock_b(imask, intf, ack); break;
@@ -368,9 +372,9 @@ void GateBoy::phase() {
 
   //----------
 
-#if 1
 
   if (sys_clkgood) {
+    const int phase = phase_total & 7;
     CHECK_CLK_PHASE(top.clk_reg.ATAL_xBxDxFxH(), 0b01010101);
     CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101);
     CHECK_CLK_PHASE(top.clk_reg.AZOF_AxCxExGx(), 0b10101010); 
@@ -382,56 +386,57 @@ void GateBoy::phase() {
 
 
     if (sys_clken) {
-      CHECK_CLK_PHASE(top.clk_reg.AFUR_ABCDxxxx.qp(), 0b11110000);
+      CHECK_CLK_PHASE(top.clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
       CHECK_CLK_PHASE(top.clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
-      CHECK_CLK_PHASE(top.clk_reg.APUK_xxCDEFxx.qp(), 0b00111100);
+      CHECK_CLK_PHASE(top.clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
       CHECK_CLK_PHASE(top.clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
-      CHECK_CLK_PHASE(top.clk_reg.AROV_ABxxxxGH,     0b11000011);
-      CHECK_CLK_PHASE(top.clk_reg.AFEP_AxxxxFGH,     0b10000111);
-      CHECK_CLK_PHASE(top.clk_reg.ATYP_xxxxEFGH,     0b00001111);
-      CHECK_CLK_PHASE(top.clk_reg.AJAX_ABCDxxxx,     0b11110000);
 
-      CHECK_CLK_PHASE(top.clk_reg.ADAR_ABCxxxxH(),   0b11100001);
-      CHECK_CLK_PHASE(top.clk_reg.AFAS_xxxDxxxx(),   0b00010000);
+      CHECK_CLK_PHASE(top.clk_reg.AROV_xxCDEFxx,      0b00111100);
+      CHECK_CLK_PHASE(top.clk_reg.AFEP_AxxxxFGH,      0b10000111);
+      CHECK_CLK_PHASE(top.clk_reg.ATYP_ABCDxxxx,      0b11110000);
+      CHECK_CLK_PHASE(top.clk_reg.AJAX_xxxxEFGH,      0b00001111);
+
+      CHECK_CLK_PHASE(top.clk_reg.ADAR_ABCxxxxH(),    0b11100001);
+      CHECK_CLK_PHASE(top.clk_reg.AFAS_xxxxEFGx(),    0b00001110);
 
       if (sys_cpuready) {
-        CHECK_CLK_PHASE(top.clk_reg.BELU_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BYRY_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BUDE_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.UVYT_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BEKO_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.MOPA_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.XYNY_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BELU_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BYRY_ABCDxxxx(),       0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BUDE_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.UVYT_ABCDxxxx(),       0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BEKO_ABCDxxxx(),       0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.MOPA_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.XYNY_ABCDxxxx(),       0b11110000);
 
-        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxCDxxxx(),       0b00110000);
-        CHECK_CLK_PHASE(top.clk_reg.BERU_ABxxEFGH(),       0b11001111);
-        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxCDxxxx(),       0b00110000);
-        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABxxEFGH(),       0b11001111);
+        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxxxxxGH(),       0b00000011);
+        CHECK_CLK_PHASE(top.clk_reg.BERU_ABCDEFxx(),       0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxxxxxGH(),       0b00000011);
+        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABCDEFxx(),       0b11111100);
 
-        CHECK_CLK_PHASE(top.clk_reg.BEJA_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BANE_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BELO_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BAZE_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BEJA_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BANE_ABCDxxxx(),       0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BELO_xxxxEFGH(),       0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BAZE_ABCDxxxx(),       0b11110000);
 
-        CHECK_CLK_PHASE(top.clk_reg.BUTO_ABCDExxx(),       0b11111000);
-        CHECK_CLK_PHASE(top.clk_reg.BELE_xxxxxFGH(),       0b00000111);
-        CHECK_CLK_PHASE(top.clk_reg.BYJU_ABCDExxx(),       0b11111000);
-        CHECK_CLK_PHASE(top.clk_reg.BALY_xxxxxFGH(),       0b00000111);
-        CHECK_CLK_PHASE(top.clk_reg.BOGA_ABCDExxx(),       0b11111000);
-        CHECK_CLK_PHASE(top.clk_reg.BOMA_xxxxxFGH(),       0b00000111);
+        CHECK_CLK_PHASE(top.clk_reg.BUTO_xBCDEFGH(),       0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BELE_Axxxxxxx(),       0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BYJU_xBCDEFGH(),       0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BALY_Axxxxxxx(),       0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BOGA_xBCDEFGH(),       0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BOMA_Axxxxxxx(),       0b10000000);
 
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_ABCDExxx.qp(), 0b11111000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_xxxxxFGH.qp(), 0b00000111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_xxxxEFGH.qp(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_ABCDxxxx.qp(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABxxEFGH.qp(), 0b11001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_xxxxxFxx.qp(), 0b00000100);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_xxxxxFGH.qp(), 0b00000111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_ABCDExxx.qp(), 0b11111000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_xBCDEFGH.qp(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_Axxxxxxx.qp(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_ABCDxxxx.qp(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_xxxxEFGH.qp(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABCDEFxx.qp(), 0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_AxxxxxGH.qp(), 0b10000011);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.qp(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_xBCDEFGH.qp(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.EXT_PIN_CLK_xxxxEFGH.qp(),  0b00001111);
       }
     }
   }
-#endif
 
   //----------
   // Done
@@ -447,17 +452,19 @@ uint64_t GateBoy::pass() {
   uint64_t hash = HASH_INIT;
 
   wire CLK = (phase_total & 1) & sys_clken;
+
   top.clk_reg.preset_rst(sys_rst);
   top.clk_reg.preset_t1t2(sys_t1, sys_t2);
   top.clk_reg.preset_cpu_ready(sys_cpuready);
   top.clk_reg.preset_clk_a(sys_clkgood);
   top.clk_reg.preset_clk_b(CLK);
+
   top.joypad.preset_buttons(0);
   update_cpu_bus(phase, cpu_req);
-  update_ext_bus(phase);
-  update_vrm_bus(phase);
-  update_oam_bus(phase);
-  update_zram_bus(phase);
+  update_ext_bus();
+  update_vrm_bus();
+  update_oam_bus();
+  update_zram_bus();
 
   Sig::sim_running = true;
   bus_collision = false;
@@ -492,40 +499,27 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
   // probably they should be fixed to align w cpu clock edges and match cart traces
 
   // CPU clocks for reference -
-  //Tri CPU_PIN_BOWA_ABCDExxx = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
-  //Tri CPU_PIN_BEDO_xxxxxFGH = TRI_HZNP; // top left port PORTD_02:
-  //Tri CPU_PIN_BEKO_xxxxEFGH = TRI_HZNP; // top left port PORTD_03:
-  //Tri CPU_PIN_BUDE_ABCDxxxx = TRI_HZNP; // top left port PORTD_04: 
-  //Tri CPU_PIN_BOLO_ABxxEFGH = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxDxxxx as "WRen" I guess
-  //Tri CPU_PIN_BUKE_xxxxxFxx = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
-  //Tri CPU_PIN_BOMA_xxxxxFGH = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  //Tri CPU_PIN_BOGA_ABCDExxx = TRI_HZNP; // top left port PORTD_09: - test pad 3
-  //Tri EXT_PIN_CLK_ABCDxxxx  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
+  //Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
+  //Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
+  //Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
+  //Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
+  //Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxxEFGx as "WRen" I guess
+  //Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  //Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
+  //Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
+  //Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
 
-  if (PHASE_A) {
-    bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0);
-  }
-  if (PHASE_B) {
-    bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0);
-  }
-  if (PHASE_C) {
-    bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0);
-  }
-  if (PHASE_D) {
-    bus.preset_addr(addr); bus.preset_data(write, data); bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(write); bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(addr_ext);
-  }
-  if (PHASE_E) {
-    bus.preset_addr(addr); bus.preset_data(write, data); bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(hold_mem); bus.CPU_PIN_ADDR_EXT.preset(addr_ext);
-  }
-  if (PHASE_F) {
-    bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(hold_mem); bus.CPU_PIN_ADDR_EXT.preset(addr_ext);
-  }
-  if (PHASE_G) {
-    bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0);
-  }
-  if (PHASE_H) {
-    bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0);
-  }
+  // B WORKS
+  // C WORKS
+
+  if (PHASE_A) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0); }
+  if (PHASE_B) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0); }
+  if (PHASE_C) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0); }
+  if (PHASE_D) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0); }
+  if (PHASE_E) { bus.preset_addr(addr); bus.preset_data(write, data); bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(write); bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(addr_ext); }
+  if (PHASE_F) { bus.preset_addr(addr); bus.preset_data(write, data); bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(hold_mem); bus.CPU_PIN_ADDR_EXT.preset(addr_ext); }
+  if (PHASE_G) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(hold_mem); bus.CPU_PIN_ADDR_EXT.preset(addr_ext); }
+  if (PHASE_H) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXT.preset(0); }
 
   top.int_reg.CPU_PIN_ACK_VBLANK.preset(0);
   top.int_reg.CPU_PIN_ACK_STAT.preset(0);
@@ -539,9 +533,7 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::update_ext_bus(int phase) {
-  (void)phase;
-
+void GateBoy::update_ext_bus() {
   top.ext_bus.EXT_PIN_WR_C.preset(top.ext_bus.EXT_PIN_WR_A.qp());
   top.ext_bus.EXT_PIN_RD_C.preset(top.ext_bus.EXT_PIN_RD_A.qp());
 
@@ -620,9 +612,7 @@ void GateBoy::update_ext_bus(int phase) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::update_vrm_bus(int phase) {
-  (void)phase;
-
+void GateBoy::update_vrm_bus() {
   top.vram_bus._VRAM_PIN_CS_C.preset(0);
   top.vram_bus._VRAM_PIN_OE_C.preset(0);
   top.vram_bus._VRAM_PIN_WR_C.preset(0);
@@ -651,9 +641,7 @@ void GateBoy::update_vrm_bus(int phase) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::update_oam_bus(int phase) {
-  (void)phase;
-
+void GateBoy::update_oam_bus() {
   uint16_t  oam_addr = top.oam_bus.get_oam_pin_addr();
 
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
@@ -669,14 +657,12 @@ void GateBoy::update_oam_bus(int phase) {
 }
 //-----------------------------------------------------------------------------
 
-void GateBoy::update_zram_bus(int phase) {
-  (void)phase;
-
+void GateBoy::update_zram_bus() {
   // ZRAM control signals are
 
-  // top.clk_reg.CPU_PIN_BUKE_xxxxxFxx
+  // top.clk_reg.CPU_PIN_BUKE_AxxxxxGH
   // top.TEDO_CPU_RDp();
-  // top.TAPU_CPU_WRp_xxxDxxxx()
+  // top.TAPU_CPU_WRp_xxxxEFGx()
   // top.cpu_bus.SYKE_FF00_FFFFp()
 
   // and there's somes gates WUTA/WOLY/WALE that do the check for FFXX && !FFFF
@@ -685,7 +671,7 @@ void GateBoy::update_zram_bus(int phase) {
   bool hit_zram = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (hit_zram) {
-    if (top.TAPU_CPU_WRp_xxxDxxxx()) {
+    if (top.TAPU_CPU_WRp_xxxxEFGx()) {
       mem[addr] = top.cpu_bus.get_bus_data();
     }
 

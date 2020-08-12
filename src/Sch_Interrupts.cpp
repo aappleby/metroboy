@@ -16,7 +16,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and4(cpu_bus.CPU_BUS_A00.qp(), cpu_bus.CPU_BUS_A01.qp(), cpu_bus.CPU_BUS_A02.qp(), cpu_bus.CPU_BUS_A03.qp());
 
   /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
-  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxDxxxx()); // schematic wrong, is NAND
+  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
 
   // FIXME FIXME FIXME order wrong!!!
 

@@ -78,15 +78,15 @@ void ExtBus::tock(SchematicTop& top) {
   }
 
   {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.CPU_PIN_WRp.qp(), top.clk_reg.AFAS_xxxDxxxx());
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxDxxxx = not1(AREV_CPU_WRn_ABCxEFGH);
-    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCxEFGH = not1(APOV_CPU_WRp_xxxDxxxx);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.CPU_PIN_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx());
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCxEFGH);
+    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH = not1(APOV_CPU_WRp_xxxxEFGx);
 
     /*p08.SORE*/ wire SORE_0000_7FFFp = not1(top.cpu_bus.CPU_BUS_A15.qp()); 
     /*p08.TEVY*/ wire TEVY_8000_9FFFn = or3(top.cpu_bus.CPU_BUS_A13.qp(), top.cpu_bus.CPU_BUS_A14.qp(), SORE_0000_7FFFp);
     /*p08.TEXO*/ wire TEXO_8000_9FFFn = and2(top.cpu_bus.CPU_PIN_ADDR_EXT.qp(), TEVY_8000_9FFFn);
     /*p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_8000_9FFFn, UMUT_MODE_DBG1p);
-    /*p08.NEVY*/ wire _NEVY = or2(MEXO_CPU_WRn_ABCxEFGH, _MOCA_DBG_EXT_RD);
+    /*p08.NEVY*/ wire _NEVY = or2(MEXO_CPU_WRn_ABCDxxxH, _MOCA_DBG_EXT_RD);
     /*p08.PUVA*/ wire _PUVA_EXT_PIN_WRn = or2(_NEVY, LUMA_DMA_READ_CARTp);
     /*p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_PIN_WRn, TOVA_MODE_DBG2n);
     /*p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_PIN_WRn, UNOR_MODE_DBG2p);
@@ -95,7 +95,7 @@ void ExtBus::tock(SchematicTop& top) {
   }
 
   {
-    /*p01.AGUT*/ wire AGUT = or_and3(top.clk_reg.AROV_ABxxxxGH.qp(), top.clk_reg.AJAX_ABCDxxxx.qp(), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
+    /*p01.AGUT*/ wire AGUT = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
     
     // if AFAS is (!A && B), AWOD looks like AFAS, this would be AWOD = (!UNOR_MODE_DBG2p && AGUT). Does that make sense?
     // CSn is definitely ABxxxxxxx relative to ext clock. So let's look at ext clock.
@@ -197,7 +197,7 @@ void ExtBus::tock(SchematicTop& top) {
   {
     // A15 is "special"
 
-    /*#p01.AGUT*/ wire AGUT_ABCDxxGH = or_and3(top.clk_reg.AROV_ABxxxxGH.qp(), top.clk_reg.AJAX_ABCDxxxx.qp(), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
+    /*#p01.AGUT*/ wire AGUT_ABCDxxGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.CPU_PIN_ADDR_EXT.qp());
 
     /* p01.AWOD*/ wire AWOD_xxxxEFxx = nor2(UNOR_MODE_DBG2p, AGUT_ABCDxxGH);
     /* p01.ABUZ*/ wire ABUZ_ABCDxxGH = not1(AWOD_xxxxEFxx);

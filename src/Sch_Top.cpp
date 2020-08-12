@@ -33,7 +33,7 @@ void SchematicTop::tick_slow(int phase) {
   clk_reg.tock_rst_slow(phase, *this);
   clk_reg.tock_dbg_slow(phase, *this);
   clk_reg.tock_vid_slow(phase, *this);
-
+  
   tim_reg.tock(*this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
   dma_reg.tock(*this, cpu_bus);
@@ -98,7 +98,7 @@ if (LECO_xBCDEFGH) set_data(
 //----------
 // more debug stuff
 
-/*p25.TUSO*/ wire TUSO = nor4(MODE_DBG2, dff20.CPU_PIN_BOGA_ABCDExxx);
+/*p25.TUSO*/ wire TUSO = nor4(MODE_DBG2, dff20.CPU_PIN_BOGA_xBCDEFGH);
 /*p25.SOLE*/ wire SOLE = not1(TUSO);
 
 if (top.VYPO_GND) bus_out.set_data(

@@ -38,6 +38,9 @@
     // ADYK_08 >> ADAR_01 : Qn?
     // ADYK_09 >> AFUR_03 : Q?
 
+    // adyk = dff(atal, upoj, apuk.qn())
+
+
 
     // NAFA_01 << LORU_02 : CLKp
 // NAFA_02 << CPU_D0  : D
@@ -194,7 +197,7 @@
 
 #if   0
     POWU_DMA_OAM_WRp     = and2(MATU_DMA_RUNNINGp, xxxxEFGH, !CPU_PIN_HOLD_MEM);
-    WYJA_OAM_WRp         = or (and(FE00_FEFFp, AJUJ_OAM_BUSYn, CPU_PIN_WRp, AFAS_xxxDxxxx), POWU_DMA_OAM_WRp);
+    WYJA_OAM_WRp         = or (and(FE00_FEFFp, AJUJ_OAM_BUSYn, CPU_PIN_WRp, AFAS_xxxxEFGx), POWU_DMA_OAM_WRp);
     OAM_PIN_WRn_A = nand2(WYJA_OAM_WRp, !OAM_TRI_A0);
     OAM_PIN_WRn_B = nand2(WYJA_OAM_WRp,  OAM_TRI_A0);
 
@@ -212,7 +215,7 @@
     // cpu data driven to bus on EFGH during write
 
 EXT_PIN_RD           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-EXT_PIN_WR           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM, AFAS_xxxDxxxx);
+EXT_PIN_WR           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM, AFAS_xxxxEFGx);
 EXT_PIN_CS           = and2(                           !CPU_PIN_ADDR_EXT, A000_FFFF,  TUNA_0000_FDFFp);
 MATE_LATCH_CPU_ADDRp = and2(                            CPU_PIN_ADDR_EXT, !ADDR_VRAM);
 LATCH_CPU_DATA       = and2(CPU_PIN_RDp,                CPU_PIN_ADDR_EXT, !ADDR_VRAM, CPU_PIN_DV);
@@ -416,7 +419,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     WR_D = USUF;
 
 
-    EXT_PIN_WR_A = and2(AFAS_xxxDxxxx, CPU_PIN_WR, CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+    EXT_PIN_WR_A = and2(AFAS_xxxxEFGx, CPU_PIN_WR, CPU_PIN_ADDR_EXT, !ADDR_VRAM);
 
 #endif
 

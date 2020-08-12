@@ -149,7 +149,7 @@ struct PixelPipe {
   /*p27.TATE*/ RegQPN _TATE_WIN_Y6 = REG_D0C0;
   /*p27.TEKE*/ RegQPN _TEKE_WIN_Y7 = REG_D0C0;
 
-  /*p??.ROXY*/ Latch _ROXY_SCX_FINE_MATCH_LATCH = TRI_D1NP;
+  /*p??.ROXY*/ Latch _ROXY_SCX_FINE_MATCH_LATCHn = TRI_D1NP;
 
   Sig _XENA_STORE_MATCHn;
 

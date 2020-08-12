@@ -58,6 +58,12 @@ inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d
 inline wire xor2(wire a, wire b) { return a ^ b; }
 inline wire xnor2(wire a, wire b) { return a == b; }
 
+inline wire xnor2_gnd(wire a, wire b) { return a == b; }
+inline wire xnor2_vcc(wire a, wire b) { return a == b; }
+
+inline wire xor2_gnd(wire a, wire b) { return a ^ b; }
+inline wire xor2_vcc(wire a, wire b) { return a ^ b; }
+
 inline wire nor2(wire a, wire b) { return !(a | b); }
 inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
 inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }

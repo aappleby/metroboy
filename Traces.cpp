@@ -134,12 +134,8 @@
     // FUFO := not(XYMO_QN)
     // WUKY := not(YZOS_QP)
 
-    // WAGO := xor2(WUKY, SPR_TRI_L0)
 
     // XUQU := not(VONU_QN);
-    // CYVU := xor2(WUKY, SPR_TRI_L1)
-    // BORE := xor2(WUKY, SPR_TRI_L2)
-    // BUVY := xor2(WUKY, SPR_TRI_L3)
     // GEJY := amux2(XUSO_Q, FUFO, XYMO_QN, WAGO)
 
     // ABEM := tri(ABON, XUQU) >> VRAM_A00

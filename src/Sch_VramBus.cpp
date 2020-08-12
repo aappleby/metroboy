@@ -213,16 +213,22 @@ void VramBus::tock(SchematicTop& top) {
 
   // Sprite fetcher read
   {
-    /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEp = not1(top.pix_pipe.XYMO_LCDC_SPSIZE.qn());
-    /*#p29.WUKY*/ wire _WUKY_FLIP_Y       = not1(top.oam_bus.YZOS_OAM_DB6n.qp());
+    /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(top.oam_bus.YZOS_OAM_DB6n.qp());
     
-    /*p29.CYVU*/ wire _CYVU_L0 = xnor2(_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_L0.qp());
-    /*p29.BORE*/ wire _BORE_L1 = xnor2(_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_L1.qp());
-    /*p29.BUVY*/ wire _BUVY_L2 = xnor2(_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_L2.qp());
-    /*p29.WAGO*/ wire _WAGO_L3 = xnor2(_WUKY_FLIP_Y, top.sprite_store.SPR_TRI_L3.qp());
+    // these are probably xor, and spr_tri_lx is inverted on reads
+    // WAGO := xor2_gnd(WUKY, SPR_TRI_L0)
+    // CYVU := xor2_gnd(WUKY, SPR_TRI_L1)
+    // BORE := xor2_gnd(WUKY, SPR_TRI_L2)
+    // BUVY := xor2_gnd(WUKY, SPR_TRI_L3)
+
+    /*p29.CYVU*/ wire _CYVU_L0 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L0.qp());
+    /*p29.BORE*/ wire _BORE_L1 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L1.qp());
+    /*p29.BUVY*/ wire _BUVY_L2 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L2.qp());
+    /*p29.WAGO*/ wire _WAGO_L3 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L3.qp());
     
-      // FIXME why is FUFO inverted?
+    // FIXME why is FUFO inverted?
     // GEJY := amux2(XUSO_Q, FUFO, XYMO_QN, WAGO)
+    /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEp = not1(top.pix_pipe.XYMO_LCDC_SPSIZE.qn());
     /*p29.GEJY*/ wire _GEJY_L3 = amux2(top.oam_bus.XUSO_OAM_DA0n.qp(), !_FUFO_LCDC_SPSIZEp,
                                        !top.pix_pipe.XYMO_LCDC_SPSIZE.qn(), _WAGO_L3);
 

@@ -108,8 +108,7 @@ void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
     /*p24.LUCA*/ _LUCA_LINE_EVEN = dff17_A(_LOFU_LINE_ENDn,      top.clk_reg.LYFE_VID_RSTn(), _LUCA_LINE_EVEN.qn());
     /*p21.NAPO*/ _NAPO_FRAME_EVEN = dff17_AB(_POPU_IN_VBLANKp.qp(), top.clk_reg.LYFE_VID_RSTn(), !_NAPO_FRAME_EVEN.qp());
 
-    // xor or xnor? does it matter?
-    /*p24.MAGU*/ wire _MAGU = xnor2(_NAPO_FRAME_EVEN.qp(), _LUCA_LINE_EVEN.qn());
+    /*p24.MAGU*/ wire _MAGU = xor2_gnd(_NAPO_FRAME_EVEN.qp(), _LUCA_LINE_EVEN.qn());
     /*p24.MECO*/ wire _MECO = not1(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not1(_MECO);
     /*p24.USEC*/ wire _USEC = not1(top.tim_reg.UREK_DIV_07n());
@@ -172,14 +171,14 @@ void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
     // these make sense as xor and not xnor
     // SYFU := xor(LAFO_Q, RAHA_QN)
 
-    /*p21.SYFU*/ wire _SYFU_LY_MATCH7n = xor2(LAFO_Y7p.qp(), _RAHA_LYC7.qn());
-    /*p21.TERY*/ wire _TERY_LY_MATCH6n = xor2(MATO_Y6p.qp(), _VEVO_LYC6.qn());
-    /*p21.TUCY*/ wire _TUCY_LY_MATCH5n = xor2(LEMA_Y5p.qp(), _VAFA_LYC5.qn());
-    /*p21.TYKU*/ wire _TYKU_LY_MATCH4n = xor2(LOVU_Y4p.qp(), _SOTA_LYC4.qn());
-    /*p21.RASY*/ wire _RASY_LY_MATCH3n = xor2(LYDO_Y3p.qp(), _SALO_LYC3.qn());
-    /*p21.REDA*/ wire _REDA_LY_MATCH2n = xor2(LEXA_Y2p.qp(), _SEDY_LYC2.qn());
-    /*p21.TYDE*/ wire _TYDE_LY_MATCH1n = xor2(MYRO_Y1p.qp(), _VUCE_LYC1.qn());
-    /*p21.RYME*/ wire _RYME_LY_MATCH0n = xor2(MUWY_Y0p.qp(), _SYRY_LYC0.qn());
+    /*p21.SYFU*/ wire _SYFU_LY_MATCH7n = xor2_gnd(LAFO_Y7p.qp(), _RAHA_LYC7.qn());
+    /*p21.TERY*/ wire _TERY_LY_MATCH6n = xor2_gnd(MATO_Y6p.qp(), _VEVO_LYC6.qn());
+    /*p21.TUCY*/ wire _TUCY_LY_MATCH5n = xor2_gnd(LEMA_Y5p.qp(), _VAFA_LYC5.qn());
+    /*p21.TYKU*/ wire _TYKU_LY_MATCH4n = xor2_gnd(LOVU_Y4p.qp(), _SOTA_LYC4.qn());
+    /*p21.RASY*/ wire _RASY_LY_MATCH3n = xor2_gnd(LYDO_Y3p.qp(), _SALO_LYC3.qn());
+    /*p21.REDA*/ wire _REDA_LY_MATCH2n = xor2_gnd(LEXA_Y2p.qp(), _SEDY_LYC2.qn());
+    /*p21.TYDE*/ wire _TYDE_LY_MATCH1n = xor2_gnd(MYRO_Y1p.qp(), _VUCE_LYC1.qn());
+    /*p21.RYME*/ wire _RYME_LY_MATCH0n = xor2_gnd(MUWY_Y0p.qp(), _SYRY_LYC0.qn());
     /*p21.SOVU*/ wire _SOVU_LY_MATCHA  = nor4 (_SYFU_LY_MATCH7n, _TERY_LY_MATCH6n, _TUCY_LY_MATCH5n, _TYKU_LY_MATCH4n); // def nor4
     /*p21.SUBO*/ wire _SUBO_LY_MATCHB  = nor4 (_RASY_LY_MATCH3n, _REDA_LY_MATCH2n, _TYDE_LY_MATCH1n, _RYME_LY_MATCH0n); // def nor4
     /*p21.RAPE*/ wire _RAPE_LY_MATCHn  = nand2(_SOVU_LY_MATCHA,  _SUBO_LY_MATCHB); // def nand2

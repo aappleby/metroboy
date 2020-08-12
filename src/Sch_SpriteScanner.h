@@ -26,22 +26,22 @@ struct SpriteScanner {
 //----------------------------------------
   // Signals
 
-  /*p29.ERUC*/ Sig _ERUC_YDIFF_S0;
-  /*p29.ERUC*/ Sig _ERUC_YDIFF_C0;
-  /*p29.ENEF*/ Sig _ENEF_YDIFF_S1;
-  /*p29.ENEF*/ Sig _ENEF_YDIFF_C1;
-  /*p29.FECO*/ Sig _FECO_YDIFF_S2;
-  /*p29.FECO*/ Sig _FECO_YDIFF_C2;
-  /*p29.GYKY*/ Sig _GYKY_YDIFF_S3;
-  /*p29.GYKY*/ Sig _GYKY_YDIFF_C3;
-  /*p29.GOPU*/ Sig _GOPU_YDIFF_S4;
-  /*p29.GOPU*/ Sig _GOPU_YDIFF_C4;
-  /*p29.FUWA*/ Sig _FUWA_YDIFF_S5;
-  /*p29.FUWA*/ Sig _FUWA_YDIFF_C5;
-  /*p29.GOJU*/ Sig _GOJU_YDIFF_S6;
-  /*p29.GOJU*/ Sig _GOJU_YDIFF_C6;
-  /*p29.WUHU*/ Sig _WUHU_YDIFF_S7;
-  /*p29.WUHU*/ Sig _WUHU_YDIFF_C7;
+  /*p29.ERUC*/ Sig ERUC_YDIFF_S0;
+  /*p29.ERUC*/ Sig ERUC_YDIFF_C0;
+  /*p29.ENEF*/ Sig ENEF_YDIFF_S1;
+  /*p29.ENEF*/ Sig ENEF_YDIFF_C1;
+  /*p29.FECO*/ Sig FECO_YDIFF_S2;
+  /*p29.FECO*/ Sig FECO_YDIFF_C2;
+  /*p29.GYKY*/ Sig GYKY_YDIFF_S3;
+  /*p29.GYKY*/ Sig GYKY_YDIFF_C3;
+  /*p29.GOPU*/ Sig GOPU_YDIFF_S4;
+  /*p29.GOPU*/ Sig GOPU_YDIFF_C4;
+  /*p29.FUWA*/ Sig FUWA_YDIFF_S5;
+  /*p29.FUWA*/ Sig FUWA_YDIFF_C5;
+  /*p29.GOJU*/ Sig GOJU_YDIFF_S6;
+  /*p29.GOJU*/ Sig GOJU_YDIFF_C6;
+  /*p29.WUHU*/ Sig WUHU_YDIFF_S7;
+  /*p29.WUHU*/ Sig WUHU_YDIFF_C7;
 
   /*p29.GACE*/ Sig _GACE_SPRITE_DELTA4;
   /*p29.GUVU*/ Sig _GUVU_SPRITE_DELTA5;

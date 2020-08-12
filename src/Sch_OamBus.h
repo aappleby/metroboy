@@ -14,14 +14,14 @@ struct OamBus {
   
   //----------------------------------------
 
-  uint8_t get_oam_tri_data() const {
+  uint8_t get_oam_tri_addr() const {
     return (uint8_t)pack_p(OAM_TRI_A0.c(), OAM_TRI_A1.c(), OAM_TRI_A2.c(), OAM_TRI_A3.c(),
                            OAM_TRI_A4.c(), OAM_TRI_A5.c(), OAM_TRI_A6.c(), OAM_TRI_A7.c());
   }
 
   uint8_t get_oam_bus_addr() const {
-    return (uint8_t)pack_p(OAM_BUS_A1.qp(), OAM_BUS_A2.qp(), OAM_BUS_A3.qp(), OAM_BUS_A4.qp(),
-                           OAM_BUS_A5.qp(), OAM_BUS_A6.qp(), OAM_BUS_A7.qp(), 0);
+    return (uint8_t)pack_p(OAM_PIN_A1.qp(), OAM_PIN_A2.qp(), OAM_PIN_A3.qp(), OAM_PIN_A4.qp(),
+                           OAM_PIN_A5.qp(), OAM_PIN_A6.qp(), OAM_PIN_A7.qp(), 0);
   }
 
   uint8_t get_oam_latch_data_a() const {
@@ -35,13 +35,13 @@ struct OamBus {
   }
 
   uint8_t get_oam_bus_data_a() const {
-    return (uint8_t)pack_p(OAM_BUS_DA0.qp(), OAM_BUS_DA1.qp(), OAM_BUS_DA2.qp(), OAM_BUS_DA3.qp(),
-                           OAM_BUS_DA4.qp(), OAM_BUS_DA5.qp(), OAM_BUS_DA6.qp(), OAM_BUS_DA7.qp());
+    return (uint8_t)pack_p(OAM_PIN_DA0.qp(), OAM_PIN_DA1.qp(), OAM_PIN_DA2.qp(), OAM_PIN_DA3.qp(),
+                           OAM_PIN_DA4.qp(), OAM_PIN_DA5.qp(), OAM_PIN_DA6.qp(), OAM_PIN_DA7.qp());
   }
 
   uint8_t get_oam_bus_data_b() const {
-    return (uint8_t)pack_p(OAM_BUS_DB0.qp(), OAM_BUS_DB1.qp(), OAM_BUS_DB2.qp(), OAM_BUS_DB3.qp(),
-                           OAM_BUS_DB4.qp(), OAM_BUS_DB5.qp(), OAM_BUS_DB6.qp(), OAM_BUS_DB7.qp());
+    return (uint8_t)pack_p(OAM_PIN_DB0.qp(), OAM_PIN_DB1.qp(), OAM_PIN_DB2.qp(), OAM_PIN_DB3.qp(),
+                           OAM_PIN_DB4.qp(), OAM_PIN_DB5.qp(), OAM_PIN_DB6.qp(), OAM_PIN_DB7.qp());
   }
 
   uint8_t get_oam_temp_a() const {
@@ -55,25 +55,25 @@ struct OamBus {
   }
 
   void preset_bus_data_a(uint8_t data) {
-    OAM_BUS_DA0.preset(data & 0x01);
-    OAM_BUS_DA1.preset(data & 0x02);
-    OAM_BUS_DA2.preset(data & 0x04);
-    OAM_BUS_DA3.preset(data & 0x08);
-    OAM_BUS_DA4.preset(data & 0x10);
-    OAM_BUS_DA5.preset(data & 0x20);
-    OAM_BUS_DA6.preset(data & 0x40);
-    OAM_BUS_DA7.preset(data & 0x80);
+    OAM_PIN_DA0.preset(data & 0x01);
+    OAM_PIN_DA1.preset(data & 0x02);
+    OAM_PIN_DA2.preset(data & 0x04);
+    OAM_PIN_DA3.preset(data & 0x08);
+    OAM_PIN_DA4.preset(data & 0x10);
+    OAM_PIN_DA5.preset(data & 0x20);
+    OAM_PIN_DA6.preset(data & 0x40);
+    OAM_PIN_DA7.preset(data & 0x80);
   }
 
   void preset_bus_data_b(uint8_t data) {
-    OAM_BUS_DB0.preset(data & 0x01);
-    OAM_BUS_DB1.preset(data & 0x02);
-    OAM_BUS_DB2.preset(data & 0x04);
-    OAM_BUS_DB3.preset(data & 0x08);
-    OAM_BUS_DB4.preset(data & 0x10);
-    OAM_BUS_DB5.preset(data & 0x20);
-    OAM_BUS_DB6.preset(data & 0x40);
-    OAM_BUS_DB7.preset(data & 0x80);
+    OAM_PIN_DB0.preset(data & 0x01);
+    OAM_PIN_DB1.preset(data & 0x02);
+    OAM_PIN_DB2.preset(data & 0x04);
+    OAM_PIN_DB3.preset(data & 0x08);
+    OAM_PIN_DB4.preset(data & 0x10);
+    OAM_PIN_DB5.preset(data & 0x20);
+    OAM_PIN_DB6.preset(data & 0x40);
+    OAM_PIN_DB7.preset(data & 0x80);
   }
 
   //----------------------------------------
@@ -133,31 +133,31 @@ struct OamBus {
   Tri OAM_TRI_A6 = TRI_HZNP;
   Tri OAM_TRI_A7 = TRI_HZNP;
 
-  Tri OAM_BUS_A1  = TRI_HZNP;
-  Tri OAM_BUS_A2  = TRI_HZNP;
-  Tri OAM_BUS_A3  = TRI_HZNP;
-  Tri OAM_BUS_A4  = TRI_HZNP;
-  Tri OAM_BUS_A5  = TRI_HZNP;
-  Tri OAM_BUS_A6  = TRI_HZNP;
-  Tri OAM_BUS_A7  = TRI_HZNP;
+  Tri OAM_PIN_A1  = TRI_HZNP;
+  Tri OAM_PIN_A2  = TRI_HZNP;
+  Tri OAM_PIN_A3  = TRI_HZNP;
+  Tri OAM_PIN_A4  = TRI_HZNP;
+  Tri OAM_PIN_A5  = TRI_HZNP;
+  Tri OAM_PIN_A6  = TRI_HZNP;
+  Tri OAM_PIN_A7  = TRI_HZNP;
 
-  Tri OAM_BUS_DA0 = TRI_HZNP;
-  Tri OAM_BUS_DA1 = TRI_HZNP;
-  Tri OAM_BUS_DA2 = TRI_HZNP;
-  Tri OAM_BUS_DA3 = TRI_HZNP;
-  Tri OAM_BUS_DA4 = TRI_HZNP;
-  Tri OAM_BUS_DA5 = TRI_HZNP;
-  Tri OAM_BUS_DA6 = TRI_HZNP;
-  Tri OAM_BUS_DA7 = TRI_HZNP;
+  Tri OAM_PIN_DA0 = TRI_HZNP;
+  Tri OAM_PIN_DA1 = TRI_HZNP;
+  Tri OAM_PIN_DA2 = TRI_HZNP;
+  Tri OAM_PIN_DA3 = TRI_HZNP;
+  Tri OAM_PIN_DA4 = TRI_HZNP;
+  Tri OAM_PIN_DA5 = TRI_HZNP;
+  Tri OAM_PIN_DA6 = TRI_HZNP;
+  Tri OAM_PIN_DA7 = TRI_HZNP;
 
-  Tri OAM_BUS_DB0 = TRI_HZNP;
-  Tri OAM_BUS_DB1 = TRI_HZNP;
-  Tri OAM_BUS_DB2 = TRI_HZNP;
-  Tri OAM_BUS_DB3 = TRI_HZNP;
-  Tri OAM_BUS_DB4 = TRI_HZNP;
-  Tri OAM_BUS_DB5 = TRI_HZNP;
-  Tri OAM_BUS_DB6 = TRI_HZNP;
-  Tri OAM_BUS_DB7 = TRI_HZNP;
+  Tri OAM_PIN_DB0 = TRI_HZNP;
+  Tri OAM_PIN_DB1 = TRI_HZNP;
+  Tri OAM_PIN_DB2 = TRI_HZNP;
+  Tri OAM_PIN_DB3 = TRI_HZNP;
+  Tri OAM_PIN_DB4 = TRI_HZNP;
+  Tri OAM_PIN_DB5 = TRI_HZNP;
+  Tri OAM_PIN_DB6 = TRI_HZNP;
+  Tri OAM_PIN_DB7 = TRI_HZNP;
 };
 
 //-----------------------------------------------------------------------------

@@ -38,8 +38,8 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
     )
   );
 
-  int y_diff = pack_p(_ERUC_YDIFF_S0, _ENEF_YDIFF_S1, _FECO_YDIFF_S2, _GYKY_YDIFF_S3,
-                      _GOPU_YDIFF_S4, _FUWA_YDIFF_S5, _GOJU_YDIFF_S6, _WUHU_YDIFF_S7);
+  int y_diff = pack_p(ERUC_YDIFF_S0, ENEF_YDIFF_S1, FECO_YDIFF_S2, GYKY_YDIFF_S3,
+                      GOPU_YDIFF_S4, FUWA_YDIFF_S5, GOJU_YDIFF_S6, WUHU_YDIFF_S7);
 
   uint8_t lcd_y  = top.lcd_reg.get_y();
 
@@ -73,34 +73,34 @@ void SpriteScanner::tick(const SchematicTop& top) {
     /*p29.FEMO*/ wire _FEMO_Y6n = not1(top.lcd_reg.MATO_Y6p.qp());
     /*p29.GUSU*/ wire _GUSU_Y7n = not1(top.lcd_reg.LAFO_Y7p.qp());
 
-    // so these adders operate on inverted inputs?
+    // this doesn't make sense for _both_ inputs to be inverted
 
-    /*p29.ERUC*/ _ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0n.qp(), GND);
-    /*p29.ERUC*/ _ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0n.qp(), GND);
-    /*p29.ENEF*/ _ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1n.qp(), _ERUC_YDIFF_C0);
-    /*p29.ENEF*/ _ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1n.qp(), _ERUC_YDIFF_C0);
-    /*p29.FECO*/ _FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2n.qp(), _ENEF_YDIFF_C1);
-    /*p29.FECO*/ _FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2n.qp(), _ENEF_YDIFF_C1);
-    /*p29.GYKY*/ _GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3n.qp(), _FECO_YDIFF_C2);
-    /*p29.GYKY*/ _GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3n.qp(), _FECO_YDIFF_C2);
-    /*p29.GOPU*/ _GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4n.qp(), _GYKY_YDIFF_C3);
-    /*p29.GOPU*/ _GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4n.qp(), _GYKY_YDIFF_C3);
-    /*p29.FUWA*/ _FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5n.qp(), _GOPU_YDIFF_C4);
-    /*p29.FUWA*/ _FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5n.qp(), _GOPU_YDIFF_C4);
-    /*p29.GOJU*/ _GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6n.qp(), _FUWA_YDIFF_C5);
-    /*p29.GOJU*/ _GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6n.qp(), _FUWA_YDIFF_C5);
-    /*p29.WUHU*/ _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7n.qp(), _GOJU_YDIFF_C6);
-    /*p29.WUHU*/ _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7n.qp(), _GOJU_YDIFF_C6);
+    /*p29.ERUC*/ ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0n.qp(), GND);
+    /*p29.ERUC*/ ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0n.qp(), GND);
+    /*p29.ENEF*/ ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1n.qp(), ERUC_YDIFF_C0);
+    /*p29.ENEF*/ ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1n.qp(), ERUC_YDIFF_C0);
+    /*p29.FECO*/ FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2n.qp(), ENEF_YDIFF_C1);
+    /*p29.FECO*/ FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2n.qp(), ENEF_YDIFF_C1);
+    /*p29.GYKY*/ GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3n.qp(), FECO_YDIFF_C2);
+    /*p29.GYKY*/ GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3n.qp(), FECO_YDIFF_C2);
+    /*p29.GOPU*/ GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4n.qp(), GYKY_YDIFF_C3);
+    /*p29.GOPU*/ GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4n.qp(), GYKY_YDIFF_C3);
+    /*p29.FUWA*/ FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5n.qp(), GOPU_YDIFF_C4);
+    /*p29.FUWA*/ FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5n.qp(), GOPU_YDIFF_C4);
+    /*p29.GOJU*/ GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6n.qp(), FUWA_YDIFF_C5);
+    /*p29.GOJU*/ GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6n.qp(), FUWA_YDIFF_C5);
+    /*p29.WUHU*/ WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7n.qp(), GOJU_YDIFF_C6);
+    /*p29.WUHU*/ WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7n.qp(), GOJU_YDIFF_C6);
   }
 
   {
-    /*p29.GACE*/ _GACE_SPRITE_DELTA4 = not1(_GOPU_YDIFF_S4);
-    /*p29.GUVU*/ _GUVU_SPRITE_DELTA5 = not1(_FUWA_YDIFF_S5);
-    /*p29.GYDA*/ _GYDA_SPRITE_DELTA6 = not1(_GOJU_YDIFF_S6);
-    /*p29.GEWY*/ _GEWY_SPRITE_DELTA7 = not1(_WUHU_YDIFF_S7);
+    /*p29.GACE*/ _GACE_SPRITE_DELTA4 = not1(GOPU_YDIFF_S4);
+    /*p29.GUVU*/ _GUVU_SPRITE_DELTA5 = not1(FUWA_YDIFF_S5);
+    /*p29.GYDA*/ _GYDA_SPRITE_DELTA6 = not1(GOJU_YDIFF_S6);
+    /*p29.GEWY*/ _GEWY_SPRITE_DELTA7 = not1(WUHU_YDIFF_S7);
 
-    /*p29.GOVU*/ _GOVU_SPSIZE_MATCH = or2(_GYKY_YDIFF_S3, top.pix_pipe.XYMO_LCDC_SPSIZE.qp());
-    /*p29.WOTA*/ _WOTA_SCAN_MATCH_Yn = nand6(_GACE_SPRITE_DELTA4, _GUVU_SPRITE_DELTA5, _GYDA_SPRITE_DELTA6, _GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
+    /*p29.GOVU*/ _GOVU_SPSIZE_MATCH = or2(GYKY_YDIFF_S3, top.pix_pipe.XYMO_LCDC_SPSIZE.qp());
+    /*p29.WOTA*/ _WOTA_SCAN_MATCH_Yn = nand6(_GACE_SPRITE_DELTA4, _GUVU_SPRITE_DELTA5, _GYDA_SPRITE_DELTA6, _GEWY_SPRITE_DELTA7, WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ _GESE_SCAN_MATCH_Y = not1(_WOTA_SCAN_MATCH_Yn);
 
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not1(CENO_SCANNINGp.qn());

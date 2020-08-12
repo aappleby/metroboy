@@ -303,10 +303,10 @@ void SpriteStore::tock(const SchematicTop& top) {
   {
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
 
-    /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0 = not1(top.sprite_scanner._ERUC_YDIFF_S0);
-    /* p29.DABY*/ wire DABY_SPRITE_DELTA1 = not1(top.sprite_scanner._ENEF_YDIFF_S1);
-    /* p29.DABU*/ wire DABU_SPRITE_DELTA2 = not1(top.sprite_scanner._FECO_YDIFF_S2);
-    /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3 = not1(top.sprite_scanner._GYKY_YDIFF_S3);
+    /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0 = not1(top.sprite_scanner.ERUC_YDIFF_S0);
+    /* p29.DABY*/ wire DABY_SPRITE_DELTA1 = not1(top.sprite_scanner.ENEF_YDIFF_S1);
+    /* p29.DABU*/ wire DABU_SPRITE_DELTA2 = not1(top.sprite_scanner.FECO_YDIFF_S2);
+    /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3 = not1(top.sprite_scanner.GYKY_YDIFF_S3);
 
     /*#p30.CUCU*/ SPR_TRI_L0 = tribuf_6n(FEPO_STORE_MATCHp, DEGE_SPRITE_DELTA0);
     /*#p30.CUCA*/ SPR_TRI_L1 = tribuf_6n(FEPO_STORE_MATCHp, DABY_SPRITE_DELTA1);
@@ -323,12 +323,12 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*#p30.CYKE*/ wire _CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_xxCDxxGH());
     /*#p30.WUDA*/ wire _WUDA_xxCDxxGH = not1(_CYKE_ABxxEFxx);
 
-    /*p28.YFOT*/ wire YFOT_OAM_A2n = not1(top.oam_bus.OAM_TRI_A2.qp());
-    /*p28.YFOC*/ wire YFOC_OAM_A3n = not1(top.oam_bus.OAM_TRI_A3.qp());
-    /*p28.YVOM*/ wire YVOM_OAM_A4n = not1(top.oam_bus.OAM_TRI_A4.qp());
-    /*p28.YMEV*/ wire YMEV_OAM_A5n = not1(top.oam_bus.OAM_TRI_A5.qp());
-    /*p28.XEMU*/ wire XEMU_OAM_A6n = not1(top.oam_bus.OAM_TRI_A6.qp());
-    /*p28.YZET*/ wire YZET_OAM_A7n = not1(top.oam_bus.OAM_TRI_A7.qp());
+    /*p28.YFOT*/ wire YFOT_OAM_A2n = !not1(top.oam_bus.OAM_TRI_A2.qp());
+    /*p28.YFOC*/ wire YFOC_OAM_A3n = !not1(top.oam_bus.OAM_TRI_A3.qp());
+    /*p28.YVOM*/ wire YVOM_OAM_A4n = !not1(top.oam_bus.OAM_TRI_A4.qp());
+    /*p28.YMEV*/ wire YMEV_OAM_A5n = !not1(top.oam_bus.OAM_TRI_A5.qp());
+    /*p28.XEMU*/ wire XEMU_OAM_A6n = !not1(top.oam_bus.OAM_TRI_A6.qp());
+    /*p28.YZET*/ wire YZET_OAM_A7n = !not1(top.oam_bus.OAM_TRI_A7.qp());
 
     /*p30.XADU*/ XADU_SPRITE_IDX0n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YFOT_OAM_A2n);
     /*p30.XEDY*/ XEDY_SPRITE_IDX1n = dff13_A(_WUDA_xxCDxxGH, _CYKE_ABxxEFxx, WEFE_VCC, YFOC_OAM_A3n);

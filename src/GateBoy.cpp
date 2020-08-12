@@ -60,6 +60,10 @@ void GateBoy::run_reset_sequence() {
   dbg_write(0xFF50, 0xFF);
   log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
 
+  log("LCDC = 0x%02x\n", dbg_read(ADDR_LCDC));
+
+  dbg_write(ADDR_LCDC, 0);
+
 #if !_DEBUG
   test_all_regs();
   test_all_mem();

@@ -332,6 +332,22 @@ inline RegDelta dff9(wire CLKp, wire CLKn, wire RSTn, wire D) {
 #endif
 }
 
+inline RegDelta dff9_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKn;
+
+#if 0
+  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
+#else
+  if (!RSTn) {
+    return RegDelta(DELTA_A1C0 | (CLKp << 1));
+  }
+  else {
+    return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
+  }
+#endif
+}
+
 inline RegQNIn dff9_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;

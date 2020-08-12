@@ -215,22 +215,14 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(top.oam_bus.YZOS_OAM_DB6n.qp());
     
-    // these are probably xor, and spr_tri_lx is inverted on reads
-    // WAGO := xor2_gnd(WUKY, SPR_TRI_L0)
-    // CYVU := xor2_gnd(WUKY, SPR_TRI_L1)
-    // BORE := xor2_gnd(WUKY, SPR_TRI_L2)
-    // BUVY := xor2_gnd(WUKY, SPR_TRI_L3)
-
-    /*p29.CYVU*/ wire _CYVU_L0 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L0.qp());
-    /*p29.BORE*/ wire _BORE_L1 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L1.qp());
-    /*p29.BUVY*/ wire _BUVY_L2 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L2.qp());
-    /*p29.WAGO*/ wire _WAGO_L3 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L3.qp());
+    /*#p29.CYVU*/ wire _CYVU_L0 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L0.qp());
+    /*#p29.BORE*/ wire _BORE_L1 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L1.qp());
+    /*#p29.BUVY*/ wire _BUVY_L2 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L2.qp());
+    /*#p29.WAGO*/ wire _WAGO_L3 = xor2_gnd(_WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L3.qp());
     
-    // FIXME why is FUFO inverted?
-    // GEJY := amux2(XUSO_Q, FUFO, XYMO_QN, WAGO)
-    /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEp = not1(top.pix_pipe.XYMO_LCDC_SPSIZE.qn());
-    /*p29.GEJY*/ wire _GEJY_L3 = amux2(top.oam_bus.XUSO_OAM_DA0n.qp(), !_FUFO_LCDC_SPSIZEp,
-                                       !top.pix_pipe.XYMO_LCDC_SPSIZE.qn(), _WAGO_L3);
+    /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEp = not1(top.pix_pipe.XYMO_LCDC_SPSIZEn.qn());
+    /*#p29.GEJY*/ wire _GEJY_L3 = amux2(top.oam_bus.XUSO_OAM_DA0n.qp(), _FUFO_LCDC_SPSIZEp,
+                                        top.pix_pipe.XYMO_LCDC_SPSIZEn.qn(), _WAGO_L3);
 
     /*#p29.XUQU*/ wire XUQU_SPRITE_AB = not1(top.sprite_fetcher._VONU_SFETCH_S1_D4.qn());
 
@@ -309,7 +301,7 @@ void VramBus::tock(SchematicTop& top) {
       /*p26.CYPO*/ _VRAM_BUS_A07 = tribuf_6n(BAFY_BG_MAP_READn, _DABA_MAP_Y2S);
       /*p26.CETA*/ _VRAM_BUS_A08 = tribuf_6n(BAFY_BG_MAP_READn, _EFYK_MAP_Y3S);
       /*p26.DAFE*/ _VRAM_BUS_A09 = tribuf_6n(BAFY_BG_MAP_READn, _EJOK_MAP_Y4S);
-      /*Xp26.AMUV*/ _VRAM_BUS_A10 = tribuf_6n(BAFY_BG_MAP_READn, top.pix_pipe.XAFO_LCDC_BGMAP.qp()); // FIXME should be QN
+      /*#p26.AMUV*/ _VRAM_BUS_A10 = tribuf_6n(BAFY_BG_MAP_READn, top.pix_pipe.XAFO_LCDC_BGMAPn.qn());
       /*p26.COVE*/ _VRAM_BUS_A11 = tribuf_6n(BAFY_BG_MAP_READn, 1);
       /*p26.COXO*/ _VRAM_BUS_A12 = tribuf_6n(BAFY_BG_MAP_READn, 1);
     }
@@ -318,7 +310,7 @@ void VramBus::tock(SchematicTop& top) {
     {
       // CHECK QP/QN
 
-      /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe._PYNU_WIN_MODE_A.qp());
+      /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp());
       /*#p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
       /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(top.tile_fetcher._MESU_BFETCH_S1.qp());
       /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(top.tile_fetcher._NYVA_BFETCH_S2.qp());
@@ -330,17 +322,17 @@ void VramBus::tock(SchematicTop& top) {
 
       /*#p25.XEZE*/ wire XEZE_WIN_MAP_READp = and2(POTU_BG_MAP_READp, PORE_WIN_MODEp);
       /*#p25.WUKO*/ WUKO_WIN_MAP_READn = not1(XEZE_WIN_MAP_READp);
-      /*#p27.XEJA*/ _VRAM_BUS_A00 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._WYKA_WIN_X3.qp());
-      /*p27.XAMO*/ _VRAM_BUS_A01 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._WODY_WIN_X4.qp());
-      /*p27.XAHE*/ _VRAM_BUS_A02 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._WOBO_WIN_X5.qp());
-      /*p27.XULO*/ _VRAM_BUS_A03 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._WYKO_WIN_X6.qp());
-      /*p27.WUJU*/ _VRAM_BUS_A04 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._XOLO_WIN_X7.qp());
-      /*#p27.VYTO*/ _VRAM_BUS_A05 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._TUFU_WIN_Y3.qp());
-      /*p27.VEHA*/ _VRAM_BUS_A06 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._TAXA_WIN_Y4.qp());
-      /*p27.VACE*/ _VRAM_BUS_A07 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._TOZO_WIN_Y5.qp());
-      /*p27.VOVO*/ _VRAM_BUS_A08 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._TATE_WIN_Y6.qp());
-      /*p27.VULO*/ _VRAM_BUS_A09 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe._TEKE_WIN_Y7.qp());
-      /*Xp27.VEVY*/ _VRAM_BUS_A10 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAP.qp()); // FIXME should be QN
+      /*#p27.XEJA*/ _VRAM_BUS_A00 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WYKA_WIN_X3.qp());
+      /*p27.XAMO*/ _VRAM_BUS_A01 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WODY_WIN_X4.qp());
+      /*p27.XAHE*/ _VRAM_BUS_A02 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WOBO_WIN_X5.qp());
+      /*p27.XULO*/ _VRAM_BUS_A03 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WYKO_WIN_X6.qp());
+      /*p27.WUJU*/ _VRAM_BUS_A04 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.XOLO_WIN_X7.qp());
+      /*#p27.VYTO*/ _VRAM_BUS_A05 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TUFU_WIN_Y3.qp());
+      /*p27.VEHA*/ _VRAM_BUS_A06 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TAXA_WIN_Y4.qp());
+      /*p27.VACE*/ _VRAM_BUS_A07 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TOZO_WIN_Y5.qp());
+      /*p27.VOVO*/ _VRAM_BUS_A08 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TATE_WIN_Y6.qp());
+      /*p27.VULO*/ _VRAM_BUS_A09 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.TEKE_WIN_Y7.qp());
+      /*#p27.VEVY*/ _VRAM_BUS_A10 = tribuf_6n(WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAP.qn());
       /*p27.VEZA*/ _VRAM_BUS_A11 = tribuf_6n(WUKO_WIN_MAP_READn, 1);
       /*p27.VOGU*/ _VRAM_BUS_A12 = tribuf_6n(WUKO_WIN_MAP_READn, 1);
     }
@@ -351,7 +343,7 @@ void VramBus::tock(SchematicTop& top) {
 
       /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(top.tile_fetcher._MESU_BFETCH_S1.qp());
       /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(top.tile_fetcher._NYVA_BFETCH_S2.qp());
-      /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe._PYNU_WIN_MODE_A.qp()); // need to check pynu first
+      /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp()); // need to check pynu first
       /*#p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
       /*#p26.AXAD*/ wire AXAD_WIN_MODEn = not1(PORE_WIN_MODEp);
 
@@ -365,9 +357,7 @@ void VramBus::tock(SchematicTop& top) {
 
       /*p25.XUCY*/ XUCY_WIN_TILE_READn = nand2(NETA_TILE_READp, PORE_WIN_MODEp);
 
-      // VUZA := nor2(PYJU_QN, WEXU_QN) // FIXME again with the inverted lcdc bit....
-
-      /*p25.VUZA*/ VUZA_TILE_BANKp = nor2(PYJU_TILE_DB7n.qn(), top.pix_pipe.WEXU_LCDC_BGTILE.qp()); // register reused
+      /*p25.VUZA*/ VUZA_TILE_BANKp = nor2(PYJU_TILE_DB7n.qn(), top.pix_pipe.WEXU_LCDC_BGTILEn.qn());
       
       /*#p26.ASUM*/ _VRAM_BUS_A00 = tribuf_6n(BEJE_BGD_TILE_READn, XUHA_FETCH_S2p);
       /*p26.EVAD*/ _VRAM_BUS_A01 = tribuf_6n(BEJE_BGD_TILE_READn, _FAFO_TILE_Y0S);
@@ -375,9 +365,9 @@ void VramBus::tock(SchematicTop& top) {
       /*p26.DODE*/ _VRAM_BUS_A03 = tribuf_6n(BEJE_BGD_TILE_READn, _ECAB_TILE_Y2S); // check outputs of ECAB
 
       /*#p25.XONU*/ _VRAM_BUS_A00 = tribuf_6n(XUCY_WIN_TILE_READn, XUHA_FETCH_S2p);
-      /*#p25.WUDO*/ _VRAM_BUS_A01 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe._VYNO_WIN_Y0.qp());
-      /*#p25.WAWE*/ _VRAM_BUS_A02 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe._VUJO_WIN_Y1.qp());
-      /*#p25.WOLU*/ _VRAM_BUS_A03 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe._VYMU_WIN_Y2.qp());
+      /*#p25.WUDO*/ _VRAM_BUS_A01 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VYNO_WIN_Y0.qp());
+      /*#p25.WAWE*/ _VRAM_BUS_A02 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VUJO_WIN_Y1.qp());
+      /*#p25.WOLU*/ _VRAM_BUS_A03 = tribuf_6n(XUCY_WIN_TILE_READn, top.pix_pipe.VYMU_WIN_Y2.qp());
       /*#p25.VAPY*/ _VRAM_BUS_A04 = tribuf_6p(NETA_TILE_READp, RAWU_TILE_DB0n.qn());
       /*#p25.SEZU*/ _VRAM_BUS_A05 = tribuf_6p(NETA_TILE_READp, POZO_TILE_DB1n.qn());
       /*#p25.VEJY*/ _VRAM_BUS_A06 = tribuf_6p(NETA_TILE_READp, PYZO_TILE_DB2n.qn());

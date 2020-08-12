@@ -238,23 +238,23 @@ void OamBus::tock(SchematicTop& top) {
     /*p28.APAG*/ wire APAG_CBD_TO_OBDp = amux2(XUPA_CPU_OAM_WRp, AMAB_CPU_READ_OAMp, AJUJ_OAM_BUSYn, ADAH_FE00_FEFFn);
     /*p28.AZUL*/ wire AZUL_CBD_TO_OBDn = not1(APAG_CBD_TO_OBDp);
 
-    /*p28.ZAXA*/ OAM_PIN_DA0 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D0.qp());
-    /*p28.ZAKY*/ OAM_PIN_DA1 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D1.qp());
-    /*p28.WULE*/ OAM_PIN_DA2 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D2.qp());
-    /*p28.ZOZO*/ OAM_PIN_DA3 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D3.qp());
-    /*p28.ZUFO*/ OAM_PIN_DA4 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D4.qp());
-    /*p28.ZATO*/ OAM_PIN_DA5 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D5.qp());
-    /*p28.YVUC*/ OAM_PIN_DA6 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D6.qp());
-    /*p28.ZUFE*/ OAM_PIN_DA7 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D7.qp());
+    /*p28.ZAXA*/ OAM_PIN_DA0 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D0.qp());
+    /*p28.ZAKY*/ OAM_PIN_DA1 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D1.qp());
+    /*p28.WULE*/ OAM_PIN_DA2 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D2.qp());
+    /*p28.ZOZO*/ OAM_PIN_DA3 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D3.qp());
+    /*p28.ZUFO*/ OAM_PIN_DA4 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D4.qp());
+    /*p28.ZATO*/ OAM_PIN_DA5 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D5.qp());
+    /*p28.YVUC*/ OAM_PIN_DA6 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D6.qp());
+    /*p28.ZUFE*/ OAM_PIN_DA7 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D7.qp());
 
-    /*p28.ZAMY*/ OAM_PIN_DB0 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D0.qp());
-    /*p28.ZOPU*/ OAM_PIN_DB1 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D1.qp());
-    /*p28.WYKY*/ OAM_PIN_DB2 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D2.qp());
-    /*p28.ZAJA*/ OAM_PIN_DB3 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D3.qp());
-    /*p28.ZUGA*/ OAM_PIN_DB4 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D4.qp());
-    /*p28.ZUMO*/ OAM_PIN_DB5 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D5.qp());
-    /*p28.XYTO*/ OAM_PIN_DB6 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D6.qp());
-    /*p28.ZYFA*/ OAM_PIN_DB7 = tribuf_6n(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D7.qp());
+    /*p28.ZAMY*/ OAM_PIN_DB0 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D0.qp());
+    /*p28.ZOPU*/ OAM_PIN_DB1 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D1.qp());
+    /*p28.WYKY*/ OAM_PIN_DB2 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D2.qp());
+    /*p28.ZAJA*/ OAM_PIN_DB3 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D3.qp());
+    /*p28.ZUGA*/ OAM_PIN_DB4 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D4.qp());
+    /*p28.ZUMO*/ OAM_PIN_DB5 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D5.qp());
+    /*p28.XYTO*/ OAM_PIN_DB6 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D6.qp());
+    /*p28.ZYFA*/ OAM_PIN_DB7 = tribuf_6nn(AZUL_CBD_TO_OBDn, top.cpu_bus.CPU_BUS_D7.qp());
   }
 
   // EBD -> OBD

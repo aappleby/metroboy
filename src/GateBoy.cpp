@@ -119,6 +119,12 @@ void GateBoy::load(const char* filename) {
   log("Loading %s\n", filename);
   memset(mem, 0, 65536);
   size_t size = load_blob(filename, mem);
+
+  // OAM is actually stored inverted, so invert it here.
+  for (int addr = 0xFE00; addr <= 0xFEFF; addr++) {
+    mem[addr] = ~mem[addr];
+  }
+
   log("Loaded %zd bytes from %s\n", size, filename);
 }
 
@@ -653,16 +659,13 @@ void GateBoy::update_oam_bus(int phase) {
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
   uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
 
-  uint8_t oam_data_in_a = ~top.oam_bus.get_oam_pin_data_a();
-  uint8_t oam_data_in_b = ~top.oam_bus.get_oam_pin_data_b();
-
   if (!top.oam_bus.OAM_PIN_OE.qp()) {
-    top.oam_bus.preset_bus_data_a(~oam_data_a);
-    top.oam_bus.preset_bus_data_b(~oam_data_b);
+    top.oam_bus.preset_bus_data_a(oam_data_a);
+    top.oam_bus.preset_bus_data_b(oam_data_b);
   }
 
-  if (!top.oam_bus.OAM_PIN_WR_A.qp()) oam_data_a = ~oam_data_in_a;
-  if (!top.oam_bus.OAM_PIN_WR_B.qp()) oam_data_b = ~oam_data_in_b;
+  if (!top.oam_bus.OAM_PIN_WR_A.qp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
+  if (!top.oam_bus.OAM_PIN_WR_B.qp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
 }
 //-----------------------------------------------------------------------------
 

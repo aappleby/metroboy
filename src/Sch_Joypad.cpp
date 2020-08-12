@@ -86,24 +86,6 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p10.ACAT*/ wire _ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-    /*p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
-    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P10_C.qp());
-    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P11_C.qp());
-    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P12_C.qp());
-    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P13_C.qp());
-
-    /*p05.KEMA*/ cpu_bus.CPU_BUS_D0 = tribuf_6n(_BYZO_FF00_RDn, KEVU_JOYP_L0.qp());
-    /*p05.KURO*/ cpu_bus.CPU_BUS_D1 = tribuf_6n(_BYZO_FF00_RDn, KAPA_JOYP_L1.qp());
-    /*p05.KUVE*/ cpu_bus.CPU_BUS_D2 = tribuf_6n(_BYZO_FF00_RDn, KEJA_JOYP_L2.qp());
-    /*p05.JEKU*/ cpu_bus.CPU_BUS_D3 = tribuf_6n(_BYZO_FF00_RDn, KOLO_JOYP_L3.qp());
-    /*p05.KOCE*/ cpu_bus.CPU_BUS_D4 = tribuf_6n(_BYZO_FF00_RDn, KELY_JOYP_UDLR.qn());
-    /*p05.CUDY*/ cpu_bus.CPU_BUS_D5 = tribuf_6n(_BYZO_FF00_RDn, COFY_JOYP_ABCS.qn());
-    /*p??.????*/ cpu_bus.CPU_BUS_D6 = tribuf_6n(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.qp());
-    /*p??.????*/ cpu_bus.CPU_BUS_D7 = tribuf_6n(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.qp());
-  }
-
-  {
     /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(top.TAPU_CPU_WRp_xxxDxxxx(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.JUTE*/ JUTE_JOYP_RA     = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D0.qp());
     /*p05.KECY*/ KECY_JOYP_LB     = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D1.qp());
@@ -113,6 +95,22 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.COFY*/ COFY_JOYP_ABCS   = dff17_A(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D5.qp());
     /*p05.KUKO*/ KUKO_DBG_FF00_D6 = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D6.qp());
     /*p05.KERU*/ KERU_DBG_FF00_D7 = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn(), top.cpu_bus.CPU_BUS_D7.qp());
+
+    /*p10.ACAT*/ wire _ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
+    /*p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
+    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P10_C.qp());
+    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P11_C.qp());
+    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P12_C.qp());
+    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P13_C.qp());
+
+    /*p05.KEMA*/ cpu_bus.CPU_BUS_D0 = tribuf_6nn(_BYZO_FF00_RDn, KEVU_JOYP_L0.qp());
+    /*p05.KURO*/ cpu_bus.CPU_BUS_D1 = tribuf_6nn(_BYZO_FF00_RDn, KAPA_JOYP_L1.qp());
+    /*p05.KUVE*/ cpu_bus.CPU_BUS_D2 = tribuf_6nn(_BYZO_FF00_RDn, KEJA_JOYP_L2.qp());
+    /*p05.JEKU*/ cpu_bus.CPU_BUS_D3 = tribuf_6nn(_BYZO_FF00_RDn, KOLO_JOYP_L3.qp());
+    /*p05.KOCE*/ cpu_bus.CPU_BUS_D4 = tribuf_6nn(_BYZO_FF00_RDn, KELY_JOYP_UDLR.qn());
+    /*p05.CUDY*/ cpu_bus.CPU_BUS_D5 = tribuf_6nn(_BYZO_FF00_RDn, COFY_JOYP_ABCS.qn());
+    /*p??.????*/ cpu_bus.CPU_BUS_D6 = tribuf_6nn(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6.qp());
+    /*p??.????*/ cpu_bus.CPU_BUS_D7 = tribuf_6nn(_BYZO_FF00_RDn, KERU_DBG_FF00_D7.qp());
   }
 
   {

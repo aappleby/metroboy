@@ -60,12 +60,10 @@ void GateBoy::run_reset_sequence() {
   dbg_write(0xFF50, 0xFF);
   log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
 
-  /*
 #if !_DEBUG
   test_all_regs();
   test_all_mem();
 #endif
-  */
 
   const char* filename = "roms/LinksAwakening_dog.dump";
   load(filename);

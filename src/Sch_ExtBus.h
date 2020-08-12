@@ -26,25 +26,25 @@ struct ExtBus {
   }
 
   void preset_pin_data_in(uint8_t data) {
-    EXT_PIN_D0_C.preset(data & 0x01);
-    EXT_PIN_D1_C.preset(data & 0x02);
-    EXT_PIN_D2_C.preset(data & 0x04);
-    EXT_PIN_D3_C.preset(data & 0x08);
-    EXT_PIN_D4_C.preset(data & 0x10);
-    EXT_PIN_D5_C.preset(data & 0x20);
-    EXT_PIN_D6_C.preset(data & 0x40);
-    EXT_PIN_D7_C.preset(data & 0x80);
+    EXT_PIN_D0n_C.preset(!(data & 0x01));
+    EXT_PIN_D1n_C.preset(!(data & 0x02));
+    EXT_PIN_D2n_C.preset(!(data & 0x04));
+    EXT_PIN_D3n_C.preset(!(data & 0x08));
+    EXT_PIN_D4n_C.preset(!(data & 0x10));
+    EXT_PIN_D5n_C.preset(!(data & 0x20));
+    EXT_PIN_D6n_C.preset(!(data & 0x40));
+    EXT_PIN_D7n_C.preset(!(data & 0x80));
   }
 
   void preset_pin_data_z() {
-    EXT_PIN_D0_C.preset(DELTA_TRIZ);
-    EXT_PIN_D1_C.preset(DELTA_TRIZ);
-    EXT_PIN_D2_C.preset(DELTA_TRIZ);
-    EXT_PIN_D3_C.preset(DELTA_TRIZ);
-    EXT_PIN_D4_C.preset(DELTA_TRIZ);
-    EXT_PIN_D5_C.preset(DELTA_TRIZ);
-    EXT_PIN_D6_C.preset(DELTA_TRIZ);
-    EXT_PIN_D7_C.preset(DELTA_TRIZ);
+    EXT_PIN_D0n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D1n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D2n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D3n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D4n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D5n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D6n_C.preset(DELTA_TRIZ);
+    EXT_PIN_D7n_C.preset(DELTA_TRIZ);
   }
 
   //-----------------------------------------------------------------------------
@@ -65,14 +65,14 @@ struct ExtBus {
   /*p08.LONU*/ Tri _LONU_EXT_ADDR_LATCH_13 = TRI_D0NP;
   /*p08.NYRE*/ Tri _NYRE_EXT_ADDR_LATCH_14 = TRI_D0NP;
 
-  /*p08.SOMA*/ Tri _SOMA_EXT_DATA_LATCH_00 = TRI_D0NP;
-  /*p08.RONY*/ Tri _RONY_EXT_DATA_LATCH_01 = TRI_D0NP;
-  /*p08.RAXY*/ Tri _RAXY_EXT_DATA_LATCH_02 = TRI_D0NP;
-  /*p08.SELO*/ Tri _SELO_EXT_DATA_LATCH_03 = TRI_D0NP;
-  /*p08.SODY*/ Tri _SODY_EXT_DATA_LATCH_04 = TRI_D0NP;
-  /*p08.SAGO*/ Tri _SAGO_EXT_DATA_LATCH_05 = TRI_D0NP;
-  /*p08.RUPA*/ Tri _RUPA_EXT_DATA_LATCH_06 = TRI_D0NP;
-  /*p08.SAZY*/ Tri _SAZY_EXT_DATA_LATCH_07 = TRI_D0NP;
+  /*p08.SOMA*/ Tri _SOMA_EXT_DATA_LATCH_D0n = TRI_D0NP;
+  /*p08.RONY*/ Tri _RONY_EXT_DATA_LATCH_D1n = TRI_D0NP;
+  /*p08.RAXY*/ Tri _RAXY_EXT_DATA_LATCH_D2n = TRI_D0NP;
+  /*p08.SELO*/ Tri _SELO_EXT_DATA_LATCH_D3n = TRI_D0NP;
+  /*p08.SODY*/ Tri _SODY_EXT_DATA_LATCH_D4n = TRI_D0NP;
+  /*p08.SAGO*/ Tri _SAGO_EXT_DATA_LATCH_D5n = TRI_D0NP;
+  /*p08.RUPA*/ Tri _RUPA_EXT_DATA_LATCH_D6n = TRI_D0NP;
+  /*p08.SAZY*/ Tri _SAZY_EXT_DATA_LATCH_D7n = TRI_D0NP;
 
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
@@ -158,14 +158,14 @@ struct ExtBus {
   Tri EXT_PIN_D6_B = TRI_HZNP;    // PIN_23 <- P08.LULA
   Tri EXT_PIN_D7_B = TRI_HZNP;    // PIN_24 <- P08.LULA
 
-  Tri EXT_PIN_D0_C = TRI_D0NP;    // PIN_17 -> P08.TOVO (debug something), SOMA (ext data latch) RALO (oam input)
-  Tri EXT_PIN_D1_C = TRI_D0NP;    // PIN_18 -> P08.RUZY,RONY
-  Tri EXT_PIN_D2_C = TRI_D0NP;    // PIN_19 -> P08.ROME,RAXY
-  Tri EXT_PIN_D3_C = TRI_D0NP;    // PIN_20 -> P08.SAZA,SELO
-  Tri EXT_PIN_D4_C = TRI_D0NP;    // PIN_21 -> P08.TEHE,SODY
-  Tri EXT_PIN_D5_C = TRI_D0NP;    // PIN_22 -> P08.RATU,SAGO
-  Tri EXT_PIN_D6_C = TRI_D0NP;    // PIN_23 -> P08.SOCA,RUPA
-  Tri EXT_PIN_D7_C = TRI_D0NP;    // PIN_24 -> P08.RYBA,SAZY
+  Tri EXT_PIN_D0n_C = TRI_D0NP;    // PIN_17 -> P08.TOVO (debug something), SOMA (ext data latch) RALO (oam input)
+  Tri EXT_PIN_D1n_C = TRI_D0NP;    // PIN_18 -> P08.RUZY,RONY
+  Tri EXT_PIN_D2n_C = TRI_D0NP;    // PIN_19 -> P08.ROME,RAXY
+  Tri EXT_PIN_D3n_C = TRI_D0NP;    // PIN_20 -> P08.SAZA,SELO
+  Tri EXT_PIN_D4n_C = TRI_D0NP;    // PIN_21 -> P08.TEHE,SODY
+  Tri EXT_PIN_D5n_C = TRI_D0NP;    // PIN_22 -> P08.RATU,SAGO
+  Tri EXT_PIN_D6n_C = TRI_D0NP;    // PIN_23 -> P08.SOCA,RUPA
+  Tri EXT_PIN_D7n_C = TRI_D0NP;    // PIN_24 -> P08.RYBA,SAZY
 
   Tri EXT_PIN_D0_D = TRI_HZNP;    // PIN_17 <- P08.RUNE
   Tri EXT_PIN_D1_D = TRI_HZNP;    // PIN_18 <- P08.RYPU

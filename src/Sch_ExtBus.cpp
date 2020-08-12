@@ -14,8 +14,8 @@ void ExtBus::dump(Dumper& d) const {
     _AROS_EXT_ADDR_LATCH_06.c(), _ATEV_EXT_ADDR_LATCH_05.c(), _AVYS_EXT_ADDR_LATCH_04.c(), _ARET_EXT_ADDR_LATCH_03.c(),
     _ALYR_EXT_ADDR_LATCH_02.c(), _APUR_EXT_ADDR_LATCH_01.c(), _ALOR_EXT_ADDR_LATCH_00.c());
   d("EXT BUS DATA    : %c%c%c%c%c%c%c%c\n",
-    _SAZY_EXT_DATA_LATCH_07.c(), _RUPA_EXT_DATA_LATCH_06.c(), _SAGO_EXT_DATA_LATCH_05.c(), _SODY_EXT_DATA_LATCH_04.c(),
-    _SELO_EXT_DATA_LATCH_03.c(), _RAXY_EXT_DATA_LATCH_02.c(), _RONY_EXT_DATA_LATCH_01.c(), _SOMA_EXT_DATA_LATCH_00.c());
+    _SAZY_EXT_DATA_LATCH_D7n.c(), _RUPA_EXT_DATA_LATCH_D6n.c(), _SAGO_EXT_DATA_LATCH_D5n.c(), _SODY_EXT_DATA_LATCH_D4n.c(),
+    _SELO_EXT_DATA_LATCH_D3n.c(), _RAXY_EXT_DATA_LATCH_D2n.c(), _RONY_EXT_DATA_LATCH_D1n.c(), _SOMA_EXT_DATA_LATCH_D0n.c());
   d("\n");
 
   d("EXT PIN RD_A    : %c%c%c\n", EXT_PIN_RD_A.c(), EXT_PIN_RD_C.c(), EXT_PIN_RD_D.c());
@@ -35,8 +35,8 @@ void ExtBus::dump(Dumper& d) const {
     EXT_PIN_D7_B.c(), EXT_PIN_D6_B.c(), EXT_PIN_D5_B.c(), EXT_PIN_D4_B.c(),
     EXT_PIN_D3_B.c(), EXT_PIN_D2_B.c(), EXT_PIN_D1_B.c(), EXT_PIN_D0_B.c());
   d("EXT PIN DATA_C  : %c%c%c%c%c%c%c%c\n",
-    EXT_PIN_D7_C.c(), EXT_PIN_D6_C.c(), EXT_PIN_D5_C.c(), EXT_PIN_D4_C.c(),
-    EXT_PIN_D3_C.c(), EXT_PIN_D2_C.c(), EXT_PIN_D1_C.c(), EXT_PIN_D0_C.c());
+    EXT_PIN_D7n_C.c(), EXT_PIN_D6n_C.c(), EXT_PIN_D5n_C.c(), EXT_PIN_D4n_C.c(),
+    EXT_PIN_D3n_C.c(), EXT_PIN_D2n_C.c(), EXT_PIN_D1n_C.c(), EXT_PIN_D0n_C.c());
   d("EXT PIN DATA_D  : %c%c%c%c%c%c%c%c\n",
     EXT_PIN_D7_D.c(), EXT_PIN_D6_D.c(), EXT_PIN_D5_D.c(), EXT_PIN_D4_D.c(),
     EXT_PIN_D3_D.c(), EXT_PIN_D2_D.c(), EXT_PIN_D1_D.c(), EXT_PIN_D0_D.c());
@@ -274,24 +274,24 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.LAVO*/ wire LAVO_EPD_TO_CBDn = nand3(top.cpu_bus.CPU_PIN_RDp.qp(), TEXO_8000_9FFFn, top.cpu_bus.CPU_PIN_HOLD_MEM.qp());
 
     // Ext pin -> Ext latch
-    /*#p08.SOMA*/ _SOMA_EXT_DATA_LATCH_00 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D0_C.qp());
-    /* p08.RONY*/ _RONY_EXT_DATA_LATCH_01 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D1_C.qp());
-    /* p08.RAXY*/ _RAXY_EXT_DATA_LATCH_02 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D2_C.qp());
-    /* p08.SELO*/ _SELO_EXT_DATA_LATCH_03 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D3_C.qp());
-    /* p08.SODY*/ _SODY_EXT_DATA_LATCH_04 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D4_C.qp());
-    /* p08.SAGO*/ _SAGO_EXT_DATA_LATCH_05 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D5_C.qp());
-    /* p08.RUPA*/ _RUPA_EXT_DATA_LATCH_06 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D6_C.qp());
-    /* p08.SAZY*/ _SAZY_EXT_DATA_LATCH_07 = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D7_C.qp());
+    /*#p08.SOMA*/ _SOMA_EXT_DATA_LATCH_D0n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D0n_C.qp());
+    /* p08.RONY*/ _RONY_EXT_DATA_LATCH_D1n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D1n_C.qp());
+    /* p08.RAXY*/ _RAXY_EXT_DATA_LATCH_D2n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D2n_C.qp());
+    /* p08.SELO*/ _SELO_EXT_DATA_LATCH_D3n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D3n_C.qp());
+    /* p08.SODY*/ _SODY_EXT_DATA_LATCH_D4n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D4n_C.qp());
+    /* p08.SAGO*/ _SAGO_EXT_DATA_LATCH_D5n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D5n_C.qp());
+    /* p08.RUPA*/ _RUPA_EXT_DATA_LATCH_D6n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D6n_C.qp());
+    /* p08.SAZY*/ _SAZY_EXT_DATA_LATCH_D7n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D7n_C.qp());
 
     // Ext latch -> int bus
-    /*#p08.RYMA*/ top.cpu_bus.CPU_BUS_D0 = tribuf_6n(LAVO_EPD_TO_CBDn, _SOMA_EXT_DATA_LATCH_00.qp());
-    /* p08.RUVO*/ top.cpu_bus.CPU_BUS_D1 = tribuf_6n(LAVO_EPD_TO_CBDn, _RONY_EXT_DATA_LATCH_01.qp());
-    /* p08.RYKO*/ top.cpu_bus.CPU_BUS_D2 = tribuf_6n(LAVO_EPD_TO_CBDn, _RAXY_EXT_DATA_LATCH_02.qp());
-    /* p08.TAVO*/ top.cpu_bus.CPU_BUS_D3 = tribuf_6n(LAVO_EPD_TO_CBDn, _SELO_EXT_DATA_LATCH_03.qp());
-    /* p08.TEPE*/ top.cpu_bus.CPU_BUS_D4 = tribuf_6n(LAVO_EPD_TO_CBDn, _SODY_EXT_DATA_LATCH_04.qp());
-    /* p08.SAFO*/ top.cpu_bus.CPU_BUS_D5 = tribuf_6n(LAVO_EPD_TO_CBDn, _SAGO_EXT_DATA_LATCH_05.qp());
-    /* p08.SEVU*/ top.cpu_bus.CPU_BUS_D6 = tribuf_6n(LAVO_EPD_TO_CBDn, _RUPA_EXT_DATA_LATCH_06.qp());
-    /* p08.TAJU*/ top.cpu_bus.CPU_BUS_D7 = tribuf_6n(LAVO_EPD_TO_CBDn, _SAZY_EXT_DATA_LATCH_07.qp());
+    /*#p08.RYMA*/ top.cpu_bus.CPU_BUS_D0 = tribuf_6nn(LAVO_EPD_TO_CBDn, _SOMA_EXT_DATA_LATCH_D0n.qp());
+    /* p08.RUVO*/ top.cpu_bus.CPU_BUS_D1 = tribuf_6nn(LAVO_EPD_TO_CBDn, _RONY_EXT_DATA_LATCH_D1n.qp());
+    /* p08.RYKO*/ top.cpu_bus.CPU_BUS_D2 = tribuf_6nn(LAVO_EPD_TO_CBDn, _RAXY_EXT_DATA_LATCH_D2n.qp());
+    /* p08.TAVO*/ top.cpu_bus.CPU_BUS_D3 = tribuf_6nn(LAVO_EPD_TO_CBDn, _SELO_EXT_DATA_LATCH_D3n.qp());
+    /* p08.TEPE*/ top.cpu_bus.CPU_BUS_D4 = tribuf_6nn(LAVO_EPD_TO_CBDn, _SODY_EXT_DATA_LATCH_D4n.qp());
+    /* p08.SAFO*/ top.cpu_bus.CPU_BUS_D5 = tribuf_6nn(LAVO_EPD_TO_CBDn, _SAGO_EXT_DATA_LATCH_D5n.qp());
+    /* p08.SEVU*/ top.cpu_bus.CPU_BUS_D6 = tribuf_6nn(LAVO_EPD_TO_CBDn, _RUPA_EXT_DATA_LATCH_D6n.qp());
+    /* p08.TAJU*/ top.cpu_bus.CPU_BUS_D7 = tribuf_6nn(LAVO_EPD_TO_CBDn, _SAZY_EXT_DATA_LATCH_D7n.qp());
   }
 }
 

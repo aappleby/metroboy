@@ -262,14 +262,14 @@ void OamBus::tock(SchematicTop& top) {
     /*p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(top.dma_reg.LUMA_DMA_READ_CARTp());
 
     // -> oam data tri
-    /*p25.RALO*/ wire RALO_EXT_D0p = not1(top.ext_bus.EXT_PIN_D0_C.qp());
-    /*p25.TUNE*/ wire TUNE_EXT_D1p = not1(top.ext_bus.EXT_PIN_D1_C.qp());
-    /*p25.SERA*/ wire SERA_EXT_D2p = not1(top.ext_bus.EXT_PIN_D2_C.qp());
-    /*p25.TENU*/ wire TENU_EXT_D3p = not1(top.ext_bus.EXT_PIN_D3_C.qp());
-    /*p25.SYSA*/ wire SYSA_EXT_D4p = not1(top.ext_bus.EXT_PIN_D4_C.qp());
-    /*p25.SUGY*/ wire SUGY_EXT_D5p = not1(top.ext_bus.EXT_PIN_D5_C.qp());
-    /*p25.TUBE*/ wire TUBE_EXT_D6p = not1(top.ext_bus.EXT_PIN_D6_C.qp());
-    /*p25.SYZO*/ wire SYZO_EXT_D7p = not1(top.ext_bus.EXT_PIN_D7_C.qp());
+    /*p25.RALO*/ wire RALO_EXT_D0p = not1(top.ext_bus.EXT_PIN_D0n_C.qp());
+    /*p25.TUNE*/ wire TUNE_EXT_D1p = not1(top.ext_bus.EXT_PIN_D1n_C.qp());
+    /*p25.SERA*/ wire SERA_EXT_D2p = not1(top.ext_bus.EXT_PIN_D2n_C.qp());
+    /*p25.TENU*/ wire TENU_EXT_D3p = not1(top.ext_bus.EXT_PIN_D3n_C.qp());
+    /*p25.SYSA*/ wire SYSA_EXT_D4p = not1(top.ext_bus.EXT_PIN_D4n_C.qp());
+    /*p25.SUGY*/ wire SUGY_EXT_D5p = not1(top.ext_bus.EXT_PIN_D5n_C.qp());
+    /*p25.TUBE*/ wire TUBE_EXT_D6p = not1(top.ext_bus.EXT_PIN_D6n_C.qp());
+    /*p25.SYZO*/ wire SYZO_EXT_D7p = not1(top.ext_bus.EXT_PIN_D7n_C.qp());
 
     /*p25.WASA*/ OAM_PIN_DA0 = tribuf_6n(_CEDE_EBD_TO_OBDn, RALO_EXT_D0p);
     /*p25.BOMO*/ OAM_PIN_DA1 = tribuf_6n(_CEDE_EBD_TO_OBDn, TUNE_EXT_D1p);

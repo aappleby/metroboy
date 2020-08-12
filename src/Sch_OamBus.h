@@ -19,7 +19,7 @@ struct OamBus {
                            OAM_TRI_A4.c(), OAM_TRI_A5.c(), OAM_TRI_A6.c(), OAM_TRI_A7.c());
   }
 
-  uint8_t get_oam_bus_addr() const {
+  uint8_t get_oam_pin_addr() const {
     return (uint8_t)pack_p(OAM_PIN_A1.qp(), OAM_PIN_A2.qp(), OAM_PIN_A3.qp(), OAM_PIN_A4.qp(),
                            OAM_PIN_A5.qp(), OAM_PIN_A6.qp(), OAM_PIN_A7.qp(), 0);
   }
@@ -34,12 +34,12 @@ struct OamBus {
                            WYNO_LATCH_OAM_DB4.c(), CYRA_LATCH_OAM_DB5.c(), ZUVE_LATCH_OAM_DB6.c(), ECED_LATCH_OAM_DB7.c());
   }
 
-  uint8_t get_oam_bus_data_a() const {
+  uint8_t get_oam_pin_data_a() const {
     return (uint8_t)pack_p(OAM_PIN_DA0.qp(), OAM_PIN_DA1.qp(), OAM_PIN_DA2.qp(), OAM_PIN_DA3.qp(),
                            OAM_PIN_DA4.qp(), OAM_PIN_DA5.qp(), OAM_PIN_DA6.qp(), OAM_PIN_DA7.qp());
   }
 
-  uint8_t get_oam_bus_data_b() const {
+  uint8_t get_oam_pin_data_b() const {
     return (uint8_t)pack_p(OAM_PIN_DB0.qp(), OAM_PIN_DB1.qp(), OAM_PIN_DB2.qp(), OAM_PIN_DB3.qp(),
                            OAM_PIN_DB4.qp(), OAM_PIN_DB5.qp(), OAM_PIN_DB6.qp(), OAM_PIN_DB7.qp());
   }

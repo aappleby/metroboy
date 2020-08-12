@@ -646,14 +646,13 @@ void GateBoy::update_vrm_bus(int phase) {
 void GateBoy::update_oam_bus(int phase) {
   (void)phase;
 
-  uint16_t  oam_addr = top.oam_bus.get_oam_bus_addr();
-  oam_addr ^= 0x7F;
+  uint16_t  oam_addr = top.oam_bus.get_oam_pin_addr();
 
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
   uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
 
-  uint8_t oam_data_in_a = ~top.oam_bus.get_oam_bus_data_a();
-  uint8_t oam_data_in_b = ~top.oam_bus.get_oam_bus_data_b();
+  uint8_t oam_data_in_a = ~top.oam_bus.get_oam_pin_data_a();
+  uint8_t oam_data_in_b = ~top.oam_bus.get_oam_pin_data_b();
 
   if (!top.oam_bus.OAM_PIN_OE.qp()) {
     top.oam_bus.preset_bus_data_a(~oam_data_a);

@@ -32,20 +32,20 @@ void OamBus::dump(Dumper& d) const {
     YVEL_LATCH_OAM_DB3.c(), YSEX_LATCH_OAM_DB2.c(), YRUM_LATCH_OAM_DB1.c(), XYKY_LATCH_OAM_DB0.c());
 
   d("OAM BUS ADDR   %03d %02x -%c%c%c%c%c%c%c\n", 
-    get_oam_bus_addr(),
-    get_oam_bus_addr(),
+    get_oam_pin_addr(),
+    get_oam_pin_addr(),
     OAM_PIN_A7.c(), OAM_PIN_A6.c(), OAM_PIN_A5.c(), OAM_PIN_A4.c(),
     OAM_PIN_A3.c(), OAM_PIN_A2.c(), OAM_PIN_A1.c());
 
   d("OAM BUS DATA A %03d %02x %c%c%c%c%c%c%c%c\n", 
-    get_oam_bus_data_a(),
-    get_oam_bus_data_a(),
+    get_oam_pin_data_a(),
+    get_oam_pin_data_a(),
     OAM_PIN_DA7.c(), OAM_PIN_DA6.c(), OAM_PIN_DA5.c(), OAM_PIN_DA4.c(),
     OAM_PIN_DA3.c(), OAM_PIN_DA2.c(), OAM_PIN_DA1.c(), OAM_PIN_DA0.c());
 
   d("OAM BUS DATA B %03d %02x %c%c%c%c%c%c%c%c\n", 
-    get_oam_bus_data_b(),
-    get_oam_bus_data_b(),
+    get_oam_pin_data_b(),
+    get_oam_pin_data_b(),
     OAM_PIN_DB7.c(), OAM_PIN_DB6.c(), OAM_PIN_DB5.c(), OAM_PIN_DB4.c(),
     OAM_PIN_DB3.c(), OAM_PIN_DB2.c(), OAM_PIN_DB1.c(), OAM_PIN_DB0.c());
 
@@ -69,14 +69,6 @@ void OamBus::dump(Dumper& d) const {
 void OamBus::tock(SchematicTop& top) {
 
   /*p28.GEKA*/ wire GEKA_OAM_A0n = not1(OAM_TRI_A0.qp()); // -> WAFO, YLYC, WUKU
-  /*p28.ZYFO*/ wire ZYFO_OAM_A1n = !not1(OAM_TRI_A1.qp());
-  /*p28.YFOT*/ wire YFOT_OAM_A2n = !not1(OAM_TRI_A2.qp());
-  /*p28.YFOC*/ wire YFOC_OAM_A3n = !not1(OAM_TRI_A3.qp());
-  /*p28.YVOM*/ wire YVOM_OAM_A4n = !not1(OAM_TRI_A4.qp());
-  /*p28.YMEV*/ wire YMEV_OAM_A5n = !not1(OAM_TRI_A5.qp());
-  /*p28.XEMU*/ wire XEMU_OAM_A6n = !not1(OAM_TRI_A6.qp());
-  /*p28.YZET*/ wire YZET_OAM_A7n = !not1(OAM_TRI_A7.qp());
-
   /*p28.WAFO*/ wire WAFO_OAM_A0p = not1(GEKA_OAM_A0n);
 
   /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(top.pix_pipe.TEPA_RENDERINGn(), top.sprite_fetcher._TULY_SFETCH_S1.qp(), top.sprite_fetcher._TESE_SFETCH_S2.qp());
@@ -196,6 +188,14 @@ void OamBus::tock(SchematicTop& top) {
   }
 
   {
+    /*p28.ZYFO*/ wire ZYFO_OAM_A1n = not1(OAM_TRI_A1.qp());
+    /*p28.YFOT*/ wire YFOT_OAM_A2n = not1(OAM_TRI_A2.qp());
+    /*p28.YFOC*/ wire YFOC_OAM_A3n = not1(OAM_TRI_A3.qp());
+    /*p28.YVOM*/ wire YVOM_OAM_A4n = not1(OAM_TRI_A4.qp());
+    /*p28.YMEV*/ wire YMEV_OAM_A5n = not1(OAM_TRI_A5.qp());
+    /*p28.XEMU*/ wire XEMU_OAM_A6n = not1(OAM_TRI_A6.qp());
+    /*p28.YZET*/ wire YZET_OAM_A7n = not1(OAM_TRI_A7.qp());
+
     OAM_PIN_A1 = ZYFO_OAM_A1n;
     OAM_PIN_A2 = YFOT_OAM_A2n;
     OAM_PIN_A3 = YFOC_OAM_A3n;

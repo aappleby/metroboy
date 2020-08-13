@@ -281,28 +281,12 @@ inline RegQNIn dff8_A(wire CLKp, wire CLKn, bool D) {
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
 
-inline RegQPIn dff8_B(wire CLKp, wire CLKn, bool D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKp;
-  (void)CLKn;
-
-  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
-}
-
 inline RegQPIn dff8_B_inv(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
   (void)CLKn;
 
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!D) << 0))};
-}
-
-inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKp;
-  (void)CLKn;
-
-  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
 
 inline RegQPNIn dff8_AB_inv(wire CLKp, wire CLKn, bool D) {

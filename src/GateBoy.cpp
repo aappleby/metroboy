@@ -182,7 +182,7 @@ void GateBoy::test_all_regs() {
   test_reg("SCX",  0xFF43, 0b11111111);
   //test_reg("LY",   0xFF44, 177); // not standard reg
   test_reg("LYC",  0xFF45, 0b11111111);
-  //test_reg("DMA",  0xFF46, 0b11111111); works, but let's not trigger random dmas...
+  //test_reg("DMA",  0xFF46, 0b11111111); // works, but let's not trigger random dmas...
   test_reg("BGP",  0xFF47, 0b11111111);
   test_reg("OBP0", 0xFF48, 0b11111111);
   test_reg("OBP1", 0xFF49, 0b11111111);

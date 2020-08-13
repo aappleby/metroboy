@@ -44,7 +44,6 @@ void P09_ApuControl_tick(const Gameboy& a,
   // APU clocks
 
 
-  // FIXME
   {
     /*p01.APUV*/ wire APUV = not1(dff20.AMUK_xBxDxFxH);
     /*p01.CYBO*/ wire CYBO = not1(dff20.AMUK_xBxDxFxH);

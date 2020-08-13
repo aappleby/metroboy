@@ -25,13 +25,13 @@ struct OamBus {
   }
 
   uint8_t get_oam_latch_data_a() const {
-    return (uint8_t)pack_p(YDYV_LATCH_OAM_DA0.c(), YCEB_LATCH_OAM_DA1.c(), ZUCA_LATCH_OAM_DA2.c(), WONE_LATCH_OAM_DA3.c(),
-                           ZAXE_LATCH_OAM_DA4.c(), XAFU_LATCH_OAM_DA5.c(), YSES_LATCH_OAM_DA6.c(), ZECA_LATCH_OAM_DA7.c());
+    return (uint8_t)pack_p(YDYV_LATCH_OAM_DA0n.c(), YCEB_LATCH_OAM_DA1n.c(), ZUCA_LATCH_OAM_DA2n.c(), WONE_LATCH_OAM_DA3n.c(),
+                           ZAXE_LATCH_OAM_DA4n.c(), XAFU_LATCH_OAM_DA5n.c(), YSES_LATCH_OAM_DA6n.c(), ZECA_LATCH_OAM_DA7n.c());
   }
 
   uint8_t get_oam_latch_data_b() const {
-    return (uint8_t)pack_p(XYKY_LATCH_OAM_DB0.c(), YRUM_LATCH_OAM_DB1.c(), YSEX_LATCH_OAM_DB2.c(), YVEL_LATCH_OAM_DB3.c(),
-                           WYNO_LATCH_OAM_DB4.c(), CYRA_LATCH_OAM_DB5.c(), ZUVE_LATCH_OAM_DB6.c(), ECED_LATCH_OAM_DB7.c());
+    return (uint8_t)pack_p(XYKY_LATCH_OAM_DB0n.c(), YRUM_LATCH_OAM_DB1n.c(), YSEX_LATCH_OAM_DB2n.c(), YVEL_LATCH_OAM_DB3n.c(),
+                           WYNO_LATCH_OAM_DB4n.c(), CYRA_LATCH_OAM_DB5n.c(), ZUVE_LATCH_OAM_DB6n.c(), ECED_LATCH_OAM_DB7n.c());
   }
 
   uint8_t get_oam_pin_data_a() const {
@@ -81,23 +81,23 @@ struct OamBus {
   /*p04.MAKA*/ RegQP MAKA_HOLD_MEMp = REG_D0C0;
   /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
 
-  /*p31.XYKY*/ Latch XYKY_LATCH_OAM_DB0 = TRI_D0NP;
-  /*p31.YRUM*/ Latch YRUM_LATCH_OAM_DB1 = TRI_D0NP;
-  /*p31.YSEX*/ Latch YSEX_LATCH_OAM_DB2 = TRI_D0NP;
-  /*p31.YVEL*/ Latch YVEL_LATCH_OAM_DB3 = TRI_D0NP;
-  /*p31.WYNO*/ Latch WYNO_LATCH_OAM_DB4 = TRI_D0NP;
-  /*p31.CYRA*/ Latch CYRA_LATCH_OAM_DB5 = TRI_D0NP;
-  /*p31.ZUVE*/ Latch ZUVE_LATCH_OAM_DB6 = TRI_D0NP;
-  /*p31.ECED*/ Latch ECED_LATCH_OAM_DB7 = TRI_D0NP;
+  /*p31.XYKY*/ Latch XYKY_LATCH_OAM_DB0n = TRI_D0NP;
+  /*p31.YRUM*/ Latch YRUM_LATCH_OAM_DB1n = TRI_D0NP;
+  /*p31.YSEX*/ Latch YSEX_LATCH_OAM_DB2n = TRI_D0NP;
+  /*p31.YVEL*/ Latch YVEL_LATCH_OAM_DB3n = TRI_D0NP;
+  /*p31.WYNO*/ Latch WYNO_LATCH_OAM_DB4n = TRI_D0NP;
+  /*p31.CYRA*/ Latch CYRA_LATCH_OAM_DB5n = TRI_D0NP;
+  /*p31.ZUVE*/ Latch ZUVE_LATCH_OAM_DB6n = TRI_D0NP;
+  /*p31.ECED*/ Latch ECED_LATCH_OAM_DB7n = TRI_D0NP;
 
-  /*p29.YDYV*/ Latch YDYV_LATCH_OAM_DA0 = TRI_D0NP;
-  /*p29.YCEB*/ Latch YCEB_LATCH_OAM_DA1 = TRI_D0NP;
-  /*p29.ZUCA*/ Latch ZUCA_LATCH_OAM_DA2 = TRI_D0NP;
-  /*p29.WONE*/ Latch WONE_LATCH_OAM_DA3 = TRI_D0NP;
-  /*p29.ZAXE*/ Latch ZAXE_LATCH_OAM_DA4 = TRI_D0NP;
-  /*p29.XAFU*/ Latch XAFU_LATCH_OAM_DA5 = TRI_D0NP;
-  /*p29.YSES*/ Latch YSES_LATCH_OAM_DA6 = TRI_D0NP;
-  /*p29.ZECA*/ Latch ZECA_LATCH_OAM_DA7 = TRI_D0NP;
+  /*p29.YDYV*/ Latch YDYV_LATCH_OAM_DA0n = TRI_D0NP;
+  /*p29.YCEB*/ Latch YCEB_LATCH_OAM_DA1n = TRI_D0NP;
+  /*p29.ZUCA*/ Latch ZUCA_LATCH_OAM_DA2n = TRI_D0NP;
+  /*p29.WONE*/ Latch WONE_LATCH_OAM_DA3n = TRI_D0NP;
+  /*p29.ZAXE*/ Latch ZAXE_LATCH_OAM_DA4n = TRI_D0NP;
+  /*p29.XAFU*/ Latch XAFU_LATCH_OAM_DA5n = TRI_D0NP;
+  /*p29.YSES*/ Latch YSES_LATCH_OAM_DA6n = TRI_D0NP;
+  /*p29.ZECA*/ Latch ZECA_LATCH_OAM_DA7n = TRI_D0NP;
 
   // oam byte 0, byte 2
   /*p29.XUSO*/ RegQP XUSO_OAM_DA0p = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
@@ -120,9 +120,9 @@ struct OamBus {
   /*p31.DEPO*/ RegQP DEPO_OAM_DB7p = REG_D0C0; // sprite x bit 7, sprite priority
 
   Tri OAM_PIN_CLK  = TRI_D0NP;
-  Tri OAM_PIN_OE   = TRI_D0PU; // FIXME why are these pulled up?
-  Tri OAM_PIN_WR_B = TRI_D0PU;
-  Tri OAM_PIN_WR_A = TRI_D0PU;
+  Tri OAM_PIN_OE   = TRI_D0NP; // FIXME why are these pulled up?
+  Tri OAM_PIN_WR_B = TRI_D0NP;
+  Tri OAM_PIN_WR_A = TRI_D0NP;
 
   Tri OAM_TRI_A0n  = TRI_D0NP;
   Tri OAM_TRI_A1n  = TRI_D0NP;

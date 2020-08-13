@@ -109,7 +109,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYNU*/ wire TYNU_ADDR_RAM = and_or3(top.cpu_bus.CPU_BUS_A15.tp(), top.cpu_bus.CPU_BUS_A14.tp(), _TUMA_CART_RAM);
 
     /*p08.TOZA*/ wire _TOZA_EXT_PIN_CS_A = and3(ABUZ, TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
-    /*p08.TYHO*/ wire _TYHO_EXT_PIN_CS_A = mux2_p(top.dma_reg.MARU_DMA_A15.qn(), _TOZA_EXT_PIN_CS_A, LUMA_DMA_READ_CARTp);
+    /*p08.TYHO*/ wire _TYHO_EXT_PIN_CS_A = mux2_p(top.dma_reg.MARU_DMA_A15n.qn(), _TOZA_EXT_PIN_CS_A, LUMA_DMA_READ_CARTp);
     EXT_PIN_CS_A = _TYHO_EXT_PIN_CS_A;
   }
 
@@ -205,7 +205,7 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.RYCA*/ wire _RYCA_MODE_DBG2n = not1(UNOR_MODE_DBG2p);
     /* p08.SOBY*/ wire _SOBY_A15n = nor2(top.cpu_bus.CPU_BUS_A15.tp(), TUTU_ADDR_BOOTp);
     /* p08.SEPY*/ wire _SEPY_A15p = nand2(ABUZ_ABCDxxGH, _SOBY_A15n);
-    /* p08.TAZY*/ wire _TAZY_A15p = mux2_p2(LUMA_DMA_READ_CARTp, top.dma_reg.MARU_DMA_A15.qn(), _SEPY_A15p);
+    /* p08.TAZY*/ wire _TAZY_A15p = mux2_p2(LUMA_DMA_READ_CARTp, top.dma_reg.MARU_DMA_A15n.qn(), _SEPY_A15p);
 
     /* p08.SUZE*/ wire _SUZEEXT_PIN_A15n = nand2(_TAZY_A15p, _RYCA_MODE_DBG2n);
     /* p08.RULO*/ wire _RULOEXT_PIN_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p);

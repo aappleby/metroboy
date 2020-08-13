@@ -172,7 +172,6 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.FEBY*/ wire RSTt = not1(RSTa);
     /*p20.GASO*/ wire RSTu = not1(RSTa);
 
-    // FIXME
     ///*p20.GYSU*/ next.ch4.CH4_START   = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, RSTu, b.ch4.CH4_START, b.ch4.NR44_START);
 
     /*p20.EFOT*/ wire CH4_STOP    = and2(b.ch4.NR44_STOP,   b.ch4.LEN_STOP);
@@ -226,7 +225,6 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.BAGU*/ next.ch4.DBG_BAGU = nand2(FF23a, b.ch4.DBG_COMO);
     /*p20.BEFA*/ next.ch4.DBG_BEFA = not1(b.ch4.FREQ_CLK);
 
-    // FIXME
     ///*p20.ATEL*/ if (b.ch4.DBG_BAGU) next.\1() = b.ch4.DBG_BEFA;
   }
 

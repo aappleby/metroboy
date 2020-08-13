@@ -50,7 +50,7 @@ struct DmaRegisters {
   /*p04.NYGY*/ RegQPN NYGY_DMA_A12n = REG_D0C0;
   /*p04.PULA*/ RegQPN PULA_DMA_A13n = REG_D0C0;
   /*p04.POKU*/ RegQPN POKU_DMA_A14n = REG_D0C0;
-  /*p04.MARU*/ RegQPN MARU_DMA_A15 = REG_D0C0;
+  /*p04.MARU*/ RegQPN MARU_DMA_A15n = REG_D0C0;
 
 //private:
 
@@ -61,7 +61,7 @@ struct DmaRegisters {
     // something wrong here... polarity of high addr bits inverted
     // MUDA = nor(!A13, !A14, A15)
 
-    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15.qn());
+    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15n.qn());
     /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13n.qn(), POKU_DMA_A14n.qn(), LEBU_DMA_ADDR_A15n);
     return MUDA_DMA_SRC_VRAMp;
   }

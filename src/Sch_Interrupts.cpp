@@ -18,8 +18,6 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
   /*p07.REFA*/ wire _REFA_FF0F_WRn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
 
-  // FIXME FIXME FIXME order wrong!!!
-
   // FF0F INT
   {
     // pass gates? does look like a transparent latch here...

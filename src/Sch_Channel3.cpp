@@ -282,7 +282,6 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
 
   {
     /*p16.GOMA*/ wire APU_RESETn = not1(b.apu.APU_RESET1);
-    // FIXME
     ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk_reg.DOVA_ABCDxxxx, b.clk_reg.DOVA_ABCDxxxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
   }
 

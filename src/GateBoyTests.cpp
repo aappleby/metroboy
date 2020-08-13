@@ -19,70 +19,6 @@ void GateBoyTests::test_rom_read() {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-void test_reset_timing(int phase_a, int phase_b, int phase_c, int phase_d) {
-  SchematicTop* top = new SchematicTop();
-
-  top.clk_reg.set_cpu_ready(0);
-  top.ext_bus.set_ext_rdwr(0, 0);
-
-  top.clk_reg.set_t1t2(0,0);
-
-  uint64_t phase_hash;
-
-  // Just read DIV forever.
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
-
-  // 8 phases w/ reset high, clock not running.
-  top.clk_reg.set_rst(1);
-  top.clk_reg.set_clk_a(0);
-  run(top, phase_a, req, false);
-
-  // 8 phases w/ reset high, clock running.
-  top.clk_reg.set_rst(1);
-  top.clk_reg.set_clk_a(1);
-  run(top, phase_b, req, false);
-
-  // 8 phases w/ reset low, clock running.
-  top.clk_reg.set_rst(0);
-  top.clk_reg.set_clk_a(1);
-  run(top, phase_c, req, false);
-
-  // Force LCDC_EN on and run until we get the CPU start request (~32k mcycles)
-
-  while(!top.clk_reg.CPU_PIN_STARTp()) {
-    run(top, 1, req, false);
-  }
-
-  // Ack the start request and run another 24 phases.
-  // We should see AFER (global reset) clear and the video clocks start up.
-  // FIXME why are the video clocks not running...
-
-  top.clk_reg.set_cpu_ready(1);
-  run(top, phase_d, req, false);
-
-  top.clk_reg.set_cpu_ready(0);
-  if (top.clk_reg.AFER_SYS_RSTp() || top.clk_reg.ASOL_POR_DONEn()) {
-    printf("\nX %d %d %d %d\n", phase_a, phase_b, phase_c, phase_d);
-  }
-  else {
-    printf(".");
-  }
-}
-
-/*
-for (int phase_a = 0; phase_a <= 8; phase_a++) 
-for (int phase_b = 1; phase_b <= 8; phase_b++)
-for (int phase_c = 0; phase_c <= 8; phase_c++)
-for (int phase_d = 8; phase_d <= 16; phase_d++)
-  test_reset_timing(phase_a, phase_b, phase_c, phase_d);
-return 0;
-*/
-
-#endif
-
-//-----------------------------------------------------------------------------
-
 void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
   printf("GateBoy::fuzz_reset_sequence\n");
 
@@ -113,7 +49,6 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
 }
 
 //-----------------------------------------------------------------------------
-// FIXME removed fast mode for now
 
 void GateBoyTests::test_reset_sequence() {
   printf("Running reset fuzz test in slow mode\n");
@@ -231,7 +166,6 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
 }
 
 //-----------------------------------------------------------------------------
-// FIXME removed fast mode for now
 
 void GateBoyTests::run_benchmark() {
   printf("Running benchmark in slow mode\n");

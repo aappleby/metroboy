@@ -6,45 +6,15 @@ using namespace Schematics;
 void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("----------SpriteScan ---------\n");
 
-  ///*p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(BALU_LINE_RSTp, DOBA_SCAN_DONE_B.qp(), BYBA_SCAN_DONE_A.qn());
-  ///*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
-  ///*p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
-
-  //d("BALU_LINE_RSTp         %d\n", BALU_LINE_RSTp.as_wire());
-  //d("BEBU_SCAN_DONE_TRIGn   %d\n", _BEBU_SCAN_DONE_TRIGn);
-  //d("AVAP_RENDER_START_TRIGp %d\n", AVAP_RENDER_START_TRIGp);
-  //d("ASEN_SCAN_DONE_PE      %d\n", _ASEN_SCAN_DONE_PE);
-
   d("BESU_SCANNINGp   %c\n", BESU_SCANNINGp  .c());
   d("CENO_SCANNINGp   %c\n", CENO_SCANNINGp  .c());
   d("BYBA_SCAN_DONE_A %c\n", BYBA_SCAN_DONE_A.c());
   d("DOBA_SCAN_DONE_B %c\n", DOBA_SCAN_DONE_B.c());
-
-  /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(_YFEL_SCAN0.qp(), _WEWY_SCAN1.qp(), _GOSO_SCAN2.qp(), _FONY_SCAN5.qp()); // die AND. 32 + 4 + 2 + 1 = 39
-  /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH());
-  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
-  d("_GAVA_SCAN_CLK %d\n", _GAVA_SCAN_CLK);
-  d("ANOM_LINE_RSTn %d\n", ANOM_LINE_RSTn);
-  d("SCAN INDEX        %02d\n", 
-    pack_p(
-      _YFEL_SCAN0.qp(),
-      _WEWY_SCAN1.qp(),
-      _GOSO_SCAN2.qp(),
-      _ELYN_SCAN3.qp(),
-      _FAHA_SCAN4.qp(),
-      _FONY_SCAN5.qp(),
-      0,
-      0
-    )
-  );
-
-  int y_diff = pack_p(ERUC_YDIFF_S0, ENEF_YDIFF_S1, FECO_YDIFF_S2, GYKY_YDIFF_S3,
-                      GOPU_YDIFF_S4, FUWA_YDIFF_S5, GOJU_YDIFF_S6, WUHU_YDIFF_S7);
-
-  uint8_t lcd_y  = top.lcd_reg.get_y();
-
-  d("LCD Y    %03d\n", lcd_y);
-  d("Y DIFF   %03d\n", y_diff);
+  d("SCAN INDEX %02d\n", pack_p(_YFEL_SCAN0.qp(), _WEWY_SCAN1.qp(), _GOSO_SCAN2.qp(), _ELYN_SCAN3.qp(),
+                                _FAHA_SCAN4.qp(), _FONY_SCAN5.qp(), 0, 0));
+  d("LCD Y      %03d\n", top.lcd_reg.get_y());
+  d("Y DIFF     %03d\n", pack_p(ERUC_YDIFF_S0, ENEF_YDIFF_S1, FECO_YDIFF_S2, GYKY_YDIFF_S3,
+                                GOPU_YDIFF_S4, FUWA_YDIFF_S5, GOJU_YDIFF_S6, WUHU_YDIFF_S7));
 
   d("_GACE_SPRITE_DELTA4      %d\n", (wire)_GACE_SPRITE_DELTA4);
   d("_GUVU_SPRITE_DELTA5      %d\n", (wire)_GUVU_SPRITE_DELTA5);
@@ -64,16 +34,16 @@ void SpriteScanner::tick(const SchematicTop& top) {
   wire GND = 0;
 
   {
-    /*p29.EBOS*/ wire _EBOS_Y0n = not1(top.lcd_reg.MUWY_Y0p.qp());
-    /*p29.DASA*/ wire _DASA_Y1n = not1(top.lcd_reg.MYRO_Y1p.qp());
-    /*p29.FUKY*/ wire _FUKY_Y2n = not1(top.lcd_reg.LEXA_Y2p.qp());
-    /*p29.FUVE*/ wire _FUVE_Y3n = not1(top.lcd_reg.LYDO_Y3p.qp());
-    /*p29.FEPU*/ wire _FEPU_Y4n = not1(top.lcd_reg.LOVU_Y4p.qp());
-    /*p29.FOFA*/ wire _FOFA_Y5n = not1(top.lcd_reg.LEMA_Y5p.qp());
-    /*p29.FEMO*/ wire _FEMO_Y6n = not1(top.lcd_reg.MATO_Y6p.qp());
-    /*p29.GUSU*/ wire _GUSU_Y7n = not1(top.lcd_reg.LAFO_Y7p.qp());
+    // this is using an adder as a subtracter by inverting the first input.
 
-    // this doesn't make sense for _both_ inputs to be inverted
+    /*#p29.EBOS*/ wire _EBOS_Y0n = not1(top.lcd_reg.MUWY_Y0p.qp());
+    /* p29.DASA*/ wire _DASA_Y1n = not1(top.lcd_reg.MYRO_Y1p.qp());
+    /* p29.FUKY*/ wire _FUKY_Y2n = not1(top.lcd_reg.LEXA_Y2p.qp());
+    /* p29.FUVE*/ wire _FUVE_Y3n = not1(top.lcd_reg.LYDO_Y3p.qp());
+    /* p29.FEPU*/ wire _FEPU_Y4n = not1(top.lcd_reg.LOVU_Y4p.qp());
+    /* p29.FOFA*/ wire _FOFA_Y5n = not1(top.lcd_reg.LEMA_Y5p.qp());
+    /* p29.FEMO*/ wire _FEMO_Y6n = not1(top.lcd_reg.MATO_Y6p.qp());
+    /* p29.GUSU*/ wire _GUSU_Y7n = not1(top.lcd_reg.LAFO_Y7p.qp());
 
     /*p29.ERUC*/ ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0p.qp(), GND);
     /*p29.ERUC*/ ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0p.qp(), GND);

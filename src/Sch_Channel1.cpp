@@ -478,7 +478,6 @@ void Channel1_tick(const Pins& pins,
   // Restart sequencer
 
   {
-    // FIXME
     //wire aCLK_1M  = a.clk.DOVA_ABCDxxxx;
     //wire bCLK_1M  = b.clk.DOVA_ABCDxxxx;
     wire aCLK_1M  = dff20.DOVA_ABCDxxxx;

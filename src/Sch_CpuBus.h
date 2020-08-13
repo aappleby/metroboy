@@ -13,15 +13,15 @@ struct CpuBus {
   void tock(const SchematicTop& top);
 
   uint16_t get_bus_addr() const {
-    return (uint16_t)pack_p(CPU_BUS_A00.qp(), CPU_BUS_A01.qp(), CPU_BUS_A02.qp(), CPU_BUS_A03.qp(),
-                          CPU_BUS_A04.qp(), CPU_BUS_A05.qp(), CPU_BUS_A06.qp(), CPU_BUS_A07.qp(),
-                          CPU_BUS_A08.qp(), CPU_BUS_A09.qp(), CPU_BUS_A10.qp(), CPU_BUS_A11.qp(),
-                          CPU_BUS_A12.qp(), CPU_BUS_A13.qp(), CPU_BUS_A14.qp(), CPU_BUS_A15.qp());
+    return (uint16_t)pack_p(CPU_BUS_A00.tp(), CPU_BUS_A01.tp(), CPU_BUS_A02.tp(), CPU_BUS_A03.tp(),
+                          CPU_BUS_A04.tp(), CPU_BUS_A05.tp(), CPU_BUS_A06.tp(), CPU_BUS_A07.tp(),
+                          CPU_BUS_A08.tp(), CPU_BUS_A09.tp(), CPU_BUS_A10.tp(), CPU_BUS_A11.tp(),
+                          CPU_BUS_A12.tp(), CPU_BUS_A13.tp(), CPU_BUS_A14.tp(), CPU_BUS_A15.tp());
   }
 
   uint8_t get_bus_data() const {
-    return (uint8_t)pack_p(CPU_BUS_D0.qp(), CPU_BUS_D1.qp(), CPU_BUS_D2.qp(), CPU_BUS_D3.qp(),
-                           CPU_BUS_D4.qp(), CPU_BUS_D5.qp(), CPU_BUS_D6.qp(), CPU_BUS_D7.qp());
+    return (uint8_t)pack_p(CPU_BUS_D0p.tp(), CPU_BUS_D1p.tp(), CPU_BUS_D2p.tp(), CPU_BUS_D3p.tp(),
+                           CPU_BUS_D4p.tp(), CPU_BUS_D5p.tp(), CPU_BUS_D6p.tp(), CPU_BUS_D7p.tp());
   }
 
   void preset_addr(uint16_t addr) {
@@ -64,48 +64,48 @@ struct CpuBus {
 
   void preset_data(bool oe, uint8_t data) {
     if (oe) {
-      CPU_BUS_D0.preset(data & 0x01);
-      CPU_BUS_D1.preset(data & 0x02);
-      CPU_BUS_D2.preset(data & 0x04);
-      CPU_BUS_D3.preset(data & 0x08);
-      CPU_BUS_D4.preset(data & 0x10);
-      CPU_BUS_D5.preset(data & 0x20);
-      CPU_BUS_D6.preset(data & 0x40);
-      CPU_BUS_D7.preset(data & 0x80);
+      CPU_BUS_D0p.preset(data & 0x01);
+      CPU_BUS_D1p.preset(data & 0x02);
+      CPU_BUS_D2p.preset(data & 0x04);
+      CPU_BUS_D3p.preset(data & 0x08);
+      CPU_BUS_D4p.preset(data & 0x10);
+      CPU_BUS_D5p.preset(data & 0x20);
+      CPU_BUS_D6p.preset(data & 0x40);
+      CPU_BUS_D7p.preset(data & 0x80);
     }
     else {
-      CPU_BUS_D0.preset(DELTA_TRIZ);
-      CPU_BUS_D1.preset(DELTA_TRIZ);
-      CPU_BUS_D2.preset(DELTA_TRIZ);
-      CPU_BUS_D3.preset(DELTA_TRIZ);
-      CPU_BUS_D4.preset(DELTA_TRIZ);
-      CPU_BUS_D5.preset(DELTA_TRIZ);
-      CPU_BUS_D6.preset(DELTA_TRIZ);
-      CPU_BUS_D7.preset(DELTA_TRIZ);
+      CPU_BUS_D0p.preset(DELTA_TRIZ);
+      CPU_BUS_D1p.preset(DELTA_TRIZ);
+      CPU_BUS_D2p.preset(DELTA_TRIZ);
+      CPU_BUS_D3p.preset(DELTA_TRIZ);
+      CPU_BUS_D4p.preset(DELTA_TRIZ);
+      CPU_BUS_D5p.preset(DELTA_TRIZ);
+      CPU_BUS_D6p.preset(DELTA_TRIZ);
+      CPU_BUS_D7p.preset(DELTA_TRIZ);
     }
   }
 
   void preset_data_z() {
-    CPU_BUS_D0.preset(DELTA_TRIZ);
-    CPU_BUS_D1.preset(DELTA_TRIZ);
-    CPU_BUS_D2.preset(DELTA_TRIZ);
-    CPU_BUS_D3.preset(DELTA_TRIZ);
-    CPU_BUS_D4.preset(DELTA_TRIZ);
-    CPU_BUS_D5.preset(DELTA_TRIZ);
-    CPU_BUS_D6.preset(DELTA_TRIZ);
-    CPU_BUS_D7.preset(DELTA_TRIZ);
+    CPU_BUS_D0p.preset(DELTA_TRIZ);
+    CPU_BUS_D1p.preset(DELTA_TRIZ);
+    CPU_BUS_D2p.preset(DELTA_TRIZ);
+    CPU_BUS_D3p.preset(DELTA_TRIZ);
+    CPU_BUS_D4p.preset(DELTA_TRIZ);
+    CPU_BUS_D5p.preset(DELTA_TRIZ);
+    CPU_BUS_D6p.preset(DELTA_TRIZ);
+    CPU_BUS_D7p.preset(DELTA_TRIZ);
   }
 
   //-----------------------------------------------------------------------------
 
   void dump(Dumper& d) const {
     d("---------- CPU Bus  ----------\n");
-    d("CPU BOOT : %d\n", CPU_PIN_BOOTp.qp());
-    d("CPU AHI  : %d\n", CPU_PIN_ADDR_HI.qp());
-    d("CPU RDp  : %d\n", CPU_PIN_RDp.qp());
-    d("CPU WRp  : %d\n", CPU_PIN_WRp.qp());
-    d("CPU AVp  : %d\n", CPU_PIN_ADDR_EXT.qp());
-    d("CPU DVp  : %d\n", CPU_PIN_HOLD_MEM.qp());
+    d("CPU BOOT : %d\n", CPU_PIN_BOOTp.tp());
+    d("CPU AHI  : %d\n", CPU_PIN_ADDR_HI.tp());
+    d("CPU RDp  : %d\n", CPU_PIN_RDp.tp());
+    d("CPU WRp  : %d\n", CPU_PIN_WRp.tp());
+    d("CPU AVp  : %d\n", CPU_PIN_ADDR_EXT.tp());
+    d("CPU DVp  : %d\n", CPU_PIN_HOLD_MEM.tp());
 
     d("CPU ADDR : %04x\n", get_bus_addr());
 
@@ -118,8 +118,8 @@ struct CpuBus {
       CPU_BUS_A03.c(), CPU_BUS_A02.c(), CPU_BUS_A01.c(), CPU_BUS_A00.c());
 
     d("CPU PIN DATA    : %c%c%c%c%c%c%c%c\n",
-      CPU_BUS_D7.c(), CPU_BUS_D6.c(), CPU_BUS_D5.c(), CPU_BUS_D4.c(),
-      CPU_BUS_D3.c(), CPU_BUS_D2.c(), CPU_BUS_D1.c(), CPU_BUS_D0.c());
+      CPU_BUS_D7p.c(), CPU_BUS_D6p.c(), CPU_BUS_D5p.c(), CPU_BUS_D4p.c(),
+      CPU_BUS_D3p.c(), CPU_BUS_D2p.c(), CPU_BUS_D1p.c(), CPU_BUS_D0p.c());
 
     d("\n");
   }
@@ -134,48 +134,48 @@ struct CpuBus {
   /*p07.ROPE*/ wire ROPE_FE00_FEFFn() const { return nand2(RYCU_0000_FDFFn(), SOHA_FF00_FFFFn()); }
   /*p07.SARO*/ wire SARO_FE00_FEFFp() const { return not1(ROPE_FE00_FEFFn()); }
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not1(SARO_FE00_FEFFp()); }
-  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not1(CPU_BUS_A15.qp()); }
-  /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or3(CPU_BUS_A13.qp(), CPU_BUS_A14.qp(), SORE_0000_7FFFp()); }
+  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not1(CPU_BUS_A15.tp()); }
+  /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or3(CPU_BUS_A13.tp(), CPU_BUS_A14.tp(), SORE_0000_7FFFp()); }
 
-  /*p22.XOLA*/ wire XOLA_A00n() const { return not1(CPU_BUS_A00.qp()); }
-  /*p22.XENO*/ wire XENO_A01n() const { return not1(CPU_BUS_A01.qp()); }
-  /*p22.XUSY*/ wire XUSY_A02n() const { return not1(CPU_BUS_A02.qp()); }
-  /*p22.XERA*/ wire XERA_A03n() const { return not1(CPU_BUS_A03.qp()); }
-  /*p07.TONA*/ wire TONA_A08n() const { return not1(CPU_BUS_A08.qp()); }
+  /*p22.XOLA*/ wire XOLA_A00n() const { return not1(CPU_BUS_A00.tp()); }
+  /*p22.XENO*/ wire XENO_A01n() const { return not1(CPU_BUS_A01.tp()); }
+  /*p22.XUSY*/ wire XUSY_A02n() const { return not1(CPU_BUS_A02.tp()); }
+  /*p22.XERA*/ wire XERA_A03n() const { return not1(CPU_BUS_A03.tp()); }
+  /*p07.TONA*/ wire TONA_A08n() const { return not1(CPU_BUS_A08.tp()); }
 
   /*p22.WADO*/ wire WADO_A00p() const { return not1(XOLA_A00n()); }
   /*p22.WESA*/ wire WESA_A01p() const { return not1(XENO_A01n()); }
   /*p22.WALO*/ wire WALO_A02p() const { return not1(XUSY_A02n()); }
   /*p22.WEPO*/ wire WEPO_A03p() const { return not1(XERA_A03n()); }
 
-  /*p03.TOVY*/ wire TOVY_A00n() const { return not1(CPU_BUS_A00.qp()); }
-  /*p08.TOLA*/ wire TOLA_A01n() const { return not1(CPU_BUS_A01.qp()); }
-  /*p06.SEFY*/ wire SEFY_A02n() const { return not1(CPU_BUS_A02.qp()); }
+  /*p03.TOVY*/ wire TOVY_A00n() const { return not1(CPU_BUS_A00.tp()); }
+  /*p08.TOLA*/ wire TOLA_A01n() const { return not1(CPU_BUS_A01.tp()); }
+  /*p06.SEFY*/ wire SEFY_A02n() const { return not1(CPU_BUS_A02.tp()); }
 
   /*p07.TUNA*/ wire TUNA_0000_FDFFp() const {
-    return nand7(CPU_BUS_A15.qp(), CPU_BUS_A14.qp(), CPU_BUS_A13.qp(),
-                 CPU_BUS_A12.qp(), CPU_BUS_A11.qp(), CPU_BUS_A10.qp(),
-                 CPU_BUS_A09.qp());
+    return nand7(CPU_BUS_A15.tp(), CPU_BUS_A14.tp(), CPU_BUS_A13.tp(),
+                 CPU_BUS_A12.tp(), CPU_BUS_A11.tp(), CPU_BUS_A10.tp(),
+                 CPU_BUS_A09.tp());
   }
 
   /*p22.WERO*/ wire WERO_FF4Xp() const {
-    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor3(CPU_BUS_A07.qp(), CPU_BUS_A05.qp(), CPU_BUS_A04.qp());
+    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor3(CPU_BUS_A07.tp(), CPU_BUS_A05.tp(), CPU_BUS_A04.tp());
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor2(TUNA_0000_FDFFp(), TONA_A08n());
-    /*p22.WUTU*/ wire WUTU_FF4Xn = nand3(SYKE_FF00_FFFFp, CPU_BUS_A06.qp(), XALY_0x00xxxxp);
+    /*p22.WUTU*/ wire WUTU_FF4Xn = nand3(SYKE_FF00_FFFFp, CPU_BUS_A06.tp(), XALY_0x00xxxxp);
     return not1(WUTU_FF4Xn);
   }
 
-  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor5(CPU_BUS_A07.qp(), CPU_BUS_A06.qp(), CPU_BUS_A05.qp(), CPU_BUS_A04.qp(), CPU_BUS_A03.qp()); }
+  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor5(CPU_BUS_A07.tp(), CPU_BUS_A06.tp(), CPU_BUS_A05.tp(), CPU_BUS_A04.tp(), CPU_BUS_A03.tp()); }
 
 
   /*p07.TULO*/ wire TULO_ADDR_00XXp() const {
-    return nor8(CPU_BUS_A15.qp(), CPU_BUS_A14.qp(), CPU_BUS_A13.qp(), CPU_BUS_A12.qp(),
-                CPU_BUS_A11.qp(), CPU_BUS_A10.qp(), CPU_BUS_A09.qp(), CPU_BUS_A08.qp());
+    return nor8(CPU_BUS_A15.tp(), CPU_BUS_A14.tp(), CPU_BUS_A13.tp(), CPU_BUS_A12.tp(),
+                CPU_BUS_A11.tp(), CPU_BUS_A10.tp(), CPU_BUS_A09.tp(), CPU_BUS_A08.tp());
   }
 
   /*p07.ZUFA*/ wire ZUFA_ADDR_00XX() const {
-    /*p07.ZORO*/ wire _ZORO_ADDR_0XXX = nor4(CPU_BUS_A15.qp(), CPU_BUS_A14.qp(), CPU_BUS_A13.qp(), CPU_BUS_A12.qp());
-    /*p07.ZADU*/ wire _ZADU_ADDR_X0XX = nor4(CPU_BUS_A11.qp(), CPU_BUS_A10.qp(), CPU_BUS_A09.qp(), CPU_BUS_A08.qp());
+    /*p07.ZORO*/ wire _ZORO_ADDR_0XXX = nor4(CPU_BUS_A15.tp(), CPU_BUS_A14.tp(), CPU_BUS_A13.tp(), CPU_BUS_A12.tp());
+    /*p07.ZADU*/ wire _ZADU_ADDR_X0XX = nor4(CPU_BUS_A11.tp(), CPU_BUS_A10.tp(), CPU_BUS_A09.tp(), CPU_BUS_A08.tp());
     return and2(_ZORO_ADDR_0XXX, _ZADU_ADDR_X0XX);
   }
 
@@ -198,14 +198,14 @@ struct CpuBus {
   Tri CPU_BUS_A14 = TRI_D0NP;  // bottom right port PORTB_26: -> A14
   Tri CPU_BUS_A15 = TRI_D0NP;  // bottom right port PORTB_30: -> A15                               
 
-  Tri CPU_BUS_D0  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D1  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D2  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D3  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D4  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D5  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D6  = TRI_HZPU;   // bottom left port: <>
-  Tri CPU_BUS_D7  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D0p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D1p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D2p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D3p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D4p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D5p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D6p  = TRI_HZPU;   // bottom left port: <>
+  Tri CPU_BUS_D7p  = TRI_HZPU;   // bottom left port: <>
 
 //private:
 

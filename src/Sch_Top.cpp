@@ -117,14 +117,14 @@ if (top.VYPO_GND) bus_out.set_data(
 ///*p05.KYWE*/ wire P05_NC1 = nor4 (KERU_DBG_FF00_D7, FF60_0o);
 
 /*p08.LYRA*/ wire DBG_D_RDn = nand2(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/*p08.TUTY*/ if (!DBG_D_RDn) CPU_BUS_D0 = not1(/*p08.TOVO*/ not1(pins.PIN_D0_C));
-/*p08.SYWA*/ if (!DBG_D_RDn) CPU_BUS_D1 = not1(/*p08.RUZY*/ not1(pins.PIN_D1_C));
-/*p08.SUGU*/ if (!DBG_D_RDn) CPU_BUS_D2 = not1(/*p08.ROME*/ not1(pins.PIN_D2_C));
-/*p08.TAWO*/ if (!DBG_D_RDn) CPU_BUS_D3 = not1(/*p08.SAZA*/ not1(pins.PIN_D3_C));
-/*p08.TUTE*/ if (!DBG_D_RDn) CPU_BUS_D4 = not1(/*p08.TEHE*/ not1(pins.PIN_D4_C));
-/*p08.SAJO*/ if (!DBG_D_RDn) CPU_BUS_D5 = not1(/*p08.RATU*/ not1(pins.PIN_D5_C));
-/*p08.TEMY*/ if (!DBG_D_RDn) CPU_BUS_D6 = not1(/*p08.SOCA*/ not1(pins.PIN_D6_C));
-/*p08.ROPA*/ if (!DBG_D_RDn) CPU_BUS_D7 = not1(/*p08.RYBA*/ not1(pins.PIN_D7_C));
+/*p08.TUTY*/ if (!DBG_D_RDn) CPU_BUS_D0p = not1(/*p08.TOVO*/ not1(pins.PIN_D0_C));
+/*p08.SYWA*/ if (!DBG_D_RDn) CPU_BUS_D1p = not1(/*p08.RUZY*/ not1(pins.PIN_D1_C));
+/*p08.SUGU*/ if (!DBG_D_RDn) CPU_BUS_D2p = not1(/*p08.ROME*/ not1(pins.PIN_D2_C));
+/*p08.TAWO*/ if (!DBG_D_RDn) CPU_BUS_D3p = not1(/*p08.SAZA*/ not1(pins.PIN_D3_C));
+/*p08.TUTE*/ if (!DBG_D_RDn) CPU_BUS_D4p = not1(/*p08.TEHE*/ not1(pins.PIN_D4_C));
+/*p08.SAJO*/ if (!DBG_D_RDn) CPU_BUS_D5p = not1(/*p08.RATU*/ not1(pins.PIN_D5_C));
+/*p08.TEMY*/ if (!DBG_D_RDn) CPU_BUS_D6p = not1(/*p08.SOCA*/ not1(pins.PIN_D6_C));
+/*p08.ROPA*/ if (!DBG_D_RDn) CPU_BUS_D7p = not1(/*p08.RYBA*/ not1(pins.PIN_D7_C));
 #endif
 
 // hack, not correct
@@ -136,8 +136,8 @@ if (top.VYPO_GND) bus_out.set_data(
 
   /*p05.KURA*/ wire FF60_0n = not1(BURO_FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not1(BURO_FF60_0);
-  /*p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D0);
-  /*p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D1);
+  /*p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D0p);
+  /*p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, CPU_BUS_D1p);
 
   ///*p05.KURA*/ wire FF60_0n = not1(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not1(FF60);
@@ -386,45 +386,45 @@ void dump_pins(TextPainter& /*text_painter*/) {
 
   text_painter.add_text("Axx ");
   dump_pins(text_painter, EXT_PIN_A15_A, EXT_PIN_A15_D);
-  dump_pins(text_painter, EXT_PIN_A14_A, EXT_PIN_A14_D);
-  dump_pins(text_painter, EXT_PIN_A13_A, EXT_PIN_A13_D);
-  dump_pins(text_painter, EXT_PIN_A12_A, EXT_PIN_A12_D);
+  dump_pins(text_painter, EXT_PIN_A14n_A, EXT_PIN_A14n_D);
+  dump_pins(text_painter, EXT_PIN_A13n_A, EXT_PIN_A13n_D);
+  dump_pins(text_painter, EXT_PIN_A12n_A, EXT_PIN_A12n_D);
   text_painter.add_char(':');
-  dump_pins(text_painter, EXT_PIN_A11_A, EXT_PIN_A11_D);
-  dump_pins(text_painter, EXT_PIN_A10_A, EXT_PIN_A10_D);
-  dump_pins(text_painter, EXT_PIN_A09_A, EXT_PIN_A09_D);
-  dump_pins(text_painter, EXT_PIN_A08_A, EXT_PIN_A08_D);
+  dump_pins(text_painter, EXT_PIN_A11n_A, EXT_PIN_A11n_D);
+  dump_pins(text_painter, EXT_PIN_A10n_A, EXT_PIN_A10n_D);
+  dump_pins(text_painter, EXT_PIN_A09n_A, EXT_PIN_A09n_D);
+  dump_pins(text_painter, EXT_PIN_A08n_A, EXT_PIN_A08n_D);
   text_painter.add_char(':');
-  dump_pins(text_painter, EXT_PIN_A07_A, EXT_PIN_A07_D);
-  dump_pins(text_painter, EXT_PIN_A06_A, EXT_PIN_A06_D);
-  dump_pins(text_painter, EXT_PIN_A05_A, EXT_PIN_A05_D);
-  dump_pins(text_painter, EXT_PIN_A04_A, EXT_PIN_A04_D);
+  dump_pins(text_painter, EXT_PIN_A07n_A, EXT_PIN_A07n_D);
+  dump_pins(text_painter, EXT_PIN_A06n_A, EXT_PIN_A06n_D);
+  dump_pins(text_painter, EXT_PIN_A05n_A, EXT_PIN_A05n_D);
+  dump_pins(text_painter, EXT_PIN_A04n_A, EXT_PIN_A04n_D);
   text_painter.add_char(':');
-  dump_pins(text_painter, EXT_PIN_A03_A, EXT_PIN_A03_D);
-  dump_pins(text_painter, EXT_PIN_A02_A, EXT_PIN_A02_D);
-  dump_pins(text_painter, EXT_PIN_A01_A, EXT_PIN_A01_D);
-  dump_pins(text_painter, EXT_PIN_A00_A, EXT_PIN_A00_D);
+  dump_pins(text_painter, EXT_PIN_A03n_A, EXT_PIN_A03n_D);
+  dump_pins(text_painter, EXT_PIN_A02n_A, EXT_PIN_A02n_D);
+  dump_pins(text_painter, EXT_PIN_A01n_A, EXT_PIN_A01n_D);
+  dump_pins(text_painter, EXT_PIN_A00n_A, EXT_PIN_A00n_D);
   text_painter.newline();
 
   text_painter.add_text("Dxx ");
-  dump_pins(text_painter, EXT_PIN_D7_A, EXT_PIN_D7_B, PIN_D7_C, EXT_PIN_D7_D);
-  dump_pins(text_painter, EXT_PIN_D6_A, EXT_PIN_D6_B, PIN_D6_C, EXT_PIN_D6_D);
-  dump_pins(text_painter, EXT_PIN_D5_A, EXT_PIN_D5_B, PIN_D5_C, EXT_PIN_D5_D);
-  dump_pins(text_painter, EXT_PIN_D4_A, EXT_PIN_D4_B, PIN_D4_C, EXT_PIN_D4_D);
-  dump_pins(text_painter, EXT_PIN_D3_A, EXT_PIN_D3_B, PIN_D3_C, EXT_PIN_D3_D);
-  dump_pins(text_painter, EXT_PIN_D2_A, EXT_PIN_D2_B, PIN_D2_C, EXT_PIN_D2_D);
-  dump_pins(text_painter, EXT_PIN_D1_A, EXT_PIN_D1_B, PIN_D1_C, EXT_PIN_D1_D);
-  dump_pins(text_painter, EXT_PIN_D0_A, EXT_PIN_D0_B, PIN_D0_C, EXT_PIN_D0_D);
+  dump_pins(text_painter, EXT_PIN_D7n_A, EXT_PIN_D7_B, PIN_D7_C, EXT_PIN_D7n_D);
+  dump_pins(text_painter, EXT_PIN_D6n_A, EXT_PIN_D6_B, PIN_D6_C, EXT_PIN_D6n_D);
+  dump_pins(text_painter, EXT_PIN_D5n_A, EXT_PIN_D5_B, PIN_D5_C, EXT_PIN_D5n_D);
+  dump_pins(text_painter, EXT_PIN_D4n_A, EXT_PIN_D4_B, PIN_D4_C, EXT_PIN_D4n_D);
+  dump_pins(text_painter, EXT_PIN_D3n_A, EXT_PIN_D3_B, PIN_D3_C, EXT_PIN_D3n_D);
+  dump_pins(text_painter, EXT_PIN_D2n_A, EXT_PIN_D2_B, PIN_D2_C, EXT_PIN_D2n_D);
+  dump_pins(text_painter, EXT_PIN_D1n_A, EXT_PIN_D1_B, PIN_D1_C, EXT_PIN_D1n_D);
+  dump_pins(text_painter, EXT_PIN_D0n_A, EXT_PIN_D0_B, PIN_D0_C, EXT_PIN_D0n_D);
   text_painter.newline();
   */
 }
 
 uint16_t get_addr() const {
   uint16_t ext_addr = (uint16_t)pack_p(
-    EXT_PIN_A00_A, EXT_PIN_A01_A, EXT_PIN_A02_A, EXT_PIN_A03_A,
-    EXT_PIN_A04_A, EXT_PIN_A05_A, EXT_PIN_A06_A, EXT_PIN_A07_A,
-    EXT_PIN_A08_A, EXT_PIN_A09_A, EXT_PIN_A10_A, EXT_PIN_A11_A,
-    EXT_PIN_A12_A, EXT_PIN_A13_A, EXT_PIN_A14_A, EXT_PIN_A15_A);
+    EXT_PIN_A00n_A, EXT_PIN_A01n_A, EXT_PIN_A02n_A, EXT_PIN_A03n_A,
+    EXT_PIN_A04n_A, EXT_PIN_A05n_A, EXT_PIN_A06n_A, EXT_PIN_A07n_A,
+    EXT_PIN_A08n_A, EXT_PIN_A09n_A, EXT_PIN_A10n_A, EXT_PIN_A11n_A,
+    EXT_PIN_A12n_A, EXT_PIN_A13n_A, EXT_PIN_A14n_A, EXT_PIN_A15_A);
 
   return ext_addr;
 }

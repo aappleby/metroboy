@@ -46,7 +46,7 @@ void GateBoy::run_reset_sequence() {
 
 
   log("Wait for CPU_PIN_START");
-  while(!top.clk_reg.CPU_PIN_STARTp.qp()) {
+  while(!top.clk_reg.CPU_PIN_STARTp.tp()) {
     run(8);
   }
   log("\n");
@@ -335,7 +335,7 @@ void GateBoy::phase() {
 
   StringDumper d;
 
-  for (pass_count = 0; pass_count < 100; pass_count++) {
+  for (pass_count = 1; pass_count < 100; pass_count++) {
     hash_regs_old = hash_regs_new;
     hash_regs_new  = pass();
     if (hash_regs_new == hash_regs_old) break;
@@ -349,7 +349,14 @@ void GateBoy::phase() {
     bus_collision = false;
   }
 
+  if (bus_floating) {
+    // FIXME hitting this a lot
+    //printf("Bus floating!\n");
+    bus_floating = false;
+  }
+
   CHECK_P(pass_count < 100);
+  pass_total += pass_count;
 
   //----------
   // Pixels _def_ latched on positive clock edge (neg edge inverted)
@@ -365,8 +372,8 @@ void GateBoy::phase() {
   int fb_y = top.lcd_reg.get_y();
 
   if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-    int p0 = top.LCD_PIN_DATA0.qp();
-    int p1 = top.LCD_PIN_DATA1.qp();
+    int p0 = !top.LCD_PIN_DATA0n.tp();
+    int p1 = !top.LCD_PIN_DATA1n.tp();
     fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
   }
 
@@ -400,40 +407,40 @@ void GateBoy::phase() {
       CHECK_CLK_PHASE(top.clk_reg.AFAS_xxxxEFGx(),    0b00001110);
 
       if (sys_cpuready) {
-        CHECK_CLK_PHASE(top.clk_reg.BELU_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BYRY_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BUDE_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.UVYT_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BEKO_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.MOPA_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.XYNY_ABCDxxxx(),       0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BELU_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BYRY_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BUDE_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.UVYT_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BEKO_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.MOPA_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.XYNY_ABCDxxxx(), 0b11110000);
 
-        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxxxxxGH(),       0b00000011);
-        CHECK_CLK_PHASE(top.clk_reg.BERU_ABCDEFxx(),       0b11111100);
-        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxxxxxGH(),       0b00000011);
-        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABCDEFxx(),       0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxxxxxGH(), 0b00000011);
+        CHECK_CLK_PHASE(top.clk_reg.BERU_ABCDEFxx(), 0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxxxxxGH(), 0b00000011);
+        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABCDEFxx(), 0b11111100);
 
-        CHECK_CLK_PHASE(top.clk_reg.BEJA_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BANE_ABCDxxxx(),       0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BELO_xxxxEFGH(),       0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BAZE_ABCDxxxx(),       0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BEJA_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BANE_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BELO_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BAZE_ABCDxxxx(), 0b11110000);
 
-        CHECK_CLK_PHASE(top.clk_reg.BUTO_xBCDEFGH(),       0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BELE_Axxxxxxx(),       0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.BYJU_xBCDEFGH(),       0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BALY_Axxxxxxx(),       0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.BOGA_xBCDEFGH(),       0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BOMA_Axxxxxxx(),       0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BUTO_xBCDEFGH(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BELE_Axxxxxxx(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BYJU_xBCDEFGH(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BALY_Axxxxxxx(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BOGA_xBCDEFGH(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BOMA_Axxxxxxx(), 0b10000000);
 
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_xBCDEFGH.qp(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_Axxxxxxx.qp(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_ABCDxxxx.qp(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_xxxxEFGH.qp(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABCDEFxx.qp(), 0b11111100);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_AxxxxxGH.qp(), 0b10000011);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.qp(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_xBCDEFGH.qp(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.EXT_PIN_CLK_xxxxEFGH.qp(),  0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
       }
     }
   }
@@ -468,6 +475,7 @@ uint64_t GateBoy::pass() {
 
   Sig::sim_running = true;
   bus_collision = false;
+  bus_floating = false;
   top.tick_slow(phase);
   Sig::sim_running = false;
 
@@ -534,29 +542,49 @@ void GateBoy::update_cpu_bus(int phase, Req req) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::update_ext_bus() {
-  top.ext_bus.EXT_PIN_WR_C.preset(top.ext_bus.EXT_PIN_WR_A.qp());
-  top.ext_bus.EXT_PIN_RD_C.preset(top.ext_bus.EXT_PIN_RD_A.qp());
+  top.ext_bus.EXT_PIN_WR_C.preset(top.ext_bus.EXT_PIN_WR_A.tp());
+  top.ext_bus.EXT_PIN_RD_C.preset(top.ext_bus.EXT_PIN_RD_A.tp());
+  top.ext_bus.EXT_PIN_A00_C.preset(top.ext_bus.EXT_PIN_A00n_A.tp());
+  top.ext_bus.EXT_PIN_A01_C.preset(top.ext_bus.EXT_PIN_A01n_A.tp());
+  top.ext_bus.EXT_PIN_A02_C.preset(top.ext_bus.EXT_PIN_A02n_A.tp());
+  top.ext_bus.EXT_PIN_A03_C.preset(top.ext_bus.EXT_PIN_A03n_A.tp());
+  top.ext_bus.EXT_PIN_A04_C.preset(top.ext_bus.EXT_PIN_A04n_A.tp());
+  top.ext_bus.EXT_PIN_A05_C.preset(top.ext_bus.EXT_PIN_A05n_A.tp());
+  top.ext_bus.EXT_PIN_A06_C.preset(top.ext_bus.EXT_PIN_A06n_A.tp());
+  top.ext_bus.EXT_PIN_A07_C.preset(top.ext_bus.EXT_PIN_A07n_A.tp());
+  top.ext_bus.EXT_PIN_A08_C.preset(top.ext_bus.EXT_PIN_A08n_A.tp());
+  top.ext_bus.EXT_PIN_A09_C.preset(top.ext_bus.EXT_PIN_A09n_A.tp());
+  top.ext_bus.EXT_PIN_A10_C.preset(top.ext_bus.EXT_PIN_A10n_A.tp());
+  top.ext_bus.EXT_PIN_A11_C.preset(top.ext_bus.EXT_PIN_A11n_A.tp());
+  top.ext_bus.EXT_PIN_A12_C.preset(top.ext_bus.EXT_PIN_A12n_A.tp());
+  top.ext_bus.EXT_PIN_A13_C.preset(top.ext_bus.EXT_PIN_A13n_A.tp());
+  top.ext_bus.EXT_PIN_A14_C.preset(top.ext_bus.EXT_PIN_A14n_A.tp());
+  top.ext_bus.EXT_PIN_A15_C.preset(top.ext_bus.EXT_PIN_A15n_A.tp());
 
-  top.ext_bus.EXT_PIN_A00_C.preset(top.ext_bus.EXT_PIN_A00_A.qp());
-  top.ext_bus.EXT_PIN_A01_C.preset(top.ext_bus.EXT_PIN_A01_A.qp());
-  top.ext_bus.EXT_PIN_A02_C.preset(top.ext_bus.EXT_PIN_A02_A.qp());
-  top.ext_bus.EXT_PIN_A03_C.preset(top.ext_bus.EXT_PIN_A03_A.qp());
-  top.ext_bus.EXT_PIN_A04_C.preset(top.ext_bus.EXT_PIN_A04_A.qp());
-  top.ext_bus.EXT_PIN_A05_C.preset(top.ext_bus.EXT_PIN_A05_A.qp());
-  top.ext_bus.EXT_PIN_A06_C.preset(top.ext_bus.EXT_PIN_A06_A.qp());
-  top.ext_bus.EXT_PIN_A07_C.preset(top.ext_bus.EXT_PIN_A07_A.qp());
-  top.ext_bus.EXT_PIN_A08_C.preset(top.ext_bus.EXT_PIN_A08_A.qp());
-  top.ext_bus.EXT_PIN_A09_C.preset(top.ext_bus.EXT_PIN_A09_A.qp());
-  top.ext_bus.EXT_PIN_A10_C.preset(top.ext_bus.EXT_PIN_A10_A.qp());
-  top.ext_bus.EXT_PIN_A11_C.preset(top.ext_bus.EXT_PIN_A11_A.qp());
-  top.ext_bus.EXT_PIN_A12_C.preset(top.ext_bus.EXT_PIN_A12_A.qp());
-  top.ext_bus.EXT_PIN_A13_C.preset(top.ext_bus.EXT_PIN_A13_A.qp());
-  top.ext_bus.EXT_PIN_A14_C.preset(top.ext_bus.EXT_PIN_A14_A.qp());
-  top.ext_bus.EXT_PIN_A15_C.preset(top.ext_bus.EXT_PIN_A15_A.qp());
+  /*
+  top.ext_bus.EXT_PIN_WR_C.preset(0);
+  top.ext_bus.EXT_PIN_RD_C.preset(0);
+  top.ext_bus.EXT_PIN_A00_C.preset(0);
+  top.ext_bus.EXT_PIN_A01_C.preset(0);
+  top.ext_bus.EXT_PIN_A02_C.preset(0);
+  top.ext_bus.EXT_PIN_A03_C.preset(0);
+  top.ext_bus.EXT_PIN_A04_C.preset(0);
+  top.ext_bus.EXT_PIN_A05_C.preset(0);
+  top.ext_bus.EXT_PIN_A06_C.preset(0);
+  top.ext_bus.EXT_PIN_A07_C.preset(0);
+  top.ext_bus.EXT_PIN_A08_C.preset(0);
+  top.ext_bus.EXT_PIN_A09_C.preset(0);
+  top.ext_bus.EXT_PIN_A10_C.preset(0);
+  top.ext_bus.EXT_PIN_A11_C.preset(0);
+  top.ext_bus.EXT_PIN_A12_C.preset(0);
+  top.ext_bus.EXT_PIN_A13_C.preset(0);
+  top.ext_bus.EXT_PIN_A14_C.preset(0);
+  top.ext_bus.EXT_PIN_A15_C.preset(0);
+  */
 
-  if (top.ext_bus.EXT_PIN_WR_A.qp()) {
-    uint16_t ext_addr = ~top.ext_bus.get_pin_addr();
-    uint8_t ext_data = ~top.ext_bus.get_pin_data_out();
+  if (top.ext_bus.EXT_PIN_WR_A.tp()) {
+    uint16_t ext_addr = top.ext_bus.get_pin_addr();
+    uint8_t ext_data = top.ext_bus.get_pin_data_out();
     
     if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
       // FIXME yeah we don't actually want to allow writing to ROM...
@@ -577,8 +605,8 @@ void GateBoy::update_ext_bus() {
     }
   }
 
-  if (top.ext_bus.EXT_PIN_RD_A.qp()) {
-    uint16_t ext_addr = ~top.ext_bus.get_pin_addr();
+  if (top.ext_bus.EXT_PIN_RD_A.tp()) {
+    uint16_t ext_addr = top.ext_bus.get_pin_addr();
 
     if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
       uint8_t ext_data = mem[ext_addr];
@@ -605,9 +633,24 @@ void GateBoy::update_ext_bus() {
       top.ext_bus.preset_pin_data_z();
     }
   }
-  else {
-    top.ext_bus.preset_pin_data_z();
-  }
+
+  if (!top.ext_bus.EXT_PIN_D0_B.tp()) top.ext_bus.EXT_PIN_D0n_C.preset(top.ext_bus.EXT_PIN_D0n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D1_B.tp()) top.ext_bus.EXT_PIN_D1n_C.preset(top.ext_bus.EXT_PIN_D1n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D2_B.tp()) top.ext_bus.EXT_PIN_D2n_C.preset(top.ext_bus.EXT_PIN_D2n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D3_B.tp()) top.ext_bus.EXT_PIN_D3n_C.preset(top.ext_bus.EXT_PIN_D3n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D4_B.tp()) top.ext_bus.EXT_PIN_D4n_C.preset(top.ext_bus.EXT_PIN_D4n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D5_B.tp()) top.ext_bus.EXT_PIN_D5n_C.preset(top.ext_bus.EXT_PIN_D5n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D6_B.tp()) top.ext_bus.EXT_PIN_D6n_C.preset(top.ext_bus.EXT_PIN_D6n_A.tp());
+  if (!top.ext_bus.EXT_PIN_D7_B.tp()) top.ext_bus.EXT_PIN_D7n_C.preset(top.ext_bus.EXT_PIN_D7n_A.tp());
+
+  if (top.ext_bus.EXT_PIN_D0_B.tp()) top.ext_bus.EXT_PIN_D0n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D1_B.tp()) top.ext_bus.EXT_PIN_D1n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D2_B.tp()) top.ext_bus.EXT_PIN_D2n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D3_B.tp()) top.ext_bus.EXT_PIN_D3n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D4_B.tp()) top.ext_bus.EXT_PIN_D4n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D5_B.tp()) top.ext_bus.EXT_PIN_D5n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D6_B.tp()) top.ext_bus.EXT_PIN_D6n_C.preset(DELTA_TRIZ);
+  if (top.ext_bus.EXT_PIN_D7_B.tp()) top.ext_bus.EXT_PIN_D7n_C.preset(DELTA_TRIZ);
 }
 
 //-----------------------------------------------------------------------------
@@ -618,16 +661,15 @@ void GateBoy::update_vrm_bus() {
   top.vram_bus._VRAM_PIN_WR_C.preset(0);
 
   uint16_t vram_pin_addr = top.vram_bus.get_pin_addr();
-  vram_pin_addr ^= 0b0001111111111111;
 
-  if (top.vram_bus._VRAM_PIN_WR_A.qp()) {
-    uint8_t vram_pin_data_out = ~top.vram_bus.get_pin_data_out();
+  if (top.vram_bus._VRAM_PIN_WR_A.tp()) {
+    uint8_t vram_pin_data_out = top.vram_bus.get_pin_data_out();
     //printf("vram[%04x] = %d\n", vram_pin_addr, data);
     mem[vram_pin_addr + 0x8000] = vram_pin_data_out;
     //printf("PHASE %C: VRAM WRITE %04x %d\n", 'A' + phase, vram_pin_addr, vram_pin_data_out);
   }
 
-  if (top.vram_bus._VRAM_PIN_OE_A.qp()) {
+  if (top.vram_bus._VRAM_PIN_OE_A.tp()) {
     uint8_t vram_pin_data_in = mem[vram_pin_addr + 0x8000];
     top.vram_bus.preset_pin_data_in(vram_pin_data_in);
 
@@ -647,13 +689,13 @@ void GateBoy::update_oam_bus() {
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
   uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
 
-  if (!top.oam_bus.OAM_PIN_OE.qp()) {
+  if (!top.oam_bus.OAM_PIN_OE.tp()) {
     top.oam_bus.preset_bus_data_a(oam_data_a);
     top.oam_bus.preset_bus_data_b(oam_data_b);
   }
 
-  if (!top.oam_bus.OAM_PIN_WR_A.qp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
-  if (!top.oam_bus.OAM_PIN_WR_B.qp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
+  if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
+  if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
 }
 //-----------------------------------------------------------------------------
 

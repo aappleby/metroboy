@@ -39,7 +39,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
   //----------------------------------------
 
   /*p27.TUKU*/ wire _TUKU_WIN_HITn = not1(top.pix_pipe.TOMU_WIN_HITp());
-  /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not1(_TAKA_SFETCH_RUNNINGp.qp());
+  /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not1(_TAKA_SFETCH_RUNNINGp.tp());
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(top.tile_fetcher._LAXU_BFETCH_S0.qp(), top.tile_fetcher._NYVA_BFETCH_S2.qp(), top.NYXU_FETCH_TRIGn());
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 

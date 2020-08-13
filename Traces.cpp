@@ -48,8 +48,8 @@
 // NAFA_04 << PYSU_02 : CLKn
 // NAFA_05 nc
 // NAFA_06 nc
-// NAFA_07 >> EVAX_04 : Qn? (tribuf to VRAM_BUS_A08)
-// NAFA_08 >> POLY_04 : Q?  (tribuf to CPU_BUS_D0)
+// NAFA_07 >> EVAX_04 : Qn? (tribuf to VRAM_BUS_A08p)
+// NAFA_08 >> POLY_04 : Q?  (tribuf to CPU_BUS_D0p)
 
 
 // LOKY := nand(LARA, LENE_QN);
@@ -179,7 +179,7 @@
 // WEWU := not1(WUKU);
 // XACA := tri(XYKY, WEWU);
 
-// GEKA := not1(OAM_TRI_A0);
+// GEKA := not1(OAM_TRI_A0n);
 // WAFO := not1(GEKA);
 
 // GUKO := and2(WAFO, AMAB, LEKO);
@@ -198,8 +198,8 @@
 #if   0
     POWU_DMA_OAM_WRp     = and2(MATU_DMA_RUNNINGp, xxxxEFGH, !CPU_PIN_HOLD_MEM);
     WYJA_OAM_WRp         = or (and(FE00_FEFFp, AJUJ_OAM_BUSYn, CPU_PIN_WRp, AFAS_xxxxEFGx), POWU_DMA_OAM_WRp);
-    OAM_PIN_WRn_A = nand2(WYJA_OAM_WRp, !OAM_TRI_A0);
-    OAM_PIN_WRn_B = nand2(WYJA_OAM_WRp,  OAM_TRI_A0);
+    OAM_PIN_WRn_A = nand2(WYJA_OAM_WRp, !OAM_TRI_A0n);
+    OAM_PIN_WRn_B = nand2(WYJA_OAM_WRp,  OAM_TRI_A0n);
 
 #endif
 
@@ -315,7 +315,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 #endif
 
 #if 0
-    EXT_PIN_A00_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+    EXT_PIN_A00n_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
 
 #endif
 
@@ -537,7 +537,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
   CBD_TO_VPD     =  and2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
 
 
-  EXT_PIN_A00_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+  EXT_PIN_A00n_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
 
 
   /*read  rom */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
@@ -985,7 +985,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 // ROXO = not1(SEGU05)
 
 // NEFO_01 << LOMA_02    (clk)
-// NEFO_02 << CPU_BUS_D7     (d)
+// NEFO_02 << CPU_BUS_D7p     (d)
 // NEFO_03 nc
 // NEFO_04 << COMP_CLOCK (clkn)
 // NEFO_05 nc

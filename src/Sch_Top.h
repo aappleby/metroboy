@@ -60,7 +60,7 @@ struct SchematicTop {
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
-    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT.qp()); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT.tp()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not1(AWOD_AVp);
     return ABUZ_AVn;
@@ -90,7 +90,7 @@ struct SchematicTop {
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C.qp(), cpu_bus.CPU_PIN_RDp.qp(), clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C.tp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     return TEDO_CPU_RDp;
   }
@@ -104,16 +104,16 @@ struct SchematicTop {
 
   // vram.TUJA, top.UBAL/MEXO
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxxEFGx());
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), clk_reg.AFAS_xxxxEFGx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
     return APOV_CPU_WRp_xxxxEFGx;
   }
 
   // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.qp(), clk_reg.AFAS_xxxxEFGx());
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), clk_reg.AFAS_xxxxEFGx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WR_C.qp(), APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WR_C.tp(), APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
     /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
     return TAPU_CPU_WRp_xxxxEFGx;
   }
@@ -137,7 +137,7 @@ struct SchematicTop {
   // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
   // so dma stops oam scan?
   /*p28.ACYL*/ wire ACYL_SCANNINGp() const {
-    /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp());
+    /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.tp());
     return ACYL_SCANNINGp;
   }
 
@@ -179,8 +179,8 @@ struct SchematicTop {
   SpriteScanner sprite_scanner;
   Bootrom bootrom;
 
-  Tri LCD_PIN_DATA1 = TRI_HZNP; // PIN_50 
-  Tri LCD_PIN_DATA0 = TRI_HZNP; // PIN_51 
+  Tri LCD_PIN_DATA1n = TRI_HZNP; // PIN_50 
+  Tri LCD_PIN_DATA0n = TRI_HZNP; // PIN_51 
   Tri LCD_PIN_CNTRL = TRI_HZNP; // PIN_52 
   Tri LCD_PIN_CLOCK = TRI_HZNP; // PIN_53 
   Tri LCD_PIN_HSYNC = TRI_HZNP; // PIN_54 

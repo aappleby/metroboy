@@ -17,14 +17,14 @@ struct ClockRegisters {
   void tock_dbg_slow(int phase, const SchematicTop& top);
   void tock_vid_slow(int phase, const SchematicTop& top);
 
-  wire get_clk_a() const { return SYS_PIN_CLK_A.qp(); }
-  wire get_clk_b() const { return SYS_PIN_CLK_B.qp(); }
+  wire get_clk_a() const { return SYS_PIN_CLK_A.tp(); }
+  wire get_clk_b() const { return SYS_PIN_CLK_B.tp(); }
 
   void preset_clk_a(wire clk_a) { SYS_PIN_CLK_A.preset(clk_a); }
   void preset_clk_b(wire clk_b) { SYS_PIN_CLK_B.preset(clk_b); }
 
   wire get_rst() const {
-    return SYS_PIN_RSTp.qp();
+    return SYS_PIN_RSTp.tp();
   }
 
   void preset_rst(wire rst) {
@@ -43,8 +43,8 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Clock input & 4 mhz clocks
 
-  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not1(SYS_PIN_CLK_A.qp()); }
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B.qp(); } // ignoring the deglitcher here
+  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not1(SYS_PIN_CLK_A.tp()); }
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B.tp(); } // ignoring the deglitcher here
   /*p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); } // apu control
   /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
   /*p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); } // bus mux, sprite store
@@ -121,15 +121,15 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // POR state
 
-  /*p01.TUBO*/ wire TUBO_CPU_READYn() const { return _TUBO_WAITINGp.qp(); }
-  /*p01.ASOL*/ wire ASOL_POR_DONEn()  const { return _ASOL_POR_DONEn.qp(); }
+  /*p01.TUBO*/ wire TUBO_CPU_READYn() const { return _TUBO_WAITINGp.tp(); }
+  /*p01.ASOL*/ wire ASOL_POR_DONEn()  const { return _ASOL_POR_DONEn.tp(); }
   /*p01.AFER*/ wire AFER_SYS_RSTp()   const { return _AFER_SYS_RSTp.qp(); }
 
   //-----------------------------------------------------------------------------
   // Resets
 
   wire ALUR_SYS_RSTn() const { // used everywhere
-    /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(_AFER_SYS_RSTp.qp(), _ASOL_POR_DONEn.qp());
+    /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(_AFER_SYS_RSTp.qp(), _ASOL_POR_DONEn.tp());
     /*p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
     return ALUR_SYS_RSTn;
   }
@@ -168,11 +168,11 @@ struct ClockRegisters {
   /*p25.TUTO*/ wire TUTO_DBG_VRAMp()  const { return and2(UNOR_MODE_DBG2p(), _SOTO_DBG_VRAM.qn()); }
   /*p25.RACO*/ wire RACO_DBG_VRAMn()  const { return not1(TUTO_DBG_VRAMp()); }
 
-  /*p07.UBET*/ wire UBET_T1p()        const { return not1(SYS_PIN_T1n.qp()); }
-  /*p07.UVAR*/ wire UVAR_T2p()        const { return not1(SYS_PIN_T2n.qp()); }
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(SYS_PIN_T1n.qp(), UVAR_T2p()); }
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(SYS_PIN_T2n.qp(), UBET_T1p()); }
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp.qp()); }
+  /*p07.UBET*/ wire UBET_T1p()        const { return not1(SYS_PIN_T1n.tp()); }
+  /*p07.UVAR*/ wire UVAR_T2p()        const { return not1(SYS_PIN_T2n.tp()); }
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(SYS_PIN_T1n.tp(), UVAR_T2p()); }
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(SYS_PIN_T2n.tp(), UBET_T1p()); }
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp.tp()); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------

@@ -14,12 +14,12 @@ struct SpriteScanner {
   void tock(const SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
-  /*p28.YFEL*/ wire YFEL_SCAN0() const { return _YFEL_SCAN0.qp(); }
-  /*p28.WEWY*/ wire WEWY_SCAN1() const { return _WEWY_SCAN1.qp(); }
-  /*p28.GOSO*/ wire GOSO_SCAN2() const { return _GOSO_SCAN2.qp(); }
-  /*p28.ELYN*/ wire ELYN_SCAN3() const { return _ELYN_SCAN3.qp(); }
-  /*p28.FAHA*/ wire FAHA_SCAN4() const { return _FAHA_SCAN4.qp(); }
-  /*p28.FONY*/ wire FONY_SCAN5() const { return _FONY_SCAN5.qp(); }
+  /*p28.YFEL*/ wire YFEL_SCAN0p() const { return _YFEL_SCAN0.qp(); }
+  /*p28.WEWY*/ wire WEWY_SCAN1p() const { return _WEWY_SCAN1.qp(); }
+  /*p28.GOSO*/ wire GOSO_SCAN2p() const { return _GOSO_SCAN2.qp(); }
+  /*p28.ELYN*/ wire ELYN_SCAN3p() const { return _ELYN_SCAN3.qp(); }
+  /*p28.FAHA*/ wire FAHA_SCAN4p() const { return _FAHA_SCAN4.qp(); }
+  /*p28.FONY*/ wire FONY_SCAN5p() const { return _FONY_SCAN5.qp(); }
 
 //private:
 

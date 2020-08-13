@@ -370,6 +370,7 @@ struct Sig : private RegBase {
 //-----------------------------------------------------------------------------
 
 extern bool bus_collision;
+extern bool bus_floating;
 
 struct Tri : private RegBase {
   Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
@@ -380,7 +381,11 @@ struct Tri : private RegBase {
   using RegBase::negedge;
   using RegBase::dump_edge;
 
-  inline wire qp()  const { return  as_wire(); }
+  inline wire tp()  const {
+    //CHECK_N(state == TRI_HZNP);
+    if (state == TRI_HZNP) bus_floating = true;
+    return  as_wire();
+  }
   //inline wire qn() const { return !as_wire(); }
 
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }

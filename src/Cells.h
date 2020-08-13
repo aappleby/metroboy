@@ -55,14 +55,8 @@ inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
 inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
 inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
 
-inline wire xor2(wire a, wire b) { return a ^ b; }
+inline wire xor2 (wire a, wire b) { return a ^ b; }
 inline wire xnor2(wire a, wire b) { return a == b; }
-
-inline wire xnor2_gnd(wire a, wire b) { return a == b; }
-inline wire xnor2_vcc(wire a, wire b) { return a == b; }
-
-inline wire xor2_gnd(wire a, wire b) { return a ^ b; }
-inline wire xor2_vcc(wire a, wire b) { return a ^ b; }
 
 inline wire nor2(wire a, wire b) { return !(a | b); }
 inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
@@ -223,6 +217,20 @@ inline RegDelta tribuf_10n(wire OEn, wire D) {
 #endif
 }
 
+inline RegDelta tribuf_10nn(wire OEn, wire Dn) {
+#if 0
+  return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
+#else
+  if (!OEn) {
+    //return D ? DELTA_TRI1 : DELTA_TRI0;
+    return (!Dn) ? DELTA_TRI0 : DELTA_TRI1;
+  }
+  else {
+    return DELTA_TRIZ;
+  }
+#endif
+}
+
 //-----------------------------------------------------------------------------
 // Generic DFF
 
@@ -281,12 +289,28 @@ inline RegQPIn dff8_B(wire CLKp, wire CLKn, bool D) {
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
 }
 
+inline RegQPIn dff8_B_inv(wire CLKp, wire CLKn, bool D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKp;
+  (void)CLKn;
+
+  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!D) << 0))};
+}
+
 inline RegQPNIn dff8_AB(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
   (void)CLKn;
 
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | (D << 0))};
+}
+
+inline RegQPNIn dff8_AB_inv(wire CLKp, wire CLKn, bool D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKp;
+  (void)CLKn;
+
+  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!D) << 0))};
 }
 
 //-----------------------------------------------------------------------------
@@ -364,7 +388,7 @@ inline RegQNIn dff9_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
 #endif
 }
 
-inline RegQNIn dff9_A2(wire CLKp, wire CLKn, wire RSTn, wire D) {
+inline RegQNIn dff9_A_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
@@ -690,7 +714,7 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // TPLATCH_09 NC
 // TPLATCH_10
 
-// Output A must _not_ be inverting, see EXT_PIN_A00_A
+// Output A must _not_ be inverting, see EXT_PIN_A00n_A
 // Second output _must_ be inverting.
 
 inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
@@ -717,5 +741,14 @@ inline RegDelta tp_latch_AB(wire HOLDn, wire D) {
   }
   else {
     return D ? DELTA_TRI1 : DELTA_TRI0;
+  }
+}
+
+inline RegDelta tp_latch_AB(wire HOLDn, const Tri& T) {
+  if (!HOLDn) {
+    return DELTA_HOLD;
+  }
+  else {
+    return T.tp() ? DELTA_TRI1 : DELTA_TRI0;
   }
 }

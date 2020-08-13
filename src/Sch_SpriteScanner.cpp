@@ -75,22 +75,22 @@ void SpriteScanner::tick(const SchematicTop& top) {
 
     // this doesn't make sense for _both_ inputs to be inverted
 
-    /*p29.ERUC*/ ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0n.qp(), GND);
-    /*p29.ERUC*/ ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0n.qp(), GND);
-    /*p29.ENEF*/ ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1n.qp(), ERUC_YDIFF_C0);
-    /*p29.ENEF*/ ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1n.qp(), ERUC_YDIFF_C0);
-    /*p29.FECO*/ FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2n.qp(), ENEF_YDIFF_C1);
-    /*p29.FECO*/ FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2n.qp(), ENEF_YDIFF_C1);
-    /*p29.GYKY*/ GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3n.qp(), FECO_YDIFF_C2);
-    /*p29.GYKY*/ GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3n.qp(), FECO_YDIFF_C2);
-    /*p29.GOPU*/ GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4n.qp(), GYKY_YDIFF_C3);
-    /*p29.GOPU*/ GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4n.qp(), GYKY_YDIFF_C3);
-    /*p29.FUWA*/ FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5n.qp(), GOPU_YDIFF_C4);
-    /*p29.FUWA*/ FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5n.qp(), GOPU_YDIFF_C4);
-    /*p29.GOJU*/ GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6n.qp(), FUWA_YDIFF_C5);
-    /*p29.GOJU*/ GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6n.qp(), FUWA_YDIFF_C5);
-    /*p29.WUHU*/ WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7n.qp(), GOJU_YDIFF_C6);
-    /*p29.WUHU*/ WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7n.qp(), GOJU_YDIFF_C6);
+    /*p29.ERUC*/ ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0p.qp(), GND);
+    /*p29.ERUC*/ ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0p.qp(), GND);
+    /*p29.ENEF*/ ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1p.qp(), ERUC_YDIFF_C0);
+    /*p29.ENEF*/ ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1p.qp(), ERUC_YDIFF_C0);
+    /*p29.FECO*/ FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2p.qp(), ENEF_YDIFF_C1);
+    /*p29.FECO*/ FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2p.qp(), ENEF_YDIFF_C1);
+    /*p29.GYKY*/ GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3p.qp(), FECO_YDIFF_C2);
+    /*p29.GYKY*/ GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3p.qp(), FECO_YDIFF_C2);
+    /*p29.GOPU*/ GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4p.qp(), GYKY_YDIFF_C3);
+    /*p29.GOPU*/ GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4p.qp(), GYKY_YDIFF_C3);
+    /*p29.FUWA*/ FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5p.qp(), GOPU_YDIFF_C4);
+    /*p29.FUWA*/ FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5p.qp(), GOPU_YDIFF_C4);
+    /*p29.GOJU*/ GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6p.qp(), FUWA_YDIFF_C5);
+    /*p29.GOJU*/ GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6p.qp(), FUWA_YDIFF_C5);
+    /*p29.WUHU*/ WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7p.qp(), GOJU_YDIFF_C6);
+    /*p29.WUHU*/ WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7p.qp(), GOJU_YDIFF_C6);
   }
 
   {
@@ -132,7 +132,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
     /*#p28.BESU*/ BESU_SCANNINGp = nor_latch(top.lcd_reg._CATU_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
-    /*#p29.CENO*/ CENO_SCANNINGp = dff17_A(top.clk_reg.XUPY_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), BESU_SCANNINGp.qp());
+    /*#p29.CENO*/ CENO_SCANNINGp = dff17_A(top.clk_reg.XUPY_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), BESU_SCANNINGp.tp());
   }
 
   //----------------------------------------

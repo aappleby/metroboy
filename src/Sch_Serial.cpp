@@ -34,15 +34,15 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   //----------------------------------------
   /*p06.SANO*/ wire SANO_ADDR_FF00_FF03 = and3(cpu_bus.SARE_XX00_XX07p(), cpu_bus.SEFY_A02n(), cpu_bus.SYKE_FF00_FFFFp());
-  /*p06.URYS*/ wire URYS_FF01_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.qp(), cpu_bus.TOLA_A01n());
-  /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.qp());
-  /*p06.UFEG*/ wire UFEG_FF01_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.qp(), cpu_bus.TOLA_A01n());
-  /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.qp());
+  /*p06.URYS*/ wire URYS_FF01_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.tp(), cpu_bus.TOLA_A01n());
+  /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
+  /*p06.UFEG*/ wire UFEG_FF01_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.tp(), cpu_bus.TOLA_A01n());
+  /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
 
   /*p06.COBA*/ wire _SER_CNT3n = not1(_CALY_SER_INTp.qp());
   /*p06.CABY*/ wire _XFER_RESET = and2(_SER_CNT3n, top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.ETAF*/ ETAF_XFER_START = dff17_A(UWAM_FF02_WRn_xxxxxFGH, _XFER_RESET, cpu_bus.CPU_BUS_D0.qp());
-  /*p06.CULY*/ CULY_XFER_DIR = dff17_AB(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn(), cpu_bus.CPU_BUS_D1.qp());
+  /*p06.ETAF*/ ETAF_XFER_START = dff17_A(UWAM_FF02_WRn_xxxxxFGH, _XFER_RESET, cpu_bus.CPU_BUS_D0p.tp());
+  /*p06.CULY*/ CULY_XFER_DIR = dff17_AB(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn(), cpu_bus.CPU_BUS_D1p.tp());
 
   /*p06.COTY*/ COTY_SER_CLK = dff17_AB(top.tim_reg.UVYN_DIV_05n(), UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn());
 
@@ -55,7 +55,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   // CAVE04 nc
   // CAVE05 >> DAWA01
 
-  /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(COTY_SER_CLK.qp(), SCK_C.qp(), CULY_XFER_DIR.qp());
+  /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(COTY_SER_CLK.qp(), SCK_C.tp(), CULY_XFER_DIR.qp());
 
   /*p06.DAWA*/ wire _DAWA_SER_CLK = or2(_SER_CLK_MUXn, ETAF_XFER_START.qn()); // this must stop the clock or something when the transmit's done
   /*p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
@@ -70,28 +70,28 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.CALY*/ _CALY_SER_INTp = dff17_AB(_SER_CNT2.qn(), _SER_RST, _CALY_SER_INTp.qn());
 
   /*p06.DAKU*/ wire _FF01_WRp_xxxxxFGH = not1(URYS_FF01_WRn_xxxxxFGH);
-  /*p06.CUFU*/ wire _SER_DATA0_SETn = nand2(cpu_bus.CPU_BUS_D0.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.DOCU*/ wire _SER_DATA1_SETn = nand2(cpu_bus.CPU_BUS_D1.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.DELA*/ wire _SER_DATA2_SETn = nand2(cpu_bus.CPU_BUS_D2.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.DYGE*/ wire _SER_DATA3_SETn = nand2(cpu_bus.CPU_BUS_D3.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.DOLA*/ wire _SER_DATA4_SETn = nand2(cpu_bus.CPU_BUS_D4.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.ELOK*/ wire _SER_DATA5_SETn = nand2(cpu_bus.CPU_BUS_D5.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.EDEL*/ wire _SER_DATA6_SETn = nand2(cpu_bus.CPU_BUS_D6.qp(), _FF01_WRp_xxxxxFGH);
-  /*p06.EFEF*/ wire _SER_DATA7_SETn = nand2(cpu_bus.CPU_BUS_D7.qp(), _FF01_WRp_xxxxxFGH);
+  /*p06.CUFU*/ wire _SER_DATA0_SETn = nand2(cpu_bus.CPU_BUS_D0p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.DOCU*/ wire _SER_DATA1_SETn = nand2(cpu_bus.CPU_BUS_D1p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.DELA*/ wire _SER_DATA2_SETn = nand2(cpu_bus.CPU_BUS_D2p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.DYGE*/ wire _SER_DATA3_SETn = nand2(cpu_bus.CPU_BUS_D3p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.DOLA*/ wire _SER_DATA4_SETn = nand2(cpu_bus.CPU_BUS_D4p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.ELOK*/ wire _SER_DATA5_SETn = nand2(cpu_bus.CPU_BUS_D5p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.EDEL*/ wire _SER_DATA6_SETn = nand2(cpu_bus.CPU_BUS_D6p.tp(), _FF01_WRp_xxxxxFGH);
+  /*p06.EFEF*/ wire _SER_DATA7_SETn = nand2(cpu_bus.CPU_BUS_D7p.tp(), _FF01_WRp_xxxxxFGH);
 
   // COHY matches BYHA, and BYHA's C input _must_be and, so this is (A | B) & C
   // and dff22's SET and RST _must_ be SETn/RSTn
 
-  /*p06.COHY*/ wire _SER_DATA0_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D0.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D1.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D2.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D3.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D4.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D5.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D6.qp(), top.clk_reg.ALUR_SYS_RSTn());
-  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D7.qp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.COHY*/ wire _SER_DATA0_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D0p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D1p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D2p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D3p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D4p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D5p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D6p.tp(), top.clk_reg.ALUR_SYS_RSTn());
+  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D7p.tp(), top.clk_reg.ALUR_SYS_RSTn());
 
-  /*p06.CAGE*/ wire _SIN_Cn = not1(SIN_C.qp());
+  /*p06.CAGE*/ wire _SIN_Cn = not1(SIN_C.tp());
   /*p06.CUBA*/ CUBA_SER_DATA0 = dff22(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);
   /*p06.DEGU*/ _SER_DATA1 = dff22(_DAWE_SER_CLK, _SER_DATA1_SETn, _SER_DATA1_RSTn, CUBA_SER_DATA0.qp());
   /*p06.DYRA*/ _SER_DATA2 = dff22(_DAWE_SER_CLK, _SER_DATA2_SETn, _SER_DATA2_RSTn, _SER_DATA1.qp());
@@ -111,20 +111,20 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   // CUGY := tri(UFEG, CUBA_15)
   // ETAG := tri(UFEG, EDER_15)
 
-  /*p06.CUGY*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(UFEG_FF01_RD, CUBA_SER_DATA0.qp());
-  /*p06.DUDE*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(UFEG_FF01_RD, _SER_DATA1.qp());
-  /*p06.DETU*/ cpu_bus.CPU_BUS_D2 = tribuf_6p(UFEG_FF01_RD, _SER_DATA2.qp());
-  /*p06.DASO*/ cpu_bus.CPU_BUS_D3 = tribuf_6p(UFEG_FF01_RD, _SER_DATA3.qp());
-  /*p06.DAME*/ cpu_bus.CPU_BUS_D4 = tribuf_6p(UFEG_FF01_RD, _SER_DATA4.qp());
-  /*p06.EVOK*/ cpu_bus.CPU_BUS_D5 = tribuf_6p(UFEG_FF01_RD, _SER_DATA5.qp());
-  /*p06.EFAB*/ cpu_bus.CPU_BUS_D6 = tribuf_6p(UFEG_FF01_RD, _SER_DATA6.qp());
-  /*p06.ETAK*/ cpu_bus.CPU_BUS_D7 = tribuf_6p(UFEG_FF01_RD, _SER_DATA7.qp());
+  /*p06.CUGY*/ cpu_bus.CPU_BUS_D0p = tribuf_6p(UFEG_FF01_RD, CUBA_SER_DATA0.qp());
+  /*p06.DUDE*/ cpu_bus.CPU_BUS_D1p = tribuf_6p(UFEG_FF01_RD, _SER_DATA1.qp());
+  /*p06.DETU*/ cpu_bus.CPU_BUS_D2p = tribuf_6p(UFEG_FF01_RD, _SER_DATA2.qp());
+  /*p06.DASO*/ cpu_bus.CPU_BUS_D3p = tribuf_6p(UFEG_FF01_RD, _SER_DATA3.qp());
+  /*p06.DAME*/ cpu_bus.CPU_BUS_D4p = tribuf_6p(UFEG_FF01_RD, _SER_DATA4.qp());
+  /*p06.EVOK*/ cpu_bus.CPU_BUS_D5p = tribuf_6p(UFEG_FF01_RD, _SER_DATA5.qp());
+  /*p06.EFAB*/ cpu_bus.CPU_BUS_D6p = tribuf_6p(UFEG_FF01_RD, _SER_DATA6.qp());
+  /*p06.ETAK*/ cpu_bus.CPU_BUS_D7p = tribuf_6p(UFEG_FF01_RD, _SER_DATA7.qp());
 
   // CORE := tri(UCOM, CULY_QN)
   // ELUV := tri(UCOM, ETAF_QN)
 
-  /*p06.CORE*/ cpu_bus.CPU_BUS_D0 = tribuf_6p(UCOM_FF02_RD, CULY_XFER_DIR.qp());
-  /*p06.ELUV*/ cpu_bus.CPU_BUS_D1 = tribuf_6p(UCOM_FF02_RD, ETAF_XFER_START.qn());
+  /*p06.CORE*/ cpu_bus.CPU_BUS_D0p = tribuf_6p(UCOM_FF02_RD, CULY_XFER_DIR.qp());
+  /*p06.ELUV*/ cpu_bus.CPU_BUS_D1p = tribuf_6p(UCOM_FF02_RD, ETAF_XFER_START.qn());
 }
 
 //------------------------------------------------------------------------------

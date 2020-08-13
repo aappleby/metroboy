@@ -4,10 +4,11 @@
 bool Sig::sim_running = false;
 
 bool bus_collision = false;
+bool bus_floating = false;
 
 //-----------------------------------------------------------------------------
 
-const Lut8 logic_lut1 = []() -> Lut8 {
+Lut8 generate_lut() {
   Lut8 temp;
 
   memset(temp.tab, ERR_XXXX, 256);
@@ -109,6 +110,8 @@ const Lut8 logic_lut1 = []() -> Lut8 {
   //----------
 
   return temp;
-}();
+}
+
+const Lut8 logic_lut1 = generate_lut();
 
 //-----------------------------------------------------------------------------

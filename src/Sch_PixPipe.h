@@ -14,13 +14,13 @@ struct PixelPipe {
   void dump(Dumper& d, const SchematicTop& top) const;
 
   int get_wx() const {
-    return pack_p(MYPA_WX0.qp(), NOFE_WX1.qp(), NOKE_WX2.qp(), MEBY_WX3.qp(),
-                  MYPU_WX4.qp(), MYCE_WX5.qp(), MUVO_WX6.qp(), NUKU_WX7.qp());
+    return pack_p(MYPA_WX0n.qp(), NOFE_WX1n.qp(), NOKE_WX2n.qp(), MEBY_WX3n.qp(),
+                  MYPU_WX4n.qp(), MYCE_WX5n.qp(), MUVO_WX6n.qp(), NUKU_WX7n.qp());
   }
     
   int get_wy() const {
-    return pack_p(NESO_WY0.qp(), NYRO_WY1.qp(), NAGA_WY2.qp(), MELA_WY3.qp(),
-                  NULO_WY4.qp(), NENE_WY5.qp(), NUKA_WY6.qp(), NAFU_WY7.qp());
+    return pack_p(NESO_WY0n.qp(), NYRO_WY1n.qp(), NAGA_WY2n.qp(), MELA_WY3n.qp(),
+                  NULO_WY4n.qp(), NENE_WY5n.qp(), NUKA_WY6n.qp(), NAFU_WY7n.qp());
   }
 
   int get_win_x() const {
@@ -69,22 +69,22 @@ struct PixelPipe {
     return and2(_XENA_STORE_MATCHn, XANO_X_167p());
   }
 
-  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.qp(); }
-  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.qp()); }
-  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.qp()); }
-  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp.qp()); }   // sfetch.tuvo/tyso
+  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.tp(); }
+  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.tp()); }
+  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.tp()); }
+  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp.tp()); }   // sfetch.tuvo/tyso
 
   wire NOCU_WIN_MODEn()  const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(PYNU_WIN_MODE_A.qp());
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(PYNU_WIN_MODE_A.tp());
     return NOCU_WIN_MODEn;
   }
   
   wire NUNY_WX_MATCH_TRIGp() const {
-    /*p27.NUNY*/ wire NUNY_WX_MATCH_TRIGp = and2(PYNU_WIN_MODE_A.qp(), NOPA_WIN_MODE_B.qn());
+    /*p27.NUNY*/ wire NUNY_WX_MATCH_TRIGp = and2(PYNU_WIN_MODE_A.tp(), NOPA_WIN_MODE_B.qn());
     return NUNY_WX_MATCH_TRIGp;
   }
 
-  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(RYDY_WIN_FIRST_TILE_A.qp()); }
+  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(RYDY_WIN_FIRST_TILE_A.tp()); }
   /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), TUKY_X5p.qp(), SYBE_X7p.qp()); } // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 
@@ -107,14 +107,14 @@ struct PixelPipe {
   /*p23.XAFO*/ Reg XAFO_LCDC_BGMAPn  = REG_D0C0;
   /*p23.WEXU*/ Reg WEXU_LCDC_BGTILEn = REG_D0C0;
   /*p23.WYMO*/ Reg WYMO_LCDC_WINENn  = REG_D0C0;
-  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP = REG_D0C0;
+  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAPn = REG_D0C0;
   /*p23.XONA*/ Reg XONA_LCDC_ENn    = REG_D0C0;
 
   // FF41 - STAT
-  /*p21.ROXE*/ Reg ROXE_INT_HBL_EN = REG_D0C0;
-  /*p21.RUFO*/ Reg RUFO_INT_VBL_EN = REG_D0C0;
-  /*p21.REFE*/ Reg REFE_INT_OAM_EN = REG_D0C0;
-  /*p21.RUGU*/ Reg RUGU_INT_LYC_EN = REG_D0C0;
+  /*p21.ROXE*/ Reg ROXE_INT_HBL_ENn = REG_D0C0;
+  /*p21.RUFO*/ Reg RUFO_INT_VBL_ENn = REG_D0C0;
+  /*p21.REFE*/ Reg REFE_INT_OAM_ENn = REG_D0C0;
+  /*p21.RUGU*/ Reg RUGU_INT_LYC_ENn = REG_D0C0;
 
   /*p27.PYNU*/ Tri PYNU_WIN_MODE_A = TRI_D0NP;
 
@@ -226,74 +226,74 @@ struct PixelPipe {
   /*p26.VAVA*/ Reg VAVA_MASK_PIPE_7 = REG_D0C0;
 
   // FF42 - SCY -> vram bus
-  /*p23.GAVE*/ Reg GAVE_SCY0 = REG_D0C0;
-  /*p23.FYMO*/ Reg FYMO_SCY1 = REG_D0C0;
-  /*p23.FEZU*/ Reg FEZU_SCY2 = REG_D0C0;
-  /*p23.FUJO*/ Reg FUJO_SCY3 = REG_D0C0;
-  /*p23.DEDE*/ Reg DEDE_SCY4 = REG_D0C0;
-  /*p23.FOTY*/ Reg FOTY_SCY5 = REG_D0C0;
-  /*p23.FOHA*/ Reg FOHA_SCY6 = REG_D0C0;
-  /*p23.FUNY*/ Reg FUNY_SCY7 = REG_D0C0;
+  /*p23.GAVE*/ Reg GAVE_SCY0n = REG_D0C0;
+  /*p23.FYMO*/ Reg FYMO_SCY1n = REG_D0C0;
+  /*p23.FEZU*/ Reg FEZU_SCY2n = REG_D0C0;
+  /*p23.FUJO*/ Reg FUJO_SCY3n = REG_D0C0;
+  /*p23.DEDE*/ Reg DEDE_SCY4n = REG_D0C0;
+  /*p23.FOTY*/ Reg FOTY_SCY5n = REG_D0C0;
+  /*p23.FOHA*/ Reg FOHA_SCY6n = REG_D0C0;
+  /*p23.FUNY*/ Reg FUNY_SCY7n = REG_D0C0;
 
   // FF43 - SCX -> ppu, vram bus
-  /*p23.DATY*/ Reg DATY_SCX0 = REG_D0C0;
-  /*p23.DUZU*/ Reg DUZU_SCX1 = REG_D0C0;
-  /*p23.CYXU*/ Reg CYXU_SCX2 = REG_D0C0;
-  /*p23.GUBO*/ Reg GUBO_SCX3 = REG_D0C0;
-  /*p23.BEMY*/ Reg BEMY_SCX4 = REG_D0C0;
-  /*p23.CUZY*/ Reg CUZY_SCX5 = REG_D0C0;
-  /*p23.CABU*/ Reg CABU_SCX6 = REG_D0C0;
-  /*p23.BAKE*/ Reg BAKE_SCX7 = REG_D0C0;
+  /*p23.DATY*/ Reg DATY_SCX0n = REG_D0C0;
+  /*p23.DUZU*/ Reg DUZU_SCX1n = REG_D0C0;
+  /*p23.CYXU*/ Reg CYXU_SCX2n = REG_D0C0;
+  /*p23.GUBO*/ Reg GUBO_SCX3n = REG_D0C0;
+  /*p23.BEMY*/ Reg BEMY_SCX4n = REG_D0C0;
+  /*p23.CUZY*/ Reg CUZY_SCX5n = REG_D0C0;
+  /*p23.CABU*/ Reg CABU_SCX6n = REG_D0C0;
+  /*p23.BAKE*/ Reg BAKE_SCX7n = REG_D0C0;
 
   // FF47 - BGP
-  /*p36.PAVO*/ RegQPN PAVO_BGP_D0 = REG_D0C0;
-  /*p36.NUSY*/ RegQPN NUSY_BGP_D1 = REG_D0C0;
-  /*p36.PYLU*/ RegQPN PYLU_BGP_D2 = REG_D0C0;
-  /*p36.MAXY*/ RegQPN MAXY_BGP_D3 = REG_D0C0;
-  /*p36.MUKE*/ RegQPN MUKE_BGP_D4 = REG_D0C0;
-  /*p36.MORU*/ RegQPN MORU_BGP_D5 = REG_D0C0;
-  /*p36.MOGY*/ RegQPN MOGY_BGP_D6 = REG_D0C0;
-  /*p36.MENA*/ RegQPN MENA_BGP_D7 = REG_D0C0;
+  /*p36.PAVO*/ RegQPN PAVO_BGP_D0n = REG_D0C0;
+  /*p36.NUSY*/ RegQPN NUSY_BGP_D1n = REG_D0C0;
+  /*p36.PYLU*/ RegQPN PYLU_BGP_D2n = REG_D0C0;
+  /*p36.MAXY*/ RegQPN MAXY_BGP_D3n = REG_D0C0;
+  /*p36.MUKE*/ RegQPN MUKE_BGP_D4n = REG_D0C0;
+  /*p36.MORU*/ RegQPN MORU_BGP_D5n = REG_D0C0;
+  /*p36.MOGY*/ RegQPN MOGY_BGP_D6n = REG_D0C0;
+  /*p36.MENA*/ RegQPN MENA_BGP_D7n = REG_D0C0;
 
   // FF48 - OBP0
-  /*p36.XUFU*/ RegQPN XUFU_OBP0_D0 = REG_D0C0;
-  /*p36.XUKY*/ RegQPN XUKY_OBP0_D1 = REG_D0C0;
-  /*p36.XOVA*/ RegQPN XOVA_OBP0_D2 = REG_D0C0;
-  /*p36.XALO*/ RegQPN XALO_OBP0_D3 = REG_D0C0;
-  /*p36.XERU*/ RegQPN XERU_OBP0_D4 = REG_D0C0;
-  /*p36.XYZE*/ RegQPN XYZE_OBP0_D5 = REG_D0C0;
-  /*p36.XUPO*/ RegQPN XUPO_OBP0_D6 = REG_D0C0;
-  /*p36.XANA*/ RegQPN XANA_OBP0_D7 = REG_D0C0;
+  /*p36.XUFU*/ RegQPN XUFU_OBP0_D0n = REG_D0C0;
+  /*p36.XUKY*/ RegQPN XUKY_OBP0_D1n = REG_D0C0;
+  /*p36.XOVA*/ RegQPN XOVA_OBP0_D2n = REG_D0C0;
+  /*p36.XALO*/ RegQPN XALO_OBP0_D3n = REG_D0C0;
+  /*p36.XERU*/ RegQPN XERU_OBP0_D4n = REG_D0C0;
+  /*p36.XYZE*/ RegQPN XYZE_OBP0_D5n = REG_D0C0;
+  /*p36.XUPO*/ RegQPN XUPO_OBP0_D6n = REG_D0C0;
+  /*p36.XANA*/ RegQPN XANA_OBP0_D7n = REG_D0C0;
 
   // FF49 - OBP1
-  /*p36.MOXY*/ RegQPN MOXY_OBP1_D0 = REG_D0C0;
-  /*p36.LAWO*/ RegQPN LAWO_OBP1_D1 = REG_D0C0;
-  /*p36.MOSA*/ RegQPN MOSA_OBP1_D2 = REG_D0C0;
-  /*p36.LOSE*/ RegQPN LOSE_OBP1_D3 = REG_D0C0;
-  /*p36.LUNE*/ RegQPN LUNE_OBP1_D4 = REG_D0C0;
-  /*p36.LUGU*/ RegQPN LUGU_OBP1_D5 = REG_D0C0;
-  /*p36.LEPU*/ RegQPN LEPU_OBP1_D6 = REG_D0C0;
-  /*p36.LUXO*/ RegQPN LUXO_OBP1_D7 = REG_D0C0;
+  /*p36.MOXY*/ RegQPN MOXY_OBP1_D0n = REG_D0C0;
+  /*p36.LAWO*/ RegQPN LAWO_OBP1_D1n = REG_D0C0;
+  /*p36.MOSA*/ RegQPN MOSA_OBP1_D2n = REG_D0C0;
+  /*p36.LOSE*/ RegQPN LOSE_OBP1_D3n = REG_D0C0;
+  /*p36.LUNE*/ RegQPN LUNE_OBP1_D4n = REG_D0C0;
+  /*p36.LUGU*/ RegQPN LUGU_OBP1_D5n = REG_D0C0;
+  /*p36.LEPU*/ RegQPN LEPU_OBP1_D6n = REG_D0C0;
+  /*p36.LUXO*/ RegQPN LUXO_OBP1_D7n = REG_D0C0;
 
   // FF4A - WY
-  /*p23.NESO*/ Reg NESO_WY0 = REG_D0C0;
-  /*p23.NYRO*/ Reg NYRO_WY1 = REG_D0C0;
-  /*p23.NAGA*/ Reg NAGA_WY2 = REG_D0C0;
-  /*p23.MELA*/ Reg MELA_WY3 = REG_D0C0;
-  /*p23.NULO*/ Reg NULO_WY4 = REG_D0C0;
-  /*p23.NENE*/ Reg NENE_WY5 = REG_D0C0;
-  /*p23.NUKA*/ Reg NUKA_WY6 = REG_D0C0;
-  /*p23.NAFU*/ Reg NAFU_WY7 = REG_D0C0;
+  /*p23.NESO*/ Reg NESO_WY0n = REG_D0C0;
+  /*p23.NYRO*/ Reg NYRO_WY1n = REG_D0C0;
+  /*p23.NAGA*/ Reg NAGA_WY2n = REG_D0C0;
+  /*p23.MELA*/ Reg MELA_WY3n = REG_D0C0;
+  /*p23.NULO*/ Reg NULO_WY4n = REG_D0C0;
+  /*p23.NENE*/ Reg NENE_WY5n = REG_D0C0;
+  /*p23.NUKA*/ Reg NUKA_WY6n = REG_D0C0;
+  /*p23.NAFU*/ Reg NAFU_WY7n = REG_D0C0;
 
   // FF4B - WX
-  /*p23.MYPA*/ Reg MYPA_WX0 = REG_D0C0;
-  /*p23.NOFE*/ Reg NOFE_WX1 = REG_D0C0;
-  /*p23.NOKE*/ Reg NOKE_WX2 = REG_D0C0;
-  /*p23.MEBY*/ Reg MEBY_WX3 = REG_D0C0;
-  /*p23.MYPU*/ Reg MYPU_WX4 = REG_D0C0;
-  /*p23.MYCE*/ Reg MYCE_WX5 = REG_D0C0;
-  /*p23.MUVO*/ Reg MUVO_WX6 = REG_D0C0;
-  /*p23.NUKU*/ Reg NUKU_WX7 = REG_D0C0;
+  /*p23.MYPA*/ Reg MYPA_WX0n = REG_D0C0;
+  /*p23.NOFE*/ Reg NOFE_WX1n = REG_D0C0;
+  /*p23.NOKE*/ Reg NOKE_WX2n = REG_D0C0;
+  /*p23.MEBY*/ Reg MEBY_WX3n = REG_D0C0;
+  /*p23.MYPU*/ Reg MYPU_WX4n = REG_D0C0;
+  /*p23.MYCE*/ Reg MYCE_WX5n = REG_D0C0;
+  /*p23.MUVO*/ Reg MUVO_WX6n = REG_D0C0;
+  /*p23.NUKU*/ Reg NUKU_WX7n = REG_D0C0;
 };
 
 //-----------------------------------------------------------------------------

@@ -390,26 +390,10 @@ struct Tri : private RegBase {
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
 
   inline void preset(RegDelta d) {
-    if (delta == DELTA_NONE) {
-      CHECK_P(is_tri());
-      delta = d;
-      value = logic_lut1[value];
-      delta = d;
-      CHECK_P(is_tri());
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(is_tri());
-      delta = d;
-      value = logic_lut1[value];
-      delta = d;
-      CHECK_P(is_tri());
-    }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) {
-        bus_collision = true;
-      }
-    }
+    CHECK_P(delta == DELTA_NONE);
+    delta = d;
+    value = logic_lut1[value];
+    delta = d;
   }
 
   inline void preset(wire d) {
@@ -438,6 +422,8 @@ struct Tri : private RegBase {
   }
 };
 
+//-----------------------------------------------------------------------------
+
 struct Latch : private RegBase {
   Latch(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
 
@@ -453,33 +439,6 @@ struct Latch : private RegBase {
   inline wire qn() const { return !as_wire(); }
 
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
-
-  inline void preset(RegDelta d) {
-    if (delta == DELTA_NONE) {
-      CHECK_P(is_tri());
-      delta = d;
-      value = logic_lut1[value];
-      delta = d;
-      CHECK_P(is_tri());
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(is_tri());
-      delta = d;
-      value = logic_lut1[value];
-      delta = d;
-      CHECK_P(is_tri());
-    }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) {
-        bus_collision = true;
-      }
-    }
-  }
-
-  inline void preset(wire d) {
-    preset(d ? DELTA_TRI1 : DELTA_TRI0);
-  }
 
   inline void operator = (RegDelta d) {
     CHECK_P(is_tri());

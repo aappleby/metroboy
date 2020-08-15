@@ -62,6 +62,44 @@ struct CpuBus {
     CPU_BUS_A15.preset(DELTA_TRIZ);
   }
 
+  void set_addr(uint16_t addr) {
+    CPU_BUS_A00 = (addr & 0x0001);
+    CPU_BUS_A01 = (addr & 0x0002);
+    CPU_BUS_A02 = (addr & 0x0004);
+    CPU_BUS_A03 = (addr & 0x0008);
+    CPU_BUS_A04 = (addr & 0x0010);
+    CPU_BUS_A05 = (addr & 0x0020);
+    CPU_BUS_A06 = (addr & 0x0040);
+    CPU_BUS_A07 = (addr & 0x0080);
+    CPU_BUS_A08 = (addr & 0x0100);
+    CPU_BUS_A09 = (addr & 0x0200);
+    CPU_BUS_A10 = (addr & 0x0400);
+    CPU_BUS_A11 = (addr & 0x0800);
+    CPU_BUS_A12 = (addr & 0x1000);
+    CPU_BUS_A13 = (addr & 0x2000);
+    CPU_BUS_A14 = (addr & 0x4000);
+    CPU_BUS_A15 = (addr & 0x8000);
+  }
+
+  void set_addr_z() {
+    CPU_BUS_A00 = DELTA_TRIZ;
+    CPU_BUS_A01 = DELTA_TRIZ;
+    CPU_BUS_A02 = DELTA_TRIZ;
+    CPU_BUS_A03 = DELTA_TRIZ;
+    CPU_BUS_A04 = DELTA_TRIZ;
+    CPU_BUS_A05 = DELTA_TRIZ;
+    CPU_BUS_A06 = DELTA_TRIZ;
+    CPU_BUS_A07 = DELTA_TRIZ;
+    CPU_BUS_A08 = DELTA_TRIZ;
+    CPU_BUS_A09 = DELTA_TRIZ;
+    CPU_BUS_A10 = DELTA_TRIZ;
+    CPU_BUS_A11 = DELTA_TRIZ;
+    CPU_BUS_A12 = DELTA_TRIZ;
+    CPU_BUS_A13 = DELTA_TRIZ;
+    CPU_BUS_A14 = DELTA_TRIZ;
+    CPU_BUS_A15 = DELTA_TRIZ;
+  }
+
   void preset_data(bool oe, uint8_t data) {
     if (oe) {
       CPU_BUS_D0p.preset(data & 0x01);
@@ -119,6 +157,16 @@ struct CpuBus {
     }
   }
 
+  void set_data_z() {
+    CPU_BUS_D0p = DELTA_TRIZ;
+    CPU_BUS_D1p = DELTA_TRIZ;
+    CPU_BUS_D2p = DELTA_TRIZ;
+    CPU_BUS_D3p = DELTA_TRIZ;
+    CPU_BUS_D4p = DELTA_TRIZ;
+    CPU_BUS_D5p = DELTA_TRIZ;
+    CPU_BUS_D6p = DELTA_TRIZ;
+    CPU_BUS_D7p = DELTA_TRIZ;
+  }
 
   //-----------------------------------------------------------------------------
 

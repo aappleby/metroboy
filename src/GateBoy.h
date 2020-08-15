@@ -21,13 +21,12 @@ public:
 
   void load(const char* filename);
 
-  void preset_cpu_bus (int phase, Req req);
-  void preset_ext_bus ();
-  void preset_vrm_bus ();
-  void preset_oam_bus ();
-  void tock_zram_bus();
+  void tock_cpu_bus (int phase, Req req);
 
-  void tock_cpu_bus();
+  void tock_ext_bus();
+  void tock_oam_bus();
+  void tock_vram_bus();
+  void tock_zram_bus();
 
   void log(const char* format, ...);
 

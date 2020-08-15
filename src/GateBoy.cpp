@@ -176,10 +176,10 @@ void GateBoy::dbg_write(int addr, uint8_t data, bool verbose) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::preset_cpu_bus(int phase, Req req) {
+void GateBoy::tock_cpu_bus(int phase, Req req) {
   auto& bus = top.cpu_bus;
 
-  bus.CPU_PIN6.preset(0);
+  bus.CPU_PIN6 = 0;
 
   // CPU_PIN_ADDR_EXT latches the cpu bus address into the ext address
 
@@ -214,162 +214,122 @@ void GateBoy::preset_cpu_bus(int phase, Req req) {
   // B WORKS
   // C WORKS
 
-  if (DELTA_AB) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXTp.preset(0); }
-  if (DELTA_BC) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXTp.preset(0); }
-  if (DELTA_CD) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXTp.preset(0); }
-  if (DELTA_DE) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXTp.preset(0); }
-  if (DELTA_EF) { bus.preset_addr(addr); bus.preset_data(write, data); bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(write); bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXTp.preset(addr_ext); }
-  if (DELTA_FG) { bus.preset_addr(addr); bus.preset_data(write, data); bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(hold_mem); bus.CPU_PIN_ADDR_EXTp.preset(addr_ext); }
-  if (DELTA_GH) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(read); bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(hold_mem); bus.CPU_PIN_ADDR_EXTp.preset(addr_ext); }
-  if (DELTA_HA) { bus.preset_addr(addr); bus.preset_data_z();          bus.CPU_PIN_RDp.preset(0);    bus.CPU_PIN_WRp.preset(0);     bus.CPU_PIN_HOLD_MEM.preset(0);        bus.CPU_PIN_ADDR_EXTp.preset(0); }
+  if (DELTA_AB) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_BC) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_CD) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_DE) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = write; bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_GH) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_HA) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+
+  top.int_reg.CPU_PIN_ACK_VBLANK = 0;
+  top.int_reg.CPU_PIN_ACK_STAT = 0;
+  top.int_reg.CPU_PIN_ACK_TIMER = 0;
+  top.int_reg.CPU_PIN_ACK_SERIAL = 0;
+  top.int_reg.CPU_PIN_ACK_JOYPAD = 0;
+
+  top.ser_reg.SCK_C = 0;
+  top.ser_reg.SIN_Cn = 0;
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_cpu_bus() {
-  top.int_reg.CPU_PIN_ACK_VBLANK.preset(0);
-  top.int_reg.CPU_PIN_ACK_STAT.preset(0);
-  top.int_reg.CPU_PIN_ACK_TIMER.preset(0);
-  top.int_reg.CPU_PIN_ACK_SERIAL.preset(0);
-  top.int_reg.CPU_PIN_ACK_JOYPAD.preset(0);
+void GateBoy::tock_ext_bus() {
+  top.ext_bus.EXT_PIN_WR_C  = (top.ext_bus.EXT_PIN_WR_A.tp());
+  top.ext_bus.EXT_PIN_RD_C  = (top.ext_bus.EXT_PIN_RD_A.tp());
+  top.ext_bus.EXT_PIN_A00_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
+  top.ext_bus.EXT_PIN_A01_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
+  top.ext_bus.EXT_PIN_A02_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
+  top.ext_bus.EXT_PIN_A03_C = (top.ext_bus.EXT_PIN_A03n_A.tp());
+  top.ext_bus.EXT_PIN_A04_C = (top.ext_bus.EXT_PIN_A04n_A.tp());
+  top.ext_bus.EXT_PIN_A05_C = (top.ext_bus.EXT_PIN_A05n_A.tp());
+  top.ext_bus.EXT_PIN_A06_C = (top.ext_bus.EXT_PIN_A06n_A.tp());
+  top.ext_bus.EXT_PIN_A07_C = (top.ext_bus.EXT_PIN_A07n_A.tp());
+  top.ext_bus.EXT_PIN_A08_C = (top.ext_bus.EXT_PIN_A08n_A.tp());
+  top.ext_bus.EXT_PIN_A09_C = (top.ext_bus.EXT_PIN_A09n_A.tp());
+  top.ext_bus.EXT_PIN_A10_C = (top.ext_bus.EXT_PIN_A10n_A.tp());
+  top.ext_bus.EXT_PIN_A11_C = (top.ext_bus.EXT_PIN_A11n_A.tp());
+  top.ext_bus.EXT_PIN_A12_C = (top.ext_bus.EXT_PIN_A12n_A.tp());
+  top.ext_bus.EXT_PIN_A13_C = (top.ext_bus.EXT_PIN_A13n_A.tp());
+  top.ext_bus.EXT_PIN_A14_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
+  top.ext_bus.EXT_PIN_A15_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
 
-  top.ser_reg.SCK_C.preset(0);
-  top.ser_reg.SIN_Cn.preset(0);
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::preset_ext_bus() {
-  top.ext_bus.EXT_PIN_WR_C.preset(top.ext_bus.EXT_PIN_WR_A.tp());
-  top.ext_bus.EXT_PIN_RD_C.preset(top.ext_bus.EXT_PIN_RD_A.tp());
-  top.ext_bus.EXT_PIN_A00_C.preset(top.ext_bus.EXT_PIN_A00n_A.tp());
-  top.ext_bus.EXT_PIN_A01_C.preset(top.ext_bus.EXT_PIN_A01n_A.tp());
-  top.ext_bus.EXT_PIN_A02_C.preset(top.ext_bus.EXT_PIN_A02n_A.tp());
-  top.ext_bus.EXT_PIN_A03_C.preset(top.ext_bus.EXT_PIN_A03n_A.tp());
-  top.ext_bus.EXT_PIN_A04_C.preset(top.ext_bus.EXT_PIN_A04n_A.tp());
-  top.ext_bus.EXT_PIN_A05_C.preset(top.ext_bus.EXT_PIN_A05n_A.tp());
-  top.ext_bus.EXT_PIN_A06_C.preset(top.ext_bus.EXT_PIN_A06n_A.tp());
-  top.ext_bus.EXT_PIN_A07_C.preset(top.ext_bus.EXT_PIN_A07n_A.tp());
-  top.ext_bus.EXT_PIN_A08_C.preset(top.ext_bus.EXT_PIN_A08n_A.tp());
-  top.ext_bus.EXT_PIN_A09_C.preset(top.ext_bus.EXT_PIN_A09n_A.tp());
-  top.ext_bus.EXT_PIN_A10_C.preset(top.ext_bus.EXT_PIN_A10n_A.tp());
-  top.ext_bus.EXT_PIN_A11_C.preset(top.ext_bus.EXT_PIN_A11n_A.tp());
-  top.ext_bus.EXT_PIN_A12_C.preset(top.ext_bus.EXT_PIN_A12n_A.tp());
-  top.ext_bus.EXT_PIN_A13_C.preset(top.ext_bus.EXT_PIN_A13n_A.tp());
-  top.ext_bus.EXT_PIN_A14_C.preset(top.ext_bus.EXT_PIN_A14n_A.tp());
-  top.ext_bus.EXT_PIN_A15_C.preset(top.ext_bus.EXT_PIN_A15n_A.tp());
-
-  /*
-  top.ext_bus.EXT_PIN_WR_C.preset(0);
-  top.ext_bus.EXT_PIN_RD_C.preset(0);
-  top.ext_bus.EXT_PIN_A00_C.preset(0);
-  top.ext_bus.EXT_PIN_A01_C.preset(0);
-  top.ext_bus.EXT_PIN_A02_C.preset(0);
-  top.ext_bus.EXT_PIN_A03_C.preset(0);
-  top.ext_bus.EXT_PIN_A04_C.preset(0);
-  top.ext_bus.EXT_PIN_A05_C.preset(0);
-  top.ext_bus.EXT_PIN_A06_C.preset(0);
-  top.ext_bus.EXT_PIN_A07_C.preset(0);
-  top.ext_bus.EXT_PIN_A08_C.preset(0);
-  top.ext_bus.EXT_PIN_A09_C.preset(0);
-  top.ext_bus.EXT_PIN_A10_C.preset(0);
-  top.ext_bus.EXT_PIN_A11_C.preset(0);
-  top.ext_bus.EXT_PIN_A12_C.preset(0);
-  top.ext_bus.EXT_PIN_A13_C.preset(0);
-  top.ext_bus.EXT_PIN_A14_C.preset(0);
-  top.ext_bus.EXT_PIN_A15_C.preset(0);
-  */
+  uint16_t ext_addr = top.ext_bus.get_pin_addr();
 
   if (top.ext_bus.EXT_PIN_WR_A.tp()) {
-    uint16_t ext_addr = top.ext_bus.get_pin_addr();
     uint8_t ext_data = top.ext_bus.get_pin_data_out();
     
     if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
-      // yeah we don't actually want to allow writing to ROM...
-      //mem[ext_addr] = ext_data;
-      //printf("PHASE %C: EXT WRITE %04x %d\n", 'A' + phase, ext_addr, ext_data);
+      //mem[ext_addr] = ext_data; // yeah we don't actually want to allow writing to ROM...
     }
     else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
       mem[ext_addr] = ext_data;
-      //printf("PHASE %C: EXT WRITE %04x %d\n", 'A' + phase, ext_addr, ext_data);
     }
     else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
       mem[ext_addr] = ext_data;
-      //printf("PHASE %C: EXT WRITE %04x %d\n", 'A' + phase, ext_addr, ext_data);
     }
     else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
       mem[ext_addr] = ext_data;
-      //printf("PHASE %C: EXT WRITE %04x %d\n", 'A' + phase, ext_addr, ext_data);
     }
   }
-
+  
   if (top.ext_bus.EXT_PIN_RD_A.tp()) {
-    uint16_t ext_addr = top.ext_bus.get_pin_addr();
-
     if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
       uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.preset_pin_data_in(ext_data);
-      //printf("PHASE %C: EXT_READ  %04x %d\n", 'A' + phase, ext_addr, ext_data);
+      top.ext_bus.set_pin_data_in(ext_data);
     }
     else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
       uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.preset_pin_data_in(ext_data);
-      //printf("PHASE %C: EXT_READ  %04x %d\n", 'A' + phase, ext_addr, ext_data);
+      top.ext_bus.set_pin_data_in(ext_data);
     }
     else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
       uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.preset_pin_data_in(ext_data);
-      //printf("PHASE %C: EXT_READ  %04x %d\n", 'A' + phase, ext_addr, ext_data);
+      top.ext_bus.set_pin_data_in(ext_data);
     }
     else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
       uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.preset_pin_data_in(ext_data);
-      //printf("PHASE %C: EXT_READ  %04x %d\n", 'A' + phase, ext_addr, ext_data);
+      top.ext_bus.set_pin_data_in(ext_data);
     }
     else {
-      //printf("PHASE %C: EXT_READ  %04x (bad addr)\n", 'A' + phase, ext_addr);
-      top.ext_bus.preset_pin_data_z();
+      top.ext_bus.set_pin_data_z();
     }
   }
-
-  if (!top.ext_bus.EXT_PIN_D0_B.tp()) top.ext_bus.EXT_PIN_D0n_C.preset(!top.ext_bus.EXT_PIN_D0n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D1_B.tp()) top.ext_bus.EXT_PIN_D1n_C.preset(!top.ext_bus.EXT_PIN_D1n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D2_B.tp()) top.ext_bus.EXT_PIN_D2n_C.preset(!top.ext_bus.EXT_PIN_D2n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D3_B.tp()) top.ext_bus.EXT_PIN_D3n_C.preset(!top.ext_bus.EXT_PIN_D3n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D4_B.tp()) top.ext_bus.EXT_PIN_D4n_C.preset(!top.ext_bus.EXT_PIN_D4n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D5_B.tp()) top.ext_bus.EXT_PIN_D5n_C.preset(!top.ext_bus.EXT_PIN_D5n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D6_B.tp()) top.ext_bus.EXT_PIN_D6n_C.preset(!top.ext_bus.EXT_PIN_D6n_A.tp());
-  if (!top.ext_bus.EXT_PIN_D7_B.tp()) top.ext_bus.EXT_PIN_D7n_C.preset(!top.ext_bus.EXT_PIN_D7n_A.tp());
-
-  if (top.ext_bus.EXT_PIN_D0_B.tp()) top.ext_bus.EXT_PIN_D0n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D1_B.tp()) top.ext_bus.EXT_PIN_D1n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D2_B.tp()) top.ext_bus.EXT_PIN_D2n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D3_B.tp()) top.ext_bus.EXT_PIN_D3n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D4_B.tp()) top.ext_bus.EXT_PIN_D4n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D5_B.tp()) top.ext_bus.EXT_PIN_D5n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D6_B.tp()) top.ext_bus.EXT_PIN_D6n_C.preset(DELTA_TRIZ);
-  if (top.ext_bus.EXT_PIN_D7_B.tp()) top.ext_bus.EXT_PIN_D7n_C.preset(DELTA_TRIZ);
+  else {
+    top.ext_bus.EXT_PIN_D0n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D1n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D2n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D3n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D4n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D5n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D6n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D7n_C = DELTA_TRIZ;
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::preset_vrm_bus() {
-  top.vram_bus._VRAM_PIN_CS_C.preset(0);
-  top.vram_bus._VRAM_PIN_OE_C.preset(0);
-  top.vram_bus._VRAM_PIN_WR_C.preset(0);
+void GateBoy::tock_vram_bus() {
+  top.vram_bus._VRAM_PIN_CS_C = 0;
+  top.vram_bus._VRAM_PIN_OE_C = 0;
+  top.vram_bus._VRAM_PIN_WR_C = 0;
 
   uint16_t vram_addr = top.vram_bus.get_pin_addr();
   uint8_t& vram_data = mem[0x8000 + vram_addr];
 
-  top.vram_bus.preset_pin_data_z();
-
   if (top.vram_bus._VRAM_PIN_WR_A.tp()) vram_data = top.vram_bus.get_pin_data_out();
-  if (top.vram_bus._VRAM_PIN_OE_A.tp()) top.vram_bus.preset_pin_data_in(vram_data);
+
+  if (top.vram_bus._VRAM_PIN_OE_A.tp()) {
+    top.vram_bus.set_pin_data_in(vram_data);
+  }
+  else {
+    top.vram_bus.set_pin_data_z();
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::preset_oam_bus() {
+void GateBoy::tock_oam_bus() {
   uint16_t oam_addr = top.oam_bus.get_oam_pin_addr();
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
   uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
@@ -377,9 +337,10 @@ void GateBoy::preset_oam_bus() {
   if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
   if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
 
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.preset_bus_data_a(oam_data_a);
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.preset_bus_data_b(oam_data_b);
+  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_a(oam_data_a);
+  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_b(oam_data_b);
 }
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_zram_bus() {
@@ -575,19 +536,20 @@ uint64_t GateBoy::next_pass() {
   top.clk_reg.preset_cpu_ready(sys_cpuready);
   top.clk_reg.preset_clk_a(sys_clkgood);
   top.clk_reg.preset_clk_b(CLK);
-
   top.joypad.preset_buttons(0);
-  preset_cpu_bus(phase, cpu_req);
-  preset_ext_bus();
-  preset_vrm_bus();
-  preset_oam_bus();
 
   RegBase::sim_running = true;
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
+
   top.tick_slow(phase);
-  tock_cpu_bus();
+
+  tock_ext_bus();
+  tock_cpu_bus(phase, cpu_req);
+  tock_vram_bus();
   tock_zram_bus();
+  tock_oam_bus();
+
   RegBase::sim_running = false;
 
   commit_and_hash(top, hash);

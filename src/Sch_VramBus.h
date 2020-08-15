@@ -61,6 +61,28 @@ struct VramBus {
     VRAM_PIN_D7n_C.preset(DELTA_TRIZ);
   }
 
+  void set_pin_data_in(uint8_t data) {
+    VRAM_PIN_D0n_C = !(data & 0x01);
+    VRAM_PIN_D1n_C = !(data & 0x02);
+    VRAM_PIN_D2n_C = !(data & 0x04);
+    VRAM_PIN_D3n_C = !(data & 0x08);
+    VRAM_PIN_D4n_C = !(data & 0x10);
+    VRAM_PIN_D5n_C = !(data & 0x20);
+    VRAM_PIN_D6n_C = !(data & 0x40);
+    VRAM_PIN_D7n_C = !(data & 0x80);
+  }
+
+  void set_pin_data_z() {
+    VRAM_PIN_D0n_C = DELTA_TRIZ;
+    VRAM_PIN_D1n_C = DELTA_TRIZ;
+    VRAM_PIN_D2n_C = DELTA_TRIZ;
+    VRAM_PIN_D3n_C = DELTA_TRIZ;
+    VRAM_PIN_D4n_C = DELTA_TRIZ;
+    VRAM_PIN_D5n_C = DELTA_TRIZ;
+    VRAM_PIN_D6n_C = DELTA_TRIZ;
+    VRAM_PIN_D7n_C = DELTA_TRIZ;
+  }
+
   //-----------------------------------------------------------------------------
 
   /*p32.LEGU*/ RegQN LEGU_TILE_DA0n = REG_D0C0; // def holds inverted pix

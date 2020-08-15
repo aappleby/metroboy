@@ -86,8 +86,10 @@ void GateBoyApp::app_init() {
   */
 #endif
 
-  //const char* filename = "roms/LinksAwakening_dog.dump";
-  //gateboy->load(filename);
+  const char* filename = "roms/LinksAwakening_dog.dump";
+  gateboy->load(filename);
+
+  GateBoyTests::run_benchmark();
 }
 
 void GateBoyApp::app_close() {

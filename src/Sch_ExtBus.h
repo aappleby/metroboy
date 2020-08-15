@@ -25,26 +25,26 @@ struct ExtBus {
                            !EXT_PIN_D4n_A.tp(), !EXT_PIN_D5n_A.tp(), !EXT_PIN_D6n_A.tp(), !EXT_PIN_D7n_A.tp());
   }
 
-  void preset_pin_data_in(uint8_t data) {
-    EXT_PIN_D0n_C.preset(!(data & 0x01));
-    EXT_PIN_D1n_C.preset(!(data & 0x02));
-    EXT_PIN_D2n_C.preset(!(data & 0x04));
-    EXT_PIN_D3n_C.preset(!(data & 0x08));
-    EXT_PIN_D4n_C.preset(!(data & 0x10));
-    EXT_PIN_D5n_C.preset(!(data & 0x20));
-    EXT_PIN_D6n_C.preset(!(data & 0x40));
-    EXT_PIN_D7n_C.preset(!(data & 0x80));
+  void set_pin_data_in(uint8_t data) {
+    EXT_PIN_D0n_C = !(data & 0x01);
+    EXT_PIN_D1n_C = !(data & 0x02);
+    EXT_PIN_D2n_C = !(data & 0x04);
+    EXT_PIN_D3n_C = !(data & 0x08);
+    EXT_PIN_D4n_C = !(data & 0x10);
+    EXT_PIN_D5n_C = !(data & 0x20);
+    EXT_PIN_D6n_C = !(data & 0x40);
+    EXT_PIN_D7n_C = !(data & 0x80);
   }
 
-  void preset_pin_data_z() {
-    EXT_PIN_D0n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D1n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D2n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D3n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D4n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D5n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D6n_C.preset(DELTA_TRIZ);
-    EXT_PIN_D7n_C.preset(DELTA_TRIZ);
+  void set_pin_data_z() {
+    EXT_PIN_D0n_C = DELTA_TRIZ;
+    EXT_PIN_D1n_C = DELTA_TRIZ;
+    EXT_PIN_D2n_C = DELTA_TRIZ;
+    EXT_PIN_D3n_C = DELTA_TRIZ;
+    EXT_PIN_D4n_C = DELTA_TRIZ;
+    EXT_PIN_D5n_C = DELTA_TRIZ;
+    EXT_PIN_D6n_C = DELTA_TRIZ;
+    EXT_PIN_D7n_C = DELTA_TRIZ;
   }
 
   //-----------------------------------------------------------------------------

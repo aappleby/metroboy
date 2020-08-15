@@ -76,6 +76,28 @@ struct OamBus {
     OAM_PIN_DB7n.preset(data & 0x80);
   }
 
+  void set_bus_data_a(uint8_t data) {
+    OAM_PIN_DA0n = (data & 0x01);
+    OAM_PIN_DA1n = (data & 0x02);
+    OAM_PIN_DA2n = (data & 0x04);
+    OAM_PIN_DA3n = (data & 0x08);
+    OAM_PIN_DA4n = (data & 0x10);
+    OAM_PIN_DA5n = (data & 0x20);
+    OAM_PIN_DA6n = (data & 0x40);
+    OAM_PIN_DA7n = (data & 0x80);
+  }
+
+  void set_bus_data_b(uint8_t data) {
+    OAM_PIN_DB0n = (data & 0x01);
+    OAM_PIN_DB1n = (data & 0x02);
+    OAM_PIN_DB2n = (data & 0x04);
+    OAM_PIN_DB3n = (data & 0x08);
+    OAM_PIN_DB4n = (data & 0x10);
+    OAM_PIN_DB5n = (data & 0x20);
+    OAM_PIN_DB6n = (data & 0x40);
+    OAM_PIN_DB7n = (data & 0x80);
+  }
+
   //----------------------------------------
 
   /*p04.MAKA*/ RegQP MAKA_HOLD_MEMp = REG_D0C0;
@@ -120,9 +142,9 @@ struct OamBus {
   /*p31.DEPO*/ RegQP DEPO_OAM_DB7p = REG_D0C0; // sprite x bit 7, sprite priority
 
   Tri OAM_PIN_CLK  = TRI_D0NP;
-  Tri OAM_PIN_OE   = TRI_D0NP;
-  Tri OAM_PIN_WR_A = TRI_D0NP;
-  Tri OAM_PIN_WR_B = TRI_D0NP;
+  Tri OAM_PIN_OE   = TRI_D1NP;
+  Tri OAM_PIN_WR_A = TRI_D1NP;
+  Tri OAM_PIN_WR_B = TRI_D1NP;
 
   Tri OAM_TRI_A0n  = TRI_D0NP;
   Tri OAM_TRI_A1n  = TRI_D0NP;

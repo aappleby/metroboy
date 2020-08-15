@@ -176,6 +176,7 @@ void GateBoyTests::run_benchmark() {
   run_benchmark(gateboy1);
   printf("\n");
 
+#if 0
   printf("Running benchmark in fast mode\n");
   GateBoy gateboy2;
   run_benchmark(gateboy2);
@@ -194,6 +195,7 @@ void GateBoyTests::run_benchmark() {
   else {
     printf("---------- PASS TOTAL HASH ----------\n");
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

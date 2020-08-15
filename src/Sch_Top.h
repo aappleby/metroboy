@@ -60,7 +60,7 @@ struct SchematicTop {
 
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
-    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXT.tp()); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXTp.tp()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not1(AWOD_AVp);
     return ABUZ_AVn;

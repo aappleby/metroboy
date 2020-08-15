@@ -43,7 +43,7 @@ void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_ENn) {
   bool LINE_153 = (Y & 153) == 153;
   bool LINE_END = (X & 113) == 113;
 
-  if (PHASE_B) {
+  if (DELTA_BC) {
     X++;
     if (_RUTU_LINE_P908 && !NYPE_LINE_STARTp) {
       MYTA_LINE_153p = LINE_153;
@@ -53,16 +53,16 @@ void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_ENn) {
     NYPE_LINE_STARTp = _RUTU_LINE_P908;
   }
 
-  if (PHASE_F) {
+  if (DELTA_FG) {
     if (LINE_END && !_RUTU_LINE_P908) Y++;
     _RUTU_LINE_P908 = LINE_END;
   }
 
-  if (PHASE_B || PHASE_F) {
+  if (DELTA_BC || DELTA_FG) {
     CATU_VID_LINE_ENDp = VID_LINE_d0;
   }
 
-  if (PHASE_D || PHASE_H) {
+  if (DELTA_DE || DELTA_HA) {
     _ANEL_LINE_P000 = CATU_VID_LINE_ENDp;
   }
 

@@ -8,7 +8,7 @@ void Joypad::reset() {
 }
 
 void Joypad::tock(int phase, const Req& req) {
-  if (PHASE_F && req.write && req.addr == ADDR_P1) {
+  if (DELTA_FG && req.write && req.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (req.data_lo & 0x30);
     switch (p1 & 0x30) {
     case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;

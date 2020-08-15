@@ -1,13 +1,15 @@
 #include "GateBoyTests.h"
 
 #include "GateBoy.h"
+#include "Constants.h"
 #include <chrono>
+#include <stdarg.h>
 
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::test_rom_read() {
   GateBoy gateboy;
-  gateboy.run_reset_sequence();
+  gateboy.reset();
 
   gateboy.mem[0] =  0x23;
 
@@ -92,7 +94,8 @@ void dump_blob(T& blob) {
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::run_benchmark(GateBoy& gateboy) {
-  gateboy.run_reset_sequence();
+
+  gateboy.reset();
 
   printf("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
 
@@ -194,3 +197,198 @@ void GateBoyTests::run_benchmark() {
 }
 
 //-----------------------------------------------------------------------------
+
+void GateBoyTests::test_all_mem() {
+  GateBoy gb;
+  gb.reset();
+
+  gb.run_bootrom();
+
+  gb.log("Test Cart ROM read\n");
+  test_mem(gb, 0x0000, 0x7FFF, 256, false);
+
+  gb.log("Test VRAM read/write\n");
+  test_mem(gb, 0x8000, 0x9FFF, 256, true);
+
+  gb.log("Test Cart RAM read/write\n");
+  test_mem(gb, 0xA000, 0xBFFF, 256, true);
+
+  gb.log("Test Main RAM read/write\n");
+  test_mem(gb, 0xC000, 0xDFFF, 256, true);
+
+  gb.log("Test Echo RAM read/write\n");
+  test_mem(gb, 0xE000, 0xFDFF, 256, true);
+
+  gb.log("Test OAM RAM read/write\n");
+  test_mem(gb, 0xFE00, 0xFEFF, 1, true);
+
+  gb.log("Test ZRAM read/write\n");
+  test_mem(gb, 0xFF80, 0xFFFE, 1, true);
+
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_interrupts() {
+  GateBoy gb;
+  gb.reset();
+
+  // hblank no stat int
+  // vblank no stat int
+
+  /*
+  #define EI_GLITCH    0b10000000
+  #define EI_LYC       0b01000000
+  #define EI_OAM       0b00100000
+  #define EI_VBLANK    0b00010000
+  #define EI_HBLANK    0b00001000
+  */
+  //dbg_write(ADDR_STAT, EI_OAM);
+  //dbg_write(ADDR_IE,   0b11111111);
+
+  gb.log("Test interrupts\n");
+  //test_reg("IF",   0xFF0F, 0b00011111); // broken
+  //test_reg("IE",   0xFFFF, 0b00011111);
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_bootrom() {
+  GateBoy gb;
+  gb.reset();
+
+  for (int i = 0; i < 16; i++) {
+    printf("bootrom @ 0x%04x = 0x%02x\n", i, gb.dbg_read(i));
+  }
+
+  gb.log("Test bootrom\n");
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_timer() {
+  GateBoy gb;
+  gb.reset();
+
+  gb.log("Test Timer\n");
+  //test_reg("DIV",  ADDR_DIV, 0b11111111); // not standard reg
+  //test_reg("TIMA", ADDR_TIMA, 0b11111111); // broken
+  //test_reg("TMA",  ADDR_TMA,  0b11111111); // works
+  //test_reg("TAC",  ADDR_TAC,  0b00000111); // works
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_joypad() {
+  GateBoy gb;
+  gb.reset();
+
+  gb.log("Test Joypad\n");
+  test_reg(gb, "JOYP", ADDR_P1,   0b00110000);
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_dma() {
+  GateBoy gb;
+  gb.reset();
+
+  gb.log("Test DMA\n");
+  //test_reg("DMA",  0xFF46, 0b11111111); // works, but let's not trigger random dmas...
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_serial() {
+  GateBoy gb;
+  gb.log("Test serial port\n");
+  //test_reg("SB",   ADDR_SB,   0b11111111); // something wrong with these ones
+  //test_reg("SC",   ADDR_SC, 0b10000011);
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_ppu() {
+  GateBoy gb;
+  gb.reset();
+
+  gb.log("Test PPU\n");
+  //test_reg("LCDC", ADDR_LCDC, 0b11111111); // works but let's not muck up lcdc
+  //test_reg("STAT", ADDR_STAT, 0b11110000); // broken
+  test_reg(gb, "SCY",  ADDR_SCY,  0b11111111);
+  test_reg(gb, "SCX",  ADDR_SCX,  0b11111111);
+  //test_reg("LY",   0xFF44, 177); // not standard reg
+  test_reg(gb, "LYC",  ADDR_LYC, 0b11111111);
+  test_reg(gb, "BGP",  ADDR_BGP,  0b11111111);
+  test_reg(gb, "OBP0", ADDR_OBP0, 0b11111111);
+  test_reg(gb, "OBP1", ADDR_OBP1, 0b11111111);
+  test_reg(gb, "WY",   ADDR_WY,   0b11111111);
+  test_reg(gb, "WX",   ADDR_WX,   0b11111111);
+  gb.log("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_mem(GateBoy& gb, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
+  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
+    uint8_t data_wr = 0x55;
+    if (test_write) {
+      gb.mem[addr] = 0;
+      gb.dbg_write(addr, data_wr);
+    }
+    else {
+      gb.mem[addr] = data_wr;
+    }
+
+    uint8_t data_rd = gb.dbg_read(addr);
+    if (data_rd != data_wr) {
+      gb.log("XXXXXXXXXXXXXXXXX FAIL XXXXXXXXXXXXXXXXX @ 0x%04x : expected 0x%02x, was 0x%02x\n", addr, data_wr, data_rd);
+      return;
+    }
+  }
+
+  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
+    uint8_t data_wr = 0xAA;
+    if (test_write) {
+      gb.mem[addr] = 0;
+      gb.dbg_write(addr, data_wr);
+    }
+    else {
+      gb.mem[addr] = data_wr;
+    }
+
+    uint8_t data_rd = gb.dbg_read(addr);
+    if (data_rd != data_wr) {
+      gb.log("XXXXXXXXXXXXXXXXX FAIL XXXXXXXXXXXXXXXXX @ 0x%04x : expected 0x%02x, was 0x%02x\n", addr, data_wr, data_rd);
+      return;
+    }
+  }
+
+  gb.log("PASS\n");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyTests::test_reg(GateBoy& gb, const char* regname, uint16_t addr, uint8_t mask) {
+
+  gb.log("Testing reg %5s: ", regname);
+  for (int data_in = 0; data_in < 256; data_in++) {
+    if (!(data_in & mask)) continue;
+    gb.dbg_write(addr, uint8_t(data_in));
+    uint8_t data_out = gb.dbg_read(addr);
+    //printf("%5s @ %04x: wrote %02x, read %02x\n", regname, addr, data_in & mask, data_out & mask);
+
+    if ((data_in & mask) != (data_out & mask)) {
+      gb.log("XXXXXXXXXXXXXXXXX FAIL XXXXXXXXXXXXXXXXX - wrote 0x%02x, read 0x%02x\n", uint8_t(data_in & mask), uint8_t(data_out & mask));
+      //return;
+    }
+  }
+  gb.log("PASS\n");
+}

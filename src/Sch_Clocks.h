@@ -182,8 +182,8 @@ struct ClockRegisters {
   Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
   Tri SYS_PIN_CLK_B = TRI_D0NP; // PIN_74 
   Tri SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  Tri SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board - but there's probably an implicit inverter
-  Tri SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board - but there's probably an implicit inverter
+  Tri SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board, inverted by input buffer
+  Tri SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board, inverted by input buffer
 
   /*p01.TUBO*/ Tri _TUBO_WAITINGp  = TRI_D1NP; // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ Tri _ASOL_POR_DONEn = TRI_D1NP; // Schematic wrong, this is a latch.

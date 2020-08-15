@@ -14,10 +14,10 @@ struct Timer {
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
   int get_div() const {
-    return pack_p(!_UKUP_DIV_00.qn(), _UFOR_DIV_01.qp(), !_UNER_DIV_02.qn(), _TERO_DIV_03.qp(),
-                !_UNYK_DIV_04.qn(), _TAMA_DIV_05.qp(),  _UGOT_DIV_06.qp(), _TULU_DIV_07.qp(),
-                 _TUGO_DIV_08.qp(), _TOFE_DIV_09.qp(),  _TERU_DIV_10.qp(), _SOLA_DIV_11.qp(),
-                 _SUBU_DIV_12.qp(), _TEKA_DIV_13.qp(), !_UKET_DIV_14.qn(), _UPOF_DIV_15.qp());
+    return pack_p(!UKUP_DIV_00.qn(), UFOR_DIV_01.qp(), !UNER_DIV_02.qn(), TERO_DIV_03.qp(),
+                !UNYK_DIV_04.qn(), TAMA_DIV_05.qp(),  UGOT_DIV_06.qp(), TULU_DIV_07.qp(),
+                 TUGO_DIV_08.qp(), TOFE_DIV_09.qp(),  TERU_DIV_10.qp(), SOLA_DIV_11.qp(),
+                 SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), !UKET_DIV_14.qn(), UPOF_DIV_15.qp());
   }
 
   int get_tima() const {
@@ -34,26 +34,28 @@ struct Timer {
     return pack_p(SOPU_TAC_0.qp(), SAMY_TAC_1.qp(), SABO_TAC_2.qp(), 0);
   }
 
-  wire UVYN_DIV_05n() const { return _TAMA_DIV_05.qn(); }
-  wire UMEK_DIV_06n() const { return _UGOT_DIV_06.qn(); }
-  wire UREK_DIV_07n() const { return _TULU_DIV_07.qn(); }
+  /*
+  wire UVYN_DIV_05n() const { return TAMA_DIV_05.qn(); }
+  wire UMEK_DIV_06n() const { return UGOT_DIV_06.qn(); }
+  wire UREK_DIV_07n() const { return TULU_DIV_07.qn(); }
 
-  wire UKUP_DIV_00()  const { return !_UKUP_DIV_00.qn(); }
-  wire UFOR_DIV_01()  const { return  _UFOR_DIV_01.qp(); }
-  wire UNER_DIV_02()  const { return !_UNER_DIV_02.qn(); }
-  wire TERO_DIV_03()  const { return  _TERO_DIV_03.qp(); }
-  wire UNYK_DIV_04()  const { return !_UNYK_DIV_04.qn(); }
-  wire TAMA_DIV_05()  const { return  _TAMA_DIV_05.qp(); }
-  wire UGOT_DIV_06()  const { return  _UGOT_DIV_06.qp(); }
-  wire TULU_DIV_07()  const { return  _TULU_DIV_07.qp(); }
-  wire TUGO_DIV_08()  const { return  _TUGO_DIV_08.qp(); }
-  wire TOFE_DIV_09()  const { return  _TOFE_DIV_09.qp(); }
-  wire TERU_DIV_10()  const { return  _TERU_DIV_10.qp(); }
-  wire SOLA_DIV_11()  const { return  _SOLA_DIV_11.qp(); }
-  wire SUBU_DIV_12()  const { return  _SUBU_DIV_12.qp(); }
-  wire TEKA_DIV_13()  const { return  _TEKA_DIV_13.qp(); }
-  wire UKET_DIV_14()  const { return !_UKET_DIV_14.qn(); }
-  wire UPOF_DIV_15()  const { return  _UPOF_DIV_15.qp(); }
+  wire UKUP_DIV_00()  const { return !UKUP_DIV_00.qn(); }
+  wire UFOR_DIV_01()  const { return  UFOR_DIV_01.qp(); }
+  wire UNER_DIV_02()  const { return !UNER_DIV_02.qn(); }
+  wire TERO_DIV_03()  const { return  TERO_DIV_03.qp(); }
+  wire UNYK_DIV_04()  const { return !UNYK_DIV_04.qn(); }
+  wire TAMA_DIV_05()  const { return  TAMA_DIV_05.qp(); }
+  wire UGOT_DIV_06()  const { return  UGOT_DIV_06.qp(); }
+  wire TULU_DIV_07()  const { return  TULU_DIV_07.qp(); }
+  wire TUGO_DIV_08()  const { return  TUGO_DIV_08.qp(); }
+  wire TOFE_DIV_09()  const { return  TOFE_DIV_09.qp(); }
+  wire TERU_DIV_10()  const { return  TERU_DIV_10.qp(); }
+  wire SOLA_DIV_11()  const { return  SOLA_DIV_11.qp(); }
+  wire SUBU_DIV_12()  const { return  SUBU_DIV_12.qp(); }
+  wire TEKA_DIV_13()  const { return  TEKA_DIV_13.qp(); }
+  wire UKET_DIV_14()  const { return !UKET_DIV_14.qn(); }
+  wire UPOF_DIV_15()  const { return  UPOF_DIV_15.qp(); }
+  */
 
   void dump(Dumper& d) const {
     d("----------  Timer   ----------\n");
@@ -72,22 +74,22 @@ struct Timer {
   //----------
   // FF04 DIV
 
-  /*p01.UKUP*/ RegQN  _UKUP_DIV_00 = REG_D0C0;
-  /*p01.UFOR*/ RegQPN _UFOR_DIV_01 = REG_D0C0;
-  /*p01.UNER*/ RegQN  _UNER_DIV_02 = REG_D0C0;
-  /*p01.TERO*/ RegQPN _TERO_DIV_03 = REG_D0C0;
-  /*p01.UNYK*/ RegQN  _UNYK_DIV_04 = REG_D0C0;
-  /*p01.TAMA*/ RegQPN _TAMA_DIV_05 = REG_D0C0;
-  /*p01.UGOT*/ RegQPN _UGOT_DIV_06 = REG_D0C0;
-  /*p01.TULU*/ RegQPN _TULU_DIV_07 = REG_D0C0;
-  /*p01.TUGO*/ RegQPN _TUGO_DIV_08 = REG_D0C0;
-  /*p01.TOFE*/ RegQPN _TOFE_DIV_09 = REG_D0C0;
-  /*p01.TERU*/ RegQPN _TERU_DIV_10 = REG_D0C0;
-  /*p01.SOLA*/ RegQPN _SOLA_DIV_11 = REG_D0C0;
-  /*p01.SUBU*/ RegQPN _SUBU_DIV_12 = REG_D0C0;
-  /*p01.TEKA*/ RegQPN _TEKA_DIV_13 = REG_D0C0;
-  /*p01.UKET*/ RegQN  _UKET_DIV_14 = REG_D0C0;
-  /*p01.UPOF*/ RegQPN _UPOF_DIV_15 = REG_D0C0;
+  /*p01.UKUP*/ RegQPN UKUP_DIV_00 = REG_D0C0;
+  /*p01.UFOR*/ RegQPN UFOR_DIV_01 = REG_D0C0;
+  /*p01.UNER*/ RegQPN UNER_DIV_02 = REG_D0C0;
+  /*p01.TERO*/ RegQPN TERO_DIV_03 = REG_D0C0;
+  /*p01.UNYK*/ RegQPN UNYK_DIV_04 = REG_D0C0;
+  /*p01.TAMA*/ RegQPN TAMA_DIV_05 = REG_D0C0;
+  /*p01.UGOT*/ RegQPN UGOT_DIV_06 = REG_D0C0;
+  /*p01.TULU*/ RegQPN TULU_DIV_07 = REG_D0C0;
+  /*p01.TUGO*/ RegQPN TUGO_DIV_08 = REG_D0C0;
+  /*p01.TOFE*/ RegQPN TOFE_DIV_09 = REG_D0C0;
+  /*p01.TERU*/ RegQPN TERU_DIV_10 = REG_D0C0;
+  /*p01.SOLA*/ RegQPN SOLA_DIV_11 = REG_D0C0;
+  /*p01.SUBU*/ RegQPN SUBU_DIV_12 = REG_D0C0;
+  /*p01.TEKA*/ RegQPN TEKA_DIV_13 = REG_D0C0;
+  /*p01.UKET*/ RegQPN UKET_DIV_14 = REG_D0C0;
+  /*p01.UPOF*/ RegQPN UPOF_DIV_15 = REG_D0C0;
 
   //----------
   // FF05 TIMA

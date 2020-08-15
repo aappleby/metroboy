@@ -235,7 +235,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     LAVO_04 >>
 
     // SOMA = latch(LAVO, EXT_PIN_D0n_C)
-    // RYMA = tribuf_6n(LAVO, SOMA_08)
+    // RYMA = tri(LAVO, SOMA_08)
 #endif
 
 #if 0

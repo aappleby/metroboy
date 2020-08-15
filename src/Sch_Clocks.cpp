@@ -167,7 +167,7 @@ void ClockRegisters::tock_rst_slow(int phase, const SchematicTop& top) {
 
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.tp(), top.tim_reg.TERO_DIV_03());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.tp(), top.tim_reg.TERO_DIV_03.qp());
 #else
   /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.qp(), top.tim_reg.UPOF_DIV_15());
 #endif

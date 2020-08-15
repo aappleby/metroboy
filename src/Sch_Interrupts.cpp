@@ -22,24 +22,19 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     // pass gates? does look like a transparent latch here...
 
-    // MATY is connected to cpu int pin...CPU_PIN_INT_VBLANK?
-    // schematic says LOPE also connected to CPU_PIN_INT_VBLANK?
-
-    /*p02.MATY*/ MATY_FF0F_L0 = tp_latch_B(_ROLO_FF0F_RDn, LOPE_FF0F_0.qp()); // OUTPUT ON RUNG 10
-    /*p02.NEJY*/ NEJY_FF0F_L1 = tp_latch_B(_ROLO_FF0F_RDn, UBUL_FF0F_3.qp()); // OUTPUT ON RUNG 10
-    /*p02.NUTY*/ NUTY_FF0F_L2 = tp_latch_B(_ROLO_FF0F_RDn, ULAK_FF0F_4.qp()); // OUTPUT ON RUNG 10
-    /*p02.MOPO*/ MOPO_FF0F_L3 = tp_latch_B(_ROLO_FF0F_RDn, LALU_FF0F_1.qp()); // OUTPUT ON RUNG 10
-    /*p02.PAVY*/ PAVY_FF0F_L4 = tp_latch_B(_ROLO_FF0F_RDn, NYBO_FF0F_2.qp()); // OUTPUT ON RUNG 10
+    /*p02.MATY*/ MATY_FF0F_L0p = tp_latch_B(_ROLO_FF0F_RDn, LOPE_FF0F_0p.qp()); // OUTPUT ON RUNG 10
+    /*p02.NEJY*/ NEJY_FF0F_L1p = tp_latch_B(_ROLO_FF0F_RDn, UBUL_FF0F_3p.qp()); // OUTPUT ON RUNG 10
+    /*p02.NUTY*/ NUTY_FF0F_L2p = tp_latch_B(_ROLO_FF0F_RDn, ULAK_FF0F_4p.qp()); // OUTPUT ON RUNG 10
+    /*p02.MOPO*/ MOPO_FF0F_L3p = tp_latch_B(_ROLO_FF0F_RDn, LALU_FF0F_1p.qp()); // OUTPUT ON RUNG 10
+    /*p02.PAVY*/ PAVY_FF0F_L4p = tp_latch_B(_ROLO_FF0F_RDn, NYBO_FF0F_2p.qp()); // OUTPUT ON RUNG 10
 
     /*p02.POLA*/ wire _POLA_FF0F_RD  = not1(_ROLO_FF0F_RDn);
 
-    // NELA := tri(POLA, MATY_Q)
-
-    /*p02.NELA*/ cpu_bus.CPU_BUS_D0p = tribuf_6p(_POLA_FF0F_RD, MATY_FF0F_L0.tp());
-    /*p02.NABO*/ cpu_bus.CPU_BUS_D1p = tribuf_6p(_POLA_FF0F_RD, NEJY_FF0F_L1.tp());
-    /*p02.ROVA*/ cpu_bus.CPU_BUS_D2p = tribuf_6p(_POLA_FF0F_RD, NUTY_FF0F_L2.tp());
-    /*p02.PADO*/ cpu_bus.CPU_BUS_D3p = tribuf_6p(_POLA_FF0F_RD, MOPO_FF0F_L3.tp());
-    /*p02.PEGY*/ cpu_bus.CPU_BUS_D4p = tribuf_6p(_POLA_FF0F_RD, PAVY_FF0F_L4.tp());
+    /*p02.NELA*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_POLA_FF0F_RD, MATY_FF0F_L0p.qn());
+    /*p02.NABO*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(_POLA_FF0F_RD, NEJY_FF0F_L1p.qn());
+    /*p02.ROVA*/ cpu_bus.CPU_BUS_D2p = tribuf_6pn(_POLA_FF0F_RD, NUTY_FF0F_L2p.qn());
+    /*p02.PADO*/ cpu_bus.CPU_BUS_D3p = tribuf_6pn(_POLA_FF0F_RD, MOPO_FF0F_L3p.qn());
+    /*p02.PEGY*/ cpu_bus.CPU_BUS_D4p = tribuf_6pn(_POLA_FF0F_RD, PAVY_FF0F_L4p.qn());
   }
 
   {
@@ -78,15 +73,15 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
     /*p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
 
-    /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg._RUTU_LINE_P908.qp());
+    /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg.RUTU_LINE_P908.qp());
     /*p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);
     /*p21.TAPA*/ wire TAPA_INT_OAM = and2(_TOLU_VBLANKn, SELA_LINE_ENDp);
     /*p21.TARU*/ wire TARU_INT_HBL = and2(_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp());
 
-    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_INT_LYC_ENn.qn(), top.lcd_reg._ROPO_LY_MATCH_SYNCp.qp(),
-                                             top.pix_pipe.REFE_INT_OAM_ENn.qn(), TAPA_INT_OAM,
-                                             top.pix_pipe.RUFO_INT_VBL_ENn.qn(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
-                                             top.pix_pipe.ROXE_INT_HBL_ENn.qn(), TARU_INT_HBL);
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_STAT_LYI_ENn.qn(), top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp(),
+                                             top.pix_pipe.REFE_STAT_OAI_ENn.qn(), TAPA_INT_OAM,
+                                             top.pix_pipe.RUFO_STAT_VBI_ENn.qn(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             top.pix_pipe.ROXE_STAT_HBI_ENn.qn(), TARU_INT_HBL);
 
     /*p21.TUVA*/ wire TUVA_INT_STATn = not1(SUKO_INT_STATb);
     /*p21.VOTY*/ wire VOTY_INT_STATp = not1(TUVA_INT_STATn);
@@ -116,17 +111,17 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // LOPE_22 << CLKp VYPU_03
 
     wire PESU_VCC = 1;
-    /*p02.LOPE*/ LOPE_FF0F_0 = dff22(_VYPU_VBLANKp,                    _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_VCC);
-    /*p02.LALU*/ LALU_FF0F_1 = dff22(VOTY_INT_STATp,                   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_VCC);
-    /*p02.NYBO*/ NYBO_FF0F_2 = dff22(top.tim_reg.MOBA_INT_TIMERp.qp(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_VCC);
-    /*p02.UBUL*/ UBUL_FF0F_3 = dff22(top.ser_reg.CALY_SER_INTp(),      _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_VCC);
-    /*p02.ULAK*/ ULAK_FF0F_4 = dff22(top.joypad.ASOK_INT_JOYPADp(),    _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_VCC);
+    /*p02.LOPE*/ LOPE_FF0F_0p = dff22(_VYPU_VBLANKp,                    _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_VCC);
+    /*p02.LALU*/ LALU_FF0F_1p = dff22(VOTY_INT_STATp,                   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_VCC);
+    /*p02.NYBO*/ NYBO_FF0F_2p = dff22(top.tim_reg.MOBA_INT_TIMERp.qp(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_VCC);
+    /*p02.UBUL*/ UBUL_FF0F_3p = dff22(top.ser_reg.CALY_SER_INTp.qp(),   _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_VCC);
+    /*p02.ULAK*/ ULAK_FF0F_4p = dff22(top.joypad.ASOK_INT_JOYPADp(),    _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_VCC);
 
-    CPU_PIN_INT_VBLANK = LOPE_FF0F_0.qp();
-    CPU_PIN_INT_STAT   = LALU_FF0F_1.qp();
-    CPU_PIN_INT_TIMER  = NYBO_FF0F_2.qp();
-    CPU_PIN_INT_SERIAL = UBUL_FF0F_3.qp();
-    CPU_PIN_INT_JOYPAD = ULAK_FF0F_4.qp();
+    CPU_PIN_INT_VBLANK = LOPE_FF0F_0p.qp();
+    CPU_PIN_INT_STAT   = LALU_FF0F_1p.qp();
+    CPU_PIN_INT_TIMER  = NYBO_FF0F_2p.qp();
+    CPU_PIN_INT_SERIAL = UBUL_FF0F_3p.qp();
+    CPU_PIN_INT_JOYPAD = ULAK_FF0F_4p.qp();
   }
 }
 

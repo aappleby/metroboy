@@ -1,4 +1,5 @@
 #include "GateBoyApp.h"
+#include "GateBoyTests.h"
 
 #include "File.h"
 #include "Debug.h"
@@ -21,11 +22,11 @@ using namespace Schematics;
 
 GateBoyApp::GateBoyApp() {
   auto top_step = [this](GateBoy* gateboy) { 
-    gateboy->phase();
+    gateboy->next_phase();
   };
   auto top_unstep = [this](GateBoy* gateboy) {
     // Run a logic pass after unstep to update our probes
-    gateboy->pass();
+    gateboy->next_pass();
   };
   state_manager.init(top_step, top_unstep);
 
@@ -65,8 +66,28 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   printf("\n");
 
+  GateBoyTests::test_all_mem();
+
   auto gateboy = state_manager.state();
-  gateboy->run_reset_sequence();
+  gateboy->reset();
+
+  //gateboy->run_bootrom();
+
+#if !_DEBUG
+  /*
+  gateboy->test_all_mem();
+  gateboy->test_bootrom();
+  gateboy->test_timer();
+  gateboy->test_joypad();
+  gateboy->test_dma();
+  gateboy->test_serial();
+  gateboy->test_ppu();
+  gateboy->test_interrupts();
+  */
+#endif
+
+  //const char* filename = "roms/LinksAwakening_dog.dump";
+  //gateboy->load(filename);
 }
 
 void GateBoyApp::app_close() {
@@ -175,13 +196,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("----------   CPU    ----------\n");
   gateboy->cpu.dump(dumper);
+  top.tim_reg.dump(dumper);
+  top.int_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
   cursor_y += col_width;
   dumper.clear();
 
   top.clk_reg.dump(dumper);
-  //top.tim_reg.dump(dumper);
-  //top.int_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
   cursor_y += col_width;
   dumper.clear();

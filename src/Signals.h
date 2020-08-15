@@ -127,6 +127,10 @@ struct RegBase {
   RegBase& operator=(const RegBase&) = delete;
   RegBase(RegState s) : state(s), delta(DELTA_NONE) {}
 
+  static bool sim_running;
+  static bool bus_collision;
+  static bool bus_floating;
+
   char c() const {
     switch(state) {
       case REG_D0C0: return '0';
@@ -348,8 +352,6 @@ struct Sig : private RegBase {
 
   inline wire qp() const { return  as_wire(); }
 
-  static bool sim_running;
-
   inline operator wire() const { return as_wire(); }
 
   inline bool as_wire() const {
@@ -368,9 +370,6 @@ struct Sig : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-
-extern bool bus_collision;
-extern bool bus_floating;
 
 struct Tri : private RegBase {
   Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
@@ -407,7 +406,9 @@ struct Tri : private RegBase {
     }
     else {
       //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) bus_collision = true;
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
     }
   }
 
@@ -430,7 +431,9 @@ struct Tri : private RegBase {
     }
     else {
       //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) bus_collision = true;
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
     }
   }
 };
@@ -468,7 +471,9 @@ struct Latch : private RegBase {
     }
     else {
       //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) bus_collision = true;
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
     }
   }
 
@@ -491,7 +496,9 @@ struct Latch : private RegBase {
     }
     else {
       //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) bus_collision = true;
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
     }
   }
 };

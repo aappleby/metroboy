@@ -96,6 +96,30 @@ struct CpuBus {
     CPU_BUS_D7p.preset(DELTA_TRIZ);
   }
 
+  void set_data(bool oe, uint8_t data) {
+    if (oe) {
+      CPU_BUS_D0p = (data & 0x01);
+      CPU_BUS_D1p = (data & 0x02);
+      CPU_BUS_D2p = (data & 0x04);
+      CPU_BUS_D3p = (data & 0x08);
+      CPU_BUS_D4p = (data & 0x10);
+      CPU_BUS_D5p = (data & 0x20);
+      CPU_BUS_D6p = (data & 0x40);
+      CPU_BUS_D7p = (data & 0x80);
+    }
+    else {
+      CPU_BUS_D0p = DELTA_TRIZ;
+      CPU_BUS_D1p = DELTA_TRIZ;
+      CPU_BUS_D2p = DELTA_TRIZ;
+      CPU_BUS_D3p = DELTA_TRIZ;
+      CPU_BUS_D4p = DELTA_TRIZ;
+      CPU_BUS_D5p = DELTA_TRIZ;
+      CPU_BUS_D6p = DELTA_TRIZ;
+      CPU_BUS_D7p = DELTA_TRIZ;
+    }
+  }
+
+
   //-----------------------------------------------------------------------------
 
   void dump(Dumper& d) const {
@@ -104,7 +128,7 @@ struct CpuBus {
     d("CPU AHI  : %d\n", CPU_PIN_ADDR_HI.tp());
     d("CPU RDp  : %d\n", CPU_PIN_RDp.tp());
     d("CPU WRp  : %d\n", CPU_PIN_WRp.tp());
-    d("CPU AVp  : %d\n", CPU_PIN_ADDR_EXT.tp());
+    d("CPU AVp  : %d\n", CPU_PIN_ADDR_EXTp.tp());
     d("CPU DVp  : %d\n", CPU_PIN_HOLD_MEM.tp());
 
     d("CPU ADDR : %04x\n", get_bus_addr());
@@ -223,7 +247,7 @@ struct CpuBus {
 
   Tri CPU_PIN_RDp       = TRI_HZNP; // top right port PORTA_00: -> LAGU, LAVO, TEDO
   Tri CPU_PIN_WRp       = TRI_HZNP; // top right port PORTA_01: ->
-  Tri CPU_PIN_ADDR_EXT  = TRI_HZNP; // top right port PORTA_06: -> TEXO, APAP
+  Tri CPU_PIN_ADDR_EXTp  = TRI_HZNP; // top right port PORTA_06: -> TEXO, APAP
 };
 
 //-----------------------------------------------------------------------------

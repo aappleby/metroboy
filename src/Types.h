@@ -16,16 +16,52 @@ typedef bool wire;
 
 //-----------------------------------------------------------------------------
 
+inline int pack_p(wire a, wire b, wire c, wire d) {
+  return (a << 0) | (b << 1) | (c << 2) | (d << 3);
+}
+
+inline int pack_p(wire a, wire b, wire c, wire d,
+                wire e, wire f, wire g, wire h) {
+  return (pack_p(a, b, c, d) << 0) | (pack_p(e, f, g, h) << 4);
+}
+
+inline int pack_p(wire a, wire b, wire c, wire d,
+                wire e, wire f, wire g, wire h,
+                wire i, wire j, wire k, wire l,
+                wire m, wire n, wire o, wire p) {
+  return (pack_p(a, b, c, d, e, f, g, h) << 0) | (pack_p(i, j, k, l, m, n, o, p) << 8);
+}
+
+//-----------------------------------------------------------------------------
+
+inline int pack_n(wire a, wire b, wire c, wire d) {
+  return (!a << 0) | (!b << 1) | (!c << 2) | (!d << 3);
+}
+
+inline int pack_n(wire a, wire b, wire c, wire d,
+                wire e, wire f, wire g, wire h) {
+  return (pack_n(a, b, c, d) << 0) | (pack_n(e, f, g, h) << 4);
+}
+
+inline int pack_n(wire a, wire b, wire c, wire d,
+                  wire e, wire f, wire g, wire h,
+                  wire i, wire j, wire k, wire l,
+                  wire m, wire n, wire o, wire p) {
+  return (pack_n(a, b, c, d, e, f, g, h) << 0) | (pack_n(i, j, k, l, m, n, o, p) << 8);
+}
+
+//-----------------------------------------------------------------------------
+
 #define PHASE(A) ((A) & (1 << (7 - phase)))
 
-#define PHASE_A  ((phase & 7) == 0)
-#define PHASE_B  ((phase & 7) == 1)
-#define PHASE_C  ((phase & 7) == 2)
-#define PHASE_D  ((phase & 7) == 3)
-#define PHASE_E  ((phase & 7) == 4)
-#define PHASE_F  ((phase & 7) == 5)
-#define PHASE_G  ((phase & 7) == 6)
-#define PHASE_H  ((phase & 7) == 7)
+#define DELTA_AB  ((phase & 7) == 0)
+#define DELTA_BC  ((phase & 7) == 1)
+#define DELTA_CD  ((phase & 7) == 2)
+#define DELTA_DE  ((phase & 7) == 3)
+#define DELTA_EF  ((phase & 7) == 4)
+#define DELTA_FG  ((phase & 7) == 5)
+#define DELTA_GH  ((phase & 7) == 6)
+#define DELTA_HA  ((phase & 7) == 7)
 #define PHASE_HI ((phase & 1) == 1)
 #define PHASE_LO ((phase & 1) == 0)
 
@@ -98,6 +134,11 @@ struct Sprite {
 struct Dumper {
   virtual void operator()(const char* format, ...) = 0;
   virtual void clear() = 0;
+
+  inline void dump_reg(const char* tag, wire D0, wire D1, wire D2, wire D3, wire D4, wire D5, wire D6, wire D7) {
+    int D = pack_p(D0, D1, D2, D3, D4, D5, D6, D7);
+    operator()("%-10s : %-3d 0x%02x 0b%d%d%d%d%d%d%d%d\n", tag, D, D, D7, D6, D5, D4, D3, D2, D1, D0);
+  }
 };
 
 void dump_req(Dumper& d, const Req& req);

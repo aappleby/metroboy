@@ -101,7 +101,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
     /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
-    /*#p28.BESU*/ BESU_SCANNINGp = nor_latch(top.lcd_reg._CATU_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
+    /*#p28.BESU*/ BESU_SCANNINGp = nor_latch(top.lcd_reg.CATU_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
     /*#p29.CENO*/ CENO_SCANNINGp = dff17_A(top.clk_reg.XUPY_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), BESU_SCANNINGp.tp());
   }
 

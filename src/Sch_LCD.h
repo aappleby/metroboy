@@ -22,16 +22,16 @@ struct LcdRegisters {
   }
 
   uint8_t get_lyc() const {
-    return (uint8_t)pack_p(SYRY_LYC0.qp(), VUCE_LYC1.qp(), SEDY_LYC2.qp(), SALO_LYC3.qp(),
-                SOTA_LYC4.qp(), VAFA_LYC5.qp(), VEVO_LYC6.qp(), RAHA_LYC7.qp());
+    return (uint8_t)pack_p(SYRY_LYC0n.qp(), VUCE_LYC1n.qp(), SEDY_LYC2n.qp(), SALO_LYC3n.qp(),
+                SOTA_LYC4n.qp(), VAFA_LYC5n.qp(), VEVO_LYC6n.qp(), RAHA_LYC7n.qp());
   }
 
   // fires on P910 and P911
   wire BYHA_VID_LINE_END_TRIGn() const {
-    /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(_CATU_LINE_P910.qp());
+    /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_LINE_P910.qp());
     
     // so if this is or_and, BYHA should go low on 910 and 911
-    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(_ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, _ABEZ_VID_RSTn);
+    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, _ABEZ_VID_RSTn);
     
     return BYHA_VID_LINE_END_TRIGn;
   }
@@ -43,7 +43,7 @@ struct LcdRegisters {
   }
 
   // -> interrupts, ppu
-  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not1(_POPU_IN_VBLANKp.qn()); }
+  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not1(POPU_IN_VBLANKp.qn()); }
 
   // -> sprite store
 
@@ -71,28 +71,28 @@ struct LcdRegisters {
 
   Sig _ABEZ_VID_RSTn;
 
-  /*p21.NYPE*/ RegQPN _NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
-  /*p28.ANEL*/ RegQP  _ANEL_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
-  /*p21.RUTU*/ RegQP  _RUTU_LINE_P908 = REG_D0C0; // fires on line phase 908, high for 8 phases
-  /*p29.CATU*/ RegQP  _CATU_LINE_P910 = REG_D0C0; // fires on line phase 910, high for 8 phases
+  /*p21.NYPE*/ RegQPN NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
+  /*p28.ANEL*/ RegQP  ANEL_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
+  /*p21.RUTU*/ RegQP  RUTU_LINE_P908 = REG_D0C0; // fires on line phase 908, high for 8 phases
+  /*p29.CATU*/ RegQP  CATU_LINE_P910 = REG_D0C0; // fires on line phase 910, high for 8 phases
 
-  /*p21.MYTA*/ RegQP  _MYTA_LINE_153p      = REG_D0C0; // fires on line 153, phase 004. clears on line 000, phase 004
-  /*p21.POPU*/ RegQPN _POPU_IN_VBLANKp     = REG_D0C0; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
-  /*p21.SYGU*/ RegQP  _SYGU_LINE_STROBE    = REG_D0C0;
-  /*p24.MEDA*/ RegQP  _MEDA_VSYNC_OUTn     = REG_D0C0;
-  /*p24.LUCA*/ RegQN  _LUCA_LINE_EVEN      = REG_D0C0;
-  /*p21.NAPO*/ RegQPN _NAPO_FRAME_EVEN     = REG_D0C0;
-  /*p21.ROPO*/ RegQP  _ROPO_LY_MATCH_SYNCp = REG_D0C0;
+  /*p21.MYTA*/ RegQP  MYTA_LINE_153p      = REG_D0C0; // fires on line 153, phase 004. clears on line 000, phase 004
+  /*p21.POPU*/ RegQPN POPU_IN_VBLANKp     = REG_D0C0; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.SYGU*/ RegQP  SYGU_LINE_STROBE    = REG_D0C0;
+  /*p24.MEDA*/ RegQP  MEDA_VSYNC_OUTn     = REG_D0C0;
+  /*p24.LUCA*/ RegQN  LUCA_LINE_EVEN      = REG_D0C0;
+  /*p21.NAPO*/ RegQPN NAPO_FRAME_EVEN     = REG_D0C0;
+  /*p21.ROPO*/ RegQP  ROPO_LY_MATCH_SYNCp = REG_D0C0;
 
   // FF45 - LYC
-  /*p23.SYRY*/ Reg SYRY_LYC0 = REG_D0C0;
-  /*p23.VUCE*/ Reg VUCE_LYC1 = REG_D0C0;
-  /*p23.SEDY*/ Reg SEDY_LYC2 = REG_D0C0;
-  /*p23.SALO*/ Reg SALO_LYC3 = REG_D0C0;
-  /*p23.SOTA*/ Reg SOTA_LYC4 = REG_D0C0;
-  /*p23.VAFA*/ Reg VAFA_LYC5 = REG_D0C0;
-  /*p23.VEVO*/ Reg VEVO_LYC6 = REG_D0C0;
-  /*p23.RAHA*/ Reg RAHA_LYC7 = REG_D0C0;
+  /*p23.SYRY*/ Reg SYRY_LYC0n = REG_D0C0;
+  /*p23.VUCE*/ Reg VUCE_LYC1n = REG_D0C0;
+  /*p23.SEDY*/ Reg SEDY_LYC2n = REG_D0C0;
+  /*p23.SALO*/ Reg SALO_LYC3n = REG_D0C0;
+  /*p23.SOTA*/ Reg SOTA_LYC4n = REG_D0C0;
+  /*p23.VAFA*/ Reg VAFA_LYC5n = REG_D0C0;
+  /*p23.VEVO*/ Reg VEVO_LYC6n = REG_D0C0;
+  /*p23.RAHA*/ Reg RAHA_LYC7n = REG_D0C0;
 };
 
 //-----------------------------------------------------------------------------

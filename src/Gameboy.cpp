@@ -50,7 +50,7 @@ void Gameboy::reset(uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock(int /*phase_*/, const Req& req) {
-  if (PHASE_F && req.write) {
+  if (DELTA_FG && req.write) {
     if (req.addr == ADDR_IF) intf  = (uint8_t)req.data_lo | 0b11100000;
     if (req.addr == ADDR_IE) imask = (uint8_t)req.data_lo;
   }
@@ -138,7 +138,7 @@ void Gameboy::tock_gb() {
   ppu.on_vbus_ack(vbus_ack);
   ppu.on_obus_ack(obus_ack);
 
-  if (PHASE_A || PHASE_B) {
+  if (DELTA_AB || DELTA_BC) {
     bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
     bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
     bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
@@ -166,8 +166,8 @@ void Gameboy::tock_gb() {
     }
   }
 
-  if (PHASE_A) z80.tock_a(imask, intf, cpu_ack);
-  if (PHASE_B) z80.tock_b(imask, intf, cpu_ack);
+  if (DELTA_AB) z80.tock_a(imask, intf, cpu_ack);
+  if (DELTA_BC) z80.tock_b(imask, intf, cpu_ack);
   //if (PHASE_C) z80.tock_c(imask, intf, cpu_ack);
   //if (PHASE_D) z80.tock_d(imask, intf, cpu_ack);
   //if (PHASE_E) z80.tock_e(imask, intf, cpu_ack);
@@ -177,7 +177,7 @@ void Gameboy::tock_gb() {
 
   timer2.tock(phase, ibus_req);
 
-  if (PHASE_F) {
+  if (DELTA_FG) {
     self.  tock(phase, ibus_req);
     serial.tock(phase, ibus_req);
     joypad.tock(phase, ibus_req);
@@ -218,7 +218,7 @@ void Gameboy::tock_gb() {
   //-----------------------------------
   // prioritize reqs
 
-  if (PHASE_B) {
+  if (DELTA_BC) {
     ibus_req = {0};
     ebus_req = {0};
     vbus_req = {0};
@@ -264,7 +264,7 @@ void Gameboy::tock_gb() {
     };
   }
 
-  if (PHASE_E && dma2.DMA_RUN_WRITE) {
+  if (DELTA_EF && dma2.DMA_RUN_WRITE) {
     obus_req = {
       .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
       .data = dma_data_latch,

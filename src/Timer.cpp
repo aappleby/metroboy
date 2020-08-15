@@ -36,14 +36,14 @@ void NewTimer::tick(const Req& req, Ack& ack) {
 
 void NewTimer::tock(int phase, const Req& req) {
 
-  if (PHASE_C) {
+  if (DELTA_CD) {
     div++;
     timer_int = tima_7_sync && !(tima & 0x80);
     tima_7_sync = (tima & 0x80);
     update_tima();
   }
 
-  if (PHASE_F && req.write) {
+  if (DELTA_FG && req.write) {
     switch(req.addr) {
     case ADDR_DIV:  div  = 0; break;
     case ADDR_TIMA: tima = req.data_lo; tima_7_sync = false; break;

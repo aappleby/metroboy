@@ -34,6 +34,12 @@ struct DmaRegisters {
     return not1(MUHO_DMA_VRAM_RDn);
   }
 
+  /*#p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp() const {
+    /*#p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15n.qn());
+    /*#p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13n.qn(), POKU_DMA_A14n.qn(), LEBU_DMA_ADDR_A15n);
+    return MUDA_DMA_SRC_VRAMp;
+  }
+
   /*p04.NAKY*/ RegQPN NAKY_DMA_A00p = REG_D0C0;
   /*p04.PYRO*/ RegQPN PYRO_DMA_A01p = REG_D0C0;
   /*p04.NEFY*/ RegQPN NEFY_DMA_A02p = REG_D0C0;
@@ -51,20 +57,6 @@ struct DmaRegisters {
   /*p04.PULA*/ RegQPN PULA_DMA_A13n = REG_D0C0;
   /*p04.POKU*/ RegQPN POKU_DMA_A14n = REG_D0C0;
   /*p04.MARU*/ RegQPN MARU_DMA_A15n = REG_D0C0;
-
-//private:
-
-  wire MUDA_DMA_SRC_VRAMp() const {
-    // LEBU := not(MARU_QN)
-    // MUDA := nor(PULA_QN, POKU_QN, LEBU)
-
-    // something wrong here... polarity of high addr bits inverted
-    // MUDA = nor(!A13, !A14, A15)
-
-    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15n.qn());
-    /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13n.qn(), POKU_DMA_A14n.qn(), LEBU_DMA_ADDR_A15n);
-    return MUDA_DMA_SRC_VRAMp;
-  }
 
   /*p04.LYXE*/ Latch _LYXE_DMA_LATCHp   = TRI_D0NP;
   /*p04.MATU*/ RegQP _MATU_DMA_RUNNINGp = REG_D0C0;

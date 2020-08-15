@@ -120,9 +120,9 @@ struct OamBus {
   /*p31.DEPO*/ RegQP DEPO_OAM_DB7p = REG_D0C0; // sprite x bit 7, sprite priority
 
   Tri OAM_PIN_CLK  = TRI_D0NP;
-  Tri OAM_PIN_OE   = TRI_D0NP; // FIXME why are these pulled up?
-  Tri OAM_PIN_WR_B = TRI_D0NP;
+  Tri OAM_PIN_OE   = TRI_D0NP;
   Tri OAM_PIN_WR_A = TRI_D0NP;
+  Tri OAM_PIN_WR_B = TRI_D0NP;
 
   Tri OAM_TRI_A0n  = TRI_D0NP;
   Tri OAM_TRI_A1n  = TRI_D0NP;

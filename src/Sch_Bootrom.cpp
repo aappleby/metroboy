@@ -51,6 +51,11 @@ static const uint8_t DMG_ROM_bin[] = {
 
 void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
+  if (top.TEDO_CPU_RDp() && (top.cpu_bus.get_bus_addr() <= 0xFF)) {
+    int x = 1;
+    x++;
+  }
+
   // FF50
   {
     /*p07.TYRO*/ wire _TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.CPU_BUS_A07.tp(), top.cpu_bus.CPU_BUS_A05.tp(), top.cpu_bus.CPU_BUS_A03.tp(),
@@ -58,7 +63,7 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.CPU_BUS_A04.tp(), top.cpu_bus.CPU_BUS_A06.tp());
 
     /*p07.TEXE*/ wire _TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ cpu_bus.CPU_BUS_D0p = tribuf_6p(_TEXE_FF50_RDp, BOOT_BITn.qp()); // does the rung of the tribuf control polarity?
+    /*p07.SYPU*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TEXE_FF50_RDp, BOOT_BITn.qp());
 
     /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(top.cpu_bus.CPU_BUS_D0p.tp(), BOOT_BITn.qp());
@@ -70,10 +75,9 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // Bootrom -> CPU
 
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(top.clk_reg.UMUT_MODE_DBG1p());
-    /*p07.YULA*/ wire _YULA_BOOT_RDp = and3(top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
-
-    /*p07.ZADO*/ wire _ZADO_BOOT_CSn  = nand2(_YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());
-    /*p07.ZERY*/ wire _ZERY_BOOT_CSp  = not1(_ZADO_BOOT_CSn);
+    /*p07.YULA*/ wire _YULA_BOOT_RDp   = and3(top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
+    /*p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());
+    /*p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
 
 #if 0
     /*p07.ZYBA*/ wire ZYBA_ADDR_00n = not1(top.cpu_bus.CPU_BUS_A00);
@@ -99,19 +103,19 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p07.ZYRA*/ wire BOOTROM_A7n    = not1(top.cpu_bus.CPU_BUS_A07);
 #endif
 
-#if 0
+#if 1
     // this is kind of a hack
-    uint16_t addr = (uint16_t)top.cpu_bus.bus_addr();
+    uint16_t addr = (uint16_t)top.cpu_bus.get_bus_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    cpu_bus.CPU_BUS_D0p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x01));
-    cpu_bus.CPU_BUS_D1p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x02));
-    cpu_bus.CPU_BUS_D2p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x04));
-    cpu_bus.CPU_BUS_D3p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x08));
-    cpu_bus.CPU_BUS_D4p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x10));
-    cpu_bus.CPU_BUS_D5p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x20));
-    cpu_bus.CPU_BUS_D6p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x40));
-    cpu_bus.CPU_BUS_D7p = tribuf_6p(_ZERY_BOOT_CSp, bool(data & 0x80));
+    cpu_bus.CPU_BUS_D0p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x01));
+    cpu_bus.CPU_BUS_D1p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x02));
+    cpu_bus.CPU_BUS_D2p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x04));
+    cpu_bus.CPU_BUS_D3p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x08));
+    cpu_bus.CPU_BUS_D4p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x10));
+    cpu_bus.CPU_BUS_D5p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x20));
+    cpu_bus.CPU_BUS_D6p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x40));
+    cpu_bus.CPU_BUS_D7p = tribuf_6pn(_ZERY_BOOT_CSp, !bool(data & 0x80));
 #endif
   }
 }

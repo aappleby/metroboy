@@ -1,10 +1,9 @@
 #include "Signals.h"
 #include <memory.h>
 
-bool Sig::sim_running = false;
-
-bool bus_collision = false;
-bool bus_floating = false;
+bool RegBase::sim_running = false;
+bool RegBase::bus_collision = false;
+bool RegBase::bus_floating = false;
 
 //-----------------------------------------------------------------------------
 

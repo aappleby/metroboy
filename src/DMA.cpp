@@ -51,10 +51,10 @@ void DMA2::tick(const Req& req, Ack& ack) {
 void DMA2::tock(int phase, const Req& req) {
 
 
-  bool DMA_WR = (req.addr == 0xFF46) && req.write && (PHASE_F || PHASE_G || PHASE_H);
+  bool DMA_WR = (req.addr == 0xFF46) && req.write && (DELTA_FG || DELTA_GH || DELTA_HA);
   bool DMA_RST = DMA_RUN_TRIG_d4;
 
-  if (PHASE_B) {
+  if (DELTA_BC) {
     // something wrong here, inverting this until we figure it out.
     // bool LUPA = nor4(DMA_WR, DMA_WR_LATCH);
     bool LUPA = DMA_WR || DMA_WR_LATCH;
@@ -63,7 +63,7 @@ void DMA2::tock(int phase, const Req& req) {
     if (DMA_RUN_READ) addr++;
   }
 
-  if (PHASE_F) {
+  if (DELTA_FG) {
     /*p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
     /*p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
     if (req.write && req.addr == 0xFF46) {

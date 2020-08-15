@@ -23,8 +23,8 @@ struct VramBus {
   }
 
   int get_bus_data() const {
-    return pack_p(!VRAM_BUS_D0n.tp(), !VRAM_BUS_D1n.tp(), !VRAM_BUS_D2n.tp(), !VRAM_BUS_D3n.tp(),
-                  !VRAM_BUS_D4n.tp(), !VRAM_BUS_D5n.tp(), !VRAM_BUS_D6n.tp(), !VRAM_BUS_D7n.tp());
+    return pack_p(VRAM_BUS_D0p.tp(), VRAM_BUS_D1p.tp(), VRAM_BUS_D2p.tp(), VRAM_BUS_D3p.tp(),
+                  VRAM_BUS_D4p.tp(), VRAM_BUS_D5p.tp(), VRAM_BUS_D6p.tp(), VRAM_BUS_D7p.tp());
   }
 
   uint16_t get_pin_addr() const {
@@ -35,36 +35,35 @@ struct VramBus {
   }
 
   uint8_t get_pin_data_out() const {
-    // FIXME why is this _not_ inverted?
-    return (uint8_t)pack_p(VRAM_PIN_D0_A.tp(), VRAM_PIN_D1_A.tp(), VRAM_PIN_D2_A.tp(), VRAM_PIN_D3_A.tp(),
-                           VRAM_PIN_D4_A.tp(), VRAM_PIN_D5_A.tp(), VRAM_PIN_D6_A.tp(), VRAM_PIN_D7_A.tp());
+    return (uint8_t)pack_p(!VRAM_PIN_D0n_A.tp(), !VRAM_PIN_D1n_A.tp(), !VRAM_PIN_D2n_A.tp(), !VRAM_PIN_D3n_A.tp(),
+                           !VRAM_PIN_D4n_A.tp(), !VRAM_PIN_D5n_A.tp(), !VRAM_PIN_D6n_A.tp(), !VRAM_PIN_D7n_A.tp());
   }
 
   void preset_pin_data_in(uint8_t data) {
-    _VRAM_PIN_D0n_C.preset(!(data & 0x01));
-    _VRAM_PIN_D1n_C.preset(!(data & 0x02));
-    _VRAM_PIN_D2n_C.preset(!(data & 0x04));
-    _VRAM_PIN_D3n_C.preset(!(data & 0x08));
-    _VRAM_PIN_D4n_C.preset(!(data & 0x10));
-    _VRAM_PIN_D5n_C.preset(!(data & 0x20));
-    _VRAM_PIN_D6n_C.preset(!(data & 0x40));
-    _VRAM_PIN_D7n_C.preset(!(data & 0x80));
+    VRAM_PIN_D0n_C.preset(!(data & 0x01));
+    VRAM_PIN_D1n_C.preset(!(data & 0x02));
+    VRAM_PIN_D2n_C.preset(!(data & 0x04));
+    VRAM_PIN_D3n_C.preset(!(data & 0x08));
+    VRAM_PIN_D4n_C.preset(!(data & 0x10));
+    VRAM_PIN_D5n_C.preset(!(data & 0x20));
+    VRAM_PIN_D6n_C.preset(!(data & 0x40));
+    VRAM_PIN_D7n_C.preset(!(data & 0x80));
   }
 
   void preset_pin_data_z() {
-    _VRAM_PIN_D0n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D1n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D2n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D3n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D4n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D5n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D6n_C.preset(DELTA_TRIZ);
-    _VRAM_PIN_D7n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D0n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D1n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D2n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D3n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D4n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D5n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D6n_C.preset(DELTA_TRIZ);
+    VRAM_PIN_D7n_C.preset(DELTA_TRIZ);
   }
 
   //-----------------------------------------------------------------------------
 
-  /*p32.LEGU*/ RegQN LEGU_TILE_DA0n = REG_D0C0;
+  /*p32.LEGU*/ RegQN LEGU_TILE_DA0n = REG_D0C0; // def holds inverted pix
   /*p32.NUDU*/ RegQN NUDU_TILE_DA1n = REG_D0C0;
   /*p32.MUKU*/ RegQN MUKU_TILE_DA2n = REG_D0C0;
   /*p32.LUZO*/ RegQN LUZO_TILE_DA3n = REG_D0C0;
@@ -73,7 +72,7 @@ struct VramBus {
   /*p32.NASA*/ RegQN NASA_TILE_DA6n = REG_D0C0;
   /*p32.NEFO*/ RegQN NEFO_TILE_DA7n = REG_D0C0; // color wrong on die
 
-  /*p32.RAWU*/ RegQN RAWU_TILE_DB0n = REG_D0C0; // also holds tile index during fetch
+  /*p32.RAWU*/ RegQN RAWU_TILE_DB0n = REG_D0C0; // def holds inverted pix, also holds tile index during fetch
   /*p32.POZO*/ RegQN POZO_TILE_DB1n = REG_D0C0;
   /*p32.PYZO*/ RegQN PYZO_TILE_DB2n = REG_D0C0; 
   /*p32.POXA*/ RegQN POXA_TILE_DB3n = REG_D0C0; 
@@ -82,7 +81,7 @@ struct VramBus {
   /*p32.POWY*/ RegQN POWY_TILE_DB6n = REG_D0C0; 
   /*p32.PYJU*/ RegQN PYJU_TILE_DB7n = REG_D0C0;
 
-  /*p33.PEFO*/ RegQN PEFO_SPRITE_DB0n = REG_D0C0;
+  /*p33.PEFO*/ RegQN PEFO_SPRITE_DB0n = REG_D0C0; // def holds inverted pix
   /*p33.ROKA*/ RegQN ROKA_SPRITE_DB1n = REG_D0C0;
   /*p33.MYTU*/ RegQN MYTU_SPRITE_DB2n = REG_D0C0;
   /*p33.RAMU*/ RegQN RAMU_SPRITE_DB3n = REG_D0C0;
@@ -91,7 +90,7 @@ struct VramBus {
   /*p33.RAMA*/ RegQN RAMA_SPRITE_DB6n = REG_D0C0;
   /*p33.RYDU*/ RegQN RYDU_SPRITE_DB7n = REG_D0C0;
 
-  /*p33.REWO*/ RegQN REWO_SPRITE_DA0n = REG_D0C0;
+  /*p33.REWO*/ RegQN REWO_SPRITE_DA0n = REG_D0C0; // def holds inverted pix
   /*p33.PEBA*/ RegQN PEBA_SPRITE_DA1n = REG_D0C0;
   /*p33.MOFO*/ RegQN MOFO_SPRITE_DA2n = REG_D0C0;
   /*p33.PUDU*/ RegQN PUDU_SPRITE_DA3n = REG_D0C0;
@@ -102,16 +101,16 @@ struct VramBus {
 
   //----------------------------------------
   
-  // OK, this is super screwy - VRAM_BUS_D* is positive on writes, inverted on reads. WTF.
+  // VRAM_BUS_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
-  Tri VRAM_BUS_D0n = TRI_D0NP;
-  Tri VRAM_BUS_D1n = TRI_D0NP;
-  Tri VRAM_BUS_D2n = TRI_D0NP;
-  Tri VRAM_BUS_D3n = TRI_D0NP;
-  Tri VRAM_BUS_D4n = TRI_D0NP;
-  Tri VRAM_BUS_D5n = TRI_D0NP;
-  Tri VRAM_BUS_D6n = TRI_D0NP;
-  Tri VRAM_BUS_D7n = TRI_D0NP;
+  Tri VRAM_BUS_D0p = TRI_D0NP;
+  Tri VRAM_BUS_D1p = TRI_D0NP;
+  Tri VRAM_BUS_D2p = TRI_D0NP;
+  Tri VRAM_BUS_D3p = TRI_D0NP;
+  Tri VRAM_BUS_D4p = TRI_D0NP;
+  Tri VRAM_BUS_D5p = TRI_D0NP;
+  Tri VRAM_BUS_D6p = TRI_D0NP;
+  Tri VRAM_BUS_D7p = TRI_D0NP;
 
   Tri VRAM_BUS_A00n = TRI_D0NP;
   Tri VRAM_BUS_A01n = TRI_D0NP;
@@ -156,14 +155,14 @@ struct VramBus {
   Tri VRAM_PIN_A11n  = TRI_D0NP;  // PIN_46 <- P04.FUSY
   Tri VRAM_PIN_A12n  = TRI_D0NP;  // PIN_42 <- P04.EXYF
 
-  Tri VRAM_PIN_D0_A = TRI_D0NP;    // PIN_33 <- P25.REGE
-  Tri VRAM_PIN_D1_A = TRI_D0NP;    // PIN_31 <- P25.RYKY
-  Tri VRAM_PIN_D2_A = TRI_D0NP;    // PIN_30 <- P25.RAZO
-  Tri VRAM_PIN_D3_A = TRI_D0NP;    // PIN_29 <- P25.RADA
-  Tri VRAM_PIN_D4_A = TRI_D0NP;    // PIN_28 <- P25.RYRO
-  Tri VRAM_PIN_D5_A = TRI_D0NP;    // PIN_27 <- P25.REVU
-  Tri VRAM_PIN_D6_A = TRI_D0NP;    // PIN_26 <- P25.REKU
-  Tri VRAM_PIN_D7_A = TRI_D0NP;    // PIN_25 <- P25.RYZE
+  Tri VRAM_PIN_D0n_A = TRI_D0NP;    // PIN_33 <- P25.REGE
+  Tri VRAM_PIN_D1n_A = TRI_D0NP;    // PIN_31 <- P25.RYKY
+  Tri VRAM_PIN_D2n_A = TRI_D0NP;    // PIN_30 <- P25.RAZO
+  Tri VRAM_PIN_D3n_A = TRI_D0NP;    // PIN_29 <- P25.RADA
+  Tri VRAM_PIN_D4n_A = TRI_D0NP;    // PIN_28 <- P25.RYRO
+  Tri VRAM_PIN_D5n_A = TRI_D0NP;    // PIN_27 <- P25.REVU
+  Tri VRAM_PIN_D6n_A = TRI_D0NP;    // PIN_26 <- P25.REKU
+  Tri VRAM_PIN_D7n_A = TRI_D0NP;    // PIN_25 <- P25.RYZE
 
   Tri VRAM_PIN_D0_B = TRI_D0NP;    // PIN_33 <- P25.ROFA
   Tri VRAM_PIN_D1_B = TRI_D0NP;    // PIN_31 <- P25.ROFA
@@ -174,23 +173,23 @@ struct VramBus {
   Tri VRAM_PIN_D6_B = TRI_D0NP;    // PIN_26 <- P25.ROFA
   Tri VRAM_PIN_D7_B = TRI_D0NP;    // PIN_25 <- P25.ROFA
 
-  Tri _VRAM_PIN_D0n_C = TRI_D0PU;    // PIN_33 -> P25.RODY
-  Tri _VRAM_PIN_D1n_C = TRI_D0PU;    // PIN_31 -> P25.REBA
-  Tri _VRAM_PIN_D2n_C = TRI_D0PU;    // PIN_30 -> P25.RYDO
-  Tri _VRAM_PIN_D3n_C = TRI_D0PU;    // PIN_29 -> P25.REMO
-  Tri _VRAM_PIN_D4n_C = TRI_D0PU;    // PIN_28 -> P25.ROCE
-  Tri _VRAM_PIN_D5n_C = TRI_D0PU;    // PIN_27 -> P25.ROPU
-  Tri _VRAM_PIN_D6n_C = TRI_D0PU;    // PIN_26 -> P25.RETA
-  Tri _VRAM_PIN_D7n_C = TRI_D0PU;    // PIN_25 -> P25.RAKU
+  Tri VRAM_PIN_D0n_C = TRI_D0PU;    // PIN_33 -> P25.RODY
+  Tri VRAM_PIN_D1n_C = TRI_D0PU;    // PIN_31 -> P25.REBA
+  Tri VRAM_PIN_D2n_C = TRI_D0PU;    // PIN_30 -> P25.RYDO
+  Tri VRAM_PIN_D3n_C = TRI_D0PU;    // PIN_29 -> P25.REMO
+  Tri VRAM_PIN_D4n_C = TRI_D0PU;    // PIN_28 -> P25.ROCE
+  Tri VRAM_PIN_D5n_C = TRI_D0PU;    // PIN_27 -> P25.ROPU
+  Tri VRAM_PIN_D6n_C = TRI_D0PU;    // PIN_26 -> P25.RETA
+  Tri VRAM_PIN_D7n_C = TRI_D0PU;    // PIN_25 -> P25.RAKU
 
-  Tri VRAM_PIN_D0_D = TRI_D0NP;    // PIN_33 <- P25.RURA
-  Tri VRAM_PIN_D1_D = TRI_D0NP;    // PIN_31 <- P25.RULY
-  Tri VRAM_PIN_D2_D = TRI_D0NP;    // PIN_30 <- P25.RARE
-  Tri VRAM_PIN_D3_D = TRI_D0NP;    // PIN_29 <- P25.RODU
-  Tri VRAM_PIN_D4_D = TRI_D0NP;    // PIN_28 <- P25.RUBE
-  Tri VRAM_PIN_D5_D = TRI_D0NP;    // PIN_27 <- P25.RUMU
-  Tri VRAM_PIN_D6_D = TRI_D0NP;    // PIN_26 <- P25.RYTY
-  Tri VRAM_PIN_D7_D = TRI_D0NP;    // PIN_25 <- P25.RADY
+  Tri VRAM_PIN_D0n_D = TRI_D0NP;    // PIN_33 <- P25.RURA
+  Tri VRAM_PIN_D1n_D = TRI_D0NP;    // PIN_31 <- P25.RULY
+  Tri VRAM_PIN_D2n_D = TRI_D0NP;    // PIN_30 <- P25.RARE
+  Tri VRAM_PIN_D3n_D = TRI_D0NP;    // PIN_29 <- P25.RODU
+  Tri VRAM_PIN_D4n_D = TRI_D0NP;    // PIN_28 <- P25.RUBE
+  Tri VRAM_PIN_D5n_D = TRI_D0NP;    // PIN_27 <- P25.RUMU
+  Tri VRAM_PIN_D6n_D = TRI_D0NP;    // PIN_26 <- P25.RYTY
+  Tri VRAM_PIN_D7n_D = TRI_D0NP;    // PIN_25 <- P25.RADY
 
   //----------------------------------------
   // Signals for debugging

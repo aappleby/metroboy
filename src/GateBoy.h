@@ -8,29 +8,26 @@ public:
   GateBoy();
 
   void run(int phase_count) {
-    for (int i = 0; i < phase_count; i++) phase();
+    for (int i = 0; i < phase_count; i++) next_phase();
   }
 
-  void phase();
-  uint64_t pass();
-  void run_reset_sequence();
+  void reset(bool verbose = false);
+  void next_phase();
+  uint64_t next_pass();
+  void run_bootrom();
 
-  uint8_t dbg_read (int addr);
-  void    dbg_write(int addr, uint8_t data);
-
-  void update_cpu_bus (int phase, Req req);
-  void update_ext_bus ();
-  void update_vrm_bus ();
-  void update_oam_bus ();
-  void update_zram_bus();
-
-  void test_reg(const char* regname, uint16_t addr, uint8_t data_in);
-  void test_mem(uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
+  uint8_t dbg_read (int addr, bool verbose = false);
+  void    dbg_write(int addr, uint8_t data, bool verbose = false);
 
   void load(const char* filename);
 
-  void test_all_mem();
-  void test_all_regs();
+  void preset_cpu_bus (int phase, Req req);
+  void preset_ext_bus ();
+  void preset_vrm_bus ();
+  void preset_oam_bus ();
+  void tock_zram_bus();
+
+  void tock_cpu_bus();
 
   void log(const char* format, ...);
 
@@ -41,12 +38,12 @@ public:
   bool sys_clkgood = 0;
   bool sys_cpuready = 0;
 
-  int phase_total = 6;
+  int phase_total = 0;
   int pass_count = 0;
   int pass_total = 0;
 
-  uint64_t phase_hash = 0;
-  uint64_t total_hash = 0;
+  uint64_t phase_hash = HASH_INIT;
+  uint64_t total_hash = HASH_INIT;
 
   uint8_t mem[65536];
   uint8_t fb[160*144];

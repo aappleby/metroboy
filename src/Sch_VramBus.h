@@ -39,28 +39,6 @@ struct VramBus {
                            !VRAM_PIN_D4n_A.tp(), !VRAM_PIN_D5n_A.tp(), !VRAM_PIN_D6n_A.tp(), !VRAM_PIN_D7n_A.tp());
   }
 
-  void preset_pin_data_in(uint8_t data) {
-    VRAM_PIN_D0n_C.preset(!(data & 0x01));
-    VRAM_PIN_D1n_C.preset(!(data & 0x02));
-    VRAM_PIN_D2n_C.preset(!(data & 0x04));
-    VRAM_PIN_D3n_C.preset(!(data & 0x08));
-    VRAM_PIN_D4n_C.preset(!(data & 0x10));
-    VRAM_PIN_D5n_C.preset(!(data & 0x20));
-    VRAM_PIN_D6n_C.preset(!(data & 0x40));
-    VRAM_PIN_D7n_C.preset(!(data & 0x80));
-  }
-
-  void preset_pin_data_z() {
-    VRAM_PIN_D0n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D1n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D2n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D3n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D4n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D5n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D6n_C.preset(DELTA_TRIZ);
-    VRAM_PIN_D7n_C.preset(DELTA_TRIZ);
-  }
-
   void set_pin_data_in(uint8_t data) {
     VRAM_PIN_D0n_C = !(data & 0x01);
     VRAM_PIN_D1n_C = !(data & 0x02);

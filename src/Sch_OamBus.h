@@ -54,28 +54,6 @@ struct OamBus {
                            GOMO_OAM_DB4p.qp(), BAXO_OAM_DB5p.qp(), YZOS_OAM_DB6p.qp(), DEPO_OAM_DB7p.qp());
   }
 
-  void preset_bus_data_a(uint8_t data) {
-    OAM_PIN_DA0n.preset(data & 0x01);
-    OAM_PIN_DA1n.preset(data & 0x02);
-    OAM_PIN_DA2n.preset(data & 0x04);
-    OAM_PIN_DA3n.preset(data & 0x08);
-    OAM_PIN_DA4n.preset(data & 0x10);
-    OAM_PIN_DA5n.preset(data & 0x20);
-    OAM_PIN_DA6n.preset(data & 0x40);
-    OAM_PIN_DA7n.preset(data & 0x80);
-  }
-
-  void preset_bus_data_b(uint8_t data) {
-    OAM_PIN_DB0n.preset(data & 0x01);
-    OAM_PIN_DB1n.preset(data & 0x02);
-    OAM_PIN_DB2n.preset(data & 0x04);
-    OAM_PIN_DB3n.preset(data & 0x08);
-    OAM_PIN_DB4n.preset(data & 0x10);
-    OAM_PIN_DB5n.preset(data & 0x20);
-    OAM_PIN_DB6n.preset(data & 0x40);
-    OAM_PIN_DB7n.preset(data & 0x80);
-  }
-
   void set_bus_data_a(uint8_t data) {
     OAM_PIN_DA0n = (data & 0x01);
     OAM_PIN_DA1n = (data & 0x02);

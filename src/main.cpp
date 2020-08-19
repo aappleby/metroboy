@@ -14,12 +14,10 @@ void run_microtests();
 
 int main(int argc, char** argv) {
 
-#if 0
-  GateBoyTests::test_rom_read();
-  return 0;
-#endif
-
 #if 1
+  GateBoyTests t;
+  return t.test_main(argc, argv);
+#else
   App* app = new GateBoyApp();
   //App* app = new DummyApp();
   //App* app = new MetroBoyApp();

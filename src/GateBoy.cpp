@@ -67,13 +67,13 @@ void GateBoy::reset(bool verbose) {
 //------------------------------------------------------------------------------
 
 void GateBoy::run_bootrom() {
-  log("Init registers\n");
-  log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50, true));
-  log("Set BOOT = 1\n");
+  //log("Init registers\n");
+  //log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50, true));
+  //log("Set BOOT = 1\n");
   dbg_write(0xFF50, 0xFF);
-  log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
-  log("LCDC = 0x%02x\n", dbg_read(ADDR_LCDC));
-  log("\n");
+  //log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
+  //log("LCDC = 0x%02x\n", dbg_read(ADDR_LCDC));
+  //log("\n");
 }
 
 //------------------------------------------------------------------------------
@@ -153,6 +153,8 @@ uint8_t GateBoy::dbg_read(int addr, bool verbose) {
 
   if (verbose) log("dbg_read 0x%04x = 0x%02x\n", addr, sample);
 
+  dbg_req = {0};
+
   return sample;
 }
 
@@ -172,198 +174,11 @@ void GateBoy::dbg_write(int addr, uint8_t data, bool verbose) {
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
+
+  dbg_req = {0};
 }
 
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_cpu_bus(int phase, Req req) {
-  auto& bus = top.cpu_bus;
-
-  bus.CPU_PIN6 = 0;
-
-  // CPU_PIN_ADDR_EXT latches the cpu bus address into the ext address
-
-  bool     read  = req.read;
-  bool     write = req.write;
-  uint16_t addr  = req.addr;
-  uint8_t  data  = req.data_lo;
-
-  bool io = req.read || req.write;
-  bool addr_ext = io && ((req.addr <= 0x7FFF) || (req.addr >= 0xA000 && req.addr < 0xFDFF));
-  bool hold_mem = io && (req.addr < 0xFF00);
-
-  if (top.cpu_bus.CPU_PIN_BOOTp.tp()) {
-    addr_ext = false;
-  }
-
-  // if we set read on phase A, we fail the mem test when we switch from testing OAM to testing ZRAM.
-  // these signals are trimmed down as much as they can be without breaking anything.
-  // probably they should be fixed to align w cpu clock edges and match cart traces
-
-  // CPU clocks for reference -
-  //Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
-  //Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
-  //Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
-  //Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
-  //Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxxEFGx as "WRen" I guess
-  //Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
-  //Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  //Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
-  //Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
-
-  // B WORKS
-  // C WORKS
-
-  if (DELTA_AB) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_BC) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_CD) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_DE) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = write; bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_GH) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_HA) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-
-  top.int_reg.CPU_PIN_ACK_VBLANK = 0;
-  top.int_reg.CPU_PIN_ACK_STAT = 0;
-  top.int_reg.CPU_PIN_ACK_TIMER = 0;
-  top.int_reg.CPU_PIN_ACK_SERIAL = 0;
-  top.int_reg.CPU_PIN_ACK_JOYPAD = 0;
-
-  top.ser_reg.SCK_C = 0;
-  top.ser_reg.SIN_Cn = 0;
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_ext_bus() {
-  top.ext_bus.EXT_PIN_WR_C  = (top.ext_bus.EXT_PIN_WR_A.tp());
-  top.ext_bus.EXT_PIN_RD_C  = (top.ext_bus.EXT_PIN_RD_A.tp());
-  top.ext_bus.EXT_PIN_A00_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
-  top.ext_bus.EXT_PIN_A01_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
-  top.ext_bus.EXT_PIN_A02_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
-  top.ext_bus.EXT_PIN_A03_C = (top.ext_bus.EXT_PIN_A03n_A.tp());
-  top.ext_bus.EXT_PIN_A04_C = (top.ext_bus.EXT_PIN_A04n_A.tp());
-  top.ext_bus.EXT_PIN_A05_C = (top.ext_bus.EXT_PIN_A05n_A.tp());
-  top.ext_bus.EXT_PIN_A06_C = (top.ext_bus.EXT_PIN_A06n_A.tp());
-  top.ext_bus.EXT_PIN_A07_C = (top.ext_bus.EXT_PIN_A07n_A.tp());
-  top.ext_bus.EXT_PIN_A08_C = (top.ext_bus.EXT_PIN_A08n_A.tp());
-  top.ext_bus.EXT_PIN_A09_C = (top.ext_bus.EXT_PIN_A09n_A.tp());
-  top.ext_bus.EXT_PIN_A10_C = (top.ext_bus.EXT_PIN_A10n_A.tp());
-  top.ext_bus.EXT_PIN_A11_C = (top.ext_bus.EXT_PIN_A11n_A.tp());
-  top.ext_bus.EXT_PIN_A12_C = (top.ext_bus.EXT_PIN_A12n_A.tp());
-  top.ext_bus.EXT_PIN_A13_C = (top.ext_bus.EXT_PIN_A13n_A.tp());
-  top.ext_bus.EXT_PIN_A14_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
-  top.ext_bus.EXT_PIN_A15_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
-
-  uint16_t ext_addr = top.ext_bus.get_pin_addr();
-
-  if (top.ext_bus.EXT_PIN_WR_A.tp()) {
-    uint8_t ext_data = top.ext_bus.get_pin_data_out();
-    
-    if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
-      //mem[ext_addr] = ext_data; // yeah we don't actually want to allow writing to ROM...
-    }
-    else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
-      mem[ext_addr] = ext_data;
-    }
-    else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
-      mem[ext_addr] = ext_data;
-    }
-    else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
-      mem[ext_addr] = ext_data;
-    }
-  }
-  
-  if (top.ext_bus.EXT_PIN_RD_A.tp()) {
-    if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else {
-      top.ext_bus.set_pin_data_z();
-    }
-  }
-  else {
-    top.ext_bus.EXT_PIN_D0n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D1n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D2n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D3n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D4n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D5n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D6n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D7n_C = DELTA_TRIZ;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_vram_bus() {
-  top.vram_bus._VRAM_PIN_CS_C = 0;
-  top.vram_bus._VRAM_PIN_OE_C = 0;
-  top.vram_bus._VRAM_PIN_WR_C = 0;
-
-  uint16_t vram_addr = top.vram_bus.get_pin_addr();
-  uint8_t& vram_data = mem[0x8000 + vram_addr];
-
-  if (top.vram_bus._VRAM_PIN_WR_A.tp()) vram_data = top.vram_bus.get_pin_data_out();
-
-  if (top.vram_bus._VRAM_PIN_OE_A.tp()) {
-    top.vram_bus.set_pin_data_in(vram_data);
-  }
-  else {
-    top.vram_bus.set_pin_data_z();
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_oam_bus() {
-  uint16_t oam_addr = top.oam_bus.get_oam_pin_addr();
-  uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
-  uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
-
-  if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
-  if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
-
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_a(oam_data_a);
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_b(oam_data_b);
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_zram_bus() {
-  // ZRAM control signals are
-
-  // top.clk_reg.CPU_PIN_BUKE_AxxxxxGH
-  // top.TEDO_CPU_RDp();
-  // top.TAPU_CPU_WRp_xxxxEFGx()
-  // top.cpu_bus.SYKE_FF00_FFFFp()
-
-  // and there's somes gates WUTA/WOLY/WALE that do the check for FFXX && !FFFF
-
-  int addr = top.cpu_bus.get_bus_addr();
-  bool hit_zram = (addr >= 0xFF80) && (addr <= 0xFFFE);
-
-  if (hit_zram) {
-    uint8_t& data = mem[addr];
-    if (top.TAPU_CPU_WRp_xxxxEFGx()) data = top.cpu_bus.get_bus_data();
-    if (top.TEDO_CPU_RDp())          top.cpu_bus.set_data(true, data);
-  }
-}
-
-//-----------------------------------------------------------------------------//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void GateBoy::next_phase() {
   phase_total++;
@@ -555,6 +370,195 @@ uint64_t GateBoy::next_pass() {
   commit_and_hash(top, hash);
 
   return hash;
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_cpu_bus(int phase, Req req) {
+  auto& bus = top.cpu_bus;
+
+  bus.CPU_PIN6 = 0;
+
+  // CPU_PIN_ADDR_EXT latches the cpu bus address into the ext address
+
+  bool     read  = req.read;
+  bool     write = req.write;
+  uint16_t addr  = req.addr;
+  uint8_t  data  = req.data_lo;
+
+  bool io = req.read || req.write;
+  bool addr_ext = io && ((req.addr <= 0x7FFF) || (req.addr >= 0xA000 && req.addr < 0xFDFF));
+  bool hold_mem = io && (req.addr < 0xFF00);
+
+  if (top.cpu_bus.CPU_PIN_BOOTp.tp()) {
+    addr_ext = false;
+  }
+
+  // if we set read on phase A, we fail the mem test when we switch from testing OAM to testing ZRAM.
+  // these signals are trimmed down as much as they can be without breaking anything.
+  // probably they should be fixed to align w cpu clock edges and match cart traces
+
+  // CPU clocks for reference -
+  //Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
+  //Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
+  //Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
+  //Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
+  //Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxxEFGx as "WRen" I guess
+  //Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  //Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
+  //Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
+  //Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
+
+  // B WORKS
+  // C WORKS
+
+  if (DELTA_AB) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_BC) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_CD) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_DE) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+  if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = write; bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_GH) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_HA) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+
+  top.int_reg.CPU_PIN_ACK_VBLANK = 0;
+  top.int_reg.CPU_PIN_ACK_STAT = 0;
+  top.int_reg.CPU_PIN_ACK_TIMER = 0;
+  top.int_reg.CPU_PIN_ACK_SERIAL = 0;
+  top.int_reg.CPU_PIN_ACK_JOYPAD = 0;
+
+  top.ser_reg.SCK_C = 0;
+  top.ser_reg.SIN_Cn = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_ext_bus() {
+  top.ext_bus.EXT_PIN_WR_C  = (top.ext_bus.EXT_PIN_WR_A.tp());
+  top.ext_bus.EXT_PIN_RD_C  = (top.ext_bus.EXT_PIN_RD_A.tp());
+  top.ext_bus.EXT_PIN_A00_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
+  top.ext_bus.EXT_PIN_A01_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
+  top.ext_bus.EXT_PIN_A02_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
+  top.ext_bus.EXT_PIN_A03_C = (top.ext_bus.EXT_PIN_A03n_A.tp());
+  top.ext_bus.EXT_PIN_A04_C = (top.ext_bus.EXT_PIN_A04n_A.tp());
+  top.ext_bus.EXT_PIN_A05_C = (top.ext_bus.EXT_PIN_A05n_A.tp());
+  top.ext_bus.EXT_PIN_A06_C = (top.ext_bus.EXT_PIN_A06n_A.tp());
+  top.ext_bus.EXT_PIN_A07_C = (top.ext_bus.EXT_PIN_A07n_A.tp());
+  top.ext_bus.EXT_PIN_A08_C = (top.ext_bus.EXT_PIN_A08n_A.tp());
+  top.ext_bus.EXT_PIN_A09_C = (top.ext_bus.EXT_PIN_A09n_A.tp());
+  top.ext_bus.EXT_PIN_A10_C = (top.ext_bus.EXT_PIN_A10n_A.tp());
+  top.ext_bus.EXT_PIN_A11_C = (top.ext_bus.EXT_PIN_A11n_A.tp());
+  top.ext_bus.EXT_PIN_A12_C = (top.ext_bus.EXT_PIN_A12n_A.tp());
+  top.ext_bus.EXT_PIN_A13_C = (top.ext_bus.EXT_PIN_A13n_A.tp());
+  top.ext_bus.EXT_PIN_A14_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
+  top.ext_bus.EXT_PIN_A15_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
+
+  uint16_t ext_addr = top.ext_bus.get_pin_addr();
+
+  if (top.ext_bus.EXT_PIN_WR_A.tp()) {
+    uint8_t ext_data = top.ext_bus.get_pin_data_out();
+    
+    if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
+      //mem[ext_addr] = ext_data; // yeah we don't actually want to allow writing to ROM...
+    }
+    else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
+      mem[ext_addr] = ext_data;
+    }
+    else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
+      mem[ext_addr] = ext_data;
+    }
+    else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
+      mem[ext_addr] = ext_data;
+    }
+  }
+  
+  if (top.ext_bus.EXT_PIN_RD_A.tp()) {
+    if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
+      uint8_t ext_data = mem[ext_addr];
+      top.ext_bus.set_pin_data_in(ext_data);
+    }
+    else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
+      uint8_t ext_data = mem[ext_addr];
+      top.ext_bus.set_pin_data_in(ext_data);
+    }
+    else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
+      uint8_t ext_data = mem[ext_addr];
+      top.ext_bus.set_pin_data_in(ext_data);
+    }
+    else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
+      uint8_t ext_data = mem[ext_addr];
+      top.ext_bus.set_pin_data_in(ext_data);
+    }
+    else {
+      top.ext_bus.set_pin_data_z();
+    }
+  }
+  else {
+    top.ext_bus.EXT_PIN_D0n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D1n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D2n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D3n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D4n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D5n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D6n_C = DELTA_TRIZ;
+    top.ext_bus.EXT_PIN_D7n_C = DELTA_TRIZ;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_vram_bus() {
+  top.vram_bus._VRAM_PIN_CS_C = 0;
+  top.vram_bus._VRAM_PIN_OE_C = 0;
+  top.vram_bus._VRAM_PIN_WR_C = 0;
+
+  uint16_t vram_addr = top.vram_bus.get_pin_addr();
+  uint8_t& vram_data = mem[0x8000 + vram_addr];
+
+  if (top.vram_bus._VRAM_PIN_WR_A.tp()) vram_data = top.vram_bus.get_pin_data_out();
+
+  if (top.vram_bus._VRAM_PIN_OE_A.tp()) {
+    top.vram_bus.set_pin_data_in(vram_data);
+  }
+  else {
+    top.vram_bus.set_pin_data_z();
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_oam_bus() {
+  uint16_t oam_addr = top.oam_bus.get_oam_pin_addr();
+  uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
+  uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
+
+  if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
+  if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
+
+  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_a(oam_data_a);
+  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_b(oam_data_b);
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_zram_bus() {
+  // ZRAM control signals are
+
+  // top.clk_reg.CPU_PIN_BUKE_AxxxxxGH
+  // top.TEDO_CPU_RDp();
+  // top.TAPU_CPU_WRp_xxxxEFGx()
+  // top.cpu_bus.SYKE_FF00_FFFFp()
+
+  // and there's somes gates WUTA/WOLY/WALE that do the check for FFXX && !FFFF
+
+  int addr = top.cpu_bus.get_bus_addr();
+  bool hit_zram = (addr >= 0xFF80) && (addr <= 0xFFFE);
+
+  if (hit_zram) {
+    uint8_t& data = mem[addr];
+    if (top.TAPU_CPU_WRp_xxxxEFGx()) data = top.cpu_bus.get_bus_data();
+    if (top.TEDO_CPU_RDp())          top.cpu_bus.set_data(true, data);
+  }
 }
 
 //-----------------------------------------------------------------------------

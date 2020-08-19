@@ -12,8 +12,17 @@ struct VramBus;
 
 struct DmaRegisters {
   void dump(Dumper& d) const;
-  void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
+
+  int get_dma_addr_hi() const {
+    return pack_p(!NAFA_DMA_A08n.qp(), !PYNE_DMA_A09n.qp(), !PARA_DMA_A10n.qp(), !NYDO_DMA_A11n.qp(),
+                  !NYGY_DMA_A12n.qp(), !PULA_DMA_A13n.qp(), !POKU_DMA_A14n.qp(), !MARU_DMA_A15n.qp());
+  }
+
+  int get_dma_addr_lo() const {
+    return pack_p(NAKY_DMA_A00p.qp(), PYRO_DMA_A01p.qp(), NEFY_DMA_A02p.qp(), MUTY_DMA_A03p.qp(),
+                  NYKO_DMA_A04p.qp(), PYLO_DMA_A05p.qp(), NUTO_DMA_A06p.qp(), MUGU_DMA_A07p.qp());
+  }
 
   // -> bunch of stuff
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const { return _MATU_DMA_RUNNINGp.qp(); }

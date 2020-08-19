@@ -133,7 +133,8 @@ struct Sprite {
 
 struct Dumper {
   virtual void operator()(const char* format, ...) = 0;
-  virtual void clear() = 0;
+  virtual void indent() {}
+  virtual void dedent() {}
 
   inline void dump_reg(const char* tag, wire D0, wire D1, wire D2, wire D3, wire D4, wire D5, wire D6, wire D7) {
     int D = pack_p(D0, D1, D2, D3, D4, D5, D6, D7);

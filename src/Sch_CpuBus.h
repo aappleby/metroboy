@@ -24,44 +24,6 @@ struct CpuBus {
                            CPU_BUS_D4p.tp(), CPU_BUS_D5p.tp(), CPU_BUS_D6p.tp(), CPU_BUS_D7p.tp());
   }
 
-  void preset_addr(uint16_t addr) {
-    CPU_BUS_A00.preset(addr & 0x0001);
-    CPU_BUS_A01.preset(addr & 0x0002);
-    CPU_BUS_A02.preset(addr & 0x0004);
-    CPU_BUS_A03.preset(addr & 0x0008);
-    CPU_BUS_A04.preset(addr & 0x0010);
-    CPU_BUS_A05.preset(addr & 0x0020);
-    CPU_BUS_A06.preset(addr & 0x0040);
-    CPU_BUS_A07.preset(addr & 0x0080);
-    CPU_BUS_A08.preset(addr & 0x0100);
-    CPU_BUS_A09.preset(addr & 0x0200);
-    CPU_BUS_A10.preset(addr & 0x0400);
-    CPU_BUS_A11.preset(addr & 0x0800);
-    CPU_BUS_A12.preset(addr & 0x1000);
-    CPU_BUS_A13.preset(addr & 0x2000);
-    CPU_BUS_A14.preset(addr & 0x4000);
-    CPU_BUS_A15.preset(addr & 0x8000);
-  }
-
-  void preset_addr_z() {
-    CPU_BUS_A00.preset(DELTA_TRIZ);
-    CPU_BUS_A01.preset(DELTA_TRIZ);
-    CPU_BUS_A02.preset(DELTA_TRIZ);
-    CPU_BUS_A03.preset(DELTA_TRIZ);
-    CPU_BUS_A04.preset(DELTA_TRIZ);
-    CPU_BUS_A05.preset(DELTA_TRIZ);
-    CPU_BUS_A06.preset(DELTA_TRIZ);
-    CPU_BUS_A07.preset(DELTA_TRIZ);
-    CPU_BUS_A08.preset(DELTA_TRIZ);
-    CPU_BUS_A09.preset(DELTA_TRIZ);
-    CPU_BUS_A10.preset(DELTA_TRIZ);
-    CPU_BUS_A11.preset(DELTA_TRIZ);
-    CPU_BUS_A12.preset(DELTA_TRIZ);
-    CPU_BUS_A13.preset(DELTA_TRIZ);
-    CPU_BUS_A14.preset(DELTA_TRIZ);
-    CPU_BUS_A15.preset(DELTA_TRIZ);
-  }
-
   void set_addr(uint16_t addr) {
     CPU_BUS_A00 = (addr & 0x0001);
     CPU_BUS_A01 = (addr & 0x0002);
@@ -98,40 +60,6 @@ struct CpuBus {
     CPU_BUS_A13 = DELTA_TRIZ;
     CPU_BUS_A14 = DELTA_TRIZ;
     CPU_BUS_A15 = DELTA_TRIZ;
-  }
-
-  void preset_data(bool oe, uint8_t data) {
-    if (oe) {
-      CPU_BUS_D0p.preset(data & 0x01);
-      CPU_BUS_D1p.preset(data & 0x02);
-      CPU_BUS_D2p.preset(data & 0x04);
-      CPU_BUS_D3p.preset(data & 0x08);
-      CPU_BUS_D4p.preset(data & 0x10);
-      CPU_BUS_D5p.preset(data & 0x20);
-      CPU_BUS_D6p.preset(data & 0x40);
-      CPU_BUS_D7p.preset(data & 0x80);
-    }
-    else {
-      CPU_BUS_D0p.preset(DELTA_TRIZ);
-      CPU_BUS_D1p.preset(DELTA_TRIZ);
-      CPU_BUS_D2p.preset(DELTA_TRIZ);
-      CPU_BUS_D3p.preset(DELTA_TRIZ);
-      CPU_BUS_D4p.preset(DELTA_TRIZ);
-      CPU_BUS_D5p.preset(DELTA_TRIZ);
-      CPU_BUS_D6p.preset(DELTA_TRIZ);
-      CPU_BUS_D7p.preset(DELTA_TRIZ);
-    }
-  }
-
-  void preset_data_z() {
-    CPU_BUS_D0p.preset(DELTA_TRIZ);
-    CPU_BUS_D1p.preset(DELTA_TRIZ);
-    CPU_BUS_D2p.preset(DELTA_TRIZ);
-    CPU_BUS_D3p.preset(DELTA_TRIZ);
-    CPU_BUS_D4p.preset(DELTA_TRIZ);
-    CPU_BUS_D5p.preset(DELTA_TRIZ);
-    CPU_BUS_D6p.preset(DELTA_TRIZ);
-    CPU_BUS_D7p.preset(DELTA_TRIZ);
   }
 
   void set_data(bool oe, uint8_t data) {

@@ -66,30 +66,39 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   printf("\n");
 
-  GateBoyTests::test_all_mem();
-
-  auto gateboy = state_manager.state();
-  gateboy->reset();
-
-  //gateboy->run_bootrom();
-
 #if !_DEBUG
-  /*
-  gateboy->test_all_mem();
-  gateboy->test_bootrom();
-  gateboy->test_timer();
-  gateboy->test_joypad();
-  gateboy->test_dma();
-  gateboy->test_serial();
-  gateboy->test_ppu();
-  gateboy->test_interrupts();
-  */
+  //GateBoyTests::test_all_mem();
+  //gateboy->test_all_mem();
+  //gateboy->test_bootrom();
+  //gateboy->test_timer();
+  //gateboy->test_joypad();
+  //gateboy->test_dma();
+  //gateboy->test_serial();
+  //gateboy->test_ppu();
+  //gateboy->test_interrupts();
+  //GateBoyTests::test_dma();
+  //GateBoyTests::test_timer();
 #endif
 
-  const char* filename = "roms/LinksAwakening_dog.dump";
-  gateboy->load(filename);
 
-  GateBoyTests::run_benchmark();
+  auto& gb = *state_manager.state();
+  gb.reset();
+
+  //gb.run_bootrom();
+
+  //const char* filename = "roms/LinksAwakening_dog.dump";
+  //gb.load(filename);
+  //printf("\n");
+
+  //GateBoyTests::run_benchmark();
+
+  /*
+  for (int i = 0; i < 256; i++) {
+    gb.mem[0x8000 + i] = uint8_t(i);
+  }
+  memset(gb.mem + 0xFE00, 0, 256);
+  gb.dbg_write(0xFF46, 0x80);
+  */
 }
 
 void GateBoyApp::app_close() {
@@ -163,7 +172,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   StringDumper dumper;
   float col_width = 256;
-  float cursor_y = 0;
+  float cursor = 0;
 
   dumper("----------   Top    ----------\n");
 
@@ -200,13 +209,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gateboy->cpu.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
-  cursor_y += col_width;
+  text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  cursor += col_width;
   dumper.clear();
 
   top.clk_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
-  cursor_y += col_width;
+  text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  cursor += col_width;
   dumper.clear();
 
   top.cpu_bus.dump(dumper);
@@ -214,14 +223,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.vram_bus.dump(dumper, top);
   top.oam_bus.dump(dumper);
   top.dma_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
-  cursor_y += col_width;
+  text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  cursor += col_width;
   dumper.clear();
 
   top.lcd_reg.dump(dumper, top);
   top.pix_pipe.dump(dumper, top);
-  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
-  cursor_y += col_width;
+  text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  cursor += col_width;
   dumper.clear();
 
   dump_probes(dumper);
@@ -231,12 +240,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.tile_fetcher.dump(dumper, top);
   top.joypad.dump(dumper);
   top.ser_reg.dump(dumper);
-  text_painter.render(view, dumper.s.c_str(), cursor_y, 0);
-  cursor_y += col_width;
+  text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  cursor += col_width;
   dumper.clear();
 
+  dump_painter.render(view, cursor, 512,      16, 16, gateboy->mem + 0xFE00);
+
   /*
-  dump_painter.render(view, col_width * 4,       0, 4, 64, gateboy->mem + 0xFE00);
   dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
 
   dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);

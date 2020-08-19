@@ -1,7 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include <functional>
-#include <stdarg.h>
 
 struct GateBoy;
 

@@ -1,47 +1,52 @@
-#include "GateBoyTests.h"
+#include <stdio.h>
+#include <stdarg.h>
 
-#include "GateBoy.h"
-#include "Constants.h"
-#include <chrono>
-#include <string>
+void LOG(const char* format = "", ...) {
+  static int log_indent = 0;
+  static int log_cursor_x = 0;
+  static char buffer[256];
 
-#define ANSI_RED "\u001b[38;2;255;0;0m"
-#define ANSI_GRN "\u001b[38;2;0;255;0m"
-#define ANSI_RST "\u001b[0m"
-
-const char* fail_tag = ANSI_RED "----FAIL----" ANSI_RST;
-const char* pass_tag = ANSI_GRN "----PASS----" ANSI_RST;
-
-#define TEST_START(...) do { log("%s: ", __FUNCTION__); log(__VA_ARGS__); log("\n"); indent(); } while(0); int err = 0;
-#define TEST_END()      do { dedent(); if (err) log("%s: %s\n", __FUNCTION__, fail_tag); return err; } while(0);
-
-#define TEST_EQ(A, B, ...) if ((A) != (B)) { LOG_R(__VA_ARGS__); log("\n"); err++; }
-#define TEST_NE(A, B, ...) if ((A) == (B)) { LOG_R(__VA_ARGS__); log("\n"); err++; }
-
-void log() {};
-
-int indentation = 0;
-int cursor_x = 0;
-
-void indent() { indentation += 2; }
-void dedent() { indentation -= 2; }
-
-void log(const char* format, ...) {
-  char buffer[256];
   va_list args;
   va_start (args, format);
   vsnprintf(buffer, 256, format, args);
   va_end (args);
 
   for (char* b = buffer; *b; b++) {
-    for (;cursor_x < indentation; cursor_x++) putchar(' ');
-    putchar(*b);
-    if (*b == '\n') cursor_x = 0;
+    if (*b == '\n') {
+      putchar(*b);
+      log_cursor_x = 0;
+    }
+    else if (*b == '\t') {
+      log_indent += 2;
+    }
+    else if (*b == '\v') {
+      log_indent -= 2;
+    }
+    else {
+      for (;log_cursor_x < log_indent; log_cursor_x++) putchar(' ');
+      putchar(*b);
+    }
   }
 }
 
-#define LOG_R(...) do { printf(ANSI_RED); log(__VA_ARGS__); printf(ANSI_RST); } while(0);
-#define LOG_G(...) do { printf(ANSI_GRN); log(__VA_ARGS__); printf(ANSI_RST); } while(0);
+#define LOG_R(...) do { printf("\u001b[38;2;255;128;128m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_G(...) do { printf("\u001b[38;2;128;255;128m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_B(...) do { printf("\u001b[38;2;128;128;255m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_Y(...) do { printf("\u001b[38;2;255;255;128m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+
+#define TEST_START(...) do { LOG("%s: ", __FUNCTION__); LOG_B(__VA_ARGS__); LOG("\n\t"); } while(0); int err = 0;
+#define TEST_END()      do { LOG("\v"); if (err) LOG_R("%s: FAIL\n", __FUNCTION__); return err; } while(0);
+
+#define EXPECT_EQ(A, B, ...) if ((A) != (B)) { LOG_Y(__VA_ARGS__); LOG("\n"); err++; }
+#define EXPECT_NE(A, B, ...) if ((A) == (B)) { LOG_Y(__VA_ARGS__); LOG("\n"); err++; }
+
+#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
+#define ASSERT_NE(A, B, ...) if ((A) == (B)) { LOG_R(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
+
+#include <chrono>
+#include "GateBoyTests.h"
+#include "GateBoy.h"
+#include "Constants.h"
 
 //-----------------------------------------------------------------------------
 
@@ -59,6 +64,8 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_ppu();
   err += test_serial();
   err += test_timer();
+
+  if (!err) LOG_G("Everything passed!\n");
 
   TEST_END();
 }
@@ -94,28 +101,28 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::test_reset_sequence() {
-  log("Running reset fuzz test in slow mode\n");
+  LOG("Running reset fuzz test in slow mode\n");
   GateBoy gateboy1;
   fuzz_reset_sequence(gateboy1);
-  log("\n");
+  LOG("\n");
 
-  log("Running reset fuzz test in fast mode\n");
+  LOG("Running reset fuzz test in fast mode\n");
   GateBoy gateboy2;
   fuzz_reset_sequence(gateboy2);
-  log("\n");
+  LOG("\n");
 
   if (gateboy1.phase_hash != gateboy2.phase_hash) {
-    log("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
+    LOG("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
   }
   else {
-    log("---------- PASS PHASE HASH ----------\n");
+    LOG("---------- PASS PHASE HASH ----------\n");
   }
 
   if (gateboy1.total_hash != gateboy2.total_hash) {
-    log("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
+    LOG("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
   }
   else {
-    log("---------- PASS TOTAL HASH ----------\n");
+    LOG("---------- PASS TOTAL HASH ----------\n");
   }
 }
 
@@ -125,7 +132,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
 
   gateboy.reset();
 
-  log("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
+  LOG("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
 
 #if _DEBUG
   const int iter_count = 16;
@@ -148,7 +155,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   gateboy.dbg_req = {.addr = 0x0150, .data = 0, .read = 1, .write = 0 };
   gateboy.cpu_en = false;
 
-  log("Running perf test");
+  LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     gateboy.phase_total = 0;
     gateboy.pass_total = 0;
@@ -171,53 +178,53 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
       pass_rate_sum2 += pass_rate * pass_rate;
       pass_rate_n++;
     }
-    log(".");
+    LOG(".");
   }
-  log("Done\n");
+  LOG("Done\n");
 
-  log("Phase total %d\n", gateboy.phase_total);
-  log("Pass total %d\n", gateboy.pass_total);
+  LOG("Phase total %d\n", gateboy.phase_total);
+  LOG("Pass total %d\n", gateboy.pass_total);
 
   double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
   double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);
   double phase_rate_sigma    = sqrt(phase_rate_variance);
-  log("Mean phase/sec %f sigma %f\n", phase_rate_mean, phase_rate_sigma);
+  LOG("Mean phase/sec %f sigma %f\n", phase_rate_mean, phase_rate_sigma);
 
   double pass_rate_mean     = pass_rate_sum1 / pass_rate_n;
   double pass_rate_variance = (pass_rate_sum2 / pass_rate_n) - (pass_rate_mean * pass_rate_mean);
   double pass_rate_sigma    = sqrt(pass_rate_variance);
-  log("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
+  LOG("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
 
-  log("Commit phase_hash   0x%016llx\n", gateboy.phase_hash);
-  log("Combined phase_hash 0x%016llx\n", gateboy.total_hash);
+  LOG("Commit phase_hash   0x%016llx\n", gateboy.phase_hash);
+  LOG("Combined phase_hash 0x%016llx\n", gateboy.total_hash);
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::run_benchmark() {
-  log("Running benchmark in slow mode\n");
+  LOG("Running benchmark in slow mode\n");
   GateBoy gateboy1;
   run_benchmark(gateboy1);
-  log("\n");
+  LOG("\n");
 
 #if 0
-  log("Running benchmark in fast mode\n");
+  LOG("Running benchmark in fast mode\n");
   GateBoy gateboy2;
   run_benchmark(gateboy2);
-  log("\n");
+  LOG("\n");
 
   if (gateboy1.phase_hash != gateboy2.phase_hash) {
-    log("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
+    LOG("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
   }
   else {
-    log("---------- PASS PHASE HASH ----------\n");
+    LOG("---------- PASS PHASE HASH ----------\n");
   }
 
   if (gateboy1.total_hash != gateboy2.total_hash) {
-    log("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
+    LOG("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
   }
   else {
-    log("---------- PASS TOTAL HASH ----------\n");
+    LOG("---------- PASS TOTAL HASH ----------\n");
   }
 #endif
 }
@@ -281,7 +288,7 @@ int GateBoyTests::test_bootrom() {
 
   for (int i = 0; i < 16; i++) {
     uint8_t byte = gb.dbg_read(i);
-    TEST_EQ(byte, DMG_ROM_bin[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
+    EXPECT_EQ(byte, DMG_ROM_bin[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
   }
 
   TEST_END();
@@ -300,22 +307,21 @@ int GateBoyTests::test_timer() {
   //test_reg("TMA",  ADDR_TMA,  0b11111111); // works
   //test_reg("TAC",  ADDR_TAC,  0b00000111); // works
 
-  log("Testing div reset + rollover: ");
+  LOG("Testing div reset + rollover: ");
   gb.dbg_write(ADDR_DIV, 0);
   for (int i = 1; i < 32768; i++) {
     int div_a = gb.dbg_read(ADDR_DIV);
     int div_b = (i >> 6) & 0xFF;
-    TEST_EQ(div_a, div_b, "div match fail");
+    EXPECT_EQ(div_a, div_b, "div match fail");
   }
-  log(err ? fail_tag : pass_tag);
-  log("\n");
+  LOG("\n");
 
   gb.dbg_write(ADDR_TIMA, 0x00);
   gb.dbg_write(ADDR_TMA,  0x00);
   gb.dbg_write(ADDR_TAC,  0x00);
-  log("TIMA 0x%02X\n", gb.dbg_read(ADDR_TIMA));
-  log("TMA  0x%02X\n", gb.dbg_read(ADDR_TMA));
-  log("TAC  0x%02X\n", gb.dbg_read(ADDR_TAC));
+  LOG("TIMA 0x%02X\n", gb.dbg_read(ADDR_TIMA));
+  LOG("TMA  0x%02X\n", gb.dbg_read(ADDR_TMA));
+  LOG("TAC  0x%02X\n", gb.dbg_read(ADDR_TAC));
 
   TEST_END();
 }
@@ -369,7 +375,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   for (int i = 0; i < 160; i++) {
     uint8_t a = gb.mem[src + i];
     uint8_t b = gb.dbg_read(0xFE00 + i);
-    TEST_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
+    EXPECT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }
 
   TEST_END();
@@ -425,7 +431,7 @@ int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, ui
       gb.mem[addr] = data_wr;
     }
     uint8_t data_rd = gb.dbg_read(addr);
-    TEST_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
   }
 
   for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
@@ -438,7 +444,7 @@ int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, ui
       gb.mem[addr] = data_wr;
     }
     uint8_t data_rd = gb.dbg_read(addr);
-    TEST_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
   }
 
   TEST_END();
@@ -453,7 +459,7 @@ int GateBoyTests::test_reg(GateBoy& gb, const char* tag, uint16_t addr, uint8_t 
     uint8_t data_in = uint8_t(i & mask);
     gb.dbg_write(addr, uint8_t(data_in));
     uint8_t data_out = gb.dbg_read(addr) & mask;
-    TEST_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+    EXPECT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
   TEST_END();

@@ -111,11 +111,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // LOPE_22 << CLKp VYPU_03
 
     wire PESU_VCC = 1;
-    /*p02.LOPE*/ LOPE_FF0F_0p = dff22(_VYPU_VBLANKp,                    _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_VCC);
-    /*p02.LALU*/ LALU_FF0F_1p = dff22(VOTY_INT_STATp,                   _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_VCC);
-    /*p02.NYBO*/ NYBO_FF0F_2p = dff22(top.tim_reg.MOBA_INT_TIMERp.qp(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_VCC);
-    /*p02.UBUL*/ UBUL_FF0F_3p = dff22(top.ser_reg.CALY_SER_INTp.qp(),   _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_VCC);
-    /*p02.ULAK*/ ULAK_FF0F_4p = dff22(top.joypad.ASOK_INT_JOYPADp(),    _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_VCC);
+    /*p02.LOPE*/ LOPE_FF0F_0p = dff22(_VYPU_VBLANKp,                         _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PESU_VCC);
+    /*p02.LALU*/ LALU_FF0F_1p = dff22(VOTY_INT_STATp,                        _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PESU_VCC);
+    /*p02.NYBO*/ NYBO_FF0F_2p = dff22(top.tim_reg.MOBA_INT_TIMER_TRIGp.qp(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PESU_VCC);
+    /*p02.UBUL*/ UBUL_FF0F_3p = dff22(top.ser_reg.CALY_SER_INTp.qp(),        _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PESU_VCC);
+    /*p02.ULAK*/ ULAK_FF0F_4p = dff22(top.joypad.ASOK_INT_JOYPADp(),         _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PESU_VCC);
 
     CPU_PIN_INT_VBLANK = LOPE_FF0F_0p.qp();
     CPU_PIN_INT_STAT   = LALU_FF0F_1p.qp();

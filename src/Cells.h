@@ -392,7 +392,7 @@ inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
 }
 
 //-----------------------------------------------------------------------------
-// 20-rung ff with async load. Only used by TIMA and a few audio regs.
+// 20-rung counter ff with async load. Only used by TIMA and a few audio regs.
 
 // REG20_01 >> Qn
 // REG20_02 nc
@@ -415,31 +415,23 @@ inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
 // REG20_19 sc
 // REG20_20 << CLKp
 
-inline RegDelta dff20(wire CLKp, wire LOADp, bool D) {
-#if 1
-  bool b3 = 1;
-  bool b2 = LOADp;
-  bool b1 = CLKp;
-  bool b0 = D;
-  return RegDelta((b3 << 3) | (b2 << 2) | (b1 << 1) | (b0 << 0));
-#else
+inline RegDelta dff20(wire CLKp, wire LOADp, bool newD, bool oldQn) {
   if (LOADp) {
     if (CLKp) {
-      return D ? DELTA_A1C1 : DELTA_A0C1;
+      return newD ? DELTA_A1C1 : DELTA_A0C1;
     }
     else {
-      return D ? DELTA_A1C0 : DELTA_A0C0;
+      return newD ? DELTA_A1C0 : DELTA_A0C0;
     }
   }
   else {
     if (CLKp) {
-      return D ? DELTA_D1C1 : DELTA_D0C1;
+      return oldQn ? DELTA_D1C1 : DELTA_D0C1;
     }
     else {
-      return D ? DELTA_D1C0 : DELTA_D0C0;
+      return oldQn ? DELTA_D1C0 : DELTA_D0C0;
     }
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -461,7 +453,7 @@ inline RegDelta dff20(wire CLKp, wire LOADp, bool D) {
 // REG22_12 NC
 // REG22_13 NC
 // REG22_14 << SETn _MUST_ be SETn, see serial
-// REG22_15 >> Qn  // Am I positive I don't have Q/Qn swapped?
+// REG22_15 >> Qn
 // REG22_16 >> Q
 // REG22_17 << RSTn _MUST_ be RSTn, see serial
 // REG22_18 NC

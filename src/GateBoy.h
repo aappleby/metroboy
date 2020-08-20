@@ -14,15 +14,30 @@ public:
   void reset(bool verbose = false);
   void next_phase();
   uint64_t next_pass();
-  void run_bootrom();
+  void set_boot_bit();
 
-  uint8_t dbg_read (int addr, bool verbose = false);
-  void    dbg_write(int addr, uint8_t data, bool verbose = false);
+  uint8_t dbg_read (int addr);
+  void    dbg_write(int addr, uint8_t data);
+
+  void NOP() { run(8); }
+  void NOPS(int x) { run(8 * x); }
+
+  void LDH_A8_A(uint8_t a8, uint8_t a) {
+    NOP();
+    NOP();
+    dbg_write(0xFF00 | a8, a);
+  }
+
+  uint8_t LDH_A_A8(uint8_t a8) {
+    NOP();
+    NOP();
+    uint8_t a = dbg_read(0xFF00 | a8);
+    return a;
+  }
 
   void load(const char* filename);
 
   void tock_cpu_bus (int phase, Req req);
-
   void tock_ext_bus();
   void tock_oam_bus();
   void tock_vram_bus();
@@ -51,6 +66,8 @@ public:
 
   Z80 cpu;
   bool cpu_en = false;
+
+  uint8_t bus_data = 0;
 
   Req cpu_req;
   Req dbg_req;

@@ -6,17 +6,14 @@
 #include "BusDump.h"
 #include "Probe.h"
 #include "GLBase.h"
+#include "Constants.h"
 #ifdef _MSC_VER
 #include <include/SDL.h>
 #else
 #include <SDL2/SDL.h>
 #endif
 
-extern BusDump poweron_004_div[];
-
 using namespace Schematics;
-
-#pragma warning(disable:4702)
 
 //-----------------------------------------------------------------------------
 
@@ -29,14 +26,10 @@ GateBoyApp::GateBoyApp() {
     gateboy->next_pass();
   };
   state_manager.init(top_step, top_unstep);
-
-  //auto gateboy = state_manager.state();
-  //load_blob("microtests/build/dmg/poweron_000_div.gb", gateboy->mem, 65536);
 }
 
 GateBoyApp::~GateBoyApp() {
 }
-
 
 //-----------------------------------------------------------------------------
 
@@ -62,43 +55,17 @@ void GateBoyApp::app_init() {
   blitter.init();
 
   trace_tex = create_texture_u32(912, 154);
-
+  overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
-  printf("\n");
-
-#if !_DEBUG
-  //GateBoyTests::test_all_mem();
-  //gateboy->test_all_mem();
-  //gateboy->test_bootrom();
-  //gateboy->test_timer();
-  //gateboy->test_joypad();
-  //gateboy->test_dma();
-  //gateboy->test_serial();
-  //gateboy->test_ppu();
-  //gateboy->test_interrupts();
-  //GateBoyTests::test_dma();
-  //GateBoyTests::test_timer();
-#endif
-
 
   auto& gb = *state_manager.state();
+  gb.cpu.reset(0x0000);
   gb.reset();
 
-  //gb.run_bootrom();
+  const char* filename = "roms/LinksAwakening_dog.dump";
+  gb.load(filename);
 
-  //const char* filename = "roms/LinksAwakening_dog.dump";
-  //gb.load(filename);
-  //printf("\n");
-
-  //GateBoyTests::run_benchmark();
-
-  /*
-  for (int i = 0; i < 256; i++) {
-    gb.mem[0x8000 + i] = uint8_t(i);
-  }
-  memset(gb.mem + 0xFE00, 0, 256);
-  gb.dbg_write(0xFF46, 0x80);
-  */
+  //gb.cpu_en = true;
 }
 
 void GateBoyApp::app_close() {
@@ -164,6 +131,8 @@ void GateBoyApp::app_update(double delta) {
 
 //-----------------------------------------------------------------------------
 
+extern const uint8_t DMG_ROM_bin[];
+
 void GateBoyApp::app_render_frame(Viewport view) {
   grid_painter.render(view);
 
@@ -203,6 +172,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Pass avg    %4.2f\n",  float(gateboy->pass_total) / float(gateboy->phase_total));
   dumper("Phase hash  %016llx\n", gateboy->phase_hash);
   dumper("Total hash  %016llx\n", gateboy->total_hash);
+  dumper("\n");
+  dumper("dbg_req ");
+  dump_req(dumper, gateboy->dbg_req);
+  dumper("cpu_req ");
+  dump_req(dumper, gateboy->cpu_req);
+
   dumper("\n");
 
   dumper("----------   CPU    ----------\n");
@@ -244,26 +219,35 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
-  dump_painter.render(view, cursor, 512,      16, 16, gateboy->mem + 0xFE00);
+  dump_painter.render(view, cursor, 512,      16, 16, DMG_ROM_bin);
 
-  /*
-  dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
+  //dump_painter.render(view, cursor, 512,      16, 16, gateboy->mem + 0xFE00);
+  //dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
 
-  dump_bus_dump(dumper, poweron_004_div, replay_cursor, 3200);
-  text_painter.render(view, dumper.s.c_str(), col_width * 5, 0);
-  dumper.clear();
-  */
+  int screen_x = int(view.screen_size.x - 320 - 32);
+  int screen_y = 32;
 
-  gb_blitter.blit_screen(view, int(view.screen_size.x - 320 - 32), 32, 2, gateboy->fb);
-
-  /*
-  for (int i = 0; i < 912 * 154; i++) {
-    trace[i] = rand() | 0xFF000000;
-  }
-  */
+  gb_blitter.blit_screen(view, screen_x, screen_y, 2, gateboy->fb);
 
   //update_texture_u32(trace_tex, 912, 154, trace);
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
+
+  memset(overlay, 0, sizeof(overlay));
+
+  int fb_y = top.lcd_reg.get_y();
+  if (fb_y >= 0 && fb_y < 144) {
+    for (int i = 0; i < 160; i++) {
+      overlay[i + fb_y * 160] = 0x33FFFF00;
+    }
+
+    int fb_x = top.pix_pipe.get_pix_count() - 8;
+    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
+      overlay[fb_x + fb_y * 160] = 0x8000FFFF;
+    }
+  }
+
+  update_texture_u32(overlay_tex, 160, 144, overlay);
+  blitter.blit(view, overlay_tex, screen_x, screen_y, 160 * 2, 144 * 2);
 
 }
 

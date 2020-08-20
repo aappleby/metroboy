@@ -176,6 +176,7 @@
     <ClInclude Include="src\SPU.h" />
     <ClInclude Include="src\StateManager.h" />
     <ClInclude Include="src\StateManager2.h" />
+    <ClInclude Include="src\Tests.h" />
     <ClInclude Include="src\test_codegen.h" />
     <ClInclude Include="src\test_micro.h" />
     <ClInclude Include="src\test_mooneye.h" />

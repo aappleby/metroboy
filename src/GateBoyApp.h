@@ -55,4 +55,7 @@ public:
   uint32_t trace[912 * 154];
   int trace_tex;
 
+  uint32_t overlay[160 * 144];
+  int overlay_tex;
+
 };

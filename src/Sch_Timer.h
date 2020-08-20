@@ -10,6 +10,7 @@ struct CpuBus;
 
 struct Timer {
 
+  void dump(Dumper& d) const;
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
@@ -21,8 +22,8 @@ struct Timer {
   }
 
   int get_tima() const {
-    return pack_p(REGA_TIMA_0.qp(), POVY_TIMA_1.qp(), PERU_TIMA_2.qp(), RATE_TIMA_3.qp(),
-                RUBY_TIMA_4.qp(), RAGE_TIMA_5.qp(), PEDA_TIMA_6.qp(), NUGA_TIMA_7.qp());
+    return pack_p(REGA_TIMA_D0.qp(), POVY_TIMA_D1.qp(), PERU_TIMA_D2.qp(), RATE_TIMA_D3.qp(),
+                  RUBY_TIMA_D4.qp(), RAGE_TIMA_D5.qp(), PEDA_TIMA_D6.qp(), NUGA_TIMA_D7.qp());
   }
 
   int get_tma() const {
@@ -57,17 +58,6 @@ struct Timer {
   wire UPOF_DIV_15()  const { return  UPOF_DIV_15.qp(); }
   */
 
-  void dump(Dumper& d) const {
-    d("----------  Timer   ----------\n");
-    d("DIV        %05d\n", get_div());
-    d("TIMA       %03d\n", get_tima());
-    d("TMA        %03d\n", get_tma());
-    d("TAC        %03d\n", get_tac());
-    d("TIMA_MAX   %c\n", NYDU_TIMA_MAX.c());
-    d("INT_TIMERp %c\n", MOBA_INT_TIMERp.c());
-    d("\n");
-  }
-
 //private:
   friend SchematicTop;
 
@@ -94,17 +84,17 @@ struct Timer {
   //----------
   // FF05 TIMA
 
-  /*p03.REGA*/ Reg REGA_TIMA_0 = REG_D0C0;
-  /*p03.POVY*/ Reg POVY_TIMA_1 = REG_D0C0;
-  /*p03.PERU*/ Reg PERU_TIMA_2 = REG_D0C0;
-  /*p03.RATE*/ Reg RATE_TIMA_3 = REG_D0C0;
-  /*p03.RUBY*/ Reg RUBY_TIMA_4 = REG_D0C0;
-  /*p03.RAGE*/ Reg RAGE_TIMA_5 = REG_D0C0;
-  /*p03.PEDA*/ Reg PEDA_TIMA_6 = REG_D0C0;
-  /*p03.NUGA*/ Reg NUGA_TIMA_7 = REG_D0C0;
+  /*p03.REGA*/ Reg REGA_TIMA_D0 = REG_D0C0;
+  /*p03.POVY*/ Reg POVY_TIMA_D1 = REG_D0C0;
+  /*p03.PERU*/ Reg PERU_TIMA_D2 = REG_D0C0;
+  /*p03.RATE*/ Reg RATE_TIMA_D3 = REG_D0C0;
+  /*p03.RUBY*/ Reg RUBY_TIMA_D4 = REG_D0C0;
+  /*p03.RAGE*/ Reg RAGE_TIMA_D5 = REG_D0C0;
+  /*p03.PEDA*/ Reg PEDA_TIMA_D6 = REG_D0C0;
+  /*p03.NUGA*/ Reg NUGA_TIMA_D7 = REG_D0C0;
 
-  /*p03.NYDU*/ RegQN NYDU_TIMA_MAX = REG_D0C0;
-  /*p03.MOBA*/ RegQP MOBA_INT_TIMERp = REG_D0C0;
+  /*p03.NYDU*/ RegQN NYDU_TIMA_D7_DELAY = REG_D0C0;
+  /*p03.MOBA*/ RegQP MOBA_INT_TIMER_TRIGp = REG_D0C0;
 
   //----------
   // FF06 TMA

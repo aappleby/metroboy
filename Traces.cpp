@@ -1,4 +1,87 @@
-    // AFUR_01 NC
+
+    // REGA_01 >> POVY_20 Qn
+    // REGA_02 nc
+    // REGA_03 << PUXY_03 D
+    // REGA_04 << MEXU_04 LOADp
+    // REGA_05 nc
+    // REGA_06 sc
+    // REGA_07 nc
+    // REGA_08 nc
+    // REGA_09 nc
+    // REGA_10 nc
+    // REGA_11 sc
+    // REGA_12 nc
+    // REGA_13 nc
+    // REGA_14 << MEXU_04 LOADp
+    // REGA_15 nc
+    // REGA_16 << PUXY_03 D
+    // REGA_17 >> SOKU_04 Q
+    // REGA_18 sc
+    // REGA_19 sc
+    // REGA_20 << SOGU_03 CLKp
+
+    // POVY_01 >> PERU_20 Qn
+    // POVY_02 nc
+    // POVY_03 << NERO_03 D
+    // POVY_04 << MEXU_04 LOADp
+    // POVY_05 nc
+    // POVY_06 sc
+    // POVY_07 nc
+    // POVY_08 nc
+    // POVY_09 nc
+    // POVY_10 nc
+    // POVY_11 sc
+    // POVY_12 nc
+    // POVY_13 nc
+    // POVY_14 << MEXU_04 LOADp
+    // POVY_15 nc
+    // POVY_16 << NERO_03 D
+    // POVY_17 >> RACY_04 Q
+    // POVY_18 sc
+    // POVY_19 sc
+    // POVY_20 << REGA_01 CLKp
+
+    // NUGA_01 >> NYDU_07 Qn
+    // NUGA_02 nc
+    // NUGA_03 << PAGU_03 D
+    // NUGA_04 << MEXU_04 LOADp
+    // NUGA_05 nc
+    // NUGA_06 sc
+    // NUGA_07 nc
+    // NUGA_08 nc
+    // NUGA_09 nc
+    // NUGA_10 nc
+    // NUGA_11 sc
+    // NUGA_12 nc
+    // NUGA_13 nc
+    // NUGA_14 << MEXU_04 LOADp
+    // NUGA_15 nc
+    // NUGA_16 << PAGU_03 D
+    // NUGA_17 >> PUSO_04 Q
+    // NUGA_18 sc
+    // NUGA_19 sc
+    // NUGA_20 << PEDA_01 CLKp
+
+    // NYDU_01 SC
+    // NYDU_02 << BOGA_05 CLKp
+    // NYDU_03 SC
+    // NYDU_04 NC
+    // NYDU_05 NC
+    // NYDU_06 << MUGY_02 RSTn
+    // NYDU_07 << NUGA_01 D
+    // NYDU_08 NC
+    // NYDU_09 SC
+    // NYDU_10 NC
+    // NYDU_11 NC
+    // NYDU_12 SC
+    // NYDU_13 << MUGY_02 RSTn
+    // NYDU_14 NC
+    // NYDU_15 NC
+    // NYDU_16 >> MERY_02 QN
+    // NYDU_17 >> NC      Q
+
+
+// AFUR_01 NC
     // AFUR_02 << !ATAL_03: CLKp
     // AFUR_03 << ADYK_09 : D
     // AFUR_04 << ATAL_03 : CLKn

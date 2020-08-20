@@ -5,8 +5,6 @@
 #include "Debug.h"
 #include "File.h"
 
-#define CHECK_CLK_PHASE(A, B) CHECK_P(wire(A) == wire((B) & (1 << (7 - phase))))
-
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
@@ -20,7 +18,7 @@ void GateBoy::reset(bool verbose) {
   if (verbose) log("GateBoy::run_reset_sequence() begin\n");
 
   // No bus activity during reset
-  dbg_req = {.addr = 0x0100, .data = 0, .read = 0, .write = 0 };
+  dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
 
   if (verbose) log("In reset\n");
   run(8);
@@ -62,18 +60,14 @@ void GateBoy::reset(bool verbose) {
   run(8);
   if (verbose) log("GateBoy::run_reset_sequence() done\n");
   if (verbose) log("\n");
+
+  cpu.get_bus_req(cpu_req);
 }
 
 //------------------------------------------------------------------------------
 
-void GateBoy::run_bootrom() {
-  //log("Init registers\n");
-  //log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50, true));
-  //log("Set BOOT = 1\n");
+void GateBoy::set_boot_bit() {
   dbg_write(0xFF50, 0xFF);
-  //log("BOOT @ 0xFF50 => %d\n", dbg_read(0xFF50));
-  //log("LCDC = 0x%02x\n", dbg_read(ADDR_LCDC));
-  //log("\n");
 }
 
 //------------------------------------------------------------------------------
@@ -98,13 +92,13 @@ void GateBoy::load(const char* filename) {
     mem[addr] = ~mem[addr];
   }
 
-  dbg_write(ADDR_BGP,  mem[ADDR_BGP], true);
-  dbg_write(ADDR_OBP0, mem[ADDR_OBP0], true);
-  dbg_write(ADDR_OBP1, mem[ADDR_OBP1], true);
-  dbg_write(ADDR_SCY,  mem[ADDR_SCY], true);
-  dbg_write(ADDR_SCX,  mem[ADDR_SCX], true);
-  dbg_write(ADDR_WY,   mem[ADDR_WY], true);
-  dbg_write(ADDR_WX,   mem[ADDR_WX], true);
+  dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
+  dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
+  dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
+  dbg_write(ADDR_SCY,  mem[ADDR_SCY]);
+  dbg_write(ADDR_SCX,  mem[ADDR_SCX]);
+  dbg_write(ADDR_WY,   mem[ADDR_WY]);
+  dbg_write(ADDR_WX,   mem[ADDR_WX]);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
@@ -124,48 +118,34 @@ void GateBoy::load(const char* filename) {
   // #define FLAG_WIN_MAP_1    0x40
   // #define FLAG_LCD_ON       0x80
 
-  dbg_write(ADDR_LCDC, mem[ADDR_LCDC], true);
+  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 
   log("Loaded %zd bytes from %s\n", size, filename);
 }
 
-
 //------------------------------------------------------------------------------
 
-uint8_t GateBoy::dbg_read(int addr, bool verbose) {
-
-  if (verbose) log("dbg_read 0x%04x\n", addr);
-
+uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
   dbg_req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
-
   /* AB */ next_phase();
   /* BC */ next_phase();
   /* CD */ next_phase();
   /* DE */ next_phase();
   /* EF */ next_phase();
-
-  uint8_t sample = top.cpu_bus.get_bus_data();
-
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
-
-  if (verbose) log("dbg_read 0x%04x = 0x%02x\n", addr, sample);
-
   dbg_req = {0};
 
-  return sample;
+  return bus_data;
 }
 
 //------------------------------------------------------------------------------
 
-void GateBoy::dbg_write(int addr, uint8_t data, bool verbose) {
-  if (verbose) log("dbg_write 0x%04x 0x%02x\n", addr, data);
-
+void GateBoy::dbg_write(int addr, uint8_t data) {
   CHECK_P((phase_total & 7) == 0);
   dbg_req = {.addr = uint16_t(addr), .data = data, .read = 0, .write = 1 };
-
   /* AB */ next_phase();
   /* BC */ next_phase();
   /* CD */ next_phase();
@@ -174,7 +154,6 @@ void GateBoy::dbg_write(int addr, uint8_t data, bool verbose) {
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
-
   dbg_req = {0};
 }
 
@@ -182,11 +161,16 @@ void GateBoy::dbg_write(int addr, uint8_t data, bool verbose) {
 
 void GateBoy::next_phase() {
   phase_total++;
+  const int phase = phase_total & 7;
 
   //----------
   // Update CPU
 
-  cpu_req = cpu_en ? cpu.bus_req : dbg_req;
+  // ab BC CD DE ef fg gh ha
+
+  if (DELTA_BC) {
+    cpu_req = cpu_en ? cpu.bus_req : dbg_req;
+  }
 
   if (cpu_en) {
     uint8_t imask = 0;
@@ -199,7 +183,6 @@ void GateBoy::next_phase() {
     ack.addr    = top.cpu_bus.get_bus_addr();
     ack.data_lo = top.cpu_bus.get_bus_data();
 
-    const int phase = phase_total & 7;
     switch(phase) {
     case 0: cpu.tock_a(imask, intf, ack); break;
     case 1: cpu.tock_b(imask, intf, ack); break;
@@ -212,9 +195,16 @@ void GateBoy::next_phase() {
     }
   }
 
+  bus_data = top.cpu_bus.get_bus_data();
+
+  // AB bc cd de ef fg gh ha
+
+  if (DELTA_AB) {
+    cpu_req = {0};
+  }
 
   //----------
-  // Update clock and buses
+  // Run logic passes
 
   uint64_t hash_regs_old  = HASH_INIT;
   uint64_t hash_regs_new  = HASH_INIT;
@@ -261,74 +251,6 @@ void GateBoy::next_phase() {
     int p0 = !top.LCD_PIN_DATA0n.tp();
     int p1 = !top.LCD_PIN_DATA1n.tp();
     fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
-  }
-
-  //----------
-
-
-  if (sys_clkgood) {
-    const int phase = phase_total & 7;
-    CHECK_CLK_PHASE(top.clk_reg.ATAL_xBxDxFxH(), 0b01010101);
-    CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101);
-    CHECK_CLK_PHASE(top.clk_reg.AZOF_AxCxExGx(), 0b10101010); 
-    CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101); 
-    CHECK_CLK_PHASE(top.clk_reg.ZEME_AxCxExGx(), 0b10101010); 
-    CHECK_CLK_PHASE(top.clk_reg.ALET_xBxDxFxH(), 0b01010101); 
-    CHECK_CLK_PHASE(top.clk_reg.MEHE_AxCxExGx(), 0b10101010); 
-    CHECK_CLK_PHASE(top.clk_reg.MYVO_AxCxExGx(), 0b10101010); 
-
-
-    if (sys_clken) {
-      CHECK_CLK_PHASE(top.clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
-      CHECK_CLK_PHASE(top.clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
-      CHECK_CLK_PHASE(top.clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
-      CHECK_CLK_PHASE(top.clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
-
-      CHECK_CLK_PHASE(top.clk_reg.AROV_xxCDEFxx,      0b00111100);
-      CHECK_CLK_PHASE(top.clk_reg.AFEP_AxxxxFGH,      0b10000111);
-      CHECK_CLK_PHASE(top.clk_reg.ATYP_ABCDxxxx,      0b11110000);
-      CHECK_CLK_PHASE(top.clk_reg.AJAX_xxxxEFGH,      0b00001111);
-
-      CHECK_CLK_PHASE(top.clk_reg.ADAR_ABCxxxxH(),    0b11100001);
-      CHECK_CLK_PHASE(top.clk_reg.AFAS_xxxxEFGx(),    0b00001110);
-
-      if (sys_cpuready) {
-        CHECK_CLK_PHASE(top.clk_reg.BELU_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BYRY_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BUDE_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.UVYT_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BEKO_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.MOPA_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.XYNY_ABCDxxxx(), 0b11110000);
-
-        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxxxxxGH(), 0b00000011);
-        CHECK_CLK_PHASE(top.clk_reg.BERU_ABCDEFxx(), 0b11111100);
-        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxxxxxGH(), 0b00000011);
-        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABCDEFxx(), 0b11111100);
-
-        CHECK_CLK_PHASE(top.clk_reg.BEJA_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BANE_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BELO_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BAZE_ABCDxxxx(), 0b11110000);
-
-        CHECK_CLK_PHASE(top.clk_reg.BUTO_xBCDEFGH(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BELE_Axxxxxxx(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.BYJU_xBCDEFGH(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BALY_Axxxxxxx(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.BOGA_xBCDEFGH(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BOMA_Axxxxxxx(), 0b10000000);
-
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
-      }
-    }
   }
 
   //----------
@@ -381,7 +303,7 @@ void GateBoy::tock_cpu_bus(int phase, Req req) {
 
   // CPU_PIN_ADDR_EXT latches the cpu bus address into the ext address
 
-  bool     read  = req.read;
+  //bool     read  = req.read;
   bool     write = req.write;
   uint16_t addr  = req.addr;
   uint8_t  data  = req.data_lo;
@@ -409,9 +331,7 @@ void GateBoy::tock_cpu_bus(int phase, Req req) {
   //Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
   //Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
 
-  // B WORKS
-  // C WORKS
-
+#if 0
   if (DELTA_AB) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
   if (DELTA_BC) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
   if (DELTA_CD) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
@@ -420,6 +340,16 @@ void GateBoy::tock_cpu_bus(int phase, Req req) {
   if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
   if (DELTA_GH) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
   if (DELTA_HA) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
+#endif
+
+  if (DELTA_AB) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_BC) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_CD) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_DE) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = 0;      bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_GH) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = 0;      bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_HA) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
 
   top.int_reg.CPU_PIN_ACK_VBLANK = 0;
   top.int_reg.CPU_PIN_ACK_STAT = 0;

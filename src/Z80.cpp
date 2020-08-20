@@ -175,7 +175,7 @@ void Z80::reset(uint16_t new_pc) {
              
     int_ack = 0;
 
-    pc = 0xFFFF;
+    pc = 0x0000;
     op_addr = pc;
     op = 0;
     cb = 0;

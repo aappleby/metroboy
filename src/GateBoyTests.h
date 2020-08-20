@@ -24,6 +24,6 @@ struct GateBoyTests {
 
   int test_dma(uint16_t src);
 
-  int test_reg(GateBoy& gb, const char* tag, uint16_t addr, uint8_t data_in);
+  int test_reg(const char* tag, uint16_t addr, uint8_t data_in);
   int test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
 };

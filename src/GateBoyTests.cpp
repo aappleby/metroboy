@@ -1,52 +1,8 @@
-#include <stdio.h>
-#include <stdarg.h>
-
-void LOG(const char* format = "", ...) {
-  static int log_indent = 0;
-  static int log_cursor_x = 0;
-  static char buffer[256];
-
-  va_list args;
-  va_start (args, format);
-  vsnprintf(buffer, 256, format, args);
-  va_end (args);
-
-  for (char* b = buffer; *b; b++) {
-    if (*b == '\n') {
-      putchar(*b);
-      log_cursor_x = 0;
-    }
-    else if (*b == '\t') {
-      log_indent += 2;
-    }
-    else if (*b == '\v') {
-      log_indent -= 2;
-    }
-    else {
-      for (;log_cursor_x < log_indent; log_cursor_x++) putchar(' ');
-      putchar(*b);
-    }
-  }
-}
-
-#define LOG_R(...) do { printf("\u001b[38;2;255;128;128m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-#define LOG_G(...) do { printf("\u001b[38;2;128;255;128m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-#define LOG_B(...) do { printf("\u001b[38;2;128;128;255m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-#define LOG_Y(...) do { printf("\u001b[38;2;255;255;128m"); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-
-#define TEST_START(...) do { LOG("%s: ", __FUNCTION__); LOG_B(__VA_ARGS__); LOG("\n\t"); } while(0); int err = 0;
-#define TEST_END()      do { LOG("\v"); if (err) LOG_R("%s: FAIL\n", __FUNCTION__); return err; } while(0);
-
-#define EXPECT_EQ(A, B, ...) if ((A) != (B)) { LOG_Y(__VA_ARGS__); LOG("\n"); err++; }
-#define EXPECT_NE(A, B, ...) if ((A) == (B)) { LOG_Y(__VA_ARGS__); LOG("\n"); err++; }
-
-#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
-#define ASSERT_NE(A, B, ...) if ((A) == (B)) { LOG_R(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
-
-#include <chrono>
 #include "GateBoyTests.h"
 #include "GateBoy.h"
 #include "Constants.h"
+#include "Tests.h"
+#include <chrono>
 
 //-----------------------------------------------------------------------------
 
@@ -69,6 +25,369 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   TEST_END();
 }
+
+//-----------------------------------------------------------------------------
+
+#if 0
+#define CHECK_CLK_PHASE(A, B) CHECK_P(wire(A) == wire((B) & (1 << (7 - phase))))
+
+if (sys_clkgood) {
+    const int phase = phase_total & 7;
+    CHECK_CLK_PHASE(top.clk_reg.ATAL_xBxDxFxH(), 0b01010101);
+    CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101);
+    CHECK_CLK_PHASE(top.clk_reg.AZOF_AxCxExGx(), 0b10101010); 
+    CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101); 
+    CHECK_CLK_PHASE(top.clk_reg.ZEME_AxCxExGx(), 0b10101010); 
+    CHECK_CLK_PHASE(top.clk_reg.ALET_xBxDxFxH(), 0b01010101); 
+    CHECK_CLK_PHASE(top.clk_reg.MEHE_AxCxExGx(), 0b10101010); 
+    CHECK_CLK_PHASE(top.clk_reg.MYVO_AxCxExGx(), 0b10101010); 
+
+
+    if (sys_clken) {
+      CHECK_CLK_PHASE(top.clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
+      CHECK_CLK_PHASE(top.clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
+      CHECK_CLK_PHASE(top.clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
+      CHECK_CLK_PHASE(top.clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
+
+      CHECK_CLK_PHASE(top.clk_reg.AROV_xxCDEFxx,      0b00111100);
+      CHECK_CLK_PHASE(top.clk_reg.AFEP_AxxxxFGH,      0b10000111);
+      CHECK_CLK_PHASE(top.clk_reg.ATYP_ABCDxxxx,      0b11110000);
+      CHECK_CLK_PHASE(top.clk_reg.AJAX_xxxxEFGH,      0b00001111);
+
+      CHECK_CLK_PHASE(top.clk_reg.ADAR_ABCxxxxH(),    0b11100001);
+      CHECK_CLK_PHASE(top.clk_reg.AFAS_xxxxEFGx(),    0b00001110);
+
+      if (sys_cpuready) {
+        CHECK_CLK_PHASE(top.clk_reg.BELU_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BYRY_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BUDE_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.UVYT_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BEKO_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.MOPA_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.XYNY_ABCDxxxx(), 0b11110000);
+
+        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxxxxxGH(), 0b00000011);
+        CHECK_CLK_PHASE(top.clk_reg.BERU_ABCDEFxx(), 0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxxxxxGH(), 0b00000011);
+        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABCDEFxx(), 0b11111100);
+
+        CHECK_CLK_PHASE(top.clk_reg.BEJA_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BANE_ABCDxxxx(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.BELO_xxxxEFGH(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.BAZE_ABCDxxxx(), 0b11110000);
+
+        CHECK_CLK_PHASE(top.clk_reg.BUTO_xBCDEFGH(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BELE_Axxxxxxx(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BYJU_xBCDEFGH(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BALY_Axxxxxxx(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.BOGA_xBCDEFGH(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.BOMA_Axxxxxxx(), 0b10000000);
+
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
+        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
+        CHECK_CLK_PHASE(top.clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
+      }
+    }
+  }
+#endif
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_mem() {
+  TEST_START();
+
+  GateBoy gb;
+  gb.reset();
+  gb.set_boot_bit();
+
+  err += test_mem(gb, "ROM",  0x0000, 0x7FFF, 256, false);
+  err += test_mem(gb, "VRAM", 0x8000, 0x9FFF, 256, true);
+  err += test_mem(gb, "CRAM", 0xA000, 0xBFFF, 256, true);
+  err += test_mem(gb, "IRAM", 0xC000, 0xDFFF, 256, true);
+  err += test_mem(gb, "ERAM", 0xE000, 0xFDFF, 256, true);
+  err += test_mem(gb, "OAM",  0xFE00, 0xFEFF, 1,   true);
+  err += test_mem(gb, "ZRAM", 0xFF80, 0xFFFE, 1,   true);
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_interrupts() {
+  TEST_START();
+
+  GateBoy gb;
+  gb.reset();
+
+  // hblank no stat int
+  // vblank no stat int
+
+  /*
+  #define EI_GLITCH    0b10000000
+  #define EI_LYC       0b01000000
+  #define EI_OAM       0b00100000
+  #define EI_VBLANK    0b00010000
+  #define EI_HBLANK    0b00001000
+  */
+  //dbg_write(ADDR_STAT, EI_OAM);
+  //dbg_write(ADDR_IE,   0b11111111);
+
+  //test_reg("IF",   0xFF0F, 0b00011111); // broken
+  //test_reg("IE",   0xFFFF, 0b00011111);
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+extern const uint8_t DMG_ROM_bin[];
+
+int GateBoyTests::test_bootrom() {
+  TEST_START();
+
+  GateBoy gb;
+  gb.reset();
+
+  for (int i = 0; i < 16; i++) {
+    uint8_t byte = gb.dbg_read(i);
+    EXPECT_EQ(byte, DMG_ROM_bin[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
+  }
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_timer() {
+  TEST_START();
+
+  test_reg("TIMA", ADDR_TIMA, 0b11111111); // works
+  test_reg("TMA",  ADDR_TMA,  0b11111111); // works
+  test_reg("TAC",  ADDR_TAC,  0b00000111); // works
+
+  // 00 - 2048 phases per TIMA tick (looks ok)
+  // 01 - 32 phases per TIMA tick   (looks ok)
+  // 10 - 128 phases per TIMA tick  (looks ok)
+  // 11 - 512 phases per TIMA tick
+
+  // FF04 DIV
+  // FF05 TIMA
+  // FF06 TMA
+  // FF07 TAC
+
+  {
+    //int delay = 0;
+
+    GateBoy gb;
+    gb.reset();
+
+    gb.dbg_write(ADDR_TMA, 0x80);
+    gb.dbg_write(ADDR_TIMA,0xFD);
+    gb.dbg_write(ADDR_DIV, 0x00);
+
+    LOG("DIV  %d\n",     gb.top.tim_reg.get_div());
+    LOG("TIMA 0x%02x\n", gb.top.tim_reg.get_tima());
+    gb.dbg_write(ADDR_TAC, 0b00000101);
+    LOG("DIV  %d\n",     gb.top.tim_reg.get_div());
+    LOG("TIMA 0x%02x\n", gb.top.tim_reg.get_tima());
+    gb.dbg_write(ADDR_DIV, 0x00);
+    LOG("DIV  %d\n",     gb.top.tim_reg.get_div());
+    LOG("TIMA 0x%02x\n", gb.top.tim_reg.get_tima());
+
+    /*
+    gb.NOP();
+    gb.LDH_A8_A(0x06, 0x80);
+    gb.NOP();
+    gb.LDH_A8_A(0x05, 0xFD);
+
+    // ld a, 0x05
+    gb.NOP();
+    gb.NOP();
+
+    gb.LDH_A8_A(07, 0x05);
+    gb.LDH_A8_A(04, 0x05);
+    
+    //gb.NOPS(delay);
+    */
+
+    //uint8_t a = gb.LDH_A_A8(0x05);
+    //LOG("delay %d TIMA 0x%02x\n", delay, a);
+  }
+
+  /*
+  00:   4096 Hz    (~4194 Hz SGB)
+  01: 262144 Hz  (~268400 Hz SGB)
+  10:  65536 Hz   (~67110 Hz SGB)
+  11:  16384 Hz   (~16780 Hz SGB)
+  */
+
+#if 0
+  GateBoy gb;
+  gb.reset();
+
+  // passes, but slow :/
+  LOG("Testing div reset + rollover, this takes a minute...");
+  gb.dbg_write(ADDR_DIV, 0);
+  for (int i = 1; i < 32768; i++) {
+    int div_a = gb.dbg_read(ADDR_DIV);
+    int div_b = (i >> 6) & 0xFF;
+    EXPECT_EQ(div_a, div_b, "div match fail");
+  }
+  LOG("\n");
+#endif
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_joypad() {
+  TEST_START();
+
+  err += test_reg("JOYP", ADDR_P1,   0b00110000);
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_dma() {
+  TEST_START();
+
+  GateBoy gb;
+  gb.reset();
+
+  for (int src = 0x0000; src < 0xFE00; src += 0x1000) {
+    err += test_dma(uint16_t(src));
+  }
+
+  TEST_END();
+}
+
+//----------------------------------------
+
+int GateBoyTests::test_dma(uint16_t src) {
+  TEST_START("0x%04x", src);
+
+  GateBoy gb;
+  gb.reset();
+
+  for (int i = 0; i < 256; i++) {
+    gb.mem[src + i] = uint8_t(rand());
+  }
+
+  memset(gb.mem + 0xFE00, 0, 256);
+
+  gb.dbg_write(0xFF46, uint8_t(src >> 8));
+
+  for (int i = 0; i < 1288; i++) gb.next_phase();
+
+  for (int i = 0; i < 160; i++) {
+    uint8_t a = gb.mem[src + i];
+    uint8_t b = gb.dbg_read(0xFE00 + i);
+    EXPECT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
+  }
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_serial() {
+  TEST_START();
+
+  GateBoy gb;
+  //err += test_reg(gb, "SB",   ADDR_SB,   0b11111111); // something wrong with these ones
+  //test_reg("SC",   ADDR_SC, 0b10000011);
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_ppu() {
+  TEST_START();
+
+  //err += test_reg("LCDC", ADDR_LCDC, 0b11111111); // works but let's not muck up lcdc
+  //err += test_reg("STAT", ADDR_STAT, 0b11110000); // broken
+  err += test_reg("SCY",  ADDR_SCY,  0b11111111);
+  err += test_reg("SCX",  ADDR_SCX,  0b11111111);
+  //err += test_reg("LY",   0xFF44, 177); // not standard reg
+  err += test_reg("LYC",  ADDR_LYC,  0b11111111);
+  err += test_reg("BGP",  ADDR_BGP,  0b11111111);
+  err += test_reg("OBP0", ADDR_OBP0, 0b11111111);
+  err += test_reg("OBP1", ADDR_OBP1, 0b11111111);
+  err += test_reg("WY",   ADDR_WY,   0b11111111);
+  err += test_reg("WX",   ADDR_WX,   0b11111111);
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
+  TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
+
+  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
+    uint8_t data_wr = 0x55;
+    if (test_write) {
+      gb.mem[addr] = 0;
+      gb.dbg_write(addr, data_wr);
+    }
+    else {
+      gb.mem[addr] = data_wr;
+    }
+    uint8_t data_rd = gb.dbg_read(addr);
+    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+  }
+
+  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
+    uint8_t data_wr = 0xAA;
+    if (test_write) {
+      gb.mem[addr] = 0;
+      gb.dbg_write(addr, data_wr);
+    }
+    else {
+      gb.mem[addr] = data_wr;
+    }
+    uint8_t data_rd = gb.dbg_read(addr);
+    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+  }
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
+  TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
+
+  GateBoy gb;
+  gb.reset();
+
+  for (int i = 0; i < 256; i++) {
+    uint8_t data_in = uint8_t(i & mask);
+    gb.dbg_write(addr, uint8_t(data_in));
+    uint8_t data_out = gb.dbg_read(addr) & mask;
+    EXPECT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+  }
+
+  TEST_END();
+}
+
+//------------------------------------------------------------------------------
+
+
+
+
+
+
 
 //-----------------------------------------------------------------------------
 
@@ -229,240 +548,3 @@ void GateBoyTests::run_benchmark() {
 #endif
 }
 
-//-----------------------------------------------------------------------------
-
-int GateBoyTests::test_mem() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-  gb.run_bootrom();
-
-  err += test_mem(gb, "ROM",  0x0000, 0x7FFF, 256, false);
-  err += test_mem(gb, "VRAM", 0x8000, 0x9FFF, 256, true);
-  err += test_mem(gb, "CRAM", 0xA000, 0xBFFF, 256, true);
-  err += test_mem(gb, "IRAM", 0xC000, 0xDFFF, 256, true);
-  err += test_mem(gb, "ERAM", 0xE000, 0xFDFF, 256, true);
-  err += test_mem(gb, "OAM",  0xFE00, 0xFEFF, 1,   true);
-  err += test_mem(gb, "ZRAM", 0xFF80, 0xFFFE, 1,   true);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_interrupts() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-
-  // hblank no stat int
-  // vblank no stat int
-
-  /*
-  #define EI_GLITCH    0b10000000
-  #define EI_LYC       0b01000000
-  #define EI_OAM       0b00100000
-  #define EI_VBLANK    0b00010000
-  #define EI_HBLANK    0b00001000
-  */
-  //dbg_write(ADDR_STAT, EI_OAM);
-  //dbg_write(ADDR_IE,   0b11111111);
-
-  //test_reg("IF",   0xFF0F, 0b00011111); // broken
-  //test_reg("IE",   0xFFFF, 0b00011111);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-extern const uint8_t DMG_ROM_bin[];
-
-int GateBoyTests::test_bootrom() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-
-  for (int i = 0; i < 16; i++) {
-    uint8_t byte = gb.dbg_read(i);
-    EXPECT_EQ(byte, DMG_ROM_bin[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
-  }
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_timer() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-
-  //test_reg("DIV",  ADDR_DIV,  0b11111111); // not standard reg
-  //test_reg("TIMA", ADDR_TIMA, 0b11111111); // broken
-  //test_reg("TMA",  ADDR_TMA,  0b11111111); // works
-  //test_reg("TAC",  ADDR_TAC,  0b00000111); // works
-
-  LOG("Testing div reset + rollover: ");
-  gb.dbg_write(ADDR_DIV, 0);
-  for (int i = 1; i < 32768; i++) {
-    int div_a = gb.dbg_read(ADDR_DIV);
-    int div_b = (i >> 6) & 0xFF;
-    EXPECT_EQ(div_a, div_b, "div match fail");
-  }
-  LOG("\n");
-
-  gb.dbg_write(ADDR_TIMA, 0x00);
-  gb.dbg_write(ADDR_TMA,  0x00);
-  gb.dbg_write(ADDR_TAC,  0x00);
-  LOG("TIMA 0x%02X\n", gb.dbg_read(ADDR_TIMA));
-  LOG("TMA  0x%02X\n", gb.dbg_read(ADDR_TMA));
-  LOG("TAC  0x%02X\n", gb.dbg_read(ADDR_TAC));
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_joypad() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-
-  err += test_reg(gb, "JOYP", ADDR_P1,   0b00110000);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_dma() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-
-  for (int src = 0x0000; src < 0xFE00; src += 0x1000) {
-    err += test_dma(uint16_t(src));
-  }
-
-  TEST_END();
-}
-
-//----------------------------------------
-
-int GateBoyTests::test_dma(uint16_t src) {
-  TEST_START("0x%04x", src);
-
-  GateBoy gb;
-  gb.reset();
-
-  for (int i = 0; i < 256; i++) {
-    gb.mem[src + i] = uint8_t(rand());
-  }
-
-  memset(gb.mem + 0xFE00, 0, 256);
-
-  gb.dbg_write(0xFF46, uint8_t(src >> 8));
-
-  for (int i = 0; i < 1288; i++) gb.next_phase();
-
-  for (int i = 0; i < 160; i++) {
-    uint8_t a = gb.mem[src + i];
-    uint8_t b = gb.dbg_read(0xFE00 + i);
-    EXPECT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
-  }
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_serial() {
-  TEST_START();
-
-  GateBoy gb;
-  //err += test_reg(gb, "SB",   ADDR_SB,   0b11111111); // something wrong with these ones
-  //test_reg("SC",   ADDR_SC, 0b10000011);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_ppu() {
-  TEST_START();
-
-  GateBoy gb;
-  gb.reset();
-
-  //err += test_reg("LCDC", ADDR_LCDC, 0b11111111); // works but let's not muck up lcdc
-  //err += test_reg(gb, "STAT", ADDR_STAT, 0b11110000); // broken
-  err += test_reg(gb, "SCY",  ADDR_SCY,  0b11111111);
-  err += test_reg(gb, "SCX",  ADDR_SCX,  0b11111111);
-  //err += test_reg("LY",   0xFF44, 177); // not standard reg
-  err += test_reg(gb, "LYC",  ADDR_LYC,  0b11111111);
-  err += test_reg(gb, "BGP",  ADDR_BGP,  0b11111111);
-  err += test_reg(gb, "OBP0", ADDR_OBP0, 0b11111111);
-  err += test_reg(gb, "OBP1", ADDR_OBP1, 0b11111111);
-  err += test_reg(gb, "WY",   ADDR_WY,   0b11111111);
-  err += test_reg(gb, "WX",   ADDR_WX,   0b11111111);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
-  TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
-
-  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
-    uint8_t data_wr = 0x55;
-    if (test_write) {
-      gb.mem[addr] = 0;
-      gb.dbg_write(addr, data_wr);
-    }
-    else {
-      gb.mem[addr] = data_wr;
-    }
-    uint8_t data_rd = gb.dbg_read(addr);
-    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
-  }
-
-  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
-    uint8_t data_wr = 0xAA;
-    if (test_write) {
-      gb.mem[addr] = 0;
-      gb.dbg_write(addr, data_wr);
-    }
-    else {
-      gb.mem[addr] = data_wr;
-    }
-    uint8_t data_rd = gb.dbg_read(addr);
-    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
-  }
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_reg(GateBoy& gb, const char* tag, uint16_t addr, uint8_t mask) {
-  TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
-
-  for (int i = 0; i < 256; i++) {
-    uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(addr) & mask;
-    EXPECT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
-  }
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------

@@ -1,8 +1,21 @@
 #include "Sch_Timer.h"
 
 #include "Sch_Top.h"
+#include "Probe.h"
 
 using namespace Schematics;
+
+void Timer::dump(Dumper& d) const {
+  d("----------  Timer   ----------\n");
+  d("DIV        0x%04x %d\n", get_div(), get_div());
+  d("TIMA       0x%02x %d\n", get_tima(), get_tima());
+  d("TMA        0x%02x %d\n", get_tma(), get_tma());
+  d("TAC        0x%02x %d\n", get_tac(), get_tac());
+  d("TIMA_MAX   %c\n", NYDU_TIMA_D7_DELAY.c());
+  d("INT_TIMERp %c\n", MOBA_INT_TIMER_TRIGp.c());
+  d("\n");
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -63,7 +76,6 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.TEDA*/ wire _TEDA_FF05_RDp = and4(top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.CPU_BUS_A00.tp());
     /*p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.CPU_BUS_A00.tp());
 
-    /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not1(MOBA_INT_TIMERp.qp());
     /*p03.UBOT*/ wire _UBOT_CLK_256Kn = not1(UFOR_DIV_01.qp());
     /*p03.UVYR*/ wire _UVYR_CLK_64Kn = not1(TERO_DIV_03.qp());
 
@@ -72,7 +84,8 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.TECY*/ wire _TECY_CLK_MUXc = mux2_n(_UKAP_CLK_MUXa, _TEKO_CLK_MUXb, SAMY_TAC_1.qp());
 
     /*p03.SOGU*/ wire _SOGU_TIMA_CLK = nor2(_TECY_CLK_MUXc, SABO_TAC_2.qn());
-    /*p03.ROKE*/ wire _ROKE_TIMA_MUX_0 = mux2_n(SABU_TMA_0.qp(), top.cpu_bus.CPU_BUS_D0p.tp(), _TOPE_FF05_WRn); // suggests WRn
+
+    /*p03.ROKE*/ wire _ROKE_TIMA_MUX_0 = mux2_n(SABU_TMA_0.qp(), top.cpu_bus.CPU_BUS_D0p.tp(), _TOPE_FF05_WRn);
     /*p03.PETU*/ wire _PETU_TIMA_MUX_1 = mux2_n(NYKE_TMA_1.qp(), top.cpu_bus.CPU_BUS_D1p.tp(), _TOPE_FF05_WRn);
     /*p03.NYKU*/ wire _NYKU_TIMA_MUX_2 = mux2_n(MURU_TMA_2.qp(), top.cpu_bus.CPU_BUS_D2p.tp(), _TOPE_FF05_WRn); // die annotation box wrong, this is a 5-rung
     /*p03.SOCE*/ wire _SOCE_TIMA_MUX_3 = mux2_n(TYVA_TMA_3.qp(), top.cpu_bus.CPU_BUS_D3p.tp(), _TOPE_FF05_WRn);
@@ -90,36 +103,33 @@ void Timer::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.PYMA*/ wire _PYMA_TIMA_LD_6 = nor2(top.clk_reg.MULO_SYS_RSTn(), _REFU_TIMA_MUX_6);
     /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor2(top.clk_reg.MULO_SYS_RSTn(), _RATO_TIMA_MUX_7);
 
+    /*p03.MERY*/ wire MERY_TIMER_INT_TRIGp = nor2(NYDU_TIMA_D7_DELAY.qn(), NUGA_TIMA_D7.qp());
+    /*p03.MOBA*/ MOBA_INT_TIMER_TRIGp = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), MERY_TIMER_INT_TRIGp);
+    /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not1(MOBA_INT_TIMER_TRIGp.qp());
     /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or2(top.cpu_bus.CPU_PIN_HOLD_MEM.tp(), _TOPE_FF05_WRn);
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand3(_MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn(), _MEKE_INT_TIMERn);
 
-    /*p03.REGA*/ REGA_TIMA_0 = dff20(_SOGU_TIMA_CLK,   _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0);
-    /*p03.POVY*/ POVY_TIMA_1 = dff20(REGA_TIMA_0.qn(), _MEXU_TIMA_LOADp, _NERO_TIMA_LD_1);
-    /*p03.PERU*/ PERU_TIMA_2 = dff20(POVY_TIMA_1.qn(), _MEXU_TIMA_LOADp, _NADA_TIMA_LD_2);
-    /*p03.RATE*/ RATE_TIMA_3 = dff20(PERU_TIMA_2.qn(), _MEXU_TIMA_LOADp, _REPA_TIMA_LD_3);
-    /*p03.RUBY*/ RUBY_TIMA_4 = dff20(RATE_TIMA_3.qn(), _MEXU_TIMA_LOADp, _ROLU_TIMA_LD_4);
-    /*p03.RAGE*/ RAGE_TIMA_5 = dff20(RUBY_TIMA_4.qn(), _MEXU_TIMA_LOADp, _RUGY_TIMA_LD_5);
-    /*p03.PEDA*/ PEDA_TIMA_6 = dff20(RAGE_TIMA_5.qn(), _MEXU_TIMA_LOADp, _PYMA_TIMA_LD_6);
-    /*p03.NUGA*/ NUGA_TIMA_7 = dff20(PEDA_TIMA_6.qn(), _MEXU_TIMA_LOADp, _PAGU_TIMA_LD_7);
-
-    /*p03.SOKU*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TEDA_FF05_RDp, REGA_TIMA_0.qp());
-    /*p03.RACY*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(_TEDA_FF05_RDp, POVY_TIMA_1.qp());
-    /*p03.RAVY*/ cpu_bus.CPU_BUS_D2p = tribuf_6pn(_TEDA_FF05_RDp, PERU_TIMA_2.qp());
-    /*p03.SOSY*/ cpu_bus.CPU_BUS_D3p = tribuf_6pn(_TEDA_FF05_RDp, RATE_TIMA_3.qp());
-    /*p03.SOMU*/ cpu_bus.CPU_BUS_D4p = tribuf_6pn(_TEDA_FF05_RDp, RUBY_TIMA_4.qp());
-    /*p03.SURO*/ cpu_bus.CPU_BUS_D5p = tribuf_6pn(_TEDA_FF05_RDp, RAGE_TIMA_5.qp());
-    /*p03.ROWU*/ cpu_bus.CPU_BUS_D6p = tribuf_6pn(_TEDA_FF05_RDp, PEDA_TIMA_6.qp());
-    /*p03.PUSO*/ cpu_bus.CPU_BUS_D7p = tribuf_6pn(_TEDA_FF05_RDp, NUGA_TIMA_7.qp());
+    /*p03.REGA*/ REGA_TIMA_D0 = dff20(_SOGU_TIMA_CLK,    _MEXU_TIMA_LOADp, _PUXY_TIMA_LD_0, REGA_TIMA_D0.qn());
+    /*p03.POVY*/ POVY_TIMA_D1 = dff20(REGA_TIMA_D0.qn(), _MEXU_TIMA_LOADp, _NERO_TIMA_LD_1, POVY_TIMA_D1.qn());
+    /*p03.PERU*/ PERU_TIMA_D2 = dff20(POVY_TIMA_D1.qn(), _MEXU_TIMA_LOADp, _NADA_TIMA_LD_2, PERU_TIMA_D2.qn());
+    /*p03.RATE*/ RATE_TIMA_D3 = dff20(PERU_TIMA_D2.qn(), _MEXU_TIMA_LOADp, _REPA_TIMA_LD_3, RATE_TIMA_D3.qn());
+    /*p03.RUBY*/ RUBY_TIMA_D4 = dff20(RATE_TIMA_D3.qn(), _MEXU_TIMA_LOADp, _ROLU_TIMA_LD_4, RUBY_TIMA_D4.qn());
+    /*p03.RAGE*/ RAGE_TIMA_D5 = dff20(RUBY_TIMA_D4.qn(), _MEXU_TIMA_LOADp, _RUGY_TIMA_LD_5, RAGE_TIMA_D5.qn());
+    /*p03.PEDA*/ PEDA_TIMA_D6 = dff20(RAGE_TIMA_D5.qn(), _MEXU_TIMA_LOADp, _PYMA_TIMA_LD_6, PEDA_TIMA_D6.qn());
+    /*p03.NUGA*/ NUGA_TIMA_D7 = dff20(PEDA_TIMA_D6.qn(), _MEXU_TIMA_LOADp, _PAGU_TIMA_LD_7, NUGA_TIMA_D7.qn());
 
     /*p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn = not1(_MEXU_TIMA_LOADp);
+    /*p03.NYDU*/ NYDU_TIMA_D7_DELAY = dff17_A(top.clk_reg.BOGA_xBCDEFGH(), _MUGY_TIMA_MAX_RSTn, NUGA_TIMA_D7.qp());
 
-    /*p03.NYDU*/ NYDU_TIMA_MAX = dff17_A(top.clk_reg.BOGA_xBCDEFGH(), _MUGY_TIMA_MAX_RSTn, NUGA_TIMA_7.qp());
-  }
-
-  {
-    /*p03.MERY*/ wire _MERY_INT_TIMER_IN = nor2(NYDU_TIMA_MAX.qn(), NUGA_TIMA_7.qp());
-
-    /*p03.MOBA*/ MOBA_INT_TIMERp = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _MERY_INT_TIMER_IN);
+    // FIXME inversion
+    /*p03.SOKU*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TEDA_FF05_RDp, !REGA_TIMA_D0.qp());
+    /*p03.RACY*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(_TEDA_FF05_RDp, !POVY_TIMA_D1.qp());
+    /*p03.RAVY*/ cpu_bus.CPU_BUS_D2p = tribuf_6pn(_TEDA_FF05_RDp, !PERU_TIMA_D2.qp());
+    /*p03.SOSY*/ cpu_bus.CPU_BUS_D3p = tribuf_6pn(_TEDA_FF05_RDp, !RATE_TIMA_D3.qp());
+    /*p03.SOMU*/ cpu_bus.CPU_BUS_D4p = tribuf_6pn(_TEDA_FF05_RDp, !RUBY_TIMA_D4.qp());
+    /*p03.SURO*/ cpu_bus.CPU_BUS_D5p = tribuf_6pn(_TEDA_FF05_RDp, !RAGE_TIMA_D5.qp());
+    /*p03.ROWU*/ cpu_bus.CPU_BUS_D6p = tribuf_6pn(_TEDA_FF05_RDp, !PEDA_TIMA_D6.qp());
+    /*p03.PUSO*/ cpu_bus.CPU_BUS_D7p = tribuf_6pn(_TEDA_FF05_RDp, !NUGA_TIMA_D7.qp());
   }
 
   // FF06 TMA

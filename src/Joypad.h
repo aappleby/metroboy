@@ -7,7 +7,7 @@ struct Joypad {
   void reset();
 
   void tick(const Req& req, Ack& ack) const;
-  void tock(int phase, const Req& req);
+  void tock(const Req& req);
 
   uint8_t get() const { return val; }
   void set(uint8_t new_val);

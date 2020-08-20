@@ -50,9 +50,7 @@ void LcdRegisters::tick(const SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-void LcdRegisters::tock(int phase, SchematicTop& top, CpuBus& cpu_bus) {
-  (void)phase;
-
+void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /* p21.XYVO*/ wire XYVO_IN_VBLANKp = and2(LOVU_Y4p.qp(), LAFO_Y7p.qp()); // 128 + 16 = 144
   /* p29.ALES*/ wire ALES_IN_VBLANKn = not1(XYVO_IN_VBLANKp);
   /* p21.POPU*/ POPU_IN_VBLANKp = dff17_AB(NYPE_LINE_P000.qp(), top.clk_reg.LYFE_VID_RSTn(), XYVO_IN_VBLANKp);

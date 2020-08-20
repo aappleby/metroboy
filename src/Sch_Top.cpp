@@ -11,7 +11,7 @@ SchematicTop::SchematicTop() {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tick_slow(int phase) {
+void SchematicTop::tick_slow() {
 
   bool verbose = false;
 
@@ -28,10 +28,10 @@ void SchematicTop::tick_slow(int phase) {
   sprite_fetcher.tick(*this);
   int_reg.tick(*this);
 
-  clk_reg.tock_clk_slow(phase, *this);
-  clk_reg.tock_rst_slow(phase, *this);
-  clk_reg.tock_dbg_slow(phase, *this);
-  clk_reg.tock_vid_slow(phase, *this);
+  clk_reg.tock_clk_slow(*this);
+  clk_reg.tock_rst_slow(*this);
+  clk_reg.tock_dbg_slow(*this);
+  clk_reg.tock_vid_slow(*this);
   
   tim_reg.tock(*this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
@@ -39,7 +39,7 @@ void SchematicTop::tick_slow(int phase) {
   ser_reg.tock(*this, cpu_bus);
   joypad.tock(*this, cpu_bus);
   sprite_scanner.tock(*this);
-  lcd_reg.tock(phase, *this, cpu_bus);
+  lcd_reg.tock(*this, cpu_bus);
   sprite_store.tock(*this);
 
   pix_pipe.tock(*this, cpu_bus);

@@ -6,8 +6,8 @@
 struct Serial {
   void reset();
   
-  void tock(int phase, const Req& req);
   void tick(const Req& req, Ack& ack) const;
+  void tock(const Req& req);
 
   void dump(Dumper& dump) const;
 

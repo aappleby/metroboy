@@ -79,7 +79,7 @@ void ClockRegisters::tick_slow(const SchematicTop& top) {
   _XONA_LCDC_ENn_qn = top.pix_pipe.XONA_LCDC_ENn.qn();
 }
 
-void ClockRegisters::tock_clk_slow(int phase, const SchematicTop& top) {
+void ClockRegisters::tock_clk_slow(const SchematicTop& top) {
   // ignoring the deglitcher here
 
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
@@ -160,7 +160,7 @@ void ClockRegisters::tock_clk_slow(int phase, const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_rst_slow(int phase, const SchematicTop& top) {
+void ClockRegisters::tock_rst_slow(const SchematicTop& top) {
   /*p01.UPYF*/ wire _UPYF = or2(SYS_PIN_RSTp.tp(), UCOB_CLKBADp());
 
   /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch(_UPYF, CPU_PIN_READYp.tp());
@@ -187,7 +187,7 @@ void ClockRegisters::tock_rst_slow(int phase, const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_dbg_slow(int phase, const SchematicTop& top) {
+void ClockRegisters::tock_dbg_slow(const SchematicTop& top) {
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p());
   /*p25.SOTO*/ _SOTO_DBG_VRAM = dff17_A(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn(), _SOTO_DBG_VRAM.qn());
 
@@ -198,7 +198,7 @@ void ClockRegisters::tock_dbg_slow(int phase, const SchematicTop& top) {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_vid_slow(int phase, const SchematicTop& top) {
+void ClockRegisters::tock_vid_slow(const SchematicTop& top) {
   /*p29.XYVA*/ wire XYVA_xBxDxFxH = not1(ZEME_AxCxExGx());
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);

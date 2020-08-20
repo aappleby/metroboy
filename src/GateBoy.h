@@ -13,7 +13,7 @@ public:
 
   void reset(bool verbose = false);
   void next_phase();
-  uint64_t next_pass();
+  uint64_t next_pass(int old_phase, int new_phase);
   void set_boot_bit();
 
   uint8_t dbg_read (int addr);
@@ -37,7 +37,7 @@ public:
 
   void load(const char* filename);
 
-  void tock_cpu_bus (int phase, Req req);
+  void tock_cpu_bus (int old_phase, int new_phase, Req req);
   void tock_ext_bus();
   void tock_oam_bus();
   void tock_vram_bus();

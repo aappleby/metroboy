@@ -35,7 +35,7 @@ void Gameboy::reset(uint16_t new_pc) {
   boot.reset(new_pc);
   lcd.reset();
 
-  phase = -1;
+  phase_total = -1;
   trace_val = 0;
 
   intf = 0xE1;
@@ -49,7 +49,7 @@ void Gameboy::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::tock(int /*phase_*/, const Req& req) {
+void Gameboy::tock(int old_phase, int new_phase, const Req& req) {
   if (DELTA_FG && req.write) {
     if (req.addr == ADDR_IF) intf  = (uint8_t)req.data_lo | 0b11100000;
     if (req.addr == ADDR_IE) imask = (uint8_t)req.data_lo;
@@ -71,7 +71,7 @@ void Gameboy::tick(const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tick_gb() {
-  phase++;
+  phase_total++;
 
   //if (z80.pc == 0xFF80) printf("running from hiram at phase %lld\n", phase);
 
@@ -121,7 +121,7 @@ void Gameboy::tick_gb() {
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::tock_gb() {
+void Gameboy::tock_gb(int old_phase, int new_phase) {
   auto& self = *this;
 
   bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
@@ -175,26 +175,26 @@ void Gameboy::tock_gb() {
   //if (PHASE_G) z80.tock_g(imask, intf, cpu_ack);
   //if (PHASE_H) z80.tock_h(imask, intf, cpu_ack);
 
-  timer2.tock(phase, ibus_req);
+  timer2.tock(old_phase, new_phase, ibus_req);
 
   if (DELTA_FG) {
-    self.  tock(phase, ibus_req);
-    serial.tock(phase, ibus_req);
-    joypad.tock(phase, ibus_req);
-    boot.  tock(phase, ibus_req);
+    self.  tock(old_phase, new_phase, ibus_req);
+    serial.tock(ibus_req);
+    joypad.tock(ibus_req);
+    boot.  tock(ibus_req);
   }
 
   bool XONA_LCDC_ENn = ppu.lcdc & FLAG_LCD_ON;
 
-  if (PHASE_HI) {
+  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     zram.  tock(ibus_req);
-    spu.   tock(phase, ibus_req);
-    ppu.   tock(phase, ibus_req);
-    dma2.  tock(phase, ibus_req);
+    spu.   tock(phase_total, ibus_req);
+    ppu.   tock(phase_total, ibus_req);
+    dma2.  tock(old_phase, new_phase, ibus_req);
     cart.  tock(ebus_req);
     vram.  tock(vbus_req);
     oam.   tock(obus_req);
-    lcd.tock(phase, ibus_req, XONA_LCDC_ENn);
+    lcd.tock(old_phase, new_phase, ibus_req, XONA_LCDC_ENn);
 
     //----------
 
@@ -274,7 +274,7 @@ void Gameboy::tock_gb() {
   }
 
   printf("phase %05lld %c REQ 0x%04x 0x%02x %d %d ACK 0x%04x 0x%02x %d 0\n",
-    phase, int('A' + (phase & 7)),
+    phase_total, int('A' + (phase_total & 7)),
     cpu_req.addr, cpu_req.data, cpu_req.read, cpu_req.write,
     cpu_ack.addr, cpu_ack.data, cpu_ack.read);
 }
@@ -301,11 +301,11 @@ void Gameboy::dump_bus(Dumper& d) {
     "\003_______H\001",
   };
 
-  d("phase %s\n", phases[phase & 7]);
-  d("tphase %lld\n", phase);
-  d("tcycle %lld\n", phase >> 1);
-  d("mcycle %lld\n", phase >> 3);
-  d("bgb cycle      0x%08x\n", ((phase / 2) * 8) + 0x00B2D5E6);
+  d("phase %s\n", phases[phase_total & 7]);
+  d("tphase %lld\n", phase_total);
+  d("tcycle %lld\n", phase_total >> 1);
+  d("mcycle %lld\n", phase_total >> 3);
+  d("bgb cycle      0x%08x\n", ((phase_total / 2) * 8) + 0x00B2D5E6);
   d("imask  %s\n", byte_to_bits(imask));
   d("intf   %s\n", byte_to_bits(intf));
   d("boot   %d\n", boot.disable_bootrom);

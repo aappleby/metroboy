@@ -12,10 +12,10 @@ struct ClockRegisters {
   void dump(Dumper& d) const;
 
   void tick_slow(const SchematicTop& top);
-  void tock_clk_slow(int phase, const SchematicTop& top);
-  void tock_rst_slow(int phase, const SchematicTop& top);
-  void tock_dbg_slow(int phase, const SchematicTop& top);
-  void tock_vid_slow(int phase, const SchematicTop& top);
+  void tock_clk_slow(const SchematicTop& top);
+  void tock_rst_slow(const SchematicTop& top);
+  void tock_dbg_slow(const SchematicTop& top);
+  void tock_vid_slow(const SchematicTop& top);
 
   wire get_clk_a() const { return SYS_PIN_CLK_A.tp(); }
   wire get_clk_b() const { return SYS_PIN_CLK_B.tp(); }

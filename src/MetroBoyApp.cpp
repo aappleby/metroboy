@@ -344,11 +344,11 @@ void MetroBoyApp::app_update(double /*delta*/) {
   // Run simulation
 
   if (runmode == RUN_FAST) {
-    int64_t phase_begin = metroboy.gb().phase;
+    int64_t phase_begin = metroboy.gb().phase_total;
     double time_begin = double(SDL_GetPerformanceCounter() - app_start);
     metroboy.run_fast(buttons, (int)fast_mcycles);
     double time_end = double(SDL_GetPerformanceCounter() - app_start);
-    int64 phase_end = metroboy.gb().phase;
+    int64 phase_end = metroboy.gb().phase_total;
     last_mcycles = int(phase_end - phase_begin) / 8;
     sim_time_msec = 1000.0 * double(time_end - time_begin) / double(SDL_GetPerformanceFrequency());
     
@@ -361,11 +361,11 @@ void MetroBoyApp::app_update(double /*delta*/) {
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);
-    int64_t phase_begin = metroboy.gb().phase;
+    int64_t phase_begin = metroboy.gb().phase_total;
     double time_begin = double(SDL_GetPerformanceCounter() - app_start);
     metroboy.run_vsync(buttons);
     double time_end = double(SDL_GetPerformanceCounter() - app_start);
-    int64 phase_end = metroboy.gb().phase;
+    int64 phase_end = metroboy.gb().phase_total;
     last_mcycles = int(phase_end - phase_begin) / 4;
     sim_time_msec = 1000.0 * double(time_end - time_begin) / double(SDL_GetPerformanceFrequency());
   }
@@ -617,7 +617,7 @@ void MetroBoyApp::app_render_ui(Viewport view) {
         "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
     };
 
-    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().phase & 7));
+    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().phase_total & 7));
     text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
     text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
     text_painter.dprintf("sim rate   %7d cycles/frame\n", last_mcycles);

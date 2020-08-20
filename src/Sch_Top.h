@@ -27,7 +27,7 @@ struct SchematicTop {
 
   SchematicTop();
 
-  void tick_slow(int phase);
+  void tick_slow();
 
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
     /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_VID_LINE_END_TRIGp(), clk_reg.ATAR_VID_RSTp());

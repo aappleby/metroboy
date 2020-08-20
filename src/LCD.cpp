@@ -36,7 +36,7 @@ void LCD::tick(const Req& req, Ack& ack) {
 
 //-----------------------------------------------------------------------------
 
-void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_ENn) {
+void LCD::tock(int old_phase, int new_phase, const Req& /*req*/, bool XONA_LCDC_ENn) {
   bool IN_VBLANK = (Y & 144) == 144;
   bool VID_LINE_d0 = _RUTU_LINE_P908 && !IN_VBLANK;
   bool LINE_000n = Y != 0;

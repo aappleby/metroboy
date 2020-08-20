@@ -11,7 +11,7 @@ struct CpuBus;
 struct LcdRegisters {
   void dump(Dumper& d, const SchematicTop& top) const;
   void tick(const SchematicTop& top);
-  void tock(int phase, SchematicTop& top, CpuBus& cpu_bus);
+  void tock(SchematicTop& top, CpuBus& cpu_bus);
 
   uint8_t get_x() const {
     return (uint8_t)pack_p(SAXO_X0p.qp(), TYPO_X1p.qp(), VYZO_X2p.qp(), TELU_X3p.qp(), SUDE_X4p.qp(), TAHA_X5p.qp(), TYRY_X6p.qp(), 0);

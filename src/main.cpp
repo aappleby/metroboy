@@ -14,7 +14,7 @@ void run_microtests();
 
 int main(int argc, char** argv) {
 
-#if 0
+#if 1
   GateBoyTests t;
   return t.test_main(argc, argv);
 #else

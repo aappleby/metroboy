@@ -52,18 +52,16 @@ inline int pack_n(wire a, wire b, wire c, wire d,
 
 //-----------------------------------------------------------------------------
 
-#define PHASE(A) ((A) & (1 << (7 - phase)))
+//#define PHASE(A) ((A) & (1 << (7 - phase)))
 
-#define DELTA_AB  ((phase & 7) == 0)
-#define DELTA_BC  ((phase & 7) == 1)
-#define DELTA_CD  ((phase & 7) == 2)
-#define DELTA_DE  ((phase & 7) == 3)
-#define DELTA_EF  ((phase & 7) == 4)
-#define DELTA_FG  ((phase & 7) == 5)
-#define DELTA_GH  ((phase & 7) == 6)
-#define DELTA_HA  ((phase & 7) == 7)
-#define PHASE_HI ((phase & 1) == 1)
-#define PHASE_LO ((phase & 1) == 0)
+#define DELTA_HA  ((old_phase == 7) && (new_phase == 0))
+#define DELTA_AB  ((old_phase == 0) && (new_phase == 1))
+#define DELTA_BC  ((old_phase == 1) && (new_phase == 2))
+#define DELTA_CD  ((old_phase == 2) && (new_phase == 3))
+#define DELTA_DE  ((old_phase == 3) && (new_phase == 4))
+#define DELTA_EF  ((old_phase == 4) && (new_phase == 5))
+#define DELTA_FG  ((old_phase == 5) && (new_phase == 6))
+#define DELTA_GH  ((old_phase == 6) && (new_phase == 7))
 
 //-----------------------------------------------------------------------------
 

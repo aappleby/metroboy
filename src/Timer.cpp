@@ -34,7 +34,7 @@ void NewTimer::tick(const Req& req, Ack& ack) {
 // Timer interrupt fires when the high bit of tima (after sync with phase C)
 // goes low. Writing to tima clears the synchronized bit for some reason.
 
-void NewTimer::tock(int phase, const Req& req) {
+void NewTimer::tock(int old_phase, int new_phase, const Req& req) {
 
   if (DELTA_CD) {
     div++;

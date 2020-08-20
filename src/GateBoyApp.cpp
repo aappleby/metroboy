@@ -23,7 +23,9 @@ GateBoyApp::GateBoyApp() {
   };
   auto top_unstep = [this](GateBoy* gateboy) {
     // Run a logic pass after unstep to update our probes
-    gateboy->next_pass();
+    int old_phase = (gateboy->phase_total - 1) & 7;
+    int new_phase = (gateboy->phase_total - 0) & 7;
+    gateboy->next_pass(old_phase, new_phase);
   };
   state_manager.init(top_step, top_unstep);
 }

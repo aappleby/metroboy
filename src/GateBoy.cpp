@@ -160,17 +160,16 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 //------------------------------------------------------------------------------
 
 void GateBoy::next_phase() {
-  phase_total++;
-  const int phase = phase_total & 7;
+  int old_phase = (phase_total + 0) & 7;
+  int new_phase = (phase_total + 1) & 7;
 
   //----------
   // Update CPU
 
   // ab BC CD DE ef fg gh ha
 
-  if (DELTA_BC) {
-    cpu_req = cpu_en ? cpu.bus_req : dbg_req;
-  }
+  cpu_req = cpu_en ? cpu.bus_req : dbg_req;
+
 
   if (cpu_en) {
     uint8_t imask = 0;
@@ -183,7 +182,7 @@ void GateBoy::next_phase() {
     ack.addr    = top.cpu_bus.get_bus_addr();
     ack.data_lo = top.cpu_bus.get_bus_data();
 
-    switch(phase) {
+    switch(old_phase) {
     case 0: cpu.tock_a(imask, intf, ack); break;
     case 1: cpu.tock_b(imask, intf, ack); break;
     case 2: cpu.tock_c(imask, intf, ack); break;
@@ -199,10 +198,6 @@ void GateBoy::next_phase() {
 
   // AB bc cd de ef fg gh ha
 
-  if (DELTA_AB) {
-    cpu_req = {0};
-  }
-
   //----------
   // Run logic passes
 
@@ -213,7 +208,7 @@ void GateBoy::next_phase() {
 
   for (pass_count = 1; pass_count < 100; pass_count++) {
     hash_regs_old = hash_regs_new;
-    hash_regs_new  = next_pass();
+    hash_regs_new  = next_pass(old_phase, new_phase);
     if (hash_regs_new == hash_regs_old) break;
     if (pass_count == 90) {
       printf("!!!STUCK!!!\n");
@@ -256,14 +251,14 @@ void GateBoy::next_phase() {
   //----------
   // Done
 
+  phase_total++;
   phase_hash = hash_regs_old;
   combine_hash(total_hash, phase_hash);
 }
 
 //-----------------------------------------------------------------------------
 
-uint64_t GateBoy::next_pass() {
-  const int phase = phase_total & 7;
+uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   uint64_t hash = HASH_INIT;
 
   wire CLK = (phase_total & 1) & sys_clken;
@@ -279,10 +274,10 @@ uint64_t GateBoy::next_pass() {
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
 
-  top.tick_slow(phase);
+  top.tick_slow();
 
   tock_ext_bus();
-  tock_cpu_bus(phase, cpu_req);
+  tock_cpu_bus(old_phase, new_phase, cpu_req);
   tock_vram_bus();
   tock_zram_bus();
   tock_oam_bus();
@@ -296,7 +291,7 @@ uint64_t GateBoy::next_pass() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_cpu_bus(int phase, Req req) {
+void GateBoy::tock_cpu_bus(int old_phase, int new_phase, Req req) {
   auto& bus = top.cpu_bus;
 
   bus.CPU_PIN6 = 0;

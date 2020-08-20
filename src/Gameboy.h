@@ -44,46 +44,55 @@ struct Gameboy {
   HostOut get_host_data() const { return gb_to_host; }
 
   void sync_to_mcycle() {
-    switch(phase & 7) {
+    int old_phase = (phase_total + 0) & 7;
+    int new_phase = (phase_total + 1) & 7;
+
+    switch(old_phase) {
     case 0: return;
-    case 1: tick_gb(); tock_gb();
-    case 2: tick_gb(); tock_gb();
-    case 3: tick_gb(); tock_gb();
-    case 4: tick_gb(); tock_gb();
-    case 5: tick_gb(); tock_gb();
-    case 6: tick_gb(); tock_gb();
-    case 7: tick_gb(); tock_gb();
+    case 1: tick_gb(); tock_gb(old_phase, new_phase);
+    case 2: tick_gb(); tock_gb(old_phase, new_phase);
+    case 3: tick_gb(); tock_gb(old_phase, new_phase);
+    case 4: tick_gb(); tock_gb(old_phase, new_phase);
+    case 5: tick_gb(); tock_gb(old_phase, new_phase);
+    case 6: tick_gb(); tock_gb(old_phase, new_phase);
+    case 7: tick_gb(); tock_gb(old_phase, new_phase);
     }
   }
   
   void mcycle() {
-    assert((phase & 7) == 7);
+    int old_phase = (phase_total + 0) & 7;
+    int new_phase = (phase_total + 1) & 7;
+
+    assert(old_phase == 7);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
     tick_gb();
-    tock_gb();
+    tock_gb(old_phase, new_phase);
   }
 
   void halfcycle() {
-    tick_gb(); tock_gb();
+    int old_phase = (phase_total + 0) & 7;
+    int new_phase = (phase_total + 1) & 7;
+
+    tick_gb(); tock_gb(old_phase, new_phase);
   }
 
   void tick_gb();
-  void tock_gb();
+  void tock_gb(int old_phase, int new_phase);
 
-  void tock(int phase, const Req& req);
+  void tock(int old_phase, int new_phase, const Req& req);
   void tick(const Req& req, Ack& ibus_ack) const;
 
   void dump_cpu   (Dumper& d);
@@ -131,7 +140,7 @@ struct Gameboy {
 
   //----------
 
-  int64_t phase = -1;
+  int64_t phase_total = -1;
 
   HostOut gb_to_host;
   uint32_t trace_val = 0;

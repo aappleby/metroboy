@@ -71,8 +71,6 @@ void Gameboy::tick(const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tick_gb() {
-  phase_total++;
-
   //if (z80.pc == 0xFF80) printf("running from hiram at phase %lld\n", phase);
 
   auto& self = *this;
@@ -166,14 +164,14 @@ void Gameboy::tock_gb(int old_phase, int new_phase) {
     }
   }
 
-  if (DELTA_AB) z80.tock_a(imask, intf, cpu_ack);
-  if (DELTA_BC) z80.tock_b(imask, intf, cpu_ack);
-  //if (PHASE_C) z80.tock_c(imask, intf, cpu_ack);
-  //if (PHASE_D) z80.tock_d(imask, intf, cpu_ack);
-  //if (PHASE_E) z80.tock_e(imask, intf, cpu_ack);
-  //if (PHASE_F) z80.tock_f(imask, intf, cpu_ack);
-  //if (PHASE_G) z80.tock_g(imask, intf, cpu_ack);
-  //if (PHASE_H) z80.tock_h(imask, intf, cpu_ack);
+  if (DELTA_AB) z80.tock_ack(imask, intf, cpu_ack);
+  if (DELTA_BC) z80.tock_req(imask, intf, cpu_ack);
+  //if (PHASE_C) z80.tock_cd(imask, intf, cpu_ack);
+  //if (PHASE_D) z80.tock_de(imask, intf, cpu_ack);
+  //if (PHASE_E) z80.tock_ef(imask, intf, cpu_ack);
+  //if (PHASE_F) z80.tock_fg(imask, intf, cpu_ack);
+  //if (PHASE_G) z80.tock_gh(imask, intf, cpu_ack);
+  //if (PHASE_H) z80.tock_ha(imask, intf, cpu_ack);
 
   timer2.tock(old_phase, new_phase, ibus_req);
 
@@ -188,8 +186,8 @@ void Gameboy::tock_gb(int old_phase, int new_phase) {
 
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     zram.  tock(ibus_req);
-    spu.   tock(phase_total, ibus_req);
-    ppu.   tock(phase_total, ibus_req);
+    spu.   tock(old_phase, new_phase, ibus_req);
+    ppu.   tock(old_phase, new_phase, ibus_req);
     dma2.  tock(old_phase, new_phase, ibus_req);
     cart.  tock(ebus_req);
     vram.  tock(vbus_req);
@@ -273,10 +271,13 @@ void Gameboy::tock_gb(int old_phase, int new_phase) {
     };
   }
 
+  phase_total++;
+  /*
   printf("phase %05lld %c REQ 0x%04x 0x%02x %d %d ACK 0x%04x 0x%02x %d 0\n",
     phase_total, int('A' + (phase_total & 7)),
     cpu_req.addr, cpu_req.data, cpu_req.read, cpu_req.write,
     cpu_ack.addr, cpu_ack.data, cpu_ack.read);
+  */
 }
 
 //-----------------------------------------------------------------------------

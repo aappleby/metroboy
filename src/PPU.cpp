@@ -236,7 +236,7 @@ void PPU::tick(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int phase, const Req& req) {
+void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
   // interrupt glitch - oam stat fires on vblank
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
@@ -268,7 +268,7 @@ void PPU::tock(int phase, const Req& req) {
   //----------------------------------------
   // Update state machiney stuff
 
-  const int tphase = (phase / 2) & 3;
+  const int tphase = (old_phase >> 1);
 
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;

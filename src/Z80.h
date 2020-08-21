@@ -9,14 +9,8 @@ struct Z80 {
   uint8_t get_int_ack() const { return int_ack; }
   void    get_bus_req(Req& r) const;
 
-  void    tock_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_c(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_d(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_e(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_f(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_g(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
+  void    tock_ack(const uint8_t imask_, const uint8_t intf_, const Ack& ack); // bus data latches
+  void    tock_req(const uint8_t imask_, const uint8_t intf_, const Ack& ack); // bus request changes
 
   void    dump(Dumper& d) const;
 

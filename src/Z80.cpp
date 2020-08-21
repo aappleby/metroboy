@@ -220,7 +220,7 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 
-void Z80::tock_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_ack(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   bus_ack = ack;
   state = state_;
   ime = ime_delay;
@@ -238,7 +238,7 @@ void Z80::tock_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   }
 }
 
-void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_req(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   bus_ack = ack;
   alu_x = 0;
   alu_y = 0;
@@ -640,34 +640,6 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
   if (DI)                  {ime = false;      ime_delay = false;}
   if (EI)                  {ime = ime_delay;  ime_delay = true;}
-}
-
-void Z80::tock_c(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
-  bus_ack = ack;
-  // Z80 idle this cycle
-}
-
-void Z80::tock_d(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
-  bus_ack = ack;
-  // Z80 idle this cycle
-}
-
-void Z80::tock_e(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
-  bus_ack = ack;
-}
-
-void Z80::tock_f(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
-  bus_ack = ack;
-  // "first" execution cycle
-}
-
-void Z80::tock_g(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
-  bus_ack = ack;
-}
-
-void Z80::tock_h(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& ack) {
-  bus_ack = ack;
-  // "second" execution cycle
 }
 
 //-----------------------------------------------------------------------------

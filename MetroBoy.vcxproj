@@ -148,29 +148,6 @@
     <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\PPU.h" />
     <ClInclude Include="src\Probe.h" />
-    <ClInclude Include="src\Sch_ApuControl.h" />
-    <ClInclude Include="src\Sch_Bootrom.h" />
-    <ClInclude Include="src\Sch_Channel1.h" />
-    <ClInclude Include="src\Sch_Channel2.h" />
-    <ClInclude Include="src\Sch_Channel3.h" />
-    <ClInclude Include="src\Sch_Channel4.h" />
-    <ClInclude Include="src\Sch_Clocks.h" />
-    <ClInclude Include="src\Sch_DMA.h" />
-    <ClInclude Include="src\Sch_ExtBus.h" />
-    <ClInclude Include="src\Sch_CpuBus.h" />
-    <ClInclude Include="src\Sch_Interrupts.h" />
-    <ClInclude Include="src\Sch_Joypad.h" />
-    <ClInclude Include="src\Sch_LCD.h" />
-    <ClInclude Include="src\Sch_OamBus.h" />
-    <ClInclude Include="src\Sch_PixPipe.h" />
-    <ClInclude Include="src\Sch_Serial.h" />
-    <ClInclude Include="src\Sch_SpriteFetcher.h" />
-    <ClInclude Include="src\Sch_SpriteScanner.h" />
-    <ClInclude Include="src\Sch_SpriteStore.h" />
-    <ClInclude Include="src\Sch_TileFetcher.h" />
-    <ClInclude Include="src\Sch_Timer.h" />
-    <ClInclude Include="src\Sch_Top.h" />
-    <ClInclude Include="src\Sch_VramBus.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\Signals.h" />
     <ClInclude Include="src\SPU.h" />
@@ -225,29 +202,6 @@
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Probe.cpp" />
-    <ClCompile Include="src\Sch_ApuControl.cpp" />
-    <ClCompile Include="src\Sch_Bootrom.cpp" />
-    <ClCompile Include="src\Sch_Channel1.cpp" />
-    <ClCompile Include="src\Sch_Channel2.cpp" />
-    <ClCompile Include="src\Sch_Channel3.cpp" />
-    <ClCompile Include="src\Sch_Channel4.cpp" />
-    <ClCompile Include="src\Sch_Clocks.cpp" />
-    <ClCompile Include="src\Sch_DMA.cpp" />
-    <ClCompile Include="src\Sch_ExtBus.cpp" />
-    <ClCompile Include="src\Sch_CpuBus.cpp" />
-    <ClCompile Include="src\Sch_Interrupts.cpp" />
-    <ClCompile Include="src\Sch_Joypad.cpp" />
-    <ClCompile Include="src\Sch_LCD.cpp" />
-    <ClCompile Include="src\Sch_OamBus.cpp" />
-    <ClCompile Include="src\Sch_PixPipe.cpp" />
-    <ClCompile Include="src\Sch_Serial.cpp" />
-    <ClCompile Include="src\Sch_SpriteFetcher.cpp" />
-    <ClCompile Include="src\Sch_SpriteScanner.cpp" />
-    <ClCompile Include="src\Sch_SpriteStore.cpp" />
-    <ClCompile Include="src\Sch_TileFetcher.cpp" />
-    <ClCompile Include="src\Sch_Timer.cpp" />
-    <ClCompile Include="src\Sch_Top.cpp" />
-    <ClCompile Include="src\Sch_VramBus.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\Signals.cpp" />
     <ClCompile Include="src\SPU.cpp" />
@@ -753,6 +707,11 @@
     <None Include="verilog\VRAM_test.sh" />
     <None Include="verilog\wishbone_device.sv" />
     <None Include="verilog\wishbone_host.sv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MetroLib.vcxproj">
+      <Project>{180964f6-cb17-4f5e-8e8b-7c11b189f70e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

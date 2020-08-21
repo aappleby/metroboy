@@ -45,12 +45,12 @@ void SPU::tick(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(int phase, const Req& req) {
+void SPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
   if (req.write) {
     bus_write(req);
   }
 
-  const int tphase = (phase / 2) & 3;
+  const int tphase = (old_phase >> 1);
   if (tphase != 0) return;
 
   bool sound_on = (nr52 & 0x80);

@@ -6,7 +6,6 @@ using namespace Schematics;
 #pragma warning(disable:4100) // unreferenced parameter
 
 #define FAST_BOOT
-#define PHASE(A) ((A) & (1 << (7 - phase)))
 
 void ClockRegisters::dump(Dumper& d) const {
   d("---------- Sys Pins ----------\n");

@@ -15,21 +15,21 @@ GateBoy::GateBoy() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset(bool verbose) {
-  if (verbose) log("GateBoy::run_reset_sequence() begin\n");
+  if (verbose) printf("GateBoy::run_reset_sequence() begin\n");
 
   // No bus activity during reset
   dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
 
-  if (verbose) log("In reset\n");
+  if (verbose) printf("In reset\n");
   run(8);
 
-  if (verbose) log("Out of reset\n");
+  if (verbose) printf("Out of reset\n");
   sys_rst = 0;
   run(8);
 
   sys_clken = 1;
   while(1) {
-    if (verbose) log("Sync with phase A\n");
+    if (verbose) printf("Sync with phase A\n");
     run(1);
     if (top.clk_reg.AFUR_xxxxEFGH.qn() &&
         top.clk_reg.ALEF_AxxxxFGH.qp() &&
@@ -38,28 +38,28 @@ void GateBoy::reset(bool verbose) {
   }
   CHECK_P(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp());
 
-  if (verbose) log("Sync done, reset phase counter to 0\n");
+  if (verbose) printf("Sync done, reset phase counter to 0\n");
   phase_total = 0;
   pass_count = 0;
   pass_total = 0;
 
-  if (verbose) log("Set CLKGOOD\n");
+  if (verbose) printf("Set CLKGOOD\n");
   sys_clkgood = 1;
   run(8);
 
   while(!top.clk_reg.CPU_PIN_STARTp.tp()) {
-    if (verbose) log("Wait for CPU_PIN_START\n");
+    if (verbose) printf("Wait for CPU_PIN_START\n");
     run(8);
   }
 
-  if (verbose) log("CPU_PIN_START high, delay 8 phases\n");
+  if (verbose) printf("CPU_PIN_START high, delay 8 phases\n");
   run(8);
 
-  if (verbose) log("Set CPU_READY\n");
+  if (verbose) printf("Set CPU_READY\n");
   sys_cpuready = 1;
   run(8);
-  if (verbose) log("GateBoy::run_reset_sequence() done\n");
-  if (verbose) log("\n");
+  if (verbose) printf("GateBoy::run_reset_sequence() done\n");
+  if (verbose) printf("\n");
 
   cpu.get_bus_req(cpu_req);
 }
@@ -72,18 +72,8 @@ void GateBoy::set_boot_bit() {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::log(const char* format, ...) {
-  printf("@%06d : ", phase_total);
-  va_list args;
-  va_start (args, format);
-  vprintf (format, args);
-  va_end (args);
-}
-
-//------------------------------------------------------------------------------
-
 void GateBoy::load(const char* filename) {
-  log("Loading %s\n", filename);
+  printf("Loading %s\n", filename);
   memset(mem, 0, 65536);
   size_t size = load_blob(filename, mem);
 
@@ -120,7 +110,7 @@ void GateBoy::load(const char* filename) {
 
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 
-  log("Loaded %zd bytes from %s\n", size, filename);
+  printf("Loaded %zd bytes from %s\n", size, filename);
 }
 
 //------------------------------------------------------------------------------
@@ -136,7 +126,6 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
-  dbg_req = {0};
 
   return bus_data;
 }
@@ -154,7 +143,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
-  dbg_req = {0};
 }
 
 //------------------------------------------------------------------------------
@@ -166,37 +154,35 @@ void GateBoy::next_phase() {
   //----------
   // Update CPU
 
-  // ab BC CD DE ef fg gh ha
 
-  cpu_req = cpu_en ? cpu.bus_req : dbg_req;
+  if (DELTA_AB) {
+    cpu_req = cpu_en ? cpu.bus_req : dbg_req;
+    dbg_req = {0};
+  }
 
+  //----------
+  // Update CPU
 
   if (cpu_en) {
     uint8_t imask = 0;
     uint8_t intf = 0;
 
-    //req.addr = 0x1234;
-
     Ack ack = {0};
 
     ack.addr    = top.cpu_bus.get_bus_addr();
-    ack.data_lo = top.cpu_bus.get_bus_data();
+    ack.data_lo = bus_data;
 
     switch(old_phase) {
-    case 0: cpu.tock_a(imask, intf, ack); break;
-    case 1: cpu.tock_b(imask, intf, ack); break;
-    case 2: cpu.tock_c(imask, intf, ack); break;
-    case 3: cpu.tock_d(imask, intf, ack); break;
-    case 4: cpu.tock_e(imask, intf, ack); break;
-    case 5: cpu.tock_f(imask, intf, ack); break;
-    case 6: cpu.tock_g(imask, intf, ack); break;
-    case 7: cpu.tock_h(imask, intf, ack); break;
+    /* AB */ case 0: cpu.tock_req(imask, intf, ack); break; // bus request changes
+    /* BC */ case 1: break;
+    /* CD */ case 2: break;
+    /* DE */ case 3: break;
+    /* EF */ case 4: cpu.tock_ack(imask, intf, ack); break; // bus data latches
+    /* FG */ case 5: break;
+    /* GH */ case 6: break;
+    /* HA */ case 7: break;
     }
   }
-
-  bus_data = top.cpu_bus.get_bus_data();
-
-  // AB bc cd de ef fg gh ha
 
   //----------
   // Run logic passes
@@ -248,6 +234,10 @@ void GateBoy::next_phase() {
     fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
   }
 
+  if (DELTA_FG) {
+    bus_data = top.cpu_bus.get_bus_data();
+  }
+
   //----------
   // Done
 
@@ -277,73 +267,33 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.tick_slow();
 
   tock_ext_bus();
-  tock_cpu_bus(old_phase, new_phase, cpu_req);
-  tock_vram_bus();
-  tock_zram_bus();
-  tock_oam_bus();
+  
+  //tock_cpu_bus(old_phase, new_phase, cpu_req);
 
-  RegBase::sim_running = false;
-
-  commit_and_hash(top, hash);
-
-  return hash;
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_cpu_bus(int old_phase, int new_phase, Req req) {
   auto& bus = top.cpu_bus;
 
   bus.CPU_PIN6 = 0;
 
-  // CPU_PIN_ADDR_EXT latches the cpu bus address into the ext address
+  //bool     read  = cpu_req.read;
+  bool     write = cpu_req.write;
+  uint16_t addr  = cpu_req.addr;
+  uint8_t  data  = cpu_req.data_lo;
 
-  //bool     read  = req.read;
-  bool     write = req.write;
-  uint16_t addr  = req.addr;
-  uint8_t  data  = req.data_lo;
-
-  bool io = req.read || req.write;
-  bool addr_ext = io && ((req.addr <= 0x7FFF) || (req.addr >= 0xA000 && req.addr < 0xFDFF));
-  bool hold_mem = io && (req.addr < 0xFF00);
+  bool io = cpu_req.read || cpu_req.write;
+  bool addr_ext = io && ((cpu_req.addr <= 0x7FFF) || (cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF));
+  bool hold_mem = io && (cpu_req.addr < 0xFF00);
 
   if (top.cpu_bus.CPU_PIN_BOOTp.tp()) {
     addr_ext = false;
   }
 
-  // if we set read on phase A, we fail the mem test when we switch from testing OAM to testing ZRAM.
-  // these signals are trimmed down as much as they can be without breaking anything.
-  // probably they should be fixed to align w cpu clock edges and match cart traces
-
-  // CPU clocks for reference -
-  //Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
-  //Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
-  //Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
-  //Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
-  //Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxxEFGx as "WRen" I guess
-  //Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
-  //Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  //Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
-  //Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
-
-#if 0
-  if (DELTA_AB) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_BC) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_CD) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_DE) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-  if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = write; bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_GH) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = read; bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_HA) { bus.set_addr(addr); bus.set_data_z();          bus.CPU_PIN_RDp = 0;    bus.CPU_PIN_WRp = 0;     bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = 0; }
-#endif
-
   if (DELTA_AB) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
   if (DELTA_BC) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
   if (DELTA_CD) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_DE) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_DE) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
   if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = 0;      bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_GH) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = 0;      bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  if (DELTA_GH) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
   if (DELTA_HA) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
 
   top.int_reg.CPU_PIN_ACK_VBLANK = 0;
@@ -354,6 +304,16 @@ void GateBoy::tock_cpu_bus(int old_phase, int new_phase, Req req) {
 
   top.ser_reg.SCK_C = 0;
   top.ser_reg.SIN_Cn = 0;
+
+  tock_vram_bus();
+  tock_zram_bus();
+  tock_oam_bus();
+
+  RegBase::sim_running = false;
+
+  commit_and_hash(top, hash);
+
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

@@ -37,13 +37,10 @@ public:
 
   void load(const char* filename);
 
-  void tock_cpu_bus (int old_phase, int new_phase, Req req);
   void tock_ext_bus();
   void tock_oam_bus();
   void tock_vram_bus();
   void tock_zram_bus();
-
-  void log(const char* format, ...);
 
   bool sys_rst = 1;
   bool sys_t1 = 0;

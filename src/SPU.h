@@ -6,7 +6,7 @@
 struct SPU {
   void reset();
 
-  void tock(int phase, const Req& req);
+  void tock(int old_phase, int new_phase, const Req& req);
   void tick(const Req& req, Ack& ibus_ack) const;
 
   sample_t get_l() const { return out_l; }

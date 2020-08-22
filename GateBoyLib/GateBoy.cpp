@@ -289,14 +289,20 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
     addr_ext = false;
   }
 
-  if (DELTA_AB) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_BC) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_CD) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_DE) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_EF) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = 0;        bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_FG) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_GH) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
-  if (DELTA_HA) { bus.set_addr(addr); bus.set_data(write, data); bus.CPU_PIN_RDp = !write; bus.CPU_PIN_WRp = write;  bus.CPU_PIN_HOLD_MEM = hold_mem; bus.CPU_PIN_ADDR_EXTp = addr_ext; }
+  bus.set_addr(addr);
+  bus.set_data(write, data);
+  bus.CPU_PIN_RDp = !write;
+  bus.CPU_PIN_WRp = write;  
+  bus.CPU_PIN_ADDR_EXTp = addr_ext;
+
+  if (DELTA_AB) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
+  if (DELTA_BC) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
+  if (DELTA_CD) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
+  if (DELTA_DE) { bus.CPU_PIN_HOLD_MEM = 0;        }
+  if (DELTA_EF) { bus.CPU_PIN_HOLD_MEM = 0;        }
+  if (DELTA_FG) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
+  if (DELTA_GH) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
+  if (DELTA_HA) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
 
   top.int_reg.CPU_PIN_ACK_VBLANK = 0;
   top.int_reg.CPU_PIN_ACK_STAT = 0;

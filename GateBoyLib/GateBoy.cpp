@@ -253,7 +253,7 @@ void GateBoy::next_phase() {
 uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   uint64_t hash = HASH_INIT;
 
-  wire CLK = (phase_total & 1) & sys_clken;
+  wire CLK = (new_phase & 1) & sys_clken;
 
   top.clk_reg.preset_rst(sys_rst);
   top.clk_reg.preset_t1t2(sys_t1, sys_t2);

@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GateBoyApp.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>

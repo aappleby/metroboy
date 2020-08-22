@@ -1,16 +1,28 @@
 #include "GateBoyApp/GateBoyApp.h"
 
-#include "CoreLib/File.h"
-#include "CoreLib/Debug.h"
-#include "GateBoyLib/Probe.h"
-#include "AppLib/GLBase.h"
 #include "CoreLib/Constants.h"
+#include "CoreLib/Debug.h"
+#include "CoreLib/File.h"
 
+#include "AppLib/AppHost.h"
+#include "AppLib/GLBase.h"
+
+#include "GateBoyLib/Probe.h"
+
+#define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
 #include "SDL/include/SDL.h"
 #else
 #include <SDL2/SDL.h>
 #endif
+
+int main(int argc, char** argv) {
+  App* app = new GateBoyApp();
+  AppHost* app_host = new AppHost(app);
+  int ret = app_host->app_main(argc, argv);
+  delete app;
+  return ret;
+}
 
 using namespace Schematics;
 
@@ -67,6 +79,9 @@ void GateBoyApp::app_init() {
   gb.load(filename);
 
   //gb.cpu_en = true;
+
+  gb.mem[0x1000] = 0x73;
+  gb.dbg_req = { .addr = 0x1000, .data = 0, .read = true, .write = false, };
 }
 
 void GateBoyApp::app_close() {
@@ -131,8 +146,6 @@ void GateBoyApp::app_update(double delta) {
 }
 
 //-----------------------------------------------------------------------------
-
-extern const uint8_t DMG_ROM_bin[];
 
 void GateBoyApp::app_render_frame(Viewport view) {
   grid_painter.render(view);

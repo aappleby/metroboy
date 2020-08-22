@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BusDump.cpp" />
+    <ClCompile Include="Cells.cpp" />
+    <ClCompile Include="GateBoy.cpp" />
+    <ClCompile Include="Probe.cpp" />
+    <ClCompile Include="Sch_ApuControl.cpp" />
+    <ClCompile Include="Sch_Bootrom.cpp" />
+    <ClCompile Include="Sch_Channel1.cpp" />
+    <ClCompile Include="Sch_Channel2.cpp" />
+    <ClCompile Include="Sch_Channel3.cpp" />
+    <ClCompile Include="Sch_Channel4.cpp" />
+    <ClCompile Include="Sch_Clocks.cpp" />
+    <ClCompile Include="Sch_CpuBus.cpp" />
+    <ClCompile Include="Sch_DMA.cpp" />
+    <ClCompile Include="Sch_ExtBus.cpp" />
+    <ClCompile Include="Sch_Interrupts.cpp" />
+    <ClCompile Include="Sch_Joypad.cpp" />
+    <ClCompile Include="Sch_LCD.cpp" />
+    <ClCompile Include="Sch_OamBus.cpp" />
+    <ClCompile Include="Sch_PixPipe.cpp" />
+    <ClCompile Include="Sch_Serial.cpp" />
+    <ClCompile Include="Sch_SpriteFetcher.cpp" />
+    <ClCompile Include="Sch_SpriteScanner.cpp" />
+    <ClCompile Include="Sch_SpriteStore.cpp" />
+    <ClCompile Include="Sch_TileFetcher.cpp" />
+    <ClCompile Include="Sch_Timer.cpp" />
+    <ClCompile Include="Sch_Top.cpp" />
+    <ClCompile Include="Sch_VramBus.cpp" />
+    <ClCompile Include="Signals.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BusDump.h" />
+    <ClInclude Include="Cells.h" />
+    <ClInclude Include="GateBoy.h" />
+    <ClInclude Include="Probe.h" />
+    <ClInclude Include="Sch_ApuControl.h" />
+    <ClInclude Include="Sch_Bootrom.h" />
+    <ClInclude Include="Sch_Channel1.h" />
+    <ClInclude Include="Sch_Channel2.h" />
+    <ClInclude Include="Sch_Channel3.h" />
+    <ClInclude Include="Sch_Channel4.h" />
+    <ClInclude Include="Sch_Clocks.h" />
+    <ClInclude Include="Sch_CpuBus.h" />
+    <ClInclude Include="Sch_DMA.h" />
+    <ClInclude Include="Sch_ExtBus.h" />
+    <ClInclude Include="Sch_Interrupts.h" />
+    <ClInclude Include="Sch_Joypad.h" />
+    <ClInclude Include="Sch_LCD.h" />
+    <ClInclude Include="Sch_OamBus.h" />
+    <ClInclude Include="Sch_PixPipe.h" />
+    <ClInclude Include="Sch_Serial.h" />
+    <ClInclude Include="Sch_SpriteFetcher.h" />
+    <ClInclude Include="Sch_SpriteScanner.h" />
+    <ClInclude Include="Sch_SpriteStore.h" />
+    <ClInclude Include="Sch_TileFetcher.h" />
+    <ClInclude Include="Sch_Timer.h" />
+    <ClInclude Include="Sch_Top.h" />
+    <ClInclude Include="Sch_VramBus.h" />
+    <ClInclude Include="Signals.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreLib\CoreLib.vcxproj">
+      <Project>{6e04c36f-3672-4257-b250-da34da7f6a42}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{d49827c4-6d3c-4913-8a4b-4859ba529a5d}</ProjectGuid>
+    <RootNamespace>GateBoyLib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

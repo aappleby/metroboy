@@ -7,7 +7,6 @@ SDL2*
 *.o
 *.vcxproj.filters
 roms
-MetroBoy
 dump.MetroBoy
 release
 gb-live32.exe

@@ -27,7 +27,27 @@ struct SchematicTop {
 
   SchematicTop();
 
-  void tick_slow();
+  void tick_slow(wire CLK, wire CLKGOOD);
+
+  /*p04.DECY*/ wire DECY_LATCH_EXTn() {
+    /*p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.CPU_PIN_LATCH_EXT.tp());
+    return DECY_LATCH_EXTn;
+  }
+
+  /*p04.CATY*/ wire CATY_LATCH_EXTp() {
+    /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn());
+    return CATY_LATCH_EXTp;
+  }
+
+  /* p28.LEKO*/ wire LEKO_CPU_RDp() {
+    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RD_C.tp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
+    /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
+    /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
+    /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
+    /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp());
+    /* p28.LEKO*/ wire LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
+    return LEKO_CPU_RDp;
+  }
 
   /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
     /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_VID_LINE_END_TRIGp(), clk_reg.ATAR_VID_RSTp());

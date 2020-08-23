@@ -78,10 +78,14 @@ void GateBoyApp::app_init() {
   const char* filename = "roms/LinksAwakening_dog.dump";
   gb.load(filename);
 
-  //gb.cpu_en = true;
+  gb.cpu.get_bus_req(gb.cpu_req);
 
-  gb.mem[0x1000] = 0x73;
-  gb.dbg_req = { .addr = 0x1000, .data = 0, .read = true, .write = false, };
+  gb.run(8);
+
+  gb.cpu_en = true;
+
+  //gb.mem[0x1000] = 0x73;
+  //gb.dbg_req = { .addr = 0x1000, .data = 0, .read = true, .write = false, };
 }
 
 void GateBoyApp::app_close() {
@@ -202,7 +206,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
-  top.clk_reg.dump(dumper);
+  wire CLK = gateboy->phase_total & 1;
+
+  top.clk_reg.dump(dumper, CLK);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();

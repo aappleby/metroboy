@@ -274,7 +274,7 @@ void SpriteStore::tick(const SchematicTop& top) {
 
   //------------------------------------------------------------------------------
 
-void SpriteStore::tock(const SchematicTop& top) {
+void SpriteStore::tock(wire CLK, const SchematicTop& top) {
   //wire WEFE_VCC = 1;
 
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not1(top.sprite_scanner._CARE_STORE_ENp_ABxxEFxx);
@@ -313,7 +313,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*#p30.CEGA*/ SPR_TRI_L2 = tribuf_6nn(FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
     /*#p30.WENU*/ SPR_TRI_L3 = tribuf_6nn(FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
 
-    /* p29.DEZY*/ DEZY_STORE_ENn = dff17_B(top.clk_reg.ZEME_AxCxExGx(), top.clk_reg.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
+    /* p29.DEZY*/ DEZY_STORE_ENn = dff17_B(top.clk_reg.ZEME_AxCxExGx(CLK), top.clk_reg.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
   }
 
   //----------------------------------------

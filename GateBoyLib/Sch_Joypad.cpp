@@ -65,7 +65,7 @@ void Joypad::tick(const SchematicTop& /*top*/) {
 
 //------------------------------------------------------------------------------
 
-void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
+void Joypad::tock(wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p10.AMUS*/ wire _AMUS_0xx00000 = nor6(top.cpu_bus.CPU_BUS_A00.tp(), top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.CPU_BUS_A02.tp(), top.cpu_bus.CPU_BUS_A03.tp(), top.cpu_bus.CPU_BUS_A04.tp(), top.cpu_bus.CPU_BUS_A07.tp());
   /*p10.ANAP*/ wire _ANAP_FF_0xx00000 = and2(_AMUS_0xx00000, top.cpu_bus.SYKE_FF00_FFFFp());
@@ -74,15 +74,15 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(JOY_PIN_P13_C.tp(), JOY_PIN_P12_C.tp(), JOY_PIN_P11_C.tp(), JOY_PIN_P10_C.tp());
 
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_A(top.clk_reg.BOGA_xBCDEFGH(), _KERY_ANY_BUTTONp);
+    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_A(top.clk_reg.BOGA_xBCDEFGH(CLKGOOD), _KERY_ANY_BUTTONp);
     CPU_PIN_WAKE = AWOB_WAKE_CPU.tp();
   }
 
   {
-    /*p02.BATU*/ BATU_JP_GLITCH0 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.qp());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp());
-    /*p02.APUG*/ APUG_JP_GLITCH3 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp());
+    /*p02.BATU*/ BATU_JP_GLITCH0 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(CLKGOOD), top.clk_reg.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
+    /*p02.ACEF*/ ACEF_JP_GLITCH1 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(CLKGOOD), top.clk_reg.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.qp());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(CLKGOOD), top.clk_reg.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp());
+    /*p02.APUG*/ APUG_JP_GLITCH3 = dff17_B(top.clk_reg.BOGA_xBCDEFGH(CLKGOOD), top.clk_reg.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp());
   }
 
   {

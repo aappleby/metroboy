@@ -11,7 +11,7 @@ struct OamBus;
 struct SpriteScanner {
 
   void tick(const SchematicTop& top);
-  void tock(const SchematicTop& top);
+  void tock(wire CLK, const SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
   /*p28.YFEL*/ wire YFEL_SCAN0p() const { return _YFEL_SCAN0.qp(); }

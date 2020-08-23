@@ -13,7 +13,7 @@ void CpuBus::dump(Dumper& d) const {
   d("CPU RDp  : %d\n", CPU_PIN_RDp.tp());
   d("CPU WRp  : %d\n", CPU_PIN_WRp.tp());
   d("CPU AXp  : %d\n", CPU_PIN_ADDR_EXTp.tp());
-  d("CPU HMp  : %d\n", CPU_PIN_HOLD_MEM.tp());
+  d("CPU HMp  : %d\n", CPU_PIN_LATCH_EXT.tp());
 
   d("CPU ADDR : %04x\n", get_bus_addr());
 

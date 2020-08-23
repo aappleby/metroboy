@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct PixelPipe {
   void tick(const SchematicTop& top);
-  void tock(SchematicTop& top, CpuBus& cpu_bus);
+  void tock(wire CLK, SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;
 
   int get_wx() const {

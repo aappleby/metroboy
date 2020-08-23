@@ -82,7 +82,7 @@ void SpriteScanner::tick(const SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tock(const SchematicTop& top) {
+void SpriteScanner::tock(wire CLK, const SchematicTop& top) {
 
   // 32 + 4 + 2 + 1 = 39
   /*#p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(_YFEL_SCAN0.qp(), _WEWY_SCAN1.qp(), _GOSO_SCAN2.qp(), _FONY_SCAN5.qp());
@@ -95,7 +95,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
     /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
     /*#p29.BAGY*/ wire BAGY_LINE_RSTn = not1(BALU_LINE_RSTp);
     /*#p29.BYBA*/ BYBA_SCAN_DONE_A = dff17_AB(top.clk_reg.XUPY_xxCDxxGH(), BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*#p29.DOBA*/ DOBA_SCAN_DONE_B = dff17_B (top.clk_reg.ALET_xBxDxFxH(), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
+    /*#p29.DOBA*/ DOBA_SCAN_DONE_B = dff17_B (top.clk_reg.ALET_xBxDxFxH(CLK), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
 
     /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn());
     /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);

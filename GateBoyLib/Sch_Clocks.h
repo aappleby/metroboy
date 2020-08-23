@@ -9,19 +9,13 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
-  void dump(Dumper& d) const;
+  void dump(Dumper& d, wire CLK) const;
 
-  void tick_slow(const SchematicTop& top);
-  void tock_clk_slow(const SchematicTop& top);
-  void tock_rst_slow(const SchematicTop& top);
+  void tick_slow(const wire CLK, SchematicTop& top);
+  void tock_clk_slow(const wire CLK, wire CLKGOOD, SchematicTop& top);
+  void tock_rst_slow(wire CLKGOOD, const SchematicTop& top);
   void tock_dbg_slow(const SchematicTop& top);
-  void tock_vid_slow(const SchematicTop& top);
-
-  wire get_clk_a() const { return SYS_PIN_CLK_A.tp(); }
-  wire get_clk_b() const { return SYS_PIN_CLK_B.tp(); }
-
-  void preset_clk_a(wire clk_a) { SYS_PIN_CLK_A.preset(clk_a); }
-  void preset_clk_b(wire clk_b) { SYS_PIN_CLK_B.preset(clk_b); }
+  void tock_vid_slow(const wire CLK, SchematicTop& top);
 
   wire get_rst() const {
     return SYS_PIN_RSTp.tp();
@@ -43,19 +37,23 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Clock input & 4 mhz clocks
 
-  /*p01.UCOB*/ wire UCOB_CLKBADp()  const { return not1(SYS_PIN_CLK_A.tp()); }
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH() const { return SYS_PIN_CLK_B.tp(); } // ignoring the deglitcher here
-  /*p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); } // apu control
-  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
-  /*p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); } // bus mux, sprite store
-  /*p01.ALET*/ wire ALET_xBxDxFxH() const { return not1(ZEME_AxCxExGx()); } // ppu, sprite fetcher, sprite scanner, tile fetcher, window
-  /*p27.MEHE*/ wire MEHE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); } // window
-  /*p27.MYVO*/ wire MYVO_AxCxExGx() const { return not1(ALET_xBxDxFxH()); } // tile fetcher
+  /*p01.UCOB*/ wire UCOB_CLKBADp(wire CLKGOOD)  const { return not1(CLKGOOD); }
+
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH(wire CLK) const { return CLK; } // ignoring the deglitcher here
+  /*p01.AZOF*/ wire AZOF_AxCxExGx(wire CLK) const { return not1(ATAL_xBxDxFxH(CLK)); } // apu control
+  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH(wire CLK) const { return not1(AZOF_AxCxExGx(CLK)); }
+  /*p01.ZEME*/ wire ZEME_AxCxExGx(wire CLK) const { return not1(ZAXY_xBxDxFxH(CLK)); } // bus mux, sprite store
+  /*p01.ALET*/ wire ALET_xBxDxFxH(wire CLK) const { return not1(ZEME_AxCxExGx(CLK)); } // ppu, sprite fetcher, sprite scanner, tile fetcher, window
+  /*p27.MEHE*/ wire MEHE_AxCxExGx(wire CLK) const { return not1(ALET_xBxDxFxH(CLK)); } // window
+  /*p27.MYVO*/ wire MYVO_AxCxExGx(wire CLK) const { return not1(ALET_xBxDxFxH(CLK)); } // tile fetcher
 
   //-----------------------------------------------------------------------------
   // Phase clocks
 
-  /*p01.BELU*/ wire BELU_xxxxEFGH() const { return nor2(ABOL_CLKREQn,  ATYP_ABCDxxxx); }
+  /*p01.BELU*/ wire BELU_xxxxEFGH() const {
+    /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPU_PIN_READYp.tp());
+    return nor2(ABOL_CLKREQn,  ATYP_ABCDxxxx);
+  }
   /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH()); }
   /*p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not1(BYRY_ABCDxxxx()); }
   /*p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // bus mux, dma
@@ -63,9 +61,12 @@ struct ClockRegisters {
   /*p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); } // bus mux, dma
   /*p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not1(MOPA_xxxxEFGH()); } // bus mux
 
-  /*p01.BAPY*/ wire BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn,
-                                                        AROV_xxCDEFxx,
-                                                        ATYP_ABCDxxxx); }
+  /*p01.BAPY*/ wire BAPY_xxxxxxGH() const {
+    /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPU_PIN_READYp.tp());
+    return nor3(ABOL_CLKREQn,
+                AROV_xxCDEFxx,
+                ATYP_ABCDxxxx);
+  }
 
   /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not1(BAPY_xxxxxxGH()); }
   /*p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not1(BERU_ABCDEFxx()); }
@@ -81,10 +82,13 @@ struct ClockRegisters {
                                                          ATYP_ABCDxxxx,
                                                          BAZE_ABCDxxxx()); }
   /*p01.BELE*/ wire BELE_Axxxxxxx() const { return not1(BUTO_xBCDEFGH()); }
-  /*p01.BYJU*/ wire BYJU_xBCDEFGH() const { return nor2(BELE_Axxxxxxx(), ATEZ_CLKBAD); }
-  /*p01.BALY*/ wire BALY_Axxxxxxx() const { return not1(BYJU_xBCDEFGH()); }
-  /*p01.BOGA*/ wire BOGA_xBCDEFGH() const { return not1(BALY_Axxxxxxx()); } // joy rst tim
-  /*p01.BOMA*/ wire BOMA_Axxxxxxx() const { return not1(BOGA_xBCDEFGH()); } // rst
+  /*p01.BYJU*/ wire BYJU_xBCDEFGH(wire CLKGOOD) const {
+    /* p01.ATEZ*/ wire ATEZ_CLKBAD  = not1(CLKGOOD);
+    return nor2(BELE_Axxxxxxx(), ATEZ_CLKBAD);
+  }
+  /*p01.BALY*/ wire BALY_Axxxxxxx(wire CLKGOOD) const { return not1(BYJU_xBCDEFGH(CLKGOOD)); }
+  /*p01.BOGA*/ wire BOGA_xBCDEFGH(wire CLKGOOD) const { return not1(BALY_Axxxxxxx(CLKGOOD)); } // joy rst tim
+  /*p01.BOMA*/ wire BOMA_Axxxxxxx(wire CLKGOOD) const { return not1(BOGA_xBCDEFGH(CLKGOOD)); } // rst
 
   /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(ADYK_ABCxxxxH.qn()); }
 
@@ -179,8 +183,7 @@ struct ClockRegisters {
 
   Sig _XONA_LCDC_ENn_qn;
 
-  Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  Tri SYS_PIN_CLK_B = TRI_D0NP; // PIN_74 
+  //Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
   Tri SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
   Tri SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board, inverted by input buffer
   Tri SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board, inverted by input buffer
@@ -190,8 +193,8 @@ struct ClockRegisters {
   /*p01.AFER*/ RegQP _AFER_SYS_RSTp  = REG_D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
   /*p25.SOTO*/ RegQN _SOTO_DBG_VRAM  = REG_D0C0;
 
-  /*p01.ATEZ*/ Sig ATEZ_CLKBAD;
-  /*p01.ABOL*/ Sig ABOL_CLKREQn;
+  ///*p01.ATEZ*/ Sig ATEZ_CLKBAD;
+  ///*p01.ABOL*/ Sig ABOL_CLKREQn;
 
   /*p01.AFUR*/ Reg AFUR_xxxxEFGH = REG_D0C0;
   /*p01.ALEF*/ Reg ALEF_AxxxxFGH = REG_D0C0;
@@ -218,7 +221,7 @@ struct ClockRegisters {
   Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
   Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
 
-  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05: // CPU OEn? Would make sense with AFAS_xxxxEFGx as "WRen" I guess
+  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
   Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
 
   // These two clocks are the only ones that run before CPU_PIN_READYp is asserted.

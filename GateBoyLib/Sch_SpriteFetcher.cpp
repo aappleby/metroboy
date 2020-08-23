@@ -30,9 +30,9 @@ void SpriteFetcher::tick(const SchematicTop& /*top*/) {
 
 //------------------------------------------------------------------------------
 
-void SpriteFetcher::tock(SchematicTop& top) {
+void SpriteFetcher::tock(wire CLK, SchematicTop& top) {
 
-  /*p01.LAPE*/ wire _LAPE_AxCxExGx = not1(top.clk_reg.ALET_xBxDxFxH());
+  /*p01.LAPE*/ wire _LAPE_AxCxExGx = not1(top.clk_reg.ALET_xBxDxFxH(CLK));
   /*p27.TAVA*/ wire _TAVA_xBxDxFxH = not1(_LAPE_AxCxExGx);
   wire VYPO = 1;
 

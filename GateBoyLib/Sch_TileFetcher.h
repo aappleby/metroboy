@@ -11,7 +11,7 @@ struct OamBus;
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void tock(SchematicTop& top);
+  void tock(wire CLK, SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
   /*p27.LAXU*/ RegQPN _LAXU_BFETCH_S0 = REG_D0C0;

@@ -271,7 +271,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.SORE*/ wire SORE_0000_7FFFp  = not1(top.cpu_bus.CPU_BUS_A15.tp()); 
     /*p08.TEVY*/ wire TEVY_8000_9FFFn  = or3(top.cpu_bus.CPU_BUS_A13.tp(), top.cpu_bus.CPU_BUS_A14.tp(), SORE_0000_7FFFp);
     /*p08.TEXO*/ wire TEXO_8000_9FFFn  = and2(top.cpu_bus.CPU_PIN_ADDR_EXTp.tp(), TEVY_8000_9FFFn);
-    /*p08.LAVO*/ wire LAVO_EPD_TO_CBDn = nand3(top.cpu_bus.CPU_PIN_RDp.tp(), TEXO_8000_9FFFn, top.cpu_bus.CPU_PIN_HOLD_MEM.tp());
+    /*p08.LAVO*/ wire LAVO_EPD_TO_CBDn = nand3(top.cpu_bus.CPU_PIN_RDp.tp(), TEXO_8000_9FFFn, top.cpu_bus.CPU_PIN_LATCH_EXT.tp());
 
     // Ext pin -> Ext latch
     /*#p08.SOMA*/ SOMA_EXT_DATA_LATCH_D0n = tp_latch_A(LAVO_EPD_TO_CBDn, EXT_PIN_D0n_C.tp());

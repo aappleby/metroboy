@@ -11,13 +11,8 @@ SchematicTop::SchematicTop() {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tick_slow() {
-
-  bool verbose = false;
-
-  if (verbose) printf("SchematicTop::tick\n");
-
-  clk_reg.tick_slow(*this);
+void SchematicTop::tick_slow(wire CLK, wire CLKGOOD) {
+  clk_reg.tick_slow(CLK, *this);
   lcd_reg.tick(*this);
   sprite_scanner.tick(*this);
   sprite_store.tick(*this);
@@ -28,28 +23,28 @@ void SchematicTop::tick_slow() {
   sprite_fetcher.tick(*this);
   int_reg.tick(*this);
 
-  clk_reg.tock_clk_slow(*this);
-  clk_reg.tock_rst_slow(*this);
+  clk_reg.tock_clk_slow(CLK, CLKGOOD, *this);
+  clk_reg.tock_rst_slow(CLKGOOD, *this);
   clk_reg.tock_dbg_slow(*this);
-  clk_reg.tock_vid_slow(*this);
+  clk_reg.tock_vid_slow(CLK, *this);
   
-  tim_reg.tock(*this, cpu_bus);
+  tim_reg.tock(CLKGOOD, *this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
   dma_reg.tock(*this, cpu_bus);
   ser_reg.tock(*this, cpu_bus);
-  joypad.tock(*this, cpu_bus);
-  sprite_scanner.tock(*this);
+  joypad.tock(CLKGOOD, *this, cpu_bus);
+  sprite_scanner.tock(CLK, *this);
   lcd_reg.tock(*this, cpu_bus);
-  sprite_store.tock(*this);
+  sprite_store.tock(CLK, *this);
 
-  pix_pipe.tock(*this, cpu_bus);
-  sprite_fetcher.tock(*this);
-  tile_fetcher.tock(*this);
+  pix_pipe.tock(CLK, *this, cpu_bus);
+  sprite_fetcher.tock(CLK, *this);
+  tile_fetcher.tock(CLK, *this);
   int_reg.tock(*this, cpu_bus);
 
   cpu_bus.tock(*this);
   ext_bus.tock(*this);
-  oam_bus.tock(*this);
+  oam_bus.tock(CLK, *this);
   vram_bus.tock(*this);
 }
 

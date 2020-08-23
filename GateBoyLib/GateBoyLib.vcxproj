@@ -11,6 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CoreLib\CoreLib.vcxproj">
+      <Project>{6e04c36f-3672-4257-b250-da34da7f6a42}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="Cells.cpp" />
     <ClCompile Include="GateBoy.cpp" />
@@ -39,6 +44,7 @@
     <ClCompile Include="Sch_Top.cpp" />
     <ClCompile Include="Sch_VramBus.cpp" />
     <ClCompile Include="Signals.cpp" />
+    <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BusDump.h" />
@@ -69,11 +75,6 @@
     <ClInclude Include="Sch_Top.h" />
     <ClInclude Include="Sch_VramBus.h" />
     <ClInclude Include="Signals.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CoreLib\CoreLib.vcxproj">
-      <Project>{6e04c36f-3672-4257-b250-da34da7f6a42}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -12,6 +12,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   TEST_START("Maaaaaain");
 
+  err += test_clk();
   err += test_mem();
   err += test_interrupts();
   err += test_bootrom();
@@ -28,74 +29,82 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-#define CHECK_CLK_PHASE(A, B) CHECK_P(wire(A) == wire((B) & (1 << (7 - phase))))
+#define EXPECT_CLK(A, B) EXPECT_EQ(wire(A), wire((B) & (1 << (7 - phase))), "Clock phase mismatch, %s at phase %d", #A, phase);
 
-if (sys_clkgood) {
-    const int phase = phase_total & 7;
-    CHECK_CLK_PHASE(top.clk_reg.ATAL_xBxDxFxH(), 0b01010101);
-    CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101);
-    CHECK_CLK_PHASE(top.clk_reg.AZOF_AxCxExGx(), 0b10101010); 
-    CHECK_CLK_PHASE(top.clk_reg.ZAXY_xBxDxFxH(), 0b01010101); 
-    CHECK_CLK_PHASE(top.clk_reg.ZEME_AxCxExGx(), 0b10101010); 
-    CHECK_CLK_PHASE(top.clk_reg.ALET_xBxDxFxH(), 0b01010101); 
-    CHECK_CLK_PHASE(top.clk_reg.MEHE_AxCxExGx(), 0b10101010); 
-    CHECK_CLK_PHASE(top.clk_reg.MYVO_AxCxExGx(), 0b10101010); 
+int GateBoyTests::test_clk() {
+  TEST_START();
 
+  GateBoy gb;
+  gb.reset();
 
-    if (sys_clken) {
-      CHECK_CLK_PHASE(top.clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
-      CHECK_CLK_PHASE(top.clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
-      CHECK_CLK_PHASE(top.clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
-      CHECK_CLK_PHASE(top.clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
+  auto& clk_reg = gb.top.clk_reg;
 
-      CHECK_CLK_PHASE(top.clk_reg.AROV_xxCDEFxx,      0b00111100);
-      CHECK_CLK_PHASE(top.clk_reg.AFEP_AxxxxFGH,      0b10000111);
-      CHECK_CLK_PHASE(top.clk_reg.ATYP_ABCDxxxx,      0b11110000);
-      CHECK_CLK_PHASE(top.clk_reg.AJAX_xxxxEFGH,      0b00001111);
+  for (int i = 0; i < 32; i++) {
+    int phase = gb.phase_total & 7;
+    wire CLK = phase & 1;
+    wire CLKGOOD = 1;
 
-      CHECK_CLK_PHASE(top.clk_reg.ADAR_ABCxxxxH(),    0b11100001);
-      CHECK_CLK_PHASE(top.clk_reg.AFAS_xxxxEFGx(),    0b00001110);
+    EXPECT_CLK(clk_reg.ATAL_xBxDxFxH(CLK), 0b01010101);
+    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH(CLK), 0b01010101);
+    EXPECT_CLK(clk_reg.AZOF_AxCxExGx(CLK), 0b10101010); 
+    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH(CLK), 0b01010101); 
+    EXPECT_CLK(clk_reg.ZEME_AxCxExGx(CLK), 0b10101010); 
+    EXPECT_CLK(clk_reg.ALET_xBxDxFxH(CLK), 0b01010101); 
+    EXPECT_CLK(clk_reg.MEHE_AxCxExGx(CLK), 0b10101010); 
+    EXPECT_CLK(clk_reg.MYVO_AxCxExGx(CLK), 0b10101010); 
 
-      if (sys_cpuready) {
-        CHECK_CLK_PHASE(top.clk_reg.BELU_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BYRY_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BUDE_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.UVYT_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BEKO_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.MOPA_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.XYNY_ABCDxxxx(), 0b11110000);
+    EXPECT_CLK(clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
+    EXPECT_CLK(clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
+    EXPECT_CLK(clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
+    EXPECT_CLK(clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
 
-        CHECK_CLK_PHASE(top.clk_reg.BAPY_xxxxxxGH(), 0b00000011);
-        CHECK_CLK_PHASE(top.clk_reg.BERU_ABCDEFxx(), 0b11111100);
-        CHECK_CLK_PHASE(top.clk_reg.BUFA_xxxxxxGH(), 0b00000011);
-        CHECK_CLK_PHASE(top.clk_reg.BOLO_ABCDEFxx(), 0b11111100);
+    EXPECT_CLK(clk_reg.AROV_xxCDEFxx,      0b00111100);
+    EXPECT_CLK(clk_reg.AFEP_AxxxxFGH,      0b10000111);
+    EXPECT_CLK(clk_reg.ATYP_ABCDxxxx,      0b11110000);
+    EXPECT_CLK(clk_reg.AJAX_xxxxEFGH,      0b00001111);
 
-        CHECK_CLK_PHASE(top.clk_reg.BEJA_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BANE_ABCDxxxx(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.BELO_xxxxEFGH(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.BAZE_ABCDxxxx(), 0b11110000);
+    EXPECT_CLK(clk_reg.ADAR_ABCxxxxH(),    0b11100001);
+    EXPECT_CLK(clk_reg.AFAS_xxxxEFGx(),    0b00001110);
 
-        CHECK_CLK_PHASE(top.clk_reg.BUTO_xBCDEFGH(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BELE_Axxxxxxx(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.BYJU_xBCDEFGH(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BALY_Axxxxxxx(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.BOGA_xBCDEFGH(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.BOMA_Axxxxxxx(), 0b10000000);
+    EXPECT_CLK(clk_reg.BELU_xxxxEFGH(), 0b00001111);
+    EXPECT_CLK(clk_reg.BYRY_ABCDxxxx(), 0b11110000);
+    EXPECT_CLK(clk_reg.BUDE_xxxxEFGH(), 0b00001111);
+    EXPECT_CLK(clk_reg.UVYT_ABCDxxxx(), 0b11110000);
+    EXPECT_CLK(clk_reg.BEKO_ABCDxxxx(), 0b11110000);
+    EXPECT_CLK(clk_reg.MOPA_xxxxEFGH(), 0b00001111);
+    EXPECT_CLK(clk_reg.XYNY_ABCDxxxx(), 0b11110000);
 
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
-        CHECK_CLK_PHASE(top.clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
-        CHECK_CLK_PHASE(top.clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
-      }
-    }
+    EXPECT_CLK(clk_reg.BAPY_xxxxxxGH(), 0b00000011);
+    EXPECT_CLK(clk_reg.BERU_ABCDEFxx(), 0b11111100);
+    EXPECT_CLK(clk_reg.BUFA_xxxxxxGH(), 0b00000011);
+    EXPECT_CLK(clk_reg.BOLO_ABCDEFxx(), 0b11111100);
+
+    EXPECT_CLK(clk_reg.BEJA_xxxxEFGH(), 0b00001111);
+    EXPECT_CLK(clk_reg.BANE_ABCDxxxx(), 0b11110000);
+    EXPECT_CLK(clk_reg.BELO_xxxxEFGH(), 0b00001111);
+    EXPECT_CLK(clk_reg.BAZE_ABCDxxxx(), 0b11110000);
+
+    EXPECT_CLK(clk_reg.BUTO_xBCDEFGH(), 0b01111111);
+    EXPECT_CLK(clk_reg.BELE_Axxxxxxx(), 0b10000000);
+    EXPECT_CLK(clk_reg.BYJU_xBCDEFGH(CLKGOOD), 0b01111111);
+    EXPECT_CLK(clk_reg.BALY_Axxxxxxx(CLKGOOD), 0b10000000);
+    EXPECT_CLK(clk_reg.BOGA_xBCDEFGH(CLKGOOD), 0b01111111);
+    EXPECT_CLK(clk_reg.BOMA_Axxxxxxx(CLKGOOD), 0b10000000);
+
+    EXPECT_CLK(clk_reg.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(clk_reg.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
+    EXPECT_CLK(clk_reg.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
+    EXPECT_CLK(clk_reg.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
+    EXPECT_CLK(clk_reg.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
+    EXPECT_CLK(clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
+    EXPECT_CLK(clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
+    EXPECT_CLK(clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
+    gb.next_phase();
   }
-#endif
+
+  TEST_END();
+}
 
 //-----------------------------------------------------------------------------
 
@@ -406,7 +415,7 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
     mix(rng);
 
     gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
-    gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
+    //gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
     gateboy.top.clk_reg.preset_cpu_ready(wire(rng & 0x04));
     gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
 

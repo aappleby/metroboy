@@ -127,7 +127,7 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* GH */ next_phase();
   /* HA */ next_phase();
 
-  return top.cpu_bus.get_bus_data();
+  return bus_data;
 }
 
 //------------------------------------------------------------------------------
@@ -154,33 +154,30 @@ void GateBoy::next_phase() {
   //----------
   // Update CPU
 
-
-  if (DELTA_AB) {
-    cpu_req = cpu_en ? cpu.bus_req : dbg_req;
-    dbg_req = {0};
-  }
-
-  //----------
-  // Update CPU
-
   if (cpu_en) {
     uint8_t imask = 0;
     uint8_t intf = 0;
 
-    Ack ack = {0};
-
-    ack.addr    = top.cpu_bus.get_bus_addr();
-    ack.data_lo = bus_data;
 
     switch(old_phase) {
-    /* AB */ case 0: cpu.tock_req(imask, intf, ack); break; // bus request changes
+    /* AB */ case 0: cpu.tock_req(imask, intf, bus_data); break; // bus request changes
     /* BC */ case 1: break;
     /* CD */ case 2: break;
     /* DE */ case 3: break;
-    /* EF */ case 4: cpu.tock_ack(imask, intf, ack); break; // bus data latches
+    /* EF */ case 4: cpu.tock_ack(imask, intf, bus_data); break; // bus data latches
     /* FG */ case 5: break;
     /* GH */ case 6: break;
     /* HA */ case 7: break;
+    }
+  }
+
+  if (DELTA_AB) {
+    if (dbg_req.read || dbg_req.write) {
+      cpu_req = dbg_req;
+      dbg_req = {0};
+    }
+    else {
+      cpu_req = cpu.bus_req;
     }
   }
 
@@ -234,11 +231,9 @@ void GateBoy::next_phase() {
     fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
   }
 
-  /*
-  if (DELTA_GH) {
+  if (DELTA_FG) {
     bus_data = top.cpu_bus.get_bus_data();
   }
-  */
 
   //----------
   // Done
@@ -258,51 +253,50 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.clk_reg.preset_rst(sys_rst);
   top.clk_reg.preset_t1t2(sys_t1, sys_t2);
   top.clk_reg.preset_cpu_ready(sys_cpuready);
-  top.clk_reg.preset_clk_a(sys_clkgood);
-  top.clk_reg.preset_clk_b(CLK);
+  //top.clk_reg.preset_clk_a(sys_clkgood);
   top.joypad.preset_buttons(0);
 
   RegBase::sim_running = true;
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
 
-  top.tick_slow();
+  top.tick_slow(CLK, sys_clkgood);
 
   tock_ext_bus();
   
   //tock_cpu_bus(old_phase, new_phase, cpu_req);
 
-  auto& bus = top.cpu_bus;
+  bool addr_rom = cpu_req.addr <= 0x7FFF;
+  bool addr_ram = cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF;
+  bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.CPU_PIN_BOOTp.tp();
+  bool hold_mem = cpu_req.read && (cpu_req.addr < 0xFF00);
 
-  bus.CPU_PIN6 = 0;
+  /*
+  Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
+  Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
 
-  //bool     read  = cpu_req.read;
-  bool     write = cpu_req.write;
-  uint16_t addr  = cpu_req.addr;
-  uint8_t  data  = cpu_req.data_lo;
+  Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
+  Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04:
 
-  bool io = cpu_req.read || cpu_req.write;
-  bool addr_ext = io && ((cpu_req.addr <= 0x7FFF) || (cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF));
-  bool hold_mem = io && (cpu_req.addr < 0xFF00);
+  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
+  Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  */
 
-  if (top.cpu_bus.CPU_PIN_BOOTp.tp()) {
-    addr_ext = false;
-  }
+  top.cpu_bus.CPU_PIN6 = 0;
+  top.cpu_bus.set_addr(cpu_req.addr);
+  top.cpu_bus.set_data(cpu_req.write, cpu_req.data_lo);
+  top.cpu_bus.CPU_PIN_RDp = !cpu_req.write;
+  top.cpu_bus.CPU_PIN_WRp = cpu_req.write;  
+  top.cpu_bus.CPU_PIN_ADDR_EXTp = addr_ext;
 
-  bus.set_addr(addr);
-  bus.set_data(write, data);
-  bus.CPU_PIN_RDp = !write;
-  bus.CPU_PIN_WRp = write;  
-  bus.CPU_PIN_ADDR_EXTp = addr_ext;
-
-  if (DELTA_AB) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
-  if (DELTA_BC) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
-  if (DELTA_CD) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
-  if (DELTA_DE) { bus.CPU_PIN_HOLD_MEM = 0;        }
-  if (DELTA_EF) { bus.CPU_PIN_HOLD_MEM = 0;        }
-  if (DELTA_FG) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
-  if (DELTA_GH) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
-  if (DELTA_HA) { bus.CPU_PIN_HOLD_MEM = hold_mem; }
+  if (DELTA_AB) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_BC) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
+  if (DELTA_CD) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
+  if (DELTA_DE) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_EF) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_FG) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_GH) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_HA) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
 
   top.int_reg.CPU_PIN_ACK_VBLANK = 0;
   top.int_reg.CPU_PIN_ACK_STAT = 0;

@@ -192,7 +192,7 @@ struct CpuBus {
   // CPU-to-SOC control signals
 
   Tri CPU_PIN6          = TRI_HZNP; // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  Tri CPU_PIN_HOLD_MEM  = TRI_HZNP; // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  Tri CPU_PIN_LATCH_EXT  = TRI_HZNP; // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
 
   Tri CPU_PIN_RDp       = TRI_HZNP; // top right port PORTA_00: -> LAGU, LAVO, TEDO
   Tri CPU_PIN_WRp       = TRI_HZNP; // top right port PORTA_01: ->

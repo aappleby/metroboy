@@ -11,7 +11,7 @@ struct CpuBus;
 struct Joypad {
 
   void tick(const SchematicTop& top);
-  void tock(const SchematicTop& top, CpuBus& cpu_bus);
+  void tock(wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d) const;
 
   void preset_buttons(uint8_t buttons);

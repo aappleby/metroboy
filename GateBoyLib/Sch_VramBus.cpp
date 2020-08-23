@@ -444,17 +444,6 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.ROCY*/ wire ROCY_CBD_TO_VPDp = and2(REVO_CBD_TO_VPDp, SAZO_CBD_TO_VPDp);
     /*p25.RAHU*/ wire RAHU_CBD_TO_VPDn = not1(ROCY_CBD_TO_VPDp);
 
-    // TEME_01 << CPU_BUS_D0p
-    // TEME_02 nc
-    // TEME_03 nc
-    // TEME_04 nc
-    // TEME_05 << RAHU
-    // TEME_06 << CPU_BUS_D0p
-    // TEME_07 nc
-    // TEME_08 nc 
-    // TEME_09 >> VRAM_BUS_D0p
-    // TEME_10 nc
-
     /*p25.TEME*/ VRAM_BUS_D0p = tribuf_10np(RAHU_CBD_TO_VPDn, top.cpu_bus.CPU_BUS_D0p.tp());
     /*p25.TEWU*/ VRAM_BUS_D1p = tribuf_10np(RAHU_CBD_TO_VPDn, top.cpu_bus.CPU_BUS_D1p.tp());
     /*p25.TYGO*/ VRAM_BUS_D2p = tribuf_10np(RAHU_CBD_TO_VPDn, top.cpu_bus.CPU_BUS_D2p.tp());
@@ -567,21 +556,20 @@ void VramBus::tock(SchematicTop& top) {
 
   // VBD -> CBD
   {
-    /*p04.DECY*/ wire DECY = not1(top.cpu_bus.CPU_PIN_HOLD_MEM.tp());
-    /*p04.CATY*/ wire CATY = not1(DECY);
+#if 0
+    wire SEBY_VBD_TO_CBDp = and2(SOSE_8000_9FFFp,
+                                 !CPU_PIN_ADDR_EXTp,
+                                 ROPY_RENDERINGn,
+                                 CPU_PIN_RDp,
+                                 CPU_PIN_LATCH_EXT);
 
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(top.ext_bus.EXT_PIN_RD_C.tp(), top.cpu_bus.CPU_PIN_RDp.tp(), top.clk_reg.UNOR_MODE_DBG2p());
-    /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
-    /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
-    /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY);
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
+#endif
 
     /*p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = and2(SOSE_8000_9FFFp, top.ABUZ_AVn());
     /*p25.TEFY*/ wire TEFY_VRAM_MCSp = not1(_VRAM_PIN_CS_C.tp());
     /*p25.TOLE*/ wire TOLE_VRAM_RDp     = mux2_p(TEFY_VRAM_MCSp, TUCA_CPU_VRAM_RDp, top.clk_reg.TUTO_DBG_VRAMp());
     /*p25.SERE*/ wire SERE_CPU_VRM_RDp = and2(TOLE_VRAM_RDp, top.pix_pipe.ROPY_RENDERINGn());
-    /*p25.TYVY*/ wire TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRM_RDp, LEKO_CPU_RDp);
+    /*p25.TYVY*/ wire TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRM_RDp, top.LEKO_CPU_RDp());
     /*p25.SEBY*/ wire SEBY_VBD_TO_CBDp = not1(TYVY_VBD_TO_CBDn);
 
     /*p25.RERY*/ wire RERY_VBUS_D0n = not1(VRAM_BUS_D0p.tp());

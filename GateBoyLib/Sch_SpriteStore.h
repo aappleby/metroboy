@@ -9,7 +9,7 @@ struct SchematicTop;
 
 struct SpriteStore {
   void tick(const SchematicTop& top);
-  void tock(const SchematicTop& top);
+  void tock(wire CLK, const SchematicTop& top);
   void dump(Dumper& d) const;
 
   /*p29.FEPO*/ Sig FEPO_STORE_MATCHp;

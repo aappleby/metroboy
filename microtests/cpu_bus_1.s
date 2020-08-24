@@ -1,21 +1,11 @@
 .include "header.inc"
 
 main:
-  //ld a, $55
-  //ld ($FF50), a
-
-  ld a, ($FE00)
-  ld ($8000), a
-- jr -
-
-  ld hl, $7FFF
+//-   jr -
+  ld a, $55
+  ld hl, $C003
 - ld (hl), a
   jr -
-
-
-
-
-
 
 
 

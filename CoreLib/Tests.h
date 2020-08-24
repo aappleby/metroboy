@@ -44,7 +44,7 @@ inline void LOG(const char* format = "", ...) {
 #define EXPECT_EQ(A, B, ...) if ((A) != (B)) { LOG_Y("EXPECT_EQ fail: "); LOG(__VA_ARGS__); LOG("\n"); err++; }
 #define EXPECT_NE(A, B, ...) if ((A) == (B)) { LOG_Y("EXPECT_NE fail: "); LOG(__VA_ARGS__); LOG("\n"); err++; }
 
-#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R("ASSERT_EQ fail: "); LOG(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
+#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R("ASSERT_EQ fail: %s @ %d\n", __FILE__, __LINE__); LOG_R("ASSERT_EQ fail: got 0x%04x, expected 0x%04x\n", (A), (B));LOG_R(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
 #define ASSERT_NE(A, B, ...) if ((A) == (B)) { LOG_R("ASSERT_NE fail: "); LOG(__VA_ARGS__); LOG("\n"); err++; TEST_END(); }
 
 //-----------------------------------------------------------------------------

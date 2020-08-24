@@ -75,17 +75,39 @@ void GateBoyApp::app_init() {
   gb.cpu.reset(0x0000);
   gb.reset();
 
-  const char* filename = "roms/LinksAwakening_dog.dump";
-  gb.load(filename);
+  //const char* filename = "roms/LinksAwakening_dog.dump";
+  //gb.load_dump(filename);
 
-  gb.cpu.get_bus_req(gb.cpu_req);
+  //gb.cpu.get_bus_req(gb.cpu_req);
 
-  gb.run(8);
+  //gb.cpu_req = { .addr = 0x7475, .data = 0x00, .read = 1, .write = 0 };
+  //gb.dbg_req = { .addr = 0x7475, .data = 0x00, .read = 1, .write = 0 };
 
-  gb.cpu_en = true;
+  gb.set_boot_bit();
+  //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
+  //printf("@0x0155 0x%02x\n", gb.mem[0x0155]);
+  //printf("@0x0156 0x%02x\n", gb.mem[0x0156]);
+  //printf("@0x0157 0x%02x\n", gb.mem[0x0157]);
 
-  //gb.mem[0x1000] = 0x73;
-  //gb.dbg_req = { .addr = 0x1000, .data = 0, .read = true, .write = false, };
+  // ld (hl),a; jr -2;
+  gb.mem[0x0155] = 0x77;
+  gb.mem[0x0156] = 0x18;
+  gb.mem[0x0157] = 0xFD;
+
+  gb.script = new Req[] {
+    { .addr = 0x0155, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode
+    { .addr = 0xC003, .data = 0x00, .read = 0, .write = 1}, // write to 0xC003
+    { .addr = 0x0156, .data = 0x00, .read = 1, .write = 0}, // read "jr -2" opcode
+    { .addr = 0x0157, .data = 0x00, .read = 1, .write = 0}, // read "jr -2" param
+    { .addr = 0x0157, .data = 0x00, .read = 0, .write = 0}, // idle cycle
+  };
+  gb.script_len = 5;
+  gb.phase_total = 0;
+
+  //gb.dbg_req = { .addr = 0x00FF, .data = 0x00, .read = 1, .write = 0 };
+  //gb.run(8);
+
+  //gb.cpu_en = true;
 }
 
 void GateBoyApp::app_close() {

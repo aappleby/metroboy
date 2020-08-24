@@ -72,7 +72,7 @@ void GateBoy::set_boot_bit() {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::load(const char* filename) {
+void GateBoy::load_dump(const char* filename) {
   printf("Loading %s\n", filename);
   memset(mem, 0, 65536);
   size_t size = load_blob(filename, mem);
@@ -110,7 +110,17 @@ void GateBoy::load(const char* filename) {
 
   dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
 
-  printf("Loaded %zd bytes from %s\n", size, filename);
+  printf("Loaded %zd bytes from dump %s\n", size, filename);
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::load_rom(const char* filename) {
+  printf("Loading %s\n", filename);
+  memset(mem, 0, 65536);
+  size_t size = load_blob(filename, mem);
+
+  printf("Loaded %zd bytes from rom %s\n", size, filename);
 }
 
 //------------------------------------------------------------------------------
@@ -126,6 +136,8 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
+  uint8_t bus_data = top.cpu_bus.get_bus_data();
+  dbg_req = {0};
 
   return bus_data;
 }
@@ -143,6 +155,7 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
+  dbg_req = {0};
 }
 
 //------------------------------------------------------------------------------
@@ -151,6 +164,10 @@ void GateBoy::next_phase() {
   int old_phase = (phase_total + 0) & 7;
   int new_phase = (phase_total + 1) & 7;
 
+  if (script) {
+    dbg_req = script[(phase_total / 8) % script_len];
+  }
+
   //----------
   // Update CPU
 
@@ -158,9 +175,10 @@ void GateBoy::next_phase() {
     uint8_t imask = 0;
     uint8_t intf = 0;
 
+    uint8_t bus_data = top.cpu_bus.get_bus_data();
 
     switch(old_phase) {
-    /* AB */ case 0: cpu.tock_req(imask, intf, bus_data); break; // bus request changes
+    /* AB */ case 0: cpu.tock_req(imask, intf, bus_data); break; // bus request _must_ change on AB, see trace
     /* BC */ case 1: break;
     /* CD */ case 2: break;
     /* DE */ case 3: break;
@@ -171,10 +189,10 @@ void GateBoy::next_phase() {
     }
   }
 
+  // Bus address _must_ change on AB, see trace
   if (DELTA_AB) {
-    if (dbg_req.read || dbg_req.write) {
+    if (!cpu_en || dbg_req.read || dbg_req.write) {
       cpu_req = dbg_req;
-      dbg_req = {0};
     }
     else {
       cpu_req = cpu.bus_req;
@@ -229,10 +247,6 @@ void GateBoy::next_phase() {
     int p0 = !top.LCD_PIN_DATA0n.tp();
     int p1 = !top.LCD_PIN_DATA1n.tp();
     fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
-  }
-
-  if (DELTA_FG) {
-    bus_data = top.cpu_bus.get_bus_data();
   }
 
   //----------
@@ -292,9 +306,9 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   if (DELTA_AB) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
   if (DELTA_BC) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
   if (DELTA_CD) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_DE) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_EF) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_FG) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_DE) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
+  if (DELTA_EF) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
+  if (DELTA_FG) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
   if (DELTA_GH) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
   if (DELTA_HA) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
 
@@ -321,74 +335,51 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_ext_bus() {
-  top.ext_bus.EXT_PIN_WR_C  = (top.ext_bus.EXT_PIN_WR_A.tp());
-  top.ext_bus.EXT_PIN_RD_C  = (top.ext_bus.EXT_PIN_RD_A.tp());
-  top.ext_bus.EXT_PIN_A00_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
-  top.ext_bus.EXT_PIN_A01_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
-  top.ext_bus.EXT_PIN_A02_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
-  top.ext_bus.EXT_PIN_A03_C = (top.ext_bus.EXT_PIN_A03n_A.tp());
-  top.ext_bus.EXT_PIN_A04_C = (top.ext_bus.EXT_PIN_A04n_A.tp());
-  top.ext_bus.EXT_PIN_A05_C = (top.ext_bus.EXT_PIN_A05n_A.tp());
-  top.ext_bus.EXT_PIN_A06_C = (top.ext_bus.EXT_PIN_A06n_A.tp());
-  top.ext_bus.EXT_PIN_A07_C = (top.ext_bus.EXT_PIN_A07n_A.tp());
-  top.ext_bus.EXT_PIN_A08_C = (top.ext_bus.EXT_PIN_A08n_A.tp());
-  top.ext_bus.EXT_PIN_A09_C = (top.ext_bus.EXT_PIN_A09n_A.tp());
-  top.ext_bus.EXT_PIN_A10_C = (top.ext_bus.EXT_PIN_A10n_A.tp());
-  top.ext_bus.EXT_PIN_A11_C = (top.ext_bus.EXT_PIN_A11n_A.tp());
-  top.ext_bus.EXT_PIN_A12_C = (top.ext_bus.EXT_PIN_A12n_A.tp());
-  top.ext_bus.EXT_PIN_A13_C = (top.ext_bus.EXT_PIN_A13n_A.tp());
-  top.ext_bus.EXT_PIN_A14_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
-  top.ext_bus.EXT_PIN_A15_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
+  top.ext_bus.EXT_PIN_WRp_C  = (top.ext_bus.EXT_PIN_WRp_A.tp());
+  top.ext_bus.EXT_PIN_RDp_C  = (top.ext_bus.EXT_PIN_RDp_A.tp());
+  top.ext_bus.EXT_PIN_A00n_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
+  top.ext_bus.EXT_PIN_A01n_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
+  top.ext_bus.EXT_PIN_A02n_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
+  top.ext_bus.EXT_PIN_A03n_C = (top.ext_bus.EXT_PIN_A03n_A.tp());
+  top.ext_bus.EXT_PIN_A04n_C = (top.ext_bus.EXT_PIN_A04n_A.tp());
+  top.ext_bus.EXT_PIN_A05n_C = (top.ext_bus.EXT_PIN_A05n_A.tp());
+  top.ext_bus.EXT_PIN_A06n_C = (top.ext_bus.EXT_PIN_A06n_A.tp());
+  top.ext_bus.EXT_PIN_A07n_C = (top.ext_bus.EXT_PIN_A07n_A.tp());
+  top.ext_bus.EXT_PIN_A08n_C = (top.ext_bus.EXT_PIN_A08n_A.tp());
+  top.ext_bus.EXT_PIN_A09n_C = (top.ext_bus.EXT_PIN_A09n_A.tp());
+  top.ext_bus.EXT_PIN_A10n_C = (top.ext_bus.EXT_PIN_A10n_A.tp());
+  top.ext_bus.EXT_PIN_A11n_C = (top.ext_bus.EXT_PIN_A11n_A.tp());
+  top.ext_bus.EXT_PIN_A12n_C = (top.ext_bus.EXT_PIN_A12n_A.tp());
+  top.ext_bus.EXT_PIN_A13n_C = (top.ext_bus.EXT_PIN_A13n_A.tp());
+  top.ext_bus.EXT_PIN_A14n_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
+  top.ext_bus.EXT_PIN_A15n_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
+
+  top.ext_bus.set_pin_data_z();
 
   uint16_t ext_addr = top.ext_bus.get_pin_addr();
+  uint8_t ext_data = top.ext_bus.get_pin_data_out();
 
-  if (top.ext_bus.EXT_PIN_WR_A.tp()) {
-    uint8_t ext_data = top.ext_bus.get_pin_data_out();
-    
-    if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
-      //mem[ext_addr] = ext_data; // yeah we don't actually want to allow writing to ROM...
+  // CS seems to actually serve as a mux between rom/ram.
+  // Based on the traces, the gb-live32 cart ignores the high bit of the
+  // address and puts data on the bus on phase B if CSn is high.
+
+  if (top.ext_bus.EXT_PIN_CSp_A.tp()) {
+    // Imem read or cmem read
+    uint8_t& mem_data = mem[ext_addr];
+    if (top.ext_bus.EXT_PIN_WRp_A.tp()) {
+      mem_data = ext_data;
     }
-    else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
-      mem[ext_addr] = ext_data;
-    }
-    else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
-      mem[ext_addr] = ext_data;
-    }
-    else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
-      mem[ext_addr] = ext_data;
-    }
-  }
   
-  if (top.ext_bus.EXT_PIN_RD_A.tp()) {
-    if (ext_addr >= 0 && ext_addr <= 0x7FFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else if (ext_addr >= 0xA000 && ext_addr <= 0xBFFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else if (ext_addr >= 0xC000 && ext_addr <= 0xDFFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else if (ext_addr >= 0xE000 && ext_addr <= 0xFFFF) {
-      uint8_t ext_data = mem[ext_addr];
-      top.ext_bus.set_pin_data_in(ext_data);
-    }
-    else {
-      top.ext_bus.set_pin_data_z();
+    if (top.ext_bus.EXT_PIN_RDp_A.tp()) {
+      top.ext_bus.set_pin_data_in(mem_data);
     }
   }
   else {
-    top.ext_bus.EXT_PIN_D0n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D1n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D2n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D3n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D4n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D5n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D6n_C = DELTA_TRIZ;
-    top.ext_bus.EXT_PIN_D7n_C = DELTA_TRIZ;
+    // ROM read, ignores high bit
+    uint8_t& mem_data = mem[ext_addr & 0x7FFF];
+    if (top.ext_bus.EXT_PIN_RDp_A.tp()) {
+      top.ext_bus.set_pin_data_in(mem_data);
+    }
   }
 }
 

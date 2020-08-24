@@ -223,6 +223,7 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
   state = state_;
   ime = ime_delay;
+  in = bus_data;
 
   if (state == 0) {
     //op_addr = ack.addr;
@@ -237,9 +238,11 @@ void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
   }
 }
 
-void Z80::tock_req(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
+void Z80::tock_req(uint8_t imask_, uint8_t intf_, uint8_t /*bus_data*/) {
   alu_x = 0;
   alu_y = 0;
+
+  uint8_t bus_data = in;
 
   //--------------------------------------------------------------------------------
 
@@ -864,6 +867,7 @@ void Z80::dump(Dumper& dump) const {
   dump("op_addr     0x%04x\n", op_addr);
   dump("OP          0x%02x @ %d\n", op, state);
   dump("CB          0x%02x\n", cb);
+  dump("in          0x%02x\n", in);
   dump("out         0x%02x\n", out);
   dump("bus req     "); dump_req(dump, bus_req);
   dump("\n");

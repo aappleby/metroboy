@@ -35,7 +35,8 @@ public:
     return a;
   }
 
-  void load(const char* filename);
+  void load_dump(const char* filename);
+  void load_rom(const char* filename);
 
   void tock_ext_bus();
   void tock_oam_bus();
@@ -64,8 +65,9 @@ public:
   Z80 cpu;
   bool cpu_en = false;
 
-  uint8_t bus_data = 0;
-
   Req cpu_req;
   Req dbg_req;
+
+  Req* script = nullptr;
+  int script_len = 0;
 };

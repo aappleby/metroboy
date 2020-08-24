@@ -28,6 +28,7 @@ struct Z80 {
   uint8_t  cb = 0;
   bool     ime = 0, ime_delay = 0;
 
+  uint8_t  in = 0;
   uint8_t  out = 0;
 
   Req      bus_req = {0};

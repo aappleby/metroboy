@@ -129,17 +129,9 @@ struct VramBus {
   //----------------------------------------
   // VRAM bus
 
-  Tri _VRAM_PIN_CS_A = TRI_D0NP;   // PIN_43 <- P25.SOKY
-  Tri _VRAM_PIN_CS_C = TRI_D0NP;   // PIN_43 -> P25.TEFY
-  Tri _VRAM_PIN_CS_D = TRI_D0NP;   // PIN_43 <- P25.SETY
-
-  Tri _VRAM_PIN_OE_A = TRI_D0NP;   // PIN_45 <- P25.REFO
-  Tri _VRAM_PIN_OE_C = TRI_D0NP;   // PIN_45 -> P25.TAVY
-  Tri _VRAM_PIN_OE_D = TRI_D0NP;   // PIN_45 <- P25.SAHA
-
-  Tri _VRAM_PIN_WR_A = TRI_D0NP;   // PIN_49 <- P25.SYSY
-  Tri _VRAM_PIN_WR_C = TRI_D0NP;   // PIN_49 -> P25.SUDO
-  Tri _VRAM_PIN_WR_D = TRI_D0NP;   // PIN_49 <- P25.RAGU
+  Pin VRAM_PIN_CSn = TRI_D0NP;
+  Pin VRAM_PIN_OEn = TRI_D0NP;
+  Pin VRAM_PIN_WRn = TRI_D0NP;
 
   Tri VRAM_PIN_A00n  = TRI_D0NP;  // PIN_34 <- P04.ECAL
   Tri VRAM_PIN_A01n  = TRI_D0NP;  // PIN_35 <- P04.EGEZ

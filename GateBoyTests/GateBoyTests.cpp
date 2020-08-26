@@ -272,9 +272,9 @@ int GateBoyTests::test_ext_bus() {
       if ((i % 8) == 0) gb.dbg_req = script[i / 8];
 
       wire CLK = !gb.top.clk_reg.EXT_PIN_CLK_xxxxEFGH.tp();
-      wire WRn = !gb.top.ext_bus.EXT_PIN_WRp_A.tp();
-      wire RDn = !gb.top.ext_bus.EXT_PIN_RDp_A.tp();
-      wire CSn = !gb.top.ext_bus.EXT_PIN_CSp_A.tp();
+      wire WRn = gb.top.ext_bus.EXT_PIN_WRn.qp();
+      wire RDn = gb.top.ext_bus.EXT_PIN_RDn.qp();
+      wire CSn = gb.top.ext_bus.EXT_PIN_CSn.qp();
 
       wire A00 = !gb.top.ext_bus.EXT_PIN_A00n_A.tp();
       wire A01 = !gb.top.ext_bus.EXT_PIN_A01n_A.tp();

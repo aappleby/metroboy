@@ -195,7 +195,7 @@ void OamBus::tock(wire CLK, SchematicTop& top) {
 
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.CPU_PIN_WRp.tp(), top.clk_reg.AFAS_xxxxEFGx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCxEFGH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(top.ext_bus.EXT_PIN_WRp_C.tp(), APOV_CPU_WRp_xxxxEFGx, top.clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2_n(!top.ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, top.clk_reg.UNOR_MODE_DBG2p());
     /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCxEFGH);
     /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCxEFGH = not1(TAPU_CPU_WRp_xxxxEFGx);
     /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCxEFGH);
@@ -227,7 +227,7 @@ void OamBus::tock(wire CLK, SchematicTop& top) {
 
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(top.cpu_bus.CPU_PIN_WRp.tp(), top.clk_reg.AFAS_xxxxEFGx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(top.ext_bus.EXT_PIN_WRp_C.tp(), APOV_CPU_WRp_xxxxEFGx, top.clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!top.ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, top.clk_reg.UNOR_MODE_DBG2p());
     /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
     /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(TAPU_CPU_WRp_xxxxEFGx);
     /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
@@ -335,7 +335,7 @@ void OamBus::tock(wire CLK, SchematicTop& top) {
 
   // OBD -> OBL
   {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(top.ext_bus.EXT_PIN_RDp_C.tp(), top.cpu_bus.CPU_PIN_RDp.tp(), top.clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!top.ext_bus.EXT_PIN_RDn.qp(), top.cpu_bus.CPU_PIN_RDp.tp(), top.clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);

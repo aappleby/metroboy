@@ -40,7 +40,7 @@ struct SchematicTop {
   }
 
   /* p28.LEKO*/ wire LEKO_CPU_RDp() {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C.tp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
+    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
     /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
@@ -110,7 +110,7 @@ struct SchematicTop {
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.EXT_PIN_RDp_C.tp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     return TEDO_CPU_RDp;
   }
@@ -133,7 +133,7 @@ struct SchematicTop {
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), clk_reg.AFAS_xxxxEFGx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.EXT_PIN_WRp_C.tp(), APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
     /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
     return TAPU_CPU_WRp_xxxxEFGx;
   }

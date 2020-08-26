@@ -337,8 +337,6 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 #pragma warning(disable : 4189)
 
 void GateBoy::tock_ext_bus() {
-  top.ext_bus.EXT_PIN_WRp_C  = (top.ext_bus.EXT_PIN_WRp_A.tp());
-  top.ext_bus.EXT_PIN_RDp_C  = (top.ext_bus.EXT_PIN_RDp_A.tp());
   top.ext_bus.EXT_PIN_A00n_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
   top.ext_bus.EXT_PIN_A01n_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
   top.ext_bus.EXT_PIN_A02n_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
@@ -362,12 +360,12 @@ void GateBoy::tock_ext_bus() {
   // Based on the traces, the gb-live32 cart ignores the high bit of the
   // address and puts data on the bus on phase B if CSn is high.
 
-  if (top.ext_bus.EXT_PIN_CSp_A.tp()) {
-    if (top.ext_bus.EXT_PIN_WRp_A.tp()) {
+  if (!top.ext_bus.EXT_PIN_CSn.qp()) {
+    if (!top.ext_bus.EXT_PIN_WRn.qp()) {
       mem[ext_addr] = top.ext_bus.get_pin_data();
     }
 
-    if (top.ext_bus.EXT_PIN_RDp_A.tp()) {
+    if (!top.ext_bus.EXT_PIN_RDn.qp()) {
       top.ext_bus.set_pin_data_in(mem[ext_addr]);
     }
     else {
@@ -375,7 +373,7 @@ void GateBoy::tock_ext_bus() {
     }
   }
   else {
-    if (!(ext_addr & 0x8000) && top.ext_bus.EXT_PIN_RDp_A.tp()) {
+    if (!(ext_addr & 0x8000) && !top.ext_bus.EXT_PIN_RDn.qp()) {
       top.ext_bus.set_pin_data_in(mem[ext_addr]);
     }
     else {

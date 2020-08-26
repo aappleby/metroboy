@@ -19,9 +19,9 @@ void ExtBus::dump(Dumper& d) const {
     SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
   d("\n");
 
-  d("EXT PIN RD_A    : %c%c%c\n", EXT_PIN_RDp_A.c(), EXT_PIN_RDp_C.c(), EXT_PIN_RDp_D.c());
-  d("EXT PIN WR_A    : %c%c%c\n", EXT_PIN_WRp_A.c(), EXT_PIN_WRp_C.c(), EXT_PIN_WRp_D.c());
-  d("EXT PIN CS_A    : %c\n",     EXT_PIN_CSp_A.c());
+  d("EXT PIN RDn     : %c\n", EXT_PIN_RDn.c());
+  d("EXT PIN WRn     : %c\n", EXT_PIN_WRn.c());
+  d("EXT PIN CSn     : %c\n", EXT_PIN_CSn.c());
 
   d("EXT PIN ADDR_A  : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     EXT_PIN_A15n_A.c(), EXT_PIN_A14n_A.c(), EXT_PIN_A13n_A.c(), EXT_PIN_A12n_A.c(),
@@ -66,8 +66,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYMU*/ wire _TYMUEXT_PIN_RDn = nor2(LUMA_DMA_READ_CARTp, _MOTY_CPU_EXT_RD);
     /*p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMUEXT_PIN_RDn, TOVA_MODE_DBG2n);
     /*p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMUEXT_PIN_RDn, UNOR_MODE_DBG2p);
-    EXT_PIN_RDp_A = _UGAC_RD_A;
-    EXT_PIN_RDp_D = _URUN_RD_D;
+    EXT_PIN_RDn = io_pin(_UGAC_RD_A, _URUN_RD_D);
   }
 
   {
@@ -83,8 +82,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.PUVA*/ wire _PUVA_EXT_PIN_WRn = or2(_NEVY, LUMA_DMA_READ_CARTp);
     /*p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_PIN_WRn, TOVA_MODE_DBG2n);
     /*p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_PIN_WRn, UNOR_MODE_DBG2p);
-    EXT_PIN_WRp_A = _UVER_WR_A;
-    EXT_PIN_WRp_D = _USUF_WR_D;
+    EXT_PIN_WRn = io_pin(_UVER_WR_A, _USUF_WR_D);
   }
 
   {
@@ -98,7 +96,7 @@ void ExtBus::tock(SchematicTop& top) {
 
     /*p08.TOZA*/ wire _TOZA_EXT_PIN_CS_A_xxCDEFGH = and3(ABUZ_xxCDEFGH, TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
     /*p08.TYHO*/ wire _TYHO_EXT_PIN_CS_A_xxCDEFGH = mux2_p(top.dma_reg.MARU_DMA_A15n.qn(), _TOZA_EXT_PIN_CS_A_xxCDEFGH, LUMA_DMA_READ_CARTp);
-    EXT_PIN_CSp_A = _TYHO_EXT_PIN_CS_A_xxCDEFGH;
+    EXT_PIN_CSn = io_pin(_TYHO_EXT_PIN_CS_A_xxCDEFGH, _TYHO_EXT_PIN_CS_A_xxCDEFGH);
   }
 
   //----------------------------------------
@@ -222,7 +220,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.LYWE*/ wire LYWE = not1(LAGU);
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
 
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(EXT_PIN_RDp_C.tp(), top.cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!EXT_PIN_RDn.qp(), top.cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /*p08.REDU*/ wire REDU_CPU_RDn = not1(TEDO_CPU_RDp);
     /*p08.RORU*/ wire RORU_CBD_TO_EPDn = mux2_p(REDU_CPU_RDn, MOTY_CPU_EXT_RD, UNOR_MODE_DBG2p);

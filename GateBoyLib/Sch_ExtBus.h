@@ -77,9 +77,6 @@ struct ExtBus {
   //-----------------------------------------------------------------------------
   // Ext bus debug inputs
 
-  Tri EXT_PIN_WRp_C  = TRI_D0NP;   // PIN_78 -> P07.UBAL
-  Tri EXT_PIN_RDp_C  = TRI_D0NP;   // PIN_79 -> P07.UJYV
-
   Tri EXT_PIN_A00n_C = TRI_D0NP;   // PIN_01 -> P08.KOVA
   Tri EXT_PIN_A01n_C = TRI_D0NP;   // PIN_02 -> P08.CAMU
   Tri EXT_PIN_A02n_C = TRI_D0NP;   // PIN_03 -> P08.BUXU
@@ -100,11 +97,9 @@ struct ExtBus {
   //-----------------------------------------------------------------------------
   // Ext bus
 
-  Tri EXT_PIN_RDp_A  = TRI_D0NP;   // PIN_79 <- P08.UGAC // RDn idles low, goes high on phase B for an external write
-  Tri EXT_PIN_RDp_D  = TRI_D0NP;   // PIN_79 <- P08.URUN
-  Tri EXT_PIN_WRp_A  = TRI_D0NP;   // PIN_78 <- P08.UVER // WRn idles high, goes low during EFG if there's a write
-  Tri EXT_PIN_WRp_D  = TRI_D0NP;   // PIN_78 <- P08.USUF
-  Tri EXT_PIN_CSp_A  = TRI_D0NP;   // PIN_80 <- P08.TYHO // CS changes on phase C if addr in [A000,FDFF]
+  Pin EXT_PIN_RDn    = TRI_D0NP;   // PIN_79 // RDn idles low, goes high on phase B for an external write
+  Pin EXT_PIN_WRn    = TRI_D0NP;   // PIN_78 // WRn idles high, goes low during EFG if there's a write
+  Pin EXT_PIN_CSn    = TRI_D0NP;   // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
 
   Tri EXT_PIN_A00n_A = TRI_D0NP;   // PIN_01 <- P08.KUPO // Address changees on B for CPU read/write, on A for DMA read
   Tri EXT_PIN_A01n_A = TRI_D0NP;   // PIN_02 <- P08.CABA

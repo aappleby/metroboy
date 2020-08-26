@@ -337,23 +337,6 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 #pragma warning(disable : 4189)
 
 void GateBoy::tock_ext_bus() {
-  top.ext_bus.EXT_PIN_A00n_C = (top.ext_bus.EXT_PIN_A00n_A.tp());
-  top.ext_bus.EXT_PIN_A01n_C = (top.ext_bus.EXT_PIN_A01n_A.tp());
-  top.ext_bus.EXT_PIN_A02n_C = (top.ext_bus.EXT_PIN_A02n_A.tp());
-  top.ext_bus.EXT_PIN_A03n_C = (top.ext_bus.EXT_PIN_A03n_A.tp());
-  top.ext_bus.EXT_PIN_A04n_C = (top.ext_bus.EXT_PIN_A04n_A.tp());
-  top.ext_bus.EXT_PIN_A05n_C = (top.ext_bus.EXT_PIN_A05n_A.tp());
-  top.ext_bus.EXT_PIN_A06n_C = (top.ext_bus.EXT_PIN_A06n_A.tp());
-  top.ext_bus.EXT_PIN_A07n_C = (top.ext_bus.EXT_PIN_A07n_A.tp());
-  top.ext_bus.EXT_PIN_A08n_C = (top.ext_bus.EXT_PIN_A08n_A.tp());
-  top.ext_bus.EXT_PIN_A09n_C = (top.ext_bus.EXT_PIN_A09n_A.tp());
-  top.ext_bus.EXT_PIN_A10n_C = (top.ext_bus.EXT_PIN_A10n_A.tp());
-  top.ext_bus.EXT_PIN_A11n_C = (top.ext_bus.EXT_PIN_A11n_A.tp());
-  top.ext_bus.EXT_PIN_A12n_C = (top.ext_bus.EXT_PIN_A12n_A.tp());
-  top.ext_bus.EXT_PIN_A13n_C = (top.ext_bus.EXT_PIN_A13n_A.tp());
-  top.ext_bus.EXT_PIN_A14n_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
-  top.ext_bus.EXT_PIN_A15n_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
-
   uint16_t ext_addr = top.ext_bus.get_pin_addr();
 
   // CS seems to actually serve as a mux between rom/ram.

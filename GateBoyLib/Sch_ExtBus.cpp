@@ -23,11 +23,11 @@ void ExtBus::dump(Dumper& d) const {
   d("EXT PIN WRn     : %c\n", EXT_PIN_WRn.c());
   d("EXT PIN CSn     : %c\n", EXT_PIN_CSn.c());
 
-  d("EXT PIN ADDR_A  : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-    EXT_PIN_A15n_A.c(), EXT_PIN_A14n_A.c(), EXT_PIN_A13n_A.c(), EXT_PIN_A12n_A.c(),
-    EXT_PIN_A11n_A.c(), EXT_PIN_A10n_A.c(), EXT_PIN_A09n_A.c(), EXT_PIN_A08n_A.c(),
-    EXT_PIN_A07n_A.c(), EXT_PIN_A06n_A.c(), EXT_PIN_A05n_A.c(), EXT_PIN_A04n_A.c(),
-    EXT_PIN_A03n_A.c(), EXT_PIN_A02n_A.c(), EXT_PIN_A01n_A.c(), EXT_PIN_A00n_A.c());
+  d("EXT PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+    EXT_PIN_A15p.c(), EXT_PIN_A14p.c(), EXT_PIN_A13p.c(), EXT_PIN_A12p.c(),
+    EXT_PIN_A11p.c(), EXT_PIN_A10p.c(), EXT_PIN_A09p.c(), EXT_PIN_A08p.c(),
+    EXT_PIN_A07p.c(), EXT_PIN_A06p.c(), EXT_PIN_A05p.c(), EXT_PIN_A04p.c(),
+    EXT_PIN_A03p.c(), EXT_PIN_A02p.c(), EXT_PIN_A01p.c(), EXT_PIN_A00p.c());
 
   d("EXT PIN DATA    : %c%c%c%c%c%c%c%c\n",
     EXT_PIN_D07p.c(), EXT_PIN_D06p.c(), EXT_PIN_D05p.c(), EXT_PIN_D04p.c(),
@@ -147,37 +147,53 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.MUCE*/ wire EXT_ADDR_13p = mux2_p2(LUMA_DMA_READ_CARTp, top.dma_reg.PULA_DMA_A13n.qn(), LONU_EXT_ADDR_LATCH_13p.tp());
     /* p08.PEGE*/ wire EXT_ADDR_14p = mux2_p2(LUMA_DMA_READ_CARTp, top.dma_reg.POKU_DMA_A14n.qn(), NYRE_EXT_ADDR_LATCH_14p.tp());
 
-    /*p08.KUPO*/ EXT_PIN_A00n_A = nand2(EXT_ADDR_00p, TOVA_MODE_DBG2n);
-    /*p08.CABA*/ EXT_PIN_A01n_A = nand2(EXT_ADDR_01p, TOVA_MODE_DBG2n);
-    /*p08.BOKU*/ EXT_PIN_A02n_A = nand2(EXT_ADDR_02p, TOVA_MODE_DBG2n);
-    /*p08.BOTY*/ EXT_PIN_A03n_A = nand2(EXT_ADDR_03p, TOVA_MODE_DBG2n);
-    /*p08.BYLA*/ EXT_PIN_A04n_A = nand2(EXT_ADDR_04p, TOVA_MODE_DBG2n);
-    /*p08.BADU*/ EXT_PIN_A05n_A = nand2(EXT_ADDR_05p, TOVA_MODE_DBG2n);
-    /*p08.CEPU*/ EXT_PIN_A06n_A = nand2(EXT_ADDR_06p, TOVA_MODE_DBG2n);
-    /*p08.DEFY*/ EXT_PIN_A07n_A = nand2(EXT_ADDR_07p, TOVA_MODE_DBG2n);
-    /*p08.MYNY*/ EXT_PIN_A08n_A = nand2(EXT_ADDR_08p, TOVA_MODE_DBG2n);
-    /*p08.MUNE*/ EXT_PIN_A09n_A = nand2(EXT_ADDR_09p, TOVA_MODE_DBG2n);
-    /*p08.ROXU*/ EXT_PIN_A10n_A = nand2(EXT_ADDR_10p, TOVA_MODE_DBG2n);
-    /*p08.LEPY*/ EXT_PIN_A11n_A = nand2(EXT_ADDR_11p, TOVA_MODE_DBG2n);
-    /*p08.LUCE*/ EXT_PIN_A12n_A = nand2(EXT_ADDR_12p, TOVA_MODE_DBG2n);
-    /*p08.LABE*/ EXT_PIN_A13n_A = nand2(EXT_ADDR_13p, TOVA_MODE_DBG2n);
-    /*p08.PUHE*/ EXT_PIN_A14n_A = nand2(EXT_ADDR_14p, TOVA_MODE_DBG2n);
+    /*p08.KUPO*/ wire KUPO = nand2(EXT_ADDR_00p, TOVA_MODE_DBG2n);
+    /*p08.CABA*/ wire CABA = nand2(EXT_ADDR_01p, TOVA_MODE_DBG2n);
+    /*p08.BOKU*/ wire BOKU = nand2(EXT_ADDR_02p, TOVA_MODE_DBG2n);
+    /*p08.BOTY*/ wire BOTY = nand2(EXT_ADDR_03p, TOVA_MODE_DBG2n);
+    /*p08.BYLA*/ wire BYLA = nand2(EXT_ADDR_04p, TOVA_MODE_DBG2n);
+    /*p08.BADU*/ wire BADU = nand2(EXT_ADDR_05p, TOVA_MODE_DBG2n);
+    /*p08.CEPU*/ wire CEPU = nand2(EXT_ADDR_06p, TOVA_MODE_DBG2n);
+    /*p08.DEFY*/ wire DEFY = nand2(EXT_ADDR_07p, TOVA_MODE_DBG2n);
+    /*p08.MYNY*/ wire MYNY = nand2(EXT_ADDR_08p, TOVA_MODE_DBG2n);
+    /*p08.MUNE*/ wire MUNE = nand2(EXT_ADDR_09p, TOVA_MODE_DBG2n);
+    /*p08.ROXU*/ wire ROXU = nand2(EXT_ADDR_10p, TOVA_MODE_DBG2n);
+    /*p08.LEPY*/ wire LEPY = nand2(EXT_ADDR_11p, TOVA_MODE_DBG2n);
+    /*p08.LUCE*/ wire LUCE = nand2(EXT_ADDR_12p, TOVA_MODE_DBG2n);
+    /*p08.LABE*/ wire LABE = nand2(EXT_ADDR_13p, TOVA_MODE_DBG2n);
+    /*p08.PUHE*/ wire PUHE = nand2(EXT_ADDR_14p, TOVA_MODE_DBG2n);
 
-    /*p08.KOTY*/ EXT_PIN_A00n_D = nor2 (EXT_ADDR_00p, UNOR_MODE_DBG2p);
-    /*p08.COTU*/ EXT_PIN_A01n_D = nor2 (EXT_ADDR_01p, UNOR_MODE_DBG2p);
-    /*p08.BAJO*/ EXT_PIN_A02n_D = nor2 (EXT_ADDR_02p, UNOR_MODE_DBG2p);
-    /*p08.BOLA*/ EXT_PIN_A03n_D = nor2 (EXT_ADDR_03p, UNOR_MODE_DBG2p);
-    /*p08.BEVO*/ EXT_PIN_A04n_D = nor2 (EXT_ADDR_04p, UNOR_MODE_DBG2p);
-    /*p08.AJAV*/ EXT_PIN_A05n_D = nor2 (EXT_ADDR_05p, UNOR_MODE_DBG2p);
-    /*p08.CYKA*/ EXT_PIN_A06n_D = nor2 (EXT_ADDR_06p, UNOR_MODE_DBG2p);
-    /*p08.COLO*/ EXT_PIN_A07n_D = nor2 (EXT_ADDR_07p, UNOR_MODE_DBG2p);
-    /*p08.MEGO*/ EXT_PIN_A08n_D = nor2 (EXT_ADDR_08p, UNOR_MODE_DBG2p);
-    /*p08.MENY*/ EXT_PIN_A09n_D = nor2 (EXT_ADDR_09p, UNOR_MODE_DBG2p);
-    /*p08.RORE*/ EXT_PIN_A10n_D = nor2 (EXT_ADDR_10p, UNOR_MODE_DBG2p);
-    /*p08.LYNY*/ EXT_PIN_A11n_D = nor2 (EXT_ADDR_11p, UNOR_MODE_DBG2p);
-    /*p08.LOSO*/ EXT_PIN_A12n_D = nor2 (EXT_ADDR_12p, UNOR_MODE_DBG2p);
-    /*p08.LEVA*/ EXT_PIN_A13n_D = nor2 (EXT_ADDR_13p, UNOR_MODE_DBG2p);
-    /*p08.PAHY*/ EXT_PIN_A14n_D = nor2 (EXT_ADDR_14p, UNOR_MODE_DBG2p);
+    /*p08.KOTY*/ wire KOTY = nor2 (EXT_ADDR_00p, UNOR_MODE_DBG2p);
+    /*p08.COTU*/ wire COTU = nor2 (EXT_ADDR_01p, UNOR_MODE_DBG2p);
+    /*p08.BAJO*/ wire BAJO = nor2 (EXT_ADDR_02p, UNOR_MODE_DBG2p);
+    /*p08.BOLA*/ wire BOLA = nor2 (EXT_ADDR_03p, UNOR_MODE_DBG2p);
+    /*p08.BEVO*/ wire BEVO = nor2 (EXT_ADDR_04p, UNOR_MODE_DBG2p);
+    /*p08.AJAV*/ wire AJAV = nor2 (EXT_ADDR_05p, UNOR_MODE_DBG2p);
+    /*p08.CYKA*/ wire CYKA = nor2 (EXT_ADDR_06p, UNOR_MODE_DBG2p);
+    /*p08.COLO*/ wire COLO = nor2 (EXT_ADDR_07p, UNOR_MODE_DBG2p);
+    /*p08.MEGO*/ wire MEGO = nor2 (EXT_ADDR_08p, UNOR_MODE_DBG2p);
+    /*p08.MENY*/ wire MENY = nor2 (EXT_ADDR_09p, UNOR_MODE_DBG2p);
+    /*p08.RORE*/ wire RORE = nor2 (EXT_ADDR_10p, UNOR_MODE_DBG2p);
+    /*p08.LYNY*/ wire LYNY = nor2 (EXT_ADDR_11p, UNOR_MODE_DBG2p);
+    /*p08.LOSO*/ wire LOSO = nor2 (EXT_ADDR_12p, UNOR_MODE_DBG2p);
+    /*p08.LEVA*/ wire LEVA = nor2 (EXT_ADDR_13p, UNOR_MODE_DBG2p);
+    /*p08.PAHY*/ wire PAHY = nor2 (EXT_ADDR_14p, UNOR_MODE_DBG2p);
+
+    EXT_PIN_A00p = io_pin(KUPO, KOTY);
+    EXT_PIN_A01p = io_pin(CABA, COTU);
+    EXT_PIN_A02p = io_pin(BOKU, BAJO);
+    EXT_PIN_A03p = io_pin(BOTY, BOLA);
+    EXT_PIN_A04p = io_pin(BYLA, BEVO);
+    EXT_PIN_A05p = io_pin(BADU, AJAV);
+    EXT_PIN_A06p = io_pin(CEPU, CYKA);
+    EXT_PIN_A07p = io_pin(DEFY, COLO);
+    EXT_PIN_A08p = io_pin(MYNY, MEGO);
+    EXT_PIN_A09p = io_pin(MUNE, MENY);
+    EXT_PIN_A10p = io_pin(ROXU, RORE);
+    EXT_PIN_A11p = io_pin(LEPY, LYNY);
+    EXT_PIN_A12p = io_pin(LUCE, LOSO);
+    EXT_PIN_A13p = io_pin(LABE, LEVA);
+    EXT_PIN_A14p = io_pin(PUHE, PAHY);
   }
 
   {
@@ -199,8 +215,8 @@ void ExtBus::tock(SchematicTop& top) {
 
     /* p08.SUZE*/ wire SUZE_EXT_PIN_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n);
     /* p08.RULO*/ wire RULO_EXT_PIN_A15n = nor2 (TAZY_A15p, UNOR_MODE_DBG2p);
-    EXT_PIN_A15n_A = SUZE_EXT_PIN_A15n;
-    EXT_PIN_A15n_D = RULO_EXT_PIN_A15n;
+    
+    EXT_PIN_A15p = io_pin(SUZE_EXT_PIN_A15n, RULO_EXT_PIN_A15n);
   }
 
   //----------------------------------------

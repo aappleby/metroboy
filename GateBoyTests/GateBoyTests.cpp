@@ -276,14 +276,14 @@ int GateBoyTests::test_ext_bus() {
       wire RDn = gb.top.ext_bus.EXT_PIN_RDn.qp();
       wire CSn = gb.top.ext_bus.EXT_PIN_CSn.qp();
 
-      wire A00 = !gb.top.ext_bus.EXT_PIN_A00n_A.tp();
-      wire A01 = !gb.top.ext_bus.EXT_PIN_A01n_A.tp();
-      wire A02 = !gb.top.ext_bus.EXT_PIN_A02n_A.tp();
-      wire A03 = !gb.top.ext_bus.EXT_PIN_A03n_A.tp();
-      wire A12 = !gb.top.ext_bus.EXT_PIN_A12n_A.tp();
-      wire A13 = !gb.top.ext_bus.EXT_PIN_A13n_A.tp();
-      wire A14 = !gb.top.ext_bus.EXT_PIN_A14n_A.tp();
-      wire A15 = !gb.top.ext_bus.EXT_PIN_A15n_A.tp();
+      wire A00 = gb.top.ext_bus.EXT_PIN_A00p.qp();
+      wire A01 = gb.top.ext_bus.EXT_PIN_A01p.qp();
+      wire A02 = gb.top.ext_bus.EXT_PIN_A02p.qp();
+      wire A03 = gb.top.ext_bus.EXT_PIN_A03p.qp();
+      wire A12 = gb.top.ext_bus.EXT_PIN_A12p.qp();
+      wire A13 = gb.top.ext_bus.EXT_PIN_A13p.qp();
+      wire A14 = gb.top.ext_bus.EXT_PIN_A14p.qp();
+      wire A15 = gb.top.ext_bus.EXT_PIN_A15p.qp();
 
       wire D00 = gb.top.ext_bus.EXT_PIN_D00p.qp();
       wire D01 = gb.top.ext_bus.EXT_PIN_D01p.qp();
@@ -324,7 +324,7 @@ int GateBoyTests::test_ext_bus() {
 
     for (int i = 0; i < 32; i++) {
       int phase = i & 7;
-      wire A15 = !gb.top.ext_bus.EXT_PIN_A15n_A.tp();
+      wire A15 = gb.top.ext_bus.EXT_PIN_A15p.qp();
 
       if (phase == 0 || phase == 1) {
         ASSERT_EQ(1, A15, "A15 not high on phase 0/1");

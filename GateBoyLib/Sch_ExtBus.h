@@ -20,31 +20,31 @@ struct ExtBus {
                             !EXT_PIN_A12n_A.tp(), !EXT_PIN_A13n_A.tp(), !EXT_PIN_A14n_A.tp(), !EXT_PIN_A15n_A.tp());
   }
 
-  uint8_t get_pin_data_out() {
-    return (uint8_t)pack_p(!EXT_PIN_D00n_A.tp(), !EXT_PIN_D01n_A.tp(), !EXT_PIN_D02n_A.tp(), !EXT_PIN_D03n_A.tp(),
-                           !EXT_PIN_D04n_A.tp(), !EXT_PIN_D05n_A.tp(), !EXT_PIN_D06n_A.tp(), !EXT_PIN_D07n_A.tp());
+  uint8_t get_pin_data() {
+    return (uint8_t)pack_p(EXT_PIN_D00p.qp(), EXT_PIN_D01p.qp(), EXT_PIN_D02p.qp(), EXT_PIN_D03p.qp(),
+                           EXT_PIN_D04p.qp(), EXT_PIN_D05p.qp(), EXT_PIN_D06p.qp(), EXT_PIN_D07p.qp());
   }
 
   void set_pin_data_in(uint8_t data) {
-    EXT_PIN_D00n_C = !(data & 0x01);
-    EXT_PIN_D01n_C = !(data & 0x02);
-    EXT_PIN_D02n_C = !(data & 0x04);
-    EXT_PIN_D03n_C = !(data & 0x08);
-    EXT_PIN_D04n_C = !(data & 0x10);
-    EXT_PIN_D05n_C = !(data & 0x20);
-    EXT_PIN_D06n_C = !(data & 0x40);
-    EXT_PIN_D07n_C = !(data & 0x80);
+    EXT_PIN_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
+    EXT_PIN_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
   }
 
   void set_pin_data_z() {
-    EXT_PIN_D00n_C = DELTA_TRIZ;
-    EXT_PIN_D01n_C = DELTA_TRIZ;
-    EXT_PIN_D02n_C = DELTA_TRIZ;
-    EXT_PIN_D03n_C = DELTA_TRIZ;
-    EXT_PIN_D04n_C = DELTA_TRIZ;
-    EXT_PIN_D05n_C = DELTA_TRIZ;
-    EXT_PIN_D06n_C = DELTA_TRIZ;
-    EXT_PIN_D07n_C = DELTA_TRIZ;
+    EXT_PIN_D00p = DELTA_TRIZ;
+    EXT_PIN_D01p = DELTA_TRIZ;
+    EXT_PIN_D02p = DELTA_TRIZ;
+    EXT_PIN_D03p = DELTA_TRIZ;
+    EXT_PIN_D04p = DELTA_TRIZ;
+    EXT_PIN_D05p = DELTA_TRIZ;
+    EXT_PIN_D06p = DELTA_TRIZ;
+    EXT_PIN_D07p = DELTA_TRIZ;
   }
 
   //-----------------------------------------------------------------------------
@@ -140,41 +140,14 @@ struct ExtBus {
   Tri EXT_PIN_A14n_D = TRI_D0NP;   // PIN_15 <- P08.PAHY
   Tri EXT_PIN_A15n_D = TRI_D0NP;   // PIN_16 <- P08.RULO
 
-  Tri EXT_PIN_D00n_A = TRI_D0NP;   // PIN_17 <- P08.RUXA
-  Tri EXT_PIN_D01n_A = TRI_D0NP;   // PIN_18 <- P08.RUJA
-  Tri EXT_PIN_D02n_A = TRI_D0NP;   // PIN_19 <- P08.RABY
-  Tri EXT_PIN_D03n_A = TRI_D0NP;   // PIN_20 <- P08.RERA
-  Tri EXT_PIN_D04n_A = TRI_D0NP;   // PIN_21 <- P08.RORY
-  Tri EXT_PIN_D05n_A = TRI_D0NP;   // PIN_22 <- P08.RYVO
-  Tri EXT_PIN_D06n_A = TRI_D0NP;   // PIN_23 <- P08.RAFY
-  Tri EXT_PIN_D07n_A = TRI_D0NP;   // PIN_24 <- P08.RAVU
-
-  Tri EXT_PIN_D00p_B = TRI_D0NP;   // PIN_17 <- P08.LULA
-  Tri EXT_PIN_D01p_B = TRI_D0NP;   // PIN_18 <- P08.LULA
-  Tri EXT_PIN_D02p_B = TRI_D0NP;   // PIN_19 <- P08.LULA
-  Tri EXT_PIN_D03p_B = TRI_D0NP;   // PIN_20 <- P08.LULA
-  Tri EXT_PIN_D04p_B = TRI_D0NP;   // PIN_21 <- P08.LULA
-  Tri EXT_PIN_D05p_B = TRI_D0NP;   // PIN_22 <- P08.LULA
-  Tri EXT_PIN_D06p_B = TRI_D0NP;   // PIN_23 <- P08.LULA
-  Tri EXT_PIN_D07p_B = TRI_D0NP;   // PIN_24 <- P08.LULA
-
-  Tri EXT_PIN_D00n_C = TRI_D0NP;   // PIN_17 -> P08.TOVO (debug something), SOMA (ext data latch) RALO (oam input)
-  Tri EXT_PIN_D01n_C = TRI_D0NP;   // PIN_18 -> P08.RUZY,RONY
-  Tri EXT_PIN_D02n_C = TRI_D0NP;   // PIN_19 -> P08.ROME,RAXY
-  Tri EXT_PIN_D03n_C = TRI_D0NP;   // PIN_20 -> P08.SAZA,SELO
-  Tri EXT_PIN_D04n_C = TRI_D0NP;   // PIN_21 -> P08.TEHE,SODY
-  Tri EXT_PIN_D05n_C = TRI_D0NP;   // PIN_22 -> P08.RATU,SAGO
-  Tri EXT_PIN_D06n_C = TRI_D0NP;   // PIN_23 -> P08.SOCA,RUPA
-  Tri EXT_PIN_D07n_C = TRI_D0NP;   // PIN_24 -> P08.RYBA,SAZY
-
-  Tri EXT_PIN_D00n_D = TRI_D0NP;   // PIN_17 <- P08.RUNE
-  Tri EXT_PIN_D01n_D = TRI_D0NP;   // PIN_18 <- P08.RYPU
-  Tri EXT_PIN_D02n_D = TRI_D0NP;   // PIN_19 <- P08.SULY
-  Tri EXT_PIN_D03n_D = TRI_D0NP;   // PIN_20 <- P08.SEZE
-  Tri EXT_PIN_D04n_D = TRI_D0NP;   // PIN_21 <- P08.RESY
-  Tri EXT_PIN_D05n_D = TRI_D0NP;   // PIN_22 <- P08.TAMU
-  Tri EXT_PIN_D06n_D = TRI_D0NP;   // PIN_23 <- P08.ROGY
-  Tri EXT_PIN_D07n_D = TRI_D0NP;   // PIN_24 <- P08.RYDA
+  Pin EXT_PIN_D00p = TRI_HZPU;   // PIN_17
+  Pin EXT_PIN_D01p = TRI_HZPU;   // PIN_18
+  Pin EXT_PIN_D02p = TRI_HZPU;   // PIN_19
+  Pin EXT_PIN_D03p = TRI_HZPU;   // PIN_20
+  Pin EXT_PIN_D04p = TRI_HZPU;   // PIN_21
+  Pin EXT_PIN_D05p = TRI_HZPU;   // PIN_22
+  Pin EXT_PIN_D06p = TRI_HZPU;   // PIN_23
+  Pin EXT_PIN_D07p = TRI_HZPU;   // PIN_24
 };
 
 //-----------------------------------------------------------------------------

@@ -334,6 +334,8 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
 //-----------------------------------------------------------------------------
 
+#pragma warning(disable : 4189)
+
 void GateBoy::tock_ext_bus() {
   top.ext_bus.EXT_PIN_WRp_C  = (top.ext_bus.EXT_PIN_WRp_A.tp());
   top.ext_bus.EXT_PIN_RDp_C  = (top.ext_bus.EXT_PIN_RDp_A.tp());
@@ -354,31 +356,30 @@ void GateBoy::tock_ext_bus() {
   top.ext_bus.EXT_PIN_A14n_C = (top.ext_bus.EXT_PIN_A14n_A.tp());
   top.ext_bus.EXT_PIN_A15n_C = (top.ext_bus.EXT_PIN_A15n_A.tp());
 
-  top.ext_bus.set_pin_data_z();
-
   uint16_t ext_addr = top.ext_bus.get_pin_addr();
-  uint8_t ext_data = top.ext_bus.get_pin_data_out();
 
   // CS seems to actually serve as a mux between rom/ram.
   // Based on the traces, the gb-live32 cart ignores the high bit of the
   // address and puts data on the bus on phase B if CSn is high.
 
   if (top.ext_bus.EXT_PIN_CSp_A.tp()) {
-    // Imem read or cmem read
-    uint8_t& mem_data = mem[ext_addr];
     if (top.ext_bus.EXT_PIN_WRp_A.tp()) {
-      mem_data = ext_data;
+      mem[ext_addr] = top.ext_bus.get_pin_data();
     }
-  
+
     if (top.ext_bus.EXT_PIN_RDp_A.tp()) {
-      top.ext_bus.set_pin_data_in(mem_data);
+      top.ext_bus.set_pin_data_in(mem[ext_addr]);
+    }
+    else {
+      top.ext_bus.set_pin_data_z();
     }
   }
   else {
-    // ROM read, ignores high bit
-    uint8_t& mem_data = mem[ext_addr & 0x7FFF];
-    if (top.ext_bus.EXT_PIN_RDp_A.tp()) {
-      top.ext_bus.set_pin_data_in(mem_data);
+    if (!(ext_addr & 0x8000) && top.ext_bus.EXT_PIN_RDp_A.tp()) {
+      top.ext_bus.set_pin_data_in(mem[ext_addr]);
+    }
+    else {
+      top.ext_bus.set_pin_data_z();
     }
   }
 }

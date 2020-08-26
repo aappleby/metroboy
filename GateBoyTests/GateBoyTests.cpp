@@ -285,14 +285,14 @@ int GateBoyTests::test_ext_bus() {
       wire A14 = !gb.top.ext_bus.EXT_PIN_A14n_A.tp();
       wire A15 = !gb.top.ext_bus.EXT_PIN_A15n_A.tp();
 
-      wire D00 = !gb.top.ext_bus.EXT_PIN_D00n_C.tp();
-      wire D01 = !gb.top.ext_bus.EXT_PIN_D01n_C.tp();
-      wire D02 = !gb.top.ext_bus.EXT_PIN_D02n_C.tp();
-      wire D03 = !gb.top.ext_bus.EXT_PIN_D03n_C.tp();
-      wire D04 = !gb.top.ext_bus.EXT_PIN_D04n_C.tp();
-      wire D05 = !gb.top.ext_bus.EXT_PIN_D05n_C.tp();
-      wire D06 = !gb.top.ext_bus.EXT_PIN_D06n_C.tp();
-      wire D07 = !gb.top.ext_bus.EXT_PIN_D07n_C.tp();
+      wire D00 = gb.top.ext_bus.EXT_PIN_D00p.qp();
+      wire D01 = gb.top.ext_bus.EXT_PIN_D01p.qp();
+      wire D02 = gb.top.ext_bus.EXT_PIN_D02p.qp();
+      wire D03 = gb.top.ext_bus.EXT_PIN_D03p.qp();
+      wire D04 = gb.top.ext_bus.EXT_PIN_D04p.qp();
+      wire D05 = gb.top.ext_bus.EXT_PIN_D05p.qp();
+      wire D06 = gb.top.ext_bus.EXT_PIN_D06p.qp();
+      wire D07 = gb.top.ext_bus.EXT_PIN_D07p.qp();
 
       ASSERT_EQ(CLK, CLK_WAVE[i] != 'x', "CLK failure at phase %d\n", i);
       ASSERT_EQ(WRn, WRn_WAVE[i] != 'x', "WRn failure at phase %d\n", i);

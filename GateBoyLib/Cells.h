@@ -97,7 +97,7 @@ inline RegDelta io_pin(wire HI, wire LO) {
 // half-bridge inverting output pin with output enable
 
 inline RegDelta io_pin(wire HI, wire LO, wire OEp) {
-  if (OEp) return DELTA_TRIZ;
+  if (!OEp) return DELTA_TRIZ;
 
   if ( HI &&  LO) return DELTA_TRI0;
   if ( HI && !LO) return DELTA_TRIZ;

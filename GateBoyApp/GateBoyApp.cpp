@@ -85,9 +85,9 @@ void GateBoyApp::app_init() {
 
   gb.set_boot_bit();
   //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
-  //printf("@0x0155 0x%02x\n", gb.mem[0x0155]);
-  //printf("@0x0156 0x%02x\n", gb.mem[0x0156]);
-  //printf("@0x0157 0x%02x\n", gb.mem[0x0157]);
+  printf("@0x0155 0x%02x\n", gb.mem[0x0155]);
+  printf("@0x0156 0x%02x\n", gb.mem[0x0156]);
+  printf("@0x0157 0x%02x\n", gb.mem[0x0157]);
 
   // ld (hl),a; jr -2;
   gb.mem[0x0155] = 0x77;
@@ -103,6 +103,20 @@ void GateBoyApp::app_init() {
   };
   gb.script_len = 5;
   gb.phase_total = 0;
+
+  /*
+  gb.mem[0xFE37] = 0x05;
+  gb.mem[0xFE49] = 0xF0;
+
+  gb.script = new Req[] {
+    { .addr = 0xFE37, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode
+    { .addr = 0x0000, .data = 0x00, .read = 0, .write = 0}, // read "ld (hl), a" opcode
+    { .addr = 0xFE49, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode
+    { .addr = 0x0000, .data = 0x00, .read = 0, .write = 0}, // read "ld (hl), a" opcode
+  };
+  gb.script_len = 4;
+  gb.phase_total = 0;
+  */
 
   //gb.dbg_req = { .addr = 0x00FF, .data = 0x00, .read = 1, .write = 0 };
   //gb.run(8);
@@ -261,7 +275,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
-  dump_painter.render(view, cursor, 512,      16, 16, DMG_ROM_bin);
+  //dump_painter.render(view, cursor, 512,      16, 16, DMG_ROM_bin);
+
+  dump_painter.render(view, cursor, 512,      16, 16, gateboy->mem + 0xFE00);
 
   //dump_painter.render(view, cursor, 512,      16, 16, gateboy->mem + 0xFE00);
   //dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);

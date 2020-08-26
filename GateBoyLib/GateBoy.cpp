@@ -133,10 +133,10 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* CD */ next_phase();
   /* DE */ next_phase();
   /* EF */ next_phase();
+  uint8_t bus_data = top.cpu_bus.get_bus_data();
   /* FG */ next_phase();
   /* GH */ next_phase();
   /* HA */ next_phase();
-  uint8_t bus_data = top.cpu_bus.get_bus_data();
   dbg_req = {0};
 
   return bus_data;
@@ -303,12 +303,12 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.cpu_bus.CPU_PIN_WRp = cpu_req.write;  
   top.cpu_bus.CPU_PIN_ADDR_EXTp = addr_ext;
 
-  if (DELTA_AB) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_AB) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
   if (DELTA_BC) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_CD) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_DE) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_EF) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_FG) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
+  if (DELTA_CD) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_DE) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_EF) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_FG) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
   if (DELTA_GH) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
   if (DELTA_HA) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
 

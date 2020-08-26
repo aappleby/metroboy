@@ -236,14 +236,18 @@ int GateBoyTests::test_ext_bus() {
     const char* WRn_WAVE = "ABCDEFGHABCDxxxHABCDEFGHABCDEFGHABCDEFGH";
     const char* RDn_WAVE = "xxxxxxxxxBCDEFGHxxxxxxxxxxxxxxxxxxxxxxxx";
     const char* CSn_WAVE = "ABCDEFGHABxxxxxxABCDEFGHABCDEFGHABCDEFGH";
+    
     const char* A00_WAVE = "ABCDEFGHABCDEFGHAxxxxxxxxBCDEFGHABCDEFGH";
     const char* A01_WAVE = "AxxxxxxxxBCDEFGHABCDEFGHABCDEFGHABCDEFGH";
     const char* A02_WAVE = "ABCDEFGHAxxxxxxxxBCDEFGHABCDEFGHABCDEFGH";
     const char* A03_WAVE = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    
     const char* A12_WAVE = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
     const char* A13_WAVE = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
     const char* A14_WAVE = "xxxxxxxxxBCDEFGHxxxxxxxxxxxxxxxxxxxxxxxx";
     const char* A15_WAVE = "ABxxxxxxABCDEFGHABxxxxxxABxxxxxxABCDEFGH";
+
+    /*
     const char* D00_WAVE = "ABCDEFGHABCDEFGHABxxxxxxxxCDEFGHABCDEFGH";
     const char* D01_WAVE = "ABCDEFGHABCDxxxxABxxxxxxxxxxxxxxxxxxxFGH";
     const char* D02_WAVE = "ABCDEFGHABCDEFGHABxxxxxxxxCDEFGHABCDEFGH";
@@ -252,6 +256,17 @@ int GateBoyTests::test_ext_bus() {
     const char* D05_WAVE = "ABCDEFGHABCDxxxxABxxxxxxxxCDEFGHABCDEFGH";
     const char* D06_WAVE = "ABCDEFGHABCDEFGHABxxxxxxxxCDEFGHABCDEFGH";
     const char* D07_WAVE = "ABxxxxxxxBCDxxxxABxxxxxxxxCDEFGHABCDEFGH";
+    */
+
+    //                     "AB      AB      AB      AB      AB      ";
+    const char* D00_WAVE = "HHHHHHHHHHHHHHHHHHxxxxxx^^HHHHHHHHHHHHHH";
+    const char* D01_WAVE = "^^HHHHHHHHHHxxxxHHxxxxxx^^xxxxxx^^^^^^^^";
+    const char* D02_WAVE = "HHHHHHHHHHHHHHHHHHxxxxxx^^HHHHHHHHHHHHHH";
+    const char* D03_WAVE = "HHxxxxxx^HHHxxxx??HHHHHHHHHHHHHHHHHHHHHH";
+    const char* D04_WAVE = "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH";
+    const char* D05_WAVE = "HHHHHHHHHHHHxxxx??xxxxxx^^HHHHHHHHHHHHHH";
+    const char* D06_WAVE = "HHHHHHHHHHHHHHHHHHxxxxxx^^HHHHHHHHHHHHHH";
+    const char* D07_WAVE = "HHxxxxxx^HHHxxxx??xxxxxx^^HHHHHHHHHHHHHH";
 
     for (int i = 0; i < 40; i++) {
       if ((i % 8) == 0) gb.dbg_req = script[i / 8];
@@ -521,7 +536,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   for (int i = 0; i < 160; i++) {
     uint8_t a = gb.mem[src + i];
     uint8_t b = gb.dbg_read(0xFE00 + i);
-    EXPECT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
+    ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }
 
   TEST_END();
@@ -574,7 +589,7 @@ int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, ui
       gb.mem[addr] = data_wr;
     }
     uint8_t data_rd = gb.dbg_read(addr);
-    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
   }
 
   for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
@@ -587,7 +602,7 @@ int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, ui
       gb.mem[addr] = data_wr;
     }
     uint8_t data_rd = gb.dbg_read(addr);
-    EXPECT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
   }
 
   TEST_END();
@@ -605,7 +620,7 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
     uint8_t data_in = uint8_t(i & mask);
     gb.dbg_write(addr, uint8_t(data_in));
     uint8_t data_out = gb.dbg_read(addr) & mask;
-    EXPECT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
   TEST_END();

@@ -83,6 +83,31 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 }
 
 //-----------------------------------------------------------------------------
+// half-bridge inverting output pin
+
+inline RegDelta io_pin(wire HI, wire LO) {
+  if ( HI &&  LO) return DELTA_TRI0;
+  if ( HI && !LO) return DELTA_TRIZ;
+  if (!HI &&  LO) return DELTA_XXXX;
+  if (!HI && !LO) return DELTA_TRI1;
+
+  return DELTA_XXXX;
+}
+
+// half-bridge inverting output pin with output enable
+
+inline RegDelta io_pin(wire HI, wire LO, wire OEp) {
+  if (OEp) return DELTA_TRIZ;
+
+  if ( HI &&  LO) return DELTA_TRI0;
+  if ( HI && !LO) return DELTA_TRIZ;
+  if (!HI &&  LO) return DELTA_XXXX;
+  if (!HI && !LO) return DELTA_TRI1;
+
+  return DELTA_XXXX;
+}
+
+//-----------------------------------------------------------------------------
 // top rung tadpole facing second rung dot
 
 inline RegDelta tribuf_6pn(wire OEp, wire D) {

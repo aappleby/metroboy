@@ -28,7 +28,7 @@ enum RegState : uint8_t {
 
 enum RegDelta : uint8_t {
   DELTA_NONE = 0b0000, // 00: delta not set yet
-  DELTA_TTTT = 0b0001, // 01: unused slot
+  DELTA_XXXX = 0b0001, // 01: error
   DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches
   DELTA_SSSS = 0b0011, // 03: meaningless, free slot
   DELTA_TRIZ = 0b0100, // 04: 
@@ -358,6 +358,46 @@ struct Tri : private RegBase {
       delta = d;
     }
     else if (delta == DELTA_HOLD) {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
+      delta = d;
+    }
+    else {
+      //CHECK_P(d == DELTA_TRIZ);
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
+    }
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+struct Pin : private RegBase {
+  Pin(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+
+  using RegBase::c;
+
+  inline wire qp()  const {
+    if (state == TRI_HZNP) bus_floating = true;
+    return as_wire();
+  }
+
+  inline wire qn()  const {
+    if (state == TRI_HZNP) bus_floating = true;
+    return !as_wire();
+  }
+
+  inline void operator = (RegDelta d) {
+    CHECK_P(is_tri());
+
+    if (delta == DELTA_NONE) {
+      delta = d;
+    }
+    else if (delta == DELTA_HOLD) {
+      __debugbreak();
       CHECK_P(d == DELTA_TRIZ);
     }
     else if (delta == DELTA_TRIZ) {

@@ -406,19 +406,19 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.PEDU*/ wire PEDUn = not1(RUMAp);
     /*p25.PONY*/ wire PONYn = not1(REHOp);
 
-    /*p25.LEXE*/ VRAM_PIN_A00n = LEXEn;
-    /*p25.LOZU*/ VRAM_PIN_A01n = LOZUn;
-    /*p25.LACA*/ VRAM_PIN_A02n = LACAn;
-    /*p25.LUVO*/ VRAM_PIN_A03n = LUVOn;
-    /*p25.LOLY*/ VRAM_PIN_A04n = LOLYn;
-    /*p25.LALO*/ VRAM_PIN_A05n = LALOn;
-    /*p25.LEFA*/ VRAM_PIN_A06n = LEFAn;
-    /*p25.LUBY*/ VRAM_PIN_A07n = LUBYn;
-    /*p25.TUJY*/ VRAM_PIN_A08n = TUJYn;
-    /*p25.TAGO*/ VRAM_PIN_A09n = TAGOn;
-    /*p25.NUVA*/ VRAM_PIN_A10n = NUVAn;
-    /*p25.PEDU*/ VRAM_PIN_A11n = PEDUn;
-    /*p25.PONY*/ VRAM_PIN_A12n = PONYn;
+    VRAM_PIN_A00p = io_pin(LEXEn, LEXEn);
+    VRAM_PIN_A01p = io_pin(LOZUn, LOZUn);
+    VRAM_PIN_A02p = io_pin(LACAn, LACAn);
+    VRAM_PIN_A03p = io_pin(LUVOn, LUVOn);
+    VRAM_PIN_A04p = io_pin(LOLYn, LOLYn);
+    VRAM_PIN_A05p = io_pin(LALOn, LALOn);
+    VRAM_PIN_A06p = io_pin(LEFAn, LEFAn);
+    VRAM_PIN_A07p = io_pin(LUBYn, LUBYn);
+    VRAM_PIN_A08p = io_pin(TUJYn, TUJYn);
+    VRAM_PIN_A09p = io_pin(TAGOn, TAGOn);
+    VRAM_PIN_A10p = io_pin(NUVAn, NUVAn);
+    VRAM_PIN_A11p = io_pin(PEDUn, PEDUn);
+    VRAM_PIN_A12p = io_pin(PONYn, PONYn);
   }
 
   //----------------------------------------

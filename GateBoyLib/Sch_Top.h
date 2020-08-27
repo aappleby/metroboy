@@ -30,15 +30,9 @@ struct SchematicTop {
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n);
 
-  // -> top.AMAB, top.APAG
-  /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn() const { 
-     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
-     return AJUJ_OAM_BUSYn;
-  }
-
   // -> oam.WYJA, oam.WUKU, oam.GUKO, top.APAG
   /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp() const { 
-      /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn()); // def and
+      /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn); // def and
       return AMAB_CPU_READ_OAMp;
   }
 
@@ -73,6 +67,7 @@ struct SchematicTop {
   /*p04.DECY*/ Sig DECY_LATCH_EXTn;
 
   /*p28.AJON*/ Sig AJON_OAM_BUSY;
+  /*p28.AJUJ*/ Sig AJUJ_OAM_BUSYn;
 
   //-----------------------------------------------------------------------------
 

@@ -38,10 +38,15 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp());
   /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
 
+  /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_LATCHp.qp());
+  /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(), _ROMO_PRELOAD_DONEn, tile_fetcher._NYKA_FETCH_DONE_P11.qp(), tile_fetcher._PORY_FETCH_DONE_P12.qp());
+  // -> sprite fetcher, top.TEVO
+  /*p27.TAVE*/ TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
+
   // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
   /*p27.TEVO*/ TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
                                       pix_pipe.SUZU_WIN_FIRST_TILEne(),
-                                      TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+                                      TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
 
   clk_reg.tick_slow(CLK, CLKGOOD, *this);
   lcd_reg.tick(*this);

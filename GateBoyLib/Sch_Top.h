@@ -123,13 +123,6 @@ struct SchematicTop {
     return ACYL_SCANNINGp;
   }
 
-  // -> sprite fetcher, top.TEVO
-  /*p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp() const {
-    /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_LATCHp.qp());
-    /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(), _ROMO_PRELOAD_DONEn, tile_fetcher._NYKA_FETCH_DONE_P11.qp(), tile_fetcher._PORY_FETCH_DONE_P12.qp());
-    return  not1(_SUVU_PRELOAD_DONE_TRIGn);
-  }
-
   //-----------------------------------------------------------------------------
 
   /*p07.UBET*/ Sig UBET_T1p;
@@ -150,6 +143,8 @@ struct SchematicTop {
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
 
   /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
+
+  /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
 
   //-----------------------------------------------------------------------------
 

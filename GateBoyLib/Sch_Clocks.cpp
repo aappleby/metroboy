@@ -60,7 +60,6 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
   d("CPU_PIN_BUKE_AxxxxxGH : %d\n", CPU_PIN_BUKE_AxxxxxGH.tp());
   d("CPU_PIN_BOMA_Axxxxxxx : %d\n", CPU_PIN_BOMA_Axxxxxxx.tp());
   d("CPU_PIN_BOGA_xBCDEFGH : %d\n", CPU_PIN_BOGA_xBCDEFGH.tp());
-  d("EXT_PIN_CLK_xxxxEFGH  : %d\n", EXT_PIN_CLK_xxxxEFGH.tp());
   d("\n");
 
   d("----------  Reset   ----------\n");
@@ -150,9 +149,8 @@ void ClockRegisters::tock_clk_slow(const wire CLK, wire CLKGOOD, SchematicTop& t
   CPU_PIN_BOMA_Axxxxxxx = BOMA_Axxxxxxx;
   CPU_PIN_BOGA_xBCDEFGH = BOGA_xBCDEFGH;
 
-  /* PIN_75 */ EXT_PIN_CLK_xxxxEFGH = BUDE_xxxxEFGH;
+  top.ext_bus.EXT_PIN_CLK = io_pin(BUDE_xxxxEFGH, BUDE_xxxxEFGH);
 
-  //CPU_PIN_EXT_CLKGOOD = (wire)SYS_PIN_CLK_A.tp();
   CPU_PIN_EXT_CLKGOOD = CLKGOOD;
 }
 

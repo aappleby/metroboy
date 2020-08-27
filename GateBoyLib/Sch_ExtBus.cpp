@@ -9,31 +9,32 @@ using namespace Schematics;
 
 void ExtBus::dump(Dumper& d) const {
   d("---------- Ext Bus  ----------\n");
-  d("EXT BUS ADDR    : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-    NYRE_EXT_ADDR_LATCH_14p.c(), LONU_EXT_ADDR_LATCH_13p.c(), LOBU_EXT_ADDR_LATCH_12p.c(), LUMY_EXT_ADDR_LATCH_11p.c(),
-    PATE_EXT_ADDR_LATCH_10p.c(), LYSA_EXT_ADDR_LATCH_09p.c(), LUNO_EXT_ADDR_LATCH_08p.c(), ARYM_EXT_ADDR_LATCH_07p.c(),
-    AROS_EXT_ADDR_LATCH_06p.c(), ATEV_EXT_ADDR_LATCH_05p.c(), AVYS_EXT_ADDR_LATCH_04p.c(), ARET_EXT_ADDR_LATCH_03p.c(),
-    ALYR_EXT_ADDR_LATCH_02p.c(), APUR_EXT_ADDR_LATCH_01p.c(), ALOR_EXT_ADDR_LATCH_00p.c());
-  d("EXT BUS DATA    : %c%c%c%c%c%c%c%c\n",
-    SAZY_EXT_DATA_LATCH_D7n.c(), RUPA_EXT_DATA_LATCH_D6n.c(), SAGO_EXT_DATA_LATCH_D5n.c(), SODY_EXT_DATA_LATCH_D4n.c(),
-    SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
+  d("EXT_PIN_CLK     : %d\n", EXT_PIN_CLK.c());
+  d("EXT_PIN_RDn     : %c\n", EXT_PIN_RDn.c());
+  d("EXT_PIN_WRn     : %c\n", EXT_PIN_WRn.c());
+  d("EXT_PIN_CSn     : %c\n", EXT_PIN_CSn.c());
   d("\n");
 
-  d("EXT PIN RDn     : %c\n", EXT_PIN_RDn.c());
-  d("EXT PIN WRn     : %c\n", EXT_PIN_WRn.c());
-  d("EXT PIN CSn     : %c\n", EXT_PIN_CSn.c());
-
-  d("EXT PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+  d("EXT_PIN_ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     EXT_PIN_A15p.c(), EXT_PIN_A14p.c(), EXT_PIN_A13p.c(), EXT_PIN_A12p.c(),
     EXT_PIN_A11p.c(), EXT_PIN_A10p.c(), EXT_PIN_A09p.c(), EXT_PIN_A08p.c(),
     EXT_PIN_A07p.c(), EXT_PIN_A06p.c(), EXT_PIN_A05p.c(), EXT_PIN_A04p.c(),
     EXT_PIN_A03p.c(), EXT_PIN_A02p.c(), EXT_PIN_A01p.c(), EXT_PIN_A00p.c());
-
-  d("EXT PIN DATA    : %c%c%c%c%c%c%c%c\n",
+  d("EXT_PIN_DATA    : %c%c%c%c%c%c%c%c\n",
     EXT_PIN_D07p.c(), EXT_PIN_D06p.c(), EXT_PIN_D05p.c(), EXT_PIN_D04p.c(),
     EXT_PIN_D03p.c(), EXT_PIN_D02p.c(), EXT_PIN_D01p.c(), EXT_PIN_D00p.c());
-
   d("\n");
+
+  d("EXT ADDR LATCH  : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+    NYRE_EXT_ADDR_LATCH_14p.c(), LONU_EXT_ADDR_LATCH_13p.c(), LOBU_EXT_ADDR_LATCH_12p.c(), LUMY_EXT_ADDR_LATCH_11p.c(),
+    PATE_EXT_ADDR_LATCH_10p.c(), LYSA_EXT_ADDR_LATCH_09p.c(), LUNO_EXT_ADDR_LATCH_08p.c(), ARYM_EXT_ADDR_LATCH_07p.c(),
+    AROS_EXT_ADDR_LATCH_06p.c(), ATEV_EXT_ADDR_LATCH_05p.c(), AVYS_EXT_ADDR_LATCH_04p.c(), ARET_EXT_ADDR_LATCH_03p.c(),
+    ALYR_EXT_ADDR_LATCH_02p.c(), APUR_EXT_ADDR_LATCH_01p.c(), ALOR_EXT_ADDR_LATCH_00p.c());
+  d("EXT DATA LATCH  : %c%c%c%c%c%c%c%c\n",
+    SAZY_EXT_DATA_LATCH_D7n.c(), RUPA_EXT_DATA_LATCH_D6n.c(), SAGO_EXT_DATA_LATCH_D5n.c(), SODY_EXT_DATA_LATCH_D4n.c(),
+    SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
+  d("\n");
+
 }
 
 //------------------------------------------------------------------------------
@@ -86,6 +87,11 @@ void ExtBus::tock(SchematicTop& top) {
   }
 
   {
+#if 0
+    /*p08.TYNU*/ wire TYNU_ADDR_RAM = (CPU_BUS_A15 && CPU_BUS_A14) || (CPU_BUS_A13 && !CPU_BUS_A14 && CPU_BUS_A15);
+    EXT_PIN_CSn = nand(xxCDEFGH, CPU_PIN_ADDR_EXTp, TYNU_ADDR_RAM, 0000_FDFFp);
+#endif
+
     /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.CPU_PIN_ADDR_EXTp.tp());
     /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(UNOR_MODE_DBG2p, AGUT_xxCDEFGH);
     /*#p01.ABUZ*/ wire ABUZ_xxCDEFGH = not1(AWOD_ABxxxxxx);
@@ -104,6 +110,11 @@ void ExtBus::tock(SchematicTop& top) {
 
   // DMA address / CPU address latch -> ext addr pins
   {
+#if 0
+    NYRE_EXT_ADDR_LATCH_14p = tp_latch_A(and(CPU_PIN_ADDR_EXTp, or(CPU_BUS_A13, CPU_BUS_A14, !CPU_BUS_A15)),
+                                         CPU_BUS_A14);
+
+#endif
     /*p08.MULE*/ wire MULE_MODE_DBG1n  = not1(UMUT_MODE_DBG1p);
     /*p08.SORE*/ wire SORE_0000_7FFFp  = not1(top.cpu_bus.CPU_BUS_A15.tp()); 
     /*p08.TEVY*/ wire TEVY_8000_9FFFn  = or3(top.cpu_bus.CPU_BUS_A13.tp(), top.cpu_bus.CPU_BUS_A14.tp(), SORE_0000_7FFFp);

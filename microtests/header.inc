@@ -8,6 +8,7 @@
 .memorymap
   defaultslot 0 
   slot 0 start $0000 size $4000
+  slot 1 start $4000 size $4000
 .endme
 .rombanksize $4000
 .rombanks 2

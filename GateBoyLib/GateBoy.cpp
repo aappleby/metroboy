@@ -189,8 +189,11 @@ void GateBoy::next_phase() {
     }
   }
 
-  // Bus address _must_ change on AB, see trace
   if (DELTA_AB) {
+    cpu_req.addr &= 0x00FF;
+  }
+
+  if (DELTA_BC) {
     if (!cpu_en || dbg_req.read || dbg_req.write) {
       cpu_req = dbg_req;
     }

@@ -9,10 +9,8 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void VramBus::dump(Dumper& d, const SchematicTop& top) const {
+void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
   d("---------- VRAM Bus ----------\n");
-  d("MAP X                : %d\n", get_map_x(top));
-  d("MAP Y                : %d\n", get_map_y(top));
 
   /*p25.XEDU*/ DUMP(XEDU_CPU_VRAM_RDn);
   /*p04.AHOC*/ DUMP(AHOC_DMA_VRAM_RDn);
@@ -24,6 +22,7 @@ void VramBus::dump(Dumper& d, const SchematicTop& top) const {
   /*p26.BEJE*/ DUMP(BEJE_BGD_TILE_READn);
   /*p25.XUCY*/ DUMP(XUCY_WIN_TILE_READn);
   /*p25.VUZA*/ DUMP(VUZA_TILE_BANKp);
+  d("\n");
 
   int TILE_DA = pack_p(LEGU_TILE_DA0n.qn(), NUDU_TILE_DA1n.qn(), MUKU_TILE_DA2n.qn(), LUZO_TILE_DA3n.qn(),
                    MEGU_TILE_DA4n.qn(), MYJY_TILE_DA5n.qn(), NASA_TILE_DA6n.qn(), NEFO_TILE_DA7n.qn());
@@ -38,6 +37,7 @@ void VramBus::dump(Dumper& d, const SchematicTop& top) const {
   d("TILE_DB      : 0x%02x\n", TILE_DB);
   d("SPRITE_DA    : 0x%02x\n", SPRITE_DA);
   d("SPRITE_DB    : 0x%02x\n", SPRITE_DB);
+  d("\n");
 
   d("VRAM BUS ADDR    : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     get_bus_addr() | 0x8000,
@@ -45,28 +45,20 @@ void VramBus::dump(Dumper& d, const SchematicTop& top) const {
     VRAM_BUS_A08n.c(), VRAM_BUS_A07n.c(), VRAM_BUS_A06n.c(), VRAM_BUS_A05n.c(),
     VRAM_BUS_A04n.c(), VRAM_BUS_A03n.c(), VRAM_BUS_A02n.c(), VRAM_BUS_A01n.c(),
     VRAM_BUS_A00n.c());
-
   d("VRAM BUS DATA    : %c%c%c%c%c%c%c%c\n",
     VRAM_BUS_D7p.c(), VRAM_BUS_D6p.c(), VRAM_BUS_D5p.c(), VRAM_BUS_D4p.c(),
     VRAM_BUS_D3p.c(), VRAM_BUS_D2p.c(), VRAM_BUS_D1p.c(), VRAM_BUS_D0p.c());
+  d("\n");
 
-  d("VRAM PIN MCSn    : %c%c%c\n", VRAM_PIN_CSn.c());
-  d("VRAM PIN MOEn    : %c%c%c\n", VRAM_PIN_OEn.c());
-  d("VRAM PIN MWRn    : %c%c%c\n", VRAM_PIN_WRn.c());
+  d("VRAM PIN MCSn    : %c\n", VRAM_PIN_CSn.c());
+  d("VRAM PIN MOEn    : %c\n", VRAM_PIN_OEn.c());
+  d("VRAM PIN MWRn    : %c\n", VRAM_PIN_WRn.c());
   d("VRAM PIN ADDR    : 0x%04x\n", get_pin_addr() | 0x8000);
-  d("VRAM PIN DATA    : %c%c%c%c%c%c%c%c\n",
+  d("VRAM PIN DATA    : %02x %c%c%c%c%c%c%c%c\n",
+    get_bus_data(),
     VRAM_PIN_D07p.c(), VRAM_PIN_D06p.c(), VRAM_PIN_D05p.c(), VRAM_PIN_D04p.c(),
     VRAM_PIN_D03p.c(), VRAM_PIN_D02p.c(), VRAM_PIN_D01p.c(), VRAM_PIN_D00p.c());
   d("\n");
-}
-
-
-int VramBus::get_map_x(const SchematicTop& /*top*/) const {
-  return pack_p(BABE_MAP_X0S, ABOD_MAP_X1S, BEWY_MAP_X2S, BYCA_MAP_X3S, ACUL_MAP_X4S, 0, 0, 0);
-}
-
-int VramBus::get_map_y(const SchematicTop& /*top*/) const {
-  return pack_p(ETAM_MAP_Y0S, DOTO_MAP_Y1S, DABA_MAP_Y2S, EFYK_MAP_Y3S, EJOK_MAP_Y4S, 0, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -225,39 +217,42 @@ void VramBus::tock(SchematicTop& top) {
   }
 
   {
-    /*#p26.FAFO*/ FAFO_TILE_Y0S = add_s(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.qn(), 0);
-    /*#p26.FAFO*/ FAFO_TILE_Y0C = add_c(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.qn(), 0);
-    /* p26.EMUX*/ EMUX_TILE_Y1S = add_s(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.qn(), FAFO_TILE_Y0C);
-    /* p26.EMUX*/ EMUX_TILE_Y1C = add_c(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.qn(), FAFO_TILE_Y0C);
-    /* p26.ECAB*/ ECAB_TILE_Y2S = add_s(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.qn(), EMUX_TILE_Y1C);
-    /* p26.ECAB*/ ECAB_TILE_Y2C = add_c(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.qn(), EMUX_TILE_Y1C);
-    /* p26.ETAM*/ ETAM_MAP_Y0S  = add_s(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.qn(), ECAB_TILE_Y2C);
-    /* p26.ETAM*/ ETAM_MAP_Y0C  = add_c(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.qn(), ECAB_TILE_Y2C);
-    /* p26.DOTO*/ DOTO_MAP_Y1S  = add_s(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.qn(), ETAM_MAP_Y0C);
-    /* p26.DOTO*/ DOTO_MAP_Y1C  = add_c(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.qn(), ETAM_MAP_Y0C);
-    /* p26.DABA*/ DABA_MAP_Y2S  = add_s(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.qn(), DOTO_MAP_Y1C);
-    /* p26.DABA*/ DABA_MAP_Y2C  = add_c(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.qn(), DOTO_MAP_Y1C);
-    /* p26.EFYK*/ EFYK_MAP_Y3S  = add_s(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.qn(), DABA_MAP_Y2C);
-    /* p26.EFYK*/ EFYK_MAP_Y3C  = add_c(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.qn(), DABA_MAP_Y2C);
-    /* p26.EJOK*/ EJOK_MAP_Y4S  = add_s(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.qn(), EFYK_MAP_Y3C);
-    /* p26.EJOK*/ EJOK_MAP_Y4C  = add_c(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.qn(), EFYK_MAP_Y3C);
+#pragma warning(push)
+#pragma warning(disable:4189)
+    /*#p26.FAFO*/ wire FAFO_TILE_Y0S = add_s(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.qn(), 0);
+    /*#p26.FAFO*/ wire FAFO_TILE_Y0C = add_c(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.qn(), 0);
+    /* p26.EMUX*/ wire EMUX_TILE_Y1S = add_s(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.qn(), FAFO_TILE_Y0C);
+    /* p26.EMUX*/ wire EMUX_TILE_Y1C = add_c(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.qn(), FAFO_TILE_Y0C);
+    /* p26.ECAB*/ wire ECAB_TILE_Y2S = add_s(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.qn(), EMUX_TILE_Y1C);
+    /* p26.ECAB*/ wire ECAB_TILE_Y2C = add_c(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.qn(), EMUX_TILE_Y1C);
+    /* p26.ETAM*/ wire ETAM_MAP_Y0S  = add_s(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.qn(), ECAB_TILE_Y2C);
+    /* p26.ETAM*/ wire ETAM_MAP_Y0C  = add_c(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.qn(), ECAB_TILE_Y2C);
+    /* p26.DOTO*/ wire DOTO_MAP_Y1S  = add_s(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.qn(), ETAM_MAP_Y0C);
+    /* p26.DOTO*/ wire DOTO_MAP_Y1C  = add_c(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.qn(), ETAM_MAP_Y0C);
+    /* p26.DABA*/ wire DABA_MAP_Y2S  = add_s(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.qn(), DOTO_MAP_Y1C);
+    /* p26.DABA*/ wire DABA_MAP_Y2C  = add_c(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.qn(), DOTO_MAP_Y1C);
+    /* p26.EFYK*/ wire EFYK_MAP_Y3S  = add_s(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.qn(), DABA_MAP_Y2C);
+    /* p26.EFYK*/ wire EFYK_MAP_Y3C  = add_c(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.qn(), DABA_MAP_Y2C);
+    /* p26.EJOK*/ wire EJOK_MAP_Y4S  = add_s(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.qn(), EFYK_MAP_Y3C);
+    /* p26.EJOK*/ wire EJOK_MAP_Y4C  = add_c(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.qn(), EFYK_MAP_Y3C);
 
-    /*#p26.ATAD*/ ATAD_TILE_X0S = add_s(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.qn(), 0);
-    /*#p26.ATAD*/ ATAD_TILE_X0C = add_c(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.qn(), 0);
-    /* p26.BEHU*/ BEHU_TILE_X1S = add_s(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.qn(), ATAD_TILE_X0C);
-    /* p26.BEHU*/ BEHU_TILE_X1C = add_c(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.qn(), ATAD_TILE_X0C);
-    /* p26.APYH*/ APYH_TILE_X2S = add_s(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.qn(), BEHU_TILE_X1C);
-    /* p26.APYH*/ APYH_TILE_X2C = add_c(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.qn(), BEHU_TILE_X1C);
-    /* p26.BABE*/ BABE_MAP_X0S  = add_s(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.qn(), APYH_TILE_X2C);
-    /* p26.BABE*/ BABE_MAP_X0C  = add_c(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.qn(), APYH_TILE_X2C);
-    /* p26.ABOD*/ ABOD_MAP_X1S  = add_s(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.qn(), BABE_MAP_X0C);
-    /* p26.ABOD*/ ABOD_MAP_X1C  = add_c(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.qn(), BABE_MAP_X0C);
-    /* p26.BEWY*/ BEWY_MAP_X2S  = add_s(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.qn(), ABOD_MAP_X1C);
-    /* p26.BEWY*/ BEWY_MAP_X2C  = add_c(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.qn(), ABOD_MAP_X1C);
-    /* p26.BYCA*/ BYCA_MAP_X3S  = add_s(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.qn(), BEWY_MAP_X2C);
-    /* p26.BYCA*/ BYCA_MAP_X3C  = add_c(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.qn(), BEWY_MAP_X2C);
-    /* p26.ACUL*/ ACUL_MAP_X4S  = add_s(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.qn(), BYCA_MAP_X3C);
-    /* p26.ACUL*/ ACUL_MAP_X4C  = add_c(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.qn(), BYCA_MAP_X3C);
+    /*#p26.ATAD*/ wire ATAD_TILE_X0S = add_s(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.qn(), 0);
+    /*#p26.ATAD*/ wire ATAD_TILE_X0C = add_c(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.qn(), 0);
+    /* p26.BEHU*/ wire BEHU_TILE_X1S = add_s(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.qn(), ATAD_TILE_X0C);
+    /* p26.BEHU*/ wire BEHU_TILE_X1C = add_c(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.qn(), ATAD_TILE_X0C);
+    /* p26.APYH*/ wire APYH_TILE_X2S = add_s(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.qn(), BEHU_TILE_X1C);
+    /* p26.APYH*/ wire APYH_TILE_X2C = add_c(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.qn(), BEHU_TILE_X1C);
+    /* p26.BABE*/ wire BABE_MAP_X0S  = add_s(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.qn(), APYH_TILE_X2C);
+    /* p26.BABE*/ wire BABE_MAP_X0C  = add_c(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.qn(), APYH_TILE_X2C);
+    /* p26.ABOD*/ wire ABOD_MAP_X1S  = add_s(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.qn(), BABE_MAP_X0C);
+    /* p26.ABOD*/ wire ABOD_MAP_X1C  = add_c(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.qn(), BABE_MAP_X0C);
+    /* p26.BEWY*/ wire BEWY_MAP_X2S  = add_s(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.qn(), ABOD_MAP_X1C);
+    /* p26.BEWY*/ wire BEWY_MAP_X2C  = add_c(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.qn(), ABOD_MAP_X1C);
+    /* p26.BYCA*/ wire BYCA_MAP_X3S  = add_s(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.qn(), BEWY_MAP_X2C);
+    /* p26.BYCA*/ wire BYCA_MAP_X3C  = add_c(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.qn(), BEWY_MAP_X2C);
+    /* p26.ACUL*/ wire ACUL_MAP_X4S  = add_s(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.qn(), BYCA_MAP_X3C);
+    /* p26.ACUL*/ wire ACUL_MAP_X4C  = add_c(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.qn(), BYCA_MAP_X3C);
+#pragma warning(pop)
 
     // Background map read
     {

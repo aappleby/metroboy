@@ -12,9 +12,6 @@ struct VramBus {
   void tock(SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
-  int get_map_x(const SchematicTop& top) const;
-  int get_map_y(const SchematicTop& top) const;
-
   int get_bus_addr() const {
     return pack_p(!VRAM_BUS_A00n.tp(), !VRAM_BUS_A01n.tp(), !VRAM_BUS_A02n.tp(), !VRAM_BUS_A03n.tp(),
                   !VRAM_BUS_A04n.tp(), !VRAM_BUS_A05n.tp(), !VRAM_BUS_A06n.tp(), !VRAM_BUS_A07n.tp(),
@@ -158,40 +155,6 @@ struct VramBus {
 
   //----------------------------------------
   // Signals for debugging
-
-  /*p26.FAFO*/ Sig FAFO_TILE_Y0S; 
-  /*p26.FAFO*/ Sig FAFO_TILE_Y0C; 
-  /*p26.EMUX*/ Sig EMUX_TILE_Y1S; 
-  /*p26.EMUX*/ Sig EMUX_TILE_Y1C; 
-  /*p26.ECAB*/ Sig ECAB_TILE_Y2S; 
-  /*p26.ECAB*/ Sig ECAB_TILE_Y2C; 
-  /*p26.ETAM*/ Sig ETAM_MAP_Y0S;
-  /*p26.ETAM*/ Sig ETAM_MAP_Y0C;
-  /*p26.DOTO*/ Sig DOTO_MAP_Y1S;
-  /*p26.DOTO*/ Sig DOTO_MAP_Y1C;
-  /*p26.DABA*/ Sig DABA_MAP_Y2S;
-  /*p26.DABA*/ Sig DABA_MAP_Y2C;
-  /*p26.EFYK*/ Sig EFYK_MAP_Y3S;
-  /*p26.EFYK*/ Sig EFYK_MAP_Y3C;
-  /*p26.EJOK*/ Sig EJOK_MAP_Y4S;
-  /*p26.EJOK*/ Sig EJOK_MAP_Y4C;
-
-  /*p26.ATAD*/ Sig ATAD_TILE_X0S; 
-  /*p26.ATAD*/ Sig ATAD_TILE_X0C; 
-  /*p26.BEHU*/ Sig BEHU_TILE_X1S; 
-  /*p26.BEHU*/ Sig BEHU_TILE_X1C; 
-  /*p26.APYH*/ Sig APYH_TILE_X2S; 
-  /*p26.APYH*/ Sig APYH_TILE_X2C; 
-  /*p26.BABE*/ Sig BABE_MAP_X0S;
-  /*p26.BABE*/ Sig BABE_MAP_X0C;
-  /*p26.ABOD*/ Sig ABOD_MAP_X1S;
-  /*p26.ABOD*/ Sig ABOD_MAP_X1C;
-  /*p26.BEWY*/ Sig BEWY_MAP_X2S;
-  /*p26.BEWY*/ Sig BEWY_MAP_X2C;
-  /*p26.BYCA*/ Sig BYCA_MAP_X3S;
-  /*p26.BYCA*/ Sig BYCA_MAP_X3C;
-  /*p26.ACUL*/ Sig ACUL_MAP_X4S;
-  /*p26.ACUL*/ Sig ACUL_MAP_X4C;
 
   /*p25.XEDU*/ Sig XEDU_CPU_VRAM_RDn;
   /*p04.AHOC*/ Sig AHOC_DMA_VRAM_RDn;

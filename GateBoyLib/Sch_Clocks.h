@@ -227,8 +227,6 @@ struct ClockRegisters {
   // These two clocks are the only ones that run before CPU_PIN_READYp is asserted.
   Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
   Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
-  
-  Tri EXT_PIN_CLK_xxxxEFGH  = TRI_HZNP; // PIN_75 <- P01.BUDE/BEVA
 };
 
 //-----------------------------------------------------------------------------

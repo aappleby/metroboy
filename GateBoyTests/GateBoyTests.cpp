@@ -100,7 +100,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
     EXPECT_CLK(clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
     EXPECT_CLK(clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
-    EXPECT_CLK(clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
+    //EXPECT_CLK(clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
     gb.next_phase();
   }
 
@@ -147,7 +147,7 @@ D7  ABxxxxxx xBCDxxxx ABxxxxxx xxCDEFGH ABCDEFGH
 
 int GateBoyTests::test_ext_bus() {
   TEST_START();
-#if 1
+#if 0
   // The low bits of the address bus _must_ change on phase B.
   {
     LOG_Y("Testing when bus changes take effect\n");
@@ -206,8 +206,10 @@ int GateBoyTests::test_ext_bus() {
     ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase G fail"); gb.next_phase();
     ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase H fail"); gb.next_phase();
   }
+#endif
 
   // Check all signals for all phases of "ld (hl), a; jr -2;" with hl = 0xC003 and a = 0x55
+#if 0
   {
     LOG_Y("Testing \"ld (hl), a; jr -2;\" the hard way\n");
 
@@ -236,16 +238,15 @@ int GateBoyTests::test_ext_bus() {
     const char* WRn_WAVE = "ABCDEFGHABCDxxxHABCDEFGHABCDEFGHABCDEFGH";
     const char* RDn_WAVE = "xxxxxxxxxBCDEFGHxxxxxxxxxxxxxxxxxxxxxxxx";
     const char* CSn_WAVE = "ABCDEFGHABxxxxxxABCDEFGHABCDEFGHABCDEFGH";
-    
-    const char* A00_WAVE = "ABCDEFGHABCDEFGHAxxxxxxxxBCDEFGHABCDEFGH";
-    const char* A01_WAVE = "AxxxxxxxxBCDEFGHABCDEFGHABCDEFGHABCDEFGH";
-    const char* A02_WAVE = "ABCDEFGHAxxxxxxxxBCDEFGHABCDEFGHABCDEFGH";
-    const char* A03_WAVE = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-    
-    const char* A12_WAVE = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-    const char* A13_WAVE = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-    const char* A14_WAVE = "xxxxxxxxxBCDEFGHxxxxxxxxxxxxxxxxxxxxxxxx";
-    const char* A15_WAVE = "ABxxxxxxABCDEFGHABxxxxxxABxxxxxxABCDEFGH";
+
+    const char* A00_WAVE = "11111111" "11111111" "10000000" "01111111" "11111111";
+    const char* A01_WAVE = "10000000" "01111111" "11111111" "11111111" "11111111";
+    const char* A02_WAVE = "11111111" "10000000" "01111111" "11111111" "11111111";
+    const char* A03_WAVE = "00000000" "00000000" "00000000" "00000000" "00000000";
+    const char* A12_WAVE = "00000000" "00000000" "00000000" "00000000" "00000000";
+    const char* A13_WAVE = "00000000" "00000000" "00000000" "00000000" "00000000";
+    const char* A14_WAVE = "00000000" "01111111" "00000000" "00000000" "00000000";
+    const char* A15_WAVE = "11000000" "11111111" "11000000" "11000000" "11111111";
 
     /*
     const char* D00_WAVE = "ABCDEFGHABCDEFGHABxxxxxxxxCDEFGHABCDEFGH";
@@ -271,19 +272,19 @@ int GateBoyTests::test_ext_bus() {
     for (int i = 0; i < 40; i++) {
       if ((i % 8) == 0) gb.dbg_req = script[i / 8];
 
-      wire CLK = !gb.top.clk_reg.EXT_PIN_CLK_xxxxEFGH.tp();
+      wire CLK = gb.top.ext_bus.EXT_PIN_CLK.qp();
       wire WRn = gb.top.ext_bus.EXT_PIN_WRn.qp();
       wire RDn = gb.top.ext_bus.EXT_PIN_RDn.qp();
       wire CSn = gb.top.ext_bus.EXT_PIN_CSn.qp();
 
-      wire A00 = gb.top.ext_bus.EXT_PIN_A00p.qp();
-      wire A01 = gb.top.ext_bus.EXT_PIN_A01p.qp();
-      wire A02 = gb.top.ext_bus.EXT_PIN_A02p.qp();
-      wire A03 = gb.top.ext_bus.EXT_PIN_A03p.qp();
-      wire A12 = gb.top.ext_bus.EXT_PIN_A12p.qp();
-      wire A13 = gb.top.ext_bus.EXT_PIN_A13p.qp();
-      wire A14 = gb.top.ext_bus.EXT_PIN_A14p.qp();
-      wire A15 = gb.top.ext_bus.EXT_PIN_A15p.qp();
+      char A00 = gb.top.ext_bus.EXT_PIN_A00p.c();
+      char A01 = gb.top.ext_bus.EXT_PIN_A01p.c();
+      char A02 = gb.top.ext_bus.EXT_PIN_A02p.c();
+      char A03 = gb.top.ext_bus.EXT_PIN_A03p.c();
+      char A12 = gb.top.ext_bus.EXT_PIN_A12p.c();
+      char A13 = gb.top.ext_bus.EXT_PIN_A13p.c();
+      char A14 = gb.top.ext_bus.EXT_PIN_A14p.c();
+      char A15 = gb.top.ext_bus.EXT_PIN_A15p.c();
 
       wire D00 = gb.top.ext_bus.EXT_PIN_D00p.qp();
       wire D01 = gb.top.ext_bus.EXT_PIN_D01p.qp();
@@ -298,22 +299,26 @@ int GateBoyTests::test_ext_bus() {
       ASSERT_EQ(WRn, WRn_WAVE[i] != 'x', "WRn failure at phase %d\n", i);
       //ASSERT_EQ(RDn, RDn_WAVE[i] != 'x', "RDn failure at phase %d\n", i); // broken
       ASSERT_EQ(CSn, CSn_WAVE[i] != 'x', "CSn failure at phase %d\n", i);
-      ASSERT_EQ(A00, A00_WAVE[i] != 'x', "A00 failure at phase %d\n", i);
-      ASSERT_EQ(A01, A01_WAVE[i] != 'x', "A01 failure at phase %d\n", i);
-      ASSERT_EQ(A02, A02_WAVE[i] != 'x', "A02 failure at phase %d\n", i);
-      ASSERT_EQ(A03, A03_WAVE[i] != 'x', "A03 failure at phase %d\n", i);
-      ASSERT_EQ(A12, A12_WAVE[i] != 'x', "A12 failure at phase %d\n", i);
-      ASSERT_EQ(A13, A13_WAVE[i] != 'x', "A13 failure at phase %d\n", i);
-      //ASSERT_EQ(A14, A14_WAVE[i] != 'x', "A14 failure at phase %d\n", i); // broken
-      ASSERT_EQ(A15, A15_WAVE[i] != 'x', "A15 failure at phase %d\n", i);
+
+      ASSERT_EQ(A00, A00_WAVE[i], "A00 failure at phase %d\n", i);
+
+      ASSERT_EQ(A01, A01_WAVE[i], "A01 failure at phase %d\n", i);
+      ASSERT_EQ(A02, A02_WAVE[i], "A02 failure at phase %d\n", i);
+      ASSERT_EQ(A03, A03_WAVE[i], "A03 failure at phase %d\n", i);
+      ASSERT_EQ(A12, A12_WAVE[i], "A12 failure at phase %d\n", i);
+      ASSERT_EQ(A13, A13_WAVE[i], "A13 failure at phase %d\n", i);
+      //ASSERT_EQ(A14, A14_WAVE[i], "A14 failure at phase %d\n", i);
+      ASSERT_EQ(A15, A15_WAVE[i], "A15 failure at phase %d\n", i);
 
       //ASSERT_EQ(D00, D00_WAVE[i] != 'x', "D00 failure at phase %d\n", i); // broken, fixing it now
 
       gb.next_phase();
     }
   }
+#endif
 
 
+#if 0
   // A15 should be ABxxxxxx if we're _not_ reading from the ext bus
   {
     GateBoy gb;

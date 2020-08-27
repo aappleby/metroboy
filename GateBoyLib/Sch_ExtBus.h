@@ -77,8 +77,9 @@ struct ExtBus {
   //-----------------------------------------------------------------------------
   // Ext bus
 
-  Pin EXT_PIN_RDn  = TRI_D0NP;   // PIN_79 // RDn idles low, goes high on phase B for an external write
+  Pin EXT_PIN_CLK  = TRI_D0NP;   // PIN_75
   Pin EXT_PIN_WRn  = TRI_D0NP;   // PIN_78 // WRn idles high, goes low during EFG if there's a write
+  Pin EXT_PIN_RDn  = TRI_D0NP;   // PIN_79 // RDn idles low, goes high on phase B for an external write
   Pin EXT_PIN_CSn  = TRI_D0NP;   // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
 
   Pin EXT_PIN_A00p = TRI_D0NP;   // PIN_01 // Address changees on B for CPU read/write, on A for DMA read

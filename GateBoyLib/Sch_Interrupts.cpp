@@ -16,7 +16,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p07.SAPA*/ wire _SAPA_ADDR_XXXF = and4(cpu_bus.CPU_BUS_A00.tp(), cpu_bus.CPU_BUS_A01.tp(), cpu_bus.CPU_BUS_A02.tp(), cpu_bus.CPU_BUS_A03.tp());
 
   /*p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp());          // schematic wrong, is NAND
-  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx()); // schematic wrong, is NAND
+  /*p07.REFA*/ wire _REFA_FF0F_WRn = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TAPU_CPU_WRp_xxxxEFGx); // schematic wrong, is NAND
 
   // FF0F INT
   {
@@ -67,11 +67,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.CPU_BUS_D3p.tp(), _REFA_FF0F_WRn);
     /*p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.CPU_BUS_D4p.tp(), _REFA_FF0F_WRn);
 
-    /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and3(_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
-    /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and3(_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.clk_reg.ALUR_SYS_RSTn());
-    /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and3(_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
-    /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
-    /*p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.clk_reg.ALUR_SYS_RSTn());
+    /*p02.LYTA*/ wire _LYTA_FF0F_RST0n = and3(_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  top.clk_reg.ALUR_SYS_RSTn);
+    /*p02.MOVU*/ wire _MOVU_FF0F_RST1n = and3(_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, top.clk_reg.ALUR_SYS_RSTn);
+    /*p02.PYGA*/ wire _PYGA_FF0F_RST2n = and3(_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  top.clk_reg.ALUR_SYS_RSTn);
+    /*p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  top.clk_reg.ALUR_SYS_RSTn);
+    /*p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  top.clk_reg.ALUR_SYS_RSTn);
 
     /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg.RUTU_LINE_P908.qp());
     /*p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);

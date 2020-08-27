@@ -8,17 +8,8 @@ using namespace Schematics;
 #define FAST_BOOT
 
 void ClockRegisters::dump(Dumper& d, wire CLK) const {
-  //d("---------- Sys Pins ----------\n");
-  //d("SYS_PIN_CLK_A %d\n", SYS_PIN_CLK_A.tp());
-  //d("SYS_PIN_RSTp  %d\n", SYS_PIN_RSTp.tp());
-  //d("SYS_PIN_T2n   %d\n", SYS_PIN_T2n.tp());
-  //d("SYS_PIN_T1n   %d\n", SYS_PIN_T1n.tp());
-  //d("\n");
-
   d("---------- Phase Clock ----------\n");
   d("PHASE         %c%c%c%c\n", AFUR_xxxxEFGH.c(), ALEF_AxxxxFGH.cn(), APUK_ABxxxxGH.c(), ADYK_ABCxxxxH.cn());
-  //d("ATEZ_CLKBAD   %d\n", ATEZ_CLKBAD.qp());
-  //d("ABOL_CLKREQn  %d\n", ABOL_CLKREQn.qp());
   d("\n");
   d("AFUR_xxxxEFGH %d\n", AFUR_xxxxEFGH.qp());
   d("ALEF_AxxxxFGH %d\n", ALEF_AxxxxFGH.qp());
@@ -26,26 +17,22 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
   d("ADYK_ABCxxxxH %d\n", ADYK_ABCxxxxH.qp());
   d("\n");
   d("AROV_xxCDEFxx %d\n", AROV_xxCDEFxx.qp());
-  d("AFEP_AxxxxFGH %d\n", AFEP_AxxxxFGH.qp());
   d("ATYP_ABCDxxxx %d\n", ATYP_ABCDxxxx.qp());
   d("AJAX_xxxxEFGH %d\n", AJAX_xxxxEFGH.qp());
   d("\n");
 
   d("---------- PPU Clock ----------\n");
-  d("MYVO_AxCxExGx %d\n", MYVO_AxCxExGx(CLK));
   d("WUVU_xxCDxxGH %d\n", !WUVU_xxCDxxGH.qn());
   d("VENA_ABCDxxxx %d\n", !VENA_ABCDxxxx.qn());
   d("WOSU_xBCxxFGx %d\n",  WOSU_xBCxxFGx.qp());
-  d("XUPY_xxCDxxGH %d\n", XUPY_xxCDxxGH());
-  d("TALU_ABCDxxxx %d\n", TALU_ABCDxxxx());
-  d("XOCE_AxxDExxH %d\n", XOCE_AxxDExxH());
-  d("AWOH_ABxxEFxx %d\n", AWOH_ABxxEFxx());
-  d("SONO_xxxxEFGH %d\n", SONO_xxxxEFGH());
-  d("WOJO_xxCxxxGx %d\n", WOJO_xxCxxxGx());
+  d("XUPY_xxCDxxGH %d\n", XUPY_xxCDxxGH);
+  d("TALU_ABCDxxxx %d\n", TALU_ABCDxxxx);
+  d("XOCE_AxxDExxH %d\n", XOCE_AxxDExxH);
+  d("WOJO_xxCxxxGx %d\n", WOJO_xxCxxxGx);
   d("\n");
 
   d("----------  Reset   ----------\n");
-  d("TUBO %d\n",  _TUBO_WAITINGp.tp());
+  d("TUBO %d\n",  TUBO_WAITINGp.tp());
   d("ASOL %d\n",  _ASOL_POR_DONEn.tp());
   d("AFER %d\n",  _AFER_SYS_RSTp.qp());
   //d("SOTO %d\n",  !_SOTO_DBG_VRAM.qn());
@@ -54,57 +41,85 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tick_slow(const wire CLK, SchematicTop& top) {
-  _XONA_LCDC_ENn_qn = top.pix_pipe.XONA_LCDC_ENn.qn();
+void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top) {
 
-  /* p01.ABOL*/ wire ABOL_CLKREQn = not1(top.cpu_bus.CPU_PIN_READYp.tp());
-  /*p01.BAPY*/ BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
-  /*p01.BELU*/ BELU_xxxxEFGH = nor2(ABOL_CLKREQn, ATYP_ABCDxxxx);
-}
+  /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(_AFER_SYS_RSTp.qp(), _ASOL_POR_DONEn.tp());
+  /*p01.ALUR*/ ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+  /*p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
+  /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
+  /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_ENn.qn());
+  /*p01.XAPO*/ XAPO_VID_RSTn = not1(XODO_VID_RSTp);
 
-void ClockRegisters::tock_clk_slow(wire RST, const wire CLK, wire CLKGOOD, SchematicTop& top) {
-  // ignoring the deglitcher here
-
-  // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
-
-  /*p01.AFUR*/ AFUR_xxxxEFGH = dff9_inv(!ATAL_xBxDxFxH(CLK),  ATAL_xBxDxFxH(CLK), top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
-  /*p01.ALEF*/ ALEF_AxxxxFGH = dff9_inv( ATAL_xBxDxFxH(CLK), !ATAL_xBxDxFxH(CLK), top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
-  /*p01.APUK*/ APUK_ABxxxxGH = dff9_inv(!ATAL_xBxDxFxH(CLK),  ATAL_xBxDxFxH(CLK), top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
-  /*p01.ADYK*/ ADYK_ABCxxxxH = dff9_inv( ATAL_xBxDxFxH(CLK), !ATAL_xBxDxFxH(CLK), top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
-
-  /* p01.ATEZ*/ wire ATEZ_CLKBAD  = not1(CLKGOOD);
-  /* p01.ABOL*/ wire ABOL_CLKREQn = not1(top.cpu_bus.CPU_PIN_READYp.tp());
-  /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
+  /*p01.ATEZ*/ wire ATEZ_CLKBAD = not1(CLKGOOD);
+  /*p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
+  /*p01.ABOL*/ wire ABOL_CLKREQn = not1(top.cpu_bus.CPU_PIN_READYp.tp());
+  
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK; // ignoring the deglitcher here
+  /*p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ ZAXY_xBxDxFxH = not1(AZOF_AxCxExGx);
 
   /*#p01.AROV*/ AROV_xxCDEFxx = not1(APUK_ABxxxxGH.qp());
-  /*#p01.AFEP*/ AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn());
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn());
   /*#p01.ATYP*/ ATYP_ABCDxxxx = not1(AFUR_xxxxEFGH.qp());
   /*#p01.AJAX*/ AJAX_xxxxEFGH = not1(ATYP_ABCDxxxx.qp());
 
-  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
-  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx); // BUFA+BYLY parallel
+  /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+  /*p01.BELU*/ wire BELU_xxxxEFGH = nor2(ABOL_CLKREQn, ATYP_ABCDxxxx);
+  /*p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
+  /*p01.BUDE*/ BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
+
+  /*p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
+  /*p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
+
+  /*p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH);
+  /*p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*p01.BEJA*/ wire BEJA_xxxxEFGH = nand2(BOLO_ABCDEFxx, BEKO_ABCDxxxx);
+  /*p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
+  /*p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
+  /*p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
+  /*p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
+  /*p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
+  /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor2(BELE_Axxxxxxx, ATEZ_CLKBAD);
+  /*p01.BALY*/ BALY_Axxxxxxx = not1(BYJU_xBCDEFGH);
+
+
+  /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.qn());
+
+  /*p29.XUPY*/ XUPY_xxCDxxGH = not1(WUVU_xxCDxxGH.qn());
+  /*p21.TALU*/ TALU_ABCDxxxx = not1(VENA_ABCDxxxx.qn());
+  /*p29.XOCE*/ XOCE_AxxDExxH = not1(WOSU_xBCxxFGx.qp());
+  /*p29.WOJO*/ WOJO_xxCxxxGx = nor2(WUVU_xxCDxxGH.qn(), WOSU_xBCxxFGx.qn());
+}
+
+void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, SchematicTop& top) {
+  // ignoring the deglitcher here
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
+
+  // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
+  /*p01.AFUR*/ AFUR_xxxxEFGH = dff9_inv(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
+  /*p01.ALEF*/ ALEF_AxxxxFGH = dff9_inv( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
+  /*p01.APUK*/ APUK_ABxxxxGH = dff9_inv(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
+  /*p01.ADYK*/ ADYK_ABCxxxxH = dff9_inv( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
+
+  /* p01.ABOL*/ wire ABOL_CLKREQn = not1(top.cpu_bus.CPU_PIN_READYp.tp());
+  /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
+
+  /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+  /*p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
+  /*p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
   /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
 
 
-  /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx()); // BUDE+BEVA parallel
   /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
-  /*#p01.BEJA*/ wire BEJA_xxxxEFGH = nand2(BOLO_ABCDEFxx,
-                                           BEKO_ABCDxxxx);
-  /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
-  /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
-  /*#p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
-  /*#p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH,
-                                           ATYP_ABCDxxxx,
-                                           BAZE_ABCDxxxx);
-  /*#p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
-  /*#p01.BYJU*/ wire BYJU_xBCDEFGH = nor2(BELE_Axxxxxxx, ATEZ_CLKBAD);
-  /*#p01.BALY*/ wire BALY_Axxxxxxx = not1(BYJU_xBCDEFGH);
   /*#p01.BUVU*/ wire BUVU_Axxxxxxx = and2(BALY_Axxxxxxx, BUTY_CLKREQ);
 
   /*#p01.BYXO*/ wire BYXO_xBCDEFGH = not1(BUVU_Axxxxxxx);
   /*#p01.BEDO*/ wire BEDO_Axxxxxxx = not1(BYXO_xBCDEFGH);
   /*#p01.BOWA*/ wire BOWA_xBCDEFGH = not1(BEDO_Axxxxxxx);
 
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn());
   /*#p01.BUGO*/ wire BUGO_xBCDExxx = not1(AFEP_AxxxxFGH);
   /*#p01.BATE*/ wire BATE_AxxxxxGH = nor3(BUGO_xBCDExxx,
                                           AROV_xxCDEFxx,
@@ -136,13 +151,13 @@ void ClockRegisters::tock_clk_slow(wire RST, const wire CLK, wire CLKGOOD, Schem
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, SchematicTop& top) {
-  /*p01.UPYF*/ wire _UPYF = or2(RST, UCOB_CLKBADp(CLKGOOD));
+  /*p01.UPYF*/ wire _UPYF = or2(RST, UCOB_CLKBADp);
 
-  /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch(_UPYF, top.cpu_bus.CPU_PIN_READYp.tp());
+  /*p01.TUBO*/ TUBO_WAITINGp = nor_latch(_UPYF, top.cpu_bus.CPU_PIN_READYp.tp());
 
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.tp(), top.tim_reg.TERO_DIV_03.qp());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(TUBO_WAITINGp.tp(), top.tim_reg.TERO_DIV_03.qp());
 #else
   /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(_TUBO_WAITINGp.qp(), top.tim_reg.UPOF_DIV_15());
 #endif
@@ -154,9 +169,12 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, SchematicTop& top) {
   /*#p01.AFAR*/ wire _AFAR_RST  = nor2(RST, _ALYP_RSTn);
 
   /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(RST, _AFAR_RST); // Schematic wrong, this is a latch.
-  /*p01.AFER*/ _AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH(CLKGOOD), BOMA_Axxxxxxx(CLKGOOD), top.UPOJ_MODE_PRODn, _ASOL_POR_DONEn.tp());
 
-  top.cpu_bus.CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
+  /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
+  /*p01.BOMA*/ wire BOMA_Axxxxxxx = not1(BOGA_xBCDEFGH);
+  /*p01.AFER*/ _AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH, BOMA_Axxxxxxx, top.UPOJ_MODE_PRODn, _ASOL_POR_DONEn.tp());
+
+  top.cpu_bus.CPU_PIN_SYS_RSTp = _AFER_SYS_RSTp.qp();
   top.cpu_bus.CPU_PIN_EXT_RST  = RST;
 }
 
@@ -167,17 +185,17 @@ void ClockRegisters::tock_dbg_slow(SchematicTop& top) {
   top.cpu_bus.CPU_PIN_UMUT_DBG = top.UMUT_MODE_DBG1p;
 }
 
-
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_vid_slow(const wire CLK, SchematicTop& top) {
-  /*p29.XYVA*/ wire XYVA_xBxDxFxH = not1(ZEME_AxCxExGx(CLK));
+void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*p29.XYVA*/ wire XYVA_xBxDxFxH = not1(ZEME_AxCxExGx);
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
-  /*p29.WUVU*/ WUVU_xxCDxxGH = dff17_A (XOTA_AxCxExGx,      XAPO_VID_RSTn(), WUVU_xxCDxxGH.qn());
-  /*p21.VENA*/ VENA_ABCDxxxx = dff17_A (WUVU_xxCDxxGH.qn(), XAPO_VID_RSTn(), VENA_ABCDxxxx.qn());
-  /*p29.WOSU*/ WOSU_xBCxxFGx = dff17_AB(XYFY_xBxDxFxH,      XAPO_VID_RSTn(), WUVU_xxCDxxGH.qn());
+  /*p29.WUVU*/ WUVU_xxCDxxGH = dff17_A (XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
+  /*p21.VENA*/ VENA_ABCDxxxx = dff17_A (WUVU_xxCDxxGH.qn(), XAPO_VID_RSTn, VENA_ABCDxxxx.qn());
+  /*p29.WOSU*/ WOSU_xBCxxFGx = dff17_AB(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
 }
 
 //-----------------------------------------------------------------------------

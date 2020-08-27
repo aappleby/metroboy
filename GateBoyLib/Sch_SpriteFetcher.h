@@ -10,7 +10,7 @@ struct VramBus;
 
 struct SpriteFetcher {
   void tick(const SchematicTop& gb);
-  void tock(wire CLK, SchematicTop& gb);
+  void tock(SchematicTop& gb);
   void dump(Dumper& d) const;
 
   /*p27.TAKA*/ Tri _TAKA_SFETCH_RUNNINGp = TRI_D0NP;

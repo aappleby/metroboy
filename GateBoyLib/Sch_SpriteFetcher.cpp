@@ -30,9 +30,12 @@ void SpriteFetcher::tick(const SchematicTop& /*top*/) {
 
 //------------------------------------------------------------------------------
 
-void SpriteFetcher::tock(wire CLK, SchematicTop& top) {
+void SpriteFetcher::tock(SchematicTop& top) {
+  /*p01.ROSY*/ wire ROSY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
 
-  /*p01.LAPE*/ wire _LAPE_AxCxExGx = not1(top.clk_reg.ALET_xBxDxFxH(CLK));
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*p01.LAPE*/ wire _LAPE_AxCxExGx = not1(ALET_xBxDxFxH);
   /*p27.TAVA*/ wire _TAVA_xBxDxFxH = not1(_LAPE_AxCxExGx);
   wire VYPO = 1;
 
@@ -40,7 +43,7 @@ void SpriteFetcher::tock(wire CLK, SchematicTop& top) {
 
   /*p27.TUKU*/ wire _TUKU_WIN_HITn = not1(top.pix_pipe.TOMU_WIN_HITp());
   /*p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not1(_TAKA_SFETCH_RUNNINGp.tp());
-  /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(top.tile_fetcher._LAXU_BFETCH_S0.qp(), top.tile_fetcher._NYVA_BFETCH_S2.qp(), top.NYXU_FETCH_TRIGn());
+  /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(top.tile_fetcher._LAXU_BFETCH_S0.qp(), top.tile_fetcher._NYVA_BFETCH_S2.qp(), top.NYXU_FETCH_TRIGn);
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
   /*p27.TEKY*/ wire _TEKY_SFETCH_REQp = and4(top.sprite_store.FEPO_STORE_MATCHp, _TUKU_WIN_HITn, LYRY_BFETCH_DONEp, _SOWO_SFETCH_RUNNINGn);
@@ -50,7 +53,6 @@ void SpriteFetcher::tock(wire CLK, SchematicTop& top) {
 
   /*p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(_SOBU_SFETCH_REQp.qp(),  _SUDA_SFETCH_REQp.qn());
 
-  wire ROSY_VID_RSTp = top.clk_reg.ROSY_VID_RSTp();
   wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_VID_LINE_END_TRIGp();
 
   // SECA := nor3(RYCE, ROSY, ATEJ) // atej not byha?

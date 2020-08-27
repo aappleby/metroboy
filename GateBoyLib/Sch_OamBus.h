@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct OamBus {
   void dump(Dumper& d) const;
-  void tock(wire CLK, SchematicTop& top);
+  void tock(SchematicTop& top);
   
   //----------------------------------------
 

@@ -27,18 +27,8 @@ struct LcdRegisters {
   }
 
   // fires on P910 and P911
-  wire BYHA_VID_LINE_END_TRIGn() const {
-    /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_LINE_P910.qp());
-    
-    // so if this is or_and, BYHA should go low on 910 and 911
-    /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, _ABEZ_VID_RSTn);
-    
-    return BYHA_VID_LINE_END_TRIGn;
-  }
-
-  // fires on P910 and P911
   wire ATEJ_VID_LINE_END_TRIGp() const {
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn());
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
     return ATEJ_VID_LINE_END_TRIGp;
   }
 
@@ -69,7 +59,7 @@ struct LcdRegisters {
 
 //private:
 
-  Sig _ABEZ_VID_RSTn;
+  Sig BYHA_VID_LINE_END_TRIGn;
 
   /*p21.NYPE*/ RegQPN NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
   /*p28.ANEL*/ RegQP  ANEL_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases

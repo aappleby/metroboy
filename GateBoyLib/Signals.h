@@ -305,7 +305,11 @@ struct Sig : private RegBase {
 
   inline bool as_wire() const {
     CHECK_P(is_sig());
-    CHECK_P(has_delta() == sim_running);
+    
+    // FIXME doing this check in release mode for sanity, but probably need to remove it later
+    //CHECK_P(has_delta() == sim_running);
+    if (has_delta() != sim_running) __debugbreak();
+
     return wire(state & 1);
   }
 

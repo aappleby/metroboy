@@ -40,7 +40,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash(&gb.top, sizeof(gb.top));
   LOG_Y("Top hash is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xf6b5c3ae774dc6a0, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0x279f9be6645216d6, top_hash, "Top hash mismatch");
 
   uint8_t* cursor = (uint8_t*)(&gb.top);
 
@@ -78,55 +78,22 @@ int GateBoyTests::test_clk() {
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    wire CLK = phase & 1;
-    wire CLKGOOD = 1;
+    //wire CLK = phase & 1;
+    //wire CLKGOOD = 1;
 
-    EXPECT_CLK(clk_reg.ATAL_xBxDxFxH(CLK), 0b01010101);
-    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH(CLK), 0b01010101);
-    EXPECT_CLK(clk_reg.AZOF_AxCxExGx(CLK), 0b10101010); 
-    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH(CLK), 0b01010101); 
-    EXPECT_CLK(clk_reg.ZEME_AxCxExGx(CLK), 0b10101010); 
-    EXPECT_CLK(clk_reg.ALET_xBxDxFxH(CLK), 0b01010101); 
-    EXPECT_CLK(clk_reg.MEHE_AxCxExGx(CLK), 0b10101010); 
-    EXPECT_CLK(clk_reg.MYVO_AxCxExGx(CLK), 0b10101010); 
-
+    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH,   0b01010101);
+    
     EXPECT_CLK(clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
     EXPECT_CLK(clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
     EXPECT_CLK(clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
     EXPECT_CLK(clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
 
-    EXPECT_CLK(clk_reg.AROV_xxCDEFxx,      0b00111100);
-    EXPECT_CLK(clk_reg.AFEP_AxxxxFGH,      0b10000111);
-    EXPECT_CLK(clk_reg.ATYP_ABCDxxxx,      0b11110000);
-    EXPECT_CLK(clk_reg.AJAX_xxxxEFGH,      0b00001111);
-
-    EXPECT_CLK(clk_reg.ADAR_ABCxxxxH(),    0b11100001);
-    EXPECT_CLK(clk_reg.AFAS_xxxxEFGx(),    0b00001110);
-
-    EXPECT_CLK(clk_reg.BELU_xxxxEFGH,   0b00001111);
-    EXPECT_CLK(clk_reg.BYRY_ABCDxxxx(), 0b11110000);
-    EXPECT_CLK(clk_reg.BUDE_xxxxEFGH(), 0b00001111);
-    EXPECT_CLK(clk_reg.UVYT_ABCDxxxx(), 0b11110000);
-    EXPECT_CLK(clk_reg.BEKO_ABCDxxxx(), 0b11110000);
-    EXPECT_CLK(clk_reg.MOPA_xxxxEFGH(), 0b00001111);
-    EXPECT_CLK(clk_reg.XYNY_ABCDxxxx(), 0b11110000);
-
-    EXPECT_CLK(clk_reg.BAPY_xxxxxxGH,   0b00000011);
-    EXPECT_CLK(clk_reg.BERU_ABCDEFxx(), 0b11111100);
-    EXPECT_CLK(clk_reg.BUFA_xxxxxxGH(), 0b00000011);
-    EXPECT_CLK(clk_reg.BOLO_ABCDEFxx(), 0b11111100);
-
-    EXPECT_CLK(clk_reg.BEJA_xxxxEFGH(), 0b00001111);
-    EXPECT_CLK(clk_reg.BANE_ABCDxxxx(), 0b11110000);
-    EXPECT_CLK(clk_reg.BELO_xxxxEFGH(), 0b00001111);
-    EXPECT_CLK(clk_reg.BAZE_ABCDxxxx(), 0b11110000);
-
-    EXPECT_CLK(clk_reg.BUTO_xBCDEFGH(), 0b01111111);
-    EXPECT_CLK(clk_reg.BELE_Axxxxxxx(), 0b10000000);
-    EXPECT_CLK(clk_reg.BYJU_xBCDEFGH(CLKGOOD), 0b01111111);
-    EXPECT_CLK(clk_reg.BALY_Axxxxxxx(CLKGOOD), 0b10000000);
-    EXPECT_CLK(clk_reg.BOGA_xBCDEFGH(CLKGOOD), 0b01111111);
-    EXPECT_CLK(clk_reg.BOMA_Axxxxxxx(CLKGOOD), 0b10000000);
+    EXPECT_CLK(clk_reg.AROV_xxCDEFxx,   0b00111100);
+    EXPECT_CLK(clk_reg.ATYP_ABCDxxxx,   0b11110000);
+    EXPECT_CLK(clk_reg.AJAX_xxxxEFGH,   0b00001111);
+    EXPECT_CLK(clk_reg.ADAR_ABCxxxxH,   0b11100001);
+    EXPECT_CLK(clk_reg.BUDE_xxxxEFGH,   0b00001111);
+    EXPECT_CLK(clk_reg.BALY_Axxxxxxx,   0b10000000);
 
     EXPECT_CLK(top.cpu_bus.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
     EXPECT_CLK(top.cpu_bus.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);

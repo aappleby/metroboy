@@ -76,17 +76,22 @@ void SpriteScanner::tick(const SchematicTop& top) {
 
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not1(CENO_SCANNINGp.qn());
 
-    /*p29.CARE*/ _CARE_STORE_ENp_ABxxEFxx = and3(top.clk_reg.XOCE_AxxDExxH(), CEHA_SCANNINGp, _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*p29.CARE*/ _CARE_STORE_ENp_ABxxEFxx = and3(top.clk_reg.XOCE_AxxDExxH, CEHA_SCANNINGp, _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 }
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tock(wire CLK, const SchematicTop& top) {
+void SpriteScanner::tock(const SchematicTop& top) {
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
+
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
 
   // 32 + 4 + 2 + 1 = 39
   /*#p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(_YFEL_SCAN0.qp(), _WEWY_SCAN1.qp(), _GOSO_SCAN2.qp(), _FONY_SCAN5.qp());
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.ATAR_VID_RSTp());
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), ATAR_VID_RSTp);
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -94,15 +99,15 @@ void SpriteScanner::tock(wire CLK, const SchematicTop& top) {
   {
     /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
     /*#p29.BAGY*/ wire BAGY_LINE_RSTn = not1(BALU_LINE_RSTp);
-    /*#p29.BYBA*/ BYBA_SCAN_DONE_A = dff17_AB(top.clk_reg.XUPY_xxCDxxGH(), BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*#p29.DOBA*/ DOBA_SCAN_DONE_B = dff17_B (top.clk_reg.ALET_xBxDxFxH(CLK), BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
+    /*#p29.BYBA*/ BYBA_SCAN_DONE_A = dff17_AB(top.clk_reg.XUPY_xxCDxxGH, BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*#p29.DOBA*/ DOBA_SCAN_DONE_B = dff17_B (ALET_xBxDxFxH, BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
 
     /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn());
     /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
 
-    /*#p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp(), AVAP_RENDER_START_TRIGp);
+    /*#p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(ATAR_VID_RSTp, AVAP_RENDER_START_TRIGp);
     /*#p28.BESU*/ BESU_SCANNINGp = nor_latch(top.lcd_reg.CATU_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
-    /*#p29.CENO*/ CENO_SCANNINGp = dff17_A(top.clk_reg.XUPY_xxCDxxGH(), top.clk_reg.ABEZ_VID_RSTn(), BESU_SCANNINGp.tp());
+    /*#p29.CENO*/ CENO_SCANNINGp = dff17_A(top.clk_reg.XUPY_xxCDxxGH, ABEZ_VID_RSTn, BESU_SCANNINGp.tp());
   }
 
   //----------------------------------------
@@ -110,7 +115,7 @@ void SpriteScanner::tock(wire CLK, const SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH());
+    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH);
 
     /*p28.YFEL*/ _YFEL_SCAN0 = dff17_AB(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, _YFEL_SCAN0.qn());
     /*p28.WEWY*/ _WEWY_SCAN1 = dff17_AB(_YFEL_SCAN0.qn(), ANOM_LINE_RSTn, _WEWY_SCAN1.qn());

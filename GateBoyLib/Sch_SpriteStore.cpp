@@ -274,8 +274,13 @@ void SpriteStore::tick(const SchematicTop& top) {
 
   //------------------------------------------------------------------------------
 
-void SpriteStore::tock(wire CLK, const SchematicTop& top) {
+void SpriteStore::tock(const SchematicTop& top) {
   //wire WEFE_VCC = 1;
+
+  /*p01.AMYG*/ wire AMYG_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+
+
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
 
   /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not1(top.sprite_scanner._CARE_STORE_ENp_ABxxEFxx);
 
@@ -313,7 +318,7 @@ void SpriteStore::tock(wire CLK, const SchematicTop& top) {
     /*#p30.CEGA*/ SPR_TRI_L2 = tribuf_6nn(FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
     /*#p30.WENU*/ SPR_TRI_L3 = tribuf_6nn(FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
 
-    /* p29.DEZY*/ DEZY_STORE_ENn = dff17_B(top.clk_reg.ZEME_AxCxExGx(CLK), top.clk_reg.XAPO_VID_RSTn(), DYTY_STORE_ENn_xxCDxxGH);
+    /* p29.DEZY*/ DEZY_STORE_ENn = dff17_B(ZEME_AxCxExGx, top.clk_reg.XAPO_VID_RSTn, DYTY_STORE_ENn_xxCDxxGH);
   }
 
   //----------------------------------------
@@ -357,7 +362,7 @@ void SpriteStore::tock(wire CLK, const SchematicTop& top) {
 
     // Delayed reset signal for the selected store once sprite fetch is done.
 
-    /*p28.ABAK*/ wire ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.AMYG_VID_RSTp());
+    /*p28.ABAK*/ wire ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), AMYG_VID_RSTp);
     /*p28.BYVA*/ wire BYVA_VID_LINE_TRIGn = not1(ABAK_VID_LINE_TRIGp);
 
     /*p29.TYNO*/ wire TYNO = nand3(top.sprite_fetcher._TOXE_SFETCH_S0.qp(), top.sprite_fetcher._SEBA_SFETCH_S1_D5.qp(), top.sprite_fetcher._VONU_SFETCH_S1_D4.qp());
@@ -516,7 +521,7 @@ void SpriteStore::tock(wire CLK, const SchematicTop& top) {
     // BYVA := not(ABAK)
     // DYBA := not(BYVA)
 
-    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), top.clk_reg.AMYG_VID_RSTp());
+    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), AMYG_VID_RSTp);
     /*p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
     /*p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
 

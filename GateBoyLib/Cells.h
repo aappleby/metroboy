@@ -53,16 +53,16 @@ inline wire add_s(wire a, wire b, wire c) {
 //-----------------------------------------------------------------------------
 
 // Six-rung mux cells are _non_inverting_. c = 1 selects input _ZERO_
-inline const wire mux2_p(wire a, wire b, wire c) {
+inline wire mux2_p(wire a, wire b, wire c) {
   return c ? a : b;
 }
 
-inline const wire mux2_p2(wire a, wire b, wire c) {
+inline wire mux2_p2(wire a, wire b, wire c) {
   return a ? b : c;
 }
 
 // Five-rung mux cells are _inverting_. c = 1 selects input _ZERO_
-inline const wire mux2_n(wire a, wire b, wire c) {
+inline wire mux2_n(wire a, wire b, wire c) {
   return c ? !a : !b;
 }
 

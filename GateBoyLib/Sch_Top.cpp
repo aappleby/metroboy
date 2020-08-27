@@ -27,11 +27,42 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn());
   /*p25.RACO*/ RACO_DBG_VRAMn = not1(TUTO_DBG_VRAMp);
 
-  /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
-  /*p25.SOTO*/ SOTO_DBG_VRAM = dff17_A(_SYCY_DBG_CLOCKn, clk_reg.CUNU_SYS_RSTn(), SOTO_DBG_VRAM.qn());
+  /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXTp.tp()); // Missing from schematic
+  /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
+  /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);
 
-  clk_reg.tick_slow(CLK, *this);
+  /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
+  /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
+  /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
+  /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
+  /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp());
+  /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
+
+  /*p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
+                                            pix_pipe.SUZU_WIN_FIRST_TILEne(),
+                                            TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+  clk_reg.tick_slow(CLK, CLKGOOD, *this);
   lcd_reg.tick(*this);
+
+  // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
+  // low on phase 0 of bg tile fetch
+  /*p27.NYXU*/ NYXU_FETCH_TRIGn = nor3(AVAP_RENDER_START_TRIGp(),
+                                            pix_pipe.MOSU_WIN_FETCH_TRIGp(),
+                                            TEVO_FETCH_TRIGp);
+
+
+  /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(clk_reg.ADAR_ABCxxxxH, clk_reg.ATYP_ABCDxxxx);
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), AFAS_xxxxEFGx);
+  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
+  /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
+  // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
+  /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
+
+  /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
+  /*p01.DULA*/ wire DULA_SYS_RSTp = not1(clk_reg.ALUR_SYS_RSTn);
+  /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*p25.SOTO*/ SOTO_DBG_VRAM = dff17_A(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn());
+
   sprite_scanner.tick(*this);
   sprite_store.tick(*this);
   pix_pipe.tick(*this);
@@ -46,25 +77,25 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   clk_reg.tock_dbg_slow(*this);
   clk_reg.tock_vid_slow(CLK, *this);
   
-  tim_reg.tock(RST, CLKGOOD, *this, cpu_bus);
+  tim_reg.tock(RST, *this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
   dma_reg.tock(*this, cpu_bus);
   ser_reg.tock(*this, cpu_bus);
-  joypad.tock(CLKGOOD, *this, cpu_bus);
-  sprite_scanner.tock(CLK, *this);
+  joypad.tock(*this, cpu_bus);
+  sprite_scanner.tock(*this);
   lcd_reg.tock(*this, cpu_bus);
-  sprite_store.tock(CLK, *this);
+  sprite_store.tock(*this);
 
-  pix_pipe.tock(CLK, *this, cpu_bus);
-  sprite_fetcher.tock(CLK, *this);
-  tile_fetcher.tock(CLK, *this);
+  pix_pipe.tock(*this, cpu_bus);
+  sprite_fetcher.tock(*this);
+  tile_fetcher.tock(*this);
   int_reg.tock(*this, cpu_bus);
 
   cpu_bus.CPU_PIN_ADDR_HI = cpu_bus.SYRO_FE00_FFFFp();
   cpu_bus.CPU_PIN_BOOTp = TUTU_ADDR_BOOTp();
 
   ext_bus.tock(*this);
-  oam_bus.tock(CLK, *this);
+  oam_bus.tock(*this);
   vram_bus.tock(*this);
 }
 #pragma optimize("", on)

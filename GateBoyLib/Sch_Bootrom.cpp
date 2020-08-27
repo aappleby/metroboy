@@ -26,10 +26,10 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p07.TEXE*/ wire _TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
     /*p07.SYPU*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TEXE_FF50_RDp, BOOT_BITn.qp());
 
-    /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(top.cpu_bus.CPU_BUS_D0p.tp(), BOOT_BITn.qp());
 
-    /*p07.TEPU*/ BOOT_BITn = dff17_AB(_TUGE_FF50_WRn, top.clk_reg.ALUR_SYS_RSTn(), _SATO_BOOT_BIT_IN);
+    /*p07.TEPU*/ BOOT_BITn = dff17_AB(_TUGE_FF50_WRn, top.clk_reg.ALUR_SYS_RSTn, _SATO_BOOT_BIT_IN);
   }
 
   {

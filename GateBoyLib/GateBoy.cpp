@@ -37,7 +37,7 @@ void GateBoy::reset(bool verbose) {
         top.clk_reg.APUK_ABxxxxGH.qp() &&
         top.clk_reg.ADYK_ABCxxxxH.qp()) break;
   }
-  CHECK_P(top.clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp());
+  CHECK_P(top.cpu_bus.CPU_PIN_BOMA_Axxxxxxx.tp());
 
   if (verbose) printf("Sync done, reset phase counter to 0\n");
   phase_total = 0;
@@ -416,7 +416,7 @@ void GateBoy::tock_zram_bus() {
 
   if (hit_zram) {
     uint8_t& data = mem[addr];
-    if (top.TAPU_CPU_WRp_xxxxEFGx()) data = top.cpu_bus.get_bus_data();
+    if (top.TAPU_CPU_WRp_xxxxEFGx) data = top.cpu_bus.get_bus_data();
     if (top.TEDO_CPU_RDp())          top.cpu_bus.set_data(true, data);
   }
 }

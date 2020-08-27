@@ -2,7 +2,9 @@
 #include "GateBoyLib/GateBoy.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
+#include "CoreLib/File.h"
 #include <chrono>
+#include <stddef.h>
 
 //-----------------------------------------------------------------------------
 
@@ -12,6 +14,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   TEST_START("Maaaaaain");
 
+  err += test_init();
   err += test_clk();
   err += test_ext_bus();
   err += test_mem();
@@ -24,6 +27,38 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_timer();
 
   if (!err) LOG_G("Everything passed!\n");
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_init() {
+  TEST_START("Init");
+
+  GateBoy gb;
+
+  LOG_Y("GateBoy top hash is 0x%016llx\n", hash(&gb.top, sizeof(gb.top)));
+
+  uint8_t* cursor = (uint8_t*)(&gb.top);
+
+  // All regs should have no delta
+  for (int i = 0; i < sizeof(gb.top); i++) {
+    uint8_t d = *cursor++;
+    ASSERT_EQ(0, (d & 0xF0));
+  }
+
+  // Mem should be clear
+  for (int i = 0; i < 65536; i++) {
+    ASSERT_EQ(0, gb.mem[i]);
+  }
+
+  // Framebuffer should be 0x04 (yellow)
+  for (int i = 0; i < 160*144; i++) {
+    ASSERT_EQ(4, gb.fb[i]);
+  }
+
+  //------------------------------
 
   TEST_END();
 }

@@ -13,6 +13,7 @@ struct GateBoyTests {
   void run_benchmark();
   void run_benchmark(GateBoy& gateboy);
 
+  int test_init();
   int test_clk();
   int test_ext_bus();
   int test_mem();

@@ -1,6 +1,7 @@
 #include "GateBoyLib/Signals.h"
 #include <memory.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 bool RegBase::sim_running = false;
 bool RegBase::bus_collision = false;
@@ -12,26 +13,26 @@ void combine_hash(uint64_t& a, uint64_t b) {
   a = _byteswap_uint64((a ^ b) * 0xff51afd7ed558ccd);
 }
 
-uint8_t commit(uint8_t s1) {
-  if ((s1 & 0x0F) == ERR_XXXX) {
-    __debugbreak();
-  }
-
-  uint8_t s2 = logic_lut1[s1];
-
-  if ((s2 & 0x0F) == ERR_XXXX) {
-    __debugbreak();
-  }
-  return s2;
-}
-
 void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
   uint64_t h = hash_regs;
 
   uint8_t* base = (uint8_t*)blob;
 
   for (int i = 0; i < size; i++) {
-    uint8_t s2 = commit(base[i]);
+
+    uint8_t s1 = base[i];
+    uint8_t s2 = logic_lut1[s1];
+
+    //printf("%04d 0x%02x 0x%02x\n", i, s1, s2);
+
+    if ((s1 & 0x0F) == ERR_XXXX) {
+      __debugbreak();
+    }
+
+    if ((s2 & 0x0F) == ERR_XXXX) {
+      __debugbreak();
+    }
+
     combine_hash(h, s2 & 0x0F);
     base[i] = s2;
   }

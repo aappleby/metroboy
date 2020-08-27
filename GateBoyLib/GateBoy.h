@@ -2,6 +2,9 @@
 #include "GateBoyLib/Sch_Top.h"
 #include "CoreLib/Z80.h"
 
+//-----------------------------------------------------------------------------
+
+#pragma pack(push, 1)
 struct GateBoy {
 public:
 
@@ -43,31 +46,35 @@ public:
   void tock_vram_bus();
   void tock_zram_bus();
 
-  bool sys_rst = 1;
-  bool sys_t1 = 0;
-  bool sys_t2 = 0;
-  bool sys_clken = 0;
-  bool sys_clkgood = 0;
-  bool sys_cpuready = 0;
+  //----------------------------------------
 
-  int phase_total = 0;
-  int pass_count = 0;
-  int pass_total = 0;
+  int32_t  phase_total = 0;
+  int32_t  pass_count = 0;
+  int32_t  pass_total = 0;
 
   uint64_t phase_hash = HASH_INIT;
   uint64_t total_hash = HASH_INIT;
 
-  uint8_t mem[65536];
-  uint8_t fb[160*144];
-
-  Schematics::SchematicTop top;
-
-  Z80 cpu;
-  bool cpu_en = false;
-
-  Req cpu_req;
-  Req dbg_req;
+  int32_t  sys_rst = 1;
+  int32_t  sys_t1 = 0;
+  int32_t  sys_t2 = 0;
+  int32_t  sys_clken = 0;
+  int32_t  sys_clkgood = 0;
+  int32_t  sys_cpuready = 0;
+  int32_t  cpu_en = 0;
 
   Req* script = nullptr;
-  int script_len = 0;
+  int32_t  script_len = 0;
+  
+  Schematics::SchematicTop top;
+  
+  Z80 cpu;
+  Req cpu_req = {0};
+  Req dbg_req = {0};
+
+  uint8_t mem[65536];
+  uint8_t fb[160*144];
 };
+#pragma pack(pop)
+
+//-----------------------------------------------------------------------------

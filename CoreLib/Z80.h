@@ -3,6 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct Z80 {
   void    reset(uint16_t new_pc);
 
@@ -89,5 +90,6 @@ struct Z80 {
   uint8_t  rlu(int op, uint8_t flags);
   uint8_t  daa(uint8_t x, uint8_t f);
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------

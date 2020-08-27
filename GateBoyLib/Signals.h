@@ -56,8 +56,6 @@ extern const Lut8 logic_lut1;
 
 //-----------------------------------------------------------------------------
 
-constexpr uint64_t HASH_INIT = 0x12345678;
-
 void combine_hash(uint64_t& a, uint64_t b);
 void commit_and_hash(void* blob, int size, uint64_t& hash_regs);
 

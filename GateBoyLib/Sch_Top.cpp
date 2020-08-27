@@ -3,6 +3,8 @@
 
 using namespace Schematics;
 
+#pragma warning(disable:4100)
+
 //-----------------------------------------------------------------------------
 
 SchematicTop::SchematicTop() {
@@ -11,7 +13,7 @@ SchematicTop::SchematicTop() {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tick_slow(wire CLK, wire CLKGOOD) {
+void SchematicTop::tick_slow(wire CLK, wire CLKGOOD, wire RST) {
   clk_reg.tick_slow(CLK, *this);
   lcd_reg.tick(*this);
   sprite_scanner.tick(*this);
@@ -42,7 +44,9 @@ void SchematicTop::tick_slow(wire CLK, wire CLKGOOD) {
   tile_fetcher.tock(CLK, *this);
   int_reg.tock(*this, cpu_bus);
 
-  cpu_bus.tock(*this);
+  cpu_bus.CPU_PIN_ADDR_HI = cpu_bus.SYRO_FE00_FFFFp();
+  cpu_bus.CPU_PIN_BOOTp = TUTU_ADDR_BOOTp();
+
   ext_bus.tock(*this);
   oam_bus.tock(CLK, *this);
   vram_bus.tock(*this);

@@ -11,7 +11,6 @@ struct VramBus;
 
 struct CpuBus {
   void dump(Dumper& d) const;
-  void tock(const SchematicTop& top);
 
   uint16_t get_bus_addr() const {
     return (uint16_t)pack_p(CPU_BUS_A00.tp(), CPU_BUS_A01.tp(), CPU_BUS_A02.tp(), CPU_BUS_A03.tp(),

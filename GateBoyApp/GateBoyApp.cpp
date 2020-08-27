@@ -71,6 +71,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+#if 0
   auto& gb = *state_manager.state();
   gb.cpu.reset(0x0000);
   gb.reset();
@@ -122,6 +123,7 @@ void GateBoyApp::app_init() {
   //gb.run(8);
 
   //gb.cpu_en = true;
+#endif
 }
 
 void GateBoyApp::app_close() {

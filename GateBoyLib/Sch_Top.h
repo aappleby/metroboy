@@ -23,11 +23,12 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct SchematicTop {
 
   SchematicTop();
 
-  void tick_slow(wire CLK, wire CLKGOOD);
+  void tick_slow(wire CLK, wire CLKGOOD, wire RST = 0);
 
   /*p04.DECY*/ wire DECY_LATCH_EXTn() {
     /*p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.CPU_PIN_LATCH_EXT.tp());
@@ -208,6 +209,7 @@ struct SchematicTop {
   Tri LCD_PIN_ALTSG = TRI_HZNP; // PIN_56 
   Tri LCD_PIN_VSYNC = TRI_HZNP; // PIN_57 
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 

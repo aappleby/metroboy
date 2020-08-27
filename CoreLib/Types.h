@@ -14,7 +14,9 @@ typedef int16_t sample_t;
 //typedef const bool wire;
 typedef bool wire;
 
+constexpr uint64_t HASH_INIT = 0x12345678;
 uint64_t mix(uint64_t h);
+uint64_t hash(void* blob, int len);
 
 double timestamp();
 
@@ -72,6 +74,7 @@ inline int pack_n(wire a, wire b, wire c, wire d,
 #pragma warning(push)
 #pragma warning(disable:4201)
 
+#pragma pack(push, 1)
 struct Req {
   uint16_t addr = 0;
   union {
@@ -89,6 +92,7 @@ struct Req {
     return read || write;
   }
 };
+#pragma pack(pop)
 
 static_assert(sizeof(Req) == 8, "Req size != 8");
 

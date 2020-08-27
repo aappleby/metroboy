@@ -9,6 +9,7 @@
 
 GateBoy::GateBoy() {
   memset(fb, 4, 160*144);
+  memset(mem, 0, 65536);
   cpu.reset(0x100);
 }
 

@@ -10,6 +10,15 @@ uint64_t mix(uint64_t h) {
   return _byteswap_uint64(h * 0xff51afd7ed558ccd);
 }
 
+uint64_t hash(void* blob, int len) {
+  uint8_t* base = (uint8_t*)blob;
+  uint64_t h = HASH_INIT;
+  for (int i = 0; i < len; i++) {
+    h = mix(h ^ base[i]);
+  }
+  return h;
+}
+
 static const uint64_t app_start = []() {
   uint64_t ret;
   QueryPerformanceCounter((LARGE_INTEGER*)&ret);

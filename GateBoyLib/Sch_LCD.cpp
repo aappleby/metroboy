@@ -3,6 +3,8 @@
 
 using namespace Schematics;
 
+//------------------------------------------------------------------------------
+
 void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("----------   LCD    ----------\n");
   d("LCD X : %03d\n", get_x());
@@ -38,9 +40,7 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("NAPO_FRAME_EVEN     %c\n", NAPO_FRAME_EVEN    .c());
   d("ROPO_LY_MATCH_SYNCp %c\n", ROPO_LY_MATCH_SYNCp.c());
   d("\n");
-
 }
-
 
 //------------------------------------------------------------------------------
 

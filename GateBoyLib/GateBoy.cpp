@@ -395,8 +395,8 @@ void GateBoy::tock_oam_bus() {
   if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
   if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
 
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_a(oam_data_a);
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_bus_data_b(oam_data_b);
+  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
+  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);
 }
 
 //-----------------------------------------------------------------------------

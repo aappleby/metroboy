@@ -40,13 +40,6 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  // -> top, tile fetcher
-  /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp() const { 
-    /*p27.NYFO*/ wire NYFO_WIN_FETCH_TRIGn = not1(NUNY_WX_MATCH_TRIGp());
-    /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp = not1(NYFO_WIN_FETCH_TRIGn);
-    return MOSU_WIN_FETCH_TRIGp;
-  }
-
   // -> top.TEVO
   /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG() const {
     return nor2(RYFA_FETCHn_A.qn(), RENE_FETCHn_B.qp());
@@ -64,15 +57,7 @@ struct PixelPipe {
   // -> sprite fetcher
   /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not1(SYLO_WIN_HITn()); }
 
-  // -> interrupts
-  /*p21.WODU*/ wire WODU_RENDER_DONEp() const {
-    return and2(_XENA_STORE_MATCHn, XANO_X_167p());
-  }
-
   /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.tp(); }
-  /*p24.LOBY*/ wire LOBY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.tp()); }
-  /*p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(_XYMU_RENDERINGp.tp()); }
-  /*p29.TEPA*/ wire TEPA_RENDERINGn() const { return not1(_XYMU_RENDERINGp.tp()); }   // sfetch.tuvo/tyso
 
   wire NOCU_WIN_MODEn()  const {
     /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(PYNU_WIN_MODE_A.tp());
@@ -89,6 +74,8 @@ struct PixelPipe {
   /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 
   //----------------------------------------
+
+  /*p21.WODU*/ Sig WODU_RENDER_DONEp;
 
   // Pixel counter
   /*p21.XEHO*/ RegQPN XEHO_X0p = REG_D0C0;
@@ -150,8 +137,6 @@ struct PixelPipe {
   /*p27.TEKE*/ RegQPN TEKE_WIN_Y7 = REG_D0C0;
 
   /*p??.ROXY*/ Latch _ROXY_SCX_FINE_MATCH_LATCHn = TRI_D1NP;
-
-  Sig _XENA_STORE_MATCHn;
 
   /*p27.RYKU*/ RegQPN _RYKU_FINE_CNT0 = REG_D0C0;
   /*p27.ROGA*/ RegQPN _ROGA_FINE_CNT1 = REG_D0C0;

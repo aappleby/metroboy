@@ -146,7 +146,6 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("RYKU_FINE_CNT0         %c\n", _RYKU_FINE_CNT0        .c());
   d("ROGA_FINE_CNT1         %c\n", _ROGA_FINE_CNT1        .c());
   d("RUBU_FINE_CNT2         %c\n", _RUBU_FINE_CNT2        .c());
-  d("_XENA_STORE_MATCHn     %c\n", _XENA_STORE_MATCHn     .c());
   d("XYMU_RENDERINGp        %c\n", _XYMU_RENDERINGp       .c());
   d("RUPO_LYC_MATCH_LATCHn  %c\n", _RUPO_LYC_MATCH_LATCHn .c());
   d("WUSA_LCD_CLOCK_GATE    %c\n", _WUSA_LCD_CLOCK_GATE   .c());
@@ -180,7 +179,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
 //------------------------------------------------------------------------------
 
 void PixelPipe::tick(const SchematicTop& top) {
-  _XENA_STORE_MATCHn = top.sprite_store.XENA_STORE_MATCHn();
+  /*p21.WODU*/ WODU_RENDER_DONEp = and2(top.sprite_store.XENA_STORE_MATCHn(), XANO_X_167p());
 }
 
 //------------------------------------------------------------------------------
@@ -202,7 +201,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
   /*p27.MEHE*/ wire MEHE_AxCxExGx = not1(ALET_xBxDxFxH);
 
-  /*#p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp(), MYVO_AxCxExGx);
+  /*#p24.VYBO*/ wire _VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_RENDER_DONEp, MYVO_AxCxExGx);
   /*#p24.SOCY*/ wire _SOCY_WIN_HITn = not1(TOMU_WIN_HITp());
   /*#p24.TYFA*/ wire _TYFA_CLKPIPEp_xBxDxFxH = and3(_SOCY_WIN_HITn, top.tile_fetcher._POKY_PRELOAD_LATCHp.qp(), _VYBO_PIX_CLK_xBxDxFxH);
   /*#p24.SEGU*/ wire _SEGU_CLKPIPEn = not1(_TYFA_CLKPIPEp_xBxDxFxH);
@@ -219,7 +218,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, TOFU_VID_RSTp);
-    /*#p21.VOGA*/ _VOGA_RENDER_DONEp        = dff17_B(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_RENDER_DONEp());
+    /*#p21.VOGA*/ _VOGA_RENDER_DONEp        = dff17_B(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_RENDER_DONEp);
     /*#p21.WEGO*/ wire WEGO_RENDER_DONEp    = or2(TOFU_VID_RSTp, _VOGA_RENDER_DONEp.qp());
     /*#p21.XYMU*/ _XYMU_RENDERINGp          = nor_latch(top.AVAP_RENDER_START_TRIGp, WEGO_RENDER_DONEp);
   }

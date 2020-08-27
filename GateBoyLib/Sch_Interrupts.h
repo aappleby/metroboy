@@ -14,36 +14,10 @@ struct CpuBus;
 // Bit 4: Joypad   Interrupt Request (INT 60h)  (1=Request)
 
 struct InterruptRegisters {
+  void dump(Dumper& d) const;
   void tick(const SchematicTop& gb);
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
 
-  void dump(Dumper& d) const {
-    d("----------   Ints   ----------\n");
-    d("LOPE_FF0F_0        %c\n", LOPE_FF0F_0p        .c());
-    d("UBUL_FF0F_3        %c\n", UBUL_FF0F_3p        .c());
-    d("ULAK_FF0F_4        %c\n", ULAK_FF0F_4p        .c());
-    d("LALU_FF0F_1        %c\n", LALU_FF0F_1p        .c());
-    d("NYBO_FF0F_2        %c\n", NYBO_FF0F_2p        .c());
-    d("\n");
-    d("MATY_FF0F_L0       %c\n", MATY_FF0F_L0p       .c());
-    d("NEJY_FF0F_L1       %c\n", NEJY_FF0F_L1p       .c());
-    d("NUTY_FF0F_L2       %c\n", NUTY_FF0F_L2p       .c());
-    d("MOPO_FF0F_L3       %c\n", MOPO_FF0F_L3p       .c());
-    d("PAVY_FF0F_L4       %c\n", PAVY_FF0F_L4p       .c());
-    d("\n");
-    d("CPU_PIN_INT_VBLANK %c\n", CPU_PIN_INT_VBLANK .c());
-    d("CPU_PIN_INT_STAT   %c\n", CPU_PIN_INT_STAT   .c());
-    d("CPU_PIN_INT_TIMER  %c\n", CPU_PIN_INT_TIMER  .c());
-    d("CPU_PIN_INT_SERIAL %c\n", CPU_PIN_INT_SERIAL .c());
-    d("CPU_PIN_INT_JOYPAD %c\n", CPU_PIN_INT_JOYPAD .c());
-    d("\n");
-    d("CPU_PIN_ACK_VBLANK %c\n", CPU_PIN_ACK_VBLANK .c());
-    d("CPU_PIN_ACK_STAT   %c\n", CPU_PIN_ACK_STAT   .c());
-    d("CPU_PIN_ACK_TIMER  %c\n", CPU_PIN_ACK_TIMER  .c());
-    d("CPU_PIN_ACK_SERIAL %c\n", CPU_PIN_ACK_SERIAL .c());
-    d("CPU_PIN_ACK_JOYPAD %c\n", CPU_PIN_ACK_JOYPAD .c());
-    d("\n");
-  }
 
 //private:
   friend SchematicTop;

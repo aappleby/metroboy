@@ -6,6 +6,36 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
+void InterruptRegisters::dump(Dumper& d) const {
+  d("----------   Ints   ----------\n");
+  d("LOPE_FF0F_0        %c\n", LOPE_FF0F_0p        .c());
+  d("UBUL_FF0F_3        %c\n", UBUL_FF0F_3p        .c());
+  d("ULAK_FF0F_4        %c\n", ULAK_FF0F_4p        .c());
+  d("LALU_FF0F_1        %c\n", LALU_FF0F_1p        .c());
+  d("NYBO_FF0F_2        %c\n", NYBO_FF0F_2p        .c());
+  d("\n");
+  d("MATY_FF0F_L0       %c\n", MATY_FF0F_L0p       .c());
+  d("NEJY_FF0F_L1       %c\n", NEJY_FF0F_L1p       .c());
+  d("NUTY_FF0F_L2       %c\n", NUTY_FF0F_L2p       .c());
+  d("MOPO_FF0F_L3       %c\n", MOPO_FF0F_L3p       .c());
+  d("PAVY_FF0F_L4       %c\n", PAVY_FF0F_L4p       .c());
+  d("\n");
+  d("CPU_PIN_INT_VBLANK %c\n", CPU_PIN_INT_VBLANK .c());
+  d("CPU_PIN_INT_STAT   %c\n", CPU_PIN_INT_STAT   .c());
+  d("CPU_PIN_INT_TIMER  %c\n", CPU_PIN_INT_TIMER  .c());
+  d("CPU_PIN_INT_SERIAL %c\n", CPU_PIN_INT_SERIAL .c());
+  d("CPU_PIN_INT_JOYPAD %c\n", CPU_PIN_INT_JOYPAD .c());
+  d("\n");
+  d("CPU_PIN_ACK_VBLANK %c\n", CPU_PIN_ACK_VBLANK .c());
+  d("CPU_PIN_ACK_STAT   %c\n", CPU_PIN_ACK_STAT   .c());
+  d("CPU_PIN_ACK_TIMER  %c\n", CPU_PIN_ACK_TIMER  .c());
+  d("CPU_PIN_ACK_SERIAL %c\n", CPU_PIN_ACK_SERIAL .c());
+  d("CPU_PIN_ACK_JOYPAD %c\n", CPU_PIN_ACK_JOYPAD .c());
+  d("\n");
+}
+
+//------------------------------------------------------------------------------
+
 void InterruptRegisters::tick(const SchematicTop& /*top*/) {
 }
 
@@ -76,7 +106,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg.RUTU_LINE_P908.qp());
     /*p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);
     /*p21.TAPA*/ wire TAPA_INT_OAM = and2(_TOLU_VBLANKn, SELA_LINE_ENDp);
-    /*p21.TARU*/ wire TARU_INT_HBL = and2(_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp());
+    /*p21.TARU*/ wire TARU_INT_HBL = and2(_TOLU_VBLANKn, top.pix_pipe.WODU_RENDER_DONEp);
 
     /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_STAT_LYI_ENn.qn(), top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp(),
                                              top.pix_pipe.REFE_STAT_OAI_ENn.qn(), TAPA_INT_OAM,

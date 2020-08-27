@@ -14,25 +14,11 @@ struct OamBus {
   
   //----------------------------------------
 
-  uint8_t get_oam_tri_addr() const {
-    return (uint8_t)pack_p(OAM_TRI_A0n.c(), OAM_TRI_A1n.c(), OAM_TRI_A2n.c(), OAM_TRI_A3n.c(),
-                           OAM_TRI_A4n.c(), OAM_TRI_A5n.c(), OAM_TRI_A6n.c(), OAM_TRI_A7n.c());
-  }
-
   uint8_t get_oam_pin_addr() const {
     return (uint8_t)pack_p(OAM_PIN_A1p.tp(), OAM_PIN_A2p.tp(), OAM_PIN_A3p.tp(), OAM_PIN_A4p.tp(),
                            OAM_PIN_A5p.tp(), OAM_PIN_A6p.tp(), OAM_PIN_A7p.tp(), 0);
   }
 
-  uint8_t get_oam_latch_data_a() const {
-    return (uint8_t)pack_p(YDYV_LATCH_OAM_DA0n.c(), YCEB_LATCH_OAM_DA1n.c(), ZUCA_LATCH_OAM_DA2n.c(), WONE_LATCH_OAM_DA3n.c(),
-                           ZAXE_LATCH_OAM_DA4n.c(), XAFU_LATCH_OAM_DA5n.c(), YSES_LATCH_OAM_DA6n.c(), ZECA_LATCH_OAM_DA7n.c());
-  }
-
-  uint8_t get_oam_latch_data_b() const {
-    return (uint8_t)pack_p(XYKY_LATCH_OAM_DB0n.c(), YRUM_LATCH_OAM_DB1n.c(), YSEX_LATCH_OAM_DB2n.c(), YVEL_LATCH_OAM_DB3n.c(),
-                           WYNO_LATCH_OAM_DB4n.c(), CYRA_LATCH_OAM_DB5n.c(), ZUVE_LATCH_OAM_DB6n.c(), ECED_LATCH_OAM_DB7n.c());
-  }
 
   uint8_t get_oam_pin_data_a() const {
     return (uint8_t)pack_p(OAM_PIN_DA0n.tp(), OAM_PIN_DA1n.tp(), OAM_PIN_DA2n.tp(), OAM_PIN_DA3n.tp(),
@@ -44,17 +30,7 @@ struct OamBus {
                            OAM_PIN_DB4n.tp(), OAM_PIN_DB5n.tp(), OAM_PIN_DB6n.tp(), OAM_PIN_DB7n.tp());
   }
 
-  uint8_t get_oam_temp_a() const {
-    return (uint8_t)pack_p(XUSO_OAM_DA0p.qp(), XEGU_OAM_DA1p.qp(), YJEX_OAM_DA2p.qp(), XYJU_OAM_DA3p.qp(),
-                           YBOG_OAM_DA4p.qp(), WYSO_OAM_DA5p.qp(), XOTE_OAM_DA6p.qp(), YZAB_OAM_DA7p.qp());
-  }
-
-  uint8_t get_oam_temp_b() const {
-    return (uint8_t)pack_p(YLOR_OAM_DB0p.qp(), ZYTY_OAM_DB1p.qp(), ZYVE_OAM_DB2p.qp(), ZEZY_OAM_DB3p.qp(),
-                           GOMO_OAM_DB4p.qp(), BAXO_OAM_DB5p.qp(), YZOS_OAM_DB6p.qp(), DEPO_OAM_DB7p.qp());
-  }
-
-  void set_bus_data_a(uint8_t data) {
+  void set_pin_data_a(uint8_t data) {
     OAM_PIN_DA0n = (data & 0x01);
     OAM_PIN_DA1n = (data & 0x02);
     OAM_PIN_DA2n = (data & 0x04);
@@ -65,7 +41,7 @@ struct OamBus {
     OAM_PIN_DA7n = (data & 0x80);
   }
 
-  void set_bus_data_b(uint8_t data) {
+  void set_pin_data_b(uint8_t data) {
     OAM_PIN_DB0n = (data & 0x01);
     OAM_PIN_DB1n = (data & 0x02);
     OAM_PIN_DB2n = (data & 0x04);

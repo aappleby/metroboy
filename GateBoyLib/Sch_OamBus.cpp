@@ -13,21 +13,30 @@ void OamBus::dump(Dumper& d) const {
   d("PIN_WR_A   %c\n", OAM_PIN_WR_A.c());
   d("PIN_WR_B   %c\n", OAM_PIN_WR_B.c());
 
+  int oam_tri_addr = pack_p(OAM_TRI_A0n.c(), OAM_TRI_A1n.c(), OAM_TRI_A2n.c(), OAM_TRI_A3n.c(),
+                            OAM_TRI_A4n.c(), OAM_TRI_A5n.c(), OAM_TRI_A6n.c(), OAM_TRI_A7n.c());
+
   d("OAM TRI ADDR   %03d %02x %c%c%c%c%c%c%c%c\n", 
-    get_oam_tri_addr(),
-    get_oam_tri_addr(),
+    oam_tri_addr,
+    oam_tri_addr,
     OAM_TRI_A7n.c(), OAM_TRI_A6n.c(), OAM_TRI_A5n.c(), OAM_TRI_A4n.c(),
     OAM_TRI_A3n.c(), OAM_TRI_A2n.c(), OAM_TRI_A1n.c(), OAM_TRI_A0n.c());
 
+  int oam_latch_data_a = pack_p(YDYV_LATCH_OAM_DA0n.c(), YCEB_LATCH_OAM_DA1n.c(), ZUCA_LATCH_OAM_DA2n.c(), WONE_LATCH_OAM_DA3n.c(),
+                                ZAXE_LATCH_OAM_DA4n.c(), XAFU_LATCH_OAM_DA5n.c(), YSES_LATCH_OAM_DA6n.c(), ZECA_LATCH_OAM_DA7n.c());
+
+  int oam_latch_data_b = pack_p(XYKY_LATCH_OAM_DB0n.c(), YRUM_LATCH_OAM_DB1n.c(), YSEX_LATCH_OAM_DB2n.c(), YVEL_LATCH_OAM_DB3n.c(),
+                                WYNO_LATCH_OAM_DB4n.c(), CYRA_LATCH_OAM_DB5n.c(), ZUVE_LATCH_OAM_DB6n.c(), ECED_LATCH_OAM_DB7n.c());
+
   d("OAM LATCH A    %03d %02x %c%c%c%c%c%c%c%c\n",
-    get_oam_latch_data_a(),
-    get_oam_latch_data_a(),
+    oam_latch_data_a,
+    oam_latch_data_a,
     ZECA_LATCH_OAM_DA7n.c(), YSES_LATCH_OAM_DA6n.c(), XAFU_LATCH_OAM_DA5n.c(), ZAXE_LATCH_OAM_DA4n.c(),
     WONE_LATCH_OAM_DA3n.c(), ZUCA_LATCH_OAM_DA2n.c(), YCEB_LATCH_OAM_DA1n.c(), YDYV_LATCH_OAM_DA0n.c());
 
   d("OAM LATCH B    %03d %02x %c%c%c%c%c%c%c%c\n", 
-    get_oam_latch_data_b(),
-    get_oam_latch_data_b(),
+    oam_latch_data_b,
+    oam_latch_data_b,
     ECED_LATCH_OAM_DB7n.c(), ZUVE_LATCH_OAM_DB6n.c(), CYRA_LATCH_OAM_DB5n.c(), WYNO_LATCH_OAM_DB4n.c(),
     YVEL_LATCH_OAM_DB3n.c(), YSEX_LATCH_OAM_DB2n.c(), YRUM_LATCH_OAM_DB1n.c(), XYKY_LATCH_OAM_DB0n.c());
 
@@ -49,15 +58,22 @@ void OamBus::dump(Dumper& d) const {
     OAM_PIN_DB7n.c(), OAM_PIN_DB6n.c(), OAM_PIN_DB5n.c(), OAM_PIN_DB4n.c(),
     OAM_PIN_DB3n.c(), OAM_PIN_DB2n.c(), OAM_PIN_DB1n.c(), OAM_PIN_DB0n.c());
 
+  int oam_temp_a = pack_p(XUSO_OAM_DA0p.qp(), XEGU_OAM_DA1p.qp(), YJEX_OAM_DA2p.qp(), XYJU_OAM_DA3p.qp(),
+                          YBOG_OAM_DA4p.qp(), WYSO_OAM_DA5p.qp(), XOTE_OAM_DA6p.qp(), YZAB_OAM_DA7p.qp());
+
+  int oam_temp_b = pack_p(YLOR_OAM_DB0p.qp(), ZYTY_OAM_DB1p.qp(), ZYVE_OAM_DB2p.qp(), ZEZY_OAM_DB3p.qp(),
+                          GOMO_OAM_DB4p.qp(), BAXO_OAM_DB5p.qp(), YZOS_OAM_DB6p.qp(), DEPO_OAM_DB7p.qp());
+  
+
   d("OAM TEMP A %03d %02x %c%c%c%c%c%c%c%c\n",
-    get_oam_temp_a(),
-    get_oam_temp_a(),
+    oam_temp_a,
+    oam_temp_a,
     YZAB_OAM_DA7p.c(), XOTE_OAM_DA6p.c(), WYSO_OAM_DA5p.c(), YBOG_OAM_DA4p.c(),
     XYJU_OAM_DA3p.c(), YJEX_OAM_DA2p.c(), XEGU_OAM_DA1p.c(), XUSO_OAM_DA0p.c());
 
   d("OAM TEMP B %03d %2x %c%c%c%c%c%c%c%c\n",
-    get_oam_temp_b(),
-    get_oam_temp_b(),
+    oam_temp_b,
+    oam_temp_b,
     DEPO_OAM_DB7p.c(), YZOS_OAM_DB6p.c(), BAXO_OAM_DB5p.c(), GOMO_OAM_DB4p.c(),
     ZEZY_OAM_DB3p.c(), ZYVE_OAM_DB2p.c(), ZYTY_OAM_DB1p.c(), YLOR_OAM_DB0p.c());
 
@@ -177,7 +193,8 @@ void OamBus::tock(SchematicTop& top) {
 
   /*p28.WAFO*/ wire WAFO_OAM_A0n = not1(GEKA_OAM_A0p);
 
-  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(top.pix_pipe.TEPA_RENDERINGn(), top.sprite_fetcher._TULY_SFETCH_S1.qp(), top.sprite_fetcher._TESE_SFETCH_S2.qp());
+  /*p29.TEPA*/ wire TEPA_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp());
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGn, top.sprite_fetcher._TULY_SFETCH_S1.qp(), top.sprite_fetcher._TESE_SFETCH_S2.qp());
   /*p28.WEFY*/ wire WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp, top.sprite_fetcher._TYFO_SFETCH_S0_D1.qp());
   /*p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(top.sprite_fetcher._TOXE_SFETCH_S0.qp());
   /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(top.sprite_fetcher._TYFO_SFETCH_S0_D1.qp(), TYTU_SFETCH_S0n);

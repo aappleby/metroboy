@@ -23,7 +23,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     WOKY_LCDC_WINMAPn.qn(),
     XONA_LCDC_ENn.qn());
 
-  /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp()); // die NOR
+  /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp); // die NOR
   /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(_XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
 
   d.dump_reg("FF41 STAT", 
@@ -867,7 +867,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.TOBE*/ wire _TOBE_FF41_RDp = and2(_VARY_FF41p, top.ASOT_CPU_RDp()); // die AND
     /*p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp); // die INV
 
-    /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp()); // die NOR
+    /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp); // die NOR
     /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(_XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
 
     /*#p21.TEBY*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);

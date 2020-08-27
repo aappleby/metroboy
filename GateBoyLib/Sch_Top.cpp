@@ -48,6 +48,10 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
                                       pix_pipe.SUZU_WIN_FIRST_TILEne(),
                                       TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
 
+  // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
+  // so dma stops oam scan?
+  /*p28.ACYL*/ ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.tp());
+
   clk_reg.tick_slow(CLK, CLKGOOD, *this);
   lcd_reg.tick(*this);
 

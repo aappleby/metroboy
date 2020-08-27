@@ -58,7 +58,7 @@ struct SchematicTop {
 
   // -> top.AMAB, top.APAG
   /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn() const { 
-     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp(), ACYL_SCANNINGp(), AJON_OAM_BUSY()); // def nor4
+     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp(), ACYL_SCANNINGp, AJON_OAM_BUSY()); // def nor4
      return AJUJ_OAM_BUSYn;
   }
 
@@ -114,16 +114,6 @@ struct SchematicTop {
   }
 
   //-----------------------------------------------------------------------------
-  // PPU signals
-
-  // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
-  // so dma stops oam scan?
-  /*p28.ACYL*/ wire ACYL_SCANNINGp() const {
-    /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.tp());
-    return ACYL_SCANNINGp;
-  }
-
-  //-----------------------------------------------------------------------------
 
   /*p07.UBET*/ Sig UBET_T1p;
   /*p07.UVAR*/ Sig UVAR_T2p;
@@ -145,6 +135,8 @@ struct SchematicTop {
   /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
 
   /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
+
+  /*p28.ACYL*/ Sig ACYL_SCANNINGp;
 
   //-----------------------------------------------------------------------------
 

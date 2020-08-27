@@ -211,7 +211,8 @@ void OamBus::tock(SchematicTop& top) {
     /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCxEFGH = not1(TAPU_CPU_WRp_xxxxEFGx);
     /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCxEFGH);
 
-    /*p04.MAKA*/ MAKA_HOLD_MEMp = dff17_B(ZEME_AxCxExGx, CUNU_SYS_RSTn, top.CATY_LATCH_EXTp());
+    /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(top.DECY_LATCH_EXTn());
+    /*p04.MAKA*/ MAKA_HOLD_MEMp = dff17_B(ZEME_AxCxExGx, CUNU_SYS_RSTn, CATY_LATCH_EXTp);
 
     /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(top.cpu_bus.SARO_FE00_FEFFp(), top.AJUJ_OAM_BUSYn()); // def and
 

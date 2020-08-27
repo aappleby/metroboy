@@ -24,7 +24,6 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p07.UPOJ*/ UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, RST);
 
   /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn());
-  /*p25.RACO*/ RACO_DBG_VRAMn = not1(TUTO_DBG_VRAMp);
 
   /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXTp.tp()); // Missing from schematic
   /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
@@ -34,7 +33,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
   /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
   /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-  /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp());
+  /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn());
+  /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);
   /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
 
 

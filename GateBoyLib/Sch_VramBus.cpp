@@ -92,7 +92,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SERE*/ wire _SERE_CPU_VRM_RDp = and2(_TOLE_VRAM_RDp, top.pix_pipe.ROPY_RENDERINGn());
 
     /*p25.SOHY*/ wire _SOHY_MWRn = nand2(_TYJY_DBG_VRAM_WRp, _SERE_CPU_VRM_RDp);
-    /*p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, top.RACO_DBG_VRAMn);
+    /*p25.RACO*/ wire RACO_DBG_VRAMn = not1(top.TUTO_DBG_VRAMp);
+    /*p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, RACO_DBG_VRAMn);
     /*p25.SOFY*/ wire _SOFY_MWRn_D = or2(_SOHY_MWRn, top.TUTO_DBG_VRAMp);
     /*p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
     /*p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
@@ -118,7 +119,8 @@ void VramBus::tock(SchematicTop& top) {
 
     /*p25.RACU*/ wire _RACU_MOEn = and4(_RYLU_CPU_VRAM_RDn, _RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAM_RDn); // def and
 
-    /*p25.SEMA*/ wire _SEMA_MOEn_A = and2(_RACU_MOEn, top.RACO_DBG_VRAMn);
+    /*p25.RACO*/ wire RACO_DBG_VRAMn = not1(top.TUTO_DBG_VRAMp);
+    /*p25.SEMA*/ wire _SEMA_MOEn_A = and2(_RACU_MOEn, RACO_DBG_VRAMn);
     /*p25.RUTE*/ wire _RUTE_MOEn_D = or2(_RACU_MOEn, top.TUTO_DBG_VRAMp); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire _REFO_MOEn_A = not1(_SEMA_MOEn_A);
     /*p25.SAHA*/ wire _SAHA_MOEn_D = not1(_RUTE_MOEn_D);
@@ -136,11 +138,9 @@ void VramBus::tock(SchematicTop& top) {
     // SUTU := nor4(LENA, LUFA, TEXY, SERE)
     /*p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BGW_VRM_RDp, LUFA, TEXY_SPR_READ_VRAMp, _SERE_CPU_VRM_RDp);
 
-    wire RACO = top.RACO_DBG_VRAMn;
-    wire TUTU = top.TUTO_DBG_VRAMp;
-
-    /*p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, RACO);
-    /*p25.SEWO*/ wire _SEWO_MCSn_D = or2(_SUTU_MCSn, TUTU);
+    /*p25.RACO*/ wire RACO_DBG_VRAMn = not1(top.TUTO_DBG_VRAMp);
+    /*p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, RACO_DBG_VRAMn);
+    /*p25.SEWO*/ wire _SEWO_MCSn_D = or2(_SUTU_MCSn, top.TUTO_DBG_VRAMp);
     /*p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
     /*p25.SETY*/ wire _SETY_MCSp_D = not1(_SEWO_MCSn_D);
     VRAM_PIN_CSn = io_pin(_SOKY_MCSp_A, _SETY_MCSp_D);

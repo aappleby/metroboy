@@ -35,11 +35,6 @@ struct SchematicTop {
     return DECY_LATCH_EXTn;
   }
 
-  /*p04.CATY*/ wire CATY_LATCH_EXTp() {
-    /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn());
-    return CATY_LATCH_EXTp;
-  }
-
   // top.BETE, top.AJUJ
   /*p28.AJON*/ wire AJON_OAM_BUSY() const {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp());
@@ -66,7 +61,6 @@ struct SchematicTop {
   /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
 
   /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
-  /*p25.RACO*/ Sig RACO_DBG_VRAMn;
 
   /*p01.ABUZ*/ Sig ABUZ_AVn;
 

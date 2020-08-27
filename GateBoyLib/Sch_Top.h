@@ -30,11 +30,6 @@ struct SchematicTop {
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n);
 
-  /*p04.DECY*/ wire DECY_LATCH_EXTn() {
-    /*p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.CPU_PIN_LATCH_EXT.tp());
-    return DECY_LATCH_EXTn;
-  }
-
   // top.BETE, top.AJUJ
   /*p28.AJON*/ wire AJON_OAM_BUSY() const {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp());
@@ -80,6 +75,9 @@ struct SchematicTop {
   /*#p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
 
   /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
+
+
+  /*p04.DECY*/ Sig DECY_LATCH_EXTn;
 
   //-----------------------------------------------------------------------------
 

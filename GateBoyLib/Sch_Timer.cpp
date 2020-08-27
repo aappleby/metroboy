@@ -22,7 +22,7 @@ void Timer::dump(Dumper& d) const {
 void Timer::tick(const SchematicTop& /*top*/) {
 }
 
-void Timer::tock(wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus) {
+void Timer::tock(wire RST, wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus) {
   /*p03.RYFO*/ wire RYFO_FF04_FF07p = and3(top.cpu_bus.CPU_BUS_A02.tp(), top.cpu_bus.SARE_XX00_XX07p(), top.cpu_bus.SYKE_FF00_FFFFp());
 
   /*p01.UVYN*/ wire UVYN_DIV_05n = not1(TAMA_DIV_05.qp());
@@ -39,7 +39,7 @@ void Timer::tock(wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p01.TAGY*/ wire TAGY_FF04_RDp = and4(top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
     /*p01.TAPE*/ wire TAPE_FF04_WRp = and4(top.TAPU_CPU_WRp_xxxxEFGx(), RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
-    /*p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(top.clk_reg.UCOB_CLKBADp(CLKGOOD), top.clk_reg.SYS_PIN_RSTp.tp(), TAPE_FF04_WRp);
+    /*p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(top.clk_reg.UCOB_CLKBADp(CLKGOOD), RST, TAPE_FF04_WRp);
 
     /*p01.UKUP*/ UKUP_DIV_00 = dff17_AB(top.clk_reg.BOGA_xBCDEFGH(CLKGOOD), UFOL_DIV_RSTn, UKUP_DIV_00.qn());
     /*p01.UFOR*/ UFOR_DIV_01 = dff17_AB(UKUP_DIV_00.qn(),            UFOL_DIV_RSTn, UFOR_DIV_01.qn());

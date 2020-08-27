@@ -28,7 +28,7 @@ struct SchematicTop {
 
   SchematicTop();
 
-  void tick_slow(wire CLK, wire CLKGOOD, wire RST = 0);
+  void tick_slow(wire RST, wire CLK, wire CLKGOOD);
 
   /*p04.DECY*/ wire DECY_LATCH_EXTn() {
     /*p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.CPU_PIN_LATCH_EXT.tp());

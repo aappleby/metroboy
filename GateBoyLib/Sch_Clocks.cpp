@@ -76,14 +76,14 @@ void ClockRegisters::tick_slow(const wire CLK, SchematicTop& top) {
   _XONA_LCDC_ENn_qn = top.pix_pipe.XONA_LCDC_ENn.qn();
 }
 
-void ClockRegisters::tock_clk_slow(const wire CLK, wire CLKGOOD, SchematicTop& top) {
+void ClockRegisters::tock_clk_slow(wire RST, const wire CLK, wire CLKGOOD, SchematicTop& top) {
   // ignoring the deglitcher here
 
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
   /*p07.UBET*/ wire UBET_T1p        = not1(SYS_PIN_T1n.tp());
   /*p07.UVAR*/ wire UVAR_T2p        = not1(SYS_PIN_T2n.tp());
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, SYS_PIN_RSTp.tp());
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, RST);
 
   /*p01.AFUR*/ AFUR_xxxxEFGH = dff9_inv(!ATAL_xBxDxFxH(CLK),  ATAL_xBxDxFxH(CLK), UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
   /*p01.ALEF*/ ALEF_AxxxxFGH = dff9_inv( ATAL_xBxDxFxH(CLK), !ATAL_xBxDxFxH(CLK), UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
@@ -157,8 +157,8 @@ void ClockRegisters::tock_clk_slow(const wire CLK, wire CLKGOOD, SchematicTop& t
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_rst_slow(wire CLKGOOD, const SchematicTop& top) {
-  /*p01.UPYF*/ wire _UPYF = or2(SYS_PIN_RSTp.tp(), UCOB_CLKBADp(CLKGOOD));
+void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, const SchematicTop& top) {
+  /*p01.UPYF*/ wire _UPYF = or2(RST, UCOB_CLKBADp(CLKGOOD));
 
   /*p01.TUBO*/ _TUBO_WAITINGp = nor_latch(_UPYF, CPU_PIN_READYp.tp());
 
@@ -173,13 +173,13 @@ void ClockRegisters::tock_rst_slow(wire CLKGOOD, const SchematicTop& top) {
   CPU_PIN_STARTp   = _TABA_POR_TRIGn;
 
   /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
-  /*#p01.AFAR*/ wire _AFAR_RST  = nor2(SYS_PIN_RSTp.tp(), _ALYP_RSTn);
+  /*#p01.AFAR*/ wire _AFAR_RST  = nor2(RST, _ALYP_RSTn);
 
-  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(SYS_PIN_RSTp.tp(), _AFAR_RST); // Schematic wrong, this is a latch.
-  /*p01.AFER*/ _AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH(CLKGOOD), BOMA_Axxxxxxx(CLKGOOD), UPOJ_MODE_PRODn(), _ASOL_POR_DONEn.tp());
+  /*p01.ASOL*/ _ASOL_POR_DONEn = nor_latch(RST, _AFAR_RST); // Schematic wrong, this is a latch.
+  /*p01.AFER*/ _AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH(CLKGOOD), BOMA_Axxxxxxx(CLKGOOD), UPOJ_MODE_PRODn(RST), _ASOL_POR_DONEn.tp());
 
   CPU_PIN_SYS_RSTp = AFER_SYS_RSTp();
-  CPU_PIN_EXT_RST  = SYS_PIN_RSTp.tp();
+  CPU_PIN_EXT_RST  = RST;
 }
 
 //-----------------------------------------------------------------------------

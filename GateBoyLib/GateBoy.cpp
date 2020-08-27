@@ -268,7 +268,7 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
   wire CLK = (new_phase & 1) & sys_clken;
 
-  top.clk_reg.preset_rst(sys_rst);
+  //top.clk_reg.preset_rst(sys_rst);
   top.clk_reg.preset_t1t2(sys_t1, sys_t2);
   top.clk_reg.preset_cpu_ready(sys_cpuready);
   //top.clk_reg.preset_clk_a(sys_clkgood);
@@ -278,7 +278,7 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
 
-  top.tick_slow(CLK, sys_clkgood);
+  top.tick_slow(sys_rst, CLK, sys_clkgood);
 
   tock_ext_bus();
   

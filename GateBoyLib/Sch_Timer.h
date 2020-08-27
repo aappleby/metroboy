@@ -12,7 +12,7 @@ struct Timer {
 
   void dump(Dumper& d) const;
   void tick(const SchematicTop& top);
-  void tock(wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus);
+  void tock(wire RST, wire CLKGOOD, const SchematicTop& top, CpuBus& cpu_bus);
 
   int get_div() const {
     return pack_p(!UKUP_DIV_00.qn(), UFOR_DIV_01.qp(), !UNER_DIV_02.qn(), TERO_DIV_03.qp(),

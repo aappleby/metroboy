@@ -13,7 +13,7 @@ SchematicTop::SchematicTop() {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tick_slow(wire CLK, wire CLKGOOD, wire RST) {
+void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD) {
   clk_reg.tick_slow(CLK, *this);
   lcd_reg.tick(*this);
   sprite_scanner.tick(*this);
@@ -25,12 +25,12 @@ void SchematicTop::tick_slow(wire CLK, wire CLKGOOD, wire RST) {
   sprite_fetcher.tick(*this);
   int_reg.tick(*this);
 
-  clk_reg.tock_clk_slow(CLK, CLKGOOD, *this);
-  clk_reg.tock_rst_slow(CLKGOOD, *this);
+  clk_reg.tock_clk_slow(RST, CLK, CLKGOOD, *this);
+  clk_reg.tock_rst_slow(RST, CLKGOOD, *this);
   clk_reg.tock_dbg_slow(*this);
   clk_reg.tock_vid_slow(CLK, *this);
   
-  tim_reg.tock(CLKGOOD, *this, cpu_bus);
+  tim_reg.tock(RST, CLKGOOD, *this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
   dma_reg.tock(*this, cpu_bus);
   ser_reg.tock(*this, cpu_bus);

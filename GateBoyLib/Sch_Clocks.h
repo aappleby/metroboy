@@ -12,11 +12,12 @@ struct ClockRegisters {
   void dump(Dumper& d, wire CLK) const;
 
   void tick_slow(const wire CLK, SchematicTop& top);
-  void tock_clk_slow(const wire CLK, wire CLKGOOD, SchematicTop& top);
-  void tock_rst_slow(wire CLKGOOD, const SchematicTop& top);
+  void tock_clk_slow(wire RST, const wire CLK, wire CLKGOOD, SchematicTop& top);
+  void tock_rst_slow(wire RST, wire CLKGOOD, const SchematicTop& top);
   void tock_dbg_slow(const SchematicTop& top);
   void tock_vid_slow(const wire CLK, SchematicTop& top);
 
+  /*
   wire get_rst() const {
     return SYS_PIN_RSTp.tp();
   }
@@ -24,6 +25,7 @@ struct ClockRegisters {
   void preset_rst(wire rst) {
     SYS_PIN_RSTp.preset(rst);
   }
+  */
 
   void preset_cpu_ready(wire ready) {
     CPU_PIN_READYp.preset(ready);
@@ -176,7 +178,7 @@ struct ClockRegisters {
   /*p07.UVAR*/ wire UVAR_T2p()        const { return not1(SYS_PIN_T2n.tp()); }
   /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(SYS_PIN_T1n.tp(), UVAR_T2p()); }
   /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(SYS_PIN_T2n.tp(), UBET_T1p()); }
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBET_T1p(), UVAR_T2p(), SYS_PIN_RSTp.tp()); }
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn(wire RST) const { return nand3(UBET_T1p(), UVAR_T2p(), RST); }
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
 
   //-----------------------------------------------------------------------------
@@ -184,7 +186,7 @@ struct ClockRegisters {
   Sig _XONA_LCDC_ENn_qn;
 
   //Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  Tri SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
+  //Tri SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
   Tri SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board, inverted by input buffer
   Tri SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board, inverted by input buffer
 

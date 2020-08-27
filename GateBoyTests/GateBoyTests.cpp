@@ -38,7 +38,9 @@ int GateBoyTests::test_init() {
 
   GateBoy gb;
 
-  LOG_Y("GateBoy top hash is 0x%016llx\n", hash(&gb.top, sizeof(gb.top)));
+  uint64_t top_hash = hash(&gb.top, sizeof(gb.top));
+  LOG_Y("Top hash is 0x%016llx\n", top_hash);
+  EXPECT_EQ(0x812b63e1e6f2e5f4, top_hash, "Top hash mismatch");
 
   uint8_t* cursor = (uint8_t*)(&gb.top);
 
@@ -57,8 +59,6 @@ int GateBoyTests::test_init() {
   for (int i = 0; i < 160*144; i++) {
     ASSERT_EQ(4, gb.fb[i]);
   }
-
-  //------------------------------
 
   TEST_END();
 }
@@ -690,7 +690,7 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
   for (int i = 0; i < fuzz_count; i++) {
     mix(rng);
 
-    gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
+    //gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
     //gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
     gateboy.top.clk_reg.preset_cpu_ready(wire(rng & 0x04));
     gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));

@@ -372,10 +372,10 @@ void GateBoy::tock_ext_bus() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_vram_bus() {
-  uint16_t vram_addr = top.vram_bus.get_pin_addr();
+  int vram_addr = top.vram_bus.get_pin_addr();
   uint8_t& vram_data = mem[0x8000 + vram_addr];
 
-  if (!top.vram_bus.VRAM_PIN_WRn.qp()) vram_data = top.vram_bus.get_pin_data_out();
+  if (!top.vram_bus.VRAM_PIN_WRn.qp()) vram_data = (uint8_t)top.vram_bus.get_pin_data();
 
   if (!top.vram_bus.VRAM_PIN_OEn.qp()) {
     top.vram_bus.set_pin_data_in(vram_data);

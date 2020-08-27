@@ -6,16 +6,38 @@ using namespace Schematics;
 
 void DmaRegisters::dump(Dumper& d) const {
   d("---------- DMA Reg  ----------\n");
-  d("DMA Addr 0x%02x:%02x\n", get_dma_addr_hi(), get_dma_addr_lo());
-  d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHp);
+
+  int dma_addr_hi = pack_p(!NAFA_DMA_A08n.qp(), !PYNE_DMA_A09n.qp(), !PARA_DMA_A10n.qp(), !NYDO_DMA_A11n.qp(),
+                           !NYGY_DMA_A12n.qp(), !PULA_DMA_A13n.qp(), !POKU_DMA_A14n.qp(), !MARU_DMA_A15n.qp());
+
+  int dma_addr_lo = pack_p(NAKY_DMA_A00p.qp(), PYRO_DMA_A01p.qp(), NEFY_DMA_A02p.qp(), MUTY_DMA_A03p.qp(),
+                           NYKO_DMA_A04p.qp(), PYLO_DMA_A05p.qp(), NUTO_DMA_A06p.qp(), MUGU_DMA_A07p.qp());
+
+  d("DMA Addr 0x%02x:%02x\n",dma_addr_hi, dma_addr_lo);
   d("MATU_DMA_RUNNINGp   %d\n", _MATU_DMA_RUNNINGp.qp());
+  d("LUMA_DMA_READ_CARTp %d\n", LUMA_DMA_READ_CARTp.qp());
+  d("LUFA_DMA_VRM_RDp    %d\n", LUFA_DMA_VRM_RDp.qp());
+  d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHp);
   d("MYTE_DMA_DONE       %d\n", !_MYTE_DMA_DONE.qn());
   d("LUVY_DMA_TRIG_d0    %d\n",  _LUVY_DMA_TRIG_d0.qp());
   d("LENE_DMA_TRIG_d4    %d\n", !_LENE_DMA_TRIG_d4.qn());
   d("LOKY_DMA_LATCHp     %d\n",  _LOKY_DMA_LATCHp);
-  d("MUDA_DMA_SRC_VRAMp  %d\n", MUDA_DMA_SRC_VRAMp());
-  d("LUMA_DMA_READ_CARTp %d\n", LUMA_DMA_READ_CARTp());
   d("\n");
+}
+
+//------------------------------------------------------------------------------
+
+void DmaRegisters::tick() {
+  /*p04.MATU*/ MATU_DMA_RUNNINGp = _MATU_DMA_RUNNINGp.qp();
+
+  /*#p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not1(MARU_DMA_A15n.qn());
+  /*#p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp = nor3(PULA_DMA_A13n.qn(), POKU_DMA_A14n.qn(), LEBU_DMA_ADDR_A15n);
+  /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not1(MUDA_DMA_SRC_VRAMp);
+  /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand2(MATU_DMA_RUNNINGp, _LOGO_DMA_VRAMn);
+  /*p04.LUMA*/ LUMA_DMA_READ_CARTp = not1(_MORY_DMA_READ_CARTn);
+
+  /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand2(MATU_DMA_RUNNINGp, MUDA_DMA_SRC_VRAMp);
+  /*p04.LUFA*/ LUFA_DMA_VRM_RDp = not1(MUHO_DMA_VRAM_RDn);
 }
 
 //------------------------------------------------------------------------------

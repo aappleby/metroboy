@@ -26,15 +26,7 @@ namespace Schematics {
 #pragma pack(push, 1)
 struct SchematicTop {
 
-  SchematicTop();
-
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n);
-
-  // -> oam.WYJA, oam.WUKU, oam.GUKO, top.APAG
-  /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp() const { 
-      /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn); // def and
-      return AMAB_CPU_READ_OAMp;
-  }
 
   //-----------------------------------------------------------------------------
 

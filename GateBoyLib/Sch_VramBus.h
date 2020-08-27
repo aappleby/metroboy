@@ -24,16 +24,16 @@ struct VramBus {
                   VRAM_BUS_D4p.tp(), VRAM_BUS_D5p.tp(), VRAM_BUS_D6p.tp(), VRAM_BUS_D7p.tp());
   }
 
-  uint16_t get_pin_addr() const {
-    return (uint16_t)pack_p(VRAM_PIN_A00p.qp(), VRAM_PIN_A01p.qp(), VRAM_PIN_A02p.qp(), VRAM_PIN_A03p.qp(),
-                            VRAM_PIN_A04p.qp(), VRAM_PIN_A05p.qp(), VRAM_PIN_A06p.qp(), VRAM_PIN_A07p.qp(),
-                            VRAM_PIN_A08p.qp(), VRAM_PIN_A09p.qp(), VRAM_PIN_A10p.qp(), VRAM_PIN_A11p.qp(),
-                            VRAM_PIN_A12p.qp(), 0, 0, 0);
+  int get_pin_addr() const {
+    return pack_p(VRAM_PIN_A00p.qp(), VRAM_PIN_A01p.qp(), VRAM_PIN_A02p.qp(), VRAM_PIN_A03p.qp(),
+                  VRAM_PIN_A04p.qp(), VRAM_PIN_A05p.qp(), VRAM_PIN_A06p.qp(), VRAM_PIN_A07p.qp(),
+                  VRAM_PIN_A08p.qp(), VRAM_PIN_A09p.qp(), VRAM_PIN_A10p.qp(), VRAM_PIN_A11p.qp(),
+                  VRAM_PIN_A12p.qp(), 0, 0, 0);
   }
 
-  uint8_t get_pin_data_out() const {
-    return (uint8_t)pack_p(VRAM_PIN_D00p.qp(), VRAM_PIN_D01p.qp(), VRAM_PIN_D02p.qp(), VRAM_PIN_D03p.qp(),
-                           VRAM_PIN_D04p.qp(), VRAM_PIN_D05p.qp(), VRAM_PIN_D06p.qp(), VRAM_PIN_D07p.qp());
+  int get_pin_data() const {
+    return pack_p(VRAM_PIN_D00p.qp(), VRAM_PIN_D01p.qp(), VRAM_PIN_D02p.qp(), VRAM_PIN_D03p.qp(),
+                  VRAM_PIN_D04p.qp(), VRAM_PIN_D05p.qp(), VRAM_PIN_D06p.qp(), VRAM_PIN_D07p.qp());
   }
 
   void set_pin_data_in(uint8_t data) {
@@ -97,7 +97,6 @@ struct VramBus {
   /*p33.SEGA*/ RegQN SEGA_SPRITE_DA7n = REG_D0C0;
 
   //----------------------------------------
-  
   // VRAM_BUS_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
   Tri VRAM_BUS_D0p = TRI_D0NP;
@@ -124,11 +123,11 @@ struct VramBus {
   Tri VRAM_BUS_A12n = TRI_D0NP;
 
   //----------------------------------------
-  // VRAM bus
+  // VRAM pins
 
-  Pin VRAM_PIN_CSn  = TRI_D0NP;
-  Pin VRAM_PIN_OEn  = TRI_D0NP;
-  Pin VRAM_PIN_WRn  = TRI_D0NP;
+  Pin VRAM_PIN_CSn  = TRI_D0NP; // PIN_43
+  Pin VRAM_PIN_OEn  = TRI_D0NP; // PIN_45
+  Pin VRAM_PIN_WRn  = TRI_D0NP; // PIN_49
 
   Pin VRAM_PIN_A00p = TRI_D0NP; // PIN_34
   Pin VRAM_PIN_A01p = TRI_D0NP; // PIN_35
@@ -152,21 +151,6 @@ struct VramBus {
   Pin VRAM_PIN_D05p = TRI_D0NP; // PIN_27
   Pin VRAM_PIN_D06p = TRI_D0NP; // PIN_26
   Pin VRAM_PIN_D07p = TRI_D0NP; // PIN_25
-
-  //----------------------------------------
-  // Signals for debugging
-
-  /*p25.XEDU*/ Sig XEDU_CPU_VRAM_RDn;
-  /*p04.AHOC*/ Sig AHOC_DMA_VRAM_RDn;
-  /*p29.ABON*/ Sig ABON_SPR_VRM_RDn;
-  /*p26.BAFY*/ Sig BAFY_BG_MAP_READn;
-  /*p25.WUKO*/ Sig WUKO_WIN_MAP_READn;
-
-  /*p27.NETA*/ Sig NETA_TILE_READp;
-  /*p26.ASUL*/ Sig ASUL_TILE_READp;
-  /*p26.BEJE*/ Sig BEJE_BGD_TILE_READn;
-  /*p25.XUCY*/ Sig XUCY_WIN_TILE_READn;
-  /*p25.VUZA*/ Sig VUZA_TILE_BANKp;
 };
 
 //-----------------------------------------------------------------------------

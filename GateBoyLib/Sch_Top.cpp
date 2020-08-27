@@ -6,16 +6,12 @@ using namespace Schematics;
 #pragma warning(disable:4100)
 
 //-----------------------------------------------------------------------------
-
-SchematicTop::SchematicTop() {
-  //memset(this, 0, sizeof(*this));
-}
-
-//-----------------------------------------------------------------------------
 // optimizer still fscking this up somehow
 
 #pragma optimize("", off)
 void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n) {
+
+  dma_reg.tick();
 
   /*p07.UBET*/ wire UBET_T1p = not1(T1n);
   /*p07.UVAR*/ wire UVAR_T2p = not1(T2n);
@@ -51,7 +47,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
   // so dma stops oam scan?
-  /*p28.ACYL*/ ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.tp());
+  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp);
+  /*p28.ACYL*/ ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.tp());
 
   clk_reg.tick_slow(CLK, CLKGOOD, *this);
   lcd_reg.tick(*this);
@@ -83,9 +80,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp());
   /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
 
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp());
   /*p28.AJON*/ AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
-  /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
+  /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
 
   sprite_scanner.tick(*this);
   sprite_store.tick(*this);
@@ -258,275 +254,3 @@ if (top.VYPO_GND) bus_out.set_data(
 #endif
 
 //-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//------------------------------------------------------------------------------
-
-//void preset(bool EXT_PIN_RDn_A, bool EXT_PIN_CSn_A);
-
-/*
-void preset_d(bool oe, uint8_t d) {
-PIN_D0_C.preset(oe, d & 0x01);
-PIN_D1_C.preset(oe, d & 0x02);
-PIN_D2_C.preset(oe, d & 0x04);
-PIN_D3_C.preset(oe, d & 0x08);
-PIN_D4_C.preset(oe, d & 0x10);
-PIN_D5_C.preset(oe, d & 0x20);
-PIN_D6_C.preset(oe, d & 0x40);
-PIN_D7_C.preset(oe, d & 0x80);
-}
-*/
-
-#if 0
-void ExtPinsOut::preset() {
-  EXT_PIN_RDp_C.preset(true, 0);   // -> P07.UJYV
-  EXT_PIN_A00_C.preset(true, 0);   // -> P08.KOVA
-  EXT_PIN_A01_C.preset(true, 0);   // -> P08.CAMU
-  EXT_PIN_A02_C.preset(true, 0);   // -> P08.BUXU
-  EXT_PIN_A03_C.preset(true, 0);   // -> P08.BASE
-  EXT_PIN_A04_C.preset(true, 0);   // -> P08.AFEC
-  EXT_PIN_A05_C.preset(true, 0);   // -> P08.ABUP
-  EXT_PIN_A06_C.preset(true, 0);   // -> P08.CYGU
-  EXT_PIN_A07_C.preset(true, 0);   // -> P08.COGO
-  EXT_PIN_A08_C.preset(true, 0);   // -> P08.MUJY
-  EXT_PIN_A09_C.preset(true, 0);   // -> P08.NENA
-  EXT_PIN_A10_C.preset(true, 0);   // -> P08.SURA
-  EXT_PIN_A11_C.preset(true, 0);   // -> P08.MADY
-  EXT_PIN_A12_C.preset(true, 0);   // -> P08.LAHE
-  EXT_PIN_A13_C.preset(true, 0);   // -> P08.LURA
-  EXT_PIN_A14_C.preset(true, 0);   // -> P08.PEVO
-  EXT_PIN_A15_C.preset(true, 0);   // -> P08.RAZA
-
-  if (!EXT_PIN_RDn_A && !EXT_PIN_CSn_A) {
-    uint16_t ext_addr = get_addr();
-
-    if (0x0000 <= ext_addr && ext_addr <= 0x7FFF) {
-      // Cart rom
-      //uint8_t d = rom[ext_addr];
-      uint8_t d = 0;
-      preset_d(true, d);
-    }
-    else if (0xC000 <= ext_addr && ext_addr <= 0xDFFF) {
-      // Main ram
-      //uint8_t d = ram[ext_addr - 0xC000];
-      uint8_t d = 0;
-      preset_d(true, d);
-    }
-    else if (0xE000 <= ext_addr && ext_addr <= 0xFFFF) {
-      // Echo ram
-      //uint8_t d = ram[ext_addr - 0xE000];
-      uint8_t d = 0;
-      preset_d(true, d);
-    }
-    else {
-      printf("Bad address?\n");
-      __debugbreak();
-    }
-  }
-  else {
-    preset_d(false, 0);
-  }
-}
-#endif
-
-
-
-
-
-#if 0
-inline void dump_pins(TextPainter& text_painter, const PinOut& a, const PinOut& d) {
-  dump_pin(text_painter, a.a, d.a);
-}
-
-inline void dump_pins(TextPainter& text_painter, const PinOut& a, const PinOut& b, const PinIn& c, const PinOut& d) {
-  dump_pin(text_painter, a.a, b.a, c.a, d.a);
-}
-
-void dump_regs(TextPainter& /*text_painter*/) {
-  /*
-  text_painter.dprintf(" ----- EXT_BUS -----\n");
-
-  text_painter.dprintf("ADDR_LATCH ");
-  dump2(text_painter, EXT_ADDR_LATCH_14.a);
-  dump2(text_painter, EXT_ADDR_LATCH_13.a);
-  dump2(text_painter, EXT_ADDR_LATCH_12.a);
-  text_painter.add_char(':');
-  dump2(text_painter, EXT_ADDR_LATCH_11.a);
-  dump2(text_painter, EXT_ADDR_LATCH_10.a);
-  dump2(text_painter, EXT_ADDR_LATCH_09.a);
-  dump2(text_painter, EXT_ADDR_LATCH_08.a);
-  text_painter.add_char(':');
-  dump2(text_painter, EXT_ADDR_LATCH_07.a);
-  dump2(text_painter, EXT_ADDR_LATCH_06.a);
-  dump2(text_painter, EXT_ADDR_LATCH_05.a);
-  dump2(text_painter, EXT_ADDR_LATCH_04.a);
-  text_painter.add_char(':');
-  dump2(text_painter, EXT_ADDR_LATCH_03.a);
-  dump2(text_painter, EXT_ADDR_LATCH_02.a);
-  dump2(text_painter, EXT_ADDR_LATCH_01.a);
-  dump2(text_painter, EXT_ADDR_LATCH_00.a);
-  text_painter.newline();
-
-  text_painter.dprintf("DATA_LATCH ");
-  dump2(text_painter, CART_DATA_LATCH_07.a);
-  dump2(text_painter, CART_DATA_LATCH_06.a);
-  dump2(text_painter, CART_DATA_LATCH_05.a);
-  dump2(text_painter, CART_DATA_LATCH_04.a);
-  text_painter.add_char(':');
-  dump2(text_painter, CART_DATA_LATCH_03.a);
-  dump2(text_painter, CART_DATA_LATCH_02.a);
-  dump2(text_painter, CART_DATA_LATCH_01.a);
-  dump2(text_painter, CART_DATA_LATCH_00.a);
-  text_painter.newline();
-  */
-}
-
-void dump_pins(TextPainter& /*text_painter*/) {
-  /*
-  text_painter.dprintf("----- EXT_PINS -----\n");
-
-  text_painter.dprintf("EXT_PIN_CLK %d\n", EXT_PIN_CLK.a.val);
-  text_painter.dprintf("WR  %d\n", EXT_PIN_WRn_A.a.val);
-  text_painter.dprintf("RD  %d\n", EXT_PIN_RDn_A.a.val);
-  text_painter.dprintf("CS  %d\n", EXT_PIN_CSn_A.a.val);
-
-  text_painter.add_text("Axx ");
-  dump_pins(text_painter, EXT_PIN_A15_A, EXT_PIN_A15_D);
-  dump_pins(text_painter, EXT_PIN_A14n_A, EXT_PIN_A14n_D);
-  dump_pins(text_painter, EXT_PIN_A13n_A, EXT_PIN_A13n_D);
-  dump_pins(text_painter, EXT_PIN_A12n_A, EXT_PIN_A12n_D);
-  text_painter.add_char(':');
-  dump_pins(text_painter, EXT_PIN_A11n_A, EXT_PIN_A11n_D);
-  dump_pins(text_painter, EXT_PIN_A10n_A, EXT_PIN_A10n_D);
-  dump_pins(text_painter, EXT_PIN_A09n_A, EXT_PIN_A09n_D);
-  dump_pins(text_painter, EXT_PIN_A08n_A, EXT_PIN_A08n_D);
-  text_painter.add_char(':');
-  dump_pins(text_painter, EXT_PIN_A07n_A, EXT_PIN_A07n_D);
-  dump_pins(text_painter, EXT_PIN_A06n_A, EXT_PIN_A06n_D);
-  dump_pins(text_painter, EXT_PIN_A05n_A, EXT_PIN_A05n_D);
-  dump_pins(text_painter, EXT_PIN_A04n_A, EXT_PIN_A04n_D);
-  text_painter.add_char(':');
-  dump_pins(text_painter, EXT_PIN_A03n_A, EXT_PIN_A03n_D);
-  dump_pins(text_painter, EXT_PIN_A02n_A, EXT_PIN_A02n_D);
-  dump_pins(text_painter, EXT_PIN_A01n_A, EXT_PIN_A01n_D);
-  dump_pins(text_painter, EXT_PIN_A00n_A, EXT_PIN_A00n_D);
-  text_painter.newline();
-
-  text_painter.add_text("Dxx ");
-  dump_pins(text_painter, EXT_PIN_D7n_A, EXT_PIN_D7_B, PIN_D7_C, EXT_PIN_D7n_D);
-  dump_pins(text_painter, EXT_PIN_D6n_A, EXT_PIN_D6_B, PIN_D6_C, EXT_PIN_D6n_D);
-  dump_pins(text_painter, EXT_PIN_D5n_A, EXT_PIN_D5_B, PIN_D5_C, EXT_PIN_D5n_D);
-  dump_pins(text_painter, EXT_PIN_D4n_A, EXT_PIN_D4_B, PIN_D4_C, EXT_PIN_D4n_D);
-  dump_pins(text_painter, EXT_PIN_D3n_A, EXT_PIN_D3_B, PIN_D3_C, EXT_PIN_D3n_D);
-  dump_pins(text_painter, EXT_PIN_D2n_A, EXT_PIN_D2_B, PIN_D2_C, EXT_PIN_D2n_D);
-  dump_pins(text_painter, EXT_PIN_D1n_A, EXT_PIN_D1_B, PIN_D1_C, EXT_PIN_D1n_D);
-  dump_pins(text_painter, EXT_PIN_D0n_A, EXT_PIN_D0_B, PIN_D0_C, EXT_PIN_D0n_D);
-  text_painter.newline();
-  */
-}
-
-uint16_t get_addr() const {
-  uint16_t ext_addr = (uint16_t)pack_p(
-    EXT_PIN_A00n_A, EXT_PIN_A01n_A, EXT_PIN_A02n_A, EXT_PIN_A03n_A,
-    EXT_PIN_A04n_A, EXT_PIN_A05n_A, EXT_PIN_A06n_A, EXT_PIN_A07n_A,
-    EXT_PIN_A08n_A, EXT_PIN_A09n_A, EXT_PIN_A10n_A, EXT_PIN_A11n_A,
-    EXT_PIN_A12n_A, EXT_PIN_A13n_A, EXT_PIN_A14n_A, EXT_PIN_A15_A);
-
-  return ext_addr;
-}
-
-/*
-void dump_pins(TextPainter& text_painter) {
-text_painter.dprintf("----- SYS_PINS -----\n");
-text_painter.dprintf("PIN_RST      %d\n", PIN_RST.a.val);
-text_painter.dprintf("PIN_CLK_GOOD %d\n", PIN_CLK_GOOD.a.val);
-text_painter.dprintf("SYS_PIN_CLK_xBxDxFxH   %d\n", SYS_PIN_CLK_xBxDxFxH.a.val);
-text_painter.dprintf("SYS_PIN_T1       %d\n", SYS_PIN_T1.a.val);
-text_painter.dprintf("SYS_PIN_T2       %d\n", SYS_PIN_T2.a.val);
-text_painter.newline();
-}
-*/
-
-#endif
-
-
-
-#if 0
-void dump(TextPainter& text_painter) {
-  text_painter.dprintf("----- VRAM_PINS -----\n");
-
-  text_painter.dprintf("MCS  %d:x:%d:%d\n", VRAM_PIN_MCSn_A.prev().val, VRAM_PIN_MCSn_C.prev().val, VRAM_PIN_MCSn_D.prev().val);
-  text_painter.dprintf("MOE  %d:x:%d:%d\n", VRAM_PIN_MOEn_A.prev().val, VRAM_PIN_MOEn_C.prev().val, VRAM_PIN_MOEn_D.prev().val);
-  text_painter.dprintf("MWR  %d:x:%d:%d\n", VRAM_PIN_MWRn_A.prev().val, VRAM_PIN_MWRn_C.prev().val, VRAM_PIN_MWRn_D.prev().val);
-  text_painter.dprintf("MAxx 0x%04x\n", pack_p(VRAM_PIN_MA00_AD, VRAM_PIN_MA01_AD, VRAM_PIN_MA02_AD, VRAM_PIN_MA03_AD, VRAM_PIN_MA04_AD, VRAM_PIN_MA05_AD, VRAM_PIN_MA06_AD,
-    VRAM_PIN_MA07_AD, VRAM_PIN_MA08_AD, VRAM_PIN_MA09_AD, VRAM_PIN_MA10_AD, VRAM_PIN_MA11_AD, VRAM_PIN_MA12_AD));
-
-  text_painter.dprintf("MDx_A 0x%02x\n", pack_p(VRAM_PIN_MD0_A, VRAM_PIN_MD1_A, VRAM_PIN_MD2_A, VRAM_PIN_MD3_A, VRAM_PIN_MD4_A, VRAM_PIN_MD5_A, VRAM_PIN_MD6_A, VRAM_PIN_MD7_A));
-  text_painter.dprintf("MDx_B 0x%02x\n", pack_p(VRAM_PIN_MD0_B, VRAM_PIN_MD1_B, VRAM_PIN_MD2_B, VRAM_PIN_MD3_B, VRAM_PIN_MD4_B, VRAM_PIN_MD5_B, VRAM_PIN_MD6_B, VRAM_PIN_MD7_B));
-  text_painter.dprintf("MDx_C 0x%02x\n", pack_p(VRAM_PIN_MD0_C, VRAM_PIN_MD1_C, VRAM_PIN_MD2_C, VRAM_PIN_MD3_C, VRAM_PIN_MD4_C, VRAM_PIN_MD5_C, VRAM_PIN_MD6_C, VRAM_PIN_MD7_C));
-  text_painter.dprintf("MDx_D 0x%02x\n", pack_p(VRAM_PIN_MD0_D, VRAM_PIN_MD1_D, VRAM_PIN_MD2_D, VRAM_PIN_MD3_D, VRAM_PIN_MD4_D, VRAM_PIN_MD5_D, VRAM_PIN_MD6_D, VRAM_PIN_MD7_D));
-  text_painter.newline();
-}
-#endif

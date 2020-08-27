@@ -28,9 +28,7 @@ struct SpriteFetcher {
   /*p29.TOBU*/ RegQP  _TOBU_SFETCH_S1_D2 = REG_D0C0;
   /*p29.VONU*/ RegQPN _VONU_SFETCH_S1_D4 = REG_D0C0;
   /*p29.SEBA*/ RegQP  _SEBA_SFETCH_S1_D5 = REG_D0C0;
-
 };
-
 
 //-----------------------------------------------------------------------------
 

@@ -41,7 +41,7 @@ void ExtBus::dump(Dumper& d) const {
 
 void ExtBus::tock(SchematicTop& top) {
 
-  wire LUMA_DMA_READ_CARTp = top.dma_reg.LUMA_DMA_READ_CARTp();
+  wire LUMA_DMA_READ_CARTp = top.dma_reg.LUMA_DMA_READ_CARTp;
   wire TUNA_0000_FDFFp = top.cpu_bus.TUNA_0000_FDFFp();
   wire TUTU_ADDR_BOOTp = top.TUTU_ADDR_BOOTp;
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n = not1(top.UNOR_MODE_DBG2p);

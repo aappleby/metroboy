@@ -40,7 +40,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash(&gb.top, sizeof(gb.top));
   LOG_Y("Top hash is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x812b63e1e6f2e5f4, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xf6b5c3ae774dc6a0, top_hash, "Top hash mismatch");
 
   uint8_t* cursor = (uint8_t*)(&gb.top);
 
@@ -73,7 +73,8 @@ int GateBoyTests::test_clk() {
   GateBoy gb;
   gb.reset();
 
-  auto& clk_reg = gb.top.clk_reg;
+  auto& top = gb.top;
+  auto& clk_reg = top.clk_reg;
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
@@ -102,7 +103,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.ADAR_ABCxxxxH(),    0b11100001);
     EXPECT_CLK(clk_reg.AFAS_xxxxEFGx(),    0b00001110);
 
-    EXPECT_CLK(clk_reg.BELU_xxxxEFGH(), 0b00001111);
+    EXPECT_CLK(clk_reg.BELU_xxxxEFGH,   0b00001111);
     EXPECT_CLK(clk_reg.BYRY_ABCDxxxx(), 0b11110000);
     EXPECT_CLK(clk_reg.BUDE_xxxxEFGH(), 0b00001111);
     EXPECT_CLK(clk_reg.UVYT_ABCDxxxx(), 0b11110000);
@@ -110,7 +111,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.MOPA_xxxxEFGH(), 0b00001111);
     EXPECT_CLK(clk_reg.XYNY_ABCDxxxx(), 0b11110000);
 
-    EXPECT_CLK(clk_reg.BAPY_xxxxxxGH(), 0b00000011);
+    EXPECT_CLK(clk_reg.BAPY_xxxxxxGH,   0b00000011);
     EXPECT_CLK(clk_reg.BERU_ABCDEFxx(), 0b11111100);
     EXPECT_CLK(clk_reg.BUFA_xxxxxxGH(), 0b00000011);
     EXPECT_CLK(clk_reg.BOLO_ABCDEFxx(), 0b11111100);
@@ -127,15 +128,15 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.BOGA_xBCDEFGH(CLKGOOD), 0b01111111);
     EXPECT_CLK(clk_reg.BOMA_Axxxxxxx(CLKGOOD), 0b10000000);
 
-    EXPECT_CLK(clk_reg.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
-    EXPECT_CLK(clk_reg.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
-    EXPECT_CLK(clk_reg.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
-    EXPECT_CLK(clk_reg.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
-    EXPECT_CLK(clk_reg.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
-    EXPECT_CLK(clk_reg.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
-    EXPECT_CLK(clk_reg.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
-    EXPECT_CLK(clk_reg.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
-    //EXPECT_CLK(clk_reg.EXT_PIN_CLK_xxxxEFGH.tp(),  0b00001111);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(top.ext_bus.EXT_PIN_CLK.qp(),           0b11110000);
     gb.next_phase();
   }
 
@@ -692,8 +693,8 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
 
     //gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
     //gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
-    gateboy.top.clk_reg.preset_cpu_ready(wire(rng & 0x04));
-    gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
+    gateboy.top.cpu_bus.preset_cpu_ready(wire(rng & 0x04));
+    //gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
 
     int phase_count = (rng >> 8) & 0x0F;
     gateboy.run(phase_count);

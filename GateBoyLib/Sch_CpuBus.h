@@ -12,6 +12,10 @@ struct VramBus;
 struct CpuBus {
   void dump(Dumper& d) const;
 
+  void preset_cpu_ready(wire ready) {
+    CPU_PIN_READYp.preset(ready);
+  }
+
   uint16_t get_bus_addr() const {
     return (uint16_t)pack_p(CPU_BUS_A00.tp(), CPU_BUS_A01.tp(), CPU_BUS_A02.tp(), CPU_BUS_A03.tp(),
                           CPU_BUS_A04.tp(), CPU_BUS_A05.tp(), CPU_BUS_A06.tp(), CPU_BUS_A07.tp(),
@@ -179,8 +183,6 @@ struct CpuBus {
   Tri CPU_BUS_D6p  = TRI_HZPU;   // bottom left port: <>
   Tri CPU_BUS_D7p  = TRI_HZPU;   // bottom left port: <>
 
-//private:
-
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
@@ -196,6 +198,30 @@ struct CpuBus {
   Tri CPU_PIN_RDp       = TRI_HZNP; // top right port PORTA_00: -> LAGU, LAVO, TEDO
   Tri CPU_PIN_WRp       = TRI_HZNP; // top right port PORTA_01: ->
   Tri CPU_PIN_ADDR_EXTp  = TRI_HZNP; // top right port PORTA_06: -> TEXO, APAP
+
+  //-----------------------------------------------------------------------------
+
+  Tri CPU_PIN_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
+  Tri CPU_PIN_READYp        = TRI_D0NP; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  Tri CPU_PIN_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state
+  Tri CPU_PIN_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
+  Tri CPU_PIN_UNOR_DBG      = TRI_HZNP; // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  Tri CPU_PIN_UMUT_DBG      = TRI_HZNP; // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+
+  Tri CPU_PIN_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  
+  Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
+  Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
+
+  Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
+  Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
+
+  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
+  Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
+
+  // These two clocks are the only ones that run before CPU_PIN_READYp is asserted.
+  Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
+  Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
 };
 
 //-----------------------------------------------------------------------------

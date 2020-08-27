@@ -35,7 +35,7 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     // Bootrom -> CPU
 
-    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(top.clk_reg.UMUT_MODE_DBG1p());
+    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(top.UMUT_MODE_DBG1p);
     /*p07.YULA*/ wire _YULA_BOOT_RDp   = and3(top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
     /*p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());
     /*p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);

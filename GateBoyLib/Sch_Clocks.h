@@ -13,28 +13,9 @@ struct ClockRegisters {
 
   void tick_slow(const wire CLK, SchematicTop& top);
   void tock_clk_slow(wire RST, const wire CLK, wire CLKGOOD, SchematicTop& top);
-  void tock_rst_slow(wire RST, wire CLKGOOD, const SchematicTop& top);
-  void tock_dbg_slow(const SchematicTop& top);
+  void tock_rst_slow(wire RST, wire CLKGOOD, SchematicTop& top);
+  void tock_dbg_slow(SchematicTop& top);
   void tock_vid_slow(const wire CLK, SchematicTop& top);
-
-  /*
-  wire get_rst() const {
-    return SYS_PIN_RSTp.tp();
-  }
-
-  void preset_rst(wire rst) {
-    SYS_PIN_RSTp.preset(rst);
-  }
-  */
-
-  void preset_cpu_ready(wire ready) {
-    CPU_PIN_READYp.preset(ready);
-  }
-
-  void preset_t1t2(wire t1, wire t2) {
-    SYS_PIN_T1n.preset(t1);
-    SYS_PIN_T2n.preset(t2);
-  }
 
   //-----------------------------------------------------------------------------
   // Clock input & 4 mhz clocks
@@ -52,25 +33,14 @@ struct ClockRegisters {
   //-----------------------------------------------------------------------------
   // Phase clocks
 
-  /*p01.BELU*/ wire BELU_xxxxEFGH() const {
-    /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPU_PIN_READYp.tp());
-    return nor2(ABOL_CLKREQn,  ATYP_ABCDxxxx);
-  }
-  /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH()); }
+  /*p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH); }
   /*p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not1(BYRY_ABCDxxxx()); }
   /*p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // bus mux, dma
   /*p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); }
   /*p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); } // bus mux, dma
   /*p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not1(MOPA_xxxxEFGH()); } // bus mux
 
-  /*p01.BAPY*/ wire BAPY_xxxxxxGH() const {
-    /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPU_PIN_READYp.tp());
-    return nor3(ABOL_CLKREQn,
-                AROV_xxCDEFxx,
-                ATYP_ABCDxxxx);
-  }
-
-  /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not1(BAPY_xxxxxxGH()); }
+  /*p01.BERU*/ wire BERU_ABCDEFxx() const { return not1(BAPY_xxxxxxGH); }
   /*p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not1(BERU_ABCDEFxx()); }
   /*p01.BOLO*/ wire BOLO_ABCDEFxx() const { return not1(BUFA_xxxxxxGH()); }
 
@@ -169,34 +139,14 @@ struct ClockRegisters {
   /*p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
   //-----------------------------------------------------------------------------
-  // Debug stuff
-
-  /*p25.TUTO*/ wire TUTO_DBG_VRAMp()  const { return and2(UNOR_MODE_DBG2p(), _SOTO_DBG_VRAM.qn()); }
-  /*p25.RACO*/ wire RACO_DBG_VRAMn()  const { return not1(TUTO_DBG_VRAMp()); }
-
-  /*p07.UBET*/ wire UBET_T1p()        const { return not1(SYS_PIN_T1n.tp()); }
-  /*p07.UVAR*/ wire UVAR_T2p()        const { return not1(SYS_PIN_T2n.tp()); }
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(SYS_PIN_T1n.tp(), UVAR_T2p()); }
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(SYS_PIN_T2n.tp(), UBET_T1p()); }
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn(wire RST) const { return nand3(UBET_T1p(), UVAR_T2p(), RST); }
-  /*p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
-
-  //-----------------------------------------------------------------------------
 
   Sig _XONA_LCDC_ENn_qn;
-
-  //Tri SYS_PIN_CLK_A = TRI_D0NP; // PIN_74 -> ATEZ, UCOB. Basically "clock good".
-  //Tri SYS_PIN_RSTp  = TRI_D1NP; // PIN_71 -> UPOJ, UPYF, AFAR, ASOL, UFOL
-  Tri SYS_PIN_T2n   = TRI_D1NP; // PIN_76, tied to 0 on board, inverted by input buffer
-  Tri SYS_PIN_T1n   = TRI_D1NP; // PIN_77, tied to 0 on board, inverted by input buffer
+  /*p01.BELU*/ Sig BELU_xxxxEFGH;
+  /*p01.BAPY*/ Sig BAPY_xxxxxxGH;
 
   /*p01.TUBO*/ Tri _TUBO_WAITINGp  = TRI_D1NP; // Must be 0 in run mode, otherwise we'd ping CPU_PIN_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ Tri _ASOL_POR_DONEn = TRI_D1NP; // Schematic wrong, this is a latch.
   /*p01.AFER*/ RegQP _AFER_SYS_RSTp  = REG_D0C0; // AFER should keep clocking even if CPU_PIN_CLKREQ = 0
-  /*p25.SOTO*/ RegQN _SOTO_DBG_VRAM  = REG_D0C0;
-
-  ///*p01.ATEZ*/ Sig ATEZ_CLKBAD;
-  ///*p01.ABOL*/ Sig ABOL_CLKREQn;
 
   /*p01.AFUR*/ Reg AFUR_xxxxEFGH = REG_D0C0;
   /*p01.ALEF*/ Reg ALEF_AxxxxFGH = REG_D0C0;
@@ -207,28 +157,6 @@ struct ClockRegisters {
   /*p01.AFEP*/ Sig AFEP_AxxxxFGH;
   /*p01.ATYP*/ Sig ATYP_ABCDxxxx;
   /*p01.AJAX*/ Sig AJAX_xxxxEFGH;
-
-  Tri CPU_PIN_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
-  Tri CPU_PIN_READYp        = TRI_D0NP; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-  Tri CPU_PIN_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state
-  Tri CPU_PIN_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
-  Tri CPU_PIN_UNOR_DBG      = TRI_HZNP; // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  Tri CPU_PIN_UMUT_DBG      = TRI_HZNP; // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-
-  Tri CPU_PIN_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  
-  Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
-  Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
-
-  Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
-  Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
-
-  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
-  Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
-
-  // These two clocks are the only ones that run before CPU_PIN_READYp is asserted.
-  Tri CPU_PIN_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  Tri CPU_PIN_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
 };
 
 //-----------------------------------------------------------------------------

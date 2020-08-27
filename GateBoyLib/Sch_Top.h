@@ -28,7 +28,7 @@ struct SchematicTop {
 
   SchematicTop();
 
-  void tick_slow(wire RST, wire CLK, wire CLKGOOD);
+  void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n);
 
   /*p04.DECY*/ wire DECY_LATCH_EXTn() {
     /*p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.CPU_PIN_LATCH_EXT.tp());
@@ -41,7 +41,7 @@ struct SchematicTop {
   }
 
   /* p28.LEKO*/ wire LEKO_CPU_RDp() {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
+    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
     /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
@@ -82,7 +82,7 @@ struct SchematicTop {
   // ext.TOZA, ext.SEPY, vram.TUCA
   /*p01.ABUZ*/ wire ABUZ_AVn() const {
     /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.CPU_PIN_ADDR_EXTp.tp()); // Missing from schematic
-    /*p01.AWOD*/ wire AWOD_AVp = nor2(clk_reg.UNOR_MODE_DBG2p(), APAP_AVn);
+    /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
     /*p01.ABUZ*/ wire ABUZ_AVn = not1(AWOD_AVp);
     return ABUZ_AVn;
   }
@@ -111,7 +111,7 @@ struct SchematicTop {
 
   // -> buncha stuff
   /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     return TEDO_CPU_RDp;
   }
@@ -134,7 +134,7 @@ struct SchematicTop {
   /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx() const {
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), clk_reg.AFAS_xxxxEFGx());
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, clk_reg.UNOR_MODE_DBG2p());
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
     /*p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
     return TAPU_CPU_WRp_xxxxEFGx;
   }
@@ -199,6 +199,19 @@ struct SchematicTop {
   SpriteFetcher sprite_fetcher;
   SpriteScanner sprite_scanner;
   Bootrom bootrom;
+
+  /*p07.UBET*/ Sig UBET_T1p;
+  /*p07.UVAR*/ Sig UVAR_T2p;
+  /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
+  /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;
+  /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
+  /*p08.TOVA*/ Sig TOVA_MODE_DBG2n;
+
+  /*p25.SOTO*/ RegQN SOTO_DBG_VRAM  = REG_D0C0;
+
+  /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
+  /*p25.RACO*/ Sig RACO_DBG_VRAMn;
+
 
   Tri LCD_PIN_DATA1n = TRI_HZNP; // PIN_50 
   Tri LCD_PIN_DATA0n = TRI_HZNP; // PIN_51 

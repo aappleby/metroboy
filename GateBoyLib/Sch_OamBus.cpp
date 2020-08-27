@@ -188,7 +188,9 @@ void OamBus::tock(SchematicTop& top) {
   {
     /*p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp, top.clk_reg.XOCE_AxxDExxH); // schematic wrong, is def nand2
     /*p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(WEFY_SPR_READp);
-    /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand3(top.DECY_LATCH_EXTn(), top.cpu_bus.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp()); // Schematic wrong, this is NAND
+    /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
+    /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
+    /*p28.BOTA*/ wire _BOTA_CPU_OAM_LATCHn  = nand3(top.DECY_LATCH_EXTn(), top.cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire _ASYT_OAM_LATCHn      = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_LATCHn); // def and
     /*p28.BODE*/ wire _BODE_OAM_LATCHp      = not1(_ASYT_OAM_LATCHn);
 

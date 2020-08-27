@@ -417,7 +417,7 @@ void GateBoy::tock_zram_bus() {
   if (hit_zram) {
     uint8_t& data = mem[addr];
     if (top.TAPU_CPU_WRp_xxxxEFGx) data = top.cpu_bus.get_bus_data();
-    if (top.TEDO_CPU_RDp())          top.cpu_bus.set_data(true, data);
+    if (top.TEDO_CPU_RDp) top.cpu_bus.set_data(true, data);
   }
 }
 

@@ -35,7 +35,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   //----------------------------------------
   /*p06.SANO*/ wire SANO_ADDR_FF00_FF03 = and3(cpu_bus.SARE_XX00_XX07p(), cpu_bus.SEFY_A02n(), cpu_bus.SYKE_FF00_FFFFp());
   /*p06.URYS*/ wire URYS_FF01_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx, SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.tp(), cpu_bus.TOLA_A01n());
-  /*p06.UFEG*/ wire UFEG_FF01_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.tp(), cpu_bus.TOLA_A01n());
+  /*p06.UFEG*/ wire UFEG_FF01_RD = and4(top.TEDO_CPU_RDp, SANO_ADDR_FF00_FF03, cpu_bus.CPU_BUS_A00.tp(), cpu_bus.TOLA_A01n());
 
   /*p06.COBA*/ wire COBA_SER_CNT3n = not1(CALY_SER_INTp.qp());
   /*p06.CABY*/ wire CABY_XFER_RESET = and2(COBA_SER_CNT3n, top.clk_reg.ALUR_SYS_RSTn);
@@ -49,7 +49,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // CORE := tri(UCOM, CULY_QN)
     // ELUV := tri(UCOM, ETAF_QN)
 
-    /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp(), SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
+    /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
     /*p06.CORE*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(UCOM_FF02_RD, CULY_XFER_DIR.qn());
     /*p06.ELUV*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(UCOM_FF02_RD, ETAF_XFER_START.qn());
   }

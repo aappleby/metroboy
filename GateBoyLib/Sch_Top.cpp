@@ -32,11 +32,12 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);
 
   /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
-  /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
+  /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
   /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
   /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
   /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp());
   /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
+
 
   /*p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_LATCHp.qp());
   /*p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(), _ROMO_PRELOAD_DONEn, tile_fetcher._NYKA_FETCH_DONE_P11.qp(), tile_fetcher._PORY_FETCH_DONE_P12.qp());

@@ -78,20 +78,6 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
-  // -> buncha stuff
-  /*p07.TEDO*/ wire TEDO_CPU_RDp() const {
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.EXT_PIN_RDn.qp(), cpu_bus.CPU_PIN_RDp.tp(), UNOR_MODE_DBG2p);
-    /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
-    return TEDO_CPU_RDp;
-  }
-
-  // -> buncha stuff
-  /*p07.ASOT*/ wire ASOT_CPU_RDp() const {
-    /*p07.AJAS*/ wire _AJAS_CPU_RDn = not1(TEDO_CPU_RDp());
-    /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(_AJAS_CPU_RDn);
-    return ASOT_CPU_RDp;
-  }
-
   // vram.TUJA, top.UBAL/MEXO
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const {
     /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(clk_reg.ADAR_ABCxxxxH, clk_reg.ATYP_ABCDxxxx);
@@ -114,6 +100,7 @@ struct SchematicTop {
 
   /*p01.ABUZ*/ Sig ABUZ_AVn;
 
+  /*p07.TEDO*/ Sig TEDO_CPU_RDp;
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
 

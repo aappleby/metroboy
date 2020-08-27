@@ -97,7 +97,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KUKO*/ KUKO_DBG_FF00_D6 = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.CPU_BUS_D6p.tp());
     /*p05.KERU*/ KERU_DBG_FF00_D7 = dff17_B(_ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.CPU_BUS_D7p.tp());
 
-    /*p10.ACAT*/ wire _ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp(), _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
+    /*p10.ACAT*/ wire _ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
     /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P10_C.tp());
     /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P11_C.tp());

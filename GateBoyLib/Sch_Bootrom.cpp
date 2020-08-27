@@ -12,7 +12,7 @@ using namespace Schematics;
 
 void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
-  if (top.TEDO_CPU_RDp() && (top.cpu_bus.get_bus_addr() <= 0xFF)) {
+  if (top.TEDO_CPU_RDp && (top.cpu_bus.get_bus_addr() <= 0xFF)) {
     int x = 1;
     x++;
   }
@@ -23,7 +23,7 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
                                                   top.cpu_bus.CPU_BUS_A02.tp(), top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.CPU_BUS_A00.tp());
     /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.CPU_BUS_A04.tp(), top.cpu_bus.CPU_BUS_A06.tp());
 
-    /*p07.TEXE*/ wire _TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp(), top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.TEXE*/ wire _TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp, top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
     /*p07.SYPU*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TEXE_FF50_RDp, BOOT_BITn.qp());
 
     /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
@@ -36,7 +36,7 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // Bootrom -> CPU
 
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(top.UMUT_MODE_DBG1p);
-    /*p07.YULA*/ wire _YULA_BOOT_RDp   = and3(top.TEDO_CPU_RDp(), _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
+    /*p07.YULA*/ wire _YULA_BOOT_RDp   = and3(top.TEDO_CPU_RDp, _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp()); // def AND
     /*p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());
     /*p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
 

@@ -39,7 +39,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF04 DIV
   {
-    /*p01.TAGY*/ wire TAGY_FF04_RDp = and4(top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
+    /*p01.TAGY*/ wire TAGY_FF04_RDp = and4(top.TEDO_CPU_RDp, RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
     /*p01.TAPE*/ wire TAPE_FF04_WRp = and4(top.TAPU_CPU_WRp_xxxxEFGx, RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
     /*p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(top.clk_reg.UCOB_CLKBADp, RST, TAPE_FF04_WRp);
 
@@ -75,7 +75,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF05 TIMA
   {
-    /*p03.TEDA*/ wire _TEDA_FF05_RDp = and4(top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.CPU_BUS_A00.tp());
+    /*p03.TEDA*/ wire _TEDA_FF05_RDp = and4(top.TEDO_CPU_RDp, RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.CPU_BUS_A00.tp());
     /*p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.CPU_BUS_A00.tp());
 
     /*p03.UBOT*/ wire _UBOT_CLK_256Kn = not1(UFOR_DIV_01.qp());
@@ -136,7 +136,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF06 TMA
   {
-    /*p03.TUBY*/ wire _TUBY_FF06_RDp = and4(top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.TOVY_A00n());
+    /*p03.TUBY*/ wire _TUBY_FF06_RDp = and4(top.TEDO_CPU_RDp, RYFO_FF04_FF07p, top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.TOVY_A00n());
     /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, RYFO_FF04_FF07p, top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.TOVY_A00n());
 
     /*p03.SABU*/ SABU_TMA_0 = dff17_AB(_TYJU_FF06_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.CPU_BUS_D0p.tp());
@@ -160,7 +160,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF07 TAC
   {
-    /*p03.SORA*/ wire _SORA_FF07_RDp = and4(top.TEDO_CPU_RDp(), RYFO_FF04_FF07p, top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.CPU_BUS_A00.tp());
+    /*p03.SORA*/ wire _SORA_FF07_RDp = and4(top.TEDO_CPU_RDp, RYFO_FF04_FF07p, top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.CPU_BUS_A00.tp());
     /*p03.SARA*/ wire _SARA_FF07_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, RYFO_FF04_FF07p, top.cpu_bus.CPU_BUS_A01.tp(), top.cpu_bus.CPU_BUS_A00.tp());
 
     /*p03.SOPU*/ SOPU_TAC_0 = dff17_AB(_SARA_FF07_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.CPU_BUS_D0p.tp());

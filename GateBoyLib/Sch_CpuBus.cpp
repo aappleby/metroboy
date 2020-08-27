@@ -33,7 +33,6 @@ void CpuBus::dump(Dumper& d) const {
 
   d("---------- CPU Pins ----------\n");
   d("CPU_PIN_STARTp        : %d\n", CPU_PIN_STARTp.tp());
-  d("CPU_PIN_READYp        : %d\n", CPU_PIN_READYp.tp());
   d("CPU_PIN_SYS_RSTp      : %d\n", CPU_PIN_SYS_RSTp.tp());
   d("CPU_PIN_EXT_RST       : %d\n", CPU_PIN_EXT_RST.tp());
   d("CPU_PIN_UNOR_DBG      : %d\n", CPU_PIN_UNOR_DBG.tp());

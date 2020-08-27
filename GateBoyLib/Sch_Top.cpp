@@ -9,7 +9,7 @@ using namespace Schematics;
 // optimizer still fscking this up somehow
 
 #pragma optimize("", off)
-void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n) {
+void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY) {
 
   dma_reg.tick();
 
@@ -50,7 +50,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp);
   /*p28.ACYL*/ ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.tp());
 
-  clk_reg.tick_slow(CLK, CLKGOOD, *this);
+  clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, *this);
   lcd_reg.tick(*this);
 
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(clk_reg.XAPO_VID_RSTn);
@@ -95,8 +95,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   sprite_fetcher.tick(*this);
   int_reg.tick(*this);
 
-  clk_reg.tock_clk_slow(RST, CLK, CLKGOOD, *this);
-  clk_reg.tock_rst_slow(RST, CLKGOOD, *this);
+  clk_reg.tock_clk_slow(RST, CLK, CLKGOOD, CPUREADY, *this);
+  clk_reg.tock_rst_slow(RST, CLKGOOD, CPUREADY, *this);
   clk_reg.tock_dbg_slow(*this);
   clk_reg.tock_vid_slow(CLK, *this);
   

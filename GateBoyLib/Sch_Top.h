@@ -26,7 +26,7 @@ namespace Schematics {
 #pragma pack(push, 1)
 struct SchematicTop {
 
-  void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n);
+  void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
 
   //-----------------------------------------------------------------------------
 

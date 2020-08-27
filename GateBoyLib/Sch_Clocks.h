@@ -14,9 +14,9 @@ struct ClockRegisters {
 
   void dump(Dumper& d, wire CLK) const;
 
-  void tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top);
-  void tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, SchematicTop& top);
-  void tock_rst_slow(wire RST, wire CLKGOOD, SchematicTop& top);
+  void tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
+  void tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
+  void tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
   void tock_dbg_slow(SchematicTop& top);
   void tock_vid_slow(wire CLK, SchematicTop& top);
 

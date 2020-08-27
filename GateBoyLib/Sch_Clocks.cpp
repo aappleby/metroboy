@@ -41,7 +41,7 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top) {
+void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
 
   /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(_AFER_SYS_RSTp.qp(), _ASOL_POR_DONEn.tp());
   /*p01.ALUR*/ ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
@@ -54,7 +54,7 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top) {
 
   /*p01.ATEZ*/ wire ATEZ_CLKBAD = not1(CLKGOOD);
   /*p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
-  /*p01.ABOL*/ wire ABOL_CLKREQn = not1(top.cpu_bus.CPU_PIN_READYp.tp());
+  /*p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK; // ignoring the deglitcher here
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
@@ -72,9 +72,9 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top) {
 
   /*p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
   /*p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
+  /*p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
 
   /*p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH);
-  /*p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
   /*p01.BEJA*/ wire BEJA_xxxxEFGH = nand2(BOLO_ABCDEFxx, BEKO_ABCDxxxx);
   /*p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
   /*p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
@@ -84,7 +84,6 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top) {
   /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor2(BELE_Axxxxxxx, ATEZ_CLKBAD);
   /*p01.BALY*/ BALY_Axxxxxxx = not1(BYJU_xBCDEFGH);
 
-
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.qn());
 
   /*p29.XUPY*/ XUPY_xxCDxxGH = not1(WUVU_xxCDxxGH.qn());
@@ -93,7 +92,7 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, SchematicTop& top) {
   /*p29.WOJO*/ WOJO_xxCxxxGx = nor2(WUVU_xxCDxxGH.qn(), WOSU_xBCxxFGx.qn());
 }
 
-void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, SchematicTop& top) {
+void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
   // ignoring the deglitcher here
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
 
@@ -103,7 +102,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, SchematicTo
   /*p01.APUK*/ APUK_ABxxxxGH = dff9_inv(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
   /*p01.ADYK*/ ADYK_ABCxxxxH = dff9_inv( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
 
-  /* p01.ABOL*/ wire ABOL_CLKREQn = not1(top.cpu_bus.CPU_PIN_READYp.tp());
+  /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
 
   /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
@@ -150,10 +149,10 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, SchematicTo
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, SchematicTop& top) {
+void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
   /*p01.UPYF*/ wire _UPYF = or2(RST, UCOB_CLKBADp);
 
-  /*p01.TUBO*/ TUBO_WAITINGp = nor_latch(_UPYF, top.cpu_bus.CPU_PIN_READYp.tp());
+  /*p01.TUBO*/ TUBO_WAITINGp = nor_latch(_UPYF, CPUREADY);
 
 
 #ifdef FAST_BOOT

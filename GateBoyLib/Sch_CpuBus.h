@@ -12,10 +12,6 @@ struct VramBus;
 struct CpuBus {
   void dump(Dumper& d) const;
 
-  void preset_cpu_ready(wire ready) {
-    CPU_PIN_READYp.preset(ready);
-  }
-
   uint16_t get_bus_addr() const {
     return (uint16_t)pack_p(CPU_BUS_A00.tp(), CPU_BUS_A01.tp(), CPU_BUS_A02.tp(), CPU_BUS_A03.tp(),
                           CPU_BUS_A04.tp(), CPU_BUS_A05.tp(), CPU_BUS_A06.tp(), CPU_BUS_A07.tp(),
@@ -202,7 +198,6 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
 
   Tri CPU_PIN_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
-  Tri CPU_PIN_READYp        = TRI_D0NP; // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   Tri CPU_PIN_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state
   Tri CPU_PIN_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
   Tri CPU_PIN_UNOR_DBG      = TRI_HZNP; // top right port PORTA_02: <- P07.UNOR_MODE_DBG2

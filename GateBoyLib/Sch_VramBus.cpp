@@ -251,7 +251,8 @@ void VramBus::tock(SchematicTop& top) {
       /*p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(top.tile_fetcher._MESU_BFETCH_S1.qp());
       /*p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(top.tile_fetcher._NYVA_BFETCH_S2.qp());
 
-      /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not1(top.pix_pipe.PORE_WIN_MODEp());
+      /*p27.PORE*/ wire PORE_WIN_MODEp = not1(top.pix_pipe.NOCU_WIN_MODEn());
+      /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not1(PORE_WIN_MODEp);
       /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
       /*p27.NENY*/ wire _NENY_FETCH_01n = not1(_NOGU_FETCH_01p);
       /*p27.POTU*/ wire _POTU_BG_MAP_READp = and2(LENA_BGW_VRM_RDp, _NENY_FETCH_01n);

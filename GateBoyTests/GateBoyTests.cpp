@@ -660,7 +660,7 @@ void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
 
     //gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
     //gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
-    gateboy.top.cpu_bus.preset_cpu_ready(wire(rng & 0x04));
+    //gateboy.top.cpu_bus.preset_cpu_ready(wire(rng & 0x04));
     //gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
 
     int phase_count = (rng >> 8) & 0x0F;

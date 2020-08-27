@@ -42,20 +42,22 @@ struct PixelPipe {
 
   // -> top.TEVO
   /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG() const {
-    return nor2(RYFA_FETCHn_A.qn(), RENE_FETCHn_B.qp());
+    /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG = nor2(RYFA_FETCHn_A.qn(), RENE_FETCHn_B.qp());
+    return SEKO_WIN_TILE_TRIG;
   }
 
   // -> top.TEVO
   /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne() const {
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn(), SOVY_WIN_FIRST_TILE_B.qp());
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(RYDY_WIN_FIRST_TILE_A.tp());
+    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, SOVY_WIN_FIRST_TILE_B.qp());
     return not1(_TUXY_WIN_FIRST_TILE_NE);
   }
 
-  // -> vram bus
-  /*p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
-
   // -> sprite fetcher
-  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const { return not1(SYLO_WIN_HITn()); }
+  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const {
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(RYDY_WIN_FIRST_TILE_A.tp());
+    return not1(SYLO_WIN_HITn);
+  }
 
   /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.tp(); }
 
@@ -68,10 +70,6 @@ struct PixelPipe {
     /*p27.NUNY*/ wire NUNY_WX_MATCH_TRIGp = and2(PYNU_WIN_MODE_A.tp(), NOPA_WIN_MODE_B.qn());
     return NUNY_WX_MATCH_TRIGp;
   }
-
-  /*p27.SYLO*/ wire SYLO_WIN_HITn()   const { return not1(RYDY_WIN_FIRST_TILE_A.tp()); }
-  /*p21.XUGU*/ wire XUGU_X_167n() const { return nand5(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), TUKY_X5p.qp(), SYBE_X7p.qp()); } // 128 + 32 + 4 + 2 + 1 = 167
-  /*p21.XANO*/ wire XANO_X_167p() const { return not1(XUGU_X_167n()); }
 
   //----------------------------------------
 

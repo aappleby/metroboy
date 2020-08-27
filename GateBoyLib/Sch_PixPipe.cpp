@@ -179,7 +179,9 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
 //------------------------------------------------------------------------------
 
 void PixelPipe::tick(const SchematicTop& top) {
-  /*p21.WODU*/ WODU_RENDER_DONEp = and2(top.sprite_store.XENA_STORE_MATCHn(), XANO_X_167p());
+  /*p21.XUGU*/ wire XUGU_X_167n = nand5(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), TUKY_X5p.qp(), SYBE_X7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
+  /*p21.XANO*/ wire XANO_X_167p = not1(XUGU_X_167n);
+  /*p21.WODU*/ WODU_RENDER_DONEp = and2(top.sprite_store.XENA_STORE_MATCHn(), XANO_X_167p);
 }
 
 //------------------------------------------------------------------------------
@@ -417,7 +419,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   //----------------------------------------
   // Window y coordinate
   {
-    /*p27.WAZY*/ wire WAZY_WIN_Y_CLKp = not1(PORE_WIN_MODEp());
+    /*p27.PORE*/ wire PORE_WIN_MODEp = not1(top.pix_pipe.NOCU_WIN_MODEn());
+    /*p27.WAZY*/ wire WAZY_WIN_Y_CLKp = not1(PORE_WIN_MODEp);
     /*p27.REPU*/ wire REPU_WIN_Y_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, PYRY_VID_RSTp);
     /*p27.SYNY*/ wire SYNY_WIN_Y_RSTn = not1(REPU_WIN_Y_RSTp);
 

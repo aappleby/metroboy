@@ -100,19 +100,6 @@ struct SchematicTop {
     return APOV_CPU_WRp_xxxxEFGx;
   }
 
-  // dma.lavy, lcd.xufa, oam.wyja, pxp.vely/xoma/myxe, ppu.waru/sepa, tile.bedy/arur, top.xuto, win.weko/wuza (most all the FF4X regs)
-  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx() const {
-    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(TAPU_CPU_WRp_xxxxEFGx);
-    /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
-    return CUPA_CPU_WRp_xxxxEFGx;
-  }
-
-  // ext.NEVY
-  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH() const {
-    /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDxxxH = not1(APOV_CPU_WRp_xxxxEFGx());
-    return MEXO_CPU_WRn_ABCDxxxH;
-  }
-
   //-----------------------------------------------------------------------------
 
   /*p07.UBET*/ Sig UBET_T1p;

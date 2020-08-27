@@ -65,10 +65,9 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(clk_reg.ADAR_ABCxxxxH, clk_reg.ATYP_ABCDxxxx);
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), AFAS_xxxxEFGx);
-  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
+  /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
   /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!ext_bus.EXT_PIN_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
-  // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
-  /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH);
+  /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH); // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
 
   /*p25.SYCY*/ wire _SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
   /*p01.DULA*/ wire DULA_SYS_RSTp = not1(clk_reg.ALUR_SYS_RSTn);

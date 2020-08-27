@@ -78,16 +78,6 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
-  // vram.TUJA, top.UBAL/MEXO
-  /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx() const {
-    /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(clk_reg.ADAR_ABCxxxxH, clk_reg.ATYP_ABCDxxxx);
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.CPU_PIN_WRp.tp(), AFAS_xxxxEFGx);
-    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    return APOV_CPU_WRp_xxxxEFGx;
-  }
-
-  //-----------------------------------------------------------------------------
-
   /*p07.UBET*/ Sig UBET_T1p;
   /*p07.UVAR*/ Sig UVAR_T2p;
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
@@ -103,6 +93,7 @@ struct SchematicTop {
   /*p07.TEDO*/ Sig TEDO_CPU_RDp;
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
+  /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;
 
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
 

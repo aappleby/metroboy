@@ -30,16 +30,9 @@ struct SchematicTop {
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n);
 
-  // top.BETE, top.AJUJ
-  /*p28.AJON*/ wire AJON_OAM_BUSY() const {
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp());
-    /*p28.AJON*/ wire AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
-    return AJON_OAM_BUSY;
-  }
-
   // -> top.AMAB, top.APAG
   /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn() const { 
-     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp(), ACYL_SCANNINGp, AJON_OAM_BUSY()); // def nor4
+     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
      return AJUJ_OAM_BUSYn;
   }
 
@@ -78,6 +71,8 @@ struct SchematicTop {
 
 
   /*p04.DECY*/ Sig DECY_LATCH_EXTn;
+
+  /*p28.AJON*/ Sig AJON_OAM_BUSY;
 
   //-----------------------------------------------------------------------------
 

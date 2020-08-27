@@ -43,7 +43,7 @@ void ExtBus::tock(SchematicTop& top) {
 
   wire LUMA_DMA_READ_CARTp = top.dma_reg.LUMA_DMA_READ_CARTp();
   wire TUNA_0000_FDFFp = top.cpu_bus.TUNA_0000_FDFFp();
-  wire TUTU_ADDR_BOOTp = top.TUTU_ADDR_BOOTp();
+  wire TUTU_ADDR_BOOTp = top.TUTU_ADDR_BOOTp;
 
   //----------------------------------------
   // Ext pins

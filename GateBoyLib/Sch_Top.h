@@ -61,14 +61,6 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
-  // boot.YULA, ext.SOBY, CPU_PIN_BOOTp
-  /*p07.TUTU*/ wire TUTU_ADDR_BOOTp() const {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp());
-    return and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
-  }
-
-  //-----------------------------------------------------------------------------
-
   /*p07.UBET*/ Sig UBET_T1p;
   /*p07.UVAR*/ Sig UVAR_T2p;
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
@@ -95,6 +87,8 @@ struct SchematicTop {
   /*p28.ACYL*/ Sig ACYL_SCANNINGp;
 
   /*#p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
+
+  /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
 
   //-----------------------------------------------------------------------------
 

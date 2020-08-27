@@ -80,6 +80,9 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
   /*p25.SOTO*/ SOTO_DBG_VRAM = dff17_A(_SYCY_DBG_CLOCKn, CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn());
 
+  /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp());
+  /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
+
   sprite_scanner.tick(*this);
   sprite_store.tick(*this);
   pix_pipe.tick(*this);
@@ -109,7 +112,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   int_reg.tock(*this, cpu_bus);
 
   cpu_bus.CPU_PIN_ADDR_HI = cpu_bus.SYRO_FE00_FFFFp();
-  cpu_bus.CPU_PIN_BOOTp = TUTU_ADDR_BOOTp();
+  cpu_bus.CPU_PIN_BOOTp = TUTU_ADDR_BOOTp;
 
   ext_bus.tock(*this);
   oam_bus.tock(*this);

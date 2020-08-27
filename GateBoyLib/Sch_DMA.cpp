@@ -16,7 +16,7 @@ void DmaRegisters::dump(Dumper& d) const {
   d("DMA Addr 0x%02x:%02x\n",dma_addr_hi, dma_addr_lo);
   d("MATU_DMA_RUNNINGp   %d\n", _MATU_DMA_RUNNINGp.qp());
   d("LUMA_DMA_READ_CARTp %d\n", LUMA_DMA_READ_CARTp.qp());
-  d("LUFA_DMA_VRM_RDp    %d\n", LUFA_DMA_VRM_RDp.qp());
+  d("LUFA_DMA_VRM_RDp    %d\n", LUFA_DMA_READ_VRAMp.qp());
   d("LYXE_DMA_LATCHn     %d\n", _LYXE_DMA_LATCHp);
   d("MYTE_DMA_DONE       %d\n", !_MYTE_DMA_DONE.qn());
   d("LUVY_DMA_TRIG_d0    %d\n",  _LUVY_DMA_TRIG_d0.qp());
@@ -37,7 +37,7 @@ void DmaRegisters::tick() {
   /*p04.LUMA*/ LUMA_DMA_READ_CARTp = not1(_MORY_DMA_READ_CARTn);
 
   /*p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand2(MATU_DMA_RUNNINGp, MUDA_DMA_SRC_VRAMp);
-  /*p04.LUFA*/ LUFA_DMA_VRM_RDp = not1(MUHO_DMA_VRAM_RDn);
+  /*p04.LUFA*/ LUFA_DMA_READ_VRAMp = not1(MUHO_DMA_VRAM_RDn);
 }
 
 //------------------------------------------------------------------------------

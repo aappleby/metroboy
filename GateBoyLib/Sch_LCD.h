@@ -26,16 +26,6 @@ struct LcdRegisters {
                 SOTA_LYC4n.qp(), VAFA_LYC5n.qp(), VEVO_LYC6n.qp(), RAHA_LYC7n.qp());
   }
 
-  // fires on P910 and P911
-  wire ATEJ_VID_LINE_END_TRIGp() const {
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
-    return ATEJ_VID_LINE_END_TRIGp;
-  }
-
-  // -> interrupts, ppu
-  /*p21.PARU*/ wire PARU_VBLANKp_d4()     const { return not1(POPU_IN_VBLANKp.qn()); }
-
-  // -> sprite store
 
   // Stays at 0 for 12 phases, 113 for 4 phases, all others for 8 phases
   /*p21.SAXO*/ RegQPN SAXO_X0p = REG_D0C0; // increments at line pase 012 (because of RUTU holding it in reset) and then at every A phase.
@@ -59,7 +49,9 @@ struct LcdRegisters {
 
 //private:
 
-  Sig BYHA_VID_LINE_END_TRIGn;
+  /*p21.PARU*/ Sig PARU_VBLANKp_d4;
+  /*p28.BYHA*/ Sig BYHA_VID_LINE_END_TRIGn;
+  /*p28.ATEJ*/ Sig ATEJ_VID_LINE_END_TRIGp;
 
   /*p21.NYPE*/ RegQPN NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
   /*p28.ANEL*/ RegQP  ANEL_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases

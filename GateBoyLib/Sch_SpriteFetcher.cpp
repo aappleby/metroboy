@@ -53,7 +53,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   /*p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(_SOBU_SFETCH_REQp.qp(),  _SUDA_SFETCH_REQp.qn());
 
-  wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_VID_LINE_END_TRIGp();
+  wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_VID_LINE_END_TRIGp;
 
   // SECA := nor3(RYCE, ROSY, ATEJ) // atej not byha?
 

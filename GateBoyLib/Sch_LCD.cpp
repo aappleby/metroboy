@@ -27,7 +27,7 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("RUTU_LINE_P908          %c\n", RUTU_LINE_P908.c());
   d("CATU_LINE_P910          %c\n", CATU_LINE_P910.c());
   d("BYHA_VID_LINE_END_TRIGn %d\n", BYHA_VID_LINE_END_TRIGn);
-  d("ATEJ_VID_LINE_END_TRIGp %d\n", ATEJ_VID_LINE_END_TRIGp());
+  d("ATEJ_VID_LINE_END_TRIGp %d\n", ATEJ_VID_LINE_END_TRIGp);
   d("\n");
 
   d("MYTA_LINE_153p      %c\n", MYTA_LINE_153p     .c());
@@ -53,6 +53,12 @@ void LcdRegisters::tick(const SchematicTop& top) {
     
   // so if this is or_and, BYHA should go low on 910 and 911
   /*p28.BYHA*/ BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, ABEZ_VID_RSTn);
+
+  // fires on P910 and P911
+  /*p28.ATEJ*/ ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
+
+  // -> interrupts, ppu
+  /*p21.PARU*/ PARU_VBLANKp_d4 = not1(POPU_IN_VBLANKp.qn());
 }
 
 //------------------------------------------------------------------------------

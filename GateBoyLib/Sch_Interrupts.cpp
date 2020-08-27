@@ -46,7 +46,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p02.ROTU*/ wire _ROTU_FF0F_WRp = not1(_REFA_FF0F_WRn);
 
-    /*p21.TOLU*/ wire _TOLU_VBLANKn       = not1(top.lcd_reg.PARU_VBLANKp_d4());
+    /*p21.TOLU*/ wire _TOLU_VBLANKn       = not1(top.lcd_reg.PARU_VBLANKp_d4);
     /*p21.VYPU*/ wire _VYPU_VBLANKp       = not1(_TOLU_VBLANKn);     
 
     /*p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(CPU_PIN_ACK_VBLANK.tp());
@@ -80,7 +80,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(top.pix_pipe.RUGU_STAT_LYI_ENn.qn(), top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp(),
                                              top.pix_pipe.REFE_STAT_OAI_ENn.qn(), TAPA_INT_OAM,
-                                             top.pix_pipe.RUFO_STAT_VBI_ENn.qn(), top.lcd_reg.PARU_VBLANKp_d4(), // polarity?
+                                             top.pix_pipe.RUFO_STAT_VBI_ENn.qn(), top.lcd_reg.PARU_VBLANKp_d4, // polarity?
                                              top.pix_pipe.ROXE_STAT_HBI_ENn.qn(), TARU_INT_HBL);
 
     /*p21.TUVA*/ wire TUVA_INT_STATn = not1(SUKO_INT_STATb);

@@ -24,7 +24,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     XONA_LCDC_ENn.qn());
 
   /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp); // die NOR
-  /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(_XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
+  /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(_XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
 
   d.dump_reg("FF41 STAT", 
     !_SADU_STAT_MODE0n,
@@ -218,7 +218,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // XYMU is the main "we're rendering" flag
 
   {
-    /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), TOFU_VID_RSTp);
+    /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, TOFU_VID_RSTp);
     /*#p21.VOGA*/ _VOGA_RENDER_DONEp        = dff17_B(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_RENDER_DONEp());
     /*#p21.WEGO*/ wire WEGO_RENDER_DONEp    = or2(TOFU_VID_RSTp, _VOGA_RENDER_DONEp.qp());
     /*#p21.XYMU*/ _XYMU_RENDERINGp          = nor_latch(top.AVAP_RENDER_START_TRIGp, WEGO_RENDER_DONEp);
@@ -228,7 +228,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Pixel counter, has carry lookahead because this can increment every tcycle
 
   {
-    /*p21.TADY*/ wire _TADY_LINE_START_RST = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), TOFU_VID_RSTp);
+    /*p21.TADY*/ wire _TADY_LINE_START_RST = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, TOFU_VID_RSTp);
 
     /*p21.RYBO*/ wire _RYBO = xor2(XEHO_X0p.qp(), SAVY_X1p.qp()); // XOR layout 1, feet facing gnd, this should def be regular xor
     /*p21.XUKE*/ wire _XUKE = and2(XEHO_X0p.qp(), SAVY_X1p.qp());
@@ -344,7 +344,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p27.NELE*/ wire NELE_WY_MATCH_HI   = not1(PALO_WY_MATCH_HIn);
     /* p27.PAFU*/ wire PAFU_WY_MATCHn     = nand5(NELE_WY_MATCH_HI, NAZE_WY_MATCH0, PEBO_WY_MATCH1, POMO_WY_MATCH2, NEVU_WY_MATCH3);
     /* p27.ROGE*/ ROGE_WY_MATCHp = not1(PAFU_WY_MATCHn);
-    /* p27.REPU*/ wire REPU_VBLANK_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4(), PYRY_VID_RSTp);
+    /* p27.REPU*/ wire REPU_VBLANK_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, PYRY_VID_RSTp);
     /* p27.SARY*/ SARY_WY_MATCH = dff17_B(top.clk_reg.TALU_ABCDxxxx, top.clk_reg.XAPO_VID_RSTn, ROGE_WY_MATCHp);
     /* p27.REJO*/ REJO_WY_MATCH_LATCH = nor_latch(SARY_WY_MATCH.qp(), REPU_VBLANK_RSTp);
   }
@@ -419,7 +419,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Window y coordinate
   {
     /*p27.WAZY*/ wire WAZY_WIN_Y_CLKp = not1(PORE_WIN_MODEp());
-    /*p27.REPU*/ wire REPU_WIN_Y_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4(), PYRY_VID_RSTp);
+    /*p27.REPU*/ wire REPU_WIN_Y_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, PYRY_VID_RSTp);
     /*p27.SYNY*/ wire SYNY_WIN_Y_RSTn = not1(REPU_WIN_Y_RSTp);
 
     // Every time we leave win mode we increment win_y
@@ -874,7 +874,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp); // die INV
 
     /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp); // die NOR
-    /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(_XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4()); // die NOR
+    /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(_XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
 
     /*#p21.TEBY*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
     /*#p21.WUGA*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);

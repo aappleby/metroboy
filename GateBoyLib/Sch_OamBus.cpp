@@ -312,7 +312,7 @@ void OamBus::tock(SchematicTop& top) {
   {
     // FIXME inversion during dma from vram to oam
 
-    /*p28.AZAR*/ wire _AZAR_VBD_TO_OBDn = not1(top.dma_reg.LUFA_DMA_VRM_RDp);
+    /*p28.AZAR*/ wire _AZAR_VBD_TO_OBDn = not1(top.dma_reg.LUFA_DMA_READ_VRAMp);
     
     // -> oam data tri
     /*p25.RERY*/ wire RERY_VRM_BUS_D0p = not1(top.vram_bus.VRAM_BUS_D0p.tp());

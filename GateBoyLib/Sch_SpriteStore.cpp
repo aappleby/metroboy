@@ -295,7 +295,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(CUXY_SPRITE_COUNT1.qp(), DYBE_SPRITE_COUNT3.qp());
     /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, DEZY_STORE_ENn.qp());
     
-    /*#p28.AZYB*/ wire _AZYB_RST = not1(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp());
+    /*#p28.AZYB*/ wire _AZYB_RST = not1(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp);
     
     /*p29.BESE*/ BESE_SPRITE_COUNT0 = dff17_AB(_CAKE_CLKp,              _AZYB_RST, BESE_SPRITE_COUNT0.qn());
     /*p29.CUXY*/ CUXY_SPRITE_COUNT1 = dff17_AB(BESE_SPRITE_COUNT0.qn(), _AZYB_RST, CUXY_SPRITE_COUNT1.qn());
@@ -362,7 +362,7 @@ void SpriteStore::tock(const SchematicTop& top) {
 
     // Delayed reset signal for the selected store once sprite fetch is done.
 
-    /*p28.ABAK*/ wire ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), AMYG_VID_RSTp);
+    /*p28.ABAK*/ wire ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, AMYG_VID_RSTp);
     /*p28.BYVA*/ wire BYVA_VID_LINE_TRIGn = not1(ABAK_VID_LINE_TRIGp);
 
     /*p29.TYNO*/ wire TYNO = nand3(top.sprite_fetcher._TOXE_SFETCH_S0.qp(), top.sprite_fetcher._SEBA_SFETCH_S1_D5.qp(), top.sprite_fetcher._VONU_SFETCH_S1_D4.qp());
@@ -521,7 +521,7 @@ void SpriteStore::tock(const SchematicTop& top) {
     // BYVA := not(ABAK)
     // DYBA := not(BYVA)
 
-    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), AMYG_VID_RSTp);
+    /*p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, AMYG_VID_RSTp);
     /*p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
     /*p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
 

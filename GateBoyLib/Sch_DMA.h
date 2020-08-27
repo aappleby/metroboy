@@ -17,7 +17,7 @@ struct DmaRegisters {
 
   /*p04.MATU*/ Sig MATU_DMA_RUNNINGp;
   /*p04.LUMA*/ Sig LUMA_DMA_READ_CARTp;
-  /*p04.LUFA*/ Sig LUFA_DMA_VRM_RDp;
+  /*p04.LUFA*/ Sig LUFA_DMA_READ_VRAMp;
 
   /*p04.NAKY*/ RegQPN NAKY_DMA_A00p = REG_D0C0;
   /*p04.PYRO*/ RegQPN PYRO_DMA_A01p = REG_D0C0;

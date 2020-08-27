@@ -294,7 +294,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(_XYMU_RENDERINGp.tp());
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(_RUBU_FINE_CNT2.qp(), _ROGA_FINE_CNT1.qp(), _RYKU_FINE_CNT0.qp());
     /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPEp, _ROZE_FINE_COUNT_7n);
-    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, top.TEVO_FETCH_TRIGp());
+    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, top.TEVO_FETCH_TRIGp);
 
     /*#p27.RYKU*/ _RYKU_FINE_CNT0 = dff17_AB(_PECU_FINE_CLK,       _PASO_FINE_RST, _RYKU_FINE_CNT0.qn());
     /*#p27.ROGA*/ _ROGA_FINE_CNT1 = dff17_AB(_RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, _ROGA_FINE_CNT1.qn());

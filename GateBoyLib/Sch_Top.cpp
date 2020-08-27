@@ -38,9 +38,11 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp());
   /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
 
-  /*p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
-                                            pix_pipe.SUZU_WIN_FIRST_TILEne(),
-                                            TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+  // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
+  /*p27.TEVO*/ TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
+                                      pix_pipe.SUZU_WIN_FIRST_TILEne(),
+                                      TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
+
   clk_reg.tick_slow(CLK, CLKGOOD, *this);
   lcd_reg.tick(*this);
 

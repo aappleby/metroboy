@@ -130,14 +130,6 @@ struct SchematicTop {
     return  not1(_SUVU_PRELOAD_DONE_TRIGn);
   }
 
-  // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
-  /*p27.TEVO*/ wire TEVO_FETCH_TRIGp() const { 
-    /*p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
-                                             pix_pipe.SUZU_WIN_FIRST_TILEne(),
-                                             TAVE_PRELOAD_DONE_TRIGp()); // Schematic wrong, this is OR
-    return TEVO_FETCH_TRIGp;
-  }
-
   //-----------------------------------------------------------------------------
 
   /*p07.UBET*/ Sig UBET_T1p;
@@ -156,6 +148,8 @@ struct SchematicTop {
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
 
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
+
+  /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
 
   //-----------------------------------------------------------------------------
 

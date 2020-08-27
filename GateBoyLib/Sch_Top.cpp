@@ -17,12 +17,11 @@ SchematicTop::SchematicTop() {
 #pragma optimize("", off)
 void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n) {
 
-  /*p07.UBET*/ UBET_T1p = not1(T1n);
-  /*p07.UVAR*/ UVAR_T2p = not1(T2n);
+  /*p07.UBET*/ wire UBET_T1p = not1(T1n);
+  /*p07.UVAR*/ wire UVAR_T2p = not1(T2n);
   /*p07.UMUT*/ UMUT_MODE_DBG1p = and2(T1n, UVAR_T2p);
   /*p07.UNOR*/ UNOR_MODE_DBG2p = and2(T2n, UBET_T1p);
   /*p07.UPOJ*/ UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, RST);
-  /*p08.TOVA*/ TOVA_MODE_DBG2n = not1(UNOR_MODE_DBG2p);
 
   /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn());
   /*p25.RACO*/ RACO_DBG_VRAMn = not1(TUTO_DBG_VRAMp);

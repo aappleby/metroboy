@@ -61,12 +61,9 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
-  /*p07.UBET*/ Sig UBET_T1p;
-  /*p07.UVAR*/ Sig UVAR_T2p;
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
   /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;
   /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
-  /*p08.TOVA*/ Sig TOVA_MODE_DBG2n;
 
   /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
   /*p25.RACO*/ Sig RACO_DBG_VRAMn;

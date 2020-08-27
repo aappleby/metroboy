@@ -221,7 +221,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp(), TOFU_VID_RSTp);
     /*#p21.VOGA*/ _VOGA_RENDER_DONEp        = dff17_B(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_RENDER_DONEp());
     /*#p21.WEGO*/ wire WEGO_RENDER_DONEp    = or2(TOFU_VID_RSTp, _VOGA_RENDER_DONEp.qp());
-    /*#p21.XYMU*/ _XYMU_RENDERINGp          = nor_latch(top.AVAP_RENDER_START_TRIGp(), WEGO_RENDER_DONEp);
+    /*#p21.XYMU*/ _XYMU_RENDERINGp          = nor_latch(top.AVAP_RENDER_START_TRIGp, WEGO_RENDER_DONEp);
   }
 
   //----------------------------------------
@@ -287,7 +287,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(POFY_HSYNCp);
 
     /*#p24.RUJU*/ RUJU_HSYNCn = or3(_PAHO_X_8_SYNC.qp(), TOFU_VID_RSTp, POME_HSYNCn.tp());
-    /*#p24.POME*/ POME_HSYNCn = nor2(top.AVAP_RENDER_START_TRIGp(), POFY_HSYNCp);
+    /*#p24.POME*/ POME_HSYNCn = nor2(top.AVAP_RENDER_START_TRIGp, POFY_HSYNCp);
 
     top.LCD_PIN_HSYNC = RUZE_HSYNCn;
   }

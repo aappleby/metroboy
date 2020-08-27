@@ -40,15 +40,6 @@ struct SchematicTop {
     return CATY_LATCH_EXTp;
   }
 
-  /*p29.AVAP*/ wire AVAP_RENDER_START_TRIGp() const {
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(clk_reg.XAPO_VID_RSTn);
-    /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_VID_LINE_END_TRIGp(), ATAR_VID_RSTp);
-    /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
-    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_A.qn());
-    /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
-    return AVAP_RENDER_START_TRIGp;
-  }
-
   // top.BETE, top.AJUJ
   /*p28.AJON*/ wire AJON_OAM_BUSY() const {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp());
@@ -102,6 +93,8 @@ struct SchematicTop {
   /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
 
   /*p28.ACYL*/ Sig ACYL_SCANNINGp;
+
+  /*#p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
 
   //-----------------------------------------------------------------------------
 

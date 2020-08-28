@@ -61,7 +61,8 @@ public:
   int32_t  sys_clken = 0;
   int32_t  sys_clkgood = 0;
   int32_t  sys_cpuready = 0;
-  int32_t  cpu_en = 0;
+  int32_t  sys_cpu_en = 0;
+  uint8_t  sys_buttons = 0;
 
   Req* script = nullptr;
   int32_t  script_len = 0;

@@ -94,7 +94,7 @@ struct Timer {
   /*p03.NUGA*/ Reg NUGA_TIMA_D7 = REG_D0C0;
 
   /*p03.NYDU*/ RegQN NYDU_TIMA_D7_DELAY = REG_D0C0;
-  /*p03.MOBA*/ RegQP MOBA_INT_TIMER_TRIGp = REG_D0C0;
+  /*p03.MOBA*/ RegQP MOBA_INT_TIMERp = REG_D0C0;
 
   //----------
   // FF06 TMA

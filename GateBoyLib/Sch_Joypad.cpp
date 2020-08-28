@@ -26,12 +26,13 @@ void Joypad::dump(Dumper& d) const {
   d("KEJA_JOYP_L2     %c\n", KEJA_JOYP_L2     .c());
   d("KOLO_JOYP_L3     %c\n", KOLO_JOYP_L3     .c());
 
-  d("JOY_PIN_P10 %c%c%c%c\n", JOY_PIN_P10_A.c(), JOY_PIN_P10_B.c(), JOY_PIN_P10_C.c(), JOY_PIN_P10_D.c()); 
-  d("JOY_PIN_P11 %c%c%c%c\n", JOY_PIN_P11_A.c(), JOY_PIN_P11_B.c(), JOY_PIN_P11_C.c(), JOY_PIN_P11_D.c()); 
-  d("JOY_PIN_P12 %c%c%c%c\n", JOY_PIN_P12_A.c(), JOY_PIN_P12_B.c(), JOY_PIN_P12_C.c(), JOY_PIN_P12_D.c()); 
-  d("JOY_PIN_P13 %c%c%c%c\n", JOY_PIN_P13_A.c(), JOY_PIN_P13_B.c(), JOY_PIN_P13_C.c(), JOY_PIN_P13_D.c()); 
-  d("JOY_PIN_P14 %c%c%c%c\n", JOY_PIN_P14_A.c(), '_',               '_',               JOY_PIN_P14_D.c());
-  d("JOY_PIN_P15 %c%c%c%c\n", JOY_PIN_P15_A.c(), '_',               '_',               JOY_PIN_P15_D.c());
+  d("JOY_PIN_P10 %c\n", JOY_PIN_P10.c());
+  d("JOY_PIN_P11 %c\n", JOY_PIN_P11.c());
+  d("JOY_PIN_P12 %c\n", JOY_PIN_P12.c());
+  d("JOY_PIN_P13 %c\n", JOY_PIN_P13.c());
+  d("JOY_PIN_P14 %c\n", JOY_PIN_P14.c());
+  d("JOY_PIN_P15 %c\n", JOY_PIN_P15.c());
+
   d("\n");
 }
 
@@ -39,23 +40,25 @@ void Joypad::dump(Dumper& d) const {
 //-----------------------------------------------------------------------------
 
 void Joypad::preset_buttons(uint8_t buttons) {
+  // Pressing a button pulls the corresponding pin _down_.
+
   if (!KELY_JOYP_UDLR.qn()) {
-    JOY_PIN_P10_C.preset(buttons & 0x01);
-    JOY_PIN_P11_C.preset(buttons & 0x02);
-    JOY_PIN_P12_C.preset(buttons & 0x04);
-    JOY_PIN_P13_C.preset(buttons & 0x08);
+    JOY_PIN_P10 = (buttons & 0x01) ? DELTA_TRI0 : DELTA_TRI1;
+    JOY_PIN_P11 = (buttons & 0x02) ? DELTA_TRI0 : DELTA_TRI1;
+    JOY_PIN_P12 = (buttons & 0x04) ? DELTA_TRI0 : DELTA_TRI1;
+    JOY_PIN_P13 = (buttons & 0x08) ? DELTA_TRI0 : DELTA_TRI1;
   }
   else if (!COFY_JOYP_ABCS.qn()) {
-    JOY_PIN_P10_C.preset(buttons & 0x10);
-    JOY_PIN_P11_C.preset(buttons & 0x20);
-    JOY_PIN_P12_C.preset(buttons & 0x40);
-    JOY_PIN_P13_C.preset(buttons & 0x80);
+    JOY_PIN_P10 = (buttons & 0x10) ? DELTA_TRI0 : DELTA_TRI1;
+    JOY_PIN_P11 = (buttons & 0x20) ? DELTA_TRI0 : DELTA_TRI1;
+    JOY_PIN_P12 = (buttons & 0x40) ? DELTA_TRI0 : DELTA_TRI1;
+    JOY_PIN_P13 = (buttons & 0x80) ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
-    JOY_PIN_P10_C.preset(1);
-    JOY_PIN_P11_C.preset(1);
-    JOY_PIN_P12_C.preset(1);
-    JOY_PIN_P13_C.preset(1);
+    JOY_PIN_P10 = DELTA_TRIZ;
+    JOY_PIN_P11 = DELTA_TRIZ;
+    JOY_PIN_P12 = DELTA_TRIZ;
+    JOY_PIN_P13 = DELTA_TRIZ;
   }
 }
 //------------------------------------------------------------------------------
@@ -71,7 +74,8 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p10.ANAP*/ wire _ANAP_FF_0xx00000 = and2(_AMUS_0xx00000, top.cpu_bus.SYKE_FF00_FFFFp());
   /*p10.AKUG*/ wire _AKUG_A06n = not1(top.cpu_bus.CPU_BUS_A06.tp());
   /*p10.BYKO*/ wire _BYKO_A05n = not1(top.cpu_bus.CPU_BUS_A05.tp());
-  /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(JOY_PIN_P13_C.tp(), JOY_PIN_P12_C.tp(), JOY_PIN_P11_C.tp(), JOY_PIN_P10_C.tp());
+
+  /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(JOY_PIN_P13.qn(), JOY_PIN_P12.qn(), JOY_PIN_P11.qn(), JOY_PIN_P10.qn());
 
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(top.clk_reg.BALY_Axxxxxxx);
   {
@@ -99,10 +103,10 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p10.ACAT*/ wire _ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /*p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
-    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P10_C.tp());
-    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P11_C.tp());
-    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P12_C.tp());
-    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P13_C.tp());
+    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P10.qn());
+    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P11.qn());
+    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P12.qn());
+    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P13.qn());
 
     /*p05.KEMA*/ cpu_bus.CPU_BUS_D0p = tribuf_6nn(_BYZO_FF00_RDn, KEVU_JOYP_L0.tp());
     /*p05.KURO*/ cpu_bus.CPU_BUS_D1p = tribuf_6nn(_BYZO_FF00_RDn, KAPA_JOYP_L1.tp());
@@ -115,35 +119,30 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    // FIXME
-    wire _BURO_FF60_0p = 0;
-    wire GND = 0;
+    // FIXME hacking out debug stuff
 
+    wire _BURO_FF60_0p = 0;
     /*p05.KURA*/ wire KURA = not1(_BURO_FF60_0p);
 
-    JOY_PIN_P10_B = GND;
-    JOY_PIN_P11_B = GND;
-    JOY_PIN_P12_B = GND;
-    JOY_PIN_P13_B = GND;
+    /*p05.KOLE*/ wire KOLE = nand2(JUTE_JOYP_RA.qp(), _BURO_FF60_0p);
+    /*p05.KYBU*/ wire KYBU = nor2 (JUTE_JOYP_RA.qp(), KURA);
+    /*p05.KYTO*/ wire KYTO = nand2(KECY_JOYP_LB.qp(), _BURO_FF60_0p);
+    /*p05.KABU*/ wire KABU = nor2 (KECY_JOYP_LB.qp(), KURA);
+    /*p05.KYHU*/ wire KYHU = nand2(JALE_JOYP_UC.qp(), _BURO_FF60_0p);
+    /*p05.KASY*/ wire KASY = nor2 (JALE_JOYP_UC.qp(), KURA);
+    /*p05.KORY*/ wire KORY = nand2(KYME_JOYP_DS.qp(), _BURO_FF60_0p);
+    /*p05.KALE*/ wire KALE = nor2 (KYME_JOYP_DS.qp(), KURA);
 
-    /*p05.KOLE*/ JOY_PIN_P10_A = nand2(JUTE_JOYP_RA.qp(), _BURO_FF60_0p);
-    /*p05.KYBU*/ JOY_PIN_P10_D = nor2 (JUTE_JOYP_RA.qp(), KURA);
-
-    /*p05.KYTO*/ JOY_PIN_P11_A = nand2(KECY_JOYP_LB.qp(), _BURO_FF60_0p);
-    /*p05.KABU*/ JOY_PIN_P11_D = nor2 (KECY_JOYP_LB.qp(), KURA);
-    /*p05.KYHU*/ JOY_PIN_P12_A = nand2(JALE_JOYP_UC.qp(), _BURO_FF60_0p);
-    /*p05.KASY*/ JOY_PIN_P12_D = nor2 (JALE_JOYP_UC.qp(), KURA);
-    /*p05.KORY*/ JOY_PIN_P13_A = nand2(KYME_JOYP_DS.qp(), _BURO_FF60_0p);
-    /*p05.KALE*/ JOY_PIN_P13_D = nor2 (KYME_JOYP_DS.qp(), KURA);
+    JOY_PIN_P10 = io_pin(KOLE, KYBU);
+    JOY_PIN_P11 = io_pin(KYTO, KABU);
+    JOY_PIN_P12 = io_pin(KYHU, KASY);
+    JOY_PIN_P13 = io_pin(KORY, KALE);
 
     /*p05.KARU*/ wire KARU = or2(KELY_JOYP_UDLR.qn(), KURA);
     /*p05.CELA*/ wire CELA = or2(COFY_JOYP_ABCS.qn(), KURA);
 
-    JOY_PIN_P14_A = KARU;
-    JOY_PIN_P14_D = KELY_JOYP_UDLR.qn();
-
-    JOY_PIN_P15_A = CELA;
-    JOY_PIN_P15_D = COFY_JOYP_ABCS.qn();
+    JOY_PIN_P14 = io_pin(KARU, KELY_JOYP_UDLR.qn());
+    JOY_PIN_P15 = io_pin(CELA, COFY_JOYP_ABCS.qn());
   }
 }
 

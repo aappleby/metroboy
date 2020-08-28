@@ -71,25 +71,18 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
   auto& gb = *state_manager.state();
   gb.cpu.reset(0x0000);
   gb.reset();
 
-  //const char* filename = "roms/LinksAwakening_dog.dump";
-  //gb.load_dump(filename);
-
-  //gb.cpu.get_bus_req(gb.cpu_req);
-
-  //gb.cpu_req = { .addr = 0x7475, .data = 0x00, .read = 1, .write = 0 };
-  //gb.dbg_req = { .addr = 0x7475, .data = 0x00, .read = 1, .write = 0 };
-
   gb.set_boot_bit();
-  //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
-  printf("@0x0155 0x%02x\n", gb.mem[0x0155]);
-  printf("@0x0156 0x%02x\n", gb.mem[0x0156]);
-  printf("@0x0157 0x%02x\n", gb.mem[0x0157]);
 
+  const char* filename = "roms/LinksAwakening_dog.dump";
+  gb.load_dump(filename);
+
+  //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
+
+#if 0
   // ld (hl),a; jr -2;
   gb.mem[0x0155] = 0x77;
   gb.mem[0x0156] = 0x18;
@@ -104,26 +97,11 @@ void GateBoyApp::app_init() {
   };
   gb.script_len = 5;
   gb.phase_total = 0;
-
-  /*
-  gb.mem[0xFE37] = 0x05;
-  gb.mem[0xFE49] = 0xF0;
-
-  gb.script = new Req[] {
-    { .addr = 0xFE37, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode
-    { .addr = 0x0000, .data = 0x00, .read = 0, .write = 0}, // read "ld (hl), a" opcode
-    { .addr = 0xFE49, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode
-    { .addr = 0x0000, .data = 0x00, .read = 0, .write = 0}, // read "ld (hl), a" opcode
-  };
-  gb.script_len = 4;
-  gb.phase_total = 0;
-  */
-
-  //gb.dbg_req = { .addr = 0x00FF, .data = 0x00, .read = 1, .write = 0 };
-  //gb.run(8);
+#endif
 
   //gb.cpu_en = true;
-#endif
+
+  //gb.sys_buttons = 0xFF;
 }
 
 void GateBoyApp::app_close() {
@@ -247,6 +225,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   wire CLK = gateboy->phase_total & 1;
 
   top.clk_reg.dump(dumper, CLK);
+  top.joypad.dump(dumper);
+  top.ser_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();
@@ -271,8 +251,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.sprite_scanner.dump(dumper, top);
   top.sprite_store.dump(dumper);
   top.tile_fetcher.dump(dumper, top);
-  top.joypad.dump(dumper);
-  top.ser_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();

@@ -40,21 +40,14 @@ struct SerialRegisters {
                                    
   /*p06.ELYS*/ RegQP ELYS_SER_OUT       = REG_D0C0;
 
-  /*p06.CALY*/ RegQPN CALY_SER_INTp = REG_D0C0;
+  /*p06.CALY*/ RegQPN CALY_INT_SERp = REG_D0C0;
+
   //----------
   // Serial pins
 
-  /* PIN_68 */ Tri SCK_A = TRI_HZNP;   // <- P06.KEXU
-  /* PIN_68 */ Tri SCK_B = TRI_HZNP;   // <- P06.CULY
-  /* PIN_68 */ Tri SCK_C = TRI_D0NP;   // -> P06.CAVE
-  /* PIN_68 */ Tri SCK_D = TRI_HZNP;   // <- P06.KUJO
-
-  ///* PIN_69 */ Tri SIN_A = TRI_HZNP;   // nc?
-  ///* PIN_69 */ Tri SIN_B = TRI_HZNP;   // nc?
-  /* PIN_69 */ Tri SIN_Cn = TRI_D0NP;   // -> P06.CAGE
-  ///* PIN_69 */ Tri SIN_D = TRI_HZNP;   // nc?
-
-  /* PIN_70 */ Tri SOUTn  = TRI_HZNP;   // <- P05.KENA
+  /* PIN_68 */ Pin SCK  = TRI_HZPU;
+  /* PIN_69 */ Pin SIN  = TRI_HZPU;
+  /* PIN_70 */ Pin SOUT = TRI_HZPU;
 };
 
 //-----------------------------------------------------------------------------

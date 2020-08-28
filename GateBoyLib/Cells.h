@@ -581,6 +581,8 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // Output 08 must _not_ be inverting, see EXT_PIN_A00n_A
 // Output 10 _must_ be inverting.
 
+// I think this might be backwards. See AWOB_WAKE_CPU
+
 inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;

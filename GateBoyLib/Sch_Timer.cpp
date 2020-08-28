@@ -12,7 +12,7 @@ void Timer::dump(Dumper& d) const {
   d("TMA        0x%02x %d\n", get_tma(), get_tma());
   d("TAC        0x%02x %d\n", get_tac(), get_tac());
   d("TIMA_MAX   %c\n", NYDU_TIMA_D7_DELAY.c());
-  d("INT_TIMERp %c\n", MOBA_INT_TIMER_TRIGp.c());
+  d("INT_TIMERp %c\n", MOBA_INT_TIMERp.c());
   d("\n");
 }
 
@@ -106,8 +106,8 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.PAGU*/ wire _PAGU_TIMA_LD_7 = nor2(MULO_SYS_RSTn, _RATO_TIMA_MUX_7);
 
     /*p03.MERY*/ wire MERY_TIMER_INT_TRIGp = nor2(NYDU_TIMA_D7_DELAY.qn(), NUGA_TIMA_D7.qp());
-    /*p03.MOBA*/ MOBA_INT_TIMER_TRIGp = dff17_B(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_INT_TRIGp);
-    /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not1(MOBA_INT_TIMER_TRIGp.qp());
+    /*p03.MOBA*/ MOBA_INT_TIMERp = dff17_B(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_INT_TRIGp);
+    /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not1(MOBA_INT_TIMERp.qp());
     /*p03.MUZU*/ wire _MUZU_TIMA_LOADn = or2(top.cpu_bus.CPU_PIN_LATCH_EXT.tp(), _TOPE_FF05_WRn);
     /*p03.MEXU*/ wire _MEXU_TIMA_LOADp = nand3(_MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn, _MEKE_INT_TIMERn);
 

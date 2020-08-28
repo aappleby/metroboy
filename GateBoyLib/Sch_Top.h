@@ -27,7 +27,7 @@ namespace Schematics {
 struct SchematicTop {
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
-
+  void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
   //-----------------------------------------------------------------------------
 
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;

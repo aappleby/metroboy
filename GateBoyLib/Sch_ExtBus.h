@@ -25,7 +25,7 @@ struct ExtBus {
                            EXT_PIN_D04p.qp(), EXT_PIN_D05p.qp(), EXT_PIN_D06p.qp(), EXT_PIN_D07p.qp());
   }
 
-  void set_pin_data_in(uint8_t data) {
+  void set_pin_data(uint8_t data) {
     EXT_PIN_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
     EXT_PIN_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
     EXT_PIN_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;

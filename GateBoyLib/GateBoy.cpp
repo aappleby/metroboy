@@ -134,8 +134,8 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* CD */ next_phase();
   /* DE */ next_phase();
   /* EF */ next_phase();
-  uint8_t bus_data = top.cpu_bus.get_bus_data();
   /* FG */ next_phase();
+  uint8_t bus_data = top.cpu_bus.get_bus_data();
   /* GH */ next_phase();
   /* HA */ next_phase();
   dbg_req = {0};
@@ -172,7 +172,7 @@ void GateBoy::next_phase() {
   //----------
   // Update CPU
 
-  if (cpu_en) {
+  if (sys_cpu_en) {
     uint8_t imask = 0;
     uint8_t intf = 0;
 
@@ -195,7 +195,7 @@ void GateBoy::next_phase() {
   }
 
   if (DELTA_BC) {
-    if (!cpu_en || dbg_req.read || dbg_req.write) {
+    if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
       cpu_req = dbg_req;
     }
     else {
@@ -264,41 +264,28 @@ void GateBoy::next_phase() {
 //-----------------------------------------------------------------------------
 
 uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
-  uint64_t hash = HASH_INIT;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-
-  //top.clk_reg.preset_rst(sys_rst);
-  //top.clk_reg.preset_t1t2(sys_t1, sys_t2);
-  //top.cpu_bus.preset_cpu_ready(sys_cpuready);
-  //top.clk_reg.preset_clk_a(sys_clkgood);
-  top.joypad.preset_buttons(0);
-
   RegBase::sim_running = true;
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
 
+  wire CLK = (new_phase & 1) & sys_clken;
+
+  top.joypad.preset_buttons(sys_buttons);
+
+  RegBase::tick_running = true;
   top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  RegBase::tick_running = false;
+
+  RegBase::tock_running = true;
+  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  RegBase::tock_running = false;
 
   tock_ext_bus();
   
-  //tock_cpu_bus(old_phase, new_phase, cpu_req);
-
   bool addr_rom = cpu_req.addr <= 0x7FFF;
   bool addr_ram = cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF;
   bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.CPU_PIN_BOOTp.tp();
   bool hold_mem = cpu_req.read && (cpu_req.addr < 0xFF00);
-
-  /*
-  Tri CPU_PIN_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
-  Tri CPU_PIN_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
-
-  Tri CPU_PIN_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
-  Tri CPU_PIN_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04:
-
-  Tri CPU_PIN_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
-  Tri CPU_PIN_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
-  */
 
   top.cpu_bus.CPU_PIN6 = 0;
   top.cpu_bus.set_addr(cpu_req.addr);
@@ -322,8 +309,8 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.int_reg.CPU_PIN_ACK_SERIAL = 0;
   top.int_reg.CPU_PIN_ACK_JOYPAD = 0;
 
-  top.ser_reg.SCK_C = 0;
-  top.ser_reg.SIN_Cn = 0;
+  top.ser_reg.SCK = DELTA_TRIZ;
+  top.ser_reg.SIN = DELTA_TRIZ;
 
   tock_vram_bus();
   tock_zram_bus();
@@ -331,8 +318,8 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
   RegBase::sim_running = false;
 
+  uint64_t hash = HASH_INIT;
   commit_and_hash(top, hash);
-
   return hash;
 }
 
@@ -348,12 +335,13 @@ void GateBoy::tock_ext_bus() {
   // address and puts data on the bus on phase B if CSn is high.
 
   if (!top.ext_bus.EXT_PIN_CSn.qp()) {
+    // FIXME need to split this up into ext ram / cart ram / echo ram
     if (!top.ext_bus.EXT_PIN_WRn.qp()) {
       mem[ext_addr] = top.ext_bus.get_pin_data();
     }
 
     if (!top.ext_bus.EXT_PIN_RDn.qp()) {
-      top.ext_bus.set_pin_data_in(mem[ext_addr]);
+      top.ext_bus.set_pin_data(mem[ext_addr]);
     }
     else {
       top.ext_bus.set_pin_data_z();
@@ -361,7 +349,7 @@ void GateBoy::tock_ext_bus() {
   }
   else {
     if (!(ext_addr & 0x8000) && !top.ext_bus.EXT_PIN_RDn.qp()) {
-      top.ext_bus.set_pin_data_in(mem[ext_addr]);
+      top.ext_bus.set_pin_data(mem[ext_addr]);
     }
     else {
       top.ext_bus.set_pin_data_z();
@@ -392,8 +380,8 @@ void GateBoy::tock_oam_bus() {
   uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
   uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
 
-  if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
   if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
+  if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
 
   if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
   if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);

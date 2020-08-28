@@ -1,3 +1,35 @@
+
+  // CORE := tri(UCOM, CULY_QN)
+  // ELUV := tri(UCOM, ETAF_QN)
+  // CAVE01 << CULY17 (xfer dir)
+  // CAVE02 << COTY17 (mux 1 = int clk)
+  // CAVE03 << SCK_C  (mux 0 = ext clk)
+  // CAVE04 nc
+  // CAVE05 >> DAWA01
+
+  // LOPE_01 SC
+    // LOPE_02 NC
+    // LOPE_03 NC
+    // LOPE_04 NC
+    // LOPE_05 SC
+    // LOPE_06 SC
+    // LOPE_07 << D    PESU_GND 
+    // LOPE_08 NC
+    // LOPE_09 SC
+    // LOPE_10 NC
+    // LOPE_11 SC
+    // LOPE_12 NC
+    // LOPE_13 NC
+    // LOPE_14 << SETn MYZU_04
+    // LOPE_15 >> Qn
+    // LOPE_16 >> Q    CPU_PIN_INT_VBLANK, MATY_03
+    // LOPE_17 << RSTn LYTA_05
+    // LOPE_18 NC
+    // LOPE_19 SC
+    // LOPE_20 SC
+    // LOPE_21 SC
+    // LOPE_22 << CLKp VYPU_03
+
     // TEME_01 << CPU_BUS_D0p
     // TEME_02 nc
     // TEME_03 nc

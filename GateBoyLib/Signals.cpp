@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 bool RegBase::sim_running = false;
+bool RegBase::tick_running = false;
+bool RegBase::tock_running = false;
 bool RegBase::bus_collision = false;
 bool RegBase::bus_floating = false;
 

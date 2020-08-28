@@ -35,7 +35,7 @@ struct PixelPipe {
 
   int get_pix_count() const {
     return pack_p(XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), XYDO_X3p.qp(),
-                TUHU_X4p.qp(), TUKY_X5p.qp(), TAKO_X6p.qp(), SYBE_X7p.qp());
+                  TUHU_X4p.qp(), TUKY_X5p.qp(), TAKO_X6p.qp(), SYBE_X7p.qp());
   }
 
   //----------------------------------------
@@ -44,13 +44,6 @@ struct PixelPipe {
   /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG() const {
     /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG = nor2(RYFA_FETCHn_A.qn(), RENE_FETCHn_B.qp());
     return SEKO_WIN_TILE_TRIG;
-  }
-
-  // -> top.TEVO
-  /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne() const {
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(RYDY_WIN_FIRST_TILE_A.tp());
-    /*p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, SOVY_WIN_FIRST_TILE_B.qp());
-    return not1(_TUXY_WIN_FIRST_TILE_NE);
   }
 
   // -> sprite fetcher
@@ -73,7 +66,8 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p21.WODU*/ Sig WODU_RENDER_DONEp;
+  /*p21.WODU*/ Sig WODU_HBLANKp;
+  /*p21.VOTY*/ Sig VOTY_INT_STATp;
 
   // Pixel counter
   /*p21.XEHO*/ RegQPN XEHO_X0p = REG_D0C0;
@@ -105,9 +99,6 @@ struct PixelPipe {
 
   /*p27.PUKU*/ Tri PUKU_WIN_FIRST_TILE_A = TRI_D1NP;
   /*p27.RYDY*/ Tri RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
-
-  /*p27.NUKO*/ Sig NUKO_WX_MATCHp;
-  /*p27.ROGE*/ Sig ROGE_WY_MATCHp;
 
   /*p27.NOPA*/ RegQN  NOPA_WIN_MODE_B       = REG_D0C0;
   /*p27.SOVY*/ RegQP  SOVY_WIN_FIRST_TILE_B = REG_D0C0;
@@ -145,7 +136,7 @@ struct PixelPipe {
   /*p21.RUPO*/ Tri _RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
 
   /*p21.WUSA*/ Tri _WUSA_LCD_CLOCK_GATE = TRI_D0NP;
-  /*p21.VOGA*/ RegQP _VOGA_RENDER_DONEp = REG_D0C0;
+  /*p21.VOGA*/ RegQP VOGA_HBLANKp = REG_D0C0;
   /*p??.PUXA*/ RegQP _PUXA_SCX_FINE_MATCH_A = REG_D0C0;
   /*p27.NYZE*/ RegQN _NYZE_SCX_FINE_MATCH_B = REG_D0C0;
 

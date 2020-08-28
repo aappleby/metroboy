@@ -15,7 +15,7 @@ struct Joypad {
   void dump(Dumper& d) const;
 
   void preset_buttons(uint8_t buttons);
-  /*p02.ASOK*/ wire ASOK_INT_JOYPADp() const { return and2(APUG_JP_GLITCH3.qp(), BATU_JP_GLITCH0.qp()); }
+  /*p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp(), BATU_JP_GLITCH0.qp()); }
 
 private:
   friend struct SchematicTop;
@@ -45,6 +45,14 @@ private:
   /*p05.KEJA*/ Tri KEJA_JOYP_L2     = TRI_D0NP; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ Tri KOLO_JOYP_L3     = TRI_D0NP; // 10-rung, looks like pass gate or something
 
+  Pin JOY_PIN_P10 = TRI_HZPU;
+  Pin JOY_PIN_P11 = TRI_HZPU;
+  Pin JOY_PIN_P12 = TRI_HZPU;
+  Pin JOY_PIN_P13 = TRI_HZPU;
+  Pin JOY_PIN_P14 = TRI_HZPU;
+  Pin JOY_PIN_P15 = TRI_HZPU;
+
+  /*
   Tri JOY_PIN_P10_A = TRI_HZNP;   // PIN_67 <- P05.KOLE
   Tri JOY_PIN_P10_B = TRI_HZNP;   // PIN_67 <- tied low between BONE and BUFY
   Tri JOY_PIN_P10_C = TRI_D0NP;   // PIN_67 -> P02.KERY, P05.KEVU
@@ -70,6 +78,7 @@ private:
 
   Tri JOY_PIN_P15_A = TRI_HZNP;   // PIN_62 <- p05.CELA
   Tri JOY_PIN_P15_D = TRI_HZNP;   // PIN_62 <- p05.COFY
+  */
 };
 
 //-----------------------------------------------------------------------------

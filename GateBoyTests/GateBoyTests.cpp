@@ -725,7 +725,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   double pass_rate_n = 0;
 
   gateboy.dbg_req = {.addr = 0x0150, .data = 0, .read = 1, .write = 0 };
-  gateboy.cpu_en = false;
+  gateboy.sys_cpu_en = false;
 
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {

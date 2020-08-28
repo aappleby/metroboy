@@ -40,6 +40,12 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("NAPO_FRAME_EVEN     %c\n", NAPO_FRAME_EVEN    .c());
   d("ROPO_LY_MATCH_SYNCp %c\n", ROPO_LY_MATCH_SYNCp.c());
   d("\n");
+
+  d("PARU_VBLANKp_d4         %c\n", PARU_VBLANKp_d4.c());
+  d("BYHA_VID_LINE_END_TRIGn %c\n", BYHA_VID_LINE_END_TRIGn.c());
+  d("ATEJ_VID_LINE_END_TRIGp %c\n", ATEJ_VID_LINE_END_TRIGp.c());
+  d("VYPU_INT_VBLANKp        %c\n", VYPU_INT_VBLANKp.c());
+  d("\n");
 }
 
 //------------------------------------------------------------------------------
@@ -59,6 +65,9 @@ void LcdRegisters::tick(const SchematicTop& top) {
 
   // -> interrupts, ppu
   /*p21.PARU*/ PARU_VBLANKp_d4 = not1(POPU_IN_VBLANKp.qn());
+
+  /*p21.TOLU*/ wire TOLU_VBLANKn = not1(PARU_VBLANKp_d4);
+  /*p21.VYPU*/ VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);
 }
 
 //------------------------------------------------------------------------------

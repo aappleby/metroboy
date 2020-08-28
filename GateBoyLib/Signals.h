@@ -75,6 +75,8 @@ struct RegBase {
   RegBase(RegState s) : state(s), delta(DELTA_NONE) {}
 
   static bool sim_running;
+  static bool tick_running;
+  static bool tock_running;
   static bool bus_collision;
   static bool bus_floating;
 
@@ -305,7 +307,7 @@ struct Sig : private RegBase {
 
   inline bool as_wire() const {
     CHECK_P(is_sig());
-    
+
     // FIXME doing this check in release mode for sanity, but probably need to remove it later
     //CHECK_P(has_delta() == sim_running);
     if (has_delta() != sim_running) __debugbreak();
@@ -317,6 +319,9 @@ struct Sig : private RegBase {
     CHECK_P(is_sig());
     CHECK_N(has_delta());
 
+    // FIXME doing this check in release mode for sanity, but probably need to remove it later
+    if (!tick_running) __debugbreak();
+    
     state = RegState(SIG_0000 | int(s));
     delta = s ? DELTA_TRI1 : DELTA_TRI0;
   }

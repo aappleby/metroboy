@@ -9,28 +9,28 @@ using namespace Schematics;
 
 void ExtBus::dump(Dumper& d) const {
   d("---------- Ext Bus  ----------\n");
-  d("EXT_PIN_CLK     : %d\n", EXT_PIN_CLK.c());
-  d("EXT_PIN_RDn     : %c\n", EXT_PIN_RDn.c());
-  d("EXT_PIN_WRn     : %c\n", EXT_PIN_WRn.c());
-  d("EXT_PIN_CSn     : %c\n", EXT_PIN_CSn.c());
+  d("PIN CLK    : %d\n", EXT_PIN_CLK.c());
+  d("PIN RDn    : %c\n", EXT_PIN_RDn.c());
+  d("PIN WRn    : %c\n", EXT_PIN_WRn.c());
+  d("PIN CSn    : %c\n", EXT_PIN_CSn.c());
   d("\n");
 
-  d("EXT_PIN_ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+  d("PIN ADDR   : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     EXT_PIN_A15p.c(), EXT_PIN_A14p.c(), EXT_PIN_A13p.c(), EXT_PIN_A12p.c(),
     EXT_PIN_A11p.c(), EXT_PIN_A10p.c(), EXT_PIN_A09p.c(), EXT_PIN_A08p.c(),
     EXT_PIN_A07p.c(), EXT_PIN_A06p.c(), EXT_PIN_A05p.c(), EXT_PIN_A04p.c(),
     EXT_PIN_A03p.c(), EXT_PIN_A02p.c(), EXT_PIN_A01p.c(), EXT_PIN_A00p.c());
-  d("EXT_PIN_DATA    : %c%c%c%c%c%c%c%c\n",
+  d("PIN DATA   : %c%c%c%c%c%c%c%c\n",
     EXT_PIN_D07p.c(), EXT_PIN_D06p.c(), EXT_PIN_D05p.c(), EXT_PIN_D04p.c(),
     EXT_PIN_D03p.c(), EXT_PIN_D02p.c(), EXT_PIN_D01p.c(), EXT_PIN_D00p.c());
   d("\n");
 
-  d("EXT ADDR LATCH  : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+  d("ADDR LATCH : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     NYRE_EXT_ADDR_LATCH_14p.c(), LONU_EXT_ADDR_LATCH_13p.c(), LOBU_EXT_ADDR_LATCH_12p.c(), LUMY_EXT_ADDR_LATCH_11p.c(),
     PATE_EXT_ADDR_LATCH_10p.c(), LYSA_EXT_ADDR_LATCH_09p.c(), LUNO_EXT_ADDR_LATCH_08p.c(), ARYM_EXT_ADDR_LATCH_07p.c(),
     AROS_EXT_ADDR_LATCH_06p.c(), ATEV_EXT_ADDR_LATCH_05p.c(), AVYS_EXT_ADDR_LATCH_04p.c(), ARET_EXT_ADDR_LATCH_03p.c(),
     ALYR_EXT_ADDR_LATCH_02p.c(), APUR_EXT_ADDR_LATCH_01p.c(), ALOR_EXT_ADDR_LATCH_00p.c());
-  d("EXT DATA LATCH  : %c%c%c%c%c%c%c%c\n",
+  d("DATA LATCH : %c%c%c%c%c%c%c%c\n",
     SAZY_EXT_DATA_LATCH_D7n.c(), RUPA_EXT_DATA_LATCH_D6n.c(), SAGO_EXT_DATA_LATCH_D5n.c(), SODY_EXT_DATA_LATCH_D4n.c(),
     SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
   d("\n");

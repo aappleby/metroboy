@@ -282,7 +282,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, _POVA_FINE_MATCHpe);
     /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
 
-    top.LCD_PIN_CLOCK = _RYPO_LCD_CLOCK;
+    top.PIN_LCD_CLOCK = io_pin(_RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
   }
 
   {
@@ -304,7 +304,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p24.RUJU*/ RUJU_HSYNCn = or3(_PAHO_X_8_SYNC.qp(), TOFU_VID_RSTp, POME_HSYNCn.tp());
     /*#p24.POME*/ POME_HSYNCn = nor2(top.AVAP_RENDER_START_TRIGp, POFY_HSYNCp);
 
-    top.LCD_PIN_HSYNC = RUZE_HSYNCn;
+    top.PIN_LCD_HSYNC = io_pin(RUZE_HSYNCn, RUZE_HSYNCn);
   }
 
   //----------------------------------------
@@ -834,8 +834,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p#35.REMY*/ wire REMY_LD0n = not1(PERO_COL_LO);
     /*#p35.RAVO*/ wire RAVO_LD1n = not1(PATY_COL_HI);
 
-    top.LCD_PIN_DATA0n = REMY_LD0n;
-    top.LCD_PIN_DATA1n = RAVO_LD1n;
+    top.PIN_LCD_DATA0n = io_pin(REMY_LD0n, REMY_LD0n);
+    top.PIN_LCD_DATA1n = io_pin(RAVO_LD1n, RAVO_LD1n);
   }
 
   //----------------------------------------

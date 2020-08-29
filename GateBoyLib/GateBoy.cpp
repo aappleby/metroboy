@@ -268,8 +268,8 @@ void GateBoy::next_phase() {
   int fb_y = top.lcd_reg.get_y();
 
   if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-    int p0 = !top.LCD_PIN_DATA0n.tp();
-    int p1 = !top.LCD_PIN_DATA1n.tp();
+    int p0 = top.PIN_LCD_DATA0n.qp();
+    int p1 = top.PIN_LCD_DATA1n.qp();
     fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
   }
 

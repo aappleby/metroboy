@@ -12,22 +12,22 @@ using namespace Schematics;
 void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
   d("---------- VRAM Bus ----------\n");
 
-  d("VRAM BUS ADDR    : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+  d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     get_bus_addr() | 0x8000,
     VRAM_BUS_A12n.c(), VRAM_BUS_A11n.c(), VRAM_BUS_A10n.c(), VRAM_BUS_A09n.c(),
     VRAM_BUS_A08n.c(), VRAM_BUS_A07n.c(), VRAM_BUS_A06n.c(), VRAM_BUS_A05n.c(),
     VRAM_BUS_A04n.c(), VRAM_BUS_A03n.c(), VRAM_BUS_A02n.c(), VRAM_BUS_A01n.c(),
     VRAM_BUS_A00n.c());
-  d("VRAM BUS DATA    : %c%c%c%c%c%c%c%c\n",
+  d("VRAM BUS DATA : %c%c%c%c%c%c%c%c\n",
     VRAM_BUS_D7p.c(), VRAM_BUS_D6p.c(), VRAM_BUS_D5p.c(), VRAM_BUS_D4p.c(),
     VRAM_BUS_D3p.c(), VRAM_BUS_D2p.c(), VRAM_BUS_D1p.c(), VRAM_BUS_D0p.c());
   d("\n");
 
-  d("VRAM PIN MCSn    : %c\n", VRAM_PIN_CSn.c());
-  d("VRAM PIN MOEn    : %c\n", VRAM_PIN_OEn.c());
-  d("VRAM PIN MWRn    : %c\n", VRAM_PIN_WRn.c());
-  d("VRAM PIN ADDR    : 0x%04x\n", get_pin_addr() | 0x8000);
-  d("VRAM PIN DATA    : %02x %c%c%c%c%c%c%c%c\n",
+  d("VRAM PIN MCSn : %c\n", VRAM_PIN_CSn.c());
+  d("VRAM PIN MOEn : %c\n", VRAM_PIN_OEn.c());
+  d("VRAM PIN MWRn : %c\n", VRAM_PIN_WRn.c());
+  d("VRAM PIN ADDR : 0x%04x\n", get_pin_addr() | 0x8000);
+  d("VRAM PIN DATA : %02x %c%c%c%c%c%c%c%c\n",
     get_bus_data(),
     VRAM_PIN_D07p.c(), VRAM_PIN_D06p.c(), VRAM_PIN_D05p.c(), VRAM_PIN_D04p.c(),
     VRAM_PIN_D03p.c(), VRAM_PIN_D02p.c(), VRAM_PIN_D01p.c(), VRAM_PIN_D00p.c());
@@ -42,10 +42,10 @@ void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
   int SPRITE_DB = pack_p(REWO_SPRITE_DA0n.qn(), PEBA_SPRITE_DA1n.qn(), MOFO_SPRITE_DA2n.qn(), PUDU_SPRITE_DA3n.qn(),
                          SAJA_SPRITE_DA4n.qn(), SUNY_SPRITE_DA5n.qn(), SEMO_SPRITE_DA6n.qn(), SEGA_SPRITE_DA7n.qn());
 
-  d("TILE_DA      : 0x%02x\n", TILE_DA);
-  d("TILE_DB      : 0x%02x\n", TILE_DB);
-  d("SPRITE_DA    : 0x%02x\n", SPRITE_DA);
-  d("SPRITE_DB    : 0x%02x\n", SPRITE_DB);
+  d("TILE_DA       : 0x%02x\n", TILE_DA);
+  d("TILE_DB       : 0x%02x\n", TILE_DB);
+  d("SPRITE_DA     : 0x%02x\n", SPRITE_DA);
+  d("SPRITE_DB     : 0x%02x\n", SPRITE_DB);
   d("\n");
 }
 

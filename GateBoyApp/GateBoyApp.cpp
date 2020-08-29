@@ -77,8 +77,8 @@ void GateBoyApp::app_init() {
 
   gb.set_boot_bit();
 
-  const char* filename = "roms/LinksAwakening_dog.dump";
-  gb.load_dump(filename);
+  //const char* filename = "roms/LinksAwakening_dog.dump";
+  //gb.load_dump(filename);
 
   //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
 
@@ -102,6 +102,7 @@ void GateBoyApp::app_init() {
   //gb.cpu_en = true;
 
   //gb.sys_buttons = 0xFF;
+  //gb.sys_buttons = 0x00;
 }
 
 void GateBoyApp::app_close() {

@@ -8,8 +8,7 @@ typedef std::vector<uint8_t> blob;
 //-----------------------------------------------------------------------------
 
 size_t file_size(const char* filename);
-size_t load_blob(const char* filename, void* dst);
-void load_blob(const char* filename, void* dst, size_t size);
+size_t load_blob(const char* filename, void* dst, size_t dst_size);
 void save_blob(const char* filename, void* src, size_t size);
 
 template<typename T>

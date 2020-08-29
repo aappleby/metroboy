@@ -9,7 +9,9 @@
 
 GateBoy::GateBoy() {
   memset(fb, 4, 160*144);
-  memset(mem, 0, 65536);
+  memset(ext_ram, 0, 8192);
+  memset(cart_rom, 0, 32768);
+  memset(cart_ram, 0, 8192);
   cpu.reset(0x100);
 }
 
@@ -75,21 +77,31 @@ void GateBoy::set_boot_bit() {
 
 void GateBoy::load_dump(const char* filename) {
   printf("Loading %s\n", filename);
-  memset(mem, 0, 65536);
-  size_t size = load_blob(filename, mem);
+
+  uint8_t* dump = new uint8_t[65536];
+  memset(dump, 0, 65536);
+
+  size_t size = load_blob(filename, dump, 65536);
+
+  memcpy(cart_rom, dump + 0x0000, 32768);
+  memcpy(vid_ram,  dump + 0x8000, 8192);
+  memcpy(cart_ram, dump + 0xA000, 8192);
+  memcpy(ext_ram,  dump + 0xC000, 8192);
 
   // OAM is actually stored inverted, so invert it here.
-  for (int addr = 0xFE00; addr <= 0xFEFF; addr++) {
-    mem[addr] = ~mem[addr];
+  for (int i = 0; i < 256; i++) {
+    oam_ram[i] = ~dump[0xFE00 + i];
   }
 
-  dbg_write(ADDR_BGP,  mem[ADDR_BGP]);
-  dbg_write(ADDR_OBP0, mem[ADDR_OBP0]);
-  dbg_write(ADDR_OBP1, mem[ADDR_OBP1]);
-  dbg_write(ADDR_SCY,  mem[ADDR_SCY]);
-  dbg_write(ADDR_SCX,  mem[ADDR_SCX]);
-  dbg_write(ADDR_WY,   mem[ADDR_WY]);
-  dbg_write(ADDR_WX,   mem[ADDR_WX]);
+  memcpy(zero_ram, dump + 0xFF80, 128);
+
+  dbg_write(ADDR_BGP,  dump[ADDR_BGP]);
+  dbg_write(ADDR_OBP0, dump[ADDR_OBP0]);
+  dbg_write(ADDR_OBP1, dump[ADDR_OBP1]);
+  dbg_write(ADDR_SCY,  dump[ADDR_SCY]);
+  dbg_write(ADDR_SCX,  dump[ADDR_SCX]);
+  dbg_write(ADDR_WY,   dump[ADDR_WY]);
+  dbg_write(ADDR_WX,   dump[ADDR_WX]);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
@@ -109,7 +121,7 @@ void GateBoy::load_dump(const char* filename) {
   // #define FLAG_WIN_MAP_1    0x40
   // #define FLAG_LCD_ON       0x80
 
-  dbg_write(ADDR_LCDC, mem[ADDR_LCDC]);
+  dbg_write(ADDR_LCDC, dump[ADDR_LCDC]);
 
   printf("Loaded %zd bytes from dump %s\n", size, filename);
 }
@@ -118,8 +130,16 @@ void GateBoy::load_dump(const char* filename) {
 
 void GateBoy::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
-  memset(mem, 0, 65536);
-  size_t size = load_blob(filename, mem);
+
+  uint8_t* dump = new uint8_t[65536];
+  size_t size = load_blob(filename, dump, 65536);
+
+  memcpy(cart_rom, dump, 32768);
+  memset(vid_ram,  0,    8192);
+  memset(cart_ram, 0,    8192);
+  memset(ext_ram,  0,    8192);
+  memset(oam_ram,  0,    256);
+  memset(zero_ram, 0,    128);
 
   printf("Loaded %zd bytes from rom %s\n", size, filename);
 }
@@ -330,6 +350,91 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 void GateBoy::tock_ext_bus() {
   uint16_t ext_addr = top.ext_bus.get_pin_addr();
 
+  // ROM read
+  {
+    uint16_t rom_addr = ext_addr & 0x7FFF;
+    wire OEn = top.ext_bus.EXT_PIN_RDn.qp();
+    wire CEn = top.ext_bus.EXT_PIN_A15p.qp();
+
+    if (!CEn && !OEn) {
+      top.ext_bus.set_pin_data(cart_rom[rom_addr]);
+    }
+  }
+
+  // Ext RAM read/write (also echo RAM)
+  {
+    uint16_t ram_addr = (ext_addr & 0x1FFF);
+
+    wire WRn  = top.ext_bus.EXT_PIN_WRn.qp();
+    wire CE1n = top.ext_bus.EXT_PIN_CSn.qp();
+    wire CE2  = top.ext_bus.EXT_PIN_A14p.qp();
+    wire OEn  = top.ext_bus.EXT_PIN_RDn.qp();
+
+    // Write
+    if (!CE1n && CE2 && !WRn) {
+      ext_ram[ram_addr] = top.ext_bus.get_pin_data();
+    }
+
+    // Read
+    if (!CE1n && CE2 && WRn && !OEn) {
+      top.ext_bus.set_pin_data(ext_ram[ram_addr]);
+    }
+  }
+
+  // Cart RAM read/write
+  {
+    // A000-BFFF
+    // 0b101xxxxxxxxxxxxx
+
+    uint16_t ram_addr = (ext_addr & 0x1FFF);
+
+    wire WRn  = top.ext_bus.EXT_PIN_WRn.qp();
+    wire CS1n = top.ext_bus.EXT_PIN_CSn.qp();
+    wire CS2  = top.ext_bus.EXT_PIN_A13p.qp() && !top.ext_bus.EXT_PIN_A14p.qp() && top.ext_bus.EXT_PIN_A15p.qp();
+    wire OEn = top.ext_bus.EXT_PIN_RDn.qp();
+
+    // Write
+    if (!CS1n && CS2 && !WRn) {
+      cart_ram[ram_addr] = top.ext_bus.get_pin_data();
+    }
+
+    // Read
+    if (!CS1n && CS2 && !OEn) {
+      top.ext_bus.set_pin_data(cart_ram[ram_addr]);
+    }
+  }
+
+  // MBC1
+
+  // 0000-3FFF - ROM Bank 00 (Read Only) This area always contains the first 16KBytes of the cartridge ROM.
+  // 4000-7FFF - ROM Bank 01-7F (Read Only) This area may contain any of the further 16KByte banks of the ROM, allowing to address up to 125 ROM Banks (almost 2MByte). As described below, bank numbers 20h, 40h, and 60h cannot be used, resulting in the odd amount of 125 banks.
+  // A000-BFFF - RAM Bank 00-03, if any (Read/Write) This area is used to address external RAM in the cartridge (if any). External RAM is often battery buffered, allowing to store game positions or high score tables, even if the gameboy is turned off, or if the cartridge is removed from the gameboy. Available RAM sizes are: 2KByte (at A000-A7FF), 8KByte (at A000-BFFF), and 32KByte (in form of four 8K banks at A000-BFFF).
+
+  // 0000-1FFF - RAM Enable (Write Only)   00h  Disable RAM (default)   ?Ah  Enable RAM Practically any value with 0Ah in the lower 4 bits enables RAM, and any other value disables RAM.
+  // 2000-3FFF - ROM Bank Number (Write Only) Writing to this address space selects the lower 5 bits of the ROM Bank Number (in range 01-1Fh). When 00h is written, the MBC translates that to bank 01h also. That doesn't harm so far, because ROM Bank 00h can be always directly accessed by reading from 0000-3FFF.
+  // But (when using the register below to specify the upper ROM Bank bits), the same happens for Bank 20h, 40h, and 60h. Any attempt to address these ROM Banks will select Bank 21h, 41h, and 61h instead.
+  // 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) This 2bit register can be used to select a RAM Bank in range from 00-03h, or to specify the upper two bits (Bit 5-6) of the ROM Bank number, depending on the current ROM/RAM Mode. (See below.)
+  // 6000-7FFF - ROM/RAM Mode Select (Write Only)  00h = ROM Banking Mode (up to 8KByte RAM, 2MByte ROM) (default)   01h = RAM Banking Mode (up to 32KByte RAM, 512KByte ROM)
+
+  // MBC1_RAM_EN
+
+  // MBC1_BANK_D0
+  // MBC1_BANK_D1
+  // MBC1_BANK_D2
+  // MBC1_BANK_D3
+  // MBC1_BANK_D4
+  // MBC1_BANK_D5
+  // MBC1_BANK_D6
+
+  // MBC1_MODE
+
+  /*
+  {
+  }
+  */
+
+#if 0
+
   // CS seems to actually serve as a mux between rom/ram.
   // Based on the traces, the gb-live32 cart ignores the high bit of the
   // address and puts data on the bus on phase B if CSn is high.
@@ -355,13 +460,15 @@ void GateBoy::tock_ext_bus() {
       top.ext_bus.set_pin_data_z();
     }
   }
+
+#endif
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_vram_bus() {
   int vram_addr = top.vram_bus.get_pin_addr();
-  uint8_t& vram_data = mem[0x8000 + vram_addr];
+  uint8_t& vram_data = vid_ram[vram_addr];
 
   if (!top.vram_bus.VRAM_PIN_WRn.qp()) vram_data = (uint8_t)top.vram_bus.get_pin_data();
 
@@ -377,8 +484,8 @@ void GateBoy::tock_vram_bus() {
 
 void GateBoy::tock_oam_bus() {
   uint16_t oam_addr = top.oam_bus.get_oam_pin_addr();
-  uint8_t& oam_data_a = mem[0xFE00 + (oam_addr << 1) + 0];
-  uint8_t& oam_data_b = mem[0xFE00 + (oam_addr << 1) + 1];
+  uint8_t& oam_data_a = oam_ram[(oam_addr << 1) + 0];
+  uint8_t& oam_data_b = oam_ram[(oam_addr << 1) + 1];
 
   if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
   if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
@@ -403,7 +510,7 @@ void GateBoy::tock_zram_bus() {
   bool hit_zram = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (hit_zram) {
-    uint8_t& data = mem[addr];
+    uint8_t& data = zero_ram[addr & 0x007F];
     if (top.TAPU_CPU_WRp_xxxxEFGx) data = top.cpu_bus.get_bus_data();
     if (top.TEDO_CPU_RDp) top.cpu_bus.set_data(true, data);
   }

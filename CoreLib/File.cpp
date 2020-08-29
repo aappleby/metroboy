@@ -15,7 +15,7 @@ size_t file_size(const char* filename) {
   return result;
 }
 
-size_t load_blob(const char* filename, void* dst) {
+size_t load_blob(const char* filename, void* dst, size_t dst_size) {
   FILE* f = nullptr;
   fopen_s(&f, filename, "rb");
 
@@ -26,17 +26,11 @@ size_t load_blob(const char* filename, void* dst) {
 
   fseek(f, 0, SEEK_END);
   size_t size = ftell(f);
+  if (size > dst_size) size = dst_size;
   fseek(f, 0, SEEK_SET);
   fread(dst, 1, size, f);
   fclose(f);
   return size;
-}
-
-void load_blob(const char* filename, void* dst, size_t size) {
-  FILE* f = nullptr;
-  fopen_s(&f, filename, "rb");
-  fread(dst, 1, size, f);
-  fclose(f);
 }
 
 void save_blob(const char* filename, void* src, size_t size) {

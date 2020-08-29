@@ -73,7 +73,13 @@ public:
   Req cpu_req = {0};
   Req dbg_req = {0};
 
-  uint8_t mem[65536];
+  uint8_t cart_rom[32768];
+  uint8_t vid_ram [8192];
+  uint8_t cart_ram[8192];
+  uint8_t ext_ram [8192];
+  uint8_t oam_ram [256];
+  uint8_t zero_ram[128];
+
   uint8_t fb[160*144];
 };
 #pragma pack(pop)

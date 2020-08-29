@@ -19,13 +19,15 @@ void CpuBus::dump(Dumper& d) const {
 
   d("CPU DATA : %02x\n", get_bus_data());
 
-  d("CPU PIN ADDR    : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+  d("CPU PIN ADDR : 0x%04x %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+    get_bus_addr(),
     CPU_BUS_A15.c(), CPU_BUS_A14.c(), CPU_BUS_A13.c(), CPU_BUS_A12.c(),
     CPU_BUS_A11.c(), CPU_BUS_A10.c(), CPU_BUS_A09.c(), CPU_BUS_A08.c(),
     CPU_BUS_A07.c(), CPU_BUS_A06.c(), CPU_BUS_A05.c(), CPU_BUS_A04.c(),
     CPU_BUS_A03.c(), CPU_BUS_A02.c(), CPU_BUS_A01.c(), CPU_BUS_A00.c());
 
-  d("CPU PIN DATA    : %c%c%c%c%c%c%c%c\n",
+  d("CPU PIN DATA : 0x%02x   %c%c%c%c%c%c%c%c\n",
+    get_bus_data(),
     CPU_BUS_D7p.c(), CPU_BUS_D6p.c(), CPU_BUS_D5p.c(), CPU_BUS_D4p.c(),
     CPU_BUS_D3p.c(), CPU_BUS_D2p.c(), CPU_BUS_D1p.c(), CPU_BUS_D0p.c());
 

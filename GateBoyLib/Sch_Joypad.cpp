@@ -42,23 +42,23 @@ void Joypad::dump(Dumper& d) const {
 void Joypad::preset_buttons(uint8_t buttons) {
   // Pressing a button pulls the corresponding pin _down_.
 
-  if (!KELY_JOYP_UDLR.qn()) {
-    JOY_PIN_P10 = (buttons & 0x01) ? DELTA_TRI0 : DELTA_TRI1;
-    JOY_PIN_P11 = (buttons & 0x02) ? DELTA_TRI0 : DELTA_TRI1;
-    JOY_PIN_P12 = (buttons & 0x04) ? DELTA_TRI0 : DELTA_TRI1;
-    JOY_PIN_P13 = (buttons & 0x08) ? DELTA_TRI0 : DELTA_TRI1;
+  JOY_PIN_P10 = DELTA_TRIZ;
+  JOY_PIN_P11 = DELTA_TRIZ;
+  JOY_PIN_P12 = DELTA_TRIZ;
+  JOY_PIN_P13 = DELTA_TRIZ;
+
+  if (JOY_PIN_P14.qp()) {
+    if (buttons & 0x01) JOY_PIN_P10 = DELTA_TRI0;
+    if (buttons & 0x02) JOY_PIN_P11 = DELTA_TRI0;
+    if (buttons & 0x04) JOY_PIN_P12 = DELTA_TRI0;
+    if (buttons & 0x08) JOY_PIN_P13 = DELTA_TRI0;
   }
-  else if (!COFY_JOYP_ABCS.qn()) {
-    JOY_PIN_P10 = (buttons & 0x10) ? DELTA_TRI0 : DELTA_TRI1;
-    JOY_PIN_P11 = (buttons & 0x20) ? DELTA_TRI0 : DELTA_TRI1;
-    JOY_PIN_P12 = (buttons & 0x40) ? DELTA_TRI0 : DELTA_TRI1;
-    JOY_PIN_P13 = (buttons & 0x80) ? DELTA_TRI0 : DELTA_TRI1;
-  }
-  else {
-    JOY_PIN_P10 = DELTA_TRIZ;
-    JOY_PIN_P11 = DELTA_TRIZ;
-    JOY_PIN_P12 = DELTA_TRIZ;
-    JOY_PIN_P13 = DELTA_TRIZ;
+
+  if (JOY_PIN_P15.qp()) {
+    if (buttons & 0x10) JOY_PIN_P10 = DELTA_TRI0;
+    if (buttons & 0x20) JOY_PIN_P11 = DELTA_TRI0;
+    if (buttons & 0x40) JOY_PIN_P12 = DELTA_TRI0;
+    if (buttons & 0x80) JOY_PIN_P13 = DELTA_TRI0;
   }
 }
 //------------------------------------------------------------------------------
@@ -108,6 +108,9 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P12.qn());
     /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_A(_BYZO_FF00_RDn, JOY_PIN_P13.qn());
 
+    // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
+    // That also means that _both_ P14 and P15 are selected at reset :/
+
     /*p05.KEMA*/ cpu_bus.CPU_BUS_D0p = tribuf_6nn(_BYZO_FF00_RDn, KEVU_JOYP_L0.tp());
     /*p05.KURO*/ cpu_bus.CPU_BUS_D1p = tribuf_6nn(_BYZO_FF00_RDn, KAPA_JOYP_L1.tp());
     /*p05.KUVE*/ cpu_bus.CPU_BUS_D2p = tribuf_6nn(_BYZO_FF00_RDn, KEJA_JOYP_L2.tp());
@@ -119,9 +122,20 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    // FIXME hacking out debug stuff
+    
+#if 0
+    // non-debug-mode
 
-    wire _BURO_FF60_0p = 0;
+    JOY_PIN_P10 = io_pin(1, 0);
+    JOY_PIN_P11 = io_pin(1, 0);
+    JOY_PIN_P12 = io_pin(1, 0);
+    JOY_PIN_P13 = io_pin(1, 0);
+
+    JOY_PIN_P14 = io_pin(1, KELY_JOYP_UDLR.qn());
+    JOY_PIN_P15 = io_pin(1, COFY_JOYP_ABCS.qn());
+#endif
+
+    wire _BURO_FF60_0p = 0; // FIXME hacking out debug stuff
     /*p05.KURA*/ wire KURA = not1(_BURO_FF60_0p);
 
     /*p05.KOLE*/ wire KOLE = nand2(JUTE_JOYP_RA.qp(), _BURO_FF60_0p);
@@ -141,8 +155,11 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KARU*/ wire KARU = or2(KELY_JOYP_UDLR.qn(), KURA);
     /*p05.CELA*/ wire CELA = or2(COFY_JOYP_ABCS.qn(), KURA);
 
-    JOY_PIN_P14 = io_pin(KARU, KELY_JOYP_UDLR.qn());
-    JOY_PIN_P15 = io_pin(CELA, COFY_JOYP_ABCS.qn());
+    // FIXME inversion?
+    // P14 and P15 are showing up as 0 on reset
+
+    JOY_PIN_P14 = io_pin(KARU, !KELY_JOYP_UDLR.qn());
+    JOY_PIN_P15 = io_pin(CELA, !COFY_JOYP_ABCS.qn());
   }
 }
 

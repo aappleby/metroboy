@@ -958,6 +958,11 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.AVOG*/ wire _AVOG_FF43_RDp = and2(_XAVY_FF43p, ASOT_CPU_RDp);
     /*p23.BEBA*/ wire _BEBA_FF43_RDn = not1(_AVOG_FF43_RDp);
 
+    if (!_BEBA_FF43_RDn) {
+      int x = 1;
+      x++;
+    }
+
     /*#p23.EDOS*/ cpu_bus.CPU_BUS_D0p = tribuf_6nn(_BEBA_FF43_RDn, DATY_SCX0n.qp());
     /* p23.EKOB*/ cpu_bus.CPU_BUS_D1p = tribuf_6nn(_BEBA_FF43_RDn, DUZU_SCX1n.qp());
     /* p23.CUGA*/ cpu_bus.CPU_BUS_D2p = tribuf_6nn(_BEBA_FF43_RDn, CYXU_SCX2n.qp());

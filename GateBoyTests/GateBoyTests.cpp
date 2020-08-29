@@ -37,10 +37,11 @@ int GateBoyTests::test_init() {
   TEST_START("Init");
 
   GateBoy gb;
+  gb.reset();
 
   uint64_t top_hash = hash(&gb.top, sizeof(gb.top));
-  LOG_Y("Top hash is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x279f9be6645216d6, top_hash, "Top hash mismatch");
+  LOG_Y("Top hash after reset is 0x%016llx\n", top_hash);
+  EXPECT_EQ(0x109151db44405d2c, top_hash, "Top hash mismatch");
 
   uint8_t* cursor = (uint8_t*)(&gb.top);
 
@@ -51,14 +52,33 @@ int GateBoyTests::test_init() {
   }
 
   // Mem should be clear
-  for (int i = 0; i < 65536; i++) {
-    ASSERT_EQ(0, gb.mem[i]);
-  }
+  for (int i = 0; i < 32768; i++) ASSERT_EQ(0, gb.cart_rom[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.ext_ram[i]);
 
   // Framebuffer should be 0x04 (yellow)
   for (int i = 0; i < 160*144; i++) {
     ASSERT_EQ(4, gb.fb[i]);
   }
+
+  EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset value");
+  EXPECT_EQ(0xFC, gb.dbg_read(ADDR_SC),   "Bad SC reset value"); // double-check this
+
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset value");
+  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset value");
+
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset value");
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset value"); // double-check this
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset value");
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset value");
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset value");
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset value");
 
   TEST_END();
 }
@@ -525,24 +545,55 @@ int GateBoyTests::test_dma() {
 
 //----------------------------------------
 
+uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
+  if (addr >= 0x0000 && addr <= 0x7FFF) {
+    return gb.cart_rom + (addr & 0x7FFF);
+  }
+  else if (addr >= 0x8000 && addr <= 0x9FFF) {
+    return gb.vid_ram + (addr & 0x1FFF);
+  }
+  else if (addr >= 0xA000 && addr <= 0xBFFF) {
+    return gb.cart_ram + (addr & 0x1FFF);
+  }
+  else if (addr >= 0xC000 && addr <= 0xDFFF) {
+    return gb.ext_ram + (addr & 0x1FFF);
+  }
+  else if (addr >= 0xE000 && addr <= 0xFDFF) {
+    return gb.ext_ram + (addr & 0x1FFF);
+  }
+  else if (addr >= 0xFE00 && addr <= 0xFEFF) {
+    return gb.oam_ram + (addr & 0x00FF);
+  }
+  else if (addr >= 0xFF80 && addr <= 0xFFFE) {
+    return gb.zero_ram + (addr & 0x007F);
+  }
+  else {
+    __debugbreak();
+    return nullptr;
+  }
+}
+
+//----------------------------------------
+
 int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
   GateBoy gb;
   gb.reset();
 
+  uint8_t* src_data = get_flat_ptr(gb, src);
   for (int i = 0; i < 256; i++) {
-    gb.mem[src + i] = uint8_t(rand());
+    src_data[src + i] = uint8_t(rand());
   }
 
-  memset(gb.mem + 0xFE00, 0, 256);
+  memset(gb.oam_ram, 0xFF, 256);
 
   gb.dbg_write(0xFF46, uint8_t(src >> 8));
 
   for (int i = 0; i < 1288; i++) gb.next_phase();
 
   for (int i = 0; i < 160; i++) {
-    uint8_t a = gb.mem[src + i];
+    uint8_t a = src_data[src + i];
     uint8_t b = gb.dbg_read(0xFE00 + i);
     ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }
@@ -587,30 +638,33 @@ int GateBoyTests::test_ppu() {
 int GateBoyTests::test_mem(GateBoy& gb, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
-  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
+  int len = addr_end - addr_start + 1;
+  uint8_t* mem = get_flat_ptr(gb, addr_start);
+
+  for (int i = 0; i < len; i += step) {
     uint8_t data_wr = 0x55;
     if (test_write) {
-      gb.mem[addr] = 0;
-      gb.dbg_write(addr, data_wr);
+      mem[i] = 0;
+      gb.dbg_write(addr_start + i, data_wr);
     }
     else {
-      gb.mem[addr] = data_wr;
+      mem[i] = data_wr;
     }
-    uint8_t data_rd = gb.dbg_read(addr);
-    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+    uint8_t data_rd = gb.dbg_read(addr_start + i);
+    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
-  for (uint16_t addr = addr_start; addr <= addr_end; addr += step) {
+  for (int i = 0; i < len; i += step) {
     uint8_t data_wr = 0xAA;
     if (test_write) {
-      gb.mem[addr] = 0;
-      gb.dbg_write(addr, data_wr);
+      mem[i] = 0;
+      gb.dbg_write(addr_start + i, data_wr);
     }
     else {
-      gb.mem[addr] = data_wr;
+      mem[i] = data_wr;
     }
-    uint8_t data_rd = gb.dbg_read(addr);
-    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr, data_wr, data_rd);
+    uint8_t data_rd = gb.dbg_read(addr_start + i);
+    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
   TEST_END();

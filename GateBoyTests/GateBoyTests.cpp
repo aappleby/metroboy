@@ -583,7 +583,7 @@ int GateBoyTests::test_dma(uint16_t src) {
 
   uint8_t* src_data = get_flat_ptr(gb, src);
   for (int i = 0; i < 256; i++) {
-    src_data[src + i] = uint8_t(rand());
+    src_data[i] = uint8_t(rand());
   }
 
   memset(gb.oam_ram, 0xFF, 256);
@@ -593,7 +593,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   for (int i = 0; i < 1288; i++) gb.next_phase();
 
   for (int i = 0; i < 160; i++) {
-    uint8_t a = src_data[src + i];
+    uint8_t a = src_data[i];
     uint8_t b = gb.dbg_read(0xFE00 + i);
     ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }

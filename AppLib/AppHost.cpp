@@ -71,8 +71,11 @@ int AppHost::app_main(int, char**) {
 
   //int initial_screen_w = 3200;
   //int initial_screen_h = 1600;
-  int initial_screen_w = 1664;
-  int initial_screen_h = 1024;
+  //int initial_screen_w = 1664;
+  //int initial_screen_h = 1024;
+
+  int initial_screen_w = 1920;
+  int initial_screen_h = 1080;
 
   window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

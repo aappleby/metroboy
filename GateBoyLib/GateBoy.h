@@ -64,6 +64,13 @@ public:
   int32_t  sys_cpu_en = 0;
   uint8_t  sys_buttons = 0;
 
+  int32_t ack_vblank = 0;
+  int32_t ack_stat = 0;
+  int32_t ack_timer = 0;
+  int32_t ack_serial = 0;
+  int32_t ack_joypad = 0;
+
+
   Req* script = nullptr;
   int32_t  script_len = 0;
   

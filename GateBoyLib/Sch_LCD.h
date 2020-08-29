@@ -22,8 +22,8 @@ struct LcdRegisters {
   }
 
   uint8_t get_lyc() const {
-    return (uint8_t)pack_p(SYRY_LYC0n.qp(), VUCE_LYC1n.qp(), SEDY_LYC2n.qp(), SALO_LYC3n.qp(),
-                SOTA_LYC4n.qp(), VAFA_LYC5n.qp(), VEVO_LYC6n.qp(), RAHA_LYC7n.qp());
+    return (uint8_t)pack_p(SYRY_LYC0n.qn(), VUCE_LYC1n.qn(), SEDY_LYC2n.qn(), SALO_LYC3n.qn(),
+                           SOTA_LYC4n.qn(), VAFA_LYC5n.qn(), VEVO_LYC6n.qn(), RAHA_LYC7n.qn());
   }
 
 
@@ -53,9 +53,9 @@ struct LcdRegisters {
   /*p21.LAFO*/ RegQPN LAFO_Y7p = REG_D0C0;
 
   /*p21.NYPE*/ RegQPN NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
-  /*p28.ANEL*/ RegQP  ANEL_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
+  /*p28.ANEL*/ RegQP  ANEL_VID_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
   /*p21.RUTU*/ RegQP  RUTU_LINE_P908 = REG_D0C0; // fires on line phase 908, high for 8 phases
-  /*p29.CATU*/ RegQP  CATU_LINE_P910 = REG_D0C0; // fires on line phase 910, high for 8 phases
+  /*p29.CATU*/ RegQP  CATU_VID_LINE_P910 = REG_D0C0; // fires on line phase 910, high for 8 phases
 
   /*p21.MYTA*/ RegQP  MYTA_LINE_153p      = REG_D0C0; // fires on line 153, phase 004. clears on line 000, phase 004
   /*p21.POPU*/ RegQPN POPU_IN_VBLANKp     = REG_D0C0; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)

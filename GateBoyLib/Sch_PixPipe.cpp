@@ -390,8 +390,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   //----------------------------------------
   // Window sequencer
 
-  /* p28.ABAF*/ wire ABAF_LINE_END_Bn = not1(top.lcd_reg.CATU_LINE_P910.qp());
-  /* p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg.ANEL_LINE_P000.qp(), ABAF_LINE_END_Bn, ABEZ_VID_RSTn);
+  /* p28.ABAF*/ wire ABAF_LINE_END_Bn = not1(top.lcd_reg.CATU_VID_LINE_P910.qp());
+  /* p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg.ANEL_VID_LINE_P000.qp(), ABAF_LINE_END_Bn, ABEZ_VID_RSTn);
   /* p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_TRIGn);
   /* p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not1(ATEJ_VID_LINE_END_TRIGp);
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENn.qn(), XAHY_VID_LINE_TRIG_d4n, top.clk_reg.XAPO_VID_RSTn);
@@ -882,10 +882,10 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.SEPA*/ wire _SEPA_FF41_WRp = and2(_VARY_FF41p, CUPA_CPU_WRp_xxxxEFGx);
     /*p21.RYVE*/ wire _RYVE_FF41_WRn = not1(_SEPA_FF41_WRp);
 
-    /*p21.ROXE*/ ROXE_STAT_HBI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D0p.tp());
-    /*p21.RUFO*/ RUFO_STAT_VBI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D1p.tp());
-    /*p21.REFE*/ REFE_STAT_OAI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D2p.tp());
-    /*p21.RUGU*/ RUGU_STAT_LYI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D3p.tp());
+    /*p21.ROXE*/ ROXE_STAT_HBI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D3p.tp());
+    /*p21.RUFO*/ RUFO_STAT_VBI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D4p.tp());
+    /*p21.REFE*/ REFE_STAT_OAI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D5p.tp());
+    /*p21.RUGU*/ RUGU_STAT_LYI_ENn = dff9_inv(_RYVE_FF41_WRn, !_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.CPU_BUS_D6p.tp());
 
     /*p21.RYJU*/ wire _RYJU_FF41_WRn = not1(_SEPA_FF41_WRp);
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor2(WESY_SYS_RSTn, _RYJU_FF41_WRn);  // schematic wrong, this is NOR

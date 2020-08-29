@@ -411,7 +411,7 @@ int GateBoyTests::test_interrupts() {
   //dbg_write(ADDR_STAT, EI_OAM);
   //dbg_write(ADDR_IE,   0b11111111);
 
-  //test_reg("IF",   0xFF0F, 0b00011111); // broken
+  test_reg("IF",   0xFF0F, 0b00011111); // broken
   //test_reg("IE",   0xFFFF, 0b00011111);
 
   TEST_END();
@@ -618,8 +618,8 @@ int GateBoyTests::test_serial() {
 int GateBoyTests::test_ppu() {
   TEST_START();
 
-  //err += test_reg("LCDC", ADDR_LCDC, 0b11111111); // works but let's not muck up lcdc
-  //err += test_reg("STAT", ADDR_STAT, 0b11110000); // broken
+  err += test_reg("LCDC", ADDR_LCDC, 0b11111111);
+  err += test_reg("STAT", ADDR_STAT, 0b01111000);
   err += test_reg("SCY",  ADDR_SCY,  0b11111111);
   err += test_reg("SCX",  ADDR_SCX,  0b11111111);
   //err += test_reg("LY",   0xFF44, 177); // not standard reg

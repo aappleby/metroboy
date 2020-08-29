@@ -25,9 +25,9 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("\n");
 
   d("NYPE_LINE_P000          %c\n", NYPE_LINE_P000.c());
-  d("ANEL_LINE_P000          %c\n", ANEL_LINE_P000.c());
+  d("ANEL_LINE_P000          %c\n", ANEL_VID_LINE_P000.c());
   d("RUTU_LINE_P908          %c\n", RUTU_LINE_P908.c());
-  d("CATU_LINE_P910          %c\n", CATU_LINE_P910.c());
+  d("CATU_LINE_P910          %c\n", CATU_VID_LINE_P910.c());
   d("BYHA_VID_LINE_END_TRIGn %d\n", BYHA_VID_LINE_END_TRIGn);
   d("ATEJ_VID_LINE_END_TRIGp %d\n", ATEJ_VID_LINE_END_TRIGp);
   d("\n");
@@ -55,10 +55,10 @@ void LcdRegisters::tick(const SchematicTop& top) {
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
 
   // fires on P910 and P911
-  /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_LINE_P910.qp());
+  /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_VID_LINE_P910.qp());
     
   // so if this is or_and, BYHA should go low on 910 and 911
-  /*p28.BYHA*/ BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P000.qp(), _ABAF_LINE_P910n, ABEZ_VID_RSTn);
+  /*p28.BYHA*/ BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_VID_LINE_P000.qp(), _ABAF_LINE_P910n, ABEZ_VID_RSTn);
 
   // fires on P910 and P911
   /*p28.ATEJ*/ ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
@@ -121,9 +121,9 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*#p21.PURE*/ wire PURE_LINE_P908n = not1(RUTU_LINE_P908.qp());
     /*#p21.SELA*/ wire SELA_LINE_P908p = not1(PURE_LINE_P908n);
-    /*#p29.ABOV*/ wire ABOV_LINE_P908p = and2(SELA_LINE_P908p, ALES_IN_VBLANKn);
-    /* p29.CATU*/ CATU_LINE_P910 = dff17_B(top.clk_reg.XUPY_xxCDxxGH, ABEZ_VID_RSTn, ABOV_LINE_P908p);
-    /* p28.ANEL*/ ANEL_LINE_P000 = dff17_B(AWOH_ABxxEFxx, ABEZ_VID_RSTn, CATU_LINE_P910.qp());
+    /*#p29.ABOV*/ wire ABOV_VID_LINE_P908p = and2(SELA_LINE_P908p, ALES_IN_VBLANKn);
+    /* p29.CATU*/ CATU_VID_LINE_P910 = dff17_B(top.clk_reg.XUPY_xxCDxxGH, ABEZ_VID_RSTn, ABOV_VID_LINE_P908p);
+    /* p28.ANEL*/ ANEL_VID_LINE_P000 = dff17_B(AWOH_ABxxEFxx, ABEZ_VID_RSTn, CATU_VID_LINE_P910.qp());
 
     /*#p21.NOKO*/ wire NOKO_LINE_153 = and4(LAFO_Y7p.qp(), LOVU_Y4p.qp(), LYDO_Y3p.qp(), MUWY_Y0p.qp()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
     /* p21.MYTA*/ MYTA_LINE_153p = dff17_B(NYPE_LINE_P000.qp(), LYFE_VID_RSTn, NOKO_LINE_153);

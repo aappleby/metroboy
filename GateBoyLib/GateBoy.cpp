@@ -185,6 +185,10 @@ void GateBoy::next_phase() {
   int old_phase = (phase_total + 0) & 7;
   int new_phase = (phase_total + 1) & 7;
 
+  if (phase_total == 164) {
+    ack_vblank = 1;
+  }
+
   if (script) {
     dbg_req = script[(phase_total / 8) % script_len];
   }
@@ -276,6 +280,12 @@ void GateBoy::next_phase() {
   //----------
   // Done
 
+  ack_vblank = 0;
+  ack_stat = 0;
+  ack_timer = 0;
+  ack_serial = 0;
+  ack_joypad = 0;
+
   phase_total++;
   phase_hash = hash_regs_old;
   combine_hash(total_hash, phase_hash);
@@ -323,11 +333,11 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   if (DELTA_GH) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
   if (DELTA_HA) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
 
-  top.int_reg.CPU_PIN_ACK_VBLANK = 0;
-  top.int_reg.CPU_PIN_ACK_STAT = 0;
-  top.int_reg.CPU_PIN_ACK_TIMER = 0;
-  top.int_reg.CPU_PIN_ACK_SERIAL = 0;
-  top.int_reg.CPU_PIN_ACK_JOYPAD = 0;
+  top.int_reg.CPU_PIN_ACK_VBLANK = ack_vblank;
+  top.int_reg.CPU_PIN_ACK_STAT   = ack_stat;
+  top.int_reg.CPU_PIN_ACK_TIMER  = ack_timer;
+  top.int_reg.CPU_PIN_ACK_SERIAL = ack_serial;
+  top.int_reg.CPU_PIN_ACK_JOYPAD = ack_joypad;
 
   top.ser_reg.SCK = DELTA_TRIZ;
   top.ser_reg.SIN = DELTA_TRIZ;

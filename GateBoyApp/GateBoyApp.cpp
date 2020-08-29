@@ -101,7 +101,7 @@ void GateBoyApp::app_init() {
 
   //gb.cpu_en = true;
 
-  //gb.sys_buttons = 0xFF;
+  //gb.sys_buttons = 0x0F;
   //gb.sys_buttons = 0x00;
 }
 

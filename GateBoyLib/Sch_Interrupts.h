@@ -29,10 +29,10 @@ struct InterruptRegisters {
   /*p02.NYBO*/ Reg NYBO_FF0F_2p = REG_D0C0;
 
   /*p02.MATY*/ Latch MATY_FF0F_L0p = TRI_D0NP;
-  /*p02.NEJY*/ Latch NEJY_FF0F_L1p = TRI_D0NP;
-  /*p02.NUTY*/ Latch NUTY_FF0F_L2p = TRI_D0NP;
-  /*p02.MOPO*/ Latch MOPO_FF0F_L3p = TRI_D0NP;
-  /*p02.PAVY*/ Latch PAVY_FF0F_L4p = TRI_D0NP;
+  /*p02.NEJY*/ Latch NEJY_FF0F_L3p = TRI_D0NP;
+  /*p02.NUTY*/ Latch NUTY_FF0F_L4p = TRI_D0NP;
+  /*p02.MOPO*/ Latch MOPO_FF0F_L1p = TRI_D0NP;
+  /*p02.PAVY*/ Latch PAVY_FF0F_L2p = TRI_D0NP;
 
   // Interrupts
   Tri CPU_PIN_INT_VBLANK  = TRI_HZNP;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int

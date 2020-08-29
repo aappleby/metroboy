@@ -41,7 +41,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash(&gb.top, sizeof(gb.top));
   LOG_Y("Top hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x109151db44405d2c, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0x5274b4ff367428dd, top_hash, "Top hash mismatch");
 
   uint8_t* cursor = (uint8_t*)(&gb.top);
 

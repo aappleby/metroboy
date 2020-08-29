@@ -15,7 +15,8 @@ struct DmaRegisters {
   void tick();
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
-  /*p04.MATU*/ Sig MATU_DMA_RUNNINGp;
+  /*p04.MATU*/ RegQP MATU_DMA_RUNNINGp = REG_D0C0;
+
   /*p04.LUMA*/ Sig LUMA_DMA_READ_CARTp;
   /*p04.LUFA*/ Sig LUFA_DMA_READ_VRAMp;
 
@@ -39,13 +40,12 @@ struct DmaRegisters {
 
 private:
 
-  /*p04.LYXE*/ Latch _LYXE_DMA_LATCHp   = TRI_D0NP;
-  /*p04.MATU*/ RegQP _MATU_DMA_RUNNINGp = REG_D0C0;
-  /*p04.MYTE*/ RegQN _MYTE_DMA_DONE     = REG_D0C0;
-  /*p04.LUVY*/ RegQP _LUVY_DMA_TRIG_d0  = REG_D0C0;
-  /*p04.LENE*/ RegQN _LENE_DMA_TRIG_d4  = REG_D0C0;
-  /*p04.LOKY*/ Tri   _LOKY_DMA_LATCHp   = TRI_D0NP; // NAND latch w/ LARA
-  /*p04.LARA*/ Tri   _LARA_DMA_LATCHn   = TRI_D1NP; // NAND latch w/ LOKY
+  /*p04.LYXE*/ Latch LYXE_DMA_LATCHp   = TRI_D0NP;
+  /*p04.MYTE*/ RegQN MYTE_DMA_DONE     = REG_D0C0;
+  /*p04.LUVY*/ RegQP LUVY_DMA_TRIG_d0  = REG_D0C0;
+  /*p04.LENE*/ RegQN LENE_DMA_TRIG_d4  = REG_D0C0;
+  /*p04.LOKY*/ Tri   LOKY_DMA_LATCHp   = TRI_D0NP; // NAND latch w/ LARA
+  /*p04.LARA*/ Tri   LARA_DMA_LATCHn   = TRI_D1NP; // NAND latch w/ LOKY
 };
 
 //-----------------------------------------------------------------------------

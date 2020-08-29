@@ -6,7 +6,7 @@
 struct LCD {
   void reset();
   void tick(const Req& req, Ack& ack);
-  void tock(int old_phase, int new_phase, const Req& req, bool XONA_LCDC_ENn);
+  void tock(int old_phase, int new_phase, const Req& req, bool XONA_LCDC_LCDENn);
 
   void dump(Dumper& dump) const;
 

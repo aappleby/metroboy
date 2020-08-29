@@ -40,9 +40,18 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
   }
 
+  clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, *this);
+
+  sprite_scanner.tick(*this);
+  sprite_store.tick(*this);
+
+  lcd_reg.tick(*this);
+
+  pix_pipe.tick(*this);
+
   {
     /*p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher._POKY_PRELOAD_LATCHp.qp());
-    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp(),
+    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp.tp(),
                                                       ROMO_PRELOAD_DONEn,
                                                       tile_fetcher._NYKA_FETCH_DONE_P11.qp(),
                                                       tile_fetcher._PORY_FETCH_DONE_P12.qp());
@@ -54,7 +63,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILE_NE);
 
     // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
-    /*p27.TEVO*/ TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG(),
+    /*p27.TEVO*/ TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG,
                                         SUZU_WIN_FIRST_TILEne,
                                         TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
   }
@@ -62,12 +71,9 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
     // so dma stops oam scan?
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp);
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp.qp());
     /*p28.ACYL*/ ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.tp());
   }
-
-  clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, *this);
-  lcd_reg.tick(*this);
 
   {
     /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(clk_reg.XAPO_VID_RSTn);
@@ -78,7 +84,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /*p27.NYFO*/ wire NYFO_WIN_FETCH_TRIGn = not1(pix_pipe.NUNY_WX_MATCH_TRIGp());
+    /*p27.NYFO*/ wire NYFO_WIN_FETCH_TRIGn = not1(pix_pipe.NUNY_WX_MATCH_TRIGp);
     /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp = not1(NYFO_WIN_FETCH_TRIGn);
 
     // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
@@ -100,19 +106,15 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp);
-    /*p28.AJON*/ AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
-    /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp.qp());
+    /*p28.AJON*/ AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp.tp()); // def AND. ppu can read oam when there's rendering but no dma
+    /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
   }
 
-  sprite_scanner.tick(*this);
-  sprite_store.tick(*this);
-  pix_pipe.tick(*this);
   tim_reg.tick(*this);
   ser_reg.tick(*this);
   joypad.tick(*this);
   sprite_fetcher.tick(*this);
-  int_reg.tick(*this);
 }
 #pragma optimize("", on)
 

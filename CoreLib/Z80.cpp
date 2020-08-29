@@ -198,9 +198,6 @@ void Z80::get_bus_req(Req& r) const {
   r = bus_req;
 }
 
-uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }
-uint8_t hi(uint16_t x) { return uint8_t(x >> 8); }
-
 void Z80::set_addr(uint16_t new_addr, int new_write) {
   bus_req.addr    = new_addr;
   bus_req.data_lo = uint16_t(new_write ? out : 0);
@@ -275,23 +272,16 @@ void Z80::tock_req(uint8_t imask_, uint8_t intf_, uint8_t /*bus_data*/) {
     }
 
     if (state == 4) {
-      if      (imask_ & intf_ & INT_JOYPAD_MASK) { int_ack = INT_JOYPAD_MASK; }
-      else if (imask_ & intf_ & INT_SERIAL_MASK) { int_ack = INT_SERIAL_MASK; }
-      else if (imask_ & intf_ & INT_TIMER_MASK)  { int_ack = INT_TIMER_MASK; }
-      else if (imask_ & intf_ & INT_STAT_MASK)   { int_ack = INT_STAT_MASK; }
-      else if (imask_ & intf_ & INT_VBLANK_MASK) { int_ack = INT_VBLANK_MASK; }
-      else                                     { int_ack = 0; }
-
       uint8_t int_addr = 0;
-      if      (imask_ & intf_ & INT_JOYPAD_MASK) { int_addr = 0x60; }
-      else if (imask_ & intf_ & INT_SERIAL_MASK) { int_addr = 0x58; }
-      else if (imask_ & intf_ & INT_TIMER_MASK)  { int_addr = 0x50; }
-      else if (imask_ & intf_ & INT_STAT_MASK)   { int_addr = 0x48; }
-      else if (imask_ & intf_ & INT_VBLANK_MASK) { int_addr = 0x40; }
-      else                                     { int_addr = 0x00; }
+
+      if      (imask_ & intf_ & INT_JOYPAD_MASK) { int_addr = 0x60; int_ack = INT_JOYPAD_MASK; }
+      else if (imask_ & intf_ & INT_SERIAL_MASK) { int_addr = 0x58; int_ack = INT_SERIAL_MASK; }
+      else if (imask_ & intf_ & INT_TIMER_MASK)  { int_addr = 0x50; int_ack = INT_TIMER_MASK; }
+      else if (imask_ & intf_ & INT_STAT_MASK)   { int_addr = 0x48; int_ack = INT_STAT_MASK; }
+      else if (imask_ & intf_ & INT_VBLANK_MASK) { int_addr = 0x40; int_ack = INT_VBLANK_MASK; }
+      else                                       { int_addr = 0x00; int_ack = 0; }
 
       pc = int_addr;
-
       set_addr(pc, 0);
       state_ = 0;
     }

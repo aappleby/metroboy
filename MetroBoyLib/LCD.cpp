@@ -36,7 +36,7 @@ void LCD::tick(const Req& req, Ack& ack) {
 
 //-----------------------------------------------------------------------------
 
-void LCD::tock(int old_phase, int new_phase, const Req& /*req*/, bool XONA_LCDC_ENn) {
+void LCD::tock(int old_phase, int new_phase, const Req& /*req*/, bool XONA_LCDC_LCDENn) {
   bool IN_VBLANK = (Y & 144) == 144;
   bool VID_LINE_d0 = _RUTU_LINE_P908 && !IN_VBLANK;
   bool LINE_000n = Y != 0;
@@ -69,7 +69,7 @@ void LCD::tock(int old_phase, int new_phase, const Req& /*req*/, bool XONA_LCDC_
   if (_RUTU_LINE_P908) X = 0;
   if (MYTA_LINE_153p) Y = 0;
 
-  if (!XONA_LCDC_ENn) {
+  if (!XONA_LCDC_LCDENn) {
     X = 0;
     Y = 0;
     _RUTU_LINE_P908 = 0;
@@ -80,7 +80,7 @@ void LCD::tock(int old_phase, int new_phase, const Req& /*req*/, bool XONA_LCDC_
   }
 
   // the !LCDC_EN here seems weird
-  VID_LINE_TRIG_d4 = (CATU_VID_LINE_ENDp && !_ANEL_LINE_P000) || !XONA_LCDC_ENn;
+  VID_LINE_TRIG_d4 = (CATU_VID_LINE_ENDp && !_ANEL_LINE_P000) || !XONA_LCDC_LCDENn;
 }
 
 //-----------------------------------------------------------------------------

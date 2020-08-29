@@ -35,7 +35,6 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
   d("TUBO %d\n",  TUBO_WAITINGp.tp());
   d("ASOL %d\n",  _ASOL_POR_DONEn.tp());
   d("AFER %d\n",  _AFER_SYS_RSTp.qp());
-  //d("SOTO %d\n",  !_SOTO_DBG_VRAM.qn());
   d("\n");
 }
 
@@ -49,7 +48,7 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
   /*p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
-  /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_ENn.qn());
+  /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn());
   /*p01.XAPO*/ XAPO_VID_RSTn = not1(XODO_VID_RSTp);
 
   /*p01.ATEZ*/ wire ATEZ_CLKBAD = not1(CLKGOOD);
@@ -91,6 +90,8 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*p29.XOCE*/ XOCE_AxxDExxH = not1(WOSU_xBCxxFGx.qp());
   /*p29.WOJO*/ WOJO_xxCxxxGx = nor2(WUVU_xxCDxxGH.qn(), WOSU_xBCxxFGx.qn());
 }
+
+//-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
   // ignoring the deglitcher here

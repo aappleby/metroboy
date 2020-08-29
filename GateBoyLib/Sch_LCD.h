@@ -26,23 +26,15 @@ struct LcdRegisters {
                            SOTA_LYC4n.qn(), VAFA_LYC5n.qn(), VEVO_LYC6n.qn(), RAHA_LYC7n.qn());
   }
 
+  /*p21.PARU*/ Sig   PARU_VBLANKp_d4;                // -> pix pipe
+  /*p28.ATEJ*/ Sig   ATEJ_VID_LINE_END_TRIGp;        // -> buncha stuff
+  /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;               // -> interrupts
+  /*p21.ROPO*/ RegQP ROPO_LY_MATCH_SYNCp = REG_D0C0; // -> pix pipe for int stat
+  /*p21.RUTU*/ RegQP RUTU_LINE_P908      = REG_D0C0; // -> pix pipe, could move PURE here. fires on line phase 908, high for 8 phases
+  /*p29.CATU*/ RegQP CATU_VID_LINE_P910  = REG_D0C0; // -> pix pipe, scanner. fires on line phase 910, high for 8 phases
+  /*p28.ANEL*/ RegQP ANEL_VID_LINE_P000  = REG_D0C0; // -> pix pipe for BYHA? fires on line phase 000, high for 8 phases
 
-  /*p21.PARU*/ Sig PARU_VBLANKp_d4;
-  /*p28.BYHA*/ Sig BYHA_VID_LINE_END_TRIGn;
-  /*p28.ATEJ*/ Sig ATEJ_VID_LINE_END_TRIGp;
-  /*p21.VYPU*/ Sig VYPU_INT_VBLANKp;
-
-  // Stays at 0 for 12 phases, 113 for 4 phases, all others for 8 phases
-  /*p21.SAXO*/ RegQPN SAXO_X0p = REG_D0C0; // increments at line pase 012 (because of RUTU holding it in reset) and then at every A phase.
-  /*p21.TYPO*/ RegQPN TYPO_X1p = REG_D0C0;
-  /*p21.VYZO*/ RegQPN VYZO_X2p = REG_D0C0;
-  /*p21.TELU*/ RegQPN TELU_X3p = REG_D0C0;
-  /*p21.SUDE*/ RegQPN SUDE_X4p = REG_D0C0;
-  /*p21.TAHA*/ RegQPN TAHA_X5p = REG_D0C0;
-  /*p21.TYRY*/ RegQPN TYRY_X6p = REG_D0C0;
-
-  // -> pix pipe, sprite scanner, vram bus
-  // Increments when RUTU goes high.
+  // -> pix pipe, sprite scanner, vram bus. Increments when RUTU goes high.
   /*p21.MUWY*/ RegQPN MUWY_Y0p = REG_D0C0;
   /*p21.MYRO*/ RegQPN MYRO_Y1p = REG_D0C0;
   /*p21.LEXA*/ RegQPN LEXA_Y2p = REG_D0C0;
@@ -52,18 +44,24 @@ struct LcdRegisters {
   /*p21.MATO*/ RegQPN MATO_Y6p = REG_D0C0;
   /*p21.LAFO*/ RegQPN LAFO_Y7p = REG_D0C0;
 
-  /*p21.NYPE*/ RegQPN NYPE_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
-  /*p28.ANEL*/ RegQP  ANEL_VID_LINE_P000 = REG_D0C0; // fires on line phase 000, high for 8 phases
-  /*p21.RUTU*/ RegQP  RUTU_LINE_P908 = REG_D0C0; // fires on line phase 908, high for 8 phases
-  /*p29.CATU*/ RegQP  CATU_VID_LINE_P910 = REG_D0C0; // fires on line phase 910, high for 8 phases
+private:
 
-  /*p21.MYTA*/ RegQP  MYTA_LINE_153p      = REG_D0C0; // fires on line 153, phase 004. clears on line 000, phase 004
-  /*p21.POPU*/ RegQPN POPU_IN_VBLANKp     = REG_D0C0; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
-  /*p21.SYGU*/ RegQP  SYGU_LINE_STROBE    = REG_D0C0;
-  /*p24.MEDA*/ RegQP  MEDA_VSYNC_OUTn     = REG_D0C0;
-  /*p24.LUCA*/ RegQN  LUCA_LINE_EVEN      = REG_D0C0;
-  /*p21.NAPO*/ RegQPN NAPO_FRAME_EVEN     = REG_D0C0;
-  /*p21.ROPO*/ RegQP  ROPO_LY_MATCH_SYNCp = REG_D0C0;
+  // Increments at line phase 012 (because of RUTU holding it in reset) and then at every A phase.
+  /*p21.SAXO*/ RegQPN SAXO_X0p = REG_D0C0; 
+  /*p21.TYPO*/ RegQPN TYPO_X1p = REG_D0C0;
+  /*p21.VYZO*/ RegQPN VYZO_X2p = REG_D0C0;
+  /*p21.TELU*/ RegQPN TELU_X3p = REG_D0C0;
+  /*p21.SUDE*/ RegQPN SUDE_X4p = REG_D0C0;
+  /*p21.TAHA*/ RegQPN TAHA_X5p = REG_D0C0;
+  /*p21.TYRY*/ RegQPN TYRY_X6p = REG_D0C0;
+
+  /*p21.NYPE*/ RegQPN NYPE_LINE_P000   = REG_D0C0; // fires on line phase 000, high for 8 phases
+  /*p21.MYTA*/ RegQP  MYTA_LINE_153p   = REG_D0C0; // fires on line 153, phase 004. clears on line 000, phase 004
+  /*p21.POPU*/ RegQPN POPU_IN_VBLANKp  = REG_D0C0; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.SYGU*/ RegQP  SYGU_LINE_STROBE = REG_D0C0;
+  /*p24.MEDA*/ RegQP  MEDA_VSYNC_OUTn  = REG_D0C0;
+  /*p24.LUCA*/ RegQN  LUCA_LINE_EVEN   = REG_D0C0;
+  /*p21.NAPO*/ RegQPN NAPO_FRAME_EVEN  = REG_D0C0;
 
   // FF45 - LYC
   /*p23.SYRY*/ Reg SYRY_LYC0n = REG_D0C0;

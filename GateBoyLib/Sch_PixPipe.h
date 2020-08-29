@@ -40,34 +40,16 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  // -> top.TEVO
-  /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG() const {
-    /*p27.SEKO*/ wire SEKO_WIN_TILE_TRIG = nor2(RYFA_FETCHn_A.qn(), RENE_FETCHn_B.qp());
-    return SEKO_WIN_TILE_TRIG;
-  }
+  /*p27.SEKO*/ Sig   SEKO_WIN_TILE_TRIG; // -> top.TEVO
+  /*p24.TOMU*/ Sig   TOMU_WIN_HITp;      // -> sprite fetcher
+  /*p27.NOCU*/ Sig   NOCU_WIN_MODEn;
+  /*p27.NUNY*/ Sig   NUNY_WX_MATCH_TRIGp;
+  /*p21.VOTY*/ Sig   VOTY_INT_STATp;
 
-  // -> sprite fetcher
-  /*p24.TOMU*/ wire TOMU_WIN_HITp()  const {
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(RYDY_WIN_FIRST_TILE_A.tp());
-    return not1(SYLO_WIN_HITn);
-  }
-
-  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return _XYMU_RENDERINGp.tp(); }
-
-  wire NOCU_WIN_MODEn()  const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not1(PYNU_WIN_MODE_A.tp());
-    return NOCU_WIN_MODEn;
-  }
-  
-  wire NUNY_WX_MATCH_TRIGp() const {
-    /*p27.NUNY*/ wire NUNY_WX_MATCH_TRIGp = and2(PYNU_WIN_MODE_A.tp(), NOPA_WIN_MODE_B.qn());
-    return NUNY_WX_MATCH_TRIGp;
-  }
-
-  //----------------------------------------
-
-  /*p21.WODU*/ Sig WODU_HBLANKp;
-  /*p21.VOTY*/ Sig VOTY_INT_STATp;
+  /*p21.XYMU*/ Tri   XYMU_RENDERINGp = TRI_D0NP; // this must be positive polarity, or stat read doesn't work
+  /*p27.PYNU*/ Tri   PYNU_WIN_MODE_A = TRI_D0NP;
+  /*p27.RYDY*/ Tri   RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
+  /*p27.SOVY*/ RegQP SOVY_WIN_FIRST_TILE_B = REG_D0C0;
 
   // Pixel counter
   /*p21.XEHO*/ RegQPN XEHO_X0p = REG_D0C0;
@@ -79,37 +61,7 @@ struct PixelPipe {
   /*p21.TAKO*/ RegQP  TAKO_X6p = REG_D0C0;
   /*p21.SYBE*/ RegQP  SYBE_X7p = REG_D0C0;
 
-  // FF40 - LCDC
-  /*p23.VYXE*/ Reg VYXE_LCDC_BGENn  = REG_D0C0;
-  /*p23.XYLO*/ Reg XYLO_LCDC_SPENn  = REG_D0C0;
-  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZEn = REG_D0C0;
-  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAPn  = REG_D0C0;
-  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILEn = REG_D0C0;
-  /*p23.WYMO*/ Reg WYMO_LCDC_WINENn  = REG_D0C0;
-  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAPn = REG_D0C0;
-  /*p23.XONA*/ Reg XONA_LCDC_ENn    = REG_D0C0;
-
-  // FF41 - STAT
-  /*p21.ROXE*/ Reg ROXE_STAT_HBI_ENn = REG_D0C0;
-  /*p21.RUFO*/ Reg RUFO_STAT_VBI_ENn = REG_D0C0;
-  /*p21.REFE*/ Reg REFE_STAT_OAI_ENn = REG_D0C0;
-  /*p21.RUGU*/ Reg RUGU_STAT_LYI_ENn = REG_D0C0;
-
-  /*p27.PYNU*/ Tri PYNU_WIN_MODE_A = TRI_D0NP;
-
-  /*p27.PUKU*/ Tri PUKU_WIN_FIRST_TILE_A = TRI_D1NP;
-  /*p27.RYDY*/ Tri RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
-
-  /*p27.NOPA*/ RegQN  NOPA_WIN_MODE_B       = REG_D0C0;
-  /*p27.SOVY*/ RegQP  SOVY_WIN_FIRST_TILE_B = REG_D0C0;
-  /*p27.REJO*/ Tri    REJO_WY_MATCH_LATCH   = TRI_D0NP;
-  /*p27.SARY*/ RegQP  SARY_WY_MATCH         = REG_D0C0;
-  /*p27.RYFA*/ RegQPN RYFA_FETCHn_A      = REG_D0C0;
-  /*p27.RENE*/ RegQP  RENE_FETCHn_B      = REG_D0C0;
-  /*p27.PYCO*/ RegQP  PYCO_WX_MATCH_A       = REG_D0C0;
-  /*p27.NUNU*/ RegQP  NUNU_WX_MATCH_B       = REG_D0C0;
-
-  // current window pixel coord
+  // Current window pixel coord
   /*p27.WYKA*/ RegQPN WYKA_WIN_X3 = REG_D0C0;
   /*p27.WODY*/ RegQPN WODY_WIN_X4 = REG_D0C0;
   /*p27.WOBO*/ RegQPN WOBO_WIN_X5 = REG_D0C0;
@@ -125,22 +77,71 @@ struct PixelPipe {
   /*p27.TATE*/ RegQPN TATE_WIN_Y6 = REG_D0C0;
   /*p27.TEKE*/ RegQPN TEKE_WIN_Y7 = REG_D0C0;
 
-  /*p??.ROXY*/ Latch _ROXY_SCX_FINE_MATCH_LATCHn = TRI_D1NP;
+  // FF40 - LCDC
+  /*p23.VYXE*/ Reg VYXE_LCDC_BGENn   = REG_D0C0;
+  /*p23.XYLO*/ Reg XYLO_LCDC_SPENn   = REG_D0C0;
+  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZEn = REG_D0C0;
+  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAPn  = REG_D0C0;
+  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILEn = REG_D0C0;
+  /*p23.WYMO*/ Reg WYMO_LCDC_WINENn  = REG_D0C0;
+  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAPn = REG_D0C0;
+  /*p23.XONA*/ Reg XONA_LCDC_LCDENn  = REG_D0C0;
 
-  /*p27.RYKU*/ RegQPN _RYKU_FINE_CNT0 = REG_D0C0;
-  /*p27.ROGA*/ RegQPN _ROGA_FINE_CNT1 = REG_D0C0;
-  /*p27.RUBU*/ RegQPN _RUBU_FINE_CNT2 = REG_D0C0;
+  // FF42 - SCY -> vram bus
+  /*p23.GAVE*/ Reg GAVE_SCY0n = REG_D0C0;
+  /*p23.FYMO*/ Reg FYMO_SCY1n = REG_D0C0;
+  /*p23.FEZU*/ Reg FEZU_SCY2n = REG_D0C0;
+  /*p23.FUJO*/ Reg FUJO_SCY3n = REG_D0C0;
+  /*p23.DEDE*/ Reg DEDE_SCY4n = REG_D0C0;
+  /*p23.FOTY*/ Reg FOTY_SCY5n = REG_D0C0;
+  /*p23.FOHA*/ Reg FOHA_SCY6n = REG_D0C0;
+  /*p23.FUNY*/ Reg FUNY_SCY7n = REG_D0C0;
 
-  /*p21.XYMU*/ Tri _XYMU_RENDERINGp = TRI_D0NP; // this must be positive polarity, or stat read doesn't work
+  // FF43 - SCX -> ppu, vram bus
+  /*p23.DATY*/ Reg DATY_SCX0n = REG_D0C0;
+  /*p23.DUZU*/ Reg DUZU_SCX1n = REG_D0C0;
+  /*p23.CYXU*/ Reg CYXU_SCX2n = REG_D0C0;
+  /*p23.GUBO*/ Reg GUBO_SCX3n = REG_D0C0;
+  /*p23.BEMY*/ Reg BEMY_SCX4n = REG_D0C0;
+  /*p23.CUZY*/ Reg CUZY_SCX5n = REG_D0C0;
+  /*p23.CABU*/ Reg CABU_SCX6n = REG_D0C0;
+  /*p23.BAKE*/ Reg BAKE_SCX7n = REG_D0C0;
 
-  /*p21.RUPO*/ Tri _RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
+  //----------------------------------------
 
-  /*p21.WUSA*/ Tri _WUSA_LCD_CLOCK_GATE = TRI_D0NP;
+private:
+
+  // FF41 - STAT
+  /*p21.ROXE*/ Reg ROXE_STAT_HBI_ENn = REG_D0C0;
+  /*p21.RUFO*/ Reg RUFO_STAT_VBI_ENn = REG_D0C0;
+  /*p21.REFE*/ Reg REFE_STAT_OAI_ENn = REG_D0C0;
+  /*p21.RUGU*/ Reg RUGU_STAT_LYI_ENn = REG_D0C0;
+
+  /*p21.WODU*/ Sig WODU_HBLANKp;
+  /*p27.PUKU*/ Tri PUKU_WIN_FIRST_TILE_A = TRI_D1NP;
+
+  /*p27.NOPA*/ RegQN  NOPA_WIN_MODE_B       = REG_D0C0;
+  /*p27.REJO*/ Tri    REJO_WY_MATCH_LATCH   = TRI_D0NP;
+  /*p27.SARY*/ RegQP  SARY_WY_MATCH         = REG_D0C0;
+  /*p27.RYFA*/ RegQPN RYFA_FETCHn_A      = REG_D0C0;
+  /*p27.RENE*/ RegQP  RENE_FETCHn_B      = REG_D0C0;
+  /*p27.PYCO*/ RegQP  PYCO_WX_MATCH_A       = REG_D0C0;
+  /*p27.NUNU*/ RegQP  NUNU_WX_MATCH_B       = REG_D0C0;
+
+  /*p??.ROXY*/ Latch ROXY_SCX_FINE_MATCH_LATCHn = TRI_D1NP;
+
+  /*p27.RYKU*/ RegQPN RYKU_FINE_CNT0 = REG_D0C0;
+  /*p27.ROGA*/ RegQPN ROGA_FINE_CNT1 = REG_D0C0;
+  /*p27.RUBU*/ RegQPN RUBU_FINE_CNT2 = REG_D0C0;
+
+  /*p21.RUPO*/ Tri RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
+
+  /*p21.WUSA*/ Tri WUSA_LCD_CLOCK_GATE = TRI_D0NP;
   /*p21.VOGA*/ RegQP VOGA_HBLANKp = REG_D0C0;
-  /*p??.PUXA*/ RegQP _PUXA_SCX_FINE_MATCH_A = REG_D0C0;
-  /*p27.NYZE*/ RegQN _NYZE_SCX_FINE_MATCH_B = REG_D0C0;
+  /*p??.PUXA*/ RegQP PUXA_SCX_FINE_MATCH_A = REG_D0C0;
+  /*p27.NYZE*/ RegQN NYZE_SCX_FINE_MATCH_B = REG_D0C0;
 
-  /*p24.PAHO*/ RegQP _PAHO_X_8_SYNC = REG_D0C0;
+  /*p24.PAHO*/ RegQP PAHO_X_8_SYNC = REG_D0C0;
 
   /*p24.RUJU*/ Tri RUJU_HSYNCn = TRI_D0NP; // nor latch with POME
   /*p24.POME*/ Tri POME_HSYNCn = TRI_D0NP; // nor latch with RUJU
@@ -198,26 +199,6 @@ struct PixelPipe {
   /*p26.WODA*/ Reg WODA_MASK_PIPE_5 = REG_D0C0;
   /*p26.VUMO*/ Reg VUMO_MASK_PIPE_6 = REG_D0C0;
   /*p26.VAVA*/ Reg VAVA_MASK_PIPE_7 = REG_D0C0;
-
-  // FF42 - SCY -> vram bus
-  /*p23.GAVE*/ Reg GAVE_SCY0n = REG_D0C0;
-  /*p23.FYMO*/ Reg FYMO_SCY1n = REG_D0C0;
-  /*p23.FEZU*/ Reg FEZU_SCY2n = REG_D0C0;
-  /*p23.FUJO*/ Reg FUJO_SCY3n = REG_D0C0;
-  /*p23.DEDE*/ Reg DEDE_SCY4n = REG_D0C0;
-  /*p23.FOTY*/ Reg FOTY_SCY5n = REG_D0C0;
-  /*p23.FOHA*/ Reg FOHA_SCY6n = REG_D0C0;
-  /*p23.FUNY*/ Reg FUNY_SCY7n = REG_D0C0;
-
-  // FF43 - SCX -> ppu, vram bus
-  /*p23.DATY*/ Reg DATY_SCX0n = REG_D0C0;
-  /*p23.DUZU*/ Reg DUZU_SCX1n = REG_D0C0;
-  /*p23.CYXU*/ Reg CYXU_SCX2n = REG_D0C0;
-  /*p23.GUBO*/ Reg GUBO_SCX3n = REG_D0C0;
-  /*p23.BEMY*/ Reg BEMY_SCX4n = REG_D0C0;
-  /*p23.CUZY*/ Reg CUZY_SCX5n = REG_D0C0;
-  /*p23.CABU*/ Reg CABU_SCX6n = REG_D0C0;
-  /*p23.BAKE*/ Reg BAKE_SCX7n = REG_D0C0;
 
   // FF47 - BGP
   /*p36.PAVO*/ RegQPN PAVO_BGP_D0n = REG_D0C0;

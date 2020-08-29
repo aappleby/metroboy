@@ -57,23 +57,23 @@ struct OamBus {
   /*p04.MAKA*/ RegQP MAKA_HOLD_MEMp = REG_D0C0;
   /*p28.WUJE*/ Tri WUJE_CPU_OAM_WRn = TRI_D1NP;
 
-  /*p31.XYKY*/ Latch XYKY_LATCH_OAM_DB0n = TRI_D0NP;
-  /*p31.YRUM*/ Latch YRUM_LATCH_OAM_DB1n = TRI_D0NP;
-  /*p31.YSEX*/ Latch YSEX_LATCH_OAM_DB2n = TRI_D0NP;
-  /*p31.YVEL*/ Latch YVEL_LATCH_OAM_DB3n = TRI_D0NP;
-  /*p31.WYNO*/ Latch WYNO_LATCH_OAM_DB4n = TRI_D0NP;
-  /*p31.CYRA*/ Latch CYRA_LATCH_OAM_DB5n = TRI_D0NP;
-  /*p31.ZUVE*/ Latch ZUVE_LATCH_OAM_DB6n = TRI_D0NP;
-  /*p31.ECED*/ Latch ECED_LATCH_OAM_DB7n = TRI_D0NP;
+  /*p31.XYKY*/ Latch XYKY_OAM_LATCH_DB0n = TRI_D0NP;
+  /*p31.YRUM*/ Latch YRUM_OAM_LATCH_DB1n = TRI_D0NP;
+  /*p31.YSEX*/ Latch YSEX_OAM_LATCH_DB2n = TRI_D0NP;
+  /*p31.YVEL*/ Latch YVEL_OAM_LATCH_DB3n = TRI_D0NP;
+  /*p31.WYNO*/ Latch WYNO_OAM_LATCH_DB4n = TRI_D0NP;
+  /*p31.CYRA*/ Latch CYRA_OAM_LATCH_DB5n = TRI_D0NP;
+  /*p31.ZUVE*/ Latch ZUVE_OAM_LATCH_DB6n = TRI_D0NP;
+  /*p31.ECED*/ Latch ECED_OAM_LATCH_DB7n = TRI_D0NP;
 
-  /*p29.YDYV*/ Latch YDYV_LATCH_OAM_DA0n = TRI_D0NP;
-  /*p29.YCEB*/ Latch YCEB_LATCH_OAM_DA1n = TRI_D0NP;
-  /*p29.ZUCA*/ Latch ZUCA_LATCH_OAM_DA2n = TRI_D0NP;
-  /*p29.WONE*/ Latch WONE_LATCH_OAM_DA3n = TRI_D0NP;
-  /*p29.ZAXE*/ Latch ZAXE_LATCH_OAM_DA4n = TRI_D0NP;
-  /*p29.XAFU*/ Latch XAFU_LATCH_OAM_DA5n = TRI_D0NP;
-  /*p29.YSES*/ Latch YSES_LATCH_OAM_DA6n = TRI_D0NP;
-  /*p29.ZECA*/ Latch ZECA_LATCH_OAM_DA7n = TRI_D0NP;
+  /*p29.YDYV*/ Latch YDYV_OAM_LATCH_DA0n = TRI_D0NP;
+  /*p29.YCEB*/ Latch YCEB_OAM_LATCH_DA1n = TRI_D0NP;
+  /*p29.ZUCA*/ Latch ZUCA_OAM_LATCH_DA2n = TRI_D0NP;
+  /*p29.WONE*/ Latch WONE_OAM_LATCH_DA3n = TRI_D0NP;
+  /*p29.ZAXE*/ Latch ZAXE_OAM_LATCH_DA4n = TRI_D0NP;
+  /*p29.XAFU*/ Latch XAFU_OAM_LATCH_DA5n = TRI_D0NP;
+  /*p29.YSES*/ Latch YSES_OAM_LATCH_DA6n = TRI_D0NP;
+  /*p29.ZECA*/ Latch ZECA_OAM_LATCH_DA7n = TRI_D0NP;
 
   // oam byte 0, byte 2
   /*p29.XUSO*/ RegQP XUSO_OAM_DA0p = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
@@ -95,19 +95,19 @@ struct OamBus {
   /*p31.YZOS*/ RegQP YZOS_OAM_DB6p = REG_D0C0; // sprite x bit 6, sprite y flip
   /*p31.DEPO*/ RegQP DEPO_OAM_DB7p = REG_D0C0; // sprite x bit 7, sprite priority
 
+  Tri OAM_BUS_A0n  = TRI_D0NP;
+  Tri OAM_BUS_A1n  = TRI_D0NP;
+  Tri OAM_BUS_A2n  = TRI_D0NP;
+  Tri OAM_BUS_A3n  = TRI_D0NP;
+  Tri OAM_BUS_A4n  = TRI_D0NP;
+  Tri OAM_BUS_A5n  = TRI_D0NP;
+  Tri OAM_BUS_A6n  = TRI_D0NP;
+  Tri OAM_BUS_A7n  = TRI_D0NP;
+
   Tri OAM_PIN_CLK  = TRI_D0NP;
   Tri OAM_PIN_OE   = TRI_D1NP;
   Tri OAM_PIN_WR_A = TRI_D1NP;
   Tri OAM_PIN_WR_B = TRI_D1NP;
-
-  Tri OAM_TRI_A0n  = TRI_D0NP;
-  Tri OAM_TRI_A1n  = TRI_D0NP;
-  Tri OAM_TRI_A2n  = TRI_D0NP;
-  Tri OAM_TRI_A3n  = TRI_D0NP;
-  Tri OAM_TRI_A4n  = TRI_D0NP;
-  Tri OAM_TRI_A5n  = TRI_D0NP;
-  Tri OAM_TRI_A6n  = TRI_D0NP;
-  Tri OAM_TRI_A7n  = TRI_D0NP;
 
   Tri OAM_PIN_A1p  = TRI_D0NP;
   Tri OAM_PIN_A2p  = TRI_D0NP;

@@ -41,13 +41,11 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash(&gb.top, sizeof(gb.top));
   LOG_Y("Top hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x5274b4ff367428dd, top_hash, "Top hash mismatch");
-
-  uint8_t* cursor = (uint8_t*)(&gb.top);
+  EXPECT_EQ(0x84e3f7dff0c0ed00, top_hash, "Top hash mismatch");
 
   // All regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
-    uint8_t d = *cursor++;
+    uint8_t d = ((uint8_t*)&gb.top)[i];
     ASSERT_EQ(0, (d & 0xF0));
   }
 

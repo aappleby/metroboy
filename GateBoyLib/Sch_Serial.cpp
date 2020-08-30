@@ -4,6 +4,8 @@
 
 using namespace Schematics;
 
+//------------------------------------------------------------------------------
+
 void SerialRegisters::dump(Dumper& d) const {
   d("----------  Serial  ----------\n");
   d("XFER_START  %c\n", ETAF_XFER_START.c());
@@ -19,12 +21,6 @@ void SerialRegisters::dump(Dumper& d) const {
   d("\n");
 }
 
-
-//------------------------------------------------------------------------------
-
-void SerialRegisters::tick(const SchematicTop& /*top*/) {
-}
-
 //------------------------------------------------------------------------------
 
 void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
@@ -38,16 +34,13 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.CABY*/ wire CABY_XFER_RESET = and2(COBA_SER_CNT3n, top.clk_reg.ALUR_SYS_RSTn);
   
   /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
-  {
 
-    /*p06.ETAF*/ ETAF_XFER_START = dff17_A(UWAM_FF02_WRn_xxxxxFGH, CABY_XFER_RESET, cpu_bus.CPU_BUS_D0p.tp());
-    /*p06.CULY*/ CULY_XFER_DIR   = dff17_AB(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn, cpu_bus.CPU_BUS_D1p.tp());
+  /*p06.ETAF*/ ETAF_XFER_START = dff17_A(UWAM_FF02_WRn_xxxxxFGH, CABY_XFER_RESET, cpu_bus.CPU_BUS_D0p.tp());
+  /*p06.CULY*/ CULY_XFER_DIR   = dff17_AB(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn, cpu_bus.CPU_BUS_D1p.tp());
 
-
-    /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
-    /*p06.CORE*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(UCOM_FF02_RD, CULY_XFER_DIR.qn());
-    /*p06.ELUV*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(UCOM_FF02_RD, ETAF_XFER_START.qn());
-  }
+  /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.CPU_BUS_A01.tp());
+  /*p06.CORE*/ cpu_bus.CPU_BUS_D0p = tribuf_6pn(UCOM_FF02_RD, CULY_XFER_DIR.qn());
+  /*p06.ELUV*/ cpu_bus.CPU_BUS_D1p = tribuf_6pn(UCOM_FF02_RD, ETAF_XFER_START.qn());
 
   /*p01.UVYN*/ wire UVYN_DIV_05n = not1(top.tim_reg.TAMA_DIV_05.qp());
   /*p06.COTY*/ COTY_SER_CLK = dff17_AB(UVYN_DIV_05n, UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn());
@@ -76,7 +69,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.EDEL*/ wire EDEL_SER_DATA6_SETn = nand2(cpu_bus.CPU_BUS_D6p.tp(), DAKU_FF01_WRp_xxxxxFGH);
   /*p06.EFEF*/ wire EFEL_SER_DATA7_SETn = nand2(cpu_bus.CPU_BUS_D7p.tp(), DAKU_FF01_WRp_xxxxxFGH);
 
-  // COHY matches BYHA, and BYHA's C input _must_be and, so this is (A | B) & C
+  // COHY matches BYHA, and BYHA's C input _must_ be and, so this is (A | B) & C
   // and dff22's SET and RST _must_ be SETn/RSTn
 
   /*p06.COHY*/ wire COHY_SER_DATA0_RSTn = or_and3(URYS_FF01_WRn_xxxxxFGH, cpu_bus.CPU_BUS_D0p.tp(), top.clk_reg.ALUR_SYS_RSTn);

@@ -9,16 +9,22 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
-  void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d) const;
 
-  int get_data() const {
-    return pack_p(EDER_SER_DATA7.qp(), EROD_SER_DATA6.qp(), EJAB_SER_DATA5.qp(), DOVU_SER_DATA4.qp(),
-                DOJO_SER_DATA3.qp(), DYRA_SER_DATA2.qp(), DEGU_SER_DATA1.qp(), CUBA_SER_DATA0.qp());
+  void set_pins(RegDelta d_sck, RegDelta d_sin) {
+    SCK = d_sck;
+    SIN = d_sin;
   }
 
-//private:
+  int get_data() const {
+    return pack_p(EDER_SER_DATA7.qp(), EROD_SER_DATA6.qp(), EJAB_SER_DATA5.qp(), DOVU_SER_DATA4.qp(),
+                  DOJO_SER_DATA3.qp(), DYRA_SER_DATA2.qp(), DEGU_SER_DATA1.qp(), CUBA_SER_DATA0.qp());
+  }
+
+  /*p06.CALY*/ RegQPN CALY_INT_SERp = REG_D0C0;
+
+private:
 
   /*p06.ETAF*/ RegQN  ETAF_XFER_START    = REG_D0C0;
   /*p06.CULY*/ RegQPN CULY_XFER_DIR      = REG_D0C0;
@@ -39,8 +45,6 @@ struct SerialRegisters {
   /*p06.EDER*/ Reg EDER_SER_DATA7     = REG_D0C0;
                                    
   /*p06.ELYS*/ RegQP ELYS_SER_OUT       = REG_D0C0;
-
-  /*p06.CALY*/ RegQPN CALY_INT_SERp = REG_D0C0;
 
   //----------
   // Serial pins

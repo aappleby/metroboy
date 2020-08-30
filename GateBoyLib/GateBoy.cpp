@@ -339,8 +339,7 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.int_reg.CPU_PIN_ACK_SERIAL = ack_serial;
   top.int_reg.CPU_PIN_ACK_JOYPAD = ack_joypad;
 
-  top.ser_reg.SCK = DELTA_TRIZ;
-  top.ser_reg.SIN = DELTA_TRIZ;
+  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
 
   tock_vram_bus();
   tock_zram_bus();

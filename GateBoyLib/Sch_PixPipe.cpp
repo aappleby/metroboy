@@ -228,7 +228,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   /*#p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_HBLANKp, MYVO_AxCxExGx);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
-  /*#p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and3(SOCY_WIN_HITn, top.tile_fetcher._POKY_PRELOAD_LATCHp.qp(), VYBO_PIX_CLK_xBxDxFxH);
+  /*#p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and3(SOCY_WIN_HITn, top.tile_fetcher.POKY_PRELOAD_LATCHp.qp(), VYBO_PIX_CLK_xBxDxFxH);
   /*#p24.SEGU*/ wire SEGU_CLKPIPEn = not1(TYFA_CLKPIPEp_xBxDxFxH);
   /*#p24.SACU*/ wire SACU_CLKPIPEp = or2(SEGU_CLKPIPEn, ROXY_SCX_FINE_MATCH_LATCHn.qp()); // Schematic wrong, this is OR
 
@@ -410,7 +410,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p27.NOPA*/ NOPA_WIN_MODE_B = dff17_A(ALET_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn, PYNU_WIN_MODE_A.tp());
 
     /*#p27.PUKU*/ PUKU_WIN_FIRST_TILE_A = nor2(NUNY_WX_MATCH_TRIGp, RYDY_WIN_FIRST_TILE_A.tp());
-    /*#p27.RYDY*/ RYDY_WIN_FIRST_TILE_A = nor3(PUKU_WIN_FIRST_TILE_A.tp(), top.tile_fetcher._PORY_FETCH_DONE_P12.qp(), PYRY_VID_RSTp);
+    /*#p27.RYDY*/ RYDY_WIN_FIRST_TILE_A = nor3(PUKU_WIN_FIRST_TILE_A.tp(), top.tile_fetcher.PORY_FETCH_DONE_P12.qp(), PYRY_VID_RSTp);
     /* p27.SOVY*/ SOVY_WIN_FIRST_TILE_B = dff17_B(ALET_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn, RYDY_WIN_FIRST_TILE_A.tp());
   }
 
@@ -548,10 +548,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Sprite pipes
 
   {
-    /*p29.TYNO*/ wire TYNO = nand3(top.sprite_fetcher._TOXE_SFETCH_S0.qp(), top.sprite_fetcher._SEBA_SFETCH_S1_D5.qp(), top.sprite_fetcher._VONU_SFETCH_S1_D4.qp());
-    /*p29.VUSA*/ wire VUSA_SPRITE_DONEn  = or2(top.sprite_fetcher._TYFO_SFETCH_S0_D1.qn(), TYNO);
-    /*p29.WUTY*/ wire WUTY_SPRITE_DONEp  = not1(VUSA_SPRITE_DONEn);
-    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn  = not1(WUTY_SPRITE_DONEp);
+    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn  = not1(top.sprite_fetcher.WUTY_SPRITE_DONEp);
 
     /*p34.MEFU*/ wire MEFU_SPRITE_MASK0n = or3(XEPY_SPRITE_DONEn, NYLU_SPR_PIPE_B0.qp(), NURO_SPR_PIPE_A0.qp()); // def or
     /*p34.MEVE*/ wire MEVE_SPRITE_MASK1n = or3(XEPY_SPRITE_DONEn, PEFU_SPR_PIPE_B1.qp(), MASO_SPR_PIPE_A1.qp());

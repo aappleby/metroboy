@@ -144,9 +144,9 @@ struct CpuBus {
   }
 
   /*p07.ZUFA*/ wire ZUFA_ADDR_00XX() const {
-    /*p07.ZORO*/ wire _ZORO_ADDR_0XXX = nor4(BUS_CPU_A15.tp(), BUS_CPU_A14.tp(), BUS_CPU_A13.tp(), BUS_CPU_A12.tp());
-    /*p07.ZADU*/ wire _ZADU_ADDR_X0XX = nor4(BUS_CPU_A11.tp(), BUS_CPU_A10.tp(), BUS_CPU_A09.tp(), BUS_CPU_A08.tp());
-    return and2(_ZORO_ADDR_0XXX, _ZADU_ADDR_X0XX);
+    /*p07.ZORO*/ wire ZORO_ADDR_0XXX = nor4(BUS_CPU_A15.tp(), BUS_CPU_A14.tp(), BUS_CPU_A13.tp(), BUS_CPU_A12.tp());
+    /*p07.ZADU*/ wire ZADU_ADDR_X0XX = nor4(BUS_CPU_A11.tp(), BUS_CPU_A10.tp(), BUS_CPU_A09.tp(), BUS_CPU_A08.tp());
+    return and2(ZORO_ADDR_0XXX, ZADU_ADDR_X0XX);
   }
 
   //-----------------------------------------------------------------------------

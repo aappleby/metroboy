@@ -23,12 +23,12 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     WOKY_LCDC_WINMAPn.qn(),
     XONA_LCDC_LCDENn.qn());
 
-  /*p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp); // die NOR
-  /*p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
+  /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp.tp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
+  /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGp.tp(), top.ACYL_SCANNINGp); // die NOR
 
   d.dump_reg("FF41 STAT", 
-    !_SADU_STAT_MODE0n,
-    !_XATY_STAT_MODE1n,
+    !SADU_STAT_MODE0n,
+    !XATY_STAT_MODE1n,
     RUPO_LYC_MATCH_LATCHn.tp(),
     ROXE_STAT_HBI_ENn.qn(),
     RUFO_STAT_VBI_ENn.qn(),

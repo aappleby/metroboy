@@ -47,10 +47,10 @@ void LcdRegisters::tick(const SchematicTop& top) {
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
 
   // fires on P910 and P911
-  /*p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_VID_LINE_P910.qp());
+  /*p28.ABAF*/ wire ABAF_LINE_P910n = not1(CATU_VID_LINE_P910.qp());
     
   // so if this is or_and, BYHA should go low on 910 and 911
-  /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_VID_LINE_P000.qp(), _ABAF_LINE_P910n, ABEZ_VID_RSTn);
+  /*p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_VID_LINE_P000.qp(), ABAF_LINE_P910n, ABEZ_VID_RSTn);
 
   // fires on P910 and P911
   /*p28.ATEJ*/ ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);

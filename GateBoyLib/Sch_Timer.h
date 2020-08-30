@@ -35,31 +35,7 @@ struct Timer {
     return pack_p(SOPU_TAC_0.qp(), SAMY_TAC_1.qp(), SABO_TAC_2.qp(), 0);
   }
 
-  /*
-  wire UVYN_DIV_05n() const { return TAMA_DIV_05.qn(); }
-  wire UMEK_DIV_06n() const { return UGOT_DIV_06.qn(); }
-  wire UREK_DIV_07n() const { return TULU_DIV_07.qn(); }
-
-  wire UKUP_DIV_00()  const { return !UKUP_DIV_00.qn(); }
-  wire UFOR_DIV_01()  const { return  UFOR_DIV_01.qp(); }
-  wire UNER_DIV_02()  const { return !UNER_DIV_02.qn(); }
-  wire TERO_DIV_03()  const { return  TERO_DIV_03.qp(); }
-  wire UNYK_DIV_04()  const { return !UNYK_DIV_04.qn(); }
-  wire TAMA_DIV_05()  const { return  TAMA_DIV_05.qp(); }
-  wire UGOT_DIV_06()  const { return  UGOT_DIV_06.qp(); }
-  wire TULU_DIV_07()  const { return  TULU_DIV_07.qp(); }
-  wire TUGO_DIV_08()  const { return  TUGO_DIV_08.qp(); }
-  wire TOFE_DIV_09()  const { return  TOFE_DIV_09.qp(); }
-  wire TERU_DIV_10()  const { return  TERU_DIV_10.qp(); }
-  wire SOLA_DIV_11()  const { return  SOLA_DIV_11.qp(); }
-  wire SUBU_DIV_12()  const { return  SUBU_DIV_12.qp(); }
-  wire TEKA_DIV_13()  const { return  TEKA_DIV_13.qp(); }
-  wire UKET_DIV_14()  const { return !UKET_DIV_14.qn(); }
-  wire UPOF_DIV_15()  const { return  UPOF_DIV_15.qp(); }
-  */
-
-//private:
-  friend SchematicTop;
+  /*p03.MOBA*/ RegQP MOBA_INT_TIMERp = REG_D0C0; // -> interrupts
 
   //----------
   // FF04 DIV
@@ -67,11 +43,11 @@ struct Timer {
   /*p01.UKUP*/ RegQPN UKUP_DIV_00 = REG_D0C0;
   /*p01.UFOR*/ RegQPN UFOR_DIV_01 = REG_D0C0;
   /*p01.UNER*/ RegQPN UNER_DIV_02 = REG_D0C0;
-  /*p01.TERO*/ RegQPN TERO_DIV_03 = REG_D0C0;
+  /*p01.TERO*/ RegQPN TERO_DIV_03 = REG_D0C0; // -> UNUT_POR_TRIGn (fast boot)
   /*p01.UNYK*/ RegQPN UNYK_DIV_04 = REG_D0C0;
-  /*p01.TAMA*/ RegQPN TAMA_DIV_05 = REG_D0C0;
-  /*p01.UGOT*/ RegQPN UGOT_DIV_06 = REG_D0C0;
-  /*p01.TULU*/ RegQPN TULU_DIV_07 = REG_D0C0;
+  /*p01.TAMA*/ RegQPN TAMA_DIV_05 = REG_D0C0; // -> Serial
+  /*p01.UGOT*/ RegQPN UGOT_DIV_06 = REG_D0C0; // -> LCD
+  /*p01.TULU*/ RegQPN TULU_DIV_07 = REG_D0C0; // -> LCD
   /*p01.TUGO*/ RegQPN TUGO_DIV_08 = REG_D0C0;
   /*p01.TOFE*/ RegQPN TOFE_DIV_09 = REG_D0C0;
   /*p01.TERU*/ RegQPN TERU_DIV_10 = REG_D0C0;
@@ -79,7 +55,11 @@ struct Timer {
   /*p01.SUBU*/ RegQPN SUBU_DIV_12 = REG_D0C0;
   /*p01.TEKA*/ RegQPN TEKA_DIV_13 = REG_D0C0;
   /*p01.UKET*/ RegQPN UKET_DIV_14 = REG_D0C0;
-  /*p01.UPOF*/ RegQPN UPOF_DIV_15 = REG_D0C0;
+  /*p01.UPOF*/ RegQPN UPOF_DIV_15 = REG_D0C0; // -> UNUT_POR_TRIGn
+
+private:
+
+  /*p03.NYDU*/ RegQN NYDU_TIMA_D7_DELAY = REG_D0C0;
 
   //----------
   // FF05 TIMA
@@ -92,9 +72,6 @@ struct Timer {
   /*p03.RAGE*/ Reg RAGE_TIMA_D5 = REG_D0C0;
   /*p03.PEDA*/ Reg PEDA_TIMA_D6 = REG_D0C0;
   /*p03.NUGA*/ Reg NUGA_TIMA_D7 = REG_D0C0;
-
-  /*p03.NYDU*/ RegQN NYDU_TIMA_D7_DELAY = REG_D0C0;
-  /*p03.MOBA*/ RegQP MOBA_INT_TIMERp = REG_D0C0;
 
   //----------
   // FF06 TMA
@@ -115,7 +92,6 @@ struct Timer {
   /*p03.SAMY*/ RegQPN SAMY_TAC_1 = REG_D0C0;
   /*p03.SABO*/ RegQPN SABO_TAC_2 = REG_D0C0;
 };
-
 
 //-----------------------------------------------------------------------------
 

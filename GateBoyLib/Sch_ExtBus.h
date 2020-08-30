@@ -4,8 +4,6 @@
 namespace Schematics {
 
 struct SchematicTop;
-struct CpuBus;
-struct OamBus;
 
 //-----------------------------------------------------------------------------
 
@@ -14,37 +12,37 @@ struct ExtBus {
   void dump(Dumper& d) const;
 
   uint16_t get_pin_addr() {
-    return (uint16_t)pack_p(EXT_PIN_A00p.qp(), EXT_PIN_A01p.qp(), EXT_PIN_A02p.qp(), EXT_PIN_A03p.qp(),
-                            EXT_PIN_A04p.qp(), EXT_PIN_A05p.qp(), EXT_PIN_A06p.qp(), EXT_PIN_A07p.qp(),
-                            EXT_PIN_A08p.qp(), EXT_PIN_A09p.qp(), EXT_PIN_A10p.qp(), EXT_PIN_A11p.qp(),
-                            EXT_PIN_A12p.qp(), EXT_PIN_A13p.qp(), EXT_PIN_A14p.qp(), EXT_PIN_A15p.qp());
+    return (uint16_t)pack_p(PIN_EXT_A00p.qp(), PIN_EXT_A01p.qp(), PIN_EXT_A02p.qp(), PIN_EXT_A03p.qp(),
+                            PIN_EXT_A04p.qp(), PIN_EXT_A05p.qp(), PIN_EXT_A06p.qp(), PIN_EXT_A07p.qp(),
+                            PIN_EXT_A08p.qp(), PIN_EXT_A09p.qp(), PIN_EXT_A10p.qp(), PIN_EXT_A11p.qp(),
+                            PIN_EXT_A12p.qp(), PIN_EXT_A13p.qp(), PIN_EXT_A14p.qp(), PIN_EXT_A15p.qp());
   }
 
   uint8_t get_pin_data() {
-    return (uint8_t)pack_p(EXT_PIN_D00p.qp(), EXT_PIN_D01p.qp(), EXT_PIN_D02p.qp(), EXT_PIN_D03p.qp(),
-                           EXT_PIN_D04p.qp(), EXT_PIN_D05p.qp(), EXT_PIN_D06p.qp(), EXT_PIN_D07p.qp());
+    return (uint8_t)pack_p(PIN_EXT_D00p.qp(), PIN_EXT_D01p.qp(), PIN_EXT_D02p.qp(), PIN_EXT_D03p.qp(),
+                           PIN_EXT_D04p.qp(), PIN_EXT_D05p.qp(), PIN_EXT_D06p.qp(), PIN_EXT_D07p.qp());
   }
 
   void set_pin_data(uint8_t data) {
-    EXT_PIN_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
-    EXT_PIN_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_EXT_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
   }
 
   void set_pin_data_z() {
-    EXT_PIN_D00p = DELTA_TRIZ;
-    EXT_PIN_D01p = DELTA_TRIZ;
-    EXT_PIN_D02p = DELTA_TRIZ;
-    EXT_PIN_D03p = DELTA_TRIZ;
-    EXT_PIN_D04p = DELTA_TRIZ;
-    EXT_PIN_D05p = DELTA_TRIZ;
-    EXT_PIN_D06p = DELTA_TRIZ;
-    EXT_PIN_D07p = DELTA_TRIZ;
+    PIN_EXT_D00p = DELTA_TRIZ;
+    PIN_EXT_D01p = DELTA_TRIZ;
+    PIN_EXT_D02p = DELTA_TRIZ;
+    PIN_EXT_D03p = DELTA_TRIZ;
+    PIN_EXT_D04p = DELTA_TRIZ;
+    PIN_EXT_D05p = DELTA_TRIZ;
+    PIN_EXT_D06p = DELTA_TRIZ;
+    PIN_EXT_D07p = DELTA_TRIZ;
   }
 
   //-----------------------------------------------------------------------------
@@ -77,36 +75,36 @@ struct ExtBus {
   //-----------------------------------------------------------------------------
   // Ext bus
 
-  Pin EXT_PIN_CLK  = TRI_D0NP;   // PIN_75
-  Pin EXT_PIN_WRn  = TRI_D0NP;   // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  Pin EXT_PIN_RDn  = TRI_D0NP;   // PIN_79 // RDn idles low, goes high on phase B for an external write
-  Pin EXT_PIN_CSn  = TRI_D0NP;   // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
+  Pin PIN_EXT_CLK  = TRI_D0NP;   // PIN_75
+  Pin PIN_EXT_WRn  = TRI_D0NP;   // PIN_78 // WRn idles high, goes low during EFG if there's a write
+  Pin PIN_EXT_RDn  = TRI_D0NP;   // PIN_79 // RDn idles low, goes high on phase B for an external write
+  Pin PIN_EXT_CSn  = TRI_D0NP;   // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
 
-  Pin EXT_PIN_A00p = TRI_D0NP;   // PIN_01 // Address changees on B for CPU read/write, on A for DMA read
-  Pin EXT_PIN_A01p = TRI_D0NP;   // PIN_02 
-  Pin EXT_PIN_A02p = TRI_D0NP;   // PIN_03 
-  Pin EXT_PIN_A03p = TRI_D0NP;   // PIN_04 
-  Pin EXT_PIN_A04p = TRI_D0NP;   // PIN_05 
-  Pin EXT_PIN_A05p = TRI_D0NP;   // PIN_06 
-  Pin EXT_PIN_A06p = TRI_D0NP;   // PIN_07 
-  Pin EXT_PIN_A07p = TRI_D0NP;   // PIN_08 
-  Pin EXT_PIN_A08p = TRI_D0NP;   // PIN_09 
-  Pin EXT_PIN_A09p = TRI_D0NP;   // PIN_10 
-  Pin EXT_PIN_A10p = TRI_D0NP;   // PIN_11 
-  Pin EXT_PIN_A11p = TRI_D0NP;   // PIN_12 
-  Pin EXT_PIN_A12p = TRI_D0NP;   // PIN_13 
-  Pin EXT_PIN_A13p = TRI_D0NP;   // PIN_14 
-  Pin EXT_PIN_A14p = TRI_D0NP;   // PIN_15 
-  Pin EXT_PIN_A15p = TRI_D0NP;   // PIN_16 // A15 changes on C
+  Pin PIN_EXT_A00p = TRI_D0NP;   // PIN_01 // Address changees on B for CPU read/write, on A for DMA read
+  Pin PIN_EXT_A01p = TRI_D0NP;   // PIN_02 
+  Pin PIN_EXT_A02p = TRI_D0NP;   // PIN_03 
+  Pin PIN_EXT_A03p = TRI_D0NP;   // PIN_04 
+  Pin PIN_EXT_A04p = TRI_D0NP;   // PIN_05 
+  Pin PIN_EXT_A05p = TRI_D0NP;   // PIN_06 
+  Pin PIN_EXT_A06p = TRI_D0NP;   // PIN_07 
+  Pin PIN_EXT_A07p = TRI_D0NP;   // PIN_08 
+  Pin PIN_EXT_A08p = TRI_D0NP;   // PIN_09 
+  Pin PIN_EXT_A09p = TRI_D0NP;   // PIN_10 
+  Pin PIN_EXT_A10p = TRI_D0NP;   // PIN_11 
+  Pin PIN_EXT_A11p = TRI_D0NP;   // PIN_12 
+  Pin PIN_EXT_A12p = TRI_D0NP;   // PIN_13 
+  Pin PIN_EXT_A13p = TRI_D0NP;   // PIN_14 
+  Pin PIN_EXT_A14p = TRI_D0NP;   // PIN_15 
+  Pin PIN_EXT_A15p = TRI_D0NP;   // PIN_16 // A15 changes on C
 
-  Pin EXT_PIN_D00p = TRI_HZPU;   // PIN_17
-  Pin EXT_PIN_D01p = TRI_HZPU;   // PIN_18
-  Pin EXT_PIN_D02p = TRI_HZPU;   // PIN_19
-  Pin EXT_PIN_D03p = TRI_HZPU;   // PIN_20
-  Pin EXT_PIN_D04p = TRI_HZPU;   // PIN_21
-  Pin EXT_PIN_D05p = TRI_HZPU;   // PIN_22
-  Pin EXT_PIN_D06p = TRI_HZPU;   // PIN_23
-  Pin EXT_PIN_D07p = TRI_HZPU;   // PIN_24
+  Pin PIN_EXT_D00p = TRI_HZPU;   // PIN_17
+  Pin PIN_EXT_D01p = TRI_HZPU;   // PIN_18
+  Pin PIN_EXT_D02p = TRI_HZPU;   // PIN_19
+  Pin PIN_EXT_D03p = TRI_HZPU;   // PIN_20
+  Pin PIN_EXT_D04p = TRI_HZPU;   // PIN_21
+  Pin PIN_EXT_D05p = TRI_HZPU;   // PIN_22
+  Pin PIN_EXT_D06p = TRI_HZPU;   // PIN_23
+  Pin PIN_EXT_D07p = TRI_HZPU;   // PIN_24
 };
 
 //-----------------------------------------------------------------------------

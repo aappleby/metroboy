@@ -12,36 +12,30 @@ struct SpriteStore {
   void tock(const SchematicTop& top);
   void dump(Dumper& d) const;
 
-  /*p29.FEPO*/ Sig FEPO_STORE_MATCHp;
-  /*p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp); }
+  /*p29.FEPO*/ Sig FEPO_STORE_MATCHp; // -> pix pipe, sprite fetcher
 
-  Tri SPR_TRI_I0p = TRI_HZPU;
+  Tri SPR_TRI_I0p = TRI_HZPU; // -> oam bus
   Tri SPR_TRI_I1p = TRI_HZPU;
   Tri SPR_TRI_I2p = TRI_HZPU;
   Tri SPR_TRI_I3p = TRI_HZPU;
   Tri SPR_TRI_I4p = TRI_HZPU;
   Tri SPR_TRI_I5p = TRI_HZPU;
 
-  Tri SPR_TRI_L0 = TRI_HZPU;
+  Tri SPR_TRI_L0 = TRI_HZPU; // -> vram bus
   Tri SPR_TRI_L1 = TRI_HZPU;
   Tri SPR_TRI_L2 = TRI_HZPU;
   Tri SPR_TRI_L3 = TRI_HZPU;
 
-//private:
-//  friend struct SchematicTop;
+private:
+
+  //----------------------------------------
+  // Active sprite counter, 10 match signals, 10 reset signals
 
   /*p29.DEZY*/ RegQP  DEZY_STORE_ENn = REG_D0C0;
   /*p29.BESE*/ RegQPN BESE_SPRITE_COUNT0 = REG_D0C0;
   /*p29.CUXY*/ RegQPN CUXY_SPRITE_COUNT1 = REG_D0C0;
   /*p29.BEGO*/ RegQPN BEGO_SPRITE_COUNT2 = REG_D0C0;
   /*p29.DYBE*/ RegQPN DYBE_SPRITE_COUNT3 = REG_D0C0;
-
-  /*p30.XADU*/ RegQN XADU_SPRITE_IDX0p = REG_D0C0;
-  /*p30.XEDY*/ RegQN XEDY_SPRITE_IDX1p = REG_D0C0;
-  /*p30.ZUZE*/ RegQN ZUZE_SPRITE_IDX2p = REG_D0C0;
-  /*p30.XOBE*/ RegQN XOBE_SPRITE_IDX3p = REG_D0C0;
-  /*p30.YDUF*/ RegQN YDUF_SPRITE_IDX4p = REG_D0C0;
-  /*p30.XECU*/ RegQN XECU_SPRITE_IDX5p = REG_D0C0;
 
   /*p29.YDUG*/ Sig YDUG_STORE0_MATCHn;
   /*p29.DYDU*/ Sig DYDU_STORE1_MATCHn;
@@ -65,7 +59,8 @@ struct SpriteStore {
   /*p29.EXUQ*/ RegQP EXUQ_STORE8_RSTp = REG_D0C0;
   /*p29.FONO*/ RegQP FONO_STORE9_RSTp = REG_D0C0;
 
-  //----------
+  //----------------------------------------
+  // All 10 of the sprite stores
 
   /*p30.YGUS*/ RegQP YGUS_STORE0_I0n = REG_D0C0;
   /*p30.YSOK*/ RegQP YSOK_STORE0_I1n = REG_D0C0;
@@ -74,10 +69,10 @@ struct SpriteStore {
   /*p30.ZONY*/ RegQP ZONY_STORE0_I4n = REG_D0C0;
   /*p30.YWAK*/ RegQP YWAK_STORE0_I5n = REG_D0C0;
 
-  /*p30.GYHO*/ RegQP GYHO_STORE0_L0 = REG_D0C0;
-  /*p30.CUFO*/ RegQP CUFO_STORE0_L1 = REG_D0C0;
-  /*p30.BOZU*/ RegQP BOZU_STORE0_L2 = REG_D0C0;
-  /*p30.FYHY*/ RegQP FYHY_STORE0_L3 = REG_D0C0;
+  /*p30.GYHO*/ RegQP GYHO_STORE0_L0n = REG_D0C0;
+  /*p30.CUFO*/ RegQP CUFO_STORE0_L1n = REG_D0C0;
+  /*p30.BOZU*/ RegQP BOZU_STORE0_L2n = REG_D0C0;
+  /*p30.FYHY*/ RegQP FYHY_STORE0_L3n = REG_D0C0;
 
   /*p31.XEPE*/ RegQN XEPE_STORE0_X0p = REG_D0C0;
   /*p31.YLAH*/ RegQN YLAH_STORE0_X1p = REG_D0C0;

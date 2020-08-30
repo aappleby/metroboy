@@ -247,7 +247,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
-  /*
   dump_probes(dumper);
   top.sprite_fetcher.dump(dumper);
   top.sprite_scanner.dump(dumper, top);
@@ -256,7 +255,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();
-  */
 
   //dump_painter.render(view, cursor, 512,      16, 16, DMG_ROM_bin);
 
@@ -265,7 +263,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
 
-  gb_blitter.blit_screen(view, 1024, 32, 2, gateboy->fb);
+  gb_blitter.blit_screen(view, 1024 + 256, 32, 2, gateboy->framebuffer);
 
   //update_texture_u32(trace_tex, 912, 154, trace);
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
@@ -285,11 +283,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   }
 
   update_texture_u32(overlay_tex, 160, 144, overlay);
-  blitter.blit(view, overlay_tex, 1024, 32, 160 * 2, 144 * 2);
+  blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
 
-  gb_blitter.blit_tiles (view, 1376, 32,     gateboy->vid_ram);
-  gb_blitter.blit_map   (view, 1376, 448, 1, gateboy->vid_ram, 0, 1);
-  gb_blitter.blit_map   (view, 1376, 736, 1, gateboy->vid_ram, 1, 1);
+  gb_blitter.blit_tiles (view, 1376 + 256, 32,     gateboy->vid_ram);
+  gb_blitter.blit_map   (view, 1376 + 256, 448, 1, gateboy->vid_ram, 0, 1);
+  gb_blitter.blit_map   (view, 1376 + 256, 736, 1, gateboy->vid_ram, 1, 1);
 }
 
 //-----------------------------------------------------------------------------

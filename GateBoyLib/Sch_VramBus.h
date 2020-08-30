@@ -4,7 +4,6 @@
 namespace Schematics {
 
 struct SchematicTop;
-struct CpuBus;
 
 //-----------------------------------------------------------------------------
 
@@ -13,49 +12,49 @@ struct VramBus {
   void dump(Dumper& d, const SchematicTop& top) const;
 
   int get_bus_addr() const {
-    return pack_p(!VRAM_BUS_A00n.tp(), !VRAM_BUS_A01n.tp(), !VRAM_BUS_A02n.tp(), !VRAM_BUS_A03n.tp(),
-                  !VRAM_BUS_A04n.tp(), !VRAM_BUS_A05n.tp(), !VRAM_BUS_A06n.tp(), !VRAM_BUS_A07n.tp(),
-                  !VRAM_BUS_A08n.tp(), !VRAM_BUS_A09n.tp(), !VRAM_BUS_A10n.tp(), !VRAM_BUS_A11n.tp(),
-                  !VRAM_BUS_A12n.tp(), 0, 0, 0);
+    return pack_p(!BUS_VRAM_A00n.tp(), !BUS_VRAM_A01n.tp(), !BUS_VRAM_A02n.tp(), !BUS_VRAM_A03n.tp(),
+                  !BUS_VRAM_A04n.tp(), !BUS_VRAM_A05n.tp(), !BUS_VRAM_A06n.tp(), !BUS_VRAM_A07n.tp(),
+                  !BUS_VRAM_A08n.tp(), !BUS_VRAM_A09n.tp(), !BUS_VRAM_A10n.tp(), !BUS_VRAM_A11n.tp(),
+                  !BUS_VRAM_A12n.tp(), 0, 0, 0);
   }
 
   int get_bus_data() const {
-    return pack_p(VRAM_BUS_D0p.tp(), VRAM_BUS_D1p.tp(), VRAM_BUS_D2p.tp(), VRAM_BUS_D3p.tp(),
-                  VRAM_BUS_D4p.tp(), VRAM_BUS_D5p.tp(), VRAM_BUS_D6p.tp(), VRAM_BUS_D7p.tp());
+    return pack_p(BUS_VRAM_D0p.tp(), BUS_VRAM_D1p.tp(), BUS_VRAM_D2p.tp(), BUS_VRAM_D3p.tp(),
+                  BUS_VRAM_D4p.tp(), BUS_VRAM_D5p.tp(), BUS_VRAM_D6p.tp(), BUS_VRAM_D7p.tp());
   }
 
   int get_pin_addr() const {
-    return pack_p(VRAM_PIN_A00p.qp(), VRAM_PIN_A01p.qp(), VRAM_PIN_A02p.qp(), VRAM_PIN_A03p.qp(),
-                  VRAM_PIN_A04p.qp(), VRAM_PIN_A05p.qp(), VRAM_PIN_A06p.qp(), VRAM_PIN_A07p.qp(),
-                  VRAM_PIN_A08p.qp(), VRAM_PIN_A09p.qp(), VRAM_PIN_A10p.qp(), VRAM_PIN_A11p.qp(),
-                  VRAM_PIN_A12p.qp(), 0, 0, 0);
+    return pack_p(PIN_VRAM_A00p.qp(), PIN_VRAM_A01p.qp(), PIN_VRAM_A02p.qp(), PIN_VRAM_A03p.qp(),
+                  PIN_VRAM_A04p.qp(), PIN_VRAM_A05p.qp(), PIN_VRAM_A06p.qp(), PIN_VRAM_A07p.qp(),
+                  PIN_VRAM_A08p.qp(), PIN_VRAM_A09p.qp(), PIN_VRAM_A10p.qp(), PIN_VRAM_A11p.qp(),
+                  PIN_VRAM_A12p.qp(), 0, 0, 0);
   }
 
   int get_pin_data() const {
-    return pack_p(VRAM_PIN_D00p.qp(), VRAM_PIN_D01p.qp(), VRAM_PIN_D02p.qp(), VRAM_PIN_D03p.qp(),
-                  VRAM_PIN_D04p.qp(), VRAM_PIN_D05p.qp(), VRAM_PIN_D06p.qp(), VRAM_PIN_D07p.qp());
+    return pack_p(PIN_VRAM_D00p.qp(), PIN_VRAM_D01p.qp(), PIN_VRAM_D02p.qp(), PIN_VRAM_D03p.qp(),
+                  PIN_VRAM_D04p.qp(), PIN_VRAM_D05p.qp(), PIN_VRAM_D06p.qp(), PIN_VRAM_D07p.qp());
   }
 
   void set_pin_data_in(uint8_t data) {
-    VRAM_PIN_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
-    VRAM_PIN_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
+    PIN_VRAM_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
   }
 
   void set_pin_data_z() {
-    VRAM_PIN_D00p = DELTA_TRIZ;
-    VRAM_PIN_D01p = DELTA_TRIZ;
-    VRAM_PIN_D02p = DELTA_TRIZ;
-    VRAM_PIN_D03p = DELTA_TRIZ;
-    VRAM_PIN_D04p = DELTA_TRIZ;
-    VRAM_PIN_D05p = DELTA_TRIZ;
-    VRAM_PIN_D06p = DELTA_TRIZ;
-    VRAM_PIN_D07p = DELTA_TRIZ;
+    PIN_VRAM_D00p = DELTA_TRIZ;
+    PIN_VRAM_D01p = DELTA_TRIZ;
+    PIN_VRAM_D02p = DELTA_TRIZ;
+    PIN_VRAM_D03p = DELTA_TRIZ;
+    PIN_VRAM_D04p = DELTA_TRIZ;
+    PIN_VRAM_D05p = DELTA_TRIZ;
+    PIN_VRAM_D06p = DELTA_TRIZ;
+    PIN_VRAM_D07p = DELTA_TRIZ;
   }
 
   //-----------------------------------------------------------------------------
@@ -97,60 +96,60 @@ struct VramBus {
   /*p33.SEGA*/ RegQN SEGA_SPRITE_DA7n = REG_D0C0;
 
   //----------------------------------------
-  // VRAM_BUS_D* must _not_ be inverting, see CBD->VBD->VPD chain
+  // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
-  Tri VRAM_BUS_D0p = TRI_D0NP;
-  Tri VRAM_BUS_D1p = TRI_D0NP;
-  Tri VRAM_BUS_D2p = TRI_D0NP;
-  Tri VRAM_BUS_D3p = TRI_D0NP;
-  Tri VRAM_BUS_D4p = TRI_D0NP;
-  Tri VRAM_BUS_D5p = TRI_D0NP;
-  Tri VRAM_BUS_D6p = TRI_D0NP;
-  Tri VRAM_BUS_D7p = TRI_D0NP;
+  Bus BUS_VRAM_D0p = TRI_D0NP;
+  Bus BUS_VRAM_D1p = TRI_D0NP;
+  Bus BUS_VRAM_D2p = TRI_D0NP;
+  Bus BUS_VRAM_D3p = TRI_D0NP;
+  Bus BUS_VRAM_D4p = TRI_D0NP;
+  Bus BUS_VRAM_D5p = TRI_D0NP;
+  Bus BUS_VRAM_D6p = TRI_D0NP;
+  Bus BUS_VRAM_D7p = TRI_D0NP;
 
-  Tri VRAM_BUS_A00n = TRI_D0NP;
-  Tri VRAM_BUS_A01n = TRI_D0NP;
-  Tri VRAM_BUS_A02n = TRI_D0NP;
-  Tri VRAM_BUS_A03n = TRI_D0NP;
-  Tri VRAM_BUS_A04n = TRI_D0NP;
-  Tri VRAM_BUS_A05n = TRI_D0NP;
-  Tri VRAM_BUS_A06n = TRI_D0NP;
-  Tri VRAM_BUS_A07n = TRI_D0NP;
-  Tri VRAM_BUS_A08n = TRI_D0NP;
-  Tri VRAM_BUS_A09n = TRI_D0NP;
-  Tri VRAM_BUS_A10n = TRI_D0NP;
-  Tri VRAM_BUS_A11n = TRI_D0NP;
-  Tri VRAM_BUS_A12n = TRI_D0NP;
+  Bus BUS_VRAM_A00n = TRI_HZPU; // This bus isn't driven between tile fetches while rendering; where's the pullup?
+  Bus BUS_VRAM_A01n = TRI_HZPU;
+  Bus BUS_VRAM_A02n = TRI_HZPU;
+  Bus BUS_VRAM_A03n = TRI_HZPU;
+  Bus BUS_VRAM_A04n = TRI_HZPU;
+  Bus BUS_VRAM_A05n = TRI_HZPU;
+  Bus BUS_VRAM_A06n = TRI_HZPU;
+  Bus BUS_VRAM_A07n = TRI_HZPU;
+  Bus BUS_VRAM_A08n = TRI_HZPU;
+  Bus BUS_VRAM_A09n = TRI_HZPU;
+  Bus BUS_VRAM_A10n = TRI_HZPU;
+  Bus BUS_VRAM_A11n = TRI_HZPU;
+  Bus BUS_VRAM_A12n = TRI_HZPU;
 
   //----------------------------------------
   // VRAM pins
 
-  Pin VRAM_PIN_CSn  = TRI_D0NP; // PIN_43
-  Pin VRAM_PIN_OEn  = TRI_D0NP; // PIN_45
-  Pin VRAM_PIN_WRn  = TRI_D0NP; // PIN_49
+  Pin PIN_VRAM_CSn  = TRI_D0NP; // PIN_43
+  Pin PIN_VRAM_OEn  = TRI_D0NP; // PIN_45
+  Pin PIN_VRAM_WRn  = TRI_D0NP; // PIN_49
 
-  Pin VRAM_PIN_A00p = TRI_D0NP; // PIN_34
-  Pin VRAM_PIN_A01p = TRI_D0NP; // PIN_35
-  Pin VRAM_PIN_A02p = TRI_D0NP; // PIN_36
-  Pin VRAM_PIN_A03p = TRI_D0NP; // PIN_37
-  Pin VRAM_PIN_A04p = TRI_D0NP; // PIN_38
-  Pin VRAM_PIN_A05p = TRI_D0NP; // PIN_39
-  Pin VRAM_PIN_A06p = TRI_D0NP; // PIN_40
-  Pin VRAM_PIN_A07p = TRI_D0NP; // PIN_41
-  Pin VRAM_PIN_A08p = TRI_D0NP; // PIN_48
-  Pin VRAM_PIN_A09p = TRI_D0NP; // PIN_47
-  Pin VRAM_PIN_A10p = TRI_D0NP; // PIN_44
-  Pin VRAM_PIN_A11p = TRI_D0NP; // PIN_46
-  Pin VRAM_PIN_A12p = TRI_D0NP; // PIN_42
+  Pin PIN_VRAM_A00p = TRI_D0NP; // PIN_34
+  Pin PIN_VRAM_A01p = TRI_D0NP; // PIN_35
+  Pin PIN_VRAM_A02p = TRI_D0NP; // PIN_36
+  Pin PIN_VRAM_A03p = TRI_D0NP; // PIN_37
+  Pin PIN_VRAM_A04p = TRI_D0NP; // PIN_38
+  Pin PIN_VRAM_A05p = TRI_D0NP; // PIN_39
+  Pin PIN_VRAM_A06p = TRI_D0NP; // PIN_40
+  Pin PIN_VRAM_A07p = TRI_D0NP; // PIN_41
+  Pin PIN_VRAM_A08p = TRI_D0NP; // PIN_48
+  Pin PIN_VRAM_A09p = TRI_D0NP; // PIN_47
+  Pin PIN_VRAM_A10p = TRI_D0NP; // PIN_44
+  Pin PIN_VRAM_A11p = TRI_D0NP; // PIN_46
+  Pin PIN_VRAM_A12p = TRI_D0NP; // PIN_42
 
-  Pin VRAM_PIN_D00p = TRI_D0NP; // PIN_33
-  Pin VRAM_PIN_D01p = TRI_D0NP; // PIN_31
-  Pin VRAM_PIN_D02p = TRI_D0NP; // PIN_30
-  Pin VRAM_PIN_D03p = TRI_D0NP; // PIN_29
-  Pin VRAM_PIN_D04p = TRI_D0NP; // PIN_28
-  Pin VRAM_PIN_D05p = TRI_D0NP; // PIN_27
-  Pin VRAM_PIN_D06p = TRI_D0NP; // PIN_26
-  Pin VRAM_PIN_D07p = TRI_D0NP; // PIN_25
+  Pin PIN_VRAM_D00p = TRI_HZPU; // PIN_33 // This pin isn't driven between tile fetches while rendering; where's the pullup?
+  Pin PIN_VRAM_D01p = TRI_HZPU; // PIN_31
+  Pin PIN_VRAM_D02p = TRI_HZPU; // PIN_30
+  Pin PIN_VRAM_D03p = TRI_HZPU; // PIN_29
+  Pin PIN_VRAM_D04p = TRI_HZPU; // PIN_28
+  Pin PIN_VRAM_D05p = TRI_HZPU; // PIN_27
+  Pin PIN_VRAM_D06p = TRI_HZPU; // PIN_26
+  Pin PIN_VRAM_D07p = TRI_HZPU; // PIN_25
 };
 
 //-----------------------------------------------------------------------------

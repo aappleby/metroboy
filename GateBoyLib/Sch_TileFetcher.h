@@ -43,8 +43,6 @@ private:
   /*p27.LOVY*/ RegQN  LOVY_BG_FETCH_DONEp = REG_D0C0;
   /*p24.PYGO*/ RegQP  PYGO_FETCH_DONE_P13 = REG_D0C0;
   /*p27.LYZU*/ RegQP  LYZU_BFETCH_S0_D1 = REG_D0C0;
-
-
 };
 
 //-----------------------------------------------------------------------------

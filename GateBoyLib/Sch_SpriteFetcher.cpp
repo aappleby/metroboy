@@ -9,20 +9,20 @@ using namespace Schematics;
 
 void SpriteFetcher::dump(Dumper& d) const {
   d("----------SpriteFetch---------\n");
-  d("_SOBU_SFETCH_REQp     %c\n", SOBU_SFETCH_REQp    .c());
-  d("_SUDA_SFETCH_REQp     %c\n", SUDA_SFETCH_REQp    .c());
+  d("SOBU_SFETCH_REQp     %c\n", SOBU_SFETCH_REQp    .c());
+  d("SUDA_SFETCH_REQp     %c\n", SUDA_SFETCH_REQp    .c());
   d("\n");
-  d("_TAKA_SFETCH_RUNNINGp %c\n", TAKA_SFETCH_RUNNINGp.c());
+  d("TAKA_SFETCH_RUNNINGp %c\n", TAKA_SFETCH_RUNNINGp.c());
   d("\n");
-  d("_TOXE_SFETCH_S0       %c\n", TOXE_SFETCH_S0      .c());
-  d("_TYFO_SFETCH_S0_D1    %c\n", TYFO_SFETCH_S0_D1   .c());
+  d("TOXE_SFETCH_S0       %c\n", TOXE_SFETCH_S0      .c());
+  d("TYFO_SFETCH_S0_D1    %c\n", TYFO_SFETCH_S0_D1   .c());
   d("\n");
-  d("_TULY_SFETCH_S1       %c\n", TULY_SFETCH_S1      .c());
-  d("_TOBU_SFETCH_S1_D2    %c\n", TOBU_SFETCH_S1_D2   .c());
-  d("_VONU_SFETCH_S1_D4    %c\n", VONU_SFETCH_S1_D4   .c());
-  d("_SEBA_SFETCH_S1_D5    %c\n", SEBA_SFETCH_S1_D5   .c());
+  d("TULY_SFETCH_S1       %c\n", TULY_SFETCH_S1      .c());
+  d("TOBU_SFETCH_S1_D2    %c\n", TOBU_SFETCH_S1_D2   .c());
+  d("VONU_SFETCH_S1_D4    %c\n", VONU_SFETCH_S1_D4   .c());
+  d("SEBA_SFETCH_S1_D5    %c\n", SEBA_SFETCH_S1_D5   .c());
   d("\n");
-  d("_TESE_SFETCH_S2       %c\n", TESE_SFETCH_S2      .c());
+  d("TESE_SFETCH_S2       %c\n", TESE_SFETCH_S2      .c());
   d("\n");
 }
 

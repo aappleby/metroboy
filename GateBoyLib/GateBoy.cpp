@@ -8,7 +8,7 @@
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
-  memset(fb, 4, 160*144);
+  memset(framebuffer, 4, 160*144);
   memset(ext_ram, 0, 8192);
   memset(cart_rom, 0, 32768);
   memset(cart_ram, 0, 8192);
@@ -17,60 +17,57 @@ GateBoy::GateBoy() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset(bool verbose) {
-  if (verbose) printf("GateBoy::run_reset_sequence() begin\n");
-
+void GateBoy::reset() {
   // No bus activity during reset
   dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
 
-  if (verbose) printf("In reset\n");
+  // In reset
   run(8);
 
-  if (verbose) printf("Out of reset\n");
+  // Out of reset
   sys_rst = 0;
   run(8);
 
+  // Start clock and sync with phase A
   sys_clken = 1;
   while(1) {
-    if (verbose) printf("Sync with phase A\n");
     run(1);
     if (top.clk_reg.AFUR_xxxxEFGH.qn() &&
         top.clk_reg.ALEF_AxxxxFGH.qp() &&
         top.clk_reg.APUK_ABxxxxGH.qp() &&
         top.clk_reg.ADYK_ABCxxxxH.qp()) break;
   }
-  CHECK_P(top.cpu_bus.CPU_PIN_BOMA_Axxxxxxx.tp());
+  CHECK_P(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.tp());
 
-  if (verbose) printf("Sync done, reset phase counter to 0\n");
+  // Sync done, reset phase counter to 0
   phase_total = 0;
   pass_count = 0;
   pass_total = 0;
 
-  if (verbose) printf("Set CLKGOOD\n");
+  // Set CLKGOOD
   sys_clkgood = 1;
   run(8);
 
-  while(!top.cpu_bus.CPU_PIN_STARTp.tp()) {
-    if (verbose) printf("Wait for CPU_PIN_START\n");
+  // Wait for PIN_CPU_START
+  while(!top.cpu_bus.PIN_CPU_STARTp.tp()) {
     run(8);
   }
 
-  if (verbose) printf("CPU_PIN_START high, delay 8 phases\n");
+  // PIN_CPU_START high, delay 8 phases
   run(8);
 
-  if (verbose) printf("Set CPU_READY\n");
+  // Set CPU_READY, delay 8 phases
   sys_cpuready = 1;
   run(8);
-  if (verbose) printf("GateBoy::run_reset_sequence() done\n");
-  if (verbose) printf("\n");
 
+  // Done, initialize bus with whatever the CPU wants.
   cpu.get_bus_req(cpu_req);
 }
 
 //------------------------------------------------------------------------------
 
 void GateBoy::set_boot_bit() {
-  dbg_write(0xFF50, 0xFF);
+  dbg_write(ADDR_DISABLE_BOOTROM, 0xFF);
 }
 
 //------------------------------------------------------------------------------
@@ -124,6 +121,7 @@ void GateBoy::load_dump(const char* filename) {
   dbg_write(ADDR_LCDC, dump[ADDR_LCDC]);
 
   printf("Loaded %zd bytes from dump %s\n", size, filename);
+  delete [] dump;
 }
 
 //------------------------------------------------------------------------------
@@ -131,10 +129,10 @@ void GateBoy::load_dump(const char* filename) {
 void GateBoy::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  uint8_t* dump = new uint8_t[65536];
-  size_t size = load_blob(filename, dump, 65536);
+  uint8_t* rom = new uint8_t[65536];
+  size_t size = load_blob(filename, rom, 65536);
 
-  memcpy(cart_rom, dump, 32768);
+  memcpy(cart_rom, rom, 32768);
   memset(vid_ram,  0,    8192);
   memset(cart_ram, 0,    8192);
   memset(ext_ram,  0,    8192);
@@ -142,6 +140,7 @@ void GateBoy::load_rom(const char* filename) {
   memset(zero_ram, 0,    128);
 
   printf("Loaded %zd bytes from rom %s\n", size, filename);
+  delete [] rom;
 }
 
 //------------------------------------------------------------------------------
@@ -185,14 +184,6 @@ void GateBoy::next_phase() {
   int old_phase = (phase_total + 0) & 7;
   int new_phase = (phase_total + 1) & 7;
 
-  if (phase_total == 164) {
-    ack_vblank = 1;
-  }
-
-  if (script) {
-    dbg_req = script[(phase_total / 8) % script_len];
-  }
-
   //----------
   // Update CPU
 
@@ -214,6 +205,10 @@ void GateBoy::next_phase() {
     }
   }
 
+  if (script) {
+    dbg_req = script[(phase_total / 8) % script_len];
+  }
+
   if (DELTA_AB) {
     cpu_req.addr &= 0x00FF;
   }
@@ -233,13 +228,11 @@ void GateBoy::next_phase() {
   uint64_t hash_regs_old  = HASH_INIT;
   uint64_t hash_regs_new  = HASH_INIT;
 
-  StringDumper d;
-
   for (pass_count = 1; pass_count < 100; pass_count++) {
     hash_regs_old = hash_regs_new;
     hash_regs_new  = next_pass(old_phase, new_phase);
     if (hash_regs_new == hash_regs_old) break;
-    if (pass_count == 90) {
+    if (pass_count > 90) {
       printf("!!!STUCK!!!\n");
     }
   }
@@ -250,9 +243,10 @@ void GateBoy::next_phase() {
   }
 
   if (RegBase::bus_floating) {
-    // FIXME hitting this a lot
-    //printf("Bus floating!\n");
+    printf("Bus floating!\n");
     RegBase::bus_floating = false;
+    //next_pass(old_phase, new_phase);
+    //RegBase::bus_floating = false;
   }
 
   CHECK_P(pass_count < 100);
@@ -272,9 +266,9 @@ void GateBoy::next_phase() {
   int fb_y = top.lcd_reg.get_y();
 
   if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-    int p0 = top.PIN_LCD_DATA0n.qp();
-    int p1 = top.PIN_LCD_DATA1n.qp();
-    fb[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
+    int p0 = top.PIN_LCD_DATA0.qp();
+    int p1 = top.PIN_LCD_DATA1.qp();
+    framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
   }
 
   //----------
@@ -314,30 +308,30 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   
   bool addr_rom = cpu_req.addr <= 0x7FFF;
   bool addr_ram = cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF;
-  bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.CPU_PIN_BOOTp.tp();
+  bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
   bool hold_mem = cpu_req.read && (cpu_req.addr < 0xFF00);
 
-  top.cpu_bus.CPU_PIN6 = 0;
+  top.cpu_bus.PIN_CPU_6 = 0;
   top.cpu_bus.set_addr(cpu_req.addr);
   top.cpu_bus.set_data(cpu_req.write, cpu_req.data_lo);
-  top.cpu_bus.CPU_PIN_RDp = !cpu_req.write;
-  top.cpu_bus.CPU_PIN_WRp = cpu_req.write;  
-  top.cpu_bus.CPU_PIN_ADDR_EXTp = addr_ext;
+  top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+  top.cpu_bus.PIN_CPU_WRp = cpu_req.write;  
+  top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext;
 
-  if (DELTA_AB) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_BC) { top.cpu_bus.CPU_PIN_LATCH_EXT = 0; }
-  if (DELTA_CD) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_DE) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_EF) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_FG) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_GH) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
-  if (DELTA_HA) { top.cpu_bus.CPU_PIN_LATCH_EXT = hold_mem; }
+  if (DELTA_AB) { top.cpu_bus.PIN_CPU_LATCH_EXT = 0; }
+  if (DELTA_BC) { top.cpu_bus.PIN_CPU_LATCH_EXT = 0; }
+  if (DELTA_CD) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
+  if (DELTA_DE) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
+  if (DELTA_EF) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
+  if (DELTA_FG) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
+  if (DELTA_GH) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
+  if (DELTA_HA) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
 
-  top.int_reg.CPU_PIN_ACK_VBLANK = ack_vblank;
-  top.int_reg.CPU_PIN_ACK_STAT   = ack_stat;
-  top.int_reg.CPU_PIN_ACK_TIMER  = ack_timer;
-  top.int_reg.CPU_PIN_ACK_SERIAL = ack_serial;
-  top.int_reg.CPU_PIN_ACK_JOYPAD = ack_joypad;
+  top.int_reg.PIN_CPU_ACK_VBLANK = ack_vblank;
+  top.int_reg.PIN_CPU_ACK_STAT   = ack_stat;
+  top.int_reg.PIN_CPU_ACK_TIMER  = ack_timer;
+  top.int_reg.PIN_CPU_ACK_SERIAL = ack_serial;
+  top.int_reg.PIN_CPU_ACK_JOYPAD = ack_joypad;
 
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
 
@@ -354,16 +348,14 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
 //-----------------------------------------------------------------------------
 
-#pragma warning(disable : 4189)
-
 void GateBoy::tock_ext_bus() {
   uint16_t ext_addr = top.ext_bus.get_pin_addr();
 
   // ROM read
   {
     uint16_t rom_addr = ext_addr & 0x7FFF;
-    wire OEn = top.ext_bus.EXT_PIN_RDn.qp();
-    wire CEn = top.ext_bus.EXT_PIN_A15p.qp();
+    wire OEn = top.ext_bus.PIN_EXT_RDn.qp();
+    wire CEn = top.ext_bus.PIN_EXT_A15p.qp();
 
     if (!CEn && !OEn) {
       top.ext_bus.set_pin_data(cart_rom[rom_addr]);
@@ -374,10 +366,10 @@ void GateBoy::tock_ext_bus() {
   {
     uint16_t ram_addr = (ext_addr & 0x1FFF);
 
-    wire WRn  = top.ext_bus.EXT_PIN_WRn.qp();
-    wire CE1n = top.ext_bus.EXT_PIN_CSn.qp();
-    wire CE2  = top.ext_bus.EXT_PIN_A14p.qp();
-    wire OEn  = top.ext_bus.EXT_PIN_RDn.qp();
+    wire WRn  = top.ext_bus.PIN_EXT_WRn.qp();
+    wire CE1n = top.ext_bus.PIN_EXT_CSn.qp();
+    wire CE2  = top.ext_bus.PIN_EXT_A14p.qp();
+    wire OEn  = top.ext_bus.PIN_EXT_RDn.qp();
 
     // Write
     if (!CE1n && CE2 && !WRn) {
@@ -397,10 +389,10 @@ void GateBoy::tock_ext_bus() {
 
     uint16_t ram_addr = (ext_addr & 0x1FFF);
 
-    wire WRn  = top.ext_bus.EXT_PIN_WRn.qp();
-    wire CS1n = top.ext_bus.EXT_PIN_CSn.qp();
-    wire CS2  = top.ext_bus.EXT_PIN_A13p.qp() && !top.ext_bus.EXT_PIN_A14p.qp() && top.ext_bus.EXT_PIN_A15p.qp();
-    wire OEn = top.ext_bus.EXT_PIN_RDn.qp();
+    wire WRn  = top.ext_bus.PIN_EXT_WRn.qp();
+    wire CS1n = top.ext_bus.PIN_EXT_CSn.qp();
+    wire CS2  = top.ext_bus.PIN_EXT_A13p.qp() && !top.ext_bus.PIN_EXT_A14p.qp() && top.ext_bus.PIN_EXT_A15p.qp();
+    wire OEn = top.ext_bus.PIN_EXT_RDn.qp();
 
     // Write
     if (!CS1n && CS2 && !WRn) {
@@ -413,7 +405,7 @@ void GateBoy::tock_ext_bus() {
     }
   }
 
-  // MBC1
+  // FIXME - implement MBC1
 
   // 0000-3FFF - ROM Bank 00 (Read Only) This area always contains the first 16KBytes of the cartridge ROM.
   // 4000-7FFF - ROM Bank 01-7F (Read Only) This area may contain any of the further 16KByte banks of the ROM, allowing to address up to 125 ROM Banks (almost 2MByte). As described below, bank numbers 20h, 40h, and 60h cannot be used, resulting in the odd amount of 125 banks.
@@ -441,36 +433,6 @@ void GateBoy::tock_ext_bus() {
   {
   }
   */
-
-#if 0
-
-  // CS seems to actually serve as a mux between rom/ram.
-  // Based on the traces, the gb-live32 cart ignores the high bit of the
-  // address and puts data on the bus on phase B if CSn is high.
-
-  if (!top.ext_bus.EXT_PIN_CSn.qp()) {
-    // FIXME need to split this up into ext ram / cart ram / echo ram
-    if (!top.ext_bus.EXT_PIN_WRn.qp()) {
-      mem[ext_addr] = top.ext_bus.get_pin_data();
-    }
-
-    if (!top.ext_bus.EXT_PIN_RDn.qp()) {
-      top.ext_bus.set_pin_data(mem[ext_addr]);
-    }
-    else {
-      top.ext_bus.set_pin_data_z();
-    }
-  }
-  else {
-    if (!(ext_addr & 0x8000) && !top.ext_bus.EXT_PIN_RDn.qp()) {
-      top.ext_bus.set_pin_data(mem[ext_addr]);
-    }
-    else {
-      top.ext_bus.set_pin_data_z();
-    }
-  }
-
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -479,9 +441,9 @@ void GateBoy::tock_vram_bus() {
   int vram_addr = top.vram_bus.get_pin_addr();
   uint8_t& vram_data = vid_ram[vram_addr];
 
-  if (!top.vram_bus.VRAM_PIN_WRn.qp()) vram_data = (uint8_t)top.vram_bus.get_pin_data();
+  if (!top.vram_bus.PIN_VRAM_WRn.qp()) vram_data = (uint8_t)top.vram_bus.get_pin_data();
 
-  if (!top.vram_bus.VRAM_PIN_OEn.qp()) {
+  if (!top.vram_bus.PIN_VRAM_OEn.qp()) {
     top.vram_bus.set_pin_data_in(vram_data);
   }
   else {
@@ -496,11 +458,11 @@ void GateBoy::tock_oam_bus() {
   uint8_t& oam_data_a = oam_ram[(oam_addr << 1) + 0];
   uint8_t& oam_data_b = oam_ram[(oam_addr << 1) + 1];
 
-  if (!top.oam_bus.OAM_PIN_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
-  if (!top.oam_bus.OAM_PIN_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
+  if (!top.oam_bus.PIN_OAM_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
+  if (!top.oam_bus.PIN_OAM_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
 
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
-  if (!top.oam_bus.OAM_PIN_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);
+  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
+  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);
 }
 
 //-----------------------------------------------------------------------------
@@ -508,7 +470,7 @@ void GateBoy::tock_oam_bus() {
 void GateBoy::tock_zram_bus() {
   // ZRAM control signals are
 
-  // top.clk_reg.CPU_PIN_BUKE_AxxxxxGH
+  // top.clk_reg.PIN_CPU_BUKE_AxxxxxGH
   // top.TEDO_CPU_RDp();
   // top.TAPU_CPU_WRp_xxxxEFGx()
   // top.cpu_bus.SYKE_FF00_FFFFp()

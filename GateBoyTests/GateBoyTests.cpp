@@ -56,7 +56,7 @@ int GateBoyTests::test_init() {
 
   // Framebuffer should be 0x04 (yellow)
   for (int i = 0; i < 160*144; i++) {
-    ASSERT_EQ(4, gb.fb[i]);
+    ASSERT_EQ(4, gb.framebuffer[i]);
   }
 
   EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");
@@ -113,15 +113,15 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.BUDE_xxxxEFGH,   0b00001111);
     EXPECT_CLK(clk_reg.BALY_Axxxxxxx,   0b10000000);
 
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOWA_xBCDEFGH.tp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BEDO_Axxxxxxx.tp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BEKO_ABCDxxxx.tp(), 0b11110000);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BUDE_xxxxEFGH.tp(), 0b00001111);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOLO_ABCDEFxx.tp(), 0b11111100);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BUKE_AxxxxxGH.tp(), 0b10000011);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOMA_Axxxxxxx.tp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.CPU_PIN_BOGA_xBCDEFGH.tp(), 0b01111111);
-    EXPECT_CLK(top.ext_bus.EXT_PIN_CLK.qp(),           0b11110000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.tp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.tp(), 0b11110000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.tp(), 0b00001111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.tp(), 0b11111100);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.tp(), 0b10000011);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.tp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(top.ext_bus.PIN_EXT_CLK.qp(),           0b11110000);
     gb.next_phase();
   }
 
@@ -293,28 +293,28 @@ int GateBoyTests::test_ext_bus() {
     for (int i = 0; i < 40; i++) {
       if ((i % 8) == 0) gb.dbg_req = script[i / 8];
 
-      wire CLK = gb.top.ext_bus.EXT_PIN_CLK.qp();
-      wire WRn = gb.top.ext_bus.EXT_PIN_WRn.qp();
-      wire RDn = gb.top.ext_bus.EXT_PIN_RDn.qp();
-      wire CSn = gb.top.ext_bus.EXT_PIN_CSn.qp();
+      wire CLK = gb.top.ext_bus.PIN_EXT_CLK.qp();
+      wire WRn = gb.top.ext_bus.PIN_EXT_WRn.qp();
+      wire RDn = gb.top.ext_bus.PIN_EXT_RDn.qp();
+      wire CSn = gb.top.ext_bus.PIN_EXT_CSn.qp();
 
-      char A00 = gb.top.ext_bus.EXT_PIN_A00p.c();
-      char A01 = gb.top.ext_bus.EXT_PIN_A01p.c();
-      char A02 = gb.top.ext_bus.EXT_PIN_A02p.c();
-      char A03 = gb.top.ext_bus.EXT_PIN_A03p.c();
-      char A12 = gb.top.ext_bus.EXT_PIN_A12p.c();
-      char A13 = gb.top.ext_bus.EXT_PIN_A13p.c();
-      char A14 = gb.top.ext_bus.EXT_PIN_A14p.c();
-      char A15 = gb.top.ext_bus.EXT_PIN_A15p.c();
+      char A00 = gb.top.ext_bus.PIN_EXT_A00p.c();
+      char A01 = gb.top.ext_bus.PIN_EXT_A01p.c();
+      char A02 = gb.top.ext_bus.PIN_EXT_A02p.c();
+      char A03 = gb.top.ext_bus.PIN_EXT_A03p.c();
+      char A12 = gb.top.ext_bus.PIN_EXT_A12p.c();
+      char A13 = gb.top.ext_bus.PIN_EXT_A13p.c();
+      char A14 = gb.top.ext_bus.PIN_EXT_A14p.c();
+      char A15 = gb.top.ext_bus.PIN_EXT_A15p.c();
 
-      wire D00 = gb.top.ext_bus.EXT_PIN_D00p.qp();
-      wire D01 = gb.top.ext_bus.EXT_PIN_D01p.qp();
-      wire D02 = gb.top.ext_bus.EXT_PIN_D02p.qp();
-      wire D03 = gb.top.ext_bus.EXT_PIN_D03p.qp();
-      wire D04 = gb.top.ext_bus.EXT_PIN_D04p.qp();
-      wire D05 = gb.top.ext_bus.EXT_PIN_D05p.qp();
-      wire D06 = gb.top.ext_bus.EXT_PIN_D06p.qp();
-      wire D07 = gb.top.ext_bus.EXT_PIN_D07p.qp();
+      wire D00 = gb.top.ext_bus.PIN_EXT_D00p.qp();
+      wire D01 = gb.top.ext_bus.PIN_EXT_D01p.qp();
+      wire D02 = gb.top.ext_bus.PIN_EXT_D02p.qp();
+      wire D03 = gb.top.ext_bus.PIN_EXT_D03p.qp();
+      wire D04 = gb.top.ext_bus.PIN_EXT_D04p.qp();
+      wire D05 = gb.top.ext_bus.PIN_EXT_D05p.qp();
+      wire D06 = gb.top.ext_bus.PIN_EXT_D06p.qp();
+      wire D07 = gb.top.ext_bus.PIN_EXT_D07p.qp();
 
       ASSERT_EQ(CLK, CLK_WAVE[i] != 'x', "CLK failure at phase %d\n", i);
       ASSERT_EQ(WRn, WRn_WAVE[i] != 'x', "WRn failure at phase %d\n", i);
@@ -350,7 +350,7 @@ int GateBoyTests::test_ext_bus() {
 
     for (int i = 0; i < 32; i++) {
       int phase = i & 7;
-      wire A15 = gb.top.ext_bus.EXT_PIN_A15p.qp();
+      wire A15 = gb.top.ext_bus.PIN_EXT_A15p.qp();
 
       if (phase == 0 || phase == 1) {
         ASSERT_EQ(1, A15, "A15 not high on phase 0/1");

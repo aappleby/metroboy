@@ -71,6 +71,8 @@ void TileFetcher::tick(const SchematicTop& top) {
   /*p32.LESO*/ LESO_LATCH_TILE_DBn   = not1(MOFU_LATCH_TILE_DBp);
 }
 
+//------------------------------------------------------------------------------
+
 void TileFetcher::tock(SchematicTop& top) {
   wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.tp();
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGp);

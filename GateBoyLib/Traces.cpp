@@ -22,7 +22,7 @@
     // LOPE_13 NC
     // LOPE_14 << SETn MYZU_04
     // LOPE_15 >> Qn
-    // LOPE_16 >> Q    CPU_PIN_INT_VBLANK, MATY_03
+    // LOPE_16 >> Q    PIN_CPU_INT_VBLANK, MATY_03
     // LOPE_17 << RSTn LYTA_05
     // LOPE_18 NC
     // LOPE_19 SC
@@ -30,15 +30,15 @@
     // LOPE_21 SC
     // LOPE_22 << CLKp VYPU_03
 
-    // TEME_01 << CPU_BUS_D0p
+    // TEME_01 << BUS_CPU_D0p
     // TEME_02 nc
     // TEME_03 nc
     // TEME_04 nc
     // TEME_05 << RAHU
-    // TEME_06 << CPU_BUS_D0p
+    // TEME_06 << BUS_CPU_D0p
     // TEME_07 nc
     // TEME_08 nc 
-    // TEME_09 >> VRAM_BUS_D0p
+    // TEME_09 >> BUS_VRAM_D0p
     // TEME_10 nc
 
     // YFAP_01 << YDYV_10
@@ -49,7 +49,7 @@
     // YFAP_06 << YDYV_10
     // YFAP_07
     // YFAP_08
-    // YFAP_09 >> CPU_BUS_D0p
+    // YFAP_09 >> BUS_CPU_D0p
     // YFAP_10
 
 
@@ -185,8 +185,8 @@
 // NAFA_04 << PYSU_02 : CLKn
 // NAFA_05 nc
 // NAFA_06 nc
-// NAFA_07 >> EVAX_04 : Qn? (tribuf to VRAM_BUS_A08p)
-// NAFA_08 >> POLY_04 : Q?  (tribuf to CPU_BUS_D0p)
+// NAFA_07 >> EVAX_04 : Qn? (tribuf to BUS_VRAM_A08p)
+// NAFA_08 >> POLY_04 : Q?  (tribuf to BUS_CPU_D0p)
 
 
 // LOKY := nand(LARA, LENE_QN);
@@ -286,7 +286,7 @@
     // FUGY := tri(ABON, XEGU_Q) >> VRAM_A05
 
 // TEGU_01 << SOSE
-// TEGU_02 << CPU_PIN_WR
+// TEGU_02 << PIN_CPU_WR
 // TEGU_03 >> SALE_03
 
 // APAR := not1(ACYL);
@@ -333,32 +333,32 @@
 
 
 #if   0
-    POWU_DMA_OAM_WRp     = and2(MATU_DMA_RUNNINGp, xxxxEFGH, !CPU_PIN_HOLD_MEM);
-    WYJA_OAM_WRp         = or (and(FE00_FEFFp, AJUJ_OAM_BUSYn, CPU_PIN_WRp, AFAS_xxxxEFGx), POWU_DMA_OAM_WRp);
-    OAM_PIN_WRn_A = nand2(WYJA_OAM_WRp, !OAM_TRI_A0n);
-    OAM_PIN_WRn_B = nand2(WYJA_OAM_WRp,  OAM_TRI_A0n);
+    POWU_DMA_OAM_WRp     = and2(MATU_DMA_RUNNINGp, xxxxEFGH, !PIN_CPU_HOLD_MEM);
+    WYJA_OAM_WRp         = or (and(FE00_FEFFp, AJUJ_OAM_BUSYn, PIN_CPU_WRp, AFAS_xxxxEFGx), POWU_DMA_OAM_WRp);
+    PIN_OAM_WRn_A = nand2(WYJA_OAM_WRp, !OAM_TRI_A0n);
+    PIN_OAM_WRn_B = nand2(WYJA_OAM_WRp,  OAM_TRI_A0n);
 
 #endif
 
 #if 0
 
     SCAN_OAM_LATCH = and2(ACYL_SCANNINGp, XOCE_AxxDExxH());
-    CPU_OAM_LATCH  = and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM, FE00_FEFFp)
-    OAM_PIN_OE = !or(SCAN_OAM_LATCH, SPR_READp, BOTA_CPU_OAM_LATCH);
+    CPU_OAM_LATCH  = and2(PIN_CPU_RDp, !PIN_CPU_HOLD_MEM, FE00_FEFFp)
+    PIN_OAM_OE = !or(SCAN_OAM_LATCH, SPR_READp, BOTA_CPU_OAM_LATCH);
 
 #endif
 
 #if 0
     // cpu data driven to bus on EFGH during write
 
-EXT_PIN_RD           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-EXT_PIN_WR           = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM, AFAS_xxxxEFGx);
-EXT_PIN_CS           = and2(                           !CPU_PIN_ADDR_EXT, A000_FFFF,  TUNA_0000_FDFFp);
-MATE_LATCH_CPU_ADDRp = and2(                            CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-LATCH_CPU_DATA       = and2(CPU_PIN_RDp,                CPU_PIN_ADDR_EXT, !ADDR_VRAM, CPU_PIN_DV);
-IBUS_TO_EBUSp        = and2(              CPU_PIN_WRp,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-EXT_PIN_A15_A        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
-EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
+PIN_EXT_RD           = and2(              PIN_CPU_WRp,  PIN_CPU_ADDR_EXT, !ADDR_VRAM);
+PIN_EXT_WR           = and2(              PIN_CPU_WRp,  PIN_CPU_ADDR_EXT, !ADDR_VRAM, AFAS_xxxxEFGx);
+PIN_EXT_CS           = and2(                           !PIN_CPU_ADDR_EXT, A000_FFFF,  TUNA_0000_FDFFp);
+MATE_LATCH_CPU_ADDRp = and2(                            PIN_CPU_ADDR_EXT, !ADDR_VRAM);
+LATCH_CPU_DATA       = and2(PIN_CPU_RDp,                PIN_CPU_ADDR_EXT, !ADDR_VRAM, PIN_CPU_DV);
+IBUS_TO_EBUSp        = and2(              PIN_CPU_WRp,  PIN_CPU_ADDR_EXT, !ADDR_VRAM);
+PIN_EXT_A15_A        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
+PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 
 #endif
 
@@ -366,12 +366,12 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 
     LAVO is NAND3
 
-    LAVO_01 << CPU_PIN_RD
+    LAVO_01 << PIN_CPU_RD
     LAVO_02 << TEXO_04
-    LAVO_03 << CPU_PIN_DV
+    LAVO_03 << PIN_CPU_DV
     LAVO_04 >>
 
-    // SOMA = latch(LAVO, EXT_PIN_D0n_C)
+    // SOMA = latch(LAVO, PIN_EXT_D0n_C)
     // RYMA = tri(LAVO, SOMA_08)
 #endif
 
@@ -379,17 +379,17 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 
     SORE = not1(A15);
     TEVY = or2(A13, A14, SORE);
-    TEXO = and2(CPU_PIN_ADDR_EXT, TEVY);
+    TEXO = and2(PIN_CPU_ADDR_EXT, TEVY);
     MOCA = nor4(TEXO, UMUT)
     NEVY = or2(MEXO, MOCA);
-    LAGU = or2(and(CPU_PIN_RD, LEVO), CPU_PIN_WR);
+    LAGU = or2(and(PIN_CPU_RD, LEVO), PIN_CPU_WR);
     LYWE = not1(LAGU)
     MOTY = or2(MOCA, LYWE)
 
     UJYV is MUX5
     UJYV_01 << UNOR_04
     UJYV_02 << RD_C
-    UJYV_03 << CPU_PIN_RD
+    UJYV_03 << PIN_CPU_RD
     UJYV_04 nc
     UJYV_05 >> TEDO_01
 
@@ -421,7 +421,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     RUXA_03 >> D0_A
 
 
-    UJYV = mux5n(UNOR, RD_C, CPU_PIN_RD);
+    UJYV = mux5n(UNOR, RD_C, PIN_CPU_RD);
     TEDO = not1(UJYV)
     REDU = not1(TEDO)
     RORU = mux6p(UNOR, REDU, MOTY);
@@ -432,27 +432,27 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 
     // if RORU selects MOTY:
 
-    D0_A = or2(!CPU_D0, !CPU_PIN_WR, ADDR_VRAM, !CPU_PIN_ADDR_EXT);
+    D0_A = or2(!CPU_D0, !PIN_CPU_WR, ADDR_VRAM, !PIN_CPU_ADDR_EXT);
 
 
-    LULA_CBD_TO_EPDp = CPU_PIN_WRp;
+    LULA_CBD_TO_EPDp = PIN_CPU_WRp;
     if (ADDR_VRAM) LULA_CBD_TO_EPDp = 0;
-    if (!CPU_PIN_ADDR_EXT) LULA_CBD_TO_EPDp = 0;
+    if (!PIN_CPU_ADDR_EXT) LULA_CBD_TO_EPDp = 0;
 
-    D*_B = and2(CPU_PIN_WRp, CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+    D*_B = and2(PIN_CPU_WRp, PIN_CPU_ADDR_EXT, !ADDR_VRAM);
 
 #endif
 
 
 #if 0
 
-    EXT_PIN_A15_A = and2(xxCDEFGH, CPU_PIN_ADDR_EXT, !A15);
-    EXT_PIN_A15_D = and2(xxCDEFGH, CPU_PIN_ADDR_EXT, !A15);
+    PIN_EXT_A15_A = and2(xxCDEFGH, PIN_CPU_ADDR_EXT, !A15);
+    PIN_EXT_A15_D = and2(xxCDEFGH, PIN_CPU_ADDR_EXT, !A15);
 
 #endif
 
 #if 0
-    EXT_PIN_A00n_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+    PIN_EXT_A00n_A = not1(tp_latch(and(PIN_CPU_ADDR_EXT, !ADDR_VRAM), BUS_CPU_A00));
 
 #endif
 
@@ -462,7 +462,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     AGUT_01 << AROV
     AGUT_02 << AJAX
     AGUT_03 nc
-    AGUT_04 << CPU_PIN_ADDR_EXT
+    AGUT_04 << PIN_CPU_ADDR_EXT
     AGUT_05 >> AWOD_02
 
     AWOD is NOR
@@ -476,7 +476,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     ABUZ_03 nc
     ABUZ_04 >> *
 
-    CS_A = and2(xxCDEFGH, CPU_PIN_ADDR_EXT, A000_FDFF);
+    CS_A = and2(xxCDEFGH, PIN_CPU_ADDR_EXT, A000_FDFF);
 
 #endif
 
@@ -484,7 +484,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 
     AREV is NAND2
     AREV_01 << AFAS_03
-    AREV_02 << CPU_PIN_WR
+    AREV_02 << PIN_CPU_WR
     AREV_03 >> APOV_01
 
     APOV is NOT4
@@ -541,12 +541,12 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     USUF_02 << PUVA_04
     USUF_03 >> WR_D
 
-    AREV = nand2(AFAS, CPU_PIN_WR);
+    AREV = nand2(AFAS, PIN_CPU_WR);
     APOV = not1(AREV);
     MEXO = not1(APOV);
     SORE = not1(A15);
     TEVY = or2(A13, A14, SORE);
-    TEXO = and2(CPU_PIN_ADDR_EXT, TEVY);
+    TEXO = and2(PIN_CPU_ADDR_EXT, TEVY);
     MOCA = nor4(TEXO, UMUT)
     NEVY = or2(MEXO, MOCA);
     PUVA = or2(NEVY, LUMA)
@@ -556,7 +556,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     WR_D = USUF;
 
 
-    EXT_PIN_WR_A = and2(AFAS_xxxxEFGx, CPU_PIN_WR, CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+    PIN_EXT_WR_A = and2(AFAS_xxxxEFGx, PIN_CPU_WR, PIN_CPU_ADDR_EXT, !ADDR_VRAM);
 
 #endif
 
@@ -590,10 +590,10 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     LEVO_02 >> LAGU_02
 
     LAGU is (probably) or2(AND())
-    LAGU_01 << CPU_PIN_RD
+    LAGU_01 << PIN_CPU_RD
     LAGU_02 << LEVO_02
     LAGU_03 nc
-    LAGU_04 << CPU_PIN_WR
+    LAGU_04 << PIN_CPU_WR
     LAGU_05 >> LYWE_01
 
     LYWE is NOT
@@ -623,10 +623,10 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 
     SORE = not1(A15);
     TEVY = or2(A13, A14, SORE);
-    TEXO = and2(CPU_PIN_ADDR_EXT, TEVY);
+    TEXO = and2(PIN_CPU_ADDR_EXT, TEVY);
     MOCA = nor4(TEXO, UMUT)
     LEVO = not1(TEXO)
-    LAGU = or2(and(CPU_PIN_RD, LEVO), CPU_PIN_WR);
+    LAGU = or2(and(PIN_CPU_RD, LEVO), PIN_CPU_WR);
     LYWE = not1(LAGU)
     MOTY = or2(MOCA, LYWE)
     TYMU = nor4(LUMA, MOTY)
@@ -636,7 +636,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
     RD_D = URUN
 
     // so we're always reading _unless_ we have a valid write to not-vram
-    EXT_PIN_RD_A = or2(!CPU_PIN_WR, !CPU_PIN_ADDR_EXT, ADDR_VRAM);
+    PIN_EXT_RD_A = or2(!PIN_CPU_WR, !PIN_CPU_ADDR_EXT, ADDR_VRAM);
 
 #endif
 
@@ -645,55 +645,55 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 #if 0
   // these are all "normal operating mode" w/o rendering or dma 
 
-  OAM_PIN_OE     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OPD_TO_OBD     = nand2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OBD_TO_OBL     =  and2(CPU_PIN_RDp, !CPU_PIN_HOLD_MEM,                     ADDR_OAM);
-  OBL_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,                     ADDR_OAM);
+  PIN_OAM_OE     = nand2(PIN_CPU_RDp, !PIN_CPU_HOLD_MEM,                     ADDR_OAM);
+  OPD_TO_OBD     = nand2(PIN_CPU_RDp, !PIN_CPU_HOLD_MEM,                     ADDR_OAM);
+  OBD_TO_OBL     =  and2(PIN_CPU_RDp, !PIN_CPU_HOLD_MEM,                     ADDR_OAM);
+  OBL_TO_CBD     =  and2(PIN_CPU_RDp,  PIN_CPU_HOLD_MEM,                     ADDR_OAM);
 
-  EPD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM,  CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  EXT_PIN_RD     = nand2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  EXT_PIN_WR     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
-  CBD_TO_EPD     =  and2(CPU_PIN_WRp,                     CPU_PIN_ADDR_EXT, !ADDR_VRAM);
-  CBA_TO_EPA     =  and2(                                 CPU_PIN_ADDR_EXT, !ADDR_VRAM);
+  EPD_TO_CBD     =  and2(PIN_CPU_RDp,  PIN_CPU_HOLD_MEM,  PIN_CPU_ADDR_EXT, !ADDR_VRAM);
+  PIN_EXT_RD     = nand2(PIN_CPU_WRp,                     PIN_CPU_ADDR_EXT, !ADDR_VRAM);
+  PIN_EXT_WR     =  and2(PIN_CPU_WRp,                     PIN_CPU_ADDR_EXT, !ADDR_VRAM,   xxxxEFGx);
+  CBD_TO_EPD     =  and2(PIN_CPU_WRp,                     PIN_CPU_ADDR_EXT, !ADDR_VRAM);
+  CBA_TO_EPA     =  and2(                                 PIN_CPU_ADDR_EXT, !ADDR_VRAM);
 
-  EXT_PIN_CS     =  and2(                                !CPU_PIN_ADDR_EXT,  ADDR_ERAM,   xxCDEFGH);
+  PIN_EXT_CS     =  and2(                                !PIN_CPU_ADDR_EXT,  ADDR_ERAM,   xxCDEFGH);
 
-  EXT_PIN_A15_A  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
-  EXT_PIN_A15_D  =  !or(                                 CPU_PIN_ADDR_EXT, A15);
+  PIN_EXT_A15_A  =  !or(                                 PIN_CPU_ADDR_EXT, A15);
+  PIN_EXT_A15_D  =  !or(                                 PIN_CPU_ADDR_EXT, A15);
 
-  OAM_PIN_WRn    = nand2(CPU_PIN_WRp,                                        ADDR_OAM,    xxxxEFGx);
-  TIMA_LOADp     =  and2(CPU_PIN_WRp, !CPU_PIN_HOLD_MEM,                     FF05,        xxxxEFGx);
-
-
-  VBD_TO_CBD     =  and2(CPU_PIN_RDp,  CPU_PIN_HOLD_MEM, !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-  VRAM_PIN_WR    = nand2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
-  VRAM_PIN_CS    = nand2(                                !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
-  VRAM_PIN_OE    = nand2(CPU_PIN_WRp,                                        ADDR_VRAM);
+  PIN_OAM_WRn    = nand2(PIN_CPU_WRp,                                        ADDR_OAM,    xxxxEFGx);
+  TIMA_LOADp     =  and2(PIN_CPU_WRp, !PIN_CPU_HOLD_MEM,                     FF05,        xxxxEFGx);
 
 
-  CBD_TO_VPD     =  and2(CPU_PIN_WRp,                    !CPU_PIN_ADDR_EXT,  ADDR_VRAM);
+  VBD_TO_CBD     =  and2(PIN_CPU_RDp,  PIN_CPU_HOLD_MEM, !PIN_CPU_ADDR_EXT,  ADDR_VRAM);
+  PIN_VRAM_WR    = nand2(PIN_CPU_WRp,                    !PIN_CPU_ADDR_EXT,  ADDR_VRAM,   xxxxEFGx);
+  PIN_VRAM_CS    = nand2(                                !PIN_CPU_ADDR_EXT,  ADDR_VRAM);
+  PIN_VRAM_OE    = nand2(PIN_CPU_WRp,                                        ADDR_VRAM);
 
 
-  EXT_PIN_A00n_A = not1(tp_latch(and(CPU_PIN_ADDR_EXT, !ADDR_VRAM), CPU_BUS_A00));
+  CBD_TO_VPD     =  and2(PIN_CPU_WRp,                    !PIN_CPU_ADDR_EXT,  ADDR_VRAM);
 
 
-  /*read  rom */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write rom */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+  PIN_EXT_A00n_A = not1(tp_latch(and(PIN_CPU_ADDR_EXT, !ADDR_VRAM), BUS_CPU_A00));
 
-  /*read  vram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
-  /*write vram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
 
-  /*read  cram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write cram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+  /*read  rom */ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;
+  /*write rom */ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;
 
-  /*read  eram*/ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = true;
-  /*write eram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = true;
+  /*read  vram*/ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = false;
+  /*write vram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false;
 
-  /*read  oam */ CPU_PIN_HOLD_MEM = true;  CPU_PIN_ADDR_EXT = false;
-  /*write oam */ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+  /*read  cram*/ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;
+  /*write cram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;
 
-  /*read  hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = dc;
-  /*write hram*/ CPU_PIN_HOLD_MEM = dc;    CPU_PIN_ADDR_EXT = false;
+  /*read  eram*/ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;
+  /*write eram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;
+
+  /*read  oam */ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = false;
+  /*write oam */ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false;
+
+  /*read  hram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = dc;
+  /*write hram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false;
 
 #endif
 
@@ -1122,7 +1122,7 @@ EXT_PIN_A15_D        = and2(                           !CPU_PIN_ADDR_EXT, !A15);
 // ROXO = not1(SEGU05)
 
 // NEFO_01 << LOMA_02    (clk)
-// NEFO_02 << CPU_BUS_D7p     (d)
+// NEFO_02 << BUS_CPU_D7p     (d)
 // NEFO_03 nc
 // NEFO_04 << COMP_CLOCK (clkn)
 // NEFO_05 nc

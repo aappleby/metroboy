@@ -340,7 +340,64 @@ struct Tri : private RegBase {
 
   inline wire tp()  const {
     //CHECK_N(state == TRI_HZNP);
-    if (state == TRI_HZNP) bus_floating = true;
+    if (state == TRI_HZNP) {
+      bus_floating = true;
+    }
+    return  as_wire();
+  }
+  //inline wire qn() const { return !as_wire(); }
+
+  inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
+
+  inline void preset(RegDelta d) {
+    CHECK_P(delta == DELTA_NONE);
+    delta = d;
+    value = logic_lut1[value];
+    delta = d;
+  }
+
+  inline void preset(wire d) {
+    preset(d ? DELTA_TRI1 : DELTA_TRI0);
+  }
+
+  inline void operator = (RegDelta d) {
+    CHECK_P(is_tri());
+
+    if (delta == DELTA_NONE) {
+      delta = d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
+      delta = d;
+    }
+    else {
+      //CHECK_P(d == DELTA_TRIZ);
+      if (d != DELTA_TRIZ) {
+        bus_collision = true;
+      }
+    }
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+struct Bus : private RegBase {
+  Bus(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::posedge;
+  using RegBase::negedge;
+  //using RegBase::dump_edge;
+
+  inline wire tp()  const {
+    //CHECK_N(state == TRI_HZNP);
+    if (state == TRI_HZNP) {
+      bus_floating = true;
+    }
     return  as_wire();
   }
   //inline wire qn() const { return !as_wire(); }
@@ -388,12 +445,16 @@ struct Pin : private RegBase {
   using RegBase::c;
 
   inline wire qp()  const {
-    if (state == TRI_HZNP) bus_floating = true;
+    if (state == TRI_HZNP) {
+      bus_floating = true;
+    }
     return as_wire();
   }
 
   inline wire qn()  const {
-    if (state == TRI_HZNP) bus_floating = true;
+    if (state == TRI_HZNP) {
+      bus_floating = true;
+    }
     return !as_wire();
   }
 

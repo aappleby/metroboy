@@ -3,6 +3,8 @@
 
 using namespace Schematics;
 
+//------------------------------------------------------------------------------
+
 void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("----------SpriteScan ---------\n");
 
@@ -19,7 +21,6 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("CARE_STORE_ENp_ABxxEFxx %d\n", (wire)CARE_STORE_ENp_ABxxEFxx);
   d("\n");
 }
-
 
 //------------------------------------------------------------------------------
 

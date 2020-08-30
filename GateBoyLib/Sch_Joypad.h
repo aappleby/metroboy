@@ -22,7 +22,7 @@ private:
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ Tri AWOB_WAKE_CPU = TRI_D0NP;
-  Tri CPU_PIN_WAKE = TRI_HZNP; // top right wire by itself <- P02.AWOB
+  Tri PIN_CPU_WAKE = TRI_HZNP; // top right wire by itself <- P02.AWOB
 
   /*p02.BATU*/ RegQP BATU_JP_GLITCH0  = REG_D0C0;
   /*p02.ACEF*/ RegQP ACEF_JP_GLITCH1  = REG_D0C0;
@@ -43,12 +43,12 @@ private:
   /*p05.KEJA*/ Tri KEJA_JOYP_L2     = TRI_D0NP; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ Tri KOLO_JOYP_L3     = TRI_D0NP; // 10-rung, looks like pass gate or something
 
-  Pin JOY_PIN_P10 = TRI_HZPU; // PIN_67
-  Pin JOY_PIN_P11 = TRI_HZPU; // PIN_66
-  Pin JOY_PIN_P12 = TRI_HZPU; // PIN_65
-  Pin JOY_PIN_P13 = TRI_HZPU; // PIN_64
-  Pin JOY_PIN_P14 = TRI_HZPU; // PIN_63
-  Pin JOY_PIN_P15 = TRI_HZPU; // PIN_62
+  Pin PIN_JOY_P10 = TRI_HZPU; // PIN_67
+  Pin PIN_JOY_P11 = TRI_HZPU; // PIN_66
+  Pin PIN_JOY_P12 = TRI_HZPU; // PIN_65
+  Pin PIN_JOY_P13 = TRI_HZPU; // PIN_64
+  Pin PIN_JOY_P14 = TRI_HZPU; // PIN_63
+  Pin PIN_JOY_P15 = TRI_HZPU; // PIN_62
 };
 
 //-----------------------------------------------------------------------------

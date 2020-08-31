@@ -3,16 +3,11 @@
 .define BASE $FDF1
 
 main:
-  ld a, 0
-  ld ($FF40), a
+  ld hl, $C003
+  ld a, $55
 
-  ld hl, BASE
-  ld a, $18
-  ld (hl+), a
-  ld a, $FE
-  ld (hl+), a
-
-  jp BASE
+- ld (hl), a
+  jr -
 
 
 

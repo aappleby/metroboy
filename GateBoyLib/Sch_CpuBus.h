@@ -60,27 +60,15 @@ struct CpuBus {
     BUS_CPU_A15 = DELTA_TRIZ;
   }
 
-  void set_data(bool oe, uint8_t data) {
-    if (oe) {
-      BUS_CPU_D0p = (data & 0x01);
-      BUS_CPU_D1p = (data & 0x02);
-      BUS_CPU_D2p = (data & 0x04);
-      BUS_CPU_D3p = (data & 0x08);
-      BUS_CPU_D4p = (data & 0x10);
-      BUS_CPU_D5p = (data & 0x20);
-      BUS_CPU_D6p = (data & 0x40);
-      BUS_CPU_D7p = (data & 0x80);
-    }
-    else {
-      BUS_CPU_D0p = DELTA_TRIZ;
-      BUS_CPU_D1p = DELTA_TRIZ;
-      BUS_CPU_D2p = DELTA_TRIZ;
-      BUS_CPU_D3p = DELTA_TRIZ;
-      BUS_CPU_D4p = DELTA_TRIZ;
-      BUS_CPU_D5p = DELTA_TRIZ;
-      BUS_CPU_D6p = DELTA_TRIZ;
-      BUS_CPU_D7p = DELTA_TRIZ;
-    }
+  void set_data(uint8_t data) {
+    BUS_CPU_D0p = (data & 0x01);
+    BUS_CPU_D1p = (data & 0x02);
+    BUS_CPU_D2p = (data & 0x04);
+    BUS_CPU_D3p = (data & 0x08);
+    BUS_CPU_D4p = (data & 0x10);
+    BUS_CPU_D5p = (data & 0x20);
+    BUS_CPU_D6p = (data & 0x40);
+    BUS_CPU_D7p = (data & 0x80);
   }
 
   void set_data_z() {
@@ -190,8 +178,8 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
-  Tri PIN_CPU_BOOTp   = TRI_HZNP;   // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Tri PIN_CPU_ADDR_HI = TRI_HZNP;   // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
+  Tri PIN_CPU_BOOTp         = TRI_HZNP; // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Tri PIN_CPU_ADDR_HI       = TRI_HZNP; // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
 
   Tri PIN_CPU_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
   Tri PIN_CPU_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state

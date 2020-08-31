@@ -82,11 +82,11 @@ void GateBoyApp::app_init() {
 
   //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
 
-#if 0
+#if 1
   // ld (hl),a; jr -2;
-  gb.mem[0x0155] = 0x77;
-  gb.mem[0x0156] = 0x18;
-  gb.mem[0x0157] = 0xFD;
+  gb.cart_rom[0x0155] = 0x77;
+  gb.cart_rom[0x0156] = 0x18;
+  gb.cart_rom[0x0157] = 0xFD;
 
   gb.script = new Req[] {
     { .addr = 0x0155, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode
@@ -270,7 +270,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   memset(overlay, 0, sizeof(overlay));
 
-  int fb_y = top.lcd_reg.get_y();
+  int fb_y = top.lcd_reg.get_ly();
   if (fb_y >= 0 && fb_y < 144) {
     for (int i = 0; i < 160; i++) {
       overlay[i + fb_y * 160] = 0x33FFFF00;

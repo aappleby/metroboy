@@ -9,7 +9,7 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("----------   LCD    ----------\n");
   d("PIX COUNT : %03d\n", top.pix_pipe.get_pix_count());
   d("LCD X     : %03d\n", get_x());
-  d("LCD Y     : %03d\n", get_y());
+  d("LCD Y     : %03d\n", get_ly());
   d("LYC       : %03d\n", get_lyc());
   d("\n");
 

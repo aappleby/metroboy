@@ -209,11 +209,13 @@ void GateBoy::next_phase() {
     dbg_req = script[(phase_total / 8) % script_len];
   }
 
-  if (DELTA_AB) {
+  if (DELTA_HA) {
     cpu_req.addr &= 0x00FF;
+    cpu_req.read = 0;
+    cpu_req.write = 0;
   }
 
-  if (DELTA_BC) {
+  if (DELTA_AB) {
     if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
       cpu_req = dbg_req;
     }
@@ -263,7 +265,7 @@ void GateBoy::next_phase() {
   // vsync 108.720 usec - right on 912 phases
 
   int fb_x = top.pix_pipe.get_pix_count() - 8;
-  int fb_y = top.lcd_reg.get_y();
+  int fb_y = top.lcd_reg.get_ly();
 
   if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
     int p0 = top.PIN_LCD_DATA0.qp();
@@ -313,11 +315,33 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
   top.cpu_bus.PIN_CPU_6 = 0;
   top.cpu_bus.set_addr(cpu_req.addr);
-  top.cpu_bus.set_data(cpu_req.write, cpu_req.data_lo);
   top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
   top.cpu_bus.PIN_CPU_WRp = cpu_req.write;  
-  top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext;
 
+  if (cpu_req.write) {
+    if (DELTA_HA) { top.cpu_bus.set_data_z(); }
+    if (DELTA_AB) { top.cpu_bus.set_data(0xFF); }
+    if (DELTA_BC) { top.cpu_bus.set_data(0xFF); }
+    if (DELTA_CD) { top.cpu_bus.set_data(0xFF); }
+    if (DELTA_DE) { top.cpu_bus.set_data(cpu_req.data_lo); }
+    if (DELTA_EF) { top.cpu_bus.set_data(cpu_req.data_lo); }
+    if (DELTA_FG) { top.cpu_bus.set_data(cpu_req.data_lo); }
+    if (DELTA_GH) { top.cpu_bus.set_data(cpu_req.data_lo); }
+  }
+  else {
+    top.cpu_bus.set_data_z();
+  }
+
+  if (DELTA_HA) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
+  if (DELTA_AB) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
+  if (DELTA_BC) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
+  if (DELTA_CD) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
+  if (DELTA_DE) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
+  if (DELTA_EF) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
+  if (DELTA_FG) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
+  if (DELTA_GH) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
+
+  if (DELTA_HA) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
   if (DELTA_AB) { top.cpu_bus.PIN_CPU_LATCH_EXT = 0; }
   if (DELTA_BC) { top.cpu_bus.PIN_CPU_LATCH_EXT = 0; }
   if (DELTA_CD) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
@@ -325,7 +349,6 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   if (DELTA_EF) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
   if (DELTA_FG) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
   if (DELTA_GH) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-  if (DELTA_HA) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
 
   top.int_reg.PIN_CPU_ACK_VBLANK = ack_vblank;
   top.int_reg.PIN_CPU_ACK_STAT   = ack_stat;
@@ -483,7 +506,7 @@ void GateBoy::tock_zram_bus() {
   if (hit_zram) {
     uint8_t& data = zero_ram[addr & 0x007F];
     if (top.TAPU_CPU_WRp_xxxxEFGx) data = top.cpu_bus.get_bus_data();
-    if (top.TEDO_CPU_RDp) top.cpu_bus.set_data(true, data);
+    if (top.TEDO_CPU_RDp) top.cpu_bus.set_data(data);
   }
 }
 

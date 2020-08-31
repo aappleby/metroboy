@@ -14,7 +14,7 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
   d("DOBA_SCAN_DONE_B %c\n", DOBA_SCAN_DONE_B.c());
   d("SCAN INDEX %02d\n", pack_p(YFEL_SCAN0.qp(), WEWY_SCAN1.qp(), GOSO_SCAN2.qp(), ELYN_SCAN3.qp(),
                                 FAHA_SCAN4.qp(), FONY_SCAN5.qp(), 0, 0));
-  d("LCD Y      %03d\n", top.lcd_reg.get_y());
+  d("LCD Y      %03d\n", top.lcd_reg.get_ly());
   d("Y DIFF     %03d\n", pack_p(DEGE_SPRITE_DELTA0, DABY_SPRITE_DELTA1, DABU_SPRITE_DELTA2, GYSA_SPRITE_DELTA3,
                                 GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7));
 

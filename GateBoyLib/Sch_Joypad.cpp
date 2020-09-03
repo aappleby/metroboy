@@ -83,7 +83,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(top.clk_reg.BALY_Axxxxxxx);
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch_A(BOGA_xBCDEFGH, KERY_ANY_BUTTONp);
+    /*p02.AWOB*/ AWOB_WAKE_CPU = tp_latch(BOGA_xBCDEFGH, KERY_ANY_BUTTONp);
     PIN_CPU_WAKE = AWOB_WAKE_CPU.tp();
   }
 
@@ -107,10 +107,10 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p10.ACAT*/ wire ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp, ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
     /*p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);
-    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch_A(BYZO_FF00_RDn, PIN_JOY_P10.qn());
-    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch_A(BYZO_FF00_RDn, PIN_JOY_P11.qn());
-    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch_A(BYZO_FF00_RDn, PIN_JOY_P12.qn());
-    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch_A(BYZO_FF00_RDn, PIN_JOY_P13.qn());
+    /*p05.KEVU*/ KEVU_JOYP_L0 = tp_latch(BYZO_FF00_RDn, PIN_JOY_P10.qn());
+    /*p05.KAPA*/ KAPA_JOYP_L1 = tp_latch(BYZO_FF00_RDn, PIN_JOY_P11.qn());
+    /*p05.KEJA*/ KEJA_JOYP_L2 = tp_latch(BYZO_FF00_RDn, PIN_JOY_P12.qn());
+    /*p05.KOLO*/ KOLO_JOYP_L3 = tp_latch(BYZO_FF00_RDn, PIN_JOY_P13.qn());
 
     // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
     // That also means that _both_ P14 and P15 are selected at reset :/

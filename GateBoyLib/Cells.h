@@ -52,18 +52,19 @@ inline wire add_s(wire a, wire b, wire c) {
 
 //-----------------------------------------------------------------------------
 
-// Six-rung mux cells are _non_inverting_. c = 1 selects input _ZERO_
-inline wire mux2_p(wire a, wire b, wire c) {
-  return c ? a : b;
+// Six-rung mux cells are _non_inverting_. m = 1 selects input A
+inline wire mux2_p(wire a, wire b, wire m) {
+  return m ? a : b;
 }
 
-inline wire mux2_p2(wire a, wire b, wire c) {
-  return a ? b : c;
+// Six-rung mux cells are _non_inverting_. m = 1 selects input A
+inline wire mux2_p2(wire m, wire a, wire b) {
+  return m ? a : b;
 }
 
-// Five-rung mux cells are _inverting_. c = 1 selects input _ZERO_
-inline wire mux2_n(wire a, wire b, wire c) {
-  return c ? !a : !b;
+// Five-rung mux cells are _inverting_. m = 1 selects input A
+inline wire mux2_n(wire a, wire b, wire m) {
+  return !(m ? a : b);
 }
 
 inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
@@ -111,24 +112,20 @@ inline RegDelta io_pin(wire HI, wire LO, wire OEp) {
 // top rung tadpole facing second rung dot
 
 inline RegDelta tribuf_6pn(wire OEp, wire D) {
-#if 0
-  return RegDelta(DELTA_TRIZ | ((D && OEp) << 0) | (((!D) && OEp) << 1));
-#else
   if (OEp) {
     return D ? DELTA_TRI0 : DELTA_TRI1;
   }
   else {
     return DELTA_TRIZ;
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
-// top rung tadpole not facing second rung dot. // OEn, Dn
+// top rung tadpole not facing second rung dot.
 
 inline RegDelta tribuf_6nn(wire OEn, wire Dn) {
   if (!OEn) {
-    return Dn ? DELTA_TRI0 : DELTA_TRI1;
+    return !Dn ? DELTA_TRI1 : DELTA_TRI0;
   }
   else {
     return DELTA_TRIZ;
@@ -136,35 +133,14 @@ inline RegDelta tribuf_6nn(wire OEn, wire Dn) {
 }
 
 //-----------------------------------------------------------------------------
-// FIXME can we see a difference between these?
-// No, YFAP/TEME look identical
 
-inline RegDelta tribuf_10np(wire OEn, wire D) {
-#if 0
-  return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
-#else
+inline RegDelta tribuf_10np(wire OEn, wire Dn) {
   if (!OEn) {
-    //return D ? DELTA_TRI1 : DELTA_TRI0;
-    return D ? DELTA_TRI0 : DELTA_TRI1;
+    return !Dn ? DELTA_TRI1 : DELTA_TRI0;
   }
   else {
     return DELTA_TRIZ;
   }
-#endif
-}
-
-inline RegDelta tribuf_10nn(wire OEn, wire Dn) {
-#if 0
-  return RegDelta(DELTA_TRIZ | ((D && !OEn) << 0) | (((!D) && !OEn) << 1));
-#else
-  if (!OEn) {
-    //return D ? DELTA_TRI1 : DELTA_TRI0;
-    return (!Dn) ? DELTA_TRI0 : DELTA_TRI1;
-  }
-  else {
-    return DELTA_TRIZ;
-  }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -209,6 +185,10 @@ inline RegQPIn dff8_B_inv(wire CLKp, wire CLKn, bool D) {
   return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!D) << 0))};
 }
 
+inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
+}
+
 inline RegQPNIn dff8_AB_inv(wire CLKp, wire CLKn, bool D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKp;
@@ -244,36 +224,38 @@ inline RegQPNIn dff8_AB_inv(wire CLKp, wire CLKn, bool D) {
 // REG9_08 >> Qn
 // REG9_09 >> Q
 
-inline RegDelta dff9_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKn;
-
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
+inline RegDelta dff9_inv(wire CLKp, wire RSTn, wire D) {
   if (!RSTn) {
     return RegDelta(DELTA_A1C0 | (CLKp << 1));
   }
   else {
     return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
   }
-#endif
+}
+
+
+inline RegDelta dff9_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
+  CHECK_N(CLKp == CLKn);
+  (void)CLKn;
+
+  if (!RSTn) {
+    return RegDelta(DELTA_A1C0 | (CLKp << 1));
+  }
+  else {
+    return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
+  }
 }
 
 inline RegQNIn dff9_A_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
   if (!RSTn) {
     return {RegDelta(DELTA_A1C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0))};
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -296,16 +278,12 @@ inline RegQNIn dff11_A_inv(wire CLKp, wire CLKn, wire RSTn, wire Dn) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
-#if 0
-  return RegDelta(DELTA_D0C0 | (RSTp << 2) | (CLKp << 1) | ((D && !RSTp) << 0));
-#else
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!Dn) << 0))};
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -345,16 +323,12 @@ inline RegQPIn dff13_B(wire CLKp, wire CLKn, wire RSTn, wire D) {
   CHECK_N(CLKp == CLKn);
   (void)CLKn;
 
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -379,42 +353,30 @@ inline RegQPIn dff13_B(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // REG17_17 >> Q    _MUST_ be Q  - see TERO
 
 inline RegQNIn dff17_A(wire CLKp, wire RSTn, wire D) {
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
-#endif
 }
 
 inline RegQPIn dff17_B(wire CLKp, wire RSTn, wire D) {
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
-#endif
 }
 
 inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -489,11 +451,6 @@ inline RegDelta dff20(wire CLKp, wire LOADp, bool newD, bool oldQn) {
 // REG22_22 << CLKp
 
 inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
-#if 0
-  bool async = !SETn || !RSTn;
-  bool val = (D || !SETn) && RSTn;
-  return RegDelta(DELTA_D0C0 | (async << 2) | (CLKp << 1) | (val << 0));
-#else
   if (!RSTn) {
     return RegDelta(DELTA_A0C0 | (CLKp << 1));
   }
@@ -503,7 +460,6 @@ inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
   else {
     return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -517,12 +473,6 @@ inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
 // NORLATCH_01 << RST
 
 inline RegDelta nor_latch(wire SETp, wire RSTp) {
-#if 1
-  bool b2 = RSTp || SETp;
-  bool b1 = RSTp || !SETp;
-  bool b0 = SETp && !RSTp;
-  return RegDelta((b2 << 2) | (b1 << 1) | (b0 << 0));
-#else
   if (RSTp) {
     return DELTA_TRI0;
   }
@@ -532,7 +482,6 @@ inline RegDelta nor_latch(wire SETp, wire RSTp) {
   else {
     return DELTA_HOLD;
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -546,12 +495,6 @@ inline RegDelta nor_latch(wire SETp, wire RSTp) {
 // NANDLATCH_01 << RSTn
 
 inline RegDelta  nand_latch(wire SETn, wire RSTn) {
-#if 1
-  bool b2 = !RSTn || !SETn;
-  bool b1 = !RSTn || SETn;
-  bool b0 = !SETn && RSTn;
-  return RegDelta((b2 << 2) | (b1 << 1) | (b0 << 0));
-#else
   if (!RSTn) {
     return DELTA_TRI0;
   }
@@ -561,11 +504,10 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
   else {
     return DELTA_HOLD;
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
-// Yellow 10-rung cells on die. Implementation might be wrong.
+// Yellow 10-rung cells on die. Transparent latch, probably.
 
 // TPLATCH_01
 // TPLATCH_02 NC
@@ -581,9 +523,7 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // Output 08 must _not_ be inverting, see PIN_EXT_A00n_A
 // Output 10 _must_ be inverting.
 
-// I think this might be backwards. See AWOB_WAKE_CPU
-
-inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
+inline RegDelta tp_latch(wire HOLDn, wire D) {
   if (!HOLDn) {
     return DELTA_HOLD;
   }
@@ -592,25 +532,7 @@ inline RegDelta  tp_latch_A(wire HOLDn, wire D) {
   }
 }
 
-inline RegDelta tp_latch_B(wire HOLDn, wire D) {
-  if (!HOLDn) {
-    return DELTA_HOLD;
-  }
-  else {
-    return D ? DELTA_TRI1 : DELTA_TRI0;
-  }
-}
-
-inline RegDelta tp_latch_AB(wire HOLDn, wire D) {
-  if (!HOLDn) {
-    return DELTA_HOLD;
-  }
-  else {
-    return D ? DELTA_TRI1 : DELTA_TRI0;
-  }
-}
-
-inline RegDelta tp_latch_AB(wire HOLDn, const Tri& T) {
+inline RegDelta tp_latch(wire HOLDn, const Tri& T) {
   if (!HOLDn) {
     return DELTA_HOLD;
   }
@@ -618,3 +540,5 @@ inline RegDelta tp_latch_AB(wire HOLDn, const Tri& T) {
     return T.tp() ? DELTA_TRI1 : DELTA_TRI0;
   }
 }
+
+//-----------------------------------------------------------------------------

@@ -9,10 +9,12 @@
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::test_main(int argc, char** argv) {
+  TEST_START("Maaaaaain");
+
   (void)argc;
   (void)argv;
 
-  TEST_START("Maaaaaain");
+  auto start = std::chrono::high_resolution_clock::now();
 
   err += test_init();
   err += test_clk();
@@ -27,6 +29,11 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_timer();
 
   if (!err) LOG_G("Everything passed!\n");
+
+  auto finish = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> elapsed = finish - start;
+  LOG_G("Tests took %f seconds\n", elapsed.count());
 
   TEST_END();
 }
@@ -127,40 +134,6 @@ int GateBoyTests::test_clk() {
 
 //-----------------------------------------------------------------------------
 
-/*
-Code in ROM, write 0x55 (0b01010101) to 0xC003 (0b1100000000000011)
-0x0155 0x77 ld (hl), A   : 2 mcycles, 16 phases
-0x0156 0x18 jr           : 3 mcycles, 24 phases
-0x0157 0xFD -2
-
-CLK ABCDxxxx ABCDxxxx ABCDxxxx ABCDxxxx ABCDxxxx
-WRn ABCDEFGH ABCDxxxH ABCDEFGH ABCDEFGH ABCDEFGH
-RDn xxxxxxxx xBCDEFGH xxxxxxxx xxxxxxxx xxxxxxxx
-CSn ABCDEFGH ABxxxxxx ABCDEFGH ABCDEFGH ABCDEFGH
-              
-     05       03       06       07       07
-A00 ABCDEFGH ABCDEFGH Axxxxxxx xBCDEFGH ABCDEFGH
-A01 Axxxxxxx xBCDEFGH ABCDEFGH ABCDEFGH ABCDEFGH
-A02 ABCDEFGH Axxxxxxx xBCDEFGH ABCDEFGH ABCDEFGH
-A03 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
-      
-     00       C0       00       00       80
-A12 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
-A13 xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx
-A14 xxxxxxxx xBCDEFGH xxxxxxxx xxxxxxxx xxxxxxxx
-A15 ABxxxxxx ABCDEFGH ABxxxxxx ABxxxxxx ABCDEFGH
-
-    ^^0x77-- -^^^0x55 ^^0x18-- --0xFD-- -----^^^
-D0  ABCDEFGH ABCDEFGH ABxxxxxx xxCDEFGH ABCDEFGH
-D1  ABCDEFGH ABCDxxxx ABxxxxxx xxxxxxxx xxxxxFGH
-D2  ABCDEFGH ABCDEFGH ABxxxxxx xxCDEFGH ABCDEFGH
-D3  ABxxxxxx xBCDxxxx ABCDEFGH ABCDEFGH ABCDEFGH
-D4  ABCDEFGH ABCDEFGH ABCDEFGH ABCDEFGH ABCDEFGH
-D5  ABCDEFGH ABCDxxxx ABxxxxxx xxCDEFGH ABCDEFGH
-D6  ABCDEFGH ABCDEFGH ABxxxxxx xxCDEFGH ABCDEFGH
-D7  ABxxxxxx xBCDxxxx ABxxxxxx xxCDEFGH ABCDEFGH
-*/
-
 #pragma warning(disable : 4189) // unref var
 
 int GateBoyTests::test_ext_bus() {
@@ -256,7 +229,7 @@ int GateBoyTests::test_ext_bus() {
 
     /*
 
-    PIN_EXT_A14p = tp_latch_A(PIN_CPU_ADDR_EXTp, BUS_CPU_A14);
+    PIN_EXT_A14p = tp_latch(PIN_CPU_ADDR_EXTp, BUS_CPU_A14);
 
     PIN_EXT_WRn = nand(PIN_CPU_WRp, xxxxEFGx, PIN_CPU_ADDR_EXTp, !ADDR_VRAM);
 
@@ -279,37 +252,40 @@ int GateBoyTests::test_ext_bus() {
     }
     */
 
+    /*
+    Code in ROM, write 0x55 (0b01010101) to 0xC003 (0b1100000000000011)
+    0x0155 0x77 ld (hl), A   : 2 mcycles, 16 phases
+    0x0156 0x18 jr           : 3 mcycles, 24 phases
+    0x0157 0xFD -2
+    */
 
     // Start checking each phase
 
-    //                     "AB      AB      AB      AB      AB      ";
-    const char* CLK_WAVE = "1111000011110000111100001111000011110000";
-    const char* WRn_WAVE = "1111111111110001111111111111111111111111";
-    const char* RDn_WAVE = "0000000001111111000000000000000000000000";
-    const char* CSn_WAVE = "1111111111000000111111111111111111111111";
-                                                            
-    //                     "AB      AB      AB      AB      AB      ";
-    const char* A00_WAVE = "1111111111111111100000000111111111111111";
-    const char* A01_WAVE = "1000000001111111111111111111111111111111";
-    const char* A02_WAVE = "1111111110000000011111111111111111111111";
-    const char* A03_WAVE = "0000000000000000000000000000000000000000";
-    const char* A12_WAVE = "0000000000000000000000000000000000000000";
-    const char* A13_WAVE = "0000000000000000000000000000000000000000";
-    const char* A14_WAVE = "0000000001111111000000000000000000000000";
-    const char* A15_WAVE = "1100000011111111110000001100000011111111";
-                                                                
-    // Scope trace w/ extra pulldown resistor patched in so we can see when
-    // the pullups are the only thing driving the bus.
-
-    //                     "AB      AB      AB      AB      AB      ";
-    const char* D00_WAVE = "^^111111^1111111^^000000^^111111^^^^^^^^"; // #
-    const char* D01_WAVE = "^^111111^1110000^^000000^^000000^^^^^^^^"; // #
-    const char* D02_WAVE = "^^111111^1111111^^000000^^111111^^^^^^^^"; // #
-    const char* D03_WAVE = "^^000000^1110000^^111111^^111111^^^^^^^^"; // #
-    const char* D04_WAVE = "^^111111^1111111^^111111^^111111^^^^^^^^"; // #
-    const char* D05_WAVE = "^^111111^1110000^^000000^^111111^^^^^^^^"; // #
-    const char* D06_WAVE = "^^111111^1111111^^000000^^111111^^^^^^^^"; // #
-    const char* D07_WAVE = "^^000000^1110000^^000000^^111111^^^^^^^^"; // #
+    //                     "AB       AB       AB       AB       AB      ";
+    const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
+    const char* WRn_WAVE = "11111111 11110001 11111111 11111111 11111111";
+    const char* RDn_WAVE = "00000000 01111111 00000000 00000000 00000000";
+    const char* CSn_WAVE = "11111111 11000000 11111111 11111111 11111111";
+                                                       
+    //                     "AB       AB       AB       AB       AB      ";
+    const char* A00_WAVE = "11111111 11111111 10000000 01111111 11111111";
+    const char* A01_WAVE = "10000000 01111111 11111111 11111111 11111111";
+    const char* A02_WAVE = "11111111 10000000 01111111 11111111 11111111";
+    const char* A03_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A12_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A13_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A14_WAVE = "00000000 01111111 00000000 00000000 00000000";
+    const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
+                                                          
+    //                     "AB       AB       AB       AB       AB      ";
+    const char* D00_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // Scope trace w/ extra pulldown resistor patched in so we can see when
+    const char* D01_WAVE = "^^111111 ^1110000 ^^000000 ^^000000 ^^^^^^^^"; // the pullups are the only thing driving the bus.
+    const char* D02_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
+    const char* D03_WAVE = "^^000000 ^1110000 ^^111111 ^^111111 ^^^^^^^^"; // #
+    const char* D04_WAVE = "^^111111 ^1111111 ^^111111 ^^111111 ^^^^^^^^"; // #
+    const char* D05_WAVE = "^^111111 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
+    const char* D06_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
+    const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
       if ((i % 8) == 0) gb.dbg_req = script[i / 8];
@@ -338,29 +314,30 @@ int GateBoyTests::test_ext_bus() {
       char D07 = gb.top.ext_bus.PIN_EXT_D07p.c();
 
       
+      int wave_idx = ((i / 8) * 9) + (i % 8);
 
-      EXPECT_EQ(CLK, CLK_WAVE[i], "CLK failure at phase %d - expected %c, got %c\n", i, CLK_WAVE[i], CLK);
-      EXPECT_EQ(WRn, WRn_WAVE[i], "WRn failure at phase %d - expected %c, got %c\n", i, WRn_WAVE[i], WRn);
-      EXPECT_EQ(RDn, RDn_WAVE[i], "RDn failure at phase %d - expected %c, got %c\n", i, RDn_WAVE[i], RDn);
-      EXPECT_EQ(CSn, CSn_WAVE[i], "CSn failure at phase %d - expected %c, got %c\n", i, CSn_WAVE[i], CSn);
+      EXPECT_EQ(CLK, CLK_WAVE[wave_idx], "CLK failure at phase %d - expected %c, got %c\n", i, CLK_WAVE[wave_idx], CLK);
+      EXPECT_EQ(WRn, WRn_WAVE[wave_idx], "WRn failure at phase %d - expected %c, got %c\n", i, WRn_WAVE[wave_idx], WRn);
+      EXPECT_EQ(RDn, RDn_WAVE[wave_idx], "RDn failure at phase %d - expected %c, got %c\n", i, RDn_WAVE[wave_idx], RDn);
+      EXPECT_EQ(CSn, CSn_WAVE[wave_idx], "CSn failure at phase %d - expected %c, got %c\n", i, CSn_WAVE[wave_idx], CSn);
 
-      EXPECT_EQ(A00, A00_WAVE[i], "A00 failure at phase %d - expected %c, got %c\n", i, A00_WAVE[i], A00);
-      EXPECT_EQ(A01, A01_WAVE[i], "A01 failure at phase %d - expected %c, got %c\n", i, A01_WAVE[i], A01);
-      EXPECT_EQ(A02, A02_WAVE[i], "A02 failure at phase %d - expected %c, got %c\n", i, A02_WAVE[i], A02);
-      EXPECT_EQ(A03, A03_WAVE[i], "A03 failure at phase %d - expected %c, got %c\n", i, A03_WAVE[i], A03);
-      EXPECT_EQ(A12, A12_WAVE[i], "A12 failure at phase %d - expected %c, got %c\n", i, A12_WAVE[i], A12);
-      EXPECT_EQ(A13, A13_WAVE[i], "A13 failure at phase %d - expected %c, got %c\n", i, A13_WAVE[i], A13);
-      EXPECT_EQ(A14, A14_WAVE[i], "A14 failure at phase %d - expected %c, got %c\n", i, A14_WAVE[i], A14);
-      EXPECT_EQ(A15, A15_WAVE[i], "A15 failure at phase %d - expected %c, got %c\n", i, A15_WAVE[i], A15);
+      EXPECT_EQ(A00, A00_WAVE[wave_idx], "A00 failure at phase %d - expected %c, got %c\n", i, A00_WAVE[wave_idx], A00);
+      EXPECT_EQ(A01, A01_WAVE[wave_idx], "A01 failure at phase %d - expected %c, got %c\n", i, A01_WAVE[wave_idx], A01);
+      EXPECT_EQ(A02, A02_WAVE[wave_idx], "A02 failure at phase %d - expected %c, got %c\n", i, A02_WAVE[wave_idx], A02);
+      EXPECT_EQ(A03, A03_WAVE[wave_idx], "A03 failure at phase %d - expected %c, got %c\n", i, A03_WAVE[wave_idx], A03);
+      EXPECT_EQ(A12, A12_WAVE[wave_idx], "A12 failure at phase %d - expected %c, got %c\n", i, A12_WAVE[wave_idx], A12);
+      EXPECT_EQ(A13, A13_WAVE[wave_idx], "A13 failure at phase %d - expected %c, got %c\n", i, A13_WAVE[wave_idx], A13);
+      EXPECT_EQ(A14, A14_WAVE[wave_idx], "A14 failure at phase %d - expected %c, got %c\n", i, A14_WAVE[wave_idx], A14);
+      EXPECT_EQ(A15, A15_WAVE[wave_idx], "A15 failure at phase %d - expected %c, got %c\n", i, A15_WAVE[wave_idx], A15);
 
-      EXPECT_EQ(D00, D00_WAVE[i], "D00 failure at phase %d - expected %c, got %c\n", i, D00_WAVE[i], D00);
-      EXPECT_EQ(D01, D01_WAVE[i], "D01 failure at phase %d - expected %c, got %c\n", i, D01_WAVE[i], D01);
-      EXPECT_EQ(D02, D02_WAVE[i], "D02 failure at phase %d - expected %c, got %c\n", i, D02_WAVE[i], D02);
-      EXPECT_EQ(D03, D03_WAVE[i], "D03 failure at phase %d - expected %c, got %c\n", i, D03_WAVE[i], D03);
-      EXPECT_EQ(D04, D04_WAVE[i], "D04 failure at phase %d - expected %c, got %c\n", i, D04_WAVE[i], D04);
-      EXPECT_EQ(D05, D05_WAVE[i], "D05 failure at phase %d - expected %c, got %c\n", i, D05_WAVE[i], D05);
-      EXPECT_EQ(D06, D06_WAVE[i], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[i], D06);
-      EXPECT_EQ(D07, D07_WAVE[i], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[i], D07);
+      EXPECT_EQ(D00, D00_WAVE[wave_idx], "D00 failure at phase %d - expected %c, got %c\n", i, D00_WAVE[wave_idx], D00);
+      EXPECT_EQ(D01, D01_WAVE[wave_idx], "D01 failure at phase %d - expected %c, got %c\n", i, D01_WAVE[wave_idx], D01);
+      EXPECT_EQ(D02, D02_WAVE[wave_idx], "D02 failure at phase %d - expected %c, got %c\n", i, D02_WAVE[wave_idx], D02);
+      EXPECT_EQ(D03, D03_WAVE[wave_idx], "D03 failure at phase %d - expected %c, got %c\n", i, D03_WAVE[wave_idx], D03);
+      EXPECT_EQ(D04, D04_WAVE[wave_idx], "D04 failure at phase %d - expected %c, got %c\n", i, D04_WAVE[wave_idx], D04);
+      EXPECT_EQ(D05, D05_WAVE[wave_idx], "D05 failure at phase %d - expected %c, got %c\n", i, D05_WAVE[wave_idx], D05);
+      EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
+      EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
       gb.next_phase();
     }

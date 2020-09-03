@@ -35,7 +35,7 @@ void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
       __debugbreak();
     }
 
-    combine_hash(h, s2 & 0x0F);
+    combine_hash(h, s2);
     base[i] = s2;
   }
 

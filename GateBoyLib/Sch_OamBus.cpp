@@ -338,6 +338,7 @@ void OamBus::tock(SchematicTop& top) {
     /*p25.RABO*/ wire RABO_VRM_BUS_D6p = not1(top.vram_bus.BUS_VRAM_D6p.tp());
     /*p25.SAME*/ wire SAME_VRM_BUS_D7p = not1(top.vram_bus.BUS_VRAM_D7p.tp());
 
+    // FIXME inversion
     /*p28.AZAR*/ wire AZAR_VBD_TO_OBDn = not1(top.dma_reg.LUFA_DMA_READ_VRAMp);
     /*p28.WUZU*/ PIN_OAM_DA0n = tribuf_6nn(AZAR_VBD_TO_OBDn, !RERY_VRM_BUS_D0p);
     /*p28.AXER*/ PIN_OAM_DA1n = tribuf_6nn(AZAR_VBD_TO_OBDn, !RUNA_VRM_BUS_D1p);
@@ -374,23 +375,23 @@ void OamBus::tock(SchematicTop& top) {
     /*p28.ASYT*/ wire ASYT_OBD_TO_OBLn     = and3(AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn, BOTA_CPU_OAM_LATCHn); // def and
 
     /*p28.BODE*/ wire BODE_OBD_TO_OBLp     = not1(ASYT_OBD_TO_OBLn);
-    /*p29.YDYV*/ YDYV_OAM_LATCH_DA0n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA0n); // -> XUSO, YFAP
-    /*p29.YCEB*/ YCEB_OAM_LATCH_DA1n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA1n);
-    /*p29.ZUCA*/ ZUCA_OAM_LATCH_DA2n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA2n);
-    /*p29.WONE*/ WONE_OAM_LATCH_DA3n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA3n);
-    /*p29.ZAXE*/ ZAXE_OAM_LATCH_DA4n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA4n);
-    /*p29.XAFU*/ XAFU_OAM_LATCH_DA5n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA5n);
-    /*p29.YSES*/ YSES_OAM_LATCH_DA6n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA6n);
-    /*p29.ZECA*/ ZECA_OAM_LATCH_DA7n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DA7n);
+    /*p29.YDYV*/ YDYV_OAM_LATCH_DA0n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA0n); // -> XUSO, YFAP
+    /*p29.YCEB*/ YCEB_OAM_LATCH_DA1n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA1n);
+    /*p29.ZUCA*/ ZUCA_OAM_LATCH_DA2n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA2n);
+    /*p29.WONE*/ WONE_OAM_LATCH_DA3n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA3n);
+    /*p29.ZAXE*/ ZAXE_OAM_LATCH_DA4n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA4n);
+    /*p29.XAFU*/ XAFU_OAM_LATCH_DA5n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA5n);
+    /*p29.YSES*/ YSES_OAM_LATCH_DA6n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA6n);
+    /*p29.ZECA*/ ZECA_OAM_LATCH_DA7n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DA7n);
 
-    /*p31.XYKY*/ XYKY_OAM_LATCH_DB0n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB0n);
-    /*p31.YRUM*/ YRUM_OAM_LATCH_DB1n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB1n);
-    /*p31.YSEX*/ YSEX_OAM_LATCH_DB2n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB2n);
-    /*p31.YVEL*/ YVEL_OAM_LATCH_DB3n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB3n);
-    /*p31.WYNO*/ WYNO_OAM_LATCH_DB4n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB4n);
-    /*p31.CYRA*/ CYRA_OAM_LATCH_DB5n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB5n);
-    /*p31.ZUVE*/ ZUVE_OAM_LATCH_DB6n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB6n);
-    /*p31.ECED*/ ECED_OAM_LATCH_DB7n = tp_latch_AB(BODE_OBD_TO_OBLp, PIN_OAM_DB7n);
+    /*p31.XYKY*/ XYKY_OAM_LATCH_DB0n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB0n);
+    /*p31.YRUM*/ YRUM_OAM_LATCH_DB1n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB1n);
+    /*p31.YSEX*/ YSEX_OAM_LATCH_DB2n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB2n);
+    /*p31.YVEL*/ YVEL_OAM_LATCH_DB3n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB3n);
+    /*p31.WYNO*/ WYNO_OAM_LATCH_DB4n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB4n);
+    /*p31.CYRA*/ CYRA_OAM_LATCH_DB5n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB5n);
+    /*p31.ZUVE*/ ZUVE_OAM_LATCH_DB6n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB6n);
+    /*p31.ECED*/ ECED_OAM_LATCH_DB7n = tp_latch(BODE_OBD_TO_OBLp, PIN_OAM_DB7n);
   }
 
   // OBL -> OBR
@@ -435,24 +436,24 @@ void OamBus::tock(SchematicTop& top) {
        
     // FIXME too many inversions
     /* p28.WUME*/ wire WUME_OBL_TO_CBDn = not1(GUKO_OBL_TO_CBDp);
-    /* p29.YFAP*/ top.cpu_bus.BUS_CPU_D0p = tribuf_10nn(WUME_OBL_TO_CBDn, YDYV_OAM_LATCH_DA0n.qn());
-    /* p29.XELE*/ top.cpu_bus.BUS_CPU_D1p = tribuf_10nn(WUME_OBL_TO_CBDn, YCEB_OAM_LATCH_DA1n.qn());
-    /* p29.YPON*/ top.cpu_bus.BUS_CPU_D2p = tribuf_10nn(WUME_OBL_TO_CBDn, ZUCA_OAM_LATCH_DA2n.qn());
-    /* p29.XUVO*/ top.cpu_bus.BUS_CPU_D3p = tribuf_10nn(WUME_OBL_TO_CBDn, WONE_OAM_LATCH_DA3n.qn());
-    /* p29.ZYSA*/ top.cpu_bus.BUS_CPU_D4p = tribuf_10nn(WUME_OBL_TO_CBDn, ZAXE_OAM_LATCH_DA4n.qn());
-    /* p29.YWEG*/ top.cpu_bus.BUS_CPU_D5p = tribuf_10nn(WUME_OBL_TO_CBDn, XAFU_OAM_LATCH_DA5n.qn());
-    /* p29.XABU*/ top.cpu_bus.BUS_CPU_D6p = tribuf_10nn(WUME_OBL_TO_CBDn, YSES_OAM_LATCH_DA6n.qn());
-    /* p29.YTUX*/ top.cpu_bus.BUS_CPU_D7p = tribuf_10nn(WUME_OBL_TO_CBDn, ZECA_OAM_LATCH_DA7n.qn());
+    /* p29.YFAP*/ top.cpu_bus.BUS_CPU_D0p = tribuf_10np(WUME_OBL_TO_CBDn, !YDYV_OAM_LATCH_DA0n.qn());
+    /* p29.XELE*/ top.cpu_bus.BUS_CPU_D1p = tribuf_10np(WUME_OBL_TO_CBDn, !YCEB_OAM_LATCH_DA1n.qn());
+    /* p29.YPON*/ top.cpu_bus.BUS_CPU_D2p = tribuf_10np(WUME_OBL_TO_CBDn, !ZUCA_OAM_LATCH_DA2n.qn());
+    /* p29.XUVO*/ top.cpu_bus.BUS_CPU_D3p = tribuf_10np(WUME_OBL_TO_CBDn, !WONE_OAM_LATCH_DA3n.qn());
+    /* p29.ZYSA*/ top.cpu_bus.BUS_CPU_D4p = tribuf_10np(WUME_OBL_TO_CBDn, !ZAXE_OAM_LATCH_DA4n.qn());
+    /* p29.YWEG*/ top.cpu_bus.BUS_CPU_D5p = tribuf_10np(WUME_OBL_TO_CBDn, !XAFU_OAM_LATCH_DA5n.qn());
+    /* p29.XABU*/ top.cpu_bus.BUS_CPU_D6p = tribuf_10np(WUME_OBL_TO_CBDn, !YSES_OAM_LATCH_DA6n.qn());
+    /* p29.YTUX*/ top.cpu_bus.BUS_CPU_D7p = tribuf_10np(WUME_OBL_TO_CBDn, !ZECA_OAM_LATCH_DA7n.qn());
        
     /* p28.WEWU*/ wire WEWU_OBL_TO_CBDn = not1(WUKU_OBL_TO_CBDp);
-    /* p31.XACA*/ top.cpu_bus.BUS_CPU_D0p = tribuf_10nn(WEWU_OBL_TO_CBDn, XYKY_OAM_LATCH_DB0n.qn());
-    /* p31.XAGU*/ top.cpu_bus.BUS_CPU_D1p = tribuf_10nn(WEWU_OBL_TO_CBDn, YRUM_OAM_LATCH_DB1n.qn());
-    /* p31.XEPU*/ top.cpu_bus.BUS_CPU_D2p = tribuf_10nn(WEWU_OBL_TO_CBDn, YSEX_OAM_LATCH_DB2n.qn());
-    /* p31.XYGU*/ top.cpu_bus.BUS_CPU_D3p = tribuf_10nn(WEWU_OBL_TO_CBDn, YVEL_OAM_LATCH_DB3n.qn());
-    /* p31.XUNA*/ top.cpu_bus.BUS_CPU_D4p = tribuf_10nn(WEWU_OBL_TO_CBDn, WYNO_OAM_LATCH_DB4n.qn());
-    /* p31.DEVE*/ top.cpu_bus.BUS_CPU_D5p = tribuf_10nn(WEWU_OBL_TO_CBDn, CYRA_OAM_LATCH_DB5n.qn());
-    /* p31.ZEHA*/ top.cpu_bus.BUS_CPU_D6p = tribuf_10nn(WEWU_OBL_TO_CBDn, ZUVE_OAM_LATCH_DB6n.qn());
-    /* p31.FYRA*/ top.cpu_bus.BUS_CPU_D7p = tribuf_10nn(WEWU_OBL_TO_CBDn, ECED_OAM_LATCH_DB7n.qn());
+    /* p31.XACA*/ top.cpu_bus.BUS_CPU_D0p = tribuf_10np(WEWU_OBL_TO_CBDn, !XYKY_OAM_LATCH_DB0n.qn());
+    /* p31.XAGU*/ top.cpu_bus.BUS_CPU_D1p = tribuf_10np(WEWU_OBL_TO_CBDn, !YRUM_OAM_LATCH_DB1n.qn());
+    /* p31.XEPU*/ top.cpu_bus.BUS_CPU_D2p = tribuf_10np(WEWU_OBL_TO_CBDn, !YSEX_OAM_LATCH_DB2n.qn());
+    /* p31.XYGU*/ top.cpu_bus.BUS_CPU_D3p = tribuf_10np(WEWU_OBL_TO_CBDn, !YVEL_OAM_LATCH_DB3n.qn());
+    /* p31.XUNA*/ top.cpu_bus.BUS_CPU_D4p = tribuf_10np(WEWU_OBL_TO_CBDn, !WYNO_OAM_LATCH_DB4n.qn());
+    /* p31.DEVE*/ top.cpu_bus.BUS_CPU_D5p = tribuf_10np(WEWU_OBL_TO_CBDn, !CYRA_OAM_LATCH_DB5n.qn());
+    /* p31.ZEHA*/ top.cpu_bus.BUS_CPU_D6p = tribuf_10np(WEWU_OBL_TO_CBDn, !ZUVE_OAM_LATCH_DB6n.qn());
+    /* p31.FYRA*/ top.cpu_bus.BUS_CPU_D7p = tribuf_10np(WEWU_OBL_TO_CBDn, !ECED_OAM_LATCH_DB7n.qn());
   }
 }
 

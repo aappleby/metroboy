@@ -89,11 +89,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   // pass gates? does look like a transparent latch here...
 
   /* p07.ROLO*/ wire ROLO_FF0F_RDn = nand4(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp); // schematic wrong, is NAND
-  /* p02.MATY*/ MATY_FF0F_L0p = tp_latch_B(ROLO_FF0F_RDn, LOPE_FF0F_0p.qp()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ MOPO_FF0F_L1p = tp_latch_B(ROLO_FF0F_RDn, LALU_FF0F_1p.qp()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ PAVY_FF0F_L2p = tp_latch_B(ROLO_FF0F_RDn, NYBO_FF0F_2p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ NEJY_FF0F_L3p = tp_latch_B(ROLO_FF0F_RDn, UBUL_FF0F_3p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ NUTY_FF0F_L4p = tp_latch_B(ROLO_FF0F_RDn, ULAK_FF0F_4p.qp()); // OUTPUT ON RUNG 10
+  /* p02.MATY*/ MATY_FF0F_L0p = tp_latch(ROLO_FF0F_RDn, LOPE_FF0F_0p.qp()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ MOPO_FF0F_L1p = tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1p.qp()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ PAVY_FF0F_L2p = tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2p.qp()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ NEJY_FF0F_L3p = tp_latch(ROLO_FF0F_RDn, UBUL_FF0F_3p.qp()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ NUTY_FF0F_L4p = tp_latch(ROLO_FF0F_RDn, ULAK_FF0F_4p.qp()); // OUTPUT ON RUNG 10
 
   /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_FF0F_RDn);
   /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.qn());

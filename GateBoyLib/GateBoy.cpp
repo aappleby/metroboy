@@ -144,21 +144,21 @@ void GateBoy::load_rom(const char* filename) {
 }
 
 //------------------------------------------------------------------------------
+// I'm guessing we proooobably latch bus data on DE, since that's also
+// when we put data on the bus for a write?
 
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
   dbg_req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
-  /* AB */ next_phase();
-  /* BC */ next_phase();
-  /* CD */ next_phase();
-  /* DE */ next_phase();
-  /* EF */ next_phase();
-  /* FG */ next_phase();
-  uint8_t bus_data = top.cpu_bus.get_bus_data();
-  /* GH */ next_phase();
-  /* HA */ next_phase();
+  /* AB */ next_phase(); // xxx
+  /* BC */ next_phase(); // xxx
+  /* CD */ next_phase(); /* ok */ 
+  /* DE */ next_phase(); /* ok */ uint8_t bus_data = top.cpu_bus.get_bus_data(); // ok
+  /* EF */ next_phase(); /* ok */ 
+  /* FG */ next_phase(); /* ok */ 
+  /* GH */ next_phase(); /* ok */ 
+  /* HA */ next_phase(); // xxx
   dbg_req = {0};
-
   return bus_data;
 }
 
@@ -191,6 +191,12 @@ void GateBoy::next_phase() {
     uint8_t imask = 0;
     uint8_t intf = 0;
 
+    if (top.int_reg.PIN_CPU_INT_VBLANK.tp()) intf |= INT_VBLANK_MASK;
+    if (top.int_reg.PIN_CPU_INT_STAT.tp())   intf |= INT_STAT_MASK;
+    if (top.int_reg.PIN_CPU_INT_TIMER.tp())  intf |= INT_TIMER_MASK;
+    if (top.int_reg.PIN_CPU_INT_SERIAL.tp()) intf |= INT_SERIAL_MASK;
+    if (top.int_reg.PIN_CPU_INT_JOYPAD.tp()) intf |= INT_JOYPAD_MASK;
+
     uint8_t bus_data = top.cpu_bus.get_bus_data();
 
     switch(old_phase) {
@@ -198,29 +204,10 @@ void GateBoy::next_phase() {
     /* BC */ case 1: break;
     /* CD */ case 2: break;
     /* DE */ case 3: break;
-    /* EF */ case 4: cpu.tock_ack(imask, intf, bus_data); break; // bus data latches
+    /* EF */ case 4: cpu.tock_ack(imask, intf, bus_data); break; // bus data latches?
     /* FG */ case 5: break;
     /* GH */ case 6: break;
     /* HA */ case 7: break;
-    }
-  }
-
-  if (script) {
-    dbg_req = script[(phase_total / 8) % script_len];
-  }
-
-  if (DELTA_HA) {
-    cpu_req.addr &= 0x00FF;
-    cpu_req.read = 0;
-    cpu_req.write = 0;
-  }
-
-  if (DELTA_AB) {
-    if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
-      cpu_req = dbg_req;
-    }
-    else {
-      cpu_req = cpu.bus_req;
     }
   }
 
@@ -307,7 +294,29 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   RegBase::tock_running = false;
 
   tock_ext_bus();
+
+  //----------
+  // CPU bus stuff
   
+  if (DELTA_HA) {
+    // I have no idea why the low half of the address stays on the bus an extra phase.
+    cpu_req.addr &= 0x00FF;
+    cpu_req.read = 0;
+    cpu_req.write = 0;
+  }
+
+  if (DELTA_AB) {
+    if (script) {
+      cpu_req = script[(phase_total / 8) % script_len];
+    }
+    else if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
+      cpu_req = dbg_req;
+    }
+    else {
+      cpu_req = cpu.bus_req;
+    }
+  }
+
   bool addr_rom = cpu_req.addr <= 0x7FFF;
   bool addr_ram = cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF;
   bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
@@ -328,9 +337,6 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
     if (DELTA_FG) { top.cpu_bus.set_data(cpu_req.data_lo); }
     if (DELTA_GH) { top.cpu_bus.set_data(cpu_req.data_lo); }
   }
-  else {
-    top.cpu_bus.set_data_z();
-  }
 
   if (DELTA_HA) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
   if (DELTA_AB) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
@@ -350,14 +356,17 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   if (DELTA_FG) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
   if (DELTA_GH) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
 
-  top.int_reg.PIN_CPU_ACK_VBLANK = ack_vblank;
-  top.int_reg.PIN_CPU_ACK_STAT   = ack_stat;
-  top.int_reg.PIN_CPU_ACK_TIMER  = ack_timer;
-  top.int_reg.PIN_CPU_ACK_SERIAL = ack_serial;
-  top.int_reg.PIN_CPU_ACK_JOYPAD = ack_joypad;
+  //----------
+
+  top.int_reg.PIN_CPU_ACK_VBLANK = wire(cpu.int_ack & INT_VBLANK_MASK);
+  top.int_reg.PIN_CPU_ACK_STAT   = wire(cpu.int_ack & INT_STAT_MASK);
+  top.int_reg.PIN_CPU_ACK_TIMER  = wire(cpu.int_ack & INT_TIMER_MASK);
+  top.int_reg.PIN_CPU_ACK_SERIAL = wire(cpu.int_ack & INT_SERIAL_MASK);
+  top.int_reg.PIN_CPU_ACK_JOYPAD = wire(cpu.int_ack & INT_JOYPAD_MASK);
+
+  //----------
 
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-
   tock_vram_bus();
   tock_zram_bus();
   tock_oam_bus();
@@ -454,6 +463,30 @@ void GateBoy::tock_ext_bus() {
 
   /*
   {
+
+    bool bank_0 = nor(MBC1_BANK_D0, MBC1_BANK_D1, MBC1_BANK_D2, MBC1_BANK_D3, MBC1_BANK_D4);
+
+    wire cart_rom_a14 = bank_0 ? 1 : MBC1_BANK_D0.qp();
+    wire cart_rom_a15 = bank_0 ? 0 : MBC1_BANK_D1.qp();
+    wire cart_rom_a16 = bank_0 ? 0 : MBC1_BANK_D2.qp();
+    wire cart_rom_a17 = bank_0 ? 0 : MBC1_BANK_D3.qp();
+    wire cart_rom_a18 = bank_0 ? 0 : MBC1_BANK_D4.qp();
+    wire cart_rom_a19 = MBC1_MODE.qp() ? 0 : bank_0 ? 0 : MBC1_BANK_D5.qp();
+    wire cart_rom_a20 = MBC1_MODE.qp() ? 0 : bank_0 ? 0 : MBC1_BANK_D6.qp();
+
+    wire cart_ram_a13 = MBC1_MODE.qp() ? MBC1_BANK_D5.qp() : 0;
+    wire cart_ram_a14 = MBC1_MODE.qp() ? MBC1_BANK_D6.qp() : 0;
+
+    // ROM read
+    {
+      uint16_t rom_addr = ext_addr & 0x7FFF;
+      wire OEn = top.ext_bus.PIN_EXT_RDn.qp();
+      wire CEn = top.ext_bus.PIN_EXT_A15p.qp();
+
+      if (!CEn && !OEn) {
+        top.ext_bus.set_pin_data(cart_rom[rom_addr]);
+      }
+    }
   }
   */
 }

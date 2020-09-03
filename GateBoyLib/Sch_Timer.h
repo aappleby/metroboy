@@ -16,9 +16,9 @@ struct Timer {
 
   int get_div() const {
     return pack_p(!UKUP_DIV_00.qn(), UFOR_DIV_01.qp(), !UNER_DIV_02.qn(), TERO_DIV_03.qp(),
-                !UNYK_DIV_04.qn(), TAMA_DIV_05.qp(),  UGOT_DIV_06.qp(), TULU_DIV_07.qp(),
-                 TUGO_DIV_08.qp(), TOFE_DIV_09.qp(),  TERU_DIV_10.qp(), SOLA_DIV_11.qp(),
-                 SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), !UKET_DIV_14.qn(), UPOF_DIV_15.qp());
+                  !UNYK_DIV_04.qn(), TAMA_DIV_05.qp(),  UGOT_DIV_06.qp(), TULU_DIV_07.qp(),
+                   TUGO_DIV_08.qp(), TOFE_DIV_09.qp(),  TERU_DIV_10.qp(), SOLA_DIV_11.qp(),
+                   SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), !UKET_DIV_14.qn(), UPOF_DIV_15.qp());
   }
 
   int get_tima() const {
@@ -27,12 +27,12 @@ struct Timer {
   }
 
   int get_tma() const {
-    return pack_p(SABU_TMA_0.qp(), NYKE_TMA_1.qp(), MURU_TMA_2.qp(), TYVA_TMA_3.qp(),
-                TYRU_TMA_4.qp(), SUFY_TMA_5.qp(), PETO_TMA_6.qp(), SETA_TMA_7.qp());
+    return pack_p(SABU_TMA_D0.qp(), NYKE_TMA_D1.qp(), MURU_TMA_D2.qp(), TYVA_TMA_D3.qp(),
+                  TYRU_TMA_D4.qp(), SUFY_TMA_D5.qp(), PETO_TMA_D6.qp(), SETA_TMA_D7.qp());
   }
 
   int get_tac() const {
-    return pack_p(SOPU_TAC_0.qp(), SAMY_TAC_1.qp(), SABO_TAC_2.qp(), 0);
+    return pack_p(SOPU_TAC_D0.qp(), SAMY_TAC_D1.qp(), SABO_TAC_D2.qp(), 0);
   }
 
   /*p03.MOBA*/ RegQP MOBA_INT_TIMERp = REG_D0C0; // -> interrupts
@@ -76,21 +76,21 @@ private:
   //----------
   // FF06 TMA
 
-  /*p03.SABU*/ RegQPN SABU_TMA_0 = REG_D0C0;
-  /*p03.NYKE*/ RegQPN NYKE_TMA_1 = REG_D0C0;
-  /*p03.MURU*/ RegQPN MURU_TMA_2 = REG_D0C0;
-  /*p03.TYVA*/ RegQPN TYVA_TMA_3 = REG_D0C0;
-  /*p03.TYRU*/ RegQPN TYRU_TMA_4 = REG_D0C0;
-  /*p03.SUFY*/ RegQPN SUFY_TMA_5 = REG_D0C0;
-  /*p03.PETO*/ RegQPN PETO_TMA_6 = REG_D0C0;
-  /*p03.SETA*/ RegQPN SETA_TMA_7 = REG_D0C0;
+  /*p03.SABU*/ RegQPN SABU_TMA_D0 = REG_D0C0;
+  /*p03.NYKE*/ RegQPN NYKE_TMA_D1 = REG_D0C0;
+  /*p03.MURU*/ RegQPN MURU_TMA_D2 = REG_D0C0;
+  /*p03.TYVA*/ RegQPN TYVA_TMA_D3 = REG_D0C0;
+  /*p03.TYRU*/ RegQPN TYRU_TMA_D4 = REG_D0C0;
+  /*p03.SUFY*/ RegQPN SUFY_TMA_D5 = REG_D0C0;
+  /*p03.PETO*/ RegQPN PETO_TMA_D6 = REG_D0C0;
+  /*p03.SETA*/ RegQPN SETA_TMA_D7 = REG_D0C0;
 
   //----------
   // FF07 TAC
 
-  /*p03.SOPU*/ RegQPN SOPU_TAC_0 = REG_D0C0;
-  /*p03.SAMY*/ RegQPN SAMY_TAC_1 = REG_D0C0;
-  /*p03.SABO*/ RegQPN SABO_TAC_2 = REG_D0C0;
+  /*p03.SOPU*/ RegQPN SOPU_TAC_D0 = REG_D0C0;
+  /*p03.SAMY*/ RegQPN SAMY_TAC_D1 = REG_D0C0;
+  /*p03.SABO*/ RegQPN SABO_TAC_D2 = REG_D0C0;
 };
 
 //-----------------------------------------------------------------------------

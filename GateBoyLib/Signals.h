@@ -29,7 +29,7 @@ enum RegState : uint8_t {
 enum RegDelta : uint8_t {
   DELTA_NONE = 0b0000, // 00: delta not set yet
   DELTA_XXXX = 0b0001, // 01: error
-  DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches
+  DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches and config bits
   DELTA_SSSS = 0b0011, // 03: meaningless, free slot
   DELTA_TRIZ = 0b0100, // 04: 
   DELTA_TRI1 = 0b0101, // 05: 

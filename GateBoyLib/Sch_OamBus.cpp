@@ -186,12 +186,12 @@ void OamBus::tock(SchematicTop& top) {
   /*#p30.CYKE*/ wire CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_xxCDxxGH);
   /*#p30.WUDA*/ wire WUDA_xxCDxxGH = not1(CYKE_ABxxEFxx);
 
-  /*p30.XADU*/ XADU_SPRITE_IDX0p = dff13_A(WUDA_xxCDxxGH, CYKE_ABxxEFxx, WEFE_VCC, YFOT_OAM_A2p);
-  /*p30.XEDY*/ XEDY_SPRITE_IDX1p = dff13_A(WUDA_xxCDxxGH, CYKE_ABxxEFxx, WEFE_VCC, YFOC_OAM_A3p);
-  /*p30.ZUZE*/ ZUZE_SPRITE_IDX2p = dff13_A(WUDA_xxCDxxGH, CYKE_ABxxEFxx, WEFE_VCC, YVOM_OAM_A4p);
-  /*p30.XOBE*/ XOBE_SPRITE_IDX3p = dff13_A(WUDA_xxCDxxGH, CYKE_ABxxEFxx, WEFE_VCC, YMEV_OAM_A5p);
-  /*p30.YDUF*/ YDUF_SPRITE_IDX4p = dff13_A(WUDA_xxCDxxGH, CYKE_ABxxEFxx, WEFE_VCC, XEMU_OAM_A6p);
-  /*p30.XECU*/ XECU_SPRITE_IDX5p = dff13_A(WUDA_xxCDxxGH, CYKE_ABxxEFxx, WEFE_VCC, YZET_OAM_A7p);
+  /*p30.XADU*/ XADU_SPRITE_IDX0p = dff13_A(WUDA_xxCDxxGH, WEFE_VCC, YFOT_OAM_A2p);
+  /*p30.XEDY*/ XEDY_SPRITE_IDX1p = dff13_A(WUDA_xxCDxxGH, WEFE_VCC, YFOC_OAM_A3p);
+  /*p30.ZUZE*/ ZUZE_SPRITE_IDX2p = dff13_A(WUDA_xxCDxxGH, WEFE_VCC, YVOM_OAM_A4p);
+  /*p30.XOBE*/ XOBE_SPRITE_IDX3p = dff13_A(WUDA_xxCDxxGH, WEFE_VCC, YMEV_OAM_A5p);
+  /*p30.YDUF*/ YDUF_SPRITE_IDX4p = dff13_A(WUDA_xxCDxxGH, WEFE_VCC, XEMU_OAM_A6p);
+  /*p30.XECU*/ XECU_SPRITE_IDX5p = dff13_A(WUDA_xxCDxxGH, WEFE_VCC, YZET_OAM_A7p);
 
   /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn = and2(top.sprite_scanner.CENO_SCANNINGp.qn(), top.pix_pipe.XYMU_RENDERINGp.tp());
 
@@ -408,24 +408,24 @@ void OamBus::tock(SchematicTop& top) {
     PIN_OAM_CLK = COTA_OAM_CLKn;
 
     /*p29.YWOK*/ wire YWOK_OAM_CLKn = not1(COTA_OAM_CLKn);
-    /*#p29.XUSO*/ XUSO_OAM_DA0p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), YDYV_OAM_LATCH_DA0n.qp());
-    /* p29.XEGU*/ XEGU_OAM_DA1p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), YCEB_OAM_LATCH_DA1n.qp());
-    /* p29.YJEX*/ YJEX_OAM_DA2p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), ZUCA_OAM_LATCH_DA2n.qp());
-    /* p29.XYJU*/ XYJU_OAM_DA3p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), WONE_OAM_LATCH_DA3n.qp());
-    /* p29.YBOG*/ YBOG_OAM_DA4p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), ZAXE_OAM_LATCH_DA4n.qp());
-    /* p29.WYSO*/ WYSO_OAM_DA5p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), XAFU_OAM_LATCH_DA5n.qp());
-    /* p29.XOTE*/ XOTE_OAM_DA6p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), YSES_OAM_LATCH_DA6n.qp());
-    /* p29.YZAB*/ YZAB_OAM_DA7p = dff8_B_inv(YWOK_OAM_CLKn, not1(YWOK_OAM_CLKn), ZECA_OAM_LATCH_DA7n.qp());
+    /*#p29.XUSO*/ XUSO_OAM_DA0p = dff8_B_inv(YWOK_OAM_CLKn, YDYV_OAM_LATCH_DA0n.qp());
+    /* p29.XEGU*/ XEGU_OAM_DA1p = dff8_B_inv(YWOK_OAM_CLKn, YCEB_OAM_LATCH_DA1n.qp());
+    /* p29.YJEX*/ YJEX_OAM_DA2p = dff8_B_inv(YWOK_OAM_CLKn, ZUCA_OAM_LATCH_DA2n.qp());
+    /* p29.XYJU*/ XYJU_OAM_DA3p = dff8_B_inv(YWOK_OAM_CLKn, WONE_OAM_LATCH_DA3n.qp());
+    /* p29.YBOG*/ YBOG_OAM_DA4p = dff8_B_inv(YWOK_OAM_CLKn, ZAXE_OAM_LATCH_DA4n.qp());
+    /* p29.WYSO*/ WYSO_OAM_DA5p = dff8_B_inv(YWOK_OAM_CLKn, XAFU_OAM_LATCH_DA5n.qp());
+    /* p29.XOTE*/ XOTE_OAM_DA6p = dff8_B_inv(YWOK_OAM_CLKn, YSES_OAM_LATCH_DA6n.qp());
+    /* p29.YZAB*/ YZAB_OAM_DA7p = dff8_B_inv(YWOK_OAM_CLKn, ZECA_OAM_LATCH_DA7n.qp());
        
     /* p31.XEGA*/ wire XEGA_OAM_CLKp = not1(COTA_OAM_CLKn);
-    /* p31.YLOR*/ YLOR_OAM_DB0p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), XYKY_OAM_LATCH_DB0n.qp());
-    /* p31.ZYTY*/ ZYTY_OAM_DB1p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), YRUM_OAM_LATCH_DB1n.qp());
-    /* p31.ZYVE*/ ZYVE_OAM_DB2p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), YSEX_OAM_LATCH_DB2n.qp());
-    /* p31.ZEZY*/ ZEZY_OAM_DB3p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), YVEL_OAM_LATCH_DB3n.qp());
-    /* p31.GOMO*/ GOMO_OAM_DB4p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), WYNO_OAM_LATCH_DB4n.qp());
-    /* p31.BAXO*/ BAXO_OAM_DB5p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), CYRA_OAM_LATCH_DB5n.qp());
-    /* p31.YZOS*/ YZOS_OAM_DB6p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), ZUVE_OAM_LATCH_DB6n.qp());
-    /* p31.DEPO*/ DEPO_OAM_DB7p = dff8_B_inv(XEGA_OAM_CLKp, not1(XEGA_OAM_CLKp), ECED_OAM_LATCH_DB7n.qp());
+    /* p31.YLOR*/ YLOR_OAM_DB0p = dff8_B_inv(XEGA_OAM_CLKp, XYKY_OAM_LATCH_DB0n.qp());
+    /* p31.ZYTY*/ ZYTY_OAM_DB1p = dff8_B_inv(XEGA_OAM_CLKp, YRUM_OAM_LATCH_DB1n.qp());
+    /* p31.ZYVE*/ ZYVE_OAM_DB2p = dff8_B_inv(XEGA_OAM_CLKp, YSEX_OAM_LATCH_DB2n.qp());
+    /* p31.ZEZY*/ ZEZY_OAM_DB3p = dff8_B_inv(XEGA_OAM_CLKp, YVEL_OAM_LATCH_DB3n.qp());
+    /* p31.GOMO*/ GOMO_OAM_DB4p = dff8_B_inv(XEGA_OAM_CLKp, WYNO_OAM_LATCH_DB4n.qp());
+    /* p31.BAXO*/ BAXO_OAM_DB5p = dff8_B_inv(XEGA_OAM_CLKp, CYRA_OAM_LATCH_DB5n.qp());
+    /* p31.YZOS*/ YZOS_OAM_DB6p = dff8_B_inv(XEGA_OAM_CLKp, ZUVE_OAM_LATCH_DB6n.qp());
+    /* p31.DEPO*/ DEPO_OAM_DB7p = dff8_B_inv(XEGA_OAM_CLKp, ECED_OAM_LATCH_DB7n.qp());
   }
 
   // OBL -> CBD

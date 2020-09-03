@@ -249,14 +249,14 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p23.XUFA*/ wire XUFA_FF45_WRn = and2(CUPA_CPU_WRp_xxxxEFGx, XAYU_FF45p);
     /* p23.WANE*/ wire WANE_FF45_WRp = not1(XUFA_FF45_WRn);
        
-    /* p23.SYRY*/ SYRY_LYC0n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.tp());
-    /* p23.VUCE*/ VUCE_LYC1n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D1p.tp());
-    /* p23.SEDY*/ SEDY_LYC2n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D2p.tp());
-    /* p23.SALO*/ SALO_LYC3n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D3p.tp());
-    /* p23.SOTA*/ SOTA_LYC4n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D4p.tp());
-    /* p23.VAFA*/ VAFA_LYC5n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D5p.tp());
-    /* p23.VEVO*/ VEVO_LYC6n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.tp());
-    /* p23.RAHA*/ RAHA_LYC7n = dff9_inv(WANE_FF45_WRp, !WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.tp());
+    /* p23.SYRY*/ SYRY_LYC0n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.tp());
+    /* p23.VUCE*/ VUCE_LYC1n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D1p.tp());
+    /* p23.SEDY*/ SEDY_LYC2n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D2p.tp());
+    /* p23.SALO*/ SALO_LYC3n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D3p.tp());
+    /* p23.SOTA*/ SOTA_LYC4n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D4p.tp());
+    /* p23.VAFA*/ VAFA_LYC5n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D5p.tp());
+    /* p23.VEVO*/ VEVO_LYC6n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.tp());
+    /* p23.RAHA*/ RAHA_LYC7n = dff9_inv(WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.tp());
 
     /*#p23.RETU*/ cpu_bus.BUS_CPU_D0p = tribuf_6nn(WEKU_FF45_RDn, SYRY_LYC0n.qp());
     /* p23.VOJO*/ cpu_bus.BUS_CPU_D1p = tribuf_6nn(WEKU_FF45_RDn, VUCE_LYC1n.qp());

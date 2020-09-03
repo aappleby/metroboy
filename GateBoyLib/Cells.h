@@ -169,32 +169,16 @@ inline RegDelta tribuf_10np(wire OEn, wire Dn) {
 // REG8_07 >> Qn
 // REG8_08 >> Q
 
-inline RegQNIn dff8_A_inv(wire CLKp, wire CLKn, bool Dn) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKp;
-  (void)CLKn;
-
-  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!Dn) << 0))};
+inline RegQNIn dff8_A_inv(wire CLKp, bool Dn) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!Dn) << 0))};
 }
 
-inline RegQPIn dff8_B_inv(wire CLKp, wire CLKn, bool D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKp;
-  (void)CLKn;
-
-  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!D) << 0))};
+inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
 }
 
 inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
   return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
-}
-
-inline RegQPNIn dff8_AB_inv(wire CLKp, wire CLKn, bool D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKp;
-  (void)CLKn;
-
-  return {RegDelta(DELTA_D0C0 | (CLKn << 1) | ((!D) << 0))};
 }
 
 //-----------------------------------------------------------------------------
@@ -233,23 +217,7 @@ inline RegDelta dff9_inv(wire CLKp, wire RSTn, wire D) {
   }
 }
 
-
-inline RegDelta dff9_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKn;
-
-  if (!RSTn) {
-    return RegDelta(DELTA_A1C0 | (CLKp << 1));
-  }
-  else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
-  }
-}
-
-inline RegQNIn dff9_A_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKn;
-
+inline RegQNIn dff9_A_inv(wire CLKp, wire RSTn, wire D) {
   if (!RSTn) {
     return {RegDelta(DELTA_A1C0 | (CLKp << 1))};
   }
@@ -274,10 +242,7 @@ inline RegQNIn dff9_A_inv(wire CLKp, wire CLKn, wire RSTn, wire D) {
 // RAWU_10 nc
 // RAWU_11 >> TUXE_02 (Qn probably)
 
-inline RegQNIn dff11_A_inv(wire CLKp, wire CLKn, wire RSTn, wire Dn) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKn;
-
+inline RegQNIn dff11_A_inv(wire CLKp, wire RSTn, wire Dn) {
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
@@ -303,26 +268,16 @@ inline RegQNIn dff11_A_inv(wire CLKp, wire CLKn, wire RSTn, wire Dn) {
 // REG13_12 >> Qn
 // REG13_13 >> Q
 
-inline RegQNIn dff13_A(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKn;
-
-#if 0
-  return RegDelta(DELTA_D0C0 | (!RSTn << 2) | (CLKp << 1) | ((D & RSTn) << 0));
-#else
+inline RegQNIn dff13_A(wire CLKp, wire RSTn, wire D) {
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }
   else {
     return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
   }
-#endif
 }
 
-inline RegQPIn dff13_B(wire CLKp, wire CLKn, wire RSTn, wire D) {
-  CHECK_N(CLKp == CLKn);
-  (void)CLKn;
-
+inline RegQPIn dff13_B(wire CLKp, wire RSTn, wire D) {
   if (!RSTn) {
     return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
   }

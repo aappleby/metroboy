@@ -100,10 +100,10 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
 
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
-  /*p01.AFUR*/ AFUR_xxxxEFGH = dff9_inv(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
-  /*p01.ALEF*/ ALEF_AxxxxFGH = dff9_inv( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
-  /*p01.APUK*/ APUK_ABxxxxGH = dff9_inv(!ATAL_xBxDxFxH,  ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
-  /*p01.ADYK*/ ADYK_ABCxxxxH = dff9_inv( ATAL_xBxDxFxH, !ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
+  /*p01.AFUR*/ AFUR_xxxxEFGH = dff9_inv(!ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
+  /*p01.ALEF*/ ALEF_AxxxxFGH = dff9_inv( ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
+  /*p01.APUK*/ APUK_ABxxxxGH = dff9_inv(!ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
+  /*p01.ADYK*/ ADYK_ABCxxxxH = dff9_inv( ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
 
   /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
@@ -168,8 +168,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
   /*p01.ASOL*/ ASOL_POR_DONEn = nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
 
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
-  /*p01.BOMA*/ wire BOMA_Axxxxxxx = not1(BOGA_xBCDEFGH);
-  /*p01.AFER*/ AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH, BOMA_Axxxxxxx, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.tp());
+  /*p01.AFER*/ AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.tp());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp = AFER_SYS_RSTp.qp();
   top.cpu_bus.PIN_CPU_EXT_RST  = RST;

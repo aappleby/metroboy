@@ -28,7 +28,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!ext_bus.PIN_EXT_RDn.qp(), cpu_bus.PIN_CPU_RDp.tp(), UNOR_MODE_DBG2p);
+    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.tp(), UNOR_MODE_DBG2p);
     /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
@@ -94,7 +94,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(clk_reg.ADAR_ABCxxxxH, clk_reg.ATYP_ABCDxxxx);
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.tp(), AFAS_xxxxEFGx);
     /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(!ext_bus.PIN_EXT_WRn.qp(), APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2_n(ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx, UNOR_MODE_DBG2p);
     /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH); // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
   }
 
@@ -217,14 +217,14 @@ if (top.VYPO_GND) bus_out.set_data(
 ///*p05.KYWE*/ wire P05_NC1 = nor4 (KERU_DBG_FF00_D7, FF60_0o);
 
 /*p08.LYRA*/ wire DBG_D_RDn = nand2(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/*p08.TUTY*/ if (!DBG_D_RDn) BUS_CPU_D0p = not1(/*p08.TOVO*/ not1(pins.PIN_D0_C));
-/*p08.SYWA*/ if (!DBG_D_RDn) BUS_CPU_D1p = not1(/*p08.RUZY*/ not1(pins.PIN_D1_C));
-/*p08.SUGU*/ if (!DBG_D_RDn) BUS_CPU_D2p = not1(/*p08.ROME*/ not1(pins.PIN_D2_C));
-/*p08.TAWO*/ if (!DBG_D_RDn) BUS_CPU_D3p = not1(/*p08.SAZA*/ not1(pins.PIN_D3_C));
-/*p08.TUTE*/ if (!DBG_D_RDn) BUS_CPU_D4p = not1(/*p08.TEHE*/ not1(pins.PIN_D4_C));
-/*p08.SAJO*/ if (!DBG_D_RDn) BUS_CPU_D5p = not1(/*p08.RATU*/ not1(pins.PIN_D5_C));
-/*p08.TEMY*/ if (!DBG_D_RDn) BUS_CPU_D6p = not1(/*p08.SOCA*/ not1(pins.PIN_D6_C));
-/*p08.ROPA*/ if (!DBG_D_RDn) BUS_CPU_D7p = not1(/*p08.RYBA*/ not1(pins.PIN_D7_C));
+/*p08.TUTY*/ if (DBG_D_RDn) BUS_CPU_D0p = not1(/*p08.TOVO*/ not1(pins.PIN_D0_C));
+/*p08.SYWA*/ if (DBG_D_RDn) BUS_CPU_D1p = not1(/*p08.RUZY*/ not1(pins.PIN_D1_C));
+/*p08.SUGU*/ if (DBG_D_RDn) BUS_CPU_D2p = not1(/*p08.ROME*/ not1(pins.PIN_D2_C));
+/*p08.TAWO*/ if (DBG_D_RDn) BUS_CPU_D3p = not1(/*p08.SAZA*/ not1(pins.PIN_D3_C));
+/*p08.TUTE*/ if (DBG_D_RDn) BUS_CPU_D4p = not1(/*p08.TEHE*/ not1(pins.PIN_D4_C));
+/*p08.SAJO*/ if (DBG_D_RDn) BUS_CPU_D5p = not1(/*p08.RATU*/ not1(pins.PIN_D5_C));
+/*p08.TEMY*/ if (DBG_D_RDn) BUS_CPU_D6p = not1(/*p08.SOCA*/ not1(pins.PIN_D6_C));
+/*p08.ROPA*/ if (DBG_D_RDn) BUS_CPU_D7p = not1(/*p08.RYBA*/ not1(pins.PIN_D7_C));
 #endif
 
 // hack, not correct

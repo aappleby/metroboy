@@ -159,7 +159,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KARU*/ wire KARU = or2(KELY_JOYP_UDLR.qn(), KURA);
     /*p05.CELA*/ wire CELA = or2(COFY_JOYP_ABCS.qn(), KURA);
 
-    // FIXME inversion?
+    // FIXME inversion
     // P14 and P15 are showing up as 0 on reset
 
     PIN_JOY_P14 = io_pin(KARU, !KELY_JOYP_UDLR.qn());

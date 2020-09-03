@@ -477,7 +477,8 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RABO*/ wire RABO_VBUS_D6n = not1(BUS_VRAM_D6p.tp());
     /*p25.SAME*/ wire SAME_VBUS_D7n = not1(BUS_VRAM_D7p.tp());
 
-    // FIXME I'm missing an inverter here or something.
+    // FIXME inversion
+    // I'm missing an inverter here or something.
 
     // RERY := not(BUS_VRAM_D0p)
     // RUGA := tri(SEBY, RERY);

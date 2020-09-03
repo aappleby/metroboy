@@ -250,7 +250,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.LYWE*/ wire LYWE = not1(LAGU);
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
 
-    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(!PIN_EXT_RDn.qp(), top.cpu_bus.PIN_CPU_RDp.tp(), top.UNOR_MODE_DBG2p);
+    /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2_n(PIN_EXT_RDn.qn(), top.cpu_bus.PIN_CPU_RDp.tp(), top.UNOR_MODE_DBG2p);
     /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /*p08.REDU*/ wire REDU_CPU_RDn = not1(TEDO_CPU_RDp);
     /*p08.RORU*/ wire RORU_CBD_TO_EPDn = mux2_p(REDU_CPU_RDn, MOTY_CPU_EXT_RD, top.UNOR_MODE_DBG2p);

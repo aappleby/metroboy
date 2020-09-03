@@ -99,7 +99,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
 
-    /*#p04.NAFA*/ NAFA_DMA_A08n = dff8_AB_inv(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D0p.tp()); // BOTH OUTPUTS USED!
+    /*#p04.NAFA*/ NAFA_DMA_A08n = dff8_AB_inv(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D0p.tp()); // BOTH OUTPUTS USED
     /* p04.PYNE*/ PYNE_DMA_A09n = dff8_AB_inv(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D1p.tp());
     /* p04.PARA*/ PARA_DMA_A10n = dff8_AB_inv(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D2p.tp());
     /* p04.NYDO*/ NYDO_DMA_A11n = dff8_AB_inv(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D3p.tp());

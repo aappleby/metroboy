@@ -299,7 +299,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
     // LCD horizontal sync pin latch
 
-    // FIXME I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
+    // FIXME inversion
+    // I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
     // seems to be correct and makes it match the trace. With that change, HSYNC is 30 phases.
     // Is it possible that it should be 29 phases and it only looks like 30 phases because of gate delay?
     // That would be a loooot of gate delay.

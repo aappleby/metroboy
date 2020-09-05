@@ -13,7 +13,7 @@ struct Joypad {
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d) const;
-  void preset_buttons(uint8_t buttons);
+  void set_buttons(uint8_t buttons);
 
   /*p02.ASOK*/ Sig ASOK_INT_JOYp;
 

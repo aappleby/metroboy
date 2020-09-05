@@ -42,7 +42,7 @@ void Joypad::dump(Dumper& d) const {
 
 //-----------------------------------------------------------------------------
 
-void Joypad::preset_buttons(uint8_t buttons) {
+void Joypad::set_buttons(uint8_t buttons) {
   // Pressing a button pulls the corresponding pin _down_.
 
   PIN_JOY_P10 = DELTA_TRIZ;

@@ -53,7 +53,8 @@ int GateBoyTests::test_init() {
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
     uint8_t delta = ((uint8_t*)&gb.top)[i] >> 4;
-    ASSERT_EQ(1, (delta == DELTA_NONE) || (delta == DELTA_LOCK));
+    //ASSERT_EQ(1, (delta == DELTA_NONE) || (delta == DELTA_LOCK));
+    ASSERT_EQ(delta, DELTA_NONE);
   }
 
   // Mem should be clear

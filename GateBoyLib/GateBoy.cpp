@@ -65,7 +65,7 @@ void GateBoy::reset() {
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
-  cpu.get_bus_req(cpu_req);
+  cpu.get_bus_req(bus_req);
 }
 
 //------------------------------------------------------------------------------
@@ -286,140 +286,53 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   RegBase::bus_floating = false;
 
   wire CLK = (new_phase & 1) & sys_clken;
-
-  top.joypad.preset_buttons(sys_buttons);
+  top.joypad.set_buttons(sys_buttons);
 
   RegBase::tick_running = true;
   top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   RegBase::tick_running = false;
 
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tock_running = false;
-
-  tock_ext_bus();
-
   //----------
   // CPU bus stuff
-  
-  if (DELTA_HA) {
-    cpu_req.read = 0;
-    cpu_req.write = 0;
-    top.cpu_bus.PIN_CPU_RDp = 1;
-    top.cpu_bus.PIN_CPU_WRp = 0;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    top.cpu_bus.set_addr_hi(0);
-    if (cpu_req.write) top.cpu_bus.set_data_z();
-  }
 
   if (DELTA_AB) {
     if (script) {
-      cpu_req = script[(phase_total / 8) % script_len];
+      bus_req = script[(phase_total / 8) % script_len];
     }
     else if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
-      cpu_req = dbg_req;
+      bus_req = dbg_req;
     }
     else {
-      cpu_req = cpu.bus_req;
+      bus_req = cpu.bus_req;
     }
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(0xFF);
   }
 
-  if (DELTA_BC) {
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(0xFF);
+  if (DELTA_HA) {
+    bus_req.read = 0;
+    bus_req.write = 0;
   }
-
-  if (DELTA_CD) {
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(0xFF);
-  }
-
-  if (DELTA_DE) {
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
-  }
-
-  if (DELTA_EF) {
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
-  }
-
-  if (DELTA_FG) {
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
-  }
-
-  if (DELTA_GH) {
-    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
-    top.cpu_bus.set_addr_lo(cpu_req.addr);
-    if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_hi(cpu_req.addr);
-    }
-    else {
-      top.cpu_bus.set_addr_hi(0);
-    }
-    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
-  }
-
-  top.cpu_bus.PIN_CPU_6 = 0;
 
   //----------
 
-  bool addr_rom = cpu_req.addr <= 0x7FFF;
-  bool addr_ram = cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF;
-  bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
-  bool hold_mem = cpu_req.read && (cpu_req.addr < 0xFF00);
+  if (bus_req.write) {
+    if (DELTA_HA) top.cpu_bus.set_data(0xFF);
+    if (DELTA_AB) top.cpu_bus.set_data(0xFF);
+    if (DELTA_BC) top.cpu_bus.set_data(0xFF);
+    if (DELTA_CD) top.cpu_bus.set_data(0xFF);
+    if (DELTA_DE) top.cpu_bus.set_data(bus_req.data_lo);
+    if (DELTA_EF) top.cpu_bus.set_data(bus_req.data_lo);
+    if (DELTA_FG) top.cpu_bus.set_data(bus_req.data_lo);
+    if (DELTA_GH) top.cpu_bus.set_data(bus_req.data_lo);
+  }
+
+  top.cpu_bus.PIN_CPU_RDp = !bus_req.write;
+  top.cpu_bus.PIN_CPU_WRp = bus_req.write;
+  top.cpu_bus.PIN_CPU_6 = 0;
+
+  bool addr_rom = bus_req.addr <= 0x7FFF;
+  bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr < 0xFDFF;
+  bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
+  bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
 
   if (DELTA_HA) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
   if (DELTA_AB) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
@@ -448,7 +361,23 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.int_reg.PIN_CPU_ACK_JOYPAD = wire(cpu.int_ack & INT_JOYPAD_MASK);
 
   //----------
+  // Something weird going on here, switching the order of these two chunks shouldn't break anything but it does
 
+  RegBase::tock_running = true;
+  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  RegBase::tock_running = false;
+
+  top.cpu_bus.set_addr_lo(bus_req.addr);
+  if (bus_req.read || bus_req.write) {
+    top.cpu_bus.set_addr_hi(bus_req.addr);
+  }
+  else {
+    top.cpu_bus.set_addr_hi(0);
+  }
+
+  //----------
+
+  tock_ext_bus();
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
   tock_vram_bus();
   tock_zram_bus();

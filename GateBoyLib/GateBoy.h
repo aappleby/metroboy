@@ -41,7 +41,7 @@ public:
   uint8_t  zero_ram[128];
   uint8_t  framebuffer[160*144];
 
-  Req      cpu_req = {0};
+  Req      bus_req = {0};
   Req      dbg_req = {0};
   Req*     script = nullptr;
   int32_t  script_len = 0; 

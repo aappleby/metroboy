@@ -12,6 +12,30 @@ GateBoy::GateBoy() {
   memset(ext_ram, 0, 8192);
   memset(cart_rom, 0, 32768);
   memset(cart_ram, 0, 8192);
+
+  top.cpu_bus.BUS_CPU_A00.lock(0);
+  top.cpu_bus.BUS_CPU_A01.lock(0);
+  top.cpu_bus.BUS_CPU_A02.lock(0);
+  top.cpu_bus.BUS_CPU_A03.lock(0);
+  top.cpu_bus.BUS_CPU_A04.lock(0);
+  top.cpu_bus.BUS_CPU_A05.lock(0);
+  top.cpu_bus.BUS_CPU_A06.lock(0);
+  top.cpu_bus.BUS_CPU_A07.lock(0);
+  top.cpu_bus.BUS_CPU_A08.lock(0);
+  top.cpu_bus.BUS_CPU_A09.lock(0);
+  top.cpu_bus.BUS_CPU_A10.lock(0);
+  top.cpu_bus.BUS_CPU_A11.lock(0);
+  top.cpu_bus.BUS_CPU_A12.lock(0);
+  top.cpu_bus.BUS_CPU_A13.lock(0);
+  top.cpu_bus.BUS_CPU_A14.lock(0);
+  top.cpu_bus.BUS_CPU_A15.lock(0);
+
+  top.cpu_bus.PIN_CPU_RDp.lock(!bus_req.write);
+  top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+  top.cpu_bus.PIN_CPU_6.lock(0);
+  top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(1);
+  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
+
   cpu.reset(0x100);
 }
 
@@ -309,94 +333,95 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
       bus_req = script[(phase_total / 8) % script_len];
     }
     else if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
-      bus_req = dbg_req;
+      bus_req.addr  = dbg_req.addr;
+      bus_req.data  = dbg_req.data;
+      bus_req.read  = dbg_req.read;
+      bus_req.write = dbg_req.write;
     }
     else {
-      bus_req = cpu.bus_req;
+      bus_req.addr  = cpu.bus_req.addr;
+      bus_req.data  = cpu.bus_req.data;
+      bus_req.read  = cpu.bus_req.read;
+      bus_req.write = cpu.bus_req.write;
     }
-  }
 
-  if (DELTA_HA) {
-    bus_req.read = 0;
-    bus_req.write = 0;
+    if (bus_req.read || bus_req.write) {
+      top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
+      top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
+      top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
+      top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
+      top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
+      top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
+      top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
+      top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
+      top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
+      top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
+      top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
+      top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
+      top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
+      top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
+      top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
+      top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
+    }
+
+    top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
+    top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+
+    bool addr_rom = bus_req.addr <= 0x7FFF;
+    bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
+    bool addr_hi  = bus_req.addr >= 0xFF00 && bus_req.addr <= 0xFFFF;
+    addr_hi = false;
+    bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram || addr_hi) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
+    top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
+  }
+  else if (DELTA_BC) {
+  }
+  else if (DELTA_CD) {
+    bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
+    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
+  }
+  else if (DELTA_DE) {
+    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  }
+  else if (DELTA_EF) {
+    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  }
+  else if (DELTA_FG) {
+    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  }
+  else if (DELTA_GH) {
+    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  }
+  else if (DELTA_HA) {
+    if ((bus_req.addr & 0xFF00) != 0xFF00) {
+      top.cpu_bus.BUS_CPU_A08.lock(0);
+      top.cpu_bus.BUS_CPU_A09.lock(0);
+      top.cpu_bus.BUS_CPU_A10.lock(0);
+      top.cpu_bus.BUS_CPU_A11.lock(0);
+      top.cpu_bus.BUS_CPU_A12.lock(0);
+      top.cpu_bus.BUS_CPU_A13.lock(0);
+      top.cpu_bus.BUS_CPU_A14.lock(0);
+      top.cpu_bus.BUS_CPU_A15.lock(0);
+    }
+
+    top.cpu_bus.PIN_CPU_RDp.lock(1);
+    top.cpu_bus.PIN_CPU_WRp.lock(0);
+
+    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
   }
 
   //----------
 
-  if (bus_req.write) {
-    if (DELTA_HA) top.cpu_bus.set_data(0xFF);
-    if (DELTA_AB) top.cpu_bus.set_data(0xFF);
-    if (DELTA_BC) top.cpu_bus.set_data(0xFF);
-    if (DELTA_CD) top.cpu_bus.set_data(0xFF);
-    if (DELTA_DE) top.cpu_bus.set_data(bus_req.data_lo);
-    if (DELTA_EF) top.cpu_bus.set_data(bus_req.data_lo);
-    if (DELTA_FG) top.cpu_bus.set_data(bus_req.data_lo);
-    if (DELTA_GH) top.cpu_bus.set_data(bus_req.data_lo);
-  }
-
-  top.cpu_bus.PIN_CPU_RDp = !bus_req.write;
-  top.cpu_bus.PIN_CPU_WRp = bus_req.write;
-  top.cpu_bus.PIN_CPU_6 = 0;
-
-  bool addr_rom = bus_req.addr <= 0x7FFF;
-  bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr < 0xFDFF;
-  bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
-  bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
-
-  if (DELTA_HA) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
-  if (DELTA_AB) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
-  if (DELTA_BC) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
-  if (DELTA_CD) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
-  if (DELTA_DE) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
-  if (DELTA_EF) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
-  if (DELTA_FG) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
-  if (DELTA_GH) { top.cpu_bus.PIN_CPU_ADDR_EXTp = addr_ext; }
-
-  if (DELTA_HA) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-  if (DELTA_AB) { top.cpu_bus.PIN_CPU_LATCH_EXT = 0; }
-  if (DELTA_BC) { top.cpu_bus.PIN_CPU_LATCH_EXT = 0; }
-  if (DELTA_CD) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-  if (DELTA_DE) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-  if (DELTA_EF) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-  if (DELTA_FG) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-  if (DELTA_GH) { top.cpu_bus.PIN_CPU_LATCH_EXT = hold_mem; }
-
-  //----------
-
-  top.int_reg.PIN_CPU_ACK_VBLANK = wire(cpu.int_ack & INT_VBLANK_MASK);
-  top.int_reg.PIN_CPU_ACK_STAT   = wire(cpu.int_ack & INT_STAT_MASK);
-  top.int_reg.PIN_CPU_ACK_TIMER  = wire(cpu.int_ack & INT_TIMER_MASK);
-  top.int_reg.PIN_CPU_ACK_SERIAL = wire(cpu.int_ack & INT_SERIAL_MASK);
-  top.int_reg.PIN_CPU_ACK_JOYPAD = wire(cpu.int_ack & INT_JOYPAD_MASK);
+  top.int_reg.PIN_CPU_ACK_VBLANK.preset(wire(cpu.int_ack & INT_VBLANK_MASK));
+  top.int_reg.PIN_CPU_ACK_STAT.preset(wire(cpu.int_ack & INT_STAT_MASK));
+  top.int_reg.PIN_CPU_ACK_TIMER.preset(wire(cpu.int_ack & INT_TIMER_MASK));
+  top.int_reg.PIN_CPU_ACK_SERIAL.preset(wire(cpu.int_ack & INT_SERIAL_MASK));
+  top.int_reg.PIN_CPU_ACK_JOYPAD.preset(wire(cpu.int_ack & INT_JOYPAD_MASK));
 
   //----------
 
   RegBase::tock_running = true;
-
-  top.cpu_bus.BUS_CPU_A00.preset(wire(bus_req.addr & 0x0001));
-  top.cpu_bus.BUS_CPU_A01.preset(wire(bus_req.addr & 0x0002));
-  top.cpu_bus.BUS_CPU_A02.preset(wire(bus_req.addr & 0x0004));
-  top.cpu_bus.BUS_CPU_A03.preset(wire(bus_req.addr & 0x0008));
-  top.cpu_bus.BUS_CPU_A04.preset(wire(bus_req.addr & 0x0010));
-  top.cpu_bus.BUS_CPU_A05.preset(wire(bus_req.addr & 0x0020));
-  top.cpu_bus.BUS_CPU_A06.preset(wire(bus_req.addr & 0x0040));
-  top.cpu_bus.BUS_CPU_A07.preset(wire(bus_req.addr & 0x0080));
-  top.cpu_bus.BUS_CPU_A08.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0100) : 0);
-  top.cpu_bus.BUS_CPU_A09.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0200) : 0);
-  top.cpu_bus.BUS_CPU_A10.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0400) : 0);
-  top.cpu_bus.BUS_CPU_A11.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0800) : 0);
-  top.cpu_bus.BUS_CPU_A12.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x1000) : 0);
-  top.cpu_bus.BUS_CPU_A13.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x2000) : 0);
-  top.cpu_bus.BUS_CPU_A14.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x4000) : 0);
-  top.cpu_bus.BUS_CPU_A15.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x8000) : 0);
-
-  top.tock_slow(sys_rst,
-                CLK,
-                sys_clkgood,
-                sys_t1,
-                sys_t2,
-                sys_cpuready);
-
+  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   RegBase::tock_running = false;
 
   //----------

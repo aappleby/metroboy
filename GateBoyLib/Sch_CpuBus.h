@@ -23,25 +23,14 @@ struct CpuBus {
   }
 
   void set_data(uint8_t data) {
-    BUS_CPU_D0p = wire(data & 0x01);
-    BUS_CPU_D1p = wire(data & 0x02);
-    BUS_CPU_D2p = wire(data & 0x04);
-    BUS_CPU_D3p = wire(data & 0x08);
-    BUS_CPU_D4p = wire(data & 0x10);
-    BUS_CPU_D5p = wire(data & 0x20);
-    BUS_CPU_D6p = wire(data & 0x40);
-    BUS_CPU_D7p = wire(data & 0x80);
-  }
-
-  void set_data_z() {
-    BUS_CPU_D0p = DELTA_TRIZ;
-    BUS_CPU_D1p = DELTA_TRIZ;
-    BUS_CPU_D2p = DELTA_TRIZ;
-    BUS_CPU_D3p = DELTA_TRIZ;
-    BUS_CPU_D4p = DELTA_TRIZ;
-    BUS_CPU_D5p = DELTA_TRIZ;
-    BUS_CPU_D6p = DELTA_TRIZ;
-    BUS_CPU_D7p = DELTA_TRIZ;
+    BUS_CPU_D0p.preset(wire(data & 0x01));
+    BUS_CPU_D1p.preset(wire(data & 0x02));
+    BUS_CPU_D2p.preset(wire(data & 0x04));
+    BUS_CPU_D3p.preset(wire(data & 0x08));
+    BUS_CPU_D4p.preset(wire(data & 0x10));
+    BUS_CPU_D5p.preset(wire(data & 0x20));
+    BUS_CPU_D6p.preset(wire(data & 0x40));
+    BUS_CPU_D7p.preset(wire(data & 0x80));
   }
 
   //-----------------------------------------------------------------------------

@@ -352,6 +352,13 @@ struct Tri : private RegBase {
 
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
 
+  inline void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
   inline void preset(RegDelta d) {
     CHECK_P(delta == DELTA_NONE);
     delta = d;
@@ -407,6 +414,13 @@ struct Bus : private RegBase {
 
   inline void operator = (wire w)  {
     (*this) = w ? DELTA_TRI1 : DELTA_TRI0;
+  }
+
+  inline void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
   }
 
   inline void preset(RegDelta d) {

@@ -48,13 +48,13 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_Y("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xc5645f685d9bccfa, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xc244125f43c6e245, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
     uint8_t delta = ((uint8_t*)&gb.top)[i] >> 4;
-    //ASSERT_EQ(1, (delta == DELTA_NONE) || (delta == DELTA_LOCK));
-    ASSERT_EQ(delta, DELTA_NONE);
+    ASSERT_EQ(1, (delta == DELTA_NONE) || (delta == DELTA_LOCK));
+    //ASSERT_EQ(delta, DELTA_NONE);
   }
 
   // Mem should be clear
@@ -355,7 +355,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(A05, A05_WAVE[wave_idx], "A05 failure at phase %d - expected %c, got %c\n", i, A05_WAVE[wave_idx], A05);
       EXPECT_EQ(A06, A06_WAVE[wave_idx], "A06 failure at phase %d - expected %c, got %c\n", i, A06_WAVE[wave_idx], A06);
       EXPECT_EQ(A07, A07_WAVE[wave_idx], "A07 failure at phase %d - expected %c, got %c\n", i, A07_WAVE[wave_idx], A07);
-      EXPECT_EQ(A08, A08_WAVE[wave_idx], "A08 failure at phase %d - expected %c, got %c\n", i, A08_WAVE[wave_idx], A08); // broken
+      EXPECT_EQ(A08, A08_WAVE[wave_idx], "A08 failure at phase %d - expected %c, got %c\n", i, A08_WAVE[wave_idx], A08);
       EXPECT_EQ(A09, A09_WAVE[wave_idx], "A09 failure at phase %d - expected %c, got %c\n", i, A09_WAVE[wave_idx], A09);
       EXPECT_EQ(A10, A10_WAVE[wave_idx], "A10 failure at phase %d - expected %c, got %c\n", i, A10_WAVE[wave_idx], A10);
       EXPECT_EQ(A11, A11_WAVE[wave_idx], "A11 failure at phase %d - expected %c, got %c\n", i, A11_WAVE[wave_idx], A11);
@@ -378,11 +378,11 @@ int GateBoyTests::test_ext_bus() {
   }
 #endif
 
-  // VRAM access
-  // ld (hl), a
-  // jr -2
-
   {
+    // VRAM access
+    // ld (hl), a
+    // jr -2
+
     LOG_Y("Testing \"ld (hl), a; jr -2;\" the hard way - hl = 0x9777, a = 0x55\n");
 
     GateBoy gb;
@@ -392,16 +392,6 @@ int GateBoyTests::test_ext_bus() {
     gb.cart_rom[0x0155] = 0x77;
     gb.cart_rom[0x0156] = 0x18;
     gb.cart_rom[0x0157] = 0xFD;
-
-    /*
-    Req* script = new Req[]{
-      { .addr = 0x0155, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode 0x77
-      { .addr = 0x9777, .data = 0x55, .read = 0, .write = 1}, // write to 0x9777
-      { .addr = 0x0156, .data = 0x00, .read = 1, .write = 0}, // read "jr -2" opcode 0x18
-      { .addr = 0x0157, .data = 0x00, .read = 1, .write = 0}, // read "jr -2" param 0xFD
-      { .addr = 0x0157, .data = 0x00, .read = 0, .write = 0}, // idle cycle
-    };
-    */
 
     Req* script = new Req[5];
     script[0].addr = 0x0155; script[0].data = 0x00; script[0].read = 1; script[0].write = 0; // read "ld (hl), a" opcode
@@ -494,16 +484,16 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(CSn, CSn_WAVE[wave_idx], "CSn failure at phase %d - expected %c, got %c\n", i, CSn_WAVE[wave_idx], CSn);
 
       EXPECT_EQ(A00, A00_WAVE[wave_idx], "A00 failure at phase %d - expected %c, got %c\n", i, A00_WAVE[wave_idx], A00);
-      //EXPECT_EQ(A01, A01_WAVE[wave_idx], "A01 failure at phase %d - expected %c, got %c\n", i, A01_WAVE[wave_idx], A01); // broken
+      EXPECT_EQ(A01, A01_WAVE[wave_idx], "A01 failure at phase %d - expected %c, got %c\n", i, A01_WAVE[wave_idx], A01);
       EXPECT_EQ(A02, A02_WAVE[wave_idx], "A02 failure at phase %d - expected %c, got %c\n", i, A02_WAVE[wave_idx], A02);
       EXPECT_EQ(A03, A03_WAVE[wave_idx], "A03 failure at phase %d - expected %c, got %c\n", i, A03_WAVE[wave_idx], A03);
 
       EXPECT_EQ(A04, A04_WAVE[wave_idx], "A04 failure at phase %d - expected %c, got %c\n", i, A04_WAVE[wave_idx], A04);
-      //EXPECT_EQ(A05, A05_WAVE[wave_idx], "A05 failure at phase %d - expected %c, got %c\n", i, A05_WAVE[wave_idx], A05); // broken
+      EXPECT_EQ(A05, A05_WAVE[wave_idx], "A05 failure at phase %d - expected %c, got %c\n", i, A05_WAVE[wave_idx], A05);
       EXPECT_EQ(A06, A06_WAVE[wave_idx], "A06 failure at phase %d - expected %c, got %c\n", i, A06_WAVE[wave_idx], A06);
       EXPECT_EQ(A07, A07_WAVE[wave_idx], "A07 failure at phase %d - expected %c, got %c\n", i, A07_WAVE[wave_idx], A07);
 
-      //EXPECT_EQ(A08, A08_WAVE[wave_idx], "A08 failure at phase %d - expected %c, got %c\n", i, A08_WAVE[wave_idx], A08); // broken
+      EXPECT_EQ(A08, A08_WAVE[wave_idx], "A08 failure at phase %d - expected %c, got %c\n", i, A08_WAVE[wave_idx], A08);
       EXPECT_EQ(A09, A09_WAVE[wave_idx], "A09 failure at phase %d - expected %c, got %c\n", i, A09_WAVE[wave_idx], A09);
       EXPECT_EQ(A10, A10_WAVE[wave_idx], "A10 failure at phase %d - expected %c, got %c\n", i, A10_WAVE[wave_idx], A10);
       EXPECT_EQ(A11, A11_WAVE[wave_idx], "A11 failure at phase %d - expected %c, got %c\n", i, A11_WAVE[wave_idx], A11);
@@ -526,33 +516,184 @@ int GateBoyTests::test_ext_bus() {
     }
   }
 
-
-#if 0
-  // A15 should be ABxxxxxx if we're _not_ reading from the ext bus
   {
+    // ZRAM access
+    // ld (hl), a
+    // jr -2
+
+    LOG_Y("Testing \"ld (hl), a; jr -2;\" the hard way - hl = 0xFF80, a = 0x55\n");
+
     GateBoy gb;
     gb.reset();
+    gb.set_boot_bit();
 
-    gb.dbg_req = { .addr = 0x1000, .data = 0x00, .read = 1, .write = 0 };
-    gb.run(8);
+    gb.cart_rom[0x0155] = 0x77;
+    gb.cart_rom[0x0156] = 0x18;
+    gb.cart_rom[0x0157] = 0xFD;
 
-    for (int i = 0; i < 32; i++) {
-      int phase = i & 7;
-      wire A15 = gb.top.ext_bus.PIN_EXT_A15p.qp();
+    Req* script = new Req[5];
+    script[0].addr = 0x0155; script[0].data = 0x00; script[0].read = 1; script[0].write = 0; // read "ld (hl), a" opcode
+    script[1].addr = 0xFF80; script[1].data = 0x55; script[1].read = 0; script[1].write = 1; // write to 0xFF80
+    script[2].addr = 0x0156; script[2].data = 0x00; script[2].read = 1; script[2].write = 0; // read "jr -2" opcode
+    script[3].addr = 0x0157; script[3].data = 0x00; script[3].read = 1; script[3].write = 0; // read "jr -2" param
+    script[4].addr = 0x0157; script[4].data = 0x00; script[4].read = 0; script[4].write = 0; // idle cycle
 
-      if (phase == 0 || phase == 1) {
-        ASSERT_EQ(1, A15, "A15 not high on phase 0/1");
-      }
-      else {
-        ASSERT_EQ(0, A15, "A15 not low on phase 2/3/4/5/6/7");
-      }
+    // Run the script once without checking phases
+    gb.dbg_req = script[0]; gb.run(8);
+    gb.dbg_req = script[1]; gb.run(8);
+    gb.dbg_req = script[2]; gb.run(8);
+    gb.dbg_req = script[3]; gb.run(8);
+    gb.dbg_req = script[4]; gb.run(8);
+
+    // Start checking each phase
+
+      
+    const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
+    const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
+    const char* RDn_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* CSn_WAVE = "11111111 11111111 11111111 11111111 11111111";
+
+#if 0
+    // PIN_CPU_ADDR_EXTp has a GLITCH!
+    {
+      // PIN_EXT_WRn = nand(PIN_CPU_WRp, xxxxEFGx, PIN_CPU_ADDR_EXTp, !ADDR_VRAM);
+      // PIN_EXT_RDn = (PIN_CPU_WR && PIN_CPU_ADDR_EXTp);
+      // PIN_EXT_ANNp = tp_latch(and2(PIN_CPU_ADDR_EXTp, !ADDR_VRAM), BUS_CPU_ANN);
+
+      // WRn = 1 = nand(PIN_CPU_WRp, xxxxEFGx, PIN_CPU_ADDR_EXTp);
+      
+      // RDn = 0 = (PIN_CPU_WR && PIN_CPU_ADDR_EXTp);
+      // A00 = 1 = tp_latch(and2(PIN_CPU_ADDR_EXTp, !ADDR_VRAM), BUS_CPU_ANN);
+
+      //const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111"; // good
+      //const char* RDn_WAVE = "00000000 00000000 00000000 00000000 00000000";
+      //const char* A00_WAVE = "11111111 10000000 00000000 01111111 11111111"; // good
+    }
+
+    // The glitch pulse causes the ext address latch to latch even though the
+    // 0xFFxx addresses are _not_ external, so the address shows up on the bus.
+
+    //                                xxxxxxx x
+    const char* A00_WAVE = "11111111 10000000 00000000 01111111 11111111";
+    const char* A01_WAVE = "10000000 00000000 01111111 11111111 11111111";
+    const char* A02_WAVE = "11111111 10000000 01111111 11111111 11111111";
+    const char* A03_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A04_WAVE = "11111111 10000000 01111111 11111111 11111111";
+    const char* A05_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A06_WAVE = "11111111 10000000 01111111 11111111 11111111";
+    const char* A07_WAVE = "00000000 01111111 10000000 00000000 00000000";
+
+    const char* A08_WAVE = "01111111 01111111 11111111 01111111 00000000";
+    const char* A09_WAVE = "00000000 01111111 10000000 00000000 00000000";
+    const char* A10_WAVE = "00000000 01111111 10000000 00000000 00000000";
+    const char* A11_WAVE = "00000000 01111111 10000000 00000000 00000000";
+    const char* A12_WAVE = "00000000 01111111 10000000 00000000 00000000";
+    const char* A13_WAVE = "00000000 01111111 10000000 00000000 00000000";
+    const char* A14_WAVE = "00000000 01111111 10000000 00000000 00000000";
+    const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
+#endif
+
+    // We are not going to bother simulating the glitch as it has no effect
+    // on the operation of the Game Boy
+
+    const char* A00_WAVE = "11111111 11111111 10000000 01111111 11111111";
+    const char* A01_WAVE = "10000000 00000000 01111111 11111111 11111111";
+    const char* A02_WAVE = "11111111 11111111 11111111 11111111 11111111";
+    const char* A03_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A04_WAVE = "11111111 11111111 11111111 11111111 11111111";
+    const char* A05_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A06_WAVE = "11111111 11111111 11111111 11111111 11111111";
+    const char* A07_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A08_WAVE = "01111111 00000000 01111111 01111111 00000000";
+    const char* A09_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A10_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A11_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A12_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A13_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A14_WAVE = "00000000 00000000 00000000 00000000 00000000";
+    const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
+
+    const char* D00_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+    const char* D01_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^000000 ^^^^^^^^";
+    const char* D02_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+    const char* D03_WAVE = "^^000000 ^^^^^^^^ ^^111111 ^^111111 ^^^^^^^^";
+    const char* D04_WAVE = "^^111111 ^^^^^^^^ ^^111111 ^^111111 ^^^^^^^^";
+    const char* D05_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+    const char* D06_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+    const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+
+    for (int i = 0; i < 40; i++) {
+      if ((i % 8) == 0) gb.dbg_req = script[i / 8];
+
+      char CLK = gb.top.ext_bus.PIN_EXT_CLK.c();
+      char WRn = gb.top.ext_bus.PIN_EXT_WRn.c();
+      char RDn = gb.top.ext_bus.PIN_EXT_RDn.c();
+      char CSn = gb.top.ext_bus.PIN_EXT_CSn.c();
+
+      char A00 = gb.top.ext_bus.PIN_EXT_A00p.c();
+      char A01 = gb.top.ext_bus.PIN_EXT_A01p.c();
+      char A02 = gb.top.ext_bus.PIN_EXT_A02p.c();
+      char A03 = gb.top.ext_bus.PIN_EXT_A03p.c();
+      char A04 = gb.top.ext_bus.PIN_EXT_A04p.c();
+      char A05 = gb.top.ext_bus.PIN_EXT_A05p.c();
+      char A06 = gb.top.ext_bus.PIN_EXT_A06p.c();
+      char A07 = gb.top.ext_bus.PIN_EXT_A07p.c();
+      char A08 = gb.top.ext_bus.PIN_EXT_A08p.c();
+      char A09 = gb.top.ext_bus.PIN_EXT_A09p.c();
+      char A10 = gb.top.ext_bus.PIN_EXT_A10p.c();
+      char A11 = gb.top.ext_bus.PIN_EXT_A11p.c();
+      char A12 = gb.top.ext_bus.PIN_EXT_A12p.c();
+      char A13 = gb.top.ext_bus.PIN_EXT_A13p.c();
+      char A14 = gb.top.ext_bus.PIN_EXT_A14p.c();
+      char A15 = gb.top.ext_bus.PIN_EXT_A15p.c();
+
+      char D00 = gb.top.ext_bus.PIN_EXT_D00p.c();
+      char D01 = gb.top.ext_bus.PIN_EXT_D01p.c();
+      char D02 = gb.top.ext_bus.PIN_EXT_D02p.c();
+      char D03 = gb.top.ext_bus.PIN_EXT_D03p.c();
+      char D04 = gb.top.ext_bus.PIN_EXT_D04p.c();
+      char D05 = gb.top.ext_bus.PIN_EXT_D05p.c();
+      char D06 = gb.top.ext_bus.PIN_EXT_D06p.c();
+      char D07 = gb.top.ext_bus.PIN_EXT_D07p.c();
+
+      
+      int wave_idx = ((i / 8) * 9) + (i % 8);
+
+      EXPECT_EQ(CLK, CLK_WAVE[wave_idx], "CLK failure at phase %d - expected %c, got %c\n", i, CLK_WAVE[wave_idx], CLK);
+      EXPECT_EQ(WRn, WRn_WAVE[wave_idx], "WRn failure at phase %d - expected %c, got %c\n", i, WRn_WAVE[wave_idx], WRn);
+      EXPECT_EQ(RDn, RDn_WAVE[wave_idx], "RDn failure at phase %d - expected %c, got %c\n", i, RDn_WAVE[wave_idx], RDn);
+      EXPECT_EQ(CSn, CSn_WAVE[wave_idx], "CSn failure at phase %d - expected %c, got %c\n", i, CSn_WAVE[wave_idx], CSn);
+
+      //EXPECT_EQ(A00, A00_WAVE[wave_idx], "A00 failure at phase %d - expected %c, got %c\n", i, A00_WAVE[wave_idx], A00); // broken
+      //EXPECT_EQ(A01, A01_WAVE[wave_idx], "A01 failure at phase %d - expected %c, got %c\n", i, A01_WAVE[wave_idx], A01);
+      //EXPECT_EQ(A02, A02_WAVE[wave_idx], "A02 failure at phase %d - expected %c, got %c\n", i, A02_WAVE[wave_idx], A02); // broken
+      //EXPECT_EQ(A03, A03_WAVE[wave_idx], "A03 failure at phase %d - expected %c, got %c\n", i, A03_WAVE[wave_idx], A03);
+      //EXPECT_EQ(A04, A04_WAVE[wave_idx], "A04 failure at phase %d - expected %c, got %c\n", i, A04_WAVE[wave_idx], A04); // broken
+      //EXPECT_EQ(A05, A05_WAVE[wave_idx], "A05 failure at phase %d - expected %c, got %c\n", i, A05_WAVE[wave_idx], A05); 
+      //EXPECT_EQ(A06, A06_WAVE[wave_idx], "A06 failure at phase %d - expected %c, got %c\n", i, A06_WAVE[wave_idx], A06); // broken
+      //EXPECT_EQ(A07, A07_WAVE[wave_idx], "A07 failure at phase %d - expected %c, got %c\n", i, A07_WAVE[wave_idx], A07); // broken
+      //EXPECT_EQ(A08, A08_WAVE[wave_idx], "A08 failure at phase %d - expected %c, got %c\n", i, A08_WAVE[wave_idx], A08); // broken
+      //EXPECT_EQ(A09, A09_WAVE[wave_idx], "A09 failure at phase %d - expected %c, got %c\n", i, A09_WAVE[wave_idx], A09); // broken
+      //EXPECT_EQ(A10, A10_WAVE[wave_idx], "A10 failure at phase %d - expected %c, got %c\n", i, A10_WAVE[wave_idx], A10); // broken
+      //EXPECT_EQ(A11, A11_WAVE[wave_idx], "A11 failure at phase %d - expected %c, got %c\n", i, A11_WAVE[wave_idx], A11); // broken
+      //EXPECT_EQ(A12, A12_WAVE[wave_idx], "A12 failure at phase %d - expected %c, got %c\n", i, A12_WAVE[wave_idx], A12);
+      //EXPECT_EQ(A13, A13_WAVE[wave_idx], "A13 failure at phase %d - expected %c, got %c\n", i, A13_WAVE[wave_idx], A13);
+      //EXPECT_EQ(A14, A14_WAVE[wave_idx], "A14 failure at phase %d - expected %c, got %c\n", i, A14_WAVE[wave_idx], A14);
+      //EXPECT_EQ(A15, A15_WAVE[wave_idx], "A15 failure at phase %d - expected %c, got %c\n", i, A15_WAVE[wave_idx], A15);
+
+      //EXPECT_EQ(D00, D00_WAVE[wave_idx], "D00 failure at phase %d - expected %c, got %c\n", i, D00_WAVE[wave_idx], D00);
+      //EXPECT_EQ(D01, D01_WAVE[wave_idx], "D01 failure at phase %d - expected %c, got %c\n", i, D01_WAVE[wave_idx], D01);
+      //EXPECT_EQ(D02, D02_WAVE[wave_idx], "D02 failure at phase %d - expected %c, got %c\n", i, D02_WAVE[wave_idx], D02);
+      //EXPECT_EQ(D03, D03_WAVE[wave_idx], "D03 failure at phase %d - expected %c, got %c\n", i, D03_WAVE[wave_idx], D03);
+      //EXPECT_EQ(D04, D04_WAVE[wave_idx], "D04 failure at phase %d - expected %c, got %c\n", i, D04_WAVE[wave_idx], D04);
+      //EXPECT_EQ(D05, D05_WAVE[wave_idx], "D05 failure at phase %d - expected %c, got %c\n", i, D05_WAVE[wave_idx], D05);
+      //EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
+      //EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
       gb.next_phase();
     }
   }
 
-  LOG_G("Pass!\n");
-#endif
   TEST_END();
 }
 

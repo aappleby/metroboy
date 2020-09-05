@@ -1,14 +1,10 @@
 .include "header.inc"
 
-.define BASE $C003
+.define BASE $FF80
 
 main:
   ld hl, BASE
   ld a, $55
-  jp loop
-
-.org $3FF0
-loop:
 - ld (hl), a
   jr -
 

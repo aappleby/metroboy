@@ -90,7 +90,7 @@ void GateBoyApp::app_init() {
 
   gb.script = new Req[5];
   gb.script[0].addr = 0x0155; gb.script[0].data = 0x00; gb.script[0].read = 1; gb.script[0].write = 0; // read "ld (hl), a" opcode
-  gb.script[1].addr = 0xC003; gb.script[1].data = 0x00; gb.script[1].read = 0; gb.script[1].write = 1; // write to 0xC003
+  gb.script[1].addr = 0x9777; gb.script[1].data = 0x00; gb.script[1].read = 0; gb.script[1].write = 1; // write to 0x9777
   gb.script[2].addr = 0x0156; gb.script[2].data = 0x00; gb.script[2].read = 1; gb.script[2].write = 0; // read "jr -2" opcode
   gb.script[3].addr = 0x0157; gb.script[3].data = 0x00; gb.script[3].read = 1; gb.script[3].write = 0; // read "jr -2" param
   gb.script[4].addr = 0x0157; gb.script[4].data = 0x00; gb.script[4].read = 0; gb.script[4].write = 0; // idle cycle

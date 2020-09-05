@@ -18,6 +18,9 @@ GateBoy::GateBoy() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset() {
+  // Lock unused pins
+  top.cpu_bus.PIN_CPU_6.lock(0);
+
   // No bus activity during reset
   dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
 
@@ -299,10 +302,13 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   // CPU bus stuff
   
   if (DELTA_HA) {
-    // I have no idea why the low half of the address stays on the bus an extra phase.
-    cpu_req.addr &= 0x00FF;
     cpu_req.read = 0;
     cpu_req.write = 0;
+    top.cpu_bus.PIN_CPU_RDp.lock(1);
+    top.cpu_bus.PIN_CPU_WRp.lock(0);
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
+    top.cpu_bus.set_addr_hi(0);
+    if (cpu_req.write) top.cpu_bus.set_data_z();
   }
 
   if (DELTA_AB) {
@@ -315,28 +321,96 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
     else {
       cpu_req = cpu.bus_req;
     }
+    top.cpu_bus.PIN_CPU_RDp.lock(!cpu_req.write);
+    top.cpu_bus.PIN_CPU_WRp.lock(cpu_req.write);
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(0xFF);
   }
+
+  if (DELTA_BC) {
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(0xFF);
+  }
+
+  if (DELTA_CD) {
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(0xFF);
+  }
+
+  if (DELTA_DE) {
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
+  }
+
+  if (DELTA_EF) {
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
+  }
+
+  if (DELTA_FG) {
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
+  }
+
+  if (DELTA_GH) {
+    if (cpu_req.read || cpu_req.write) {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(cpu_req.addr);
+    }
+    else {
+      top.cpu_bus.set_addr_lo(cpu_req.addr);
+      top.cpu_bus.set_addr_hi(0);
+    }
+    if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
+  }
+
+
+  //----------
 
   bool addr_rom = cpu_req.addr <= 0x7FFF;
   bool addr_ram = cpu_req.addr >= 0xA000 && cpu_req.addr < 0xFDFF;
   bool addr_ext = (cpu_req.read || cpu_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
   bool hold_mem = cpu_req.read && (cpu_req.addr < 0xFF00);
-
-  top.cpu_bus.PIN_CPU_6 = 0;
-  top.cpu_bus.set_addr(cpu_req.addr);
-  top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
-  top.cpu_bus.PIN_CPU_WRp = cpu_req.write;  
-
-  if (cpu_req.write) {
-    if (DELTA_HA) { top.cpu_bus.set_data_z(); }
-    if (DELTA_AB) { top.cpu_bus.set_data(0xFF); }
-    if (DELTA_BC) { top.cpu_bus.set_data(0xFF); }
-    if (DELTA_CD) { top.cpu_bus.set_data(0xFF); }
-    if (DELTA_DE) { top.cpu_bus.set_data(cpu_req.data_lo); }
-    if (DELTA_EF) { top.cpu_bus.set_data(cpu_req.data_lo); }
-    if (DELTA_FG) { top.cpu_bus.set_data(cpu_req.data_lo); }
-    if (DELTA_GH) { top.cpu_bus.set_data(cpu_req.data_lo); }
-  }
 
   if (DELTA_HA) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }
   if (DELTA_AB) { top.cpu_bus.PIN_CPU_ADDR_EXTp = 1; }

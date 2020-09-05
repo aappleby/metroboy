@@ -10,11 +10,11 @@ uint64_t mix(uint64_t h) {
   return _byteswap_uint64(h * 0xff51afd7ed558ccd);
 }
 
-uint64_t hash(void* blob, int len) {
+uint64_t hash_states(void* blob, int len) {
   uint8_t* base = (uint8_t*)blob;
   uint64_t h = HASH_INIT;
   for (int i = 0; i < len; i++) {
-    h = mix(h ^ base[i]);
+    h = mix(h ^ (base[i] & 0x0F));
   }
   return h;
 }

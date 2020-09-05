@@ -475,8 +475,8 @@ inline RegDelta  nand_latch(wire SETn, wire RSTn) {
 // TPLATCH_09 NC
 // TPLATCH_10
 
-// Output 08 must _not_ be inverting, see PIN_EXT_A00n_A
-// Output 10 _must_ be inverting.
+// Output 08 must _not_ be inverting, see PIN_EXT_A14p
+// Output 10 _must_ be inverting...?
 
 inline RegDelta tp_latch(wire HOLDn, wire D) {
   if (!HOLDn) {

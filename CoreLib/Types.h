@@ -16,7 +16,7 @@ typedef bool wire;
 
 constexpr uint64_t HASH_INIT = 0x12345678;
 uint64_t mix(uint64_t h);
-uint64_t hash(void* blob, int len);
+uint64_t hash_states(void* blob, int len);
 
 double timestamp();
 

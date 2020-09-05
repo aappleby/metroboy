@@ -1,11 +1,14 @@
 .include "header.inc"
 
-.define BASE $FDF1
+.define BASE $C003
 
 main:
-  ld hl, $C003
+  ld hl, BASE
   ld a, $55
+  jp loop
 
+.org $3FF0
+loop:
 - ld (hl), a
   jr -
 

@@ -22,53 +22,37 @@ struct CpuBus {
                            BUS_CPU_D4p.tp(), BUS_CPU_D5p.tp(), BUS_CPU_D6p.tp(), BUS_CPU_D7p.tp());
   }
 
-  void set_addr(uint16_t addr) {
-    BUS_CPU_A00 = (addr & 0x0001);
-    BUS_CPU_A01 = (addr & 0x0002);
-    BUS_CPU_A02 = (addr & 0x0004);
-    BUS_CPU_A03 = (addr & 0x0008);
-    BUS_CPU_A04 = (addr & 0x0010);
-    BUS_CPU_A05 = (addr & 0x0020);
-    BUS_CPU_A06 = (addr & 0x0040);
-    BUS_CPU_A07 = (addr & 0x0080);
-    BUS_CPU_A08 = (addr & 0x0100);
-    BUS_CPU_A09 = (addr & 0x0200);
-    BUS_CPU_A10 = (addr & 0x0400);
-    BUS_CPU_A11 = (addr & 0x0800);
-    BUS_CPU_A12 = (addr & 0x1000);
-    BUS_CPU_A13 = (addr & 0x2000);
-    BUS_CPU_A14 = (addr & 0x4000);
-    BUS_CPU_A15 = (addr & 0x8000);
+  void set_addr_lo(uint16_t addr) {
+    BUS_CPU_A00 = wire(addr & 0x0001);
+    BUS_CPU_A01 = wire(addr & 0x0002);
+    BUS_CPU_A02 = wire(addr & 0x0004);
+    BUS_CPU_A03 = wire(addr & 0x0008);
+    BUS_CPU_A04 = wire(addr & 0x0010);
+    BUS_CPU_A05 = wire(addr & 0x0020);
+    BUS_CPU_A06 = wire(addr & 0x0040);
+    BUS_CPU_A07 = wire(addr & 0x0080);
   }
 
-  void set_addr_z() {
-    BUS_CPU_A00 = DELTA_TRIZ;
-    BUS_CPU_A01 = DELTA_TRIZ;
-    BUS_CPU_A02 = DELTA_TRIZ;
-    BUS_CPU_A03 = DELTA_TRIZ;
-    BUS_CPU_A04 = DELTA_TRIZ;
-    BUS_CPU_A05 = DELTA_TRIZ;
-    BUS_CPU_A06 = DELTA_TRIZ;
-    BUS_CPU_A07 = DELTA_TRIZ;
-    BUS_CPU_A08 = DELTA_TRIZ;
-    BUS_CPU_A09 = DELTA_TRIZ;
-    BUS_CPU_A10 = DELTA_TRIZ;
-    BUS_CPU_A11 = DELTA_TRIZ;
-    BUS_CPU_A12 = DELTA_TRIZ;
-    BUS_CPU_A13 = DELTA_TRIZ;
-    BUS_CPU_A14 = DELTA_TRIZ;
-    BUS_CPU_A15 = DELTA_TRIZ;
+  void set_addr_hi(uint16_t addr) {
+    BUS_CPU_A08 = wire(addr & 0x0100);
+    BUS_CPU_A09 = wire(addr & 0x0200);
+    BUS_CPU_A10 = wire(addr & 0x0400);
+    BUS_CPU_A11 = wire(addr & 0x0800);
+    BUS_CPU_A12 = wire(addr & 0x1000);
+    BUS_CPU_A13 = wire(addr & 0x2000);
+    BUS_CPU_A14 = wire(addr & 0x4000);
+    BUS_CPU_A15 = wire(addr & 0x8000);
   }
 
   void set_data(uint8_t data) {
-    BUS_CPU_D0p = (data & 0x01);
-    BUS_CPU_D1p = (data & 0x02);
-    BUS_CPU_D2p = (data & 0x04);
-    BUS_CPU_D3p = (data & 0x08);
-    BUS_CPU_D4p = (data & 0x10);
-    BUS_CPU_D5p = (data & 0x20);
-    BUS_CPU_D6p = (data & 0x40);
-    BUS_CPU_D7p = (data & 0x80);
+    BUS_CPU_D0p = wire(data & 0x01);
+    BUS_CPU_D1p = wire(data & 0x02);
+    BUS_CPU_D2p = wire(data & 0x04);
+    BUS_CPU_D3p = wire(data & 0x08);
+    BUS_CPU_D4p = wire(data & 0x10);
+    BUS_CPU_D5p = wire(data & 0x20);
+    BUS_CPU_D6p = wire(data & 0x40);
+    BUS_CPU_D7p = wire(data & 0x80);
   }
 
   void set_data_z() {

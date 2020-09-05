@@ -12,15 +12,18 @@ enum RegState : uint8_t {
   REG_D1C1 = 0b0011, // 03: state 1 + clock 1
   SIG_0000 = 0b0100, // 04: signal driven low
   SIG_1111 = 0b0101, // 05: signal driven high
+
   TRI_D0PD = 0b0110, // 06: pin driven 0 + pull down
   TRI_D1PD = 0b0111, // 07: pin driven 1 + pull down
   TRI_D0PU = 0b1000, // 08: pin driven 0 + pull up
   TRI_D1PU = 0b1001, // 09: pin driven 1 + pull up
   TRI_D0NP = 0b1010, // 10: pin driven 0 + no pull
   TRI_D1NP = 0b1011, // 11: pin driven 1 + no pull
+
   TRI_HZPD = 0b1100, // 12: pin driven Z + pull down
   TRI_HZPU = 0b1101, // 13: pin driven Z + pull up
   TRI_HZNP = 0b1110, // 14: pin driven Z + no pull
+
   ERR_XXXX = 0b1111, // 15: combined error state
 };
 
@@ -30,7 +33,7 @@ enum RegDelta : uint8_t {
   DELTA_NONE = 0b0000, // 00: delta not set yet
   DELTA_XXXX = 0b0001, // 01: error
   DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches and config bits
-  DELTA_SSSS = 0b0011, // 03: meaningless, free slot
+  DELTA_LOCK = 0b0011, // 03: do not change tri when committed, sticky. used for buses.
   DELTA_TRIZ = 0b0100, // 04: 
   DELTA_TRI1 = 0b0101, // 05: 
   DELTA_TRI0 = 0b0110, // 06: 
@@ -349,6 +352,13 @@ struct Tri : private RegBase {
 
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
 
+  inline void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
   inline void preset(RegDelta d) {
     CHECK_P(delta == DELTA_NONE);
     delta = d;
@@ -402,7 +412,16 @@ struct Bus : private RegBase {
   }
   //inline wire qn() const { return !as_wire(); }
 
-  inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
+  inline void operator = (wire w)  {
+    (*this) = w ? DELTA_TRI1 : DELTA_TRI0;
+  }
+
+  inline void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
 
   inline void preset(RegDelta d) {
     CHECK_P(delta == DELTA_NONE);

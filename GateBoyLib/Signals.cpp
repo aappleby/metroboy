@@ -156,6 +156,16 @@ Lut8 generate_lut() {
   temp.tab[TRI_HZPU | (DELTA_HOLD << 4)] = TRI_HZPU;
   temp.tab[TRI_HZNP | (DELTA_HOLD << 4)] = TRI_HZNP;
 
+  temp.tab[TRI_D0PD | (DELTA_LOCK << 4)] = TRI_D0PD | (DELTA_LOCK << 4);
+  temp.tab[TRI_D1PD | (DELTA_LOCK << 4)] = TRI_D1PD | (DELTA_LOCK << 4);
+  temp.tab[TRI_D0PU | (DELTA_LOCK << 4)] = TRI_D0PU | (DELTA_LOCK << 4);
+  temp.tab[TRI_D1PU | (DELTA_LOCK << 4)] = TRI_D1PU | (DELTA_LOCK << 4);
+  temp.tab[TRI_D0NP | (DELTA_LOCK << 4)] = TRI_D0NP | (DELTA_LOCK << 4);
+  temp.tab[TRI_D1NP | (DELTA_LOCK << 4)] = TRI_D1NP | (DELTA_LOCK << 4);
+  temp.tab[TRI_HZPD | (DELTA_LOCK << 4)] = TRI_HZPD | (DELTA_LOCK << 4);
+  temp.tab[TRI_HZPU | (DELTA_LOCK << 4)] = TRI_HZPU | (DELTA_LOCK << 4);
+  temp.tab[TRI_HZNP | (DELTA_LOCK << 4)] = TRI_HZNP | (DELTA_LOCK << 4);
+
   //----------
 
   return temp;

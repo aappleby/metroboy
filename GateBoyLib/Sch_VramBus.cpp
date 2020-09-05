@@ -437,9 +437,6 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RELA*/ wire RELA_VPD_TO_VBDn = or2(REVO_VRAM_RDp, SAZO_VRAM_RD);
     /*p25.RENA*/ wire RENA_VPD_TO_VBDp = not1(RELA_VPD_TO_VBDn);
 
-    // But if tri6p is inverting, then _PIN_VRAM_D0n_C is _not_ inverting?
-    // Or is vram bus _not_ inverting on read?
-
     /*p25.RODY*/ BUS_VRAM_D0p = tribuf_6pn(RENA_VPD_TO_VBDp, PIN_VRAM_D00p.qn());
     /*p25.REBA*/ BUS_VRAM_D1p = tribuf_6pn(RENA_VPD_TO_VBDp, PIN_VRAM_D01p.qn());
     /*p25.RYDO*/ BUS_VRAM_D2p = tribuf_6pn(RENA_VPD_TO_VBDp, PIN_VRAM_D02p.qn());

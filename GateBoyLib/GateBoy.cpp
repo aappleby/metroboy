@@ -19,7 +19,8 @@ GateBoy::GateBoy() {
 
 void GateBoy::reset() {
   // Lock unused pins
-  top.cpu_bus.PIN_CPU_6.lock(0);
+  top.cpu_bus.set_addr_lo(0);
+  top.cpu_bus.set_addr_hi(0);
 
   // No bus activity during reset
   dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
@@ -304,8 +305,8 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   if (DELTA_HA) {
     cpu_req.read = 0;
     cpu_req.write = 0;
-    top.cpu_bus.PIN_CPU_RDp.lock(1);
-    top.cpu_bus.PIN_CPU_WRp.lock(0);
+    top.cpu_bus.PIN_CPU_RDp = 1;
+    top.cpu_bus.PIN_CPU_WRp = 0;
     top.cpu_bus.set_addr_lo(cpu_req.addr);
     top.cpu_bus.set_addr_hi(0);
     if (cpu_req.write) top.cpu_bus.set_data_z();
@@ -321,20 +322,21 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
     else {
       cpu_req = cpu.bus_req;
     }
-    top.cpu_bus.PIN_CPU_RDp.lock(!cpu_req.write);
-    top.cpu_bus.PIN_CPU_WRp.lock(cpu_req.write);
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(cpu_req.addr);
     }
     else {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(0);
     }
     if (cpu_req.write) top.cpu_bus.set_data(0xFF);
   }
 
   if (DELTA_BC) {
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
     top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
       top.cpu_bus.set_addr_hi(cpu_req.addr);
@@ -346,6 +348,8 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   }
 
   if (DELTA_CD) {
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
     top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
       top.cpu_bus.set_addr_hi(cpu_req.addr);
@@ -357,53 +361,58 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   }
 
   if (DELTA_DE) {
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(cpu_req.addr);
     }
     else {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(0);
     }
     if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
   }
 
   if (DELTA_EF) {
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(cpu_req.addr);
     }
     else {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(0);
     }
     if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
   }
 
   if (DELTA_FG) {
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(cpu_req.addr);
     }
     else {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(0);
     }
     if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
   }
 
   if (DELTA_GH) {
+    top.cpu_bus.PIN_CPU_RDp = !cpu_req.write;
+    top.cpu_bus.PIN_CPU_WRp = cpu_req.write;
+    top.cpu_bus.set_addr_lo(cpu_req.addr);
     if (cpu_req.read || cpu_req.write) {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(cpu_req.addr);
     }
     else {
-      top.cpu_bus.set_addr_lo(cpu_req.addr);
       top.cpu_bus.set_addr_hi(0);
     }
     if (cpu_req.write) top.cpu_bus.set_data(cpu_req.data_lo);
   }
 
+  top.cpu_bus.PIN_CPU_6 = 0;
 
   //----------
 

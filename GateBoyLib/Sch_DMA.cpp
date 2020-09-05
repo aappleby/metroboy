@@ -42,6 +42,7 @@ void DmaRegisters::tick() {
 
 //------------------------------------------------------------------------------
 
+#pragma optimize("", off)
 void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /* p01.UVYT*/ wire UVYT_ABCDxxxx = not1(top.clk_reg.BUDE_xxxxEFGH);
   /* p04.MOPA*/ wire MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);

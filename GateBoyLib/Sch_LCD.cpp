@@ -64,6 +64,7 @@ void LcdRegisters::tick(const SchematicTop& top) {
 
 //------------------------------------------------------------------------------
 
+#pragma optimize("", off)
 void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.ALUR*/ wire ALUR_SYS_RSTn = top.clk_reg.ALUR_SYS_RSTn;
   /*p01.XAPO*/ wire XAPO_VID_RSTn = top.clk_reg.XAPO_VID_RSTn;

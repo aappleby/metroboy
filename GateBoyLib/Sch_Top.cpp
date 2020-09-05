@@ -134,12 +134,20 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   
   tim_reg.tock(RST, *this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
+
   dma_reg.tock(*this, cpu_bus);
+
+
   ser_reg.tock(*this, cpu_bus);
   joypad.tock(*this, cpu_bus);
   sprite_scanner.tock(*this);
+
+
+
   lcd_reg.tock(*this, cpu_bus);
+
   sprite_store.tock(*this);
+
 
   pix_pipe.tock(*this, cpu_bus);
   sprite_fetcher.tock(*this);
@@ -149,11 +157,12 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   cpu_bus.PIN_CPU_ADDR_HI = cpu_bus.SYRO_FE00_FFFFp();
   cpu_bus.PIN_CPU_BOOTp = TUTU_ADDR_BOOTp;
 
+
   ext_bus.tock(*this);
+
   oam_bus.tock(*this);
   vram_bus.tock(*this);
 }
-#pragma optimize("", on)
 
 //------------------------------------------------------------------------------
 

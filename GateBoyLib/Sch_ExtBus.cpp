@@ -39,6 +39,7 @@ void ExtBus::dump(Dumper& d) const {
 
 //------------------------------------------------------------------------------
 
+#pragma optimize("", off)
 void ExtBus::tock(SchematicTop& top) {
 
   wire LUMA_DMA_READ_CARTp = top.dma_reg.LUMA_DMA_READ_CARTp;
@@ -48,6 +49,8 @@ void ExtBus::tock(SchematicTop& top) {
 
   //----------------------------------------
   // Ext pins
+
+
 
   {
 #if 0
@@ -95,6 +98,7 @@ void ExtBus::tock(SchematicTop& top) {
     PIN_EXT_WRn = io_pin(UVER_WR_A, USUF_WR_D);
   }
 
+
   {
 #if 0
     /*p08.TYNU*/ wire TYNU_ADDR_RAM = (BUS_CPU_A15 && BUS_CPU_A14) || (BUS_CPU_A13 && !BUS_CPU_A14 && BUS_CPU_A15);
@@ -113,6 +117,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYHO*/ wire TYHO_PIN_EXT_CS_A_xxCDEFGH = mux2_p(top.dma_reg.MARU_DMA_A15n.qn(), TOZA_PIN_EXT_CS_A_xxCDEFGH, LUMA_DMA_READ_CARTp);
     PIN_EXT_CSn = io_pin(TYHO_PIN_EXT_CS_A_xxCDEFGH, TYHO_PIN_EXT_CS_A_xxCDEFGH);
   }
+
 
   //----------------------------------------
   // Ext address
@@ -215,6 +220,7 @@ void ExtBus::tock(SchematicTop& top) {
     PIN_EXT_A14p = io_pin(PUHE, PAHY);
   }
 
+
   {
     // A15 is "special"
 
@@ -235,6 +241,7 @@ void ExtBus::tock(SchematicTop& top) {
 
   //----------------------------------------
   // Ext data out
+
 
   // CPU data bus -> external data bus
   {

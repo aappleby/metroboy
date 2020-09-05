@@ -139,6 +139,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <SDLCheck>true</SDLCheck>
+      <Optimization>Full</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>

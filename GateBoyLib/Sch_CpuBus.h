@@ -22,28 +22,6 @@ struct CpuBus {
                            BUS_CPU_D4p.tp(), BUS_CPU_D5p.tp(), BUS_CPU_D6p.tp(), BUS_CPU_D7p.tp());
   }
 
-  void set_addr_lo(uint16_t addr) {
-    BUS_CPU_A00 = wire(addr & 0x0001);
-    BUS_CPU_A01 = wire(addr & 0x0002);
-    BUS_CPU_A02 = wire(addr & 0x0004);
-    BUS_CPU_A03 = wire(addr & 0x0008);
-    BUS_CPU_A04 = wire(addr & 0x0010);
-    BUS_CPU_A05 = wire(addr & 0x0020);
-    BUS_CPU_A06 = wire(addr & 0x0040);
-    BUS_CPU_A07 = wire(addr & 0x0080);
-  }
-
-  void set_addr_hi(uint16_t addr) {
-    BUS_CPU_A08 = wire(addr & 0x0100);
-    BUS_CPU_A09 = wire(addr & 0x0200);
-    BUS_CPU_A10 = wire(addr & 0x0400);
-    BUS_CPU_A11 = wire(addr & 0x0800);
-    BUS_CPU_A12 = wire(addr & 0x1000);
-    BUS_CPU_A13 = wire(addr & 0x2000);
-    BUS_CPU_A14 = wire(addr & 0x4000);
-    BUS_CPU_A15 = wire(addr & 0x8000);
-  }
-
   void set_data(uint8_t data) {
     BUS_CPU_D0p = wire(data & 0x01);
     BUS_CPU_D1p = wire(data & 0x02);

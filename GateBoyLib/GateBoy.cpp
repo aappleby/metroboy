@@ -18,10 +18,6 @@ GateBoy::GateBoy() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset() {
-  // Lock unused pins
-  top.cpu_bus.set_addr_lo(0);
-  top.cpu_bus.set_addr_hi(0);
-
   // No bus activity during reset
   dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
 
@@ -361,19 +357,34 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   top.int_reg.PIN_CPU_ACK_JOYPAD = wire(cpu.int_ack & INT_JOYPAD_MASK);
 
   //----------
-  // Something weird going on here, switching the order of these two chunks shouldn't break anything but it does
 
   RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tock_running = false;
 
-  top.cpu_bus.set_addr_lo(bus_req.addr);
-  if (bus_req.read || bus_req.write) {
-    top.cpu_bus.set_addr_hi(bus_req.addr);
-  }
-  else {
-    top.cpu_bus.set_addr_hi(0);
-  }
+  top.cpu_bus.BUS_CPU_A00.preset(wire(bus_req.addr & 0x0001));
+  top.cpu_bus.BUS_CPU_A01.preset(wire(bus_req.addr & 0x0002));
+  top.cpu_bus.BUS_CPU_A02.preset(wire(bus_req.addr & 0x0004));
+  top.cpu_bus.BUS_CPU_A03.preset(wire(bus_req.addr & 0x0008));
+  top.cpu_bus.BUS_CPU_A04.preset(wire(bus_req.addr & 0x0010));
+  top.cpu_bus.BUS_CPU_A05.preset(wire(bus_req.addr & 0x0020));
+  top.cpu_bus.BUS_CPU_A06.preset(wire(bus_req.addr & 0x0040));
+  top.cpu_bus.BUS_CPU_A07.preset(wire(bus_req.addr & 0x0080));
+  top.cpu_bus.BUS_CPU_A08.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0100) : 0);
+  top.cpu_bus.BUS_CPU_A09.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0200) : 0);
+  top.cpu_bus.BUS_CPU_A10.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0400) : 0);
+  top.cpu_bus.BUS_CPU_A11.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x0800) : 0);
+  top.cpu_bus.BUS_CPU_A12.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x1000) : 0);
+  top.cpu_bus.BUS_CPU_A13.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x2000) : 0);
+  top.cpu_bus.BUS_CPU_A14.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x4000) : 0);
+  top.cpu_bus.BUS_CPU_A15.preset((bus_req.read || bus_req.write) ? wire(bus_req.addr & 0x8000) : 0);
+
+  top.tock_slow(sys_rst,
+                CLK,
+                sys_clkgood,
+                sys_t1,
+                sys_t2,
+                sys_cpuready);
+
+  RegBase::tock_running = false;
 
   //----------
 

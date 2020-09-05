@@ -20,6 +20,7 @@ void dump_bus_dump(Dumper& d, BusDump* dump, int start, int count) {
   }
 }
 
+#if 0
 
 
 BusDump poweron_000_div[] = {
@@ -91,3 +92,5 @@ BusDump poweron_004_div[] = {
   {.phase = -1}
 };
 
+
+#endif

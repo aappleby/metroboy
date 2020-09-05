@@ -213,6 +213,14 @@ int GateBoyTests::test_ext_bus() {
     gb.cart_rom[0x0156] = 0x18;
     gb.cart_rom[0x0157] = 0xFD;
 
+    Req* script = new Req[5];
+    script[0].addr = 0x0155; script[0].data = 0x00; script[0].read = 1; script[0].write = 0; // read "ld (hl), a" opcode
+    script[1].addr = 0xC003; script[1].data = 0x55; script[1].read = 0; script[1].write = 1; // write to 0xC003
+    script[2].addr = 0x0156; script[2].data = 0x00; script[2].read = 1; script[2].write = 0; // read "jr -2" opcode
+    script[3].addr = 0x0157; script[3].data = 0x00; script[3].read = 1; script[3].write = 0; // read "jr -2" param
+    script[4].addr = 0x0157; script[4].data = 0x00; script[4].read = 0; script[4].write = 0; // idle cycle
+
+    /*
     Req* script = new Req[]{
       { .addr = 0x0155, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode 0x77
       { .addr = 0xC003, .data = 0x55, .read = 0, .write = 1}, // write to 0xC003
@@ -220,6 +228,7 @@ int GateBoyTests::test_ext_bus() {
       { .addr = 0x0157, .data = 0x00, .read = 1, .write = 0}, // read "jr -2" param 0xFD
       { .addr = 0x0157, .data = 0x00, .read = 0, .write = 0}, // idle cycle
     };
+    */
 
     // Run the script once without checking phases
     gb.dbg_req = script[0]; gb.run(8);
@@ -384,6 +393,7 @@ int GateBoyTests::test_ext_bus() {
     gb.cart_rom[0x0156] = 0x18;
     gb.cart_rom[0x0157] = 0xFD;
 
+    /*
     Req* script = new Req[]{
       { .addr = 0x0155, .data = 0x00, .read = 1, .write = 0}, // read "ld (hl), a" opcode 0x77
       { .addr = 0x9777, .data = 0x55, .read = 0, .write = 1}, // write to 0x9777
@@ -391,6 +401,14 @@ int GateBoyTests::test_ext_bus() {
       { .addr = 0x0157, .data = 0x00, .read = 1, .write = 0}, // read "jr -2" param 0xFD
       { .addr = 0x0157, .data = 0x00, .read = 0, .write = 0}, // idle cycle
     };
+    */
+
+    Req* script = new Req[5];
+    script[0].addr = 0x0155; script[0].data = 0x00; script[0].read = 1; script[0].write = 0; // read "ld (hl), a" opcode
+    script[1].addr = 0x9777; script[1].data = 0x55; script[1].read = 0; script[1].write = 1; // write to 0xC003
+    script[2].addr = 0x0156; script[2].data = 0x00; script[2].read = 1; script[2].write = 0; // read "jr -2" opcode
+    script[3].addr = 0x0157; script[3].data = 0x00; script[3].read = 1; script[3].write = 0; // read "jr -2" param
+    script[4].addr = 0x0157; script[4].data = 0x00; script[4].read = 0; script[4].write = 0; // idle cycle
 
     // Run the script once without checking phases
     gb.dbg_req = script[0]; gb.run(8);
@@ -935,7 +953,8 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
 void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
   uint64_t rng = 1;
 
-  Req req = {.addr = 0xFF04, .data = 0, .read = 1, .write = 0 };
+  Req req;
+  req.addr = 0xFF04, req.data = 0, req.read = 1, req.write = 0;
 
 #ifdef _DEBUG
   const int fuzz_count = 128;
@@ -1012,7 +1031,10 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   double pass_rate_sum2 = 0;
   double pass_rate_n = 0;
 
-  gateboy.dbg_req = {.addr = 0x0150, .data = 0, .read = 1, .write = 0 };
+  gateboy.dbg_req.addr = 0x0150;
+  gateboy.dbg_req.data = 0;
+  gateboy.dbg_req.read = 1;
+  gateboy.dbg_req.write = 0;
   gateboy.sys_cpu_en = false;
 
   LOG("Running perf test");

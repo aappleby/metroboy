@@ -336,17 +336,20 @@ void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint
   update_ubo(vram_ubo, 8192, vram);
 
   {
-    GBBlitTileUniforms uniforms = {
-      .viewport = {
-        (float)view.min.x,
-        (float)view.min.y,
-        (float)view.max.x,
-        (float)view.max.y,
-    },
-    .quad_pos = {},
-    .quad_tex = {},
-    .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3], default_pal[4]},
+    GBBlitTileUniforms uniforms;
+    uniforms.viewport = {
+      (float)view.min.x,
+      (float)view.min.y,
+      (float)view.max.x,
+      (float)view.max.y,
     };
+    uniforms.quad_pos = {};
+    uniforms.quad_tex = {};
+    uniforms.palette[0] = default_pal[0];
+    uniforms.palette[1] = default_pal[1];
+    uniforms.palette[2] = default_pal[2];
+    uniforms.palette[3] = default_pal[3];
+    uniforms.palette[4] = default_pal[4];
 
     bind_shader(blit_tile_prog);
     bind_vao(quad_vao);
@@ -379,19 +382,24 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, c
   update_ubo(vram_ubo, 8192, vram);
 
   {
-    GBBlitMapUniforms uniforms = {
-      .viewport = {
-        (float)view.min.x,
-        (float)view.min.y,
-        (float)view.max.x,
-        (float)view.max.y,
-    },
-    .quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale},
-    .quad_tex = {0, 0, 256, 256},
-    .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
-    .which_map = which_map,
-    .alt_map = alt_map,
+    GBBlitMapUniforms uniforms;
+    uniforms.viewport = {
+      (float)view.min.x,
+      (float)view.min.y,
+      (float)view.max.x,
+      (float)view.max.y,
     };
+    uniforms.quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale};
+    uniforms.quad_tex = {0, 0, 256, 256};
+
+    uniforms.palette[0] = default_pal[0];
+    uniforms.palette[1] = default_pal[1];
+    uniforms.palette[2] = default_pal[2];
+    uniforms.palette[3] = default_pal[3];
+    uniforms.palette[4] = default_pal[4];
+
+    uniforms.which_map = which_map;
+    uniforms.alt_map = alt_map;
     update_ubo(blit_map_ubo, sizeof(uniforms), &uniforms);
 
     bind_shader(blit_map_prog);

@@ -41,8 +41,14 @@ void Gameboy::reset(uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
-  ebus_req = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
-  ebus_ack = {.addr = new_pc, .data = 0x00, .read = 1 };
+  ebus_req.addr = new_pc;
+  ebus_req.data = 0x00;
+  ebus_req.read = 1;
+  ebus_req.write = 0;
+
+  ebus_ack.addr = new_pc;
+  ebus_ack.data = 0x00;
+  ebus_ack.read = 1;
 
   sentinel = 0xDEADBEEF;
 }
@@ -245,30 +251,24 @@ void Gameboy::tock_gb(int old_phase, int new_phase) {
   dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
 
   if (dma_src_vbus) {
-    vbus_req = {
-      .addr = dma2.addr,
-      .data = 0,
-      .read = 1,
-      .write = 0,
-    };
+    vbus_req.addr = dma2.addr;
+    vbus_req.data = 0;
+    vbus_req.read = 1;
+    vbus_req.write = 0;
   }
 
   if (dma_src_ebus) {
-    ebus_req = {
-      .addr = dma2.addr,
-      .data = 0,
-      .read = 1,
-      .write = 0,
-    };
+    ebus_req.addr = dma2.addr;
+    ebus_req.data = 0;
+    ebus_req.read = 1;
+    ebus_req.write = 0;
   }
 
   if (DELTA_EF && dma2.DMA_RUN_WRITE) {
-    obus_req = {
-      .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
-      .data = dma_data_latch,
-      .read = 0,
-      .write = 1,
-    };
+    obus_req.addr = uint16_t(0xFE00 | (dma2.addr & 0xFF));
+    obus_req.data = dma_data_latch;
+    obus_req.read = 0;
+    obus_req.write = 1;
   }
 
   phase_total++;

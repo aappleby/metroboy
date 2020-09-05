@@ -116,9 +116,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 }
 
 //------------------------------------------------------------------------------
-// optimizer still fscking this up somehow
 
-#pragma optimize("", off)
 void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY) {
   {
     /*p25.SYCY*/ wire SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);

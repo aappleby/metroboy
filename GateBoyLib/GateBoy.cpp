@@ -19,7 +19,10 @@ GateBoy::GateBoy() {
 
 void GateBoy::reset() {
   // No bus activity during reset
-  dbg_req = {.addr = 0x0000, .data = 0, .read = 0, .write = 0 };
+  dbg_req.addr = 0x0000;
+  dbg_req.data = 0;
+  dbg_req.read = 0;
+  dbg_req.write = 0;
 
   // In reset
   run(8);
@@ -149,7 +152,12 @@ void GateBoy::load_rom(const char* filename) {
 
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
-  dbg_req = {.addr = uint16_t(addr), .data = 0, .read = 1, .write = 0 };
+  
+  dbg_req.addr = uint16_t(addr);
+  dbg_req.data = 0;
+  dbg_req.read = 1;
+  dbg_req.write = 0;
+
   /* AB */ next_phase(); // xxx
   /* BC */ next_phase(); // xxx
   /* CD */ next_phase(); /* ok */ 
@@ -166,7 +174,12 @@ uint8_t GateBoy::dbg_read(int addr) {
 
 void GateBoy::dbg_write(int addr, uint8_t data) {
   CHECK_P((phase_total & 7) == 0);
-  dbg_req = {.addr = uint16_t(addr), .data = data, .read = 0, .write = 1 };
+
+  dbg_req.addr = uint16_t(addr);
+  dbg_req.data = data;
+  dbg_req.read = 0;
+  dbg_req.write = 1;
+
   /* AB */ next_phase();
   /* BC */ next_phase();
   /* CD */ next_phase();

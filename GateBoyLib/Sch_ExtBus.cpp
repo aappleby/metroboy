@@ -39,7 +39,6 @@ void ExtBus::dump(Dumper& d) const {
 
 //------------------------------------------------------------------------------
 
-#pragma optimize("", off)
 void ExtBus::tock(SchematicTop& top) {
 
   wire LUMA_DMA_READ_CARTp = top.dma_reg.LUMA_DMA_READ_CARTp;

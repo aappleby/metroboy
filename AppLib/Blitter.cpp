@@ -110,22 +110,23 @@ void Blitter::blit(Viewport view,
                    uint32_t tex, int tw, int th,
                    int sx, int sy, int sw, int sh,
                    int dx, int dy, int dw, int dh) {
-  BlitUniforms blit_uniforms = {
-    .viewport = {
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y,
-    },
-
-    .blit_src_rect = {sx, sy, sx+sw, sy+sh},
-    .blit_dst_rect = {dx, dy, dx+dw, dy+dh},
-    .blit_tex_size = {0, 0, tw, th},
-    .blit_col      = {1,1,1,1},
-
-    .solid = 0,
-    .mono = 0,
+  BlitUniforms blit_uniforms;
+  
+  blit_uniforms.viewport = {
+    (float)view.min.x,
+    (float)view.min.y,
+    (float)view.max.x,
+    (float)view.max.y,
   };
+
+  blit_uniforms.blit_src_rect = {sx, sy, sx+sw, sy+sh};
+  blit_uniforms.blit_dst_rect = {dx, dy, dx+dw, dy+dh};
+  blit_uniforms.blit_tex_size = {0, 0, tw, th};
+  blit_uniforms.blit_col      = {1,1,1,1};
+
+  blit_uniforms.solid = 0;
+  blit_uniforms.mono = 0;
+  
   update_ubo(blit_ubo, sizeof(blit_uniforms), &blit_uniforms);
 
   bind_shader(blit_prog);
@@ -142,22 +143,23 @@ void Blitter::blit_mono(Viewport view,
                         uint32_t tex, int tw, int th,
                         int sx, int sy, int sw, int sh,
                         int dx, int dy, int dw, int dh) {
-  BlitUniforms blit_uniforms = {
-    .viewport = {
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y,
-    },
-
-    .blit_src_rect = {sx, sy, sx+sw, sy+sh},
-    .blit_dst_rect = {dx, dy, dx+dw, dy+dh},
-    .blit_tex_size = {0, 0, tw, th},
-    .blit_col      = {1,1,1,1},
-
-    .solid = 0,
-    .mono = 1,
+  BlitUniforms blit_uniforms;
+  
+  blit_uniforms.viewport = {
+    (float)view.min.x,
+    (float)view.min.y,
+    (float)view.max.x,
+    (float)view.max.y,
   };
+
+  blit_uniforms.blit_src_rect = {sx, sy, sx+sw, sy+sh};
+  blit_uniforms.blit_dst_rect = {dx, dy, dx+dw, dy+dh};
+  blit_uniforms.blit_tex_size = {0, 0, tw, th};
+  blit_uniforms.blit_col      = {1,1,1,1};
+
+  blit_uniforms.solid = 0;
+  blit_uniforms.mono = 1;
+
   update_ubo(blit_ubo, sizeof(blit_uniforms), &blit_uniforms);
 
   bind_shader(blit_prog);

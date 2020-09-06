@@ -196,8 +196,8 @@ inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
 
 
 
-inline RegQPIn dff8(wire CLKp, bool D) {
-  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | (D << 0))};
+inline RegDelta dff8(wire CLKp, bool D) {
+  return RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | (D << 0));
 }
 
 

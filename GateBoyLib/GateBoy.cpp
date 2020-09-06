@@ -108,7 +108,14 @@ void GateBoy::load_dump(const char* filename) {
   size_t size = load_blob(filename, dump, 65536);
 
   memcpy(cart_rom, dump + 0x0000, 32768);
+  
   memcpy(vid_ram,  dump + 0x8000, 8192);
+  /*
+  for (int i = 0; i < 8192; i++) {
+    vid_ram[i] = ~dump[0x8000 + i];
+  }
+  */
+
   memcpy(cart_ram, dump + 0xA000, 8192);
   memcpy(ext_ram,  dump + 0xC000, 8192);
 
@@ -558,10 +565,10 @@ void GateBoy::tock_vram_bus() {
   int vram_addr = top.vram_bus.get_pin_addr();
   uint8_t& vram_data = vid_ram[vram_addr];
 
-  if (!top.vram_bus.PIN_VRAM_WRn.qp()) vram_data = (uint8_t)top.vram_bus.get_pin_data();
+  if (!top.vram_bus.PIN_VRAM_WRn.qp()) vram_data = ~(uint8_t)top.vram_bus.get_pin_data();
 
   if (!top.vram_bus.PIN_VRAM_OEn.qp()) {
-    top.vram_bus.set_pin_data_in(~vram_data);
+    top.vram_bus.set_pin_data_in(vram_data);
   }
   else {
     top.vram_bus.set_pin_data_z();
@@ -575,11 +582,11 @@ void GateBoy::tock_oam_bus() {
   uint8_t& oam_data_a = oam_ram[(oam_addr << 1) + 0];
   uint8_t& oam_data_b = oam_ram[(oam_addr << 1) + 1];
 
-  if (!top.oam_bus.PIN_OAM_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
-  if (!top.oam_bus.PIN_OAM_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
+  if (!top.oam_bus.PIN_OAM_WR_A.tp()) oam_data_a = ~top.oam_bus.get_oam_pin_data_a();
+  if (!top.oam_bus.PIN_OAM_WR_B.tp()) oam_data_b = ~top.oam_bus.get_oam_pin_data_b();
 
-  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_a(~oam_data_a);
-  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_b(~oam_data_b);
+  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
+  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);
 }
 
 //-----------------------------------------------------------------------------

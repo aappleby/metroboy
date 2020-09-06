@@ -82,7 +82,7 @@ void GateBoyApp::app_init() {
 
   //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
 
-#if 1
+#if 0
   // ld (hl),a; jr -2;
   gb.cart_rom[0x0155] = 0x77;
   gb.cart_rom[0x0156] = 0x18;

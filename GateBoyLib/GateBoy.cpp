@@ -177,14 +177,14 @@ uint8_t GateBoy::dbg_read(int addr) {
   dbg_req.read = 1;
   dbg_req.write = 0;
 
-  /* AB */ next_phase(); // xxx
-  /* BC */ next_phase(); // xxx
+  /* AB */ next_phase(); /* xx */
+  /* BC */ next_phase(); /* xx */
   /* CD */ next_phase(); /* ok */ 
-  /* DE */ next_phase(); /* ok */ uint8_t bus_data = top.cpu_bus.get_bus_data(); // ok
+  /* DE */ next_phase(); /* ok */
   /* EF */ next_phase(); /* ok */ 
-  /* FG */ next_phase(); /* ok */ 
+  /* FG */ next_phase(); /* ok */ uint8_t bus_data = top.cpu_bus.get_bus_data(); 
   /* GH */ next_phase(); /* ok */ 
-  /* HA */ next_phase(); // xxx
+  /* HA */ next_phase(); /* xx */
   dbg_req = {0};
   return bus_data;
 }

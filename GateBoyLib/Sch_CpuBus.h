@@ -140,11 +140,11 @@ struct CpuBus {
 
   Tri PIN_CPU_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   
-  Tri PIN_CPU_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // Blue clock - decoders, alu, some reset stuff
+  Tri PIN_CPU_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // this is the "put address on bus" clock
   Tri PIN_CPU_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
 
-  Tri PIN_CPU_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03:
-  Tri PIN_CPU_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: 
+  Tri PIN_CPU_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03: // this is the "reset for next cycle" clock
+  Tri PIN_CPU_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: // this is the "put write data on bus" clock
 
   Tri PIN_CPU_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
   Tri PIN_CPU_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock

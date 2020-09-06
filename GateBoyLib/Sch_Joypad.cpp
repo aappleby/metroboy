@@ -130,13 +130,13 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 #if 0
     // non-debug-mode
 
-    PIN_JOY_P10 = io_pin(1, 0);
-    PIN_JOY_P11 = io_pin(1, 0);
-    PIN_JOY_P12 = io_pin(1, 0);
-    PIN_JOY_P13 = io_pin(1, 0);
+    PIN_JOY_P10 = io_pin(1, 0); // hi z
+    PIN_JOY_P11 = io_pin(1, 0); // hi z
+    PIN_JOY_P12 = io_pin(1, 0); // hi z
+    PIN_JOY_P13 = io_pin(1, 0); // hi z
 
-    PIN_JOY_P14 = io_pin(1, KELY_JOYP_UDLR.qn());
-    PIN_JOY_P15 = io_pin(1, COFY_JOYP_ABCS.qn());
+    PIN_JOY_P14 = io_pin(1, KELY_JOYP_UDLR.qn()); // open drain
+    PIN_JOY_P15 = io_pin(1, COFY_JOYP_ABCS.qn()); // open drain
 #endif
 
     wire BURO_FF60_0p = 0; // FIXME hacking out debug stuff
@@ -159,11 +159,18 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KARU*/ wire KARU = or2(KELY_JOYP_UDLR.qn(), KURA);
     /*p05.CELA*/ wire CELA = or2(COFY_JOYP_ABCS.qn(), KURA);
 
-    // FIXME inversion
-    // P14 and P15 are showing up as 0 on reset
+    /*
+    // lcd ribbon voltages after bootrom
+    04 5 left & b
+    05 0 diodes 1&2
+    06 5 down & start
+    07 5 up & select
+    08 5 right & a
+    09 0 diodes 3 & 4
+    */
 
-    PIN_JOY_P14 = io_pin(KARU, !KELY_JOYP_UDLR.qn());
-    PIN_JOY_P15 = io_pin(CELA, !COFY_JOYP_ABCS.qn());
+    PIN_JOY_P14 = io_pin(KARU, KELY_JOYP_UDLR.qn());
+    PIN_JOY_P15 = io_pin(CELA, COFY_JOYP_ABCS.qn());
   }
 }
 

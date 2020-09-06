@@ -45,34 +45,34 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p01.TAPE*/ wire TAPE_FF04_WRp = and4(top.TAPU_CPU_WRp_xxxxEFGx, RYFO_FF04_FF07p, top.cpu_bus.TOLA_A01n(), top.cpu_bus.TOVY_A00n());
     /*p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(top.clk_reg.UCOB_CLKBADp, RST, TAPE_FF04_WRp);
 
-    /*p01.UKUP*/ UKUP_DIV_00 = dff17_AB(BOGA_xBCDEFGH,    UFOL_DIV_RSTn, UKUP_DIV_00.qn());
-    /*p01.UFOR*/ UFOR_DIV_01 = dff17_AB(UKUP_DIV_00.qn(), UFOL_DIV_RSTn, UFOR_DIV_01.qn());
-    /*p01.UNER*/ UNER_DIV_02 = dff17_AB(UFOR_DIV_01.qn(), UFOL_DIV_RSTn, UNER_DIV_02.qn());
-    /*p01.TERO*/ TERO_DIV_03 = dff17_AB(UNER_DIV_02.qn(), UFOL_DIV_RSTn, TERO_DIV_03.qn());
-    /*p01.UNYK*/ UNYK_DIV_04 = dff17_AB(TERO_DIV_03.qn(), UFOL_DIV_RSTn, UNYK_DIV_04.qn());
-    /*p01.TAMA*/ TAMA_DIV_05 = dff17_AB(UNYK_DIV_04.qn(), UFOL_DIV_RSTn, TAMA_DIV_05.qn());
+    /* p01.UKUP*/ UKUP_DIV_00 = dff17_AB(BOGA_xBCDEFGH,    UFOL_DIV_RSTn, UKUP_DIV_00.qn());
+    /* p01.UFOR*/ UFOR_DIV_01 = dff17_AB(UKUP_DIV_00.qn(), UFOL_DIV_RSTn, UFOR_DIV_01.qn());
+    /* p01.UNER*/ UNER_DIV_02 = dff17_AB(UFOR_DIV_01.qn(), UFOL_DIV_RSTn, UNER_DIV_02.qn());
+    /*#p01.TERO*/ TERO_DIV_03 = dff17_AB(UNER_DIV_02.qn(), UFOL_DIV_RSTn, TERO_DIV_03.qn());
+    /* p01.UNYK*/ UNYK_DIV_04 = dff17_AB(TERO_DIV_03.qn(), UFOL_DIV_RSTn, UNYK_DIV_04.qn());
+    /* p01.TAMA*/ TAMA_DIV_05 = dff17_AB(UNYK_DIV_04.qn(), UFOL_DIV_RSTn, TAMA_DIV_05.qn());
 
     ///*p01.ULUR*/ wire ULUR_DIV_06_CLK = mux2p(BOGA_AxCDEFGH, DIV_05, FF60_1);
-    /*p01.ULUR*/ wire ULUR_DIV_06_CLK = TAMA_DIV_05.qn();
-    /*p01.UGOT*/ UGOT_DIV_06 = dff17_AB(ULUR_DIV_06_CLK,  UFOL_DIV_RSTn, UGOT_DIV_06.qn());
-    /*p01.TULU*/ TULU_DIV_07 = dff17_AB(UGOT_DIV_06.qn(), UFOL_DIV_RSTn, TULU_DIV_07.qn());
-    /*p01.TUGO*/ TUGO_DIV_08 = dff17_AB(TULU_DIV_07.qn(), UFOL_DIV_RSTn, TUGO_DIV_08.qn());
-    /*p01.TOFE*/ TOFE_DIV_09 = dff17_AB(TUGO_DIV_08.qn(), UFOL_DIV_RSTn, TOFE_DIV_09.qn());
-    /*p01.TERU*/ TERU_DIV_10 = dff17_AB(TOFE_DIV_09.qn(), UFOL_DIV_RSTn, TERU_DIV_10.qn());
-    /*p01.SOLA*/ SOLA_DIV_11 = dff17_AB(TERU_DIV_10.qn(), UFOL_DIV_RSTn, SOLA_DIV_11.qn());
-    /*p01.SUBU*/ SUBU_DIV_12 = dff17_AB(SOLA_DIV_11.qn(), UFOL_DIV_RSTn, SUBU_DIV_12.qn());
-    /*p01.TEKA*/ TEKA_DIV_13 = dff17_AB(SUBU_DIV_12.qn(), UFOL_DIV_RSTn, TEKA_DIV_13.qn());
-    /*p01.UKET*/ UKET_DIV_14 = dff17_AB(TEKA_DIV_13.qn(), UFOL_DIV_RSTn, UKET_DIV_14.qn());
-    /*p01.UPOF*/ UPOF_DIV_15 = dff17_AB(UKET_DIV_14.qn(), UFOL_DIV_RSTn, UPOF_DIV_15.qn());
+    /* p01.ULUR*/ wire ULUR_DIV_06_CLK = TAMA_DIV_05.qn();
+    /* p01.UGOT*/ UGOT_DIV_06 = dff17_AB(ULUR_DIV_06_CLK,  UFOL_DIV_RSTn, UGOT_DIV_06.qn());
+    /* p01.TULU*/ TULU_DIV_07 = dff17_AB(UGOT_DIV_06.qn(), UFOL_DIV_RSTn, TULU_DIV_07.qn());
+    /* p01.TUGO*/ TUGO_DIV_08 = dff17_AB(TULU_DIV_07.qn(), UFOL_DIV_RSTn, TUGO_DIV_08.qn());
+    /* p01.TOFE*/ TOFE_DIV_09 = dff17_AB(TUGO_DIV_08.qn(), UFOL_DIV_RSTn, TOFE_DIV_09.qn());
+    /* p01.TERU*/ TERU_DIV_10 = dff17_AB(TOFE_DIV_09.qn(), UFOL_DIV_RSTn, TERU_DIV_10.qn());
+    /* p01.SOLA*/ SOLA_DIV_11 = dff17_AB(TERU_DIV_10.qn(), UFOL_DIV_RSTn, SOLA_DIV_11.qn());
+    /* p01.SUBU*/ SUBU_DIV_12 = dff17_AB(SOLA_DIV_11.qn(), UFOL_DIV_RSTn, SUBU_DIV_12.qn());
+    /* p01.TEKA*/ TEKA_DIV_13 = dff17_AB(SUBU_DIV_12.qn(), UFOL_DIV_RSTn, TEKA_DIV_13.qn());
+    /* p01.UKET*/ UKET_DIV_14 = dff17_AB(TEKA_DIV_13.qn(), UFOL_DIV_RSTn, UKET_DIV_14.qn());
+    /* p01.UPOF*/ UPOF_DIV_15 = dff17_AB(UKET_DIV_14.qn(), UFOL_DIV_RSTn, UPOF_DIV_15.qn());
 
-    /*p01.TAWU*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(TAGY_FF04_RDp, UMEK_DIV_06n);
-    /*p01.TAKU*/ cpu_bus.BUS_CPU_D1p = tribuf_6pn(TAGY_FF04_RDp, UREK_DIV_07n);
-    /*p01.TEMU*/ cpu_bus.BUS_CPU_D2p = tribuf_6pn(TAGY_FF04_RDp, UTOK_DIV_08n);
-    /*p01.TUSE*/ cpu_bus.BUS_CPU_D3p = tribuf_6pn(TAGY_FF04_RDp, SAPY_DIV_09n);
-    /*p01.UPUG*/ cpu_bus.BUS_CPU_D4p = tribuf_6pn(TAGY_FF04_RDp, UMER_DIV_10n);
-    /*p01.SEPU*/ cpu_bus.BUS_CPU_D5p = tribuf_6pn(TAGY_FF04_RDp, RAVE_DIV_11n);
-    /*p01.SAWA*/ cpu_bus.BUS_CPU_D6p = tribuf_6pn(TAGY_FF04_RDp, RYSO_DIV_12n);
-    /*p01.TATU*/ cpu_bus.BUS_CPU_D7p = tribuf_6pn(TAGY_FF04_RDp, UDOR_DIV_13n);
+    /* p01.TAWU*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(TAGY_FF04_RDp, UMEK_DIV_06n);
+    /* p01.TAKU*/ cpu_bus.BUS_CPU_D1p = tribuf_6pn(TAGY_FF04_RDp, UREK_DIV_07n);
+    /* p01.TEMU*/ cpu_bus.BUS_CPU_D2p = tribuf_6pn(TAGY_FF04_RDp, UTOK_DIV_08n);
+    /* p01.TUSE*/ cpu_bus.BUS_CPU_D3p = tribuf_6pn(TAGY_FF04_RDp, SAPY_DIV_09n);
+    /* p01.UPUG*/ cpu_bus.BUS_CPU_D4p = tribuf_6pn(TAGY_FF04_RDp, UMER_DIV_10n);
+    /* p01.SEPU*/ cpu_bus.BUS_CPU_D5p = tribuf_6pn(TAGY_FF04_RDp, RAVE_DIV_11n);
+    /* p01.SAWA*/ cpu_bus.BUS_CPU_D6p = tribuf_6pn(TAGY_FF04_RDp, RYSO_DIV_12n);
+    /* p01.TATU*/ cpu_bus.BUS_CPU_D7p = tribuf_6pn(TAGY_FF04_RDp, UDOR_DIV_13n);
   }
 
   // FF05 TIMA

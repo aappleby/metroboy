@@ -1,3 +1,21 @@
+    // TERO_01 sc
+    // TERO_02 << UNER_16
+    // TERO_03 sc
+    // TERO_04 nc
+    // TERO_05 nc
+    // TERO_06 << UFOL_04
+    // TERO_07 << TERO_16
+    // TERO_08 nc
+    // TERO_09 sc
+    // TERO_10 nc
+    // TERO_11 nc
+    // TERO_12 sc
+    // TERO_13 << UFOL_04
+    // TERO_14 nc
+    // TERO_15 nc
+    // TERO_16 >> TERO_07, UNYK_02
+    // TERO_17 >> UVYR_01
+
     // XYKY_01 << BODE
     // XYKY_02 nc
     // XYKY_03 << OAM_D0

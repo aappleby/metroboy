@@ -367,54 +367,71 @@ void VramBus::tock(SchematicTop& top) {
     /* p25.SUZA*/ BUS_VRAM_D7p = tribuf_10np(RAHU_CBD_TO_VPDn, top.cpu_bus.BUS_CPU_D7p.tp());
 
     /*#p25.ROVE*/ wire ROVE_CBD_TO_VPDp = not1(RAHU_CBD_TO_VPDn);
-    /*#p25.SEFA*/ wire SEFAp = and2(BUS_VRAM_D0p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SOGO*/ wire SOGOp = and2(BUS_VRAM_D1p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SEFU*/ wire SEFUp = and2(BUS_VRAM_D2p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SUNA*/ wire SUNAp = and2(BUS_VRAM_D3p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SUMO*/ wire SUMOp = and2(BUS_VRAM_D4p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SAZU*/ wire SAZUp = and2(BUS_VRAM_D5p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SAMO*/ wire SAMOp = and2(BUS_VRAM_D6p.tp(), ROVE_CBD_TO_VPDp);
-    /* p25.SUKE*/ wire SUKEp = and2(BUS_VRAM_D7p.tp(), ROVE_CBD_TO_VPDp);
+    /*#p25.SEFA*/ wire SEFA_D0p = and2(BUS_VRAM_D0p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SOGO*/ wire SOGO_D1p = and2(BUS_VRAM_D1p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SEFU*/ wire SEFU_D2p = and2(BUS_VRAM_D2p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SUNA*/ wire SUNA_D3p = and2(BUS_VRAM_D3p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SUMO*/ wire SUMO_D4p = and2(BUS_VRAM_D4p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SAZU*/ wire SAZU_D5p = and2(BUS_VRAM_D5p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SAMO*/ wire SAMO_D6p = and2(BUS_VRAM_D6p.tp(), ROVE_CBD_TO_VPDp);
+    /* p25.SUKE*/ wire SUKE_D7p = and2(BUS_VRAM_D7p.tp(), ROVE_CBD_TO_VPDp);
 
-    /*#p25.REGE*/ wire REGEn = not1(SEFAp);
-    /* p25.RYKY*/ wire RYKYn = not1(SOGOp);
-    /* p25.RAZO*/ wire RAZOn = not1(SEFUp);
-    /* p25.RADA*/ wire RADAn = not1(SUNAp);
-    /* p25.RYRO*/ wire RYROn = not1(SUMOp);
-    /* p25.REVU*/ wire REVUn = not1(SAZUp);
-    /* p25.REKU*/ wire REKUn = not1(SAMOp);
-    /* p25.RYZE*/ wire RYZEn = not1(SUKEp);
+    /*#p25.REGE*/ wire REGE_D0n = not1(SEFA_D0p);
+    /* p25.RYKY*/ wire RYKY_D1n = not1(SOGO_D1p);
+    /* p25.RAZO*/ wire RAZO_D2n = not1(SEFU_D2p);
+    /* p25.RADA*/ wire RADA_D3n = not1(SUNA_D3p);
+    /* p25.RYRO*/ wire RYRO_D4n = not1(SUMO_D4p);
+    /* p25.REVU*/ wire REVU_D5n = not1(SAZU_D5p);
+    /* p25.REKU*/ wire REKU_D6n = not1(SAMO_D6p);
+    /* p25.RYZE*/ wire RYZE_D7n = not1(SUKE_D7p);
 
-    /*#p25.SYNU*/ wire SYNUp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D0p.tp());
-    /* p25.SYMA*/ wire SYMAp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D1p.tp());
-    /* p25.ROKO*/ wire ROKOp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D2p.tp());
-    /* p25.SYBU*/ wire SYBUp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D3p.tp());
-    /* p25.SAKO*/ wire SAKOp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D4p.tp());
-    /* p25.SEJY*/ wire SEJYp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D5p.tp());
-    /* p25.SEDO*/ wire SEDOp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D6p.tp());
-    /* p25.SAWU*/ wire SAWUp = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D7p.tp());
+    /*#p25.SYNU*/ wire SYNU_D0p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D0p.tp());
+    /* p25.SYMA*/ wire SYMA_D1p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D1p.tp());
+    /* p25.ROKO*/ wire ROKO_D2p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D2p.tp());
+    /* p25.SYBU*/ wire SYBU_D3p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D3p.tp());
+    /* p25.SAKO*/ wire SAKO_D4p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D4p.tp());
+    /* p25.SEJY*/ wire SEJY_D5p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D5p.tp());
+    /* p25.SEDO*/ wire SEDO_D6p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D6p.tp());
+    /* p25.SAWU*/ wire SAWU_D7p = or2(RAHU_CBD_TO_VPDn, BUS_VRAM_D7p.tp());
 
-    /*#p25.RURA*/ wire RURAn = not1(SYNUp);
-    /* p25.RULY*/ wire RULYn = not1(SYMAp);
-    /* p25.RARE*/ wire RAREn = not1(ROKOp);
-    /* p25.RODU*/ wire RODUn = not1(SYBUp);
-    /* p25.RUBE*/ wire RUBEn = not1(SAKOp);
-    /* p25.RUMU*/ wire RUMUn = not1(SEJYp);
-    /* p25.RYTY*/ wire RYTYn = not1(SEDOp);
-    /* p25.RADY*/ wire RADYn = not1(SAWUp);
+    /*#p25.RURA*/ wire RURA_D0n = not1(SYNU_D0p);
+    /* p25.RULY*/ wire RULY_D1n = not1(SYMA_D1p);
+    /* p25.RARE*/ wire RARE_D2n = not1(ROKO_D2p);
+    /* p25.RODU*/ wire RODU_D3n = not1(SYBU_D3p);
+    /* p25.RUBE*/ wire RUBE_D4n = not1(SAKO_D4p);
+    /* p25.RUMU*/ wire RUMU_D5n = not1(SEJY_D5p);
+    /* p25.RYTY*/ wire RYTY_D6n = not1(SEDO_D6p);
+    /* p25.RADY*/ wire RADY_D7n = not1(SAWU_D7p);
 
     /*#p25.RELA*/ wire RELA_CBD_TO_VPDp = or2(REVO_CBD_TO_VPDp, SAZO_CBD_TO_VPDp);
     /*#p25.RENA*/ wire RENA_CBD_TO_VPDn = not1(RELA_CBD_TO_VPDp);
     /*#p25.ROFA*/ wire ROFA_CBD_TO_VPDp = not1(RENA_CBD_TO_VPDn);
 
-    /*#*/ PIN_VRAM_D00p = io_pin(REGEn, RURAn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D01p = io_pin(RYKYn, RULYn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D02p = io_pin(RAZOn, RAREn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D03p = io_pin(RADAn, RODUn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D04p = io_pin(RYROn, RUBEn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D05p = io_pin(REVUn, RUMUn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D06p = io_pin(REKUn, RYTYn, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D07p = io_pin(RYZEn, RADYn, ROFA_CBD_TO_VPDp);
+    /*
+    if (ROFA_CBD_TO_VPDp) {
+      printf("! 0x%02x\n", top.cpu_bus.get_bus_data());
+
+      printf("$ 0x%02x\n", pack_p(BUS_VRAM_D0p.tp(),
+                                  BUS_VRAM_D1p.tp(),
+                                  BUS_VRAM_D2p.tp(),
+                                  BUS_VRAM_D3p.tp(),
+                                  BUS_VRAM_D4p.tp(),
+                                  BUS_VRAM_D5p.tp(),
+                                  BUS_VRAM_D6p.tp(),
+                                  BUS_VRAM_D7p.tp()));
+
+
+    }
+    */
+
+    /*#*/ PIN_VRAM_D00p = io_pin(REGE_D0n, RURA_D0n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D01p = io_pin(RYKY_D1n, RULY_D1n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D02p = io_pin(RAZO_D2n, RARE_D2n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D03p = io_pin(RADA_D3n, RODU_D3n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D04p = io_pin(RYRO_D4n, RUBE_D4n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D05p = io_pin(REVU_D5n, RUMU_D5n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D06p = io_pin(REKU_D6n, RYTY_D6n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D07p = io_pin(RYZE_D7n, RADY_D7n, ROFA_CBD_TO_VPDp);
   }
 
   //----------------------------------------

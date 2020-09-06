@@ -147,9 +147,9 @@ inline RegDelta tribuf_6nn(wire OEn, wire Dn) {
 
 // Must be NP - see KOVA/KEJO
 
-inline RegDelta tribuf_10np(wire OEn, wire Dn) {
+inline RegDelta tribuf_10np(wire OEn, wire D) {
   if (!OEn) {
-    return !Dn ? DELTA_TRI1 : DELTA_TRI0;
+    return D ? DELTA_TRI1 : DELTA_TRI0;
   }
   else {
     return DELTA_TRIZ;

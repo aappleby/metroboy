@@ -48,7 +48,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_Y("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x26d80474f7e6144c, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xd89b445082824d87, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -85,6 +85,16 @@ int GateBoyTests::test_init() {
   EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset value");
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset value");
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset value");
+
+  // Button signals should be pulled high
+  EXPECT_EQ('^', gb.top.joypad.PIN_JOY_P10.c());
+  EXPECT_EQ('^', gb.top.joypad.PIN_JOY_P11.c());
+  EXPECT_EQ('^', gb.top.joypad.PIN_JOY_P12.c());
+  EXPECT_EQ('^', gb.top.joypad.PIN_JOY_P13.c());
+
+  // Button scan signals should be driven low
+  EXPECT_EQ('0', gb.top.joypad.PIN_JOY_P14.c());
+  EXPECT_EQ('0', gb.top.joypad.PIN_JOY_P15.c());
 
   TEST_END();
 }
@@ -656,18 +666,6 @@ int GateBoyTests::test_ext_bus() {
 
 int GateBoyTests::test_mem() {
   TEST_START();
-
-  {
-    GateBoy gb;
-    gb.reset();
-    gb.set_boot_bit();
-    printf("value in vram is 0x%02x\n", gb.vid_ram[0]);
-    printf("writing 0x55 to 0x8000\n");
-    gb.dbg_write(0x8000, 0x55);
-    printf("value in vram is 0x%02x\n", gb.vid_ram[0]);
-    uint8_t readback = gb.dbg_read(0x8000);
-    printf("vaule in readback is 0x%02x\n", readback);
-  }
 
   GateBoy gb;
   gb.reset();

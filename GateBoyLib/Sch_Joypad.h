@@ -17,7 +17,7 @@ struct Joypad {
 
   /*p02.ASOK*/ Sig ASOK_INT_JOYp;
 
-private:
+//private:
   friend struct SchematicTop;
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?

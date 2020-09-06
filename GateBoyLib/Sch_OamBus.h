@@ -21,35 +21,35 @@ struct OamBus {
 
 
   uint8_t get_oam_pin_data_a() const {
-    return (uint8_t)pack_p(PIN_OAM_DA0n.tp(), PIN_OAM_DA1n.tp(), PIN_OAM_DA2n.tp(), PIN_OAM_DA3n.tp(),
-                           PIN_OAM_DA4n.tp(), PIN_OAM_DA5n.tp(), PIN_OAM_DA6n.tp(), PIN_OAM_DA7n.tp());
+    return ~(uint8_t)pack_p(PIN_OAM_DA0n.tp(), PIN_OAM_DA1n.tp(), PIN_OAM_DA2n.tp(), PIN_OAM_DA3n.tp(),
+                            PIN_OAM_DA4n.tp(), PIN_OAM_DA5n.tp(), PIN_OAM_DA6n.tp(), PIN_OAM_DA7n.tp());
   }
 
   uint8_t get_oam_pin_data_b() const {
-    return (uint8_t)pack_p(PIN_OAM_DB0n.tp(), PIN_OAM_DB1n.tp(), PIN_OAM_DB2n.tp(), PIN_OAM_DB3n.tp(),
-                           PIN_OAM_DB4n.tp(), PIN_OAM_DB5n.tp(), PIN_OAM_DB6n.tp(), PIN_OAM_DB7n.tp());
+    return ~(uint8_t)pack_p(PIN_OAM_DB0n.tp(), PIN_OAM_DB1n.tp(), PIN_OAM_DB2n.tp(), PIN_OAM_DB3n.tp(),
+                            PIN_OAM_DB4n.tp(), PIN_OAM_DB5n.tp(), PIN_OAM_DB6n.tp(), PIN_OAM_DB7n.tp());
   }
 
   void set_pin_data_a(uint8_t data) {
-    PIN_OAM_DA0n = (data & 0x01);
-    PIN_OAM_DA1n = (data & 0x02);
-    PIN_OAM_DA2n = (data & 0x04);
-    PIN_OAM_DA3n = (data & 0x08);
-    PIN_OAM_DA4n = (data & 0x10);
-    PIN_OAM_DA5n = (data & 0x20);
-    PIN_OAM_DA6n = (data & 0x40);
-    PIN_OAM_DA7n = (data & 0x80);
+    PIN_OAM_DA0n = !(data & 0x01);
+    PIN_OAM_DA1n = !(data & 0x02);
+    PIN_OAM_DA2n = !(data & 0x04);
+    PIN_OAM_DA3n = !(data & 0x08);
+    PIN_OAM_DA4n = !(data & 0x10);
+    PIN_OAM_DA5n = !(data & 0x20);
+    PIN_OAM_DA6n = !(data & 0x40);
+    PIN_OAM_DA7n = !(data & 0x80);
   }
 
   void set_pin_data_b(uint8_t data) {
-    PIN_OAM_DB0n = (data & 0x01);
-    PIN_OAM_DB1n = (data & 0x02);
-    PIN_OAM_DB2n = (data & 0x04);
-    PIN_OAM_DB3n = (data & 0x08);
-    PIN_OAM_DB4n = (data & 0x10);
-    PIN_OAM_DB5n = (data & 0x20);
-    PIN_OAM_DB6n = (data & 0x40);
-    PIN_OAM_DB7n = (data & 0x80);
+    PIN_OAM_DB0n = !(data & 0x01);
+    PIN_OAM_DB1n = !(data & 0x02);
+    PIN_OAM_DB2n = !(data & 0x04);
+    PIN_OAM_DB3n = !(data & 0x08);
+    PIN_OAM_DB4n = !(data & 0x10);
+    PIN_OAM_DB5n = !(data & 0x20);
+    PIN_OAM_DB6n = !(data & 0x40);
+    PIN_OAM_DB7n = !(data & 0x80);
   }
 
   //----------------------------------------

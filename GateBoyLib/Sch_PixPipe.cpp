@@ -304,8 +304,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     // seems to be correct and makes it match the trace. With that change, HSYNC is 30 phases.
     // Is it possible that it should be 29 phases and it only looks like 30 phases because of gate delay?
     // That would be a loooot of gate delay.
-
-    // PAHO := dff17(ROXO, XYMU, XYDO_Q)   // def dff17
+    // Could we possibly be incrementing X3p one phase early?
 
     /*#p24.ROXO*/ wire ROXO_CLKPIPEp = not1(SEGU_CLKPIPEn);
     /* p24.PAHO*/ PAHO_X_8_SYNC = dff17_B(!ROXO_CLKPIPEp, XYMU_RENDERINGp.tp(), XYDO_X3p.qp());

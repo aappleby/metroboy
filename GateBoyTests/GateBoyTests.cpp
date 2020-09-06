@@ -48,7 +48,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_Y("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xc244125f43c6e245, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0x26d80474f7e6144c, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -657,6 +657,18 @@ int GateBoyTests::test_ext_bus() {
 int GateBoyTests::test_mem() {
   TEST_START();
 
+  {
+    GateBoy gb;
+    gb.reset();
+    gb.set_boot_bit();
+    printf("value in vram is 0x%02x\n", gb.vid_ram[0]);
+    printf("writing 0x55 to 0x8000\n");
+    gb.dbg_write(0x8000, 0x55);
+    printf("value in vram is 0x%02x\n", gb.vid_ram[0]);
+    uint8_t readback = gb.dbg_read(0x8000);
+    printf("vaule in readback is 0x%02x\n", readback);
+  }
+
   GateBoy gb;
   gb.reset();
   gb.set_boot_bit();
@@ -900,9 +912,21 @@ int GateBoyTests::test_dma(uint16_t src) {
   GateBoy gb;
   gb.reset();
 
-  uint8_t* src_data = get_flat_ptr(gb, src);
+  uint8_t blob[256];
   for (int i = 0; i < 256; i++) {
-    src_data[i] = uint8_t(rand());
+    blob[i] = uint8_t(rand());
+  }
+
+  if (src < 0x8000) {
+    uint8_t* src_data = get_flat_ptr(gb, src);
+    for (int i = 0; i < 256; i++) {
+      src_data[i] = blob[i];
+    }
+  }
+  else {
+    for (int i = 0; i < 256; i++) {
+      gb.dbg_write(src + i, blob[i]);
+    }
   }
 
   memset(gb.oam_ram, 0xFF, 256);
@@ -912,7 +936,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   for (int i = 0; i < 1288; i++) gb.next_phase();
 
   for (int i = 0; i < 160; i++) {
-    uint8_t a = src_data[i];
+    uint8_t a = blob[i];
     uint8_t b = gb.dbg_read(0xFE00 + i);
     ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }

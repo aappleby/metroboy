@@ -561,7 +561,7 @@ void GateBoy::tock_vram_bus() {
   if (!top.vram_bus.PIN_VRAM_WRn.qp()) vram_data = (uint8_t)top.vram_bus.get_pin_data();
 
   if (!top.vram_bus.PIN_VRAM_OEn.qp()) {
-    top.vram_bus.set_pin_data_in(vram_data);
+    top.vram_bus.set_pin_data_in(~vram_data);
   }
   else {
     top.vram_bus.set_pin_data_z();
@@ -578,8 +578,8 @@ void GateBoy::tock_oam_bus() {
   if (!top.oam_bus.PIN_OAM_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
   if (!top.oam_bus.PIN_OAM_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
 
-  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
-  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);
+  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_a(~oam_data_a);
+  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_b(~oam_data_b);
 }
 
 //-----------------------------------------------------------------------------

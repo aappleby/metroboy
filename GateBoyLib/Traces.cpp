@@ -1,3 +1,14 @@
+    // XYKY_01 << BODE
+    // XYKY_02 nc
+    // XYKY_03 << OAM_D0
+    // XYKY_04 nc
+    // XYKY_05 nc
+    // XYKY_06 nc
+    // XYKY_07 nc
+    // XYKY_08 >> YLOR
+    // XYKY_09 nc
+    // XYKY_10 >> XACA
+
 
   // CORE := tri(UCOM, CULY_QN)
   // ELUV := tri(UCOM, ETAF_QN)

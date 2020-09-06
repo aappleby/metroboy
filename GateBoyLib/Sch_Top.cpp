@@ -256,42 +256,52 @@ if (top.VYPO_GND) bus_out.set_data(
 // so the address bus is technically a tribuf, but we're going to ignore
 // this debug circuit for now.
 {
-// If we're in debug mode 2, drive external address bus onto internal address
-// these may be backwards, probably don't want to drive external address onto bus normally...
+  // If we're in debug mode 2, drive external address bus onto internal address
 
-/*p08.KOVA*/ wire A00_Cn = not1(PIN_EXT_A00_C);
-/*p08.CAMU*/ wire A01_Cn = not1(PIN_EXT_A01_C);
-/*p08.BUXU*/ wire A02_Cn = not1(PIN_EXT_A02_C);
-/*p08.BASE*/ wire A03_Cn = not1(PIN_EXT_A03_C);
-/*p08.AFEC*/ wire A04_Cn = not1(PIN_EXT_A04_C);
-/*p08.ABUP*/ wire A05_Cn = not1(PIN_EXT_A05_C);
-/*p08.CYGU*/ wire A06_Cn = not1(PIN_EXT_A06_C);
-/*p08.COGO*/ wire A07_Cn = not1(PIN_EXT_A07_C);
-/*p08.MUJY*/ wire A08_Cn = not1(PIN_EXT_A08_C);
-/*p08.NENA*/ wire A09_Cn = not1(PIN_EXT_A09_C);
-/*p08.SURA*/ wire A10_Cn = not1(PIN_EXT_A10_C);
-/*p08.MADY*/ wire A11_Cn = not1(PIN_EXT_A11_C);
-/*p08.LAHE*/ wire A12_Cn = not1(PIN_EXT_A12_C);
-/*p08.LURA*/ wire A13_Cn = not1(PIN_EXT_A13_C);
-/*p08.PEVO*/ wire A14_Cn = not1(PIN_EXT_A14_C);
-/*p08.RAZA*/ wire A15_Cn = not1(PIN_EXT_A15_C);
+  /*#p08.KOVA*/ wire KOVA_A00p = not1(PIN_EXT_A00p.qn());
+  /* p08.CAMU*/ wire CAMU_A01p = not1(PIN_EXT_A01p.qn());
+  /* p08.BUXU*/ wire BUXU_A02p = not1(PIN_EXT_A02p.qn());
+  /* p08.BASE*/ wire BASE_A03p = not1(PIN_EXT_A03p.qn());
+  /* p08.AFEC*/ wire AFEC_A04p = not1(PIN_EXT_A04p.qn());
+  /* p08.ABUP*/ wire ABUP_A05p = not1(PIN_EXT_A05p.qn());
+  /* p08.CYGU*/ wire CYGU_A06p = not1(PIN_EXT_A06p.qn());
+  /* p08.COGO*/ wire COGO_A07p = not1(PIN_EXT_A07p.qn());
+  /* p08.MUJY*/ wire MUJY_A08p = not1(PIN_EXT_A08p.qn());
+  /* p08.NENA*/ wire NENA_A09p = not1(PIN_EXT_A09p.qn());
+  /* p08.SURA*/ wire SURA_A10p = not1(PIN_EXT_A10p.qn());
+  /* p08.MADY*/ wire MADY_A11p = not1(PIN_EXT_A11p.qn());
+  /* p08.LAHE*/ wire LAHE_A12p = not1(PIN_EXT_A12p.qn());
+  /* p08.LURA*/ wire LURA_A13p = not1(PIN_EXT_A13p.qn());
+  /* p08.PEVO*/ wire PEVO_A14p = not1(PIN_EXT_A14p.qn());
+  /* p08.RAZA*/ wire RAZA_A15p = not1(PIN_EXT_A15p.qn());
 
-/*p08.KEJO*/ top.cpu_bus.BUS_CPU_A00 = tribuf_10np(TOVA_MODE_DBG2n, A00_Cn);
-/*p08.BYXE*/ top.cpu_bus.BUS_CPU_A01 = tribuf_10np(TOVA_MODE_DBG2n, A01_Cn);
-/*p08.AKAN*/ top.cpu_bus.BUS_CPU_A02 = tribuf_10np(TOVA_MODE_DBG2n, A02_Cn);
-/*p08.ANAR*/ top.cpu_bus.BUS_CPU_A03 = tribuf_10np(TOVA_MODE_DBG2n, A03_Cn);
-/*p08.AZUV*/ top.cpu_bus.BUS_CPU_A04 = tribuf_10np(TOVA_MODE_DBG2n, A04_Cn);
-/*p08.AJOV*/ top.cpu_bus.BUS_CPU_A05 = tribuf_10np(TOVA_MODE_DBG2n, A05_Cn);
-/*p08.BYNE*/ top.cpu_bus.BUS_CPU_A06 = tribuf_10np(TOVA_MODE_DBG2n, A06_Cn);
-/*p08.BYNA*/ top.cpu_bus.BUS_CPU_A07 = tribuf_10np(TOVA_MODE_DBG2n, A07_Cn);
-/*p08.LOFA*/ top.cpu_bus.BUS_CPU_A08 = tribuf_10np(TOVA_MODE_DBG2n, A08_Cn);
-/*p08.MAPU*/ top.cpu_bus.BUS_CPU_A09 = tribuf_10np(TOVA_MODE_DBG2n, A09_Cn);
-/*p08.RALA*/ top.cpu_bus.BUS_CPU_A10 = tribuf_10np(TOVA_MODE_DBG2n, A10_Cn);
-/*p08.LORA*/ top.cpu_bus.BUS_CPU_A11 = tribuf_10np(TOVA_MODE_DBG2n, A11_Cn);
-/*p08.LYNA*/ top.cpu_bus.BUS_CPU_A12 = tribuf_10np(TOVA_MODE_DBG2n, A12_Cn);
-/*p08.LEFY*/ top.cpu_bus.BUS_CPU_A13 = tribuf_10np(TOVA_MODE_DBG2n, A13_Cn);
-/*p08.NEFE*/ top.cpu_bus.BUS_CPU_A14 = tribuf_10np(TOVA_MODE_DBG2n, A14_Cn);
-/*p08.SYZU*/ top.cpu_bus.BUS_CPU_A15 = tribuf_10np(TOVA_MODE_DBG2n, A15_Cn);
+  // KEJO_01 << KOVA_02
+  // KEJO_02 
+  // KEJO_03 
+  // KEJO_04 << TOVA_02
+  // KEJO_05 << KOVA_02
+  // KEJO_06 
+  // KEJO_07 
+  // KEJO_08 
+  // KEJO_09 >> BUS_CPU_A00p
+  // KEJO_10 
+
+  /* p08.KEJO*/ top.cpu_bus.BUS_CPU_A00 = tribuf_10np(TOVA_MODE_DBG2n, KOVA_A00p);
+  /* p08.BYXE*/ top.cpu_bus.BUS_CPU_A01 = tribuf_10np(TOVA_MODE_DBG2n, CAMU_A01p);
+  /* p08.AKAN*/ top.cpu_bus.BUS_CPU_A02 = tribuf_10np(TOVA_MODE_DBG2n, BUXU_A02p);
+  /* p08.ANAR*/ top.cpu_bus.BUS_CPU_A03 = tribuf_10np(TOVA_MODE_DBG2n, BASE_A03p);
+  /* p08.AZUV*/ top.cpu_bus.BUS_CPU_A04 = tribuf_10np(TOVA_MODE_DBG2n, AFEC_A04p);
+  /* p08.AJOV*/ top.cpu_bus.BUS_CPU_A05 = tribuf_10np(TOVA_MODE_DBG2n, ABUP_A05p);
+  /* p08.BYNE*/ top.cpu_bus.BUS_CPU_A06 = tribuf_10np(TOVA_MODE_DBG2n, CYGU_A06p);
+  /* p08.BYNA*/ top.cpu_bus.BUS_CPU_A07 = tribuf_10np(TOVA_MODE_DBG2n, COGO_A07p);
+  /* p08.LOFA*/ top.cpu_bus.BUS_CPU_A08 = tribuf_10np(TOVA_MODE_DBG2n, MUJY_A08p);
+  /* p08.MAPU*/ top.cpu_bus.BUS_CPU_A09 = tribuf_10np(TOVA_MODE_DBG2n, NENA_A09p);
+  /* p08.RALA*/ top.cpu_bus.BUS_CPU_A10 = tribuf_10np(TOVA_MODE_DBG2n, SURA_A10p);
+  /* p08.LORA*/ top.cpu_bus.BUS_CPU_A11 = tribuf_10np(TOVA_MODE_DBG2n, MADY_A11p);
+  /* p08.LYNA*/ top.cpu_bus.BUS_CPU_A12 = tribuf_10np(TOVA_MODE_DBG2n, LAHE_A12p);
+  /* p08.LEFY*/ top.cpu_bus.BUS_CPU_A13 = tribuf_10np(TOVA_MODE_DBG2n, LURA_A13p);
+  /* p08.NEFE*/ top.cpu_bus.BUS_CPU_A14 = tribuf_10np(TOVA_MODE_DBG2n, PEVO_A14p);
+  /* p08.SYZU*/ top.cpu_bus.BUS_CPU_A15 = tribuf_10np(TOVA_MODE_DBG2n, RAZA_A15p);
 }
 #endif
 

@@ -111,9 +111,9 @@ inline RegDelta io_pin(wire HI, wire LO, wire OEp) {
 //-----------------------------------------------------------------------------
 // top rung tadpole facing second rung dot
 
-inline RegDelta tribuf_6pn(wire OEp, wire D) {
+inline RegDelta tribuf_6pn(wire OEp, wire Dn) {
   if (OEp) {
-    return D ? DELTA_TRI0 : DELTA_TRI1;
+    return !Dn ? DELTA_TRI1 : DELTA_TRI0;
   }
   else {
     return DELTA_TRIZ;
@@ -133,6 +133,19 @@ inline RegDelta tribuf_6nn(wire OEn, wire Dn) {
 }
 
 //-----------------------------------------------------------------------------
+
+// TYGO_01 << BUS_CPU_D2p
+// TYGO_02 nc
+// TYGO_03 nc
+// TYGO_04 nc
+// TYGO_05 << RAHU_04
+// TYGO_06 << BUS_CPU_D2p
+// TYGO_07 nc
+// TYGO_08 nc
+// TYGO_09 >> BUS_VRAM_D2p
+// TYGO_10 nc
+
+// Must be NP - see KOVA/KEJO
 
 inline RegDelta tribuf_10np(wire OEn, wire Dn) {
   if (!OEn) {
@@ -180,6 +193,14 @@ inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
 inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
   return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
 }
+
+
+
+inline RegQPIn dff8(wire CLKp, bool D) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | (D << 0))};
+}
+
+
 
 //-----------------------------------------------------------------------------
 // 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
@@ -353,7 +374,7 @@ inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
 // REG20_14 << LOADp
 // REG20_15 nc
 // REG20_16 << D
-// REG20_17 >> Q
+// REG20_17 >> Also Qn? Doesn't make sense as Q.
 // REG20_18 sc
 // REG20_19 sc
 // REG20_20 << CLKp

@@ -125,15 +125,14 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn = not1(MEXU_TIMA_LOADp);
     /*p03.NYDU*/ NYDU_TIMA_D7_DELAY = dff17_A(BOGA_xBCDEFGH, MUGY_TIMA_MAX_RSTn, NUGA_TIMA_D7.qp());
 
-    // FIXME inversion
-    /*p03.SOKU*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(TEDA_FF05_RDp, !REGA_TIMA_D0.qp());
-    /*p03.RACY*/ cpu_bus.BUS_CPU_D1p = tribuf_6pn(TEDA_FF05_RDp, !POVY_TIMA_D1.qp());
-    /*p03.RAVY*/ cpu_bus.BUS_CPU_D2p = tribuf_6pn(TEDA_FF05_RDp, !PERU_TIMA_D2.qp());
-    /*p03.SOSY*/ cpu_bus.BUS_CPU_D3p = tribuf_6pn(TEDA_FF05_RDp, !RATE_TIMA_D3.qp());
-    /*p03.SOMU*/ cpu_bus.BUS_CPU_D4p = tribuf_6pn(TEDA_FF05_RDp, !RUBY_TIMA_D4.qp());
-    /*p03.SURO*/ cpu_bus.BUS_CPU_D5p = tribuf_6pn(TEDA_FF05_RDp, !RAGE_TIMA_D5.qp());
-    /*p03.ROWU*/ cpu_bus.BUS_CPU_D6p = tribuf_6pn(TEDA_FF05_RDp, !PEDA_TIMA_D6.qp());
-    /*p03.PUSO*/ cpu_bus.BUS_CPU_D7p = tribuf_6pn(TEDA_FF05_RDp, !NUGA_TIMA_D7.qp());
+    /*p03.SOKU*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(TEDA_FF05_RDp, REGA_TIMA_D0.qn());
+    /*p03.RACY*/ cpu_bus.BUS_CPU_D1p = tribuf_6pn(TEDA_FF05_RDp, POVY_TIMA_D1.qn());
+    /*p03.RAVY*/ cpu_bus.BUS_CPU_D2p = tribuf_6pn(TEDA_FF05_RDp, PERU_TIMA_D2.qn());
+    /*p03.SOSY*/ cpu_bus.BUS_CPU_D3p = tribuf_6pn(TEDA_FF05_RDp, RATE_TIMA_D3.qn());
+    /*p03.SOMU*/ cpu_bus.BUS_CPU_D4p = tribuf_6pn(TEDA_FF05_RDp, RUBY_TIMA_D4.qn());
+    /*p03.SURO*/ cpu_bus.BUS_CPU_D5p = tribuf_6pn(TEDA_FF05_RDp, RAGE_TIMA_D5.qn());
+    /*p03.ROWU*/ cpu_bus.BUS_CPU_D6p = tribuf_6pn(TEDA_FF05_RDp, PEDA_TIMA_D6.qn());
+    /*p03.PUSO*/ cpu_bus.BUS_CPU_D7p = tribuf_6pn(TEDA_FF05_RDp, NUGA_TIMA_D7.qn());
   }
 
   // FF06 TMA

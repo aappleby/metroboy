@@ -157,52 +157,6 @@ inline RegDelta tribuf_10np(wire OEn, wire D) {
 }
 
 //-----------------------------------------------------------------------------
-// 8-rung register with no reset and dual outputs
-// ********* This ticks on the _falling_ edge of the clock *********
-// Two or three vias in center column
-// Ticking on the rising edge of the clock breaks sprite rendering and stuff.
-// Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
-// This is probably Qn/Q order like the others.
-
-// |o------O | CLKp
-///|====O====| D
-// |  -----  |
-// |O-------o| CLKn
-// |  -----  |
-// |==     ==|
-// |xxx-O-xxx| Qn
-// |xxx-O-xxx| Q  or this rung can be empty
-
-// REG8_01 << CLKp
-// REG8_02 << D
-// REG8_03 nc
-// REG8_04 << CLKn
-// REG8_05 nc
-// REG8_06 nc
-// REG8_07 >> Qn
-// REG8_08 >> Q
-
-inline RegQNIn dff8_A_inv(wire CLKp, bool Dn) {
-  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!Dn) << 0))};
-}
-
-inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
-  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
-}
-
-inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
-  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
-}
-
-
-
-inline RegDelta dff8(wire CLKp, bool D) {
-  return RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | (D << 0));
-}
-
-
-
-//-----------------------------------------------------------------------------
 // 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
 // Four vias in center column
 

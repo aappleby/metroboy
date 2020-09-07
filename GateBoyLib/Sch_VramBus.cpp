@@ -33,8 +33,8 @@ void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
     PIN_VRAM_D03p.c(), PIN_VRAM_D02p.c(), PIN_VRAM_D01p.c(), PIN_VRAM_D00p.c());
   d("\n");
 
-  int TILE_DA = pack_p(LEGU_TILE_DA0n.qn(), NUDU_TILE_DA1n.qn(), MUKU_TILE_DA2n.qn(), LUZO_TILE_DA3n.qn(),
-                       MEGU_TILE_DA4n.qn(), MYJY_TILE_DA5n.qn(), NASA_TILE_DA6n.qn(), NEFO_TILE_DA7n.qn());
+  int TILE_DA = pack_p(LEGU_TILE_DA0n.q07(), NUDU_TILE_DA1n.q07(), MUKU_TILE_DA2n.q07(), LUZO_TILE_DA3n.q07(),
+                       MEGU_TILE_DA4n.q07(), MYJY_TILE_DA5n.q07(), NASA_TILE_DA6n.q07(), NEFO_TILE_DA7n.q07());
   int TILE_DB = pack_p(RAWU_TILE_DB0n.qn(), POZO_TILE_DB1n.qn(), PYZO_TILE_DB2n.qn(), POXA_TILE_DB3n.qn(),
                        PULO_TILE_DB4n.qn(), POJU_TILE_DB5n.qn(), POWY_TILE_DB6n.qn(), PYJU_TILE_DB7n.qn());
   int SPRITE_DA = pack_p(PEFO_SPRITE_DB0n.qn(), ROKA_SPRITE_DB1n.qn(), MYTU_SPRITE_DB2n.qn(), RAMU_SPRITE_DB3n.qn(),
@@ -158,11 +158,11 @@ void VramBus::tock(SchematicTop& top) {
     /* p04.DAVA*/ BUS_VRAM_A05n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.PYLO_DMA_A05p.qp());
     /* p04.ETEG*/ BUS_VRAM_A06n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NUTO_DMA_A06p.qp());
     /*#p04.EREW*/ BUS_VRAM_A07n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.MUGU_DMA_A07p.qp());
-    /*#p04.EVAX*/ BUS_VRAM_A08n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NAFA_DMA_A08n.qn());
-    /* p04.DUVE*/ BUS_VRAM_A09n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.PYNE_DMA_A09n.qn());
-    /* p04.ERAF*/ BUS_VRAM_A10n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.PARA_DMA_A10n.qn());
-    /* p04.FUSY*/ BUS_VRAM_A11n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NYDO_DMA_A11n.qn());
-    /* p04.EXYF*/ BUS_VRAM_A12n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NYGY_DMA_A12n.qn());
+    /*#p04.EVAX*/ BUS_VRAM_A08n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NAFA_DMA_A08n.q07());
+    /* p04.DUVE*/ BUS_VRAM_A09n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.PYNE_DMA_A09n.q07());
+    /* p04.ERAF*/ BUS_VRAM_A10n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.PARA_DMA_A10n.q07());
+    /* p04.FUSY*/ BUS_VRAM_A11n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NYDO_DMA_A11n.q07());
+    /* p04.EXYF*/ BUS_VRAM_A12n = tribuf_6nn(AHOC_DMA_VRAM_RDn, top.dma_reg.NYGY_DMA_A12n.q07());
   }
 
   // Sprite fetcher read
@@ -504,14 +504,16 @@ void VramBus::tock(SchematicTop& top) {
   // VBD -> tile pix temp
   {
     /*#p32.LOMA*/ wire LOMA_LATCH_TILE_DAn = not1(top.tile_fetcher.METE_LATCH_TILE_DAp);
-    /*p32.LEGU*/ LEGU_TILE_DA0n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D0p.tp());
-    /*p32.NUDU*/ NUDU_TILE_DA1n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D1p.tp());
-    /*p32.MUKU*/ MUKU_TILE_DA2n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D2p.tp());
-    /*p32.LUZO*/ LUZO_TILE_DA3n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D3p.tp());
-    /*p32.MEGU*/ MEGU_TILE_DA4n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D4p.tp());
-    /*p32.MYJY*/ MYJY_TILE_DA5n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D5p.tp());
-    /*p32.NASA*/ NASA_TILE_DA6n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D6p.tp());
-    /*p32.NEFO*/ NEFO_TILE_DA7n = dff8_A_inv(LOMA_LATCH_TILE_DAn, BUS_VRAM_D7p.tp());
+    /*#p32.LOMA*/ wire LOMA_LATCH_TILE_DAp = not1(LOMA_LATCH_TILE_DAn);
+
+    /*p32.LEGU*/ LEGU_TILE_DA0n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D0p.tp());
+    /*p32.NUDU*/ NUDU_TILE_DA1n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D1p.tp());
+    /*p32.MUKU*/ MUKU_TILE_DA2n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D2p.tp());
+    /*p32.LUZO*/ LUZO_TILE_DA3n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D3p.tp());
+    /*p32.MEGU*/ MEGU_TILE_DA4n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D4p.tp());
+    /*p32.MYJY*/ MYJY_TILE_DA5n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D5p.tp());
+    /*p32.NASA*/ NASA_TILE_DA6n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D6p.tp());
+    /*p32.NEFO*/ NEFO_TILE_DA7n.tock(LOMA_LATCH_TILE_DAn, LOMA_LATCH_TILE_DAp, BUS_VRAM_D7p.tp());
 
     // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
     /*p??.LUVE*/ wire LUVE_MATCH_TILE_DBp = not1(top.tile_fetcher.LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR

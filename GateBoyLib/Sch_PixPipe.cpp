@@ -469,24 +469,24 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Background pipes are loaded at phase 16 of tile fetch
 
   {
-    /*p32.LUHE*/ wire BG_PIX_A0n = not1(top.vram_bus.LEGU_TILE_DA0n.qn());
-    /*p32.NOLY*/ wire BG_PIX_A1n = not1(top.vram_bus.NUDU_TILE_DA1n.qn());
-    /*p32.LEKE*/ wire BG_PIX_A2n = not1(top.vram_bus.MUKU_TILE_DA2n.qn());
-    /*p32.LOMY*/ wire BG_PIX_A3n = not1(top.vram_bus.LUZO_TILE_DA3n.qn());
-    /*p32.LALA*/ wire BG_PIX_A4n = not1(top.vram_bus.MEGU_TILE_DA4n.qn());
-    /*p32.LOXA*/ wire BG_PIX_A5n = not1(top.vram_bus.MYJY_TILE_DA5n.qn());
-    /*p32.NEZE*/ wire BG_PIX_A6n = not1(top.vram_bus.NASA_TILE_DA6n.qn());
-    /*p32.NOBO*/ wire BG_PIX_A7n = not1(top.vram_bus.NEFO_TILE_DA7n.qn());
+    /*p32.LUHE*/ wire BG_PIX_A0n = not1(top.vram_bus.LEGU_TILE_DA0n.q07());
+    /*p32.NOLY*/ wire BG_PIX_A1n = not1(top.vram_bus.NUDU_TILE_DA1n.q07());
+    /*p32.LEKE*/ wire BG_PIX_A2n = not1(top.vram_bus.MUKU_TILE_DA2n.q07());
+    /*p32.LOMY*/ wire BG_PIX_A3n = not1(top.vram_bus.LUZO_TILE_DA3n.q07());
+    /*p32.LALA*/ wire BG_PIX_A4n = not1(top.vram_bus.MEGU_TILE_DA4n.q07());
+    /*p32.LOXA*/ wire BG_PIX_A5n = not1(top.vram_bus.MYJY_TILE_DA5n.q07());
+    /*p32.NEZE*/ wire BG_PIX_A6n = not1(top.vram_bus.NASA_TILE_DA6n.q07());
+    /*p32.NOBO*/ wire BG_PIX_A7n = not1(top.vram_bus.NEFO_TILE_DA7n.q07());
 
     /*p32.LOZE*/ wire LOZE_PIPE_A_LOADp = not1(top.NYXU_FETCH_TRIGn);
-    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.LEGU_TILE_DA0n.qn());
-    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.NUDU_TILE_DA1n.qn());
-    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.MUKU_TILE_DA2n.qn());
-    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.LUZO_TILE_DA3n.qn());
-    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.MEGU_TILE_DA4n.qn());
-    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.MYJY_TILE_DA5n.qn());
-    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.NASA_TILE_DA6n.qn());
-    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.NEFO_TILE_DA7n.qn());
+    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.LEGU_TILE_DA0n.q07());
+    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.NUDU_TILE_DA1n.q07());
+    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.MUKU_TILE_DA2n.q07());
+    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.LUZO_TILE_DA3n.q07());
+    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.MEGU_TILE_DA4n.q07());
+    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.MYJY_TILE_DA5n.q07());
+    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.NASA_TILE_DA6n.q07());
+    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand2(LOZE_PIPE_A_LOADp, top.vram_bus.NEFO_TILE_DA7n.q07());
 
     /*p32.LOTY*/ wire BG_PIPE_A_RST0 = nand2(LOZE_PIPE_A_LOADp, BG_PIX_A0n);
     /*p32.NEXA*/ wire BG_PIPE_A_RST1 = nand2(LOZE_PIPE_A_LOADp, BG_PIX_A1n);

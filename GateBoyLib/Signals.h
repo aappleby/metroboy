@@ -48,6 +48,10 @@ enum RegDelta : uint8_t {
   DELTA_A1C1 = 0b1111, // 15: async set + clock 1
 };
 
+struct RegQNIn { RegDelta d; };
+struct RegQPNIn { RegDelta d; };
+struct RegQPIn { RegDelta d; };
+
 //-----------------------------------------------------------------------------
 
 struct Lut8 {
@@ -131,33 +135,6 @@ struct RegBase {
   inline bool has_delta() const { return delta != DELTA_NONE; }
   inline wire as_wire()   const { /*CHECKn(has_delta());*/ return wire(state & 1); }
 
-  inline wire posedge() const {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    return !(old_v & 1) && (new_v & 1);
-  }
-
-  inline wire negedge() const {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    return (old_v & 1) && !(new_v & 1);
-  }
-
-  /*
-  void dump_edge(const char* name) {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    if (!(old_v & 1) && (new_v & 1)) printf("%s ^^^\n", name);
-    if ((old_v & 1) && !(new_v & 1)) printf("%s vvv\n", name);
-  }
-  */
-
   union {
     struct {
       RegState state : 4;
@@ -176,9 +153,6 @@ struct Reg : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   inline wire qp()  const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
@@ -201,17 +175,52 @@ struct Reg : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
+// 8-rung register with no reset, inverting input, and dual outputs
+// Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
 
-struct RegQPIn { RegDelta d; };
+// REG8_01 |o------O | << CLKn
+// REG8_02 |====O====| << Dn
+// REG8_03 |  -----  |
+// REG8_04 |O-------o| << CLKp
+// REG8_05 |  -----  |
+// REG8_06 |==     ==|
+// REG8_07 |xxx-O-xxx| >> Qn
+// REG8_08 |xxx-O-xxx| >> Q  or this rung can be empty
+
+struct DFF8 : private RegBase {
+  DFF8() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+
+  inline wire q07() const { return !as_wire(); }
+  inline wire q08() const { return  as_wire(); }
+
+  inline void tock(wire CLKn, wire CLKp, bool Dn) {
+    (void)CLKn;
+    CHECK_P(is_reg() && !has_delta());
+    delta = RegDelta(DELTA_D0C0 | ((CLKp) << 1) | ((!Dn) << 0));
+  }
+};
+
+inline RegQNIn dff8_A_inv(wire CLKp, bool Dn) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!Dn) << 0))};
+}
+
+inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
+}
+
+inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
+  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
+}
+
+//-----------------------------------------------------------------------------
 
 struct RegQP : private RegBase {
   RegQP(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   inline wire qp()  const { return  as_wire(); }
   inline wire clk() const { return wire(state & 0x02); }
@@ -234,16 +243,11 @@ struct RegQP : private RegBase {
 
 //-----------------------------------------------------------------------------
 
-struct RegQNIn { RegDelta d; };
-
 struct RegQN : private RegBase {
   RegQN(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   inline wire qn() const { return !as_wire(); }
   inline wire clk() const { return wire(state & 0x02); }
@@ -266,16 +270,11 @@ struct RegQN : private RegBase {
 
 //-----------------------------------------------------------------------------
 
-struct RegQPNIn { RegDelta d; };
-
 struct RegQPN : private RegBase {
   RegQPN(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   inline wire qp() const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
@@ -337,9 +336,6 @@ struct Tri : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   inline wire tp()  const {
     //CHECK_N(state == TRI_HZNP);
@@ -399,9 +395,6 @@ struct Bus : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   inline wire tp()  const {
     //CHECK_N(state == TRI_HZNP);
@@ -507,9 +500,6 @@ struct Latch : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::posedge;
-  using RegBase::negedge;
-  //using RegBase::dump_edge;
 
   // adding Q/Qn here because latches can have both inverting and
   // non-inverting outputs

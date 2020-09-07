@@ -63,28 +63,54 @@ int GateBoyTests::test_init() {
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.ext_ram[i]);
 
   // Framebuffer should be 0x04 (yellow)
+
   for (int i = 0; i < 160*144; i++) {
     ASSERT_EQ(4, gb.framebuffer[i]);
   }
 
-  EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset value");
-  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset value"); // double-check this
+#if 0
+#define ADDR_P1          0xFF00
+#define ADDR_SB          0xFF01
+#define ADDR_SC          0xFF02
+#define ADDR_DIV         0xFF04
+#define ADDR_TIMA        0xFF05
+#define ADDR_TMA         0xFF06
+#define ADDR_TAC         0xFF07
+#define ADDR_IF          0xFF0F
+#define ADDR_LCDC        0xFF40
+#define ADDR_STAT        0xFF41
+#define ADDR_SCY         0xFF42
+#define ADDR_SCX         0xFF43
+#define ADDR_LY          0xFF44
+#define ADDR_LYC         0xFF45
+#define ADDR_DMA         0xFF46
+#define ADDR_BGP         0xFF47
+#define ADDR_OBP0        0xFF48
+#define ADDR_OBP1        0xFF49
+#define ADDR_WY          0xFF4A
+#define ADDR_WX          0xFF4B
+#endif
 
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset value");
-  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset value");
-
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset value");
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset value"); // double-check this
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset value");
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset value");
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset value");
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset value");
+  EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");   // CF after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset value");   // 00 after bootrom
+  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset value");   // 7E after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset value");  // AB after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset value"); // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset value");  // 00 after bootrom
+  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset value");  // F8 after bootrom
+  EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset value");   // E1 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset value"); // 91 after bootrom
+  EXPECT_EQ(0x84, gb.dbg_read(ADDR_STAT), "Bad STAT reset value"); // 85 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset value");  // 00 after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset value");  // FF after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset value");  // FC after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset value"); // 9F after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset value"); // FF after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset value");   // 00 after bootrom
 
   // Button signals should be pulled high
   EXPECT_EQ('^', gb.top.joypad.PIN_JOY_P10.c());

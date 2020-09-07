@@ -59,14 +59,14 @@ struct VramBus {
 
   //-----------------------------------------------------------------------------
 
-  /*p32.LEGU*/ RegQN LEGU_TILE_DA0n = REG_D0C0; // def holds inverted pix
-  /*p32.NUDU*/ RegQN NUDU_TILE_DA1n = REG_D0C0;
-  /*p32.MUKU*/ RegQN MUKU_TILE_DA2n = REG_D0C0;
-  /*p32.LUZO*/ RegQN LUZO_TILE_DA3n = REG_D0C0;
-  /*p32.MEGU*/ RegQN MEGU_TILE_DA4n = REG_D0C0;
-  /*p32.MYJY*/ RegQN MYJY_TILE_DA5n = REG_D0C0;
-  /*p32.NASA*/ RegQN NASA_TILE_DA6n = REG_D0C0;
-  /*p32.NEFO*/ RegQN NEFO_TILE_DA7n = REG_D0C0; // color wrong on die
+  /*p32.LEGU*/ DFF8 LEGU_TILE_DA0n;
+  /*p32.NUDU*/ DFF8 NUDU_TILE_DA1n;
+  /*p32.MUKU*/ DFF8 MUKU_TILE_DA2n;
+  /*p32.LUZO*/ DFF8 LUZO_TILE_DA3n;
+  /*p32.MEGU*/ DFF8 MEGU_TILE_DA4n;
+  /*p32.MYJY*/ DFF8 MYJY_TILE_DA5n;
+  /*p32.NASA*/ DFF8 NASA_TILE_DA6n;
+  /*p32.NEFO*/ DFF8 NEFO_TILE_DA7n; // color wrong on die
 
   /*p32.RAWU*/ RegQN RAWU_TILE_DB0n = REG_D0C0; // def holds inverted pix, also holds tile index during fetch
   /*p32.POZO*/ RegQN POZO_TILE_DB1n = REG_D0C0;

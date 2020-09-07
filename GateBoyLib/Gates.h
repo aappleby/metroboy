@@ -122,10 +122,6 @@ enum RegDelta : uint8_t {
   DELTA_A1C1 = 0b1111, // 15: async set + clock 1
 };
 
-struct RegQNIn { RegDelta d; };
-struct RegQPNIn { RegDelta d; };
-struct RegQPIn { RegDelta d; };
-
 //-----------------------------------------------------------------------------
 
 struct Lut8 {
@@ -203,6 +199,9 @@ struct RegBase {
     }
   }
 
+  inline wire qp() const { return  as_wire(); }
+  inline wire qn() const { return !as_wire(); }
+
   inline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_D1C1); }
   inline bool is_sig()    const { return (state >= SIG_0000) && (state <= SIG_1111); }
   inline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
@@ -212,6 +211,58 @@ struct RegBase {
       bus_floating = true;
     }
     /*CHECKn(has_delta());*/ return wire(state & 1);
+  }
+
+  inline void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  inline void preset(RegDelta d) {
+    CHECK_P(delta == DELTA_NONE);
+    delta = d;
+    value = logic_lut1[value];
+    delta = d;
+  }
+
+  inline void preset(wire d) {
+    preset(d ? DELTA_TRI1 : DELTA_TRI0);
+  }
+
+  inline void merge_tri_delta(RegDelta new_d) {
+    CHECK_P(is_tri());
+    if (delta == DELTA_NONE) {
+      delta = new_d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(new_d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(new_d == DELTA_TRIZ || new_d == DELTA_TRI0 || new_d == DELTA_TRI1);
+      delta = new_d;
+    }
+    else {
+      //CHECK_P(d == DELTA_TRIZ);
+      if (new_d != DELTA_TRIZ) {
+        RegBase::bus_collision = true;
+      }
+    }
+  }
+
+  inline void dff(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
+    (void)CLKn;
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
+    }
+    else if (!SETn) {
+      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    }
   }
 
   union {
@@ -224,34 +275,6 @@ struct RegBase {
 };
 
 #pragma warning(pop)
-
-//-----------------------------------------------------------------------------
-
-struct Reg : private RegBase {
-  Reg(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
-
-  using RegBase::c;
-  using RegBase::cn;
-
-  inline wire qp()  const { return  as_wire(); }
-  inline wire qn() const { return !as_wire(); }
-  inline wire clk() const { return wire(state & 0x02); }
-
-  inline wire posedge() const {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    return !(old_v & 1) && (new_v & 1);
-  }
-
-  inline void operator = (RegDelta d) {
-    CHECK_P(is_reg()); // must be state state
-    CHECK_N(d == DELTA_NONE); // must not be invalid sig
-    CHECK_N(has_delta());     // state must not already be driven
-    delta = d;
-  }
-};
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset, inverting input, and dual outputs. Used by
@@ -270,23 +293,14 @@ struct DFF8 : private RegBase {
   DFF8() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
+  using RegBase::qp;
+  using RegBase::qn;
 
-  inline wire q07() const { return !as_wire(); }
-  inline wire q08() const { return  as_wire(); }
+  inline wire q07() const { return qn(); }
+  inline wire q08() const { return qp(); }
 
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
-
-  inline void tock(wire CLKn, bool Dn) {
-    CHECK_P(is_reg() && !has_delta());
-    delta = RegDelta(DELTA_D0C0 | ((!CLKn) << 1) | ((!Dn) << 0));
-  }
-
-  inline void tock(wire CLKn, wire CLKp, bool Dn) {
-    (void)CLKn;
-    CHECK_P(is_reg() && !has_delta());
-    delta = RegDelta(DELTA_D0C0 | ((CLKp) << 1) | ((!Dn) << 0));
-  }
+  inline void tock(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
+  inline void tock(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -308,31 +322,24 @@ struct DFF9 : private RegBase {
   DFF9() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
+  using RegBase::qp;
+  using RegBase::qn;
 
-  inline wire q08() const { return !as_wire(); }
-  inline wire q09() const { return  as_wire(); }
+  inline wire q08() const { return qn(); }
+  inline wire q09() const { return qp(); }
 
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
-
-  inline void tock(wire CLKp, wire RSTn, bool D) {
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
-    }
+  inline void tock(wire CLKp, wire RSTn, bool Dn) {
+    tock(CLKp, !CLKp, RSTn, Dn);
   }
 
-  inline void tock(wire CLKp, wire CLKn, wire RSTn, bool D) {
+  inline void tock(wire CLKp, wire CLKn, wire RSTn, bool Dn) {
     (void)CLKn;
     CHECK_P(is_reg() && !has_delta());
     if (!RSTn) {
       delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
     }
     else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!Dn) << 0));
     }
   }
 };
@@ -357,20 +364,11 @@ struct DFF11 : private RegBase {
   DFF11() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
+  using RegBase::qn;
 
   inline wire q11() const { return !as_wire(); }
 
-  inline wire qn() const { return !as_wire(); }
-
-  inline void tock(wire CLKp, wire RSTn, wire Dn) {
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!Dn) << 0));
-    }
-  }
+  inline void tock(wire CLKp, wire RSTn, wire Dn) { dff(CLKp, !CLKp, 1, RSTn, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -394,12 +392,11 @@ struct DFF13 : private RegBase {
   DFF13() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
+  using RegBase::qp;
+  using RegBase::qn;
 
-  inline wire q12() const { return !as_wire(); }
-  inline wire q13() const { return  as_wire(); }
-
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
+  inline wire q12() const { return qn(); }
+  inline wire q13() const { return qp(); }
 
   inline void tock(wire CLKp, wire RSTn, wire D) {
     CHECK_P(is_reg() && !has_delta());
@@ -437,9 +434,8 @@ struct DFF17 : private RegBase {
   DFF17() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
+  using RegBase::qp;
+  using RegBase::qn;
 
   inline void tock(wire CLKp, wire RSTn, wire D) {
     CHECK_P(is_reg() && !has_delta());
@@ -480,9 +476,8 @@ struct DFF20 : private RegBase {
   DFF20() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
+  using RegBase::qp;
+  using RegBase::qn;
 
   inline void tock(wire CLKp, wire LOADp, bool newD, bool oldQn) {
     CHECK_P(is_reg() && !has_delta());
@@ -537,9 +532,8 @@ struct DFF22 : private RegBase {
   DFF22() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
+  using RegBase::qp;
+  using RegBase::qn;
 
   inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) {
     CHECK_P(is_reg() && !has_delta());
@@ -561,14 +555,13 @@ struct Sig : private RegBase {
   Sig() : RegBase(SIG_0000) {}
 
   using RegBase::c;
+  using RegBase::qp;
 
-  inline wire qp() const { return  as_wire(); }
   inline operator wire() const { return as_wire(); }
 
   inline bool as_wire() const {
     CHECK_P(is_sig());
     CHECK_P(has_delta() == sim_running);
-
     return wire(state & 1);
   }
 
@@ -589,20 +582,11 @@ struct Tri : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
+  using RegBase::lock;
 
-  inline wire tp()  const {
-    return  as_wire();
-  }
-  //inline wire qn() const { return !as_wire(); }
+  inline wire tp()  const { return as_wire(); }
 
   inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
-
-  inline void lock(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
 
   inline void preset(RegDelta d) {
     CHECK_P(delta == DELTA_NONE);
@@ -615,26 +599,7 @@ struct Tri : private RegBase {
     preset(d ? DELTA_TRI1 : DELTA_TRI0);
   }
 
-  inline void operator = (RegDelta d) {
-    CHECK_P(is_tri());
-
-    if (delta == DELTA_NONE) {
-      delta = d;
-    }
-    else if (delta == DELTA_HOLD) {
-      CHECK_P(d == DELTA_TRIZ);
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
-      delta = d;
-    }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) {
-        bus_collision = true;
-      }
-    }
-  }
+  inline void operator = (RegDelta d) { merge_tri_delta(d); }
 };
 
 //-----------------------------------------------------------------------------
@@ -692,54 +657,13 @@ struct Bus : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
+  using RegBase::lock;
+  using RegBase::preset;
 
-  inline wire tp()  const {
-    return  as_wire();
-  }
-  //inline wire qn() const { return !as_wire(); }
+  inline wire tp()  const { return as_wire(); }
 
-  inline void operator = (wire w)  {
-    (*this) = w ? DELTA_TRI1 : DELTA_TRI0;
-  }
-
-  inline void lock(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  inline void preset(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE);
-    delta = d;
-    value = logic_lut1[value];
-    delta = d;
-  }
-
-  inline void preset(wire d) {
-    preset(d ? DELTA_TRI1 : DELTA_TRI0);
-  }
-
-  inline void operator = (RegDelta d) {
-    CHECK_P(is_tri());
-
-    if (delta == DELTA_NONE) {
-      delta = d;
-    }
-    else if (delta == DELTA_HOLD) {
-      CHECK_P(d == DELTA_TRIZ);
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
-      delta = d;
-    }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) {
-        bus_collision = true;
-      }
-    }
-  }
+  inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
+  inline void operator = (RegDelta d) { merge_tri_delta(d); }
 };
 
 //-----------------------------------------------------------------------------
@@ -753,39 +677,15 @@ struct Pin : private RegBase {
   inline wire qp()  const { return  as_wire(); }
   inline wire qn()  const { return !as_wire(); }
 
-  inline void operator = (RegDelta d) { set(d); }
+  inline void operator = (RegDelta d) { merge_tri_delta(d); }
 
   inline void io_pin(wire HI, wire LO, wire OEp = true) {
-    if      (!OEp)       set(DELTA_TRIZ);
-    else if ( HI &&  LO) set(DELTA_TRI0);
-    else if ( HI && !LO) set(DELTA_TRIZ);
-    else if (!HI &&  LO) set(DELTA_XXXX);
-    else if (!HI && !LO) set(DELTA_TRI1);
-    else                 set(DELTA_XXXX);
-  }
-
-private:
-
-  inline void set(RegDelta d) {
-    CHECK_P(is_tri());
-
-    if (delta == DELTA_NONE) {
-      delta = d;
-    }
-    else if (delta == DELTA_HOLD) {
-      __debugbreak();
-      CHECK_P(d == DELTA_TRIZ);
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
-      delta = d;
-    }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) {
-        bus_collision = true;
-      }
-    }
+    if      (!OEp)       merge_tri_delta(DELTA_TRIZ);
+    else if ( HI &&  LO) merge_tri_delta(DELTA_TRI0);
+    else if ( HI && !LO) merge_tri_delta(DELTA_TRIZ);
+    else if (!HI &&  LO) merge_tri_delta(DELTA_XXXX);
+    else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
+    else                 merge_tri_delta(DELTA_XXXX);
   }
 };
 
@@ -796,34 +696,11 @@ struct Latch : private RegBase {
 
   using RegBase::c;
   using RegBase::cn;
+  using RegBase::qp;
+  using RegBase::qn;
 
-  // adding Q/Qn here because latches can have both inverting and
-  // non-inverting outputs
-  inline wire qp()  const { return  as_wire(); }
-  inline wire qn() const { return !as_wire(); }
-
-  inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
-
-  inline void operator = (RegDelta d) {
-    CHECK_P(is_tri());
-
-    if (delta == DELTA_NONE) {
-      delta = d;
-    }
-    else if (delta == DELTA_HOLD) {
-      CHECK_P(d == DELTA_TRIZ);
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(d == DELTA_TRIZ || d == DELTA_TRI0 || d == DELTA_TRI1);
-      delta = d;
-    }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (d != DELTA_TRIZ) {
-        bus_collision = true;
-      }
-    }
-  }
+  inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
+  inline void operator = (RegDelta d) { merge_tri_delta(d); }
 };
 
 //-----------------------------------------------------------------------------
@@ -904,11 +781,5 @@ inline RegDelta tp_latch(wire HOLDn, const Tri& T) {
     return T.tp() ? DELTA_TRI1 : DELTA_TRI0;
   }
 }
-
-//-----------------------------------------------------------------------------
-
-static_assert(sizeof(Reg) == 1, "Reg size != 1");
-static_assert(sizeof(Sig) == 1, "Sig size != 1");
-static_assert(sizeof(Tri) == 1, "Tri size != 1");
 
 //-----------------------------------------------------------------------------

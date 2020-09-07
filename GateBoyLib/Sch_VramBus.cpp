@@ -175,7 +175,7 @@ void VramBus::tock(SchematicTop& top) {
     /*#p29.WAGO*/ wire WAGO_L3 = xor2(WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L3.tp());
     
     /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn = not1(top.pix_pipe.XYMO_LCDC_SPSIZEn.qn());
-    /*#p29.GEJY*/ wire GEJY_L3 = amux2(top.oam_bus.XUSO_OAM_DA0p.qp(), FUFO_LCDC_SPSIZEn,
+    /*#p29.GEJY*/ wire GEJY_L3 = amux2(top.oam_bus.XUSO_OAM_DA0p.q08(), FUFO_LCDC_SPSIZEn,
                                        top.pix_pipe.XYMO_LCDC_SPSIZEn.qn(), WAGO_L3);
 
     /* p29.ABEM*/ BUS_VRAM_A00n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.sprite_fetcher.XUQU_SPRITE_AB);
@@ -183,13 +183,13 @@ void VramBus::tock(SchematicTop& top) {
     /* p29.ARAS*/ BUS_VRAM_A02n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, BORE_L1);
     /* p29.AGAG*/ BUS_VRAM_A03n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, BUVY_L2);
     /* p29.FAMU*/ BUS_VRAM_A04n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, GEJY_L3);
-    /*#p29.FUGY*/ BUS_VRAM_A05n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.XEGU_OAM_DA1p.qp());
-    /* p29.GAVO*/ BUS_VRAM_A06n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.YJEX_OAM_DA2p.qp());
-    /* p29.WYGA*/ BUS_VRAM_A07n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.XYJU_OAM_DA3p.qp());
-    /* p29.WUNE*/ BUS_VRAM_A08n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.YBOG_OAM_DA4p.qp());
-    /* p29.GOTU*/ BUS_VRAM_A09n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.WYSO_OAM_DA5p.qp());
-    /* p29.GEGU*/ BUS_VRAM_A10n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.XOTE_OAM_DA6p.qp());
-    /* p29.XEHE*/ BUS_VRAM_A11n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.YZAB_OAM_DA7p.qp());
+    /*#p29.FUGY*/ BUS_VRAM_A05n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.XEGU_OAM_DA1p.q08());
+    /* p29.GAVO*/ BUS_VRAM_A06n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.YJEX_OAM_DA2p.q08());
+    /* p29.WYGA*/ BUS_VRAM_A07n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.XYJU_OAM_DA3p.q08());
+    /* p29.WUNE*/ BUS_VRAM_A08n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.YBOG_OAM_DA4p.q08());
+    /* p29.GOTU*/ BUS_VRAM_A09n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.WYSO_OAM_DA5p.q08());
+    /* p29.GEGU*/ BUS_VRAM_A10n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.XOTE_OAM_DA6p.q08());
+    /* p29.XEHE*/ BUS_VRAM_A11n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.oam_bus.YZAB_OAM_DA7p.q08());
     /* p29.DYSO*/ BUS_VRAM_A12n = tribuf_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, 0);   // sprites always in low half of tile store
   }
 

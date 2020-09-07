@@ -83,14 +83,14 @@ struct OamBus {
   /*p30.XECU*/ RegQN XECU_SPRITE_IDX5p = REG_D0C0;
 
   // oam byte 0, byte 2
-  /*p29.XUSO*/ RegQP XUSO_OAM_DA0p = REG_D0C0; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ RegQP XEGU_OAM_DA1p = REG_D0C0; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ RegQP YJEX_OAM_DA2p = REG_D0C0; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ RegQP XYJU_OAM_DA3p = REG_D0C0; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ RegQP YBOG_OAM_DA4p = REG_D0C0; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ RegQP WYSO_OAM_DA5p = REG_D0C0; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ RegQP XOTE_OAM_DA6p = REG_D0C0; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ RegQP YZAB_OAM_DA7p = REG_D0C0; // sprite y bit 7, sprite tile index bit 7
+  /*p29.XUSO*/ DFF8 XUSO_OAM_DA0p; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ DFF8 XEGU_OAM_DA1p; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ DFF8 YJEX_OAM_DA2p; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ DFF8 XYJU_OAM_DA3p; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ DFF8 YBOG_OAM_DA4p; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ DFF8 WYSO_OAM_DA5p; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ DFF8 XOTE_OAM_DA6p; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ DFF8 YZAB_OAM_DA7p; // sprite y bit 7, sprite tile index bit 7
 
   // oam byte 1, byte 3
   /*p31.YLOR*/ RegQP YLOR_OAM_DB0p = REG_D0C0; // sprite x bit 0, 

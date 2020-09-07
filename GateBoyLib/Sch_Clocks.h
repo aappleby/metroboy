@@ -52,9 +52,9 @@ private:
   /*p01.APUK*/ DFF9 APUK_ABxxxxGH;
   /*p01.ADYK*/ DFF9 ADYK_ABCxxxxH;
 
-  /*p29.WUVU*/ Reg  WUVU_xxCDxxGH = REG_D0C0;
-  /*p21.VENA*/ Reg  VENA_ABCDxxxx = REG_D0C0;
-  /*p29.WOSU*/ Reg WOSU_xBCxxFGx = REG_D0C0;
+  /*p29.WUVU*/ DFF17 WUVU_xxCDxxGH;
+  /*p21.VENA*/ DFF17 VENA_ABCDxxxx;
+  /*p29.WOSU*/ DFF17 WOSU_xBCxxFGx;
 };
 
 //-----------------------------------------------------------------------------

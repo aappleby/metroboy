@@ -88,22 +88,22 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*p02.BATU*/ BATU_JP_GLITCH0 = dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1 = dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2 = dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp());
-    /*p02.APUG*/ APUG_JP_GLITCH3 = dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp());
+    /*p02.BATU*/ BATU_JP_GLITCH0.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, KERY_ANY_BUTTONp);
+    /*p02.ACEF*/ ACEF_JP_GLITCH1.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp());
+    /*p02.APUG*/ APUG_JP_GLITCH3.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp());
   }
 
   {
     /*p10.ATOZ*/ wire ATOZ_FF00_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
-    /*p05.JUTE*/ JUTE_JOYP_RA     = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.tp());
-    /*p05.KECY*/ KECY_JOYP_LB     = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D1p.tp());
-    /*p05.JALE*/ JALE_JOYP_UC     = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D2p.tp());
-    /*p05.KYME*/ KYME_JOYP_DS     = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D3p.tp());
-    /*p05.KELY*/ KELY_JOYP_UDLR   = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D4p.tp());
-    /*p05.COFY*/ COFY_JOYP_ABCS   = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D5p.tp());
-    /*p05.KUKO*/ KUKO_DBG_FF00_D6 = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.tp());
-    /*p05.KERU*/ KERU_DBG_FF00_D7 = dff17(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.tp());
+    /*p05.JUTE*/ JUTE_JOYP_RA    .tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.tp());
+    /*p05.KECY*/ KECY_JOYP_LB    .tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D1p.tp());
+    /*p05.JALE*/ JALE_JOYP_UC    .tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D2p.tp());
+    /*p05.KYME*/ KYME_JOYP_DS    .tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D3p.tp());
+    /*p05.KELY*/ KELY_JOYP_UDLR  .tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D4p.tp());
+    /*p05.COFY*/ COFY_JOYP_ABCS  .tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D5p.tp());
+    /*p05.KUKO*/ KUKO_DBG_FF00_D6.tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.tp());
+    /*p05.KERU*/ KERU_DBG_FF00_D7.tock(ATOZ_FF00_WRn, top.clk_reg.ALUR_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.tp());
 
     /*p10.ACAT*/ wire ACAT_FF00_RDp = and4(top.TEDO_CPU_RDp, ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
     /*p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);

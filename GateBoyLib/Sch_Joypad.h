@@ -24,19 +24,19 @@ struct Joypad {
   /*p02.AWOB*/ Tri AWOB_WAKE_CPU = TRI_D0NP;
   Tri PIN_CPU_WAKE = TRI_HZNP; // top right wire by itself <- P02.AWOB
 
-  /*p02.BATU*/ Reg BATU_JP_GLITCH0  = REG_D0C0;
-  /*p02.ACEF*/ Reg ACEF_JP_GLITCH1  = REG_D0C0;
-  /*p02.AGEM*/ Reg AGEM_JP_GLITCH2  = REG_D0C0;
-  /*p02.APUG*/ Reg APUG_JP_GLITCH3  = REG_D0C0;
+  /*p02.BATU*/ DFF17 BATU_JP_GLITCH0;
+  /*p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
+  /*p02.AGEM*/ DFF17 AGEM_JP_GLITCH2;
+  /*p02.APUG*/ DFF17 APUG_JP_GLITCH3;
 
-  /*p05.JUTE*/ Reg JUTE_JOYP_RA     = REG_D0C0;
-  /*p05.KECY*/ Reg KECY_JOYP_LB     = REG_D0C0;
-  /*p05.JALE*/ Reg JALE_JOYP_UC     = REG_D0C0;
-  /*p05.KYME*/ Reg KYME_JOYP_DS     = REG_D0C0;
-  /*p05.KELY*/ Reg KELY_JOYP_UDLR   = REG_D0C0;
-  /*p05.COFY*/ Reg COFY_JOYP_ABCS   = REG_D0C0;
-  /*p05.KUKO*/ Reg KUKO_DBG_FF00_D6 = REG_D0C0;
-  /*p05.KERU*/ Reg KERU_DBG_FF00_D7 = REG_D0C0;
+  /*p05.JUTE*/ DFF17 JUTE_JOYP_RA;
+  /*p05.KECY*/ DFF17 KECY_JOYP_LB;
+  /*p05.JALE*/ DFF17 JALE_JOYP_UC;
+  /*p05.KYME*/ DFF17 KYME_JOYP_DS;
+  /*p05.KELY*/ DFF17 KELY_JOYP_UDLR;
+  /*p05.COFY*/ DFF17 COFY_JOYP_ABCS;
+  /*p05.KUKO*/ DFF17 KUKO_DBG_FF00_D6;
+  /*p05.KERU*/ DFF17 KERU_DBG_FF00_D7;
 
   /*p05.KEVU*/ Tri KEVU_JOYP_L0     = TRI_D0NP; // 10-rung, looks like pass gate or something
   /*p05.KAPA*/ Tri KAPA_JOYP_L1     = TRI_D0NP; // 10-rung, looks like pass gate or something

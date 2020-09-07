@@ -35,31 +35,31 @@ struct Timer {
     return pack_p(SOPU_TAC_D0.qp(), SAMY_TAC_D1.qp(), SABO_TAC_D2.qp(), 0);
   }
 
-  /*p03.MOBA*/ Reg MOBA_INT_TIMERp = REG_D0C0; // -> interrupts
+  /*p03.MOBA*/ DFF17 MOBA_INT_TIMERp; // -> interrupts
 
   //----------
   // FF04 DIV
 
-  /*p01.UKUP*/ Reg UKUP_DIV_00 = REG_D0C0;
-  /*p01.UFOR*/ Reg UFOR_DIV_01 = REG_D0C0;
-  /*p01.UNER*/ Reg UNER_DIV_02 = REG_D0C0;
-  /*p01.TERO*/ Reg TERO_DIV_03 = REG_D0C0; // -> UNUT_POR_TRIGn (fast boot)
-  /*p01.UNYK*/ Reg UNYK_DIV_04 = REG_D0C0;
-  /*p01.TAMA*/ Reg TAMA_DIV_05 = REG_D0C0; // -> Serial
-  /*p01.UGOT*/ Reg UGOT_DIV_06 = REG_D0C0; // -> LCD
-  /*p01.TULU*/ Reg TULU_DIV_07 = REG_D0C0; // -> LCD
-  /*p01.TUGO*/ Reg TUGO_DIV_08 = REG_D0C0;
-  /*p01.TOFE*/ Reg TOFE_DIV_09 = REG_D0C0;
-  /*p01.TERU*/ Reg TERU_DIV_10 = REG_D0C0;
-  /*p01.SOLA*/ Reg SOLA_DIV_11 = REG_D0C0;
-  /*p01.SUBU*/ Reg SUBU_DIV_12 = REG_D0C0;
-  /*p01.TEKA*/ Reg TEKA_DIV_13 = REG_D0C0;
-  /*p01.UKET*/ Reg UKET_DIV_14 = REG_D0C0;
-  /*p01.UPOF*/ Reg UPOF_DIV_15 = REG_D0C0; // -> UNUT_POR_TRIGn
+  /*p01.UKUP*/ DFF17 UKUP_DIV_00;
+  /*p01.UFOR*/ DFF17 UFOR_DIV_01;
+  /*p01.UNER*/ DFF17 UNER_DIV_02;
+  /*p01.TERO*/ DFF17 TERO_DIV_03; // -> UNUT_POR_TRIGn (fast boot)
+  /*p01.UNYK*/ DFF17 UNYK_DIV_04;
+  /*p01.TAMA*/ DFF17 TAMA_DIV_05; // -> Serial
+  /*p01.UGOT*/ DFF17 UGOT_DIV_06; // -> LCD
+  /*p01.TULU*/ DFF17 TULU_DIV_07; // -> LCD
+  /*p01.TUGO*/ DFF17 TUGO_DIV_08;
+  /*p01.TOFE*/ DFF17 TOFE_DIV_09;
+  /*p01.TERU*/ DFF17 TERU_DIV_10;
+  /*p01.SOLA*/ DFF17 SOLA_DIV_11;
+  /*p01.SUBU*/ DFF17 SUBU_DIV_12;
+  /*p01.TEKA*/ DFF17 TEKA_DIV_13;
+  /*p01.UKET*/ DFF17 UKET_DIV_14;
+  /*p01.UPOF*/ DFF17 UPOF_DIV_15; // -> UNUT_POR_TRIGn
 
 private:
 
-  /*p03.NYDU*/ Reg NYDU_TIMA_D7_DELAY = REG_D0C0;
+  /*p03.NYDU*/ DFF17 NYDU_TIMA_D7_DELAY;
 
   //----------
   // FF05 TIMA
@@ -76,21 +76,21 @@ private:
   //----------
   // FF06 TMA
 
-  /*p03.SABU*/ Reg SABU_TMA_D0 = REG_D0C0;
-  /*p03.NYKE*/ Reg NYKE_TMA_D1 = REG_D0C0;
-  /*p03.MURU*/ Reg MURU_TMA_D2 = REG_D0C0;
-  /*p03.TYVA*/ Reg TYVA_TMA_D3 = REG_D0C0;
-  /*p03.TYRU*/ Reg TYRU_TMA_D4 = REG_D0C0;
-  /*p03.SUFY*/ Reg SUFY_TMA_D5 = REG_D0C0;
-  /*p03.PETO*/ Reg PETO_TMA_D6 = REG_D0C0;
-  /*p03.SETA*/ Reg SETA_TMA_D7 = REG_D0C0;
+  /*p03.SABU*/ DFF17 SABU_TMA_D0;
+  /*p03.NYKE*/ DFF17 NYKE_TMA_D1;
+  /*p03.MURU*/ DFF17 MURU_TMA_D2;
+  /*p03.TYVA*/ DFF17 TYVA_TMA_D3;
+  /*p03.TYRU*/ DFF17 TYRU_TMA_D4;
+  /*p03.SUFY*/ DFF17 SUFY_TMA_D5;
+  /*p03.PETO*/ DFF17 PETO_TMA_D6;
+  /*p03.SETA*/ DFF17 SETA_TMA_D7;
 
   //----------
   // FF07 TAC
 
-  /*p03.SOPU*/ Reg SOPU_TAC_D0 = REG_D0C0;
-  /*p03.SAMY*/ Reg SAMY_TAC_D1 = REG_D0C0;
-  /*p03.SABO*/ Reg SABO_TAC_D2 = REG_D0C0;
+  /*p03.SOPU*/ DFF17 SOPU_TAC_D0;
+  /*p03.SAMY*/ DFF17 SAMY_TAC_D1;
+  /*p03.SABO*/ DFF17 SABO_TAC_D2;
 };
 
 //-----------------------------------------------------------------------------

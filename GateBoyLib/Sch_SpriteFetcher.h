@@ -27,19 +27,17 @@ private:
 
   // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
 
-  /*p27.TAKA*/ Tri    TAKA_SFETCH_RUNNINGp = TRI_D0NP;
-  /*p27.SOBU*/ Reg  SOBU_SFETCH_REQp = REG_D0C0;
-  /*p27.SUDA*/ Reg  SUDA_SFETCH_REQp = REG_D0C0;
+  /*p27.TAKA*/ Tri   TAKA_SFETCH_RUNNINGp = TRI_D0NP;
+  /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp;
+  /*p27.SUDA*/ DFF17 SUDA_SFETCH_REQp;
 
-  /*p29.TOXE*/ Reg TOXE_SFETCH_S0 = REG_D0C0;
-  /*p29.TYFO*/ Reg TYFO_SFETCH_S0_D1 = REG_D0C0;
-
-  /*p29.TULY*/ Reg TULY_SFETCH_S1 = REG_D0C0;
-  /*p29.TESE*/ Reg TESE_SFETCH_S2 = REG_D0C0;
-
-  /*p29.TOBU*/ Reg  TOBU_SFETCH_S1_D2 = REG_D0C0;
-  /*p29.VONU*/ Reg VONU_SFETCH_S1_D4 = REG_D0C0;
-  /*p29.SEBA*/ Reg  SEBA_SFETCH_S1_D5 = REG_D0C0;
+  /*p29.TOXE*/ DFF17 TOXE_SFETCH_S0;
+  /*p29.TYFO*/ DFF17 TYFO_SFETCH_S0_D1;
+  /*p29.TULY*/ DFF17 TULY_SFETCH_S1;
+  /*p29.TESE*/ DFF17 TESE_SFETCH_S2;
+  /*p29.TOBU*/ DFF17 TOBU_SFETCH_S1_D2;
+  /*p29.VONU*/ DFF17 VONU_SFETCH_S1_D4;
+  /*p29.SEBA*/ DFF17 SEBA_SFETCH_S1_D5;
 };
 
 //-----------------------------------------------------------------------------

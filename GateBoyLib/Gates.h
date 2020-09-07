@@ -433,14 +433,24 @@ struct DFF13 : private RegBase {
 // DFF17_16 >> QN   _MUST_ be QN - see TERO
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-inline RegDelta dff17(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return RegDelta(DELTA_A0C0 | (CLKp << 1));
+struct DFF17 : private RegBase {
+  DFF17() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
+  inline void tock(wire CLKp, wire RSTn, wire D) {
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    }
   }
-  else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.

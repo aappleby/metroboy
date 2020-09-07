@@ -33,18 +33,18 @@ struct SpriteScanner {
   //----------------------------------------
   // States
 
-  /*p28.BESU*/ Latch  BESU_SCANNINGp = TRI_D0NP; // -> oam bus
-  /*p29.CENO*/ Reg  CENO_SCANNINGp = REG_D0C0; // -> oam bus
+  /*p28.BESU*/ Latch BESU_SCANNINGp = TRI_D0NP; // -> oam bus
+  /*p29.CENO*/ DFF17 CENO_SCANNINGp; // -> oam bus
 
-  /*p28.YFEL*/ Reg YFEL_SCAN0 = REG_D0C0; // -> oam bus address mux
-  /*p28.WEWY*/ Reg WEWY_SCAN1 = REG_D0C0;
-  /*p28.GOSO*/ Reg GOSO_SCAN2 = REG_D0C0;
-  /*p28.ELYN*/ Reg ELYN_SCAN3 = REG_D0C0;
-  /*p28.FAHA*/ Reg FAHA_SCAN4 = REG_D0C0;
-  /*p28.FONY*/ Reg FONY_SCAN5 = REG_D0C0;
+  /*p28.YFEL*/ DFF17 YFEL_SCAN0; // -> oam bus address mux
+  /*p28.WEWY*/ DFF17 WEWY_SCAN1;
+  /*p28.GOSO*/ DFF17 GOSO_SCAN2;
+  /*p28.ELYN*/ DFF17 ELYN_SCAN3;
+  /*p28.FAHA*/ DFF17 FAHA_SCAN4;
+  /*p28.FONY*/ DFF17 FONY_SCAN5;
 
-  /*p29.BYBA*/ Reg BYBA_SCAN_DONE_A = REG_D0C0; // -> top.AVAP_RENDER_START_TRIGp
-  /*p29.DOBA*/ Reg  DOBA_SCAN_DONE_B = REG_D0C0; // -> top.AVAP_RENDER_START_TRIGp
+  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_A; // -> top.AVAP_RENDER_START_TRIGp
+  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_B; // -> top.AVAP_RENDER_START_TRIGp
 };
 
 //-----------------------------------------------------------------------------

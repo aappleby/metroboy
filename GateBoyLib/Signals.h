@@ -198,6 +198,11 @@ struct DFF8 : private RegBase {
   inline wire qn() const { return !as_wire(); }
   inline wire qp() const { return  as_wire(); }
 
+  inline void tock(wire CLKn, bool Dn) {
+    CHECK_P(is_reg() && !has_delta());
+    delta = RegDelta(DELTA_D0C0 | ((!CLKn) << 1) | ((!Dn) << 0));
+  }
+
   inline void tock(wire CLKn, wire CLKp, bool Dn) {
     (void)CLKn;
     CHECK_P(is_reg() && !has_delta());
@@ -234,6 +239,16 @@ struct DFF9 : private RegBase {
 
   inline wire qn() const { return !as_wire(); }
   inline wire qp() const { return  as_wire(); }
+
+  inline void tock(wire CLKp, wire RSTn, bool D) {
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
+    }
+  }
 
   inline void tock(wire CLKp, wire CLKn, wire RSTn, bool D) {
     (void)CLKn;

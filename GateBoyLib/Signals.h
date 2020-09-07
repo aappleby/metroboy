@@ -195,6 +195,9 @@ struct DFF8 : private RegBase {
   inline wire q07() const { return !as_wire(); }
   inline wire q08() const { return  as_wire(); }
 
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
   inline void tock(wire CLKn, wire CLKp, bool Dn) {
     (void)CLKn;
     CHECK_P(is_reg() && !has_delta());

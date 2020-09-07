@@ -190,9 +190,9 @@ void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
-  /*p29.WUVU*/ WUVU_xxCDxxGH = dff17_A (XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
-  /*p21.VENA*/ VENA_ABCDxxxx = dff17_A (WUVU_xxCDxxGH.qn(), XAPO_VID_RSTn, VENA_ABCDxxxx.qn());
-  /*p29.WOSU*/ WOSU_xBCxxFGx = dff17_AB(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
+  /*p29.WUVU*/ WUVU_xxCDxxGH = dff17 (XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
+  /*p21.VENA*/ VENA_ABCDxxxx = dff17 (WUVU_xxCDxxGH.qn(), XAPO_VID_RSTn, VENA_ABCDxxxx.qn());
+  /*p29.WOSU*/ WOSU_xBCxxFGx = dff17(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
 }
 
 //-----------------------------------------------------------------------------

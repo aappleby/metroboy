@@ -15,19 +15,19 @@ struct DmaRegisters {
   void tick();
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
 
-  /*p04.MATU*/ RegQP MATU_DMA_RUNNINGp = REG_D0C0;
+  /*p04.MATU*/ Reg MATU_DMA_RUNNINGp = REG_D0C0;
 
   /*p04.LUMA*/ Sig LUMA_DMA_READ_CARTp;
   /*p04.LUFA*/ Sig LUFA_DMA_READ_VRAMp;
 
-  /*p04.NAKY*/ RegQPN NAKY_DMA_A00p = REG_D0C0;
-  /*p04.PYRO*/ RegQPN PYRO_DMA_A01p = REG_D0C0;
-  /*p04.NEFY*/ RegQPN NEFY_DMA_A02p = REG_D0C0;
-  /*p04.MUTY*/ RegQPN MUTY_DMA_A03p = REG_D0C0;
-  /*p04.NYKO*/ RegQPN NYKO_DMA_A04p = REG_D0C0;
-  /*p04.PYLO*/ RegQPN PYLO_DMA_A05p = REG_D0C0;
-  /*p04.NUTO*/ RegQPN NUTO_DMA_A06p = REG_D0C0;
-  /*p04.MUGU*/ RegQPN MUGU_DMA_A07p = REG_D0C0;
+  /*p04.NAKY*/ Reg NAKY_DMA_A00p = REG_D0C0;
+  /*p04.PYRO*/ Reg PYRO_DMA_A01p = REG_D0C0;
+  /*p04.NEFY*/ Reg NEFY_DMA_A02p = REG_D0C0;
+  /*p04.MUTY*/ Reg MUTY_DMA_A03p = REG_D0C0;
+  /*p04.NYKO*/ Reg NYKO_DMA_A04p = REG_D0C0;
+  /*p04.PYLO*/ Reg PYLO_DMA_A05p = REG_D0C0;
+  /*p04.NUTO*/ Reg NUTO_DMA_A06p = REG_D0C0;
+  /*p04.MUGU*/ Reg MUGU_DMA_A07p = REG_D0C0;
 
   /*p04.NAFA*/ DFF8 NAFA_DMA_A08n;
   /*p04.PYNE*/ DFF8 PYNE_DMA_A09n;
@@ -41,9 +41,9 @@ struct DmaRegisters {
 private:
 
   /*p04.LYXE*/ Latch LYXE_DMA_LATCHp   = TRI_D0NP;
-  /*p04.MYTE*/ RegQN MYTE_DMA_DONE     = REG_D0C0;
-  /*p04.LUVY*/ RegQP LUVY_DMA_TRIG_d0  = REG_D0C0;
-  /*p04.LENE*/ RegQN LENE_DMA_TRIG_d4  = REG_D0C0;
+  /*p04.MYTE*/ Reg MYTE_DMA_DONE     = REG_D0C0;
+  /*p04.LUVY*/ Reg LUVY_DMA_TRIG_d0  = REG_D0C0;
+  /*p04.LENE*/ Reg LENE_DMA_TRIG_d4  = REG_D0C0;
   /*p04.LOKY*/ Tri   LOKY_DMA_LATCHp   = TRI_D0NP; // NAND latch w/ LARA
   /*p04.LARA*/ Tri   LARA_DMA_LATCHn   = TRI_D1NP; // NAND latch w/ LOKY
 };

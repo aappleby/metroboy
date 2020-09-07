@@ -341,17 +341,17 @@ struct DFF9 : private RegBase {
 // Reg11 is used by the background pixel temp state
 // Not sure why it's special.
 
-// RAWU_01 nc
-// RAWU_02 << VYPO_02 (RSTp?)
-// RAWU_03 << VRM_BUS_D0
-// RAWU_04 nc
-// RAWU_05 << LABU_03 (CLKp?)
-// RAWU_06 nc
-// RAWU_07 nc
-// RAWU_08 << LUVE_03 (CLKn?)
-// RAWU_09 << VYPO_02 (RSTp?)
-// RAWU_10 nc
-// RAWU_11 >> TUXE_02 (Qn probably)
+// DFF11_01 nc
+// DFF11_02 << VYPO_02 (RSTp?)
+// DFF11_03 << VRM_BUS_D0
+// DFF11_04 nc
+// DFF11_05 << LABU_03 (CLKp?)
+// DFF11_06 nc
+// DFF11_07 nc
+// DFF11_08 << LUVE_03 (CLKn?)
+// DFF11_09 << VYPO_02 (RSTp?)
+// DFF11_10 nc
+// DFF11_11 >> TUXE_02 (Qn probably)
 
 struct DFF11 : private RegBase {
   DFF11() : RegBase(REG_D0C0) {}
@@ -376,19 +376,19 @@ struct DFF11 : private RegBase {
 //-----------------------------------------------------------------------------
 // Dunno why this reg is different than DFF9.
 
-// REG13_01 nc
-// REG13_02 << RSTn
-// REG13_03 << D
-// REG13_04 nc
-// REG13_05 << CLKp
-// REG13_06 nc
-// REG13_07 nc
-// REG13_08 << CLKn
-// REG13_09 << RSTn
-// REG13_10 nc
-// REG13_11 nc
-// REG13_12 >> Qn
-// REG13_13 >> Q
+// DFF13_01 nc
+// DFF13_02 << RSTn
+// DFF13_03 << D
+// DFF13_04 nc
+// DFF13_05 << CLKp
+// DFF13_06 nc
+// DFF13_07 nc
+// DFF13_08 << CLKn
+// DFF13_09 << RSTn
+// DFF13_10 nc
+// DFF13_11 nc
+// DFF13_12 >> Qn
+// DFF13_13 >> Q
 
 struct DFF13 : private RegBase {
   DFF13() : RegBase(REG_D0C0) {}
@@ -415,74 +415,56 @@ struct DFF13 : private RegBase {
 //-----------------------------------------------------------------------------
 // This reg is really 3 pieces - clock edge detector, latch, and output buffer.
 
-// REG17_01 == REG17_12
-// REG17_02 << CLKp
-// REG17_03 == REG17_09
-// REG17_04 NC
-// REG17_05 NC
-// REG17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
-// REG17_07 << D
-// REG17_08 NC
-// REG17_09 == REG17_03
-// REG17_10 NC
-// REG17_11 NC
-// REG17_12 == REG17_01
-// REG17_13 << RSTn
-// REG17_14 NC
-// REG17_15 NC
-// REG17_16 >> QN   _MUST_ be QN - see TERO
-// REG17_17 >> Q    _MUST_ be Q  - see TERO
+// DFF17_01 == REG17_12
+// DFF17_02 << CLKp
+// DFF17_03 == REG17_09
+// DFF17_04 NC
+// DFF17_05 NC
+// DFF17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
+// DFF17_07 << D
+// DFF17_08 NC
+// DFF17_09 == REG17_03
+// DFF17_10 NC
+// DFF17_11 NC
+// DFF17_12 == REG17_01
+// DFF17_13 << RSTn
+// DFF17_14 NC
+// DFF17_15 NC
+// DFF17_16 >> QN   _MUST_ be QN - see TERO
+// DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-inline RegQNIn dff17_A(wire CLKp, wire RSTn, wire D) {
+inline RegDelta dff17(wire CLKp, wire RSTn, wire D) {
   if (!RSTn) {
-    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+    return RegDelta(DELTA_A0C0 | (CLKp << 1));
   }
   else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
-  }
-}
-
-inline RegQPIn dff17_B(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
-  }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
-  }
-}
-
-inline RegQPNIn dff17_AB(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
-  }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
+    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
 }
 
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.
 
-// REG20_01 >> Qn
-// REG20_02 nc
-// REG20_03 << D
-// REG20_04 << LOADp
-// REG20_05 nc
-// REG20_06 sc
-// REG20_07 nc
-// REG20_08 nc
-// REG20_09 nc
-// REG20_10 nc
-// REG20_11 sc
-// REG20_12 nc
-// REG20_13 nc
-// REG20_14 << LOADp
-// REG20_15 nc
-// REG20_16 << D
-// REG20_17 >> Also Qn? Doesn't make sense as Q.
-// REG20_18 sc
-// REG20_19 sc
-// REG20_20 << CLKp
+// DFF20_01 >> Qn
+// DFF20_02 nc
+// DFF20_03 << D
+// DFF20_04 << LOADp
+// DFF20_05 nc
+// DFF20_06 sc
+// DFF20_07 nc
+// DFF20_08 nc
+// DFF20_09 nc
+// DFF20_10 nc
+// DFF20_11 sc
+// DFF20_12 nc
+// DFF20_13 nc
+// DFF20_14 << LOADp
+// DFF20_15 nc
+// DFF20_16 << D
+// DFF20_17 >> Also Qn? Doesn't make sense as Q.
+// DFF20_18 sc
+// DFF20_19 sc
+// DFF20_20 << CLKp
 
 inline RegDelta dff20(wire CLKp, wire LOADp, bool newD, bool oldQn) {
   if (LOADp) {
@@ -508,28 +490,28 @@ inline RegDelta dff20(wire CLKp, wire LOADp, bool newD, bool oldQn) {
 
 // SETn/RSTn are correct and not swapped, see serial + ALUR_RSTn
 
-// REG22_01 SC
-// REG22_02 NC
-// REG22_03 NC
-// REG22_04 NC
-// REG22_05 SC
-// REG22_06 SC
-// REG22_07 << D
-// REG22_08 NC
-// REG22_09 SC
-// REG22_10 NC
-// REG22_11 SC
-// REG22_12 NC
-// REG22_13 NC
-// REG22_14 << SETn _MUST_ be SETn, see serial
-// REG22_15 >> Qn
-// REG22_16 >> Q
-// REG22_17 << RSTn _MUST_ be RSTn, see serial
-// REG22_18 NC
-// REG22_19 SC
-// REG22_20 SC
-// REG22_21 SC
-// REG22_22 << CLKp
+// DFF22_01 sc
+// DFF22_02 nc
+// DFF22_03 nc
+// DFF22_04 nc
+// DFF22_05 sc
+// DFF22_06 sc
+// DFF22_07 << D
+// DFF22_08 nc
+// DFF22_09 sc
+// DFF22_10 nc
+// DFF22_11 sc
+// DFF22_12 nc
+// DFF22_13 nc
+// DFF22_14 << SETn _MUST_ be SETn, see serial
+// DFF22_15 >> Qn
+// DFF22_16 >> Q
+// DFF22_17 << RSTn _MUST_ be RSTn, see serial
+// DFF22_18 nc
+// DFF22_19 sc
+// DFF22_20 sc
+// DFF22_21 sc
+// DFF22_22 << CLKp
 
 inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
   if (!RSTn) {
@@ -542,88 +524,6 @@ inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
     return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
   }
 }
-
-//-----------------------------------------------------------------------------
-
-struct RegQP : private RegBase {
-  RegQP(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
-
-  using RegBase::c;
-  using RegBase::cn;
-
-  inline wire qp()  const { return  as_wire(); }
-  inline wire clk() const { return wire(state & 0x02); }
-
-  inline wire posedge() const {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    return !(old_v & 1) && (new_v & 1);
-  }
-
-  inline void operator = (RegQPIn in) {
-    CHECK_P(is_reg()); // must be state state
-    CHECK_N(in.d == DELTA_NONE); // must not be invalid sig
-    CHECK_N(has_delta());     // state must not already be driven
-    delta = in.d;
-  }
-};
-
-//-----------------------------------------------------------------------------
-
-struct RegQN : private RegBase {
-  RegQN(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
-
-  using RegBase::c;
-  using RegBase::cn;
-
-  inline wire qn() const { return !as_wire(); }
-  inline wire clk() const { return wire(state & 0x02); }
-
-  inline wire posedge() const {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    return !(old_v & 1) && (new_v & 1);
-  }
-
-  inline void operator = (RegQNIn in) {
-    CHECK_P(is_reg()); // must be state state
-    CHECK_N(in.d == DELTA_NONE); // must not be invalid sig
-    CHECK_N(has_delta());     // state must not already be driven
-    delta = in.d;
-  }
-};
-
-//-----------------------------------------------------------------------------
-
-struct RegQPN : private RegBase {
-  RegQPN(RegState s) : RegBase(s) { CHECK_P(is_reg()); }
-
-  using RegBase::c;
-  using RegBase::cn;
-
-  inline wire qp() const { return  as_wire(); }
-  inline wire qn() const { return !as_wire(); }
-  inline wire clk() const { return wire(state & 0x02); }
-
-  inline wire posedge() const {
-    uint8_t old_v = value;
-    uint8_t new_v = logic_lut1[value];
-    CHECK_N(old_v == ERR_XXXX);
-    CHECK_N(new_v == ERR_XXXX);
-    return !(old_v & 1) && (new_v & 1);
-  }
-
-  inline void operator = (RegQPNIn in) {
-    CHECK_P(is_reg()); // must be state state
-    CHECK_N(in.d == DELTA_NONE); // must not be invalid sig
-    CHECK_N(has_delta());     // state must not already be driven
-    delta = in.d;
-  }
-};
 
 //-----------------------------------------------------------------------------
 

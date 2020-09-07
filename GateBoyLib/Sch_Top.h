@@ -83,7 +83,7 @@ struct SchematicTop {
   SpriteScanner sprite_scanner;
   Bootrom bootrom;
 
-  /*p25.SOTO*/ RegQN SOTO_DBG_VRAM  = REG_D0C0;
+  /*p25.SOTO*/ Reg SOTO_DBG_VRAM  = REG_D0C0;
 
   Pin PIN_LCD_DATA1 = TRI_HZNP; // PIN_50 
   Pin PIN_LCD_DATA0 = TRI_HZNP; // PIN_51 

@@ -31,18 +31,18 @@ struct TileFetcher {
   /*p24.POKY*/ Latch POKY_PRELOAD_LATCHp = TRI_D0NP;    // -> pix pipe, top. fires 13 phases into first tile fetch
   /*p27.LONY*/ Latch LONY_BG_FETCH_RUNNINGp = TRI_D0NP; // -> vram bus
 
-  /*p24.NYKA*/ RegQP NYKA_FETCH_DONE_P11 = REG_D0C0; // -> top
-  /*p24.PORY*/ RegQP PORY_FETCH_DONE_P12 = REG_D0C0; // -> top
+  /*p24.NYKA*/ Reg NYKA_FETCH_DONE_P11 = REG_D0C0; // -> top
+  /*p24.PORY*/ Reg PORY_FETCH_DONE_P12 = REG_D0C0; // -> top
 
 private:
 
-  /*p27.LAXU*/ RegQPN LAXU_BFETCH_S0 = REG_D0C0;
-  /*p27.MESU*/ RegQPN MESU_BFETCH_S1 = REG_D0C0;
-  /*p27.NYVA*/ RegQPN NYVA_BFETCH_S2 = REG_D0C0;
+  /*p27.LAXU*/ Reg LAXU_BFETCH_S0 = REG_D0C0;
+  /*p27.MESU*/ Reg MESU_BFETCH_S1 = REG_D0C0;
+  /*p27.NYVA*/ Reg NYVA_BFETCH_S2 = REG_D0C0;
 
-  /*p27.LOVY*/ RegQN  LOVY_BG_FETCH_DONEp = REG_D0C0;
-  /*p24.PYGO*/ RegQP  PYGO_FETCH_DONE_P13 = REG_D0C0;
-  /*p27.LYZU*/ RegQP  LYZU_BFETCH_S0_D1 = REG_D0C0;
+  /*p27.LOVY*/ Reg LOVY_BG_FETCH_DONEp = REG_D0C0;
+  /*p24.PYGO*/ Reg PYGO_FETCH_DONE_P13 = REG_D0C0;
+  /*p27.LYZU*/ Reg LYZU_BFETCH_S0_D1 = REG_D0C0;
 };
 
 //-----------------------------------------------------------------------------

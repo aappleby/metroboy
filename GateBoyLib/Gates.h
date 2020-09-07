@@ -757,6 +757,7 @@ struct Bus : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
+// half-bridge inverting io pin, some with output enable.
 
 struct Pin : private RegBase {
   Pin(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
@@ -777,7 +778,28 @@ struct Pin : private RegBase {
     return !as_wire();
   }
 
-  inline void operator = (RegDelta d) {
+  inline void operator = (RegDelta d) { set(d); }
+
+  inline void io_pin(wire HI, wire LO) {
+    if      ( HI &&  LO) set(DELTA_TRI0);
+    else if ( HI && !LO) set(DELTA_TRIZ);
+    else if (!HI &&  LO) set(DELTA_XXXX);
+    else if (!HI && !LO) set(DELTA_TRI1);
+    else                 set(DELTA_XXXX);
+  }
+
+  inline void io_pin(wire HI, wire LO, wire OEp) {
+    if      (!OEp)       set(DELTA_TRIZ);
+    else if ( HI &&  LO) set(DELTA_TRI0);
+    else if ( HI && !LO) set(DELTA_TRIZ);
+    else if (!HI &&  LO) set(DELTA_XXXX);
+    else if (!HI && !LO) set(DELTA_TRI1);
+    else                 set(DELTA_XXXX);
+  }
+
+private:
+
+  inline void set(RegDelta d) {
     CHECK_P(is_tri());
 
     if (delta == DELTA_NONE) {
@@ -799,31 +821,6 @@ struct Pin : private RegBase {
     }
   }
 };
-
-//-----------------------------------------------------------------------------
-// half-bridge inverting output pin
-
-inline RegDelta io_pin(wire HI, wire LO) {
-  if ( HI &&  LO) return DELTA_TRI0;
-  if ( HI && !LO) return DELTA_TRIZ;
-  if (!HI &&  LO) return DELTA_XXXX;
-  if (!HI && !LO) return DELTA_TRI1;
-
-  return DELTA_XXXX;
-}
-
-// half-bridge inverting output pin with output enable
-
-inline RegDelta io_pin(wire HI, wire LO, wire OEp) {
-  if (!OEp) return DELTA_TRIZ;
-
-  if ( HI &&  LO) return DELTA_TRI0;
-  if ( HI && !LO) return DELTA_TRIZ;
-  if (!HI &&  LO) return DELTA_XXXX;
-  if (!HI && !LO) return DELTA_TRI1;
-
-  return DELTA_XXXX;
-}
 
 //-----------------------------------------------------------------------------
 

@@ -73,7 +73,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYMU*/ wire TYMU_EXT_RDn = nor2(LUMA_DMA_READ_CARTp, MOTY_CPU_EXT_RD);
     /*p08.UGAC*/ wire UGAC_RD_A = nand2(TYMU_EXT_RDn, TOVA_MODE_DBG2n);
     /*p08.URUN*/ wire URUN_RD_D = nor2 (TYMU_EXT_RDn, top.UNOR_MODE_DBG2p);
-    PIN_EXT_RDn = io_pin(UGAC_RD_A, URUN_RD_D);
+    PIN_EXT_RDn.io_pin(UGAC_RD_A, URUN_RD_D);
   }
 
   {
@@ -94,7 +94,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.PUVA*/ wire PUVA_EXT_WRn = or2(NEVY, LUMA_DMA_READ_CARTp);
     /*p08.UVER*/ wire UVER_WR_A = nand2(PUVA_EXT_WRn, TOVA_MODE_DBG2n);
     /*p08.USUF*/ wire USUF_WR_D = nor2 (PUVA_EXT_WRn, top.UNOR_MODE_DBG2p);
-    PIN_EXT_WRn = io_pin(UVER_WR_A, USUF_WR_D);
+    PIN_EXT_WRn.io_pin(UVER_WR_A, USUF_WR_D);
   }
 
 
@@ -114,7 +114,7 @@ void ExtBus::tock(SchematicTop& top) {
 
     /*p08.TOZA*/ wire TOZA_PIN_EXT_CS_A_xxCDEFGH = and3(ABUZ_xxCDEFGH, TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
     /*p08.TYHO*/ wire TYHO_PIN_EXT_CS_A_xxCDEFGH = mux2_p(top.dma_reg.MARU_DMA_A15n.q07(), TOZA_PIN_EXT_CS_A_xxCDEFGH, LUMA_DMA_READ_CARTp);
-    PIN_EXT_CSn = io_pin(TYHO_PIN_EXT_CS_A_xxCDEFGH, TYHO_PIN_EXT_CS_A_xxCDEFGH);
+    PIN_EXT_CSn.io_pin(TYHO_PIN_EXT_CS_A_xxCDEFGH, TYHO_PIN_EXT_CS_A_xxCDEFGH);
   }
 
 
@@ -202,21 +202,21 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.LEVA*/ wire LEVA = nor2 (MUCE_A13p, top.UNOR_MODE_DBG2p);
     /*p08.PAHY*/ wire PAHY = nor2 (PEGE_A14p, top.UNOR_MODE_DBG2p);
 
-    PIN_EXT_A00p = io_pin(KUPO, KOTY);
-    PIN_EXT_A01p = io_pin(CABA, COTU);
-    PIN_EXT_A02p = io_pin(BOKU, BAJO);
-    PIN_EXT_A03p = io_pin(BOTY, BOLA);
-    PIN_EXT_A04p = io_pin(BYLA, BEVO);
-    PIN_EXT_A05p = io_pin(BADU, AJAV);
-    PIN_EXT_A06p = io_pin(CEPU, CYKA);
-    PIN_EXT_A07p = io_pin(DEFY, COLO);
-    PIN_EXT_A08p = io_pin(MYNY, MEGO);
-    PIN_EXT_A09p = io_pin(MUNE, MENY);
-    PIN_EXT_A10p = io_pin(ROXU, RORE);
-    PIN_EXT_A11p = io_pin(LEPY, LYNY);
-    PIN_EXT_A12p = io_pin(LUCE, LOSO);
-    PIN_EXT_A13p = io_pin(LABE, LEVA);
-    PIN_EXT_A14p = io_pin(PUHE, PAHY);
+    PIN_EXT_A00p.io_pin(KUPO, KOTY);
+    PIN_EXT_A01p.io_pin(CABA, COTU);
+    PIN_EXT_A02p.io_pin(BOKU, BAJO);
+    PIN_EXT_A03p.io_pin(BOTY, BOLA);
+    PIN_EXT_A04p.io_pin(BYLA, BEVO);
+    PIN_EXT_A05p.io_pin(BADU, AJAV);
+    PIN_EXT_A06p.io_pin(CEPU, CYKA);
+    PIN_EXT_A07p.io_pin(DEFY, COLO);
+    PIN_EXT_A08p.io_pin(MYNY, MEGO);
+    PIN_EXT_A09p.io_pin(MUNE, MENY);
+    PIN_EXT_A10p.io_pin(ROXU, RORE);
+    PIN_EXT_A11p.io_pin(LEPY, LYNY);
+    PIN_EXT_A12p.io_pin(LUCE, LOSO);
+    PIN_EXT_A13p.io_pin(LABE, LEVA);
+    PIN_EXT_A14p.io_pin(PUHE, PAHY);
   }
 
 
@@ -235,7 +235,7 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.SUZE*/ wire SUZE_PIN_EXT_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n);
     /* p08.RULO*/ wire RULO_PIN_EXT_A15n = nor2 (TAZY_A15p, top.UNOR_MODE_DBG2p);
     
-    PIN_EXT_A15p = io_pin(SUZE_PIN_EXT_A15n, RULO_PIN_EXT_A15n);
+    PIN_EXT_A15p.io_pin(SUZE_PIN_EXT_A15n, RULO_PIN_EXT_A15n);
   }
 
   //----------------------------------------
@@ -280,14 +280,14 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.ROGY*/ wire ROGY = nor2 (top.cpu_bus.BUS_CPU_D6p.tp(), RORU_CBD_TO_EPDn);
     /*p08.RYDA*/ wire RYDA = nor2 (top.cpu_bus.BUS_CPU_D7p.tp(), RORU_CBD_TO_EPDn);
 
-    PIN_EXT_D00p = io_pin(RUXA, RUNE, LULA_CBD_TO_EPDp);
-    PIN_EXT_D01p = io_pin(RUJA, RYPU, LULA_CBD_TO_EPDp);
-    PIN_EXT_D02p = io_pin(RABY, SULY, LULA_CBD_TO_EPDp);
-    PIN_EXT_D03p = io_pin(RERA, SEZE, LULA_CBD_TO_EPDp);
-    PIN_EXT_D04p = io_pin(RORY, RESY, LULA_CBD_TO_EPDp);
-    PIN_EXT_D05p = io_pin(RYVO, TAMU, LULA_CBD_TO_EPDp);
-    PIN_EXT_D06p = io_pin(RAFY, ROGY, LULA_CBD_TO_EPDp);
-    PIN_EXT_D07p = io_pin(RAVU, RYDA, LULA_CBD_TO_EPDp);
+    PIN_EXT_D00p.io_pin(RUXA, RUNE, LULA_CBD_TO_EPDp);
+    PIN_EXT_D01p.io_pin(RUJA, RYPU, LULA_CBD_TO_EPDp);
+    PIN_EXT_D02p.io_pin(RABY, SULY, LULA_CBD_TO_EPDp);
+    PIN_EXT_D03p.io_pin(RERA, SEZE, LULA_CBD_TO_EPDp);
+    PIN_EXT_D04p.io_pin(RORY, RESY, LULA_CBD_TO_EPDp);
+    PIN_EXT_D05p.io_pin(RYVO, TAMU, LULA_CBD_TO_EPDp);
+    PIN_EXT_D06p.io_pin(RAFY, ROGY, LULA_CBD_TO_EPDp);
+    PIN_EXT_D07p.io_pin(RAVU, RYDA, LULA_CBD_TO_EPDp);
   }
 
   //----------------------------------------

@@ -146,7 +146,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx = BOMA_Axxxxxxx;
   top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH = BOGA_xBCDEFGH;
 
-  top.ext_bus.PIN_EXT_CLK = io_pin(BUDE_xxxxEFGH, BUDE_xxxxEFGH);
+  top.ext_bus.PIN_EXT_CLK.io_pin(BUDE_xxxxEFGH, BUDE_xxxxEFGH);
 }
 
 //-----------------------------------------------------------------------------

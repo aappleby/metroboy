@@ -79,7 +79,7 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SOFY*/ wire SOFY_MWRn_D = or2(SOHY_MWRn, top.TUTO_DBG_VRAMp);
     /*p25.SYSY*/ wire SYSY_MWRp_A = not1(TAXY_MWRn_A);
     /*p25.RAGU*/ wire RAGU_MWRp_D = not1(SOFY_MWRn_D);
-    PIN_VRAM_WRn = io_pin(SYSY_MWRp_A, RAGU_MWRp_D);
+    PIN_VRAM_WRn.io_pin(SYSY_MWRp_A, RAGU_MWRp_D);
   }
 
   {
@@ -102,7 +102,7 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RUTE*/ wire RUTE_MOEn_D = or2(RACU_MOEn, top.TUTO_DBG_VRAMp); // schematic wrong, second input is RACU
     /*p25.REFO*/ wire REFO_MOEn_A = not1(SEMA_MOEn_A);
     /*p25.SAHA*/ wire SAHA_MOEn_D = not1(RUTE_MOEn_D);
-    PIN_VRAM_OEn = io_pin(REFO_MOEn_A, SAHA_MOEn_D);
+    PIN_VRAM_OEn.io_pin(REFO_MOEn_A, SAHA_MOEn_D);
   }
 
   {
@@ -122,7 +122,7 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.SEWO*/ wire SEWO_MCSn_D = or2(SUTU_MCSn, top.TUTO_DBG_VRAMp);
     /*p25.SOKY*/ wire SOKY_MCSp_A = not1(TODE_MCSn_A);
     /*p25.SETY*/ wire SETY_MCSp_D = not1(SEWO_MCSn_D);
-    PIN_VRAM_CSn = io_pin(SOKY_MCSp_A, SETY_MCSp_D);
+    PIN_VRAM_CSn.io_pin(SOKY_MCSp_A, SETY_MCSp_D);
   }
 
   //----------------------------------------
@@ -322,19 +322,19 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.PEDU*/ wire PEDUn = not1(RUMAp);
     /*p25.PONY*/ wire PONYn = not1(REHOp);
 
-    PIN_VRAM_A00p = io_pin(LEXEn, LEXEn);
-    PIN_VRAM_A01p = io_pin(LOZUn, LOZUn);
-    PIN_VRAM_A02p = io_pin(LACAn, LACAn);
-    PIN_VRAM_A03p = io_pin(LUVOn, LUVOn);
-    PIN_VRAM_A04p = io_pin(LOLYn, LOLYn);
-    PIN_VRAM_A05p = io_pin(LALOn, LALOn);
-    PIN_VRAM_A06p = io_pin(LEFAn, LEFAn);
-    PIN_VRAM_A07p = io_pin(LUBYn, LUBYn);
-    PIN_VRAM_A08p = io_pin(TUJYn, TUJYn);
-    PIN_VRAM_A09p = io_pin(TAGOn, TAGOn);
-    PIN_VRAM_A10p = io_pin(NUVAn, NUVAn);
-    PIN_VRAM_A11p = io_pin(PEDUn, PEDUn);
-    PIN_VRAM_A12p = io_pin(PONYn, PONYn);
+    PIN_VRAM_A00p.io_pin(LEXEn, LEXEn);
+    PIN_VRAM_A01p.io_pin(LOZUn, LOZUn);
+    PIN_VRAM_A02p.io_pin(LACAn, LACAn);
+    PIN_VRAM_A03p.io_pin(LUVOn, LUVOn);
+    PIN_VRAM_A04p.io_pin(LOLYn, LOLYn);
+    PIN_VRAM_A05p.io_pin(LALOn, LALOn);
+    PIN_VRAM_A06p.io_pin(LEFAn, LEFAn);
+    PIN_VRAM_A07p.io_pin(LUBYn, LUBYn);
+    PIN_VRAM_A08p.io_pin(TUJYn, TUJYn);
+    PIN_VRAM_A09p.io_pin(TAGOn, TAGOn);
+    PIN_VRAM_A10p.io_pin(NUVAn, NUVAn);
+    PIN_VRAM_A11p.io_pin(PEDUn, PEDUn);
+    PIN_VRAM_A12p.io_pin(PONYn, PONYn);
   }
 
   //----------------------------------------
@@ -424,14 +424,14 @@ void VramBus::tock(SchematicTop& top) {
     }
     */
 
-    /*#*/ PIN_VRAM_D00p = io_pin(REGE_D0n, RURA_D0n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D01p = io_pin(RYKY_D1n, RULY_D1n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D02p = io_pin(RAZO_D2n, RARE_D2n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D03p = io_pin(RADA_D3n, RODU_D3n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D04p = io_pin(RYRO_D4n, RUBE_D4n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D05p = io_pin(REVU_D5n, RUMU_D5n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D06p = io_pin(REKU_D6n, RYTY_D6n, ROFA_CBD_TO_VPDp);
-    /* */ PIN_VRAM_D07p = io_pin(RYZE_D7n, RADY_D7n, ROFA_CBD_TO_VPDp);
+    /*#*/ PIN_VRAM_D00p.io_pin(REGE_D0n, RURA_D0n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D01p.io_pin(RYKY_D1n, RULY_D1n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D02p.io_pin(RAZO_D2n, RARE_D2n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D03p.io_pin(RADA_D3n, RODU_D3n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D04p.io_pin(RYRO_D4n, RUBE_D4n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D05p.io_pin(REVU_D5n, RUMU_D5n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D06p.io_pin(REKU_D6n, RYTY_D6n, ROFA_CBD_TO_VPDp);
+    /* */ PIN_VRAM_D07p.io_pin(RYZE_D7n, RADY_D7n, ROFA_CBD_TO_VPDp);
   }
 
   //----------------------------------------

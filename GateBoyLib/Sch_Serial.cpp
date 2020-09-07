@@ -97,8 +97,8 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.KEXU*/ wire KEXU = nand2(COTY_SER_CLK.qp(), CULY_XFER_DIR.qp());
   /*p06.KUJO*/ wire KUJO = nor2(COTY_SER_CLK.qp(), /*p06.JAGO*/ not1(CULY_XFER_DIR.qp()));
 
-  /*p06.KEXU*/ SCK = io_pin(KEXU, KUJO, CULY_XFER_DIR.qp());
-  /*p05.KENA*/ SOUT = io_pin(ELYS_SER_OUT.qp(), ELYS_SER_OUT.qp());
+  /*p06.KEXU*/ SCK.io_pin(KEXU, KUJO, CULY_XFER_DIR.qp());
+  /*p05.KENA*/ SOUT.io_pin(ELYS_SER_OUT.qp(), ELYS_SER_OUT.qp());
 
   /*#p06.CUGY*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(UFEG_FF01_RD, CUBA_SER_DATA0.qn());
   /* p06.DUDE*/ cpu_bus.BUS_CPU_D1p = tribuf_6pn(UFEG_FF01_RD, DEGU_SER_DATA1.qn());

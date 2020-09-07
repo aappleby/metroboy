@@ -476,24 +476,34 @@ struct DFF17 : private RegBase {
 // DFF20_19 sc
 // DFF20_20 << CLKp
 
-inline RegDelta dff20(wire CLKp, wire LOADp, bool newD, bool oldQn) {
-  if (LOADp) {
-    if (CLKp) {
-      return newD ? DELTA_A1C1 : DELTA_A0C1;
+struct DFF20 : private RegBase {
+  DFF20() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
+  inline void tock(wire CLKp, wire LOADp, bool newD, bool oldQn) {
+    CHECK_P(is_reg() && !has_delta());
+    if (LOADp) {
+      if (CLKp) {
+        delta = newD ? DELTA_A1C1 : DELTA_A0C1;
+      }
+      else {
+        delta = newD ? DELTA_A1C0 : DELTA_A0C0;
+      }
     }
     else {
-      return newD ? DELTA_A1C0 : DELTA_A0C0;
+      if (CLKp) {
+        delta = oldQn ? DELTA_D1C1 : DELTA_D0C1;
+      }
+      else {
+        delta = oldQn ? DELTA_D1C0 : DELTA_D0C0;
+      }
     }
   }
-  else {
-    if (CLKp) {
-      return oldQn ? DELTA_D1C1 : DELTA_D0C1;
-    }
-    else {
-      return oldQn ? DELTA_D1C0 : DELTA_D0C0;
-    }
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 // DFF with async set/reset. Used by pixel pipes, serial data register.
@@ -523,17 +533,27 @@ inline RegDelta dff20(wire CLKp, wire LOADp, bool newD, bool oldQn) {
 // DFF22_21 sc
 // DFF22_22 << CLKp
 
-inline RegDelta dff22(wire CLKp, wire SETn, wire RSTn, bool D) {
-  if (!RSTn) {
-    return RegDelta(DELTA_A0C0 | (CLKp << 1));
+struct DFF22 : private RegBase {
+  DFF22() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
+  inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) {
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
+    }
+    else if (!SETn) {
+      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    }
   }
-  else if (!SETn) {
-    return RegDelta(DELTA_A1C0 | (CLKp << 1));
-  }
-  else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 

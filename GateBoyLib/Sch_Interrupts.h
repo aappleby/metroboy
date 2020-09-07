@@ -15,11 +15,11 @@ struct InterruptRegisters {
 //private:
   friend SchematicTop;
 
-  /*p02.LOPE*/ Reg LOPE_FF0F_0p = REG_D0C0;
-  /*p02.UBUL*/ Reg UBUL_FF0F_3p = REG_D0C0;
-  /*p02.ULAK*/ Reg ULAK_FF0F_4p = REG_D0C0;
-  /*p02.LALU*/ Reg LALU_FF0F_1p = REG_D0C0;
-  /*p02.NYBO*/ Reg NYBO_FF0F_2p = REG_D0C0;
+  /*p02.LOPE*/ DFF22 LOPE_FF0F_0p;
+  /*p02.UBUL*/ DFF22 UBUL_FF0F_3p;
+  /*p02.ULAK*/ DFF22 ULAK_FF0F_4p;
+  /*p02.LALU*/ DFF22 LALU_FF0F_1p;
+  /*p02.NYBO*/ DFF22 NYBO_FF0F_2p;
 
   /*p02.MATY*/ Latch MATY_FF0F_L0p = TRI_D0NP;
   /*p02.NEJY*/ Latch NEJY_FF0F_L3p = TRI_D0NP;

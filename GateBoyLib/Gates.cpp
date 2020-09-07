@@ -63,6 +63,14 @@ Lut8 generate_lut() {
   memset(temp.tab, ERR_XXXX, 256);
 
   //----------------------------------------
+  // initial register resets
+
+  temp.tab[REG_XXXX | (DELTA_A0C0 << 4)] = REG_D0C0;
+  temp.tab[REG_XXXX | (DELTA_A0C1 << 4)] = REG_D0C1;
+  temp.tab[REG_XXXX | (DELTA_A1C0 << 4)] = REG_D1C0;
+  temp.tab[REG_XXXX | (DELTA_A1C1 << 4)] = REG_D1C1;
+
+  //----------------------------------------
   // clocked registers
 
   temp.tab[REG_D0C0 | (DELTA_D0C0 << 4)] = REG_D0C0;
@@ -109,8 +117,8 @@ Lut8 generate_lut() {
   temp.tab[SIG_0000 | (DELTA_TRI0 << 4)] = SIG_0000;
   temp.tab[SIG_1111 | (DELTA_TRI1 << 4)] = SIG_0000;
 #endif
-  temp.tab[SIG_0000 | (DELTA_TRI0 << 4)] = SIG_0000;
-  temp.tab[SIG_1111 | (DELTA_TRI1 << 4)] = SIG_1111;
+  //temp.tab[SIG_0000 | (DELTA_TRI0 << 4)] = SIG_0000;
+  //temp.tab[SIG_1111 | (DELTA_TRI1 << 4)] = SIG_1111;
 
 
   //----------------------------------------

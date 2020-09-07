@@ -79,13 +79,17 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 //-----------------------------------------------------------------------------
 
+// FIXME get rid of SIG_0000/SIG_1111 and add X state different from ERR that
+// we can only leave via DELTA_Axxx
+
 enum RegState : uint8_t {
   REG_D0C0 = 0b0000, // 00: state 0 + clock 0
   REG_D1C0 = 0b0001, // 01: state 1 + clock 0
   REG_D0C1 = 0b0010, // 02: state 0 + clock 1
   REG_D1C1 = 0b0011, // 03: state 1 + clock 1
-  SIG_0000 = 0b0100, // 04: signal driven low
-  SIG_1111 = 0b0101, // 05: signal driven high
+
+  REG_XXXX = 0b0100, // 04:
+  REG_YYYY = 0b0101, // 05:
 
   TRI_D0PD = 0b0110, // 06: pin driven 0 + pull down
   TRI_D1PD = 0b0111, // 07: pin driven 1 + pull down
@@ -163,8 +167,8 @@ struct RegBase {
       case REG_D1C0: return '1';
       case REG_D0C1: return '0';
       case REG_D1C1: return '1';
-      case SIG_0000: return '0';
-      case SIG_1111: return '1';
+      //case SIG_0000: return '0';
+      //case SIG_1111: return '1';
       case TRI_D0PD: return '0';
       case TRI_D1PD: return '1';
       case TRI_D0PU: return '0';
@@ -184,8 +188,8 @@ struct RegBase {
       case REG_D1C0: return '0';
       case REG_D0C1: return '1';
       case REG_D1C1: return '0';
-      case SIG_0000: return '1';
-      case SIG_1111: return '0';
+      //case SIG_0000: return '1';
+      //case SIG_1111: return '0';
       case TRI_D0PD: return '1';
       case TRI_D1PD: return '0';
       case TRI_D0PU: return '1';
@@ -202,8 +206,7 @@ struct RegBase {
   inline wire qp() const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
 
-  inline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_D1C1); }
-  inline bool is_sig()    const { return (state >= SIG_0000) && (state <= SIG_1111); }
+  inline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_YYYY); }
   inline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
   inline bool has_delta() const { return delta != DELTA_NONE; }
   inline wire as_wire()   const {
@@ -304,7 +307,7 @@ struct DFF8 : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-// 9-rung register with reset, inverting input, and dual outputs. Looks like
+// 9-rung register with async _set_?, inverting input, and dual outputs. Looks like
 // Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
 // OBP1, stat int enable, sprite store, SCY, SCX, LCDC, WX, WY.
 
@@ -319,7 +322,7 @@ struct DFF8 : private RegBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : private RegBase {
-  DFF9() : RegBase(REG_D0C0) {}
+  DFF9() : RegBase(REG_XXXX) {}
 
   using RegBase::c;
   using RegBase::qp;
@@ -328,20 +331,10 @@ struct DFF9 : private RegBase {
   inline wire q08() const { return qn(); }
   inline wire q09() const { return qp(); }
 
-  inline void tock(wire CLKp, wire RSTn, bool Dn) {
-    tock(CLKp, !CLKp, RSTn, Dn);
-  }
+  // FIXME the SETn here is slightly weird. too many inversions?
 
-  inline void tock(wire CLKp, wire CLKn, wire RSTn, bool Dn) {
-    (void)CLKn;
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!Dn) << 0));
-    }
-  }
+  inline void tock(wire CLKp, wire SETn, bool Dn)            { dff(CLKp, !CLKp, SETn, 1, !Dn); }
+  inline void tock(wire CLKp, wire CLKn, wire SETn, bool Dn) { dff(CLKp,  CLKn, SETn, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -349,19 +342,19 @@ struct DFF9 : private RegBase {
 // Not sure why it's special.
 
 // DFF11_01 nc
-// DFF11_02 << VYPO_02 (RSTp?)
-// DFF11_03 << VRM_BUS_D0
+// DFF11_02 << RSTp? // FIXME trace this
+// DFF11_03 << D
 // DFF11_04 nc
-// DFF11_05 << LABU_03 (CLKp?)
+// DFF11_05 << CLKp
 // DFF11_06 nc
 // DFF11_07 nc
-// DFF11_08 << LUVE_03 (CLKn?)
-// DFF11_09 << VYPO_02 (RSTp?)
+// DFF11_08 << CLKn
+// DFF11_09 << RSTn
 // DFF11_10 nc
-// DFF11_11 >> TUXE_02 (Qn probably)
+// DFF11_11 >> Qn
 
 struct DFF11 : private RegBase {
-  DFF11() : RegBase(REG_D0C0) {}
+  DFF11() : RegBase(REG_D0C0) {} // does not work with xxxx
 
   using RegBase::c;
   using RegBase::qn;
@@ -389,7 +382,7 @@ struct DFF11 : private RegBase {
 // DFF13_13 >> Q
 
 struct DFF13 : private RegBase {
-  DFF13() : RegBase(REG_D0C0) {}
+  DFF13() : RegBase(REG_D0C0) {} // does not work with xxxx
 
   using RegBase::c;
   using RegBase::qp;
@@ -423,7 +416,7 @@ struct DFF13 : private RegBase {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : private RegBase {
-  DFF17() : RegBase(REG_D0C0) {}
+  DFF17() : RegBase(REG_D0C0) {} // does not work with xxxx
 
   using RegBase::c;
   using RegBase::qp;
@@ -525,25 +518,21 @@ struct DFF22 : private RegBase {
 //-----------------------------------------------------------------------------
 
 struct Sig : private RegBase {
-  Sig() : RegBase(SIG_0000) {}
+  Sig() : RegBase(TRI_HZNP) {}
 
   using RegBase::c;
   using RegBase::qp;
 
-  inline operator wire() const { return as_wire(); }
-
-  inline bool as_wire() const {
-    CHECK_P(is_sig());
+  inline operator wire() const {
     CHECK_P(has_delta() == sim_running);
     return wire(state & 1);
   }
 
   inline void operator = (wire s) {
-    CHECK_P(is_sig());
     CHECK_N(has_delta());
     CHECK_P(tick_running);
     
-    state = RegState(SIG_0000 | int(s));
+    state = RegState(TRI_D0NP | int(s));
     delta = s ? DELTA_TRI1 : DELTA_TRI0;
   }
 };

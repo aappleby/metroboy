@@ -47,10 +47,10 @@ private:
   /*p01.ASOL*/ Tri   ASOL_POR_DONEn = TRI_D1NP; // Schematic wrong, this is a latch.
   /*p01.AFER*/ RegQP AFER_SYS_RSTp  = REG_D0C0; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
 
-  /*p01.AFUR*/ Reg AFUR_xxxxEFGH = REG_D0C0;
-  /*p01.ALEF*/ Reg ALEF_AxxxxFGH = REG_D0C0;
-  /*p01.APUK*/ Reg APUK_ABxxxxGH = REG_D0C0;
-  /*p01.ADYK*/ Reg ADYK_ABCxxxxH = REG_D0C0;
+  /*p01.AFUR*/ DFF9 AFUR_xxxxEFGH;
+  /*p01.ALEF*/ DFF9 ALEF_AxxxxFGH;
+  /*p01.APUK*/ DFF9 APUK_ABxxxxGH;
+  /*p01.ADYK*/ DFF9 ADYK_ABCxxxxH;
 
   /*p29.WUVU*/ RegQN  WUVU_xxCDxxGH = REG_D0C0;
   /*p21.VENA*/ RegQN  VENA_ABCDxxxx = REG_D0C0;

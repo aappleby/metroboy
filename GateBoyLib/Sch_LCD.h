@@ -64,14 +64,14 @@ private:
   /*p21.NAPO*/ RegQPN NAPO_FRAME_EVEN  = REG_D0C0;
 
   // FF45 - LYC
-  /*p23.SYRY*/ Reg SYRY_LYC0n = REG_D0C0;
-  /*p23.VUCE*/ Reg VUCE_LYC1n = REG_D0C0;
-  /*p23.SEDY*/ Reg SEDY_LYC2n = REG_D0C0;
-  /*p23.SALO*/ Reg SALO_LYC3n = REG_D0C0;
-  /*p23.SOTA*/ Reg SOTA_LYC4n = REG_D0C0;
-  /*p23.VAFA*/ Reg VAFA_LYC5n = REG_D0C0;
-  /*p23.VEVO*/ Reg VEVO_LYC6n = REG_D0C0;
-  /*p23.RAHA*/ Reg RAHA_LYC7n = REG_D0C0;
+  /*p23.SYRY*/ DFF9 SYRY_LYC0n;
+  /*p23.VUCE*/ DFF9 VUCE_LYC1n;
+  /*p23.SEDY*/ DFF9 SEDY_LYC2n;
+  /*p23.SALO*/ DFF9 SALO_LYC3n;
+  /*p23.SOTA*/ DFF9 SOTA_LYC4n;
+  /*p23.VAFA*/ DFF9 VAFA_LYC5n;
+  /*p23.VEVO*/ DFF9 VEVO_LYC6n;
+  /*p23.RAHA*/ DFF9 RAHA_LYC7n;
 };
 
 //-----------------------------------------------------------------------------

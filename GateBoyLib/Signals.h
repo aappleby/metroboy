@@ -210,10 +210,6 @@ struct DFF8 : private RegBase {
   }
 };
 
-inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
-  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
-}
-
 //-----------------------------------------------------------------------------
 // 9-rung register with reset, inverting input, and dual outputs. Looks like
 // Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
@@ -268,15 +264,6 @@ inline RegDelta dff9_inv(wire CLKp, wire RSTn, wire D) {
   }
   else {
     return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
-  }
-}
-
-inline RegQNIn dff9_A_inv(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A1C0 | (CLKp << 1))};
-  }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0))};
   }
 }
 

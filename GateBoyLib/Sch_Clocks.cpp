@@ -97,13 +97,14 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
 void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
   // ignoring the deglitcher here
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
-
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
-  /*p01.AFUR*/ AFUR_xxxxEFGH = dff9_inv(not1(ATAL_xBxDxFxH), top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
-  /*p01.ALEF*/ ALEF_AxxxxFGH = dff9_inv(     ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
-  /*p01.APUK*/ APUK_ABxxxxGH = dff9_inv(not1(ATAL_xBxDxFxH), top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
-  /*p01.ADYK*/ ADYK_ABCxxxxH = dff9_inv(     ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
+  /*p01.ATAL*/ wire ATAL_AxCxExGx = not1(ATAL_xBxDxFxH);
+
+  /*p01.AFUR*/ AFUR_xxxxEFGH.tock(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp());
+  /*p01.ALEF*/ ALEF_AxxxxFGH.tock(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn());
+  /*p01.APUK*/ APUK_ABxxxxGH.tock(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
+  /*p01.ADYK*/ ADYK_ABCxxxxH.tock(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
 
   /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);

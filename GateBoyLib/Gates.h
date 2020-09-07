@@ -398,15 +398,7 @@ struct DFF13 : private RegBase {
   inline wire q12() const { return qn(); }
   inline wire q13() const { return qp(); }
 
-  inline void tock(wire CLKp, wire RSTn, wire D) {
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-    }
-  }
+  inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -437,15 +429,7 @@ struct DFF17 : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
 
-  inline void tock(wire CLKp, wire RSTn, wire D) {
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-    }
-  }
+  inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -535,18 +519,7 @@ struct DFF22 : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
 
-  inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) {
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
-    }
-    else if (!SETn) {
-      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-    }
-  }
+  inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------

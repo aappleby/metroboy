@@ -1,5 +1,5 @@
 #pragma once
-#include "GateBoyLib/Cells.h"
+#include "GateBoyLib/Signals.h"
 
 struct GateBoy;
 struct GateBoyTests;

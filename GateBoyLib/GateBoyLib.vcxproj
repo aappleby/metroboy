@@ -17,7 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
-    <ClCompile Include="Cells.cpp" />
     <ClCompile Include="GateBoy.cpp" />
     <ClCompile Include="Probe.cpp" />
     <ClCompile Include="Sch_ApuControl.cpp" />
@@ -48,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BusDump.h" />
-    <ClInclude Include="Cells.h" />
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="Probe.h" />
     <ClInclude Include="Sch_ApuControl.h" />
@@ -134,6 +132,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>

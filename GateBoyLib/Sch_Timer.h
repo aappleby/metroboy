@@ -1,5 +1,5 @@
 #pragma once
-#include "GateBoyLib/Cells.h"
+#include "GateBoyLib/Signals.h"
 
 namespace Schematics {
 

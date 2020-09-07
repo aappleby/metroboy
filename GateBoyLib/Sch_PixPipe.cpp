@@ -651,7 +651,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     // Palette pipe
     {
-      wire GOMO_OBP = top.oam_bus.GOMO_OAM_DB4p.qp();
+      wire GOMO_OBP = top.oam_bus.GOMO_OAM_DB4p.q08();
 
       /*p34.SYPY*/ wire SYPY = not1(GOMO_OBP);
       /*p34.TOTU*/ wire TOTU = not1(GOMO_OBP);
@@ -693,7 +693,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     // Background mask pipe
     {
-      wire DEPO = top.oam_bus.DEPO_OAM_DB7p.qp();
+      wire DEPO = top.oam_bus.DEPO_OAM_DB7p.q08();
 
       /*p26.XOGA*/ wire XOGA = not1(DEPO);
       /*p26.XURA*/ wire XURA = not1(DEPO);

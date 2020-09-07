@@ -167,7 +167,7 @@ void VramBus::tock(SchematicTop& top) {
 
   // Sprite fetcher read
   {
-    /*#p29.WUKY*/ wire WUKY_FLIP_Yp = not1(top.oam_bus.YZOS_OAM_DB6p.qp());
+    /*#p29.WUKY*/ wire WUKY_FLIP_Yp = not1(top.oam_bus.YZOS_OAM_DB6p.q08());
     
     /*#p29.CYVU*/ wire CYVU_L0 = xor2(WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L0.tp());
     /*#p29.BORE*/ wire BORE_L1 = xor2(WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L1.tp());
@@ -530,7 +530,7 @@ void VramBus::tock(SchematicTop& top) {
 
   // VRAM tri -> sprite pix temp + x flip
   {
-    /*#p29.XONO*/ wire XONO_FLIP_X = and2(top.oam_bus.BAXO_OAM_DB5p.qp(), top.sprite_fetcher.TEXY_SPR_READ_VRAMp);
+    /*#p29.XONO*/ wire XONO_FLIP_X = and2(top.oam_bus.BAXO_OAM_DB5p.q08(), top.sprite_fetcher.TEXY_SPR_READ_VRAMp);
 
     /*p33.PUTE*/ wire PUTE_FLIP0p = mux2_p2(XONO_FLIP_X, BUS_VRAM_D7p.tp(), BUS_VRAM_D0p.tp());
     /*p33.PELO*/ wire PELO_FLIP1p = mux2_p2(XONO_FLIP_X, BUS_VRAM_D6p.tp(), BUS_VRAM_D1p.tp());

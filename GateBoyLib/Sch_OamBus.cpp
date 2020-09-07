@@ -61,8 +61,8 @@ void OamBus::dump(Dumper& d) const {
   int oam_temp_a = pack_p(XUSO_OAM_DA0p.q08(), XEGU_OAM_DA1p.q08(), YJEX_OAM_DA2p.q08(), XYJU_OAM_DA3p.q08(),
                           YBOG_OAM_DA4p.q08(), WYSO_OAM_DA5p.q08(), XOTE_OAM_DA6p.q08(), YZAB_OAM_DA7p.q08());
 
-  int oam_temp_b = pack_p(YLOR_OAM_DB0p.qp(), ZYTY_OAM_DB1p.qp(), ZYVE_OAM_DB2p.qp(), ZEZY_OAM_DB3p.qp(),
-                          GOMO_OAM_DB4p.qp(), BAXO_OAM_DB5p.qp(), YZOS_OAM_DB6p.qp(), DEPO_OAM_DB7p.qp());
+  int oam_temp_b = pack_p(YLOR_OAM_DB0p.q08(), ZYTY_OAM_DB1p.q08(), ZYVE_OAM_DB2p.q08(), ZEZY_OAM_DB3p.q08(),
+                          GOMO_OAM_DB4p.q08(), BAXO_OAM_DB5p.q08(), YZOS_OAM_DB6p.q08(), DEPO_OAM_DB7p.q08());
   
 
   d("OAM TEMP A %03d %02x %c%c%c%c%c%c%c%c\n",
@@ -410,14 +410,16 @@ void OamBus::tock(SchematicTop& top) {
     /* p29.YZAB*/ YZAB_OAM_DA7p.tock(YWOK_OAM_CLKn, YWOK_OAM_CLKp, ZECA_OAM_LATCH_DA7n.qp());
        
     /* p31.XEGA*/ wire XEGA_OAM_CLKp = not1(COTA_OAM_CLKn);
-    /* p31.YLOR*/ YLOR_OAM_DB0p = dff8_B_inv(XEGA_OAM_CLKp, XYKY_OAM_LATCH_DB0n.qp());
-    /* p31.ZYTY*/ ZYTY_OAM_DB1p = dff8_B_inv(XEGA_OAM_CLKp, YRUM_OAM_LATCH_DB1n.qp());
-    /* p31.ZYVE*/ ZYVE_OAM_DB2p = dff8_B_inv(XEGA_OAM_CLKp, YSEX_OAM_LATCH_DB2n.qp());
-    /* p31.ZEZY*/ ZEZY_OAM_DB3p = dff8_B_inv(XEGA_OAM_CLKp, YVEL_OAM_LATCH_DB3n.qp());
-    /* p31.GOMO*/ GOMO_OAM_DB4p = dff8_B_inv(XEGA_OAM_CLKp, WYNO_OAM_LATCH_DB4n.qp());
-    /* p31.BAXO*/ BAXO_OAM_DB5p = dff8_B_inv(XEGA_OAM_CLKp, CYRA_OAM_LATCH_DB5n.qp());
-    /* p31.YZOS*/ YZOS_OAM_DB6p = dff8_B_inv(XEGA_OAM_CLKp, ZUVE_OAM_LATCH_DB6n.qp());
-    /* p31.DEPO*/ DEPO_OAM_DB7p = dff8_B_inv(XEGA_OAM_CLKp, ECED_OAM_LATCH_DB7n.qp());
+    /* p31.XEGA*/ wire XEGA_OAM_CLKn = not1(XEGA_OAM_CLKp);
+
+    /* p31.YLOR*/ YLOR_OAM_DB0p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, XYKY_OAM_LATCH_DB0n.qp());
+    /* p31.ZYTY*/ ZYTY_OAM_DB1p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, YRUM_OAM_LATCH_DB1n.qp());
+    /* p31.ZYVE*/ ZYVE_OAM_DB2p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, YSEX_OAM_LATCH_DB2n.qp());
+    /* p31.ZEZY*/ ZEZY_OAM_DB3p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, YVEL_OAM_LATCH_DB3n.qp());
+    /* p31.GOMO*/ GOMO_OAM_DB4p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, WYNO_OAM_LATCH_DB4n.qp());
+    /* p31.BAXO*/ BAXO_OAM_DB5p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, CYRA_OAM_LATCH_DB5n.qp());
+    /* p31.YZOS*/ YZOS_OAM_DB6p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, ZUVE_OAM_LATCH_DB6n.qp());
+    /* p31.DEPO*/ DEPO_OAM_DB7p.tock(XEGA_OAM_CLKp, XEGA_OAM_CLKn, ECED_OAM_LATCH_DB7n.qp());
   }
 
   // OBL -> CBD

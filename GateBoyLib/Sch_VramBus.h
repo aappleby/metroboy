@@ -86,14 +86,14 @@ struct VramBus {
   /*p33.RAMA*/ DFF8 RAMA_SPRITE_DB6n;
   /*p33.RYDU*/ DFF8 RYDU_SPRITE_DB7n;
 
-  /*p33.REWO*/ RegQN REWO_SPRITE_DA0n = REG_D0C0; // def holds inverted pix
-  /*p33.PEBA*/ RegQN PEBA_SPRITE_DA1n = REG_D0C0;
-  /*p33.MOFO*/ RegQN MOFO_SPRITE_DA2n = REG_D0C0;
-  /*p33.PUDU*/ RegQN PUDU_SPRITE_DA3n = REG_D0C0;
-  /*p33.SAJA*/ RegQN SAJA_SPRITE_DA4n = REG_D0C0;
-  /*p33.SUNY*/ RegQN SUNY_SPRITE_DA5n = REG_D0C0;
-  /*p33.SEMO*/ RegQN SEMO_SPRITE_DA6n = REG_D0C0;
-  /*p33.SEGA*/ RegQN SEGA_SPRITE_DA7n = REG_D0C0;
+  /*p33.REWO*/ DFF8 REWO_SPRITE_DA0n;
+  /*p33.PEBA*/ DFF8 PEBA_SPRITE_DA1n;
+  /*p33.MOFO*/ DFF8 MOFO_SPRITE_DA2n;
+  /*p33.PUDU*/ DFF8 PUDU_SPRITE_DA3n;
+  /*p33.SAJA*/ DFF8 SAJA_SPRITE_DA4n;
+  /*p33.SUNY*/ DFF8 SUNY_SPRITE_DA5n;
+  /*p33.SEMO*/ DFF8 SEMO_SPRITE_DA6n;
+  /*p33.SEGA*/ DFF8 SEGA_SPRITE_DA7n;
 
   //----------------------------------------
   // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain

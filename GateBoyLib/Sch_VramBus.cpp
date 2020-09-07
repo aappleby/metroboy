@@ -39,8 +39,8 @@ void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
                        PULO_TILE_DB4n.qn(), POJU_TILE_DB5n.qn(), POWY_TILE_DB6n.qn(), PYJU_TILE_DB7n.qn());
   int SPRITE_DA = pack_p(PEFO_SPRITE_DB0n.q07(), ROKA_SPRITE_DB1n.q07(), MYTU_SPRITE_DB2n.q07(), RAMU_SPRITE_DB3n.q07(),
                          SELE_SPRITE_DB4n.q07(), SUTO_SPRITE_DB5n.q07(), RAMA_SPRITE_DB6n.q07(), RYDU_SPRITE_DB7n.q07());
-  int SPRITE_DB = pack_p(REWO_SPRITE_DA0n.qn(), PEBA_SPRITE_DA1n.qn(), MOFO_SPRITE_DA2n.qn(), PUDU_SPRITE_DA3n.qn(),
-                         SAJA_SPRITE_DA4n.qn(), SUNY_SPRITE_DA5n.qn(), SEMO_SPRITE_DA6n.qn(), SEGA_SPRITE_DA7n.qn());
+  int SPRITE_DB = pack_p(REWO_SPRITE_DA0n.q07(), PEBA_SPRITE_DA1n.q07(), MOFO_SPRITE_DA2n.q07(), PUDU_SPRITE_DA3n.q07(),
+                         SAJA_SPRITE_DA4n.q07(), SUNY_SPRITE_DA5n.q07(), SEMO_SPRITE_DA6n.q07(), SEGA_SPRITE_DA7n.q07());
 
   d("TILE_DA       : 0x%02x\n", TILE_DA);
   d("TILE_DB       : 0x%02x\n", TILE_DB);
@@ -558,15 +558,16 @@ void VramBus::tock(SchematicTop& top) {
     /*#p29.VYWA*/ wire VYWA_CLKp = not1(top.sprite_fetcher.TOPU_LATCH_SPPIXA);
     /*#p29.WENY*/ wire WENY_CLKn = not1(VYWA_CLKp);
     /*#p29.XADO*/ wire XADO_CLKp = not1(WENY_CLKn);
+    /*#p29.????*/ wire XADO_CLKn = not1(XADO_CLKp);
 
-    /*p33.REWO*/ REWO_SPRITE_DA0n = dff8_A_inv(XADO_CLKp, PUTE_FLIP0p);
-    /*p33.PEBA*/ PEBA_SPRITE_DA1n = dff8_A_inv(XADO_CLKp, PELO_FLIP1p);
-    /*p33.MOFO*/ MOFO_SPRITE_DA2n = dff8_A_inv(XADO_CLKp, PONO_FLIP2p);
-    /*p33.PUDU*/ PUDU_SPRITE_DA3n = dff8_A_inv(XADO_CLKp, POBE_FLIP3p);
-    /*p33.SAJA*/ SAJA_SPRITE_DA4n = dff8_A_inv(XADO_CLKp, PACY_FLIP4p);
-    /*p33.SUNY*/ SUNY_SPRITE_DA5n = dff8_A_inv(XADO_CLKp, PUGU_FLIP5p);
-    /*p33.SEMO*/ SEMO_SPRITE_DA6n = dff8_A_inv(XADO_CLKp, PAWE_FLIP6p);
-    /*p33.SEGA*/ SEGA_SPRITE_DA7n = dff8_A_inv(XADO_CLKp, PULY_FLIP7p);
+    /*p33.REWO*/ REWO_SPRITE_DA0n.tock(XADO_CLKp, XADO_CLKn, PUTE_FLIP0p);
+    /*p33.PEBA*/ PEBA_SPRITE_DA1n.tock(XADO_CLKp, XADO_CLKn, PELO_FLIP1p);
+    /*p33.MOFO*/ MOFO_SPRITE_DA2n.tock(XADO_CLKp, XADO_CLKn, PONO_FLIP2p);
+    /*p33.PUDU*/ PUDU_SPRITE_DA3n.tock(XADO_CLKp, XADO_CLKn, POBE_FLIP3p);
+    /*p33.SAJA*/ SAJA_SPRITE_DA4n.tock(XADO_CLKp, XADO_CLKn, PACY_FLIP4p);
+    /*p33.SUNY*/ SUNY_SPRITE_DA5n.tock(XADO_CLKp, XADO_CLKn, PUGU_FLIP5p);
+    /*p33.SEMO*/ SEMO_SPRITE_DA6n.tock(XADO_CLKp, XADO_CLKn, PAWE_FLIP6p);
+    /*p33.SEGA*/ SEGA_SPRITE_DA7n.tock(XADO_CLKp, XADO_CLKn, PULY_FLIP7p);
   }
 }
 

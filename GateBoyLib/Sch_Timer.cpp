@@ -83,20 +83,20 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.UBOT*/ wire UBOT_CLK_256Kn = not1(UFOR_DIV_01.qp());
     /*p03.UVYR*/ wire UVYR_CLK_64Kn = not1(TERO_DIV_03.qp());
 
-    /*p03.UKAP*/ wire UKAP_CLK_MUXa = mux2_n(UVYN_DIV_05n, UVYR_CLK_64Kn, SOPU_TAC_D0.qp());
-    /*p03.TEKO*/ wire TEKO_CLK_MUXb = mux2_n(UBOT_CLK_256Kn, UREK_DIV_07n, SOPU_TAC_D0.qp());
-    /*p03.TECY*/ wire TECY_CLK_MUXc = mux2_n(UKAP_CLK_MUXa, TEKO_CLK_MUXb, SAMY_TAC_D1.qp());
+    /*p03.UKAP*/ wire UKAP_CLK_MUXa = mux2n(SOPU_TAC_D0.qp(), UVYN_DIV_05n,   UVYR_CLK_64Kn);
+    /*p03.TEKO*/ wire TEKO_CLK_MUXb = mux2n(SOPU_TAC_D0.qp(), UBOT_CLK_256Kn, UREK_DIV_07n);
+    /*p03.TECY*/ wire TECY_CLK_MUXc = mux2n(SAMY_TAC_D1.qp(), UKAP_CLK_MUXa,  TEKO_CLK_MUXb);
 
     /*p03.SOGU*/ wire SOGU_TIMA_CLK = nor2(TECY_CLK_MUXc, SABO_TAC_D2.qn());
 
-    /*p03.ROKE*/ wire ROKE_TIMA_D0 = mux2_n(SABU_TMA_D0.qp(), top.cpu_bus.BUS_CPU_D0p.tp(), TOPE_FF05_WRn);
-    /*p03.PETU*/ wire PETU_TIMA_D1 = mux2_n(NYKE_TMA_D1.qp(), top.cpu_bus.BUS_CPU_D1p.tp(), TOPE_FF05_WRn);
-    /*p03.NYKU*/ wire NYKU_TIMA_D2 = mux2_n(MURU_TMA_D2.qp(), top.cpu_bus.BUS_CPU_D2p.tp(), TOPE_FF05_WRn); // die annotation box wrong, this is a 5-rung
-    /*p03.SOCE*/ wire SOCE_TIMA_D3 = mux2_n(TYVA_TMA_D3.qp(), top.cpu_bus.BUS_CPU_D3p.tp(), TOPE_FF05_WRn);
-    /*p03.SALA*/ wire SALA_TIMA_D4 = mux2_n(TYRU_TMA_D4.qp(), top.cpu_bus.BUS_CPU_D4p.tp(), TOPE_FF05_WRn);
-    /*p03.SYRU*/ wire SYRU_TIMA_D5 = mux2_n(SUFY_TMA_D5.qp(), top.cpu_bus.BUS_CPU_D5p.tp(), TOPE_FF05_WRn);
-    /*p03.REFU*/ wire REFU_TIMA_D6 = mux2_n(PETO_TMA_D6.qp(), top.cpu_bus.BUS_CPU_D6p.tp(), TOPE_FF05_WRn);
-    /*p03.RATO*/ wire RATO_TIMA_D7 = mux2_n(SETA_TMA_D7.qp(), top.cpu_bus.BUS_CPU_D7p.tp(), TOPE_FF05_WRn);
+    /*p03.ROKE*/ wire ROKE_TIMA_D0 = mux2n(TOPE_FF05_WRn, SABU_TMA_D0.qp(), top.cpu_bus.BUS_CPU_D0p.tp());
+    /*p03.PETU*/ wire PETU_TIMA_D1 = mux2n(TOPE_FF05_WRn, NYKE_TMA_D1.qp(), top.cpu_bus.BUS_CPU_D1p.tp());
+    /*p03.NYKU*/ wire NYKU_TIMA_D2 = mux2n(TOPE_FF05_WRn, MURU_TMA_D2.qp(), top.cpu_bus.BUS_CPU_D2p.tp());
+    /*p03.SOCE*/ wire SOCE_TIMA_D3 = mux2n(TOPE_FF05_WRn, TYVA_TMA_D3.qp(), top.cpu_bus.BUS_CPU_D3p.tp());
+    /*p03.SALA*/ wire SALA_TIMA_D4 = mux2n(TOPE_FF05_WRn, TYRU_TMA_D4.qp(), top.cpu_bus.BUS_CPU_D4p.tp());
+    /*p03.SYRU*/ wire SYRU_TIMA_D5 = mux2n(TOPE_FF05_WRn, SUFY_TMA_D5.qp(), top.cpu_bus.BUS_CPU_D5p.tp());
+    /*p03.REFU*/ wire REFU_TIMA_D6 = mux2n(TOPE_FF05_WRn, PETO_TMA_D6.qp(), top.cpu_bus.BUS_CPU_D6p.tp());
+    /*p03.RATO*/ wire RATO_TIMA_D7 = mux2n(TOPE_FF05_WRn, SETA_TMA_D7.qp(), top.cpu_bus.BUS_CPU_D7p.tp());
 
     /*p03.PUXY*/ wire PUXY_TIMA_D0 = nor2(MULO_SYS_RSTn, ROKE_TIMA_D0);
     /*p03.NERO*/ wire NERO_TIMA_D1 = nor2(MULO_SYS_RSTn, PETU_TIMA_D1);

@@ -52,17 +52,12 @@ inline wire add_s(wire a, wire b, wire c) {
 //-----------------------------------------------------------------------------
 
 // Six-rung mux cells are _non_inverting_. m = 1 selects input A
-inline wire mux2_p(wire a, wire b, wire m) {
-  return m ? a : b;
-}
-
-// Six-rung mux cells are _non_inverting_. m = 1 selects input A
-inline wire mux2_p2(wire m, wire a, wire b) {
+inline wire mux2p(wire m, wire a, wire b) {
   return m ? a : b;
 }
 
 // Five-rung mux cells are _inverting_. m = 1 selects input A
-inline wire mux2_n(wire a, wire b, wire m) {
+inline wire mux2n(wire m, wire a, wire b) {
   return !(m ? a : b);
 }
 
@@ -212,7 +207,12 @@ struct RegBase {
   inline bool is_sig()    const { return (state >= SIG_0000) && (state <= SIG_1111); }
   inline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
   inline bool has_delta() const { return delta != DELTA_NONE; }
-  inline wire as_wire()   const { /*CHECKn(has_delta());*/ return wire(state & 1); }
+  inline wire as_wire()   const {
+    if (state == TRI_HZNP) {
+      bus_floating = true;
+    }
+    /*CHECKn(has_delta());*/ return wire(state & 1);
+  }
 
   union {
     struct {
@@ -563,15 +563,11 @@ struct Sig : private RegBase {
   using RegBase::c;
 
   inline wire qp() const { return  as_wire(); }
-
   inline operator wire() const { return as_wire(); }
 
   inline bool as_wire() const {
     CHECK_P(is_sig());
-
-    // FIXME doing this check in release mode for sanity, but probably need to remove it later
-    //CHECK_P(has_delta() == sim_running);
-    if (has_delta() != sim_running) __debugbreak();
+    CHECK_P(has_delta() == sim_running);
 
     return wire(state & 1);
   }
@@ -579,9 +575,7 @@ struct Sig : private RegBase {
   inline void operator = (wire s) {
     CHECK_P(is_sig());
     CHECK_N(has_delta());
-
-    // FIXME doing this check in release mode for sanity, but probably need to remove it later
-    if (!tick_running) __debugbreak();
+    CHECK_P(tick_running);
     
     state = RegState(SIG_0000 | int(s));
     delta = s ? DELTA_TRI1 : DELTA_TRI0;
@@ -597,10 +591,6 @@ struct Tri : private RegBase {
   using RegBase::cn;
 
   inline wire tp()  const {
-    //CHECK_N(state == TRI_HZNP);
-    if (state == TRI_HZNP) {
-      bus_floating = true;
-    }
     return  as_wire();
   }
   //inline wire qn() const { return !as_wire(); }
@@ -704,10 +694,6 @@ struct Bus : private RegBase {
   using RegBase::cn;
 
   inline wire tp()  const {
-    //CHECK_N(state == TRI_HZNP);
-    if (state == TRI_HZNP) {
-      bus_floating = true;
-    }
     return  as_wire();
   }
   //inline wire qn() const { return !as_wire(); }
@@ -764,31 +750,12 @@ struct Pin : private RegBase {
 
   using RegBase::c;
 
-  inline wire qp()  const {
-    if (state == TRI_HZNP) {
-      bus_floating = true;
-    }
-    return as_wire();
-  }
-
-  inline wire qn()  const {
-    if (state == TRI_HZNP) {
-      bus_floating = true;
-    }
-    return !as_wire();
-  }
+  inline wire qp()  const { return  as_wire(); }
+  inline wire qn()  const { return !as_wire(); }
 
   inline void operator = (RegDelta d) { set(d); }
 
-  inline void io_pin(wire HI, wire LO) {
-    if      ( HI &&  LO) set(DELTA_TRI0);
-    else if ( HI && !LO) set(DELTA_TRIZ);
-    else if (!HI &&  LO) set(DELTA_XXXX);
-    else if (!HI && !LO) set(DELTA_TRI1);
-    else                 set(DELTA_XXXX);
-  }
-
-  inline void io_pin(wire HI, wire LO, wire OEp) {
+  inline void io_pin(wire HI, wire LO, wire OEp = true) {
     if      (!OEp)       set(DELTA_TRIZ);
     else if ( HI &&  LO) set(DELTA_TRI0);
     else if ( HI && !LO) set(DELTA_TRIZ);

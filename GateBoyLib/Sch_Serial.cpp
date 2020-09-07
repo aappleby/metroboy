@@ -44,7 +44,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.UVYN*/ wire UVYN_DIV_05n = not1(top.tim_reg.TAMA_DIV_05.qp());
   /*p06.COTY*/ COTY_SER_CLK.tock(UVYN_DIV_05n, UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn());
 
-  /*p06.CAVE*/ wire CAVE_SER_CLK_MUXn = mux2_n(COTY_SER_CLK.qp(), SCK.qn(), CULY_XFER_DIR.qp());
+  /*p06.CAVE*/ wire CAVE_SER_CLK_MUXn = mux2n(CULY_XFER_DIR.qp(), COTY_SER_CLK.qp(), SCK.qn());
 
   /*p06.DAWA*/ wire DAWA_SER_CLK = or2(CAVE_SER_CLK_MUXn, ETAF_XFER_START.qn()); // this must stop the clock or something when the transmit's done
   /*p06.EDYL*/ wire EDYL_SER_CLK = not1(DAWA_SER_CLK);

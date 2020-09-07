@@ -205,7 +205,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF44 LY
   {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn  = mux2_n(top.ext_bus.PIN_EXT_RDn.qn(), top.cpu_bus.PIN_CPU_RDp.tp(), top.UNOR_MODE_DBG2p);
+    /* p07.UJYV*/ wire UJYV_CPU_RDn  = mux2n(top.UNOR_MODE_DBG2p, top.ext_bus.PIN_EXT_RDn.qn(), top.cpu_bus.PIN_CPU_RDp.tp());
     /* p07.TEDO*/ wire TEDO_CPU_RDp  = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn  = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp  = not1(AJAS_CPU_RDn);

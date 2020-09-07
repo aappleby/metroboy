@@ -224,7 +224,9 @@ struct RegBase {
   }
 
   inline void preset(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE);
+    if (delta != DELTA_NONE) {
+      CHECK_P(delta == DELTA_NONE);
+    }
     delta = d;
     value = logic_lut1[value];
     delta = d;
@@ -322,7 +324,7 @@ struct DFF8 : private RegBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : private RegBase {
-  DFF9() : RegBase(REG_XXXX) {}
+  DFF9() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
   using RegBase::qp;
@@ -354,7 +356,7 @@ struct DFF9 : private RegBase {
 // DFF11_11 >> Qn
 
 struct DFF11 : private RegBase {
-  DFF11() : RegBase(REG_D0C0) {} // does not work with xxxx
+  DFF11() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
   using RegBase::qn;
@@ -382,7 +384,7 @@ struct DFF11 : private RegBase {
 // DFF13_13 >> Q
 
 struct DFF13 : private RegBase {
-  DFF13() : RegBase(REG_D0C0) {} // does not work with xxxx
+  DFF13() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
   using RegBase::qp;
@@ -545,22 +547,11 @@ struct Tri : private RegBase {
   using RegBase::c;
   using RegBase::cn;
   using RegBase::lock;
+  using RegBase::preset;
 
   inline wire tp()  const { return as_wire(); }
 
-  inline void operator = (wire w)  { (*this) = w ? DELTA_TRI1 : DELTA_TRI0; }
-
-  inline void preset(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE);
-    delta = d;
-    value = logic_lut1[value];
-    delta = d;
-  }
-
-  inline void preset(wire d) {
-    preset(d ? DELTA_TRI1 : DELTA_TRI0);
-  }
-
+  inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
   inline void operator = (RegDelta d) { merge_tri_delta(d); }
 };
 
@@ -675,17 +666,29 @@ struct Latch : private RegBase {
 // NORLATCH_01 NC
 // NORLATCH_01 << RST
 
-inline RegDelta nor_latch(wire SETp, wire RSTp) {
-  if (RSTp) {
-    return DELTA_TRI0;
+struct NorLatch : private RegBase {
+  NorLatch() : RegBase(TRI_D0NP) {}
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::qp;
+  using RegBase::qn;
+
+  //inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
+  //inline void operator = (RegDelta d) { merge_tri_delta(d); }
+
+  inline void nor_latch(wire SETp, wire RSTp) {
+    if (RSTp) {
+      delta = DELTA_TRI0;
+    }
+    else if (SETp) {
+      delta = DELTA_TRI1;
+    }
+    else {
+      delta = DELTA_HOLD;
+    }
   }
-  else if (SETp) {
-    return DELTA_TRI1;
-  }
-  else {
-    return DELTA_HOLD;
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on VCC side. Only TAKA/LONY seem to use this cell

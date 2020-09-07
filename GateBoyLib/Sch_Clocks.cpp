@@ -34,8 +34,8 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
   d("\n");
 
   d("----------  Reset   ----------\n");
-  d("TUBO %d\n",  TUBO_WAITINGp.tp());
-  d("ASOL %d\n",  ASOL_POR_DONEn.tp());
+  d("TUBO %d\n",  TUBO_WAITINGp.qp());
+  d("ASOL %d\n",  ASOL_POR_DONEn.qp());
   d("AFER %d\n",  AFER_SYS_RSTp.qp());
   d("\n");
 }
@@ -44,7 +44,7 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
 
 void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
 
-  /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp(), ASOL_POR_DONEn.tp());
+  /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp(), ASOL_POR_DONEn.qp());
   /*p01.ALUR*/ ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
   /*p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
   /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
@@ -153,10 +153,10 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
 
 void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
   /*p01.UPYF*/ wire UPYF = or2(RST, UCOB_CLKBADp);
-  /*p01.TUBO*/ TUBO_WAITINGp = nor_latch(UPYF, CPUREADY);
+  /*p01.TUBO*/ TUBO_WAITINGp.nor_latch(UPYF, CPUREADY);
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.tp(), top.tim_reg.TERO_DIV_03.qp());
+  /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.TERO_DIV_03.qp());
 #else
   /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.UPOF_DIV_15());
 #endif
@@ -166,10 +166,10 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
 
   /*#p01.ALYP*/ wire ALYP_RSTn = not1(TABA_POR_TRIGn);
   /*#p01.AFAR*/ wire AFAR_RST  = nor2(RST, ALYP_RSTn);
-  /*p01.ASOL*/ ASOL_POR_DONEn = nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
 
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
-  /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.tp());
+  /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp = AFER_SYS_RSTp.qp();
   top.cpu_bus.PIN_CPU_EXT_RST  = RST;

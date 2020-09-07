@@ -40,7 +40,7 @@ struct DmaRegisters {
 
 private:
 
-  /*p04.LYXE*/ Latch LYXE_DMA_LATCHp = TRI_D0NP;
+  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp;
   /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;
   /*p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;
   /*p04.LENE*/ DFF17 LENE_DMA_TRIG_d4;

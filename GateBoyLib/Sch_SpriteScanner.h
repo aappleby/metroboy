@@ -33,8 +33,8 @@ struct SpriteScanner {
   //----------------------------------------
   // States
 
-  /*p28.BESU*/ Latch BESU_SCANNINGp = TRI_D0NP; // -> oam bus
-  /*p29.CENO*/ DFF17 CENO_SCANNINGp; // -> oam bus
+  /*p28.BESU*/ NorLatch BESU_SCANNINGp; // -> oam bus
+  /*p29.CENO*/ DFF17 CENO_SCANNINGp;    // -> oam bus
 
   /*p28.YFEL*/ DFF17 YFEL_SCAN0; // -> oam bus address mux
   /*p28.WEWY*/ DFF17 WEWY_SCAN1;

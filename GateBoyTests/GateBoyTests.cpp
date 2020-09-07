@@ -369,6 +369,7 @@ int GateBoyTests::test_ext_bus() {
   }
 #endif
 
+#if 1
   {
     // VRAM access
     // ld (hl), a
@@ -506,6 +507,7 @@ int GateBoyTests::test_ext_bus() {
       gb.next_phase();
     }
   }
+#endif
 
   {
     // ZRAM access

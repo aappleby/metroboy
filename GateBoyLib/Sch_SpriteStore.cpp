@@ -125,7 +125,7 @@ void SpriteStore::tick(const SchematicTop& top) {
 
   /*#p29.CEHA*/ wire CEHA_SCANNINGp  = not1(top.sprite_scanner.CENO_SCANNINGp.qn());
   /*#p29.BYJO*/ wire BYJO_SCANNINGn  = not1(CEHA_SCANNINGp);
-  /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(BYJO_SCANNINGn, top.pix_pipe.XYMU_RENDERINGp.tp());
+  /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(BYJO_SCANNINGn, top.pix_pipe.XYMU_RENDERINGp.qp());
   /*#p29.AROR*/ wire AROR_MATCH_ENp  = and2(AZEM_RENDERINGp, top.pix_pipe.XYLO_LCDC_SPENn.qn());
 
   //----------------------------------------

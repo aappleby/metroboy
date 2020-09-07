@@ -119,7 +119,7 @@ void OamBus::tock(SchematicTop& top) {
   /* p28.XEMU*/ wire XEMU_OAM_A6p = not1(BUS_OAM_A6n.tp());
   /* p28.YZET*/ wire YZET_OAM_A7p = not1(BUS_OAM_A7n.tp());
 
-  /*p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.tp();
+  /*p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
   /*p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg.MATU_DMA_RUNNINGp.qp();
   /*p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner.BESU_SCANNINGp.qp();
 
@@ -193,7 +193,7 @@ void OamBus::tock(SchematicTop& top) {
   /*p30.YDUF*/ YDUF_SPRITE_IDX4p.tock(WUDA_xxCDxxGH, WEFE_VCC, XEMU_OAM_A6p);
   /*p30.XECU*/ XECU_SPRITE_IDX5p.tock(WUDA_xxCDxxGH, WEFE_VCC, YZET_OAM_A7p);
 
-  /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn = and2(top.sprite_scanner.CENO_SCANNINGp.qn(), top.pix_pipe.XYMU_RENDERINGp.tp());
+  /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn = and2(top.sprite_scanner.CENO_SCANNINGp.qn(), top.pix_pipe.XYMU_RENDERINGp.qp());
 
   /*#p30.WUZY*/ top.sprite_store.SPR_TRI_I0p = tribuf_6nn(BUZA_STORE_SPRITE_INDXn, XADU_SPRITE_IDX0p.qn());
   /* p30.WYSE*/ top.sprite_store.SPR_TRI_I1p = tribuf_6nn(BUZA_STORE_SPRITE_INDXn, XEDY_SPRITE_IDX1p.qn());
@@ -269,7 +269,7 @@ void OamBus::tock(SchematicTop& top) {
     /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(TAPU_CPU_WRp_xxxxEFGx);
     /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
     /*p28.XUTO*/ wire XUTO_CPU_OAM_WRp = and2(SARO_FE00_FEFFp, CUPA_CPU_WRp_xxxxEFGx);
-    /*p28.WUJE*/ WUJE_CPU_OAM_WRn = nor_latch(XYNY_ABCDxxxx, XUTO_CPU_OAM_WRp);
+    /*p28.WUJE*/ WUJE_CPU_OAM_WRn.nor_latch(XYNY_ABCDxxxx, XUTO_CPU_OAM_WRp);
     
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WRp = not1(WUJE_CPU_OAM_WRn.qp());
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor3(MATU_DMA_RUNNINGp, ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor

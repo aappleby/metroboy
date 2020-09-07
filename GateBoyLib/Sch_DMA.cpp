@@ -57,7 +57,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p22.XEDA*/ wire XEDA_FF46p    = not1(WATE_FF46n);
     /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
     /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn(), CUNU_SYS_RSTn);
-    /*#p04.LYXE*/ LYXE_DMA_LATCHp    = nor_latch(LAVY_FF46_WRp, LOKO_DMA_RSTp);
+    /*#p04.LYXE*/ LYXE_DMA_LATCHp.nor_latch(LAVY_FF46_WRp, LOKO_DMA_RSTp);
 
     /*#p04.LUPA*/ wire LUPA_DMA_TRIG = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn());
     /*#p04.LUVY*/ LUVY_DMA_TRIG_d0  .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LUPA_DMA_TRIG);

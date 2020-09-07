@@ -55,7 +55,7 @@ struct OamBus {
   //----------------------------------------
 
   /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
-  /*p28.WUJE*/ Latch WUJE_CPU_OAM_WRn = TRI_D1NP;
+  /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;
 
   /*p31.XYKY*/ Latch XYKY_OAM_LATCH_DB0n = TRI_D0NP;
   /*p31.YRUM*/ Latch YRUM_OAM_LATCH_DB1n = TRI_D0NP;

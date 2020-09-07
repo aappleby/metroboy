@@ -1002,7 +1002,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // POKY05 << LOBY01
 // If PYGO goes high, POKY03 goes high
 // if LOBY goes high, POKY03 goes low.
-// POKY = nor_latch(PYGO, LOBY)
+// POKY.nor_latch(PYGO, LOBY)
 
 // SOBU_01 SC
 // SOBU_02 << TAVA_02 CLKp

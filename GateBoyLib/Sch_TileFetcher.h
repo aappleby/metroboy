@@ -28,7 +28,7 @@ struct TileFetcher {
   /*#p32.METE*/ Sig METE_LATCH_TILE_DAp; // -> vram bus
   /* p32.LESO*/ Sig LESO_LATCH_TILE_DBn; // -> vram bus
 
-  /*p24.POKY*/ Latch POKY_PRELOAD_LATCHp = TRI_D0NP;    // -> pix pipe, top. fires 13 phases into first tile fetch
+  /*p24.POKY*/ NorLatch POKY_PRELOAD_LATCHp;    // -> pix pipe, top. fires 13 phases into first tile fetch
   /*p27.LONY*/ Latch LONY_BG_FETCH_RUNNINGp = TRI_D0NP; // -> vram bus
 
   /*p24.NYKA*/ DFF17 NYKA_FETCH_DONE_P11; // -> top

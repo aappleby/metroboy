@@ -29,8 +29,8 @@ void SpriteFetcher::dump(Dumper& d) const {
 //------------------------------------------------------------------------------
 
 void SpriteFetcher::tick(const SchematicTop& top) {
-  /* p29.TEPA*/ wire TEPA_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.tp());
-  /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.tp());
+  /* p29.TEPA*/ wire TEPA_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.qp());
+  /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.qp());
 
   // FIXME this is kind of a mess
   /* p29.TYNO*/ wire TYNO = nand3(TOXE_SFETCH_S0.qp(), SEBA_SFETCH_S1_D5.qp(), VONU_SFETCH_S1_D4.qp());
@@ -56,7 +56,7 @@ void SpriteFetcher::tick(const SchematicTop& top) {
 
 void SpriteFetcher::tock(SchematicTop& top) {
   wire VYPO = 1;
-  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.tp();
+  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
   wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_VID_LINE_END_TRIGp;
 
   /* p01.ROSY*/ wire ROSY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);

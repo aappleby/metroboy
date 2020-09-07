@@ -46,8 +46,8 @@ struct PixelPipe {
   /*p27.NUNY*/ Sig   NUNY_WX_MATCH_TRIGp;
   /*p21.VOTY*/ Sig   VOTY_INT_STATp;
 
-  /*p21.XYMU*/ Tri   XYMU_RENDERINGp = TRI_D0NP; // this must be positive polarity, or stat read doesn't work
-  /*p27.PYNU*/ Tri   PYNU_WIN_MODE_A = TRI_D0NP;
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
+  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
   /*p27.RYDY*/ Tri   RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
   /*p27.SOVY*/ DFF17 SOVY_WIN_FIRST_TILE_B;
 
@@ -121,22 +121,22 @@ private:
   /*p27.PUKU*/ Tri PUKU_WIN_FIRST_TILE_A = TRI_D1NP;
 
   /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_B;
-  /*p27.REJO*/ Tri    REJO_WY_MATCH_LATCH   = TRI_D0NP;
+  /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCH;
   /*p27.SARY*/ DFF17 SARY_WY_MATCH;
   /*p27.RYFA*/ DFF17 RYFA_FETCHn_A;
   /*p27.RENE*/ DFF17 RENE_FETCHn_B;
   /*p27.PYCO*/ DFF17 PYCO_WX_MATCH_A;
   /*p27.NUNU*/ DFF17 NUNU_WX_MATCH_B;
 
-  /*p??.ROXY*/ Latch ROXY_SCX_FINE_MATCH_LATCHn = TRI_D1NP;
+  /*p??.ROXY*/ NorLatch ROXY_SCX_FINE_MATCH_LATCHn;
 
   /*p27.RYKU*/ DFF17 RYKU_FINE_CNT0;
   /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;
   /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;
 
-  /*p21.RUPO*/ Tri RUPO_LYC_MATCH_LATCHn = TRI_D0NP;
+  /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
 
-  /*p21.WUSA*/ Tri WUSA_LCD_CLOCK_GATE = TRI_D0NP;
+  /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE;
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;
   /*p??.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;
   /*p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;

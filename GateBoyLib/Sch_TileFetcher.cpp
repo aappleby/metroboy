@@ -28,9 +28,9 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& /*top*/) const {
 //------------------------------------------------------------------------------
 
 void TileFetcher::tick(const SchematicTop& top) {
-  /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.tp());
+  /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.qp());
 
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.tp());
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp());
   /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
   /* p26.AXAD*/ wire AXAD_WIN_MODEn = not1(PORE_WIN_MODEp);
 
@@ -74,7 +74,7 @@ void TileFetcher::tick(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 void TileFetcher::tock(SchematicTop& top) {
-  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.tp();
+  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
 
   /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
@@ -98,7 +98,7 @@ void TileFetcher::tock(SchematicTop& top) {
   /*p24.PORY*/ PORY_FETCH_DONE_P12.tock(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_FETCH_DONE_P11.qp());
   /*p24.PYGO*/ PYGO_FETCH_DONE_P13.tock(ALET_xBxDxFxH, XYMU_RENDERINGp,   PORY_FETCH_DONE_P12.qp());
 
-  /*p24.POKY*/ POKY_PRELOAD_LATCHp = nor_latch(PYGO_FETCH_DONE_P13.qp(), LOBY_RENDERINGn);
+  /*p24.POKY*/ POKY_PRELOAD_LATCHp.nor_latch(PYGO_FETCH_DONE_P13.qp(), LOBY_RENDERINGn);
 
   /*p27.LOVY*/ LOVY_BG_FETCH_DONEp  .tock(MYVO_AxCxExGx, top.NYXU_FETCH_TRIGn,     LYRY_BFETCH_DONEp);
   /*p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(LOVY_BG_FETCH_DONEp.qn(), XYMU_RENDERINGp);

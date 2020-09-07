@@ -18,6 +18,7 @@
   <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
+    <ClCompile Include="Gates.cpp" />
     <ClCompile Include="Probe.cpp" />
     <ClCompile Include="Sch_ApuControl.cpp" />
     <ClCompile Include="Sch_Bootrom.cpp" />
@@ -42,12 +43,12 @@
     <ClCompile Include="Sch_Timer.cpp" />
     <ClCompile Include="Sch_Top.cpp" />
     <ClCompile Include="Sch_VramBus.cpp" />
-    <ClCompile Include="Signals.cpp" />
     <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BusDump.h" />
     <ClInclude Include="GateBoy.h" />
+    <ClInclude Include="Gates.h" />
     <ClInclude Include="Probe.h" />
     <ClInclude Include="Sch_ApuControl.h" />
     <ClInclude Include="Sch_Bootrom.h" />
@@ -72,7 +73,6 @@
     <ClInclude Include="Sch_Timer.h" />
     <ClInclude Include="Sch_Top.h" />
     <ClInclude Include="Sch_VramBus.h" />
-    <ClInclude Include="Signals.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

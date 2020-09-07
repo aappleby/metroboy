@@ -1,4 +1,4 @@
-#include "GateBoyLib/Signals.h"
+#include "GateBoyLib/Gates.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>

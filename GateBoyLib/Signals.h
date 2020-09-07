@@ -175,8 +175,8 @@ struct Reg : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-// 8-rung register with no reset, inverting input, and dual outputs
-// Used by sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
+// 8-rung register with no reset, inverting input, and dual outputs. Used by
+// sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
 
 // REG8_01 |o------O | << CLKn
 // REG8_02 |====O====| << Dn
@@ -207,6 +207,62 @@ struct DFF8 : private RegBase {
 
 inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
   return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
+}
+
+//-----------------------------------------------------------------------------
+// 9-rung register with reset, inverting input, and dual outputs. Looks like
+// Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
+// OBP1, stat int enable, sprite store, SCY, SCX, LCDC, WX, WY.
+
+// REG9_01 | O===--o | 
+// REG9_02 |==--O====| << CLKp
+// REG9_03 | ------- | << D
+// REG9_04 |o-------O| << CLKn
+// REG9_05 |  -----  | 
+// REG9_06 |--xxOxx--| << RSTn
+// REG9_07 |o-------o| 
+// REG9_08 |xxx-O-xxx| >> Qn
+// REG9_09 |xxx-O-xxx| >> Q
+
+struct DFF9 : private RegBase {
+  DFF9() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+
+  inline wire q08() const { return !as_wire(); }
+  inline wire q09() const { return  as_wire(); }
+
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
+  inline void tock(wire CLKp, wire CLKn, wire RSTn, bool D) {
+    (void)CLKn;
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
+    }
+  }
+};
+
+inline RegDelta dff9_inv(wire CLKp, wire RSTn, wire D) {
+  if (!RSTn) {
+    return RegDelta(DELTA_A1C0 | (CLKp << 1));
+  }
+  else {
+    return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
+  }
+}
+
+inline RegQNIn dff9_A_inv(wire CLKp, wire RSTn, wire D) {
+  if (!RSTn) {
+    return {RegDelta(DELTA_A1C0 | (CLKp << 1))};
+  }
+  else {
+    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0))};
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -157,51 +157,6 @@ inline RegDelta tribuf_10np(wire OEn, wire D) {
 }
 
 //-----------------------------------------------------------------------------
-// 9-rung register with reset and dual outputs. Looks like Reg8 with a hat and a belt.
-// Four vias in center column
-
-// Used by clock phase (CHECK), LYC, BGP, OBP0, OBP1, stat int enable, sprite
-// store, SCY, SCX, LCDC, WX, WY
-
-// | O===--o | 
-// |==--O====| CLKp
-// | ------- | D
-// |o-------O| CLKn
-// |  -----  | 
-// |--xxOxx--| RSTn
-// |o-------o| 
-// |xxx-O-xxx| Qn
-// |xxx-O-xxx| Q
-
-// REG9_01 NC
-// REG9_02 << CLKp
-// REG9_03 << D
-// REG9_04 << CLKn
-// REG9_05 NC
-// REG9_06 << RSTn
-// REG9_07 NC
-// REG9_08 >> Qn
-// REG9_09 >> Q
-
-inline RegDelta dff9_inv(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return RegDelta(DELTA_A1C0 | (CLKp << 1));
-  }
-  else {
-    return RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0));
-  }
-}
-
-inline RegQNIn dff9_A_inv(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A1C0 | (CLKp << 1))};
-  }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!D) << 0))};
-  }
-}
-
-//-----------------------------------------------------------------------------
 // Reg11 is used by the background pixel temp state
 // Not sure why it's special.
 

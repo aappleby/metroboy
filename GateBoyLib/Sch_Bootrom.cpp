@@ -19,15 +19,15 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF50 - disable bootrom bit
   {
-    /*p07.TYRO*/ wire TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.BUS_CPU_A07.tp(), top.cpu_bus.BUS_CPU_A05.tp(), top.cpu_bus.BUS_CPU_A03.tp(),
-                                                  top.cpu_bus.BUS_CPU_A02.tp(), top.cpu_bus.BUS_CPU_A01.tp(), top.cpu_bus.BUS_CPU_A00.tp());
-    /*p07.TUFA*/ wire TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.BUS_CPU_A04.tp(), top.cpu_bus.BUS_CPU_A06.tp());
+    /*p07.TYRO*/ wire TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.BUS_CPU_A07.qp(), top.cpu_bus.BUS_CPU_A05.qp(), top.cpu_bus.BUS_CPU_A03.qp(),
+                                                  top.cpu_bus.BUS_CPU_A02.qp(), top.cpu_bus.BUS_CPU_A01.qp(), top.cpu_bus.BUS_CPU_A00.qp());
+    /*p07.TUFA*/ wire TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.BUS_CPU_A04.qp(), top.cpu_bus.BUS_CPU_A06.qp());
 
     /*p07.TEXE*/ wire TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp, top.cpu_bus.SYKE_FF00_FFFFp(), TYFO_ADDR_0x0x0000p, TUFA_ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(TEXE_FF50_RDp, BOOT_BITn.qp());
+    /*p07.SYPU*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TEXE_FF50_RDp, BOOT_BITn.qp());
 
     /*p07.TUGE*/ wire TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, top.cpu_bus.SYKE_FF00_FFFFp(), TYFO_ADDR_0x0x0000p, TUFA_ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire SATO_BOOT_BIT_IN = or2(top.cpu_bus.BUS_CPU_D0p.tp(), BOOT_BITn.qp());
+    /*p07.SATO*/ wire SATO_BOOT_BIT_IN = or2(top.cpu_bus.BUS_CPU_D0p.qp(), BOOT_BITn.qp());
 
     /*p07.TEPU*/ BOOT_BITn.tock(TUGE_FF50_WRn, top.clk_reg.ALUR_SYS_RSTn, SATO_BOOT_BIT_IN);
   }
@@ -69,14 +69,14 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     uint16_t addr = (uint16_t)top.cpu_bus.get_bus_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    cpu_bus.BUS_CPU_D0p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x01));
-    cpu_bus.BUS_CPU_D1p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x02));
-    cpu_bus.BUS_CPU_D2p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x04));
-    cpu_bus.BUS_CPU_D3p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x08));
-    cpu_bus.BUS_CPU_D4p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x10));
-    cpu_bus.BUS_CPU_D5p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x20));
-    cpu_bus.BUS_CPU_D6p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x40));
-    cpu_bus.BUS_CPU_D7p = tribuf_6pn(ZERY_BOOT_CSp, !bool(data & 0x80));
+    cpu_bus.BUS_CPU_D0p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x01));
+    cpu_bus.BUS_CPU_D1p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x02));
+    cpu_bus.BUS_CPU_D2p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x04));
+    cpu_bus.BUS_CPU_D3p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x08));
+    cpu_bus.BUS_CPU_D4p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x10));
+    cpu_bus.BUS_CPU_D5p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x20));
+    cpu_bus.BUS_CPU_D6p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x40));
+    cpu_bus.BUS_CPU_D7p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x80));
 #endif
   }
 }

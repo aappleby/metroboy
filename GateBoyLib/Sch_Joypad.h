@@ -21,7 +21,7 @@ struct Joypad {
   friend struct SchematicTop;
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
-  /*p02.AWOB*/ Tri AWOB_WAKE_CPU = TRI_D0NP;
+  /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU = TRI_D0NP;
   Tri PIN_CPU_WAKE = TRI_HZNP; // top right wire by itself <- P02.AWOB
 
   /*p02.BATU*/ DFF17 BATU_JP_GLITCH0;
@@ -38,10 +38,10 @@ struct Joypad {
   /*p05.KUKO*/ DFF17 KUKO_DBG_FF00_D6;
   /*p05.KERU*/ DFF17 KERU_DBG_FF00_D7;
 
-  /*p05.KEVU*/ Tri KEVU_JOYP_L0     = TRI_D0NP; // 10-rung, looks like pass gate or something
-  /*p05.KAPA*/ Tri KAPA_JOYP_L1     = TRI_D0NP; // 10-rung, looks like pass gate or something
-  /*p05.KEJA*/ Tri KEJA_JOYP_L2     = TRI_D0NP; // 10-rung, looks like pass gate or something
-  /*p05.KOLO*/ Tri KOLO_JOYP_L3     = TRI_D0NP; // 10-rung, looks like pass gate or something
+  /*p05.KEVU*/ TpLatch KEVU_JOYP_L0 = TRI_D0NP; // 10-rung, looks like pass gate or something
+  /*p05.KAPA*/ TpLatch KAPA_JOYP_L1 = TRI_D0NP; // 10-rung, looks like pass gate or something
+  /*p05.KEJA*/ TpLatch KEJA_JOYP_L2 = TRI_D0NP; // 10-rung, looks like pass gate or something
+  /*p05.KOLO*/ TpLatch KOLO_JOYP_L3 = TRI_D0NP; // 10-rung, looks like pass gate or something
 
   Pin PIN_JOY_P10 = TRI_HZPU; // PIN_67
   Pin PIN_JOY_P11 = TRI_HZPU; // PIN_66

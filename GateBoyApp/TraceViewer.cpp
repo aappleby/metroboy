@@ -96,7 +96,7 @@ void plot_signal(int x, int y, void* d, std::vector<SignalMap>& map) {
 void draw_labels(int x, int y, std::vector<SignalMap>& map) {
   for (int field = 0; field < map.size(); field++) {
     SignalMap sig = map[field];
-    tp.render_text(x, y, sig.name);
+    qp.render_text(x, y, sig.name);
 
     y += sig.width * 12;
   }

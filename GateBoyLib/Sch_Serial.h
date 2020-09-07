@@ -49,9 +49,9 @@ private:
   //----------
   // Serial pins
 
-  /* PIN_68 */ Pin SCK  = TRI_HZPU;
-  /* PIN_69 */ Pin SIN  = TRI_HZPU;
-  /* PIN_70 */ Pin SOUT = TRI_HZPU;
+  /* PIN_68 */ Pin SCK;
+  /* PIN_69 */ Pin SIN;
+  /* PIN_70 */ Pin SOUT;
 };
 
 //-----------------------------------------------------------------------------

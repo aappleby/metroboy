@@ -102,7 +102,7 @@ void TileFetcher::tock(SchematicTop& top) {
 
   /*p27.LOVY*/ LOVY_BG_FETCH_DONEp  .tock(MYVO_AxCxExGx, top.NYXU_FETCH_TRIGn,     LYRY_BFETCH_DONEp);
   /*p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(LOVY_BG_FETCH_DONEp.qn(), XYMU_RENDERINGp);
-  /*p27.LONY*/ LONY_BG_FETCH_RUNNINGp = nand_latch(top.NYXU_FETCH_TRIGn, LURY_BG_FETCH_DONEn);
+  /*p27.LONY*/ LONY_BG_FETCH_RUNNINGp.nand_latch(top.NYXU_FETCH_TRIGn, LURY_BG_FETCH_DONEn);
 }
 
 //------------------------------------------------------------------------------

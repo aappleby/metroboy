@@ -44,8 +44,9 @@ private:
   /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;
   /*p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;
   /*p04.LENE*/ DFF17 LENE_DMA_TRIG_d4;
-  /*p04.LOKY*/ Tri   LOKY_DMA_LATCHp = TRI_D0NP; // NAND latch w/ LARA
-  /*p04.LARA*/ Tri   LARA_DMA_LATCHn = TRI_D1NP; // NAND latch w/ LOKY
+
+  /*p04.LOKY*/ NandLatch LOKY_DMA_LATCHp; // NAND latch w/ LARA
+  ///*p04.LARA*/ Tri   LARA_DMA_LATCHn = TRI_D1NP; // NAND latch w/ LOKY
 };
 
 //-----------------------------------------------------------------------------

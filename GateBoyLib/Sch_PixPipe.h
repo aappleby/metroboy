@@ -48,7 +48,7 @@ struct PixelPipe {
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
-  /*p27.RYDY*/ Tri   RYDY_WIN_FIRST_TILE_A = TRI_D0NP;
+  /*p27.RYDY*/ NorLatch RYDY_WIN_FIRST_TILE_A; // NorLatch with p27.PUKU
   /*p27.SOVY*/ DFF17 SOVY_WIN_FIRST_TILE_B;
 
   // Pixel counter
@@ -118,7 +118,6 @@ private:
   /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn;
 
   /*p21.WODU*/ Sig WODU_HBLANKp;
-  /*p27.PUKU*/ Tri PUKU_WIN_FIRST_TILE_A = TRI_D1NP;
 
   /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_B;
   /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCH;

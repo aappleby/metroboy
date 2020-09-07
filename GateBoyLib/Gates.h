@@ -542,7 +542,7 @@ struct Sig : private RegBase {
 //-----------------------------------------------------------------------------
 
 struct Tri : private RegBase {
-  Tri(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+  Tri(RegState r = TRI_HZNP) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
   using RegBase::cn;
@@ -554,82 +554,74 @@ struct Tri : private RegBase {
   inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
   inline void operator = (RegDelta d) { merge_tri_delta(d); }
 };
-
-//-----------------------------------------------------------------------------
-// top rung tadpole facing second rung dot
-
-inline RegDelta tribuf_6pn(wire OEp, wire Dn) {
-  if (OEp) {
-    return !Dn ? DELTA_TRI1 : DELTA_TRI0;
-  }
-  else {
-    return DELTA_TRIZ;
-  }
-}
-
-//-----------------------------------------------------------------------------
-// top rung tadpole not facing second rung dot.
-
-inline RegDelta tribuf_6nn(wire OEn, wire Dn) {
-  if (!OEn) {
-    return !Dn ? DELTA_TRI1 : DELTA_TRI0;
-  }
-  else {
-    return DELTA_TRIZ;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-// TYGO_01 << BUS_CPU_D2p
-// TYGO_02 nc
-// TYGO_03 nc
-// TYGO_04 nc
-// TYGO_05 << RAHU_04
-// TYGO_06 << BUS_CPU_D2p
-// TYGO_07 nc
-// TYGO_08 nc
-// TYGO_09 >> BUS_VRAM_D2p
-// TYGO_10 nc
-
-// Must be NP - see KOVA/KEJO
-
-inline RegDelta tribuf_10np(wire OEn, wire D) {
-  if (!OEn) {
-    return D ? DELTA_TRI1 : DELTA_TRI0;
-  }
-  else {
-    return DELTA_TRIZ;
-  }
-}
 
 //-----------------------------------------------------------------------------
 
 struct Bus : private RegBase {
-  Bus(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+  Bus(RegState r = TRI_HZPU) : RegBase(r) {}
 
   using RegBase::c;
-  using RegBase::cn;
   using RegBase::lock;
-  using RegBase::preset;
+  using RegBase::qp;
 
-  inline wire tp()  const { return as_wire(); }
+  inline void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
+  //inline void set(RegDelta d) { merge_tri_delta(d); }
 
-  inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-  inline void operator = (RegDelta d) { merge_tri_delta(d); }
+  // TYGO_01 << BUS_CPU_D2p
+  // TYGO_02 nc
+  // TYGO_03 nc
+  // TYGO_04 nc
+  // TYGO_05 << RAHU_04
+  // TYGO_06 << BUS_CPU_D2p
+  // TYGO_07 nc
+  // TYGO_08 nc
+  // TYGO_09 >> BUS_VRAM_D2p
+  // TYGO_10 nc
+
+  // Must be NP - see KOVA/KEJO
+
+  inline void tri10_np(wire OEn, wire D) {
+    if (!OEn) {
+      merge_tri_delta(D ? DELTA_TRI1 : DELTA_TRI0);
+    }
+    else {
+      merge_tri_delta(DELTA_TRIZ);
+    }
+  }
+
+  // top rung tadpole not facing second rung dot.
+
+  inline void tri_6nn(wire OEn, wire Dn) {
+    if (!OEn) {
+      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
+    }
+    else {
+      merge_tri_delta(DELTA_TRIZ);
+    }
+  }
+
+  inline void tri_6pn(wire OEp, wire Dn) {
+    if (OEp) {
+      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
+    }
+    else {
+      merge_tri_delta(DELTA_TRIZ);
+    }
+  }
 };
 
 //-----------------------------------------------------------------------------
-// half-bridge inverting io pin, some with output enable.
+// Half-bridge inverting io pin, some with output enable.
 
 struct Pin : private RegBase {
-  Pin(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
+  Pin(RegState r = TRI_HZPU) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
 
   inline wire qp()  const { return  as_wire(); }
   inline wire qn()  const { return !as_wire(); }
 
+  inline void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
   inline void operator = (RegDelta d) { merge_tri_delta(d); }
 
   inline void io_pin(wire HI, wire LO, wire OEp = true) {
@@ -643,27 +635,13 @@ struct Pin : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-
-struct Latch : private RegBase {
-  Latch(RegState r) : RegBase(r) { CHECK_P(is_tri()); }
-
-  using RegBase::c;
-  using RegBase::cn;
-  using RegBase::qp;
-  using RegBase::qn;
-
-  inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-  inline void operator = (RegDelta d) { merge_tri_delta(d); }
-};
-
-//-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
 
 // NORLATCH_01 << SET
-// NORLATCH_01 NC
+// NORLATCH_01 nc
 // NORLATCH_01 >> QN
 // NORLATCH_01 >> Q
-// NORLATCH_01 NC
+// NORLATCH_01 nc
 // NORLATCH_01 << RST
 
 struct NorLatch : private RegBase {
@@ -674,10 +652,8 @@ struct NorLatch : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
 
-  //inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-  //inline void operator = (RegDelta d) { merge_tri_delta(d); }
-
   inline void nor_latch(wire SETp, wire RSTp) {
+    CHECK_N(has_delta());
     if (RSTp) {
       delta = DELTA_TRI0;
     }
@@ -694,57 +670,67 @@ struct NorLatch : private RegBase {
 // 6-rung cell, "arms" on VCC side. Only TAKA/LONY seem to use this cell
 
 // NANDLATCH_01 << SETn
-// NANDLATCH_01 NC
+// NANDLATCH_01 nc
 // NANDLATCH_01 >> Q
 // NANDLATCH_01 >> QN
-// NANDLATCH_01 NC
+// NANDLATCH_01 nc
 // NANDLATCH_01 << RSTn
 
-inline RegDelta  nand_latch(wire SETn, wire RSTn) {
-  if (!RSTn) {
-    return DELTA_TRI0;
+struct NandLatch : private RegBase {
+  NandLatch() : RegBase(TRI_D0NP) {}
+
+  using RegBase::c;
+  using RegBase::cn;
+  using RegBase::qp;
+  using RegBase::qn;
+
+  inline void nand_latch(wire SETn, wire RSTn) {
+    CHECK_N(has_delta());
+    if (!RSTn) {
+      delta = DELTA_TRI0;
+    }
+    else if (!SETn) {
+      delta = DELTA_TRI1;
+    }
+    else {
+      delta = DELTA_HOLD;
+    }
   }
-  else if (!SETn) {
-    return DELTA_TRI1;
-  }
-  else {
-    return DELTA_HOLD;
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 // Yellow 10-rung cells on die. Transparent latch, probably.
 
-// TPLATCH_01
-// TPLATCH_02 NC
-// TPLATCH_03
-// TPLATCH_04 NC
-// TPLATCH_05 NC
-// TPLATCH_06 NC
-// TPLATCH_07 NC
-// TPLATCH_08
-// TPLATCH_09 NC
-// TPLATCH_10
+// TPLATCH_01 << HOLDn
+// TPLATCH_02 nc
+// TPLATCH_03 << D
+// TPLATCH_04 nc
+// TPLATCH_05 nc
+// TPLATCH_06 nc
+// TPLATCH_07 nc
+// TPLATCH_08 >> Q
+// TPLATCH_09 nc
+// TPLATCH_10 >> Qn
 
 // Output 08 must _not_ be inverting, see PIN_EXT_A14p
 // Output 10 _must_ be inverting...?
 
-inline RegDelta tp_latch(wire HOLDn, wire D) {
-  if (!HOLDn) {
-    return DELTA_HOLD;
-  }
-  else {
-    return D ? DELTA_TRI1 : DELTA_TRI0;
-  }
-}
+struct TpLatch : private RegBase {
+  TpLatch(RegState r = TRI_D0NP) : RegBase(r) {}
 
-inline RegDelta tp_latch(wire HOLDn, const Tri& T) {
-  if (!HOLDn) {
-    return DELTA_HOLD;
+  using RegBase::c;
+  using RegBase::qp;
+  using RegBase::qn;
+
+  inline void tp_latch(wire HOLDn, wire D) {
+    CHECK_N(has_delta());
+    if (!HOLDn) {
+      delta = DELTA_HOLD;
+    }
+    else {
+      delta = D ? DELTA_TRI1 : DELTA_TRI0;
+    }
   }
-  else {
-    return T.tp() ? DELTA_TRI1 : DELTA_TRI0;
-  }
-}
+};
 
 //-----------------------------------------------------------------------------

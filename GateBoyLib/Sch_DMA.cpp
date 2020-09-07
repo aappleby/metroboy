@@ -62,9 +62,11 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.LUPA*/ wire LUPA_DMA_TRIG = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn());
     /*#p04.LUVY*/ LUVY_DMA_TRIG_d0  .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LUPA_DMA_TRIG);
     /*#p04.LENE*/ LENE_DMA_TRIG_d4  .tock(MOPA_xxxxEFGH, CUNU_SYS_RSTn, LUVY_DMA_TRIG_d0.qp());
-    /*#p04.LOKY*/ LOKY_DMA_LATCHp    = nand2(LARA_DMA_LATCHn.tp(), LENE_DMA_TRIG_d4.qn());
-    /*#p04.LARA*/ LARA_DMA_LATCHn    = nand3(LOKY_DMA_LATCHp.tp(), MYTE_DMA_DONE.qn(), CUNU_SYS_RSTn);
-    /*#p04.MATU*/ MATU_DMA_RUNNINGp .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.tp());
+    
+    /*#p04.LOKY*/ LOKY_DMA_LATCHp.nand_latch(LENE_DMA_TRIG_d4.qn(), and2(MYTE_DMA_DONE.qn(), CUNU_SYS_RSTn));
+    
+
+    /*#p04.MATU*/ MATU_DMA_RUNNINGp .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp());
   }
 
   {
@@ -80,7 +82,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn(), CUNU_SYS_RSTn);
     /*#p04.LAPA*/ wire LAPA_DMA_RSTn = not1(LOKO_DMA_RSTp);
-    /*#p04.META*/ wire META_DMA_CLKp = and2(UVYT_ABCDxxxx, LOKY_DMA_LATCHp.tp());
+    /*#p04.META*/ wire META_DMA_CLKp = and2(UVYT_ABCDxxxx, LOKY_DMA_LATCHp.qp());
 
     /*#p04.NAKY*/ NAKY_DMA_A00p.tock(META_DMA_CLKp,       LAPA_DMA_RSTn, NAKY_DMA_A00p.qn());
     /*#p04.PYRO*/ PYRO_DMA_A01p.tock(NAKY_DMA_A00p.qn(),  LAPA_DMA_RSTn, PYRO_DMA_A01p.qn());
@@ -100,14 +102,14 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
     /*#p??.PYSU*/ wire PYSU_FF46_WRp = not1(LORU_FF46_WRn);
 
-    /*#p04.NAFA*/ NAFA_DMA_A08n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D0p.tp()); // BOTH OUTPUTS USED
-    /* p04.PYNE*/ PYNE_DMA_A09n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D1p.tp());
-    /* p04.PARA*/ PARA_DMA_A10n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D2p.tp());
-    /* p04.NYDO*/ NYDO_DMA_A11n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D3p.tp());
-    /* p04.NYGY*/ NYGY_DMA_A12n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D4p.tp());
-    /* p04.PULA*/ PULA_DMA_A13n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D5p.tp());
-    /* p04.POKU*/ POKU_DMA_A14n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D6p.tp());
-    /* p04.MARU*/ MARU_DMA_A15n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D7p.tp());
+    /*#p04.NAFA*/ NAFA_DMA_A08n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D0p.qp()); // BOTH OUTPUTS USED
+    /* p04.PYNE*/ PYNE_DMA_A09n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D1p.qp());
+    /* p04.PARA*/ PARA_DMA_A10n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D2p.qp());
+    /* p04.NYDO*/ NYDO_DMA_A11n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D3p.qp());
+    /* p04.NYGY*/ NYGY_DMA_A12n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D4p.qp());
+    /* p04.PULA*/ PULA_DMA_A13n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D5p.qp());
+    /* p04.POKU*/ POKU_DMA_A14n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D6p.qp());
+    /* p04.MARU*/ MARU_DMA_A15n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D7p.qp());
 
     /*p 07.AJAS*/ wire AJAS_CPU_RDn  = not1(top.TEDO_CPU_RDp);
     /*p 07.ASOT*/ wire ASOT_CPU_RDp  = not1(AJAS_CPU_RDn);
@@ -115,14 +117,14 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
     /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
 
-    /*#p04.POLY*/ cpu_bus.BUS_CPU_D0p = tribuf_6pn(PUSY_FF46_RDp, NAFA_DMA_A08n.q08());
-    /* p04.ROFO*/ cpu_bus.BUS_CPU_D1p = tribuf_6pn(PUSY_FF46_RDp, PYNE_DMA_A09n.q08());
-    /* p04.REMA*/ cpu_bus.BUS_CPU_D2p = tribuf_6pn(PUSY_FF46_RDp, PARA_DMA_A10n.q08());
-    /* p04.PANE*/ cpu_bus.BUS_CPU_D3p = tribuf_6pn(PUSY_FF46_RDp, NYDO_DMA_A11n.q08());
-    /* p04.PARE*/ cpu_bus.BUS_CPU_D4p = tribuf_6pn(PUSY_FF46_RDp, NYGY_DMA_A12n.q08());
-    /* p04.RALY*/ cpu_bus.BUS_CPU_D5p = tribuf_6pn(PUSY_FF46_RDp, PULA_DMA_A13n.q08());
-    /* p04.RESU*/ cpu_bus.BUS_CPU_D6p = tribuf_6pn(PUSY_FF46_RDp, POKU_DMA_A14n.q08());
-    /* p04.NUVY*/ cpu_bus.BUS_CPU_D7p = tribuf_6pn(PUSY_FF46_RDp, MARU_DMA_A15n.q08());
+    /*#p04.POLY*/ cpu_bus.BUS_CPU_D0p.tri_6pn(PUSY_FF46_RDp, NAFA_DMA_A08n.q08());
+    /* p04.ROFO*/ cpu_bus.BUS_CPU_D1p.tri_6pn(PUSY_FF46_RDp, PYNE_DMA_A09n.q08());
+    /* p04.REMA*/ cpu_bus.BUS_CPU_D2p.tri_6pn(PUSY_FF46_RDp, PARA_DMA_A10n.q08());
+    /* p04.PANE*/ cpu_bus.BUS_CPU_D3p.tri_6pn(PUSY_FF46_RDp, NYDO_DMA_A11n.q08());
+    /* p04.PARE*/ cpu_bus.BUS_CPU_D4p.tri_6pn(PUSY_FF46_RDp, NYGY_DMA_A12n.q08());
+    /* p04.RALY*/ cpu_bus.BUS_CPU_D5p.tri_6pn(PUSY_FF46_RDp, PULA_DMA_A13n.q08());
+    /* p04.RESU*/ cpu_bus.BUS_CPU_D6p.tri_6pn(PUSY_FF46_RDp, POKU_DMA_A14n.q08());
+    /* p04.NUVY*/ cpu_bus.BUS_CPU_D7p.tri_6pn(PUSY_FF46_RDp, MARU_DMA_A15n.q08());
   }
 }
 

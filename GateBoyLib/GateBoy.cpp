@@ -223,11 +223,11 @@ void GateBoy::next_phase() {
     uint8_t imask = 0;
     uint8_t intf = 0;
 
-    if (top.int_reg.PIN_CPU_INT_VBLANK.tp()) intf |= INT_VBLANK_MASK;
-    if (top.int_reg.PIN_CPU_INT_STAT.tp())   intf |= INT_STAT_MASK;
-    if (top.int_reg.PIN_CPU_INT_TIMER.tp())  intf |= INT_TIMER_MASK;
-    if (top.int_reg.PIN_CPU_INT_SERIAL.tp()) intf |= INT_SERIAL_MASK;
-    if (top.int_reg.PIN_CPU_INT_JOYPAD.tp()) intf |= INT_JOYPAD_MASK;
+    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
+    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
+    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
+    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
+    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
 
     uint8_t bus_data = top.cpu_bus.get_bus_data();
 
@@ -407,11 +407,11 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
   //----------
 
-  top.int_reg.PIN_CPU_ACK_VBLANK.preset(wire(cpu.int_ack & INT_VBLANK_MASK));
-  top.int_reg.PIN_CPU_ACK_STAT.preset(wire(cpu.int_ack & INT_STAT_MASK));
-  top.int_reg.PIN_CPU_ACK_TIMER.preset(wire(cpu.int_ack & INT_TIMER_MASK));
-  top.int_reg.PIN_CPU_ACK_SERIAL.preset(wire(cpu.int_ack & INT_SERIAL_MASK));
-  top.int_reg.PIN_CPU_ACK_JOYPAD.preset(wire(cpu.int_ack & INT_JOYPAD_MASK));
+  top.int_reg.PIN_CPU_ACK_VBLANK.set(wire(cpu.int_ack & INT_VBLANK_MASK));
+  top.int_reg.PIN_CPU_ACK_STAT  .set(wire(cpu.int_ack & INT_STAT_MASK));
+  top.int_reg.PIN_CPU_ACK_TIMER .set(wire(cpu.int_ack & INT_TIMER_MASK));
+  top.int_reg.PIN_CPU_ACK_SERIAL.set(wire(cpu.int_ack & INT_SERIAL_MASK));
+  top.int_reg.PIN_CPU_ACK_JOYPAD.set(wire(cpu.int_ack & INT_JOYPAD_MASK));
 
   //----------
 

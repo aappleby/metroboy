@@ -14,17 +14,17 @@ struct SpriteStore {
 
   /*p29.FEPO*/ Sig FEPO_STORE_MATCHp; // -> pix pipe, sprite fetcher
 
-  Tri SPR_TRI_I0p = TRI_HZPU; // -> oam bus
-  Tri SPR_TRI_I1p = TRI_HZPU;
-  Tri SPR_TRI_I2p = TRI_HZPU;
-  Tri SPR_TRI_I3p = TRI_HZPU;
-  Tri SPR_TRI_I4p = TRI_HZPU;
-  Tri SPR_TRI_I5p = TRI_HZPU;
+  Bus SPR_TRI_I0p = TRI_HZPU; // -> oam bus
+  Bus SPR_TRI_I1p = TRI_HZPU;
+  Bus SPR_TRI_I2p = TRI_HZPU;
+  Bus SPR_TRI_I3p = TRI_HZPU;
+  Bus SPR_TRI_I4p = TRI_HZPU;
+  Bus SPR_TRI_I5p = TRI_HZPU;
 
-  Tri SPR_TRI_L0 = TRI_HZPU; // -> vram bus
-  Tri SPR_TRI_L1 = TRI_HZPU;
-  Tri SPR_TRI_L2 = TRI_HZPU;
-  Tri SPR_TRI_L3 = TRI_HZPU;
+  Bus SPR_TRI_L0 = TRI_HZPU; // -> vram bus
+  Bus SPR_TRI_L1 = TRI_HZPU;
+  Bus SPR_TRI_L2 = TRI_HZPU;
+  Bus SPR_TRI_L3 = TRI_HZPU;
 
 private:
 

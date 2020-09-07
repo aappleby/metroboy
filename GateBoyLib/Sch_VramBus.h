@@ -12,15 +12,15 @@ struct VramBus {
   void dump(Dumper& d, const SchematicTop& top) const;
 
   int get_bus_addr() const {
-    return pack_p(!BUS_VRAM_A00n.tp(), !BUS_VRAM_A01n.tp(), !BUS_VRAM_A02n.tp(), !BUS_VRAM_A03n.tp(),
-                  !BUS_VRAM_A04n.tp(), !BUS_VRAM_A05n.tp(), !BUS_VRAM_A06n.tp(), !BUS_VRAM_A07n.tp(),
-                  !BUS_VRAM_A08n.tp(), !BUS_VRAM_A09n.tp(), !BUS_VRAM_A10n.tp(), !BUS_VRAM_A11n.tp(),
-                  !BUS_VRAM_A12n.tp(), 0, 0, 0);
+    return pack_p(!BUS_VRAM_A00n.qp(), !BUS_VRAM_A01n.qp(), !BUS_VRAM_A02n.qp(), !BUS_VRAM_A03n.qp(),
+                  !BUS_VRAM_A04n.qp(), !BUS_VRAM_A05n.qp(), !BUS_VRAM_A06n.qp(), !BUS_VRAM_A07n.qp(),
+                  !BUS_VRAM_A08n.qp(), !BUS_VRAM_A09n.qp(), !BUS_VRAM_A10n.qp(), !BUS_VRAM_A11n.qp(),
+                  !BUS_VRAM_A12n.qp(), 0, 0, 0);
   }
 
   int get_bus_data() const {
-    return pack_p(BUS_VRAM_D0p.tp(), BUS_VRAM_D1p.tp(), BUS_VRAM_D2p.tp(), BUS_VRAM_D3p.tp(),
-                  BUS_VRAM_D4p.tp(), BUS_VRAM_D5p.tp(), BUS_VRAM_D6p.tp(), BUS_VRAM_D7p.tp());
+    return pack_p(BUS_VRAM_D0p.qp(), BUS_VRAM_D1p.qp(), BUS_VRAM_D2p.qp(), BUS_VRAM_D3p.qp(),
+                  BUS_VRAM_D4p.qp(), BUS_VRAM_D5p.qp(), BUS_VRAM_D6p.qp(), BUS_VRAM_D7p.qp());
   }
 
   int get_pin_addr() const {

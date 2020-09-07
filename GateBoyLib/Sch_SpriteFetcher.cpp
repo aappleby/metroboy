@@ -69,7 +69,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   /* p27.TUKU*/ wire TUKU_WIN_HITn = not1(top.pix_pipe.TOMU_WIN_HITp);
   /* p27.LYRY*/ wire LYRY_BFETCH_DONEp = not1(top.tile_fetcher.MOCE_BFETCH_DONEn);
-  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(TAKA_SFETCH_RUNNINGp.tp());
+  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(TAKA_SFETCH_RUNNINGp.qp());
 
   /* p27.TEKY*/ wire TEKY_SFETCH_REQp = and4(top.sprite_store.FEPO_STORE_MATCHp, TUKU_WIN_HITn, LYRY_BFETCH_DONEp, SOWO_SFETCH_RUNNINGn);
 
@@ -80,7 +80,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   /*#p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor3(RYCE_SFETCH_TRIGp, ROSY_VID_RSTp, ATEJ_VID_LINE_END_TRIGp);
   /* p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SPRITE_DONEp, top.TAVE_PRELOAD_DONE_TRIGp); // def nor
-  /* p27.TAKA*/ TAKA_SFETCH_RUNNINGp = nand_latch(SECA_SFETCH_RUNNING_SETn, VEKU_SFETCH_RUNNING_RSTn);
+  /* p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, VEKU_SFETCH_RUNNING_RSTn);
    
   /*#p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand2(TESE_SFETCH_S2.qp(), TOXE_SFETCH_S0.qp());
   /*#p29.TOMA*/ wire TOMA_SFETCH_CLK_xBxDxFxH = nand2(LAPE_AxCxExGx, TAME_SFETCH_CLK_GATE);

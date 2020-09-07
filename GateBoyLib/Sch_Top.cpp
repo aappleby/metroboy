@@ -56,7 +56,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     // -> sprite fetcher, top.TEVO
     /*p27.TAVE*/ TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
 
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(pix_pipe.RYDY_WIN_FIRST_TILE_A.tp());
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(pix_pipe.RYDY_WIN_FIRST_TILE_A.qp());
     /*p27.TUXY*/ wire TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
     /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILE_NE);
 

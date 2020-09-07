@@ -15,41 +15,41 @@ struct OamBus {
   //----------------------------------------
 
   uint8_t get_oam_pin_addr() const {
-    return (uint8_t)pack_p(PIN_OAM_A1p.tp(), PIN_OAM_A2p.tp(), PIN_OAM_A3p.tp(), PIN_OAM_A4p.tp(),
-                           PIN_OAM_A5p.tp(), PIN_OAM_A6p.tp(), PIN_OAM_A7p.tp(), 0);
+    return (uint8_t)pack_p(PIN_OAM_A1p.qp(), PIN_OAM_A2p.qp(), PIN_OAM_A3p.qp(), PIN_OAM_A4p.qp(),
+                           PIN_OAM_A5p.qp(), PIN_OAM_A6p.qp(), PIN_OAM_A7p.qp(), 0);
   }
 
 
   uint8_t get_oam_pin_data_a() const {
-    return ~(uint8_t)pack_p(PIN_OAM_DA0n.tp(), PIN_OAM_DA1n.tp(), PIN_OAM_DA2n.tp(), PIN_OAM_DA3n.tp(),
-                            PIN_OAM_DA4n.tp(), PIN_OAM_DA5n.tp(), PIN_OAM_DA6n.tp(), PIN_OAM_DA7n.tp());
+    return ~(uint8_t)pack_p(PIN_OAM_DA0n.qp(), PIN_OAM_DA1n.qp(), PIN_OAM_DA2n.qp(), PIN_OAM_DA3n.qp(),
+                            PIN_OAM_DA4n.qp(), PIN_OAM_DA5n.qp(), PIN_OAM_DA6n.qp(), PIN_OAM_DA7n.qp());
   }
 
   uint8_t get_oam_pin_data_b() const {
-    return ~(uint8_t)pack_p(PIN_OAM_DB0n.tp(), PIN_OAM_DB1n.tp(), PIN_OAM_DB2n.tp(), PIN_OAM_DB3n.tp(),
-                            PIN_OAM_DB4n.tp(), PIN_OAM_DB5n.tp(), PIN_OAM_DB6n.tp(), PIN_OAM_DB7n.tp());
+    return ~(uint8_t)pack_p(PIN_OAM_DB0n.qp(), PIN_OAM_DB1n.qp(), PIN_OAM_DB2n.qp(), PIN_OAM_DB3n.qp(),
+                            PIN_OAM_DB4n.qp(), PIN_OAM_DB5n.qp(), PIN_OAM_DB6n.qp(), PIN_OAM_DB7n.qp());
   }
 
   void set_pin_data_a(uint8_t data) {
-    PIN_OAM_DA0n = !(data & 0x01);
-    PIN_OAM_DA1n = !(data & 0x02);
-    PIN_OAM_DA2n = !(data & 0x04);
-    PIN_OAM_DA3n = !(data & 0x08);
-    PIN_OAM_DA4n = !(data & 0x10);
-    PIN_OAM_DA5n = !(data & 0x20);
-    PIN_OAM_DA6n = !(data & 0x40);
-    PIN_OAM_DA7n = !(data & 0x80);
+    PIN_OAM_DA0n.set(!(data & 0x01));
+    PIN_OAM_DA1n.set(!(data & 0x02));
+    PIN_OAM_DA2n.set(!(data & 0x04));
+    PIN_OAM_DA3n.set(!(data & 0x08));
+    PIN_OAM_DA4n.set(!(data & 0x10));
+    PIN_OAM_DA5n.set(!(data & 0x20));
+    PIN_OAM_DA6n.set(!(data & 0x40));
+    PIN_OAM_DA7n.set(!(data & 0x80));
   }
 
   void set_pin_data_b(uint8_t data) {
-    PIN_OAM_DB0n = !(data & 0x01);
-    PIN_OAM_DB1n = !(data & 0x02);
-    PIN_OAM_DB2n = !(data & 0x04);
-    PIN_OAM_DB3n = !(data & 0x08);
-    PIN_OAM_DB4n = !(data & 0x10);
-    PIN_OAM_DB5n = !(data & 0x20);
-    PIN_OAM_DB6n = !(data & 0x40);
-    PIN_OAM_DB7n = !(data & 0x80);
+    PIN_OAM_DB0n.set(!(data & 0x01));
+    PIN_OAM_DB1n.set(!(data & 0x02));
+    PIN_OAM_DB2n.set(!(data & 0x04));
+    PIN_OAM_DB3n.set(!(data & 0x08));
+    PIN_OAM_DB4n.set(!(data & 0x10));
+    PIN_OAM_DB5n.set(!(data & 0x20));
+    PIN_OAM_DB6n.set(!(data & 0x40));
+    PIN_OAM_DB7n.set(!(data & 0x80));
   }
 
   //----------------------------------------
@@ -57,23 +57,23 @@ struct OamBus {
   /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;
 
-  /*p31.XYKY*/ Latch XYKY_OAM_LATCH_DB0n = TRI_D0NP;
-  /*p31.YRUM*/ Latch YRUM_OAM_LATCH_DB1n = TRI_D0NP;
-  /*p31.YSEX*/ Latch YSEX_OAM_LATCH_DB2n = TRI_D0NP;
-  /*p31.YVEL*/ Latch YVEL_OAM_LATCH_DB3n = TRI_D0NP;
-  /*p31.WYNO*/ Latch WYNO_OAM_LATCH_DB4n = TRI_D0NP;
-  /*p31.CYRA*/ Latch CYRA_OAM_LATCH_DB5n = TRI_D0NP;
-  /*p31.ZUVE*/ Latch ZUVE_OAM_LATCH_DB6n = TRI_D0NP;
-  /*p31.ECED*/ Latch ECED_OAM_LATCH_DB7n = TRI_D0NP;
+  /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n = TRI_D0NP;
+  /*p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n = TRI_D0NP;
+  /*p31.YSEX*/ TpLatch YSEX_OAM_LATCH_DB2n = TRI_D0NP;
+  /*p31.YVEL*/ TpLatch YVEL_OAM_LATCH_DB3n = TRI_D0NP;
+  /*p31.WYNO*/ TpLatch WYNO_OAM_LATCH_DB4n = TRI_D0NP;
+  /*p31.CYRA*/ TpLatch CYRA_OAM_LATCH_DB5n = TRI_D0NP;
+  /*p31.ZUVE*/ TpLatch ZUVE_OAM_LATCH_DB6n = TRI_D0NP;
+  /*p31.ECED*/ TpLatch ECED_OAM_LATCH_DB7n = TRI_D0NP;
 
-  /*p29.YDYV*/ Latch YDYV_OAM_LATCH_DA0n = TRI_D0NP;
-  /*p29.YCEB*/ Latch YCEB_OAM_LATCH_DA1n = TRI_D0NP;
-  /*p29.ZUCA*/ Latch ZUCA_OAM_LATCH_DA2n = TRI_D0NP;
-  /*p29.WONE*/ Latch WONE_OAM_LATCH_DA3n = TRI_D0NP;
-  /*p29.ZAXE*/ Latch ZAXE_OAM_LATCH_DA4n = TRI_D0NP;
-  /*p29.XAFU*/ Latch XAFU_OAM_LATCH_DA5n = TRI_D0NP;
-  /*p29.YSES*/ Latch YSES_OAM_LATCH_DA6n = TRI_D0NP;
-  /*p29.ZECA*/ Latch ZECA_OAM_LATCH_DA7n = TRI_D0NP;
+  /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n = TRI_D0NP;
+  /*p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n = TRI_D0NP;
+  /*p29.ZUCA*/ TpLatch ZUCA_OAM_LATCH_DA2n = TRI_D0NP;
+  /*p29.WONE*/ TpLatch WONE_OAM_LATCH_DA3n = TRI_D0NP;
+  /*p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n = TRI_D0NP;
+  /*p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n = TRI_D0NP;
+  /*p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n = TRI_D0NP;
+  /*p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n = TRI_D0NP;
 
   /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
   /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
@@ -116,31 +116,31 @@ struct OamBus {
   Tri PIN_OAM_WR_A = TRI_D1NP;
   Tri PIN_OAM_WR_B = TRI_D1NP;
 
-  Tri PIN_OAM_A1p  = TRI_D0NP;
-  Tri PIN_OAM_A2p  = TRI_D0NP;
-  Tri PIN_OAM_A3p  = TRI_D0NP;
-  Tri PIN_OAM_A4p  = TRI_D0NP;
-  Tri PIN_OAM_A5p  = TRI_D0NP;
-  Tri PIN_OAM_A6p  = TRI_D0NP;
-  Tri PIN_OAM_A7p  = TRI_D0NP;
+  Bus PIN_OAM_A1p  = TRI_D0NP;
+  Bus PIN_OAM_A2p  = TRI_D0NP;
+  Bus PIN_OAM_A3p  = TRI_D0NP;
+  Bus PIN_OAM_A4p  = TRI_D0NP;
+  Bus PIN_OAM_A5p  = TRI_D0NP;
+  Bus PIN_OAM_A6p  = TRI_D0NP;
+  Bus PIN_OAM_A7p  = TRI_D0NP;
 
-  Tri PIN_OAM_DA0n = TRI_D0NP;
-  Tri PIN_OAM_DA1n = TRI_D0NP;
-  Tri PIN_OAM_DA2n = TRI_D0NP;
-  Tri PIN_OAM_DA3n = TRI_D0NP;
-  Tri PIN_OAM_DA4n = TRI_D0NP;
-  Tri PIN_OAM_DA5n = TRI_D0NP;
-  Tri PIN_OAM_DA6n = TRI_D0NP;
-  Tri PIN_OAM_DA7n = TRI_D0NP;
+  Bus PIN_OAM_DA0n = TRI_D0PU;
+  Bus PIN_OAM_DA1n = TRI_D0PU;
+  Bus PIN_OAM_DA2n = TRI_D0PU;
+  Bus PIN_OAM_DA3n = TRI_D0PU;
+  Bus PIN_OAM_DA4n = TRI_D0PU;
+  Bus PIN_OAM_DA5n = TRI_D0PU;
+  Bus PIN_OAM_DA6n = TRI_D0PU;
+  Bus PIN_OAM_DA7n = TRI_D0PU;
 
-  Tri PIN_OAM_DB0n = TRI_D0NP;
-  Tri PIN_OAM_DB1n = TRI_D0NP;
-  Tri PIN_OAM_DB2n = TRI_D0NP;
-  Tri PIN_OAM_DB3n = TRI_D0NP;
-  Tri PIN_OAM_DB4n = TRI_D0NP;
-  Tri PIN_OAM_DB5n = TRI_D0NP;
-  Tri PIN_OAM_DB6n = TRI_D0NP;
-  Tri PIN_OAM_DB7n = TRI_D0NP;
+  Bus PIN_OAM_DB0n = TRI_D0PU;
+  Bus PIN_OAM_DB1n = TRI_D0PU;
+  Bus PIN_OAM_DB2n = TRI_D0PU;
+  Bus PIN_OAM_DB3n = TRI_D0PU;
+  Bus PIN_OAM_DB4n = TRI_D0PU;
+  Bus PIN_OAM_DB5n = TRI_D0PU;
+  Bus PIN_OAM_DB6n = TRI_D0PU;
+  Bus PIN_OAM_DB7n = TRI_D0PU;
 };
 
 //-----------------------------------------------------------------------------

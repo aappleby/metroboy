@@ -27,7 +27,7 @@ private:
 
   // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
 
-  /*p27.TAKA*/ Tri   TAKA_SFETCH_RUNNINGp = TRI_D0NP;
+  /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp;
   /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp;
   /*p27.SUDA*/ DFF17 SUDA_SFETCH_REQp;
 

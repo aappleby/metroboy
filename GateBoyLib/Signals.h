@@ -206,10 +206,6 @@ inline RegQPIn dff8_B_inv(wire CLKp, bool D) {
   return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
 }
 
-inline RegQPNIn dff8_AB_inv(wire CLKp, bool D) {
-  return {RegDelta(DELTA_D0C0 | ((!CLKp) << 1) | ((!D) << 0))};
-}
-
 //-----------------------------------------------------------------------------
 
 struct RegQP : private RegBase {

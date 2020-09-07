@@ -62,12 +62,12 @@ private:
   //----------------------------------------
   // All 10 of the sprite stores
 
-  /*p30.YGUS*/ RegQP YGUS_STORE0_I0n = REG_D0C0;
-  /*p30.YSOK*/ RegQP YSOK_STORE0_I1n = REG_D0C0;
-  /*p30.YZEP*/ RegQP YZEP_STORE0_I2n = REG_D0C0;
-  /*p30.WYTE*/ RegQP WYTE_STORE0_I3n = REG_D0C0;
-  /*p30.ZONY*/ RegQP ZONY_STORE0_I4n = REG_D0C0;
-  /*p30.YWAK*/ RegQP YWAK_STORE0_I5n = REG_D0C0;
+  /*p30.YGUS*/ DFF8 YGUS_STORE0_I0n;
+  /*p30.YSOK*/ DFF8 YSOK_STORE0_I1n;
+  /*p30.YZEP*/ DFF8 YZEP_STORE0_I2n;
+  /*p30.WYTE*/ DFF8 WYTE_STORE0_I3n;
+  /*p30.ZONY*/ DFF8 ZONY_STORE0_I4n;
+  /*p30.YWAK*/ DFF8 YWAK_STORE0_I5n;
 
   /*p30.GYHO*/ RegQP GYHO_STORE0_L0n = REG_D0C0;
   /*p30.CUFO*/ RegQP CUFO_STORE0_L1n = REG_D0C0;

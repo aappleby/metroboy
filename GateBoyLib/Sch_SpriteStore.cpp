@@ -31,7 +31,7 @@ void SpriteStore::dump(Dumper& d) const {
   d("STORE0 M%d R%d I%02d L%02d X%03d\n",
     !YDUG_STORE0_MATCHn,
     EBOJ_STORE0_RSTp.qp(),
-    pack_n(YGUS_STORE0_I0n.qp(), YSOK_STORE0_I1n.qp(), YZEP_STORE0_I2n.qp(), WYTE_STORE0_I3n.qp(), ZONY_STORE0_I4n.qp(), YWAK_STORE0_I5n.qp(), 1, 1),
+    pack_n(YGUS_STORE0_I0n.q08(), YSOK_STORE0_I1n.q08(), YZEP_STORE0_I2n.q08(), WYTE_STORE0_I3n.q08(), ZONY_STORE0_I4n.q08(), YWAK_STORE0_I5n.q08(), 1, 1),
     pack_n(GYHO_STORE0_L0n.qp(), CUFO_STORE0_L1n.qp(), BOZU_STORE0_L2n.qp(), FYHY_STORE0_L3n.qp()),
     pack_n(XEPE_STORE0_X0p.qn(), YLAH_STORE0_X1p.qn(), ZOLA_STORE0_X2p.qn(), ZULU_STORE0_X3p.qn(), WELO_STORE0_X4p.qn(), XUNY_STORE0_X5p.qn(), WOTE_STORE0_X6p.qn(), XAKO_STORE0_X7p.qn())
   );
@@ -382,12 +382,12 @@ void SpriteStore::tock(const SchematicTop& top) {
     /*p29.DENY*/ wire DENY_SPRITE8_GETn = not1(FOXA_SPRITE8_GETp);
     /*p29.FADO*/ wire FADO_SPRITE9_GETn = not1(GUZE_SPRITE9_GETp);
 
-    /* p30.ZETU*/ SPR_TRI_I0p = tribuf_6nn(FURO_SPRITE0_GETn, YGUS_STORE0_I0n.qp());
-    /* p30.ZECE*/ SPR_TRI_I1p = tribuf_6nn(FURO_SPRITE0_GETn, YSOK_STORE0_I1n.qp());
-    /* p30.ZAVE*/ SPR_TRI_I2p = tribuf_6nn(FURO_SPRITE0_GETn, YZEP_STORE0_I2n.qp());
-    /* p30.WOKO*/ SPR_TRI_I3p = tribuf_6nn(FURO_SPRITE0_GETn, WYTE_STORE0_I3n.qp());
-    /* p30.ZUMU*/ SPR_TRI_I4p = tribuf_6nn(FURO_SPRITE0_GETn, ZONY_STORE0_I4n.qp());
-    /*#p30.ZEDY*/ SPR_TRI_I5p = tribuf_6nn(FURO_SPRITE0_GETn, YWAK_STORE0_I5n.qp());
+    /* p30.ZETU*/ SPR_TRI_I0p = tribuf_6nn(FURO_SPRITE0_GETn, YGUS_STORE0_I0n.q08());
+    /* p30.ZECE*/ SPR_TRI_I1p = tribuf_6nn(FURO_SPRITE0_GETn, YSOK_STORE0_I1n.q08());
+    /* p30.ZAVE*/ SPR_TRI_I2p = tribuf_6nn(FURO_SPRITE0_GETn, YZEP_STORE0_I2n.q08());
+    /* p30.WOKO*/ SPR_TRI_I3p = tribuf_6nn(FURO_SPRITE0_GETn, WYTE_STORE0_I3n.q08());
+    /* p30.ZUMU*/ SPR_TRI_I4p = tribuf_6nn(FURO_SPRITE0_GETn, ZONY_STORE0_I4n.q08());
+    /*#p30.ZEDY*/ SPR_TRI_I5p = tribuf_6nn(FURO_SPRITE0_GETn, YWAK_STORE0_I5n.q08());
 
     /*#p30.CUBO*/ SPR_TRI_I0p = tribuf_6nn(DYDO_SPRITE1_GETn, CADU_STORE1_I0n.qp());
     /* p30.CELU*/ SPR_TRI_I1p = tribuf_6nn(DYDO_SPRITE1_GETn, CEBO_STORE1_I1n.qp());
@@ -578,15 +578,17 @@ void SpriteStore::tock(const SchematicTop& top) {
     // I guess it must store inverted X, so that when reset X = 0xFF?
 
     /*p29.GENY*/ wire GENY_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
+    /*p29.GENY*/ wire GENY_STORE0_CLKn = not1(GENY_STORE0_CLKp);
+
     /*p29.ENOB*/ wire ENOB_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
     /*p29.FUXU*/ wire FUXU_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
 
-    /*p30.YGUS*/ YGUS_STORE0_I0n = dff8_B_inv(GENY_STORE0_CLKp, SPR_TRI_I0p.tp());
-    /*p30.YSOK*/ YSOK_STORE0_I1n = dff8_B_inv(GENY_STORE0_CLKp, SPR_TRI_I1p.tp());
-    /*p30.YZEP*/ YZEP_STORE0_I2n = dff8_B_inv(GENY_STORE0_CLKp, SPR_TRI_I2p.tp());
-    /*p30.WYTE*/ WYTE_STORE0_I3n = dff8_B_inv(GENY_STORE0_CLKp, SPR_TRI_I3p.tp());
-    /*p30.ZONY*/ ZONY_STORE0_I4n = dff8_B_inv(GENY_STORE0_CLKp, SPR_TRI_I4p.tp());
-    /*p30.YWAK*/ YWAK_STORE0_I5n = dff8_B_inv(GENY_STORE0_CLKp, SPR_TRI_I5p.tp());
+    /*p30.YGUS*/ YGUS_STORE0_I0n.tock(GENY_STORE0_CLKp, GENY_STORE0_CLKn, SPR_TRI_I0p.tp());
+    /*p30.YSOK*/ YSOK_STORE0_I1n.tock(GENY_STORE0_CLKp, GENY_STORE0_CLKn, SPR_TRI_I1p.tp());
+    /*p30.YZEP*/ YZEP_STORE0_I2n.tock(GENY_STORE0_CLKp, GENY_STORE0_CLKn, SPR_TRI_I2p.tp());
+    /*p30.WYTE*/ WYTE_STORE0_I3n.tock(GENY_STORE0_CLKp, GENY_STORE0_CLKn, SPR_TRI_I3p.tp());
+    /*p30.ZONY*/ ZONY_STORE0_I4n.tock(GENY_STORE0_CLKp, GENY_STORE0_CLKn, SPR_TRI_I4p.tp());
+    /*p30.YWAK*/ YWAK_STORE0_I5n.tock(GENY_STORE0_CLKp, GENY_STORE0_CLKn, SPR_TRI_I5p.tp());
 
     /*p30.GYHO*/ GYHO_STORE0_L0n = dff8_B_inv(ENOB_STORE0_CLKp, SPR_TRI_L0.tp());
     /*p30.CUFO*/ CUFO_STORE0_L1n = dff8_B_inv(ENOB_STORE0_CLKp, SPR_TRI_L1.tp());

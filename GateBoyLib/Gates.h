@@ -353,14 +353,25 @@ struct DFF9 : private RegBase {
 // RAWU_10 nc
 // RAWU_11 >> TUXE_02 (Qn probably)
 
-inline RegQNIn dff11_A_inv(wire CLKp, wire RSTn, wire Dn) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+struct DFF11 : private RegBase {
+  DFF11() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+
+  inline wire q11() const { return !as_wire(); }
+
+  inline wire qn() const { return !as_wire(); }
+
+  inline void tock(wire CLKp, wire RSTn, wire Dn) {
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!Dn) << 0));
+    }
   }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | ((!Dn) << 0))};
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 // Dunno why this reg is different than DFF9.

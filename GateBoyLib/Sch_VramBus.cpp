@@ -518,14 +518,14 @@ void VramBus::tock(SchematicTop& top) {
     // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
     /*p??.LUVE*/ wire LUVE_MATCH_TILE_DBp = not1(top.tile_fetcher.LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
     /*p32.LABU*/ wire LABU_LATCH_TILE_DBn = not1(LUVE_MATCH_TILE_DBp);
-    /*p32.RAWU*/ RAWU_TILE_DB0n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D0p.tp());
-    /*p32.POZO*/ POZO_TILE_DB1n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D1p.tp());
-    /*p32.PYZO*/ PYZO_TILE_DB2n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D2p.tp());
-    /*p32.POXA*/ POXA_TILE_DB3n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D3p.tp());
-    /*p32.PULO*/ PULO_TILE_DB4n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D4p.tp());
-    /*p32.POJU*/ POJU_TILE_DB5n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D5p.tp());
-    /*p32.POWY*/ POWY_TILE_DB6n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D6p.tp());
-    /*p32.PYJU*/ PYJU_TILE_DB7n = dff11_A_inv(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D7p.tp());
+    /*p32.RAWU*/ RAWU_TILE_DB0n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D0p.tp());
+    /*p32.POZO*/ POZO_TILE_DB1n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D1p.tp());
+    /*p32.PYZO*/ PYZO_TILE_DB2n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D2p.tp());
+    /*p32.POXA*/ POXA_TILE_DB3n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D3p.tp());
+    /*p32.PULO*/ PULO_TILE_DB4n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D4p.tp());
+    /*p32.POJU*/ POJU_TILE_DB5n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D5p.tp());
+    /*p32.POWY*/ POWY_TILE_DB6n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D6p.tp());
+    /*p32.PYJU*/ PYJU_TILE_DB7n.tock(LABU_LATCH_TILE_DBn, VYPO, BUS_VRAM_D7p.tp());
   }
 
   // VRAM tri -> sprite pix temp + x flip

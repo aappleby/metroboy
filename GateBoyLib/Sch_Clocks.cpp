@@ -169,7 +169,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
   /*p01.ASOL*/ ASOL_POR_DONEn = nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
 
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
-  /*p01.AFER*/ AFER_SYS_RSTp = dff13_B(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.tp());
+  /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.tp());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp = AFER_SYS_RSTp.qp();
   top.cpu_bus.PIN_CPU_EXT_RST  = RST;

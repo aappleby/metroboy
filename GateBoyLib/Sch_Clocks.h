@@ -45,7 +45,7 @@ private:
 
   /*p01.TUBO*/ Tri   TUBO_WAITINGp  = TRI_D1NP; // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ Tri   ASOL_POR_DONEn = TRI_D1NP; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ RegQP AFER_SYS_RSTp  = REG_D0C0; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
+  /*p01.AFER*/ DFF13 AFER_SYS_RSTp; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
 
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGH;
   /*p01.ALEF*/ DFF9 ALEF_AxxxxFGH;

@@ -390,23 +390,27 @@ struct DFF11 : private RegBase {
 // REG13_12 >> Qn
 // REG13_13 >> Q
 
-inline RegQNIn dff13_A(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
-  }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
-  }
-}
+struct DFF13 : private RegBase {
+  DFF13() : RegBase(REG_D0C0) {}
 
-inline RegQPIn dff13_B(wire CLKp, wire RSTn, wire D) {
-  if (!RSTn) {
-    return {RegDelta(DELTA_A0C0 | (CLKp << 1))};
+  using RegBase::c;
+
+  inline wire q12() const { return !as_wire(); }
+  inline wire q13() const { return  as_wire(); }
+
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
+  inline void tock(wire CLKp, wire RSTn, wire D) {
+    CHECK_P(is_reg() && !has_delta());
+    if (!RSTn) {
+      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
+    }
+    else {
+      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
+    }
   }
-  else {
-    return {RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0))};
-  }
-}
+};
 
 //-----------------------------------------------------------------------------
 // This reg is really 3 pieces - clock edge detector, latch, and output buffer.

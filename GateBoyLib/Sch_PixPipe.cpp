@@ -37,6 +37,28 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     0
   );
 
+  d.dump_reg("FF42 SCY",
+    GAVE_SCY0n.qn(),
+    FYMO_SCY1n.qn(),
+    FEZU_SCY2n.qn(),
+    FUJO_SCY3n.qn(),
+    DEDE_SCY4n.qn(),
+    FOTY_SCY5n.qn(),
+    FOHA_SCY6n.qn(),
+    FUNY_SCY7n.qn()
+  );
+
+  d.dump_reg("FF43 SCX",
+    DATY_SCX0n.qn(),
+    DUZU_SCX1n.qn(),
+    CYXU_SCX2n.qn(),
+    GUBO_SCX3n.qn(),
+    BEMY_SCX4n.qn(),
+    CUZY_SCX5n.qn(),
+    CABU_SCX6n.qn(),
+    BAKE_SCX7n.qn()
+  );
+
   d.dump_reg("FF47 BGP",
     PAVO_BGP_D0n.q07(),
     NUSY_BGP_D1n.q07(),

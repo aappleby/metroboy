@@ -60,4 +60,6 @@ public:
   uint32_t overlay[160 * 144];
   int overlay_tex;
 
+  int vram_tex;
+
 };

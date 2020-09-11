@@ -327,7 +327,7 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
     if (script) {
       bus_req = script[(phase_total / 8) % script_len];
     }
-    else if (!sys_cpu_en || dbg_req.read || dbg_req.write) {
+    else if (dbg_req.read || dbg_req.write) {
       bus_req.addr  = dbg_req.addr;
       bus_req.data  = dbg_req.data;
       bus_req.read  = dbg_req.read;

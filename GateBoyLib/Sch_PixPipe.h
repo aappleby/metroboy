@@ -13,6 +13,9 @@ struct PixelPipe {
   void tock(SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;
 
+  int get_scx() const {
+  }
+
   int get_wx() const {
     return pack_p(MYPA_WX0n.qp(), NOFE_WX1n.qp(), NOKE_WX2n.qp(), MEBY_WX3n.qp(),
                   MYPU_WX4n.qp(), MYCE_WX5n.qp(), MUVO_WX6n.qp(), NUKU_WX7n.qp());

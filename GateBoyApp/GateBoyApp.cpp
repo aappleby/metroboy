@@ -68,6 +68,7 @@ void GateBoyApp::app_init() {
   blitter.init();
 
   trace_tex = create_texture_u32(912, 154);
+  vram_tex = create_texture_u8(128, 64);
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
@@ -75,14 +76,15 @@ void GateBoyApp::app_init() {
   gb.cpu.reset(0x0000);
   gb.reset();
 
-  gb.set_boot_bit();
+  //gb.set_boot_bit();
 
   const char* filename = "roms/LinksAwakening_dog.dump";
   gb.load_dump(filename);
 
-  //gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
+#if 0
+  gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
 
-#if 1
+#if 0
   // ld (hl),a; jr -2;
   gb.cart_rom[0x0155] = 0x77;
   gb.cart_rom[0x0156] = 0x18;
@@ -99,7 +101,14 @@ void GateBoyApp::app_init() {
   gb.phase_total = 0;
 #endif
 
-  //gb.cpu_en = true;
+  for (int i = 0; i < 8192; i++) {
+    gb.vid_ram[i] = (uint8_t)rand();
+  }
+
+  gb.next_phase();
+  gb.sys_cpu_en = true;
+  gb.run(7);
+#endif
 
   //gb.sys_buttons = 0x0F;
   //gb.sys_buttons = 0x00;
@@ -153,6 +162,8 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_F4:     save_dump = true; break;
     }
   }
+
+  step_forward += 114 * 8 * 8;
 
   if (step_forward) {
     state_manager.step(step_forward);
@@ -268,6 +279,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //update_texture_u32(trace_tex, 912, 154, trace);
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
 
+  update_texture_u8(vram_tex, 128, 64, gateboy->vid_ram);
+  blitter.blit_mono(view, vram_tex, 128, 64, 0, 0, 128, 64, 0, 0, 128, 64);
+
+
   memset(overlay, 0, sizeof(overlay));
 
   int fb_y = top.lcd_reg.get_ly();
@@ -286,7 +301,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
 
   gb_blitter.blit_tiles (view, 1376 + 256, 32,     gateboy->vid_ram);
+  gb_blitter.blit_map   (view, 1376 - 32,  448, 1, gateboy->vid_ram, 0, 0);
   gb_blitter.blit_map   (view, 1376 + 256, 448, 1, gateboy->vid_ram, 0, 1);
+  gb_blitter.blit_map   (view, 1376 - 32,  736, 1, gateboy->vid_ram, 1, 0);
   gb_blitter.blit_map   (view, 1376 + 256, 736, 1, gateboy->vid_ram, 1, 1);
 }
 

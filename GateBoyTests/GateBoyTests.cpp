@@ -48,7 +48,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_Y("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xb1ed638f6b2740bb, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xdb7ef4bc9fe6e9fe, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -154,14 +154,14 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.BUDE_xxxxEFGH,   0b00001111);
     EXPECT_CLK(clk_reg.BALY_Axxxxxxx,   0b10000000);
 
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.tp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.tp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.tp(), 0b11110000);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.tp(), 0b00001111);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.tp(), 0b11111100);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.tp(), 0b10000011);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.tp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH.tp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.qp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.qp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.qp(), 0b11110000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.qp(), 0b00001111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.qp(), 0b11111100);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.qp(), 0b10000011);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.qp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH.qp(), 0b01111111);
     EXPECT_CLK(top.ext_bus.PIN_EXT_CLK.qp(),           0b11110000);
     gb.next_phase();
   }

@@ -153,8 +153,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("PUXA_FINE_MATCH_A      %c\n", PUXA_SCX_FINE_MATCH_A     .c());
   d("NYZE_FINE_MATCH_B      %c\n", NYZE_SCX_FINE_MATCH_B     .c());
   d("PAHO_X_8_SYNC          %c\n", PAHO_X_8_SYNC         .c());
-  d("RUJU_LCD_PIN_STp       %c\n", RUJU_HSYNCn.c());
-  d("POME_LCD_PIN_STn       %c\n", POME_HSYNCn.c());
+  d("POFY_HSYNCp            %c\n", POFY_HSYNCp.c());
   d("VOTY_INT_STATp         %c\n", VOTY_INT_STATp.c());
   d("\n");
 
@@ -308,12 +307,9 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p24.ROXO*/ wire ROXO_CLKPIPEp = not1(SEGU_CLKPIPEn);
     /* p24.PAHO*/ PAHO_X_8_SYNC.tock(!ROXO_CLKPIPEp, XYMU_RENDERINGp.qp(), XYDO_X3p.qp());
     
-    /*#p24.POFY*/ wire POFY_HSYNCp = not1(RUJU_HSYNCn.tp());
-    /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(POFY_HSYNCp);
+    /*#p24.POFY*/ POFY_HSYNCp.nor_latch(top.AVAP_RENDER_START_TRIGp, or2(PAHO_X_8_SYNC.qp(), TOFU_VID_RSTp));
 
-    /*#p24.RUJU*/ RUJU_HSYNCn = or3(PAHO_X_8_SYNC.qp(), TOFU_VID_RSTp, POME_HSYNCn.tp());
-    /*#p24.POME*/ POME_HSYNCn = nor2(top.AVAP_RENDER_START_TRIGp, POFY_HSYNCp);
-
+    /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(POFY_HSYNCp.qp());
     top.PIN_LCD_HSYNC.io_pin(RUZE_HSYNCn, RUZE_HSYNCn);
   }
 
@@ -409,7 +405,6 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
     /* p27.PYNU*/ PYNU_WIN_MODE_A.nor_latch(NUNU_WX_MATCH_B.qp(), XOFO_WIN_RSTp);
     /* p27.NOPA*/ NOPA_WIN_MODE_B.tock(ALET_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn, PYNU_WIN_MODE_A.qp());
-
     /*#p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCH_TRIGp, or2(top.tile_fetcher.PORY_FETCH_DONE_P12.qp(), PYRY_VID_RSTp));
     /* p27.SOVY*/ SOVY_WIN_FIRST_TILE_B.tock(ALET_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn, RYDY_WIN_FIRST_TILE_A.qp());
   }

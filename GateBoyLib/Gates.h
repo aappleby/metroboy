@@ -459,23 +459,7 @@ struct DFF20 : private RegBase {
   using RegBase::qn;
 
   inline void tock(wire CLKp, wire LOADp, bool newD, bool oldQn) {
-    CHECK_P(is_reg() && !has_delta());
-    if (LOADp) {
-      if (CLKp) {
-        delta = newD ? DELTA_A1C1 : DELTA_A0C1;
-      }
-      else {
-        delta = newD ? DELTA_A1C0 : DELTA_A0C0;
-      }
-    }
-    else {
-      if (CLKp) {
-        delta = oldQn ? DELTA_D1C1 : DELTA_D0C1;
-      }
-      else {
-        delta = oldQn ? DELTA_D1C0 : DELTA_D0C0;
-      }
-    }
+    dff(CLKp, !CLKp, !LOADp || !newD, !LOADp || newD, oldQn);
   }
 };
 
@@ -540,32 +524,17 @@ struct Sig : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-
-struct Tri : private RegBase {
-  Tri(RegState r = TRI_HZNP) : RegBase(r) { CHECK_P(is_tri()); }
-
-  using RegBase::c;
-  using RegBase::cn;
-  using RegBase::lock;
-  using RegBase::preset;
-
-  inline wire tp()  const { return as_wire(); }
-
-  inline void operator = (wire w)     { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-  inline void operator = (RegDelta d) { merge_tri_delta(d); }
-};
-
-//-----------------------------------------------------------------------------
+// Tristate bus, can have multiple drivers.
 
 struct Bus : private RegBase {
   Bus(RegState r = TRI_HZPU) : RegBase(r) {}
 
   using RegBase::c;
+  using RegBase::cn;
   using RegBase::lock;
   using RegBase::qp;
 
   inline void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-  //inline void set(RegDelta d) { merge_tri_delta(d); }
 
   // TYGO_01 << BUS_CPU_D2p
   // TYGO_02 nc
@@ -611,18 +580,24 @@ struct Bus : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-// Half-bridge inverting io pin, some with output enable.
+// Tristate io pin, can have only one driver.
 
 struct Pin : private RegBase {
   Pin(RegState r = TRI_HZPU) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
+  using RegBase::lock;
+  using RegBase::qp;
+  using RegBase::qn;
 
-  inline wire qp()  const { return  as_wire(); }
-  inline wire qn()  const { return !as_wire(); }
+  inline void set(wire w) {
+    CHECK_N(has_delta());
+    merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0);
+  }
 
-  inline void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-  inline void operator = (RegDelta d) { merge_tri_delta(d); }
+  inline void operator = (RegDelta d) {
+    merge_tri_delta(d);
+  }
 
   inline void io_pin(wire HI, wire LO, wire OEp = true) {
     if      (!OEp)       merge_tri_delta(DELTA_TRIZ);

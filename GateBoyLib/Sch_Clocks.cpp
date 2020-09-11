@@ -132,19 +132,19 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
   /*#p01.BOMA*/ wire BOMA_Axxxxxxx = not1(BOGA_xBCDEFGH);
 
-  top.cpu_bus.PIN_CPU_EXT_CLKGOOD = CLKGOOD;
+  top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
 
-  top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH = BOWA_xBCDEFGH;
-  top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx = BEDO_Axxxxxxx;
+  top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.set(BOWA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.set(BEDO_Axxxxxxx);
 
-  top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx = BEKO_ABCDxxxx;
-  top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH = BUDE_xxxxEFGH;
+  top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx);
+  top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.set(BUDE_xxxxEFGH);
 
-  top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx = BOLO_ABCDEFxx;
-  top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH = BUKE_AxxxxxGH;
+  top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.set(BOLO_ABCDEFxx);
+  top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.set(BUKE_AxxxxxGH);
     
-  top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx = BOMA_Axxxxxxx;
-  top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH = BOGA_xBCDEFGH;
+  top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.set(BOMA_Axxxxxxx);
+  top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH.set(BOGA_xBCDEFGH);
 
   top.ext_bus.PIN_EXT_CLK.io_pin(BUDE_xxxxEFGH, BUDE_xxxxEFGH);
 }
@@ -162,7 +162,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
 #endif
 
   /*p01.TABA*/ wire TABA_POR_TRIGn = or3(top.UNOR_MODE_DBG2p, top.UMUT_MODE_DBG1p, UNUT_POR_TRIGn);
-  top.cpu_bus.PIN_CPU_STARTp   = TABA_POR_TRIGn;
+  top.cpu_bus.PIN_CPU_STARTp.set(TABA_POR_TRIGn);
 
   /*#p01.ALYP*/ wire ALYP_RSTn = not1(TABA_POR_TRIGn);
   /*#p01.AFAR*/ wire AFAR_RST  = nor2(RST, ALYP_RSTn);
@@ -171,15 +171,15 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
   /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp());
 
-  top.cpu_bus.PIN_CPU_SYS_RSTp = AFER_SYS_RSTp.qp();
-  top.cpu_bus.PIN_CPU_EXT_RST  = RST;
+  top.cpu_bus.PIN_CPU_SYS_RSTp.set(AFER_SYS_RSTp.qp());
+  top.cpu_bus.PIN_CPU_EXT_RST.set(RST);
 }
 
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_dbg_slow(SchematicTop& top) {
-  top.cpu_bus.PIN_CPU_UNOR_DBG = top.UNOR_MODE_DBG2p;
-  top.cpu_bus.PIN_CPU_UMUT_DBG = top.UMUT_MODE_DBG1p;
+  top.cpu_bus.PIN_CPU_UNOR_DBG.set(top.UNOR_MODE_DBG2p);
+  top.cpu_bus.PIN_CPU_UMUT_DBG.set(top.UMUT_MODE_DBG1p);
 }
 
 //-----------------------------------------------------------------------------

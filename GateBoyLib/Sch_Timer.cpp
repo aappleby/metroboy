@@ -110,7 +110,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*p03.MERY*/ wire MERY_TIMER_INT_TRIGp = nor2(NYDU_TIMA_D7_DELAY.qn(), NUGA_TIMA_D7.qp());
     /*p03.MOBA*/ MOBA_INT_TIMERp.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_INT_TRIGp);
     /*p03.MEKE*/ wire MEKE_INT_TIMERn = not1(MOBA_INT_TIMERp.qp());
-    /*p03.MUZU*/ wire MUZU_TIMA_LOADn = or2(top.cpu_bus.PIN_CPU_LATCH_EXT.tp(), TOPE_FF05_WRn);
+    /*p03.MUZU*/ wire MUZU_TIMA_LOADn = or2(top.cpu_bus.PIN_CPU_LATCH_EXT.qp(), TOPE_FF05_WRn);
     /*p03.MEXU*/ wire MEXU_TIMA_LOADp = nand3(MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn, MEKE_INT_TIMERn);
 
     /*p03.REGA*/ REGA_TIMA_D0.tock(SOGU_TIMA_CLK,     MEXU_TIMA_LOADp, PUXY_TIMA_D0, REGA_TIMA_D0.qn());

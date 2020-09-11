@@ -22,17 +22,17 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.PIN_CPU_ADDR_EXTp.tp()); // Missing from schematic
+    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.PIN_CPU_ADDR_EXTp.qp()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
     /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);
   }
 
   {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.tp());
+    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
     /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-    /*p04.DECY*/ DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.tp());
+    /*p04.DECY*/ DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
     /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
     /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);
     /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
@@ -92,7 +92,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   {
     /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(clk_reg.ADAR_ABCxxxxH, clk_reg.ATYP_ABCDxxxx);
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.tp(), AFAS_xxxxEFGx);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.qp(), AFAS_xxxxEFGx);
     /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
     /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx);
     /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH); // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
@@ -152,8 +152,8 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   tile_fetcher.tock(*this);
   int_reg.tock(*this, cpu_bus);
 
-  cpu_bus.PIN_CPU_ADDR_HI = cpu_bus.SYRO_FE00_FFFFp();
-  cpu_bus.PIN_CPU_BOOTp = TUTU_ADDR_BOOTp;
+  cpu_bus.PIN_CPU_ADDR_HI.set(cpu_bus.SYRO_FE00_FFFFp());
+  cpu_bus.PIN_CPU_BOOTp.set(TUTU_ADDR_BOOTp);
 
 
   ext_bus.tock(*this);

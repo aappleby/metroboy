@@ -8,12 +8,12 @@ using namespace Schematics;
 
 void CpuBus::dump(Dumper& d) const {
   d("---------- CPU Bus  ----------\n");
-  d("BOOT      : %d\n", PIN_CPU_BOOTp.tp());
-  d("ADDR_HI   : %d\n", PIN_CPU_ADDR_HI.tp());
-  d("RDp       : %d\n", PIN_CPU_RDp.tp());
-  d("WRp       : %d\n", PIN_CPU_WRp.tp());
-  d("ADDR_EXT  : %d\n", PIN_CPU_ADDR_EXTp.tp());
-  d("LATCH_EXT : %d\n", PIN_CPU_LATCH_EXT.tp());
+  d("BOOT      : %d\n", PIN_CPU_BOOTp.qp());
+  d("ADDR_HI   : %d\n", PIN_CPU_ADDR_HI.qp());
+  d("RDp       : %d\n", PIN_CPU_RDp.qp());
+  d("WRp       : %d\n", PIN_CPU_WRp.qp());
+  d("ADDR_EXT  : %d\n", PIN_CPU_ADDR_EXTp.qp());
+  d("LATCH_EXT : %d\n", PIN_CPU_LATCH_EXT.qp());
 
   d("BUS ADDR  : 0x%04x %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     get_bus_addr(),
@@ -29,20 +29,20 @@ void CpuBus::dump(Dumper& d) const {
 
   d("\n");
 
-  d("PIN STARTp        : %d\n", PIN_CPU_STARTp.tp());
-  d("PIN SYS_RSTp      : %d\n", PIN_CPU_SYS_RSTp.tp());
-  d("PIN EXT_RST       : %d\n", PIN_CPU_EXT_RST.tp());
-  d("PIN UNOR_DBG      : %d\n", PIN_CPU_UNOR_DBG.tp());
-  d("PIN UMUT_DBG      : %d\n", PIN_CPU_UMUT_DBG.tp());
-  d("PIN EXT_CLKGOOD   : %d\n", PIN_CPU_EXT_CLKGOOD.tp());
-  d("PIN BOWA_xBCDEFGH : %d\n", PIN_CPU_BOWA_xBCDEFGH.tp());
-  d("PIN BEDO_Axxxxxxx : %d\n", PIN_CPU_BEDO_Axxxxxxx.tp());
-  d("PIN BEKO_ABCDxxxx : %d\n", PIN_CPU_BEKO_ABCDxxxx.tp());
-  d("PIN BUDE_xxxxEFGH : %d\n", PIN_CPU_BUDE_xxxxEFGH.tp());
-  d("PIN BOLO_ABCDEFxx : %d\n", PIN_CPU_BOLO_ABCDEFxx.tp());
-  d("PIN BUKE_AxxxxxGH : %d\n", PIN_CPU_BUKE_AxxxxxGH.tp());
-  d("PIN BOMA_Axxxxxxx : %d\n", PIN_CPU_BOMA_Axxxxxxx.tp());
-  d("PIN BOGA_xBCDEFGH : %d\n", PIN_CPU_BOGA_xBCDEFGH.tp());
+  d("PIN STARTp        : %d\n", PIN_CPU_STARTp.qp());
+  d("PIN SYS_RSTp      : %d\n", PIN_CPU_SYS_RSTp.qp());
+  d("PIN EXT_RST       : %d\n", PIN_CPU_EXT_RST.qp());
+  d("PIN UNOR_DBG      : %d\n", PIN_CPU_UNOR_DBG.qp());
+  d("PIN UMUT_DBG      : %d\n", PIN_CPU_UMUT_DBG.qp());
+  d("PIN EXT_CLKGOOD   : %d\n", PIN_CPU_EXT_CLKGOOD.qp());
+  d("PIN BOWA_xBCDEFGH : %d\n", PIN_CPU_BOWA_xBCDEFGH.qp());
+  d("PIN BEDO_Axxxxxxx : %d\n", PIN_CPU_BEDO_Axxxxxxx.qp());
+  d("PIN BEKO_ABCDxxxx : %d\n", PIN_CPU_BEKO_ABCDxxxx.qp());
+  d("PIN BUDE_xxxxEFGH : %d\n", PIN_CPU_BUDE_xxxxEFGH.qp());
+  d("PIN BOLO_ABCDEFxx : %d\n", PIN_CPU_BOLO_ABCDEFxx.qp());
+  d("PIN BUKE_AxxxxxGH : %d\n", PIN_CPU_BUKE_AxxxxxGH.qp());
+  d("PIN BOMA_Axxxxxxx : %d\n", PIN_CPU_BOMA_Axxxxxxx.qp());
+  d("PIN BOGA_xBCDEFGH : %d\n", PIN_CPU_BOGA_xBCDEFGH.qp());
   d("\n");
 }
 

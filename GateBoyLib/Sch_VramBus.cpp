@@ -54,7 +54,7 @@ void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
 void VramBus::tock(SchematicTop& top) {
   wire VYPO = 1;
 
-  /*p08.TEXO*/ wire TEXO_8000_9FFFn = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.tp(), top.cpu_bus.TEVY_8000_9FFFn());
+  /*p08.TEXO*/ wire TEXO_8000_9FFFn = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), top.cpu_bus.TEVY_8000_9FFFn());
   /*p25.TEFA*/ wire TEFA_8000_9FFFp = nor2(top.cpu_bus.SYRO_FE00_FFFFp(), TEXO_8000_9FFFn);
   /*p25.SOSE*/ wire SOSE_8000_9FFFp = and2(top.cpu_bus.BUS_CPU_A15.qp(), TEFA_8000_9FFFp);
 
@@ -85,7 +85,7 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_READ_VRAMp, top.pix_pipe.XYMU_RENDERINGp.qp()); // def nor4
     /*p25.TAVY*/ wire TAVY_MOEp = not1(PIN_VRAM_OEn.qn());
-    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.tp());  // Schematic wrong, second input is PIN_CPU_WRp
+    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
     /*p25.SALE*/ wire SALE_VRAM_WRn = mux2p(top.TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
     /*p25.RYLU*/ wire RYLU_CPU_VRAM_RDn = nand2(SALE_VRAM_WRn, XANE_VRAM_LOCKn);
 
@@ -343,7 +343,7 @@ void VramBus::tock(SchematicTop& top) {
   // CBD->VBD->VPD
   {
     /*p25.TAVY*/ wire TAVY_MOEp = not1(PIN_VRAM_OEn.qn());
-    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.tp());  // Schematic wrong, second input is PIN_CPU_WRp
+    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
     /*p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(top.TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
 
     /*p25.TUCA*/ wire TUCA_CPU_VRAM_AVn = and2(SOSE_8000_9FFFp, top.ABUZ_AVn);
@@ -440,7 +440,7 @@ void VramBus::tock(SchematicTop& top) {
   // VPD -> VBD
   {
     /*p25.TAVY*/ wire TAVY_MOEp = not1(PIN_VRAM_OEn.qn());
-    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.tp());  // Schematic wrong, second input is PIN_CPU_WRp
+    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
     /*p25.SALE*/ wire SALE_VRAM_WRn = mux2p(top.TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
 
     /*p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = and2(SOSE_8000_9FFFp, top.ABUZ_AVn);

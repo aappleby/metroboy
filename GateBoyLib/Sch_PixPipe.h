@@ -142,8 +142,7 @@ private:
 
   /*p24.PAHO*/ DFF17 PAHO_X_8_SYNC;
 
-  /*p24.RUJU*/ Tri RUJU_HSYNCn = TRI_D0NP; // nor latch with POME
-  /*p24.POME*/ Tri POME_HSYNCn = TRI_D0NP; // nor latch with RUJU
+  /*p24.POFY*/ NorLatch POFY_HSYNCp; // RUJU+POFY+POME form a nor latch
 
   /*p32.MYDE*/ DFF22 MYDE_BG_PIPE_A0;
   /*p32.NOZO*/ DFF22 NOZO_BG_PIPE_A1;

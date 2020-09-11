@@ -64,7 +64,7 @@ void GateBoy::reset() {
         top.clk_reg.APUK_ABxxxxGH.qp() &&
         top.clk_reg.ADYK_ABCxxxxH.qp()) break;
   }
-  CHECK_P(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.tp());
+  CHECK_P(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.qp());
 
   // Sync done, reset phase counter to 0
   phase_total = 0;
@@ -76,7 +76,7 @@ void GateBoy::reset() {
   run(8);
 
   // Wait for PIN_CPU_START
-  while(!top.cpu_bus.PIN_CPU_STARTp.tp()) {
+  while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {
     run(8);
   }
 
@@ -366,7 +366,7 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
     bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
     bool addr_hi  = bus_req.addr >= 0xFF00 && bus_req.addr <= 0xFFFF;
     addr_hi = false;
-    bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram || addr_hi) && !top.cpu_bus.PIN_CPU_BOOTp.tp();
+    bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram || addr_hi) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
     top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
   }
   else if (DELTA_BC) {
@@ -572,11 +572,11 @@ void GateBoy::tock_oam_bus() {
   uint8_t& oam_data_a = oam_ram[(oam_addr << 1) + 0];
   uint8_t& oam_data_b = oam_ram[(oam_addr << 1) + 1];
 
-  if (!top.oam_bus.PIN_OAM_WR_A.tp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
-  if (!top.oam_bus.PIN_OAM_WR_B.tp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
+  if (!top.oam_bus.PIN_OAM_WR_A.qp()) oam_data_a = top.oam_bus.get_oam_pin_data_a();
+  if (!top.oam_bus.PIN_OAM_WR_B.qp()) oam_data_b = top.oam_bus.get_oam_pin_data_b();
 
-  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_a(oam_data_a);
-  if (!top.oam_bus.PIN_OAM_OE.tp()) top.oam_bus.set_pin_data_b(oam_data_b);
+  if (!top.oam_bus.PIN_OAM_OE.qp()) top.oam_bus.set_pin_data_a(oam_data_a);
+  if (!top.oam_bus.PIN_OAM_OE.qp()) top.oam_bus.set_pin_data_b(oam_data_b);
 }
 
 //-----------------------------------------------------------------------------

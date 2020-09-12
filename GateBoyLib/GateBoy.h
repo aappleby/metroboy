@@ -6,26 +6,27 @@
 
 #pragma pack(push, 1)
 struct GateBoy {
-public:
   GateBoy();
 
   void     reset();
-  void     load_dump(const char* filename);
-  void     load_rom(const char* filename);
-  void     set_boot_bit();
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
+  void     tock_ext_bus();
+  void     tock_oam_bus();
+  void     tock_vram_bus();
+  void     tock_zram_bus();
 
-  void next_phase();
+  void     next_phase();
   uint64_t next_pass(int old_phase, int new_phase);
   void run(int phase_count) {
-    for (int i = 0; i < phase_count; i++) next_phase();
+    for (int i = 0; i < phase_count; i++) {
+      next_phase();
+    }
   }
 
-  void tock_ext_bus();
-  void tock_oam_bus();
-  void tock_vram_bus();
-  void tock_zram_bus();
+  void set_boot_bit() {
+    dbg_write(0xFF50, 0xFF);
+  }
 
   //----------------------------------------
 
@@ -60,6 +61,7 @@ public:
   int32_t  sys_cpuready = 0;
   int32_t  sys_cpu_en = 0;
   uint8_t  sys_buttons = 0;
+  uint8_t  sys_cart_loaded = 0;
 
   int32_t  ack_vblank = 0;
   int32_t  ack_stat = 0;

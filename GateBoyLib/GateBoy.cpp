@@ -8,10 +8,14 @@
 //-----------------------------------------------------------------------------
 
 GateBoy::GateBoy() {
-  memset(framebuffer, 4, 160*144);
-  memset(ext_ram, 0, 8192);
   memset(cart_rom, 0, 32768);
+  memset(vid_ram,  0, 8192);
   memset(cart_ram, 0, 8192);
+  memset(ext_ram,  0, 8192);
+  memset(oam_ram,  0, 256);
+  memset(zero_ram, 0, 128);
+
+  memset(framebuffer, 4, 160*144);
 
   top.cpu_bus.BUS_CPU_A00.lock(0);
   top.cpu_bus.BUS_CPU_A01.lock(0);
@@ -36,7 +40,7 @@ GateBoy::GateBoy() {
   top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(1);
   top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
 
-  cpu.reset(0x100);
+  cpu.reset(0x0000);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,81 +92,13 @@ void GateBoy::reset() {
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
+  cpu.reset(0x0000);
   cpu.get_bus_req(bus_req);
-}
 
-//------------------------------------------------------------------------------
-
-void GateBoy::set_boot_bit() {
-  dbg_write(ADDR_DISABLE_BOOTROM, 0xFF);
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoy::load_dump(const char* filename) {
-  printf("Loading %s\n", filename);
-
-  uint8_t* dump = new uint8_t[65536];
-  memset(dump, 0, 65536);
-
-  size_t size = load_blob(filename, dump, 65536);
-
-  memcpy(cart_rom, dump + 0x0000, 32768);
-  memcpy(vid_ram,  dump + 0x8000, 8192);
-  memcpy(cart_ram, dump + 0xA000, 8192);
-  memcpy(ext_ram,  dump + 0xC000, 8192);
-  memcpy(oam_ram,  dump + 0xFE00, 256);
-  memcpy(zero_ram, dump + 0xFF80, 128);
-
-  dbg_write(ADDR_BGP,  dump[ADDR_BGP]);
-  dbg_write(ADDR_OBP0, dump[ADDR_OBP0]);
-  dbg_write(ADDR_OBP1, dump[ADDR_OBP1]);
-  dbg_write(ADDR_SCY,  dump[ADDR_SCY]);
-  dbg_write(ADDR_SCX,  dump[ADDR_SCX]);
-  dbg_write(ADDR_WY,   dump[ADDR_WY]);
-  dbg_write(ADDR_WX,   dump[ADDR_WX]);
-
-  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
-  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 5 - Window Display Enable          (0=Off, 1=On)
-  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
-  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
-  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
-
-  // #define FLAG_BG_ON        0x01
-  // #define FLAG_OBJ_ON       0x02
-  // #define FLAG_TALL_SPRITES 0x04
-  // #define FLAG_BG_MAP_1     0x08
-  // #define FLAG_TILE_0       0x10
-  // #define FLAG_WIN_ON       0x20
-  // #define FLAG_WIN_MAP_1    0x40
-  // #define FLAG_LCD_ON       0x80
-
-  dbg_write(ADDR_LCDC, dump[ADDR_LCDC]);
-
-  printf("Loaded %zd bytes from dump %s\n", size, filename);
-  delete [] dump;
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoy::load_rom(const char* filename) {
-  printf("Loading %s\n", filename);
-
-  uint8_t* rom = new uint8_t[65536];
-  size_t size = load_blob(filename, rom, 65536);
-
-  memcpy(cart_rom, rom, 32768);
-  memset(vid_ram,  0,    8192);
-  memset(cart_ram, 0,    8192);
-  memset(ext_ram,  0,    8192);
-  memset(oam_ram,  0,    256);
-  memset(zero_ram, 0,    128);
-
-  printf("Loaded %zd bytes from rom %s\n", size, filename);
-  delete [] rom;
+  // and skip AB so we can latch the first opcode before the cpu starts running
+  next_phase();
+  sys_cpu_en = true;
+  run(7);
 }
 
 //------------------------------------------------------------------------------
@@ -440,7 +376,7 @@ void GateBoy::tock_ext_bus() {
   uint16_t ext_addr = top.ext_bus.get_pin_addr();
 
   // ROM read
-  {
+  if (sys_cart_loaded) {
     uint16_t rom_addr = ext_addr & 0x7FFF;
     wire OEn = top.ext_bus.PIN_EXT_RDn.qp();
     wire CEn = top.ext_bus.PIN_EXT_A15p.qp();
@@ -553,15 +489,20 @@ void GateBoy::tock_vram_bus() {
   int vram_addr = top.vram_bus.get_pin_addr();
   uint8_t& vram_data = vid_ram[vram_addr];
 
-  if (!top.vram_bus.PIN_VRAM_WRn.qp()) {
-    vram_data = (uint8_t)top.vram_bus.get_pin_data();
-  }
+  // We're getting a fake write on the first phase because PIN_VRAM_WRn resets to 0...
+  // ignore it if we're in reset
 
-  if (!top.vram_bus.PIN_VRAM_OEn.qp()) {
-    top.vram_bus.set_pin_data_in(vram_data);
-  }
-  else {
-    top.vram_bus.set_pin_data_z();
+  if (!sys_rst) {
+    if (!top.vram_bus.PIN_VRAM_WRn.qp()) {
+      vram_data = (uint8_t)top.vram_bus.get_pin_data();
+    }
+
+    if (!top.vram_bus.PIN_VRAM_OEn.qp()) {
+      top.vram_bus.set_pin_data_in(vram_data);
+    }
+    else {
+      top.vram_bus.set_pin_data_z();
+    }
   }
 }
 

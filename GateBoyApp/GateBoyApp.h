@@ -19,10 +19,6 @@ public:
 
   //----------
 
-  void reset(uint16_t new_pc);
-
-  //----------
-
   const char* app_get_title() override;
   void app_init() override;
   void app_close() override;
@@ -31,6 +27,23 @@ public:
   void app_render_ui(Viewport view) override;
 
   //----------
+
+  void reset(uint16_t new_pc);
+
+  //----------
+
+private:
+
+  void load_raw_dump(const char* filename);
+  void save_raw_dump(const char* filename);
+
+  void load_megadump(const char* filename);
+  void save_megadump(const char* filename);
+
+  void load_flat_dump(const char* filename);
+  void save_flat_dump(const char* filename);
+
+  void load_rom(const char* filename);
 
   enum RunMode {
     RUN_FAST,
@@ -60,6 +73,5 @@ public:
   uint32_t overlay[160 * 144];
   int overlay_tex;
 
-  int vram_tex;
-
+  int ram_tex;
 };

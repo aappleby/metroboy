@@ -46,7 +46,9 @@ int GateBoyTests::test_main(int argc, char** argv) {
   auto finish = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double> elapsed = finish - start;
+
   LOG_G("Tests took %f seconds\n", elapsed.count());
+  LOG_G("%d failures\n", err);
 
   TEST_END();
 }
@@ -56,6 +58,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 int GateBoyTests::test_micro() {
   TEST_START();
 
+#if 1
   LOG_B("---------- Boot sys reg states ----------\n");
   err += run_microtest("poweron_000_joy.gb");
   err += run_microtest("poweron_000_sb.gb");
@@ -123,6 +126,7 @@ int GateBoyTests::test_micro() {
   err += run_microtest("lcdon_to_oam_int_l0.gb");
   err += run_microtest("lcdon_to_oam_int_l1.gb");
   err += run_microtest("lcdon_to_oam_int_l2.gb");
+#endif
 
   LOG_B("---------- POWERON-to-LY timing ----------\n");
   err += run_microtest("poweron_000_ly.gb");   // pass
@@ -131,6 +135,7 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_233_ly.gb");   // 
   err += run_microtest("poweron_234_ly.gb");   // 
 
+#if 1
   LOG_B("---------- Timer ----------\n");
   err += run_microtest("poweron_000_div.gb");
   err += run_microtest("poweron_004_div.gb");
@@ -165,6 +170,7 @@ int GateBoyTests::test_micro() {
   err += run_microtest("timer_tma_load_c.gb");
   err += run_microtest("timer_tma_write_a.gb");
   err += run_microtest("timer_tma_write_b.gb");
+#endif
 
   //load_rom("line_65_ly.gb"); // pass
   //load_rom("lcdon_to_oam_unlock_a.gb"); // fail#
@@ -187,8 +193,18 @@ int GateBoyTests::run_microtest(const char* filename) {
   load_blob(path.c_str(), gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
 
-  // if we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2
-  // so we're early by 0xC30 (3120) mcycles
+  // FIXME
+  // LCD has to be at (98,0) before we start the tests, but for some reason
+  // right now our bootrom is putting us at (26,0) - run for an additional
+  // 72*8 = 576 phases with the CPU off to get back in sync.
+
+  gb.sys_cpu_en = 0;
+  gb.run(576);
+  gb.sys_cpu_en = 1;
+
+  // Similarly, the bootrom isn't putting us at the right point relative to
+  // DIV. If we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2 so
+  // we're early by 0xC30 (3120) mcycles
 
   gb.top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
 

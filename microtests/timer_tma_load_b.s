@@ -12,8 +12,4 @@ main:
 
   nops 5
   ldh a, (TIMA)
-  add $55
-  
-end:
-  ld ($8000), a
-  jr end
+  test_finish_a $00

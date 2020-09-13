@@ -72,7 +72,7 @@ void GateBoyApp::app_init() {
   //load_rom("roms/tetris.gb");
   //load_rom("microtests/build/dmg/poweron_000_ly.gb");
   //load_rom("microtests/build/dmg/poweron_119_ly.gb");
-  //load_rom("microtests/build/dmg/poweron_120_ly.gb");
+  load_rom("microtests/build/dmg/poweron_120_ly.gb");
   //load_rom("microtests/build/dmg/poweron_233_ly.gb");
   //load_rom("microtests/build/dmg/poweron_234_ly.gb");
 
@@ -85,27 +85,10 @@ void GateBoyApp::app_init() {
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
 
-  state_manager.state()->phase_total = 0;
-
-#if 0
-  // ld (hl),a; jr -2;
-  gb.cart_rom[0x0155] = 0x77;
-  gb.cart_rom[0x0156] = 0x18;
-  gb.cart_rom[0x0157] = 0xFD;
-
-  gb.script = new Req[5];
-  gb.script[0].addr = 0x0155; gb.script[0].data = 0x00; gb.script[0].read = 1; gb.script[0].write = 0; // read "ld (hl), a" opcode
-  gb.script[1].addr = 0xFF80; gb.script[1].data = 0x00; gb.script[1].read = 0; gb.script[1].write = 1; // write to 0xFF80
-  gb.script[2].addr = 0x0156; gb.script[2].data = 0x00; gb.script[2].read = 1; gb.script[2].write = 0; // read "jr -2" opcode
-  gb.script[3].addr = 0x0157; gb.script[3].data = 0x00; gb.script[3].read = 1; gb.script[3].write = 0; // read "jr -2" param
-  gb.script[4].addr = 0x0157; gb.script[4].data = 0x00; gb.script[4].read = 0; gb.script[4].write = 0; // idle cycle
-
-  gb.script_len = 5;
-  gb.phase_total = 0;
-#endif
-
-  //gb.sys_buttons = 0x0F;
-  //gb.sys_buttons = 0x00;
+  auto gb = state_manager.state();
+  gb->sys_cpu_en = 0;
+  //gb->run(576);
+  gb->sys_cpu_en = 1;
 }
 
 //----------------------------------------

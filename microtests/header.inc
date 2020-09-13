@@ -264,11 +264,27 @@
 .endm
 
 .macro test_pass
+  ld a, $FF
+  ldh ($80), a
+  ld a, $FF
+  ldh ($81), a
+  ld a, $31
+  ldh ($82), a
+  ld a, b
+
   ld a, $55
   test_end
 .endm
 
 .macro test_fail
+  ld a, $00
+  ldh ($80), a
+  ld a, $FF
+  ldh ($81), a
+  ld a, $31
+  ldh ($82), a
+  ld a, b
+
   ld a, $FF
   test_end
 .endm
@@ -291,6 +307,14 @@
 .endm
 
 .macro test_finish_not_a ARGS expected
+  ld b, a
+  ldh ($80), a
+  ld a, expected
+  ldh ($81), a
+  ld a, $31
+  ldh ($82), a
+  ld a, b
+
   cp expected
   jr nz, +
   ld a, $FF
@@ -301,9 +325,7 @@
 
 .macro test_finish_b ARGS expected
   ld a, b
-  sub <expected
-  add $55
-  test_end
+  test_finish_a expected
 .endm
 
 .macro test_finish_div ARGS expected
@@ -324,16 +346,6 @@
 .macro test_finish_if ARGS expected
   ldh a, (IF)
   test_finish_a expected
-.endm
-
-.macro assert_stat ARGS expected
-  ldh a, (STAT)
-  cp expected
-  jr z, +
-  ld a, $FF
-- ld (VRAM), a
-  jr -
-+ nop
 .endm
 
 ;-------------------------------------------------------------------------------

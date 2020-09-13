@@ -183,9 +183,15 @@ void Assembler::disassemble_one(const uint8_t* code, Dumper& dump) {
 //-----------------------------------------------------------------------------
 
 void Assembler::disassemble(
-    const uint8_t* code, size_t code_size, uint16_t code_base,
-    int opcount, Dumper& dump, bool /*collapse_nops*/) {
-  size_t code_cursor = 0;
+    const uint8_t* code, size_t code_size,
+    uint16_t code_base,
+    uint16_t pc,
+    int opcount,
+    Dumper& dump,
+    bool /*collapse_nops*/) {
+  
+  size_t code_cursor = pc - code_base;
+  
   for (int i = 0; i < opcount; i++) {
     if (code_cursor >= code_size) return;
 
@@ -260,7 +266,7 @@ void Assembler::disassemble(Dumper& dump) {
     dump(".org $%04x\n", addr);
 
     const blob& code = block.second;
-    disassemble(code.data(), code.size(), addr, 100000, dump);
+    disassemble(code.data(), code.size(), addr, addr, 100000, dump);
   }
 }
 

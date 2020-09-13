@@ -58,7 +58,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 int GateBoyTests::test_micro() {
   TEST_START();
 
-#if 1
+#if 0
   LOG_B("---------- Boot sys reg states ----------\n");
   err += run_microtest("poweron_000_joy.gb");
   err += run_microtest("poweron_000_sb.gb");
@@ -126,7 +126,6 @@ int GateBoyTests::test_micro() {
   err += run_microtest("lcdon_to_oam_int_l0.gb");
   err += run_microtest("lcdon_to_oam_int_l1.gb");
   err += run_microtest("lcdon_to_oam_int_l2.gb");
-#endif
 
   LOG_B("---------- POWERON-to-LY timing ----------\n");
   err += run_microtest("poweron_000_ly.gb");   // pass
@@ -134,8 +133,8 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_120_ly.gb");   // FAIL - should be 0x01 - off by 584 phases?
   err += run_microtest("poweron_233_ly.gb");   // 
   err += run_microtest("poweron_234_ly.gb");   // 
+#endif
 
-#if 1
   LOG_B("---------- Timer ----------\n");
   err += run_microtest("poweron_000_div.gb");
   err += run_microtest("poweron_004_div.gb");
@@ -159,6 +158,7 @@ int GateBoyTests::test_micro() {
   err += run_microtest("timer_tima_write_e.gb");
   err += run_microtest("timer_tima_write_f.gb");
 
+#if 0
   err += run_microtest("timer_div_phase_c.gb");
   err += run_microtest("timer_div_phase_d.gb");
   err += run_microtest("timer_int_inc_sled.gb");

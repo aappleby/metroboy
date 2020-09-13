@@ -1,5 +1,6 @@
 #include "GateBoyApp/GateBoyApp.h"
 
+#include "CoreLib/Assembler.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/Debug.h"
 #include "CoreLib/File.h"
@@ -69,12 +70,7 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
   reset(0x0100);
-  //load_rom("roms/tetris.gb");
-  //load_rom("microtests/build/dmg/poweron_000_ly.gb");
-  //load_rom("microtests/build/dmg/poweron_119_ly.gb");
-  load_rom("microtests/build/dmg/poweron_120_ly.gb");
-  //load_rom("microtests/build/dmg/poweron_233_ly.gb");
-  //load_rom("microtests/build/dmg/poweron_234_ly.gb");
+  load_rom("microtests/build/dmg/timer_tima_phase_b.gb");
 
   /*
   for (int i = 0; i < 8192; i++) {
@@ -87,7 +83,7 @@ void GateBoyApp::app_init() {
 
   auto gb = state_manager.state();
   gb->sys_cpu_en = 0;
-  //gb->run(576);
+  gb->run(576);
   gb->sys_cpu_en = 1;
 }
 
@@ -448,6 +444,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.sprite_store.dump(dumper);
   top.tile_fetcher.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  cursor += col_width;
+  dumper.clear();
+
+  dumper("---------- DISASM ----------\n");
+  uint16_t pc = gateboy->cpu.op_addr;
+  Assembler a;
+  a.disassemble(gateboy->cart_rom, 32768,
+                ADDR_CART_ROM_BEGIN, pc,
+                30, dumper, false);
+  text_painter.render(view, dumper.s.c_str(), cursor, 512 - 160);
   cursor += col_width;
   dumper.clear();
 

@@ -351,25 +351,22 @@ void Gameboy::dump_disasm(Dumper& d) {
   d("\002--------------DISASM-----------\001\n");
 
   uint16_t pc = z80.get_op_addr();
-  const uint8_t* segment;
 
-  if (ADDR_MAIN_RAM_BEGIN <= pc && pc <= ADDR_MAIN_RAM_END) {
-    segment = cart.get_main_ram() + (pc - ADDR_MAIN_RAM_BEGIN);
+  Assembler a;
+  if (ADDR_CART_ROM_BEGIN <= pc && pc <= ADDR_CART_ROM_END) {
+    a.disassemble(cart.get_cart_rom(), 32768, 
+                  ADDR_CART_ROM_BEGIN, pc,
+                  30, d, false);
+  }
+  else if (ADDR_MAIN_RAM_BEGIN <= pc && pc <= ADDR_MAIN_RAM_END) {
+    a.disassemble(cart.get_main_ram(), 8192,
+                  ADDR_MAIN_RAM_BEGIN, pc,
+                  30, d, false);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
-    segment = zram.get() + (pc - ADDR_ZEROPAGE_BEGIN);
-  }
-  else if (ADDR_OAM_BEGIN <= pc && pc <= ADDR_OAM_END) {
-    segment = oam.get() + (pc - ADDR_OAM_BEGIN);
-  }
-  else {
-    segment = cart.get_flat_ptr(pc);
-  }
-
-  if (segment) {
-    Assembler a;
-    a.disassemble(segment, 65536, pc, 30, d, false);
-    d("\n");
+    a.disassemble(zram.get(), 127,
+                  ADDR_ZEROPAGE_BEGIN, pc,
+                  30, d, false);
   }
   else {
     d("(bad pc)\n");

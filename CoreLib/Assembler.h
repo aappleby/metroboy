@@ -15,7 +15,15 @@ struct Assembler {
   template<typename ... Args>
   void assemble(const char* format, Args ... args);
   void disassemble_one(const uint8_t* code, Dumper& dump);
-  void disassemble(const uint8_t* code, size_t code_size, uint16_t code_base, int opcount, Dumper& dump, bool collapse_nops = true);
+
+  void disassemble(
+    const uint8_t* code, size_t code_size,
+    uint16_t code_base,
+    uint16_t pc,
+    int opcount,
+    Dumper& dump,
+    bool collapse_nops = true);
+
   void assemble(const char* source);
 
   void disassemble(Dumper& dump);

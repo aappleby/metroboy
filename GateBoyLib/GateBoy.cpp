@@ -80,9 +80,11 @@ void GateBoy::reset() {
   run(8);
 
   // Wait for PIN_CPU_START
+  printf("Waiting for PIN_CPU_START\n");
   while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {
     run(8);
   }
+  printf("Got PIN_CPU_START\n");
 
   // PIN_CPU_START high, delay 8 phases
   run(8);
@@ -99,6 +101,9 @@ void GateBoy::reset() {
   next_phase();
   sys_cpu_en = true;
   run(7);
+
+  //top.tim_reg.
+
 }
 
 //------------------------------------------------------------------------------
@@ -167,15 +172,18 @@ void GateBoy::next_phase() {
 
     uint8_t bus_data = top.cpu_bus.get_bus_data();
 
+    // tock_ack can't be on EF or FG, see lcdon_to_ly1_b - ly changes to 1 on fg
+    // and there's no clock edge going to the cpu on GH, so data must be latched on HA
+
     switch(old_phase) {
     /* AB */ case 0: cpu.tock_req(imask, intf, bus_data); break; // bus request _must_ change on AB, see trace
     /* BC */ case 1: break;
     /* CD */ case 2: break;
     /* DE */ case 3: break;
-    /* EF */ case 4: cpu.tock_ack(imask, intf, bus_data); break; // bus data latches?
+    /* EF */ case 4: break;
     /* FG */ case 5: break;
     /* GH */ case 6: break;
-    /* HA */ case 7: break;
+    /* HA */ case 7: cpu.tock_ack(imask, intf, bus_data); break;
     }
   }
 

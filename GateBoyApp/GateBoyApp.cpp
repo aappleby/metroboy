@@ -67,16 +67,19 @@ void GateBoyApp::app_init() {
   ram_tex = create_texture_u8(256, 256);
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
-
-  //reset(0x0100);
-  load_rom("roms/tetris.gb");
+  
 
   /*
-  auto gb = state_manager.state();
+  reset(0x0000);
+  load_rom("roms/tetris.gb");
+
   for (int i = 0; i < 8192; i++) {
+    auto gb = state_manager.state();
     gb->vid_ram[i] = (uint8_t)rand();
   }
   */
+
+  reset(0x0100);
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
 
@@ -100,9 +103,6 @@ void GateBoyApp::app_init() {
   gb.phase_total = 0;
 #endif
 
-  for (int i = 0; i < 8192; i++) {
-    gb.vid_ram[i] = (uint8_t)rand();
-  }
 
 #endif
 
@@ -362,23 +362,17 @@ void GateBoyApp::save_flat_dump(const char* filename) {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  reset(0x0100);
-
   uint8_t* rom = new uint8_t[65536];
   size_t size = load_blob(filename, rom, 65536);
 
   auto gb = state_manager.state();
-
   memcpy(gb->cart_rom, rom, 32768);
-  /*
-  memset(gb->vid_ram,  0,    8192);
-  memset(gb->cart_ram, 0,    8192);
-  memset(gb->ext_ram,  0,    8192);
-  memset(gb->oam_ram,  0,    256);
-  memset(gb->zero_ram, 0,    128);
-  */
-
   gb->sys_cart_loaded = 1;
+
+  // if we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2
+  // so we're early by 0xC30 (3120) mcycles
+
+  gb->top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
 
   printf("Loaded %zd bytes from rom %s\n", size, filename);
   delete [] rom;

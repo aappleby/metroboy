@@ -16,6 +16,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
+  /*
   err += test_init();
   err += test_clk();
   err += test_ext_bus();
@@ -27,6 +28,18 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_ppu();
   err += test_serial();
   err += test_timer();
+  */
+
+  err += test_micro();
+
+  //load_rom("roms/cpu_instrs.gb"); // needs MBC1
+  //load_rom("roms/instr_timing.gb"); // PASS, but takes ages. _NOT_ microtest
+
+  //load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb"); // pass
+  //load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb"); // fail (need to hook up EI, 0xFFFF?)
+  //load_rom("roms/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb"); // pass
+  //load_rom("roms/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb"); // pass
+
 
   if (!err) LOG_G("Everything passed!\n");
 
@@ -36,6 +49,144 @@ int GateBoyTests::test_main(int argc, char** argv) {
   LOG_G("Tests took %f seconds\n", elapsed.count());
 
   TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro() {
+  TEST_START();
+
+  LOG_B("---------- Boot sys reg states ----------\n");
+  err += run_microtest("poweron_000_joy.gb");
+  err += run_microtest("poweron_000_sb.gb");
+  err += run_microtest("poweron_000_sc.gb");
+  err += run_microtest("poweron_000_if.gb");
+  err += run_microtest("poweron_000_dma.gb");
+
+  LOG_B("---------- Boot timer reg states ----------\n");
+  err += run_microtest("poweron_000_div.gb");
+  err += run_microtest("poweron_000_tima.gb");
+  err += run_microtest("poweron_000_tma.gb");
+  err += run_microtest("poweron_000_tac.gb");
+
+  LOG_B("---------- Boot PPU reg states ----------\n");
+  err += run_microtest("poweron_000_lcdc.gb");
+  err += run_microtest("poweron_000_stat.gb"); // FAIL - should be 0x85 - ly=lyc, vblank - but we're seeing 87 - ly=lyc, render
+  err += run_microtest("poweron_000_scy.gb");
+  err += run_microtest("poweron_000_scx.gb");
+  err += run_microtest("poweron_000_ly.gb");
+  err += run_microtest("poweron_000_lyc.gb");
+  err += run_microtest("poweron_000_bgp.gb");
+  err += run_microtest("poweron_000_obp0.gb");
+  err += run_microtest("poweron_000_obp1.gb");
+  err += run_microtest("poweron_000_wy.gb");
+  err += run_microtest("poweron_000_wx.gb");
+
+  LOG_B("---------- Boot mem states ----------\n");
+  err += run_microtest("poweron_000_oam.gb");  // FAIL
+  err += run_microtest("poweron_000_vram.gb"); // FAIL
+
+  LOG_B("---------- LCDEN-to-LY timing ----------\n");
+  err += run_microtest("lcdon_to_ly1_a.gb");
+  err += run_microtest("lcdon_to_ly1_b.gb");
+  err += run_microtest("lcdon_to_ly2_a.gb");
+  err += run_microtest("lcdon_to_ly2_b.gb");
+  err += run_microtest("lcdon_to_ly3_a.gb");
+  err += run_microtest("lcdon_to_ly3_b.gb");
+
+  LOG_B("---------- LCDEN-to-STAT timing ----------\n");
+  err += run_microtest("lcdon_to_stat0_a.gb");
+  err += run_microtest("lcdon_to_stat0_b.gb");
+  err += run_microtest("lcdon_to_stat0_c.gb");
+  err += run_microtest("lcdon_to_stat0_d.gb");
+  err += run_microtest("lcdon_to_stat1_a.gb");
+  err += run_microtest("lcdon_to_stat1_b.gb");
+  err += run_microtest("lcdon_to_stat1_c.gb");
+  err += run_microtest("lcdon_to_stat1_d.gb"); // FAIL#
+  err += run_microtest("lcdon_to_stat1_e.gb");
+  err += run_microtest("lcdon_to_stat2_a.gb"); // FAIL#
+  err += run_microtest("lcdon_to_stat2_b.gb");
+  err += run_microtest("lcdon_to_stat2_c.gb");
+  err += run_microtest("lcdon_to_stat2_d.gb");
+  err += run_microtest("lcdon_to_stat3_a.gb");
+  err += run_microtest("lcdon_to_stat3_b.gb");
+  err += run_microtest("lcdon_to_stat3_c.gb");
+  err += run_microtest("lcdon_to_stat3_d.gb");
+
+  LOG_B("---------- POWERON-to-LY timing ----------\n");
+  err += run_microtest("poweron_000_ly.gb");   // pass
+  err += run_microtest("poweron_119_ly.gb");   // pass
+  err += run_microtest("poweron_120_ly.gb");   // FAIL - should be 0x01 - off by 584 phases?
+  err += run_microtest("poweron_233_ly.gb");   // 
+  err += run_microtest("poweron_234_ly.gb");   // 
+
+  LOG_B("---------- Timer DIV ----------\n");
+  err += run_microtest("poweron_000_div.gb");
+  err += run_microtest("poweron_004_div.gb");
+  err += run_microtest("poweron_005_div.gb");
+  err += run_microtest("timer_div_phase_c.gb");
+  err += run_microtest("timer_div_phase_d.gb");
+
+  LOG_B("---------- Timer TIMA ----------\n");
+  err += run_microtest("timer_tima_phase_a.gb"); // FE pass
+  err += run_microtest("timer_tima_phase_b.gb"); // FF FAIL
+  err += run_microtest("timer_tima_phase_c.gb"); // FF FAIL
+  err += run_microtest("timer_tima_phase_d.gb"); // FF pass
+  err += run_microtest("timer_tima_phase_e.gb"); // FF pass
+  err += run_microtest("timer_tima_phase_f.gb"); // 00 FAIL
+  err += run_microtest("timer_tima_phase_g.gb"); // 80 FAIL
+  err += run_microtest("timer_tima_phase_h.gb"); // 80 FAIL
+  err += run_microtest("timer_tima_phase_i.gb"); // 80 pass
+  err += run_microtest("timer_tima_phase_j.gb"); // 81 FAIL
+  err += run_microtest("timer_tima_write_a.gb"); // pass
+  err += run_microtest("timer_tima_write_b.gb"); // fail
+
+  //load_rom("line_65_ly.gb"); // pass
+  //load_rom("lcdon_to_oam_unlock_a.gb"); // fail#
+  //load_rom("lcdon_to_oam_unlock_b.gb"); // fail#
+  //load_rom("lcdon_to_oam_int_l0.gb"); // fail#
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::run_microtest(const char* filename) {
+  LOG_B("%-40s ", filename);
+
+  std::string path = "microtests/build/dmg/" + std::string(filename);
+
+  GateBoy gb;
+  load_obj("gateboy_post_bootrom.raw.dump", gb);
+
+  load_blob(path.c_str(), gb.cart_rom, 32768);
+  gb.sys_cart_loaded = 1;
+
+  // if we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2
+  // so we're early by 0xC30 (3120) mcycles
+
+  gb.top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
+
+  int mcycle = 0;
+  uint8_t result = 0;
+  for (; mcycle < 1000; mcycle++) {
+    result = gb.vid_ram[0];
+    if (result) break;
+    gb.run(8);
+  }
+
+  if (mcycle == 1000) {
+    LOG_Y("TIMEOUT\n");
+    return 1;
+  }
+  else if (result == 0x55) {
+    LOG_G("PASS @ %d\n", mcycle);
+    return 0;
+  }
+  else {
+    LOG_R("FAIL @ %d\n", mcycle);
+    return 1;
+  }
 }
 
 //-----------------------------------------------------------------------------

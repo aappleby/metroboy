@@ -95,16 +95,18 @@ void MetroBoyApp::app_init() {
   gb_blitter.init();
   dump_painter.init();
 
+  //load("microtests/build/dmg/div_inc_timing_a");
+
   //load("oh"); // broken eye
-  //load("pocket");
+  //load("roms/pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
+  //load("roms/LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("roms/", "SML");
-  //load("roms/", "tetris");
+  //load("roms/tetris");
 
   //load_memdump("roms", "LinksAwakening_house");
-  load_memdump("roms", "LinksAwakening_dog");
+  //load_memdump("roms", "LinksAwakening_dog");
   //load_memdump("roms", "tetris");
 
   //runmode = STEP_PHASE;
@@ -302,6 +304,8 @@ void MetroBoyApp::app_update(double /*delta*/) {
   // Run simulation
 
   if (runmode == RUN_FAST) {
+    metroboy.run_fast(buttons, 1000);
+    /*
     int64_t phase_begin = metroboy.gb().phase_total;
     double time_begin = timestamp();
     metroboy.run_fast(buttons, (int)fast_mcycles);
@@ -316,6 +320,7 @@ void MetroBoyApp::app_update(double /*delta*/) {
     
     double a = 0.95;
     fast_mcycles = fast_mcycles * a + new_mcycles * (1.0 - a);
+    */
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);

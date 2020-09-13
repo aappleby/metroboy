@@ -29,12 +29,12 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d.dump_reg("FF41 STAT", 
     !SADU_STAT_MODE0n,
     !XATY_STAT_MODE1n,
-    RUPO_LYC_MATCH_LATCHn.qp(),
+    RUPO_LYC_MATCH_LATCHn.qn(),
     ROXE_STAT_HBI_ENn.qn(),
     RUFO_STAT_VBI_ENn.qn(),
     REFE_STAT_OAI_ENn.qn(),
     RUGU_STAT_LYI_ENn.qn(),
-    0
+    1
   );
 
   d.dump_reg("FF42 SCY",
@@ -906,7 +906,9 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.RUGU*/ RUGU_STAT_LYI_ENn.tock(RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.BUS_CPU_D6p.qp());
 
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not1(SEPA_FF41_WRp);
-    /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor2(WESY_SYS_RSTn, RYJU_FF41_WRn);  // schematic wrong, this is NOR
+    /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn, RYJU_FF41_WRn);
+
+    // This latch isn't actually used as a latch, it's effectively an inverter.
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp());
 
     /*p21.TOBE*/ wire TOBE_FF41_RDp = and2(VARY_FF41p, ASOT_CPU_RDp); // die AND

@@ -5,7 +5,7 @@ using namespace Schematics;
 
 #pragma warning(disable:4100) // unreferenced parameter
 
-#define FAST_BOOT
+//#define FAST_BOOT
 
 //-----------------------------------------------------------------------------
 
@@ -158,7 +158,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
 #ifdef FAST_BOOT
   /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.TERO_DIV_03.qp());
 #else
-  /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.UPOF_DIV_15());
+  /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.UPOF_DIV_15.qp());
 #endif
 
   /*p01.TABA*/ wire TABA_POR_TRIGn = or3(top.UNOR_MODE_DBG2p, top.UMUT_MODE_DBG1p, UNUT_POR_TRIGn);

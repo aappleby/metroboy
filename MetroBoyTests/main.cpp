@@ -11,9 +11,8 @@
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
-  printf("Hello World %f\n", timestamp());
 
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();

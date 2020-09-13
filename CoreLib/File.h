@@ -25,6 +25,11 @@ inline void save_array(const std::string& filename, T& data) {
 }
 
 template<typename T>
+inline void load_obj(const char* filename, T& data) {
+  load_blob(filename, &data, sizeof(T));
+}
+
+template<typename T>
 inline void load_obj(const std::string& filename, T& data) {
   load_blob(filename.c_str(), &data, sizeof(T));
 }

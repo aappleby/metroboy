@@ -46,41 +46,24 @@ struct Gameboy {
 
   void sync_to_mcycle() {
     int old_phase = (phase_total + 0) & 7;
-    int new_phase = (phase_total + 1) & 7;
-
     switch(old_phase) {
     case 0: return;
-    case 1: tick_gb(); tock_gb(old_phase, new_phase);
-    case 2: tick_gb(); tock_gb(old_phase, new_phase);
-    case 3: tick_gb(); tock_gb(old_phase, new_phase);
-    case 4: tick_gb(); tock_gb(old_phase, new_phase);
-    case 5: tick_gb(); tock_gb(old_phase, new_phase);
-    case 6: tick_gb(); tock_gb(old_phase, new_phase);
-    case 7: tick_gb(); tock_gb(old_phase, new_phase);
+    case 1: halfcycle();
+    case 2: halfcycle();
+    case 3: halfcycle();
+    case 4: halfcycle();
+    case 5: halfcycle();
+    case 6: halfcycle();
+    case 7: halfcycle();
     }
   }
   
   void mcycle() {
-    int old_phase = (phase_total + 0) & 7;
-    int new_phase = (phase_total + 1) & 7;
+    assert(((phase_total + 0) & 7) == 7);
 
-    assert(old_phase == 7);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
-    tick_gb();
-    tock_gb(old_phase, new_phase);
+    for (int i = 0; i < 8; i++) {
+      halfcycle();
+    }
   }
 
   void halfcycle() {

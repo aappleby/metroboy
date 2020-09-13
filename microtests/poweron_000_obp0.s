@@ -2,7 +2,8 @@
 
 .define DELAY  0
 .define ADDR   $FF48
-.define RESULT $9F
+//.define RESULT $9F
+.define RESULT $FF
 
 main:
   nops DELAY

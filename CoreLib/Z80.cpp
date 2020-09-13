@@ -223,7 +223,7 @@ void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
   in = bus_data;
 
   if (state == 0) {
-    //op_addr = ack.addr;
+    op_addr = bus_req.addr;
     op = bus_data;     
     int_ack = 0;
 

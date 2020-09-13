@@ -24,6 +24,9 @@ struct GateBoyTests {
   int test_ppu();
   int test_serial();
   int test_timer();
+  int test_micro();
+  
+  int run_microtest(const char* filename);
 
   int test_dma(uint16_t src);
 

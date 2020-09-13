@@ -1,14 +1,15 @@
 #include "MetroBoyLib/Gameboy.h"
 #include "CoreLib/File.h"
+#include "CoreLib/Tests.h"
 
 
 static const std::string all_microtests[] = {
   //"000-oam_lock",
-  "000-write_to_x8000",
+  //"000-write_to_x8000",
   //"001-vram_unlocked",
   //"002-vram_locked",
-  "004-tima_boot_phase",
-  "004-tima_cycle_timer",
+  //"004-tima_boot_phase",
+  //"004-tima_cycle_timer",
   //"007-lcd_on_stat",
   //"400-dma",
   //"500-scx-timing",
@@ -530,11 +531,14 @@ static const std::string all_microtests[] = {
 
 
 
+//------------------------------------------------------------------------------
 
+int run_microtest(const std::string& prefix, const std::string& name) {
+  std::string filename = prefix + name + ".gb";
+  LOG_B("%-60s ", filename.c_str());
 
+  //TEST_START(filename.c_str());
 
-bool run_microtest(const std::string& prefix, const std::string& name) {
-  std::string filename = prefix + "/" + name + ".gb";
   blob rom;
   load_array(filename, rom);
 
@@ -554,38 +558,43 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   }
 
   if (i == mcycles) {
-    printf("%-50s ? TIMEOUT @ %d\n", name.c_str(), i);
-    return false;
+    LOG_R("TIMEOUT\n");
+    return 1;
   }
-  else if (result == 0x55) {
-    //printf(".");
-    printf("%s 0x%02x PASS @ %d\n", name.c_str(), result, i);
-    return true;
+
+  if (result != 0x55) {
+    LOG_R("FAIL @ %d\n", i);
+    return 1;
   }
-  else {
-    printf("%-50s X 0x%02x FAIL @ %d\n", name.c_str(), result, i);
-    return false;
-  }
+
+  //EXPECT_NE(i, mcycles,   "TIMEOUT @ %d", i);
+  //EXPECT_EQ(0x55, result, "%s FAIL @ %d", name.c_str(), i);
+
+  //TEST_END();
+
+  LOG_G("pass @ %d\n", i);
+
+  return 0;
 }
 
-void run_microtests() {
+//------------------------------------------------------------------------------
+
+int run_microtests() {
+  std::string prefix = "microtests/build/dmg/";
+  TEST_START("Microtests in %s:", prefix.c_str());
+
   double begin = timestamp();
 
-  std::string prefix = "microtests/build/dmg/";
-
-  printf("\n");
-  printf("---------- Microtests in %s: ----------\n", prefix.c_str());
-
   int fails = 0;
-  //for (auto name : micro_tests) {
   for (auto name : all_microtests) {
     if (name == "break") break;
     if (name[0] == '-') continue;
-    bool pass = run_microtest(prefix, name);
-    if (!pass) fails++;
+    fails += run_microtest(prefix, name);
   }
-  printf("\n");
-
   double end = timestamp();
-  printf("---------- Microtests took %f seconds, %d failures ----------\n", (end - begin), fails);
+  LOG_Y("---------- Microtests took %f seconds, %d failures ----------\n", (end - begin), fails);
+
+  TEST_END();
 }
+
+//------------------------------------------------------------------------------

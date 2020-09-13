@@ -424,6 +424,10 @@ struct DFF17 : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
 
+  void force_state(int s) {
+    state = RegState(s);
+  }
+
   inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 

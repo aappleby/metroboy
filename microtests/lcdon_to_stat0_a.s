@@ -1,19 +1,9 @@
-; pass - dmg, ags
 
 .include "header.inc"
 
-; LCD on -> STAT mode reads 0
-
-;-------------------------------------------------------------------------------
-  
 main:
+  reset_lcd_for_test
 
-  lcd_off_unsafe
-
-  lcd_on
-
-  nops 16 + 43
+  long_delay 59
 
   test_finish_stat $87
-
-;-------------------------------------------------------------------------------

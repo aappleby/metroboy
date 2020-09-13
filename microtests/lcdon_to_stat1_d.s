@@ -3,8 +3,6 @@
 main:
   reset_lcd_for_test
 
-  long_delay 114*153
-
-  nops 110
+  long_delay 17552
 
   test_finish_stat $84

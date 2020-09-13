@@ -113,6 +113,14 @@ int GateBoyTests::test_micro() {
   err += run_microtest("lcdon_to_stat3_c.gb");
   err += run_microtest("lcdon_to_stat3_d.gb");
 
+  LOG_B("---------- LCDEN-to-int timing ----------\n");
+  err += run_microtest("lcdon_to_lyc1_int.gb");
+  err += run_microtest("lcdon_to_lyc2_int.gb");
+  err += run_microtest("lcdon_to_lyc3_int.gb");
+  err += run_microtest("lcdon_to_oam_int_l0.gb");
+  err += run_microtest("lcdon_to_oam_int_l1.gb");
+  err += run_microtest("lcdon_to_oam_int_l2.gb");
+
   LOG_B("---------- POWERON-to-LY timing ----------\n");
   err += run_microtest("poweron_000_ly.gb");   // pass
   err += run_microtest("poweron_119_ly.gb");   // pass
@@ -120,14 +128,11 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_233_ly.gb");   // 
   err += run_microtest("poweron_234_ly.gb");   // 
 
-  LOG_B("---------- Timer DIV ----------\n");
+  LOG_B("---------- Timer ----------\n");
   err += run_microtest("poweron_000_div.gb");
   err += run_microtest("poweron_004_div.gb");
   err += run_microtest("poweron_005_div.gb");
-  err += run_microtest("timer_div_phase_c.gb");
-  err += run_microtest("timer_div_phase_d.gb");
 
-  LOG_B("---------- Timer TIMA ----------\n");
   err += run_microtest("timer_tima_phase_a.gb"); // FE pass
   err += run_microtest("timer_tima_phase_b.gb"); // FF FAIL
   err += run_microtest("timer_tima_phase_c.gb"); // FF FAIL
@@ -138,8 +143,25 @@ int GateBoyTests::test_micro() {
   err += run_microtest("timer_tima_phase_h.gb"); // 80 FAIL
   err += run_microtest("timer_tima_phase_i.gb"); // 80 pass
   err += run_microtest("timer_tima_phase_j.gb"); // 81 FAIL
-  err += run_microtest("timer_tima_write_a.gb"); // pass
-  err += run_microtest("timer_tima_write_b.gb"); // fail
+
+  err += run_microtest("timer_tima_write_a.gb");
+  err += run_microtest("timer_tima_write_b.gb");
+  err += run_microtest("timer_tima_write_c.gb");
+  err += run_microtest("timer_tima_write_d.gb");
+  err += run_microtest("timer_tima_write_e.gb");
+  err += run_microtest("timer_tima_write_f.gb");
+
+  err += run_microtest("timer_div_phase_c.gb");
+  err += run_microtest("timer_div_phase_d.gb");
+  err += run_microtest("timer_int_inc_sled.gb");
+  err += run_microtest("timer_int_inc_sled_a.gb");
+  err += run_microtest("timer_int_inc_sled_b.gb");
+  
+  err += run_microtest("timer_tma_load_a.gb");
+  err += run_microtest("timer_tma_load_b.gb");
+  err += run_microtest("timer_tma_load_c.gb");
+  err += run_microtest("timer_tma_write_a.gb");
+  err += run_microtest("timer_tma_write_b.gb");
 
   //load_rom("line_65_ly.gb"); // pass
   //load_rom("lcdon_to_oam_unlock_a.gb"); // fail#
@@ -168,14 +190,15 @@ int GateBoyTests::run_microtest(const char* filename) {
   gb.top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
 
   int mcycle = 0;
+  int timeout = 100000;
   uint8_t result = 0;
-  for (; mcycle < 1000; mcycle++) {
+  for (; mcycle < timeout; mcycle++) {
     result = gb.vid_ram[0];
     if (result) break;
     gb.run(8);
   }
 
-  if (mcycle == 1000) {
+  if (mcycle == timeout) {
     LOG_Y("TIMEOUT\n");
     return 1;
   }

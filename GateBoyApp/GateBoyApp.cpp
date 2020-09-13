@@ -68,23 +68,24 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
+  reset(0x0100);
+  //load_rom("roms/tetris.gb");
+  //load_rom("microtests/build/dmg/poweron_000_ly.gb");
+  //load_rom("microtests/build/dmg/poweron_119_ly.gb");
+  //load_rom("microtests/build/dmg/poweron_120_ly.gb");
+  //load_rom("microtests/build/dmg/poweron_233_ly.gb");
+  //load_rom("microtests/build/dmg/poweron_234_ly.gb");
 
   /*
-  reset(0x0000);
-  load_rom("roms/tetris.gb");
-
   for (int i = 0; i < 8192; i++) {
     auto gb = state_manager.state();
     gb->vid_ram[i] = (uint8_t)rand();
   }
   */
 
-  reset(0x0100);
-
   //load_flat_dump("roms/LinksAwakening_dog.dump");
 
-#if 0
-  gb.load_rom("microtests/build/dmg/cpu_bus_1.gb");
+  state_manager.state()->phase_total = 0;
 
 #if 0
   // ld (hl),a; jr -2;
@@ -101,9 +102,6 @@ void GateBoyApp::app_init() {
 
   gb.script_len = 5;
   gb.phase_total = 0;
-#endif
-
-
 #endif
 
   //gb.sys_buttons = 0x0F;
@@ -419,6 +417,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Pass avg    %4.2f\n",  float(gateboy->pass_total) / float(gateboy->phase_total));
   dumper("Phase hash  %016llx\n", gateboy->phase_hash);
   dumper("Total hash  %016llx\n", gateboy->total_hash);
+  dumper("BGB cycle   0x%08x\n",  gateboy->phase_total / 4);
+
   dumper("\n");
   dumper("dbg_req ");
   dump_req(dumper, gateboy->dbg_req);

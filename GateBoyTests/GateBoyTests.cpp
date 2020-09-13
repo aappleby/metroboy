@@ -99,11 +99,14 @@ int GateBoyTests::test_micro() {
   err += run_microtest("lcdon_to_stat0_b.gb");
   err += run_microtest("lcdon_to_stat0_c.gb");
   err += run_microtest("lcdon_to_stat0_d.gb");
+#if 0
+  // slow
   err += run_microtest("lcdon_to_stat1_a.gb");
   err += run_microtest("lcdon_to_stat1_b.gb");
   err += run_microtest("lcdon_to_stat1_c.gb");
   err += run_microtest("lcdon_to_stat1_d.gb"); // FAIL#
   err += run_microtest("lcdon_to_stat1_e.gb");
+#endif
   err += run_microtest("lcdon_to_stat2_a.gb"); // FAIL#
   err += run_microtest("lcdon_to_stat2_b.gb");
   err += run_microtest("lcdon_to_stat2_c.gb");
@@ -198,16 +201,25 @@ int GateBoyTests::run_microtest(const char* filename) {
     gb.run(8);
   }
 
+  uint8_t result_a = gb.zero_ram[0]; // actual
+  uint8_t result_b = gb.zero_ram[1]; // expected
+  uint8_t result_c = gb.zero_ram[2]; // sanity (should be 0x31
+
+
   if (mcycle == timeout) {
     LOG_Y("TIMEOUT\n");
     return 1;
   }
+  else if (result_c != 0x31) {
+    LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, mcycle);
+    return 1;
+  }
   else if (result == 0x55) {
-    LOG_G("PASS @ %d\n", mcycle);
+    LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
     return 0;
   }
   else {
-    LOG_R("FAIL @ %d\n", mcycle);
+    LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, mcycle);
     return 1;
   }
 }

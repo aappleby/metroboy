@@ -273,12 +273,15 @@
   test_end
 .endm
 
-.macro display_a
-- ld (VRAM), a
-  jr -
-.endm
-
 .macro test_finish_a ARGS expected
+  ld b, a
+  ldh ($80), a
+  ld a, expected
+  ldh ($81), a
+  ld a, $31
+  ldh ($82), a
+  ld a, b
+
   cp expected
   jr z, +
   ld a, $FF

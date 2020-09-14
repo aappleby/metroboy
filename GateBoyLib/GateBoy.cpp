@@ -118,7 +118,6 @@ void GateBoy::reset_post_bootrom() {
   // 72*8 = 576 phases with the CPU off to get back in sync.
 
   sys_cpu_en = 0;
-  run(576);
   sys_cpu_en = 1;
 
   // Similarly, the bootrom isn't putting us at the right point relative to
@@ -126,6 +125,9 @@ void GateBoy::reset_post_bootrom() {
   // we're early by 0xC30 (3120) mcycles
 
   top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
+  top.tim_reg.force_set_tima(0xFF);  // this passes poweron_000_tima.gb
+  
+  top.int_reg.force_set_if(0xe1); // this doesn't work, the timer int is still firing...
 }
 
 //------------------------------------------------------------------------------

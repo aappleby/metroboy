@@ -12,14 +12,22 @@ struct InterruptRegisters {
   void dump(Dumper& d) const;
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
 
+  void force_set_if(uint8_t _if) {
+    LOPE_FF0F_D0p.force_state(_if & 0x01);
+    LALU_FF0F_D1p.force_state(_if & 0x02);
+    NYBO_FF0F_D2p.force_state(_if & 0x04);
+    UBUL_FF0F_D3p.force_state(_if & 0x08);
+    ULAK_FF0F_D4p.force_state(_if & 0x10);
+  }
+
 //private:
   friend SchematicTop;
 
-  /*p02.LOPE*/ DFF22 LOPE_FF0F_0p;
-  /*p02.UBUL*/ DFF22 UBUL_FF0F_3p;
-  /*p02.ULAK*/ DFF22 ULAK_FF0F_4p;
-  /*p02.LALU*/ DFF22 LALU_FF0F_1p;
-  /*p02.NYBO*/ DFF22 NYBO_FF0F_2p;
+  /*p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
+  /*p02.UBUL*/ DFF22 UBUL_FF0F_D3p;
+  /*p02.ULAK*/ DFF22 ULAK_FF0F_D4p;
+  /*p02.LALU*/ DFF22 LALU_FF0F_D1p;
+  /*p02.NYBO*/ DFF22 NYBO_FF0F_D2p;
 
   /*p02.MATY*/ TpLatch MATY_FF0F_L0p = TRI_D0NP;
   /*p02.NEJY*/ TpLatch NEJY_FF0F_L3p = TRI_D0NP;

@@ -40,6 +40,20 @@ struct Timer {
     return pack_p(SOPU_TAC_D0.qp(), SAMY_TAC_D1.qp(), SABO_TAC_D2.qp(), 0);
   }
 
+  void force_set_tima(uint8_t tima) {
+    uint16_t tima_a = tima;
+    uint16_t tima_b = ((~tima) << 2);
+
+    REGA_TIMA_D0.force_state(((tima_a >>  0) & 1) | ((tima_b >>  0) & 2));
+    POVY_TIMA_D1.force_state(((tima_a >>  1) & 1) | ((tima_b >>  1) & 2));
+    PERU_TIMA_D2.force_state(((tima_a >>  2) & 1) | ((tima_b >>  2) & 2));
+    RATE_TIMA_D3.force_state(((tima_a >>  3) & 1) | ((tima_b >>  3) & 2));
+    RUBY_TIMA_D4.force_state(((tima_a >>  4) & 1) | ((tima_b >>  4) & 2));
+    RAGE_TIMA_D5.force_state(((tima_a >>  5) & 1) | ((tima_b >>  5) & 2));
+    PEDA_TIMA_D6.force_state(((tima_a >>  6) & 1) | ((tima_b >>  6) & 2));
+    NUGA_TIMA_D7.force_state(((tima_a >>  7) & 1) | ((tima_b >>  7) & 2));
+  }
+
   void force_set_div(uint16_t div) {
 
     // 0b1111001111011011

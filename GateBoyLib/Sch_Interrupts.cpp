@@ -8,11 +8,11 @@ using namespace Schematics;
 
 void InterruptRegisters::dump(Dumper& d) const {
   d("----------   Ints   ----------\n");
-  d("LOPE_FF0F_0        %c\n", LOPE_FF0F_0p        .c());
-  d("LALU_FF0F_1        %c\n", LALU_FF0F_1p        .c());
-  d("NYBO_FF0F_2        %c\n", NYBO_FF0F_2p        .c());
-  d("UBUL_FF0F_3        %c\n", UBUL_FF0F_3p        .c());
-  d("ULAK_FF0F_4        %c\n", ULAK_FF0F_4p        .c());
+  d("LOPE_FF0F_0        %c\n", LOPE_FF0F_D0p        .c());
+  d("LALU_FF0F_1        %c\n", LALU_FF0F_D1p        .c());
+  d("NYBO_FF0F_2        %c\n", NYBO_FF0F_D2p        .c());
+  d("UBUL_FF0F_3        %c\n", UBUL_FF0F_D3p        .c());
+  d("ULAK_FF0F_4        %c\n", ULAK_FF0F_D4p        .c());
   d("\n");
   d("MATY_FF0F_L0       %c\n", MATY_FF0F_L0p       .c());
   d("MOPO_FF0F_L3       %c\n", MOPO_FF0F_L1p       .c());
@@ -74,26 +74,26 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /* p02.TYME*/ wire TYME_FF0F_RST4n = and3(SEME_INT4_WRn, LAMO_INT_JOY_ACKn,  top.clk_reg.ALUR_SYS_RSTn);
 
   wire PESU_VCC = 1;
-  /* p02.LOPE*/ LOPE_FF0F_0p.tock(top.lcd_reg.VYPU_INT_VBLANKp,     MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_VCC);
-  /* p02.LALU*/ LALU_FF0F_1p.tock(top.pix_pipe.VOTY_INT_STATp,      MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_VCC);
-  /* p02.NYBO*/ NYBO_FF0F_2p.tock(top.tim_reg.MOBA_TIMER_OVERFLOWp.qp(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_VCC);
-  /* p02.UBUL*/ UBUL_FF0F_3p.tock(top.ser_reg.CALY_INT_SERp.qp(),   TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_VCC);
-  /* p02.ULAK*/ ULAK_FF0F_4p.tock(top.joypad.ASOK_INT_JOYp,         TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_VCC);
+  /* p02.LOPE*/ LOPE_FF0F_D0p.tock(top.lcd_reg.VYPU_INT_VBLANKp,          MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_VCC);
+  /* p02.LALU*/ LALU_FF0F_D1p.tock(top.pix_pipe.VOTY_INT_STATp,           MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_VCC);
+  /* p02.NYBO*/ NYBO_FF0F_D2p.tock(top.tim_reg.MOBA_TIMER_OVERFLOWp.qp(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_VCC);
+  /* p02.UBUL*/ UBUL_FF0F_D3p.tock(top.ser_reg.CALY_INT_SERp.qp(),        TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_VCC);
+  /* p02.ULAK*/ ULAK_FF0F_D4p.tock(top.joypad.ASOK_INT_JOYp,              TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_VCC);
 
-  PIN_CPU_INT_VBLANK.set(LOPE_FF0F_0p.qp());
-  PIN_CPU_INT_STAT  .set(LALU_FF0F_1p.qp());
-  PIN_CPU_INT_TIMER .set(NYBO_FF0F_2p.qp());
-  PIN_CPU_INT_SERIAL.set(UBUL_FF0F_3p.qp());
-  PIN_CPU_INT_JOYPAD.set(ULAK_FF0F_4p.qp());
+  PIN_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.qp());
+  PIN_CPU_INT_STAT  .set(LALU_FF0F_D1p.qp());
+  PIN_CPU_INT_TIMER .set(NYBO_FF0F_D2p.qp());
+  PIN_CPU_INT_SERIAL.set(UBUL_FF0F_D3p.qp());
+  PIN_CPU_INT_JOYPAD.set(ULAK_FF0F_D4p.qp());
 
   // pass gates? does look like a transparent latch here...
 
   /* p07.ROLO*/ wire ROLO_FF0F_RDn = nand4(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp); // schematic wrong, is NAND
-  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(ROLO_FF0F_RDn, LOPE_FF0F_0p.qp()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1p.qp()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(ROLO_FF0F_RDn, UBUL_FF0F_3p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(ROLO_FF0F_RDn, ULAK_FF0F_4p.qp()); // OUTPUT ON RUNG 10
+  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(ROLO_FF0F_RDn, LOPE_FF0F_D0p.qp()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_D1p.qp()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_D2p.qp()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp()); // OUTPUT ON RUNG 10
 
   /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_FF0F_RDn);
   /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p.tri_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.qn());

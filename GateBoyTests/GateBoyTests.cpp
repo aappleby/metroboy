@@ -58,7 +58,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 int GateBoyTests::test_micro() {
   TEST_START();
 
-#if 0
+#if 1
   LOG_B("---------- Boot sys reg states ----------\n");
   err += run_microtest("poweron_000_joy.gb");
   err += run_microtest("poweron_000_sb.gb");

@@ -469,6 +469,10 @@ struct DFF20 {
     deltaB = DELTA_NONE;
   }
 
+  void force_state(int s) {
+    stateA = RegState(s);
+  }
+
   inline wire qp() const { return  wire(stateA & 1); }
   inline wire qn() const { return !wire(stateA & 1); }
 
@@ -538,6 +542,10 @@ static_assert(sizeof(DFF20) == 2, "DFF20 size != 2");
 
 struct DFF22 : private RegBase {
   DFF22() : RegBase(REG_D0C0) {}
+
+  void force_state(int s) {
+    state = RegState(s);
+  }
 
   using RegBase::c;
   using RegBase::qp;

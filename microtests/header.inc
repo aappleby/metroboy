@@ -289,6 +289,19 @@
   test_end
 .endm
 
+.macro test_fail_a ARGS expected
+  ld b, a
+  ldh ($80), a
+  ld a, expected
+  ldh ($81), a
+  ld a, $31
+  ldh ($82), a
+  ld a, b
+
+  ld a, $FF
+  test_end
+.endm
+
 .macro test_finish_a ARGS expected
   ld b, a
   ldh ($80), a

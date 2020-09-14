@@ -185,6 +185,7 @@ void GateBoy::next_phase() {
   // Update CPU
 
   if (sys_cpu_en) {
+    // FIXME imask derrrrrr
     uint8_t imask = 0;
     uint8_t intf = 0;
 

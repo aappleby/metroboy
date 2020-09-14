@@ -160,6 +160,28 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   oam_bus.tock(*this);
   vram_bus.tock(*this);
+
+#if 0
+  {
+    // IE is technically in the CPU, but we're going to implement it here for now.
+    wire FFFF_HIT = cpu_bus.get_bus_addr() == 0xFFFF;
+    wire FFFF_WRn = nand2(TAPU_CPU_WRp_xxxxEFGx, FFFF_HIT);
+
+    IE_D0.tock(FFFF_WRn, cpu_bus.BUS_CPU_D0p.qp());
+    IE_D1.tock(FFFF_WRn, cpu_bus.BUS_CPU_D1p.qp());
+    IE_D2.tock(FFFF_WRn, cpu_bus.BUS_CPU_D2p.qp());
+    IE_D3.tock(FFFF_WRn, cpu_bus.BUS_CPU_D3p.qp());
+    IE_D4.tock(FFFF_WRn, cpu_bus.BUS_CPU_D4p.qp());
+
+    wire FFFF_RDn = nand2(TEDO_CPU_RDp, FFFF_HIT);
+    
+    cpu_bus.BUS_CPU_D0p.tri_6nn(FFFF_RDn, IE_D0.qp());
+    cpu_bus.BUS_CPU_D1p.tri_6nn(FFFF_RDn, IE_D1.qp());
+    cpu_bus.BUS_CPU_D2p.tri_6nn(FFFF_RDn, IE_D2.qp());
+    cpu_bus.BUS_CPU_D3p.tri_6nn(FFFF_RDn, IE_D3.qp());
+    cpu_bus.BUS_CPU_D4p.tri_6nn(FFFF_RDn, IE_D4.qp());
+  }
+#endif
 }
 
 //-----------------------------------------------------------------------------

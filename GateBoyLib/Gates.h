@@ -285,6 +285,19 @@ struct RegBase {
 #pragma warning(pop)
 
 //-----------------------------------------------------------------------------
+// Generic DFF
+
+struct DFF : private RegBase {
+  DFF() : RegBase(REG_D0C0) {}
+
+  using RegBase::c;
+  using RegBase::qp;
+  using RegBase::qn;
+
+  inline void tock(wire CLKp, bool D) { dff(CLKp, !CLKp, 1, 1, D); }
+};
+
+//-----------------------------------------------------------------------------
 // 8-rung register with no reset, inverting input, and dual outputs. Used by
 // sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
 

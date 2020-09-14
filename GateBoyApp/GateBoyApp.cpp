@@ -70,7 +70,6 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
   // regenerate post-bootrom dump
-  /*
   {
     state_manager.reset();
     auto& gb = *state_manager.state();
@@ -82,11 +81,12 @@ void GateBoyApp::app_init() {
       gb.vid_ram[i] = (uint8_t)rand();
     }
   }
-  */
 
+  /*
   state_manager.reset();
   state_manager.state()->reset_post_bootrom();
   load_rom("microtests/build/dmg/timer_tima_inc_256k_a.gb");
+  */
 
   /*
   for (int i = 0; i < 8192; i++) {

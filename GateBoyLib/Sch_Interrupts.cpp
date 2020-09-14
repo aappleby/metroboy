@@ -76,7 +76,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   wire PESU_VCC = 1;
   /* p02.LOPE*/ LOPE_FF0F_0p.tock(top.lcd_reg.VYPU_INT_VBLANKp,     MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_VCC);
   /* p02.LALU*/ LALU_FF0F_1p.tock(top.pix_pipe.VOTY_INT_STATp,      MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_VCC);
-  /* p02.NYBO*/ NYBO_FF0F_2p.tock(top.tim_reg.MOBA_INT_TIMERp.qp(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_VCC);
+  /* p02.NYBO*/ NYBO_FF0F_2p.tock(top.tim_reg.MOBA_TIMER_OVERFLOWp.qp(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_VCC);
   /* p02.UBUL*/ UBUL_FF0F_3p.tock(top.ser_reg.CALY_INT_SERp.qp(),   TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_VCC);
   /* p02.ULAK*/ ULAK_FF0F_4p.tock(top.joypad.ASOK_INT_JOYp,         TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_VCC);
 

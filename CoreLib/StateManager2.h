@@ -37,15 +37,6 @@ public:
     return states.back();
   }
 
-  void load_dump() {
-    clear_history();
-    load_obj("dump.gb", states.back());
-  }
-
-  void save_dump() {
-    save_obj("dump.gb", state());
-  }
-
   void step(int count = 1) {
     auto s = new T(*states.back());
     states.push_back(s);

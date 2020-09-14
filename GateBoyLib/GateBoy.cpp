@@ -45,7 +45,7 @@ GateBoy::GateBoy() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset() {
+void GateBoy::reset_to_bootrom() {
   // No bus activity during reset
   dbg_req.addr = 0x0000;
   dbg_req.data = 0;
@@ -80,11 +80,11 @@ void GateBoy::reset() {
   run(8);
 
   // Wait for PIN_CPU_START
-  printf("Waiting for PIN_CPU_START\n");
+  //printf("Waiting for PIN_CPU_START\n");
   while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {
     run(8);
   }
-  printf("Got PIN_CPU_START\n");
+  //printf("Got PIN_CPU_START\n");
 
   // PIN_CPU_START high, delay 8 phases
   run(8);
@@ -110,6 +110,7 @@ void GateBoy::reset() {
 
 void GateBoy::reset_post_bootrom() {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
+  check_sentinel();
 
   // FIXME
   // LCD has to be at (98,0) before we start the tests, but for some reason
@@ -289,10 +290,7 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
   // CPU bus stuff
 
   if (DELTA_AB) {
-    if (script) {
-      bus_req = script[(phase_total / 8) % script_len];
-    }
-    else if (dbg_req.read || dbg_req.write) {
+    if (dbg_req.read || dbg_req.write) {
       bus_req.addr  = dbg_req.addr;
       bus_req.data  = dbg_req.data;
       bus_req.read  = dbg_req.read;

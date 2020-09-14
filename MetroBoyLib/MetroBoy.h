@@ -22,9 +22,13 @@ public:
   MetroBoy(const MetroBoy&) = delete;
   MetroBoy& operator=(const MetroBoy&) = delete;
 
-  using StateManagerBase<MetroboyState>::load_dump;
-  using StateManagerBase<MetroboyState>::save_dump;
+  void load_dump() {
+    load_obj("dump.MetroBoy", *current);
+  }
 
+  void save_dump() {
+    save_obj("dump.MetroBoy", *current);
+  }
 
   Gameboy& gb() {
     return current->gb;

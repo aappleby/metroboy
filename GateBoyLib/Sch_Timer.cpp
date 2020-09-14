@@ -8,11 +8,12 @@ using namespace Schematics;
 void Timer::dump(Dumper& d) const {
   d("----------  Timer   ----------\n");
   d("DIV        0x%04x %d\n", get_div(), get_div());
-  d("TIMA       0x%02x %d\n", get_tima(), get_tima());
+  d("TIMA A     0x%02x %d\n", get_tima_a(), get_tima_a());
+  d("TIMA B     0x%02x %d\n", get_tima_b(), get_tima_b());
   d("TMA        0x%02x %d\n", get_tma(), get_tma());
   d("TAC        0x%02x %d\n", get_tac(), get_tac());
-  d("TIMA_MAX   %c\n", NYDU_TIMA_D7_DELAY.c());
-  d("INT_TIMERp %c\n", MOBA_INT_TIMERp.c());
+  d("NYDU_TIMA_D7_DELAY   %c\n", NYDU_TIMA_D7_DELAY.c());
+  d("MOBA_TIMER_OVERFLOWp %c\n", MOBA_TIMER_OVERFLOWp.c());
   d("\n");
 }
 
@@ -108,59 +109,60 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
 
     // mery = nor2(nuga_01, nydu_16);  // ???? reg polarities?
 
-    /* p03.MERY*/ wire MERY_TIMER_INT_TRIGp = nor2(NYDU_TIMA_D7_DELAY.qn(), NUGA_TIMA_D7.qp());
-    /*#p03.MOBA*/ MOBA_INT_TIMERp.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_INT_TRIGp);
-    /*#p03.MEKE*/ wire MEKE_INT_TIMERn = not1(MOBA_INT_TIMERp.qp());
-    /*#p03.MUZU*/ wire MUZU_TIMA_LOADn = or2(top.cpu_bus.PIN_CPU_LATCH_EXT.qp(), TOPE_FF05_WRn);
-    /*#p03.MEXU*/ wire MEXU_TIMA_LOADp = nand3(MUZU_TIMA_LOADn, top.clk_reg.ALUR_SYS_RSTn, MEKE_INT_TIMERn);
+    /* p03.MERY*/ wire MERY_TIMER_OVERFLOWp = nor2(NUGA_TIMA_D7.qp(), NYDU_TIMA_D7_DELAY.qn());
+    /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_OVERFLOWp);
 
-    // REGA_01 >> POVY_20 Qn
-    // REGA_02 nc
-    // REGA_03 << PUXY    D
-    // REGA_04 << MEXU    LOADp
-    // REGA_05 nc
-    // REGA_06 sc
-    // REGA_07 nc
-    // REGA_08 nc
-    // REGA_09 nc
-    // REGA_10 nc
-    // REGA_11 sc
-    // REGA_12 nc
-    // REGA_13 nc
-    // REGA_14 << MEXU    LOADp
-    // REGA_15 nc
-    // REGA_16 << PUXY    D
-    // REGA_17 >> SOKU_04 Also Qn? Doesn't make sense as Q.
-    // REGA_18 sc
-    // REGA_19 sc
-    // REGA_20 << SOGU    CLKp
+    /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn = not1(MOBA_TIMER_OVERFLOWp.qp());
+    /*#p03.MUZU*/ wire MUZU_CPU_LOAD_TIMAn  = or2(top.cpu_bus.PIN_CPU_LATCH_EXT.qp(), TOPE_FF05_WRn);
+    /*#p03.MEXU*/ wire MEXU_TIMA_LOADp      = nand3(MUZU_CPU_LOAD_TIMAn, top.clk_reg.ALUR_SYS_RSTn, MEKE_TIMER_OVERFLOWn);
+
+    // DFF20_01 >> Qn, to next reg in chain
+    // DFF20_02 nc
+    // DFF20_03 << D
+    // DFF20_04 << LOADp
+    // DFF20_05 nc
+    // DFF20_06 sc
+    // DFF20_07 nc
+    // DFF20_08 nc
+    // DFF20_09 nc
+    // DFF20_10 nc
+    // DFF20_11 sc
+    // DFF20_12 nc
+    // DFF20_13 nc
+    // DFF20_14 << LOADp
+    // DFF20_15 nc
+    // DFF20_16 << D
+    // DFF20_17 >> Qn, to CPU bus
+    // DFF20_18 sc
+    // DFF20_19 sc
+    // DFF20_20 << CLKp
 
     /*#p03.SOGU*/ wire SOGU_TIMA_CLK = nor2(TECY_CLK_MUXc, SABO_TAC_D2.qn());
 
-    probe("SOGU", SOGU_TIMA_CLK);
+    probe("01 MERY_TIMER_LOAD_TRIGp", MERY_TIMER_OVERFLOWp);
+    probe("02 SOGU_TIMA_CLK",         SOGU_TIMA_CLK);
+    probe("03 MEXU_TIMA_LOADp",       MEXU_TIMA_LOADp);
 
-    /* p03.REGA*/ REGA_TIMA_D0.tock(SOGU_TIMA_CLK,     MEXU_TIMA_LOADp, PUXY_TIMA_D0, REGA_TIMA_D0.qn());
-    /* p03.POVY*/ POVY_TIMA_D1.tock(REGA_TIMA_D0.qn(), MEXU_TIMA_LOADp, NERO_TIMA_D1, POVY_TIMA_D1.qn());
-    /* p03.PERU*/ PERU_TIMA_D2.tock(POVY_TIMA_D1.qn(), MEXU_TIMA_LOADp, NADA_TIMA_D2, PERU_TIMA_D2.qn());
-    /* p03.RATE*/ RATE_TIMA_D3.tock(PERU_TIMA_D2.qn(), MEXU_TIMA_LOADp, REPA_TIMA_D3, RATE_TIMA_D3.qn());
-    /* p03.RUBY*/ RUBY_TIMA_D4.tock(RATE_TIMA_D3.qn(), MEXU_TIMA_LOADp, ROLU_TIMA_D4, RUBY_TIMA_D4.qn());
-    /* p03.RAGE*/ RAGE_TIMA_D5.tock(RUBY_TIMA_D4.qn(), MEXU_TIMA_LOADp, RUGY_TIMA_D5, RAGE_TIMA_D5.qn());
-    /* p03.PEDA*/ PEDA_TIMA_D6.tock(RAGE_TIMA_D5.qn(), MEXU_TIMA_LOADp, PYMA_TIMA_D6, PEDA_TIMA_D6.qn());
-    /* p03.NUGA*/ NUGA_TIMA_D7.tock(PEDA_TIMA_D6.qn(), MEXU_TIMA_LOADp, PAGU_TIMA_D7, NUGA_TIMA_D7.qn());
-
-    //nydu = dff(boga, mugy, nuga_01)
+    /*#p03.REGA*/ REGA_TIMA_D0.tock(!SOGU_TIMA_CLK,    MEXU_TIMA_LOADp, PUXY_TIMA_D0);
+    /*#p03.POVY*/ POVY_TIMA_D1.tock(REGA_TIMA_D0.qn(), MEXU_TIMA_LOADp, NERO_TIMA_D1);
+    /*#p03.PERU*/ PERU_TIMA_D2.tock(POVY_TIMA_D1.qn(), MEXU_TIMA_LOADp, NADA_TIMA_D2);
+    /*#p03.RATE*/ RATE_TIMA_D3.tock(PERU_TIMA_D2.qn(), MEXU_TIMA_LOADp, REPA_TIMA_D3);
+    /*#p03.RUBY*/ RUBY_TIMA_D4.tock(RATE_TIMA_D3.qn(), MEXU_TIMA_LOADp, ROLU_TIMA_D4);
+    /*#p03.RAGE*/ RAGE_TIMA_D5.tock(RUBY_TIMA_D4.qn(), MEXU_TIMA_LOADp, RUGY_TIMA_D5);
+    /*#p03.PEDA*/ PEDA_TIMA_D6.tock(RAGE_TIMA_D5.qn(), MEXU_TIMA_LOADp, PYMA_TIMA_D6);
+    /*#p03.NUGA*/ NUGA_TIMA_D7.tock(PEDA_TIMA_D6.qn(), MEXU_TIMA_LOADp, PAGU_TIMA_D7);
 
     /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn = not1(MEXU_TIMA_LOADp);
     /*#p03.NYDU*/ NYDU_TIMA_D7_DELAY.tock(BOGA_xBCDEFGH, MUGY_TIMA_MAX_RSTn, NUGA_TIMA_D7.qp());
 
-    /* p03.SOKU*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TEDA_FF05_RDp, REGA_TIMA_D0.qn());
-    /* p03.RACY*/ cpu_bus.BUS_CPU_D1p.tri_6pn(TEDA_FF05_RDp, POVY_TIMA_D1.qn());
-    /* p03.RAVY*/ cpu_bus.BUS_CPU_D2p.tri_6pn(TEDA_FF05_RDp, PERU_TIMA_D2.qn());
-    /* p03.SOSY*/ cpu_bus.BUS_CPU_D3p.tri_6pn(TEDA_FF05_RDp, RATE_TIMA_D3.qn());
-    /* p03.SOMU*/ cpu_bus.BUS_CPU_D4p.tri_6pn(TEDA_FF05_RDp, RUBY_TIMA_D4.qn());
-    /* p03.SURO*/ cpu_bus.BUS_CPU_D5p.tri_6pn(TEDA_FF05_RDp, RAGE_TIMA_D5.qn());
-    /* p03.ROWU*/ cpu_bus.BUS_CPU_D6p.tri_6pn(TEDA_FF05_RDp, PEDA_TIMA_D6.qn());
-    /* p03.PUSO*/ cpu_bus.BUS_CPU_D7p.tri_6pn(TEDA_FF05_RDp, NUGA_TIMA_D7.qn());
+    /*#p03.SOKU*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TEDA_FF05_RDp, REGA_TIMA_D0.qn());
+    /*#p03.RACY*/ cpu_bus.BUS_CPU_D1p.tri_6pn(TEDA_FF05_RDp, POVY_TIMA_D1.qn());
+    /*#p03.RAVY*/ cpu_bus.BUS_CPU_D2p.tri_6pn(TEDA_FF05_RDp, PERU_TIMA_D2.qn());
+    /*#p03.SOSY*/ cpu_bus.BUS_CPU_D3p.tri_6pn(TEDA_FF05_RDp, RATE_TIMA_D3.qn());
+    /*#p03.SOMU*/ cpu_bus.BUS_CPU_D4p.tri_6pn(TEDA_FF05_RDp, RUBY_TIMA_D4.qn());
+    /*#p03.SURO*/ cpu_bus.BUS_CPU_D5p.tri_6pn(TEDA_FF05_RDp, RAGE_TIMA_D5.qn());
+    /*#p03.ROWU*/ cpu_bus.BUS_CPU_D6p.tri_6pn(TEDA_FF05_RDp, PEDA_TIMA_D6.qn());
+    /*#p03.PUSO*/ cpu_bus.BUS_CPU_D7p.tri_6pn(TEDA_FF05_RDp, NUGA_TIMA_D7.qn());
   }
 
   // FF06 TMA

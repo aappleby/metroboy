@@ -27,8 +27,8 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_joypad();
   err += test_ppu();
   err += test_serial();
-  err += test_timer();
   */
+  err += test_timer();
 
   err += test_micro();
 
@@ -146,6 +146,23 @@ int GateBoyTests::test_micro() {
   err += run_microtest("timer_tima_inc_256k_d.gb");
   err += run_microtest("timer_tima_inc_256k_e.gb");
   err += run_microtest("timer_tima_inc_256k_f.gb");
+  err += run_microtest("timer_tima_inc_256k_g.gb");
+  err += run_microtest("timer_tima_inc_256k_h.gb");
+  err += run_microtest("timer_tima_inc_256k_i.gb");
+  err += run_microtest("timer_tima_inc_256k_j.gb");
+  err += run_microtest("timer_tima_inc_256k_k.gb");
+
+  err += run_microtest("timer_tima_reload_256k_a.gb");
+  err += run_microtest("timer_tima_reload_256k_b.gb");
+  err += run_microtest("timer_tima_reload_256k_c.gb");
+  err += run_microtest("timer_tima_reload_256k_d.gb");
+  err += run_microtest("timer_tima_reload_256k_e.gb");
+  err += run_microtest("timer_tima_reload_256k_f.gb");
+  err += run_microtest("timer_tima_reload_256k_g.gb");
+  err += run_microtest("timer_tima_reload_256k_h.gb");
+  err += run_microtest("timer_tima_reload_256k_i.gb");
+  err += run_microtest("timer_tima_reload_256k_j.gb");
+  err += run_microtest("timer_tima_reload_256k_k.gb");
 
   err += run_microtest("timer_tima_phase_a.gb"); // FE pass
   err += run_microtest("timer_tima_phase_b.gb"); // FF FAIL
@@ -165,19 +182,18 @@ int GateBoyTests::test_micro() {
   err += run_microtest("timer_tima_write_e.gb");
   err += run_microtest("timer_tima_write_f.gb");
 
-#if 0
   err += run_microtest("timer_div_phase_c.gb");
   err += run_microtest("timer_div_phase_d.gb");
-  err += run_microtest("timer_int_inc_sled.gb");
-  err += run_microtest("timer_int_inc_sled_a.gb");
-  err += run_microtest("timer_int_inc_sled_b.gb");
   
   err += run_microtest("timer_tma_load_a.gb");
   err += run_microtest("timer_tma_load_b.gb");
   err += run_microtest("timer_tma_load_c.gb");
   err += run_microtest("timer_tma_write_a.gb");
   err += run_microtest("timer_tma_write_b.gb");
-#endif
+
+  err += run_microtest("timer_int_inc_sled.gb");
+  err += run_microtest("timer_int_inc_sled_a.gb");
+  err += run_microtest("timer_int_inc_sled_b.gb");
 
   //load_rom("line_65_ly.gb"); // pass
   //load_rom("lcdon_to_oam_unlock_a.gb"); // fail#
@@ -237,7 +253,7 @@ int GateBoyTests::test_init() {
   TEST_START("Init");
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_Y("Top state hash after reset is 0x%016llx\n", top_hash);
@@ -326,7 +342,7 @@ int GateBoyTests::test_clk() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   auto& top = gb.top;
   auto& clk_reg = top.clk_reg;
@@ -435,7 +451,7 @@ int GateBoyTests::test_ext_bus() {
     LOG_Y("Testing \"ld (hl), a; jr -2;\" the hard way - hl = 0xC003, a = 0x55\n");
 
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
     gb.set_boot_bit();
 
     gb.cart_rom[0x0155] = 0x77;
@@ -571,7 +587,7 @@ int GateBoyTests::test_ext_bus() {
     LOG_Y("Testing \"ld (hl), a; jr -2;\" the hard way - hl = 0x9777, a = 0x55\n");
 
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
     gb.set_boot_bit();
 
     gb.cart_rom[0x0155] = 0x77;
@@ -710,7 +726,7 @@ int GateBoyTests::test_ext_bus() {
     LOG_Y("Testing \"ld (hl), a; jr -2;\" the hard way - hl = 0xFF80, a = 0x55\n");
 
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
     gb.set_boot_bit();
 
     gb.cart_rom[0x0155] = 0x77;
@@ -889,7 +905,7 @@ int GateBoyTests::test_mem() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
   gb.set_boot_bit();
 
   err += test_mem(gb, "ROM",  0x0000, 0x7FFF, 256, false);
@@ -909,7 +925,7 @@ int GateBoyTests::test_interrupts() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   // hblank no stat int
   // vblank no stat int
@@ -938,7 +954,7 @@ int GateBoyTests::test_bootrom() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   for (int i = 0; i < 16; i++) {
     uint8_t byte = gb.dbg_read(i);
@@ -962,10 +978,11 @@ int GateBoyTests::test_timer() {
   // TAC 110 - 128 phases per TIMA tick
   // TAC 111 - 512 phases per TIMA tick
 
+#if 0
   LOG("Testing TIMA tick rate and reset to TMA... ");
   {
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -986,7 +1003,7 @@ int GateBoyTests::test_timer() {
   }
   {
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1007,7 +1024,7 @@ int GateBoyTests::test_timer() {
   }
   {
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1028,7 +1045,7 @@ int GateBoyTests::test_timer() {
   }
   {
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1048,7 +1065,7 @@ int GateBoyTests::test_timer() {
     if (!err) LOG_B("TAC 0b111 pass ");
   }
   if (!err) LOG("\n");
-
+#endif
 
 #if 0
   GateBoy gb;
@@ -1084,7 +1101,7 @@ int GateBoyTests::test_dma() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   for (int src = 0x0000; src < 0xFE00; src += 0x1000) {
     err += test_dma(uint16_t(src));
@@ -1129,7 +1146,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   uint8_t blob[256];
   for (int i = 0; i < 256; i++) {
@@ -1197,7 +1214,7 @@ int GateBoyTests::test_ppu() {
   {
     LOG("Checking LY increment rate... ");
     GateBoy gb;
-    gb.reset();
+    gb.reset_to_bootrom();
     gb.dbg_write(ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable
@@ -1267,7 +1284,7 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   GateBoy gb;
-  gb.reset();
+  gb.reset_to_bootrom();
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
@@ -1348,7 +1365,7 @@ void GateBoyTests::test_reset_sequence() {
 
 void GateBoyTests::run_benchmark(GateBoy& gateboy) {
 
-  gateboy.reset();
+  gateboy.reset_to_bootrom();
 
   LOG("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
 

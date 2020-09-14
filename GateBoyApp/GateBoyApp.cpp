@@ -69,7 +69,23 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
-  reset_post_bootrom();
+  // regenerate post-bootrom dump
+  /*
+  {
+    state_manager.reset();
+    auto& gb = *state_manager.state();
+    gb.reset_to_bootrom();
+    load_blob("roms/tetris.gb", gb.cart_rom, 32768);
+    gb.sys_cart_loaded = 1;
+
+    for (int i = 0; i < 8192; i++) {
+      gb.vid_ram[i] = (uint8_t)rand();
+    }
+  }
+  */
+
+  state_manager.reset();
+  state_manager.state()->reset_post_bootrom();
   load_rom("microtests/build/dmg/timer_tima_inc_256k_a.gb");
 
   /*
@@ -172,7 +188,8 @@ void GateBoyApp::app_update(double delta) {
 
   if (reset_sim) {
     printf("Resetting sim\n");
-    reset_post_bootrom();
+    state_manager.reset();
+    state_manager.state()->reset_post_bootrom();
   }
 
   if (_load_megadump) {
@@ -212,15 +229,15 @@ void GateBoyApp::app_update(double delta) {
 
 void GateBoyApp::load_raw_dump(const char* filename) {
   printf("Loading raw dump from %s\n", filename);
-  reset_bootrom();
-  load_obj(filename, *state_manager.state());
+  state_manager.reset();
+  state_manager.state()->load_dump(filename);
 }
 
 //----------
 
 void GateBoyApp::save_raw_dump(const char* filename) {
   printf("Saving raw dump to %s\n", filename);
-  save_obj(filename, *state_manager.state());
+  state_manager.state()->save_dump(filename);
 }
 
 //-----------------------------------------------------------------------------
@@ -246,6 +263,7 @@ void GateBoyApp::load_megadump(const char* filename) {
   for (size_t i = 0; i < state_count; i++) {
     state_manager.states[i] = new GateBoy();
     fread(state_manager.states[i], 1, sizeof(GateBoy), f);
+    state_manager.states[i]->check_sentinel();
   }
 
   printf("Loaded %zd states\n", state_count);
@@ -276,18 +294,19 @@ void GateBoyApp::save_megadump(const char* filename) {
 }
 
 //-----------------------------------------------------------------------------
-// Load a flat (no memory partitions) dump and copy it into the various regs
-// and memory chunks.
+// Load a flat (just raw contents of memory addresses, no individual regs) dump
+// and copy it into the various regs and memory chunks.
 
 void GateBoyApp::load_flat_dump(const char* filename) {
   printf("Loading flat dump %s\n", filename);
 
-  reset_bootrom();
+  state_manager.reset();
+  state_manager.state()->reset_post_bootrom();
 
   uint8_t* dump = new uint8_t[65536];
   memset(dump, 0, 65536);
   size_t size = load_blob(filename, dump, 65536);
-
+  
   auto gb = state_manager.state();
 
   memcpy(gb->cart_rom, dump + 0x0000, 32768);
@@ -341,7 +360,8 @@ void GateBoyApp::save_flat_dump(const char* filename) {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  reset_post_bootrom();
+  state_manager.reset();
+  state_manager.state()->reset_post_bootrom();
 
   auto gb = state_manager.state();
   size_t size = load_blob(filename, gb->cart_rom, 32768);
@@ -443,11 +463,20 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper.clear();
 
   dumper("---------- DISASM ----------\n");
-  uint16_t pc = gateboy->cpu.op_addr;
-  Assembler a;
-  a.disassemble(gateboy->cart_rom, 32768,
-                ADDR_CART_ROM_BEGIN, pc,
-                30, dumper, false);
+  if (gateboy->top.bootrom.BOOT_BITn.qp()) {
+    uint16_t pc = gateboy->cpu.op_addr;
+    Assembler a;
+    a.disassemble(gateboy->cart_rom, 32768,
+                  ADDR_CART_ROM_BEGIN, pc,
+                  30, dumper, false);
+  }
+  else {
+    uint16_t pc = gateboy->cpu.op_addr;
+    Assembler a;
+    a.disassemble(DMG_ROM_bin, 256,
+                  ADDR_CART_ROM_BEGIN, pc,
+                  30, dumper, false);
+  }
   text_painter.render(view, dumper.s.c_str(), cursor, 512 - 160);
   cursor += col_width;
   dumper.clear();
@@ -516,22 +545,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
 void GateBoyApp::app_render_ui(Viewport view) {
   (void)view;
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoyApp::reset_bootrom() {
-  printf("GateBoyApp::reset()\n");
-  state_manager.reset();
-  state_manager.state()->reset();
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoyApp::reset_post_bootrom() {
-  printf("GateBoyApp::reset()\n");
-  state_manager.reset();
-  state_manager.state()->reset_post_bootrom();
 }
 
 //-----------------------------------------------------------------------------

@@ -21,9 +21,14 @@ struct Timer {
                    SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), !UKET_DIV_14.qn(), UPOF_DIV_15.qp());
   }
 
-  int get_tima() const {
-    return pack_p(REGA_TIMA_D0.qp(), POVY_TIMA_D1.qp(), PERU_TIMA_D2.qp(), RATE_TIMA_D3.qp(),
-                  RUBY_TIMA_D4.qp(), RAGE_TIMA_D5.qp(), PEDA_TIMA_D6.qp(), NUGA_TIMA_D7.qp());
+  int get_tima_a() const {
+    return pack_p(REGA_TIMA_D0.q_01(), POVY_TIMA_D1.q_01(), PERU_TIMA_D2.q_01(), RATE_TIMA_D3.q_01(),
+                  RUBY_TIMA_D4.q_01(), RAGE_TIMA_D5.q_01(), PEDA_TIMA_D6.q_01(), NUGA_TIMA_D7.q_01());
+  }
+
+  int get_tima_b() const {
+    return pack_p(REGA_TIMA_D0.q_17(), POVY_TIMA_D1.q_17(), PERU_TIMA_D2.q_17(), RATE_TIMA_D3.q_17(),
+                  RUBY_TIMA_D4.q_17(), RAGE_TIMA_D5.q_17(), PEDA_TIMA_D6.q_17(), NUGA_TIMA_D7.q_17());
   }
 
   int get_tma() const {
@@ -84,7 +89,7 @@ struct Timer {
     */
   }
 
-  /*p03.MOBA*/ DFF17 MOBA_INT_TIMERp; // -> interrupts
+  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // -> interrupts
 
   //----------
   // FF04 DIV

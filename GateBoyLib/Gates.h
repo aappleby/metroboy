@@ -105,6 +105,48 @@ enum RegState : uint8_t {
   ERR_XXXX = 0b1111, // 15: combined error state
 };
 
+inline char reg_state_to_c(RegState state) {
+  switch(state) {
+    case REG_D0C0: return '0';
+    case REG_D1C0: return '1';
+    case REG_D0C1: return '0';
+    case REG_D1C1: return '1';
+    //case SIG_0000: return '0';
+    //case SIG_1111: return '1';
+    case TRI_D0PD: return '0';
+    case TRI_D1PD: return '1';
+    case TRI_D0PU: return '0';
+    case TRI_D1PU: return '1';
+    case TRI_D0NP: return '0';
+    case TRI_D1NP: return '1';
+    case TRI_HZPD: return 'v';
+    case TRI_HZPU: return '^';
+    case TRI_HZNP: return 'Z';
+    default:       return 'E';
+  }
+}
+
+inline char reg_state_to_cn(RegState state) {
+  switch(state) {
+    case REG_D0C0: return '1';
+    case REG_D1C0: return '0';
+    case REG_D0C1: return '1';
+    case REG_D1C1: return '0';
+    //case SIG_0000: return '1';
+    //case SIG_1111: return '0';
+    case TRI_D0PD: return '1';
+    case TRI_D1PD: return '0';
+    case TRI_D0PU: return '1';
+    case TRI_D1PU: return '0';
+    case TRI_D0NP: return '1';
+    case TRI_D1NP: return '0';
+    case TRI_HZPD: return '^';
+    case TRI_HZPU: return 'v';
+    case TRI_HZNP: return 'Z';
+    default:       return 'E';
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 enum RegDelta : uint8_t {
@@ -161,47 +203,8 @@ struct RegBase {
   static bool bus_collision;
   static bool bus_floating;
 
-  char c() const {
-    switch(state) {
-      case REG_D0C0: return '0';
-      case REG_D1C0: return '1';
-      case REG_D0C1: return '0';
-      case REG_D1C1: return '1';
-      //case SIG_0000: return '0';
-      //case SIG_1111: return '1';
-      case TRI_D0PD: return '0';
-      case TRI_D1PD: return '1';
-      case TRI_D0PU: return '0';
-      case TRI_D1PU: return '1';
-      case TRI_D0NP: return '0';
-      case TRI_D1NP: return '1';
-      case TRI_HZPD: return 'v';
-      case TRI_HZPU: return '^';
-      case TRI_HZNP: return 'Z';
-      default:       return 'E';
-    }
-  }
-
-  char cn() const {
-    switch(state) {
-      case REG_D0C0: return '1';
-      case REG_D1C0: return '0';
-      case REG_D0C1: return '1';
-      case REG_D1C1: return '0';
-      //case SIG_0000: return '1';
-      //case SIG_1111: return '0';
-      case TRI_D0PD: return '1';
-      case TRI_D1PD: return '0';
-      case TRI_D0PU: return '1';
-      case TRI_D1PU: return '0';
-      case TRI_D0NP: return '1';
-      case TRI_D1NP: return '0';
-      case TRI_HZPD: return '^';
-      case TRI_HZPU: return 'v';
-      case TRI_HZNP: return 'Z';
-      default:       return 'E';
-    }
-  }
+  inline char c() const  { return reg_state_to_c(state); }
+  inline char cn() const { return reg_state_to_cn(state); }
 
   inline wire qp() const { return  as_wire(); }
   inline wire qn() const { return !as_wire(); }
@@ -456,17 +459,58 @@ struct DFF17 : private RegBase {
 // DFF20_19 sc
 // DFF20_20 << CLKp
 
-struct DFF20 : private RegBase {
-  DFF20() : RegBase(REG_D0C0) {}
+#pragma warning(push)
+#pragma warning(disable:4201)
 
-  using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
-
-  inline void tock(wire CLKp, wire LOADp, bool newD, bool oldQn) {
-    dff(CLKp, !CLKp, !LOADp || !newD, !LOADp || newD, oldQn);
+struct DFF20 {
+  DFF20() {
+    stateA = REG_D0C0;
+    stateB = REG_D0C0;
+    deltaA = DELTA_NONE;
+    deltaB = DELTA_NONE;
   }
+
+  inline wire qp() const { return  wire(stateA & 1); }
+  inline wire qn() const { return !wire(stateA & 1); }
+
+  inline wire q_01() const { return  wire(stateA & 1); }
+  inline wire q_17() const { return  wire(stateA & 1); }
+
+  inline void tock(wire CLKp, wire LOADp, bool newD) {
+    (void)LOADp;
+    (void)newD;
+
+    //deltaA = RegDelta(DELTA_D0C0 | (CLKp << 1) | (qn() << 0));
+
+    if (LOADp) {
+      deltaA = RegDelta(DELTA_A0C0 | (CLKp << 1) | (newD << 0));
+    }
+    else {
+      deltaA = RegDelta(DELTA_D0C0 | (CLKp << 1) | (!(stateA & 1) << 0));
+    }
+
+    deltaB = DELTA_D0C0;
+  }
+
+  union {
+    struct {
+      RegState stateA : 4;
+      RegDelta deltaA : 4;
+    };
+    uint8_t valueA;
+  };
+  union {
+    struct {
+      RegState stateB : 4;
+      RegDelta deltaB : 4;
+    };
+    uint8_t valueB;
+  };
 };
+
+#pragma warning(pop)
+
+static_assert(sizeof(DFF20) == 2, "DFF20 size != 2");
 
 //-----------------------------------------------------------------------------
 // DFF with async set/reset. Used by pixel pipes, serial data register.
@@ -563,7 +607,7 @@ struct Bus : private RegBase {
     }
   }
 
-  // top rung tadpole not facing second rung dot.
+  // top rung tadpole _not_ facing second rung dot.
 
   inline void tri_6nn(wire OEn, wire Dn) {
     if (!OEn) {
@@ -573,6 +617,8 @@ struct Bus : private RegBase {
       merge_tri_delta(DELTA_TRIZ);
     }
   }
+
+  // top rung tadpole facing second rung dot.
 
   inline void tri_6pn(wire OEp, wire Dn) {
     if (OEp) {

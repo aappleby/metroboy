@@ -28,11 +28,6 @@ public:
 
   //----------
 
-  void reset_bootrom();
-  void reset_post_bootrom();
-
-  //----------
-
 private:
 
   void load_microtest(const char* filename);

@@ -12,14 +12,6 @@ public:
     current = new T();
   }
 
-  void load_dump() {
-    load_obj("dump.MetroBoy", *current);
-  }
-
-  void save_dump() {
-    save_obj("dump.MetroBoy", *current);
-  }
-
   //----------------------------------------
 
   void push_frame() {

@@ -1,27 +1,27 @@
 .include "header.inc"
 
-// 0  = 1
-// 1  = 1
-// 2  = 2
-// 3  = 2
-// 4  = 2
-// 5  = 2
-// 6  = 3
-// 7  = 3
-// 8  = 3
-// 9  = 3
-// 10 = 4
+// 0  = FF
+// 1  = FF
+// 2  = 00
+// 3  = 34
+// 4  = 34
+// 5  = 34
+// 6  = 35
+// 7  = 35
+// 8  = 35
+// 9  = 35
+// 10 = 36
 
 main:
   ld a, $00
   ldh (DIV), a
-  ld a, $00
+  ld a, $FE
   ldh (TIMA), a
   ld a, $34
   ldh (TMA), a
   ld a, %00000101 // 262144 hz, one tick every 4 cycles
   ldh (TAC), a
 
-  nops 2
+  nops 6
   ldh a, (TIMA)
-  test_finish_a $02
+  test_finish_a $35

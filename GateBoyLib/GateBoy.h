@@ -1,6 +1,7 @@
 #pragma once
 #include "GateBoyLib/Sch_Top.h"
 #include "CoreLib/Z80.h"
+#include "CoreLib/File.h"
 
 //-----------------------------------------------------------------------------
 
@@ -8,7 +9,7 @@
 struct GateBoy {
   GateBoy();
 
-  void     reset();
+  void     reset_to_bootrom();
   void     reset_post_bootrom();
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
@@ -31,6 +32,22 @@ struct GateBoy {
 
   //----------------------------------------
 
+  void load_dump(const char* filename) {
+    load_obj(filename, *this);
+    check_sentinel();
+  }
+
+  void save_dump(const char* filename) {
+    save_obj(filename, *this);
+  }
+
+  void check_sentinel() {
+    if (sentinel1 != 0xDEADBEEFBAADF00D) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
+    if (sentinel2 != 0xF00DCAFEBAADC0DE) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
+  }
+
+  uint64_t sentinel1 = 0xDEADBEEFBAADF00D;
+
   Z80 cpu;
 
   Schematics::SchematicTop top;
@@ -45,8 +62,6 @@ struct GateBoy {
 
   Req      bus_req = {0};
   Req      dbg_req = {0};
-  Req*     script = nullptr;
-  int32_t  script_len = 0; 
 
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
@@ -69,6 +84,8 @@ struct GateBoy {
   int32_t  ack_timer = 0;
   int32_t  ack_serial = 0;
   int32_t  ack_joypad = 0;
+
+  uint64_t sentinel2 = 0xF00DCAFEBAADC0DE;
 };
 #pragma pack(pop)
 

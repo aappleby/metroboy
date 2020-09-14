@@ -436,9 +436,8 @@ struct DFF17 : private RegBase {
 
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.
-// FIXME - TIMA broken in microtests, this reg could be wrong.
 
-// DFF20_01 >> Qn
+// DFF20_01 >> Q
 // DFF20_02 nc
 // DFF20_03 << D
 // DFF20_04 << LOADp
@@ -454,10 +453,10 @@ struct DFF17 : private RegBase {
 // DFF20_14 << LOADp
 // DFF20_15 nc
 // DFF20_16 << D
-// DFF20_17 >> Also Qn? Doesn't make sense as Q.
+// DFF20_17 >> Qn
 // DFF20_18 sc
 // DFF20_19 sc
-// DFF20_20 << CLKp
+// DFF20_20 << CLKn
 
 #pragma warning(push)
 #pragma warning(disable:4201)
@@ -473,24 +472,21 @@ struct DFF20 {
   inline wire qp() const { return  wire(stateA & 1); }
   inline wire qn() const { return !wire(stateA & 1); }
 
-  inline wire q_01() const { return  wire(stateA & 1); }
-  inline wire q_17() const { return  wire(stateA & 1); }
-
-  inline void tock(wire CLKp, wire LOADp, bool newD) {
+  inline void tock(wire CLKn, wire LOADp, bool newD) {
     (void)LOADp;
     (void)newD;
 
-    //deltaA = RegDelta(DELTA_D0C0 | (CLKp << 1) | (qn() << 0));
-
     if (LOADp) {
-      deltaA = RegDelta(DELTA_A0C0 | (CLKp << 1) | (newD << 0));
+      deltaA = RegDelta(DELTA_A0C0 | (!CLKn << 1) | (newD << 0));
     }
     else {
-      deltaA = RegDelta(DELTA_D0C0 | (CLKp << 1) | (!(stateA & 1) << 0));
+      deltaA = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(stateA & 1) << 0));
     }
 
     deltaB = DELTA_D0C0;
   }
+
+  // FIXME don't need stateb/deltab
 
   union {
     struct {

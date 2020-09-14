@@ -22,13 +22,13 @@ struct Timer {
   }
 
   int get_tima_a() const {
-    return pack_p(REGA_TIMA_D0.q_01(), POVY_TIMA_D1.q_01(), PERU_TIMA_D2.q_01(), RATE_TIMA_D3.q_01(),
-                  RUBY_TIMA_D4.q_01(), RAGE_TIMA_D5.q_01(), PEDA_TIMA_D6.q_01(), NUGA_TIMA_D7.q_01());
+    return pack_p(REGA_TIMA_D0.qp(), POVY_TIMA_D1.qp(), PERU_TIMA_D2.qp(), RATE_TIMA_D3.qp(),
+                  RUBY_TIMA_D4.qp(), RAGE_TIMA_D5.qp(), PEDA_TIMA_D6.qp(), NUGA_TIMA_D7.qp());
   }
 
   int get_tima_b() const {
-    return pack_p(REGA_TIMA_D0.q_17(), POVY_TIMA_D1.q_17(), PERU_TIMA_D2.q_17(), RATE_TIMA_D3.q_17(),
-                  RUBY_TIMA_D4.q_17(), RAGE_TIMA_D5.q_17(), PEDA_TIMA_D6.q_17(), NUGA_TIMA_D7.q_17());
+    return pack_p(REGA_TIMA_D0.qn(), POVY_TIMA_D1.qn(), PERU_TIMA_D2.qn(), RATE_TIMA_D3.qn(),
+                  RUBY_TIMA_D4.qn(), RAGE_TIMA_D5.qn(), PEDA_TIMA_D6.qn(), NUGA_TIMA_D7.qn());
   }
 
   int get_tma() const {

@@ -84,7 +84,6 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.UBOT*/ wire UBOT_CLK_256Kn = not1(UFOR_DIV_01.qp());
     /*#p03.UVYR*/ wire UVYR_CLK_64Kn = not1(TERO_DIV_03.qp());
 
-
     /*#p03.UKAP*/ wire UKAP_CLK_MUXa = mux2n(SOPU_TAC_D0.qp(), UVYN_DIV_05n,   UVYR_CLK_64Kn);
     /*#p03.TEKO*/ wire TEKO_CLK_MUXb = mux2n(SOPU_TAC_D0.qp(), UBOT_CLK_256Kn, UREK_DIV_07n);
     /*#p03.TECY*/ wire TECY_CLK_MUXc = mux2n(SAMY_TAC_D1.qp(), UKAP_CLK_MUXa,  TEKO_CLK_MUXb);
@@ -107,50 +106,22 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.PYMA*/ wire PYMA_TIMA_D6 = nor2(MULO_SYS_RSTn, REFU_TIMA_D6);
     /*#p03.PAGU*/ wire PAGU_TIMA_D7 = nor2(MULO_SYS_RSTn, RATO_TIMA_D7);
 
-    // mery = nor2(nuga_01, nydu_16);  // ???? reg polarities?
-
-    /* p03.MERY*/ wire MERY_TIMER_OVERFLOWp = nor2(NUGA_TIMA_D7.qp(), NYDU_TIMA_D7_DELAY.qn());
+    /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp = nor2(NUGA_TIMA_D7.qp(), NYDU_TIMA_D7_DELAY.qn());
     /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.tock(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_OVERFLOWp);
 
     /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn = not1(MOBA_TIMER_OVERFLOWp.qp());
     /*#p03.MUZU*/ wire MUZU_CPU_LOAD_TIMAn  = or2(top.cpu_bus.PIN_CPU_LATCH_EXT.qp(), TOPE_FF05_WRn);
     /*#p03.MEXU*/ wire MEXU_TIMA_LOADp      = nand3(MUZU_CPU_LOAD_TIMAn, top.clk_reg.ALUR_SYS_RSTn, MEKE_TIMER_OVERFLOWn);
 
-    // DFF20_01 >> Qn, to next reg in chain
-    // DFF20_02 nc
-    // DFF20_03 << D
-    // DFF20_04 << LOADp
-    // DFF20_05 nc
-    // DFF20_06 sc
-    // DFF20_07 nc
-    // DFF20_08 nc
-    // DFF20_09 nc
-    // DFF20_10 nc
-    // DFF20_11 sc
-    // DFF20_12 nc
-    // DFF20_13 nc
-    // DFF20_14 << LOADp
-    // DFF20_15 nc
-    // DFF20_16 << D
-    // DFF20_17 >> Qn, to CPU bus
-    // DFF20_18 sc
-    // DFF20_19 sc
-    // DFF20_20 << CLKp
-
     /*#p03.SOGU*/ wire SOGU_TIMA_CLK = nor2(TECY_CLK_MUXc, SABO_TAC_D2.qn());
-
-    probe("01 MERY_TIMER_LOAD_TRIGp", MERY_TIMER_OVERFLOWp);
-    probe("02 SOGU_TIMA_CLK",         SOGU_TIMA_CLK);
-    probe("03 MEXU_TIMA_LOADp",       MEXU_TIMA_LOADp);
-
-    /*#p03.REGA*/ REGA_TIMA_D0.tock(!SOGU_TIMA_CLK,    MEXU_TIMA_LOADp, PUXY_TIMA_D0);
-    /*#p03.POVY*/ POVY_TIMA_D1.tock(REGA_TIMA_D0.qn(), MEXU_TIMA_LOADp, NERO_TIMA_D1);
-    /*#p03.PERU*/ PERU_TIMA_D2.tock(POVY_TIMA_D1.qn(), MEXU_TIMA_LOADp, NADA_TIMA_D2);
-    /*#p03.RATE*/ RATE_TIMA_D3.tock(PERU_TIMA_D2.qn(), MEXU_TIMA_LOADp, REPA_TIMA_D3);
-    /*#p03.RUBY*/ RUBY_TIMA_D4.tock(RATE_TIMA_D3.qn(), MEXU_TIMA_LOADp, ROLU_TIMA_D4);
-    /*#p03.RAGE*/ RAGE_TIMA_D5.tock(RUBY_TIMA_D4.qn(), MEXU_TIMA_LOADp, RUGY_TIMA_D5);
-    /*#p03.PEDA*/ PEDA_TIMA_D6.tock(RAGE_TIMA_D5.qn(), MEXU_TIMA_LOADp, PYMA_TIMA_D6);
-    /*#p03.NUGA*/ NUGA_TIMA_D7.tock(PEDA_TIMA_D6.qn(), MEXU_TIMA_LOADp, PAGU_TIMA_D7);
+    /*#p03.REGA*/ REGA_TIMA_D0.tock(SOGU_TIMA_CLK,       MEXU_TIMA_LOADp, PUXY_TIMA_D0);
+    /*#p03.POVY*/ POVY_TIMA_D1.tock(REGA_TIMA_D0.qp(), MEXU_TIMA_LOADp, NERO_TIMA_D1);
+    /*#p03.PERU*/ PERU_TIMA_D2.tock(POVY_TIMA_D1.qp(), MEXU_TIMA_LOADp, NADA_TIMA_D2);
+    /*#p03.RATE*/ RATE_TIMA_D3.tock(PERU_TIMA_D2.qp(), MEXU_TIMA_LOADp, REPA_TIMA_D3);
+    /*#p03.RUBY*/ RUBY_TIMA_D4.tock(RATE_TIMA_D3.qp(), MEXU_TIMA_LOADp, ROLU_TIMA_D4);
+    /*#p03.RAGE*/ RAGE_TIMA_D5.tock(RUBY_TIMA_D4.qp(), MEXU_TIMA_LOADp, RUGY_TIMA_D5);
+    /*#p03.PEDA*/ PEDA_TIMA_D6.tock(RAGE_TIMA_D5.qp(), MEXU_TIMA_LOADp, PYMA_TIMA_D6);
+    /*#p03.NUGA*/ NUGA_TIMA_D7.tock(PEDA_TIMA_D6.qp(), MEXU_TIMA_LOADp, PAGU_TIMA_D7);
 
     /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn = not1(MEXU_TIMA_LOADp);
     /*#p03.NYDU*/ NYDU_TIMA_D7_DELAY.tock(BOGA_xBCDEFGH, MUGY_TIMA_MAX_RSTn, NUGA_TIMA_D7.qp());

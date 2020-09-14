@@ -500,15 +500,6 @@ struct DFF20 {
       deltaA = RegDelta(DELTA_A0C0 | (!CLKn << 1) | (newD << 0));
     }
     else {
-      /*
-      if (stateA == REG_D0C1 && CLKn) {
-        printf("?");
-      }
-
-      if (stateA == REG_D0C0 && !CLKn) {
-        printf("?");
-      }
-      */
       deltaA = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(stateA & 1) << 0));
     }
 

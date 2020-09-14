@@ -162,6 +162,180 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   vram_bus.tock(*this);
 }
 
+//-----------------------------------------------------------------------------
+
+void SchematicTop::tock_ext_bus(wire sys_cart_loaded, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
+  uint16_t ext_addr = ext_bus.get_pin_addr();
+
+  // ROM read
+  if (sys_cart_loaded) {
+    uint16_t rom_addr = ext_addr & 0x7FFF;
+    wire OEn = ext_bus.PIN_EXT_RDn.qp();
+    wire CEn = ext_bus.PIN_EXT_A15p.qp();
+
+    if (!CEn && !OEn) {
+      ext_bus.set_pin_data(cart_rom[rom_addr]);
+    }
+  }
+
+  // Ext RAM read/write (also echo RAM)
+  {
+    uint16_t ram_addr = (ext_addr & 0x1FFF);
+
+    wire WRn  = ext_bus.PIN_EXT_WRn.qp();
+    wire CE1n = ext_bus.PIN_EXT_CSn.qp();
+    wire CE2  = ext_bus.PIN_EXT_A14p.qp();
+    wire OEn  = ext_bus.PIN_EXT_RDn.qp();
+
+    // Write
+    if (!CE1n && CE2 && !WRn) {
+      ext_ram[ram_addr] = ext_bus.get_pin_data();
+    }
+
+    // Read
+    if (!CE1n && CE2 && WRn && !OEn) {
+      ext_bus.set_pin_data(ext_ram[ram_addr]);
+    }
+  }
+
+  // Cart RAM read/write
+  {
+    // A000-BFFF
+    // 0b101xxxxxxxxxxxxx
+
+    uint16_t ram_addr = (ext_addr & 0x1FFF);
+
+    wire WRn  = ext_bus.PIN_EXT_WRn.qp();
+    wire CS1n = ext_bus.PIN_EXT_CSn.qp();
+    wire CS2  = ext_bus.PIN_EXT_A13p.qp() && !ext_bus.PIN_EXT_A14p.qp() && ext_bus.PIN_EXT_A15p.qp();
+    wire OEn = ext_bus.PIN_EXT_RDn.qp();
+
+    // Write
+    if (!CS1n && CS2 && !WRn) {
+      cart_ram[ram_addr] = ext_bus.get_pin_data();
+    }
+
+    // Read
+    if (!CS1n && CS2 && !OEn) {
+      ext_bus.set_pin_data(cart_ram[ram_addr]);
+    }
+  }
+
+  // FIXME - implement MBC1
+
+  // 0000-3FFF - ROM Bank 00 (Read Only) This area always contains the first 16KBytes of the cartridge ROM.
+  // 4000-7FFF - ROM Bank 01-7F (Read Only) This area may contain any of the further 16KByte banks of the ROM, allowing to address up to 125 ROM Banks (almost 2MByte). As described below, bank numbers 20h, 40h, and 60h cannot be used, resulting in the odd amount of 125 banks.
+  // A000-BFFF - RAM Bank 00-03, if any (Read/Write) This area is used to address external RAM in the cartridge (if any). External RAM is often battery buffered, allowing to store game positions or high score tables, even if the gameboy is turned off, or if the cartridge is removed from the gameboy. Available RAM sizes are: 2KByte (at A000-A7FF), 8KByte (at A000-BFFF), and 32KByte (in form of four 8K banks at A000-BFFF).
+
+  // 0000-1FFF - RAM Enable (Write Only)   00h  Disable RAM (default)   ?Ah  Enable RAM Practically any value with 0Ah in the lower 4 bits enables RAM, and any other value disables RAM.
+  // 2000-3FFF - ROM Bank Number (Write Only) Writing to this address space selects the lower 5 bits of the ROM Bank Number (in range 01-1Fh). When 00h is written, the MBC translates that to bank 01h also. That doesn't harm so far, because ROM Bank 00h can be always directly accessed by reading from 0000-3FFF.
+  // But (when using the register below to specify the upper ROM Bank bits), the same happens for Bank 20h, 40h, and 60h. Any attempt to address these ROM Banks will select Bank 21h, 41h, and 61h instead.
+  // 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) This 2bit register can be used to select a RAM Bank in range from 00-03h, or to specify the upper two bits (Bit 5-6) of the ROM Bank number, depending on the current ROM/RAM Mode. (See below.)
+  // 6000-7FFF - ROM/RAM Mode Select (Write Only)  00h = ROM Banking Mode (up to 8KByte RAM, 2MByte ROM) (default)   01h = RAM Banking Mode (up to 32KByte RAM, 512KByte ROM)
+
+  // MBC1_RAM_EN
+
+  // MBC1_BANK_D0
+  // MBC1_BANK_D1
+  // MBC1_BANK_D2
+  // MBC1_BANK_D3
+  // MBC1_BANK_D4
+  // MBC1_BANK_D5
+  // MBC1_BANK_D6
+
+  // MBC1_MODE
+
+  /*
+  {
+
+    bool bank_0 = nor(MBC1_BANK_D0, MBC1_BANK_D1, MBC1_BANK_D2, MBC1_BANK_D3, MBC1_BANK_D4);
+
+    wire cart_rom_a14 = bank_0 ? 1 : MBC1_BANK_D0.qp();
+    wire cart_rom_a15 = bank_0 ? 0 : MBC1_BANK_D1.qp();
+    wire cart_rom_a16 = bank_0 ? 0 : MBC1_BANK_D2.qp();
+    wire cart_rom_a17 = bank_0 ? 0 : MBC1_BANK_D3.qp();
+    wire cart_rom_a18 = bank_0 ? 0 : MBC1_BANK_D4.qp();
+    wire cart_rom_a19 = MBC1_MODE.qp() ? 0 : bank_0 ? 0 : MBC1_BANK_D5.qp();
+    wire cart_rom_a20 = MBC1_MODE.qp() ? 0 : bank_0 ? 0 : MBC1_BANK_D6.qp();
+
+    wire cart_ram_a13 = MBC1_MODE.qp() ? MBC1_BANK_D5.qp() : 0;
+    wire cart_ram_a14 = MBC1_MODE.qp() ? MBC1_BANK_D6.qp() : 0;
+
+    // ROM read
+    {
+      uint16_t rom_addr = ext_addr & 0x7FFF;
+      wire OEn = top.ext_bus.PIN_EXT_RDn.qp();
+      wire CEn = top.ext_bus.PIN_EXT_A15p.qp();
+
+      if (!CEn && !OEn) {
+        top.ext_bus.set_pin_data(cart_rom[rom_addr]);
+      }
+    }
+  }
+  */
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::tock_vram_bus(wire RST, uint8_t* vid_ram) {
+  int vram_addr = vram_bus.get_pin_addr();
+  uint8_t& vram_data = vid_ram[vram_addr];
+
+  // We're getting a fake write on the first phase because PIN_VRAM_WRn resets to 0...
+  // ignore it if we're in reset
+
+  if (!RST) {
+    if (!vram_bus.PIN_VRAM_WRn.qp()) {
+      vram_data = (uint8_t)vram_bus.get_pin_data();
+    }
+
+    if (!vram_bus.PIN_VRAM_OEn.qp()) {
+      vram_bus.set_pin_data_in(vram_data);
+    }
+    else {
+      vram_bus.set_pin_data_z();
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::tock_oam_bus(uint8_t* oam_ram) {
+  uint16_t oam_addr = oam_bus.get_oam_pin_addr();
+  uint8_t& oam_data_a = oam_ram[(oam_addr << 1) + 0];
+  uint8_t& oam_data_b = oam_ram[(oam_addr << 1) + 1];
+
+  if (!oam_bus.PIN_OAM_WR_A.qp()) oam_data_a = oam_bus.get_oam_pin_data_a();
+  if (!oam_bus.PIN_OAM_WR_B.qp()) oam_data_b = oam_bus.get_oam_pin_data_b();
+
+  if (!oam_bus.PIN_OAM_OE.qp()) oam_bus.set_pin_data_a(oam_data_a);
+  if (!oam_bus.PIN_OAM_OE.qp()) oam_bus.set_pin_data_b(oam_data_b);
+}
+
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::tock_zram_bus(uint8_t* zero_ram) {
+  // ZRAM control signals are
+
+  // top.clk_reg.PIN_CPU_BUKE_AxxxxxGH
+  // top.TEDO_CPU_RDp();
+  // top.TAPU_CPU_WRp_xxxxEFGx()
+  // top.cpu_bus.SYKE_FF00_FFFFp()
+
+  // and there's somes gates WUTA/WOLY/WALE that do the check for FFXX && !FFFF
+
+  int addr = cpu_bus.get_bus_addr();
+  bool hit_zram = (addr >= 0xFF80) && (addr <= 0xFFFE);
+
+  if (hit_zram) {
+    uint8_t& data = zero_ram[addr & 0x007F];
+    if (TAPU_CPU_WRp_xxxxEFGx) data = cpu_bus.get_bus_data();
+    if (TEDO_CPU_RDp) cpu_bus.set_data(data);
+  }
+}
+
 //------------------------------------------------------------------------------
 
 #if 0

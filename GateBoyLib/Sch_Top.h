@@ -29,6 +29,11 @@ struct SchematicTop {
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
   void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
 
+  void tock_ext_bus(wire sys_cart_loaded, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram);
+  void tock_vram_bus(wire RST, uint8_t* vid_ram);
+  void tock_oam_bus(uint8_t* oam_ram);
+  void tock_zram_bus(uint8_t* zero_ram);
+
   //-----------------------------------------------------------------------------
 
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;

@@ -13,10 +13,6 @@ struct GateBoy {
   void     reset_post_bootrom();
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
-  void     tock_ext_bus();
-  void     tock_oam_bus();
-  void     tock_vram_bus();
-  void     tock_zram_bus();
 
   void     next_phase();
   uint64_t next_pass(int old_phase, int new_phase);

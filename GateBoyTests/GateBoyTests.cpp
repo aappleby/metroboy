@@ -56,35 +56,76 @@ int GateBoyTests::test_main(int argc, char** argv) {
 int GateBoyTests::test_micro() {
   TEST_START();
 
-  LOG_B("---------- Boot sys reg states ----------\n");
-  err += run_microtest("poweron_000_joy.gb");
-  err += run_microtest("poweron_000_sb.gb");
-  err += run_microtest("poweron_000_sc.gb");
-  err += run_microtest("poweron_000_if.gb");
-  err += run_microtest("poweron_000_dma.gb");
+  LOG_B("---------- Boot state ----------\n");
 
-  LOG_B("---------- Boot timer reg states ----------\n");
+  err += run_microtest("poweron_000_bgp.gb");
   err += run_microtest("poweron_000_div.gb");
-  err += run_microtest("poweron_000_tima.gb");
-  err += run_microtest("poweron_000_tma.gb");
-  err += run_microtest("poweron_000_tac.gb");
-
-  LOG_B("---------- Boot PPU reg states ----------\n");
+  err += run_microtest("poweron_000_dma.gb");
+  err += run_microtest("poweron_000_if.gb");
+  err += run_microtest("poweron_000_joy.gb");
   err += run_microtest("poweron_000_lcdc.gb");
-  err += run_microtest("poweron_000_stat.gb");
-  err += run_microtest("poweron_000_scy.gb");
-  err += run_microtest("poweron_000_scx.gb");
   err += run_microtest("poweron_000_ly.gb");
   err += run_microtest("poweron_000_lyc.gb");
-  err += run_microtest("poweron_000_bgp.gb");
+  err += run_microtest("poweron_000_oam.gb");
   err += run_microtest("poweron_000_obp0.gb");
   err += run_microtest("poweron_000_obp1.gb");
-  err += run_microtest("poweron_000_wy.gb");
-  err += run_microtest("poweron_000_wx.gb");
-
-  LOG_B("---------- Boot mem states ----------\n");
-  err += run_microtest("poweron_000_oam.gb");
+  err += run_microtest("poweron_000_sb.gb");
+  err += run_microtest("poweron_000_sc.gb");
+  err += run_microtest("poweron_000_scx.gb");
+  err += run_microtest("poweron_000_scy.gb");
+  err += run_microtest("poweron_000_stat.gb");
+  err += run_microtest("poweron_000_tac.gb");
+  err += run_microtest("poweron_000_tima.gb");
+  err += run_microtest("poweron_000_tma.gb");
   err += run_microtest("poweron_000_vram.gb");
+  err += run_microtest("poweron_000_wx.gb");
+  err += run_microtest("poweron_000_wy.gb");
+  err += run_microtest("poweron_004_div.gb");
+  err += run_microtest("poweron_005_div.gb");
+  err += run_microtest("poweron_005_oam.gb");
+  err += run_microtest("poweron_005_stat.gb");
+  err += run_microtest("poweron_006_oam.gb"); // fail
+  err += run_microtest("poweron_006_stat.gb"); // fail
+  err += run_microtest("poweron_007_stat.gb");
+  err += run_microtest("poweron_025_vram.gb");
+  err += run_microtest("poweron_026_stat.gb");
+  err += run_microtest("poweron_026_vram.gb"); // fail
+  err += run_microtest("poweron_027_stat.gb");
+  err += run_microtest("poweron_069_oam.gb");
+  err += run_microtest("poweron_069_stat.gb");
+  err += run_microtest("poweron_069_vram.gb");
+  err += run_microtest("poweron_070_oam.gb");
+  err += run_microtest("poweron_070_stat.gb");
+  err += run_microtest("poweron_070_vram.gb");
+  err += run_microtest("poweron_119_ly.gb");
+  err += run_microtest("poweron_119_oam.gb");
+  err += run_microtest("poweron_119_stat.gb");
+  err += run_microtest("poweron_120_ly.gb");
+  err += run_microtest("poweron_120_oam.gb"); // fail
+  err += run_microtest("poweron_120_stat.gb"); // fail
+  err += run_microtest("poweron_121_oam.gb");
+  err += run_microtest("poweron_121_stat.gb");
+  err += run_microtest("poweron_139_vram.gb");
+  err += run_microtest("poweron_140_stat.gb");
+  err += run_microtest("poweron_140_vram.gb"); // fail
+  err += run_microtest("poweron_141_stat.gb");
+  err += run_microtest("poweron_183_oam.gb");
+  err += run_microtest("poweron_183_stat.gb");
+  err += run_microtest("poweron_183_vram.gb");
+  err += run_microtest("poweron_184_oam.gb");
+  err += run_microtest("poweron_184_stat.gb");
+  err += run_microtest("poweron_184_vram.gb");
+  err += run_microtest("poweron_233_ly.gb");
+  err += run_microtest("poweron_233_oam.gb");
+  err += run_microtest("poweron_234_ly.gb");
+  err += run_microtest("poweron_234_oam.gb"); // fail
+  err += run_microtest("poweron_234_stat.gb");
+  err += run_microtest("poweron_235_oam.gb");
+  err += run_microtest("poweron_235_stat.gb");
+  err += run_microtest("poweron_oam_read_a.gb");
+  err += run_microtest("poweron_oam_read_b.gb"); // fail
+  err += run_microtest("poweron_oam_read_c.gb");
+  err += run_microtest("poweron_oam_read_d.gb"); // fail
 
   LOG_B("---------- LCDEN-to-LY timing ----------\n");
   err += run_microtest("lcdon_to_ly1_a.gb");
@@ -149,12 +190,6 @@ int GateBoyTests::test_micro() {
   err += run_microtest("lcdon_to_hblank_int_scx7.gb");
 
 
-  LOG_B("---------- POWERON-to-LY timing ----------\n");
-  err += run_microtest("poweron_000_ly.gb");
-  err += run_microtest("poweron_119_ly.gb");
-  err += run_microtest("poweron_120_ly.gb");
-  err += run_microtest("poweron_233_ly.gb");
-  err += run_microtest("poweron_234_ly.gb");
 
   LOG_B("---------- HBLANK interrupt ----------\n");
   // err += run_microtest("hblank_int_halt_a.gb"); // timeout
@@ -242,9 +277,6 @@ int GateBoyTests::test_micro() {
 
 
   LOG_B("---------- Timer ----------\n");
-  err += run_microtest("poweron_000_div.gb");
-  err += run_microtest("poweron_004_div.gb");
-  err += run_microtest("poweron_005_div.gb");
 
   err += run_microtest("timer_tima_inc_256k_a.gb");
   err += run_microtest("timer_tima_inc_256k_b.gb");
@@ -407,16 +439,16 @@ int GateBoyTests::test_micro() {
   err += run_microtest("sprite4_7_b.gb");
 
   err += run_microtest("sprite_0_a.gb");
-  err += run_microtest("sprite_0_b.gb");
+  err += run_microtest("sprite_0_b.gb"); // fail
   err += run_microtest("sprite_1_a.gb");
   err += run_microtest("sprite_1_b.gb");
 
-  err += run_microtest("stat_write_glitch_l0_a.gb");
-  err += run_microtest("stat_write_glitch_l0_b.gb");
+  err += run_microtest("stat_write_glitch_l0_a.gb"); // fail
+  err += run_microtest("stat_write_glitch_l0_b.gb"); // fail
   err += run_microtest("stat_write_glitch_l0_c.gb");
   err += run_microtest("stat_write_glitch_l1_a.gb");
-  err += run_microtest("stat_write_glitch_l1_b.gb");
-  err += run_microtest("stat_write_glitch_l1_c.gb");
+  err += run_microtest("stat_write_glitch_l1_b.gb"); // fail
+  err += run_microtest("stat_write_glitch_l1_c.gb"); // fail
   err += run_microtest("stat_write_glitch_l1_d.gb");
 
 #if 0 // slow

@@ -100,14 +100,11 @@ struct SchematicTop {
   Pin PIN_LCD_ALTSG = TRI_HZNP; // PIN_56 
   Pin PIN_LCD_VSYNC = TRI_HZNP; // PIN_57
 
-  /*
   DFF IE_D0;
   DFF IE_D1;
   DFF IE_D2;
   DFF IE_D3;
   DFF IE_D4;
-  */
-
 };
 #pragma pack(pop)
 

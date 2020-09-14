@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreLib/Types.h"
+#include <stdio.h>
 
 #pragma warning(disable : 5054) // or'ing different enums deprecated
 
@@ -226,6 +227,10 @@ struct RegBase {
     delta = DELTA_LOCK;
   }
 
+  void force_state(int s) {
+    state = RegState(s);
+  }
+
   inline void preset(RegDelta d) {
     if (delta != DELTA_NONE) {
       CHECK_P(delta == DELTA_NONE);
@@ -293,8 +298,9 @@ struct DFF : private RegBase {
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
+  using RegBase::force_state;
 
-  inline void tock(wire CLKp, bool D) { dff(CLKp, !CLKp, 1, 1, D); }
+  inline void tock(wire CLKp, bool RSTn, bool D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -439,10 +445,7 @@ struct DFF17 : private RegBase {
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-
-  void force_state(int s) {
-    state = RegState(s);
-  }
+  using RegBase::force_state;
 
   inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
@@ -476,8 +479,8 @@ struct DFF17 : private RegBase {
 
 struct DFF20 {
   DFF20() {
-    stateA = REG_D0C0;
-    stateB = REG_D0C0;
+    stateA = REG_D0C1;
+    stateB = REG_D0C1;
     deltaA = DELTA_NONE;
     deltaB = DELTA_NONE;
   }
@@ -497,6 +500,15 @@ struct DFF20 {
       deltaA = RegDelta(DELTA_A0C0 | (!CLKn << 1) | (newD << 0));
     }
     else {
+      /*
+      if (stateA == REG_D0C1 && CLKn) {
+        printf("?");
+      }
+
+      if (stateA == REG_D0C0 && !CLKn) {
+        printf("?");
+      }
+      */
       deltaA = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(stateA & 1) << 0));
     }
 
@@ -556,13 +568,10 @@ static_assert(sizeof(DFF20) == 2, "DFF20 size != 2");
 struct DFF22 : private RegBase {
   DFF22() : RegBase(REG_D0C0) {}
 
-  void force_state(int s) {
-    state = RegState(s);
-  }
-
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
+  using RegBase::force_state;
 
   inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
 };

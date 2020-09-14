@@ -6,8 +6,15 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void InterruptRegisters::dump(Dumper& d) const {
+void InterruptRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("----------   Ints   ----------\n");
+  d("IE_D0              %c\n", top.IE_D0.c());
+  d("IE_D1              %c\n", top.IE_D1.c());
+  d("IE_D2              %c\n", top.IE_D2.c());
+  d("IE_D3              %c\n", top.IE_D3.c());
+  d("IE_D4              %c\n", top.IE_D4.c());
+  d("\n");
+
   d("LOPE_FF0F_0        %c\n", LOPE_FF0F_D0p        .c());
   d("LALU_FF0F_1        %c\n", LALU_FF0F_D1p        .c());
   d("NYBO_FF0F_2        %c\n", NYBO_FF0F_D2p        .c());

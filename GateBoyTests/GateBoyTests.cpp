@@ -16,18 +16,16 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  /*
-  err += test_init();
-  err += test_clk();
-  err += test_ext_bus();
-  err += test_mem();
+  //err += test_init();
+  //err += test_clk();
+  //err += test_ext_bus();
+  //err += test_mem();
   err += test_interrupts();
-  err += test_bootrom();
-  err += test_dma();
-  err += test_joypad();
-  err += test_ppu();
-  err += test_serial();
-  */
+  //err += test_bootrom();
+  //err += test_dma();
+  //err += test_joypad();
+  //err += test_ppu();
+  //err += test_serial();
   err += test_timer();
 
   err += test_micro();
@@ -941,7 +939,7 @@ int GateBoyTests::test_interrupts() {
   //dbg_write(ADDR_IE,   0b11111111);
 
   test_reg("IF",   0xFF0F, 0b00011111); // broken
-  //test_reg("IE",   0xFFFF, 0b00011111);
+  test_reg("IE",   0xFFFF, 0b00011111);
 
   TEST_END();
 }

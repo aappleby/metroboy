@@ -9,7 +9,7 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct InterruptRegisters {
-  void dump(Dumper& d) const;
+  void dump(Dumper& d, const SchematicTop& top) const;
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
 
   void force_set_if(uint8_t _if) {

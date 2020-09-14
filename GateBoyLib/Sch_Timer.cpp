@@ -114,7 +114,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.MEXU*/ wire MEXU_TIMA_LOADp      = nand3(MUZU_CPU_LOAD_TIMAn, top.clk_reg.ALUR_SYS_RSTn, MEKE_TIMER_OVERFLOWn);
 
     /*#p03.SOGU*/ wire SOGU_TIMA_CLK = nor2(TECY_CLK_MUXc, SABO_TAC_D2.qn());
-    /*#p03.REGA*/ REGA_TIMA_D0.tock(SOGU_TIMA_CLK,       MEXU_TIMA_LOADp, PUXY_TIMA_D0);
+    /*#p03.REGA*/ REGA_TIMA_D0.tock(SOGU_TIMA_CLK,     MEXU_TIMA_LOADp, PUXY_TIMA_D0);
     /*#p03.POVY*/ POVY_TIMA_D1.tock(REGA_TIMA_D0.qp(), MEXU_TIMA_LOADp, NERO_TIMA_D1);
     /*#p03.PERU*/ PERU_TIMA_D2.tock(POVY_TIMA_D1.qp(), MEXU_TIMA_LOADp, NADA_TIMA_D2);
     /*#p03.RATE*/ RATE_TIMA_D3.tock(PERU_TIMA_D2.qp(), MEXU_TIMA_LOADp, REPA_TIMA_D3);

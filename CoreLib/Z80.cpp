@@ -1,6 +1,7 @@
 #include "CoreLib/Z80.h"
 #include "CoreLib/Constants.h"
 #include <assert.h>
+#include <stdio.h>
 
 #pragma warning(disable:4189)
 #pragma warning(disable:4244)
@@ -228,6 +229,7 @@ void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
     int_ack = 0;
 
     if ((imask_ & intf_) && ime) {
+      //printf("interrupt!\n");
       op = 0xF4; // fake opcode
       ime = false;
       ime_delay = false;

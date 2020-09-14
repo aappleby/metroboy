@@ -70,6 +70,7 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
   // regenerate post-bootrom dump
+  /*
   {
     state_manager.reset();
     auto& gb = *state_manager.state();
@@ -81,12 +82,11 @@ void GateBoyApp::app_init() {
       gb.vid_ram[i] = (uint8_t)rand();
     }
   }
+  */
 
-  /*
   state_manager.reset();
   state_manager.state()->reset_post_bootrom();
-  load_rom("microtests/build/dmg/timer_tima_inc_256k_a.gb");
-  */
+  load_rom("microtests/build/dmg/timer_int_inc_sled.gb");
 
   /*
   for (int i = 0; i < 8192; i++) {
@@ -425,7 +425,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("----------   CPU    ----------\n");
   gateboy->cpu.dump(dumper);
   top.tim_reg.dump(dumper);
-  top.int_reg.dump(dumper);
+  top.int_reg.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();

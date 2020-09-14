@@ -125,9 +125,12 @@ void GateBoy::reset_post_bootrom() {
   // we're early by 0xC30 (3120) mcycles
 
   top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
-  top.tim_reg.force_set_tima(0xFF);  // this passes poweron_000_tima.gb
-  
-  top.int_reg.force_set_if(0xe1); // this doesn't work, the timer int is still firing...
+
+  top.IE_D0.force_state(REG_D0C0);
+  top.IE_D1.force_state(REG_D0C0);
+  top.IE_D2.force_state(REG_D0C0);
+  top.IE_D3.force_state(REG_D0C0);
+  top.IE_D4.force_state(REG_D0C0);
 }
 
 //------------------------------------------------------------------------------
@@ -185,8 +188,7 @@ void GateBoy::next_phase() {
   // Update CPU
 
   if (sys_cpu_en) {
-    // FIXME imask derrrrrr
-    uint8_t imask = 0;
+    uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
     uint8_t intf = 0;
 
     if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;

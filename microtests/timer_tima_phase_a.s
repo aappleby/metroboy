@@ -20,7 +20,7 @@ main:
   ld a, $80
   ldh (TMA), a
 
-  ld a, %00000101
+  ld a, %00000101 // 262144 hz, one tick every 4 cycles
   ldh (TAC), a
   ld a, $FD
   ldh (TIMA), a

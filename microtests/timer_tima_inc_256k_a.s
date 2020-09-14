@@ -5,4 +5,6 @@ main:
   ldh (TAC), a
   nops 0
   ldh a, (TIMA)
+//- ld ($8000), a
+//  jr -
   test_finish_a $00

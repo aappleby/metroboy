@@ -9,6 +9,7 @@ struct GateBoy {
   GateBoy();
 
   void     reset();
+  void     reset_post_bootrom();
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
   void     tock_ext_bus();

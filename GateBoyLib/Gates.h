@@ -433,6 +433,7 @@ struct DFF17 : private RegBase {
 
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.
+// FIXME - TIMA broken in microtests, this reg could be wrong.
 
 // DFF20_01 >> Qn
 // DFF20_02 nc

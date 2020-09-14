@@ -69,8 +69,8 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
-  reset(0x0100);
-  load_rom("microtests/build/dmg/timer_tima_phase_b.gb");
+  reset_post_bootrom();
+  load_rom("microtests/build/dmg/timer_tima_inc_256k_a.gb");
 
   /*
   for (int i = 0; i < 8192; i++) {
@@ -81,10 +81,12 @@ void GateBoyApp::app_init() {
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
 
+  /*
   auto gb = state_manager.state();
   gb->sys_cpu_en = 0;
   gb->run(576);
   gb->sys_cpu_en = 1;
+  */
 }
 
 //----------------------------------------
@@ -170,7 +172,7 @@ void GateBoyApp::app_update(double delta) {
 
   if (reset_sim) {
     printf("Resetting sim\n");
-    reset(0);
+    reset_post_bootrom();
   }
 
   if (_load_megadump) {
@@ -210,7 +212,7 @@ void GateBoyApp::app_update(double delta) {
 
 void GateBoyApp::load_raw_dump(const char* filename) {
   printf("Loading raw dump from %s\n", filename);
-  reset(0);
+  reset_bootrom();
   load_obj(filename, *state_manager.state());
 }
 
@@ -280,7 +282,7 @@ void GateBoyApp::save_megadump(const char* filename) {
 void GateBoyApp::load_flat_dump(const char* filename) {
   printf("Loading flat dump %s\n", filename);
 
-  reset(0);
+  reset_bootrom();
 
   uint8_t* dump = new uint8_t[65536];
   memset(dump, 0, 65536);
@@ -339,20 +341,13 @@ void GateBoyApp::save_flat_dump(const char* filename) {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  uint8_t* rom = new uint8_t[65536];
-  size_t size = load_blob(filename, rom, 65536);
+  reset_post_bootrom();
 
   auto gb = state_manager.state();
-  memcpy(gb->cart_rom, rom, 32768);
+  size_t size = load_blob(filename, gb->cart_rom, 32768);
   gb->sys_cart_loaded = 1;
 
-  // if we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2
-  // so we're early by 0xC30 (3120) mcycles
-
-  gb->top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
-
   printf("Loaded %zd bytes from rom %s\n", size, filename);
-  delete [] rom;
 }
 
 //-----------------------------------------------------------------------------
@@ -406,6 +401,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("\n");
 
+  dump_probes(dumper);
   dumper("----------   CPU    ----------\n");
   gateboy->cpu.dump(dumper);
   top.tim_reg.dump(dumper);
@@ -438,7 +434,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
-  dump_probes(dumper);
   top.sprite_fetcher.dump(dumper);
   top.sprite_scanner.dump(dumper, top);
   top.sprite_store.dump(dumper);
@@ -525,18 +520,18 @@ void GateBoyApp::app_render_ui(Viewport view) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::reset(uint16_t new_pc) {
+void GateBoyApp::reset_bootrom() {
   printf("GateBoyApp::reset()\n");
   state_manager.reset();
+  state_manager.state()->reset();
+}
 
-  auto& gb = *state_manager.state();
+//-----------------------------------------------------------------------------
 
-  if (new_pc == 0x0000) {
-    gb.reset();
-  }
-  if (new_pc == 0x0100) {
-    load_obj("gateboy_post_bootrom.raw.dump", *state_manager.state());
-  }
+void GateBoyApp::reset_post_bootrom() {
+  printf("GateBoyApp::reset()\n");
+  state_manager.reset();
+  state_manager.state()->reset_post_bootrom();
 }
 
 //-----------------------------------------------------------------------------

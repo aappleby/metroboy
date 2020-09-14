@@ -107,6 +107,27 @@ void GateBoy::reset() {
 }
 
 //------------------------------------------------------------------------------
+
+void GateBoy::reset_post_bootrom() {
+  load_obj("gateboy_post_bootrom.raw.dump", *this);
+
+  // FIXME
+  // LCD has to be at (98,0) before we start the tests, but for some reason
+  // right now our bootrom is putting us at (26,0) - run for an additional
+  // 72*8 = 576 phases with the CPU off to get back in sync.
+
+  sys_cpu_en = 0;
+  run(576);
+  sys_cpu_en = 1;
+
+  // Similarly, the bootrom isn't putting us at the right point relative to
+  // DIV. If we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2 so
+  // we're early by 0xC30 (3120) mcycles
+
+  top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
+}
+
+//------------------------------------------------------------------------------
 // I'm guessing we proooobably latch bus data on DE, since that's also
 // when we put data on the bus for a write?
 

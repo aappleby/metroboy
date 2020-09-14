@@ -28,11 +28,14 @@ public:
 
   //----------
 
-  void reset(uint16_t new_pc);
+  void reset_bootrom();
+  void reset_post_bootrom();
 
   //----------
 
 private:
+
+  void load_microtest(const char* filename);
 
   void load_raw_dump(const char* filename);
   void save_raw_dump(const char* filename);

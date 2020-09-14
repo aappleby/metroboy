@@ -140,6 +140,13 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_004_div.gb");
   err += run_microtest("poweron_005_div.gb");
 
+  err += run_microtest("timer_tima_inc_256k_a.gb");
+  err += run_microtest("timer_tima_inc_256k_b.gb");
+  err += run_microtest("timer_tima_inc_256k_c.gb");
+  err += run_microtest("timer_tima_inc_256k_d.gb");
+  err += run_microtest("timer_tima_inc_256k_e.gb");
+  err += run_microtest("timer_tima_inc_256k_f.gb");
+
   err += run_microtest("timer_tima_phase_a.gb"); // FE pass
   err += run_microtest("timer_tima_phase_b.gb"); // FF FAIL
   err += run_microtest("timer_tima_phase_c.gb"); // FF FAIL
@@ -188,25 +195,9 @@ int GateBoyTests::run_microtest(const char* filename) {
   std::string path = "microtests/build/dmg/" + std::string(filename);
 
   GateBoy gb;
-  load_obj("gateboy_post_bootrom.raw.dump", gb);
-
+  gb.reset_post_bootrom();
   load_blob(path.c_str(), gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
-
-  // FIXME
-  // LCD has to be at (98,0) before we start the tests, but for some reason
-  // right now our bootrom is putting us at (26,0) - run for an additional
-  // 72*8 = 576 phases with the CPU off to get back in sync.
-
-  gb.sys_cpu_en = 0;
-  gb.run(576);
-  gb.sys_cpu_en = 1;
-
-  // Similarly, the bootrom isn't putting us at the right point relative to
-  // DIV. If we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2 so
-  // we're early by 0xC30 (3120) mcycles
-
-  gb.top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
 
   int mcycle = 0;
   int timeout = 100000;

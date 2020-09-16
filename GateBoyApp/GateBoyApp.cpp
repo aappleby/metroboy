@@ -162,7 +162,7 @@ void GateBoyApp::app_init() {
 
   // run rom
   gb.reset_post_bootrom();
-  load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb");
+  load_rom("microtests/build/dmg/hblank_int_if_b.gb");
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
 

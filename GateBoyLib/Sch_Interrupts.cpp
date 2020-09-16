@@ -1,5 +1,6 @@
 #include "GateBoyLib/Sch_Interrupts.h"
 
+#include "GateBoyLib/Probe.h"
 #include "GateBoyLib/Sch_Top.h"
 
 using namespace Schematics;
@@ -21,11 +22,11 @@ void InterruptRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("UBUL_FF0F_3        %c\n", UBUL_FF0F_D3p        .c());
   d("ULAK_FF0F_4        %c\n", ULAK_FF0F_D4p        .c());
   d("\n");
-  d("MATY_FF0F_L0       %c\n", MATY_FF0F_L0p       .c());
-  d("MOPO_FF0F_L3       %c\n", MOPO_FF0F_L1p       .c());
-  d("PAVY_FF0F_L4       %c\n", PAVY_FF0F_L2p       .c());
-  d("NEJY_FF0F_L1       %c\n", NEJY_FF0F_L3p       .c());
-  d("NUTY_FF0F_L2       %c\n", NUTY_FF0F_L4p       .c());
+  d("MATY_FF0F_L0p      %c\n", MATY_FF0F_L0p       .c());
+  d("MOPO_FF0F_L1p      %c\n", MOPO_FF0F_L1p       .c());
+  d("PAVY_FF0F_L2p      %c\n", PAVY_FF0F_L2p       .c());
+  d("NEJY_FF0F_L3p      %c\n", NEJY_FF0F_L3p       .c());
+  d("NUTY_FF0F_L4p      %c\n", NUTY_FF0F_L4p       .c());
   d("\n");
   d("PIN_CPU_INT_VBLANK %c\n", PIN_CPU_INT_VBLANK .c());
   d("PIN_CPU_INT_STAT   %c\n", PIN_CPU_INT_STAT   .c());
@@ -95,14 +96,18 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   // pass gates? does look like a transparent latch here...
 
-  /* p07.ROLO*/ wire ROLO_FF0F_RDn = nand4(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp); // schematic wrong, is NAND
-  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(ROLO_FF0F_RDn, LOPE_FF0F_D0p.qp()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_D1p.qp()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_D2p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp()); // OUTPUT ON RUNG 10
+  /* p07.ROLO*/ wire ROLO_HOLDn = nand4(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, cpu_bus.SYKE_FF00_FFFFp(), top.TEDO_CPU_RDp); // schematic wrong, is NAND
 
-  /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_FF0F_RDn);
+  // FIXME this inversion fixes a bunch of tests...
+  // MATY is one of those big yellow latchy things
+
+  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(!ROLO_HOLDn, LOPE_FF0F_D0p.qp()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(!ROLO_HOLDn, LALU_FF0F_D1p.qp()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(!ROLO_HOLDn, NYBO_FF0F_D2p.qp()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!ROLO_HOLDn, UBUL_FF0F_D3p.qp()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!ROLO_HOLDn, ULAK_FF0F_D4p.qp()); // OUTPUT ON RUNG 10
+
+  /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_HOLDn);
   /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p.tri_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.qn());
   /*#p02.NABO*/ cpu_bus.BUS_CPU_D1p.tri_6pn(POLA_FF0F_RD, MOPO_FF0F_L1p.qn());
   /*#p02.ROVA*/ cpu_bus.BUS_CPU_D2p.tri_6pn(POLA_FF0F_RD, PAVY_FF0F_L2p.qn());

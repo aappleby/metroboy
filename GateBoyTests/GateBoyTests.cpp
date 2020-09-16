@@ -17,17 +17,17 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  //err += test_init();
-  //err += test_clk();
-  //err += test_ext_bus();
-  //err += test_mem();
-  //err += test_interrupts();
-  //err += test_bootrom();
-  //err += test_dma();
-  //err += test_joypad();
-  //err += test_ppu();
-  //err += test_serial();
-  //err += test_timer();
+  err += test_init();
+  err += test_clk();
+  err += test_ext_bus();
+  err += test_mem();
+  err += test_interrupts();
+  err += test_bootrom();
+  err += test_dma();
+  err += test_joypad();
+  err += test_ppu();
+  err += test_serial();
+  err += test_timer();
   err += test_micro();
 
   if (!err) LOG_G("Everything passed!\n");
@@ -569,8 +569,8 @@ int GateBoyTests::test_init() {
   gb.reset_to_bootrom();
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
-  LOG_Y("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xb15e6fb300af5aa1, top_hash, "Top hash mismatch");
+  LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
+  EXPECT_EQ(0x7c74fe301ae6d5f7, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -761,7 +761,7 @@ int GateBoyTests::test_ext_bus() {
   // Check all signals for all phases of "ld (hl), a; jr -2;" with hl = 0xC003 and a = 0x55
 #if 1
   {
-    LOG_Y("Testing cram write external bus waves\n");
+    LOG_B("Testing cram write external bus waves\n");
 
     GateBoy gb;
     gb.reset_post_bootrom();
@@ -886,7 +886,7 @@ int GateBoyTests::test_ext_bus() {
 
 #if 1
   {
-    LOG_Y("Testing vram write external bus waves\n");
+    LOG_B("Testing vram write external bus waves\n");
 
     GateBoy gb;
     gb.reset_post_bootrom();
@@ -1016,7 +1016,7 @@ int GateBoyTests::test_ext_bus() {
 
 #if 1
   {
-    LOG_Y("Testing zram write external bus waves\n");
+    LOG_B("Testing zram write external bus waves\n");
 
     GateBoy gb;
     gb.reset_post_bootrom();
@@ -1511,6 +1511,7 @@ int GateBoyTests::test_ppu() {
     LOG("Checking LY increment rate... ");
     GateBoy gb;
     gb.reset_to_bootrom();
+    gb.sys_cart_loaded = 1;
     gb.dbg_write(ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable

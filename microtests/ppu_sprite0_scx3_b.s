@@ -1,6 +1,6 @@
 .include "header.inc"
 
-.define DELAY 62
+.define DELAY 65
 .define RESULT $80
 .define SPRITEX 0
 .define SPRITEY 0

@@ -355,24 +355,24 @@ void OamBus::tock(SchematicTop& top) {
     /* p28.BOTA*/ wire BOTA_CPU_OAM_LATCHn  = nand3(DECY_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
     /* p28.ASYT*/ wire ASYT_OBD_TO_OBLn     = and3(AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn, BOTA_CPU_OAM_LATCHn); // def and
 
-    /* p28.BODE*/ wire BODE_OBD_TO_OBLp     = not1(ASYT_OBD_TO_OBLn);
-    /* p29.YDYV*/ YDYV_OAM_LATCH_DA0n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA0n.qp()); // -> XUSO, YFAP
-    /* p29.YCEB*/ YCEB_OAM_LATCH_DA1n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA1n.qp());
-    /* p29.ZUCA*/ ZUCA_OAM_LATCH_DA2n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA2n.qp());
-    /* p29.WONE*/ WONE_OAM_LATCH_DA3n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA3n.qp());
-    /* p29.ZAXE*/ ZAXE_OAM_LATCH_DA4n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA4n.qp());
-    /* p29.XAFU*/ XAFU_OAM_LATCH_DA5n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA5n.qp());
-    /* p29.YSES*/ YSES_OAM_LATCH_DA6n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA6n.qp());
-    /* p29.ZECA*/ ZECA_OAM_LATCH_DA7n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DA7n.qp());
+    /* p28.BODE*/ wire BODE_HOLDn     = not1(ASYT_OBD_TO_OBLn);
+    /* p29.YDYV*/ YDYV_OAM_LATCH_DA0n.tp_latch(BODE_HOLDn, BUS_OAM_DA0n.qp()); // -> XUSO, YFAP
+    /* p29.YCEB*/ YCEB_OAM_LATCH_DA1n.tp_latch(BODE_HOLDn, BUS_OAM_DA1n.qp());
+    /* p29.ZUCA*/ ZUCA_OAM_LATCH_DA2n.tp_latch(BODE_HOLDn, BUS_OAM_DA2n.qp());
+    /* p29.WONE*/ WONE_OAM_LATCH_DA3n.tp_latch(BODE_HOLDn, BUS_OAM_DA3n.qp());
+    /* p29.ZAXE*/ ZAXE_OAM_LATCH_DA4n.tp_latch(BODE_HOLDn, BUS_OAM_DA4n.qp());
+    /* p29.XAFU*/ XAFU_OAM_LATCH_DA5n.tp_latch(BODE_HOLDn, BUS_OAM_DA5n.qp());
+    /* p29.YSES*/ YSES_OAM_LATCH_DA6n.tp_latch(BODE_HOLDn, BUS_OAM_DA6n.qp());
+    /* p29.ZECA*/ ZECA_OAM_LATCH_DA7n.tp_latch(BODE_HOLDn, BUS_OAM_DA7n.qp());
 
-    /*#p31.XYKY*/ XYKY_OAM_LATCH_DB0n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB0n.qp());
-    /* p31.YRUM*/ YRUM_OAM_LATCH_DB1n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB1n.qp());
-    /* p31.YSEX*/ YSEX_OAM_LATCH_DB2n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB2n.qp());
-    /* p31.YVEL*/ YVEL_OAM_LATCH_DB3n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB3n.qp());
-    /* p31.WYNO*/ WYNO_OAM_LATCH_DB4n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB4n.qp());
-    /* p31.CYRA*/ CYRA_OAM_LATCH_DB5n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB5n.qp());
-    /* p31.ZUVE*/ ZUVE_OAM_LATCH_DB6n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB6n.qp());
-    /* p31.ECED*/ ECED_OAM_LATCH_DB7n.tp_latch(BODE_OBD_TO_OBLp, BUS_OAM_DB7n.qp());
+    /*#p31.XYKY*/ XYKY_OAM_LATCH_DB0n.tp_latch(BODE_HOLDn, BUS_OAM_DB0n.qp());
+    /* p31.YRUM*/ YRUM_OAM_LATCH_DB1n.tp_latch(BODE_HOLDn, BUS_OAM_DB1n.qp());
+    /* p31.YSEX*/ YSEX_OAM_LATCH_DB2n.tp_latch(BODE_HOLDn, BUS_OAM_DB2n.qp());
+    /* p31.YVEL*/ YVEL_OAM_LATCH_DB3n.tp_latch(BODE_HOLDn, BUS_OAM_DB3n.qp());
+    /* p31.WYNO*/ WYNO_OAM_LATCH_DB4n.tp_latch(BODE_HOLDn, BUS_OAM_DB4n.qp());
+    /* p31.CYRA*/ CYRA_OAM_LATCH_DB5n.tp_latch(BODE_HOLDn, BUS_OAM_DB5n.qp());
+    /* p31.ZUVE*/ ZUVE_OAM_LATCH_DB6n.tp_latch(BODE_HOLDn, BUS_OAM_DB6n.qp());
+    /* p31.ECED*/ ECED_OAM_LATCH_DB7n.tp_latch(BODE_HOLDn, BUS_OAM_DB7n.qp());
   }
 
   // OBL -> OBR

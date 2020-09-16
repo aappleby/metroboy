@@ -1,40 +1,43 @@
 .include "header.inc"
 
-.define ST_A8_A $E0
-.define DMA_SRC $A0
-.define JR_A8   $18
-.define NEG_2   $FE
-
-
 main:
-  // Turn on cart ram
-  ld a, $0A
-  ld ($0000), a
+  ld a, $00;
+  ldh ($40), a;
+  ld a, $27;
+  ld hl, $A000;
+  ld (hl), a;
+  ld a, $72;
+  ld hl, $A09F;
+  ld (hl), a;
 
-  // Stick a sentinel value at the beginning and end of the DMA source range
-  ld a, $73
-  ld h, DMA_SRC
-  ld l, $00
-  ld (hl), a
-  ld l, $9F
-  ld (hl), a
+  ld hl, $FF80;
+  ld a, $E0;
+  ld (hl+), a;
+  ld a, $46;
+  ld (hl+), a;
+  ld a, $3E;
+  ld (hl+), a;
+  ld a, $28;
+  ld (hl+), a;
+  ld a, $3D;
+  ld (hl+), a;
+  ld a, $20;
+  ld (hl+), a;
+  ld a, $FD;
+  ld (hl+), a;
+  ld a, $C9;
+  ld (hl+), a;
 
-  // Copy our dma code to zram
-  ld h, $FF
-  ld l, $80
-  
-  ld a, ST_A8_A
-  ld (hl+), a
+  ld a, $A0;
+  call $ff80;
 
-  ld a, $46
-  ld (hl+), a
-
-  ld a, JR_A8
-  ld (hl+), a
-
-  ld a, NEG_2
-  ld (hl+), a
-
-  // Start dma
-  ld a, DMA_SRC
-  jp $ff80
+  ld a, $00;
+  ld hl, $A000;
+  add (hl);
+  ld hl, $A09F;
+  add (hl);
+  ld b, a
+  ld a, $91
+  ldh ($40), a
+  ld a, b
+  test_finish_a $99

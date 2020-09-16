@@ -11,6 +11,6 @@ main:
   ld ($FE00), a
   lcd_on
 
-  nops 16
+  nops 59
   ld a, ($FE00)
-  test_finish_a $FF
+  test_finish_a $27

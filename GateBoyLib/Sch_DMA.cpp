@@ -23,7 +23,7 @@ void DmaRegisters::dump(Dumper& d) const {
   d("MYTE_DMA_DONE       %d\n", !MYTE_DMA_DONE.qn());
   d("LUVY_DMA_TRIG_d0    %d\n",  LUVY_DMA_TRIG_d0.qp());
   d("LENE_DMA_TRIG_d4    %d\n", !LENE_DMA_TRIG_d4.qn());
-  d("LOKY_DMA_LATCHp     %d\n",  LOKY_DMA_LATCHp);
+  d("LOKY_DMA_LATCHp     %d\n",  LOKY_DMA_LATCHp.qp());
   d("\n");
 }
 

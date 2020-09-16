@@ -4,10 +4,10 @@ main:
   ld a, $00;
   ldh ($40), a;
   ld a, $27;
-  ld hl, $E000;
+  ld hl, $9000;
   ld (hl), a;
   ld a, $72;
-  ld hl, $E09F;
+  ld hl, $909F;
   ld (hl), a;
 
   ld hl, $FF80;
@@ -28,13 +28,13 @@ main:
   ld a, $C9;
   ld (hl+), a;
 
-  ld a, $E0;
+  ld a, $90;
   call $ff80;
 
   ld a, $00;
-  ld hl, $E000;
+  ld hl, $9000;
   add (hl);
-  ld hl, $E09F;
+  ld hl, $909F;
   add (hl);
   ld b, a
   ld a, $91

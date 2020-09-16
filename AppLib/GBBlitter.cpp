@@ -332,7 +332,8 @@ static vec4 default_pal[5] = {
   {0.80, 0.80, 0.00, 1.0},
 };
 
-void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint8_t* vram) {
+void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram) {
+  (void)scale;
   update_ubo(vram_ubo, 8192, vram);
 
   {

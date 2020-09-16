@@ -79,7 +79,8 @@ struct Z80 {
 
 #pragma warning(pop)
 
-  void set_addr(uint16_t new_addr, int new_write);
+  void set_bus(uint16_t new_addr, int new_write);
+  void clear_bus();
 
   uint8_t get_reg(int mux);
   void set_reg(int mux, uint8_t data);

@@ -70,9 +70,8 @@ uint8_t metadata[] = {
   0x1a, 0x41,
 };
 
-void Assembler::link() {
-  /*
-  memset(rom_buf, 0, 1024*1024);
+void Assembler::link_to(uint8_t* rom_buf) {
+  memset(rom_buf, 0, 32768);
   memcpy(rom_buf + 0x100, metadata, sizeof(metadata));
   
   // copy blocks into rom_buf
@@ -80,10 +79,8 @@ void Assembler::link() {
   for (const auto& block : block_map) {
     uint16_t addr = block.first;
     const blob& code = block.second;
-
     memcpy(rom_buf + addr, code.data(), code.size());
   }
-  */
 }
 
 
@@ -129,7 +126,7 @@ void copy_line(const char*& source, char* dest) {
 
   // copy until eol or comment
   while (*source != 0 && *source != '\n' && *source != '/' && *source != ';') {
-    *dest++ = *source++;
+    *dest++ = (char)tolower(*source++);
   }
 
   // trim
@@ -281,7 +278,7 @@ bool match_op(const char* line, const char* op_string, int& arg) {
 
 void Assembler::assemble(const char* source) {
   while (*source) {
-    char line_buf[256];
+    char line_buf[256] = {0};
     char* line = line_buf;
     copy_line(source, line);
     if (*line == 0) continue;

@@ -9,7 +9,7 @@ using namespace Schematics;
 
 void ExtBus::dump(Dumper& d) const {
   d("---------- Ext Bus  ----------\n");
-  d("PIN CLK    : %d\n", PIN_EXT_CLK.c());
+  d("PIN CLK    : %c\n", PIN_EXT_CLK.c());
   d("PIN RDn    : %c\n", PIN_EXT_RDn.c());
   d("PIN WRn    : %c\n", PIN_EXT_WRn.c());
   d("PIN CSn    : %c\n", PIN_EXT_CSn.c());
@@ -53,13 +53,10 @@ void ExtBus::tock(SchematicTop& top) {
 
   {
 #if 0
-
-
     PIN_EXT_RDn = (PIN_CPU_WR && PIN_CPU_ADDR_EXTp);
     if (ADDR_VRAM) {
       PIN_EXT_RDn = PIN_CPU_RDp || PIN_CPU_WRp;
     }
-
 #endif
 
     /*p08.SORE*/ wire SORE_0000_7FFFp = not1(top.cpu_bus.BUS_CPU_A15.qp()); 
@@ -297,27 +294,27 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.SORE*/ wire SORE_0000_7FFFp  = not1(top.cpu_bus.BUS_CPU_A15.qp()); 
     /*p08.TEVY*/ wire TEVY_8000_9FFFn  = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), SORE_0000_7FFFp);
     /*p08.TEXO*/ wire TEXO_8000_9FFFn  = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), TEVY_8000_9FFFn);
-    /*p08.LAVO*/ wire LAVO_EPD_TO_CBDn = nand3(top.cpu_bus.PIN_CPU_RDp.qp(), TEXO_8000_9FFFn, top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
+    /*p08.LAVO*/ wire LAVO_HOLDn = nand3(top.cpu_bus.PIN_CPU_RDp.qp(), TEXO_8000_9FFFn, top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
 
     // Ext pin -> Ext latch
-    /*#p08.SOMA*/ SOMA_EXT_DATA_LATCH_D0n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D00p.qn());
-    /* p08.RONY*/ RONY_EXT_DATA_LATCH_D1n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D01p.qn());
-    /* p08.RAXY*/ RAXY_EXT_DATA_LATCH_D2n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D02p.qn());
-    /* p08.SELO*/ SELO_EXT_DATA_LATCH_D3n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D03p.qn());
-    /* p08.SODY*/ SODY_EXT_DATA_LATCH_D4n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D04p.qn());
-    /* p08.SAGO*/ SAGO_EXT_DATA_LATCH_D5n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D05p.qn());
-    /* p08.RUPA*/ RUPA_EXT_DATA_LATCH_D6n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D06p.qn());
-    /* p08.SAZY*/ SAZY_EXT_DATA_LATCH_D7n.tp_latch(LAVO_EPD_TO_CBDn, PIN_EXT_D07p.qn());
+    /*#p08.SOMA*/ SOMA_EXT_DATA_LATCH_D0n.tp_latch(LAVO_HOLDn, PIN_EXT_D00p.qn());
+    /* p08.RONY*/ RONY_EXT_DATA_LATCH_D1n.tp_latch(LAVO_HOLDn, PIN_EXT_D01p.qn());
+    /* p08.RAXY*/ RAXY_EXT_DATA_LATCH_D2n.tp_latch(LAVO_HOLDn, PIN_EXT_D02p.qn());
+    /* p08.SELO*/ SELO_EXT_DATA_LATCH_D3n.tp_latch(LAVO_HOLDn, PIN_EXT_D03p.qn());
+    /* p08.SODY*/ SODY_EXT_DATA_LATCH_D4n.tp_latch(LAVO_HOLDn, PIN_EXT_D04p.qn());
+    /* p08.SAGO*/ SAGO_EXT_DATA_LATCH_D5n.tp_latch(LAVO_HOLDn, PIN_EXT_D05p.qn());
+    /* p08.RUPA*/ RUPA_EXT_DATA_LATCH_D6n.tp_latch(LAVO_HOLDn, PIN_EXT_D06p.qn());
+    /* p08.SAZY*/ SAZY_EXT_DATA_LATCH_D7n.tp_latch(LAVO_HOLDn, PIN_EXT_D07p.qn());
 
     // Ext latch -> int bus
-    /*#p08.RYMA*/ top.cpu_bus.BUS_CPU_D0p.tri_6nn(LAVO_EPD_TO_CBDn, SOMA_EXT_DATA_LATCH_D0n.qp());
-    /* p08.RUVO*/ top.cpu_bus.BUS_CPU_D1p.tri_6nn(LAVO_EPD_TO_CBDn, RONY_EXT_DATA_LATCH_D1n.qp());
-    /* p08.RYKO*/ top.cpu_bus.BUS_CPU_D2p.tri_6nn(LAVO_EPD_TO_CBDn, RAXY_EXT_DATA_LATCH_D2n.qp());
-    /* p08.TAVO*/ top.cpu_bus.BUS_CPU_D3p.tri_6nn(LAVO_EPD_TO_CBDn, SELO_EXT_DATA_LATCH_D3n.qp());
-    /* p08.TEPE*/ top.cpu_bus.BUS_CPU_D4p.tri_6nn(LAVO_EPD_TO_CBDn, SODY_EXT_DATA_LATCH_D4n.qp());
-    /* p08.SAFO*/ top.cpu_bus.BUS_CPU_D5p.tri_6nn(LAVO_EPD_TO_CBDn, SAGO_EXT_DATA_LATCH_D5n.qp());
-    /* p08.SEVU*/ top.cpu_bus.BUS_CPU_D6p.tri_6nn(LAVO_EPD_TO_CBDn, RUPA_EXT_DATA_LATCH_D6n.qp());
-    /* p08.TAJU*/ top.cpu_bus.BUS_CPU_D7p.tri_6nn(LAVO_EPD_TO_CBDn, SAZY_EXT_DATA_LATCH_D7n.qp());
+    /*#p08.RYMA*/ top.cpu_bus.BUS_CPU_D0p.tri_6nn(LAVO_HOLDn, SOMA_EXT_DATA_LATCH_D0n.qp());
+    /* p08.RUVO*/ top.cpu_bus.BUS_CPU_D1p.tri_6nn(LAVO_HOLDn, RONY_EXT_DATA_LATCH_D1n.qp());
+    /* p08.RYKO*/ top.cpu_bus.BUS_CPU_D2p.tri_6nn(LAVO_HOLDn, RAXY_EXT_DATA_LATCH_D2n.qp());
+    /* p08.TAVO*/ top.cpu_bus.BUS_CPU_D3p.tri_6nn(LAVO_HOLDn, SELO_EXT_DATA_LATCH_D3n.qp());
+    /* p08.TEPE*/ top.cpu_bus.BUS_CPU_D4p.tri_6nn(LAVO_HOLDn, SODY_EXT_DATA_LATCH_D4n.qp());
+    /* p08.SAFO*/ top.cpu_bus.BUS_CPU_D5p.tri_6nn(LAVO_HOLDn, SAGO_EXT_DATA_LATCH_D5n.qp());
+    /* p08.SEVU*/ top.cpu_bus.BUS_CPU_D6p.tri_6nn(LAVO_HOLDn, RUPA_EXT_DATA_LATCH_D6n.qp());
+    /* p08.TAJU*/ top.cpu_bus.BUS_CPU_D7p.tri_6nn(LAVO_HOLDn, SAZY_EXT_DATA_LATCH_D7n.qp());
   }
 }
 

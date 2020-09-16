@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreLib/Assembler.h"
 #include "CoreLib/StateManager2.h"
 
 #include "AppLib/App.h"
@@ -72,4 +73,6 @@ private:
   int overlay_tex;
 
   int ram_tex;
+
+  Assembler assembler;
 };

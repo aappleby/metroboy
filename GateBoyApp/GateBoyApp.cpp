@@ -17,6 +17,8 @@
 #include <SDL2/SDL.h>
 #endif
 
+#include <stdarg.h>
+
 using namespace Schematics;
 
 //-----------------------------------------------------------------------------
@@ -69,11 +71,11 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
+  auto& gb = *state_manager.state();
+  
   // regenerate post-bootrom dump
   /*
   {
-    state_manager.reset();
-    auto& gb = *state_manager.state();
     gb.reset_to_bootrom();
     load_blob("roms/tetris.gb", gb.cart_rom, 32768);
     gb.sys_cart_loaded = 1;
@@ -83,26 +85,90 @@ void GateBoyApp::app_init() {
     }
   }
   */
+  
+#if 0
+  // run tiny app
+  if (1) {
+    gb.reset_post_bootrom();
+    //gb.dbg_write(0xFF40, 0);
 
-  state_manager.reset();
-  state_manager.state()->reset_post_bootrom();
-  load_rom("microtests/build/dmg/timer_int_inc_sled.gb");
+    /*
+    const char* app = R"(
+    0150:
+      ld a, $73
+      ld hl, $8000
+      ld (hl), a
+      ld hl, $809F
+      ld (hl), a
+      ld hl, $FF80
+      ld a, $E0
+      ld (hl+), a
+      ld a, $46
+      ld (hl+), a
+      ld a, $18
+      ld (hl+), a
+      ld a, $FE
+      ld (hl+), a
+      ld a, $80
+      jp $ff80
+    )";
+    */
 
-  /*
-  for (int i = 0; i < 8192; i++) {
-    auto gb = state_manager.state();
-    gb->vid_ram[i] = (uint8_t)rand();
+    std::string app;
+    app += "0150:\n";
+
+    app += "ld a, $00\n";
+    app += "ldh ($40), a\n";
+    app += "ld a, $73\n";
+    app += "ld hl, $8000\n";
+    app += "ld (hl), a\n";
+    app += "ld hl, $809F\n";
+    app += "ld (hl), a\n";
+
+    app += "ld hl, $FF80\n";
+    app += "ld a, $E0\n"; app += "ld (hl+), a\n";
+    app += "ld a, $46\n"; app += "ld (hl+), a\n";
+    app += "ld a, $3E\n"; app += "ld (hl+), a\n";
+    app += "ld a, $28\n"; app += "ld (hl+), a\n";
+    app += "ld a, $3D\n"; app += "ld (hl+), a\n";
+    app += "ld a, $20\n"; app += "ld (hl+), a\n";
+    app += "ld a, $FD\n"; app += "ld (hl+), a\n";
+    app += "ld a, $C9\n"; app += "ld (hl+), a\n";
+    
+    app += "ld a, $80\n";
+    app += "call $ff80\n";
+
+    app += "ld a, $00\n";
+    app += "ld hl, $8000\n";
+    app += "add (hl)\n";
+    app += "jr -2\n";
+
+    /*
+    const char* app = R"(
+    0150:
+      ld a, $55
+      ld hl, $0150
+      ld a, (hl)
+      jr -3
+    )";
+    */
+
+    Assembler as;
+    as.assemble(app.c_str());
+    as.link_to(gb.cart_rom);
+    gb.sys_cart_loaded = 1;
   }
-  */
+#endif
+
+  // run rom
+  gb.reset_post_bootrom();
+  load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb");
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
 
-  /*
-  auto gb = state_manager.state();
-  gb->sys_cpu_en = 0;
-  gb->run(576);
-  gb->sys_cpu_en = 1;
-  */
+  gb.phase_total = 0;
+  gb.pass_count = 0;
+  gb.pass_total = 0;
 }
 
 //----------------------------------------
@@ -165,6 +231,8 @@ void GateBoyApp::app_update(double delta) {
     }
 
     if (event.type == SDL_DROPFILE) {
+      state_manager.reset();
+      state_manager.state()->reset_post_bootrom();
       load_rom(event.drop.file);
       SDL_free(event.drop.file);
     }
@@ -360,9 +428,6 @@ void GateBoyApp::save_flat_dump(const char* filename) {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  state_manager.reset();
-  state_manager.state()->reset_post_bootrom();
-
   auto gb = state_manager.state();
   size_t size = load_blob(filename, gb->cart_rom, 32768);
   gb->sys_cart_loaded = 1;
@@ -430,14 +495,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
+  /*
   wire CLK = gateboy->phase_total & 1;
-
   top.clk_reg.dump(dumper, CLK);
   top.joypad.dump(dumper);
   top.ser_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();
+  */
 
   top.cpu_bus.dump(dumper);
   top.ext_bus.dump(dumper);
@@ -463,82 +529,85 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper.clear();
 
   dumper("---------- DISASM ----------\n");
-  if (gateboy->top.bootrom.BOOT_BITn.qp()) {
+  {
     uint16_t pc = gateboy->cpu.op_addr;
-    Assembler a;
-    a.disassemble(gateboy->cart_rom, 32768,
-                  ADDR_CART_ROM_BEGIN, pc,
-                  30, dumper, false);
+    const uint8_t* code = nullptr;
+    uint16_t code_size = 0;
+    uint16_t code_base = 0;
+
+    if (!gateboy->top.bootrom.BOOT_BITn.qp()) {
+      code = DMG_ROM_bin;
+      code_size = 256;
+      code_base = ADDR_BOOT_ROM_BEGIN;
+    }
+    else if (pc >= 0x0000 && pc <= 0x7FFF) {
+      code = gateboy->cart_rom;
+      code_size = 32768;
+      code_base = ADDR_CART_ROM_BEGIN;
+    }
+    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
+      code = gateboy->zero_ram;
+      code_size = 127;
+      code_base = ADDR_ZEROPAGE_BEGIN;
+    }
+
+    assembler.disassemble(code, code_size, code_base, pc, 30, dumper, /*collapse_nops*/ false);
+    text_painter.render(view, dumper.s.c_str(), cursor, 0);
   }
-  else {
-    uint16_t pc = gateboy->cpu.op_addr;
-    Assembler a;
-    a.disassemble(DMG_ROM_bin, 256,
-                  ADDR_CART_ROM_BEGIN, pc,
-                  30, dumper, false);
-  }
-  text_painter.render(view, dumper.s.c_str(), cursor, 512 - 160);
-  cursor += col_width;
-  dumper.clear();
+
+  dump_painter.render(view, cursor, 416, 16, 16, gateboy->oam_ram);
+
+  //cursor += col_width;
+  //dumper.clear();
 
   //dump_painter.render(view, cursor, 512,      16, 16, DMG_ROM_bin);
-
-  //dump_painter.render(view, cursor, 512, 16, 16, gateboy->oam_ram);
   //dump_painter.render(view, cursor, 768, 16,  8, gateboy->zero_ram);
-
   //dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
-
-  gb_blitter.blit_screen(view, 1024 + 256, 32, 2, gateboy->framebuffer);
 
   //update_texture_u32(trace_tex, 912, 154, trace);
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
 
-  /*
-  $FFFF	Interrupt Enable Flag
-  $FF80-$FFFE	Zero Page - 127 bytes
-  $FF00-$FF7F	Hardware I/O Registers
-  $FEA0-$FEFF	Unusable Memory
-  $FE00-$FE9F	OAM - Object Attribute Memory
-  $E000-$FDFF	Echo RAM - Reserved, Do Not Use
-  $D000-$DFFF	Internal RAM - Bank 1-7 (switchable - CGB only)
-  $C000-$CFFF	Internal RAM - Bank 0 (fixed)
-
-  */
-
-  update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gateboy->cart_rom);
-  update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gateboy->vid_ram);
-  update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gateboy->cart_ram);
-  update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gateboy->ext_ram);
-  update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gateboy->oam_ram);
-  update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gateboy->zero_ram);
-
-  //void update_texture_u8(int tex, int dx, int dy, int dw, int dh, const uint8_t* pix) {
-  blitter.blit_mono(view, ram_tex, 256, 256,
-                    0, 0, 256, 256,
-                    1056, 736, 256, 256);
-
-
-  memset(overlay, 0, sizeof(overlay));
-
-  int fb_y = top.lcd_reg.get_ly();
-  if (fb_y >= 0 && fb_y < 144) {
-    for (int i = 0; i < 160; i++) {
-      overlay[i + fb_y * 160] = 0x33FFFF00;
-    }
-    int fb_x = top.pix_pipe.get_pix_count() - 8;
-    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-      overlay[fb_x + fb_y * 160] = 0x8000FFFF;
-    }
+  // Draw flat memory view
+  {
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gateboy->cart_rom);
+    update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gateboy->vid_ram);
+    update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gateboy->cart_ram);
+    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gateboy->ext_ram);
+    update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gateboy->oam_ram);
+    update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gateboy->zero_ram);
+    blitter.blit_mono(view, ram_tex, 256, 256,
+                      0, 0, 256, 256,
+                      (int)cursor, 640, 256, 256);
   }
 
-  update_texture_u32(overlay_tex, 160, 144, overlay);
-  blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
+  // Draw screen overlay
+  {
+    memset(overlay, 0, sizeof(overlay));
 
-  gb_blitter.blit_tiles (view, 1632, 32,     gateboy->vid_ram);
-  gb_blitter.blit_map   (view, 1344, 448, 1, gateboy->vid_ram, 0, 0);
-  gb_blitter.blit_map   (view, 1632, 448, 1, gateboy->vid_ram, 0, 1);
-  gb_blitter.blit_map   (view, 1344, 736, 1, gateboy->vid_ram, 1, 0);
-  gb_blitter.blit_map   (view, 1632, 736, 1, gateboy->vid_ram, 1, 1);
+    int fb_y = top.lcd_reg.get_ly();
+    if (fb_y >= 0 && fb_y < 144) {
+      for (int i = 0; i < 160; i++) {
+        overlay[i + fb_y * 160] = 0x33FFFF00;
+      }
+      int fb_x = top.pix_pipe.get_pix_count() - 8;
+      if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
+        overlay[fb_x + fb_y * 160] = 0x8000FFFF;
+      }
+    }
+
+    update_texture_u32(overlay_tex, 160, 144, overlay);
+    blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
+  }
+
+  // Draw screen and vid ram contents
+  if (1) {
+    gb_blitter.blit_screen(view, 1280, 32,  2, gateboy->framebuffer);
+    gb_blitter.blit_tiles (view, 1632, 32,  1, gateboy->vid_ram);
+    gb_blitter.blit_map   (view, 1344, 448, 1, gateboy->vid_ram, 0, 0);
+    gb_blitter.blit_map   (view, 1632, 448, 1, gateboy->vid_ram, 0, 1);
+    gb_blitter.blit_map   (view, 1344, 736, 1, gateboy->vid_ram, 1, 0);
+    gb_blitter.blit_map   (view, 1632, 736, 1, gateboy->vid_ram, 1, 1);
+  }
 }
 
 //-----------------------------------------------------------------------------

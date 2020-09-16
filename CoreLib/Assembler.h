@@ -34,7 +34,7 @@ struct Assembler {
     block_map.clear();
   }
 
-  void link();
+  void link_to(uint8_t* rom_buf);
   void write_source();
 
   //----------

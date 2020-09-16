@@ -5,6 +5,22 @@
 
 using namespace Schematics;
 
+uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
+  /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp.qp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
+  /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGp.qp(), top.ACYL_SCANNINGp); // die NOR
+  uint8_t stat = (uint8_t)pack_p(
+    !SADU_STAT_MODE0n,
+    !XATY_STAT_MODE1n,
+    RUPO_LYC_MATCH_LATCHn.qn(),
+    ROXE_STAT_HBI_ENn.qn(),
+    RUFO_STAT_VBI_ENn.qn(),
+    REFE_STAT_OAI_ENn.qn(),
+    RUGU_STAT_LYI_ENn.qn(),
+    1
+  );
+  return stat;
+}
+
 void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("---------- Pix Pipe ----------\n");
 

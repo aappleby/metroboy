@@ -188,17 +188,24 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tock_ext_bus(wire sys_cart_loaded, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
+void SchematicTop::tock_ext_bus(wire RST, wire sys_cart_loaded, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
+  if (RST) return;
+
   uint16_t ext_addr = ext_bus.get_pin_addr();
 
   // ROM read
-  if (sys_cart_loaded) {
+  {
     uint16_t rom_addr = ext_addr & 0x7FFF;
     wire OEn = ext_bus.PIN_EXT_RDn.qp();
     wire CEn = ext_bus.PIN_EXT_A15p.qp();
 
     if (!CEn && !OEn) {
-      ext_bus.set_pin_data(cart_rom[rom_addr]);
+      if (sys_cart_loaded) {
+        ext_bus.set_pin_data(cart_rom[rom_addr]);
+      }
+      else {
+        printf("no cart loaded!\n");
+      }
     }
   }
 
@@ -302,6 +309,8 @@ void SchematicTop::tock_ext_bus(wire sys_cart_loaded, uint8_t* cart_rom, uint8_t
 //-----------------------------------------------------------------------------
 
 void SchematicTop::tock_vram_bus(wire RST, uint8_t* vid_ram) {
+  if (RST) return;
+
   int vram_addr = vram_bus.get_pin_addr();
   uint8_t& vram_data = vid_ram[vram_addr];
 
@@ -324,7 +333,9 @@ void SchematicTop::tock_vram_bus(wire RST, uint8_t* vid_ram) {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tock_oam_bus(uint8_t* oam_ram) {
+void SchematicTop::tock_oam_bus(wire RST, uint8_t* oam_ram) {
+  if (RST) return;
+
   uint16_t oam_addr = oam_bus.get_oam_pin_addr();
   uint8_t& oam_data_a = oam_ram[(oam_addr << 1) + 0];
   uint8_t& oam_data_b = oam_ram[(oam_addr << 1) + 1];
@@ -340,7 +351,9 @@ void SchematicTop::tock_oam_bus(uint8_t* oam_ram) {
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tock_zram_bus(uint8_t* zero_ram) {
+void SchematicTop::tock_zram_bus(wire RST, uint8_t* zero_ram) {
+  if (RST) return;
+
   // ZRAM control signals are
 
   // top.clk_reg.PIN_CPU_BUKE_AxxxxxGH

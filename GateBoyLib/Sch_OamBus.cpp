@@ -13,14 +13,14 @@ void OamBus::dump(Dumper& d) const {
   d("PIN_WR_A   %c\n", PIN_OAM_WR_A.c());
   d("PIN_WR_B   %c\n", PIN_OAM_WR_B.c());
 
-  int oam_tri_addr = pack_p(BUS_OAM_A0n.c(), BUS_OAM_A1n.c(), BUS_OAM_A2n.c(), BUS_OAM_A3n.c(),
-                            BUS_OAM_A4n.c(), BUS_OAM_A5n.c(), BUS_OAM_A6n.c(), BUS_OAM_A7n.c());
+  int oam_tri_addr = pack_p(BUS_OAM_A0n.qn(), BUS_OAM_A1n.qn(), BUS_OAM_A2n.qn(), BUS_OAM_A3n.qn(),
+                            BUS_OAM_A4n.qn(), BUS_OAM_A5n.qn(), BUS_OAM_A6n.qn(), BUS_OAM_A7n.qn());
 
   d("OAM TRI ADDR   %03d %02x %c%c%c%c%c%c%c%c\n", 
     oam_tri_addr,
     oam_tri_addr,
-    BUS_OAM_A7n.c(), BUS_OAM_A6n.c(), BUS_OAM_A5n.c(), BUS_OAM_A4n.c(),
-    BUS_OAM_A3n.c(), BUS_OAM_A2n.c(), BUS_OAM_A1n.c(), BUS_OAM_A0n.c());
+    BUS_OAM_A7n.cn(), BUS_OAM_A6n.cn(), BUS_OAM_A5n.cn(), BUS_OAM_A4n.cn(),
+    BUS_OAM_A3n.cn(), BUS_OAM_A2n.cn(), BUS_OAM_A1n.cn(), BUS_OAM_A0n.cn());
 
   int oam_latch_data_a = pack_p(YDYV_OAM_LATCH_DA0n.c(), YCEB_OAM_LATCH_DA1n.c(), ZUCA_OAM_LATCH_DA2n.c(), WONE_OAM_LATCH_DA3n.c(),
                                 ZAXE_OAM_LATCH_DA4n.c(), XAFU_OAM_LATCH_DA5n.c(), YSES_OAM_LATCH_DA6n.c(), ZECA_OAM_LATCH_DA7n.c());
@@ -415,6 +415,11 @@ void OamBus::tock(SchematicTop& top) {
 
   // OBL -> CBD
   {
+#if 0
+    /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(BESU_SCANNINGp, pix_pipe.XYMU_RENDERINGp.qp());
+    /* p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(top.cpu_bus.SARO_FE00_FEFFp(), AJUJ_OAM_BUSYn); // def and
+#endif
+
     /* p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(top.cpu_bus.SARO_FE00_FEFFp(), top.AJUJ_OAM_BUSYn); // def and
     /* p28.GUKO*/ wire GUKO_OBL_TO_CBDp = and3(top.LEKO_CPU_RDp, AMAB_CPU_READ_OAMp, WAFO_OAM_A0n);
     /* p28.WUKU*/ wire WUKU_OBL_TO_CBDp = and3(top.LEKO_CPU_RDp, AMAB_CPU_READ_OAMp, GEKA_OAM_A0p);

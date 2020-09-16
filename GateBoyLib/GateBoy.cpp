@@ -112,20 +112,14 @@ void GateBoy::reset_post_bootrom() {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
   check_sentinel();
 
-  // FIXME
-  // LCD has to be at (98,0) before we start the tests, but for some reason
-  // right now our bootrom is putting us at (26,0) - run for an additional
-  // 72*8 = 576 phases with the CPU off to get back in sync.
-
-  sys_cpu_en = 0;
-  sys_cpu_en = 1;
-
-  // Similarly, the bootrom isn't putting us at the right point relative to
-  // DIV. If we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2 so
+  // The bootrom isn't putting us at the right point relative to DIV. 
+  // If we run bootrom w/o FAST_BOOT, at app start div is 0xDEC2 so
   // we're early by 0xC30 (3120) mcycles
 
   top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
 
+  top.tim_reg.force_set_tima(0x00);
+  
   top.IE_D0.force_state(REG_D0C0);
   top.IE_D1.force_state(REG_D0C0);
   top.IE_D2.force_state(REG_D0C0);
@@ -150,8 +144,8 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* CD */ next_phase(); /* ok */ 
   /* DE */ next_phase(); /* ok */
   /* EF */ next_phase(); /* ok */ 
-  /* FG */ next_phase(); /* ok */ uint8_t bus_data = top.cpu_bus.get_bus_data(); 
-  /* GH */ next_phase(); /* ok */ 
+  /* FG */ next_phase(); /* ok */
+  /* GH */ next_phase(); /* ok */ uint8_t bus_data = top.cpu_bus.get_bus_data();  
   /* HA */ next_phase(); /* xx */
   dbg_req = {0};
   return bus_data;
@@ -198,9 +192,6 @@ void GateBoy::next_phase() {
     if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
 
     uint8_t bus_data = top.cpu_bus.get_bus_data();
-
-    // tock_ack can't be on EF or FG, see lcdon_to_ly1_b - ly changes to 1 on fg
-    // and there's no clock edge going to the cpu on GH, so data must be latched on HA
 
     switch(old_phase) {
     /* AB */ case 0: cpu.tock_req(imask, intf, bus_data); break; // bus request _must_ change on AB, see trace
@@ -301,11 +292,17 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
       bus_req.read  = dbg_req.read;
       bus_req.write = dbg_req.write;
     }
-    else {
+    else if (sys_cpu_en) {
       bus_req.addr  = cpu.bus_req.addr;
       bus_req.data  = cpu.bus_req.data;
       bus_req.read  = cpu.bus_req.read;
       bus_req.write = cpu.bus_req.write;
+    }
+    else {
+      bus_req.addr  = 0;
+      bus_req.data  = 0;
+      bus_req.read  = 0;
+      bus_req.write = 0;
     }
 
     if (bus_req.read || bus_req.write) {
@@ -367,7 +364,12 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
       top.cpu_bus.BUS_CPU_A15.lock(0);
     }
 
-    top.cpu_bus.PIN_CPU_RDp.lock(1);
+    if (sys_cpu_en) {
+      top.cpu_bus.PIN_CPU_RDp.lock(1);
+    }
+    else {
+      top.cpu_bus.PIN_CPU_RDp.lock(0);
+    }
     top.cpu_bus.PIN_CPU_WRp.lock(0);
 
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
@@ -389,11 +391,12 @@ uint64_t GateBoy::next_pass(int old_phase, int new_phase) {
 
   //----------
 
-  top.tock_ext_bus(sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
+  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
   top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(zero_ram);
-  top.tock_oam_bus(oam_ram);
+  top.tock_zram_bus(sys_rst, zero_ram);
+  top.tock_oam_bus (sys_rst, oam_ram);
+
+  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
 
   RegBase::sim_running = false;
 

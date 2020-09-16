@@ -351,6 +351,7 @@ struct DFF9 : private RegBase {
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
+  using RegBase::force_state;
 
   inline wire q08() const { return qn(); }
   inline wire q09() const { return qp(); }
@@ -479,8 +480,8 @@ struct DFF17 : private RegBase {
 
 struct DFF20 {
   DFF20() {
-    stateA = REG_D0C1;
-    stateB = REG_D0C1;
+    stateA = REG_D0C0;
+    stateB = REG_D0C0;
     deltaA = DELTA_NONE;
     deltaB = DELTA_NONE;
   }
@@ -599,6 +600,7 @@ struct Bus : private RegBase {
   using RegBase::cn;
   using RegBase::lock;
   using RegBase::qp;
+  using RegBase::qn;
 
   inline void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
 

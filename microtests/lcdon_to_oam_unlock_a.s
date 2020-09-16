@@ -7,11 +7,10 @@ main:
   clear_stat
   clear_if
   lcd_off_unsafe
+  ld a, $27
+  ld ($FE00), a
   lcd_on
-  nops 114
 
-  nops 104
-
+  nops 15
   ld a, ($FE00)
-
-  test_finish_a $55
+  test_finish_a $27

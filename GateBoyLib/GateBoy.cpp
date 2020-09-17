@@ -216,7 +216,76 @@ void GateBoy::next_pass() {
   }
 
   uint64_t pass_hash_old = pass_hash;
-  update_logic(pass_hash_old);
+
+  RegBase::sim_running = true;
+
+  //int old_phase = (phase_total + 0) & 7;
+  int new_phase = (phase_total + 1) & 7;
+
+  wire CLK = (new_phase & 1) & sys_clken;
+  top.joypad.set_buttons(sys_buttons);
+
+  //----------
+
+  RegBase::tick_running = true;
+  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  RegBase::tick_running = false;
+
+
+  if (pass_count == 0) {
+    if (DELTA_CD) {
+      bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
+      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
+    }
+  
+    if (DELTA_HA) {
+      if ((bus_req.addr & 0xFF00) != 0xFF00) {
+        top.cpu_bus.BUS_CPU_A08.lock(0);
+        top.cpu_bus.BUS_CPU_A09.lock(0);
+        top.cpu_bus.BUS_CPU_A10.lock(0);
+        top.cpu_bus.BUS_CPU_A11.lock(0);
+        top.cpu_bus.BUS_CPU_A12.lock(0);
+        top.cpu_bus.BUS_CPU_A13.lock(0);
+        top.cpu_bus.BUS_CPU_A14.lock(0);
+        top.cpu_bus.BUS_CPU_A15.lock(0);
+      }
+
+      if (sys_cpu_en) {
+        top.cpu_bus.PIN_CPU_RDp.lock(1);
+      }
+      else {
+        top.cpu_bus.PIN_CPU_RDp.lock(0);
+      }
+      top.cpu_bus.PIN_CPU_WRp.lock(0);
+
+      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
+    }
+  }
+
+
+
+  if (DELTA_DE | DELTA_EF || DELTA_FG || DELTA_GH) {
+    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  }
+  
+ 
+
+
+  RegBase::tock_running = true;
+  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
+  top.tock_vram_bus(sys_rst, vid_ram);
+  top.tock_zram_bus(sys_rst, zero_ram);
+  top.tock_oam_bus (sys_rst, oam_ram);
+  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
+  RegBase::tock_running = false;
+
+  pass_hash = HASH_INIT;
+  commit_and_hash(top, pass_hash);
+
+  //----------
+
+  RegBase::sim_running = false;
 
   if (DELTA_AB) {
     uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
@@ -341,90 +410,6 @@ void GateBoy::next_pass() {
     }
     CHECK_P(pass_count < 100);
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::update_logic(uint64_t pass_hash_old) {
-  (void)pass_hash_old;
-
-  RegBase::sim_running = true;
-
-  //int old_phase = (phase_total + 0) & 7;
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
-
-  if (DELTA_BC) {
-  }
-  
-  if (DELTA_CD) {
-    bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
-  }
-  
-  if (DELTA_DE) {
-    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  }
-  
-  if (DELTA_EF) {
-    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  }
-  
-  if (DELTA_FG) {
-    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  }
-  
-  if (DELTA_GH) {
-    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  }
-  
-  if (DELTA_HA) {
-    if ((bus_req.addr & 0xFF00) != 0xFF00) {
-      top.cpu_bus.BUS_CPU_A08.lock(0);
-      top.cpu_bus.BUS_CPU_A09.lock(0);
-      top.cpu_bus.BUS_CPU_A10.lock(0);
-      top.cpu_bus.BUS_CPU_A11.lock(0);
-      top.cpu_bus.BUS_CPU_A12.lock(0);
-      top.cpu_bus.BUS_CPU_A13.lock(0);
-      top.cpu_bus.BUS_CPU_A14.lock(0);
-      top.cpu_bus.BUS_CPU_A15.lock(0);
-    }
-
-    if (sys_cpu_en) {
-      top.cpu_bus.PIN_CPU_RDp.lock(1);
-    }
-    else {
-      top.cpu_bus.PIN_CPU_RDp.lock(0);
-    }
-    top.cpu_bus.PIN_CPU_WRp.lock(0);
-
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-  }
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
-
-  //----------
-
-  RegBase::sim_running = false;
 }
 
 //-----------------------------------------------------------------------------

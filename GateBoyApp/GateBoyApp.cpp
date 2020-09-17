@@ -38,8 +38,11 @@ GateBoyApp::GateBoyApp() {
     gateboy->next_pass();
   };
   auto top_unstep = [this](GateBoy* gateboy) {
+    (void)gateboy;
+    /*
     // Run a logic pass after unstep to update our probes
     gateboy->update_logic();
+    */
   };
   state_manager.init(top_step, top_unstep);
 }

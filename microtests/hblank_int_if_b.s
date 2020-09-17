@@ -1,20 +1,13 @@
-; pass - ags, dmg
-
 .include "header.inc"
 
 main:
-  di
 
   lcd_off_unsafe
-  lcd_on
-
-  nops 114
-
-  nops 46
-
-  set_ie_stat
-  clear_if
   set_stat_int_hblank
 
-  ldh a, (IF)
-  test_finish_a $E2
+  clear_if
+
+
+  lcd_on
+  nops 60
+  test_finish_if $E2

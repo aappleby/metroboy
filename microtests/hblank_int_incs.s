@@ -1,26 +1,16 @@
-; pass - ags, dmg
-
 .include "header.inc"
 
 main:
-  di
-  clear_if
 
   lcd_off_unsafe
-  lcd_on
-
-  nops 114
-
   set_stat_int_hblank
   set_ie_stat
+  clear_if
   ei
 
-  xor a
-.repeat 200
-  inc a
-.endr
-
+  lcd_on
+  incs 200
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_a 50
+  test_finish_a $CF

@@ -226,6 +226,12 @@
 .endr
 .endm
 
+.macro incs ARGS count
+.repeat count
+  inc a
+.endr
+.endm
+
 ;-------------------------------------------------------------------------------
 ; Long delay w/ loop, clobbers ABC
 

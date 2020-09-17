@@ -9,12 +9,9 @@ main:
   ei
 
   lcd_on
-
   halt
-  nop
-
   test_fail
 
 .org STAT_INT_VECTOR
-  ldh a, (DIV)
-  test_finish_a $AE
+  test_finish_div $AE
+  

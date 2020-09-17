@@ -921,11 +921,9 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p21.REFE*/ REFE_STAT_OAI_ENn.tock(RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.BUS_CPU_D5p.qp());
     /*p21.RUGU*/ RUGU_STAT_LYI_ENn.tock(RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.BUS_CPU_D6p.qp());
 
-    /*
     if (top.lcd_reg.PARU_VBLANKp_d4 && WODU_HBLANKp && SEPA_FF41_WRp) {
       printf("Stat write during hblank/vblank\n");
     }
-    */
     
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not1(SEPA_FF41_WRp);
     /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn, RYJU_FF41_WRn);

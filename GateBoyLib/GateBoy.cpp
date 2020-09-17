@@ -183,6 +183,10 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 //------------------------------------------------------------------------------
 
 void GateBoy::next_phase() {
+
+  //----------
+  // Run logic passes
+
   do {
     next_pass();
   } while(pass_count);
@@ -211,9 +215,7 @@ void GateBoy::next_pass() {
   if (pass_count == 0) {
     if (sys_cpu_en) {
       if (DELTA_AB) cpu.tock_req(imask, intf, bus_data); // bus request _must_ change on AB, see trace
-      if (DELTA_HA) {
-        cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
-      }
+      if (DELTA_HA) cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
     }
   }
 
@@ -222,7 +224,7 @@ void GateBoy::next_pass() {
   RegBase::sim_running = false;
   pass_count++;
 
-  if (dbg_req.read) {
+  if (DELTA_GH && dbg_req.read) {
     dbg_req.data = top.cpu_bus.get_bus_data();
   }
 

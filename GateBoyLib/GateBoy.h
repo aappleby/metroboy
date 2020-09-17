@@ -62,7 +62,7 @@ struct GateBoy {
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
   int32_t  pass_total = 0;
-  uint64_t phase_hash = HASH_INIT;
+  uint64_t pass_hash = HASH_INIT;
   uint64_t total_hash = HASH_INIT;
 
   int32_t  sys_rst = 1;

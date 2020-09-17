@@ -95,12 +95,15 @@ void GateBoy::reset_to_bootrom() {
 
   // Done, initialize bus with whatever the CPU wants.
   cpu.reset(0x0000);
-  cpu.get_bus_req(bus_req);
+  sys_cpu_en = true;
 
+  //cpu.get_bus_req(bus_req);
+
+  /*
   // and skip AB so we can latch the first opcode before the cpu starts running
   next_phase();
-  sys_cpu_en = true;
   run(7);
+  */
 
   //top.tim_reg.
 
@@ -208,13 +211,10 @@ void GateBoy::next_phase() {
   //----------
   // Run logic passes
 
-  uint64_t hash_regs_old  = HASH_INIT;
-  uint64_t hash_regs_new  = HASH_INIT;
-
   for (pass_count = 1; pass_count < 100; pass_count++) {
-    hash_regs_old = hash_regs_new;
-    hash_regs_new  = next_pass(old_phase, new_phase);
-    if (hash_regs_new == hash_regs_old) break;
+    uint64_t pass_hash_new = next_pass(old_phase, new_phase);
+    if (pass_hash == pass_hash_new) break;
+    pass_hash = pass_hash_new;
     if (pass_count > 90) {
       printf("!!!STUCK!!!\n");
     }
@@ -264,8 +264,8 @@ void GateBoy::next_phase() {
   ack_joypad = 0;
 
   phase_total++;
-  phase_hash = hash_regs_old;
-  combine_hash(total_hash, phase_hash);
+  pass_hash = pass_hash;
+  combine_hash(total_hash, pass_hash);
 }
 
 //-----------------------------------------------------------------------------

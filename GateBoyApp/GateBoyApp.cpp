@@ -74,7 +74,6 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
-  /*
   {
     gb.reset_to_bootrom();
     load_blob("roms/tetris.gb", gb.cart_rom, 32768);
@@ -84,7 +83,6 @@ void GateBoyApp::app_init() {
       gb.vid_ram[i] = (uint8_t)rand();
     }
   }
-  */
   
 #if 0
   // run tiny app
@@ -161,10 +159,11 @@ void GateBoyApp::app_init() {
 #endif
 
   // run rom
-  gb.reset_post_bootrom();
-  load_rom("microtests/build/dmg/oam_int_if_level_b.gb");
+  //gb.reset_post_bootrom();
+  //load_rom("microtests/build/dmg/oam_int_if_level_b.gb");
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
+  //gb.sys_cpu_en = false;
 
   gb.phase_total = 0;
   gb.pass_count = 0;
@@ -474,7 +473,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Pass count  %8d\n",    gateboy->pass_count);
   dumper("Pass total  %8d\n",    gateboy->pass_total);
   dumper("Pass avg    %4.2f\n",  float(gateboy->pass_total) / float(gateboy->phase_total));
-  dumper("Phase hash  %016llx\n", gateboy->phase_hash);
+  dumper("Phase hash  %016llx\n", gateboy->pass_hash);
   dumper("Total hash  %016llx\n", gateboy->total_hash);
   dumper("BGB cycle   0x%08x\n",  gateboy->phase_total / 4);
 

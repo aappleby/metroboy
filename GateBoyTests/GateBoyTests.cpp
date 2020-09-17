@@ -572,7 +572,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x7c74fe301ae6d5f7, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xc6ddc6547dfe21fc, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -1651,7 +1651,7 @@ void GateBoyTests::test_reset_sequence() {
   fuzz_reset_sequence(gateboy2);
   LOG("\n");
 
-  if (gateboy1.phase_hash != gateboy2.phase_hash) {
+  if (gateboy1.pass_hash != gateboy2.pass_hash) {
     LOG("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
   }
   else {
@@ -1672,7 +1672,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
 
   gateboy.reset_to_bootrom();
 
-  LOG("Hash 1 after reset: 0x%016llx\n", gateboy.phase_hash);
+  LOG("Hash 1 after reset: 0x%016llx\n", gateboy.pass_hash);
 
 #if _DEBUG
   const int iter_count = 16;
@@ -1738,7 +1738,7 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   double pass_rate_sigma    = sqrt(pass_rate_variance);
   LOG("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
 
-  LOG("Commit phase_hash   0x%016llx\n", gateboy.phase_hash);
+  LOG("Commit phase_hash   0x%016llx\n", gateboy.pass_hash);
   LOG("Combined phase_hash 0x%016llx\n", gateboy.total_hash);
 }
 

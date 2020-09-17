@@ -38,11 +38,8 @@ GateBoyApp::GateBoyApp() {
     gateboy->next_pass();
   };
   auto top_unstep = [this](GateBoy* gateboy) {
-    (void)gateboy;
-    /*
     // Run a logic pass after unstep to update our probes
     gateboy->update_logic();
-    */
   };
   state_manager.init(top_step, top_unstep);
 }
@@ -238,10 +235,6 @@ void GateBoyApp::app_update(double delta) {
     }
   }
 
-  if (runmode == RUN_FAST) {
-    step_forward = 114 * 8 * 8;
-  }
-
   if (toggle_cpu) {
     auto gb = state_manager.state();
     if (gb->sys_cpu_en) {
@@ -280,7 +273,12 @@ void GateBoyApp::app_update(double delta) {
     save_dump = false;
   }
 
-  if (step_forward) {
+  if (runmode == RUN_FAST) {
+    state_manager.step(0);
+    auto gb = state_manager.state();
+    gb->run(114 * 8 * 8);
+  }
+  else if (step_forward) {
     state_manager.step(step_forward);
     step_forward = 0;
   }

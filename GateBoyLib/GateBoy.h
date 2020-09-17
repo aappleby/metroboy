@@ -67,9 +67,11 @@ struct GateBoy {
   uint8_t  zero_ram[128];
   uint8_t  framebuffer[160*144];
 
-  Req      bus_req = {0};
+  Req      cpu_req = {0};
   Req      dbg_req = {0};
+  Req      bus_req = {0};
 
+  uint8_t  sim_stable = false;
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
   int32_t  pass_total = 0;
@@ -85,13 +87,6 @@ struct GateBoy {
   int32_t  sys_cpu_en = 0;
   uint8_t  sys_buttons = 0;
   uint8_t  sys_cart_loaded = 0;
-
-  // FIXME delete these
-  int32_t  ack_vblank = 0;
-  int32_t  ack_stat = 0;
-  int32_t  ack_timer = 0;
-  int32_t  ack_serial = 0;
-  int32_t  ack_joypad = 0;
 
   uint64_t sentinel2 = 0xF00DCAFEBAADC0DE;
 };

@@ -103,16 +103,6 @@ void GateBoy::reset_to_bootrom() {
   cpu.reset(0x0000);
   sys_cpu_en = true;
 
-  //cpu.get_bus_req(bus_req);
-
-  /*
-  // and skip AB so we can latch the first opcode before the cpu starts running
-  next_phase();
-  run(7);
-  */
-
-  //top.tim_reg.
-
   pass_count = 0;
 }
 
@@ -195,16 +185,15 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 //------------------------------------------------------------------------------
 
 void GateBoy::next_phase() {
+  bool stable = false;
   do {
-    next_pass();
-  } while(pass_count);
+    stable = next_pass();
+  } while(!stable);
 }
 
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass() {
-
-  uint64_t pass_hash_old = pass_hash;
 
   RegBase::sim_running = true;
 
@@ -223,9 +212,9 @@ bool GateBoy::next_pass() {
   }
 
   RegBase::sim_running = false;
+  pass_count++;
 
-  if (pass_hash != pass_hash_old) {
-    pass_count++;
+  if (!stable) {
     if (pass_count > 90) {
       printf("!!!STUCK!!!\n");
     }
@@ -264,7 +253,7 @@ bool GateBoy::next_pass() {
       framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
     }
 
-    pass_total += pass_count + 1;
+    pass_total += pass_count;
     pass_count = 0;
     phase_total++;
     combine_hash(total_hash, pass_hash);
@@ -347,16 +336,9 @@ bool GateBoy::next_pass_ab() {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_bc() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
-
   bool stable = update_logic();
 
-  //----------
-
-  if (pass_hash == pass_hash_old) {
+  if (stable) {
     uint8_t bus_data = top.cpu_bus.get_bus_data();
     if (DELTA_GH && sys_cpu_en) {
       uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
@@ -408,15 +390,11 @@ bool GateBoy::next_pass_fg() {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_gh() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
 
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
   bool stable = update_logic();
 
-  if (pass_hash == pass_hash_old) {
+  if (stable) {
     uint8_t bus_data = top.cpu_bus.get_bus_data();
     if (sys_cpu_en) {
       uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
@@ -459,7 +437,10 @@ bool GateBoy::next_pass_gh() {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_ha() {
-  return update_logic();
+
+  bool stable = update_logic();
+
+  return stable;
 }
 
 //-----------------------------------------------------------------------------

@@ -10,7 +10,7 @@ struct Z80 {
   uint8_t get_int_ack() const { return int_ack; }
   void    get_bus_req(Req& r) const;
 
-  void    tock_req(uint8_t imask_, uint8_t intf_, uint8_t bus_data); // bus request changes
+  void    tock_req(uint8_t imask_, uint8_t intf_); // bus request changes
   void    tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data); // bus data latches
 
   void    dump(Dumper& d) const;

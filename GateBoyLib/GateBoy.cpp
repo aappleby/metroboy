@@ -207,29 +207,31 @@ void GateBoy::next_pass() {
   if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
   if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
 
-  uint8_t bus_data = top.cpu_bus.get_bus_data();
-
   //----------
   // Update CPU
 
-  if (pass_count == 0 && DELTA_AB && sys_cpu_en) cpu.tock_req(imask, intf, bus_data); // bus request _must_ change on AB, see trace
+  if (pass_count == 0) {
+    RegBase::bus_collision = false;
+    RegBase::bus_floating = false;
+  }
+
+  if (pass_count == 0 && DELTA_AB && sys_cpu_en) cpu.tock_req(imask, intf); // bus request _must_ change on AB, see trace
 
   uint64_t pass_hash_old = pass_hash;
   update_logic();
-  RegBase::sim_running = false;
-  pass_count++;
 
   if (pass_hash == pass_hash_old) {
+    uint8_t bus_data = top.cpu_bus.get_bus_data();
     if (DELTA_GH && sys_cpu_en) cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
     if (DELTA_GH && dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
 
     if (RegBase::bus_collision) {
-      printf("Bus collision!\n");
+      //printf("Bus collision!\n");
       RegBase::bus_collision = false;
     }
 
     if (RegBase::bus_floating) {
-      printf("Bus floating!\n");
+      //printf("Bus floating!\n");
       RegBase::bus_floating = false;
       //next_pass(old_phase, new_phase);
       //RegBase::bus_floating = false;
@@ -254,16 +256,18 @@ void GateBoy::next_pass() {
       framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
     }
 
-    pass_total += pass_count;
+    pass_total += pass_count + 1;
     pass_count = 0;
     phase_total++;
     combine_hash(total_hash, pass_hash);
-
   }
-  if (pass_count > 90) {
-    printf("!!!STUCK!!!\n");
+  else {
+    pass_count++;
+    if (pass_count > 90) {
+      printf("!!!STUCK!!!\n");
+    }
+    CHECK_P(pass_count < 100);
   }
-  CHECK_P(pass_count < 100);
 }
 
 //-----------------------------------------------------------------------------
@@ -273,8 +277,6 @@ void GateBoy::update_logic() {
   int new_phase = (phase_total + 1) & 7;
 
   RegBase::sim_running = true;
-  RegBase::bus_collision = false;
-  RegBase::bus_floating = false;
 
   wire CLK = (new_phase & 1) & sys_clken;
   top.joypad.set_buttons(sys_buttons);
@@ -401,6 +403,7 @@ void GateBoy::update_logic() {
 
   pass_hash = HASH_INIT;
   commit_and_hash(top, pass_hash);
+  RegBase::sim_running = false;
 }
 
 //-----------------------------------------------------------------------------

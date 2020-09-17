@@ -469,11 +469,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   else {
     dumper("State size          %d M\n",      state_size / (1024 * 1024));
   }
-  dumper("Phase count %8d\n",    gateboy->phase_total);
-  dumper("Pass count  %8d\n",    gateboy->pass_count);
-  dumper("Pass total  %8d\n",    gateboy->pass_total);
-  dumper("Pass avg    %4.2f\n",  float(gateboy->pass_total) / float(gateboy->phase_total));
-  dumper("Phase hash  %016llx\n", gateboy->pass_hash);
+  dumper("Phase count %8d\n",     gateboy->phase_total);
+  dumper("Pass count  %8d\n",     gateboy->pass_count);
+  dumper("Pass total  %8d\n",     gateboy->pass_total);
+  dumper("Pass avg    %4.2f\n",   float(gateboy->pass_total) / float(gateboy->phase_total));
+  dumper("Pass hash   %016llx\n", gateboy->pass_hash);
   dumper("Total hash  %016llx\n", gateboy->total_hash);
   dumper("BGB cycle   0x%08x\n",  gateboy->phase_total / 4);
 

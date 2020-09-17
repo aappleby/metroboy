@@ -15,7 +15,7 @@ struct GateBoy {
   void     dbg_write(int addr, uint8_t data);
 
   void     next_phase();
-  uint64_t next_pass(int old_phase, int new_phase);
+  void     next_pass();
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();
@@ -75,6 +75,7 @@ struct GateBoy {
   uint8_t  sys_buttons = 0;
   uint8_t  sys_cart_loaded = 0;
 
+  // FIXME delete these
   int32_t  ack_vblank = 0;
   int32_t  ack_stat = 0;
   int32_t  ack_timer = 0;

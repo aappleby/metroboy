@@ -16,6 +16,16 @@ struct GateBoy {
 
   void next_phase();
   void next_pass();
+
+  void next_pass_ab();
+  void next_pass_bc();
+  void next_pass_cd();
+  void next_pass_de();
+  void next_pass_ef();
+  void next_pass_fg();
+  void next_pass_gh();
+  void next_pass_ha();
+
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();

@@ -212,23 +212,16 @@ void GateBoy::next_pass() {
   //----------
   // Update CPU
 
-  if (pass_count == 0) {
-    if (sys_cpu_en) {
-      if (DELTA_AB) cpu.tock_req(imask, intf, bus_data); // bus request _must_ change on AB, see trace
-      if (DELTA_HA) cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
-    }
-  }
+  if (pass_count == 0 && DELTA_AB && sys_cpu_en) cpu.tock_req(imask, intf, bus_data); // bus request _must_ change on AB, see trace
 
   uint64_t pass_hash_old = pass_hash;
   update_logic();
   RegBase::sim_running = false;
   pass_count++;
 
-  if (DELTA_GH && dbg_req.read) {
-    dbg_req.data = top.cpu_bus.get_bus_data();
-  }
-
   if (pass_hash == pass_hash_old) {
+    if (DELTA_GH && sys_cpu_en) cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
+    if (DELTA_GH && dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
 
     if (RegBase::bus_collision) {
       printf("Bus collision!\n");

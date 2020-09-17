@@ -202,22 +202,24 @@ void GateBoy::next_phase() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::next_pass() {
+bool GateBoy::next_pass() {
 
   uint64_t pass_hash_old = pass_hash;
 
   RegBase::sim_running = true;
 
+  bool stable = false;
+
   int old_phase = (phase_total + 0) & 7;
   switch(old_phase) {
-  case 0: next_pass_ab(); break;
-  case 1: next_pass_bc(); break;
-  case 2: next_pass_cd(); break;
-  case 3: next_pass_de(); break;
-  case 4: next_pass_ef(); break;
-  case 5: next_pass_fg(); break;
-  case 6: next_pass_gh(); break;
-  case 7: next_pass_ha(); break;
+  case 0: stable = next_pass_ab(); break;
+  case 1: stable = next_pass_bc(); break;
+  case 2: stable = next_pass_cd(); break;
+  case 3: stable = next_pass_de(); break;
+  case 4: stable = next_pass_ef(); break;
+  case 5: stable = next_pass_fg(); break;
+  case 6: stable = next_pass_gh(); break;
+  case 7: stable = next_pass_ha(); break;
   }
 
   RegBase::sim_running = false;
@@ -261,18 +263,20 @@ void GateBoy::next_pass() {
       int p1 = top.PIN_LCD_DATA1.qp();
       framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
     }
+
+    pass_total += pass_count + 1;
+    pass_count = 0;
+    phase_total++;
+    combine_hash(total_hash, pass_hash);
   }
+
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::next_pass_ab() {
-  //----------
-  // Update CPU
+bool GateBoy::next_pass_ab() {
 
-  uint64_t pass_hash_old = pass_hash;
-
-  //----------
   if (pass_count == 0) {
     uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
     uint8_t intf = 0;
@@ -288,7 +292,7 @@ void GateBoy::next_pass_ab() {
     }
   }
 
-  update_logic();
+  bool stable = update_logic();
 
   //----------
 
@@ -337,25 +341,18 @@ void GateBoy::next_pass_ab() {
   bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
   top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
 
-  if (pass_hash == pass_hash_old) {
-
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-
-  }
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::next_pass_bc() {
+bool GateBoy::next_pass_bc() {
   //----------
   // Update CPU
 
   uint64_t pass_hash_old = pass_hash;
 
-  update_logic();
+  bool stable = update_logic();
 
   //----------
 
@@ -376,108 +373,48 @@ void GateBoy::next_pass_bc() {
 
     bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
-
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
   }
+
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::next_pass_cd() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
-
-  update_logic();
-
-  //----------
-
-  if (pass_hash == pass_hash_old) {
-
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
+bool GateBoy::next_pass_cd() {
+  return update_logic();
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::next_pass_de() {
+bool GateBoy::next_pass_de() {
+  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  return update_logic();
+}
+
+//-----------------------------------------------------------------------------
+
+bool GateBoy::next_pass_ef() {
+  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  return update_logic();
+}
+
+//-----------------------------------------------------------------------------
+
+bool GateBoy::next_pass_fg() {
+  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  return update_logic();
+}
+
+//-----------------------------------------------------------------------------
+
+bool GateBoy::next_pass_gh() {
   //----------
   // Update CPU
 
   uint64_t pass_hash_old = pass_hash;
 
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  update_logic();
-
-  //----------
-
-  if (pass_hash == pass_hash_old) {
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::next_pass_ef() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
-
-  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  update_logic();
-
-  //----------
-
-  if (pass_hash == pass_hash_old) {
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::next_pass_fg() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
-
-  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  update_logic();
-
-  //----------
-
-  if (pass_hash == pass_hash_old) {
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::next_pass_gh() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
-
-  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  update_logic();
+  bool stable = update_logic();
 
   if (pass_hash == pass_hash_old) {
     uint8_t bus_data = top.cpu_bus.get_bus_data();
@@ -514,37 +451,20 @@ void GateBoy::next_pass_gh() {
     top.cpu_bus.PIN_CPU_WRp.lock(0);
 
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
   }
+
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::next_pass_ha() {
-  //----------
-  // Update CPU
-
-  uint64_t pass_hash_old = pass_hash;
-
-  update_logic();
-
-  //----------
-
-  if (pass_hash == pass_hash_old) {
-    pass_total += pass_count + 1;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
+bool GateBoy::next_pass_ha() {
+  return update_logic();
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::update_logic() {
+bool GateBoy::update_logic() {
   int new_phase = (phase_total + 1) & 7;
 
   wire CLK = (new_phase & 1) & sys_clken;
@@ -564,6 +484,9 @@ void GateBoy::update_logic() {
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
   RegBase::tock_running = false;
 
+  uint64_t pass_hash_old = pass_hash;
   pass_hash = HASH_INIT;
   commit_and_hash(top, pass_hash);
+
+  return pass_hash_old == pass_hash;
 }

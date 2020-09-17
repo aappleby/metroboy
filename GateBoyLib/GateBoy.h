@@ -15,17 +15,17 @@ struct GateBoy {
   void     dbg_write(int addr, uint8_t data);
 
   void next_phase();
-  void next_pass();
+  bool next_pass();
 
-  void next_pass_ab();
-  void next_pass_bc();
-  void next_pass_cd();
-  void next_pass_de();
-  void next_pass_ef();
-  void next_pass_fg();
-  void next_pass_gh();
-  void next_pass_ha();
-  void update_logic();
+  bool next_pass_ab();
+  bool next_pass_bc();
+  bool next_pass_cd();
+  bool next_pass_de();
+  bool next_pass_ef();
+  bool next_pass_fg();
+  bool next_pass_gh();
+  bool next_pass_ha();
+  bool update_logic();
 
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {

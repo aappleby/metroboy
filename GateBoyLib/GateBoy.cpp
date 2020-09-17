@@ -194,7 +194,7 @@ void GateBoy::next_phase() {
 
 void GateBoy::next_pass() {
   int old_phase = (phase_total + 0) & 7;
-  int new_phase = (phase_total + 1) & 7;
+  //int new_phase = (phase_total + 1) & 7;
 
   if (pass_count == 0) {
     //----------
@@ -225,6 +225,59 @@ void GateBoy::next_pass() {
     }
   }
 
+  uint64_t pass_hash_old = pass_hash;
+  update_logic();
+  RegBase::sim_running = false;
+  pass_count++;
+
+  if (pass_hash == pass_hash_old) {
+    if (RegBase::bus_collision) {
+      printf("Bus collision!\n");
+      RegBase::bus_collision = false;
+    }
+
+    if (RegBase::bus_floating) {
+      printf("Bus floating!\n");
+      RegBase::bus_floating = false;
+      //next_pass(old_phase, new_phase);
+      //RegBase::bus_floating = false;
+    }
+
+    //----------
+    // Pixels _def_ latched on positive clock edge (neg edge inverted)
+
+    // clock phase is ~119.21 nsec (4.19304 mhz crystal)
+    // hsync seems consistently 3.495 - 3.500 us (29 phases?)
+    // hsync to bogus clock pulse 1.465 us
+    // data changes on rising edge of lcd clock
+    // hsync should go low the same phase that lcd clock goes high
+    // vsync 108.720 usec - right on 912 phases
+
+    int fb_x = top.pix_pipe.get_pix_count() - 8;
+    int fb_y = top.lcd_reg.get_ly();
+
+    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
+      int p0 = top.PIN_LCD_DATA0.qp();
+      int p1 = top.PIN_LCD_DATA1.qp();
+      framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
+    }
+
+    pass_total += pass_count;
+    pass_count = 0;
+    phase_total++;
+    combine_hash(total_hash, pass_hash);
+  }
+  if (pass_count > 90) {
+    printf("!!!STUCK!!!\n");
+  }
+  CHECK_P(pass_count < 100);
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::update_logic() {
+  int old_phase = (phase_total + 0) & 7;
+  int new_phase = (phase_total + 1) & 7;
 
   RegBase::sim_running = true;
   RegBase::bus_collision = false;
@@ -353,54 +406,8 @@ void GateBoy::next_pass() {
 
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
 
-  RegBase::sim_running = false;
-
-  uint64_t pass_hash_old = pass_hash;
   pass_hash = HASH_INIT;
   commit_and_hash(top, pass_hash);
-  pass_count++;
-
-  if (pass_hash == pass_hash_old) {
-    if (RegBase::bus_collision) {
-      printf("Bus collision!\n");
-      RegBase::bus_collision = false;
-    }
-
-    if (RegBase::bus_floating) {
-      printf("Bus floating!\n");
-      RegBase::bus_floating = false;
-      //next_pass(old_phase, new_phase);
-      //RegBase::bus_floating = false;
-    }
-
-    //----------
-    // Pixels _def_ latched on positive clock edge (neg edge inverted)
-
-    // clock phase is ~119.21 nsec (4.19304 mhz crystal)
-    // hsync seems consistently 3.495 - 3.500 us (29 phases?)
-    // hsync to bogus clock pulse 1.465 us
-    // data changes on rising edge of lcd clock
-    // hsync should go low the same phase that lcd clock goes high
-    // vsync 108.720 usec - right on 912 phases
-
-    int fb_x = top.pix_pipe.get_pix_count() - 8;
-    int fb_y = top.lcd_reg.get_ly();
-
-    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-      int p0 = top.PIN_LCD_DATA0.qp();
-      int p1 = top.PIN_LCD_DATA1.qp();
-      framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
-    }
-
-    pass_total += pass_count;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
-  if (pass_count > 90) {
-    printf("!!!STUCK!!!\n");
-  }
-  CHECK_P(pass_count < 100);
 }
 
 //-----------------------------------------------------------------------------

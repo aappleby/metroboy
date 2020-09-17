@@ -136,6 +136,12 @@ void GateBoy::reset_post_bootrom() {
   top.IE_D3.force_state(REG_D0C0);
   top.IE_D4.force_state(REG_D0C0);
 
+  top.int_reg.PIN_CPU_ACK_VBLANK.lock(0);
+  top.int_reg.PIN_CPU_ACK_STAT  .lock(0);
+  top.int_reg.PIN_CPU_ACK_TIMER .lock(0);
+  top.int_reg.PIN_CPU_ACK_SERIAL.lock(0);
+  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(0);
+
   pass_count = 0;
 }
 
@@ -201,9 +207,6 @@ void GateBoy::next_phase() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::next_pass() {
-  int old_phase = (phase_total + 0) & 7;
-  int new_phase = (phase_total + 1) & 7;
-
   //----------
   // Update CPU
 
@@ -213,7 +216,72 @@ void GateBoy::next_pass() {
   }
 
   uint64_t pass_hash_old = pass_hash;
-  update_logic();
+  update_logic(pass_hash_old);
+
+  if (DELTA_AB) {
+    uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+    uint8_t intf = 0;
+
+    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
+    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
+    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
+    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
+    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+
+    if (sys_cpu_en) {
+      if (pass_count == 0) {
+        cpu.tock_req(imask, intf); // bus request _must_ change on AB, see trace
+      }
+    }
+  }
+
+  if (DELTA_AB) {
+    bus_req.addr  = cpu.bus_req.addr;
+    bus_req.data  = cpu.bus_req.data;
+    bus_req.read  = cpu.bus_req.read;
+    bus_req.write = cpu.bus_req.write;
+      
+    top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
+    top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
+    top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));
+    top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu.int_ack & INT_SERIAL_MASK));
+    top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu.int_ack & INT_JOYPAD_MASK));
+
+    if (dbg_req.read || dbg_req.write) {
+      bus_req.addr  = dbg_req.addr;
+      bus_req.data  = dbg_req.data;
+      bus_req.read  = dbg_req.read;
+      bus_req.write = dbg_req.write;
+    }
+
+    if (bus_req.read || bus_req.write) {
+      top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
+      top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
+      top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
+      top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
+      top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
+      top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
+      top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
+      top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
+      top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
+      top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
+      top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
+      top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
+      top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
+      top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
+      top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
+      top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
+    }
+
+    top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
+    top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+
+    bool addr_rom = bus_req.addr <= 0x7FFF;
+    bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
+    bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
+    top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
+
+  }
 
   if (pass_hash == pass_hash_old) {
     uint8_t bus_data = top.cpu_bus.get_bus_data();
@@ -277,84 +345,23 @@ void GateBoy::next_pass() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::update_logic() {
+void GateBoy::update_logic(uint64_t pass_hash_old) {
+  (void)pass_hash_old;
+
   RegBase::sim_running = true;
 
-  int old_phase = (phase_total + 0) & 7;
+  //int old_phase = (phase_total + 0) & 7;
   int new_phase = (phase_total + 1) & 7;
 
   wire CLK = (new_phase & 1) & sys_clken;
   top.joypad.set_buttons(sys_buttons);
 
+  //----------
+
   RegBase::tick_running = true;
   top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   RegBase::tick_running = false;
 
-  //----------
-  // CPU bus stuff
-
-  static bool addr_rom = 0;
-  static bool addr_ram = 0;
-  static bool addr_ext = 0;
-
-  if (DELTA_AB) {
-    if (pass_count == 0) {
-      bus_req.addr  = 0;
-      bus_req.data  = 0;
-      bus_req.read  = 0;
-      bus_req.write = 0;
-      if (sys_cpu_en) {
-        uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-        uint8_t intf = 0;
-
-        if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-        if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-        if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-        if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-        if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
-        cpu.tock_req(imask, intf); // bus request _must_ change on AB, see trace
-        top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
-        top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
-        top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));
-        top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu.int_ack & INT_SERIAL_MASK));
-        top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu.int_ack & INT_JOYPAD_MASK));
-        bus_req.addr  = cpu.bus_req.addr;
-        bus_req.data  = cpu.bus_req.data;
-        bus_req.read  = cpu.bus_req.read;
-        bus_req.write = cpu.bus_req.write;
-      }
-      
-      if (dbg_req.read || dbg_req.write) {
-        bus_req.addr  = dbg_req.addr;
-        bus_req.data  = dbg_req.data;
-        bus_req.read  = dbg_req.read;
-        bus_req.write = dbg_req.write;
-      }
-
-      if (bus_req.read || bus_req.write) {
-        top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
-        top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
-        top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
-        top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
-        top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
-        top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
-        top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
-        top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
-        top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
-        top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
-        top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
-        top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
-        top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
-        top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
-        top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
-        top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
-      }
-
-      top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
-      top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
-
-    }
-  }
 
   if (DELTA_BC) {
   }
@@ -403,13 +410,6 @@ void GateBoy::update_logic() {
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
   }
 
-  addr_rom = bus_req.addr <= 0x7FFF;
-  addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
-  addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
-  top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
-
-  //----------
-
   RegBase::tock_running = true;
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
@@ -421,6 +421,9 @@ void GateBoy::update_logic() {
 
   pass_hash = HASH_INIT;
   commit_and_hash(top, pass_hash);
+
+  //----------
+
   RegBase::sim_running = false;
 }
 

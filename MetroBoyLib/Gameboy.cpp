@@ -56,6 +56,9 @@ void Gameboy::reset(uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock(int old_phase, int new_phase, const Req& req) {
+  (void)old_phase;
+  (void)new_phase;
+
   if (DELTA_FG && req.write) {
     if (req.addr == ADDR_IF) intf  = (uint8_t)req.data_lo | 0b11100000;
     if (req.addr == ADDR_IE) imask = (uint8_t)req.data_lo;

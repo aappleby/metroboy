@@ -49,6 +49,9 @@ void DMA2::tick(const Req& req, Ack& ack) {
 }
 
 void DMA2::tock(int old_phase, int new_phase, const Req& req) {
+  int phase_total = old_phase;
+  (void)new_phase;
+
   bool DMA_WR = (req.addr == 0xFF46) && req.write && (DELTA_FG || DELTA_GH || DELTA_HA);
   bool DMA_RST = DMA_RUN_TRIG_d4;
 

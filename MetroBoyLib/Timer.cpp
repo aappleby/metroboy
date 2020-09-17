@@ -35,6 +35,8 @@ void NewTimer::tick(const Req& req, Ack& ack) {
 // goes low. Writing to tima clears the synchronized bit for some reason.
 
 void NewTimer::tock(int old_phase, int new_phase, const Req& req) {
+  int phase_total = old_phase;
+  (void)new_phase;
 
   if (DELTA_CD) {
     div++;

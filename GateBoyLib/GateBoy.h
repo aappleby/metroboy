@@ -16,7 +16,7 @@ struct GateBoy {
 
   void next_phase();
   void next_pass();
-  void update_logic();
+  void update_logic(uint64_t pass_hash_old);
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();

@@ -1,5 +1,6 @@
 #include "GateBoyLib/Sch_OamBus.h"
 
+#include "GateBoyLib/Probe.h"
 #include "GateBoyLib/Sch_Top.h"
 
 using namespace Schematics;
@@ -125,6 +126,8 @@ void OamBus::tock(SchematicTop& top) {
   /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn  = or3(ACYL_SCANNINGp, XYMU_RENDERINGp, MATU_DMA_RUNNINGp);
   /*p28.BETE*/ wire BETE_PPU_OAM_RDn  = not1(AJON_OAM_BUSY);
 
+  probe("ASAM_CPU_OAM_RDn", ASAM_CPU_OAM_RDn);
+
   // Scanner addr -> OAM addr
   /*p28.GEFY*/ BUS_OAM_A0n.tri_6nn(APAR_SCAN_OAM_RDn, GND);
   /*p28.WUWE*/ BUS_OAM_A1n.tri_6nn(APAR_SCAN_OAM_RDn, GND);
@@ -229,11 +232,11 @@ void OamBus::tock(SchematicTop& top) {
     /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(top.DECY_LATCH_EXTn);
     /*p04.MAKA*/ MAKA_HOLD_MEMp.tock(ZEME_AxCxExGx, CUNU_SYS_RSTn, CATY_LATCH_EXTp);
 
-    /*p28.AMAB*/ wire AMAB_CPU_READ_OAMp = and2(top.cpu_bus.SARO_FE00_FEFFp(), top.AJUJ_OAM_BUSYn); // def and
+    /*p28.AMAB*/ wire AMAB_CPU_OAM_WRp = and2(top.cpu_bus.SARO_FE00_FEFFp(), top.AJUJ_OAM_BUSYn); // def and
 
-    /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor2(UVYT_ABCDxxxx, MAKA_HOLD_MEMp.qp()); // def nor4
-    /*p04.POWU*/ wire POWU_DMA_OAM_WRp  = and2(top.dma_reg.MATU_DMA_RUNNINGp.qp(), NAXY_DMA_OAM_WENp); // def and
-    /*p04.WYJA*/ wire WYJA_OAM_WRp      = and_or3(AMAB_CPU_READ_OAMp, CUPA_CPU_WRp_xxxxEFGx, POWU_DMA_OAM_WRp);
+    /*p04.NAXY*/ wire NAXY_DMA_OAM_WRp = nor2(UVYT_ABCDxxxx, MAKA_HOLD_MEMp.qp()); // def nor4
+    /*p04.POWU*/ wire POWU_DMA_OAM_WRp  = and2(top.dma_reg.MATU_DMA_RUNNINGp.qp(), NAXY_DMA_OAM_WRp); // def and
+    /*p04.WYJA*/ wire WYJA_OAM_WRp      = and_or3(AMAB_CPU_OAM_WRp, CUPA_CPU_WRp_xxxxEFGx, POWU_DMA_OAM_WRp);
 
     /*p28.YNYC*/ wire YNYC_OAM_B_WRp = and2(WYJA_OAM_WRp, WAFO_OAM_A0n);
     /*p28.ZOFE*/ wire ZOFE = not1(YNYC_OAM_B_WRp);

@@ -1,28 +1,20 @@
-; pass - ags, dmg
-
-.ifdef DMG
-.define DELAY 8
-.else
-.define DELAY 7
-.endif
-
 .include "header.inc"
 
 main:
-  reset_lcd_for_test
-  nops 114
-
+  nops 41
+  lcd_off_unsafe
   set_stat_int_hblank
   set_ie_stat
+  clear_if
   ei
 
-  ldh (DIV), a
+  lcd_on
+
   halt
   nop
-
 
   test_fail
 
 .org STAT_INT_VECTOR
-  nops DELAY
-  test_finish_div 1
+  ldh a, (DIV)
+  test_finish_a $AE

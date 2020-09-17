@@ -2,6 +2,8 @@
 #include <memory.h>
 #include <stdio.h>
 
+#include "GateBoyLib/Probe.h"
+
 using namespace Schematics;
 
 #pragma warning(disable:4100)
@@ -108,6 +110,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp.qp());
     /*p28.AJON*/ AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp.qp()); // def AND. ppu can read oam when there's rendering but no dma
     /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
+
+    probe("AJUJ_OAM_BUSYn", AJUJ_OAM_BUSYn.qp());
   }
 
   tim_reg.tick(*this);

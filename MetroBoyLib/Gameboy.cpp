@@ -171,7 +171,7 @@ void Gameboy::tock_gb(int old_phase, int new_phase) {
   }
 
   if (DELTA_AB) z80.tock_ack(imask, intf, cpu_ack.data_lo);
-  if (DELTA_BC) z80.tock_req(imask, intf, cpu_ack.data_lo);
+  if (DELTA_BC) z80.tock_req(imask, intf);
   //if (PHASE_C) z80.tock_cd(imask, intf, cpu_ack);
   //if (PHASE_D) z80.tock_de(imask, intf, cpu_ack);
   //if (PHASE_E) z80.tock_ef(imask, intf, cpu_ack);

@@ -272,11 +272,6 @@ void GateBoy::next_pass_ab() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
   //----------
   if (pass_count == 0) {
     uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
@@ -293,20 +288,7 @@ void GateBoy::next_pass_ab() {
     }
   }
 
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -373,28 +355,7 @@ void GateBoy::next_pass_bc() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -431,29 +392,7 @@ void GateBoy::next_pass_cd() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -474,29 +413,8 @@ void GateBoy::next_pass_de() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -516,31 +434,8 @@ void GateBoy::next_pass_ef() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
-
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -560,31 +455,8 @@ void GateBoy::next_pass_fg() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
-
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -604,32 +476,8 @@ void GateBoy::next_pass_gh() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
-
-  //----------
+  update_logic();
 
   if (pass_hash == pass_hash_old) {
     uint8_t bus_data = top.cpu_bus.get_bus_data();
@@ -682,28 +530,7 @@ void GateBoy::next_pass_ha() {
 
   uint64_t pass_hash_old = pass_hash;
 
-  int new_phase = (phase_total + 1) & 7;
-
-  wire CLK = (new_phase & 1) & sys_clken;
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------
-  RegBase::tick_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
-
-
-  RegBase::tock_running = true;
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
-
-  pass_hash = HASH_INIT;
-  commit_and_hash(top, pass_hash);
+  update_logic();
 
   //----------
 
@@ -716,3 +543,27 @@ void GateBoy::next_pass_ha() {
 }
 
 //-----------------------------------------------------------------------------
+
+void GateBoy::update_logic() {
+  int new_phase = (phase_total + 1) & 7;
+
+  wire CLK = (new_phase & 1) & sys_clken;
+  top.joypad.set_buttons(sys_buttons);
+
+  //----------
+  RegBase::tick_running = true;
+  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  RegBase::tick_running = false;
+
+  RegBase::tock_running = true;
+  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
+  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
+  top.tock_vram_bus(sys_rst, vid_ram);
+  top.tock_zram_bus(sys_rst, zero_ram);
+  top.tock_oam_bus (sys_rst, oam_ram);
+  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
+  RegBase::tock_running = false;
+
+  pass_hash = HASH_INIT;
+  commit_and_hash(top, pass_hash);
+}

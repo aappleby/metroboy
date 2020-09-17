@@ -25,6 +25,7 @@ struct GateBoy {
   void next_pass_fg();
   void next_pass_gh();
   void next_pass_ha();
+  void update_logic();
 
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {

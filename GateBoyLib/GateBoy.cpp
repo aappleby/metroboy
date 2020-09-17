@@ -210,11 +210,6 @@ void GateBoy::next_pass() {
   //----------
   // Update CPU
 
-  if (pass_count == 0) {
-    RegBase::bus_collision = false;
-    RegBase::bus_floating = false;
-  }
-
   uint64_t pass_hash_old = pass_hash;
 
   RegBase::sim_running = true;
@@ -226,42 +221,28 @@ void GateBoy::next_pass() {
   top.joypad.set_buttons(sys_buttons);
 
   //----------
+  if (pass_count == 0) {
+    if (DELTA_AB) {
+      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+      uint8_t intf = 0;
+
+      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
+      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
+      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
+      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
+      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+
+      if (sys_cpu_en) {
+        cpu.tock_req(imask, intf); // bus request _must_ change on AB, see trace
+      }
+    }
+  }
+
+
 
   RegBase::tick_running = true;
   top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   RegBase::tick_running = false;
-
-
-  if (pass_count == 0) {
-    if (DELTA_CD) {
-      bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
-      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
-    }
-  
-    if (DELTA_HA) {
-      if ((bus_req.addr & 0xFF00) != 0xFF00) {
-        top.cpu_bus.BUS_CPU_A08.lock(0);
-        top.cpu_bus.BUS_CPU_A09.lock(0);
-        top.cpu_bus.BUS_CPU_A10.lock(0);
-        top.cpu_bus.BUS_CPU_A11.lock(0);
-        top.cpu_bus.BUS_CPU_A12.lock(0);
-        top.cpu_bus.BUS_CPU_A13.lock(0);
-        top.cpu_bus.BUS_CPU_A14.lock(0);
-        top.cpu_bus.BUS_CPU_A15.lock(0);
-      }
-
-      if (sys_cpu_en) {
-        top.cpu_bus.PIN_CPU_RDp.lock(1);
-      }
-      else {
-        top.cpu_bus.PIN_CPU_RDp.lock(0);
-      }
-      top.cpu_bus.PIN_CPU_WRp.lock(0);
-
-      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-    }
-  }
-
 
 
   if (DELTA_DE | DELTA_EF || DELTA_FG || DELTA_GH) {
@@ -269,7 +250,6 @@ void GateBoy::next_pass() {
   }
   
  
-
 
   RegBase::tock_running = true;
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
@@ -286,23 +266,6 @@ void GateBoy::next_pass() {
   //----------
 
   RegBase::sim_running = false;
-
-  if (DELTA_AB) {
-    uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-    uint8_t intf = 0;
-
-    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
-
-    if (sys_cpu_en) {
-      if (pass_count == 0) {
-        cpu.tock_req(imask, intf); // bus request _must_ change on AB, see trace
-      }
-    }
-  }
 
   if (DELTA_AB) {
     bus_req.addr  = cpu.bus_req.addr;
@@ -402,6 +365,36 @@ void GateBoy::next_pass() {
     pass_count = 0;
     phase_total++;
     combine_hash(total_hash, pass_hash);
+
+    if (DELTA_CD) {
+      bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
+      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
+    }
+
+    if (DELTA_HA) {
+      if ((bus_req.addr & 0xFF00) != 0xFF00) {
+        top.cpu_bus.BUS_CPU_A08.lock(0);
+        top.cpu_bus.BUS_CPU_A09.lock(0);
+        top.cpu_bus.BUS_CPU_A10.lock(0);
+        top.cpu_bus.BUS_CPU_A11.lock(0);
+        top.cpu_bus.BUS_CPU_A12.lock(0);
+        top.cpu_bus.BUS_CPU_A13.lock(0);
+        top.cpu_bus.BUS_CPU_A14.lock(0);
+        top.cpu_bus.BUS_CPU_A15.lock(0);
+      }
+
+      if (sys_cpu_en) {
+        top.cpu_bus.PIN_CPU_RDp.lock(1);
+      }
+      else {
+        top.cpu_bus.PIN_CPU_RDp.lock(0);
+      }
+      top.cpu_bus.PIN_CPU_WRp.lock(0);
+
+      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
+    }
+    RegBase::bus_collision = false;
+    RegBase::bus_floating = false;
   }
   else {
     pass_count++;

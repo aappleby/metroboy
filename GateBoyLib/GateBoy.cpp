@@ -151,8 +151,10 @@ uint8_t GateBoy::dbg_read(int addr) {
   /* DE */ next_phase(); /* ok */
   /* EF */ next_phase(); /* ok */ 
   /* FG */ next_phase(); /* ok */
-  /* GH */ next_phase(); /* ok */ uint8_t bus_data = top.cpu_bus.get_bus_data();  
+  /* GH */ next_phase(); /* ok */
   /* HA */ next_phase(); /* xx */
+  
+  uint8_t bus_data = (uint8_t)dbg_req.data;
   dbg_req = {0};
   return bus_data;
 }
@@ -181,10 +183,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 //------------------------------------------------------------------------------
 
 void GateBoy::next_phase() {
-
-  //----------
-  // Run logic passes
-
   do {
     next_pass();
   } while(pass_count);
@@ -194,33 +192,27 @@ void GateBoy::next_phase() {
 
 void GateBoy::next_pass() {
   int old_phase = (phase_total + 0) & 7;
-  //int new_phase = (phase_total + 1) & 7;
+  int new_phase = (phase_total + 1) & 7;
+
+  uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+  uint8_t intf = 0;
+
+  if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
+  if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
+  if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
+  if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
+  if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+
+  uint8_t bus_data = top.cpu_bus.get_bus_data();
+
+  //----------
+  // Update CPU
 
   if (pass_count == 0) {
-    //----------
-    // Update CPU
-
     if (sys_cpu_en) {
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-      uint8_t intf = 0;
-
-      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
-
-      uint8_t bus_data = top.cpu_bus.get_bus_data();
-
-      switch(old_phase) {
-      /* AB */ case 0: cpu.tock_req(imask, intf, bus_data); break; // bus request _must_ change on AB, see trace
-      /* BC */ case 1: break;
-      /* CD */ case 2: break;
-      /* DE */ case 3: break;
-      /* EF */ case 4: break;
-      /* FG */ case 5: break;
-      /* GH */ case 6: break;
-      /* HA */ case 7: cpu.tock_ack(imask, intf, bus_data); break; // has to be here or we get more errors
+      if (DELTA_AB) cpu.tock_req(imask, intf, bus_data); // bus request _must_ change on AB, see trace
+      if (DELTA_HA) {
+        cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
       }
     }
   }
@@ -230,7 +222,12 @@ void GateBoy::next_pass() {
   RegBase::sim_running = false;
   pass_count++;
 
+  if (dbg_req.read) {
+    dbg_req.data = top.cpu_bus.get_bus_data();
+  }
+
   if (pass_hash == pass_hash_old) {
+
     if (RegBase::bus_collision) {
       printf("Bus collision!\n");
       RegBase::bus_collision = false;
@@ -266,6 +263,7 @@ void GateBoy::next_pass() {
     pass_count = 0;
     phase_total++;
     combine_hash(total_hash, pass_hash);
+
   }
   if (pass_count > 90) {
     printf("!!!STUCK!!!\n");

@@ -46,7 +46,7 @@ GateBoy::GateBoy() {
   top.int_reg.PIN_CPU_ACK_SERIAL.lock(0);
   top.int_reg.PIN_CPU_ACK_JOYPAD.lock(0);
 
-  cpu.reset(0x0000);
+  cpu_blah.reset(0x0000);
 }
 
 //-----------------------------------------------------------------------------
@@ -100,7 +100,7 @@ void GateBoy::reset_to_bootrom() {
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
-  cpu.reset(0x0000);
+  cpu_blah.reset(0x0000);
   sys_cpu_en = true;
 
   pass_count = 0;
@@ -238,19 +238,9 @@ bool GateBoy::next_pass() {
 bool GateBoy::next_pass_ab() {
 
   if (pass_count == 0) {
-    imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-    intf_to_cpu = 0;
-
-    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
-    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
-    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
-    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
-    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
-
     if (sys_cpu_en) {
-      cpu.tock_req(imask_to_cpu, intf_to_cpu); // bus request _must_ change on AB, see trace
-      cpu_req = cpu.bus_req;
-      cpu_int_ack = cpu.int_ack;
+      cpu_req = cpu_blah.bus_req;
+      cpu_int_ack = cpu_blah.int_ack;
     }
   }
 
@@ -372,12 +362,6 @@ bool GateBoy::next_pass_gh() {
   if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
   if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
 
-  if (stable) {
-    if (sys_cpu_en) {
-      cpu.tock_ack(imask_to_cpu, intf_to_cpu, (uint8_t)bus_req.data); // has to be here or we get more errors
-    }
-  }
-
   if (bus_req.read) bus_req.data = bus_data;
   if (dbg_req.read) dbg_req.data = bus_data;
 
@@ -409,6 +393,13 @@ bool GateBoy::next_pass_ha() {
   top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
 
   bool stable = update_logic();
+
+  if (stable) {
+    if (sys_cpu_en) {
+      cpu_blah.tock_ack(imask_to_cpu, intf_to_cpu, (uint8_t)bus_req.data); // has to be here or we get more errors
+      cpu_blah.tock_req(imask_to_cpu, intf_to_cpu); // bus request _must_ change on AB, see trace
+    }
+  }
 
   return stable;
 }

@@ -475,6 +475,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Pass hash   %016llx\n", gateboy->pass_hash);
   dumper("Total hash  %016llx\n", gateboy->total_hash);
   dumper("BGB cycle   0x%08x\n",  gateboy->phase_total / 4);
+  dumper("Sim clock   %f\n",      double(gateboy->phase_total) / (4194304.0 * 2));
 
   dumper("\n");
   dumper("dbg_req ");
@@ -486,7 +487,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dump_probes(dumper);
   dumper("----------   CPU    ----------\n");
-  gateboy->cpu.dump(dumper);
+  gateboy->cpu_blah.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
@@ -528,7 +529,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("---------- DISASM ----------\n");
   {
-    uint16_t pc = gateboy->cpu.op_addr;
+    uint16_t pc = gateboy->cpu_blah.op_addr;
     const uint8_t* code = nullptr;
     uint16_t code_size = 0;
     uint16_t code_base = 0;

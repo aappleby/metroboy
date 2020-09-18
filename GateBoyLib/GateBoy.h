@@ -61,7 +61,7 @@ struct GateBoy {
 
   uint64_t sentinel1 = 0xDEADBEEFBAADF00D;
 
-  Z80 cpu;
+  Z80 cpu_blah;
 
   Schematics::SchematicTop top;
 

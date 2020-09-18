@@ -345,8 +345,6 @@ bool GateBoy::next_pass_cd() {
 bool GateBoy::next_pass_de() {
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
 
-  uint8_t bus_data = top.cpu_bus.get_bus_data();
-  if (dbg_req.read) dbg_req.data = bus_data;
 
   bool stable = update_logic();
   return stable;
@@ -377,7 +375,7 @@ bool GateBoy::next_pass_gh() {
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
   bool stable = update_logic();
 
-
+  // right now this has to be in gh, moving to fg breaks things
   uint8_t bus_data = top.cpu_bus.get_bus_data();
   uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
   uint8_t intf = 0;
@@ -393,6 +391,8 @@ bool GateBoy::next_pass_gh() {
       cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
     }
   }
+
+  if (dbg_req.read) dbg_req.data = bus_data;
 
   return stable;
 }

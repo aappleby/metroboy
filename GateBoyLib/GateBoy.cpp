@@ -182,15 +182,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   dbg_req = {0};
 }
 
-//------------------------------------------------------------------------------
-
-void GateBoy::next_phase() {
-  bool stable = false;
-  do {
-    stable = next_pass();
-  } while(!stable);
-}
-
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass() {
@@ -198,6 +189,8 @@ bool GateBoy::next_pass() {
   RegBase::sim_running = true;
 
   bool stable = false;
+  RegBase::bus_collision = false;
+  RegBase::bus_floating = false;
 
   int old_phase = (phase_total + 0) & 7;
   switch(old_phase) {
@@ -211,6 +204,14 @@ bool GateBoy::next_pass() {
   case 7: stable = next_pass_ha(); break;
   }
 
+  if (stable && RegBase::bus_collision) {
+    printf("Bus collision!\n");
+  }
+
+  if (stable && RegBase::bus_floating) {
+    printf("Bus floating!\n");
+  }
+
   RegBase::sim_running = false;
   pass_count++;
 
@@ -221,19 +222,6 @@ bool GateBoy::next_pass() {
     CHECK_P(pass_count < 100);
   }
   else {
-    if (RegBase::bus_collision) {
-      //printf("Bus collision!\n");
-    }
-
-    if (RegBase::bus_floating) {
-      //printf("Bus floating!\n");
-      //next_pass(old_phase, new_phase);
-      //RegBase::bus_floating = false;
-    }
-
-    RegBase::bus_collision = false;
-    RegBase::bus_floating = false;
-
     //----------
     // Pixels _def_ latched on positive clock edge (neg edge inverted)
 
@@ -339,20 +327,6 @@ bool GateBoy::next_pass_bc() {
   bool stable = update_logic();
 
   if (stable) {
-    uint8_t bus_data = top.cpu_bus.get_bus_data();
-    if (DELTA_GH && sys_cpu_en) {
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-      uint8_t intf = 0;
-
-      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
-      cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
-    }
-    if (DELTA_GH && dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
-
     bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
   }
@@ -394,41 +368,23 @@ bool GateBoy::next_pass_gh() {
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
   bool stable = update_logic();
 
-  if (stable) {
-    uint8_t bus_data = top.cpu_bus.get_bus_data();
-    if (sys_cpu_en) {
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-      uint8_t intf = 0;
 
-      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+  uint8_t bus_data = top.cpu_bus.get_bus_data();
+  uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+  uint8_t intf = 0;
+
+  if (dbg_req.read) dbg_req.data = bus_data;
+
+  if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
+  if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
+  if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
+  if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
+  if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+
+  if (stable) {
+    if (sys_cpu_en) {
       cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
     }
-    if (dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
-
-    if ((bus_req.addr & 0xFF00) != 0xFF00) {
-      top.cpu_bus.BUS_CPU_A08.lock(0);
-      top.cpu_bus.BUS_CPU_A09.lock(0);
-      top.cpu_bus.BUS_CPU_A10.lock(0);
-      top.cpu_bus.BUS_CPU_A11.lock(0);
-      top.cpu_bus.BUS_CPU_A12.lock(0);
-      top.cpu_bus.BUS_CPU_A13.lock(0);
-      top.cpu_bus.BUS_CPU_A14.lock(0);
-      top.cpu_bus.BUS_CPU_A15.lock(0);
-    }
-
-    if (sys_cpu_en) {
-      top.cpu_bus.PIN_CPU_RDp.lock(1);
-    }
-    else {
-      top.cpu_bus.PIN_CPU_RDp.lock(0);
-    }
-    top.cpu_bus.PIN_CPU_WRp.lock(0);
-
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
   }
 
   return stable;
@@ -437,6 +393,26 @@ bool GateBoy::next_pass_gh() {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_ha() {
+
+  if ((bus_req.addr & 0xFF00) != 0xFF00) {
+    top.cpu_bus.BUS_CPU_A08.lock(0);
+    top.cpu_bus.BUS_CPU_A09.lock(0);
+    top.cpu_bus.BUS_CPU_A10.lock(0);
+    top.cpu_bus.BUS_CPU_A11.lock(0);
+    top.cpu_bus.BUS_CPU_A12.lock(0);
+    top.cpu_bus.BUS_CPU_A13.lock(0);
+    top.cpu_bus.BUS_CPU_A14.lock(0);
+    top.cpu_bus.BUS_CPU_A15.lock(0);
+  }
+
+  if (sys_cpu_en) {
+    top.cpu_bus.PIN_CPU_RDp.lock(1);
+  }
+  else {
+    top.cpu_bus.PIN_CPU_RDp.lock(0);
+  }
+  top.cpu_bus.PIN_CPU_WRp.lock(0);
+  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
 
   bool stable = update_logic();
 

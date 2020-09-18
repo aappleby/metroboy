@@ -215,6 +215,7 @@ struct RegBase {
   inline bool has_delta() const { return delta != DELTA_NONE; }
   inline wire as_wire()   const {
     if (state == TRI_HZNP) {
+      //printf("bus floating?\n");
       bus_floating = true;
     }
     /*CHECKn(has_delta());*/ return wire(state & 1);
@@ -259,6 +260,7 @@ struct RegBase {
     else {
       //CHECK_P(d == DELTA_TRIZ);
       if (new_d != DELTA_TRIZ) {
+        //printf("Bus collision?\n");
         RegBase::bus_collision = true;
       }
     }

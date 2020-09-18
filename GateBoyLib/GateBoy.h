@@ -14,7 +14,19 @@ struct GateBoy {
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
 
-  void next_phase();
+  void run(int phase_count) {
+    for (int i = 0; i < phase_count; i++) {
+      next_phase();
+    }
+  }
+
+  void next_phase() {
+    bool stable = false;
+    do {
+      stable = next_pass();
+    } while(!stable);
+  }
+
   bool next_pass();
 
   bool next_pass_ab();
@@ -26,12 +38,6 @@ struct GateBoy {
   bool next_pass_gh();
   bool next_pass_ha();
   bool update_logic();
-
-  void run(int phase_count) {
-    for (int i = 0; i < phase_count; i++) {
-      next_phase();
-    }
-  }
 
   void set_boot_bit() {
     dbg_write(0xFF50, 0xFF);

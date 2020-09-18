@@ -146,16 +146,7 @@ uint8_t GateBoy::dbg_read(int addr) {
   dbg_req.data = 0;
   dbg_req.read = 1;
   dbg_req.write = 0;
-
-  /* AB */ next_phase(); /* xx */
-  /* BC */ next_phase(); /* xx */
-  /* CD */ next_phase(); /* ok */ 
-  /* DE */ next_phase(); /* ok */
-  /* EF */ next_phase(); /* ok */ 
-  /* FG */ next_phase(); /* ok */
-  /* GH */ next_phase(); /* ok */
-  /* HA */ next_phase(); /* xx */
-  
+  run(8);
   uint8_t bus_data = (uint8_t)dbg_req.data;
   dbg_req = {0};
   return bus_data;
@@ -170,15 +161,7 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   dbg_req.data = data;
   dbg_req.read = 0;
   dbg_req.write = 1;
-
-  /* AB */ next_phase();
-  /* BC */ next_phase();
-  /* CD */ next_phase();
-  /* DE */ next_phase();
-  /* EF */ next_phase();
-  /* FG */ next_phase();
-  /* GH */ next_phase();
-  /* HA */ next_phase();
+  run(8);
   dbg_req = {0};
 }
 
@@ -255,17 +238,19 @@ bool GateBoy::next_pass() {
 bool GateBoy::next_pass_ab() {
 
   if (pass_count == 0) {
-    uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-    uint8_t intf = 0;
+    imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+    intf_to_cpu = 0;
 
-    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
+    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
+    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
+    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
+    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
 
     if (sys_cpu_en) {
-      cpu.tock_req(imask, intf); // bus request _must_ change on AB, see trace
+      cpu.tock_req(imask_to_cpu, intf_to_cpu); // bus request _must_ change on AB, see trace
+      cpu_req = cpu.bus_req;
+      cpu_int_ack = cpu.int_ack;
     }
   }
 
@@ -273,16 +258,16 @@ bool GateBoy::next_pass_ab() {
 
   //----------
 
-  bus_req.addr  = cpu.bus_req.addr;
-  bus_req.data  = cpu.bus_req.data;
-  bus_req.read  = cpu.bus_req.read;
-  bus_req.write = cpu.bus_req.write;
+  bus_req.addr  = cpu_req.addr;
+  bus_req.data  = cpu_req.data;
+  bus_req.read  = cpu_req.read;
+  bus_req.write = cpu_req.write;
       
-  top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
-  top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
-  top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));
-  top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu.int_ack & INT_SERIAL_MASK));
-  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu.int_ack & INT_JOYPAD_MASK));
+  top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu_int_ack & INT_VBLANK_MASK));
+  top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu_int_ack & INT_STAT_MASK));
+  top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu_int_ack & INT_TIMER_MASK));
+  top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu_int_ack & INT_SERIAL_MASK));
+  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu_int_ack & INT_JOYPAD_MASK));
 
   if (dbg_req.read || dbg_req.write) {
     bus_req.addr  = dbg_req.addr;
@@ -337,7 +322,8 @@ bool GateBoy::next_pass_bc() {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_cd() {
-  return update_logic();
+  bool stable = update_logic();
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
@@ -377,21 +363,22 @@ bool GateBoy::next_pass_gh() {
 
   // right now this has to be in gh, moving to fg breaks things
   uint8_t bus_data = top.cpu_bus.get_bus_data();
-  uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-  uint8_t intf = 0;
+  imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+  intf_to_cpu = 0;
 
-  if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
-  if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;
-  if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf |= INT_TIMER_MASK;
-  if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf |= INT_SERIAL_MASK;
-  if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf |= INT_JOYPAD_MASK;
+  if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
+  if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
+  if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
+  if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
+  if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
 
   if (stable) {
     if (sys_cpu_en) {
-      cpu.tock_ack(imask, intf, bus_data); // has to be here or we get more errors
+      cpu.tock_ack(imask_to_cpu, intf_to_cpu, (uint8_t)bus_req.data); // has to be here or we get more errors
     }
   }
 
+  if (bus_req.read) bus_req.data = bus_data;
   if (dbg_req.read) dbg_req.data = bus_data;
 
   return stable;

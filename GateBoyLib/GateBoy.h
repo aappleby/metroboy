@@ -77,6 +77,10 @@ struct GateBoy {
   Req      dbg_req = {0};
   Req      bus_req = {0};
 
+  uint8_t  imask_to_cpu = 0;
+  uint8_t  intf_to_cpu = 0;
+  uint8_t  cpu_int_ack = 0;
+
   uint8_t  sim_stable = false;
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;

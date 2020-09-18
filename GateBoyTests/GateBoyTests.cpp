@@ -517,7 +517,7 @@ int GateBoyTests::test_micro() {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::run_microtest(const char* filename) {
-  LOG_B("%-40s ", filename);
+  //LOG_B("%-40s ", filename);
 
   std::string path = "microtests/build/dmg/" + std::string(filename);
 
@@ -541,22 +541,22 @@ int GateBoyTests::run_microtest(const char* filename) {
 
 
   if (mcycle == timeout) {
-    //LOG_B("%-40s ", filename);
+    LOG_B("%-40s ", filename);
     LOG_Y("TIMEOUT\n");
     return 1;
   }
   else if (result_c != 0x31) {
-    //LOG_B("%-40s ", filename);
+    LOG_B("%-40s ", filename);
     LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, mcycle);
     return 1;
   }
   else if (result == 0x55) {
     //LOG_B("%-40s ", filename);
-    LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
+    //LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
     return 0;
   }
   else {
-    //LOG_B("%-40s ", filename);
+    LOG_B("%-40s ", filename);
     LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, mcycle);
     return 1;
   }
@@ -572,7 +572,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x9961f1a63338451e, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xc6ddc6547dfe21fc, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {

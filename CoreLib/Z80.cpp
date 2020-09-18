@@ -237,7 +237,6 @@ void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
   if (state == 0) {
     op_addr = bus_req.addr;
     op = bus_data;     
-    int_ack = 0;
 
     if ((imask_ & intf_) && ime) {
       //printf("interrupt!\n");
@@ -253,6 +252,8 @@ void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
 void Z80::tock_req(uint8_t imask_, uint8_t intf_) {
   alu_x = 0;
   alu_y = 0;
+
+  int_ack = 0;
 
   if (INT) {
 

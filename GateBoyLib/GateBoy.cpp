@@ -235,29 +235,44 @@ bool GateBoy::next_pass() {
 
 //-----------------------------------------------------------------------------
 
-bool GateBoy::next_pass_ab() {
-
-  if (pass_count == 0) {
-    if (sys_cpu_en) {
-      cpu_req = cpu_blah.bus_req;
-      cpu_int_ack = cpu_blah.int_ack;
-    }
-  }
+bool GateBoy::next_pass_ha() {
 
   bool stable = update_logic();
 
-  //----------
+  top.cpu_bus.PIN_CPU_RDp.lock(0);
+  top.cpu_bus.PIN_CPU_WRp.lock(0);
+  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
 
-  bus_req.addr  = cpu_req.addr;
-  bus_req.data  = cpu_req.data;
-  bus_req.read  = cpu_req.read;
-  bus_req.write = cpu_req.write;
-      
-  top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu_int_ack & INT_VBLANK_MASK));
-  top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu_int_ack & INT_STAT_MASK));
-  top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu_int_ack & INT_TIMER_MASK));
-  top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu_int_ack & INT_SERIAL_MASK));
-  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu_int_ack & INT_JOYPAD_MASK));
+  top.cpu_bus.BUS_CPU_A08.lock(0);
+  top.cpu_bus.BUS_CPU_A09.lock(0);
+  top.cpu_bus.BUS_CPU_A10.lock(0);
+  top.cpu_bus.BUS_CPU_A11.lock(0);
+  top.cpu_bus.BUS_CPU_A12.lock(0);
+  top.cpu_bus.BUS_CPU_A13.lock(0);
+  top.cpu_bus.BUS_CPU_A14.lock(0);
+  top.cpu_bus.BUS_CPU_A15.lock(0);
+
+  top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu_blah.int_ack & INT_VBLANK_MASK));
+  top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu_blah.int_ack & INT_STAT_MASK));
+  top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu_blah.int_ack & INT_TIMER_MASK));
+  top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu_blah.int_ack & INT_SERIAL_MASK));
+  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu_blah.int_ack & INT_JOYPAD_MASK));
+
+  if (stable) {
+    if (sys_cpu_en) {
+      cpu_blah.tock_ack(imask_to_cpu, intf_to_cpu, (uint8_t)bus_req.data); // has to be here or we get more errors
+      cpu_blah.tock_req(imask_to_cpu, intf_to_cpu); // bus request _must_ change on AB, see trace
+    }
+  }
+
+  return stable;
+}
+
+//-----------------------------------------------------------------------------
+
+bool GateBoy::next_pass_ab() {
+
+  bool stable = update_logic();
 
   if (dbg_req.read || dbg_req.write) {
     bus_req.addr  = dbg_req.addr;
@@ -265,33 +280,41 @@ bool GateBoy::next_pass_ab() {
     bus_req.read  = dbg_req.read;
     bus_req.write = dbg_req.write;
   }
-
-  if (bus_req.read || bus_req.write) {
-    top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
-    top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
-    top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
-    top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
-    top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
-    top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
-    top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
-    top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
-    top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
-    top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
-    top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
-    top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
-    top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
-    top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
-    top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
-    top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
+  else if (sys_cpu_en) {
+    cpu_req = cpu_blah.bus_req;
+    bus_req.addr  = cpu_req.addr;
+    bus_req.data  = cpu_req.data;
+    bus_req.read  = cpu_req.read;
+    bus_req.write = cpu_req.write;
   }
-
-  top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
-  top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+  else {
+    bus_req = {0};
+  }
 
   bool addr_rom = bus_req.addr <= 0x7FFF;
   bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
   bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
+
+  top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
+  top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
   top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
+
+  top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
+  top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
+  top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
+  top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
+  top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
+  top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
+  top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
+  top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
+  top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
+  top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
+  top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
+  top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
+  top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
+  top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
+  top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
+  top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
 
   return stable;
 }
@@ -300,18 +323,13 @@ bool GateBoy::next_pass_ab() {
 
 bool GateBoy::next_pass_bc() {
   bool stable = update_logic();
-
-  if (stable) {
-    bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
-  }
-
   return stable;
 }
 
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_cd() {
+
   bool stable = update_logic();
   return stable;
 }
@@ -319,8 +337,10 @@ bool GateBoy::next_pass_cd() {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_de() {
-  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  bool hold_mem = bus_req.read && (bus_req.addr < 0xFF00);
+  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(hold_mem);
 
+  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo); // must be here
 
   bool stable = update_logic();
   return stable;
@@ -348,11 +368,15 @@ bool GateBoy::next_pass_fg() {
 
 bool GateBoy::next_pass_gh() {
 
-  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
+  if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo); // must be here
   bool stable = update_logic();
 
-  // right now this has to be in gh, moving to fg breaks things
+  // has to be in gh, moving to fg breaks things
   uint8_t bus_data = top.cpu_bus.get_bus_data();
+  if (bus_req.read) bus_req.data = bus_data;
+  if (dbg_req.read) dbg_req.data = bus_data;
+
+  // imask/intf have to be latched here or we get more errors
   imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
   intf_to_cpu = 0;
 
@@ -361,45 +385,6 @@ bool GateBoy::next_pass_gh() {
   if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
   if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
   if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
-
-  if (bus_req.read) bus_req.data = bus_data;
-  if (dbg_req.read) dbg_req.data = bus_data;
-
-  return stable;
-}
-
-//-----------------------------------------------------------------------------
-
-bool GateBoy::next_pass_ha() {
-
-  if ((bus_req.addr & 0xFF00) != 0xFF00) {
-    top.cpu_bus.BUS_CPU_A08.lock(0);
-    top.cpu_bus.BUS_CPU_A09.lock(0);
-    top.cpu_bus.BUS_CPU_A10.lock(0);
-    top.cpu_bus.BUS_CPU_A11.lock(0);
-    top.cpu_bus.BUS_CPU_A12.lock(0);
-    top.cpu_bus.BUS_CPU_A13.lock(0);
-    top.cpu_bus.BUS_CPU_A14.lock(0);
-    top.cpu_bus.BUS_CPU_A15.lock(0);
-  }
-
-  if (sys_cpu_en) {
-    top.cpu_bus.PIN_CPU_RDp.lock(1);
-  }
-  else {
-    top.cpu_bus.PIN_CPU_RDp.lock(0);
-  }
-  top.cpu_bus.PIN_CPU_WRp.lock(0);
-  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-
-  bool stable = update_logic();
-
-  if (stable) {
-    if (sys_cpu_en) {
-      cpu_blah.tock_ack(imask_to_cpu, intf_to_cpu, (uint8_t)bus_req.data); // has to be here or we get more errors
-      cpu_blah.tock_req(imask_to_cpu, intf_to_cpu); // bus request _must_ change on AB, see trace
-    }
-  }
 
   return stable;
 }

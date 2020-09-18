@@ -19,7 +19,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   err += test_init();
   err += test_clk();
-  err += test_ext_bus();
+  //err += test_ext_bus();
   err += test_mem();
   err += test_interrupts();
   err += test_bootrom();

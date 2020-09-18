@@ -344,21 +344,30 @@ bool GateBoy::next_pass_cd() {
 
 bool GateBoy::next_pass_de() {
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  return update_logic();
+
+  uint8_t bus_data = top.cpu_bus.get_bus_data();
+  if (dbg_req.read) dbg_req.data = bus_data;
+
+  bool stable = update_logic();
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_ef() {
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  return update_logic();
+
+  bool stable = update_logic();
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_pass_fg() {
   if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  return update_logic();
+
+  bool stable = update_logic();
+  return stable;
 }
 
 //-----------------------------------------------------------------------------
@@ -372,8 +381,6 @@ bool GateBoy::next_pass_gh() {
   uint8_t bus_data = top.cpu_bus.get_bus_data();
   uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
   uint8_t intf = 0;
-
-  if (dbg_req.read) dbg_req.data = bus_data;
 
   if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf |= INT_VBLANK_MASK;
   if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf |= INT_STAT_MASK;

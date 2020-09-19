@@ -87,20 +87,6 @@ void GateBoy::reset_to_bootrom() {
 void GateBoy::reset_post_bootrom() {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
   check_sentinel();
-
-  //printf("div %x\n", top.tim_reg.get_div());
-
-  //top.tim_reg.force_set_div(0xEAF2); // this passes poweron_000/4/5_div
-
-  top.tim_reg.force_set_tima(0x00);
-  
-  top.IE_D0.force_state(REG_D0C0);
-  top.IE_D1.force_state(REG_D0C0);
-  top.IE_D2.force_state(REG_D0C0);
-  top.IE_D3.force_state(REG_D0C0);
-  top.IE_D4.force_state(REG_D0C0);
-
-  pass_count = 0;
 }
 
 //------------------------------------------------------------------------------

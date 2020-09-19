@@ -17,17 +17,17 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  err += test_init();
-  err += test_clk();
+  //err += test_init();
+  //err += test_clk();
   //err += test_ext_bus();
-  err += test_mem();
-  err += test_interrupts();
-  err += test_bootrom();
-  err += test_dma();
-  err += test_joypad();
-  err += test_ppu();
-  err += test_serial();
-  err += test_timer();
+  //err += test_mem();
+  //err += test_interrupts();
+  //err += test_bootrom();
+  //err += test_dma();
+  //err += test_joypad();
+  //err += test_ppu();
+  //err += test_serial();
+  //err += test_timer();
   err += test_micro();
 
   if (!err) LOG_G("Everything passed!\n");
@@ -615,6 +615,7 @@ int GateBoyTests::test_init() {
 #define ADDR_WX          0xFF4B
 #endif
 
+#if 0
   EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");   // CF after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset value");   // 00 after bootrom
   EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset value");   // 7E after bootrom
@@ -645,6 +646,7 @@ int GateBoyTests::test_init() {
   // Button scan signals should be driven low
   EXPECT_EQ('0', gb.top.joypad.PIN_JOY_P14.c());
   EXPECT_EQ('0', gb.top.joypad.PIN_JOY_P15.c());
+#endif
 
   TEST_END();
 }
@@ -657,7 +659,8 @@ int GateBoyTests::test_clk() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_to_bootrom();
+  gb.reset_post_bootrom();
+  gb.sys_cpu_en = false;
 
   auto& top = gb.top;
   auto& clk_reg = top.clk_reg;

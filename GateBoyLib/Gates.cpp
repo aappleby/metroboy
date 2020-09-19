@@ -15,8 +15,8 @@ void combine_hash(uint64_t& a, uint64_t b) {
   a = _byteswap_uint64((a ^ b) * 0xff51afd7ed558ccd);
 }
 
-void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
-  uint64_t h = hash_regs;
+uint64_t commit_and_hash(void* blob, int size) {
+  uint64_t h = HASH_INIT;
 
   uint8_t* base = (uint8_t*)blob;
 
@@ -39,7 +39,7 @@ void commit_and_hash(void* blob, int size, uint64_t& hash_regs) {
     base[i] = s2;
   }
 
-  hash_regs = h;
+  return h;
 }
 
 /*

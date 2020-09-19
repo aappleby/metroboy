@@ -481,6 +481,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("dbg_req ");
   dump_req(dumper, gateboy->dbg_req);
   dumper("cpu_req ");
+  dump_req(dumper, gateboy->cpu_req);
+  dumper("bus_req ");
   dump_req(dumper, gateboy->bus_req);
 
   dumper("\n");

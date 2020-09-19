@@ -5,7 +5,7 @@ using namespace Schematics;
 
 #pragma warning(disable:4100) // unreferenced parameter
 
-#define FAST_BOOT
+//#define FAST_BOOT
 
 //-----------------------------------------------------------------------------
 

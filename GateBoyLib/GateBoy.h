@@ -21,23 +21,14 @@ struct GateBoy {
   }
 
   void next_phase() {
-    bool stable = false;
     do {
-      stable = next_pass();
-    } while(!stable);
+      next_pass();
+    } while(!sim_stable);
   }
 
-  bool next_pass();
+  void next_pass();
 
-  bool next_pass_ab();
-  bool next_pass_bc();
-  bool next_pass_cd();
-  bool next_pass_de();
-  bool next_pass_ef();
-  bool next_pass_fg();
-  bool next_pass_gh();
-  bool next_pass_ha();
-  bool update_logic();
+  uint64_t update_logic();
 
   void set_boot_bit() {
     dbg_write(0xFF50, 0xFF);
@@ -81,7 +72,7 @@ struct GateBoy {
   uint8_t  intf_to_cpu = 0;
   uint8_t  cpu_int_ack = 0;
 
-  uint8_t  sim_stable = false;
+  uint8_t  sim_stable = 0;
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
   int32_t  pass_total = 0;

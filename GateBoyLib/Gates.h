@@ -181,11 +181,11 @@ extern const Lut8 logic_lut1;
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
-void commit_and_hash(void* blob, int size, uint64_t& hash_regs);
+uint64_t commit_and_hash(void* blob, int size);
 
 template<typename T>
-inline void commit_and_hash(T& obj, uint64_t& hash_regs) {
-  commit_and_hash(&obj, sizeof(T), hash_regs);
+inline uint64_t commit_and_hash(T& obj) {
+  return commit_and_hash(&obj, sizeof(T));
 }
 
 //-----------------------------------------------------------------------------

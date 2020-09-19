@@ -52,16 +52,9 @@ void sprintf(std::string& out, const char* format, Args ... args)
 //-----------------------------------------------------------------------------
 
 void dump_req(Dumper& d, const Req& req) {
-  if (req.write)  {
-    d("%04x:%04x %s%s\n", req.addr, req.data,
-      req.read  ? "\003R \001" : "- ",
-      req.write ? "\002W \001" : "- ");
-  }
-  else {
-    d("%04x:---- %s%s\n", req.addr,
-      req.read  ? "\003R \001" : "- ",
-      req.write ? "\002W \001" : "- ");
-  }
+  d("%04x:%04x %s%s\n", req.addr, req.data,
+    req.read  ? "\003R \001" : "- ",
+    req.write ? "\002W \001" : "- ");
 }
 
 void dump_ack(Dumper& d, const Ack& ack) {

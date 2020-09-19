@@ -20,6 +20,11 @@ uint64_t hash_states(void* blob, int len);
 
 double timestamp();
 
+template<typename S, typename T>
+inline T clamp_val(S a, T min, T max) {
+  return (a < min) ? min : (a > max) ? max : T(a);
+}
+
 //-----------------------------------------------------------------------------
 
 inline int pack_p(wire a, wire b, wire c, wire d) {

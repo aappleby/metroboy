@@ -40,6 +40,10 @@ struct PixelPipe {
                   TUHU_X4p.qp(), TUKY_X5p.qp(), TAKO_X6p.qp(), SYBE_X7p.qp());
   }
 
+  wire lcd_on() {
+    return XONA_LCDC_LCDENn.qn();
+  }
+
   //----------------------------------------
 
   /*p27.SEKO*/ Sig   SEKO_WIN_TILE_TRIG; // -> top.TEVO

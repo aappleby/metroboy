@@ -28,6 +28,19 @@ struct GateBoy {
 
   void next_pass();
 
+  void next_mcycle() {
+    do {
+      next_phase();
+    } while(phase_total & 7);
+  }
+
+  void next_line() {
+    if (top.pix_pipe.lcd_on()) {
+      while(!top.lcd_reg.get_lx()) next_mcycle();
+      while( top.lcd_reg.get_lx()) next_mcycle();
+    }
+  }
+
   uint64_t update_logic();
 
   void set_boot_bit() {

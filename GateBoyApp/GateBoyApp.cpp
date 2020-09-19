@@ -34,8 +34,19 @@ int main(int argc, char** argv) {
 //-----------------------------------------------------------------------------
 
 GateBoyApp::GateBoyApp() {
-  auto top_step = [this](GateBoy* gateboy) { 
-    gateboy->next_pass();
+  auto top_step = [this](GateBoy* gateboy) {
+    if (stepmode == STEP_PASS) {
+      gateboy->next_pass();
+    }
+    else if (stepmode == STEP_PHASE) {
+      gateboy->next_phase();
+    }
+    else if (stepmode == STEP_MCYCLE) {
+      gateboy->next_mcycle();
+    }
+    else if (stepmode == STEP_LINE) {
+      gateboy->next_line();
+    }
   };
   auto top_unstep = [this](GateBoy* gateboy) {
     // Run a logic pass after unstep to update our probes
@@ -72,6 +83,7 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
+#if 0
   if (0) {
     gb.reset_to_bootrom();
     load_blob("roms/tetris.gb", gb.cart_rom, 32768);
@@ -81,34 +93,13 @@ void GateBoyApp::app_init() {
       gb.vid_ram[i] = (uint8_t)rand();
     }
   }
+#endif
   
 #if 0
   // run tiny app
   if (1) {
     gb.reset_post_bootrom();
     //gb.dbg_write(0xFF40, 0);
-
-    /*
-    const char* app = R"(
-    0150:
-      ld a, $73
-      ld hl, $8000
-      ld (hl), a
-      ld hl, $809F
-      ld (hl), a
-      ld hl, $FF80
-      ld a, $E0
-      ld (hl+), a
-      ld a, $46
-      ld (hl+), a
-      ld a, $18
-      ld (hl+), a
-      ld a, $FE
-      ld (hl+), a
-      ld a, $80
-      jp $ff80
-    )";
-    */
 
     std::string app;
     app += "0150:\n";
@@ -139,16 +130,6 @@ void GateBoyApp::app_init() {
     app += "add (hl)\n";
     app += "jr -2\n";
 
-    /*
-    const char* app = R"(
-    0150:
-      ld a, $55
-      ld hl, $0150
-      ld a, (hl)
-      jr -3
-    )";
-    */
-
     Assembler as;
     as.assemble(app.c_str());
     as.link_to(gb.cart_rom);
@@ -156,11 +137,10 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  //gb.reset_to_bootrom();
 
   // run rom
   gb.reset_post_bootrom();
-  //load_rom("microtests/build/dmg/poweron_000_tima.gb");
+  load_rom("microtests/build/dmg/poweron_006_oam.gb");
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb.sys_cpu_en = false;
@@ -199,15 +179,23 @@ void GateBoyApp::app_update(double delta) {
 
     case SDLK_f:      runmode = RUN_FAST; break;
     case SDLK_v:      runmode = RUN_VSYNC; break;
-    case SDLK_s:      runmode = STEP_FRAME; break;
+    case SDLK_s:      runmode = RUN_STEP; break;
     case SDLK_r:      reset_sim = true; break;
     case SDLK_c:      toggle_cpu = true; break;
 
+    case SDLK_UP: {
+      stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
+      break;
+    }
+
+    case SDLK_DOWN: {
+      stepmode = clamp_val(stepmode - 1, STEP_MIN, STEP_MAX);
+      break;
+    }
+
     case SDLK_RIGHT:  {
-      if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 114 * 8 * 8;
-      } else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 114 * 8;
+      if (keyboard_state[SDL_SCANCODE_LALT]) {
+        step_forward += 64;
       } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
         step_forward += 8;
       } else {
@@ -276,7 +264,8 @@ void GateBoyApp::app_update(double delta) {
     auto gb = state_manager.state();
     gb->run(114 * 8 * 8);
   }
-  else if (step_forward) {
+  
+  else if (runmode == RUN_STEP && step_forward) {
     state_manager.step(step_forward);
     step_forward = 0;
   }
@@ -551,6 +540,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     assembler.disassemble(code, code_size, code_base, pc, 30, dumper, /*collapse_nops*/ false);
     text_painter.render(view, dumper.s.c_str(), cursor, 0);
   }
+  dumper.clear();
 
   dump_painter.render(view, cursor, 416, 16, 16, gateboy->oam_ram);
 
@@ -605,6 +595,21 @@ void GateBoyApp::app_render_frame(Viewport view) {
     gb_blitter.blit_map   (view, 1344, 736, 1, gateboy->vid_ram, 1, 0);
     gb_blitter.blit_map   (view, 1632, 736, 1, gateboy->vid_ram, 1, 1);
   }
+
+  switch(runmode) {
+  case RUN_FAST:  dumper("RUN_FAST  ");  break;
+  case RUN_VSYNC: dumper("RUN_VSYNC "); break;
+  case RUN_STEP:  dumper("RUN_STEP  "); break;
+  }
+  switch(stepmode) {
+  case STEP_PASS:   dumper("STEP_PASS\n");   break;
+  case STEP_PHASE:  dumper("STEP_PHASE\n");  break;
+  case STEP_MCYCLE: dumper("STEP_MCYCLE\n"); break;
+  case STEP_LINE:   dumper("STEP_LINE\n");   break;
+  }
+  text_painter.render(view, dumper.s.c_str(), 1280, 32 + 144 * 2);
+  dumper.clear();
+
 }
 
 //-----------------------------------------------------------------------------

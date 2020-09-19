@@ -47,12 +47,22 @@ private:
   enum RunMode {
     RUN_FAST,
     RUN_VSYNC,
-    STEP_FRAME,
-    STEP_LINE,
-    STEP_PHASE
+    RUN_STEP,
   };
 
-  RunMode runmode = STEP_PHASE;
+  enum StepMode {
+    STEP_PASS   = 0,
+    STEP_PHASE  = 1,
+    STEP_MCYCLE = 2,
+    STEP_LINE   = 3,
+    
+    STEP_MIN = STEP_PASS,
+    STEP_MAX = STEP_LINE,
+  };
+
+  RunMode runmode = RUN_STEP;
+  StepMode stepmode = STEP_PHASE;
+
   const uint8_t* keyboard_state = nullptr;
 
   StateManager2<GateBoy> state_manager;

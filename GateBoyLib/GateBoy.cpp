@@ -54,31 +54,19 @@ GateBoy::GateBoy() {
 void GateBoy::reset_to_bootrom() {
   // In reset
   sys_rst = 1;
-  run(8);
+  run(5);
 
   // Out of reset
+  // Start clock and sync with phase 
   sys_rst = 0;
-  run(8);
-
-  // Start clock and sync with phase A
   sys_clken = 1;
-  while(1) {
-    printf("<*>\n");
-    run(1);
-    if (top.clk_reg.AFUR_xxxxEFGH.qn() &&
-        top.clk_reg.ALEF_AxxxxFGH.qp() &&
-        top.clk_reg.APUK_ABxxxxGH.qp() &&
-        top.clk_reg.ADYK_ABCxxxxH.qp()) break;
-  }
-  CHECK_P(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.qp());
-
-  // Sync done, reset phase counter to 0
-  phase_total = 0;
-  pass_count = 0;
-  pass_total = 0;
-
-  // Set CLKGOOD
   sys_clkgood = 1;
+  run(3);
+
+  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.qn());
+  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.qp());
+  CHECK_P(top.clk_reg.APUK_ABxxxxGH.qp());
+  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.qp());
 
   // Wait for PIN_CPU_START
   while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {
@@ -86,19 +74,12 @@ void GateBoy::reset_to_bootrom() {
   }
 
   // Delay to sync w/ expected div value after bootrom
-  
-  // run(40) = eaf6
-
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
   cpu_blah.reset(0x0000);
   sys_cpuready = 1;
   sys_cpu_en = true;
-
-  phase_total = 0;
-  pass_count = 0;
-  pass_total = 0;
 }
 
 //------------------------------------------------------------------------------

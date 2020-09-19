@@ -17,17 +17,19 @@ int GateBoyTests::test_main(int argc, char** argv) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
+  // slow pre-bootrom tests
   //err += test_init();
-  //err += test_clk();
-  //err += test_ext_bus();
-  //err += test_mem();
-  //err += test_interrupts();
   //err += test_bootrom();
-  //err += test_dma();
-  //err += test_joypad();
-  //err += test_ppu();
-  //err += test_serial();
-  //err += test_timer();
+
+  err += test_clk();
+  err += test_ext_bus();
+  err += test_mem();
+  err += test_interrupts();
+  err += test_dma();
+  err += test_joypad();
+  err += test_ppu();
+  err += test_serial();
+  err += test_timer();
   err += test_micro();
 
   if (!err) LOG_G("Everything passed!\n");
@@ -572,7 +574,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xc6ddc6547dfe21fc, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xa52523a4ac4c3133, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -1213,7 +1215,8 @@ int GateBoyTests::test_interrupts() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_to_bootrom();
+  gb.reset_post_bootrom();
+  gb.sys_cpu_en = 0;
 
   // hblank no stat int
   // vblank no stat int
@@ -1432,9 +1435,10 @@ int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
   GateBoy gb;
-  gb.reset_to_bootrom();
+  gb.reset_post_bootrom();
   gb.sys_cpu_en = 0;
   gb.sys_cart_loaded = 1;
+  gb.dbg_write(ADDR_LCDC, 0);
 
   /*
   gb.oam_ram[0] = 0x87;
@@ -1515,8 +1519,11 @@ int GateBoyTests::test_ppu() {
   {
     LOG("Checking LY increment rate... ");
     GateBoy gb;
-    gb.reset_to_bootrom();
+    gb.reset_post_bootrom();
+    gb.sys_cpu_en = 0;
     gb.sys_cart_loaded = 1;
+
+    gb.dbg_write(ADDR_LCDC, 0x00);
     gb.dbg_write(ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable
@@ -1549,10 +1556,10 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
   GateBoy gb;
-  gb.reset_to_bootrom();
-  gb.set_boot_bit();
+  gb.reset_post_bootrom();
   gb.sys_cpu_en = 0;
   gb.sys_cart_loaded = 1;
+  gb.dbg_write(ADDR_LCDC, 0);
 
   int len = addr_end - addr_start + 1;
   uint8_t* mem = get_flat_ptr(gb, addr_start);
@@ -1592,7 +1599,8 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   GateBoy gb;
-  gb.reset_to_bootrom();
+  gb.reset_post_bootrom();
+  gb.sys_cpu_en = 0;
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);

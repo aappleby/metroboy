@@ -162,10 +162,6 @@ void GateBoyApp::app_init() {
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb.sys_cpu_en = false;
-
-  gb.phase_total = 0;
-  gb.pass_count = 0;
-  gb.pass_total = 0;
 }
 
 //----------------------------------------
@@ -496,7 +492,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   cursor += col_width;
   dumper.clear();
 
-  /*
   wire CLK = gateboy->phase_total & 1;
   top.clk_reg.dump(dumper, CLK);
   top.joypad.dump(dumper);
@@ -504,7 +499,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();
-  */
 
   top.cpu_bus.dump(dumper);
   top.ext_bus.dump(dumper);

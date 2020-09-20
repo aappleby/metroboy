@@ -162,8 +162,8 @@ void GateBoy::next_pass() {
       if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
 
       // has to be in gh or things break
-      if (cpu_req.read) cpu_req.data = top.cpu_bus.get_bus_data();
-      if (dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
+      if (cpu_req.read) cpu_req.data = cpu_data_latch;
+      if (dbg_req.read) dbg_req.data = cpu_data_latch;
     }
 
     //----------
@@ -258,8 +258,11 @@ uint64_t GateBoy::update_logic() {
     //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && (bus_req.addr <= 0xFDFF));
     //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && !addr_oam);
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read);
-    cpu_data_latch = 0xFF;
   }
+
+  if (DELTA_FG) cpu_data_latch = 0xFF;
+  if (DELTA_GH) cpu_data_latch &= top.cpu_bus.get_bus_data();
+  if (DELTA_HA) cpu_data_latch &= top.cpu_bus.get_bus_data();
 
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);

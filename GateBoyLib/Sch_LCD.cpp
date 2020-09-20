@@ -76,8 +76,8 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.LYHA*/ wire LYHA_VID_RSTp = not1(XAPO_VID_RSTn);
   /*p01.LYFE*/ wire LYFE_VID_RSTn = not1(LYHA_VID_RSTp);
 
-  /* p29.XUPY*/ wire XUPY_xxCDxxGH = top.clk_reg.XUPY_xxCDxxGH;
-  /* p21.TALU*/ wire TALU_ABCDxxxx = top.clk_reg.TALU_ABCDxxxx;
+  /* p29.XUPY*/ wire XUPY_xxCDxxGH = top.clk_reg.XUPY_ABxxEFxx;
+  /* p21.TALU*/ wire TALU_ABCDxxxx = top.clk_reg.TALU_xxCDEFxx;
   /* p28.AWOH*/ wire AWOH_ABxxEFxx = not1(XUPY_xxCDxxGH);
   /* p21.SONO*/ wire SONO_xxxxEFGH = not1(TALU_ABCDxxxx);
 

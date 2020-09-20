@@ -69,7 +69,7 @@ void SpriteScanner::tick(const SchematicTop& top) {
   /* p29.GESE*/ wire GESE_SCAN_MATCH_Y  = not1(WOTA_SCAN_MATCH_Yn);
   /* p29.CEHA*/ wire CEHA_SCANNINGp     = not1(CENO_SCANNINGp.qn());
 
-  /* p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and3(top.clk_reg.XOCE_AxxDExxH, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+  /* p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and3(top.clk_reg.XOCE_xBCxxFGx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
 }
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
   {
     /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
     /*#p29.BAGY*/ wire BAGY_LINE_RSTn = not1(BALU_LINE_RSTp);
-    /*#p29.BYBA*/ BYBA_SCAN_DONE_A.tock(top.clk_reg.XUPY_xxCDxxGH, BAGY_LINE_RSTn, FETO_SCAN_DONE_d0);
+    /*#p29.BYBA*/ BYBA_SCAN_DONE_A.tock(top.clk_reg.XUPY_ABxxEFxx, BAGY_LINE_RSTn, FETO_SCAN_DONE_d0);
     /*#p29.DOBA*/ DOBA_SCAN_DONE_B.tock(ALET_xBxDxFxH, BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp());
 
     /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn());
@@ -99,7 +99,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(ATAR_VID_RSTp, AVAP_RENDER_START_TRIGp);
     /*#p28.BESU*/ BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_VID_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
-    /*#p29.CENO*/ CENO_SCANNINGp.tock(top.clk_reg.XUPY_xxCDxxGH, ABEZ_VID_RSTn, BESU_SCANNINGp.qp());
+    /*#p29.CENO*/ CENO_SCANNINGp.tock(top.clk_reg.XUPY_ABxxEFxx, ABEZ_VID_RSTn, BESU_SCANNINGp.qp());
   }
 
   //----------------------------------------
@@ -107,7 +107,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p28.GAVA*/ wire GAVA_SCAN_CLK = or2(FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_xxCDxxGH);
+    /*p28.GAVA*/ wire GAVA_SCAN_CLK = or2(FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx);
 
     /*p28.YFEL*/ YFEL_SCAN0.tock(GAVA_SCAN_CLK,   ANOM_LINE_RSTn, YFEL_SCAN0.qn());
     /*p28.WEWY*/ WEWY_SCAN1.tock(YFEL_SCAN0.qn(), ANOM_LINE_RSTn, WEWY_SCAN1.qn());

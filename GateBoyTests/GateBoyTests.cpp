@@ -669,19 +669,29 @@ int GateBoyTests::test_clk() {
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH,   0b01010101);
-    
+    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH, 0b01010101);
+    EXPECT_CLK(clk_reg.BUDE_xxxxEFGH, 0b00001111);
+
+    EXPECT_CLK(clk_reg.ATYP_ABCDxxxx, 0b11110000);
+    EXPECT_CLK(clk_reg.AROV_xxCDEFxx, 0b00111100);
+    EXPECT_CLK(clk_reg.AJAX_xxxxEFGH, 0b00001111);
+
+    EXPECT_CLK(clk_reg.ADAR_ABCxxxxH, 0b11100001);
+    EXPECT_CLK(clk_reg.BALY_Axxxxxxx, 0b10000000);
+
+    EXPECT_CLK(clk_reg.XUPY_ABxxEFxx, 0b11001100);
+    EXPECT_CLK(clk_reg.TALU_xxCDEFxx, 0b00111100);
+    EXPECT_CLK(clk_reg.XOCE_xBCxxFGx, 0b01100110);
+    EXPECT_CLK(clk_reg.WOJO_AxxxExxx, 0b10001000);
+
     EXPECT_CLK(clk_reg.AFUR_xxxxEFGH.qp(), 0b00001111);
     EXPECT_CLK(clk_reg.ALEF_AxxxxFGH.qp(), 0b10000111);
     EXPECT_CLK(clk_reg.APUK_ABxxxxGH.qp(), 0b11000011);
     EXPECT_CLK(clk_reg.ADYK_ABCxxxxH.qp(), 0b11100001);
 
-    EXPECT_CLK(clk_reg.AROV_xxCDEFxx,   0b00111100);
-    EXPECT_CLK(clk_reg.ATYP_ABCDxxxx,   0b11110000);
-    EXPECT_CLK(clk_reg.AJAX_xxxxEFGH,   0b00001111);
-    EXPECT_CLK(clk_reg.ADAR_ABCxxxxH,   0b11100001);
-    EXPECT_CLK(clk_reg.BUDE_xxxxEFGH,   0b00001111);
-    EXPECT_CLK(clk_reg.BALY_Axxxxxxx,   0b10000000);
+    EXPECT_CLK(clk_reg.WUVU_ABxxEFxx.qp(), 0b11001100);
+    EXPECT_CLK(clk_reg.VENA_xxCDEFxx.qp(), 0b00111100);
+    EXPECT_CLK(clk_reg.WOSU_AxxDExxH.qp(), 0b10011001);
 
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.qp(), 0b01111111);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.qp(), 0b10000000);

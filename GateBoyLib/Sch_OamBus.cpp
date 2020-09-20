@@ -171,7 +171,7 @@ void OamBus::tock(SchematicTop& top) {
   //----------------------------------------
   // Sprite store input driver.
 
-  /*#p30.CYKE*/ wire CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_xxCDxxGH);
+  /*#p30.CYKE*/ wire CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_ABxxEFxx);
   /*#p30.WUDA*/ wire WUDA_xxCDxxGH = not1(CYKE_ABxxEFxx);
   /* p28.YFOT*/ wire YFOT_OAM_A2p = not1(BUS_OAM_A2n.qp());
   /* p28.YFOC*/ wire YFOC_OAM_A3p = not1(BUS_OAM_A3n.qp());
@@ -204,17 +204,43 @@ void OamBus::tock(SchematicTop& top) {
   // OAM pins
 
   {
-    /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp, top.clk_reg.XOCE_AxxDExxH); // schematic wrong, is def nand2
-    /*p28.XUJA*/ wire XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp);
-    /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
-    /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-    /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCHn  = nand3(top.DECY_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
-    /*p28.ASYT*/ wire ASYT_OAM_LATCHn      = and3(AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn, BOTA_CPU_OAM_LATCHn); // def and
-    /*p28.BODE*/ wire BODE_OAM_LATCHp      = not1(ASYT_OAM_LATCHn);
+#if 0
+    if (ACYL_SCANNINGp) {
+      if (XOCE_xBCxxFGx) {
+        PIN_OAM_OE.set(0);
+      }
+      else {
+        BOTA_CPU_OAM_LATCHn  = !and3(!PIN_CPU_LATCH_EXT, SARO_FE00_FEFFp, TEDO_CPU_RDp);
+        ASYT_OAM_LATCHn      = and3(!WEFY_SPR_READp, BOTA_CPU_OAM_LATCHn);
+        PIN_OAM_OE.set(ASYT_OAM_LATCHn);
+      }
+    }
+    else if (WEFY_SPR_READp) {
+      PIN_OAM_OE.set(0);
+    }
+    else if (PIN_CPU_LATCH_EXT) {
+      PIN_OAM_OE.set(1);
+    }
+    else {
+      PIN_OAM_OE.set(!and3(SARO_FE00_FEFFp, TEDO_CPU_RDp));
+    }
+#endif
 
-    /*p28.YVAL*/ wire YVAL_OAM_LATCHn  = not1(BODE_OAM_LATCHp);
-    /*p28.YRYV*/ wire YRYU_OAM_LATCHp  = not1(YVAL_OAM_LATCHn);
-    /*p28.ZODO*/ wire ZODO_OAM_LATCHn  = not1(YRYU_OAM_LATCHp);
+    /*#p28.AJEP*/ wire AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp, top.clk_reg.XOCE_xBCxxFGx); // schematic wrong, is def nand2
+    /*#p28.XUJA*/ wire XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp);
+    /*#p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
+    /*#p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
+
+    /*#p04.CATY*/ wire CATY_LATCH_EXTp = not1(top.DECY_LATCH_EXTn);
+    /*#p28.BOFE*/ wire BOFE_LATCH_EXTn = not1(CATY_LATCH_EXTp);
+
+    /*#p28.BOTA*/ wire BOTA_CPU_OAM_LATCHn  = nand3(BOFE_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
+    /*#p28.ASYT*/ wire ASYT_OAM_LATCHn      = and3(AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn, BOTA_CPU_OAM_LATCHn); // def and
+    /*#p28.BODE*/ wire BODE_OAM_LATCHp      = not1(ASYT_OAM_LATCHn);
+
+    /*#p28.YVAL*/ wire YVAL_OAM_LATCHn  = not1(BODE_OAM_LATCHp);
+    /*#p28.YRYV*/ wire YRYU_OAM_LATCHp  = not1(YVAL_OAM_LATCHn);
+    /*#p28.ZODO*/ wire ZODO_OAM_LATCHn  = not1(YRYU_OAM_LATCHp);
     PIN_OAM_OE.set(ZODO_OAM_LATCHn);
   }
 
@@ -352,7 +378,7 @@ void OamBus::tock(SchematicTop& top) {
     /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-    /* p28.AJEP*/ wire AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp, top.clk_reg.XOCE_AxxDExxH); // schematic wrong, is def nand2
+    /* p28.AJEP*/ wire AJEP_SCAN_OAM_LATCHn = nand2(top.ACYL_SCANNINGp, top.clk_reg.XOCE_xBCxxFGx); // schematic wrong, is def nand2
     /* p28.XUJA*/ wire XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp);
     /* p04.DECY*/ wire DECY_LATCH_EXTn = not1(top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
     /* p28.BOTA*/ wire BOTA_CPU_OAM_LATCHn  = nand3(DECY_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
@@ -380,7 +406,7 @@ void OamBus::tock(SchematicTop& top) {
 
   // OBL -> OBR
   {
-    /*p29.XYSO*/ wire XYSO_ABxDEFxH = not1(top.clk_reg.WOJO_xxCxxxGx);
+    /*p29.XYSO*/ wire XYSO_ABxDEFxH = not1(top.clk_reg.WOJO_AxxxExxx);
     /*p25.AVER*/ wire AVER_SCAN_OAM_CLK = nand2(top.ACYL_SCANNINGp, XYSO_ABxDEFxH); 
     /*p25.XUJY*/ wire XUJY_PPU_OAM_CLK  = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK);
     

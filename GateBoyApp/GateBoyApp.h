@@ -50,18 +50,8 @@ private:
     RUN_STEP,
   };
 
-  enum StepMode {
-    STEP_PASS   = 0,
-    STEP_PHASE  = 1,
-    STEP_MCYCLE = 2,
-    STEP_LINE   = 3,
-    
-    STEP_MIN = STEP_PASS,
-    STEP_MAX = STEP_LINE,
-  };
-
   RunMode runmode = RUN_STEP;
-  StepMode stepmode = STEP_PHASE;
+  StepSize stepmode = STEP_PHASE;
 
   const uint8_t* keyboard_state = nullptr;
 

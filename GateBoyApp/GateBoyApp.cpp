@@ -34,23 +34,26 @@ int main(int argc, char** argv) {
 //-----------------------------------------------------------------------------
 
 GateBoyApp::GateBoyApp() {
-  auto top_step = [this](GateBoy* gateboy) {
-    if (stepmode == STEP_PASS) {
+  auto top_step = [](GateBoy* gateboy, StepSize step_size) {
+    (void)step_size;
+    gateboy->next_phase();
+    /*
+    if (step_size == STEP_PASS) {
       gateboy->next_pass();
     }
-    else if (stepmode == STEP_PHASE) {
-      gateboy->next_phase();
+    else if (step_size == STEP_PHASE) {
     }
-    else if (stepmode == STEP_MCYCLE) {
+    else if (step_size == STEP_CYCLE) {
       gateboy->next_mcycle();
     }
-    else if (stepmode == STEP_LINE) {
+    else if (step_size == STEP_LINE) {
       gateboy->next_line();
     }
+    */
   };
-  auto top_unstep = [this](GateBoy* gateboy) {
+  auto top_unstep = [](GateBoy* gateboy, StepSize /*step_size*/) {
     // Run a logic pass after unstep to update our probes
-    gateboy->update_logic();
+    gateboy->update_top();
   };
   state_manager.init(top_step, top_unstep);
 }
@@ -83,15 +86,13 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
-#if 0
-  if (0) {
-    gb.reset_to_bootrom();
-    load_blob("roms/tetris.gb", gb.cart_rom, 32768);
-    gb.sys_cart_loaded = 1;
+#if 1
+  gb.reset_to_bootrom();
+  load_blob("roms/tetris.gb", gb.cart_rom, 32768);
+  gb.sys_cart_loaded = 1;
 
-    for (int i = 0; i < 8192; i++) {
-      gb.vid_ram[i] = (uint8_t)rand();
-    }
+  for (int i = 0; i < 8192; i++) {
+    gb.vid_ram[i] = (uint8_t)rand();
   }
 #endif
   
@@ -139,8 +140,9 @@ void GateBoyApp::app_init() {
 
 
   // run rom
-  gb.reset_post_bootrom();
-  load_rom("microtests/build/dmg/poweron_006_oam.gb");
+  //gb.reset_post_bootrom();
+  //load_rom("microtests/build/dmg/poweron_006_oam.gb");
+  //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb");
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb.sys_cpu_en = false;
@@ -194,8 +196,11 @@ void GateBoyApp::app_update(double delta) {
     }
 
     case SDLK_RIGHT:  {
-      if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 64;
+      if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
+        step_forward += 113 * 8 * 8;
+      }
+      else if (keyboard_state[SDL_SCANCODE_LALT]) {
+        step_forward += 113 * 8;
       } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
         step_forward += 8;
       } else {
@@ -260,18 +265,18 @@ void GateBoyApp::app_update(double delta) {
   }
 
   if (runmode == RUN_FAST) {
-    state_manager.step(0);
-    auto gb = state_manager.state();
-    gb->run(114 * 8 * 8);
+    //auto gb = state_manager.state();
+    //gb->run(114 * 8 * 8);
+    state_manager.step(113 * 8 * 8, STEP_PHASE);
   }
   
   else if (runmode == RUN_STEP && step_forward) {
-    state_manager.step(step_forward);
+    state_manager.step(step_forward, stepmode);
     step_forward = 0;
   }
 
   while(step_backward--) {
-    state_manager.unstep(1);
+    state_manager.unstep(1, stepmode);
   }
 
   frame_count++;
@@ -306,20 +311,12 @@ void GateBoyApp::load_megadump(const char* filename) {
     return;
   }
 
-  size_t state_count = state_manager.state_count();
-  fread(&state_count, 1, sizeof(state_count), f);
+  state_manager.load_megadump(f);
+  state_manager.scan([](const GateBoy* gb) {
+    gb->check_sentinel();
+    return true;
+  });
 
-  for (auto s : state_manager.states) {
-    delete s;
-  }
-  state_manager.states.resize(state_count);
-  for (size_t i = 0; i < state_count; i++) {
-    state_manager.states[i] = new GateBoy();
-    fread(state_manager.states[i], 1, sizeof(GateBoy), f);
-    state_manager.states[i]->check_sentinel();
-  }
-
-  printf("Loaded %zd states\n", state_count);
   fclose(f);
 }
 
@@ -335,14 +332,7 @@ void GateBoyApp::save_megadump(const char* filename) {
     return;
   }
 
-  size_t state_count = state_manager.state_count();
-  fwrite(&state_count, 1, sizeof(state_count), f);
-
-  for (size_t i = 0; i < state_count; i++) {
-    fwrite(state_manager.states[i], 1, sizeof(GateBoy), f);
-  }
-
-  printf("Saved %zd states\n", state_count);
+  state_manager.save_megadump(f);
   fclose(f);
 }
 
@@ -602,11 +592,30 @@ void GateBoyApp::app_render_frame(Viewport view) {
   case RUN_STEP:  dumper("RUN_STEP  "); break;
   }
   switch(stepmode) {
-  case STEP_PASS:   dumper("STEP_PASS\n");   break;
-  case STEP_PHASE:  dumper("STEP_PHASE\n");  break;
-  case STEP_MCYCLE: dumper("STEP_MCYCLE\n"); break;
-  case STEP_LINE:   dumper("STEP_LINE\n");   break;
+  case STEP_PASS:   dumper("STEP_PASS   ");   break;
+  case STEP_PHASE:  dumper("STEP_PHASE  ");  break;
+  case STEP_CYCLE: dumper("STEP_MCYCLE "); break;
+  case STEP_LINE:   dumper("STEP_LINE   ");   break;
   }
+  dumper("Sim clock %8.3f ",      double(gateboy->phase_total) / (4194304.0 * 2));
+  dumper("%s", phases[gateboy->phase_total & 7]);
+  dumper("%c", gateboy->sim_stable ? ' ' : '*');
+  dumper("\n");
+
+  int count = 0;
+  state_manager.rev_scan([&](const GateBoy* gb) {
+    switch(gb->get_step_size()) {
+    case STEP_LINE:  dumper("L"); break;
+    case STEP_CYCLE: dumper("C"); break;
+    case STEP_PHASE: dumper("P"); break;
+    case STEP_PASS:  dumper("S"); break;
+    }
+    count++;
+    return count < 30;
+  });
+  dumper("\n");
+
+
   text_painter.render(view, dumper.s.c_str(), 1280, 32 + 144 * 2);
   dumper.clear();
 

@@ -14,11 +14,7 @@ struct GateBoy {
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
 
-  void run(int phase_count) {
-    for (int i = 0; i < phase_count; i++) {
-      next_phase();
-    }
-  }
+  void next_pass();
 
   void next_phase() {
     do {
@@ -26,25 +22,36 @@ struct GateBoy {
     } while(!sim_stable);
   }
 
-  void next_pass();
-
   void next_mcycle() {
-    do {
-      next_phase();
-    } while(phase_total & 7);
+    run(8);
   }
 
   void next_line() {
-    if (top.pix_pipe.lcd_on()) {
-      while(!top.lcd_reg.get_lx()) next_mcycle();
-      while( top.lcd_reg.get_lx()) next_mcycle();
+    run(113 * 8);
+  }
+
+  void run(int phase_count) {
+    for (int i = 0; i < phase_count; i++) {
+      next_phase();
     }
   }
 
   uint64_t update_logic();
+  uint64_t update_top();
 
   void set_boot_bit() {
     dbg_write(0xFF50, 0xFF);
+  }
+
+  StepSize get_step_size() const {
+    bool line_begin  = top.lcd_reg.get_lx() == 0;
+    bool cycle_begin = (phase_total & 7) == 0;
+    bool phase_begin = pass_count == 0;
+
+    if (!phase_begin) return STEP_PASS;
+    if (!cycle_begin) return STEP_PHASE;
+    if (!line_begin)  return STEP_CYCLE;
+    return STEP_LINE;
   }
 
   //----------------------------------------
@@ -58,7 +65,7 @@ struct GateBoy {
     save_obj(filename, *this);
   }
 
-  void check_sentinel() {
+  void check_sentinel() const {
     if (sentinel1 != 0xDEADBEEFBAADF00D) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
     if (sentinel2 != 0xF00DCAFEBAADC0DE) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
   }
@@ -80,6 +87,7 @@ struct GateBoy {
   Req      cpu_req = {0};
   Req      dbg_req = {0};
   Req      bus_req = {0};
+  uint8_t  cpu_data_latch = 0;
 
   uint8_t  imask_to_cpu = 0;
   uint8_t  intf_to_cpu = 0;

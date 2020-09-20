@@ -221,6 +221,13 @@ struct RegBase {
     /*CHECKn(has_delta());*/ return wire(state & 1);
   }
 
+  inline void lock(RegDelta d) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = d;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
   inline void lock(wire w) {
     CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
     delta = w ? DELTA_TRI1 : DELTA_TRI0;

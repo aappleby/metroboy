@@ -45,23 +45,23 @@ void Joypad::dump(Dumper& d) const {
 void Joypad::set_buttons(uint8_t buttons) {
   // Pressing a button pulls the corresponding pin _down_.
 
-  PIN_JOY_P10 = DELTA_TRIZ;
-  PIN_JOY_P11 = DELTA_TRIZ;
-  PIN_JOY_P12 = DELTA_TRIZ;
-  PIN_JOY_P13 = DELTA_TRIZ;
+  PIN_JOY_P10.lock(DELTA_TRIZ);
+  PIN_JOY_P11.lock(DELTA_TRIZ);
+  PIN_JOY_P12.lock(DELTA_TRIZ);
+  PIN_JOY_P13.lock(DELTA_TRIZ);
 
   if (PIN_JOY_P14.qp()) {
-    if (buttons & 0x01) PIN_JOY_P10 = DELTA_TRI0;
-    if (buttons & 0x02) PIN_JOY_P11 = DELTA_TRI0;
-    if (buttons & 0x04) PIN_JOY_P12 = DELTA_TRI0;
-    if (buttons & 0x08) PIN_JOY_P13 = DELTA_TRI0;
+    if (buttons & 0x01) PIN_JOY_P10.lock(DELTA_TRI0);
+    if (buttons & 0x02) PIN_JOY_P11.lock(DELTA_TRI0);
+    if (buttons & 0x04) PIN_JOY_P12.lock(DELTA_TRI0);
+    if (buttons & 0x08) PIN_JOY_P13.lock(DELTA_TRI0);
   }
 
   if (PIN_JOY_P15.qp()) {
-    if (buttons & 0x10) PIN_JOY_P10 = DELTA_TRI0;
-    if (buttons & 0x20) PIN_JOY_P11 = DELTA_TRI0;
-    if (buttons & 0x40) PIN_JOY_P12 = DELTA_TRI0;
-    if (buttons & 0x80) PIN_JOY_P13 = DELTA_TRI0;
+    if (buttons & 0x10) PIN_JOY_P10.lock(DELTA_TRI0);
+    if (buttons & 0x20) PIN_JOY_P11.lock(DELTA_TRI0);
+    if (buttons & 0x40) PIN_JOY_P12.lock(DELTA_TRI0);
+    if (buttons & 0x80) PIN_JOY_P13.lock(DELTA_TRI0);
   }
 }
 //------------------------------------------------------------------------------

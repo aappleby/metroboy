@@ -250,7 +250,15 @@ uint64_t GateBoy::update_logic() {
   }
 
   if (DELTA_DE) {
+    // Something weird here, in order for OAM read to work we don't want to set PIN_CPU_LATCH_EXT,
+    // but not doing so breaks DMA tests? Probably need to distinguish between CPU/DMA reads
+    // or something.
+
+    //bool addr_oam = (bus_req.addr >= 0xFE00) && (bus_req.addr <= 0xFEFF);
+    //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && (bus_req.addr <= 0xFDFF));
+    //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && !addr_oam);
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read);
+    cpu_data_latch = 0xFF;
   }
 
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
@@ -273,9 +281,12 @@ uint64_t GateBoy::update_logic() {
 
   top.joypad.set_buttons(sys_buttons);
 
-  //----------------------------------------
-  // Run one pass of our simulation.
+  return update_top();
+}
 
+//-----------------------------------------------------------------------------
+
+uint64_t GateBoy::update_top() {
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
 

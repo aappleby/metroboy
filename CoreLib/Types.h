@@ -14,6 +14,16 @@ typedef int16_t sample_t;
 //typedef const bool wire;
 typedef bool wire;
 
+enum StepSize {
+  STEP_PASS  = 0,
+  STEP_PHASE = 1,
+  STEP_CYCLE = 2,
+  STEP_LINE  = 3,
+    
+  STEP_MIN = STEP_PASS,
+  STEP_MAX = STEP_LINE,
+};
+
 constexpr uint64_t HASH_INIT = 0x12345678;
 uint64_t mix(uint64_t h);
 uint64_t hash_states(void* blob, int len);

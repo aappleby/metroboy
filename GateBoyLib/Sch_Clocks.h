@@ -31,10 +31,10 @@ struct ClockRegisters {
   /*#p01.ADAR*/ Sig ADAR_ABCxxxxH; // ext bus, oam bus
   /* p01.BALY*/ Sig BALY_Axxxxxxx; // joypad, timer
 
-  /* p29.XUPY*/ Sig XUPY_xxCDxxGH; // lcd, sprite scanner
-  /* p21.TALU*/ Sig TALU_ABCDxxxx; // lcd, pix pipe (wy match should probably move to lcd)
-  /* p29.XOCE*/ Sig XOCE_AxxDExxH; // oam bus, sprite scanner
-  /* p29.WOJO*/ Sig WOJO_xxCxxxGx; // oam bus
+  /* p29.XUPY*/ Sig XUPY_ABxxEFxx; // lcd, sprite scanner
+  /* p21.TALU*/ Sig TALU_xxCDEFxx; // lcd, pix pipe (wy match should probably move to lcd)
+  /* p29.XOCE*/ Sig XOCE_xBCxxFGx; // oam bus, sprite scanner
+  /* p29.WOJO*/ Sig WOJO_AxxxExxx; // oam bus
 
   /* p01.ALUR*/ Sig ALUR_SYS_RSTn; // everywhere
   /* p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere
@@ -52,9 +52,9 @@ private:
   /*p01.APUK*/ DFF9 APUK_ABxxxxGH;
   /*p01.ADYK*/ DFF9 ADYK_ABCxxxxH;
 
-  /*p29.WUVU*/ DFF17 WUVU_xxCDxxGH;
-  /*p21.VENA*/ DFF17 VENA_ABCDxxxx;
-  /*p29.WOSU*/ DFF17 WOSU_xBCxxFGx;
+  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
+  /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
+  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 };
 
 //-----------------------------------------------------------------------------

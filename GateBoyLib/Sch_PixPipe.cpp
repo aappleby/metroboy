@@ -406,7 +406,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p27.PAFU*/ wire PAFU_WY_MATCHn     = nand5(NELE_WY_MATCH_HI, NAZE_WY_MATCH0, PEBO_WY_MATCH1, POMO_WY_MATCH2, NEVU_WY_MATCH3);
     /* p27.ROGE*/ wire ROGE_WY_MATCHp = not1(PAFU_WY_MATCHn);
     /* p27.REPU*/ wire REPU_VBLANK_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, PYRY_VID_RSTp);
-    /* p27.SARY*/ SARY_WY_MATCH.tock(top.clk_reg.TALU_ABCDxxxx, top.clk_reg.XAPO_VID_RSTn, ROGE_WY_MATCHp);
+    /* p27.SARY*/ SARY_WY_MATCH.tock(top.clk_reg.TALU_xxCDEFxx, top.clk_reg.XAPO_VID_RSTn, ROGE_WY_MATCHp);
     /* p27.REJO*/ REJO_WY_MATCH_LATCH.nor_latch(SARY_WY_MATCH.qp(), REPU_VBLANK_RSTp);
   }
 

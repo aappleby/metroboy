@@ -24,13 +24,13 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
   d("\n");
 
   d("---------- PPU Clock ----------\n");
-  d("VENA_ABCDxxxx %d\n", !VENA_ABCDxxxx.qn());
-  d("TALU_ABCDxxxx %c\n", TALU_ABCDxxxx.c());
-  d("XOCE_AxxDExxH %c\n", XOCE_AxxDExxH.c());
-  d("WOSU_xBCxxFGx %d\n",  WOSU_xBCxxFGx.qp());
-  d("WOJO_xxCxxxGx %c\n", WOJO_xxCxxxGx.c());
-  d("WUVU_xxCDxxGH %d\n", !WUVU_xxCDxxGH.qn());
-  d("XUPY_xxCDxxGH %c\n", XUPY_xxCDxxGH.c());
+  d("VENA_ABCDxxxx %d\n", !VENA_xxCDEFxx.qn());
+  d("TALU_ABCDxxxx %c\n", TALU_xxCDEFxx.c());
+  d("XOCE_AxxDExxH %c\n", XOCE_xBCxxFGx.c());
+  d("WOSU_xBCxxFGx %d\n",  WOSU_AxxDExxH.qp());
+  d("WOJO_xxCxxxGx %c\n", WOJO_AxxxExxx.c());
+  d("WUVU_xxCDxxGH %d\n", !WUVU_ABxxEFxx.qn());
+  d("XUPY_xxCDxxGH %c\n", XUPY_ABxxEFxx.c());
   d("\n");
 
   d("----------  Reset   ----------\n");
@@ -87,10 +87,10 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.qn());
 
-  /*p29.XUPY*/ XUPY_xxCDxxGH = not1(WUVU_xxCDxxGH.qn());
-  /*p21.TALU*/ TALU_ABCDxxxx = not1(VENA_ABCDxxxx.qn());
-  /*p29.XOCE*/ XOCE_AxxDExxH = not1(WOSU_xBCxxFGx.qp());
-  /*p29.WOJO*/ WOJO_xxCxxxGx = nor2(WUVU_xxCDxxGH.qn(), WOSU_xBCxxFGx.qn());
+  /*p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.qn());
+  /*p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.qn());
+  /*p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.qp());
+  /*p29.WOJO*/ WOJO_AxxxExxx = nor2(WUVU_ABxxEFxx.qn(), WOSU_AxxDExxH.qn());
 }
 
 //-----------------------------------------------------------------------------
@@ -190,9 +190,9 @@ void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
-  /*p29.WUVU*/ WUVU_xxCDxxGH.tock(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
-  /*p21.VENA*/ VENA_ABCDxxxx.tock(WUVU_xxCDxxGH.qn(), XAPO_VID_RSTn, VENA_ABCDxxxx.qn());
-  /*p29.WOSU*/ WOSU_xBCxxFGx.tock(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_xxCDxxGH.qn());
+  /*p29.WUVU*/ WUVU_ABxxEFxx.tock(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
+  /*p21.VENA*/ VENA_xxCDEFxx.tock(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn());
+  /*p29.WOSU*/ WOSU_AxxDExxH.tock(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
 }
 
 //-----------------------------------------------------------------------------

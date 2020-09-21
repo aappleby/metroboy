@@ -16,3 +16,7 @@ void dump_probes(Dumper& d) {
   }
   d("\n");
 }
+
+void clear_probes() {
+  all_probes.clear();
+}

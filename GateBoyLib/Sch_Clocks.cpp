@@ -66,31 +66,32 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p01.ATYP*/ ATYP_ABCDxxxx = not1(AFUR_xxxxEFGH.qp());
   /*#p01.AJAX*/ AJAX_xxxxEFGH = not1(ATYP_ABCDxxxx.qp());
 
-  /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
-  /*p01.BELU*/ wire BELU_xxxxEFGH = nor2(ABOL_CLKREQn, ATYP_ABCDxxxx);
-  /*p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
-  /*p01.BUDE*/ BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
+  /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
 
-  /*p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
-  /*p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
-  /*p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
+  /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
+  /*#p01.BUDE*/ BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
 
-  /*p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH);
-  /*p01.BEJA*/ wire BEJA_xxxxEFGH = nand2(BOLO_ABCDEFxx, BEKO_ABCDxxxx);
-  /*p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
-  /*p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
-  /*p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
-  /*p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
-  /*p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
-  /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor2(BELE_Axxxxxxx, ATEZ_CLKBAD);
-  /*p01.BALY*/ BALY_Axxxxxxx = not1(BYJU_xBCDEFGH);
+  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
+  /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
 
-  /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.qn());
+  /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH);
+  /*#p01.BEJA*/ wire BEJA_xxxxEFGH = nand4(BOLO_ABCDEFxx, BOLO_ABCDEFxx, BEKO_ABCDxxxx, BEKO_ABCDxxxx);
+  /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
+  /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
+  /*#p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
+  
+  /*#p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
+  /*#p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
+  /*#p01.BYJU*/ wire BYJU_xBCDEFGH = or2(BELE_Axxxxxxx, ATEZ_CLKBAD); // waaaaait - this is an or
 
-  /*p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.qn());
-  /*p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.qn());
-  /*p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.qp());
-  /*p29.WOJO*/ WOJO_AxxxExxx = nor2(WUVU_ABxxEFxx.qn(), WOSU_AxxDExxH.qn());
+  /*#p01.BALY*/ BALY_Axxxxxxx = not1(BYJU_xBCDEFGH);
+  /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.q08());
+  /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.q16());
+  /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.q16());
+  /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.q17());
+  /*#p29.WOJO*/ WOJO_AxxxExxx = nor2(WOSU_AxxDExxH.qn(), WUVU_ABxxEFxx.qn());
 }
 
 //-----------------------------------------------------------------------------
@@ -106,12 +107,12 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*p01.APUK*/ APUK_ABxxxxGH.tock(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn());
   /*p01.ADYK*/ ADYK_ABCxxxxH.tock(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn());
 
-  /* p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
+  /*#p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
 
-  /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
-  /*p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
-  /*p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
+  /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
   /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
 
   /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
@@ -134,8 +135,8 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
 
   top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
 
-  top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.set(BOWA_xBCDEFGH);
-  top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.set(BEDO_Axxxxxxx);
+  top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.set(BOWA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.set(BEDO_Axxxxxxx);
 
   top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx);
   top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.set(BUDE_xxxxEFGH);
@@ -143,8 +144,8 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.set(BOLO_ABCDEFxx);
   top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.set(BUKE_AxxxxxGH);
     
-  top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.set(BOMA_Axxxxxxx);
-  top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH.set(BOGA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.set(BOMA_Axxxxxxx);
+  top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.set(BOGA_xBCDEFGH);
 
   top.ext_bus.PIN_EXT_CLK.io_pin(BUDE_xxxxEFGH, BUDE_xxxxEFGH);
 }
@@ -168,7 +169,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
   /*#p01.AFAR*/ wire AFAR_RST  = nor2(RST, ALYP_RSTn);
   /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
 
-  /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
+  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
   /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp.set(AFER_SYS_RSTp.qp());
@@ -191,7 +192,7 @@ void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
   /*p29.WUVU*/ WUVU_ABxxEFxx.tock(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
-  /*p21.VENA*/ VENA_xxCDEFxx.tock(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn());
+  /*p21.VENA*/ VENA_xxCDEFxx.tock(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
   /*p29.WOSU*/ WOSU_AxxDExxH.tock(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
 }
 

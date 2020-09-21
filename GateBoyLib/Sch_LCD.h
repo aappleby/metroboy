@@ -22,8 +22,8 @@ struct LcdRegisters {
   }
 
   uint8_t get_lyc() const {
-    return (uint8_t)pack_p(SYRY_LYC0n.qn(), VUCE_LYC1n.qn(), SEDY_LYC2n.qn(), SALO_LYC3n.qn(),
-                           SOTA_LYC4n.qn(), VAFA_LYC5n.qn(), VEVO_LYC6n.qn(), RAHA_LYC7n.qn());
+    return (uint8_t)pack_p(SYRY_LYC0n.q08(), VUCE_LYC1n.q08(), SEDY_LYC2n.q08(), SALO_LYC3n.q08(),
+                           SOTA_LYC4n.q08(), VAFA_LYC5n.q08(), VEVO_LYC6n.q08(), RAHA_LYC7n.q08());
   }
 
   /*p21.PARU*/ Sig   PARU_VBLANKp_d4;                // -> pix pipe

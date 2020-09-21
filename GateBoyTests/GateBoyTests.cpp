@@ -25,7 +25,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_ext_bus();
   err += test_mem();
   err += test_interrupts();
-  //err += test_dma();
+  err += test_dma();
   err += test_joypad();
   err += test_ppu();
   err += test_serial();
@@ -115,10 +115,6 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_234_stat.gb");
   err += run_microtest("poweron_235_oam.gb");
   err += run_microtest("poweron_235_stat.gb");
-  err += run_microtest("poweron_oam_read_a.gb");
-  err += run_microtest("poweron_oam_read_b.gb");
-  err += run_microtest("poweron_oam_read_c.gb");
-  err += run_microtest("poweron_oam_read_d.gb");
 
   LOG_B("---------- LCDEN-to-LY timing ----------\n");
   err += run_microtest("lcdon_to_ly1_a.gb");
@@ -670,6 +666,8 @@ int GateBoyTests::test_clk() {
   gb.reset_post_bootrom();
   gb.sys_cpu_en = false;
 
+  gb.run(32);
+
   auto& top = gb.top;
   auto& clk_reg = top.clk_reg;
 
@@ -683,7 +681,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.AJAX_xxxxEFGH, 0b00001111);
 
     EXPECT_CLK(clk_reg.ADAR_ABCxxxxH, 0b11100001);
-    EXPECT_CLK(clk_reg.BALY_Axxxxxxx, 0b10000000);
+    EXPECT_CLK(clk_reg.BALY_Axxxxxxx, 0b01111111);
 
     EXPECT_CLK(clk_reg.XUPY_ABxxEFxx, 0b11001100);
     EXPECT_CLK(clk_reg.TALU_xxCDEFxx, 0b00111100);
@@ -699,14 +697,14 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.VENA_xxCDEFxx.qp(), 0b00111100);
     EXPECT_CLK(clk_reg.WOSU_AxxDExxH.qp(), 0b10011001);
 
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_xBCDEFGH.qp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_Axxxxxxx.qp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.qp(), 0b01111111);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.qp(), 0b11110000);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.qp(), 0b00001111);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.qp(), 0b11111100);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.qp(), 0b10000011);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_Axxxxxxx.qp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_xBCDEFGH.qp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.qp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.qp(), 0b10000000);
     EXPECT_CLK(top.ext_bus.PIN_EXT_CLK.qp(),           0b11110000);
     gb.next_phase();
   }

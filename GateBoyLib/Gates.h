@@ -332,8 +332,8 @@ struct DFF8 : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
 
-  inline wire q07() const { return qn(); }
-  inline wire q08() const { return qp(); }
+  inline wire q07() const { return !as_wire(); }
+  inline wire q08() const { return  as_wire(); }
 
   inline void tock(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
   inline void tock(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
@@ -358,12 +358,15 @@ struct DFF9 : private RegBase {
   DFF9() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  //using RegBase::qn;
+  //using RegBase::qp;
   using RegBase::force_state;
 
-  inline wire q08() const { return qn(); }
-  inline wire q09() const { return qp(); }
+  inline wire qn() const { return !as_wire(); }
+  inline wire qp() const { return  as_wire(); }
+
+  inline wire q08() const { return !as_wire(); }
+  inline wire q09() const { return  as_wire(); }
 
   // FIXME the SETn here is slightly weird. too many inversions?
 
@@ -391,11 +394,9 @@ struct DFF11 : private RegBase {
   DFF11() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-  using RegBase::qn;
+  inline wire q11() const { return as_wire(); }
 
-  inline wire q11() const { return !as_wire(); }
-
-  inline void tock(wire CLKp, wire RSTn, wire Dn) { dff(CLKp, !CLKp, 1, RSTn, !Dn); }
+  inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -429,7 +430,6 @@ struct DFF13 : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-// This reg is really 3 pieces - clock edge detector, latch, and output buffer.
 
 // DFF17_01 == REG17_12
 // DFF17_02 << CLKp
@@ -456,6 +456,9 @@ struct DFF17 : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
   using RegBase::force_state;
+
+  wire q16() const { return !as_wire(); }
+  wire q17() const { return  as_wire(); }
 
   inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
@@ -573,6 +576,9 @@ struct DFF22 : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
   using RegBase::force_state;
+
+  inline wire q15() const { return !as_wire(); }
+  inline wire q16() const { return  as_wire(); }
 
   inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
 };

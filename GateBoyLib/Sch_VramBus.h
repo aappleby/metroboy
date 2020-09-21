@@ -68,14 +68,14 @@ struct VramBus {
   /*p32.NASA*/ DFF8 NASA_TILE_DA6n;
   /*p32.NEFO*/ DFF8 NEFO_TILE_DA7n; // color wrong on die
 
-  /*p32.RAWU*/ DFF11 RAWU_TILE_DB0n; // def holds inverted pix, also holds tile index during fetch
-  /*p32.POZO*/ DFF11 POZO_TILE_DB1n;
-  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2n; 
-  /*p32.POXA*/ DFF11 POXA_TILE_DB3n; 
-  /*p32.PULO*/ DFF11 PULO_TILE_DB4n; 
-  /*p32.POJU*/ DFF11 POJU_TILE_DB5n; 
-  /*p32.POWY*/ DFF11 POWY_TILE_DB6n; 
-  /*p32.PYJU*/ DFF11 PYJU_TILE_DB7n;
+  /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p; // def holds inverted pix, also holds tile index during fetch
+  /*p32.POZO*/ DFF11 POZO_TILE_DB1p;
+  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p; 
+  /*p32.POXA*/ DFF11 POXA_TILE_DB3p; 
+  /*p32.PULO*/ DFF11 PULO_TILE_DB4p; 
+  /*p32.POJU*/ DFF11 POJU_TILE_DB5p; 
+  /*p32.POWY*/ DFF11 POWY_TILE_DB6p; 
+  /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p;
 
   /*p33.PEFO*/ DFF8 PEFO_SPRITE_DB0n;
   /*p33.ROKA*/ DFF8 ROKA_SPRITE_DB1n;

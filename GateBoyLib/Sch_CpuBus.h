@@ -140,8 +140,8 @@ struct CpuBus {
 
   Pin PIN_CPU_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   
-  Pin PIN_CPU_BOWA_xBCDEFGH = TRI_HZNP; // top left port PORTD_01: // this is the "put address on bus" clock
-  Pin PIN_CPU_BEDO_Axxxxxxx = TRI_HZNP; // top left port PORTD_02:
+  Pin PIN_CPU_BOWA_Axxxxxxx = TRI_HZNP; // top left port PORTD_01: // this is the "put address on bus" clock
+  Pin PIN_CPU_BEDO_xBCDEFGH = TRI_HZNP; // top left port PORTD_02:
 
   Pin PIN_CPU_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03: // this is the "reset for next cycle" clock
   Pin PIN_CPU_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: // this is the "put write data on bus" clock
@@ -150,8 +150,8 @@ struct CpuBus {
   Pin PIN_CPU_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
 
   // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
-  Pin PIN_CPU_BOMA_Axxxxxxx = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  Pin PIN_CPU_BOGA_xBCDEFGH = TRI_HZNP; // top left port PORTD_09: - test pad 3
+  Pin PIN_CPU_BOMA_xBCDEFGH = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
+  Pin PIN_CPU_BOGA_Axxxxxxx = TRI_HZNP; // top left port PORTD_09: - test pad 3
 };
 
 //-----------------------------------------------------------------------------

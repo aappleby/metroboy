@@ -61,6 +61,7 @@ GateBoyApp::GateBoyApp() {
     if (pass_hash_old != pass_hash_new) printf("UNSTEP FAIL\n");
     */
 
+    clear_probes();
   };
   state_manager.init(top_step, top_unstep);
 }
@@ -149,17 +150,13 @@ void GateBoyApp::app_init() {
   // run rom
   gb.reset_post_bootrom();
 
-  load_rom("microtests/build/dmg/hblank_int_halt_a.gb"); // fail
-  //load_rom("microtests/build/dmg/oam_int_halt_a.gb");    // pass
-  //load_rom("microtests/build/dmg/vblank_int_halt_a.gb"); // fail
+  //load_rom("microtests/build/dmg/poweron_005_stat.gb");
+  //load_rom("microtests/build/dmg/poweron_006_stat.gb");
+  //load_rom("microtests/build/dmg/poweron_007_stat.gb");
+  //load_rom("microtests/build/dmg/poweron_120_stat.gb");
 
-  //load_rom("microtests/build/dmg/poweron_026_vram.gb");
-  //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb");
-
-  
-
-  //load_flat_dump("roms/LinksAwakening_dog.dump");
-  //gb.sys_cpu_en = false;
+  load_flat_dump("roms/LinksAwakening_dog.dump");
+  gb.sys_cpu_en = false;
 }
 
 //----------------------------------------

@@ -329,8 +329,6 @@ struct DFF8 : private RegBase {
   DFF8() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
 
   inline wire q07() const { return !as_wire(); }
   inline wire q08() const { return  as_wire(); }
@@ -394,7 +392,6 @@ struct DFF11 : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-// Dunno why this reg is different than DFF9.
 
 // DFF13_01 nc
 // DFF13_02 << RSTn

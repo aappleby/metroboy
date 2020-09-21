@@ -63,10 +63,10 @@ void GateBoy::reset_to_bootrom() {
   sys_clkgood = 1;
   run(3);
 
-  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.qn());
-  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.qp());
-  CHECK_P(top.clk_reg.APUK_ABxxxxGH.qp());
-  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.qp());
+  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.q08n());
+  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.q09p());
+  CHECK_P(top.clk_reg.APUK_ABxxxxGH.q09p());
+  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.q09p());
 
   // Wait for PIN_CPU_START
   while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {

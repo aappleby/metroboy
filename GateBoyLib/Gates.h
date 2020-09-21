@@ -358,15 +358,9 @@ struct DFF9 : private RegBase {
   DFF9() : RegBase(REG_D0C0) {}
 
   using RegBase::c;
-  //using RegBase::qn;
-  //using RegBase::qp;
-  using RegBase::force_state;
 
-  inline wire qn() const { return !as_wire(); }
-  inline wire qp() const { return  as_wire(); }
-
-  inline wire q08() const { return !as_wire(); }
-  inline wire q09() const { return  as_wire(); }
+  inline wire q08n() const { return !as_wire(); }
+  inline wire q09p() const { return  as_wire(); }
 
   // FIXME the SETn here is slightly weird. too many inversions?
 

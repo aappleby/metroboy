@@ -94,7 +94,7 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
-#if 0
+#if 1
   gb.reset_to_bootrom();
   load_blob("roms/tetris.gb", gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
@@ -147,6 +147,7 @@ void GateBoyApp::app_init() {
 #endif
 
 
+#if 0
   // run rom
   gb.reset_post_bootrom();
 
@@ -157,6 +158,7 @@ void GateBoyApp::app_init() {
 
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb.sys_cpu_en = false;
+#endif
 }
 
 //----------------------------------------

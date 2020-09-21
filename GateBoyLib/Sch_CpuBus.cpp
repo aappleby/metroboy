@@ -9,7 +9,7 @@ using namespace Schematics;
 void CpuBus::dump(Dumper& d) const {
   d("---------- CPU Bus  ----------\n");
   d("BOOT      : %d\n", PIN_CPU_BOOTp.qp());
-  d("ADDR_HI   : %d\n", PIN_CPU_ADDR_HI.qp());
+  d("ADDR_HI   : %d\n", PIN_CPU_ADDR_HIp.qp());
   d("RDp       : %d\n", PIN_CPU_RDp.qp());
   d("WRp       : %d\n", PIN_CPU_WRp.qp());
   d("ADDR_EXT  : %d\n", PIN_CPU_ADDR_EXTp.qp());

@@ -130,7 +130,7 @@ struct CpuBus {
   // SOC-to-CPU control signals
 
   Pin PIN_CPU_BOOTp         = TRI_HZNP; // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Pin PIN_CPU_ADDR_HI       = TRI_HZNP; // top right port PORTA_03: <- P25.SYRO // Not really sure why this is here
+  Pin PIN_CPU_ADDR_HIp      = TRI_HZNP; // top right port PORTA_03: <- P25.SYRO
 
   Pin PIN_CPU_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
   Pin PIN_CPU_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state

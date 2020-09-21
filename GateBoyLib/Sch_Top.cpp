@@ -157,7 +157,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   tile_fetcher.tock(*this);
   int_reg.tock(*this, cpu_bus);
 
-  cpu_bus.PIN_CPU_ADDR_HI.set(cpu_bus.SYRO_FE00_FFFFp());
+  cpu_bus.PIN_CPU_ADDR_HIp.set(cpu_bus.SYRO_FE00_FFFFp());
   cpu_bus.PIN_CPU_BOOTp.set(TUTU_ADDR_BOOTp);
 
 

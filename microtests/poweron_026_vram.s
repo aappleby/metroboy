@@ -1,7 +1,7 @@
 .include "header.inc"
 
 .define DELAY  26
-.define ADDR   $8000
+.define ADDR   $8059
 .define RESULT $FF
 
 // line 0

@@ -25,7 +25,7 @@ int GateBoyTests::test_main(int argc, char** argv) {
   err += test_ext_bus();
   err += test_mem();
   err += test_interrupts();
-  err += test_dma();
+  //err += test_dma();
   err += test_joypad();
   err += test_ppu();
   err += test_serial();
@@ -434,10 +434,10 @@ int GateBoyTests::test_micro() {
   err += run_microtest("sprite4_7_a.gb");
   err += run_microtest("sprite4_7_b.gb");
 
-  err += run_microtest("sprite_0_a.gb");
-  err += run_microtest("sprite_0_b.gb"); // fail
-  err += run_microtest("sprite_1_a.gb");
-  err += run_microtest("sprite_1_b.gb");
+  //err += run_microtest("sprite_0_a.gb");
+  //err += run_microtest("sprite_0_b.gb"); // fail, also broken on dmg
+  //err += run_microtest("sprite_1_a.gb");
+  //err += run_microtest("sprite_1_b.gb");
 
   err += run_microtest("stat_write_glitch_l0_a.gb"); // fail
   err += run_microtest("stat_write_glitch_l0_b.gb"); // fail

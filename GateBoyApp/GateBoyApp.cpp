@@ -36,12 +36,11 @@ int main(int argc, char** argv) {
 GateBoyApp::GateBoyApp() {
   auto top_step = [](GateBoy* gateboy, StepSize step_size) {
     (void)step_size;
-    gateboy->next_phase();
-    /*
     if (step_size == STEP_PASS) {
       gateboy->next_pass();
     }
     else if (step_size == STEP_PHASE) {
+      gateboy->next_phase();
     }
     else if (step_size == STEP_CYCLE) {
       gateboy->next_mcycle();
@@ -49,7 +48,6 @@ GateBoyApp::GateBoyApp() {
     else if (step_size == STEP_LINE) {
       gateboy->next_line();
     }
-    */
   };
   auto top_unstep = [](GateBoy* gateboy, StepSize /*step_size*/) {
     // Run a logic pass after unstep to update our probes
@@ -86,7 +84,7 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
-#if 1
+#if 0
   gb.reset_to_bootrom();
   load_blob("roms/tetris.gb", gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
@@ -140,9 +138,11 @@ void GateBoyApp::app_init() {
 
 
   // run rom
-  //gb.reset_post_bootrom();
-  //load_rom("microtests/build/dmg/poweron_006_oam.gb");
+  gb.reset_post_bootrom();
+  load_rom("microtests/build/dmg/poweron_026_vram.gb");
   //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb");
+
+  
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb.sys_cpu_en = false;

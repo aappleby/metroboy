@@ -21,16 +21,17 @@ int GateBoyTests::test_main(int argc, char** argv) {
   //err += test_init();
   //err += test_bootrom();
 
-  err += test_clk();
-  err += test_ext_bus();
-  err += test_mem();
-  err += test_interrupts();
-  err += test_dma();
-  err += test_joypad();
-  err += test_ppu();
-  err += test_serial();
-  err += test_timer();
-  err += test_micro();
+  //err += test_clk();
+  //err += test_ext_bus();
+  //err += test_mem();
+  //err += test_interrupts();
+  //err += test_dma();
+  //err += test_joypad();
+  //err += test_ppu();
+  //err += test_serial();
+  //err += test_timer();
+  //err += test_micro();
+  err += test_micro_ints();
 
   if (!err) LOG_G("Everything passed!\n");
 
@@ -45,6 +46,30 @@ int GateBoyTests::test_main(int argc, char** argv) {
 }
 
 //-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_ints() {
+  TEST_START();
+
+  err += run_microtest("hblank_int_halt_scx0.gb");
+  err += run_microtest("hblank_int_halt_scx1.gb");
+  err += run_microtest("hblank_int_halt_scx2.gb");
+  err += run_microtest("hblank_int_halt_scx3.gb");
+  err += run_microtest("hblank_int_halt_scx4.gb");
+  err += run_microtest("hblank_int_halt_scx5.gb");
+  err += run_microtest("hblank_int_halt_scx6.gb");
+  err += run_microtest("hblank_int_halt_scx7.gb");
+
+  err += run_microtest("hblank_int_incs_scx0.gb");
+  err += run_microtest("hblank_int_incs_scx1.gb");
+  err += run_microtest("hblank_int_incs_scx2.gb");
+  err += run_microtest("hblank_int_incs_scx3.gb");
+  err += run_microtest("hblank_int_incs_scx4.gb");
+  err += run_microtest("hblank_int_incs_scx5.gb");
+  err += run_microtest("hblank_int_incs_scx6.gb");
+  err += run_microtest("hblank_int_incs_scx7.gb");
+
+  TEST_END();
+}
 
 int GateBoyTests::test_micro() {
   TEST_START();

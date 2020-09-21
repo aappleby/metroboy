@@ -1,25 +1,20 @@
 .include "header.inc"
 
 main:
-  nops 123
-
-  ld a, 1
+  ld a, 4
   ldh (SCX), a
-  ld hl, $FF0F
 
+  cycle_init
   set_stat_int_hblank
   set_ie_stat
   clear_if
   ei
 
   xor a
-  ldh (DIV), a
-
-  halt
-
+  incs $30
   di
   test_fail
 
 .org STAT_INT_VECTOR
-  nops 18
-  test_finish_div 1
+  test_finish_a $30
+  test_display_a

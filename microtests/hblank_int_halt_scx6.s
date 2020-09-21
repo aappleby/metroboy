@@ -1,16 +1,18 @@
 .include "header.inc"
 
 main:
+  ld a, 6
+  ldh (SCX), a
 
-  lcd_off_unsafe
+  cycle_init
+
   set_stat_int_hblank
   set_ie_stat
   clear_if
   ei
 
-  lcd_on
-  incs 200
+  halt
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_a $CF
+  test_finish_cycle $50

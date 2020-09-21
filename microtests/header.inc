@@ -290,12 +290,14 @@
 .endm
 
 ;-------------------------------------------------------------------------------
-; Report test failure
-
-; Report test pass if a == expected
 
 .macro test_end
 - ld (VRAM), a
+  jr -
+.endm
+
+.macro test_display_a
+- ld ($8000), a
   jr -
 .endm
 
@@ -325,6 +327,9 @@
   test_end
 .endm
 
+;-------------------------------------------------------------------------------
+; Report test pass if a == expected
+
 .macro test_finish_a ARGS expected
   ld b, a
   ldh ($80), a
@@ -342,6 +347,9 @@
   test_end
 .endm
 
+;-------------------------------------------------------------------------------
+; Report test pass if a != expected
+
 .macro test_finish_not_a ARGS expected
   ld b, a
   ldh ($80), a
@@ -358,6 +366,8 @@
 + ld a, $55
   test_end
 .endm
+
+;-------------------------------------------------------------------------------
 
 .macro test_finish_b ARGS expected
   ld a, b

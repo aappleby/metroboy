@@ -25,6 +25,7 @@ struct GateBoyTests {
   int test_serial();
   int test_timer();
   int test_micro();
+  int test_micro_ints();
   
   int run_microtest(const char* filename);
 

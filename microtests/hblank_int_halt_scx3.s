@@ -1,7 +1,11 @@
 .include "header.inc"
 
 main:
+  ld a, 3
+  ldh (SCX), a
+
   cycle_init
+
   set_stat_int_hblank
   set_ie_stat
   clear_if
@@ -11,4 +15,4 @@ main:
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_cycle $52
+  test_finish_cycle $4F

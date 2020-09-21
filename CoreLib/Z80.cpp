@@ -245,6 +245,13 @@ void Z80::tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
       ime_delay = false;
     }
   }
+
+  /*
+  if (imask & 0x01) z80.unhalt |= ppu.vblank1;
+  if (imask & 0x02) z80.unhalt |= ppu.stat2;
+  if (imask & 0x04) z80.unhalt |= timer_int;
+  if (imask & 0x10) z80.unhalt |= joypad.get() != 0xFF;
+  */
 }
 
 //--------------------------------------------------------------------------------
@@ -300,11 +307,44 @@ void Z80::tock_req(uint8_t imask_, uint8_t intf_) {
 
   }                                                                                                                                                                                                                             
   else if (HALT) {                                                                                                                                                                                                              
-    bool no_halt = ((imask_ & intf_) && !ime);                                                                                                                                                                                    
     if (HALT && state == 0) unhalt = 0;                                                                                                                                                                                         
 
-    if (state == 0 && HALT)                   /**/ {                                            /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = !no_halt; }
-    if (state == 1 && HALT)                   /**/ {                                            /**/                                               /**/                                                        set_bus(pc, 0); state_ = !unhalt; }
+    if (state == 0 && HALT) {
+      pcl = inc(pcl, 1);
+      pch = inc(pch, inc_c);
+      set_bus(pc, 0);
+
+      if (imask_ & intf_) {
+        if (ime) {
+          //printf("Halting B\n");
+          state_ = ime;
+        }
+        else {
+          //printf("_NOT_ halting\n");
+          state_ = ime;
+        }
+      }
+      else {
+        //printf("Halting A\n");
+        state_ = 1;
+      }
+
+      unhalt = 0;
+    }
+    if (state == 1 && HALT) {
+      set_bus(pc, 0);
+      //state_ = !unhalt;
+
+      if (imask_ & intf_) {
+        //printf("Unhalting\n");
+        state_ = 0;
+      }
+      else {
+        //printf("Still halted\n");
+        state_ = 1;
+      }
+
+    }
   }                                                                                                                                                                                                                                          
   else if (PREFIX_CB) {                                                                                                                                                                                                                      
     if (state == 1) cb = in;                                                                                                                                                                                                           

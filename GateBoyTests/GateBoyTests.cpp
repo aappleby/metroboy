@@ -50,23 +50,23 @@ int GateBoyTests::test_main(int argc, char** argv) {
 int GateBoyTests::test_micro_ints() {
   TEST_START();
 
-  err += run_microtest("hblank_int_halt_scx0.gb");
-  err += run_microtest("hblank_int_halt_scx1.gb");
-  err += run_microtest("hblank_int_halt_scx2.gb");
-  err += run_microtest("hblank_int_halt_scx3.gb");
-  err += run_microtest("hblank_int_halt_scx4.gb");
-  err += run_microtest("hblank_int_halt_scx5.gb");
-  err += run_microtest("hblank_int_halt_scx6.gb");
-  err += run_microtest("hblank_int_halt_scx7.gb");
+  err += run_microtest("int_hblank_halt_scx0.gb");
+  err += run_microtest("int_hblank_halt_scx1.gb");
+  err += run_microtest("int_hblank_halt_scx2.gb");
+  err += run_microtest("int_hblank_halt_scx3.gb");
+  err += run_microtest("int_hblank_halt_scx4.gb");
+  err += run_microtest("int_hblank_halt_scx5.gb");
+  err += run_microtest("int_hblank_halt_scx6.gb");
+  err += run_microtest("int_hblank_halt_scx7.gb");
 
-  err += run_microtest("hblank_int_incs_scx0.gb");
-  err += run_microtest("hblank_int_incs_scx1.gb");
-  err += run_microtest("hblank_int_incs_scx2.gb");
-  err += run_microtest("hblank_int_incs_scx3.gb");
-  err += run_microtest("hblank_int_incs_scx4.gb");
-  err += run_microtest("hblank_int_incs_scx5.gb");
-  err += run_microtest("hblank_int_incs_scx6.gb");
-  err += run_microtest("hblank_int_incs_scx7.gb");
+  err += run_microtest("int_hblank_incs_scx0.gb");
+  err += run_microtest("int_hblank_incs_scx1.gb");
+  err += run_microtest("int_hblank_incs_scx2.gb");
+  err += run_microtest("int_hblank_incs_scx3.gb");
+  err += run_microtest("int_hblank_incs_scx4.gb");
+  err += run_microtest("int_hblank_incs_scx5.gb");
+  err += run_microtest("int_hblank_incs_scx6.gb");
+  err += run_microtest("int_hblank_incs_scx7.gb");
 
   TEST_END();
 }

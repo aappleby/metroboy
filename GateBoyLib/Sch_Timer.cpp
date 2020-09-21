@@ -7,11 +7,29 @@ using namespace Schematics;
 
 void Timer::dump(Dumper& d) const {
   d("----------  Timer   ----------\n");
-  d("DIV        0x%04x %d\n", get_div(), get_div());
-  d("TIMA A     0x%02x %d\n", get_tima_a(), get_tima_a());
-  d("TIMA B     0x%02x %d\n", get_tima_b(), get_tima_b());
-  d("TMA        0x%02x %d\n", get_tma(), get_tma());
-  d("TAC        0x%02x %d\n", get_tac(), get_tac());
+  d("DIV    : 0x%04x %d\n", get_div(), get_div());
+  d("DIV    : %c%c %c%c%c%c%c%c%c%c %c%c%c%c%c%c\n",
+    UPOF_DIV_15.c(),
+    UKET_DIV_14.c(),
+    TEKA_DIV_13.c(),
+    SUBU_DIV_12.c(),
+    SOLA_DIV_11.c(),
+    TERU_DIV_10.c(),
+    TOFE_DIV_09.c(),
+    TUGO_DIV_08.c(),
+    TULU_DIV_07.c(),
+    UGOT_DIV_06.c(),
+    TAMA_DIV_05.c(),
+    UNYK_DIV_04.c(),
+    TERO_DIV_03.c(),
+    UNER_DIV_02.c(),
+    UFOR_DIV_01.c(),
+    UKUP_DIV_00.c());
+
+  d("TIMA A : 0x%02x %d\n", get_tima_a(), get_tima_a());
+  d("TIMA B : 0x%02x %d\n", get_tima_b(), get_tima_b());
+  d("TMA    : 0x%02x %d\n", get_tma(), get_tma());
+  d("TAC    : 0x%02x %d\n", get_tac(), get_tac());
   d("NYDU_TIMA_D7_DELAY   %c\n", NYDU_TIMA_D7_DELAY.c());
   d("MOBA_TIMER_OVERFLOWp %c\n", MOBA_TIMER_OVERFLOWp.c());
   d("\n");

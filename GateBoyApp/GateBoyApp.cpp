@@ -50,8 +50,17 @@ GateBoyApp::GateBoyApp() {
     }
   };
   auto top_unstep = [](GateBoy* gateboy, StepSize /*step_size*/) {
+    (void)gateboy;
+
     // Run a logic pass after unstep to update our probes
-    gateboy->update_top();
+    // This still doesn't work :P
+    /*
+    uint64_t pass_hash_old = gateboy->pass_hash;
+    gateboy->update_logic();
+    uint64_t pass_hash_new = revert_and_hash(gateboy->top);
+    if (pass_hash_old != pass_hash_new) printf("UNSTEP FAIL\n");
+    */
+
   };
   state_manager.init(top_step, top_unstep);
 }
@@ -140,7 +149,10 @@ void GateBoyApp::app_init() {
   // run rom
   gb.reset_post_bootrom();
 
-  load_rom("microtests/build/dmg/hblank_int_halt_b.gb");
+  load_rom("microtests/build/dmg/hblank_int_halt_a.gb"); // fail
+  //load_rom("microtests/build/dmg/oam_int_halt_a.gb");    // pass
+  //load_rom("microtests/build/dmg/vblank_int_halt_a.gb"); // fail
+
   //load_rom("microtests/build/dmg/poweron_026_vram.gb");
   //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb");
 
@@ -453,7 +465,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("Pass avg    %4.2f\n",   float(gateboy->pass_total) / float(gateboy->phase_total));
   dumper("Pass hash   %016llx\n", gateboy->pass_hash);
   dumper("Total hash  %016llx\n", gateboy->total_hash);
-  dumper("BGB cycle   0x%08x\n",  gateboy->phase_total / 4);
+  dumper("BGB cycle   0x%08x\n",  (gateboy->phase_total / 4) - 0x10000);
   dumper("Sim clock   %f\n",      double(gateboy->phase_total) / (4194304.0 * 2));
 
   dumper("\n");

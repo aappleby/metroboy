@@ -36,8 +36,8 @@ struct GateBoy {
     }
   }
 
-  uint64_t update_logic();
-  uint64_t update_top();
+  void update_inputs();
+  void update_top();
 
   void set_boot_bit() {
     dbg_write(0xFF50, 0xFF);

@@ -69,6 +69,36 @@
 
 ;-------------------------------------------------------------------------------
 
+.macro cycle_init
+  ld a, %101
+  ldh (TAC), a
+.endm
+
+.macro cycle_count
+  ld hl, $FF05
+  xor a
+  add (hl)
+  nop
+  add (hl)
+  nop
+  add (hl)
+  nop
+  add (hl)
+.endm
+
+.macro test_finish_cycle ARGS expected
+  cycle_count
+  test_finish_a expected
+.endm
+
+.macro test_display_cycle
+  cycle_count
+- ld ($8000), a
+  jr -
+.endm
+
+;-------------------------------------------------------------------------------
+
 .macro clear_stat
   xor a
   ldh (STAT), a

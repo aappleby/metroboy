@@ -15,10 +15,10 @@ struct Timer {
   void tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus);
 
   int get_div() const {
-    return pack_p(!UKUP_DIV_00.qn(), UFOR_DIV_01.qp(), !UNER_DIV_02.qn(), TERO_DIV_03.qp(),
-                  !UNYK_DIV_04.qn(), TAMA_DIV_05.qp(),  UGOT_DIV_06.qp(), TULU_DIV_07.qp(),
-                   TUGO_DIV_08.qp(), TOFE_DIV_09.qp(),  TERU_DIV_10.qp(), SOLA_DIV_11.qp(),
-                   SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), !UKET_DIV_14.qn(), UPOF_DIV_15.qp());
+    return pack_p(UKUP_DIV_00.qp(), UFOR_DIV_01.qp(), UNER_DIV_02.qp(), TERO_DIV_03.qp(),
+                  UNYK_DIV_04.qp(), TAMA_DIV_05.qp(), UGOT_DIV_06.qp(), TULU_DIV_07.qp(),
+                  TUGO_DIV_08.qp(), TOFE_DIV_09.qp(), TERU_DIV_10.qp(), SOLA_DIV_11.qp(),
+                  SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), UKET_DIV_14.qp(), UPOF_DIV_15.qp());
   }
 
   int get_tima_a() const {

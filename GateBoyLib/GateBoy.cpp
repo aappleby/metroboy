@@ -127,7 +127,11 @@ void GateBoy::next_pass() {
   // Run one pass of our simulation.
 
   uint64_t pass_hash_old = pass_hash;
-  uint64_t pass_hash_new = update_logic();
+
+  update_inputs();
+  update_top();
+
+  uint64_t pass_hash_new = commit_and_hash(top);
 
   sim_stable = pass_hash_old == pass_hash_new;
   pass_hash = pass_hash_new;
@@ -205,11 +209,9 @@ void GateBoy::next_pass() {
 }
 
 //-----------------------------------------------------------------------------
+// Update all inputs to our simulation.
 
-uint64_t GateBoy::update_logic() {
-
-  //----------------------------------------
-  // Update all inputs to our simulation.
+void GateBoy::update_inputs() {
 
   if (DELTA_AB) {
     cpu_req = cpu_blah.bus_req;
@@ -283,13 +285,13 @@ uint64_t GateBoy::update_logic() {
   }
 
   top.joypad.set_buttons(sys_buttons);
-
-  return update_top();
 }
 
 //-----------------------------------------------------------------------------
+// Run one pass of our simulation.
 
-uint64_t GateBoy::update_top() {
+void GateBoy::update_top() {
+
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
 
@@ -309,8 +311,6 @@ uint64_t GateBoy::update_top() {
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
   RegBase::tock_running = false;
   RegBase::sim_running = false;
-
-  return commit_and_hash(top);
 }
 
 //-----------------------------------------------------------------------------

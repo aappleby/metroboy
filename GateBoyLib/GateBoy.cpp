@@ -158,7 +158,9 @@ void GateBoy::next_pass() {
       // imask/intf have to be latched here or we get more errors
       imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
       intf_to_cpu = 0;
+    }
 
+    if (DELTA_GH) {
       if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
       if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
       if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;

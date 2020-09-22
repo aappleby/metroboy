@@ -24,7 +24,7 @@ struct Z80 {
 //private:
   int      state = 0, state_ = 0;
   uint16_t op_addr = 0;
-  bool     unhalt = 0;
+  bool     cpu_halted = 0;
   uint8_t  op = 0;
   uint8_t  cb = 0;
   bool     ime = 0, ime_delay = 0;

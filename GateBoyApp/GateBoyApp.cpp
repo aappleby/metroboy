@@ -94,7 +94,7 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
-#if 1
+#if 0
   gb.reset_to_bootrom();
   load_blob("roms/tetris.gb", gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
@@ -147,17 +147,35 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 0
+#if 1
   // run rom
   gb.reset_post_bootrom();
 
-  //load_rom("microtests/build/dmg/poweron_005_stat.gb");
-  //load_rom("microtests/build/dmg/poweron_006_stat.gb");
-  //load_rom("microtests/build/dmg/poweron_007_stat.gb");
-  //load_rom("microtests/build/dmg/poweron_120_stat.gb");
+  load_rom("microtests/build/dmg/int_hblank_halt_scx0.gb"); // int fires on BC 626, int starts on 680, expected 4E FAIL
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx1.gb"); // int fires on DE 628, int starts on 680, expected 4F
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx2.gb"); // int fires on FG 630, int starts on 680, expected 4F
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx3.gb"); // int fires on HA 632, int starts on 688, expected 4F FAIL
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx4.gb"); // int fires on BC 634, int starts on 688, expected 4F FAIL
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx5.gb"); // int fires on DE 636, int starts on 688, expected 50
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx6.gb"); // int fires on FG 638, int starts on 688, expected 50
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx7.gb"); // int fires on HA 640, int starts on 696, expected 50 FAIL
 
-  load_flat_dump("roms/LinksAwakening_dog.dump");
-  gb.sys_cpu_en = false;
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx0.gb"); // int fires on BC 626, int starts on 672
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx1.gb"); // int fires on DE 628, int starts on 672
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx2.gb"); // int fires on FG 630, int starts on 672
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx3.gb"); // int fires on HA 632, int starts on 680
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx4.gb"); // int fires on BC 634, int starts on 680
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx5.gb"); // int fires on DE 636, int starts on 680
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx6.gb"); // int fires on FG 638, int starts on 680
+  //load_rom("microtests/build/dmg/int_hblank_incs_scx7.gb"); // int fires on HA 640, int starts on 688
+
+  //load_flat_dump("roms/LinksAwakening_dog.dump");
+  //gb.sys_cpu_en = false;
+
+  gb.phase_total = 0;
+  gb.pass_count = 0;
+  gb.pass_total = 0;
+
 #endif
 }
 

@@ -90,11 +90,6 @@ void Gameboy::tick_gb() {
   bool timer_int = timer2.get_interrupt();
 
   intf &= ~z80.get_int_ack();
-  if (imask & 0x01) z80.unhalt |= ppu.vblank1;
-  if (imask & 0x02) z80.unhalt |= ppu.stat2;
-  if (imask & 0x04) z80.unhalt |= timer_int;
-  if (imask & 0x10) z80.unhalt |= joypad.get() != 0xFF;
-
   if (ppu.vblank1)          intf |= INT_VBLANK_MASK;
   if (ppu.stat1)            intf |= INT_STAT_MASK;
   if (timer_int)            intf |= INT_TIMER_MASK;

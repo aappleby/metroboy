@@ -59,12 +59,6 @@ void Interrupts::tock() {
     bool fire_int_timer1   = timer.get_interrupt();
     bool fire_int_buttons1 = joypad.get() != 0xFF;
 
-    unhalt = 0;
-    if (imask & 0x01) unhalt |= ppu.vblank1;
-    if (imask & 0x02) unhalt |= ppu.stat2;
-    if (imask & 0x04) unhalt |= fire_int_timer1;
-    if (imask & 0x10) unhalt |= fire_int_buttons1;
-
     if (ppu.vblank1)       intf_ |= INT_VBLANK_MASK;
     if (ppu.stat1)         intf_ |= INT_STAT_MASK;
     if (fire_int_timer1)   intf_ |= INT_TIMER_MASK;

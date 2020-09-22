@@ -151,7 +151,10 @@ void GateBoyApp::app_init() {
   // run rom
   gb.reset_post_bootrom();
 
-  load_rom("microtests/build/dmg/int_hblank_halt_scx0.gb"); // int fires on BC 626, int starts on 680, expected 4E FAIL
+  //load_rom("microtests/build/dmg/int_hblank_halt_bug_a.gb");
+  //load_rom("microtests/build/dmg/int_hblank_halt_bug_b.gb");
+
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx0.gb"); // int fires on BC 626, int starts on 680, expected 4E FAIL
   //load_rom("microtests/build/dmg/int_hblank_halt_scx1.gb"); // int fires on DE 628, int starts on 680, expected 4F
   //load_rom("microtests/build/dmg/int_hblank_halt_scx2.gb"); // int fires on FG 630, int starts on 680, expected 4F
   //load_rom("microtests/build/dmg/int_hblank_halt_scx3.gb"); // int fires on HA 632, int starts on 688, expected 4F FAIL
@@ -169,8 +172,8 @@ void GateBoyApp::app_init() {
   //load_rom("microtests/build/dmg/int_hblank_incs_scx6.gb"); // int fires on FG 638, int starts on 680
   //load_rom("microtests/build/dmg/int_hblank_incs_scx7.gb"); // int fires on HA 640, int starts on 688
 
-  //load_flat_dump("roms/LinksAwakening_dog.dump");
-  //gb.sys_cpu_en = false;
+  load_flat_dump("roms/LinksAwakening_dog.dump");
+  gb.sys_cpu_en = false;
 
   gb.phase_total = 0;
   gb.pass_count = 0;

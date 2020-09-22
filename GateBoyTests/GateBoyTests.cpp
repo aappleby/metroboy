@@ -50,6 +50,9 @@ int GateBoyTests::test_main(int argc, char** argv) {
 int GateBoyTests::test_micro_ints() {
   TEST_START();
 
+  err += run_microtest("int_hblank_halt_bug_a.gb");
+  err += run_microtest("int_hblank_halt_bug_b.gb");
+
   err += run_microtest("int_hblank_halt_scx0.gb");
   err += run_microtest("int_hblank_halt_scx1.gb");
   err += run_microtest("int_hblank_halt_scx2.gb");

@@ -14,11 +14,10 @@
     <ClCompile Include="Bootrom.cpp" />
     <ClCompile Include="Cart.cpp" />
     <ClCompile Include="DMA.cpp" />
-    <ClCompile Include="Gameboy.cpp" />
+    <ClCompile Include="MetroBoy.cpp" />
     <ClCompile Include="Interrupts.cpp" />
     <ClCompile Include="Joypad.cpp" />
     <ClCompile Include="LCD.cpp" />
-    <ClCompile Include="MetroBoy.cpp" />
     <ClCompile Include="OAM.cpp" />
     <ClCompile Include="PPU.cpp" />
     <ClCompile Include="Serial.cpp" />
@@ -31,10 +30,9 @@
     <ClInclude Include="Bootrom.h" />
     <ClInclude Include="Cart.h" />
     <ClInclude Include="DMA.h" />
-    <ClInclude Include="Gameboy.h" />
+    <ClInclude Include="MetroBoy.h" />
     <ClInclude Include="Joypad.h" />
     <ClInclude Include="LCD.h" />
-    <ClInclude Include="MetroBoy.h" />
     <ClInclude Include="OAM.h" />
     <ClInclude Include="PPU.h" />
     <ClInclude Include="Serial.h" />

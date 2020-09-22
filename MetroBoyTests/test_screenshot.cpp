@@ -1,4 +1,4 @@
-#include "MetroBoyLib/Gameboy.h"
+#include "MetroBoyLib/MetroBoy.h"
 #include "CoreLib/File.h"
 
 #pragma warning(disable : 4996)

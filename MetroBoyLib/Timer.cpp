@@ -89,7 +89,6 @@ void NewTimer::dump(Dumper& d) const {
   d("tima_7_sync %d\n",     tima_7_sync);
   d("timer_int        %d\n",     timer_int);
   d("tima_clk    %d\n",     tima_clk);
-
   d("\n");
 }
 

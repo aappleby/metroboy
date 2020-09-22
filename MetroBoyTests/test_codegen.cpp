@@ -1,5 +1,5 @@
 #include "CoreLib/Assembler.h"
-#include "MetroBoyLib/Gameboy.h"
+#include "MetroBoyLib/MetroBoy.h"
 
 #include <string>
 
@@ -29,7 +29,7 @@ int spritex_vs_scx[17][9] = {
   { 63, 63, 63, 63, 63, 63, 64, 64, 63 },
 };
 
-void test_preloaded(Gameboy& gameboy, const std::string& /*name*/) {
+void test_preloaded(MetroBoy& gameboy, const std::string& /*name*/) {
   uint8_t result = 0xFF;
   int i = 0;
   const int mcycles = 100000;  // bits_ram_en needs lots of mcycles

@@ -12,6 +12,18 @@ public:
     current = new T();
   }
 
+  T* state() {
+    return current;
+  }
+
+  T& operator*() {
+    return *current;
+  }
+
+  T* operator->() {
+    return current;
+  }
+
   //----------------------------------------
 
   void push_frame() {
@@ -87,8 +99,6 @@ public:
   }
  
   //----------------------------------------
-
-protected:
 
   T* current;
   std::vector<T*> mb_frame;

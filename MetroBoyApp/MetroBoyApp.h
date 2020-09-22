@@ -1,13 +1,15 @@
 #pragma once
 
+#include "CoreLib/StateManager.h"
+#include "CoreLib/File.h"
 #include "AppLib/App.h"
-#include "MetroBoyLib/MetroBoy.h"
 #include "AppLib/GridPainter.h"
 #include "AppLib/GBBlitter.h"
 #include "AppLib/DumpPainter.h"
 #include "AppLib/Blitter.h"
 #include "AppLib/GridPainter.h"
 #include "AppLib/TextPainter.h"
+#include "MetroBoyLib/MetroBoy.h"
 
 #include <string>
 
@@ -24,8 +26,8 @@ public:
   virtual void app_render_ui(Viewport view);
 
   void post();
-  void load(const std::string& prefix, const std::string& name);
-  void load(const std::string& name) { load("./", name); }
+  void load_rom(const std::string& prefix, const std::string& name);
+  void load_rom(const std::string& name) { load_rom("./", name); }
 
   void load_memdump(const std::string& prefix, const std::string& name);
 
@@ -83,10 +85,14 @@ public:
   //----------
   // gb state
 
-  MetroBoy metroboy;
+  StateManagerBase<MetroBoy> gb;
 
   //----------
   // debug
 
   uint8_t golden[160 * 144] = {};
+
+  blob rom;
+  uint32_t tracebuffer[456 * 154] = {0};
+  int tracecursor = 0;
 };

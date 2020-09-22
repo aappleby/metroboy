@@ -1,7 +1,7 @@
 #include "MetroBoyTests/test_wpol.h"
 #include "CoreLib/File.h"
 
-#include "MetroBoyLib/Gameboy.h"
+#include "MetroBoyLib/MetroBoy.h"
 
 #include <vector>
 #include <fstream>
@@ -131,8 +131,8 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   blob rom;
   load_array(filename, rom);
 
-  Gameboy gameboy;
-  Gameboy* gb = &gameboy;
+  MetroBoy gameboy;
+  MetroBoy* gb = &gameboy;
   if (gb) {
     gb->set_rom(rom.data(), rom.size());
     gb->reset(0x100);

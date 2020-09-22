@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
 
-  run_microtests();
+  run_metroboy_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();

@@ -31,8 +31,8 @@ int main(int argc, char** argv) {
   err += t.test_ppu();
   err += t.test_serial();
   err += t.test_timer();
-  //err += t.test_micro();
-  err += t.test_micro_ints();
+  err += t.test_micro();
+  //err += t.test_micro_ints();
 
   auto finish = timestamp();
 
@@ -211,10 +211,10 @@ int GateBoyTests::test_micro() {
   err += run_microtest("dma_0xE000.gb");
 
   LOG_B("---------- HBLANK interrupt ----------\n");
-  err += run_microtest("hblank_int_halt_a.gb");
-  err += run_microtest("hblank_int_halt_b.gb");
-  err += run_microtest("hblank_int_if_a.gb");
-  err += run_microtest("hblank_int_if_b.gb");
+  //err += run_microtest("hblank_int_halt_a.gb");
+  //err += run_microtest("hblank_int_halt_b.gb");
+  //err += run_microtest("hblank_int_if_a.gb");
+  //err += run_microtest("hblank_int_if_b.gb");
 
   // deleted?
   //err += run_microtest("hblank_int_if_c.gb");
@@ -224,77 +224,77 @@ int GateBoyTests::test_micro() {
   //err += run_microtest("hblank_int_nops_a.gb");
   //err += run_microtest("hblank_int_nops_b.gb");
 
-  err += run_microtest("hblank_int_scx0_halt_a.gb");
-  err += run_microtest("hblank_int_scx0_halt_b.gb");
-  err += run_microtest("hblank_int_scx0_if_a.gb");
-  err += run_microtest("hblank_int_scx0_if_b.gb");
-  err += run_microtest("hblank_int_scx0_if_c.gb");
-  err += run_microtest("hblank_int_scx0_if_d.gb");
-  err += run_microtest("hblank_int_scx0_nops_a.gb");
-  err += run_microtest("hblank_int_scx0_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx1_halt_a.gb");
-  err += run_microtest("hblank_int_scx1_halt_b.gb");
-  err += run_microtest("hblank_int_scx1_if_a.gb");
-  err += run_microtest("hblank_int_scx1_if_b.gb");
-  err += run_microtest("hblank_int_scx1_if_c.gb");
-  err += run_microtest("hblank_int_scx1_if_d.gb");
-  err += run_microtest("hblank_int_scx1_nops_a.gb");
-  err += run_microtest("hblank_int_scx1_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx2_halt_a.gb");
-  err += run_microtest("hblank_int_scx2_halt_b.gb");
-  err += run_microtest("hblank_int_scx2_if_a.gb");
-  err += run_microtest("hblank_int_scx2_if_b.gb");
-  err += run_microtest("hblank_int_scx2_if_c.gb");
-  err += run_microtest("hblank_int_scx2_if_d.gb");
-  err += run_microtest("hblank_int_scx2_nops_a.gb");
-  err += run_microtest("hblank_int_scx2_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx3_halt_a.gb");
-  err += run_microtest("hblank_int_scx3_halt_b.gb");
-  err += run_microtest("hblank_int_scx3_if_a.gb");
-  err += run_microtest("hblank_int_scx3_if_b.gb");
-  err += run_microtest("hblank_int_scx3_if_c.gb");
-  err += run_microtest("hblank_int_scx3_if_d.gb");
-  err += run_microtest("hblank_int_scx3_nops_a.gb");
-  err += run_microtest("hblank_int_scx3_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx4_halt_a.gb");
-  err += run_microtest("hblank_int_scx4_halt_b.gb");
-  err += run_microtest("hblank_int_scx4_if_a.gb");
-  err += run_microtest("hblank_int_scx4_if_b.gb");
-  err += run_microtest("hblank_int_scx4_if_c.gb");
-  err += run_microtest("hblank_int_scx4_if_d.gb");
-  err += run_microtest("hblank_int_scx4_nops_a.gb");
-  err += run_microtest("hblank_int_scx4_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx5_halt_a.gb");
-  err += run_microtest("hblank_int_scx5_halt_b.gb");
-  err += run_microtest("hblank_int_scx5_if_a.gb");
-  err += run_microtest("hblank_int_scx5_if_b.gb");
-  err += run_microtest("hblank_int_scx5_if_c.gb");
-  err += run_microtest("hblank_int_scx5_if_d.gb");
-  err += run_microtest("hblank_int_scx5_nops_a.gb");
-  err += run_microtest("hblank_int_scx5_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx6_halt_a.gb");
-  err += run_microtest("hblank_int_scx6_halt_b.gb");
-  err += run_microtest("hblank_int_scx6_if_a.gb");
-  err += run_microtest("hblank_int_scx6_if_b.gb");
-  err += run_microtest("hblank_int_scx6_if_c.gb");
-  err += run_microtest("hblank_int_scx6_if_d.gb");
-  err += run_microtest("hblank_int_scx6_nops_a.gb");
-  err += run_microtest("hblank_int_scx6_nops_b.gb");
-
-  err += run_microtest("hblank_int_scx7_halt_a.gb");
-  err += run_microtest("hblank_int_scx7_halt_b.gb");
-  err += run_microtest("hblank_int_scx7_if_a.gb");
-  err += run_microtest("hblank_int_scx7_if_b.gb");
-  err += run_microtest("hblank_int_scx7_if_c.gb");
-  err += run_microtest("hblank_int_scx7_if_d.gb");
-  err += run_microtest("hblank_int_scx7_nops_a.gb");
-  err += run_microtest("hblank_int_scx7_nops_b.gb");
+  //err += run_microtest("hblank_int_scx0_halt_a.gb");
+  //err += run_microtest("hblank_int_scx0_halt_b.gb");
+  //err += run_microtest("hblank_int_scx0_if_a.gb");
+  //err += run_microtest("hblank_int_scx0_if_b.gb");
+  //err += run_microtest("hblank_int_scx0_if_c.gb");
+  //err += run_microtest("hblank_int_scx0_if_d.gb");
+  //err += run_microtest("hblank_int_scx0_nops_a.gb");
+  //err += run_microtest("hblank_int_scx0_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx1_halt_a.gb");
+  //err += run_microtest("hblank_int_scx1_halt_b.gb");
+  //err += run_microtest("hblank_int_scx1_if_a.gb");
+  //err += run_microtest("hblank_int_scx1_if_b.gb");
+  //err += run_microtest("hblank_int_scx1_if_c.gb");
+  //err += run_microtest("hblank_int_scx1_if_d.gb");
+  //err += run_microtest("hblank_int_scx1_nops_a.gb");
+  //err += run_microtest("hblank_int_scx1_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx2_halt_a.gb");
+  //err += run_microtest("hblank_int_scx2_halt_b.gb");
+  //err += run_microtest("hblank_int_scx2_if_a.gb");
+  //err += run_microtest("hblank_int_scx2_if_b.gb");
+  //err += run_microtest("hblank_int_scx2_if_c.gb");
+  //err += run_microtest("hblank_int_scx2_if_d.gb");
+  //err += run_microtest("hblank_int_scx2_nops_a.gb");
+  //err += run_microtest("hblank_int_scx2_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx3_halt_a.gb");
+  //err += run_microtest("hblank_int_scx3_halt_b.gb");
+  //err += run_microtest("hblank_int_scx3_if_a.gb");
+  //err += run_microtest("hblank_int_scx3_if_b.gb");
+  //err += run_microtest("hblank_int_scx3_if_c.gb");
+  //err += run_microtest("hblank_int_scx3_if_d.gb");
+  //err += run_microtest("hblank_int_scx3_nops_a.gb");
+  //err += run_microtest("hblank_int_scx3_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx4_halt_a.gb");
+  //err += run_microtest("hblank_int_scx4_halt_b.gb");
+  //err += run_microtest("hblank_int_scx4_if_a.gb");
+  //err += run_microtest("hblank_int_scx4_if_b.gb");
+  //err += run_microtest("hblank_int_scx4_if_c.gb");
+  //err += run_microtest("hblank_int_scx4_if_d.gb");
+  //err += run_microtest("hblank_int_scx4_nops_a.gb");
+  //err += run_microtest("hblank_int_scx4_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx5_halt_a.gb");
+  //err += run_microtest("hblank_int_scx5_halt_b.gb");
+  //err += run_microtest("hblank_int_scx5_if_a.gb");
+  //err += run_microtest("hblank_int_scx5_if_b.gb");
+  //err += run_microtest("hblank_int_scx5_if_c.gb");
+  //err += run_microtest("hblank_int_scx5_if_d.gb");
+  //err += run_microtest("hblank_int_scx5_nops_a.gb");
+  //err += run_microtest("hblank_int_scx5_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx6_halt_a.gb");
+  //err += run_microtest("hblank_int_scx6_halt_b.gb");
+  //err += run_microtest("hblank_int_scx6_if_a.gb");
+  //err += run_microtest("hblank_int_scx6_if_b.gb");
+  //err += run_microtest("hblank_int_scx6_if_c.gb");
+  //err += run_microtest("hblank_int_scx6_if_d.gb");
+  //err += run_microtest("hblank_int_scx6_nops_a.gb");
+  //err += run_microtest("hblank_int_scx6_nops_b.gb");
+  //
+  //err += run_microtest("hblank_int_scx7_halt_a.gb");
+  //err += run_microtest("hblank_int_scx7_halt_b.gb");
+  //err += run_microtest("hblank_int_scx7_if_a.gb");
+  //err += run_microtest("hblank_int_scx7_if_b.gb");
+  //err += run_microtest("hblank_int_scx7_if_c.gb");
+  //err += run_microtest("hblank_int_scx7_if_d.gb");
+  //err += run_microtest("hblank_int_scx7_nops_a.gb");
+  //err += run_microtest("hblank_int_scx7_nops_b.gb");
 
 
   LOG_B("---------- Timer ----------\n");
@@ -544,12 +544,10 @@ int GateBoyTests::test_micro() {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::run_microtest(const char* filename) {
-  std::string path = "microtests/build/dmg/" + std::string(filename);
+  blob rom = load_blob(std::string("microtests/build/dmg/") + filename);
 
   GateBoy gb;
-  gb.reset_post_bootrom();
-  load_blob(path.c_str(), gb.cart_rom, 32768);
-  gb.sys_cart_loaded = 1;
+  gb.reset_post_bootrom(rom.data(), rom.size());
 
   int timeout = 500; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
@@ -574,8 +572,8 @@ int GateBoyTests::run_microtest(const char* filename) {
     return 1;
   }
   else if (result_a == result_b) {
-    LOG_B("%-30s ", filename);
-    LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
+    //LOG_B("%-30s ", filename);
+    //LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
     return 0;
   }
   else {
@@ -591,7 +589,7 @@ int GateBoyTests::test_init() {
   TEST_START("Init");
 
   GateBoy gb;
-  gb.reset_to_bootrom();
+  gb.reset_to_bootrom(nullptr, 0);
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
@@ -605,7 +603,7 @@ int GateBoyTests::test_init() {
   }
 
   // Mem should be clear
-  for (int i = 0; i < 32768; i++) ASSERT_EQ(0, gb.cart_rom[i]);
+  //for (int i = 0; i < 32768; i++) ASSERT_EQ(0, gb.cart_rom[i]);
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.cart_ram[i]);
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.ext_ram[i]);
 
@@ -660,7 +658,7 @@ int GateBoyTests::test_clk() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_post_bootrom();
+  gb.reset_post_bootrom(nullptr, 0);
   gb.sys_cpu_en = false;
 
   gb.run(32);
@@ -780,9 +778,6 @@ int GateBoyTests::test_ext_bus() {
   {
     LOG_B("Testing cram write external bus waves\n");
 
-    GateBoy gb;
-    gb.reset_post_bootrom();
-
     const char* app = R"(
     0150:
       ld a, $55
@@ -793,7 +788,10 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    as.link_to(gb.cart_rom);
+    blob rom = as.link();
+
+    GateBoy gb;
+    gb.reset_post_bootrom(rom.data(), rom.size());
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -903,9 +901,6 @@ int GateBoyTests::test_ext_bus() {
   {
     LOG_B("Testing vram write external bus waves\n");
 
-    GateBoy gb;
-    gb.reset_post_bootrom();
-
     const char* app = R"(
     0150:
       ld a, $55
@@ -916,7 +911,10 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    as.link_to(gb.cart_rom);
+    blob rom = as.link();
+
+    GateBoy gb;
+    gb.reset_post_bootrom(rom.data(), rom.size());
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1031,9 +1029,6 @@ int GateBoyTests::test_ext_bus() {
   {
     LOG_B("Testing zram write external bus waves\n");
 
-    GateBoy gb;
-    gb.reset_post_bootrom();
-
     const char* app = R"(
     0150:
       ld a, $55
@@ -1044,7 +1039,10 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    as.link_to(gb.cart_rom);
+    blob rom = as.link();
+
+    GateBoy gb;
+    gb.reset_post_bootrom(rom.data(), rom.size());
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1220,7 +1218,7 @@ int GateBoyTests::test_interrupts() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_post_bootrom();
+  gb.reset_post_bootrom(nullptr, 0);
   gb.sys_cpu_en = 0;
 
   // hblank no stat int
@@ -1250,7 +1248,7 @@ int GateBoyTests::test_bootrom() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_to_bootrom();
+  gb.reset_to_bootrom(nullptr, 0);
 
   for (int i = 0; i < 16; i++) {
     uint8_t byte = gb.dbg_read(i);
@@ -1438,10 +1436,10 @@ uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
 int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
+  blob dummy_rom(32768);
   GateBoy gb;
-  gb.reset_post_bootrom();
+  gb.reset_post_bootrom(dummy_rom.data(), dummy_rom.size());
   gb.sys_cpu_en = 0;
-  gb.sys_cart_loaded = 1;
   gb.dbg_write(ADDR_LCDC, 0);
 
   uint8_t blob[256];
@@ -1507,9 +1505,8 @@ int GateBoyTests::test_ppu() {
   {
     LOG("Checking LY increment rate... ");
     GateBoy gb;
-    gb.reset_post_bootrom();
+    gb.reset_post_bootrom(nullptr, 0);
     gb.sys_cpu_en = 0;
-    gb.sys_cart_loaded = 1;
 
     gb.dbg_write(ADDR_LCDC, 0x00);
     gb.dbg_write(ADDR_LCDC, 0x80);
@@ -1544,9 +1541,9 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
   GateBoy gb;
-  gb.reset_post_bootrom();
+  blob dummy_rom(32768);
+  gb.reset_post_bootrom(dummy_rom.data(), dummy_rom.size());
   gb.sys_cpu_en = 0;
-  gb.sys_cart_loaded = 1;
   gb.dbg_write(ADDR_LCDC, 0);
 
   int len = addr_end - addr_start + 1;
@@ -1587,7 +1584,7 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   GateBoy gb;
-  gb.reset_post_bootrom();
+  gb.reset_post_bootrom(nullptr, 0);
   gb.sys_cpu_en = 0;
 
   for (int i = 0; i < 256; i++) {
@@ -1626,7 +1623,7 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gateboy.reset_to_bootrom();
+    gateboy.reset_to_bootrom(nullptr, 0);
     gateboy.dbg_req.addr = 0x0150;
     gateboy.dbg_req.data = 0;
     gateboy.dbg_req.read = 1;

@@ -41,6 +41,10 @@ public:
     return states.back();
   }
 
+  T* operator->() {
+    return states.back();
+  }
+
   void step(int count, StepSize step_size) {
     auto s = new T(*states.back());
     states.push_back(s);

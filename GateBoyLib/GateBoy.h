@@ -9,8 +9,8 @@
 struct GateBoy {
   GateBoy();
 
-  void     reset_to_bootrom();
-  void     reset_post_bootrom();
+  void     reset_to_bootrom(uint8_t* rom_buf, size_t rom_size);
+  void     reset_post_bootrom(uint8_t* rom_buf, size_t rom_size);
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
 
@@ -108,7 +108,9 @@ struct GateBoy {
   int32_t  sys_cpuready = 0;
   int32_t  sys_cpu_en = 0;
   uint8_t  sys_buttons = 0;
-  uint8_t  sys_cart_loaded = 0;
+  uint8_t  xxx_sys_cart_loaded = 0;
+
+private:
 
   uint8_t* rom_buf = nullptr;
   size_t   rom_size = 0;

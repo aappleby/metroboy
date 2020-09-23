@@ -192,7 +192,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tock_ext_bus(wire RST, wire sys_cart_loaded, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
+void SchematicTop::tock_ext_bus(wire RST, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
   if (RST) return;
 
   uint16_t ext_addr = ext_bus.get_pin_addr();
@@ -204,7 +204,7 @@ void SchematicTop::tock_ext_bus(wire RST, wire sys_cart_loaded, uint8_t* cart_ro
     wire CEn = ext_bus.PIN_EXT_A15p.qp();
 
     if (!CEn && !OEn) {
-      if (sys_cart_loaded) {
+      if (cart_rom) {
         ext_bus.set_pin_data(cart_rom[rom_addr]);
       }
       else {

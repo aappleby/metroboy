@@ -70,6 +70,12 @@ uint8_t metadata[] = {
   0x1a, 0x41,
 };
 
+blob Assembler::link() {
+  blob ret(32768);
+  link_to(ret.data());
+  return ret;
+}
+
 void Assembler::link_to(uint8_t* rom_buf) {
   memset(rom_buf, 0, 32768);
   memcpy(rom_buf + 0x100, metadata, sizeof(metadata));

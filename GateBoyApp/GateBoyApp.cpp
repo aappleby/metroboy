@@ -34,36 +34,39 @@ int main(int argc, char** argv) {
 //-----------------------------------------------------------------------------
 
 GateBoyApp::GateBoyApp() {
-  auto top_step = [](GateBoy* gateboy, StepSize step_size) {
+
+  auto top_step = [](GateBoy* gb, StepSize step_size) {
     (void)step_size;
     if (step_size == STEP_PASS) {
-      gateboy->next_pass();
+      gb->next_pass();
     }
     else if (step_size == STEP_PHASE) {
-      gateboy->next_phase();
+      gb->next_phase();
     }
     else if (step_size == STEP_CYCLE) {
-      gateboy->next_mcycle();
+      gb->next_mcycle();
     }
     else if (step_size == STEP_LINE) {
-      gateboy->next_line();
+      gb->next_line();
     }
   };
+
   auto top_unstep = [](GateBoy* gateboy, StepSize /*step_size*/) {
     (void)gateboy;
 
     // Run a logic pass after unstep to update our probes
     // This still doesn't work :P
     /*
-    uint64_t pass_hash_old = gateboy->pass_hash;
-    gateboy->update_logic();
-    uint64_t pass_hash_new = revert_and_hash(gateboy->top);
+    uint64_t pass_hash_old = gb->pass_hash;
+    gb->update_logic();
+    uint64_t pass_hash_new = revert_and_hash(gb->top);
     if (pass_hash_old != pass_hash_new) printf("UNSTEP FAIL\n");
     */
 
     clear_probes();
   };
-  state_manager.init(top_step, top_unstep);
+
+  gb.init(top_step, top_unstep);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,25 +91,19 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
-  auto& gb = *state_manager.state();
-  
   // regenerate post-bootrom dump
-#if 1
-  gb.reset_to_bootrom();
-  load_blob("roms/tetris.gb", gb.cart_rom, 32768);
-  gb.sys_cart_loaded = 1;
+#if 0
+  blob rom = load_blob("roms/tetris.gb");
+  gb->reset_to_bootrom(rom.data(), rom.size());
 
   for (int i = 0; i < 8192; i++) {
-    gb.vid_ram[i] = (uint8_t)rand();
+    gb->vid_ram[i] = (uint8_t)rand();
   }
 #endif
   
 #if 0
   // run tiny app
   if (1) {
-    gb.reset_post_bootrom();
-    //gb.dbg_write(0xFF40, 0);
-
     std::string app;
     app += "0150:\n";
 
@@ -138,15 +135,15 @@ void GateBoyApp::app_init() {
 
     Assembler as;
     as.assemble(app.c_str());
-    as.link_to(gb.cart_rom);
-    gb.sys_cart_loaded = 1;
+    blob rom = as.link();
+
+    gb->reset_post_bootrom(rom.data(), rom.size());
   }
 #endif
 
 
-#if 0
+#if 1
   // run rom
-  gb.reset_post_bootrom();
 
   //load_rom("microtests/build/dmg/int_hblank_halt_bug_a.gb");
   //load_rom("microtests/build/dmg/int_hblank_halt_bug_b.gb");
@@ -169,14 +166,12 @@ void GateBoyApp::app_init() {
   //load_rom("microtests/build/dmg/int_hblank_incs_scx6.gb"); // int fires on FG 638, int starts on 680
   //load_rom("microtests/build/dmg/int_hblank_incs_scx7.gb"); // int fires on HA 640, int starts on 688
 
-  load_rom("microtests/build/dmg/flood_vram.gb");
+  //load_rom("microtests/build/dmg/flood_vram.gb");
+
+  //load_rom("roms/tetris.gb");
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
-  //gb.sys_cpu_en = false;
-
-  gb.phase_total = 0;
-  gb.pass_count = 0;
-  gb.pass_total = 0;
+  //gb->sys_cpu_en = false;
 
 #endif
 }
@@ -252,15 +247,12 @@ void GateBoyApp::app_update(double delta) {
     }
 
     if (event.type == SDL_DROPFILE) {
-      state_manager.reset();
-      state_manager.state()->reset_post_bootrom();
       load_rom(event.drop.file);
       SDL_free(event.drop.file);
     }
   }
 
   if (toggle_cpu) {
-    auto gb = state_manager.state();
     if (gb->sys_cpu_en) {
       printf("Disabling CPU\n");
       gb->sys_cpu_en = 0;
@@ -273,8 +265,8 @@ void GateBoyApp::app_update(double delta) {
 
   if (reset_sim) {
     printf("Resetting sim\n");
-    state_manager.reset();
-    state_manager.state()->reset_post_bootrom();
+    gb.reset();
+    gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
   }
 
   if (_load_megadump) {
@@ -300,16 +292,16 @@ void GateBoyApp::app_update(double delta) {
   if (runmode == RUN_FAST) {
     //auto gb = state_manager.state();
     //gb->run(114 * 8 * 8);
-    state_manager.step(113 * 8 * 8, STEP_PHASE);
+    gb.step(113 * 8 * 8, STEP_PHASE);
   }
   
   else if (runmode == RUN_STEP && step_forward) {
-    state_manager.step(step_forward, stepmode);
+    gb.step(step_forward, stepmode);
     step_forward = 0;
   }
 
   while(step_backward--) {
-    state_manager.unstep(1, stepmode);
+    gb.unstep(1, stepmode);
   }
 
   frame_count++;
@@ -320,15 +312,15 @@ void GateBoyApp::app_update(double delta) {
 
 void GateBoyApp::load_raw_dump(const char* filename) {
   printf("Loading raw dump from %s\n", filename);
-  state_manager.reset();
-  state_manager.state()->load_dump(filename);
+  gb.reset();
+  gb->load_dump(filename);
 }
 
 //----------
 
 void GateBoyApp::save_raw_dump(const char* filename) {
   printf("Saving raw dump to %s\n", filename);
-  state_manager.state()->save_dump(filename);
+  gb->save_dump(filename);
 }
 
 //-----------------------------------------------------------------------------
@@ -344,8 +336,8 @@ void GateBoyApp::load_megadump(const char* filename) {
     return;
   }
 
-  state_manager.load_megadump(f);
-  state_manager.scan([](const GateBoy* gb) {
+  gb.load_megadump(f);
+  gb.scan([](const GateBoy* gb) {
     gb->check_sentinel();
     return true;
   });
@@ -365,7 +357,7 @@ void GateBoyApp::save_megadump(const char* filename) {
     return;
   }
 
-  state_manager.save_megadump(f);
+  gb.save_megadump(f);
   fclose(f);
 }
 
@@ -376,29 +368,25 @@ void GateBoyApp::save_megadump(const char* filename) {
 void GateBoyApp::load_flat_dump(const char* filename) {
   printf("Loading flat dump %s\n", filename);
 
-  state_manager.reset();
-  state_manager.state()->reset_post_bootrom();
+  rom_buf = load_blob(filename);
 
-  uint8_t* dump = new uint8_t[65536];
-  memset(dump, 0, 65536);
-  size_t size = load_blob(filename, dump, 65536);
-  
-  auto gb = state_manager.state();
+  gb.reset();
+  gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
 
-  memcpy(gb->cart_rom, dump + 0x0000, 32768);
-  memcpy(gb->vid_ram,  dump + 0x8000, 8192);
-  memcpy(gb->cart_ram, dump + 0xA000, 8192);
-  memcpy(gb->ext_ram,  dump + 0xC000, 8192);
-  memcpy(gb->oam_ram,  dump + 0xFE00, 256);
-  memcpy(gb->zero_ram, dump + 0xFF80, 128);
+  memcpy(gb->cart_rom, rom_buf.data() + 0x0000, 32768);
+  memcpy(gb->vid_ram,  rom_buf.data() + 0x8000, 8192);
+  memcpy(gb->cart_ram, rom_buf.data() + 0xA000, 8192);
+  memcpy(gb->ext_ram,  rom_buf.data() + 0xC000, 8192);
+  memcpy(gb->oam_ram,  rom_buf.data() + 0xFE00, 256);
+  memcpy(gb->zero_ram, rom_buf.data() + 0xFF80, 128);
 
-  gb->dbg_write(ADDR_BGP,  dump[ADDR_BGP]);
-  gb->dbg_write(ADDR_OBP0, dump[ADDR_OBP0]);
-  gb->dbg_write(ADDR_OBP1, dump[ADDR_OBP1]);
-  gb->dbg_write(ADDR_SCY,  dump[ADDR_SCY]);
-  gb->dbg_write(ADDR_SCX,  dump[ADDR_SCX]);
-  gb->dbg_write(ADDR_WY,   dump[ADDR_WY]);
-  gb->dbg_write(ADDR_WX,   dump[ADDR_WX]);
+  gb->dbg_write(ADDR_BGP,  rom_buf[ADDR_BGP]);
+  gb->dbg_write(ADDR_OBP0, rom_buf[ADDR_OBP0]);
+  gb->dbg_write(ADDR_OBP1, rom_buf[ADDR_OBP1]);
+  gb->dbg_write(ADDR_SCY,  rom_buf[ADDR_SCY]);
+  gb->dbg_write(ADDR_SCX,  rom_buf[ADDR_SCX]);
+  gb->dbg_write(ADDR_WY,   rom_buf[ADDR_WY]);
+  gb->dbg_write(ADDR_WX,   rom_buf[ADDR_WX]);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
@@ -418,10 +406,9 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   // #define FLAG_WIN_MAP_1    0x40
   // #define FLAG_LCD_ON       0x80
 
-  gb->dbg_write(ADDR_LCDC, dump[ADDR_LCDC]);
+  gb->dbg_write(ADDR_LCDC, rom_buf[ADDR_LCDC]);
 
-  printf("Loaded %zd bytes from dump %s\n", size, filename);
-  delete [] dump;
+  printf("Loaded %zd bytes from dump %s\n", rom_buf.size(), filename);
 }
 
 //----------
@@ -436,11 +423,15 @@ void GateBoyApp::save_flat_dump(const char* filename) {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  auto gb = state_manager.state();
-  size_t size = load_blob(filename, gb->cart_rom, 32768);
-  gb->sys_cart_loaded = 1;
+  rom_buf = load_blob(filename);
 
-  printf("Loaded %zd bytes from rom %s\n", size, filename);
+  gb.reset();
+  gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
+  gb->phase_total = 0;
+  gb->pass_count = 0;
+  gb->pass_total = 0;
+
+  printf("Loaded %zd bytes from rom %s\n", rom_buf.size(), filename);
 }
 
 //-----------------------------------------------------------------------------
@@ -448,8 +439,7 @@ void GateBoyApp::load_rom(const char* filename) {
 void GateBoyApp::app_render_frame(Viewport view) {
   grid_painter.render(view);
 
-  auto gateboy = state_manager.state();
-  const auto& top = gateboy->top;
+  const auto& top = gb->top;
 
   StringDumper dumper;
   float col_width = 256 - 32;
@@ -468,9 +458,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
     "\003_______H\001",
   };
 
-  dumper("phase %s\n", phases[gateboy->phase_total & 7]);
+  dumper("phase %s\n", phases[gb->phase_total & 7]);
 
-  size_t state_size = state_manager.state_size_bytes();
+  size_t state_size = gb.state_size_bytes();
 
   if (state_size < 1024 * 1024) {
     dumper("State size          %d K\n",      state_size / 1024);
@@ -478,35 +468,35 @@ void GateBoyApp::app_render_frame(Viewport view) {
   else {
     dumper("State size          %d M\n",      state_size / (1024 * 1024));
   }
-  dumper("Phase count %8d\n",     gateboy->phase_total);
-  dumper("Pass count  %8d\n",     gateboy->pass_count);
-  dumper("Pass total  %8d\n",     gateboy->pass_total);
-  dumper("Pass avg    %4.2f\n",   float(gateboy->pass_total) / float(gateboy->phase_total));
-  dumper("Pass hash   %016llx\n", gateboy->pass_hash);
-  dumper("Total hash  %016llx\n", gateboy->total_hash);
-  dumper("BGB cycle   0x%08x\n",  (gateboy->phase_total / 4) - 0x10000);
-  dumper("Sim clock   %f\n",      double(gateboy->phase_total) / (4194304.0 * 2));
+  dumper("Phase count %8d\n",     gb->phase_total);
+  dumper("Pass count  %8d\n",     gb->pass_count);
+  dumper("Pass total  %8d\n",     gb->pass_total);
+  dumper("Pass avg    %4.2f\n",   float(gb->pass_total) / float(gb->phase_total));
+  dumper("Pass hash   %016llx\n", gb->pass_hash);
+  dumper("Total hash  %016llx\n", gb->total_hash);
+  dumper("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);
+  dumper("Sim clock   %f\n",      double(gb->phase_total) / (4194304.0 * 2));
 
   dumper("\n");
   dumper("dbg_req ");
-  dump_req(dumper, gateboy->dbg_req);
+  dump_req(dumper, gb->dbg_req);
   dumper("cpu_req ");
-  dump_req(dumper, gateboy->cpu_req);
+  dump_req(dumper, gb->cpu_req);
   dumper("bus_req ");
-  dump_req(dumper, gateboy->bus_req);
+  dump_req(dumper, gb->bus_req);
 
   dumper("\n");
 
   dump_probes(dumper);
   dumper("----------   CPU    ----------\n");
-  gateboy->cpu_blah.dump(dumper);
+  gb->cpu_blah.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += col_width;
   dumper.clear();
 
-  wire CLK = gateboy->phase_total & 1;
+  wire CLK = gb->phase_total & 1;
   top.clk_reg.dump(dumper, CLK);
   top.joypad.dump(dumper);
   top.ser_reg.dump(dumper);
@@ -539,23 +529,23 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("---------- DISASM ----------\n");
   {
-    uint16_t pc = gateboy->cpu_blah.op_addr;
+    uint16_t pc = gb->cpu_blah.op_addr;
     const uint8_t* code = nullptr;
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gateboy->top.bootrom.BOOT_BITn.qp()) {
+    if (!gb->top.bootrom.BOOT_BITn.qp()) {
       code = DMG_ROM_bin;
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;
     }
     else if (pc >= 0x0000 && pc <= 0x7FFF) {
-      code = gateboy->cart_rom;
+      code = gb->cart_rom;
       code_size = 32768;
       code_base = ADDR_CART_ROM_BEGIN;
     }
     else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code = gateboy->zero_ram;
+      code = gb->zero_ram;
       code_size = 127;
       code_base = ADDR_ZEROPAGE_BEGIN;
     }
@@ -565,26 +555,26 @@ void GateBoyApp::app_render_frame(Viewport view) {
   }
   dumper.clear();
 
-  dump_painter.render(view, cursor, 416, 16, 16, gateboy->oam_ram);
+  dump_painter.render(view, cursor, 416, 16, 16, gb->oam_ram);
 
   //cursor += col_width;
   //dumper.clear();
 
   //dump_painter.render(view, cursor, 512,      16, 16, DMG_ROM_bin);
-  //dump_painter.render(view, cursor, 768, 16,  8, gateboy->zero_ram);
-  //dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gateboy->mem + 0x0000);
+  //dump_painter.render(view, cursor, 768, 16,  8, gb->zero_ram);
+  //dump_painter.render(view, col_width * 4 + 128, 0, 4, 64, gb->mem + 0x0000);
 
   //update_texture_u32(trace_tex, 912, 154, trace);
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
 
   // Draw flat memory view
   {
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gateboy->cart_rom);
-    update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gateboy->vid_ram);
-    update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gateboy->cart_ram);
-    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gateboy->ext_ram);
-    update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gateboy->oam_ram);
-    update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gateboy->zero_ram);
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->cart_rom);
+    update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vid_ram);
+    update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart_ram);
+    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->ext_ram);
+    update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->oam_ram);
+    update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zero_ram);
     blitter.blit_mono(view, ram_tex, 256, 256,
                       0, 0, 256, 256,
                       960 + 96, 640 + 96, 256, 256);
@@ -611,12 +601,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   // Draw screen and vid ram contents
   if (1) {
-    gb_blitter.blit_screen(view, 1280, 32,  2, gateboy->framebuffer);
-    gb_blitter.blit_tiles (view, 1632, 32,  1, gateboy->vid_ram);
-    gb_blitter.blit_map   (view, 1344, 448, 1, gateboy->vid_ram, 0, 0);
-    gb_blitter.blit_map   (view, 1632, 448, 1, gateboy->vid_ram, 0, 1);
-    gb_blitter.blit_map   (view, 1344, 736, 1, gateboy->vid_ram, 1, 0);
-    gb_blitter.blit_map   (view, 1632, 736, 1, gateboy->vid_ram, 1, 1);
+    gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
+    gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vid_ram);
+    gb_blitter.blit_map   (view, 1344, 448, 1, gb->vid_ram, 0, 0);
+    gb_blitter.blit_map   (view, 1632, 448, 1, gb->vid_ram, 0, 1);
+    gb_blitter.blit_map   (view, 1344, 736, 1, gb->vid_ram, 1, 0);
+    gb_blitter.blit_map   (view, 1632, 736, 1, gb->vid_ram, 1, 1);
   }
 
   switch(runmode) {
@@ -630,13 +620,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
   case STEP_CYCLE: dumper("STEP_MCYCLE "); break;
   case STEP_LINE:   dumper("STEP_LINE   ");   break;
   }
-  dumper("Sim clock %8.3f ",      double(gateboy->phase_total) / (4194304.0 * 2));
-  dumper("%s", phases[gateboy->phase_total & 7]);
-  dumper("%c", gateboy->sim_stable ? ' ' : '*');
+  dumper("Sim clock %8.3f ",      double(gb->phase_total) / (4194304.0 * 2));
+  dumper("%s", phases[gb->phase_total & 7]);
+  dumper("%c", gb->sim_stable ? ' ' : '*');
   dumper("\n");
 
   int count = 0;
-  state_manager.rev_scan([&](const GateBoy* gb) {
+  gb.rev_scan([&](const GateBoy* gb) {
     switch(gb->get_step_size()) {
     case STEP_LINE:  dumper("L"); break;
     case STEP_CYCLE: dumper("C"); break;

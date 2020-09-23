@@ -51,7 +51,18 @@ GateBoy::GateBoy() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_bootrom() {
+void GateBoy::reset_to_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
+  if (_rom_buf) {
+    size_t size = _rom_size > 32768 ? 32768 : _rom_size;
+    memcpy(cart_rom, _rom_buf, size);
+    rom_buf = _rom_buf;
+    rom_size = _rom_size;
+  } else {
+    memset(cart_rom, 0, 32768);
+    rom_buf = 0;
+    rom_size = 0;
+  }
+
   // In reset
   sys_rst = 1;
   run(5);
@@ -84,9 +95,20 @@ void GateBoy::reset_to_bootrom() {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::reset_post_bootrom() {
+void GateBoy::reset_post_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
   check_sentinel();
+
+  if (_rom_buf) {
+    size_t size = _rom_size > 32768 ? 32768 : _rom_size;
+    memcpy(cart_rom, _rom_buf, size);
+    rom_buf = _rom_buf;
+    rom_size = _rom_size;
+  } else {
+    memset(cart_rom, 0, 32768);
+    rom_buf = 0;
+    rom_size = 0;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -305,8 +327,9 @@ void GateBoy::update_top() {
   RegBase::tick_running = false;
 
   RegBase::tock_running = true;
+
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, sys_cart_loaded, cart_rom, cart_ram, ext_ram);
+  top.tock_ext_bus (sys_rst, rom_buf ? cart_rom : nullptr, cart_ram, ext_ram);
   top.tock_vram_bus(sys_rst, vid_ram);
   top.tock_zram_bus(sys_rst, zero_ram);
   top.tock_oam_bus (sys_rst, oam_ram);

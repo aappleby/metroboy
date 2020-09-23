@@ -30,18 +30,13 @@ public:
 
 private:
 
-  void load_microtest(const char* filename);
-
+  void load_rom(const char* filename);
   void load_raw_dump(const char* filename);
   void save_raw_dump(const char* filename);
-
   void load_megadump(const char* filename);
   void save_megadump(const char* filename);
-
   void load_flat_dump(const char* filename);
   void save_flat_dump(const char* filename);
-
-  void load_rom(const char* filename);
 
   enum RunMode {
     RUN_FAST,
@@ -54,7 +49,7 @@ private:
 
   const uint8_t* keyboard_state = nullptr;
 
-  StateManager2<GateBoy> state_manager;
+  StateManager2<GateBoy> gb;
 
   GridPainter grid_painter;
   TextPainter text_painter;
@@ -74,4 +69,6 @@ private:
   int ram_tex;
 
   Assembler assembler;
+
+  blob rom_buf;
 };

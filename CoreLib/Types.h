@@ -14,14 +14,24 @@ typedef int16_t sample_t;
 //typedef const bool wire;
 typedef bool wire;
 
+enum RunMode {
+  RUN_STEP = 0,
+  RUN_FAST = 1,
+  RUN_VSYNC = 2,
+
+  RUN_MIN = RUN_STEP,
+  RUN_MAX = RUN_VSYNC,
+};
+
 enum StepSize {
   STEP_PASS  = 0,
   STEP_PHASE = 1,
   STEP_CYCLE = 2,
   STEP_LINE  = 3,
+  STEP_FRAME = 4,
     
   STEP_MIN = STEP_PASS,
-  STEP_MAX = STEP_LINE,
+  STEP_MAX = STEP_FRAME,
 };
 
 constexpr uint64_t HASH_INIT = 0x12345678;

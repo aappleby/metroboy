@@ -16,7 +16,6 @@ class GateBoyApp : public App {
 public:
 
   GateBoyApp();
-  ~GateBoyApp() override;
 
   //----------
 

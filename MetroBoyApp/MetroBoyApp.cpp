@@ -1,69 +1,30 @@
 #include "MetroBoyApp/MetroBoyApp.h"
 
+#include "AppLib/AppHost.h"
 #include "AppLib/Audio.h"
 #include "AppLib/GLBase.h"
 #include "CoreLib/Debug.h"
+
+//-----------------------------------------------------------------------------
+
+int main(int argc, char** argv) {
+
+  //App* app = new GateBoyApp();
+  //App* app = new DummyApp();
+  App* app = new MetroBoyApp();
+
+  AppHost* app_host = new AppHost(app);
+  int ret = app_host->app_main(argc, argv);
+  delete app;
+  return ret;
+}
+
 
 #ifdef _MSC_VER
 #include "SDL/include/SDL.h"
 #else
 #include <SDL2/SDL.h>
 #endif
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
-#include <vector>
-#include <typeinfo>
-
-extern const uint32_t gb_colors[];
-
-void run_wpol_test(const std::string& prefix, const std::string& name);
-
-//-----------------------------------------------------------------------------
-
-MetroBoyApp::MetroBoyApp() {
-  post();
-}
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::post() {
-  double begin = timestamp();
-
-  printf("\n");
-  printf("---------- POST begin ----------\n");
-
-  int err = 0;
-#if 0
-  printf("Timer\n");
-  err += run_microtest("microtests/build/dmg/div_inc_timing_a.gb");
-  err += run_microtest("microtests/build/dmg/div_inc_timing_b.gb");
-  err += run_microtest("microtests/build/dmg/poweron_000_div.gb");
-  err += run_microtest("microtests/build/dmg/poweron_004_div.gb");
-  err += run_microtest("microtests/build/dmg/poweron_005_div.gb");
-  err += run_microtest("microtests/build/dmg/timer_div_phase_c.gb");
-  err += run_microtest("microtests/build/dmg/timer_div_phase_d.gb");
-  printf("\n");
-#endif
-
-#if 0
-  printf("Reset\n");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x00.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x08.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x10.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x18.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x20.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x28.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x30.gb");
-  err += run_microtest("micro_cpu/build/dmg/rst_0x38.gb");
-  printf("\n");
-#endif
-  if (err) exit(1);
-
-  double end = timestamp();
-  printf("---------- POST done in %f seconds ----------\n", (end - begin));
-  printf("\n");
-}
 
 //-----------------------------------------------------------------------------
 
@@ -103,13 +64,16 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
 
+  load_rom("microtests/build/dmg/flood_vram.gb");
+
   //load_rom("roms/oh.gb"); // broken eye
   //load_rom("roms/pocket.gb");
   //load_rom("roms/gejmboj.gb");
   //load_rom("roms/LinksAwakening");
   //load_rom("roms/Prehistorik Man (U).gb");
   //load_rom("roms/SML.gb");
-  load_rom("roms/tetris.gb");
+  //load_rom("roms/tetris.gb");
+  //runmode = RUN_FAST;
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
@@ -160,11 +124,312 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
   printf("Loading rom %s\n", gb_filename.c_str());
   
   load_array(gb_filename.c_str(), rom);
-  gb->set_rom(rom.data(), rom.size());
-  gb->reset(0x0100);
+  gb->reset(0x0100, rom.data(), rom.size());
   
   rom_loaded = true;
-  runmode = STEP_PHASE;
+  runmode = RUN_STEP;
+  stepsize = STEP_PHASE;
+}
+
+//-----------------------------------------------------------------------------
+
+void MetroBoyApp::app_update(double /*delta*/) {
+  int  step_forward = 0;
+  int  step_backward = 0;
+  
+  //----------------------------------------
+  // Handle keys
+
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+
+    if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
+    case SDLK_f:      runmode = RUN_FAST; break;
+    case SDLK_v:      runmode = RUN_VSYNC; break;
+    case SDLK_s:      runmode = RUN_STEP; break;
+    case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
+    case SDLK_UP:     stepsize = clamp_val(stepsize + 1, STEP_MIN, STEP_MAX); break;
+    case SDLK_DOWN:   stepsize = clamp_val(stepsize - 1, STEP_MIN, STEP_MAX); break;
+
+    case SDLK_r: {
+      gb.clear();
+      memset(tracebuffer, 0, sizeof(tracebuffer));
+      gb->reset(0x0100, rom.data(), rom.size());
+      break;
+    }
+    case SDLK_F1: {
+      load_obj("dump.MetroBoy", *gb.state());
+      rom_loaded = true;
+      break;
+    }
+    case SDLK_F4: {
+      save_obj("dump.MetroBoy", *gb.state());
+      break;
+    }
+
+    case SDLK_RIGHT:  {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_forward = 8;
+      } else if (keyboard_state[SDL_SCANCODE_LALT]) {
+        step_forward = 1024;
+      } else {
+        step_forward = 1;
+      }
+      break;
+    }
+
+    case SDLK_LEFT: {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_backward = 8;
+      } else if (keyboard_state[SDL_SCANCODE_LALT]) {
+        step_backward = 1024;
+      } else {
+        step_backward = 1;
+      }
+      break;
+    }
+    }
+
+    if (event.type == SDL_DROPFILE) {
+      load_array(event.drop.file, rom);
+      gb->reset(0x0100, rom.data(), rom.size());
+      rom_loaded = true;
+      runmode = RUN_VSYNC;
+      SDL_free(event.drop.file);
+    }
+  }
+
+  //----------------------------------------
+  // Button input
+
+  buttons = 0;
+  if (keyboard_state[SDL_SCANCODE_RIGHT])  buttons |= 0x01;
+  if (keyboard_state[SDL_SCANCODE_LEFT])   buttons |= 0x02;
+  if (keyboard_state[SDL_SCANCODE_UP])     buttons |= 0x04;
+  if (keyboard_state[SDL_SCANCODE_DOWN])   buttons |= 0x08;
+  if (keyboard_state[SDL_SCANCODE_X])      buttons |= 0x10;
+  if (keyboard_state[SDL_SCANCODE_Z])      buttons |= 0x20;
+  if (keyboard_state[SDL_SCANCODE_RSHIFT]) buttons |= 0x40;
+  if (keyboard_state[SDL_SCANCODE_RETURN]) buttons |= 0x80;
+
+  //----------------------------------------
+  // Run simulation
+
+  if (runmode == RUN_FAST) {
+    gb.clear();
+    gb->set_joypad(~buttons);
+    gb->step_mcycle(MCYCLES_PER_FRAME * 8);
+  }
+  else if (runmode == RUN_VSYNC) {
+    gb.clear();
+    gb->set_joypad(~buttons);
+    gb->sync_to_vblank();
+
+    //audio_begin();
+
+    for (int i = 0; i < MCYCLES_PER_FRAME; i++) {
+      gb->mcycle();
+      //audio_post(gb->get_host_data().out_l, gb->get_host_data().out_r);
+    }
+
+    //audio_end();
+  }
+  else if (runmode == STEP_PHASE) {
+    if (step_forward) {
+      gb.push_cycle();
+      gb->step_phase(step_forward);
+    }
+    if (step_backward) {
+      gb.pop_cycle();
+    }
+  }
+  else if (runmode == STEP_FRAME) {
+    if (step_forward)  {
+      gb.push_frame();
+      gb->step_frame(step_forward);
+    }
+    if (step_backward) {
+      gb.pop_frame();
+    }
+  }
+  else if (runmode == STEP_LINE) {
+    if (step_forward) {
+      gb.push_line();
+      gb->step_line(step_forward);
+    }
+    if (step_backward) {
+      gb.pop_line();
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void MetroBoyApp::app_render_frame(Viewport view) {
+
+  grid_painter.render(view);
+
+  //----------------------------------------
+  // Flat memory view
+
+  update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->get_cart_rom());
+  update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->get_vram());
+  update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->get_cart_ram());
+  update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->get_main_ram());
+  update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->get_oam_ram());
+  update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->get_zram());
+
+  blitter.blit_mono(view, ram_tex, 256, 256,
+                    0, 0, 256, 256,
+                    960 + 96, 640 + 96, 256, 256);
+
+  //----------------------------------------
+  // Gameboy screen
+
+  gb_blitter.blit_screen(view, 1280, 32,  2, gb->fb);
+  gb_blitter.blit_tiles (view, 1632, 32,  1, gb->get_vram());
+  gb_blitter.blit_map   (view, 1344, 448, 1, gb->get_vram(), 0, 0);
+  gb_blitter.blit_map   (view, 1632, 448, 1, gb->get_vram(), 0, 1);
+  gb_blitter.blit_map   (view, 1344, 736, 1, gb->get_vram(), 1, 0);
+  gb_blitter.blit_map   (view, 1632, 736, 1, gb->get_vram(), 1, 1);
+
+  //----------------------------------------
+  // Trace view
+
+  //const int gb_trace_x = int(view.sx()) - 32 * 17;
+  //const int gb_trace_y = int(view.sy()) - 32 * 7;
+  //gb_blitter.blit_trace (view, gb_trace_x, gb_trace_y, metroboy.get_trace());
+
+  //----------------------------------------
+  // Memory debugger
+
+  //dump_painter.render(view, 900, 100, 16, 8, metroboy->get_zram());
+  //dump_painter.render(view, 900, 300, 64, 128, metroboy->get_main_ram());
+}
+
+//-----------------------------------------------------------------------------
+
+void MetroBoyApp::app_render_ui(Viewport view) {
+  StringDumper d;
+
+  int column = 0;
+
+  if (1) {
+    gb->dump_bus(d);
+    gb->z80.dump(d);
+    gb->timer2.dump(d);
+    gb->dma2.dump(d);
+    gb->cart.dump(d);
+    gb->joypad.dump(d);
+    gb->serial.dump(d);
+    text_painter.render(view, d.s, (float)column, 0);
+    d.clear();
+    column += 32 * 7;
+  }
+
+  if (1) {
+    gb->lcd.dump(d);
+    gb->get_spu().dump(d);
+    gb->zram.dump(d);
+    gb->oam.dump(d);
+    text_painter.render(view, d.s, (float)column, 0);
+    d.clear();
+    column += 32 * 7;
+  }
+
+  if (1) {
+    gb->ppu.dump(d);
+    text_painter.render(view, d.s, (float)column, 0);
+    d.clear();
+    column += 32 * 7;
+  }
+
+  if (1) {
+    gb->dump_disasm(d);
+    text_painter.render(view, d.s, (float)column, 0);
+    d.clear();
+    column += 32 * 7;
+  }
+
+  /*
+  double mcycles_per_sec_1x = 114 * 154 * 60; // 1.05 mhz
+  double sim_speed = 1.06;
+  double sim_budget_msec = 60.0;
+  double fast_mcycles = mcycles_per_sec_1x * sim_speed * sim_budget_msec / 1000.0;
+  int last_mcycles = 0;
+  double sim_time_msec = 0.0;
+
+  {
+    double sim_mcycles_per_sec = double(last_mcycles) * (1000.0 / sim_budget_msec);
+    double rt_mcycles_per_sec = 114.0 * 154.0 * 60.0;
+
+    const char* mode_names[] = {
+        "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
+    };
+
+    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(gb->phase_total & 7));
+    text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
+    text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
+    text_painter.dprintf("sim rate   %7d cycles/frame\n", last_mcycles);
+    text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
+    
+    text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
+  }
+  */
+}
+
+//-----------------------------------------------------------------------------
+
+
+
+
+
+#if 0
+void MetroBoy::step_over() {
+  push_cycle();
+
+  auto& gb = current->gb;
+
+  int op_addr = gb.get_cpu().get_op_addr();
+  int op = get_rom()[op_addr];
+  int op_size = op_sizes[op];
+  if (op == 0xcb) op_size = 2;
+
+  int next_op_addr = op_addr + op_size;
+
+  gb.sync_to_mcycle();
+  int i = 0;
+  for (; i < 1000000; i++) {
+    if (gb.get_cpu().get_op_addr() == next_op_addr) {
+      // step succeeded
+      return;
+    }
+    gb.mcycle();
+  }
+
+  // step failed
+  pop_cycle();
+  return;
+}
+#endif
+
+
+#if 0
+  //----------------------------------------
+  // Wave thingy
+
+  for (int i = 0; i < 16; i++) {
+    uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
+    uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
+    uint32_t color = 0xFFFFFFFF;
+
+    framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
+    framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
+  }
+#endif
+
+
+
 
 #if 0
   std::string golden_filename = prefix + "/" + name + ".bmp";
@@ -212,266 +477,12 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
     overlay_mode = 1;
   }
 #endif
-}
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::app_update(double /*delta*/) {
-  ImGuiIO& io = ImGui::GetIO();
-
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-
-    if (!io.WantCaptureKeyboard) {
-      if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
-      case SDLK_f:      runmode = RUN_FAST; break;
-      case SDLK_v:      runmode = RUN_VSYNC; break;
-      case SDLK_s:      runmode = STEP_FRAME; break;
-      case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
-      case SDLK_RIGHT:  {
-        if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          step_forward = 8;
-        } else if (keyboard_state[SDL_SCANCODE_LALT]) {
-          step_forward = 1024;
-        } else {
-          step_forward = 1;
-        }
-        break;
-      }
-      case SDLK_LEFT:   {
-        step_backward = 1;
-        break;
-      }
-      case SDLK_UP:     step_up = true; break;
-      case SDLK_DOWN:   step_down = true; break;
-
-      case SDLK_r:      reset = true; break;
-      case SDLK_F1:     load_dump = true; break;
-      case SDLK_F4:     save_dump = true; break;
-      }
-    }
-
-    if (event.type == SDL_DROPFILE) {
-      load_array(event.drop.file, rom);
-      gb->set_rom(rom.data(), rom.size());
-      gb->reset(0x0100);
-
-      rom_loaded = true;
-      runmode = RUN_VSYNC;
-      SDL_free(event.drop.file);
-    }
-  }
-
-  //----------------------------------------
-  // Button input
-
-  buttons = 0;
-  if (keyboard_state[SDL_SCANCODE_RIGHT])  buttons |= 0x01;
-  if (keyboard_state[SDL_SCANCODE_LEFT])   buttons |= 0x02;
-  if (keyboard_state[SDL_SCANCODE_UP])     buttons |= 0x04;
-  if (keyboard_state[SDL_SCANCODE_DOWN])   buttons |= 0x08;
-  if (keyboard_state[SDL_SCANCODE_X])      buttons |= 0x10;
-  if (keyboard_state[SDL_SCANCODE_Z])      buttons |= 0x20;
-  if (keyboard_state[SDL_SCANCODE_RSHIFT]) buttons |= 0x40;
-  if (keyboard_state[SDL_SCANCODE_RETURN]) buttons |= 0x80;
-
-  //----------------------------------------
-  // Handle sim controls
-
-  if (reset) {
-    gb.clear();
-    memset(tracebuffer, 0, sizeof(tracebuffer));
-    gb->set_rom(rom.data(), rom.size());
-    gb->reset(0x0100);
-    reset = false;
-  }
-
-  if (load_dump) {
-    load_obj("dump.MetroBoy", *gb.state());
-    load_dump = false;
-    rom_loaded = true;
-  }
-
-  if (save_dump) {
-    save_obj("dump.MetroBoy", *gb.state());
-    save_dump = false;
-  }
-
-  if (step_up) {
-    if (runmode == STEP_PHASE) runmode = STEP_LINE;
-    else if (runmode == STEP_LINE) runmode = STEP_FRAME;
-  }
-
-  if (step_down) {
-    if (runmode == STEP_FRAME) runmode = STEP_LINE;
-    else if (runmode == STEP_LINE) runmode = STEP_PHASE;
-  }
-
-  //----------------------------------------
-  // Run simulation
-
-  if (runmode == RUN_FAST) {
-    // 114 * 154 = 17556 mcycles/frame
-    // Simulate 8 frames per real frame.
-
-    gb.clear();
-    gb->set_joypad(~buttons);
-    gb->step_mcycle(114 * 154 * 8);
-  }
-  else if (runmode == RUN_VSYNC) {
-    //printf("%d --------\n", frame_count);
-    int64_t phase_begin = gb->phase_total;
-    double time_begin = timestamp();
-
-    //metroboy.run_vsync(buttons);
-
-    gb.clear();
-    gb->set_joypad(~buttons);
-    gb->sync_to_mcycle();
-
-    while(gb->get_host_data().y != 144) {
-      gb->mcycle();
-    }
-
-    audio_begin();
-
-    for (int i = 0; i < 154 * 114; i++) {
-      gb->mcycle();
-      //audio_post(current->gb.get_host_data().out_l,
-      //           current->gb.get_host_data().out_r);
-    }
-
-    audio_end();
-
-    double time_end = timestamp();
-    int64 phase_end = gb->phase_total;
-    last_mcycles = int(phase_end - phase_begin) / 4;
-    sim_time_msec = 1000.0 * (time_end - time_begin);
-  }
-  else if (runmode == STEP_PHASE) {
-    if (step_forward) {
-      gb.push_cycle();
-      gb->step_phase(step_forward);
-    }
-    if (step_backward) {
-      gb.pop_cycle();
-    }
-  }
-  else if (runmode == STEP_FRAME) {
-    if (step_forward)  {
-      gb.push_frame();
-      gb->step_frame(step_forward);
-    }
-    if (step_backward) {
-      gb.pop_frame();
-    }
-  }
-  else if (runmode == STEP_LINE) {
-    if (step_forward) {
-      gb.push_line();
-      gb->step_line(step_forward);
-    }
-    if (step_backward) {
-      gb.pop_line();
-    }
-  }
-
-  step_forward = 0;
-  step_backward = 0;
-  step_up = false;
-  step_down = false;
-}
-
-/*
-void MetroBoy::step_over() {
-  push_cycle();
-
-  auto& gb = current->gb;
-
-  int op_addr = gb.get_cpu().get_op_addr();
-  int op = get_rom()[op_addr];
-  int op_size = op_sizes[op];
-  if (op == 0xcb) op_size = 2;
-
-  int next_op_addr = op_addr + op_size;
-
-  gb.sync_to_mcycle();
-  int i = 0;
-  for (; i < 1000000; i++) {
-    if (gb.get_cpu().get_op_addr() == next_op_addr) {
-      // step succeeded
-      return;
-    }
-    gb.mcycle();
-  }
-
-  // step failed
-  pop_cycle();
-  return;
-}
-*/
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::app_render_frame(Viewport view) {
-
-  grid_painter.render(view);
-
-  //----------------------------------------
-  // Wave thingy
-
-  /*
-  for (int i = 0; i < 16; i++) {
-    uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
-    uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
-    uint32_t color = 0xFFFFFFFF;
-
-    framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
-    framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
-  }
-  */
-
-  //----------------------------------------
-  // Flat memory view
-
-  {
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->get_cart_rom());
-    update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->get_vram());
-    update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->get_cart_ram());
-    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->get_main_ram());
-    update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->get_oam_ram());
-    update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->get_zram());
-
-    blitter.blit_mono(view, ram_tex, 256, 256,
-                      0, 0, 256, 256,
-                      960 + 96, 640 + 96, 256, 256);
-  }
-
-  //----------------------------------------
-  // Gameboy screen
-
-  gb_blitter.blit_screen(view, 1280, 32,  2, gb->fb);
-  gb_blitter.blit_tiles (view, 1632, 32,  1, gb->get_vram());
-  gb_blitter.blit_map   (view, 1344, 448, 1, gb->get_vram(), 0, 0);
-  gb_blitter.blit_map   (view, 1632, 448, 1, gb->get_vram(), 0, 1);
-  gb_blitter.blit_map   (view, 1344, 736, 1, gb->get_vram(), 1, 0);
-  gb_blitter.blit_map   (view, 1632, 736, 1, gb->get_vram(), 1, 1);
-
-  //----------------------------------------
-  // Trace view
-
-  //const int gb_trace_x = int(view.sx()) - 32 * 17;
-  //const int gb_trace_y = int(view.sy()) - 32 * 7;
-  //gb_blitter.blit_trace (view, gb_trace_x, gb_trace_y, metroboy.get_trace());
 
 
-  //dump_painter.render(view, 900, 100, 16, 8, metroboy->get_zram());
-  //dump_painter.render(view, 900, 300, 64, 128, metroboy->get_main_ram());
+  #if 0
 
   //----------------------------------------
   // Reference image
-
-#if 0
 
   if (overlay_mode == 2) {
     for (int y = 0; y < 144; y++) {
@@ -485,12 +496,10 @@ void MetroBoyApp::app_render_frame(Viewport view) {
       }
     }
   }
-#endif
 
   //----------------------------------------
   // Diff overlay
 
-#if 0
   if (overlay_mode == 1) {
     for (int y = 0; y < 144; y++) {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screen_y + 0) * fb_width + gb_screen_x];
@@ -512,12 +521,10 @@ void MetroBoyApp::app_render_frame(Viewport view) {
       }
     }
   }
-#endif
 
   //----------------------------------------
   // Screen overlay
 
-#if 0
   {
     memset(overlay, 0, sizeof(overlay));
 
@@ -536,72 +543,3 @@ void MetroBoyApp::app_render_frame(Viewport view) {
     blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
   }
 #endif
-
-}
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::app_render_ui(Viewport view) {
-  StringDumper d;
-
-  //----------------------------------------
-  // Left column text
-
-  int column = 0;
-
-  if (1) {
-    gb->dump_bus(d);
-    gb->z80.dump(d);
-    gb->timer2.dump(d);
-    gb->dma2.dump(d);
-    gb->cart.dump(d);
-    gb->joypad.dump(d);
-    gb->serial.dump(d);
-    text_painter.render(view, d.s, (float)column, 0);
-    d.clear();
-    column += 32 * 7;
-  }
-
-  if (1) {
-    gb->lcd.dump(d);
-    gb->get_spu().dump(d);
-    gb->zram.dump(d);
-    gb->oam.dump(d);
-    text_painter.render(view, d.s, (float)column, 0);
-    d.clear();
-    column += 32 * 7;
-  }
-
-  if (1) {
-    gb->ppu.dump(d);
-    text_painter.render(view, d.s, (float)column, 0);
-    d.clear();
-    column += 32 * 7;
-  }
-
-  if (1) {
-    gb->dump_disasm(d);
-    text_painter.render(view, d.s, (float)column, 0);
-    d.clear();
-    column += 32 * 7;
-  }
-
-  {
-    double sim_mcycles_per_sec = double(last_mcycles) * (1000.0 / sim_budget_msec);
-    double rt_mcycles_per_sec = 114.0 * 154.0 * 60.0;
-
-    const char* mode_names[] = {
-        "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
-    };
-
-    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(gb->phase_total & 7));
-    text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
-    text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
-    text_painter.dprintf("sim rate   %7d cycles/frame\n", last_mcycles);
-    text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
-    
-    text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
-  }
-}
-
-//-----------------------------------------------------------------------------

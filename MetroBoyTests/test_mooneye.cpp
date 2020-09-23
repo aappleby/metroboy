@@ -1,9 +1,5 @@
-#include "MetroBoyTests/test_mooneye.h"
-
 #include "MetroBoyLib/MetroBoy.h"
 #include "CoreLib/File.h"
-
-//#include <windows.h>
 
 //---------
 // mooneye generic
@@ -145,8 +141,7 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
   load_array(filename, rom);
 
   MetroBoy gameboy;
-  gameboy.set_rom(rom.data(), rom.size());
-  gameboy.reset(0x100);
+  gameboy.reset(0x0100, rom.data(), rom.size());
 
   uint8_t result = 0xFF;
   int i = 0;

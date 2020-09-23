@@ -4,42 +4,41 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "CoreLib/File.h"
-#include <chrono>
 #include <stddef.h>
 
 //-----------------------------------------------------------------------------
 
-int GateBoyTests::test_main(int argc, char** argv) {
+int main(int argc, char** argv) {
   TEST_START("Maaaaaain");
 
   (void)argc;
   (void)argv;
 
-  auto start = std::chrono::high_resolution_clock::now();
+  GateBoyTests t;
+
+  auto start = timestamp();
 
   // slow pre-bootrom tests
   //err += test_init();
   //err += test_bootrom();
 
-  //err += test_clk();
-  //err += test_ext_bus();
-  //err += test_mem();
-  //err += test_interrupts();
-  //err += test_dma();
-  //err += test_joypad();
-  //err += test_ppu();
-  //err += test_serial();
-  //err += test_timer();
-  //err += test_micro();
-  err += test_micro_ints();
+  err += t.test_clk();
+  err += t.test_ext_bus();
+  err += t.test_mem();
+  err += t.test_interrupts();
+  err += t.test_dma();
+  err += t.test_joypad();
+  err += t.test_ppu();
+  err += t.test_serial();
+  err += t.test_timer();
+  //err += t.test_micro();
+  err += t.test_micro_ints();
+
+  auto finish = timestamp();
 
   if (!err) LOG_G("Everything passed!\n");
 
-  auto finish = std::chrono::high_resolution_clock::now();
-
-  std::chrono::duration<double> elapsed = finish - start;
-
-  LOG_G("Tests took %f seconds\n", elapsed.count());
+  LOG_G("Tests took %f seconds\n", finish - start);
   LOG_G("%d failures\n", err);
 
   TEST_END();
@@ -545,8 +544,6 @@ int GateBoyTests::test_micro() {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::run_microtest(const char* filename) {
-  //LOG_B("%-40s ", filename);
-
   std::string path = "microtests/build/dmg/" + std::string(filename);
 
   GateBoy gb;
@@ -554,17 +551,11 @@ int GateBoyTests::run_microtest(const char* filename) {
   load_blob(path.c_str(), gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
 
+  int timeout = 500; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
-  //int timeout = 20000;
-
-  // All our "fast" microtests take under 500 cycles
-  int timeout = 500;
-
-  uint8_t result = 0;
   for (; mcycle < timeout; mcycle++) {
-    result = gb.vid_ram[0];
-    if (result) break;
     gb.run(8);
+    if (gb.vid_ram[0]) break;
   }
 
   uint8_t result_a = gb.zero_ram[0]; // actual
@@ -573,22 +564,22 @@ int GateBoyTests::run_microtest(const char* filename) {
 
 
   if (mcycle == timeout) {
-    LOG_B("%-40s ", filename);
+    LOG_B("%-30s ", filename);
     LOG_Y("TIMEOUT\n");
     return 1;
   }
   else if (result_c != 0x31) {
-    LOG_B("%-40s ", filename);
+    LOG_B("%-30s ", filename);
     LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, mcycle);
     return 1;
   }
-  else if (result == 0x55) {
-    //LOG_B("%-40s ", filename);
-    //LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
+  else if (result_a == result_b) {
+    LOG_B("%-30s ", filename);
+    LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
     return 0;
   }
   else {
-    LOG_B("%-40s ", filename);
+    LOG_B("%-30s ", filename);
     LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, mcycle);
     return 1;
   }
@@ -624,29 +615,7 @@ int GateBoyTests::test_init() {
     ASSERT_EQ(4, gb.framebuffer[i]);
   }
 
-#if 0
-#define ADDR_P1          0xFF00
-#define ADDR_SB          0xFF01
-#define ADDR_SC          0xFF02
-#define ADDR_DIV         0xFF04
-#define ADDR_TIMA        0xFF05
-#define ADDR_TMA         0xFF06
-#define ADDR_TAC         0xFF07
-#define ADDR_IF          0xFF0F
-#define ADDR_LCDC        0xFF40
-#define ADDR_STAT        0xFF41
-#define ADDR_SCY         0xFF42
-#define ADDR_SCX         0xFF43
-#define ADDR_LY          0xFF44
-#define ADDR_LYC         0xFF45
-#define ADDR_DMA         0xFF46
-#define ADDR_BGP         0xFF47
-#define ADDR_OBP0        0xFF48
-#define ADDR_OBP1        0xFF49
-#define ADDR_WY          0xFF4A
-#define ADDR_WX          0xFF4B
-#endif
-
+  // we don't really care much about the pre-bootrom reg values
 #if 0
   EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");   // CF after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset value");   // 00 after bootrom
@@ -808,7 +777,6 @@ int GateBoyTests::test_ext_bus() {
 #endif
 
   // Check all signals for all phases of "ld (hl), a; jr -2;" with hl = 0xC003 and a = 0x55
-#if 1
   {
     LOG_B("Testing cram write external bus waves\n");
 
@@ -931,9 +899,7 @@ int GateBoyTests::test_ext_bus() {
       gb.next_phase();
     }
   }
-#endif
 
-#if 1
   {
     LOG_B("Testing vram write external bus waves\n");
 
@@ -1061,9 +1027,7 @@ int GateBoyTests::test_ext_bus() {
       gb.next_phase();
     }
   }
-#endif
 
-#if 1
   {
     LOG_B("Testing zram write external bus waves\n");
 
@@ -1230,7 +1194,6 @@ int GateBoyTests::test_ext_bus() {
       gb.next_phase();
     }
   }
-#endif
 
   TEST_END();
 }
@@ -1273,7 +1236,7 @@ int GateBoyTests::test_interrupts() {
   //dbg_write(ADDR_STAT, EI_OAM);
   //dbg_write(ADDR_IE,   0b11111111);
 
-  test_reg("IF",   0xFF0F, 0b00011111); // broken
+  test_reg("IF",   0xFF0F, 0b00011111);
   test_reg("IE",   0xFFFF, 0b00011111);
 
   TEST_END();
@@ -1436,7 +1399,6 @@ int GateBoyTests::test_dma() {
   for (int src = 0x0000; src < 0xFE00; src += 0x1000) {
     err += test_dma(uint16_t(src));
   }
-  //err += test_dma(0x1000);
 
   TEST_END();
 }
@@ -1482,25 +1444,12 @@ int GateBoyTests::test_dma(uint16_t src) {
   gb.sys_cart_loaded = 1;
   gb.dbg_write(ADDR_LCDC, 0);
 
-  /*
-  gb.oam_ram[0] = 0x87;
-  gb.cart_rom[0x1000] = 0x34;
-
-  printf("oam_ram[0] = 0x%02x\n", gb.dbg_read(0xFE00));
-  gb.dbg_write(0xFF46, uint8_t(src >> 8));
-  printf("oam_ram[0] = 0x%02x\n", gb.dbg_read(0xFE00));
-  gb.run(2000);
-  printf("oam_ram[0] = 0x%02x\n", gb.dbg_read(0xFE00));
-  */
-
-#if 1
   uint8_t blob[256];
   for (int i = 0; i < 256; i++) {
     blob[i] = uint8_t(rand());
   }
 
   if (src < 0x8000) {
-    //uint8_t* src_data = get_flat_ptr(gb, src);
     for (int i = 0; i < 256; i++) {
       gb.cart_rom[src + i] = blob[i];
     }
@@ -1522,7 +1471,6 @@ int GateBoyTests::test_dma(uint16_t src) {
     uint8_t b = gb.dbg_read(0xFE00 + i);
     ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }
-#endif
 
   TEST_END();
 }
@@ -1544,9 +1492,7 @@ int GateBoyTests::test_serial() {
 int GateBoyTests::test_ppu() {
   TEST_START();
 
-  // Mucking with LCDC causes bus collisions somewhere - figure out why later
-  //err += test_reg("LCDC", ADDR_LCDC, 0b11111111);
-
+  //err += test_reg("LCDC", ADDR_LCDC, 0b11111111); // don't test this reg here, writing does things
   err += test_reg("STAT", ADDR_STAT, 0b01111000);
   err += test_reg("SCY",  ADDR_SCY,  0b11111111);
   err += test_reg("SCX",  ADDR_SCX,  0b11111111);
@@ -1568,7 +1514,7 @@ int GateBoyTests::test_ppu() {
     gb.dbg_write(ADDR_LCDC, 0x00);
     gb.dbg_write(ADDR_LCDC, 0x80);
 
-    // LY should increment every 114*8 phases after LCD enable
+    // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (int i = 0; i < 153; i++) {
       EXPECT_EQ(i, gb.top.lcd_reg.get_ly());
       gb.run(114 * 8);
@@ -1654,78 +1600,10 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_END();
 }
 
-//------------------------------------------------------------------------------
-
-
-
-
-
-
-
 //-----------------------------------------------------------------------------
 
-void GateBoyTests::fuzz_reset_sequence(GateBoy& gateboy) {
-  uint64_t rng = 1;
-
-  Req req;
-  req.addr = 0xFF04, req.data = 0, req.read = 1, req.write = 0;
-
-#ifdef _DEBUG
-  const int fuzz_count = 128;
-#else
-  const int fuzz_count = 65536;
-#endif
-
-  for (int i = 0; i < fuzz_count; i++) {
-    mix(rng);
-
-    //gateboy.top.clk_reg.preset_rst(wire(rng & 0x01));
-    //gateboy.top.clk_reg.preset_clk_a(wire(rng & 0x02));
-    //gateboy.top.cpu_bus.preset_cpu_ready(wire(rng & 0x04));
-    //gateboy.top.clk_reg.preset_t1t2(wire(rng & 0x08), wire(rng & 0x10));
-
-    int phase_count = (rng >> 8) & 0x0F;
-    gateboy.run(phase_count);
-
-    if ((i & 0xFF) == 0xFF) printf(".");
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoyTests::test_reset_sequence() {
-  LOG("Running reset fuzz test in slow mode\n");
-  GateBoy gateboy1;
-  fuzz_reset_sequence(gateboy1);
-  LOG("\n");
-
-  LOG("Running reset fuzz test in fast mode\n");
-  GateBoy gateboy2;
-  fuzz_reset_sequence(gateboy2);
-  LOG("\n");
-
-  if (gateboy1.pass_hash != gateboy2.pass_hash) {
-    LOG("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
-  }
-  else {
-    LOG("---------- PASS PHASE HASH ----------\n");
-  }
-
-  if (gateboy1.total_hash != gateboy2.total_hash) {
-    LOG("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
-  }
-  else {
-    LOG("---------- PASS TOTAL HASH ----------\n");
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoyTests::run_benchmark(GateBoy& gateboy) {
-
-  gateboy.reset_to_bootrom();
-
-  LOG("Hash 1 after reset: 0x%016llx\n", gateboy.pass_hash);
+void GateBoyTests::run_benchmark() {
+  GateBoy gateboy;
 
 #if _DEBUG
   const int iter_count = 16;
@@ -1745,24 +1623,24 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   double pass_rate_sum2 = 0;
   double pass_rate_n = 0;
 
-  gateboy.dbg_req.addr = 0x0150;
-  gateboy.dbg_req.data = 0;
-  gateboy.dbg_req.read = 1;
-  gateboy.dbg_req.write = 0;
-  gateboy.sys_cpu_en = false;
-
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
+    // FIXME should probably benchmark something other than the bootrom...
+    gateboy.reset_to_bootrom();
+    gateboy.dbg_req.addr = 0x0150;
+    gateboy.dbg_req.data = 0;
+    gateboy.dbg_req.read = 1;
+    gateboy.dbg_req.write = 0;
+    gateboy.sys_cpu_en = false;
     gateboy.phase_total = 0;
     gateboy.pass_total = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = timestamp();
     gateboy.run(phase_per_iter);
-    auto finish = std::chrono::high_resolution_clock::now();
+    auto finish = timestamp();
 
     if (iter >= warmup) {
-      std::chrono::duration<double> elapsed = finish - start;
-      double time = elapsed.count();
+      double time = (finish - start);
 
       double phase_rate = double(gateboy.phase_total) / time;
       phase_rate_sum1 += phase_rate;
@@ -1790,38 +1668,6 @@ void GateBoyTests::run_benchmark(GateBoy& gateboy) {
   double pass_rate_variance = (pass_rate_sum2 / pass_rate_n) - (pass_rate_mean * pass_rate_mean);
   double pass_rate_sigma    = sqrt(pass_rate_variance);
   LOG("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
-
-  LOG("Commit phase_hash   0x%016llx\n", gateboy.pass_hash);
-  LOG("Combined phase_hash 0x%016llx\n", gateboy.total_hash);
 }
 
 //-----------------------------------------------------------------------------
-
-void GateBoyTests::run_benchmark() {
-  LOG("Running benchmark in slow mode\n");
-  GateBoy gateboy1;
-  run_benchmark(gateboy1);
-  LOG("\n");
-
-#if 0
-  LOG("Running benchmark in fast mode\n");
-  GateBoy gateboy2;
-  run_benchmark(gateboy2);
-  LOG("\n");
-
-  if (gateboy1.phase_hash != gateboy2.phase_hash) {
-    LOG("XXXXXXXXXX FAIL PHASE HASH XXXXXXXXXX\n");
-  }
-  else {
-    LOG("---------- PASS PHASE HASH ----------\n");
-  }
-
-  if (gateboy1.total_hash != gateboy2.total_hash) {
-    LOG("XXXXXXXXXX FAIL TOTAL HASH XXXXXXXXXX\n");
-  }
-  else {
-    LOG("---------- PASS TOTAL HASH ----------\n");
-  }
-#endif
-}
-

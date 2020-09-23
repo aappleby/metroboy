@@ -20,6 +20,11 @@
 //-----------------------------------------------------------------------------
 
 struct MetroBoy {
+  MetroBoy() = default;
+  MetroBoy(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
+    reset(new_pc, new_rom, new_rom_size);
+  }
+
   struct HostOut {
     int x = 0;
     int y = 0;
@@ -31,9 +36,16 @@ struct MetroBoy {
     uint32_t trace = 0;
   };
 
-  void    set_rom(uint8_t* new_rom, size_t new_rom_size);
-  void    reset(uint16_t new_pc);
+  void reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size);
+
   HostOut get_host_data() const { return gb_to_host; }
+
+  void sync_to_vblank() {
+    sync_to_mcycle();
+    while(get_host_data().y != 144) {
+      mcycle();
+    }
+  }
 
   void step_phase(int count) {
     for (int i = 0; i < count; i++) {
@@ -142,11 +154,11 @@ struct MetroBoy {
   // 0xFF80 - zram
 
   uint8_t* get_cart_rom() { return cart.get_cart_rom(); }
-  uint8_t* get_vram()     { return vram.get(); }
+  uint8_t* get_vram()     { return vram.ram; }
   uint8_t* get_cart_ram() { return cart.get_cart_ram(); }
   uint8_t* get_main_ram() { return cart.get_main_ram(); }
   uint8_t* get_oam_ram()  { return (uint8_t*)oam.get(); }
-  uint8_t* get_zram()     { return zram.get(); }
+  uint8_t* get_zram()     { return zram.ram; }
 
   void set_joypad(uint8_t v) { joypad.set(v); }
 

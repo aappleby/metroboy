@@ -20,6 +20,8 @@ constexpr int samples_per_frame = output_hz / 60;
 
 #define HBLANK_DELAY_START  8
 
+#define MCYCLES_PER_FRAME (114 * 154)
+
 //-----------------------------------------------------------------------------
 // Memory map
 

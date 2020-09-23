@@ -1,4 +1,3 @@
-#include "MetroBoyTests/test_wpol.h"
 #include "CoreLib/File.h"
 
 #include "MetroBoyLib/MetroBoy.h"
@@ -134,8 +133,7 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   MetroBoy gameboy;
   MetroBoy* gb = &gameboy;
   if (gb) {
-    gb->set_rom(rom.data(), rom.size());
-    gb->reset(0x100);
+    gb->reset(0x0100, rom.data(), rom.size());
   }
 
   uint8_t result = 0xFF;

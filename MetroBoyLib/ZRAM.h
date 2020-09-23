@@ -11,7 +11,6 @@ struct ZRAM {
   void dump(Dumper& dump) const;
   uint8_t* get() { return ram; }
 
-private:
   uint8_t ram[128] = {0};
 };
 

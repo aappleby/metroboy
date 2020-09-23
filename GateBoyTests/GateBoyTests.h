@@ -5,14 +5,6 @@ struct GateBoy;
 
 struct GateBoyTests {
 
-  int test_main(int argc, char** argv);
-
-  void test_reset_sequence();
-  void fuzz_reset_sequence(GateBoy& gateboy);
-
-  void run_benchmark();
-  void run_benchmark(GateBoy& gateboy);
-
   int test_init();
   int test_clk();
   int test_ext_bus();
@@ -30,7 +22,8 @@ struct GateBoyTests {
   int run_microtest(const char* filename);
 
   int test_dma(uint16_t src);
-
   int test_reg(const char* tag, uint16_t addr, uint8_t data_in);
   int test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
+
+  void run_benchmark();
 };

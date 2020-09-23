@@ -66,9 +66,6 @@ GateBoyApp::GateBoyApp() {
   state_manager.init(top_step, top_unstep);
 }
 
-GateBoyApp::~GateBoyApp() {
-}
-
 //-----------------------------------------------------------------------------
 
 const char* GateBoyApp::app_get_title() {
@@ -94,7 +91,7 @@ void GateBoyApp::app_init() {
   auto& gb = *state_manager.state();
   
   // regenerate post-bootrom dump
-#if 0
+#if 1
   gb.reset_to_bootrom();
   load_blob("roms/tetris.gb", gb.cart_rom, 32768);
   gb.sys_cart_loaded = 1;
@@ -147,7 +144,7 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 1
+#if 0
   // run rom
   gb.reset_post_bootrom();
 
@@ -172,8 +169,10 @@ void GateBoyApp::app_init() {
   //load_rom("microtests/build/dmg/int_hblank_incs_scx6.gb"); // int fires on FG 638, int starts on 680
   //load_rom("microtests/build/dmg/int_hblank_incs_scx7.gb"); // int fires on HA 640, int starts on 688
 
-  load_flat_dump("roms/LinksAwakening_dog.dump");
-  gb.sys_cpu_en = false;
+  load_rom("microtests/build/dmg/flood_vram.gb");
+
+  //load_flat_dump("roms/LinksAwakening_dog.dump");
+  //gb.sys_cpu_en = false;
 
   gb.phase_total = 0;
   gb.pass_count = 0;

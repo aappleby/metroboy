@@ -11,18 +11,9 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::set_rom(uint8_t* new_rom, size_t new_rom_size) {
-  cart.set_rom(new_rom, new_rom_size);
-
-  for (int i = 0; i < 160*144; i++) fb[i] = rand() & 3;
-}
-
-void MetroBoy::reset(uint16_t new_pc) {
-  uint8_t* old_rom = cart.cart_rom;
-  size_t old_rom_size = cart.cart_size;
-
+void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   z80.reset(new_pc);
-  cart.set_rom(old_rom, old_rom_size);
+  cart.set_rom(new_rom, new_rom_size);
   cart.reset();
   ppu.reset(new_pc == 0);
   oam.reset();

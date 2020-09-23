@@ -20,19 +20,19 @@ uint64_t hash_states(void* blob, int len) {
 }
 
 static const uint64_t app_start = []() {
-  uint64_t ret;
+  uint64_t ret = 0;
   QueryPerformanceCounter((LARGE_INTEGER*)&ret);
   return ret;
 }();
 
 static const double inv_perf_freq = []() {
-  uint64_t ret;
+  uint64_t ret = 0;
   QueryPerformanceFrequency((LARGE_INTEGER*)&ret);
   return 1.0 / double(ret);
 }();
 
 double timestamp() {
-  uint64_t ret;
+  uint64_t ret = 0;
   QueryPerformanceCounter((LARGE_INTEGER*)&ret);
   return double(ret - app_start) * inv_perf_freq;
 }

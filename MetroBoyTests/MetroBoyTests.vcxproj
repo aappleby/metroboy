@@ -11,19 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MetroBoyTests.cpp" />
     <ClCompile Include="test_codegen.cpp" />
     <ClCompile Include="test_micro.cpp" />
     <ClCompile Include="test_mooneye.cpp" />
     <ClCompile Include="test_screenshot.cpp" />
     <ClCompile Include="test_wpol.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="test_codegen.h" />
-    <ClInclude Include="test_micro.h" />
-    <ClInclude Include="test_mooneye.h" />
-    <ClInclude Include="test_screenshot.h" />
-    <ClInclude Include="test_wpol.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoreLib\CoreLib.vcxproj">

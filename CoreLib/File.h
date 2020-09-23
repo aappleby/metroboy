@@ -39,3 +39,9 @@ inline void save_obj(const std::string& filename, T& data) {
   save_blob(filename.c_str(), &data, sizeof(T));
 }
 
+inline blob load_blob(const std::string& filename) {
+  blob ret;
+  load_array(filename, ret);
+  return ret;
+}
+

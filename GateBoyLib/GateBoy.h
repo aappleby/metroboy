@@ -110,6 +110,9 @@ struct GateBoy {
   uint8_t  sys_buttons = 0;
   uint8_t  sys_cart_loaded = 0;
 
+  uint8_t* rom_buf = nullptr;
+  size_t   rom_size = 0;
+
   uint64_t sentinel2 = 0xF00DCAFEBAADC0DE;
 };
 #pragma pack(pop)

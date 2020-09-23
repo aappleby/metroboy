@@ -92,9 +92,9 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   
   // regenerate post-bootrom dump
-#if 0
-  blob rom = load_blob("roms/tetris.gb");
-  gb->reset_to_bootrom(rom.data(), rom.size());
+#if 1
+  rom_buf = load_blob("roms/tetris.gb");
+  gb->reset_to_bootrom(rom_buf.data(), rom_buf.size());
 
   for (int i = 0; i < 8192; i++) {
     gb->vid_ram[i] = (uint8_t)rand();
@@ -142,7 +142,7 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 1
+#if 0
   // run rom
 
   //load_rom("microtests/build/dmg/int_hblank_halt_bug_a.gb");
@@ -170,8 +170,8 @@ void GateBoyApp::app_init() {
 
   //load_rom("roms/tetris.gb");
 
-  //load_flat_dump("roms/LinksAwakening_dog.dump");
-  //gb->sys_cpu_en = false;
+  load_flat_dump("roms/LinksAwakening_dog.dump");
+  gb->sys_cpu_en = false;
 
 #endif
 }
@@ -223,6 +223,15 @@ void GateBoyApp::app_update(double delta) {
       break;
     }
 
+    case SDLK_LEFT:   {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_backward += 8;
+      } else {
+        step_backward += 1;
+      }
+      break;
+    }
+
     case SDLK_RIGHT:  {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
         step_forward += 113 * 8 * 8;
@@ -236,14 +245,6 @@ void GateBoyApp::app_update(double delta) {
       }
       break;
     }
-    case SDLK_LEFT:   {
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_backward += 8;
-      } else {
-        step_backward += 1;
-      }
-      break;
-    }
     }
 
     if (event.type == SDL_DROPFILE) {
@@ -251,6 +252,8 @@ void GateBoyApp::app_update(double delta) {
       SDL_free(event.drop.file);
     }
   }
+
+  //----------------------------------------
 
   if (toggle_cpu) {
     if (gb->sys_cpu_en) {
@@ -288,6 +291,10 @@ void GateBoyApp::app_update(double delta) {
     save_raw_dump("gateboy.raw.dump");
     save_dump = false;
   }
+
+  //----------------------------------------
+
+  if (gb->rom_buf != rom_buf.data()) __debugbreak();
 
   if (runmode == RUN_FAST) {
     //auto gb = state_manager.state();
@@ -373,7 +380,6 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   gb.reset();
   gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
 
-  memcpy(gb->cart_rom, rom_buf.data() + 0x0000, 32768);
   memcpy(gb->vid_ram,  rom_buf.data() + 0x8000, 8192);
   memcpy(gb->cart_ram, rom_buf.data() + 0xA000, 8192);
   memcpy(gb->ext_ram,  rom_buf.data() + 0xC000, 8192);
@@ -540,7 +546,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
       code_base = ADDR_BOOT_ROM_BEGIN;
     }
     else if (pc >= 0x0000 && pc <= 0x7FFF) {
-      code = gb->cart_rom;
+      // FIXME needs to account for mbc1 mem mapping
+      code = gb->rom_buf;
       code_size = 32768;
       code_base = ADDR_CART_ROM_BEGIN;
     }
@@ -569,7 +576,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   // Draw flat memory view
   {
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->cart_rom);
+    //printf("rom_buf.data() %p\n", rom_buf.data());
+    //printf("gb->rom_buf %p\n", gb->rom_buf);
+
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->rom_buf);
     update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vid_ram);
     update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart_ram);
     update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->ext_ram);

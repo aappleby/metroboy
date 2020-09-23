@@ -72,33 +72,28 @@ struct GateBoy {
 
   uint64_t sentinel1 = 0xDEADBEEFBAADF00D;
 
-  Z80 cpu_blah;
+  // CPU
 
-  Schematics::SchematicTop top;
-
-  uint8_t  cart_rom[32768];
-  uint8_t  vid_ram [8192];
-  uint8_t  cart_ram[8192];
-  uint8_t  ext_ram [8192];
-  uint8_t  oam_ram [256];
-  uint8_t  zero_ram[128];
-  uint8_t  framebuffer[160*144];
-
+  Z80      cpu_blah;
   Req      cpu_req = {0};
   Req      dbg_req = {0};
   Req      bus_req = {0};
   uint8_t  cpu_data_latch = 0;
-
   uint8_t  imask_to_cpu = 0;
   uint8_t  intf_to_cpu = 0;
   uint8_t  cpu_int_ack = 0;
 
+  // SOC
+
+  Schematics::SchematicTop top;
   uint8_t  sim_stable = 0;
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
   int32_t  pass_total = 0;
   uint64_t pass_hash = HASH_INIT;
   uint64_t total_hash = HASH_INIT;
+
+  // Sys flags
 
   int32_t  sys_rst = 1;
   int32_t  sys_t1 = 0;
@@ -108,10 +103,15 @@ struct GateBoy {
   int32_t  sys_cpuready = 0;
   int32_t  sys_cpu_en = 0;
   uint8_t  sys_buttons = 0;
-  uint8_t  xxx_sys_cart_loaded = 0;
 
-private:
+  // Memory
 
+  uint8_t  vid_ram [8192];
+  uint8_t  cart_ram[8192];
+  uint8_t  ext_ram [8192];
+  uint8_t  oam_ram [256];
+  uint8_t  zero_ram[128];
+  uint8_t  framebuffer[160*144];
   uint8_t* rom_buf = nullptr;
   size_t   rom_size = 0;
 

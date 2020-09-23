@@ -1405,7 +1405,7 @@ int GateBoyTests::test_dma() {
 
 uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
   if (addr >= 0x0000 && addr <= 0x7FFF) {
-    return gb.cart_rom + (addr & 0x7FFF);
+    return gb.rom_buf + (addr & 0x7FFF);
   }
   else if (addr >= 0x8000 && addr <= 0x9FFF) {
     return gb.vid_ram + (addr & 0x1FFF);
@@ -1449,7 +1449,7 @@ int GateBoyTests::test_dma(uint16_t src) {
 
   if (src < 0x8000) {
     for (int i = 0; i < 256; i++) {
-      gb.cart_rom[src + i] = blob[i];
+      gb.rom_buf[src + i] = blob[i];
     }
   }
   else {

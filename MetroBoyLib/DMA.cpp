@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #if 0
-//-----------------------------------------------------------------------------
 
 void DMA1::get_ebus_req(Req& r) const {
   if ((mode_a != Mode::NONE) && ((source_a >> 5) != 4)) {
@@ -37,10 +36,14 @@ void DMA1::get_obus_req(Req& r) const {
   }
 }
 
-//-----------------------------------------------------------------------------
 #endif
 
-void DMA2::tick(const Req& req, Ack& ack) {
+//-----------------------------------------------------------------------------
+// FIXME the phases are totally off here
+
+void DMA::tick(int phase_total, const Req& req, Ack& ack) {
+  (void)phase_total;
+
   if (req.read && req.addr == 0xFF46) {
     ack.addr = req.addr;
     ack.data_lo = uint8_t(addr >> 8);
@@ -48,10 +51,9 @@ void DMA2::tick(const Req& req, Ack& ack) {
   }
 }
 
-void DMA2::tock(int old_phase, int new_phase, const Req& req) {
-  int phase_total = old_phase;
-  (void)new_phase;
+//-----------------------------------------------------------------------------
 
+void DMA::tock(int phase_total, const Req& req) {
   bool DMA_WR = (req.addr == 0xFF46) && req.write && (DELTA_FG || DELTA_GH || DELTA_HA);
   bool DMA_RST = DMA_RUN_TRIG_d4;
 
@@ -84,7 +86,9 @@ void DMA2::tock(int old_phase, int new_phase, const Req& req) {
   }
 }
 
-void DMA2::dump(Dumper& d) const {
+//-----------------------------------------------------------------------------
+
+void DMA::dump(Dumper& d) const {
   d("\002--------------DMA2--------------\001\n");
 
   d("DMA_WR_LATCH    %d\n", (bool)DMA_WR_LATCH);
@@ -95,3 +99,5 @@ void DMA2::dump(Dumper& d) const {
   d("DMA_DONE        %d\n", (bool)DMA_DONE);
   d("addr            0x%04x\n", addr);
 }
+
+//-----------------------------------------------------------------------------

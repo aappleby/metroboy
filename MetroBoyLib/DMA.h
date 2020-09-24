@@ -1,10 +1,12 @@
 #pragma once
 #include "CoreLib/Types.h"
 
-struct DMA2 {
+//-----------------------------------------------------------------------------
 
-  void tick(const Req& req, Ack& ack);
-  void tock(int old_phase, int new_phase, const Req& req);
+struct DMA {
+
+  void tick(int phase_total, const Req& req, Ack& ack);
+  void tock(int phase_total, const Req& req);
   void dump(Dumper& dump) const;
 
   uint16_t addr = 0;
@@ -16,3 +18,5 @@ struct DMA2 {
   /*p04.MATU*/ bool DMA_RUN_WRITE = 0;
   /*p04.MYTE*/ bool DMA_DONE = 0;
 };
+
+//-----------------------------------------------------------------------------

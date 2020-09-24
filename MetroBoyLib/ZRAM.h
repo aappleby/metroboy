@@ -6,8 +6,8 @@
 struct ZRAM {
   void reset();
 
-  void tock(const Req& req);
-  void tick(const Req& req, Ack& ack) const;
+  void tock(int phase_total, const Req& req);
+  void tick(int phase_total, const Req& req, Ack& ack) const;
   void dump(Dumper& dump) const;
   uint8_t* get() { return ram; }
 

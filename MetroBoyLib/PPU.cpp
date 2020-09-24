@@ -4,20 +4,6 @@
 
 extern const uint32_t gb_colors[];
 
-uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
-
-uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
-uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map);
-
-uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter);
-uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map);
-
-uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags);
-
-uint8_t flip2(uint8_t b) {
-  return uint8_t(((b * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32);
-}
-
 //-----------------------------------------------------------------------------
 
 void PPU::reset(bool run_bootrom) {
@@ -74,6 +60,50 @@ void PPU::reset(bool run_bootrom) {
 
     update_palettes();
   }
+}
+
+//-----------------------------------------------------------------------------
+
+uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty) {
+  return base + (tile << 4) + (ty << 1);
+}
+
+uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
+  uint16_t base = (lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+  return base + (map_y << 5) + map_x;
+}
+
+uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
+  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
+  map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
+  uint8_t ty = (scy + line) & 7;
+  return pack_tile_addr(base, map, ty);
+}
+
+uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter) {
+  uint16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+  uint8_t win_y = uint8_t(wy_counter >> 3);
+  return base + (win_y << 5) + map_x;
+}
+
+uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
+  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
+  map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
+  return pack_tile_addr(base, map, wy_counter & 7);
+}
+
+uint16_t sprite_base_address(uint8_t /*lcdc*/, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags) {
+  uint8_t sprite_dy = line + 16 - sprite_y;
+  if (flags & SPRITE_FLIP_Y) {
+    uint8_t sprite_height = 7;
+    sprite_dy ^= sprite_height;
+  }
+
+  return pack_tile_addr(ADDR_TILE0, map, sprite_dy);
+}
+
+uint8_t flip2(uint8_t b) {
+  return uint8_t(((b * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32);
 }
 
 //-----------------------------------------------------------------------------
@@ -152,15 +182,11 @@ void PPU::on_vbus_ack(const Ack& vbus_ack) {
 
   if (vbus_ack.read) {
     if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      //printf("fetch background 0x%02x\n", data);
-
       if (fetch_state == FETCH_TILE_MAP) tile_map = data;
       if (fetch_state == FETCH_TILE_LO)  tile_lo = data;
       if (fetch_state == FETCH_TILE_HI)  tile_hi = data;
     }
     else if (fetch_type == FETCH_SPRITE) {
-      //printf("fetch sprite 0x%02x\n", data);
-
       if (fetch_state == FETCH_SPRITE_LO) sprite_lo = data;
       if (fetch_state == FETCH_SPRITE_HI) sprite_hi = data;
     }
@@ -175,8 +201,6 @@ void PPU::on_obus_ack(const Ack& obus_ack) {
   uint8_t hi = obus_ack.data_hi;
 
   if (obus_ack.read) {
-    //printf("fetch oam 0x%04x\n", obus_ack.data);
-
     if (obus_ack.addr & 2) {
       this->spriteP = lo;
       this->spriteF = hi;
@@ -207,7 +231,9 @@ void PPU::on_obus_ack(const Ack& obus_ack) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tick(const Req& req, Ack& ack) const {
+void PPU::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
+
   if (req.addr == ADDR_LY) return;
 
   if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
@@ -236,7 +262,7 @@ void PPU::tick(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
+void PPU::tock(int phase_total, const Req& req) {
   // interrupt glitch - oam stat fires on vblank
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
@@ -267,8 +293,6 @@ void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
 
   //----------------------------------------
   // Update state machiney stuff
-
-  const int tphase = (old_phase >> 1);
 
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
@@ -467,7 +491,10 @@ void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
   bool rendering = counter >= 87 && (pix_count + pix_discard_pad != 168) && line < 144;
 
   if (rendering) {
-    emit_pixel(tphase);
+
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      emit_pixel();
+    }
 
     if (pipe_count == 0 && tile_latched) {
       bg_pix_lo = tile_lo;
@@ -537,8 +564,7 @@ void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
   //-----------------------------------
 
   // this needs to go somewhere else
-
-  if (tphase == 0 || tphase == 2) {
+  if (DELTA_AB || DELTA_EF) {
     stat &= 0b11111100;
     stat |= state;
   }
@@ -577,7 +603,7 @@ void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
   //-----------------------------------
   // interrupt generation
 
-  if (tphase == 1 || tphase == 3) {
+  if (DELTA_BC || DELTA_FG) {
     bool fire_stat_hblank1 = hblank_delay2 <= 6;
     bool fire_stat_vblank1 = (line == 144 && counter >= 4) || (line >= 145);
     bool fire_stat_lyc1    = compare_line == lyc;
@@ -594,7 +620,7 @@ void PPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
     uint8_t stat_int1_ = stat_int1;
     uint8_t stat_int2_ = stat_int2;
 
-    if (tphase == 3) {
+    if (DELTA_FG) {
       stat_ &= ~STAT_LYC;
       stat_int1_ = 0;
       stat_int2_ = 0;
@@ -669,49 +695,9 @@ void PPU::tock_lcdoff() {
 }
 
 //-----------------------------------------------------------------------------
-
-uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty) {
-  return base + (tile << 4) + (ty << 1);
-}
-
-uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
-  uint16_t base = (lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
-  return base + (map_y << 5) + map_x;
-}
-
-uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
-  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
-  map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
-  uint8_t ty = (scy + line) & 7;
-  return pack_tile_addr(base, map, ty);
-}
-
-uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter) {
-  uint16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
-  uint8_t win_y = uint8_t(wy_counter >> 3);
-  return base + (win_y << 5) + map_x;
-}
-
-uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
-  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
-  map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
-  return pack_tile_addr(base, map, wy_counter & 7);
-}
-
-uint16_t sprite_base_address(uint8_t /*lcdc*/, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags) {
-  uint8_t sprite_dy = line + 16 - sprite_y;
-  if (flags & SPRITE_FLIP_Y) {
-    uint8_t sprite_height = 7;
-    sprite_dy ^= sprite_height;
-  }
-
-  return pack_tile_addr(ADDR_TILE0, map, sprite_dy);
-}
-
-//-----------------------------------------------------------------------------
 // Emit pixel if we have some in the pipe and we're not stalled.
 
-void PPU::emit_pixel(int /*tphase*/) {
+void PPU::emit_pixel() {
   if (pipe_count == 0) {
     return;
   }
@@ -896,22 +882,6 @@ void PPU::dump(Dumper& d) const {
   d("bg_pal_hi       %s\n", byte_to_bits(bg_pal_hi));
 
   {
-    /*
-    auto out = tick(tcycle);
-
-    pribus(d, "bus_to_ppu",  bus_to_ppu);
-    pribus(d, "ppu_to_bus",  out.ppu_to_bus);
-    d("\n");
-
-    pribus(d, "ppu_to_vram", out.ppu_to_vram);
-    pribus(d, "vram_to_ppu", vram_to_ppu);
-    d("\n");
-
-    pribus(d, "ppu_to_oam",  out.ppu_to_oam);
-    pribus(d, "oam_to_ppu",  oam_to_ppu);
-    d("\n");
-    */
-
 #define dumpit(a, b) d("%-14s " b "\n", #a, a);
 
     dumpit(pix_count ,"%d");

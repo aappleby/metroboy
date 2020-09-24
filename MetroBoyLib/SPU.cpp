@@ -7,7 +7,7 @@ const char* byte_to_bits(uint8_t b);
 //-----------------------------------------------------------------------------
 
 void SPU::reset() {
-  *this = {};
+  *this = {0};
 
   nr10 = 0x80;
   nr11 = 0xBF;
@@ -39,19 +39,17 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tick(const Req& req, Ack& ack) const {
+void SPU::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
   if (req.read) bus_read(req, ack);
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(int old_phase, int /*new_phase*/, const Req& req) {
-  if (req.write) {
-    bus_write(req);
-  }
+void SPU::tock(int phase_total, const Req& req) {
+  if (DELTA_GH && req.write) bus_write(req);
 
-  const int tphase = (old_phase >> 1);
-  if (tphase != 0) return;
+  if (!DELTA_HA) return;
 
   bool sound_on = (nr52 & 0x80);
   uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;

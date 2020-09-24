@@ -3,20 +3,13 @@
 
 //-----------------------------------------------------------------------------
 
-struct NewTimer {
+struct Timer {
   void reset();
 
-  void tick(const Req& req, Ack& ack);
-  void tock(int old_phase, int new_phase, const Req& req);
+  void tick(int phase_total, const Req& req, Ack& ack);
+  void tock(int phase_total, const Req& req);
   void dump(Dumper& dump) const;
-
   void update_tima();
-
-  bool get_interrupt() const {
-    return timer_int;
-  }
-
-  //private:
 
   uint16_t div = 0;
   uint8_t  tima = 0;

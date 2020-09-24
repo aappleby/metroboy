@@ -29,6 +29,45 @@ public:
 
   void load_memdump(const std::string& prefix, const std::string& name);
 
+  //----------------------------------------
+
+  void sync_to_vblank() {
+    while(gb->ppu.line != 144) step_mcycle();
+  }
+
+  void run_to_breakpoint(uint16_t breakpoint) {
+    while (gb->z80.get_op_addr() != breakpoint) step_mcycle();
+  }
+
+  void step_phase(int count = 1) {
+    for (int i = 0; i < count; i++) {
+      gb->next_phase();
+    }
+  }
+
+  void step_cycle(int count = 1) {
+    for (int i = 0; i < count; i++) {
+      step_phase();
+      while(gb->phase_total & 7) step_phase();
+    }
+  }
+
+  void step_line(int count = 1) {
+    for (int i = 0; i < count; i++) {
+      int old_line = gb->ppu.line;
+      while(gb->ppu.line == old_line) step_cycle();
+    }
+  }
+
+  void step_frame(int count = 1) {
+    for (int i = 0; i < count; i++) {
+      while (gb->ppu.line == 144) step_cycle();
+      while (gb->ppu.line != 144) step_cycle();
+    }
+  }
+
+  //----------------------------------------
+
   double app_start = 0;
 
   Blitter     blitter;

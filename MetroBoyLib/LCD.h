@@ -5,8 +5,8 @@
 
 struct LCD {
   void reset();
-  void tick(const Req& req, Ack& ack);
-  void tock(int old_phase, int new_phase, const Req& req, bool XONA_LCDC_LCDENn);
+  void tick(int phase_total, const Req& req, Ack& ack);
+  void tock(int phase_total, const Req& req, bool XONA_LCDC_LCDENn);
 
   void dump(Dumper& dump) const;
 
@@ -15,14 +15,14 @@ struct LCD {
 
   // states
 
-  /*p21.RUTU*/ bool _RUTU_LINE_P908  = 0;
-  /*p21.NYPE*/ bool NYPE_LINE_STARTp  = 0;
-  /*p29.CATU*/ bool CATU_VID_LINE_ENDp  = 0;
-  /*p28.ANEL*/ bool _ANEL_LINE_P000  = 0;
-  /*p21.MYTA*/ bool MYTA_LINE_153p  = 0;
-  /*p24.MEDA*/ bool MEDA_VSYNC_OUTn   = 0;
-  /*p24.MEDA*/ bool POPU_IN_VBLANKp = 0;
-  /*p24.PAHO*/ bool _PAHO_X_8_SYNC     = 0;
+  /*p21.RUTU*/ bool RUTU_LINE_P908   = 0;
+  /*p21.NYPE*/ bool NYPE_LINE_STARTp = 0;
+  /*p29.CATU*/ bool CATU_LINE_ENDp   = 0;
+  /*p28.ANEL*/ bool ANEL_LINE_P000   = 0;
+  /*p21.MYTA*/ bool MYTA_LINE_153p   = 0;
+  /*p24.MEDA*/ bool MEDA_VSYNC_OUTn  = 0;
+  /*p24.MEDA*/ bool POPU_IN_VBLANKp  = 0;
+  /*p24.PAHO*/ bool PAHO_X_8_SYNC    = 0;
 
   // signals
 

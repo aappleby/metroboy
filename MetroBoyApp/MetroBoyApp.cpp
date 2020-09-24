@@ -217,48 +217,31 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
   if (runmode == RUN_FAST) {
     gb.clear();
-    gb->set_joypad(~buttons);
-    gb->step_mcycle(MCYCLES_PER_FRAME * 8);
+    gb->joypad.set(~buttons);
+    step_cycle(MCYCLES_PER_FRAME * 8);
   }
   else if (runmode == RUN_VSYNC) {
     gb.clear();
-    gb->set_joypad(~buttons);
-    gb->sync_to_vblank();
+    gb->joypad.set(~buttons);
+    sync_to_vblank();
 
     //audio_begin();
-
-    for (int i = 0; i < MCYCLES_PER_FRAME; i++) {
-      gb->mcycle();
-      //audio_post(gb->get_host_data().out_l, gb->get_host_data().out_r);
-    }
-
+    step_cycle(MCYCLES_PER_FRAME);
+    //audio_post(gb->get_host_data().out_l, gb->get_host_data().out_r);
     //audio_end();
   }
-  else if (runmode == STEP_PHASE) {
+  else if (runmode == RUN_STEP) {
     if (step_forward) {
-      gb.push_cycle();
-      gb->step_phase(step_forward);
+      if      (stepsize == STEP_PHASE) { gb.push_phase(); step_phase(step_forward); }
+      else if (stepsize == STEP_CYCLE) { gb.push_cycle(); step_cycle(step_forward); }
+      else if (stepsize == STEP_LINE)  { gb.push_line();  step_line(step_forward); }
+      else if (stepsize == STEP_FRAME) { gb.push_frame(); step_frame(step_forward); }
     }
     if (step_backward) {
-      gb.pop_cycle();
-    }
-  }
-  else if (runmode == STEP_FRAME) {
-    if (step_forward)  {
-      gb.push_frame();
-      gb->step_frame(step_forward);
-    }
-    if (step_backward) {
-      gb.pop_frame();
-    }
-  }
-  else if (runmode == STEP_LINE) {
-    if (step_forward) {
-      gb.push_line();
-      gb->step_line(step_forward);
-    }
-    if (step_backward) {
-      gb.pop_line();
+      if      (stepsize == STEP_PHASE) { gb.pop_phase(); }
+      else if (stepsize == STEP_CYCLE) { gb.pop_cycle(); }
+      else if (stepsize == STEP_LINE)  { gb.pop_line();  }
+      else if (stepsize == STEP_FRAME) { gb.pop_frame(); }
     }
   }
 }
@@ -272,12 +255,12 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
   // Flat memory view
 
-  update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->get_cart_rom());
-  update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->get_vram());
-  update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->get_cart_ram());
-  update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->get_main_ram());
-  update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->get_oam_ram());
-  update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->get_zram());
+  update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, rom.data());
+  update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vram.ram);
+  update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart.get_cart_ram());
+  update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->cart.get_main_ram());
+  update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, (uint8_t*)gb->oam.get());
+  update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zram.ram);
 
   blitter.blit_mono(view, ram_tex, 256, 256,
                     0, 0, 256, 256,
@@ -287,11 +270,11 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   // Gameboy screen
 
   gb_blitter.blit_screen(view, 1280, 32,  2, gb->fb);
-  gb_blitter.blit_tiles (view, 1632, 32,  1, gb->get_vram());
-  gb_blitter.blit_map   (view, 1344, 448, 1, gb->get_vram(), 0, 0);
-  gb_blitter.blit_map   (view, 1632, 448, 1, gb->get_vram(), 0, 1);
-  gb_blitter.blit_map   (view, 1344, 736, 1, gb->get_vram(), 1, 0);
-  gb_blitter.blit_map   (view, 1632, 736, 1, gb->get_vram(), 1, 1);
+  gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vram.ram);
+  gb_blitter.blit_map   (view, 1344, 448, 1, gb->vram.ram, 0, 0);
+  gb_blitter.blit_map   (view, 1632, 448, 1, gb->vram.ram, 0, 1);
+  gb_blitter.blit_map   (view, 1344, 736, 1, gb->vram.ram, 1, 0);
+  gb_blitter.blit_map   (view, 1632, 736, 1, gb->vram.ram, 1, 1);
 
   //----------------------------------------
   // Trace view
@@ -317,8 +300,8 @@ void MetroBoyApp::app_render_ui(Viewport view) {
   if (1) {
     gb->dump_bus(d);
     gb->z80.dump(d);
-    gb->timer2.dump(d);
-    gb->dma2.dump(d);
+    gb->timer.dump(d);
+    gb->dma.dump(d);
     gb->cart.dump(d);
     gb->joypad.dump(d);
     gb->serial.dump(d);
@@ -419,8 +402,8 @@ void MetroBoy::step_over() {
   // Wave thingy
 
   for (int i = 0; i < 16; i++) {
-    uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
-    uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
+    uint8_t a = (gameboy.spu.s3_wave[i] & 0x0F) >> 0;
+    uint8_t b = (gameboy.spu.s3_wave[i] & 0xF0) >> 4;
     uint32_t color = 0xFFFFFFFF;
 
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;

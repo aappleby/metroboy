@@ -64,8 +64,6 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.LENE*/ LENE_DMA_TRIG_d4  .tock(MOPA_xxxxEFGH, CUNU_SYS_RSTn, LUVY_DMA_TRIG_d0.qp());
     
     /*#p04.LOKY*/ LOKY_DMA_LATCHp.nand_latch(LENE_DMA_TRIG_d4.qn(), and2(MYTE_DMA_DONE.qn(), CUNU_SYS_RSTn));
-    
-
     /*#p04.MATU*/ MATU_DMA_RUNNINGp .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp());
   }
 

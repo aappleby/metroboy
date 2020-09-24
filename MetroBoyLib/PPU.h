@@ -6,25 +6,11 @@
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  /*
-  struct Out {
-    int x;
-    int y;
-    int counter;
-    uint8_t pix_out;
-    bool pix_oe;
-
-    bool stat1;
-    bool stat2;
-    bool vblank1;
-    bool vblank2;
-  };
-  */
-
   void reset(bool run_bootrom);
 
-  void tick(const Req& req, Ack& ibus_ack) const;
-  void tock(int old_phase, int new_phase, const Req& ibus_req);
+  void tick(int phase_total, const Req& req, Ack& ibus_ack) const;
+  void tock(int phase_total, const Req& ibus_req);
+  void tock_lcdoff();
 
   void get_vbus_req(Req& r) const;
   void get_obus_req(Req& r) const;
@@ -32,19 +18,9 @@ struct PPU {
   void on_vbus_ack(const Ack& vbus_ack);
   void on_obus_ack(const Ack& obus_ack);
 
+  void emit_pixel();
 
   void dump(Dumper& dump) const;
-
-  uint8_t get_stat()       const { return stat; }
-
-  bool get_old_stat_int1() const { return old_stat_int2; }
-  bool get_old_stat_int2() const { return old_stat_int2; }
-
-//private:
-
-  void tock_lcdoff();
-  void emit_pixel(int tphase);
-  void merge_tile(int tphase);
 
   //----------
   // Timers and states

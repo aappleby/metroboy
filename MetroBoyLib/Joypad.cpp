@@ -7,22 +7,24 @@ void Joypad::reset() {
   p1 = 0xCF; // FF00
 }
 
-void Joypad::tock(const Req& req) {
-  if (req.write && req.addr == ADDR_P1) {
+void Joypad::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
+
+  if (req.read && req.addr == ADDR_P1) {
+    ack.addr = req.addr;
+    ack.data_lo = p1;
+    ack.read++;
+  }
+}
+
+void Joypad::tock(int phase_total, const Req& req) {
+  if (DELTA_GH && req.write && req.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (req.data_lo & 0x30);
     switch (p1 & 0x30) {
     case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;
     case 0x10: p1 = (p1 & 0xF0) | ((val >> 4) & 0xF); break;
     case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
     }
-  }
-}
-
-void Joypad::tick(const Req& req, Ack& ack) const {
-  if (req.read && req.addr == ADDR_P1) {
-    ack.addr = req.addr;
-    ack.data_lo = p1;
-    ack.read++;
   }
 }
 

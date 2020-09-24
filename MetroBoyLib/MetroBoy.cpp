@@ -18,7 +18,7 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   ppu.reset(new_pc == 0);
   oam.reset();
   spu.reset();
-  timer2.reset();
+  timer.reset();
   vram.reset();
   joypad.reset();
   serial.reset();
@@ -27,9 +27,7 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   lcd.reset();
 
   phase_total = -1;
-  trace_val = 0;
-
-  intf = 0xE1;
+  intf  = 0xE0;
   imask = 0x00;
 
   ebus_req.addr = new_pc;
@@ -40,23 +38,13 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   ebus_ack.addr = new_pc;
   ebus_ack.data = 0x00;
   ebus_ack.read = 1;
-
-  sentinel = 0xDEADBEEF;
 }
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::tock(int old_phase, int new_phase, const Req& req) {
-  (void)old_phase;
-  (void)new_phase;
+void MetroBoy::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
 
-  if (DELTA_FG && req.write) {
-    if (req.addr == ADDR_IF) intf  = (uint8_t)req.data_lo | 0b11100000;
-    if (req.addr == ADDR_IE) imask = (uint8_t)req.data_lo;
-  }
-}
-
-void MetroBoy::tick(const Req& req, Ack& ack) const {
   if (req.read && ((req.addr == ADDR_IF) || (req.addr == ADDR_IE))) {
     uint8_t data = 0;
     if (req.addr == ADDR_IF) data = 0b11100000 | intf;
@@ -68,20 +56,25 @@ void MetroBoy::tick(const Req& req, Ack& ack) const {
   }
 }
 
+void MetroBoy::tock(int phase_total, const Req& req) {
+  if (DELTA_GH && req.write) {
+    if (req.addr == ADDR_IF) intf  = (uint8_t)req.data_lo | 0b11100000;
+    if (req.addr == ADDR_IE) imask = (uint8_t)req.data_lo;
+  }
+}
+
 //-----------------------------------------------------------------------------
 
-void MetroBoy::tick_gb() {
+void MetroBoy::next_phase() {
   auto& self = *this;
 
   //-----------------------------------
   // interrupts are partially asynchronous
 
-  bool timer_int = timer2.get_interrupt();
-
   intf &= ~z80.get_int_ack();
   if (ppu.vblank1)          intf |= INT_VBLANK_MASK;
   if (ppu.stat1)            intf |= INT_STAT_MASK;
-  if (timer_int)            intf |= INT_TIMER_MASK;
+  if (timer.timer_int)      intf |= INT_TIMER_MASK;
   if (joypad.get() != 0xFF) intf |= INT_JOYPAD_MASK;
 
   //-----------------------------------
@@ -89,16 +82,16 @@ void MetroBoy::tick_gb() {
 
   if (ibus_req.read) {
     ibus_ack = { 0 };
-    ppu.tick(ibus_req, ibus_ack);
-    serial.tick(ibus_req, ibus_ack);
-    joypad.tick(ibus_req, ibus_ack);
-    zram.tick(ibus_req, ibus_ack);
-    spu.tick(ibus_req, ibus_ack);
-    boot.tick(ibus_req, ibus_ack);
-    self.tick(ibus_req, ibus_ack);
-    timer2.tick(ibus_req, ibus_ack);
-    dma2.tick(ibus_req, ibus_ack);
-    lcd.tick(ibus_req, ibus_ack);
+    ppu.   tick(phase_total, ibus_req, ibus_ack);
+    serial.tick(phase_total, ibus_req, ibus_ack);
+    joypad.tick(phase_total, ibus_req, ibus_ack);
+    zram.  tick(phase_total, ibus_req, ibus_ack);
+    spu.   tick(phase_total, ibus_req, ibus_ack);
+    boot.  tick(phase_total, ibus_req, ibus_ack);
+    self.  tick(phase_total, ibus_req, ibus_ack);
+    timer. tick(phase_total, ibus_req, ibus_ack);
+    dma.   tick(phase_total, ibus_req, ibus_ack);
+    lcd.   tick(phase_total, ibus_req, ibus_ack);
   }
 
   ebus_ack = { 0 };
@@ -108,15 +101,11 @@ void MetroBoy::tick_gb() {
   cart.tick(ebus_req, ebus_ack);
   vram.tick(vbus_req, vbus_ack);
   oam .tick(obus_req, obus_ack);
-}
 
-//-----------------------------------------------------------------------------
+  //----------------------------------------
 
-void MetroBoy::tock_gb(int old_phase, int new_phase) {
-  auto& self = *this;
-
-  bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
-  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
+  bool dma_src_vbus = dma.DMA_RUN_READ && (dma.addr >= ADDR_VRAM_BEGIN) && (dma.addr <= ADDR_VRAM_END);
+  bool dma_src_ebus = dma.DMA_RUN_READ && !dma_src_vbus;
 
   if (dma_src_vbus) dma_data_latch = vbus_ack.data_lo;
   if (dma_src_ebus) dma_data_latch = ebus_ack.data_lo;
@@ -157,47 +146,36 @@ void MetroBoy::tock_gb(int old_phase, int new_phase) {
     }
   }
 
-  if (DELTA_AB) z80.tock_ack(imask, intf, cpu_ack.data_lo);
-  if (DELTA_BC) z80.tock_req(imask, intf);
-
-  timer2.tock(old_phase, new_phase, ibus_req);
-
-  if (DELTA_FG) {
-    self.  tock(old_phase, new_phase, ibus_req);
-    serial.tock(ibus_req);
-    joypad.tock(ibus_req);
-    boot.  tock(ibus_req);
-  }
-
   bool XONA_LCDC_LCDENn = ppu.lcdc & FLAG_LCD_ON;
 
-  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    zram.  tock(ibus_req);
-    spu.   tock(old_phase, new_phase, ibus_req);
-    ppu.   tock(old_phase, new_phase, ibus_req);
-    dma2.  tock(old_phase, new_phase, ibus_req);
-    cart.  tock(ebus_req);
-    vram.  tock(vbus_req);
-    oam.   tock(obus_req);
-    lcd.tock(old_phase, new_phase, ibus_req, XONA_LCDC_LCDENn);
+  if (DELTA_HA) {
+    z80.tock_ack(imask, intf, cpu_ack.data_lo);
+    z80.tock_req(imask, intf);
+  }
 
-    //----------
+  timer. tock(phase_total, ibus_req);
+  self.  tock(phase_total, ibus_req);
+  serial.tock(phase_total, ibus_req);
+  joypad.tock(phase_total, ibus_req);
+  boot.  tock(phase_total, ibus_req);
+  zram.  tock(phase_total, ibus_req);
+  spu.   tock(phase_total, ibus_req);
+  ppu.   tock(phase_total, ibus_req);
+  dma.  tock(phase_total, ibus_req);
+  cart.  tock(phase_total, ebus_req);
+  vram.  tock(phase_total, vbus_req);
+  oam.   tock(phase_total, obus_req);
+  lcd.   tock(phase_total, ibus_req, XONA_LCDC_LCDENn);
 
-    gb_to_host.x       = ppu.pix_count;
-    gb_to_host.y       = ppu.line;
-    gb_to_host.counter = ppu.counter;
-    gb_to_host.pix     = ppu.pix_out;
-    gb_to_host.pix_oe  = ppu.pix_oe;
-    gb_to_host.out_r   = spu.get_r();
-    gb_to_host.out_l   = spu.get_l();
-    gb_to_host.trace   = ebus_req.addr;
+  //----------
 
-    int pix_x = ppu.pix_count;
-    int pix_y = ppu.line;
+  int pix_x = ppu.pix_count;
+  int pix_y = ppu.line;
 
-    if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
-      fb[gb_to_host.x + gb_to_host.y * 160] = ppu.pix_out;
-    }
+  if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
+    int sx = ppu.pix_count;
+    int sy = ppu.line;
+    fb[sx + sy * 160] = ppu.pix_out;
   }
 
   //-----------------------------------
@@ -228,25 +206,25 @@ void MetroBoy::tock_gb(int old_phase, int new_phase) {
   ppu.get_vbus_req(vbus_req);
   ppu.get_obus_req(obus_req);
 
-  dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
-  dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
+  dma_src_vbus = dma.DMA_RUN_READ && (dma.addr >= ADDR_VRAM_BEGIN) && (dma.addr <= ADDR_VRAM_END);
+  dma_src_ebus = dma.DMA_RUN_READ && !dma_src_vbus;
 
   if (dma_src_vbus) {
-    vbus_req.addr = dma2.addr;
+    vbus_req.addr = dma.addr;
     vbus_req.data = 0;
     vbus_req.read = 1;
     vbus_req.write = 0;
   }
 
   if (dma_src_ebus) {
-    ebus_req.addr = dma2.addr;
+    ebus_req.addr = dma.addr;
     ebus_req.data = 0;
     ebus_req.read = 1;
     ebus_req.write = 0;
   }
 
-  if (DELTA_EF && dma2.DMA_RUN_WRITE) {
-    obus_req.addr = uint16_t(0xFE00 | (dma2.addr & 0xFF));
+  if (DELTA_EF && dma.DMA_RUN_WRITE) {
+    obus_req.addr = uint16_t(0xFE00 | (dma.addr & 0xFF));
     obus_req.data = dma_data_latch;
     obus_req.read = 0;
     obus_req.write = 1;

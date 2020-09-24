@@ -65,6 +65,8 @@ struct GateBoy {
     save_obj(filename, *this);
   }
 
+  //----------------------------------------
+
   void check_sentinel() const {
     if (sentinel1 != 0xDEADBEEFBAADF00D) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
     if (sentinel2 != 0xF00DCAFEBAADC0DE) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;

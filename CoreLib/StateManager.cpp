@@ -6,4 +6,4 @@ struct foo {
   int b;
 };
 
-static StateManagerBase<foo> bler;
+static StateStack<foo> bler;

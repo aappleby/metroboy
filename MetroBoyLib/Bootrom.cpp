@@ -4,12 +4,6 @@
 
 //-----------------------------------------------------------------------------
 
-void Bootrom::reset(uint16_t new_pc) {
-  disable_bootrom = new_pc != 0x0000;
-}
-
-//-----------------------------------------------------------------------------
-
 void Bootrom::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
   if (req.read && req.addr <= 0x00FF && !disable_bootrom) {

@@ -64,7 +64,9 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
 
-  load_rom("microtests/build/dmg/flood_vram.gb");
+  load_rom("microtests/build/dmg/hblank_int_l0.gb");
+
+  //load_rom("microtests/build/dmg/flood_vram.gb");
 
   //load_rom("roms/oh.gb"); // broken eye
   //load_rom("roms/pocket.gb");
@@ -94,7 +96,7 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
   blob buf;
   load_array(filename, buf);
 
-  memcpy(gb->get_vram(), &buf[0x8000], 8192);
+  memcpy(gb->vram.ram, &buf[0x8000], 8192);
 
   gb->ppu.lcdc = buf[0xFF40];
   gb->ppu.stat = buf[0xFF41];
@@ -110,7 +112,7 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
   gb->ppu.wx   = buf[0xFF4B];
   gb->ppu.update_palettes();
 
-  uint8_t* oam_flat = (uint8_t*)gb->oam.get();
+  uint8_t* oam_flat = (uint8_t*)gb->oam.ram;
 
   for (int i = 0; i < 256; i++) {
     oam_flat[i] = buf[ADDR_OAM_BEGIN + i];
@@ -124,6 +126,8 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
   printf("Loading rom %s\n", gb_filename.c_str());
   
   load_array(gb_filename.c_str(), rom);
+
+  gb.clear_history();
   gb->reset(0x0100, rom.data(), rom.size());
   
   rom_loaded = true;
@@ -152,46 +156,34 @@ void MetroBoyApp::app_update(double /*delta*/) {
     case SDLK_DOWN:   stepsize = clamp_val(stepsize - 1, STEP_MIN, STEP_MAX); break;
 
     case SDLK_r: {
-      gb.clear();
-      memset(tracebuffer, 0, sizeof(tracebuffer));
+      gb.clear_history();
       gb->reset(0x0100, rom.data(), rom.size());
       break;
     }
     case SDLK_F1: {
-      load_obj("dump.MetroBoy", *gb.state());
+      load_obj("dump.MetroBoy", *gb.top());
       rom_loaded = true;
       break;
     }
     case SDLK_F4: {
-      save_obj("dump.MetroBoy", *gb.state());
+      save_obj("dump.MetroBoy", *gb.top());
       break;
     }
 
     case SDLK_RIGHT:  {
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_forward = 8;
-      } else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward = 1024;
-      } else {
-        step_forward = 1;
-      }
+      step_forward = keyboard_state[SDL_SCANCODE_LCTRL] ? 8 : 1;
       break;
     }
 
     case SDLK_LEFT: {
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_backward = 8;
-      } else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_backward = 1024;
-      } else {
-        step_backward = 1;
-      }
+      step_backward = keyboard_state[SDL_SCANCODE_LCTRL] ? 8 : 1;
       break;
     }
     }
 
     if (event.type == SDL_DROPFILE) {
       load_array(event.drop.file, rom);
+      gb.clear_history();
       gb->reset(0x0100, rom.data(), rom.size());
       rom_loaded = true;
       runmode = RUN_VSYNC;
@@ -216,32 +208,32 @@ void MetroBoyApp::app_update(double /*delta*/) {
   // Run simulation
 
   if (runmode == RUN_FAST) {
-    gb.clear();
+    gb.clear_history();
     gb->joypad.set(~buttons);
     step_cycle(MCYCLES_PER_FRAME * 8);
   }
   else if (runmode == RUN_VSYNC) {
-    gb.clear();
+    gb.clear_history();
     gb->joypad.set(~buttons);
     sync_to_vblank();
 
     //audio_begin();
-    step_cycle(MCYCLES_PER_FRAME);
-    //audio_post(gb->get_host_data().out_l, gb->get_host_data().out_r);
+    for (int i = 0; i < MCYCLES_PER_FRAME; i++) {
+      step_cycle(1);
+      //audio_post(gb->get_host_data().out_l, gb->get_host_data().out_r);
+    }
     //audio_end();
   }
   else if (runmode == RUN_STEP) {
     if (step_forward) {
-      if      (stepsize == STEP_PHASE) { gb.push_phase(); step_phase(step_forward); }
-      else if (stepsize == STEP_CYCLE) { gb.push_cycle(); step_cycle(step_forward); }
-      else if (stepsize == STEP_LINE)  { gb.push_line();  step_line(step_forward); }
-      else if (stepsize == STEP_FRAME) { gb.push_frame(); step_frame(step_forward); }
+      gb.push();
+      if      (stepsize == STEP_PHASE) { step_phase(step_forward); }
+      else if (stepsize == STEP_CYCLE) { step_cycle(step_forward); }
+      else if (stepsize == STEP_LINE)  { step_line (step_forward); }
+      else if (stepsize == STEP_FRAME) { step_frame(step_forward); }
     }
     if (step_backward) {
-      if      (stepsize == STEP_PHASE) { gb.pop_phase(); }
-      else if (stepsize == STEP_CYCLE) { gb.pop_cycle(); }
-      else if (stepsize == STEP_LINE)  { gb.pop_line();  }
-      else if (stepsize == STEP_FRAME) { gb.pop_frame(); }
+      gb.pop();
     }
   }
 }
@@ -257,9 +249,9 @@ void MetroBoyApp::app_render_frame(Viewport view) {
 
   update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, rom.data());
   update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vram.ram);
-  update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart.get_cart_ram());
-  update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->cart.get_main_ram());
-  update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, (uint8_t*)gb->oam.get());
+  update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart.cart_ram);
+  update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->cart.main_ram);
+  update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->oam.ram);
   update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zram.ram);
 
   blitter.blit_mono(view, ram_tex, 256, 256,
@@ -269,7 +261,7 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
   // Gameboy screen
 
-  gb_blitter.blit_screen(view, 1280, 32,  2, gb->fb);
+  gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
   gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vram.ram);
   gb_blitter.blit_map   (view, 1344, 448, 1, gb->vram.ram, 0, 0);
   gb_blitter.blit_map   (view, 1632, 448, 1, gb->vram.ram, 0, 1);
@@ -300,6 +292,7 @@ void MetroBoyApp::app_render_ui(Viewport view) {
   if (1) {
     gb->dump_bus(d);
     gb->z80.dump(d);
+    gb->ints.dump(d);
     gb->timer.dump(d);
     gb->dma.dump(d);
     gb->cart.dump(d);
@@ -312,7 +305,7 @@ void MetroBoyApp::app_render_ui(Viewport view) {
 
   if (1) {
     gb->lcd.dump(d);
-    gb->get_spu().dump(d);
+    gb->spu.dump(d);
     gb->zram.dump(d);
     gb->oam.dump(d);
     text_painter.render(view, d.s, (float)column, 0);
@@ -334,7 +327,24 @@ void MetroBoyApp::app_render_ui(Viewport view) {
     column += 32 * 7;
   }
 
-  /*
+  const char* mode_names[] = {"RUN_STEP", "RUN_FAST", "RUN_VSYNC"};
+  const char* step_names[] = {"STEP_PASS", "STEP_PHASE", "STEP_CYCLE", "STEP_LINE", "STEP_FRAME"};
+
+  text_painter.dprintf("%s %s\n", mode_names[runmode], step_names[stepsize]);
+
+  size_t state_size = gb.state_size_bytes();
+  if (state_size < 1024 * 1024) {
+    text_painter.dprintf("State size %d K\n", state_size / 1024);
+  }
+  else {
+    text_painter.dprintf("State size %d M\n", state_size / (1024 * 1024));
+  }
+
+
+  text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
+
+
+    /*
   double mcycles_per_sec_1x = 114 * 154 * 60; // 1.05 mhz
   double sim_speed = 1.06;
   double sim_budget_msec = 60.0;

@@ -32,11 +32,11 @@ public:
   //----------------------------------------
 
   void sync_to_vblank() {
-    while(gb->ppu.line != 144) step_mcycle();
+    while(gb->ppu.line != 144) step_cycle();
   }
 
   void run_to_breakpoint(uint16_t breakpoint) {
-    while (gb->z80.get_op_addr() != breakpoint) step_mcycle();
+    while (gb->z80.op_addr != breakpoint) step_cycle();
   }
 
   void step_phase(int count = 1) {
@@ -99,7 +99,7 @@ public:
   //----------
   // gb state
 
-  StateManagerBase<MetroBoy> gb;
+  StateStack<MetroBoy> gb;
 
   //----------
   // debug

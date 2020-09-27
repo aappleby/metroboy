@@ -9,7 +9,7 @@ static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };
 //-----------------------------------------------------------------------------
 
 void Timer::reset() {
-  div  = 0x2AF3;
+  div  = 0xEAF2;
   tima = 0;
   tma  = 0;
   tac  = 0;

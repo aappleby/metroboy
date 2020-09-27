@@ -12,6 +12,8 @@
 //-----------------------------------------------------------------------------
 
 void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
+  check_sentinel();
+
   z80.reset(new_pc);
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
@@ -23,12 +25,11 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   joypad.reset();
   serial.reset();
   zram.reset();
-  boot.reset(new_pc);
   lcd.reset();
 
-  phase_total = -1;
-  intf  = 0xE0;
-  imask = 0x00;
+  boot.disable_bootrom = new_pc != 0x0000;
+
+  phase_total = 0;
 
   ebus_req.addr = new_pc;
   ebus_req.data = 0x00;
@@ -38,44 +39,13 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   ebus_ack.addr = new_pc;
   ebus_ack.data = 0x00;
   ebus_ack.read = 1;
-}
 
-//-----------------------------------------------------------------------------
-
-void MetroBoy::tick(int phase_total, const Req& req, Ack& ack) const {
-  (void)phase_total;
-
-  if (req.read && ((req.addr == ADDR_IF) || (req.addr == ADDR_IE))) {
-    uint8_t data = 0;
-    if (req.addr == ADDR_IF) data = 0b11100000 | intf;
-    if (req.addr == ADDR_IE) data = imask;
-
-    ack.addr = req.addr;
-    ack.data_lo = data;
-    ack.read++;
-  }
-}
-
-void MetroBoy::tock(int phase_total, const Req& req) {
-  if (DELTA_GH && req.write) {
-    if (req.addr == ADDR_IF) intf  = (uint8_t)req.data_lo | 0b11100000;
-    if (req.addr == ADDR_IE) imask = (uint8_t)req.data_lo;
-  }
+  memset(framebuffer, 4, 160 * 144);
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoy::next_phase() {
-  auto& self = *this;
-
-  //-----------------------------------
-  // interrupts are partially asynchronous
-
-  intf &= ~z80.get_int_ack();
-  if (ppu.vblank1)          intf |= INT_VBLANK_MASK;
-  if (ppu.stat1)            intf |= INT_STAT_MASK;
-  if (timer.timer_int)      intf |= INT_TIMER_MASK;
-  if (joypad.get() != 0xFF) intf |= INT_JOYPAD_MASK;
 
   //-----------------------------------
   // gather acks
@@ -88,19 +58,19 @@ void MetroBoy::next_phase() {
     zram.  tick(phase_total, ibus_req, ibus_ack);
     spu.   tick(phase_total, ibus_req, ibus_ack);
     boot.  tick(phase_total, ibus_req, ibus_ack);
-    self.  tick(phase_total, ibus_req, ibus_ack);
     timer. tick(phase_total, ibus_req, ibus_ack);
     dma.   tick(phase_total, ibus_req, ibus_ack);
     lcd.   tick(phase_total, ibus_req, ibus_ack);
+    ints.  tick(phase_total, ibus_req, ibus_ack);
   }
 
   ebus_ack = { 0 };
   vbus_ack = { 0 };
   obus_ack = { 0 };
 
-  cart.tick(ebus_req, ebus_ack);
-  vram.tick(vbus_req, vbus_ack);
-  oam .tick(obus_req, obus_ack);
+  cart.tick(phase_total, ebus_req, ebus_ack);
+  vram.tick(phase_total, vbus_req, vbus_ack);
+  oam .tick(phase_total, obus_req, obus_ack);
 
   //----------------------------------------
 
@@ -115,57 +85,35 @@ void MetroBoy::next_phase() {
   CHECK_N(vbus_ack.read > 1);
   CHECK_N(obus_ack.read > 1);
 
-  ppu.on_vbus_ack(vbus_ack);
-  ppu.on_obus_ack(obus_ack);
-
-  if (DELTA_AB || DELTA_BC) {
+  if (DELTA_HA) {
     bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
     bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
     bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
     bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
-    if (cpu_has_ibus_req) {
-      cpu_ack = ibus_ack;
-    }
-    else if (cpu_has_ebus_req) {
-      cpu_ack = ebus_ack;
-    }
-    else if (cpu_has_vbus_req) {
-      cpu_ack = vbus_ack;
-    }
-    else if (cpu_has_obus_req) {
-      cpu_ack = obus_ack;
-    }
-    else {
-      cpu_ack = { 0 };
-    }
+    uint8_t bus_data = 0xFF;
+    if      (cpu_has_ibus_req) bus_data = ibus_ack.data_lo;
+    else if (cpu_has_ebus_req) bus_data = ebus_ack.data_lo;
+    else if (cpu_has_vbus_req) bus_data = vbus_ack.data_lo;
+    else if (cpu_has_obus_req) bus_data = obus_ack.data_lo;
 
-    if (cpu_ack.read == 0) {
-      cpu_ack.addr = cpu_req.addr;
-      cpu_ack.data_lo = 0xFF;
-    }
-  }
-
-  bool XONA_LCDC_LCDENn = ppu.lcdc & FLAG_LCD_ON;
-
-  if (DELTA_HA) {
-    z80.tock_ack(imask, intf, cpu_ack.data_lo);
-    z80.tock_req(imask, intf);
+    z80.tock_ack(ints.imask, ints.intf, bus_data);
+    z80.tock_req(ints.imask, ints.intf);
   }
 
   timer. tock(phase_total, ibus_req);
-  self.  tock(phase_total, ibus_req);
   serial.tock(phase_total, ibus_req);
   joypad.tock(phase_total, ibus_req);
   boot.  tock(phase_total, ibus_req);
   zram.  tock(phase_total, ibus_req);
   spu.   tock(phase_total, ibus_req);
-  ppu.   tock(phase_total, ibus_req);
-  dma.  tock(phase_total, ibus_req);
+  ppu.   tock(phase_total, ibus_req, vbus_ack, obus_ack);
+  dma.   tock(phase_total, ibus_req);
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  lcd.   tock(phase_total, ibus_req, XONA_LCDC_LCDENn);
+  lcd.   tock(phase_total, ibus_req, ppu.lcdc & FLAG_LCD_ON);
+  ints.  tock(phase_total, ibus_req, z80.int_ack, ppu.vblank1, ppu.stat1, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
 
   //----------
 
@@ -175,19 +123,19 @@ void MetroBoy::next_phase() {
   if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
     int sx = ppu.pix_count;
     int sy = ppu.line;
-    fb[sx + sy * 160] = ppu.pix_out;
+    framebuffer[sx + sy * 160] = ppu.pix_out;
   }
 
   //-----------------------------------
   // prioritize reqs
 
-  if (DELTA_BC) {
+  if (DELTA_AB) {
+    cpu_req = z80.bus_req;
+
     ibus_req = {0};
     ebus_req = {0};
     vbus_req = {0};
     obus_req = {0};
-
-    z80.get_bus_req(cpu_req);
 
     if (cpu_req.addr >= 0xFF00 && cpu_req.addr <= 0xFFFF) {
       ibus_req = cpu_req;
@@ -253,8 +201,6 @@ void MetroBoy::dump_bus(Dumper& d) {
   d("tcycle %lld\n", phase_total >> 1);
   d("mcycle %lld\n", phase_total >> 3);
   d("bgb cycle      0x%08x\n", ((phase_total / 2) * 8) + 0x00B2D5E6);
-  d("imask  %s\n", byte_to_bits(imask));
-  d("intf   %s\n", byte_to_bits(intf));
   d("boot   %d\n", boot.disable_bootrom);
   d("\n");
 
@@ -266,7 +212,6 @@ void MetroBoy::dump_bus(Dumper& d) {
   d("---VBUS ack:    "); dump_ack(d, vbus_ack);
   d("---OBUS req:    "); dump_req(d, obus_req);
   d("---OBUS ack:    "); dump_ack(d, obus_ack);
-  d("---CPU  ack:    "); dump_ack(d, cpu_ack);
   d("\n");
 }
 
@@ -275,21 +220,21 @@ void MetroBoy::dump_bus(Dumper& d) {
 void MetroBoy::dump_disasm(Dumper& d) {
   d("\002--------------DISASM-----------\001\n");
 
-  uint16_t pc = z80.get_op_addr();
+  uint16_t pc = z80.op_addr;
 
   Assembler a;
   if (ADDR_CART_ROM_BEGIN <= pc && pc <= ADDR_CART_ROM_END) {
-    a.disassemble(cart.get_cart_rom(), 32768, 
+    a.disassemble(cart.cart_rom, 32768, 
                   ADDR_CART_ROM_BEGIN, pc,
                   30, d, false);
   }
   else if (ADDR_MAIN_RAM_BEGIN <= pc && pc <= ADDR_MAIN_RAM_END) {
-    a.disassemble(cart.get_main_ram(), 8192,
+    a.disassemble(cart.main_ram, 8192,
                   ADDR_MAIN_RAM_BEGIN, pc,
                   30, d, false);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
-    a.disassemble(zram.get(), 127,
+    a.disassemble(zram.ram, 127,
                   ADDR_ZEROPAGE_BEGIN, pc,
                   30, d, false);
   }

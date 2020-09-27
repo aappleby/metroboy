@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClCompile Include="MetroBoyTests.cpp" />
     <ClCompile Include="test_codegen.cpp" />
-    <ClCompile Include="test_micro.cpp" />
     <ClCompile Include="test_mooneye.cpp" />
     <ClCompile Include="test_screenshot.cpp" />
     <ClCompile Include="test_wpol.cpp" />

@@ -137,19 +137,19 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   }
 
   uint8_t result = 0xFF;
-  int i = 0;
-  constexpr int mcycles = 25000000;
-  for (; i < mcycles; i++) {
-    gb->mcycle();
-    if (gb->get_cpu().get_op() == 0x40) {
-      result = gb->get_cpu().get_a();
+  int phase = 0;
+  constexpr int timeout = 25000000 * 8;
+  for (; phase < timeout; phase++) {
+    gb->next_phase();
+    if (gb->z80.op == 0x40) {
+      result = gb->z80.a;
       break;
     }
   }
 
-  if (i == mcycles) {
+  if (phase == timeout) {
     printf("%-50s ", name.c_str());
-    printf("? TIMEOUT @ %d\n", i);
+    printf("? TIMEOUT @ %d\n", phase);
   }
   else if (result == 0x00) {
     printf(".");
@@ -157,7 +157,7 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   else {
     printf("\n");
     printf("%-50s ", name.c_str());
-    printf("X 0x%02x FAIL @ %d\n", result, i);
+    printf("X 0x%02x FAIL @ %d\n", result, phase);
   }
 }
 

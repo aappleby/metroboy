@@ -31,15 +31,15 @@ int spritex_vs_scx[17][9] = {
 
 void test_preloaded(MetroBoy& gameboy, const std::string& /*name*/) {
   uint8_t result = 0xFF;
-  int i = 0;
-  const int mcycles = 100000;  // bits_ram_en needs lots of mcycles
-  for (; i < mcycles; i++) {
-    gameboy.mcycle();
-    result = gameboy.get_vram()[0];
+  int phase = 0;
+  const int timeout = 100000 * 8;  // bits_ram_en needs lots of mcycles
+  for (; phase < timeout; phase++) {
+    gameboy.next_phase();
+    result = gameboy.vram.ram[0];
     if (result) break;
   }
 
-  if (i == mcycles) {
+  if (phase == timeout) {
     printf("?");
   }
   else if (result == 0x55) {

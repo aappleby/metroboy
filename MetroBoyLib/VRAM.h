@@ -5,8 +5,8 @@
 
 struct VRAM {
   void  reset();
-  void  tock(const Req& req);
-  void  tick(const Req& req, Ack& ack) const;
+  void  tick(int phase_total, const Req& req, Ack& ack) const;
+  void  tock(int phase_total, const Req& req);
 
   uint8_t ram[8192] = {0};
 };

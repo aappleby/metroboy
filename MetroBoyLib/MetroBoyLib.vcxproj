@@ -30,6 +30,7 @@
     <ClInclude Include="Bootrom.h" />
     <ClInclude Include="Cart.h" />
     <ClInclude Include="DMA.h" />
+    <ClInclude Include="Interrupts.h" />
     <ClInclude Include="MetroBoy.h" />
     <ClInclude Include="Joypad.h" />
     <ClInclude Include="LCD.h" />

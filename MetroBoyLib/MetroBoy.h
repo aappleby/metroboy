@@ -3,9 +3,11 @@
 #include "CoreLib/Types.h"
 #include "CoreLib/Z80.h"
 
-#include "MetroBoyLib/Joypad.h"
+#include "MetroBoyLib/Bootrom.h"
 #include "MetroBoyLib/Cart.h"
 #include "MetroBoyLib/DMA.h"
+#include "MetroBoyLib/Interrupts.h"
+#include "MetroBoyLib/Joypad.h"
 #include "MetroBoyLib/LCD.h"
 #include "MetroBoyLib/PPU.h"
 #include "MetroBoyLib/Serial.h"
@@ -13,9 +15,6 @@
 #include "MetroBoyLib/Timer.h"
 #include "MetroBoyLib/VRAM.h"
 #include "MetroBoyLib/ZRAM.h"
-#include "MetroBoyLib/Bootrom.h"
-
-#include <assert.h>
 
 //-----------------------------------------------------------------------------
 
@@ -28,8 +27,6 @@ struct MetroBoy {
   void reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size);
 
   void next_phase();
-  void tick(int phase_total, const Req& req, Ack& ibus_ack) const;
-  void tock(int phase_total, const Req& req);
 
   void dump_bus   (Dumper& d);
   void dump_disasm(Dumper& d);
@@ -58,13 +55,11 @@ struct MetroBoy {
   DMA     dma;
   Bootrom boot;
   LCD     lcd;
+  Interrupts ints;
 
-  int64_t phase_total = -1;
-  uint8_t intf = 0;
-  uint8_t imask = 0;
+  int64_t phase_total = 0;
 
   Req cpu_req  = {0};
-  Ack cpu_ack  = {0};
 
   Req ebus_req = {0}; // 0x0000 - 0x7FFF, 0xA000 - 0xFFFF
   Ack ebus_ack = {0};
@@ -80,7 +75,7 @@ struct MetroBoy {
 
   uint8_t dma_data_latch;
 
-  uint8_t fb[160*144] = {0};
+  uint8_t framebuffer[160*144] = {0};
 
   //----------
 

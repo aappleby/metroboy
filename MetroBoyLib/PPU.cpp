@@ -7,7 +7,7 @@ extern const uint32_t gb_colors[];
 //-----------------------------------------------------------------------------
 
 void PPU::reset(bool run_bootrom) {
-  *this = {};
+  *this = {0};
 
   //----------
   // Registers
@@ -109,122 +109,68 @@ uint8_t flip2(uint8_t b) {
 //-----------------------------------------------------------------------------
 
 void PPU::get_vbus_req(Req& r) const {
-  if ((lcdc & FLAG_LCD_ON) == 0) return;
+  if (lcdc & FLAG_LCD_ON) {
+    uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
+    uint8_t map_y = ((scy + line) >> 3) & 31;
 
-  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-  uint8_t map_y = ((scy + line) >> 3) & 31;
+    uint16_t fetch_addr = 0;
 
-  uint16_t fetch_addr = 0;
+    if (fetch_type == FETCH_BACKGROUND) {
+      if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = tile_map_address(lcdc, new_map_x, map_y);
+      else if (fetch_state == FETCH_TILE_LO)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+      else if (fetch_state == FETCH_TILE_HI)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+    }
+    else if (fetch_type == FETCH_WINDOW) {
+      if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = win_map_address(lcdc, map_x, win_y_latch);
+      else if (fetch_state == FETCH_TILE_LO)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+      else if (fetch_state == FETCH_TILE_HI)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+    }
+    else if (fetch_type == FETCH_SPRITE) {
+      if      (fetch_state == FETCH_SPRITE_LO) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+      else if (fetch_state == FETCH_SPRITE_HI) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
+    }
 
-  if (fetch_type == FETCH_BACKGROUND) {
-    if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = tile_map_address(lcdc, new_map_x, map_y);
-    else if (fetch_state == FETCH_TILE_LO)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-    else if (fetch_state == FETCH_TILE_HI)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_WINDOW) {
-    if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = win_map_address(lcdc, map_x, win_y_latch);
-    else if (fetch_state == FETCH_TILE_LO)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-    else if (fetch_state == FETCH_TILE_HI)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_SPRITE) {
-    if      (fetch_state == FETCH_SPRITE_LO) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-    else if (fetch_state == FETCH_SPRITE_HI) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-  }
+    if (pix_count + pix_discard_pad == 168) {
+      fetch_addr = 0;
+    }
 
-  if (pix_count + pix_discard_pad == 168) {
-    fetch_addr = 0;
-  }
-
-  if (fetch_type != FETCH_NONE) {
-    r.addr    = fetch_addr;
-    r.data_lo = 0;
-    r.read    = 1;
-    r.write   = 0;
+    if (fetch_type != FETCH_NONE) {
+      r.addr    = fetch_addr;
+      r.data_lo = 0;
+      r.read    = 1;
+      r.write   = 0;
+    }
   }
 }
 
 //----------------------------------------
 
 void PPU::get_obus_req(Req& r) const {
-  if ((lcdc & FLAG_LCD_ON) == 0) return;
+  if (lcdc & FLAG_LCD_ON) {
+    uint16_t fetch_addr = 0;
 
-  uint16_t fetch_addr = 0;
-
-  // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-  if (counter < 80) {
-    r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
-    r.data  = 0;
-    r.read  = 1;
-    r.write = 0;
-    return;
-  }
-
-  if (fetch_type == FETCH_SPRITE && fetch_state == FETCH_SPRITE_MAP) {
-    fetch_addr = ADDR_OAM_BEGIN + (sprite_index << 2) + 2;
-  }
-
-  if (pix_count + pix_discard_pad == 168) {
-    fetch_addr = 0;
-  }
-
-  if (fetch_addr != 0) {
-    r.addr  = fetch_addr;
-    r.data  = 0;
-    r.read  = 1;
-    r.write = 0;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void PPU::on_vbus_ack(const Ack& vbus_ack) {
-  uint8_t data = (uint8_t)vbus_ack.data_lo;
-
-  if (vbus_ack.read) {
-    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_TILE_MAP) tile_map = data;
-      if (fetch_state == FETCH_TILE_LO)  tile_lo = data;
-      if (fetch_state == FETCH_TILE_HI)  tile_hi = data;
-    }
-    else if (fetch_type == FETCH_SPRITE) {
-      if (fetch_state == FETCH_SPRITE_LO) sprite_lo = data;
-      if (fetch_state == FETCH_SPRITE_HI) sprite_hi = data;
-    }
-  }
-}
-
-//----------------------------------------
-// this is probably gonna break if cpu tries to read obus during rendering...
-
-void PPU::on_obus_ack(const Ack& obus_ack) {
-  uint8_t lo = obus_ack.data_lo;
-  uint8_t hi = obus_ack.data_hi;
-
-  if (obus_ack.read) {
-    if (obus_ack.addr & 2) {
-      this->spriteP = lo;
-      this->spriteF = hi;
-    }
-    else {
-      this->spriteY = lo;
-      this->spriteX = hi;
+    // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
+    if (counter < 80) {
+      r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
+      r.data  = 0;
+      r.read  = 1;
+      r.write = 0;
+      return;
     }
 
-    //-----------------------------------
-    // Build sprite table
+    if (fetch_type == FETCH_SPRITE && fetch_state == FETCH_SPRITE_MAP) {
+      fetch_addr = ADDR_OAM_BEGIN + (sprite_index << 2) + 2;
+    }
 
-    if (counter < 86 && sprite_count < 10) {
-      int si = (obus_ack.addr - ADDR_OAM_BEGIN) >> 2;
-      int sy = spriteY - 16;
-      int sx = spriteX;
+    if (pix_count + pix_discard_pad == 168) {
+      fetch_addr = 0;
+    }
 
-      uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
-      if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
-        sprite_x[sprite_count] = spriteX;
-        sprite_y[sprite_count] = spriteY;
-        sprite_i[sprite_count] = (uint8_t)si;
-        sprite_count++;
-      }
+    if (fetch_addr != 0) {
+      r.addr  = fetch_addr;
+      r.data  = 0;
+      r.read  = 1;
+      r.write = 0;
     }
   }
 }
@@ -262,7 +208,58 @@ void PPU::tick(int phase_total, const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int phase_total, const Req& req) {
+void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack obus_ack) {
+  // handle vbus ack
+  {
+    uint8_t data = (uint8_t)vbus_ack.data_lo;
+
+    if (vbus_ack.read) {
+      if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+        if (fetch_state == FETCH_TILE_MAP) tile_map = data;
+        if (fetch_state == FETCH_TILE_LO)  tile_lo = data;
+        if (fetch_state == FETCH_TILE_HI)  tile_hi = data;
+      }
+      else if (fetch_type == FETCH_SPRITE) {
+        if (fetch_state == FETCH_SPRITE_LO) sprite_lo = data;
+        if (fetch_state == FETCH_SPRITE_HI) sprite_hi = data;
+      }
+    }
+  }
+
+  // handle obus ack
+  {
+    uint8_t lo = obus_ack.data_lo;
+    uint8_t hi = obus_ack.data_hi;
+
+    if (obus_ack.read) {
+      if (obus_ack.addr & 2) {
+        this->spriteP = lo;
+        this->spriteF = hi;
+      }
+      else {
+        this->spriteY = lo;
+        this->spriteX = hi;
+      }
+
+      //-----------------------------------
+      // Build sprite table
+
+      if (counter < 86 && sprite_count < 10) {
+        int si = (obus_ack.addr - ADDR_OAM_BEGIN) >> 2;
+        int sy = spriteY - 16;
+        int sx = spriteX;
+
+        uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
+        if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
+          sprite_x[sprite_count] = spriteX;
+          sprite_y[sprite_count] = spriteY;
+          sprite_i[sprite_count] = (uint8_t)si;
+          sprite_count++;
+        }
+      }
+    }
+  }
+
   // interrupt glitch - oam stat fires on vblank
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 

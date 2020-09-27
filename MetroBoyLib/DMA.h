@@ -9,7 +9,7 @@ struct DMA {
   void tock(int phase_total, const Req& req);
   void dump(Dumper& dump) const;
 
-  uint16_t addr = 0;
+  uint16_t addr = 0xFFFF;
 
   /*p04.LYXE*/ bool DMA_WR_LATCH = 0;
   /*p04.LUVY*/ bool DMA_RUN_TRIG_d0 = 0;

@@ -146,7 +146,7 @@ void update_vbo(int vbo, int size_bytes, const void* data) {
 
 //-----------------------------------------------------------------------------
 
-int create_ibo(int size_bytes, const uint16_t* data) {
+int create_ibo(int size_bytes, const void* data) {
   int vbo = 0;
   glGenBuffers(1, (GLuint*)&vbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
@@ -181,7 +181,7 @@ void bind_ubo(int prog, const char* name, int index, int ubo) {
 
 //-----------------------------------------------------------------------------
 
-int create_texture_u32(int width, int height, const uint32_t* data) {
+int create_texture_u32(int width, int height, const void* data) {
   int tex = 0;
   glGenTextures(1, (GLuint*)&tex);
   glActiveTexture(GL_TEXTURE0);
@@ -198,7 +198,7 @@ int create_texture_u32(int width, int height, const uint32_t* data) {
 
 //----------------------------------------
 
-void update_texture_u32(int tex, int width, int height, const uint32_t* pix) {
+void update_texture_u32(int tex, int width, int height, const void* pix) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glTexSubImage2D(GL_TEXTURE_2D, 0,
@@ -208,7 +208,7 @@ void update_texture_u32(int tex, int width, int height, const uint32_t* pix) {
 
 //-----------------------------------------------------------------------------
 
-int create_texture_u8(int width, int height, const uint8_t* data) {
+int create_texture_u8(int width, int height, const void* data) {
   int tex = 0;
   glGenTextures(1, (GLuint*)&tex);
   glActiveTexture(GL_TEXTURE0);
@@ -228,11 +228,11 @@ int create_texture_u8(int width, int height, const uint8_t* data) {
 
 //----------------------------------------
 
-void update_texture_u8(int tex, int width, int height, const uint8_t* pix) {
+void update_texture_u8(int tex, int width, int height, const void* pix) {
   update_texture_u8(tex, 0, 0, width, height, pix);
 }
 
-void update_texture_u8(int tex, int dx, int dy, int dw, int dh, const uint8_t* pix) {
+void update_texture_u8(int tex, int dx, int dy, int dw, int dh, const void* pix) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -244,7 +244,7 @@ void update_texture_u8(int tex, int dx, int dy, int dw, int dh, const uint8_t* p
 
 //-----------------------------------------------------------------------------
 
-int create_table_u8(int width, int height, const uint8_t* data) {
+int create_table_u8(int width, int height, const void* data) {
   int tex = 0;
   glGenTextures(1, (GLuint*)&tex);
   glActiveTexture(GL_TEXTURE0);
@@ -262,7 +262,7 @@ int create_table_u8(int width, int height, const uint8_t* data) {
 
 //----------------------------------------
 
-void update_table_u8(int tex, int width, int height, const uint8_t* pix) {
+void update_table_u8(int tex, int width, int height, const void* pix) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -274,7 +274,7 @@ void update_table_u8(int tex, int width, int height, const uint8_t* pix) {
 
 //-----------------------------------------------------------------------------
 
-int create_table_u32(int width, int height, const uint32_t* data) {
+int create_table_u32(int width, int height, const void* data) {
   int tex = 0;
   glGenTextures(1, (GLuint*)&tex);
   glActiveTexture(GL_TEXTURE0);
@@ -290,7 +290,7 @@ int create_table_u32(int width, int height, const uint32_t* data) {
 
 //----------------------------------------
 
-void update_table_u32(int tex, int width, int height, const uint32_t* pix) {
+void update_table_u32(int tex, int width, int height, const void* pix) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glTexSubImage2D(GL_TEXTURE_2D, 0,
@@ -447,6 +447,7 @@ int create_shader(const char* name, const char* src) {
   return shaderProgram;
 }
 
+//----------------------------------------
 
 void bind_shader(int shader) {
   glUseProgram(shader);

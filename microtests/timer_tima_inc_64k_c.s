@@ -15,6 +15,6 @@ main:
   ld a, %00000110 // 65536 hz, one tick every 16 cycles
   ldh (TAC), a
 
-  nops 13
+  nops 29
   ldh a, (TIMA)
-  test_finish_a 1
+  test_finish_a 2

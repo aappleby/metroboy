@@ -144,25 +144,25 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
   gameboy.reset(0x0100, rom.data(), rom.size());
 
   uint8_t result = 0xFF;
-  int i = 0;
-  int mcycles = 1000000;  
+  int phase = 0;
+  int timeout = 1000000 * 8;
 
-  // bits_ram_en needs lots of tcycles
-  if (name == "bits_ram_en.gb") mcycles = 25000000;
+  // bits_ram_en needs lots of phases
+  if (name == "bits_ram_en.gb") timeout = 25000000 * 8;
 
-  for (; i < mcycles; i++) {
-    gameboy.mcycle();
-    if (gameboy.get_cpu().get_op() == 0x40) {
+  for (; phase < timeout; phase++) {
+    gameboy.next_phase();
+    if (gameboy.z80.op == 0x40) {
       //printf("\ntest %s end @ %d\n", name.c_str(), i);
-      result = gameboy.get_cpu().get_a();
+      result = gameboy.z80.a;
       break;
     }
   }
 
-  if (i == mcycles) {
+  if (phase == timeout) {
     printf("\n");
     printf("%-50s ", name.c_str());
-    printf("? TIMEOUT @ %d\n", i);
+    printf("? TIMEOUT @ %d\n", phase);
   }
   else if (result == 0x00) {
     printf(".");
@@ -170,7 +170,7 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
   else {
     printf("\n");
     printf("%-50s ", name.c_str());
-    printf("X 0x%02x FAIL @ %d\n", result, i);
+    printf("X 0x%02x FAIL @ %d\n", result, phase);
   }
 }
 

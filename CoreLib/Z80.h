@@ -7,21 +7,13 @@
 struct Z80 {
   void    reset(uint16_t new_pc);
 
-  uint8_t get_int_ack() const { return int_ack; }
-  void    get_bus_req(Req& r) const;
-
   void    tock_req(uint8_t imask_, uint8_t intf_); // bus request changes
   void    tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data); // bus data latches
 
   void    dump(Dumper& d) const;
 
-  uint16_t get_op_addr() const { return op_addr; }
-  uint8_t  get_a()  const { return a; }
-  uint8_t  get_op() const { return op; }
-  int      get_state() const { return state; }
-  
+  //----------------------------------------
 
-//private:
   int      state = 0, state_ = 0;
   uint16_t op_addr = 0;
   bool     cpu_halted = 0;

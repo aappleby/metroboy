@@ -12,17 +12,9 @@ void OAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-void OAM::tock(const Req& req) {
-  if (req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
-    uint16_t oam_addr = req.addr & 0x00FF;
-    uint16_t d = ram[oam_addr >> 1];
-    if (oam_addr & 1) d = (d & 0x00FF) | (req.data_lo << 8);
-    else              d = (d & 0xFF00) | (req.data_lo << 0);
-    ram[oam_addr >> 1] = d;
-  }
-}
+void OAM::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
 
-void OAM::tick(const Req& req, Ack& ack) const {
   if (req.read && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     ack.addr = req.addr;
     if (req.addr & 1) {
@@ -32,6 +24,18 @@ void OAM::tick(const Req& req, Ack& ack) const {
       ack.data = ram[(req.addr & 0x00FF) >> 1];
     }
     ack.read++;
+  }
+}
+
+// FIXME this probably writes on phases other than GH during DMA...
+
+void OAM::tock(int phase_total, const Req& req) {
+  if (DELTA_GH && req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
+    uint16_t oam_addr = req.addr & 0x00FF;
+    uint16_t d = ram[oam_addr >> 1];
+    if (oam_addr & 1) d = (d & 0x00FF) | (req.data_lo << 8);
+    else              d = (d & 0xFF00) | (req.data_lo << 0);
+    ram[oam_addr >> 1] = d;
   }
 }
 

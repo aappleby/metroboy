@@ -9,14 +9,11 @@ struct PPU {
   void reset(bool run_bootrom);
 
   void tick(int phase_total, const Req& req, Ack& ibus_ack) const;
-  void tock(int phase_total, const Req& ibus_req);
+  void tock(int phase_total, const Req& ibus_req, const Ack vbus_ack, const Ack obus_ack);
   void tock_lcdoff();
 
   void get_vbus_req(Req& r) const;
   void get_obus_req(Req& r) const;
-
-  void on_vbus_ack(const Ack& vbus_ack);
-  void on_obus_ack(const Ack& obus_ack);
 
   void emit_pixel();
 

@@ -65,7 +65,9 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Cart::tick(const Req& req, Ack& ack) const {
+void Cart::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
+
   const int region = req.addr >> 13;
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
@@ -121,12 +123,12 @@ void Cart::tick(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void Cart::tock(const Req& req) {
+void Cart::tock(int phase_total, const Req& req) {
   const int region = req.addr >> 13;
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
-  if (req.write) {
+  if (DELTA_GH && req.write) {
     if (region == 0) {
       // cart_rom
       ram_enable = (req.data_lo & 0x0F) == 0x0A;

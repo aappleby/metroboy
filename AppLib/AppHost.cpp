@@ -132,6 +132,7 @@ int AppHost::app_main(int, char**) {
   static double new_now = timestamp();
 
   while (!quit) {
+    app->begin_frame();
     old_now = new_now;
     new_now = timestamp();
     const double delta = new_now - old_now;
@@ -254,6 +255,7 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // Render ImGui
 
+    /*
     ImGui::Render();
     const ImDrawData* draw_data = ImGui::GetDrawData();
 
@@ -297,12 +299,14 @@ int AppHost::app_main(int, char**) {
 
       glDisable(GL_SCISSOR_TEST);
     }
+    */
 
     //----------------------------------------
     // Client end frame
 
-    check_gl_error();
+    //check_gl_error();
 
+    app->end_frame();
     SDL_GL_SwapWindow((SDL_Window*)window);
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
   }

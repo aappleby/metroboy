@@ -19,9 +19,12 @@ public:
   virtual const char* app_get_title();
   virtual void app_init();
   virtual void app_close();
+
+  virtual void begin_frame() { frame_begin = timestamp(); }
   virtual void app_update(double delta);
   virtual void app_render_frame(Viewport view);
   virtual void app_render_ui(Viewport view);
+  virtual void end_frame()   { frame_end = timestamp(); frame_time = frame_end - frame_begin; }
 
   void post();
   void load_rom(const std::string& prefix, const std::string& name);
@@ -84,6 +87,12 @@ public:
   int overlay_mode = 0;
   const uint8_t* keyboard_state = nullptr;
   uint8_t buttons = 0;
+  
+  double sim_time = 0;
+
+  double frame_begin = 0;
+  double frame_end = 0;
+  double frame_time = 0;
 
   //----------
   // viz

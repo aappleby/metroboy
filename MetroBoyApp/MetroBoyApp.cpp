@@ -65,6 +65,7 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
 
   load_rom("roms/cpu_instrs.gb");
+  runmode = RUN_FAST;
 
   //load_rom("microtests/build/dmg/timer_int_halt_a.gb");
   //load_rom("microtests/build/dmg/halt_bug.gb");
@@ -210,10 +211,12 @@ void MetroBoyApp::app_update(double /*delta*/) {
   //----------------------------------------
   // Run simulation
 
+  double sim_begin = timestamp();
+
   if (runmode == RUN_FAST) {
     gb.clear_history();
     gb->joypad.set(~buttons);
-    step_cycle(MCYCLES_PER_FRAME * 8);
+    step_cycle(MCYCLES_PER_FRAME * 20);
   }
   else if (runmode == RUN_VSYNC) {
     gb.clear_history();
@@ -239,6 +242,9 @@ void MetroBoyApp::app_update(double /*delta*/) {
       gb.pop();
     }
   }
+
+  double sim_end = timestamp();
+  sim_time = sim_end - sim_begin;
 }
 
 //-----------------------------------------------------------------------------
@@ -264,12 +270,16 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
   // Gameboy screen
 
+  gb_blitter.blit_map   (view, 1280, 32,  2, gb->vram.ram, 0, 0);
+
+  /*
   gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
   gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vram.ram);
   gb_blitter.blit_map   (view, 1344, 448, 1, gb->vram.ram, 0, 0);
   gb_blitter.blit_map   (view, 1632, 448, 1, gb->vram.ram, 0, 1);
   gb_blitter.blit_map   (view, 1344, 736, 1, gb->vram.ram, 1, 0);
   gb_blitter.blit_map   (view, 1632, 736, 1, gb->vram.ram, 1, 1);
+  */
 
   //----------------------------------------
   // Trace view
@@ -291,7 +301,6 @@ void MetroBoyApp::app_render_ui(Viewport view) {
   StringDumper d;
 
   int column = 0;
-
   if (1) {
     gb->dump_bus(d);
     gb->z80.dump(d);
@@ -342,6 +351,8 @@ void MetroBoyApp::app_render_ui(Viewport view) {
   else {
     text_painter.dprintf("State size %d M\n", state_size / (1024 * 1024));
   }
+  text_painter.dprintf("Sim time %f\n", sim_time);
+  text_painter.dprintf("Frame time %f\n", frame_time);
 
 
   text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));

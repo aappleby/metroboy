@@ -3,6 +3,8 @@
 
 extern const uint8_t DMG_ROM_bin[];
 
+extern const char* op_strings[256];
+extern const char* op_strings2[256];
 //-----------------------------------------------------------------------------
 // Audio config
 

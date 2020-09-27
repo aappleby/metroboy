@@ -97,8 +97,7 @@ void MetroBoy::next_phase() {
     else if (cpu_has_vbus_req) bus_data = vbus_ack.data_lo;
     else if (cpu_has_obus_req) bus_data = obus_ack.data_lo;
 
-    z80.tock_ack(ints.imask, ints.intf, bus_data);
-    z80.tock_req(ints.imask, ints.intf);
+    z80.tock(ints.imask, ints.intf, bus_data);
 
     /*
     z80.tock_ack(imask_delay, intf_delay, bus_data);

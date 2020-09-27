@@ -19,7 +19,6 @@ struct Z80 {
 
   int      state = 0, state_ = 0;
   uint16_t op_addr = 0;
-  bool     cpu_halted = 0;
 
   uint8_t  op = 0;
   uint8_t  cb = 0;

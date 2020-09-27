@@ -64,7 +64,8 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
 
-  load_rom("microtests/build/dmg/timer_int_halt_b.gb");
+  load_rom("microtests/build/dmg/timer_int_halt_a.gb");
+  //load_rom("microtests/build/dmg/halt_bug.gb");
 
   //load_rom("microtests/build/dmg/flood_vram.gb");
 

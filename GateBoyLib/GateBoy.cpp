@@ -182,8 +182,7 @@ void GateBoy::next_pass() {
     // CPU updates after HA.
 
     if (DELTA_HA && sys_cpu_en) {
-      cpu_blah.tock_ack(imask_to_cpu, intf_to_cpu, (uint8_t)cpu_req.data);
-      cpu_blah.tock_req(imask_to_cpu, intf_to_cpu);
+      cpu_blah.tock(imask_to_cpu, intf_to_cpu, (uint8_t)cpu_req.data);
     }
 
     //----------

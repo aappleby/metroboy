@@ -313,18 +313,11 @@ void Z80::execute_halt(uint8_t imask_, uint8_t intf_) {
     }
   }
   else if (state == 1) {
+    if (imask_ & intf_) {
+      set_bus(pc, 0);
+      state_ = 0;
+    }
   }
-  else if (state == 2) {
-  }
-
-  else if (cpu_halted) {
-    if (imask_ & intf_) cpu_halted = false;
-    set_bus(pc, 0);
-    state_ = 0;
-  }
-
-  cpu_halted = !(imask_ & intf_);
-  state_ = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -890,28 +883,29 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
 
 void Z80::dump(Dumper& d_) const {
   d_("\002------------- CPU --------------\001\n");
-  d_("state       %d\n", state);
-  d_("halted      %d\n", cpu_halted);
-  d_("op_addr     0x%04x\n", op_addr);
-  d_("OP          0x%02x @ %d\n", op, state);
-  d_("CB          0x%02x\n", cb);
-  d_("in          0x%02x\n", in);
-  d_("out         0x%02x\n", out);
-  d_("bus req     ");
-  dump_req(d_, bus_req);
+  d_("state    %d\n", state);
+  //d_("halted   %d\n", cpu_halted);
+  d_("op_addr  0x%04x\n", op_addr);
+  d_("OP       0x%02x '%s' @ %d\n", op, op_strings2[op], state);
+  d_("CB       0x%02x\n", cb);
+  d_("in       0x%02x\n", in);
+  d_("out      0x%02x\n", out);
   d_("\n");
-  d_("PC          0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
-  d_("SP          0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
-  d_("XY          0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
-  d_("BC          0x%04x 0x%02x 0x%02x\n", bc, b, c);
-  d_("DE          0x%04x 0x%02x 0x%02x\n", de, d, e);
-  d_("HL          0x%04x 0x%02x 0x%02x\n", hl, h, l);
-  d_("AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
-  d_("alu_f       0x%02x\n", alu_f);
-  d_("IME         %d\n", ime);
-  d_("IME_        %d\n", ime_delay);
-  d_("interrupt   %d\n", INT);
-  d_("int_ack     0x%02x\n", int_ack);
+  d_("bus req   ");
+  dump_req(d_, bus_req);
+  d_("PC        0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
+  d_("SP        0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
+  d_("XY        0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
+  d_("BC        0x%04x 0x%02x 0x%02x\n", bc, b, c);
+  d_("DE        0x%04x 0x%02x 0x%02x\n", de, d, e);
+  d_("HL        0x%04x 0x%02x 0x%02x\n", hl, h, l);
+  d_("AF        0x%04x 0x%02x 0x%02x\n", af, a, f);
+  d_("alu_f     0x%02x\n", alu_f);
+  d_("\n");
+  d_("IME       %d\n", ime);
+  d_("IME_      %d\n", ime_delay);
+  d_("interrupt %d\n", INT);
+  d_("int_ack   0x%02x\n", int_ack);
   d_("\n");
 }
 

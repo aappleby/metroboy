@@ -34,7 +34,7 @@ void Interrupts::tock(int phase_total, const Req& req,
     intf &= ~cpu_int_ack;
   }
 
-  if (DELTA_GH && req.write) {
+  if (DELTA_GH) {
     if (req.write) {
       if (req.addr == ADDR_IF) intf  = (uint8_t)req.data | 0b11100000;
       if (req.addr == ADDR_IE) imask = (uint8_t)req.data;

@@ -2,11 +2,10 @@
 
 main:
   ld a, 0
-
   ldh (DIV), a
   set_ie_timer
 
-  ld a, $FC
+  ld a, $E0
   ldh (TIMA), a
 
   ld a, %00000101
@@ -14,11 +13,11 @@ main:
 
   ei
 
-  xor a
-.repeat 11
-  inc a
-.endr
+  halt
+  nop
   test_fail
 
 .org TIMER_INT_VECTOR
-  test_finish_a 11
+  nops 42
+  ldh a, (DIV)
+  test_finish_a 2

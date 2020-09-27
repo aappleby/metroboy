@@ -148,6 +148,10 @@ int run_microtests() {
   err += run_microtest("div_inc_timing_b.gb");
   err += run_microtest("timer_div_phase_c.gb");
   err += run_microtest("timer_div_phase_d.gb");
+
+  err += run_microtest("timer_int_halt_a.gb");
+  err += run_microtest("timer_int_halt_b.gb");
+
   err += run_microtest("timer_int_inc_sled.gb");
   err += run_microtest("timer_int_inc_sled_a.gb");
   err += run_microtest("timer_int_inc_sled_b.gb");
@@ -163,6 +167,9 @@ int run_microtests() {
   err += run_microtest("timer_tima_inc_256k_j.gb");
   err += run_microtest("timer_tima_inc_256k_k.gb");
   err += run_microtest("timer_tima_inc_64k_a.gb");
+  err += run_microtest("timer_tima_inc_64k_b.gb");
+  err += run_microtest("timer_tima_inc_64k_c.gb");
+  err += run_microtest("timer_tima_inc_64k_d.gb");
   err += run_microtest("timer_tima_phase_a.gb");
   err += run_microtest("timer_tima_phase_b.gb");
   err += run_microtest("timer_tima_phase_c.gb");

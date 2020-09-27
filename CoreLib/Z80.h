@@ -5,18 +5,22 @@
 
 #pragma pack(push, 1)
 struct Z80 {
-  void    reset(uint16_t new_pc);
+  void reset(uint16_t new_pc);
 
-  void    tock_req(uint8_t imask_, uint8_t intf_); // bus request changes
-  void    tock_ack(uint8_t imask_, uint8_t intf_, uint8_t bus_data); // bus data latches
+  void tock(uint8_t imask_, uint8_t intf_, uint8_t bus_data);
 
-  void    dump(Dumper& d) const;
+  void execute_int(uint8_t imask_, uint8_t intf_);
+  void execute_halt(uint8_t imask_, uint8_t intf_);
+  void execute_op();
+
+  void dump(Dumper& d) const;
 
   //----------------------------------------
 
   int      state = 0, state_ = 0;
   uint16_t op_addr = 0;
   bool     cpu_halted = 0;
+
   uint8_t  op = 0;
   uint8_t  cb = 0;
   bool     ime = 0, ime_delay = 0;

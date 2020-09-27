@@ -99,6 +99,14 @@ void MetroBoy::next_phase() {
 
     z80.tock_ack(ints.imask, ints.intf, bus_data);
     z80.tock_req(ints.imask, ints.intf);
+
+    /*
+    z80.tock_ack(imask_delay, intf_delay, bus_data);
+    z80.tock_req(imask_delay, intf_delay);
+
+    intf_delay = ints.intf;
+    imask_delay = ints.imask;
+    */
   }
 
   timer. tock(phase_total, ibus_req);
@@ -200,7 +208,7 @@ void MetroBoy::dump_bus(Dumper& d) {
   d("tphase %lld\n", phase_total);
   d("tcycle %lld\n", phase_total >> 1);
   d("mcycle %lld\n", phase_total >> 3);
-  d("bgb cycle      0x%08x\n", ((phase_total / 2) * 8) + 0x00B2D5E6);
+  d("bgb cycle      0x%08x\n", (phase_total / 4) + 0x00B2D5E6);
   d("boot   %d\n", boot.disable_bootrom);
   d("\n");
 

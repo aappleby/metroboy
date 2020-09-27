@@ -57,6 +57,9 @@ struct MetroBoy {
   LCD     lcd;
   Interrupts ints;
 
+  uint8_t intf_delay = 0;
+  uint8_t imask_delay = 0;
+
   int64_t phase_total = 0;
 
   Req cpu_req  = {0};

@@ -335,20 +335,24 @@ void Z80::execute_op() {
     if (state == 0)                           /**/ {                                            /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 1; }
 
     if (OP_CB_R) {
-      if (state == 1)                         /**/ { alu_x = GET_CB;                            /**/                  pcl = inc(pcl, 1);           /**/ SET_CB(alu_cb(cb, f));       pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(mask); }
+      if (state == 1)                         /**/ { alu_x = GET_CB;                            /**/                  pcl = inc(pcl, 1);           /**/ SET_CB(alu_cb(cb, f));       pch = inc(pch, inc_c);    op_done = 1; set_f(mask); }
     }
     else {
       if (OP_CB_BIT) {
         if (state == 1)                       /**/ {                                            /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 2; }
-        if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(mask); }
+        if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    op_done = 1; set_f(mask); }
       }
       else {
         if (state == 1)                       /**/ {                                            /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 2; }
         if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_bus(xy, 1); state_ = 3; set_f(mask); }
-        if (state == 3)                       /**/ {                                            /**/                                               /**/                                                        set_bus(pc, 0); state_ = 0; }
+        if (state == 3)                       /**/ {                                            /**/                                               /**/                                                        op_done = 1; }
       }
     }
-    return;
+    if (read_arg) set_bus(pc, 0);
+    if (op_done) {
+      set_bus(pc, 0);
+      state_ = 0;
+    }
   }
 
   bool branch = false;                                                                                                                                                                               
@@ -379,43 +383,43 @@ void Z80::execute_op() {
                                                                                                                                                                                       
   // 8-bit alu                                                                                                                                                                                                                 
                                                                                                                                                                                       
-  if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL);                    /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
-  if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(1, F_CARRY));     pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xE0); }
-  if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(3, F_CARRY));     pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xE0); }
-  if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
-  if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
-  if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
-  if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
-  if (state == 0 && DAA)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xB0); }
-  if (state == 0 && CPL)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0x60); }
-  if (state == 0 && SCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0x70); }
-  if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0x70); }
+  if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL);                    /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
+  if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(1, F_CARRY));     pch = inc(pch, inc_c);    op_done = 1; set_f(0xE0); }
+  if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(3, F_CARRY));     pch = inc(pch, inc_c);    op_done = 1; set_f(0xE0); }
+  if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
+  if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
+  if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
+  if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
+  if (state == 0 && DAA)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xB0); }
+  if (state == 0 && CPL)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0x60); }
+  if (state == 0 && SCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0x70); }
+  if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0x70); }
                                                                                                                                                                                       
   if (state == 0 && ALU_A_D8)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 1; }
-  if (state == 1 && ALU_A_D8)               /**/ { alu_y = in;                                 /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
+  if (state == 1 && ALU_A_D8)               /**/ { alu_y = in;                                 /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
                                                                                                                                                                                       
   if (state == 0 && ALU_A_HL)               /**/ {                                             /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 1; }
-  if (state == 1 && ALU_A_HL)               /**/ { alu_y = in;                                 /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; set_f(0xF0); }
+  if (state == 1 && ALU_A_HL)               /**/ { alu_y = in;                                 /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    op_done = 1; set_f(0xF0); }
                                                                                                                                                                                       
                                                                                                                                                                                       
   if (state == 0 && INC_AT_HL)              /**/ {                                             /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 1; }
   if (state == 0 && DEC_AT_HL)              /**/ {                                             /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 1; }
   if (state == 1 && INC_AT_HL)              /**/ { alu_x = in;                                 /**/                                               /**/ out = alu(1, F_CARRY);                                 set_bus(xy, 1); state_ = 2; set_f(0xE0); }
   if (state == 1 && DEC_AT_HL)              /**/ { alu_x = in;                                 /**/                                               /**/ out = alu(3, F_CARRY);                                 set_bus(xy, 1); state_ = 2; set_f(0xE0); }
-  if (state == 2 && INC_AT_HL)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; }
-  if (state == 2 && DEC_AT_HL)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; }
+  if (state == 2 && INC_AT_HL)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    op_done = 1; }
+  if (state == 2 && DEC_AT_HL)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    op_done = 1; }
                                                                                                                                                                                       
   // 16-bit alu                                                                                                                                                                     
                                                                                                                                                                                       
   if (state == 0 && ADD_SP_R8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 1; }
   if (state == 1 && ADD_SP_R8)              /**/ { alu_x = in;                                 /**/ alu_y = spl;                                  /**/ spl = alu(0, f);                                       set_bus(pc, 0); state_ = 2; set_f(0xF0); }
   if (state == 2 && ADD_SP_R8)              /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;                                  /**/ sph = alu(1, f);                                       set_bus(pc, 0); state_ = 3; }
-  if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; }
+  if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    op_done = 1; }
                              
   // FIXME
   if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 1; }
   if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = in;                                 /**/ alu_y = spl;                                  /**/ l = alu(0, f);                                         set_bus(pc, 0); state_ = 2; set_f(0xF0); }
-  if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;                                  /**/ h = alu(1, f);               pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = 0; }
+  if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;                                  /**/ h = alu(1, f);               pcl = inc(pcl, 1); pch = inc(pch, inc_c); op_done = 1; }
                                 
   // FIXME
   if (state == 0 && INC_BC)                 /**/ {                                             /**/                  c = inc(  c, 1);             /**/                              b = inc(  b, inc_c);      set_bus(pc, 0); state_ = 1; }
@@ -585,7 +589,7 @@ void Z80::execute_op() {
   if (state == 1 && JP_CC_A16   &&  branch) /**/ {                   xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 2; }
   if (state == 1 && JP_CC_A16   && !branch) /**/ {                   xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 2; }
   if (state == 2 && JP_CC_A16   &&  branch) /**/ {                   xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 3; }
-  if (state == 2 && JP_CC_A16   && !branch) /**/ {                   xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 0; }
+  if (state == 2 && JP_CC_A16   && !branch) /**/ {                   xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    op_done = 1; }
   if (state == 3 && JP_CC_A16   &&  branch) /**/ {                                             /**/                  pcl = xyl;                   /**/                              pch = xyh;                op_done = 1; }
                                                                                                                                                                                       
   if (state == 0 && JP_A16)                 /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 1; }

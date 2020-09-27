@@ -53,7 +53,7 @@ void MetroBoyApp::app_init() {
 
   //load_rom("roms/cpu_instrs.gb");
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb");            // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb");         // fail
+  //load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb");         // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb");           // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb");           // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/05-op rp.gb");              // pass
@@ -64,7 +64,9 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
 
-  load_rom("microtests/build/dmg/timer_int_halt_a.gb");
+  load_rom("roms/cpu_instrs.gb");
+
+  //load_rom("microtests/build/dmg/timer_int_halt_a.gb");
   //load_rom("microtests/build/dmg/halt_bug.gb");
 
   //load_rom("microtests/build/dmg/flood_vram.gb");

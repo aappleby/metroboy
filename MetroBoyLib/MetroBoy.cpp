@@ -156,6 +156,11 @@ void MetroBoy::next_phase() {
     else {
       ebus_req = cpu_req;
     }
+
+    // hackkkk
+    if (cpu_req.write && cpu_req.addr >= 0x8000 && cpu_req.addr <= 0x9FFF) {
+      vram.ram[cpu_req.addr - 0x8000] = cpu_req.data;
+    }
   }
 
   ppu.get_vbus_req(vbus_req);

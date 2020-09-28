@@ -537,14 +537,14 @@ void Z80::execute_op() {
                                                                                                                                                                                                
     // 16-bit stuff                                                                                                                                                                                                                                   
                                                                                                                                                                                                
-    if (state == 0 && LD_BC_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 0 && LD_DE_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 0 && LD_HL_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 0 && LD_SP_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 1 && LD_BC_D16)              /**/ { c = in;                                     /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 1 && LD_DE_D16)              /**/ { e = in;                                     /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 1 && LD_HL_D16)              /**/ { l = in;                                     /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 1 && LD_SP_D16)              /**/ { spl = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
+    if (state == 0 && LD_BC_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 0 && LD_DE_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 0 && LD_HL_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 0 && LD_SP_D16)              /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 1 && LD_BC_D16)              /**/ { c = in;                                     /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 1 && LD_DE_D16)              /**/ { e = in;                                     /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 1 && LD_HL_D16)              /**/ { l = in;                                     /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
+    if (state == 1 && LD_SP_D16)              /**/ { spl = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c); set_bus(pc, 0); state_ = state + 1; }
     if (state == 2 && LD_BC_D16)              /**/ { b = in;                                     /**/                            /**/                                       op_done2 = 1; }
     if (state == 2 && LD_DE_D16)              /**/ { d = in;                                     /**/                            /**/                                       op_done2 = 1; }
     if (state == 2 && LD_HL_D16)              /**/ { h = in;                                     /**/                            /**/                                       op_done2 = 1; }
@@ -599,8 +599,8 @@ void Z80::execute_op() {
                                                                                                                                                                                                
     // ok we need to latch out on set_addr                                                                                                                                                                                                           
                                                                                                                                                                                                
-    if (state == 0 && CALL_A16)               /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    read_arg = 1; }
-    if (state == 1 && CALL_A16)               /**/ { xyl = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    read_arg = 1; }
+    if (state == 0 && CALL_A16)               /**/ {                                             /**/                            /**/                                       read_arg = 1; }
+    if (state == 1 && CALL_A16)               /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
     if (state == 2 && CALL_A16)               /**/ { xyh = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(sp, 0); state_ = state + 1; }
     if (state == 3 && CALL_A16)               /**/ { out = pch;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
     if (state == 4 && CALL_A16)               /**/ { out = pcl;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
@@ -646,6 +646,8 @@ void Z80::execute_op() {
   }
 
   if (read_arg) {
+    pcl = inc(pcl, 1);
+    pch = inc(pch, inc_c);    
     set_bus(pc, 0);
     state_ = state + 1;
   }

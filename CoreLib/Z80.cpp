@@ -340,12 +340,12 @@ void Z80::execute_op() {
     }
     else {
       if (OP_CB_BIT) {
-        if (state == 1)                       /**/ {                                            /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 2; }
+        if (state == 1)                       /**/ {                                            /**/                                               /**/                                                        set_bus(hl, 0); state_ = 2; }
         if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    op_done = 1; set_f(mask); }
       }
       else {
-        if (state == 1)                       /**/ {                                            /**/                  xyl = l;                     /**/                              xyh = h;                  set_bus(xy, 0); state_ = 2; }
-        if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_bus(xy, 1); state_ = 3; set_f(mask); }
+        if (state == 1)                       /**/ {                                            /**/                                               /**/                                                        set_bus(hl, 0); state_ = 2; }
+        if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_bus(hl, 1); state_ = 3; set_f(mask); }
         if (state == 3)                       /**/ {                                            /**/                                               /**/                                                        op_done = 1; }
       }
     }

@@ -204,6 +204,7 @@ void Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
   }
 
   if (state == 0) {
+    pc = bus_req.addr;
     op_addr = bus_req.addr;
     op = bus_data;     
 
@@ -305,8 +306,6 @@ void Z80::execute_op() {
     case 2: branch = !(f & F_CARRY); break;                                                                                                                                                            
     case 3: branch =  (f & F_CARRY); break;                                                                                                                                                            
     }                                                                                                                                                                                                  
-
-    uint8_t bus = 0xDD;
 
     // IN OUT BC DE HL AF XY | PC SP AD
 
@@ -520,8 +519,8 @@ void Z80::execute_op() {
                                                                                                                  
     if (state == 0 && JP_CC_A16   &&  branch) /**/ {                                          bus_read(++pc); }
     if (state == 1 && JP_CC_A16   &&  branch) /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && JP_CC_A16   &&  branch) /**/ { xyh = in;                                bus_nop(xy); }
-    if (state == 3 && JP_CC_A16   &&  branch) /**/ { pc = bus_req.addr;                       bus_read(pc); op_done = 1; }
+    if (state == 2 && JP_CC_A16   &&  branch) /**/ { xyh = in;                                bus_nop(); }
+    if (state == 3 && JP_CC_A16   &&  branch) /**/ {                                          bus_read(xy); op_done = 1; }
 
     if (state == 0 && JP_CC_A16   && !branch) /**/ {                                          bus_read(++pc); }
     if (state == 1 && JP_CC_A16   && !branch) /**/ {                                          bus_read(++pc); }
@@ -529,10 +528,10 @@ void Z80::execute_op() {
                                                                                                                  
     if (state == 0 && JP_A16)                 /**/ {                                          bus_read(++pc); }
     if (state == 1 && JP_A16)                 /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && JP_A16)                 /**/ { xyh = in;                                bus_nop(xy); }
-    if (state == 3 && JP_A16)                 /**/ { pc = bus_req.addr;                       bus_read(pc); op_done = 1; }
+    if (state == 2 && JP_A16)                 /**/ { xyh = in;                                bus_nop(); }
+    if (state == 3 && JP_A16)                 /**/ {                                          bus_read(xy); op_done = 1; }
                                                                                                         
-    if (state == 0 && JP_HL)                  /**/ { pc = hl;                                 bus_read(pc); op_done = 1; }
+    if (state == 0 && JP_HL)                  /**/ {                                          bus_read(hl); op_done = 1; }
 
     // calls
 
@@ -541,7 +540,7 @@ void Z80::execute_op() {
     if (state == 2 && CALL_CC_A16 &&  branch) /**/ { xyh = in;                                bus_nop(++pc); }
     if (state == 3 && CALL_CC_A16 &&  branch) /**/ {                                          bus_write(--sp, pch); }
     if (state == 4 && CALL_CC_A16 &&  branch) /**/ {                                          bus_write(--sp, pcl); }
-    if (state == 5 && CALL_CC_A16 &&  branch) /**/ { pc = xy;                                 bus_read(pc); op_done = 1; }
+    if (state == 5 && CALL_CC_A16 &&  branch) /**/ {                                          bus_read(xy); op_done = 1; }
                                                                                                                 
     if (state == 0 && CALL_CC_A16 && !branch) /**/ {                                          bus_read(++pc); }
     if (state == 1 && CALL_CC_A16 && !branch) /**/ {                                          bus_read(++pc); }
@@ -552,12 +551,12 @@ void Z80::execute_op() {
     if (state == 2 && CALL_A16)               /**/ { xyh = in;                                bus_nop(++pc); }
     if (state == 3 && CALL_A16)               /**/ {                                          bus_write(--sp, pch); }
     if (state == 4 && CALL_A16)               /**/ {                                          bus_write(--sp, pcl); }
-    if (state == 5 && CALL_A16)               /**/ { pc = xy;                                 bus_read(pc); op_done = 1; }
+    if (state == 5 && CALL_A16)               /**/ {                                          bus_read(xy); op_done = 1; }
                                                                                                                  
     if (state == 0 && RST_NN)                 /**/ {                                          bus_nop(++pc); }
     if (state == 1 && RST_NN)                 /**/ {                                          bus_write(--sp, pch); }
     if (state == 2 && RST_NN)                 /**/ {                                          bus_write(--sp, pcl); }
-    if (state == 3 && RST_NN)                 /**/ { pc = op - 0xC7;                          bus_read(pc); op_done = 1; }
+    if (state == 3 && RST_NN)                 /**/ {                                          bus_read(op - 0xC7); op_done = 1; }
 
     // returns
 
@@ -565,29 +564,29 @@ void Z80::execute_op() {
     if (state == 1 && RET_CC      && !branch) /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                                                                                                
     if (state == 0 && RET_CC      &&  branch) /**/ {                                          bus_nop(); }
-    if (state == 1 && RET_CC      &&  branch) /**/ {                                          bus_nop(); }
-    if (state == 2 && RET_CC      &&  branch) /**/ {                                          bus_read(sp++); }
-    if (state == 3 && RET_CC      &&  branch) /**/ { pcl = in;                                bus_read(sp++); }
-    if (state == 4 && RET_CC      &&  branch) /**/ { pch = in;                                bus_read(pc); op_done = 1; }
+    if (state == 1 && RET_CC      &&  branch) /**/ {                                          bus_read(sp++); }
+    if (state == 2 && RET_CC      &&  branch) /**/ { xyl = in;                                bus_read(sp++); }
+    if (state == 3 && RET_CC      &&  branch) /**/ { xyh = in;                                bus_nop(); }
+    if (state == 4 && RET_CC      &&  branch) /**/ {                                          bus_read(xy); op_done = 1; }
                                                                                                                  
     if (state == 0 && RETI)                   /**/ {                                          bus_read(sp++); }
-    if (state == 1 && RETI)                   /**/ { pcl = in;                                bus_read(sp++); }
-    if (state == 2 && RETI)                   /**/ { pch = in;                                bus_nop(); }
-    if (state == 3 && RETI)                   /**/ {                                          bus_read(pc); op_done = 1; }
+    if (state == 1 && RETI)                   /**/ { xyl = in;                                bus_read(sp++); }
+    if (state == 2 && RETI)                   /**/ { xyh = in;                                bus_nop(); }
+    if (state == 3 && RETI)                   /**/ {                                          bus_read(xy); op_done = 1; }
                                                                                                                  
     if (state == 0 && RET)                    /**/ {                                          bus_read(sp++); }
-    if (state == 1 && RET)                    /**/ { pcl = in;                                bus_read(sp++); }
-    if (state == 2 && RET)                    /**/ { pch = in;                                bus_nop(); }
-    if (state == 3 && RET)                    /**/ {                                          bus_read(pc); op_done = 1; }
+    if (state == 1 && RET)                    /**/ { xyl = in;                                bus_read(sp++); }
+    if (state == 2 && RET)                    /**/ { xyh = in;                                bus_nop(); }
+    if (state == 3 && RET)                    /**/ {                                          bus_read(xy); op_done = 1; }
                                                                                                                                                                                                
     f &= 0xF0;
-
-    if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
-    if (DI)                  {ime = false;      ime_delay = false;}
-    if (EI)                  {ime = ime_delay;  ime_delay = true;}
   }
 
   state_ = op_done ? 0 : state + 1;
+
+  if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
+  if (DI)                  {ime = false;      ime_delay = false;}
+  if (EI)                  {ime = ime_delay;  ime_delay = true;}
 }
 
 //-----------------------------------------------------------------------------

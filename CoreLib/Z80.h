@@ -88,7 +88,8 @@ struct Z80 {
     bus_req.write   = (bool)new_write;
   }
 
-  void bus_nop() {
+  void bus_nop(uint16_t addr = 0) {
+    (void)addr;
     bus_req.addr    = 0x0000;
     bus_req.data_lo = 0;
     bus_req.read    = 0;
@@ -100,6 +101,13 @@ struct Z80 {
     bus_req.data_lo = 0;
     bus_req.read    = 1;
     bus_req.write   = 0;
+  }
+
+  void bus_write(uint16_t addr, uint8_t data) {
+    bus_req.addr    = addr;
+    bus_req.data_lo = data;
+    bus_req.read    = 0;
+    bus_req.write   = 1;
   }
 
   void bus_write(uint16_t addr) {

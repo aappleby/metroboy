@@ -74,8 +74,40 @@ struct Z80 {
 
 #pragma warning(pop)
 
-  void set_bus(uint16_t new_addr, int new_write);
-  void clear_bus();
+  void set_bus(uint16_t addr, bool read, bool write) {
+    bus_req.addr    = addr;
+    bus_req.data_lo = write ? out : 0;
+    bus_req.read    = read;
+    bus_req.write   = write;
+  }
+
+  void set_bus(uint16_t new_addr, int new_write) {
+    bus_req.addr    = new_addr;
+    bus_req.data_lo = uint16_t(new_write ? out : 0);
+    bus_req.read    = (bool)!new_write;
+    bus_req.write   = (bool)new_write;
+  }
+
+  void bus_nop() {
+    bus_req.addr    = 0x0000;
+    bus_req.data_lo = 0;
+    bus_req.read    = 0;
+    bus_req.write   = 0;
+  }
+
+  void bus_read(uint16_t addr)  {
+    bus_req.addr    = addr;
+    bus_req.data_lo = 0;
+    bus_req.read    = 1;
+    bus_req.write   = 0;
+  }
+
+  void bus_write(uint16_t addr) {
+    bus_req.addr    = addr;
+    bus_req.data_lo = out;
+    bus_req.read    = 0;
+    bus_req.write   = 1;
+  }
 
   uint8_t get_reg(int mux);
   void set_reg(int mux, uint8_t data);

@@ -257,7 +257,7 @@ void Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
 void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
   if (state == 0) {
     set_bus(sp, 0);
-    state_ = 1;
+    state_ = state + 1;
   }
 
   if (state == 1) {
@@ -265,7 +265,7 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
     out = pch;
     sph = dec(sph, inc_c);
     set_bus(sp, 1);
-    state_ = 2;
+    state_ = state + 1;
   }
     
   if (state == 2) {
@@ -273,12 +273,12 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
     out = pcl;
     sph = dec(sph, inc_c);
     set_bus(sp, 1);
-    state_ = 3;
+    state_ = state + 1;
   }
 
   if (state == 3) {
     set_bus(xy, 0);
-    state_ = 4;
+    state_ = state + 1;
   }
 
   if (state == 4) {
@@ -337,19 +337,19 @@ void Z80::execute_op() {
 
     bool OP_CB_BIT = PREFIX_CB && (CB_QUAD == 1);
 
-    if (state == 0)                           /**/ {                                            /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = 1; }
+    if (state == 0)                           /**/ {                                            /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
 
     if (OP_CB_R) {
       if (state == 1)                         /**/ { alu_x = GET_CB;                            /**/                  pcl = inc(pcl, 1);           /**/ SET_CB(alu_cb(cb, f));       pch = inc(pch, inc_c);    op_done = 1; set_f(mask); }
     }
     else {
       if (OP_CB_BIT) {
-        if (state == 1)                       /**/ {                                            /**/                                               /**/                                                        set_bus(hl, 0); state_ = 2; }
+        if (state == 1)                       /**/ {                                            /**/                                               /**/                                                        set_bus(hl, 0); state_ = state + 1; }
         if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    op_done = 1; set_f(mask); }
       }
       else {
-        if (state == 1)                       /**/ {                                            /**/                                               /**/                                                        set_bus(hl, 0); state_ = 2; }
-        if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_bus(hl, 1); state_ = 3; set_f(mask); }
+        if (state == 1)                       /**/ {                                            /**/                                               /**/                                                        set_bus(hl, 0); state_ = state + 1; }
+        if (state == 2)                       /**/ { alu_x = in;                                /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_bus(hl, 1); state_ = state + 1; set_f(mask); }
         if (state == 3)                       /**/ {                                            /**/                                               /**/                                                        op_done = 1; }
       }
     }

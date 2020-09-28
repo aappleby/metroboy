@@ -383,38 +383,39 @@ void Z80::execute_op() {
                                                                                                                                                                                                                   
     // 8-bit alu                                                                                                                                                                                                                                             
                                                                                                                                                                                                                   
-    if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL);                    /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
-    if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                            /**/ set_reg(OP_ROW, alu(1, F_CARRY)); set_f(0xE0);           op_done2 = 1; }
-    if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                            /**/ set_reg(OP_ROW, alu(3, F_CARRY)); set_f(0xE0);           op_done2 = 1; }
-    if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
-    if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
-    if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
-    if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
-    if (state == 0 && DAA)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xB0);           op_done2 = 1; }
-    if (state == 0 && CPL)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0x60);           op_done2 = 1; }
-    if (state == 0 && SCF)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0x70);           op_done2 = 1; }
-    if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0x70);           op_done2 = 1; }
+    if (state == 0 && ALU_A_R)                /**/ { a = alu(a, get_reg(OP_COL), OP_ROW, f); set_f(0xF0);                         op_done2 = 1; }
+    if (state == 0 && INC_R)                  /**/ { set_reg(OP_ROW, alu(get_reg(OP_ROW), 0, 1, F_CARRY)); set_f(0xE0);           op_done2 = 1; }
+    if (state == 0 && DEC_R)                  /**/ { set_reg(OP_ROW, alu(get_reg(OP_ROW), 0, 3, F_CARRY)); set_f(0xE0);           op_done2 = 1; }
+
+    if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && DAA)                    /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0xB0);           op_done2 = 1; }
+    if (state == 0 && CPL)                    /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0x60);           op_done2 = 1; }
+    if (state == 0 && SCF)                    /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0x70);           op_done2 = 1; }
+    if (state == 0 && CCF)                    /**/ { alu_x = a;                                  a = rlu(OP_ROW, f);               set_f(0x70);           op_done2 = 1; }
                                                                                                                                                                                                                   
-    if (state == 0 && ALU_A_D8)               /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
-    if (state == 1 && ALU_A_D8)               /**/ { alu_y = in;                                 /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f); set_f(0xF0);                         op_done2 = 1; }
+    if (state == 0 && ALU_A_D8)               /**/ {                                             read_arg = 1; }
+    if (state == 1 && ALU_A_D8)               /**/ { a = alu(a, in, OP_ROW, f); set_f(0xF0);     op_done2 = 1; }
                                                                                                                                                                                                                   
-    if (state == 0 && ALU_A_HL)               /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
-    if (state == 1 && ALU_A_HL)               /**/ { alu_y = in;                                 /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f); set_f(0xF0);                         op_done2 = 1; }
+    if (state == 0 && ALU_A_HL)               /**/ { xy = hl;                                    read_xy = 1; }
+    if (state == 1 && ALU_A_HL)               /**/ { a = alu(a, in, OP_ROW, f); set_f(0xF0);     op_done2 = 1; }
                                                                                                                                                                                                                   
                                                                                                                                                                                                                   
-    if (state == 0 && INC_AT_HL)              /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
-    if (state == 0 && DEC_AT_HL)              /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
-    if (state == 1 && INC_AT_HL)              /**/ { xy = hl; alu_x = in;                        /**/                            /**/ out = alu(1, F_CARRY); set_f(0xE0);                      write_xy = 1; }
-    if (state == 1 && DEC_AT_HL)              /**/ { xy = hl; alu_x = in;                        /**/                            /**/ out = alu(3, F_CARRY); set_f(0xE0);                      write_xy = 1; }
-    if (state == 2 && INC_AT_HL)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
-    if (state == 2 && DEC_AT_HL)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 0 && INC_AT_HL)              /**/ { xy = hl;                                            read_xy = 1; }
+    if (state == 0 && DEC_AT_HL)              /**/ { xy = hl;                                            read_xy = 1; }
+    if (state == 1 && INC_AT_HL)              /**/ { xy = hl; out = alu(in, 0, 1, F_CARRY); set_f(0xE0); write_xy = 1; }
+    if (state == 1 && DEC_AT_HL)              /**/ { xy = hl; out = alu(in, 0, 3, F_CARRY); set_f(0xE0); write_xy = 1; }
+    if (state == 2 && INC_AT_HL)              /**/ {                                                     op_done2 = 1; }
+    if (state == 2 && DEC_AT_HL)              /**/ {                                                     op_done2 = 1; }
                                                                                                                                                                                                                   
     // 16-bit alu                                                                                                                                                                                                 
                                                                                                                                                                                                                   
-    if (state == 0 && ADD_SP_R8)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
-    if (state == 1 && ADD_SP_R8)              /**/ { alu_x = in;                                 /**/ alu_y = spl;               /**/ spl = alu(0, f); set_f(0xF0);                            no_bus = 1; }
-    if (state == 2 && ADD_SP_R8)              /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;               /**/ sph = alu(1, f);                                         no_bus = 1; }
-    if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 0 && ADD_SP_R8)              /**/ {                                        read_arg = 1; }
+    if (state == 1 && ADD_SP_R8)              /**/ { spl = alu(in, spl, 0, f); set_f(0xF0); no_bus = 1; }
+    if (state == 2 && ADD_SP_R8)              /**/ { sph = alu(sxt(in), sph, 1, f);         no_bus = 1; }
+    if (state == 3 && ADD_SP_R8)              /**/ {                                        op_done2 = 1; }
                                                                                                                                                                                                                   
     // FIXME                                                                                                                                                                                                      
     if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
@@ -719,6 +720,12 @@ void Z80::set_f(uint8_t mask) {
 }
 
 //-----------------------------------------------------------------------------
+
+uint8_t Z80::alu(uint8_t arg1, uint8_t arg2, int op, uint8_t flags) {
+  alu_x = arg1;
+  alu_y = arg2;
+  return alu(op, flags);
+}
 
 uint8_t Z80::alu(int op, uint8_t flags) {
   alu_f = flags;

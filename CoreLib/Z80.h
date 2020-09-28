@@ -82,6 +82,9 @@ struct Z80 {
 
   void     set_f(uint8_t mask);
   uint8_t  alu_cb(int op, uint8_t flags);
+
+  uint8_t  alu(uint8_t arg1, uint8_t arg2, int op, uint8_t flags);
+
   uint8_t  alu(int op, uint8_t flags);
   uint8_t  rlu(int op, uint8_t flags);
   uint8_t  daa(uint8_t x, uint8_t f);

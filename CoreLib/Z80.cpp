@@ -344,13 +344,13 @@ void Z80::execute_op() {
     }
     else {
       if (OP_CB_BIT) {
-        if (state == 1)                       /**/ {                                            /**/                             /**/                                          set_bus(hl, 0); state_ = state + 1; }
-        if (state == 2)                       /**/ { alu_x = in;                                /**/                             /**/ out = alu_cb(cb, f); set_f(mask);        op_done2 = 1;  }
+        if (state == 1)                       /**/ { xy = hl;                                   /**/                             /**/                                          read_xy = 1; }
+        if (state == 2)                       /**/ { alu_x = in;                                /**/                             /**/ out = alu_cb(cb, f); set_f(mask);        op_done2 = 1; }
       }
       else {
-        if (state == 1)                       /**/ {                                            /**/                             /**/                                          set_bus(hl, 0); state_ = state + 1; }
-        if (state == 2)                       /**/ { alu_x = in;                                /**/                             /**/ out = alu_cb(cb, f); set_f(mask);        set_bus(hl, 1); state_ = state + 1;  }
-        if (state == 3)                       /**/ {                                            /**/                                               /**/                        op_done2 = 1; }
+        if (state == 1)                       /**/ { xy = hl;                                   /**/                             /**/                                          read_xy = 1; }
+        if (state == 2)                       /**/ { xy = hl; alu_x = in;                       /**/                             /**/ out = alu_cb(cb, f); set_f(mask);        write_xy = 1; }
+        if (state == 3)                       /**/ {                                            /**/                             /**/                                          op_done2 = 1; }
       }
     }
   }
@@ -564,11 +564,11 @@ void Z80::execute_op() {
                                                                                                                                                                                                                                                             
     // conditional branches                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                             
-    if (state == 0 && JR_R8)                  /**/ {                                             /**/                            /**/ xyl = inc(pcl, 1); xyh = inc(pch, inc_c);                read_xy = 1; }
+    if (state == 0 && JR_R8)                  /**/ {                                             /**/                            /**/ xy = ++pc;                                               read_xy = 1; }
     if (state == 1 && JR_R8)                  /**/ { alu_x = xyl;                                /**/ alu_y = in;                /**/ pcl = alu(1, F_CARRY);                                   no_bus = 1; }                                                         
     if (state == 2 && JR_R8)                  /**/ { alu_x = xyh;                                /**/ alu_y = sxt(in);           /**/ pch = alu(1, alu_f);                                     op_done = 1; }
                                                                                                                                                                                                                   
-    if (state == 0 && JR_CC_R8    &&  branch) /**/ {                                             /**/                            /**/ xyl = inc(pcl, 1); xyh = inc(pch, inc_c);                read_xy = 1; }
+    if (state == 0 && JR_CC_R8    &&  branch) /**/ {                                             /**/                            /**/ xy = ++pc;                                               read_xy = 1; }
     if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_x = xyl;                                /**/ alu_y = in;                /**/ pcl = alu(1, F_CARRY);                                   no_bus = 1; }
     if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_x = xyh;                                /**/ alu_y = sxt(in);           /**/ pch = alu(1, alu_f);                                     op_done = 1; }
                                                                                                                                                                                                                   
@@ -614,8 +614,8 @@ void Z80::execute_op() {
     if (state == 2 && RST_NN)                 /**/ { out = pcl;    sp--; xy = sp;                /**/                            /**/                                                          write_xy = 1; }
     if (state == 3 && RST_NN)                 /**/ {               pc = op - 0xC7;               /**/                            /**/                                                          op_done = 1; }
                                                                                                                                                                                                
-    if (state == 0 && RET_CC      && !branch) /**/ { pc++;                                       /**/                            /**/                                                          no_bus = 1; }
-    if (state == 1 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                                          op_done = 1; }
+    if (state == 0 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                                          no_bus = 1; }
+    if (state == 1 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
                                                                                                                                                                                                
     if (state == 0 && RET_CC      &&  branch) /**/ {           no_bus = 1; }
     if (state == 1 && RET_CC      &&  branch) /**/ {           no_bus = 1; }

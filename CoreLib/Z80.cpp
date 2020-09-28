@@ -328,6 +328,8 @@ void Z80::execute_op() {
   bool op_done2 = false;
   bool pop_sp = false;
   bool no_bus = false;
+  bool read_xy = false;
+  bool write_xy = false;
 
   if (PREFIX_CB) {                                                                                                                                                                                                                      
     if (state == 1) cb = in;                                                                                                                                                                                                           
@@ -367,249 +369,253 @@ void Z80::execute_op() {
 
     // misc
 
-    if (state == 0 && NOP)                    /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 0 && STOP)                   /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 0 && DI)                     /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 0 && EI)                     /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL));           /**/                            /**/                                       op_done2 = 1; }
+    if (state == 0 && NOP)                    /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 0 && STOP)                   /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 0 && DI)                     /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 0 && EI)                     /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL));           /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && LD_SP_HL)               /**/ { xy = hl;                                    /**/                            /**/                                                          no_bus = 1; }
+    if (state == 1 && LD_SP_HL)               /**/ { sp = xy;                                    /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && LD_R_D8)                /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LD_R_D8)                /**/ { set_reg(OP_ROW, in);                        /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // 8-bit alu                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                  
+    if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL);                    /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                            /**/ set_reg(OP_ROW, alu(1, F_CARRY)); set_f(0xE0);           op_done2 = 1; }
+    if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                            /**/ set_reg(OP_ROW, alu(3, F_CARRY)); set_f(0xE0);           op_done2 = 1; }
+    if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xF0);           op_done2 = 1; }
+    if (state == 0 && DAA)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0xB0);           op_done2 = 1; }
+    if (state == 0 && CPL)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0x60);           op_done2 = 1; }
+    if (state == 0 && SCF)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0x70);           op_done2 = 1; }
+    if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);               set_f(0x70);           op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && ALU_A_D8)               /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && ALU_A_D8)               /**/ { alu_y = in;                                 /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f); set_f(0xF0);                         op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && ALU_A_HL)               /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && ALU_A_HL)               /**/ { alu_y = in;                                 /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f); set_f(0xF0);                         op_done2 = 1; }
+                                                                                                                                                                                                                  
+                                                                                                                                                                                                                  
+    if (state == 0 && INC_AT_HL)              /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && DEC_AT_HL)              /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && INC_AT_HL)              /**/ { xy = hl; alu_x = in;                        /**/                            /**/ out = alu(1, F_CARRY); set_f(0xE0);                      write_xy = 1; }
+    if (state == 1 && DEC_AT_HL)              /**/ { xy = hl; alu_x = in;                        /**/                            /**/ out = alu(3, F_CARRY); set_f(0xE0);                      write_xy = 1; }
+    if (state == 2 && INC_AT_HL)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && DEC_AT_HL)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // 16-bit alu                                                                                                                                                                                                 
+                                                                                                                                                                                                                  
+    if (state == 0 && ADD_SP_R8)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && ADD_SP_R8)              /**/ { alu_x = in;                                 /**/ alu_y = spl;               /**/ spl = alu(0, f); set_f(0xF0);                            no_bus = 1; }
+    if (state == 2 && ADD_SP_R8)              /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;               /**/ sph = alu(1, f);                                         no_bus = 1; }
+    if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // FIXME                                                                                                                                                                                                      
+    if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = in;                                 /**/ alu_y = spl;               /**/ l = alu(0, f); set_f(0xF0);                              no_bus = 1; }
+    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;               /**/ h = alu(1, f);                                           op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // FIXME                                                                                                                                                                                                      
+    if (state == 0 && INC_BC)                 /**/ { bc++;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && DEC_BC)                 /**/ { bc--;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && INC_DE)                 /**/ { de++;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && DEC_DE)                 /**/ { de--;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && INC_HL)                 /**/ { hl++;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && DEC_HL)                 /**/ { hl--;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && INC_SP)                 /**/ { sp++;                                       /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && DEC_SP)                 /**/ { sp--;                                       /**/                            /**/                                                          no_bus = 1; }
+                                                                                                                                                                                                                  
+    if (state == 1 && INC_BC)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && DEC_BC)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && INC_DE)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && DEC_DE)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && INC_HL)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && DEC_HL)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && INC_SP)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && DEC_SP)                 /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // load/store                                                                                                                                                                                                 
+                                                                                                                                                                                                                  
+    if (state == 0 && STM_A16_SP)             /**/ { out = spl;                                  /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && STM_A16_SP)             /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && STM_A16_SP)             /**/ { xyh = in;                                   /**/                            /**/                                                          write_xy = 1; }
+    if (state == 3 && STM_A16_SP)             /**/ { xy++; out = sph;                            /**/                            /**/                                                          write_xy = 1; }
+    if (state == 4 && STM_A16_SP)             /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && STM_A16_A)              /**/ { out = a;                                    /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && STM_A16_A)              /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && STM_A16_A)              /**/ { xyh = in;                                   /**/                            /**/                                                          write_xy = 1; }
+    if (state == 3 && STM_A16_A)              /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && LDM_A_A16)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LDM_A_A16)              /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && LDM_A_A16)              /**/ { xyh = in;                                   /**/                            /**/                                                          read_xy = 1; }
+    if (state == 3 && LDM_A_A16)              /**/ { a = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // indirect load/store                                                                                                                                                                                        
+                                                                                                                                                                                                                  
+    if (state == 0 && LDM_A_BC)               /**/ { xy = bc;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && LDM_A_DE)               /**/ { xy = de;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && LDM_R_HL)               /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && STM_BC_A)               /**/ { xy = bc; out = a;                           /**/                            /**/                                                          write_xy = 1; }
+    if (state == 0 && STM_DE_A)               /**/ { xy = de; out = a;                           /**/                            /**/                                                          write_xy = 1; }
+    if (state == 0 && STM_HL_R)               /**/ { xy = hl; out = get_reg(OP_COL);             /**/                            /**/                                                          write_xy = 1; }
                                                                                                                                                                                                
-    if (state == 0 && LD_SP_HL)               /**/ { xy = hl;                                    /**/                            /**/                                       no_bus = 1; }
-    if (state == 1 && LD_SP_HL)               /**/ { sp = xy;                                    /**/                            /**/                                       op_done2 = 1; }
+    if (state == 1 && LDM_A_BC)               /**/ { xy = pc; a = in;                            /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && LDM_A_DE)               /**/ { xy = pc; a = in;                            /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && LDM_R_HL)               /**/ { xy = pc; set_reg(OP_ROW, in);               /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && STM_BC_A)               /**/ { xy = pc;                                    /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && STM_DE_A)               /**/ { xy = pc;                                    /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && STM_HL_R)               /**/ { xy = pc;                                    /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && STM_HL_D8)              /**/ { xy = pc;                                    /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && STM_HL_D8)              /**/ { xy = hl; out = in;                          /**/                            /**/                                                          write_xy = 1; }
+    if (state == 2 && STM_HL_D8)              /**/ { xy = pc;                                    /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && LDM_A_HLP)              /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && LDM_A_HLP)              /**/ { xy = pc; a = in;                            /**/                            /**/ hl++;                                                    op_done2 = 1; }
                                                                                                                                                                                                
-    if (state == 0 && LD_R_D8)                /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LD_R_D8)                /**/ { set_reg(OP_ROW, in);                        /**/                            /**/                                       op_done2 = 1; }
+    if (state == 0 && LDM_A_HLM)              /**/ { xy = hl;                                    /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && LDM_A_HLM)              /**/ { xy = pc; a = in;                            /**/                            /**/ hl--;                                                    op_done2 = 1; }
                                                                                                                                                                                                
-    // 8-bit alu                                                                                                                                                                                                                          
+    if (state == 0 && STM_HLP_A)              /**/ { xy = hl; out = a;                           /**/                            /**/                                                          write_xy = 1; }
+    if (state == 1 && STM_HLP_A)              /**/ { xy = pc;                                    /**/                            /**/ hl++;                                                    op_done2 = 1; }
                                                                                                                                                                                                
-    if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL);                    /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f);                   op_done2 = 1; set_f(0xF0); }
-    if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                            /**/ set_reg(OP_ROW, alu(1, F_CARRY));     op_done2 = 1; set_f(0xE0); }
-    if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                            /**/ set_reg(OP_ROW, alu(3, F_CARRY));     op_done2 = 1; set_f(0xE0); }
-    if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0xF0); }
-    if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0xF0); }
-    if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0xF0); }
-    if (state == 0 && RR_A)                   /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0xF0); }
-    if (state == 0 && DAA)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0xB0); }
-    if (state == 0 && CPL)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0x60); }
-    if (state == 0 && SCF)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0x70); }
-    if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                            /**/ a = rlu(OP_ROW, f);                   op_done2 = 1; set_f(0x70); }
-                                                                                                                                                                                               
-    if (state == 0 && ALU_A_D8)               /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && ALU_A_D8)               /**/ { alu_y = in;                                 /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f); set_f(0xF0);      op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && ALU_A_HL)               /**/ { xy = hl;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && ALU_A_HL)               /**/ { alu_y = in;                                 /**/ alu_x = a;                 /**/ a = alu(OP_ROW, f); set_f(0xF0);      op_done2 = 1; }
-                                                                                                                                                                                               
-                                                                                                                                                                                               
-    if (state == 0 && INC_AT_HL)              /**/ { xy = hl;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && DEC_AT_HL)              /**/ { xy = hl;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && INC_AT_HL)              /**/ { xy = hl; alu_x = in;                        /**/                            /**/ out = alu(1, F_CARRY); set_f(0xE0);   set_bus(xy, 1); state_ = state + 1; }
-    if (state == 1 && DEC_AT_HL)              /**/ { xy = hl; alu_x = in;                        /**/                            /**/ out = alu(3, F_CARRY); set_f(0xE0);   set_bus(xy, 1); state_ = state + 1; }
-    if (state == 2 && INC_AT_HL)              /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && DEC_AT_HL)              /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    // 16-bit alu                                                                                                                                                                              
-                                                                                                                                                                                               
-    if (state == 0 && ADD_SP_R8)              /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && ADD_SP_R8)              /**/ { alu_x = in;                                 /**/ alu_y = spl;               /**/ spl = alu(0, f);                      no_bus = 1; set_f(0xF0); }
-    if (state == 2 && ADD_SP_R8)              /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;               /**/ sph = alu(1, f);                      no_bus = 1; }
-    if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    // FIXME                                                                                                                                                                                   
-    if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = in;                                 /**/ alu_y = spl;               /**/ l = alu(0, f);                        no_bus = 1; set_f(0xF0); }
-    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;               /**/ h = alu(1, f);                        op_done2 = 1; }
-                                                                                                                                                                                               
-    // FIXME                                                                                                                                                                                   
-    if (state == 0 && INC_BC)                 /**/ { bc++;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && DEC_BC)                 /**/ { bc--;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && INC_DE)                 /**/ { de++;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && DEC_DE)                 /**/ { de--;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && INC_HL)                 /**/ { hl++;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && DEC_HL)                 /**/ { hl--;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && INC_SP)                 /**/ { sp++;                                       /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && DEC_SP)                 /**/ { sp--;                                       /**/                            /**/                                       no_bus = 1; }
-                                                                                                                                                                                               
-    if (state == 1 && INC_BC)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && DEC_BC)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && INC_DE)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && DEC_DE)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && INC_HL)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && DEC_HL)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && INC_SP)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && DEC_SP)                 /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    // load/store                                                                                                                                                                              
-                                                                                                                                                                                               
-    if (state == 0 && STM_A16_SP)             /**/ { out = spl;                                  /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && STM_A16_SP)             /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && STM_A16_SP)             /**/ { xyh = in;                                   /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 3 && STM_A16_SP)             /**/ { xy++; out = sph;                            /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 4 && STM_A16_SP)             /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && STM_A16_A)              /**/ { out = a;                                    /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && STM_A16_A)              /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && STM_A16_A)              /**/ { xyh = in;                                   /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 3 && STM_A16_A)              /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && LDM_A_A16)              /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LDM_A_A16)              /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && LDM_A_A16)              /**/ { xyh = in;                                   /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 3 && LDM_A_A16)              /**/ { a = in;                                     /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    // indirect load/store                                                                                                                                                                     
-                                                                                                                                                                                               
-    if (state == 0 && LDM_A_BC)               /**/ { xy = bc;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && LDM_A_DE)               /**/ { xy = de;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && LDM_R_HL)               /**/ { xy = hl;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && STM_BC_A)               /**/ { xy = bc; out = a;                           /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 0 && STM_DE_A)               /**/ { xy = de; out = a;                           /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 0 && STM_HL_R)               /**/ { xy = hl; out = get_reg(OP_COL);             /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
+    if (state == 0 && STM_HLM_A)              /**/ { xy = hl; out = a;                           /**/                            /**/                                                          write_xy = 1; }
+    if (state == 1 && STM_HLM_A)              /**/ { xy = pc;                                    /**/                            /**/ hl--;                                                    op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // zero-page load/store                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                  
+    if (state == 0 && LDM_A_A8)               /**/ { xy = pc;                                    /**/                            /**/                                                          read_arg = 1; }
+    if (state == 0 && STM_A8_A)               /**/ { xy = pc;                                    /**/                            /**/                                                          read_arg = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && LDM_A_C)                /**/ { xy = 0xFF00 | c;                            /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && LDM_A_A8)               /**/ { xy = 0xFF00 | in;                           /**/                            /**/                                                          read_xy = 1; }
 
-    if (state == 1 && LDM_A_BC)               /**/ { xy = pc; a = in;                            /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && LDM_A_DE)               /**/ { xy = pc; a = in;                            /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && LDM_R_HL)               /**/ { xy = pc; set_reg(OP_ROW, in);               /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && STM_BC_A)               /**/ { xy = pc;                                    /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && STM_DE_A)               /**/ { xy = pc;                                    /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && STM_HL_R)               /**/ { xy = pc;                                    /**/                            /**/                                       op_done2 = 1; }
+    if (state == 0 && STM_C_A)                /**/ { xy = 0xFF00 | c;  out = a;                  /**/                            /**/                                                          write_xy = 1; }
+    if (state == 1 && STM_A8_A)               /**/ { xy = 0xFF00 | in; out = a;                  /**/                            /**/                                                          write_xy = 1; }
+                                                                                                                                                                                                                  
+    if (state == 1 && LDM_A_C)                /**/ { xy = pc; a = in;                            /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 1 && STM_C_A)                /**/ { xy = pc;                                    /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && LDM_A_A8)               /**/ { xy = pc; a = in;                            /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && STM_A8_A)               /**/ { xy = pc;                                    /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // push / pop                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                  
+    if (state == 0 && PUSH_BC)                /**/ {                                             /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && PUSH_DE)                /**/ {                                             /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && PUSH_HL)                /**/ {                                             /**/                            /**/                                                          no_bus = 1; }
+    if (state == 0 && PUSH_AF)                /**/ {                                             /**/                            /**/                                                          no_bus = 1; }
+    if (state == 1 && PUSH_BC)                /**/ { out = b; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 1 && PUSH_DE)                /**/ { out = d; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 1 && PUSH_HL)                /**/ { out = h; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 1 && PUSH_AF)                /**/ { out = a; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 2 && PUSH_BC)                /**/ { out = c; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 2 && PUSH_DE)                /**/ { out = e; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 2 && PUSH_HL)                /**/ { out = l; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 2 && PUSH_AF)                /**/ { out = f; xy = --sp;                         /**/                            /**/                                                          write_xy = 1; }
+    if (state == 3 && PUSH_BC)                /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 3 && PUSH_DE)                /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 3 && PUSH_HL)                /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 3 && PUSH_AF)                /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && POP_BC)                 /**/ {         xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && POP_DE)                 /**/ {         xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && POP_HL)                 /**/ {         xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 0 && POP_AF)                 /**/ {         xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && POP_BC)                 /**/ { c = in; xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && POP_DE)                 /**/ { e = in; xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && POP_HL)                 /**/ { l = in; xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 1 && POP_AF)                 /**/ { f = in; xy = sp++;                          /**/                            /**/                                                          read_xy = 1; }
+    if (state == 2 && POP_BC)                 /**/ { b = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && POP_DE)                 /**/ { d = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && POP_HL)                 /**/ { h = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && POP_AF)                 /**/ { a = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    // 16-bit stuff                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                  
+    if (state == 0 && LD_BC_D16)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 0 && LD_DE_D16)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 0 && LD_HL_D16)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 0 && LD_SP_D16)              /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LD_BC_D16)              /**/ { c = in;                                     /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LD_DE_D16)              /**/ { e = in;                                     /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LD_HL_D16)              /**/ { l = in;                                     /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && LD_SP_D16)              /**/ { spl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && LD_BC_D16)              /**/ { b = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && LD_DE_D16)              /**/ { d = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && LD_HL_D16)              /**/ { h = in;                                     /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 2 && LD_SP_D16)              /**/ { sph = in;                                   /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && ADD_HL_BC)              /**/ { alu_x = c;                                  /**/ alu_y = l;                 /**/ l = alu(0, f);                                           no_bus = 1; }
+    if (state == 0 && ADD_HL_DE)              /**/ { alu_x = e;                                  /**/ alu_y = l;                 /**/ l = alu(0, f);                                           no_bus = 1; }
+    if (state == 0 && ADD_HL_HL)              /**/ { alu_x = l;                                  /**/ alu_y = l;                 /**/ l = alu(0, f);                                           no_bus = 1; }
+    if (state == 0 && ADD_HL_SP)              /**/ { alu_x = spl;                                /**/ alu_y = l;                 /**/ l = alu(0, f);                                           no_bus = 1; }
+    if (state == 1 && ADD_HL_BC)              /**/ { alu_x = b;                                  /**/ alu_y = h;                 /**/ h = alu(1, alu_f); set_f(0x70);                          op_done2 = 1; }
+    if (state == 1 && ADD_HL_DE)              /**/ { alu_x = d;                                  /**/ alu_y = h;                 /**/ h = alu(1, alu_f); set_f(0x70);                          op_done2 = 1; }
+    if (state == 1 && ADD_HL_HL)              /**/ { alu_x = h;                                  /**/ alu_y = h;                 /**/ h = alu(1, alu_f); set_f(0x70);                          op_done2 = 1; }
+    if (state == 1 && ADD_HL_SP)              /**/ { alu_x = sph;                                /**/ alu_y = h;                 /**/ h = alu(1, alu_f); set_f(0x70);                          op_done2 = 1; }
+                                                                                                                                                                                                                                                            
+    // conditional branches                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                            
+    if (state == 0 && JR_R8)                  /**/ {                                             /**/                            /**/                                                          xyl = inc(pcl, 1); xyh = inc(pch, inc_c);    set_bus(xy, 0); state_ = state + 1; }
+    if (state == 1 && JR_R8)                  /**/ { alu_x = xyl;                                /**/ alu_y = in;                /**/                                                          pcl = alu(1, F_CARRY);                       clear_bus();    state_ = state + 1; }                                                         
+    if (state == 2 && JR_R8)                  /**/ { alu_x = xyh;                                /**/ alu_y = sxt(in);           /**/                                                          pch = alu(1, alu_f);                         op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && JR_CC_R8    &&  branch) /**/ {                                             /**/                            /**/                                                          xyl = inc(pcl, 1); xyh = inc(pch, inc_c);    set_bus(xy, 0); state_ = state + 1; }
+    if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_x = xyl;                                /**/ alu_y = in;                /**/                                                          pcl = alu(1, F_CARRY);                       set_bus(xy, 0); state_ = state + 1; }
+    if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_x = xyh;                                /**/ alu_y = sxt(in);           /**/                                                          pch = alu(1, alu_f);                         op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && JR_CC_R8    && !branch) /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && JR_CC_R8    && !branch) /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+                                                                                                                                                                                                                  
+    if (state == 0 && JP_CC_A16   &&  branch) /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 0 && JP_CC_A16   && !branch) /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && JP_CC_A16   &&  branch) /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && JP_CC_A16   && !branch) /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && JP_CC_A16   &&  branch) /**/ { xyh = in;                                   /**/                            /**/                                                          no_bus = 1; }
+    if (state == 2 && JP_CC_A16   && !branch) /**/ { xyh = in;                                   /**/                            /**/                                                          op_done2 = 1; }
+    if (state == 3 && JP_CC_A16   &&  branch) /**/ {                                             /**/                            /**/                                                          pc = xy; op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && JP_A16)                 /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && JP_A16)                 /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && JP_A16)                 /**/ { xyh = in;                                   /**/                            /**/                                                          no_bus = 1; }
+    if (state == 3 && JP_A16)                 /**/ {                                             /**/                            /**/                                                          pc = xy; op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && JP_HL)                  /**/ {                                             /**/                            /**/                                                          pc = hl; op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && CALL_CC_A16 &&  branch) /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && CALL_CC_A16 &&  branch) /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && CALL_CC_A16 &&  branch) /**/ { xyh = in;                                   /**/                            /**/                                                          pc++;    set_bus(sp, 0); state_ = state + 1; }
+    if (state == 3 && CALL_CC_A16 &&  branch) /**/ { out = pch;                                  /**/                            /**/                                                          sp--;    set_bus(sp, 1); state_ = state + 1; }
+    if (state == 4 && CALL_CC_A16 &&  branch) /**/ { out = pcl;                                  /**/                            /**/                                                          sp--;    set_bus(sp, 1); state_ = state + 1; }
+    if (state == 5 && CALL_CC_A16 &&  branch) /**/ {                                             /**/                            /**/                                                          pc = xy; op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && CALL_CC_A16 && !branch) /**/ {                                             /**/                            /**/                                                          pc++;    set_bus(pc, 0); state_ = state + 1; }
+    if (state == 1 && CALL_CC_A16 && !branch) /**/ { xyl = in;                                   /**/                            /**/                                                          pc++;    set_bus(pc, 0); state_ = state + 1; }
+    if (state == 2 && CALL_CC_A16 && !branch) /**/ {                                             /**/                            /**/                                                          op_done2 = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && CALL_A16)               /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
+    if (state == 1 && CALL_A16)               /**/ { xyl = in;                                   /**/                            /**/                                                          read_arg = 1; }
+    if (state == 2 && CALL_A16)               /**/ { xyh = in;                                   /**/                            /**/                                                          pc++;    set_bus(sp, 0); state_ = state + 1; }
+    if (state == 3 && CALL_A16)               /**/ { out = pch;                                  /**/                            /**/                                                          sp--;    set_bus(sp, 1); state_ = state + 1; }
+    if (state == 4 && CALL_A16)               /**/ { out = pcl;                                  /**/                            /**/                                                          sp--;    set_bus(sp, 1); state_ = state + 1; }
+    if (state == 5 && CALL_A16)               /**/ {                                             /**/                            /**/                                                          pc = xy; op_done = 1; }
+                                                                                                                                                                                                                  
+    if (state == 0 && RST_NN)                 /**/ { alu_y = 0x38;                               /**/                            /**/                                                          pc++;    clear_bus();    state_ = state + 1; }
+    if (state == 1 && RST_NN)                 /**/ { out = pch;                                  /**/                            /**/                                                          sp--;    set_bus(sp, 1); state_ = state + 1; }
+    if (state == 2 && RST_NN)                 /**/ { out = pcl;                                  /**/                            /**/                                                          sp--;    set_bus(sp, 1); state_ = state + 1; }
+    if (state == 3 && RST_NN)                 /**/ {                                             /**/                            /**/                                                          pc = op - 0xC7; op_done = 1; }
                                                                                                                                                                                                
-    if (state == 0 && STM_HL_D8)              /**/ { xy = pc;                                    /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && STM_HL_D8)              /**/ { xy = hl; out = in;                          /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 2 && STM_HL_D8)              /**/ { xy = pc;                                    /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && LDM_A_HLP)              /**/ { xy = hl;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && STM_HLP_A)              /**/ { xy = hl; out = a;                           /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 0 && LDM_A_HLM)              /**/ { xy = hl;                                    /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && STM_HLM_A)              /**/ { xy = hl; out = a;                           /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ { xy = pc; a = in;                            /**/                            /**/ hl++;                                 op_done2 = 1; }
-    if (state == 1 && STM_HLP_A)              /**/ { xy = pc;                                    /**/                            /**/ hl++;                                 op_done2 = 1; }
-    if (state == 1 && LDM_A_HLM)              /**/ { xy = pc; a = in;                            /**/                            /**/ hl--;                                 op_done2 = 1; }
-    if (state == 1 && STM_HLM_A)              /**/ { xy = pc;                                    /**/                            /**/ hl--;                                 op_done2 = 1; }
-                                                                                                                                                                                               
-    // zero-page load/store                                                                                                                                                                                                               
-                                                                                                                                                                                               
-    if (state == 0 && LDM_A_A8)               /**/ { xy = pc;                                    /**/                            /**/                                       read_arg = 1; }
-    if (state == 0 && STM_A8_A)               /**/ { xy = pc;                                    /**/                            /**/                                       read_arg = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && LDM_A_C)                /**/ { xy = 0xFF00 | c;                            /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && STM_C_A)                /**/ { xy = 0xFF00 | c;  out = a;                  /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 1 && LDM_A_A8)               /**/ { xy = 0xFF00 | in;                           /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && STM_A8_A)               /**/ { xy = 0xFF00 | in; out = a;                  /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-                                                                                                                                                                                               
-    if (state == 1 && LDM_A_C)                /**/ { xy = pc; a = in;                            /**/                            /**/                                       op_done2 = 1; }
-    if (state == 1 && STM_C_A)                /**/ { xy = pc;                                    /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && LDM_A_A8)               /**/ { xy = pc; a = in;                            /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && STM_A8_A)               /**/ { xy = pc;                                    /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    // push / pop                                                                                                                                                                                                                         
-                                                                                                                                                                                               
-    if (state == 0 && PUSH_BC)                /**/ {                                             /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && PUSH_DE)                /**/ {                                             /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && PUSH_HL)                /**/ {                                             /**/                            /**/                                       no_bus = 1; }
-    if (state == 0 && PUSH_AF)                /**/ {                                             /**/                            /**/                                       no_bus = 1; }
-    if (state == 1 && PUSH_BC)                /**/ { out = b; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 1 && PUSH_DE)                /**/ { out = d; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 1 && PUSH_HL)                /**/ { out = h; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 1 && PUSH_AF)                /**/ { out = a; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 2 && PUSH_BC)                /**/ { out = c; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 2 && PUSH_DE)                /**/ { out = e; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 2 && PUSH_HL)                /**/ { out = l; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 2 && PUSH_AF)                /**/ { out = f; xy = --sp;                         /**/                            /**/                                       set_bus(xy, 1); state_ = state + 1; }
-    if (state == 3 && PUSH_BC)                /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 3 && PUSH_DE)                /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 3 && PUSH_HL)                /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-    if (state == 3 && PUSH_AF)                /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && POP_BC)                 /**/ {         xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && POP_DE)                 /**/ {         xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && POP_HL)                 /**/ {         xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 0 && POP_AF)                 /**/ {         xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && POP_BC)                 /**/ { c = in; xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && POP_DE)                 /**/ { e = in; xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && POP_HL)                 /**/ { l = in; xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && POP_AF)                 /**/ { f = in; xy = sp++;                          /**/                            /**/                                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 2 && POP_BC)                 /**/ { b = in;                                     /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && POP_DE)                 /**/ { d = in;                                     /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && POP_HL)                 /**/ { h = in;                                     /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && POP_AF)                 /**/ { a = in;                                     /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    // 16-bit stuff                                                                                                                                                                                                                                   
-                                                                                                                                                                                               
-    if (state == 0 && LD_BC_D16)              /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 0 && LD_DE_D16)              /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 0 && LD_HL_D16)              /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 0 && LD_SP_D16)              /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LD_BC_D16)              /**/ { c = in;                                     /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LD_DE_D16)              /**/ { e = in;                                     /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LD_HL_D16)              /**/ { l = in;                                     /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && LD_SP_D16)              /**/ { spl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && LD_BC_D16)              /**/ { b = in;                                     /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && LD_DE_D16)              /**/ { d = in;                                     /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && LD_HL_D16)              /**/ { h = in;                                     /**/                            /**/                                       op_done2 = 1; }
-    if (state == 2 && LD_SP_D16)              /**/ { sph = in;                                   /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && ADD_HL_BC)              /**/ { alu_x = c;                                  /**/ alu_y = l;                 /**/ l = alu(0, f);                        no_bus = 1; }
-    if (state == 0 && ADD_HL_DE)              /**/ { alu_x = e;                                  /**/ alu_y = l;                 /**/ l = alu(0, f);                        no_bus = 1; }
-    if (state == 0 && ADD_HL_HL)              /**/ { alu_x = l;                                  /**/ alu_y = l;                 /**/ l = alu(0, f);                        no_bus = 1; }
-    if (state == 0 && ADD_HL_SP)              /**/ { alu_x = spl;                                /**/ alu_y = l;                 /**/ l = alu(0, f);                        no_bus = 1; }
-    if (state == 1 && ADD_HL_BC)              /**/ { alu_x = b;                                  /**/ alu_y = h;                 /**/ h = alu(1, alu_f);                    op_done2 = 1; set_f(0x70); }
-    if (state == 1 && ADD_HL_DE)              /**/ { alu_x = d;                                  /**/ alu_y = h;                 /**/ h = alu(1, alu_f);                    op_done2 = 1; set_f(0x70); }
-    if (state == 1 && ADD_HL_HL)              /**/ { alu_x = h;                                  /**/ alu_y = h;                 /**/ h = alu(1, alu_f);                    op_done2 = 1; set_f(0x70); }
-    if (state == 1 && ADD_HL_SP)              /**/ { alu_x = sph;                                /**/ alu_y = h;                 /**/ h = alu(1, alu_f);                    op_done2 = 1; set_f(0x70); }
-                                                                                                                                                                                                                                         
-    // conditional branches                                                                                                                                                                                                              
-                                                                                                                                                                                                                                         
-    if (state == 0 && JR_R8)                  /**/ {                                             /**/                            /**/                                       xyl = inc(pcl, 1); xyh = inc(pch, inc_c);    set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && JR_R8)                  /**/ { alu_x = xyl;                                /**/ alu_y = in;                /**/                                       pcl = alu(1, F_CARRY);                       clear_bus();    state_ = state + 1; }                                                         
-    if (state == 2 && JR_R8)                  /**/ { alu_x = xyh;                                /**/ alu_y = sxt(in);           /**/                                       pch = alu(1, alu_f);                         op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && JR_CC_R8    &&  branch) /**/ {                                             /**/                            /**/                                       xyl = inc(pcl, 1); xyh = inc(pch, inc_c);    set_bus(xy, 0); state_ = state + 1; }
-    if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_x = xyl;                                /**/ alu_y = in;                /**/                                       pcl = alu(1, F_CARRY);                       set_bus(xy, 0); state_ = state + 1; }
-    if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_x = xyh;                                /**/ alu_y = sxt(in);           /**/                                       pch = alu(1, alu_f);                         op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && JR_CC_R8    && !branch) /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && JR_CC_R8    && !branch) /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-                                                                                                                                                                                               
-    if (state == 0 && JP_CC_A16   &&  branch) /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 0 && JP_CC_A16   && !branch) /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && JP_CC_A16   &&  branch) /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && JP_CC_A16   && !branch) /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && JP_CC_A16   &&  branch) /**/ { xyh = in;                                   /**/                            /**/                                       no_bus = 1; }
-    if (state == 2 && JP_CC_A16   && !branch) /**/ { xyh = in;                                   /**/                            /**/                                       op_done2 = 1; }
-    if (state == 3 && JP_CC_A16   &&  branch) /**/ {                                             /**/                            /**/                                       pc = xy; op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && JP_A16)                 /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && JP_A16)                 /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && JP_A16)                 /**/ { xyh = in;                                   /**/                            /**/                                       no_bus = 1; }
-    if (state == 3 && JP_A16)                 /**/ {                                             /**/                            /**/                                       pc = xy; op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && JP_HL)                  /**/ {                                             /**/                            /**/                                       pc = hl; op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && CALL_CC_A16 &&  branch) /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && CALL_CC_A16 &&  branch) /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && CALL_CC_A16 &&  branch) /**/ { xyh = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(sp, 0); state_ = state + 1; }
-    if (state == 3 && CALL_CC_A16 &&  branch) /**/ { out = pch;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
-    if (state == 4 && CALL_CC_A16 &&  branch) /**/ { out = pcl;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
-    if (state == 5 && CALL_CC_A16 &&  branch) /**/ {                                             /**/                            /**/                                       pc = xy; op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && CALL_CC_A16 && !branch) /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 1 && CALL_CC_A16 && !branch) /**/ { xyl = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 2 && CALL_CC_A16 && !branch) /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && CALL_A16)               /**/ {                                             /**/                            /**/                                       read_arg = 1; }
-    if (state == 1 && CALL_A16)               /**/ { xyl = in;                                   /**/                            /**/                                       read_arg = 1; }
-    if (state == 2 && CALL_A16)               /**/ { xyh = in;                                   /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(sp, 0); state_ = state + 1; }
-    if (state == 3 && CALL_A16)               /**/ { out = pch;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
-    if (state == 4 && CALL_A16)               /**/ { out = pcl;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
-    if (state == 5 && CALL_A16)               /**/ {                                             /**/                            /**/                                       pc = xy; op_done = 1; }
-                                                                                                                                                                                               
-    if (state == 0 && RST_NN)                 /**/ { alu_y = 0x38;                               /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    clear_bus();    state_ = state + 1; }
-    if (state == 1 && RST_NN)                 /**/ { out = pch;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
-    if (state == 2 && RST_NN)                 /**/ { out = pcl;                                  /**/                            /**/                                       spl = dec(spl, 1); sph = dec(sph, inc_c);    set_bus(sp, 1); state_ = state + 1; }
-    if (state == 3 && RST_NN)                 /**/ {                                             /**/                            /**/                                       pc = op - 0xC7;                              op_done = 1; }
-
-    if (state == 0 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    clear_bus();    state_ = state + 1; }
-    if (state == 1 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                                                                    op_done = 1; }
+    if (state == 0 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                                          pc++;    clear_bus();    state_ = state + 1; }
+    if (state == 1 && RET_CC      && !branch) /**/ {                                             /**/                            /**/                                                          op_done = 1; }
                                                                                                                                                                                                
     if (state == 0 && RET_CC      &&  branch) /**/ {           no_bus = 1; }
     if (state == 1 && RET_CC      &&  branch) /**/ {           no_bus = 1; }
@@ -636,6 +642,16 @@ void Z80::execute_op() {
 
   if (no_bus) {
     clear_bus();
+    state_ = state + 1;
+  }
+
+  if (read_xy) {
+    set_bus(xy, 0);
+    state_ = state + 1;
+  }
+
+  if (write_xy) {
+    set_bus(xy, 1);
     state_ = state + 1;
   }
 

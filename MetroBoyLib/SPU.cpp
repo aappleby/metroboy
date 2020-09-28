@@ -178,7 +178,7 @@ void SPU::tock(int phase_total, const Req& req) {
   if (!s1_phase_clock) {
     const uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
     const uint16_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
-      
+
     s1_phase_clock = 2047 ^ (s1_sweep_period ? s1_sweep_freq : s1_freq);
     s1_phase = (s1_phase + 1) & 7;
   }
@@ -188,7 +188,7 @@ void SPU::tock(int phase_total, const Req& req) {
 
   if (!s2_phase_clock) {
     const uint16_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
-      
+
     s2_phase_clock = 2047 ^ s2_freq;
     s2_phase = (s2_phase + 1) & 7;
   }
@@ -199,7 +199,7 @@ void SPU::tock(int phase_total, const Req& req) {
   // we run this twice because this is ticking at 1 mhz
   if (!s3_phase_clock) {
     const uint16_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
-      
+
     s3_phase_clock = 2047 ^ s3_freq;
     s3_phase = (s3_phase + 1) & 31;
   }
@@ -209,7 +209,7 @@ void SPU::tock(int phase_total, const Req& req) {
 
   if (!s3_phase_clock) {
     const uint16_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
-      
+
     s3_phase_clock = 2047 ^ s3_freq;
     s3_phase = (s3_phase + 1) & 31;
   }
@@ -223,17 +223,17 @@ void SPU::tock(int phase_total, const Req& req) {
 
     s4_phase_clock = s4_phase_period;
     bool lfsr_bit = (s4_lfsr ^ (s4_lfsr >> 1)) & 1;
-    /* verilator lint_on WIDTH */    
+    /* verilator lint_on WIDTH */
     s4_phase_clock = s4_phase_period;
     if (s4_lfsr_mode) {
-      /* verilator lint_off WIDTH */    
+      /* verilator lint_off WIDTH */
       s4_lfsr = ((s4_lfsr >> 1) & 0b0111111111011111) | (lfsr_bit << 5);
-      /* verilator lint_on WIDTH */    
+      /* verilator lint_on WIDTH */
     }
     else {
-      /* verilator lint_off WIDTH */    
+      /* verilator lint_off WIDTH */
       s4_lfsr = ((s4_lfsr >> 1) & 0b0011111111111111) | (lfsr_bit << 14);
-      /* verilator lint_on WIDTH */    
+      /* verilator lint_on WIDTH */
     }
   }
   else {
@@ -292,7 +292,7 @@ void SPU::tock(int phase_total, const Req& req) {
   out_r = 0;
   out_l = 0;
 
-  /* verilator lint_off WIDTH */    
+  /* verilator lint_off WIDTH */
   if (nr51 & 0b00000001) out_r += s1_out;
   if (nr51 & 0b00000010) out_r += s2_out;
   if (nr51 & 0b00000100) out_r += s3_out;
@@ -301,7 +301,7 @@ void SPU::tock(int phase_total, const Req& req) {
   if (nr51 & 0b00100000) out_l += s2_out;
   if (nr51 & 0b01000000) out_l += s3_out;
   if (nr51 & 0b10000000) out_l += s4_out;
-  /* verilator lint_on WIDTH */    
+  /* verilator lint_on WIDTH */
 
   const uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
   const uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;

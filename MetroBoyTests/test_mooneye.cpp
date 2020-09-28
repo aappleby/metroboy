@@ -39,7 +39,7 @@ static const std::string generic_tests[] = {
   "reti_intr_timing.gb",
   "reti_timing.gb",
   "rst_timing.gb",
- 
+
   "bits/mem_oam.gb",
   "bits/reg_f.gb",
   "bits/unused_hwio-GS.gb",
@@ -113,7 +113,7 @@ static const std::string mbc1_tests[] = {
 // mooneye misc
 
 static const char* misc_tests[] = {
-  "bits/unused_hwio-C.gb", 
+  "bits/unused_hwio-C.gb",
   "ppu/vblank_stat_intr-C.gb",
   "boot_div-A.gb",
   "boot_div-cgb0.gb",

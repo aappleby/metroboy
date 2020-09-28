@@ -16,7 +16,7 @@ struct SPU {
   sample_t get_r() const { return out_r; }
 
   void dump(Dumper& d) const;
-  
+
   //----------
 
   uint8_t nr10 = 0;
@@ -28,22 +28,22 @@ struct SPU {
   uint8_t nr20 = 0;
   uint8_t nr21 = 0;
   uint8_t nr22 = 0;
-  
+
   uint8_t nr23 = 0;
   uint8_t nr24 = 0;
   uint8_t nr30 = 0;
   uint8_t nr31 = 0;
-  
+
   uint8_t nr32 = 0;
   uint8_t nr33 = 0;
   uint8_t nr34 = 0;
   uint8_t nr40 = 0;
-  
+
   uint8_t nr41 = 0;
   uint8_t nr42 = 0;
   uint8_t nr43 = 0;
   uint8_t nr44 = 0;
-  
+
   uint8_t nr50 = 0;
   uint8_t nr51 = 0;
   uint8_t nr52 = 0;
@@ -71,7 +71,7 @@ struct SPU {
   uint8_t s1_env_clock = 0;
   uint8_t s2_env_clock = 0;
   uint8_t s4_env_clock = 0;
-  
+
   uint8_t s1_env_volume = 0;
   uint8_t s2_env_volume = 0;
   uint8_t s4_env_volume = 0;

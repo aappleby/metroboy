@@ -40,7 +40,7 @@ static const char* generic_tests[] = {
   "ret_timing.gb",
   "reti_intr_timing.gb",
   "reti_timing.gb",
-  "rst_timing.gb", 
+  "rst_timing.gb",
 
   "bits/mem_oam.gb",
   "bits/reg_f.gb",

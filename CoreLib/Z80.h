@@ -117,6 +117,14 @@ struct Z80 {
     bus_req.write   = 1;
   }
 
+  void op_done(uint16_t addr) {
+    bus_req.addr    = addr;
+    bus_req.data_lo = 0;
+    bus_req.read    = 1;
+    bus_req.write   = 0;
+    state_ = 0;
+  }
+
   uint8_t get_reg(int mux);
   void set_reg(int mux, uint8_t data);
 

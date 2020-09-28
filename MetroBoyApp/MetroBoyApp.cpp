@@ -50,8 +50,8 @@ void MetroBoyApp::app_init() {
 
   gb_blitter.init();
   dump_painter.init();
+  load_rom("roms/tetris.gb");
 
-  //load_rom("roms/cpu_instrs.gb");
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb");         // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb");           // pass
@@ -63,9 +63,7 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/09-op r,r.gb");             // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
-
-  load_rom("roms/cpu_instrs.gb");
-  runmode = RUN_FAST;
+  //load_rom("roms/cpu_instrs.gb"); // pass
 
   //load_rom("microtests/build/dmg/timer_int_halt_a.gb");
   //load_rom("microtests/build/dmg/halt_bug.gb");
@@ -78,8 +76,8 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/LinksAwakening");
   //load_rom("roms/Prehistorik Man (U).gb");
   //load_rom("roms/SML.gb");
-  //load_rom("roms/tetris.gb");
-  //runmode = RUN_FAST;
+
+  runmode = RUN_FAST;
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
@@ -128,12 +126,12 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
   std::string gb_filename = prefix + "/" + name;
   printf("Loading rom %s\n", gb_filename.c_str());
-  
+
   load_array(gb_filename.c_str(), rom);
 
   gb.clear_history();
   gb->reset(0x0100, rom.data(), rom.size());
-  
+
   rom_loaded = true;
   runmode = RUN_STEP;
   stepsize = STEP_PHASE;
@@ -144,7 +142,7 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
 void MetroBoyApp::app_update(double /*delta*/) {
   int  step_forward = 0;
   int  step_backward = 0;
-  
+
   //----------------------------------------
   // Handle keys
 
@@ -212,11 +210,12 @@ void MetroBoyApp::app_update(double /*delta*/) {
   // Run simulation
 
   double sim_begin = timestamp();
+  int64_t phase_begin = gb->phase_total;
 
   if (runmode == RUN_FAST) {
     gb.clear_history();
     gb->joypad.set(~buttons);
-    step_cycle(MCYCLES_PER_FRAME * 20);
+    step_cycle(MCYCLES_PER_FRAME * 8);
   }
   else if (runmode == RUN_VSYNC) {
     gb.clear_history();
@@ -244,7 +243,10 @@ void MetroBoyApp::app_update(double /*delta*/) {
   }
 
   double sim_end = timestamp();
+  int64_t phase_end = gb->phase_total;
+
   sim_time = sim_end - sim_begin;
+  sim_rate = (phase_end - phase_begin) / sim_time;
 }
 
 //-----------------------------------------------------------------------------
@@ -351,11 +353,15 @@ void MetroBoyApp::app_render_ui(Viewport view) {
   else {
     text_painter.dprintf("State size %d M\n", state_size / (1024 * 1024));
   }
-  text_painter.dprintf("Sim time %f\n", sim_time);
+
+  double phases_per_frame = 114 * 154 * 60 * 8;
+  double sim_ratio = sim_rate / phases_per_frame;
+
+  text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time);
 
 
-  text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
+  text_painter.render(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
 
 
     /*
@@ -379,7 +385,7 @@ void MetroBoyApp::app_render_ui(Viewport view) {
     text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
     text_painter.dprintf("sim rate   %7d cycles/frame\n", last_mcycles);
     text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
-    
+
     text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
   }
   */

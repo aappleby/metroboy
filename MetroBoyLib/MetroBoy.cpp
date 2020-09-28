@@ -52,15 +52,15 @@ void MetroBoy::next_phase() {
 
   if (ibus_req.read) {
     ibus_ack = { 0 };
-    //ppu.   tick(phase_total, ibus_req, ibus_ack);
-    //serial.tick(phase_total, ibus_req, ibus_ack);
-    //joypad.tick(phase_total, ibus_req, ibus_ack);
+    ppu.   tick(phase_total, ibus_req, ibus_ack);
+    serial.tick(phase_total, ibus_req, ibus_ack);
+    joypad.tick(phase_total, ibus_req, ibus_ack);
     zram.  tick(phase_total, ibus_req, ibus_ack);
-    //spu.   tick(phase_total, ibus_req, ibus_ack);
-    //boot.  tick(phase_total, ibus_req, ibus_ack);
+    spu.   tick(phase_total, ibus_req, ibus_ack);
+    boot.  tick(phase_total, ibus_req, ibus_ack);
     timer. tick(phase_total, ibus_req, ibus_ack);
-    //dma.   tick(phase_total, ibus_req, ibus_ack);
-    //lcd.   tick(phase_total, ibus_req, ibus_ack);
+    dma.   tick(phase_total, ibus_req, ibus_ack);
+    lcd.   tick(phase_total, ibus_req, ibus_ack);
     ints.  tick(phase_total, ibus_req, ibus_ack);
   }
 
@@ -109,17 +109,17 @@ void MetroBoy::next_phase() {
   }
 
   timer. tock(phase_total, ibus_req);
-  //serial.tock(phase_total, ibus_req);
-  //joypad.tock(phase_total, ibus_req);
-  //boot.  tock(phase_total, ibus_req);
+  serial.tock(phase_total, ibus_req);
+  joypad.tock(phase_total, ibus_req);
+  boot.  tock(phase_total, ibus_req);
   zram.  tock(phase_total, ibus_req);
-  //spu.   tock(phase_total, ibus_req);
-  //ppu.   tock(phase_total, ibus_req, vbus_ack, obus_ack);
-  //dma.   tock(phase_total, ibus_req);
+  spu.   tock(phase_total, ibus_req);
+  ppu.   tock(phase_total, ibus_req, vbus_ack, obus_ack);
+  dma.   tock(phase_total, ibus_req);
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  //lcd.   tock(phase_total, ibus_req, ppu.lcdc & FLAG_LCD_ON);
+  lcd.   tock(phase_total, ibus_req, ppu.lcdc & FLAG_LCD_ON);
   ints.  tock(phase_total, ibus_req, z80.int_ack, ppu.vblank1, ppu.stat1, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
 
   //----------
@@ -236,7 +236,7 @@ void MetroBoy::dump_disasm(Dumper& d) {
 
   Assembler a;
   if (ADDR_CART_ROM_BEGIN <= pc && pc <= ADDR_CART_ROM_END) {
-    a.disassemble(cart.cart_rom, 32768, 
+    a.disassemble(cart.cart_rom, 32768,
                   ADDR_CART_ROM_BEGIN, pc,
                   30, d, false);
   }

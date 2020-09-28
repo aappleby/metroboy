@@ -87,8 +87,9 @@ public:
   int overlay_mode = 0;
   const uint8_t* keyboard_state = nullptr;
   uint8_t buttons = 0;
-  
+
   double sim_time = 0;
+  double sim_rate = 0;
 
   double frame_begin = 0;
   double frame_end = 0;

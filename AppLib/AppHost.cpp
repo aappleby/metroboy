@@ -1,7 +1,7 @@
 #include "AppLib/AppHost.h"
 #include "AppLib/GLBase.h"
 
-#include "imgui/imgui.h"
+//#include "imgui/imgui.h"
 #include "glad/glad.h"
 
 #ifdef _MSC_VER
@@ -69,13 +69,8 @@ int AppHost::app_main(int, char**) {
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  //int initial_screen_w = 3200;
-  //int initial_screen_h = 1600;
-  //int initial_screen_w = 1664;
-  //int initial_screen_h = 1024;
-
-  int initial_screen_w = 1920;
-  int initial_screen_h = 1080;
+  const int initial_screen_w = 1920;
+  const int initial_screen_h = 1080;
 
   window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -89,6 +84,7 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // Initialize ImGui and ImGui renderer
 
+  /*
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
   ImGuiIO& io = ImGui::GetIO();
@@ -112,6 +108,7 @@ int AppHost::app_main(int, char**) {
     glVertexAttribPointer(1, 2, GL_FLOAT,         GL_FALSE, 20, (void*)8);
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,  20, (void*)16);
   }
+  */
 
 
   //----------------------------------------
@@ -144,11 +141,38 @@ int AppHost::app_main(int, char**) {
     SDL_GL_GetDrawableSize((SDL_Window*)window, &screen_w, &screen_h);
 
     int mouse_x = 0, mouse_y = 0;
-    uint32_t mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+    const auto mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+    const auto world_mouse = view_snap.screenToWorld({mouse_x, mouse_y});
 
-    SDL_Event events[64];
+    bool mouse_captured = false;
+    (void)mouse_captured;
+
     SDL_PumpEvents();
+    SDL_Event events[64];
     const int nevents = SDL_PeepEvents(events, 64, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+#if 0
+    io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
+    io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
+    io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
+
+    io.MousePos = { (float)world_mouse.x, (float)world_mouse.y };
+
+    io.DeltaTime = 1.0f/60.0f;              // set the time elapsed since the previous frame (in seconds)
+    io.DisplaySize.x = 1920.0f;             // set the current display width
+    io.DisplaySize.y = 1280.0f;             // set the current display height here
+    io.MousePos = my_mouse_pos;             // set the mouse position
+    io.MouseDown[0] = my_mouse_buttons[0];  // set the mouse button states
+    io.MouseDown[1] = my_mouse_buttons[1];
+
+    io.DeltaTime = (float)delta;
+    io.DisplaySize.x = float(screen_w);
+    io.DisplaySize.y = float(screen_h);
+
+    ImGui::NewFrame();
+
+    mouse_captured = io.WantCaptureMouse;
+
     for(int i = 0; i < nevents; i++) {
       const SDL_Event* event = &events[i];
 
@@ -160,23 +184,9 @@ int AppHost::app_main(int, char**) {
           if (event->wheel.y > 0) io.MouseWheel += 1;
           if (event->wheel.y < 0) io.MouseWheel -= 1;
         }
-        else {
-          view_raw = view_raw.zoom({mouse_x, mouse_y}, double(event->wheel.y) * 0.25);
-        }
-        break;
-      }
-      case SDL_MOUSEMOTION: {
-        if (io.WantCaptureMouse) {
-        }
-        else {
-          if (event->motion.state & SDL_BUTTON_LMASK) {
-            view_raw = view_raw.pan({event->motion.xrel, event->motion.yrel});
-          }
-        }
         break;
       }
       case SDL_TEXTINPUT: {
-
         io.AddInputCharactersUTF8(event->text.text);
         break;
       }
@@ -192,39 +202,48 @@ int AppHost::app_main(int, char**) {
         break;
       }
       }
+    }
+#endif
 
-      if (event->type == SDL_QUIT) {
-        quit = true;
+
+    //----------------------------------------
+    // Handle mouse events
+
+    for(int i = 0; i < nevents; i++) {
+      auto& event = events[i];
+      switch (event.type) {
+      case SDL_MOUSEWHEEL: {
+        view_raw = view_raw.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
+        break;
       }
-
-      if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_ESCAPE) {
-        view_raw = view_raw.reset(screen_w, screen_h);
-        if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
+      case SDL_MOUSEMOTION: {
+        if (event.motion.state & SDL_BUTTON_LMASK) {
+          view_raw = view_raw.pan({event.motion.xrel, event.motion.yrel});
+        }
+        break;
+      }
       }
     }
 
-    io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
-    io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
-    io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
+    //----------------------------------------
+    // Handle key events
 
-    const auto world_mouse = view_snap.screenToWorld({mouse_x, mouse_y});
-    io.MousePos = { (float)world_mouse.x, (float)world_mouse.y };
-
-    /*
-    io.DeltaTime = 1.0f/60.0f;              // set the time elapsed since the previous frame (in seconds)
-    io.DisplaySize.x = 1920.0f;             // set the current display width
-    io.DisplaySize.y = 1280.0f;             // set the current display height here
-    io.MousePos = my_mouse_pos;             // set the mouse position
-    io.MouseDown[0] = my_mouse_buttons[0];  // set the mouse button states
-    io.MouseDown[1] = my_mouse_buttons[1];
-    */
-
-    io.DeltaTime = (float)delta;
-    io.DisplaySize.x = float(screen_w);
-    io.DisplaySize.y = float(screen_h);
-
-
-    ImGui::NewFrame();
+    for(int i = 0; i < nevents; i++) {
+      auto& event = events[i];
+      switch (event.type) {
+      case SDL_KEYDOWN: {
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+          view_raw = view_raw.reset(screen_w, screen_h);
+          if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
+        }
+        break;
+      }
+      case SDL_QUIT: {
+        quit = true;
+        break;
+      }
+      }
+    }
 
     //----------------------------------------
     // Client app update
@@ -250,12 +269,12 @@ int AppHost::app_main(int, char**) {
 
     app->app_render_ui(view_snap);
 
-    //ImGui::ShowDemoWindow();
-
     //----------------------------------------
-    // Render ImGui
+    // ImGui render
 
     /*
+    //ImGui::ShowDemoWindow();
+
     ImGui::Render();
     const ImDrawData* draw_data = ImGui::GetDrawData();
 
@@ -316,7 +335,7 @@ int AppHost::app_main(int, char**) {
 
   app->app_close();
 
-  ImGui::DestroyContext();
+  //ImGui::DestroyContext();
   SDL_GL_DeleteContext(gl_context);
   SDL_DestroyWindow((SDL_Window*)window);
   SDL_Quit();

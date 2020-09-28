@@ -418,9 +418,9 @@ void Z80::execute_op() {
     if (state == 3 && ADD_SP_R8)              /**/ {                                        op_done2 = 1; }
                                                                                                                                                                                                                   
     // FIXME                                                                                                                                                                                                      
-    if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                            /**/                                                          read_arg = 1; }
-    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = in;                                 /**/ alu_y = spl;               /**/ l = alu(0, f); set_f(0xF0);                              no_bus = 1; }
-    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;               /**/ h = alu(1, f);                                           op_done2 = 1; }
+    if (state == 0 && LD_HL_SP_R8)            /**/ {                                        read_arg = 1; }
+    if (state == 1 && LD_HL_SP_R8)            /**/ { l = alu(in, spl, 0, f); set_f(0xF0);   no_bus = 1; }
+    if (state == 2 && LD_HL_SP_R8)            /**/ { h = alu(sxt(in), sph, 1, f);           op_done2 = 1; }
                                                                                                                                                                                                                   
     // FIXME                                                                                                                                                                                                      
     if (state == 0 && INC_BC)                 /**/ { bc++;                                       /**/                            /**/                                                          no_bus = 1; }

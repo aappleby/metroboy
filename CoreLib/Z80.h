@@ -32,6 +32,7 @@ struct Z80 {
   uint8_t alu_x = 0;
   uint8_t alu_y = 0;
   uint8_t alu_f = 0;
+  uint8_t alu_o = 0;
 
   uint8_t inc_x = 0;
   uint8_t inc_y = 0;

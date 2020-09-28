@@ -236,46 +236,23 @@ void Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
 //-----------------------------------------------------------------------------
 
 void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
-  if (state == 0) {
-    set_bus(sp, 0);
-    state_ = state + 1;
-  }
+  uint8_t _int_addr = 0;
+  uint8_t _int_ack = 0;
 
-  if (state == 1) {
-    spl = dec(spl, 1);
-    out = pch;
-    sph = dec(sph, inc_c);
-    set_bus(sp, 1);
-    state_ = state + 1;
-  }
-    
-  if (state == 2) {
-    spl = dec(spl, 1);
-    out = pcl;
-    sph = dec(sph, inc_c);
-    set_bus(sp, 1);
-    state_ = state + 1;
-  }
+  if      (imask_ & intf_ & INT_JOYPAD_MASK) { _int_addr = 0x60; _int_ack = INT_JOYPAD_MASK; }
+  else if (imask_ & intf_ & INT_SERIAL_MASK) { _int_addr = 0x58; _int_ack = INT_SERIAL_MASK; }
+  else if (imask_ & intf_ & INT_TIMER_MASK)  { _int_addr = 0x50; _int_ack = INT_TIMER_MASK; }
+  else if (imask_ & intf_ & INT_STAT_MASK)   { _int_addr = 0x48; _int_ack = INT_STAT_MASK; }
+  else if (imask_ & intf_ & INT_VBLANK_MASK) { _int_addr = 0x40; _int_ack = INT_VBLANK_MASK; }
+  else                                       { _int_addr = 0x00; _int_ack = 0; }
 
-  if (state == 3) {
-    set_bus(xy, 0);
-    state_ = state + 1;
-  }
+  if      (state == 0) { bus_nop(); }
+  else if (state == 1) { bus_write(--sp, pch); }
+  else if (state == 2) { bus_write(--sp, pcl); }
+  else if (state == 3) { bus_read(xy); }
+  else if (state == 4) { pc = _int_addr; int_ack = _int_ack; bus_read(pc); }
 
-  if (state == 4) {
-    uint8_t int_addr = 0;
-
-    if      (imask_ & intf_ & INT_JOYPAD_MASK) { int_addr = 0x60; int_ack = INT_JOYPAD_MASK; }
-    else if (imask_ & intf_ & INT_SERIAL_MASK) { int_addr = 0x58; int_ack = INT_SERIAL_MASK; }
-    else if (imask_ & intf_ & INT_TIMER_MASK)  { int_addr = 0x50; int_ack = INT_TIMER_MASK; }
-    else if (imask_ & intf_ & INT_STAT_MASK)   { int_addr = 0x48; int_ack = INT_STAT_MASK; }
-    else if (imask_ & intf_ & INT_VBLANK_MASK) { int_addr = 0x40; int_ack = INT_VBLANK_MASK; }
-    else                                       { int_addr = 0x00; int_ack = 0; }
-
-    pc = int_addr;
-    set_bus(pc, 0);
-    state_ = 0;
-  }
+  state_ = (state == 4) ? 0 : state + 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -283,21 +260,12 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
 void Z80::execute_halt(uint8_t imask_, uint8_t intf_) {
 
   if (state == 0) {
-    pcl = inc(pcl, 1);
-    pch = inc(pch, inc_c);
-    set_bus(pc, 0);
-    if (imask_ & intf_) {
-      state_ = 0;
-    }
-    else {
-      state_ = 1;
-    }
+    bus_read(++pc);
+    state_ = !(imask_ & intf_);
   }
   else if (state == 1) {
-    if (imask_ & intf_) {
-      set_bus(pc, 0);
-      state_ = 0;
-    }
+    bus_read(pc);
+    state_ = !(imask_ & intf_);
   }
 }
 
@@ -319,13 +287,13 @@ void Z80::execute_op() {
     }
     else {
       if (OP_CB_BIT) {
-        if (state == 1)                       /**/ {                                                      bus_read(hl); }
-        if (state == 2)                       /**/ { alu_x = in; out = alu_cb(cb, f); set_f(mask);        bus_read(++pc); op_done = 1; }
+        if (state == 1)                       /**/ {                                                bus_read(hl); }
+        if (state == 2)                       /**/ { alu_x = in; alu_cb(cb, f); set_f(mask);        bus_read(++pc); op_done = 1; }
       }
       else {
-        if (state == 1)                       /**/ {                                                      bus_read(hl); }
-        if (state == 2)                       /**/ { alu_x = in; out = alu_cb(cb, f); set_f(mask);        bus_write(hl); }
-        if (state == 3)                       /**/ {                                                      bus_read(++pc); op_done = 1; }
+        if (state == 1)                       /**/ {                                                bus_read(hl); }
+        if (state == 2)                       /**/ { alu_x = in; alu_cb(cb, f); set_f(mask);        bus_write(hl, alu_o); }
+        if (state == 3)                       /**/ {                                                bus_read(++pc); op_done = 1; }
       }
     }
   }
@@ -380,8 +348,8 @@ void Z80::execute_op() {
                                                                                                                                                                                         
     if (state == 0 && INC_AT_HL)              /**/ {                                          bus_read(  hl); }
     if (state == 0 && DEC_AT_HL)              /**/ {                                          bus_read(  hl); }
-    if (state == 1 && INC_AT_HL)              /**/ { out = alu(in, 1, 1, 0); set_f(0xE0);     bus_write( hl); }
-    if (state == 1 && DEC_AT_HL)              /**/ { out = alu(in, 1, 3, 0); set_f(0xE0);     bus_write( hl); }
+    if (state == 1 && INC_AT_HL)              /**/ { alu(in, 1, 1, 0); set_f(0xE0);           bus_write( hl, alu_o); }
+    if (state == 1 && DEC_AT_HL)              /**/ { alu(in, 1, 3, 0); set_f(0xE0);           bus_write( hl, alu_o); }
     if (state == 2 && INC_AT_HL)              /**/ {                                          bus_read(++pc); op_done = 1; }
     if (state == 2 && DEC_AT_HL)              /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                                                                                                                   
@@ -398,14 +366,14 @@ void Z80::execute_op() {
     if (state == 2 && LD_HL_SP_R8)            /**/ { h = alu(sxt(in), sph, 1, f);             bus_read(++pc); op_done = 1; }
                                                                                                                                                                                                                   
     // FIXME                                                                                                                                                                                                      
-    if (state == 0 && INC_BC)                 /**/ { bc++;                                    bus_nop(); }
-    if (state == 0 && DEC_BC)                 /**/ { bc--;                                    bus_nop(); }
-    if (state == 0 && INC_DE)                 /**/ { de++;                                    bus_nop(); }
-    if (state == 0 && DEC_DE)                 /**/ { de--;                                    bus_nop(); }
-    if (state == 0 && INC_HL)                 /**/ { hl++;                                    bus_nop(); }
-    if (state == 0 && DEC_HL)                 /**/ { hl--;                                    bus_nop(); }
-    if (state == 0 && INC_SP)                 /**/ { sp++;                                    bus_nop(); }
-    if (state == 0 && DEC_SP)                 /**/ { sp--;                                    bus_nop(); }
+    if (state == 0 && INC_BC)                 /**/ {                                          bus_nop(bc++); }
+    if (state == 0 && DEC_BC)                 /**/ {                                          bus_nop(bc--); }
+    if (state == 0 && INC_DE)                 /**/ {                                          bus_nop(de++); }
+    if (state == 0 && DEC_DE)                 /**/ {                                          bus_nop(de--); }
+    if (state == 0 && INC_HL)                 /**/ {                                          bus_nop(hl++); }
+    if (state == 0 && DEC_HL)                 /**/ {                                          bus_nop(hl--); }
+    if (state == 0 && INC_SP)                 /**/ {                                          bus_nop(sp++); }
+    if (state == 0 && DEC_SP)                 /**/ {                                          bus_nop(sp--); }
                                                                                                                  
     if (state == 1 && INC_BC)                 /**/ {                                          bus_read(++pc); op_done = 1; }
     if (state == 1 && DEC_BC)                 /**/ {                                          bus_read(++pc); op_done = 1; }
@@ -420,13 +388,13 @@ void Z80::execute_op() {
                                                                                                                  
     if (state == 0 && STM_A16_SP)             /**/ {                                          bus_read(++pc); }
     if (state == 1 && STM_A16_SP)             /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && STM_A16_SP)             /**/ { xyh = in; out = spl;                     bus_write(xy++); }
-    if (state == 3 && STM_A16_SP)             /**/ {           out = sph;                     bus_write(xy++); }
+    if (state == 2 && STM_A16_SP)             /**/ { xyh = in;                                bus_write(xy++, spl); }
+    if (state == 3 && STM_A16_SP)             /**/ {                                          bus_write(xy++, sph); }
     if (state == 4 && STM_A16_SP)             /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                  
-    if (state == 0 && STM_A16_A)              /**/ { out = a;                                 bus_read(++pc); }
+    if (state == 0 && STM_A16_A)              /**/ {                                          bus_read(++pc); }
     if (state == 1 && STM_A16_A)              /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && STM_A16_A)              /**/ { xyh = in;                                bus_write(xy++); }
+    if (state == 2 && STM_A16_A)              /**/ { xyh = in;                                bus_write(xy++, a); }
     if (state == 3 && STM_A16_A)              /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                  
     if (state == 0 && LDM_A_A16)              /**/ {                                          bus_read(++pc); }
@@ -439,9 +407,9 @@ void Z80::execute_op() {
     if (state == 0 && LDM_A_BC)               /**/ {                                          bus_read(bc); }
     if (state == 0 && LDM_A_DE)               /**/ {                                          bus_read(de); }
     if (state == 0 && LDM_R_HL)               /**/ {                                          bus_read(hl); }
-    if (state == 0 && STM_BC_A)               /**/ { out = a;                                 bus_write(bc); }
-    if (state == 0 && STM_DE_A)               /**/ { out = a;                                 bus_write(de); }
-    if (state == 0 && STM_HL_R)               /**/ { out = get_reg(OP_COL);                   bus_write(hl); }
+    if (state == 0 && STM_BC_A)               /**/ {                                          bus_write(bc, a); }
+    if (state == 0 && STM_DE_A)               /**/ {                                          bus_write(de, a); }
+    if (state == 0 && STM_HL_R)               /**/ {                                          bus_write(hl, get_reg(OP_COL)); }
                                                                                               
     if (state == 1 && LDM_A_BC)               /**/ { a = in;                                  bus_read(++pc); op_done = 1; }
     if (state == 1 && LDM_A_DE)               /**/ { a = in;                                  bus_read(++pc); op_done = 1; }
@@ -450,20 +418,20 @@ void Z80::execute_op() {
     if (state == 1 && STM_DE_A)               /**/ {                                          bus_read(++pc); op_done = 1; }
     if (state == 1 && STM_HL_R)               /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                  
-    if (state == 0 && STM_HL_D8)              /**/ { xy = pc;                                 bus_read(++pc); }
-    if (state == 1 && STM_HL_D8)              /**/ { xy = hl; out = in;                       bus_write(hl); }
-    if (state == 2 && STM_HL_D8)              /**/ { xy = pc;                                 bus_read(++pc); op_done = 1; }
+    if (state == 0 && STM_HL_D8)              /**/ {                                          bus_read(++pc); }
+    if (state == 1 && STM_HL_D8)              /**/ {                                          bus_write(hl, in); }
+    if (state == 2 && STM_HL_D8)              /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                  
     if (state == 0 && LDM_A_HLP)              /**/ {                                          bus_read(hl++); }
     if (state == 1 && LDM_A_HLP)              /**/ { a = in;                                  bus_read(++pc); op_done = 1; }
                                                                                               
     if (state == 0 && LDM_A_HLM)              /**/ {                                          bus_read(hl--); }
-    if (state == 1 && LDM_A_HLM)              /**/ {          a = in;                         bus_read(++pc); op_done = 1; }
+    if (state == 1 && LDM_A_HLM)              /**/ { a = in;                                  bus_read(++pc); op_done = 1; }
                                                                                               
-    if (state == 0 && STM_HLP_A)              /**/ {            out = a;                      bus_write(hl++); }
+    if (state == 0 && STM_HLP_A)              /**/ {                                          bus_write(hl++, a); }
     if (state == 1 && STM_HLP_A)              /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                               
-    if (state == 0 && STM_HLM_A)              /**/ {            out = a;                      bus_write(hl--); }
+    if (state == 0 && STM_HLM_A)              /**/ {                                          bus_write(hl--, a); }
     if (state == 1 && STM_HLM_A)              /**/ {                                          bus_read(++pc); op_done = 1; }
                                                                                                                  
     // zero-page load/store                                                                                                                                 
@@ -474,8 +442,8 @@ void Z80::execute_op() {
     if (state == 0 && LDM_A_C)                /**/ {                                          bus_read(0xFF00 | c); }
     if (state == 1 && LDM_A_A8)               /**/ {                                          bus_read(0xFF00 | in); }
 
-    if (state == 0 && STM_C_A)                /**/ { out = a;                                 bus_write(0xFF00 | c); }
-    if (state == 1 && STM_A8_A)               /**/ { out = a;                                 bus_write(0xFF00 | in); }
+    if (state == 0 && STM_C_A)                /**/ {                                          bus_write(0xFF00 | c, a); }
+    if (state == 1 && STM_A8_A)               /**/ {                                          bus_write(0xFF00 | in, a); }
                                                                                                                  
     if (state == 1 && LDM_A_C)                /**/ { a = in;                                  bus_read(++pc); op_done = 1; }
     if (state == 1 && STM_C_A)                /**/ {                                          bus_read(++pc); op_done = 1; }
@@ -488,14 +456,14 @@ void Z80::execute_op() {
     if (state == 0 && PUSH_DE)                /**/ {                                          bus_nop(); }
     if (state == 0 && PUSH_HL)                /**/ {                                          bus_nop(); }
     if (state == 0 && PUSH_AF)                /**/ {                                          bus_nop(); }
-    if (state == 1 && PUSH_BC)                /**/ { out = b;                                 bus_write(--sp); }
-    if (state == 1 && PUSH_DE)                /**/ { out = d;                                 bus_write(--sp); }
-    if (state == 1 && PUSH_HL)                /**/ { out = h;                                 bus_write(--sp); }
-    if (state == 1 && PUSH_AF)                /**/ { out = a;                                 bus_write(--sp); }
-    if (state == 2 && PUSH_BC)                /**/ { out = c;                                 bus_write(--sp); }
-    if (state == 2 && PUSH_DE)                /**/ { out = e;                                 bus_write(--sp); }
-    if (state == 2 && PUSH_HL)                /**/ { out = l;                                 bus_write(--sp); }
-    if (state == 2 && PUSH_AF)                /**/ { out = f;                                 bus_write(--sp); }
+    if (state == 1 && PUSH_BC)                /**/ {                                          bus_write(--sp, b); }
+    if (state == 1 && PUSH_DE)                /**/ {                                          bus_write(--sp, d); }
+    if (state == 1 && PUSH_HL)                /**/ {                                          bus_write(--sp, h); }
+    if (state == 1 && PUSH_AF)                /**/ {                                          bus_write(--sp, a); }
+    if (state == 2 && PUSH_BC)                /**/ {                                          bus_write(--sp, c); }
+    if (state == 2 && PUSH_DE)                /**/ {                                          bus_write(--sp, e); }
+    if (state == 2 && PUSH_HL)                /**/ {                                          bus_write(--sp, l); }
+    if (state == 2 && PUSH_AF)                /**/ {                                          bus_write(--sp, f); }
     if (state == 3 && PUSH_BC)                /**/ {                                          bus_read(++pc); op_done = 1; }
     if (state == 3 && PUSH_DE)                /**/ {                                          bus_read(++pc); op_done = 1; }
     if (state == 3 && PUSH_HL)                /**/ {                                          bus_read(++pc); op_done = 1; }
@@ -554,8 +522,8 @@ void Z80::execute_op() {
                                                                                                                  
     if (state == 0 && JP_CC_A16   &&  branch) /**/ {                                          bus_read(++pc); }
     if (state == 1 && JP_CC_A16   &&  branch) /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && JP_CC_A16   &&  branch) /**/ { xyh = in;                                bus_nop(); }
-    if (state == 3 && JP_CC_A16   &&  branch) /**/ { pc = xy;                                 bus_read(  pc); op_done = 1; }
+    if (state == 2 && JP_CC_A16   &&  branch) /**/ { xyh = in;                                bus_nop(xy); }
+    if (state == 3 && JP_CC_A16   &&  branch) /**/ { pc = bus_req.addr;                       bus_read(  pc); op_done = 1; }
 
     if (state == 0 && JP_CC_A16   && !branch) /**/ {                                          bus_read(++pc); }
     if (state == 1 && JP_CC_A16   && !branch) /**/ {                                          bus_read(++pc); }
@@ -563,8 +531,8 @@ void Z80::execute_op() {
                                                                                                                  
     if (state == 0 && JP_A16)                 /**/ {                                          bus_read(++pc); }
     if (state == 1 && JP_A16)                 /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && JP_A16)                 /**/ { xyh = in;                                bus_nop(); }
-    if (state == 3 && JP_A16)                 /**/ { pc = xy;                                 bus_read(pc); op_done = 1; }
+    if (state == 2 && JP_A16)                 /**/ { xyh = in;                                bus_nop(xy); }
+    if (state == 3 && JP_A16)                 /**/ { pc = bus_req.addr;                       bus_read(pc); op_done = 1; }
                                                                                                         
     if (state == 0 && JP_HL)                  /**/ { pc = hl;                                 bus_read(pc); op_done = 1; }
 
@@ -572,9 +540,9 @@ void Z80::execute_op() {
 
     if (state == 0 && CALL_CC_A16 &&  branch) /**/ {                                          bus_read(++pc); }
     if (state == 1 && CALL_CC_A16 &&  branch) /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && CALL_CC_A16 &&  branch) /**/ { xyh = in;  pc++;                         bus_nop(); }
-    if (state == 3 && CALL_CC_A16 &&  branch) /**/ { out = pch;                               bus_write(--sp); }
-    if (state == 4 && CALL_CC_A16 &&  branch) /**/ { out = pcl;                               bus_write(--sp); }
+    if (state == 2 && CALL_CC_A16 &&  branch) /**/ { xyh = in;                                bus_nop(++pc); }
+    if (state == 3 && CALL_CC_A16 &&  branch) /**/ {                                          bus_write(--sp, pch); }
+    if (state == 4 && CALL_CC_A16 &&  branch) /**/ {                                          bus_write(--sp, pcl); }
     if (state == 5 && CALL_CC_A16 &&  branch) /**/ { pc = xy;                                 bus_read(pc); op_done = 1; }
                                                                                                                 
     if (state == 0 && CALL_CC_A16 && !branch) /**/ {                                          bus_read(++pc); }
@@ -583,14 +551,14 @@ void Z80::execute_op() {
                                                                                                                  
     if (state == 0 && CALL_A16)               /**/ {                                          bus_read(++pc); }
     if (state == 1 && CALL_A16)               /**/ { xyl = in;                                bus_read(++pc); }
-    if (state == 2 && CALL_A16)               /**/ { xyh = in;  pc++;                         bus_nop(); }
-    if (state == 3 && CALL_A16)               /**/ { out = pch;                               bus_write(--sp); }
-    if (state == 4 && CALL_A16)               /**/ { out = pcl;                               bus_write(--sp); }
+    if (state == 2 && CALL_A16)               /**/ { xyh = in;                                bus_nop(++pc); }
+    if (state == 3 && CALL_A16)               /**/ {                                          bus_write(--sp, pch); }
+    if (state == 4 && CALL_A16)               /**/ {                                          bus_write(--sp, pcl); }
     if (state == 5 && CALL_A16)               /**/ { pc = xy;                                 bus_read(pc); op_done = 1; }
                                                                                                                  
     if (state == 0 && RST_NN)                 /**/ { alu_y = 0x38; pc++;                      bus_nop(); }
-    if (state == 1 && RST_NN)                 /**/ { out = pch;                               bus_write(--sp); }
-    if (state == 2 && RST_NN)                 /**/ { out = pcl;                               bus_write(--sp); }
+    if (state == 1 && RST_NN)                 /**/ {                                          bus_write(--sp, pch); }
+    if (state == 2 && RST_NN)                 /**/ {                                          bus_write(--sp, pcl); }
     if (state == 3 && RST_NN)                 /**/ { pc = op - 0xC7;                          bus_read(pc); op_done = 1; }
 
     // returns
@@ -602,17 +570,17 @@ void Z80::execute_op() {
     if (state == 1 && RET_CC      &&  branch) /**/ {                                          bus_nop(); }
     if (state == 2 && RET_CC      &&  branch) /**/ {                                          bus_read(sp++); }
     if (state == 3 && RET_CC      &&  branch) /**/ { pcl = in;                                bus_read(sp++); }
-    if (state == 4 && RET_CC      &&  branch) /**/ { pch = in;                                set_bus(pc, 0); op_done = 1; }
+    if (state == 4 && RET_CC      &&  branch) /**/ { pch = in;                                bus_read(pc); op_done = 1; }
                                                                                                                  
     if (state == 0 && RETI)                   /**/ {                                          bus_read(sp++); }
     if (state == 1 && RETI)                   /**/ { pcl = in;                                bus_read(sp++); }
     if (state == 2 && RETI)                   /**/ { pch = in;                                bus_nop(); }
-    if (state == 3 && RETI)                   /**/ {                                          set_bus(pc, 0); op_done = 1; }
+    if (state == 3 && RETI)                   /**/ {                                          bus_read(pc); op_done = 1; }
                                                                                                                  
     if (state == 0 && RET)                    /**/ {                                          bus_read(sp++); }
     if (state == 1 && RET)                    /**/ { pcl = in;                                bus_read(sp++); }
     if (state == 2 && RET)                    /**/ { pch = in;                                bus_nop(); }
-    if (state == 3 && RET)                    /**/ {                                          set_bus(pc, 0); op_done = 1; }
+    if (state == 3 && RET)                    /**/ {                                          bus_read(pc); op_done = 1; }
                                                                                                                                                                                                
     f &= 0xF0;
 
@@ -688,7 +656,7 @@ uint8_t Z80::alu(int op, uint8_t flags) {
   case 7: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
   }
 
-  uint8_t alu_o = (uint8_t)d2;
+  alu_o = (uint8_t)d2;
   alu_f = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
 
   if (d1 & 0x010) alu_f |= F_HALF_CARRY;
@@ -798,7 +766,7 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
   const uint8_t row = ((op >> 3) & 7);
   const bool bit_mux = (x >> row) & 1;
 
-  uint8_t alu_o = 0;
+  alu_o = 0;
 
   switch (quad) {
   case 0:

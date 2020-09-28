@@ -350,8 +350,8 @@ void Z80::execute_op() {
     if (state == 0 && EI)                     /**/ {                                          bus_read(++pc); op_done = 1; }
     if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL));        bus_read(++pc); op_done = 1; }
                                                                                                                  
-    if (state == 0 && LD_SP_HL)               /**/ { xy = hl;                                 bus_nop(); }
-    if (state == 1 && LD_SP_HL)               /**/ { sp = xy;                                 bus_read(++pc); op_done = 1; }
+    if (state == 0 && LD_SP_HL)               /**/ {                                          bus_nop(hl); }
+    if (state == 1 && LD_SP_HL)               /**/ { sp = bus_req.addr;                       bus_read(++pc); op_done = 1; }
                                                                                                                  
     if (state == 0 && LD_R_D8)                /**/ {                                          bus_read(++pc); }
     if (state == 1 && LD_R_D8)                /**/ { set_reg(OP_ROW, in);                     bus_read(++pc); op_done = 1; }

@@ -240,6 +240,12 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
   uint8_t _int_addr = 0;
   uint8_t _int_ack = 0;
 
+  uint16_t ad = bus_req.addr;
+  uint16_t adp = ad + 1;
+  uint16_t adm = ad - 1;
+
+  state_ = state + 1;
+
   if      (imask_ & intf_ & INT_JOYPAD_MASK) { _int_addr = 0x60; _int_ack = INT_JOYPAD_MASK; }
   else if (imask_ & intf_ & INT_SERIAL_MASK) { _int_addr = 0x58; _int_ack = INT_SERIAL_MASK; }
   else if (imask_ & intf_ & INT_TIMER_MASK)  { _int_addr = 0x50; _int_ack = INT_TIMER_MASK; }
@@ -247,24 +253,27 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
   else if (imask_ & intf_ & INT_VBLANK_MASK) { _int_addr = 0x40; _int_ack = INT_VBLANK_MASK; }
   else                                       { _int_addr = 0x00; _int_ack = 0; }
 
-  if      (state == 0) { bus_nop(); }
-  else if (state == 1) { bus_write(--sp, pch); }
-  else if (state == 2) { bus_write(--sp, pcl); }
-  else if (state == 3) { bus_read(xy); }
-  else if (state == 4) { pc = _int_addr; int_ack = _int_ack; bus_read(pc); }
-
-  state_ = (state == 4) ? 0 : state + 1;
+  if      (state == 0) { pc = ad;            bus_nop(sp); }
+  else if (state == 1) { sp = adm;           bus_write(sp, pch); }
+  else if (state == 2) { sp = adm;           bus_write(sp, pcl); }
+  else if (state == 3) {                     bus_nop(); }
+  else if (state == 4) { int_ack = _int_ack; op_done(_int_addr); }
 }
 
 //-----------------------------------------------------------------------------
 
 void Z80::execute_halt(uint8_t imask_, uint8_t intf_) {
+  uint16_t ad = bus_req.addr;
+  uint16_t adp = ad + 1;
+  uint16_t adm = ad - 1;
 
   if (state == 0) {
-    bus_read(++pc);
+    pc = adp;
+    bus_read(pc);
     state_ = !(imask_ & intf_);
   }
   else if (state == 1) {
+    pc = ad;
     bus_read(pc);
     state_ = !(imask_ & intf_);
   }
@@ -274,7 +283,6 @@ void Z80::execute_halt(uint8_t imask_, uint8_t intf_) {
 
 void Z80::execute_op() {
   state_ = state + 1;
-  bool op_done2 = false;
 
   uint16_t ad = bus_req.addr;
   uint16_t adp = ad + 1;
@@ -587,8 +595,6 @@ void Z80::execute_op() {
                                                                                                                                                                                                
     f &= 0xF0;
   }
-
-  if (op_done2) state_ = 0;
 
   if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
   if (DI)                  {ime = false;      ime_delay = false;}

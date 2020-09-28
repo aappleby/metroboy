@@ -373,10 +373,10 @@ void Z80::execute_op() {
     if (state == 0 && EI)                     /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
     if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL));           /**/                            /**/                                       op_done2 = 1; }
                                                                                                                                                                                                
-    if (state == 0 && LD_SP_HL)               /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
-    if (state == 1 && LD_SP_HL)               /**/ {                                             /**/                            /**/                                       spl = l;           sph = h;                  op_done = 1; }
+    if (state == 0 && LD_SP_HL)               /**/ {                                             /**/                            /**/                                       sp = hl; no_bus = 1; }
+    if (state == 1 && LD_SP_HL)               /**/ {                                             /**/                            /**/                                       op_done2 = 1; }
                                                                                                                                                                                                
-    if (state == 0 && LD_R_D8)                /**/ {                                             /**/                            /**/                                       pcl = inc(pcl, 1); pch = inc(pch, inc_c);    set_bus(pc, 0); state_ = state + 1; }
+    if (state == 0 && LD_R_D8)                /**/ {                                             /**/                            /**/                                       read_arg = 1; }
     if (state == 1 && LD_R_D8)                /**/ { set_reg(OP_ROW, in);                        /**/                            /**/                                       op_done2 = 1; }
                                                                                                                                                                                                
     // 8-bit alu                                                                                                                                                                                                                          

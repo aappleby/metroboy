@@ -74,7 +74,7 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /* p02.RAKE*/ wire RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D2p.qp(), REFA_FF0F_WRn);
   /* p02.SULO*/ wire SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D3p.qp(), REFA_FF0F_WRn);
   /* p02.SEME*/ wire SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D4p.qp(), REFA_FF0F_WRn);
-       
+
   /*#p02.LYTA*/ wire LYTA_FF0F_RST0n = and3(MUXE_INT0_WRn, LETY_INT_VBL_ACKn,  top.clk_reg.ALUR_SYS_RSTn);
   /* p02.MOVU*/ wire MOVU_FF0F_RST1n = and3(NABE_INT1_WRn, LEJA_INT_STAT_ACKn, top.clk_reg.ALUR_SYS_RSTn);
   /* p02.PYGA*/ wire PYGA_FF0F_RST2n = and3(RAKE_INT2_WRn, LESA_INT_TIM_ACKn,  top.clk_reg.ALUR_SYS_RSTn);

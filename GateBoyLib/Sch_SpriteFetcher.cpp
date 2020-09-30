@@ -57,7 +57,7 @@ void SpriteFetcher::tick(const SchematicTop& top) {
 void SpriteFetcher::tock(SchematicTop& top) {
   wire VYPO = 1;
   wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
-  wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_VID_LINE_END_TRIGp;
+  wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_LINE_TRIGp;
 
   /* p01.ROSY*/ wire ROSY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /* p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);

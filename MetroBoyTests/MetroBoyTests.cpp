@@ -76,7 +76,7 @@ int run_microtest(std::string filename) {
   blob rom = load_blob(path);
   MetroBoy gb(0x0100, rom.data(), rom.size());
 
-  int timeout = 4000; // All our "fast" microtests take under 4000 phases
+  int timeout = 8000; // All our "fast" microtests take under 4000 phases
   int phase = 0;
   for (; phase < timeout; phase++) {
     gb.next_phase();
@@ -142,7 +142,7 @@ int run_microtests() {
   err += run_microtest("halt_op_dupe_delay.gb");
 #endif
 
-#if 1
+#if 0
   LOG_Y("Timer tests\n");
   err += run_microtest("div_inc_timing_a.gb");
   err += run_microtest("div_inc_timing_b.gb");
@@ -204,7 +204,7 @@ int run_microtests() {
   err += run_microtest("timer_tma_write_b.gb");
 #endif
 
-#if 0
+#if 1
   LOG_Y("HBlank int tests\n");
   err += run_microtest("hblank_int_di_timing_a.gb");
   err += run_microtest("hblank_int_di_timing_b.gb");
@@ -274,9 +274,7 @@ int run_microtests() {
   err += run_microtest("hblank_scx3_if_d.gb");
   err += run_microtest("hblank_scx3_int_a.gb");
   err += run_microtest("hblank_scx3_int_b.gb");
-#endif
 
-#if 0
   err += run_microtest("int_hblank_halt_bug_a.gb");
   err += run_microtest("int_hblank_halt_bug_b.gb");
   err += run_microtest("int_hblank_halt_scx0.gb");
@@ -295,6 +293,9 @@ int run_microtests() {
   err += run_microtest("int_hblank_incs_scx5.gb");
   err += run_microtest("int_hblank_incs_scx6.gb");
   err += run_microtest("int_hblank_incs_scx7.gb");
+#endif
+
+#if 0
   err += run_microtest("is_if_set_during_ime0.gb");
   err += run_microtest("lcdon_halt_to_vblank_int_a.gb");
   err += run_microtest("lcdon_halt_to_vblank_int_b.gb");

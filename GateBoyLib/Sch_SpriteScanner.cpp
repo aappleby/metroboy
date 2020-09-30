@@ -83,7 +83,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
 
   // 32 + 4 + 2 + 1 = 39
   /*#p28.FETO*/ wire FETO_SCAN_DONE_d0 = and4(YFEL_SCAN0.qp(), WEWY_SCAN1.qp(), GOSO_SCAN2.qp(), FONY_SCAN5.qp());
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, ATAR_VID_RSTp);
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -98,7 +98,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
     /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or2(ATAR_VID_RSTp, AVAP_RENDER_START_TRIGp);
-    /*#p28.BESU*/ BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_VID_LINE_P910.qp(), ASEN_SCAN_DONE_PE);
+    /*#p28.BESU*/ BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_LINE_P000.qp(), ASEN_SCAN_DONE_PE);
     /*#p29.CENO*/ CENO_SCANNINGp.tock(top.clk_reg.XUPY_ABxxEFxx, ABEZ_VID_RSTn, BESU_SCANNINGp.qp());
   }
 

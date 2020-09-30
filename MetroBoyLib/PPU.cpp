@@ -1,4 +1,5 @@
 #include "MetroBoyLib/PPU.h"
+
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
@@ -9,20 +10,15 @@ extern const uint32_t gb_colors[];
 void PPU::reset(bool run_bootrom) {
   *this = {0};
 
+  phase_count = 0;
+  line = 0;
+  lyc_match = 0;
+  frame_count = 0;
+
   //----------
   // Registers
 
   stat = 0x80;
-
-  //----------
-  // Timers and states
-
-  counter = 4;
-  counter_delay1 = 3;
-  counter_delay2 = 2;
-  counter_delay3 = 1;
-
-  hblank_delay2 = HBLANK_DELAY_START;
 
   //----------
   // Sprites
@@ -37,29 +33,22 @@ void PPU::reset(bool run_bootrom) {
   //----------
   // Fixup if we're not running the bootrom
 
+#if 1
   if (!run_bootrom) {
-    //dma = 0xFF;
     bgp = 0xFC;
     obp0 = 0xFF;
     obp1 = 0xFF;
+    update_palettes();
 
-    line = 153;
-    line_delay1 = 153;
-    line_delay2 = 153;
-    line_delay3 = 153;
-
-    counter = 401;
-    counter_delay1 = 400;
-    counter_delay2 = 399;
-    counter_delay3 = 398;
+    //counter = 401;
 
     lcdc = 0x91;
-    pix_count = 160;
-    pix_discard_scx = 0;
-    pix_discard_pad = 8;
+    //pix_count2 = 160;
+    //pix_discard_scx = 0;
+    //pix_discard_pad = 8;
 
-    update_palettes();
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -108,107 +97,186 @@ uint8_t flip2(uint8_t b) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::get_vbus_req(Req& r) const {
-  if (lcdc & FLAG_LCD_ON) {
-    uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-    uint8_t map_y = ((scy + line) >> 3) & 31;
+void PPU::get_vbus_req(Req& /*r*/) const {
+#if 0
+  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
+  uint8_t map_y = ((scy + line) >> 3) & 31;
 
-    uint16_t fetch_addr = 0;
+  uint16_t fetch_addr = 0;
 
-    if (fetch_type == FETCH_BACKGROUND) {
-      if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = tile_map_address(lcdc, new_map_x, map_y);
-      else if (fetch_state == FETCH_TILE_LO)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-      else if (fetch_state == FETCH_TILE_HI)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-    }
-    else if (fetch_type == FETCH_WINDOW) {
-      if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = win_map_address(lcdc, map_x, win_y_latch);
-      else if (fetch_state == FETCH_TILE_LO)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-      else if (fetch_state == FETCH_TILE_HI)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-    }
-    else if (fetch_type == FETCH_SPRITE) {
-      if      (fetch_state == FETCH_SPRITE_LO) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-      else if (fetch_state == FETCH_SPRITE_HI) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-    }
-
-    if (pix_count + pix_discard_pad == 168) {
-      fetch_addr = 0;
-    }
-
-    if (fetch_type != FETCH_NONE) {
-      r.addr    = fetch_addr;
-      r.data_lo = 0;
-      r.read    = 1;
-      r.write   = 0;
-    }
+  if (fetch_type == FETCH_BACKGROUND) {
+    if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = tile_map_address(lcdc, new_map_x, map_y);
+    else if (fetch_state == FETCH_TILE_LO)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
   }
+  else if (fetch_type == FETCH_WINDOW) {
+    if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = win_map_address(lcdc, map_x, win_y_latch);
+    else if (fetch_state == FETCH_TILE_LO)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_SPRITE) {
+    if      (fetch_state == FETCH_SPRITE_LO) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_SPRITE_HI) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
+  }
+
+  if (pix_count2 + pix_discard_pad == 168) {
+    fetch_addr = 0;
+  }
+
+  if (fetch_type != FETCH_NONE) {
+    r.addr    = fetch_addr;
+    r.data_lo = 0;
+    r.read    = 1;
+    r.write   = 0;
+  }
+#endif
 }
 
 //----------------------------------------
 
-void PPU::get_obus_req(Req& r) const {
+void PPU::get_obus_req(Req& /*r*/) const {
+#if 0
+  uint16_t fetch_addr = 0;
+
+  // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
+  if (counter < 80) {
+    r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+    return;
+  }
+
+  if (fetch_type == FETCH_SPRITE && fetch_state == FETCH_SPRITE_MAP) {
+    fetch_addr = ADDR_OAM_BEGIN + (sprite_index << 2) + 2;
+  }
+
+  if (pix_count2 + pix_discard_pad == 168) {
+    fetch_addr = 0;
+  }
+
+  if (fetch_addr != 0) {
+    r.addr  = fetch_addr;
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+  }
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
+bool PPU::read(uint16_t addr, uint8_t& out) {
+  bool hblank    = pix_count >= 167;
+  bool vblank    = line >= 144;
+  bool scanning  = phase_count < 160;
+  bool rendering = phase_count >= 160 && !hblank;
+
+  switch (addr) {
+    case ADDR_LCDC: out = lcdc; return true;
+    case ADDR_STAT: {
+      out = stat & 0b01111000;
+      if (rendering || vblank)   out |= 0b001;
+      if (rendering || scanning) out |= 0b010;
+      if (lyc_match)             out |= 0b100;
+      return true;
+    }
+    case ADDR_SCY:  out = scy;  return true;
+    case ADDR_SCX:  out = scx;  return true;
+    case ADDR_LY:   out = line; return true; // FIXME needs glitches added
+    case ADDR_LYC:  out = lyc;  return true;
+    case ADDR_BGP:  out = bgp;  return true;
+    case ADDR_OBP0: out = obp0; return true;
+    case ADDR_OBP1: out = obp1; return true;
+    case ADDR_WY:   out = wy;   return true;
+    case ADDR_WX:   out = wx;   return true;
+  }
+  return false;
+}
+
+//-----------------------------------------------------------------------------
+
+bool PPU::write(uint16_t addr, uint8_t data) {
+  switch (addr) {
+  case ADDR_LCDC: lcdc = data; return true;
+  case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); return true;
+  case ADDR_SCY:  scy = data;  return true;
+  case ADDR_SCX:  scx = data;  return true;
+  case ADDR_LYC:  lyc = data;  return true;
+  case ADDR_BGP:  bgp = data;  update_palettes(); return true;;
+  case ADDR_OBP0: obp0 = data; update_palettes(); return true;;
+  case ADDR_OBP1: obp1 = data; update_palettes(); return true;;
+  case ADDR_WY:   wy = data;   return true;
+  case ADDR_WX:   wx = data;   return true;
+  };
+  return false;
+}
+
+//-----------------------------------------------------------------------------
+
+void PPU::tick(int phase_total, const Req& req, Ack& ack) {
+
+  bool hblank    = pix_count >= 167;
+  bool vblank    = line >= 144;
+  bool scanning  = phase_count < 160;
+
+  if (DELTA_HA) {
+    if (hblank && !vblank)   stat_int |= EI_HBLANK;
+    if (vblank)              stat_int |= EI_VBLANK;
+    if (scanning && !vblank) stat_int |= EI_OAM;
+    if (lyc_match)           stat_int |= EI_LYC;
+  }
+
+  if (DELTA_BC) {
+    lyc_match = (line == lyc);
+  }
+
+  if (req.read) {
+    ack.read += read(req.addr, ack.data_lo);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void PPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, const Ack /*obus_ack*/) {
+
+  // phase timer and stuff
   if (lcdc & FLAG_LCD_ON) {
-    uint16_t fetch_addr = 0;
-
-    // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    if (counter < 80) {
-      r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
-      r.data  = 0;
-      r.read  = 1;
-      r.write = 0;
-      return;
-    }
-
-    if (fetch_type == FETCH_SPRITE && fetch_state == FETCH_SPRITE_MAP) {
-      fetch_addr = ADDR_OAM_BEGIN + (sprite_index << 2) + 2;
-    }
-
-    if (pix_count + pix_discard_pad == 168) {
-      fetch_addr = 0;
-    }
-
-    if (fetch_addr != 0) {
-      r.addr  = fetch_addr;
-      r.data  = 0;
-      r.read  = 1;
-      r.write = 0;
+    phase_count++;
+    if (phase_count == 912) {
+      phase_count = 0;
+      line++;
+      if (line == 154) {
+        frame_count++;
+        line = 0;
+      }
     }
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void PPU::tick(int phase_total, const Req& req, Ack& ack) const {
-  (void)phase_total;
-
-  if (req.addr == ADDR_LY) return;
-
-  if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
-    uint8_t data = (uint8_t)req.data_lo;
-    switch (req.addr) {
-    case ADDR_LCDC: data = lcdc; break;
-    case ADDR_STAT: data = stat; break;
-    case ADDR_SCY:  data = scy; break;
-    case ADDR_SCX:  data = scx; break;
-    case ADDR_LY:   data = ly; break;
-    case ADDR_LYC:  data = lyc; break;
-      //case ADDR_DMA:  data = dma; break;
-    case ADDR_BGP:  data = bgp; break;
-    case ADDR_OBP0: data = obp0; break;
-    case ADDR_OBP1: data = obp1; break;
-    case ADDR_WY:   data = wy; break;
-    case ADDR_WX:   data = wx; break;
-    default:        data = 0; break;
-    }
-
-    ack.addr = req.addr;
-    ack.data_lo = data;
-    ack.read++;
+  else {
+    phase_count = 0;
+    line = 0;
+    lyc_match = 0;
+    frame_count = 0;
   }
-}
 
-//-----------------------------------------------------------------------------
+  //---------
 
-void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack obus_ack) {
+  if (phase_count == 2) {
+    lyc_match = (line == lyc);
+  }
+
+  if (phase_count == 160) {
+    // rendering begins
+  }
+
+  // interrupt glitch - oam stat fires on vblank
+  // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
+
+  if (DELTA_GH && req.write) {
+    write(req.addr, req.data_lo);
+  }
+
+#if 0
   // handle vbus ack
   {
     uint8_t data = (uint8_t)vbus_ack.data_lo;
@@ -260,94 +328,35 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
     }
   }
 
-  // interrupt glitch - oam stat fires on vblank
-  // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
-
-  if (req.write && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
-    uint8_t data = (uint8_t)req.data_lo;
-    switch (req.addr) {
-    case ADDR_LCDC: lcdc = data; break;
-    case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
-    case ADDR_SCY:  scy = data;  break;
-    case ADDR_SCX:  scx = data;  break;
-    case ADDR_LY:   ly = data;   break;
-    case ADDR_LYC:  lyc = data;  break;
-      //case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  bgp = data;  break;
-    case ADDR_OBP0: obp0 = data; break;
-    case ADDR_OBP1: obp1 = data; break;
-    case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
-    };
-
-    update_palettes();
-  }
-
   if ((lcdc & FLAG_LCD_ON) == 0) {
     tock_lcdoff();
     return;
   }
+#endif
 
   //----------------------------------------
   // Update state machiney stuff
 
-  counter_delay3 = counter_delay2;
-  counter_delay2 = counter_delay1;
-  counter_delay1 = counter;
-
-  line_delay3 = line_delay2;
-  line_delay2 = line_delay1;
-  line_delay1 = line;
-
-  counter++;
-  if (counter == TCYCLES_LINE) {
-    counter = 0;
-    line++;
-    if (line == 154) {
-      line = 0;
-      frame_count++;
-    }
-  }
-
-  if (counter == 0) {
-    state = PPU_STATE_HBLANK;
-    in_window_old = false;
-    in_window_new = false;
-    in_window_early = false;
-    win_retrig_old = false;
-    win_retrig_new = false;
-    pipe_count = 0;
+#if 0
+  if (lcd.phase_count == 0) {
+    //in_window_old = false;
+    //in_window_new = false;
+    //in_window_early = false;
+    //win_retrig_old = false;
+    //win_retrig_new = false;
+    //pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
     pix_count = 0;
     pix_discard_scx = 0;
     pix_discard_pad = 0;
-    hblank_delay2 = HBLANK_DELAY_START;
-    frame_start = (line == 0);
-    frame_done = (line == 144);
   }
-
-  if (counter == 4 && (frame_count != 0 || line != 0)) {
-    this->state = PPU_STATE_OAM;
-  }
-
-  if (counter == 84) {
-    state = PPU_STATE_VRAM;
-  }
-
-  if (counter > 84 && (pix_count + pix_discard_pad == 168)) {
-    state = PPU_STATE_HBLANK;
-    fetch_delay = false;
-    fetch_state = PPU::FETCH_IDLE;
-  }
-
-  if ((line == 144 && counter >= 4) || (line >= 145)) {
-    state = PPU_STATE_VBLANK;
-  }
+#endif
 
   //-----------------------------------
   // Handle OAM/VRAM reads
 
+#if 0
   if (!fetch_delay && (fetch_state == FETCH_SPRITE_HI))  {
     if (spriteF & SPRITE_FLIP_X) {
       sprite_lo = flip2(sprite_lo);
@@ -366,10 +375,12 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
     ob_pal_hi |= (sprite_pal_hi & ~mask);
     sprite_index = -1;
   }
+#endif
 
   //-----------------------------------
   // Window stuff
 
+#if 0
   win_retrig_old = win_retrig_new;
   win_retrig_new = in_window_old && in_window_early;
 
@@ -378,7 +389,7 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
   in_window_early =
     (lcdc & FLAG_WIN_ON) &&
     (line >= wy) &&
-    (pix_count + pix_discard_pad == wx);
+    (pix_count2 + pix_discard_pad == wx);
 
   /*
   // what was this about? writes to FF40 do something weird?
@@ -427,11 +438,39 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
   }
 
   in_window_old |= in_window_new;
+#endif
 
   //-----------------------------------
   // Actual rendering
 
-  int next_pix = pix_count + pix_discard_pad;
+  // line 8, scx 0:
+
+  // 7488 - besu high
+  // 7648 - ppu read 9820, besu falls, xymu high, tile fetcher state 000
+  // 7652 - ppu read 8000
+  // 7656 - ppu read 8001
+
+  // 7660 - ppu read 9820, first tile latched into pipe, tile fetcher state 000
+  // 7661 - sacu falls
+  // 7662 - first sacu high
+  // 7664 - ppu read 8000
+  // 7668 - ppu read 8001
+  // 7672 - no ppu read
+
+  // 7676 - ppu read 9821, tile fetcher state 000
+  // 7678 - hsync pin falls
+  // 7680 - ppu read 8000
+  // 7684 - ppu read 8001
+
+  // 7692 - tile fetcher state 000
+
+  // 7994 - pix count 167
+  // 7995 - xymu 0, stat hblank
+  // 8398 - lx 0, ly 9
+  // 8400 - besu high
+
+  /*
+  int next_pix = pix_count2 + pix_discard_pad;
 
   sprite_hit = 15;
   if (lcdc & FLAG_OBJ_ON) {
@@ -445,22 +484,7 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
     if (next_pix == sprite_x[2]) sprite_hit = 2;
     if (next_pix == sprite_x[1]) sprite_hit = 1;
     if (next_pix == sprite_x[0]) sprite_hit = 0;
-
-#if SPRITE_AT_ZERO_GLITCH
-    if (sprite_hit == 15) {
-      if (sprite_x[9] == 0) sprite_hit = 9;
-      if (sprite_x[8] == 0) sprite_hit = 8;
-      if (sprite_x[7] == 0) sprite_hit = 7;
-      if (sprite_x[6] == 0) sprite_hit = 6;
-      if (sprite_x[5] == 0) sprite_hit = 5;
-      if (sprite_x[4] == 0) sprite_hit = 4;
-      if (sprite_x[3] == 0) sprite_hit = 3;
-      if (sprite_x[2] == 0) sprite_hit = 2;
-      if (sprite_x[1] == 0) sprite_hit = 1;
-      if (sprite_x[0] == 0) sprite_hit = 0;
-    }
-#endif
-      }
+  }
 
   if ((sprite_index == -1) && sprite_hit != 15) {
     sprite_index = sprite_i[sprite_hit];
@@ -471,7 +495,14 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
     sprite_x[sprite_hit] = 255;
     sprite_y[sprite_hit] = 255;
   }
+  */
 
+  //bool rendering = lcd.phase_count >= 160 && pix_count < 167;
+
+  if (phase_count == 160) {
+  }
+
+#if 0
   if (counter == 86) {
 
     tile_latched = true;
@@ -481,17 +512,11 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
       win_y_latch = 0;
     }
     map_x = 0;
-    scx_latch = scx;
   }
-
-  // if this isn't 87 stuff breaks :/
-  bool rendering = counter >= 87 && (pix_count + pix_discard_pad != 168) && line < 144;
 
   if (rendering) {
 
-    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-      emit_pixel();
-    }
+    emit_pixel();
 
     if (pipe_count == 0 && tile_latched) {
       bg_pix_lo = tile_lo;
@@ -500,14 +525,12 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
       tile_latched = 0;
     }
   }
-
-  if ((pix_count + pix_discard_pad == 168) && hblank_delay2) {
-    hblank_delay2--;
-  }
+#endif
 
   //-----------------------------------
   // Fetcher state machine
 
+#if 0
   if (rendering) {
     if (fetch_delay) {
       fetch_delay = false;
@@ -548,132 +571,35 @@ void PPU::tock(int phase_total, const Req& req, const Ack vbus_ack, const Ack ob
       }
     }
   }
+#endif
 
   //-----------------------------------
   // Turn fetcher off once line is done
 
-  if (pix_count + pix_discard_pad == 168) {
+#if 0
+  if (pix_count2 + pix_discard_pad == 168) {
     fetch_type = FETCH_NONE;
     fetch_state = FETCH_IDLE;
     fetch_delay = false;
   }
-
-  //-----------------------------------
-
-  // this needs to go somewhere else
-  if (DELTA_AB || DELTA_EF) {
-    stat &= 0b11111100;
-    stat |= state;
-  }
-
-  //-----------------------------------
-  // lyc_match
-
-  if (line == 0) {
-    if (counter == 0) compare_line = 0;
-    if (counter == 0) ly = line;
-
-    if (counter == 4) compare_line = ly;
-    if (counter == 4) ly = line;
-  }
-  else if (line < 153) {
-    if (counter == 0) compare_line = -1;
-    if (counter == 0) ly = line;
-
-    if (counter == 4) compare_line = ly;
-    if (counter == 4) ly = line;
-  }
-  else if (line == 153) {
-    if (counter == 0) compare_line = -1;
-    if (counter == 0) ly = line;
-
-    if (counter == 4) compare_line = ly;
-    if (counter == 4) ly = 0;
-
-    if (counter == 8) compare_line = -1;
-    if (counter == 8) ly = 0;
-
-    if (counter == 12) compare_line = 0;
-    if (counter == 12) ly = 0;
-  }
-
-  //-----------------------------------
-  // interrupt generation
-
-  if (DELTA_BC || DELTA_FG) {
-    bool fire_stat_hblank1 = hblank_delay2 <= 6;
-    bool fire_stat_vblank1 = (line == 144 && counter >= 4) || (line >= 145);
-    bool fire_stat_lyc1    = compare_line == lyc;
-    //bool fire_stat_glitch1 = ibus_req.write && ibus_req.addr == ADDR_STAT && stat_int1 != 0;
-    bool fire_stat_oam1    = (line > 0) && (line < 144) && (counter == 0);
-
-    bool fire_stat_hblank2 = hblank_delay2 <= 6;
-    bool fire_stat_vblank2 = (line == 144 && counter >= 4) || (line >= 145);
-    bool fire_stat_lyc2    = compare_line == lyc;
-    //bool fire_stat_glitch2 = ibus_req.write && ibus_req.addr == ADDR_STAT && stat_int2 != 0;
-    bool fire_stat_oam2   = ((line == 0 && counter == 4) || (line > 0 && line <= 144 && counter == 4));
-
-    uint8_t stat_ = stat;
-    uint8_t stat_int1_ = stat_int1;
-    uint8_t stat_int2_ = stat_int2;
-
-    if (DELTA_FG) {
-      stat_ &= ~STAT_LYC;
-      stat_int1_ = 0;
-      stat_int2_ = 0;
-    }
-
-    if (fire_stat_lyc1)    stat_ |= STAT_LYC;
-
-    if (fire_stat_hblank1) stat_int1_ |= EI_HBLANK;
-    if (fire_stat_vblank1) stat_int1_ |= EI_VBLANK;
-    if (fire_stat_lyc1)    stat_int1_ |= EI_LYC;
-    //if (fire_stat_glitch1) stat_int1_ |= EI_GLITCH;
-    if (fire_stat_oam1)    stat_int1_ |= EI_OAM;
-
-    if (fire_stat_hblank2) stat_int2_ |= EI_HBLANK;
-    if (fire_stat_vblank2) stat_int2_ |= EI_VBLANK;
-    if (fire_stat_lyc2)    stat_int2_ |= EI_LYC;
-    //if (fire_stat_glitch2) stat_int2_ |= EI_GLITCH;
-    if (fire_stat_oam2)    stat_int2_ |= EI_OAM;
-
-    vblank1 = line == 144 && counter == 4;
-    stat1   = ((stat_ & stat_int1_) && !old_stat_int1);
-
-    vblank2 = line == 144 && counter == 4;
-    stat2   = ((stat_ & stat_int2_) && !old_stat_int2);
-
-    stat = stat_;
-    stat_int1 = stat_int1_;
-    stat_int2 = stat_int2_;
-    old_stat_int1 = (stat_ & stat_int1_);
-    old_stat_int2 = (stat_ & stat_int2_);
-  }
+#endif
 
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void PPU::tock_lcdoff() {
   counter = 4;
-  counter_delay1 = 3;
-  counter_delay2 = 2;
-  counter_delay3 = 1;
 
   line = 0;
-  line_delay1 = 0;
-  line_delay2 = 0;
-  line_delay3 = 0;
 
   ly = 0;
   frame_count = 0;
-  frame_done = false;
-  frame_start = false;
 
-  hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
-  pix_count = 0;
+  pix_count2 = 0;
   pix_discard_scx = 0;
   pix_discard_pad = 0;
   sprite_count = 0;
@@ -684,20 +610,14 @@ void PPU::tock_lcdoff() {
 
   state = PPU_STATE_HBLANK;
   stat &= 0b11111100;
-
-  stat1 = 0;
-  stat2 = 0;
-  vblank1 = 0;
-  vblank2 = 0;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Emit pixel if we have some in the pipe and we're not stalled.
 
 void PPU::emit_pixel() {
-  if (pipe_count == 0) {
-    return;
-  }
+#if 0
   if (sprite_index != -1) {
     return;
   }
@@ -741,7 +661,7 @@ void PPU::emit_pixel() {
   pix_out = 0;
   pix_oe = false;
 
-  if (pix_discard_scx < (scx_latch & 7)) {
+  if (pix_discard_scx < (scx & 7)) {
     pix_oe = false;
     pix_out = 0;
     pix_discard_scx++;
@@ -751,15 +671,18 @@ void PPU::emit_pixel() {
     pix_out = 0;
     pix_discard_pad++;
   }
-  else if (pix_count + pix_discard_pad == 168) {
+  else if (pix_count2 + pix_discard_pad == 168) {
     pix_oe = false;
     pix_out = 0;
   }
   else {
     pix_oe = true;
     pix_out = (palettes[pal] >> (pix << 1)) & 3;
-    pix_count++;
+    pix_count2++;
   }
+
+  pix_count++;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -792,6 +715,11 @@ const char* fetch_names2[] = {
 void PPU::dump(Dumper& d) const {
   d("\002--------------PPU--------------\001\n");
 
+  d("phase_count = %d\n", phase_count);
+  d("line        = %d\n", line);
+  d("lyc_match   = %d\n", lyc_match);
+
+#if 0
   d("LCDC      %s\n", byte_to_bits(lcdc));
   d("STAT      %s\n", byte_to_bits(stat));
   d("SCY       %d\n", scy);
@@ -808,18 +736,11 @@ void PPU::dump(Dumper& d) const {
   d("\n");
 
   d("frame     %d\n", frame_count);
-  d("line      %d\n", line);
   d("state     %s\n", state_names[state]);
   d("counter   %d\n", counter);
-  d("hdelay    %d\n", hblank_delay2);
   d("\n");
 
-  d("compare_line  %d\n", compare_line);
-  d("stat_int1     %d\n", stat_int1);
-  d("stat_int2     %d\n", stat_int2);
-  d("old_stat_int1 %d\n", old_stat_int1);
-  d("old_stat_int2 %d\n", old_stat_int2);
-  d("scx_latch     %d\n", scx_latch);
+  d("stat_int      %d\n", stat_int);
   d("win_y_latch   %d\n", win_y_latch);
   d("win_y_counter %d\n", win_y_counter);
   d("\n");
@@ -861,13 +782,14 @@ void PPU::dump(Dumper& d) const {
   // Pixel pipe
 
   d("map_x           %d\n", map_x);
-
   d("tile_map        %d\n", tile_map);
   d("tile_lo         %d\n", tile_lo);
   d("tile_hi         %d\n", tile_hi);
   d("tile_latched    %d\n", tile_latched);
+  d("\n");
 
   d("pix_count       %d\n", pix_count);
+  d("pix_count2      %d\n", pix_count2);
   d("pix_discard_scx %d\n", pix_discard_scx);
   d("pix_discard_pad %d\n", pix_discard_pad);
   d("pipe_count      %d\n", pipe_count);
@@ -881,16 +803,13 @@ void PPU::dump(Dumper& d) const {
   {
 #define dumpit(a, b) d("%-14s " b "\n", #a, a);
 
-    dumpit(pix_count ,"%d");
+    dumpit(pix_count2 ,"%d");
     dumpit(line      ,"%d");
     dumpit(counter   ,"%d");
     dumpit(pix_out   ,"0x%02x");
     dumpit(pix_oe    ,"%d");
-    dumpit(stat1     ,"%d");
-    dumpit(stat2     ,"%d");
-    dumpit(vblank1   ,"%d");
-    dumpit(vblank2   ,"%d");
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

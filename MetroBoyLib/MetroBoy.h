@@ -8,7 +8,6 @@
 #include "MetroBoyLib/DMA.h"
 #include "MetroBoyLib/Interrupts.h"
 #include "MetroBoyLib/Joypad.h"
-#include "MetroBoyLib/LCD.h"
 #include "MetroBoyLib/PPU.h"
 #include "MetroBoyLib/Serial.h"
 #include "MetroBoyLib/SPU.h"
@@ -54,7 +53,6 @@ struct MetroBoy {
   SPU     spu;
   DMA     dma;
   Bootrom boot;
-  LCD     lcd;
   Interrupts ints;
 
   uint8_t intf_delay = 0;

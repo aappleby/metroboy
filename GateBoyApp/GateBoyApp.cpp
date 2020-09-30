@@ -90,9 +90,9 @@ void GateBoyApp::app_init() {
   ram_tex = create_texture_u8(256, 256);
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
-  
+
   // regenerate post-bootrom dump
-#if 1
+#if 0
   rom_buf = load_blob("roms/tetris.gb");
   gb->reset_to_bootrom(rom_buf.data(), rom_buf.size());
 
@@ -100,7 +100,7 @@ void GateBoyApp::app_init() {
     gb->vid_ram[i] = (uint8_t)rand();
   }
 #endif
-  
+
 #if 0
   // run tiny app
   if (1) {
@@ -124,7 +124,7 @@ void GateBoyApp::app_init() {
     app += "ld a, $20\n"; app += "ld (hl+), a\n";
     app += "ld a, $FD\n"; app += "ld (hl+), a\n";
     app += "ld a, $C9\n"; app += "ld (hl+), a\n";
-    
+
     app += "ld a, $80\n";
     app += "call $ff80\n";
 
@@ -142,7 +142,7 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 0
+#if 1
   // run rom
 
   //load_rom("microtests/build/dmg/int_hblank_halt_bug_a.gb");
@@ -170,8 +170,16 @@ void GateBoyApp::app_init() {
 
   //load_rom("roms/tetris.gb");
 
-  load_flat_dump("roms/LinksAwakening_dog.dump");
+  load_rom("microtests/build/dmg/timer_tma_load_a.gb"); // FAIL
+  load_rom("microtests/build/dmg/timer_tma_load_b.gb"); // FAIL
+  load_rom("microtests/build/dmg/timer_tma_load_c.gb"); // FAIL
+
   gb->sys_cpu_en = false;
+  gb->dbg_write(ADDR_LYC, 10);
+  gb->sys_cpu_en = true;
+
+  //load_flat_dump("roms/LinksAwakening_dog.dump");
+  //gb->sys_cpu_en = false;
 
 #endif
 }
@@ -224,20 +232,16 @@ void GateBoyApp::app_update(double delta) {
     }
 
     case SDLK_LEFT:   {
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_backward += 8;
-      } else {
-        step_backward += 1;
-      }
+      step_backward += 1;
       break;
     }
 
     case SDLK_RIGHT:  {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 113 * 8 * 8;
+        step_forward += 114 * 8 * 8;
       }
       else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 113 * 8;
+        step_forward += 114 * 8;
       } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
         step_forward += 8;
       } else {
@@ -301,7 +305,7 @@ void GateBoyApp::app_update(double delta) {
     //gb->run(114 * 8 * 8);
     gb.step(113 * 8 * 8, STEP_PHASE);
   }
-  
+
   else if (runmode == RUN_STEP && step_forward) {
     gb.step(step_forward, stepmode);
     step_forward = 0;
@@ -590,6 +594,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
                       960 + 96, 640 + 96, 256, 256);
   }
 
+  // Draw screen and vid ram contents
+  if (1) {
+    gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
+    gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vid_ram);
+    gb_blitter.blit_map   (view, 1344, 448, 1, gb->vid_ram, 0, 0);
+    gb_blitter.blit_map   (view, 1632, 448, 1, gb->vid_ram, 0, 1);
+    gb_blitter.blit_map   (view, 1344, 736, 1, gb->vid_ram, 1, 0);
+    gb_blitter.blit_map   (view, 1632, 736, 1, gb->vid_ram, 1, 1);
+  }
+
   // Draw screen overlay
   {
     memset(overlay, 0, sizeof(overlay));
@@ -607,16 +621,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
     blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
-  }
-
-  // Draw screen and vid ram contents
-  if (1) {
-    gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
-    gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vid_ram);
-    gb_blitter.blit_map   (view, 1344, 448, 1, gb->vid_ram, 0, 0);
-    gb_blitter.blit_map   (view, 1632, 448, 1, gb->vid_ram, 0, 1);
-    gb_blitter.blit_map   (view, 1344, 736, 1, gb->vid_ram, 1, 0);
-    gb_blitter.blit_map   (view, 1632, 736, 1, gb->vid_ram, 1, 1);
   }
 
   switch(runmode) {

@@ -63,10 +63,15 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/09-op r,r.gb");             // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
-  //load_rom("roms/cpu_instrs.gb"); // pass
+  load_rom("roms/cpu_instrs.gb"); // pass
 
   //load_rom("microtests/build/dmg/timer_int_halt_a.gb");
   //load_rom("microtests/build/dmg/halt_bug.gb");
+
+  //load_rom("microtests/build/dmg/hblank_int_if_a.gb");
+  //load_rom("microtests/build/dmg/hblank_int_if_b.gb");
+
+  //load_rom("microtests/build/dmg/int_hblank_halt_scx1.gb");
 
   //load_rom("microtests/build/dmg/flood_vram.gb");
 
@@ -77,7 +82,7 @@ void MetroBoyApp::app_init() {
   //load_rom("roms/Prehistorik Man (U).gb");
   //load_rom("roms/SML.gb");
 
-  runmode = RUN_FAST;
+  //runmode = RUN_FAST;
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
@@ -272,16 +277,14 @@ void MetroBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
   // Gameboy screen
 
-  gb_blitter.blit_map   (view, 1280, 32,  2, gb->vram.ram, 0, 0);
+  //gb_blitter.blit_map   (view, 1280, 32,  2, gb->vram.ram, 0, 0);
 
-  /*
   gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
   gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vram.ram);
   gb_blitter.blit_map   (view, 1344, 448, 1, gb->vram.ram, 0, 0);
   gb_blitter.blit_map   (view, 1632, 448, 1, gb->vram.ram, 0, 1);
   gb_blitter.blit_map   (view, 1344, 736, 1, gb->vram.ram, 1, 0);
   gb_blitter.blit_map   (view, 1632, 736, 1, gb->vram.ram, 1, 1);
-  */
 
   //----------------------------------------
   // Trace view
@@ -318,7 +321,6 @@ void MetroBoyApp::app_render_ui(Viewport view) {
   }
 
   if (1) {
-    gb->lcd.dump(d);
     gb->spu.dump(d);
     gb->zram.dump(d);
     gb->oam.dump(d);

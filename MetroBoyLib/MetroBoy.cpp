@@ -25,7 +25,6 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   joypad.reset();
   serial.reset();
   zram.reset();
-  lcd.reset();
 
   boot.disable_bootrom = new_pc != 0x0000;
 
@@ -60,7 +59,6 @@ void MetroBoy::next_phase() {
     boot.  tick(phase_total, ibus_req, ibus_ack);
     timer. tick(phase_total, ibus_req, ibus_ack);
     dma.   tick(phase_total, ibus_req, ibus_ack);
-    lcd.   tick(phase_total, ibus_req, ibus_ack);
     ints.  tick(phase_total, ibus_req, ibus_ack);
   }
 
@@ -119,18 +117,15 @@ void MetroBoy::next_phase() {
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  lcd.   tock(phase_total, ibus_req, ppu.lcdc & FLAG_LCD_ON);
-  ints.  tock(phase_total, ibus_req, z80.int_ack, ppu.vblank1, ppu.stat1, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
+  ints.  tock(phase_total, ibus_req, z80.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
 
   //----------
 
-  int pix_x = ppu.pix_count;
+  int pix_x = ppu.pix_count - 8;
   int pix_y = ppu.line;
 
   if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
-    int sx = ppu.pix_count;
-    int sy = ppu.line;
-    framebuffer[sx + sy * 160] = ppu.pix_out;
+    framebuffer[pix_x + pix_y * 160] = ppu.pix_out;
   }
 
   //-----------------------------------
@@ -158,9 +153,11 @@ void MetroBoy::next_phase() {
     }
 
     // hackkkk
+    /*
     if (cpu_req.write && cpu_req.addr >= 0x8000 && cpu_req.addr <= 0x9FFF) {
       vram.ram[cpu_req.addr - 0x8000] = cpu_req.data;
     }
+    */
   }
 
   ppu.get_vbus_req(vbus_req);

@@ -26,15 +26,17 @@ struct LcdRegisters {
                            SOTA_LYC4n.q08n(), VAFA_LYC5n.q08n(), VEVO_LYC6n.q08n(), RAHA_LYC7n.q08n());
   }
 
-  /*p21.PARU*/ Sig   PARU_VBLANKp_d4;                // -> pix pipe
-  /*p28.ATEJ*/ Sig   ATEJ_VID_LINE_END_TRIGp;        // -> buncha stuff
-  /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;               // -> interrupts
-  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat
-  /*p21.RUTU*/ DFF17 RUTU_LINE_P908; // -> pix pipe, could move PURE here. fires on line phase 908, high for 8 phases
-  /*p29.CATU*/ DFF17 CATU_VID_LINE_P910; // -> pix pipe, scanner. fires on line phase 910, high for 8 phases
-  /*p28.ANEL*/ DFF17 ANEL_VID_LINE_P000; // -> pix pipe for BYHA? fires on line phase 000, high for 8 phases
+  /*p21.PARU*/ Sig   PARU_VBLANKp_d4;     // -> pix pipe
+  /*p28.ATEJ*/ Sig   ATEJ_LINE_TRIGp;     // -> buncha stuff
+  /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;    // -> interrupts
+  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 
-  // -> pix pipe, sprite scanner, vram bus. Increments when RUTU goes high.
+  /*p29.CATU*/ DFF17 CATU_LINE_P000; // -> pix pipe, scanner.
+  /*p21.NYPE*/ DFF17 NYPE_LINE_P002;
+  /*p28.ANEL*/ DFF17 ANEL_LINE_P002; // -> pix pipe for BYHA?
+  /*p21.RUTU*/ DFF17 RUTU_LINE_P910; // -> pix pipe, could move PURE here.
+
+  // -> pix pipe, sprite scanner, vram bus. Increments at P910
   /*p21.MUWY*/ DFF17 MUWY_Y0p;
   /*p21.MYRO*/ DFF17 MYRO_Y1p;
   /*p21.LEXA*/ DFF17 LEXA_Y2p;
@@ -46,8 +48,8 @@ struct LcdRegisters {
 
 private:
 
-  // Increments at line phase 012 (because of RUTU holding it in reset) and then at every A phase.
-  /*p21.SAXO*/ DFF17 SAXO_X0p; 
+  // Increments at P010 (because of RUTU holding it in reset) and then at every A phase.
+  /*p21.SAXO*/ DFF17 SAXO_X0p;
   /*p21.TYPO*/ DFF17 TYPO_X1p;
   /*p21.VYZO*/ DFF17 VYZO_X2p;
   /*p21.TELU*/ DFF17 TELU_X3p;
@@ -55,9 +57,8 @@ private:
   /*p21.TAHA*/ DFF17 TAHA_X5p;
   /*p21.TYRY*/ DFF17 TYRY_X6p;
 
-  /*p21.NYPE*/ DFF17 NYPE_LINE_P000; // fires on line phase 000, high for 8 phases
-  /*p21.MYTA*/ DFF17 MYTA_LINE_153p; // fires on line 153, phase 004. clears on line 000, phase 004
-  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp; // firce on line 144, phase 004. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp; // FIXME firce on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.MYTA*/ DFF17 MYTA_LINE_153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
   /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;
   /*p24.LUCA*/ DFF17 LUCA_LINE_EVEN;

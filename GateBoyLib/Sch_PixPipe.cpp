@@ -42,7 +42,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp.qp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
   /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGp.qp(), top.ACYL_SCANNINGp); // die NOR
 
-  d.dump_reg("FF41 STAT", 
+  d.dump_reg("FF41 STAT",
     !SADU_STAT_MODE0n,
     !XATY_STAT_MODE1n,
     RUPO_LYC_MATCH_LATCHn.qn(),
@@ -86,7 +86,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     MENA_BGP_D7n.q07()
   );
 
-  d.dump_reg("FF48 OBP0", 
+  d.dump_reg("FF48 OBP0",
     XUFU_OBP0_D0n.q07(),
     XUKY_OBP0_D1n.q07(),
     XOVA_OBP0_D2n.q07(),
@@ -134,20 +134,20 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     MYDE_BG_PIPE_A0.qp(), NOZO_BG_PIPE_A1.qp(), MOJU_BG_PIPE_A2.qp(), MACU_BG_PIPE_A3.qp(),
     NEPO_BG_PIPE_A4.qp(), MODU_BG_PIPE_A5.qp(), NEDA_BG_PIPE_A6.qp(), PYBO_BG_PIPE_A7.qp());
 
-  d.dump_reg("BG_PIPE_B", 
+  d.dump_reg("BG_PIPE_B",
     TOMY_BG_PIPE_B0.qp(), TACA_BG_PIPE_B1.qp(), SADY_BG_PIPE_B2.qp(), RYSA_BG_PIPE_B3.qp(),
     SOBO_BG_PIPE_B4.qp(), SETU_BG_PIPE_B5.qp(), RALU_BG_PIPE_B6.qp(), SOHU_BG_PIPE_B7.qp());
 
-  d.dump_reg("SPR_PIPE_A", 
+  d.dump_reg("SPR_PIPE_A",
     NYLU_SPR_PIPE_B0.qp(), PEFU_SPR_PIPE_B1.qp(), NATY_SPR_PIPE_B2.qp(), PYJO_SPR_PIPE_B3.qp(),
     VARE_SPR_PIPE_B4.qp(), WEBA_SPR_PIPE_B5.qp(), VANU_SPR_PIPE_B6.qp(), VUPY_SPR_PIPE_B7.qp());
 
-  d.dump_reg("SPR_PIPE_B", 
+  d.dump_reg("SPR_PIPE_B",
     NURO_SPR_PIPE_A0.qp(), MASO_SPR_PIPE_A1.qp(), LEFE_SPR_PIPE_A2.qp(), LESU_SPR_PIPE_A3.qp(),
     WYHO_SPR_PIPE_A4.qp(), WORA_SPR_PIPE_A5.qp(), VAFO_SPR_PIPE_A6.qp(), WUFY_SPR_PIPE_A7.qp());
 
-  d.dump_reg("PAL_PIPE", 
-    RUGO_PAL_PIPE_0.qp(), SATA_PAL_PIPE_1.qp(), ROSA_PAL_PIPE_2.qp(), SOMY_PAL_PIPE_3.qp(), 
+  d.dump_reg("PAL_PIPE",
+    RUGO_PAL_PIPE_0.qp(), SATA_PAL_PIPE_1.qp(), ROSA_PAL_PIPE_2.qp(), SOMY_PAL_PIPE_3.qp(),
     PALU_PAL_PIPE_4.qp(), NUKE_PAL_PIPE_5.qp(), MODA_PAL_PIPE_6.qp(), LYME_PAL_PIPE_7.qp()
   );
 
@@ -221,8 +221,8 @@ void PixelPipe::tick(const SchematicTop& top) {
   /*p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_X_167p);
 
   /*p21.TOLU*/ wire TOLU_VBLANKn       = not1(top.lcd_reg.PARU_VBLANKp_d4);
-    
-  /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg.RUTU_LINE_P908.qp());
+
+  /*p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg.RUTU_LINE_P910.qp());
   /*p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);
   /*p21.TAPA*/ wire TAPA_INT_OAM = and2(TOLU_VBLANKn, SELA_LINE_ENDp);
   /*p21.TARU*/ wire TARU_INT_HBL = and2(TOLU_VBLANKn, WODU_HBLANKp);
@@ -270,6 +270,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*#p24.SEGU*/ wire SEGU_CLKPIPEn = not1(TYFA_CLKPIPEp_xBxDxFxH);
   /*#p24.SACU*/ wire SACU_CLKPIPEp = or2(SEGU_CLKPIPEn, ROXY_SCX_FINE_MATCH_LATCHn.qp()); // Schematic wrong, this is OR
 
+  probe("SACU_CLKPIPEp", SACU_CLKPIPEp);
+
   /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
   /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
 
@@ -280,7 +282,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // XYMU is the main "we're rendering" flag
 
   {
-    /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, TOFU_VID_RSTp);
+    /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, TOFU_VID_RSTp);
     /*#p21.VOGA*/ VOGA_HBLANKp     .tock(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_HBLANKp);
     /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(TOFU_VID_RSTp, VOGA_HBLANKp.qp());
     /*#p21.XYMU*/ XYMU_RENDERINGp.nor_latch(top.AVAP_RENDER_START_TRIGp, WEGO_HBLANKp);
@@ -290,7 +292,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Pixel counter, has carry lookahead because this can increment every tcycle
 
   {
-    /*p21.TADY*/ wire TADY_LINE_START_RST = nor2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, TOFU_VID_RSTp);
+    /*p21.TADY*/ wire TADY_LINE_START_RST = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, TOFU_VID_RSTp);
 
     /*p21.RYBO*/ wire RYBO = xor2(XEHO_X0p.qp(), SAVY_X1p.qp()); // XOR layout 1, feet facing gnd, this should def be regular xor
     /*p21.XUKE*/ wire XUKE = and2(XEHO_X0p.qp(), SAVY_X1p.qp());
@@ -344,7 +346,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*#p24.ROXO*/ wire ROXO_CLKPIPEp = not1(SEGU_CLKPIPEn);
     /* p24.PAHO*/ PAHO_X_8_SYNC.tock(!ROXO_CLKPIPEp, XYMU_RENDERINGp.qp(), XYDO_X3p.qp());
-    
+
     /*#p24.POFY*/ POFY_HSYNCp.nor_latch(top.AVAP_RENDER_START_TRIGp, or2(PAHO_X_8_SYNC.qp(), TOFU_VID_RSTp));
 
     /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(POFY_HSYNCp.qp());
@@ -434,8 +436,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   //----------------------------------------
   // Window sequencer
 
-  /* p28.ABAF*/ wire ABAF_LINE_END_Bn = not1(top.lcd_reg.CATU_VID_LINE_P910.qp());
-  /* p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg.ANEL_VID_LINE_P000.qp(), ABAF_LINE_END_Bn, ABEZ_VID_RSTn);
+  /* p28.ABAF*/ wire ABAF_LINE_END_Bn = not1(top.lcd_reg.CATU_LINE_P000.qp());
+  /* p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg.ANEL_LINE_P002.qp(), ABAF_LINE_END_Bn, ABEZ_VID_RSTn);
   /* p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_TRIGn);
   /* p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not1(ATEJ_VID_LINE_END_TRIGp);
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENn.q08n(), XAHY_VID_LINE_TRIG_d4n, top.clk_reg.XAPO_VID_RSTn);
@@ -829,7 +831,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
                                                 LUGU_OBP1_D5n.q07(), LARU_PAL_OBP1C,
                                                 LOSE_OBP1_D3n.q07(), LYKY_PAL_OBP1B,
                                                 LAWO_OBP1_D1n.q07(), LOPU_PAL_OBP1A);
-    
+
     /*#p35.MUFA*/ wire MUFA_COL_OBP1_LO = amux4(LEDO_PAL_OBP1D, LEPU_OBP1_D6n.q07(),
                                                 LARU_PAL_OBP1C, LUNE_OBP1_D4n.q07(),
                                                 LYKY_PAL_OBP1B, MOSA_OBP1_D2n.q07(),
@@ -926,7 +928,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
       printf("Stat write during hblank/vblank\n");
     }
     */
-    
+
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not1(SEPA_FF41_WRp);
     /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn, RYJU_FF41_WRn);
 

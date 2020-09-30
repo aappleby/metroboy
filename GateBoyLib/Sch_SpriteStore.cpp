@@ -274,8 +274,8 @@ void SpriteStore::tock(const SchematicTop& top) {
   wire DABU_SPRITE_DELTA2 = top.sprite_scanner.DABU_SPRITE_DELTA2;
   wire GYSA_SPRITE_DELTA3 = top.sprite_scanner.GYSA_SPRITE_DELTA3;
 
-  /*#p28.AZYB*/ wire AZYB_VID_LINE_TRIGn = not1(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp);
-  /* p28.ABAK*/ wire ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_VID_LINE_END_TRIGp, AMYG_VID_RSTp);
+  /*#p28.AZYB*/ wire AZYB_VID_LINE_TRIGn = not1(top.lcd_reg.ATEJ_LINE_TRIGp);
+  /* p28.ABAK*/ wire ABAK_VID_LINE_TRIGp = or2(top.lcd_reg.ATEJ_LINE_TRIGp, AMYG_VID_RSTp);
   /* p28.BYVA*/ wire BYVA_VID_LINE_TRIGn = not1(ABAK_VID_LINE_TRIGp);
   /* p29.DYBA*/ wire DYBA_VID_LINE_TRIGp = not1(BYVA_VID_LINE_TRIGn);
 

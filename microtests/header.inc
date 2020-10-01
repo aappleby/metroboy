@@ -165,6 +165,15 @@
   ldh (LCDC), a
 .endm
 
+.macro reset_lcd_for_test
+  di
+  clear_stat
+  clear_ie
+  clear_if
+  lcd_off_unsafe
+  lcd_on
+.endm
+
 .macro clear_map0 ARGS value
   ld hl, $9800
   ld a, value
@@ -283,15 +292,6 @@
   ldh (STAT), a
 .endm
 
-.macro reset_lcd_for_test
-  di
-  clear_stat
-  clear_ie
-  clear_if
-  lcd_off_unsafe
-  lcd_on
-.endm
-
 .macro skip_line
   nops 114
 .endm
@@ -300,9 +300,8 @@
 // Test end macros. Writes actual value to FF80, expected value to FF81, sanity
 // check value to FF82, then dumps a pass/fail pattern to vram.
 
-.define PASS_PATTERN $80
+.define PASS_PATTERN $01
 .define FAIL_PATTERN $FF
-.define SANE_PATTERN $31
 
 .macro test_end
   ld hl, $8000
@@ -316,38 +315,38 @@
   ldh ($80), a
   ld a, PASS_PATTERN
   ldh ($81), a
-  ld a, SANE_PATTERN
-  ldh ($82), a
   ld a, PASS_PATTERN
+  ldh ($82), a
   test_end
 .endm
 
 .macro test_fail
   ld a, FAIL_PATTERN
   ldh ($80), a
-  ld a, PASS_PATTERN
-  ldh ($81), a
-  ld a, SANE_PATTERN
-  ldh ($82), a
   ld a, FAIL_PATTERN
+  ldh ($81), a
+  ld a, FAIL_PATTERN
+  ldh ($82), a
   test_end
 .endm
 
 .macro test_finish_a ARGS expected
-  ld b, a
+
+  cp expected
+  jr z, +
+
   ldh ($80), a
   ld a, expected
   ldh ($81), a
-  ld a, SANE_PATTERN
-  ldh ($82), a
-
-  ld a, b
-  cp expected
-
-  jr z, +
   ld a, FAIL_PATTERN
+  ldh ($82), a
   test_end
-+ ld a, PASS_PATTERN
+
++ ldh ($80), a
+  ld a, expected
+  ldh ($81), a
+  ld a, PASS_PATTERN
+  ldh ($82), a
   test_end
 .endm
 

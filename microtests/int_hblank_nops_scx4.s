@@ -2,7 +2,7 @@
 
 main:
   lcd_off_unsafe
-  ld a, 5
+  ld a, 4
   ldh (SCX), a
   cycle_init
   set_stat_int_hblank
@@ -12,10 +12,9 @@ main:
   lcd_on
 
   xor a
-  incs 1000
+  nops 1000
   di
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_a 63
-  //test_display_a
+  test_finish_cycle 99

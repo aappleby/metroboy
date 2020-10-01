@@ -173,24 +173,20 @@ void GateBoy::next_pass() {
     //----------
     // CPU updates after HA.
 
-    static uint8_t imask_delay = 0;
-    static uint8_t intf_delay = 0;
-
     if (DELTA_HA && sys_cpu_en) {
-      //cpu_blah.tock_ha(imask_to_cpu, intf_to_cpu, (uint8_t)cpu_req.data);
-      imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-      cpu_blah.tock_ha(imask_to_cpu, intf_delay, (uint8_t)cpu_req.data);
-
-      imask_delay = imask_to_cpu;
-      intf_delay = intf_to_cpu;
-      intf_to_cpu = 0;
+      cpu_blah.tock_ha(imask_gh, intf_gh, (uint8_t)cpu_req.data);
     }
 
-    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
-    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
-    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
-    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
-    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
+    // fg or gh works for int_hblank_incs w/o delay
+    if (DELTA_GH) {
+      imask_gh = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+      intf_gh = 0;
+      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_gh |= INT_VBLANK_MASK;
+      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_gh |= INT_STAT_MASK;
+      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_gh |= INT_TIMER_MASK;
+      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_gh |= INT_SERIAL_MASK;
+      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_gh |= INT_JOYPAD_MASK;
+    }
 
     /*
     if (DELTA_DE && sys_cpu_en) {

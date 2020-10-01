@@ -194,7 +194,7 @@ void GateBoyApp::app_init() {
 
   */
 
-  load_rom("microtests/build/dmg/lyc_int_halt_a.gb");
+  load_rom("microtests/build/dmg/int_hblank_incs_scx0.gb");
   //runmode = RUN_FAST;
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");

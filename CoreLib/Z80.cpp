@@ -195,7 +195,7 @@ void Z80::reset(uint16_t new_pc) {
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 
-void Z80::tock_ha(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
+void Z80::tock_ha(uint8_t imask_, uint8_t intf_gh, uint8_t bus_data) {
   state = state_;
   ime = ime_delay;
 
@@ -208,13 +208,14 @@ void Z80::tock_ha(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
     op_addr = bus_req.addr;
     op = bus_data;
 
-    if ((imask_ & intf_) && ime) {
+    if ((imask_ & intf_gh) && ime) {
       op = 0xF4; // fake opcode
       ime = false;
       ime_delay = false;
     }
   }
 
+  /*
   if (HALT && (state == 1)) {
     if ((imask_ & intf_) && ime) {
       op = 0xF4; // fake opcode
@@ -222,28 +223,21 @@ void Z80::tock_ha(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
       ime_delay = false;
     }
   }
+  */
 
   alu_x = 0;
   alu_y = 0;
   int_ack = 0;
 
   if (INT) {
-    execute_int(imask_, intf_);
+    execute_int(imask_, intf_gh);
   }
   else if (HALT) {
-    execute_halt(imask_, intf_);
+    execute_halt(imask_, intf_gh);
   }
   else {
     execute_op();
   }
-}
-
-//----------------------------------------
-
-void Z80::tock_de(uint8_t imask_, uint8_t intf_, uint8_t bus_data) {
-  (void)imask_;
-  (void)intf_;
-  (void)bus_data;
 }
 
 //-----------------------------------------------------------------------------
@@ -269,7 +263,8 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
   else if (state == 1) { sp = adm;           bus_write(sp, pch); }
   else if (state == 2) { sp = adm;           bus_write(sp, pcl); }
   else if (state == 3) {                     bus_nop(); }
-  else if (state == 4) { int_ack = _int_ack; op_done(_int_addr); }
+  else if (state == 4) {                     bus_nop(); }
+  else if (state == 5) { int_ack = _int_ack; op_done(_int_addr); }
 }
 
 //-----------------------------------------------------------------------------
@@ -287,6 +282,7 @@ void Z80::execute_halt(uint8_t imask_, uint8_t intf_) {
   else if (state == 1) {
     pc = ad;
     bus_read(pc);
+    state_ = !(imask_ & intf_);
   }
 }
 

@@ -129,6 +129,7 @@ int GateBoyTests::test_micro_halt() {
 
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
+#if 0
   err += run_microtest("vblank2_int_halt_a.gb"); // main vblank, fail
   err += run_microtest("vblank2_int_halt_b.gb");
 
@@ -146,7 +147,38 @@ int GateBoyTests::test_micro_halt() {
 
   err += run_microtest("timer_int_halt_a.gb");
   err += run_microtest("timer_int_halt_b.gb");
+#endif
 
+  err += run_microtest("int_hblank_halt_scx0.gb");
+  err += run_microtest("int_hblank_halt_scx1.gb");
+  err += run_microtest("int_hblank_halt_scx2.gb");
+  err += run_microtest("int_hblank_halt_scx3.gb");
+  err += run_microtest("int_hblank_halt_scx4.gb");
+  err += run_microtest("int_hblank_halt_scx5.gb");
+  err += run_microtest("int_hblank_halt_scx6.gb");
+  err += run_microtest("int_hblank_halt_scx7.gb");
+
+  LOG_B("---------- Inc-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_hblank_incs_scx0.gb");
+  err += run_microtest("int_hblank_incs_scx1.gb");
+  err += run_microtest("int_hblank_incs_scx2.gb");
+  err += run_microtest("int_hblank_incs_scx3.gb");
+  err += run_microtest("int_hblank_incs_scx4.gb");
+  err += run_microtest("int_hblank_incs_scx5.gb");
+  err += run_microtest("int_hblank_incs_scx6.gb");
+  err += run_microtest("int_hblank_incs_scx7.gb");
+
+  LOG_B("---------- Nop-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_hblank_nops_scx0.gb");
+  err += run_microtest("int_hblank_nops_scx1.gb");
+  err += run_microtest("int_hblank_nops_scx2.gb");
+  err += run_microtest("int_hblank_nops_scx3.gb");
+  err += run_microtest("int_hblank_nops_scx4.gb");
+  err += run_microtest("int_hblank_nops_scx5.gb");
+  err += run_microtest("int_hblank_nops_scx6.gb");
+  err += run_microtest("int_hblank_nops_scx7.gb");
 
   TEST_END();
 }
@@ -691,7 +723,7 @@ int GateBoyTests::run_microtest(const char* filename) {
   gb.reset_post_bootrom(rom.data(), rom.size());
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
-  int timeout = 500000; // All our "fast" microtests take under 500 cycles
+  int timeout = 150000; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
     gb.run(8);
@@ -700,27 +732,26 @@ int GateBoyTests::run_microtest(const char* filename) {
 
   uint8_t result_a = gb.zero_ram[0]; // actual
   uint8_t result_b = gb.zero_ram[1]; // expected
-  uint8_t result_c = gb.zero_ram[2]; // sanity (should be 0x31
-
+  uint8_t result_c = gb.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
 
   if (mcycle == timeout) {
     LOG_B("%-30s ", filename);
     LOG_Y("TIMEOUT\n");
     return 1;
   }
-  else if (result_c != 0x31) {
-    LOG_B("%-30s ", filename);
-    LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, mcycle);
-    return 1;
-  }
-  else if (result_a == result_b) {
+  else if (result_c == 0x01) {
     LOG_B("%-30s ", filename);
     LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
     return 0;
   }
-  else {
+  else if (result_c == 0xFF) {
     LOG_B("%-30s ", filename);
     LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, mcycle);
+    return 1;
+  }
+  else {
+    LOG_B("%-30s ", filename);
+    LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, mcycle);
     return 1;
   }
 }

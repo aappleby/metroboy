@@ -81,8 +81,8 @@ struct GateBoy {
   Req      dbg_req = {0};
   Req      bus_req = {0};
   uint8_t  cpu_data_latch = 0;
-  uint8_t  imask_to_cpu = 0;
-  uint8_t  intf_to_cpu = 0;
+  uint8_t  imask_gh = 0;
+  uint8_t  intf_gh = 0;
   uint8_t  cpu_int_ack = 0;
 
   // SOC

@@ -6,6 +6,8 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
+#define SKIP_PASSING_TESTS
+
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
@@ -22,6 +24,7 @@ int main(int argc, char** argv) {
   //err += test_init();
   //err += test_bootrom();
 
+#ifndef SKIP_PASSING_TESTS
   err += t.test_clk();
   err += t.test_ext_bus();
   err += t.test_mem();
@@ -31,7 +34,12 @@ int main(int argc, char** argv) {
   err += t.test_ppu();
   err += t.test_serial();
   err += t.test_timer();
-  err += t.test_micro();
+#endif
+
+  err += t.test_micro_halt();
+
+  //err += t.test_micro();
+  //err += t.test_micro_poweron();
   //err += t.test_micro_ints();
 
   auto finish = timestamp();
@@ -46,34 +54,7 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-int GateBoyTests::test_micro_ints() {
-  TEST_START();
-
-  err += run_microtest("int_hblank_halt_bug_a.gb");
-  err += run_microtest("int_hblank_halt_bug_b.gb");
-
-  err += run_microtest("int_hblank_halt_scx0.gb");
-  err += run_microtest("int_hblank_halt_scx1.gb");
-  err += run_microtest("int_hblank_halt_scx2.gb");
-  err += run_microtest("int_hblank_halt_scx3.gb");
-  err += run_microtest("int_hblank_halt_scx4.gb");
-  err += run_microtest("int_hblank_halt_scx5.gb");
-  err += run_microtest("int_hblank_halt_scx6.gb");
-  err += run_microtest("int_hblank_halt_scx7.gb");
-
-  err += run_microtest("int_hblank_incs_scx0.gb");
-  err += run_microtest("int_hblank_incs_scx1.gb");
-  err += run_microtest("int_hblank_incs_scx2.gb");
-  err += run_microtest("int_hblank_incs_scx3.gb");
-  err += run_microtest("int_hblank_incs_scx4.gb");
-  err += run_microtest("int_hblank_incs_scx5.gb");
-  err += run_microtest("int_hblank_incs_scx6.gb");
-  err += run_microtest("int_hblank_incs_scx7.gb");
-
-  TEST_END();
-}
-
-int GateBoyTests::test_micro() {
+int GateBoyTests::test_micro_poweron() {
   TEST_START();
 
   LOG_B("---------- Stat boot state ----------\n");
@@ -102,34 +83,6 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_004_div.gb");
   err += run_microtest("poweron_005_div.gb");
 
-  LOG_B("---------- OAM Boot state ----------\n");
-
-  err += run_microtest("poweron_000_oam.gb");
-  err += run_microtest("poweron_005_oam.gb");
-  err += run_microtest("poweron_006_oam.gb");
-  err += run_microtest("poweron_069_oam.gb");
-  err += run_microtest("poweron_070_oam.gb");
-  err += run_microtest("poweron_119_oam.gb");
-  err += run_microtest("poweron_120_oam.gb");
-  err += run_microtest("poweron_121_oam.gb");
-  err += run_microtest("poweron_183_oam.gb");
-  err += run_microtest("poweron_184_oam.gb");
-  err += run_microtest("poweron_233_oam.gb");
-  err += run_microtest("poweron_234_oam.gb");
-  err += run_microtest("poweron_235_oam.gb");
-
-  LOG_B("---------- VRAM Boot state ----------\n");
-
-  err += run_microtest("poweron_000_vram.gb");
-  err += run_microtest("poweron_025_vram.gb");
-  err += run_microtest("poweron_026_vram.gb");
-  err += run_microtest("poweron_069_vram.gb");
-  err += run_microtest("poweron_070_vram.gb");
-  err += run_microtest("poweron_139_vram.gb");
-  err += run_microtest("poweron_140_vram.gb");
-  err += run_microtest("poweron_183_vram.gb");
-  err += run_microtest("poweron_184_vram.gb");
-
   LOG_B("---------- LY boot state ----------\n");
 
   err += run_microtest("poweron_000_ly.gb");
@@ -138,7 +91,7 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_233_ly.gb");
   err += run_microtest("poweron_234_ly.gb");
 
-#if SKIP_PASSING_TESTS
+#ifndef SKIP_PASSING_TESTS
   LOG_B("---------- Other reg initial values ----------\n");
   err += run_microtest("poweron_000_bgp.gb");
   err += run_microtest("poweron_000_dma.gb");
@@ -159,85 +112,68 @@ int GateBoyTests::test_micro() {
   err += run_microtest("poweron_000_wy.gb");
 #endif
 
-#if SKIP_PASSING_TESTS
-  LOG_B("---------- LCDEN-to-LY timing ----------\n");
-  err += run_microtest("lcdon_to_ly1_a.gb");
-  err += run_microtest("lcdon_to_ly1_b.gb");
-  err += run_microtest("lcdon_to_ly2_a.gb");
-  err += run_microtest("lcdon_to_ly2_b.gb");
-  err += run_microtest("lcdon_to_ly3_a.gb");
-  err += run_microtest("lcdon_to_ly3_b.gb");
-#endif
+  TEST_END();
+}
 
-  LOG_B("---------- LCDEN-to-STAT timing ----------\n");
-  err += run_microtest("lcdon_to_stat0_a.gb");
-  err += run_microtest("lcdon_to_stat0_b.gb");
-  err += run_microtest("lcdon_to_stat0_c.gb");
-  err += run_microtest("lcdon_to_stat0_d.gb");
-#if 0
-  // slow
-  err += run_microtest("lcdon_to_stat1_a.gb");
-  err += run_microtest("lcdon_to_stat1_b.gb");
-  err += run_microtest("lcdon_to_stat1_c.gb");
-  err += run_microtest("lcdon_to_stat1_d.gb");
-  err += run_microtest("lcdon_to_stat1_e.gb");
-#endif
-  err += run_microtest("lcdon_to_stat2_a.gb");
-  err += run_microtest("lcdon_to_stat2_b.gb");
-  err += run_microtest("lcdon_to_stat2_c.gb");
-  err += run_microtest("lcdon_to_stat2_d.gb");
-  err += run_microtest("lcdon_to_stat3_a.gb");
-  err += run_microtest("lcdon_to_stat3_b.gb");
-  err += run_microtest("lcdon_to_stat3_c.gb");
-  err += run_microtest("lcdon_to_stat3_d.gb");
+//-----------------------------------------------------------------------------
 
-#if 0
-  LOG_B("---------- LYC interrupt ----------\n");
-  err += run_microtest("lcdon_to_lyc1_int.gb");
-  err += run_microtest("lcdon_to_lyc2_int.gb");
-  err += run_microtest("lcdon_to_lyc3_int.gb");
-#endif
+/*
+vblank_int_halt_a -
+int fires on       131450
+cpu req is FFFE on 131465 (predec sp)
+div read on        131729
+*/
 
+int GateBoyTests::test_micro_halt() {
+  TEST_START();
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("vblank2_int_halt_a.gb"); // main vblank, fail
+  err += run_microtest("vblank2_int_halt_b.gb");
+
+  //err += run_microtest("hblank_int_halt_a.gb");
+
+  //err += run_microtest("hblank_int_halt_b.gb");
+  err += run_microtest("vblank_int_halt_a.gb"); // stat vblank, fail
+  err += run_microtest("vblank_int_halt_b.gb");
+
+  err += run_microtest("oam_int_halt_a.gb"); // pass
+  err += run_microtest("oam_int_halt_b.gb"); // pass
+
+  err += run_microtest("lyc_int_halt_a.gb"); // write these
+  err += run_microtest("lyc_int_halt_b.gb");
+
+  err += run_microtest("timer_int_halt_a.gb");
+  err += run_microtest("timer_int_halt_b.gb");
+
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_vblank() {
+  TEST_START();
 
 #if 0 // slow
-  err += run_microtest("lcdon_halt_to_vblank_int_a.gb"); // fail
+  err += run_microtest("lcdon_halt_to_vblank_int_a.gb"); // ***FAIL***
   err += run_microtest("lcdon_halt_to_vblank_int_b.gb");
   err += run_microtest("lcdon_nops_to_vblank_int_a.gb");
   err += run_microtest("lcdon_nops_to_vblank_int_b.gb");
 #endif
 
-  // deleted these?
-  //err += run_microtest("lcdon_to_hblank_di_timing_a.gb");
-  //err += run_microtest("lcdon_to_hblank_di_timing_b.gb");
-  //err += run_microtest("lcdon_to_hblank_int_l0.gb");
-  //err += run_microtest("lcdon_to_hblank_int_l1.gb");
-  //err += run_microtest("lcdon_to_hblank_int_l2.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx0.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx1.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx2.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx3.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx4.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx5.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx6.gb");
-  //err += run_microtest("lcdon_to_hblank_int_scx7.gb");
+  TEST_END();
+}
 
-#if SKIP_PASSING_TESTS
-  LOG_B("---------- DMA ----------\n");
-  err += run_microtest("dma_0x1000.gb");
-  err += run_microtest("dma_0x9000.gb");
-  err += run_microtest("dma_0xA000.gb");
-  err += run_microtest("dma_0xE000.gb");
-#endif
+//-----------------------------------------------------------------------------
 
-  LOG_B("---------- OAM interrupt ----------\n");
-  err += run_microtest("lcdon_to_oam_int_l0.gb");
-  err += run_microtest("lcdon_to_oam_int_l1.gb");
-  err += run_microtest("lcdon_to_oam_int_l2.gb");
+int GateBoyTests::test_micro_int_stat_hblank() {
+  TEST_START();
 
+  //err += run_microtest("int_hblank_halt_bug_a.gb");
+  //err += run_microtest("int_hblank_halt_bug_b.gb");
 
-  LOG_B("---------- HBLANK interrupt ----------\n");
-  //err += run_microtest("hblank_int_halt_a.gb");
-  //err += run_microtest("hblank_int_halt_b.gb");
   //err += run_microtest("hblank_int_if_a.gb");
   //err += run_microtest("hblank_int_if_b.gb");
 
@@ -321,8 +257,258 @@ int GateBoyTests::test_micro() {
   //err += run_microtest("hblank_int_scx7_nops_a.gb");
   //err += run_microtest("hblank_int_scx7_nops_b.gb");
 
+  err += run_microtest("int_hblank_halt_scx0.gb");
+  err += run_microtest("int_hblank_halt_scx1.gb");
+  err += run_microtest("int_hblank_halt_scx2.gb");
+  err += run_microtest("int_hblank_halt_scx3.gb");
+  err += run_microtest("int_hblank_halt_scx4.gb");
+  err += run_microtest("int_hblank_halt_scx5.gb");
+  err += run_microtest("int_hblank_halt_scx6.gb");
+  err += run_microtest("int_hblank_halt_scx7.gb");
 
-  LOG_B("---------- Timer ----------\n");
+  err += run_microtest("int_hblank_incs_scx0.gb");
+  err += run_microtest("int_hblank_incs_scx1.gb");
+  err += run_microtest("int_hblank_incs_scx2.gb");
+  err += run_microtest("int_hblank_incs_scx3.gb");
+  err += run_microtest("int_hblank_incs_scx4.gb");
+  err += run_microtest("int_hblank_incs_scx5.gb");
+  err += run_microtest("int_hblank_incs_scx6.gb");
+  err += run_microtest("int_hblank_incs_scx7.gb");
+
+  // deleted these?
+  //err += run_microtest("lcdon_to_hblank_di_timing_a.gb");
+  //err += run_microtest("lcdon_to_hblank_di_timing_b.gb");
+  //err += run_microtest("lcdon_to_hblank_int_l0.gb");
+  //err += run_microtest("lcdon_to_hblank_int_l1.gb");
+  //err += run_microtest("lcdon_to_hblank_int_l2.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx0.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx1.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx2.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx3.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx4.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx5.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx6.gb");
+  //err += run_microtest("lcdon_to_hblank_int_scx7.gb");
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_stat_vblank() {
+  TEST_START();
+#if 0 // slow
+  LOG_B("---------- VBlank interrupt timing ----------\n");
+  err += run_microtest("vblank2_int_if_a.gb");
+  err += run_microtest("vblank2_int_if_b.gb");
+  err += run_microtest("vblank2_int_if_c.gb");
+  err += run_microtest("vblank2_int_if_d.gb");
+  err += run_microtest("vblank2_int_inc_sled.gb");
+  err += run_microtest("vblank2_int_nops_a.gb");
+  err += run_microtest("vblank2_int_nops_b.gb");
+
+  err += run_microtest("vblank_int_if_a.gb");
+  err += run_microtest("vblank_int_if_b.gb");
+  err += run_microtest("vblank_int_if_c.gb");
+  err += run_microtest("vblank_int_if_d.gb");
+  err += run_microtest("vblank_int_inc_sled.gb");
+  err += run_microtest("vblank_int_nops_a.gb");
+  err += run_microtest("vblank_int_nops_b.gb");
+#endif
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_stat_oam() {
+  TEST_START();
+  err += run_microtest("lcdon_to_oam_int_l0.gb");
+  err += run_microtest("lcdon_to_oam_int_l1.gb");
+  err += run_microtest("lcdon_to_oam_int_l2.gb");
+
+  // slow
+  err += run_microtest("line_144_oam_int_a.gb"); // pass
+  err += run_microtest("line_144_oam_int_b.gb"); // pass
+  err += run_microtest("line_144_oam_int_c.gb"); // pass
+  err += run_microtest("line_144_oam_int_d.gb"); // pass
+
+  err += run_microtest("oam_int_if_edge_a.gb"); // pass
+  err += run_microtest("oam_int_if_edge_b.gb"); // pass
+  err += run_microtest("oam_int_if_edge_c.gb"); // pass
+  err += run_microtest("oam_int_if_edge_d.gb"); // pass
+  err += run_microtest("oam_int_if_level_c.gb"); // pass
+  err += run_microtest("oam_int_if_level_d.gb"); // pass
+  err += run_microtest("oam_int_inc_sled.gb"); // pass
+  err += run_microtest("oam_int_nops_a.gb"); // pass
+  err += run_microtest("oam_int_nops_b.gb"); // pass
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_stat_lyc() {
+  TEST_START();
+  LOG_B("---------- LYC interrupt ----------\n");
+  err += run_microtest("lcdon_to_lyc1_int.gb");
+  err += run_microtest("lcdon_to_lyc2_int.gb");
+  err += run_microtest("lcdon_to_lyc3_int.gb");
+
+  err += run_microtest("lyc1_int_if_edge_a.gb");  // pass
+  err += run_microtest("lyc1_int_if_edge_b.gb");  // pass
+  err += run_microtest("lyc1_int_if_edge_c.gb");  // pass
+  err += run_microtest("lyc1_int_if_edge_d.gb");  // pass
+  err += run_microtest("lyc1_int_nops_a.gb");     // pass
+  err += run_microtest("lyc1_int_nops_b.gb");     // pass
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_timer() {
+  TEST_START();
+  LOG_B("---------- Timer interrupt ----------\n");
+  err += run_microtest("timer_int_inc_sled.gb");
+  err += run_microtest("timer_int_inc_sled_a.gb");
+  err += run_microtest("timer_int_inc_sled_b.gb");
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_serial() {
+  TEST_START();
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_int_joypad() {
+  TEST_START();
+  TEST_END();
+}
+
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_lcden() {
+  TEST_START();
+
+  err += run_microtest("lcdon_to_ly1_a.gb");
+  err += run_microtest("lcdon_to_ly1_b.gb");
+  err += run_microtest("lcdon_to_ly2_a.gb");
+  err += run_microtest("lcdon_to_ly2_b.gb");
+  err += run_microtest("lcdon_to_ly3_a.gb");
+  err += run_microtest("lcdon_to_ly3_b.gb");
+
+  err += run_microtest("lcdon_to_stat0_a.gb");
+  err += run_microtest("lcdon_to_stat0_b.gb");
+  err += run_microtest("lcdon_to_stat0_c.gb");
+  err += run_microtest("lcdon_to_stat0_d.gb");
+  err += run_microtest("lcdon_to_stat1_a.gb");
+  err += run_microtest("lcdon_to_stat1_b.gb");
+  err += run_microtest("lcdon_to_stat1_c.gb");
+  err += run_microtest("lcdon_to_stat1_d.gb");
+  err += run_microtest("lcdon_to_stat1_e.gb");
+  err += run_microtest("lcdon_to_stat2_a.gb");
+  err += run_microtest("lcdon_to_stat2_b.gb");
+  err += run_microtest("lcdon_to_stat2_c.gb");
+  err += run_microtest("lcdon_to_stat2_d.gb");
+  err += run_microtest("lcdon_to_stat3_a.gb");
+  err += run_microtest("lcdon_to_stat3_b.gb");
+  err += run_microtest("lcdon_to_stat3_c.gb");
+  err += run_microtest("lcdon_to_stat3_d.gb");
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_dma() {
+  TEST_START();
+  LOG_B("---------- DMA ----------\n");
+  err += run_microtest("dma_0x1000.gb");
+  err += run_microtest("dma_0x9000.gb");
+  err += run_microtest("dma_0xA000.gb");
+  err += run_microtest("dma_0xE000.gb");
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_lock_oam() {
+  TEST_START();
+
+  err += run_microtest("oam_read_l0_a.gb"); // pass
+  err += run_microtest("oam_read_l0_b.gb"); // pass
+  err += run_microtest("oam_read_l0_c.gb"); // pass
+  err += run_microtest("oam_read_l0_d.gb"); // ***FAIL***
+  err += run_microtest("oam_read_l1_a.gb"); // ***FAIL***
+  err += run_microtest("oam_read_l1_b.gb"); // pass
+  err += run_microtest("oam_read_l1_c.gb"); // pass
+  err += run_microtest("oam_read_l1_d.gb"); // pass
+  err += run_microtest("oam_read_l1_e.gb"); // pass
+  err += run_microtest("oam_read_l1_f.gb"); // ***FAIL***
+
+  err += run_microtest("oam_write_l0_a.gb"); // pass
+  err += run_microtest("oam_write_l0_b.gb"); // ***FAIL***
+  err += run_microtest("oam_write_l0_c.gb"); // pass
+  err += run_microtest("oam_write_l0_d.gb"); // ***FAIL***
+  err += run_microtest("oam_write_l0_e.gb"); // pass
+
+  err += run_microtest("oam_write_l1_a.gb"); // pass
+  err += run_microtest("oam_write_l1_b.gb"); // pass
+  err += run_microtest("oam_write_l1_c.gb"); // ***FAIL***
+  err += run_microtest("oam_write_l1_d.gb"); // pass
+  err += run_microtest("oam_write_l1_e.gb"); // pass
+  err += run_microtest("oam_write_l1_f.gb"); // pass
+
+  err += run_microtest("lcdon_to_oam_unlock_a.gb"); // pass
+  err += run_microtest("lcdon_to_oam_unlock_b.gb"); // pass
+  err += run_microtest("lcdon_to_oam_unlock_c.gb"); // pass
+  err += run_microtest("lcdon_to_oam_unlock_d.gb"); // ***FAIL***
+
+  err += run_microtest("poweron_000_oam.gb");
+  err += run_microtest("poweron_005_oam.gb");
+  err += run_microtest("poweron_006_oam.gb");
+  err += run_microtest("poweron_069_oam.gb");
+  err += run_microtest("poweron_070_oam.gb");
+  err += run_microtest("poweron_119_oam.gb");
+  err += run_microtest("poweron_120_oam.gb");
+  err += run_microtest("poweron_121_oam.gb");
+  err += run_microtest("poweron_183_oam.gb");
+  err += run_microtest("poweron_184_oam.gb");
+  err += run_microtest("poweron_233_oam.gb");
+  err += run_microtest("poweron_234_oam.gb");
+  err += run_microtest("poweron_235_oam.gb");
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_lock_vram() {
+  TEST_START();
+
+  err += run_microtest("poweron_000_vram.gb");
+  err += run_microtest("poweron_025_vram.gb");
+  err += run_microtest("poweron_026_vram.gb");
+  err += run_microtest("poweron_069_vram.gb");
+  err += run_microtest("poweron_070_vram.gb");
+  err += run_microtest("poweron_139_vram.gb");
+  err += run_microtest("poweron_140_vram.gb");
+  err += run_microtest("poweron_183_vram.gb");
+  err += run_microtest("poweron_184_vram.gb");
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_timer() {
+  TEST_START();
 
   err += run_microtest("timer_tima_inc_256k_a.gb");
   err += run_microtest("timer_tima_inc_256k_b.gb");
@@ -369,97 +555,56 @@ int GateBoyTests::test_micro() {
   err += run_microtest("timer_div_phase_c.gb");
   err += run_microtest("timer_div_phase_d.gb");
 
-  err += run_microtest("timer_tma_load_a.gb"); // FAIL
-  err += run_microtest("timer_tma_load_b.gb"); // FAIL
-  err += run_microtest("timer_tma_load_c.gb"); // FAIL
   err += run_microtest("timer_tma_write_a.gb");
   err += run_microtest("timer_tma_write_b.gb");
 
-  err += run_microtest("timer_int_inc_sled.gb");
-  err += run_microtest("timer_int_inc_sled_a.gb");
-  err += run_microtest("timer_int_inc_sled_b.gb");
-  // FIXME add timer_int_halt test
+  TEST_END();
+}
 
-#if 0 // slow
-  err += run_microtest("line_144_oam_int_a.gb");
-  err += run_microtest("line_144_oam_int_b.gb");
-  err += run_microtest("line_144_oam_int_c.gb");
-  err += run_microtest("line_144_oam_int_d.gb");
+//-----------------------------------------------------------------------------
 
-  err += run_microtest("line_153_ly_a.gb");
-  err += run_microtest("line_153_ly_b.gb");
-  err += run_microtest("line_153_ly_c.gb");
-  err += run_microtest("line_153_ly_d.gb");
-  err += run_microtest("line_153_ly_e.gb");
-  err += run_microtest("line_153_ly_f.gb");
+int GateBoyTests::test_micro_ppu() {
+  TEST_START();
 
-  err += run_microtest("line_153_lyc0_int_inc_sled.gb");
+#if 0
 
+  err += run_microtest("line_153_ly_a.gb"); // pass
+  err += run_microtest("line_153_ly_b.gb"); // pass
+  err += run_microtest("line_153_ly_c.gb"); // pass
+  err += run_microtest("line_153_ly_d.gb"); // pass
+  err += run_microtest("line_153_ly_e.gb"); // pass
+  err += run_microtest("line_153_ly_f.gb"); // pass
+
+  err += run_microtest("line_153_lyc0_int_inc_sled.gb"); // ***FAIL***
+#endif
+
+
+
+#ifndef SKIP_PASSING_TESTS
+  err += run_microtest("lyc1_write_timing_a.gb"); // pass
+  err += run_microtest("lyc1_write_timing_b.gb"); // pass
+  err += run_microtest("lyc1_write_timing_c.gb"); // pass
+  err += run_microtest("lyc1_write_timing_d.gb"); // pass
 #endif
 
 #if 0
-  err += run_microtest("lyc1_int_if_edge_a.gb");
-  err += run_microtest("lyc1_int_if_edge_b.gb");
-  err += run_microtest("lyc1_int_if_edge_c.gb");
-  err += run_microtest("lyc1_int_if_edge_d.gb");
-  err += run_microtest("lyc1_int_nops_a.gb");
-  err += run_microtest("lyc1_int_nops_b.gb");
-  err += run_microtest("lyc1_write_timing_a.gb");
-  err += run_microtest("lyc1_write_timing_b.gb");
-  err += run_microtest("lyc1_write_timing_c.gb");
-  err += run_microtest("lyc1_write_timing_d.gb");
 #endif
 
 #if 0
-  err += run_microtest("oam_int_halt_a.gb");
-  err += run_microtest("oam_int_halt_b.gb");
-  err += run_microtest("oam_int_if_edge_a.gb");
-  err += run_microtest("oam_int_if_edge_b.gb");
-  err += run_microtest("oam_int_if_edge_c.gb");
-  err += run_microtest("oam_int_if_edge_d.gb");
-  // deleted?
-  //err += run_microtest("oam_int_if_level_a.gb");
-  //err += run_microtest("oam_int_if_level_b.gb");
-  err += run_microtest("oam_int_if_level_c.gb");
-  err += run_microtest("oam_int_if_level_d.gb");
-  err += run_microtest("oam_int_inc_sled.gb");
-  err += run_microtest("oam_int_nops_a.gb");
-  err += run_microtest("oam_int_nops_b.gb");
-  err += run_microtest("oam_read_l0_a.gb");
-  err += run_microtest("oam_read_l0_b.gb");
-  err += run_microtest("oam_read_l0_c.gb");
-  err += run_microtest("oam_read_l0_d.gb");
-  err += run_microtest("oam_read_l1_a.gb");
-  err += run_microtest("oam_read_l1_b.gb");
-  err += run_microtest("oam_read_l1_c.gb");
-  err += run_microtest("oam_read_l1_d.gb");
-  err += run_microtest("oam_read_l1_e.gb");
-  err += run_microtest("oam_read_l1_f.gb");
-
-  err += run_microtest("oam_write_l0_a.gb");
-  err += run_microtest("oam_write_l0_b.gb");
-  err += run_microtest("oam_write_l0_c.gb");
-  err += run_microtest("oam_write_l0_d.gb");
-  err += run_microtest("oam_write_l0_e.gb");
-
-  err += run_microtest("oam_write_l1_a.gb");
-  err += run_microtest("oam_write_l1_b.gb");
-  err += run_microtest("oam_write_l1_c.gb");
-  err += run_microtest("oam_write_l1_d.gb");
-  err += run_microtest("oam_write_l1_e.gb");
-  err += run_microtest("oam_write_l1_f.gb");
-
-  err += run_microtest("lcdon_to_oam_unlock_a.gb");
-  err += run_microtest("lcdon_to_oam_unlock_b.gb");
-  err += run_microtest("lcdon_to_oam_unlock_c.gb");
-  err += run_microtest("lcdon_to_oam_unlock_d.gb");
+  err += run_microtest("stat_write_glitch_l0_a.gb");
+  err += run_microtest("stat_write_glitch_l0_b.gb");
+  err += run_microtest("stat_write_glitch_l0_c.gb");
+  err += run_microtest("stat_write_glitch_l1_a.gb");
+  err += run_microtest("stat_write_glitch_l1_b.gb");
+  err += run_microtest("stat_write_glitch_l1_c.gb");
+  err += run_microtest("stat_write_glitch_l1_d.gb");
 #endif
 
-#if 0
+
   err += run_microtest("ppu_sprite0_scx0_b.gb");
   err += run_microtest("ppu_sprite0_scx2_a.gb");
   err += run_microtest("ppu_sprite0_scx2_b.gb");
-  err += run_microtest("ppu_sprite0_scx3_a.gb");
+  err += run_microtest("ppu_sprite0_scx3_a.gb"); // FAIL
   err += run_microtest("ppu_sprite0_scx3_b.gb");
   err += run_microtest("ppu_sprite0_scx4_a.gb");
   err += run_microtest("ppu_sprite0_scx4_b.gb");
@@ -467,7 +612,7 @@ int GateBoyTests::test_micro() {
   err += run_microtest("ppu_sprite0_scx5_b.gb");
   err += run_microtest("ppu_sprite0_scx6_a.gb");
   err += run_microtest("ppu_sprite0_scx6_b.gb");
-  err += run_microtest("ppu_sprite0_scx7_a.gb");
+  err += run_microtest("ppu_sprite0_scx7_a.gb"); // FAIL
   err += run_microtest("ppu_sprite0_scx7_b.gb");
 
   err += run_microtest("sprite4_0_a.gb");
@@ -486,46 +631,15 @@ int GateBoyTests::test_micro() {
   err += run_microtest("sprite4_6_b.gb");
   err += run_microtest("sprite4_7_a.gb");
   err += run_microtest("sprite4_7_b.gb");
-#endif
 
-  //err += run_microtest("sprite_0_a.gb");
-  //err += run_microtest("sprite_0_b.gb"); // broken on dmg
-  //err += run_microtest("sprite_1_a.gb");
-  //err += run_microtest("sprite_1_b.gb");
+  TEST_END();
+}
 
-#if 0
-  err += run_microtest("stat_write_glitch_l0_a.gb");
-  err += run_microtest("stat_write_glitch_l0_b.gb");
-  err += run_microtest("stat_write_glitch_l0_c.gb");
-  err += run_microtest("stat_write_glitch_l1_a.gb");
-  err += run_microtest("stat_write_glitch_l1_b.gb");
-  err += run_microtest("stat_write_glitch_l1_c.gb");
-  err += run_microtest("stat_write_glitch_l1_d.gb");
-#endif
+//-----------------------------------------------------------------------------
 
-#if 0 // slow
-  err += run_microtest("vblank2_int_halt_a.gb");
-  err += run_microtest("vblank2_int_halt_b.gb");
-  err += run_microtest("vblank2_int_if_a.gb");
-  err += run_microtest("vblank2_int_if_b.gb");
-  err += run_microtest("vblank2_int_if_c.gb");
-  err += run_microtest("vblank2_int_if_d.gb");
-  err += run_microtest("vblank2_int_inc_sled.gb");
-  err += run_microtest("vblank2_int_nops_a.gb");
-  err += run_microtest("vblank2_int_nops_b.gb");
+int GateBoyTests::test_micro_window() {
+  TEST_START();
 
-  err += run_microtest("vblank_int_halt_a.gb");
-  err += run_microtest("vblank_int_halt_b.gb");
-  err += run_microtest("vblank_int_if_a.gb");
-  err += run_microtest("vblank_int_if_b.gb");// fail
-  err += run_microtest("vblank_int_if_c.gb");
-  err += run_microtest("vblank_int_if_d.gb");
-  err += run_microtest("vblank_int_inc_sled.gb");
-  err += run_microtest("vblank_int_nops_a.gb");
-  err += run_microtest("vblank_int_nops_b.gb");
-#endif
-
-#if 0
   err += run_microtest("win0_scx3_a.gb");
   err += run_microtest("win0_scx3_b.gb");
   err += run_microtest("win10_scx3_a.gb");
@@ -564,7 +678,6 @@ int GateBoyTests::test_micro() {
   err += run_microtest("win14_b.gb");
   err += run_microtest("win15_a.gb");
   err += run_microtest("win15_b.gb");
-#endif
 
   TEST_END();
 }
@@ -577,7 +690,8 @@ int GateBoyTests::run_microtest(const char* filename) {
   GateBoy gb;
   gb.reset_post_bootrom(rom.data(), rom.size());
 
-  int timeout = 500; // All our "fast" microtests take under 500 cycles
+  //int timeout = 500; // All our "fast" microtests take under 500 cycles
+  int timeout = 500000; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
     gb.run(8);

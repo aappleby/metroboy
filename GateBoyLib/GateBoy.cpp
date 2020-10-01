@@ -60,7 +60,7 @@ void GateBoy::reset_to_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
   run(5);
 
   // Out of reset
-  // Start clock and sync with phase 
+  // Start clock and sync with phase
   sys_rst = 0;
   sys_clken = 1;
   sys_clkgood = 1;
@@ -101,7 +101,7 @@ void GateBoy::reset_post_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
 
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
-  
+
   dbg_req.addr = uint16_t(addr);
   dbg_req.data = 0;
   dbg_req.read = 1;
@@ -160,19 +160,11 @@ void GateBoy::next_pass() {
     //----------
     // Bus data and interrupt flags are latched after GH.
 
-    if (DELTA_GH) {
+    /*if (DELTA_FG) {*/
       // imask/intf have to be latched here or we get more errors
-      imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-      intf_to_cpu = 0;
-    }
+      //intf_to_cpu = 0;
 
     if (DELTA_GH) {
-      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
-      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
-      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
-      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
-      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
-
       // has to be in gh or things break
       if (cpu_req.read) cpu_req.data = cpu_data_latch;
       if (dbg_req.read) dbg_req.data = cpu_data_latch;
@@ -181,9 +173,30 @@ void GateBoy::next_pass() {
     //----------
     // CPU updates after HA.
 
+    static uint8_t imask_delay = 0;
+    static uint8_t intf_delay = 0;
+
     if (DELTA_HA && sys_cpu_en) {
-      cpu_blah.tock(imask_to_cpu, intf_to_cpu, (uint8_t)cpu_req.data);
+      //cpu_blah.tock_ha(imask_to_cpu, intf_to_cpu, (uint8_t)cpu_req.data);
+      imask_to_cpu = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+      cpu_blah.tock_ha(imask_to_cpu, intf_delay, (uint8_t)cpu_req.data);
+
+      imask_delay = imask_to_cpu;
+      intf_delay = intf_to_cpu;
+      intf_to_cpu = 0;
     }
+
+    if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_to_cpu |= INT_VBLANK_MASK;
+    if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_to_cpu |= INT_STAT_MASK;
+    if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_to_cpu |= INT_TIMER_MASK;
+    if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_to_cpu |= INT_SERIAL_MASK;
+    if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_to_cpu |= INT_JOYPAD_MASK;
+
+    /*
+    if (DELTA_DE && sys_cpu_en) {
+      cpu_blah.tock_de(imask_to_cpu, intf_to_cpu, (uint8_t)cpu_req.data);
+    }
+    */
 
     //----------
     // Send pixels to the display if necessary.

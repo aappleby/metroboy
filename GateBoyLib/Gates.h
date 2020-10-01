@@ -6,39 +6,39 @@
 
 //-----------------------------------------------------------------------------
 
-inline wire not1(wire a) { return !a; }
+__forceinline wire not1(wire a) { return !a; }
 
-inline wire and2(wire a, wire b) { return a & b; }
-inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
-inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
-inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
-inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
-inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
+__forceinline wire and2(wire a, wire b) { return a & b; }
+__forceinline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
+__forceinline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
+__forceinline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
+__forceinline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
+__forceinline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
 
-inline wire or2(wire a, wire b) { return a | b; }
-inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
-inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
-inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
+__forceinline wire or2(wire a, wire b) { return a | b; }
+__forceinline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
+__forceinline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
+__forceinline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
 
-inline wire xor2 (wire a, wire b) { return a ^ b; }
-inline wire xnor2(wire a, wire b) { return a == b; }
+__forceinline wire xor2 (wire a, wire b) { return a ^ b; }
+__forceinline wire xnor2(wire a, wire b) { return a == b; }
 
-inline wire nor2(wire a, wire b) { return !(a | b); }
-inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
-inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
-inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
-inline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
-inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
+__forceinline wire nor2(wire a, wire b) { return !(a | b); }
+__forceinline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
+__forceinline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
+__forceinline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
+__forceinline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
+__forceinline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
 
-inline wire nand2(wire a, wire b) { return !(a & b); }
-inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
-inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
-inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
-inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
-inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
+__forceinline wire nand2(wire a, wire b) { return !(a & b); }
+__forceinline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
+__forceinline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
+__forceinline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
+__forceinline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
+__forceinline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
 
-inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
-inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
+__forceinline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
+__forceinline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
 
 //-----------------------------------------------------------------------------
 
@@ -155,10 +155,10 @@ enum RegDelta : uint8_t {
   DELTA_XXXX = 0b0001, // 01: error
   DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches and config bits
   DELTA_LOCK = 0b0011, // 03: do not change tri when committed, sticky. used for buses.
-  DELTA_TRIZ = 0b0100, // 04: 
-  DELTA_TRI1 = 0b0101, // 05: 
-  DELTA_TRI0 = 0b0110, // 06: 
-  DELTA_TRIX = 0b0111, // 07: 
+  DELTA_TRIZ = 0b0100, // 04:
+  DELTA_TRI1 = 0b0101, // 05:
+  DELTA_TRI0 = 0b0110, // 06:
+  DELTA_TRIX = 0b0111, // 07:
   DELTA_D0C0 = 0b1000, // 08: data 0    + clock 0
   DELTA_D1C0 = 0b1001, // 09: data 1    + clock 0
   DELTA_D0C1 = 0b1010, // 10: data 0    + clock 1
@@ -204,20 +204,27 @@ struct RegBase {
   static bool bus_collision;
   static bool bus_floating;
 
-  inline char c() const  { return reg_state_to_c(state); }
-  inline char cn() const { return reg_state_to_cn(state); }
+  __forceinline char c() const  { return reg_state_to_c(state); }
+  __forceinline char cn() const { return reg_state_to_cn(state); }
 
-  inline wire qp() const { return  as_wire(); }
-  inline wire qn() const { return !as_wire(); }
+  __forceinline wire qp() const {
+    return  as_wire();
+  }
 
-  inline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_YYYY); }
-  inline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
-  inline bool has_delta() const { return delta != DELTA_NONE; }
-  inline wire as_wire()   const {
+  __forceinline wire qn() const {
+    return !as_wire();
+  }
+
+  __forceinline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_YYYY); }
+  __forceinline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
+  __forceinline bool has_delta() const { return delta != DELTA_NONE; }
+  __forceinline wire as_wire()   const {
+#ifdef SANITY_CHECK
     if (state == TRI_HZNP) {
       //printf("bus floating?\n");
       bus_floating = true;
     }
+#endif
     /*CHECKn(has_delta());*/ return wire(state & 1);
   }
 
@@ -342,13 +349,13 @@ struct DFF8 : private RegBase {
 // Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
 // OBP1, stat int enable, sprite store, SCY, SCX, LCDC, WX, WY.
 
-// DFF9_01 | O===--o | 
+// DFF9_01 | O===--o |
 // DFF9_02 |==--O====| << CLKp
 // DFF9_03 | ------- | << D
 // DFF9_04 |o-------O| << CLKn
-// DFF9_05 |  -----  | 
+// DFF9_05 |  -----  |
 // DFF9_06 |--xxOxx--| << RSTn
-// DFF9_07 |o-------o| 
+// DFF9_07 |o-------o|
 // DFF9_08 |xxx-O-xxx| >> Qn
 // DFF9_09 |xxx-O-xxx| >> Q
 
@@ -590,7 +597,7 @@ struct Sig : private RegBase {
   inline void operator = (wire s) {
     CHECK_N(has_delta());
     CHECK_P(tick_running);
-    
+
     state = RegState(TRI_D0NP | int(s));
     delta = s ? DELTA_TRI1 : DELTA_TRI0;
   }

@@ -166,17 +166,36 @@ void GateBoyApp::app_init() {
   //load_rom("microtests/build/dmg/int_hblank_incs_scx6.gb"); // int fires on FG 638, int starts on 680
   //load_rom("microtests/build/dmg/int_hblank_incs_scx7.gb"); // int fires on HA 640, int starts on 688
 
-  //load_rom("microtests/build/dmg/flood_vram.gb");
+  /*
+  oam_int_halt_a.gb              0x01 0x01 0x31 PASS @ 322
+  oam_int_halt_b.gb              0x02 0x02 0x31 PASS @ 323
+  2038 : int fires on phase G
+  2048 : isr starts
 
-  //load_rom("roms/tetris.gb");
+  vblank2_int_halt_a.gb          0x02 0x01 0x31 FAIL @ 16486
+  vblank2_int_halt_b.gb          0x02 0x02 0x31 PASS @ 16488
+  131450 : int fires on phase C
+  131464 : isr starts
 
-  load_rom("microtests/build/dmg/timer_tma_load_a.gb"); // FAIL
-  load_rom("microtests/build/dmg/timer_tma_load_b.gb"); // FAIL
-  load_rom("microtests/build/dmg/timer_tma_load_c.gb"); // FAIL
+  vblank_int_halt_a.gb           0x02 0x01 0x31 FAIL @ 16491
+  vblank_int_halt_b.gb           0x02 0x02 0x31 PASS @ 16493
+  int fires on 131450, phase C
 
-  gb->sys_cpu_en = false;
-  gb->dbg_write(ADDR_LYC, 10);
-  gb->sys_cpu_en = true;
+  lyc_int_halt_a.gb              0x05 0x04 0x31 FAIL @ 357
+  lyc_int_halt_b.gb              0x05 0x05 0x31 PASS @ 359
+  2090 : int fires on phase C
+  2104 : isr starts
+  passes w/ nop sled, fails w/ halt
+
+  timer_int_halt_a.gb            0x02 0x02 0x31 PASS @ 247
+  timer_int_halt_b.gb            0x03 0x03 0x31 PASS @ 241
+  1200 : int fires on phase A
+  1216 : isr starts
+
+  */
+
+  load_rom("microtests/build/dmg/lyc_int_halt_a.gb");
+  //runmode = RUN_FAST;
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;

@@ -23,10 +23,11 @@ uint64_t commit_and_hash(void* blob, int size) {
   for (int i = 0; i < size; i++) {
 
     uint8_t s1 = base[i];
-    uint8_t s2 = logic_lut1[s1];
+    uint8_t s2 = logic_lut1.tab[s1];
 
     //printf("%04d 0x%02x 0x%02x\n", i, s1, s2);
 
+#ifdef SANITY_CHECK
     if ((s1 & 0x0F) == ERR_XXXX) {
       __debugbreak();
     }
@@ -34,8 +35,11 @@ uint64_t commit_and_hash(void* blob, int size) {
     if ((s2 & 0x0F) == ERR_XXXX) {
       __debugbreak();
     }
+#endif
 
-    combine_hash(h, s2);
+    //combine_hash(h, s2);
+    h = _byteswap_uint64((h ^ s2) * 0xff51afd7ed558ccd);
+
     base[i] = s2;
   }
 

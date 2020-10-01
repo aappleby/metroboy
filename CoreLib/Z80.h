@@ -7,7 +7,8 @@
 struct Z80 {
   void reset(uint16_t new_pc);
 
-  void tock(uint8_t imask_, uint8_t intf_, uint8_t bus_data);
+  void tock_ha(uint8_t imask_, uint8_t intf_, uint8_t bus_data);
+  void tock_de(uint8_t imask_, uint8_t intf_, uint8_t bus_data);
 
   void execute_int(uint8_t imask_, uint8_t intf_);
   void execute_halt(uint8_t imask_, uint8_t intf_);

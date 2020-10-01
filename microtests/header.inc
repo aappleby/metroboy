@@ -1,4 +1,4 @@
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 .gbheader
 	name "microtest"
@@ -15,7 +15,7 @@
 .ramsize 2
 .bank 0 slot 0
 
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 .define VRAM $8000
 
@@ -40,7 +40,53 @@
 .define IF   $0F
 .define IE   $FF
 
-;-------------------------------------------------------------------------------
+.define VBLANK_INT_VECTOR $40
+.define STAT_INT_VECTOR   $48
+.define TIMER_INT_VECTOR  $50
+.define SERIAL_INT_VECTOR $58
+.define JOYPAD_INT_VECTOR $60
+
+//-------------------------------------------------------------------------------
+// Memset / memcpy helpers
+
+.macro memset_1024 ARGS base value
+  ld hl, base
+  ld a, value
+  ld b, 0
+- ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  dec b
+  jr nz, -
+.endm
+
+//-------------------------------------------------------------------------------
+// Cycle counter helper. Returns a value that increments every cycle in A.
+
+.macro cycle_init
+  ld a, %101
+  ldh (TAC), a
+.endm
+
+.macro cycle_count
+  ld hl, $FF05
+  xor a
+  add (hl)
+  nop
+  add (hl)
+  nop
+  add (hl)
+  nop
+  add (hl)
+.endm
+
+.macro test_finish_cycle ARGS expected
+  cycle_count
+  test_finish_a expected
+.endm
+
+//------------------------------------------------------------------------------
 
 .macro set_if
   ld a, $FF
@@ -72,43 +118,6 @@
   ldh (IE), a
 .endm
 
-;-------------------------------------------------------------------------------
-
-.macro cycle_init
-  ld a, %101
-  ldh (TAC), a
-.endm
-
-.macro cycle_count
-  ld hl, $FF05
-  xor a
-  add (hl)
-  nop
-  add (hl)
-  nop
-  add (hl)
-  nop
-  add (hl)
-.endm
-
-.macro test_finish_cycle ARGS expected
-  cycle_count
-  test_finish_a expected
-.endm
-
-.macro test_display_cycle
-  cycle_count
-- ld ($8000), a
-  jr -
-.endm
-
-;-------------------------------------------------------------------------------
-
-.macro clear_stat
-  xor a
-  ldh (STAT), a
-.endm
-
 .macro set_stat_int_lyc
   ld a, %01000000
   ldh (STAT), a
@@ -129,7 +138,7 @@
   ldh (STAT), a
 .endm
 
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 .macro lcd_off_unsafe
   ld a, $0
@@ -180,8 +189,8 @@
   jr nz,-
 .endm
 
-;-------------------------------------------------------------------------------
-; Non-cycle-accurate wait for vblank
+//------------------------------------------------------------------------------
+// Non-cycle-accurate wait for vblank
 
 .macro wait_vblank
 -	ldh a, ($41)
@@ -194,7 +203,7 @@
 	jr nz, -
 .endm
 
-; Non-cycle-accurate wait for hblank
+// Non-cycle-accurate wait for hblank
 
 .macro wait_hblank
 -	ldh a, ($41)
@@ -205,8 +214,8 @@
 	jr nz, -
 .endm
 
-;-------------------------------------------------------------------------------
-; Put a box pattern in tile 0
+//------------------------------------------------------------------------------
+// Put a box pattern in tile 0
 
 .macro load_box 
 	ld a, %01111110
@@ -216,7 +225,7 @@
 .endr
 .endm
 
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 .macro load_sprite ARGS i y x p f
   ld hl, $FE00 + 4 * i
@@ -240,20 +249,8 @@
 .endr
 .endm
 
-.macro memset_1024 ARGS base index
-  ld hl, base
-  ld a, 0
-  ld b, 0
-- ld (hl+), a
-  ld (hl+), a
-  ld (hl+), a
-  ld (hl+), a
-  dec b
-  jr nz, -
-.endm
-
-;-------------------------------------------------------------------------------
-; Short delay w/ nops
+//------------------------------------------------------------------------------
+// Short cycle-accurate delay w/ nops
 
 .macro nops ARGS count
 .repeat count
@@ -267,8 +264,8 @@
 .endr
 .endm
 
-;-------------------------------------------------------------------------------
-; Long delay w/ loop, clobbers ABC
+//------------------------------------------------------------------------------
+// Long cycle-accurate delay w/ loop, clobbers ABC
 
 .macro long_delay ARGS cycles
   xor a
@@ -279,7 +276,12 @@
   nops ((cycles - 9) # 6)
 .endm
 
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+.macro clear_stat
+  xor a
+  ldh (STAT), a
+.endm
 
 .macro reset_lcd_for_test
   di
@@ -294,66 +296,60 @@
   nops 114
 .endm
 
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// Test end macros. Writes actual value to FF80, expected value to FF81, sanity
+// check value to FF82, then dumps a pass/fail pattern to vram.
+
+.define PASS_PATTERN $80
+.define FAIL_PATTERN $FF
+.define SANE_PATTERN $31
 
 .macro test_end
-- ld (VRAM), a
-  jr -
-.endm
-
-.macro test_display_a
-- ld ($8000), a
+  ld hl, $8000
+- ld (hl), a
+  inc l
   jr -
 .endm
 
 .macro test_pass
-  ld a, $FF
+  ld a, PASS_PATTERN
   ldh ($80), a
-  ld a, $FF
+  ld a, PASS_PATTERN
   ldh ($81), a
-  ld a, $31
+  ld a, SANE_PATTERN
   ldh ($82), a
-  ld a, b
-
-  ld a, $55
+  ld a, PASS_PATTERN
   test_end
 .endm
 
 .macro test_fail
-  ld a, $00
+  ld a, FAIL_PATTERN
   ldh ($80), a
-  ld a, $FF
+  ld a, PASS_PATTERN
   ldh ($81), a
-  ld a, $31
+  ld a, SANE_PATTERN
   ldh ($82), a
-  ld a, b
-
-  ld a, $FF
+  ld a, FAIL_PATTERN
   test_end
 .endm
-
-;-------------------------------------------------------------------------------
-; Report test pass if a == expected
 
 .macro test_finish_a ARGS expected
   ld b, a
   ldh ($80), a
   ld a, expected
   ldh ($81), a
-  ld a, $31
+  ld a, SANE_PATTERN
   ldh ($82), a
-  ld a, b
 
+  ld a, b
   cp expected
+
   jr z, +
-  ld a, $FF
+  ld a, FAIL_PATTERN
   test_end
-+ ld a, $55
++ ld a, PASS_PATTERN
   test_end
 .endm
-
-;-------------------------------------------------------------------------------
-; Report test pass if a != expected
 
 .macro test_finish_not_a ARGS expected
   ld b, a
@@ -362,17 +358,31 @@
   ldh ($81), a
   ld a, $31
   ldh ($82), a
-  ld a, b
 
+  ld a, b
   cp expected
+
   jr nz, +
-  ld a, $FF
+  ld a, FAIL_PATTERN
   test_end
-+ ld a, $55
++ ld a, PASS_PATTERN
   test_end
 .endm
 
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// Helpers for debugging tests
+
+.macro test_display_a
+  test_end
+.endm
+
+.macro test_display_cycle
+  cycle_count
+  test_end
+.endm
+
+//------------------------------------------------------------------------------
+// Helpers for writing tests.
 
 .macro test_finish_b ARGS expected
   ld a, b
@@ -399,15 +409,7 @@
   test_finish_a expected
 .endm
 
-;-------------------------------------------------------------------------------
-
-.define VBLANK_INT_VECTOR $40
-.define STAT_INT_VECTOR   $48
-.define TIMER_INT_VECTOR  $50
-.define SERIAL_INT_VECTOR $58
-.define JOYPAD_INT_VECTOR $60
-
-;-------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 .org $100
   nop

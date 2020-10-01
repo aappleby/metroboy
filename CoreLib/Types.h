@@ -29,7 +29,7 @@ enum StepSize {
   STEP_CYCLE = 2,
   STEP_LINE  = 3,
   STEP_FRAME = 4,
-    
+
   STEP_MIN = STEP_PASS,
   STEP_MAX = STEP_FRAME,
 };
@@ -178,14 +178,14 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 
-#if _DEBUG
+#if 0
 
 inline void CHECK_P (wire A)         { if (!A)     __debugbreak(); }
 inline void CHECK_N (wire A)         { if (A)      __debugbreak(); }
 inline void CHECK_EQ(wire A, wire B) { if (A != B) __debugbreak(); }
 inline void CHECK_NE(wire A, wire B) { if (A == B) __debugbreak(); }
 
-#else 
+#else
 
 #define CHECK_P(A)
 #define CHECK_N(A)

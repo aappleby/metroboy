@@ -1,11 +1,3 @@
-; pass - ags, dmg
-
-.ifdef DMG
-.define DELAY 28
-.else
-.define DELAY 27
-.endif
-
 .include "header.inc"
 
 main:
@@ -32,5 +24,5 @@ main:
   test_fail
 
 .org STAT_INT_VECTOR
-  nops DELAY
+  nops 28
   test_finish_div 2

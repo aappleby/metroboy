@@ -16,9 +16,25 @@ struct GateBoyTests {
   int test_ppu();
   int test_serial();
   int test_timer();
-  int test_micro();
-  int test_micro_ints();
-  
+
+  int test_micro_poweron();
+  int test_micro_lcden();
+  int test_micro_halt();
+  int test_micro_timer();
+  int test_micro_int_vblank();
+  int test_micro_int_stat_hblank();
+  int test_micro_int_stat_vblank();
+  int test_micro_int_stat_oam();
+  int test_micro_int_stat_lyc();
+  int test_micro_int_timer();
+  int test_micro_int_serial();
+  int test_micro_int_joypad();
+  int test_micro_lock_oam();
+  int test_micro_lock_vram();
+  int test_micro_window();
+  int test_micro_dma();
+  int test_micro_ppu();
+
   int run_microtest(const char* filename);
 
   int test_dma(uint16_t src);

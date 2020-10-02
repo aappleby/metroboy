@@ -68,8 +68,14 @@ struct GateBoy {
   //----------------------------------------
 
   void check_sentinel() const {
-    if (sentinel1 != 0xDEADBEEFBAADF00D) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
-    if (sentinel2 != 0xF00DCAFEBAADC0DE) *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
+    if (sentinel1 != 0xDEADBEEFBAADF00D) {
+      printf("sentinel1 fail!\n");
+      *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
+    }
+    if (sentinel2 != 0xF00DCAFEBAADC0DE) {
+      printf("sentinel2 fail!\n");
+      *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
+    }
   }
 
   uint64_t sentinel1 = 0xDEADBEEFBAADF00D;
@@ -81,9 +87,22 @@ struct GateBoy {
   Req      dbg_req = {0};
   Req      bus_req = {0};
   uint8_t  cpu_data_latch = 0;
+  uint8_t  cpu_int_ack = 0;
+
   uint8_t  imask_gh = 0;
   uint8_t  intf_gh = 0;
-  uint8_t  cpu_int_ack = 0;
+
+  uint8_t  imask_cd = 0;
+  uint8_t  intf_cd = 0;
+
+  uint8_t imask_gh_delay = 0;
+  uint8_t intf_gh_delay = 0;
+  uint8_t imask_cd_delay = 0;
+  uint8_t intf_cd_delay = 0;
+  uint8_t placeholder4 = 0;
+  uint8_t placeholder5 = 0;
+  uint8_t placeholder6 = 0;
+  uint8_t placeholder7 = 0;
 
   // SOC
 

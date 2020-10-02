@@ -194,8 +194,16 @@ void GateBoyApp::app_init() {
 
   */
 
-  load_rom("microtests/build/dmg/int_hblank_incs_scx0.gb");
-  //runmode = RUN_FAST;
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx0.gb"); // int fires on 822, phase G
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx1.gb"); // int fires on 824, phase A
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx2.gb"); // int fires on 826, phase C
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx3.gb"); // int fires on 828, phase E
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx4.gb"); // int fires on 830, phase G
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx5.gb"); // int fires on 832, phase A
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx6.gb"); // int fires on 834, phase C
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx7.gb"); // int fires on 836, phase E
+
+                                                            //runmode = RUN_FAST;
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;
@@ -322,7 +330,7 @@ void GateBoyApp::app_update(double delta) {
   if (runmode == RUN_FAST) {
     //auto gb = state_manager.state();
     //gb->run(114 * 8 * 8);
-    gb.step(113 * 8 * 8, STEP_PHASE);
+    gb.step(114 * 8 * 8, STEP_PHASE);
   }
 
   else if (runmode == RUN_STEP && step_forward) {

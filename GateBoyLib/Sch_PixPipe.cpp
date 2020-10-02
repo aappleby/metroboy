@@ -270,7 +270,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*#p24.SEGU*/ wire SEGU_CLKPIPEn = not1(TYFA_CLKPIPEp_xBxDxFxH);
   /*#p24.SACU*/ wire SACU_CLKPIPEp = or2(SEGU_CLKPIPEn, ROXY_SCX_FINE_MATCH_LATCHn.qp()); // Schematic wrong, this is OR
 
-  probe("SACU_CLKPIPEp", SACU_CLKPIPEp);
+  //probe("SACU_CLKPIPEp", SACU_CLKPIPEp);
 
   /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
   /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);

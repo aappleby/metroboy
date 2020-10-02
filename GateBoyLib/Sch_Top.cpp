@@ -111,7 +111,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p28.AJON*/ AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp.qp()); // def AND. ppu can read oam when there's rendering but no dma
     /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
 
-    probe("AJUJ_OAM_BUSYn", AJUJ_OAM_BUSYn.qp());
+    //probe("AJUJ_OAM_BUSYn", AJUJ_OAM_BUSYn.qp());
   }
 
   tim_reg.tick(*this);
@@ -134,7 +134,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   clk_reg.tock_rst_slow(RST, CLKGOOD, CPUREADY, *this);
   clk_reg.tock_dbg_slow(*this);
   clk_reg.tock_vid_slow(CLK, *this);
-  
+
   tim_reg.tock(RST, *this, cpu_bus);
   bootrom.tock(*this, cpu_bus);
 
@@ -169,7 +169,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     // IE is technically in the CPU, but we're going to implement it here for now.
     wire FFFF_HIT = cpu_bus.get_bus_addr() == 0xFFFF;
-    
+
     //if (FFFF_HIT) printf("FFFF_HIT\n");
 
     wire FFFF_WRn = nand2(TAPU_CPU_WRp_xxxxEFGx, FFFF_HIT);
@@ -181,7 +181,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     IE_D4.tock(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D4p.qp());
 
     wire FFFF_RDn = nand2(TEDO_CPU_RDp, FFFF_HIT);
-    
+
     cpu_bus.BUS_CPU_D0p.tri_6nn(FFFF_RDn, IE_D0.qn());
     cpu_bus.BUS_CPU_D1p.tri_6nn(FFFF_RDn, IE_D1.qn());
     cpu_bus.BUS_CPU_D2p.tri_6nn(FFFF_RDn, IE_D2.qn());
@@ -491,15 +491,15 @@ if (top.VYPO_GND) bus_out.set_data(
   /* p08.RAZA*/ wire RAZA_A15p = not1(PIN_EXT_A15p.qn());
 
   // KEJO_01 << KOVA_02
-  // KEJO_02 
-  // KEJO_03 
+  // KEJO_02
+  // KEJO_03
   // KEJO_04 << TOVA_02
   // KEJO_05 << KOVA_02
-  // KEJO_06 
-  // KEJO_07 
-  // KEJO_08 
+  // KEJO_06
+  // KEJO_07
+  // KEJO_08
   // KEJO_09 >> BUS_CPU_A00p
-  // KEJO_10 
+  // KEJO_10
 
   /* p08.KEJO*/ top.cpu_bus.BUS_CPU_A00 = tribuf_10np(TOVA_MODE_DBG2n, KOVA_A00p);
   /* p08.BYXE*/ top.cpu_bus.BUS_CPU_A01 = tribuf_10np(TOVA_MODE_DBG2n, CAMU_A01p);

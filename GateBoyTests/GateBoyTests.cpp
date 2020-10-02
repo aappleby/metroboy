@@ -129,13 +129,10 @@ int GateBoyTests::test_micro_halt() {
 
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
-#if 0
+#if 1
   err += run_microtest("vblank2_int_halt_a.gb"); // main vblank, fail
   err += run_microtest("vblank2_int_halt_b.gb");
 
-  //err += run_microtest("hblank_int_halt_a.gb");
-
-  //err += run_microtest("hblank_int_halt_b.gb");
   err += run_microtest("vblank_int_halt_a.gb"); // stat vblank, fail
   err += run_microtest("vblank_int_halt_b.gb");
 
@@ -144,10 +141,15 @@ int GateBoyTests::test_micro_halt() {
 
   err += run_microtest("lyc_int_halt_a.gb"); // write these
   err += run_microtest("lyc_int_halt_b.gb");
-
-  err += run_microtest("timer_int_halt_a.gb");
-  err += run_microtest("timer_int_halt_b.gb");
 #endif
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_timer_halt.gb");
+  err += run_microtest("int_timer_incs.gb");
+  err += run_microtest("int_timer_nops.gb");
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
   err += run_microtest("int_hblank_halt_scx0.gb");
   err += run_microtest("int_hblank_halt_scx1.gb");
@@ -741,17 +743,17 @@ int GateBoyTests::run_microtest(const char* filename) {
   }
   else if (result_c == 0x01) {
     LOG_B("%-30s ", filename);
-    LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, mcycle);
+    LOG_G("0x%02x 0x%02x %4d 0x%02x PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
     return 0;
   }
   else if (result_c == 0xFF) {
     LOG_B("%-30s ", filename);
-    LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, mcycle);
+    LOG_R("0x%02x 0x%02x %4d 0x%02x FAIL @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
     return 1;
   }
   else {
     LOG_B("%-30s ", filename);
-    LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, mcycle);
+    LOG_Y("0x%02x 0x%02x %4d 0x%02x ERROR @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
     return 1;
   }
 }

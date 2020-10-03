@@ -56,7 +56,7 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*p01.ATEZ*/ wire ATEZ_CLKBAD = not1(CLKGOOD);
   /*p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
   /*p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
-  
+
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK; // ignoring the deglitcher here
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ ZAXY_xBxDxFxH = not1(AZOF_AxCxExGx);
@@ -81,12 +81,12 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
   /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
   /*#p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
-  
+
   /*#p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
   /*#p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
-  /*#p01.BYJU*/ wire BYJU_xBCDEFGH = or2(BELE_Axxxxxxx, ATEZ_CLKBAD); // waaaaait - this is an or
+  /*#p01.BYJU*/ wire BYJU_Axxxxxxx = or2(BELE_Axxxxxxx, ATEZ_CLKBAD);
 
-  /*#p01.BALY*/ BALY_Axxxxxxx = not1(BYJU_xBCDEFGH);
+  /*#p01.BALY*/ BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.q08n());
   /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.q16());
   /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.q16());
@@ -116,7 +116,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
 
   /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
-  /*#p01.BUVU*/ wire BUVU_Axxxxxxx = and2(BALY_Axxxxxxx, BUTY_CLKREQ);
+  /*#p01.BUVU*/ wire BUVU_Axxxxxxx = and2(BALY_xBCDEFGH, BUTY_CLKREQ);
 
   /*#p01.BYXO*/ wire BYXO_xBCDEFGH = not1(BUVU_Axxxxxxx);
   /*#p01.BEDO*/ wire BEDO_Axxxxxxx = not1(BYXO_xBCDEFGH);
@@ -130,7 +130,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*#p01.BASU*/ wire BASU_xBCDEFxx = not1(BATE_AxxxxxGH);
 
   /*#p01.BUKE*/ wire BUKE_AxxxxxGH = not1(BASU_xBCDEFxx);
-  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
+  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_xBCDEFGH);
   /*#p01.BOMA*/ wire BOMA_Axxxxxxx = not1(BOGA_xBCDEFGH);
 
   top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
@@ -143,7 +143,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
 
   top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.set(BOLO_ABCDEFxx);
   top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.set(BUKE_AxxxxxGH);
-    
+
   top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.set(BOMA_Axxxxxxx);
   top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.set(BOGA_xBCDEFGH);
 
@@ -169,7 +169,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
   /*#p01.AFAR*/ wire AFAR_RST  = nor2(RST, ALYP_RSTn);
   /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
 
-  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_Axxxxxxx);
+  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_xBCDEFGH);
   /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp.set(AFER_SYS_RSTp.qp());

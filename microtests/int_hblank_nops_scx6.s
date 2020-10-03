@@ -8,13 +8,19 @@ main:
   set_stat_int_hblank
   set_ie_stat
   clear_if
-  ei
   lcd_on
+  ei         // 30
+  xor a      // 31
+  nops 62    // 93
 
-  xor a
-  nops 1000
+  // 94
+  // 95
+  // 96
+  // 97
+  // 98
+
   di
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_cycle 100
+  test_finish_cycle 99

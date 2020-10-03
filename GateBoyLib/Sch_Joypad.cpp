@@ -81,7 +81,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p02.KERY*/ wire KERY_ANY_BUTTONp = or4(PIN_JOY_P13.qn(), PIN_JOY_P12.qn(), PIN_JOY_P11.qn(), PIN_JOY_P10.qn());
 
-  /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(top.clk_reg.BALY_Axxxxxxx);
+  /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(top.clk_reg.BALY_xBCDEFGH);
   {
     /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(BOGA_xBCDEFGH, KERY_ANY_BUTTONp);
     PIN_CPU_WAKE.set(AWOB_WAKE_CPU.qp());

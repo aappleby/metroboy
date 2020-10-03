@@ -29,7 +29,7 @@ struct ClockRegisters {
   /* p01.AJAX*/ Sig AJAX_xxxxEFGH; // ext bus
 
   /*#p01.ADAR*/ Sig ADAR_ABCxxxxH; // ext bus, oam bus
-  /* p01.BALY*/ Sig BALY_Axxxxxxx; // joypad, timer
+  /* p01.BALY*/ Sig BALY_xBCDEFGH; // joypad, timer
 
   /* p29.XUPY*/ Sig XUPY_ABxxEFxx; // lcd, sprite scanner
   /* p21.TALU*/ Sig TALU_xxCDEFxx; // lcd, pix pipe (wy match should probably move to lcd)

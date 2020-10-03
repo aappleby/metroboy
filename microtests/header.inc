@@ -380,6 +380,11 @@
   test_end
 .endm
 
+.macro test_display_div
+  ldh a, (DIV)
+  test_end
+.endm
+
 //------------------------------------------------------------------------------
 // Helpers for writing tests.
 

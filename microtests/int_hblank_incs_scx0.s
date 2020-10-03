@@ -8,14 +8,19 @@ main:
   set_stat_int_hblank
   set_ie_stat
   clear_if
-  ei
   lcd_on
+  ei         // 30
+  xor a      // 31
+  incs 60    // 91   // int fires @ phase 814, phase G of last op
 
-  xor a
-  incs 1000
+  // 92
+  // 93
+  // 94
+  // 95
+  // 96
+
   di
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_a 61
-  //test_display_a
+  test_finish_a 60

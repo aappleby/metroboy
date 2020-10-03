@@ -92,7 +92,7 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   // regenerate post-bootrom dump
-#if 0
+#if 1
   rom_buf = load_blob("roms/tetris.gb");
   gb->reset_to_bootrom(rom_buf.data(), rom_buf.size());
 
@@ -207,6 +207,8 @@ void GateBoyApp::app_init() {
 
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;
+
+  //load_rom("microtests/build/dmg/int_hblank_nops_scx1.gb");
 
 #endif
 }

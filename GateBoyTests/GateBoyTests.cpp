@@ -127,52 +127,6 @@ div read on        131729
 int GateBoyTests::test_micro_halt() {
   TEST_START();
 
-  LOG_B("---------- Halt-to-interrupt timing ----------\n");
-
-#if 1
-  err += run_microtest("vblank2_int_halt_a.gb"); // main vblank, fail
-  err += run_microtest("vblank2_int_halt_b.gb");
-
-  err += run_microtest("vblank_int_halt_a.gb"); // stat vblank, fail
-  err += run_microtest("vblank_int_halt_b.gb");
-
-  err += run_microtest("oam_int_halt_a.gb"); // pass
-  err += run_microtest("oam_int_halt_b.gb"); // pass
-
-  err += run_microtest("lyc_int_halt_a.gb"); // write these
-  err += run_microtest("lyc_int_halt_b.gb");
-#endif
-
-  LOG_B("---------- Halt-to-interrupt timing ----------\n");
-
-  err += run_microtest("int_timer_halt.gb");
-  err += run_microtest("int_timer_incs.gb");
-  err += run_microtest("int_timer_nops.gb");
-
-  LOG_B("---------- Halt-to-interrupt timing ----------\n");
-
-  err += run_microtest("int_hblank_halt_scx0.gb");
-  err += run_microtest("int_hblank_halt_scx1.gb");
-  err += run_microtest("int_hblank_halt_scx2.gb");
-  err += run_microtest("int_hblank_halt_scx3.gb");
-  err += run_microtest("int_hblank_halt_scx4.gb");
-  err += run_microtest("int_hblank_halt_scx5.gb");
-  err += run_microtest("int_hblank_halt_scx6.gb");
-  err += run_microtest("int_hblank_halt_scx7.gb");
-
-  LOG_B("---------- Inc-to-interrupt timing ----------\n");
-
-  err += run_microtest("int_hblank_incs_scx0.gb");
-  err += run_microtest("int_hblank_incs_scx1.gb");
-  err += run_microtest("int_hblank_incs_scx2.gb");
-  err += run_microtest("int_hblank_incs_scx3.gb");
-  err += run_microtest("int_hblank_incs_scx4.gb");
-  err += run_microtest("int_hblank_incs_scx5.gb");
-  err += run_microtest("int_hblank_incs_scx6.gb");
-  err += run_microtest("int_hblank_incs_scx7.gb");
-
-  LOG_B("---------- Nop-to-interrupt timing ----------\n");
-
   err += run_microtest("int_hblank_nops_scx0.gb");
   err += run_microtest("int_hblank_nops_scx1.gb");
   err += run_microtest("int_hblank_nops_scx2.gb");
@@ -181,6 +135,80 @@ int GateBoyTests::test_micro_halt() {
   err += run_microtest("int_hblank_nops_scx5.gb");
   err += run_microtest("int_hblank_nops_scx6.gb");
   err += run_microtest("int_hblank_nops_scx7.gb");
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_timer_halt_div_a.gb"); // int fires on 1200 A
+  err += run_microtest("int_timer_halt_div_b.gb"); // int fires on 1200 A
+  err += run_microtest("int_timer_nops_div_a.gb"); // int fires on 1200 A
+  err += run_microtest("int_timer_nops_div_b.gb"); // int fires on 1200 A
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_timer_halt.gb"); // int fires on 1200 A
+  err += run_microtest("int_hblank_halt_scx1.gb"); // int fires on 824 A
+  err += run_microtest("int_hblank_halt_scx5.gb"); // int fires on 832 A
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_timer_incs.gb");
+  err += run_microtest("int_hblank_incs_scx1.gb");
+  err += run_microtest("int_hblank_incs_scx5.gb");
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_timer_nops.gb");
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_vblank1_halt.gb"); // int fires on 131602 C
+  err += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
+  err += run_microtest("int_lyc_halt.gb"); // int fires on 1226 C
+  err += run_microtest("int_hblank_halt_scx6.gb"); // int fires on 834 C
+  err += run_microtest("int_hblank_halt_scx2.gb"); // int fires on 826 C
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_vblank1_incs.gb");
+  err += run_microtest("int_vblank2_incs.gb");
+  err += run_microtest("int_lyc_incs.gb");
+  err += run_microtest("int_hblank_incs_scx6.gb");
+  err += run_microtest("int_hblank_incs_scx2.gb");
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_vblank1_nops.gb");
+  err += run_microtest("int_vblank2_nops.gb");
+  err += run_microtest("int_lyc_nops.gb");
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_hblank_halt_scx3.gb"); // int fires on 828 E
+  err += run_microtest("int_hblank_halt_scx7.gb"); // int fires on 836 E
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_hblank_incs_scx3.gb");
+  err += run_microtest("int_hblank_incs_scx7.gb");
+
+  LOG_B("----------\n");
+
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_oam_halt.gb"); // int fires on 1182 G
+  err += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
+  err += run_microtest("int_hblank_halt_scx4.gb"); // int fires on 830 G
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_oam_incs.gb");
+  err += run_microtest("int_hblank_incs_scx0.gb");
+  err += run_microtest("int_hblank_incs_scx4.gb");
+
+  LOG_B("----------\n");
+
+  err += run_microtest("int_oam_nops.gb");
 
   TEST_END();
 }
@@ -723,13 +751,14 @@ int GateBoyTests::run_microtest(const char* filename) {
 
   GateBoy gb;
   gb.reset_post_bootrom(rom.data(), rom.size());
+  gb.phase_total = 0;
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
   int timeout = 150000; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
     gb.run(8);
-    if (gb.vid_ram[0]) break;
+    if (gb.zero_ram[2]) break;
   }
 
   uint8_t result_a = gb.zero_ram[0]; // actual
@@ -851,7 +880,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.AJAX_xxxxEFGH, 0b00001111);
 
     EXPECT_CLK(clk_reg.ADAR_ABCxxxxH, 0b11100001);
-    EXPECT_CLK(clk_reg.BALY_Axxxxxxx, 0b01111111);
+    EXPECT_CLK(clk_reg.BALY_xBCDEFGH, 0b01111111);
 
     EXPECT_CLK(clk_reg.XUPY_ABxxEFxx, 0b11001100);
     EXPECT_CLK(clk_reg.TALU_xxCDEFxx, 0b00111100);

@@ -95,6 +95,31 @@ struct GateBoy {
   uint8_t  imask_cd = 0;
   uint8_t  intf_cd = 0;
 
+  bool int_vblank = 0;
+  bool int_vblank_halt = 0;
+  bool int_vblank_delay = 0;
+  bool int_vblank_halt_delay = 0;
+
+  bool int_stat = 0;
+  bool int_stat_halt = 0;
+  bool int_stat_delay = 0;
+  bool int_stat_halt_delay = 0;
+
+  bool int_timer = 0;
+  bool int_timer_halt = 0;
+  bool int_timer_delay = 0;
+  bool int_timer_halt_delay = 0;
+
+  bool int_serial = 0;
+  bool int_serial_halt = 0;
+  bool int_serial_delay = 0;
+  bool int_serial_halt_delay = 0;
+
+  bool int_joypad = 0;
+  bool int_joypad_halt = 0;
+  bool int_joypad_delay = 0;
+  bool int_joypad_halt_delay = 0;
+
   uint8_t imask_gh_delay = 0;
   uint8_t intf_gh_delay = 0;
   uint8_t imask_cd_delay = 0;

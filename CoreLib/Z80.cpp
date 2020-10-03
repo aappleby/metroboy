@@ -267,7 +267,10 @@ void Z80::execute_int(uint8_t imask_, uint8_t intf_) {
   else if (state == 1) { sp = adm;           bus_write(sp, pch); }
   else if (state == 2) { sp = adm;           bus_write(sp, pcl); }
   else if (state == 3) {                     bus_nop(); }
-  else if (state == 4) { int_ack = _int_ack; op_done(_int_addr); }
+  else if (state == 4) {                     bus_nop(); }
+  else if (state == 5) { int_ack = _int_ack; op_done(_int_addr); }
+
+  //else if (state == 4) { int_ack = _int_ack; op_done(_int_addr); }
 }
 
 //-----------------------------------------------------------------------------

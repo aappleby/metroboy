@@ -195,12 +195,8 @@ void Z80::reset(uint16_t new_pc) {
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 
-void Z80::tock_ha(uint8_t imask_cd, uint8_t intf_cd,
-                  uint8_t imask_gh, uint8_t intf_gh,
-                  uint8_t bus_data) {
-  (void)imask_cd;
+void Z80::tock_ha(uint8_t imask, uint8_t intf_cd, uint8_t intf_gh, uint8_t bus_data) {
   (void)intf_cd;
-
 
   state = state_;
   ime = ime_delay;
@@ -214,7 +210,7 @@ void Z80::tock_ha(uint8_t imask_cd, uint8_t intf_cd,
     op_addr = bus_req.addr;
     op = bus_data;
 
-    if ((imask_gh & intf_gh) && ime) {
+    if ((imask & intf_gh) && ime) {
       op = 0xF4; // fake opcode
       ime = false;
       ime_delay = false;
@@ -222,7 +218,7 @@ void Z80::tock_ha(uint8_t imask_cd, uint8_t intf_cd,
   }
 
   if (HALT && (state == 1)) {
-    if ((imask_cd & intf_cd) && ime) {
+    if ((imask & intf_cd) && ime) {
       op = 0xF4; // fake opcode
       ime = false;
       ime_delay = false;
@@ -234,10 +230,10 @@ void Z80::tock_ha(uint8_t imask_cd, uint8_t intf_cd,
   int_ack = 0;
 
   if (INT) {
-    execute_int(imask_gh, intf_gh);
+    execute_int(imask, intf_gh);
   }
   else if (HALT) {
-    execute_halt(imask_cd, intf_cd);
+    execute_halt(imask, intf_cd);
   }
   else {
     execute_op();

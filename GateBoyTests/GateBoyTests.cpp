@@ -127,87 +127,67 @@ div read on        131729
 int GateBoyTests::test_micro_halt() {
   TEST_START();
 
-  err += run_microtest("int_hblank_nops_scx0.gb");
-  err += run_microtest("int_hblank_nops_scx1.gb");
-  err += run_microtest("int_hblank_nops_scx2.gb");
-  err += run_microtest("int_hblank_nops_scx3.gb");
-  err += run_microtest("int_hblank_nops_scx4.gb");
-  err += run_microtest("int_hblank_nops_scx5.gb");
-  err += run_microtest("int_hblank_nops_scx6.gb");
-  err += run_microtest("int_hblank_nops_scx7.gb");
-
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
-  err += run_microtest("int_timer_halt_div_a.gb"); // int fires on 1200 A
-  err += run_microtest("int_timer_halt_div_b.gb"); // int fires on 1200 A
-  err += run_microtest("int_timer_nops_div_a.gb"); // int fires on 1200 A
-  err += run_microtest("int_timer_nops_div_b.gb"); // int fires on 1200 A
+  err += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
+  err += run_microtest("int_hblank_halt_scx1.gb"); // int fires on 824 A
+  err += run_microtest("int_hblank_halt_scx2.gb"); // int fires on 826 C
+  err += run_microtest("int_hblank_halt_scx3.gb"); // int fires on 828 E
+  err += run_microtest("int_hblank_halt_scx4.gb"); // int fires on 830 G
+  err += run_microtest("int_hblank_halt_scx5.gb"); // int fires on 832 A
+  err += run_microtest("int_hblank_halt_scx6.gb"); // int fires on 834 C
+  err += run_microtest("int_hblank_halt_scx7.gb"); // int fires on 836 E
+
+  err += run_microtest("int_hblank_incs_scx0.gb"); // int fires on 822 G
+  err += run_microtest("int_hblank_incs_scx1.gb"); // int fires on 824 A
+  err += run_microtest("int_hblank_incs_scx2.gb"); // int fires on 826 C
+  err += run_microtest("int_hblank_incs_scx3.gb"); // int fires on 828 E
+  err += run_microtest("int_hblank_incs_scx4.gb"); // int fires on 830 G
+  err += run_microtest("int_hblank_incs_scx5.gb"); // int fires on 832 A
+  err += run_microtest("int_hblank_incs_scx6.gb"); // int fires on 834 C
+  err += run_microtest("int_hblank_incs_scx7.gb"); // int fires on 836 E
+
+  err += run_microtest("int_hblank_nops_scx0.gb"); // int fires on 822 G
+  err += run_microtest("int_hblank_nops_scx1.gb"); // int fires on 824 A
+  err += run_microtest("int_hblank_nops_scx2.gb"); // int fires on 826 C
+  err += run_microtest("int_hblank_nops_scx3.gb"); // int fires on 828 E
+  err += run_microtest("int_hblank_nops_scx4.gb"); // int fires on 830 G
+  err += run_microtest("int_hblank_nops_scx5.gb"); // int fires on 832 A
+  err += run_microtest("int_hblank_nops_scx6.gb"); // int fires on 834 C
+  err += run_microtest("int_hblank_nops_scx7.gb"); // int fires on 836 E
 
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
   err += run_microtest("int_timer_halt.gb"); // int fires on 1200 A
-  err += run_microtest("int_hblank_halt_scx1.gb"); // int fires on 824 A
-  err += run_microtest("int_hblank_halt_scx5.gb"); // int fires on 832 A
-
-  LOG_B("----------\n");
-
   err += run_microtest("int_timer_incs.gb");
-  err += run_microtest("int_hblank_incs_scx1.gb");
-  err += run_microtest("int_hblank_incs_scx5.gb");
-
-  LOG_B("----------\n");
-
   err += run_microtest("int_timer_nops.gb");
+  err += run_microtest("int_timer_halt_div_a.gb");
+  err += run_microtest("int_timer_halt_div_b.gb");
+  err += run_microtest("int_timer_nops_div_a.gb");
+  err += run_microtest("int_timer_nops_div_b.gb");
 
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
   err += run_microtest("int_vblank1_halt.gb"); // int fires on 131602 C
-  err += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
-  err += run_microtest("int_lyc_halt.gb"); // int fires on 1226 C
-  err += run_microtest("int_hblank_halt_scx6.gb"); // int fires on 834 C
-  err += run_microtest("int_hblank_halt_scx2.gb"); // int fires on 826 C
-
-  LOG_B("----------\n");
-
   err += run_microtest("int_vblank1_incs.gb");
-  err += run_microtest("int_vblank2_incs.gb");
-  err += run_microtest("int_lyc_incs.gb");
-  err += run_microtest("int_hblank_incs_scx6.gb");
-  err += run_microtest("int_hblank_incs_scx2.gb");
-
-  LOG_B("----------\n");
-
   err += run_microtest("int_vblank1_nops.gb");
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
+  err += run_microtest("int_vblank2_incs.gb");
   err += run_microtest("int_vblank2_nops.gb");
+
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
+  err += run_microtest("int_lyc_halt.gb"); // int fires on 1226 C
+  err += run_microtest("int_lyc_incs.gb");
   err += run_microtest("int_lyc_nops.gb");
 
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
-  err += run_microtest("int_hblank_halt_scx3.gb"); // int fires on 828 E
-  err += run_microtest("int_hblank_halt_scx7.gb"); // int fires on 836 E
-
-  LOG_B("----------\n");
-
-  err += run_microtest("int_hblank_incs_scx3.gb");
-  err += run_microtest("int_hblank_incs_scx7.gb");
-
-  LOG_B("----------\n");
-
-
-  LOG_B("---------- Halt-to-interrupt timing ----------\n");
-
   err += run_microtest("int_oam_halt.gb"); // int fires on 1182 G
-  err += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
-  err += run_microtest("int_hblank_halt_scx4.gb"); // int fires on 830 G
-
-  LOG_B("----------\n");
-
   err += run_microtest("int_oam_incs.gb");
-  err += run_microtest("int_hblank_incs_scx0.gb");
-  err += run_microtest("int_hblank_incs_scx4.gb");
-
-  LOG_B("----------\n");
-
   err += run_microtest("int_oam_nops.gb");
 
   TEST_END();

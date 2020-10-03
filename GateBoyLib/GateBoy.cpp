@@ -96,8 +96,6 @@ void GateBoy::reset_post_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
 }
 
 //------------------------------------------------------------------------------
-// I'm guessing we proooobably latch bus data on DE, since that's also
-// when we put data on the bus for a write?
 
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
@@ -208,7 +206,7 @@ void GateBoy::next_pass() {
 
       uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
 
-      cpu_blah.tock_ha(imask, intf_cd_delay, imask, intf_gh, (uint8_t)cpu_req.data);
+      cpu_blah.tock_ha(imask, intf_cd_delay, intf_gh, (uint8_t)cpu_req.data);
     }
 
     //----------

@@ -8,13 +8,19 @@ main:
   set_stat_int_hblank
   set_ie_stat
   clear_if
-  ei
   lcd_on
-
+  ei
   xor a
-  halt
+  halt // int fires on 834 C
+
+
+
+
+
+
+
   di
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_cycle 100
+  test_finish_cycle 99

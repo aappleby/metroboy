@@ -162,32 +162,26 @@ void GateBoy::next_pass() {
 
     // cd works for halt
     if (DELTA_CD) {
-      imask_cd_delay = imask_cd;
-      intf_cd_delay = intf_cd;
+      int_vblank_halt_delay = int_vblank_halt;
+      int_stat_halt_delay   = int_stat_halt;
+      int_timer_halt_delay  = int_timer_halt;
+      int_serial_halt_delay = int_serial_halt;
+      int_joypad_halt_delay = int_joypad_halt;
 
-      imask_cd = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-
-      intf_cd = 0;
-      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_cd |= INT_VBLANK_MASK;
-      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_cd |= INT_STAT_MASK;
-      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_cd |= INT_TIMER_MASK;
-      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_cd |= INT_SERIAL_MASK;
-      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_cd |= INT_JOYPAD_MASK;
+      int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+      int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
+      int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp();
+      int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+      int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
     }
 
     // fg or gh works for int_hblank_incs
     if (DELTA_GH) {
-      imask_gh_delay = imask_gh;
-      intf_gh_delay = intf_gh;
-
-      imask_gh = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-
-      intf_gh = 0;
-      if (top.int_reg.PIN_CPU_INT_VBLANK.qp()) intf_gh |= INT_VBLANK_MASK;
-      if (top.int_reg.PIN_CPU_INT_STAT.qp())   intf_gh |= INT_STAT_MASK;
-      if (top.int_reg.PIN_CPU_INT_TIMER.qp())  intf_gh |= INT_TIMER_MASK;
-      if (top.int_reg.PIN_CPU_INT_SERIAL.qp()) intf_gh |= INT_SERIAL_MASK;
-      if (top.int_reg.PIN_CPU_INT_JOYPAD.qp()) intf_gh |= INT_JOYPAD_MASK;
+      int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+      int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
+      int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
+      int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+      int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
     }
 
     if (DELTA_GH) {
@@ -197,7 +191,24 @@ void GateBoy::next_pass() {
     }
 
     if (DELTA_HA && sys_cpu_en) {
-      cpu_blah.tock_ha(imask_cd_delay, intf_cd_delay, imask_gh, intf_gh, (uint8_t)cpu_req.data);
+
+      intf_gh = 0;
+      if (int_vblank) intf_gh |= INT_VBLANK_MASK;
+      if (int_stat)   intf_gh |= INT_STAT_MASK;
+      if (int_timer)  intf_gh |= INT_TIMER_MASK;
+      if (int_serial) intf_gh |= INT_SERIAL_MASK;
+      if (int_joypad) intf_gh |= INT_JOYPAD_MASK;
+
+      intf_cd_delay = 0;
+      if (int_vblank_halt_delay) intf_cd_delay |= INT_VBLANK_MASK;
+      if (int_stat_halt_delay)   intf_cd_delay |= INT_STAT_MASK;
+      if (int_timer_halt_delay)  intf_cd_delay |= INT_TIMER_MASK;
+      if (int_serial_halt_delay) intf_cd_delay |= INT_SERIAL_MASK;
+      if (int_joypad_halt_delay) intf_cd_delay |= INT_JOYPAD_MASK;
+
+      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+
+      cpu_blah.tock_ha(imask, intf_cd_delay, imask, intf_gh, (uint8_t)cpu_req.data);
     }
 
     //----------

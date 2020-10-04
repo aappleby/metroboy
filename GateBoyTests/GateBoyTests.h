@@ -6,10 +6,10 @@ struct GateBoy;
 struct GateBoyTests {
 
   int test_init();
+  int test_bootrom();
   int test_clk();
   int test_ext_bus();
   int test_mem();
-  int test_bootrom();
   int test_dma();
   int test_interrupts();
   int test_joypad();

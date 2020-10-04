@@ -165,17 +165,19 @@ void GateBoy::next_pass() {
       if (dbg_req.read) dbg_req.data = cpu_data_latch;
     }
 
-    if (DELTA_CD) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_CD) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_CD) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp();
-    if (DELTA_CD) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_CD) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+    // A B   C D   E F   G H
 
-    if (DELTA_GH) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_GH) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_GH) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
-    if (DELTA_GH) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_GH) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+    if (DELTA_BC) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+    if (DELTA_BC) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
+    if (DELTA_FG) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp(); // this one latches funny
+    if (DELTA_BC) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+    if (DELTA_BC) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+
+    if (DELTA_FG) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+    if (DELTA_FG) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
+    if (DELTA_FG) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
+    if (DELTA_FG) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+    if (DELTA_FG) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
 
     if (DELTA_HA && sys_cpu_en) {
 

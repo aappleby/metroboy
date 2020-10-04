@@ -6,7 +6,7 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
-#define SKIP_PASSING_TESTS
+//#define SKIP_PASSING_TESTS
 
 //-----------------------------------------------------------------------------
 
@@ -21,26 +21,37 @@ int main(int argc, char** argv) {
   auto start = timestamp();
 
   // slow pre-bootrom tests
-  //err += test_init();
-  //err += test_bootrom();
+  err += t.test_init();
+  err += t.test_bootrom();
 
-#ifndef SKIP_PASSING_TESTS
   err += t.test_clk();
   err += t.test_ext_bus();
   err += t.test_mem();
-  err += t.test_interrupts();
   err += t.test_dma();
+  err += t.test_interrupts();
   err += t.test_joypad();
   err += t.test_ppu();
   err += t.test_serial();
   err += t.test_timer();
-#endif
 
+
+  err += t.test_micro_poweron();
+  err += t.test_micro_lcden();
   err += t.test_micro_halt();
-
-  //err += t.test_micro();
-  //err += t.test_micro_poweron();
-  //err += t.test_micro_ints();
+  err += t.test_micro_timer();
+  err += t.test_micro_int_vblank();
+  err += t.test_micro_int_stat_hblank();
+  err += t.test_micro_int_stat_vblank();
+  err += t.test_micro_int_stat_oam();
+  err += t.test_micro_int_stat_lyc();
+  err += t.test_micro_int_timer();
+  err += t.test_micro_int_serial();
+  err += t.test_micro_int_joypad();
+  err += t.test_micro_lock_oam();
+  err += t.test_micro_lock_vram();
+  err += t.test_micro_window();
+  err += t.test_micro_dma();
+  err += t.test_micro_ppu();
 
   auto finish = timestamp();
 
@@ -208,7 +219,7 @@ int GateBoyTests::test_micro_halt() {
 int GateBoyTests::test_micro_int_vblank() {
   TEST_START();
 
-#if 0 // slow
+#if 1 // slow
   err += run_microtest("lcdon_halt_to_vblank_int_a.gb"); // ***FAIL***
   err += run_microtest("lcdon_halt_to_vblank_int_b.gb");
   err += run_microtest("lcdon_nops_to_vblank_int_a.gb");
@@ -422,9 +433,9 @@ int GateBoyTests::test_micro_int_stat_lyc() {
 int GateBoyTests::test_micro_int_timer() {
   TEST_START();
   LOG_B("---------- Timer interrupt ----------\n");
-  err += run_microtest("timer_int_inc_sled.gb");
-  err += run_microtest("timer_int_inc_sled_a.gb");
-  err += run_microtest("timer_int_inc_sled_b.gb");
+  //err += run_microtest("timer_int_inc_sled.gb");
+  //err += run_microtest("timer_int_inc_sled_a.gb");
+  //err += run_microtest("timer_int_inc_sled_b.gb");
   TEST_END();
 }
 
@@ -787,7 +798,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xa52523a4ac4c3133, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xb9cb09a7f14a7df9, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {

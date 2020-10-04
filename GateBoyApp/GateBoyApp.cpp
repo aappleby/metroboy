@@ -208,7 +208,7 @@ void GateBoyApp::app_init() {
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;
 
-  load_rom("microtests/build/dmg/dma_0xC000.gb");
+  load_rom("microtests/build/dmg/poweron_004_div.gb");
 
   //gb->dbg_write(ADDR_DMA, 0x01);
   //gb->sys_cpu_en = false;

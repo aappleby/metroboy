@@ -91,6 +91,7 @@ void GateBoy::reset_to_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
 void GateBoy::reset_post_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
   check_sentinel();
+  check_div();
 
   rom_buf = _rom_buf;
   rom_size = _rom_size;

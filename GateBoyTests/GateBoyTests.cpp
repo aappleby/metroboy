@@ -21,6 +21,9 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
+  //err += t.test_micro_int_stat();
+
+#if 1
   // slow pre-bootrom tests
   err += t.test_init();
   err += t.test_bootrom();
@@ -48,6 +51,7 @@ int main(int argc, char** argv) {
   err += t.test_micro_window();
   err += t.test_micro_dma();
   err += t.test_micro_ppu();
+#endif
 
   auto finish = timestamp();
 
@@ -139,6 +143,10 @@ int GateBoyTests::test_micro_int_vblank() {
 
 int GateBoyTests::test_micro_int_stat() {
   TEST_START();
+
+  err += run_microtest("poweron_000_div.gb");
+  err += run_microtest("poweron_004_div.gb");
+  err += run_microtest("poweron_005_div.gb");
 
   err += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
   err += run_microtest("int_hblank_halt_scx1.gb"); // int fires on 824 A

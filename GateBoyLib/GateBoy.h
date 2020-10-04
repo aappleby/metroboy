@@ -67,6 +67,14 @@ struct GateBoy {
 
   //----------------------------------------
 
+  void check_div() const {
+    int div = top.tim_reg.get_div();
+    if (div != 0xEAF3) {
+      printf("div fail!\n");
+      *reinterpret_cast<int*>(0xDEADC0DEDEADC0DE) = 1;
+    }
+  }
+
   void check_sentinel() const {
     if (sentinel1 != 0xDEADBEEFBAADF00D) {
       printf("sentinel1 fail!\n");

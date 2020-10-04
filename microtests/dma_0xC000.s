@@ -7,10 +7,10 @@ main:
 
   // copy sentinel bytes to ram
   ld a, $27;
-  ld hl, $A000;
+  ld hl, $C000;
   ld (hl), a;
   ld a, $72;
-  ld hl, $A09F;
+  ld hl, $C09F;
   ld (hl), a;
 
   // copy dma func to zram
@@ -33,7 +33,7 @@ main:
   ld (hl+), a;
 
   // call dma func
-  ld a, $A0;
+  ld a, $C0;
   call $FF90;
 
   // read endpoints of oam

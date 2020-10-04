@@ -105,7 +105,7 @@ struct CpuBus {
   Bus BUS_CPU_A12;  // bottom right port PORTB_18: -> A12
   Bus BUS_CPU_A13;  // bottom right port PORTB_22: -> A13
   Bus BUS_CPU_A14;  // bottom right port PORTB_26: -> A14
-  Bus BUS_CPU_A15;  // bottom right port PORTB_30: -> A15                               
+  Bus BUS_CPU_A15;  // bottom right port PORTB_30: -> A15
 
   Bus BUS_CPU_D0p;  // bottom left port: <>
   Bus BUS_CPU_D1p;  // bottom left port: <>
@@ -119,7 +119,7 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
-  Pin PIN_CPU_6;         // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  Pin PIN_CPU_6;         // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
   Pin PIN_CPU_LATCH_EXT; // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
 
   Pin PIN_CPU_RDp;       // top right port PORTA_00: -> LAGU, LAVO, TEDO
@@ -130,16 +130,16 @@ struct CpuBus {
   // SOC-to-CPU control signals
 
   Pin PIN_CPU_BOOTp         = TRI_HZNP; // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Pin PIN_CPU_ADDR_HIp      = TRI_HZNP; // top right port PORTA_03: <- P25.SYRO
+  Pin PIN_CPU_ADDR_HIp      = TRI_HZNP; // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
 
   Pin PIN_CPU_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
   Pin PIN_CPU_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state
-  Pin PIN_CPU_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad 
+  Pin PIN_CPU_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad
   Pin PIN_CPU_UNOR_DBG      = TRI_HZNP; // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   Pin PIN_CPU_UMUT_DBG      = TRI_HZNP; // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 
   Pin PIN_CPU_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  
+
   Pin PIN_CPU_BOWA_Axxxxxxx = TRI_HZNP; // top left port PORTD_01: // this is the "put address on bus" clock
   Pin PIN_CPU_BEDO_xBCDEFGH = TRI_HZNP; // top left port PORTD_02:
 

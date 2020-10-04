@@ -285,10 +285,18 @@ void GateBoy::update_inputs() {
     // but not doing so breaks DMA tests? Probably need to distinguish between CPU/DMA reads
     // or something.
 
-    //bool addr_oam = (bus_req.addr >= 0xFE00) && (bus_req.addr <= 0xFEFF);
+    bool addr_oam = (bus_req.addr >= 0xFE00) && (bus_req.addr <= 0xFEFF);
+    (void)addr_oam;
+
+    // PIN_CPU_ADDR_HIp = SYRO_FE00_FFFFp
+
     //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && (bus_req.addr <= 0xFDFF));
     //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && !addr_oam);
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read);
+
+    //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && !top.cpu_bus.PIN_CPU_ADDR_HIp.qp());
+
+    //top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && (bus_req.addr < 0xFF00));
   }
 
   if (DELTA_FG) cpu_data_latch = 0xFF;

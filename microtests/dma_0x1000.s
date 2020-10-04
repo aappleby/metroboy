@@ -1,16 +1,20 @@
 .include "header.inc"
 
 main:
+  // turn lcd off
   ld a, $00;
   ldh ($40), a;
-  ld a, $27;
-  ld hl, $1000;
-  ld (hl), a;
-  ld a, $72;
-  ld hl, $109F;
-  ld (hl), a;
 
-  ld hl, $FF80;
+
+
+
+
+
+
+
+
+  // copy dma func to zram
+  ld hl, $FF90;
   ld a, $E0;
   ld (hl+), a;
   ld a, $46;
@@ -28,17 +32,23 @@ main:
   ld a, $C9;
   ld (hl+), a;
 
+  // call dma func
   ld a, $10;
-  call $ff80;
+  call $FF90;
 
-  ld a, $00;
+  // read endpoints of oam
+  ld a, $00
   ld hl, $FE00;
   add (hl);
   ld hl, $FE9F;
   add (hl);
   ld b, a
+
+  // turn lcd on
   ld a, $91
   ldh ($40), a
+
+  // check result
   ld a, b
   test_finish_a $99
 

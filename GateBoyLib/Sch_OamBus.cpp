@@ -9,10 +9,10 @@ using namespace Schematics;
 
 void OamBus::dump(Dumper& d) const {
   d("\002===== OAM Bus =====\001\n");
-  d("PIN_CLK    %c\n", PIN_OAM_CLK.c());
-  d("PIN_OE     %c\n", PIN_OAM_OE.c());
-  d("PIN_WR_A   %c\n", PIN_OAM_WR_A.c());
-  d("PIN_WR_B   %c\n", PIN_OAM_WR_B.c());
+  d("PIN_OAM_CLK    %c\n", PIN_OAM_CLK.c());
+  d("PIN_OAM_OE     %c\n", PIN_OAM_OE.c());
+  d("PIN_OAM_WR_A   %c\n", PIN_OAM_WR_A.c());
+  d("PIN_OAM_WR_B   %c\n", PIN_OAM_WR_B.c());
 
   int oam_tri_addr = pack_p(BUS_OAM_A0n.qn(), BUS_OAM_A1n.qn(), BUS_OAM_A2n.qn(), BUS_OAM_A3n.qn(),
                             BUS_OAM_A4n.qn(), BUS_OAM_A5n.qn(), BUS_OAM_A6n.qn(), BUS_OAM_A7n.qn());
@@ -90,6 +90,9 @@ void OamBus::dump(Dumper& d) const {
       0
     )
   );
+
+  d("MAKA_HOLD_MEMp   %c\n", MAKA_HOLD_MEMp.c());
+  d("WUJE_CPU_OAM_WRn %c\n", WUJE_CPU_OAM_WRn.c());
 
   d("\n");
 }
@@ -246,7 +249,6 @@ void OamBus::tock(SchematicTop& top) {
 
   {
     // PIN_CPU_LATCH_EXT _blocks_ DMA from writing to OAM? wat?
-
     /*p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(top.clk_reg.ADAR_ABCxxxxH, top.clk_reg.ATYP_ABCDxxxx);
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), AFAS_xxxxEFGx);
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCxEFGH);

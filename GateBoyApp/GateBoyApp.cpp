@@ -208,7 +208,10 @@ void GateBoyApp::app_init() {
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;
 
-  load_rom("microtests/build/dmg/dma_0x1000.gb");
+  load_rom("microtests/build/dmg/dma_0xC000.gb");
+
+  //gb->dbg_write(ADDR_DMA, 0x01);
+  //gb->sys_cpu_en = false;
 
 #endif
 }
@@ -510,14 +513,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   size_t state_size = gb.state_size_bytes();
 
   if (state_size < 1024 * 1024) {
-    dumper("State size          %d K\n",      state_size / 1024);
+    dumper("State size  %d K\n",      state_size / 1024);
   }
   else {
-    dumper("State size          %d M\n",      state_size / (1024 * 1024));
+    dumper("State size  %d M\n",      state_size / (1024 * 1024));
   }
-  dumper("Phase count %8d\n",     gb->phase_total);
-  dumper("Pass count  %8d\n",     gb->pass_count);
-  dumper("Pass total  %8d\n",     gb->pass_total);
+  dumper("Phase count %d\n",     gb->phase_total);
+  dumper("Pass count  %d\n",     gb->pass_count);
+  dumper("Pass total  %d\n",     gb->pass_total);
   dumper("Pass avg    %4.2f\n",   float(gb->pass_total) / float(gb->phase_total));
   dumper("Pass hash   %016llx\n", gb->pass_hash);
   dumper("Total hash  %016llx\n", gb->total_hash);
@@ -546,8 +549,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   wire CLK = gb->phase_total & 1;
   top.clk_reg.dump(dumper, CLK);
   top.joypad.dump(dumper);
-  //top.ser_reg.dump(dumper);
-  top.lcd_reg.dump(dumper, top);
+  top.ser_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += 224 - 64;
   dumper.clear();
@@ -565,6 +567,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //----------
 
+  top.lcd_reg.dump(dumper, top);
   top.pix_pipe.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
   cursor += 224;

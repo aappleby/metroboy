@@ -127,6 +127,7 @@ div read on        131729
 int GateBoyTests::test_micro_halt() {
   TEST_START();
 
+#if 1
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
   err += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
@@ -138,6 +139,8 @@ int GateBoyTests::test_micro_halt() {
   err += run_microtest("int_hblank_halt_scx6.gb"); // int fires on 834 C
   err += run_microtest("int_hblank_halt_scx7.gb"); // int fires on 836 E
 
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
   err += run_microtest("int_hblank_incs_scx0.gb"); // int fires on 822 G
   err += run_microtest("int_hblank_incs_scx1.gb"); // int fires on 824 A
   err += run_microtest("int_hblank_incs_scx2.gb"); // int fires on 826 C
@@ -147,6 +150,8 @@ int GateBoyTests::test_micro_halt() {
   err += run_microtest("int_hblank_incs_scx6.gb"); // int fires on 834 C
   err += run_microtest("int_hblank_incs_scx7.gb"); // int fires on 836 E
 
+  LOG_B("---------- Halt-to-interrupt timing ----------\n");
+
   err += run_microtest("int_hblank_nops_scx0.gb"); // int fires on 822 G
   err += run_microtest("int_hblank_nops_scx1.gb"); // int fires on 824 A
   err += run_microtest("int_hblank_nops_scx2.gb"); // int fires on 826 C
@@ -155,17 +160,21 @@ int GateBoyTests::test_micro_halt() {
   err += run_microtest("int_hblank_nops_scx5.gb"); // int fires on 832 A
   err += run_microtest("int_hblank_nops_scx6.gb"); // int fires on 834 C
   err += run_microtest("int_hblank_nops_scx7.gb"); // int fires on 836 E
+#endif
 
+#if 1
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
-  err += run_microtest("int_timer_halt.gb"); // int fires on 1200 A
-  err += run_microtest("int_timer_incs.gb");
-  err += run_microtest("int_timer_nops.gb");
+  err += run_microtest("int_timer_halt.gb"); // int fires on 296 A
   err += run_microtest("int_timer_halt_div_a.gb");
   err += run_microtest("int_timer_halt_div_b.gb");
+  err += run_microtest("int_timer_incs.gb");
+  err += run_microtest("int_timer_nops.gb");
   err += run_microtest("int_timer_nops_div_a.gb");
   err += run_microtest("int_timer_nops_div_b.gb");
+#endif
 
+#if 1
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
   err += run_microtest("int_vblank1_halt.gb"); // int fires on 131602 C
@@ -177,6 +186,7 @@ int GateBoyTests::test_micro_halt() {
   err += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
   err += run_microtest("int_vblank2_incs.gb");
   err += run_microtest("int_vblank2_nops.gb");
+#endif
 
   LOG_B("---------- Halt-to-interrupt timing ----------\n");
 
@@ -752,17 +762,17 @@ int GateBoyTests::run_microtest(const char* filename) {
   }
   else if (result_c == 0x01) {
     LOG_B("%-30s ", filename);
-    LOG_G("0x%02x 0x%02x %4d 0x%02x PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
+    LOG_G("%3d %3d %3d PASS @ %d\n", result_a, result_b, (result_a - result_b), mcycle);
     return 0;
   }
   else if (result_c == 0xFF) {
     LOG_B("%-30s ", filename);
-    LOG_R("0x%02x 0x%02x %4d 0x%02x FAIL @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
+    LOG_R("%3d %3d %3d FAIL @ %d\n", result_a, result_b, (result_a - result_b), mcycle);
     return 1;
   }
   else {
     LOG_B("%-30s ", filename);
-    LOG_Y("0x%02x 0x%02x %4d 0x%02x ERROR @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
+    LOG_Y("%3d %3d %3d ERROR @ %d\n", result_a, result_b, (result_a - result_b), mcycle);
     return 1;
   }
 }

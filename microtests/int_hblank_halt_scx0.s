@@ -11,7 +11,7 @@ main:
   lcd_on
   ei
   xor a
-  halt // int fires on 822 G
+  halt // int fires on 814 G
 
 
 

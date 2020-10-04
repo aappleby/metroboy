@@ -11,7 +11,7 @@ main:
   lcd_on
   ei         // 30
   xor a      // 31
-  nops 61    // 92    // int fires @ phase 816, phase A of last op (!!!)
+  nops 61    // 92    // int fires on 816 A
 
   // 93
   // 94

@@ -2,6 +2,7 @@
 
 #include "CoreLib/Assembler.h"
 #include "CoreLib/StateManager2.h"
+#include "CoreLib/SmoothTimer.h"
 
 #include "AppLib/App.h"
 #include "AppLib/GridPainter.h"
@@ -20,11 +21,20 @@ public:
   //----------
 
   const char* app_get_title() override;
+
   void app_init() override;
   void app_close() override;
+
+  void begin_frame() { frame_begin = timestamp(); }
   void app_update(double delta) override;
   void app_render_frame(Viewport view) override;
   void app_render_ui(Viewport view) override;
+
+  void end_frame() {
+    frame_end = timestamp();
+    frame_time = frame_end - frame_begin;
+    frame_time_smooth = frame_time_smooth * 0.99 + frame_time * 0.01;
+  }
 
   //----------
 
@@ -59,6 +69,15 @@ private:
 
   int frame_count = 0;
   int replay_cursor = 0;
+
+  double sim_time = 0;
+  double sim_time_smooth = 0;
+  double sim_rate = 0;
+
+  double frame_begin = 0;
+  double frame_end = 0;
+  double frame_time = 0;
+  double frame_time_smooth = 0;
 
   uint32_t trace[912 * 154];
   int trace_tex;

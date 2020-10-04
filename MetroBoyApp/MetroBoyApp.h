@@ -2,6 +2,7 @@
 
 #include "CoreLib/StateManager.h"
 #include "CoreLib/File.h"
+#include "CoreLib/SmoothTimer.h"
 #include "AppLib/App.h"
 #include "AppLib/GridPainter.h"
 #include "AppLib/GBBlitter.h"

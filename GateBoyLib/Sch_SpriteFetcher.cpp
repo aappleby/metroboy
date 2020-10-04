@@ -8,7 +8,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void SpriteFetcher::dump(Dumper& d) const {
-  d("----------SpriteFetch---------\n");
+  d("\002===== SpriteFetch =====\001\n");
   d("SOBU_SFETCH_REQp     %c\n", SOBU_SFETCH_REQp    .c());
   d("SUDA_SFETCH_REQp     %c\n", SUDA_SFETCH_REQp    .c());
   d("\n");
@@ -81,7 +81,7 @@ void SpriteFetcher::tock(SchematicTop& top) {
   /*#p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor3(RYCE_SFETCH_TRIGp, ROSY_VID_RSTp, ATEJ_VID_LINE_END_TRIGp);
   /* p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SPRITE_DONEp, top.TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, VEKU_SFETCH_RUNNING_RSTn);
-   
+
   /*#p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand2(TESE_SFETCH_S2.qp(), TOXE_SFETCH_S0.qp());
   /*#p29.TOMA*/ wire TOMA_SFETCH_CLK_xBxDxFxH = nand2(LAPE_AxCxExGx, TAME_SFETCH_CLK_GATE);
 

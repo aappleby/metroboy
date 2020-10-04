@@ -7,7 +7,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void SerialRegisters::dump(Dumper& d) const {
-  d("----------  Serial  ----------\n");
+  d("\002===== Serial =====\001\n");
   d("XFER_START  %c\n", ETAF_XFER_START.c());
   d("XFER_DIR    %c\n", CULY_XFER_DIR  .c());
   d("SER_CLK     %c\n", COTY_SER_CLK   .c());
@@ -33,7 +33,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p06.COBA*/ wire COBA_SER_CNT3n = not1(CALY_INT_SERp.qp());
   /*p06.CABY*/ wire CABY_XFER_RESET = and2(COBA_SER_CNT3n, top.clk_reg.ALUR_SYS_RSTn);
-  
+
   /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A01.qp());
   /*p06.ETAF*/ ETAF_XFER_START.tock(UWAM_FF02_WRn_xxxxxFGH, CABY_XFER_RESET, cpu_bus.BUS_CPU_D7p.qp());
   /*p06.CULY*/ CULY_XFER_DIR  .tock(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D0p.qp());

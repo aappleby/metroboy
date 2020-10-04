@@ -32,9 +32,9 @@ main:
   call $ff80;
 
   ld a, $00;
-  ld hl, $1000;
+  ld hl, $FE00;
   add (hl);
-  ld hl, $109F;
+  ld hl, $FE9F;
   add (hl);
   ld b, a
   ld a, $91

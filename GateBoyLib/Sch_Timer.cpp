@@ -6,26 +6,8 @@
 using namespace Schematics;
 
 void Timer::dump(Dumper& d) const {
-  d("----------  Timer   ----------\n");
+  d("\002===== Timer =====\001\n");
   d("DIV    : 0x%04x %d\n", get_div(), get_div());
-  d("DIV    : %c%c %c%c%c%c%c%c%c%c %c%c%c%c%c%c\n",
-    UPOF_DIV_15.c(),
-    UKET_DIV_14.c(),
-    TEKA_DIV_13.c(),
-    SUBU_DIV_12.c(),
-    SOLA_DIV_11.c(),
-    TERU_DIV_10.c(),
-    TOFE_DIV_09.c(),
-    TUGO_DIV_08.c(),
-    TULU_DIV_07.c(),
-    UGOT_DIV_06.c(),
-    TAMA_DIV_05.c(),
-    UNYK_DIV_04.c(),
-    TERO_DIV_03.c(),
-    UNER_DIV_02.c(),
-    UFOR_DIV_01.c(),
-    UKUP_DIV_00.c());
-
   d("TIMA A : 0x%02x %d\n", get_tima_a(), get_tima_a());
   d("TIMA B : 0x%02x %d\n", get_tima_b(), get_tima_b());
   d("TMA    : 0x%02x %d\n", get_tma(), get_tma());
@@ -126,9 +108,6 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.PYMA*/ wire PYMA_TIMA_D6 = nor2(MULO_SYS_RSTn, REFU_TIMA_D6);
     /*#p03.PAGU*/ wire PAGU_TIMA_D7 = nor2(MULO_SYS_RSTn, RATO_TIMA_D7);
 
-    /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp = nor2(NUGA_TIMA_D7.qp(), NYDU_TIMA_D7_DELAY.qn());
-    /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.tock(BOGA_Axxxxxxx, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_OVERFLOWp);
-
     /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn = not1(MOBA_TIMER_OVERFLOWp.qp());
     /*#p03.MUZU*/ wire MUZU_CPU_LOAD_TIMAn  = or2(top.cpu_bus.PIN_CPU_LATCH_EXT.qp(), TOPE_FF05_WRn);
     /*#p03.MEXU*/ wire MEXU_TIMA_LOADp      = nand3(MUZU_CPU_LOAD_TIMAn, top.clk_reg.ALUR_SYS_RSTn, MEKE_TIMER_OVERFLOWn);
@@ -143,9 +122,6 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.PEDA*/ PEDA_TIMA_D6.tock(RAGE_TIMA_D5.qp(), MEXU_TIMA_LOADp, PYMA_TIMA_D6);
     /*#p03.NUGA*/ NUGA_TIMA_D7.tock(PEDA_TIMA_D6.qp(), MEXU_TIMA_LOADp, PAGU_TIMA_D7);
 
-    /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn = not1(MEXU_TIMA_LOADp);
-    /*#p03.NYDU*/ NYDU_TIMA_D7_DELAY.tock(BOGA_Axxxxxxx, MUGY_TIMA_MAX_RSTn, NUGA_TIMA_D7.qp());
-
     /*#p03.SOKU*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TEDA_FF05_RDp, REGA_TIMA_D0.qn());
     /*#p03.RACY*/ cpu_bus.BUS_CPU_D1p.tri_6pn(TEDA_FF05_RDp, POVY_TIMA_D1.qn());
     /*#p03.RAVY*/ cpu_bus.BUS_CPU_D2p.tri_6pn(TEDA_FF05_RDp, PERU_TIMA_D2.qn());
@@ -154,6 +130,12 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.SURO*/ cpu_bus.BUS_CPU_D5p.tri_6pn(TEDA_FF05_RDp, RAGE_TIMA_D5.qn());
     /*#p03.ROWU*/ cpu_bus.BUS_CPU_D6p.tri_6pn(TEDA_FF05_RDp, PEDA_TIMA_D6.qn());
     /*#p03.PUSO*/ cpu_bus.BUS_CPU_D7p.tri_6pn(TEDA_FF05_RDp, NUGA_TIMA_D7.qn());
+
+    /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn = not1(MEXU_TIMA_LOADp);
+    /*#p03.NYDU*/ NYDU_TIMA_D7_DELAY.tock(BOGA_Axxxxxxx, MUGY_TIMA_MAX_RSTn, NUGA_TIMA_D7.qp());
+
+    /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp = nor2(NUGA_TIMA_D7.qp(), NYDU_TIMA_D7_DELAY.qn());
+    /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.tock(BOGA_Axxxxxxx, top.clk_reg.ALUR_SYS_RSTn, MERY_TIMER_OVERFLOWp);
   }
 
   // FF06 TMA

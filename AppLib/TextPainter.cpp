@@ -105,7 +105,7 @@ void TextPainter::init() {
   text_prog = create_shader("text_glsl", text_glsl);
 
   set_pal(0, 0.4f, 0.4f, 0.4f, 1.0f); // grey
-  set_pal(1, 0.8f, 0.8f, 0.8f, 1.0f); // white 
+  set_pal(1, 0.8f, 0.8f, 0.8f, 1.0f); // white
   set_pal(2, 0.6f, 1.0f, 0.6f, 1.0f); // lo-z out = green
   set_pal(3, 1.0f, 0.6f, 0.6f, 1.0f); // hi-z out = red
   set_pal(4, 0.6f, 0.6f, 1.0f, 1.0f); // lo-z in = blue

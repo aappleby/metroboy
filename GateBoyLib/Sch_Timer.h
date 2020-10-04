@@ -103,8 +103,6 @@ struct Timer {
     */
   }
 
-  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // -> interrupts
-
   //----------
   // FF04 DIV
 
@@ -125,9 +123,10 @@ struct Timer {
   /*p01.UKET*/ DFF17 UKET_DIV_14;
   /*p01.UPOF*/ DFF17 UPOF_DIV_15; // -> UNUT_POR_TRIGn
 
-private:
-
   /*p03.NYDU*/ DFF17 NYDU_TIMA_D7_DELAY;
+  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // -> interrupts
+
+private:
 
   //----------
   // FF05 TIMA

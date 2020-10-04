@@ -178,7 +178,7 @@ void run_mooneye_acceptance() {
   double begin = timestamp();
 
   printf("\n");
-  printf("---------- Mooneye tests ----------\n");
+  printf("---------- Mooneye tests =====\001\n");
 
   printf("Generic");
   for (auto name : generic_tests) {

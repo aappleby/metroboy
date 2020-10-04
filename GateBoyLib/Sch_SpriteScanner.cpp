@@ -6,7 +6,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
-  d("----------SpriteScan ---------\n");
+  d("\002===== SpriteScan =====\001\n");
 
   d("BESU_SCANNINGp   %c\n", BESU_SCANNINGp  .c());
   d("CENO_SCANNINGp   %c\n", CENO_SCANNINGp  .c());

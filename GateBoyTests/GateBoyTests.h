@@ -19,16 +19,14 @@ struct GateBoyTests {
 
   int test_micro_poweron();
   int test_micro_lcden();
-  int test_micro_halt();
   int test_micro_timer();
+
   int test_micro_int_vblank();
-  int test_micro_int_stat_hblank();
-  int test_micro_int_stat_vblank();
-  int test_micro_int_stat_oam();
-  int test_micro_int_stat_lyc();
+  int test_micro_int_stat();
   int test_micro_int_timer();
   int test_micro_int_serial();
   int test_micro_int_joypad();
+
   int test_micro_lock_oam();
   int test_micro_lock_vram();
   int test_micro_window();
@@ -42,4 +40,6 @@ struct GateBoyTests {
   int test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
 
   void run_benchmark();
+
+  bool print_passes = true;
 };

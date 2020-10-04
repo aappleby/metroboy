@@ -130,7 +130,7 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
 void run_mealybug_tests() {
   double begin = timestamp();
 
-  printf("---------- Mealybug tests ----------\n");
+  printf("---------- Mealybug tests =====\001\n");
 
   bool dots = true;
   for (auto name : mealybug_tests) {

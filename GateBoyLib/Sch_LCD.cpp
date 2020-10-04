@@ -6,7 +6,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
-  d("----------   LCD    ----------\n");
+  d("\002===== LCD =====\001\n");
   d("PIX COUNT : %03d\n", top.pix_pipe.get_pix_count());
   d("LCD X     : %03d\n", get_lx());
   d("LCD Y     : %03d\n", get_ly());
@@ -23,20 +23,16 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("PIN_LCD_ALTSG  : %c\n", top.PIN_LCD_ALTSG.c());
   d("\n");
 
-  d("CATU_LINE_P000  %c\n", CATU_LINE_P000.c());
-  d("NYPE_LINE_P002  %c\n", NYPE_LINE_P002.c());
-  d("ANEL_LINE_P002  %c\n", ANEL_LINE_P002.c());
-  d("RUTU_LINE_P910  %c\n", RUTU_LINE_P910.c());
-  d("ATEJ_LINE_TRIGp %c\n", ATEJ_LINE_TRIGp.c());
-  d("\n");
-
+  d("CATU_LINE_P000      %c\n", CATU_LINE_P000.c());
+  d("NYPE_LINE_P002      %c\n", NYPE_LINE_P002.c());
+  d("ANEL_LINE_P002      %c\n", ANEL_LINE_P002.c());
+  d("RUTU_LINE_P910      %c\n", RUTU_LINE_P910.c());
+  d("ATEJ_LINE_TRIGp     %c\n", ATEJ_LINE_TRIGp.c());
   d("MYTA_LINE_153p      %c\n", MYTA_LINE_153p     .c());
   d("POPU_IN_VBLANKp     %c\n", POPU_IN_VBLANKp    .c());
   d("ROPO_LY_MATCH_SYNCp %c\n", ROPO_LY_MATCH_SYNCp.c());
-  d("\n");
-
-  d("PARU_VBLANKp_d4         %c\n", PARU_VBLANKp_d4.c());
-  d("VYPU_INT_VBLANKp        %c\n", VYPU_INT_VBLANKp.c());
+  d("PARU_VBLANKp_d4     %c\n", PARU_VBLANKp_d4.c());
+  d("VYPU_INT_VBLANKp    %c\n", VYPU_INT_VBLANKp.c());
   d("\n");
 }
 

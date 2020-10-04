@@ -8,7 +8,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void InterruptRegisters::dump(Dumper& d, const SchematicTop& top) const {
-  d("----------   Ints   ----------\n");
+  d("\002===== Ints =====\001\n");
   d("IE_D0              %c\n", top.IE_D0.c());
   d("IE_D1              %c\n", top.IE_D1.c());
   d("IE_D2              %c\n", top.IE_D2.c());

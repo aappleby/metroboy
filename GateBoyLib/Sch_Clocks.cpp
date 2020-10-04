@@ -10,33 +10,29 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::dump(Dumper& d, wire CLK) const {
-  d("---------- Phase Clock ----------\n");
-  d("PHASE         %c%c%c%c\n", AFUR_xxxxEFGH.c(), ALEF_AxxxxFGH.c(), APUK_ABxxxxGH.c(), ADYK_ABCxxxxH.c());
+  d("\002===== Clocks =====\001\n");
+  d("PHASE %c%c%c%c\n", AFUR_xxxxEFGH.c(), ALEF_AxxxxFGH.c(), APUK_ABxxxxGH.c(), ADYK_ABCxxxxH.c());
   d("\n");
-  d("AFUR_xxxxEFGH %d\n", AFUR_xxxxEFGH.q09p());
-  d("ALEF_AxxxxFGH %d\n", ALEF_AxxxxFGH.q09p());
-  d("APUK_ABxxxxGH %d\n", APUK_ABxxxxGH.q09p());
-  d("ADYK_ABCxxxxH %d\n", ADYK_ABCxxxxH.q09p());
-  d("\n");
-  d("ATYP_ABCDxxxx %d\n", ATYP_ABCDxxxx.qp());
-  d("AROV_xxCDEFxx %d\n", AROV_xxCDEFxx.qp());
-  d("AJAX_xxxxEFGH %d\n", AJAX_xxxxEFGH.qp());
-  d("\n");
-
-  d("---------- PPU Clock ----------\n");
-  d("VENA_ABCDxxxx %d\n", !VENA_xxCDEFxx.qn());
+  d("AFUR_xxxxEFGH %c\n", AFUR_xxxxEFGH.c());
+  d("ALEF_AxxxxFGH %c\n", ALEF_AxxxxFGH.c());
+  d("APUK_ABxxxxGH %c\n", APUK_ABxxxxGH.c());
+  d("ADYK_ABCxxxxH %c\n", ADYK_ABCxxxxH.c());
+  d("ATYP_ABCDxxxx %c\n", ATYP_ABCDxxxx.c());
+  d("AROV_xxCDEFxx %c\n", AROV_xxCDEFxx.c());
+  d("AJAX_xxxxEFGH %c\n", AJAX_xxxxEFGH.c());
+  d("VENA_ABCDxxxx %c\n", VENA_xxCDEFxx.c());
   d("TALU_ABCDxxxx %c\n", TALU_xxCDEFxx.c());
   d("XOCE_AxxDExxH %c\n", XOCE_xBCxxFGx.c());
-  d("WOSU_xBCxxFGx %d\n",  WOSU_AxxDExxH.qp());
+  d("WOSU_xBCxxFGx %c\n", WOSU_AxxDExxH.c());
   d("WOJO_xxCxxxGx %c\n", WOJO_AxxxExxx.c());
-  d("WUVU_xxCDxxGH %d\n", !WUVU_ABxxEFxx.qn());
+  d("WUVU_xxCDxxGH %c\n", WUVU_ABxxEFxx.c());
   d("XUPY_xxCDxxGH %c\n", XUPY_ABxxEFxx.c());
   d("\n");
 
-  d("----------  Reset   ----------\n");
-  d("TUBO %d\n",  TUBO_WAITINGp.qp());
-  d("ASOL %d\n",  ASOL_POR_DONEn.qp());
-  d("AFER %d\n",  AFER_SYS_RSTp.qp());
+  d("\002===== Reset =====\001\n");
+  d("TUBO_WAITINGp  %c\n", TUBO_WAITINGp.c());
+  d("ASOL_POR_DONEn %c\n", ASOL_POR_DONEn.c());
+  d("AFER_SYS_RSTp  %c\n", AFER_SYS_RSTp.c());
   d("\n");
 }
 

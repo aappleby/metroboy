@@ -208,7 +208,7 @@ void GateBoyApp::app_init() {
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;
 
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx0.gb");
+  load_rom("microtests/build/dmg/dma_0x1000.gb");
 
 #endif
 }
@@ -329,6 +329,9 @@ void GateBoyApp::app_update(double delta) {
 
   if (gb->rom_buf != rom_buf.data()) __debugbreak();
 
+  double sim_begin = timestamp();
+  int64_t phase_begin = gb->phase_total;
+
   if (runmode == RUN_FAST) {
     //auto gb = state_manager.state();
     //gb->run(114 * 8 * 8);
@@ -343,6 +346,12 @@ void GateBoyApp::app_update(double delta) {
   while(step_backward--) {
     gb.unstep(1, stepmode);
   }
+
+  double sim_end = timestamp();
+  int64_t phase_end = gb->phase_total;
+  sim_time = sim_end - sim_begin;
+  sim_time_smooth = sim_time_smooth * 0.9 + sim_time * 0.1;
+  sim_rate = (phase_end - phase_begin) / sim_time_smooth;
 
   frame_count++;
 }
@@ -481,10 +490,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   const auto& top = gb->top;
 
   StringDumper dumper;
-  float col_width = 256 - 32;
   float cursor = 0;
 
-  dumper("----------   Top    ----------\n");
+  dumper("\002===== Top =====\001\n");
 
   const char* phases[] = {
     "\002A_______\001",
@@ -523,25 +531,28 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dump_req(dumper, gb->cpu_req);
   dumper("bus_req ");
   dump_req(dumper, gb->bus_req);
-
   dumper("\n");
 
   dump_probes(dumper);
-  dumper("----------   CPU    ----------\n");
   gb->cpu_blah.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
-  cursor += col_width;
+  cursor += 224 - 32;
   dumper.clear();
+
+  //----------
 
   wire CLK = gb->phase_total & 1;
   top.clk_reg.dump(dumper, CLK);
   top.joypad.dump(dumper);
-  top.ser_reg.dump(dumper);
+  //top.ser_reg.dump(dumper);
+  top.lcd_reg.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
-  cursor += col_width;
+  cursor += 224 - 64;
   dumper.clear();
+
+  //----------
 
   top.cpu_bus.dump(dumper);
   top.ext_bus.dump(dumper);
@@ -549,24 +560,29 @@ void GateBoyApp::app_render_frame(Viewport view) {
   top.oam_bus.dump(dumper);
   top.dma_reg.dump(dumper);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
-  cursor += col_width;
+  cursor += 224;
   dumper.clear();
 
-  top.lcd_reg.dump(dumper, top);
+  //----------
+
   top.pix_pipe.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
-  cursor += col_width;
+  cursor += 224;
   dumper.clear();
+
+  //----------
 
   top.sprite_fetcher.dump(dumper);
   top.sprite_scanner.dump(dumper, top);
   top.sprite_store.dump(dumper);
   top.tile_fetcher.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
-  cursor += col_width;
+  cursor += 224 - 32;
   dumper.clear();
 
-  dumper("---------- DISASM ----------\n");
+  //----------
+
+  dumper("\002===== Disasm =====\001\n");
   {
     uint16_t pc = gb->cpu_blah.op_addr;
     const uint8_t* code = nullptr;
@@ -590,12 +606,29 @@ void GateBoyApp::app_render_frame(Viewport view) {
       code_base = ADDR_ZEROPAGE_BEGIN;
     }
 
-    assembler.disassemble(code, code_size, code_base, pc, 30, dumper, /*collapse_nops*/ false);
-    text_painter.render(view, dumper.s.c_str(), cursor, 0);
+    assembler.disassemble(code, code_size, code_base, pc, 34, dumper, /*collapse_nops*/ false);
   }
-  dumper.clear();
+  dumper("\n");
 
-  dump_painter.render(view, cursor, 416, 16, 16, gb->oam_ram);
+  dumper("\002===== OAM =====\001\n");
+  for (int y = 0; y < 10; y++) {
+    for (int x = 0; x < 16; x++) {
+      dumper("%02x ", gb->oam_ram[x + y * 16]);
+    }
+    dumper("\n");
+  }
+  dumper("\n");
+  dumper("\002===== ZRAM =====\001\n");
+  for (int y = 0; y < 8; y++) {
+    for (int x = 0; x < 16; x++) {
+      dumper("%02x ", gb->zero_ram[x + y * 16]);
+    }
+    dumper("\n");
+  }
+  dumper("\n");
+
+  text_painter.render(view, dumper.s.c_str(), cursor, 0);
+  dumper.clear();
 
   //cursor += col_width;
   //dumper.clear();
@@ -620,12 +653,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
     update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zero_ram);
     blitter.blit_mono(view, ram_tex, 256, 256,
                       0, 0, 256, 256,
-                      960 + 96, 640 + 96, 256, 256);
+                      960 + 96 - 64, 640 + 96, 256, 256);
   }
 
   // Draw screen and vid ram contents
   if (1) {
-    gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
+    gb_blitter.blit_screen(view, 1280, 64,  2, gb->framebuffer);
     gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vid_ram);
     gb_blitter.blit_map   (view, 1344, 448, 1, gb->vid_ram, 0, 0);
     gb_blitter.blit_map   (view, 1632, 448, 1, gb->vid_ram, 0, 1);
@@ -649,19 +682,19 @@ void GateBoyApp::app_render_frame(Viewport view) {
     }
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
-    blitter.blit(view, overlay_tex, 1024 + 256, 32, 160 * 2, 144 * 2);
+    blitter.blit(view, overlay_tex, 1280, 64, 160 * 2, 144 * 2);
   }
 
   switch(runmode) {
-  case RUN_FAST:  dumper("RUN_FAST  ");  break;
+  case RUN_FAST:  dumper("RUN_FAST  "); break;
   case RUN_VSYNC: dumper("RUN_VSYNC "); break;
   case RUN_STEP:  dumper("RUN_STEP  "); break;
   }
   switch(stepmode) {
-  case STEP_PASS:   dumper("STEP_PASS   ");   break;
-  case STEP_PHASE:  dumper("STEP_PHASE  ");  break;
-  case STEP_CYCLE: dumper("STEP_MCYCLE "); break;
-  case STEP_LINE:   dumper("STEP_LINE   ");   break;
+  case STEP_PASS:   dumper("STEP_PASS   "); break;
+  case STEP_PHASE:  dumper("STEP_PHASE  "); break;
+  case STEP_CYCLE:  dumper("STEP_CYCLE  "); break;
+  case STEP_LINE:   dumper("STEP_LINE   "); break;
   }
   dumper("Sim clock %8.3f ",      double(gb->phase_total) / (4194304.0 * 2));
   dumper("%s", phases[gb->phase_total & 7]);
@@ -682,9 +715,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("\n");
 
 
-  text_painter.render(view, dumper.s.c_str(), 1280, 32 + 144 * 2);
+  text_painter.render(view, dumper.s.c_str(), 1280, 64 + 144 * 2);
   dumper.clear();
 
+  double phases_per_frame = 114 * 154 * 60 * 8;
+  double sim_ratio = sim_rate / phases_per_frame;
+
+  text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time_smooth, sim_ratio);
+  text_painter.dprintf("Frame time %f\n", frame_time_smooth);
+  text_painter.render(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
 }
 
 //-----------------------------------------------------------------------------

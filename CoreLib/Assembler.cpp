@@ -358,7 +358,7 @@ void fuzz_assembler() {
     if (cmp != 0) {
       printf("---- %d ------\n", rep);
       printf("%s", source1);
-      printf("----------\n");
+      printf("-=====\001\n");
       printf("%s", source2);
     }
   }

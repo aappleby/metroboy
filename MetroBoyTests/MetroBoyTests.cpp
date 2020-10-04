@@ -21,7 +21,7 @@ void MetroBoyApp::post() {
   double begin = timestamp();
 
   printf("\n");
-  printf("---------- POST begin ----------\n");
+  printf("---------- POST begin =====\001\n");
 
   int err = 0;
 

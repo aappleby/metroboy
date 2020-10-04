@@ -850,12 +850,12 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
 //-----------------------------------------------------------------------------
 
 void Z80::dump(Dumper& d_) const {
-  d_("\002------------- CPU --------------\001\n");
+  d_("\002===== CPU =====\001\n");
   d_("state    %d\n", state);
   d_("state_   %d\n", state_);
-  //d_("halted   %d\n", cpu_halted);
-  d_("op_addr  0x%04x\n", op_addr);
-  d_("OP       0x%02x '%s' @ %d\n", op, op_strings2[op], state);
+  d_("op addr  0x%04x\n", op_addr);
+  d_("opcode   0x%02x\n", op);
+  d_("opname   '%s' @ %d\n", op_strings2[op], state);
   d_("CB       0x%02x\n", cb);
   d_("in       0x%02x\n", in);
   d_("out      0x%02x\n", out);

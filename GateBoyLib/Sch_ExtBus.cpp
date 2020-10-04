@@ -8,7 +8,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void ExtBus::dump(Dumper& d) const {
-  d("---------- Ext Bus  ----------\n");
+  d("\002===== Ext Bus =====\001\n");
   d("PIN CLK    : %c\n", PIN_EXT_CLK.c());
   d("PIN RDn    : %c\n", PIN_EXT_RDn.c());
   d("PIN WRn    : %c\n", PIN_EXT_WRn.c());

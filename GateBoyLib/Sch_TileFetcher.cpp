@@ -9,7 +9,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void TileFetcher::dump(Dumper& d, const SchematicTop& /*top*/) const {
-  d("----------TileFetcher---------\n");
+  d("\002=====TileFetcher=====\001\n");
   d("LAXU_BFETCH_S0           %c\n", LAXU_BFETCH_S0.c());
   d("MESU_BFETCH_S1           %c\n", MESU_BFETCH_S1.c());
   d("NYVA_BFETCH_S2           %c\n", NYVA_BFETCH_S2.c());

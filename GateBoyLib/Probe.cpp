@@ -10,11 +10,13 @@ void probe(const char* signal_name, wire s) {
 }
 
 void dump_probes(Dumper& d) {
-  d("---------- PROBES ----------\n");
-  for (const auto& v : all_probes) {
-    d("%-24s : %d\n", v.first.c_str(), v.second);
+  if (all_probes.size()) {
+    d("\002===== Probes =====\001\n");
+    for (const auto& v : all_probes) {
+      d("%-24s : %d\n", v.first.c_str(), v.second);
+    }
+    d("\n");
   }
-  d("\n");
 }
 
 void clear_probes() {

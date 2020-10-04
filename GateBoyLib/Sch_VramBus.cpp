@@ -10,7 +10,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
-  d("---------- VRAM Bus ----------\n");
+  d("\002===== VRAM Bus =====\001\n");
 
   d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     get_bus_addr() | 0x8000,

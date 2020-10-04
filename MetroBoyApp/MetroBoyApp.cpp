@@ -249,7 +249,6 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
   double sim_end = timestamp();
   int64_t phase_end = gb->phase_total;
-
   sim_time = sim_end - sim_begin;
   sim_rate = (phase_end - phase_begin) / sim_time;
 }
@@ -361,8 +360,6 @@ void MetroBoyApp::app_render_ui(Viewport view) {
 
   text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time);
-
-
   text_painter.render(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
 
 

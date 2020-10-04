@@ -22,7 +22,7 @@ uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
 }
 
 void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
-  d("---------- Pix Pipe ----------\n");
+  d("\002===== Pix Pipe =====\001\n");
 
   d.dump_reg("PIX COUNT",
     XEHO_X0p.qp(), SAVY_X1p.qp(), XODU_X2p.qp(), XYDO_X3p.qp(),
@@ -196,7 +196,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   d("\n");
 
 
-  d("----------  Window  ----------\n");
+  d("\002===== Window =====\001\n");
 
   d("PYNU_WIN_MODE_A       : %c\n", PYNU_WIN_MODE_A.c());
   d("RYDY_WIN_FIRST_TILE_A : %c\n", RYDY_WIN_FIRST_TILE_A.c());

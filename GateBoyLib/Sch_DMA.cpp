@@ -7,7 +7,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void DmaRegisters::dump(Dumper& d) const {
-  d("---------- DMA Reg  ----------\n");
+  d("\002===== DMA Reg =====\001\n");
 
   int dma_addr_hi = pack_p(!NAFA_DMA_A08n.q08(), !PYNE_DMA_A09n.q08(), !PARA_DMA_A10n.q08(), !NYDO_DMA_A11n.q08(),
                            !NYGY_DMA_A12n.q08(), !PULA_DMA_A13n.q08(), !POKU_DMA_A14n.q08(), !MARU_DMA_A15n.q08());

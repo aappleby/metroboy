@@ -8,7 +8,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void OamBus::dump(Dumper& d) const {
-  d("---------- OAM Bus  ----------\n");
+  d("\002===== OAM Bus =====\001\n");
   d("PIN_CLK    %c\n", PIN_OAM_CLK.c());
   d("PIN_OE     %c\n", PIN_OAM_OE.c());
   d("PIN_WR_A   %c\n", PIN_OAM_WR_A.c());
@@ -66,19 +66,19 @@ void OamBus::dump(Dumper& d) const {
                           GOMO_OAM_DB4p.q08(), BAXO_OAM_DB5p.q08(), YZOS_OAM_DB6p.q08(), DEPO_OAM_DB7p.q08());
 
 
-  d("OAM TEMP A %03d %02x %c%c%c%c%c%c%c%c\n",
+  d("OAM TEMP A     %03d %02x %c%c%c%c%c%c%c%c\n",
     oam_temp_a,
     oam_temp_a,
     YZAB_OAM_DA7p.c(), XOTE_OAM_DA6p.c(), WYSO_OAM_DA5p.c(), YBOG_OAM_DA4p.c(),
     XYJU_OAM_DA3p.c(), YJEX_OAM_DA2p.c(), XEGU_OAM_DA1p.c(), XUSO_OAM_DA0p.c());
 
-  d("OAM TEMP B %03d %2x %c%c%c%c%c%c%c%c\n",
+  d("OAM TEMP B     %03d %2x %c%c%c%c%c%c%c%c\n",
     oam_temp_b,
     oam_temp_b,
     DEPO_OAM_DB7p.c(), YZOS_OAM_DB6p.c(), BAXO_OAM_DB5p.c(), GOMO_OAM_DB4p.c(),
     ZEZY_OAM_DB3p.c(), ZYVE_OAM_DB2p.c(), ZYTY_OAM_DB1p.c(), YLOR_OAM_DB0p.c());
 
-  d("SPRITE INDEX %02d\n",
+  d("SPRITE INDEX   %02d\n",
     pack_p(
       XADU_SPRITE_IDX0p.qn(),
       XEDY_SPRITE_IDX1p.qn(),

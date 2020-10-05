@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-  //err += t.test_micro_int_stat();
+  //err += t.test_micro_lock_oam();
 
 #if 1
   // slow pre-bootrom tests

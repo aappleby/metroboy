@@ -303,114 +303,83 @@
 .define PASS_PATTERN $01
 .define FAIL_PATTERN $FF
 
-.macro test_end
+.macro test_display_a
   ld hl, $8000
 - ld (hl), a
   inc l
   jr -
 .endm
 
-.macro test_pass
-  ld a, PASS_PATTERN
+.macro test_end2 ARGS expected3, result
   ldh ($80), a
-  ld a, PASS_PATTERN
+  ld a, expected3
   ldh ($81), a
-  ld a, PASS_PATTERN
+  ld a, result
   ldh ($82), a
-  test_end
+  test_display_a
+.endm
+
+.macro test_pass
+  test_end2 PASS_PATTERN PASS_PATTERN
 .endm
 
 .macro test_fail
-  ld a, FAIL_PATTERN
-  ldh ($80), a
-  ld a, FAIL_PATTERN
-  ldh ($81), a
-  ld a, FAIL_PATTERN
-  ldh ($82), a
-  test_end
+  test_end2 FAIL_PATTERN FAIL_PATTERN
 .endm
 
-.macro test_finish_a ARGS expected
-
-  cp expected
+.macro test_finish_a ARGS expected2
+  cp expected2
   jr z, +
-
-  ldh ($80), a
-  ld a, expected
-  ldh ($81), a
-  ld a, FAIL_PATTERN
-  ldh ($82), a
-  test_end
-
-+ ldh ($80), a
-  ld a, expected
-  ldh ($81), a
-  ld a, PASS_PATTERN
-  ldh ($82), a
-  test_end
+  test_end2 expected2 FAIL_PATTERN
++ test_end2 expected2 PASS_PATTERN
 .endm
 
-.macro test_finish_not_a ARGS expected
-  ld b, a
-  ldh ($80), a
-  ld a, expected
-  ldh ($81), a
-  ld a, $31
-  ldh ($82), a
-
-  ld a, b
-  cp expected
-
-  jr nz, +
-  ld a, FAIL_PATTERN
-  test_end
-+ ld a, PASS_PATTERN
-  test_end
+.macro test_finish_not_a ARGS expected2
+  cp expected2
+  jr z, +
+  test_end2 expected2 PASS_PATTERN
++ test_end2 expected2 FAIL_PATTERN
 .endm
 
 //------------------------------------------------------------------------------
 // Helpers for debugging tests
 
-.macro test_display_a
-  test_end
-.endm
-
 .macro test_display_cycle
   cycle_count
-  test_end
+  test_display_a
 .endm
 
 .macro test_display_div
   ldh a, (DIV)
-  test_end
+  test_display_a
 .endm
 
 //------------------------------------------------------------------------------
 // Helpers for writing tests.
 
-.macro test_finish_b ARGS expected
+.macro test_finish_b ARGS expected1
   ld a, b
-  test_finish_a expected
+  test_finish_a expected1
 .endm
 
-.macro test_finish_div ARGS expected
+.macro test_finish_div ARGS expected1
   ldh a, (DIV)
-  test_finish_a expected
+  test_finish_a expected1
 .endm
 
-.macro test_finish_stat ARGS expected
+.macro test_finish_stat ARGS expected1
   ldh a, (STAT)
-  test_finish_a expected
+  test_finish_a expected1
 .endm
 
-.macro test_finish_ly ARGS expected
+.macro test_finish_ly ARGS expected1
   ldh a, (LY)
-  test_finish_a expected
+  test_finish_a expected1
 .endm
 
-.macro test_finish_if ARGS expected
+.macro test_finish_if ARGS expected1
   ldh a, (IF)
-  test_finish_a expected
+  test_finish_a expected1
 .endm
 
 //------------------------------------------------------------------------------

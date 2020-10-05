@@ -90,18 +90,18 @@ struct GateBoy {
 
   // CPU
 
-  Z80      cpu_blah;
+  Z80      cpu;
   Req      cpu_req = {0};
   Req      dbg_req = {0};
   Req      bus_req = {0};
-  uint8_t  cpu_data_latch = 0;
-  uint8_t  cpu_int_ack = 0;
+  uint8_t  xxx_cpu_data_latch = 0;
+  uint8_t  xxx_cpu_int_ack = 0;
 
-  uint8_t  imask_gh = 0;
-  uint8_t  intf_gh = 0;
+  uint8_t  xxx_imask_gh = 0;
+  uint8_t  xxx_intf_gh = 0;
 
-  uint8_t  imask_cd = 0;
-  uint8_t  intf_cd = 0;
+  uint8_t  xxx_imask_cd = 0;
+  uint8_t  xxx_intf_cd = 0;
 
   bool int_vblank = 0;
   bool int_vblank_halt = 0;

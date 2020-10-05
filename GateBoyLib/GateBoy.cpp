@@ -46,7 +46,7 @@ GateBoy::GateBoy() {
   top.int_reg.PIN_CPU_ACK_SERIAL.lock(0);
   top.int_reg.PIN_CPU_ACK_JOYPAD.lock(0);
 
-  cpu_blah.reset(0x0000);
+  cpu.reset(0x0000);
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ void GateBoy::reset_to_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
-  cpu_blah.reset(0x0000);
+  cpu.reset(0x0000);
   sys_cpuready = 1;
   sys_cpu_en = true;
 }
@@ -131,101 +131,18 @@ void GateBoy::next_pass() {
 
   //----------------------------------------
 
-  if (DELTA_AB) {
-    cpu_req = cpu_blah.bus_req;
-    bus_req = {0};
-
-    if (sys_cpu_en) bus_req = cpu_req;
-    if (dbg_req.read || dbg_req.write) bus_req = dbg_req;
-
-    bool addr_rom = bus_req.addr <= 0x7FFF;
-    bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
-    bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
-
-    top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
-    top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
-    top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
-    top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu_blah.int_ack & INT_VBLANK_MASK));
-    top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu_blah.int_ack & INT_STAT_MASK));
-    top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu_blah.int_ack & INT_TIMER_MASK));
-    top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu_blah.int_ack & INT_SERIAL_MASK));
-    top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu_blah.int_ack & INT_JOYPAD_MASK));
-
-    top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
-    top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
-    top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
-    top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
-    top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
-    top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
-    top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
-    top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
-    top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
-    top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
-    top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
-    top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
-    top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
-    top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
-    top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
-    top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
-  }
-
-  if (DELTA_DE) {
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && (bus_req.addr < 0xFF00));
-  }
-
-  if (DELTA_FG) cpu_data_latch = 0xFF;
-  if (DELTA_GH) cpu_data_latch &= top.cpu_bus.get_bus_data();
-  if (DELTA_HA) cpu_data_latch &= top.cpu_bus.get_bus_data();
-
-  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    if (bus_req.write) top.cpu_bus.set_data(bus_req.data_lo);
-  }
-
-  if (DELTA_HA) {
-    top.cpu_bus.PIN_CPU_RDp.lock(0);
-    top.cpu_bus.PIN_CPU_WRp.lock(0);
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-    top.cpu_bus.BUS_CPU_A08.lock(0);
-    top.cpu_bus.BUS_CPU_A09.lock(0);
-    top.cpu_bus.BUS_CPU_A10.lock(0);
-    top.cpu_bus.BUS_CPU_A11.lock(0);
-    top.cpu_bus.BUS_CPU_A12.lock(0);
-    top.cpu_bus.BUS_CPU_A13.lock(0);
-    top.cpu_bus.BUS_CPU_A14.lock(0);
-    top.cpu_bus.BUS_CPU_A15.lock(0);
-  }
-
-  top.joypad.set_buttons(sys_buttons);
-
-  //----------------------------------------
-
   if (pass_count == 0) {
-    if (DELTA_CD) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_CD) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_CD) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_CD) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+    if (DELTA_DE) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+    if (DELTA_DE) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
+    if (DELTA_DE) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+    if (DELTA_DE) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
 
-    if (DELTA_GH) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp(); // this one latches funny
-
-    if (DELTA_EF && sys_cpu_en) {
-
-      uint8_t intf_halt = 0;
-      if (int_vblank_halt) intf_halt |= INT_VBLANK_MASK;
-      if (int_stat_halt)   intf_halt |= INT_STAT_MASK;
-      if (int_timer_halt)  intf_halt |= INT_TIMER_MASK;
-      if (int_serial_halt) intf_halt |= INT_SERIAL_MASK;
-      if (int_joypad_halt) intf_halt |= INT_JOYPAD_MASK;
-
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-
-      cpu_blah.tock_de(imask, intf_halt);
-    }
-
-    if (DELTA_GH) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_GH) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_GH) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
-    if (DELTA_GH) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_GH) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+    if (DELTA_HA) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp(); // this one latches funny
+    if (DELTA_HA) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+    if (DELTA_HA) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
+    if (DELTA_HA) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
+    if (DELTA_HA) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+    if (DELTA_HA) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
 
     if (DELTA_HA) {
       // has to be in gh or things break
@@ -233,21 +150,69 @@ void GateBoy::next_pass() {
       if (dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
     }
 
-    //----------
-    // CPU updates after HA.
+    if (DELTA_AB) {
+      cpu_req = cpu.bus_req;
+      bus_req = {0};
 
-    if (DELTA_HA && sys_cpu_en) {
+      if (sys_cpu_en) bus_req = cpu_req;
+      if (dbg_req.read || dbg_req.write) bus_req = dbg_req;
 
-      uint8_t intf = 0;
-      if (int_vblank) intf |= INT_VBLANK_MASK;
-      if (int_stat)   intf |= INT_STAT_MASK;
-      if (int_timer)  intf |= INT_TIMER_MASK;
-      if (int_serial) intf |= INT_SERIAL_MASK;
-      if (int_joypad) intf |= INT_JOYPAD_MASK;
+      bool addr_rom = bus_req.addr <= 0x7FFF;
+      bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
+      bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
 
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+      top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
+      top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+      top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
+      top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
+      top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
+      top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));
+      top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu.int_ack & INT_SERIAL_MASK));
+      top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu.int_ack & INT_JOYPAD_MASK));
 
-      cpu_blah.tock_ha(imask, intf, (uint8_t)cpu_req.data);
+      top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
+      top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
+      top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
+      top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
+      top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
+      top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
+      top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
+      top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
+      top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
+      top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
+      top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
+      top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
+      top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
+      top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
+      top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
+      top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
+    }
+
+    if (DELTA_DE) {
+      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(bus_req.read && (bus_req.addr < 0xFF00));
+    }
+
+    if (DELTA_HA) {
+      top.cpu_bus.PIN_CPU_RDp.lock(0);
+      top.cpu_bus.PIN_CPU_WRp.lock(0);
+      top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
+      top.cpu_bus.BUS_CPU_A08.lock(0);
+      top.cpu_bus.BUS_CPU_A09.lock(0);
+      top.cpu_bus.BUS_CPU_A10.lock(0);
+      top.cpu_bus.BUS_CPU_A11.lock(0);
+      top.cpu_bus.BUS_CPU_A12.lock(0);
+      top.cpu_bus.BUS_CPU_A13.lock(0);
+      top.cpu_bus.BUS_CPU_A14.lock(0);
+      top.cpu_bus.BUS_CPU_A15.lock(0);
+    }
+
+    top.joypad.set_buttons(sys_buttons);
+
+    if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write) {
+      top.cpu_bus.lock_data(bus_req.data_lo);
+    }
+    else {
+      top.cpu_bus.unlock_data();
     }
   }
 
@@ -289,6 +254,39 @@ void GateBoy::next_pass() {
   // CPU or test function and update the CPU if necessary.
 
   if (sim_stable) {
+
+    //----------
+
+    if (DELTA_DE && sys_cpu_en) {
+
+      uint8_t intf_halt = 0;
+      if (int_vblank_halt) intf_halt |= INT_VBLANK_MASK;
+      if (int_stat_halt)   intf_halt |= INT_STAT_MASK;
+      if (int_timer_halt)  intf_halt |= INT_TIMER_MASK;
+      if (int_serial_halt) intf_halt |= INT_SERIAL_MASK;
+      if (int_joypad_halt) intf_halt |= INT_JOYPAD_MASK;
+
+      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+
+      cpu.tock_de(imask, intf_halt);
+    }
+
+    //----------
+    // CPU updates after HA.
+
+    if (DELTA_HA && sys_cpu_en) {
+
+      uint8_t intf = 0;
+      if (int_vblank) intf |= INT_VBLANK_MASK;
+      if (int_stat)   intf |= INT_STAT_MASK;
+      if (int_timer)  intf |= INT_TIMER_MASK;
+      if (int_serial) intf |= INT_SERIAL_MASK;
+      if (int_joypad) intf |= INT_JOYPAD_MASK;
+
+      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+
+      cpu.tock_ha(imask, intf, (uint8_t)cpu_req.data);
+    }
 
     //----------
     // If the sim is stable and there's still a bus collision or float, we have a problem.

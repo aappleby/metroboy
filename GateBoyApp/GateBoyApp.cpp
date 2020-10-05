@@ -108,7 +108,7 @@ void GateBoyApp::app_init() {
   //gb->sys_cpu_en = false;
 
   // run rom
-  load_rom("microtests/build/dmg/poweron_006_oam.gb");
+  //load_rom("microtests/build/dmg/poweron_006_oam.gb");
 }
 
 //----------------------------------------
@@ -346,13 +346,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("phase %s\n", phases[gb->phase_total & 7]);
 
+  dumper("State count %d\n", gb.state_count());
   size_t state_size = gb.state_size_bytes();
-
   if (state_size < 1024 * 1024) {
-    dumper("State size  %d K\n",      state_size / 1024);
+    dumper("State size  %d K\n", state_size / 1024);
   }
   else {
-    dumper("State size  %d M\n",      state_size / (1024 * 1024));
+    dumper("State size  %d M\n", state_size / (1024 * 1024));
   }
   dumper("Phase count %d\n",     gb->phase_total);
   dumper("Pass count  %d\n",     gb->pass_count);
@@ -373,7 +373,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("\n");
 
   dump_probes(dumper);
-  gb->cpu_blah.dump(dumper);
+  gb->cpu.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper, top);
   text_painter.render(view, dumper.s.c_str(), cursor, 0);
@@ -423,7 +423,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   dumper("\002===== Disasm =====\001\n");
   {
-    uint16_t pc = gb->cpu_blah.op_addr;
+    uint16_t pc = gb->cpu.op_addr;
     const uint8_t* code = nullptr;
     uint16_t code_size = 0;
     uint16_t code_base = 0;

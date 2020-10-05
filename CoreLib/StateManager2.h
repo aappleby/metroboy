@@ -7,52 +7,26 @@
 //-----------------------------------------------------------------------------
 
 template<class T>
-class StateManager2 {
-public:
-
-  StateManager2() {
-    states.push_back(new T());
-  }
+struct StateManager2 {
+  StateManager2() { states.resize(1); }
   StateManager2(const StateManager2&) = delete;
   StateManager2& operator=(const StateManager2&) = delete;
 
-  typedef std::function<void(T*, StepSize)> step_func;
+  T* state()      { return &states.back(); }
+  T* operator->() { return &states.back(); }
 
-  size_t state_count() const {
-    return states.size();
-  }
+  size_t state_count() const      { return states.size(); }
+  size_t state_size_bytes() const { return state_count() * sizeof(T); }
 
-  size_t state_size_bytes() const {
-    return state_count() * sizeof(T);
-  }
+  void push() { states.push_back(states.back()); }
+  void pop()  { if (states.size() > 1) { states.pop_back(); } }
 
   void reset() {
-    for (auto s : states) delete s;
     states.clear();
-    states.push_back(new T());
+    states.resize(1);
   }
 
-  T* state() {
-    return states.back();
-  }
-
-  T* operator->() {
-    return states.back();
-  }
-
-  void push() {
-    auto s = new T(*states.back());
-    states.push_back(s);
-  }
-
-  void pop() {
-    if (states.size() > 1) {
-      delete states.back();
-      states.pop_back();
-    }
-  }
-
-  std::vector<T*> states;
+  std::vector<T> states;
 };
 
 //-----------------------------------------------------------------------------

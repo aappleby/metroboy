@@ -33,6 +33,28 @@ struct CpuBus {
     BUS_CPU_D7p.set(data & 0x80);
   }
 
+  void lock_data(uint8_t data) {
+    BUS_CPU_D0p.lock(data & 0x01);
+    BUS_CPU_D1p.lock(data & 0x02);
+    BUS_CPU_D2p.lock(data & 0x04);
+    BUS_CPU_D3p.lock(data & 0x08);
+    BUS_CPU_D4p.lock(data & 0x10);
+    BUS_CPU_D5p.lock(data & 0x20);
+    BUS_CPU_D6p.lock(data & 0x40);
+    BUS_CPU_D7p.lock(data & 0x80);
+  }
+
+  void unlock_data() {
+    BUS_CPU_D0p.unlock();
+    BUS_CPU_D1p.unlock();
+    BUS_CPU_D2p.unlock();
+    BUS_CPU_D3p.unlock();
+    BUS_CPU_D4p.unlock();
+    BUS_CPU_D5p.unlock();
+    BUS_CPU_D6p.unlock();
+    BUS_CPU_D7p.unlock();
+  }
+
   //-----------------------------------------------------------------------------
   // Address decoders
 

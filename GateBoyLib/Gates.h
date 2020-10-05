@@ -242,6 +242,11 @@ struct RegBase {
     delta = DELTA_LOCK;
   }
 
+  inline void unlock() {
+    CHECK_P(delta == DELTA_LOCK);
+    delta = DELTA_NONE;
+  }
+
   void force_state(int s) {
     state = RegState(s);
   }
@@ -612,6 +617,7 @@ struct Bus : private RegBase {
   using RegBase::c;
   using RegBase::cn;
   using RegBase::lock;
+  using RegBase::unlock;
   using RegBase::qp;
   using RegBase::qn;
 

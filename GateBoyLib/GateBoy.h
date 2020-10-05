@@ -128,10 +128,10 @@ struct GateBoy {
   bool xxx_int_joypad_delay = 0;
   bool xxx_int_joypad_halt_delay = 0;
 
-  uint8_t imask_gh_delay = 0;
-  uint8_t intf_gh_delay = 0;
-  uint8_t imask_cd_delay = 0;
-  uint8_t intf_cd_delay = 0;
+  uint8_t xxx_imask_gh_delay = 0;
+  uint8_t xxx_intf_gh_delay = 0;
+  uint8_t xxx_imask_cd_delay = 0;
+  uint8_t xxx_intf_cd_delay = 0;
   uint8_t placeholder4 = 0;
   uint8_t placeholder5 = 0;
   uint8_t placeholder6 = 0;

@@ -33,44 +33,6 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-GateBoyApp::GateBoyApp() {
-
-  auto top_step = [](GateBoy* gb, StepSize step_size) {
-    (void)step_size;
-    if (step_size == STEP_PASS) {
-      gb->next_pass();
-    }
-    else if (step_size == STEP_PHASE) {
-      gb->next_phase();
-    }
-    else if (step_size == STEP_CYCLE) {
-      gb->next_mcycle();
-    }
-    else if (step_size == STEP_LINE) {
-      gb->next_line();
-    }
-  };
-
-  auto top_unstep = [](GateBoy* gateboy, StepSize /*step_size*/) {
-    (void)gateboy;
-
-    // Run a logic pass after unstep to update our probes
-    // This still doesn't work :P
-    /*
-    uint64_t pass_hash_old = gb->pass_hash;
-    gb->update_logic();
-    uint64_t pass_hash_new = revert_and_hash(gb->top);
-    if (pass_hash_old != pass_hash_new) printf("UNSTEP FAIL\n");
-    */
-
-    clear_probes();
-  };
-
-  gb.init(top_step, top_unstep);
-}
-
-//-----------------------------------------------------------------------------
-
 const char* GateBoyApp::app_get_title() {
   return "GateBoyApp";
 }
@@ -142,78 +104,11 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 1
-  // run rom
-
-  //load_rom("microtests/build/dmg/int_hblank_halt_bug_a.gb");
-  //load_rom("microtests/build/dmg/int_hblank_halt_bug_b.gb");
-
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx0.gb"); // int fires on BC 626, int starts on 680, expected 4E FAIL
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx1.gb"); // int fires on DE 628, int starts on 680, expected 4F
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx2.gb"); // int fires on FG 630, int starts on 680, expected 4F
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx3.gb"); // int fires on HA 632, int starts on 688, expected 4F FAIL
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx4.gb"); // int fires on BC 634, int starts on 688, expected 4F FAIL
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx5.gb"); // int fires on DE 636, int starts on 688, expected 50
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx6.gb"); // int fires on FG 638, int starts on 688, expected 50
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx7.gb"); // int fires on HA 640, int starts on 696, expected 50 FAIL
-
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx0.gb"); // int fires on BC 626, int starts on 672
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx1.gb"); // int fires on DE 628, int starts on 672
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx2.gb"); // int fires on FG 630, int starts on 672
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx3.gb"); // int fires on HA 632, int starts on 680
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx4.gb"); // int fires on BC 634, int starts on 680
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx5.gb"); // int fires on DE 636, int starts on 680
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx6.gb"); // int fires on FG 638, int starts on 680
-  //load_rom("microtests/build/dmg/int_hblank_incs_scx7.gb"); // int fires on HA 640, int starts on 688
-
-  /*
-  oam_int_halt_a.gb              0x01 0x01 0x31 PASS @ 322
-  oam_int_halt_b.gb              0x02 0x02 0x31 PASS @ 323
-  2038 : int fires on phase G
-  2048 : isr starts
-
-  vblank2_int_halt_a.gb          0x02 0x01 0x31 FAIL @ 16486
-  vblank2_int_halt_b.gb          0x02 0x02 0x31 PASS @ 16488
-  131450 : int fires on phase C
-  131464 : isr starts
-
-  vblank_int_halt_a.gb           0x02 0x01 0x31 FAIL @ 16491
-  vblank_int_halt_b.gb           0x02 0x02 0x31 PASS @ 16493
-  int fires on 131450, phase C
-
-  lyc_int_halt_a.gb              0x05 0x04 0x31 FAIL @ 357
-  lyc_int_halt_b.gb              0x05 0x05 0x31 PASS @ 359
-  2090 : int fires on phase C
-  2104 : isr starts
-  passes w/ nop sled, fails w/ halt
-
-  timer_int_halt_a.gb            0x02 0x02 0x31 PASS @ 247
-  timer_int_halt_b.gb            0x03 0x03 0x31 PASS @ 241
-  1200 : int fires on phase A
-  1216 : isr starts
-
-  */
-
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx0.gb"); // int fires on 822, phase G
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx1.gb"); // int fires on 824, phase A
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx2.gb"); // int fires on 826, phase C
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx3.gb"); // int fires on 828, phase E
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx4.gb"); // int fires on 830, phase G
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx5.gb"); // int fires on 832, phase A
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx6.gb"); // int fires on 834, phase C
-  //load_rom("microtests/build/dmg/int_hblank_nops_scx7.gb"); // int fires on 836, phase E
-
-                                                            //runmode = RUN_FAST;
-
   //load_flat_dump("roms/LinksAwakening_dog.dump");
   //gb->sys_cpu_en = false;
 
-  load_rom("microtests/build/dmg/poweron_000_oam.gb");
-
-  //gb->dbg_write(ADDR_DMA, 0x01);
-  //gb->sys_cpu_en = false;
-
-#endif
+  // run rom
+  load_rom("microtests/build/dmg/poweron_006_oam.gb");
 }
 
 //----------------------------------------
@@ -227,31 +122,52 @@ void GateBoyApp::app_update(double delta) {
   (void)delta;
 
   SDL_Event event;
+  int step_forward = 0;
+  int step_backward = 0;
 
-  bool load_dump = false;
-  bool save_dump = false;
-  bool _load_megadump = false;
-  bool _save_megadump = false;
-  bool reset_sim = false;
-  bool toggle_cpu = false;
-  int  step_forward = 0;
-  int  step_backward = 0;
+  //----------------------------------------
 
   while (SDL_PollEvent(&event)) {
 
-    if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
-    case SDLK_F1:     load_dump = true; break;
-    case SDLK_F4:     save_dump = true; break;
-    case SDLK_F5:     reset_sim = true; break;
+    if (event.type == SDL_KEYDOWN)
+    switch (event.key.keysym.sym) {
 
-    case SDLK_F9:     _load_megadump = true; break;
-    case SDLK_F12:    _save_megadump = true; break;
+    case SDLK_F1: {
+      printf("Loading raw dump from %s\n", "gateboy.raw.dump");
+      gb.reset();
+      gb->load_dump("gateboy.raw.dump");
+      break;
+    }
 
-    case SDLK_f:      runmode = RUN_FAST; break;
-    case SDLK_v:      runmode = RUN_VSYNC; break;
-    case SDLK_s:      runmode = RUN_STEP; break;
-    case SDLK_r:      reset_sim = true; break;
-    case SDLK_c:      toggle_cpu = true; break;
+    case SDLK_F4: {
+      printf("Saving raw dump to %s\n", "gateboy.raw.dump");
+      gb->save_dump("gateboy.raw.dump");
+      break;
+    }
+
+    case SDLK_r:
+    case SDLK_F5: {
+      printf("Resetting sim\n");
+      gb.reset();
+      gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
+      break;
+    }
+
+    case SDLK_c: {
+      if (gb->sys_cpu_en) {
+        printf("Disabling CPU\n");
+        gb->sys_cpu_en = 0;
+      }
+      else {
+        printf("Enabling CPU\n");
+        gb->sys_cpu_en = 1;
+      }
+      break;
+    }
+
+    case SDLK_f: runmode = RUN_FAST; break;
+    case SDLK_v: runmode = RUN_VSYNC; break;
+    case SDLK_s: runmode = RUN_STEP; break;
 
     case SDLK_UP: {
       stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
@@ -264,7 +180,11 @@ void GateBoyApp::app_update(double delta) {
     }
 
     case SDLK_LEFT:   {
-      step_backward += 1;
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_backward += 8;
+      } else {
+        step_backward += 1;
+      }
       break;
     }
 
@@ -291,63 +211,33 @@ void GateBoyApp::app_update(double delta) {
 
   //----------------------------------------
 
-  if (toggle_cpu) {
-    if (gb->sys_cpu_en) {
-      printf("Disabling CPU\n");
-      gb->sys_cpu_en = 0;
-    }
-    else {
-      printf("Enabling CPU\n");
-      gb->sys_cpu_en = 1;
-    }
-  }
-
-  if (reset_sim) {
-    printf("Resetting sim\n");
-    gb.reset();
-    gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
-  }
-
-  if (_load_megadump) {
-    load_megadump("gateboy.megadump");
-    _load_megadump = false;
-  }
-
-  if (_save_megadump) {
-    save_megadump("gateboy.megadump");
-    _save_megadump = false;
-  }
-
-  if (load_dump) {
-    load_raw_dump("gateboy.raw.dump");
-    load_dump = false;
-  }
-
-  if (save_dump) {
-    save_raw_dump("gateboy.raw.dump");
-    save_dump = false;
-  }
-
-  //----------------------------------------
-
   if (gb->rom_buf != rom_buf.data()) __debugbreak();
 
   double sim_begin = timestamp();
   int64_t phase_begin = gb->phase_total;
 
   if (runmode == RUN_FAST) {
-    //auto gb = state_manager.state();
-    //gb->run(114 * 8 * 8);
-    gb.step(114 * 8 * 8, STEP_PHASE);
+    gb.push();
+    for (int i = 0; i < 114 * 8 * 8; i++) {
+      gb->next_phase();
+    }
   }
-
   else if (runmode == RUN_STEP && step_forward) {
-    gb.step(step_forward, stepmode);
-    step_forward = 0;
+    gb.push();
+    for (int i = 0; i < step_forward; i++) {
+      switch(stepmode) {
+      case STEP_PASS:  gb->next_pass();   break;
+      case STEP_PHASE: gb->next_phase();  break;
+      case STEP_CYCLE: gb->next_mcycle(); break;
+      case STEP_LINE:  gb->next_line();   break;
+      }
+    }
   }
-
-  while(step_backward--) {
-    gb.unstep(1, stepmode);
+  else if (runmode == RUN_STEP && step_backward) {
+    for (int i  = 0; i < step_backward; i++) {
+      gb.pop();
+    }
+    clear_probes();
   }
 
   double sim_end = timestamp();
@@ -357,60 +247,6 @@ void GateBoyApp::app_update(double delta) {
   sim_rate = (phase_end - phase_begin) / sim_time_smooth;
 
   frame_count++;
-}
-
-//-----------------------------------------------------------------------------
-// Load/save raw object dump
-
-void GateBoyApp::load_raw_dump(const char* filename) {
-  printf("Loading raw dump from %s\n", filename);
-  gb.reset();
-  gb->load_dump(filename);
-}
-
-//----------
-
-void GateBoyApp::save_raw_dump(const char* filename) {
-  printf("Saving raw dump to %s\n", filename);
-  gb->save_dump(filename);
-}
-
-//-----------------------------------------------------------------------------
-// Load/save _all_ states in the state manager
-
-void GateBoyApp::load_megadump(const char* filename) {
-  printf("Loading megadump %s\n", filename);
-
-  FILE* f = nullptr;
-  fopen_s(&f, filename, "rb");
-  if (!f) {
-    printf("GateBoyApp::load_megadump :: couldn't open %s\n", filename);
-    return;
-  }
-
-  gb.load_megadump(f);
-  gb.scan([](const GateBoy* gb) {
-    gb->check_sentinel();
-    return true;
-  });
-
-  fclose(f);
-}
-
-//----------
-
-void GateBoyApp::save_megadump(const char* filename) {
-  printf("Saving megadump %s\n", filename);
-
-  FILE* f = nullptr;
-  fopen_s(&f, filename, "wb");
-  if (!f) {
-    printf("GateBoyApp::save_megadump :: couldn't open %s\n", filename);
-    return;
-  }
-
-  gb.save_megadump(f);
-  fclose(f);
 }
 
 //-----------------------------------------------------------------------------
@@ -704,6 +540,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("%c", gb->sim_stable ? ' ' : '*');
   dumper("\n");
 
+  /*
   int count = 0;
   gb.rev_scan([&](const GateBoy* gb) {
     switch(gb->get_step_size()) {
@@ -716,6 +553,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     return count < 30;
   });
   dumper("\n");
+  */
 
 
   text_painter.render(view, dumper.s.c_str(), 1280, 64 + 144 * 2);

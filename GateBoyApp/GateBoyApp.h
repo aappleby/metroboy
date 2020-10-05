@@ -16,10 +16,6 @@
 class GateBoyApp : public App {
 public:
 
-  GateBoyApp();
-
-  //----------
-
   const char* app_get_title() override;
 
   void app_init() override;
@@ -41,10 +37,6 @@ public:
 private:
 
   void load_rom(const char* filename);
-  void load_raw_dump(const char* filename);
-  void save_raw_dump(const char* filename);
-  void load_megadump(const char* filename);
-  void save_megadump(const char* filename);
   void load_flat_dump(const char* filename);
   void save_flat_dump(const char* filename);
 

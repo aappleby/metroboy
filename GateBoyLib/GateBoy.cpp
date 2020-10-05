@@ -130,118 +130,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 void GateBoy::next_pass() {
 
   //----------------------------------------
-  // Run one pass of our simulation.
-
-  uint64_t pass_hash_old = pass_hash;
-
-  update_inputs();
-  update_top();
-
-  uint64_t pass_hash_new = commit_and_hash(top);
-
-  sim_stable = pass_hash_old == pass_hash_new;
-  pass_hash = pass_hash_new;
-  pass_count++;
-
-  if (pass_count > 90) printf("!!!STUCK!!!\n");
-
-  //----------------------------------------
-  // Once the simulation converges, latch the data that needs to go back to the
-  // CPU or test function and update the CPU if necessary.
-
-  if (sim_stable) {
-
-    //----------
-    // If the sim is stable and there's still a bus collision or float, we have a problem.
-
-    if (RegBase::bus_collision) printf("Bus collision!\n");
-    if (RegBase::bus_floating)  printf("Bus floating!\n");
-
-    //----------
-    // CPU updates after HA.
-
-    if (DELTA_GH) {
-      // has to be in gh or things break
-      if (cpu_req.read) cpu_req.data = cpu_data_latch;
-      if (dbg_req.read) dbg_req.data = cpu_data_latch;
-    }
-
-    // A B   C D   E F   G H
-
-    if (DELTA_BC) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_BC) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_FG) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp(); // this one latches funny
-    if (DELTA_BC) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_BC) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
-
-    if (DELTA_FG) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_FG) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_FG) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
-    if (DELTA_FG) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_FG) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
-
-    if (DELTA_HA && sys_cpu_en) {
-
-      uint8_t intf = 0;
-      if (int_vblank) intf |= INT_VBLANK_MASK;
-      if (int_stat)   intf |= INT_STAT_MASK;
-      if (int_timer)  intf |= INT_TIMER_MASK;
-      if (int_serial) intf |= INT_SERIAL_MASK;
-      if (int_joypad) intf |= INT_JOYPAD_MASK;
-
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-
-      cpu_blah.tock_ha(imask, intf, (uint8_t)cpu_req.data);
-    }
-
-    if (DELTA_DE && sys_cpu_en) {
-
-      uint8_t intf_halt = 0;
-      if (int_vblank_halt) intf_halt |= INT_VBLANK_MASK;
-      if (int_stat_halt)   intf_halt |= INT_STAT_MASK;
-      if (int_timer_halt)  intf_halt |= INT_TIMER_MASK;
-      if (int_serial_halt) intf_halt |= INT_SERIAL_MASK;
-      if (int_joypad_halt) intf_halt |= INT_JOYPAD_MASK;
-
-      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
-
-      cpu_blah.tock_de(imask, intf_halt);
-    }
-
-    //----------
-    // Send pixels to the display if necessary.
-    // FIXME should probably use the lcd sync pins for this...
-
-    // clock phase is ~119.21 nsec (4.19304 mhz crystal)
-    // hsync seems consistently 3.495 - 3.500 us (29 phases?)
-    // hsync to bogus clock pulse 1.465 us
-    // data changes on rising edge of lcd clock
-    // hsync should go low the same phase that lcd clock goes high
-    // vsync 108.720 usec - right on 912 phases
-
-    int fb_x = top.pix_pipe.get_pix_count() - 8;
-    int fb_y = top.lcd_reg.get_ly();
-
-    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-      int p0 = top.PIN_LCD_DATA0.qp();
-      int p1 = top.PIN_LCD_DATA1.qp();
-      framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
-    }
-
-    //----------
-    // Done, move to the next phase.
-
-    pass_total += pass_count;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
-  }
-}
-
-//-----------------------------------------------------------------------------
-// Update all inputs to our simulation.
-
-void GateBoy::update_inputs() {
 
   if (DELTA_AB) {
     cpu_req = cpu_blah.bus_req;
@@ -308,12 +196,65 @@ void GateBoy::update_inputs() {
   }
 
   top.joypad.set_buttons(sys_buttons);
-}
 
-//-----------------------------------------------------------------------------
-// Run one pass of our simulation.
+  //----------------------------------------
 
-void GateBoy::update_top() {
+  if (pass_count == 0) {
+    if (DELTA_CD) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+    if (DELTA_CD) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
+    if (DELTA_CD) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+    if (DELTA_CD) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+
+    if (DELTA_GH) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp(); // this one latches funny
+
+    if (DELTA_EF && sys_cpu_en) {
+
+      uint8_t intf_halt = 0;
+      if (int_vblank_halt) intf_halt |= INT_VBLANK_MASK;
+      if (int_stat_halt)   intf_halt |= INT_STAT_MASK;
+      if (int_timer_halt)  intf_halt |= INT_TIMER_MASK;
+      if (int_serial_halt) intf_halt |= INT_SERIAL_MASK;
+      if (int_joypad_halt) intf_halt |= INT_JOYPAD_MASK;
+
+      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+
+      cpu_blah.tock_de(imask, intf_halt);
+    }
+
+    if (DELTA_GH) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+    if (DELTA_GH) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
+    if (DELTA_GH) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
+    if (DELTA_GH) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+    if (DELTA_GH) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+
+    if (DELTA_HA) {
+      // has to be in gh or things break
+      if (cpu_req.read) cpu_req.data = top.cpu_bus.get_bus_data();
+      if (dbg_req.read) dbg_req.data = top.cpu_bus.get_bus_data();
+    }
+
+    //----------
+    // CPU updates after HA.
+
+    if (DELTA_HA && sys_cpu_en) {
+
+      uint8_t intf = 0;
+      if (int_vblank) intf |= INT_VBLANK_MASK;
+      if (int_stat)   intf |= INT_STAT_MASK;
+      if (int_timer)  intf |= INT_TIMER_MASK;
+      if (int_serial) intf |= INT_SERIAL_MASK;
+      if (int_joypad) intf |= INT_JOYPAD_MASK;
+
+      uint8_t imask = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+
+      cpu_blah.tock_ha(imask, intf, (uint8_t)cpu_req.data);
+    }
+  }
+
+  //----------------------------------------
+  // Run one pass of our simulation.
+
+  uint64_t pass_hash_old = pass_hash;
 
   RegBase::bus_collision = false;
   RegBase::bus_floating = false;
@@ -326,7 +267,6 @@ void GateBoy::update_top() {
   RegBase::tick_running = false;
 
   RegBase::tock_running = true;
-
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   top.tock_ext_bus (sys_rst, rom_buf, cart_ram, ext_ram);
   top.tock_vram_bus(sys_rst, vid_ram);
@@ -335,6 +275,67 @@ void GateBoy::update_top() {
   top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
   RegBase::tock_running = false;
   RegBase::sim_running = false;
+
+  uint64_t pass_hash_new = commit_and_hash(top);
+
+  sim_stable = pass_hash_old == pass_hash_new;
+  pass_hash = pass_hash_new;
+  pass_count++;
+
+  if (pass_count > 90) printf("!!!STUCK!!!\n");
+
+  //----------------------------------------
+  // Once the simulation converges, latch the data that needs to go back to the
+  // CPU or test function and update the CPU if necessary.
+
+  if (sim_stable) {
+
+    //----------
+    // If the sim is stable and there's still a bus collision or float, we have a problem.
+
+    if (RegBase::bus_collision) printf("Bus collision!\n");
+    if (RegBase::bus_floating)  printf("Bus floating!\n");
+
+    //----------
+    // Send pixels to the display if necessary.
+    // FIXME should probably use the lcd sync pins for this...
+
+    // clock phase is ~119.21 nsec (4.19304 mhz crystal)
+    // hsync seems consistently 3.495 - 3.500 us (29 phases?)
+    // hsync to bogus clock pulse 1.465 us
+    // data changes on rising edge of lcd clock
+    // hsync should go low the same phase that lcd clock goes high
+    // vsync 108.720 usec - right on 912 phases
+
+    int fb_x = top.pix_pipe.get_pix_count() - 8;
+    int fb_y = top.lcd_reg.get_ly();
+
+    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
+      int p0 = top.PIN_LCD_DATA0.qp();
+      int p1 = top.PIN_LCD_DATA1.qp();
+      framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
+    }
+
+    //----------
+    // Done, move to the next phase.
+
+    pass_total += pass_count;
+    pass_count = 0;
+    phase_total++;
+    combine_hash(total_hash, pass_hash);
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Update all inputs to our simulation.
+
+void GateBoy::update_inputs() {
+}
+
+//-----------------------------------------------------------------------------
+// Run one pass of our simulation.
+
+void GateBoy::update_top() {
 }
 
 //-----------------------------------------------------------------------------

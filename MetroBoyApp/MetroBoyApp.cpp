@@ -443,54 +443,6 @@ void MetroBoy::step_over() {
 
 
 
-#if 0
-  std::string golden_filename = prefix + "/" + name + ".bmp";
-  SDL_Surface* golden_surface = SDL_LoadBMP(golden_filename.c_str());
-
-  if (!golden_surface) {
-    overlay_mode = 0;
-    memset(golden, 0, 160 * 144);
-  }
-
-  if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
-    printf("Loaded i8 golden\n");
-    uint8_t* src = (uint8_t*)golden_surface->pixels;
-    uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
-    for (int y = 0; y < 144; y++) {
-      for (int x = 0; x < 160; x++) {
-        uint8_t a = pal[src[x + y * 160]] & 0xFF;
-
-        if (a < 40) a = 3;
-        else if (a < 128) a = 2;
-        else if (a < 210) a = 1;
-        else a = 0;
-
-        golden[x + y * 160] = a;
-      }
-    }
-    overlay_mode = 1;
-  }
-
-  else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
-    printf("Loaded argb golden\n");
-    uint8_t* src = (uint8_t*)golden_surface->pixels;
-    for (int y = 0; y < 144; y++) {
-      for (int x = 0; x < 160; x++) {
-        uint8_t a = src[x * 3 + y * golden_surface->pitch];
-
-        if (a < 40) a = 3;
-        else if (a < 128) a = 2;
-        else if (a < 210) a = 1;
-        else a = 0;
-
-        golden[x + y * 160] = a;
-      }
-    }
-    overlay_mode = 1;
-  }
-#endif
-
-
   #if 0
 
   //----------------------------------------

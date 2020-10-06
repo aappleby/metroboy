@@ -243,7 +243,7 @@ struct RegBase {
   }
 
   inline void unlock() {
-    CHECK_P(delta == DELTA_LOCK);
+    //CHECK_P(delta == DELTA_LOCK);
     delta = DELTA_NONE;
   }
 
@@ -309,6 +309,28 @@ struct RegBase {
 };
 
 #pragma warning(pop)
+
+//-----------------------------------------------------------------------------
+
+struct DelayGlitch {
+  RegBase da = TRI_D0NP;
+  RegBase db = TRI_D0NP;
+  RegBase dc = TRI_D0NP;
+  RegBase dd = TRI_D0NP;
+  RegBase de = TRI_D0NP;
+
+  inline void set(wire w) {
+    de.merge_tri_delta(dd.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    dd.merge_tri_delta(dc.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    dc.merge_tri_delta(db.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    db.merge_tri_delta(da.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    da.merge_tri_delta(w       ? DELTA_TRI1 : DELTA_TRI0);
+  }
+
+  inline wire qp() const {
+    return de.qp();
+  }
+};
 
 //-----------------------------------------------------------------------------
 // Generic DFF

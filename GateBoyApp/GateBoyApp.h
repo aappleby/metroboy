@@ -37,6 +37,7 @@ public:
 private:
 
   void load_rom(const char* filename);
+  void load_golden(const char* filename);
   void load_flat_dump(const char* filename);
   void save_flat_dump(const char* filename);
 
@@ -76,6 +77,9 @@ private:
 
   uint32_t overlay[160 * 144];
   int overlay_tex;
+
+  uint8_t golden_u8[160 * 144];
+  bool has_golden = false;
 
   int ram_tex;
 

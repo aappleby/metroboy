@@ -1172,12 +1172,12 @@ int GateBoyTests::test_ext_bus() {
     {
       // PIN_EXT_WRn = nand(PIN_CPU_WRp, xxxxEFGx, PIN_CPU_ADDR_EXTp, !ADDR_VRAM);
       // PIN_EXT_RDn = (PIN_CPU_WR && PIN_CPU_ADDR_EXTp);
-      // PIN_EXT_ANNp = tp_latch(and2(PIN_CPU_ADDR_EXTp, !ADDR_VRAM), BUS_CPU_ANN);
+      // PIN_EXT_A00p = tp_latch(and2(PIN_CPU_ADDR_EXTp, !ADDR_VRAM), BUS_CPU_A00);
 
       // WRn = 1 = nand(PIN_CPU_WRp, xxxxEFGx, PIN_CPU_ADDR_EXTp);
 
       // RDn = 0 = (PIN_CPU_WR && PIN_CPU_ADDR_EXTp);
-      // A00 = 1 = tp_latch(and2(PIN_CPU_ADDR_EXTp, !ADDR_VRAM), BUS_CPU_ANN);
+      // A00 = 1 = tp_latch(and2(PIN_CPU_ADDR_EXTp, !ADDR_VRAM), BUS_CPU_A00);
 
       //const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111"; // good
       //const char* RDn_WAVE = "00000000 00000000 00000000 00000000 00000000";

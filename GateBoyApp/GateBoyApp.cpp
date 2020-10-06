@@ -54,7 +54,7 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   // regenerate post-bootrom dump
-#if 0
+#if 1
   rom_buf = load_blob("roms/tetris.gb");
   gb->reset_to_bootrom(rom_buf.data(), rom_buf.size());
 
@@ -109,7 +109,8 @@ void GateBoyApp::app_init() {
 
   // run rom
   //load_rom("microtests/build/dmg/ppu_sprite0_scx7_a.gb");
-  load_rom("roms/mealybug/m3_wx_6_change.gb");
+  //load_rom   ("roms/mealybug/m3_lcdc_bg_en_change.gb");
+  //load_golden("roms/mealybug/m3_lcdc_bg_en_change.bmp");
 }
 
 //----------------------------------------
@@ -322,6 +323,54 @@ void GateBoyApp::load_rom(const char* filename) {
   printf("Loaded %zd bytes from rom %s\n", rom_buf.size(), filename);
 }
 
+void GateBoyApp::load_golden(const char* filename) {
+  SDL_Surface* golden_surface = SDL_LoadBMP(filename);
+
+  if (!golden_surface) {
+    printf("Failed to load golden %s\n", filename);
+    memset(golden_u8, 0, 160 * 144);
+    return;
+  }
+
+  if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
+    printf("Loaded i8 golden %s\n", filename);
+    uint8_t* src = (uint8_t*)golden_surface->pixels;
+    uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
+    for (int y = 0; y < 144; y++) {
+      for (int x = 0; x < 160; x++) {
+        uint8_t a = pal[src[x + y * 160]] & 0xFF;
+
+        if (a < 40) a = 3;
+        else if (a < 128) a = 2;
+        else if (a < 210) a = 1;
+        else a = 0;
+
+        golden_u8[x + y * 160] = a;
+      }
+    }
+  }
+
+  else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
+    printf("Loaded bgr24 golden %s\n", filename);
+    uint8_t* src = (uint8_t*)golden_surface->pixels;
+    (void)src;
+    for (int y = 0; y < 144; y++) {
+      for (int x = 0; x < 160; x++) {
+        uint8_t a = src[x * 3 + y * golden_surface->pitch];
+
+        if (a < 40) a = 3;
+        else if (a < 128) a = 2;
+        else if (a < 210) a = 1;
+        else a = 0;
+
+        golden_u8[x + y * 160] = a;
+      }
+    }
+  }
+
+  has_golden = true;
+}
+
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_render_frame(Viewport view) {
@@ -500,7 +549,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   // Draw screen and vid ram contents
   if (1) {
-    gb_blitter.blit_screen(view, 1280, 64,  2, gb->framebuffer);
+    if (has_golden) {
+      gb_blitter.blit_diff(view, 1280, 64,  2, gb->framebuffer, golden_u8);
+    }
+    else {
+      gb_blitter.blit_screen(view, 1280, 64,  2, gb->framebuffer);
+    }
+
     gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vid_ram);
     gb_blitter.blit_map   (view, 1344, 448, 1, gb->vid_ram, 0, 0);
     gb_blitter.blit_map   (view, 1632, 448, 1, gb->vid_ram, 0, 1);

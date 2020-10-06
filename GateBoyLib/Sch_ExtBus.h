@@ -47,6 +47,8 @@ struct ExtBus {
 
   //-----------------------------------------------------------------------------
 
+  //DelayGlitch MATE_HOLDn_delay;
+
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p = TRI_D0NP;
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p = TRI_D0NP;
   /*p08.ALYR*/ TpLatch ALYR_EXT_ADDR_LATCH_02p = TRI_D0NP;
@@ -81,20 +83,20 @@ struct ExtBus {
   Pin PIN_EXT_CSn  = TRI_D0NP;   // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
 
   Pin PIN_EXT_A00p = TRI_D0NP;   // PIN_01 // Address changees on B for CPU read/write, on A for DMA read
-  Pin PIN_EXT_A01p = TRI_D0NP;   // PIN_02 
-  Pin PIN_EXT_A02p = TRI_D0NP;   // PIN_03 
-  Pin PIN_EXT_A03p = TRI_D0NP;   // PIN_04 
-  Pin PIN_EXT_A04p = TRI_D0NP;   // PIN_05 
-  Pin PIN_EXT_A05p = TRI_D0NP;   // PIN_06 
-  Pin PIN_EXT_A06p = TRI_D0NP;   // PIN_07 
-  Pin PIN_EXT_A07p = TRI_D0NP;   // PIN_08 
-  Pin PIN_EXT_A08p = TRI_D0NP;   // PIN_09 
-  Pin PIN_EXT_A09p = TRI_D0NP;   // PIN_10 
-  Pin PIN_EXT_A10p = TRI_D0NP;   // PIN_11 
-  Pin PIN_EXT_A11p = TRI_D0NP;   // PIN_12 
-  Pin PIN_EXT_A12p = TRI_D0NP;   // PIN_13 
-  Pin PIN_EXT_A13p = TRI_D0NP;   // PIN_14 
-  Pin PIN_EXT_A14p = TRI_D0NP;   // PIN_15 
+  Pin PIN_EXT_A01p = TRI_D0NP;   // PIN_02
+  Pin PIN_EXT_A02p = TRI_D0NP;   // PIN_03
+  Pin PIN_EXT_A03p = TRI_D0NP;   // PIN_04
+  Pin PIN_EXT_A04p = TRI_D0NP;   // PIN_05
+  Pin PIN_EXT_A05p = TRI_D0NP;   // PIN_06
+  Pin PIN_EXT_A06p = TRI_D0NP;   // PIN_07
+  Pin PIN_EXT_A07p = TRI_D0NP;   // PIN_08
+  Pin PIN_EXT_A08p = TRI_D0NP;   // PIN_09
+  Pin PIN_EXT_A09p = TRI_D0NP;   // PIN_10
+  Pin PIN_EXT_A10p = TRI_D0NP;   // PIN_11
+  Pin PIN_EXT_A11p = TRI_D0NP;   // PIN_12
+  Pin PIN_EXT_A12p = TRI_D0NP;   // PIN_13
+  Pin PIN_EXT_A13p = TRI_D0NP;   // PIN_14
+  Pin PIN_EXT_A14p = TRI_D0NP;   // PIN_15
   Pin PIN_EXT_A15p = TRI_D0NP;   // PIN_16 // A15 changes on C
 
   Pin PIN_EXT_D00p = TRI_HZPU;   // PIN_17

@@ -36,9 +36,6 @@ struct GateBoy {
     }
   }
 
-  void update_inputs();
-  void update_top();
-
   void set_boot_bit() {
     dbg_write(0xFF50, 0xFF);
   }
@@ -86,6 +83,8 @@ struct GateBoy {
     }
   }
 
+  //----------------------------------------
+
   uint64_t sentinel1 = 0xDEADBEEFBAADF00D;
 
   // CPU
@@ -94,8 +93,8 @@ struct GateBoy {
   Req      cpu_req = {0};
   Req      dbg_req = {0};
   Req      bus_req = {0};
-  uint8_t  xxx_cpu_data_latch = 0;
-  uint8_t  xxx_cpu_int_ack = 0;
+  uint8_t  cpu_data_latch = 0;
+  uint8_t  imask_latch = 0;
 
   uint8_t  xxx_imask_gh = 0;
   uint8_t  xxx_intf_gh = 0;

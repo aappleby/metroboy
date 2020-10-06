@@ -57,7 +57,7 @@ private:
   /*p21.TAHA*/ DFF17 TAHA_X5p;
   /*p21.TYRY*/ DFF17 TYRY_X6p;
 
-  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp; // FIXME firce on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
   /*p21.MYTA*/ DFF17 MYTA_LINE_153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
   /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;

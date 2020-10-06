@@ -30,8 +30,6 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.BOGA*/ wire BOGA_Axxxxxxx = not1(top.clk_reg.BALY_xBCDEFGH);
   /*p03.RYFO*/ wire RYFO_FF04_FF07p = and3(top.cpu_bus.BUS_CPU_A02.qp(), top.cpu_bus.SARE_XX00_XX07p(), top.cpu_bus.SYKE_FF00_FFFFp());
 
-  probe("BOGA", BOGA_Axxxxxxx);
-
   /*p01.UVYN*/ wire UVYN_DIV_05n = not1(TAMA_DIV_05.qp());
   /*p01.UTOK*/ wire UMEK_DIV_06n = not1(UGOT_DIV_06.qp());
   /*p01.SAPY*/ wire UREK_DIV_07n = not1(TULU_DIV_07.qp());

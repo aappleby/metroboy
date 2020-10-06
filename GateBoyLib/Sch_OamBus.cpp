@@ -208,6 +208,17 @@ void OamBus::tock(SchematicTop& top) {
 
   {
 #if 0
+    if (WEFY_SPR_READp) {
+      PIN_OAM_OE.set(0);
+    }
+    else if (PIN_CPU_LATCH_EXT) {
+      PIN_OAM_OE.set(1);
+    }
+    else {
+      PIN_OAM_OE.set(!and3(SARO_FE00_FEFFp, TEDO_CPU_RDp));
+    }
+
+
     if (ACYL_SCANNINGp) {
       if (XOCE_xBCxxFGx) {
         PIN_OAM_OE.set(0);

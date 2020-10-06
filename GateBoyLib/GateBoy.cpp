@@ -202,6 +202,9 @@ void GateBoy::next_pass() {
 
     if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
       if (bus_req.read && (bus_req.addr < 0xFF00)) top.cpu_bus.PIN_CPU_LATCH_EXT.lock(1);
+    }
+
+    if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
       if (bus_req.write) top.cpu_bus.lock_data(bus_req.data_lo);
     }
 

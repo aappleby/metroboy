@@ -108,7 +108,8 @@ void GateBoyApp::app_init() {
   //gb->sys_cpu_en = false;
 
   // run rom
-  //load_rom("microtests/build/dmg/poweron_006_oam.gb");
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx7_a.gb");
+  load_rom("roms/mealybug/m3_wx_6_change.gb");
 }
 
 //----------------------------------------
@@ -370,6 +371,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dump_req(dumper, gb->cpu_req);
   dumper("bus_req ");
   dump_req(dumper, gb->bus_req);
+  dumper("cpu_data_latch %d 0x%02x\n", gb->cpu_data_latch, gb->cpu_data_latch);
+
   dumper("\n");
 
   dump_probes(dumper);

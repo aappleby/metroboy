@@ -21,10 +21,10 @@ main:
   ei
 
   xor a
-.repeat 1200
+.repeat 1122
   inc a
 .endr
-
+  di
   test_fail
 
 .org STAT_INT_VECTOR

@@ -285,6 +285,10 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, TOFU_VID_RSTp);
     /*#p21.VOGA*/ VOGA_HBLANKp     .tock(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_HBLANKp);
     /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(TOFU_VID_RSTp, VOGA_HBLANKp.qp());
+
+    //probe("AVAP_RENDER_START_TRIGp", top.AVAP_RENDER_START_TRIGp);
+    //probe("WEGO_HBLANKp", WEGO_HBLANKp);
+
     /*#p21.XYMU*/ XYMU_RENDERINGp.nor_latch(top.AVAP_RENDER_START_TRIGp, WEGO_HBLANKp);
   }
 
@@ -378,8 +382,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn = nand4(ROXY_SCX_FINE_MATCH_LATCHn.qp(), SUHA_SCX_FINE_MATCHp, SYBY_SCX_FINE_MATCHp, SOZU_SCX_FINE_MATCHp);
     /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp = not1(RONE_SCX_FINE_MATCHn);
 
-    /* p24.ROXO*/ wire ROXO_CLKPIPEp = not1(SEGU_CLKPIPEn);
-    /*p 27.MOXE*/ wire MOXE_AxCxExGx = not1(ALET_xBxDxFxH);
+    /*#p24.ROXO*/ wire ROXO_CLKPIPEp = not1(SEGU_CLKPIPEn);
+    /* p27.MOXE*/ wire MOXE_AxCxExGx = not1(ALET_xBxDxFxH);
     /*#p27.PUXA*/ PUXA_SCX_FINE_MATCH_A.tock(ROXO_CLKPIPEp, XYMU_RENDERINGp.qp(), POHU_SCX_FINE_MATCHp);
     /*#p27.NYZE*/ NYZE_SCX_FINE_MATCH_B.tock(MOXE_AxCxExGx,  XYMU_RENDERINGp.qp(), PUXA_SCX_FINE_MATCH_A.qp());
 
@@ -940,6 +944,22 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGp.qp(), top.ACYL_SCANNINGp); // die NOR
     /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp.qp(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
+
+    probe("00 SADU_STAT_MODE0", !SADU_STAT_MODE0n);
+    probe("01 XATY_STAT_MODE1", !XATY_STAT_MODE1n);
+    probe("02 RUPO_LYC_MATCH_LATCHn", !RUPO_LYC_MATCH_LATCHn.qp());
+
+#if 0
+    BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B, BALU_LINE_RSTp, BYBA_SCAN_DONE_A);
+
+    TADY_LINE_START_RSTn = nor2(ATEJ_LINE_TRIGp, TOFU_VID_RSTp);
+    VOGA_HBLANKp     .tock(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_HBLANKp);
+    WEGO_HBLANKp = or2(TOFU_VID_RSTp, VOGA_HBLANKp);
+
+    XYMU_RENDERINGp = nor_latch(not1(BEBU_SCAN_DONE_TRIGn), WEGO_HBLANKp);
+    XATY_STAT_MODE1n = nor2(XYMU_RENDERINGp, ACYL_SCANNINGp);
+    SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp, PARU_VBLANKp_d4);
+#endif
 
     /*#p21.TEBY*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
     /*#p21.WUGA*/ cpu_bus.BUS_CPU_D1p.tri_6pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);

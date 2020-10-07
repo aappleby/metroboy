@@ -222,3 +222,6 @@ inline const char* byte_to_bits(uint8_t x) {
   };
   return tab[x];
 }
+
+extern const uint8_t vram_boot[8192];
+extern const uint8_t framebuffer_boot[160*144];

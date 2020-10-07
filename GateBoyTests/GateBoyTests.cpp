@@ -23,27 +23,12 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-  {
-    blob rom(32768);
-    GateBoy gb;
-
-    gb.load_post_bootrom_state();
-    gb.set_rom(rom.data(), rom.size());
-
-    uint64_t top_hash;
-
-    top_hash = hash_states(&gb.top, sizeof(gb.top));
-    printf("Top hash 1 0x%016llx\n", top_hash);
-
-    gb.reset_cart();
-
-    top_hash = hash_states(&gb.top, sizeof(gb.top));
-    printf("Top hash 1 0x%016llx\n", top_hash);
-  }
+  err += t.test_post_bootrom_state();
 
 #if 0
 
 #ifdef RUN_SLOW_TESTS
+  err += t.test_post_bootrom_state();
   err += t.test_init();
   err += t.test_bootrom();
 #endif
@@ -79,6 +64,31 @@ int main(int argc, char** argv) {
 
   LOG_G("Tests took %f seconds\n", finish - start);
   LOG_G("%d failures\n", err);
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_post_bootrom_state() {
+  TEST_START();
+
+  uint64_t hash1, hash2;
+
+  {
+    GateBoy gb;
+    gb.load_post_bootrom_state();
+    hash1 = hash_states(&gb, sizeof(gb));
+  }
+
+  {
+    GateBoy gb;
+    gb.reset_cart();
+    hash2 = hash_states(&gb, sizeof(gb));
+  }
+
+  LOG_B("load_post_bootrom_state 0x%016llx\n", hash1);
+  LOG_B("reset_cart              0x%016llx\n", hash2);
 
   TEST_END();
 }

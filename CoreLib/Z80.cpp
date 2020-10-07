@@ -192,6 +192,41 @@ void Z80::reset(uint16_t new_pc) {
 }
 
 //-----------------------------------------------------------------------------
+
+void Z80::reset_cart() {
+  state = 2;
+  state_ = 0;
+  op_addr = 0xFE;
+  op = 0xE0;
+  cb = 0x11;
+  ime = false;
+  ime_delay = false;
+  in = 0x50;
+  out = 0x00;
+  bus_req.addr = 0x0100;
+  bus_req.data = 0x00;
+  bus_req.read = 0x01;
+  bus_req.write = 0x00;
+  bus_req.pad1 = 0x00;
+  alu_x = 0x00;
+  alu_y = 0x00;
+  alu_f = 0xb0;
+  alu_o = 0x00;
+  inc_x = 0x00;
+  inc_y = 0x00;
+  inc_c = 0x00;
+  int_ack = 0x00;
+  bc = 0x0013;
+  de = 0x00D8;
+  hl = 0x014D;
+  af = 0x01B0;
+  xy = 0xFF50;
+  pc = 0x0100;
+  sp = 0xFFFE;
+  t = 0x00;
+}
+
+//-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 

@@ -5,12 +5,15 @@
 #include "CoreLib/Debug.h"
 #include "CoreLib/File.h"
 
+
 //------------------------------------------------------------------------------
 
 void GateBoy::load_post_bootrom_state() {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
   check_sentinel();
   check_div();
+  rom_buf = nullptr;
+  rom_size = 0;
 }
 
 void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
@@ -21,22 +24,81 @@ void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
 //------------------------------------------------------------------------------
 
 void GateBoy::reset_cart() {
-  CHECK_P(rom_buf != nullptr);
-  CHECK_P(rom_size);
+  sentinel1 = 0xdeadbeefbaadf00d;
+
+  cpu.reset_cart();
 
   cpu_req.addr = 0xff50;
   cpu_req.data = 1;
   cpu_req.read = 0;
   cpu_req.write = 1;
-
   dbg_req = {0};
   bus_req = cpu_req;
 
   cpu_data_latch = 1;
-  int_vblank = 1;
-  int_vblank_halt = 1;
+  imask_latch = 0;
+  xxx_imask_gh = 0;
+  xxx_intf_gh = 0;
+  xxx_imask_cd = 0;
+  xxx_intf_cd = 0;
+
+  int_vblank = true;
+  int_vblank_halt = true;
+  xxx_int_vblank_delay = false;
+  xxx_int_vblank_halt_delay = false;
+  int_stat = false;
+  int_stat_halt = false;
+  xxx_int_stat_delay = false;
+  xxx_int_stat_halt_delay = false;
+  int_timer = false;
+  int_timer_halt = false;
+  xxx_int_timer_delay = false;
+  xxx_int_timer_halt_delay = false;
+  int_serial = false;
+  int_serial_halt = false;
+  xxx_int_serial_delay = false;
+  xxx_int_serial_halt_delay = false;
+  int_joypad = false;
+  int_joypad_halt = false;
+  xxx_int_joypad_delay = false;
+  xxx_int_joypad_halt_delay = false;
+  xxx_imask_gh_delay = false;
+  xxx_intf_gh_delay = false;
+  placeholder4 = 0;
+  placeholder5 = 0;
+  placeholder6 = 0;
+  placeholder7 = 0;
+
 
   top.reset_cart();
+
+  sim_stable = 1;
+  phase_total = 0x02cf5798;
+  pass_count = 0;
+  pass_total = 0x0ba17e04;
+  pass_hash = 0xe4757409f21a2024;
+  total_hash = 0x70060dc202c8b770;
+  sys_rst = 0;
+  sys_t1 = 0;
+  sys_t2 = 0;
+  sys_clken = 1;
+  sys_clkgood = 1;
+  sys_cpuready = 1;
+  sys_cpu_en = 1;
+
+  memcpy(vid_ram, vram_boot, 8192);
+  memset(cart_ram, 0, sizeof(cart_ram));
+  memset(ext_ram, 0, sizeof(ext_ram));
+  memset(oam_ram, 0, sizeof(oam_ram));
+  memset(zero_ram, 0, sizeof(zero_ram));
+  zero_ram[0x7A] = 0x39;
+  zero_ram[0x7B] = 0x01;
+  zero_ram[0x7C] = 0x2E;
+  memcpy(framebuffer, framebuffer_boot, 160*144);
+
+  rom_buf = nullptr;
+  rom_size = 0;
+  sentinel2 = 0xf00dcafebaadc0de;
 }
 
 //-----------------------------------------------------------------------------
@@ -115,6 +177,8 @@ void GateBoy::reset_boot() {
   memset(zero_ram, 0, 128);
   memset(framebuffer, 4, 160*144);
 
+  rom_buf = nullptr;
+  rom_size = 0;
   sentinel2 = 0xF00DCAFEBAADC0DE;
 }
 

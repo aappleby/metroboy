@@ -16,6 +16,7 @@ struct GateBoyTests {
   int test_ppu();
   int test_serial();
   int test_timer();
+  int test_post_bootrom_state();
 
   int test_micro_poweron();
   int test_micro_lcden();

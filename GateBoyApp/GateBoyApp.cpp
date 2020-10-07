@@ -155,9 +155,8 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_F5: {
       printf("Resetting sim\n");
       gb.reset_states();
-      gb->load_post_bootrom_state();
-      gb->set_rom(rom_buf.data(), rom_buf.size());
       gb->reset_cart();
+      gb->set_rom(rom_buf.data(), rom_buf.size());
       break;
     }
 
@@ -267,9 +266,8 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   rom_buf = load_blob(filename);
 
   gb.reset_states();
-  gb->load_post_bootrom_state();
-  gb->set_rom(rom_buf.data(), rom_buf.size());
   gb->reset_cart();
+  gb->set_rom(rom_buf.data(), rom_buf.size());
 
   memcpy(gb->vid_ram,  rom_buf.data() + 0x8000, 8192);
   memcpy(gb->cart_ram, rom_buf.data() + 0xA000, 8192);
@@ -324,8 +322,8 @@ void GateBoyApp::load_rom(const char* filename) {
 
   gb.reset_states();
   gb->load_post_bootrom_state();
-  gb->set_rom(rom_buf.data(), rom_buf.size());
   gb->reset_cart();
+  gb->set_rom(rom_buf.data(), rom_buf.size());
   gb->phase_total = 0;
   gb->pass_count = 0;
   gb->pass_total = 0;

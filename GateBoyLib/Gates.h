@@ -704,7 +704,7 @@ struct Bus : private RegBase {
 // Tristate io pin, can have only one driver.
 
 struct Pin : private RegBase {
-  Pin(RegState r = TRI_HZPU) : RegBase(r) { CHECK_P(is_tri()); }
+  Pin(RegState r = TRI_HZNP) : RegBase(r) { CHECK_P(is_tri()); }
 
   using RegBase::c;
   using RegBase::lock;

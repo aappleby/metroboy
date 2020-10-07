@@ -16,8 +16,8 @@ struct DmaRegisters {
   void reset_bootrom() {
     MATU_DMA_RUNNINGp.reset(REG_D0C0);
 
-    LUMA_DMA_READ_CARTp.reset();
-    LUFA_DMA_READ_VRAMp.reset();
+    LUMA_DMA_READ_CARTp.reset(TRI_HZNP);
+    LUFA_DMA_READ_VRAMp.reset(TRI_HZNP);
 
     NAKY_DMA_A00p.reset(REG_D0C0);
     PYRO_DMA_A01p.reset(REG_D0C0);

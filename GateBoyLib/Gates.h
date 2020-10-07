@@ -608,12 +608,9 @@ struct DFF22 : private RegBase {
 struct Sig : private RegBase {
   Sig(RegState r = TRI_HZNP) : RegBase(r) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::qp;
-
-  void reset() {
-    state = TRI_HZNP;
-  }
 
   inline operator wire() const {
     CHECK_P(has_delta() == sim_running);

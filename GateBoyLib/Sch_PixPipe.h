@@ -10,7 +10,200 @@ struct CpuBus;
 
 struct PixelPipe {
   void reset() {}
-  void reset_bootrom() {}
+
+  void reset_bootrom() {
+    SEKO_WIN_TILE_TRIG.reset(TRI_HZNP);
+    TOMU_WIN_HITp.reset(TRI_HZNP);
+    NOCU_WIN_MODEn.reset(TRI_HZNP);
+    NUNY_WX_MATCH_TRIGp.reset(TRI_HZNP);
+    VOTY_INT_STATp.reset(TRI_HZNP);
+
+    XYMU_RENDERINGp.reset(TRI_D0NP);
+    PYNU_WIN_MODE_A.reset(TRI_D0NP);
+    RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
+    SOVY_WIN_FIRST_TILE_B;
+
+    XEHO_X0p.reset(REG_D0C0);
+    SAVY_X1p.reset(REG_D0C0);
+    XODU_X2p.reset(REG_D0C0);
+    XYDO_X3p.reset(REG_D0C0);
+    TUHU_X4p.reset(REG_D0C0);
+    TUKY_X5p.reset(REG_D0C0);
+    TAKO_X6p.reset(REG_D0C0);
+    SYBE_X7p.reset(REG_D0C0);
+
+    WYKA_WIN_X3.reset(REG_D0C0);
+    WODY_WIN_X4.reset(REG_D0C0);
+    WOBO_WIN_X5.reset(REG_D0C0);
+    WYKO_WIN_X6.reset(REG_D0C0);
+    XOLO_WIN_X7.reset(REG_D0C0);
+
+    VYNO_WIN_Y0.reset(REG_D0C0);
+    VUJO_WIN_Y1.reset(REG_D0C0);
+    VYMU_WIN_Y2.reset(REG_D0C0);
+    TUFU_WIN_Y3.reset(REG_D0C0);
+    TAXA_WIN_Y4.reset(REG_D0C0);
+    TOZO_WIN_Y5.reset(REG_D0C0);
+    TATE_WIN_Y6.reset(REG_D0C0);
+    TEKE_WIN_Y7.reset(REG_D0C0);
+
+    VYXE_LCDC_BGENn.reset(REG_D0C0);
+    XYLO_LCDC_SPENn.reset(REG_D0C0);
+    XYMO_LCDC_SPSIZEn.reset(REG_D0C0);
+    XAFO_LCDC_BGMAPn.reset(REG_D0C0);
+    WEXU_LCDC_BGTILEn.reset(REG_D0C0);
+    WYMO_LCDC_WINENn.reset(REG_D0C0);
+    WOKY_LCDC_WINMAPn.reset(REG_D0C0);
+    XONA_LCDC_LCDENn.reset(REG_D0C0);
+
+    GAVE_SCY0n.reset(REG_D0C0);
+    FYMO_SCY1n.reset(REG_D0C0);
+    FEZU_SCY2n.reset(REG_D0C0);
+    FUJO_SCY3n.reset(REG_D0C0);
+    DEDE_SCY4n.reset(REG_D0C0);
+    FOTY_SCY5n.reset(REG_D0C0);
+    FOHA_SCY6n.reset(REG_D0C0);
+    FUNY_SCY7n.reset(REG_D0C0);
+
+    DATY_SCX0n.reset(REG_D0C0);
+    DUZU_SCX1n.reset(REG_D0C0);
+    CYXU_SCX2n.reset(REG_D0C0);
+    GUBO_SCX3n.reset(REG_D0C0);
+    BEMY_SCX4n.reset(REG_D0C0);
+    CUZY_SCX5n.reset(REG_D0C0);
+    CABU_SCX6n.reset(REG_D0C0);
+    BAKE_SCX7n.reset(REG_D0C0);
+
+    ROXE_STAT_HBI_ENn.reset(REG_D0C0);
+    RUFO_STAT_VBI_ENn.reset(REG_D0C0);
+    REFE_STAT_OAI_ENn.reset(REG_D0C0);
+    RUGU_STAT_LYI_ENn.reset(REG_D0C0);
+
+    WODU_HBLANKp.reset(TRI_HZNP);
+
+    NOPA_WIN_MODE_B.reset(REG_D0C0);
+    REJO_WY_MATCH_LATCH.reset(TRI_D0NP);;
+    SARY_WY_MATCH.reset(REG_D0C0);
+    RYFA_FETCHn_A.reset(REG_D0C0);
+    RENE_FETCHn_B.reset(REG_D0C0);
+    PYCO_WX_MATCH_A.reset(REG_D0C0);
+    NUNU_WX_MATCH_B.reset(REG_D0C0);
+
+    ROXY_SCX_FINE_MATCH_LATCHn.reset(TRI_D0NP);;
+
+    RYKU_FINE_CNT0.reset(REG_D0C0);
+    ROGA_FINE_CNT1.reset(REG_D0C0);
+    RUBU_FINE_CNT2.reset(REG_D0C0);
+
+    RUPO_LYC_MATCH_LATCHn.reset(TRI_D0NP);;
+
+    WUSA_LCD_CLOCK_GATE.reset(TRI_D0NP);;
+    VOGA_HBLANKp.reset(REG_D0C0);
+    PUXA_SCX_FINE_MATCH_A.reset(REG_D0C0);
+    NYZE_SCX_FINE_MATCH_B.reset(REG_D0C0);
+
+    PAHO_X_8_SYNC.reset(REG_D0C0);
+
+    POFY_HSYNCp.reset(TRI_D0NP);
+
+    MYDE_BG_PIPE_A0.reset(REG_D0C0);
+    NOZO_BG_PIPE_A1.reset(REG_D0C0);
+    MOJU_BG_PIPE_A2.reset(REG_D0C0);
+    MACU_BG_PIPE_A3.reset(REG_D0C0);
+    NEPO_BG_PIPE_A4.reset(REG_D0C0);
+    MODU_BG_PIPE_A5.reset(REG_D0C0);
+    NEDA_BG_PIPE_A6.reset(REG_D0C0);
+    PYBO_BG_PIPE_A7.reset(REG_D0C0);
+
+    TOMY_BG_PIPE_B0.reset(REG_D0C0);
+    TACA_BG_PIPE_B1.reset(REG_D0C0);
+    SADY_BG_PIPE_B2.reset(REG_D0C0);
+    RYSA_BG_PIPE_B3.reset(REG_D0C0);
+    SOBO_BG_PIPE_B4.reset(REG_D0C0);
+    SETU_BG_PIPE_B5.reset(REG_D0C0);
+    RALU_BG_PIPE_B6.reset(REG_D0C0);
+    SOHU_BG_PIPE_B7.reset(REG_D0C0);
+
+    NURO_SPR_PIPE_A0.reset(REG_D0C0);
+    MASO_SPR_PIPE_A1.reset(REG_D0C0);
+    LEFE_SPR_PIPE_A2.reset(REG_D0C0);
+    LESU_SPR_PIPE_A3.reset(REG_D0C0);
+    WYHO_SPR_PIPE_A4.reset(REG_D0C0);
+    WORA_SPR_PIPE_A5.reset(REG_D0C0);
+    VAFO_SPR_PIPE_A6.reset(REG_D0C0);
+    WUFY_SPR_PIPE_A7.reset(REG_D0C0);
+
+    NYLU_SPR_PIPE_B0.reset(REG_D0C0);
+    PEFU_SPR_PIPE_B1.reset(REG_D0C0);
+    NATY_SPR_PIPE_B2.reset(REG_D0C0);
+    PYJO_SPR_PIPE_B3.reset(REG_D0C0);
+    VARE_SPR_PIPE_B4.reset(REG_D0C0);
+    WEBA_SPR_PIPE_B5.reset(REG_D0C0);
+    VANU_SPR_PIPE_B6.reset(REG_D0C0);
+    VUPY_SPR_PIPE_B7.reset(REG_D0C0);
+
+    RUGO_PAL_PIPE_0.reset(REG_D0C0);
+    SATA_PAL_PIPE_1.reset(REG_D0C0);
+    ROSA_PAL_PIPE_2.reset(REG_D0C0);
+    SOMY_PAL_PIPE_3.reset(REG_D0C0);
+    PALU_PAL_PIPE_4.reset(REG_D0C0);
+    NUKE_PAL_PIPE_5.reset(REG_D0C0);
+    MODA_PAL_PIPE_6.reset(REG_D0C0);
+    LYME_PAL_PIPE_7.reset(REG_D0C0);
+
+    VEZO_MASK_PIPE_0.reset(REG_D0C0);
+    WURU_MASK_PIPE_1.reset(REG_D0C0);
+    VOSA_MASK_PIPE_2.reset(REG_D0C0);
+    WYFU_MASK_PIPE_3.reset(REG_D0C0);
+    XETE_MASK_PIPE_4.reset(REG_D0C0);
+    WODA_MASK_PIPE_5.reset(REG_D0C0);
+    VUMO_MASK_PIPE_6.reset(REG_D0C0);
+    VAVA_MASK_PIPE_7.reset(REG_D0C0);
+
+    PAVO_BGP_D0n.reset(REG_D0C0);
+    NUSY_BGP_D1n.reset(REG_D0C0);
+    PYLU_BGP_D2n.reset(REG_D0C0);
+    MAXY_BGP_D3n.reset(REG_D0C0);
+    MUKE_BGP_D4n.reset(REG_D0C0);
+    MORU_BGP_D5n.reset(REG_D0C0);
+    MOGY_BGP_D6n.reset(REG_D0C0);
+    MENA_BGP_D7n.reset(REG_D0C0);
+
+    XUFU_OBP0_D0n.reset(REG_D0C0);
+    XUKY_OBP0_D1n.reset(REG_D0C0);
+    XOVA_OBP0_D2n.reset(REG_D0C0);
+    XALO_OBP0_D3n.reset(REG_D0C0);
+    XERU_OBP0_D4n.reset(REG_D0C0);
+    XYZE_OBP0_D5n.reset(REG_D0C0);
+    XUPO_OBP0_D6n.reset(REG_D0C0);
+    XANA_OBP0_D7n.reset(REG_D0C0);
+    MOXY_OBP1_D0n.reset(REG_D0C0);
+    LAWO_OBP1_D1n.reset(REG_D0C0);
+    MOSA_OBP1_D2n.reset(REG_D0C0);
+    LOSE_OBP1_D3n.reset(REG_D0C0);
+    LUNE_OBP1_D4n.reset(REG_D0C0);
+    LUGU_OBP1_D5n.reset(REG_D0C0);
+    LEPU_OBP1_D6n.reset(REG_D0C0);
+    LUXO_OBP1_D7n.reset(REG_D0C0);
+
+    NESO_WY0n.reset(REG_D0C0);
+    NYRO_WY1n.reset(REG_D0C0);
+    NAGA_WY2n.reset(REG_D0C0);
+    MELA_WY3n.reset(REG_D0C0);
+    NULO_WY4n.reset(REG_D0C0);
+    NENE_WY5n.reset(REG_D0C0);
+    NUKA_WY6n.reset(REG_D0C0);
+    NAFU_WY7n.reset(REG_D0C0);
+    MYPA_WX0n.reset(REG_D0C0);
+    NOFE_WX1n.reset(REG_D0C0);
+    NOKE_WX2n.reset(REG_D0C0);
+    MEBY_WX3n.reset(REG_D0C0);
+    MYPU_WX4n.reset(REG_D0C0);
+    MYCE_WX5n.reset(REG_D0C0);
+    MUVO_WX6n.reset(REG_D0C0);
+    NUKU_WX7n.reset(REG_D0C0);
+  }
+
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;

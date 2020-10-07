@@ -13,7 +13,37 @@ struct SchematicTop;
 struct ClockRegisters {
 
   void reset() {}
-  void reset_bootrom() {}
+  void reset_bootrom() {
+    UCOB_CLKBADp.reset();
+
+    ZAXY_xBxDxFxH.reset();
+    BUDE_xxxxEFGH.reset();
+    ATYP_ABCDxxxx.reset();
+    AROV_xxCDEFxx.reset();
+    AJAX_xxxxEFGH.reset();
+    ADAR_ABCxxxxH.reset();
+    BALY_xBCDEFGH.reset();
+    XUPY_ABxxEFxx.reset();
+    TALU_xxCDEFxx.reset();
+    XOCE_xBCxxFGx.reset();
+    WOJO_AxxxExxx.reset();
+    ALUR_SYS_RSTn.reset();
+    XAPO_VID_RSTn.reset();
+
+    TUBO_WAITINGp.reset(TRI_D0NP);
+    ASOL_POR_DONEn.reset(TRI_D0NP);
+    AFER_SYS_RSTp.reset(REG_D0C0);
+
+    AFUR_xxxxEFGH.reset(REG_D0C0);
+    ALEF_AxxxxFGH.reset(REG_D0C0);
+    APUK_ABxxxxGH.reset(REG_D0C0);
+    ADYK_ABCxxxxH.reset(REG_D0C0);
+
+    WUVU_ABxxEFxx.reset(REG_D0C0);
+    VENA_xxCDEFxx.reset(REG_D0C0);
+    WOSU_AxxDExxH.reset(REG_D0C0);
+  }
+
   void dump(Dumper& d, wire CLK) const;
 
   void tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top);

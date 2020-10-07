@@ -26,7 +26,44 @@ namespace Schematics {
 #pragma pack(push, 1)
 struct SchematicTop {
   void reset() {}
-  void reset_bootrom() {}
+
+  void reset_bootrom() {
+    oam_bus.reset_bootrom();
+    ext_bus.reset_bootrom();
+    cpu_bus.reset_bootrom();
+    vram_bus.reset_bootrom();
+
+    clk_reg.reset_bootrom();
+    dma_reg.reset_bootrom();
+    int_reg.reset_bootrom();
+    joypad.reset_bootrom();
+    lcd_reg.reset_bootrom();
+    pix_pipe.reset_bootrom();
+    ser_reg.reset_bootrom();
+    sprite_store.reset_bootrom();
+    tim_reg.reset_bootrom();
+    tile_fetcher.reset_bootrom();
+    sprite_fetcher.reset_bootrom();
+    sprite_scanner.reset_bootrom();
+    bootrom.reset_bootrom();
+
+    SOTO_DBG_VRAM.reset(REG_D0C0);
+
+    PIN_LCD_DATA1.reset(TRI_HZNP);
+    PIN_LCD_DATA0.reset(TRI_HZNP);
+    PIN_LCD_CNTRL.reset(TRI_HZNP);
+    PIN_LCD_CLOCK.reset(TRI_HZNP);
+    PIN_LCD_HSYNC.reset(TRI_HZNP);
+    PIN_LCD_LATCH.reset(TRI_HZNP);
+    PIN_LCD_ALTSG.reset(TRI_HZNP);
+    PIN_LCD_VSYNC.reset(TRI_HZNP);
+
+    IE_D0.reset(REG_D0C0);
+    IE_D1.reset(REG_D0C0);
+    IE_D2.reset(REG_D0C0);
+    IE_D3.reset(REG_D0C0);
+    IE_D4.reset(REG_D0C0);
+  }
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
   void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);

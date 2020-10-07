@@ -54,9 +54,10 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   // regenerate post-bootrom dump
-#if 0
+#if 1
   rom_buf = load_blob("roms/tetris.gb");
-  gb->reset_to_bootrom(rom_buf.data(), rom_buf.size());
+  gb->set_rom(rom_buf.data(), rom_buf.size());
+  gb->reset_bootrom();
 
   for (int i = 0; i < 8192; i++) {
     gb->vid_ram[i] = (uint8_t)rand();
@@ -112,7 +113,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_bg_en_change.gb");
   //load_golden("roms/mealybug/m3_lcdc_bg_en_change.bmp");
 
-  load_rom("roms/tetris.gb");
+  //load_rom("roms/tetris.gb");
 }
 
 //----------------------------------------

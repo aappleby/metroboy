@@ -32,6 +32,72 @@ void GateBoy::reset() {
 
 void GateBoy::reset_bootrom() {
 
+  sentinel1 = 0xDEADBEEFBAADF00D;
+
+  cpu.reset_bootrom();
+  cpu_req = {0};
+  dbg_req = {0};
+  bus_req = {0};
+  cpu_data_latch = 0;
+  imask_latch = 0;
+
+  xxx_imask_gh = 0;
+  xxx_intf_gh = 0;
+
+  xxx_imask_cd = 0;
+  xxx_intf_cd = 0;
+
+  int_vblank = 0;
+  int_vblank_halt = 0;
+  xxx_int_vblank_delay = 0;
+  xxx_int_vblank_halt_delay = 0;
+
+  int_stat = 0;
+  int_stat_halt = 0;
+  xxx_int_stat_delay = 0;
+  xxx_int_stat_halt_delay = 0;
+
+  int_timer = 0;
+  int_timer_halt = 0;
+  xxx_int_timer_delay = 0;
+  xxx_int_timer_halt_delay = 0;
+
+  int_serial = 0;
+  int_serial_halt = 0;
+  xxx_int_serial_delay = 0;
+  xxx_int_serial_halt_delay = 0;
+
+  int_joypad = 0;
+  int_joypad_halt = 0;
+  xxx_int_joypad_delay = 0;
+  xxx_int_joypad_halt_delay = 0;
+
+  xxx_imask_gh_delay = 0;
+  xxx_intf_gh_delay = 0;
+  xxx_imask_cd_delay = 0;
+  xxx_intf_cd_delay = 0;
+  placeholder4 = 0;
+  placeholder5 = 0;
+  placeholder6 = 0;
+  placeholder7 = 0;
+
+  top.reset_bootrom();
+  sim_stable = 0;
+  phase_total = 0;
+  pass_count = 0;
+  pass_total = 0;
+  pass_hash = HASH_INIT;
+  total_hash = HASH_INIT;
+
+  sys_rst = 1;
+  sys_t1 = 0;
+  sys_t2 = 0;
+  sys_clken = 0;
+  sys_clkgood = 0;
+  sys_cpuready = 0;
+  sys_cpu_en = 0;
+  sys_buttons = 0;
+
   memset(vid_ram,  0, 8192);
   memset(cart_ram, 0, 8192);
   memset(ext_ram,  0, 8192);
@@ -39,8 +105,7 @@ void GateBoy::reset_bootrom() {
   memset(zero_ram, 0, 128);
   memset(framebuffer, 4, 160*144);
 
-  top.cpu_bus.reset_bootrom();
-  top.int_reg.reset_bootrom();
+  sentinel2 = 0xF00DCAFEBAADC0DE;
 
   //----------------------------------------
 

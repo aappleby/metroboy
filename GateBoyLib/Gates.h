@@ -313,6 +313,20 @@ struct RegBase {
 //-----------------------------------------------------------------------------
 
 struct DelayGlitch {
+
+  void reset() {
+    da.reset(TRI_D0NP);
+    db.reset(TRI_D0NP);
+    dc.reset(TRI_D0NP);
+    dd.reset(TRI_D0NP);
+    de.reset(TRI_D0NP);
+    df.reset(TRI_D0NP);
+    dg.reset(TRI_D0NP);
+    dh.reset(TRI_D0NP);
+    di.reset(TRI_D0NP);
+    dj.reset(TRI_D0NP);
+  }
+
   RegBase da = TRI_D0NP;
   RegBase db = TRI_D0NP;
   RegBase dc = TRI_D0NP;
@@ -348,10 +362,10 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   DFF() : RegBase(REG_D0C0) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::reset;
 
   inline void tock(wire CLKp, bool RSTn, bool D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
@@ -372,6 +386,7 @@ struct DFF : private RegBase {
 struct DFF8 : private RegBase {
   DFF8() : RegBase(REG_D0C0) {}
 
+  using RegBase::reset;
   using RegBase::c;
 
   inline wire q07() const { return !as_wire(); }
@@ -399,6 +414,7 @@ struct DFF8 : private RegBase {
 struct DFF9 : private RegBase {
   DFF9() : RegBase(REG_D0C0) {}
 
+  using RegBase::reset;
   using RegBase::c;
 
   inline wire q08n() const { return !as_wire(); }
@@ -429,6 +445,7 @@ struct DFF9 : private RegBase {
 struct DFF11 : private RegBase {
   DFF11() : RegBase(REG_D0C0) {}
 
+  using RegBase::reset;
   using RegBase::c;
   inline wire q11() const { return as_wire(); }
 
@@ -454,6 +471,7 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   DFF13() : RegBase(REG_D0C0) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
@@ -487,10 +505,10 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   DFF17() : RegBase(REG_D0C0) {} // does not work with xxxx
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::reset;
 
   wire q16() const { return !as_wire(); }
   wire q17() const { return  as_wire(); }
@@ -530,6 +548,13 @@ struct DFF20 {
     stateA = REG_D0C0;
     stateB = REG_D0C0;
     deltaA = DELTA_NONE;
+    deltaB = DELTA_NONE;
+  }
+
+  void reset(RegState sa, RegState sb) {
+    stateA = sa;
+    deltaA = DELTA_NONE;
+    stateB = sb;
     deltaB = DELTA_NONE;
   }
 
@@ -607,10 +632,10 @@ static_assert(sizeof(DFF20) == 2, "DFF20 size != 2");
 struct DFF22 : private RegBase {
   DFF22() : RegBase(REG_D0C0) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::reset;
 
   inline wire q15() const { return !as_wire(); }
   inline wire q16() const { return  as_wire(); }
@@ -625,6 +650,10 @@ struct Sig : private RegBase {
 
   using RegBase::c;
   using RegBase::qp;
+
+  void reset() {
+    state = TRI_HZNP;
+  }
 
   inline operator wire() const {
     CHECK_P(has_delta() == sim_running);
@@ -646,6 +675,7 @@ struct Sig : private RegBase {
 struct Bus : private RegBase {
   Bus(RegState r = TRI_HZPU) : RegBase(r) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
   using RegBase::lock;
@@ -706,11 +736,11 @@ struct Bus : private RegBase {
 struct Pin : private RegBase {
   Pin(RegState r = TRI_HZNP) : RegBase(r) { CHECK_P(is_tri()); }
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::lock;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::reset;
 
   inline void set(wire w) {
     CHECK_N(has_delta());
@@ -744,6 +774,7 @@ struct Pin : private RegBase {
 struct NorLatch : private RegBase {
   NorLatch() : RegBase(TRI_D0NP) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
   using RegBase::qp;
@@ -776,6 +807,7 @@ struct NorLatch : private RegBase {
 struct NandLatch : private RegBase {
   NandLatch() : RegBase(TRI_D0NP) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
   using RegBase::qp;
@@ -815,6 +847,7 @@ struct NandLatch : private RegBase {
 struct TpLatch : private RegBase {
   TpLatch(RegState r = TRI_D0NP) : RegBase(r) {}
 
+  using RegBase::reset;
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;

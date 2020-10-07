@@ -6,6 +6,7 @@
 #pragma pack(push, 1)
 struct Z80 {
   void reset(uint16_t new_pc);
+  void reset_bootrom() { reset(0x0000); }
 
   void tock_ha(uint8_t imask, uint8_t intf_gh, uint8_t bus_data);
   void tock_de(uint8_t imask, uint8_t intf_cd);

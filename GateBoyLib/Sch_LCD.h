@@ -10,6 +10,49 @@ struct CpuBus;
 
 struct LcdRegisters {
   void reset_cart() {
+    PARU_VBLANKp_d4.reset(TRI_D1NP);
+    ATEJ_LINE_TRIGp.reset(TRI_D0NP);
+    VYPU_INT_VBLANKp.reset(TRI_D1NP);
+
+    ROPO_LY_MATCH_SYNCp.reset(REG_D1C0);
+
+    CATU_LINE_P000.reset(REG_D0C1);
+    NYPE_LINE_P002.reset(REG_D0C0);
+    ANEL_LINE_P002.reset(REG_D0C0);
+    RUTU_LINE_P910.reset(REG_D0C1);
+
+    MUWY_Y0p.reset(REG_D0C0);
+    MYRO_Y1p.reset(REG_D0C1);
+    LEXA_Y2p.reset(REG_D0C1);
+    LYDO_Y3p.reset(REG_D0C1);
+    LOVU_Y4p.reset(REG_D0C1);
+    LEMA_Y5p.reset(REG_D0C1);
+    MATO_Y6p.reset(REG_D0C1);
+    LAFO_Y7p.reset(REG_D0C1);
+
+    SAXO_X0p.reset(REG_D0C0);
+    TYPO_X1p.reset(REG_D1C1);
+    VYZO_X2p.reset(REG_D0C0);
+    TELU_X3p.reset(REG_D0C1);
+    SUDE_X4p.reset(REG_D0C1);
+    TAHA_X5p.reset(REG_D1C1);
+    TYRY_X6p.reset(REG_D1C0);
+
+    POPU_IN_VBLANKp .reset(REG_D1C0);
+    MYTA_LINE_153p  .reset(REG_D1C0);
+    SYGU_LINE_STROBE.reset(REG_D0C1);
+    MEDA_VSYNC_OUTn .reset(REG_D0C0);
+    LUCA_LINE_EVEN  .reset(REG_D1C1);
+    NAPO_FRAME_EVEN .reset(REG_D0C1);
+
+    SYRY_LYC0n.reset(REG_D1C1);
+    VUCE_LYC1n.reset(REG_D1C1);
+    SEDY_LYC2n.reset(REG_D1C1);
+    SALO_LYC3n.reset(REG_D1C1);
+    SOTA_LYC4n.reset(REG_D1C1);
+    VAFA_LYC5n.reset(REG_D1C1);
+    VEVO_LYC6n.reset(REG_D1C1);
+    RAHA_LYC7n.reset(REG_D1C1);
   }
 
   void reset_bootrom() {

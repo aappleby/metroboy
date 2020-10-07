@@ -8,7 +8,9 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct CpuBus {
-  void reset() {}
+  void reset() {
+  }
+
   void reset_bootrom() {
     BUS_CPU_A00.lock(0);
     BUS_CPU_A01.lock(0);
@@ -32,7 +34,24 @@ struct CpuBus {
     PIN_CPU_6.lock(0);
     PIN_CPU_ADDR_EXTp.lock(1);
     PIN_CPU_LATCH_EXT.lock(0);
+    PIN_CPU_BOOTp         .reset(TRI_HZNP);
+    PIN_CPU_ADDR_HIp      .reset(TRI_HZNP);
+    PIN_CPU_STARTp        .reset(TRI_HZNP);
+    PIN_CPU_SYS_RSTp      .reset(TRI_HZNP);
+    PIN_CPU_EXT_RST       .reset(TRI_HZNP);
+    PIN_CPU_UNOR_DBG      .reset(TRI_HZNP);
+    PIN_CPU_UMUT_DBG      .reset(TRI_HZNP);
+    PIN_CPU_EXT_CLKGOOD   .reset(TRI_HZNP);
+    PIN_CPU_BOWA_Axxxxxxx .reset(TRI_HZNP);
+    PIN_CPU_BEDO_xBCDEFGH .reset(TRI_HZNP);
+    PIN_CPU_BEKO_ABCDxxxx .reset(TRI_HZNP);
+    PIN_CPU_BUDE_xxxxEFGH .reset(TRI_HZNP);
+    PIN_CPU_BOLO_ABCDEFxx .reset(TRI_HZNP);
+    PIN_CPU_BUKE_AxxxxxGH .reset(TRI_HZNP);
+    PIN_CPU_BOMA_xBCDEFGH .reset(TRI_HZNP);
+    PIN_CPU_BOGA_Axxxxxxx .reset(TRI_HZNP);
   }
+
   void dump(Dumper& d) const;
 
   uint16_t get_bus_addr() const {
@@ -176,29 +195,29 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
-  Pin PIN_CPU_BOOTp         = TRI_HZNP; // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Pin PIN_CPU_ADDR_HIp      = TRI_HZNP; // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
+  Pin PIN_CPU_BOOTp;       // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Pin PIN_CPU_ADDR_HIp;    // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
 
-  Pin PIN_CPU_STARTp        = TRI_HZNP; // top center port PORTC_04: <- P01.CPU_RESET
-  Pin PIN_CPU_SYS_RSTp      = TRI_HZNP; // top center port PORTC_01: <- P01.AFER , reset related state
-  Pin PIN_CPU_EXT_RST       = TRI_HZNP; // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  Pin PIN_CPU_UNOR_DBG      = TRI_HZNP; // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  Pin PIN_CPU_UMUT_DBG      = TRI_HZNP; // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  Pin PIN_CPU_STARTp;      // top center port PORTC_04: <- P01.CPU_RESET
+  Pin PIN_CPU_SYS_RSTp;    // top center port PORTC_01: <- P01.AFER , reset related state
+  Pin PIN_CPU_EXT_RST;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  Pin PIN_CPU_UNOR_DBG;    // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  Pin PIN_CPU_UMUT_DBG;    // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 
-  Pin PIN_CPU_EXT_CLKGOOD   = TRI_HZNP; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  Pin PIN_CPU_EXT_CLKGOOD; // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
 
-  Pin PIN_CPU_BOWA_Axxxxxxx = TRI_HZNP; // top left port PORTD_01: // this is the "put address on bus" clock
-  Pin PIN_CPU_BEDO_xBCDEFGH = TRI_HZNP; // top left port PORTD_02:
+  Pin PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: // this is the "put address on bus" clock
+  Pin PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02:
 
-  Pin PIN_CPU_BEKO_ABCDxxxx = TRI_HZNP; // top left port PORTD_03: // this is the "reset for next cycle" clock
-  Pin PIN_CPU_BUDE_xxxxEFGH = TRI_HZNP; // top left port PORTD_04: // this is the "put write data on bus" clock
+  Pin PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: // this is the "reset for next cycle" clock
+  Pin PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: // this is the "put write data on bus" clock
 
-  Pin PIN_CPU_BOLO_ABCDEFxx = TRI_HZNP; // top left port PORTD_05:
-  Pin PIN_CPU_BUKE_AxxxxxGH = TRI_HZNP; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  Pin PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05:
+  Pin PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: // this is probably the "latch bus data" clock
 
   // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
-  Pin PIN_CPU_BOMA_xBCDEFGH = TRI_HZNP; // top left port PORTD_08: (RESET_CLK)
-  Pin PIN_CPU_BOGA_Axxxxxxx = TRI_HZNP; // top left port PORTD_09: - test pad 3
+  Pin PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: (RESET_CLK)
+  Pin PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
 };
 
 //-----------------------------------------------------------------------------

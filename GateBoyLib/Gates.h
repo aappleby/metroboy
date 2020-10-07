@@ -710,6 +710,7 @@ struct Pin : private RegBase {
   using RegBase::lock;
   using RegBase::qp;
   using RegBase::qn;
+  using RegBase::reset;
 
   inline void set(wire w) {
     CHECK_N(has_delta());

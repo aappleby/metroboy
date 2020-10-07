@@ -10,6 +10,27 @@ struct VramBus;
 
 struct SpriteFetcher {
   void reset_cart() {
+    WUTY_SPRITE_DONEp.reset(TRI_D0NP);
+    WEFY_SPR_READp.reset(TRI_D0NP);
+    VAPE_FETCH_OAM_CLK.reset(TRI_D0NP);
+    SOHO_SPR_VRAM_RDp.reset(TRI_D0NP);
+    TEXY_SPR_READ_VRAMp.reset(TRI_D0NP);
+    ABON_SPR_VRM_RDn.reset(TRI_D1NP);
+    XUQU_SPRITE_AB.reset(TRI_D0NP);
+    RACA_LATCH_SPPIXB.reset(TRI_D0NP);
+    TOPU_LATCH_SPPIXA.reset(TRI_D0NP);
+
+    TAKA_SFETCH_RUNNINGp.reset(TRI_D0NP);
+    SOBU_SFETCH_REQp.reset(REG_D0C0);
+    SUDA_SFETCH_REQp.reset(REG_D0C1);
+
+    TOXE_SFETCH_S0.reset(REG_D1C1);
+    TYFO_SFETCH_S0_D1.reset(REG_D1C1);
+    TULY_SFETCH_S1.reset(REG_D0C0);
+    TESE_SFETCH_S2.reset(REG_D1C1);
+    TOBU_SFETCH_S1_D2.reset(REG_D0C0);
+    VONU_SFETCH_S1_D4.reset(REG_D0C0);
+    SEBA_SFETCH_S1_D5.reset(REG_D0C1);
   }
 
   void reset_bootrom() {

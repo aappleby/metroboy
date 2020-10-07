@@ -7,6 +7,12 @@
 
 //------------------------------------------------------------------------------
 
+void GateBoy::load_post_bootrom_state() {
+  load_obj("gateboy_post_bootrom.raw.dump", *this);
+  check_sentinel();
+  check_div();
+}
+
 void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
   rom_buf = _rom_buf;
   rom_size = _rom_size;
@@ -14,24 +20,14 @@ void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::reset() {
+void GateBoy::reset_cart() {
   CHECK_P(rom_buf != nullptr);
   CHECK_P(rom_size);
-
-  auto _rom_buf = rom_buf;
-  auto _rom_size = rom_size;
-
-  load_obj("gateboy_post_bootrom.raw.dump", *this);
-  check_sentinel();
-  check_div();
-
-  set_rom(_rom_buf, _rom_size);
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_bootrom() {
-
+void GateBoy::reset_boot() {
   sentinel1 = 0xDEADBEEFBAADF00D;
 
   cpu.reset_bootrom();
@@ -106,6 +102,11 @@ void GateBoy::reset_bootrom() {
   memset(framebuffer, 4, 160*144);
 
   sentinel2 = 0xF00DCAFEBAADC0DE;
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::run_reset_sequence() {
 
   //----------------------------------------
 

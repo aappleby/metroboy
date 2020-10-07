@@ -8,8 +8,12 @@
 #pragma pack(push, 1)
 struct GateBoy {
   void     set_rom(uint8_t* rom_buf, size_t rom_size);
-  void     reset();
-  void     reset_bootrom();
+  void     load_post_bootrom_state();
+  void     reset_cart();
+
+  void     reset_boot();
+  void     run_reset_sequence();
+
   uint8_t  dbg_read (int addr);
   void     dbg_write(int addr, uint8_t data);
 

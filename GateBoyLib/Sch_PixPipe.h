@@ -10,6 +10,196 @@ struct CpuBus;
 
 struct PixelPipe {
   void reset_cart() {
+    SEKO_WIN_TILE_TRIG .reset(TRI_D0NP);
+    TOMU_WIN_HITp      .reset(TRI_D0NP);
+    NOCU_WIN_MODEn     .reset(TRI_D1NP);
+    NUNY_WX_MATCH_TRIGp.reset(TRI_D0NP);
+    VOTY_INT_STATp     .reset(TRI_D0NP);
+
+    XYMU_RENDERINGp.reset(TRI_D0NP);
+    PYNU_WIN_MODE_A.reset(TRI_D0NP);
+    RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
+    SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
+
+    XEHO_X0p.reset(REG_D1C1);
+    SAVY_X1p.reset(REG_D1C1);
+    XODU_X2p.reset(REG_D1C1);
+    XYDO_X3p.reset(REG_D0C1);
+    TUHU_X4p.reset(REG_D0C1);
+    TUKY_X5p.reset(REG_D1C1);
+    TAKO_X6p.reset(REG_D0C1);
+    SYBE_X7p.reset(REG_D1C1);
+
+    WYKA_WIN_X3.reset(REG_D0C0);
+    WODY_WIN_X4.reset(REG_D0C1);
+    WOBO_WIN_X5.reset(REG_D0C1);
+    WYKO_WIN_X6.reset(REG_D0C1);
+    XOLO_WIN_X7.reset(REG_D0C1);
+
+    VYNO_WIN_Y0.reset(REG_D0C1);
+    VUJO_WIN_Y1.reset(REG_D0C1);
+    VYMU_WIN_Y2.reset(REG_D0C1);
+    TUFU_WIN_Y3.reset(REG_D0C1);
+    TAXA_WIN_Y4.reset(REG_D0C1);
+    TOZO_WIN_Y5.reset(REG_D0C1);
+    TATE_WIN_Y6.reset(REG_D0C1);
+    TEKE_WIN_Y7.reset(REG_D0C1);
+
+    VYXE_LCDC_BGENn  .reset(REG_D0C1);
+    XYLO_LCDC_SPENn  .reset(REG_D1C1);
+    XYMO_LCDC_SPSIZEn.reset(REG_D1C1);
+    XAFO_LCDC_BGMAPn .reset(REG_D1C1);
+    WEXU_LCDC_BGTILEn.reset(REG_D0C1);
+    WYMO_LCDC_WINENn .reset(REG_D1C1);
+    WOKY_LCDC_WINMAPn.reset(REG_D1C1);
+    XONA_LCDC_LCDENn .reset(REG_D0C1);
+
+    GAVE_SCY0n.reset(REG_D1C1);
+    FYMO_SCY1n.reset(REG_D1C1);
+    FEZU_SCY2n.reset(REG_D1C1);
+    FUJO_SCY3n.reset(REG_D1C1);
+    DEDE_SCY4n.reset(REG_D1C1);
+    FOTY_SCY5n.reset(REG_D1C1);
+    FOHA_SCY6n.reset(REG_D1C1);
+    FUNY_SCY7n.reset(REG_D1C1);
+
+    DATY_SCX0n.reset(REG_D1C1);
+    DUZU_SCX1n.reset(REG_D1C1);
+    CYXU_SCX2n.reset(REG_D1C1);
+    GUBO_SCX3n.reset(REG_D1C1);
+    BEMY_SCX4n.reset(REG_D1C1);
+    CUZY_SCX5n.reset(REG_D1C1);
+    CABU_SCX6n.reset(REG_D1C1);
+    BAKE_SCX7n.reset(REG_D1C1);
+
+    ROXE_STAT_HBI_ENn.reset(REG_D1C1);
+    RUFO_STAT_VBI_ENn.reset(REG_D1C1);
+    REFE_STAT_OAI_ENn.reset(REG_D1C1);
+    RUGU_STAT_LYI_ENn.reset(REG_D1C1);
+
+    WODU_HBLANKp.reset(TRI_D1NP);
+
+    NOPA_WIN_MODE_B.reset(REG_D0C0);
+    REJO_WY_MATCH_LATCH.reset(TRI_D0NP);
+    SARY_WY_MATCH.reset(REG_D0C0);
+    RYFA_FETCHn_A.reset(REG_D0C1);
+    RENE_FETCHn_B.reset(REG_D0C0);
+    PYCO_WX_MATCH_A.reset(REG_D0C0);
+    NUNU_WX_MATCH_B.reset(REG_D0C1);
+
+    ROXY_SCX_FINE_MATCH_LATCHn.reset(TRI_D1NP);
+
+    RYKU_FINE_CNT0.reset(REG_D0C1);
+    ROGA_FINE_CNT1.reset(REG_D0C1);
+    RUBU_FINE_CNT2.reset(REG_D0C1);
+
+    RUPO_LYC_MATCH_LATCHn.reset(TRI_D0NP);
+
+    WUSA_LCD_CLOCK_GATE.reset(TRI_D0NP);
+    VOGA_HBLANKp.reset(REG_D1C0);
+    PUXA_SCX_FINE_MATCH_A.reset(REG_D0C0);
+    NYZE_SCX_FINE_MATCH_B.reset(REG_D0C1);
+
+    PAHO_X_8_SYNC.reset(REG_D0C1);
+
+    POFY_HSYNCp.reset(TRI_D0NP);
+
+    MYDE_BG_PIPE_A0.reset(REG_D0C1);
+    NOZO_BG_PIPE_A1.reset(REG_D0C1);
+    MOJU_BG_PIPE_A2.reset(REG_D0C1);
+    MACU_BG_PIPE_A3.reset(REG_D0C1);
+    NEPO_BG_PIPE_A4.reset(REG_D0C1);
+    MODU_BG_PIPE_A5.reset(REG_D0C1);
+    NEDA_BG_PIPE_A6.reset(REG_D0C1);
+    PYBO_BG_PIPE_A7.reset(REG_D0C1);
+
+    TOMY_BG_PIPE_B0.reset(REG_D0C1);
+    TACA_BG_PIPE_B1.reset(REG_D0C1);
+    SADY_BG_PIPE_B2.reset(REG_D0C1);
+    RYSA_BG_PIPE_B3.reset(REG_D0C1);
+    SOBO_BG_PIPE_B4.reset(REG_D0C1);
+    SETU_BG_PIPE_B5.reset(REG_D0C1);
+    RALU_BG_PIPE_B6.reset(REG_D0C1);
+    SOHU_BG_PIPE_B7.reset(REG_D0C1);
+
+    NURO_SPR_PIPE_A0.reset(REG_D0C1);
+    MASO_SPR_PIPE_A1.reset(REG_D0C1);
+    LEFE_SPR_PIPE_A2.reset(REG_D0C1);
+    LESU_SPR_PIPE_A3.reset(REG_D0C1);
+    WYHO_SPR_PIPE_A4.reset(REG_D0C1);
+    WORA_SPR_PIPE_A5.reset(REG_D0C1);
+    VAFO_SPR_PIPE_A6.reset(REG_D0C1);
+    WUFY_SPR_PIPE_A7.reset(REG_D0C1);
+
+    NYLU_SPR_PIPE_B0.reset(REG_D0C1);
+    PEFU_SPR_PIPE_B1.reset(REG_D0C1);
+    NATY_SPR_PIPE_B2.reset(REG_D0C1);
+    PYJO_SPR_PIPE_B3.reset(REG_D0C1);
+    VARE_SPR_PIPE_B4.reset(REG_D0C1);
+    WEBA_SPR_PIPE_B5.reset(REG_D0C1);
+    VANU_SPR_PIPE_B6.reset(REG_D0C1);
+    VUPY_SPR_PIPE_B7.reset(REG_D0C1);
+
+    RUGO_PAL_PIPE_0.reset(REG_D0C1);
+    SATA_PAL_PIPE_1.reset(REG_D0C1);
+    ROSA_PAL_PIPE_2.reset(REG_D0C1);
+    SOMY_PAL_PIPE_3.reset(REG_D0C1);
+    PALU_PAL_PIPE_4.reset(REG_D0C1);
+    NUKE_PAL_PIPE_5.reset(REG_D0C1);
+    MODA_PAL_PIPE_6.reset(REG_D0C1);
+    LYME_PAL_PIPE_7.reset(REG_D0C1);
+
+    VEZO_MASK_PIPE_0.reset(REG_D1C1);
+    WURU_MASK_PIPE_1.reset(REG_D1C1);
+    VOSA_MASK_PIPE_2.reset(REG_D1C1);
+    WYFU_MASK_PIPE_3.reset(REG_D1C1);
+    XETE_MASK_PIPE_4.reset(REG_D1C1);
+    WODA_MASK_PIPE_5.reset(REG_D1C1);
+    VUMO_MASK_PIPE_6.reset(REG_D1C1);
+    VAVA_MASK_PIPE_7.reset(REG_D1C1);
+
+    PAVO_BGP_D0n.reset(REG_D1C0);
+    NUSY_BGP_D1n.reset(REG_D1C0);
+    PYLU_BGP_D2n.reset(REG_D0C0);
+    MAXY_BGP_D3n.reset(REG_D0C0);
+    MUKE_BGP_D4n.reset(REG_D0C0);
+    MORU_BGP_D5n.reset(REG_D0C0);
+    MOGY_BGP_D6n.reset(REG_D0C0);
+    MENA_BGP_D7n.reset(REG_D0C0);
+
+    XUFU_OBP0_D0n.reset(REG_D0C0);
+    XUKY_OBP0_D1n.reset(REG_D0C0);
+    XOVA_OBP0_D2n.reset(REG_D0C0);
+    XALO_OBP0_D3n.reset(REG_D0C0);
+    XERU_OBP0_D4n.reset(REG_D0C0);
+    XYZE_OBP0_D5n.reset(REG_D0C0);
+    XUPO_OBP0_D6n.reset(REG_D0C0);
+    XANA_OBP0_D7n.reset(REG_D0C0);
+    MOXY_OBP1_D0n.reset(REG_D0C0);
+    LAWO_OBP1_D1n.reset(REG_D0C0);
+    MOSA_OBP1_D2n.reset(REG_D0C0);
+    LOSE_OBP1_D3n.reset(REG_D0C0);
+    LUNE_OBP1_D4n.reset(REG_D0C0);
+    LUGU_OBP1_D5n.reset(REG_D0C0);
+    LEPU_OBP1_D6n.reset(REG_D0C0);
+    LUXO_OBP1_D7n.reset(REG_D0C0);
+
+    NESO_WY0n.reset(REG_D1C1);
+    NYRO_WY1n.reset(REG_D1C1);
+    NAGA_WY2n.reset(REG_D1C1);
+    MELA_WY3n.reset(REG_D1C1);
+    NULO_WY4n.reset(REG_D1C1);
+    NENE_WY5n.reset(REG_D1C1);
+    NUKA_WY6n.reset(REG_D1C1);
+    NAFU_WY7n.reset(REG_D1C1);
+    MYPA_WX0n.reset(REG_D1C1);
+    NOFE_WX1n.reset(REG_D1C1);
+    NOKE_WX2n.reset(REG_D1C1);
+    MEBY_WX3n.reset(REG_D1C1);
+    MYPU_WX4n.reset(REG_D1C1);
+    MYCE_WX5n.reset(REG_D1C1);
+    MUVO_WX6n.reset(REG_D1C1);
+    NUKU_WX7n.reset(REG_D1C1);
   }
 
   void reset_bootrom() {

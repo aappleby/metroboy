@@ -12,6 +12,32 @@ struct OamBus;
 
 struct TileFetcher {
   void reset_cart() {
+    LENA_BGW_VRM_RDp.reset(TRI_D0NP);
+    MOCE_BFETCH_DONEn.reset(TRI_D0NP);
+    NETA_TILE_READp.reset(TRI_D0NP);
+    XUHA_FETCH_S2p.reset(TRI_D1NP);
+
+    XUCY_WIN_TILE_READn.reset(TRI_D1NP);
+    WUKO_WIN_MAP_READn.reset(TRI_D1NP);
+    BAFY_BG_MAP_READn.reset(TRI_D1NP);
+    BEJE_BG_TILE_READn.reset(TRI_D1NP);
+
+    METE_LATCH_TILE_DAp.reset(TRI_D0NP);
+    LESO_LATCH_TILE_DBn.reset(TRI_D1NP);
+
+    POKY_PRELOAD_LATCHp.reset(TRI_D0NP);
+    LONY_BG_FETCH_RUNNINGp.reset(TRI_D0NP);
+
+    NYKA_FETCH_DONE_P11.reset(REG_D0C0);
+    PORY_FETCH_DONE_P12.reset(REG_D0C1);
+
+    LAXU_BFETCH_S0.reset(REG_D1C1);
+    MESU_BFETCH_S1.reset(REG_D0C0);
+    NYVA_BFETCH_S2.reset(REG_D1C1);
+
+    LOVY_BG_FETCH_DONEp.reset(REG_D1C1);
+    PYGO_FETCH_DONE_P13.reset(REG_D0C0);
+    LYZU_BFETCH_S0_D1.reset(REG_D0C0);
   }
 
   void reset_bootrom() {

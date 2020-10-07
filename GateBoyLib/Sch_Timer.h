@@ -10,6 +10,47 @@ struct CpuBus;
 
 struct Timer {
   void reset_cart() {
+    UKUP_DIV_00.reset(REG_D1C1);
+    UFOR_DIV_01.reset(REG_D1C0);
+    UNER_DIV_02.reset(REG_D0C0);
+    TERO_DIV_03.reset(REG_D0C1);
+    UNYK_DIV_04.reset(REG_D1C1);
+    TAMA_DIV_05.reset(REG_D1C0);
+    UGOT_DIV_06.reset(REG_D1C0);
+    TULU_DIV_07.reset(REG_D1C0);
+    TUGO_DIV_08.reset(REG_D0C0);
+    TOFE_DIV_09.reset(REG_D1C1);
+    TERU_DIV_10.reset(REG_D0C0);
+    SOLA_DIV_11.reset(REG_D1C1);
+    SUBU_DIV_12.reset(REG_D0C0);
+    TEKA_DIV_13.reset(REG_D1C1);
+    UKET_DIV_14.reset(REG_D1C0);
+    UPOF_DIV_15.reset(REG_D1C0);
+
+    NYDU_TIMA_D7_DELAY.reset(REG_D0C1);
+    MOBA_TIMER_OVERFLOWp.reset(REG_D0C1);
+
+    REGA_TIMA_D0.reset(REG_D0C1);
+    POVY_TIMA_D1.reset(REG_D0C1);
+    PERU_TIMA_D2.reset(REG_D0C1);
+    RATE_TIMA_D3.reset(REG_D0C1);
+    RUBY_TIMA_D4.reset(REG_D0C1);
+    RAGE_TIMA_D5.reset(REG_D0C1);
+    PEDA_TIMA_D6.reset(REG_D0C1);
+    NUGA_TIMA_D7.reset(REG_D0C1);
+
+    SABU_TMA_D0.reset(REG_D0C1);
+    NYKE_TMA_D1.reset(REG_D0C1);
+    MURU_TMA_D2.reset(REG_D0C1);
+    TYVA_TMA_D3.reset(REG_D0C1);
+    TYRU_TMA_D4.reset(REG_D0C1);
+    SUFY_TMA_D5.reset(REG_D0C1);
+    PETO_TMA_D6.reset(REG_D0C1);
+    SETA_TMA_D7.reset(REG_D0C1);
+
+    SOPU_TAC_D0.reset(REG_D0C1);
+    SAMY_TAC_D1.reset(REG_D0C1);
+    SABO_TAC_D2.reset(REG_D0C1);
   }
 
   void reset_bootrom() {

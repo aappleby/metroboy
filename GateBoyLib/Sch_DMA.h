@@ -12,6 +12,36 @@ struct VramBus;
 
 struct DmaRegisters {
   void reset_cart() {
+    MATU_DMA_RUNNINGp.reset(REG_D0C1);
+
+    LUMA_DMA_READ_CARTp.reset(TRI_D0NP);
+    LUFA_DMA_READ_VRAMp.reset(TRI_D0NP);
+
+    NAKY_DMA_A00p.reset(REG_D0C0);
+    PYRO_DMA_A01p.reset(REG_D0C1);
+    NEFY_DMA_A02p.reset(REG_D0C1);
+    MUTY_DMA_A03p.reset(REG_D0C1);
+    NYKO_DMA_A04p.reset(REG_D0C1);
+    PYLO_DMA_A05p.reset(REG_D0C1);
+    NUTO_DMA_A06p.reset(REG_D0C1);
+    MUGU_DMA_A07p.reset(REG_D0C1);
+
+    NAFA_DMA_A08n.reset(REG_D0C0);
+    PYNE_DMA_A09n.reset(REG_D0C0);
+    PARA_DMA_A10n.reset(REG_D0C0);
+    NYDO_DMA_A11n.reset(REG_D0C0);
+    NYGY_DMA_A12n.reset(REG_D0C0);
+    PULA_DMA_A13n.reset(REG_D0C0);
+    POKU_DMA_A14n.reset(REG_D0C0);
+    MARU_DMA_A15n.reset(REG_D0C0);
+
+    LYXE_DMA_LATCHp.reset(TRI_D0NP);
+
+    MYTE_DMA_DONE.reset(REG_D0C0);
+    LUVY_DMA_TRIG_d0.reset(REG_D0C1);
+    LENE_DMA_TRIG_d4.reset(REG_D0C0);
+
+    LOKY_DMA_LATCHp.reset(TRI_D0NP);
   }
 
   void reset_bootrom() {

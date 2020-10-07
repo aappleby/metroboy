@@ -11,7 +11,35 @@ struct CpuBus;
 struct Joypad {
 
   void reset_cart() {
-  }
+    ASOK_INT_JOYp.reset(TRI_D0NP);
+    AWOB_WAKE_CPU.reset(TRI_D0NP);
+    PIN_CPU_WAKE.reset(TRI_D0NP);
+
+    BATU_JP_GLITCH0.reset(REG_D0C1);
+    ACEF_JP_GLITCH1.reset(REG_D0C1);
+    AGEM_JP_GLITCH2.reset(REG_D0C1);
+    APUG_JP_GLITCH3.reset(REG_D0C1);
+
+    JUTE_JOYP_RA.reset(REG_D0C1);
+    KECY_JOYP_LB.reset(REG_D0C1);
+    JALE_JOYP_UC.reset(REG_D0C1);
+    KYME_JOYP_DS.reset(REG_D0C1);
+    KELY_JOYP_UDLR.reset(REG_D0C1);
+    COFY_JOYP_ABCS.reset(REG_D0C1);
+    KUKO_DBG_FF00_D6.reset(REG_D0C1);
+    KERU_DBG_FF00_D7.reset(REG_D0C1);
+
+    KEVU_JOYP_L0.reset(TRI_D0NP);
+    KAPA_JOYP_L1.reset(TRI_D0NP);
+    KEJA_JOYP_L2.reset(TRI_D0NP);
+    KOLO_JOYP_L3.reset(TRI_D0NP);
+
+    PIN_JOY_P10.reset(TRI_HZPU);
+    PIN_JOY_P11.reset(TRI_HZPU);
+    PIN_JOY_P12.reset(TRI_HZPU);
+    PIN_JOY_P13.reset(TRI_HZPU);
+    PIN_JOY_P14.reset(TRI_D0PU);
+    PIN_JOY_P15.reset(TRI_D0PU);  }
 
   void reset_bootrom() {
     ASOK_INT_JOYp.reset(TRI_HZNP);

@@ -708,7 +708,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x911aaa27ffe27cf8, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xe85b2abb20d513d7, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {

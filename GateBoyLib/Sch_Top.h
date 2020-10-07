@@ -25,7 +25,62 @@ namespace Schematics {
 
 #pragma pack(push, 1)
 struct SchematicTop {
-  void reset() {}
+  void reset_cart() {
+    UMUT_MODE_DBG1p.reset(TRI_D0NP);
+    UNOR_MODE_DBG2p.reset(TRI_D0NP);
+    UPOJ_MODE_PRODn.reset(TRI_D1NP);
+    TUTO_DBG_VRAMp.reset(TRI_D0NP);
+    ABUZ_AVn.reset(TRI_D1NP);
+    TEDO_CPU_RDp.reset(TRI_D0NP);
+    LEKO_CPU_RDp.reset(TRI_D0NP);
+    TAPU_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
+    APOV_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
+    NYXU_FETCH_TRIGn.reset(TRI_D1NP);
+    TEVO_FETCH_TRIGp.reset(TRI_D0NP);
+    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
+    ACYL_SCANNINGp.reset(TRI_D0NP);
+    AVAP_RENDER_START_TRIGp.reset(TRI_D0NP);
+    TUTU_ADDR_BOOTp.reset(TRI_D0NP);
+    DECY_LATCH_EXTn.reset(TRI_D1NP);
+    AJON_OAM_BUSY.reset(TRI_D0NP);
+    AJUJ_OAM_BUSYn.reset(TRI_D1NP);
+
+    oam_bus.reset_cart();
+    ext_bus.reset_cart();
+    cpu_bus.reset_cart();
+    vram_bus.reset_cart();
+
+    //clk_reg.reset_cart();
+    //dma_reg.reset_cart();
+    //int_reg.reset_cart();
+    //joypad.reset_cart();
+    //lcd_reg.reset_cart();
+    //pix_pipe.reset_cart();
+    ser_reg.reset_cart();
+    //sprite_store.reset_cart();
+    //tim_reg.reset_cart();
+    //tile_fetcher.reset_cart();
+    //sprite_fetcher.reset_cart();
+    //sprite_scanner.reset_cart();
+    //bootrom.reset_cart();
+
+    SOTO_DBG_VRAM.reset(REG_D0C1);
+
+    PIN_LCD_DATA1.reset(TRI_D0NP);
+    PIN_LCD_DATA0.reset(TRI_D0NP);
+    PIN_LCD_CNTRL.reset(TRI_D0NP);
+    PIN_LCD_CLOCK.reset(TRI_D0NP);
+    PIN_LCD_HSYNC.reset(TRI_D0NP);
+    PIN_LCD_LATCH.reset(TRI_D0NP);
+    PIN_LCD_ALTSG.reset(TRI_D0NP);
+    PIN_LCD_VSYNC.reset(TRI_D0NP);
+
+    IE_D0.reset(REG_D0C1);
+    IE_D1.reset(REG_D0C1);
+    IE_D2.reset(REG_D0C1);
+    IE_D3.reset(REG_D0C1);
+    IE_D4.reset(REG_D0C1);
+  }
 
   void reset_bootrom() {
     UMUT_MODE_DBG1p.reset(TRI_HZNP);

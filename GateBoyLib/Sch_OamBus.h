@@ -9,7 +9,85 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct OamBus {
-  void reset() {}
+  void reset_cart() {
+    MAKA_HOLD_MEMp.reset(REG_D0C1);
+    WUJE_CPU_OAM_WRn.reset(TRI_D1NP);
+
+    XYKY_OAM_LATCH_DB0n.reset(TRI_D1NP);
+    YRUM_OAM_LATCH_DB1n.reset(TRI_D1NP);
+    YSEX_OAM_LATCH_DB2n.reset(TRI_D1NP);
+    YVEL_OAM_LATCH_DB3n.reset(TRI_D1NP);
+    WYNO_OAM_LATCH_DB4n.reset(TRI_D1NP);
+    CYRA_OAM_LATCH_DB5n.reset(TRI_D1NP);
+    ZUVE_OAM_LATCH_DB6n.reset(TRI_D1NP);
+    ECED_OAM_LATCH_DB7n.reset(TRI_D1NP);
+
+    YDYV_OAM_LATCH_DA0n.reset(TRI_D1NP);
+    YCEB_OAM_LATCH_DA1n.reset(TRI_D1NP);
+    ZUCA_OAM_LATCH_DA2n.reset(TRI_D1NP);
+    WONE_OAM_LATCH_DA3n.reset(TRI_D1NP);
+    ZAXE_OAM_LATCH_DA4n.reset(TRI_D1NP);
+    XAFU_OAM_LATCH_DA5n.reset(TRI_D1NP);
+    YSES_OAM_LATCH_DA6n.reset(TRI_D1NP);
+    ZECA_OAM_LATCH_DA7n.reset(TRI_D1NP);
+
+    XADU_SPRITE_IDX0p.reset(REG_D0C1);
+    XEDY_SPRITE_IDX1p.reset(REG_D0C1);
+    ZUZE_SPRITE_IDX2p.reset(REG_D1C1);
+    XOBE_SPRITE_IDX3p.reset(REG_D0C1);
+    YDUF_SPRITE_IDX4p.reset(REG_D1C1);
+    XECU_SPRITE_IDX5p.reset(REG_D0C1);
+
+    XUSO_OAM_DA0p.reset(REG_D0C1);
+    XEGU_OAM_DA1p.reset(REG_D0C1);
+    YJEX_OAM_DA2p.reset(REG_D0C1);
+    XYJU_OAM_DA3p.reset(REG_D0C1);
+    YBOG_OAM_DA4p.reset(REG_D0C1);
+    WYSO_OAM_DA5p.reset(REG_D0C1);
+    XOTE_OAM_DA6p.reset(REG_D0C1);
+    YZAB_OAM_DA7p.reset(REG_D0C1);
+
+    YLOR_OAM_DB0p.reset(REG_D0C1);
+    ZYTY_OAM_DB1p.reset(REG_D0C1);
+    ZYVE_OAM_DB2p.reset(REG_D0C1);
+    ZEZY_OAM_DB3p.reset(REG_D0C1);
+    GOMO_OAM_DB4p.reset(REG_D0C1);
+    BAXO_OAM_DB5p.reset(REG_D0C1);
+    YZOS_OAM_DB6p.reset(REG_D0C1);
+    DEPO_OAM_DB7p.reset(REG_D0C1);
+
+    PIN_OAM_CLK .reset(TRI_D1NP);
+    PIN_OAM_OE  .reset(TRI_D1NP);
+    PIN_OAM_WR_A.reset(TRI_D1NP);
+    PIN_OAM_WR_B.reset(TRI_D1NP);
+
+    BUS_OAM_A0n .reset(TRI_D1NP);
+    BUS_OAM_A1n .reset(TRI_D1NP);
+    BUS_OAM_A2n .reset(TRI_D1NP);
+    BUS_OAM_A3n .reset(TRI_D1NP);
+    BUS_OAM_A4n .reset(TRI_D0NP);
+    BUS_OAM_A5n .reset(TRI_D1NP);
+    BUS_OAM_A6n .reset(TRI_D0NP);
+    BUS_OAM_A7n .reset(TRI_D1NP);
+
+    BUS_OAM_DA0n.reset(TRI_D0PU);
+    BUS_OAM_DA1n.reset(TRI_D0PU);
+    BUS_OAM_DA2n.reset(TRI_D0PU);
+    BUS_OAM_DA3n.reset(TRI_D0PU);
+    BUS_OAM_DA4n.reset(TRI_D0PU);
+    BUS_OAM_DA5n.reset(TRI_D0PU);
+    BUS_OAM_DA6n.reset(TRI_D0PU);
+    BUS_OAM_DA7n.reset(TRI_D0PU);
+    BUS_OAM_DB0n.reset(TRI_D0PU);
+    BUS_OAM_DB1n.reset(TRI_D0PU);
+    BUS_OAM_DB2n.reset(TRI_D0PU);
+    BUS_OAM_DB3n.reset(TRI_D0PU);
+    BUS_OAM_DB4n.reset(TRI_D0PU);
+    BUS_OAM_DB5n.reset(TRI_D0PU);
+    BUS_OAM_DB6n.reset(TRI_D0PU);
+    BUS_OAM_DB7n.reset(TRI_D0PU);
+  }
+
   void reset_bootrom() {
     MAKA_HOLD_MEMp.reset(REG_D0C0);
     WUJE_CPU_OAM_WRn.reset(TRI_D0NP);
@@ -86,6 +164,7 @@ struct OamBus {
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
   }
+
   void dump(Dumper& d) const;
   void tock(SchematicTop& top);
 

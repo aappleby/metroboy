@@ -23,6 +23,20 @@ void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
 void GateBoy::reset_cart() {
   CHECK_P(rom_buf != nullptr);
   CHECK_P(rom_size);
+
+  cpu_req.addr = 0xff50;
+  cpu_req.data = 1;
+  cpu_req.read = 0;
+  cpu_req.write = 1;
+
+  dbg_req = {0};
+  bus_req = cpu_req;
+
+  cpu_data_latch = 1;
+  int_vblank = 1;
+  int_vblank_halt = 1;
+
+  top.reset_cart();
 }
 
 //-----------------------------------------------------------------------------

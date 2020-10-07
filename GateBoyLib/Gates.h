@@ -198,7 +198,7 @@ struct RegBase {
   RegBase& operator=(const RegBase&) = delete;
 
   void reset(int s) {
-    state = RegState(s);
+    value = (uint8_t)s;
   }
 
   static bool sim_running;
@@ -312,6 +312,20 @@ struct RegBase {
 //-----------------------------------------------------------------------------
 
 struct DelayGlitch {
+
+  // fixme
+  void reset_cart() {
+    da.reset(ERR_XXXX);
+    db.reset(ERR_XXXX);
+    dc.reset(ERR_XXXX);
+    dd.reset(ERR_XXXX);
+    de.reset(ERR_XXXX);
+    df.reset(ERR_XXXX);
+    dg.reset(ERR_XXXX);
+    dh.reset(ERR_XXXX);
+    di.reset(ERR_XXXX);
+    dj.reset(ERR_XXXX);
+  }
 
   void reset() {
     da.reset(TRI_D0NP);

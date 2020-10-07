@@ -9,7 +9,32 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
-  void reset() {}
+  void reset_cart() {
+    reset_bootrom();
+
+    CALY_INT_SERp.reset(REG_D0C1);
+    ETAF_XFER_START.reset(REG_D0C1);
+    CULY_XFER_DIR.reset(REG_D0C1);
+    COTY_SER_CLK.reset(REG_D0C0);
+    CAFA_SER_CNT0.reset(REG_D0C1);
+    CYLO_SER_CNT1.reset(REG_D0C1);
+    CYDE_SER_CNT2.reset(REG_D0C1);
+
+    CUBA_SER_DATA0.reset(REG_D0C1);
+    DEGU_SER_DATA1.reset(REG_D0C1);
+    DYRA_SER_DATA2.reset(REG_D0C1);
+    DOJO_SER_DATA3.reset(REG_D0C1);
+    DOVU_SER_DATA4.reset(REG_D0C1);
+    EJAB_SER_DATA5.reset(REG_D0C1);
+    EROD_SER_DATA6.reset(REG_D0C1);
+    EDER_SER_DATA7.reset(REG_D0C1);
+
+    ELYS_SER_OUT.reset(REG_D0C0);
+
+    SCK.reset(TRI_HZNP);
+    SIN.reset(TRI_HZNP);
+    SOUT.reset(TRI_D1NP);
+  }
 
   void reset_bootrom() {
     CALY_INT_SERp.reset(REG_D0C0);

@@ -8,7 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct VramBus {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     LEGU_TILE_DA0n.reset(REG_D0C0);

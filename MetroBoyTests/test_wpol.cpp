@@ -133,7 +133,7 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   MetroBoy gameboy;
   MetroBoy* gb = &gameboy;
   if (gb) {
-    gb->reset(0x0100, rom.data(), rom.size());
+    gb->reset_cart(rom.data(), rom.size());
   }
 
   uint8_t result = 0xFF;

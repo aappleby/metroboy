@@ -53,7 +53,7 @@ struct Timer {
     SABO_TAC_D2.reset(REG_D0C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     UKUP_DIV_00.reset(REG_D0C0);
     UFOR_DIV_01.reset(REG_D0C0);
     UNER_DIV_02.reset(REG_D0C0);

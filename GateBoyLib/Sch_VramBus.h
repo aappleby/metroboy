@@ -94,7 +94,7 @@ struct VramBus {
     PIN_VRAM_D07p.reset(TRI_D0PU);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     LEGU_TILE_DA0n.reset(REG_D0C0);
     NUDU_TILE_DA1n.reset(REG_D0C0);
     MUKU_TILE_DA2n.reset(REG_D0C0);

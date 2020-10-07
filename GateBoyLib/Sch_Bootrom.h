@@ -13,7 +13,7 @@ struct Bootrom {
     BOOT_BITn.reset(REG_D1C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     BOOT_BITn.reset(REG_D0C0);
   }
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);

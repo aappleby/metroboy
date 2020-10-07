@@ -74,7 +74,8 @@ int run_microtest(std::string filename) {
   std::string path = "microtests/build/dmg/" + filename;
 
   blob rom = load_blob(path);
-  MetroBoy gb(0x0100, rom.data(), rom.size());
+  MetroBoy gb;
+  gb.reset_cart(rom.data(), rom.size());
 
   int timeout = 8000; // All our "fast" microtests take under 4000 phases
   int phase = 0;

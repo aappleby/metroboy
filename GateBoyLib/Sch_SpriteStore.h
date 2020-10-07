@@ -280,7 +280,7 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D1C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     FEPO_STORE_MATCHp.reset(TRI_HZNP);
 
     SPR_TRI_I0p.reset(TRI_HZPU);

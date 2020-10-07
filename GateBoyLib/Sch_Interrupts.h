@@ -35,7 +35,7 @@ struct InterruptRegisters {
     PIN_CPU_ACK_JOYPAD.reset(TRI_D0NP | (DELTA_LOCK << 4));
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     LOPE_FF0F_D0p.reset(REG_D0C0);
     UBUL_FF0F_D3p.reset(REG_D0C0);
     ULAK_FF0F_D4p.reset(REG_D0C0);

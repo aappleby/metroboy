@@ -11,13 +11,13 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
+void MetroBoy::reset_cart(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  z80.reset(new_pc);
+  z80.reset_cart();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
-  ppu.reset(new_pc == 0);
+  ppu.reset_cart();
   oam.reset();
   spu.reset();
   timer.reset();
@@ -26,16 +26,48 @@ void MetroBoy::reset(uint16_t new_pc, uint8_t* new_rom, size_t new_rom_size) {
   serial.reset();
   zram.reset();
 
-  boot.disable_bootrom = new_pc != 0x0000;
+  boot.disable_bootrom = true;
 
   phase_total = 0;
 
-  ebus_req.addr = new_pc;
+  ebus_req.addr = 0x0100;
   ebus_req.data = 0x00;
   ebus_req.read = 1;
   ebus_req.write = 0;
 
-  ebus_ack.addr = new_pc;
+  ebus_ack.addr = 0x0100;
+  ebus_ack.data = 0x00;
+  ebus_ack.read = 1;
+
+  memset(framebuffer, 4, 160 * 144);
+}
+
+
+void MetroBoy::reset_boot(uint8_t* new_rom, size_t new_rom_size) {
+  check_sentinel();
+
+  z80.reset_boot();
+  cart.set_rom(new_rom, new_rom_size);
+  cart.reset();
+  ppu.reset_boot();
+  oam.reset();
+  spu.reset();
+  timer.reset();
+  vram.reset();
+  joypad.reset();
+  serial.reset();
+  zram.reset();
+
+  boot.disable_bootrom = false;
+
+  phase_total = 0;
+
+  ebus_req.addr = 0x0000;
+  ebus_req.data = 0x00;
+  ebus_req.read = 1;
+  ebus_req.write = 0;
+
+  ebus_ack.addr = 0x0000;
   ebus_ack.data = 0x00;
   ebus_ack.read = 1;
 

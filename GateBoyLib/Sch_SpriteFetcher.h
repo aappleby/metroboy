@@ -33,7 +33,7 @@ struct SpriteFetcher {
     SEBA_SFETCH_S1_D5.reset(REG_D0C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     WUTY_SPRITE_DONEp.reset(TRI_HZNP);
     WEFY_SPR_READp.reset(TRI_HZNP);
     VAPE_FETCH_OAM_CLK.reset(TRI_HZNP);

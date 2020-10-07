@@ -106,7 +106,7 @@ void GateBoy::reset_cart() {
 void GateBoy::reset_boot() {
   sentinel1 = 0xDEADBEEFBAADF00D;
 
-  cpu.reset_bootrom();
+  cpu.reset_boot();
   cpu_req = {0};
   dbg_req = {0};
   bus_req = {0};
@@ -153,7 +153,7 @@ void GateBoy::reset_boot() {
   placeholder6 = 0;
   placeholder7 = 0;
 
-  top.reset_bootrom();
+  top.reset_boot();
   sim_stable = 0;
   phase_total = 0;
   pass_count = 0;
@@ -217,7 +217,7 @@ void GateBoy::run_reset_sequence() {
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
-  cpu.reset(0x0000);
+  cpu.reset_boot();
   sys_cpuready = 1;
   sys_cpu_en = true;
 }

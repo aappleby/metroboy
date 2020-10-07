@@ -144,49 +144,27 @@ constexpr uint8_t F_ZERO = 0x80;
 
 //-----------------------------------------------------------------------------
 
-void Z80::reset(uint16_t new_pc) {
+void Z80::reset_boot() {
   *this = Z80();
 
-  if (new_pc == 0x100) {
-    ime = ime_delay = 0;
+  ime = ime_delay = 0;
 
-    state = 0;
+  state = 0;
 
-    int_ack = 0;
+  int_ack = 0;
 
-    pc = 0x100;
-    op_addr = pc;
-    op = 0;
-    cb = 0;
-    state = 0;
+  pc = 0x0000;
+  op_addr = pc;
+  op = 0;
+  cb = 0;
+  state = 0;
 
-    bc = 0x0013;
-    de = 0x00D8;
-    hl = 0x014D;
-    af = 0x01B0;
-    sp = 0xFFFE;
-    xy = 0x0000;
-  }
-  else {
-    ime = ime_delay = 0;
-
-    state = 0;
-
-    int_ack = 0;
-
-    pc = 0x0000;
-    op_addr = pc;
-    op = 0;
-    cb = 0;
-    state = 0;
-
-    bc = 0x0000;
-    de = 0x0000;
-    hl = 0x0000;
-    af = 0x0000;
-    sp = 0x0000;
-    xy = 0x0000;
-  }
+  bc = 0x0000;
+  de = 0x0000;
+  hl = 0x0000;
+  af = 0x0000;
+  sp = 0x0000;
+  xy = 0x0000;
 
   set_bus(pc, 0);
 }

@@ -82,7 +82,7 @@ struct SchematicTop {
     IE_D4.reset(REG_D0C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     UMUT_MODE_DBG1p.reset(TRI_HZNP);
     UNOR_MODE_DBG2p.reset(TRI_HZNP);
     UPOJ_MODE_PRODn.reset(TRI_HZNP);
@@ -102,24 +102,24 @@ struct SchematicTop {
     AJON_OAM_BUSY.reset(TRI_HZNP);
     AJUJ_OAM_BUSYn.reset(TRI_HZNP);
 
-    oam_bus.reset_bootrom();
-    ext_bus.reset_bootrom();
-    cpu_bus.reset_bootrom();
-    vram_bus.reset_bootrom();
+    oam_bus.reset_boot();
+    ext_bus.reset_boot();
+    cpu_bus.reset_boot();
+    vram_bus.reset_boot();
 
-    clk_reg.reset_bootrom();
-    dma_reg.reset_bootrom();
-    int_reg.reset_bootrom();
-    joypad.reset_bootrom();
-    lcd_reg.reset_bootrom();
-    pix_pipe.reset_bootrom();
-    ser_reg.reset_bootrom();
-    sprite_store.reset_bootrom();
-    tim_reg.reset_bootrom();
-    tile_fetcher.reset_bootrom();
-    sprite_fetcher.reset_bootrom();
-    sprite_scanner.reset_bootrom();
-    bootrom.reset_bootrom();
+    clk_reg.reset_boot();
+    dma_reg.reset_boot();
+    int_reg.reset_boot();
+    joypad.reset_boot();
+    lcd_reg.reset_boot();
+    pix_pipe.reset_boot();
+    ser_reg.reset_boot();
+    sprite_store.reset_boot();
+    tim_reg.reset_boot();
+    tile_fetcher.reset_boot();
+    sprite_fetcher.reset_boot();
+    sprite_scanner.reset_boot();
+    bootrom.reset_boot();
 
     SOTO_DBG_VRAM.reset(REG_D0C0);
 

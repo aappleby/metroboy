@@ -34,7 +34,7 @@ struct SpriteScanner {
     DOBA_SCAN_DONE_B.reset(REG_D1C0);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     DEGE_SPRITE_DELTA0.reset(TRI_HZNP);
     DABY_SPRITE_DELTA1.reset(TRI_HZNP);
     DABU_SPRITE_DELTA2.reset(TRI_HZNP);

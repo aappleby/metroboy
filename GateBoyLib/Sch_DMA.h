@@ -44,7 +44,7 @@ struct DmaRegisters {
     LOKY_DMA_LATCHp.reset(TRI_D0NP);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     MATU_DMA_RUNNINGp.reset(REG_D0C0);
 
     LUMA_DMA_READ_CARTp.reset(TRI_HZNP);

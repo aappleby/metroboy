@@ -40,7 +40,7 @@ struct TileFetcher {
     LYZU_BFETCH_S0_D1.reset(REG_D0C0);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     LENA_BGW_VRM_RDp.reset(TRI_HZNP);
     MOCE_BFETCH_DONEn.reset(TRI_HZNP);
     NETA_TILE_READp.reset(TRI_HZNP);

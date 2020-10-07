@@ -202,7 +202,7 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D1C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     SEKO_WIN_TILE_TRIG.reset(TRI_HZNP);
     TOMU_WIN_HITp.reset(TRI_HZNP);
     NOCU_WIN_MODEn.reset(TRI_HZNP);

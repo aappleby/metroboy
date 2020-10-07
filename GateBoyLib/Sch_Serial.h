@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct SerialRegisters {
   void reset_cart() {
-    reset_bootrom();
+    reset_boot();
 
     CALY_INT_SERp.reset(REG_D0C1);
     ETAF_XFER_START.reset(REG_D0C1);
@@ -36,7 +36,7 @@ struct SerialRegisters {
     SOUT.reset(TRI_D1NP);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     CALY_INT_SERp.reset(REG_D0C0);
     ETAF_XFER_START.reset(REG_D0C0);
     CULY_XFER_DIR.reset(REG_D0C0);

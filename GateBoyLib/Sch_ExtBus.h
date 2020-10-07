@@ -68,7 +68,7 @@ struct ExtBus {
     PIN_EXT_D07p.reset(TRI_HZPU);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     ext_glitch.reset();
 
     ALOR_EXT_ADDR_LATCH_00p.reset(TRI_D0NP);

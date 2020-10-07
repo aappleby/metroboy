@@ -42,7 +42,7 @@ struct ClockRegisters {
     WOSU_AxxDExxH.reset(REG_D1C0);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     UCOB_CLKBADp.reset(TRI_HZNP);
 
     ZAXY_xBxDxFxH.reset(TRI_HZNP);

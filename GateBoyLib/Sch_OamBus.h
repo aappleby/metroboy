@@ -88,7 +88,7 @@ struct OamBus {
     BUS_OAM_DB7n.reset(TRI_D0PU);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     MAKA_HOLD_MEMp.reset(REG_D0C0);
     WUJE_CPU_OAM_WRn.reset(TRI_D0NP);
 

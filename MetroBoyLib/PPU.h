@@ -8,7 +8,8 @@ struct LCD;
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  void reset(bool run_bootrom);
+  void reset_cart();
+  void reset_boot();
 
   bool    read (uint16_t addr, uint8_t& out);
   bool    write(uint16_t addr, uint8_t data);

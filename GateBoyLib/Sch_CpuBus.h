@@ -61,8 +61,7 @@ struct CpuBus {
     PIN_CPU_BOGA_Axxxxxxx .reset(TRI_D1NP);
   }
 
-  void reset_bootrom() {
-    printf("CpuBus::reset_bootrom\n");
+  void reset_boot() {
     BUS_CPU_A00.reset(TRI_HZPU);
     BUS_CPU_A01.reset(TRI_HZPU);
     BUS_CPU_A02.reset(TRI_HZPU);

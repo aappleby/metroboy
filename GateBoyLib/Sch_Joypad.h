@@ -41,7 +41,7 @@ struct Joypad {
     PIN_JOY_P14.reset(TRI_D0PU);
     PIN_JOY_P15.reset(TRI_D0PU);  }
 
-  void reset_bootrom() {
+  void reset_boot() {
     ASOK_INT_JOYp.reset(TRI_HZNP);
     AWOB_WAKE_CPU.reset(TRI_D0NP);
     PIN_CPU_WAKE.reset(TRI_HZNP);

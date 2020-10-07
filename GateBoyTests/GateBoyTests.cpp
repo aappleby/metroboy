@@ -23,9 +23,8 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-  err += t.test_post_bootrom_state();
 
-#if 0
+#if 1
 
 #ifdef RUN_SLOW_TESTS
   err += t.test_post_bootrom_state();
@@ -685,9 +684,8 @@ int GateBoyTests::run_microtest(const char* filename) {
   }
 
   GateBoy gb;
-  gb.load_post_bootrom_state();
-  gb.set_rom(rom.data(), rom.size());
   gb.reset_cart();
+  gb.set_rom(rom.data(), rom.size());
   gb.phase_total = 0;
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
@@ -803,10 +801,10 @@ int GateBoyTests::test_clk() {
   TEST_START();
 
   GateBoy gb;
-  blob dummy_rom(32768);
-  gb.load_post_bootrom_state();
-  gb.set_rom(dummy_rom.data(), dummy_rom.size());
   gb.reset_cart();
+
+  blob rom(32768);
+  gb.set_rom(rom.data(), rom.size());
 
   gb.sys_cpu_en = false;
 
@@ -880,9 +878,8 @@ int GateBoyTests::test_ext_bus() {
     blob rom = as.link();
 
     GateBoy gb;
-    gb.load_post_bootrom_state();
-    gb.set_rom(rom.data(), rom.size());
     gb.reset_cart();
+    gb.set_rom(rom.data(), rom.size());
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1005,9 +1002,8 @@ int GateBoyTests::test_ext_bus() {
     blob rom = as.link();
 
     GateBoy gb;
-    gb.load_post_bootrom_state();
-    gb.set_rom(rom.data(), rom.size());
     gb.reset_cart();
+    gb.set_rom(rom.data(), rom.size());
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1135,9 +1131,8 @@ int GateBoyTests::test_ext_bus() {
     blob rom = as.link();
 
     GateBoy gb;
-    gb.load_post_bootrom_state();
-    gb.set_rom(rom.data(), rom.size());
     gb.reset_cart();
+    gb.set_rom(rom.data(), rom.size());
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1313,11 +1308,11 @@ int GateBoyTests::test_mem() {
 int GateBoyTests::test_interrupts() {
   TEST_START();
 
-  blob rom(32768);
   GateBoy gb;
-  gb.load_post_bootrom_state();
-  gb.set_rom(rom.data(), rom.size());
   gb.reset_cart();
+
+  blob rom(32768);
+  gb.set_rom(rom.data(), rom.size());
 
   gb.sys_cpu_en = 0;
 
@@ -1538,11 +1533,11 @@ uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
 int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
-  blob rom(32768);
   GateBoy gb;
-  gb.load_post_bootrom_state();
-  gb.set_rom(rom.data(), rom.size());
   gb.reset_cart();
+
+  blob rom(32768);
+  gb.set_rom(rom.data(), rom.size());
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
 
@@ -1647,11 +1642,11 @@ int GateBoyTests::test_ppu() {
 int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
-  blob rom(32768);
   GateBoy gb;
-  gb.load_post_bootrom_state();
-  gb.set_rom(rom.data(), rom.size());
   gb.reset_cart();
+
+  blob rom(32768);
+  gb.set_rom(rom.data(), rom.size());
 
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
@@ -1693,11 +1688,11 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  blob rom(32768);
   GateBoy gb;
-  gb.load_post_bootrom_state();
-  gb.set_rom(rom.data(), rom.size());
   gb.reset_cart();
+
+  blob rom(32768);
+  gb.set_rom(rom.data(), rom.size());
 
   gb.sys_cpu_en = 0;
 

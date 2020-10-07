@@ -55,7 +55,7 @@ struct LcdRegisters {
     RAHA_LYC7n.reset(REG_D1C1);
   }
 
-  void reset_bootrom() {
+  void reset_boot() {
     PARU_VBLANKp_d4.reset(TRI_HZNP);
     ATEJ_LINE_TRIGp.reset(TRI_HZNP);
     VYPU_INT_VBLANKp.reset(TRI_HZNP);

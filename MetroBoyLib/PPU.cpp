@@ -7,7 +7,7 @@ extern const uint32_t gb_colors[];
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset(bool run_bootrom) {
+void PPU::reset_cart() {
   *this = {0};
 
   phase_count = 0;
@@ -33,22 +33,37 @@ void PPU::reset(bool run_bootrom) {
   //----------
   // Fixup if we're not running the bootrom
 
-#if 1
-  if (!run_bootrom) {
-    bgp = 0xFC;
-    obp0 = 0xFF;
-    obp1 = 0xFF;
-    update_palettes();
+  bgp = 0xFC;
+  obp0 = 0xFF;
+  obp1 = 0xFF;
+  update_palettes();
+  lcdc = 0x91;
+}
 
-    //counter = 401;
+//-----------------------------------------------------------------------------
 
-    lcdc = 0x91;
-    //pix_count2 = 160;
-    //pix_discard_scx = 0;
-    //pix_discard_pad = 8;
+void PPU::reset_boot() {
+  *this = {0};
 
-  }
-#endif
+  phase_count = 0;
+  line = 0;
+  lyc_match = 0;
+  frame_count = 0;
+
+  //----------
+  // Registers
+
+  stat = 0x80;
+
+  //----------
+  // Sprites
+
+  sprite_hit = 15;
+  sprite_index = -1;
+
+  for (int i = 0; i < 10; i++) sprite_x[i] = 0xFF;
+  for (int i = 0; i < 10; i++) sprite_y[i] = 0xFF;
+  for (int i = 0; i < 10; i++) sprite_i[i] = 0xFF;
 }
 
 //-----------------------------------------------------------------------------

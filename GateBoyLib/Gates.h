@@ -360,7 +360,7 @@ struct DelayGlitch {
 // Generic DFF
 
 struct DFF : private RegBase {
-  DFF() : RegBase(REG_D0C0) {}
+  DFF(RegState r = REG_D0C0) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -384,7 +384,7 @@ struct DFF : private RegBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8 : private RegBase {
-  DFF8() : RegBase(REG_D0C0) {}
+  DFF8(RegState r = REG_D0C0) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -412,7 +412,7 @@ struct DFF8 : private RegBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : private RegBase {
-  DFF9() : RegBase(REG_D0C0) {}
+  DFF9(RegState r = REG_D0C0) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -443,7 +443,7 @@ struct DFF9 : private RegBase {
 // DFF11_11 >> Qn
 
 struct DFF11 : private RegBase {
-  DFF11() : RegBase(REG_D0C0) {}
+  DFF11(RegState r = REG_D0C0) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -469,7 +469,7 @@ struct DFF11 : private RegBase {
 // DFF13_13 >> Q
 
 struct DFF13 : private RegBase {
-  DFF13() : RegBase(REG_D0C0) {}
+  DFF13(RegState r = REG_D0C0) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -503,7 +503,7 @@ struct DFF13 : private RegBase {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : private RegBase {
-  DFF17() : RegBase(REG_D0C0) {} // does not work with xxxx
+  DFF17(RegState r = REG_D0C0) : RegBase(r) {} // does not work with xxxx
 
   using RegBase::reset;
   using RegBase::c;
@@ -540,66 +540,26 @@ struct DFF17 : private RegBase {
 // DFF20_19 sc
 // DFF20_20 << CLKn
 
-#pragma warning(push)
-#pragma warning(disable:4201)
+struct DFF20 : private RegBase{
+  DFF20(RegState r = REG_D0C0) : RegBase(r) {}
 
-struct DFF20 {
-  DFF20() {
-    stateA = REG_D0C0;
-    stateB = REG_D0C0;
-    deltaA = DELTA_NONE;
-    deltaB = DELTA_NONE;
-  }
-
-  void reset(RegState sa, RegState sb) {
-    stateA = sa;
-    deltaA = DELTA_NONE;
-    stateB = sb;
-    deltaB = DELTA_NONE;
-  }
-
-  void force_state(int s) {
-    stateA = RegState(s);
-  }
-
-  inline wire qp() const { return  wire(stateA & 1); }
-  inline wire qn() const { return !wire(stateA & 1); }
+  using RegBase::reset;
+  using RegBase::c;
+  using RegBase::qp;
+  using RegBase::qn;
 
   inline void tock(wire CLKn, wire LOADp, bool newD) {
     (void)LOADp;
     (void)newD;
 
     if (LOADp) {
-      deltaA = RegDelta(DELTA_A0C0 | (!CLKn << 1) | (newD << 0));
+      delta = RegDelta(DELTA_A0C0 | (!CLKn << 1) | (newD << 0));
     }
     else {
-      deltaA = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(stateA & 1) << 0));
+      delta = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(state & 1) << 0));
     }
-
-    deltaB = DELTA_D0C0;
   }
-
-  // FIXME don't need stateb/deltab
-
-  union {
-    struct {
-      RegState stateA : 4;
-      RegDelta deltaA : 4;
-    };
-    uint8_t valueA;
-  };
-  union {
-    struct {
-      RegState stateB : 4;
-      RegDelta deltaB : 4;
-    };
-    uint8_t valueB;
-  };
 };
-
-#pragma warning(pop)
-
-static_assert(sizeof(DFF20) == 2, "DFF20 size != 2");
 
 //-----------------------------------------------------------------------------
 // DFF with async set/reset. Used by pixel pipes, serial data register.
@@ -630,7 +590,7 @@ static_assert(sizeof(DFF20) == 2, "DFF20 size != 2");
 // DFF22_22 << CLKp
 
 struct DFF22 : private RegBase {
-  DFF22() : RegBase(REG_D0C0) {}
+  DFF22(RegState r = REG_D0C0) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -646,7 +606,7 @@ struct DFF22 : private RegBase {
 //-----------------------------------------------------------------------------
 
 struct Sig : private RegBase {
-  Sig() : RegBase(TRI_HZNP) {}
+  Sig(RegState r = TRI_HZNP) : RegBase(r) {}
 
   using RegBase::c;
   using RegBase::qp;
@@ -772,7 +732,7 @@ struct Pin : private RegBase {
 // NORLATCH_01 << RST
 
 struct NorLatch : private RegBase {
-  NorLatch() : RegBase(TRI_D0NP) {}
+  NorLatch(RegState r = TRI_D0NP) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -805,7 +765,7 @@ struct NorLatch : private RegBase {
 // NANDLATCH_01 << RSTn
 
 struct NandLatch : private RegBase {
-  NandLatch() : RegBase(TRI_D0NP) {}
+  NandLatch(RegState r = TRI_D0NP) : RegBase(r) {}
 
   using RegBase::reset;
   using RegBase::c;

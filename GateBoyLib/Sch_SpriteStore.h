@@ -8,6 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteStore {
+  void reset() {}
+  void reset_bootrom() {}
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
   void dump(Dumper& d) const;
@@ -130,7 +132,7 @@ private:
   /*p31.DEPY*/ DFF9 DEPY_STORE2_X7p;
 
   //----------
-  
+
   /*p30.DEVY*/ DFF8 DEVY_STORE3_I0n;
   /*p30.DESE*/ DFF8 DESE_STORE3_I1n;
   /*p30.DUNY*/ DFF8 DUNY_STORE3_I2n;
@@ -165,7 +167,7 @@ private:
   /*p30.CAJU*/ DFF8 CAJU_STORE4_L1n;
   /*p30.CONO*/ DFF8 CONO_STORE4_L2n;
   /*p30.CUMU*/ DFF8 CUMU_STORE4_L3n;
-  
+
   /*p31.WEDU*/ DFF9 WEDU_STORE4_X0p;
   /*p31.YGAJ*/ DFF9 YGAJ_STORE4_X1p;
   /*p31.ZYJO*/ DFF9 ZYJO_STORE4_X2p;
@@ -188,7 +190,7 @@ private:
   /*p30.ABEG*/ DFF8 ABEG_STORE5_L1n;
   /*p30.ABUX*/ DFF8 ABUX_STORE5_L2n;
   /*p30.ANED*/ DFF8 ANED_STORE5_L3n;
-  
+
   /*p31.FUSA*/ DFF9 FUSA_STORE5_X0p;
   /*p31.FAXA*/ DFF9 FAXA_STORE5_X1p;
   /*p31.FOZY*/ DFF9 FOZY_STORE5_X2p;

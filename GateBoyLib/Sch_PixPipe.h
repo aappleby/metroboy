@@ -9,6 +9,8 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct PixelPipe {
+  void reset() {}
+  void reset_bootrom() {}
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;
@@ -19,7 +21,7 @@ struct PixelPipe {
     return pack_p(MYPA_WX0n.q09p(), NOFE_WX1n.q09p(), NOKE_WX2n.q09p(), MEBY_WX3n.q09p(),
                   MYPU_WX4n.q09p(), MYCE_WX5n.q09p(), MUVO_WX6n.q09p(), NUKU_WX7n.q09p());
   }
-    
+
   int get_wy() const {
     return pack_p(NESO_WY0n.q09p(), NYRO_WY1n.q09p(), NAGA_WY2n.q09p(), MELA_WY3n.q09p(),
                   NULO_WY4n.q09p(), NENE_WY5n.q09p(), NUKA_WY6n.q09p(), NAFU_WY7n.q09p());

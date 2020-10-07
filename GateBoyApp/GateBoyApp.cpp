@@ -138,7 +138,7 @@ void GateBoyApp::app_update(double delta) {
 
     case SDLK_F1: {
       printf("Loading raw dump from %s\n", "gateboy.raw.dump");
-      gb.reset();
+      gb.reset_states();
       gb->load_dump("gateboy.raw.dump");
       break;
     }
@@ -152,8 +152,9 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_r:
     case SDLK_F5: {
       printf("Resetting sim\n");
-      gb.reset();
-      gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
+      gb.reset_states();
+      gb->set_rom(rom_buf.data(), rom_buf.size());
+      gb->reset();
       break;
     }
 
@@ -262,8 +263,9 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
   rom_buf = load_blob(filename);
 
-  gb.reset();
-  gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
+  gb.reset_states();
+  gb->set_rom(rom_buf.data(), rom_buf.size());
+  gb->reset();
 
   memcpy(gb->vid_ram,  rom_buf.data() + 0x8000, 8192);
   memcpy(gb->cart_ram, rom_buf.data() + 0xA000, 8192);
@@ -316,8 +318,9 @@ void GateBoyApp::load_rom(const char* filename) {
 
   rom_buf = load_blob(filename);
 
-  gb.reset();
-  gb->reset_post_bootrom(rom_buf.data(), rom_buf.size());
+  gb.reset_states();
+  gb->set_rom(rom_buf.data(), rom_buf.size());
+  gb->reset();
   gb->phase_total = 0;
   gb->pass_count = 0;
   gb->pass_total = 0;

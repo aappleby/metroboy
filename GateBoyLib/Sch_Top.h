@@ -25,6 +25,8 @@ namespace Schematics {
 
 #pragma pack(push, 1)
 struct SchematicTop {
+  void reset() {}
+  void reset_bootrom() {}
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
   void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
@@ -91,13 +93,13 @@ struct SchematicTop {
 
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAM;
 
-  Pin PIN_LCD_DATA1 = TRI_HZNP; // PIN_50 
-  Pin PIN_LCD_DATA0 = TRI_HZNP; // PIN_51 
-  Pin PIN_LCD_CNTRL = TRI_HZNP; // PIN_52 
-  Pin PIN_LCD_CLOCK = TRI_HZNP; // PIN_53 
-  Pin PIN_LCD_HSYNC = TRI_HZNP; // PIN_54 
-  Pin PIN_LCD_LATCH = TRI_HZNP; // PIN_55 
-  Pin PIN_LCD_ALTSG = TRI_HZNP; // PIN_56 
+  Pin PIN_LCD_DATA1 = TRI_HZNP; // PIN_50
+  Pin PIN_LCD_DATA0 = TRI_HZNP; // PIN_51
+  Pin PIN_LCD_CNTRL = TRI_HZNP; // PIN_52
+  Pin PIN_LCD_CLOCK = TRI_HZNP; // PIN_53
+  Pin PIN_LCD_HSYNC = TRI_HZNP; // PIN_54
+  Pin PIN_LCD_LATCH = TRI_HZNP; // PIN_55
+  Pin PIN_LCD_ALTSG = TRI_HZNP; // PIN_56
   Pin PIN_LCD_VSYNC = TRI_HZNP; // PIN_57
 
   DFF IE_D0;

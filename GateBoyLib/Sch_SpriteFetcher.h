@@ -9,6 +9,8 @@ struct VramBus;
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
+  void reset() {}
+  void reset_bootrom() {}
   void tick(const SchematicTop& gb);
   void tock(SchematicTop& gb);
   void dump(Dumper& d) const;

@@ -12,6 +12,8 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
+  void reset() {}
+  void reset_bootrom() {}
   void dump(Dumper& d, wire CLK) const;
 
   void tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top);

@@ -8,6 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct ExtBus {
+  void reset() {}
+  void reset_bootrom() {}
   void tock(SchematicTop& top);
   void dump(Dumper& d) const;
 

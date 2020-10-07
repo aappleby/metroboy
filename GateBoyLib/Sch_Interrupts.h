@@ -9,15 +9,23 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct InterruptRegisters {
+  void reset() {}
+  void reset_bootrom() {
+    PIN_CPU_ACK_VBLANK.lock(0);
+    PIN_CPU_ACK_STAT  .lock(0);
+    PIN_CPU_ACK_TIMER .lock(0);
+    PIN_CPU_ACK_SERIAL.lock(0);
+    PIN_CPU_ACK_JOYPAD.lock(0);
+  }
   void dump(Dumper& d, const SchematicTop& top) const;
   void tock(const SchematicTop& gb, CpuBus& cpu_bus);
 
   void force_set_if(uint8_t _if) {
-    LOPE_FF0F_D0p.force_state(_if & 0x01);
-    LALU_FF0F_D1p.force_state(_if & 0x02);
-    NYBO_FF0F_D2p.force_state(_if & 0x04);
-    UBUL_FF0F_D3p.force_state(_if & 0x08);
-    ULAK_FF0F_D4p.force_state(_if & 0x10);
+    LOPE_FF0F_D0p.reset(_if & 0x01);
+    LALU_FF0F_D1p.reset(_if & 0x02);
+    NYBO_FF0F_D2p.reset(_if & 0x04);
+    UBUL_FF0F_D3p.reset(_if & 0x08);
+    ULAK_FF0F_D4p.reset(_if & 0x10);
   }
 
 //private:

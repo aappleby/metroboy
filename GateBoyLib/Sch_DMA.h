@@ -11,6 +11,8 @@ struct VramBus;
 //-----------------------------------------------------------------------------
 
 struct DmaRegisters {
+  void reset() {}
+  void reset_bootrom() {}
   void dump(Dumper& d) const;
   void tick();
   void tock(const SchematicTop& top, CpuBus& cpu_bus);

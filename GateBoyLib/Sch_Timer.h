@@ -9,7 +9,8 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct Timer {
-
+  void reset() {}
+  void reset_bootrom() {}
   void dump(Dumper& d) const;
   void tick(const SchematicTop& top);
   void tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus);
@@ -66,22 +67,22 @@ struct Timer {
     uint16_t div_a = div;
     uint16_t div_b = ((~div) << 2);
 
-    UKUP_DIV_00.force_state(((div_a >>  0) & 1) | ((div_b >>  0) & 2));
-    UFOR_DIV_01.force_state(((div_a >>  1) & 1) | ((div_b >>  1) & 2));
-    UNER_DIV_02.force_state(((div_a >>  2) & 1) | ((div_b >>  2) & 2));
-    TERO_DIV_03.force_state(((div_a >>  3) & 1) | ((div_b >>  3) & 2));
-    UNYK_DIV_04.force_state(((div_a >>  4) & 1) | ((div_b >>  4) & 2));
-    TAMA_DIV_05.force_state(((div_a >>  5) & 1) | ((div_b >>  5) & 2));
-    UGOT_DIV_06.force_state(((div_a >>  6) & 1) | ((div_b >>  6) & 2));
-    TULU_DIV_07.force_state(((div_a >>  7) & 1) | ((div_b >>  7) & 2));
-    TUGO_DIV_08.force_state(((div_a >>  8) & 1) | ((div_b >>  8) & 2));
-    TOFE_DIV_09.force_state(((div_a >>  9) & 1) | ((div_b >>  9) & 2));
-    TERU_DIV_10.force_state(((div_a >> 10) & 1) | ((div_b >> 10) & 2));
-    SOLA_DIV_11.force_state(((div_a >> 11) & 1) | ((div_b >> 11) & 2));
-    SUBU_DIV_12.force_state(((div_a >> 12) & 1) | ((div_b >> 12) & 2));
-    TEKA_DIV_13.force_state(((div_a >> 13) & 1) | ((div_b >> 13) & 2));
-    UKET_DIV_14.force_state(((div_a >> 14) & 1) | ((div_b >> 14) & 2));
-    UPOF_DIV_15.force_state(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
+    UKUP_DIV_00.reset(((div_a >>  0) & 1) | ((div_b >>  0) & 2));
+    UFOR_DIV_01.reset(((div_a >>  1) & 1) | ((div_b >>  1) & 2));
+    UNER_DIV_02.reset(((div_a >>  2) & 1) | ((div_b >>  2) & 2));
+    TERO_DIV_03.reset(((div_a >>  3) & 1) | ((div_b >>  3) & 2));
+    UNYK_DIV_04.reset(((div_a >>  4) & 1) | ((div_b >>  4) & 2));
+    TAMA_DIV_05.reset(((div_a >>  5) & 1) | ((div_b >>  5) & 2));
+    UGOT_DIV_06.reset(((div_a >>  6) & 1) | ((div_b >>  6) & 2));
+    TULU_DIV_07.reset(((div_a >>  7) & 1) | ((div_b >>  7) & 2));
+    TUGO_DIV_08.reset(((div_a >>  8) & 1) | ((div_b >>  8) & 2));
+    TOFE_DIV_09.reset(((div_a >>  9) & 1) | ((div_b >>  9) & 2));
+    TERU_DIV_10.reset(((div_a >> 10) & 1) | ((div_b >> 10) & 2));
+    SOLA_DIV_11.reset(((div_a >> 11) & 1) | ((div_b >> 11) & 2));
+    SUBU_DIV_12.reset(((div_a >> 12) & 1) | ((div_b >> 12) & 2));
+    TEKA_DIV_13.reset(((div_a >> 13) & 1) | ((div_b >> 13) & 2));
+    UKET_DIV_14.reset(((div_a >> 14) & 1) | ((div_b >> 14) & 2));
+    UPOF_DIV_15.reset(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
 
     /*
     UKUP_DIV_00.force_state(REG_D1C0);

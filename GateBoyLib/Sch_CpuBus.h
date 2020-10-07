@@ -8,6 +8,31 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct CpuBus {
+  void reset() {}
+  void reset_bootrom() {
+    BUS_CPU_A00.lock(0);
+    BUS_CPU_A01.lock(0);
+    BUS_CPU_A02.lock(0);
+    BUS_CPU_A03.lock(0);
+    BUS_CPU_A04.lock(0);
+    BUS_CPU_A05.lock(0);
+    BUS_CPU_A06.lock(0);
+    BUS_CPU_A07.lock(0);
+    BUS_CPU_A08.lock(0);
+    BUS_CPU_A09.lock(0);
+    BUS_CPU_A10.lock(0);
+    BUS_CPU_A11.lock(0);
+    BUS_CPU_A12.lock(0);
+    BUS_CPU_A13.lock(0);
+    BUS_CPU_A14.lock(0);
+    BUS_CPU_A15.lock(0);
+
+    PIN_CPU_RDp.lock(1);
+    PIN_CPU_WRp.lock(0);
+    PIN_CPU_6.lock(0);
+    PIN_CPU_ADDR_EXTp.lock(1);
+    PIN_CPU_LATCH_EXT.lock(0);
+  }
   void dump(Dumper& d) const;
 
   uint16_t get_bus_addr() const {

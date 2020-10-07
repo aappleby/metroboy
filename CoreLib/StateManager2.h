@@ -7,10 +7,10 @@
 //-----------------------------------------------------------------------------
 
 template<class T>
-struct StateManager2 {
-  StateManager2() { states.resize(1); }
-  StateManager2(const StateManager2&) = delete;
-  StateManager2& operator=(const StateManager2&) = delete;
+struct StateStack {
+  StateStack() { states.resize(1); }
+  StateStack(const StateStack&) = delete;
+  StateStack& operator=(const StateStack&) = delete;
 
   T* state()      { return &states.back(); }
   T* operator->() { return &states.back(); }
@@ -21,7 +21,7 @@ struct StateManager2 {
   void push() { states.push_back(states.back()); }
   void pop()  { if (states.size() > 1) { states.pop_back(); } }
 
-  void reset() {
+  void reset_states() {
     states.clear();
     states.resize(1);
   }

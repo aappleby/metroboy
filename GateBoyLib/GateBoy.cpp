@@ -5,55 +5,47 @@
 #include "CoreLib/Debug.h"
 #include "CoreLib/File.h"
 
+//------------------------------------------------------------------------------
+
+void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
+  rom_buf = _rom_buf;
+  rom_size = _rom_size;
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoy::reset() {
+  CHECK_P(rom_buf != nullptr);
+  CHECK_P(rom_size);
+
+  auto _rom_buf = rom_buf;
+  auto _rom_size = rom_size;
+
+  load_obj("gateboy_post_bootrom.raw.dump", *this);
+  check_sentinel();
+  check_div();
+
+  set_rom(_rom_buf, _rom_size);
+}
+
 //-----------------------------------------------------------------------------
 
-GateBoy::GateBoy() {
-  //memset(cart_rom, 0, 32768);
+void GateBoy::reset_bootrom() {
+
   memset(vid_ram,  0, 8192);
   memset(cart_ram, 0, 8192);
   memset(ext_ram,  0, 8192);
   memset(oam_ram,  0, 256);
   memset(zero_ram, 0, 128);
-
   memset(framebuffer, 4, 160*144);
 
-  top.cpu_bus.BUS_CPU_A00.lock(0);
-  top.cpu_bus.BUS_CPU_A01.lock(0);
-  top.cpu_bus.BUS_CPU_A02.lock(0);
-  top.cpu_bus.BUS_CPU_A03.lock(0);
-  top.cpu_bus.BUS_CPU_A04.lock(0);
-  top.cpu_bus.BUS_CPU_A05.lock(0);
-  top.cpu_bus.BUS_CPU_A06.lock(0);
-  top.cpu_bus.BUS_CPU_A07.lock(0);
-  top.cpu_bus.BUS_CPU_A08.lock(0);
-  top.cpu_bus.BUS_CPU_A09.lock(0);
-  top.cpu_bus.BUS_CPU_A10.lock(0);
-  top.cpu_bus.BUS_CPU_A11.lock(0);
-  top.cpu_bus.BUS_CPU_A12.lock(0);
-  top.cpu_bus.BUS_CPU_A13.lock(0);
-  top.cpu_bus.BUS_CPU_A14.lock(0);
-  top.cpu_bus.BUS_CPU_A15.lock(0);
+  top.cpu_bus.reset_bootrom();
+  top.int_reg.reset_bootrom();
 
-  top.cpu_bus.PIN_CPU_RDp.lock(!bus_req.write);
-  top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
-  top.cpu_bus.PIN_CPU_6.lock(0);
-  top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(1);
-  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
+  //----------------------------------------
 
-  top.int_reg.PIN_CPU_ACK_VBLANK.lock(0);
-  top.int_reg.PIN_CPU_ACK_STAT  .lock(0);
-  top.int_reg.PIN_CPU_ACK_TIMER .lock(0);
-  top.int_reg.PIN_CPU_ACK_SERIAL.lock(0);
-  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(0);
-
-  cpu.reset(0x0000);
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::reset_to_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
-  rom_buf = _rom_buf;
-  rom_size = _rom_size;
+  CHECK_P(rom_buf != nullptr);
+  CHECK_P(rom_size);
 
   // In reset
   sys_rst = 1;
@@ -84,17 +76,6 @@ void GateBoy::reset_to_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
   cpu.reset(0x0000);
   sys_cpuready = 1;
   sys_cpu_en = true;
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoy::reset_post_bootrom(uint8_t* _rom_buf, size_t _rom_size) {
-  load_obj("gateboy_post_bootrom.raw.dump", *this);
-  check_sentinel();
-  check_div();
-
-  rom_buf = _rom_buf;
-  rom_size = _rom_size;
 }
 
 //------------------------------------------------------------------------------

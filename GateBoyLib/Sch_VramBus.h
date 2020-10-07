@@ -8,6 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct VramBus {
+  void reset() {}
+  void reset_bootrom() {}
   void tock(SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
@@ -70,11 +72,11 @@ struct VramBus {
 
   /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p; // def holds inverted pix, also holds tile index during fetch
   /*p32.POZO*/ DFF11 POZO_TILE_DB1p;
-  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p; 
-  /*p32.POXA*/ DFF11 POXA_TILE_DB3p; 
-  /*p32.PULO*/ DFF11 PULO_TILE_DB4p; 
-  /*p32.POJU*/ DFF11 POJU_TILE_DB5p; 
-  /*p32.POWY*/ DFF11 POWY_TILE_DB6p; 
+  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p;
+  /*p32.POXA*/ DFF11 POXA_TILE_DB3p;
+  /*p32.PULO*/ DFF11 PULO_TILE_DB4p;
+  /*p32.POJU*/ DFF11 POJU_TILE_DB5p;
+  /*p32.POWY*/ DFF11 POWY_TILE_DB6p;
   /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p;
 
   /*p33.PEFO*/ DFF8 PEFO_SPRITE_DB0n;

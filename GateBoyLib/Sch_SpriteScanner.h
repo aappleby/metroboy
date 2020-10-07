@@ -9,7 +9,8 @@ struct OamBus;
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-
+  void reset() {}
+  void reset_bootrom() {}
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;

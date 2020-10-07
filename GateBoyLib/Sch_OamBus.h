@@ -9,9 +9,11 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct OamBus {
+  void reset() {}
+  void reset_bootrom() {}
   void dump(Dumper& d) const;
   void tock(SchematicTop& top);
-  
+
   //----------------------------------------
 
   uint8_t get_oam_pin_addr() const {
@@ -100,10 +102,10 @@ struct OamBus {
   /*p29.YZAB*/ DFF8 YZAB_OAM_DA7p; // sprite y bit 7, sprite tile index bit 7
 
   // oam byte 1, byte 3
-  /*p31.YLOR*/ DFF8 YLOR_OAM_DB0p; // sprite x bit 0, 
-  /*p31.ZYTY*/ DFF8 ZYTY_OAM_DB1p; // sprite x bit 1, 
-  /*p31.ZYVE*/ DFF8 ZYVE_OAM_DB2p; // sprite x bit 2, 
-  /*p31.ZEZY*/ DFF8 ZEZY_OAM_DB3p; // sprite x bit 3, 
+  /*p31.YLOR*/ DFF8 YLOR_OAM_DB0p; // sprite x bit 0,
+  /*p31.ZYTY*/ DFF8 ZYTY_OAM_DB1p; // sprite x bit 1,
+  /*p31.ZYVE*/ DFF8 ZYVE_OAM_DB2p; // sprite x bit 2,
+  /*p31.ZEZY*/ DFF8 ZEZY_OAM_DB3p; // sprite x bit 3,
   /*p31.GOMO*/ DFF8 GOMO_OAM_DB4p; // sprite x bit 4, sprite palette
   /*p31.BAXO*/ DFF8 BAXO_OAM_DB5p; // sprite x bit 5, sprite x flip
   /*p31.YZOS*/ DFF8 YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip

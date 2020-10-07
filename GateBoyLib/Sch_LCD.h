@@ -9,6 +9,8 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct LcdRegisters {
+  void reset() {}
+  void reset_bootrom() {}
   void dump(Dumper& d, const SchematicTop& top) const;
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top, CpuBus& cpu_bus);

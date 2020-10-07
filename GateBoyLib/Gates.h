@@ -198,6 +198,10 @@ struct RegBase {
   RegBase& operator=(const RegBase&) = delete;
   RegBase(RegState s) : state(s), delta(DELTA_NONE) {}
 
+  void reset(int s) {
+    state = RegState(s);
+  }
+
   static bool sim_running;
   static bool tick_running;
   static bool tock_running;
@@ -245,10 +249,6 @@ struct RegBase {
   inline void unlock() {
     //CHECK_P(delta == DELTA_LOCK);
     delta = DELTA_NONE;
-  }
-
-  void force_state(int s) {
-    state = RegState(s);
   }
 
   inline void preset(RegDelta d) {
@@ -351,7 +351,7 @@ struct DFF : private RegBase {
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::force_state;
+  using RegBase::reset;
 
   inline void tock(wire CLKp, bool RSTn, bool D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
@@ -490,7 +490,7 @@ struct DFF17 : private RegBase {
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::force_state;
+  using RegBase::reset;
 
   wire q16() const { return !as_wire(); }
   wire q17() const { return  as_wire(); }
@@ -610,7 +610,7 @@ struct DFF22 : private RegBase {
   using RegBase::c;
   using RegBase::qp;
   using RegBase::qn;
-  using RegBase::force_state;
+  using RegBase::reset;
 
   inline wire q15() const { return !as_wire(); }
   inline wire q16() const { return  as_wire(); }

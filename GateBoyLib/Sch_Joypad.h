@@ -10,6 +10,8 @@ struct CpuBus;
 
 struct Joypad {
 
+  void reset() {}
+  void reset_bootrom() {}
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d) const;

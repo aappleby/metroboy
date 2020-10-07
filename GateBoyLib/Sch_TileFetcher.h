@@ -11,6 +11,8 @@ struct OamBus;
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
+  void reset() {}
+  void reset_bootrom() {}
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;

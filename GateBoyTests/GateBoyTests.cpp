@@ -657,7 +657,8 @@ int GateBoyTests::run_microtest(const char* filename) {
   }
 
   GateBoy gb;
-  gb.reset_post_bootrom(rom.data(), rom.size());
+  gb.set_rom(rom.data(), rom.size());
+  gb.reset();
   gb.phase_total = 0;
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
@@ -702,10 +703,11 @@ int GateBoyTests::test_init() {
   TEST_START("Init");
 
   GateBoy gb;
-  gb.reset_to_bootrom(nullptr, 0);
+  gb.set_rom(nullptr, 0);
+  gb.reset_bootrom();
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
-  LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
+  LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
   EXPECT_EQ(0xd76ab2ccbdd36cd4, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
@@ -728,26 +730,26 @@ int GateBoyTests::test_init() {
 
   // we don't really care much about the pre-bootrom reg values
 #if 0
-  EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset value");   // CF after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset value");   // 00 after bootrom
-  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset value");   // 7E after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset value");  // AB after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset value"); // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset value");  // 00 after bootrom
-  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset value");  // F8 after bootrom
-  EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset value");   // E1 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset value"); // 91 after bootrom
+  EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
+  EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
   //EXPECT_EQ(0x84, gb.dbg_read(ADDR_STAT), "Bad STAT reset value"); // 85 after bootrom unstable latch problem
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset value");  // 00 after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset value");  // FF after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset value");  // FC after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset value"); // 9F after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset value"); // FF after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
 
   // Button signals should be pulled high
   EXPECT_EQ('^', gb.top.joypad.PIN_JOY_P10.c());
@@ -771,7 +773,8 @@ int GateBoyTests::test_clk() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_post_bootrom(nullptr, 0);
+  gb.set_rom(nullptr, 0);
+  gb.reset();
   gb.sys_cpu_en = false;
 
   gb.run(32);
@@ -844,7 +847,8 @@ int GateBoyTests::test_ext_bus() {
     blob rom = as.link();
 
     GateBoy gb;
-    gb.reset_post_bootrom(rom.data(), rom.size());
+    gb.set_rom(rom.data(), rom.size());
+    gb.reset();
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -967,7 +971,8 @@ int GateBoyTests::test_ext_bus() {
     blob rom = as.link();
 
     GateBoy gb;
-    gb.reset_post_bootrom(rom.data(), rom.size());
+    gb.set_rom(rom.data(), rom.size());
+    gb.reset();
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1095,7 +1100,8 @@ int GateBoyTests::test_ext_bus() {
     blob rom = as.link();
 
     GateBoy gb;
-    gb.reset_post_bootrom(rom.data(), rom.size());
+    gb.set_rom(rom.data(), rom.size());
+    gb.reset();
 
     // Run through the first loop iteration.
     gb.run(120);
@@ -1272,7 +1278,8 @@ int GateBoyTests::test_interrupts() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_post_bootrom(nullptr, 0);
+  gb.set_rom(nullptr, 0);
+  gb.reset();
   gb.sys_cpu_en = 0;
 
   // hblank no stat int
@@ -1302,7 +1309,8 @@ int GateBoyTests::test_bootrom() {
   TEST_START();
 
   GateBoy gb;
-  gb.reset_to_bootrom(nullptr, 0);
+  gb.set_rom(nullptr, 0);
+  gb.reset_bootrom();
 
   for (int i = 0; i < 16; i++) {
     uint8_t byte = gb.dbg_read(i);
@@ -1327,7 +1335,7 @@ int GateBoyTests::test_timer() {
   // TAC 111 - 512 phases per TIMA tick
 
 #if 0
-  LOG("Testing TIMA tick rate and reset to TMA... ");
+  LOG("Testing TIMA tick rate and reset_states to TMA... ");
   {
     GateBoy gb;
     gb.reset_to_bootrom();
@@ -1420,7 +1428,7 @@ int GateBoyTests::test_timer() {
   gb.reset();
 
   // passes, but slow :/
-  LOG("Testing div reset + rollover, this takes a minute...");
+  LOG("Testing div reset_states + rollover, this takes a minute...");
   gb.dbg_write(ADDR_DIV, 0);
   for (int i = 1; i < 32768; i++) {
     int div_a = gb.dbg_read(ADDR_DIV);
@@ -1492,7 +1500,8 @@ int GateBoyTests::test_dma(uint16_t src) {
 
   blob dummy_rom(32768);
   GateBoy gb;
-  gb.reset_post_bootrom(dummy_rom.data(), dummy_rom.size());
+  gb.set_rom(dummy_rom.data(), dummy_rom.size());
+  gb.reset();
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
 
@@ -1599,7 +1608,8 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 
   GateBoy gb;
   blob dummy_rom(32768);
-  gb.reset_post_bootrom(dummy_rom.data(), dummy_rom.size());
+  gb.set_rom(dummy_rom.data(), dummy_rom.size());
+  gb.reset();
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
 
@@ -1641,7 +1651,8 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   GateBoy gb;
-  gb.reset_post_bootrom(nullptr, 0);
+  gb.set_rom(nullptr, 0);
+  gb.reset();
   gb.sys_cpu_en = 0;
 
   for (int i = 0; i < 256; i++) {
@@ -1680,7 +1691,8 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gateboy.reset_to_bootrom(nullptr, 0);
+    gateboy.set_rom(nullptr, 0);
+    gateboy.reset_bootrom();
     gateboy.dbg_req.addr = 0x0150;
     gateboy.dbg_req.data = 0;
     gateboy.dbg_req.read = 1;

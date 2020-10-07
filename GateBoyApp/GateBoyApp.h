@@ -52,7 +52,7 @@ private:
 
   const uint8_t* keyboard_state = nullptr;
 
-  StateManager2<GateBoy> gb;
+  StateStack<GateBoy> gb;
 
   GridPainter grid_painter;
   TextPainter text_painter;

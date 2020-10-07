@@ -9,7 +9,265 @@ struct SchematicTop;
 
 struct SpriteStore {
   void reset() {}
-  void reset_bootrom() {}
+
+  void reset_bootrom() {
+    DEZY_STORE_ENn.reset(REG_D0C0);
+    BESE_SPRITE_COUNT0.reset(REG_D0C0);
+    CUXY_SPRITE_COUNT1.reset(REG_D0C0);
+    BEGO_SPRITE_COUNT2.reset(REG_D0C0);
+    DYBE_SPRITE_COUNT3.reset(REG_D0C0);
+
+    YDUG_STORE0_MATCHn.reset(TRI_D0NP);
+    DYDU_STORE1_MATCHn.reset(TRI_D0NP);
+    DEGO_STORE2_MATCHn.reset(TRI_D0NP);
+    YLOZ_STORE3_MATCHn.reset(TRI_D0NP);
+    XAGE_STORE4_MATCHn.reset(TRI_D0NP);
+    EGOM_STORE5_MATCHn.reset(TRI_D0NP);
+    YBEZ_STORE6_MATCHn.reset(TRI_D0NP);
+    DYKA_STORE7_MATCHn.reset(TRI_D0NP);
+    EFYL_STORE8_MATCHn.reset(TRI_D0NP);
+    YGEM_STORE9_MATCHn.reset(TRI_D0NP);
+
+    EBOJ_STORE0_RSTp.reset(REG_D0C0);
+    CEDY_STORE1_RSTp.reset(REG_D0C0);
+    EGAV_STORE2_RSTp.reset(REG_D0C0);
+    GOTA_STORE3_RSTp.reset(REG_D0C0);
+    XUDY_STORE4_RSTp.reset(REG_D0C0);
+    WAFY_STORE5_RSTp.reset(REG_D0C0);
+    WOMY_STORE6_RSTp.reset(REG_D0C0);
+    WAPO_STORE7_RSTp.reset(REG_D0C0);
+    EXUQ_STORE8_RSTp.reset(REG_D0C0);
+    FONO_STORE9_RSTp.reset(REG_D0C0);
+
+    YGUS_STORE0_I0n.reset(REG_D0C0);
+    YSOK_STORE0_I1n.reset(REG_D0C0);
+    YZEP_STORE0_I2n.reset(REG_D0C0);
+    WYTE_STORE0_I3n.reset(REG_D0C0);
+    ZONY_STORE0_I4n.reset(REG_D0C0);
+    YWAK_STORE0_I5n.reset(REG_D0C0);
+
+    GYHO_STORE0_L0n.reset(REG_D0C0);
+    CUFO_STORE0_L1n.reset(REG_D0C0);
+    BOZU_STORE0_L2n.reset(REG_D0C0);
+    FYHY_STORE0_L3n.reset(REG_D0C0);
+
+    XEPE_STORE0_X0p.reset(REG_D0C0);
+    YLAH_STORE0_X1p.reset(REG_D0C0);
+    ZOLA_STORE0_X2p.reset(REG_D0C0);
+    ZULU_STORE0_X3p.reset(REG_D0C0);
+    WELO_STORE0_X4p.reset(REG_D0C0);
+    XUNY_STORE0_X5p.reset(REG_D0C0);
+    WOTE_STORE0_X6p.reset(REG_D0C0);
+    XAKO_STORE0_X7p.reset(REG_D0C0);
+
+
+
+    CADU_STORE1_I0n.reset(REG_D0C0);
+    CEBO_STORE1_I1n.reset(REG_D0C0);
+    CUFA_STORE1_I2n.reset(REG_D0C0);
+    COMA_STORE1_I3n.reset(REG_D0C0);
+    CUZA_STORE1_I4n.reset(REG_D0C0);
+    CAJY_STORE1_I5n.reset(REG_D0C0);
+
+    AMES_STORE1_L0n.reset(REG_D0C0);
+    AROF_STORE1_L1n.reset(REG_D0C0);
+    ABOP_STORE1_L2n.reset(REG_D0C0);
+    ABUG_STORE1_L3n.reset(REG_D0C0);
+
+    DANY_STORE1_X0p.reset(REG_D0C0);
+    DUKO_STORE1_X1p.reset(REG_D0C0);
+    DESU_STORE1_X2p.reset(REG_D0C0);
+    DAZO_STORE1_X3p.reset(REG_D0C0);
+    DAKE_STORE1_X4p.reset(REG_D0C0);
+    CESO_STORE1_X5p.reset(REG_D0C0);
+    DYFU_STORE1_X6p.reset(REG_D0C0);
+    CUSY_STORE1_X7p.reset(REG_D0C0);
+
+
+
+    BUHE_STORE2_I0n.reset(REG_D0C0);
+    BYHU_STORE2_I1n.reset(REG_D0C0);
+    BECA_STORE2_I2n.reset(REG_D0C0);
+    BULU_STORE2_I3n.reset(REG_D0C0);
+    BUNA_STORE2_I4n.reset(REG_D0C0);
+    BOXA_STORE2_I5n.reset(REG_D0C0);
+
+    YLOV_STORE2_L0n.reset(REG_D0C0);
+    XOSY_STORE2_L1n.reset(REG_D0C0);
+    XAZY_STORE2_L2n.reset(REG_D0C0);
+    YKUK_STORE2_L3n.reset(REG_D0C0);
+
+    FOKA_STORE2_X0p.reset(REG_D0C0);
+    FYTY_STORE2_X1p.reset(REG_D0C0);
+    FUBY_STORE2_X2p.reset(REG_D0C0);
+    GOXU_STORE2_X3p.reset(REG_D0C0);
+    DUHY_STORE2_X4p.reset(REG_D0C0);
+    EJUF_STORE2_X5p.reset(REG_D0C0);
+    ENOR_STORE2_X6p.reset(REG_D0C0);
+    DEPY_STORE2_X7p.reset(REG_D0C0);
+
+
+
+    DEVY_STORE3_I0n.reset(REG_D0C0);
+    DESE_STORE3_I1n.reset(REG_D0C0);
+    DUNY_STORE3_I2n.reset(REG_D0C0);
+    DUHA_STORE3_I3n.reset(REG_D0C0);
+    DEBA_STORE3_I4n.reset(REG_D0C0);
+    DAFU_STORE3_I5n.reset(REG_D0C0);
+
+    ZURO_STORE3_L0n.reset(REG_D0C0);
+    ZYLU_STORE3_L1n.reset(REG_D0C0);
+    ZENE_STORE3_L2n.reset(REG_D0C0);
+    ZURY_STORE3_L3n.reset(REG_D0C0);
+
+    XOLY_STORE3_X0p.reset(REG_D0C0);
+    XYBA_STORE3_X1p.reset(REG_D0C0);
+    XABE_STORE3_X2p.reset(REG_D0C0);
+    XEKA_STORE3_X3p.reset(REG_D0C0);
+    XOMY_STORE3_X4p.reset(REG_D0C0);
+    WUHA_STORE3_X5p.reset(REG_D0C0);
+    WYNA_STORE3_X6p.reset(REG_D0C0);
+    WECO_STORE3_X7p.reset(REG_D0C0);
+
+
+
+    XAVE_STORE4_I0n.reset(REG_D0C0);
+    XEFE_STORE4_I1n.reset(REG_D0C0);
+    WANU_STORE4_I2n.reset(REG_D0C0);
+    XABO_STORE4_I3n.reset(REG_D0C0);
+    XEGE_STORE4_I4n.reset(REG_D0C0);
+    XYNU_STORE4_I5n.reset(REG_D0C0);
+
+    CAPO_STORE4_L0n.reset(REG_D0C0);
+    CAJU_STORE4_L1n.reset(REG_D0C0);
+    CONO_STORE4_L2n.reset(REG_D0C0);
+    CUMU_STORE4_L3n.reset(REG_D0C0);
+
+    WEDU_STORE4_X0p.reset(REG_D0C0);
+    YGAJ_STORE4_X1p.reset(REG_D0C0);
+    ZYJO_STORE4_X2p.reset(REG_D0C0);
+    XURY_STORE4_X3p.reset(REG_D0C0);
+    YBED_STORE4_X4p.reset(REG_D0C0);
+    ZALA_STORE4_X5p.reset(REG_D0C0);
+    WYDE_STORE4_X6p.reset(REG_D0C0);
+    XEPA_STORE4_X7p.reset(REG_D0C0);
+
+
+
+    EKOP_STORE5_I0n.reset(REG_D0C0);
+    ETYM_STORE5_I1n.reset(REG_D0C0);
+    GORU_STORE5_I2n.reset(REG_D0C0);
+    EBEX_STORE5_I3n.reset(REG_D0C0);
+    ETAV_STORE5_I4n.reset(REG_D0C0);
+    EKAP_STORE5_I5n.reset(REG_D0C0);
+
+    ACEP_STORE5_L0n.reset(REG_D0C0);
+    ABEG_STORE5_L1n.reset(REG_D0C0);
+    ABUX_STORE5_L2n.reset(REG_D0C0);
+    ANED_STORE5_L3n.reset(REG_D0C0);
+
+    FUSA_STORE5_X0p.reset(REG_D0C0);
+    FAXA_STORE5_X1p.reset(REG_D0C0);
+    FOZY_STORE5_X2p.reset(REG_D0C0);
+    FESY_STORE5_X3p.reset(REG_D0C0);
+    CYWE_STORE5_X4p.reset(REG_D0C0);
+    DYBY_STORE5_X5p.reset(REG_D0C0);
+    DURY_STORE5_X6p.reset(REG_D0C0);
+    CUVY_STORE5_X7p.reset(REG_D0C0);
+
+
+
+    GABO_STORE6_I0n.reset(REG_D0C0);
+    GACY_STORE6_I1n.reset(REG_D0C0);
+    FOGO_STORE6_I2n.reset(REG_D0C0);
+    GOHU_STORE6_I3n.reset(REG_D0C0);
+    FOXY_STORE6_I4n.reset(REG_D0C0);
+    GECU_STORE6_I5n.reset(REG_D0C0);
+
+    ZUMY_STORE6_L0n.reset(REG_D0C0);
+    ZAFU_STORE6_L1n.reset(REG_D0C0);
+    ZEXO_STORE6_L2n.reset(REG_D0C0);
+    ZUBE_STORE6_L3n.reset(REG_D0C0);
+
+    YCOL_STORE6_X0p.reset(REG_D0C0);
+    YRAC_STORE6_X1p.reset(REG_D0C0);
+    YMEM_STORE6_X2p.reset(REG_D0C0);
+    YVAG_STORE6_X3p.reset(REG_D0C0);
+    ZOLY_STORE6_X4p.reset(REG_D0C0);
+    ZOGO_STORE6_X5p.reset(REG_D0C0);
+    ZECU_STORE6_X6p.reset(REG_D0C0);
+    ZESA_STORE6_X7p.reset(REG_D0C0);
+
+
+
+    GULE_STORE7_I0n.reset(REG_D0C0);
+    GYNO_STORE7_I1n.reset(REG_D0C0);
+    FEFA_STORE7_I2n.reset(REG_D0C0);
+    FYSU_STORE7_I3n.reset(REG_D0C0);
+    GESY_STORE7_I4n.reset(REG_D0C0);
+    FUZO_STORE7_I5n.reset(REG_D0C0);
+
+    XYNA_STORE7_L0n.reset(REG_D0C0);
+    YGUM_STORE7_L1n.reset(REG_D0C0);
+    XAKU_STORE7_L2n.reset(REG_D0C0);
+    XYGO_STORE7_L3n.reset(REG_D0C0);
+
+    ERAZ_STORE7_X0p.reset(REG_D0C0);
+    EPUM_STORE7_X1p.reset(REG_D0C0);
+    EROL_STORE7_X2p.reset(REG_D0C0);
+    EHYN_STORE7_X3p.reset(REG_D0C0);
+    FAZU_STORE7_X4p.reset(REG_D0C0);
+    FAXE_STORE7_X5p.reset(REG_D0C0);
+    EXUK_STORE7_X6p.reset(REG_D0C0);
+    FEDE_STORE7_X7p.reset(REG_D0C0);
+
+
+
+    AXUV_STORE8_I0n.reset(REG_D0C0);
+    BADA_STORE8_I1n.reset(REG_D0C0);
+    APEV_STORE8_I2n.reset(REG_D0C0);
+    BADO_STORE8_I3n.reset(REG_D0C0);
+    BEXY_STORE8_I4n.reset(REG_D0C0);
+    BYHE_STORE8_I5n.reset(REG_D0C0);
+
+    AZAP_STORE8_L0n.reset(REG_D0C0);
+    AFYX_STORE8_L1n.reset(REG_D0C0);
+    AFUT_STORE8_L2n.reset(REG_D0C0);
+    AFYM_STORE8_L3n.reset(REG_D0C0);
+
+    EZUF_STORE8_X0p.reset(REG_D0C0);
+    ENAD_STORE8_X1p.reset(REG_D0C0);
+    EBOW_STORE8_X2p.reset(REG_D0C0);
+    FYCA_STORE8_X3p.reset(REG_D0C0);
+    GAVY_STORE8_X4p.reset(REG_D0C0);
+    GYPU_STORE8_X5p.reset(REG_D0C0);
+    GADY_STORE8_X6p.reset(REG_D0C0);
+    GAZA_STORE8_X7p.reset(REG_D0C0);
+
+
+
+    YBER_STORE9_I0n.reset(REG_D0C0);
+    YZOR_STORE9_I1n.reset(REG_D0C0);
+    XYFE_STORE9_I2n.reset(REG_D0C0);
+    XOTU_STORE9_I3n.reset(REG_D0C0);
+    XUTE_STORE9_I4n.reset(REG_D0C0);
+    XUFO_STORE9_I5n.reset(REG_D0C0);
+
+    CANA_STORE9_L0n.reset(REG_D0C0);
+    FOFO_STORE9_L1n.reset(REG_D0C0);
+    DYSY_STORE9_L2n.reset(REG_D0C0);
+    DEWU_STORE9_L3n.reset(REG_D0C0);
+
+    XUVY_STORE9_X0p.reset(REG_D0C0);
+    XERE_STORE9_X1p.reset(REG_D0C0);
+    XUZO_STORE9_X2p.reset(REG_D0C0);
+    XEXA_STORE9_X3p.reset(REG_D0C0);
+    YPOD_STORE9_X4p.reset(REG_D0C0);
+    YROP_STORE9_X5p.reset(REG_D0C0);
+    YNEP_STORE9_X6p.reset(REG_D0C0);
+    YZOF_STORE9_X7p.reset(REG_D0C0);
+  }
+
   void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
   void dump(Dumper& d) const;
@@ -33,33 +291,33 @@ private:
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
 
-  /*p29.DEZY*/ DFF17 DEZY_STORE_ENn;
-  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0;
-  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1;
-  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2;
-  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3;
+  /*p29.DEZY*/ DFF17 DEZY_STORE_ENn = ERR_XXXX;
+  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0 = ERR_XXXX;
+  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1 = ERR_XXXX;
+  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2 = ERR_XXXX;
+  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3 = ERR_XXXX;
 
-  /*p29.YDUG*/ Sig YDUG_STORE0_MATCHn;
-  /*p29.DYDU*/ Sig DYDU_STORE1_MATCHn;
-  /*p29.DEGO*/ Sig DEGO_STORE2_MATCHn;
-  /*p29.YLOZ*/ Sig YLOZ_STORE3_MATCHn;
-  /*p29.XAGE*/ Sig XAGE_STORE4_MATCHn;
-  /*p29.EGOM*/ Sig EGOM_STORE5_MATCHn;
-  /*p29.YBEZ*/ Sig YBEZ_STORE6_MATCHn;
-  /*p29.DYKA*/ Sig DYKA_STORE7_MATCHn;
-  /*p29.EFYL*/ Sig EFYL_STORE8_MATCHn;
-  /*p29.YGEM*/ Sig YGEM_STORE9_MATCHn;
+  /*p29.YDUG*/ Sig YDUG_STORE0_MATCHn = ERR_XXXX;
+  /*p29.DYDU*/ Sig DYDU_STORE1_MATCHn = ERR_XXXX;
+  /*p29.DEGO*/ Sig DEGO_STORE2_MATCHn = ERR_XXXX;
+  /*p29.YLOZ*/ Sig YLOZ_STORE3_MATCHn = ERR_XXXX;
+  /*p29.XAGE*/ Sig XAGE_STORE4_MATCHn = ERR_XXXX;
+  /*p29.EGOM*/ Sig EGOM_STORE5_MATCHn = ERR_XXXX;
+  /*p29.YBEZ*/ Sig YBEZ_STORE6_MATCHn = ERR_XXXX;
+  /*p29.DYKA*/ Sig DYKA_STORE7_MATCHn = ERR_XXXX;
+  /*p29.EFYL*/ Sig EFYL_STORE8_MATCHn = ERR_XXXX;
+  /*p29.YGEM*/ Sig YGEM_STORE9_MATCHn = ERR_XXXX;
 
-  /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp;
-  /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp;
-  /*p29.EGAV*/ DFF17 EGAV_STORE2_RSTp;
-  /*p29.GOTA*/ DFF17 GOTA_STORE3_RSTp;
-  /*p29.XUDY*/ DFF17 XUDY_STORE4_RSTp;
-  /*p29.WAFY*/ DFF17 WAFY_STORE5_RSTp;
-  /*p29.WOMY*/ DFF17 WOMY_STORE6_RSTp;
-  /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp;
-  /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp;
-  /*p29.FONO*/ DFF17 FONO_STORE9_RSTp;
+  /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp = ERR_XXXX;
+  /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp = ERR_XXXX;
+  /*p29.EGAV*/ DFF17 EGAV_STORE2_RSTp = ERR_XXXX;
+  /*p29.GOTA*/ DFF17 GOTA_STORE3_RSTp = ERR_XXXX;
+  /*p29.XUDY*/ DFF17 XUDY_STORE4_RSTp = ERR_XXXX;
+  /*p29.WAFY*/ DFF17 WAFY_STORE5_RSTp = ERR_XXXX;
+  /*p29.WOMY*/ DFF17 WOMY_STORE6_RSTp = ERR_XXXX;
+  /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp = ERR_XXXX;
+  /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp = ERR_XXXX;
+  /*p29.FONO*/ DFF17 FONO_STORE9_RSTp = ERR_XXXX;
 
   //----------------------------------------
   // All 10 of the sprite stores

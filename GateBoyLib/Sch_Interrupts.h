@@ -10,6 +10,29 @@ struct CpuBus;
 
 struct InterruptRegisters {
   void reset_cart() {
+    LOPE_FF0F_D0p.reset(REG_D1C1);
+    UBUL_FF0F_D3p.reset(REG_D0C0);
+    ULAK_FF0F_D4p.reset(REG_D0C0);
+    LALU_FF0F_D1p.reset(REG_D0C0);
+    NYBO_FF0F_D2p.reset(REG_D0C0);
+
+    MATY_FF0F_L0p.reset(TRI_D0NP);
+    NEJY_FF0F_L3p.reset(TRI_D0NP);
+    NUTY_FF0F_L4p.reset(TRI_D0NP);
+    MOPO_FF0F_L1p.reset(TRI_D0NP);
+    PAVY_FF0F_L2p.reset(TRI_D0NP);
+
+    PIN_CPU_INT_VBLANK.reset(TRI_D1NP);
+    PIN_CPU_INT_STAT  .reset(TRI_D0NP);
+    PIN_CPU_INT_TIMER .reset(TRI_D0NP);
+    PIN_CPU_INT_SERIAL.reset(TRI_D0NP);
+    PIN_CPU_INT_JOYPAD.reset(TRI_D0NP);
+
+    PIN_CPU_ACK_VBLANK.reset(TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_STAT  .reset(TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_TIMER .reset(TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_SERIAL.reset(TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_JOYPAD.reset(TRI_D0NP | (DELTA_LOCK << 4));
   }
 
   void reset_bootrom() {
@@ -25,7 +48,6 @@ struct InterruptRegisters {
     MOPO_FF0F_L1p.reset(TRI_D0NP);
     PAVY_FF0F_L2p.reset(TRI_D0NP);
 
-    // Interrupts
     PIN_CPU_INT_VBLANK.reset(TRI_HZNP);
     PIN_CPU_INT_STAT  .reset(TRI_HZNP);
     PIN_CPU_INT_TIMER .reset(TRI_HZNP);

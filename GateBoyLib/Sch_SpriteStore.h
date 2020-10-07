@@ -11,6 +11,20 @@ struct SpriteStore {
   void reset() {}
 
   void reset_bootrom() {
+    FEPO_STORE_MATCHp.reset(TRI_HZNP);
+
+    SPR_TRI_I0p.reset(TRI_HZPU);
+    SPR_TRI_I1p.reset(TRI_HZPU);
+    SPR_TRI_I2p.reset(TRI_HZPU);
+    SPR_TRI_I3p.reset(TRI_HZPU);
+    SPR_TRI_I4p.reset(TRI_HZPU);
+    SPR_TRI_I5p.reset(TRI_HZPU);
+
+    SPR_TRI_L0.reset(TRI_HZPU);
+    SPR_TRI_L1.reset(TRI_HZPU);
+    SPR_TRI_L2.reset(TRI_HZPU);
+    SPR_TRI_L3.reset(TRI_HZPU);
+
     DEZY_STORE_ENn.reset(REG_D0C0);
     BESE_SPRITE_COUNT0.reset(REG_D0C0);
     CUXY_SPRITE_COUNT1.reset(REG_D0C0);
@@ -272,19 +286,19 @@ struct SpriteStore {
   void tock(const SchematicTop& top);
   void dump(Dumper& d) const;
 
-  /*p29.FEPO*/ Sig FEPO_STORE_MATCHp; // -> pix pipe, sprite fetcher
+  /*p29.FEPO*/ Sig FEPO_STORE_MATCHp = ERR_XXXX; // -> pix pipe, sprite fetcher
 
-  Bus SPR_TRI_I0p = TRI_HZPU; // -> oam bus
-  Bus SPR_TRI_I1p = TRI_HZPU;
-  Bus SPR_TRI_I2p = TRI_HZPU;
-  Bus SPR_TRI_I3p = TRI_HZPU;
-  Bus SPR_TRI_I4p = TRI_HZPU;
-  Bus SPR_TRI_I5p = TRI_HZPU;
+  Bus SPR_TRI_I0p = ERR_XXXX; // -> oam bus
+  Bus SPR_TRI_I1p = ERR_XXXX;
+  Bus SPR_TRI_I2p = ERR_XXXX;
+  Bus SPR_TRI_I3p = ERR_XXXX;
+  Bus SPR_TRI_I4p = ERR_XXXX;
+  Bus SPR_TRI_I5p = ERR_XXXX;
 
-  Bus SPR_TRI_L0 = TRI_HZPU; // -> vram bus
-  Bus SPR_TRI_L1 = TRI_HZPU;
-  Bus SPR_TRI_L2 = TRI_HZPU;
-  Bus SPR_TRI_L3 = TRI_HZPU;
+  Bus SPR_TRI_L0 = ERR_XXXX; // -> vram bus
+  Bus SPR_TRI_L1 = ERR_XXXX;
+  Bus SPR_TRI_L2 = ERR_XXXX;
+  Bus SPR_TRI_L3 = ERR_XXXX;
 
 private:
 

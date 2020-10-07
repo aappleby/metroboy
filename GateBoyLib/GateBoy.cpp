@@ -37,38 +37,17 @@ void GateBoy::reset_cart() {
 
   cpu_data_latch = 1;
   imask_latch = 0;
-  xxx_imask_gh = 0;
-  xxx_intf_gh = 0;
-  xxx_imask_cd = 0;
-  xxx_intf_cd = 0;
 
   int_vblank = true;
   int_vblank_halt = true;
-  xxx_int_vblank_delay = false;
-  xxx_int_vblank_halt_delay = false;
   int_stat = false;
   int_stat_halt = false;
-  xxx_int_stat_delay = false;
-  xxx_int_stat_halt_delay = false;
   int_timer = false;
   int_timer_halt = false;
-  xxx_int_timer_delay = false;
-  xxx_int_timer_halt_delay = false;
   int_serial = false;
   int_serial_halt = false;
-  xxx_int_serial_delay = false;
-  xxx_int_serial_halt_delay = false;
   int_joypad = false;
   int_joypad_halt = false;
-  xxx_int_joypad_delay = false;
-  xxx_int_joypad_halt_delay = false;
-  xxx_imask_gh_delay = false;
-  xxx_intf_gh_delay = false;
-  placeholder4 = 0;
-  placeholder5 = 0;
-  placeholder6 = 0;
-  placeholder7 = 0;
-
 
   top.reset_cart();
 
@@ -78,6 +57,7 @@ void GateBoy::reset_cart() {
   pass_total = 0x0ba17e04;
   pass_hash = 0xe4757409f21a2024;
   total_hash = 0x70060dc202c8b770;
+
   sys_rst = 0;
   sys_t1 = 0;
   sys_t2 = 0;
@@ -107,53 +87,30 @@ void GateBoy::reset_boot() {
   sentinel1 = 0xDEADBEEFBAADF00D;
 
   cpu.reset_boot();
+
   cpu_req = {0};
   dbg_req = {0};
   bus_req = {0};
   cpu_data_latch = 0;
   imask_latch = 0;
 
-  xxx_imask_gh = 0;
-  xxx_intf_gh = 0;
-
-  xxx_imask_cd = 0;
-  xxx_intf_cd = 0;
-
   int_vblank = 0;
   int_vblank_halt = 0;
-  xxx_int_vblank_delay = 0;
-  xxx_int_vblank_halt_delay = 0;
 
   int_stat = 0;
   int_stat_halt = 0;
-  xxx_int_stat_delay = 0;
-  xxx_int_stat_halt_delay = 0;
 
   int_timer = 0;
   int_timer_halt = 0;
-  xxx_int_timer_delay = 0;
-  xxx_int_timer_halt_delay = 0;
 
   int_serial = 0;
   int_serial_halt = 0;
-  xxx_int_serial_delay = 0;
-  xxx_int_serial_halt_delay = 0;
 
   int_joypad = 0;
   int_joypad_halt = 0;
-  xxx_int_joypad_delay = 0;
-  xxx_int_joypad_halt_delay = 0;
-
-  xxx_imask_gh_delay = 0;
-  xxx_intf_gh_delay = 0;
-  xxx_imask_cd_delay = 0;
-  xxx_intf_cd_delay = 0;
-  placeholder4 = 0;
-  placeholder5 = 0;
-  placeholder6 = 0;
-  placeholder7 = 0;
 
   top.reset_boot();
+
   sim_stable = 0;
   phase_total = 0;
   pass_count = 0;

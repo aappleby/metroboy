@@ -55,9 +55,9 @@ void GateBoyApp::app_init() {
 
   // regenerate post-bootrom dump
 #if 1
+  gb->reset_boot();
   rom_buf = load_blob("roms/tetris.gb");
   gb->set_rom(rom_buf.data(), rom_buf.size());
-  gb->reset_boot();
   gb->run_reset_sequence();
 
   for (int i = 0; i < 8192; i++) {

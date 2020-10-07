@@ -99,45 +99,20 @@ struct GateBoy {
   uint8_t  cpu_data_latch = 0;
   uint8_t  imask_latch = 0;
 
-  uint8_t  xxx_imask_gh = 0;
-  uint8_t  xxx_intf_gh = 0;
-
-  uint8_t  xxx_imask_cd = 0;
-  uint8_t  xxx_intf_cd = 0;
-
   bool int_vblank = 0;
   bool int_vblank_halt = 0;
-  bool xxx_int_vblank_delay = 0;
-  bool xxx_int_vblank_halt_delay = 0;
 
   bool int_stat = 0;
   bool int_stat_halt = 0;
-  bool xxx_int_stat_delay = 0;
-  bool xxx_int_stat_halt_delay = 0;
 
   bool int_timer = 0;
   bool int_timer_halt = 0;
-  bool xxx_int_timer_delay = 0;
-  bool xxx_int_timer_halt_delay = 0;
 
   bool int_serial = 0;
   bool int_serial_halt = 0;
-  bool xxx_int_serial_delay = 0;
-  bool xxx_int_serial_halt_delay = 0;
 
   bool int_joypad = 0;
   bool int_joypad_halt = 0;
-  bool xxx_int_joypad_delay = 0;
-  bool xxx_int_joypad_halt_delay = 0;
-
-  uint8_t xxx_imask_gh_delay = 0;
-  uint8_t xxx_intf_gh_delay = 0;
-  uint8_t xxx_imask_cd_delay = 0;
-  uint8_t xxx_intf_cd_delay = 0;
-  uint8_t placeholder4 = 0;
-  uint8_t placeholder5 = 0;
-  uint8_t placeholder6 = 0;
-  uint8_t placeholder7 = 0;
 
   // SOC
 

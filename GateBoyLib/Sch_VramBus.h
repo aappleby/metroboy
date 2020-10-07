@@ -9,6 +9,89 @@ struct SchematicTop;
 
 struct VramBus {
   void reset_cart() {
+    LEGU_TILE_DA0n.reset(REG_D1C0);
+    NUDU_TILE_DA1n.reset(REG_D1C0);
+    MUKU_TILE_DA2n.reset(REG_D1C0);
+    LUZO_TILE_DA3n.reset(REG_D1C0);
+    MEGU_TILE_DA4n.reset(REG_D1C0);
+    MYJY_TILE_DA5n.reset(REG_D1C0);
+    NASA_TILE_DA6n.reset(REG_D1C0);
+    NEFO_TILE_DA7n.reset(REG_D1C0);
+    RAWU_TILE_DB0p.reset(REG_D0C1);
+    POZO_TILE_DB1p.reset(REG_D0C1);
+    PYZO_TILE_DB2p.reset(REG_D0C1);
+    POXA_TILE_DB3p.reset(REG_D0C1);
+    PULO_TILE_DB4p.reset(REG_D0C1);
+    POJU_TILE_DB5p.reset(REG_D0C1);
+    POWY_TILE_DB6p.reset(REG_D0C1);
+    PYJU_TILE_DB7p.reset(REG_D0C1);
+
+    PEFO_SPRITE_DB0n.reset(REG_D0C0);
+    ROKA_SPRITE_DB1n.reset(REG_D0C0);
+    MYTU_SPRITE_DB2n.reset(REG_D0C0);
+    RAMU_SPRITE_DB3n.reset(REG_D0C0);
+    SELE_SPRITE_DB4n.reset(REG_D0C0);
+    SUTO_SPRITE_DB5n.reset(REG_D0C0);
+    RAMA_SPRITE_DB6n.reset(REG_D0C0);
+    RYDU_SPRITE_DB7n.reset(REG_D0C0);
+    REWO_SPRITE_DA0n.reset(REG_D0C0);
+    PEBA_SPRITE_DA1n.reset(REG_D0C0);
+    MOFO_SPRITE_DA2n.reset(REG_D0C0);
+    PUDU_SPRITE_DA3n.reset(REG_D0C0);
+    SAJA_SPRITE_DA4n.reset(REG_D0C0);
+    SUNY_SPRITE_DA5n.reset(REG_D0C0);
+    SEMO_SPRITE_DA6n.reset(REG_D0C0);
+    SEGA_SPRITE_DA7n.reset(REG_D0C0);
+
+    BUS_VRAM_D0p .reset(TRI_D0NP);
+    BUS_VRAM_D1p .reset(TRI_D0NP);
+    BUS_VRAM_D2p .reset(TRI_D0NP);
+    BUS_VRAM_D3p .reset(TRI_D0NP);
+    BUS_VRAM_D4p .reset(TRI_D0NP);
+    BUS_VRAM_D5p .reset(TRI_D0NP);
+    BUS_VRAM_D6p .reset(TRI_D0NP);
+    BUS_VRAM_D7p .reset(TRI_D0NP);
+
+    BUS_VRAM_A00n.reset(TRI_D1PU);
+    BUS_VRAM_A01n.reset(TRI_D1PU);
+    BUS_VRAM_A02n.reset(TRI_D1PU);
+    BUS_VRAM_A03n.reset(TRI_D1PU);
+    BUS_VRAM_A04n.reset(TRI_D0PU);
+    BUS_VRAM_A05n.reset(TRI_D1PU);
+    BUS_VRAM_A06n.reset(TRI_D0PU);
+    BUS_VRAM_A07n.reset(TRI_D1PU);
+    BUS_VRAM_A08n.reset(TRI_D1PU);
+    BUS_VRAM_A09n.reset(TRI_D1PU);
+    BUS_VRAM_A10n.reset(TRI_D1PU);
+    BUS_VRAM_A11n.reset(TRI_D1PU);
+    BUS_VRAM_A12n.reset(TRI_D1PU);
+
+    PIN_VRAM_CSn .reset(TRI_D1NP);
+    PIN_VRAM_OEn .reset(TRI_D0NP);
+    PIN_VRAM_WRn .reset(TRI_D1NP);
+
+    PIN_VRAM_A00p.reset(TRI_D0NP);
+    PIN_VRAM_A01p.reset(TRI_D0NP);
+    PIN_VRAM_A02p.reset(TRI_D0NP);
+    PIN_VRAM_A03p.reset(TRI_D0NP);
+    PIN_VRAM_A04p.reset(TRI_D1NP);
+    PIN_VRAM_A05p.reset(TRI_D0NP);
+    PIN_VRAM_A06p.reset(TRI_D1NP);
+    PIN_VRAM_A07p.reset(TRI_D0NP);
+    PIN_VRAM_A08p.reset(TRI_D0NP);
+    PIN_VRAM_A09p.reset(TRI_D0NP);
+    PIN_VRAM_A10p.reset(TRI_D0NP);
+    PIN_VRAM_A11p.reset(TRI_D0NP);
+    PIN_VRAM_A12p.reset(TRI_D0NP);
+
+    PIN_VRAM_D00p.reset(TRI_D0PU);
+    PIN_VRAM_D01p.reset(TRI_D0PU);
+    PIN_VRAM_D02p.reset(TRI_D0PU);
+    PIN_VRAM_D03p.reset(TRI_D0PU);
+    PIN_VRAM_D04p.reset(TRI_D0PU);
+    PIN_VRAM_D05p.reset(TRI_D0PU);
+    PIN_VRAM_D06p.reset(TRI_D0PU);
+    PIN_VRAM_D07p.reset(TRI_D0PU);
   }
 
   void reset_bootrom() {

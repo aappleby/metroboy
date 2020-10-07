@@ -9,7 +9,8 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct LcdRegisters {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     PARU_VBLANKp_d4.reset(TRI_HZNP);

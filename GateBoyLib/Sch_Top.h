@@ -50,19 +50,19 @@ struct SchematicTop {
     cpu_bus.reset_cart();
     vram_bus.reset_cart();
 
-    //clk_reg.reset_cart();
-    //dma_reg.reset_cart();
-    //int_reg.reset_cart();
-    //joypad.reset_cart();
-    //lcd_reg.reset_cart();
-    //pix_pipe.reset_cart();
+    clk_reg.reset_cart();
+    dma_reg.reset_cart();
+    int_reg.reset_cart();
+    joypad.reset_cart();
+    lcd_reg.reset_cart();
+    pix_pipe.reset_cart();
     ser_reg.reset_cart();
-    //sprite_store.reset_cart();
-    //tim_reg.reset_cart();
-    //tile_fetcher.reset_cart();
-    //sprite_fetcher.reset_cart();
-    //sprite_scanner.reset_cart();
-    //bootrom.reset_cart();
+    sprite_store.reset_cart();
+    tim_reg.reset_cart();
+    tile_fetcher.reset_cart();
+    sprite_fetcher.reset_cart();
+    sprite_scanner.reset_cart();
+    bootrom.reset_cart();
 
     SOTO_DBG_VRAM.reset(REG_D0C1);
 

@@ -9,7 +9,8 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct PixelPipe {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     SEKO_WIN_TILE_TRIG.reset(TRI_HZNP);

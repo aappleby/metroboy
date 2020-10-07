@@ -12,7 +12,9 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
-  void reset() {}
+  void reset_cart() {
+  }
+
   void reset_bootrom() {
     UCOB_CLKBADp.reset(TRI_HZNP);
 

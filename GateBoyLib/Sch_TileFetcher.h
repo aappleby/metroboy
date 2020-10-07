@@ -11,7 +11,8 @@ struct OamBus;
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     LENA_BGW_VRM_RDp.reset(TRI_HZNP);

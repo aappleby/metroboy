@@ -11,7 +11,8 @@ struct VramBus;
 //-----------------------------------------------------------------------------
 
 struct DmaRegisters {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     MATU_DMA_RUNNINGp.reset(REG_D0C0);

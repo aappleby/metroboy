@@ -9,7 +9,8 @@ struct VramBus;
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     WUTY_SPRITE_DONEp.reset(TRI_HZNP);

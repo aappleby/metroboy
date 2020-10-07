@@ -9,7 +9,9 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct InterruptRegisters {
-  void reset() {}
+  void reset_cart() {
+  }
+
   void reset_bootrom() {
     LOPE_FF0F_D0p.reset(REG_D0C0);
     UBUL_FF0F_D3p.reset(REG_D0C0);

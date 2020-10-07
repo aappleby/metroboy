@@ -9,7 +9,8 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct Timer {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     UKUP_DIV_00.reset(REG_D0C0);

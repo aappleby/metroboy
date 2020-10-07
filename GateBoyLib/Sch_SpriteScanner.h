@@ -9,7 +9,8 @@ struct OamBus;
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     DEGE_SPRITE_DELTA0.reset(TRI_HZNP);

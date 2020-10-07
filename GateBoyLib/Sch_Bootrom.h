@@ -9,7 +9,9 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct Bootrom {
-  void reset() {}
+  void reset_cart() {
+  }
+
   void reset_bootrom() {
     BOOT_BITn.reset(REG_D0C0);
   }

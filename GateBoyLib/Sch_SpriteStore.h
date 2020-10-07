@@ -8,7 +8,8 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteStore {
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     FEPO_STORE_MATCHp.reset(TRI_HZNP);

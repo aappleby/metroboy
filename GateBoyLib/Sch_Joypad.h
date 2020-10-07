@@ -10,7 +10,8 @@ struct CpuBus;
 
 struct Joypad {
 
-  void reset() {}
+  void reset_cart() {
+  }
 
   void reset_bootrom() {
     ASOK_INT_JOYp.reset(TRI_HZNP);

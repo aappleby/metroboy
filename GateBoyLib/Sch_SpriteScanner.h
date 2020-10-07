@@ -10,6 +10,28 @@ struct OamBus;
 
 struct SpriteScanner {
   void reset_cart() {
+    DEGE_SPRITE_DELTA0.reset(TRI_D0NP);
+    DABY_SPRITE_DELTA1.reset(TRI_D0NP);
+    DABU_SPRITE_DELTA2.reset(TRI_D0NP);
+    GYSA_SPRITE_DELTA3.reset(TRI_D0NP);
+    GACE_SPRITE_DELTA4.reset(TRI_D0NP);
+    GUVU_SPRITE_DELTA5.reset(TRI_D0NP);
+    GYDA_SPRITE_DELTA6.reset(TRI_D0NP);
+    GEWY_SPRITE_DELTA7.reset(TRI_D0NP);
+    CARE_STORE_ENp_ABxxEFxx.reset(TRI_D0NP);
+
+    BESU_SCANNINGp.reset(TRI_D0NP);
+    CENO_SCANNINGp.reset(REG_D0C1);
+
+    YFEL_SCAN0.reset(REG_D1C1);
+    WEWY_SCAN1.reset(REG_D1C0);
+    GOSO_SCAN2.reset(REG_D1C0);
+    ELYN_SCAN3.reset(REG_D0C0);
+    FAHA_SCAN4.reset(REG_D0C1);
+    FONY_SCAN5.reset(REG_D1C1);
+
+    BYBA_SCAN_DONE_A.reset(REG_D1C1);
+    DOBA_SCAN_DONE_B.reset(REG_D1C0);
   }
 
   void reset_bootrom() {

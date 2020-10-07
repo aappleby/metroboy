@@ -47,7 +47,7 @@ struct ExtBus {
 
   //-----------------------------------------------------------------------------
 
-  //DelayGlitch MATE_HOLDn_delay;
+  DelayGlitch ext_glitch;
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p = TRI_D0NP;
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p = TRI_D0NP;

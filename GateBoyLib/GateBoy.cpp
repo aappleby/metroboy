@@ -168,7 +168,8 @@ void GateBoy::next_pass() {
 
       bool addr_rom = bus_req.addr <= 0x7FFF;
       bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
-      bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram) && !top.cpu_bus.PIN_CPU_BOOTp.qp();
+      bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram);
+      if (bus_req.addr <= 0x00FF && top.cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
 
       top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
       top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);

@@ -6,7 +6,7 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
-//#define RUN_SLOW_TESTS
+#define RUN_SLOW_TESTS
 
 //-----------------------------------------------------------------------------
 
@@ -706,7 +706,7 @@ int GateBoyTests::test_init() {
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x9ed6268c68cb033d, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0xd76ab2ccbdd36cd4, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -826,69 +826,9 @@ int GateBoyTests::test_clk() {
 
 int GateBoyTests::test_ext_bus() {
   TEST_START();
-#if 0
-  // The low bits of the address bus _must_ change on phase B.
-  {
-    LOG_Y("Testing when bus changes take effect\n");
-    GateBoy gb;
-    gb.reset();
-    gb.set_boot_bit();
-
-    // Preset address to 0xFF and run for a mcycle.
-    gb.dbg_req = { .addr = 0x00FF, .data = 0x00, .read = 1, .write = 0 };
-    gb.run(8);
-
-    // We should see the address on the bus
-    ASSERT_EQ(gb.phase_total & 7, 0);
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x80FF, "Phase A fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x80FF, "Phase B fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase C fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase D fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase E fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase F fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase G fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase H fail"); gb.next_phase();
-
-    // Change the debug request in state B. It should _not_ take effect yet.
-    ASSERT_EQ(gb.phase_total & 7, 0);
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x80FF, "Phase A fail"); gb.next_phase();
-    gb.dbg_req = { .addr = 0x0000, .data = 0x00, .read = 1, .write = 0 };
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x80FF, "Phase B fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase C fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase D fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase E fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase F fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase G fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase H fail"); gb.next_phase();
-
-    // Now we're back at phase A again.
-    // The address bus change should take effect on state B
-    ASSERT_EQ(gb.phase_total & 7, 0);
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x80FF, "Phase A fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x8000, "Phase B fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x0000, "Phase C fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x0000, "Phase D fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x0000, "Phase E fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x0000, "Phase F fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x0000, "Phase G fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x0000, "Phase H fail"); gb.next_phase();
-
-    // Now change the address back in state A. It should take effect in state B.
-    gb.dbg_req = { .addr = 0x00FF, .data = 0x00, .read = 1, .write = 0 };
-    ASSERT_EQ(gb.phase_total & 7, 0);
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x8000, "Phase A fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x80FF, "Phase B fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase C fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase D fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase E fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase F fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase G fail"); gb.next_phase();
-    ASSERT_EQ(gb.top.ext_bus.get_pin_addr(), 0x00FF, "Phase H fail"); gb.next_phase();
-  }
-#endif
 
   // Check all signals for all phases of "ld (hl), a; jr -2;" with hl = 0xC003 and a = 0x55
-  {
+  if (1) {
     LOG_B("Testing cram write external bus waves\n");
 
     const char* app = R"(
@@ -1011,7 +951,7 @@ int GateBoyTests::test_ext_bus() {
     }
   }
 
-  {
+  if (1) {
     LOG_B("Testing vram write external bus waves\n");
 
     const char* app = R"(
@@ -1139,7 +1079,7 @@ int GateBoyTests::test_ext_bus() {
     }
   }
 
-  {
+  if (1) {
     LOG_B("Testing zram write external bus waves\n");
 
     const char* app = R"(
@@ -1205,7 +1145,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A13_WAVE = "00000000 01111111 10000000 00000000 00000000";
     const char* A14_WAVE = "00000000 01111111 10000000 00000000 00000000";
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
-#endif
+#else
 
     // We are not going to bother simulating the glitch as it has no effect
     // on the operation of the Game Boy
@@ -1226,6 +1166,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A13_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A14_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
+#endif
 
     const char* D00_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D01_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^000000 ^^^^^^^^";

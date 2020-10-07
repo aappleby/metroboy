@@ -54,7 +54,7 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   // regenerate post-bootrom dump
-#if 1
+#if 0
   rom_buf = load_blob("roms/tetris.gb");
   gb->reset_to_bootrom(rom_buf.data(), rom_buf.size());
 
@@ -111,6 +111,8 @@ void GateBoyApp::app_init() {
   //load_rom("microtests/build/dmg/ppu_sprite0_scx7_a.gb");
   //load_rom   ("roms/mealybug/m3_lcdc_bg_en_change.gb");
   //load_golden("roms/mealybug/m3_lcdc_bg_en_change.bmp");
+
+  load_rom("roms/tetris.gb");
 }
 
 //----------------------------------------

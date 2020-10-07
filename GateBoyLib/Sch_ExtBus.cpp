@@ -35,6 +35,17 @@ void ExtBus::dump(Dumper& d) const {
     SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
   d("\n");
 
+  d("ext_glitch.da %c\n", ext_glitch.da.c());
+  d("ext_glitch.db %c\n", ext_glitch.db.c());
+  d("ext_glitch.dc %c\n", ext_glitch.dc.c());
+  d("ext_glitch.dd %c\n", ext_glitch.dd.c());
+  d("ext_glitch.de %c\n", ext_glitch.de.c());
+  d("ext_glitch.df %c\n", ext_glitch.df.c());
+  d("ext_glitch.dg %c\n", ext_glitch.dg.c());
+  d("ext_glitch.dh %c\n", ext_glitch.dh.c());
+  d("ext_glitch.di %c\n", ext_glitch.di.c());
+  d("ext_glitch.dj %c\n", ext_glitch.dj.c());
+
 }
 
 //------------------------------------------------------------------------------
@@ -127,12 +138,15 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.MULE*/ wire MULE_MODE_DBG1n  = not1(top.UMUT_MODE_DBG1p);
     /*p08.SORE*/ wire SORE_0000_7FFFp  = not1(top.cpu_bus.BUS_CPU_A15.qp());
     /*p08.TEVY*/ wire TEVY_8000_9FFFn  = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), SORE_0000_7FFFp);
+
+    //wire blah = top.cpu_bus.PIN_CPU_ADDR_EXTp.qp();
+    //ext_glitch.set(blah);
+
     /*p08.TEXO*/ wire TEXO_8000_9FFFn  = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), TEVY_8000_9FFFn);
     /*p08.LOXO*/ wire LOXO_HOLDn = and_or3(MULE_MODE_DBG1n, TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p);
     /*p08.LASY*/ wire LASY_HOLDn = not1(LOXO_HOLDn);
     /*p08.MATE*/ wire MATE_HOLDn = not1(LASY_HOLDn);
 
-    //MATE_HOLDn_delay.set(MATE_HOLDn);
 
     // Is this acutally a pass gate?
 

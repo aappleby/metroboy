@@ -318,8 +318,18 @@ struct DelayGlitch {
   RegBase dc = TRI_D0NP;
   RegBase dd = TRI_D0NP;
   RegBase de = TRI_D0NP;
+  RegBase df = TRI_D0NP;
+  RegBase dg = TRI_D0NP;
+  RegBase dh = TRI_D0NP;
+  RegBase di = TRI_D0NP;
+  RegBase dj = TRI_D0NP;
 
   inline void set(wire w) {
+    dj.merge_tri_delta(di.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    di.merge_tri_delta(dh.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    dh.merge_tri_delta(dg.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    dg.merge_tri_delta(df.qp() ? DELTA_TRI1 : DELTA_TRI0);
+    df.merge_tri_delta(de.qp() ? DELTA_TRI1 : DELTA_TRI0);
     de.merge_tri_delta(dd.qp() ? DELTA_TRI1 : DELTA_TRI0);
     dd.merge_tri_delta(dc.qp() ? DELTA_TRI1 : DELTA_TRI0);
     dc.merge_tri_delta(db.qp() ? DELTA_TRI1 : DELTA_TRI0);
@@ -328,7 +338,7 @@ struct DelayGlitch {
   }
 
   inline wire qp() const {
-    return de.qp();
+    return dj.qp();
   }
 };
 

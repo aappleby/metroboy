@@ -13,6 +13,33 @@ struct SchematicTop;
 struct ClockRegisters {
 
   void reset_cart() {
+    UCOB_CLKBADp .reset(TRI_D0NP);
+    ZAXY_xBxDxFxH.reset(TRI_D0NP);
+    BUDE_xxxxEFGH.reset(TRI_D0NP);
+    ATYP_ABCDxxxx.reset(TRI_D1NP);
+    AROV_xxCDEFxx.reset(TRI_D0NP);
+    AJAX_xxxxEFGH.reset(TRI_D0NP);
+    ADAR_ABCxxxxH.reset(TRI_D1NP);
+    BALY_xBCDEFGH.reset(TRI_D0NP);
+    XUPY_ABxxEFxx.reset(TRI_D1NP);
+    TALU_xxCDEFxx.reset(TRI_D0NP);
+    XOCE_xBCxxFGx.reset(TRI_D0NP);
+    WOJO_AxxxExxx.reset(TRI_D1NP);
+    ALUR_SYS_RSTn.reset(TRI_D1NP);
+    XAPO_VID_RSTn.reset(TRI_D1NP);
+
+    TUBO_WAITINGp.reset(TRI_D0NP);
+    ASOL_POR_DONEn.reset(TRI_D0NP);
+    AFER_SYS_RSTp.reset(REG_D0C1);
+
+    AFUR_xxxxEFGH.reset(REG_D0C1);
+    ALEF_AxxxxFGH.reset(REG_D1C0);
+    APUK_ABxxxxGH.reset(REG_D1C1);
+    ADYK_ABCxxxxH.reset(REG_D1C0);
+
+    WUVU_ABxxEFxx.reset(REG_D1C1);
+    VENA_xxCDEFxx.reset(REG_D0C0);
+    WOSU_AxxDExxH.reset(REG_D1C0);
   }
 
   void reset_bootrom() {

@@ -52,41 +52,41 @@ struct ClockRegisters {
   void tock_dbg_slow(SchematicTop& top);
   void tock_vid_slow(wire CLK, SchematicTop& top);
 
-  /* p01.UCOB*/ Sig UCOB_CLKBADp = ERR_XXXX;  // timer
-  /* p01.ZAXY*/ Sig ZAXY_xBxDxFxH = ERR_XXXX; // various
-  /* p01.BUDE*/ Sig BUDE_xxxxEFGH = ERR_XXXX; // uvyt, beko
+  /* p01.UCOB*/ Sig UCOB_CLKBADp;  // timer
+  /* p01.ZAXY*/ Sig ZAXY_xBxDxFxH; // various
+  /* p01.BUDE*/ Sig BUDE_xxxxEFGH; // uvyt, beko
 
-  /* p01.ATYP*/ Sig ATYP_ABCDxxxx = ERR_XXXX; // afas, etc
-  /* p01.AROV*/ Sig AROV_xxCDEFxx = ERR_XXXX; // ext bus
-  /* p01.AJAX*/ Sig AJAX_xxxxEFGH = ERR_XXXX; // ext bus
+  /* p01.ATYP*/ Sig ATYP_ABCDxxxx; // afas, etc
+  /* p01.AROV*/ Sig AROV_xxCDEFxx; // ext bus
+  /* p01.AJAX*/ Sig AJAX_xxxxEFGH; // ext bus
 
-  /*#p01.ADAR*/ Sig ADAR_ABCxxxxH = ERR_XXXX; // ext bus, oam bus
-  /* p01.BALY*/ Sig BALY_xBCDEFGH = ERR_XXXX; // joypad, timer
+  /*#p01.ADAR*/ Sig ADAR_ABCxxxxH; // ext bus, oam bus
+  /* p01.BALY*/ Sig BALY_xBCDEFGH; // joypad, timer
 
-  /* p29.XUPY*/ Sig XUPY_ABxxEFxx = ERR_XXXX; // lcd, sprite scanner
-  /* p21.TALU*/ Sig TALU_xxCDEFxx = ERR_XXXX; // lcd, pix pipe (wy match should probably move to lcd)
-  /* p29.XOCE*/ Sig XOCE_xBCxxFGx = ERR_XXXX; // oam bus, sprite scanner
-  /* p29.WOJO*/ Sig WOJO_AxxxExxx = ERR_XXXX; // oam bus
+  /* p29.XUPY*/ Sig XUPY_ABxxEFxx; // lcd, sprite scanner
+  /* p21.TALU*/ Sig TALU_xxCDEFxx; // lcd, pix pipe (wy match should probably move to lcd)
+  /* p29.XOCE*/ Sig XOCE_xBCxxFGx; // oam bus, sprite scanner
+  /* p29.WOJO*/ Sig WOJO_AxxxExxx; // oam bus
 
-  /* p01.ALUR*/ Sig ALUR_SYS_RSTn = ERR_XXXX; // everywhere
-  /* p01.XAPO*/ Sig XAPO_VID_RSTn = ERR_XXXX; // everywhere
+  /* p01.ALUR*/ Sig ALUR_SYS_RSTn; // everywhere
+  /* p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere
 
 private:
   friend struct ::GateBoy;
   friend struct ::GateBoyTests;
 
-  /*p01.TUBO*/ NorLatch TUBO_WAITINGp = ERR_XXXX;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
-  /*p01.ASOL*/ NorLatch ASOL_POR_DONEn = ERR_XXXX; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ DFF13 AFER_SYS_RSTp = ERR_XXXX; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
+  /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
+  /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
+  /*p01.AFER*/ DFF13 AFER_SYS_RSTp; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
 
-  /*p01.AFUR*/ DFF9 AFUR_xxxxEFGH = ERR_XXXX;
-  /*p01.ALEF*/ DFF9 ALEF_AxxxxFGH = ERR_XXXX;
-  /*p01.APUK*/ DFF9 APUK_ABxxxxGH = ERR_XXXX;
-  /*p01.ADYK*/ DFF9 ADYK_ABCxxxxH = ERR_XXXX;
+  /*p01.AFUR*/ DFF9 AFUR_xxxxEFGH;
+  /*p01.ALEF*/ DFF9 ALEF_AxxxxFGH;
+  /*p01.APUK*/ DFF9 APUK_ABxxxxGH;
+  /*p01.ADYK*/ DFF9 ADYK_ABCxxxxH;
 
-  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx = ERR_XXXX;
-  /*p21.VENA*/ DFF17 VENA_xxCDEFxx = ERR_XXXX;
-  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH = ERR_XXXX;
+  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
+  /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
+  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 };
 
 //-----------------------------------------------------------------------------

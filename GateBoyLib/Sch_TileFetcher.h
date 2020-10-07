@@ -12,7 +12,36 @@ struct OamBus;
 
 struct TileFetcher {
   void reset() {}
-  void reset_bootrom() {}
+
+  void reset_bootrom() {
+    LENA_BGW_VRM_RDp.reset(TRI_HZNP);
+    MOCE_BFETCH_DONEn.reset(TRI_HZNP);
+    NETA_TILE_READp.reset(TRI_HZNP);
+    XUHA_FETCH_S2p.reset(TRI_HZNP);
+
+    XUCY_WIN_TILE_READn.reset(TRI_HZNP);
+    WUKO_WIN_MAP_READn.reset(TRI_HZNP);
+    BAFY_BG_MAP_READn.reset(TRI_HZNP);
+    BEJE_BG_TILE_READn.reset(TRI_HZNP);
+
+    METE_LATCH_TILE_DAp.reset(TRI_HZNP);
+    LESO_LATCH_TILE_DBn.reset(TRI_HZNP);
+
+    POKY_PRELOAD_LATCHp.reset(TRI_D0NP);
+    LONY_BG_FETCH_RUNNINGp.reset(TRI_D0NP);
+
+    NYKA_FETCH_DONE_P11.reset(REG_D0C0);
+    PORY_FETCH_DONE_P12.reset(REG_D0C0);
+
+    LAXU_BFETCH_S0.reset(REG_D0C0);
+    MESU_BFETCH_S1.reset(REG_D0C0);
+    NYVA_BFETCH_S2.reset(REG_D0C0);
+
+    LOVY_BG_FETCH_DONEp.reset(REG_D0C0);
+    PYGO_FETCH_DONE_P13.reset(REG_D0C0);
+    LYZU_BFETCH_S0_D1.reset(REG_D0C0);
+  }
+
   void tick(const SchematicTop& top);
   void tock(SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;

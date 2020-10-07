@@ -143,97 +143,97 @@ struct VramBus {
 
   //-----------------------------------------------------------------------------
 
-  /*p32.LEGU*/ DFF8 LEGU_TILE_DA0n = ERR_XXXX;
-  /*p32.NUDU*/ DFF8 NUDU_TILE_DA1n = ERR_XXXX;
-  /*p32.MUKU*/ DFF8 MUKU_TILE_DA2n = ERR_XXXX;
-  /*p32.LUZO*/ DFF8 LUZO_TILE_DA3n = ERR_XXXX;
-  /*p32.MEGU*/ DFF8 MEGU_TILE_DA4n = ERR_XXXX;
-  /*p32.MYJY*/ DFF8 MYJY_TILE_DA5n = ERR_XXXX;
-  /*p32.NASA*/ DFF8 NASA_TILE_DA6n = ERR_XXXX;
-  /*p32.NEFO*/ DFF8 NEFO_TILE_DA7n = ERR_XXXX; // color wrong on die
+  /*p32.LEGU*/ DFF8 LEGU_TILE_DA0n;
+  /*p32.NUDU*/ DFF8 NUDU_TILE_DA1n;
+  /*p32.MUKU*/ DFF8 MUKU_TILE_DA2n;
+  /*p32.LUZO*/ DFF8 LUZO_TILE_DA3n;
+  /*p32.MEGU*/ DFF8 MEGU_TILE_DA4n;
+  /*p32.MYJY*/ DFF8 MYJY_TILE_DA5n;
+  /*p32.NASA*/ DFF8 NASA_TILE_DA6n;
+  /*p32.NEFO*/ DFF8 NEFO_TILE_DA7n; // color wrong on die
 
-  /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p = ERR_XXXX; // def holds inverted pix, also holds tile index during fetch
-  /*p32.POZO*/ DFF11 POZO_TILE_DB1p = ERR_XXXX;
-  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p = ERR_XXXX;
-  /*p32.POXA*/ DFF11 POXA_TILE_DB3p = ERR_XXXX;
-  /*p32.PULO*/ DFF11 PULO_TILE_DB4p = ERR_XXXX;
-  /*p32.POJU*/ DFF11 POJU_TILE_DB5p = ERR_XXXX;
-  /*p32.POWY*/ DFF11 POWY_TILE_DB6p = ERR_XXXX;
-  /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p = ERR_XXXX;
+  /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p; // def holds inverted pix, also holds tile index during fetch
+  /*p32.POZO*/ DFF11 POZO_TILE_DB1p;
+  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p;
+  /*p32.POXA*/ DFF11 POXA_TILE_DB3p;
+  /*p32.PULO*/ DFF11 PULO_TILE_DB4p;
+  /*p32.POJU*/ DFF11 POJU_TILE_DB5p;
+  /*p32.POWY*/ DFF11 POWY_TILE_DB6p;
+  /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p;
 
-  /*p33.PEFO*/ DFF8 PEFO_SPRITE_DB0n = ERR_XXXX;
-  /*p33.ROKA*/ DFF8 ROKA_SPRITE_DB1n = ERR_XXXX;
-  /*p33.MYTU*/ DFF8 MYTU_SPRITE_DB2n = ERR_XXXX;
-  /*p33.RAMU*/ DFF8 RAMU_SPRITE_DB3n = ERR_XXXX;
-  /*p33.SELE*/ DFF8 SELE_SPRITE_DB4n = ERR_XXXX;
-  /*p33.SUTO*/ DFF8 SUTO_SPRITE_DB5n = ERR_XXXX;
-  /*p33.RAMA*/ DFF8 RAMA_SPRITE_DB6n = ERR_XXXX;
-  /*p33.RYDU*/ DFF8 RYDU_SPRITE_DB7n = ERR_XXXX;
+  /*p33.PEFO*/ DFF8 PEFO_SPRITE_DB0n;
+  /*p33.ROKA*/ DFF8 ROKA_SPRITE_DB1n;
+  /*p33.MYTU*/ DFF8 MYTU_SPRITE_DB2n;
+  /*p33.RAMU*/ DFF8 RAMU_SPRITE_DB3n;
+  /*p33.SELE*/ DFF8 SELE_SPRITE_DB4n;
+  /*p33.SUTO*/ DFF8 SUTO_SPRITE_DB5n;
+  /*p33.RAMA*/ DFF8 RAMA_SPRITE_DB6n;
+  /*p33.RYDU*/ DFF8 RYDU_SPRITE_DB7n;
 
-  /*p33.REWO*/ DFF8 REWO_SPRITE_DA0n = ERR_XXXX;
-  /*p33.PEBA*/ DFF8 PEBA_SPRITE_DA1n = ERR_XXXX;
-  /*p33.MOFO*/ DFF8 MOFO_SPRITE_DA2n = ERR_XXXX;
-  /*p33.PUDU*/ DFF8 PUDU_SPRITE_DA3n = ERR_XXXX;
-  /*p33.SAJA*/ DFF8 SAJA_SPRITE_DA4n = ERR_XXXX;
-  /*p33.SUNY*/ DFF8 SUNY_SPRITE_DA5n = ERR_XXXX;
-  /*p33.SEMO*/ DFF8 SEMO_SPRITE_DA6n = ERR_XXXX;
-  /*p33.SEGA*/ DFF8 SEGA_SPRITE_DA7n = ERR_XXXX;
+  /*p33.REWO*/ DFF8 REWO_SPRITE_DA0n;
+  /*p33.PEBA*/ DFF8 PEBA_SPRITE_DA1n;
+  /*p33.MOFO*/ DFF8 MOFO_SPRITE_DA2n;
+  /*p33.PUDU*/ DFF8 PUDU_SPRITE_DA3n;
+  /*p33.SAJA*/ DFF8 SAJA_SPRITE_DA4n;
+  /*p33.SUNY*/ DFF8 SUNY_SPRITE_DA5n;
+  /*p33.SEMO*/ DFF8 SEMO_SPRITE_DA6n;
+  /*p33.SEGA*/ DFF8 SEGA_SPRITE_DA7n;
 
   //----------------------------------------
   // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
-  Bus BUS_VRAM_D0p = ERR_XXXX;
-  Bus BUS_VRAM_D1p = ERR_XXXX;
-  Bus BUS_VRAM_D2p = ERR_XXXX;
-  Bus BUS_VRAM_D3p = ERR_XXXX;
-  Bus BUS_VRAM_D4p = ERR_XXXX;
-  Bus BUS_VRAM_D5p = ERR_XXXX;
-  Bus BUS_VRAM_D6p = ERR_XXXX;
-  Bus BUS_VRAM_D7p = ERR_XXXX;
+  Bus BUS_VRAM_D0p;
+  Bus BUS_VRAM_D1p;
+  Bus BUS_VRAM_D2p;
+  Bus BUS_VRAM_D3p;
+  Bus BUS_VRAM_D4p;
+  Bus BUS_VRAM_D5p;
+  Bus BUS_VRAM_D6p;
+  Bus BUS_VRAM_D7p;
 
-  Bus BUS_VRAM_A00n = ERR_XXXX; // This bus isn't driven between tile fetches while rendering; where's the pullup?
-  Bus BUS_VRAM_A01n = ERR_XXXX;
-  Bus BUS_VRAM_A02n = ERR_XXXX;
-  Bus BUS_VRAM_A03n = ERR_XXXX;
-  Bus BUS_VRAM_A04n = ERR_XXXX;
-  Bus BUS_VRAM_A05n = ERR_XXXX;
-  Bus BUS_VRAM_A06n = ERR_XXXX;
-  Bus BUS_VRAM_A07n = ERR_XXXX;
-  Bus BUS_VRAM_A08n = ERR_XXXX;
-  Bus BUS_VRAM_A09n = ERR_XXXX;
-  Bus BUS_VRAM_A10n = ERR_XXXX;
-  Bus BUS_VRAM_A11n = ERR_XXXX;
-  Bus BUS_VRAM_A12n = ERR_XXXX;
+  Bus BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
+  Bus BUS_VRAM_A01n;
+  Bus BUS_VRAM_A02n;
+  Bus BUS_VRAM_A03n;
+  Bus BUS_VRAM_A04n;
+  Bus BUS_VRAM_A05n;
+  Bus BUS_VRAM_A06n;
+  Bus BUS_VRAM_A07n;
+  Bus BUS_VRAM_A08n;
+  Bus BUS_VRAM_A09n;
+  Bus BUS_VRAM_A10n;
+  Bus BUS_VRAM_A11n;
+  Bus BUS_VRAM_A12n;
 
   //----------------------------------------
   // VRAM pins
 
-  Pin PIN_VRAM_CSn  = ERR_XXXX; // PIN_43
-  Pin PIN_VRAM_OEn  = ERR_XXXX; // PIN_45
-  Pin PIN_VRAM_WRn  = ERR_XXXX; // PIN_49
+  Pin PIN_VRAM_CSn ; // PIN_43
+  Pin PIN_VRAM_OEn ; // PIN_45
+  Pin PIN_VRAM_WRn ; // PIN_49
 
-  Pin PIN_VRAM_A00p = ERR_XXXX; // PIN_34
-  Pin PIN_VRAM_A01p = ERR_XXXX; // PIN_35
-  Pin PIN_VRAM_A02p = ERR_XXXX; // PIN_36
-  Pin PIN_VRAM_A03p = ERR_XXXX; // PIN_37
-  Pin PIN_VRAM_A04p = ERR_XXXX; // PIN_38
-  Pin PIN_VRAM_A05p = ERR_XXXX; // PIN_39
-  Pin PIN_VRAM_A06p = ERR_XXXX; // PIN_40
-  Pin PIN_VRAM_A07p = ERR_XXXX; // PIN_41
-  Pin PIN_VRAM_A08p = ERR_XXXX; // PIN_48
-  Pin PIN_VRAM_A09p = ERR_XXXX; // PIN_47
-  Pin PIN_VRAM_A10p = ERR_XXXX; // PIN_44
-  Pin PIN_VRAM_A11p = ERR_XXXX; // PIN_46
-  Pin PIN_VRAM_A12p = ERR_XXXX; // PIN_42
+  Pin PIN_VRAM_A00p; // PIN_34
+  Pin PIN_VRAM_A01p; // PIN_35
+  Pin PIN_VRAM_A02p; // PIN_36
+  Pin PIN_VRAM_A03p; // PIN_37
+  Pin PIN_VRAM_A04p; // PIN_38
+  Pin PIN_VRAM_A05p; // PIN_39
+  Pin PIN_VRAM_A06p; // PIN_40
+  Pin PIN_VRAM_A07p; // PIN_41
+  Pin PIN_VRAM_A08p; // PIN_48
+  Pin PIN_VRAM_A09p; // PIN_47
+  Pin PIN_VRAM_A10p; // PIN_44
+  Pin PIN_VRAM_A11p; // PIN_46
+  Pin PIN_VRAM_A12p; // PIN_42
 
-  Pin PIN_VRAM_D00p = ERR_XXXX; // PIN_33 // This pin isn't driven between tile fetches while rendering; where's the pullup?
-  Pin PIN_VRAM_D01p = ERR_XXXX; // PIN_31
-  Pin PIN_VRAM_D02p = ERR_XXXX; // PIN_30
-  Pin PIN_VRAM_D03p = ERR_XXXX; // PIN_29
-  Pin PIN_VRAM_D04p = ERR_XXXX; // PIN_28
-  Pin PIN_VRAM_D05p = ERR_XXXX; // PIN_27
-  Pin PIN_VRAM_D06p = ERR_XXXX; // PIN_26
-  Pin PIN_VRAM_D07p = ERR_XXXX; // PIN_25
+  Pin PIN_VRAM_D00p; // PIN_33 // This pin isn't driven between tile fetches while rendering; where's the pullup?
+  Pin PIN_VRAM_D01p; // PIN_31
+  Pin PIN_VRAM_D02p; // PIN_30
+  Pin PIN_VRAM_D03p; // PIN_29
+  Pin PIN_VRAM_D04p; // PIN_28
+  Pin PIN_VRAM_D05p; // PIN_27
+  Pin PIN_VRAM_D06p; // PIN_26
+  Pin PIN_VRAM_D07p; // PIN_25
 };
 
 //-----------------------------------------------------------------------------

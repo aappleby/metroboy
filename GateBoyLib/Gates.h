@@ -360,7 +360,7 @@ struct DelayGlitch {
 // Generic DFF
 
 struct DFF : private RegBase {
-  DFF(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -384,7 +384,7 @@ struct DFF : private RegBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8 : private RegBase {
-  DFF8(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF8() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -412,7 +412,7 @@ struct DFF8 : private RegBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : private RegBase {
-  DFF9(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF9() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -443,7 +443,7 @@ struct DFF9 : private RegBase {
 // DFF11_11 >> Qn
 
 struct DFF11 : private RegBase {
-  DFF11(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF11() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -469,7 +469,7 @@ struct DFF11 : private RegBase {
 // DFF13_13 >> Q
 
 struct DFF13 : private RegBase {
-  DFF13(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF13() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -503,7 +503,7 @@ struct DFF13 : private RegBase {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : private RegBase {
-  DFF17(RegState r = REG_D0C0) : RegBase(r) {} // does not work with xxxx
+  DFF17() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -513,7 +513,9 @@ struct DFF17 : private RegBase {
   wire q16() const { return !as_wire(); }
   wire q17() const { return  as_wire(); }
 
-  inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
+  inline void tock(wire CLKp, wire RSTn, wire D) {
+    dff(CLKp, !CLKp, 1, RSTn, D);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -541,7 +543,7 @@ struct DFF17 : private RegBase {
 // DFF20_20 << CLKn
 
 struct DFF20 : private RegBase{
-  DFF20(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF20() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -590,7 +592,7 @@ struct DFF20 : private RegBase{
 // DFF22_22 << CLKp
 
 struct DFF22 : private RegBase {
-  DFF22(RegState r = REG_D0C0) : RegBase(r) {}
+  DFF22() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -606,7 +608,7 @@ struct DFF22 : private RegBase {
 //-----------------------------------------------------------------------------
 
 struct Sig : private RegBase {
-  Sig(RegState r = TRI_HZNP) : RegBase(r) {}
+  Sig() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -630,7 +632,7 @@ struct Sig : private RegBase {
 // Tristate bus, can have multiple drivers.
 
 struct Bus : private RegBase {
-  Bus(RegState r = TRI_HZPU) : RegBase(r) {}
+  Bus() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -691,7 +693,7 @@ struct Bus : private RegBase {
 // Tristate io pin, can have only one driver.
 
 struct Pin : private RegBase {
-  Pin(RegState r = TRI_HZNP) : RegBase(r) { CHECK_P(is_tri()); }
+  Pin() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -729,7 +731,7 @@ struct Pin : private RegBase {
 // NORLATCH_01 << RST
 
 struct NorLatch : private RegBase {
-  NorLatch(RegState r = TRI_D0NP) : RegBase(r) {}
+  NorLatch() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -762,7 +764,7 @@ struct NorLatch : private RegBase {
 // NANDLATCH_01 << RSTn
 
 struct NandLatch : private RegBase {
-  NandLatch(RegState r = TRI_D0NP) : RegBase(r) {}
+  NandLatch() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;
@@ -802,7 +804,7 @@ struct NandLatch : private RegBase {
 // Output 10 _must_ be inverting...?
 
 struct TpLatch : private RegBase {
-  TpLatch(RegState r = TRI_D0NP) : RegBase(r) {}
+  TpLatch() : RegBase(ERR_XXXX) {}
 
   using RegBase::reset;
   using RegBase::c;

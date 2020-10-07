@@ -138,85 +138,85 @@ struct OamBus {
 
   //----------------------------------------
 
-  /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp = ERR_XXXX;
-  /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn = ERR_XXXX;
+  /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
+  /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;
 
-  /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n = ERR_XXXX;
-  /*p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n = ERR_XXXX;
-  /*p31.YSEX*/ TpLatch YSEX_OAM_LATCH_DB2n = ERR_XXXX;
-  /*p31.YVEL*/ TpLatch YVEL_OAM_LATCH_DB3n = ERR_XXXX;
-  /*p31.WYNO*/ TpLatch WYNO_OAM_LATCH_DB4n = ERR_XXXX;
-  /*p31.CYRA*/ TpLatch CYRA_OAM_LATCH_DB5n = ERR_XXXX;
-  /*p31.ZUVE*/ TpLatch ZUVE_OAM_LATCH_DB6n = ERR_XXXX;
-  /*p31.ECED*/ TpLatch ECED_OAM_LATCH_DB7n = ERR_XXXX;
+  /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n;
+  /*p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n;
+  /*p31.YSEX*/ TpLatch YSEX_OAM_LATCH_DB2n;
+  /*p31.YVEL*/ TpLatch YVEL_OAM_LATCH_DB3n;
+  /*p31.WYNO*/ TpLatch WYNO_OAM_LATCH_DB4n;
+  /*p31.CYRA*/ TpLatch CYRA_OAM_LATCH_DB5n;
+  /*p31.ZUVE*/ TpLatch ZUVE_OAM_LATCH_DB6n;
+  /*p31.ECED*/ TpLatch ECED_OAM_LATCH_DB7n;
 
-  /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n = ERR_XXXX;
-  /*p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n = ERR_XXXX;
-  /*p29.ZUCA*/ TpLatch ZUCA_OAM_LATCH_DA2n = ERR_XXXX;
-  /*p29.WONE*/ TpLatch WONE_OAM_LATCH_DA3n = ERR_XXXX;
-  /*p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n = ERR_XXXX;
-  /*p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n = ERR_XXXX;
-  /*p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n = ERR_XXXX;
-  /*p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n = ERR_XXXX;
+  /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n;
+  /*p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n;
+  /*p29.ZUCA*/ TpLatch ZUCA_OAM_LATCH_DA2n;
+  /*p29.WONE*/ TpLatch WONE_OAM_LATCH_DA3n;
+  /*p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n;
+  /*p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n;
+  /*p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n;
+  /*p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n;
 
-  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p = ERR_XXXX;
-  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p = ERR_XXXX;
-  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p = ERR_XXXX;
-  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p = ERR_XXXX;
-  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p = ERR_XXXX;
-  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p = ERR_XXXX;
+  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
+  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
+  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p;
+  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p;
+  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p;
+  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p;
 
   // oam byte 0, byte 2
-  /*p29.XUSO*/ DFF8 XUSO_OAM_DA0p = ERR_XXXX; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ DFF8 XEGU_OAM_DA1p = ERR_XXXX; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ DFF8 YJEX_OAM_DA2p = ERR_XXXX; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ DFF8 XYJU_OAM_DA3p = ERR_XXXX; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ DFF8 YBOG_OAM_DA4p = ERR_XXXX; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ DFF8 WYSO_OAM_DA5p = ERR_XXXX; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ DFF8 XOTE_OAM_DA6p = ERR_XXXX; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ DFF8 YZAB_OAM_DA7p = ERR_XXXX; // sprite y bit 7, sprite tile index bit 7
+  /*p29.XUSO*/ DFF8 XUSO_OAM_DA0p; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ DFF8 XEGU_OAM_DA1p; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ DFF8 YJEX_OAM_DA2p; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ DFF8 XYJU_OAM_DA3p; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ DFF8 YBOG_OAM_DA4p; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ DFF8 WYSO_OAM_DA5p; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ DFF8 XOTE_OAM_DA6p; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ DFF8 YZAB_OAM_DA7p; // sprite y bit 7, sprite tile index bit 7
 
   // oam byte 1, byte 3
-  /*p31.YLOR*/ DFF8 YLOR_OAM_DB0p = ERR_XXXX; // sprite x bit 0,
-  /*p31.ZYTY*/ DFF8 ZYTY_OAM_DB1p = ERR_XXXX; // sprite x bit 1,
-  /*p31.ZYVE*/ DFF8 ZYVE_OAM_DB2p = ERR_XXXX; // sprite x bit 2,
-  /*p31.ZEZY*/ DFF8 ZEZY_OAM_DB3p = ERR_XXXX; // sprite x bit 3,
-  /*p31.GOMO*/ DFF8 GOMO_OAM_DB4p = ERR_XXXX; // sprite x bit 4, sprite palette
-  /*p31.BAXO*/ DFF8 BAXO_OAM_DB5p = ERR_XXXX; // sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ DFF8 YZOS_OAM_DB6p = ERR_XXXX; // sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ DFF8 DEPO_OAM_DB7p = ERR_XXXX; // sprite x bit 7, sprite priority
+  /*p31.YLOR*/ DFF8 YLOR_OAM_DB0p; // sprite x bit 0,
+  /*p31.ZYTY*/ DFF8 ZYTY_OAM_DB1p; // sprite x bit 1,
+  /*p31.ZYVE*/ DFF8 ZYVE_OAM_DB2p; // sprite x bit 2,
+  /*p31.ZEZY*/ DFF8 ZEZY_OAM_DB3p; // sprite x bit 3,
+  /*p31.GOMO*/ DFF8 GOMO_OAM_DB4p; // sprite x bit 4, sprite palette
+  /*p31.BAXO*/ DFF8 BAXO_OAM_DB5p; // sprite x bit 5, sprite x flip
+  /*p31.YZOS*/ DFF8 YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip
+  /*p31.DEPO*/ DFF8 DEPO_OAM_DB7p; // sprite x bit 7, sprite priority
 
-  Pin PIN_OAM_CLK  = ERR_XXXX;
-  Pin PIN_OAM_OE   = ERR_XXXX;
-  Pin PIN_OAM_WR_A = ERR_XXXX;
-  Pin PIN_OAM_WR_B = ERR_XXXX;
+  Pin PIN_OAM_CLK ;
+  Pin PIN_OAM_OE  ;
+  Pin PIN_OAM_WR_A;
+  Pin PIN_OAM_WR_B;
 
-  Bus BUS_OAM_A0n  = ERR_XXXX;
-  Bus BUS_OAM_A1n  = ERR_XXXX;
-  Bus BUS_OAM_A2n  = ERR_XXXX;
-  Bus BUS_OAM_A3n  = ERR_XXXX;
-  Bus BUS_OAM_A4n  = ERR_XXXX;
-  Bus BUS_OAM_A5n  = ERR_XXXX;
-  Bus BUS_OAM_A6n  = ERR_XXXX;
-  Bus BUS_OAM_A7n  = ERR_XXXX;
+  Bus BUS_OAM_A0n ;
+  Bus BUS_OAM_A1n ;
+  Bus BUS_OAM_A2n ;
+  Bus BUS_OAM_A3n ;
+  Bus BUS_OAM_A4n ;
+  Bus BUS_OAM_A5n ;
+  Bus BUS_OAM_A6n ;
+  Bus BUS_OAM_A7n ;
 
-  Bus BUS_OAM_DA0n = ERR_XXXX;
-  Bus BUS_OAM_DA1n = ERR_XXXX;
-  Bus BUS_OAM_DA2n = ERR_XXXX;
-  Bus BUS_OAM_DA3n = ERR_XXXX;
-  Bus BUS_OAM_DA4n = ERR_XXXX;
-  Bus BUS_OAM_DA5n = ERR_XXXX;
-  Bus BUS_OAM_DA6n = ERR_XXXX;
-  Bus BUS_OAM_DA7n = ERR_XXXX;
+  Bus BUS_OAM_DA0n;
+  Bus BUS_OAM_DA1n;
+  Bus BUS_OAM_DA2n;
+  Bus BUS_OAM_DA3n;
+  Bus BUS_OAM_DA4n;
+  Bus BUS_OAM_DA5n;
+  Bus BUS_OAM_DA6n;
+  Bus BUS_OAM_DA7n;
 
-  Bus BUS_OAM_DB0n = ERR_XXXX;
-  Bus BUS_OAM_DB1n = ERR_XXXX;
-  Bus BUS_OAM_DB2n = ERR_XXXX;
-  Bus BUS_OAM_DB3n = ERR_XXXX;
-  Bus BUS_OAM_DB4n = ERR_XXXX;
-  Bus BUS_OAM_DB5n = ERR_XXXX;
-  Bus BUS_OAM_DB6n = ERR_XXXX;
-  Bus BUS_OAM_DB7n = ERR_XXXX;
+  Bus BUS_OAM_DB0n;
+  Bus BUS_OAM_DB1n;
+  Bus BUS_OAM_DB2n;
+  Bus BUS_OAM_DB3n;
+  Bus BUS_OAM_DB4n;
+  Bus BUS_OAM_DB5n;
+  Bus BUS_OAM_DB6n;
+  Bus BUS_OAM_DB7n;
 };
 
 //-----------------------------------------------------------------------------

@@ -21,7 +21,7 @@ struct PixelPipe {
     XYMU_RENDERINGp.reset(TRI_D0NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
     RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
-    SOVY_WIN_FIRST_TILE_B;
+    SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
 
     XEHO_X0p.reset(REG_D0C0);
     SAVY_X1p.reset(REG_D0C0);

@@ -28,6 +28,25 @@ struct SchematicTop {
   void reset() {}
 
   void reset_bootrom() {
+    UMUT_MODE_DBG1p.reset(TRI_HZNP);
+    UNOR_MODE_DBG2p.reset(TRI_HZNP);
+    UPOJ_MODE_PRODn.reset(TRI_HZNP);
+    TUTO_DBG_VRAMp.reset(TRI_HZNP);
+    ABUZ_AVn.reset(TRI_HZNP);
+    TEDO_CPU_RDp.reset(TRI_HZNP);
+    LEKO_CPU_RDp.reset(TRI_HZNP);
+    TAPU_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
+    APOV_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
+    NYXU_FETCH_TRIGn.reset(TRI_HZNP);
+    TEVO_FETCH_TRIGp.reset(TRI_HZNP);
+    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_HZNP);
+    ACYL_SCANNINGp.reset(TRI_HZNP);
+    AVAP_RENDER_START_TRIGp.reset(TRI_HZNP);
+    TUTU_ADDR_BOOTp.reset(TRI_HZNP);
+    DECY_LATCH_EXTn.reset(TRI_HZNP);
+    AJON_OAM_BUSY.reset(TRI_HZNP);
+    AJUJ_OAM_BUSYn.reset(TRI_HZNP);
+
     oam_bus.reset_bootrom();
     ext_bus.reset_bootrom();
     cpu_bus.reset_bootrom();
@@ -78,31 +97,19 @@ struct SchematicTop {
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
   /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;
   /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
-
   /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
-
   /*p01.ABUZ*/ Sig ABUZ_AVn;
-
   /*p07.TEDO*/ Sig TEDO_CPU_RDp;
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
   /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;
-
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
-
   /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
-
   /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
-
   /*p28.ACYL*/ Sig ACYL_SCANNINGp;
-
-  /*#p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
-
+  /*p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
   /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
-
-
   /*p04.DECY*/ Sig DECY_LATCH_EXTn;
-
   /*p28.AJON*/ Sig AJON_OAM_BUSY;
   /*p28.AJUJ*/ Sig AJUJ_OAM_BUSYn;
 
@@ -130,14 +137,14 @@ struct SchematicTop {
 
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAM;
 
-  Pin PIN_LCD_DATA1 = TRI_HZNP; // PIN_50
-  Pin PIN_LCD_DATA0 = TRI_HZNP; // PIN_51
-  Pin PIN_LCD_CNTRL = TRI_HZNP; // PIN_52
-  Pin PIN_LCD_CLOCK = TRI_HZNP; // PIN_53
-  Pin PIN_LCD_HSYNC = TRI_HZNP; // PIN_54
-  Pin PIN_LCD_LATCH = TRI_HZNP; // PIN_55
-  Pin PIN_LCD_ALTSG = TRI_HZNP; // PIN_56
-  Pin PIN_LCD_VSYNC = TRI_HZNP; // PIN_57
+  Pin PIN_LCD_DATA1; // PIN_50
+  Pin PIN_LCD_DATA0; // PIN_51
+  Pin PIN_LCD_CNTRL; // PIN_52
+  Pin PIN_LCD_CLOCK; // PIN_53
+  Pin PIN_LCD_HSYNC; // PIN_54
+  Pin PIN_LCD_LATCH; // PIN_55
+  Pin PIN_LCD_ALTSG; // PIN_56
+  Pin PIN_LCD_VSYNC; // PIN_57
 
   DFF IE_D0;
   DFF IE_D1;

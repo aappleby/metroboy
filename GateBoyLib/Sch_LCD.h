@@ -73,53 +73,53 @@ struct LcdRegisters {
                            SOTA_LYC4n.q08n(), VAFA_LYC5n.q08n(), VEVO_LYC6n.q08n(), RAHA_LYC7n.q08n());
   }
 
-  /*p21.PARU*/ Sig   PARU_VBLANKp_d4 = ERR_XXXX;     // -> pix pipe
-  /*p28.ATEJ*/ Sig   ATEJ_LINE_TRIGp = ERR_XXXX;     // -> buncha stuff
-  /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp = ERR_XXXX;    // -> interrupts
-  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp = ERR_XXXX; // -> pix pipe for int stat, fires on P002, clears on the following P002
+  /*p21.PARU*/ Sig   PARU_VBLANKp_d4;     // -> pix pipe
+  /*p28.ATEJ*/ Sig   ATEJ_LINE_TRIGp;     // -> buncha stuff
+  /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;    // -> interrupts
+  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 
-  /*p29.CATU*/ DFF17 CATU_LINE_P000 = ERR_XXXX; // -> pix pipe, scanner.
-  /*p21.NYPE*/ DFF17 NYPE_LINE_P002 = ERR_XXXX;
-  /*p28.ANEL*/ DFF17 ANEL_LINE_P002 = ERR_XXXX; // -> pix pipe for BYHA?
-  /*p21.RUTU*/ DFF17 RUTU_LINE_P910 = ERR_XXXX; // -> pix pipe, could move PURE here.
+  /*p29.CATU*/ DFF17 CATU_LINE_P000; // -> pix pipe, scanner.
+  /*p21.NYPE*/ DFF17 NYPE_LINE_P002;
+  /*p28.ANEL*/ DFF17 ANEL_LINE_P002; // -> pix pipe for BYHA?
+  /*p21.RUTU*/ DFF17 RUTU_LINE_P910; // -> pix pipe, could move PURE here.
 
   // -> pix pipe, sprite scanner, vram bus. Increments at P910
-  /*p21.MUWY*/ DFF17 MUWY_Y0p = ERR_XXXX;
-  /*p21.MYRO*/ DFF17 MYRO_Y1p = ERR_XXXX;
-  /*p21.LEXA*/ DFF17 LEXA_Y2p = ERR_XXXX;
-  /*p21.LYDO*/ DFF17 LYDO_Y3p = ERR_XXXX;
-  /*p21.LOVU*/ DFF17 LOVU_Y4p = ERR_XXXX;
-  /*p21.LEMA*/ DFF17 LEMA_Y5p = ERR_XXXX;
-  /*p21.MATO*/ DFF17 MATO_Y6p = ERR_XXXX;
-  /*p21.LAFO*/ DFF17 LAFO_Y7p = ERR_XXXX;
+  /*p21.MUWY*/ DFF17 MUWY_Y0p;
+  /*p21.MYRO*/ DFF17 MYRO_Y1p;
+  /*p21.LEXA*/ DFF17 LEXA_Y2p;
+  /*p21.LYDO*/ DFF17 LYDO_Y3p;
+  /*p21.LOVU*/ DFF17 LOVU_Y4p;
+  /*p21.LEMA*/ DFF17 LEMA_Y5p;
+  /*p21.MATO*/ DFF17 MATO_Y6p;
+  /*p21.LAFO*/ DFF17 LAFO_Y7p;
 
 private:
 
   // Increments at P010 (because of RUTU holding it in reset) and then at every A phase.
-  /*p21.SAXO*/ DFF17 SAXO_X0p = ERR_XXXX;
-  /*p21.TYPO*/ DFF17 TYPO_X1p = ERR_XXXX;
-  /*p21.VYZO*/ DFF17 VYZO_X2p = ERR_XXXX;
-  /*p21.TELU*/ DFF17 TELU_X3p = ERR_XXXX;
-  /*p21.SUDE*/ DFF17 SUDE_X4p = ERR_XXXX;
-  /*p21.TAHA*/ DFF17 TAHA_X5p = ERR_XXXX;
-  /*p21.TYRY*/ DFF17 TYRY_X6p = ERR_XXXX;
+  /*p21.SAXO*/ DFF17 SAXO_X0p;
+  /*p21.TYPO*/ DFF17 TYPO_X1p;
+  /*p21.VYZO*/ DFF17 VYZO_X2p;
+  /*p21.TELU*/ DFF17 TELU_X3p;
+  /*p21.SUDE*/ DFF17 SUDE_X4p;
+  /*p21.TAHA*/ DFF17 TAHA_X5p;
+  /*p21.TYRY*/ DFF17 TYRY_X6p;
 
-  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp = ERR_XXXX; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
-  /*p21.MYTA*/ DFF17 MYTA_LINE_153p = ERR_XXXX;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
-  /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE = ERR_XXXX;
-  /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn = ERR_XXXX;
-  /*p24.LUCA*/ DFF17 LUCA_LINE_EVEN = ERR_XXXX;
-  /*p21.NAPO*/ DFF17 NAPO_FRAME_EVEN = ERR_XXXX;
+  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.MYTA*/ DFF17 MYTA_LINE_153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
+  /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
+  /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;
+  /*p24.LUCA*/ DFF17 LUCA_LINE_EVEN;
+  /*p21.NAPO*/ DFF17 NAPO_FRAME_EVEN;
 
   // FF45 - LYC
-  /*p23.SYRY*/ DFF9 SYRY_LYC0n = ERR_XXXX;
-  /*p23.VUCE*/ DFF9 VUCE_LYC1n = ERR_XXXX;
-  /*p23.SEDY*/ DFF9 SEDY_LYC2n = ERR_XXXX;
-  /*p23.SALO*/ DFF9 SALO_LYC3n = ERR_XXXX;
-  /*p23.SOTA*/ DFF9 SOTA_LYC4n = ERR_XXXX;
-  /*p23.VAFA*/ DFF9 VAFA_LYC5n = ERR_XXXX;
-  /*p23.VEVO*/ DFF9 VEVO_LYC6n = ERR_XXXX;
-  /*p23.RAHA*/ DFF9 RAHA_LYC7n = ERR_XXXX;
+  /*p23.SYRY*/ DFF9 SYRY_LYC0n;
+  /*p23.VUCE*/ DFF9 VUCE_LYC1n;
+  /*p23.SEDY*/ DFF9 SEDY_LYC2n;
+  /*p23.SALO*/ DFF9 SALO_LYC3n;
+  /*p23.SOTA*/ DFF9 SOTA_LYC4n;
+  /*p23.VAFA*/ DFF9 VAFA_LYC5n;
+  /*p23.VEVO*/ DFF9 VEVO_LYC6n;
+  /*p23.RAHA*/ DFF9 RAHA_LYC7n;
 };
 
 //-----------------------------------------------------------------------------

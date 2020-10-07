@@ -10,7 +10,51 @@ struct CpuBus;
 
 struct Timer {
   void reset() {}
-  void reset_bootrom() {}
+
+  void reset_bootrom() {
+    UKUP_DIV_00.reset(REG_D0C0);
+    UFOR_DIV_01.reset(REG_D0C0);
+    UNER_DIV_02.reset(REG_D0C0);
+    TERO_DIV_03.reset(REG_D0C0);
+    UNYK_DIV_04.reset(REG_D0C0);
+    TAMA_DIV_05.reset(REG_D0C0);
+    UGOT_DIV_06.reset(REG_D0C0);
+    TULU_DIV_07.reset(REG_D0C0);
+    TUGO_DIV_08.reset(REG_D0C0);
+    TOFE_DIV_09.reset(REG_D0C0);
+    TERU_DIV_10.reset(REG_D0C0);
+    SOLA_DIV_11.reset(REG_D0C0);
+    SUBU_DIV_12.reset(REG_D0C0);
+    TEKA_DIV_13.reset(REG_D0C0);
+    UKET_DIV_14.reset(REG_D0C0);
+    UPOF_DIV_15.reset(REG_D0C0);
+
+    NYDU_TIMA_D7_DELAY.reset(REG_D0C0);
+    MOBA_TIMER_OVERFLOWp.reset(REG_D0C0);
+
+    REGA_TIMA_D0.reset(REG_D0C0);
+    POVY_TIMA_D1.reset(REG_D0C0);
+    PERU_TIMA_D2.reset(REG_D0C0);
+    RATE_TIMA_D3.reset(REG_D0C0);
+    RUBY_TIMA_D4.reset(REG_D0C0);
+    RAGE_TIMA_D5.reset(REG_D0C0);
+    PEDA_TIMA_D6.reset(REG_D0C0);
+    NUGA_TIMA_D7.reset(REG_D0C0);
+
+    SABU_TMA_D0.reset(REG_D0C0);
+    NYKE_TMA_D1.reset(REG_D0C0);
+    MURU_TMA_D2.reset(REG_D0C0);
+    TYVA_TMA_D3.reset(REG_D0C0);
+    TYRU_TMA_D4.reset(REG_D0C0);
+    SUFY_TMA_D5.reset(REG_D0C0);
+    PETO_TMA_D6.reset(REG_D0C0);
+    SETA_TMA_D7.reset(REG_D0C0);
+
+    SOPU_TAC_D0.reset(REG_D0C0);
+    SAMY_TAC_D1.reset(REG_D0C0);
+    SABO_TAC_D2.reset(REG_D0C0);
+  }
+
   void dump(Dumper& d) const;
   void tick(const SchematicTop& top);
   void tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus);

@@ -152,14 +152,14 @@ void OamBus::tock(SchematicTop& top) {
 
   //----------------------------------------
 
-  probe(3,  "TEDO_CPU_RDp",          TEDO_CPU_RDp);
-  probe(4,  "CUPA_CPU_WRp_xxxxEFGx", CUPA_CPU_WRp_xxxxEFGx);
-  probe(5,  "SARO_FE00_FEFFp",       SARO_FE00_FEFFp);
-  probe(6,  "MATU_DMA_RUNNINGp",     top.dma_reg.MATU_DMA_RUNNINGp.qp());
-  probe(7,  "XYMU_RENDERINGp",       top.pix_pipe.XYMU_RENDERINGp.qp());
-  probe(8,  "BESU_SCANNINGp",        top.sprite_scanner.BESU_SCANNINGp.qp());
-  probe(9,  "AJON_PPU_OAM_ENp",         AJON_PPU_OAM_ENp);
-  probe(10, "AMAB_CPU_OAM_ENp",      AMAB_CPU_OAM_ENp);
+  //probe( 5, "BESU_SCANNINGp",        top.sprite_scanner.BESU_SCANNINGp.qp());
+  //probe( 6, "XYMU_RENDERINGp",       top.pix_pipe.XYMU_RENDERINGp.qp());
+  //probe( 7, "MATU_DMA_RUNNINGp",     top.dma_reg.MATU_DMA_RUNNINGp.qp());
+  //probe(10, "TEDO_CPU_RDp",          TEDO_CPU_RDp);
+  //probe(11, "CUPA_CPU_WRp_xxxxEFGx", CUPA_CPU_WRp_xxxxEFGx);
+  //probe(12, "SARO_FE00_FEFFp",       SARO_FE00_FEFFp);
+  //probe(13, "AJON_PPU_OAM_ENp",      AJON_PPU_OAM_ENp);
+  //probe(14, "AMAB_CPU_OAM_ENp",      AMAB_CPU_OAM_ENp);
 
   //----------------------------------------
   // OAM address mux
@@ -213,36 +213,33 @@ void OamBus::tock(SchematicTop& top) {
 
   //----------------------------------------
   // OAM pins
+  // PIN_CPU_LATCH_EXT _blocks_ DMA from writing to OAM? wat?
 
   {
+    /*p04.MAKA*/ MAKA_HOLD_MEMp.tock(ZEME_AxCxExGx, CUNU_SYS_RSTn, CATY_LATCH_EXTp);
+    /*p04.NAXY*/ wire NAXY_DMA_OAM_WRp = nor2(UVYT_ABCDxxxx, MAKA_HOLD_MEMp.qp()); // def nor2
+    /*p04.POWU*/ wire POWU_DMA_OAM_WRp  = and2(top.dma_reg.MATU_DMA_RUNNINGp.qp(), NAXY_DMA_OAM_WRp); // def and
+
+    PIN_OAM_CLK.set(COTA_OAM_CLKn);
+
     /*#p28.BODE*/ wire BODE_OAM_OEp = not1(ASYT_OAM_OEn);
     /*#p28.YVAL*/ wire YVAL_OAM_OEn = not1(BODE_OAM_OEp);
     /*#p28.YRYV*/ wire YRYU_OAM_OEp = not1(YVAL_OAM_OEn);
     /*#p28.ZODO*/ wire ZODO_OAM_OEn = not1(YRYU_OAM_OEp);
-
-    probe(12, "PIN_OAM_OE", !ZODO_OAM_OEn);
-
     PIN_OAM_OE.set(ZODO_OAM_OEn);
-  }
 
-  {
-    // PIN_CPU_LATCH_EXT _blocks_ DMA from writing to OAM? wat?
-
-    /*p04.MAKA*/ MAKA_HOLD_MEMp.tock(ZEME_AxCxExGx, CUNU_SYS_RSTn, CATY_LATCH_EXTp);
-
-    /*p04.NAXY*/ wire NAXY_DMA_OAM_WRp = nor2(UVYT_ABCDxxxx, MAKA_HOLD_MEMp.qp()); // def nor2
-    /*p04.POWU*/ wire POWU_DMA_OAM_WRp  = and2(top.dma_reg.MATU_DMA_RUNNINGp.qp(), NAXY_DMA_OAM_WRp); // def and
     /*p04.WYJA*/ wire WYJA_OAM_WRp      = and_or3(AMAB_CPU_OAM_ENp, CUPA_CPU_WRp_xxxxEFGx, POWU_DMA_OAM_WRp);
+    /*p28.YNYC*/ wire YNYC_OAM_A_WRp = and2(WYJA_OAM_WRp, WAFO_OAM_A0n);
+    /*p28.YLYC*/ wire YLYC_OAM_B_WRp = and2(WYJA_OAM_WRp, GEKA_OAM_A0p);
+    /*p28.ZOFE*/ wire ZOFE_OAM_A_WRn = not1(YNYC_OAM_A_WRp);
+    /*p28.ZONE*/ wire ZONE_OAM_B_WRn = not1(YLYC_OAM_B_WRp);
+    PIN_OAM_WR_A.set(ZOFE_OAM_A_WRn);
+    PIN_OAM_WR_B.set(ZONE_OAM_B_WRn);
 
-    probe(11, "WYJA_OAM_WRp", WYJA_OAM_WRp);
-
-    /*p28.YNYC*/ wire YNYC_OAM_B_WRp = and2(WYJA_OAM_WRp, WAFO_OAM_A0n);
-    /*p28.ZOFE*/ wire ZOFE = not1(YNYC_OAM_B_WRp);
-    PIN_OAM_WR_A.set(ZOFE);
-
-    /*p28.YLYC*/ wire YLYC_OAM_A_WRp = and2(WYJA_OAM_WRp, GEKA_OAM_A0p);
-    /*p28.ZONE*/ wire ZONE = not1(YLYC_OAM_A_WRp);
-    PIN_OAM_WR_B.set(ZONE);
+    //probe(20, "PIN_OAM_CLKp", !COTA_OAM_CLKn);
+    //probe(21, "PIN_OAM_OEp", !ZODO_OAM_OEn);
+    //probe(22, "PIN_OAM_WR_Ap", !ZOFE);
+    //probe(23, "PIN_OAM_WR_Bp", !ZONE);
   }
 
   //----------------------------------------
@@ -352,11 +349,6 @@ void OamBus::tock(SchematicTop& top) {
     /* p31.CYRA*/ CYRA_OAM_LATCH_DB5n.tp_latch(BODE_HOLDn, BUS_OAM_DB5n.qp());
     /* p31.ZUVE*/ ZUVE_OAM_LATCH_DB6n.tp_latch(BODE_HOLDn, BUS_OAM_DB6n.qp());
     /* p31.ECED*/ ECED_OAM_LATCH_DB7n.tp_latch(BODE_HOLDn, BUS_OAM_DB7n.qp());
-  }
-
-  // OBL -> OBR
-  {
-    PIN_OAM_CLK.set(COTA_OAM_CLKn);
   }
 
   // OBL -> CBD

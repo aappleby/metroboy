@@ -14,7 +14,6 @@ Probes::Probes() {
 
   for (int i = 0; i < channel_count; i++) {
     memset(names[i], 0, 32);
-    sprintf_s(names[i], sample_count, "<probe %02d>", i);
   }
 
   memset(samples, '_', channel_count * sample_count);
@@ -38,10 +37,15 @@ void Probes::end_pass() {
 
 void Probes::dump(Dumper& d) {
   for (int y = 0; y < channel_count; y++) {
-    d("%-24s : ", names[y]);
-    auto s = samples[y];
-    for (int x = 0; x < sample_count; x++) {
-      d.add_char(s[(cursor + x + 1) % sample_count]);
+    if (names[y][0]) {
+      d("%-24s : ", names[y]);
+      auto s = samples[y];
+      for (int x = 0; x < sample_count; x++) {
+        d.add_char(s[(cursor + x + 1) % sample_count]);
+      }
+    }
+    else {
+      d("---");
     }
     d.add_char('\n');
   }

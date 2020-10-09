@@ -1,104 +1,132 @@
-*   lcdon_to_stat1_d.gb             133  132    1  255 FAIL @ 17599 // phase 140648. stat goes to 0 on the phase C _after_ the read
-    ags fail
-*   lcdon_to_stat2_a.gb             132  128    4  255 FAIL @ 157   // lyc match goes to 0 on the phase C _after_ the read
-    ags fail
-    poweron_006_stat.gb             133  132    1  255 FAIL @ 31    // stat 0 goes to 0 on the phase C _after_ the read
-    ags fail
-    poweron_120_stat.gb             132  128    4  255 FAIL @ 145
-    ags fail
+line_153_lyc0_int_inc_sled.gb
+  dmg pass, ags pass
 
+ppu_sprite0_scx3_a.gb
+  dmg pass, ags fail
+ppu_sprite0_scx7_a.gb
+  dmg pass, ags fail
 
-*   lcdon_to_oam_unlock_d.gb          0   39  -39  255 FAIL @ 109   // XYMU goes 0 on phase H during the read, but OAM is still locked until A. Race between H and A?
-    ags pass
-    should PIN_OAM_OE be low on EFGH?
+//----------
+// STAT
 
+lcdon_to_stat1_d.gb
+  dmg pass, ags fail
+lcdon_to_stat2_a.gb
+  dmg pass, ags fail
+poweron_006_stat.gb
+  dmg pass, ags fail
+poweron_120_stat.gb
+  dmg pass, ags fail
 
-*   line_153_lyc0_int_inc_sled.gb    97   98   -1  255 FAIL @ 17491 // int firing on phase C before the last inc
-    ags pass
+stat_write_glitch_l0_a.gb
+  dmg pass, ags fail
+stat_write_glitch_l0_b.gb
+  dmg pass, ags fail
+stat_write_glitch_l1_b.gb
+  dmg pass, ags fail
+stat_write_glitch_l1_c.gb
+  dmg pass, ags fail
 
-*   oam_read_l0_d.gb                  0  240 -240  255 FAIL @ 101 // XYMU goes 0 on phase H during the read, but OAM is still locked until A. Race between H and A?
-    ags pass
-*   oam_read_l1_a.gb                240  255  -15  255 FAIL @ 151 // LATCH_EXT goes to 1 on phase E, but BESU_SCANNINGp doesn't go to 1 until A
-    ags pass
-*   oam_read_l1_f.gb                240  255  -15  255 FAIL @ 265 // LATCH_EXT goes to 1 on phase E, but BESU_SCANNINGp doesn't go to 1 until A
-    ags pass
+//----------
+// OAM
 
+lcdon_to_oam_unlock_d.gb
+  dmg pass, ags pass
+  should PIN_OAM_OE be low on EFGH?
 
-*   oam_write_l0_b.gb               145  240  -95  255 FAIL @ 107 // WR_A has a glitch to 0 in phase D, we should prob be using the oam clock...
-    the write should _not_ go through
-    CPU_WRp hitting two passes before XYMU goes high
-    ags pass
+oam_read_l0_d.gb
+  dmg pass, ags pass
+  PIN_OAM_OEp high way before AMAB_CPU_OEM_ENp
 
-*   oam_write_l0_d.gb               240  145   95  255 FAIL @ 110 // something w/ OAM_CLK, OAM_WR, etc. gliches in HA
-    CPU_WRp goes low before rendering finishes
-    ags pass
+oam_read_l1_a.gb
+  dmg pass, ags pass
 
-*   oam_write_l1_c.gb               240  145   95  255 FAIL @ 228 // glitch gap between scanning and rendering
-    CPU_WRp pulse happens too far before the scan/render gap
-    ags fail
+oam_read_l1_f.gb
+  dmg pass, ags pass
 
+oam_write_l0_b.gb
+  dmg pass, ags pass
+  the write should _not_ go through
+  CPU_WRp hitting two passes before XYMU goes high
 
+oam_write_l0_d.gb
+  dmg pass, ags pass
+  CPU_WRp goes low before rendering finishes
 
+oam_write_l1_c.gb
+  dmg pass, ags fail
+  CPU_WRp pulse happens too far before the scan/render gap
 
-*   poweron_006_oam.gb                0  255 -255  255 FAIL @ 31
-    ags fail
-    poweron_120_oam.gb                0  255 -255  255 FAIL @ 145
-    ags fail
-    poweron_234_oam.gb                0  255 -255  255 FAIL @ 259
-    ags fail
+poweron_006_oam.gb
+  dmg pass, ags fail
+poweron_120_oam.gb
+  dmg pass, ags fail
+poweron_234_oam.gb
+  dmg pass, ags fail
 
+//----------
+// VRAM
 
+poweron_026_vram.gb
+  dmg pass, ags fail
+poweron_140_vram.gb
+  dmg pass, ags fail
 
-*   poweron_026_vram.gb               0  255 -255  255 FAIL @ 51
-    ags fail
-    poweron_140_vram.gb               0  255 -255  255 FAIL @ 165
-    ags fail
+//----------
+// PPU
 
-
-
-
-
-
-
-*   ppu_sprite0_scx3_a.gb           128  131   -3  255 FAIL @ 234 // this one looks actually broken, stat goes 0 a full cycle before the read.
-  ags fail
-*   ppu_sprite0_scx7_a.gb           128  131   -3  255 FAIL @ 234 // stat changes 0 on same phase B as read addr goes on the bus
-  ags fail
-
-*   stat_write_glitch_l0_a.gb       224  226   -2  255 FAIL @ 51
-  ags fail
-*   stat_write_glitch_l0_b.gb       224  226   -2  255 FAIL @ 160
-  ags fail
-*   stat_write_glitch_l1_b.gb       224  226   -2  255 FAIL @ 224
-  ags fail
-*   stat_write_glitch_l1_c.gb       224  226   -2  255 FAIL @ 274
-  ags fail
-
-
-
-
-
-
-m3_bgp_change.gb - fail, check lcd interface
+m3_bgp_change.gb
+  fail, check lcd interface
   bgp change appears to be taking effect too early
 
-m3_lcdc_obj_en_change.gb - off by one pixel
-m3_lcdc_obj_en_change_variant.gb - off by one pixel again
-m3_lcdc_obj_size_change.gb - fail!?!
-m3_lcdc_obj_size_change_scx.gb - fail!?!
-m3_obp0_change.gb - close but no cigar, slightly off by one pixel in a few places
-m3_bgp_change_sprites.gb - off by 1 or 2 pixels
+m3_lcdc_obj_en_change.gb
+  off by one pixel
+
+m3_lcdc_obj_en_change_variant.gb
+  off by one pixel again
+
+m3_lcdc_obj_size_change.gb
+  fail!?!
+
+m3_lcdc_obj_size_change_scx.gb
+  fail!?!
+
+m3_obp0_change.gb
+  close but no cigar, slightly off by one pixel in a few places
+
+m3_bgp_change_sprites.gb
+  off by 1 or 2 pixels
 
 m3_lcdc_bg_en_change.gb
+  off by one on the left side
+
 m3_lcdc_bg_map_change.gb
+  left edge wrong, probably not clearing the pix OR
+
 m3_lcdc_tile_sel_change.gb
+  same left edge thing
+
 m3_lcdc_tile_sel_win_change.gb
+  same left edge thing
+
 m3_lcdc_win_en_change_multiple.gb
+  something supa brokens
+
 m3_lcdc_win_en_change_multiple_wx.gb
+  golden doesn't load?
+
 m3_lcdc_win_map_change.gb
+  same left edge thing
+
 m3_scx_low_3_bits.gb
+  pass, but screen coords go funny
+
 m3_window_timing.gb
+  off by one and something broken
+
 m3_window_timing_wx_0.gb
+  off by one and something broken
+
 m3_wx_4_change.gb
 m3_wx_4_change_sprites.gb
 m3_wx_5_change.gb

@@ -111,10 +111,10 @@ void GateBoyApp::app_init() {
 
   // run rom
 
-  //load_rom   ("roms/mealybug/m3_bgp_change.gb");
-  //load_golden("roms/mealybug/m3_bgp_change.bmp");
+  load_rom   ("roms/mealybug/m3_window_timing_wx_0.gb");
+  load_golden("roms/mealybug/m3_window_timing_wx_0.bmp");
 
-  load_rom("microtests/build/dmg/oam_read_l0_d.gb");
+  //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 
   GateBoy::current = gb.state();
 }

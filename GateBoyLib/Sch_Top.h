@@ -67,8 +67,8 @@ struct SchematicTop {
     PIN_LCD_CNTRL.reset(TRI_D0NP);
     PIN_LCD_CLOCK.reset(TRI_D0NP);
     PIN_LCD_HSYNC.reset(TRI_D0NP);
-    PIN_LCD_NEWLINE.reset(TRI_D0NP);
-    PIN_LCD_ALTSG.reset(TRI_D0NP);
+    PIN_LCD_DATALCH.reset(TRI_D0NP);
+    PIN_LCD_ALTSIGL.reset(TRI_D0NP);
     PIN_LCD_VSYNC.reset(TRI_D0NP);
 
     IE_D0.reset(REG_D0C1);
@@ -123,8 +123,8 @@ struct SchematicTop {
     PIN_LCD_CNTRL.reset(TRI_HZNP);
     PIN_LCD_CLOCK.reset(TRI_HZNP);
     PIN_LCD_HSYNC.reset(TRI_HZNP);
-    PIN_LCD_NEWLINE.reset(TRI_HZNP);
-    PIN_LCD_ALTSG.reset(TRI_HZNP);
+    PIN_LCD_DATALCH.reset(TRI_HZNP);
+    PIN_LCD_ALTSIGL.reset(TRI_HZNP);
     PIN_LCD_VSYNC.reset(TRI_HZNP);
 
     IE_D0.reset(REG_D0C0);
@@ -194,8 +194,8 @@ struct SchematicTop {
   Pin PIN_LCD_CNTRL; // PIN_52
   Pin PIN_LCD_CLOCK; // PIN_53
   Pin PIN_LCD_HSYNC; // PIN_54
-  Pin PIN_LCD_NEWLINE; // PIN_55
-  Pin PIN_LCD_ALTSG; // PIN_56
+  Pin PIN_LCD_DATALCH; // PIN_55
+  Pin PIN_LCD_ALTSIGL; // PIN_56
   Pin PIN_LCD_VSYNC; // PIN_57
 
   DFF IE_D0;

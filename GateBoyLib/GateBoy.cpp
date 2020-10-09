@@ -221,7 +221,7 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 void GateBoy::next_pass() {
 
   current = this;
-  probes.begin_pass();
+  probes.begin_pass(pass_count);
 
   //----------------------------------------
 
@@ -311,12 +311,7 @@ void GateBoy::next_pass() {
     top.joypad.set_buttons(sys_buttons);
   }
 
-  if (pass_count == 0) {
-    probe(0, "phase", ((pass_count == 0) ? "ABCDEFGH" : "abcdefgh")[phase_total & 7]);
-  }
-  else {
-    probe(0, "phase", '-');
-  }
+  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
 
   //----------------------------------------
   // Run one pass of our simulation.
@@ -352,6 +347,14 @@ void GateBoy::next_pass() {
   if (pass_count > 90) printf("!!!STUCK!!!\n");
 
   //----------
+
+  probe(10, "PIN_LCD_CLOCK",    top.PIN_LCD_CLOCK.qp());
+  probe(11, "PIN_LCD_HSYNC",    top.PIN_LCD_HSYNC.qp());
+  probe(12, "PIN_LCD_VSYNC",    top.PIN_LCD_VSYNC.qp());
+  probe(13, "PIN_LCD_DATA0",    top.PIN_LCD_DATA0.qp());
+  probe(14, "PIN_LCD_DATA1",    top.PIN_LCD_DATA1.qp());
+  probe(15, "PIN_LCD_DATALCH",  top.PIN_LCD_DATALCH.qp());
+
   // Send pixels to the display if necessary.
   // FIXME should probably use the lcd sync pins for this...
 
@@ -362,28 +365,22 @@ void GateBoy::next_pass() {
   // hsync should go low the same phase that lcd clock goes high
   // vsync 108.720 usec - right on 912 phases
 
-  uint8_t p0 = top.PIN_LCD_DATA0.qp();
-  uint8_t p1 = top.PIN_LCD_DATA1.qp();
-  framebuffer[screen_x + screen_y * 160] |= p0 + p1 * 2;
-
-  if (screen_x < 0 || screen_x >= 160 || screen_y < 0 || screen_y >= 154) printf("???\n");
-
-  if (top.PIN_LCD_CLOCK.posedge()) {
-    screen_x++;
-    framebuffer[screen_x + screen_y * 160] = 0;
+  if (top.PIN_LCD_VSYNC.posedge()) {
+    screen_y = 0;
   }
 
-  if (top.PIN_LCD_NEWLINE.negedge()) {
+  if (top.PIN_LCD_HSYNC.posedge()) {
+    screen_x = 0;
     screen_y++;
   }
 
-  if (top.PIN_LCD_HSYNC.qp()) {
-    screen_x = 0;
-    lcd_data_latch = 0;
-  }
-
-  if (top.PIN_LCD_VSYNC.qp()) {
-    screen_y = 0;
+  if (top.PIN_LCD_CLOCK.posedge()) {
+    if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 154) {
+      uint8_t p0 = top.PIN_LCD_DATA0.qp();
+      uint8_t p1 = top.PIN_LCD_DATA1.qp();
+      framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;
+    }
+    screen_x++;
   }
 
   if (!top.pix_pipe.XONA_LCDC_LCDENn.q08n()) {
@@ -440,8 +437,6 @@ void GateBoy::next_pass() {
     phase_total++;
     combine_hash(total_hash, pass_hash);
   }
-
-  probes.end_pass();
 }
 
 //-----------------------------------------------------------------------------

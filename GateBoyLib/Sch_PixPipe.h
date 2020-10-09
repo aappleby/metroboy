@@ -158,31 +158,32 @@ struct PixelPipe {
     VUMO_MASK_PIPE_6.reset(REG_D1C1);
     VAVA_MASK_PIPE_7.reset(REG_D1C1);
 
-    PAVO_BGP_D0n.reset(REG_D1C0);
-    NUSY_BGP_D1n.reset(REG_D1C0);
-    PYLU_BGP_D2n.reset(REG_D0C0);
-    MAXY_BGP_D3n.reset(REG_D0C0);
-    MUKE_BGP_D4n.reset(REG_D0C0);
-    MORU_BGP_D5n.reset(REG_D0C0);
-    MOGY_BGP_D6n.reset(REG_D0C0);
-    MENA_BGP_D7n.reset(REG_D0C0);
+    PAVO_BGP_D0n.reset(REG_D1C1);
+    NUSY_BGP_D1n.reset(REG_D1C1);
+    PYLU_BGP_D2n.reset(REG_D0C1);
+    MAXY_BGP_D3n.reset(REG_D0C1);
+    MUKE_BGP_D4n.reset(REG_D0C1);
+    MORU_BGP_D5n.reset(REG_D0C1);
+    MOGY_BGP_D6n.reset(REG_D0C1);
+    MENA_BGP_D7n.reset(REG_D0C1);
 
-    XUFU_OBP0_D0n.reset(REG_D0C0);
-    XUKY_OBP0_D1n.reset(REG_D0C0);
-    XOVA_OBP0_D2n.reset(REG_D0C0);
-    XALO_OBP0_D3n.reset(REG_D0C0);
-    XERU_OBP0_D4n.reset(REG_D0C0);
-    XYZE_OBP0_D5n.reset(REG_D0C0);
-    XUPO_OBP0_D6n.reset(REG_D0C0);
-    XANA_OBP0_D7n.reset(REG_D0C0);
-    MOXY_OBP1_D0n.reset(REG_D0C0);
-    LAWO_OBP1_D1n.reset(REG_D0C0);
-    MOSA_OBP1_D2n.reset(REG_D0C0);
-    LOSE_OBP1_D3n.reset(REG_D0C0);
-    LUNE_OBP1_D4n.reset(REG_D0C0);
-    LUGU_OBP1_D5n.reset(REG_D0C0);
-    LEPU_OBP1_D6n.reset(REG_D0C0);
-    LUXO_OBP1_D7n.reset(REG_D0C0);
+    XUFU_OBP0_D0n.reset(REG_D0C1);
+    XUKY_OBP0_D1n.reset(REG_D0C1);
+    XOVA_OBP0_D2n.reset(REG_D0C1);
+    XALO_OBP0_D3n.reset(REG_D0C1);
+    XERU_OBP0_D4n.reset(REG_D0C1);
+    XYZE_OBP0_D5n.reset(REG_D0C1);
+    XUPO_OBP0_D6n.reset(REG_D0C1);
+    XANA_OBP0_D7n.reset(REG_D0C1);
+
+    MOXY_OBP1_D0n.reset(REG_D0C1);
+    LAWO_OBP1_D1n.reset(REG_D0C1);
+    MOSA_OBP1_D2n.reset(REG_D0C1);
+    LOSE_OBP1_D3n.reset(REG_D0C1);
+    LUNE_OBP1_D4n.reset(REG_D0C1);
+    LUGU_OBP1_D5n.reset(REG_D0C1);
+    LEPU_OBP1_D6n.reset(REG_D0C1);
+    LUXO_OBP1_D7n.reset(REG_D0C1);
 
     NESO_WY0n.reset(REG_D1C1);
     NYRO_WY1n.reset(REG_D1C1);
@@ -591,34 +592,34 @@ private:
   /*p26.VAVA*/ DFF22 VAVA_MASK_PIPE_7;
 
   // FF47 - BGP
-  /*p36.PAVO*/ DFF8 PAVO_BGP_D0n;
-  /*p36.NUSY*/ DFF8 NUSY_BGP_D1n;
-  /*p36.PYLU*/ DFF8 PYLU_BGP_D2n;
-  /*p36.MAXY*/ DFF8 MAXY_BGP_D3n;
-  /*p36.MUKE*/ DFF8 MUKE_BGP_D4n;
-  /*p36.MORU*/ DFF8 MORU_BGP_D5n;
-  /*p36.MOGY*/ DFF8 MOGY_BGP_D6n;
-  /*p36.MENA*/ DFF8 MENA_BGP_D7n;
+  /*p36.PAVO*/ DFF8n PAVO_BGP_D0n;
+  /*p36.NUSY*/ DFF8n NUSY_BGP_D1n;
+  /*p36.PYLU*/ DFF8n PYLU_BGP_D2n;
+  /*p36.MAXY*/ DFF8n MAXY_BGP_D3n;
+  /*p36.MUKE*/ DFF8n MUKE_BGP_D4n;
+  /*p36.MORU*/ DFF8n MORU_BGP_D5n;
+  /*p36.MOGY*/ DFF8n MOGY_BGP_D6n;
+  /*p36.MENA*/ DFF8n MENA_BGP_D7n;
 
   // FF48 - OBP0
-  /*p36.XUFU*/ DFF8 XUFU_OBP0_D0n;
-  /*p36.XUKY*/ DFF8 XUKY_OBP0_D1n;
-  /*p36.XOVA*/ DFF8 XOVA_OBP0_D2n;
-  /*p36.XALO*/ DFF8 XALO_OBP0_D3n;
-  /*p36.XERU*/ DFF8 XERU_OBP0_D4n;
-  /*p36.XYZE*/ DFF8 XYZE_OBP0_D5n;
-  /*p36.XUPO*/ DFF8 XUPO_OBP0_D6n;
-  /*p36.XANA*/ DFF8 XANA_OBP0_D7n;
+  /*p36.XUFU*/ DFF8n XUFU_OBP0_D0n;
+  /*p36.XUKY*/ DFF8n XUKY_OBP0_D1n;
+  /*p36.XOVA*/ DFF8n XOVA_OBP0_D2n;
+  /*p36.XALO*/ DFF8n XALO_OBP0_D3n;
+  /*p36.XERU*/ DFF8n XERU_OBP0_D4n;
+  /*p36.XYZE*/ DFF8n XYZE_OBP0_D5n;
+  /*p36.XUPO*/ DFF8n XUPO_OBP0_D6n;
+  /*p36.XANA*/ DFF8n XANA_OBP0_D7n;
 
   // FF49 - OBP1
-  /*p36.MOXY*/ DFF8 MOXY_OBP1_D0n;
-  /*p36.LAWO*/ DFF8 LAWO_OBP1_D1n;
-  /*p36.MOSA*/ DFF8 MOSA_OBP1_D2n;
-  /*p36.LOSE*/ DFF8 LOSE_OBP1_D3n;
-  /*p36.LUNE*/ DFF8 LUNE_OBP1_D4n;
-  /*p36.LUGU*/ DFF8 LUGU_OBP1_D5n;
-  /*p36.LEPU*/ DFF8 LEPU_OBP1_D6n;
-  /*p36.LUXO*/ DFF8 LUXO_OBP1_D7n;
+  /*p36.MOXY*/ DFF8n MOXY_OBP1_D0n;
+  /*p36.LAWO*/ DFF8n LAWO_OBP1_D1n;
+  /*p36.MOSA*/ DFF8n MOSA_OBP1_D2n;
+  /*p36.LOSE*/ DFF8n LOSE_OBP1_D3n;
+  /*p36.LUNE*/ DFF8n LUNE_OBP1_D4n;
+  /*p36.LUGU*/ DFF8n LUGU_OBP1_D5n;
+  /*p36.LEPU*/ DFF8n LEPU_OBP1_D6n;
+  /*p36.LUXO*/ DFF8n LUXO_OBP1_D7n;
 
   // FF4A - WY
   /*p23.NESO*/ DFF9 NESO_WY0n;

@@ -79,7 +79,7 @@ blob Assembler::link() {
 void Assembler::link_to(uint8_t* rom_buf) {
   memset(rom_buf, 0, 32768);
   memcpy(rom_buf + 0x100, metadata, sizeof(metadata));
-  
+
   // copy blocks into rom_buf
 
   for (const auto& block : block_map) {
@@ -192,9 +192,9 @@ void Assembler::disassemble(
     int opcount,
     Dumper& dump,
     bool /*collapse_nops*/) {
-  
+
   size_t code_cursor = pc - code_base;
-  
+
   for (int i = 0; i < opcount; i++) {
     if (code_cursor >= code_size) return;
 
@@ -411,12 +411,12 @@ void Assembler::patch_jr() {
 void Assembler::clear_oam() {
 	emit(LD_A_D8(0));
   emit(LD_B_D8(0));
-  
+
   //emit(LD_HL_D16(uint16_t(0xFE00)));
   emit(0x21);
   emit(0x00);
   emit(0xFE);
-  
+
   size_t dst = block_code->size();
 
   emit(LD_HLP_A);
@@ -444,7 +444,7 @@ void Assembler::scx(int x) {
 
 void Assembler::load_sprite(int i, int y, int x, int p, int f) {
   emit(LD_HL_D16(0xFE00 + 4 * i));
-  
+
   emit(LD_A_D8(y));
   emit(LD_HLP_A);
 

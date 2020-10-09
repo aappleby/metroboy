@@ -10,38 +10,51 @@
 
 
 Probes::Probes() {
-  cursor = 0;
+  pass_cursor = 0;
 
   for (int i = 0; i < channel_count; i++) {
     memset(names[i], 0, 32);
+    sprintf_s(names[i], 32, "<probe %02d>", i);
   }
 
-  memset(samples, '_', channel_count * sample_count);
+  memset(phase_samples, '_', channel_count * sample_count);
+  memset(pass_samples, '_', channel_count * sample_count);
 }
 
 void Probes::probe(int index, const char* signal_name, char s) {
   strcpy_s(names[index], 31, signal_name);
   if (s <= 1) {
-    samples[index][cursor] = s + 30; //? '#' : '_';
+    pass_samples[index][pass_cursor] = s + 30; //? '#' : '_';
+    phase_samples[index][phase_cursor] = s + 30; //? '#' : '_';
   }
   else {
-    samples[index][cursor] = s;
+    pass_samples[index][pass_cursor] = s;
+    phase_samples[index][phase_cursor] = s;
   }
 }
 
-void Probes::begin_pass() {
-  cursor = (cursor + 1) % sample_count;
-}
-void Probes::end_pass() {
+void Probes::begin_pass(int pass_count) {
+  pass_cursor = (pass_cursor + 1) % sample_count;
+  if (pass_count == 0) {
+    phase_cursor = (phase_cursor + 1) % sample_count;
+  }
 }
 
-void Probes::dump(Dumper& d) {
+void Probes::dump(Dumper& d, bool draw_passes) {
   for (int y = 0; y < channel_count; y++) {
     if (names[y][0]) {
       d("%-24s : ", names[y]);
-      auto s = samples[y];
-      for (int x = 0; x < sample_count; x++) {
-        d.add_char(s[(cursor + x + 1) % sample_count]);
+      if (draw_passes) {
+        auto s = pass_samples[y];
+        for (int x = 0; x < sample_count; x++) {
+          d.add_char(s[(pass_cursor + x + 1) % sample_count]);
+        }
+      }
+      else {
+        auto s = phase_samples[y];
+        for (int x = 0; x < sample_count; x++) {
+          d.add_char(s[(phase_cursor + x + 1) % sample_count]);
+        }
       }
     }
     else {
@@ -54,12 +67,6 @@ void Probes::dump(Dumper& d) {
 void probe(int index, const char* signal_name, char s) {
   if (GateBoy::current) {
     GateBoy::current->probes.probe(index, signal_name, s);
-  }
-}
-
-void dump_probes(Dumper& d) {
-  if (GateBoy::current) {
-    GateBoy::current->probes.dump(d);
   }
 }
 

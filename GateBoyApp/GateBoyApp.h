@@ -82,6 +82,7 @@ private:
   bool has_golden = false;
   bool show_diff = false;
   bool show_golden = false;
+  bool draw_passes = false;
 
   int ram_tex;
 

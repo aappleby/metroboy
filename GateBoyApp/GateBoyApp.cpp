@@ -111,8 +111,8 @@ void GateBoyApp::app_init() {
 
   // run rom
 
-  load_rom   ("roms/mealybug/m3_window_timing_wx_0.gb");
-  load_golden("roms/mealybug/m3_window_timing_wx_0.bmp");
+  load_rom   ("roms/mealybug/m3_bgp_change.gb");
+  load_golden("roms/mealybug/m3_bgp_change.bmp");
 
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 
@@ -179,6 +179,7 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_s: runmode = RUN_STEP; break;
     case SDLK_d: show_diff = !show_diff; break;
     case SDLK_g: show_golden = !show_golden; break;
+    case SDLK_o: draw_passes = !draw_passes; break;
 
     case SDLK_UP: {
       stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
@@ -640,7 +641,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.dprintf("Frame time %f\n", frame_time_smooth);
   text_painter.render(view, gb_x, gb_y + 144 * 2 + 24);
 
-  dump_probes(dumper);
+  if (GateBoy::current) {
+    GateBoy::current->probes.dump(dumper, draw_passes);
+  }
+
   text_painter.render(view, dumper.s, 640 - 64, 640 + 128);
   dumper.clear();
 }

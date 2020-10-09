@@ -26,14 +26,14 @@ struct DmaRegisters {
     NUTO_DMA_A06p.reset(REG_D0C1);
     MUGU_DMA_A07p.reset(REG_D0C1);
 
-    NAFA_DMA_A08n.reset(REG_D0C0);
-    PYNE_DMA_A09n.reset(REG_D0C0);
-    PARA_DMA_A10n.reset(REG_D0C0);
-    NYDO_DMA_A11n.reset(REG_D0C0);
-    NYGY_DMA_A12n.reset(REG_D0C0);
-    PULA_DMA_A13n.reset(REG_D0C0);
-    POKU_DMA_A14n.reset(REG_D0C0);
-    MARU_DMA_A15n.reset(REG_D0C0);
+    NAFA_DMA_A08n.reset(REG_D0C1);
+    PYNE_DMA_A09n.reset(REG_D0C1);
+    PARA_DMA_A10n.reset(REG_D0C1);
+    NYDO_DMA_A11n.reset(REG_D0C1);
+    NYGY_DMA_A12n.reset(REG_D0C1);
+    PULA_DMA_A13n.reset(REG_D0C1);
+    POKU_DMA_A14n.reset(REG_D0C1);
+    MARU_DMA_A15n.reset(REG_D0C1);
 
     LYXE_DMA_LATCHp.reset(TRI_D0NP);
 
@@ -95,14 +95,14 @@ struct DmaRegisters {
   /*p04.NUTO*/ DFF17 NUTO_DMA_A06p;
   /*p04.MUGU*/ DFF17 MUGU_DMA_A07p;
 
-  /*p04.NAFA*/ DFF8 NAFA_DMA_A08n;
-  /*p04.PYNE*/ DFF8 PYNE_DMA_A09n;
-  /*p04.PARA*/ DFF8 PARA_DMA_A10n;
-  /*p04.NYDO*/ DFF8 NYDO_DMA_A11n;
-  /*p04.NYGY*/ DFF8 NYGY_DMA_A12n;
-  /*p04.PULA*/ DFF8 PULA_DMA_A13n;
-  /*p04.POKU*/ DFF8 POKU_DMA_A14n;
-  /*p04.MARU*/ DFF8 MARU_DMA_A15n;
+  /*p04.NAFA*/ DFF8n NAFA_DMA_A08n;
+  /*p04.PYNE*/ DFF8n PYNE_DMA_A09n;
+  /*p04.PARA*/ DFF8n PARA_DMA_A10n;
+  /*p04.NYDO*/ DFF8n NYDO_DMA_A11n;
+  /*p04.NYGY*/ DFF8n NYGY_DMA_A12n;
+  /*p04.PULA*/ DFF8n PULA_DMA_A13n;
+  /*p04.POKU*/ DFF8n POKU_DMA_A14n;
+  /*p04.MARU*/ DFF8n MARU_DMA_A15n;
 
 private:
 

@@ -62,7 +62,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.LUPA*/ wire LUPA_DMA_TRIG = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn());
     /*#p04.LUVY*/ LUVY_DMA_TRIG_d0  .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LUPA_DMA_TRIG);
     /*#p04.LENE*/ LENE_DMA_TRIG_d4  .tock(MOPA_xxxxEFGH, CUNU_SYS_RSTn, LUVY_DMA_TRIG_d0.qp());
-    
+
     /*#p04.LOKY*/ LOKY_DMA_LATCHp.nand_latch(LENE_DMA_TRIG_d4.qn(), and2(MYTE_DMA_DONE.qn(), CUNU_SYS_RSTn));
     /*#p04.MATU*/ MATU_DMA_RUNNINGp .tock(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp());
   }
@@ -98,16 +98,16 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p22.XEDA*/ wire XEDA_FF46p    = not1(WATE_FF46n);
     /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
-    /*#p??.PYSU*/ wire PYSU_FF46_WRp = not1(LORU_FF46_WRn);
+    ///*#p??.PYSU*/ wire PYSU_FF46_WRp = not1(LORU_FF46_WRn);
 
-    /*#p04.NAFA*/ NAFA_DMA_A08n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D0p.qp()); // BOTH OUTPUTS USED
-    /* p04.PYNE*/ PYNE_DMA_A09n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D1p.qp());
-    /* p04.PARA*/ PARA_DMA_A10n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D2p.qp());
-    /* p04.NYDO*/ NYDO_DMA_A11n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D3p.qp());
-    /* p04.NYGY*/ NYGY_DMA_A12n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D4p.qp());
-    /* p04.PULA*/ PULA_DMA_A13n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D5p.qp());
-    /* p04.POKU*/ POKU_DMA_A14n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D6p.qp());
-    /* p04.MARU*/ MARU_DMA_A15n.tock(LORU_FF46_WRn, PYSU_FF46_WRp, top.cpu_bus.BUS_CPU_D7p.qp());
+    /*#p04.NAFA*/ NAFA_DMA_A08n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D0p.qp()); // BOTH OUTPUTS USED
+    /* p04.PYNE*/ PYNE_DMA_A09n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D1p.qp());
+    /* p04.PARA*/ PARA_DMA_A10n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D2p.qp());
+    /* p04.NYDO*/ NYDO_DMA_A11n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D3p.qp());
+    /* p04.NYGY*/ NYGY_DMA_A12n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D4p.qp());
+    /* p04.PULA*/ PULA_DMA_A13n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D5p.qp());
+    /* p04.POKU*/ POKU_DMA_A14n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D6p.qp());
+    /* p04.MARU*/ MARU_DMA_A15n.dff8n(LORU_FF46_WRn, top.cpu_bus.BUS_CPU_D7p.qp());
 
     /*p 07.AJAS*/ wire AJAS_CPU_RDn  = not1(top.TEDO_CPU_RDp);
     /*p 07.ASOT*/ wire ASOT_CPU_RDp  = not1(AJAS_CPU_RDn);

@@ -163,6 +163,9 @@ struct Sprite {
 //-----------------------------------------------------------------------------
 
 struct Dumper {
+  virtual void add_char(char c) { (void)c; }
+  virtual void newline() { add_char('\n'); }
+
   virtual void operator()(const char* format, ...) = 0;
   virtual void indent() {}
   virtual void dedent() {}

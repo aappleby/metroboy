@@ -80,6 +80,8 @@ private:
 
   uint8_t golden_u8[160 * 144];
   bool has_golden = false;
+  bool show_diff = false;
+  bool show_golden = false;
 
   int ram_tex;
 

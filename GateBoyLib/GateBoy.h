@@ -1,5 +1,6 @@
 #pragma once
 #include "GateBoyLib/Sch_Top.h"
+#include "GateBoyLib/Probe.h"
 #include "CoreLib/Z80.h"
 #include "CoreLib/File.h"
 
@@ -7,6 +8,11 @@
 
 #pragma pack(push, 1)
 struct GateBoy {
+
+  static GateBoy* current;
+
+  void dump(Dumper& d) const;
+
   void     set_rom(uint8_t* rom_buf, size_t rom_size);
   void     load_post_bootrom_state();
   void     reset_cart();
@@ -126,25 +132,32 @@ struct GateBoy {
 
   // Sys flags
 
-  int32_t  sys_rst = 1;
-  int32_t  sys_t1 = 0;
-  int32_t  sys_t2 = 0;
-  int32_t  sys_clken = 0;
-  int32_t  sys_clkgood = 0;
-  int32_t  sys_cpuready = 0;
-  int32_t  sys_cpu_en = 0;
-  uint8_t  sys_buttons = 0;
+  int32_t sys_rst = 1;
+  int32_t sys_t1 = 0;
+  int32_t sys_t2 = 0;
+  int32_t sys_clken = 0;
+  int32_t sys_clkgood = 0;
+  int32_t sys_cpuready = 0;
+  int32_t sys_cpu_en = 0;
+  uint8_t sys_buttons = 0;
 
   // Memory
 
-  uint8_t  vid_ram [8192];
-  uint8_t  cart_ram[8192];
-  uint8_t  ext_ram [8192];
-  uint8_t  oam_ram [256];
-  uint8_t  zero_ram[128];
-  uint8_t  framebuffer[160*144];
+  uint8_t vid_ram [8192];
+  uint8_t cart_ram[8192];
+  uint8_t ext_ram [8192];
+  uint8_t oam_ram [256];
+  uint8_t zero_ram[128];
+
+  uint8_t framebuffer[160*154];
+  uint8_t screen_x = 0;
+  uint8_t screen_y = 0;
+  uint8_t lcd_data_latch = 0;
+
   uint8_t* rom_buf = nullptr;
   size_t   rom_size = 0;
+
+  Probes probes;
 
   uint64_t sentinel2 = 0xF00DCAFEBAADC0DE;
 };

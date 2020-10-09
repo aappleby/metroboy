@@ -125,8 +125,19 @@ void SpriteStore::tick(const SchematicTop& top) {
 
   /*#p29.CEHA*/ wire CEHA_SCANNINGp  = not1(top.sprite_scanner.CENO_SCANNINGp.qn());
   /*#p29.BYJO*/ wire BYJO_SCANNINGn  = not1(CEHA_SCANNINGp);
-  /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(BYJO_SCANNINGn, top.pix_pipe.XYMU_RENDERINGp.qp());
+  /* p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
+  /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(BYJO_SCANNINGn, XYMU_RENDERINGp);
   /*#p29.AROR*/ wire AROR_MATCH_ENp  = and2(AZEM_RENDERINGp, top.pix_pipe.XYLO_LCDC_SPENn.q08n());
+
+  {
+    /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn = and2(top.sprite_scanner.CENO_SCANNINGp.qn(), XYMU_RENDERINGp);
+    /*#p30.WUZY*/ SPR_TRI_I0p.tri_6nn(BUZA_STORE_SPRITE_INDXn, top.sprite_scanner.XADU_SPRITE_IDX0p.qn());
+    /* p30.WYSE*/ SPR_TRI_I1p.tri_6nn(BUZA_STORE_SPRITE_INDXn, top.sprite_scanner.XEDY_SPRITE_IDX1p.qn());
+    /* p30.ZYSU*/ SPR_TRI_I2p.tri_6nn(BUZA_STORE_SPRITE_INDXn, top.sprite_scanner.ZUZE_SPRITE_IDX2p.qn());
+    /* p30.WYDA*/ SPR_TRI_I3p.tri_6nn(BUZA_STORE_SPRITE_INDXn, top.sprite_scanner.XOBE_SPRITE_IDX3p.qn());
+    /* p30.WUCO*/ SPR_TRI_I4p.tri_6nn(BUZA_STORE_SPRITE_INDXn, top.sprite_scanner.YDUF_SPRITE_IDX4p.qn());
+    /* p30.WEZA*/ SPR_TRI_I5p.tri_6nn(BUZA_STORE_SPRITE_INDXn, top.sprite_scanner.XECU_SPRITE_IDX5p.qn());
+  }
 
   //----------------------------------------
 
@@ -279,14 +290,14 @@ void SpriteStore::tock(const SchematicTop& top) {
   /* p28.BYVA*/ wire BYVA_VID_LINE_TRIGn = not1(ABAK_VID_LINE_TRIGp);
   /* p29.DYBA*/ wire DYBA_VID_LINE_TRIGp = not1(BYVA_VID_LINE_TRIGn);
 
-  /*#p31.ZAGO*/ wire ZAGO_X0n = not1(top.oam_bus.YLOR_OAM_DB0p.q08());
-  /* p31.ZOCY*/ wire ZOCY_X1n = not1(top.oam_bus.ZYTY_OAM_DB1p.q08());
-  /* p31.YPUR*/ wire YPUR_X2n = not1(top.oam_bus.ZYVE_OAM_DB2p.q08());
-  /* p31.YVOK*/ wire YVOK_X3n = not1(top.oam_bus.ZEZY_OAM_DB3p.q08());
-  /* p31.COSE*/ wire COSE_X4n = not1(top.oam_bus.GOMO_OAM_DB4p.q08());
-  /* p31.AROP*/ wire AROP_X5n = not1(top.oam_bus.BAXO_OAM_DB5p.q08());
-  /* p31.XATU*/ wire XATU_X6n = not1(top.oam_bus.YZOS_OAM_DB6p.q08());
-  /* p31.BADY*/ wire BADY_X7n = not1(top.oam_bus.DEPO_OAM_DB7p.q08());
+  /*#p31.ZAGO*/ wire ZAGO_X0n = not1(top.sprite_scanner.YLOR_OAM_DB0p.q08());
+  /* p31.ZOCY*/ wire ZOCY_X1n = not1(top.sprite_scanner.ZYTY_OAM_DB1p.q08());
+  /* p31.YPUR*/ wire YPUR_X2n = not1(top.sprite_scanner.ZYVE_OAM_DB2p.q08());
+  /* p31.YVOK*/ wire YVOK_X3n = not1(top.sprite_scanner.ZEZY_OAM_DB3p.q08());
+  /* p31.COSE*/ wire COSE_X4n = not1(top.sprite_scanner.GOMO_OAM_DB4p.q08());
+  /* p31.AROP*/ wire AROP_X5n = not1(top.sprite_scanner.BAXO_OAM_DB5p.q08());
+  /* p31.XATU*/ wire XATU_X6n = not1(top.sprite_scanner.YZOS_OAM_DB6p.q08());
+  /* p31.BADY*/ wire BADY_X7n = not1(top.sprite_scanner.DEPO_OAM_DB7p.q08());
 
   wire WUTY_SPRITE_DONEp = top.sprite_fetcher.WUTY_SPRITE_DONEp;
 

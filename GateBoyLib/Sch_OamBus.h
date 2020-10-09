@@ -10,6 +10,7 @@ struct CpuBus;
 
 struct OamBus {
   void reset_cart() {
+    COTA_OAM_CLKn.reset(TRI_D0NP); // FIXME not sure about cart boot state
     MAKA_HOLD_MEMp.reset(REG_D0C1);
     WUJE_CPU_OAM_WRn.reset(TRI_D1NP);
 
@@ -30,31 +31,6 @@ struct OamBus {
     XAFU_OAM_LATCH_DA5n.reset(TRI_D1NP);
     YSES_OAM_LATCH_DA6n.reset(TRI_D1NP);
     ZECA_OAM_LATCH_DA7n.reset(TRI_D1NP);
-
-    XADU_SPRITE_IDX0p.reset(REG_D0C1);
-    XEDY_SPRITE_IDX1p.reset(REG_D0C1);
-    ZUZE_SPRITE_IDX2p.reset(REG_D1C1);
-    XOBE_SPRITE_IDX3p.reset(REG_D0C1);
-    YDUF_SPRITE_IDX4p.reset(REG_D1C1);
-    XECU_SPRITE_IDX5p.reset(REG_D0C1);
-
-    XUSO_OAM_DA0p.reset(REG_D0C1);
-    XEGU_OAM_DA1p.reset(REG_D0C1);
-    YJEX_OAM_DA2p.reset(REG_D0C1);
-    XYJU_OAM_DA3p.reset(REG_D0C1);
-    YBOG_OAM_DA4p.reset(REG_D0C1);
-    WYSO_OAM_DA5p.reset(REG_D0C1);
-    XOTE_OAM_DA6p.reset(REG_D0C1);
-    YZAB_OAM_DA7p.reset(REG_D0C1);
-
-    YLOR_OAM_DB0p.reset(REG_D0C1);
-    ZYTY_OAM_DB1p.reset(REG_D0C1);
-    ZYVE_OAM_DB2p.reset(REG_D0C1);
-    ZEZY_OAM_DB3p.reset(REG_D0C1);
-    GOMO_OAM_DB4p.reset(REG_D0C1);
-    BAXO_OAM_DB5p.reset(REG_D0C1);
-    YZOS_OAM_DB6p.reset(REG_D0C1);
-    DEPO_OAM_DB7p.reset(REG_D0C1);
 
     PIN_OAM_CLK .reset(TRI_D1NP);
     PIN_OAM_OE  .reset(TRI_D1NP);
@@ -86,9 +62,12 @@ struct OamBus {
     BUS_OAM_DB5n.reset(TRI_D0PU);
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
+
+    oam_glitch.reset();
   }
 
   void reset_boot() {
+    COTA_OAM_CLKn.reset(TRI_D0NP);
     MAKA_HOLD_MEMp.reset(REG_D0C0);
     WUJE_CPU_OAM_WRn.reset(TRI_D0NP);
 
@@ -109,31 +88,6 @@ struct OamBus {
     XAFU_OAM_LATCH_DA5n.reset(TRI_D0NP);
     YSES_OAM_LATCH_DA6n.reset(TRI_D0NP);
     ZECA_OAM_LATCH_DA7n.reset(TRI_D0NP);
-
-    XADU_SPRITE_IDX0p.reset(REG_D0C0);
-    XEDY_SPRITE_IDX1p.reset(REG_D0C0);
-    ZUZE_SPRITE_IDX2p.reset(REG_D0C0);
-    XOBE_SPRITE_IDX3p.reset(REG_D0C0);
-    YDUF_SPRITE_IDX4p.reset(REG_D0C0);
-    XECU_SPRITE_IDX5p.reset(REG_D0C0);
-
-    XUSO_OAM_DA0p.reset(REG_D0C0);
-    XEGU_OAM_DA1p.reset(REG_D0C0);
-    YJEX_OAM_DA2p.reset(REG_D0C0);
-    XYJU_OAM_DA3p.reset(REG_D0C0);
-    YBOG_OAM_DA4p.reset(REG_D0C0);
-    WYSO_OAM_DA5p.reset(REG_D0C0);
-    XOTE_OAM_DA6p.reset(REG_D0C0);
-    YZAB_OAM_DA7p.reset(REG_D0C0);
-
-    YLOR_OAM_DB0p.reset(REG_D0C0);
-    ZYTY_OAM_DB1p.reset(REG_D0C0);
-    ZYVE_OAM_DB2p.reset(REG_D0C0);
-    ZEZY_OAM_DB3p.reset(REG_D0C0);
-    GOMO_OAM_DB4p.reset(REG_D0C0);
-    BAXO_OAM_DB5p.reset(REG_D0C0);
-    YZOS_OAM_DB6p.reset(REG_D0C0);
-    DEPO_OAM_DB7p.reset(REG_D0C0);
 
     PIN_OAM_CLK.reset(TRI_D0NP);
     PIN_OAM_OE.reset(TRI_D1NP);
@@ -163,9 +117,12 @@ struct OamBus {
     BUS_OAM_DB5n.reset(TRI_D0PU);
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
+
+    oam_glitch.reset();
   }
 
   void dump(Dumper& d) const;
+  void tick(const SchematicTop& top);
   void tock(SchematicTop& top);
 
   //----------------------------------------
@@ -217,6 +174,7 @@ struct OamBus {
 
   //----------------------------------------
 
+  /*p25.COTA*/ Sig COTA_OAM_CLKn;
   /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;
 
@@ -237,33 +195,6 @@ struct OamBus {
   /*p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n;
   /*p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n;
   /*p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n;
-
-  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
-  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
-  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p;
-  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p;
-  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p;
-  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p;
-
-  // oam byte 0, byte 2
-  /*p29.XUSO*/ DFF8 XUSO_OAM_DA0p; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ DFF8 XEGU_OAM_DA1p; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ DFF8 YJEX_OAM_DA2p; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ DFF8 XYJU_OAM_DA3p; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ DFF8 YBOG_OAM_DA4p; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ DFF8 WYSO_OAM_DA5p; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ DFF8 XOTE_OAM_DA6p; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ DFF8 YZAB_OAM_DA7p; // sprite y bit 7, sprite tile index bit 7
-
-  // oam byte 1, byte 3
-  /*p31.YLOR*/ DFF8 YLOR_OAM_DB0p; // sprite x bit 0,
-  /*p31.ZYTY*/ DFF8 ZYTY_OAM_DB1p; // sprite x bit 1,
-  /*p31.ZYVE*/ DFF8 ZYVE_OAM_DB2p; // sprite x bit 2,
-  /*p31.ZEZY*/ DFF8 ZEZY_OAM_DB3p; // sprite x bit 3,
-  /*p31.GOMO*/ DFF8 GOMO_OAM_DB4p; // sprite x bit 4, sprite palette
-  /*p31.BAXO*/ DFF8 BAXO_OAM_DB5p; // sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ DFF8 YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ DFF8 DEPO_OAM_DB7p; // sprite x bit 7, sprite priority
 
   Pin PIN_OAM_CLK ;
   Pin PIN_OAM_OE  ;
@@ -296,6 +227,8 @@ struct OamBus {
   Bus BUS_OAM_DB5n;
   Bus BUS_OAM_DB6n;
   Bus BUS_OAM_DB7n;
+
+  DelayGlitch oam_glitch;
 };
 
 //-----------------------------------------------------------------------------

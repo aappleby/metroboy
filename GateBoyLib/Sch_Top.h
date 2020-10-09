@@ -38,12 +38,8 @@ struct SchematicTop {
     NYXU_FETCH_TRIGn.reset(TRI_D1NP);
     TEVO_FETCH_TRIGp.reset(TRI_D0NP);
     TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
-    ACYL_SCANNINGp.reset(TRI_D0NP);
     AVAP_RENDER_START_TRIGp.reset(TRI_D0NP);
     TUTU_ADDR_BOOTp.reset(TRI_D0NP);
-    DECY_LATCH_EXTn.reset(TRI_D1NP);
-    AJON_OAM_BUSY.reset(TRI_D0NP);
-    AJUJ_OAM_BUSYn.reset(TRI_D1NP);
 
     oam_bus.reset_cart();
     ext_bus.reset_cart();
@@ -71,7 +67,7 @@ struct SchematicTop {
     PIN_LCD_CNTRL.reset(TRI_D0NP);
     PIN_LCD_CLOCK.reset(TRI_D0NP);
     PIN_LCD_HSYNC.reset(TRI_D0NP);
-    PIN_LCD_LATCH.reset(TRI_D0NP);
+    PIN_LCD_NEWLINE.reset(TRI_D0NP);
     PIN_LCD_ALTSG.reset(TRI_D0NP);
     PIN_LCD_VSYNC.reset(TRI_D0NP);
 
@@ -80,6 +76,9 @@ struct SchematicTop {
     IE_D2.reset(REG_D0C1);
     IE_D3.reset(REG_D0C1);
     IE_D4.reset(REG_D0C1);
+
+    lcd_data1_delay.reset();
+    lcd_data0_delay.reset();
   }
 
   void reset_boot() {
@@ -95,12 +94,8 @@ struct SchematicTop {
     NYXU_FETCH_TRIGn.reset(TRI_HZNP);
     TEVO_FETCH_TRIGp.reset(TRI_HZNP);
     TAVE_PRELOAD_DONE_TRIGp.reset(TRI_HZNP);
-    ACYL_SCANNINGp.reset(TRI_HZNP);
     AVAP_RENDER_START_TRIGp.reset(TRI_HZNP);
     TUTU_ADDR_BOOTp.reset(TRI_HZNP);
-    DECY_LATCH_EXTn.reset(TRI_HZNP);
-    AJON_OAM_BUSY.reset(TRI_HZNP);
-    AJUJ_OAM_BUSYn.reset(TRI_HZNP);
 
     oam_bus.reset_boot();
     ext_bus.reset_boot();
@@ -128,7 +123,7 @@ struct SchematicTop {
     PIN_LCD_CNTRL.reset(TRI_HZNP);
     PIN_LCD_CLOCK.reset(TRI_HZNP);
     PIN_LCD_HSYNC.reset(TRI_HZNP);
-    PIN_LCD_LATCH.reset(TRI_HZNP);
+    PIN_LCD_NEWLINE.reset(TRI_HZNP);
     PIN_LCD_ALTSG.reset(TRI_HZNP);
     PIN_LCD_VSYNC.reset(TRI_HZNP);
 
@@ -137,6 +132,9 @@ struct SchematicTop {
     IE_D2.reset(REG_D0C0);
     IE_D3.reset(REG_D0C0);
     IE_D4.reset(REG_D0C0);
+
+    lcd_data1_delay.reset();
+    lcd_data0_delay.reset();
   }
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
@@ -161,12 +159,8 @@ struct SchematicTop {
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
   /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
   /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
-  /*p28.ACYL*/ Sig ACYL_SCANNINGp;
   /*p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
   /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
-  /*p04.DECY*/ Sig DECY_LATCH_EXTn;
-  /*p28.AJON*/ Sig AJON_OAM_BUSY;
-  /*p28.AJUJ*/ Sig AJUJ_OAM_BUSYn;
 
   //-----------------------------------------------------------------------------
 
@@ -192,12 +186,15 @@ struct SchematicTop {
 
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAM;
 
+  DelayGlitch lcd_data1_delay;
+  DelayGlitch lcd_data0_delay;
+
   Pin PIN_LCD_DATA1; // PIN_50
   Pin PIN_LCD_DATA0; // PIN_51
   Pin PIN_LCD_CNTRL; // PIN_52
   Pin PIN_LCD_CLOCK; // PIN_53
   Pin PIN_LCD_HSYNC; // PIN_54
-  Pin PIN_LCD_LATCH; // PIN_55
+  Pin PIN_LCD_NEWLINE; // PIN_55
   Pin PIN_LCD_ALTSG; // PIN_56
   Pin PIN_LCD_VSYNC; // PIN_57
 

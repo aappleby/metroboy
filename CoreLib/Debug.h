@@ -7,7 +7,12 @@
 
 struct StringDumper : public Dumper {
   std::string s;
-  virtual void operator()(const char* format, ...) {
+
+  void add_char(char c) override {
+    s.push_back(c);
+  }
+
+  void operator()(const char* format, ...) override {
     char source_buf[1024];
     va_list args;
     va_start (args, format);

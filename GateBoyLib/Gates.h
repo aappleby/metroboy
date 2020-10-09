@@ -275,12 +275,8 @@ struct RegBase {
       CHECK_P(new_d == DELTA_TRIZ || new_d == DELTA_TRI0 || new_d == DELTA_TRI1);
       delta = new_d;
     }
-    else {
-      //CHECK_P(d == DELTA_TRIZ);
-      if (new_d != DELTA_TRIZ) {
-        //printf("Bus collision?\n");
-        RegBase::bus_collision = true;
-      }
+    else if (new_d != DELTA_TRIZ) {
+      RegBase::bus_collision = true;
     }
   }
 
@@ -324,7 +320,6 @@ struct DelayGlitch {
     dg.reset(ERR_XXXX);
     dh.reset(ERR_XXXX);
     di.reset(ERR_XXXX);
-    dj.reset(ERR_XXXX);
   }
 
   void reset() {
@@ -337,7 +332,6 @@ struct DelayGlitch {
     dg.reset(TRI_D0NP);
     dh.reset(TRI_D0NP);
     di.reset(TRI_D0NP);
-    dj.reset(TRI_D0NP);
   }
 
   RegBase da;
@@ -349,10 +343,8 @@ struct DelayGlitch {
   RegBase dg;
   RegBase dh;
   RegBase di;
-  RegBase dj;
 
   inline void set(wire w) {
-    dj.merge_tri_delta(di.qp() ? DELTA_TRI1 : DELTA_TRI0);
     di.merge_tri_delta(dh.qp() ? DELTA_TRI1 : DELTA_TRI0);
     dh.merge_tri_delta(dg.qp() ? DELTA_TRI1 : DELTA_TRI0);
     dg.merge_tri_delta(df.qp() ? DELTA_TRI1 : DELTA_TRI0);
@@ -364,9 +356,15 @@ struct DelayGlitch {
     da.merge_tri_delta(w       ? DELTA_TRI1 : DELTA_TRI0);
   }
 
-  inline wire qp() const {
-    return dj.qp();
-  }
+  inline wire q1() const { return da.qp(); }
+  inline wire q2() const { return db.qp(); }
+  inline wire q3() const { return dc.qp(); }
+  inline wire q4() const { return dd.qp(); }
+  inline wire q5() const { return de.qp(); }
+  inline wire q6() const { return df.qp(); }
+  inline wire q7() const { return dg.qp(); }
+  inline wire q8() const { return dh.qp(); }
+  inline wire q9() const { return di.qp(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -692,16 +690,30 @@ struct Pin : private RegBase {
   using RegBase::qp;
   using RegBase::qn;
 
+  bool posedge() const { return  (value & 1) && !(old_value & 1); }
+  bool negedge() const { return !(value & 1) &&  (old_value & 1); }
+
+  void dump(Dumper& d) const {
+
+    char edge = posedge() ? '^' : negedge() ? 'v' : '-';
+
+    d("%c%c%c", reg_state_to_c(state), reg_state_to_c(RegState(old_value & 0x0F)), edge);
+  }
+
   inline void set(wire w) {
+    old_value = state | (DELTA_LOCK << 4);
     CHECK_N(has_delta());
     merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0);
   }
 
   inline void operator = (RegDelta d) {
+    old_value = state | (DELTA_LOCK << 4);
     merge_tri_delta(d);
   }
 
   inline void io_pin(wire HI, wire LO, wire OEp = true) {
+    old_value = state | (DELTA_LOCK << 4);
+
     if      (!OEp)       merge_tri_delta(DELTA_TRIZ);
     else if ( HI &&  LO) merge_tri_delta(DELTA_TRI0);
     else if ( HI && !LO) merge_tri_delta(DELTA_TRIZ);
@@ -709,6 +721,8 @@ struct Pin : private RegBase {
     else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
     else                 merge_tri_delta(DELTA_XXXX);
   }
+
+  uint8_t old_value = TRI_HZNP | (DELTA_LOCK << 4);
 };
 
 //-----------------------------------------------------------------------------

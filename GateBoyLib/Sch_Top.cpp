@@ -35,8 +35,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
     /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
     /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-    /*p04.DECY*/ DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
-    /*p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
+    /* p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
+    /* p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
     /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);
     /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
   }
@@ -70,13 +70,6 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    // int.asam, oam.aver/ajep, ppu.xaty, top.apar/.ajuj
-    // so dma stops oam scan?
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp.qp());
-    /*p28.ACYL*/ ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp());
-  }
-
-  {
     /* p01.ATAR*/ wire ATAR_VID_RSTp = not1(clk_reg.XAPO_VID_RSTn);
     /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
     /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
@@ -106,18 +99,12 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
   }
 
-  {
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_reg.MATU_DMA_RUNNINGp.qp());
-    /*p28.AJON*/ AJON_OAM_BUSY = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGp.qp()); // def AND. ppu can read oam when there's rendering but no dma
-    /*p28.AJUJ*/ AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp(), ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor4
-
-    //probe("AJUJ_OAM_BUSYn", AJUJ_OAM_BUSYn.qp());
-  }
-
   tim_reg.tick(*this);
   joypad.tick(*this);
   tile_fetcher.tick(*this);
   sprite_fetcher.tick(*this);
+
+  oam_bus.tick(*this);
 }
 
 //------------------------------------------------------------------------------
@@ -336,6 +323,7 @@ void SchematicTop::tock_vram_bus(wire RST, uint8_t* vid_ram) {
 }
 
 //-----------------------------------------------------------------------------
+// FIXME This should be using PIN_OAM_CLK (which might actually be PIN_OAM_CSn?)
 
 void SchematicTop::tock_oam_bus(wire RST, uint8_t* oam_ram) {
   if (RST) return;
@@ -350,8 +338,6 @@ void SchematicTop::tock_oam_bus(wire RST, uint8_t* oam_ram) {
   if (!oam_bus.PIN_OAM_OE.qp()) oam_bus.set_pin_data_a(oam_data_a);
   if (!oam_bus.PIN_OAM_OE.qp()) oam_bus.set_pin_data_b(oam_data_b);
 }
-
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 

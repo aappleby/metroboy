@@ -44,8 +44,6 @@ void ExtBus::dump(Dumper& d) const {
   d("ext_glitch.dg %c\n", ext_glitch.dg.c());
   d("ext_glitch.dh %c\n", ext_glitch.dh.c());
   d("ext_glitch.di %c\n", ext_glitch.di.c());
-  d("ext_glitch.dj %c\n", ext_glitch.dj.c());
-
 }
 
 //------------------------------------------------------------------------------

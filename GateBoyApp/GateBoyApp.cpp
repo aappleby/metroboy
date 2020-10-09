@@ -54,7 +54,7 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   // regenerate post-bootrom dump
-#if 1
+#if 0
   gb->reset_boot();
   rom_buf = load_blob("roms/tetris.gb");
   gb->set_rom(rom_buf.data(), rom_buf.size());
@@ -110,11 +110,13 @@ void GateBoyApp::app_init() {
   //gb->sys_cpu_en = false;
 
   // run rom
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx7_a.gb");
-  //load_rom   ("roms/mealybug/m3_lcdc_bg_en_change.gb");
-  //load_golden("roms/mealybug/m3_lcdc_bg_en_change.bmp");
 
-  //load_rom("roms/tetris.gb");
+  //load_rom   ("roms/mealybug/m3_bgp_change.gb");
+  //load_golden("roms/mealybug/m3_bgp_change.bmp");
+
+  load_rom("microtests/build/dmg/oam_read_l0_d.gb");
+
+  GateBoy::current = gb.state();
 }
 
 //----------------------------------------
@@ -175,6 +177,8 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_f: runmode = RUN_FAST; break;
     case SDLK_v: runmode = RUN_VSYNC; break;
     case SDLK_s: runmode = RUN_STEP; break;
+    case SDLK_d: show_diff = !show_diff; break;
+    case SDLK_g: show_golden = !show_golden; break;
 
     case SDLK_UP: {
       stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
@@ -243,8 +247,8 @@ void GateBoyApp::app_update(double delta) {
   else if (runmode == RUN_STEP && step_backward) {
     for (int i  = 0; i < step_backward; i++) {
       gb.pop();
+      GateBoy::current = gb.state();
     }
-    clear_probes();
   }
 
   double sim_end = timestamp();
@@ -376,6 +380,7 @@ void GateBoyApp::load_golden(const char* filename) {
   }
 
   has_golden = true;
+  show_diff = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -428,10 +433,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   dumper("bus_req ");
   dump_req(dumper, gb->bus_req);
   dumper("cpu_data_latch %d 0x%02x\n", gb->cpu_data_latch, gb->cpu_data_latch);
-
   dumper("\n");
 
-  dump_probes(dumper);
+  gb->dump(dumper);
+  dumper("\n");
+
   gb->cpu.dump(dumper);
   top.tim_reg.dump(dumper);
   top.int_reg.dump(dumper, top);
@@ -539,6 +545,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
 
   // Draw flat memory view
+  /*
   {
     //printf("rom_buf.data() %p\n", rom_buf.data());
     //printf("gb->rom_buf %p\n", gb->rom_buf);
@@ -553,14 +560,24 @@ void GateBoyApp::app_render_frame(Viewport view) {
                       0, 0, 256, 256,
                       960 + 96 - 64, 640 + 96, 256, 256);
   }
+  */
 
   // Draw screen and vid ram contents
+
+  int gb_x = 1216;
+  int gb_y = 32;
+
   if (1) {
-    if (has_golden) {
-      gb_blitter.blit_diff(view, 1280, 64,  2, gb->framebuffer, golden_u8);
+    if (has_golden && show_diff) {
+      gb_blitter.blit_diff(view, gb_x, gb_y,  2, gb->framebuffer, golden_u8);
     }
     else {
-      gb_blitter.blit_screen(view, 1280, 64,  2, gb->framebuffer);
+      if (show_golden) {
+        gb_blitter.blit_screen(view, gb_x, gb_y,  2, golden_u8);
+      }
+      else {
+        gb_blitter.blit_screen(view, gb_x, gb_y,  2, gb->framebuffer);
+      }
     }
 
     gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vid_ram);
@@ -574,19 +591,20 @@ void GateBoyApp::app_render_frame(Viewport view) {
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_y = top.lcd_reg.get_ly();
+    int fb_x = gb->screen_x;
+    int fb_y = gb->screen_y;
+
     if (fb_y >= 0 && fb_y < 144) {
       for (int i = 0; i < 160; i++) {
         overlay[i + fb_y * 160] = 0x33FFFF00;
       }
-      int fb_x = top.pix_pipe.get_pix_count() - 8;
       if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
         overlay[fb_x + fb_y * 160] = 0x8000FFFF;
       }
     }
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
-    blitter.blit(view, overlay_tex, 1280, 64, 160 * 2, 144 * 2);
+    blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
   }
 
   switch(runmode) {
@@ -600,36 +618,31 @@ void GateBoyApp::app_render_frame(Viewport view) {
   case STEP_CYCLE:  dumper("STEP_CYCLE  "); break;
   case STEP_LINE:   dumper("STEP_LINE   "); break;
   }
+  //if (
   dumper("Sim clock %8.3f ",      double(gb->phase_total) / (4194304.0 * 2));
   dumper("%s", phases[gb->phase_total & 7]);
   dumper("%c", gb->sim_stable ? ' ' : '*');
   dumper("\n");
 
-  /*
-  int count = 0;
-  gb.rev_scan([&](const GateBoy* gb) {
-    switch(gb->get_step_size()) {
-    case STEP_LINE:  dumper("L"); break;
-    case STEP_CYCLE: dumper("C"); break;
-    case STEP_PHASE: dumper("P"); break;
-    case STEP_PASS:  dumper("S"); break;
-    }
-    count++;
-    return count < 30;
-  });
-  dumper("\n");
-  */
-
-
-  text_painter.render(view, dumper.s.c_str(), 1280, 64 + 144 * 2);
+  text_painter.render(view, dumper.s, gb_x, gb_y + 144 * 2);
   dumper.clear();
+
+  if (show_golden) {
+    dumper("GOLDEN IMAGE\n");
+    text_painter.render(view, dumper.s, gb_x, gb_y + 144 * 2 + 12);
+    dumper.clear();
+  }
 
   double phases_per_frame = 114 * 154 * 60 * 8;
   double sim_ratio = sim_rate / phases_per_frame;
 
   text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time_smooth, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time_smooth);
-  text_painter.render(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
+  text_painter.render(view, gb_x, gb_y + 144 * 2 + 24);
+
+  dump_probes(dumper);
+  text_painter.render(view, dumper.s, 640 - 64, 640 + 128);
+  dumper.clear();
 }
 
 //-----------------------------------------------------------------------------

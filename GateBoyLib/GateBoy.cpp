@@ -4,7 +4,18 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/Debug.h"
 #include "CoreLib/File.h"
+#include "GateBoyLib/Probe.h"
 
+GateBoy* GateBoy::current = nullptr;
+
+//------------------------------------------------------------------------------
+
+void GateBoy::dump(Dumper& d) const {
+  d("\002===== GateBoy =====\001\n");
+  d("screen_x       %3d\n", screen_x);
+  d("screen_y       %3d\n", screen_y);
+  d("lcd_data_latch %3d\n", lcd_data_latch);
+}
 
 //------------------------------------------------------------------------------
 
@@ -209,9 +220,13 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 
 void GateBoy::next_pass() {
 
+  current = this;
+  probes.begin_pass();
+
   //----------------------------------------
 
   if (pass_count == 0) {
+
     cpu_data_latch = top.cpu_bus.get_bus_data();
     imask_latch = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
 
@@ -227,19 +242,6 @@ void GateBoy::next_pass() {
     if (DELTA_HA) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
     if (DELTA_HA) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
     if (DELTA_HA) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
-
-    if (DELTA_HA) {
-      top.cpu_bus.PIN_CPU_RDp.lock(0);
-      top.cpu_bus.PIN_CPU_WRp.lock(0);
-      top.cpu_bus.BUS_CPU_A08.lock(0);
-      top.cpu_bus.BUS_CPU_A09.lock(0);
-      top.cpu_bus.BUS_CPU_A10.lock(0);
-      top.cpu_bus.BUS_CPU_A11.lock(0);
-      top.cpu_bus.BUS_CPU_A12.lock(0);
-      top.cpu_bus.BUS_CPU_A13.lock(0);
-      top.cpu_bus.BUS_CPU_A14.lock(0);
-      top.cpu_bus.BUS_CPU_A15.lock(0);
-    }
 
     if (DELTA_AB) {
       cpu_req = cpu.bus_req;
@@ -280,18 +282,40 @@ void GateBoy::next_pass() {
       top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
     }
 
+    if (DELTA_HA) {
+      top.cpu_bus.PIN_CPU_RDp.lock(0);
+      top.cpu_bus.PIN_CPU_WRp.lock(0);
+      top.cpu_bus.BUS_CPU_A08.lock(0);
+      top.cpu_bus.BUS_CPU_A09.lock(0);
+      top.cpu_bus.BUS_CPU_A10.lock(0);
+      top.cpu_bus.BUS_CPU_A11.lock(0);
+      top.cpu_bus.BUS_CPU_A12.lock(0);
+      top.cpu_bus.BUS_CPU_A13.lock(0);
+      top.cpu_bus.BUS_CPU_A14.lock(0);
+      top.cpu_bus.BUS_CPU_A15.lock(0);
+    }
+
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
     top.cpu_bus.unlock_data();
 
+    // not at all certain about this. seems to break some oam read glitches.
     if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
       if (bus_req.read && (bus_req.addr < 0xFF00)) top.cpu_bus.PIN_CPU_LATCH_EXT.lock(1);
     }
 
+    // Data has to be driven on EFGH or we fail the wave tests
     if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
       if (bus_req.write) top.cpu_bus.lock_data(bus_req.data_lo);
     }
 
     top.joypad.set_buttons(sys_buttons);
+  }
+
+  if (pass_count == 0) {
+    probe(0, "phase", ((pass_count == 0) ? "ABCDEFGH" : "abcdefgh")[phase_total & 7]);
+  }
+  else {
+    probe(0, "phase", '-');
   }
 
   //----------------------------------------
@@ -326,6 +350,46 @@ void GateBoy::next_pass() {
   pass_count++;
 
   if (pass_count > 90) printf("!!!STUCK!!!\n");
+
+  //----------
+  // Send pixels to the display if necessary.
+  // FIXME should probably use the lcd sync pins for this...
+
+  // clock phase is ~119.21 nsec (4.19304 mhz crystal)
+  // hsync seems consistently 3.495 - 3.500 us (29 phases?)
+  // hsync to bogus clock pulse 1.465 us
+  // data changes on rising edge of lcd clock
+  // hsync should go low the same phase that lcd clock goes high
+  // vsync 108.720 usec - right on 912 phases
+
+  uint8_t p0 = top.PIN_LCD_DATA0.qp();
+  uint8_t p1 = top.PIN_LCD_DATA1.qp();
+  framebuffer[screen_x + screen_y * 160] |= p0 + p1 * 2;
+
+  if (screen_x < 0 || screen_x >= 160 || screen_y < 0 || screen_y >= 154) printf("???\n");
+
+  if (top.PIN_LCD_CLOCK.posedge()) {
+    screen_x++;
+    framebuffer[screen_x + screen_y * 160] = 0;
+  }
+
+  if (top.PIN_LCD_NEWLINE.negedge()) {
+    screen_y++;
+  }
+
+  if (top.PIN_LCD_HSYNC.qp()) {
+    screen_x = 0;
+    lcd_data_latch = 0;
+  }
+
+  if (top.PIN_LCD_VSYNC.qp()) {
+    screen_y = 0;
+  }
+
+  if (!top.pix_pipe.XONA_LCDC_LCDENn.q08n()) {
+    screen_x = 0;
+    screen_y = 0;
+  }
 
   //----------------------------------------
   // Once the simulation converges, latch the data that needs to go back to the
@@ -369,26 +433,6 @@ void GateBoy::next_pass() {
     if (RegBase::bus_floating)  printf("Bus floating!\n");
 
     //----------
-    // Send pixels to the display if necessary.
-    // FIXME should probably use the lcd sync pins for this...
-
-    // clock phase is ~119.21 nsec (4.19304 mhz crystal)
-    // hsync seems consistently 3.495 - 3.500 us (29 phases?)
-    // hsync to bogus clock pulse 1.465 us
-    // data changes on rising edge of lcd clock
-    // hsync should go low the same phase that lcd clock goes high
-    // vsync 108.720 usec - right on 912 phases
-
-    int fb_x = top.pix_pipe.get_pix_count() - 8;
-    int fb_y = top.lcd_reg.get_ly();
-
-    if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-      int p0 = top.PIN_LCD_DATA0.qp();
-      int p1 = top.PIN_LCD_DATA1.qp();
-      framebuffer[fb_x + fb_y * 160] = uint8_t(p0 + p1 * 2);
-    }
-
-    //----------
     // Done, move to the next phase.
 
     pass_total += pass_count;
@@ -396,6 +440,8 @@ void GateBoy::next_pass() {
     phase_total++;
     combine_hash(total_hash, pass_hash);
   }
+
+  probes.end_pass();
 }
 
 //-----------------------------------------------------------------------------

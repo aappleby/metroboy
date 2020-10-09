@@ -8,13 +8,13 @@ using namespace Schematics;
 
 void CpuBus::dump(Dumper& d) const {
   d("\002===== CPU Bus =====\001\n");
-  d("BOOT      %d\n", PIN_CPU_BOOTp.qp());
-  d("ADDR_HI   %d\n", PIN_CPU_ADDR_HIp.qp());
-  d("RDp       %d\n", PIN_CPU_RDp.qp());
-  d("WRp       %d\n", PIN_CPU_WRp.qp());
-  d("ADDR_EXT  %d\n", PIN_CPU_ADDR_EXTp.qp());
-  d("LATCH_EXT %d\n", PIN_CPU_LATCH_EXT.qp());
-  d("BUS ADDR  0x%04x %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
+  d("PIN_CPU_BOOTp     %c\n", PIN_CPU_BOOTp.c());
+  d("PIN_CPU_ADDR_HIp  %c\n", PIN_CPU_ADDR_HIp.c());
+  d("PIN_CPU_RDp       %c\n", PIN_CPU_RDp.c());
+  d("PIN_CPU_WRp       %c\n", PIN_CPU_WRp.c());
+  d("PIN_CPU_ADDR_EXT  %c\n", PIN_CPU_ADDR_EXTp.c());
+  d("PIN_CPU_LATCH_EXT %c\n", PIN_CPU_LATCH_EXT.c());
+  d("BUS ADDR  0x%04x  %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     get_bus_addr(),
     BUS_CPU_A15.c(), BUS_CPU_A14.c(), BUS_CPU_A13.c(), BUS_CPU_A12.c(),
     BUS_CPU_A11.c(), BUS_CPU_A10.c(), BUS_CPU_A09.c(), BUS_CPU_A08.c(),

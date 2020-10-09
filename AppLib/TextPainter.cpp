@@ -132,7 +132,7 @@ void TextPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::render(Viewport view, float x, float y, float scale) {
+void TextPainter::render(Viewport view, double x, double y, float scale) {
 
   bind_shader(text_prog);
 

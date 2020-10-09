@@ -22,9 +22,9 @@ public:
   void add_string(const std::string& text_painter);
   void dprintf(const char* format, ...);
 
-  void render(Viewport view, float x, float y, float scale = 1.0f);
+  void render(Viewport view, double x, double y, float scale = 1.0f);
 
-  void render(Viewport view, const std::string& text, float x, float y, float scale = 1.0f) {
+  void render(Viewport view, const std::string& text, double x, double y, float scale = 1.0f) {
     add_string(text);
     render(view, x, y, scale);
   }

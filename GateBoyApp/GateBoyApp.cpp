@@ -134,17 +134,29 @@ void GateBoyApp::app_init() {
   */
 
   load_flat_dump("roms/LinksAwakening_dog.dump");
-  memset(&gb->vid_ram[1024 * 2], 0, 1024 * 4);
-
+  for (int i = 0; i < 2048; i += 2) {
+    gb->vid_ram[i + 0] = 0xFF;
+    gb->vid_ram[i + 1] = 0x00;
+  }
+  memset(&gb->vid_ram[1024 * 2], 0x00, 1024 * 4);
   gb->sys_cpu_en = false;
+
+  for (int i = 0; i < 160; i+= 4) {
+    gb->oam_ram[i + 0] = 0xFF;
+    gb->oam_ram[i + 1] = 0xFF;
+  }
+
+  gb->oam_ram[0] = 24;
+  gb->oam_ram[1] = 8;
+
 
   //gb->top.pix_pipe.set_wx(7);
   //gb->top.pix_pipe.set_wy(16);
 
   // run rom
 
-  //load_rom   ("roms/mealybug/m3_bgp_change.gb");
-  //load_golden("roms/mealybug/m3_bgp_change.bmp");
+  //load_rom   ("roms/mealybug/m3_lcdc_obj_en_change.gb");
+  //load_golden("roms/mealybug/m3_lcdc_obj_en_change.bmp");
 
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 

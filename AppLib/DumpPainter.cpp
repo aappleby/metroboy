@@ -96,7 +96,7 @@ void main() {
 
   // Read atlas and emit color.
   float pix = texelFetch(atlas_tex, ivec2(atlas_tex_x, atlas_tex_y), 0).r;
-  
+
   if (tile_xi == highlight.x && tile_yi == highlight.y) {
     fs_out = mix(bg_color, highlight_color, pix);
   }
@@ -215,7 +215,7 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
   bind_texture(dump_prog, "atlas_tex", 1, hexa_tex);
   bind_table  (dump_prog, "ruler_x",  2, ruler_x_tab);
   bind_table  (dump_prog, "ruler_y",  3, ruler_y_tab);
-  
+
   bind_vao(dump_vao);
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

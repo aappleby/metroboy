@@ -499,21 +499,21 @@ struct DFF13 : private RegBase {
 
 //-----------------------------------------------------------------------------
 
-// DFF17_01 == REG17_12
+// DFF17_01 SC
 // DFF17_02 << CLKp
-// DFF17_03 == REG17_09
-// DFF17_04 NC
-// DFF17_05 NC
+// DFF17_03 SC
+// DFF17_04 --
+// DFF17_05 --
 // DFF17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
 // DFF17_07 << D
-// DFF17_08 NC
-// DFF17_09 == REG17_03
-// DFF17_10 NC
-// DFF17_11 NC
-// DFF17_12 == REG17_01
+// DFF17_08 --
+// DFF17_09 SC
+// DFF17_10 --
+// DFF17_11 --
+// DFF17_12 SC
 // DFF17_13 << RSTn
-// DFF17_14 NC
-// DFF17_15 NC
+// DFF17_14 --
+// DFF17_15 --
 // DFF17_16 >> QN   _MUST_ be QN - see TERO
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
@@ -523,10 +523,10 @@ struct DFF17 : private RegBase {
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
-  wire q16n() const { return !as_wire(); }
-  wire q17p() const { return  as_wire(); }
+  wire q16() const { return !as_wire(); }
+  wire q17() const { return  as_wire(); }
 
-  void dfff17(wire CLKp, wire RSTn, wire D) {
+  void dff17(wire CLKp, wire RSTn, wire D) {
     dff(CLKp, !CLKp, 1, RSTn, D);
   }
 };

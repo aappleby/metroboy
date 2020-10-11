@@ -107,34 +107,32 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  /*
+  load_flat_dump("roms/LinksAwakening_dog.dump");
+  gb->sys_cpu_en = false;
+
   {
+    memset(gb->oam_ram, 0, 160);
     memset(gb->vid_ram, 0, 8192);
     uint8_t* cursor = gb->vid_ram;
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 384; i++) {
       *cursor++ = 0b11111111;
       *cursor++ = 0b11111111;
+      *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
+      *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
+      *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
+      *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
+      *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10000001;
+      *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
       *cursor++ = 0b11111111;
       *cursor++ = 0b11111111;
     }
-    gb->sys_cpu_en = false;
   }
-  */
-
-  load_flat_dump("roms/LinksAwakening_dog.dump");
-  gb->sys_cpu_en = false;
 
   /*
   for (int i = 0; i < 2048; i += 2) {

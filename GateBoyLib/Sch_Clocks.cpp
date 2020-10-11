@@ -84,9 +84,9 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
   /*#p01.BALY*/ BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.q08n());
-  /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.q16n());
-  /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.q16n());
-  /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.q17p());
+  /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.q16());
+  /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.q16());
+  /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.q17());
   /*#p29.WOJO*/ WOJO_AxxxExxx = nor2(WOSU_AxxDExxH.qn(), WUVU_ABxxEFxx.qn());
 }
 
@@ -187,9 +187,9 @@ void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
-  /*p29.WUVU*/ WUVU_ABxxEFxx.dfff17(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
-  /*p21.VENA*/ VENA_xxCDEFxx.dfff17(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
-  /*p29.WOSU*/ WOSU_AxxDExxH.dfff17(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
+  /*p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
+  /*p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
+  /*p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
 }
 
 //-----------------------------------------------------------------------------

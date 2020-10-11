@@ -35,15 +35,15 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.CABY*/ wire CABY_XFER_RESET = and2(COBA_SER_CNT3n, top.clk_reg.ALUR_SYS_RSTn);
 
   /*p06.UWAM*/ wire UWAM_FF02_WRn_xxxxxFGH = nand4(top.TAPU_CPU_WRp_xxxxEFGx, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A01.qp());
-  /*p06.ETAF*/ ETAF_XFER_START.dfff17(UWAM_FF02_WRn_xxxxxFGH, CABY_XFER_RESET, cpu_bus.BUS_CPU_D7p.qp());
-  /*p06.CULY*/ CULY_XFER_DIR  .dfff17(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D0p.qp());
+  /*p06.ETAF*/ ETAF_XFER_START.dff17(UWAM_FF02_WRn_xxxxxFGH, CABY_XFER_RESET, cpu_bus.BUS_CPU_D7p.qp());
+  /*p06.CULY*/ CULY_XFER_DIR  .dff17(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D0p.qp());
 
   /*p06.UCOM*/ wire UCOM_FF02_RD = and4(top.TEDO_CPU_RDp, SANO_ADDR_FF00_FF03, cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A01.qp());
   /*p06.ELUV*/ cpu_bus.BUS_CPU_D7p.tri_6pn(UCOM_FF02_RD, ETAF_XFER_START.qn());
   /*p06.CORE*/ cpu_bus.BUS_CPU_D0p.tri_6pn(UCOM_FF02_RD, CULY_XFER_DIR.qn());
 
   /*p01.UVYN*/ wire UVYN_DIV_05n = not1(top.tim_reg.TAMA_DIV_05.qp());
-  /*p06.COTY*/ COTY_SER_CLK.dfff17(UVYN_DIV_05n, UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn());
+  /*p06.COTY*/ COTY_SER_CLK.dff17(UVYN_DIV_05n, UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn());
 
   /*p06.CAVE*/ wire CAVE_SER_CLK_MUXn = mux2n(CULY_XFER_DIR.qp(), COTY_SER_CLK.qp(), SCK.qn());
 
@@ -54,10 +54,10 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.DAWE*/ wire DAWE_SER_CLK = not1(DEHO_SER_CLK);
 
   /*p06.CARO*/ wire CARO_SER_RST = and2(UWAM_FF02_WRn_xxxxxFGH, top.clk_reg.ALUR_SYS_RSTn);
-  /*p06.CAFA*/ CAFA_SER_CNT0.dfff17(DAWA_SER_CLK, CARO_SER_RST,   CAFA_SER_CNT0.qn());
-  /*p06.CYLO*/ CYLO_SER_CNT1.dfff17(CAFA_SER_CNT0.qn(), CARO_SER_RST, CYLO_SER_CNT1.qn());
-  /*p06.CYDE*/ CYDE_SER_CNT2.dfff17(CYLO_SER_CNT1.qn(), CARO_SER_RST, CYDE_SER_CNT2.qn());
-  /*p06.CALY*/ CALY_INT_SERp.dfff17(CYDE_SER_CNT2.qn(), CARO_SER_RST, CALY_INT_SERp.qn());
+  /*p06.CAFA*/ CAFA_SER_CNT0.dff17(DAWA_SER_CLK, CARO_SER_RST,   CAFA_SER_CNT0.qn());
+  /*p06.CYLO*/ CYLO_SER_CNT1.dff17(CAFA_SER_CNT0.qn(), CARO_SER_RST, CYLO_SER_CNT1.qn());
+  /*p06.CYDE*/ CYDE_SER_CNT2.dff17(CYLO_SER_CNT1.qn(), CARO_SER_RST, CYDE_SER_CNT2.qn());
+  /*p06.CALY*/ CALY_INT_SERp.dff17(CYDE_SER_CNT2.qn(), CARO_SER_RST, CALY_INT_SERp.qn());
 
   /*p06.CUFU*/ wire CUFU_SER_DATA0_SETn = nand2(cpu_bus.BUS_CPU_D0p.qp(), DAKU_FF01_WRp);
   /*p06.DOCU*/ wire DOCU_SER_DATA1_SETn = nand2(cpu_bus.BUS_CPU_D1p.qp(), DAKU_FF01_WRp);
@@ -89,7 +89,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.EJAB*/ EJAB_SER_DATA5.dff22(EPYT_SER_CLK, ELOK_SER_DATA5_SETn, EHUJ_SER_DATA5_RSTn, DOVU_SER_DATA4.qp());
   /*p06.EROD*/ EROD_SER_DATA6.dff22(EPYT_SER_CLK, EDEL_SER_DATA6_SETn, EFAK_SER_DATA6_RSTn, EJAB_SER_DATA5.qp());
   /*p06.EDER*/ EDER_SER_DATA7.dff22(EPYT_SER_CLK, EFEL_SER_DATA7_SETn, EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp());
-  /*p06.ELYS*/ ELYS_SER_OUT  .dfff17(EDYL_SER_CLK, top.clk_reg.ALUR_SYS_RSTn, EDER_SER_DATA7.qp());
+  /*p06.ELYS*/ ELYS_SER_OUT  .dff17(EDYL_SER_CLK, top.clk_reg.ALUR_SYS_RSTn, EDER_SER_DATA7.qp());
 
   // FIXME hacking out debug stuff
   ///*p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);

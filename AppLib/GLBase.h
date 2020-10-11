@@ -24,7 +24,7 @@ void  bind_ubo  (int prog, const char* name, int index, int ubo);
 int   create_texture_u32(int width, int height, const void* data = nullptr);
 void  update_texture_u32(int tex, int width, int height, const void* pix);
 
-int   create_texture_u8(int width, int height, const void* data = nullptr);
+int   create_texture_u8(int width, int height, const void* data = nullptr, bool filter = false);
 void  update_texture_u8(int tex, int width, int height, const void* pix);
 void  update_texture_u8(int tex, int dx, int dy, int dw, int dh, const void* pix);
 

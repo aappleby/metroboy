@@ -208,7 +208,7 @@ void update_texture_u32(int tex, int width, int height, const void* pix) {
 
 //-----------------------------------------------------------------------------
 
-int create_texture_u8(int width, int height, const void* data) {
+int create_texture_u8(int width, int height, const void* data, bool filter) {
   int tex = 0;
   glGenTextures(1, (GLuint*)&tex);
   glActiveTexture(GL_TEXTURE0);
@@ -217,8 +217,6 @@ int create_texture_u8(int width, int height, const void* data) {
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-  bool filter = false;
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);

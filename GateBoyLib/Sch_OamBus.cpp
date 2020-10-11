@@ -216,7 +216,7 @@ void OamBus::tock(SchematicTop& top) {
   // PIN_CPU_LATCH_EXT _blocks_ DMA from writing to OAM? wat?
 
   {
-    /*p04.MAKA*/ MAKA_HOLD_MEMp.dfff17(ZEME_AxCxExGx, CUNU_SYS_RSTn, CATY_LATCH_EXTp);
+    /*p04.MAKA*/ MAKA_HOLD_MEMp.dff17(ZEME_AxCxExGx, CUNU_SYS_RSTn, CATY_LATCH_EXTp);
     /*p04.NAXY*/ wire NAXY_DMA_OAM_WRp = nor2(UVYT_ABCDxxxx, MAKA_HOLD_MEMp.qp()); // def nor2
     /*p04.POWU*/ wire POWU_DMA_OAM_WRp  = and2(top.dma_reg.MATU_DMA_RUNNINGp.qp(), NAXY_DMA_OAM_WRp); // def and
 

@@ -189,14 +189,14 @@ struct SchematicTop {
   DelayGlitch lcd_data1_delay;
   DelayGlitch lcd_data0_delay;
 
-  Pin PIN_LCD_DATA1; // PIN_50
-  Pin PIN_LCD_DATA0; // PIN_51
-  Pin PIN_LCD_CNTRL; // PIN_52
-  Pin PIN_LCD_CLOCK; // PIN_53
-  Pin PIN_LCD_HSYNC; // PIN_54
-  Pin PIN_LCD_DATALCH; // PIN_55
-  Pin PIN_LCD_ALTSIGL; // PIN_56
-  Pin PIN_LCD_VSYNC; // PIN_57
+  /*PIN_50*/ Pin PIN_LCD_DATA1;
+  /*PIN_51*/ Pin PIN_LCD_DATA0;
+  /*PIN_52*/ Pin PIN_LCD_CNTRL;
+  /*PIN_53*/ Pin PIN_LCD_CLOCK;
+  /*PIN_54*/ Pin PIN_LCD_HSYNC;
+  /*PIN_55*/ Pin PIN_LCD_DATALCH;
+  /*PIN_56*/ Pin PIN_LCD_ALTSIGL;
+  /*PIN_57*/ Pin PIN_LCD_VSYNC;
 
   DFF IE_D0;
   DFF IE_D1;

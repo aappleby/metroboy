@@ -170,7 +170,7 @@ void GateBoy::run_reset_sequence() {
   sys_clkgood = 1;
   run(3);
 
-  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.q08n());
+  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.q08());
   CHECK_P(top.clk_reg.ALEF_AxxxxFGH.q09p());
   CHECK_P(top.clk_reg.APUK_ABxxxxGH.q09p());
   CHECK_P(top.clk_reg.ADYK_ABCxxxxH.q09p());
@@ -386,7 +386,7 @@ void GateBoy::next_pass() {
 
   if (top.PIN_LCD_HSYNC.qp()) screen_x = 0;
 
-  if (!top.pix_pipe.XONA_LCDC_LCDENn.q08n()) {
+  if (!top.pix_pipe.XONA_LCDC_LCDENn.q08()) {
     screen_x = 0;
     screen_y = 0;
   }

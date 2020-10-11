@@ -102,7 +102,11 @@ struct PixelPipe {
 
     PAHO_X_8_SYNC.reset(REG_D0C1);
 
-    POFY_HSYNCp.reset(TRI_D0NP);
+    // FIXME need to check against actual bootrom state
+    RUJU.reset(REG_D1C0);
+    POFY.reset(REG_D0C0);
+    POME.reset(REG_D1C0);
+    //POFY_HSYNCp.reset(TRI_D0NP);
 
     MYDE_BG_PIPE_A0.reset(REG_D0C1);
     NOZO_BG_PIPE_A1.reset(REG_D0C1);
@@ -318,7 +322,10 @@ struct PixelPipe {
 
     PAHO_X_8_SYNC.reset(REG_D0C0);
 
-    POFY_HSYNCp.reset(TRI_D0NP);
+    // FIXME boot state
+    RUJU.reset(REG_D1C0);
+    POFY.reset(REG_D0C0);
+    POME.reset(REG_D1C0);
 
     MYDE_BG_PIPE_A0.reset(REG_D0C0);
     NOZO_BG_PIPE_A1.reset(REG_D0C0);
@@ -450,7 +457,7 @@ struct PixelPipe {
   }
 
   wire lcd_on() {
-    return XONA_LCDC_LCDENn.q08n();
+    return XONA_LCDC_LCDENn.q08();
   }
 
   //----------------------------------------
@@ -557,7 +564,11 @@ private:
 
   /*p24.PAHO*/ DFF17 PAHO_X_8_SYNC;
 
-  /*p24.POFY*/ NorLatch POFY_HSYNCp; // RUJU+POFY+POME form a nor latch
+  /*p24.RUJU*/ Gate RUJU;
+  /*p24.POFY*/ Gate POFY;
+  /*p24.POME*/ Gate POME;
+
+  ///*p24.POFY*/ NorLatch POFY_HSYNCp; // RUJU+POFY+POME form a nor latch
 
   /*p32.MYDE*/ DFF22 MYDE_BG_PIPE_A0;
   /*p32.NOZO*/ DFF22 NOZO_BG_PIPE_A1;

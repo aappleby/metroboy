@@ -299,6 +299,19 @@ struct RegBase {
 
 //-----------------------------------------------------------------------------
 
+struct Gate : private RegBase {
+  using RegBase::reset;
+  using RegBase::c;
+
+  operator wire() const { return as_wire(); }
+
+  void operator = (const wire D) {
+    dff(0, 1, !D, D, 0);
+  }
+};
+
+//-----------------------------------------------------------------------------
+
 struct DelayGlitch {
 
   // fixme
@@ -436,7 +449,7 @@ struct DFF9 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
-  wire q08n() const { return !as_wire(); }
+  wire q08() const { return !as_wire(); }
   wire q09p() const { return  as_wire(); }
 
   // FIXME the SETn here is slightly weird. too many inversions?

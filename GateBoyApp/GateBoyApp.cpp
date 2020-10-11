@@ -110,6 +110,7 @@ void GateBoyApp::app_init() {
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb->sys_cpu_en = false;
 
+  /*
   {
     memset(gb->oam_ram, 0, 160);
     memset(gb->vid_ram, 0, 8192);
@@ -133,6 +134,7 @@ void GateBoyApp::app_init() {
       *cursor++ = 0b11111111;
     }
   }
+  */
 
   /*
   for (int i = 0; i < 2048; i += 2) {

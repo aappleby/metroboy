@@ -30,15 +30,14 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.BOGA*/ wire BOGA_Axxxxxxx = not1(top.clk_reg.BALY_xBCDEFGH);
   /*p03.RYFO*/ wire RYFO_FF04_FF07p = and3(top.cpu_bus.BUS_CPU_A02.qp(), top.cpu_bus.SARE_XX00_XX07p(), top.cpu_bus.SYKE_FF00_FFFFp());
 
-  /*p01.UVYN*/ wire UVYN_DIV_05n = not1(TAMA_DIV_05.qp());
-  /*p01.UTOK*/ wire UMEK_DIV_06n = not1(UGOT_DIV_06.qp());
-  /*p01.SAPY*/ wire UREK_DIV_07n = not1(TULU_DIV_07.qp());
-  /*p01.UTOK*/ wire UTOK_DIV_08n = not1(TUGO_DIV_08.qp());
-  /*p01.SAPY*/ wire SAPY_DIV_09n = not1(TOFE_DIV_09.qp());
-  /*p01.UMER*/ wire UMER_DIV_10n = not1(TERU_DIV_10.qp());
-  /*p01.RAVE*/ wire RAVE_DIV_11n = not1(SOLA_DIV_11.qp());
-  /*p01.RYSO*/ wire RYSO_DIV_12n = not1(SUBU_DIV_12.qp());
-  /*p01.UDOR*/ wire UDOR_DIV_13n = not1(TEKA_DIV_13.qp());
+  /* p01.UTOK*/ wire UMEK_DIV_06n = not1(UGOT_DIV_06.qp());
+  /*#p01.UREK*/ wire UREK_DIV_07n = not1(TULU_DIV_07.qp());
+  /* p01.UTOK*/ wire UTOK_DIV_08n = not1(TUGO_DIV_08.qp());
+  /* p01.SAPY*/ wire SAPY_DIV_09n = not1(TOFE_DIV_09.qp());
+  /* p01.UMER*/ wire UMER_DIV_10n = not1(TERU_DIV_10.qp());
+  /* p01.RAVE*/ wire RAVE_DIV_11n = not1(SOLA_DIV_11.qp());
+  /* p01.RYSO*/ wire RYSO_DIV_12n = not1(SUBU_DIV_12.qp());
+  /* p01.UDOR*/ wire UDOR_DIV_13n = not1(TEKA_DIV_13.qp());
 
   // FF04 DIV
   {
@@ -54,6 +53,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /* p01.TAMA*/ TAMA_DIV_05.dff17(UNYK_DIV_04.qn(), UFOL_DIV_RSTn, TAMA_DIV_05.qn());
 
     ///*p01.ULUR*/ wire ULUR_DIV_06_CLK = mux2p(BOGA_AxCDEFGH, DIV_05, FF60_1);
+    ///
     /* p01.ULUR*/ wire ULUR_DIV_06_CLK = TAMA_DIV_05.qn();
     /* p01.UGOT*/ UGOT_DIV_06.dff17(ULUR_DIV_06_CLK,  UFOL_DIV_RSTn, UGOT_DIV_06.qn());
     /* p01.TULU*/ TULU_DIV_07.dff17(UGOT_DIV_06.qn(), UFOL_DIV_RSTn, TULU_DIV_07.qn());
@@ -70,7 +70,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /* p01.TAKU*/ cpu_bus.BUS_CPU_D1p.tri_6pn(TAGY_FF04_RDp, UREK_DIV_07n);
     /* p01.TEMU*/ cpu_bus.BUS_CPU_D2p.tri_6pn(TAGY_FF04_RDp, UTOK_DIV_08n);
     /* p01.TUSE*/ cpu_bus.BUS_CPU_D3p.tri_6pn(TAGY_FF04_RDp, SAPY_DIV_09n);
-    /* p01.UPUG*/ cpu_bus.BUS_CPU_D4p.tri_6pn(TAGY_FF04_RDp, UMER_DIV_10n);
+    /* p01.UPUG*/ cpu_bus.BUS_CPU_D4p.tri_6pn(TAGY_FF04_RDp, UMER_DIV_10n); // Schematic wrong, UPUG/SEPU driving D5/D4
     /* p01.SEPU*/ cpu_bus.BUS_CPU_D5p.tri_6pn(TAGY_FF04_RDp, RAVE_DIV_11n);
     /* p01.SAWA*/ cpu_bus.BUS_CPU_D6p.tri_6pn(TAGY_FF04_RDp, RYSO_DIV_12n);
     /* p01.TATU*/ cpu_bus.BUS_CPU_D7p.tri_6pn(TAGY_FF04_RDp, UDOR_DIV_13n);
@@ -84,6 +84,7 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p03.UBOT*/ wire UBOT_CLK_256Kn = not1(UFOR_DIV_01.qp());
     /*#p03.UVYR*/ wire UVYR_CLK_64Kn = not1(TERO_DIV_03.qp());
 
+    /* p01.UVYN*/ wire UVYN_DIV_05n = not1(TAMA_DIV_05.qp());
     /*#p03.UKAP*/ wire UKAP_CLK_MUXa = mux2n(SOPU_TAC_D0.qp(), UVYN_DIV_05n,   UVYR_CLK_64Kn);
     /*#p03.TEKO*/ wire TEKO_CLK_MUXb = mux2n(SOPU_TAC_D0.qp(), UBOT_CLK_256Kn, UREK_DIV_07n);
     /*#p03.TECY*/ wire TECY_CLK_MUXc = mux2n(SAMY_TAC_D1.qp(), UKAP_CLK_MUXa,  TEKO_CLK_MUXb);

@@ -57,9 +57,9 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
   /*p01.ZAXY*/ ZAXY_xBxDxFxH = not1(AZOF_AxCxExGx);
 
-  /*#p01.AROV*/ AROV_xxCDEFxx = not1(APUK_ABxxxxGH.q09p());
+  /*#p01.AROV*/ AROV_xxCDEFxx = not1(APUK_ABxxxxGH.q09());
   /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.q08());
-  /*#p01.ATYP*/ ATYP_ABCDxxxx = not1(AFUR_xxxxEFGH.q09p());
+  /*#p01.ATYP*/ ATYP_ABCDxxxx = not1(AFUR_xxxxEFGH.q09());
   /*#p01.AJAX*/ AJAX_xxxxEFGH = not1(ATYP_ABCDxxxx.qp());
 
   /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
@@ -98,7 +98,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
   /*p01.ATAL*/ wire ATAL_AxCxExGx = not1(ATAL_xBxDxFxH);
 
-  /*p01.AFUR*/ AFUR_xxxxEFGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.q09p());
+  /*p01.AFUR*/ AFUR_xxxxEFGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.q09());
   /*p01.ALEF*/ ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.q08());
   /*p01.APUK*/ APUK_ABxxxxGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.q08());
   /*p01.ADYK*/ ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.q08());

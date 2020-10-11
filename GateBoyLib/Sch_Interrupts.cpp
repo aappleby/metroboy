@@ -88,11 +88,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(top.ser_reg.CALY_INT_SERp.qp(),        TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_VCC);
   /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(top.joypad.ASOK_INT_JOYp,              TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_VCC);
 
-  PIN_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.qp());
-  PIN_CPU_INT_STAT  .set(LALU_FF0F_D1p.qp());
-  PIN_CPU_INT_TIMER .set(NYBO_FF0F_D2p.qp());
-  PIN_CPU_INT_SERIAL.set(UBUL_FF0F_D3p.qp());
-  PIN_CPU_INT_JOYPAD.set(ULAK_FF0F_D4p.qp());
+  PIN_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.q16());
+  PIN_CPU_INT_STAT  .set(LALU_FF0F_D1p.q16());
+  PIN_CPU_INT_TIMER .set(NYBO_FF0F_D2p.q16());
+  PIN_CPU_INT_SERIAL.set(UBUL_FF0F_D3p.q16());
+  PIN_CPU_INT_JOYPAD.set(ULAK_FF0F_D4p.q16());
 
   // pass gates? does look like a transparent latch here...
 
@@ -101,11 +101,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   // FIXME this inversion fixes a bunch of tests...
   // MATY is one of those big yellow latchy things
 
-  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(!ROLO_HOLDn, LOPE_FF0F_D0p.qp()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(!ROLO_HOLDn, LALU_FF0F_D1p.qp()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(!ROLO_HOLDn, NYBO_FF0F_D2p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!ROLO_HOLDn, UBUL_FF0F_D3p.qp()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!ROLO_HOLDn, ULAK_FF0F_D4p.qp()); // OUTPUT ON RUNG 10
+  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(!ROLO_HOLDn, LOPE_FF0F_D0p.q16()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(!ROLO_HOLDn, LALU_FF0F_D1p.q16()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(!ROLO_HOLDn, NYBO_FF0F_D2p.q16()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!ROLO_HOLDn, UBUL_FF0F_D3p.q16()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!ROLO_HOLDn, ULAK_FF0F_D4p.q16()); // OUTPUT ON RUNG 10
 
   /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_HOLDn);
   /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p.tri_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.q10n());

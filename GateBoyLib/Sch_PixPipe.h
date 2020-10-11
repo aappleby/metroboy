@@ -16,9 +16,14 @@ struct PixelPipe {
     NUNY_WX_MATCH_TRIGp.reset(TRI_D0NP);
     VOTY_INT_STATp     .reset(TRI_D0NP);
 
-    XYMU_RENDERINGp.reset(TRI_D0NP);
+    XYMU_RENDERINGn.reset(TRI_D0NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
-    RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
+
+    // FIXME check boot state
+    PUKU.reset(REG_D1C0);
+    RYDY.reset(REG_D0C0);
+    //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
+
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
 
     XEHO_X0p.reset(REG_D1C1);
@@ -236,9 +241,14 @@ struct PixelPipe {
     NUNY_WX_MATCH_TRIGp.reset(TRI_HZNP);
     VOTY_INT_STATp.reset(TRI_HZNP);
 
-    XYMU_RENDERINGp.reset(TRI_D0NP);
+    XYMU_RENDERINGn.reset(TRI_D0NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
-    RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
+
+    // FIXME check boot state
+    PUKU.reset(REG_D1C0);
+    RYDY.reset(REG_D0C0);
+    //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
+
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
 
     XEHO_X0p.reset(REG_D0C0);
@@ -432,13 +442,13 @@ struct PixelPipe {
   uint8_t get_stat(const SchematicTop& top) const;
 
   int get_wx() const {
-    return pack_p(MYPA_WX0n.q09p(), NOFE_WX1n.q09p(), NOKE_WX2n.q09p(), MEBY_WX3n.q09p(),
-                  MYPU_WX4n.q09p(), MYCE_WX5n.q09p(), MUVO_WX6n.q09p(), NUKU_WX7n.q09p());
+    return pack_p(MYPA_WX0n.q09(), NOFE_WX1n.q09(), NOKE_WX2n.q09(), MEBY_WX3n.q09(),
+                  MYPU_WX4n.q09(), MYCE_WX5n.q09(), MUVO_WX6n.q09(), NUKU_WX7n.q09());
   }
 
   int get_wy() const {
-    return pack_p(NESO_WY0n.q09p(), NYRO_WY1n.q09p(), NAGA_WY2n.q09p(), MELA_WY3n.q09p(),
-                  NULO_WY4n.q09p(), NENE_WY5n.q09p(), NUKA_WY6n.q09p(), NAFU_WY7n.q09p());
+    return pack_p(NESO_WY0n.q09(), NYRO_WY1n.q09(), NAGA_WY2n.q09(), MELA_WY3n.q09(),
+                  NULO_WY4n.q09(), NENE_WY5n.q09(), NUKA_WY6n.q09(), NAFU_WY7n.q09());
   }
 
   int get_win_x() const {
@@ -468,9 +478,14 @@ struct PixelPipe {
   /*p27.NUNY*/ Sig   NUNY_WX_MATCH_TRIGp;
   /*p21.VOTY*/ Sig   VOTY_INT_STATp;
 
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ NorLatch2 XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
-  /*p27.RYDY*/ NorLatch RYDY_WIN_FIRST_TILE_A; // NorLatch with p27.PUKU
+
+  /*p27.PUKU*/ Gate PUKU;
+  /*p27.RYDY*/ Gate RYDY;
+
+  ///*p27.RYDY*/ Gate RYDY_WIN_FIRST_TILE_A; // NorLatch with p27.PUKU
+
   /*p27.SOVY*/ DFF17 SOVY_WIN_FIRST_TILE_B;
 
   // Pixel counter

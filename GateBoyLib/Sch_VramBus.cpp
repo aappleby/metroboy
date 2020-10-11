@@ -58,7 +58,7 @@ void VramBus::tock(SchematicTop& top) {
   /*p25.TEFA*/ wire TEFA_8000_9FFFp = nor2(top.cpu_bus.SYRO_FE00_FFFFp(), TEXO_8000_9FFFn);
   /*p25.SOSE*/ wire SOSE_8000_9FFFp = and2(top.cpu_bus.BUS_CPU_A15.qp(), TEFA_8000_9FFFp);
 
-  /*p25.ROPY*/ wire ROPY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.qp());
+  /*p25.ROPY*/ wire ROPY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.q03());
 
   //----------------------------------------
   // VRAM pins
@@ -83,7 +83,7 @@ void VramBus::tock(SchematicTop& top) {
   }
 
   {
-    /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_READ_VRAMp, top.pix_pipe.XYMU_RENDERINGp.qp()); // def nor4
+    /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_READ_VRAMp, top.pix_pipe.XYMU_RENDERINGn.q03()); // def nor4
     /*p25.TAVY*/ wire TAVY_MOEp = not1(PIN_VRAM_OEn.qn());
     /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
     /*p25.SALE*/ wire SALE_VRAM_WRn = mux2p(top.TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
@@ -130,7 +130,7 @@ void VramBus::tock(SchematicTop& top) {
 
   // CPU address -> vram address
   {
-    /* p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_READ_VRAMp, top.pix_pipe.XYMU_RENDERINGp.qp());
+    /* p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_READ_VRAMp, top.pix_pipe.XYMU_RENDERINGn.q03());
     /* p25.XEDU*/ wire XEDU_CPU_VRAM_RDn = not1(XANE_VRAM_LOCKn);
     /* p25.XAKY*/ BUS_VRAM_A00n.tri_6nn(XEDU_CPU_VRAM_RDn, top.cpu_bus.BUS_CPU_A00.qp());
     /* p25.XUXU*/ BUS_VRAM_A01n.tri_6nn(XEDU_CPU_VRAM_RDn, top.cpu_bus.BUS_CPU_A01.qp());

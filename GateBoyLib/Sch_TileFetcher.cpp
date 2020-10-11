@@ -28,7 +28,7 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& /*top*/) const {
 //------------------------------------------------------------------------------
 
 void TileFetcher::tick(const SchematicTop& top) {
-  /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGp.qp());
+  /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.q03());
 
   /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp());
   /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
@@ -74,7 +74,7 @@ void TileFetcher::tick(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 void TileFetcher::tock(SchematicTop& top) {
-  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
+  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGn.q03();
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
 
   /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);

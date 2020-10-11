@@ -450,7 +450,7 @@ struct DFF9 : private RegBase {
   using RegBase::c;
 
   wire q08() const { return !as_wire(); }
-  wire q09p() const { return  as_wire(); }
+  wire q09() const { return  as_wire(); }
 
   // FIXME the SETn here is slightly weird. too many inversions?
 
@@ -618,11 +618,10 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
+  //wire qp() const { return  as_wire(); }
 
-  wire q15n() const { return !as_wire(); }
-  wire q16p() const { return  as_wire(); }
+  wire q15() const { return !as_wire(); }
+  wire q16() const { return  as_wire(); }
 
   void dff22(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
 };
@@ -766,6 +765,28 @@ struct NorLatch : private RegBase {
   using RegBase::cn;
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
+
+  void nor_latch(wire SETp, wire RSTp) {
+    CHECK_N(has_delta());
+    if (RSTp) {
+      delta = DELTA_TRI0;
+    }
+    else if (SETp) {
+      delta = DELTA_TRI1;
+    }
+    else {
+      delta = DELTA_HOLD;
+    }
+  }
+};
+
+struct NorLatch2 : private RegBase {
+  using RegBase::reset;
+  using RegBase::c;
+  using RegBase::cn;
+
+  wire q03() const { return !as_wire(); }
+  wire q04() const { return  as_wire(); }
 
   void nor_latch(wire SETp, wire RSTp) {
     CHECK_N(has_delta());

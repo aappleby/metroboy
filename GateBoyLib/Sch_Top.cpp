@@ -52,14 +52,14 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   {
     /*p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
-    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGp.qp(),
+    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.q03(),
                                                       ROMO_PRELOAD_DONEn,
                                                       tile_fetcher.NYKA_FETCH_DONE_P11.qp(),
                                                       tile_fetcher.PORY_FETCH_DONE_P12.qp());
     // -> sprite fetcher, top.TEVO
     /*p27.TAVE*/ TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
 
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(pix_pipe.RYDY_WIN_FIRST_TILE_A.qp());
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(pix_pipe.RYDY);
     /*p27.TUXY*/ wire TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
     /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILE_NE);
 

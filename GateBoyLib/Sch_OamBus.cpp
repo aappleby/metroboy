@@ -124,7 +124,7 @@ void OamBus::tock(SchematicTop& top) {
 
   //----------------------------------------
 
-  /* p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGp.qp();
+  /* p21.XYMU*/ wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGn.q03();
   /* p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg.MATU_DMA_RUNNINGp.qp();
   /* p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner.BESU_SCANNINGp.qp();
   /* p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp);

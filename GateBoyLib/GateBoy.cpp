@@ -171,9 +171,9 @@ void GateBoy::run_reset_sequence() {
   run(3);
 
   CHECK_P(top.clk_reg.AFUR_xxxxEFGH.q08());
-  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.q09p());
-  CHECK_P(top.clk_reg.APUK_ABxxxxGH.q09p());
-  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.q09p());
+  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.q09());
+  CHECK_P(top.clk_reg.APUK_ABxxxxGH.q09());
+  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.q09());
 
   // Wait for PIN_CPU_START
   while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {

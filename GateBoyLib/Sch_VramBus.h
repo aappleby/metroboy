@@ -9,14 +9,14 @@ struct SchematicTop;
 
 struct VramBus {
   void reset_cart() {
-    LEGU_TILE_DA0n.reset(REG_D1C0);
-    NUDU_TILE_DA1n.reset(REG_D1C0);
-    MUKU_TILE_DA2n.reset(REG_D1C0);
-    LUZO_TILE_DA3n.reset(REG_D1C0);
-    MEGU_TILE_DA4n.reset(REG_D1C0);
-    MYJY_TILE_DA5n.reset(REG_D1C0);
-    NASA_TILE_DA6n.reset(REG_D1C0);
-    NEFO_TILE_DA7n.reset(REG_D1C0);
+    LEGU_TILE_DA0n.reset(REG_D1C1);
+    NUDU_TILE_DA1n.reset(REG_D1C1);
+    MUKU_TILE_DA2n.reset(REG_D1C1);
+    LUZO_TILE_DA3n.reset(REG_D1C1);
+    MEGU_TILE_DA4n.reset(REG_D1C1);
+    MYJY_TILE_DA5n.reset(REG_D1C1);
+    NASA_TILE_DA6n.reset(REG_D1C1);
+    NEFO_TILE_DA7n.reset(REG_D1C1);
     RAWU_TILE_DB0p.reset(REG_D0C1);
     POZO_TILE_DB1p.reset(REG_D0C1);
     PYZO_TILE_DB2p.reset(REG_D0C1);
@@ -26,22 +26,22 @@ struct VramBus {
     POWY_TILE_DB6p.reset(REG_D0C1);
     PYJU_TILE_DB7p.reset(REG_D0C1);
 
-    PEFO_SPRITE_DB0n.reset(REG_D0C0);
-    ROKA_SPRITE_DB1n.reset(REG_D0C0);
-    MYTU_SPRITE_DB2n.reset(REG_D0C0);
-    RAMU_SPRITE_DB3n.reset(REG_D0C0);
-    SELE_SPRITE_DB4n.reset(REG_D0C0);
-    SUTO_SPRITE_DB5n.reset(REG_D0C0);
-    RAMA_SPRITE_DB6n.reset(REG_D0C0);
-    RYDU_SPRITE_DB7n.reset(REG_D0C0);
-    REWO_SPRITE_DA0n.reset(REG_D0C0);
-    PEBA_SPRITE_DA1n.reset(REG_D0C0);
-    MOFO_SPRITE_DA2n.reset(REG_D0C0);
-    PUDU_SPRITE_DA3n.reset(REG_D0C0);
-    SAJA_SPRITE_DA4n.reset(REG_D0C0);
-    SUNY_SPRITE_DA5n.reset(REG_D0C0);
-    SEMO_SPRITE_DA6n.reset(REG_D0C0);
-    SEGA_SPRITE_DA7n.reset(REG_D0C0);
+    PEFO_SPRITE_DB0n.reset(REG_D0C1);
+    ROKA_SPRITE_DB1n.reset(REG_D0C1);
+    MYTU_SPRITE_DB2n.reset(REG_D0C1);
+    RAMU_SPRITE_DB3n.reset(REG_D0C1);
+    SELE_SPRITE_DB4n.reset(REG_D0C1);
+    SUTO_SPRITE_DB5n.reset(REG_D0C1);
+    RAMA_SPRITE_DB6n.reset(REG_D0C1);
+    RYDU_SPRITE_DB7n.reset(REG_D0C1);
+    REWO_SPRITE_DA0n.reset(REG_D0C1);
+    PEBA_SPRITE_DA1n.reset(REG_D0C1);
+    MOFO_SPRITE_DA2n.reset(REG_D0C1);
+    PUDU_SPRITE_DA3n.reset(REG_D0C1);
+    SAJA_SPRITE_DA4n.reset(REG_D0C1);
+    SUNY_SPRITE_DA5n.reset(REG_D0C1);
+    SEMO_SPRITE_DA6n.reset(REG_D0C1);
+    SEGA_SPRITE_DA7n.reset(REG_D0C1);
 
     BUS_VRAM_D0p .reset(TRI_D0NP);
     BUS_VRAM_D1p .reset(TRI_D0NP);
@@ -227,14 +227,14 @@ struct VramBus {
 
   //-----------------------------------------------------------------------------
 
-  /*p32.LEGU*/ DFF8 LEGU_TILE_DA0n;
-  /*p32.NUDU*/ DFF8 NUDU_TILE_DA1n;
-  /*p32.MUKU*/ DFF8 MUKU_TILE_DA2n;
-  /*p32.LUZO*/ DFF8 LUZO_TILE_DA3n;
-  /*p32.MEGU*/ DFF8 MEGU_TILE_DA4n;
-  /*p32.MYJY*/ DFF8 MYJY_TILE_DA5n;
-  /*p32.NASA*/ DFF8 NASA_TILE_DA6n;
-  /*p32.NEFO*/ DFF8 NEFO_TILE_DA7n; // color wrong on die
+  /*p32.LEGU*/ DFF8n LEGU_TILE_DA0n;
+  /*p32.NUDU*/ DFF8n NUDU_TILE_DA1n;
+  /*p32.MUKU*/ DFF8n MUKU_TILE_DA2n;
+  /*p32.LUZO*/ DFF8n LUZO_TILE_DA3n;
+  /*p32.MEGU*/ DFF8n MEGU_TILE_DA4n;
+  /*p32.MYJY*/ DFF8n MYJY_TILE_DA5n;
+  /*p32.NASA*/ DFF8n NASA_TILE_DA6n;
+  /*p32.NEFO*/ DFF8n NEFO_TILE_DA7n; // color wrong on die
 
   /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p; // def holds inverted pix, also holds tile index during fetch
   /*p32.POZO*/ DFF11 POZO_TILE_DB1p;
@@ -244,6 +244,8 @@ struct VramBus {
   /*p32.POJU*/ DFF11 POJU_TILE_DB5p;
   /*p32.POWY*/ DFF11 POWY_TILE_DB6p;
   /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p;
+
+  // switching these to DFF8n breaks sprites
 
   /*p33.PEFO*/ DFF8 PEFO_SPRITE_DB0n;
   /*p33.ROKA*/ DFF8 ROKA_SPRITE_DB1n;

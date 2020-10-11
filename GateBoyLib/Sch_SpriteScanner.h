@@ -150,6 +150,8 @@ struct SpriteScanner {
   /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p;
   /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p;
 
+  // switching these to DFF8n breajs sprite4_*_b
+
   // oam byte 0, byte 2
   /*p29.XUSO*/ DFF8 XUSO_OAM_DA0p; // sprite y bit 0, sprite tile index bit 0
   /*p29.XEGU*/ DFF8 XEGU_OAM_DA1p; // sprite y bit 1, sprite tile index bit 1

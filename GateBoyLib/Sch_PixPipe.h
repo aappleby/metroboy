@@ -203,6 +203,28 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D1C1);
   }
 
+  void set_wx(uint8_t wx) {
+    MYPA_WX0n.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
+    NOFE_WX1n.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
+    NOKE_WX2n.reset((wx & 0x04) ? REG_D0C1 : REG_D1C1);
+    MEBY_WX3n.reset((wx & 0x08) ? REG_D0C1 : REG_D1C1);
+    MYPU_WX4n.reset((wx & 0x10) ? REG_D0C1 : REG_D1C1);
+    MYCE_WX5n.reset((wx & 0x20) ? REG_D0C1 : REG_D1C1);
+    MUVO_WX6n.reset((wx & 0x40) ? REG_D0C1 : REG_D1C1);
+    NUKU_WX7n.reset((wx & 0x80) ? REG_D0C1 : REG_D1C1);
+  }
+
+  void set_wy(uint8_t wy) {
+    NESO_WY0n.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
+    NYRO_WY1n.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
+    NAGA_WY2n.reset((wy & 0x04) ? REG_D0C1 : REG_D1C1);
+    MELA_WY3n.reset((wy & 0x08) ? REG_D0C1 : REG_D1C1);
+    NULO_WY4n.reset((wy & 0x10) ? REG_D0C1 : REG_D1C1);
+    NENE_WY5n.reset((wy & 0x20) ? REG_D0C1 : REG_D1C1);
+    NUKA_WY6n.reset((wy & 0x40) ? REG_D0C1 : REG_D1C1);
+    NAFU_WY7n.reset((wy & 0x80) ? REG_D0C1 : REG_D1C1);
+  }
+
   void reset_boot() {
     SEKO_WIN_TILE_TRIG.reset(TRI_HZNP);
     TOMU_WIN_HITp.reset(TRI_HZNP);

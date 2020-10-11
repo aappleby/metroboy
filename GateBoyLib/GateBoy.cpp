@@ -365,13 +365,13 @@ void GateBoy::next_pass() {
   // hsync should go low the same phase that lcd clock goes high
   // vsync 108.720 usec - right on 912 phases
 
-  if (top.PIN_LCD_VSYNC.posedge()) {
-    screen_y = 0;
-  }
-
   if (top.PIN_LCD_HSYNC.posedge()) {
     screen_x = 0;
     screen_y++;
+  }
+
+  if (top.PIN_LCD_VSYNC.qp()) {
+    screen_y = 0;
   }
 
   if (top.PIN_LCD_CLOCK.posedge()) {

@@ -6,39 +6,39 @@
 
 //-----------------------------------------------------------------------------
 
-__forceinline wire not1(wire a) { return !a; }
+inline wire not1(wire a) { return !a; }
 
-__forceinline wire and2(wire a, wire b) { return a & b; }
-__forceinline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
-__forceinline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
-__forceinline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
-__forceinline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
-__forceinline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
+inline wire and2(wire a, wire b) { return a & b; }
+inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
+inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
+inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
+inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
+inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
 
-__forceinline wire or2(wire a, wire b) { return a | b; }
-__forceinline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
-__forceinline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
-__forceinline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
+inline wire or2(wire a, wire b) { return a | b; }
+inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
+inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
+inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
 
-__forceinline wire xor2 (wire a, wire b) { return a ^ b; }
-__forceinline wire xnor2(wire a, wire b) { return a == b; }
+inline wire xor2 (wire a, wire b) { return a ^ b; }
+inline wire xnor2(wire a, wire b) { return a == b; }
 
-__forceinline wire nor2(wire a, wire b) { return !(a | b); }
-__forceinline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
-__forceinline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
-__forceinline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
-__forceinline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
-__forceinline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
+inline wire nor2(wire a, wire b) { return !(a | b); }
+inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
+inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
+inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
+inline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
+inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
 
-__forceinline wire nand2(wire a, wire b) { return !(a & b); }
-__forceinline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
-__forceinline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
-__forceinline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
-__forceinline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
-__forceinline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
+inline wire nand2(wire a, wire b) { return !(a & b); }
+inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
+inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
+inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
+inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
+inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
 
-__forceinline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
-__forceinline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
+inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
+inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
 
 //-----------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ enum RegDelta : uint8_t {
 //-----------------------------------------------------------------------------
 
 struct Lut8 {
-  inline uint8_t operator[](int x) const { return tab[x]; }
+  uint8_t operator[](int x) const { return tab[x]; }
   uint8_t tab[256];
 };
 
@@ -207,21 +207,13 @@ struct RegBase {
   static bool bus_collision;
   static bool bus_floating;
 
-  __forceinline char c() const  { return reg_state_to_c(state); }
-  __forceinline char cn() const { return reg_state_to_cn(state); }
+  char c() const  { return reg_state_to_c(state); }
+  char cn() const { return reg_state_to_cn(state); }
 
-  __forceinline wire qp() const {
-    return  as_wire();
-  }
-
-  __forceinline wire qn() const {
-    return !as_wire();
-  }
-
-  __forceinline bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_YYYY); }
-  __forceinline bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
-  __forceinline bool has_delta() const { return delta != DELTA_NONE; }
-  __forceinline wire as_wire()   const {
+  bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_YYYY); }
+  bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
+  bool has_delta() const { return delta != DELTA_NONE; }
+  wire as_wire()   const {
 #ifdef SANITY_CHECK
     if (state == TRI_HZNP) {
       //printf("bus floating?\n");
@@ -231,26 +223,26 @@ struct RegBase {
     /*CHECKn(has_delta());*/ return wire(state & 1);
   }
 
-  inline void lock(RegDelta d) {
+  void lock(RegDelta d) {
     CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
     delta = d;
     value = logic_lut1[value];
     delta = DELTA_LOCK;
   }
 
-  inline void lock(wire w) {
+  void lock(wire w) {
     CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
     delta = w ? DELTA_TRI1 : DELTA_TRI0;
     value = logic_lut1[value];
     delta = DELTA_LOCK;
   }
 
-  inline void unlock() {
+  void unlock() {
     //CHECK_P(delta == DELTA_LOCK);
     delta = DELTA_NONE;
   }
 
-  inline void preset(RegDelta d) {
+  void preset(RegDelta d) {
     if (delta != DELTA_NONE) {
       CHECK_P(delta == DELTA_NONE);
     }
@@ -259,11 +251,11 @@ struct RegBase {
     delta = d;
   }
 
-  inline void preset(wire d) {
+  void preset(wire d) {
     preset(d ? DELTA_TRI1 : DELTA_TRI0);
   }
 
-  inline void merge_tri_delta(RegDelta new_d) {
+  void merge_tri_delta(RegDelta new_d) {
     CHECK_P(is_tri());
     if (delta == DELTA_NONE) {
       delta = new_d;
@@ -280,7 +272,7 @@ struct RegBase {
     }
   }
 
-  inline void dff(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
+  void dff(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
     (void)CLKn;
     CHECK_P(is_reg() && !has_delta());
     if (!RSTn) {
@@ -344,27 +336,27 @@ struct DelayGlitch {
   RegBase dh;
   RegBase di;
 
-  inline void set(wire w) {
-    di.merge_tri_delta(dh.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    dh.merge_tri_delta(dg.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    dg.merge_tri_delta(df.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    df.merge_tri_delta(de.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    de.merge_tri_delta(dd.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    dd.merge_tri_delta(dc.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    dc.merge_tri_delta(db.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    db.merge_tri_delta(da.qp() ? DELTA_TRI1 : DELTA_TRI0);
-    da.merge_tri_delta(w       ? DELTA_TRI1 : DELTA_TRI0);
+  void set(wire w) {
+    di.merge_tri_delta(dh.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    dh.merge_tri_delta(dg.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    dg.merge_tri_delta(df.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    df.merge_tri_delta(de.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    de.merge_tri_delta(dd.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    dd.merge_tri_delta(dc.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    dc.merge_tri_delta(db.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    db.merge_tri_delta(da.as_wire() ? DELTA_TRI1 : DELTA_TRI0);
+    da.merge_tri_delta(w            ? DELTA_TRI1 : DELTA_TRI0);
   }
 
-  inline wire q1() const { return da.qp(); }
-  inline wire q2() const { return db.qp(); }
-  inline wire q3() const { return dc.qp(); }
-  inline wire q4() const { return dd.qp(); }
-  inline wire q5() const { return de.qp(); }
-  inline wire q6() const { return df.qp(); }
-  inline wire q7() const { return dg.qp(); }
-  inline wire q8() const { return dh.qp(); }
-  inline wire q9() const { return di.qp(); }
+  wire q1() const { return da.as_wire(); }
+  wire q2() const { return db.as_wire(); }
+  wire q3() const { return dc.as_wire(); }
+  wire q4() const { return dd.as_wire(); }
+  wire q5() const { return de.as_wire(); }
+  wire q6() const { return df.as_wire(); }
+  wire q7() const { return dg.as_wire(); }
+  wire q8() const { return dh.as_wire(); }
+  wire q9() const { return di.as_wire(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -373,10 +365,10 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  inline void tock(wire CLKp, bool RSTn, bool D) { dff(CLKp, !CLKp, 1, RSTn, D); }
+  void dff(wire CLKp, bool RSTn, bool D) { RegBase::dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -396,11 +388,11 @@ struct DFF8 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
-  inline wire q07() const { return !as_wire(); }
-  inline wire q08() const { return  as_wire(); }
+  wire q07n() const { return !as_wire(); }
+  wire q08p() const { return  as_wire(); }
 
-  inline void tock(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
-  inline void tock(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
+  void dff8(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
+  void dff8(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
 };
 
 // same w/ inverted clock, not 100% positive this is correct but BGP has to
@@ -419,10 +411,10 @@ struct DFF8n : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
-  inline wire q07() const { return !as_wire(); }
-  inline wire q08() const { return  as_wire(); }
+  wire q07n() const { return !as_wire(); }
+  wire q08p() const { return  as_wire(); }
 
-  inline void dff8n(wire CLK01, bool Dn) { dff( CLK01, !CLK01, 1, 1, !Dn); }
+  void dff8n(wire CLK01, bool Dn) { dff( CLK01, !CLK01, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -444,13 +436,13 @@ struct DFF9 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
-  inline wire q08n() const { return !as_wire(); }
-  inline wire q09p() const { return  as_wire(); }
+  wire q08n() const { return !as_wire(); }
+  wire q09p() const { return  as_wire(); }
 
   // FIXME the SETn here is slightly weird. too many inversions?
 
-  inline void tock(wire CLKp, wire SETn, bool Dn)            { dff(CLKp, !CLKp, SETn, 1, !Dn); }
-  inline void tock(wire CLKp, wire CLKn, wire SETn, bool Dn) { dff(CLKp,  CLKn, SETn, 1, !Dn); }
+  void dff9(wire CLKp, wire SETn, bool Dn)            { dff(CLKp, !CLKp, SETn, 1, !Dn); }
+  void dff9(wire CLKp, wire CLKn, wire SETn, bool Dn) { dff(CLKp,  CLKn, SETn, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -467,14 +459,14 @@ struct DFF9 : private RegBase {
 // DFF11_08 << CLKn
 // DFF11_09 << RSTn
 // DFF11_10 nc
-// DFF11_11 >> Qn
+// DFF11_11 >> Qp?
 
 struct DFF11 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  inline wire q11() const { return as_wire(); }
+  wire q11p() const { return as_wire(); }
 
-  inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
+  void dff11(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -496,13 +488,13 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  inline wire q12() const { return qn(); }
-  inline wire q13() const { return qp(); }
+  wire q12n() const { return qn(); }
+  wire q13p() const { return qp(); }
 
-  inline void tock(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
+  void dff13(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -528,13 +520,13 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  wire q16() const { return !as_wire(); }
-  wire q17() const { return  as_wire(); }
+  wire q16n() const { return !as_wire(); }
+  wire q17p() const { return  as_wire(); }
 
-  inline void tock(wire CLKp, wire RSTn, wire D) {
+  void dfff17(wire CLKp, wire RSTn, wire D) {
     dff(CLKp, !CLKp, 1, RSTn, D);
   }
 };
@@ -566,10 +558,10 @@ struct DFF17 : private RegBase {
 struct DFF20 : private RegBase{
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire q01p() const { return  as_wire(); }
+  wire q17n() const { return !as_wire(); }
 
-  inline void tock(wire CLKn, wire LOADp, bool newD) {
+  void dff20(wire CLKn, wire LOADp, bool newD) {
     (void)LOADp;
     (void)newD;
 
@@ -613,13 +605,13 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  inline wire q15() const { return !as_wire(); }
-  inline wire q16() const { return  as_wire(); }
+  wire q15n() const { return !as_wire(); }
+  wire q16p() const { return  as_wire(); }
 
-  inline void tock(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
+  void dff22(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -627,14 +619,14 @@ struct DFF22 : private RegBase {
 struct Sig : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
+  wire qp() const { return  as_wire(); }
 
-  inline operator wire() const {
+  operator wire() const {
     CHECK_P(has_delta() == sim_running);
     return wire(state & 1);
   }
 
-  inline void operator = (wire s) {
+  void operator = (wire s) {
     CHECK_N(has_delta());
     CHECK_P(tick_running);
 
@@ -652,10 +644,10 @@ struct Bus : private RegBase {
   using RegBase::cn;
   using RegBase::lock;
   using RegBase::unlock;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  inline void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
+  void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
 
   // TYGO_01 << BUS_CPU_D2p
   // TYGO_02 nc
@@ -670,7 +662,7 @@ struct Bus : private RegBase {
 
   // Must be NP - see KOVA/KEJO
 
-  inline void tri10_np(wire OEn, wire D) {
+  void tri10_np(wire OEn, wire D) {
     if (!OEn) {
       merge_tri_delta(D ? DELTA_TRI1 : DELTA_TRI0);
     }
@@ -681,7 +673,7 @@ struct Bus : private RegBase {
 
   // top rung tadpole _not_ facing second rung dot.
 
-  inline void tri_6nn(wire OEn, wire Dn) {
+  void tri_6nn(wire OEn, wire Dn) {
     if (!OEn) {
       merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
     }
@@ -692,7 +684,7 @@ struct Bus : private RegBase {
 
   // top rung tadpole facing second rung dot.
 
-  inline void tri_6pn(wire OEp, wire Dn) {
+  void tri_6pn(wire OEp, wire Dn) {
     if (OEp) {
       merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
     }
@@ -709,31 +701,29 @@ struct Pin : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::lock;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
   bool posedge() const { return  (value & 1) && !(old_value & 1); }
   bool negedge() const { return !(value & 1) &&  (old_value & 1); }
 
   void dump(Dumper& d) const {
-
     char edge = posedge() ? '^' : negedge() ? 'v' : '-';
-
     d("%c%c%c", reg_state_to_c(state), reg_state_to_c(RegState(old_value & 0x0F)), edge);
   }
 
-  inline void set(wire w) {
+  void set(wire w) {
     old_value = state | (DELTA_LOCK << 4);
     CHECK_N(has_delta());
     merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0);
   }
 
-  inline void operator = (RegDelta d) {
+  void operator = (RegDelta d) {
     old_value = state | (DELTA_LOCK << 4);
     merge_tri_delta(d);
   }
 
-  inline void io_pin(wire HI, wire LO, wire OEp = true) {
+  void io_pin(wire HI, wire LO, wire OEp = true) {
     old_value = state | (DELTA_LOCK << 4);
 
     if      (!OEp)       merge_tri_delta(DELTA_TRIZ);
@@ -751,20 +741,20 @@ struct Pin : private RegBase {
 // 6-rung cell, "arms" on ground side
 
 // NORLATCH_01 << SET
-// NORLATCH_01 nc
-// NORLATCH_01 >> QN
-// NORLATCH_01 >> Q
-// NORLATCH_01 nc
-// NORLATCH_01 << RST
+// NORLATCH_02 nc
+// NORLATCH_03 >> QN
+// NORLATCH_04 >> Q
+// NORLATCH_05 nc
+// NORLATCH_06 << RST
 
 struct NorLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  inline void nor_latch(wire SETp, wire RSTp) {
+  void nor_latch(wire SETp, wire RSTp) {
     CHECK_N(has_delta());
     if (RSTp) {
       delta = DELTA_TRI0;
@@ -782,20 +772,20 @@ struct NorLatch : private RegBase {
 // 6-rung cell, "arms" on VCC side. Only TAKA/LONY seem to use this cell
 
 // NANDLATCH_01 << SETn
-// NANDLATCH_01 nc
-// NANDLATCH_01 >> Q
-// NANDLATCH_01 >> QN
-// NANDLATCH_01 nc
-// NANDLATCH_01 << RSTn
+// NANDLATCH_02 nc
+// NANDLATCH_03 >> Q
+// NANDLATCH_04 >> QN
+// NANDLATCH_05 nc
+// NANDLATCH_06 << RSTn
 
 struct NandLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 
-  inline void nand_latch(wire SETn, wire RSTn) {
+  void nand_latch(wire SETn, wire RSTn) {
     CHECK_N(has_delta());
     if (!RSTn) {
       delta = DELTA_TRI0;
@@ -829,10 +819,10 @@ struct NandLatch : private RegBase {
 struct TpLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::qp;
-  using RegBase::qn;
+  wire q08p() const { return  as_wire(); }
+  wire q10n() const { return !as_wire(); }
 
-  inline void tp_latch(wire HOLDn, wire D) {
+  void tp_latch(wire HOLDn, wire D) {
     CHECK_N(has_delta());
     if (!HOLDn) {
       delta = DELTA_HOLD;

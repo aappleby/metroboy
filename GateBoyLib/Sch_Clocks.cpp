@@ -84,9 +84,9 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
   /*#p01.BALY*/ BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.q08n());
-  /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.q16());
-  /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.q16());
-  /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.q17());
+  /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.q16n());
+  /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.q16n());
+  /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.q17p());
   /*#p29.WOJO*/ WOJO_AxxxExxx = nor2(WOSU_AxxDExxH.qn(), WUVU_ABxxEFxx.qn());
 }
 
@@ -98,10 +98,10 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
   /*p01.ATAL*/ wire ATAL_AxCxExGx = not1(ATAL_xBxDxFxH);
 
-  /*p01.AFUR*/ AFUR_xxxxEFGH.tock(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.q09p());
-  /*p01.ALEF*/ ALEF_AxxxxFGH.tock(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.q08n());
-  /*p01.APUK*/ APUK_ABxxxxGH.tock(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.q08n());
-  /*p01.ADYK*/ ADYK_ABCxxxxH.tock(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.q08n());
+  /*p01.AFUR*/ AFUR_xxxxEFGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.q09p());
+  /*p01.ALEF*/ ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.q08n());
+  /*p01.APUK*/ APUK_ABxxxxGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.q08n());
+  /*p01.ADYK*/ ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.q08n());
 
   /*#p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
@@ -166,7 +166,7 @@ void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, Schema
   /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
 
   /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_xBCDEFGH);
-  /*p01.AFER*/ AFER_SYS_RSTp.tock(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp());
+  /*p01.AFER*/ AFER_SYS_RSTp.dff13(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp.set(AFER_SYS_RSTp.qp());
   top.cpu_bus.PIN_CPU_EXT_RST.set(RST);
@@ -187,9 +187,9 @@ void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
 
-  /*p29.WUVU*/ WUVU_ABxxEFxx.tock(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
-  /*p21.VENA*/ VENA_xxCDEFxx.tock(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
-  /*p29.WOSU*/ WOSU_AxxDExxH.tock(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
+  /*p29.WUVU*/ WUVU_ABxxEFxx.dfff17(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
+  /*p21.VENA*/ VENA_xxCDEFxx.dfff17(WUVU_ABxxEFxx.qn(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
+  /*p29.WOSU*/ WOSU_AxxDExxH.dfff17(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn());
 }
 
 //-----------------------------------------------------------------------------

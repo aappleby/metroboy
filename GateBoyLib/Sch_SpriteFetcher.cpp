@@ -73,8 +73,8 @@ void SpriteFetcher::tock(SchematicTop& top) {
 
   /* p27.TEKY*/ wire TEKY_SFETCH_REQp = and4(top.sprite_store.FEPO_STORE_MATCHp, TUKU_WIN_HITn, LYRY_BFETCH_DONEp, SOWO_SFETCH_RUNNINGn);
 
-  /* p27.SOBU*/ SOBU_SFETCH_REQp.tock(TAVA_xBxDxFxH, VYPO, TEKY_SFETCH_REQp);
-  /* p27.SUDA*/ SUDA_SFETCH_REQp.tock(LAPE_AxCxExGx, VYPO, SOBU_SFETCH_REQp.qp());
+  /* p27.SOBU*/ SOBU_SFETCH_REQp.dfff17(TAVA_xBxDxFxH, VYPO, TEKY_SFETCH_REQp);
+  /* p27.SUDA*/ SUDA_SFETCH_REQp.dfff17(LAPE_AxCxExGx, VYPO, SOBU_SFETCH_REQp.qp());
 
   /* p27.RYCE*/ wire RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp(),  SUDA_SFETCH_REQp.qn());
 
@@ -85,13 +85,13 @@ void SpriteFetcher::tock(SchematicTop& top) {
   /*#p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand2(TESE_SFETCH_S2.qp(), TOXE_SFETCH_S0.qp());
   /*#p29.TOMA*/ wire TOMA_SFETCH_CLK_xBxDxFxH = nand2(LAPE_AxCxExGx, TAME_SFETCH_CLK_GATE);
 
-  /*#p29.TOXE*/ TOXE_SFETCH_S0   .tock(TOMA_SFETCH_CLK_xBxDxFxH, SECA_SFETCH_RUNNING_SETn, TOXE_SFETCH_S0.qn());
-  /*#p29.TYFO*/ TYFO_SFETCH_S0_D1.tock(LAPE_AxCxExGx,            VYPO,                     TOXE_SFETCH_S0.qp());
-  /*#p29.TULY*/ TULY_SFETCH_S1   .tock(TOXE_SFETCH_S0.qn(),      SECA_SFETCH_RUNNING_SETn, TULY_SFETCH_S1.qn());
-  /*#p29.TOBU*/ TOBU_SFETCH_S1_D2.tock(TAVA_xBxDxFxH,            XYMU_RENDERINGp,          TULY_SFETCH_S1.qp());
-  /*#p29.VONU*/ VONU_SFETCH_S1_D4.tock(TAVA_xBxDxFxH,            XYMU_RENDERINGp,          TOBU_SFETCH_S1_D2.qp());
-  /*#p29.SEBA*/ SEBA_SFETCH_S1_D5.tock(LAPE_AxCxExGx,            XYMU_RENDERINGp,          VONU_SFETCH_S1_D4.qp());
-  /*#p29.TESE*/ TESE_SFETCH_S2   .tock(TULY_SFETCH_S1.qn(),      SECA_SFETCH_RUNNING_SETn, TESE_SFETCH_S2.qn());
+  /*#p29.TOXE*/ TOXE_SFETCH_S0   .dfff17(TOMA_SFETCH_CLK_xBxDxFxH, SECA_SFETCH_RUNNING_SETn, TOXE_SFETCH_S0.qn());
+  /*#p29.TYFO*/ TYFO_SFETCH_S0_D1.dfff17(LAPE_AxCxExGx,            VYPO,                     TOXE_SFETCH_S0.qp());
+  /*#p29.TULY*/ TULY_SFETCH_S1   .dfff17(TOXE_SFETCH_S0.qn(),      SECA_SFETCH_RUNNING_SETn, TULY_SFETCH_S1.qn());
+  /*#p29.TOBU*/ TOBU_SFETCH_S1_D2.dfff17(TAVA_xBxDxFxH,            XYMU_RENDERINGp,          TULY_SFETCH_S1.qp());
+  /*#p29.VONU*/ VONU_SFETCH_S1_D4.dfff17(TAVA_xBxDxFxH,            XYMU_RENDERINGp,          TOBU_SFETCH_S1_D2.qp());
+  /*#p29.SEBA*/ SEBA_SFETCH_S1_D5.dfff17(LAPE_AxCxExGx,            XYMU_RENDERINGp,          VONU_SFETCH_S1_D4.qp());
+  /*#p29.TESE*/ TESE_SFETCH_S2   .dfff17(TULY_SFETCH_S1.qn(),      SECA_SFETCH_RUNNING_SETn, TESE_SFETCH_S2.qn());
 }
 
 //------------------------------------------------------------------------------

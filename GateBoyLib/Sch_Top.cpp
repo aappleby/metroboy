@@ -114,7 +114,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p25.SYCY*/ wire SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
     /*p01.DULA*/ wire DULA_SYS_RSTp = not1(clk_reg.ALUR_SYS_RSTn);
     /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
-    /*p25.SOTO*/ SOTO_DBG_VRAM.tock(SYCY_DBG_CLOCKn, CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn());
+    /*p25.SOTO*/ SOTO_DBG_VRAM.dfff17(SYCY_DBG_CLOCKn, CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn());
   }
 
   clk_reg.tock_clk_slow(RST, CLK, CLKGOOD, CPUREADY, *this);
@@ -161,11 +161,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
     wire FFFF_WRn = nand2(TAPU_CPU_WRp_xxxxEFGx, FFFF_HIT);
 
-    IE_D0.tock(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D0p.qp());
-    IE_D1.tock(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D1p.qp());
-    IE_D2.tock(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D2p.qp());
-    IE_D3.tock(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D3p.qp());
-    IE_D4.tock(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D4p.qp());
+    IE_D0.dff(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D0p.qp());
+    IE_D1.dff(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D1p.qp());
+    IE_D2.dff(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D2p.qp());
+    IE_D3.dff(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D3p.qp());
+    IE_D4.dff(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D4p.qp());
 
     wire FFFF_RDn = nand2(TEDO_CPU_RDp, FFFF_HIT);
 

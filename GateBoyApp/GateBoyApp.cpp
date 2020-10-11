@@ -53,6 +53,8 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+  load_rom("roms/tetris.gb");
+
   // regenerate post-bootrom dump
 #if 0
   gb->reset_boot();
@@ -105,14 +107,44 @@ void GateBoyApp::app_init() {
   }
 #endif
 
+  /*
+  {
+    memset(gb->vid_ram, 0, 8192);
+    uint8_t* cursor = gb->vid_ram;
+    for (int i = 0; i < 64; i++) {
+      *cursor++ = 0b11111111;
+      *cursor++ = 0b11111111;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;
+      *cursor++ = 0b11111111;
+      *cursor++ = 0b11111111;
+    }
+    gb->sys_cpu_en = false;
+  }
+  */
 
-  //load_flat_dump("roms/LinksAwakening_dog.dump");
-  //gb->sys_cpu_en = false;
+  load_flat_dump("roms/LinksAwakening_dog.dump");
+  memset(&gb->vid_ram[1024 * 2], 0, 1024 * 4);
+
+  gb->sys_cpu_en = false;
+
+  //gb->top.pix_pipe.set_wx(7);
+  //gb->top.pix_pipe.set_wy(16);
 
   // run rom
 
-  load_rom   ("roms/mealybug/m3_bgp_change.gb");
-  load_golden("roms/mealybug/m3_bgp_change.bmp");
+  //load_rom   ("roms/mealybug/m3_bgp_change.gb");
+  //load_golden("roms/mealybug/m3_bgp_change.bmp");
 
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 

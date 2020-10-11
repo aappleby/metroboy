@@ -109,13 +109,13 @@ struct Timer {
   }
 
   int get_tima_a() const {
-    return pack_p(REGA_TIMA_D0.qp(), POVY_TIMA_D1.qp(), PERU_TIMA_D2.qp(), RATE_TIMA_D3.qp(),
-                  RUBY_TIMA_D4.qp(), RAGE_TIMA_D5.qp(), PEDA_TIMA_D6.qp(), NUGA_TIMA_D7.qp());
+    return pack_p(REGA_TIMA_D0.q01p(), POVY_TIMA_D1.q01p(), PERU_TIMA_D2.q01p(), RATE_TIMA_D3.q01p(),
+                  RUBY_TIMA_D4.q01p(), RAGE_TIMA_D5.q01p(), PEDA_TIMA_D6.q01p(), NUGA_TIMA_D7.q01p());
   }
 
   int get_tima_b() const {
-    return pack_p(REGA_TIMA_D0.qn(), POVY_TIMA_D1.qn(), PERU_TIMA_D2.qn(), RATE_TIMA_D3.qn(),
-                  RUBY_TIMA_D4.qn(), RAGE_TIMA_D5.qn(), PEDA_TIMA_D6.qn(), NUGA_TIMA_D7.qn());
+    return pack_p(REGA_TIMA_D0.q17n(), POVY_TIMA_D1.q17n(), PERU_TIMA_D2.q17n(), RATE_TIMA_D3.q17n(),
+                  RUBY_TIMA_D4.q17n(), RAGE_TIMA_D5.q17n(), PEDA_TIMA_D6.q17n(), NUGA_TIMA_D7.q17n());
   }
 
   int get_tma() const {

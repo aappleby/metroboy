@@ -119,7 +119,7 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.TYNU*/ wire TYNU_ADDR_RAM = and_or3(top.cpu_bus.BUS_CPU_A15.qp(), top.cpu_bus.BUS_CPU_A14.qp(), TUMA_CART_RAM);
 
     /*p08.TOZA*/ wire TOZA_PIN_EXT_CS_A_xxCDEFGH = and3(ABUZ_xxCDEFGH, TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
-    /*p08.TYHO*/ wire TYHO_PIN_EXT_CS_A_xxCDEFGH = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MARU_DMA_A15n.q07(), TOZA_PIN_EXT_CS_A_xxCDEFGH);
+    /*p08.TYHO*/ wire TYHO_PIN_EXT_CS_A_xxCDEFGH = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MARU_DMA_A15n.q07n(), TOZA_PIN_EXT_CS_A_xxCDEFGH);
     PIN_EXT_CSn.io_pin(TYHO_PIN_EXT_CS_A_xxCDEFGH, TYHO_PIN_EXT_CS_A_xxCDEFGH);
   }
 
@@ -165,21 +165,21 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.NYRE*/ NYRE_EXT_ADDR_LATCH_14p.tp_latch(MATE_HOLDn, top.cpu_bus.BUS_CPU_A14.qp());
 
 
-    /* p08.AMET*/ wire AMET_A00p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NAKY_DMA_A00p.qp(),  ALOR_EXT_ADDR_LATCH_00p.qp());
-    /* p08.ATOL*/ wire ATOL_A01p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PYRO_DMA_A01p.qp(),  APUR_EXT_ADDR_LATCH_01p.qp());
-    /* p08.APOK*/ wire APOK_A02p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NEFY_DMA_A02p.qp(),  ALYR_EXT_ADDR_LATCH_02p.qp());
-    /* p08.AMER*/ wire AMER_A03p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MUTY_DMA_A03p.qp(),  ARET_EXT_ADDR_LATCH_03p.qp());
-    /* p08.ATEM*/ wire ATEM_A04p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NYKO_DMA_A04p.qp(),  AVYS_EXT_ADDR_LATCH_04p.qp());
-    /* p08.ATOV*/ wire ATOV_A05p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PYLO_DMA_A05p.qp(),  ATEV_EXT_ADDR_LATCH_05p.qp());
-    /* p08.ATYR*/ wire ATYR_A06p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NUTO_DMA_A06p.qp(),  AROS_EXT_ADDR_LATCH_06p.qp());
-    /*#p08.ASUR*/ wire ASUR_A07p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MUGU_DMA_A07p.qp(),  ARYM_EXT_ADDR_LATCH_07p.qp());
-    /*#p08.MANO*/ wire MANO_A08p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NAFA_DMA_A08n.q07(), LUNO_EXT_ADDR_LATCH_08p.qp());
-    /* p08.MASU*/ wire MASU_A09p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PYNE_DMA_A09n.q07(), LYSA_EXT_ADDR_LATCH_09p.qp());
-    /* p08.PAMY*/ wire PAMY_A10p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PARA_DMA_A10n.q07(), PATE_EXT_ADDR_LATCH_10p.qp());
-    /* p08.MALE*/ wire MALE_A11p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NYDO_DMA_A11n.q07(), LUMY_EXT_ADDR_LATCH_11p.qp());
-    /* p08.MOJY*/ wire MOJY_A12p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NYGY_DMA_A12n.q07(), LOBU_EXT_ADDR_LATCH_12p.qp());
-    /* p08.MUCE*/ wire MUCE_A13p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PULA_DMA_A13n.q07(), LONU_EXT_ADDR_LATCH_13p.qp());
-    /* p08.PEGE*/ wire PEGE_A14p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.POKU_DMA_A14n.q07(), NYRE_EXT_ADDR_LATCH_14p.qp());
+    /* p08.AMET*/ wire AMET_A00p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NAKY_DMA_A00p.qp(),  ALOR_EXT_ADDR_LATCH_00p.q08p());
+    /* p08.ATOL*/ wire ATOL_A01p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PYRO_DMA_A01p.qp(),  APUR_EXT_ADDR_LATCH_01p.q08p());
+    /* p08.APOK*/ wire APOK_A02p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NEFY_DMA_A02p.qp(),  ALYR_EXT_ADDR_LATCH_02p.q08p());
+    /* p08.AMER*/ wire AMER_A03p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MUTY_DMA_A03p.qp(),  ARET_EXT_ADDR_LATCH_03p.q08p());
+    /* p08.ATEM*/ wire ATEM_A04p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NYKO_DMA_A04p.qp(),  AVYS_EXT_ADDR_LATCH_04p.q08p());
+    /* p08.ATOV*/ wire ATOV_A05p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PYLO_DMA_A05p.qp(),  ATEV_EXT_ADDR_LATCH_05p.q08p());
+    /* p08.ATYR*/ wire ATYR_A06p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NUTO_DMA_A06p.qp(),  AROS_EXT_ADDR_LATCH_06p.q08p());
+    /*#p08.ASUR*/ wire ASUR_A07p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MUGU_DMA_A07p.qp(),  ARYM_EXT_ADDR_LATCH_07p.q08p());
+    /*#p08.MANO*/ wire MANO_A08p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NAFA_DMA_A08n.q07n(), LUNO_EXT_ADDR_LATCH_08p.q08p());
+    /* p08.MASU*/ wire MASU_A09p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PYNE_DMA_A09n.q07n(), LYSA_EXT_ADDR_LATCH_09p.q08p());
+    /* p08.PAMY*/ wire PAMY_A10p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PARA_DMA_A10n.q07n(), PATE_EXT_ADDR_LATCH_10p.q08p());
+    /* p08.MALE*/ wire MALE_A11p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NYDO_DMA_A11n.q07n(), LUMY_EXT_ADDR_LATCH_11p.q08p());
+    /* p08.MOJY*/ wire MOJY_A12p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.NYGY_DMA_A12n.q07n(), LOBU_EXT_ADDR_LATCH_12p.q08p());
+    /* p08.MUCE*/ wire MUCE_A13p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.PULA_DMA_A13n.q07n(), LONU_EXT_ADDR_LATCH_13p.q08p());
+    /* p08.PEGE*/ wire PEGE_A14p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.POKU_DMA_A14n.q07n(), NYRE_EXT_ADDR_LATCH_14p.q08p());
 
     /*p08.KUPO*/ wire KUPO = nand2(AMET_A00p, TOVA_MODE_DBG2n);
     /*p08.CABA*/ wire CABA = nand2(ATOL_A01p, TOVA_MODE_DBG2n);
@@ -241,7 +241,7 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.RYCA*/ wire RYCA_MODE_DBG2n = not1(top.UNOR_MODE_DBG2p);
     /* p08.SOBY*/ wire SOBY_A15n = nor2(top.cpu_bus.BUS_CPU_A15.qp(), TUTU_ADDR_BOOTp);
     /* p08.SEPY*/ wire SEPY_A15p_ABxxxxxx = nand2(ABUZ_xxCDEFGH, SOBY_A15n);
-    /* p08.TAZY*/ wire TAZY_A15p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MARU_DMA_A15n.q07(), SEPY_A15p_ABxxxxxx);
+    /* p08.TAZY*/ wire TAZY_A15p = mux2p(LUMA_DMA_READ_CARTp, top.dma_reg.MARU_DMA_A15n.q07n(), SEPY_A15p_ABxxxxxx);
 
     /* p08.SUZE*/ wire SUZE_PIN_EXT_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n);
     /* p08.RULO*/ wire RULO_PIN_EXT_A15n = nor2 (TAZY_A15p, top.UNOR_MODE_DBG2p);
@@ -321,14 +321,14 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.SAZY*/ SAZY_EXT_DATA_LATCH_D7n.tp_latch(LAVO_HOLDn, PIN_EXT_D07p.qn());
 
     // Ext latch -> int bus
-    /*#p08.RYMA*/ top.cpu_bus.BUS_CPU_D0p.tri_6nn(LAVO_HOLDn, SOMA_EXT_DATA_LATCH_D0n.qp());
-    /* p08.RUVO*/ top.cpu_bus.BUS_CPU_D1p.tri_6nn(LAVO_HOLDn, RONY_EXT_DATA_LATCH_D1n.qp());
-    /* p08.RYKO*/ top.cpu_bus.BUS_CPU_D2p.tri_6nn(LAVO_HOLDn, RAXY_EXT_DATA_LATCH_D2n.qp());
-    /* p08.TAVO*/ top.cpu_bus.BUS_CPU_D3p.tri_6nn(LAVO_HOLDn, SELO_EXT_DATA_LATCH_D3n.qp());
-    /* p08.TEPE*/ top.cpu_bus.BUS_CPU_D4p.tri_6nn(LAVO_HOLDn, SODY_EXT_DATA_LATCH_D4n.qp());
-    /* p08.SAFO*/ top.cpu_bus.BUS_CPU_D5p.tri_6nn(LAVO_HOLDn, SAGO_EXT_DATA_LATCH_D5n.qp());
-    /* p08.SEVU*/ top.cpu_bus.BUS_CPU_D6p.tri_6nn(LAVO_HOLDn, RUPA_EXT_DATA_LATCH_D6n.qp());
-    /* p08.TAJU*/ top.cpu_bus.BUS_CPU_D7p.tri_6nn(LAVO_HOLDn, SAZY_EXT_DATA_LATCH_D7n.qp());
+    /*#p08.RYMA*/ top.cpu_bus.BUS_CPU_D0p.tri_6nn(LAVO_HOLDn, SOMA_EXT_DATA_LATCH_D0n.q08p());
+    /* p08.RUVO*/ top.cpu_bus.BUS_CPU_D1p.tri_6nn(LAVO_HOLDn, RONY_EXT_DATA_LATCH_D1n.q08p());
+    /* p08.RYKO*/ top.cpu_bus.BUS_CPU_D2p.tri_6nn(LAVO_HOLDn, RAXY_EXT_DATA_LATCH_D2n.q08p());
+    /* p08.TAVO*/ top.cpu_bus.BUS_CPU_D3p.tri_6nn(LAVO_HOLDn, SELO_EXT_DATA_LATCH_D3n.q08p());
+    /* p08.TEPE*/ top.cpu_bus.BUS_CPU_D4p.tri_6nn(LAVO_HOLDn, SODY_EXT_DATA_LATCH_D4n.q08p());
+    /* p08.SAFO*/ top.cpu_bus.BUS_CPU_D5p.tri_6nn(LAVO_HOLDn, SAGO_EXT_DATA_LATCH_D5n.q08p());
+    /* p08.SEVU*/ top.cpu_bus.BUS_CPU_D6p.tri_6nn(LAVO_HOLDn, RUPA_EXT_DATA_LATCH_D6n.q08p());
+    /* p08.TAJU*/ top.cpu_bus.BUS_CPU_D7p.tri_6nn(LAVO_HOLDn, SAZY_EXT_DATA_LATCH_D7n.q08p());
   }
 }
 

@@ -134,20 +134,23 @@ void GateBoyApp::app_init() {
   */
 
   load_flat_dump("roms/LinksAwakening_dog.dump");
+  gb->sys_cpu_en = false;
+
+  /*
   for (int i = 0; i < 2048; i += 2) {
     gb->vid_ram[i + 0] = 0xFF;
     gb->vid_ram[i + 1] = 0x00;
   }
   memset(&gb->vid_ram[1024 * 2], 0x00, 1024 * 4);
-  gb->sys_cpu_en = false;
 
   for (int i = 0; i < 160; i+= 4) {
     gb->oam_ram[i + 0] = 0xFF;
     gb->oam_ram[i + 1] = 0xFF;
   }
 
-  gb->oam_ram[0] = 24;
+  gb->oam_ram[0] = 17;
   gb->oam_ram[1] = 8;
+  */
 
 
   //gb->top.pix_pipe.set_wx(7);

@@ -374,14 +374,17 @@ void GateBoy::next_pass() {
     screen_y = 0;
   }
 
+  if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 154) {
+    uint8_t p0 = top.PIN_LCD_DATA0.qp();
+    uint8_t p1 = top.PIN_LCD_DATA1.qp();
+    framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;
+  }
+
   if (top.PIN_LCD_CLOCK.posedge()) {
-    if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 154) {
-      uint8_t p0 = top.PIN_LCD_DATA0.qp();
-      uint8_t p1 = top.PIN_LCD_DATA1.qp();
-      framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;
-    }
     screen_x++;
   }
+
+  if (top.PIN_LCD_HSYNC.qp()) screen_x = 0;
 
   if (!top.pix_pipe.XONA_LCDC_LCDENn.q08n()) {
     screen_x = 0;

@@ -16,10 +16,9 @@ struct PixelPipe {
     NUNY_WX_MATCH_TRIGp.reset(TRI_D0NP);
     VOTY_INT_STATp     .reset(TRI_D0NP);
 
-    XYMU_RENDERINGn.reset(TRI_D0NP);
+    XYMU_RENDERINGn.reset(TRI_D1NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
 
-    // FIXME check boot state
     PUKU.reset(REG_D1C0);
     RYDY.reset(REG_D0C0);
     //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
@@ -105,9 +104,8 @@ struct PixelPipe {
     PUXA_SCX_FINE_MATCH_A.reset(REG_D0C0);
     NYZE_SCX_FINE_MATCH_B.reset(REG_D0C1);
 
-    PAHO_X_8_SYNC.reset(REG_D0C1);
+    PAHO_X_8_SYNC.reset(REG_D0C0);
 
-    // FIXME need to check against actual bootrom state
     RUJU.reset(REG_D1C0);
     POFY.reset(REG_D0C0);
     POME.reset(REG_D1C0);

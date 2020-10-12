@@ -39,9 +39,9 @@ struct LcdRegisters {
     TYRY_X6p.reset(REG_D1C0);
 
     POPU_IN_VBLANKp .reset(REG_D1C0);
-    MYTA_LINE_153p  .reset(REG_D1C0);
+    MYTA_LINE_153p  .reset(REG_D1C1);
     SYGU_LINE_STROBE.reset(REG_D0C1);
-    MEDA_VSYNC_OUTn .reset(REG_D0C0);
+    MEDA_VSYNC_OUTn .reset(REG_D0C1);
     LUCA_LINE_EVEN  .reset(REG_D1C1);
     NAPO_FRAME_EVEN .reset(REG_D0C1);
 

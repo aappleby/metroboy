@@ -9,7 +9,15 @@ struct SchematicTop;
 
 struct ExtBus {
   void reset_cart() {
-    ext_glitch.reset_cart();
+    ext_glitch.da.value = 0x0F;
+    ext_glitch.db.value = 0x0F;
+    ext_glitch.dc.value = 0x0F;
+    ext_glitch.dd.value = 0x0F;
+    ext_glitch.de.value = 0x0F;
+    ext_glitch.df.value = 0x0F;
+    ext_glitch.dg.value = 0x0F;
+    ext_glitch.dh.value = 0x0F;
+    ext_glitch.di.value = 0x0F;
 
     ALOR_EXT_ADDR_LATCH_00p.reset(TRI_D1NP);
     APUR_EXT_ADDR_LATCH_01p.reset(TRI_D0NP);
@@ -36,36 +44,36 @@ struct ExtBus {
     RUPA_EXT_DATA_LATCH_D6n.reset(TRI_D0NP);
     SAZY_EXT_DATA_LATCH_D7n.reset(TRI_D0NP);
 
-    PIN_EXT_CLK.reset(TRI_D1NP);
-    PIN_EXT_WRn.reset(TRI_D1NP);
-    PIN_EXT_RDn.reset(TRI_D0NP);
-    PIN_EXT_CSn.reset(TRI_D1NP);
+    PIN_EXT_CLK.reset(TRI_D1NP, TRI_D1NP);
+    PIN_EXT_WRn.reset(TRI_D1NP, TRI_D1NP);
+    PIN_EXT_RDn.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_CSn.reset(TRI_D1NP, TRI_D1NP);
 
-    PIN_EXT_A00p.reset(TRI_D1NP);
-    PIN_EXT_A01p.reset(TRI_D0NP);
-    PIN_EXT_A02p.reset(TRI_D1NP);
-    PIN_EXT_A03p.reset(TRI_D1NP);
-    PIN_EXT_A04p.reset(TRI_D0NP);
-    PIN_EXT_A05p.reset(TRI_D0NP);
-    PIN_EXT_A06p.reset(TRI_D1NP);
-    PIN_EXT_A07p.reset(TRI_D0NP);
-    PIN_EXT_A08p.reset(TRI_D0NP);
-    PIN_EXT_A09p.reset(TRI_D0NP);
-    PIN_EXT_A10p.reset(TRI_D0NP);
-    PIN_EXT_A11p.reset(TRI_D0NP);
-    PIN_EXT_A12p.reset(TRI_D0NP);
-    PIN_EXT_A13p.reset(TRI_D0NP);
-    PIN_EXT_A14p.reset(TRI_D0NP);
-    PIN_EXT_A15p.reset(TRI_D1NP);
+    PIN_EXT_A00p.reset(TRI_D1NP, TRI_D1NP);
+    PIN_EXT_A01p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A02p.reset(TRI_D1NP, TRI_D1NP);
+    PIN_EXT_A03p.reset(TRI_D1NP, TRI_D1NP);
+    PIN_EXT_A04p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A05p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A06p.reset(TRI_D1NP, TRI_D1NP);
+    PIN_EXT_A07p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A08p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A09p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A10p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A11p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A12p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A13p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A14p.reset(TRI_D0NP, TRI_D0NP);
+    PIN_EXT_A15p.reset(TRI_D1NP, TRI_D1NP);
 
-    PIN_EXT_D00p.reset(TRI_HZPU);
-    PIN_EXT_D01p.reset(TRI_HZPU);
-    PIN_EXT_D02p.reset(TRI_HZPU);
-    PIN_EXT_D03p.reset(TRI_HZPU);
-    PIN_EXT_D04p.reset(TRI_HZPU);
-    PIN_EXT_D05p.reset(TRI_HZPU);
-    PIN_EXT_D06p.reset(TRI_HZPU);
-    PIN_EXT_D07p.reset(TRI_HZPU);
+    PIN_EXT_D00p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D01p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D02p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D03p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D04p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D05p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D06p.reset(TRI_HZPU, TRI_HZPU);
+    PIN_EXT_D07p.reset(TRI_HZPU, TRI_HZPU);
   }
 
   void reset_boot() {

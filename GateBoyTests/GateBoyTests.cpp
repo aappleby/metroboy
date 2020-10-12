@@ -23,7 +23,6 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-
 #if 1
 
 #ifdef RUN_SLOW_TESTS
@@ -74,20 +73,56 @@ int GateBoyTests::test_post_bootrom_state() {
 
   uint64_t hash1, hash2;
 
-  {
-    GateBoy gb;
-    gb.load_post_bootrom_state();
-    hash1 = hash_states(&gb, sizeof(gb));
+  GateBoy gb1;
+  GateBoy gb2;
+
+  gb1.load_post_bootrom_state();
+  gb2.reset_cart();
+
+  memset(&gb1.probes, 0, sizeof(gb1.probes));
+  memset(&gb2.probes, 0, sizeof(gb2.probes));
+
+  hash1 = hash_states(&gb1, sizeof(gb1));
+  hash2 = hash_states(&gb2, sizeof(gb2));
+
+#if 0
+  for (int i = 0; i < sizeof(gb1); i++) {
+    uint8_t* blob1 = (uint8_t*)&gb1;
+    uint8_t* blob2 = (uint8_t*)&gb2;
+    if (blob1[i] != blob2[i]) {
+      printf("mismatch at %d\n", i);
+    }
   }
 
-  {
-    GateBoy gb;
-    gb.reset_cart();
-    hash2 = hash_states(&gb, sizeof(gb));
-  }
+#define DIFF(A) printf(#A " %d\n", memcmp(&gb1.A, &gb2.A, sizeof(gb1.A)));
+
+  DIFF(cpu);
+  DIFF(cpu_req);
+  DIFF(dbg_req);
+  DIFF(bus_req);
+  DIFF(top.oam_bus);
+  DIFF(top.ext_bus);
+  DIFF(top.cpu_bus);
+  DIFF(top.vram_bus);
+  DIFF(top.clk_reg);
+  DIFF(top.dma_reg);
+  DIFF(top.int_reg);
+  DIFF(top.joypad);
+  DIFF(top.lcd_reg);
+  DIFF(top.pix_pipe);
+  DIFF(top.ser_reg);
+  DIFF(top.sprite_store);
+  DIFF(top.tim_reg);
+  DIFF(top.tile_fetcher);
+  DIFF(top.sprite_fetcher);
+  DIFF(top.bootrom);
+  DIFF(top);
+#endif
 
   LOG_B("load_post_bootrom_state 0x%016llx\n", hash1);
   LOG_B("reset_cart              0x%016llx\n", hash2);
+
+  ASSERT_EQ(hash1, hash2);
 
   TEST_END();
 }

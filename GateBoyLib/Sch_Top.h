@@ -62,6 +62,26 @@ struct SchematicTop {
 
     SOTO_DBG_VRAM.reset(REG_D0C1);
 
+    lcd_data0_delay.da.value = TRI_D1NP;
+    lcd_data0_delay.db.value = TRI_D1NP;
+    lcd_data0_delay.dc.value = TRI_D1NP;
+    lcd_data0_delay.dd.value = TRI_D1NP;
+    lcd_data0_delay.de.value = TRI_D1NP;
+    lcd_data0_delay.df.value = TRI_D1NP;
+    lcd_data0_delay.dg.value = TRI_D1NP;
+    lcd_data0_delay.dh.value = TRI_D1NP;
+    lcd_data0_delay.di.value = TRI_D1NP;
+
+    lcd_data1_delay.da.value = TRI_D1NP;
+    lcd_data1_delay.db.value = TRI_D1NP;
+    lcd_data1_delay.dc.value = TRI_D1NP;
+    lcd_data1_delay.dd.value = TRI_D1NP;
+    lcd_data1_delay.de.value = TRI_D1NP;
+    lcd_data1_delay.df.value = TRI_D1NP;
+    lcd_data1_delay.dg.value = TRI_D1NP;
+    lcd_data1_delay.dh.value = TRI_D1NP;
+    lcd_data1_delay.di.value = TRI_D1NP;
+
     PIN_LCD_DATA1.reset(TRI_D0NP);
     PIN_LCD_DATA0.reset(TRI_D0NP);
     PIN_LCD_CNTRL.reset(TRI_D0NP);
@@ -76,9 +96,6 @@ struct SchematicTop {
     IE_D2.reset(REG_D0C1);
     IE_D3.reset(REG_D0C1);
     IE_D4.reset(REG_D0C1);
-
-    lcd_data1_delay.reset();
-    lcd_data0_delay.reset();
   }
 
   void reset_boot() {

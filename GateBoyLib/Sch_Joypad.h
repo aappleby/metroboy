@@ -34,12 +34,13 @@ struct Joypad {
     KEJA_JOYP_L2.reset(TRI_D0NP);
     KOLO_JOYP_L3.reset(TRI_D0NP);
 
-    PIN_JOY_P10.reset(TRI_HZPU);
-    PIN_JOY_P11.reset(TRI_HZPU);
-    PIN_JOY_P12.reset(TRI_HZPU);
-    PIN_JOY_P13.reset(TRI_HZPU);
-    PIN_JOY_P14.reset(TRI_D0PU);
-    PIN_JOY_P15.reset(TRI_D0PU);  }
+    PIN_JOY_P10.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
+    PIN_JOY_P11.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
+    PIN_JOY_P12.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
+    PIN_JOY_P13.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
+    PIN_JOY_P14.reset(TRI_D0PU, TRI_D0PU);
+    PIN_JOY_P15.reset(TRI_D0PU, TRI_D0PU);
+  }
 
   void reset_boot() {
     ASOK_INT_JOYp.reset(TRI_HZNP);

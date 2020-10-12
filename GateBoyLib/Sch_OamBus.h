@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct OamBus {
   void reset_cart() {
-    COTA_OAM_CLKn.reset(TRI_D0NP); // FIXME not sure about cart boot state
+    COTA_OAM_CLKn.reset(TRI_D1NP); // FIXME not sure about cart boot state
     MAKA_HOLD_MEMp.reset(REG_D0C1);
     WUJE_CPU_OAM_WRn.reset(TRI_D1NP);
 
@@ -32,10 +32,10 @@ struct OamBus {
     YSES_OAM_LATCH_DA6n.reset(TRI_D1NP);
     ZECA_OAM_LATCH_DA7n.reset(TRI_D1NP);
 
-    PIN_OAM_CLK .reset(TRI_D1NP);
-    PIN_OAM_OE  .reset(TRI_D1NP);
-    PIN_OAM_WR_A.reset(TRI_D1NP);
-    PIN_OAM_WR_B.reset(TRI_D1NP);
+    PIN_OAM_CLK .reset(TRI_D1NP, TRI_D1NP);
+    PIN_OAM_OE  .reset(TRI_D1NP, TRI_D1NP);
+    PIN_OAM_WR_A.reset(TRI_D1NP, TRI_D1NP);
+    PIN_OAM_WR_B.reset(TRI_D1NP, TRI_D1NP);
 
     BUS_OAM_A0n .reset(TRI_D1NP);
     BUS_OAM_A1n .reset(TRI_D1NP);
@@ -63,7 +63,15 @@ struct OamBus {
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
 
-    oam_glitch.reset();
+    oam_glitch.da.value = 0x0F;
+    oam_glitch.db.value = 0x0F;
+    oam_glitch.dc.value = 0x0F;
+    oam_glitch.dd.value = 0x0F;
+    oam_glitch.de.value = 0x0F;
+    oam_glitch.df.value = 0x0F;
+    oam_glitch.dg.value = 0x0F;
+    oam_glitch.dh.value = 0x0F;
+    oam_glitch.di.value = 0x0F;
   }
 
   void reset_boot() {

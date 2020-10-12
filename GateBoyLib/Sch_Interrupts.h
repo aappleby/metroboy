@@ -28,11 +28,11 @@ struct InterruptRegisters {
     PIN_CPU_INT_SERIAL.reset(TRI_D0NP);
     PIN_CPU_INT_JOYPAD.reset(TRI_D0NP);
 
-    PIN_CPU_ACK_VBLANK.reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_ACK_STAT  .reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_ACK_TIMER .reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_ACK_SERIAL.reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_ACK_JOYPAD.reset(TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_VBLANK.reset(TRI_D0NP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_STAT  .reset(TRI_D0NP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_TIMER .reset(TRI_D0NP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_SERIAL.reset(TRI_D0NP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ACK_JOYPAD.reset(TRI_D0NP, TRI_D0NP | (DELTA_LOCK << 4));
   }
 
   void reset_boot() {

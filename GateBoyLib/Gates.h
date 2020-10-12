@@ -710,11 +710,20 @@ struct Bus : private RegBase {
 // Tristate io pin, can have only one driver.
 
 struct Pin : private RegBase {
-  using RegBase::reset;
   using RegBase::c;
   using RegBase::lock;
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
+
+  void reset(int s) {
+    old_value = (uint8_t)(s | DELTA_LOCK << 4);
+    value = (uint8_t)s;
+  }
+
+  void reset(int s1, int s2) {
+    old_value = (uint8_t)(s1 | DELTA_LOCK << 4);
+    value = (uint8_t)s2;
+  }
 
   bool posedge() const { return  (value & 1) && !(old_value & 1); }
   bool negedge() const { return !(value & 1) &&  (old_value & 1); }

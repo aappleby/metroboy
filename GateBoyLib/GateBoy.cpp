@@ -65,9 +65,9 @@ void GateBoy::reset_cart() {
   sim_stable = 1;
   phase_total = 0x02cf5798;
   pass_count = 0;
-  pass_total = 0x0ba17e04;
-  pass_hash = 0xe4757409f21a2024;
-  total_hash = 0x70060dc202c8b770;
+  pass_total = 0x0c239985;
+  pass_hash = 0x62b2a8cd3ff66e35;
+  total_hash = 0x3b9e8c465b9c4923;
 
   sys_rst = 0;
   sys_t1 = 0;
@@ -86,6 +86,10 @@ void GateBoy::reset_cart() {
   zero_ram[0x7B] = 0x01;
   zero_ram[0x7C] = 0x2E;
   memcpy(framebuffer, framebuffer_boot, 160*144);
+
+  screen_x = 159;
+  screen_y = 143;
+  lcd_data_latch = 0;
 
   rom_buf = nullptr;
   rom_size = 0;
@@ -374,7 +378,7 @@ void GateBoy::next_pass() {
     screen_y = 0;
   }
 
-  if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 154) {
+  if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
     uint8_t p0 = top.PIN_LCD_DATA0.qp();
     uint8_t p1 = top.PIN_LCD_DATA1.qp();
     framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;

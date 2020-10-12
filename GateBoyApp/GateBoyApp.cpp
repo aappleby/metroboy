@@ -56,7 +56,7 @@ void GateBoyApp::app_init() {
   load_rom("roms/tetris.gb");
 
   // regenerate post-bootrom dump
-#if 0
+#if 1
   gb->reset_boot();
   rom_buf = load_blob("roms/tetris.gb");
   gb->set_rom(rom_buf.data(), rom_buf.size());
@@ -107,8 +107,8 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  load_flat_dump("roms/LinksAwakening_dog.dump");
-  gb->sys_cpu_en = false;
+  //load_flat_dump("roms/LinksAwakening_dog.dump");
+  //gb->sys_cpu_en = false;
 
   /*
   {
@@ -191,6 +191,7 @@ void GateBoyApp::app_update(double delta) {
       printf("Loading raw dump from %s\n", "gateboy.raw.dump");
       gb.reset_states();
       gb->load_dump("gateboy.raw.dump");
+      gb->set_rom(rom_buf.data(), rom_buf.size());
       break;
     }
 

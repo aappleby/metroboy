@@ -9,22 +9,22 @@ struct SchematicTop;
 
 struct CpuBus {
   void reset_cart() {
-    BUS_CPU_A00.reset(TRI_D0PU);
-    BUS_CPU_A01.reset(TRI_D0PU);
-    BUS_CPU_A02.reset(TRI_D0PU);
-    BUS_CPU_A03.reset(TRI_D0PU);
-    BUS_CPU_A04.reset(TRI_D1PU);
-    BUS_CPU_A05.reset(TRI_D0PU);
-    BUS_CPU_A06.reset(TRI_D1PU);
-    BUS_CPU_A07.reset(TRI_D0PU);
-    BUS_CPU_A08.reset(TRI_D0PU);
-    BUS_CPU_A09.reset(TRI_D0PU);
-    BUS_CPU_A10.reset(TRI_D0PU);
-    BUS_CPU_A11.reset(TRI_D0PU);
-    BUS_CPU_A12.reset(TRI_D0PU);
-    BUS_CPU_A13.reset(TRI_D0PU);
-    BUS_CPU_A14.reset(TRI_D0PU);
-    BUS_CPU_A15.reset(TRI_D0PU);
+    BUS_CPU_A00.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A01.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A02.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A03.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A04.reset(TRI_D1PU | (DELTA_LOCK << 4));
+    BUS_CPU_A05.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A06.reset(TRI_D1PU | (DELTA_LOCK << 4));
+    BUS_CPU_A07.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A08.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A09.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A10.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A11.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A12.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A13.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A14.reset(TRI_D0PU | (DELTA_LOCK << 4));
+    BUS_CPU_A15.reset(TRI_D0PU | (DELTA_LOCK << 4));
 
     BUS_CPU_D0p.reset(TRI_HZPU);
     BUS_CPU_D1p.reset(TRI_HZPU);
@@ -35,12 +35,12 @@ struct CpuBus {
     BUS_CPU_D6p.reset(TRI_HZPU);
     BUS_CPU_D7p.reset(TRI_HZPU);
 
-    PIN_CPU_6.reset(ERR_XXXX); // ?
+    PIN_CPU_6.reset(0x3E, 0x0F); // ?
 
-    PIN_CPU_LATCH_EXT.reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_RDp      .reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_WRp      .reset(TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_ADDR_EXTp.reset(TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_LATCH_EXT.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_RDp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_WRp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_ADDR_EXTp.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
 
     PIN_CPU_BOOTp         .reset(TRI_D0NP);
     PIN_CPU_ADDR_HIp      .reset(TRI_D0NP);

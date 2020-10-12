@@ -440,13 +440,13 @@ struct PixelPipe {
   uint8_t get_stat(const SchematicTop& top) const;
 
   int get_wx() const {
-    return pack_p(MYPA_WX0n.q09(), NOFE_WX1n.q09(), NOKE_WX2n.q09(), MEBY_WX3n.q09(),
-                  MYPU_WX4n.q09(), MYCE_WX5n.q09(), MUVO_WX6n.q09(), NUKU_WX7n.q09());
+    return pack_p(MYPA_WX0n.qp09(), NOFE_WX1n.qp09(), NOKE_WX2n.qp09(), MEBY_WX3n.qp09(),
+                  MYPU_WX4n.qp09(), MYCE_WX5n.qp09(), MUVO_WX6n.qp09(), NUKU_WX7n.qp09());
   }
 
   int get_wy() const {
-    return pack_p(NESO_WY0n.q09(), NYRO_WY1n.q09(), NAGA_WY2n.q09(), MELA_WY3n.q09(),
-                  NULO_WY4n.q09(), NENE_WY5n.q09(), NUKA_WY6n.q09(), NAFU_WY7n.q09());
+    return pack_p(NESO_WY0n.qp09(), NYRO_WY1n.qp09(), NAGA_WY2n.qp09(), MELA_WY3n.qp09(),
+                  NULO_WY4n.qp09(), NENE_WY5n.qp09(), NUKA_WY6n.qp09(), NAFU_WY7n.qp09());
   }
 
   int get_win_x() const {
@@ -465,7 +465,7 @@ struct PixelPipe {
   }
 
   wire lcd_on() {
-    return XONA_LCDC_LCDENn.q08();
+    return XONA_LCDC_LCDENn.qn08();
   }
 
   //----------------------------------------

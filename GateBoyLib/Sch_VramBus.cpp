@@ -174,9 +174,9 @@ void VramBus::tock(SchematicTop& top) {
     /*#p29.BUVY*/ wire BUVY_L2 = xor2(WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L2.qp());
     /*#p29.WAGO*/ wire WAGO_L3 = xor2(WUKY_FLIP_Yp, top.sprite_store.SPR_TRI_L3.qp());
 
-    /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn = not1(top.pix_pipe.XYMO_LCDC_SPSIZEn.q08());
+    /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn = not1(top.pix_pipe.XYMO_LCDC_SPSIZEn.qn08());
     /*#p29.GEJY*/ wire GEJY_L3 = amux2(top.sprite_scanner.XUSO_OAM_DA0p.q08p(), FUFO_LCDC_SPSIZEn,
-                                       top.pix_pipe.XYMO_LCDC_SPSIZEn.q08(), WAGO_L3);
+                                       top.pix_pipe.XYMO_LCDC_SPSIZEn.qn08(), WAGO_L3);
 
     /* p29.ABEM*/ BUS_VRAM_A00n.tri_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, top.sprite_fetcher.XUQU_SPRITE_AB);
     /* p29.BAXE*/ BUS_VRAM_A01n.tri_6nn(top.sprite_fetcher.ABON_SPR_VRM_RDn, CYVU_L0);
@@ -197,39 +197,39 @@ void VramBus::tock(SchematicTop& top) {
     // Map scroll adder
 #pragma warning(push)
 #pragma warning(disable:4189)
-    /*#p26.FAFO*/ wire FAFO_TILE_Y0S = add_s(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.q08(), 0);
-    /*#p26.FAFO*/ wire FAFO_TILE_Y0C = add_c(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.q08(), 0);
-    /* p26.EMUX*/ wire EMUX_TILE_Y1S = add_s(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.q08(), FAFO_TILE_Y0C);
-    /* p26.EMUX*/ wire EMUX_TILE_Y1C = add_c(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.q08(), FAFO_TILE_Y0C);
-    /* p26.ECAB*/ wire ECAB_TILE_Y2S = add_s(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.q08(), EMUX_TILE_Y1C);
-    /* p26.ECAB*/ wire ECAB_TILE_Y2C = add_c(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.q08(), EMUX_TILE_Y1C);
-    /* p26.ETAM*/ wire ETAM_MAP_Y0S  = add_s(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.q08(), ECAB_TILE_Y2C);
-    /* p26.ETAM*/ wire ETAM_MAP_Y0C  = add_c(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.q08(), ECAB_TILE_Y2C);
-    /* p26.DOTO*/ wire DOTO_MAP_Y1S  = add_s(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.q08(), ETAM_MAP_Y0C);
-    /* p26.DOTO*/ wire DOTO_MAP_Y1C  = add_c(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.q08(), ETAM_MAP_Y0C);
-    /* p26.DABA*/ wire DABA_MAP_Y2S  = add_s(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.q08(), DOTO_MAP_Y1C);
-    /* p26.DABA*/ wire DABA_MAP_Y2C  = add_c(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.q08(), DOTO_MAP_Y1C);
-    /* p26.EFYK*/ wire EFYK_MAP_Y3S  = add_s(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.q08(), DABA_MAP_Y2C);
-    /* p26.EFYK*/ wire EFYK_MAP_Y3C  = add_c(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.q08(), DABA_MAP_Y2C);
-    /* p26.EJOK*/ wire EJOK_MAP_Y4S  = add_s(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.q08(), EFYK_MAP_Y3C);
-    /* p26.EJOK*/ wire EJOK_MAP_Y4C  = add_c(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.q08(), EFYK_MAP_Y3C);
+    /*#p26.FAFO*/ wire FAFO_TILE_Y0S = add_s(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.qn08(), 0);
+    /*#p26.FAFO*/ wire FAFO_TILE_Y0C = add_c(top.lcd_reg.MUWY_Y0p.qp(), top.pix_pipe.GAVE_SCY0n.qn08(), 0);
+    /* p26.EMUX*/ wire EMUX_TILE_Y1S = add_s(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.qn08(), FAFO_TILE_Y0C);
+    /* p26.EMUX*/ wire EMUX_TILE_Y1C = add_c(top.lcd_reg.MYRO_Y1p.qp(), top.pix_pipe.FYMO_SCY1n.qn08(), FAFO_TILE_Y0C);
+    /* p26.ECAB*/ wire ECAB_TILE_Y2S = add_s(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.qn08(), EMUX_TILE_Y1C);
+    /* p26.ECAB*/ wire ECAB_TILE_Y2C = add_c(top.lcd_reg.LEXA_Y2p.qp(), top.pix_pipe.FEZU_SCY2n.qn08(), EMUX_TILE_Y1C);
+    /* p26.ETAM*/ wire ETAM_MAP_Y0S  = add_s(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.qn08(), ECAB_TILE_Y2C);
+    /* p26.ETAM*/ wire ETAM_MAP_Y0C  = add_c(top.lcd_reg.LYDO_Y3p.qp(), top.pix_pipe.FUJO_SCY3n.qn08(), ECAB_TILE_Y2C);
+    /* p26.DOTO*/ wire DOTO_MAP_Y1S  = add_s(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.qn08(), ETAM_MAP_Y0C);
+    /* p26.DOTO*/ wire DOTO_MAP_Y1C  = add_c(top.lcd_reg.LOVU_Y4p.qp(), top.pix_pipe.DEDE_SCY4n.qn08(), ETAM_MAP_Y0C);
+    /* p26.DABA*/ wire DABA_MAP_Y2S  = add_s(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.qn08(), DOTO_MAP_Y1C);
+    /* p26.DABA*/ wire DABA_MAP_Y2C  = add_c(top.lcd_reg.LEMA_Y5p.qp(), top.pix_pipe.FOTY_SCY5n.qn08(), DOTO_MAP_Y1C);
+    /* p26.EFYK*/ wire EFYK_MAP_Y3S  = add_s(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.qn08(), DABA_MAP_Y2C);
+    /* p26.EFYK*/ wire EFYK_MAP_Y3C  = add_c(top.lcd_reg.MATO_Y6p.qp(), top.pix_pipe.FOHA_SCY6n.qn08(), DABA_MAP_Y2C);
+    /* p26.EJOK*/ wire EJOK_MAP_Y4S  = add_s(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.qn08(), EFYK_MAP_Y3C);
+    /* p26.EJOK*/ wire EJOK_MAP_Y4C  = add_c(top.lcd_reg.LAFO_Y7p.qp(), top.pix_pipe.FUNY_SCY7n.qn08(), EFYK_MAP_Y3C);
 
-    /*#p26.ATAD*/ wire ATAD_TILE_X0S = add_s(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.q08(), 0);
-    /*#p26.ATAD*/ wire ATAD_TILE_X0C = add_c(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.q08(), 0);
-    /* p26.BEHU*/ wire BEHU_TILE_X1S = add_s(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.q08(), ATAD_TILE_X0C);
-    /* p26.BEHU*/ wire BEHU_TILE_X1C = add_c(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.q08(), ATAD_TILE_X0C);
-    /* p26.APYH*/ wire APYH_TILE_X2S = add_s(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.q08(), BEHU_TILE_X1C);
-    /* p26.APYH*/ wire APYH_TILE_X2C = add_c(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.q08(), BEHU_TILE_X1C);
-    /* p26.BABE*/ wire BABE_MAP_X0S  = add_s(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.q08(), APYH_TILE_X2C);
-    /* p26.BABE*/ wire BABE_MAP_X0C  = add_c(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.q08(), APYH_TILE_X2C);
-    /* p26.ABOD*/ wire ABOD_MAP_X1S  = add_s(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.q08(), BABE_MAP_X0C);
-    /* p26.ABOD*/ wire ABOD_MAP_X1C  = add_c(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.q08(), BABE_MAP_X0C);
-    /* p26.BEWY*/ wire BEWY_MAP_X2S  = add_s(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.q08(), ABOD_MAP_X1C);
-    /* p26.BEWY*/ wire BEWY_MAP_X2C  = add_c(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.q08(), ABOD_MAP_X1C);
-    /* p26.BYCA*/ wire BYCA_MAP_X3S  = add_s(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.q08(), BEWY_MAP_X2C);
-    /* p26.BYCA*/ wire BYCA_MAP_X3C  = add_c(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.q08(), BEWY_MAP_X2C);
-    /* p26.ACUL*/ wire ACUL_MAP_X4S  = add_s(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.q08(), BYCA_MAP_X3C);
-    /* p26.ACUL*/ wire ACUL_MAP_X4C  = add_c(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.q08(), BYCA_MAP_X3C);
+    /*#p26.ATAD*/ wire ATAD_TILE_X0S = add_s(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.qn08(), 0);
+    /*#p26.ATAD*/ wire ATAD_TILE_X0C = add_c(top.pix_pipe.XEHO_X0p.qp(), top.pix_pipe.DATY_SCX0n.qn08(), 0);
+    /* p26.BEHU*/ wire BEHU_TILE_X1S = add_s(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.qn08(), ATAD_TILE_X0C);
+    /* p26.BEHU*/ wire BEHU_TILE_X1C = add_c(top.pix_pipe.SAVY_X1p.qp(), top.pix_pipe.DUZU_SCX1n.qn08(), ATAD_TILE_X0C);
+    /* p26.APYH*/ wire APYH_TILE_X2S = add_s(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.qn08(), BEHU_TILE_X1C);
+    /* p26.APYH*/ wire APYH_TILE_X2C = add_c(top.pix_pipe.XODU_X2p.qp(), top.pix_pipe.CYXU_SCX2n.qn08(), BEHU_TILE_X1C);
+    /* p26.BABE*/ wire BABE_MAP_X0S  = add_s(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.qn08(), APYH_TILE_X2C);
+    /* p26.BABE*/ wire BABE_MAP_X0C  = add_c(top.pix_pipe.XYDO_X3p.qp(), top.pix_pipe.GUBO_SCX3n.qn08(), APYH_TILE_X2C);
+    /* p26.ABOD*/ wire ABOD_MAP_X1S  = add_s(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.qn08(), BABE_MAP_X0C);
+    /* p26.ABOD*/ wire ABOD_MAP_X1C  = add_c(top.pix_pipe.TUHU_X4p.qp(), top.pix_pipe.BEMY_SCX4n.qn08(), BABE_MAP_X0C);
+    /* p26.BEWY*/ wire BEWY_MAP_X2S  = add_s(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.qn08(), ABOD_MAP_X1C);
+    /* p26.BEWY*/ wire BEWY_MAP_X2C  = add_c(top.pix_pipe.TUKY_X5p.qp(), top.pix_pipe.CUZY_SCX5n.qn08(), ABOD_MAP_X1C);
+    /* p26.BYCA*/ wire BYCA_MAP_X3S  = add_s(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.qn08(), BEWY_MAP_X2C);
+    /* p26.BYCA*/ wire BYCA_MAP_X3C  = add_c(top.pix_pipe.TAKO_X6p.qp(), top.pix_pipe.CABU_SCX6n.qn08(), BEWY_MAP_X2C);
+    /* p26.ACUL*/ wire ACUL_MAP_X4S  = add_s(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.qn08(), BYCA_MAP_X3C);
+    /* p26.ACUL*/ wire ACUL_MAP_X4C  = add_c(top.pix_pipe.SYBE_X7p.qp(), top.pix_pipe.BAKE_SCX7n.qn08(), BYCA_MAP_X3C);
 #pragma warning(pop)
 
     // Background map read
@@ -244,7 +244,7 @@ void VramBus::tock(SchematicTop& top) {
       /* p26.CYPO*/ BUS_VRAM_A07n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, DABA_MAP_Y2S);
       /* p26.CETA*/ BUS_VRAM_A08n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, EFYK_MAP_Y3S);
       /* p26.DAFE*/ BUS_VRAM_A09n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, EJOK_MAP_Y4S);
-      /*#p26.AMUV*/ BUS_VRAM_A10n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, top.pix_pipe.XAFO_LCDC_BGMAPn.q08());
+      /*#p26.AMUV*/ BUS_VRAM_A10n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, top.pix_pipe.XAFO_LCDC_BGMAPn.qn08());
       /* p26.COVE*/ BUS_VRAM_A11n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, 1);
       /* p26.COXO*/ BUS_VRAM_A12n.tri_6nn(top.tile_fetcher.BAFY_BG_MAP_READn, 1);
     }
@@ -261,7 +261,7 @@ void VramBus::tock(SchematicTop& top) {
       /* p27.VACE*/ BUS_VRAM_A07n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, top.pix_pipe.TOZO_WIN_Y5.qp());
       /* p27.VOVO*/ BUS_VRAM_A08n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, top.pix_pipe.TATE_WIN_Y6.qp());
       /* p27.VULO*/ BUS_VRAM_A09n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, top.pix_pipe.TEKE_WIN_Y7.qp());
-      /*#p27.VEVY*/ BUS_VRAM_A10n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAPn.q08());
+      /*#p27.VEVY*/ BUS_VRAM_A10n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, top.pix_pipe.WOKY_LCDC_WINMAPn.qn08());
       /* p27.VEZA*/ BUS_VRAM_A11n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, 1);
       /* p27.VOGU*/ BUS_VRAM_A12n.tri_6nn(top.tile_fetcher.WUKO_WIN_MAP_READn, 1);
     }
@@ -287,7 +287,7 @@ void VramBus::tock(SchematicTop& top) {
       /*#p25.SUVO*/ BUS_VRAM_A10n.tri_6pn(top.tile_fetcher.NETA_TILE_READp,     POWY_TILE_DB6p.q11p());
       /*#p25.TOBO*/ BUS_VRAM_A11n.tri_6pn(top.tile_fetcher.NETA_TILE_READp,     PYJU_TILE_DB7p.q11p());
 
-      /*#p25.VUZA*/ wire VUZA_TILE_BANKp = nor2(PYJU_TILE_DB7p.q11p(), top.pix_pipe.WEXU_LCDC_BGTILEn.q08());
+      /*#p25.VUZA*/ wire VUZA_TILE_BANKp = nor2(PYJU_TILE_DB7p.q11p(), top.pix_pipe.WEXU_LCDC_BGTILEn.qn08());
       /*#p25.VURY*/ BUS_VRAM_A12n.tri_6pn(top.tile_fetcher.NETA_TILE_READp,     VUZA_TILE_BANKp);
     }
   }

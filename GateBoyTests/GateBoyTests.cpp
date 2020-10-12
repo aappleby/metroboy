@@ -6,7 +6,7 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
-//#define RUN_SLOW_TESTS
+#define RUN_SLOW_TESTS
 
 //-----------------------------------------------------------------------------
 
@@ -26,10 +26,11 @@ int main(int argc, char** argv) {
 #if 1
 
 #ifdef RUN_SLOW_TESTS
-  err += t.test_post_bootrom_state();
   err += t.test_init();
   err += t.test_bootrom();
 #endif
+
+  err += t.test_post_bootrom_state();
 
   err += t.test_clk();
   err += t.test_ext_bus();
@@ -764,14 +765,16 @@ int GateBoyTests::run_microtest(const char* filename) {
 int GateBoyTests::test_init() {
   TEST_START("Init");
 
+  blob rom(32768);
+
   GateBoy gb;
-  gb.set_rom(nullptr, 0);
   gb.reset_boot();
+  gb.set_rom(rom.data(), rom.size());
   gb.run_reset_sequence();
 
   uint64_t top_hash = hash_states(&gb.top, sizeof(gb.top));
   LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0xe85b2abb20d513d7, top_hash, "Top hash mismatch");
+  EXPECT_EQ(0x6242fa077bd36b15, top_hash, "Top hash mismatch");
 
   // All unlocked regs should have no delta
   for (int i = 0; i < sizeof(gb.top); i++) {
@@ -785,10 +788,11 @@ int GateBoyTests::test_init() {
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.cart_ram[i]);
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.ext_ram[i]);
 
-  // Framebuffer should be 0x04 (yellow)
+  // Framebuffer should be 0x04 (yellow) except for the first pixel, which
+  // always gets written to because XONA_LCDCENn is 0 at boot
 
-  for (int i = 0; i < 160*144; i++) {
-    ASSERT_EQ(4, gb.framebuffer[i]);
+  for (int i = 1; i < 160*144; i++) {
+    ASSERT_EQ(4, gb.framebuffer[i], "bad framebuffer at %d\n", i);
   }
 
   // we don't really care much about the pre-bootrom reg values
@@ -865,10 +869,10 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk_reg.XOCE_xBCxxFGx, 0b01100110);
     EXPECT_CLK(clk_reg.WOJO_AxxxExxx, 0b10001000);
 
-    EXPECT_CLK(clk_reg.AFUR_xxxxEFGH.q09(), 0b00001111);
-    EXPECT_CLK(clk_reg.ALEF_AxxxxFGH.q09(), 0b10000111);
-    EXPECT_CLK(clk_reg.APUK_ABxxxxGH.q09(), 0b11000011);
-    EXPECT_CLK(clk_reg.ADYK_ABCxxxxH.q09(), 0b11100001);
+    EXPECT_CLK(clk_reg.AFUR_xxxxEFGH.qp09(), 0b00001111);
+    EXPECT_CLK(clk_reg.ALEF_AxxxxFGH.qp09(), 0b10000111);
+    EXPECT_CLK(clk_reg.APUK_ABxxxxGH.qp09(), 0b11000011);
+    EXPECT_CLK(clk_reg.ADYK_ABCxxxxH.qp09(), 0b11100001);
 
     EXPECT_CLK(clk_reg.WUVU_ABxxEFxx.qp(), 0b11001100);
     EXPECT_CLK(clk_reg.VENA_xxCDEFxx.qp(), 0b00111100);

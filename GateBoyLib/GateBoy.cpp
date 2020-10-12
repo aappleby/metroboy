@@ -174,10 +174,10 @@ void GateBoy::run_reset_sequence() {
   sys_clkgood = 1;
   run(3);
 
-  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.q08());
-  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.q09());
-  CHECK_P(top.clk_reg.APUK_ABxxxxGH.q09());
-  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.q09());
+  CHECK_P(top.clk_reg.AFUR_xxxxEFGH.qn08());
+  CHECK_P(top.clk_reg.ALEF_AxxxxFGH.qp09());
+  CHECK_P(top.clk_reg.APUK_ABxxxxGH.qp09());
+  CHECK_P(top.clk_reg.ADYK_ABCxxxxH.qp09());
 
   // Wait for PIN_CPU_START
   while(!top.cpu_bus.PIN_CPU_STARTp.qp()) {
@@ -369,28 +369,29 @@ void GateBoy::next_pass() {
   // hsync should go low the same phase that lcd clock goes high
   // vsync 108.720 usec - right on 912 phases
 
-  if (top.PIN_LCD_HSYNC.posedge()) {
-    screen_x = 0;
-    screen_y++;
+  if (top.pix_pipe.XONA_LCDC_LCDENn.qn08()) {
+    if (top.PIN_LCD_HSYNC.posedge()) {
+      screen_x = 0;
+      screen_y++;
+    }
+
+    if (top.PIN_LCD_VSYNC.qp()) {
+      screen_y = 0;
+    }
+
+    if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
+      uint8_t p0 = top.PIN_LCD_DATA0.qp();
+      uint8_t p1 = top.PIN_LCD_DATA1.qp();
+      framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;
+    }
+
+    if (top.PIN_LCD_CLOCK.posedge()) {
+      screen_x++;
+    }
+
+    if (top.PIN_LCD_HSYNC.qp()) screen_x = 0;
   }
-
-  if (top.PIN_LCD_VSYNC.qp()) {
-    screen_y = 0;
-  }
-
-  if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
-    uint8_t p0 = top.PIN_LCD_DATA0.qp();
-    uint8_t p1 = top.PIN_LCD_DATA1.qp();
-    framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;
-  }
-
-  if (top.PIN_LCD_CLOCK.posedge()) {
-    screen_x++;
-  }
-
-  if (top.PIN_LCD_HSYNC.qp()) screen_x = 0;
-
-  if (!top.pix_pipe.XONA_LCDC_LCDENn.q08()) {
+  else {
     screen_x = 0;
     screen_y = 0;
   }

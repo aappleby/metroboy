@@ -111,6 +111,7 @@ void TextPainter::init() {
   set_pal(4, 0.6f, 0.6f, 1.0f, 1.0f); // lo-z in = blue
   set_pal(5, 1.0f, 1.0f, 0.6f, 1.0f); // hi-z in = yellow
   set_pal(6, 1.0f, 0.6f, 1.0f, 1.0f); // error magenta
+  set_pal(7, 0.4f, 0.4f, 0.4f, 1.0f); // grey
 
   inst_data = new uint32_t[65536];
 

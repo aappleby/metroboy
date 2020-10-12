@@ -978,8 +978,9 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp, XYMU_RENDERINGn.q03()); // die NOR
 
-    probe(1, "SADU_STAT_MODE0", !SADU_STAT_MODE0n);
-    probe(2, "XATY_STAT_MODE1", !XATY_STAT_MODE1n);
+    probe(3, "SADU_STAT_MODE0",      !SADU_STAT_MODE0n);
+    probe(4, "XATY_STAT_MODE1",      !XATY_STAT_MODE1n);
+    probe(5, "RUPO_LYC_MATCH_LATCH", !RUPO_LYC_MATCH_LATCHn.qp());
 
     /*#p21.TEBY*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
     /*#p21.WUGA*/ cpu_bus.BUS_CPU_D1p.tri_6pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);

@@ -1,7 +1,11 @@
 //----------
 // PPU
 
+line_153_lyc0_int_inc_sled.gb
+  dmg pass, ags pass
+
 ppu_sprite0_scx3_a.gb
+  read happens waaaay after we hit hblank, wtf
   dmg pass, ags fail
 ppu_sprite0_scx7_a.gb
   dmg pass, ags fail
@@ -11,11 +15,13 @@ ppu_sprite0_scx7_a.gb
 
 poweron_006_stat.gb
   dmg pass, ags fail
+  dunno, read happens a phase or two before stat changes
 poweron_120_stat.gb
   dmg pass, ags fail
 
 lcdon_to_stat2_a.gb
   dmg pass, ags fail
+  read happens well before lyc goes 0
 
 stat_write_glitch_l0_a.gb
   dmg pass, ags fail

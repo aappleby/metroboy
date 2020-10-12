@@ -225,11 +225,12 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 void GateBoy::next_pass() {
 
   current = this;
-  probes.begin_pass(pass_count);
+  probes.begin_pass(phase_total);
 
   //----------------------------------------
 
   if (pass_count == 0) {
+    probes.begin_phase();
 
     cpu_data_latch = top.cpu_bus.get_bus_data();
     imask_latch = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
@@ -315,8 +316,6 @@ void GateBoy::next_pass() {
     top.joypad.set_buttons(sys_buttons);
   }
 
-  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
-
   //----------------------------------------
   // Run one pass of our simulation.
 
@@ -352,12 +351,14 @@ void GateBoy::next_pass() {
 
   //----------
 
+  /*
   probe(10, "PIN_LCD_CLOCK",    top.PIN_LCD_CLOCK.qp());
   probe(11, "PIN_LCD_HSYNC",    top.PIN_LCD_HSYNC.qp());
   probe(12, "PIN_LCD_VSYNC",    top.PIN_LCD_VSYNC.qp());
   probe(13, "PIN_LCD_DATA0",    top.PIN_LCD_DATA0.qp());
   probe(14, "PIN_LCD_DATA1",    top.PIN_LCD_DATA1.qp());
   probe(15, "PIN_LCD_DATALCH",  top.PIN_LCD_DATALCH.qp());
+  */
 
   // Send pixels to the display if necessary.
   // FIXME should probably use the lcd sync pins for this...
@@ -444,7 +445,12 @@ void GateBoy::next_pass() {
     pass_count = 0;
     phase_total++;
     combine_hash(total_hash, pass_hash);
+
+    probes.end_phase();
   }
+
+  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
+  probes.end_pass(sim_stable);
 }
 
 //-----------------------------------------------------------------------------

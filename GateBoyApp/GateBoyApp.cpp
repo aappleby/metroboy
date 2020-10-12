@@ -56,7 +56,7 @@ void GateBoyApp::app_init() {
   load_rom("roms/tetris.gb");
 
   // regenerate post-bootrom dump
-#if 1
+#if 0
   gb->reset_boot();
   rom_buf = load_blob("roms/tetris.gb");
   gb->set_rom(rom_buf.data(), rom_buf.size());
@@ -161,7 +161,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_obj_en_change.gb");
   //load_golden("roms/mealybug/m3_lcdc_obj_en_change.bmp");
 
-  //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
+  load_rom("microtests/build/dmg/poweron_006_oam.gb");
 
   GateBoy::current = gb.state();
 }

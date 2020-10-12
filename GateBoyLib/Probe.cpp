@@ -19,6 +19,7 @@ Probes::Probes() {
 
   memset(phase_samples, '_', channel_count * sample_count);
   memset(pass_samples, '_', channel_count * sample_count);
+  memset(stable, 0, sample_count);
 }
 
 void Probes::probe(int index, const char* signal_name, char s) {
@@ -33,33 +34,42 @@ void Probes::probe(int index, const char* signal_name, char s) {
   }
 }
 
-void Probes::begin_pass(int pass_count) {
+void Probes::begin_pass(int phase_total) {
+  (void)phase_total;
   pass_cursor = (pass_cursor + 1) % sample_count;
-  if (pass_count == 0) {
-    phase_cursor = (phase_cursor + 1) % sample_count;
-  }
+}
+
+void Probes::end_pass(bool _stable) {
+  stable[pass_cursor] = _stable;
+}
+
+void Probes::begin_phase() {
+  phase_cursor = (phase_cursor + 1) % sample_count;
+}
+
+void Probes::end_phase() {
 }
 
 void Probes::dump(Dumper& d, bool draw_passes) {
   for (int y = 0; y < channel_count; y++) {
-    if (names[y][0]) {
-      d("%-24s : ", names[y]);
-      if (draw_passes) {
-        auto s = pass_samples[y];
-        for (int x = 0; x < sample_count; x++) {
-          d.add_char(s[(pass_cursor + x + 1) % sample_count]);
-        }
-      }
-      else {
-        auto s = phase_samples[y];
-        for (int x = 0; x < sample_count; x++) {
-          d.add_char(s[(phase_cursor + x + 1) % sample_count]);
-        }
+
+    d("\001%-24s : ", names[y]);
+    if (draw_passes) {
+      auto s = pass_samples[y];
+      for (int x = 0; x < sample_count; x++) {
+        int idx = (pass_cursor + x + 1) % sample_count;
+        d.add_char(stable[idx] ? '\001' : '\007');
+        d.add_char(s[idx]);
       }
     }
     else {
-      d("---");
+      auto s = phase_samples[y];
+      for (int x = 0; x < sample_count; x++) {
+        int idx = (phase_cursor + x + 1) % sample_count;
+        d.add_char(s[idx]);
+      }
     }
+    d.add_char('\001');
     d.add_char('\n');
   }
 }

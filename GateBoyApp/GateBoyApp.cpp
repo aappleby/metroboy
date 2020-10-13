@@ -158,8 +158,8 @@ void GateBoyApp::app_init() {
 
   // run rom
 
-  load_rom   ("roms/mealybug/m3_bgp_change.gb");
-  load_golden("roms/mealybug/m3_bgp_change.bmp");
+  load_rom   ("roms/mealybug/m3_lcdc_obj_en_change.gb");
+  load_golden("roms/mealybug/m3_lcdc_obj_en_change.bmp");
 
   //load_rom("microtests/build/dmg/line_153_ly_c.gb");
 

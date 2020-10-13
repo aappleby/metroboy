@@ -110,30 +110,29 @@ poweron_140_vram.gb
 //----------
 // MEALYBUG
 
-m3_bgp_change.gb
+m3_bgp_change.gb pass?
   
 
 m3_lcdc_obj_en_change.gb
-  rightmost pixel of each sprite getting cut off
+  two pixels in top left off
 
 m3_lcdc_obj_en_change_variant.gb
-  rightmost pixel of each sprite getting cut off
-  rightmost column wrong
+  two pixels in top left off
   
 m3_lcdc_obj_size_change.gb
-  one glyph in top left wrong
+  one glyph off
 
 m3_lcdc_obj_size_change_scx.gb
-  two glyphs in right column wrong
+  two glyphs off
 
 m3_lcdc_win_en_change_multiple_wx.gb
-  tiny off-by-one pixels
+  a couple wrong pixels, screen coordinates go out of range?
 
 m3_bgp_change_sprites.gb
-  stripes off by one, probably pixel ORing
+  pass, but screen coords go out of range
 
 m3_lcdc_bg_en_change.gb
-  stripes off by one, probably pixel ORing
+  tiny patch of wrong pixels top left
 
 
 

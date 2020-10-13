@@ -360,8 +360,21 @@ void GateBoy::next_pass() {
 
   if (top.pix_pipe.XONA_LCDC_LCDENn.qn08()) {
 
+    uint8_t p0 = top.PIN_LCD_DATA0.qp();
+    uint8_t p1 = top.PIN_LCD_DATA1.qp();
+    lcd_data_latch |= p0 + p1 * 2;
+
+    if (top.PIN_LCD_CLOCK.qp() && !top.PIN_LCD_CLOCK.posedge()) {
+      lcd_data_latch = 0;
+    }
+
     if (top.PIN_LCD_DATALCH.posedge()) {
-      framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
+      if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
+        framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
+      }
+      else {
+        printf("??? %d\n", phase_total);
+      }
     }
 
     if (top.PIN_LCD_HSYNC.posedge()) {
@@ -379,17 +392,16 @@ void GateBoy::next_pass() {
     }
 
     if (top.PIN_LCD_CLOCK.posedge()) {
-      framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
+      if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
+        framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
+      }
+      else {
+        printf("??? %d\n", phase_total);
+      }
       screen_x++;
-    }
-
-    uint8_t p0 = top.PIN_LCD_DATA0.qp();
-    uint8_t p1 = top.PIN_LCD_DATA1.qp();
-    lcd_data_latch |= p0 + p1 * 2;
-
-    if (top.PIN_LCD_CLOCK.qp()) {
       lcd_data_latch = 0;
     }
+
   }
   else {
     screen_x = 0;

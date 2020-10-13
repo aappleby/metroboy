@@ -351,50 +351,58 @@ void GateBoy::next_pass() {
 
   //----------
 
-  /*
   probe(10, "PIN_LCD_CLOCK",    top.PIN_LCD_CLOCK.qp());
   probe(11, "PIN_LCD_HSYNC",    top.PIN_LCD_HSYNC.qp());
   probe(12, "PIN_LCD_VSYNC",    top.PIN_LCD_VSYNC.qp());
   probe(13, "PIN_LCD_DATA0",    top.PIN_LCD_DATA0.qp());
   probe(14, "PIN_LCD_DATA1",    top.PIN_LCD_DATA1.qp());
   probe(15, "PIN_LCD_DATALCH",  top.PIN_LCD_DATALCH.qp());
-  */
-
-  // Send pixels to the display if necessary.
-  // FIXME should probably use the lcd sync pins for this...
-
-  // clock phase is ~119.21 nsec (4.19304 mhz crystal)
-  // hsync seems consistently 3.495 - 3.500 us (29 phases?)
-  // hsync to bogus clock pulse 1.465 us
-  // data changes on rising edge of lcd clock
-  // hsync should go low the same phase that lcd clock goes high
-  // vsync 108.720 usec - right on 912 phases
 
   if (top.pix_pipe.XONA_LCDC_LCDENn.qn08()) {
+
+    if (top.PIN_LCD_DATALCH.posedge()) {
+      framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
+    }
+
     if (top.PIN_LCD_HSYNC.posedge()) {
-      screen_x = 0;
       screen_y++;
+      lcd_data_latch = 0;
     }
 
     if (top.PIN_LCD_VSYNC.qp()) {
       screen_y = 0;
     }
 
-    if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
-      uint8_t p0 = top.PIN_LCD_DATA0.qp();
-      uint8_t p1 = top.PIN_LCD_DATA1.qp();
-      framebuffer[screen_x + screen_y * 160] = p0 + p1 * 2;
+    if (top.PIN_LCD_HSYNC.qp()) {
+      screen_x = 0;
+      lcd_data_latch = 0;
     }
 
     if (top.PIN_LCD_CLOCK.posedge()) {
+      framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
       screen_x++;
     }
 
-    if (top.PIN_LCD_HSYNC.qp()) screen_x = 0;
+    uint8_t p0 = top.PIN_LCD_DATA0.qp();
+    uint8_t p1 = top.PIN_LCD_DATA1.qp();
+    lcd_data_latch |= p0 + p1 * 2;
+
+    if (top.PIN_LCD_CLOCK.qp()) {
+      lcd_data_latch = 0;
+    }
   }
   else {
     screen_x = 0;
     screen_y = 0;
+  }
+
+  if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
+    probe(7, "PIX LO", (framebuffer[screen_x + screen_y * 160] & 1) ? 1 : 0);
+    probe(8, "PIX HI", (framebuffer[screen_x + screen_y * 160] & 2) ? 1 : 0);
+  }
+  else {
+    probe(7, "PIX LO", 0);
+    probe(8, "PIX HI", 0);
   }
 
   //----------------------------------------

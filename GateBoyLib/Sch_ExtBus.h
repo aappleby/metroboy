@@ -9,15 +9,15 @@ struct SchematicTop;
 
 struct ExtBus {
   void reset_cart() {
-    ext_glitch.da.value = 0x0F;
-    ext_glitch.db.value = 0x0F;
-    ext_glitch.dc.value = 0x0F;
-    ext_glitch.dd.value = 0x0F;
-    ext_glitch.de.value = 0x0F;
-    ext_glitch.df.value = 0x0F;
-    ext_glitch.dg.value = 0x0F;
-    ext_glitch.dh.value = 0x0F;
-    ext_glitch.di.value = 0x0F;
+    //ext_glitch.da.value = 0x0F;
+    //ext_glitch.db.value = 0x0F;
+    //ext_glitch.dc.value = 0x0F;
+    //ext_glitch.dd.value = 0x0F;
+    //ext_glitch.de.value = 0x0F;
+    //ext_glitch.df.value = 0x0F;
+    //ext_glitch.dg.value = 0x0F;
+    //ext_glitch.dh.value = 0x0F;
+    //ext_glitch.di.value = 0x0F;
 
     ALOR_EXT_ADDR_LATCH_00p.reset(TRI_D1NP);
     APUR_EXT_ADDR_LATCH_01p.reset(TRI_D0NP);
@@ -77,7 +77,7 @@ struct ExtBus {
   }
 
   void reset_boot() {
-    ext_glitch.reset();
+    //ext_glitch.reset();
 
     ALOR_EXT_ADDR_LATCH_00p.reset(TRI_D0NP);
     APUR_EXT_ADDR_LATCH_01p.reset(TRI_D0NP);
@@ -175,7 +175,7 @@ struct ExtBus {
 
   //-----------------------------------------------------------------------------
 
-  DelayGlitch ext_glitch;
+  //DelayGlitch ext_glitch;
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p;
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p;

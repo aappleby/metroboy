@@ -1,33 +1,3 @@
-// clock phase is ~119.21 nsec (4.194304 mhz crystal)
-// hsync seems consistently 3.495 - 3.500 us (29 phases?)
-// hsync to bogus clock pulse 1.465 us
-// data changes on rising edge of lcd clock
-// hsync should go low the same phase that lcd clock goes high
-// vsync 108.720 usec - right on 912 phases
-
-
-data lines change a few ns after clock goes high
-hsync goes low and clock goes high at the same time
-17.96 us between vsync going high and hsync going high
-17.965 us between vsync going low and hsync going high
-hsync pulse 3.495 usec
-2.035 us between first isolated clock pulse and rest of pulses
-during sprite fetch, clock high for 2.745 us
-
-latch and altsig go low at the same time
-0.470 us from latch low to vsync low
-18.430 us from latch low to hsync high
-
-
-first clock posedge to last clock posedge 37.665 us
-10 clock ticks = 2.380 us = 0.238
-40 clock ticks = 9.530 us = 0.23825
-90 clock ticks = 21.450 us = 0.238333333333333 us
-100 clock ticks = 23.835 us = 0.23835
-150 clock ticks = 35.760 = 0.2384
-
-159 total clock pulses in main line section not including glitch pulse during hsync
-
 //----------
 // PPU
 
@@ -110,34 +80,17 @@ poweron_140_vram.gb
 //----------
 // MEALYBUG
 
-m3_bgp_change.gb pass?
-  
-
-m3_lcdc_obj_en_change.gb
-  two pixels in top left off
-
-m3_lcdc_obj_en_change_variant.gb
-  two pixels in top left off
-  
-m3_lcdc_obj_size_change.gb
-  one glyph off
-
-m3_lcdc_obj_size_change_scx.gb
-  two glyphs off
 
 m3_lcdc_win_en_change_multiple_wx.gb
-  a couple wrong pixels, screen coordinates go out of range?
+  a couple wrong pixels
 
-m3_bgp_change_sprites.gb
-  pass, but screen coords go out of range
-
-m3_lcdc_bg_en_change.gb
-  tiny patch of wrong pixels top left
-
-
-
-
-
+m3_bgp_change_sprites.gb - pass
+m3_lcdc_obj_size_change.gb - pass w/ sprite latch clock delayed 6 passes
+m3_lcdc_obj_size_change_scx.gb - pass w/ sprite latch clock delayed 6 passes
+m3_lcdc_bg_en_change.gb pass w pix delay 1 pass
+m3_bgp_change.gb pass w pix delay 1 pass
+m3_lcdc_obj_en_change.gb  pass w pix delay 1 pass
+m3_lcdc_obj_en_change_variant.gb  pass w pix delay 1 pass
 m3_obp0_change.gb  pass!
 m3_lcdc_bg_map_change.gb  pass!
 m3_lcdc_tile_sel_change.gb  pass!

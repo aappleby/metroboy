@@ -63,15 +63,15 @@ struct OamBus {
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
 
-    oam_glitch.da.value = 0x0F;
-    oam_glitch.db.value = 0x0F;
-    oam_glitch.dc.value = 0x0F;
-    oam_glitch.dd.value = 0x0F;
-    oam_glitch.de.value = 0x0F;
-    oam_glitch.df.value = 0x0F;
-    oam_glitch.dg.value = 0x0F;
-    oam_glitch.dh.value = 0x0F;
-    oam_glitch.di.value = 0x0F;
+    //oam_glitch.da.value = 0x0F;
+    //oam_glitch.db.value = 0x0F;
+    //oam_glitch.dc.value = 0x0F;
+    //oam_glitch.dd.value = 0x0F;
+    //oam_glitch.de.value = 0x0F;
+    //oam_glitch.df.value = 0x0F;
+    //oam_glitch.dg.value = 0x0F;
+    //oam_glitch.dh.value = 0x0F;
+    //oam_glitch.di.value = 0x0F;
   }
 
   void reset_boot() {
@@ -126,7 +126,7 @@ struct OamBus {
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
 
-    oam_glitch.reset();
+    //oam_glitch.reset();
   }
 
   void dump(Dumper& d) const;
@@ -236,7 +236,7 @@ struct OamBus {
   Bus BUS_OAM_DB6n;
   Bus BUS_OAM_DB7n;
 
-  DelayGlitch oam_glitch;
+  //DelayGlitch oam_glitch;
 };
 
 //-----------------------------------------------------------------------------

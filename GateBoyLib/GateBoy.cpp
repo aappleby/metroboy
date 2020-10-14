@@ -15,6 +15,22 @@ void GateBoy::dump(Dumper& d) const {
   d("screen_x       %3d\n", screen_x);
   d("screen_y       %3d\n", screen_y);
   d("lcd_data_latch %3d\n", lcd_data_latch);
+  d("lcd_pix_lo     %c\n",  top.lcd_pix_lo.c());
+  d("lcd_pix_hi     %c\n",  top.lcd_pix_hi.c());
+
+  d("lcd_pipe_lo    %c%c%c%c%c%c%c%c\n",
+    top.lcd_pipe_lo[0].c(), top.lcd_pipe_lo[1].c(), top.lcd_pipe_lo[2].c(), top.lcd_pipe_lo[3].c(),
+    top.lcd_pipe_lo[4].c(), top.lcd_pipe_lo[5].c(), top.lcd_pipe_lo[6].c(), top.lcd_pipe_lo[7].c());
+  d("lcd_pipe_hi    %c%c%c%c%c%c%c%c\n",
+    top.lcd_pipe_hi[0].c(), top.lcd_pipe_hi[1].c(), top.lcd_pipe_hi[2].c(), top.lcd_pipe_hi[3].c(),
+    top.lcd_pipe_hi[4].c(), top.lcd_pipe_hi[5].c(), top.lcd_pipe_hi[6].c(), top.lcd_pipe_hi[7].c());
+
+  d("lcd_line_lo    %c%c%c%c%c%c%c%c\n",
+    top.lcd_line_lo[0].c(), top.lcd_line_lo[1].c(), top.lcd_line_lo[2].c(), top.lcd_line_lo[3].c(),
+    top.lcd_line_lo[4].c(), top.lcd_line_lo[5].c(), top.lcd_line_lo[6].c(), top.lcd_line_lo[7].c());
+  d("lcd_line_hi    %c%c%c%c%c%c%c%c\n",
+    top.lcd_line_hi[0].c(), top.lcd_line_hi[1].c(), top.lcd_line_hi[2].c(), top.lcd_line_hi[3].c(),
+    top.lcd_line_hi[4].c(), top.lcd_line_hi[5].c(), top.lcd_line_hi[6].c(), top.lcd_line_hi[7].c());
 }
 
 //------------------------------------------------------------------------------
@@ -351,70 +367,33 @@ void GateBoy::next_pass() {
 
   //----------
 
-  probe(10, "PIN_LCD_CLOCK",    top.PIN_LCD_CLOCK.qp());
-  probe(11, "PIN_LCD_HSYNC",    top.PIN_LCD_HSYNC.qp());
-  probe(12, "PIN_LCD_VSYNC",    top.PIN_LCD_VSYNC.qp());
-  probe(13, "PIN_LCD_DATA0",    top.PIN_LCD_DATA0.qp());
-  probe(14, "PIN_LCD_DATA1",    top.PIN_LCD_DATA1.qp());
-  probe(15, "PIN_LCD_DATALCH",  top.PIN_LCD_DATALCH.qp());
+  probe(10, "PIN_LCD_CLOCK", top.PIN_LCD_CLOCK.qp());
+  probe(11, "PIN_LCD_HSYNC", top.PIN_LCD_HSYNC.qp());
+  probe(12, "PIN_LCD_VSYNC", top.PIN_LCD_VSYNC.qp());
+  probe(13, "PIN_LCD_DATA0", top.PIN_LCD_DATA0.qp());
+  probe(14, "PIN_LCD_DATA1", top.PIN_LCD_DATA1.qp());
+  probe(15, "PIN_LCD_LATCH", top.PIN_LCD_LATCH.qp());
 
-  if (top.pix_pipe.XONA_LCDC_LCDENn.qn08()) {
+  if (top.PIN_LCD_CLOCK.posedge()) {
+    screen_x++;
+  }
+  if (top.PIN_LCD_HSYNC.qp() || top.PIN_LCD_LATCH.qp()) {
+    screen_x = 0;
+  }
 
-    uint8_t p0 = top.PIN_LCD_DATA0.qp();
-    uint8_t p1 = top.PIN_LCD_DATA1.qp();
-    lcd_data_latch |= p0 + p1 * 2;
-
-    if (top.PIN_LCD_CLOCK.qp() && !top.PIN_LCD_CLOCK.posedge()) {
-      lcd_data_latch = 0;
-    }
-
-    if (top.PIN_LCD_DATALCH.posedge()) {
-      if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
-        framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
-      }
-      else {
-        printf("??? %d\n", phase_total);
+  if (top.PIN_LCD_LATCH.posedge()) {
+    if (screen_y < 144) {
+      for (int x = 0; x < 160; x++) {
+        uint8_t p0 = top.lcd_line_lo[x].qp();
+        uint8_t p1 = top.lcd_line_hi[x].qp();
+        framebuffer[x + screen_y * 160] = p0 + p1 * 2;
       }
     }
 
-    if (top.PIN_LCD_HSYNC.posedge()) {
-      screen_y++;
-      lcd_data_latch = 0;
-    }
-
+    screen_y++;
     if (top.PIN_LCD_VSYNC.qp()) {
       screen_y = 0;
     }
-
-    if (top.PIN_LCD_HSYNC.qp()) {
-      screen_x = 0;
-      lcd_data_latch = 0;
-    }
-
-    if (top.PIN_LCD_CLOCK.posedge()) {
-      if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
-        framebuffer[screen_x + screen_y * 160] = lcd_data_latch;
-      }
-      else {
-        printf("??? %d\n", phase_total);
-      }
-      screen_x++;
-      lcd_data_latch = 0;
-    }
-
-  }
-  else {
-    screen_x = 0;
-    screen_y = 0;
-  }
-
-  if (screen_x >= 0 && screen_x < 160 && screen_y >= 0 && screen_y < 144) {
-    probe(7, "PIX LO", (framebuffer[screen_x + screen_y * 160] & 1) ? 1 : 0);
-    probe(8, "PIX HI", (framebuffer[screen_x + screen_y * 160] & 2) ? 1 : 0);
-  }
-  else {
-    probe(7, "PIX LO", 0);
-    probe(8, "PIX HI", 0);
   }
 
   //----------------------------------------

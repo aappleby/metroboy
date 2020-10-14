@@ -899,15 +899,17 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p#35.REMY*/ wire REMY_LD0n = not1(PERO_COL_LO);
     /*#p35.RAVO*/ wire RAVO_LD1n = not1(PATY_COL_HI);
 
-    //top.PIN_LCD_DATA0.io_pin(REMY_LD0n, REMY_LD0n);
-    //top.PIN_LCD_DATA1.io_pin(RAVO_LD1n, RAVO_LD1n);
-
     // not sure why this needs a delay, but it has to be at least q2
     top.lcd_data0_delay.set(REMY_LD0n);
     top.lcd_data1_delay.set(RAVO_LD1n);
 
-    top.PIN_LCD_DATA0.io_pin(top.lcd_data0_delay.q2(), top.lcd_data0_delay.q2());
-    top.PIN_LCD_DATA1.io_pin(top.lcd_data1_delay.q2(), top.lcd_data1_delay.q2());
+    //top.PIN_LCD_DATA0.io_pin(REMY_LD0n, REMY_LD0n);
+    //top.PIN_LCD_DATA1.io_pin(RAVO_LD1n, RAVO_LD1n);
+
+    // so q1 works but q2 has tiny errors? wat?
+
+    top.PIN_LCD_DATA0.io_pin(top.lcd_data0_delay.q1(), top.lcd_data0_delay.q1());
+    top.PIN_LCD_DATA1.io_pin(top.lcd_data1_delay.q1(), top.lcd_data1_delay.q1());
   }
 
   //----------------------------------------

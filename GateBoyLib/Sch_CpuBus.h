@@ -35,7 +35,8 @@ struct CpuBus {
     BUS_CPU_D6p.reset(TRI_HZPU);
     BUS_CPU_D7p.reset(TRI_HZPU);
 
-    PIN_CPU_6.reset(0x3E, 0x0F); // ?
+    //PIN_CPU_6.reset(0x3E, 0x0F); // ?
+    PIN_CPU_6.reset(TRI_HZNP | (DELTA_LOCK << 4));
 
     PIN_CPU_LATCH_EXT.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
     PIN_CPU_RDp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
@@ -88,7 +89,7 @@ struct CpuBus {
     BUS_CPU_D6p.reset(TRI_HZPU);
     BUS_CPU_D7p.reset(TRI_HZPU);
 
-    PIN_CPU_6.reset(TRI_HZNP);
+    PIN_CPU_6.reset(TRI_HZNP | (DELTA_LOCK << 4));
     PIN_CPU_LATCH_EXT.reset(TRI_HZNP);
     PIN_CPU_RDp.reset(TRI_HZNP);
     PIN_CPU_WRp.reset(TRI_HZNP);

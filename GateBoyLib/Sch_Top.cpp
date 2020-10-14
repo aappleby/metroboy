@@ -175,6 +175,21 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     cpu_bus.BUS_CPU_D3p.tri_6nn(FFFF_RDn, IE_D3.qn());
     cpu_bus.BUS_CPU_D4p.tri_6nn(FFFF_RDn, IE_D4.qn());
   }
+
+  lcd_pix_lo.nor_latch(PIN_LCD_DATA0.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
+  lcd_pix_hi.nor_latch(PIN_LCD_DATA1.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
+
+  for (int i = 0; i < 159; i++) {
+    lcd_pipe_lo[i].dff(PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
+    lcd_pipe_hi[i].dff(PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+    lcd_line_lo[i].dff(PIN_LCD_LATCH.qp(), lcd_pipe_lo[i + 1].qp());
+    lcd_line_hi[i].dff(PIN_LCD_LATCH.qp(), lcd_pipe_hi[i + 1].qp());
+  }
+
+  lcd_pipe_lo[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp());
+  lcd_pipe_hi[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp());
+  lcd_line_lo[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_lo.qp());
+  lcd_line_hi[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_hi.qp());
 }
 
 //-----------------------------------------------------------------------------

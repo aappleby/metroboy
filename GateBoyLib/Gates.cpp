@@ -9,6 +9,8 @@ bool RegBase::tock_running = false;
 bool RegBase::bus_collision = false;
 bool RegBase::bus_floating = false;
 
+#define SANITY_CHECK
+
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b) {

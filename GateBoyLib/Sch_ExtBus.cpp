@@ -35,15 +35,15 @@ void ExtBus::dump(Dumper& d) const {
     SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
   d("\n");
 
-  d("ext_glitch.da %c\n", ext_glitch.da.c());
-  d("ext_glitch.db %c\n", ext_glitch.db.c());
-  d("ext_glitch.dc %c\n", ext_glitch.dc.c());
-  d("ext_glitch.dd %c\n", ext_glitch.dd.c());
-  d("ext_glitch.de %c\n", ext_glitch.de.c());
-  d("ext_glitch.df %c\n", ext_glitch.df.c());
-  d("ext_glitch.dg %c\n", ext_glitch.dg.c());
-  d("ext_glitch.dh %c\n", ext_glitch.dh.c());
-  d("ext_glitch.di %c\n", ext_glitch.di.c());
+  //d("ext_glitch.da %c\n", ext_glitch.da.c());
+  //d("ext_glitch.db %c\n", ext_glitch.db.c());
+  //d("ext_glitch.dc %c\n", ext_glitch.dc.c());
+  //d("ext_glitch.dd %c\n", ext_glitch.dd.c());
+  //d("ext_glitch.de %c\n", ext_glitch.de.c());
+  //d("ext_glitch.df %c\n", ext_glitch.df.c());
+  //d("ext_glitch.dg %c\n", ext_glitch.dg.c());
+  //d("ext_glitch.dh %c\n", ext_glitch.dh.c());
+  //d("ext_glitch.di %c\n", ext_glitch.di.c());
 }
 
 //------------------------------------------------------------------------------

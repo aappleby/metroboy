@@ -92,6 +92,9 @@ struct VramBus {
     PIN_VRAM_D05p.reset(TRI_D0PU);
     PIN_VRAM_D06p.reset(TRI_D0PU);
     PIN_VRAM_D07p.reset(TRI_D0PU);
+
+    latch_sprite_a_delay.reset();
+    latch_sprite_b_delay.reset();
   }
 
   void reset_boot() {
@@ -174,6 +177,9 @@ struct VramBus {
     PIN_VRAM_D05p.reset(TRI_HZPU);
     PIN_VRAM_D06p.reset(TRI_HZPU);
     PIN_VRAM_D07p.reset(TRI_HZPU);
+
+    latch_sprite_a_delay.reset();
+    latch_sprite_b_delay.reset();
   }
 
   void tock(SchematicTop& top);
@@ -227,14 +233,14 @@ struct VramBus {
 
   //-----------------------------------------------------------------------------
 
-  /*p32.LEGU*/ DFF8n LEGU_TILE_DA0n;
-  /*p32.NUDU*/ DFF8n NUDU_TILE_DA1n;
-  /*p32.MUKU*/ DFF8n MUKU_TILE_DA2n;
-  /*p32.LUZO*/ DFF8n LUZO_TILE_DA3n;
-  /*p32.MEGU*/ DFF8n MEGU_TILE_DA4n;
-  /*p32.MYJY*/ DFF8n MYJY_TILE_DA5n;
-  /*p32.NASA*/ DFF8n NASA_TILE_DA6n;
-  /*p32.NEFO*/ DFF8n NEFO_TILE_DA7n; // color wrong on die
+  /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n;
+  /*p32.NUDU*/ DFF8p NUDU_TILE_DA1n;
+  /*p32.MUKU*/ DFF8p MUKU_TILE_DA2n;
+  /*p32.LUZO*/ DFF8p LUZO_TILE_DA3n;
+  /*p32.MEGU*/ DFF8p MEGU_TILE_DA4n;
+  /*p32.MYJY*/ DFF8p MYJY_TILE_DA5n;
+  /*p32.NASA*/ DFF8p NASA_TILE_DA6n;
+  /*p32.NEFO*/ DFF8p NEFO_TILE_DA7n; // color wrong on die
 
   /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p; // def holds inverted pix, also holds tile index during fetch
   /*p32.POZO*/ DFF11 POZO_TILE_DB1p;
@@ -247,23 +253,23 @@ struct VramBus {
 
   // switching these to DFF8n breaks sprites
 
-  /*p33.PEFO*/ DFF8 PEFO_SPRITE_DB0n;
-  /*p33.ROKA*/ DFF8 ROKA_SPRITE_DB1n;
-  /*p33.MYTU*/ DFF8 MYTU_SPRITE_DB2n;
-  /*p33.RAMU*/ DFF8 RAMU_SPRITE_DB3n;
-  /*p33.SELE*/ DFF8 SELE_SPRITE_DB4n;
-  /*p33.SUTO*/ DFF8 SUTO_SPRITE_DB5n;
-  /*p33.RAMA*/ DFF8 RAMA_SPRITE_DB6n;
-  /*p33.RYDU*/ DFF8 RYDU_SPRITE_DB7n;
+  /*p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n;
+  /*p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n;
+  /*p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n;
+  /*p33.RAMU*/ DFF8n RAMU_SPRITE_DB3n;
+  /*p33.SELE*/ DFF8n SELE_SPRITE_DB4n;
+  /*p33.SUTO*/ DFF8n SUTO_SPRITE_DB5n;
+  /*p33.RAMA*/ DFF8n RAMA_SPRITE_DB6n;
+  /*p33.RYDU*/ DFF8n RYDU_SPRITE_DB7n;
 
-  /*p33.REWO*/ DFF8 REWO_SPRITE_DA0n;
-  /*p33.PEBA*/ DFF8 PEBA_SPRITE_DA1n;
-  /*p33.MOFO*/ DFF8 MOFO_SPRITE_DA2n;
-  /*p33.PUDU*/ DFF8 PUDU_SPRITE_DA3n;
-  /*p33.SAJA*/ DFF8 SAJA_SPRITE_DA4n;
-  /*p33.SUNY*/ DFF8 SUNY_SPRITE_DA5n;
-  /*p33.SEMO*/ DFF8 SEMO_SPRITE_DA6n;
-  /*p33.SEGA*/ DFF8 SEGA_SPRITE_DA7n;
+  /*p33.REWO*/ DFF8n REWO_SPRITE_DA0n;
+  /*p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n;
+  /*p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n;
+  /*p33.PUDU*/ DFF8n PUDU_SPRITE_DA3n;
+  /*p33.SAJA*/ DFF8n SAJA_SPRITE_DA4n;
+  /*p33.SUNY*/ DFF8n SUNY_SPRITE_DA5n;
+  /*p33.SEMO*/ DFF8n SEMO_SPRITE_DA6n;
+  /*p33.SEGA*/ DFF8n SEGA_SPRITE_DA7n;
 
   //----------------------------------------
   // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
@@ -320,6 +326,9 @@ struct VramBus {
   Pin PIN_VRAM_D05p; // PIN_27
   Pin PIN_VRAM_D06p; // PIN_26
   Pin PIN_VRAM_D07p; // PIN_25
+
+  DelayGlitch latch_sprite_a_delay;
+  DelayGlitch latch_sprite_b_delay;
 };
 
 //-----------------------------------------------------------------------------

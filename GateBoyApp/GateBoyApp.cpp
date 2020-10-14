@@ -107,10 +107,10 @@ void GateBoyApp::app_init() {
   }
 #endif
 
+  /*
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb->sys_cpu_en = false;
 
-  /*
   {
     memset(gb->oam_ram, 0, 160);
     memset(gb->vid_ram, 0, 8192);
@@ -158,8 +158,8 @@ void GateBoyApp::app_init() {
 
   // run rom
 
-  load_rom   ("roms/mealybug/m3_lcdc_obj_en_change.gb");
-  load_golden("roms/mealybug/m3_lcdc_obj_en_change.bmp");
+  load_rom   ("roms/mealybug/m3_bgp_change_sprites.gb");
+  load_golden("roms/mealybug/m3_bgp_change_sprites.bmp");
 
   //load_rom("microtests/build/dmg/line_153_ly_c.gb");
 
@@ -641,15 +641,35 @@ void GateBoyApp::app_render_frame(Viewport view) {
     memset(overlay, 0, sizeof(overlay));
 
     int fb_x = gb->screen_x;
-    int fb_y = gb->screen_y;
+    //int fb_y = gb->screen_y;
+    int fb_y = gb->top.lcd_reg.get_ly();
 
-    if (fb_y >= 0 && fb_y < 144) {
-      for (int i = 0; i < 160; i++) {
-        overlay[i + fb_y * 160] = 0x33FFFF00;
+    if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
+
+      for (int x = 0; x < fb_x; x++) {
+        uint8_t p0 = top.lcd_pipe_lo[159 - fb_x + x + 1].qp();
+        uint8_t p1 = top.lcd_pipe_hi[159 - fb_x + x + 1].qp();
+
+        int c = (3 - (p0 + p1 * 2)) * 85;
+
+        overlay[x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
       }
-      if (fb_x >= 0 && fb_x < 160 && fb_y >= 0 && fb_y < 144) {
-        overlay[fb_x + fb_y * 160] = 0x8000FFFF;
+      {
+        uint8_t p0 = top.lcd_pix_lo.qp();
+        uint8_t p1 = top.lcd_pix_hi.qp();
+
+        int c = (3 - (p0 + p1 * 2)) * 85;
+
+        overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
       }
+
+      //overlay[i + fb_y * 160] = 0x33FFFF00;
+      //}
+      /*
+      if (fb_x >= 0 && fb_x < 160) {
+        overlay[fb_x + fb_y * 160] = 0x80FF0000;
+      }
+      */
     }
 
     update_texture_u32(overlay_tex, 160, 144, overlay);

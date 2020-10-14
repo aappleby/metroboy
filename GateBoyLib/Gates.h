@@ -381,6 +381,7 @@ struct DFF : private RegBase {
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
+  void dff(wire CLKp, bool D)            { RegBase::dff(CLKp, !CLKp, 1, 1, D); }
   void dff(wire CLKp, bool RSTn, bool D) { RegBase::dff(CLKp, !CLKp, 1, RSTn, D); }
 };
 
@@ -397,7 +398,7 @@ struct DFF : private RegBase {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
-struct DFF8 : private RegBase {
+struct DFF8n : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
@@ -408,8 +409,9 @@ struct DFF8 : private RegBase {
   void dff8(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
 };
 
-// same w/ inverted clock, not 100% positive this is correct but BGP has to
-// latch on the rising edge of the clock or m3_bgp_change is way off.
+//-----------------------------------------------------------------------------
+// same w/ swapped clock inputs, not 100% positive this is correct but BGP has
+// to latch on the rising edge of the clock or m3_bgp_change is way off.
 
 // DFF8_01 |o------O | << CLKp
 // DFF8_02 |====O====| << Dn
@@ -420,7 +422,7 @@ struct DFF8 : private RegBase {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
-struct DFF8n : private RegBase {
+struct DFF8p : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 

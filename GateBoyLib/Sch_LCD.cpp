@@ -19,8 +19,8 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("PIN_LCD_DATA1   : "); top.PIN_LCD_DATA1.dump(d); d("\n");
   d("PIN_LCD_DATA0   : "); top.PIN_LCD_DATA0.dump(d); d("\n");
   d("PIN_LCD_CNTRL   : "); top.PIN_LCD_CNTRL.dump(d); d("\n");
-  d("PIN_LCD_DATALCH : "); top.PIN_LCD_DATALCH.dump(d); d("\n");
-  d("PIN_LCD_ALTSIGL   : "); top.PIN_LCD_ALTSIGL.dump(d); d("\n");
+  d("PIN_LCD_DATALCH : "); top.PIN_LCD_LATCH.dump(d); d("\n");
+  d("PIN_LCD_ALTSIGL   : "); top.PIN_LCD_FLIPS.dump(d); d("\n");
   d("\n");
 
   d("CATU_LINE_P000      %c\n", CATU_LINE_P000.c());
@@ -139,7 +139,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*#p24.KUPA*/ wire KUPA = amux2(top.pix_pipe.XONA_LCDC_LCDENn.qn08(), KEBO, KEDY_LCDC_ENn, USEC_DIV_07p);
     /*#p24.KOFO*/ wire KOFO = not1(KUPA);
-    top.PIN_LCD_ALTSIGL.io_pin(KOFO, KOFO);
+    top.PIN_LCD_FLIPS.io_pin(KOFO, KOFO);
   }
 
   {
@@ -171,7 +171,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(top.pix_pipe.XONA_LCDC_LCDENn.qn08(), KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);
     /*#p24.KYMO*/ wire KYMO_LINE_ENDn = not1(KAHE_LINE_ENDp);
-    top.PIN_LCD_DATALCH.io_pin(KYMO_LINE_ENDn, KYMO_LINE_ENDn);
+    top.PIN_LCD_LATCH.io_pin(KYMO_LINE_ENDn, KYMO_LINE_ENDn);
   }
 
   // LCD vertical sync pin

@@ -87,8 +87,8 @@ struct SchematicTop {
     PIN_LCD_CNTRL.reset(TRI_D0NP);
     PIN_LCD_CLOCK.reset(TRI_D0NP);
     PIN_LCD_HSYNC.reset(TRI_D0NP);
-    PIN_LCD_DATALCH.reset(TRI_D0NP);
-    PIN_LCD_ALTSIGL.reset(TRI_D0NP);
+    PIN_LCD_LATCH.reset(TRI_D0NP);
+    PIN_LCD_FLIPS.reset(TRI_D0NP);
     PIN_LCD_VSYNC.reset(TRI_D0NP);
 
     IE_D0.reset(REG_D0C1);
@@ -96,6 +96,16 @@ struct SchematicTop {
     IE_D2.reset(REG_D0C1);
     IE_D3.reset(REG_D0C1);
     IE_D4.reset(REG_D0C1);
+
+    lcd_pix_lo.reset(TRI_D0NP);
+    lcd_pix_hi.reset(TRI_D0NP);
+
+    for (int i = 0; i < 160; i++) {
+      lcd_pipe_lo[i].reset(REG_D0C0);
+      lcd_pipe_hi[i].reset(REG_D0C0);
+      lcd_line_lo[i].reset(REG_D0C0);
+      lcd_line_hi[i].reset(REG_D0C0);
+    }
   }
 
   void reset_boot() {
@@ -140,8 +150,8 @@ struct SchematicTop {
     PIN_LCD_CNTRL.reset(TRI_HZNP);
     PIN_LCD_CLOCK.reset(TRI_HZNP);
     PIN_LCD_HSYNC.reset(TRI_HZNP);
-    PIN_LCD_DATALCH.reset(TRI_HZNP);
-    PIN_LCD_ALTSIGL.reset(TRI_HZNP);
+    PIN_LCD_LATCH.reset(TRI_HZNP);
+    PIN_LCD_FLIPS.reset(TRI_HZNP);
     PIN_LCD_VSYNC.reset(TRI_HZNP);
 
     IE_D0.reset(REG_D0C0);
@@ -152,6 +162,16 @@ struct SchematicTop {
 
     lcd_data1_delay.reset();
     lcd_data0_delay.reset();
+
+    lcd_pix_lo.reset(TRI_D0NP);
+    lcd_pix_hi.reset(TRI_D0NP);
+
+    for (int i = 0; i < 160; i++) {
+      lcd_pipe_lo[i].reset(REG_D0C0);
+      lcd_pipe_hi[i].reset(REG_D0C0);
+      lcd_line_lo[i].reset(REG_D0C0);
+      lcd_line_hi[i].reset(REG_D0C0);
+    }
   }
 
   void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
@@ -211,8 +231,8 @@ struct SchematicTop {
   /*PIN_52*/ Pin PIN_LCD_CNTRL;
   /*PIN_53*/ Pin PIN_LCD_CLOCK;
   /*PIN_54*/ Pin PIN_LCD_HSYNC;
-  /*PIN_55*/ Pin PIN_LCD_DATALCH;
-  /*PIN_56*/ Pin PIN_LCD_ALTSIGL;
+  /*PIN_55*/ Pin PIN_LCD_LATCH;
+  /*PIN_56*/ Pin PIN_LCD_FLIPS;
   /*PIN_57*/ Pin PIN_LCD_VSYNC;
 
   DFF IE_D0;
@@ -220,6 +240,14 @@ struct SchematicTop {
   DFF IE_D2;
   DFF IE_D3;
   DFF IE_D4;
+
+  NorLatch lcd_pix_lo;
+  NorLatch lcd_pix_hi;
+
+  DFF lcd_pipe_lo[160];
+  DFF lcd_pipe_hi[160];
+  DFF lcd_line_lo[160];
+  DFF lcd_line_hi[160];
 };
 #pragma pack(pop)
 

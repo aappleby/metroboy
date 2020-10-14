@@ -153,24 +153,24 @@ struct SpriteScanner {
   // switching these to DFF8n breajs sprite4_*_b
 
   // oam byte 0, byte 2
-  /*p29.XUSO*/ DFF8 XUSO_OAM_DA0p; // sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ DFF8 XEGU_OAM_DA1p; // sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ DFF8 YJEX_OAM_DA2p; // sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ DFF8 XYJU_OAM_DA3p; // sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ DFF8 YBOG_OAM_DA4p; // sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ DFF8 WYSO_OAM_DA5p; // sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ DFF8 XOTE_OAM_DA6p; // sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ DFF8 YZAB_OAM_DA7p; // sprite y bit 7, sprite tile index bit 7
+  /*p29.XUSO*/ DFF8n XUSO_OAM_DA0p; // sprite y bit 0, sprite tile index bit 0
+  /*p29.XEGU*/ DFF8n XEGU_OAM_DA1p; // sprite y bit 1, sprite tile index bit 1
+  /*p29.YJEX*/ DFF8n YJEX_OAM_DA2p; // sprite y bit 2, sprite tile index bit 2
+  /*p29.XYJU*/ DFF8n XYJU_OAM_DA3p; // sprite y bit 3, sprite tile index bit 3
+  /*p29.YBOG*/ DFF8n YBOG_OAM_DA4p; // sprite y bit 4, sprite tile index bit 4
+  /*p29.WYSO*/ DFF8n WYSO_OAM_DA5p; // sprite y bit 5, sprite tile index bit 5
+  /*p29.XOTE*/ DFF8n XOTE_OAM_DA6p; // sprite y bit 6, sprite tile index bit 6
+  /*p29.YZAB*/ DFF8n YZAB_OAM_DA7p; // sprite y bit 7, sprite tile index bit 7
 
   // oam byte 1, byte 3
-  /*p31.YLOR*/ DFF8 YLOR_OAM_DB0p; // sprite x bit 0,
-  /*p31.ZYTY*/ DFF8 ZYTY_OAM_DB1p; // sprite x bit 1,
-  /*p31.ZYVE*/ DFF8 ZYVE_OAM_DB2p; // sprite x bit 2,
-  /*p31.ZEZY*/ DFF8 ZEZY_OAM_DB3p; // sprite x bit 3,
-  /*p31.GOMO*/ DFF8 GOMO_OAM_DB4p; // sprite x bit 4, sprite palette
-  /*p31.BAXO*/ DFF8 BAXO_OAM_DB5p; // sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ DFF8 YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ DFF8 DEPO_OAM_DB7p; // sprite x bit 7, sprite priority
+  /*p31.YLOR*/ DFF8n YLOR_OAM_DB0p; // sprite x bit 0,
+  /*p31.ZYTY*/ DFF8n ZYTY_OAM_DB1p; // sprite x bit 1,
+  /*p31.ZYVE*/ DFF8n ZYVE_OAM_DB2p; // sprite x bit 2,
+  /*p31.ZEZY*/ DFF8n ZEZY_OAM_DB3p; // sprite x bit 3,
+  /*p31.GOMO*/ DFF8n GOMO_OAM_DB4p; // sprite x bit 4, sprite palette
+  /*p31.BAXO*/ DFF8n BAXO_OAM_DB5p; // sprite x bit 5, sprite x flip
+  /*p31.YZOS*/ DFF8n YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip
+  /*p31.DEPO*/ DFF8n DEPO_OAM_DB7p; // sprite x bit 7, sprite priority
 };
 
 //-----------------------------------------------------------------------------

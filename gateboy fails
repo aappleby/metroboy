@@ -1,3 +1,6 @@
+need to trace clocks for RUPO_LYC_MATCH_LATCH
+  inverting ROPO clock delays it even more
+
 //----------
 // PPU
 
@@ -7,21 +10,20 @@ line_153_ly_c.gb
 ppu_sprite0_scx3_a.gb
   read happens waaaay after we hit hblank, wtf
   dmg pass, ags fail
+
 ppu_sprite0_scx7_a.gb
   dmg pass, ags fail
 
 //----------
 // STAT
 
-poweron_006_stat.gb
+poweron_006_stat.gb / poweron_120_stat.gb
   dmg pass, ags fail
   dunno, read happens a phase or two before stat changes
-poweron_120_stat.gb
-  dmg pass, ags fail
 
 lcdon_to_stat2_a.gb
   dmg pass, ags fail
-  read happens well before lyc goes 0
+  read happens 2 phases before lyc goes 0
 
 stat_write_glitch_l0_a.gb
   dmg pass, ags fail
@@ -62,11 +64,9 @@ lcdon_to_oam_unlock_d.gb
   dmg pass, ags pass
   should PIN_OAM_OE be low on EFGH?
 
-poweron_006_oam.gb
-  dmg pass, ags fail
-poweron_120_oam.gb
-  dmg pass, ags fail
-poweron_234_oam.gb
+poweron_006_oam.gb / poweron_120_oam.gb / poweron_234_oam.gb
+  no gap between mode 1 and mode 2?
+  checked gates and i seem to have verified all of them
   dmg pass, ags fail
 
 //----------
@@ -81,9 +81,7 @@ poweron_140_vram.gb
 // MEALYBUG
 
 
-m3_lcdc_win_en_change_multiple_wx.gb
-  a couple wrong pixels
-
+m3_lcdc_win_en_change_multiple_wx.gb - pass, reference image from mealybug wrong
 m3_bgp_change_sprites.gb - pass
 m3_lcdc_obj_size_change.gb - pass w/ sprite latch clock delayed 6 passes
 m3_lcdc_obj_size_change_scx.gb - pass w/ sprite latch clock delayed 6 passes

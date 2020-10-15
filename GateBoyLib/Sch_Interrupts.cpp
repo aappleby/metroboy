@@ -84,15 +84,15 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   wire PESU_VCC = 1;
   /* p02.LOPE*/ LOPE_FF0F_D0p.dff22(top.lcd_reg.VYPU_INT_VBLANKp,          MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_VCC);
   /* p02.LALU*/ LALU_FF0F_D1p.dff22(top.pix_pipe.VOTY_INT_STATp,           MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_VCC);
-  /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(top.tim_reg.MOBA_TIMER_OVERFLOWp.qp(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_VCC);
-  /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(top.ser_reg.CALY_INT_SERp.qp(),        TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_VCC);
+  /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(top.tim_reg.MOBA_TIMER_OVERFLOWp.qp17(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_VCC);
+  /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(top.ser_reg.CALY_INT_SERp.qp17(),        TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_VCC);
   /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(top.joypad.ASOK_INT_JOYp,              TOGA_FF0F_SET4n, TYME_FF0F_RST4n, PESU_VCC);
 
-  PIN_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.q16());
-  PIN_CPU_INT_STAT  .set(LALU_FF0F_D1p.q16());
-  PIN_CPU_INT_TIMER .set(NYBO_FF0F_D2p.q16());
-  PIN_CPU_INT_SERIAL.set(UBUL_FF0F_D3p.q16());
-  PIN_CPU_INT_JOYPAD.set(ULAK_FF0F_D4p.q16());
+  PIN_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.qp16());
+  PIN_CPU_INT_STAT  .set(LALU_FF0F_D1p.qp16());
+  PIN_CPU_INT_TIMER .set(NYBO_FF0F_D2p.qp16());
+  PIN_CPU_INT_SERIAL.set(UBUL_FF0F_D3p.qp16());
+  PIN_CPU_INT_JOYPAD.set(ULAK_FF0F_D4p.qp16());
 
   // pass gates? does look like a transparent latch here...
 
@@ -101,11 +101,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   // FIXME this inversion fixes a bunch of tests...
   // MATY is one of those big yellow latchy things
 
-  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(!ROLO_HOLDn, LOPE_FF0F_D0p.q16()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(!ROLO_HOLDn, LALU_FF0F_D1p.q16()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(!ROLO_HOLDn, NYBO_FF0F_D2p.q16()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!ROLO_HOLDn, UBUL_FF0F_D3p.q16()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!ROLO_HOLDn, ULAK_FF0F_D4p.q16()); // OUTPUT ON RUNG 10
+  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(!ROLO_HOLDn, LOPE_FF0F_D0p.qp16()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(!ROLO_HOLDn, LALU_FF0F_D1p.qp16()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(!ROLO_HOLDn, NYBO_FF0F_D2p.qp16()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!ROLO_HOLDn, UBUL_FF0F_D3p.qp16()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!ROLO_HOLDn, ULAK_FF0F_D4p.qp16()); // OUTPUT ON RUNG 10
 
   /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_HOLDn);
   /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p.tri_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.q10n());

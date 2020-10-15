@@ -367,12 +367,65 @@ void GateBoy::next_pass() {
 
   //----------
 
-  probe(10, "PIN_LCD_CLOCK", top.PIN_LCD_CLOCK.qp());
-  probe(11, "PIN_LCD_HSYNC", top.PIN_LCD_HSYNC.qp());
-  probe(12, "PIN_LCD_VSYNC", top.PIN_LCD_VSYNC.qp());
-  probe(13, "PIN_LCD_DATA0", top.PIN_LCD_DATA0.qp());
-  probe(14, "PIN_LCD_DATA1", top.PIN_LCD_DATA1.qp());
-  probe(15, "PIN_LCD_LATCH", top.PIN_LCD_LATCH.qp());
+  probe( 1, "PIN_CPU_RDp", top.cpu_bus.PIN_CPU_RDp.qp());
+  probe( 2, "PIN_CPU_WRp", top.cpu_bus.PIN_CPU_WRp.qp());
+
+  probe( 3, "XEHO_X0p",    top.pix_pipe.XEHO_X0p.qn16());
+  probe( 4, "SAVY_X1p",    top.pix_pipe.SAVY_X1p.qn16());
+  probe( 5, "XODU_X2p",    top.pix_pipe.XODU_X2p.qn16());
+
+  //probe(10, "PIN_LCD_CLOCK", top.PIN_LCD_CLOCK.qp());
+  //probe(11, "PIN_LCD_HSYNC", top.PIN_LCD_HSYNC.qp());
+  //probe(12, "PIN_LCD_VSYNC", top.PIN_LCD_VSYNC.qp());
+  //probe(13, "PIN_LCD_DATA0", top.PIN_LCD_DATA0.qp());
+  //probe(14, "PIN_LCD_DATA1", top.PIN_LCD_DATA1.qp());
+  //probe(15, "PIN_LCD_LATCH", top.PIN_LCD_LATCH.qp());
+
+  //probe(8, "PIN_EXT_RDp", !top.ext_bus.PIN_EXT_RDn.qp());
+  //probe(9, "PIN_EXT_WRp", !top.ext_bus.PIN_EXT_WRn.qp());
+
+  //probe(16, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D0p.c());
+  //probe(17, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D1p.c());
+  //probe(18, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D2p.c());
+  //probe(19, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D3p.c());
+  //probe(20, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D4p.c());
+  //probe(21, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D5p.c());
+  //probe(22, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D6p.c());
+  //probe(23, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D7p.c());
+
+  //----------------------------------------
+
+  //probe( 2, "CUPA_CPU_WRp",          CUPA_CPU_WRp_xxxxEFGx);
+  //probe( 5, "BESU_SCANNINGp",        top.sprite_scanner.BESU_SCANNINGp.qp());
+  //probe( 6, "XYMU_RENDERINGp",       top.pix_pipe.XYMU_RENDERINGp.qp());
+  //probe( 7, "MATU_DMA_RUNNINGp",     top.dma_reg.MATU_DMA_RUNNINGp.qp());
+  //probe(10, "TEDO_CPU_RDp",          TEDO_CPU_RDp);
+  //probe(11, "CUPA_CPU_WRp_xxxxEFGx", CUPA_CPU_WRp_xxxxEFGx);
+  //probe(12, "SARO_FE00_FEFFp",       SARO_FE00_FEFFp);
+  //probe(13, "AJON_PPU_OAM_ENp",      AJON_PPU_OAM_ENp);
+  //probe(14, "AMAB_CPU_OAM_ENp",      AMAB_CPU_OAM_ENp);
+  //probe(20, "PIN_OAM_CLKp",          !COTA_OAM_CLKn);
+  //probe(21, "PIN_OAM_OEp",           !ZODO_OAM_OEn);
+  //probe(22, "PIN_OAM_WR_Ap",         !ZOFE);
+  //probe(23, "PIN_OAM_WR_Bp",         !ZONE);
+  //probe(11, "GUKO_OBL_TO_CBDp",      GUKO_OBL_TO_CBDp);
+  //probe(12, "WUKU_OBL_TO_CBDp",      WUKU_OBL_TO_CBDp);
+
+  //probe(16, "RUTU_LINE_P910", top.lcd_reg.RUTU_LINE_P910.qp());
+  //probe(17, "CATU_LINE_P000", top.lcd_reg.CATU_LINE_P000.qp());
+  //probe(18, "NYPE_LINE_P002", top.lcd_reg.NYPE_LINE_P002.qp());
+  //probe(19, "ANEL_LINE_P002", top.lcd_reg.ANEL_LINE_P002.qp());
+
+  //probe("SACU_CLKPIPEp", SACU_CLKPIPEp);
+  //probe(3, "SADU_STAT_MODE0",      !SADU_STAT_MODE0n);
+  //probe(4, "XATY_STAT_MODE1",      !XATY_STAT_MODE1n);
+  //probe(5, "RUPO_LYC_MATCH_LATCH", !RUPO_LYC_MATCH_LATCHn.qp());
+  //probe(6, "XYMU_RENDERINGp",      XYMU_RENDERINGn.qn03());
+  //probe(7, "PARU_VBLANKp_d4",      top.lcd_reg.PARU_VBLANKp_d4);
+  //probe(8, "MATU_DMA_RUNNINGp",    top.dma_reg.MATU_DMA_RUNNINGp.qp());
+  //probe(9, "BESU_SCANNINGp",       top.sprite_scanner.BESU_SCANNINGp.qp());
+
+
 
   if (top.PIN_LCD_CLOCK.posedge()) {
     screen_x++;

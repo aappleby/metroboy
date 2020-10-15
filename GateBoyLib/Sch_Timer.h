@@ -102,29 +102,29 @@ struct Timer {
   void tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus);
 
   int get_div() const {
-    return pack_p(UKUP_DIV_00.qp(), UFOR_DIV_01.qp(), UNER_DIV_02.qp(), TERO_DIV_03.qp(),
-                  UNYK_DIV_04.qp(), TAMA_DIV_05.qp(), UGOT_DIV_06.qp(), TULU_DIV_07.qp(),
-                  TUGO_DIV_08.qp(), TOFE_DIV_09.qp(), TERU_DIV_10.qp(), SOLA_DIV_11.qp(),
-                  SUBU_DIV_12.qp(), TEKA_DIV_13.qp(), UKET_DIV_14.qp(), UPOF_DIV_15.qp());
+    return pack_p(UKUP_DIV_00.qp17(), UFOR_DIV_01.qp17(), UNER_DIV_02.qp17(), TERO_DIV_03.qp17(),
+                  UNYK_DIV_04.qp17(), TAMA_DIV_05.qp17(), UGOT_DIV_06.qp17(), TULU_DIV_07.qp17(),
+                  TUGO_DIV_08.qp17(), TOFE_DIV_09.qp17(), TERU_DIV_10.qp17(), SOLA_DIV_11.qp17(),
+                  SUBU_DIV_12.qp17(), TEKA_DIV_13.qp17(), UKET_DIV_14.qp17(), UPOF_DIV_15.qp17());
   }
 
   int get_tima_a() const {
-    return pack_p(REGA_TIMA_D0.q01p(), POVY_TIMA_D1.q01p(), PERU_TIMA_D2.q01p(), RATE_TIMA_D3.q01p(),
-                  RUBY_TIMA_D4.q01p(), RAGE_TIMA_D5.q01p(), PEDA_TIMA_D6.q01p(), NUGA_TIMA_D7.q01p());
+    return pack_p(REGA_TIMA_D0.qp01(), POVY_TIMA_D1.qp01(), PERU_TIMA_D2.qp01(), RATE_TIMA_D3.qp01(),
+                  RUBY_TIMA_D4.qp01(), RAGE_TIMA_D5.qp01(), PEDA_TIMA_D6.qp01(), NUGA_TIMA_D7.qp01());
   }
 
   int get_tima_b() const {
-    return pack_p(REGA_TIMA_D0.q17n(), POVY_TIMA_D1.q17n(), PERU_TIMA_D2.q17n(), RATE_TIMA_D3.q17n(),
-                  RUBY_TIMA_D4.q17n(), RAGE_TIMA_D5.q17n(), PEDA_TIMA_D6.q17n(), NUGA_TIMA_D7.q17n());
+    return pack_p(REGA_TIMA_D0.qn17(), POVY_TIMA_D1.qn17(), PERU_TIMA_D2.qn17(), RATE_TIMA_D3.qn17(),
+                  RUBY_TIMA_D4.qn17(), RAGE_TIMA_D5.qn17(), PEDA_TIMA_D6.qn17(), NUGA_TIMA_D7.qn17());
   }
 
   int get_tma() const {
-    return pack_p(SABU_TMA_D0.qp(), NYKE_TMA_D1.qp(), MURU_TMA_D2.qp(), TYVA_TMA_D3.qp(),
-                  TYRU_TMA_D4.qp(), SUFY_TMA_D5.qp(), PETO_TMA_D6.qp(), SETA_TMA_D7.qp());
+    return pack_p(SABU_TMA_D0.qp17(), NYKE_TMA_D1.qp17(), MURU_TMA_D2.qp17(), TYVA_TMA_D3.qp17(),
+                  TYRU_TMA_D4.qp17(), SUFY_TMA_D5.qp17(), PETO_TMA_D6.qp17(), SETA_TMA_D7.qp17());
   }
 
   int get_tac() const {
-    return pack_p(SOPU_TAC_D0.qp(), SAMY_TAC_D1.qp(), SABO_TAC_D2.qp(), 0);
+    return pack_p(SOPU_TAC_D0.qp17(), SAMY_TAC_D1.qp17(), SABO_TAC_D2.qp17(), 0);
   }
 
   void force_set_tima(uint8_t tima) {

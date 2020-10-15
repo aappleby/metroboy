@@ -63,7 +63,7 @@ void Joypad::set_buttons(uint8_t buttons) {
 //------------------------------------------------------------------------------
 
 void Joypad::tick(const SchematicTop& /*top*/) {
-  /*p02.ASOK*/ ASOK_INT_JOYp = and2(APUG_JP_GLITCH3.qp(), BATU_JP_GLITCH0.qp());
+  /*p02.ASOK*/ ASOK_INT_JOYp = and2(APUG_JP_GLITCH3.qp17(), BATU_JP_GLITCH0.qp17());
 }
 
 //------------------------------------------------------------------------------
@@ -85,9 +85,9 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     /*p02.BATU*/ BATU_JP_GLITCH0.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp());
-    /*p02.APUG*/ APUG_JP_GLITCH3.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp());
+    /*p02.ACEF*/ ACEF_JP_GLITCH1.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp17());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp17());
+    /*p02.APUG*/ APUG_JP_GLITCH3.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp17());
   }
 
   {
@@ -115,10 +115,10 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*p05.KURO*/ cpu_bus.BUS_CPU_D1p.tri_6nn(BYZO_FF00_RDn, KAPA_JOYP_L1.q08p());
     /*p05.KUVE*/ cpu_bus.BUS_CPU_D2p.tri_6nn(BYZO_FF00_RDn, KEJA_JOYP_L2.q08p());
     /*p05.JEKU*/ cpu_bus.BUS_CPU_D3p.tri_6nn(BYZO_FF00_RDn, KOLO_JOYP_L3.q08p());
-    /*p05.KOCE*/ cpu_bus.BUS_CPU_D4p.tri_6nn(BYZO_FF00_RDn, KELY_JOYP_UDLR.qn());
-    /*p05.CUDY*/ cpu_bus.BUS_CPU_D5p.tri_6nn(BYZO_FF00_RDn, COFY_JOYP_ABCS.qn());
-    /*p??.????*/ cpu_bus.BUS_CPU_D6p.tri_6nn(BYZO_FF00_RDn, KUKO_DBG_FF00_D6.qp());
-    /*p??.????*/ cpu_bus.BUS_CPU_D7p.tri_6nn(BYZO_FF00_RDn, KERU_DBG_FF00_D7.qp());
+    /*p05.KOCE*/ cpu_bus.BUS_CPU_D4p.tri_6nn(BYZO_FF00_RDn, KELY_JOYP_UDLR.qn16());
+    /*p05.CUDY*/ cpu_bus.BUS_CPU_D5p.tri_6nn(BYZO_FF00_RDn, COFY_JOYP_ABCS.qn16());
+    /*p??.????*/ cpu_bus.BUS_CPU_D6p.tri_6nn(BYZO_FF00_RDn, KUKO_DBG_FF00_D6.qp17());
+    /*p??.????*/ cpu_bus.BUS_CPU_D7p.tri_6nn(BYZO_FF00_RDn, KERU_DBG_FF00_D7.qp17());
   }
 
   {
@@ -138,22 +138,22 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     wire BURO_FF60_0p = 0; // FIXME hacking out debug stuff
     /*p05.KURA*/ wire KURA = not1(BURO_FF60_0p);
 
-    /*p05.KOLE*/ wire KOLE = nand2(JUTE_JOYP_RA.qp(), BURO_FF60_0p);
-    /*p05.KYBU*/ wire KYBU = nor2 (JUTE_JOYP_RA.qp(), KURA);
-    /*p05.KYTO*/ wire KYTO = nand2(KECY_JOYP_LB.qp(), BURO_FF60_0p);
-    /*p05.KABU*/ wire KABU = nor2 (KECY_JOYP_LB.qp(), KURA);
-    /*p05.KYHU*/ wire KYHU = nand2(JALE_JOYP_UC.qp(), BURO_FF60_0p);
-    /*p05.KASY*/ wire KASY = nor2 (JALE_JOYP_UC.qp(), KURA);
-    /*p05.KORY*/ wire KORY = nand2(KYME_JOYP_DS.qp(), BURO_FF60_0p);
-    /*p05.KALE*/ wire KALE = nor2 (KYME_JOYP_DS.qp(), KURA);
+    /*p05.KOLE*/ wire KOLE = nand2(JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
+    /*p05.KYBU*/ wire KYBU = nor2 (JUTE_JOYP_RA.qp17(), KURA);
+    /*p05.KYTO*/ wire KYTO = nand2(KECY_JOYP_LB.qp17(), BURO_FF60_0p);
+    /*p05.KABU*/ wire KABU = nor2 (KECY_JOYP_LB.qp17(), KURA);
+    /*p05.KYHU*/ wire KYHU = nand2(JALE_JOYP_UC.qp17(), BURO_FF60_0p);
+    /*p05.KASY*/ wire KASY = nor2 (JALE_JOYP_UC.qp17(), KURA);
+    /*p05.KORY*/ wire KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
+    /*p05.KALE*/ wire KALE = nor2 (KYME_JOYP_DS.qp17(), KURA);
 
     PIN_JOY_P10.io_pin(KOLE, KYBU);
     PIN_JOY_P11.io_pin(KYTO, KABU);
     PIN_JOY_P12.io_pin(KYHU, KASY);
     PIN_JOY_P13.io_pin(KORY, KALE);
 
-    /*p05.KARU*/ wire KARU = or2(KELY_JOYP_UDLR.qn(), KURA);
-    /*p05.CELA*/ wire CELA = or2(COFY_JOYP_ABCS.qn(), KURA);
+    /*p05.KARU*/ wire KARU = or2(KELY_JOYP_UDLR.qn16(), KURA);
+    /*p05.CELA*/ wire CELA = or2(COFY_JOYP_ABCS.qn16(), KURA);
 
     /*
     // lcd ribbon voltages after bootrom
@@ -165,8 +165,8 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     09 0 diodes 3 & 4
     */
 
-    PIN_JOY_P14.io_pin(KARU, KELY_JOYP_UDLR.qn());
-    PIN_JOY_P15.io_pin(CELA, COFY_JOYP_ABCS.qn());
+    PIN_JOY_P14.io_pin(KARU, KELY_JOYP_UDLR.qn16());
+    PIN_JOY_P15.io_pin(CELA, COFY_JOYP_ABCS.qn16());
   }
 }
 

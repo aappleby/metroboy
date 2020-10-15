@@ -28,15 +28,15 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& /*top*/) const {
 //------------------------------------------------------------------------------
 
 void TileFetcher::tick(const SchematicTop& top) {
-  /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.q03());
+  /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.qn03());
 
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp());
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp04());
   /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
   /* p26.AXAD*/ wire AXAD_WIN_MODEn = not1(PORE_WIN_MODEp);
 
-  /*#p27.LAXE*/ wire LAXE_BFETCH_S0n = not1(LAXU_BFETCH_S0.qp());
-  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(MESU_BFETCH_S1.qp());
-  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(NYVA_BFETCH_S2.qp());
+  /*#p27.LAXE*/ wire LAXE_BFETCH_S0n = not1(LAXU_BFETCH_S0.qp17());
+  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(MESU_BFETCH_S1.qp17());
+  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(NYVA_BFETCH_S2.qp17());
 
   /* p27.NOGU*/ wire NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
   /* p27.NENY*/ wire NENY_FETCH_01n = not1(NOGU_FETCH_01p);
@@ -55,15 +55,15 @@ void TileFetcher::tick(const SchematicTop& top) {
   /* p26.BAFY*/ BAFY_BG_MAP_READn   = not1(ACEN_BG_MAP_READp);
   /* p26.BEJE*/ BEJE_BG_TILE_READn = not1(ASUL_BG_TILE_READp);
 
-  /* p27.MOCE*/ MOCE_BFETCH_DONEn = nand3(LAXU_BFETCH_S0.qp(), NYVA_BFETCH_S2.qp(), top.NYXU_FETCH_TRIGn);
+  /* p27.MOCE*/ MOCE_BFETCH_DONEn = nand3(LAXU_BFETCH_S0.qp17(), NYVA_BFETCH_S2.qp17(), top.NYXU_FETCH_TRIGn);
 
   /*#p27.XUHA*/ XUHA_FETCH_S2p  = not1(NOFU_BFETCH_S2n);
 
   // MYSO fires on fetch phase 2, 6, 10
-  /*#p27.MYSO*/ wire MYSO_BG_TRIGp   = nor3(LOBY_RENDERINGn, LAXE_BFETCH_S0n, LYZU_BFETCH_S0_D1.qp());
+  /*#p27.MYSO*/ wire MYSO_BG_TRIGp   = nor3(LOBY_RENDERINGn, LAXE_BFETCH_S0n, LYZU_BFETCH_S0_D1.qp17());
 
   // NYDY on fetch phase 6
-  /*#p27.NYDY*/ wire NYDY_LATCH_TILE_DAn = nand3(MYSO_BG_TRIGp, MESU_BFETCH_S1.qp(), NOFU_BFETCH_S2n);
+  /*#p27.NYDY*/ wire NYDY_LATCH_TILE_DAn = nand3(MYSO_BG_TRIGp, MESU_BFETCH_S1.qp17(), NOFU_BFETCH_S2n);
   /*#p32.METE*/ METE_LATCH_TILE_DAp   = not1(NYDY_LATCH_TILE_DAn);
 
   // MOFU fires on fetch phase 2 and 10
@@ -74,7 +74,7 @@ void TileFetcher::tick(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 void TileFetcher::tock(SchematicTop& top) {
-  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGn.q03();
+  wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGn.qn03();
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
 
   /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
@@ -83,10 +83,10 @@ void TileFetcher::tock(SchematicTop& top) {
 
   /*p27.LEBO*/ wire LEBO_AxCxExGx = nand2(ALET_xBxDxFxH, MOCE_BFETCH_DONEn);
 
-  /*p27.LAXU*/ LAXU_BFETCH_S0   .dff17(LEBO_AxCxExGx,             top.NYXU_FETCH_TRIGn,   LAXU_BFETCH_S0.qn());
-  /*p27.MESU*/ MESU_BFETCH_S1   .dff17(LAXU_BFETCH_S0.qn(),       top.NYXU_FETCH_TRIGn,   MESU_BFETCH_S1.qn());
-  /*p27.NYVA*/ NYVA_BFETCH_S2   .dff17(MESU_BFETCH_S1.qn(),       top.NYXU_FETCH_TRIGn,   NYVA_BFETCH_S2.qn());
-  /*p27.LYZU*/ LYZU_BFETCH_S0_D1.dff17(ALET_xBxDxFxH, XYMU_RENDERINGp, LAXU_BFETCH_S0.qp());
+  /*p27.LAXU*/ LAXU_BFETCH_S0   .dff17(LEBO_AxCxExGx,             top.NYXU_FETCH_TRIGn,   LAXU_BFETCH_S0.qn16());
+  /*p27.MESU*/ MESU_BFETCH_S1   .dff17(LAXU_BFETCH_S0.qn16(),       top.NYXU_FETCH_TRIGn,   MESU_BFETCH_S1.qn16());
+  /*p27.NYVA*/ NYVA_BFETCH_S2   .dff17(MESU_BFETCH_S1.qn16(),       top.NYXU_FETCH_TRIGn,   NYVA_BFETCH_S2.qn16());
+  /*p27.LYZU*/ LYZU_BFETCH_S0_D1.dff17(ALET_xBxDxFxH, XYMU_RENDERINGp, LAXU_BFETCH_S0.qp17());
 
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
@@ -95,13 +95,13 @@ void TileFetcher::tock(SchematicTop& top) {
   /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(MOSU_WIN_FETCH_TRIGp, LOBY_RENDERINGn);
 
   /*p24.NYKA*/ NYKA_FETCH_DONE_P11.dff17(ALET_xBxDxFxH, NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp);
-  /*p24.PORY*/ PORY_FETCH_DONE_P12.dff17(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_FETCH_DONE_P11.qp());
-  /*p24.PYGO*/ PYGO_FETCH_DONE_P13.dff17(ALET_xBxDxFxH, XYMU_RENDERINGp,   PORY_FETCH_DONE_P12.qp());
+  /*p24.PORY*/ PORY_FETCH_DONE_P12.dff17(MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_FETCH_DONE_P11.qp17());
+  /*p24.PYGO*/ PYGO_FETCH_DONE_P13.dff17(ALET_xBxDxFxH, XYMU_RENDERINGp,   PORY_FETCH_DONE_P12.qp17());
 
-  /*p24.POKY*/ POKY_PRELOAD_LATCHp.nor_latch(PYGO_FETCH_DONE_P13.qp(), LOBY_RENDERINGn);
+  /*p24.POKY*/ POKY_PRELOAD_LATCHp.nor_latch(PYGO_FETCH_DONE_P13.qp17(), LOBY_RENDERINGn);
 
   /*p27.LOVY*/ LOVY_BG_FETCH_DONEp  .dff17(MYVO_AxCxExGx, top.NYXU_FETCH_TRIGn,     LYRY_BFETCH_DONEp);
-  /*p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(LOVY_BG_FETCH_DONEp.qn(), XYMU_RENDERINGp);
+  /*p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(LOVY_BG_FETCH_DONEp.qn16(), XYMU_RENDERINGp);
   /*p27.LONY*/ LONY_BG_FETCH_RUNNINGp.nand_latch(top.NYXU_FETCH_TRIGn, LURY_BG_FETCH_DONEn);
 }
 

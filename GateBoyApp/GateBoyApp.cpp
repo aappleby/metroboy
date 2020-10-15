@@ -125,7 +125,7 @@ void GateBoyApp::app_init() {
       *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
       *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;
+      *cursor++ = 0b10000001;f
       *cursor++ = 0b10101011;
       *cursor++ = 0b10000001;
       *cursor++ = 0b10101011;
@@ -158,10 +158,10 @@ void GateBoyApp::app_init() {
 
   // run rom
 
-  load_rom   ("roms/mealybug/m3_bgp_change_sprites.gb");
-  load_golden("roms/mealybug/m3_bgp_change_sprites.bmp");
+  //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
+  //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
-  //load_rom("microtests/build/dmg/line_153_ly_c.gb");
+  load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb");
 
   GateBoy::current = gb.state();
 }
@@ -542,7 +542,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->top.bootrom.BOOT_BITn.qp()) {
+    if (!gb->top.bootrom.BOOT_BITn.qp17()) {
       code = DMG_ROM_bin;
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;
@@ -655,8 +655,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
         overlay[x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
       }
       {
-        uint8_t p0 = top.lcd_pix_lo.qp();
-        uint8_t p1 = top.lcd_pix_hi.qp();
+        uint8_t p0 = top.lcd_pix_lo.qp04();
+        uint8_t p1 = top.lcd_pix_hi.qp04();
 
         int c = (3 - (p0 + p1 * 2)) * 85;
 

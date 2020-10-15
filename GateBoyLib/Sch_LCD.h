@@ -105,11 +105,11 @@ struct LcdRegisters {
   void tock(SchematicTop& top, CpuBus& cpu_bus);
 
   uint8_t get_lx() const {
-    return (uint8_t)pack_p(SAXO_X0p.qp(), TYPO_X1p.qp(), VYZO_X2p.qp(), TELU_X3p.qp(), SUDE_X4p.qp(), TAHA_X5p.qp(), TYRY_X6p.qp(), 0);
+    return (uint8_t)pack_p(SAXO_X0p.qp17(), TYPO_X1p.qp17(), VYZO_X2p.qp17(), TELU_X3p.qp17(), SUDE_X4p.qp17(), TAHA_X5p.qp17(), TYRY_X6p.qp17(), 0);
   }
 
   uint8_t get_ly() const {
-    return (uint8_t)pack_p(MUWY_Y0p.qp(), MYRO_Y1p.qp(), LEXA_Y2p.qp(), LYDO_Y3p.qp(), LOVU_Y4p.qp(), LEMA_Y5p.qp(), MATO_Y6p.qp(), LAFO_Y7p.qp());
+    return (uint8_t)pack_p(MUWY_Y0p.qp17(), MYRO_Y1p.qp17(), LEXA_Y2p.qp17(), LYDO_Y3p.qp17(), LOVU_Y4p.qp17(), LEMA_Y5p.qp17(), MATO_Y6p.qp17(), LAFO_Y7p.qp17());
   }
 
   uint8_t get_lyc() const {

@@ -378,6 +378,7 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
@@ -402,11 +403,11 @@ struct DFF8n : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
-  wire q07n() const { return !as_wire(); }
-  wire q08p() const { return  as_wire(); }
+  wire qn07() const { return !as_wire(); }
+  wire qp08() const { return  as_wire(); }
 
-  void dff8(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
-  void dff8(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
+  void dff8n(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
+  void dff8n(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -426,10 +427,10 @@ struct DFF8p : private RegBase {
   using RegBase::reset;
   using RegBase::c;
 
-  wire q07n() const { return !as_wire(); }
-  wire q08p() const { return  as_wire(); }
+  wire qn07() const { return !as_wire(); }
+  wire qp08() const { return  as_wire(); }
 
-  void dff8n(wire CLK01, bool Dn) { dff( CLK01, !CLK01, 1, 1, !Dn); }
+  void dff8p(wire CLKp, bool Dn) { dff( CLKp, !CLKp, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -479,6 +480,7 @@ struct DFF9 : private RegBase {
 struct DFF11 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+
   wire q11p() const { return as_wire(); }
 
   void dff11(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
@@ -503,11 +505,9 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
 
-  wire q12n() const { return qn(); }
-  wire q13p() const { return qp(); }
+  wire qn12() const { return !as_wire(); }
+  wire qp13() const { return  as_wire(); }
 
   void dff13(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
 };
@@ -535,11 +535,9 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
 
-  wire q16() const { return !as_wire(); }
-  wire q17() const { return  as_wire(); }
+  wire qn16() const { return !as_wire(); }
+  wire qp17() const { return  as_wire(); }
 
   void dff17(wire CLKp, wire RSTn, wire D) {
     dff(CLKp, !CLKp, 1, RSTn, D);
@@ -573,8 +571,9 @@ struct DFF17 : private RegBase {
 struct DFF20 : private RegBase{
   using RegBase::reset;
   using RegBase::c;
-  wire q01p() const { return  as_wire(); }
-  wire q17n() const { return !as_wire(); }
+
+  wire qp01() const { return  as_wire(); }
+  wire qn17() const { return !as_wire(); }
 
   void dff20(wire CLKn, wire LOADp, bool newD) {
     (void)LOADp;
@@ -620,10 +619,9 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  //wire qp() const { return  as_wire(); }
 
-  wire q15() const { return !as_wire(); }
-  wire q16() const { return  as_wire(); }
+  wire qn15() const { return !as_wire(); }
+  wire qp16() const { return  as_wire(); }
 
   void dff22(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
 };
@@ -633,6 +631,7 @@ struct DFF22 : private RegBase {
 struct Sig : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+
   wire qp() const { return  as_wire(); }
 
   operator wire() const {
@@ -652,6 +651,19 @@ struct Sig : private RegBase {
 //-----------------------------------------------------------------------------
 // Tristate bus, can have multiple drivers.
 
+// TYGO_01 << BUS_CPU_D2p
+// TYGO_02 nc
+// TYGO_03 nc
+// TYGO_04 nc
+// TYGO_05 << RAHU_04
+// TYGO_06 << BUS_CPU_D2p
+// TYGO_07 nc
+// TYGO_08 nc
+// TYGO_09 >> BUS_VRAM_D2p
+// TYGO_10 nc
+
+// Must be NP - see KOVA/KEJO
+
 struct Bus : private RegBase {
   using RegBase::reset;
   using RegBase::c;
@@ -662,19 +674,6 @@ struct Bus : private RegBase {
   wire qn() const { return !as_wire(); }
 
   void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-
-  // TYGO_01 << BUS_CPU_D2p
-  // TYGO_02 nc
-  // TYGO_03 nc
-  // TYGO_04 nc
-  // TYGO_05 << RAHU_04
-  // TYGO_06 << BUS_CPU_D2p
-  // TYGO_07 nc
-  // TYGO_08 nc
-  // TYGO_09 >> BUS_VRAM_D2p
-  // TYGO_10 nc
-
-  // Must be NP - see KOVA/KEJO
 
   void tri10_np(wire OEn, wire D) {
     if (!OEn) {
@@ -714,6 +713,7 @@ struct Bus : private RegBase {
 struct Pin : private RegBase {
   using RegBase::c;
   using RegBase::lock;
+
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
@@ -773,9 +773,10 @@ struct Pin : private RegBase {
 struct NorLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::cn;
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
+  //using RegBase::cn;
+
+  wire qn03() const { return !as_wire(); }
+  wire qp04() const { return  as_wire(); }
 
   void nor_latch(wire SETp, wire RSTp) {
     CHECK_N(has_delta());
@@ -796,8 +797,8 @@ struct NorLatch2 : private RegBase {
   using RegBase::c;
   using RegBase::cn;
 
-  wire q03() const { return !as_wire(); }
-  wire q04() const { return  as_wire(); }
+  wire qn03() const { return !as_wire(); }
+  wire qp04() const { return  as_wire(); }
 
   void nor_latch(wire SETp, wire RSTp) {
     CHECK_N(has_delta());
@@ -827,8 +828,8 @@ struct NandLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
+  wire qp03() const { return  as_wire(); }
+  wire qn04() const { return !as_wire(); }
 
   void nand_latch(wire SETn, wire RSTn) {
     CHECK_N(has_delta());

@@ -21,7 +21,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p07.UNOR*/ UNOR_MODE_DBG2p = and2(T2n, UBET_T1p);
     /*p07.UPOJ*/ UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, RST);
 
-    /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn());
+    /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn16());
   }
 
   {
@@ -51,16 +51,16 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   pix_pipe.tick(*this);
 
   {
-    /*p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
-    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.q03(),
+    /*p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp04());
+    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn03(),
                                                       ROMO_PRELOAD_DONEn,
-                                                      tile_fetcher.NYKA_FETCH_DONE_P11.qp(),
-                                                      tile_fetcher.PORY_FETCH_DONE_P12.qp());
+                                                      tile_fetcher.NYKA_FETCH_DONE_P11.qp17(),
+                                                      tile_fetcher.PORY_FETCH_DONE_P12.qp17());
     // -> sprite fetcher, top.TEVO
     /*p27.TAVE*/ TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
 
     /*p27.SYLO*/ wire SYLO_WIN_HITn = not1(pix_pipe.RYDY);
-    /*p27.TUXY*/ wire TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
+    /*p27.TUXY*/ wire TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17());
     /*p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILE_NE);
 
     // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
@@ -73,7 +73,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p01.ATAR*/ wire ATAR_VID_RSTp = not1(clk_reg.XAPO_VID_RSTn);
     /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
     /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
-    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_B.qp(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_A.qn());
+    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_B.qp17(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_A.qn16());
     /*#p29.AVAP*/ AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
   }
 
@@ -95,7 +95,7 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp());
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp17());
     /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
   }
 
@@ -114,7 +114,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p25.SYCY*/ wire SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
     /*p01.DULA*/ wire DULA_SYS_RSTp = not1(clk_reg.ALUR_SYS_RSTn);
     /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
-    /*p25.SOTO*/ SOTO_DBG_VRAM.dff17(SYCY_DBG_CLOCKn, CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn());
+    /*p25.SOTO*/ SOTO_DBG_VRAM.dff17(SYCY_DBG_CLOCKn, CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn16());
   }
 
   clk_reg.tock_clk_slow(RST, CLK, CLKGOOD, CPUREADY, *this);
@@ -186,10 +186,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     lcd_line_hi[i].dff(PIN_LCD_LATCH.qp(), lcd_pipe_hi[i + 1].qp());
   }
 
-  lcd_pipe_lo[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp());
-  lcd_pipe_hi[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp());
-  lcd_line_lo[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_lo.qp());
-  lcd_line_hi[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_hi.qp());
+  lcd_pipe_lo[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
+  lcd_pipe_hi[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
+  lcd_line_lo[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_lo.qp04());
+  lcd_line_hi[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_hi.qp04());
 }
 
 //-----------------------------------------------------------------------------

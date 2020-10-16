@@ -58,46 +58,26 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, *this);
 
+  lcd_reg.tick(*this);
+
   sprite_scanner.tick(*this);
   sprite_store.tick(*this);
 
-  lcd_reg.tick(*this);
 
   pix_pipe.tick(*this);
 
   {
-    /*p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp04());
-    /*p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn03(),
-                                                      ROMO_PRELOAD_DONEn,
-                                                      tile_fetcher.NYKA_FETCH_DONE_P11.qp17(),
-                                                      tile_fetcher.PORY_FETCH_DONE_P12.qp17());
-    // -> sprite fetcher, top.TEVO
-    /*p27.TAVE*/ TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-
-    // -> ppu.PASO, window.VETU, top.NYXU_TILE_FETCHER_RSTn
-    /*p27.TEVO*/ TEVO_FETCH_TRIGp = or3(pix_pipe.SEKO_WIN_TILE_TRIG,
-                                        pix_pipe.SUZU_WIN_FIRST_TILEne,
-                                        TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  }
-
-  {
-    // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
-    // low on phase 0 of bg tile fetch
-    /*p27.NYXU*/ NYXU_FETCH_TRIGn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp, top.pix_pipe.MOSU_WIN_FETCH_TRIGp, TEVO_FETCH_TRIGp);
-  }
-
-  {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
-    /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx);
-    /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCDxxxH); // boot.TUGE, int.REFA, joy.ATOZ, ser.URYS/UWAM, timer.TAPE/TOPE/TYJU/SARA, top.DYKY
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
+    /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx      = not1(AREV_CPU_WRn_ABCDxxxH);
+    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2n(UNOR_MODE_DBG2p, top.ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx);
+    /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx      = not1(UBAL_CPU_WRn_ABCDxxxH);
     /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(top.TAPU_CPU_WRp_xxxxEFGx);
-    /*p07.CUPA*/ CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
+    /*p07.CUPA*/ CUPA_CPU_WRp_xxxxEFGx      = not1(DYKY_CPU_WRn_ABCDxxxH);
   }
 
   {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(bootrom.BOOT_BITn.qp17());
-    /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, cpu_bus.TULO_ADDR_00XXp());
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(top.bootrom.BOOT_BITn.qp17());
+    /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, top.cpu_bus.TULO_ADDR_00XXp());
   }
 
   tim_reg.tick(*this);

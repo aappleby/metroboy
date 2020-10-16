@@ -100,15 +100,12 @@ void OamBus::tock(SchematicTop& top) {
 
   /* p28.AJON*/ wire _AJON_PPU_OAM_ENp = and2(top.dma_reg.BOGE_DMA_RUNNINGn, top.pix_pipe.XYMU_RENDERINGn.qn03()); // def AND. ppu can read oam when there's rendering but no dma
 
-  /*#p28.BODE*/ Sig _BODE_OAM_OEp;
-  {
-    /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(top.sprite_scanner.ACYL_SCANNINGp, top.clk_reg.XOCE_xBCxxFGx); // schematic wrong, is def nand2
-    /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp);
-    /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn = not1(top.CATY_LATCH_EXTp);
-    /*#p28.BOTA*/ wire _BOTA_CPU_OAM_OEn  = nand3(_BOFE_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp); // Schematic wrong, this is NAND
-    /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_OEn); // def and
-    /*#p28.BODE*/ _BODE_OAM_OEp = not1(_ASYT_OAM_OEn);
-  }
+  /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(top.sprite_scanner.ACYL_SCANNINGp, top.clk_reg.XOCE_xBCxxFGx); // schematic wrong, is def nand2
+  /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp);
+  /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn = not1(top.CATY_LATCH_EXTp);
+  /*#p28.BOTA*/ wire _BOTA_CPU_OAM_OEn  = nand3(_BOFE_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp); // Schematic wrong, this is NAND
+  /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_OEn); // def and
+  /*#p28.BODE*/ wire _BODE_OAM_OEp = not1(_ASYT_OAM_OEn);
 
   /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(top.dma_reg.MATU_DMA_RUNNINGp.qp17(), top.sprite_scanner.ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
   /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(top.cpu_bus.SARO_FE00_FEFFp(), _AJUJ_OAM_BUSYn); // def and

@@ -35,9 +35,6 @@ struct SchematicTop {
     LEKO_CPU_RDp.reset(TRI_D0NP);
     TAPU_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
     APOV_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
-    NYXU_FETCH_TRIGn.reset(TRI_D1NP);
-    TEVO_FETCH_TRIGp.reset(TRI_D0NP);
-    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
     TUTU_ADDR_BOOTp.reset(TRI_D0NP);
 
     oam_bus.reset_cart();
@@ -117,9 +114,6 @@ struct SchematicTop {
     LEKO_CPU_RDp.reset(TRI_HZNP);
     TAPU_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
     APOV_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
-    NYXU_FETCH_TRIGn.reset(TRI_HZNP);
-    TEVO_FETCH_TRIGp.reset(TRI_HZNP);
-    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_HZNP);
     TUTU_ADDR_BOOTp.reset(TRI_HZNP);
 
     oam_bus.reset_boot();
@@ -201,9 +195,6 @@ struct SchematicTop {
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
   /*p07.CUPA*/ Sig CUPA_CPU_WRp_xxxxEFGx;
   /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;
-  /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
-  /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
-  /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
   /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
 
   //-----------------------------------------------------------------------------

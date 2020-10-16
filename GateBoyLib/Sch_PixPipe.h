@@ -10,7 +10,7 @@ struct CpuBus;
 
 struct PixelPipe {
   void reset_cart() {
-    SEKO_WIN_TILE_TRIG .reset(TRI_D0NP);
+    SEKO_FETCH_TRIGp .reset(TRI_D0NP);
     TOMU_WIN_HITp      .reset(TRI_D0NP);
     NOCU_WIN_MODEn     .reset(TRI_D1NP);
     NUNY_WX_MATCH_TRIGp.reset(TRI_D0NP);
@@ -24,6 +24,10 @@ struct PixelPipe {
     //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
 
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
+
+    NYXU_FETCH_TRIGn.reset(TRI_D1NP);
+    TEVO_FETCH_TRIGp.reset(TRI_D0NP);
+    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
 
     XEHO_X0p.reset(REG_D1C1);
     SAVY_X1p.reset(REG_D1C1);
@@ -233,7 +237,7 @@ struct PixelPipe {
   }
 
   void reset_boot() {
-    SEKO_WIN_TILE_TRIG.reset(TRI_HZNP);
+    SEKO_FETCH_TRIGp.reset(TRI_HZNP);
     TOMU_WIN_HITp.reset(TRI_HZNP);
     NOCU_WIN_MODEn.reset(TRI_HZNP);
     NUNY_WX_MATCH_TRIGp.reset(TRI_HZNP);
@@ -248,6 +252,10 @@ struct PixelPipe {
     //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
 
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
+
+    NYXU_FETCH_TRIGn.reset(TRI_HZNP);
+    TEVO_FETCH_TRIGp.reset(TRI_HZNP);
+    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_HZNP);
 
     XEHO_X0p.reset(REG_D0C0);
     SAVY_X1p.reset(REG_D0C0);
@@ -470,7 +478,11 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p27.SEKO*/ Sig SEKO_WIN_TILE_TRIG; // -> top.TEVO
+  /*p27.SEKO*/ Sig SEKO_FETCH_TRIGp;
+  /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
+  /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
+  /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
+
   /*p24.TOMU*/ Sig SYLO_WIN_HITn;      // -> sprite fetcher
   /*p24.TOMU*/ Sig TOMU_WIN_HITp;      // -> sprite fetcher
   /*p27.NOCU*/ Sig NOCU_WIN_MODEn;
@@ -480,6 +492,8 @@ struct PixelPipe {
   /*p21.VOTY*/ Sig VOTY_INT_STATp;
   /*p27.SUZU*/ Sig SUZU_WIN_FIRST_TILEne;
   /*p24.LOBY*/ Sig LOBY_RENDERINGn;
+  /*p21.SADU*/ Sig SADU_STAT_MODE0n;
+  /*p21.XATY*/ Sig XATY_STAT_MODE1n;
 
   /*p21.XYMU*/ NorLatch2 XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;

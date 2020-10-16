@@ -199,6 +199,7 @@ struct SchematicTop {
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
 
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
+  /*p07.CUPA*/ Sig CUPA_CPU_WRp_xxxxEFGx;
   /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
   /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;

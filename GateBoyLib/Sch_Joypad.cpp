@@ -77,17 +77,16 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
   /*p02.KERY*/ wire KERY_ANY_BUTTONp = or4(PIN_JOY_P13.qn(), PIN_JOY_P12.qn(), PIN_JOY_P11.qn(), PIN_JOY_P10.qn());
 
-  /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(top.clk_reg.BALY_xBCDEFGH);
   {
-    /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(BOGA_xBCDEFGH, KERY_ANY_BUTTONp);
+    /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(top.clk_reg.BOGA_Axxxxxxx, KERY_ANY_BUTTONp);
     PIN_CPU_WAKE.set(AWOB_WAKE_CPU.qp08());
   }
 
   {
-    /*p02.BATU*/ BATU_JP_GLITCH0.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, KERY_ANY_BUTTONp);
-    /*p02.ACEF*/ ACEF_JP_GLITCH1.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp17());
-    /*p02.AGEM*/ AGEM_JP_GLITCH2.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp17());
-    /*p02.APUG*/ APUG_JP_GLITCH3.dff17(BOGA_xBCDEFGH, top.clk_reg.ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp17());
+    /*p02.BATU*/ BATU_JP_GLITCH0.dff17(top.clk_reg.BOGA_Axxxxxxx, top.clk_reg.ALUR_SYS_RSTn, KERY_ANY_BUTTONp);
+    /*p02.ACEF*/ ACEF_JP_GLITCH1.dff17(top.clk_reg.BOGA_Axxxxxxx, top.clk_reg.ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp17());
+    /*p02.AGEM*/ AGEM_JP_GLITCH2.dff17(top.clk_reg.BOGA_Axxxxxxx, top.clk_reg.ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp17());
+    /*p02.APUG*/ APUG_JP_GLITCH3.dff17(top.clk_reg.BOGA_Axxxxxxx, top.clk_reg.ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp17());
   }
 
   {

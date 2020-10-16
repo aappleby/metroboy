@@ -49,13 +49,10 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
 
-  /* p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(top.TAPU_CPU_WRp_xxxxEFGx);
-  /* p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
-
   {
     /*#p22.WATE*/ wire WATE_FF46n    = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.WALO_A02p(), top.cpu_bus.XERA_A03n());
     /*#p22.XEDA*/ wire XEDA_FF46p    = not1(WATE_FF46n);
-    /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
+    /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(top.CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
     /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn16(), CUNU_SYS_RSTn);
     /*#p04.LYXE*/ LYXE_DMA_LATCHp.nor_latch(LAVY_FF46_WRp, LOKO_DMA_RSTp);
 
@@ -96,7 +93,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*#p22.WATE*/ wire WATE_FF46n    = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.WALO_A02p(), top.cpu_bus.XERA_A03n());
     /*#p22.XEDA*/ wire XEDA_FF46p    = not1(WATE_FF46n);
-    /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
+    /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(top.CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
     ///*#p??.PYSU*/ wire PYSU_FF46_WRp = not1(LORU_FF46_WRn);
 

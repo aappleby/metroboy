@@ -71,23 +71,20 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*#p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*#p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*#p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
-  /*p01.LYHA*/ wire LYHA_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
-  /*p01.LYFE*/ wire LYFE_VID_RSTn = not1(LYHA_VID_RSTp);
+  /* p01.LYHA*/ wire LYHA_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
 
   /*#p29.XUPY*/ wire XUPY_ABxxEFxx = top.clk_reg.XUPY_ABxxEFxx;
   /*#p21.TALU*/ wire TALU_xxCDEFxx = top.clk_reg.TALU_xxCDEFxx;
   /*#p28.AWOH*/ wire AWOH_xxCDxxGH = not1(XUPY_ABxxEFxx);
   /*#p21.SONO*/ wire SONO_ABxxxxGH = not1(TALU_xxCDEFxx);
 
-  /*#p21.XYVO*/ wire XYVO_IN_VBLANKp = and2(LOVU_Y4p.qp17(), LAFO_Y7p.qp17()); // 128 + 16 = 144
-  /*#p29.ALES*/ wire ALES_IN_VBLANKn = not1(XYVO_IN_VBLANKp);
+  /*#p21.XYVO*/ wire _XYVO_IN_VBLANKp = and2(LOVU_Y4p.qp17(), LAFO_Y7p.qp17()); // 128 + 16 = 144
+  /*#p29.ALES*/ wire _ALES_IN_VBLANKn = not1(_XYVO_IN_VBLANKp);
 
-  /*#p21.POPU*/ POPU_IN_VBLANKp.dff17(NYPE_LINE_P002.qp17(), LYFE_VID_RSTn, XYVO_IN_VBLANKp);
+  /* p01.LYFE*/ wire _LYFE_LCD_RSTn = not1(LYHA_VID_RSTp);
+  /*#p21.POPU*/ POPU_IN_VBLANKp.dff17(NYPE_LINE_P002.qp17(), _LYFE_LCD_RSTn, _XYVO_IN_VBLANKp);
 
-  /*#p24.KEDY*/ wire KEDY_LCDC_ENn = not1(top.pix_pipe.XONA_LCDC_LCDENn.qn08());
-
-  /* p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(top.TAPU_CPU_WRp_xxxxEFGx);
-  /* p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
+  /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(top.pix_pipe.XONA_LCDC_LCDENn.qn08());
 
   {
     // LCD main timer, 912 phases per line
@@ -115,34 +112,34 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*#p21.SANU*/ wire _SANU_x113p = and4(TYRY_X6p.qp17(), TAHA_X5p.qp17(), SUDE_X4p.qp17(), SAXO_X0p.qp17()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
 
-    /*#p21.RUTU*/ RUTU_LINE_P910.dff17(SONO_ABxxxxGH, LYFE_VID_RSTn, _SANU_x113p);
-    /*#p21.NYPE*/ NYPE_LINE_P002.dff17(TALU_xxCDEFxx, LYFE_VID_RSTn, RUTU_LINE_P910.qp17());
+    /*#p21.RUTU*/ RUTU_LINE_P910.dff17(SONO_ABxxxxGH, _LYFE_LCD_RSTn, _SANU_x113p);
+    /*#p21.NYPE*/ NYPE_LINE_P002.dff17(TALU_xxCDEFxx, _LYFE_LCD_RSTn, RUTU_LINE_P910.qp17());
 
-    /*#p29.ABOV*/ wire ABOV_VID_LINE_P908p = and2(SELA_LINE_P908p, ALES_IN_VBLANKn);
+    /*#p29.ABOV*/ wire _ABOV_VID_LINE_P908p = and2(SELA_LINE_P908p, _ALES_IN_VBLANKn);
 
-    /*#p29.CATU*/ CATU_LINE_P000.dff17(XUPY_ABxxEFxx, ABEZ_VID_RSTn, ABOV_VID_LINE_P908p);
+    /*#p29.CATU*/ CATU_LINE_P000.dff17(XUPY_ABxxEFxx, ABEZ_VID_RSTn, _ABOV_VID_LINE_P908p);
     /*#p28.ANEL*/ ANEL_LINE_P002.dff17(AWOH_xxCDxxGH, ABEZ_VID_RSTn, CATU_LINE_P000.qp17());
 
-    /*#p21.NOKO*/ wire NOKO_LINE_153 = and4(LAFO_Y7p.qp17(), LOVU_Y4p.qp17(), LYDO_Y3p.qp17(), MUWY_Y0p.qp17()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-    /*#p21.MYTA*/ MYTA_LINE_153p.dff17(NYPE_LINE_P002.qn16(), LYFE_VID_RSTn, NOKO_LINE_153);
+    /*#p21.NOKO*/ wire _NOKO_LINE_153 = and4(LAFO_Y7p.qp17(), LOVU_Y4p.qp17(), LYDO_Y3p.qp17(), MUWY_Y0p.qp17()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+    /*#p21.MYTA*/ MYTA_LINE_153p.dff17(NYPE_LINE_P002.qn16(), _LYFE_LCD_RSTn, _NOKO_LINE_153);
   }
 
   {
     // if LCDC_ENn, LCD_PIN_ALTSG = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
 
-    /*#p24.LOFU*/ wire LOFU_LINE_ENDn = not1(RUTU_LINE_P910.qp17());
-    /*#p24.LUCA*/ LUCA_LINE_EVEN .dff17(LOFU_LINE_ENDn,        LYFE_VID_RSTn, LUCA_LINE_EVEN.qn16());
-    /*#p21.NAPO*/ NAPO_FRAME_EVEN.dff17(POPU_IN_VBLANKp.qp17(), LYFE_VID_RSTn, NAPO_FRAME_EVEN.qn16());
+    /*#p24.LOFU*/ wire _LOFU_LINE_ENDn = not1(RUTU_LINE_P910.qp17());
+    /*#p24.LUCA*/ LUCA_LINE_EVEN .dff17(_LOFU_LINE_ENDn,        _LYFE_LCD_RSTn, LUCA_LINE_EVEN.qn16());
+    /*#p21.NAPO*/ NAPO_FRAME_EVEN.dff17(POPU_IN_VBLANKp.qp17(), _LYFE_LCD_RSTn, NAPO_FRAME_EVEN.qn16());
 
-    /*#p24.MAGU*/ wire MAGU = xor2(NAPO_FRAME_EVEN.qp17(), LUCA_LINE_EVEN.qn16());
-    /*#p24.MECO*/ wire MECO = not1(MAGU);
-    /*#p24.KEBO*/ wire KEBO = not1(MECO);
+    /*#p24.MAGU*/ wire _MAGU = xor2(NAPO_FRAME_EVEN.qp17(), LUCA_LINE_EVEN.qn16());
+    /*#p24.MECO*/ wire _MECO = not1(_MAGU);
+    /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
 
-    /*#p24.USEC*/ wire USEC_DIV_07p = not1(top.tim_reg.UREK_DIV_07n);
-    /*#p24.KUPA*/ wire KUPA = amux2(top.pix_pipe.XONA_LCDC_LCDENn.qn08(), KEBO, KEDY_LCDC_ENn, USEC_DIV_07p);
-    /*#p24.KOFO*/ wire KOFO = not1(KUPA);
+    /*#p24.USEC*/ wire _USEC_DIV_07p = not1(top.tim_reg.UREK_DIV_07n);
+    /*#p24.KUPA*/ wire _KUPA = amux2(top.pix_pipe.XONA_LCDC_LCDENn.qn08(), _KEBO, _KEDY_LCDC_ENn, _USEC_DIV_07p);
+    /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
 
-    top.PIN_LCD_FLIPS.io_pin(KOFO, KOFO);
+    top.PIN_LCD_FLIPS.io_pin(_KOFO, _KOFO);
   }
 
   {
@@ -160,7 +157,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p21.TEBO*/ wire _TEBO_083n = nand7(TYRY_X6p.qp17(), _TAFY_C5n,       SUDE_X4p.qp17(), _VATE_C3n,       _VUTY_C2n,       TYPO_X1p.qp17(), SAXO_X0p.qp17()); // 1010011 == 83
 
     /*#p21.TEGY*/ wire _TEGY_LINE_STROBE = nand4(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
-    /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(SONO_ABxxxxGH, LYFE_VID_RSTn, _TEGY_LINE_STROBE);
+    /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(SONO_ABxxxxGH, _LYFE_LCD_RSTn, _TEGY_LINE_STROBE);
 
     /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp17(), RUTU_LINE_P910.qp17());
     /*#p21.POGU*/ wire _POGU = not1(_RYNO);
@@ -173,7 +170,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(PURE_LINE_P908n);
 
     /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(top.tim_reg.UMEK_DIV_06n);
-    /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(top.pix_pipe.XONA_LCDC_LCDENn.qn08(), _KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);
+    /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(top.pix_pipe.XONA_LCDC_LCDENn.qn08(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
     /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1(_KAHE_LINE_ENDp);
     top.PIN_LCD_LATCH.io_pin(_KYMO_LINE_ENDn, _KYMO_LINE_ENDn);
   }
@@ -184,7 +181,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p24.NERU*/ wire _NERU_LINE_000p = nor8(LAFO_Y7p.qp17(), LOVU_Y4p.qp17(), LYDO_Y3p.qp17(), MUWY_Y0p.qp17(),
                                               MYRO_Y1p.qp17(), LEXA_Y2p.qp17(), LEMA_Y5p.qp17(), MATO_Y6p.qp17());
 
-    /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(NYPE_LINE_P002.qn16(), LYFE_VID_RSTn, _NERU_LINE_000p);
+    /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(NYPE_LINE_P002.qn16(), _LYFE_LCD_RSTn, _NERU_LINE_000p);
     /*#p24.MURE*/ wire _MURE_VSYNC = not1(MEDA_VSYNC_OUTn.qp17());
 
     /*#*/ top.PIN_LCD_VSYNC.io_pin(_MURE_VSYNC, _MURE_VSYNC);
@@ -243,7 +240,7 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p23.XYLY*/ wire _XYLY_FF45_RDp = and2(top.ASOT_CPU_RDp, _XAYU_FF45p);
     /* p23.WEKU*/ wire _WEKU_FF45_RDn = not1(_XYLY_FF45_RDp);
 
-    /* p23.XUFA*/ wire _XUFA_FF45_WRn = and2(CUPA_CPU_WRp_xxxxEFGx, _XAYU_FF45p);
+    /* p23.XUFA*/ wire _XUFA_FF45_WRn = and2(top.CUPA_CPU_WRp_xxxxEFGx, _XAYU_FF45p);
     /* p23.WANE*/ wire _WANE_FF45_WRp = not1(_XUFA_FF45_WRn);
 
     /* p23.SYRY*/ SYRY_LYC0n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.qp());

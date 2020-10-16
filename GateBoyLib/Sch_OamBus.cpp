@@ -109,13 +109,6 @@ void OamBus::tock(SchematicTop& top) {
   /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
   /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
 
-  /* p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
-  /* p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCxEFGH);
-  /* p07.UBAL*/ wire UBAL_CPU_WRn_ABCxEFGH = mux2n(top.UNOR_MODE_DBG2p, top.ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx);
-  /* p07.TAPU*/ wire TAPU_CPU_WRp_xxxxEFGx = not1(UBAL_CPU_WRn_ABCxEFGH);
-  /* p07.DYKY*/ wire DYKY_CPU_WRn_ABCxEFGH = not1(TAPU_CPU_WRp_xxxxEFGx);
-  /* p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCxEFGH);
-
   /* p07.SARO*/ wire SARO_FE00_FEFFp = not1(top.cpu_bus.ROPE_FE00_FEFFn());
   /* p28.ADAH*/ wire ADAH_FE00_FEFFn = not1(SARO_FE00_FEFFp);
 
@@ -212,7 +205,7 @@ void OamBus::tock(SchematicTop& top) {
     /*#p28.ZODO*/ wire ZODO_OAM_OEn = not1(YRYU_OAM_OEp);
     PIN_OAM_OE.set(ZODO_OAM_OEn);
 
-    /*p04.WYJA*/ wire WYJA_OAM_WRp      = and_or3(AMAB_CPU_OAM_ENp, CUPA_CPU_WRp_xxxxEFGx, POWU_DMA_OAM_WRp);
+    /*p04.WYJA*/ wire WYJA_OAM_WRp      = and_or3(AMAB_CPU_OAM_ENp, top.CUPA_CPU_WRp_xxxxEFGx, POWU_DMA_OAM_WRp);
     /*p28.YNYC*/ wire YNYC_OAM_A_WRp = and2(WYJA_OAM_WRp, WAFO_OAM_A0n);
     /*p28.YLYC*/ wire YLYC_OAM_B_WRp = and2(WYJA_OAM_WRp, GEKA_OAM_A0p);
     /*p28.ZOFE*/ wire ZOFE_OAM_A_WRn = not1(YNYC_OAM_A_WRp);
@@ -226,7 +219,7 @@ void OamBus::tock(SchematicTop& top) {
 
   // CBD -> OBD
   {
-    /*p28.XUTO*/ wire XUTO_CPU_OAM_WRp = and2(SARO_FE00_FEFFp, CUPA_CPU_WRp_xxxxEFGx);
+    /*p28.XUTO*/ wire XUTO_CPU_OAM_WRp = and2(SARO_FE00_FEFFp, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p28.WUJE*/ WUJE_CPU_OAM_WRn.nor_latch(XYNY_ABCDxxxx, XUTO_CPU_OAM_WRp);
 
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WRp = not1(WUJE_CPU_OAM_WRn.qp04());

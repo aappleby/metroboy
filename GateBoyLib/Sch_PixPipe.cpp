@@ -283,9 +283,6 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
   /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
 
-  /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(top.TAPU_CPU_WRp_xxxxEFGx);
-  /*p07.CUPA*/ wire CUPA_CPU_WRp_xxxxEFGx = not1(DYKY_CPU_WRn_ABCDxxxH);
-
   //----------------------------------------
   // XYMU is the main "we're rendering" flag
 
@@ -908,7 +905,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WORU*/ wire WORU_FF40n = nand5(cpu_bus.WERO_FF4Xp(), cpu_bus.XOLA_A00n(), cpu_bus.XENO_A01n(), cpu_bus.XUSY_A02n(), cpu_bus.XERA_A03n());
     /*p22.VOCA*/ wire VOCA_FF40p = not1(WORU_FF40n);
 
-    /*p23.WARU*/ wire WARU_FF40_WRp = and2(VOCA_FF40p, CUPA_CPU_WRp_xxxxEFGx);
+    /*p23.WARU*/ wire WARU_FF40_WRp = and2(VOCA_FF40p, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p23.XUBO*/ wire XUBO_FF40_WRn = not1(WARU_FF40_WRp);
 
     /*p01.XARE*/ wire XARE_RSTn = not1(XORE_SYS_RSTp);
@@ -941,7 +938,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WOFA*/ wire WOFA_FF41n = nand5(cpu_bus.WERO_FF4Xp(), cpu_bus.WADO_A00p(), cpu_bus.XENO_A01n(), cpu_bus.XUSY_A02n(), cpu_bus.XERA_A03n());
     /*p22.VARY*/ wire VARY_FF41p = not1(WOFA_FF41n);
 
-    /*p21.SEPA*/ wire SEPA_FF41_WRp = and2(VARY_FF41p, CUPA_CPU_WRp_xxxxEFGx);
+    /*p21.SEPA*/ wire SEPA_FF41_WRp = and2(VARY_FF41p, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not1(SEPA_FF41_WRp);
 
     /*p21.ROXE*/ ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.BUS_CPU_D3p.qp());
@@ -987,7 +984,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WEBU*/ wire WEBU_FF42n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.XERA_A03n());
     /*p22.XARO*/ wire XARO_FF42p = not1(WEBU_FF42n);
 
-    /*p23.BEDY*/ wire BEDY_FF42_WRp = and2(XARO_FF42p, CUPA_CPU_WRp_xxxxEFGx);
+    /*p23.BEDY*/ wire BEDY_FF42_WRp = and2(XARO_FF42p, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p23.CAVO*/ wire CAVO_FF42_WRn = not1(BEDY_FF42_WRp);
 
     /*p23.GAVE*/ GAVE_SCY0n.dff9(CAVO_FF42_WRn, CUNU_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.qp());
@@ -1018,7 +1015,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WAVU*/ wire WAVU_FF43n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.XERA_A03n());
     /*p22.XAVY*/ wire XAVY_FF43p = not1(WAVU_FF43n);
 
-    /*p23.ARUR*/ wire ARUR_FF43_WRp = and2(XAVY_FF43p, CUPA_CPU_WRp_xxxxEFGx);
+    /*p23.ARUR*/ wire ARUR_FF43_WRp = and2(XAVY_FF43p, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p23.AMUN*/ wire AMUN_FF43_WRn = not1(ARUR_FF43_WRp);
 
     /*p23.DATY*/ DATY_SCX0n.dff9(AMUN_FF43_WRn, CUNU_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.qp());
@@ -1050,7 +1047,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WYBO*/ wire WYBO_FF47n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.WESA_A01p(), top.cpu_bus.WALO_A02p(), top.cpu_bus.XERA_A03n());
     /*p22.WERA*/ wire WERA_FF47 = not1(WYBO_FF47n);
 
-    /*p36.VELY*/ wire VELY_FF47_WR  = and2(CUPA_CPU_WRp_xxxxEFGx, WERA_FF47);
+    /*p36.VELY*/ wire VELY_FF47_WR  = and2(top.CUPA_CPU_WRp_xxxxEFGx, WERA_FF47);
     /*p36.TEPO*/ wire TEPO_FF47_WRp = not1(VELY_FF47_WR);
 
     // This has to latch on the _rising_ edge of the clock, otherwise the timing glitches in m3_bgp_change are way off.
@@ -1084,7 +1081,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WETA*/ wire WETA_FF48n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.XENO_A01n(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.WEPO_A03p());
     /*p22.XAYO*/ wire XAYO_FF48 = not1(WETA_FF48n);
 
-    /*p36.XOMA*/ wire XOMA_FF48_WR = and2(CUPA_CPU_WRp_xxxxEFGx, XAYO_FF48);
+    /*p36.XOMA*/ wire XOMA_FF48_WR = and2(top.CUPA_CPU_WRp_xxxxEFGx, XAYO_FF48);
     /*p36.XELO*/ wire XELO_FF48_WRn = not1(XOMA_FF48_WR);
 
     /*p36.XUFU*/ XUFU_OBP0_D0n.dff8p(XELO_FF48_WRn, top.cpu_bus.BUS_CPU_D0p.qp());
@@ -1116,7 +1113,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.VAMA*/ wire VAMA_FF49n = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.XENO_A01n(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.WEPO_A03p());
     /*p22.TEGO*/ wire TEGO_FF49 = not1(VAMA_FF49n);
 
-    /*p36.MYXE*/ wire MYXE_FF49_WR = and2(CUPA_CPU_WRp_xxxxEFGx, TEGO_FF49);
+    /*p36.MYXE*/ wire MYXE_FF49_WR = and2(top.CUPA_CPU_WRp_xxxxEFGx, TEGO_FF49);
     /*p36.LEHO*/ wire LEHO_FF49_WRn = not1(MYXE_FF49_WR);
 
     /*p36.MOXY*/ MOXY_OBP1_D0n.dff8p(LEHO_FF49_WRn, top.cpu_bus.BUS_CPU_D0p.qp());
@@ -1148,7 +1145,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WYVO*/ wire WYVO_FF4An = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.WEPO_A03p());
     /*p22.VYGA*/ wire VYGA_FF4Ap = not1(WYVO_FF4An);
 
-    /*p23.WEKO*/ wire WEKO_FF4A_WRp = and2(VYGA_FF4Ap, CUPA_CPU_WRp_xxxxEFGx);
+    /*p23.WEKO*/ wire WEKO_FF4A_WRp = and2(VYGA_FF4Ap, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p23.VEFU*/ wire VEFU_FF4A_WRn = not1(WEKO_FF4A_WRp);
 
     /*p23.NESO*/ NESO_WY0n.dff9(VEFU_FF4A_WRn, WALU_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.qp());
@@ -1180,7 +1177,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p22.WAGE*/ wire WAGE_FF4Bn = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.WADO_A00p(), top.cpu_bus.WESA_A01p(), top.cpu_bus.XUSY_A02n(), top.cpu_bus.WEPO_A03p());
     /*p22.VUMY*/ wire VUMY_FF4Bp = not1(WAGE_FF4Bn);
 
-    /*p23.WUZA*/ wire WUZA_FF4B_WRp = and2(VUMY_FF4Bp, CUPA_CPU_WRp_xxxxEFGx);
+    /*p23.WUZA*/ wire WUZA_FF4B_WRp = and2(VUMY_FF4Bp, top.CUPA_CPU_WRp_xxxxEFGx);
     /*p23.VOXU*/ wire VOXU_FF4B_WRn = not1(WUZA_FF4B_WRp);
 
     /*p23.MYPA*/ MYPA_WX0n.dff9(VOXU_FF4B_WRn, WALU_SYS_RSTn, top.cpu_bus.BUS_CPU_D0p.qp());

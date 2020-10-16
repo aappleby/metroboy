@@ -83,6 +83,8 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p01.BYJU*/ wire BYJU_Axxxxxxx = or2(BELE_Axxxxxxx, ATEZ_CLKBAD);
 
   /*#p01.BALY*/ BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
+  /* p01.BOGA*/ BOGA_Axxxxxxx = not1(BALY_xBCDEFGH);
+
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.qn08());
   /*#p29.XUPY*/ XUPY_ABxxEFxx = not1(WUVU_ABxxEFxx.qn16());
   /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.qn16());
@@ -127,8 +129,7 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*#p01.BASU*/ wire BASU_xBCDEFxx = not1(BATE_AxxxxxGH);
 
   /*#p01.BUKE*/ wire BUKE_AxxxxxGH = not1(BASU_xBCDEFxx);
-  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_xBCDEFGH);
-  /*#p01.BOMA*/ wire BOMA_Axxxxxxx = not1(BOGA_xBCDEFGH);
+  /*#p01.BOMA*/ wire BOMA_xBCDEFGH = not1(BOGA_Axxxxxxx);
 
   top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
 
@@ -141,8 +142,8 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.set(BOLO_ABCDEFxx);
   top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.set(BUKE_AxxxxxGH);
 
-  top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.set(BOMA_Axxxxxxx);
-  top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.set(BOGA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.set(BOMA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.set(BOGA_Axxxxxxx);
 
   top.ext_bus.PIN_EXT_CLK.io_pin(BUDE_xxxxEFGH, BUDE_xxxxEFGH);
 }

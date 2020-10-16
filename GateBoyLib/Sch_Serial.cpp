@@ -42,8 +42,7 @@ void SerialRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p06.ELUV*/ cpu_bus.BUS_CPU_D7p.tri_6pn(UCOM_FF02_RD, ETAF_XFER_START.qn16());
   /*p06.CORE*/ cpu_bus.BUS_CPU_D0p.tri_6pn(UCOM_FF02_RD, CULY_XFER_DIR.qn16());
 
-  /*p01.UVYN*/ wire UVYN_DIV_05n = not1(top.tim_reg.TAMA_DIV_05.qp17());
-  /*p06.COTY*/ COTY_SER_CLK.dff17(UVYN_DIV_05n, UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn16());
+  /*p06.COTY*/ COTY_SER_CLK.dff17(top.tim_reg.UVYN_DIV_05n, UWAM_FF02_WRn_xxxxxFGH, COTY_SER_CLK.qn16());
 
   /*p06.CAVE*/ wire CAVE_SER_CLK_MUXn = mux2n(CULY_XFER_DIR.qp17(), COTY_SER_CLK.qp17(), SCK.qn());
 

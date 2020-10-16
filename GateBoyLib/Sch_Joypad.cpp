@@ -80,7 +80,7 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.BOGA*/ wire BOGA_xBCDEFGH = not1(top.clk_reg.BALY_xBCDEFGH);
   {
     /*p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(BOGA_xBCDEFGH, KERY_ANY_BUTTONp);
-    PIN_CPU_WAKE.set(AWOB_WAKE_CPU.q08p());
+    PIN_CPU_WAKE.set(AWOB_WAKE_CPU.qp08());
   }
 
   {
@@ -111,10 +111,10 @@ void Joypad::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
     // That also means that _both_ P14 and P15 are selected at reset :/
 
-    /*p05.KEMA*/ cpu_bus.BUS_CPU_D0p.tri_6nn(BYZO_FF00_RDn, KEVU_JOYP_L0.q08p());
-    /*p05.KURO*/ cpu_bus.BUS_CPU_D1p.tri_6nn(BYZO_FF00_RDn, KAPA_JOYP_L1.q08p());
-    /*p05.KUVE*/ cpu_bus.BUS_CPU_D2p.tri_6nn(BYZO_FF00_RDn, KEJA_JOYP_L2.q08p());
-    /*p05.JEKU*/ cpu_bus.BUS_CPU_D3p.tri_6nn(BYZO_FF00_RDn, KOLO_JOYP_L3.q08p());
+    /*p05.KEMA*/ cpu_bus.BUS_CPU_D0p.tri_6nn(BYZO_FF00_RDn, KEVU_JOYP_L0.qp08());
+    /*p05.KURO*/ cpu_bus.BUS_CPU_D1p.tri_6nn(BYZO_FF00_RDn, KAPA_JOYP_L1.qp08());
+    /*p05.KUVE*/ cpu_bus.BUS_CPU_D2p.tri_6nn(BYZO_FF00_RDn, KEJA_JOYP_L2.qp08());
+    /*p05.JEKU*/ cpu_bus.BUS_CPU_D3p.tri_6nn(BYZO_FF00_RDn, KOLO_JOYP_L3.qp08());
     /*p05.KOCE*/ cpu_bus.BUS_CPU_D4p.tri_6nn(BYZO_FF00_RDn, KELY_JOYP_UDLR.qn16());
     /*p05.CUDY*/ cpu_bus.BUS_CPU_D5p.tri_6nn(BYZO_FF00_RDn, COFY_JOYP_ABCS.qn16());
     /*p??.????*/ cpu_bus.BUS_CPU_D6p.tri_6nn(BYZO_FF00_RDn, KUKO_DBG_FF00_D6.qp17());

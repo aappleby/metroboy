@@ -41,7 +41,7 @@ void TileFetcher::tick(const SchematicTop& top) {
   /* p27.NOGU*/ wire NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
   /* p27.NENY*/ wire NENY_FETCH_01n = not1(NOGU_FETCH_01p);
 
-  /* p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(LONY_BG_FETCH_RUNNINGp.qp());
+  /* p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(LONY_BG_FETCH_RUNNINGp.qp03());
   /* p27.LENA*/ LENA_BGW_VRM_RDp = not1(LUSU_BGW_VRAM_RDn);
 
   /* p27.POTU*/ wire POTU_BG_MAP_READp  = and2(LENA_BGW_VRM_RDp, NENY_FETCH_01n);

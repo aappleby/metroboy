@@ -23,7 +23,7 @@ void DmaRegisters::dump(Dumper& d) const {
   d("MYTE_DMA_DONE       %d\n", !MYTE_DMA_DONE.qn16());
   d("LUVY_DMA_TRIG_d0    %d\n",  LUVY_DMA_TRIG_d0.qp17());
   d("LENE_DMA_TRIG_d4    %d\n", !LENE_DMA_TRIG_d4.qn16());
-  d("LOKY_DMA_LATCHp     %d\n",  LOKY_DMA_LATCHp.qp());
+  d("LOKY_DMA_LATCHp     %d\n",  LOKY_DMA_LATCHp.qp03());
   d("\n");
 }
 
@@ -64,7 +64,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     /*#p04.LENE*/ LENE_DMA_TRIG_d4  .dff17(MOPA_xxxxEFGH, CUNU_SYS_RSTn, LUVY_DMA_TRIG_d0.qp17());
 
     /*#p04.LOKY*/ LOKY_DMA_LATCHp.nand_latch(LENE_DMA_TRIG_d4.qn16(), and2(MYTE_DMA_DONE.qn16(), CUNU_SYS_RSTn));
-    /*#p04.MATU*/ MATU_DMA_RUNNINGp .dff17(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp());
+    /*#p04.MATU*/ MATU_DMA_RUNNINGp .dff17(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp03());
   }
 
   {
@@ -80,7 +80,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn16(), CUNU_SYS_RSTn);
     /*#p04.LAPA*/ wire LAPA_DMA_RSTn = not1(LOKO_DMA_RSTp);
-    /*#p04.META*/ wire META_DMA_CLKp = and2(UVYT_ABCDxxxx, LOKY_DMA_LATCHp.qp());
+    /*#p04.META*/ wire META_DMA_CLKp = and2(UVYT_ABCDxxxx, LOKY_DMA_LATCHp.qp03());
 
     /*#p04.NAKY*/ NAKY_DMA_A00p.dff17(META_DMA_CLKp,       LAPA_DMA_RSTn, NAKY_DMA_A00p.qn16());
     /*#p04.PYRO*/ PYRO_DMA_A01p.dff17(NAKY_DMA_A00p.qn16(),  LAPA_DMA_RSTn, PYRO_DMA_A01p.qn16());

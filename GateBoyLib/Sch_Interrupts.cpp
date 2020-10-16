@@ -108,11 +108,11 @@ void InterruptRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!ROLO_HOLDn, ULAK_FF0F_D4p.qp16()); // OUTPUT ON RUNG 10
 
   /*p02.POLA*/ wire POLA_FF0F_RD  = not1(ROLO_HOLDn);
-  /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p.tri_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.q10n());
-  /*#p02.NABO*/ cpu_bus.BUS_CPU_D1p.tri_6pn(POLA_FF0F_RD, MOPO_FF0F_L1p.q10n());
-  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D2p.tri_6pn(POLA_FF0F_RD, PAVY_FF0F_L2p.q10n());
-  /*#p02.PADO*/ cpu_bus.BUS_CPU_D3p.tri_6pn(POLA_FF0F_RD, NEJY_FF0F_L3p.q10n());
-  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D4p.tri_6pn(POLA_FF0F_RD, NUTY_FF0F_L4p.q10n());
+  /*#p02.NELA*/ cpu_bus.BUS_CPU_D0p.tri_6pn(POLA_FF0F_RD, MATY_FF0F_L0p.qn10());
+  /*#p02.NABO*/ cpu_bus.BUS_CPU_D1p.tri_6pn(POLA_FF0F_RD, MOPO_FF0F_L1p.qn10());
+  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D2p.tri_6pn(POLA_FF0F_RD, PAVY_FF0F_L2p.qn10());
+  /*#p02.PADO*/ cpu_bus.BUS_CPU_D3p.tri_6pn(POLA_FF0F_RD, NEJY_FF0F_L3p.qn10());
+  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D4p.tri_6pn(POLA_FF0F_RD, NUTY_FF0F_L4p.qn10());
 }
 
 //------------------------------------------------------------------------------

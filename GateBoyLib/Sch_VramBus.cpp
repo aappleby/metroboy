@@ -92,7 +92,7 @@ void VramBus::tock(SchematicTop& top) {
     /*p25.RAWA*/ wire RAWA_SPR_VRAM_RDn = not1(top.sprite_fetcher.SOHO_SPR_VRAM_RDp);
     /*p25.APAM*/ wire APAM_DMA_VRAM_RDn = not1(top.dma_reg.LUFA_DMA_READ_VRAMp);
 
-    /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not1(top.tile_fetcher.LONY_BG_FETCH_RUNNINGp.qp());
+    /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not1(top.tile_fetcher.LONY_BG_FETCH_RUNNINGp.qp03());
 
 
     /*p25.RACU*/ wire RACU_MOEn = and4(RYLU_CPU_VRAM_RDn, RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, APAM_DMA_VRAM_RDn); // def and

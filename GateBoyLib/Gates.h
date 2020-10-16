@@ -865,8 +865,8 @@ struct NandLatch : private RegBase {
 struct TpLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  wire q08p() const { return  as_wire(); }
-  wire q10n() const { return !as_wire(); }
+  wire qp08() const { return  as_wire(); }
+  wire qn10() const { return !as_wire(); }
 
   void tp_latch(wire HOLDn, wire D) {
     CHECK_N(has_delta());

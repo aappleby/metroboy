@@ -174,14 +174,6 @@ struct OamBus {
 
   //----------------------------------------
 
-  /*p28.YFOT*/ Sig YFOT_OAM_A2p;
-  /*p28.YFOC*/ Sig YFOC_OAM_A3p;
-  /*p28.YVOM*/ Sig YVOM_OAM_A4p;
-  /*p28.YMEV*/ Sig YMEV_OAM_A5p;
-  /*p28.XEMU*/ Sig XEMU_OAM_A6p;
-  /*p28.YZET*/ Sig YZET_OAM_A7p;
-
-
   /*p25.COTA*/ Sig COTA_OAM_CLKn;
   /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;

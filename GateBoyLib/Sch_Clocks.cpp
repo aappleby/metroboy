@@ -51,6 +51,12 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
   /*p01.XAPO*/ XAPO_VID_RSTn = not1(XODO_VID_RSTp);
 
+  /*#p01.ATAR*/ ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /*#p01.ABEZ*/ ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
+
+
+
+
   /*p01.ATEZ*/ wire ATEZ_CLKBAD = not1(CLKGOOD);
   /*p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
   /*p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);

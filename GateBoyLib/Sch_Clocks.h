@@ -113,6 +113,10 @@ struct ClockRegisters {
   /*p01.DULA*/ Sig DULA_SYS_RSTp;
   /*p01.CUNU*/ Sig CUNU_SYS_RSTn;
 
+  /*p01.ATAR*/ Sig ATAR_VID_RSTp;
+  /*p01.ABEZ*/ Sig ABEZ_VID_RSTn;
+
+
 
 private:
   friend struct ::GateBoy;

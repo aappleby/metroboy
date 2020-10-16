@@ -38,7 +38,6 @@ struct SchematicTop {
     NYXU_FETCH_TRIGn.reset(TRI_D1NP);
     TEVO_FETCH_TRIGp.reset(TRI_D0NP);
     TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
-    AVAP_RENDER_START_TRIGp.reset(TRI_D0NP);
     TUTU_ADDR_BOOTp.reset(TRI_D0NP);
 
     oam_bus.reset_cart();
@@ -121,7 +120,6 @@ struct SchematicTop {
     NYXU_FETCH_TRIGn.reset(TRI_HZNP);
     TEVO_FETCH_TRIGp.reset(TRI_HZNP);
     TAVE_PRELOAD_DONE_TRIGp.reset(TRI_HZNP);
-    AVAP_RENDER_START_TRIGp.reset(TRI_HZNP);
     TUTU_ADDR_BOOTp.reset(TRI_HZNP);
 
     oam_bus.reset_boot();
@@ -206,7 +204,6 @@ struct SchematicTop {
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
   /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
   /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
-  /*p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
   /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
 
   //-----------------------------------------------------------------------------

@@ -85,20 +85,12 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /*#p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
-    /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
-    /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
-    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_B.qp17(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_A.qn16());
-    /*#p29.AVAP*/ AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
-  }
-
-  {
     /*p27.NYFO*/ wire NYFO_WIN_FETCH_TRIGn = not1(pix_pipe.NUNY_WX_MATCH_TRIGp);
     /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp = not1(NYFO_WIN_FETCH_TRIGn);
 
     // pxp.loze, pxp.luxa, tile.lony/lovy/laxu/mesu/nyva/moce
     // low on phase 0 of bg tile fetch
-    /*p27.NYXU*/ NYXU_FETCH_TRIGn = nor3(AVAP_RENDER_START_TRIGp, MOSU_WIN_FETCH_TRIGp, TEVO_FETCH_TRIGp);
+    /*p27.NYXU*/ NYXU_FETCH_TRIGn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp, MOSU_WIN_FETCH_TRIGp, TEVO_FETCH_TRIGp);
   }
 
   {

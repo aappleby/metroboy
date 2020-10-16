@@ -129,6 +129,13 @@ struct SpriteScanner {
 
   /*p29.CARE*/ Sig CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
+  /*p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
+
+  /*p29.CEHA*/ Sig CEHA_SCANNINGp;
+
+  /*p28.ANOM*/ Sig ANOM_LINE_RSTn;
+  /*p29.BAGY*/ Sig BAGY_LINE_RSTn;
+
   //----------------------------------------
   // States
 
@@ -142,8 +149,8 @@ struct SpriteScanner {
   /*p28.FAHA*/ DFF17 FAHA_SCAN4;
   /*p28.FONY*/ DFF17 FONY_SCAN5;
 
-  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_A; // -> top.AVAP_RENDER_START_TRIGp
-  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_B; // -> top.AVAP_RENDER_START_TRIGp
+  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_A;
+  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_B;
 
   /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
   /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;

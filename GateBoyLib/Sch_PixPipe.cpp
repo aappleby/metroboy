@@ -256,8 +256,6 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(top.clk_reg.CUNU_SYS_RSTn);
   /*#p01.WALU*/ wire WALU_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*#p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
-  /*#p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
-  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
   /* p01.TOFU*/ wire _TOFU_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /* p01.PYRY*/ wire _PYRY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
 
@@ -278,7 +276,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*#p21.VOGA*/ VOGA_HBLANKp.dff17(top.clk_reg.ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_HBLANKp);
 
     /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(_TOFU_VID_RSTp, VOGA_HBLANKp.qp17());
-    /*#p21.XYMU*/ XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, top.AVAP_RENDER_START_TRIGp);
+    /*#p21.XYMU*/ XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, top.sprite_scanner.AVAP_RENDER_START_TRIGp);
   }
 
   //----------------------------------------
@@ -341,7 +339,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(ROXO_CLKPIPEp, XYMU_RENDERINGn.qn03(), XYDO_X3p.qp17());
 
-    /*#p24.POME*/ POME = nor2(top.AVAP_RENDER_START_TRIGp, POFY);
+    /*#p24.POME*/ POME = nor2(top.sprite_scanner.AVAP_RENDER_START_TRIGp, POFY);
     /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, POME);
     /*#p24.POFY*/ POFY = not1(RUJU);
 
@@ -433,7 +431,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Window sequencer
 
   /* p28.ABAF*/ wire ABAF_LINE_END_Bn = not1(top.lcd_reg.CATU_LINE_P000.qp17());
-  /* p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg.ANEL_LINE_P002.qp17(), ABAF_LINE_END_Bn, ABEZ_VID_RSTn);
+  /* p28.BYHA*/ wire BYHA_VID_LINE_TRIGn = or_and3(top.lcd_reg.ANEL_LINE_P002.qp17(), ABAF_LINE_END_Bn, top.clk_reg.ABEZ_VID_RSTn);
   /* p28.ATEJ*/ wire ATEJ_VID_LINE_END_TRIGp = not1(BYHA_VID_LINE_TRIGn);
   /* p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not1(ATEJ_VID_LINE_END_TRIGp);
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENn.qn08(), XAHY_VID_LINE_TRIG_d4n, top.clk_reg.XAPO_VID_RSTn);

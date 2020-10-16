@@ -271,14 +271,15 @@ void GateBoy::next_pass() {
       if (sys_cpu_en) bus_req = cpu_req;
       if (dbg_req.read || dbg_req.write) bus_req = dbg_req;
 
+      top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
+      top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+
       bool addr_rom = bus_req.addr <= 0x7FFF;
       bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
       bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram);
       if (bus_req.addr <= 0x00FF && top.cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
-
-      top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
-      top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
       top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
+
       top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
       top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
       top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));

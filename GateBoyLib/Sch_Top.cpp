@@ -26,6 +26,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
+    // This is def broken, but how do I fix it?
+
     /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.PIN_CPU_ADDR_EXTp.qp()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
     /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);

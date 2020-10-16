@@ -68,6 +68,14 @@ void OamBus::dump(Dumper& d) const {
 //------------------------------------------------------------------------------
 
 void OamBus::tick(const SchematicTop& top) {
+  /* p28.YFOT*/ YFOT_OAM_A2p = not1(top.oam_bus.BUS_OAM_A2n.qp());
+  /* p28.YFOC*/ YFOC_OAM_A3p = not1(top.oam_bus.BUS_OAM_A3n.qp());
+  /* p28.YVOM*/ YVOM_OAM_A4p = not1(top.oam_bus.BUS_OAM_A4n.qp());
+  /* p28.YMEV*/ YMEV_OAM_A5p = not1(top.oam_bus.BUS_OAM_A5n.qp());
+  /* p28.XEMU*/ XEMU_OAM_A6p = not1(top.oam_bus.BUS_OAM_A6n.qp());
+  /* p28.YZET*/ YZET_OAM_A7p = not1(top.oam_bus.BUS_OAM_A7n.qp());
+
+
   /*p29.XYSO*/ wire XYSO_xBCDxFGH = not1(top.clk_reg.WOJO_AxxxExxx);
   /*p25.AVER*/ wire AVER_SCAN_OAM_CLK = nand2(top.sprite_scanner.ACYL_SCANNINGp, XYSO_xBCDxFGH);
   /*p25.XUJY*/ wire XUJY_PPU_OAM_CLK  = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK);

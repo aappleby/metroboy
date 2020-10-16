@@ -106,6 +106,7 @@ struct ClockRegisters {
   /*p01.ZEME*/ Sig ZEME_AxCxExGx;
   /*p01.UVYT*/ Sig UVYT_ABCDxxxx;
   /*p04.MOPA*/ Sig MOPA_xxxxEFGH;
+  /*p01.ALET*/ Sig ALET_xBxDxFxH;
 
   /*p01.ALUR*/ Sig ALUR_SYS_RSTn; // everywhere
   /*p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere

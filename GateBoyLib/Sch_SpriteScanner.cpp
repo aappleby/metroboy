@@ -105,9 +105,6 @@ void SpriteScanner::tock(const SchematicTop& top) {
   /*#p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*#p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
 
-  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
-  /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
-
   // 32 + 4 + 2 + 1 = 39
   /*#p28.FETO*/ wire FETO_SCAN_DONE_d0 = and4(YFEL_SCAN0.qp17(), WEWY_SCAN1.qp17(), GOSO_SCAN2.qp17(), FONY_SCAN5.qp17());
   /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
@@ -119,7 +116,7 @@ void SpriteScanner::tock(const SchematicTop& top) {
     /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
     /*#p29.BAGY*/ wire BAGY_LINE_RSTn = not1(BALU_LINE_RSTp);
     /*#p29.BYBA*/ BYBA_SCAN_DONE_A.dff17(top.clk_reg.XUPY_ABxxEFxx, BAGY_LINE_RSTn, FETO_SCAN_DONE_d0);
-    /*#p29.DOBA*/ DOBA_SCAN_DONE_B.dff17(ALET_xBxDxFxH, BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp17());
+    /*#p29.DOBA*/ DOBA_SCAN_DONE_B.dff17(top.clk_reg.ALET_xBxDxFxH, BAGY_LINE_RSTn, BYBA_SCAN_DONE_A.qp17());
 
     /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_B.qp17(), BALU_LINE_RSTp, BYBA_SCAN_DONE_A.qn16());
     /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
@@ -132,19 +129,13 @@ void SpriteScanner::tock(const SchematicTop& top) {
   {
     /*#p30.CYKE*/ wire CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_ABxxEFxx);
     /*#p30.WUDA*/ wire WUDA_xxCDxxGH = not1(CYKE_ABxxEFxx);
-    /* p28.YFOT*/ wire YFOT_OAM_A2p = not1(top.oam_bus.BUS_OAM_A2n.qp());
-    /* p28.YFOC*/ wire YFOC_OAM_A3p = not1(top.oam_bus.BUS_OAM_A3n.qp());
-    /* p28.YVOM*/ wire YVOM_OAM_A4p = not1(top.oam_bus.BUS_OAM_A4n.qp());
-    /* p28.YMEV*/ wire YMEV_OAM_A5p = not1(top.oam_bus.BUS_OAM_A5n.qp());
-    /* p28.XEMU*/ wire XEMU_OAM_A6p = not1(top.oam_bus.BUS_OAM_A6n.qp());
-    /* p28.YZET*/ wire YZET_OAM_A7p = not1(top.oam_bus.BUS_OAM_A7n.qp());
 
-    /*p30.XADU*/ XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH, WEFE_VCC, YFOT_OAM_A2p);
-    /*p30.XEDY*/ XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH, WEFE_VCC, YFOC_OAM_A3p);
-    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH, WEFE_VCC, YVOM_OAM_A4p);
-    /*p30.XOBE*/ XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH, WEFE_VCC, YMEV_OAM_A5p);
-    /*p30.YDUF*/ YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH, WEFE_VCC, XEMU_OAM_A6p);
-    /*p30.XECU*/ XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH, WEFE_VCC, YZET_OAM_A7p);
+    /*p30.XADU*/ XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH, WEFE_VCC, top.oam_bus.YFOT_OAM_A2p);
+    /*p30.XEDY*/ XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH, WEFE_VCC, top.oam_bus.YFOC_OAM_A3p);
+    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH, WEFE_VCC, top.oam_bus.YVOM_OAM_A4p);
+    /*p30.XOBE*/ XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH, WEFE_VCC, top.oam_bus.YMEV_OAM_A5p);
+    /*p30.YDUF*/ YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH, WEFE_VCC, top.oam_bus.XEMU_OAM_A6p);
+    /*p30.XECU*/ XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH, WEFE_VCC, top.oam_bus.YZET_OAM_A7p);
   }
 
   //----------------------------------------
@@ -152,9 +143,9 @@ void SpriteScanner::tock(const SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p28.GAVA*/ wire GAVA_SCAN_CLK = or2(FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx);
+    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx);
 
-    /*p28.YFEL*/ YFEL_SCAN0.dff17(GAVA_SCAN_CLK,   ANOM_LINE_RSTn, YFEL_SCAN0.qn16());
+    /*p28.YFEL*/ YFEL_SCAN0.dff17(_GAVA_SCAN_CLK,   ANOM_LINE_RSTn, YFEL_SCAN0.qn16());
     /*p28.WEWY*/ WEWY_SCAN1.dff17(YFEL_SCAN0.qn16(), ANOM_LINE_RSTn, WEWY_SCAN1.qn16());
     /*p28.GOSO*/ GOSO_SCAN2.dff17(WEWY_SCAN1.qn16(), ANOM_LINE_RSTn, GOSO_SCAN2.qn16());
     /*p28.ELYN*/ ELYN_SCAN3.dff17(GOSO_SCAN2.qn16(), ANOM_LINE_RSTn, ELYN_SCAN3.qn16());
@@ -163,29 +154,29 @@ void SpriteScanner::tock(const SchematicTop& top) {
   }
 
   {
-    /*p29.YWOK*/ wire YWOK_OAM_CLKn = not1(top.oam_bus.COTA_OAM_CLKn);
-    /*p29.YWOK*/ wire YWOK_OAM_CLKp = not1(YWOK_OAM_CLKn);
+    /*p29.YWOK*/ wire _YWOK_OAM_CLKn = not1(top.oam_bus.COTA_OAM_CLKn);
+    /*p29.YWOK*/ wire _YWOK_OAM_CLKp = not1(_YWOK_OAM_CLKn);
 
-    /*#p29.XUSO*/ XUSO_OAM_DA0p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.YDYV_OAM_LATCH_DA0n.qp08());
-    /* p29.XEGU*/ XEGU_OAM_DA1p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.YCEB_OAM_LATCH_DA1n.qp08());
-    /* p29.YJEX*/ YJEX_OAM_DA2p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.ZUCA_OAM_LATCH_DA2n.qp08());
-    /* p29.XYJU*/ XYJU_OAM_DA3p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.WONE_OAM_LATCH_DA3n.qp08());
-    /* p29.YBOG*/ YBOG_OAM_DA4p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.ZAXE_OAM_LATCH_DA4n.qp08());
-    /* p29.WYSO*/ WYSO_OAM_DA5p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.XAFU_OAM_LATCH_DA5n.qp08());
-    /* p29.XOTE*/ XOTE_OAM_DA6p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.YSES_OAM_LATCH_DA6n.qp08());
-    /* p29.YZAB*/ YZAB_OAM_DA7p.dff8n(YWOK_OAM_CLKn, YWOK_OAM_CLKp, top.oam_bus.ZECA_OAM_LATCH_DA7n.qp08());
+    /*#p29.XUSO*/ XUSO_OAM_DA0p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.YDYV_OAM_LATCH_DA0n.qp08());
+    /* p29.XEGU*/ XEGU_OAM_DA1p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.YCEB_OAM_LATCH_DA1n.qp08());
+    /* p29.YJEX*/ YJEX_OAM_DA2p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.ZUCA_OAM_LATCH_DA2n.qp08());
+    /* p29.XYJU*/ XYJU_OAM_DA3p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.WONE_OAM_LATCH_DA3n.qp08());
+    /* p29.YBOG*/ YBOG_OAM_DA4p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.ZAXE_OAM_LATCH_DA4n.qp08());
+    /* p29.WYSO*/ WYSO_OAM_DA5p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.XAFU_OAM_LATCH_DA5n.qp08());
+    /* p29.XOTE*/ XOTE_OAM_DA6p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.YSES_OAM_LATCH_DA6n.qp08());
+    /* p29.YZAB*/ YZAB_OAM_DA7p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.ZECA_OAM_LATCH_DA7n.qp08());
 
-    /* p31.XEGA*/ wire XEGA_OAM_CLKp = not1(top.oam_bus.COTA_OAM_CLKn);
-    /* p31.XEGA*/ wire XEGA_OAM_CLKn = not1(XEGA_OAM_CLKp);
+    /* p31.XEGA*/ wire _XEGA_OAM_CLKp = not1(top.oam_bus.COTA_OAM_CLKn);
+    /* p31.XEGA*/ wire _XEGA_OAM_CLKn = not1(_XEGA_OAM_CLKp);
 
-    /* p31.YLOR*/ YLOR_OAM_DB0p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.XYKY_OAM_LATCH_DB0n.qp08());
-    /* p31.ZYTY*/ ZYTY_OAM_DB1p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.YRUM_OAM_LATCH_DB1n.qp08());
-    /* p31.ZYVE*/ ZYVE_OAM_DB2p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.YSEX_OAM_LATCH_DB2n.qp08());
-    /* p31.ZEZY*/ ZEZY_OAM_DB3p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.YVEL_OAM_LATCH_DB3n.qp08());
-    /* p31.GOMO*/ GOMO_OAM_DB4p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.WYNO_OAM_LATCH_DB4n.qp08());
-    /* p31.BAXO*/ BAXO_OAM_DB5p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.CYRA_OAM_LATCH_DB5n.qp08());
-    /* p31.YZOS*/ YZOS_OAM_DB6p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.ZUVE_OAM_LATCH_DB6n.qp08());
-    /* p31.DEPO*/ DEPO_OAM_DB7p.dff8n(XEGA_OAM_CLKp, XEGA_OAM_CLKn, top.oam_bus.ECED_OAM_LATCH_DB7n.qp08());
+    /* p31.YLOR*/ YLOR_OAM_DB0p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.XYKY_OAM_LATCH_DB0n.qp08());
+    /* p31.ZYTY*/ ZYTY_OAM_DB1p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.YRUM_OAM_LATCH_DB1n.qp08());
+    /* p31.ZYVE*/ ZYVE_OAM_DB2p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.YSEX_OAM_LATCH_DB2n.qp08());
+    /* p31.ZEZY*/ ZEZY_OAM_DB3p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.YVEL_OAM_LATCH_DB3n.qp08());
+    /* p31.GOMO*/ GOMO_OAM_DB4p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.WYNO_OAM_LATCH_DB4n.qp08());
+    /* p31.BAXO*/ BAXO_OAM_DB5p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.CYRA_OAM_LATCH_DB5n.qp08());
+    /* p31.YZOS*/ YZOS_OAM_DB6p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.ZUVE_OAM_LATCH_DB6n.qp08());
+    /* p31.DEPO*/ DEPO_OAM_DB7p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.ECED_OAM_LATCH_DB7n.qp08());
   }
 }
 

@@ -136,16 +136,8 @@ struct OamBus {
   //----------------------------------------
 
   uint8_t get_oam_pin_addr() const {
-    /* p28.ZYFO*/ wire ZYFO_OAM_A1p = not1(BUS_OAM_A1n.qp());
-    /* p28.YFOT*/ wire YFOT_OAM_A2p = not1(BUS_OAM_A2n.qp());
-    /* p28.YFOC*/ wire YFOC_OAM_A3p = not1(BUS_OAM_A3n.qp());
-    /* p28.YVOM*/ wire YVOM_OAM_A4p = not1(BUS_OAM_A4n.qp());
-    /* p28.YMEV*/ wire YMEV_OAM_A5p = not1(BUS_OAM_A5n.qp());
-    /* p28.XEMU*/ wire XEMU_OAM_A6p = not1(BUS_OAM_A6n.qp());
-    /* p28.YZET*/ wire YZET_OAM_A7p = not1(BUS_OAM_A7n.qp());
-
-    return (uint8_t)pack_p(ZYFO_OAM_A1p, YFOT_OAM_A2p, YFOC_OAM_A3p, YVOM_OAM_A4p,
-                           YMEV_OAM_A5p, XEMU_OAM_A6p, YZET_OAM_A7p, 0);
+    return (uint8_t)pack_p(BUS_OAM_A1n.qn(), BUS_OAM_A2n.qn(), BUS_OAM_A3n.qn(), BUS_OAM_A4n.qn(),
+                           BUS_OAM_A5n.qn(), BUS_OAM_A6n.qn(), BUS_OAM_A7n.qn(), 0);
   }
 
   uint8_t get_oam_pin_data_a() const {
@@ -181,6 +173,14 @@ struct OamBus {
   }
 
   //----------------------------------------
+
+  /*p28.YFOT*/ Sig YFOT_OAM_A2p;
+  /*p28.YFOC*/ Sig YFOC_OAM_A3p;
+  /*p28.YVOM*/ Sig YVOM_OAM_A4p;
+  /*p28.YMEV*/ Sig YMEV_OAM_A5p;
+  /*p28.XEMU*/ Sig XEMU_OAM_A6p;
+  /*p28.YZET*/ Sig YZET_OAM_A7p;
+
 
   /*p25.COTA*/ Sig COTA_OAM_CLKn;
   /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;

@@ -21,6 +21,8 @@ void Timer::dump(Dumper& d) const {
 //------------------------------------------------------------------------------
 
 void Timer::tick(const SchematicTop& /*top*/) {
+  /*#p01.UTOK*/ UMEK_DIV_06n = not1(UGOT_DIV_06.qp17());
+  /*#p01.UREK*/ UREK_DIV_07n = not1(TULU_DIV_07.qp17());
 }
 
 //------------------------------------------------------------------------------
@@ -30,8 +32,6 @@ void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.BOGA*/ wire BOGA_Axxxxxxx = not1(top.clk_reg.BALY_xBCDEFGH);
   /*p03.RYFO*/ wire RYFO_FF04_FF07p = and3(top.cpu_bus.BUS_CPU_A02.qp(), top.cpu_bus.SARE_XX00_XX07p(), top.cpu_bus.SYKE_FF00_FFFFp());
 
-  /* p01.UTOK*/ wire UMEK_DIV_06n = not1(UGOT_DIV_06.qp17());
-  /*#p01.UREK*/ wire UREK_DIV_07n = not1(TULU_DIV_07.qp17());
   /* p01.UTOK*/ wire UTOK_DIV_08n = not1(TUGO_DIV_08.qp17());
   /* p01.SAPY*/ wire SAPY_DIV_09n = not1(TOFE_DIV_09.qp17());
   /* p01.UMER*/ wire UMER_DIV_10n = not1(TERU_DIV_10.qp17());

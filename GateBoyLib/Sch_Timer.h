@@ -190,6 +190,9 @@ struct Timer {
     */
   }
 
+  /*#p01.UTOK*/ Sig UMEK_DIV_06n;
+  /*#p01.UREK*/ Sig UREK_DIV_07n;
+
   //----------
   // FF04 DIV
 

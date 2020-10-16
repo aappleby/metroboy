@@ -40,11 +40,11 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
 
 void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
 
-  /*p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp13(), ASOL_POR_DONEn.qp04());
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp13(), ASOL_POR_DONEn.qp04());
   /*#p01.ALUR*/ ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
   /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
-  /*p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
   /*p01.XAPO*/ XAPO_VID_RSTn = not1(XODO_VID_RSTp);

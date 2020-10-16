@@ -6,10 +6,8 @@
 using namespace Schematics;
 
 uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg.MATU_DMA_RUNNINGp.qp17();
-  /*p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner.BESU_SCANNINGp.qp04();
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp);
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, BESU_SCANNINGp);
+  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
+  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
   /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGn.qn03(), ACYL_SCANNINGp); // die NOR
@@ -27,10 +25,8 @@ uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
 }
 
 void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg.MATU_DMA_RUNNINGp.qp17();
-  /*p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner.BESU_SCANNINGp.qp04();
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp);
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, BESU_SCANNINGp);
+  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
+  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   d("\002===== Pix Pipe =====\001\n");
 
@@ -263,15 +259,13 @@ void PixelPipe::tick(const SchematicTop& top) {
 void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   wire GND = 0;
 
-  /*p04.MATU*/ wire MATU_DMA_RUNNINGp = top.dma_reg.MATU_DMA_RUNNINGp.qp17();
-  /*p28.BESU*/ wire BESU_SCANNINGp = top.sprite_scanner.BESU_SCANNINGp.qp04();
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp);
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, BESU_SCANNINGp);
+  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
+  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
-  /*p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
-  /*p01.WALU*/ wire WALU_SYS_RSTn = not1(XORE_SYS_RSTp);
+  /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*#p01.WALU*/ wire WALU_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);

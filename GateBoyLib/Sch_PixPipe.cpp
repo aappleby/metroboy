@@ -7,7 +7,7 @@ using namespace Schematics;
 
 uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
+  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
   /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGn.qn03(), ACYL_SCANNINGp); // die NOR
@@ -26,7 +26,7 @@ uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
 
 void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
+  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   d("\002===== Pix Pipe =====\001\n");
 
@@ -260,7 +260,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   wire GND = 0;
 
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
-  /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
+  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);

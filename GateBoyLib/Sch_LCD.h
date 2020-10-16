@@ -120,6 +120,10 @@ struct LcdRegisters {
   /*p21.PARU*/ Sig   PARU_VBLANKp_d4;     // -> pix pipe
   /*p28.ATEJ*/ Sig   ATEJ_LINE_TRIGp;     // -> buncha stuff
   /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;    // -> interrupts
+
+  /*p21.PURE*/ Sig PURE_LINE_P908n;
+  /*p21.SELA*/ Sig SELA_LINE_P908p;
+
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 
   /*p29.CATU*/ DFF17 CATU_LINE_P000; // -> pix pipe, scanner.

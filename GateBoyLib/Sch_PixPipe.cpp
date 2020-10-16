@@ -230,10 +230,7 @@ void PixelPipe::tick(const SchematicTop& top) {
 
   /*#p21.TOLU*/ wire TOLU_VBLANKn = not1(top.lcd_reg.PARU_VBLANKp_d4);
 
-  /*#p21.PURE*/ wire PURE_LINE_ENDn = not1(top.lcd_reg.RUTU_LINE_P910.qp17());
-  /*#p21.SELA*/ wire SELA_LINE_ENDp = not1(PURE_LINE_ENDn);
-
-  /*#p21.TAPA*/ wire TAPA_INT_OAM = and2(TOLU_VBLANKn, SELA_LINE_ENDp);
+  /*#p21.TAPA*/ wire TAPA_INT_OAM = and2(TOLU_VBLANKn, top.lcd_reg.SELA_LINE_P908p);
   /*#p21.TARU*/ wire TARU_INT_HBL = and2(WODU_HBLANKp, TOLU_VBLANKn);
 
   /*#p21.SUKO*/ wire SUKO_INT_STATb = amux4(RUGU_STAT_LYI_ENn.qn08(), top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17(),

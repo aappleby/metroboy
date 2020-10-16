@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   err += t.test_bootrom();
 #endif
 
-  err += t.test_post_bootrom_state();
+  //err += t.test_post_bootrom_state();
 
   err += t.test_clk();
   err += t.test_ext_bus();

@@ -31,6 +31,10 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.PIN_CPU_ADDR_EXTp.qp()); // Missing from schematic
     /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
     /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);
+
+    /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
+    /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(top.UNOR_MODE_DBG2p, AGUT_xxCDEFGH);
+    /*#p01.ABUZ*/ ABUZ_xxCDEFGH = not1(AWOD_ABxxxxxx);
   }
 
   {

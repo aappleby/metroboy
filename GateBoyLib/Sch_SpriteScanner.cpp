@@ -100,8 +100,8 @@ void SpriteScanner::tick(const SchematicTop& top) {
 void SpriteScanner::tock(const SchematicTop& top) {
   wire WEFE_VCC = 1;
 
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
-  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
+  /*#p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
 
   /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
   /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);

@@ -108,6 +108,15 @@ struct ClockRegisters {
   /*p04.MOPA*/ Sig MOPA_xxxxEFGH;
   /*p01.ALET*/ Sig ALET_xBxDxFxH;
 
+  /*p01.BEKO*/ Sig BEKO_ABCDxxxx;
+  /*p01.BOLO*/ Sig BOLO_ABCDEFxx;
+  /*p01.BUKE*/ Sig BUKE_AxxxxxGH;
+  /*p01.BOMA*/ Sig BOMA_xBCDEFGH;
+
+
+
+
+
   /*p01.ALUR*/ Sig ALUR_SYS_RSTn; // everywhere
   /*p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere
   /*p01.DULA*/ Sig DULA_SYS_RSTp;

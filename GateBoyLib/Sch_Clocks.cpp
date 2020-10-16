@@ -78,9 +78,9 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
   /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
   /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
-  /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*#p01.BOLO*/ BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
 
-  /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH);
+  /*#p01.BEKO*/ BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
   /*#p01.BEJA*/ wire BEJA_xxxxEFGH = nand4(BOLO_ABCDEFxx, BOLO_ABCDEFxx, BEKO_ABCDxxxx, BEKO_ABCDxxxx);
   /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
   /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
@@ -122,32 +122,26 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
   /*#p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
   /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
 
-  /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
-  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
-  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
-  /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(BALY_xBCDEFGH, BUTY_CLKREQ);
 
-  /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
-  /*#p01.BUVU*/ wire BUVU_Axxxxxxx = and2(BALY_xBCDEFGH, BUTY_CLKREQ);
-
-  /*#p01.BYXO*/ wire BYXO_xBCDEFGH = not1(BUVU_Axxxxxxx);
-  /*#p01.BEDO*/ wire BEDO_Axxxxxxx = not1(BYXO_xBCDEFGH);
-  /*#p01.BOWA*/ wire BOWA_xBCDEFGH = not1(BEDO_Axxxxxxx);
+  /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
+  /*#p01.BEDO*/ wire _BEDO_Axxxxxxx = not1(_BYXO_xBCDEFGH);
+  /*#p01.BOWA*/ wire _BOWA_xBCDEFGH = not1(_BEDO_Axxxxxxx);
 
   /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn08());
-  /*#p01.BUGO*/ wire BUGO_xBCDExxx = not1(AFEP_AxxxxFGH);
-  /*#p01.BATE*/ wire BATE_AxxxxxGH = nor3(BUGO_xBCDExxx,
-                                          AROV_xxCDEFxx,
-                                          ABOL_CLKREQn);
-  /*#p01.BASU*/ wire BASU_xBCDEFxx = not1(BATE_AxxxxxGH);
+  /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(AFEP_AxxxxFGH);
+  /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx,
+                                           AROV_xxCDEFxx,
+                                           ABOL_CLKREQn);
+  /*#p01.BASU*/ wire _BASU_xBCDEFxx = not1(_BATE_AxxxxxGH);
 
-  /*#p01.BUKE*/ wire BUKE_AxxxxxGH = not1(BASU_xBCDEFxx);
-  /*#p01.BOMA*/ wire BOMA_xBCDEFGH = not1(BOGA_Axxxxxxx);
+  /*#p01.BUKE*/ BUKE_AxxxxxGH = not1(_BASU_xBCDEFxx);
+  /*#p01.BOMA*/ BOMA_xBCDEFGH = not1(BOGA_Axxxxxxx);
 
   top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
 
-  top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.set(BOWA_xBCDEFGH);
-  top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.set(BEDO_Axxxxxxx);
+  top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.set(_BOWA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.set(_BEDO_Axxxxxxx);
 
   top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx);
   top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.set(BUDE_xxxxEFGH);

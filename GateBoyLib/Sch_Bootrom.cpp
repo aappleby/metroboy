@@ -12,33 +12,28 @@ using namespace Schematics;
 
 void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
 
-  if (top.TEDO_CPU_RDp && (top.cpu_bus.get_bus_addr() <= 0xFF)) {
-    int x = 1;
-    x++;
-  }
-
   // FF50 - disable bootrom bit
   {
-    /*p07.TYRO*/ wire TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.BUS_CPU_A07.qp(), top.cpu_bus.BUS_CPU_A05.qp(), top.cpu_bus.BUS_CPU_A03.qp(),
+    /*p07.TYRO*/ wire _TYFO_ADDR_0x0x0000p = nor6(top.cpu_bus.BUS_CPU_A07.qp(), top.cpu_bus.BUS_CPU_A05.qp(), top.cpu_bus.BUS_CPU_A03.qp(),
                                                   top.cpu_bus.BUS_CPU_A02.qp(), top.cpu_bus.BUS_CPU_A01.qp(), top.cpu_bus.BUS_CPU_A00.qp());
-    /*p07.TUFA*/ wire TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.BUS_CPU_A04.qp(), top.cpu_bus.BUS_CPU_A06.qp());
+    /*p07.TUFA*/ wire _TUFA_ADDR_x1x1xxxxp = and2(top.cpu_bus.BUS_CPU_A04.qp(), top.cpu_bus.BUS_CPU_A06.qp());
 
-    /*p07.TEXE*/ wire TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp, top.cpu_bus.SYKE_FF00_FFFFp(), TYFO_ADDR_0x0x0000p, TUFA_ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ cpu_bus.BUS_CPU_D0p.tri_6pn(TEXE_FF50_RDp, BOOT_BITn.qp17());
+    /*p07.TEXE*/ wire _TEXE_FF50_RDp = and4(top.TEDO_CPU_RDp, top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.SYPU*/ cpu_bus.BUS_CPU_D0p.tri_6pn(_TEXE_FF50_RDp, BOOT_BITn.qp17());
 
-    /*p07.TUGE*/ wire TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, top.cpu_bus.SYKE_FF00_FFFFp(), TYFO_ADDR_0x0x0000p, TUFA_ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire SATO_BOOT_BIT_IN = or2(top.cpu_bus.BUS_CPU_D0p.qp(), BOOT_BITn.qp17());
+    /*p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(top.TAPU_CPU_WRp_xxxxEFGx, top.cpu_bus.SYKE_FF00_FFFFp(), _TYFO_ADDR_0x0x0000p, _TUFA_ADDR_x1x1xxxxp);
+    /*p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(top.cpu_bus.BUS_CPU_D0p.qp(), BOOT_BITn.qp17());
 
-    /*p07.TEPU*/ BOOT_BITn.dff17(TUGE_FF50_WRn, top.clk_reg.ALUR_SYS_RSTn, SATO_BOOT_BIT_IN);
+    /*p07.TEPU*/ BOOT_BITn.dff17(_TUGE_FF50_WRn, top.clk_reg.ALUR_SYS_RSTn, _SATO_BOOT_BIT_IN);
   }
 
   {
     // Bootrom -> CPU
 
-    /*p07.YAZA*/ wire YAZA_MODE_DBG1n = not1(top.UMUT_MODE_DBG1p);
-    /*p07.YULA*/ wire YULA_BOOT_RDp   = and3(top.TEDO_CPU_RDp, YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp); // def AND
-    /*p07.ZADO*/ wire ZADO_BOOT_CSn   = nand2(YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());
-    /*p07.ZERY*/ wire ZERY_BOOT_CSp   = not1(ZADO_BOOT_CSn);
+    /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(top.UMUT_MODE_DBG1p);
+    /*p07.YULA*/ wire _YULA_BOOT_RDp   = and3(top.TEDO_CPU_RDp, _YAZA_MODE_DBG1n, top.TUTU_ADDR_BOOTp); // def AND
+    /*p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, top.cpu_bus.ZUFA_ADDR_00XX());
+    /*p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
 
 #if 0
     /*p07.ZYBA*/ wire ZYBA_ADDR_00n = not1(top.cpu_bus.BUS_CPU_A00);
@@ -69,14 +64,14 @@ void Bootrom::tock(const SchematicTop& top, CpuBus& cpu_bus) {
     uint16_t addr = (uint16_t)top.cpu_bus.get_bus_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    cpu_bus.BUS_CPU_D0p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x01));
-    cpu_bus.BUS_CPU_D1p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x02));
-    cpu_bus.BUS_CPU_D2p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x04));
-    cpu_bus.BUS_CPU_D3p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x08));
-    cpu_bus.BUS_CPU_D4p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x10));
-    cpu_bus.BUS_CPU_D5p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x20));
-    cpu_bus.BUS_CPU_D6p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x40));
-    cpu_bus.BUS_CPU_D7p.tri_6pn(ZERY_BOOT_CSp, !bool(data & 0x80));
+    cpu_bus.BUS_CPU_D0p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x01));
+    cpu_bus.BUS_CPU_D1p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x02));
+    cpu_bus.BUS_CPU_D2p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x04));
+    cpu_bus.BUS_CPU_D3p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x08));
+    cpu_bus.BUS_CPU_D4p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x10));
+    cpu_bus.BUS_CPU_D5p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x20));
+    cpu_bus.BUS_CPU_D6p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x40));
+    cpu_bus.BUS_CPU_D7p.tri_6pn(_ZERY_BOOT_CSp, !bool(data & 0x80));
 #endif
   }
 }

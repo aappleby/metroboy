@@ -117,6 +117,7 @@ struct SpriteScanner {
   // Signals
 
   /*p28.ACYL*/ Sig ACYL_SCANNINGp;
+  /*p29.CEHA*/ Sig CEHA_SCANNINGp;
 
   /*p29.DEGE*/ Sig DEGE_SPRITE_DELTA0; // -> sprite store
   /*p29.DABY*/ Sig DABY_SPRITE_DELTA1; // -> sprite store
@@ -130,8 +131,6 @@ struct SpriteScanner {
   /*p29.CARE*/ Sig CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
   /*p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
-
-  /*p29.CEHA*/ Sig CEHA_SCANNINGp;
 
   /*p28.ANOM*/ Sig ANOM_LINE_RSTn;
   /*p29.BAGY*/ Sig BAGY_LINE_RSTn;

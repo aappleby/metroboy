@@ -192,8 +192,12 @@ struct SchematicTop {
   /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;
   /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
   /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
+
   /*p07.TEDO*/ Sig TEDO_CPU_RDp;
+  /*p07.AJAS*/ Sig AJAS_CPU_RDn;
+  /*p07.ASOT*/ Sig ASOT_CPU_RDp;
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
+
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
   /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;
   /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;

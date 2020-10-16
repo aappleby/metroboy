@@ -50,29 +50,25 @@ void ExtBus::dump(Dumper& d) const {
 
 void ExtBus::tock(SchematicTop& top) {
 
-  /*p08.TOVA*/ wire TOVA_MODE_DBG2n = not1(top.UNOR_MODE_DBG2p);
-
-  /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(top.TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p);
-  /*p08.LEVO*/ wire LEVO_8000_9FFFp = not1(top.TEXO_8000_9FFFn);
-
-  /*p08.LAGU*/ wire LAGU = and_or3(top.cpu_bus.PIN_CPU_RDp.qp(), LEVO_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());
-  /*p08.LYWE*/ wire LYWE = not1(LAGU);
-
-  /*p07.UJYV*/ wire UJYV_CPU_RDn = mux2n(top.UNOR_MODE_DBG2p, PIN_EXT_RDn.qn(), top.cpu_bus.PIN_CPU_RDp.qp());
-  /*p07.TEDO*/ wire TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
-
-
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCxEFGH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
   /*p01.APOV*/ wire APOV_CPU_WRp_xxxxEFGx = not1(AREV_CPU_WRn_ABCxEFGH);
 
-  /*p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
+
+
+  /*p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(top.TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p);
+  /*p08.LEVO*/ wire _LEVO_8000_9FFFp = not1(top.TEXO_8000_9FFFn);
+  /*p08.LAGU*/ wire _LAGU = and_or3(top.cpu_bus.PIN_CPU_RDp.qp(), _LEVO_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());
+  /*p08.LYWE*/ wire _LYWE = not1(_LAGU);
+  /*p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
+
+  /*p08.TOVA*/ wire _TOVA_MODE_DBG2n = not1(top.UNOR_MODE_DBG2p);
 
   //----------------------------------------
   // Ext pins
 
   {
     /*p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(top.dma_reg.LUMA_DMA_READ_CARTp, _MOTY_CPU_EXT_RD);
-    /*p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, TOVA_MODE_DBG2n);
+    /*p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, _TOVA_MODE_DBG2n);
     /*p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, top.UNOR_MODE_DBG2p);
     PIN_EXT_RDn.io_pin(_UGAC_RD_A, _URUN_RD_D);
   }
@@ -80,9 +76,9 @@ void ExtBus::tock(SchematicTop& top) {
   {
 
     /*p08.MEXO*/ wire _MEXO_CPU_WRn_ABCDxxxH = not1(APOV_CPU_WRp_xxxxEFGx);
-    /*p08.NEVY*/ wire _NEVY = or2(_MEXO_CPU_WRn_ABCDxxxH, MOCA_DBG_EXT_RD);
+    /*p08.NEVY*/ wire _NEVY = or2(_MEXO_CPU_WRn_ABCDxxxH, _MOCA_DBG_EXT_RD);
     /*p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, top.dma_reg.LUMA_DMA_READ_CARTp);
-    /*p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, TOVA_MODE_DBG2n);
+    /*p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, _TOVA_MODE_DBG2n);
     /*p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, top.UNOR_MODE_DBG2p);
     PIN_EXT_WRn.io_pin(_UVER_WR_A, _USUF_WR_D);
   }
@@ -142,21 +138,21 @@ void ExtBus::tock(SchematicTop& top) {
     /* p08.MUCE*/ wire _MUCE_A13p = mux2p(top.dma_reg.LUMA_DMA_READ_CARTp, top.dma_reg.PULA_DMA_A13n.qn07(), LONU_EXT_ADDR_LATCH_13p.qp08());
     /* p08.PEGE*/ wire _PEGE_A14p = mux2p(top.dma_reg.LUMA_DMA_READ_CARTp, top.dma_reg.POKU_DMA_A14n.qn07(), NYRE_EXT_ADDR_LATCH_14p.qp08());
 
-    /*p08.KUPO*/ wire _KUPO = nand2(_AMET_A00p, TOVA_MODE_DBG2n);
-    /*p08.CABA*/ wire _CABA = nand2(_ATOL_A01p, TOVA_MODE_DBG2n);
-    /*p08.BOKU*/ wire _BOKU = nand2(_APOK_A02p, TOVA_MODE_DBG2n);
-    /*p08.BOTY*/ wire _BOTY = nand2(_AMER_A03p, TOVA_MODE_DBG2n);
-    /*p08.BYLA*/ wire _BYLA = nand2(_ATEM_A04p, TOVA_MODE_DBG2n);
-    /*p08.BADU*/ wire _BADU = nand2(_ATOV_A05p, TOVA_MODE_DBG2n);
-    /*p08.CEPU*/ wire _CEPU = nand2(_ATYR_A06p, TOVA_MODE_DBG2n);
-    /*p08.DEFY*/ wire _DEFY = nand2(_ASUR_A07p, TOVA_MODE_DBG2n);
-    /*p08.MYNY*/ wire _MYNY = nand2(_MANO_A08p, TOVA_MODE_DBG2n);
-    /*p08.MUNE*/ wire _MUNE = nand2(_MASU_A09p, TOVA_MODE_DBG2n);
-    /*p08.ROXU*/ wire _ROXU = nand2(_PAMY_A10p, TOVA_MODE_DBG2n);
-    /*p08.LEPY*/ wire _LEPY = nand2(_MALE_A11p, TOVA_MODE_DBG2n);
-    /*p08.LUCE*/ wire _LUCE = nand2(_MOJY_A12p, TOVA_MODE_DBG2n);
-    /*p08.LABE*/ wire _LABE = nand2(_MUCE_A13p, TOVA_MODE_DBG2n);
-    /*p08.PUHE*/ wire _PUHE = nand2(_PEGE_A14p, TOVA_MODE_DBG2n);
+    /*p08.KUPO*/ wire _KUPO = nand2(_AMET_A00p, _TOVA_MODE_DBG2n);
+    /*p08.CABA*/ wire _CABA = nand2(_ATOL_A01p, _TOVA_MODE_DBG2n);
+    /*p08.BOKU*/ wire _BOKU = nand2(_APOK_A02p, _TOVA_MODE_DBG2n);
+    /*p08.BOTY*/ wire _BOTY = nand2(_AMER_A03p, _TOVA_MODE_DBG2n);
+    /*p08.BYLA*/ wire _BYLA = nand2(_ATEM_A04p, _TOVA_MODE_DBG2n);
+    /*p08.BADU*/ wire _BADU = nand2(_ATOV_A05p, _TOVA_MODE_DBG2n);
+    /*p08.CEPU*/ wire _CEPU = nand2(_ATYR_A06p, _TOVA_MODE_DBG2n);
+    /*p08.DEFY*/ wire _DEFY = nand2(_ASUR_A07p, _TOVA_MODE_DBG2n);
+    /*p08.MYNY*/ wire _MYNY = nand2(_MANO_A08p, _TOVA_MODE_DBG2n);
+    /*p08.MUNE*/ wire _MUNE = nand2(_MASU_A09p, _TOVA_MODE_DBG2n);
+    /*p08.ROXU*/ wire _ROXU = nand2(_PAMY_A10p, _TOVA_MODE_DBG2n);
+    /*p08.LEPY*/ wire _LEPY = nand2(_MALE_A11p, _TOVA_MODE_DBG2n);
+    /*p08.LUCE*/ wire _LUCE = nand2(_MOJY_A12p, _TOVA_MODE_DBG2n);
+    /*p08.LABE*/ wire _LABE = nand2(_MUCE_A13p, _TOVA_MODE_DBG2n);
+    /*p08.PUHE*/ wire _PUHE = nand2(_PEGE_A14p, _TOVA_MODE_DBG2n);
 
     /*p08.KOTY*/ wire _KOTY = nor2 (_AMET_A00p, top.UNOR_MODE_DBG2p);
     /*p08.COTU*/ wire _COTU = nor2 (_ATOL_A01p, top.UNOR_MODE_DBG2p);
@@ -214,7 +210,7 @@ void ExtBus::tock(SchematicTop& top) {
     // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
 
-    /*p08.REDU*/ wire _REDU_CPU_RDn = not1(TEDO_CPU_RDp);
+    /*p08.REDU*/ wire _REDU_CPU_RDn = not1(top.TEDO_CPU_RDp);
     /*p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(top.UNOR_MODE_DBG2p, _REDU_CPU_RDn, _MOTY_CPU_EXT_RD);
     /*p08.LULA*/ wire _LULA_CBD_TO_EPDp = not1(_RORU_CBD_TO_EPDn);
 

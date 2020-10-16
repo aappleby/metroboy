@@ -25,6 +25,12 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn16());
   }
 
+  /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
+  /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
+  /* p07.AJAS*/ AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
+  /* p07.ASOT*/ ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
+
+
   {
     // This is def broken, but how do I fix it?
 
@@ -42,10 +48,6 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
-    /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
-    /* p07.AJAS*/ wire AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
-    /* p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
     /* p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
     /* p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
     /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);

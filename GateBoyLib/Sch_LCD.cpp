@@ -205,14 +205,9 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   // FF44 LY
   {
-    /* p07.UJYV*/ wire UJYV_CPU_RDn  = mux2n(top.UNOR_MODE_DBG2p, top.ext_bus.PIN_EXT_RDn.qn(), top.cpu_bus.PIN_CPU_RDp.qp());
-    /* p07.TEDO*/ wire TEDO_CPU_RDp  = not1(UJYV_CPU_RDn);
-    /* p07.AJAS*/ wire AJAS_CPU_RDn  = not1(TEDO_CPU_RDp);
-    /* p07.ASOT*/ wire ASOT_CPU_RDp  = not1(AJAS_CPU_RDn);
-
     /* p22.WYLE*/ wire WYLE_FF44n    = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.XENO_A01n(), top.cpu_bus.WALO_A02p(), top.cpu_bus.XERA_A03n());
     /* p22.XOGY*/ wire XOGY_FF44p    = not1(WYLE_FF44n);
-    /* p23.WAFU*/ wire WAFU_FF44_RDp = and2(ASOT_CPU_RDp, XOGY_FF44p);
+    /* p23.WAFU*/ wire WAFU_FF44_RDp = and2(top.ASOT_CPU_RDp, XOGY_FF44p);
     /* p23.VARO*/ wire VARO_FF44_RDn = not1(WAFU_FF44_RDp);
 
     /*#p23.WURY*/ wire WURY_LY0n = not1(MUWY_Y0p.qp17());

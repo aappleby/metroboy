@@ -60,8 +60,8 @@ void SpriteFetcher::tock(SchematicTop& top) {
   wire ATEJ_VID_LINE_END_TRIGp = top.lcd_reg.ATEJ_LINE_TRIGp;
 
   /* p01.ROSY*/ wire ROSY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
-  /* p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
-  /* p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
   /* p01.LAPE*/ wire LAPE_AxCxExGx = not1(ALET_xBxDxFxH);
   /* p27.TAVA*/ wire TAVA_xBxDxFxH = not1(LAPE_AxCxExGx);
 

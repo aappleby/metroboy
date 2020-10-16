@@ -77,9 +77,9 @@ void TileFetcher::tock(SchematicTop& top) {
   wire XYMU_RENDERINGp = top.pix_pipe.XYMU_RENDERINGn.qn03();
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
 
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
-  /*p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
-  /*p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*#p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
 
   /*p27.LEBO*/ wire LEBO_AxCxExGx = nand2(ALET_xBxDxFxH, MOCE_BFETCH_DONEn);
 

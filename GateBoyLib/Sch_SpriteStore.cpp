@@ -277,7 +277,7 @@ void SpriteStore::tock(const SchematicTop& top) {
   wire XAPO_VID_RSTn = top.clk_reg.XAPO_VID_RSTn;
   /* p01.AMYG*/ wire AMYG_VID_RSTp = not1(XAPO_VID_RSTn);
 
-  /* p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
 
   /* p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not1(top.sprite_scanner.CARE_STORE_ENp_ABxxEFxx);
   wire DEGE_SPRITE_DELTA0 = top.sprite_scanner.DEGE_SPRITE_DELTA0;

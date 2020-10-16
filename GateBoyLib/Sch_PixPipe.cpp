@@ -272,10 +272,10 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*p01.TOFU*/ wire TOFU_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*p01.PYRY*/ wire PYRY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
 
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
-  /*p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
-  /*p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
-  /*p27.MEHE*/ wire MEHE_AxCxExGx = not1(ALET_xBxDxFxH);
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*#p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
+  /*#p27.MEHE*/ wire MEHE_AxCxExGx = not1(ALET_xBxDxFxH);
 
   /*#p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_HBLANKp, MYVO_AxCxExGx);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);

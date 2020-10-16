@@ -103,8 +103,8 @@ void SpriteScanner::tock(const SchematicTop& top) {
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
 
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
-  /*p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
 
   // 32 + 4 + 2 + 1 = 39
   /*#p28.FETO*/ wire FETO_SCAN_DONE_d0 = and4(YFEL_SCAN0.qp17(), WEWY_SCAN1.qp17(), GOSO_SCAN2.qp17(), FONY_SCAN5.qp17());

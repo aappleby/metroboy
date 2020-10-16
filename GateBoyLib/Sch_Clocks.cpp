@@ -182,7 +182,7 @@ void ClockRegisters::tock_dbg_slow(SchematicTop& top) {
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
   /*p29.XYVA*/ wire XYVA_xBxDxFxH = not1(ZEME_AxCxExGx);
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);

@@ -86,6 +86,10 @@ struct ClockRegisters {
   void tock_vid_slow(wire CLK, SchematicTop& top);
 
   /*p01.UCOB*/ Sig UCOB_CLKBADp;  // timer
+
+  /*p01.ATAL*/ Sig ATAL_xBxDxFxH;
+
+
   /*p01.ZAXY*/ Sig ZAXY_xBxDxFxH; // various
   /*p01.BUDE*/ Sig BUDE_xxxxEFGH; // uvyt, beko
 
@@ -108,6 +112,10 @@ struct ClockRegisters {
   /*p04.MOPA*/ Sig MOPA_xxxxEFGH;
   /*p01.ALET*/ Sig ALET_xBxDxFxH;
 
+
+  /*p01.BEDO*/ Sig BEDO_Axxxxxxx;
+  /*p01.BOWA*/ Sig BOWA_xBCDEFGH;
+
   /*p01.BEKO*/ Sig BEKO_ABCDxxxx;
   /*p01.BOLO*/ Sig BOLO_ABCDEFxx;
   /*p01.BUKE*/ Sig BUKE_AxxxxxGH;
@@ -121,6 +129,7 @@ struct ClockRegisters {
   /*p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere
   /*p01.DULA*/ Sig DULA_SYS_RSTp;
   /*p01.CUNU*/ Sig CUNU_SYS_RSTn;
+  /*p01.XORE*/ Sig XORE_SYS_RSTp;
 
   /*p01.ATAR*/ Sig ATAR_VID_RSTp;
   /*p01.ABEZ*/ Sig ABEZ_VID_RSTn;

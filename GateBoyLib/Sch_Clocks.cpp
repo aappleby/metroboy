@@ -46,10 +46,10 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p01.CUNU*/ CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
 
 
-  /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
-  /*p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
-  /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
-  /*p01.XAPO*/ XAPO_VID_RSTn = not1(XODO_VID_RSTp);
+  /*#p01.XORE*/ XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
+  /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
+  /*p01.XAPO*/ XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
 
   /*#p01.ATAR*/ ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*#p01.ABEZ*/ ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
@@ -57,40 +57,41 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
 
 
-  /*p01.ATEZ*/ wire ATEZ_CLKBAD = not1(CLKGOOD);
+  /*p01.ATEZ*/ wire _ATEZ_CLKBAD = not1(CLKGOOD);
   /*p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
-  /*p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
+  /*p01.ABOL*/ wire _ABOL_CLKREQn = not1(CPUREADY);
 
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK; // ignoring the deglitcher here
-  /*p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
-  /*p01.ZAXY*/ ZAXY_xBxDxFxH = not1(AZOF_AxCxExGx);
+  // ignoring the deglitcher here
+  /*p01.ATAL*/ ATAL_xBxDxFxH = CLK;
+  /*p01.AZOF*/ wire _AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ ZAXY_xBxDxFxH = not1(_AZOF_AxCxExGx);
 
   /*#p01.AROV*/ AROV_xxCDEFxx = not1(APUK_ABxxxxGH.qp09());
-  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn08());
+  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn08());
   /*#p01.ATYP*/ ATYP_ABCDxxxx = not1(AFUR_xxxxEFGH.qp09());
   /*#p01.AJAX*/ AJAX_xxxxEFGH = not1(ATYP_ABCDxxxx.qp());
 
-  /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+  /*#p01.BAPY*/ wire _BAPY_xxxxxxGH = nor3(_ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
 
-  /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
-  /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
-  /*#p01.BUDE*/ BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
+  /*#p01.BELU*/ wire _BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, _ABOL_CLKREQn);
+  /*#p01.BYRY*/ wire _BYRY_ABCDxxxx = not1(_BELU_xxxxEFGH);
+  /*#p01.BUDE*/ BUDE_xxxxEFGH = not1(_BYRY_ABCDxxxx);
 
-  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
-  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
-  /*#p01.BOLO*/ BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*#p01.BERU*/ wire _BERU_ABCDEFxx = not1(_BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire _BUFA_xxxxxxGH = not1(_BERU_ABCDEFxx);
+  /*#p01.BOLO*/ BOLO_ABCDEFxx = not1(_BUFA_xxxxxxGH);
 
   /*#p01.BEKO*/ BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
-  /*#p01.BEJA*/ wire BEJA_xxxxEFGH = nand4(BOLO_ABCDEFxx, BOLO_ABCDEFxx, BEKO_ABCDxxxx, BEKO_ABCDxxxx);
-  /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
-  /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
-  /*#p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
+  /*#p01.BEJA*/ wire _BEJA_xxxxEFGH = nand4(BOLO_ABCDEFxx, BOLO_ABCDEFxx, BEKO_ABCDxxxx, BEKO_ABCDxxxx);
+  /*#p01.BANE*/ wire _BANE_ABCDxxxx = not1(_BEJA_xxxxEFGH);
+  /*#p01.BELO*/ wire _BELO_xxxxEFGH = not1(_BANE_ABCDxxxx);
+  /*#p01.BAZE*/ wire _BAZE_ABCDxxxx = not1(_BELO_xxxxEFGH);
 
-  /*#p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
-  /*#p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
-  /*#p01.BYJU*/ wire BYJU_Axxxxxxx = or2(BELE_Axxxxxxx, ATEZ_CLKBAD);
+  /*#p01.BUTO*/ wire _BUTO_xBCDEFGH = nand3(_AFEP_AxxxxFGH, ATYP_ABCDxxxx, _BAZE_ABCDxxxx);
+  /*#p01.BELE*/ wire _BELE_Axxxxxxx = not1(_BUTO_xBCDEFGH);
+  /*#p01.BYJU*/ wire _BYJU_Axxxxxxx = or2(_BELE_Axxxxxxx, _ATEZ_CLKBAD);
 
-  /*#p01.BALY*/ BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
+  /*#p01.BALY*/ BALY_xBCDEFGH = not1(_BYJU_Axxxxxxx);
   /* p01.BOGA*/ BOGA_Axxxxxxx = not1(BALY_xBCDEFGH);
 
   /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(ADYK_ABCxxxxH.qn08());
@@ -104,44 +105,39 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /* p01.UVYT*/ UVYT_ABCDxxxx = not1(BUDE_xxxxEFGH);
   /* p04.MOPA*/ MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
   /*#p01.ALET*/ ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
-}
 
-//-----------------------------------------------------------------------------
-
-void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
-  // ignoring the deglitcher here
-  // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH = CLK;
-  /*p01.ATAL*/ wire ATAL_AxCxExGx = not1(ATAL_xBxDxFxH);
-
-  /*p01.AFUR*/ AFUR_xxxxEFGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp09());
-  /*p01.ALEF*/ ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn08());
-  /*p01.APUK*/ APUK_ABxxxxGH.dff9(ATAL_AxCxExGx, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn08());
-  /*p01.ADYK*/ ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn08());
-
-  /*#p01.ABOL*/ wire ABOL_CLKREQn = not1(CPUREADY);
-  /*#p01.BUTY*/ wire BUTY_CLKREQ = not1(ABOL_CLKREQn);
-
-  /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(BALY_xBCDEFGH, BUTY_CLKREQ);
-
-  /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
-  /*#p01.BEDO*/ wire _BEDO_Axxxxxxx = not1(_BYXO_xBCDEFGH);
-  /*#p01.BOWA*/ wire _BOWA_xBCDEFGH = not1(_BEDO_Axxxxxxx);
-
-  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(ALEF_AxxxxFGH.qn08());
-  /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(AFEP_AxxxxFGH);
+  /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
   /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx,
                                            AROV_xxCDEFxx,
-                                           ABOL_CLKREQn);
+                                           _ABOL_CLKREQn);
   /*#p01.BASU*/ wire _BASU_xBCDEFxx = not1(_BATE_AxxxxxGH);
 
   /*#p01.BUKE*/ BUKE_AxxxxxGH = not1(_BASU_xBCDEFxx);
   /*#p01.BOMA*/ BOMA_xBCDEFGH = not1(BOGA_Axxxxxxx);
 
+  /*#p01.BUTY*/ wire _BUTY_CLKREQ = not1(_ABOL_CLKREQn);
+
+  /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(BALY_xBCDEFGH, _BUTY_CLKREQ);
+  /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
+  /*#p01.BEDO*/ BEDO_Axxxxxxx = not1(_BYXO_xBCDEFGH);
+  /*#p01.BOWA*/ BOWA_xBCDEFGH = not1(BEDO_Axxxxxxx);
+
+}
+
+//-----------------------------------------------------------------------------
+
+void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
+  // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
+
+  /*p01.AFUR*/ AFUR_xxxxEFGH.dff9(!ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp09());
+  /*p01.ALEF*/ ALEF_AxxxxFGH.dff9( ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, AFUR_xxxxEFGH.qn08());
+  /*p01.APUK*/ APUK_ABxxxxGH.dff9(!ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ALEF_AxxxxFGH.qn08());
+  /*p01.ADYK*/ ADYK_ABCxxxxH.dff9( ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, APUK_ABxxxxGH.qn08());
+
   top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
 
-  top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.set(_BOWA_xBCDEFGH);
-  top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.set(_BEDO_Axxxxxxx);
+  top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.set(BOWA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.set(BEDO_Axxxxxxx);
 
   top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx);
   top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.set(BUDE_xxxxEFGH);

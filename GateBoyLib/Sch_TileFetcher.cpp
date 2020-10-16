@@ -30,45 +30,43 @@ void TileFetcher::dump(Dumper& d, const SchematicTop& /*top*/) const {
 void TileFetcher::tick(const SchematicTop& top) {
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.qn03());
 
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp04());
-  /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
-  /* p26.AXAD*/ wire AXAD_WIN_MODEn = not1(PORE_WIN_MODEp);
+  /* p26.AXAD*/ wire _AXAD_WIN_MODEn = not1(top.pix_pipe.PORE_WIN_MODEp);
 
-  /*#p27.LAXE*/ wire LAXE_BFETCH_S0n = not1(LAXU_BFETCH_S0.qp17());
-  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(MESU_BFETCH_S1.qp17());
-  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(NYVA_BFETCH_S2.qp17());
+  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1(LAXU_BFETCH_S0.qp17());
+  /*#p27.NAKO*/ wire _NAKO_BFETCH_S1n = not1(MESU_BFETCH_S1.qp17());
+  /*#p27.NOFU*/ wire _NOFU_BFETCH_S2n = not1(NYVA_BFETCH_S2.qp17());
 
-  /* p27.NOGU*/ wire NOGU_FETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
-  /* p27.NENY*/ wire NENY_FETCH_01n = not1(NOGU_FETCH_01p);
+  /* p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(_NAKO_BFETCH_S1n, _NOFU_BFETCH_S2n);
+  /* p27.NENY*/ wire _NENY_FETCH_01n = not1(_NOGU_FETCH_01p);
 
-  /* p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not1(LONY_BG_FETCH_RUNNINGp.qp03());
-  /* p27.LENA*/ LENA_BGW_VRM_RDp = not1(LUSU_BGW_VRAM_RDn);
+  /* p27.LUSU*/ wire _LUSU_BGW_VRAM_RDn = not1(LONY_BG_FETCH_RUNNINGp.qp03());
+  /* p27.LENA*/ LENA_BGW_VRM_RDp = not1(_LUSU_BGW_VRAM_RDn);
 
-  /* p27.POTU*/ wire POTU_BG_MAP_READp  = and2(LENA_BGW_VRM_RDp, NENY_FETCH_01n);
-  /*#p25.XEZE*/ wire XEZE_WIN_MAP_READp = and2(POTU_BG_MAP_READp, PORE_WIN_MODEp);
-  /* p26.ACEN*/ wire ACEN_BG_MAP_READp  = and2(POTU_BG_MAP_READp, AXAD_WIN_MODEn);
+  /* p27.POTU*/ wire _POTU_BG_MAP_READp  = and2(LENA_BGW_VRM_RDp, _NENY_FETCH_01n);
+  /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(_POTU_BG_MAP_READp, top.pix_pipe.PORE_WIN_MODEp);
+  /* p26.ACEN*/ wire _ACEN_BG_MAP_READp  = and2(_POTU_BG_MAP_READp, _AXAD_WIN_MODEn);
 
-  /* p27.NETA*/ NETA_TILE_READp = and2(LENA_BGW_VRM_RDp, NOGU_FETCH_01p);
-  /* p26.ASUL*/ wire ASUL_BG_TILE_READp  = and2(NETA_TILE_READp, AXAD_WIN_MODEn);
-  /* p25.XUCY*/ XUCY_WIN_TILE_READn = nand2(NETA_TILE_READp, PORE_WIN_MODEp);
-  /*#p25.WUKO*/ WUKO_WIN_MAP_READn  = not1(XEZE_WIN_MAP_READp);
-  /* p26.BAFY*/ BAFY_BG_MAP_READn   = not1(ACEN_BG_MAP_READp);
-  /* p26.BEJE*/ BEJE_BG_TILE_READn = not1(ASUL_BG_TILE_READp);
+  /* p27.NETA*/ NETA_TILE_READp = and2(LENA_BGW_VRM_RDp, _NOGU_FETCH_01p);
+  /* p26.ASUL*/ wire _ASUL_BG_TILE_READp  = and2(NETA_TILE_READp, _AXAD_WIN_MODEn);
+  /* p25.XUCY*/ XUCY_WIN_TILE_READn = nand2(NETA_TILE_READp, top.pix_pipe.PORE_WIN_MODEp);
+  /*#p25.WUKO*/ WUKO_WIN_MAP_READn  = not1(_XEZE_WIN_MAP_READp);
+  /* p26.BAFY*/ BAFY_BG_MAP_READn   = not1(_ACEN_BG_MAP_READp);
+  /* p26.BEJE*/ BEJE_BG_TILE_READn = not1(_ASUL_BG_TILE_READp);
 
   /* p27.MOCE*/ MOCE_BFETCH_DONEn = nand3(LAXU_BFETCH_S0.qp17(), NYVA_BFETCH_S2.qp17(), top.NYXU_FETCH_TRIGn);
 
-  /*#p27.XUHA*/ XUHA_FETCH_S2p  = not1(NOFU_BFETCH_S2n);
+  /*#p27.XUHA*/ XUHA_FETCH_S2p  = not1(_NOFU_BFETCH_S2n);
 
   // MYSO fires on fetch phase 2, 6, 10
-  /*#p27.MYSO*/ wire MYSO_BG_TRIGp   = nor3(LOBY_RENDERINGn, LAXE_BFETCH_S0n, LYZU_BFETCH_S0_D1.qp17());
+  /*#p27.MYSO*/ wire _MYSO_BG_TRIGp   = nor3(LOBY_RENDERINGn, _LAXE_BFETCH_S0n, LYZU_BFETCH_S0_D1.qp17());
 
   // NYDY on fetch phase 6
-  /*#p27.NYDY*/ wire NYDY_LATCH_TILE_DAn = nand3(MYSO_BG_TRIGp, MESU_BFETCH_S1.qp17(), NOFU_BFETCH_S2n);
-  /*#p32.METE*/ METE_LATCH_TILE_DAp   = not1(NYDY_LATCH_TILE_DAn);
+  /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn = nand3(_MYSO_BG_TRIGp, MESU_BFETCH_S1.qp17(), _NOFU_BFETCH_S2n);
+  /*#p32.METE*/ METE_LATCH_TILE_DAp   = not1(_NYDY_LATCH_TILE_DAn);
 
   // MOFU fires on fetch phase 2 and 10
-  /*p27.MOFU*/ wire MOFU_LATCH_TILE_DBp = and2(MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
-  /*p32.LESO*/ LESO_LATCH_TILE_DBn   = not1(MOFU_LATCH_TILE_DBp);
+  /*p27.MOFU*/ wire _MOFU_LATCH_TILE_DBp = and2(_MYSO_BG_TRIGp, _NAKO_BFETCH_S1n);
+  /*p32.LESO*/ LESO_LATCH_TILE_DBn   = not1(_MOFU_LATCH_TILE_DBp);
 
   /*p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 }

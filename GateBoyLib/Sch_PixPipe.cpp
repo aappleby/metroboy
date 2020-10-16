@@ -268,8 +268,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp);
   /*p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, BESU_SCANNINGp);
 
-  /*p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
-  /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
   /*p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*p01.WALU*/ wire WALU_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);

@@ -62,15 +62,13 @@ void LcdRegisters::tick(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
-  /*p01.ALUR*/ wire ALUR_SYS_RSTn = top.clk_reg.ALUR_SYS_RSTn;
-  /*p01.XAPO*/ wire XAPO_VID_RSTn = top.clk_reg.XAPO_VID_RSTn;
-  /*p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
-  /*p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
   /*p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(XAPO_VID_RSTn);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
-  /*p01.LYHA*/ wire LYHA_VID_RSTp = not1(XAPO_VID_RSTn);
+  /*p01.LYHA*/ wire LYHA_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*p01.LYFE*/ wire LYFE_VID_RSTn = not1(LYHA_VID_RSTp);
 
   /*#p29.XUPY*/ wire XUPY_ABxxEFxx = top.clk_reg.XUPY_ABxxEFxx;

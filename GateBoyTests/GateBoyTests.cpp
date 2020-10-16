@@ -6,7 +6,7 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
-#define RUN_SLOW_TESTS
+//#define RUN_SLOW_TESTS
 
 //-----------------------------------------------------------------------------
 

@@ -16,17 +16,17 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   dma_reg.tick();
 
   {
-    /*p07.UBET*/ wire UBET_T1p = not1(T1n);
-    /*p07.UVAR*/ wire UVAR_T2p = not1(T2n);
-    /*p07.UMUT*/ UMUT_MODE_DBG1p = and2(T1n, UVAR_T2p);
-    /*p07.UNOR*/ UNOR_MODE_DBG2p = and2(T2n, UBET_T1p);
-    /*p07.UPOJ*/ UPOJ_MODE_PRODn = nand3(UBET_T1p, UVAR_T2p, RST);
+    /*p07.UBET*/ wire _UBET_T1p = not1(T1n);
+    /*p07.UVAR*/ wire _UVAR_T2p = not1(T2n);
+    /*p07.UMUT*/ UMUT_MODE_DBG1p = and2(T1n, _UVAR_T2p);
+    /*p07.UNOR*/ UNOR_MODE_DBG2p = and2(T2n, _UBET_T1p);
+    /*p07.UPOJ*/ UPOJ_MODE_PRODn = nand3(_UBET_T1p, _UVAR_T2p, RST);
 
     /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn16());
   }
 
-  /* p07.UJYV*/ wire UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
-  /* p07.TEDO*/ TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
+  /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
+  /* p07.TEDO*/ TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
   /* p07.AJAS*/ AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
   /* p07.ASOT*/ ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
 
@@ -39,21 +39,21 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
     /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);
 
-    /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
-    /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(top.UNOR_MODE_DBG2p, AGUT_xxCDEFGH);
+    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
+    /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(top.UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
     /*#p01.ABUZ*/ ABUZ_xxCDEFGH = not1(AWOD_ABxxxxxx);
 
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not1(top.cpu_bus.BUS_CPU_A15.qp());
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), SORE_0000_7FFFp);
-    /*p08.TEXO*/ TEXO_8000_9FFFn = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), TEVY_8000_9FFFn);
+    /*p08.SORE*/ wire _SORE_0000_7FFFp = not1(top.cpu_bus.BUS_CPU_A15.qp());
+    /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), _SORE_0000_7FFFp);
+    /*p08.TEXO*/ TEXO_8000_9FFFn = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), _TEVY_8000_9FFFn);
   }
 
   {
-    /* p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
-    /* p04.CATY*/ CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
+    /* p04.DECY*/ wire _DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
+    /* p04.CATY*/ CATY_LATCH_EXTp = not1(_DECY_LATCH_EXTn);
 
-    /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);
-    /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
+    /* p28.MYNU*/ wire _MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);
+    /* p28.LEKO*/ LEKO_CPU_RDp = not1(_MYNU_CPU_RDn);
   }
 
   clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, top);
@@ -67,17 +67,17 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   pix_pipe.tick(top);
 
   {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
-    /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx      = not1(AREV_CPU_WRn_ABCDxxxH);
-    /*p07.UBAL*/ wire UBAL_CPU_WRn_ABCDxxxH = mux2n(UNOR_MODE_DBG2p, top.ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx);
-    /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx      = not1(UBAL_CPU_WRn_ABCDxxxH);
-    /*p07.DYKY*/ wire DYKY_CPU_WRn_ABCDxxxH = not1(top.TAPU_CPU_WRp_xxxxEFGx);
-    /*p07.CUPA*/ CUPA_CPU_WRp_xxxxEFGx      = not1(DYKY_CPU_WRn_ABCDxxxH);
+    /*p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
+    /*p01.APOV*/ APOV_CPU_WRp_xxxxEFGx      = not1(_AREV_CPU_WRn_ABCDxxxH);
+    /*p07.UBAL*/ wire _UBAL_CPU_WRn_ABCDxxxH = mux2n(UNOR_MODE_DBG2p, top.ext_bus.PIN_EXT_WRn.qn(), APOV_CPU_WRp_xxxxEFGx);
+    /*p07.TAPU*/ TAPU_CPU_WRp_xxxxEFGx      = not1(_UBAL_CPU_WRn_ABCDxxxH);
+    /*p07.DYKY*/ wire _DYKY_CPU_WRn_ABCDxxxH = not1(top.TAPU_CPU_WRp_xxxxEFGx);
+    /*p07.CUPA*/ CUPA_CPU_WRp_xxxxEFGx      = not1(_DYKY_CPU_WRn_ABCDxxxH);
   }
 
   {
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not1(top.bootrom.BOOT_BITn.qp17());
-    /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, top.cpu_bus.TULO_ADDR_00XXp());
+    /*p07.TERA*/ wire _TERA_BOOT_BITp  = not1(top.bootrom.BOOT_BITn.qp17());
+    /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, top.cpu_bus.TULO_ADDR_00XXp());
   }
 
   tim_reg.tick(top);

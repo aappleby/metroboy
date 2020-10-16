@@ -170,8 +170,6 @@ struct CpuBus {
   /*p07.ROPE*/ wire ROPE_FE00_FEFFn() const { return nand2(RYCU_0000_FDFFn(), SOHA_FF00_FFFFn()); }
   /*p07.SARO*/ wire SARO_FE00_FEFFp() const { return not1(ROPE_FE00_FEFFn()); }
   /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not1(SARO_FE00_FEFFp()); }
-  /*p08.SORE*/ wire SORE_0000_7FFFp() const { return not1(BUS_CPU_A15.qp()); }
-  /*p08.TEVY*/ wire TEVY_8000_9FFFn() const { return or3(BUS_CPU_A13.qp(), BUS_CPU_A14.qp(), SORE_0000_7FFFp()); }
 
   /*p22.XOLA*/ wire XOLA_A00n() const { return not1(BUS_CPU_A00.qp()); }
   /*p22.XENO*/ wire XENO_A01n() const { return not1(BUS_CPU_A01.qp()); }

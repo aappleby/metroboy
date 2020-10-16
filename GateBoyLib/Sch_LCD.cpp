@@ -41,13 +41,13 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
 
 void LcdRegisters::tick(const SchematicTop& top) {
   // fires on P910 and P911
-  /*p28.ABAF*/ wire ABAF_LINE_P910n = not1(CATU_LINE_P000.qp17());
+  /* p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_LINE_P000.qp17());
 
   // so if this is or_and, BYHA should go low on 910 and 911
-  /*p28.BYHA*/ BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P002.qp17(), ABAF_LINE_P910n, top.clk_reg.ABEZ_VID_RSTn);
+  /* p28.BYHA*/ BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P002.qp17(), _ABAF_LINE_P910n, top.clk_reg.ABEZ_VID_RSTn);
 
   // fires on P910 and P911
-  /*p28.ATEJ*/ ATEJ_LINE_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
+  /* p28.ATEJ*/ ATEJ_LINE_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
 
   // -> interrupts, ppu
   /*#p21.PARU*/ PARU_VBLANKp_d4 = not1(POPU_IN_VBLANKp.qn16());

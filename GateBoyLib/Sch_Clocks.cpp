@@ -105,6 +105,7 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /* p01.UVYT*/ UVYT_ABCDxxxx = not1(BUDE_xxxxEFGH);
   /* p04.MOPA*/ MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
   /*#p01.ALET*/ ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*#p27.MYVO*/ MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
 
   /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
   /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx,

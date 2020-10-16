@@ -470,14 +470,16 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p27.SEKO*/ Sig   SEKO_WIN_TILE_TRIG; // -> top.TEVO
-  /*p24.TOMU*/ Sig   SYLO_WIN_HITn;      // -> sprite fetcher
-  /*p24.TOMU*/ Sig   TOMU_WIN_HITp;      // -> sprite fetcher
-  /*p27.NOCU*/ Sig   NOCU_WIN_MODEn;
-  /*p27.NOCU*/ Sig   PORE_WIN_MODEp;
-  /*p27.NUNY*/ Sig   NUNY_WX_MATCH_TRIGp;
-  /*p21.VOTY*/ Sig   VOTY_INT_STATp;
-  /*p27.SUZU*/ Sig   SUZU_WIN_FIRST_TILEne;
+  /*p27.SEKO*/ Sig SEKO_WIN_TILE_TRIG; // -> top.TEVO
+  /*p24.TOMU*/ Sig SYLO_WIN_HITn;      // -> sprite fetcher
+  /*p24.TOMU*/ Sig TOMU_WIN_HITp;      // -> sprite fetcher
+  /*p27.NOCU*/ Sig NOCU_WIN_MODEn;
+  /*p27.NOCU*/ Sig PORE_WIN_MODEp;
+  /*p27.NUNY*/ Sig NUNY_WX_MATCH_TRIGp;
+  /*p27.MOSU*/ Sig MOSU_WIN_FETCH_TRIGp;
+  /*p21.VOTY*/ Sig VOTY_INT_STATp;
+  /*p27.SUZU*/ Sig SUZU_WIN_FIRST_TILEne;
+  /*p24.LOBY*/ Sig LOBY_RENDERINGn;
 
   /*p21.XYMU*/ NorLatch2 XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;

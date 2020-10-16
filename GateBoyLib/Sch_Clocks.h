@@ -120,6 +120,8 @@ struct ClockRegisters {
   /*p01.BOLO*/ Sig BOLO_ABCDEFxx;
   /*p01.BUKE*/ Sig BUKE_AxxxxxGH;
   /*p01.BOMA*/ Sig BOMA_xBCDEFGH;
+  /*p27.MYVO*/ Sig MYVO_AxCxExGx;
+
 
 
 

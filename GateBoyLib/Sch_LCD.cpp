@@ -52,7 +52,7 @@ void LcdRegisters::tick(const SchematicTop& top) {
   // -> interrupts, ppu
   /*#p21.PARU*/ PARU_VBLANKp_d4 = not1(POPU_IN_VBLANKp.qn16());
 
-  /*#p21.TOLU*/ wire TOLU_VBLANKn = not1(PARU_VBLANKp_d4);
+  /*#p21.TOLU*/ TOLU_VBLANKn = not1(PARU_VBLANKp_d4);
   /*#p21.VYPU*/ VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);
 
   /*#p21.PURE*/ PURE_LINE_P908n = not1(RUTU_LINE_P910.qp17());

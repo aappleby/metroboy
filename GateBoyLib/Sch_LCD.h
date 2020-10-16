@@ -118,6 +118,7 @@ struct LcdRegisters {
   }
 
   /*p21.PARU*/ Sig   PARU_VBLANKp_d4;     // -> pix pipe
+  /*p21.TOLU*/ Sig   TOLU_VBLANKn;
   /*p28.ATEJ*/ Sig   ATEJ_LINE_TRIGp;     // -> buncha stuff
   /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;    // -> interrupts
 

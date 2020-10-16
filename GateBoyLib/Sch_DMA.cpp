@@ -38,6 +38,8 @@ void DmaRegisters::tick() {
 
   /* p04.MUHO*/ wire MUHO_DMA_VRAM_RDn = nand2(MATU_DMA_RUNNINGp.qp17(), MUDA_DMA_SRC_VRAMp);
   /* p04.LUFA*/ LUFA_DMA_READ_VRAMp    = not1(MUHO_DMA_VRAM_RDn);
+
+  /*#p28.BOGE*/ BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp.qp17());
 }
 
 //------------------------------------------------------------------------------

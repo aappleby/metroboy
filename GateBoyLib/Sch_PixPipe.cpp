@@ -6,11 +6,8 @@
 using namespace Schematics;
 
 uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
-  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
-  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
-
   /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
-  /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGn.qn03(), ACYL_SCANNINGp); // die NOR
+  /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGn.qn03(), top.sprite_scanner.ACYL_SCANNINGp); // die NOR
   uint8_t stat = (uint8_t)pack_p(
     !SADU_STAT_MODE0n,
     !XATY_STAT_MODE1n,
@@ -25,9 +22,6 @@ uint8_t PixelPipe::get_stat(const SchematicTop& top) const {
 }
 
 void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
-  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
-  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
-
   d("\002===== Pix Pipe =====\001\n");
 
   d.dump_reg("PIX COUNT",
@@ -46,7 +40,7 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
     XONA_LCDC_LCDENn.qn08());
 
   /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
-  /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGn.qn03(), ACYL_SCANNINGp); // die NOR
+  /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(XYMU_RENDERINGn.qn03(), top.sprite_scanner.ACYL_SCANNINGp); // die NOR
 
   d.dump_reg("FF41 STAT",
     !SADU_STAT_MODE0n,
@@ -254,10 +248,10 @@ void PixelPipe::tick(const SchematicTop& top) {
 //------------------------------------------------------------------------------
 
 void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
+  wire VYPO = 1;
   wire GND = 0;
 
-  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
-  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
+  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(top.dma_reg.BOGE_DMA_RUNNINGn, top.sprite_scanner.BESU_SCANNINGp.qp04());
 
   /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
@@ -266,13 +260,13 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*#p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*#p01.ATAR*/ wire ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
   /*#p01.ABEZ*/ wire ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
-  /*p01.TOFU*/ wire TOFU_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
-  /*p01.PYRY*/ wire PYRY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /* p01.TOFU*/ wire _TOFU_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /* p01.PYRY*/ wire _PYRY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
 
   /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
   /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
   /*#p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
-  /*#p27.MEHE*/ wire MEHE_AxCxExGx = not1(ALET_xBxDxFxH);
+  /*#p27.MEHE*/ wire _MEHE_AxCxExGx = not1(ALET_xBxDxFxH);
 
   /*#p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor3(top.sprite_store.FEPO_STORE_MATCHp, WODU_HBLANKp, MYVO_AxCxExGx);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
@@ -280,17 +274,14 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   /*#p24.SEGU*/ wire SEGU_CLKPIPEn = not1(TYFA_CLKPIPEp_xBxDxFxH);
   /*#p24.SACU*/ wire SACU_CLKPIPEp = or2(SEGU_CLKPIPEn, ROXY_SCX_FINE_MATCH_LATCHn.qp04()); // Schematic wrong, this is OR
 
-  /*p07.AJAS*/ wire AJAS_CPU_RDn = not1(top.TEDO_CPU_RDp);
-  /*p07.ASOT*/ wire ASOT_CPU_RDp = not1(AJAS_CPU_RDn);
-
   //----------------------------------------
   // XYMU is the main "we're rendering" flag
 
   {
-    /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, TOFU_VID_RSTp);
+    /*#p21.TADY*/ wire TADY_LINE_START_RSTn = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
     /*#p21.VOGA*/ VOGA_HBLANKp.dff17(ALET_xBxDxFxH, TADY_LINE_START_RSTn, WODU_HBLANKp);
 
-    /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(TOFU_VID_RSTp, VOGA_HBLANKp.qp17());
+    /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(_TOFU_VID_RSTp, VOGA_HBLANKp.qp17());
     /*#p21.XYMU*/ XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, top.AVAP_RENDER_START_TRIGp);
   }
 
@@ -298,7 +289,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   // Pixel counter, has carry lookahead because this can increment every tcycle
 
   {
-    /*p21.TADY*/ wire TADY_LINE_START_RST = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, TOFU_VID_RSTp);
+    /*p21.TADY*/ wire TADY_LINE_START_RST = nor2(top.lcd_reg.ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
 
     /*p21.RYBO*/ wire RYBO = xor2(XEHO_X0p.qp17(), SAVY_X1p.qp17()); // XOR layout 1, feet facing gnd, this should def be regular xor
     /*p21.XUKE*/ wire XUKE = and2(XEHO_X0p.qp17(), SAVY_X1p.qp17());
@@ -330,7 +321,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
   {
     /*#p21.XAJO*/ wire XAJO_X_009p = and2(XEHO_X0p.qp17(), XYDO_X3p.qp17());
-    /*#p21.WEGO*/ wire WEGO_LINE_END_RSTp = or2(TOFU_VID_RSTp, VOGA_HBLANKp.qp17());
+    /*#p21.WEGO*/ wire WEGO_LINE_END_RSTp = or2(_TOFU_VID_RSTp, VOGA_HBLANKp.qp17());
     /*#p21.WUSA*/ WUSA_LCD_CLOCK_GATE.nor_latch(XAJO_X_009p, WEGO_LINE_END_RSTp);
     /*#p21.TOBA*/ wire TOBA_LCD_CLOCK = and2(WUSA_LCD_CLOCK_GATE.qp04(), SACU_CLKPIPEp);
     /*#p27.POVA*/ wire POVA_FINE_MATCHpe = and2(NYZE_SCX_FINE_MATCH_B.qn16(), PUXA_SCX_FINE_MATCH_A.qp17());
@@ -355,7 +346,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(ROXO_CLKPIPEp, XYMU_RENDERINGn.qn03(), XYDO_X3p.qp17());
 
     /*#p24.POME*/ POME = nor2(top.AVAP_RENDER_START_TRIGp, POFY);
-    /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp17(), TOFU_VID_RSTp, POME);
+    /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, POME);
     /*#p24.POFY*/ POFY = not1(RUJU);
 
     /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(POFY);
@@ -416,7 +407,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p27.NELE*/ wire NELE_WY_MATCH_HI   = not1(PALO_WY_MATCH_HIn);
     /* p27.PAFU*/ wire PAFU_WY_MATCHn     = nand5(NELE_WY_MATCH_HI, NAZE_WY_MATCH0, PEBO_WY_MATCH1, POMO_WY_MATCH2, NEVU_WY_MATCH3);
     /* p27.ROGE*/ wire ROGE_WY_MATCHp = not1(PAFU_WY_MATCHn);
-    /* p27.REPU*/ wire REPU_VBLANK_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, PYRY_VID_RSTp);
+    /* p27.REPU*/ wire REPU_VBLANK_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, _PYRY_VID_RSTp);
     /* p27.SARY*/ SARY_WY_MATCH.dff17(top.clk_reg.TALU_xxCDEFxx, top.clk_reg.XAPO_VID_RSTn, ROGE_WY_MATCHp);
     /* p27.REJO*/ REJO_WY_MATCH_LATCH.nor_latch(SARY_WY_MATCH.qp17(), REPU_VBLANK_RSTp);
   }
@@ -439,7 +430,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     // This trigger fires on the pixel _at_ WX
     /*p27.ROCO*/ wire ROCO_CLKPIPEp = not1(SEGU_CLKPIPEn);
     /*p27.PYCO*/ PYCO_WX_MATCH_A.dff17(ROCO_CLKPIPEp, top.clk_reg.XAPO_VID_RSTn, NUKO_WX_MATCHp);
-    /*p27.NUNU*/ NUNU_WX_MATCH_B.dff17(MEHE_AxCxExGx, top.clk_reg.XAPO_VID_RSTn, PYCO_WX_MATCH_A.qp17());
+    /*p27.NUNU*/ NUNU_WX_MATCH_B.dff17(_MEHE_AxCxExGx, top.clk_reg.XAPO_VID_RSTn, PYCO_WX_MATCH_A.qp17());
   }
 
   //----------------------------------------
@@ -456,7 +447,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p27.NOPA*/ NOPA_WIN_MODE_B.dff17(ALET_xBxDxFxH, top.clk_reg.XAPO_VID_RSTn, PYNU_WIN_MODE_A.qp04());
 
     /* p27.PUKU*/ PUKU = nor2(NUNY_WX_MATCH_TRIGp, RYDY);
-    /* p27.RYDY*/ RYDY = nor3(PUKU, top.tile_fetcher.PORY_FETCH_DONE_P12.qp17(), PYRY_VID_RSTp);
+    /* p27.RYDY*/ RYDY = nor3(PUKU, top.tile_fetcher.PORY_FETCH_DONE_P12.qp17(), _PYRY_VID_RSTp);
 
     ///*#p27.RYDY*/ RYDY_WIN_FIRST_TILE_A.nor_latch(NUNY_WX_MATCH_TRIGp, or2(top.tile_fetcher.PORY_FETCH_DONE_P12.qp(), PYRY_VID_RSTp));
 
@@ -496,7 +487,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   {
     /*p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
     /*p27.WAZY*/ wire WAZY_WIN_Y_CLKp = not1(PORE_WIN_MODEp);
-    /*p27.REPU*/ wire REPU_WIN_Y_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, PYRY_VID_RSTp);
+    /*p27.REPU*/ wire REPU_WIN_Y_RSTp = or2(top.lcd_reg.PARU_VBLANKp_d4, _PYRY_VID_RSTp);
     /*p27.SYNY*/ wire SYNY_WIN_Y_RSTn = not1(REPU_WIN_Y_RSTp);
 
     // Every time we leave win mode we increment win_y
@@ -727,8 +718,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
       /*p34.LOWA*/ wire LOWA_PAL_PIPE_RST6n = nand2(SOKA_SPRITE_MASK6p, LADY);
       /*p34.LUNU*/ wire LUNU_PAL_PIPE_RST7n = nand2(XOVU_SPRITE_MASK7p, LAFY);
 
-      wire VYPO = 0;
-      /*p34.RUGO*/ RUGO_PAL_PIPE_0.dff22(SACU_CLKPIPEp, PUME_PAL_PIPE_SET0n, SUCO_PAL_PIPE_RST0n, VYPO);
+      /*p34.RUGO*/ RUGO_PAL_PIPE_0.dff22(SACU_CLKPIPEp, PUME_PAL_PIPE_SET0n, SUCO_PAL_PIPE_RST0n, GND);
       /*p34.SATA*/ SATA_PAL_PIPE_1.dff22(SACU_CLKPIPEp, SORO_PAL_PIPE_SET1n, TAFA_PAL_PIPE_RST1n, RUGO_PAL_PIPE_0.qp16());
       /*p34.ROSA*/ ROSA_PAL_PIPE_2.dff22(SACU_CLKPIPEp, PAMO_PAL_PIPE_SET2n, PYZY_PAL_PIPE_RST2n, SATA_PAL_PIPE_1.qp16());
       /*p34.SOMY*/ SOMY_PAL_PIPE_3.dff22(SACU_CLKPIPEp, SUKY_PAL_PIPE_SET3n, TOWA_PAL_PIPE_RST3n, ROSA_PAL_PIPE_2.qp16());
@@ -740,25 +730,23 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
 
     // Background mask pipe
     {
-      wire DEPO = top.sprite_scanner.DEPO_OAM_DB7p.qp08();
+      /*p26.XOGA*/ wire XOGA = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XURA*/ wire XURA = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.TAJO*/ wire TAJO = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XENU*/ wire XENU = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XYKE*/ wire XYKE = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XABA*/ wire XABA = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.TAFU*/ wire TAFU = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XUHO*/ wire XUHO = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
 
-      /*p26.XOGA*/ wire XOGA = not1(DEPO);
-      /*p26.XURA*/ wire XURA = not1(DEPO);
-      /*p26.TAJO*/ wire TAJO = not1(DEPO);
-      /*p26.XENU*/ wire XENU = not1(DEPO);
-      /*p26.XYKE*/ wire XYKE = not1(DEPO);
-      /*p26.XABA*/ wire XABA = not1(DEPO);
-      /*p26.TAFU*/ wire TAFU = not1(DEPO);
-      /*p26.XUHO*/ wire XUHO = not1(DEPO);
-
-      /*p26.TEDE*/ wire TEDE_MASK_PIPE_SET0 = nand2(LESY_SPRITE_MASK0p, DEPO);
-      /*p26.XALA*/ wire XALA_MASK_PIPE_SET1 = nand2(LOTA_SPRITE_MASK1p, DEPO);
-      /*p26.TYRA*/ wire TYRA_MASK_PIPE_SET2 = nand2(LYKU_SPRITE_MASK2p, DEPO);
-      /*p26.XYRU*/ wire XYRU_MASK_PIPE_SET3 = nand2(ROBY_SPRITE_MASK3p, DEPO);
-      /*p26.XUKU*/ wire XUKU_MASK_PIPE_SET4 = nand2(TYTA_SPRITE_MASK4p, DEPO);
-      /*p26.XELY*/ wire XELY_MASK_PIPE_SET5 = nand2(TYCO_SPRITE_MASK5p, DEPO);
-      /*p26.TYKO*/ wire TYKO_MASK_PIPE_SET6 = nand2(SOKA_SPRITE_MASK6p, DEPO);
-      /*p26.TUWU*/ wire TUWU_MASK_PIPE_SET7 = nand2(XOVU_SPRITE_MASK7p, DEPO);
+      /*p26.TEDE*/ wire TEDE_MASK_PIPE_SET0 = nand2(LESY_SPRITE_MASK0p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XALA*/ wire XALA_MASK_PIPE_SET1 = nand2(LOTA_SPRITE_MASK1p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.TYRA*/ wire TYRA_MASK_PIPE_SET2 = nand2(LYKU_SPRITE_MASK2p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XYRU*/ wire XYRU_MASK_PIPE_SET3 = nand2(ROBY_SPRITE_MASK3p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XUKU*/ wire XUKU_MASK_PIPE_SET4 = nand2(TYTA_SPRITE_MASK4p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.XELY*/ wire XELY_MASK_PIPE_SET5 = nand2(TYCO_SPRITE_MASK5p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.TYKO*/ wire TYKO_MASK_PIPE_SET6 = nand2(SOKA_SPRITE_MASK6p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+      /*p26.TUWU*/ wire TUWU_MASK_PIPE_SET7 = nand2(XOVU_SPRITE_MASK7p, top.sprite_scanner.DEPO_OAM_DB7p.qp08());
 
       /*p26.WOKA*/ wire WOKA_MASK_PIPE_RST0 = nand2(LESY_SPRITE_MASK0p, XOGA);
       /*p26.WEDE*/ wire WEDE_MASK_PIPE_RST1 = nand2(LOTA_SPRITE_MASK1p, XURA);
@@ -768,8 +756,6 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
       /*p26.WUJA*/ wire WUJA_MASK_PIPE_RST5 = nand2(TYCO_SPRITE_MASK5p, XABA);
       /*p26.TENA*/ wire TENA_MASK_PIPE_RST6 = nand2(SOKA_SPRITE_MASK6p, TAFU);
       /*p26.WUBU*/ wire WUBU_MASK_PIPE_RST7 = nand2(XOVU_SPRITE_MASK7p, XUHO);
-
-      wire VYPO = 1;
 
       /*p26.VEZO*/ VEZO_MASK_PIPE_0.dff22(SACU_CLKPIPEp, TEDE_MASK_PIPE_SET0, WOKA_MASK_PIPE_RST0, VYPO);
       /*p26.WURU*/ WURU_MASK_PIPE_1.dff22(SACU_CLKPIPEp, XALA_MASK_PIPE_SET1, WEDE_MASK_PIPE_RST1, VEZO_MASK_PIPE_0.qp16());
@@ -885,15 +871,10 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p#35.REMY*/ wire REMY_LD0n = not1(PERO_COL_LO);
     /*#p35.RAVO*/ wire RAVO_LD1n = not1(PATY_COL_HI);
 
-    // not sure why this needs a delay, but it has to be at least q2
     top.lcd_data0_delay.set(REMY_LD0n);
     top.lcd_data1_delay.set(RAVO_LD1n);
 
-    //top.PIN_LCD_DATA0.io_pin(REMY_LD0n, REMY_LD0n);
-    //top.PIN_LCD_DATA1.io_pin(RAVO_LD1n, RAVO_LD1n);
-
     // so q1 works but q2 has tiny errors? wat?
-
     top.PIN_LCD_DATA0.io_pin(top.lcd_data0_delay.q1(), top.lcd_data0_delay.q1());
     top.PIN_LCD_DATA1.io_pin(top.lcd_data1_delay.q1(), top.lcd_data1_delay.q1());
   }
@@ -918,7 +899,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p23.WOKY*/ WOKY_LCDC_WINMAPn .dff9(XUBO_FF40_WRn, XARE_RSTn, cpu_bus.BUS_CPU_D6p.qp());
     /* p23.XONA*/ XONA_LCDC_LCDENn  .dff9(XUBO_FF40_WRn, XARE_RSTn, cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p23.VYRE*/ wire VYRE_FF40_RDp = and2(VOCA_FF40p, ASOT_CPU_RDp);
+    /*p23.VYRE*/ wire VYRE_FF40_RDp = and2(VOCA_FF40p, top.ASOT_CPU_RDp);
     /*p23.WYCE*/ wire WYCE_FF40_RDn = not1(VYRE_FF40_RDp);
 
     /*#p23.WYPO*/ cpu_bus.BUS_CPU_D0p.tri_6nn(WYCE_FF40_RDn, VYXE_LCDC_BGENn.qp09());
@@ -958,13 +939,8 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     // This latch isn't actually used as a latch, it's effectively an inverter.
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17());
 
-    /*p21.TOBE*/ wire TOBE_FF41_RDp = and2(VARY_FF41p, ASOT_CPU_RDp); // die AND
+    /*p21.TOBE*/ wire TOBE_FF41_RDp = and2(VARY_FF41p, top.ASOT_CPU_RDp); // die AND
     /*p21.VAVE*/ wire VAVE_FF41_RDn = not1(TOBE_FF41_RDp); // die INV
-
-#if 0
-    /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(0, top.lcd_reg.PARU_VBLANKp_d4); // die NOR
-    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp0); // die NOR
-#endif
 
     /*p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
     /*p21.XATY*/ wire XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp, XYMU_RENDERINGn.qn03()); // die NOR
@@ -996,7 +972,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.FOHA*/ FOHA_SCY6n.dff9(CAVO_FF42_WRn, CUNU_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.qp());
     /*p23.FUNY*/ FUNY_SCY7n.dff9(CAVO_FF42_WRn, CUNU_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p23.ANYP*/ wire ANYP_FF42_RDp = and2(XARO_FF42p, ASOT_CPU_RDp);
+    /*p23.ANYP*/ wire ANYP_FF42_RDp = and2(XARO_FF42p, top.ASOT_CPU_RDp);
     /*p23.BUWY*/ wire BUWY_FF42_RDn = not1(ANYP_FF42_RDp);
 
     /*#p23.WARE*/ cpu_bus.BUS_CPU_D0p.tri_6nn(BUWY_FF42_RDn, GAVE_SCY0n.qp09());
@@ -1027,7 +1003,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.CABU*/ CABU_SCX6n.dff9(AMUN_FF43_WRn, CUNU_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.qp());
     /*p23.BAKE*/ BAKE_SCX7n.dff9(AMUN_FF43_WRn, CUNU_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p23.AVOG*/ wire AVOG_FF43_RDp = and2(XAVY_FF43p, ASOT_CPU_RDp);
+    /*p23.AVOG*/ wire AVOG_FF43_RDp = and2(XAVY_FF43p, top.ASOT_CPU_RDp);
     /*p23.BEBA*/ wire BEBA_FF43_RDn = not1(AVOG_FF43_RDp);
 
     /*#p23.EDOS*/ cpu_bus.BUS_CPU_D0p.tri_6nn(BEBA_FF43_RDn, DATY_SCX0n.qp09());
@@ -1061,7 +1037,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p36.MOGY*/ MOGY_BGP_D6n.dff8p(TEPO_FF47_WRp, top.cpu_bus.BUS_CPU_D6p.qp());
     /* p36.MENA*/ MENA_BGP_D7n.dff8p(TEPO_FF47_WRp, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p36.VUSO*/ wire VUSO_FF47_RD = and2(ASOT_CPU_RDp, WERA_FF47);
+    /*p36.VUSO*/ wire VUSO_FF47_RD = and2(top.ASOT_CPU_RDp, WERA_FF47);
     /*p36.TEPY*/ wire TEPY_FF47_RDn = not1(VUSO_FF47_RD);
 
     /*#p36.RARO*/ cpu_bus.BUS_CPU_D0p.tri_6nn(TEPY_FF47_RDn, PAVO_BGP_D0n.qp08());
@@ -1093,7 +1069,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.XUPO*/ XUPO_OBP0_D6n.dff8p(XELO_FF48_WRn, top.cpu_bus.BUS_CPU_D6p.qp());
     /*p36.XANA*/ XANA_OBP0_D7n.dff8p(XELO_FF48_WRn, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p36.XUFY*/ wire XUFY_FF48_RD = and2(ASOT_CPU_RDp, XAYO_FF48);
+    /*p36.XUFY*/ wire XUFY_FF48_RD = and2(top.ASOT_CPU_RDp, XAYO_FF48);
     /*p36.XOZY*/ wire XOZY_FF48_RDn = not1(XUFY_FF48_RD);
 
     /*#p36.XARY*/ cpu_bus.BUS_CPU_D0p.tri_6nn(XOZY_FF48_RDn, XUFU_OBP0_D0n.qp08());
@@ -1125,7 +1101,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p36.LEPU*/ LEPU_OBP1_D6n.dff8p(LEHO_FF49_WRn, top.cpu_bus.BUS_CPU_D6p.qp());
     /*p36.LUXO*/ LUXO_OBP1_D7n.dff8p(LEHO_FF49_WRn, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p36.MUMY*/ wire MUMY_FF49_RD = and2(ASOT_CPU_RDp, TEGO_FF49);
+    /*p36.MUMY*/ wire MUMY_FF49_RD = and2(top.ASOT_CPU_RDp, TEGO_FF49);
     /*p36.LOTE*/ wire LOTE_FF49_RDn = not1(MUMY_FF49_RD);
 
     /*#p36.LAJU*/ cpu_bus.BUS_CPU_D0p.tri_6nn(LOTE_FF49_RDn, MOXY_OBP1_D0n.qp08());
@@ -1157,7 +1133,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.NUKA*/ NUKA_WY6n.dff9(VEFU_FF4A_WRn, WALU_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.qp());
     /*p23.NAFU*/ NAFU_WY7n.dff9(VEFU_FF4A_WRn, WALU_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p23.WAXU*/ wire WAXU_FF4A_RDp = and2(VYGA_FF4Ap, ASOT_CPU_RDp);
+    /*p23.WAXU*/ wire WAXU_FF4A_RDp = and2(VYGA_FF4Ap, top.ASOT_CPU_RDp);
     /*p23.VOMY*/ wire VOMY_FF4A_RDn = not1(WAXU_FF4A_RDp);
 
     /*#p23.PUNU*/ cpu_bus.BUS_CPU_D0p.tri_6nn(VOMY_FF4A_RDn, NESO_WY0n.qp09());
@@ -1189,7 +1165,7 @@ void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /*p23.MUVO*/ MUVO_WX6n.dff9(VOXU_FF4B_WRn, WALU_SYS_RSTn, top.cpu_bus.BUS_CPU_D6p.qp());
     /*p23.NUKU*/ NUKU_WX7n.dff9(VOXU_FF4B_WRn, WALU_SYS_RSTn, top.cpu_bus.BUS_CPU_D7p.qp());
 
-    /*p23.WYZE*/ wire WYZE_FF4B_RDp = and2(VUMY_FF4Bp, ASOT_CPU_RDp);
+    /*p23.WYZE*/ wire WYZE_FF4B_RDp = and2(VUMY_FF4Bp, top.ASOT_CPU_RDp);
     /*p23.VYCU*/ wire VYCU_FF4B_RDn = not1(WYZE_FF4B_RDp);
 
     /*#p23.LOVA*/ cpu_bus.BUS_CPU_D0p.tri_6nn(VYCU_FF4B_RDn, MYPA_WX0n.qp09());

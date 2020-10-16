@@ -50,7 +50,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   {
     /* p04.DECY*/ wire DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
-    /* p04.CATY*/ wire CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
+    /* p04.CATY*/ CATY_LATCH_EXTp = not1(DECY_LATCH_EXTn);
+
     /* p28.MYNU*/ wire MYNU_CPU_RDn = nand2(ASOT_CPU_RDp, CATY_LATCH_EXTp);
     /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
   }

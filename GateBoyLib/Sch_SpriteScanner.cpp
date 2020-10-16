@@ -93,6 +93,8 @@ void SpriteScanner::tick(const SchematicTop& top) {
   /* p29.CEHA*/ wire CEHA_SCANNINGp     = not1(CENO_SCANNINGp.qn16());
 
   /* p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and3(top.clk_reg.XOCE_xBCxxFGx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+
+  /*#p28.ACYL*/ ACYL_SCANNINGp = and2(top.dma_reg.BOGE_DMA_RUNNINGn, BESU_SCANNINGp.qp04());
 }
 
 //------------------------------------------------------------------------------

@@ -85,6 +85,7 @@ struct DmaRegisters {
 
   /*p04.LUMA*/ Sig LUMA_DMA_READ_CARTp;
   /*p04.LUFA*/ Sig LUFA_DMA_READ_VRAMp;
+  /*p28.BOGE*/ Sig BOGE_DMA_RUNNINGn;
 
   /*p04.NAKY*/ DFF17 NAKY_DMA_A00p;
   /*p04.PYRO*/ DFF17 PYRO_DMA_A01p;

@@ -107,9 +107,9 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  /*
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb->sys_cpu_en = false;
+  /*
 
   {
     memset(gb->oam_ram, 0, 160);
@@ -161,7 +161,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
   //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
-  load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb");
+  //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb");
 
   GateBoy::current = gb.state();
 }
@@ -641,7 +641,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
     memset(overlay, 0, sizeof(overlay));
 
     int fb_x = gb->screen_x;
-    //int fb_y = gb->screen_y;
     int fb_y = gb->top.lcd_reg.get_ly();
 
     if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
@@ -650,9 +649,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
         uint8_t p0 = top.lcd_pipe_lo[159 - fb_x + x + 1].qp();
         uint8_t p1 = top.lcd_pipe_hi[159 - fb_x + x + 1].qp();
 
-        int c = (3 - (p0 + p1 * 2)) * 85;
+        int r = (3 - (p0 + p1 * 2)) * 30 + 50;
+        int g = (3 - (p0 + p1 * 2)) * 30 + 50;
+        int b = (3 - (p0 + p1 * 2)) * 30 + 30;
 
-        overlay[x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
+        overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
       {
         uint8_t p0 = top.lcd_pix_lo.qp04();
@@ -662,14 +663,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
         overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
       }
-
-      //overlay[i + fb_y * 160] = 0x33FFFF00;
-      //}
-      /*
-      if (fb_x >= 0 && fb_x < 160) {
-        overlay[fb_x + fb_y * 160] = 0x80FF0000;
-      }
-      */
     }
 
     update_texture_u32(overlay_tex, 160, 144, overlay);

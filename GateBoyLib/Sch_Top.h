@@ -198,6 +198,8 @@ struct SchematicTop {
   /*p07.ASOT*/ Sig ASOT_CPU_RDp;
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
 
+  /*p04.CATY*/ Sig CATY_LATCH_EXTp;
+
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
   /*p07.CUPA*/ Sig CUPA_CPU_WRp_xxxxEFGx;
   /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;

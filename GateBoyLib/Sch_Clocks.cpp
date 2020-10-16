@@ -47,6 +47,8 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
 
   /*#p01.XORE*/ XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /* p01.WESY*/ WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
+
   /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
   /*p01.XAPO*/ XAPO_VID_RSTn = not1(_XODO_VID_RSTp);

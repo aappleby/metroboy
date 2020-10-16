@@ -117,10 +117,11 @@ struct LcdRegisters {
                            SOTA_LYC4n.qn08(), VAFA_LYC5n.qn08(), VEVO_LYC6n.qn08(), RAHA_LYC7n.qn08());
   }
 
-  /*p21.PARU*/ Sig   PARU_VBLANKp_d4;     // -> pix pipe
-  /*p21.TOLU*/ Sig   TOLU_VBLANKn;
-  /*p28.ATEJ*/ Sig   ATEJ_LINE_TRIGp;     // -> buncha stuff
-  /*p21.VYPU*/ Sig   VYPU_INT_VBLANKp;    // -> interrupts
+  /*p28.BYHA*/ Sig BYHA_VID_LINE_END_TRIGn;
+  /*p21.PARU*/ Sig PARU_VBLANKp_d4;     // -> pix pipe
+  /*p21.TOLU*/ Sig TOLU_VBLANKn;
+  /*p28.ATEJ*/ Sig ATEJ_LINE_TRIGp;     // -> buncha stuff
+  /*p21.VYPU*/ Sig VYPU_INT_VBLANKp;    // -> interrupts
 
   /*p21.PURE*/ Sig PURE_LINE_P908n;
   /*p21.SELA*/ Sig SELA_LINE_P908p;

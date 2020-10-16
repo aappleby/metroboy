@@ -23,25 +23,6 @@ void SpriteScanner::dump(Dumper& d, const SchematicTop& top) const {
                                 GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7));
   d("CARE_STORE_ENp_ABxxEFxx %d\n", (wire)CARE_STORE_ENp_ABxxEFxx);
 
-  int oam_temp_a = pack_p(XUSO_OAM_DA0p.qp08(), XEGU_OAM_DA1p.qp08(), YJEX_OAM_DA2p.qp08(), XYJU_OAM_DA3p.qp08(),
-                          YBOG_OAM_DA4p.qp08(), WYSO_OAM_DA5p.qp08(), XOTE_OAM_DA6p.qp08(), YZAB_OAM_DA7p.qp08());
-
-  int oam_temp_b = pack_p(YLOR_OAM_DB0p.qp08(), ZYTY_OAM_DB1p.qp08(), ZYVE_OAM_DB2p.qp08(), ZEZY_OAM_DB3p.qp08(),
-                          GOMO_OAM_DB4p.qp08(), BAXO_OAM_DB5p.qp08(), YZOS_OAM_DB6p.qp08(), DEPO_OAM_DB7p.qp08());
-
-
-  d("OAM TEMP A     %03d %02x %c%c%c%c%c%c%c%c\n",
-    oam_temp_a,
-    oam_temp_a,
-    YZAB_OAM_DA7p.c(), XOTE_OAM_DA6p.c(), WYSO_OAM_DA5p.c(), YBOG_OAM_DA4p.c(),
-    XYJU_OAM_DA3p.c(), YJEX_OAM_DA2p.c(), XEGU_OAM_DA1p.c(), XUSO_OAM_DA0p.c());
-
-  d("OAM TEMP B     %03d %2x %c%c%c%c%c%c%c%c\n",
-    oam_temp_b,
-    oam_temp_b,
-    DEPO_OAM_DB7p.c(), YZOS_OAM_DB6p.c(), BAXO_OAM_DB5p.c(), GOMO_OAM_DB4p.c(),
-    ZEZY_OAM_DB3p.c(), ZYVE_OAM_DB2p.c(), ZYTY_OAM_DB1p.c(), YLOR_OAM_DB0p.c());
-
   d("\n");
 }
 
@@ -61,22 +42,22 @@ void SpriteScanner::tick(const SchematicTop& top) {
   /* p29.FEMO*/ wire _FEMO_Y6n = not1(top.lcd_reg.MATO_Y6p.qp17());
   /* p29.GUSU*/ wire _GUSU_Y7n = not1(top.lcd_reg.LAFO_Y7p.qp17());
 
-  /*p29.ERUC*/ wire _ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, XUSO_OAM_DA0p.qp08(), GND);
-  /*p29.ERUC*/ wire _ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, XUSO_OAM_DA0p.qp08(), GND);
-  /*p29.ENEF*/ wire _ENEF_YDIFF_S1 = add_s(_DASA_Y1n, XEGU_OAM_DA1p.qp08(), _ERUC_YDIFF_C0);
-  /*p29.ENEF*/ wire _ENEF_YDIFF_C1 = add_c(_DASA_Y1n, XEGU_OAM_DA1p.qp08(), _ERUC_YDIFF_C0);
-  /*p29.FECO*/ wire _FECO_YDIFF_S2 = add_s(_FUKY_Y2n, YJEX_OAM_DA2p.qp08(), _ENEF_YDIFF_C1);
-  /*p29.FECO*/ wire _FECO_YDIFF_C2 = add_c(_FUKY_Y2n, YJEX_OAM_DA2p.qp08(), _ENEF_YDIFF_C1);
-  /*p29.GYKY*/ wire _GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, XYJU_OAM_DA3p.qp08(), _FECO_YDIFF_C2);
-  /*p29.GYKY*/ wire _GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, XYJU_OAM_DA3p.qp08(), _FECO_YDIFF_C2);
-  /*p29.GOPU*/ wire _GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, YBOG_OAM_DA4p.qp08(), _GYKY_YDIFF_C3);
-  /*p29.GOPU*/ wire _GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, YBOG_OAM_DA4p.qp08(), _GYKY_YDIFF_C3);
-  /*p29.FUWA*/ wire _FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, WYSO_OAM_DA5p.qp08(), _GOPU_YDIFF_C4);
-  /*p29.FUWA*/ wire _FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, WYSO_OAM_DA5p.qp08(), _GOPU_YDIFF_C4);
-  /*p29.GOJU*/ wire _GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, XOTE_OAM_DA6p.qp08(), _FUWA_YDIFF_C5);
-  /*p29.GOJU*/ wire _GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, XOTE_OAM_DA6p.qp08(), _FUWA_YDIFF_C5);
-  /*p29.WUHU*/ wire _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
-  /*p29.WUHU*/ wire _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
+  /*p29.ERUC*/ wire _ERUC_YDIFF_S0 = add_s(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0p.qp08(), GND);
+  /*p29.ERUC*/ wire _ERUC_YDIFF_C0 = add_c(_EBOS_Y0n, top.oam_bus.XUSO_OAM_DA0p.qp08(), GND);
+  /*p29.ENEF*/ wire _ENEF_YDIFF_S1 = add_s(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1p.qp08(), _ERUC_YDIFF_C0);
+  /*p29.ENEF*/ wire _ENEF_YDIFF_C1 = add_c(_DASA_Y1n, top.oam_bus.XEGU_OAM_DA1p.qp08(), _ERUC_YDIFF_C0);
+  /*p29.FECO*/ wire _FECO_YDIFF_S2 = add_s(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2p.qp08(), _ENEF_YDIFF_C1);
+  /*p29.FECO*/ wire _FECO_YDIFF_C2 = add_c(_FUKY_Y2n, top.oam_bus.YJEX_OAM_DA2p.qp08(), _ENEF_YDIFF_C1);
+  /*p29.GYKY*/ wire _GYKY_YDIFF_S3 = add_s(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3p.qp08(), _FECO_YDIFF_C2);
+  /*p29.GYKY*/ wire _GYKY_YDIFF_C3 = add_c(_FUVE_Y3n, top.oam_bus.XYJU_OAM_DA3p.qp08(), _FECO_YDIFF_C2);
+  /*p29.GOPU*/ wire _GOPU_YDIFF_S4 = add_s(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4p.qp08(), _GYKY_YDIFF_C3);
+  /*p29.GOPU*/ wire _GOPU_YDIFF_C4 = add_c(_FEPU_Y4n, top.oam_bus.YBOG_OAM_DA4p.qp08(), _GYKY_YDIFF_C3);
+  /*p29.FUWA*/ wire _FUWA_YDIFF_S5 = add_s(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5p.qp08(), _GOPU_YDIFF_C4);
+  /*p29.FUWA*/ wire _FUWA_YDIFF_C5 = add_c(_FOFA_Y5n, top.oam_bus.WYSO_OAM_DA5p.qp08(), _GOPU_YDIFF_C4);
+  /*p29.GOJU*/ wire _GOJU_YDIFF_S6 = add_s(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6p.qp08(), _FUWA_YDIFF_C5);
+  /*p29.GOJU*/ wire _GOJU_YDIFF_C6 = add_c(_FEMO_Y6n, top.oam_bus.XOTE_OAM_DA6p.qp08(), _FUWA_YDIFF_C5);
+  /*p29.WUHU*/ wire _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
+  /*p29.WUHU*/ wire _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, top.oam_bus.YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
 
   /* p29.DEGE*/ DEGE_SPRITE_DELTA0 = not1(_ERUC_YDIFF_S0);
   /* p29.DABY*/ DABY_SPRITE_DELTA1 = not1(_ENEF_YDIFF_S1);

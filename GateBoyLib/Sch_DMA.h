@@ -14,8 +14,8 @@ struct DmaRegisters {
   void reset_cart() {
     MATU_DMA_RUNNINGp.reset(REG_D0C1);
 
-    LUMA_DMA_READ_CARTp.reset(TRI_D0NP);
-    LUFA_DMA_READ_VRAMp.reset(TRI_D0NP);
+    LUMA_DMA_CARTp.reset(TRI_D0NP);
+    LUFA_DMA_VRAMp.reset(TRI_D0NP);
 
     NAKY_DMA_A00p.reset(REG_D0C0);
     PYRO_DMA_A01p.reset(REG_D0C1);
@@ -47,8 +47,8 @@ struct DmaRegisters {
   void reset_boot() {
     MATU_DMA_RUNNINGp.reset(REG_D0C0);
 
-    LUMA_DMA_READ_CARTp.reset(TRI_HZNP);
-    LUFA_DMA_READ_VRAMp.reset(TRI_HZNP);
+    LUMA_DMA_CARTp.reset(TRI_HZNP);
+    LUFA_DMA_VRAMp.reset(TRI_HZNP);
 
     NAKY_DMA_A00p.reset(REG_D0C0);
     PYRO_DMA_A01p.reset(REG_D0C0);
@@ -83,8 +83,8 @@ struct DmaRegisters {
 
   /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;
 
-  /*p04.LUMA*/ Sig LUMA_DMA_READ_CARTp;
-  /*p04.LUFA*/ Sig LUFA_DMA_READ_VRAMp;
+  /*p04.LUMA*/ Sig LUMA_DMA_CARTp;
+  /*p04.LUFA*/ Sig LUFA_DMA_VRAMp;
   /*p28.BOGE*/ Sig BOGE_DMA_RUNNINGn;
 
   /*p04.NAKY*/ DFF17 NAKY_DMA_A00p;

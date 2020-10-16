@@ -79,8 +79,8 @@ struct ClockRegisters {
 
   void dump(Dumper& d, wire CLK) const;
 
-  void tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
-  void tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
+  void tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, const SchematicTop& top);
+  void tock_clk_slow(wire CLKGOOD, SchematicTop& top);
   void tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
   void tock_dbg_slow(SchematicTop& top);
   void tock_vid_slow(wire CLK, SchematicTop& top);
@@ -99,7 +99,7 @@ struct ClockRegisters {
 
   /*p01.ADAR*/ Sig ADAR_ABCxxxxH; // ext bus, oam bus
   /*p01.BALY*/ Sig BALY_xBCDEFGH; // joypad, timer
-  /*p01.BALY*/ Sig BOGA_Axxxxxxx;
+  /*p01.BOGA*/ Sig BOGA_Axxxxxxx;
 
   /*p29.XUPY*/ Sig XUPY_ABxxEFxx; // lcd, sprite scanner
   /*p21.TALU*/ Sig TALU_xxCDEFxx; // lcd, pix pipe (wy match should probably move to lcd)
@@ -123,18 +123,11 @@ struct ClockRegisters {
   /*p27.MYVO*/ Sig MYVO_AxCxExGx;
 
 
-
-
-
-
   /*p01.ALUR*/ Sig ALUR_SYS_RSTn; // everywhere
   /*p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere
-  /*p01.DULA*/ Sig DULA_SYS_RSTp;
   /*p01.CUNU*/ Sig CUNU_SYS_RSTn;
   /*p01.XORE*/ Sig XORE_SYS_RSTp;
   /*p01.WESY*/ Sig WESY_SYS_RSTn;
-
-
   /*p01.ATAR*/ Sig ATAR_VID_RSTp;
   /*p01.ABEZ*/ Sig ABEZ_VID_RSTn;
 

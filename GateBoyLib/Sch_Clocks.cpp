@@ -36,32 +36,28 @@ void ClockRegisters::dump(Dumper& d, wire CLK) const {
   d("\n");
 }
 
-//-----------------------------------------------------------------------------
+//==============================================================================
 
-void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
+void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, const SchematicTop& top) {
 
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp13(), ASOL_POR_DONEn.qp04());
-  /*#p01.ALUR*/ ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
-  /*#p01.DULA*/ DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
+  /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp13(), ASOL_POR_DONEn.qp04());
+  /*#p01.ALUR*/ ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
   /*#p01.CUNU*/ CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
-
-
   /*#p01.XORE*/ XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /* p01.WESY*/ WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
 
-  /*p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
-  /*p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
-  /*p01.XAPO*/ XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
-
-  /*#p01.ATAR*/ ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
+  /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
+  /* p01.XAPO*/ XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
+  /*#p01.ATAR*/ ATAR_VID_RSTp = not1(XAPO_VID_RSTn);
   /*#p01.ABEZ*/ ABEZ_VID_RSTn = not1(ATAR_VID_RSTp);
 
 
-
-
-  /*p01.ATEZ*/ wire _ATEZ_CLKBAD = not1(CLKGOOD);
-  /*p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
-  /*p01.ABOL*/ wire _ABOL_CLKREQn = not1(CPUREADY);
+  /* p01.ATEZ*/ wire _ATEZ_CLKBAD = not1(CLKGOOD);
+  /* p01.UCOB*/ UCOB_CLKBADp = not1(CLKGOOD);
+  /* p01.ABOL*/ wire _ABOL_CLKREQn = not1(CPUREADY);
+  /*#p01.BUTY*/ wire _BUTY_CLKREQ = not1(_ABOL_CLKREQn);
 
   // ignoring the deglitcher here
   /*p01.ATAL*/ ATAL_xBxDxFxH = CLK;
@@ -110,15 +106,11 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p27.MYVO*/ MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
 
   /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
-  /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx,
-                                           AROV_xxCDEFxx,
-                                           _ABOL_CLKREQn);
+  /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx, AROV_xxCDEFxx, _ABOL_CLKREQn);
   /*#p01.BASU*/ wire _BASU_xBCDEFxx = not1(_BATE_AxxxxxGH);
 
   /*#p01.BUKE*/ BUKE_AxxxxxGH = not1(_BASU_xBCDEFxx);
   /*#p01.BOMA*/ BOMA_xBCDEFGH = not1(BOGA_Axxxxxxx);
-
-  /*#p01.BUTY*/ wire _BUTY_CLKREQ = not1(_ABOL_CLKREQn);
 
   /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(BALY_xBCDEFGH, _BUTY_CLKREQ);
   /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
@@ -127,9 +119,9 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
 }
 
-//-----------------------------------------------------------------------------
+//==============================================================================
 
-void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
+void ClockRegisters::tock_clk_slow(wire CLKGOOD, SchematicTop& top) {
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
   /*p01.AFUR*/ AFUR_xxxxEFGH.dff9(!ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, ADYK_ABCxxxxH.qp09());
@@ -157,24 +149,23 @@ void ClockRegisters::tock_clk_slow(wire RST, wire CLK, wire CLKGOOD, wire CPUREA
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, SchematicTop& top) {
-  /*p01.UPYF*/ wire UPYF = or2(RST, UCOB_CLKBADp);
-  /*p01.TUBO*/ TUBO_WAITINGp.nor_latch(UPYF, CPUREADY);
+  /*p01.UPYF*/ wire _UPYF = or2(RST, UCOB_CLKBADp);
+  /*p01.TUBO*/ TUBO_WAITINGp.nor_latch(_UPYF, CPUREADY);
 
 #ifdef FAST_BOOT
-  /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.TERO_DIV_03.qp());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp(), top.tim_reg.TERO_DIV_03.qp());
 #else
-  /*p01.UNUT*/ wire UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp04(), top.tim_reg.UPOF_DIV_15.qp17());
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp04(), top.tim_reg.UPOF_DIV_15.qp17());
 #endif
 
-  /*p01.TABA*/ wire TABA_POR_TRIGn = or3(top.UNOR_MODE_DBG2p, top.UMUT_MODE_DBG1p, UNUT_POR_TRIGn);
-  top.cpu_bus.PIN_CPU_STARTp.set(TABA_POR_TRIGn);
+  /*p01.TABA*/ wire _TABA_POR_TRIGn = or3(top.UNOR_MODE_DBG2p, top.UMUT_MODE_DBG1p, _UNUT_POR_TRIGn);
+  top.cpu_bus.PIN_CPU_STARTp.set(_TABA_POR_TRIGn);
 
-  /*#p01.ALYP*/ wire ALYP_RSTn = not1(TABA_POR_TRIGn);
-  /*#p01.AFAR*/ wire AFAR_RST  = nor2(RST, ALYP_RSTn);
-  /*p01.ASOL*/ ASOL_POR_DONEn.nor_latch(RST, AFAR_RST); // Schematic wrong, this is a latch.
+  /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
+  /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(RST, _ALYP_RSTn);
+  /* p01.ASOL*/ ASOL_POR_DONEn.nor_latch(RST, _AFAR_RSTp); // Schematic wrong, this is a latch.
 
-  /*#p01.BOGA*/ wire BOGA_xBCDEFGH = not1(BALY_xBCDEFGH);
-  /*p01.AFER*/ AFER_SYS_RSTp.dff13(BOGA_xBCDEFGH, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp04());
+  /* p01.AFER*/ AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx, top.UPOJ_MODE_PRODn, ASOL_POR_DONEn.qp04());
 
   top.cpu_bus.PIN_CPU_SYS_RSTp.set(AFER_SYS_RSTp.qp13());
   top.cpu_bus.PIN_CPU_EXT_RST.set(RST);
@@ -190,13 +181,13 @@ void ClockRegisters::tock_dbg_slow(SchematicTop& top) {
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
-  /*p29.XYVA*/ wire XYVA_xBxDxFxH = not1(ZEME_AxCxExGx);
-  /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
-  /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);
+  /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not1(ZEME_AxCxExGx);
+  /*p29.XOTA*/ wire _XOTA_AxCxExGx = not1(_XYVA_xBxDxFxH);
+  /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not1(_XOTA_AxCxExGx);
 
-  /*p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn16());
+  /*p29.WUVU*/ WUVU_ABxxEFxx.dff17(_XOTA_AxCxExGx,       XAPO_VID_RSTn, WUVU_ABxxEFxx.qn16());
   /*p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn16(), XAPO_VID_RSTn, VENA_xxCDEFxx.qn16()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
-  /*p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH,      XAPO_VID_RSTn, WUVU_ABxxEFxx.qn16());
+  /*p29.WOSU*/ WOSU_AxxDExxH.dff17(_XYFY_xBxDxFxH,       XAPO_VID_RSTn, WUVU_ABxxEFxx.qn16());
 }
 
 //-----------------------------------------------------------------------------

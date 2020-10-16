@@ -56,15 +56,15 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p28.LEKO*/ LEKO_CPU_RDp = not1(MYNU_CPU_RDn);
   }
 
-  clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, *this);
+  clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, top);
 
-  lcd_reg.tick(*this);
+  lcd_reg.tick(top);
 
-  sprite_scanner.tick(*this);
-  sprite_store.tick(*this);
+  sprite_scanner.tick(top);
+  sprite_store.tick(top);
 
 
-  pix_pipe.tick(*this);
+  pix_pipe.tick(top);
 
   {
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand2(top.cpu_bus.PIN_CPU_WRp.qp(), top.clk_reg.AFAS_xxxxEFGx);
@@ -80,59 +80,59 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p07.TUTU*/ TUTU_ADDR_BOOTp = and2(TERA_BOOT_BITp, top.cpu_bus.TULO_ADDR_00XXp());
   }
 
-  tim_reg.tick(*this);
-  joypad.tick(*this);
-  tile_fetcher.tick(*this);
-  sprite_fetcher.tick(*this);
+  tim_reg.tick(top);
+  joypad.tick(top);
+  tile_fetcher.tick(top);
+  sprite_fetcher.tick(top);
 
-  oam_bus.tick(*this);
+  oam_bus.tick(top);
 }
 
 //------------------------------------------------------------------------------
 
 void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY) {
-  const auto& top = *this;
+  auto& top = *this;
 
   {
     /*#p25.SYCY*/ wire SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
     /*#p25.SOTO*/ SOTO_DBG_VRAM.dff17(SYCY_DBG_CLOCKn, top.clk_reg.CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn16());
   }
 
-  clk_reg.tock_clk_slow(RST, CLK, CLKGOOD, CPUREADY, *this);
-  clk_reg.tock_rst_slow(RST, CLKGOOD, CPUREADY, *this);
-  clk_reg.tock_dbg_slow(*this);
-  clk_reg.tock_vid_slow(CLK, *this);
+  clk_reg.tock_clk_slow(CLKGOOD, top);
+  clk_reg.tock_rst_slow(RST, CLKGOOD, CPUREADY, top);
+  clk_reg.tock_dbg_slow(top);
+  clk_reg.tock_vid_slow(CLK, top);
 
-  tim_reg.tock(RST, *this, cpu_bus);
-  bootrom.tock(*this, cpu_bus);
+  tim_reg.tock(RST, top, cpu_bus);
+  bootrom.tock(top, cpu_bus);
 
-  dma_reg.tock(*this, cpu_bus);
-
-
-  ser_reg.tock(*this, cpu_bus);
-  joypad.tock(*this, cpu_bus);
-  sprite_scanner.tock(*this);
+  dma_reg.tock(top, cpu_bus);
 
 
+  ser_reg.tock(top, cpu_bus);
+  joypad.tock(top, cpu_bus);
+  sprite_scanner.tock(top);
 
-  lcd_reg.tock(*this, cpu_bus);
-
-  sprite_store.tock(*this);
 
 
-  pix_pipe.tock(*this, cpu_bus);
-  sprite_fetcher.tock(*this);
-  tile_fetcher.tock(*this);
-  int_reg.tock(*this, cpu_bus);
+  lcd_reg.tock(top, cpu_bus);
+
+  sprite_store.tock(top);
+
+
+  pix_pipe.tock(top, cpu_bus);
+  sprite_fetcher.tock(top);
+  tile_fetcher.tock(top);
+  int_reg.tock(top, cpu_bus);
 
   cpu_bus.PIN_CPU_ADDR_HIp.set(cpu_bus.SYRO_FE00_FFFFp());
   cpu_bus.PIN_CPU_BOOTp.set(TUTU_ADDR_BOOTp);
 
 
-  ext_bus.tock(*this);
+  ext_bus.tock(top);
 
-  oam_bus.tock(*this);
-  vram_bus.tock(*this);
+  oam_bus.tock(top);
+  vram_bus.tock(top);
 
   {
     // IE is technically in the CPU, but we're going to implement it here for now.

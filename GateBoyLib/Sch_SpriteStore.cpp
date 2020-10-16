@@ -280,14 +280,14 @@ void SpriteStore::tock(const SchematicTop& top) {
   /* p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
   /* p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
 
-  /*#p31.ZAGO*/ wire _ZAGO_X0n = not1(top.sprite_scanner.YLOR_OAM_DB0p.qp08());
-  /* p31.ZOCY*/ wire _ZOCY_X1n = not1(top.sprite_scanner.ZYTY_OAM_DB1p.qp08());
-  /* p31.YPUR*/ wire _YPUR_X2n = not1(top.sprite_scanner.ZYVE_OAM_DB2p.qp08());
-  /* p31.YVOK*/ wire _YVOK_X3n = not1(top.sprite_scanner.ZEZY_OAM_DB3p.qp08());
-  /* p31.COSE*/ wire _COSE_X4n = not1(top.sprite_scanner.GOMO_OAM_DB4p.qp08());
-  /* p31.AROP*/ wire _AROP_X5n = not1(top.sprite_scanner.BAXO_OAM_DB5p.qp08());
-  /* p31.XATU*/ wire _XATU_X6n = not1(top.sprite_scanner.YZOS_OAM_DB6p.qp08());
-  /* p31.BADY*/ wire _BADY_X7n = not1(top.sprite_scanner.DEPO_OAM_DB7p.qp08());
+  /*#p31.ZAGO*/ wire _ZAGO_X0n = not1(top.oam_bus.YLOR_OAM_DB0p.qp08());
+  /* p31.ZOCY*/ wire _ZOCY_X1n = not1(top.oam_bus.ZYTY_OAM_DB1p.qp08());
+  /* p31.YPUR*/ wire _YPUR_X2n = not1(top.oam_bus.ZYVE_OAM_DB2p.qp08());
+  /* p31.YVOK*/ wire _YVOK_X3n = not1(top.oam_bus.ZEZY_OAM_DB3p.qp08());
+  /* p31.COSE*/ wire _COSE_X4n = not1(top.oam_bus.GOMO_OAM_DB4p.qp08());
+  /* p31.AROP*/ wire _AROP_X5n = not1(top.oam_bus.BAXO_OAM_DB5p.qp08());
+  /* p31.XATU*/ wire _XATU_X6n = not1(top.oam_bus.YZOS_OAM_DB6p.qp08());
+  /* p31.BADY*/ wire _BADY_X7n = not1(top.oam_bus.DEPO_OAM_DB7p.qp08());
 
   //----------------------------------------
   // Sprite scan Y matcher

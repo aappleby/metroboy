@@ -641,7 +641,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     memset(overlay, 0, sizeof(overlay));
 
     int fb_x = gb->screen_x;
-    int fb_y = gb->top.lcd_reg.get_ly();
+    int fb_y = gb->screen_y;
 
     if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
 

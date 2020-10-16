@@ -68,19 +68,7 @@ void OamBus::dump(Dumper& d) const {
 //------------------------------------------------------------------------------
 
 void OamBus::tick(const SchematicTop& top) {
-  /*p29.XYSO*/ wire XYSO_xBCDxFGH = not1(top.clk_reg.WOJO_AxxxExxx);
-  /*p25.AVER*/ wire AVER_SCAN_OAM_CLK = nand2(top.sprite_scanner.ACYL_SCANNINGp, XYSO_xBCDxFGH);
-  /*p25.XUJY*/ wire XUJY_PPU_OAM_CLK  = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK);
-
-  /* p07.SARO*/ wire SARO_FE00_FEFFp = not1(top.cpu_bus.ROPE_FE00_FEFFn());
-
-  /* p01.UVYT*/ wire UVYT_ABCDxxxx = not1(top.clk_reg.BUDE_xxxxEFGH);
-  /* p04.MOPA*/ wire MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
-
-  // CUFE looks like BYHA minus an inverter
-  /*p25.CUFE*/ wire CUFE_OAM_CLK  = not1(or_and3(SARO_FE00_FEFFp, top.dma_reg.MATU_DMA_RUNNINGp.qp17(), MOPA_xxxxEFGH));
-  /*p25.BYCU*/ wire BYCU_OAM_CLKp = nand3(AVER_SCAN_OAM_CLK, XUJY_PPU_OAM_CLK, CUFE_OAM_CLK);
-  /*p25.COTA*/ COTA_OAM_CLKn = not1(BYCU_OAM_CLKp);
+  (void)top;
 }
 
 //------------------------------------------------------------------------------
@@ -92,8 +80,6 @@ void OamBus::tock(SchematicTop& top) {
   //----------------------------------------
 
   /* p28.XYNY*/ wire _XYNY_ABCDxxxx = not1(top.clk_reg.MOPA_xxxxEFGH);
-
-  //----------------------------------------
 
   /*#p28.GEKA*/ wire _GEKA_OAM_A0p = not1(BUS_OAM_A0n.qp()); // -> WAFO, YLYC, WUKU
   /* p28.WAFO*/ wire _WAFO_OAM_A0n = not1(_GEKA_OAM_A0p);
@@ -109,6 +95,15 @@ void OamBus::tock(SchematicTop& top) {
 
   /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(top.dma_reg.MATU_DMA_RUNNINGp.qp17(), top.sprite_scanner.ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
   /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(top.cpu_bus.SARO_FE00_FEFFp(), _AJUJ_OAM_BUSYn); // def and
+
+  /* p29.XYSO*/ wire _XYSO_xBCDxFGH = not1(top.clk_reg.WOJO_AxxxExxx);
+  /* p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand2(top.sprite_scanner.ACYL_SCANNINGp, _XYSO_xBCDxFGH);
+  /* p25.XUJY*/ wire _XUJY_PPU_OAM_CLK  = not1(top.sprite_fetcher.VAPE_FETCH_OAM_CLK);
+
+  // CUFE looks like BYHA minus an inverter
+  /* p25.CUFE*/ wire _CUFE_OAM_CLK  = not1(or_and3(top.cpu_bus.SARO_FE00_FEFFp(), top.dma_reg.MATU_DMA_RUNNINGp.qp17(), top.clk_reg.MOPA_xxxxEFGH));
+  /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3(_AVER_SCAN_OAM_CLK, _XUJY_PPU_OAM_CLK, _CUFE_OAM_CLK);
+  /* p25.COTA*/ wire _COTA_OAM_CLKn = not1(_BYCU_OAM_CLKp);
 
   //----------------------------------------
   // OAM address mux
@@ -167,7 +162,7 @@ void OamBus::tock(SchematicTop& top) {
   {
     /*p04.MAKA*/ MAKA_HOLD_MEMp.dff17(top.clk_reg.ZEME_AxCxExGx, top.clk_reg.CUNU_SYS_RSTn, top.CATY_LATCH_EXTp);
 
-    PIN_OAM_CLK.set(COTA_OAM_CLKn);
+    PIN_OAM_CLK.set(_COTA_OAM_CLKn);
 
     /*#p28.YVAL*/ wire _YVAL_OAM_OEn = not1(_BODE_OAM_OEp);
     /*#p28.YRYV*/ wire _YRYU_OAM_OEp = not1(_YVAL_OAM_OEn);
@@ -317,6 +312,32 @@ void OamBus::tock(SchematicTop& top) {
     /* p31.DEVE*/ top.cpu_bus.BUS_CPU_D5p.tri10_np(_WEWU_OBL_TO_CBDn, CYRA_OAM_LATCH_DB5n.qn10());
     /* p31.ZEHA*/ top.cpu_bus.BUS_CPU_D6p.tri10_np(_WEWU_OBL_TO_CBDn, ZUVE_OAM_LATCH_DB6n.qn10());
     /* p31.FYRA*/ top.cpu_bus.BUS_CPU_D7p.tri10_np(_WEWU_OBL_TO_CBDn, ECED_OAM_LATCH_DB7n.qn10());
+  }
+
+  {
+    /*p29.YWOK*/ wire _YWOK_OAM_CLKn = not1(_COTA_OAM_CLKn);
+    /*p29.YWOK*/ wire _YWOK_OAM_CLKp = not1(_YWOK_OAM_CLKn);
+
+    /*#p29.XUSO*/ top.sprite_scanner.XUSO_OAM_DA0p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.YDYV_OAM_LATCH_DA0n.qp08());
+    /* p29.XEGU*/ top.sprite_scanner.XEGU_OAM_DA1p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.YCEB_OAM_LATCH_DA1n.qp08());
+    /* p29.YJEX*/ top.sprite_scanner.YJEX_OAM_DA2p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.ZUCA_OAM_LATCH_DA2n.qp08());
+    /* p29.XYJU*/ top.sprite_scanner.XYJU_OAM_DA3p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.WONE_OAM_LATCH_DA3n.qp08());
+    /* p29.YBOG*/ top.sprite_scanner.YBOG_OAM_DA4p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.ZAXE_OAM_LATCH_DA4n.qp08());
+    /* p29.WYSO*/ top.sprite_scanner.WYSO_OAM_DA5p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.XAFU_OAM_LATCH_DA5n.qp08());
+    /* p29.XOTE*/ top.sprite_scanner.XOTE_OAM_DA6p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.YSES_OAM_LATCH_DA6n.qp08());
+    /* p29.YZAB*/ top.sprite_scanner.YZAB_OAM_DA7p.dff8n(_YWOK_OAM_CLKn, _YWOK_OAM_CLKp, top.oam_bus.ZECA_OAM_LATCH_DA7n.qp08());
+
+    /* p31.XEGA*/ wire _XEGA_OAM_CLKp = not1(_COTA_OAM_CLKn);
+    /* p31.XEGA*/ wire _XEGA_OAM_CLKn = not1(_XEGA_OAM_CLKp);
+
+    /* p31.YLOR*/ top.sprite_scanner.YLOR_OAM_DB0p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.XYKY_OAM_LATCH_DB0n.qp08());
+    /* p31.ZYTY*/ top.sprite_scanner.ZYTY_OAM_DB1p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.YRUM_OAM_LATCH_DB1n.qp08());
+    /* p31.ZYVE*/ top.sprite_scanner.ZYVE_OAM_DB2p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.YSEX_OAM_LATCH_DB2n.qp08());
+    /* p31.ZEZY*/ top.sprite_scanner.ZEZY_OAM_DB3p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.YVEL_OAM_LATCH_DB3n.qp08());
+    /* p31.GOMO*/ top.sprite_scanner.GOMO_OAM_DB4p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.WYNO_OAM_LATCH_DB4n.qp08());
+    /* p31.BAXO*/ top.sprite_scanner.BAXO_OAM_DB5p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.CYRA_OAM_LATCH_DB5n.qp08());
+    /* p31.YZOS*/ top.sprite_scanner.YZOS_OAM_DB6p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.ZUVE_OAM_LATCH_DB6n.qp08());
+    /* p31.DEPO*/ top.sprite_scanner.DEPO_OAM_DB7p.dff8n(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, top.oam_bus.ECED_OAM_LATCH_DB7n.qp08());
   }
 }
 

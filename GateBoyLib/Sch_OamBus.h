@@ -10,7 +10,6 @@ struct CpuBus;
 
 struct OamBus {
   void reset_cart() {
-    COTA_OAM_CLKn.reset(TRI_D1NP); // FIXME not sure about cart boot state
     MAKA_HOLD_MEMp.reset(REG_D0C1);
     WUJE_CPU_OAM_WRn.reset(TRI_D1NP);
 
@@ -75,7 +74,6 @@ struct OamBus {
   }
 
   void reset_boot() {
-    COTA_OAM_CLKn.reset(TRI_D0NP);
     MAKA_HOLD_MEMp.reset(REG_D0C0);
     WUJE_CPU_OAM_WRn.reset(TRI_D0NP);
 
@@ -174,7 +172,6 @@ struct OamBus {
 
   //----------------------------------------
 
-  /*p25.COTA*/ Sig COTA_OAM_CLKn;
   /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;
 

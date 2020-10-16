@@ -48,28 +48,25 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   /* p01.UVYT*/ wire UVYT_ABCDxxxx = not1(top.clk_reg.BUDE_xxxxEFGH);
   /* p04.MOPA*/ wire MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
 
-  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
-  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
-
   {
     /*#p22.WATE*/ wire WATE_FF46n    = nand5(top.cpu_bus.WERO_FF4Xp(), top.cpu_bus.XOLA_A00n(), top.cpu_bus.WESA_A01p(), top.cpu_bus.WALO_A02p(), top.cpu_bus.XERA_A03n());
     /*#p22.XEDA*/ wire XEDA_FF46p    = not1(WATE_FF46n);
     /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(top.CUPA_CPU_WRp_xxxxEFGx, XEDA_FF46p);
-    /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn16(), CUNU_SYS_RSTn);
+    /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn16(), top.clk_reg.CUNU_SYS_RSTn);
     /*#p04.LYXE*/ LYXE_DMA_LATCHp.nor_latch(LAVY_FF46_WRp, LOKO_DMA_RSTp);
 
     /*#p04.LUPA*/ wire LUPA_DMA_TRIG = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn03());
-    /*#p04.LUVY*/ LUVY_DMA_TRIG_d0  .dff17(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LUPA_DMA_TRIG);
-    /*#p04.LENE*/ LENE_DMA_TRIG_d4  .dff17(MOPA_xxxxEFGH, CUNU_SYS_RSTn, LUVY_DMA_TRIG_d0.qp17());
+    /*#p04.LUVY*/ LUVY_DMA_TRIG_d0  .dff17(UVYT_ABCDxxxx, top.clk_reg.CUNU_SYS_RSTn, LUPA_DMA_TRIG);
+    /*#p04.LENE*/ LENE_DMA_TRIG_d4  .dff17(MOPA_xxxxEFGH, top.clk_reg.CUNU_SYS_RSTn, LUVY_DMA_TRIG_d0.qp17());
 
-    /*#p04.LOKY*/ LOKY_DMA_LATCHp.nand_latch(LENE_DMA_TRIG_d4.qn16(), and2(MYTE_DMA_DONE.qn16(), CUNU_SYS_RSTn));
-    /*#p04.MATU*/ MATU_DMA_RUNNINGp .dff17(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp03());
+    /*#p04.LOKY*/ LOKY_DMA_LATCHp.nand_latch(LENE_DMA_TRIG_d4.qn16(), and2(MYTE_DMA_DONE.qn16(), top.clk_reg.CUNU_SYS_RSTn));
+    /*#p04.MATU*/ MATU_DMA_RUNNINGp .dff17(UVYT_ABCDxxxx, top.clk_reg.CUNU_SYS_RSTn, LOKY_DMA_LATCHp.qp03());
   }
 
   {
     // 128+16+8+4+2+1 = 159, this must be "dma done"
 
-    /*#p04.LOKO*/ wire LOKO_DMA_RSTp  = nand2(LENE_DMA_TRIG_d4.qn16(), CUNU_SYS_RSTn);
+    /*#p04.LOKO*/ wire LOKO_DMA_RSTp  = nand2(LENE_DMA_TRIG_d4.qn16(), top.clk_reg.CUNU_SYS_RSTn);
     /*#p04.LAPA*/ wire LAPA_DMA_RSTn  = not1(LOKO_DMA_RSTp);
     /*#p04.NAVO*/ wire NAVO_DMA_DONEn = nand6(NAKY_DMA_A00p.qp17(), PYRO_DMA_A01p.qp17(), NEFY_DMA_A02p.qp17(), MUTY_DMA_A03p.qp17(), NYKO_DMA_A04p.qp17(), MUGU_DMA_A07p.qp17());
     /*#p04.NOLO*/ wire NOLO_DMA_DONEp = not1(NAVO_DMA_DONEn);
@@ -77,7 +74,7 @@ void DmaRegisters::tock(const SchematicTop& top, CpuBus& cpu_bus) {
   }
 
   {
-    /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn16(), CUNU_SYS_RSTn);
+    /*#p04.LOKO*/ wire LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn16(), top.clk_reg.CUNU_SYS_RSTn);
     /*#p04.LAPA*/ wire LAPA_DMA_RSTn = not1(LOKO_DMA_RSTp);
     /*#p04.META*/ wire META_DMA_CLKp = and2(UVYT_ABCDxxxx, LOKY_DMA_LATCHp.qp03());
 

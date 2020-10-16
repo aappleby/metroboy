@@ -42,8 +42,10 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp.qp13(), ASOL_POR_DONEn.qp04());
   /*#p01.ALUR*/ ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
-  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
-  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.DULA*/ DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+
+
   /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
@@ -91,6 +93,10 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.qp17());
   /*#p29.WOJO*/ WOJO_AxxxExxx = nor2(WOSU_AxxDExxH.qn16(), WUVU_ABxxEFxx.qn16());
   /*#p01.AFAS*/ AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH, ATYP_ABCDxxxx);
+
+  /*#p01.ZEME*/ ZEME_AxCxExGx = not1(ZAXY_xBxDxFxH);
+  /* p01.UVYT*/ UVYT_ABCDxxxx = not1(BUDE_xxxxEFGH);
+  /* p04.MOPA*/ MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
 }
 
 //-----------------------------------------------------------------------------
@@ -184,7 +190,6 @@ void ClockRegisters::tock_dbg_slow(SchematicTop& top) {
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_vid_slow(wire CLK, SchematicTop& top) {
-  /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
   /*p29.XYVA*/ wire XYVA_xBxDxFxH = not1(ZEME_AxCxExGx);
   /*p29.XOTA*/ wire XOTA_AxCxExGx = not1(XYVA_xBxDxFxH);
   /*p29.XYFY*/ wire XYFY_xBxDxFxH = not1(XOTA_AxCxExGx);

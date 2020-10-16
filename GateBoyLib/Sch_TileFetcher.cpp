@@ -69,6 +69,8 @@ void TileFetcher::tick(const SchematicTop& top) {
   // MOFU fires on fetch phase 2 and 10
   /*p27.MOFU*/ wire MOFU_LATCH_TILE_DBp = and2(MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
   /*p32.LESO*/ LESO_LATCH_TILE_DBn   = not1(MOFU_LATCH_TILE_DBp);
+
+  /*p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 }
 
 //------------------------------------------------------------------------------
@@ -87,8 +89,6 @@ void TileFetcher::tock(SchematicTop& top) {
   /*p27.MESU*/ MESU_BFETCH_S1   .dff17(LAXU_BFETCH_S0.qn16(),       top.NYXU_FETCH_TRIGn,   MESU_BFETCH_S1.qn16());
   /*p27.NYVA*/ NYVA_BFETCH_S2   .dff17(MESU_BFETCH_S1.qn16(),       top.NYXU_FETCH_TRIGn,   NYVA_BFETCH_S2.qn16());
   /*p27.LYZU*/ LYZU_BFETCH_S0_D1.dff17(ALET_xBxDxFxH, XYMU_RENDERINGp, LAXU_BFETCH_S0.qp17());
-
-  /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
   /*p27.NYFO*/ wire NYFO_WIN_FETCH_TRIGn = not1(top.pix_pipe.NUNY_WX_MATCH_TRIGp);
   /*p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp = not1(NYFO_WIN_FETCH_TRIGn);

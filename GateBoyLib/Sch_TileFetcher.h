@@ -73,18 +73,20 @@ struct TileFetcher {
   void tock(SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
-  /* p27.LENA*/ Sig LENA_BGW_VRM_RDp;  // -> SUTU_MCSn
-  /* p27.MOCE*/ Sig MOCE_BFETCH_DONEn; // -> sprite feetcher
-  /* p27.NETA*/ Sig NETA_TILE_READp;   // -> vram bus
-  /*#p27.XUHA*/ Sig XUHA_FETCH_S2p;    // -> vram bus addr mux
+  /*p27.LENA*/ Sig LENA_BGW_VRM_RDp;  // -> SUTU_MCSn
+  /*p27.MOCE*/ Sig MOCE_BFETCH_DONEn; // -> sprite feetcher
+  /*p27.NETA*/ Sig NETA_TILE_READp;   // -> vram bus
+  /*p27.XUHA*/ Sig XUHA_FETCH_S2p;    // -> vram bus addr mux
 
-  /* p25.XUCY*/ Sig XUCY_WIN_TILE_READn; // -> vram bus
-  /*#p25.WUKO*/ Sig WUKO_WIN_MAP_READn;// -> vram bus
-  /* p26.BAFY*/ Sig BAFY_BG_MAP_READn;// -> vram bus
-  /* p26.BEJE*/ Sig BEJE_BG_TILE_READn;// -> vram bus
+  /*p25.XUCY*/ Sig XUCY_WIN_TILE_READn; // -> vram bus
+  /*p25.WUKO*/ Sig WUKO_WIN_MAP_READn;// -> vram bus
+  /*p26.BAFY*/ Sig BAFY_BG_MAP_READn;// -> vram bus
+  /*p26.BEJE*/ Sig BEJE_BG_TILE_READn;// -> vram bus
 
-  /*#p32.METE*/ Sig METE_LATCH_TILE_DAp; // -> vram bus
-  /* p32.LESO*/ Sig LESO_LATCH_TILE_DBn; // -> vram bus
+  /*p32.METE*/ Sig METE_LATCH_TILE_DAp; // -> vram bus
+  /*p32.LESO*/ Sig LESO_LATCH_TILE_DBn; // -> vram bus
+
+  /*p27.LYRY*/ Sig LYRY_BFETCH_DONEp;
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp;    // -> pix pipe, top. fires 13 phases into first tile fetch
   /*p27.LONY*/ NandLatch LONY_BG_FETCH_RUNNINGp; // -> vram bus

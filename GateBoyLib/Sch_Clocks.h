@@ -25,6 +25,8 @@ struct ClockRegisters {
     TALU_xxCDEFxx.reset(TRI_D0NP);
     XOCE_xBCxxFGx.reset(TRI_D0NP);
     WOJO_AxxxExxx.reset(TRI_D1NP);
+    AFAS_xxxxEFGx.reset(TRI_HZNP);
+
     ALUR_SYS_RSTn.reset(TRI_D1NP);
     XAPO_VID_RSTn.reset(TRI_D1NP);
 
@@ -56,6 +58,8 @@ struct ClockRegisters {
     TALU_xxCDEFxx.reset(TRI_HZNP);
     XOCE_xBCxxFGx.reset(TRI_HZNP);
     WOJO_AxxxExxx.reset(TRI_HZNP);
+    AFAS_xxxxEFGx.reset(TRI_HZNP);
+
     ALUR_SYS_RSTn.reset(TRI_HZNP);
     XAPO_VID_RSTn.reset(TRI_HZNP);
 
@@ -96,6 +100,7 @@ struct ClockRegisters {
   /* p21.TALU*/ Sig TALU_xxCDEFxx; // lcd, pix pipe (wy match should probably move to lcd)
   /* p29.XOCE*/ Sig XOCE_xBCxxFGx; // oam bus, sprite scanner
   /* p29.WOJO*/ Sig WOJO_AxxxExxx; // oam bus
+  /* p01.AFAS*/ Sig AFAS_xxxxEFGx;
 
   /* p01.ALUR*/ Sig ALUR_SYS_RSTn; // everywhere
   /* p01.XAPO*/ Sig XAPO_VID_RSTn; // everywhere

@@ -184,12 +184,14 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
+  /*p01.ABUZ*/ Sig ABUZ_AVn;
+  /*p01.ABUZ*/ Sig ABUZ_xxCDEFGH;
+  /*p08.TEXO*/ Sig TEXO_8000_9FFFn;
+
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
   /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;
   /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
   /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
-  /*p01.ABUZ*/ Sig ABUZ_AVn;
-  /*p01.ABUZ*/ Sig ABUZ_xxCDEFGH;
   /*p07.TEDO*/ Sig TEDO_CPU_RDp;
   /*p28.LEKO*/ Sig LEKO_CPU_RDp;
   /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;

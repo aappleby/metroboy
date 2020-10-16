@@ -88,6 +88,7 @@ void ClockRegisters::tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, SchematicT
   /*#p21.TALU*/ TALU_xxCDEFxx = not1(VENA_xxCDEFxx.qn16());
   /*#p29.XOCE*/ XOCE_xBCxxFGx = not1(WOSU_AxxDExxH.qp17());
   /*#p29.WOJO*/ WOJO_AxxxExxx = nor2(WOSU_AxxDExxH.qn16(), WUVU_ABxxEFxx.qn16());
+  /*#p01.AFAS*/ AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH, ATYP_ABCDxxxx);
 }
 
 //-----------------------------------------------------------------------------

@@ -274,9 +274,7 @@ void GateBoy::next_pass() {
       top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
       top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
 
-      bool addr_rom = bus_req.addr <= 0x7FFF;
-      bool addr_ram = bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF;
-      bool addr_ext = (bus_req.read || bus_req.write) && (addr_rom || addr_ram);
+      bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
       if (bus_req.addr <= 0x00FF && top.cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
       top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
 
@@ -333,6 +331,20 @@ void GateBoy::next_pass() {
     top.joypad.set_buttons(sys_buttons);
   }
 
+  probe( 6, "addr_rom",          bus_req.addr <= 0x7FFF);
+  probe( 7, "addr_ram",          bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF);
+  probe( 8, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
+  probe( 9, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
+  probe(10, "PIN_CPU_ADDR_EXTp", top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
+  probe(11, "PIN_CPU_LATCH_EXT", top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
+  probe(13, "ABUZ_xxCDEFGH",     top.ABUZ_xxCDEFGH);
+  probe(14, "TEXO_8000_9FFFn",   top.TEXO_ADDR_EXT_AND_NOT_VRAM);
+
+
+  probe(16, "PIN_VRAM_CSp",      !top.vram_bus.PIN_VRAM_CSn.qp());
+  probe(17, "PIN_VRAM_OEp",      !top.vram_bus.PIN_VRAM_OEn.qp());
+  probe(18, "PIN_VRAM_WRp",      !top.vram_bus.PIN_VRAM_WRn.qp());
+
   //----------------------------------------
   // Run one pass of our simulation.
 
@@ -368,12 +380,12 @@ void GateBoy::next_pass() {
 
   //----------
 
-  probe( 1, "PIN_CPU_RDp", top.cpu_bus.PIN_CPU_RDp.qp());
-  probe( 2, "PIN_CPU_WRp", top.cpu_bus.PIN_CPU_WRp.qp());
+  //probe( 1, "PIN_CPU_RDp", top.cpu_bus.PIN_CPU_RDp.qp());
+  //probe( 2, "PIN_CPU_WRp", top.cpu_bus.PIN_CPU_WRp.qp());
 
-  probe( 3, "XEHO_X0p",    top.pix_pipe.XEHO_X0p.qn16());
-  probe( 4, "SAVY_X1p",    top.pix_pipe.SAVY_X1p.qn16());
-  probe( 5, "XODU_X2p",    top.pix_pipe.XODU_X2p.qn16());
+  //probe( 3, "XEHO_X0p",    top.pix_pipe.XEHO_X0p.qn16());
+  //probe( 4, "SAVY_X1p",    top.pix_pipe.SAVY_X1p.qn16());
+  //probe( 5, "XODU_X2p",    top.pix_pipe.XODU_X2p.qn16());
 
   //probe(10, "PIN_LCD_CLOCK", top.PIN_LCD_CLOCK.qp());
   //probe(11, "PIN_LCD_HSYNC", top.PIN_LCD_HSYNC.qp());

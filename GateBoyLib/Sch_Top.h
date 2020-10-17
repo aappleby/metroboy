@@ -30,7 +30,7 @@ struct SchematicTop {
     UNOR_MODE_DBG2p.reset(TRI_D0NP);
     UPOJ_MODE_PRODn.reset(TRI_D1NP);
     TUTO_DBG_VRAMp.reset(TRI_D0NP);
-    ABUZ_AVn.reset(TRI_D1NP);
+    ABUZ_xxCDEFGH.reset(TRI_D1NP);
     TEDO_CPU_RDp.reset(TRI_D0NP);
     LEKO_CPU_RDp.reset(TRI_D0NP);
     TAPU_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
@@ -109,7 +109,7 @@ struct SchematicTop {
     UNOR_MODE_DBG2p.reset(TRI_HZNP);
     UPOJ_MODE_PRODn.reset(TRI_HZNP);
     TUTO_DBG_VRAMp.reset(TRI_HZNP);
-    ABUZ_AVn.reset(TRI_HZNP);
+    ABUZ_xxCDEFGH.reset(TRI_HZNP);
     TEDO_CPU_RDp.reset(TRI_HZNP);
     LEKO_CPU_RDp.reset(TRI_HZNP);
     TAPU_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
@@ -176,9 +176,8 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
-  /*p01.ABUZ*/ Sig ABUZ_AVn;
   /*p01.ABUZ*/ Sig ABUZ_xxCDEFGH;
-  /*p08.TEXO*/ Sig TEXO_8000_9FFFn;
+  /*p08.TEXO*/ Sig TEXO_ADDR_EXT_AND_NOT_VRAM;
 
   /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
   /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;

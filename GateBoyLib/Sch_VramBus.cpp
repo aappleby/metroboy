@@ -54,29 +54,31 @@ void VramBus::dump(Dumper& d, const SchematicTop& /*top*/) const {
 void VramBus::tock(SchematicTop& top) {
   wire VYPO = 1;
 
-  /* p25.TEFA*/ wire _TEFA_8000_9FFFp = nor2(top.cpu_bus.SYRO_FE00_FFFFp(), top.TEXO_8000_9FFFn);
-  /* p25.SOSE*/ wire _SOSE_8000_9FFFp = and2(top.cpu_bus.BUS_CPU_A15.qp(), _TEFA_8000_9FFFp);
+  /*#p25.TEFA*/ wire _TEFA_8000_9FFFp = nor2(top.cpu_bus.SYRO_FE00_FFFFp(), top.TEXO_ADDR_EXT_AND_NOT_VRAM);
+  /*#p25.SOSE*/ wire _SOSE_8000_9FFFp = and2(top.cpu_bus.BUS_CPU_A15.qp(), _TEFA_8000_9FFFp);
 
-  /* p25.ROPY*/ wire _ROPY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.qn03());
+  /*#p25.ROPY*/ wire _ROPY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.qn03());
 
-  /* p25.TEFY*/ wire _TEFY_VRAM_MCSp = not1(PIN_VRAM_CSn.qn());
-  /* p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and2(_SOSE_8000_9FFFp, top.ABUZ_AVn);
-  /* p25.TOLE*/ wire _TOLE_VRAM_RDp     = mux2p(top.TUTO_DBG_VRAMp, _TEFY_VRAM_MCSp, _TUCA_CPU_VRAM_RDp);
-  /* p25.SERE*/ wire _SERE_CPU_VRM_RDp = and2(_TOLE_VRAM_RDp, _ROPY_RENDERINGn);
+  /*#p25.TEFY*/ wire _TEFY_VRAM_MCSp = not1(PIN_VRAM_CSn.qn());
+  /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = and2(_SOSE_8000_9FFFp, top.ABUZ_xxCDEFGH);
 
-  /* p25.TAVY*/ wire _TAVY_MOEp = not1(PIN_VRAM_OEn.qn());
-  /* p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(_SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
-  /* p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(top.TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
-  /* p25.RUVY*/ wire _RUVY_VRAM_WRp    = not1(_SALE_CPU_VRAM_WRn);
-  /* p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(_RUVY_VRAM_WRp, _SERE_CPU_VRM_RDp);
-  /* p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
-  /* p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
+  /*#p25.TOLE*/ wire _TOLE_VRAM_RDp     = mux2p(top.TUTO_DBG_VRAMp, _TEFY_VRAM_MCSp, _TUCA_CPU_VRAM_RDp);
+  /*#p25.SERE*/ wire _SERE_CPU_VRM_RDp = and2(_TOLE_VRAM_RDp, _ROPY_RENDERINGn);
+
+  /*#p25.TAVY*/ wire _TAVY_MOEp = not1(PIN_VRAM_OEn.qn());
+  /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(_SOSE_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
+  /*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(top.TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
+  /*#p25.RUVY*/ wire _RUVY_VRAM_WRp    = not1(_SALE_CPU_VRAM_WRn);
+  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(_SERE_CPU_VRM_RDp, _RUVY_VRAM_WRp);
+  /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
+  /*#p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
   /*#p25.RELA*/ wire _RELA_CBD_TO_VPDp = or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
   /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
 
-  /* p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_VRAMp, top.pix_pipe.XYMU_RENDERINGn.qn03());
+  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(top.dma_reg.LUFA_DMA_VRAMp, top.pix_pipe.XYMU_RENDERINGn.qn03());
 
-  /* p25.RACO*/ wire _RACO_DBG_VRAMn = not1(top.TUTO_DBG_VRAMp);
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(top.TUTO_DBG_VRAMp);
+  (void)_RACO_DBG_VRAMn;
 
   //----------------------------------------
   // VRAM pins
@@ -84,9 +86,9 @@ void VramBus::tock(SchematicTop& top) {
   {
     /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and2(_SOSE_8000_9FFFp, top.APOV_CPU_WRp_xxxxEFGx);
     /*p25.SUDO*/ wire _SUDO_MWRp_C = not1(PIN_VRAM_WRn.qn());
-    /*p25.TYJY*/ wire _TYJY_DBG_VRAM_WRp = mux2p(top.TUTO_DBG_VRAMp, _SUDO_MWRp_C, _TUJA_CPU_VRAM_WRp);
+    /*p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(top.TUTO_DBG_VRAMp, _SUDO_MWRp_C, _TUJA_CPU_VRAM_WRp);
 
-    /*p25.SOHY*/ wire _SOHY_MWRn = nand2(_TYJY_DBG_VRAM_WRp, _SERE_CPU_VRM_RDp);
+    /*p25.SOHY*/ wire _SOHY_MWRn = nand2(_TYJY_VRAM_WRp, _SERE_CPU_VRM_RDp);
 
     /*p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn);
     /*p25.SOFY*/ wire _SOFY_MWRn_D = or2(_SOHY_MWRn, top.TUTO_DBG_VRAMp);

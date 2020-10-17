@@ -50,9 +50,9 @@ void ExtBus::dump(Dumper& d) const {
 
 void ExtBus::tock(SchematicTop& top) {
 
-  /*p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(top.TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p);
-  /*p08.LEVO*/ wire _LEVO_8000_9FFFp = not1(top.TEXO_8000_9FFFn);
-  /*p08.LAGU*/ wire _LAGU = and_or3(top.cpu_bus.PIN_CPU_RDp.qp(), _LEVO_8000_9FFFp, top.cpu_bus.PIN_CPU_WRp.qp());
+  /*p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(top.TEXO_ADDR_EXT_AND_NOT_VRAM, top.UMUT_MODE_DBG1p);
+  /*p08.LEVO*/ wire _LEVO_ADDR_INT_OR_ADDR_VRAM = not1(top.TEXO_ADDR_EXT_AND_NOT_VRAM);
+  /*p08.LAGU*/ wire _LAGU = and_or3(top.cpu_bus.PIN_CPU_RDp.qp(), _LEVO_ADDR_INT_OR_ADDR_VRAM, top.cpu_bus.PIN_CPU_WRp.qp());
   /*p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /*p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
 
@@ -96,7 +96,7 @@ void ExtBus::tock(SchematicTop& top) {
   // DMA address / CPU address latch -> ext addr pins
   {
     /*p08.MULE*/ wire _MULE_MODE_DBG1n  = not1(top.UMUT_MODE_DBG1p);
-    /*p08.LOXO*/ wire _LOXO_HOLDn = and_or3(_MULE_MODE_DBG1n, top.TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p);
+    /*p08.LOXO*/ wire _LOXO_HOLDn = and_or3(_MULE_MODE_DBG1n, top.TEXO_ADDR_EXT_AND_NOT_VRAM, top.UMUT_MODE_DBG1p);
     /*p08.LASY*/ wire _LASY_HOLDn = not1(_LOXO_HOLDn);
     /*p08.MATE*/ wire _MATE_HOLDn = not1(_LASY_HOLDn);
 
@@ -241,7 +241,7 @@ void ExtBus::tock(SchematicTop& top) {
   // Ext data in
   {
     // -> ext bus
-    /*p08.LAVO*/ wire _LAVO_HOLDn = nand3(top.cpu_bus.PIN_CPU_RDp.qp(), top.TEXO_8000_9FFFn, top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
+    /*p08.LAVO*/ wire _LAVO_HOLDn = nand3(top.cpu_bus.PIN_CPU_RDp.qp(), top.TEXO_ADDR_EXT_AND_NOT_VRAM, top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
 
     // Ext pin -> Ext latch
     /*#p08.SOMA*/ SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN_EXT_D00p.qn());

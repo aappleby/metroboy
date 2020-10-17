@@ -35,17 +35,20 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     // This is def broken, but how do I fix it?
 
-    /*p??.APAP*/ wire APAP_AVn = not1(cpu_bus.PIN_CPU_ADDR_EXTp.qp()); // Missing from schematic
-    /*p01.AWOD*/ wire AWOD_AVp = nor2(UNOR_MODE_DBG2p, APAP_AVn);
-    /*p01.ABUZ*/ ABUZ_AVn = not1(AWOD_AVp);
-
+#if 0
+    /*#p01.ABUZ*/ ABUZ_xxCDEFGH = UNOR_MODE_DBG2p || (xxCDEFGH && PIN_CPU_ADDR_EXTp);
+#endif
     /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
-    /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(top.UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
-    /*#p01.ABUZ*/ ABUZ_xxCDEFGH = not1(AWOD_ABxxxxxx);
+    /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(top.UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
+    /*#p01.ABUZ*/ ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
 
-    /*p08.SORE*/ wire _SORE_0000_7FFFp = not1(top.cpu_bus.BUS_CPU_A15.qp());
-    /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), _SORE_0000_7FFFp);
-    /*p08.TEXO*/ TEXO_8000_9FFFn = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), _TEVY_8000_9FFFn);
+#if 0
+    TEXO_ADDR_EXT_AND_NOT_VRAM = addr_vram ? 0 : PIN_CPU_ADDR_EXTp;
+#endif
+
+    /*#p08.SORE*/ wire _SORE_0000_7FFFp = not1(top.cpu_bus.BUS_CPU_A15.qp());
+    /*#p08.TEVY*/ wire _TEVY_8000_9FFFn = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), _SORE_0000_7FFFp);
+    /*#p08.TEXO*/ TEXO_ADDR_EXT_AND_NOT_VRAM = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), _TEVY_8000_9FFFn);
   }
 
   {

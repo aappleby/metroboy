@@ -9,7 +9,7 @@ bool RegBase::tock_running = false;
 bool RegBase::bus_collision = false;
 bool RegBase::bus_floating = false;
 
-#define SANITY_CHECK
+//#define SANITY_CHECK
 
 //-----------------------------------------------------------------------------
 

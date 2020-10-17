@@ -41,7 +41,7 @@ struct CpuBus {
     PIN_CPU_LATCH_EXT.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
     PIN_CPU_RDp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
     PIN_CPU_WRp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_ADDR_EXTp.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
+    PIN_CPU_EXT_BUSp.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
 
     PIN_CPU_BOOTp         .reset(TRI_D0NP);
     PIN_CPU_ADDR_HIp      .reset(TRI_D0NP);
@@ -93,7 +93,7 @@ struct CpuBus {
     PIN_CPU_LATCH_EXT.reset(TRI_HZNP);
     PIN_CPU_RDp.reset(TRI_HZNP);
     PIN_CPU_WRp.reset(TRI_HZNP);
-    PIN_CPU_ADDR_EXTp.reset(TRI_HZNP);
+    PIN_CPU_EXT_BUSp.reset(TRI_HZNP);
 
     PIN_CPU_BOOTp         .reset(TRI_HZNP);
     PIN_CPU_ADDR_HIp      .reset(TRI_HZNP);
@@ -249,7 +249,7 @@ struct CpuBus {
 
   Pin PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
   Pin PIN_CPU_WRp;           // top right port PORTA_01: ->
-  Pin PIN_CPU_ADDR_EXTp;     // top right port PORTA_06: -> TEXO, APAP
+  Pin PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals

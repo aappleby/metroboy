@@ -635,13 +635,7 @@ struct Sig : private RegBase {
   wire qp() const { return  as_wire(); }
 
   operator wire() const {
-    //CHECK_P(has_delta() == sim_running);
-
-    if (has_delta() != sim_running) {
-      printf("BAD SIGNAL\n");
-      __debugbreak();
-    }
-
+    CHECK_P(has_delta() == sim_running);
     return wire(state & 1);
   }
 

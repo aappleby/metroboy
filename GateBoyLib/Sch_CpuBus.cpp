@@ -12,7 +12,7 @@ void CpuBus::dump(Dumper& d) const {
   d("PIN_CPU_ADDR_HIp  %c\n", PIN_CPU_ADDR_HIp.c());
   d("PIN_CPU_RDp       %c\n", PIN_CPU_RDp.c());
   d("PIN_CPU_WRp       %c\n", PIN_CPU_WRp.c());
-  d("PIN_CPU_ADDR_EXT  %c\n", PIN_CPU_ADDR_EXTp.c());
+  d("PIN_CPU_ADDR_EXT  %c\n", PIN_CPU_EXT_BUSp.c());
   d("PIN_CPU_LATCH_EXT %c\n", PIN_CPU_LATCH_EXT.c());
   d("BUS ADDR  0x%04x  %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     get_bus_addr(),

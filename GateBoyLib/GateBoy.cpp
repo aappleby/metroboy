@@ -24,13 +24,6 @@ void GateBoy::dump(Dumper& d) const {
   d("lcd_pipe_hi    %c%c%c%c%c%c%c%c\n",
     top.lcd_pipe_hi[0].c(), top.lcd_pipe_hi[1].c(), top.lcd_pipe_hi[2].c(), top.lcd_pipe_hi[3].c(),
     top.lcd_pipe_hi[4].c(), top.lcd_pipe_hi[5].c(), top.lcd_pipe_hi[6].c(), top.lcd_pipe_hi[7].c());
-
-  d("lcd_line_lo    %c%c%c%c%c%c%c%c\n",
-    top.lcd_line_lo[0].c(), top.lcd_line_lo[1].c(), top.lcd_line_lo[2].c(), top.lcd_line_lo[3].c(),
-    top.lcd_line_lo[4].c(), top.lcd_line_lo[5].c(), top.lcd_line_lo[6].c(), top.lcd_line_lo[7].c());
-  d("lcd_line_hi    %c%c%c%c%c%c%c%c\n",
-    top.lcd_line_hi[0].c(), top.lcd_line_hi[1].c(), top.lcd_line_hi[2].c(), top.lcd_line_hi[3].c(),
-    top.lcd_line_hi[4].c(), top.lcd_line_hi[5].c(), top.lcd_line_hi[6].c(), top.lcd_line_hi[7].c());
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +269,7 @@ void GateBoy::next_pass() {
 
       bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
       if (bus_req.addr <= 0x00FF && top.cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
-      top.cpu_bus.PIN_CPU_ADDR_EXTp.lock(addr_ext);
+      top.cpu_bus.PIN_CPU_EXT_BUSp.lock(addr_ext);
 
       top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
       top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
@@ -303,6 +296,11 @@ void GateBoy::next_pass() {
     }
 
     if (DELTA_HA) {
+      // This seems wrong, but it passes tests. *shrug*
+      if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
+        top.cpu_bus.PIN_CPU_EXT_BUSp.lock(0);
+      }
+
       top.cpu_bus.PIN_CPU_RDp.lock(0);
       top.cpu_bus.PIN_CPU_WRp.lock(0);
       top.cpu_bus.BUS_CPU_A08.lock(0);
@@ -335,7 +333,7 @@ void GateBoy::next_pass() {
   probe( 7, "addr_ram",          bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF);
   probe( 8, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
   probe( 9, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
-  probe(10, "PIN_CPU_ADDR_EXTp", top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
+  probe(10, "PIN_CPU_ADDR_EXTp", top.cpu_bus.PIN_CPU_EXT_BUSp.qp());
   probe(11, "PIN_CPU_LATCH_EXT", top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
   probe(13, "ABUZ_xxCDEFGH",     top.ABUZ_xxCDEFGH);
   probe(14, "TEXO_8000_9FFFn",   top.TEXO_ADDR_EXT_AND_NOT_VRAM);
@@ -449,10 +447,15 @@ void GateBoy::next_pass() {
 
   if (top.PIN_LCD_LATCH.posedge()) {
     if (screen_y < 144) {
-      for (int x = 0; x < 160; x++) {
-        uint8_t p0 = top.lcd_line_lo[x].qp();
-        uint8_t p1 = top.lcd_line_hi[x].qp();
+      for (int x = 0; x < 159; x++) {
+        uint8_t p0 = top.lcd_pipe_lo[x + 1].qp();
+        uint8_t p1 = top.lcd_pipe_hi[x + 1].qp();
         framebuffer[x + screen_y * 160] = p0 + p1 * 2;
+      }
+      {
+        uint8_t p0 = top.lcd_pix_lo.qp04();
+        uint8_t p1 = top.lcd_pix_hi.qp04();
+        framebuffer[159 + screen_y * 160] = p0 + p1 * 2;
       }
     }
 

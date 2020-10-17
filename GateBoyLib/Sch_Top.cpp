@@ -16,13 +16,12 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   dma_reg.tick();
 
   {
-    /*p07.UBET*/ wire _UBET_T1p = not1(T1n);
-    /*p07.UVAR*/ wire _UVAR_T2p = not1(T2n);
+    /*p07.UBET*/ wire _UBET_T1p  = not1(T1n);
+    /*p07.UVAR*/ wire _UVAR_T2p  = not1(T2n);
     /*p07.UMUT*/ UMUT_MODE_DBG1p = and2(T1n, _UVAR_T2p);
     /*p07.UNOR*/ UNOR_MODE_DBG2p = and2(T2n, _UBET_T1p);
     /*p07.UPOJ*/ UPOJ_MODE_PRODn = nand3(_UBET_T1p, _UVAR_T2p, RST);
-
-    /*p25.TUTO*/ TUTO_DBG_VRAMp = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn16());
+    /*p25.TUTO*/ TUTO_DBG_VRAMp  = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAM.qn16());
   }
 
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
@@ -33,22 +32,13 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
 
   {
-    // This is def broken, but how do I fix it?
-
-#if 0
-    /*#p01.ABUZ*/ ABUZ_xxCDEFGH = UNOR_MODE_DBG2p || (xxCDEFGH && PIN_CPU_ADDR_EXTp);
-#endif
-    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.PIN_CPU_ADDR_EXTp.qp());
+    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(top.clk_reg.AROV_xxCDEFxx.qp(), top.clk_reg.AJAX_xxxxEFGH.qp(), top.cpu_bus.PIN_CPU_EXT_BUSp.qp());
     /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(top.UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
     /*#p01.ABUZ*/ ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
 
-#if 0
-    TEXO_ADDR_EXT_AND_NOT_VRAM = addr_vram ? 0 : PIN_CPU_ADDR_EXTp;
-#endif
-
     /*#p08.SORE*/ wire _SORE_0000_7FFFp = not1(top.cpu_bus.BUS_CPU_A15.qp());
     /*#p08.TEVY*/ wire _TEVY_8000_9FFFn = or3(top.cpu_bus.BUS_CPU_A13.qp(), top.cpu_bus.BUS_CPU_A14.qp(), _SORE_0000_7FFFp);
-    /*#p08.TEXO*/ TEXO_ADDR_EXT_AND_NOT_VRAM = and2(top.cpu_bus.PIN_CPU_ADDR_EXTp.qp(), _TEVY_8000_9FFFn);
+    /*#p08.TEXO*/ TEXO_ADDR_EXT_AND_NOT_VRAM = and2(top.cpu_bus.PIN_CPU_EXT_BUSp.qp(), _TEVY_8000_9FFFn);
   }
 
   {
@@ -60,13 +50,9 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, top);
-
   lcd_reg.tick(top);
-
   sprite_scanner.tick(top);
   sprite_store.tick(top);
-
-
   pix_pipe.tick(top);
 
   {
@@ -105,24 +91,14 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   clk_reg.tock_rst_slow(RST, CLKGOOD, CPUREADY, top);
   clk_reg.tock_dbg_slow(top);
   clk_reg.tock_vid_slow(CLK, top);
-
   tim_reg.tock(RST, top, cpu_bus);
   bootrom.tock(top, cpu_bus);
-
   dma_reg.tock(top, cpu_bus);
-
-
   ser_reg.tock(top, cpu_bus);
   joypad.tock(top, cpu_bus);
   sprite_scanner.tock(top);
-
-
-
   lcd_reg.tock(top, cpu_bus);
-
   sprite_store.tock(top);
-
-
   pix_pipe.tock(top, cpu_bus);
   sprite_fetcher.tock(top);
   tile_fetcher.tock(top);
@@ -131,18 +107,13 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   cpu_bus.PIN_CPU_ADDR_HIp.set(cpu_bus.SYRO_FE00_FFFFp());
   cpu_bus.PIN_CPU_BOOTp.set(TUTU_ADDR_BOOTp);
 
-
   ext_bus.tock(top);
-
   oam_bus.tock(top);
   vram_bus.tock(top);
 
   {
     // IE is technically in the CPU, but we're going to implement it here for now.
     wire FFFF_HIT = cpu_bus.get_bus_addr() == 0xFFFF;
-
-    //if (FFFF_HIT) printf("FFFF_HIT\n");
-
     wire FFFF_WRn = nand2(TAPU_CPU_WRp_xxxxEFGx, FFFF_HIT);
 
     IE_D0.dff(FFFF_WRn, !RST, cpu_bus.BUS_CPU_D0p.qp());
@@ -166,14 +137,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   for (int i = 0; i < 159; i++) {
     lcd_pipe_lo[i].dff(PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
     lcd_pipe_hi[i].dff(PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
-    lcd_line_lo[i].dff(PIN_LCD_LATCH.qp(), lcd_pipe_lo[i + 1].qp());
-    lcd_line_hi[i].dff(PIN_LCD_LATCH.qp(), lcd_pipe_hi[i + 1].qp());
   }
 
   lcd_pipe_lo[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
   lcd_pipe_hi[159].dff(PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
-  lcd_line_lo[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_lo.qp04());
-  lcd_line_hi[159].dff(PIN_LCD_LATCH.qp(), lcd_pix_hi.qp04());
 }
 
 //-----------------------------------------------------------------------------

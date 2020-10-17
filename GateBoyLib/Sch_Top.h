@@ -99,8 +99,6 @@ struct SchematicTop {
     for (int i = 0; i < 160; i++) {
       lcd_pipe_lo[i].reset(REG_D0C0);
       lcd_pipe_hi[i].reset(REG_D0C0);
-      lcd_line_lo[i].reset(REG_D0C0);
-      lcd_line_hi[i].reset(REG_D0C0);
     }
   }
 
@@ -161,8 +159,6 @@ struct SchematicTop {
     for (int i = 0; i < 160; i++) {
       lcd_pipe_lo[i].reset(REG_D0C0);
       lcd_pipe_hi[i].reset(REG_D0C0);
-      lcd_line_lo[i].reset(REG_D0C0);
-      lcd_line_hi[i].reset(REG_D0C0);
     }
   }
 
@@ -243,8 +239,6 @@ struct SchematicTop {
 
   DFF lcd_pipe_lo[160];
   DFF lcd_pipe_hi[160];
-  DFF lcd_line_lo[160];
-  DFF lcd_line_hi[160];
 };
 #pragma pack(pop)
 

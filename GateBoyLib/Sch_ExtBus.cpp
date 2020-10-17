@@ -97,8 +97,10 @@ void ExtBus::tock(SchematicTop& top) {
   {
     /*p08.MULE*/ wire _MULE_MODE_DBG1n  = not1(top.UMUT_MODE_DBG1p);
     /*p08.LOXO*/ wire _LOXO_HOLDn = and_or3(_MULE_MODE_DBG1n, top.TEXO_ADDR_EXT_AND_NOT_VRAM, top.UMUT_MODE_DBG1p);
-    /*p08.LASY*/ wire _LASY_HOLDn = not1(_LOXO_HOLDn);
-    /*p08.MATE*/ wire _MATE_HOLDn = not1(_LASY_HOLDn);
+    /*p08.LASY*/ wire _LASY_HOLDp = not1(_LOXO_HOLDn);
+    /*p08.MATE*/ wire _MATE_HOLDn = not1(_LASY_HOLDp);
+
+    probe(20, "_MATE_HOLDn", _MATE_HOLDn);
 
     /* p08.ALOR*/ ALOR_EXT_ADDR_LATCH_00p.tp_latch(_MATE_HOLDn, top.cpu_bus.BUS_CPU_A00.qp());
     /* p08.APUR*/ APUR_EXT_ADDR_LATCH_01p.tp_latch(_MATE_HOLDn, top.cpu_bus.BUS_CPU_A01.qp());

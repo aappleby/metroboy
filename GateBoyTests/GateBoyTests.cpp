@@ -23,14 +23,14 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
+  //err += t.test_post_bootrom_state();
+
 #if 1
 
 #ifdef RUN_SLOW_TESTS
   err += t.test_init();
   err += t.test_bootrom();
 #endif
-
-  //err += t.test_post_bootrom_state();
 
   err += t.test_clk();
   err += t.test_ext_bus();
@@ -69,6 +69,17 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
+int diff(void* a, void* b, int size) {
+  uint8_t* ca = (uint8_t*)a;
+  uint8_t* cb = (uint8_t*)b;
+
+  for (int i = 0; i < size; i++) {
+    if (ca[i] != cb[i]) return i;
+  }
+
+  return -1;
+}
+
 int GateBoyTests::test_post_bootrom_state() {
   TEST_START();
 
@@ -86,7 +97,8 @@ int GateBoyTests::test_post_bootrom_state() {
   hash1 = hash_states(&gb1, sizeof(gb1));
   hash2 = hash_states(&gb2, sizeof(gb2));
 
-#if 0
+#if 1
+  /*
   for (int i = 0; i < sizeof(gb1); i++) {
     uint8_t* blob1 = (uint8_t*)&gb1;
     uint8_t* blob2 = (uint8_t*)&gb2;
@@ -94,13 +106,25 @@ int GateBoyTests::test_post_bootrom_state() {
       printf("mismatch at %d\n", i);
     }
   }
+  */
 
-#define DIFF(A) printf(#A " %d\n", memcmp(&gb1.A, &gb2.A, sizeof(gb1.A)));
+#define DIFF(A) printf(#A " %d\n", diff(&gb1.A, &gb2.A, sizeof(gb1.A)));
 
   DIFF(cpu);
   DIFF(cpu_req);
   DIFF(dbg_req);
   DIFF(bus_req);
+  DIFF(top);
+  DIFF(vid_ram);
+  DIFF(cart_ram);
+  DIFF(ext_ram);
+  DIFF(oam_ram);
+  DIFF(zero_ram);
+  //DIFF(framebuffer);
+  printf("framebuffer %d\n", diff(gb1.framebuffer, gb2.framebuffer, 160*144));
+#endif
+
+  /*
   DIFF(top.oam_bus);
   DIFF(top.ext_bus);
   DIFF(top.cpu_bus);
@@ -116,9 +140,11 @@ int GateBoyTests::test_post_bootrom_state() {
   DIFF(top.tim_reg);
   DIFF(top.tile_fetcher);
   DIFF(top.sprite_fetcher);
+  DIFF(top.sprite_scanner);
   DIFF(top.bootrom);
-  DIFF(top);
-#endif
+  */
+
+  printf("gb %d\n", diff(&gb1, &gb2, sizeof(gb1)));
 
   LOG_B("load_post_bootrom_state 0x%016llx\n", hash1);
   LOG_B("reset_cart              0x%016llx\n", hash2);

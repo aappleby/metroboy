@@ -10,6 +10,9 @@ struct OamBus;
 
 struct SpriteScanner {
   void reset_cart() {
+    ACYL_SCANNINGp.reset(TRI_D0NP);
+    CEHA_SCANNINGp.reset(TRI_D0NP);
+
     DEGE_SPRITE_DELTA0.reset(TRI_D0NP);
     DABY_SPRITE_DELTA1.reset(TRI_D0NP);
     DABU_SPRITE_DELTA2.reset(TRI_D0NP);
@@ -19,6 +22,10 @@ struct SpriteScanner {
     GYDA_SPRITE_DELTA6.reset(TRI_D0NP);
     GEWY_SPRITE_DELTA7.reset(TRI_D0NP);
     CARE_STORE_ENp_ABxxEFxx.reset(TRI_D0NP);
+
+    AVAP_RENDER_START_TRIGp.reset(TRI_D0NP);
+    ANOM_LINE_RSTn.reset(TRI_D1NP);
+    BAGY_LINE_RSTn.reset(TRI_D1NP);
 
     BESU_SCANNINGp.reset(TRI_D0NP);
     CENO_SCANNINGp.reset(REG_D0C1);

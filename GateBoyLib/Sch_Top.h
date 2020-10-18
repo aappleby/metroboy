@@ -26,14 +26,19 @@ namespace Schematics {
 #pragma pack(push, 1)
 struct SchematicTop {
   void reset_cart() {
+    ABUZ_xxCDEFGH.reset(TRI_D0NP);
+    TEXO_ADDR_EXT_AND_NOT_VRAM.reset(TRI_D0NP);
     UMUT_MODE_DBG1p.reset(TRI_D0NP);
     UNOR_MODE_DBG2p.reset(TRI_D0NP);
     UPOJ_MODE_PRODn.reset(TRI_D1NP);
     TUTO_DBG_VRAMp.reset(TRI_D0NP);
-    ABUZ_xxCDEFGH.reset(TRI_D1NP);
     TEDO_CPU_RDp.reset(TRI_D0NP);
+    AJAS_CPU_RDn.reset(TRI_D1NP);
+    ASOT_CPU_RDp.reset(TRI_D0NP);
     LEKO_CPU_RDp.reset(TRI_D0NP);
+    CATY_LATCH_EXTp.reset(TRI_D0NP);
     TAPU_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
+    CUPA_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
     APOV_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
     TUTU_ADDR_BOOTp.reset(TRI_D0NP);
 
@@ -103,11 +108,11 @@ struct SchematicTop {
   }
 
   void reset_boot() {
+    ABUZ_xxCDEFGH.reset(TRI_HZNP);
     UMUT_MODE_DBG1p.reset(TRI_HZNP);
     UNOR_MODE_DBG2p.reset(TRI_HZNP);
     UPOJ_MODE_PRODn.reset(TRI_HZNP);
     TUTO_DBG_VRAMp.reset(TRI_HZNP);
-    ABUZ_xxCDEFGH.reset(TRI_HZNP);
     TEDO_CPU_RDp.reset(TRI_HZNP);
     LEKO_CPU_RDp.reset(TRI_HZNP);
     TAPU_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);

@@ -339,6 +339,18 @@ struct DelayGlitch {
     di.reset(TRI_D0NP);
   }
 
+  void reset(RegState s) {
+    da.reset(s);
+    db.reset(s);
+    dc.reset(s);
+    dd.reset(s);
+    de.reset(s);
+    df.reset(s);
+    dg.reset(s);
+    dh.reset(s);
+    di.reset(s);
+  }
+
   RegBase da;
   RegBase db;
   RegBase dc;

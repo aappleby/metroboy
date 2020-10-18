@@ -24,6 +24,7 @@ struct TileFetcher {
 
     METE_LATCH_TILE_DAp.reset(TRI_D0NP);
     LESO_LATCH_TILE_DBn.reset(TRI_D1NP);
+    LYRY_BFETCH_DONEp.reset(TRI_D1NP);
 
     POKY_PRELOAD_LATCHp.reset(TRI_D0NP);
     LONY_BG_FETCH_RUNNINGp.reset(TRI_D0NP);

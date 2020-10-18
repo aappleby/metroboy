@@ -11,23 +11,26 @@ struct CpuBus;
 struct PixelPipe {
   void reset_cart() {
     SEKO_FETCH_TRIGp .reset(TRI_D0NP);
-    TOMU_WIN_HITp      .reset(TRI_D0NP);
-    NOCU_WIN_MODEn     .reset(TRI_D1NP);
+    TEVO_FETCH_TRIGp.reset(TRI_D0NP);
+    NYXU_FETCH_TRIGn.reset(TRI_D1NP);
+    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
+    SYLO_WIN_HITn.reset(TRI_D1NP);
+    TOMU_WIN_HITp.reset(TRI_D0NP);
+    NOCU_WIN_MODEn.reset(TRI_D1NP);
+    PORE_WIN_MODEp.reset(TRI_D0NP);
     NUNY_WX_MATCH_TRIGp.reset(TRI_D0NP);
-    VOTY_INT_STATp     .reset(TRI_D0NP);
-
+    MOSU_WIN_FETCH_TRIGp.reset(TRI_D0NP);
+    VOTY_INT_STATp.reset(TRI_D0NP);
+    SUZU_WIN_FIRST_TILEne.reset(TRI_D0NP);
+    LOBY_RENDERINGn.reset(TRI_D1NP);
+    SADU_STAT_MODE0n.reset(TRI_D0NP);
+    XATY_STAT_MODE1n.reset(TRI_D1NP);
     XYMU_RENDERINGn.reset(TRI_D1NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
 
     PUKU.reset(REG_D1C0);
     RYDY.reset(REG_D0C0);
-    //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
-
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
-
-    NYXU_FETCH_TRIGn.reset(TRI_D1NP);
-    TEVO_FETCH_TRIGp.reset(TRI_D0NP);
-    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
 
     XEHO_X0p.reset(REG_D1C1);
     SAVY_X1p.reset(REG_D1C1);
@@ -562,8 +565,6 @@ struct PixelPipe {
   /*p23.BAKE*/ DFF9 BAKE_SCX7n;
 
   //----------------------------------------
-
-private:
 
   // FF41 - STAT
   /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn;

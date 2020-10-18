@@ -192,6 +192,8 @@ void LcdRegisters::tock(SchematicTop& top, CpuBus& cpu_bus) {
     /* p21.RAPE*/ wire _RAPE_LY_MATCHn = nand2(_SOVU_LY_MATCHA,  _SUBO_LY_MATCHB); // def nand2
     /* p21.PALY*/ wire _PALY_LY_MATCHa = not1(_RAPE_LY_MATCHn); // def not
 
+    probe(4, "PALY_LY_MATCHA", _PALY_LY_MATCHa);
+
     /*#p21.ROPO*/ ROPO_LY_MATCH_SYNCp.dff17(top.clk_reg.TALU_xxCDEFxx, top.clk_reg.WESY_SYS_RSTn, _PALY_LY_MATCHa);
   }
 

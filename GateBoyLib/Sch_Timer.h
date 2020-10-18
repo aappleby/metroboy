@@ -10,6 +10,10 @@ struct CpuBus;
 
 struct Timer {
   void reset_cart() {
+    UVYN_DIV_05n.reset(TRI_D0NP);
+    UMEK_DIV_06n.reset(TRI_D0NP);
+    UREK_DIV_07n.reset(TRI_D0NP);
+
     UKUP_DIV_00.reset(REG_D1C1);
     UFOR_DIV_01.reset(REG_D1C0);
     UNER_DIV_02.reset(REG_D0C0);

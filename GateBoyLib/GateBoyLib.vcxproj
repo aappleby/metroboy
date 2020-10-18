@@ -74,6 +74,9 @@
     <ClInclude Include="Sch_Top.h" />
     <ClInclude Include="Sch_VramBus.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="GateBoy.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

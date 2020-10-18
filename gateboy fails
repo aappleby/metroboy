@@ -19,11 +19,18 @@ ppu_sprite0_scx7_a.gb
 
 poweron_006_stat.gb / poweron_120_stat.gb
   dmg pass, ags fail
+  read on ha, stat0 goes low on bc
   dunno, read happens a phase or two before stat changes
+  it's in the weird broken line 0
+  let's regen the post-bootrom state...
 
 lcdon_to_stat2_a.gb
   dmg pass, ags fail
-  read happens 2 phases before lyc goes 0
+  read happens on ha, lyc doesn't go low until bc
+  PALY changes in time, but that's not what's ending up in the latch
+  ROPO could get the change in time if its clock were inverted and delayed
+  TALU looks a little funny (5 rungs, 2 sets of "wings"?), is it a buffer?
+  inverting TALU breaks a bunch of stuff
 
 stat_write_glitch_l0_a.gb
   dmg pass, ags fail

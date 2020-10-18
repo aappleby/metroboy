@@ -56,7 +56,7 @@ void GateBoyApp::app_init() {
   load_rom("roms/tetris.gb");
 
   // regenerate post-bootrom dump
-#if 0
+#if 1
   gb->reset_boot();
   rom_buf = load_blob("roms/tetris.gb");
   gb->set_rom(rom_buf.data(), rom_buf.size());
@@ -107,8 +107,8 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  load_flat_dump("roms/LinksAwakening_dog.dump");
-  gb->sys_cpu_en = false;
+  //load_flat_dump("roms/LinksAwakening_dog.dump");
+  //gb->sys_cpu_en = false;
 
   /*
 
@@ -162,7 +162,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
   //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
-  //load_rom("microtests/build/dmg/poweron_000_vram.gb");
+  //load_rom("microtests/build/dmg/poweron_006_stat.gb");
 
   GateBoy::current = gb.state();
 }

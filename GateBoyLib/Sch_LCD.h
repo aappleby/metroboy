@@ -10,9 +10,13 @@ struct CpuBus;
 
 struct LcdRegisters {
   void reset_cart() {
+    BYHA_VID_LINE_END_TRIGn.reset(TRI_D1NP);
     PARU_VBLANKp_d4.reset(TRI_D1NP);
+    TOLU_VBLANKn.reset(TRI_D0NP);
     ATEJ_LINE_TRIGp.reset(TRI_D0NP);
     VYPU_INT_VBLANKp.reset(TRI_D1NP);
+    PURE_LINE_P908n.reset(TRI_D1NP);
+    SELA_LINE_P908p.reset(TRI_D0NP);
 
     ROPO_LY_MATCH_SYNCp.reset(REG_D1C0);
 

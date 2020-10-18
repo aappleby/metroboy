@@ -74,9 +74,9 @@ void GateBoy::reset_cart() {
   sim_stable = 1;
   phase_total = 0x02cf5798;
   pass_count = 0;
-  pass_total = 0x0c239985;
-  pass_hash = 0x62b2a8cd3ff66e35;
-  total_hash = 0x3b9e8c465b9c4923;
+  pass_total = 0x0c23db7e;
+  pass_hash = 0xdd0849d964666f73;
+  total_hash = 0xdfa0b6a3a264e502;
 
   sys_rst = 0;
   sys_t1 = 0;
@@ -96,8 +96,8 @@ void GateBoy::reset_cart() {
   zero_ram[0x7C] = 0x2E;
   memcpy(framebuffer, framebuffer_boot, 160*144);
 
-  screen_x = 159;
-  screen_y = 143;
+  screen_x = 0;
+  screen_y = 152;
   lcd_data_latch = 0;
 
   rom_buf = nullptr;
@@ -427,10 +427,11 @@ void GateBoy::next_pass() {
   //probe(18, "NYPE_LINE_P002", top.lcd_reg.NYPE_LINE_P002.qp());
   //probe(19, "ANEL_LINE_P002", top.lcd_reg.ANEL_LINE_P002.qp());
 
-  //probe("SACU_CLKPIPEp", SACU_CLKPIPEp);
-  //probe(3, "SADU_STAT_MODE0",      !SADU_STAT_MODE0n);
-  //probe(4, "XATY_STAT_MODE1",      !XATY_STAT_MODE1n);
-  //probe(5, "RUPO_LYC_MATCH_LATCH", !RUPO_LYC_MATCH_LATCHn.qp());
+  probe(1, "SADU_STAT_MODE0",      !top.pix_pipe.SADU_STAT_MODE0n);
+  probe(2, "XATY_STAT_MODE1",      !top.pix_pipe.XATY_STAT_MODE1n);
+  probe(3, "ROPO_LY_MATCH_SYNCp",  top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17());
+  //probe(3, "RUPO_LYC_MATCH_LATCH", top.pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03());
+
   //probe(6, "XYMU_RENDERINGp",      XYMU_RENDERINGn.qn03());
   //probe(7, "PARU_VBLANKp_d4",      top.lcd_reg.PARU_VBLANKp_d4);
   //probe(8, "MATU_DMA_RUNNINGp",    top.dma_reg.MATU_DMA_RUNNINGp.qp());

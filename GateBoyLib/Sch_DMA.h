@@ -16,6 +16,7 @@ struct DmaRegisters {
 
     LUMA_DMA_CARTp.reset(TRI_D0NP);
     LUFA_DMA_VRAMp.reset(TRI_D0NP);
+    BOGE_DMA_RUNNINGn.reset(TRI_D1NP);
 
     NAKY_DMA_A00p.reset(REG_D0C0);
     PYRO_DMA_A01p.reset(REG_D0C1);

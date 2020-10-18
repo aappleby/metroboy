@@ -26,22 +26,22 @@ struct VramBus {
     POWY_TILE_DB6p.reset(REG_D0C1);
     PYJU_TILE_DB7p.reset(REG_D0C1);
 
-    PEFO_SPRITE_DB0n.reset(REG_D0C0);
-    ROKA_SPRITE_DB1n.reset(REG_D0C0);
-    MYTU_SPRITE_DB2n.reset(REG_D0C0);
-    RAMU_SPRITE_DB3n.reset(REG_D0C0);
-    SELE_SPRITE_DB4n.reset(REG_D0C0);
-    SUTO_SPRITE_DB5n.reset(REG_D0C0);
-    RAMA_SPRITE_DB6n.reset(REG_D0C0);
-    RYDU_SPRITE_DB7n.reset(REG_D0C0);
-    REWO_SPRITE_DA0n.reset(REG_D0C0);
-    PEBA_SPRITE_DA1n.reset(REG_D0C0);
-    MOFO_SPRITE_DA2n.reset(REG_D0C0);
-    PUDU_SPRITE_DA3n.reset(REG_D0C0);
-    SAJA_SPRITE_DA4n.reset(REG_D0C0);
-    SUNY_SPRITE_DA5n.reset(REG_D0C0);
-    SEMO_SPRITE_DA6n.reset(REG_D0C0);
-    SEGA_SPRITE_DA7n.reset(REG_D0C0);
+    PEFO_SPRITE_DB0n.reset(REG_D1C0);
+    ROKA_SPRITE_DB1n.reset(REG_D1C0);
+    MYTU_SPRITE_DB2n.reset(REG_D1C0);
+    RAMU_SPRITE_DB3n.reset(REG_D1C0);
+    SELE_SPRITE_DB4n.reset(REG_D1C0);
+    SUTO_SPRITE_DB5n.reset(REG_D1C0);
+    RAMA_SPRITE_DB6n.reset(REG_D1C0);
+    RYDU_SPRITE_DB7n.reset(REG_D1C0);
+    REWO_SPRITE_DA0n.reset(REG_D1C0);
+    PEBA_SPRITE_DA1n.reset(REG_D1C0);
+    MOFO_SPRITE_DA2n.reset(REG_D1C0);
+    PUDU_SPRITE_DA3n.reset(REG_D1C0);
+    SAJA_SPRITE_DA4n.reset(REG_D1C0);
+    SUNY_SPRITE_DA5n.reset(REG_D1C0);
+    SEMO_SPRITE_DA6n.reset(REG_D1C0);
+    SEGA_SPRITE_DA7n.reset(REG_D1C0);
 
     BUS_VRAM_D0p .reset(TRI_D0NP);
     BUS_VRAM_D1p .reset(TRI_D0NP);
@@ -93,8 +93,8 @@ struct VramBus {
     PIN_VRAM_D06p.reset(TRI_D0PU);
     PIN_VRAM_D07p.reset(TRI_D0PU);
 
-    latch_sprite_a_delay.reset();
-    latch_sprite_b_delay.reset();
+    latch_sprite_a_delay.reset(TRI_D1NP);
+    latch_sprite_b_delay.reset(TRI_D1NP);
   }
 
   void reset_boot() {

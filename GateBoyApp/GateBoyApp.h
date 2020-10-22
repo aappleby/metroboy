@@ -12,19 +12,19 @@
 #include "AppLib/Blitter.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/GateBoyThread.h"
 
 class GateBoyApp : public App {
 public:
 
-  const char* app_get_title() override;
-
+  const char* app_get_title() override { return "GateBoyApp"; }
   void app_init() override;
-  void app_close() override;
+  void app_close() override {};
 
   void begin_frame() { frame_begin = timestamp(); }
   void app_update(double delta) override;
   void app_render_frame(Viewport view) override;
-  void app_render_ui(Viewport view) override;
+  void app_render_ui(Viewport /*view*/) override {};
 
   void end_frame() {
     frame_end = timestamp();
@@ -36,23 +36,14 @@ public:
 
 private:
 
-  void load_rom(const char* filename);
   void load_golden(const char* filename);
-  void load_flat_dump(const char* filename);
-  void save_flat_dump(const char* filename);
-
-  enum RunMode {
-    RUN_FAST,
-    RUN_VSYNC,
-    RUN_STEP,
-  };
 
   RunMode runmode = RUN_STEP;
   StepSize stepmode = STEP_PHASE;
 
   const uint8_t* keyboard_state = nullptr;
 
-  StateStack<GateBoy> gb;
+  GateBoyThread gb_thread;
 
   GridPainter grid_painter;
   TextPainter text_painter;
@@ -62,10 +53,6 @@ private:
 
   int frame_count = 0;
   int replay_cursor = 0;
-
-  double sim_time = 0;
-  double sim_time_smooth = 0;
-  double sim_rate = 0;
 
   double frame_begin = 0;
   double frame_end = 0;
@@ -87,6 +74,4 @@ private:
   int ram_tex;
 
   Assembler assembler;
-
-  blob rom_buf;
 };

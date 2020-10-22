@@ -100,8 +100,6 @@ void ExtBus::tock(SchematicTop& top) {
     /*p08.LASY*/ wire _LASY_HOLDp = not1(_LOXO_HOLDn);
     /*p08.MATE*/ wire _MATE_HOLDn = not1(_LASY_HOLDp);
 
-    probe(20, "_MATE_HOLDn", _MATE_HOLDn);
-
     /* p08.ALOR*/ ALOR_EXT_ADDR_LATCH_00p.tp_latch(_MATE_HOLDn, top.cpu_bus.BUS_CPU_A00.qp());
     /* p08.APUR*/ APUR_EXT_ADDR_LATCH_01p.tp_latch(_MATE_HOLDn, top.cpu_bus.BUS_CPU_A01.qp());
     /* p08.ALYR*/ ALYR_EXT_ADDR_LATCH_02p.tp_latch(_MATE_HOLDn, top.cpu_bus.BUS_CPU_A02.qp());

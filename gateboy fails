@@ -46,7 +46,10 @@ stat_write_glitch_l1_c.gb
 
 oam_read_l0_d.gb
   dmg pass, ags pass
-  PIN_OAM_OEp high way before AMAB_CPU_OEM_ENp
+  PIN_OAM_OE goes low in AB
+  CPU_OAM_RDn goes low in GH
+  PIN_CPU_LATCH_EXT goes high in DE
+  if CPU_RD was delayed we might be able to latch oam in HA
 
 oam_read_l1_a.gb
   dmg pass, ags pass

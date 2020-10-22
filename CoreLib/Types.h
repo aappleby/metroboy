@@ -34,6 +34,32 @@ enum StepSize {
   STEP_MAX = STEP_FRAME,
 };
 
+static const char* runmode_names[] = {
+  "RUN_STEP  ",
+  "RUN_FAST  ",
+  "RUN_VSYNC ",
+};
+
+static const char* stepmode_names[] = {
+  "STEP_PASS   ",
+  "STEP_PHASE  ",
+  "STEP_CYCLE  ",
+  "STEP_LINE   ",
+  "STEP_FRAME  ",
+};
+
+static const char* phase_names[] = {
+  "\002A_______\001",
+  "\003_B______\001",
+  "\002__C_____\001",
+  "\003___D____\001",
+  "\002____E___\001",
+  "\003_____F__\001",
+  "\002______G_\001",
+  "\003_______H\001",
+};
+
+
 constexpr uint64_t HASH_INIT = 0x12345678;
 uint64_t mix(uint64_t h);
 uint64_t hash_states(void* blob, int len);

@@ -145,7 +145,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::tock_ext_bus(wire RST, uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
+void SchematicTop::tock_ext_bus(wire RST, const uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram) {
   if (RST) return;
 
   uint16_t ext_addr = ext_bus.get_pin_addr();

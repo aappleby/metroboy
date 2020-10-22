@@ -329,20 +329,6 @@ void GateBoy::next_pass() {
     top.joypad.set_buttons(sys_buttons);
   }
 
-  probe( 6, "addr_rom",          bus_req.addr <= 0x7FFF);
-  probe( 7, "addr_ram",          bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF);
-  probe( 8, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
-  probe( 9, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
-  probe(10, "PIN_CPU_ADDR_EXTp", top.cpu_bus.PIN_CPU_EXT_BUSp.qp());
-  probe(11, "PIN_CPU_LATCH_EXT", top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
-  probe(13, "ABUZ_xxCDEFGH",     top.ABUZ_xxCDEFGH);
-  probe(14, "TEXO_8000_9FFFn",   top.TEXO_ADDR_EXT_AND_NOT_VRAM);
-
-
-  probe(16, "PIN_VRAM_CSp",      !top.vram_bus.PIN_VRAM_CSn.qp());
-  probe(17, "PIN_VRAM_OEp",      !top.vram_bus.PIN_VRAM_OEn.qp());
-  probe(18, "PIN_VRAM_WRp",      !top.vram_bus.PIN_VRAM_WRn.qp());
-
   //----------------------------------------
   // Run one pass of our simulation.
 
@@ -378,6 +364,25 @@ void GateBoy::next_pass() {
 
   //----------
 
+  probe(1, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
+  probe(2, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
+  probe(3, "SADU_STAT_MODE0",      !top.pix_pipe.SADU_STAT_MODE0n);
+  probe(4, "XATY_STAT_MODE1",      !top.pix_pipe.XATY_STAT_MODE1n);
+  //probe(5, "ROPO_LY_MATCH_SYNCp",  top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17());
+  //probe(3, "RUPO_LYC_MATCH_LATCH", top.pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03());
+
+  //probe( 6, "addr_rom",          bus_req.addr <= 0x7FFF);
+  //probe( 7, "addr_ram",          bus_req.addr >= 0xA000 && bus_req.addr <= 0xFDFF);
+  //probe(10, "PIN_CPU_ADDR_EXTp", top.cpu_bus.PIN_CPU_EXT_BUSp.qp());
+  //probe(11, "PIN_CPU_LATCH_EXT", top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
+  //probe(13, "ABUZ_xxCDEFGH",     top.ABUZ_xxCDEFGH);
+  //probe(14, "TEXO_8000_9FFFn",   top.TEXO_ADDR_EXT_AND_NOT_VRAM);
+
+  //probe(16, "PIN_VRAM_CSp",      !top.vram_bus.PIN_VRAM_CSn.qp());
+  //probe(17, "PIN_VRAM_OEp",      !top.vram_bus.PIN_VRAM_OEn.qp());
+  //probe(18, "PIN_VRAM_WRp",      !top.vram_bus.PIN_VRAM_WRn.qp());
+
+
   //probe( 1, "PIN_CPU_RDp", top.cpu_bus.PIN_CPU_RDp.qp());
   //probe( 2, "PIN_CPU_WRp", top.cpu_bus.PIN_CPU_WRp.qp());
 
@@ -404,6 +409,11 @@ void GateBoy::next_pass() {
   //probe(22, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D6p.c());
   //probe(23, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D7p.c());
 
+  probe(10, "PIN_OAM_CLK",  top.oam_bus.PIN_OAM_CLK.qp());
+  probe(11, "PIN_OAM_OE",   top.oam_bus.PIN_OAM_OE.qp());
+  probe(12, "PIN_OAM_WR_A", top.oam_bus.PIN_OAM_WR_A.qp());
+  probe(13, "PIN_OAM_WR_B", top.oam_bus.PIN_OAM_WR_B.qp());
+
   //----------------------------------------
 
   //probe( 2, "CUPA_CPU_WRp",          CUPA_CPU_WRp_xxxxEFGx);
@@ -426,11 +436,6 @@ void GateBoy::next_pass() {
   //probe(17, "CATU_LINE_P000", top.lcd_reg.CATU_LINE_P000.qp());
   //probe(18, "NYPE_LINE_P002", top.lcd_reg.NYPE_LINE_P002.qp());
   //probe(19, "ANEL_LINE_P002", top.lcd_reg.ANEL_LINE_P002.qp());
-
-  probe(1, "SADU_STAT_MODE0",      !top.pix_pipe.SADU_STAT_MODE0n);
-  probe(2, "XATY_STAT_MODE1",      !top.pix_pipe.XATY_STAT_MODE1n);
-  probe(3, "ROPO_LY_MATCH_SYNCp",  top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17());
-  //probe(3, "RUPO_LYC_MATCH_LATCH", top.pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03());
 
   //probe(6, "XYMU_RENDERINGp",      XYMU_RENDERINGn.qn03());
   //probe(7, "PARU_VBLANKp_d4",      top.lcd_reg.PARU_VBLANKp_d4);

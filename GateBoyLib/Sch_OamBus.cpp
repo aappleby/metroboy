@@ -110,6 +110,12 @@ void OamBus::tock(SchematicTop& top) {
   /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(top.sprite_fetcher.WEFY_SPR_READp);
   /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn = not1(top.CATY_LATCH_EXTp);
   /*#p28.BOTA*/ wire _BOTA_CPU_OAM_OEn  = nand3(_BOFE_LATCH_EXTn, top.cpu_bus.SARO_FE00_FEFFp(), top.ASOT_CPU_RDp); // Schematic wrong, this is NAND
+
+  probe(16, "PIN_CPU_LATCH_EXT", top.cpu_bus.PIN_CPU_LATCH_EXT.qp());
+  probe(17, "SARO_FE00_FEFFp",   top.cpu_bus.SARO_FE00_FEFFp());
+  probe(18, "ASOT_CPU_RDp",      top.ASOT_CPU_RDp);
+  probe(15, "BOTA_CPU_OAM_OEn",  _BOTA_CPU_OAM_OEn);
+
   /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_OEn); // def and
   /*#p28.BODE*/ wire _BODE_OAM_OEp = not1(_ASYT_OAM_OEn);
 
@@ -162,6 +168,11 @@ void OamBus::tock(SchematicTop& top) {
     /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn  = not1(top.dma_reg.MATU_DMA_RUNNINGp.qp17());
     /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or3(top.sprite_scanner.ACYL_SCANNINGp, top.pix_pipe.XYMU_RENDERINGn.qn03(), top.dma_reg.MATU_DMA_RUNNINGp.qp17());
     /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not1(_AJON_PPU_OAM_ENp);
+
+    probe(20, "_APAR_SCAN_OAM_RDn", _APAR_SCAN_OAM_RDn);
+    probe(21, "_DUGA_DMA_OAM_RDn ", _DUGA_DMA_OAM_RDn );
+    probe(22, "_ASAM_CPU_OAM_RDn ", _ASAM_CPU_OAM_RDn );
+    probe(23, "_BETE_PPU_OAM_RDn ", _BETE_PPU_OAM_RDn );
 
     // Scanner addr -> OAM addr
     /*p28.GEFY*/ BUS_OAM_A0n.tri_6nn(_APAR_SCAN_OAM_RDn, GND);

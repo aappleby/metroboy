@@ -31,14 +31,6 @@ struct GateBoy {
     } while(!sim_stable);
   }
 
-  void next_mcycle() {
-    run(8);
-  }
-
-  void next_line() {
-    run(113 * 8);
-  }
-
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();

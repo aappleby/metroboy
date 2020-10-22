@@ -225,19 +225,8 @@ void MetroBoy::next_phase() {
 //-----------------------------------------------------------------------------
 
 void MetroBoy::dump_bus(Dumper& d) {
-  const char* phases[] = {
-    "\002A_______\001",
-    "\003_B______\001",
-    "\002__C_____\001",
-    "\003___D____\001",
-    "\002____E___\001",
-    "\003_____F__\001",
-    "\002______G_\001",
-    "\003_______H\001",
-  };
-
   d("\002------------- BUS --------------\001\n");
-  d("phase %s\n", phases[phase_total & 7]);
+  d("phase %s\n", phase_names[phase_total & 7]);
   d("tphase %lld\n", phase_total);
   d("tcycle %lld\n", phase_total >> 1);
   d("mcycle %lld\n", phase_total >> 3);

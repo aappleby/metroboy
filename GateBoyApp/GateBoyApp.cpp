@@ -30,8 +30,6 @@ int main(int argc, char** argv) {
 void GateBoyApp::app_init() {
   printf("GateBoyApp::app_init()\n");
 
-  gb_thread.init();
-
   grid_painter.init();
   text_painter.init();
   dump_painter.init();
@@ -42,6 +40,13 @@ void GateBoyApp::app_init() {
   ram_tex = create_texture_u8(256, 256);
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
+
+  gb_thread.init();
+  gb_thread.start();
+}
+
+void GateBoyApp::app_close() {
+  gb_thread.stop();
 }
 
 //-----------------------------------------------------------------------------
@@ -60,27 +65,33 @@ void GateBoyApp::app_update(double delta) {
     if (event.type == SDL_KEYDOWN)
     switch (event.key.keysym.sym) {
 
+    case SDLK_s: { gb_thread.pause();  break; }
+    case SDLK_d: { gb_thread.resume(); break; }
+
+#if 0
     case SDLK_F1: { gb_thread.load_raw_dump(); break; }
     case SDLK_F4: { gb_thread.save_raw_dump(); break; }
     case SDLK_r:  { gb_thread.reset(); break; }
-    case SDLK_c:  { gb_thread.toggle_cpu(); break; }
+    //case SDLK_c:  { gb_thread.toggle_cpu(); break; }
 
     case SDLK_f: runmode = RUN_FAST; break;
-    case SDLK_v: runmode = RUN_VSYNC; break;
-    case SDLK_s: runmode = RUN_STEP; break;
-    case SDLK_d: show_diff = !show_diff; break;
+    case SDLK_v: runmode = RUN_SYNC; break;
+    case SDLK_s: { break; }
+
+    case SDLK_d: show_diff   = !show_diff;   break;
     case SDLK_g: show_golden = !show_golden; break;
     case SDLK_o: draw_passes = !draw_passes; break;
 
     case SDLK_UP: {
-      stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
+      //stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
       break;
     }
 
     case SDLK_DOWN: {
-      stepmode = clamp_val(stepmode - 1, STEP_MIN, STEP_MAX);
+      //stepmode = clamp_val(stepmode - 1, STEP_MIN, STEP_MAX);
       break;
     }
+#endif
 
     case SDLK_LEFT:   {
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
@@ -112,67 +123,37 @@ void GateBoyApp::app_update(double delta) {
     }
   }
 
+  if (step_forward) {
+    gb_thread.request_steps(step_forward);
+    /*
+    gb_thread.pause();
+    gb_thread.steps_remaining += step_forward;
+    gb_thread.resume();
+    */
+  }
+
+  if (step_backward) {
+    /*
+    gb_thread.pause();
+    gb_thread.steps_remaining = 0;
+    gb_thread.gb.pop();
+    gb_thread.resume();
+    */
+  }
+
   //----------
 
-  gb_thread.sim_update(runmode, stepmode, step_forward, step_backward);
+  //gb_thread.sim_update(runmode, stepmode, step_forward, step_backward);
 
   frame_count++;
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyApp::load_golden(const char* filename) {
-  SDL_Surface* golden_surface = SDL_LoadBMP(filename);
-
-  if (!golden_surface) {
-    printf("Failed to load golden %s\n", filename);
-    memset(golden_u8, 0, 160 * 144);
-    return;
-  }
-
-  if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
-    printf("Loaded i8 golden %s\n", filename);
-    uint8_t* src = (uint8_t*)golden_surface->pixels;
-    uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
-    for (int y = 0; y < 144; y++) {
-      for (int x = 0; x < 160; x++) {
-        uint8_t a = pal[src[x + y * 160]] & 0xFF;
-
-        if (a < 40) a = 3;
-        else if (a < 128) a = 2;
-        else if (a < 210) a = 1;
-        else a = 0;
-
-        golden_u8[x + y * 160] = a;
-      }
-    }
-  }
-
-  else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
-    printf("Loaded bgr24 golden %s\n", filename);
-    uint8_t* src = (uint8_t*)golden_surface->pixels;
-    (void)src;
-    for (int y = 0; y < 144; y++) {
-      for (int x = 0; x < 160; x++) {
-        uint8_t a = src[x * 3 + y * golden_surface->pitch];
-
-        if (a < 40) a = 3;
-        else if (a < 128) a = 2;
-        else if (a < 210) a = 1;
-        else a = 0;
-
-        golden_u8[x + y * 160] = a;
-      }
-    }
-  }
-
-  has_golden = true;
-  show_diff = true;
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_render_frame(Viewport view) {
+  bool paused = gb_thread.isPaused();
+  if (!paused) gb_thread.pause();
+
   grid_painter.render(view);
 
   const auto& top = gb_thread.gb->top;
@@ -182,8 +163,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   int fb_y = gb_thread.gb->screen_y;
   int64_t phase_total = gb_thread.gb->phase_total;
   bool sim_stable = gb_thread.gb->sim_stable;
-  double sim_rate = gb_thread.sim_rate;
-  double sim_time_smooth = gb_thread.sim_time_smooth;
+  //double sim_rate = gb_thread.sim_rate;
+  //double sim_time_smooth = gb_thread.sim_time_smooth;
 
   StringDumper dumper;
   float cursor = 0;
@@ -296,8 +277,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   // Status bar under screen
 
-  double phases_per_frame = 114 * 154 * 60 * 8;
-  double sim_ratio = sim_rate / phases_per_frame;
+  //double phases_per_frame = 114 * 154 * 60 * 8;
+  //double sim_ratio = sim_rate / phases_per_frame;
+  double sim_ratio = 0.0;
+  double sim_time_smooth = 0.0;
 
   dumper("%s %s Sim clock %8.3f %s %c %s\n",
     runmode_names[runmode],
@@ -312,11 +295,62 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   // Probe dump
 
-  if (GateBoy::current) {
-    GateBoy::current->probes.dump(dumper, draw_passes);
-    text_painter.render(view, dumper.s, 640 - 64, 640 + 128);
-    dumper.clear();
+  gb_thread.gb->probes.dump(dumper, draw_passes);
+  text_painter.render(view, dumper.s, 640 - 64, 640 + 128);
+  dumper.clear();
+
+  if (!paused) gb_thread.resume();
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyApp::load_golden(const char* filename) {
+  SDL_Surface* golden_surface = SDL_LoadBMP(filename);
+
+  if (!golden_surface) {
+    printf("Failed to load golden %s\n", filename);
+    memset(golden_u8, 0, 160 * 144);
+    return;
   }
+
+  if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
+    printf("Loaded i8 golden %s\n", filename);
+    uint8_t* src = (uint8_t*)golden_surface->pixels;
+    uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
+    for (int y = 0; y < 144; y++) {
+      for (int x = 0; x < 160; x++) {
+        uint8_t a = pal[src[x + y * 160]] & 0xFF;
+
+        if (a < 40) a = 3;
+        else if (a < 128) a = 2;
+        else if (a < 210) a = 1;
+        else a = 0;
+
+        golden_u8[x + y * 160] = a;
+      }
+    }
+  }
+
+  else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
+    printf("Loaded bgr24 golden %s\n", filename);
+    uint8_t* src = (uint8_t*)golden_surface->pixels;
+    (void)src;
+    for (int y = 0; y < 144; y++) {
+      for (int x = 0; x < 160; x++) {
+        uint8_t a = src[x * 3 + y * golden_surface->pitch];
+
+        if (a < 40) a = 3;
+        else if (a < 128) a = 2;
+        else if (a < 210) a = 1;
+        else a = 0;
+
+        golden_u8[x + y * 160] = a;
+      }
+    }
+  }
+
+  has_golden = true;
+  show_diff = true;
 }
 
 //-----------------------------------------------------------------------------

@@ -6,8 +6,6 @@
 #include "CoreLib/File.h"
 #include "GateBoyLib/Probe.h"
 
-GateBoy* GateBoy::current = nullptr;
-
 //------------------------------------------------------------------------------
 
 void GateBoy::dump(Dumper& d) const {
@@ -233,7 +231,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 
 void GateBoy::next_pass() {
 
-  current = this;
   probes.begin_pass(phase_total);
 
   //----------------------------------------

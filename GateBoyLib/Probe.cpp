@@ -1,13 +1,10 @@
 #include "GateBoyLib/Probe.h"
 
-#include "GateBoyLib/GateBoy.h"
+#include <memory.h>
+#include <stdio.h>
+#include <string.h>
 
-#include <string>
-#include <map>
-#include <vector>
-#include <deque>
-
-
+thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
   pass_cursor = 0;
@@ -35,12 +32,16 @@ void Probes::probe(int index, const char* signal_name, char s) {
 }
 
 void Probes::begin_pass(int phase_total) {
+  CHECK_P(thread_probes == nullptr);
+  thread_probes = this;
   (void)phase_total;
   pass_cursor = (pass_cursor + 1) % sample_count;
 }
 
 void Probes::end_pass(bool _stable) {
+  CHECK_P(thread_probes == this);
   stable[pass_cursor] = _stable;
+  thread_probes = nullptr;
 }
 
 void Probes::begin_phase() {
@@ -75,36 +76,10 @@ void Probes::dump(Dumper& d, bool draw_passes) {
 }
 
 void probe(int index, const char* signal_name, char s) {
-  if (GateBoy::current) {
-    GateBoy::current->probes.probe(index, signal_name, s);
+  if (thread_probes) {
+    thread_probes->probe(index, signal_name, s);
+  }
+  else {
+    printf("<no probes for current thread>\n");
   }
 }
-
-#if 0
-std::map<std::string, std::deque<wire>> all_probes;
-
-void probe(int index, const char* signal_name, wire s) {
-  (void)index;
-  auto& samples = all_probes[signal_name];
-  while(samples.size() >= 30) samples.pop_front();
-  samples.push_back(s);
-}
-
-void dump_probes(Dumper& d) {
-  if (all_probes.size()) {
-    d("\002===== Probes =====\001\n");
-    for (const auto& v : all_probes) {
-      d("%-24s : ", v.first.c_str());
-      for (const auto& s : v.second) {
-        d("%c", s ? '#' : '_');
-      }
-      d("\n");
-    }
-    d("\n");
-  }
-}
-
-void clear_probes() {
-  all_probes.clear();
-}
-#endif

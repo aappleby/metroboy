@@ -9,8 +9,6 @@
 #pragma pack(push, 1)
 struct GateBoy {
 
-  static GateBoy* current;
-
   void dump(Dumper& d) const;
 
   void     set_rom(uint8_t* rom_buf, size_t rom_size);
@@ -39,17 +37,6 @@ struct GateBoy {
 
   void set_boot_bit() {
     dbg_write(0xFF50, 0xFF);
-  }
-
-  StepSize get_step_size() const {
-    bool line_begin  = top.lcd_reg.get_lx() == 0;
-    bool cycle_begin = (phase_total & 7) == 0;
-    bool phase_begin = pass_count == 0;
-
-    if (!phase_begin) return STEP_PASS;
-    if (!cycle_begin) return STEP_PHASE;
-    if (!line_begin)  return STEP_CYCLE;
-    return STEP_LINE;
   }
 
   //----------------------------------------

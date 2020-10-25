@@ -156,11 +156,11 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
     if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
     case SDLK_f:      runmode = RUN_FAST; break;
-    case SDLK_v:      runmode = RUN_VSYNC; break;
+    case SDLK_v:      runmode = RUN_SYNC; break;
     case SDLK_s:      runmode = RUN_STEP; break;
     case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
-    case SDLK_UP:     stepsize = clamp_val(stepsize + 1, STEP_MIN, STEP_MAX); break;
-    case SDLK_DOWN:   stepsize = clamp_val(stepsize - 1, STEP_MIN, STEP_MAX); break;
+    //case SDLK_UP:     stepsize = clamp_val(stepsize + 1, STEP_MIN, STEP_MAX); break;
+    //case SDLK_DOWN:   stepsize = clamp_val(stepsize - 1, STEP_MIN, STEP_MAX); break;
 
     case SDLK_r: {
       gb.clear_history();
@@ -193,7 +193,7 @@ void MetroBoyApp::app_update(double /*delta*/) {
       gb.clear_history();
       gb->reset_cart(rom.data(), rom.size());
       rom_loaded = true;
-      runmode = RUN_VSYNC;
+      runmode = RUN_SYNC;
       SDL_free(event.drop.file);
     }
   }
@@ -222,7 +222,7 @@ void MetroBoyApp::app_update(double /*delta*/) {
     gb->joypad.set(~buttons);
     step_cycle(MCYCLES_PER_FRAME * 8);
   }
-  else if (runmode == RUN_VSYNC) {
+  else if (runmode == RUN_SYNC) {
     gb.clear_history();
     gb->joypad.set(~buttons);
     sync_to_vblank();
@@ -238,9 +238,9 @@ void MetroBoyApp::app_update(double /*delta*/) {
     if (step_forward) {
       gb.push();
       if      (stepsize == STEP_PHASE) { step_phase(step_forward); }
-      else if (stepsize == STEP_CYCLE) { step_cycle(step_forward); }
-      else if (stepsize == STEP_LINE)  { step_line (step_forward); }
-      else if (stepsize == STEP_FRAME) { step_frame(step_forward); }
+      //else if (stepsize == STEP_CYCLE) { step_cycle(step_forward); }
+      //else if (stepsize == STEP_LINE)  { step_line (step_forward); }
+      //else if (stepsize == STEP_FRAME) { step_frame(step_forward); }
     }
     if (step_backward) {
       gb.pop();
@@ -342,10 +342,7 @@ void MetroBoyApp::app_render_ui(Viewport view) {
     column += 32 * 7;
   }
 
-  const char* mode_names[] = {"RUN_STEP", "RUN_FAST", "RUN_VSYNC"};
-  const char* step_names[] = {"STEP_PASS", "STEP_PHASE", "STEP_CYCLE", "STEP_LINE", "STEP_FRAME"};
-
-  text_painter.dprintf("%s %s\n", mode_names[runmode], step_names[stepsize]);
+  text_painter.dprintf("%s %s\n", runmode_names[runmode], stepmode_names[stepsize]);
 
   size_t state_size = gb.state_size_bytes();
   if (state_size < 1024 * 1024) {

@@ -7,17 +7,6 @@
 #include <thread>
 #include <atomic>
 
-void gateboy_main()
-{
-  std::cout << "countdown:\n";
-  while(1) {
-    static int i = 0;
-    std::cout << i << std::endl;
-    std::this_thread::sleep_for (std::chrono::seconds(1));
-    i++;
-  }
-}
-
 //-----------------------------------------------------------------------------
 
 void GateBoyThread::init() {
@@ -133,102 +122,95 @@ void GateBoyThread::init() {
   //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
-
-  GateBoy::current = gb.state();
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoyThread::reset() {
-  sim_guard g(sim_lock);
-
   printf("Resetting sim\n");
   gb.reset_states();
   gb->reset_cart();
   gb->set_rom(rom_buf.data(), rom_buf.size());
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-void GateBoyThread::sim_update(int runmode, int stepmode, int step_forward, int step_backward) {
-  if (gb->rom_buf != rom_buf.data()) __debugbreak();
+void GateBoyThread::start() {
+  if (main) return;
 
-  double sim_begin = timestamp();
-  int64_t phase_begin = gb->phase_total;
+  main = new std::thread([this] {
+    printf("Thread starting\n");
 
-  if (runmode == RUN_FAST) {
-    sim_push();
-    sim_run(114 * 8 * 8);
-  }
-  else if (runmode == RUN_STEP && step_forward) {
-    sim_push();
-    for (int i = 0; i < step_forward; i++) {
-      switch(stepmode) {
-      case STEP_PASS:  { sim_guard g(sim_lock); gb->next_pass(); break; }
-      case STEP_PHASE: { sim_run(1); break; }
-      case STEP_CYCLE: { sim_run(8); break; }
-      case STEP_LINE:  { sim_run(114 * 8); break; }
+    while(1) {
+      throttle.wait_for_resume();
+
+      if (exit) return;
+
+      double time_begin = timestamp();
+      int64_t pass_begin = gb->pass_total;
+      int64_t phase_begin = gb->phase_total;
+
+      while(!throttle._break && steps_remaining) {
+        gb->next_pass();
+        steps_remaining--;
       }
+
+      double time_end = timestamp();
+      int64_t pass_end = gb->pass_total;
+      int64_t phase_end = gb->phase_total;
+
+      sim_time += (time_end - time_begin);
+      pass_count += (pass_end - pass_begin);
+      phase_count += (phase_end - phase_begin);
     }
-  }
-  else if (runmode == RUN_STEP && step_backward) {
-    for (int i  = 0; i < step_backward; i++) {
-      sim_pop();
-    }
-  }
 
-  double sim_end = timestamp();
-  int64_t phase_end = gb->phase_total;
-  {
-    sim_guard g(sim_lock);
-    sim_time = sim_end - sim_begin;
-    sim_time_smooth = sim_time_smooth * 0.9 + sim_time * 0.1;
-    sim_rate = (phase_end - phase_begin) / sim_time_smooth;
-  }
+    printf("Exiting!\n");
+  });
+}
+
+//----------------------------------------
+
+void GateBoyThread::stop() {
+  if (!main) return;
+
+  pause();
+  exit = true;
+  resume();
+
+  main->join();
+
+  delete main;
+}
+
+//----------------------------------------
+
+void GateBoyThread::pause() {
+  throttle.pause();
+}
+
+//----------------------------------------
+
+void GateBoyThread::resume() {
+  throttle.resume();
+}
+
+//----------------------------------------
+
+void GateBoyThread::request_steps(int steps) {
+  pause();
+  steps_remaining += steps * 100;
+  resume();
 }
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::sim_push() {
-  sim_guard g(sim_lock);
-  gb.push();
-}
-
-void GateBoyThread::sim_pop() {
-  sim_guard g(sim_lock);
-  gb.pop();
-  GateBoy::current = gb.state();
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyThread::sim_run(int phases) {
-  for (int i = 0; i < phases; i++) {
-    sim_guard g(sim_lock);
-    gb->next_phase();
-  }
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyThread::toggle_cpu() {
-  sim_guard g(sim_lock);
-
-  if (gb->sys_cpu_en) {
-    printf("Disabling CPU\n");
-    gb->sys_cpu_en = 0;
-  }
-  else {
-    printf("Enabling CPU\n");
-    gb->sys_cpu_en = 1;
-  }
+void GateBoyThread::step_sim() {
+  //printf("%d %d\n", sem_run.count.load(), sem_stop.count.load());
 }
 
 //------------------------------------------------------------------------------
 
 void GateBoyThread::load_raw_dump() {
-  sim_guard g(sim_lock);
-
   printf("Loading raw dump from %s\n", "gateboy.raw.dump");
   gb.reset_states();
   gb->load_dump("gateboy.raw.dump");
@@ -236,8 +218,6 @@ void GateBoyThread::load_raw_dump() {
 }
 
 void GateBoyThread::save_raw_dump() {
-  sim_guard g(sim_lock);
-
   printf("Saving raw dump to %s\n", "gateboy.raw.dump");
   gb->save_dump("gateboy.raw.dump");
 }
@@ -246,8 +226,6 @@ void GateBoyThread::save_raw_dump() {
 // Load a standard GB rom
 
 void GateBoyThread::load_rom(const char* filename) {
-  sim_guard g(sim_lock);
-
   printf("Loading %s\n", filename);
   rom_buf = load_blob(filename);
 
@@ -267,8 +245,6 @@ void GateBoyThread::load_rom(const char* filename) {
 // and copy it into the various regs and memory chunks.
 
 void GateBoyThread::load_flat_dump(const char* filename) {
-  sim_guard g(sim_lock);
-
   rom_buf = load_blob(filename);
 
   gb.reset_states();
@@ -313,8 +289,6 @@ void GateBoyThread::load_flat_dump(const char* filename) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump1(Dumper& d) {
-  sim_guard g(sim_lock);
-
   d("\002===== Top =====\001\n");
 
   const char* phases[] = {
@@ -346,6 +320,14 @@ void GateBoyThread::dump1(Dumper& d) {
   d("Total hash  %016llx\n", gb->total_hash);
   d("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock   %f\n",      double(gb->phase_total) / (4194304.0 * 2));
+  d("Steps left  %d\n",      steps_remaining);
+
+
+  d("Sim time    %f\n",      sim_time);
+  d("Pass count  %lld\n",    pass_count);
+  d("Pass rate   %f\n",      double(pass_count) / sim_time);
+  d("Phase count %lld\n",    phase_count);
+  d("Phase rate  %f\n",      double(phase_count) / sim_time);
 
   d("\n");
   d("dbg_req ");
@@ -368,8 +350,6 @@ void GateBoyThread::dump1(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump2(Dumper& d) {
-  sim_guard g(sim_lock);
-
   wire CLK = gb->phase_total & 1;
   gb->top.clk_reg.dump(d, CLK);
   gb->top.joypad.dump(d);
@@ -379,8 +359,6 @@ void GateBoyThread::dump2(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump3(Dumper& d) {
-  sim_guard g(sim_lock);
-
   gb->top.cpu_bus.dump(d);
   gb->top.ext_bus.dump(d);
   gb->top.vram_bus.dump(d, gb->top);
@@ -391,8 +369,6 @@ void GateBoyThread::dump3(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump4(Dumper& d) {
-  sim_guard g(sim_lock);
-
   gb->top.lcd_reg.dump(d, gb->top);
   gb->top.pix_pipe.dump(d, gb->top);
 }
@@ -400,8 +376,6 @@ void GateBoyThread::dump4(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump5(Dumper& d) {
-  sim_guard g(sim_lock);
-
   gb->top.sprite_fetcher.dump(d);
   gb->top.sprite_scanner.dump(d, gb->top);
   gb->top.sprite_store.dump(d);
@@ -411,8 +385,6 @@ void GateBoyThread::dump5(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump6(Dumper& d) {
-  sim_guard g(sim_lock);
-
   d("\002===== Disasm =====\001\n");
   {
     uint16_t pc = gb->cpu.op_addr;

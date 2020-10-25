@@ -15,37 +15,30 @@ typedef int16_t sample_t;
 typedef bool wire;
 
 enum RunMode {
-  RUN_STEP = 0,
-  RUN_FAST = 1,
-  RUN_VSYNC = 2,
-
-  RUN_MIN = RUN_STEP,
-  RUN_MAX = RUN_VSYNC,
+  RUN_STOP = 0, // don't run
+  RUN_STEP = 1, // run one step
+  RUN_FAST = 2, // run steps as fast as possible
+  RUN_SYNC = 3, // run until end of frame, then wait for vsync signal
 };
 
 enum StepSize {
   STEP_PASS  = 0,
   STEP_PHASE = 1,
-  STEP_CYCLE = 2,
-  STEP_LINE  = 3,
-  STEP_FRAME = 4,
-
-  STEP_MIN = STEP_PASS,
-  STEP_MAX = STEP_FRAME,
 };
 
 static const char* runmode_names[] = {
-  "RUN_STEP  ",
-  "RUN_FAST  ",
-  "RUN_VSYNC ",
+  "RUN_STOP ",
+  "RUN_STEP ",
+  "RUN_FAST ",
+  "RUN_SYNC ",
 };
 
 static const char* stepmode_names[] = {
-  "STEP_PASS   ",
-  "STEP_PHASE  ",
-  "STEP_CYCLE  ",
-  "STEP_LINE   ",
-  "STEP_FRAME  ",
+  "STEP_PASS  ",
+  "STEP_PHASE ",
+  "STEP_CYCLE ",
+  "STEP_LINE  ",
+  "STEP_FRAME ",
 };
 
 static const char* phase_names[] = {
@@ -58,7 +51,6 @@ static const char* phase_names[] = {
   "\002______G_\001",
   "\003_______H\001",
 };
-
 
 constexpr uint64_t HASH_INIT = 0x12345678;
 uint64_t mix(uint64_t h);

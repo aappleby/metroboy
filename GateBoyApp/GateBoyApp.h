@@ -19,7 +19,7 @@ public:
 
   const char* app_get_title() override { return "GateBoyApp"; }
   void app_init() override;
-  void app_close() override {};
+  void app_close() override;
 
   void begin_frame() { frame_begin = timestamp(); }
   void app_update(double delta) override;

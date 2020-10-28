@@ -135,71 +135,145 @@ void GateBoyThread::reset() {
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::start() {
-  if (main) return;
+void GateBoyThread::thread_main() {
+  std::unique_lock<std::mutex> lock(mut, std::defer_lock);
 
-  main = new std::thread([this] {
-    printf("Thread starting\n");
+  while(1) {
+    // Lock and wait until we're unpaused and we have a job in the queue.
+    lock.lock();
+    while (sig_pause || (command.count == 0 && (cursor_r == cursor_w))) {
+      sig_waiting = true;
+      cv_thread_pause.notify_one();
+      cv_thread_resume.wait(lock);
+    }
+    sig_waiting = false;
 
-    while(1) {
-      throttle.wait_for_resume();
-
-      if (exit) return;
-
-      double time_begin = timestamp();
-      int64_t pass_begin = gb->pass_total;
-      int64_t phase_begin = gb->phase_total;
-
-      while(!throttle._break && steps_remaining) {
-        gb->next_pass();
-        steps_remaining--;
-      }
-
-      double time_end = timestamp();
-      int64_t pass_end = gb->pass_total;
-      int64_t phase_end = gb->phase_total;
-
-      sim_time += (time_end - time_begin);
-      pass_count += (pass_end - pass_begin);
-      phase_count += (phase_end - phase_begin);
+    // Grab the next job off the queue.
+    if (command.count == 0 && (cursor_r != cursor_w)) {
+      command = ring[cursor_r++];
     }
 
-    printf("Exiting!\n");
-  });
+    // Unlock and do the job if we have one.
+    lock.unlock();
+    switch(command.op) {
+    case CMD_Exit:
+      return;
+    case CMD_StepPhase:
+      run_step_phase();
+      break;
+    case CMD_StepPass:
+      run_step_pass();
+      break;
+    case CMD_StepBack:
+      run_step_back();
+      break;
+    default:
+      printf("BAD COMMAND\n");
+      command.count = 0;
+      break;
+    }
+  }
+}
+
+//----------------------------------------
+
+void GateBoyThread::pause() {
+  if (!pause_count++) {
+    std::unique_lock<std::mutex> lock(mut);
+    sig_pause = true;
+    while (!sig_waiting) cv_thread_pause.wait(lock);
+  }
+}
+
+//----------------------------------------
+
+void GateBoyThread::resume() {
+  if (pause_count && !--pause_count) {
+    std::unique_lock<std::mutex> lock(mut);
+    sig_pause = false;
+    cv_thread_resume.notify_one();
+  }
+}
+
+//----------------------------------------
+
+void GateBoyThread::post_work(Command c) {
+  std::unique_lock<std::mutex> lock(mut);
+  if (uint8_t(cursor_w + 1) != cursor_r) {
+    ring[cursor_w++] = c;
+  }
+  cv_thread_resume.notify_one();
+}
+
+//----------------------------------------
+
+void GateBoyThread::clear_work() {
+  pause();
+  cursor_r = 0;
+  cursor_w = 0;
+  command.count = 0;
+  resume();
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyThread::run_step_phase() {
+  double time_begin = timestamp();
+
+  for(;command.count && !sig_pause; command.count--) {
+    gb->next_phase();
+  }
+
+  double time_end = timestamp();
+  gb->sim_time += (time_end - time_begin);
+}
+
+//----------------------------------------
+
+void GateBoyThread::run_step_pass() {
+  for(;command.count && !sig_pause; command.count--) {
+    gb->next_pass();
+  }
+}
+
+//----------------------------------------
+
+void GateBoyThread::run_step_back() {
+  for(;command.count && !sig_pause; command.count--) {
+    gb.pop();
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyThread::start() {
+  if (main) return;
+  main = new std::thread([this] { thread_main(); });
 }
 
 //----------------------------------------
 
 void GateBoyThread::stop() {
   if (!main) return;
-
-  pause();
-  exit = true;
-  resume();
-
+  clear_work();
+  post_work({CMD_Exit, 1});
+  while (pause_count) resume();
   main->join();
-
   delete main;
 }
 
 //----------------------------------------
 
-void GateBoyThread::pause() {
-  throttle.pause();
+void GateBoyThread::step_phase(int steps) {
+  post_work({CMD_StepPhase, steps});
 }
 
-//----------------------------------------
-
-void GateBoyThread::resume() {
-  throttle.resume();
+void GateBoyThread::step_pass(int steps) {
+  post_work({CMD_StepPass, steps});
 }
 
-//----------------------------------------
-
-void GateBoyThread::request_steps(int steps) {
-  pause();
-  steps_remaining += steps * 100;
-  resume();
+void GateBoyThread::step_back(int steps) {
+  post_work({CMD_StepBack, steps});
 }
 
 //------------------------------------------------------------------------------
@@ -320,14 +394,18 @@ void GateBoyThread::dump1(Dumper& d) {
   d("Total hash  %016llx\n", gb->total_hash);
   d("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock   %f\n",      double(gb->phase_total) / (4194304.0 * 2));
-  d("Steps left  %d\n",      steps_remaining);
 
+  d("Commands left %d\n",    uint8_t(cursor_w - cursor_r));
+  d("Steps left    %d\n",    command.count);
+  d("Sim time      %f\n",    gb->sim_time);
+  d("Waiting       %d\n",    sig_waiting.load());
 
-  d("Sim time    %f\n",      sim_time);
+  /*
   d("Pass count  %lld\n",    pass_count);
   d("Pass rate   %f\n",      double(pass_count) / sim_time);
   d("Phase count %lld\n",    phase_count);
   d("Phase rate  %f\n",      double(phase_count) / sim_time);
+  */
 
   d("\n");
   d("dbg_req ");

@@ -103,6 +103,8 @@ struct GateBoy {
 
   Schematics::SchematicTop top;
   uint8_t  sim_stable = 0;
+
+  double   sim_time = 0;
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
   int32_t  pass_total = 0;

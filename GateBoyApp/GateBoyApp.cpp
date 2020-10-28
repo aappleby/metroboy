@@ -55,8 +55,6 @@ void GateBoyApp::app_update(double delta) {
   (void)delta;
 
   SDL_Event event;
-  int step_forward = 0;
-  int step_backward = 0;
 
   //----------------------------------------
 
@@ -95,23 +93,23 @@ void GateBoyApp::app_update(double delta) {
 
     case SDLK_LEFT:   {
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_backward += 8;
+        gb_thread.step_back(8);
       } else {
-        step_backward += 1;
+        gb_thread.step_back(1);
       }
       break;
     }
 
     case SDLK_RIGHT:  {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 114 * 8 * 8;
+        gb_thread.step_phase(114 * 8 * 8);
       }
       else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        step_forward += 114 * 8;
+        gb_thread.step_phase(114 * 8);
       } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        step_forward += 8;
+        gb_thread.step_phase(8);
       } else {
-        step_forward += 1;
+        gb_thread.step_phase(1);
       }
       break;
     }
@@ -123,23 +121,6 @@ void GateBoyApp::app_update(double delta) {
     }
   }
 
-  if (step_forward) {
-    gb_thread.request_steps(step_forward);
-    /*
-    gb_thread.pause();
-    gb_thread.steps_remaining += step_forward;
-    gb_thread.resume();
-    */
-  }
-
-  if (step_backward) {
-    /*
-    gb_thread.pause();
-    gb_thread.steps_remaining = 0;
-    gb_thread.gb.pop();
-    gb_thread.resume();
-    */
-  }
 
   //----------
 
@@ -151,8 +132,9 @@ void GateBoyApp::app_update(double delta) {
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_render_frame(Viewport view) {
-  bool paused = gb_thread.isPaused();
-  if (!paused) gb_thread.pause();
+  //bool paused = gb_thread.control._paused;
+  gb_thread.pause();
+  CHECK_P(gb_thread.sig_waiting);
 
   grid_painter.render(view);
 
@@ -299,7 +281,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s, 640 - 64, 640 + 128);
   dumper.clear();
 
-  if (!paused) gb_thread.resume();
+  gb_thread.resume();
 }
 
 //------------------------------------------------------------------------------

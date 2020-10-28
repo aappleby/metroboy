@@ -138,7 +138,7 @@ void GateBoyThread::reset() {
 void GateBoyThread::thread_main() {
   std::unique_lock<std::mutex> lock(mut, std::defer_lock);
 
-  while(1) {
+  while(!sig_exit) {
     // Lock and wait until we're unpaused and we have a job in the queue.
     lock.lock();
     while (sig_pause || (command.count == 0 && (cursor_r == cursor_w))) {
@@ -151,22 +151,16 @@ void GateBoyThread::thread_main() {
     // Grab the next job off the queue.
     if (command.count == 0 && (cursor_r != cursor_w)) {
       command = ring[cursor_r++];
+      if (command.op == CMD_StepPhase) gb.push();
     }
 
     // Unlock and do the job if we have one.
     lock.unlock();
     switch(command.op) {
-    case CMD_Exit:
-      return;
-    case CMD_StepPhase:
-      run_step_phase();
-      break;
-    case CMD_StepPass:
-      run_step_pass();
-      break;
-    case CMD_StepBack:
-      run_step_back();
-      break;
+    case CMD_Exit:      sig_exit = true;  break;
+    case CMD_StepPhase: run_step_phase(); break;
+    case CMD_StepPass:  run_step_pass();  break;
+    case CMD_StepBack:  run_step_back();  break;
     default:
       printf("BAD COMMAND\n");
       command.count = 0;
@@ -240,6 +234,7 @@ void GateBoyThread::run_step_pass() {
 
 void GateBoyThread::run_step_back() {
   for(;command.count && !sig_pause; command.count--) {
+    printf("pop\n");
     gb.pop();
   }
 }
@@ -399,6 +394,18 @@ void GateBoyThread::dump1(Dumper& d) {
   d("Steps left    %d\n",    command.count);
   d("Sim time      %f\n",    gb->sim_time);
   d("Waiting       %d\n",    sig_waiting.load());
+
+  double phase_rate = (gb->phase_total - old_phase_total) / (gb->sim_time - old_sim_time);
+
+  if (gb->sim_time == old_sim_time) {
+    phase_rate = 0;
+  }
+
+  phase_rate_smooth = (phase_rate_smooth * 0.99) + (phase_rate * 0.01);
+
+  d("Phase rate    %f\n",      phase_rate_smooth);
+  old_phase_total = gb->phase_total;
+  old_sim_time = gb->sim_time;
 
   /*
   d("Pass count  %lld\n",    pass_count);

@@ -30,13 +30,8 @@ uint64_t commit_and_hash(void* blob, int size) {
     //printf("%04d 0x%02x 0x%02x\n", i, s1, s2);
 
 #ifdef SANITY_CHECK
-    if ((s1 & 0x0F) == ERR_XXXX) {
-      __debugbreak();
-    }
-
-    if ((s2 & 0x0F) == ERR_XXXX) {
-      __debugbreak();
-    }
+    CHECK_N((s1 & 0x0F) == ERR_XXXX);
+    CHECK_N((s2 & 0x0F) == ERR_XXXX);
 #endif
 
     //combine_hash(h, s2);

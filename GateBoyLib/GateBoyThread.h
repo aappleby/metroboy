@@ -230,8 +230,9 @@ struct GateBoyThread {
 
   int pause_count = 0;
   std::mutex mut;
-  std::atomic_bool sig_pause     = false;
-  std::atomic_bool sig_waiting   = false;
+  std::atomic_bool sig_pause   = false;
+  std::atomic_bool sig_waiting = false;
+  std::atomic_bool sig_exit    = false;
   std::condition_variable cv_thread_pause;
   std::condition_variable cv_thread_resume;
 
@@ -241,6 +242,9 @@ struct GateBoyThread {
 
   Command command = {0,0};
 
+  double   old_sim_time = 0;
+  int32_t  old_phase_total = 0;
+  double   phase_rate_smooth = 0;
 };
 
 //--------------------------------------------------------------------------------

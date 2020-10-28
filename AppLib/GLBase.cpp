@@ -111,7 +111,6 @@ void check_gl_error() {
   int err = glGetError();
   if (err) {
     printf("glGetError %d\n", err);
-    //__debugbreak();
   }
 }
 

@@ -63,8 +63,25 @@ void GateBoyApp::app_update(double delta) {
     if (event.type == SDL_KEYDOWN)
     switch (event.key.keysym.sym) {
 
-    case SDLK_s: { gb_thread.pause();  break; }
-    case SDLK_d: { gb_thread.resume(); break; }
+    case SDLK_SPACE: { gb_thread.sig_pause ? gb_thread.resume() : gb_thread.pause(); break; }
+
+    case SDLK_f: {
+      if (runmode != RUN_FAST) {
+        gb_thread.step_phase(1024 * 1024 * 1024);
+        gb_thread.resume();
+        runmode = RUN_FAST;
+      }
+      break;
+    }
+    case SDLK_v: {
+      runmode = RUN_SYNC;
+      break;
+    }
+    case SDLK_s: {
+      runmode = RUN_STEP;
+      gb_thread.clear_work();
+      break;
+    }
 
 #if 0
     case SDLK_F1: { gb_thread.load_raw_dump(); break; }
@@ -72,9 +89,6 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_r:  { gb_thread.reset(); break; }
     //case SDLK_c:  { gb_thread.toggle_cpu(); break; }
 
-    case SDLK_f: runmode = RUN_FAST; break;
-    case SDLK_v: runmode = RUN_SYNC; break;
-    case SDLK_s: { break; }
 
     case SDLK_d: show_diff   = !show_diff;   break;
     case SDLK_g: show_golden = !show_golden; break;
@@ -92,24 +106,28 @@ void GateBoyApp::app_update(double delta) {
 #endif
 
     case SDLK_LEFT:   {
-      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        gb_thread.step_back(8);
-      } else {
-        gb_thread.step_back(1);
+      if (runmode == RUN_STEP) {
+        if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+          gb_thread.step_back(8);
+        } else {
+          gb_thread.step_back(1);
+        }
       }
       break;
     }
 
     case SDLK_RIGHT:  {
-      if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-        gb_thread.step_phase(114 * 8 * 8);
-      }
-      else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        gb_thread.step_phase(114 * 8);
-      } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        gb_thread.step_phase(8);
-      } else {
-        gb_thread.step_phase(1);
+      if (runmode == RUN_STEP) {
+        if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
+          gb_thread.step_phase(114 * 8 * 8);
+        }
+        else if (keyboard_state[SDL_SCANCODE_LALT]) {
+          gb_thread.step_phase(114 * 8);
+        } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+          gb_thread.step_phase(8);
+        } else {
+          gb_thread.step_phase(1);
+        }
       }
       break;
     }
@@ -121,20 +139,13 @@ void GateBoyApp::app_update(double delta) {
     }
   }
 
-
-  //----------
-
-  //gb_thread.sim_update(runmode, stepmode, step_forward, step_backward);
-
   frame_count++;
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_render_frame(Viewport view) {
-  //bool paused = gb_thread.control._paused;
   gb_thread.pause();
-  CHECK_P(gb_thread.sig_waiting);
 
   grid_painter.render(view);
 

@@ -167,7 +167,6 @@ struct SchematicTop {
     }
   }
 
-  void tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
   void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
 
   void tock_ext_bus (wire RST, const uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram);

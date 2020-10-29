@@ -430,7 +430,16 @@ void GateBoyThread::dump1(Dumper& d) {
   d("\n");
 
   gb->cpu.dump(d);
-  gb->top.tim_reg.dump(d);
+
+  d("\002===== Timer =====\001\n");
+  d("DIV    : 0x%04x %d\n", top.tim_reg.get_div(),    top.tim_reg.get_div());
+  d("TIMA A : 0x%02x %d\n", top.tim_reg.get_tima_a(), top.tim_reg.get_tima_a());
+  d("TIMA B : 0x%02x %d\n", top.tim_reg.get_tima_b(), top.tim_reg.get_tima_b());
+  d("TMA    : 0x%02x %d\n", top.tim_reg.get_tma(),    top.tim_reg.get_tma());
+  d("TAC    : 0x%02x %d\n", top.tim_reg.get_tac(),    top.tim_reg.get_tac());
+  d("NYDU_TIMA_D7_DELAY   %c\n", top.tim_reg.NYDU_TIMA_D7_DELAY.c());
+  d("MOBA_TIMER_OVERFLOWp %c\n", top.tim_reg.MOBA_TIMER_OVERFLOWp.c());
+  d("\n");
 
   d("\002===== Ints =====\001\n");
   d("IE_D0              %c\n", top.IE_D0.c());
@@ -882,7 +891,20 @@ void GateBoyThread::dump5(Dumper& d) {
   d("\n");
 
 
-  gb->top.tile_fetcher.dump(d, gb->top);
+  d("\002=====TileFetcher=====\001\n");
+  d("LAXU_BFETCH_S0           %c\n", top.tile_fetcher.LAXU_BFETCH_S0.c());
+  d("MESU_BFETCH_S1           %c\n", top.tile_fetcher.MESU_BFETCH_S1.c());
+  d("NYVA_BFETCH_S2           %c\n", top.tile_fetcher.NYVA_BFETCH_S2.c());
+  d("LYZU_BFETCH_S0_D1        %c\n", top.tile_fetcher.LYZU_BFETCH_S0_D1.c());
+  d("\n");
+  d("NYKA_FETCH_DONE_P11      %c\n", top.tile_fetcher.NYKA_FETCH_DONE_P11.c());
+  d("PORY_FETCH_DONE_P12      %c\n", top.tile_fetcher.PORY_FETCH_DONE_P12.c());
+  d("PYGO_FETCH_DONE_P13      %c\n", top.tile_fetcher.PYGO_FETCH_DONE_P13.c());
+  d("POKY_PRELOAD_DONEp       %c\n", top.tile_fetcher.POKY_PRELOAD_LATCHp.c());
+  d("\n");
+  d("LONY_FETCH_RUNNINGp      %c\n", top.tile_fetcher.LONY_BG_FETCH_RUNNINGp.c()); // 1 for phases 0-11, 0 for 12-15
+  d("LOVY_FETCH_DONEp         %c\n", top.tile_fetcher.LOVY_BG_FETCH_DONEp.c());    // 0 for phases 0-11, 1 for 12-15
+  d("\n");
 }
 
 //------------------------------------------------------------------------------

@@ -101,9 +101,6 @@ struct Timer {
     SABO_TAC_D2.reset(REG_D0C0);
   }
 
-  void dump(Dumper& d) const;
-  void tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus);
-
   int get_div() const {
     return pack_p(UKUP_DIV_00.qp17(), UFOR_DIV_01.qp17(), UNER_DIV_02.qp17(), TERO_DIV_03.qp17(),
                   UNYK_DIV_04.qp17(), TAMA_DIV_05.qp17(), UGOT_DIV_06.qp17(), TULU_DIV_07.qp17(),

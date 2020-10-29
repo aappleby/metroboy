@@ -337,9 +337,7 @@ void GateBoy::next_pass() {
   wire CLK = !(phase_total & 1) & sys_clken;
 
   RegBase::sim_running = true;
-  top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
 
-  RegBase::tock_running = true;
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
   top.tock_ext_bus (sys_rst, rom_buf, cart_ram, ext_ram);
   top.tock_vram_bus(sys_rst, vid_ram);

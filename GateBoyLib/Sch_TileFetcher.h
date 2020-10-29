@@ -70,9 +70,6 @@ struct TileFetcher {
     LYZU_BFETCH_S0_D1.reset(REG_D0C0);
   }
 
-  void tock(SchematicTop& top);
-  void dump(Dumper& d, const SchematicTop& top) const;
-
   /*p27.LENA*/ Sig LENA_BGW_VRM_RDp;  // -> SUTU_MCSn
   /*p27.MOCE*/ Sig MOCE_BFETCH_DONEn; // -> sprite feetcher
   /*p27.NETA*/ Sig NETA_TILE_READp;   // -> vram bus

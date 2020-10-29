@@ -9,8 +9,6 @@ struct SchematicTop;
 
 struct SpriteStore {
   void reset_cart() {
-    FEPO_STORE_MATCHp.reset(TRI_D0NP);
-
     SPR_TRI_I0p.reset(TRI_D0PU);
     SPR_TRI_I1p.reset(TRI_D0PU);
     SPR_TRI_I2p.reset(TRI_D1PU);
@@ -28,17 +26,6 @@ struct SpriteStore {
     CUXY_SPRITE_COUNT1.reset(REG_D0C1);
     BEGO_SPRITE_COUNT2.reset(REG_D0C1);
     DYBE_SPRITE_COUNT3.reset(REG_D0C1);
-
-    YDUG_STORE0_MATCHn.reset(TRI_D1NP);
-    DYDU_STORE1_MATCHn.reset(TRI_D1NP);
-    DEGO_STORE2_MATCHn.reset(TRI_D1NP);
-    YLOZ_STORE3_MATCHn.reset(TRI_D1NP);
-    XAGE_STORE4_MATCHn.reset(TRI_D1NP);
-    EGOM_STORE5_MATCHn.reset(TRI_D1NP);
-    YBEZ_STORE6_MATCHn.reset(TRI_D1NP);
-    DYKA_STORE7_MATCHn.reset(TRI_D1NP);
-    EFYL_STORE8_MATCHn.reset(TRI_D1NP);
-    YGEM_STORE9_MATCHn.reset(TRI_D1NP);
 
     EBOJ_STORE0_RSTp.reset(REG_D0C0);
     CEDY_STORE1_RSTp.reset(REG_D0C0);
@@ -281,8 +268,6 @@ struct SpriteStore {
   }
 
   void reset_boot() {
-    FEPO_STORE_MATCHp.reset(TRI_HZNP);
-
     SPR_TRI_I0p.reset(TRI_HZPU);
     SPR_TRI_I1p.reset(TRI_HZPU);
     SPR_TRI_I2p.reset(TRI_HZPU);
@@ -300,17 +285,6 @@ struct SpriteStore {
     CUXY_SPRITE_COUNT1.reset(REG_D0C0);
     BEGO_SPRITE_COUNT2.reset(REG_D0C0);
     DYBE_SPRITE_COUNT3.reset(REG_D0C0);
-
-    YDUG_STORE0_MATCHn.reset(TRI_D0NP);
-    DYDU_STORE1_MATCHn.reset(TRI_D0NP);
-    DEGO_STORE2_MATCHn.reset(TRI_D0NP);
-    YLOZ_STORE3_MATCHn.reset(TRI_D0NP);
-    XAGE_STORE4_MATCHn.reset(TRI_D0NP);
-    EGOM_STORE5_MATCHn.reset(TRI_D0NP);
-    YBEZ_STORE6_MATCHn.reset(TRI_D0NP);
-    DYKA_STORE7_MATCHn.reset(TRI_D0NP);
-    EFYL_STORE8_MATCHn.reset(TRI_D0NP);
-    YGEM_STORE9_MATCHn.reset(TRI_D0NP);
 
     EBOJ_STORE0_RSTp.reset(REG_D0C0);
     CEDY_STORE1_RSTp.reset(REG_D0C0);
@@ -552,8 +526,6 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  /*p29.FEPO*/ Sig FEPO_STORE_MATCHp; // -> pix pipe, sprite fetcher
-
   Bus SPR_TRI_I0p; // -> oam bus
   Bus SPR_TRI_I1p;
   Bus SPR_TRI_I2p;
@@ -574,17 +546,6 @@ struct SpriteStore {
   /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1;
   /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2;
   /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3;
-
-  /*p29.YDUG*/ Sig YDUG_STORE0_MATCHn;
-  /*p29.DYDU*/ Sig DYDU_STORE1_MATCHn;
-  /*p29.DEGO*/ Sig DEGO_STORE2_MATCHn;
-  /*p29.YLOZ*/ Sig YLOZ_STORE3_MATCHn;
-  /*p29.XAGE*/ Sig XAGE_STORE4_MATCHn;
-  /*p29.EGOM*/ Sig EGOM_STORE5_MATCHn;
-  /*p29.YBEZ*/ Sig YBEZ_STORE6_MATCHn;
-  /*p29.DYKA*/ Sig DYKA_STORE7_MATCHn;
-  /*p29.EFYL*/ Sig EFYL_STORE8_MATCHn;
-  /*p29.YGEM*/ Sig YGEM_STORE9_MATCHn;
 
   /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp;
   /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp;

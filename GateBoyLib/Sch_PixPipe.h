@@ -73,8 +73,6 @@ struct PixelPipe {
     REFE_STAT_OAI_ENn.reset(REG_D1C1);
     RUGU_STAT_LYI_ENn.reset(REG_D1C1);
 
-    WODU_HBLANKp.reset(TRI_D1NP);
-
     NOPA_WIN_MODE_B.reset(REG_D0C0);
     REJO_WY_MATCH_LATCH.reset(TRI_D0NP);
     SARY_WY_MATCH.reset(REG_D0C0);
@@ -290,8 +288,6 @@ struct PixelPipe {
     RUFO_STAT_VBI_ENn.reset(REG_D0C0);
     REFE_STAT_OAI_ENn.reset(REG_D0C0);
     RUGU_STAT_LYI_ENn.reset(REG_D0C0);
-
-    WODU_HBLANKp.reset(TRI_HZNP);
 
     NOPA_WIN_MODE_B.reset(REG_D0C0);
     REJO_WY_MATCH_LATCH.reset(TRI_D0NP);;
@@ -523,8 +519,6 @@ struct PixelPipe {
   /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn;
   /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn;
   /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn;
-
-  /*p21.WODU*/ Sig WODU_HBLANKp;
 
   /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_B;
   /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCH;

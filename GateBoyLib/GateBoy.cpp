@@ -338,13 +338,8 @@ void GateBoy::next_pass() {
 
   RegBase::sim_running = true;
 
-  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  top.tock_ext_bus (sys_rst, rom_buf, cart_ram, ext_ram);
-  top.tock_vram_bus(sys_rst, vid_ram);
-  top.tock_zram_bus(sys_rst, zero_ram);
-  top.tock_oam_bus (sys_rst, oam_ram);
-  top.ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
-  RegBase::tock_running = false;
+  top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready,
+                rom_buf, vid_ram, cart_ram, ext_ram, oam_ram, zero_ram);
   RegBase::sim_running = false;
 
   uint64_t pass_hash_new = commit_and_hash(top);

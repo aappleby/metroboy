@@ -26,22 +26,6 @@ namespace Schematics {
 #pragma pack(push, 1)
 struct SchematicTop {
   void reset_cart() {
-    ABUZ_xxCDEFGH.reset(TRI_D0NP);
-    TEXO_ADDR_EXT_AND_NOT_VRAM.reset(TRI_D0NP);
-    UMUT_MODE_DBG1p.reset(TRI_D0NP);
-    UNOR_MODE_DBG2p.reset(TRI_D0NP);
-    UPOJ_MODE_PRODn.reset(TRI_D1NP);
-    TUTO_DBG_VRAMp.reset(TRI_D0NP);
-    TEDO_CPU_RDp.reset(TRI_D0NP);
-    AJAS_CPU_RDn.reset(TRI_D1NP);
-    ASOT_CPU_RDp.reset(TRI_D0NP);
-    LEKO_CPU_RDp.reset(TRI_D0NP);
-    CATY_LATCH_EXTp.reset(TRI_D0NP);
-    TAPU_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
-    CUPA_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
-    APOV_CPU_WRp_xxxxEFGx.reset(TRI_D0NP);
-    TUTU_ADDR_BOOTp.reset(TRI_D0NP);
-
     oam_bus.reset_cart();
     ext_bus.reset_cart();
     cpu_bus.reset_cart();
@@ -108,17 +92,6 @@ struct SchematicTop {
   }
 
   void reset_boot() {
-    ABUZ_xxCDEFGH.reset(TRI_HZNP);
-    UMUT_MODE_DBG1p.reset(TRI_HZNP);
-    UNOR_MODE_DBG2p.reset(TRI_HZNP);
-    UPOJ_MODE_PRODn.reset(TRI_HZNP);
-    TUTO_DBG_VRAMp.reset(TRI_HZNP);
-    TEDO_CPU_RDp.reset(TRI_HZNP);
-    LEKO_CPU_RDp.reset(TRI_HZNP);
-    TAPU_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
-    APOV_CPU_WRp_xxxxEFGx.reset(TRI_HZNP);
-    TUTU_ADDR_BOOTp.reset(TRI_HZNP);
-
     oam_bus.reset_boot();
     ext_bus.reset_boot();
     cpu_bus.reset_boot();
@@ -167,34 +140,13 @@ struct SchematicTop {
     }
   }
 
-  void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY);
+  void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY,
+                 uint8_t* rom_buf, uint8_t* vid_ram, uint8_t* cart_ram, uint8_t* ext_ram, uint8_t* oam_ram, uint8_t* zero_ram);
 
   void tock_ext_bus (wire RST, const uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram);
   void tock_vram_bus(wire RST, uint8_t* vid_ram);
   void tock_oam_bus (wire RST, uint8_t* oam_ram);
-  void tock_zram_bus(wire RST, uint8_t* zero_ram);
-
-  //-----------------------------------------------------------------------------
-
-  /*p01.ABUZ*/ Sig ABUZ_xxCDEFGH;
-  /*p08.TEXO*/ Sig TEXO_ADDR_EXT_AND_NOT_VRAM;
-
-  /*p07.UMUT*/ Sig UMUT_MODE_DBG1p;
-  /*p07.UNOR*/ Sig UNOR_MODE_DBG2p;
-  /*p07.UPOJ*/ Sig UPOJ_MODE_PRODn;
-  /*p25.TUTO*/ Sig TUTO_DBG_VRAMp;
-
-  /*p07.TEDO*/ Sig TEDO_CPU_RDp;
-  /*p07.AJAS*/ Sig AJAS_CPU_RDn;
-  /*p07.ASOT*/ Sig ASOT_CPU_RDp;
-  /*p28.LEKO*/ Sig LEKO_CPU_RDp;
-
-  /*p04.CATY*/ Sig CATY_LATCH_EXTp;
-
-  /*p07.TAPU*/ Sig TAPU_CPU_WRp_xxxxEFGx;
-  /*p07.CUPA*/ Sig CUPA_CPU_WRp_xxxxEFGx;
-  /*p01.APOV*/ Sig APOV_CPU_WRp_xxxxEFGx;
-  /*p07.TUTU*/ Sig TUTU_ADDR_BOOTp;
+  void tock_zram_bus(wire RST, uint8_t* zero_ram, wire TAPU_CPU_WRp_xxxxEFGx, wire TEDO_CPU_RDp);
 
   //-----------------------------------------------------------------------------
 

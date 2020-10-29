@@ -377,9 +377,53 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(top.sprite_store.YGEM_STORE9_MATCHn, top.sprite_store.EFYL_STORE8_MATCHn, top.sprite_store.DYKA_STORE7_MATCHn, top.sprite_store.YBEZ_STORE6_MATCHn, top.sprite_store.EGOM_STORE5_MATCHn);
   /* p29.FEPO*/ top.sprite_store.FEPO_STORE_MATCHp = or2(_FEFY_STORE_MATCHp, _FOVE_STORE_MATCHp);
 
-  //----------------------------------------
+  //------------------------------------------------------------------------------
 
-  pix_pipe.tick(top);
+  // 128 + 32 + 4 + 2 + 1 = 167
+  /*#p21.XUGU*/ wire _XUGU_X_167n = nand5(top.pix_pipe.XEHO_X0p.qp17(), top.pix_pipe.SAVY_X1p.qp17(), top.pix_pipe.XODU_X2p.qp17(), top.pix_pipe.TUKY_X5p.qp17(), top.pix_pipe.SYBE_X7p.qp17());
+  /*#p21.XANO*/ wire _XANO_X_167p = not1(_XUGU_X_167n);
+  /*#p21.XENA*/ wire _XENA_STORE_MATCHn = not1(top.sprite_store.FEPO_STORE_MATCHp);
+  /*#p21.WODU*/ top.pix_pipe.WODU_HBLANKp = and2(_XENA_STORE_MATCHn, _XANO_X_167p);
+
+  /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(top.lcd_reg.TOLU_VBLANKn, top.lcd_reg.SELA_LINE_P908p);
+  /*#p21.TARU*/ wire _TARU_INT_HBL = and2(top.pix_pipe.WODU_HBLANKp, top.lcd_reg.TOLU_VBLANKn);
+  /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(top.pix_pipe.RUGU_STAT_LYI_ENn.qn08(), top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17(),
+                                             top.pix_pipe.REFE_STAT_OAI_ENn.qn08(), _TAPA_INT_OAM,
+                                             top.pix_pipe.RUFO_STAT_VBI_ENn.qn08(), top.lcd_reg.PARU_VBLANKp_d4, // polarity?
+                                             top.pix_pipe.ROXE_STAT_HBI_ENn.qn08(), _TARU_INT_HBL);
+
+  /*#p21.TUVA*/ wire _TUVA_INT_STATn = not1(_SUKO_INT_STATp);
+  /*#p21.VOTY*/ top.pix_pipe.VOTY_INT_STATp = not1(_TUVA_INT_STATn);
+
+  /*#p27.NOCU*/ top.pix_pipe.NOCU_WIN_MODEn = not1(top.pix_pipe.PYNU_WIN_MODE_A.qp04());
+  /* p27.PORE*/ top.pix_pipe.PORE_WIN_MODEp = not1(top.pix_pipe.NOCU_WIN_MODEn);
+  /*#p27.SYLO*/ top.pix_pipe.SYLO_WIN_HITn = not1(top.pix_pipe.RYDY);
+  /*#p24.TOMU*/ top.pix_pipe.TOMU_WIN_HITp = not1(top.pix_pipe.SYLO_WIN_HITn);
+  /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(top.pix_pipe.SYLO_WIN_HITn, top.pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17());
+  /* p27.SUZU*/ top.pix_pipe.SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILE_NE);
+
+  /* p24.LOBY*/ top.pix_pipe.LOBY_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.qn03());
+
+  //----------
+
+  /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(top.tile_fetcher.POKY_PRELOAD_LATCHp.qp04());
+  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(top.pix_pipe.XYMU_RENDERINGn.qn03(),
+                                                      _ROMO_PRELOAD_DONEn,
+                                                      top.tile_fetcher.NYKA_FETCH_DONE_P11.qp17(),
+                                                      top.tile_fetcher.PORY_FETCH_DONE_P12.qp17());
+
+
+  /* p27.SEKO*/ top.pix_pipe.SEKO_FETCH_TRIGp = nor2(top.pix_pipe.RYFA_FETCHn_A.qn16(), top.pix_pipe.RENE_FETCHn_B.qp17());
+  /* p27.TAVE*/ top.pix_pipe.TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
+  /* p27.TEVO*/ top.pix_pipe.TEVO_FETCH_TRIGp = or3(top.pix_pipe.SEKO_FETCH_TRIGp, top.pix_pipe.SUZU_WIN_FIRST_TILEne, top.pix_pipe.TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
+  /*#p27.NUNY*/ top.pix_pipe.NUNY_WX_MATCH_TRIGp = and2(top.pix_pipe.PYNU_WIN_MODE_A.qp04(), top.pix_pipe.NOPA_WIN_MODE_B.qn16());
+  /* p27.NYFO*/ wire _NYFO_WIN_FETCH_TRIGn = not1(top.pix_pipe.NUNY_WX_MATCH_TRIGp);
+  /* p27.MOSU*/ top.pix_pipe.MOSU_WIN_FETCH_TRIGp = not1(_NYFO_WIN_FETCH_TRIGn);
+
+  /* p27.NYXU*/ top.pix_pipe.NYXU_FETCH_TRIGn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp, top.pix_pipe.MOSU_WIN_FETCH_TRIGp, top.pix_pipe.TEVO_FETCH_TRIGp);
+
+  /* p21.SADU*/ top.pix_pipe.SADU_STAT_MODE0n = nor2(top.pix_pipe.XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
+  /* p21.XATY*/ top.pix_pipe.XATY_STAT_MODE1n = nor2(top.sprite_scanner.ACYL_SCANNINGp, top.pix_pipe.XYMU_RENDERINGn.qn03()); // die NOR
 
   //----------------------------------------
 

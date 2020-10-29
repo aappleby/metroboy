@@ -214,58 +214,6 @@ void PixelPipe::dump(Dumper& d, const SchematicTop& top) const {
 
 //------------------------------------------------------------------------------
 
-void PixelPipe::tick(const SchematicTop& top) {
-
-  // 128 + 32 + 4 + 2 + 1 = 167
-  /*#p21.XUGU*/ wire _XUGU_X_167n = nand5(XEHO_X0p.qp17(), SAVY_X1p.qp17(), XODU_X2p.qp17(), TUKY_X5p.qp17(), SYBE_X7p.qp17());
-  /*#p21.XANO*/ wire _XANO_X_167p = not1(_XUGU_X_167n);
-  /*#p21.XENA*/ wire _XENA_STORE_MATCHn = not1(top.sprite_store.FEPO_STORE_MATCHp);
-  /*#p21.WODU*/ WODU_HBLANKp = and2(_XENA_STORE_MATCHn, _XANO_X_167p);
-
-  /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(top.lcd_reg.TOLU_VBLANKn, top.lcd_reg.SELA_LINE_P908p);
-  /*#p21.TARU*/ wire _TARU_INT_HBL = and2(WODU_HBLANKp, top.lcd_reg.TOLU_VBLANKn);
-  /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(RUGU_STAT_LYI_ENn.qn08(), top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17(),
-                                             REFE_STAT_OAI_ENn.qn08(), _TAPA_INT_OAM,
-                                             RUFO_STAT_VBI_ENn.qn08(), top.lcd_reg.PARU_VBLANKp_d4, // polarity?
-                                             ROXE_STAT_HBI_ENn.qn08(), _TARU_INT_HBL);
-
-  /*#p21.TUVA*/ wire _TUVA_INT_STATn = not1(_SUKO_INT_STATp);
-  /*#p21.VOTY*/ VOTY_INT_STATp = not1(_TUVA_INT_STATn);
-
-  /*#p27.NOCU*/ NOCU_WIN_MODEn = not1(PYNU_WIN_MODE_A.qp04());
-  /* p27.PORE*/ PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
-  /*#p27.SYLO*/ SYLO_WIN_HITn = not1(RYDY);
-  /*#p24.TOMU*/ TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
-  /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(SYLO_WIN_HITn, SOVY_WIN_FIRST_TILE_B.qp17());
-  /* p27.SUZU*/ SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILE_NE);
-
-  /* p24.LOBY*/ LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn03());
-
-  //----------
-
-  /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn = not1(top.tile_fetcher.POKY_PRELOAD_LATCHp.qp04());
-  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn03(),
-                                                      _ROMO_PRELOAD_DONEn,
-                                                      top.tile_fetcher.NYKA_FETCH_DONE_P11.qp17(),
-                                                      top.tile_fetcher.PORY_FETCH_DONE_P12.qp17());
-
-
-  /* p27.SEKO*/ SEKO_FETCH_TRIGp = nor2(RYFA_FETCHn_A.qn16(), RENE_FETCHn_B.qp17());
-  /* p27.TAVE*/ TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
-  /* p27.TEVO*/ TEVO_FETCH_TRIGp = or3(SEKO_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  /*#p27.NUNY*/ NUNY_WX_MATCH_TRIGp = and2(PYNU_WIN_MODE_A.qp04(), NOPA_WIN_MODE_B.qn16());
-  /* p27.NYFO*/ wire _NYFO_WIN_FETCH_TRIGn = not1(NUNY_WX_MATCH_TRIGp);
-  /* p27.MOSU*/ MOSU_WIN_FETCH_TRIGp = not1(_NYFO_WIN_FETCH_TRIGn);
-
-  /* p27.NYXU*/ NYXU_FETCH_TRIGn = nor3(top.sprite_scanner.AVAP_RENDER_START_TRIGp, MOSU_WIN_FETCH_TRIGp, TEVO_FETCH_TRIGp);
-
-  /* p21.SADU*/ SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn03(), top.lcd_reg.PARU_VBLANKp_d4); // die NOR
-  /* p21.XATY*/ XATY_STAT_MODE1n = nor2(top.sprite_scanner.ACYL_SCANNINGp, XYMU_RENDERINGn.qn03()); // die NOR
-
-}
-
-//------------------------------------------------------------------------------
-
 void PixelPipe::tock(SchematicTop& top, CpuBus& cpu_bus) {
   wire VYPO = 1;
   wire GND = 0;

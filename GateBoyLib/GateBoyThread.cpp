@@ -462,7 +462,7 @@ void GateBoyThread::dump4(Dumper& d) {
 void GateBoyThread::dump5(Dumper& d) {
   gb->top.sprite_fetcher.dump(d);
   gb->top.sprite_scanner.dump(d, gb->top);
-  gb->top.sprite_store.dump(d);
+  gb->top.sprite_store.dump(d, gb->top);
   gb->top.tile_fetcher.dump(d, gb->top);
 }
 

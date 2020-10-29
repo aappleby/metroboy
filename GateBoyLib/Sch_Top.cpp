@@ -7,6 +7,8 @@
 using namespace Schematics;
 extern const uint8_t DMG_ROM_bin[];
 
+//#define FAST_BOOT
+
 #pragma warning(disable:4100)
 
 //-----------------------------------------------------------------------------
@@ -548,10 +550,60 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   //------------------------------------------------------------------------------
 
-  clk_reg.tock_clk_slow(top, CLKGOOD);
-  clk_reg.tock_rst_slow(top, RST, CLKGOOD, CPUREADY);
-  clk_reg.tock_dbg_slow(top);
-  clk_reg.tock_vid_slow(top, CLK);
+  // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
+
+  /*p01.AFUR*/ top.clk_reg.AFUR_xxxxEFGH.dff9(!top.clk_reg.ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, top.clk_reg.ADYK_ABCxxxxH.qp09());
+  /*p01.ALEF*/ top.clk_reg.ALEF_AxxxxFGH.dff9( top.clk_reg.ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, top.clk_reg.AFUR_xxxxEFGH.qn08());
+  /*p01.APUK*/ top.clk_reg.APUK_ABxxxxGH.dff9(!top.clk_reg.ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, top.clk_reg.ALEF_AxxxxFGH.qn08());
+  /*p01.ADYK*/ top.clk_reg.ADYK_ABCxxxxH.dff9( top.clk_reg.ATAL_xBxDxFxH, top.UPOJ_MODE_PRODn, top.clk_reg.APUK_ABxxxxGH.qn08());
+
+  top.cpu_bus.PIN_CPU_EXT_CLKGOOD.set(CLKGOOD);
+
+  top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.set(top.clk_reg.BOWA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.set(top.clk_reg.BEDO_Axxxxxxx);
+
+  top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.set(top.clk_reg.BEKO_ABCDxxxx);
+  top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.set(top.clk_reg.BUDE_xxxxEFGH);
+
+  top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.set(top.clk_reg.BOLO_ABCDEFxx);
+  top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.set(top.clk_reg.BUKE_AxxxxxGH);
+
+  top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.set(top.clk_reg.BOMA_xBCDEFGH);
+  top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.set(top.clk_reg.BOGA_Axxxxxxx);
+
+  top.ext_bus.PIN_EXT_CLK.io_pin(top.clk_reg.BUDE_xxxxEFGH, top.clk_reg.BUDE_xxxxEFGH);
+
+  /*p01.UPYF*/ wire _UPYF = or2(RST, top.clk_reg.UCOB_CLKBADp);
+  /*p01.TUBO*/ top.clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, CPUREADY);
+
+#ifdef FAST_BOOT
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(top.clk_reg.TUBO_WAITINGp.qp(), top.tim_reg.TERO_DIV_03.qp());
+#else
+  /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(top.clk_reg.TUBO_WAITINGp.qp04(), top.tim_reg.UPOF_DIV_15.qp17());
+#endif
+
+  /*p01.TABA*/ wire _TABA_POR_TRIGn = or3(top.UNOR_MODE_DBG2p, top.UMUT_MODE_DBG1p, _UNUT_POR_TRIGn);
+  top.cpu_bus.PIN_CPU_STARTp.set(_TABA_POR_TRIGn);
+
+  /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
+  /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(RST, _ALYP_RSTn);
+  /* p01.ASOL*/ top.clk_reg.ASOL_POR_DONEn.nor_latch(RST, _AFAR_RSTp); // Schematic wrong, this is a latch.
+
+  /* p01.AFER*/ top.clk_reg.AFER_SYS_RSTp.dff13(top.clk_reg.BOGA_Axxxxxxx, top.UPOJ_MODE_PRODn, top.clk_reg.ASOL_POR_DONEn.qp04());
+
+  top.cpu_bus.PIN_CPU_SYS_RSTp.set(top.clk_reg.AFER_SYS_RSTp.qp13());
+  top.cpu_bus.PIN_CPU_EXT_RST.set(RST);
+
+  top.cpu_bus.PIN_CPU_UNOR_DBG.set(top.UNOR_MODE_DBG2p);
+  top.cpu_bus.PIN_CPU_UMUT_DBG.set(top.UMUT_MODE_DBG1p);
+
+  /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not1(top.clk_reg.ZEME_AxCxExGx);
+  /*p29.XOTA*/ wire _XOTA_AxCxExGx = not1(_XYVA_xBxDxFxH);
+  /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not1(_XOTA_AxCxExGx);
+
+  /*p29.WUVU*/ top.clk_reg.WUVU_ABxxEFxx.dff17(_XOTA_AxCxExGx,                   top.clk_reg.XAPO_VID_RSTn, top.clk_reg.WUVU_ABxxEFxx.qn16());
+  /*p21.VENA*/ top.clk_reg.VENA_xxCDEFxx.dff17(top.clk_reg.WUVU_ABxxEFxx.qn16(), top.clk_reg.XAPO_VID_RSTn, top.clk_reg.VENA_xxCDEFxx.qn16()); // inverting the clock to this reg doesn't seem to break anything, which is really weird
+  /*p29.WOSU*/ top.clk_reg.WOSU_AxxDExxH.dff17(_XYFY_xBxDxFxH,                   top.clk_reg.XAPO_VID_RSTn, top.clk_reg.WUVU_ABxxEFxx.qn16());
 
   //------------------------------------------------------------------------------
 

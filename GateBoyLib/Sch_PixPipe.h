@@ -444,7 +444,6 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D0C0);
   }
 
-  void tock(SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d, const SchematicTop& top) const;
 
   uint8_t get_stat(const SchematicTop& top) const;

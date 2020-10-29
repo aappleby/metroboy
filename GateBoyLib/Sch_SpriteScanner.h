@@ -10,23 +10,6 @@ struct OamBus;
 
 struct SpriteScanner {
   void reset_cart() {
-    ACYL_SCANNINGp.reset(TRI_D0NP);
-    CEHA_SCANNINGp.reset(TRI_D0NP);
-
-    DEGE_SPRITE_DELTA0.reset(TRI_D0NP);
-    DABY_SPRITE_DELTA1.reset(TRI_D0NP);
-    DABU_SPRITE_DELTA2.reset(TRI_D0NP);
-    GYSA_SPRITE_DELTA3.reset(TRI_D0NP);
-    GACE_SPRITE_DELTA4.reset(TRI_D0NP);
-    GUVU_SPRITE_DELTA5.reset(TRI_D0NP);
-    GYDA_SPRITE_DELTA6.reset(TRI_D0NP);
-    GEWY_SPRITE_DELTA7.reset(TRI_D0NP);
-    CARE_STORE_ENp_ABxxEFxx.reset(TRI_D0NP);
-
-    AVAP_RENDER_START_TRIGp.reset(TRI_D0NP);
-    ANOM_LINE_RSTn.reset(TRI_D1NP);
-    BAGY_LINE_RSTn.reset(TRI_D1NP);
-
     BESU_SCANNINGp.reset(TRI_D0NP);
     CENO_SCANNINGp.reset(REG_D0C1);
 
@@ -49,16 +32,6 @@ struct SpriteScanner {
   }
 
   void reset_boot() {
-    DEGE_SPRITE_DELTA0.reset(TRI_HZNP);
-    DABY_SPRITE_DELTA1.reset(TRI_HZNP);
-    DABU_SPRITE_DELTA2.reset(TRI_HZNP);
-    GYSA_SPRITE_DELTA3.reset(TRI_HZNP);
-    GACE_SPRITE_DELTA4.reset(TRI_HZNP);
-    GUVU_SPRITE_DELTA5.reset(TRI_HZNP);
-    GYDA_SPRITE_DELTA6.reset(TRI_HZNP);
-    GEWY_SPRITE_DELTA7.reset(TRI_HZNP);
-    CARE_STORE_ENp_ABxxEFxx.reset(TRI_HZNP);
-
     BESU_SCANNINGp.reset(TRI_D0NP);
     CENO_SCANNINGp.reset(REG_D0C0);
 
@@ -79,28 +52,6 @@ struct SpriteScanner {
     YDUF_SPRITE_IDX4p.reset(REG_D0C0);
     XECU_SPRITE_IDX5p.reset(REG_D0C0);
   }
-
-  //----------------------------------------
-  // Signals
-
-  /*p28.ACYL*/ Sig ACYL_SCANNINGp;
-  /*p29.CEHA*/ Sig CEHA_SCANNINGp;
-
-  /*p29.DEGE*/ Sig DEGE_SPRITE_DELTA0; // -> sprite store
-  /*p29.DABY*/ Sig DABY_SPRITE_DELTA1; // -> sprite store
-  /*p29.DABU*/ Sig DABU_SPRITE_DELTA2; // -> sprite store
-  /*p29.GYSA*/ Sig GYSA_SPRITE_DELTA3; // -> sprite store
-  /*p29.GACE*/ Sig GACE_SPRITE_DELTA4;
-  /*p29.GUVU*/ Sig GUVU_SPRITE_DELTA5;
-  /*p29.GYDA*/ Sig GYDA_SPRITE_DELTA6;
-  /*p29.GEWY*/ Sig GEWY_SPRITE_DELTA7;
-
-  /*p29.CARE*/ Sig CARE_STORE_ENp_ABxxEFxx; // to sprite store
-
-  /*p29.AVAP*/ Sig AVAP_RENDER_START_TRIGp;
-
-  /*p28.ANOM*/ Sig ANOM_LINE_RSTn;
-  /*p29.BAGY*/ Sig BAGY_LINE_RSTn;
 
   //----------------------------------------
   // States

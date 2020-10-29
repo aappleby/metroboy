@@ -776,9 +776,6 @@ void GateBoyThread::dump5(Dumper& d) {
   d("DOBA_SCAN_DONE_B %c\n", top.sprite_scanner.DOBA_SCAN_DONE_B.c());
   d("\n");
   d("LCD Y      %03d\n", top.lcd_reg.get_ly());
-  d("Y DIFF     %03d\n", pack_p(top.sprite_scanner.DEGE_SPRITE_DELTA0, top.sprite_scanner.DABY_SPRITE_DELTA1, top.sprite_scanner.DABU_SPRITE_DELTA2, top.sprite_scanner.GYSA_SPRITE_DELTA3,
-                                top.sprite_scanner.GACE_SPRITE_DELTA4, top.sprite_scanner.GUVU_SPRITE_DELTA5, top.sprite_scanner.GYDA_SPRITE_DELTA6, top.sprite_scanner.GEWY_SPRITE_DELTA7));
-  d("CARE_STORE_ENp_ABxxEFxx %d\n", (wire)top.sprite_scanner.CARE_STORE_ENp_ABxxEFxx);
 
   d("\n");
 

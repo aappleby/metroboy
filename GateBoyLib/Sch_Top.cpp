@@ -204,30 +204,30 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p29.WUHU*/ wire _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, oam_bus.YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
   /*p29.WUHU*/ wire _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, oam_bus.YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
 
-  /* p29.DEGE*/ sprite_scanner.DEGE_SPRITE_DELTA0 = not1(_ERUC_YDIFF_S0);
-  /* p29.DABY*/ sprite_scanner.DABY_SPRITE_DELTA1 = not1(_ENEF_YDIFF_S1);
-  /* p29.DABU*/ sprite_scanner.DABU_SPRITE_DELTA2 = not1(_FECO_YDIFF_S2);
-  /* p29.GYSA*/ sprite_scanner.GYSA_SPRITE_DELTA3 = not1(_GYKY_YDIFF_S3);
-  /* p29.GACE*/ sprite_scanner.GACE_SPRITE_DELTA4 = not1(_GOPU_YDIFF_S4);
-  /* p29.GUVU*/ sprite_scanner.GUVU_SPRITE_DELTA5 = not1(_FUWA_YDIFF_S5);
-  /* p29.GYDA*/ sprite_scanner.GYDA_SPRITE_DELTA6 = not1(_GOJU_YDIFF_S6);
-  /* p29.GEWY*/ sprite_scanner.GEWY_SPRITE_DELTA7 = not1(_WUHU_YDIFF_S7);
+  /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0 = not1(_ERUC_YDIFF_S0);
+  /* p29.DABY*/ wire DABY_SPRITE_DELTA1 = not1(_ENEF_YDIFF_S1);
+  /* p29.DABU*/ wire DABU_SPRITE_DELTA2 = not1(_FECO_YDIFF_S2);
+  /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3 = not1(_GYKY_YDIFF_S3);
+  /* p29.GACE*/ wire GACE_SPRITE_DELTA4 = not1(_GOPU_YDIFF_S4);
+  /* p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not1(_FUWA_YDIFF_S5);
+  /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not1(_GOJU_YDIFF_S6);
+  /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not1(_WUHU_YDIFF_S7);
 
   /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH  = or2(pix_pipe.XYMO_LCDC_SPSIZEn.qn08(), _GYKY_YDIFF_S3);
-  /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand6(sprite_scanner.GACE_SPRITE_DELTA4, sprite_scanner.GUVU_SPRITE_DELTA5, sprite_scanner.GYDA_SPRITE_DELTA6, sprite_scanner.GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
+  /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
   /* p29.GESE*/ wire _GESE_SCAN_MATCH_Y  = not1(_WOTA_SCAN_MATCH_Yn);
-  /* p29.CEHA*/ sprite_scanner.CEHA_SCANNINGp     = not1(sprite_scanner.CENO_SCANNINGp.qn16());
+  /* p29.CEHA*/ wire CEHA_SCANNINGp     = not1(sprite_scanner.CENO_SCANNINGp.qn16());
 
-  /* p29.CARE*/ sprite_scanner.CARE_STORE_ENp_ABxxEFxx = and3(XOCE_xBCxxFGx, sprite_scanner.CEHA_SCANNINGp, _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+  /* p29.CARE*/ wire CARE_STORE_ENp_ABxxEFxx = and3(XOCE_xBCxxFGx, CEHA_SCANNINGp, _GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
 
-  /*#p28.ACYL*/ sprite_scanner.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp04());
+  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp04());
 
-  /*#p28.ANOM*/ sprite_scanner.ANOM_LINE_RSTn = nor2(ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
-  /*#p29.BALU*/ wire _BALU_LINE_RSTp = not1(sprite_scanner.ANOM_LINE_RSTn);
-  /*#p29.BAGY*/ sprite_scanner.BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
+  /*#p29.BALU*/ wire _BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
+  /*#p29.BAGY*/ wire BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
 
   /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_B.qp17(), _BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_A.qn16());
-  /*#p29.AVAP*/ sprite_scanner.AVAP_RENDER_START_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
+  /*#p29.AVAP*/ wire AVAP_RENDER_START_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
 
   //----------------------------------------
 
@@ -240,7 +240,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p21.ADAZ*/ wire _ADAZ_X6n = not1(pix_pipe.TAKO_X6p.qp17());
   /* p21.ASAH*/ wire _ASAH_X7n = not1(pix_pipe.SYBE_X7p.qp17());
 
-  /*#p29.BYJO*/ wire _BYJO_SCANNINGn  = not1(sprite_scanner.CEHA_SCANNINGp);
+  /*#p29.BYJO*/ wire _BYJO_SCANNINGn  = not1(CEHA_SCANNINGp);
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(_BYJO_SCANNINGn, pix_pipe.XYMU_RENDERINGn.qn03());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp  = and2(_AZEM_RENDERINGp, pix_pipe.XYLO_LCDC_SPENn.qn08());
 
@@ -425,10 +425,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p27.NYFO*/ wire _NYFO_WIN_FETCH_TRIGn = not1(NUNY_WX_MATCH_TRIGp);
   /* p27.MOSU*/ wire MOSU_WIN_FETCH_TRIGp = not1(_NYFO_WIN_FETCH_TRIGn);
 
-  /* p27.NYXU*/ wire NYXU_FETCH_TRIGn = nor3(sprite_scanner.AVAP_RENDER_START_TRIGp, MOSU_WIN_FETCH_TRIGp, TEVO_FETCH_TRIGp);
+  /* p27.NYXU*/ wire NYXU_FETCH_TRIGn = nor3(AVAP_RENDER_START_TRIGp, MOSU_WIN_FETCH_TRIGp, TEVO_FETCH_TRIGp);
 
   /* p21.SADU*/ wire SADU_STAT_MODE0n = nor2(pix_pipe.XYMU_RENDERINGn.qn03(), PARU_VBLANKp_d4); // die NOR
-  /* p21.XATY*/ wire XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03()); // die NOR
+  /* p21.XATY*/ wire XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03()); // die NOR
 
   //----------------------------------------
 
@@ -1081,10 +1081,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*#p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(sprite_scanner.YFEL_SCAN0.qp17(), sprite_scanner.WEWY_SCAN1.qp17(), sprite_scanner.GOSO_SCAN2.qp17(), sprite_scanner.FONY_SCAN5.qp17());
 
   {
-    /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_A.dff17(XUPY_ABxxEFxx, sprite_scanner.BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
-    /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_B.dff17(ALET_xBxDxFxH, sprite_scanner.BAGY_LINE_RSTn, sprite_scanner.BYBA_SCAN_DONE_A.qp17());
+    /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_A.dff17(XUPY_ABxxEFxx, BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_B.dff17(ALET_xBxDxFxH, BAGY_LINE_RSTn, sprite_scanner.BYBA_SCAN_DONE_A.qp17());
 
-    /*#p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(ATAR_VID_RSTp, sprite_scanner.AVAP_RENDER_START_TRIGp);
+    /*#p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(ATAR_VID_RSTp, AVAP_RENDER_START_TRIGp);
     /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd_reg.CATU_LINE_P000.qp17(), _ASEN_SCAN_DONE_PE);
     /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGp.dff17(XUPY_ABxxEFxx, ABEZ_VID_RSTn, sprite_scanner.BESU_SCANNINGp.qp04());
   }
@@ -1115,12 +1115,12 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   XUPY_ABxxEFxx);
 
-    /*p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17(_GAVA_SCAN_CLK,                       sprite_scanner.ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn16());
-    /*p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17(sprite_scanner.YFEL_SCAN0.qn16(), sprite_scanner.ANOM_LINE_RSTn, sprite_scanner.WEWY_SCAN1.qn16());
-    /*p28.GOSO*/ sprite_scanner.GOSO_SCAN2.dff17(sprite_scanner.WEWY_SCAN1.qn16(), sprite_scanner.ANOM_LINE_RSTn, sprite_scanner.GOSO_SCAN2.qn16());
-    /*p28.ELYN*/ sprite_scanner.ELYN_SCAN3.dff17(sprite_scanner.GOSO_SCAN2.qn16(), sprite_scanner.ANOM_LINE_RSTn, sprite_scanner.ELYN_SCAN3.qn16());
-    /*p28.FAHA*/ sprite_scanner.FAHA_SCAN4.dff17(sprite_scanner.ELYN_SCAN3.qn16(), sprite_scanner.ANOM_LINE_RSTn, sprite_scanner.FAHA_SCAN4.qn16());
-    /*p28.FONY*/ sprite_scanner.FONY_SCAN5.dff17(sprite_scanner.FAHA_SCAN4.qn16(), sprite_scanner.ANOM_LINE_RSTn, sprite_scanner.FONY_SCAN5.qn16());
+    /*p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17(_GAVA_SCAN_CLK,                       ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn16());
+    /*p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17(sprite_scanner.YFEL_SCAN0.qn16(), ANOM_LINE_RSTn, sprite_scanner.WEWY_SCAN1.qn16());
+    /*p28.GOSO*/ sprite_scanner.GOSO_SCAN2.dff17(sprite_scanner.WEWY_SCAN1.qn16(), ANOM_LINE_RSTn, sprite_scanner.GOSO_SCAN2.qn16());
+    /*p28.ELYN*/ sprite_scanner.ELYN_SCAN3.dff17(sprite_scanner.GOSO_SCAN2.qn16(), ANOM_LINE_RSTn, sprite_scanner.ELYN_SCAN3.qn16());
+    /*p28.FAHA*/ sprite_scanner.FAHA_SCAN4.dff17(sprite_scanner.ELYN_SCAN3.qn16(), ANOM_LINE_RSTn, sprite_scanner.FAHA_SCAN4.qn16());
+    /*p28.FONY*/ sprite_scanner.FONY_SCAN5.dff17(sprite_scanner.FAHA_SCAN4.qn16(), ANOM_LINE_RSTn, sprite_scanner.FONY_SCAN5.qn16());
   }
 
   //------------------------------------------------------------------------------
@@ -1321,7 +1321,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /* p01.AMYG*/ wire _AMYG_VID_RSTp = not1(XAPO_VID_RSTn);
 
-  /* p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not1(sprite_scanner.CARE_STORE_ENp_ABxxEFxx);
+  /* p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not1(CARE_STORE_ENp_ABxxEFxx);
 
   /*#p28.AZYB*/ wire _AZYB_VID_LINE_TRIGn = not1(ATEJ_LINE_TRIGp);
   /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
@@ -1358,10 +1358,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
 
-    /*#p30.CUCU*/ sprite_store.SPR_TRI_L0.tri_6nn(sprite_store.FEPO_STORE_MATCHp, sprite_scanner.DEGE_SPRITE_DELTA0);
-    /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(sprite_store.FEPO_STORE_MATCHp, sprite_scanner.DABY_SPRITE_DELTA1);
-    /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(sprite_store.FEPO_STORE_MATCHp, sprite_scanner.DABU_SPRITE_DELTA2);
-    /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(sprite_store.FEPO_STORE_MATCHp, sprite_scanner.GYSA_SPRITE_DELTA3);
+    /*#p30.CUCU*/ sprite_store.SPR_TRI_L0.tri_6nn(sprite_store.FEPO_STORE_MATCHp, DEGE_SPRITE_DELTA0);
+    /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(sprite_store.FEPO_STORE_MATCHp, DABY_SPRITE_DELTA1);
+    /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(sprite_store.FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
+    /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(sprite_store.FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
 
     /* p29.DEZY*/ sprite_store.DEZY_STORE_ENn.dff17(ZEME_AxCxExGx, XAPO_VID_RSTn, _DYTY_STORE_ENn_xxCDxxGH);
   }
@@ -1916,7 +1916,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17(ALET_xBxDxFxH, _TADY_LINE_START_RSTn, pix_pipe.WODU_HBLANKp);
 
-  /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp, sprite_scanner.AVAP_RENDER_START_TRIGp);
+  /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp, AVAP_RENDER_START_TRIGp);
 
   //----------------------------------------
   // Pixel counter, has carry lookahead because this can increment every tcycle
@@ -1974,7 +1974,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
     /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.XYDO_X3p.qp17());
 
-    /*#p24.POME*/ pix_pipe.POME = nor2(sprite_scanner.AVAP_RENDER_START_TRIGp, pix_pipe.POFY);
+    /*#p24.POME*/ pix_pipe.POME = nor2(AVAP_RENDER_START_TRIGp, pix_pipe.POFY);
     /*#p24.RUJU*/ pix_pipe.RUJU = or3(pix_pipe.PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, pix_pipe.POME);
     /*#p24.POFY*/ pix_pipe.POFY = not1(pix_pipe.RUJU);
 
@@ -3135,7 +3135,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /* p28.AJON*/ wire _AJON_PPU_OAM_ENp = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGn.qn03()); // def AND. ppu can read oam when there's rendering but no dma
 
-  /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(sprite_scanner.ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
+  /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
   /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(WEFY_SPR_READp);
   /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn = not1(CATY_LATCH_EXTp);
   /*#p28.BOTA*/ wire _BOTA_CPU_OAM_OEn  = nand3(_BOFE_LATCH_EXTn, cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
@@ -3148,7 +3148,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_CPU_OAM_OEn); // def and
   /*#p28.BODE*/ wire _BODE_OAM_OEp = not1(_ASYT_OAM_OEn);
 
-  /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp17(), sprite_scanner.ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
+  /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp17(), ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
   /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(cpu_bus.SARO_FE00_FEFFp(), _AJUJ_OAM_BUSYn); // def and
 
   // CUFE looks like BYHA minus an inverter
@@ -3156,7 +3156,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   bool _COTA_OAM_CLKn;
   {
     /* p29.XYSO*/ wire _XYSO_xBCDxFGH = not1(WOJO_AxxxExxx);
-    /* p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand2(sprite_scanner.ACYL_SCANNINGp, _XYSO_xBCDxFGH);
+    /* p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand2(ACYL_SCANNINGp, _XYSO_xBCDxFGH);
     /* p25.XUJY*/ wire _XUJY_PPU_OAM_CLK  = not1(VAPE_FETCH_OAM_CLK);
     /* p25.CUFE*/ wire _CUFE_OAM_CLK  = not1(or_and3(cpu_bus.SARO_FE00_FEFFp(), dma_reg.MATU_DMA_RUNNINGp.qp17(), MOPA_xxxxEFGH));
 
@@ -3193,9 +3193,9 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   // OAM address mux
 
   {
-    /*p28.APAR*/ wire _APAR_SCAN_OAM_RDn = not1(sprite_scanner.ACYL_SCANNINGp);
+    /*p28.APAR*/ wire _APAR_SCAN_OAM_RDn = not1(ACYL_SCANNINGp);
     /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn  = not1(dma_reg.MATU_DMA_RUNNINGp.qp17());
-    /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or3(sprite_scanner.ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03(), dma_reg.MATU_DMA_RUNNINGp.qp17());
+    /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or3(ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03(), dma_reg.MATU_DMA_RUNNINGp.qp17());
     /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not1(_AJON_PPU_OAM_ENp);
 
     //probe(20, "_APAR_SCAN_OAM_RDn", _APAR_SCAN_OAM_RDn);

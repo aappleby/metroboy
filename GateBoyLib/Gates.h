@@ -285,6 +285,9 @@ struct RegBase {
   }
 
   void commit() {
+    CHECK_N(delta == DELTA_NONE);
+    CHECK_N(delta == DELTA_COMM);
+
     uint8_t s1 = value;
     uint8_t s2 = logic_lut1.tab[s1];
 
@@ -398,6 +401,7 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
@@ -422,6 +426,7 @@ struct DFF : private RegBase {
 struct DFF8n : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qn07() const { return !as_wire(); }
   wire qp08() const { return  as_wire(); }
@@ -446,6 +451,7 @@ struct DFF8n : private RegBase {
 struct DFF8p : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qn07() const { return !as_wire(); }
   wire qp08() const { return  as_wire(); }
@@ -501,6 +507,7 @@ struct DFF9 : private RegBase {
 struct DFF11 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire q11p() const { return as_wire(); }
 
@@ -526,6 +533,7 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qn12() const { return !as_wire(); }
   wire qp13() const { return  as_wire(); }
@@ -642,6 +650,7 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qn15() const { return !as_wire(); }
   wire qp16() const { return  as_wire(); }
@@ -651,6 +660,7 @@ struct DFF22 : private RegBase {
 
 //-----------------------------------------------------------------------------
 
+/*
 struct Sig : private RegBase {
   using RegBase::reset;
   using RegBase::c;
@@ -670,6 +680,7 @@ struct Sig : private RegBase {
     delta = s ? DELTA_TRI1 : DELTA_TRI0;
   }
 };
+*/
 
 //-----------------------------------------------------------------------------
 // Tristate bus, can have multiple drivers.
@@ -693,6 +704,8 @@ struct Bus : private RegBase {
   using RegBase::cn;
   using RegBase::lock;
   using RegBase::unlock;
+  using RegBase::commit;
+
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
@@ -797,7 +810,7 @@ struct Pin : private RegBase {
 struct NorLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  //using RegBase::cn;
+  using RegBase::commit;
 
   wire qn03() const { return !as_wire(); }
   wire qp04() const { return  as_wire(); }
@@ -820,6 +833,7 @@ struct NorLatch2 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
+  using RegBase::commit;
 
   wire qn03() const { return !as_wire(); }
   wire qp04() const { return  as_wire(); }
@@ -852,6 +866,8 @@ struct NandLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
+  using RegBase::commit;
+
   wire qp03() const { return  as_wire(); }
   wire qn04() const { return !as_wire(); }
 

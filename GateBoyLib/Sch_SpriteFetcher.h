@@ -57,7 +57,6 @@ struct SpriteFetcher {
     SEBA_SFETCH_S1_D5.reset(REG_D0C0);
   }
 
-  void tick(const SchematicTop& gb);
   void tock(SchematicTop& gb);
   void dump(Dumper& d) const;
 
@@ -70,8 +69,6 @@ struct SpriteFetcher {
   /*#p29.XUQU*/ Sig XUQU_SPRITE_AB;      // -> vram bus
   /*#p29.RACA*/ Sig RACA_LATCH_SPPIXB;   // -> vram bus
   /*#p29.TOPU*/ Sig TOPU_LATCH_SPPIXA;   // -> vram bus
-
-private:
 
   // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
 

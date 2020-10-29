@@ -28,31 +28,6 @@ void SpriteFetcher::dump(Dumper& d) const {
 
 //------------------------------------------------------------------------------
 
-void SpriteFetcher::tick(const SchematicTop& top) {
-  // FIXME this is kind of a mess
-
-  /* p29.TEPA*/ wire _TEPA_RENDERINGn = not1(top.pix_pipe.XYMU_RENDERINGn.qn03());
-  /* p29.TYNO*/ wire _TYNO = nand3(TOXE_SFETCH_S0.qp17(), SEBA_SFETCH_S1_D5.qp17(), VONU_SFETCH_S1_D4.qp17());
-  /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn  = or2(TYFO_SFETCH_S0_D1.qn16(), _TYNO);
-  /* p29.WUTY*/ WUTY_SPRITE_DONEp = not1(_VUSA_SPRITE_DONEn);
-  /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGn, TULY_SFETCH_S1.qp17(), TESE_SFETCH_S2.qp17());
-  /* p28.WEFY*/ WEFY_SPR_READp = and2(_TUVO_PPU_OAM_RDp, TYFO_SFETCH_S0_D1.qp17());
-  /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(TOXE_SFETCH_S0.qp17());
-  /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(TYFO_SFETCH_S0_D1.qp17(), _TYTU_SFETCH_S0n);
-  /* p29.SAKY*/ wire _SAKY_SFETCH_MYSTERY = nor2(TULY_SFETCH_S1.qp17(), VONU_SFETCH_S1_D4.qp17());
-  /* p29.TYSO*/ wire _TYSO_SPRITE_READn = or2(_SAKY_SFETCH_MYSTERY, _TEPA_RENDERINGn); // def or
-  /* p29.TEXY*/ TEXY_SPR_READ_VRAMp = not1(_TYSO_SPRITE_READn);
-  /* p29.ABON*/ ABON_SPR_VRM_RDn = not1(TEXY_SPR_READ_VRAMp);
-  /* p25.SOHO*/ SOHO_SPR_VRAM_RDp = and2(_TACU_SPR_SEQ_5_TRIG, TEXY_SPR_READ_VRAMp);
-  /* p25.VAPE*/ VAPE_FETCH_OAM_CLK = and2(_TUVO_PPU_OAM_RDp, _TACU_SPR_SEQ_5_TRIG);
-  /*#p29.XUQU*/ XUQU_SPRITE_AB = not1(top.sprite_fetcher.VONU_SFETCH_S1_D4.qn16());
-  /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(_TYTU_SFETCH_S0n, top.pix_pipe.LOBY_RENDERINGn, top.sprite_fetcher.TYFO_SFETCH_S0_D1.qp17());
-  /*#p29.RACA*/ RACA_LATCH_SPPIXB = and2(top.sprite_fetcher.VONU_SFETCH_S1_D4.qp17(), _SYCU_SFETCH_S0pe);
-  /*#p29.TOPU*/ TOPU_LATCH_SPPIXA = and2(top.sprite_fetcher.TULY_SFETCH_S1.qp17(), _SYCU_SFETCH_S0pe);
-}
-
-//------------------------------------------------------------------------------
-
 void SpriteFetcher::tock(SchematicTop& top) {
   wire VYPO = 1;
 

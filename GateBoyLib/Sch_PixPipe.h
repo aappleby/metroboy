@@ -10,21 +10,6 @@ struct CpuBus;
 
 struct PixelPipe {
   void reset_cart() {
-    SEKO_FETCH_TRIGp .reset(TRI_D0NP);
-    TEVO_FETCH_TRIGp.reset(TRI_D0NP);
-    NYXU_FETCH_TRIGn.reset(TRI_D1NP);
-    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_D0NP);
-    SYLO_WIN_HITn.reset(TRI_D1NP);
-    TOMU_WIN_HITp.reset(TRI_D0NP);
-    NOCU_WIN_MODEn.reset(TRI_D1NP);
-    PORE_WIN_MODEp.reset(TRI_D0NP);
-    NUNY_WX_MATCH_TRIGp.reset(TRI_D0NP);
-    MOSU_WIN_FETCH_TRIGp.reset(TRI_D0NP);
-    VOTY_INT_STATp.reset(TRI_D0NP);
-    SUZU_WIN_FIRST_TILEne.reset(TRI_D0NP);
-    LOBY_RENDERINGn.reset(TRI_D1NP);
-    SADU_STAT_MODE0n.reset(TRI_D0NP);
-    XATY_STAT_MODE1n.reset(TRI_D1NP);
     XYMU_RENDERINGn.reset(TRI_D1NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
 
@@ -240,12 +225,6 @@ struct PixelPipe {
   }
 
   void reset_boot() {
-    SEKO_FETCH_TRIGp.reset(TRI_HZNP);
-    TOMU_WIN_HITp.reset(TRI_HZNP);
-    NOCU_WIN_MODEn.reset(TRI_HZNP);
-    NUNY_WX_MATCH_TRIGp.reset(TRI_HZNP);
-    VOTY_INT_STATp.reset(TRI_HZNP);
-
     XYMU_RENDERINGn.reset(TRI_D0NP);
     PYNU_WIN_MODE_A.reset(TRI_D0NP);
 
@@ -255,10 +234,6 @@ struct PixelPipe {
     //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
 
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
-
-    NYXU_FETCH_TRIGn.reset(TRI_HZNP);
-    TEVO_FETCH_TRIGp.reset(TRI_HZNP);
-    TAVE_PRELOAD_DONE_TRIGp.reset(TRI_HZNP);
 
     XEHO_X0p.reset(REG_D0C0);
     SAVY_X1p.reset(REG_D0C0);
@@ -444,20 +419,6 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D0C0);
   }
 
-  uint8_t get_stat() const {
-    uint8_t stat = (uint8_t)pack_p(
-      !SADU_STAT_MODE0n,
-      !XATY_STAT_MODE1n,
-      RUPO_LYC_MATCH_LATCHn.qn03(),
-      ROXE_STAT_HBI_ENn.qn08(),
-      RUFO_STAT_VBI_ENn.qn08(),
-      REFE_STAT_OAI_ENn.qn08(),
-      RUGU_STAT_LYI_ENn.qn08(),
-      1
-    );
-    return stat;
-  }
-
   int get_wx() const {
     return pack_p(MYPA_WX0n.qp09(), NOFE_WX1n.qp09(), NOKE_WX2n.qp09(), MEBY_WX3n.qp09(),
                   MYPU_WX4n.qp09(), MYCE_WX5n.qp09(), MUVO_WX6n.qp09(), NUKU_WX7n.qp09());
@@ -488,23 +449,6 @@ struct PixelPipe {
   }
 
   //----------------------------------------
-
-  /*p27.SEKO*/ Sig SEKO_FETCH_TRIGp;
-  /*p27.TEVO*/ Sig TEVO_FETCH_TRIGp;
-  /*p27.NYXU*/ Sig NYXU_FETCH_TRIGn;
-  /*p27.TAVE*/ Sig TAVE_PRELOAD_DONE_TRIGp;
-
-  /*p24.TOMU*/ Sig SYLO_WIN_HITn;      // -> sprite fetcher
-  /*p24.TOMU*/ Sig TOMU_WIN_HITp;      // -> sprite fetcher
-  /*p27.NOCU*/ Sig NOCU_WIN_MODEn;
-  /*p27.NOCU*/ Sig PORE_WIN_MODEp;
-  /*p27.NUNY*/ Sig NUNY_WX_MATCH_TRIGp;
-  /*p27.MOSU*/ Sig MOSU_WIN_FETCH_TRIGp;
-  /*p21.VOTY*/ Sig VOTY_INT_STATp;
-  /*p27.SUZU*/ Sig SUZU_WIN_FIRST_TILEne;
-  /*p24.LOBY*/ Sig LOBY_RENDERINGn;
-  /*p21.SADU*/ Sig SADU_STAT_MODE0n;
-  /*p21.XATY*/ Sig XATY_STAT_MODE1n;
 
   /*p21.XYMU*/ NorLatch2 XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;

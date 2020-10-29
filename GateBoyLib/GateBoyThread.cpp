@@ -570,9 +570,10 @@ void GateBoyThread::dump4(Dumper& d) {
     top.pix_pipe.WOKY_LCDC_WINMAPn.qn08(),
     top.pix_pipe.XONA_LCDC_LCDENn.qn08());
 
+  // FIXME plumb sadu/xaty in here somehow
   d.dump_reg("FF41 STAT",
-    !top.pix_pipe.SADU_STAT_MODE0n,
-    !top.pix_pipe.XATY_STAT_MODE1n,
+    0, //!top.pix_pipe.SADU_STAT_MODE0n,
+    0, //!top.pix_pipe.XATY_STAT_MODE1n,
     top.pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03(),
     top.pix_pipe.ROXE_STAT_HBI_ENn.qn08(),
     top.pix_pipe.RUFO_STAT_VBI_ENn.qn08(),
@@ -720,7 +721,6 @@ void GateBoyThread::dump4(Dumper& d) {
   d("NYZE_FINE_MATCH_B      %c\n", top.pix_pipe.NYZE_SCX_FINE_MATCH_B.c());
   d("PAHO_X_8_SYNC          %c\n", top.pix_pipe.PAHO_X_8_SYNC.c());
   d("POFY_HSYNCp            %c\n", top.pix_pipe.POFY.c());
-  d("VOTY_INT_STATp         %c\n", top.pix_pipe.VOTY_INT_STATp.c());
   d("\n");
 
 

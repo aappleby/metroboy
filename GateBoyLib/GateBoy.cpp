@@ -359,8 +359,8 @@ void GateBoy::next_pass() {
 
   probe(1, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
   probe(2, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
-  probe(3, "SADU_STAT_MODE0",      !top.pix_pipe.SADU_STAT_MODE0n);
-  probe(4, "XATY_STAT_MODE1",      !top.pix_pipe.XATY_STAT_MODE1n);
+  //probe(3, "SADU_STAT_MODE0",      !top.pix_pipe.SADU_STAT_MODE0n);
+  //probe(4, "XATY_STAT_MODE1",      !top.pix_pipe.XATY_STAT_MODE1n);
   //probe(5, "ROPO_LY_MATCH_SYNCp",  top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17());
   //probe(3, "RUPO_LYC_MATCH_LATCH", top.pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03());
 

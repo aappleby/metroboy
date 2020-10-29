@@ -220,8 +220,6 @@ struct Timer {
   /*p03.NYDU*/ DFF17 NYDU_TIMA_D7_DELAY;
   /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // -> interrupts
 
-private:
-
   //----------
   // FF05 TIMA
 

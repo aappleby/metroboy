@@ -552,8 +552,6 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  void dump(Dumper& d, const SchematicTop& top) const;
-
   /*p29.FEPO*/ Sig FEPO_STORE_MATCHp; // -> pix pipe, sprite fetcher
 
   Bus SPR_TRI_I0p; // -> oam bus

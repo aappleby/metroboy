@@ -29,10 +29,6 @@
     <ClCompile Include="Sch_CpuBus.cpp" />
     <ClCompile Include="Sch_ExtBus.cpp" />
     <ClCompile Include="Sch_OamBus.cpp" />
-    <ClCompile Include="Sch_PixPipe.cpp" />
-    <ClCompile Include="Sch_Serial.cpp" />
-    <ClCompile Include="Sch_SpriteFetcher.cpp" />
-    <ClCompile Include="Sch_SpriteScanner.cpp" />
     <ClCompile Include="Sch_SpriteStore.cpp" />
     <ClCompile Include="Sch_TileFetcher.cpp" />
     <ClCompile Include="Sch_Timer.cpp" />

@@ -739,9 +739,149 @@ void GateBoyThread::dump4(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump5(Dumper& d) {
-  gb->top.sprite_fetcher.dump(d);
-  gb->top.sprite_scanner.dump(d, gb->top);
-  gb->top.sprite_store.dump(d, gb->top);
+  const auto& top = gb->top;
+
+  d("\002===== SpriteFetch =====\001\n");
+  d("SOBU_SFETCH_REQp     %c\n", top.sprite_fetcher.SOBU_SFETCH_REQp    .c());
+  d("SUDA_SFETCH_REQp     %c\n", top.sprite_fetcher.SUDA_SFETCH_REQp    .c());
+  d("\n");
+  d("TAKA_SFETCH_RUNNINGp %c\n", top.sprite_fetcher.TAKA_SFETCH_RUNNINGp.c());
+  d("\n");
+  d("TOXE_SFETCH_S0       %c\n", top.sprite_fetcher.TOXE_SFETCH_S0      .c());
+  d("TYFO_SFETCH_S0_D1    %c\n", top.sprite_fetcher.TYFO_SFETCH_S0_D1   .c());
+  d("\n");
+  d("TULY_SFETCH_S1       %c\n", top.sprite_fetcher.TULY_SFETCH_S1      .c());
+  d("TOBU_SFETCH_S1_D2    %c\n", top.sprite_fetcher.TOBU_SFETCH_S1_D2   .c());
+  d("VONU_SFETCH_S1_D4    %c\n", top.sprite_fetcher.VONU_SFETCH_S1_D4   .c());
+  d("SEBA_SFETCH_S1_D5    %c\n", top.sprite_fetcher.SEBA_SFETCH_S1_D5   .c());
+  d("\n");
+  d("TESE_SFETCH_S2       %c\n", top.sprite_fetcher.TESE_SFETCH_S2      .c());
+  d("\n");
+
+  d("\002===== SpriteScan =====\001\n");
+
+  d("SCAN INDEX       %02d\n", pack_p(top.sprite_scanner.YFEL_SCAN0.qp17(), top.sprite_scanner.WEWY_SCAN1.qp17(), top.sprite_scanner.GOSO_SCAN2.qp17(), top.sprite_scanner.ELYN_SCAN3.qp17(),
+                                      top.sprite_scanner.FAHA_SCAN4.qp17(), top.sprite_scanner.FONY_SCAN5.qp17(), 0, 0));
+  d("SPRITE INDEX     %02d\n", pack_p(top.sprite_scanner.XADU_SPRITE_IDX0p.qn12(), top.sprite_scanner.XEDY_SPRITE_IDX1p.qn12(), top.sprite_scanner.ZUZE_SPRITE_IDX2p.qn12(), top.sprite_scanner.XOBE_SPRITE_IDX3p.qn12(),
+                                      top.sprite_scanner.YDUF_SPRITE_IDX4p.qn12(), top.sprite_scanner.XECU_SPRITE_IDX5p.qn12(), 0, 0));
+
+  d("BESU_SCANNINGp   %c\n", top.sprite_scanner.BESU_SCANNINGp  .c());
+  d("CENO_SCANNINGp   %c\n", top.sprite_scanner.CENO_SCANNINGp  .c());
+  d("BYBA_SCAN_DONE_A %c\n", top.sprite_scanner.BYBA_SCAN_DONE_A.c());
+  d("DOBA_SCAN_DONE_B %c\n", top.sprite_scanner.DOBA_SCAN_DONE_B.c());
+  d("\n");
+  d("LCD Y      %03d\n", top.lcd_reg.get_ly());
+  d("Y DIFF     %03d\n", pack_p(top.sprite_scanner.DEGE_SPRITE_DELTA0, top.sprite_scanner.DABY_SPRITE_DELTA1, top.sprite_scanner.DABU_SPRITE_DELTA2, top.sprite_scanner.GYSA_SPRITE_DELTA3,
+                                top.sprite_scanner.GACE_SPRITE_DELTA4, top.sprite_scanner.GUVU_SPRITE_DELTA5, top.sprite_scanner.GYDA_SPRITE_DELTA6, top.sprite_scanner.GEWY_SPRITE_DELTA7));
+  d("CARE_STORE_ENp_ABxxEFxx %d\n", (wire)top.sprite_scanner.CARE_STORE_ENp_ABxxEFxx);
+
+  d("\n");
+
+
+  d("\002===== SpriteStore =====\001\n");
+  d("DEZY_STORE_ENn %c\n", top.sprite_store.DEZY_STORE_ENn.c());
+  d("FEPO_STORE_MATCHp %d\n", wire(top.sprite_store.FEPO_STORE_MATCHp));
+
+  d("STORE MATCH %c%c%c%c%c%c%c%c%c%c\n",
+    top.sprite_store.YDUG_STORE0_MATCHn.c(), top.sprite_store.DYDU_STORE1_MATCHn.c(), top.sprite_store.DEGO_STORE2_MATCHn.c(), top.sprite_store.YLOZ_STORE3_MATCHn.c(), top.sprite_store.XAGE_STORE4_MATCHn.c(),
+    top.sprite_store.EGOM_STORE5_MATCHn.c(), top.sprite_store.YBEZ_STORE6_MATCHn.c(), top.sprite_store.DYKA_STORE7_MATCHn.c(), top.sprite_store.EFYL_STORE8_MATCHn.c(), top.sprite_store.YGEM_STORE9_MATCHn.c());
+
+  d("SPRITE COUNT %02d\n", pack_p(top.sprite_store.BESE_SPRITE_COUNT0.qp17(), top.sprite_store.CUXY_SPRITE_COUNT1.qp17(), top.sprite_store.BEGO_SPRITE_COUNT2.qp17(), top.sprite_store.DYBE_SPRITE_COUNT3.qp17()));
+
+  int spr_tri_idx = pack_p(top.sprite_store.SPR_TRI_I0p.qp(), top.sprite_store.SPR_TRI_I1p.qp(), top.sprite_store.SPR_TRI_I2p.qp(), top.sprite_store.SPR_TRI_I3p.qp(), top.sprite_store.SPR_TRI_I4p.qp(), top.sprite_store.SPR_TRI_I5p.qp(), 0, 0);
+  d("SPR_TRI_IDX  = %2d %c%c%c%c%c%c\n",
+    spr_tri_idx,
+    top.sprite_store.SPR_TRI_I5p.c(), top.sprite_store.SPR_TRI_I4p.c(), top.sprite_store.SPR_TRI_I3p.c(), top.sprite_store.SPR_TRI_I2p.c(),
+    top.sprite_store.SPR_TRI_I1p.c(), top.sprite_store.SPR_TRI_I0p.c());
+
+  int spr_tri_line = pack_p(top.sprite_store.SPR_TRI_L0.qp(), top.sprite_store.SPR_TRI_L1.qp(), top.sprite_store.SPR_TRI_L2.qp(), top.sprite_store.SPR_TRI_L3.qp());
+  d("SPR_TRI_LINE = %2d %c%c%c%c\n",
+    spr_tri_line,
+    top.sprite_store.SPR_TRI_L0.c(), top.sprite_store.SPR_TRI_L1.c(), top.sprite_store.SPR_TRI_L2.c(), top.sprite_store.SPR_TRI_L3.c());
+
+  d("STORE0 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.YDUG_STORE0_MATCHn,
+    top.sprite_store.EBOJ_STORE0_RSTp.qp17(),
+    pack_n(top.sprite_store.YGUS_STORE0_I0n.qp08(), top.sprite_store.YSOK_STORE0_I1n.qp08(), top.sprite_store.YZEP_STORE0_I2n.qp08(), top.sprite_store.WYTE_STORE0_I3n.qp08(), top.sprite_store.ZONY_STORE0_I4n.qp08(), top.sprite_store.YWAK_STORE0_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.GYHO_STORE0_L0n.qp08(), top.sprite_store.CUFO_STORE0_L1n.qp08(), top.sprite_store.BOZU_STORE0_L2n.qp08(), top.sprite_store.FYHY_STORE0_L3n.qp08()),
+    pack_n(top.sprite_store.XEPE_STORE0_X0p.qn08(), top.sprite_store.YLAH_STORE0_X1p.qn08(), top.sprite_store.ZOLA_STORE0_X2p.qn08(), top.sprite_store.ZULU_STORE0_X3p.qn08(), top.sprite_store.WELO_STORE0_X4p.qn08(), top.sprite_store.XUNY_STORE0_X5p.qn08(), top.sprite_store.WOTE_STORE0_X6p.qn08(), top.sprite_store.XAKO_STORE0_X7p.qn08())
+  );
+
+  d("STORE1 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.DYDU_STORE1_MATCHn,
+    top.sprite_store.CEDY_STORE1_RSTp.qp17(),
+    pack_n(top.sprite_store.CADU_STORE1_I0n.qp08(), top.sprite_store.CEBO_STORE1_I1n.qp08(), top.sprite_store.CUFA_STORE1_I2n.qp08(), top.sprite_store.COMA_STORE1_I3n.qp08(), top.sprite_store.CUZA_STORE1_I4n.qp08(), top.sprite_store.CAJY_STORE1_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.AMES_STORE1_L0n.qp08(), top.sprite_store.AROF_STORE1_L1n.qp08(), top.sprite_store.ABOP_STORE1_L2n.qp08(), top.sprite_store.ABUG_STORE1_L3n.qp08()),
+    pack_n(top.sprite_store.DANY_STORE1_X0p.qn08(), top.sprite_store.DUKO_STORE1_X1p.qn08(), top.sprite_store.DESU_STORE1_X2p.qn08(), top.sprite_store.DAZO_STORE1_X3p.qn08(), top.sprite_store.DAKE_STORE1_X4p.qn08(), top.sprite_store.CESO_STORE1_X5p.qn08(), top.sprite_store.DYFU_STORE1_X6p.qn08(), top.sprite_store.CUSY_STORE1_X7p.qn08())
+  );
+
+  d("STORE2 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.DEGO_STORE2_MATCHn,
+    top.sprite_store.EGAV_STORE2_RSTp.qp17(),
+    pack_n(top.sprite_store.BUHE_STORE2_I0n.qp08(), top.sprite_store.BYHU_STORE2_I1n.qp08(), top.sprite_store.BECA_STORE2_I2n.qp08(), top.sprite_store.BULU_STORE2_I3n.qp08(), top.sprite_store.BUNA_STORE2_I4n.qp08(), top.sprite_store.BOXA_STORE2_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.YLOV_STORE2_L0n.qp08(), top.sprite_store.XOSY_STORE2_L1n.qp08(), top.sprite_store.XAZY_STORE2_L2n.qp08(), top.sprite_store.YKUK_STORE2_L3n.qp08()),
+    pack_n(top.sprite_store.FOKA_STORE2_X0p.qn08(), top.sprite_store.FYTY_STORE2_X1p.qn08(), top.sprite_store.FUBY_STORE2_X2p.qn08(), top.sprite_store.GOXU_STORE2_X3p.qn08(), top.sprite_store.DUHY_STORE2_X4p.qn08(), top.sprite_store.EJUF_STORE2_X5p.qn08(), top.sprite_store.ENOR_STORE2_X6p.qn08(), top.sprite_store.DEPY_STORE2_X7p.qn08())
+  );
+
+  d("STORE3 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.YLOZ_STORE3_MATCHn,
+    top.sprite_store.GOTA_STORE3_RSTp.qp17(),
+    pack_n(top.sprite_store.DEVY_STORE3_I0n.qp08(), top.sprite_store.DESE_STORE3_I1n.qp08(), top.sprite_store.DUNY_STORE3_I2n.qp08(), top.sprite_store.DUHA_STORE3_I3n.qp08(), top.sprite_store.DEBA_STORE3_I4n.qp08(), top.sprite_store.DAFU_STORE3_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.ZURO_STORE3_L0n.qp08(), top.sprite_store.ZYLU_STORE3_L1n.qp08(), top.sprite_store.ZENE_STORE3_L2n.qp08(), top.sprite_store.ZURY_STORE3_L3n.qp08()),
+    pack_n(top.sprite_store.XOLY_STORE3_X0p.qn08(), top.sprite_store.XYBA_STORE3_X1p.qn08(), top.sprite_store.XABE_STORE3_X2p.qn08(), top.sprite_store.XEKA_STORE3_X3p.qn08(), top.sprite_store.XOMY_STORE3_X4p.qn08(), top.sprite_store.WUHA_STORE3_X5p.qn08(), top.sprite_store.WYNA_STORE3_X6p.qn08(), top.sprite_store.WECO_STORE3_X7p.qn08())
+  );
+
+  d("STORE4 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.XAGE_STORE4_MATCHn,
+    top.sprite_store.XUDY_STORE4_RSTp.qp17(),
+    pack_n(top.sprite_store.XAVE_STORE4_I0n.qp08(), top.sprite_store.XEFE_STORE4_I1n.qp08(), top.sprite_store.WANU_STORE4_I2n.qp08(), top.sprite_store.XABO_STORE4_I3n.qp08(), top.sprite_store.XEGE_STORE4_I4n.qp08(), top.sprite_store.XYNU_STORE4_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.CAPO_STORE4_L0n.qp08(), top.sprite_store.CAJU_STORE4_L1n.qp08(), top.sprite_store.CONO_STORE4_L2n.qp08(), top.sprite_store.CUMU_STORE4_L3n.qp08()),
+    pack_n(top.sprite_store.WEDU_STORE4_X0p.qn08(), top.sprite_store.YGAJ_STORE4_X1p.qn08(), top.sprite_store.ZYJO_STORE4_X2p.qn08(), top.sprite_store.XURY_STORE4_X3p.qn08(), top.sprite_store.YBED_STORE4_X4p.qn08(), top.sprite_store.ZALA_STORE4_X5p.qn08(), top.sprite_store.WYDE_STORE4_X6p.qn08(), top.sprite_store.XEPA_STORE4_X7p.qn08())
+  );
+
+  d("STORE5 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.EGOM_STORE5_MATCHn,
+    top.sprite_store.WAFY_STORE5_RSTp.qp17(),
+    pack_n(top.sprite_store.EKOP_STORE5_I0n.qp08(), top.sprite_store.ETYM_STORE5_I1n.qp08(), top.sprite_store.GORU_STORE5_I2n.qp08(), top.sprite_store.EBEX_STORE5_I3n.qp08(), top.sprite_store.ETAV_STORE5_I4n.qp08(), top.sprite_store.EKAP_STORE5_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.ACEP_STORE5_L0n.qp08(), top.sprite_store.ABEG_STORE5_L1n.qp08(), top.sprite_store.ABUX_STORE5_L2n.qp08(), top.sprite_store.ANED_STORE5_L3n.qp08()),
+    pack_n(top.sprite_store.FUSA_STORE5_X0p.qn08(), top.sprite_store.FAXA_STORE5_X1p.qn08(), top.sprite_store.FOZY_STORE5_X2p.qn08(), top.sprite_store.FESY_STORE5_X3p.qn08(), top.sprite_store.CYWE_STORE5_X4p.qn08(), top.sprite_store.DYBY_STORE5_X5p.qn08(), top.sprite_store.DURY_STORE5_X6p.qn08(), top.sprite_store.CUVY_STORE5_X7p.qn08())
+  );
+
+  d("STORE6 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.YBEZ_STORE6_MATCHn,
+    top.sprite_store.WOMY_STORE6_RSTp.qp17(),
+    pack_n(top.sprite_store.GABO_STORE6_I0n.qp08(), top.sprite_store.GACY_STORE6_I1n.qp08(), top.sprite_store.FOGO_STORE6_I2n.qp08(), top.sprite_store.GOHU_STORE6_I3n.qp08(), top.sprite_store.FOXY_STORE6_I4n.qp08(), top.sprite_store.GECU_STORE6_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.ZUMY_STORE6_L0n.qp08(), top.sprite_store.ZAFU_STORE6_L1n.qp08(), top.sprite_store.ZEXO_STORE6_L2n.qp08(), top.sprite_store.ZUBE_STORE6_L3n.qp08()),
+    pack_n(top.sprite_store.YCOL_STORE6_X0p.qn08(), top.sprite_store.YRAC_STORE6_X1p.qn08(), top.sprite_store.YMEM_STORE6_X2p.qn08(), top.sprite_store.YVAG_STORE6_X3p.qn08(), top.sprite_store.ZOLY_STORE6_X4p.qn08(), top.sprite_store.ZOGO_STORE6_X5p.qn08(), top.sprite_store.ZECU_STORE6_X6p.qn08(), top.sprite_store.ZESA_STORE6_X7p.qn08())
+  );
+
+  d("STORE7 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.DYKA_STORE7_MATCHn,
+    top.sprite_store.WAPO_STORE7_RSTp.qp17(),
+    pack_n(top.sprite_store.GULE_STORE7_I0n.qp08(), top.sprite_store.GYNO_STORE7_I1n.qp08(), top.sprite_store.FEFA_STORE7_I2n.qp08(), top.sprite_store.FYSU_STORE7_I3n.qp08(), top.sprite_store.GESY_STORE7_I4n.qp08(), top.sprite_store.FUZO_STORE7_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.XYNA_STORE7_L0n.qp08(), top.sprite_store.YGUM_STORE7_L1n.qp08(), top.sprite_store.XAKU_STORE7_L2n.qp08(), top.sprite_store.XYGO_STORE7_L3n.qp08()),
+    pack_n(top.sprite_store.ERAZ_STORE7_X0p.qn08(), top.sprite_store.EPUM_STORE7_X1p.qn08(), top.sprite_store.EROL_STORE7_X2p.qn08(), top.sprite_store.EHYN_STORE7_X3p.qn08(), top.sprite_store.FAZU_STORE7_X4p.qn08(), top.sprite_store.FAXE_STORE7_X5p.qn08(), top.sprite_store.EXUK_STORE7_X6p.qn08(), top.sprite_store.FEDE_STORE7_X7p.qn08())
+  );
+
+  d("STORE8 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.EFYL_STORE8_MATCHn,
+    top.sprite_store.EXUQ_STORE8_RSTp.qp17(),
+    pack_n(top.sprite_store.AXUV_STORE8_I0n.qp08(), top.sprite_store.BADA_STORE8_I1n.qp08(), top.sprite_store.APEV_STORE8_I2n.qp08(), top.sprite_store.BADO_STORE8_I3n.qp08(), top.sprite_store.BEXY_STORE8_I4n.qp08(), top.sprite_store.BYHE_STORE8_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.AZAP_STORE8_L0n.qp08(), top.sprite_store.AFYX_STORE8_L1n.qp08(), top.sprite_store.AFUT_STORE8_L2n.qp08(), top.sprite_store.AFYM_STORE8_L3n.qp08()),
+    pack_n(top.sprite_store.EZUF_STORE8_X0p.qn08(), top.sprite_store.ENAD_STORE8_X1p.qn08(), top.sprite_store.EBOW_STORE8_X2p.qn08(), top.sprite_store.FYCA_STORE8_X3p.qn08(), top.sprite_store.GAVY_STORE8_X4p.qn08(), top.sprite_store.GYPU_STORE8_X5p.qn08(), top.sprite_store.GADY_STORE8_X6p.qn08(), top.sprite_store.GAZA_STORE8_X7p.qn08())
+  );
+
+  d("STORE9 M%d R%d I%02d L%02d X%03d\n",
+    !top.sprite_store.YGEM_STORE9_MATCHn,
+    top.sprite_store.FONO_STORE9_RSTp.qp17(),
+    pack_n(top.sprite_store.YBER_STORE9_I0n.qp08(), top.sprite_store.YZOR_STORE9_I1n.qp08(), top.sprite_store.XYFE_STORE9_I2n.qp08(), top.sprite_store.XOTU_STORE9_I3n.qp08(), top.sprite_store.XUTE_STORE9_I4n.qp08(), top.sprite_store.XUFO_STORE9_I5n.qp08(), 1, 1),
+    pack_n(top.sprite_store.CANA_STORE9_L0n.qp08(), top.sprite_store.FOFO_STORE9_L1n.qp08(), top.sprite_store.DYSY_STORE9_L2n.qp08(), top.sprite_store.DEWU_STORE9_L3n.qp08()),
+    pack_n(top.sprite_store.XUVY_STORE9_X0p.qn08(), top.sprite_store.XERE_STORE9_X1p.qn08(), top.sprite_store.XUZO_STORE9_X2p.qn08(), top.sprite_store.XEXA_STORE9_X3p.qn08(), top.sprite_store.YPOD_STORE9_X4p.qn08(), top.sprite_store.YROP_STORE9_X5p.qn08(), top.sprite_store.YNEP_STORE9_X6p.qn08(), top.sprite_store.YZOF_STORE9_X7p.qn08())
+  );
+
+  d("\n");
+
+
   gb->top.tile_fetcher.dump(d, gb->top);
 }
 

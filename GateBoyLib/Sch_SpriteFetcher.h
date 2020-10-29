@@ -57,9 +57,6 @@ struct SpriteFetcher {
     SEBA_SFETCH_S1_D5.reset(REG_D0C0);
   }
 
-  void tock(SchematicTop& gb);
-  void dump(Dumper& d) const;
-
   /* p29.WUTY*/ Sig WUTY_SPRITE_DONEp;   // -> pix pipe, sprite store
   /* p28.WEFY*/ Sig WEFY_SPR_READp;      // -> oam bus
   /* p25.VAPE*/ Sig VAPE_FETCH_OAM_CLK;  // -> oam bus

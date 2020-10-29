@@ -490,7 +490,6 @@ void GateBoyThread::dump2(Dumper& d) {
   d("PIN_JOY_P14      %c\n", top.joypad.PIN_JOY_P14.c());
   d("PIN_JOY_P15      %c\n", top.joypad.PIN_JOY_P15.c());
   d("PIN_CPU_WAKE     %c\n", top.joypad.PIN_CPU_WAKE .c());
-  d("ASOK_INT_JOYp    %c\n", top.joypad.ASOK_INT_JOYp.c());
   d("AWOB_WAKE_CPU    %c\n", top.joypad.AWOB_WAKE_CPU.c());
   d("BATU_JP_GLITCH0  %c\n", top.joypad.BATU_JP_GLITCH0.c());
   d("ACEF_JP_GLITCH1  %c\n", top.joypad.ACEF_JP_GLITCH1.c());

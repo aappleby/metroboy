@@ -61,9 +61,6 @@ struct InterruptRegisters {
     PIN_CPU_ACK_JOYPAD.reset(TRI_D0NP);
   }
 
-//private:
-  friend SchematicTop;
-
   /*p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
   /*p02.UBUL*/ DFF22 UBUL_FF0F_D3p;
   /*p02.ULAK*/ DFF22 ULAK_FF0F_D4p;

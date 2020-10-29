@@ -11,7 +11,6 @@ struct CpuBus;
 struct Joypad {
 
   void reset_cart() {
-    ASOK_INT_JOYp.reset(TRI_D0NP);
     AWOB_WAKE_CPU.reset(TRI_D0NP);
     PIN_CPU_WAKE.reset(TRI_D0NP);
 
@@ -43,7 +42,6 @@ struct Joypad {
   }
 
   void reset_boot() {
-    ASOK_INT_JOYp.reset(TRI_HZNP);
     AWOB_WAKE_CPU.reset(TRI_D0NP);
     PIN_CPU_WAKE.reset(TRI_HZNP);
 
@@ -96,8 +94,6 @@ struct Joypad {
       if (buttons & 0x80) PIN_JOY_P13.lock(DELTA_TRI0);
     }
   }
-
-  /*p02.ASOK*/ Sig ASOK_INT_JOYp;
 
 //private:
   friend struct SchematicTop;

@@ -133,8 +133,8 @@ struct VramBus {
     PIN_VRAM_D06p.reset(TRI_D0PU);
     PIN_VRAM_D07p.reset(TRI_D0PU);
 
-    latch_sprite_a_delay.reset(TRI_D1NP);
-    latch_sprite_b_delay.reset(TRI_D1NP);
+    //latch_sprite_a_delay.reset(TRI_D1NP);
+    //latch_sprite_b_delay.reset(TRI_D1NP);
   }
 
   void reset_boot() {
@@ -218,8 +218,8 @@ struct VramBus {
     PIN_VRAM_D06p.reset(TRI_HZPU);
     PIN_VRAM_D07p.reset(TRI_HZPU);
 
-    latch_sprite_a_delay.reset();
-    latch_sprite_b_delay.reset();
+    //latch_sprite_a_delay.reset();
+    //latch_sprite_b_delay.reset();
   }
 
   int get_bus_addr() const {
@@ -364,8 +364,8 @@ struct VramBus {
   Pin PIN_VRAM_D06p; // PIN_26
   Pin PIN_VRAM_D07p; // PIN_25
 
-  DelayGlitch latch_sprite_a_delay;
-  DelayGlitch latch_sprite_b_delay;
+  //DelayGlitch latch_sprite_a_delay;
+  //DelayGlitch latch_sprite_b_delay;
 };
 
 //-----------------------------------------------------------------------------

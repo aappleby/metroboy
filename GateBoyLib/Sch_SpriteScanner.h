@@ -80,7 +80,6 @@ struct SpriteScanner {
     XECU_SPRITE_IDX5p.reset(REG_D0C0);
   }
 
-  void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 

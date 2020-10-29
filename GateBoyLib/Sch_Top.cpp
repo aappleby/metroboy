@@ -2763,7 +2763,24 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   //------------------------------------------------------------------------------
 
-  tile_fetcher.tock(top);
+  /*p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(top.clk_reg.ALET_xBxDxFxH, top.tile_fetcher.MOCE_BFETCH_DONEn);
+
+  /*p27.LAXU*/ top.tile_fetcher.LAXU_BFETCH_S0   .dff17(_LEBO_AxCxExGx,                             top.pix_pipe.NYXU_FETCH_TRIGn,       top.tile_fetcher.LAXU_BFETCH_S0.qn16());
+  /*p27.MESU*/ top.tile_fetcher.MESU_BFETCH_S1   .dff17(top.tile_fetcher.LAXU_BFETCH_S0.qn16(),     top.pix_pipe.NYXU_FETCH_TRIGn,       top.tile_fetcher.MESU_BFETCH_S1.qn16());
+  /*p27.NYVA*/ top.tile_fetcher.NYVA_BFETCH_S2   .dff17(top.tile_fetcher.MESU_BFETCH_S1.qn16(),     top.pix_pipe.NYXU_FETCH_TRIGn,       top.tile_fetcher.NYVA_BFETCH_S2.qn16());
+  /*p27.LYZU*/ top.tile_fetcher.LYZU_BFETCH_S0_D1.dff17(top.clk_reg.ALET_xBxDxFxH,                  top.pix_pipe.XYMU_RENDERINGn.qn03(), top.tile_fetcher.LAXU_BFETCH_S0.qp17());
+
+  /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(top.pix_pipe.MOSU_WIN_FETCH_TRIGp, top.pix_pipe.LOBY_RENDERINGn);
+
+  /*p24.NYKA*/ top.tile_fetcher.NYKA_FETCH_DONE_P11.dff17(top.clk_reg.ALET_xBxDxFxH, _NAFY_RENDERING_AND_NOT_WIN_TRIG,      top.tile_fetcher.LYRY_BFETCH_DONEp);
+  /*p24.PORY*/ top.tile_fetcher.PORY_FETCH_DONE_P12.dff17(top.clk_reg.MYVO_AxCxExGx, _NAFY_RENDERING_AND_NOT_WIN_TRIG,      top.tile_fetcher.NYKA_FETCH_DONE_P11.qp17());
+  /*p24.PYGO*/ top.tile_fetcher.PYGO_FETCH_DONE_P13.dff17(top.clk_reg.ALET_xBxDxFxH, top.pix_pipe.XYMU_RENDERINGn.qn03(),   top.tile_fetcher.PORY_FETCH_DONE_P12.qp17());
+
+  /*p24.POKY*/ top.tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(top.tile_fetcher.PYGO_FETCH_DONE_P13.qp17(), top.pix_pipe.LOBY_RENDERINGn);
+
+  /*p27.LOVY*/ top.tile_fetcher.LOVY_BG_FETCH_DONEp  .dff17(top.clk_reg.MYVO_AxCxExGx, top.pix_pipe.NYXU_FETCH_TRIGn,     top.tile_fetcher.LYRY_BFETCH_DONEp);
+  /*p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(top.tile_fetcher.LOVY_BG_FETCH_DONEp.qn16(), top.pix_pipe.XYMU_RENDERINGn.qn03());
+  /*p27.LONY*/ top.tile_fetcher.LONY_BG_FETCH_RUNNINGp.nand_latch(top.pix_pipe.NYXU_FETCH_TRIGn, _LURY_BG_FETCH_DONEn);
 
   //------------------------------------------------------------------------------
 

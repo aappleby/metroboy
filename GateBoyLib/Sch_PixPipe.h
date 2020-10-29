@@ -444,9 +444,19 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D0C0);
   }
 
-  void dump(Dumper& d, const SchematicTop& top) const;
-
-  uint8_t get_stat(const SchematicTop& top) const;
+  uint8_t get_stat() const {
+    uint8_t stat = (uint8_t)pack_p(
+      !SADU_STAT_MODE0n,
+      !XATY_STAT_MODE1n,
+      RUPO_LYC_MATCH_LATCHn.qn03(),
+      ROXE_STAT_HBI_ENn.qn08(),
+      RUFO_STAT_VBI_ENn.qn08(),
+      REFE_STAT_OAI_ENn.qn08(),
+      RUGU_STAT_LYI_ENn.qn08(),
+      1
+    );
+    return stat;
+  }
 
   int get_wx() const {
     return pack_p(MYPA_WX0n.qp09(), NOFE_WX1n.qp09(), NOKE_WX2n.qp09(), MEBY_WX3n.qp09(),

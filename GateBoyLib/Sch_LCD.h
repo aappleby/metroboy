@@ -10,8 +10,6 @@ struct CpuBus;
 
 struct LcdRegisters {
 
-  void dump(Dumper& d, const SchematicTop& top) const;
-
   void reset_cart() {
     BYHA_VID_LINE_END_TRIGn.reset(TRI_D1NP);
     PARU_VBLANKp_d4.reset(TRI_D1NP);

@@ -60,8 +60,6 @@ struct InterruptRegisters {
     PIN_CPU_ACK_SERIAL.reset(TRI_D0NP);
     PIN_CPU_ACK_JOYPAD.reset(TRI_D0NP);
   }
-  void dump(Dumper& d, const SchematicTop& top) const;
-  void tock(const SchematicTop& gb, CpuBus& cpu_bus);
 
 //private:
   friend SchematicTop;

@@ -2729,7 +2729,37 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   //------------------------------------------------------------------------------
 
-  sprite_fetcher.tock(top);
+  /* p01.ROSY*/ wire _ROSY_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /* p01.LAPE*/ wire _LAPE_AxCxExGx = not1(top.clk_reg.ALET_xBxDxFxH);
+  /* p27.TAVA*/ wire _TAVA_xBxDxFxH = not1(_LAPE_AxCxExGx);
+
+  //----------------------------------------
+
+  /* p27.TUKU*/ wire _TUKU_WIN_HITn = not1(top.pix_pipe.TOMU_WIN_HITp);
+
+  /* p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn = not1(top.sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp03());
+
+  /* p27.TEKY*/ wire _TEKY_SFETCH_REQp = and4(top.sprite_store.FEPO_STORE_MATCHp, _TUKU_WIN_HITn, top.tile_fetcher.LYRY_BFETCH_DONEp, _SOWO_SFETCH_RUNNINGn);
+
+  /* p27.SOBU*/ top.sprite_fetcher.SOBU_SFETCH_REQp.dff17(_TAVA_xBxDxFxH, VYPO, _TEKY_SFETCH_REQp);
+  /* p27.SUDA*/ top.sprite_fetcher.SUDA_SFETCH_REQp.dff17(_LAPE_AxCxExGx, VYPO, top.sprite_fetcher.SOBU_SFETCH_REQp.qp17());
+
+  /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(top.sprite_fetcher.SOBU_SFETCH_REQp.qp17(),  top.sprite_fetcher.SUDA_SFETCH_REQp.qn16());
+
+  /*#p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp, top.lcd_reg.ATEJ_LINE_TRIGp);
+  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(top.sprite_fetcher.WUTY_SPRITE_DONEp, top.pix_pipe.TAVE_PRELOAD_DONE_TRIGp); // def nor
+  /* p27.TAKA*/ top.sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
+
+  /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand2(top.sprite_fetcher.TESE_SFETCH_S2.qp17(), top.sprite_fetcher.TOXE_SFETCH_S0.qp17());
+  /*#p29.TOMA*/ wire _TOMA_SFETCH_CLK_xBxDxFxH = nand2(_LAPE_AxCxExGx, _TAME_SFETCH_CLK_GATE);
+
+  /*#p29.TOXE*/ top.sprite_fetcher.TOXE_SFETCH_S0   .dff17(_TOMA_SFETCH_CLK_xBxDxFxH,                   _SECA_SFETCH_RUNNING_SETn,            top.sprite_fetcher.TOXE_SFETCH_S0.qn16());
+  /*#p29.TYFO*/ top.sprite_fetcher.TYFO_SFETCH_S0_D1.dff17(_LAPE_AxCxExGx,                              VYPO,                                 top.sprite_fetcher.TOXE_SFETCH_S0.qp17());
+  /*#p29.TULY*/ top.sprite_fetcher.TULY_SFETCH_S1   .dff17(top.sprite_fetcher.TOXE_SFETCH_S0.qn16(),    _SECA_SFETCH_RUNNING_SETn,            top.sprite_fetcher.TULY_SFETCH_S1.qn16());
+  /*#p29.TOBU*/ top.sprite_fetcher.TOBU_SFETCH_S1_D2.dff17(_TAVA_xBxDxFxH,                              top.pix_pipe.XYMU_RENDERINGn.qn03(),  top.sprite_fetcher.TULY_SFETCH_S1.qp17());
+  /*#p29.VONU*/ top.sprite_fetcher.VONU_SFETCH_S1_D4.dff17(_TAVA_xBxDxFxH,                              top.pix_pipe.XYMU_RENDERINGn.qn03(),  top.sprite_fetcher.TOBU_SFETCH_S1_D2.qp17());
+  /*#p29.SEBA*/ top.sprite_fetcher.SEBA_SFETCH_S1_D5.dff17(_LAPE_AxCxExGx,                              top.pix_pipe.XYMU_RENDERINGn.qn03(),  top.sprite_fetcher.VONU_SFETCH_S1_D4.qp17());
+  /*#p29.TESE*/ top.sprite_fetcher.TESE_SFETCH_S2   .dff17(top.sprite_fetcher.TULY_SFETCH_S1.qn16(),    _SECA_SFETCH_RUNNING_SETn,            top.sprite_fetcher.TESE_SFETCH_S2.qn16());
 
   //------------------------------------------------------------------------------
 

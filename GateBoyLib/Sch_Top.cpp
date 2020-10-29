@@ -505,21 +505,21 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p29.TEPA*/ wire _TEPA_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn03());
   /* p29.TYNO*/ wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0.qp17(), sprite_fetcher.SEBA_SFETCH_S1_D5.qp17(), sprite_fetcher.VONU_SFETCH_S1_D4.qp17());
   /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn  = or2(sprite_fetcher.TYFO_SFETCH_S0_D1.qn16(), _TYNO);
-  /* p29.WUTY*/ sprite_fetcher.WUTY_SPRITE_DONEp = not1(_VUSA_SPRITE_DONEn);
+  /* p29.WUTY*/ wire WUTY_SPRITE_DONEp = not1(_VUSA_SPRITE_DONEn);
   /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGn, sprite_fetcher.TULY_SFETCH_S1.qp17(), sprite_fetcher.TESE_SFETCH_S2.qp17());
-  /* p28.WEFY*/ sprite_fetcher.WEFY_SPR_READp = and2(_TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1.qp17());
+  /* p28.WEFY*/ wire WEFY_SPR_READp = and2(_TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1.qp17());
   /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0.qp17());
   /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0_D1.qp17(), _TYTU_SFETCH_S0n);
   /* p29.SAKY*/ wire _SAKY_SFETCH_MYSTERY = nor2(sprite_fetcher.TULY_SFETCH_S1.qp17(), sprite_fetcher.VONU_SFETCH_S1_D4.qp17());
   /* p29.TYSO*/ wire _TYSO_SPRITE_READn = or2(_SAKY_SFETCH_MYSTERY, _TEPA_RENDERINGn); // def or
-  /* p29.TEXY*/ sprite_fetcher.TEXY_SPR_READ_VRAMp = not1(_TYSO_SPRITE_READn);
-  /* p29.ABON*/ sprite_fetcher.ABON_SPR_VRM_RDn = not1(sprite_fetcher.TEXY_SPR_READ_VRAMp);
-  /* p25.SOHO*/ sprite_fetcher.SOHO_SPR_VRAM_RDp = and2(_TACU_SPR_SEQ_5_TRIG, sprite_fetcher.TEXY_SPR_READ_VRAMp);
-  /* p25.VAPE*/ sprite_fetcher.VAPE_FETCH_OAM_CLK = and2(_TUVO_PPU_OAM_RDp, _TACU_SPR_SEQ_5_TRIG);
-  /*#p29.XUQU*/ sprite_fetcher.XUQU_SPRITE_AB = not1(sprite_fetcher.VONU_SFETCH_S1_D4.qn16());
+  /* p29.TEXY*/ wire TEXY_SPR_READ_VRAMp = not1(_TYSO_SPRITE_READn);
+  /* p29.ABON*/ wire ABON_SPR_VRM_RDn = not1(TEXY_SPR_READ_VRAMp);
+  /* p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and2(_TACU_SPR_SEQ_5_TRIG, TEXY_SPR_READ_VRAMp);
+  /* p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and2(_TUVO_PPU_OAM_RDp, _TACU_SPR_SEQ_5_TRIG);
+  /*#p29.XUQU*/ wire XUQU_SPRITE_AB = not1(sprite_fetcher.VONU_SFETCH_S1_D4.qn16());
   /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(_TYTU_SFETCH_S0n, LOBY_RENDERINGn, sprite_fetcher.TYFO_SFETCH_S0_D1.qp17());
-  /*#p29.RACA*/ sprite_fetcher.RACA_LATCH_SPPIXB = and2(sprite_fetcher.VONU_SFETCH_S1_D4.qp17(), _SYCU_SFETCH_S0pe);
-  /*#p29.TOPU*/ sprite_fetcher.TOPU_LATCH_SPPIXA = and2(sprite_fetcher.TULY_SFETCH_S1.qp17(), _SYCU_SFETCH_S0pe);
+  /*#p29.RACA*/ wire RACA_LATCH_SPPIXB = and2(sprite_fetcher.VONU_SFETCH_S1_D4.qp17(), _SYCU_SFETCH_S0pe);
+  /*#p29.TOPU*/ wire TOPU_LATCH_SPPIXA = and2(sprite_fetcher.TULY_SFETCH_S1.qp17(), _SYCU_SFETCH_S0pe);
 
   //----------------------------------------
 
@@ -1405,16 +1405,16 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
     // Delayed reset signal for the selected store once sprite fetch is done.
 
-    /*p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUVA_SPRITE0_GETp);
-    /*p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, ENUT_SPRITE1_GETp);
-    /*p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, EMOL_SPRITE2_GETp);
-    /*p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GYFY_SPRITE3_GETp);
-    /*p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GONO_SPRITE4_GETp);
-    /*p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GEGA_SPRITE5_GETp);
-    /*p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, XOJA_SPRITE6_GETp);
-    /*p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUTU_SPRITE7_GETp);
-    /*p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, FOXA_SPRITE8_GETp);
-    /*p29.FONO*/ sprite_store.FONO_STORE9_RSTp.dff17(sprite_fetcher.WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUZE_SPRITE9_GETp);
+    /*p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUVA_SPRITE0_GETp);
+    /*p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, ENUT_SPRITE1_GETp);
+    /*p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, EMOL_SPRITE2_GETp);
+    /*p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GYFY_SPRITE3_GETp);
+    /*p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GONO_SPRITE4_GETp);
+    /*p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GEGA_SPRITE5_GETp);
+    /*p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, XOJA_SPRITE6_GETp);
+    /*p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUTU_SPRITE7_GETp);
+    /*p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, FOXA_SPRITE8_GETp);
+    /*p29.FONO*/ sprite_store.FONO_STORE9_RSTp.dff17(WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUZE_SPRITE9_GETp);
 
     // Tribus drivers for all 10 sprite stores
 
@@ -2191,7 +2191,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   // Sprite pipes
 
   {
-    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn  = not1(sprite_fetcher.WUTY_SPRITE_DONEp);
+    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn  = not1(WUTY_SPRITE_DONEp);
 
     /*p34.MEFU*/ wire MEFU_SPRITE_MASK0n = or3(XEPY_SPRITE_DONEn, pix_pipe.NYLU_SPR_PIPE_B0.qp16(), pix_pipe.NURO_SPR_PIPE_A0.qp16()); // def or
     /*p34.MEVE*/ wire MEVE_SPRITE_MASK1n = or3(XEPY_SPRITE_DONEn, pix_pipe.PEFU_SPR_PIPE_B1.qp16(), pix_pipe.MASO_SPR_PIPE_A1.qp16());
@@ -2796,7 +2796,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp17(),  sprite_fetcher.SUDA_SFETCH_REQp.qn16());
 
   /*#p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp, ATEJ_LINE_TRIGp);
-  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(sprite_fetcher.WUTY_SPRITE_DONEp, TAVE_PRELOAD_DONE_TRIGp); // def nor
+  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SPRITE_DONEp, TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
 
   /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand2(sprite_fetcher.TESE_SFETCH_S2.qp17(), sprite_fetcher.TOXE_SFETCH_S0.qp17());
@@ -3136,7 +3136,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p28.AJON*/ wire _AJON_PPU_OAM_ENp = and2(BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGn.qn03()); // def AND. ppu can read oam when there's rendering but no dma
 
   /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(sprite_scanner.ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
-  /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(sprite_fetcher.WEFY_SPR_READp);
+  /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(WEFY_SPR_READp);
   /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn = not1(CATY_LATCH_EXTp);
   /*#p28.BOTA*/ wire _BOTA_CPU_OAM_OEn  = nand3(_BOFE_LATCH_EXTn, cpu_bus.SARO_FE00_FEFFp(), ASOT_CPU_RDp); // Schematic wrong, this is NAND
 
@@ -3157,7 +3157,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     /* p29.XYSO*/ wire _XYSO_xBCDxFGH = not1(WOJO_AxxxExxx);
     /* p25.AVER*/ wire _AVER_SCAN_OAM_CLK = nand2(sprite_scanner.ACYL_SCANNINGp, _XYSO_xBCDxFGH);
-    /* p25.XUJY*/ wire _XUJY_PPU_OAM_CLK  = not1(sprite_fetcher.VAPE_FETCH_OAM_CLK);
+    /* p25.XUJY*/ wire _XUJY_PPU_OAM_CLK  = not1(VAPE_FETCH_OAM_CLK);
     /* p25.CUFE*/ wire _CUFE_OAM_CLK  = not1(or_and3(cpu_bus.SARO_FE00_FEFFp(), dma_reg.MATU_DMA_RUNNINGp.qp17(), MOPA_xxxxEFGH));
 
     /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3(_AVER_SCAN_OAM_CLK, _XUJY_PPU_OAM_CLK, _CUFE_OAM_CLK);
@@ -3454,7 +3454,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     /*p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(_SALE_CPU_VRAM_WRn, _XANE_VRAM_LOCKn);
 
-    /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(sprite_fetcher.SOHO_SPR_VRAM_RDp);
+    /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(SOHO_SPR_VRAM_RDp);
     /*p25.APAM*/ wire _APAM_DMA_VRAM_RDn = not1(LUFA_DMA_VRAMp);
     /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not1(tile_fetcher.LONY_BG_FETCH_RUNNINGp.qp03());
 
@@ -3471,7 +3471,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(tile_fetcher.LENA_BGW_VRM_RDp,
                                          LUFA_DMA_VRAMp,
-                                         sprite_fetcher.TEXY_SPR_READ_VRAMp,
+                                         TEXY_SPR_READ_VRAMp,
                                          _SERE_CPU_VRM_RDp);
 
     /*p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn);
@@ -3533,19 +3533,19 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_bus.XUSO_OAM_DA0p.qp08(), _FUFO_LCDC_SPSIZEn,
                                         pix_pipe.XYMO_LCDC_SPSIZEn.qn08(), _WAGO_L3);
 
-    /* p29.ABEM*/ vram_bus.BUS_VRAM_A00n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, sprite_fetcher.XUQU_SPRITE_AB);
-    /* p29.BAXE*/ vram_bus.BUS_VRAM_A01n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, _CYVU_L0);
-    /* p29.ARAS*/ vram_bus.BUS_VRAM_A02n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, _BORE_L1);
-    /* p29.AGAG*/ vram_bus.BUS_VRAM_A03n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, _BUVY_L2);
-    /* p29.FAMU*/ vram_bus.BUS_VRAM_A04n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, _GEJY_L3);
-    /*#p29.FUGY*/ vram_bus.BUS_VRAM_A05n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.XEGU_OAM_DA1p.qp08());
-    /* p29.GAVO*/ vram_bus.BUS_VRAM_A06n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.YJEX_OAM_DA2p.qp08());
-    /* p29.WYGA*/ vram_bus.BUS_VRAM_A07n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.XYJU_OAM_DA3p.qp08());
-    /* p29.WUNE*/ vram_bus.BUS_VRAM_A08n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.YBOG_OAM_DA4p.qp08());
-    /* p29.GOTU*/ vram_bus.BUS_VRAM_A09n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.WYSO_OAM_DA5p.qp08());
-    /* p29.GEGU*/ vram_bus.BUS_VRAM_A10n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.XOTE_OAM_DA6p.qp08());
-    /* p29.XEHE*/ vram_bus.BUS_VRAM_A11n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, oam_bus.YZAB_OAM_DA7p.qp08());
-    /* p29.DYSO*/ vram_bus.BUS_VRAM_A12n.tri_6nn(sprite_fetcher.ABON_SPR_VRM_RDn, 0);   // sprites always in low half of tile store
+    /* p29.ABEM*/ vram_bus.BUS_VRAM_A00n.tri_6nn(ABON_SPR_VRM_RDn, XUQU_SPRITE_AB);
+    /* p29.BAXE*/ vram_bus.BUS_VRAM_A01n.tri_6nn(ABON_SPR_VRM_RDn, _CYVU_L0);
+    /* p29.ARAS*/ vram_bus.BUS_VRAM_A02n.tri_6nn(ABON_SPR_VRM_RDn, _BORE_L1);
+    /* p29.AGAG*/ vram_bus.BUS_VRAM_A03n.tri_6nn(ABON_SPR_VRM_RDn, _BUVY_L2);
+    /* p29.FAMU*/ vram_bus.BUS_VRAM_A04n.tri_6nn(ABON_SPR_VRM_RDn, _GEJY_L3);
+    /*#p29.FUGY*/ vram_bus.BUS_VRAM_A05n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.XEGU_OAM_DA1p.qp08());
+    /* p29.GAVO*/ vram_bus.BUS_VRAM_A06n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.YJEX_OAM_DA2p.qp08());
+    /* p29.WYGA*/ vram_bus.BUS_VRAM_A07n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.XYJU_OAM_DA3p.qp08());
+    /* p29.WUNE*/ vram_bus.BUS_VRAM_A08n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.YBOG_OAM_DA4p.qp08());
+    /* p29.GOTU*/ vram_bus.BUS_VRAM_A09n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.WYSO_OAM_DA5p.qp08());
+    /* p29.GEGU*/ vram_bus.BUS_VRAM_A10n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.XOTE_OAM_DA6p.qp08());
+    /* p29.XEHE*/ vram_bus.BUS_VRAM_A11n.tri_6nn(ABON_SPR_VRM_RDn, oam_bus.YZAB_OAM_DA7p.qp08());
+    /* p29.DYSO*/ vram_bus.BUS_VRAM_A12n.tri_6nn(ABON_SPR_VRM_RDn, 0);   // sprites always in low half of tile store
   }
 
   {
@@ -3826,7 +3826,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   // VRAM tri -> sprite pix temp + x flip
   {
-    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_bus.BAXO_OAM_DB5p.qp08(), sprite_fetcher.TEXY_SPR_READ_VRAMp);
+    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_bus.BAXO_OAM_DB5p.qp08(), TEXY_SPR_READ_VRAMp);
 
     /*p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X, vram_bus.BUS_VRAM_D7p.qp(), vram_bus.BUS_VRAM_D0p.qp());
     /*p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X, vram_bus.BUS_VRAM_D6p.qp(), vram_bus.BUS_VRAM_D1p.qp());
@@ -3837,7 +3837,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X, vram_bus.BUS_VRAM_D1p.qp(), vram_bus.BUS_VRAM_D6p.qp());
     /*p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X, vram_bus.BUS_VRAM_D0p.qp(), vram_bus.BUS_VRAM_D7p.qp());
 
-    /*#p29.PEBY*/ wire _PEBY_CLKp = not1(sprite_fetcher.RACA_LATCH_SPPIXB);
+    /*#p29.PEBY*/ wire _PEBY_CLKp = not1(RACA_LATCH_SPPIXB);
     /*#p29.NYBE*/ wire _NYBE_CLKn = not1(_PEBY_CLKp);
     /*#p29.PUCO*/ wire _PUCO_CLKp = not1(_NYBE_CLKn);
 
@@ -3852,7 +3852,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p33.RAMA*/ vram_bus.RAMA_SPRITE_DB6n.dff8n(vram_bus.latch_sprite_a_delay.q6(), _PAWE_FLIP6p);
     /*p33.RYDU*/ vram_bus.RYDU_SPRITE_DB7n.dff8n(vram_bus.latch_sprite_a_delay.q6(), _PULY_FLIP7p);
 
-    /*#p29.VYWA*/ wire _VYWA_CLKp = not1(sprite_fetcher.TOPU_LATCH_SPPIXA);
+    /*#p29.VYWA*/ wire _VYWA_CLKp = not1(TOPU_LATCH_SPPIXA);
     /*#p29.WENY*/ wire _WENY_CLKn = not1(_VYWA_CLKp);
     /*#p29.XADO*/ wire _XADO_CLKp = not1(_WENY_CLKn);
 

@@ -10,16 +10,6 @@ struct VramBus;
 
 struct SpriteFetcher {
   void reset_cart() {
-    WUTY_SPRITE_DONEp.reset(TRI_D0NP);
-    WEFY_SPR_READp.reset(TRI_D0NP);
-    VAPE_FETCH_OAM_CLK.reset(TRI_D0NP);
-    SOHO_SPR_VRAM_RDp.reset(TRI_D0NP);
-    TEXY_SPR_READ_VRAMp.reset(TRI_D0NP);
-    ABON_SPR_VRM_RDn.reset(TRI_D1NP);
-    XUQU_SPRITE_AB.reset(TRI_D0NP);
-    RACA_LATCH_SPPIXB.reset(TRI_D0NP);
-    TOPU_LATCH_SPPIXA.reset(TRI_D0NP);
-
     TAKA_SFETCH_RUNNINGp.reset(TRI_D0NP);
     SOBU_SFETCH_REQp.reset(REG_D0C0);
     SUDA_SFETCH_REQp.reset(REG_D0C1);
@@ -34,16 +24,6 @@ struct SpriteFetcher {
   }
 
   void reset_boot() {
-    WUTY_SPRITE_DONEp.reset(TRI_HZNP);
-    WEFY_SPR_READp.reset(TRI_HZNP);
-    VAPE_FETCH_OAM_CLK.reset(TRI_HZNP);
-    SOHO_SPR_VRAM_RDp.reset(TRI_HZNP);
-    TEXY_SPR_READ_VRAMp.reset(TRI_HZNP);
-    ABON_SPR_VRM_RDn.reset(TRI_HZNP);
-    XUQU_SPRITE_AB.reset(TRI_HZNP);
-    RACA_LATCH_SPPIXB.reset(TRI_HZNP);
-    TOPU_LATCH_SPPIXA.reset(TRI_HZNP);
-
     TAKA_SFETCH_RUNNINGp.reset(TRI_D0NP);
     SOBU_SFETCH_REQp.reset(REG_D0C0);
     SUDA_SFETCH_REQp.reset(REG_D0C0);
@@ -56,16 +36,6 @@ struct SpriteFetcher {
     VONU_SFETCH_S1_D4.reset(REG_D0C0);
     SEBA_SFETCH_S1_D5.reset(REG_D0C0);
   }
-
-  /* p29.WUTY*/ Sig WUTY_SPRITE_DONEp;   // -> pix pipe, sprite store
-  /* p28.WEFY*/ Sig WEFY_SPR_READp;      // -> oam bus
-  /* p25.VAPE*/ Sig VAPE_FETCH_OAM_CLK;  // -> oam bus
-  /* p25.SOHO*/ Sig SOHO_SPR_VRAM_RDp;   // -> vram bus
-  /* p29.TEXY*/ Sig TEXY_SPR_READ_VRAMp; // -> vram bus
-  /* p29.ABON*/ Sig ABON_SPR_VRM_RDn;    // -> vram bus
-  /*#p29.XUQU*/ Sig XUQU_SPRITE_AB;      // -> vram bus
-  /*#p29.RACA*/ Sig RACA_LATCH_SPPIXB;   // -> vram bus
-  /*#p29.TOPU*/ Sig TOPU_LATCH_SPPIXA;   // -> vram bus
 
   // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
 

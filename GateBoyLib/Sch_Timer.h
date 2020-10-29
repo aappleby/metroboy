@@ -102,7 +102,6 @@ struct Timer {
   }
 
   void dump(Dumper& d) const;
-  void tick(const SchematicTop& top);
   void tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus);
 
   int get_div() const {

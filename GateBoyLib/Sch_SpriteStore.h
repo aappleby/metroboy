@@ -552,7 +552,6 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  void tick(const SchematicTop& top);
   void tock(const SchematicTop& top);
   void dump(Dumper& d) const;
 
@@ -569,8 +568,6 @@ struct SpriteStore {
   Bus SPR_TRI_L1;
   Bus SPR_TRI_L2;
   Bus SPR_TRI_L3;
-
-private:
 
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals

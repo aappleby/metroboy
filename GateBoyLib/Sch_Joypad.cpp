@@ -60,11 +60,6 @@ void Joypad::set_buttons(uint8_t buttons) {
     if (buttons & 0x80) PIN_JOY_P13.lock(DELTA_TRI0);
   }
 }
-//------------------------------------------------------------------------------
-
-void Joypad::tick(const SchematicTop& /*top*/) {
-  /*p02.ASOK*/ ASOK_INT_JOYp = and2(APUG_JP_GLITCH3.qp17(), BATU_JP_GLITCH0.qp17());
-}
 
 //------------------------------------------------------------------------------
 

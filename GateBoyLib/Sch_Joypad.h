@@ -74,7 +74,6 @@ struct Joypad {
     PIN_JOY_P15.reset(TRI_HZPU);
   }
 
-  void tick(const SchematicTop& top);
   void tock(const SchematicTop& top, CpuBus& cpu_bus);
   void dump(Dumper& d) const;
   void set_buttons(uint8_t buttons);

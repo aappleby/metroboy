@@ -20,14 +20,6 @@ void Timer::dump(Dumper& d) const {
 
 //------------------------------------------------------------------------------
 
-void Timer::tick(const SchematicTop& /*top*/) {
-  /* p01.UVYN*/ UVYN_DIV_05n = not1(TAMA_DIV_05.qp17());
-  /* p01.UMEK*/ UMEK_DIV_06n = not1(UGOT_DIV_06.qp17());
-  /* p01.UREK*/ UREK_DIV_07n = not1(TULU_DIV_07.qp17());
-}
-
-//------------------------------------------------------------------------------
-
 void Timer::tock(wire RST, const SchematicTop& top, CpuBus& cpu_bus) {
   /*p03.RYFO*/ wire _RYFO_FF04_FF07p = and3(top.cpu_bus.BUS_CPU_A02.qp(), top.cpu_bus.SARE_XX00_XX07p(), top.cpu_bus.SYKE_FF00_FFFFp());
 

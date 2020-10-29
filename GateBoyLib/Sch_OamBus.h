@@ -9,6 +9,85 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct OamBus {
+  void dump(Dumper& d) const {
+    d("\002===== OAM Bus =====\001\n");
+    d("PIN_OAM_CLK    %c\n", PIN_OAM_CLK.c());
+    d("PIN_OAM_OE     %c\n", PIN_OAM_OE.c());
+    d("PIN_OAM_WR_A   %c\n", PIN_OAM_WR_A.c());
+    d("PIN_OAM_WR_B   %c\n", PIN_OAM_WR_B.c());
+
+    int oam_tri_addr = pack_p(BUS_OAM_A0n.qn(), BUS_OAM_A1n.qn(), BUS_OAM_A2n.qn(), BUS_OAM_A3n.qn(),
+                              BUS_OAM_A4n.qn(), BUS_OAM_A5n.qn(), BUS_OAM_A6n.qn(), BUS_OAM_A7n.qn());
+
+    d("OAM TRI ADDR   %03d %02x %c%c%c%c%c%c%c%c\n",
+      oam_tri_addr,
+      oam_tri_addr,
+      BUS_OAM_A7n.cn(), BUS_OAM_A6n.cn(), BUS_OAM_A5n.cn(), BUS_OAM_A4n.cn(),
+      BUS_OAM_A3n.cn(), BUS_OAM_A2n.cn(), BUS_OAM_A1n.cn(), BUS_OAM_A0n.cn());
+
+    int oam_latch_data_a = pack_p(YDYV_OAM_LATCH_DA0n.c(), YCEB_OAM_LATCH_DA1n.c(), ZUCA_OAM_LATCH_DA2n.c(), WONE_OAM_LATCH_DA3n.c(),
+                                  ZAXE_OAM_LATCH_DA4n.c(), XAFU_OAM_LATCH_DA5n.c(), YSES_OAM_LATCH_DA6n.c(), ZECA_OAM_LATCH_DA7n.c());
+
+    int oam_latch_data_b = pack_p(XYKY_OAM_LATCH_DB0n.c(), YRUM_OAM_LATCH_DB1n.c(), YSEX_OAM_LATCH_DB2n.c(), YVEL_OAM_LATCH_DB3n.c(),
+                                  WYNO_OAM_LATCH_DB4n.c(), CYRA_OAM_LATCH_DB5n.c(), ZUVE_OAM_LATCH_DB6n.c(), ECED_OAM_LATCH_DB7n.c());
+
+    d("OAM BUS ADDR   %03d %02x -%c%c%c%c%c%c%c\n",
+      get_oam_pin_addr(),
+      get_oam_pin_addr(),
+      BUS_OAM_A7n.cn(), BUS_OAM_A6n.cn(), BUS_OAM_A5n.cn(), BUS_OAM_A4n.cn(),
+      BUS_OAM_A3n.cn(), BUS_OAM_A2n.cn(), BUS_OAM_A1n.cn());
+
+    d("OAM BUS DATA A %03d %02x %c%c%c%c%c%c%c%c\n",
+      get_oam_pin_data_a(),
+      get_oam_pin_data_a(),
+      BUS_OAM_DA7n.c(), BUS_OAM_DA6n.c(), BUS_OAM_DA5n.c(), BUS_OAM_DA4n.c(),
+      BUS_OAM_DA3n.c(), BUS_OAM_DA2n.c(), BUS_OAM_DA1n.c(), BUS_OAM_DA0n.c());
+
+    d("OAM BUS DATA B %03d %02x %c%c%c%c%c%c%c%c\n",
+      get_oam_pin_data_b(),
+      get_oam_pin_data_b(),
+      BUS_OAM_DB7n.c(), BUS_OAM_DB6n.c(), BUS_OAM_DB5n.c(), BUS_OAM_DB4n.c(),
+      BUS_OAM_DB3n.c(), BUS_OAM_DB2n.c(), BUS_OAM_DB1n.c(), BUS_OAM_DB0n.c());
+
+    d("MAKA_HOLD_MEMp   %c\n", MAKA_HOLD_MEMp.c());
+    d("WUJE_CPU_OAM_WRn %c\n", WUJE_CPU_OAM_WRn.c());
+
+    d("OAM LATCH A    %03d %02x %c%c%c%c%c%c%c%c\n",
+      oam_latch_data_a,
+      oam_latch_data_a,
+      ZECA_OAM_LATCH_DA7n.c(), YSES_OAM_LATCH_DA6n.c(), XAFU_OAM_LATCH_DA5n.c(), ZAXE_OAM_LATCH_DA4n.c(),
+      WONE_OAM_LATCH_DA3n.c(), ZUCA_OAM_LATCH_DA2n.c(), YCEB_OAM_LATCH_DA1n.c(), YDYV_OAM_LATCH_DA0n.c());
+
+    d("OAM LATCH B    %03d %02x %c%c%c%c%c%c%c%c\n",
+      oam_latch_data_b,
+      oam_latch_data_b,
+      ECED_OAM_LATCH_DB7n.c(), ZUVE_OAM_LATCH_DB6n.c(), CYRA_OAM_LATCH_DB5n.c(), WYNO_OAM_LATCH_DB4n.c(),
+      YVEL_OAM_LATCH_DB3n.c(), YSEX_OAM_LATCH_DB2n.c(), YRUM_OAM_LATCH_DB1n.c(), XYKY_OAM_LATCH_DB0n.c());
+
+    int oam_temp_a = pack_p(XUSO_OAM_DA0p.qp08(), XEGU_OAM_DA1p.qp08(), YJEX_OAM_DA2p.qp08(), XYJU_OAM_DA3p.qp08(),
+                            YBOG_OAM_DA4p.qp08(), WYSO_OAM_DA5p.qp08(), XOTE_OAM_DA6p.qp08(), YZAB_OAM_DA7p.qp08());
+
+    int oam_temp_b = pack_p(YLOR_OAM_DB0p.qp08(), ZYTY_OAM_DB1p.qp08(), ZYVE_OAM_DB2p.qp08(), ZEZY_OAM_DB3p.qp08(),
+                            GOMO_OAM_DB4p.qp08(), BAXO_OAM_DB5p.qp08(), YZOS_OAM_DB6p.qp08(), DEPO_OAM_DB7p.qp08());
+
+
+    d("OAM TEMP A     %03d %02x %c%c%c%c%c%c%c%c\n",
+      oam_temp_a,
+      oam_temp_a,
+      YZAB_OAM_DA7p.c(), XOTE_OAM_DA6p.c(), WYSO_OAM_DA5p.c(), YBOG_OAM_DA4p.c(),
+      XYJU_OAM_DA3p.c(), YJEX_OAM_DA2p.c(), XEGU_OAM_DA1p.c(), XUSO_OAM_DA0p.c());
+
+    d("OAM TEMP B     %03d %2x %c%c%c%c%c%c%c%c\n",
+      oam_temp_b,
+      oam_temp_b,
+      DEPO_OAM_DB7p.c(), YZOS_OAM_DB6p.c(), BAXO_OAM_DB5p.c(), GOMO_OAM_DB4p.c(),
+      ZEZY_OAM_DB3p.c(), ZYVE_OAM_DB2p.c(), ZYTY_OAM_DB1p.c(), YLOR_OAM_DB0p.c());
+
+
+    d("\n");
+  }
+
+
   void reset_cart() {
     MAKA_HOLD_MEMp.reset(REG_D0C1);
     WUJE_CPU_OAM_WRn.reset(TRI_D1NP);
@@ -152,10 +231,6 @@ struct OamBus {
     BUS_OAM_DB6n.reset(TRI_D0PU);
     BUS_OAM_DB7n.reset(TRI_D0PU);
   }
-
-  void dump(Dumper& d) const;
-  void tick(const SchematicTop& top);
-  void tock(SchematicTop& top);
 
   //----------------------------------------
 

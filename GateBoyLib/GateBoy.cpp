@@ -337,9 +337,7 @@ void GateBoy::next_pass() {
   wire CLK = !(phase_total & 1) & sys_clken;
 
   RegBase::sim_running = true;
-  RegBase::tick_running = true;
   top.tick_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);
-  RegBase::tick_running = false;
 
   RegBase::tock_running = true;
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready);

@@ -880,21 +880,6 @@ int GateBoyTests::test_clk() {
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    EXPECT_CLK(clk_reg.ZAXY_xBxDxFxH, 0b01010101);
-    EXPECT_CLK(clk_reg.BUDE_xxxxEFGH, 0b00001111);
-
-    EXPECT_CLK(clk_reg.ATYP_ABCDxxxx, 0b11110000);
-    EXPECT_CLK(clk_reg.AROV_xxCDEFxx, 0b00111100);
-    EXPECT_CLK(clk_reg.AJAX_xxxxEFGH, 0b00001111);
-
-    EXPECT_CLK(clk_reg.ADAR_ABCxxxxH, 0b11100001);
-    EXPECT_CLK(clk_reg.BALY_xBCDEFGH, 0b01111111);
-
-    EXPECT_CLK(clk_reg.XUPY_ABxxEFxx, 0b11001100);
-    EXPECT_CLK(clk_reg.TALU_xxCDEFxx, 0b00111100);
-    EXPECT_CLK(clk_reg.XOCE_xBCxxFGx, 0b01100110);
-    EXPECT_CLK(clk_reg.WOJO_AxxxExxx, 0b10001000);
-
     EXPECT_CLK(clk_reg.AFUR_xxxxEFGH.qp09(), 0b00001111);
     EXPECT_CLK(clk_reg.ALEF_AxxxxFGH.qp09(), 0b10000111);
     EXPECT_CLK(clk_reg.APUK_ABxxxxGH.qp09(), 0b11000011);

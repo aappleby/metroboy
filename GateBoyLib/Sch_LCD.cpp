@@ -4,8 +4,6 @@
 
 using namespace Schematics;
 
-//------------------------------------------------------------------------------
-
 void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("\002===== LCD =====\001\n");
   d("PIX COUNT : %03d\n", top.pix_pipe.get_pix_count());
@@ -35,28 +33,6 @@ void LcdRegisters::dump(Dumper& d, const SchematicTop& top) const {
   d("PARU_VBLANKp_d4     %c\n", PARU_VBLANKp_d4.c());
   d("VYPU_INT_VBLANKp    %c\n", VYPU_INT_VBLANKp.c());
   d("\n");
-}
-
-//------------------------------------------------------------------------------
-
-void LcdRegisters::tick(const SchematicTop& top) {
-  // fires on P910 and P911
-  /* p28.ABAF*/ wire _ABAF_LINE_P910n = not1(CATU_LINE_P000.qp17());
-
-  // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.BYHA*/ BYHA_VID_LINE_END_TRIGn = or_and3(ANEL_LINE_P002.qp17(), _ABAF_LINE_P910n, top.clk_reg.ABEZ_VID_RSTn);
-
-  // fires on P910 and P911
-  /* p28.ATEJ*/ ATEJ_LINE_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
-
-  // -> interrupts, ppu
-  /*#p21.PARU*/ PARU_VBLANKp_d4 = not1(POPU_IN_VBLANKp.qn16());
-
-  /*#p21.TOLU*/ TOLU_VBLANKn = not1(PARU_VBLANKp_d4);
-  /*#p21.VYPU*/ VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);
-
-  /*#p21.PURE*/ PURE_LINE_P908n = not1(RUTU_LINE_P910.qp17());
-  /*#p21.SELA*/ SELA_LINE_P908p = not1(PURE_LINE_P908n);
 }
 
 //------------------------------------------------------------------------------

@@ -11,7 +11,7 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY) {
-  const auto& top = *this;
+  auto& top = *this;
 
   RegBase::tick_running = true;
 
@@ -66,12 +66,106 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   //----------------------------------------
+  //clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, top);
 
-  clk_reg.tick_slow(CLK, CLKGOOD, CPUREADY, top);
+  /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(top.clk_reg.AFER_SYS_RSTp.qp13(), top.clk_reg.ASOL_POR_DONEn.qp04());
+  /*#p01.ALUR*/ top.clk_reg.ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(top.clk_reg.ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ top.clk_reg.CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.XORE*/ top.clk_reg.XORE_SYS_RSTp = not1(top.clk_reg.CUNU_SYS_RSTn);
+  /* p01.WESY*/ top.clk_reg.WESY_SYS_RSTn = not1(top.clk_reg.XORE_SYS_RSTp);
 
-  //----------------------------------------
+  /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(top.clk_reg.XORE_SYS_RSTp);
+  /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, top.pix_pipe.XONA_LCDC_LCDENn.qn08());
+  /* p01.XAPO*/ top.clk_reg.XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
+  /*#p01.ATAR*/ top.clk_reg.ATAR_VID_RSTp = not1(top.clk_reg.XAPO_VID_RSTn);
+  /*#p01.ABEZ*/ top.clk_reg.ABEZ_VID_RSTn = not1(top.clk_reg.ATAR_VID_RSTp);
 
-  lcd_reg.tick(top);
+
+  /* p01.ATEZ*/ wire _ATEZ_CLKBAD = not1(CLKGOOD);
+  /* p01.UCOB*/ top.clk_reg.UCOB_CLKBADp = not1(CLKGOOD);
+  /* p01.ABOL*/ wire _ABOL_CLKREQn = not1(CPUREADY);
+  /*#p01.BUTY*/ wire _BUTY_CLKREQ = not1(_ABOL_CLKREQn);
+
+  // ignoring the deglitcher here
+  /*p01.ATAL*/ top.clk_reg.ATAL_xBxDxFxH = CLK;
+  /*p01.AZOF*/ wire _AZOF_AxCxExGx = not1(top.clk_reg.ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ top.clk_reg.ZAXY_xBxDxFxH = not1(_AZOF_AxCxExGx);
+
+  /*#p01.AROV*/ top.clk_reg.AROV_xxCDEFxx = not1(top.clk_reg.APUK_ABxxxxGH.qp09());
+  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH = not1(top.clk_reg.ALEF_AxxxxFGH.qn08());
+  /*#p01.ATYP*/ top.clk_reg.ATYP_ABCDxxxx = not1(top.clk_reg.AFUR_xxxxEFGH.qp09());
+  /*#p01.AJAX*/ top.clk_reg.AJAX_xxxxEFGH = not1(top.clk_reg.ATYP_ABCDxxxx.qp());
+
+  /*#p01.BAPY*/ wire _BAPY_xxxxxxGH = nor3(_ABOL_CLKREQn, top.clk_reg.AROV_xxCDEFxx, top.clk_reg.ATYP_ABCDxxxx);
+
+  /*#p01.BELU*/ wire _BELU_xxxxEFGH = nor2(top.clk_reg.ATYP_ABCDxxxx, _ABOL_CLKREQn);
+  /*#p01.BYRY*/ wire _BYRY_ABCDxxxx = not1(_BELU_xxxxEFGH);
+  /*#p01.BUDE*/ top.clk_reg.BUDE_xxxxEFGH = not1(_BYRY_ABCDxxxx);
+
+  /*#p01.BERU*/ wire _BERU_ABCDEFxx = not1(_BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire _BUFA_xxxxxxGH = not1(_BERU_ABCDEFxx);
+  /*#p01.BOLO*/ top.clk_reg.BOLO_ABCDEFxx = not1(_BUFA_xxxxxxGH);
+
+  /*#p01.BEKO*/ top.clk_reg.BEKO_ABCDxxxx = not1(top.clk_reg.BUDE_xxxxEFGH); // BEKO+BAVY parallel
+  /*#p01.BEJA*/ wire _BEJA_xxxxEFGH = nand4(top.clk_reg.BOLO_ABCDEFxx, top.clk_reg.BOLO_ABCDEFxx, top.clk_reg.BEKO_ABCDxxxx, top.clk_reg.BEKO_ABCDxxxx);
+  /*#p01.BANE*/ wire _BANE_ABCDxxxx = not1(_BEJA_xxxxEFGH);
+  /*#p01.BELO*/ wire _BELO_xxxxEFGH = not1(_BANE_ABCDxxxx);
+  /*#p01.BAZE*/ wire _BAZE_ABCDxxxx = not1(_BELO_xxxxEFGH);
+
+  /*#p01.BUTO*/ wire _BUTO_xBCDEFGH = nand3(_AFEP_AxxxxFGH, top.clk_reg.ATYP_ABCDxxxx, _BAZE_ABCDxxxx);
+  /*#p01.BELE*/ wire _BELE_Axxxxxxx = not1(_BUTO_xBCDEFGH);
+  /*#p01.BYJU*/ wire _BYJU_Axxxxxxx = or2(_BELE_Axxxxxxx, _ATEZ_CLKBAD);
+
+  /*#p01.BALY*/ top.clk_reg.BALY_xBCDEFGH = not1(_BYJU_Axxxxxxx);
+  /* p01.BOGA*/ top.clk_reg.BOGA_Axxxxxxx = not1(top.clk_reg.BALY_xBCDEFGH);
+
+  /*#p01.ADAR*/ top.clk_reg.ADAR_ABCxxxxH = not1(top.clk_reg.ADYK_ABCxxxxH.qn08());
+  /*#p29.XUPY*/ top.clk_reg.XUPY_ABxxEFxx = not1(top.clk_reg.WUVU_ABxxEFxx.qn16());
+  /*#p21.TALU*/ top.clk_reg.TALU_xxCDEFxx = not1(top.clk_reg.VENA_xxCDEFxx.qn16());
+  /*#p29.XOCE*/ top.clk_reg.XOCE_xBCxxFGx = not1(top.clk_reg.WOSU_AxxDExxH.qp17());
+  /*#p29.WOJO*/ top.clk_reg.WOJO_AxxxExxx = nor2(top.clk_reg.WOSU_AxxDExxH.qn16(), top.clk_reg.WUVU_ABxxEFxx.qn16());
+  /*#p01.AFAS*/ top.clk_reg.AFAS_xxxxEFGx = nor2(top.clk_reg.ADAR_ABCxxxxH, top.clk_reg.ATYP_ABCDxxxx);
+
+  /*#p01.ZEME*/ top.clk_reg.ZEME_AxCxExGx = not1(top.clk_reg.ZAXY_xBxDxFxH);
+  /* p01.UVYT*/ top.clk_reg.UVYT_ABCDxxxx = not1(top.clk_reg.BUDE_xxxxEFGH);
+  /* p04.MOPA*/ top.clk_reg.MOPA_xxxxEFGH = not1(top.clk_reg.UVYT_ABCDxxxx);
+  /*#p01.ALET*/ top.clk_reg.ALET_xBxDxFxH = not1(top.clk_reg.ZEME_AxCxExGx);
+  /*#p27.MYVO*/ top.clk_reg.MYVO_AxCxExGx = not1(top.clk_reg.ALET_xBxDxFxH);
+
+  /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
+  /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx, top.clk_reg.AROV_xxCDEFxx, _ABOL_CLKREQn);
+  /*#p01.BASU*/ wire _BASU_xBCDEFxx = not1(_BATE_AxxxxxGH);
+
+  /*#p01.BUKE*/ top.clk_reg.BUKE_AxxxxxGH = not1(_BASU_xBCDEFxx);
+  /*#p01.BOMA*/ top.clk_reg.BOMA_xBCDEFGH = not1(top.clk_reg.BOGA_Axxxxxxx);
+
+  /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(top.clk_reg.BALY_xBCDEFGH, _BUTY_CLKREQ);
+  /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
+  /*#p01.BEDO*/ top.clk_reg.BEDO_Axxxxxxx = not1(_BYXO_xBCDEFGH);
+  /*#p01.BOWA*/ top.clk_reg.BOWA_xBCDEFGH = not1(top.clk_reg.BEDO_Axxxxxxx);
+
+
+  //------------------------------------------------------------------------------
+  // lcd_reg.tick(top);
+
+  // fires on P910 and P911
+  /* p28.ABAF*/ wire _ABAF_LINE_P910n = not1(top.lcd_reg.CATU_LINE_P000.qp17());
+
+  // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.BYHA*/ top.lcd_reg.BYHA_VID_LINE_END_TRIGn = or_and3(top.lcd_reg.ANEL_LINE_P002.qp17(), _ABAF_LINE_P910n, top.clk_reg.ABEZ_VID_RSTn);
+
+  // fires on P910 and P911
+  /* p28.ATEJ*/ top.lcd_reg.ATEJ_LINE_TRIGp = not1(top.lcd_reg.BYHA_VID_LINE_END_TRIGn);
+
+  // -> interrupts, ppu
+  /*#p21.PARU*/ top.lcd_reg.PARU_VBLANKp_d4 = not1(top.lcd_reg.POPU_IN_VBLANKp.qn16());
+
+  /*#p21.TOLU*/ top.lcd_reg.TOLU_VBLANKn = not1(top.lcd_reg.PARU_VBLANKp_d4);
+  /*#p21.VYPU*/ top.lcd_reg.VYPU_INT_VBLANKp = not1(top.lcd_reg.TOLU_VBLANKn);
+
+  /*#p21.PURE*/ top.lcd_reg.PURE_LINE_P908n = not1(top.lcd_reg.RUTU_LINE_P910.qp17());
+  /*#p21.SELA*/ top.lcd_reg.SELA_LINE_P908p = not1(top.lcd_reg.PURE_LINE_P908n);
 
   //----------------------------------------
 
@@ -132,10 +226,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p25.SOTO*/ SOTO_DBG_VRAM.dff17(SYCY_DBG_CLOCKn, clk_reg.CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn16());
   }
 
-  clk_reg.tock_clk_slow(CLKGOOD, top);
-  clk_reg.tock_rst_slow(RST, CLKGOOD, CPUREADY, top);
+  clk_reg.tock_clk_slow(top, CLKGOOD);
+  clk_reg.tock_rst_slow(top, RST, CLKGOOD, CPUREADY);
   clk_reg.tock_dbg_slow(top);
-  clk_reg.tock_vid_slow(CLK, top);
+  clk_reg.tock_vid_slow(top, CLK);
   tim_reg.tock(RST, top, cpu_bus);
   bootrom.tock(top, cpu_bus);
 

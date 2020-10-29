@@ -11,6 +11,32 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct ClockRegisters {
+  void dump(Dumper& d) const {
+    d("\002===== Clocks =====\001\n");
+    d("PHASE %c%c%c%c\n", AFUR_xxxxEFGH.c(), ALEF_AxxxxFGH.c(), APUK_ABxxxxGH.c(), ADYK_ABCxxxxH.c());
+    d("\n");
+    d("AFUR_xxxxEFGH %c\n", AFUR_xxxxEFGH.c());
+    d("ALEF_AxxxxFGH %c\n", ALEF_AxxxxFGH.c());
+    d("APUK_ABxxxxGH %c\n", APUK_ABxxxxGH.c());
+    d("ADYK_ABCxxxxH %c\n", ADYK_ABCxxxxH.c());
+    d("ATYP_ABCDxxxx %c\n", ATYP_ABCDxxxx.c());
+    d("AROV_xxCDEFxx %c\n", AROV_xxCDEFxx.c());
+    d("AJAX_xxxxEFGH %c\n", AJAX_xxxxEFGH.c());
+    d("VENA_ABCDxxxx %c\n", VENA_xxCDEFxx.c());
+    d("TALU_ABCDxxxx %c\n", TALU_xxCDEFxx.c());
+    d("XOCE_AxxDExxH %c\n", XOCE_xBCxxFGx.c());
+    d("WOSU_xBCxxFGx %c\n", WOSU_AxxDExxH.c());
+    d("WOJO_xxCxxxGx %c\n", WOJO_AxxxExxx.c());
+    d("WUVU_xxCDxxGH %c\n", WUVU_ABxxEFxx.c());
+    d("XUPY_xxCDxxGH %c\n", XUPY_ABxxEFxx.c());
+    d("\n");
+
+    d("\002===== Reset =====\001\n");
+    d("TUBO_WAITINGp  %c\n", TUBO_WAITINGp.c());
+    d("ASOL_POR_DONEn %c\n", ASOL_POR_DONEn.c());
+    d("AFER_SYS_RSTp  %c\n", AFER_SYS_RSTp.c());
+    d("\n");
+  }
 
   void reset_cart() {
     UCOB_CLKBADp .reset(TRI_D0NP);
@@ -91,13 +117,10 @@ struct ClockRegisters {
     WOSU_AxxDExxH.reset(REG_D0C0);
   }
 
-  void dump(Dumper& d, wire CLK) const;
-
-  void tick_slow(wire CLK, wire CLKGOOD, wire CPUREADY, const SchematicTop& top);
-  void tock_clk_slow(wire CLKGOOD, SchematicTop& top);
-  void tock_rst_slow(wire RST, wire CLKGOOD, wire CPUREADY, SchematicTop& top);
+  void tock_clk_slow(SchematicTop& top, wire CLKGOOD);
+  void tock_rst_slow(SchematicTop& top, wire RST, wire CLKGOOD, wire CPUREADY);
   void tock_dbg_slow(SchematicTop& top);
-  void tock_vid_slow(wire CLK, SchematicTop& top);
+  void tock_vid_slow(SchematicTop& top, wire CLK);
 
   /*p01.UCOB*/ Sig UCOB_CLKBADp;  // timer
 
@@ -144,12 +167,6 @@ struct ClockRegisters {
   /*p01.WESY*/ Sig WESY_SYS_RSTn;
   /*p01.ATAR*/ Sig ATAR_VID_RSTp;
   /*p01.ABEZ*/ Sig ABEZ_VID_RSTn;
-
-
-
-private:
-  friend struct ::GateBoy;
-  friend struct ::GateBoyTests;
 
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.

@@ -9,6 +9,9 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct LcdRegisters {
+
+  void dump(Dumper& d, const SchematicTop& top) const;
+
   void reset_cart() {
     BYHA_VID_LINE_END_TRIGn.reset(TRI_D1NP);
     PARU_VBLANKp_d4.reset(TRI_D1NP);
@@ -104,8 +107,6 @@ struct LcdRegisters {
     RAHA_LYC7n.reset(REG_D0C0);
   }
 
-  void dump(Dumper& d, const SchematicTop& top) const;
-  void tick(const SchematicTop& top);
   void tock(SchematicTop& top, CpuBus& cpu_bus);
 
   uint8_t get_lx() const {
@@ -146,8 +147,6 @@ struct LcdRegisters {
   /*p21.LEMA*/ DFF17 LEMA_Y5p;
   /*p21.MATO*/ DFF17 MATO_Y6p;
   /*p21.LAFO*/ DFF17 LAFO_Y7p;
-
-private:
 
   // Increments at P010 (because of RUTU holding it in reset) and then at every A phase.
   /*p21.SAXO*/ DFF17 SAXO_X0p;

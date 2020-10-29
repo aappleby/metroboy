@@ -435,8 +435,7 @@ void GateBoyThread::dump1(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::dump2(Dumper& d) {
-  wire CLK = gb->phase_total & 1;
-  gb->top.clk_reg.dump(d, CLK);
+  gb->top.clk_reg.dump(d);
   gb->top.joypad.dump(d);
   gb->top.ser_reg.dump(d);
 }

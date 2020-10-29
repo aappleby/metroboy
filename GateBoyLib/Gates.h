@@ -80,9 +80,6 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 //-----------------------------------------------------------------------------
 
-// FIXME get rid of SIG_0000/SIG_1111 and add X state different from ERR that
-// we can only leave via DELTA_Axxx
-
 enum RegState : uint8_t {
   REG_D0C0 = 0b0000, // 00: state 0 + clock 0
   REG_D1C0 = 0b0001, // 01: state 1 + clock 0
@@ -112,8 +109,6 @@ inline char reg_state_to_c(RegState state) {
     case REG_D1C0: return '1';
     case REG_D0C1: return '0';
     case REG_D1C1: return '1';
-    //case SIG_0000: return '0';
-    //case SIG_1111: return '1';
     case TRI_D0PD: return '0';
     case TRI_D1PD: return '1';
     case TRI_D0PU: return '0';
@@ -133,8 +128,6 @@ inline char reg_state_to_cn(RegState state) {
     case REG_D1C0: return '0';
     case REG_D0C1: return '1';
     case REG_D1C1: return '0';
-    //case SIG_0000: return '1';
-    //case SIG_1111: return '0';
     case TRI_D0PD: return '1';
     case TRI_D1PD: return '0';
     case TRI_D0PU: return '1';
@@ -152,7 +145,7 @@ inline char reg_state_to_cn(RegState state) {
 
 enum RegDelta : uint8_t {
   DELTA_NONE = 0b0000, // 00: delta not set yet
-  DELTA_XXXX = 0b0001, // 01: error
+  DELTA_COMM = 0b0001, // 01: delta committed early, will change to NONE during final commit.
   DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches and config bits
   DELTA_LOCK = 0b0011, // 03: do not change tri when committed, sticky. used for buses.
   DELTA_TRIZ = 0b0100, // 04:
@@ -764,9 +757,9 @@ struct Pin : private RegBase {
     if      (!OEp)       merge_tri_delta(DELTA_TRIZ);
     else if ( HI &&  LO) merge_tri_delta(DELTA_TRI0);
     else if ( HI && !LO) merge_tri_delta(DELTA_TRIZ);
-    else if (!HI &&  LO) merge_tri_delta(DELTA_XXXX);
+    else if (!HI &&  LO) __debugbreak();
     else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
-    else                 merge_tri_delta(DELTA_XXXX);
+    else                 __debugbreak();
   }
 
   uint8_t old_value = TRI_HZNP | (DELTA_LOCK << 4);

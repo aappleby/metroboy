@@ -9,6 +9,21 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
+  void dump(Dumper& d) const {
+    d("\002===== Serial =====\001\n");
+    d("XFER_START  %c\n", ETAF_XFER_START.c());
+    d("XFER_DIR    %c\n", CULY_XFER_DIR  .c());
+    d("SER_CLK     %c\n", COTY_SER_CLK   .c());
+    d("SER_CNT     %d\n", pack_p(!CAFA_SER_CNT0.qn16(), !CYLO_SER_CNT1.qn16(), !CYDE_SER_CNT2.qn16(), 0));
+    d("SER_DATA    0x%02x\n", get_data());
+    d("SER_OUT     %c\n", ELYS_SER_OUT.c());
+    d("SCK         %c\n", PIN_SCK.c());
+    d("SIN         %c\n", PIN_SIN.c());
+    d("SOUT        %c\n", PIN_SOUT.c());
+    d("_CALY_SER_INTp %c\n", CALY_INT_SERp.c());
+    d("\n");
+  }
+
   void reset_cart() {
     reset_boot();
 
@@ -31,9 +46,9 @@ struct SerialRegisters {
 
     ELYS_SER_OUT.reset(REG_D0C0);
 
-    SCK.reset(TRI_HZNP);
-    SIN.reset(TRI_HZNP);
-    SOUT.reset(TRI_D1NP);
+    PIN_SCK.reset(TRI_HZNP);
+    PIN_SIN.reset(TRI_HZNP);
+    PIN_SOUT.reset(TRI_D1NP);
   }
 
   void reset_boot() {
@@ -56,17 +71,16 @@ struct SerialRegisters {
 
     ELYS_SER_OUT.reset(REG_D0C0);
 
-    SCK.reset(TRI_HZNP);
-    SIN.reset(TRI_HZNP);
-    SOUT.reset(TRI_HZNP);
+    PIN_SCK.reset(TRI_HZNP);
+    PIN_SIN.reset(TRI_HZNP);
+    PIN_SOUT.reset(TRI_HZNP);
   }
 
-  void tock(const SchematicTop& top, CpuBus& cpu_bus);
-  void dump(Dumper& d) const;
+  void tock(SchematicTop& top, CpuBus& cpu_bus);
 
   void set_pins(RegDelta d_sck, RegDelta d_sin) {
-    SCK = d_sck;
-    SIN = d_sin;
+    PIN_SCK = d_sck;
+    PIN_SIN = d_sin;
   }
 
   int get_data() const {
@@ -98,9 +112,9 @@ struct SerialRegisters {
   //----------
   // Serial pins
 
-  /* PIN_68 */ Pin SCK;
-  /* PIN_69 */ Pin SIN;
-  /* PIN_70 */ Pin SOUT;
+  /* PIN_68 */ Pin PIN_SCK;
+  /* PIN_69 */ Pin PIN_SIN;
+  /* PIN_70 */ Pin PIN_SOUT;
 };
 
 //-----------------------------------------------------------------------------

@@ -207,13 +207,18 @@ struct RegBase {
   bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
   bool has_delta() const { return delta != DELTA_NONE; }
   wire as_wire()   const {
-#ifdef SANITY_CHECK
+    if (delta == DELTA_COMM) {
+      CHECK_N(delta == DELTA_COMM);
+    }
+    /*
     if (state == TRI_HZNP) {
       //printf("bus floating?\n");
       bus_floating = true;
     }
-#endif
-    /*CHECKn(has_delta());*/ return wire(state & 1);
+    */
+    //CHECK_N(delta);
+
+    return wire(state & 1);
   }
 
   void lock(RegDelta d) {
@@ -277,6 +282,16 @@ struct RegBase {
     else {
       delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
     }
+  }
+
+  void commit() {
+    uint8_t s1 = value;
+    uint8_t s2 = logic_lut1.tab[s1];
+
+    CHECK_N((s1 & 0x0F) == ERR_XXXX);
+    CHECK_N((s2 & 0x0F) == ERR_XXXX);
+
+    value = s2 | (DELTA_COMM << 4);
   }
 
   union {
@@ -456,6 +471,7 @@ struct DFF8p : private RegBase {
 struct DFF9 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qn08() const { return !as_wire(); }
   wire qp09() const { return  as_wire(); }
@@ -540,6 +556,7 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qn16() const { return !as_wire(); }
   wire qp17() const { return  as_wire(); }
@@ -576,6 +593,7 @@ struct DFF17 : private RegBase {
 struct DFF20 : private RegBase{
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   wire qp01() const { return  as_wire(); }
   wire qn17() const { return !as_wire(); }
@@ -718,6 +736,7 @@ struct Bus : private RegBase {
 struct Pin : private RegBase {
   using RegBase::c;
   using RegBase::lock;
+  using RegBase::commit;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
@@ -870,6 +889,8 @@ struct NandLatch : private RegBase {
 struct TpLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
+
   wire qp08() const { return  as_wire(); }
   wire qn10() const { return !as_wire(); }
 

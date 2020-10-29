@@ -452,9 +452,47 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /*p02.ASOK*/ top.joypad.ASOK_INT_JOYp = and2(top.joypad.APUG_JP_GLITCH3.qp17(), top.joypad.BATU_JP_GLITCH0.qp17());
 
-  //----------------------------------------
+  //------------------------------------------------------------------------------
 
-  tile_fetcher.tick(top);
+  /* p26.AXAD*/ wire _AXAD_WIN_MODEn = not1(top.pix_pipe.PORE_WIN_MODEp);
+
+  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1(top.tile_fetcher.LAXU_BFETCH_S0.qp17());
+  /*#p27.NAKO*/ wire _NAKO_BFETCH_S1n = not1(top.tile_fetcher.MESU_BFETCH_S1.qp17());
+  /*#p27.NOFU*/ wire _NOFU_BFETCH_S2n = not1(top.tile_fetcher.NYVA_BFETCH_S2.qp17());
+
+  /* p27.NOGU*/ wire _NOGU_FETCH_01p = nand2(_NAKO_BFETCH_S1n, _NOFU_BFETCH_S2n);
+  /* p27.NENY*/ wire _NENY_FETCH_01n = not1(_NOGU_FETCH_01p);
+
+  /* p27.LUSU*/ wire _LUSU_BGW_VRAM_RDn = not1(top.tile_fetcher.LONY_BG_FETCH_RUNNINGp.qp03());
+  /* p27.LENA*/ top.tile_fetcher.LENA_BGW_VRM_RDp = not1(_LUSU_BGW_VRAM_RDn);
+
+  /* p27.POTU*/ wire _POTU_BG_MAP_READp  = and2(top.tile_fetcher.LENA_BGW_VRM_RDp, _NENY_FETCH_01n);
+  /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(_POTU_BG_MAP_READp, top.pix_pipe.PORE_WIN_MODEp);
+  /* p26.ACEN*/ wire _ACEN_BG_MAP_READp  = and2(_POTU_BG_MAP_READp, _AXAD_WIN_MODEn);
+
+  /* p27.NETA*/ top.tile_fetcher.NETA_TILE_READp = and2(top.tile_fetcher.LENA_BGW_VRM_RDp, _NOGU_FETCH_01p);
+  /* p26.ASUL*/ wire _ASUL_BG_TILE_READp  = and2(top.tile_fetcher.NETA_TILE_READp, _AXAD_WIN_MODEn);
+  /* p25.XUCY*/ top.tile_fetcher.XUCY_WIN_TILE_READn = nand2(top.tile_fetcher.NETA_TILE_READp, top.pix_pipe.PORE_WIN_MODEp);
+  /*#p25.WUKO*/ top.tile_fetcher.WUKO_WIN_MAP_READn  = not1(_XEZE_WIN_MAP_READp);
+  /* p26.BAFY*/ top.tile_fetcher.BAFY_BG_MAP_READn   = not1(_ACEN_BG_MAP_READp);
+  /* p26.BEJE*/ top.tile_fetcher.BEJE_BG_TILE_READn = not1(_ASUL_BG_TILE_READp);
+
+  /* p27.MOCE*/ top.tile_fetcher.MOCE_BFETCH_DONEn = nand3(top.tile_fetcher.LAXU_BFETCH_S0.qp17(), top.tile_fetcher.NYVA_BFETCH_S2.qp17(), top.pix_pipe.NYXU_FETCH_TRIGn);
+
+  /*#p27.XUHA*/ top.tile_fetcher.XUHA_FETCH_S2p  = not1(_NOFU_BFETCH_S2n);
+
+  // MYSO fires on fetch phase 2, 6, 10
+  /*#p27.MYSO*/ wire _MYSO_BG_TRIGp   = nor3(top.pix_pipe.LOBY_RENDERINGn, _LAXE_BFETCH_S0n, top.tile_fetcher.LYZU_BFETCH_S0_D1.qp17());
+
+  // NYDY on fetch phase 6
+  /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn = nand3(_MYSO_BG_TRIGp, top.tile_fetcher.MESU_BFETCH_S1.qp17(), _NOFU_BFETCH_S2n);
+  /*#p32.METE*/ top.tile_fetcher.METE_LATCH_TILE_DAp   = not1(_NYDY_LATCH_TILE_DAn);
+
+  // MOFU fires on fetch phase 2 and 10
+  /*p27.MOFU*/ wire _MOFU_LATCH_TILE_DBp = and2(_MYSO_BG_TRIGp, _NAKO_BFETCH_S1n);
+  /*p32.LESO*/ top.tile_fetcher.LESO_LATCH_TILE_DBn   = not1(_MOFU_LATCH_TILE_DBp);
+
+  /*p27.LYRY*/ top.tile_fetcher.LYRY_BFETCH_DONEp = not1(top.tile_fetcher.MOCE_BFETCH_DONEn);
 
   //----------------------------------------
 

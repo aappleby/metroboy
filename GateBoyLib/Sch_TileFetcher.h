@@ -70,7 +70,6 @@ struct TileFetcher {
     LYZU_BFETCH_S0_D1.reset(REG_D0C0);
   }
 
-  void tick(const SchematicTop& top);
   void tock(SchematicTop& top);
   void dump(Dumper& d, const SchematicTop& top) const;
 
@@ -94,8 +93,6 @@ struct TileFetcher {
 
   /*p24.NYKA*/ DFF17 NYKA_FETCH_DONE_P11; // -> top
   /*p24.PORY*/ DFF17 PORY_FETCH_DONE_P12; // -> top
-
-private:
 
   /*p27.LAXU*/ DFF17 LAXU_BFETCH_S0;
   /*p27.MESU*/ DFF17 MESU_BFETCH_S1;

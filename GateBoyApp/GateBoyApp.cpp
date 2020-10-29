@@ -51,13 +51,8 @@ void GateBoyApp::app_close() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_update(double delta) {
-  (void)delta;
-
+void GateBoyApp::app_update(double /*delta*/) {
   SDL_Event event;
-
-  //----------------------------------------
-
   while (SDL_PollEvent(&event)) {
 
     if (event.type == SDL_KEYDOWN)
@@ -66,6 +61,7 @@ void GateBoyApp::app_update(double delta) {
     case SDLK_SPACE: { gb_thread.sig_pause ? gb_thread.resume() : gb_thread.pause(); break; }
 
     case SDLK_f: {
+      gb_thread.clear_work();
       if (runmode != RUN_FAST) {
         gb_thread.step_phase(1024 * 1024 * 1024);
         gb_thread.resume();
@@ -74,36 +70,25 @@ void GateBoyApp::app_update(double delta) {
       break;
     }
     case SDLK_v: {
+      gb_thread.clear_work();
       runmode = RUN_SYNC;
       break;
     }
     case SDLK_s: {
-      runmode = RUN_STEP;
       gb_thread.clear_work();
+      runmode = RUN_STEP;
       break;
     }
 
-#if 0
-    case SDLK_F1: { gb_thread.load_raw_dump(); break; }
-    case SDLK_F4: { gb_thread.save_raw_dump(); break; }
-    case SDLK_r:  { gb_thread.reset(); break; }
+    case SDLK_F1:   gb_thread.load_raw_dump();  break;
+    case SDLK_F4:   gb_thread.save_raw_dump();  break;
+    case SDLK_r:    gb_thread.reset();          break;
+    case SDLK_d:    show_diff   = !show_diff;   break;
+    case SDLK_g:    show_golden = !show_golden; break;
+    case SDLK_o:    draw_passes = !draw_passes; break;
+    case SDLK_UP:   stepmode = STEP_PHASE;      break;
+    case SDLK_DOWN: stepmode = STEP_PASS;       break;
     //case SDLK_c:  { gb_thread.toggle_cpu(); break; }
-
-
-    case SDLK_d: show_diff   = !show_diff;   break;
-    case SDLK_g: show_golden = !show_golden; break;
-    case SDLK_o: draw_passes = !draw_passes; break;
-
-    case SDLK_UP: {
-      //stepmode = clamp_val(stepmode + 1, STEP_MIN, STEP_MAX);
-      break;
-    }
-
-    case SDLK_DOWN: {
-      //stepmode = clamp_val(stepmode - 1, STEP_MIN, STEP_MAX);
-      break;
-    }
-#endif
 
     case SDLK_LEFT:   {
       if (runmode == RUN_STEP) {
@@ -138,8 +123,6 @@ void GateBoyApp::app_update(double delta) {
       SDL_free(event.drop.file);
     }
   }
-
-  frame_count++;
 }
 
 //-----------------------------------------------------------------------------
@@ -156,8 +139,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   int fb_y = gb_thread.gb->screen_y;
   int64_t phase_total = gb_thread.gb->phase_total;
   bool sim_stable = gb_thread.gb->sim_stable;
-  //double sim_rate = gb_thread.sim_rate;
-  //double sim_time_smooth = gb_thread.sim_time_smooth;
 
   StringDumper dumper;
   float cursor = 0;
@@ -292,6 +273,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   text_painter.render(view, dumper.s, 640 - 64, 640 + 128);
   dumper.clear();
 
+  frame_count++;
   gb_thread.resume();
 }
 

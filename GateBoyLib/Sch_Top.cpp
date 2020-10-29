@@ -525,6 +525,8 @@ void SchematicTop::tick_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
 void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY) {
   auto& top = *this;
+  wire GND = 0;
+  wire WEFE_VCC = 1;
 
   {
     /*#p25.SYCY*/ wire SYCY_DBG_CLOCKn = not1(UNOR_MODE_DBG2p);
@@ -798,8 +800,53 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   //------------------------------------------------------------------------------
+  // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
-  sprite_scanner.tock(top);
+  // 32 + 4 + 2 + 1 = 39
+  /*#p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(top.sprite_scanner.YFEL_SCAN0.qp17(), top.sprite_scanner.WEWY_SCAN1.qp17(), top.sprite_scanner.GOSO_SCAN2.qp17(), top.sprite_scanner.FONY_SCAN5.qp17());
+
+  {
+    /*#p29.BYBA*/ top.sprite_scanner.BYBA_SCAN_DONE_A.dff17(top.clk_reg.XUPY_ABxxEFxx, top.sprite_scanner.BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*#p29.DOBA*/ top.sprite_scanner.DOBA_SCAN_DONE_B.dff17(top.clk_reg.ALET_xBxDxFxH, top.sprite_scanner.BAGY_LINE_RSTn, top.sprite_scanner.BYBA_SCAN_DONE_A.qp17());
+
+    /*#p28.ASEN*/ wire _ASEN_SCAN_DONE_PE = or2(top.clk_reg.ATAR_VID_RSTp, top.sprite_scanner.AVAP_RENDER_START_TRIGp);
+    /*#p28.BESU*/ top.sprite_scanner.BESU_SCANNINGp.nor_latch(top.lcd_reg.CATU_LINE_P000.qp17(), _ASEN_SCAN_DONE_PE);
+    /*#p29.CENO*/ top.sprite_scanner.CENO_SCANNINGp.dff17(top.clk_reg.XUPY_ABxxEFxx, top.clk_reg.ABEZ_VID_RSTn, top.sprite_scanner.BESU_SCANNINGp.qp04());
+  }
+
+  {
+    /*#p30.CYKE*/ wire _CYKE_ABxxEFxx = not1(top.clk_reg.XUPY_ABxxEFxx);
+    /*#p30.WUDA*/ wire _WUDA_xxCDxxGH = not1(_CYKE_ABxxEFxx);
+
+    /* p28.YFOT*/ wire _YFOT_OAM_A2p = not1(top.oam_bus.BUS_OAM_A2n.qp());
+    /* p28.YFOC*/ wire _YFOC_OAM_A3p = not1(top.oam_bus.BUS_OAM_A3n.qp());
+    /* p28.YVOM*/ wire _YVOM_OAM_A4p = not1(top.oam_bus.BUS_OAM_A4n.qp());
+    /* p28.YMEV*/ wire _YMEV_OAM_A5p = not1(top.oam_bus.BUS_OAM_A5n.qp());
+    /* p28.XEMU*/ wire _XEMU_OAM_A6p = not1(top.oam_bus.BUS_OAM_A6n.qp());
+    /* p28.YZET*/ wire _YZET_OAM_A7p = not1(top.oam_bus.BUS_OAM_A7n.qp());
+
+    /*p30.XADU*/ top.sprite_scanner.XADU_SPRITE_IDX0p.dff13(_WUDA_xxCDxxGH, WEFE_VCC, _YFOT_OAM_A2p);
+    /*p30.XEDY*/ top.sprite_scanner.XEDY_SPRITE_IDX1p.dff13(_WUDA_xxCDxxGH, WEFE_VCC, _YFOC_OAM_A3p);
+    /*p30.ZUZE*/ top.sprite_scanner.ZUZE_SPRITE_IDX2p.dff13(_WUDA_xxCDxxGH, WEFE_VCC, _YVOM_OAM_A4p);
+    /*p30.XOBE*/ top.sprite_scanner.XOBE_SPRITE_IDX3p.dff13(_WUDA_xxCDxxGH, WEFE_VCC, _YMEV_OAM_A5p);
+    /*p30.YDUF*/ top.sprite_scanner.YDUF_SPRITE_IDX4p.dff13(_WUDA_xxCDxxGH, WEFE_VCC, _XEMU_OAM_A6p);
+    /*p30.XECU*/ top.sprite_scanner.XECU_SPRITE_IDX5p.dff13(_WUDA_xxCDxxGH, WEFE_VCC, _YZET_OAM_A7p);
+  }
+
+  //----------------------------------------
+  // Sprite scan counter
+  // Sprite scan takes 160 phases, 4 phases per sprite.
+
+  {
+    /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0,   top.clk_reg.XUPY_ABxxEFxx);
+
+    /*p28.YFEL*/ top.sprite_scanner.YFEL_SCAN0.dff17(_GAVA_SCAN_CLK,                       top.sprite_scanner.ANOM_LINE_RSTn, top.sprite_scanner.YFEL_SCAN0.qn16());
+    /*p28.WEWY*/ top.sprite_scanner.WEWY_SCAN1.dff17(top.sprite_scanner.YFEL_SCAN0.qn16(), top.sprite_scanner.ANOM_LINE_RSTn, top.sprite_scanner.WEWY_SCAN1.qn16());
+    /*p28.GOSO*/ top.sprite_scanner.GOSO_SCAN2.dff17(top.sprite_scanner.WEWY_SCAN1.qn16(), top.sprite_scanner.ANOM_LINE_RSTn, top.sprite_scanner.GOSO_SCAN2.qn16());
+    /*p28.ELYN*/ top.sprite_scanner.ELYN_SCAN3.dff17(top.sprite_scanner.GOSO_SCAN2.qn16(), top.sprite_scanner.ANOM_LINE_RSTn, top.sprite_scanner.ELYN_SCAN3.qn16());
+    /*p28.FAHA*/ top.sprite_scanner.FAHA_SCAN4.dff17(top.sprite_scanner.ELYN_SCAN3.qn16(), top.sprite_scanner.ANOM_LINE_RSTn, top.sprite_scanner.FAHA_SCAN4.qn16());
+    /*p28.FONY*/ top.sprite_scanner.FONY_SCAN5.dff17(top.sprite_scanner.FAHA_SCAN4.qn16(), top.sprite_scanner.ANOM_LINE_RSTn, top.sprite_scanner.FONY_SCAN5.qn16());
+  }
 
   //------------------------------------------------------------------------------
   // lcd_reg.tock();
@@ -1239,12 +1286,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   //------------------------------------------------------------------------------
-  //oam_bus.tock(top);
-
-  wire GND = 0;
-  wire WEFE_VCC = 1;
-
-  //----------------------------------------
   // OAM signals
 
   /* p28.XYNY*/ wire _XYNY_ABCDxxxx = not1(top.clk_reg.MOPA_xxxxEFGH);

@@ -548,12 +548,9 @@ void GateBoyThread::dump4(Dumper& d) {
   d("NYPE_LINE_P002      %c\n", top.lcd_reg.NYPE_LINE_P002.c());
   d("ANEL_LINE_P002      %c\n", top.lcd_reg.ANEL_LINE_P002.c());
   d("RUTU_LINE_P910      %c\n", top.lcd_reg.RUTU_LINE_P910.c());
-  d("ATEJ_LINE_TRIGp     %c\n", top.lcd_reg.ATEJ_LINE_TRIGp.c());
   d("MYTA_LINE_153p      %c\n", top.lcd_reg.MYTA_LINE_153p     .c());
   d("POPU_IN_VBLANKp     %c\n", top.lcd_reg.POPU_IN_VBLANKp    .c());
   d("ROPO_LY_MATCH_SYNCp %c\n", top.lcd_reg.ROPO_LY_MATCH_SYNCp.c());
-  d("PARU_VBLANKp_d4     %c\n", top.lcd_reg.PARU_VBLANKp_d4.c());
-  d("VYPU_INT_VBLANKp    %c\n", top.lcd_reg.VYPU_INT_VBLANKp.c());
   d("\n");
 
   d("\002===== Pix Pipe =====\001\n");

@@ -11,14 +11,6 @@ struct CpuBus;
 struct LcdRegisters {
 
   void reset_cart() {
-    BYHA_VID_LINE_END_TRIGn.reset(TRI_D1NP);
-    PARU_VBLANKp_d4.reset(TRI_D1NP);
-    TOLU_VBLANKn.reset(TRI_D0NP);
-    ATEJ_LINE_TRIGp.reset(TRI_D0NP);
-    VYPU_INT_VBLANKp.reset(TRI_D1NP);
-    PURE_LINE_P908n.reset(TRI_D1NP);
-    SELA_LINE_P908p.reset(TRI_D0NP);
-
     ROPO_LY_MATCH_SYNCp.reset(REG_D1C0);
 
     CATU_LINE_P000.reset(REG_D0C1);
@@ -61,10 +53,6 @@ struct LcdRegisters {
   }
 
   void reset_boot() {
-    PARU_VBLANKp_d4.reset(TRI_HZNP);
-    ATEJ_LINE_TRIGp.reset(TRI_HZNP);
-    VYPU_INT_VBLANKp.reset(TRI_HZNP);
-
     ROPO_LY_MATCH_SYNCp.reset(REG_D0C0);
 
     CATU_LINE_P000.reset(REG_D0C0);
@@ -119,15 +107,6 @@ struct LcdRegisters {
     return (uint8_t)pack_p(SYRY_LYC0n.qn08(), VUCE_LYC1n.qn08(), SEDY_LYC2n.qn08(), SALO_LYC3n.qn08(),
                            SOTA_LYC4n.qn08(), VAFA_LYC5n.qn08(), VEVO_LYC6n.qn08(), RAHA_LYC7n.qn08());
   }
-
-  /*p28.BYHA*/ Sig BYHA_VID_LINE_END_TRIGn;
-  /*p21.PARU*/ Sig PARU_VBLANKp_d4;     // -> pix pipe
-  /*p21.TOLU*/ Sig TOLU_VBLANKn;
-  /*p28.ATEJ*/ Sig ATEJ_LINE_TRIGp;     // -> buncha stuff
-  /*p21.VYPU*/ Sig VYPU_INT_VBLANKp;    // -> interrupts
-
-  /*p21.PURE*/ Sig PURE_LINE_P908n;
-  /*p21.SELA*/ Sig SELA_LINE_P908p;
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 

@@ -159,19 +159,19 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p28.ABAF*/ wire _ABAF_LINE_P910n = not1(lcd_reg.CATU_LINE_P000.qp17());
 
   // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.BYHA*/ lcd_reg.BYHA_VID_LINE_END_TRIGn = or_and3(lcd_reg.ANEL_LINE_P002.qp17(), _ABAF_LINE_P910n, ABEZ_VID_RSTn);
+  /* p28.BYHA*/ wire BYHA_VID_LINE_END_TRIGn = or_and3(lcd_reg.ANEL_LINE_P002.qp17(), _ABAF_LINE_P910n, ABEZ_VID_RSTn);
 
   // fires on P910 and P911
-  /* p28.ATEJ*/ lcd_reg.ATEJ_LINE_TRIGp = not1(lcd_reg.BYHA_VID_LINE_END_TRIGn);
+  /* p28.ATEJ*/ wire ATEJ_LINE_TRIGp = not1(BYHA_VID_LINE_END_TRIGn);
 
   // -> interrupts, ppu
-  /*#p21.PARU*/ lcd_reg.PARU_VBLANKp_d4 = not1(lcd_reg.POPU_IN_VBLANKp.qn16());
+  /*#p21.PARU*/ wire PARU_VBLANKp_d4 = not1(lcd_reg.POPU_IN_VBLANKp.qn16());
 
-  /*#p21.TOLU*/ lcd_reg.TOLU_VBLANKn = not1(lcd_reg.PARU_VBLANKp_d4);
-  /*#p21.VYPU*/ lcd_reg.VYPU_INT_VBLANKp = not1(lcd_reg.TOLU_VBLANKn);
+  /*#p21.TOLU*/ wire TOLU_VBLANKn = not1(PARU_VBLANKp_d4);
+  /*#p21.VYPU*/ wire VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);
 
-  /*#p21.PURE*/ lcd_reg.PURE_LINE_P908n = not1(lcd_reg.RUTU_LINE_P910.qp17());
-  /*#p21.SELA*/ lcd_reg.SELA_LINE_P908p = not1(lcd_reg.PURE_LINE_P908n);
+  /*#p21.PURE*/ wire PURE_LINE_P908n = not1(lcd_reg.RUTU_LINE_P910.qp17());
+  /*#p21.SELA*/ wire SELA_LINE_P908p = not1(PURE_LINE_P908n);
 
   //------------------------------------------------------------------------------
   // sprite_scanner.tick()
@@ -222,7 +222,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /*#p28.ACYL*/ sprite_scanner.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp04());
 
-  /*#p28.ANOM*/ sprite_scanner.ANOM_LINE_RSTn = nor2(lcd_reg.ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
+  /*#p28.ANOM*/ sprite_scanner.ANOM_LINE_RSTn = nor2(ATEJ_LINE_TRIGp, ATAR_VID_RSTp);
   /*#p29.BALU*/ wire _BALU_LINE_RSTp = not1(sprite_scanner.ANOM_LINE_RSTn);
   /*#p29.BAGY*/ sprite_scanner.BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
 
@@ -390,11 +390,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*#p21.XENA*/ wire _XENA_STORE_MATCHn = not1(sprite_store.FEPO_STORE_MATCHp);
   /*#p21.WODU*/ pix_pipe.WODU_HBLANKp = and2(_XENA_STORE_MATCHn, _XANO_X_167p);
 
-  /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(lcd_reg.TOLU_VBLANKn, lcd_reg.SELA_LINE_P908p);
-  /*#p21.TARU*/ wire _TARU_INT_HBL = and2(pix_pipe.WODU_HBLANKp, lcd_reg.TOLU_VBLANKn);
+  /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(TOLU_VBLANKn, SELA_LINE_P908p);
+  /*#p21.TARU*/ wire _TARU_INT_HBL = and2(pix_pipe.WODU_HBLANKp, TOLU_VBLANKn);
   /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn08(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp17(),
                                              pix_pipe.REFE_STAT_OAI_ENn.qn08(), _TAPA_INT_OAM,
-                                             pix_pipe.RUFO_STAT_VBI_ENn.qn08(), lcd_reg.PARU_VBLANKp_d4, // polarity?
+                                             pix_pipe.RUFO_STAT_VBI_ENn.qn08(), PARU_VBLANKp_d4, // polarity?
                                              pix_pipe.ROXE_STAT_HBI_ENn.qn08(), _TARU_INT_HBL);
 
   /*#p21.TUVA*/ wire _TUVA_INT_STATn = not1(_SUKO_INT_STATp);
@@ -427,7 +427,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /* p27.NYXU*/ pix_pipe.NYXU_FETCH_TRIGn = nor3(sprite_scanner.AVAP_RENDER_START_TRIGp, pix_pipe.MOSU_WIN_FETCH_TRIGp, pix_pipe.TEVO_FETCH_TRIGp);
 
-  /* p21.SADU*/ pix_pipe.SADU_STAT_MODE0n = nor2(pix_pipe.XYMU_RENDERINGn.qn03(), lcd_reg.PARU_VBLANKp_d4); // die NOR
+  /* p21.SADU*/ pix_pipe.SADU_STAT_MODE0n = nor2(pix_pipe.XYMU_RENDERINGn.qn03(), PARU_VBLANKp_d4); // die NOR
   /* p21.XATY*/ pix_pipe.XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03()); // die NOR
 
   //----------------------------------------
@@ -1168,7 +1168,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p21.RUTU*/ lcd_reg.RUTU_LINE_P910.dff17(_SONO_ABxxxxGH, _LYFE_LCD_RSTn, _SANU_x113p);
     /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002.dff17(TALU_xxCDEFxx, _LYFE_LCD_RSTn, lcd_reg.RUTU_LINE_P910.qp17());
 
-    /*#p29.ABOV*/ wire _ABOV_VID_LINE_P908p = and2(lcd_reg.SELA_LINE_P908p, _ALES_IN_VBLANKn);
+    /*#p29.ABOV*/ wire _ABOV_VID_LINE_P908p = and2(SELA_LINE_P908p, _ALES_IN_VBLANKn);
 
     /*#p29.CATU*/ lcd_reg.CATU_LINE_P000.dff17(XUPY_ABxxEFxx, ABEZ_VID_RSTn, _ABOV_VID_LINE_P908p);
     /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002.dff17(_AWOH_xxCDxxGH, ABEZ_VID_RSTn, lcd_reg.CATU_LINE_P000.qp17());
@@ -1220,7 +1220,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   {
 
-    /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(lcd_reg.PURE_LINE_P908n);
+    /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(PURE_LINE_P908n);
 
     /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(tim_reg.UMEK_DIV_06n);
     /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
@@ -1323,8 +1323,8 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /* p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not1(sprite_scanner.CARE_STORE_ENp_ABxxEFxx);
 
-  /*#p28.AZYB*/ wire _AZYB_VID_LINE_TRIGn = not1(lcd_reg.ATEJ_LINE_TRIGp);
-  /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(lcd_reg.ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
+  /*#p28.AZYB*/ wire _AZYB_VID_LINE_TRIGn = not1(ATEJ_LINE_TRIGp);
+  /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
   /* p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
   /* p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
 
@@ -1905,11 +1905,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*#p24.ROXO*/ wire _ROXO_CLKPIPEp = not1(_SEGU_CLKPIPEn);
   /*#p24.SACU*/ wire _SACU_CLKPIPEp = or2(_SEGU_CLKPIPEn, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp04()); // Schematic wrong, this is OR
 
-  /* p27.REPU*/ wire _REPU_VBLANK_RSTp = or2(lcd_reg.PARU_VBLANKp_d4, _PYRY_VID_RSTp);
+  /* p27.REPU*/ wire _REPU_VBLANK_RSTp = or2(PARU_VBLANKp_d4, _PYRY_VID_RSTp);
 
   /*#p21.WEGO*/ wire _WEGO_HBLANKp = or2(_TOFU_VID_RSTp, pix_pipe.VOGA_HBLANKp.qp17());
 
-  /* p21.TADY*/ wire _TADY_LINE_START_RSTn = nor2(lcd_reg.ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
+  /* p21.TADY*/ wire _TADY_LINE_START_RSTn = nor2(ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
 
   //----------------------------------------
   // XYMU is the main "we're rendering" flag
@@ -2060,7 +2060,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   //----------------------------------------
   // Window sequencer
 
-  /* p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not1(lcd_reg.ATEJ_LINE_TRIGp);
+  /* p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not1(ATEJ_LINE_TRIGp);
   /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08(), _XAHY_VID_LINE_TRIG_d4n, XAPO_VID_RSTn);
 
   {
@@ -2529,7 +2529,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p21.RUGU*/ pix_pipe.RUGU_STAT_LYI_ENn.dff9(_RYVE_FF41_WRn, WESY_SYS_RSTn, cpu_bus.BUS_CPU_D6p.qp());
 
     /*
-    if (lcd_reg.PARU_VBLANKp_d4 && WODU_HBLANKp && SEPA_FF41_WRp) {
+    if (PARU_VBLANKp_d4 && WODU_HBLANKp && SEPA_FF41_WRp) {
       printf("Stat write during hblank/vblank\n");
     }
     */
@@ -2795,7 +2795,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp17(),  sprite_fetcher.SUDA_SFETCH_REQp.qn16());
 
-  /*#p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp, lcd_reg.ATEJ_LINE_TRIGp);
+  /*#p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp, ATEJ_LINE_TRIGp);
   /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(sprite_fetcher.WUTY_SPRITE_DONEp, pix_pipe.TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
 
@@ -2870,7 +2870,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  ALUR_SYS_RSTn);
   /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  ALUR_SYS_RSTn);
 
-  /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22(lcd_reg.VYPU_INT_VBLANKp,            _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, _PESU_VCC);
+  /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp,                    _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, _PESU_VCC);
   /* p02.LALU*/ int_reg.LALU_FF0F_D1p.dff22(pix_pipe.VOTY_INT_STATp,             _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, _PESU_VCC);
   /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22(tim_reg.MOBA_TIMER_OVERFLOWp.qp17(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, _PESU_VCC);
   /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22(ser_reg.CALY_INT_SERp.qp17(),        _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, _PESU_VCC);

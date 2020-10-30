@@ -2355,12 +2355,12 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p35.REMY*/ wire _REMY_LD0n = not1(_PERO_COL_LO);
     /*#p35.RAVO*/ wire _RAVO_LD1n = not1(_PATY_COL_HI);
 
-    lcd_data0_delay.set(_REMY_LD0n);
-    lcd_data1_delay.set(_RAVO_LD1n);
+    //lcd_data0_delay.set(_REMY_LD0n);
+    //lcd_data1_delay.set(_RAVO_LD1n);
 
     // so q1 works but q2 has tiny errors? wat?
-    PIN_LCD_DATA0.io_pin(lcd_data0_delay.q1(), lcd_data0_delay.q1());
-    PIN_LCD_DATA1.io_pin(lcd_data1_delay.q1(), lcd_data1_delay.q1());
+    PIN_LCD_DATA0.io_pin(/*lcd_data0_delay.q1()*/ _REMY_LD0n, /*lcd_data0_delay.q1()*/ _REMY_LD0n);
+    PIN_LCD_DATA1.io_pin(/*lcd_data1_delay.q1()*/ _RAVO_LD1n, /*lcd_data1_delay.q1()*/ _RAVO_LD1n);
   }
 
   //----------------------------------------
@@ -4227,13 +4227,14 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   tock_ext_bus (RST, rom_buf, cart_ram, ext_ram);
   tock_zram_bus(RST, zero_ram, _TAPU_CPU_WRp_xxxxEFGx, _TEDO_CPU_RDp);
-  tock_oam_bus (RST, oam_ram);
   ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
 
 
 
 
   {
+    tock_oam_bus (RST, oam_ram);
+
     oam_bus.MAKA_HOLD_MEMp.commit();
     oam_bus.WUJE_CPU_OAM_WRn.commit();
 

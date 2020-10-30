@@ -25,6 +25,13 @@ uint64_t commit_and_hash(void* blob, int size) {
   for (int i = 0; i < size; i++) {
 
     uint8_t s1 = base[i];
+
+    uint8_t d1 = (s1 >> 4);
+    if (d1 != DELTA_LOCK && d1 != DELTA_COMM) {
+      printf("xxx\n");
+    }
+
+
     uint8_t s2 = logic_lut1.tab[s1];
 
     //printf("%04d 0x%02x 0x%02x\n", i, s1, s2);

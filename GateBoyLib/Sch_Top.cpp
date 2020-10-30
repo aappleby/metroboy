@@ -557,6 +557,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   {
     /*#p25.SYCY*/ wire SYCY_DBG_CLOCKn = not1(_UNOR_MODE_DBG2p);
     /*#p25.SOTO*/ SOTO_DBG_VRAM.dff17(SYCY_DBG_CLOCKn, _CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn16());
+    SOTO_DBG_VRAM.commit();
   }
 
   //------------------------------------------------------------------------------
@@ -589,9 +590,9 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     cpu_bus.PIN_CPU_BOGA_Axxxxxxx.set(_BOGA_Axxxxxxx);
 
     ext_bus.PIN_EXT_CLK.io_pin(_BUDE_xxxxEFGH, _BUDE_xxxxEFGH);
+    ext_bus.PIN_EXT_CLK.commit();
 
     /*p01.UPYF*/ wire _UPYF = or2(RST, _UCOB_CLKBADp);
-    /*p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, CPUREADY);
 
 #ifdef FAST_BOOT
     /*p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(clk_reg.TUBO_WAITINGp.qp(), tim_reg.TERO_DIV_03.qp());
@@ -602,14 +603,21 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p01.TABA*/ wire _TABA_POR_TRIGn = or3(_UNOR_MODE_DBG2p, _UMUT_MODE_DBG1p, _UNUT_POR_TRIGn);
     cpu_bus.PIN_CPU_STARTp.set(_TABA_POR_TRIGn);
 
+    /*p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, CPUREADY);
+    clk_reg.TUBO_WAITINGp.commit();
+
     /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
     /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(RST, _ALYP_RSTn);
-    /* p01.ASOL*/ clk_reg.ASOL_POR_DONEn.nor_latch(RST, _AFAR_RSTp); // Schematic wrong, this is a latch.
-
-    /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13(_BOGA_Axxxxxxx, _UPOJ_MODE_PRODn, clk_reg.ASOL_POR_DONEn.qp04());
 
     cpu_bus.PIN_CPU_SYS_RSTp.set(clk_reg.AFER_SYS_RSTp.qp13());
     cpu_bus.PIN_CPU_EXT_RST.set(RST);
+
+    /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13(_BOGA_Axxxxxxx, _UPOJ_MODE_PRODn, clk_reg.ASOL_POR_DONEn.qp04());
+    clk_reg.AFER_SYS_RSTp.commit();
+
+    /* p01.ASOL*/ clk_reg.ASOL_POR_DONEn.nor_latch(RST, _AFAR_RSTp); // Schematic wrong, this is a latch.
+    clk_reg.ASOL_POR_DONEn.commit();
+
 
     cpu_bus.PIN_CPU_UNOR_DBG.set(_UNOR_MODE_DBG2p);
     cpu_bus.PIN_CPU_UMUT_DBG.set(_UMUT_MODE_DBG1p);
@@ -1032,11 +1040,15 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     ser_reg.CYLO_SER_CNT1.commit();
     ser_reg.CYDE_SER_CNT2.commit();
 
+    /* p06.CAGE*/ wire _CAGE_SIN_Cp = not1(ser_reg.PIN_SIN.qn());
+
     /* p06.KEXU*/ ser_reg.PIN_SCK.io_pin(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17());
     /* p05.KENA*/ ser_reg.PIN_SOUT.io_pin(ser_reg.ELYS_SER_OUT.qp17(), ser_reg.ELYS_SER_OUT.qp17());
+    /* hack */    ser_reg.PIN_SIN.io_pin(1, 1);
+
     ser_reg.PIN_SCK.commit();
     ser_reg.PIN_SOUT.commit();
-    //ser_reg.PIN_SIN.commit(); // FIXME
+    ser_reg.PIN_SIN.commit();
 
     /* p06.ETAF*/ ser_reg.ETAF_XFER_START.dff17(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D7p.qp());
     /* p06.CULY*/ ser_reg.CULY_XFER_DIR  .dff17(_UWAM_FF02_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D0p.qp());
@@ -1079,7 +1091,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p06.EFAB*/ cpu_bus.BUS_CPU_D6p.tri_6pn(_UFEG_FF01_RDp, ser_reg.EROD_SER_DATA6.qn15());
     /*#p06.ETAK*/ cpu_bus.BUS_CPU_D7p.tri_6pn(_UFEG_FF01_RDp, ser_reg.EDER_SER_DATA7.qn15());
 
-    /* p06.CAGE*/ wire _CAGE_SIN_Cp = not1(ser_reg.PIN_SIN.qn());
     /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SIN_Cp);
     /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, ser_reg.CUBA_SER_DATA0.qp16());
     /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, ser_reg.DEGU_SER_DATA1.qp16());
@@ -2118,10 +2129,15 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   {
     /*#p21.XAJO*/ wire _XAJO_X_009p = and2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.XYDO_X3p.qp17());
-    /*#p21.WUSA*/ pix_pipe.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, _WEGO_HBLANKp);
+
+
     /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(pix_pipe.WUSA_LCD_CLOCK_GATE.qp04(), _SACU_CLKPIPEp);
     /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, _POVA_FINE_MATCHpe);
     /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
+
+    /*#p21.WUSA*/ pix_pipe.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, _WEGO_HBLANKp);
+    pix_pipe.WUSA_LCD_CLOCK_GATE.commit();
+
 
     PIN_LCD_CLOCK.io_pin(_RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
     PIN_LCD_CLOCK.commit();
@@ -2137,8 +2153,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     // That would be a loooot of gate delay.
     // Could we possibly be incrementing X3p one phase early?
 
-    /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.XYDO_X3p.qp17());
-
     /*#p24.POME*/ pix_pipe.POME = nor2(AVAP_RENDER_START_TRIGp, pix_pipe.POFY);
     /*#p24.RUJU*/ pix_pipe.RUJU = or3(pix_pipe.PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, pix_pipe.POME);
     /*#p24.POFY*/ pix_pipe.POFY = not1(pix_pipe.RUJU);
@@ -2146,6 +2160,14 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(pix_pipe.POFY);
     PIN_LCD_HSYNC.io_pin(_RUZE_HSYNCn, _RUZE_HSYNCn);
     PIN_LCD_HSYNC.commit();
+
+    /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.XYDO_X3p.qp17());
+    pix_pipe.PAHO_X_8_SYNC.commit();
+
+    pix_pipe.POME.commit();
+    pix_pipe.RUJU.commit();
+    pix_pipe.POFY.commit();
+
   }
 
   //----------------------------------------
@@ -2987,6 +3009,13 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p28.FUGU*/ oam_bus.BUS_OAM_A6n.tri_6nn(_BETE_PPU_OAM_RDn, sprite_store.SPR_TRI_I4p.qp());
     /*p28.FYKE*/ oam_bus.BUS_OAM_A7n.tri_6nn(_BETE_PPU_OAM_RDn, sprite_store.SPR_TRI_I5p.qp());
   }
+
+  sprite_store.SPR_TRI_I0p.commit();
+  sprite_store.SPR_TRI_I1p.commit();
+  sprite_store.SPR_TRI_I2p.commit();
+  sprite_store.SPR_TRI_I3p.commit();
+  sprite_store.SPR_TRI_I4p.commit();
+  sprite_store.SPR_TRI_I5p.commit();
 
   //----------------------------------------
   // OAM data out
@@ -4754,6 +4783,31 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     pix_pipe.XONA_LCDC_LCDENn  .commit();
   }
 
+  cpu_bus.BUS_CPU_A00.commit();
+  cpu_bus.BUS_CPU_A01.commit();
+  cpu_bus.BUS_CPU_A02.commit();
+  cpu_bus.BUS_CPU_A03.commit();
+  cpu_bus.BUS_CPU_A04.commit();
+  cpu_bus.BUS_CPU_A05.commit();
+  cpu_bus.BUS_CPU_A06.commit();
+  cpu_bus.BUS_CPU_A07.commit();
+  cpu_bus.BUS_CPU_A08.commit();
+  cpu_bus.BUS_CPU_A09.commit();
+  cpu_bus.BUS_CPU_A10.commit();
+  cpu_bus.BUS_CPU_A11.commit();
+  cpu_bus.BUS_CPU_A12.commit();
+  cpu_bus.BUS_CPU_A13.commit();
+  cpu_bus.BUS_CPU_A14.commit();
+  cpu_bus.BUS_CPU_A15.commit();
+
+  cpu_bus.BUS_CPU_D0p.commit();
+  cpu_bus.BUS_CPU_D1p.commit();
+  cpu_bus.BUS_CPU_D2p.commit();
+  cpu_bus.BUS_CPU_D3p.commit();
+  cpu_bus.BUS_CPU_D4p.commit();
+  cpu_bus.BUS_CPU_D5p.commit();
+  cpu_bus.BUS_CPU_D6p.commit();
+  cpu_bus.BUS_CPU_D7p.commit();
 
   RegBase::tock_running = false;
 }

@@ -477,6 +477,9 @@ struct DFF9 : private RegBase {
 
   void dff9(wire CLKp, wire SETn, bool Dn)            { dff(CLKp, !CLKp, SETn, 1, !Dn); }
   void dff9(wire CLKp, wire CLKn, wire SETn, bool Dn) { dff(CLKp,  CLKn, SETn, 1, !Dn); }
+
+  void dff9c(wire CLKp, wire SETn, bool Dn)            { dff(CLKp, !CLKp, SETn, 1, !Dn); commit(); }
+  void dff9c(wire CLKp, wire CLKn, wire SETn, bool Dn) { dff(CLKp,  CLKn, SETn, 1, !Dn); commit(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -530,6 +533,7 @@ struct DFF13 : private RegBase {
   wire qp13() const { return  as_wire(); }
 
   void dff13(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); }
+  void dff13c(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); commit(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -562,6 +566,11 @@ struct DFF17 : private RegBase {
 
   void dff17(wire CLKp, wire RSTn, wire D) {
     dff(CLKp, !CLKp, 1, RSTn, D);
+  }
+
+  void dff17c(wire CLKp, wire RSTn, wire D) {
+    dff(CLKp, !CLKp, 1, RSTn, D);
+    commit();
   }
 };
 
@@ -769,6 +778,13 @@ struct Pin : private RegBase {
     merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0);
   }
 
+  void setc(wire w) {
+    old_value = state | (DELTA_LOCK << 4);
+    CHECK_N(has_delta());
+    merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0);
+    commit();
+  }
+
   void operator = (RegDelta d) {
     old_value = state | (DELTA_LOCK << 4);
     merge_tri_delta(d);
@@ -783,6 +799,18 @@ struct Pin : private RegBase {
     else if (!HI &&  LO) __debugbreak();
     else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
     else                 __debugbreak();
+  }
+
+  void io_pinc(wire HI, wire LO, wire OEp = true) {
+    old_value = state | (DELTA_LOCK << 4);
+
+    if      (!OEp)       merge_tri_delta(DELTA_TRIZ);
+    else if ( HI &&  LO) merge_tri_delta(DELTA_TRI0);
+    else if ( HI && !LO) merge_tri_delta(DELTA_TRIZ);
+    else if (!HI &&  LO) __debugbreak();
+    else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
+    else                 __debugbreak();
+    commit();
   }
 
   uint8_t old_value = TRI_HZNP | (DELTA_LOCK << 4);
@@ -817,6 +845,20 @@ struct NorLatch : private RegBase {
     else {
       delta = DELTA_HOLD;
     }
+  }
+
+  void nor_latchc(wire SETp, wire RSTp) {
+    CHECK_N(has_delta());
+    if (RSTp) {
+      delta = DELTA_TRI0;
+    }
+    else if (SETp) {
+      delta = DELTA_TRI1;
+    }
+    else {
+      delta = DELTA_HOLD;
+    }
+    commit();
   }
 };
 

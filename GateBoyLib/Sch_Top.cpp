@@ -199,17 +199,17 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p29.WUHU*/ wire _WUHU_YDIFF_S7 = add_s(_GUSU_Y7n, oam_bus.YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
   /*p29.WUHU*/ wire _WUHU_YDIFF_C7 = add_c(_GUSU_Y7n, oam_bus.YZAB_OAM_DA7p.qp08(), _GOJU_YDIFF_C6);
 
-  /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0 = not1(_ERUC_YDIFF_S0);
-  /* p29.DABY*/ wire DABY_SPRITE_DELTA1 = not1(_ENEF_YDIFF_S1);
-  /* p29.DABU*/ wire DABU_SPRITE_DELTA2 = not1(_FECO_YDIFF_S2);
-  /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3 = not1(_GYKY_YDIFF_S3);
-  /* p29.GACE*/ wire GACE_SPRITE_DELTA4 = not1(_GOPU_YDIFF_S4);
-  /* p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not1(_FUWA_YDIFF_S5);
-  /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not1(_GOJU_YDIFF_S6);
-  /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not1(_WUHU_YDIFF_S7);
+  /* p29.DEGE*/ wire _DEGE_SPRITE_DELTA0 = not1(_ERUC_YDIFF_S0);
+  /* p29.DABY*/ wire _DABY_SPRITE_DELTA1 = not1(_ENEF_YDIFF_S1);
+  /* p29.DABU*/ wire _DABU_SPRITE_DELTA2 = not1(_FECO_YDIFF_S2);
+  /* p29.GYSA*/ wire _GYSA_SPRITE_DELTA3 = not1(_GYKY_YDIFF_S3);
+  /* p29.GACE*/ wire _GACE_SPRITE_DELTA4 = not1(_GOPU_YDIFF_S4);
+  /* p29.GUVU*/ wire _GUVU_SPRITE_DELTA5 = not1(_FUWA_YDIFF_S5);
+  /* p29.GYDA*/ wire _GYDA_SPRITE_DELTA6 = not1(_GOJU_YDIFF_S6);
+  /* p29.GEWY*/ wire _GEWY_SPRITE_DELTA7 = not1(_WUHU_YDIFF_S7);
 
   /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH  = or2(pix_pipe.XYMO_LCDC_SPSIZEn.qn08(), _GYKY_YDIFF_S3);
-  /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
+  /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn = nand6(_GACE_SPRITE_DELTA4, _GUVU_SPRITE_DELTA5, _GYDA_SPRITE_DELTA6, _GEWY_SPRITE_DELTA7, _WUHU_YDIFF_C7, _GOVU_SPSIZE_MATCH);
   /* p29.GESE*/ wire _GESE_SCAN_MATCH_Y  = not1(_WOTA_SCAN_MATCH_Yn);
   /* p29.CEHA*/ wire CEHA_SCANNINGp     = not1(sprite_scanner.CENO_SCANNINGp.qn16());
 
@@ -1111,8 +1111,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(joypad.PIN_JOY_P13.qn(), joypad.PIN_JOY_P12.qn(), joypad.PIN_JOY_P11.qn(), joypad.PIN_JOY_P10.qn());
 
     {
-      /*p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latch(_BOGA_Axxxxxxx, _KERY_ANY_BUTTONp);
       joypad.PIN_CPU_WAKE.set(joypad.AWOB_WAKE_CPU.qp08());
+      joypad.PIN_CPU_WAKE.commit();
+
+      /*p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latch(_BOGA_Axxxxxxx, _KERY_ANY_BUTTONp);
+      joypad.AWOB_WAKE_CPU.commit();
     }
 
     {
@@ -1120,37 +1123,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
       /*p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, joypad.BATU_JP_GLITCH0.qp17());
       /*p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, joypad.ACEF_JP_GLITCH1.qp17());
       /*p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, joypad.AGEM_JP_GLITCH2.qp17());
-    }
-
-    {
-      /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-      /*p05.JUTE*/ joypad.JUTE_JOYP_RA    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D0p.qp());
-      /*p05.KECY*/ joypad.KECY_JOYP_LB    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D1p.qp());
-      /*p05.JALE*/ joypad.JALE_JOYP_UC    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D2p.qp());
-      /*p05.KYME*/ joypad.KYME_JOYP_DS    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D3p.qp());
-      /*p05.KELY*/ joypad.KELY_JOYP_UDLR  .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D4p.qp());
-      /*p05.COFY*/ joypad.COFY_JOYP_ABCS  .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D5p.qp());
-      /*p05.KUKO*/ joypad.KUKO_DBG_FF00_D6.dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D6p.qp());
-      /*p05.KERU*/ joypad.KERU_DBG_FF00_D7.dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D7p.qp());
-
-      /* p10.ACAT*/ wire _ACAT_FF00_RDp = and4(_TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-      /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
-      /* p05.KEVU*/ joypad.KEVU_JOYP_L0.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P10.qn());
-      /* p05.KAPA*/ joypad.KAPA_JOYP_L1.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P11.qn());
-      /* p05.KEJA*/ joypad.KEJA_JOYP_L2.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P12.qn());
-      /* p05.KOLO*/ joypad.KOLO_JOYP_L3.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P13.qn());
-
-      // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
-      // That also means that _both_ P14 and P15 are selected at reset :/
-
-      /* p05.KEMA*/ cpu_bus.BUS_CPU_D0p.tri_6nn(_BYZO_FF00_RDn, joypad.KEVU_JOYP_L0.qp08());
-      /* p05.KURO*/ cpu_bus.BUS_CPU_D1p.tri_6nn(_BYZO_FF00_RDn, joypad.KAPA_JOYP_L1.qp08());
-      /* p05.KUVE*/ cpu_bus.BUS_CPU_D2p.tri_6nn(_BYZO_FF00_RDn, joypad.KEJA_JOYP_L2.qp08());
-      /* p05.JEKU*/ cpu_bus.BUS_CPU_D3p.tri_6nn(_BYZO_FF00_RDn, joypad.KOLO_JOYP_L3.qp08());
-      /* p05.KOCE*/ cpu_bus.BUS_CPU_D4p.tri_6nn(_BYZO_FF00_RDn, joypad.KELY_JOYP_UDLR.qn16());
-      /* p05.CUDY*/ cpu_bus.BUS_CPU_D5p.tri_6nn(_BYZO_FF00_RDn, joypad.COFY_JOYP_ABCS.qn16());
-      /* p??.????*/ cpu_bus.BUS_CPU_D6p.tri_6nn(_BYZO_FF00_RDn, joypad.KUKO_DBG_FF00_D6.qp17());
-      /* p??.????*/ cpu_bus.BUS_CPU_D7p.tri_6nn(_BYZO_FF00_RDn, joypad.KERU_DBG_FF00_D7.qp17());
+      joypad.BATU_JP_GLITCH0.commit();
+      joypad.ACEF_JP_GLITCH1.commit();
+      joypad.AGEM_JP_GLITCH2.commit();
+      joypad.APUG_JP_GLITCH3.commit();
     }
 
     {
@@ -1183,6 +1159,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
       joypad.PIN_JOY_P11.io_pin(_KYTO, _KABU);
       joypad.PIN_JOY_P12.io_pin(_KYHU, _KASY);
       joypad.PIN_JOY_P13.io_pin(_KORY, _KALE);
+      joypad.PIN_JOY_P10.commit();
+      joypad.PIN_JOY_P11.commit();
+      joypad.PIN_JOY_P12.commit();
+      joypad.PIN_JOY_P13.commit();
 
       /*p05.KARU*/ wire _KARU = or2(joypad.KELY_JOYP_UDLR.qn16(), _KURA);
       /*p05.CELA*/ wire _CELA = or2(joypad.COFY_JOYP_ABCS.qn16(), _KURA);
@@ -1199,32 +1179,55 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
       joypad.PIN_JOY_P14.io_pin(_KARU, joypad.KELY_JOYP_UDLR.qn16());
       joypad.PIN_JOY_P15.io_pin(_CELA, joypad.COFY_JOYP_ABCS.qn16());
+      joypad.PIN_JOY_P14.commit();
+      joypad.PIN_JOY_P15.commit();
     }
 
-    joypad.AWOB_WAKE_CPU.commit();
-    joypad.PIN_CPU_WAKE.commit();
-    joypad.BATU_JP_GLITCH0.commit();
-    joypad.ACEF_JP_GLITCH1.commit();
-    joypad.AGEM_JP_GLITCH2.commit();
-    joypad.APUG_JP_GLITCH3.commit();
-    joypad.JUTE_JOYP_RA.commit();
-    joypad.KECY_JOYP_LB.commit();
-    joypad.JALE_JOYP_UC.commit();
-    joypad.KYME_JOYP_DS.commit();
-    joypad.KELY_JOYP_UDLR.commit();
-    joypad.COFY_JOYP_ABCS.commit();
-    joypad.KUKO_DBG_FF00_D6.commit();
-    joypad.KERU_DBG_FF00_D7.commit();
-    joypad.KEVU_JOYP_L0.commit();
-    joypad.KAPA_JOYP_L1.commit();
-    joypad.KEJA_JOYP_L2.commit();
-    joypad.KOLO_JOYP_L3.commit();
-    joypad.PIN_JOY_P10.commit();
-    joypad.PIN_JOY_P11.commit();
-    joypad.PIN_JOY_P12.commit();
-    joypad.PIN_JOY_P13.commit();
-    joypad.PIN_JOY_P14.commit();
-    joypad.PIN_JOY_P15.commit();
+    // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
+    // That also means that _both_ P14 and P15 are selected at reset :/
+
+    {
+      /* p10.ACAT*/ wire _ACAT_FF00_RDp = and4(_TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
+      /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
+
+      /* p05.KEMA*/ cpu_bus.BUS_CPU_D0p.tri_6nn(_BYZO_FF00_RDn, joypad.KEVU_JOYP_L0.qp08());
+      /* p05.KURO*/ cpu_bus.BUS_CPU_D1p.tri_6nn(_BYZO_FF00_RDn, joypad.KAPA_JOYP_L1.qp08());
+      /* p05.KUVE*/ cpu_bus.BUS_CPU_D2p.tri_6nn(_BYZO_FF00_RDn, joypad.KEJA_JOYP_L2.qp08());
+      /* p05.JEKU*/ cpu_bus.BUS_CPU_D3p.tri_6nn(_BYZO_FF00_RDn, joypad.KOLO_JOYP_L3.qp08());
+      /* p05.KOCE*/ cpu_bus.BUS_CPU_D4p.tri_6nn(_BYZO_FF00_RDn, joypad.KELY_JOYP_UDLR.qn16());
+      /* p05.CUDY*/ cpu_bus.BUS_CPU_D5p.tri_6nn(_BYZO_FF00_RDn, joypad.COFY_JOYP_ABCS.qn16());
+      /* p??.????*/ cpu_bus.BUS_CPU_D6p.tri_6nn(_BYZO_FF00_RDn, joypad.KUKO_DBG_FF00_D6.qp17());
+      /* p??.????*/ cpu_bus.BUS_CPU_D7p.tri_6nn(_BYZO_FF00_RDn, joypad.KERU_DBG_FF00_D7.qp17());
+
+      /* p05.KEVU*/ joypad.KEVU_JOYP_L0.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P10.qn());
+      /* p05.KAPA*/ joypad.KAPA_JOYP_L1.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P11.qn());
+      /* p05.KEJA*/ joypad.KEJA_JOYP_L2.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P12.qn());
+      /* p05.KOLO*/ joypad.KOLO_JOYP_L3.tp_latch(_BYZO_FF00_RDn, joypad.PIN_JOY_P13.qn());
+      joypad.KEVU_JOYP_L0.commit();
+      joypad.KAPA_JOYP_L1.commit();
+      joypad.KEJA_JOYP_L2.commit();
+      joypad.KOLO_JOYP_L3.commit();
+
+      /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
+      /*p05.JUTE*/ joypad.JUTE_JOYP_RA    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D0p.qp());
+      /*p05.KECY*/ joypad.KECY_JOYP_LB    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D1p.qp());
+      /*p05.JALE*/ joypad.JALE_JOYP_UC    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D2p.qp());
+      /*p05.KYME*/ joypad.KYME_JOYP_DS    .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D3p.qp());
+      joypad.JUTE_JOYP_RA.commit();
+      joypad.KECY_JOYP_LB.commit();
+      joypad.JALE_JOYP_UC.commit();
+      joypad.KYME_JOYP_DS.commit();
+
+      /*p05.KELY*/ joypad.KELY_JOYP_UDLR  .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D4p.qp());
+      /*p05.COFY*/ joypad.COFY_JOYP_ABCS  .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D5p.qp());
+      joypad.KELY_JOYP_UDLR.commit();
+      joypad.COFY_JOYP_ABCS.commit();
+
+      /*p05.KUKO*/ joypad.KUKO_DBG_FF00_D6.dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D6p.qp());
+      /*p05.KERU*/ joypad.KERU_DBG_FF00_D7.dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, cpu_bus.BUS_CPU_D7p.qp());
+      joypad.KUKO_DBG_FF00_D6.commit();
+      joypad.KERU_DBG_FF00_D7.commit();
+    }
   }
 
   //------------------------------------------------------------------------------
@@ -1429,6 +1432,13 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p30.GATE*/ sprite_store.SPR_TRI_L1.tri_6nn(FADO_SPRITE9_GETn, sprite_store.FOFO_STORE9_L1n.qp08());
     /* p30.COHO*/ sprite_store.SPR_TRI_L2.tri_6nn(FADO_SPRITE9_GETn, sprite_store.DYSY_STORE9_L2n.qp08());
     /* p30.CAWO*/ sprite_store.SPR_TRI_L3.tri_6nn(FADO_SPRITE9_GETn, sprite_store.DEWU_STORE9_L3n.qp08());
+
+    // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
+
+    /*#p30.CUCU*/ sprite_store.SPR_TRI_L0.tri_6nn(_FEPO_STORE_MATCHp, _DEGE_SPRITE_DELTA0);
+    /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(_FEPO_STORE_MATCHp, _DABY_SPRITE_DELTA1);
+    /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(_FEPO_STORE_MATCHp, _DABU_SPRITE_DELTA2);
+    /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(_FEPO_STORE_MATCHp, _GYSA_SPRITE_DELTA3);
   }
 
   //----------------------------------------
@@ -1445,6 +1455,17 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p29.GUKY*/ wire GUKY_STORE7_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WAPO_STORE7_RSTp.qp17());
     /*p29.GORO*/ wire GORO_STORE8_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EXUQ_STORE8_RSTp.qp17());
     /*p29.DUBU*/ wire DUBU_STORE9_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.FONO_STORE9_RSTp.qp17());
+
+    sprite_store.EBOJ_STORE0_RSTp.commit();
+    sprite_store.CEDY_STORE1_RSTp.commit();
+    sprite_store.EGAV_STORE2_RSTp.commit();
+    sprite_store.GOTA_STORE3_RSTp.commit();
+    sprite_store.XUDY_STORE4_RSTp.commit();
+    sprite_store.WAFY_STORE5_RSTp.commit();
+    sprite_store.WOMY_STORE6_RSTp.commit();
+    sprite_store.WAPO_STORE7_RSTp.commit();
+    sprite_store.EXUQ_STORE8_RSTp.commit();
+    sprite_store.FONO_STORE9_RSTp.commit();
 
     /*p29.DYNA*/ wire DYNA_STORE0_RSTn = not1(DYWE_STORE0_RSTp);
     /*p29.DOKU*/ wire DOKU_STORE1_RSTn = not1(EFEV_STORE1_RSTp);
@@ -1505,69 +1526,89 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     // Resetting the store X coords to 0 doesn't make sense, as they'd fire during a line even if we never stored any sprites.
     // I guess it must store inverted X, so that when reset X = 0xFF?
 
-    {
-      /*p29.GENY*/ wire GENY_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
-      /*p29.GENY*/ wire GENY_STORE0_CLKn = not1(GENY_STORE0_CLKp);
+    /*p29.GENY*/ wire GENY_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
+    /*p29.ENOB*/ wire ENOB_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
+    /*p29.FUXU*/ wire FUXU_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
 
-      /*p30.YGUS*/ sprite_store.YGUS_STORE0_I0n.dff8n(GENY_STORE0_CLKp, GENY_STORE0_CLKn, sprite_store.SPR_TRI_I0p.qp());
-      /*p30.YSOK*/ sprite_store.YSOK_STORE0_I1n.dff8n(GENY_STORE0_CLKp, GENY_STORE0_CLKn, sprite_store.SPR_TRI_I1p.qp());
-      /*p30.YZEP*/ sprite_store.YZEP_STORE0_I2n.dff8n(GENY_STORE0_CLKp, GENY_STORE0_CLKn, sprite_store.SPR_TRI_I2p.qp());
-      /*p30.WYTE*/ sprite_store.WYTE_STORE0_I3n.dff8n(GENY_STORE0_CLKp, GENY_STORE0_CLKn, sprite_store.SPR_TRI_I3p.qp());
-      /*p30.ZONY*/ sprite_store.ZONY_STORE0_I4n.dff8n(GENY_STORE0_CLKp, GENY_STORE0_CLKn, sprite_store.SPR_TRI_I4p.qp());
-      /*p30.YWAK*/ sprite_store.YWAK_STORE0_I5n.dff8n(GENY_STORE0_CLKp, GENY_STORE0_CLKn, sprite_store.SPR_TRI_I5p.qp());
+    /* p30.YGUS*/ sprite_store.YGUS_STORE0_I0n.dff8n(GENY_STORE0_CLKp, sprite_store.SPR_TRI_I0p.qp());
+    /* p30.YSOK*/ sprite_store.YSOK_STORE0_I1n.dff8n(GENY_STORE0_CLKp, sprite_store.SPR_TRI_I1p.qp());
+    /* p30.YZEP*/ sprite_store.YZEP_STORE0_I2n.dff8n(GENY_STORE0_CLKp, sprite_store.SPR_TRI_I2p.qp());
+    /* p30.WYTE*/ sprite_store.WYTE_STORE0_I3n.dff8n(GENY_STORE0_CLKp, sprite_store.SPR_TRI_I3p.qp());
+    /* p30.ZONY*/ sprite_store.ZONY_STORE0_I4n.dff8n(GENY_STORE0_CLKp, sprite_store.SPR_TRI_I4p.qp());
+    /* p30.YWAK*/ sprite_store.YWAK_STORE0_I5n.dff8n(GENY_STORE0_CLKp, sprite_store.SPR_TRI_I5p.qp());
+    /* p30.GYHO*/ sprite_store.GYHO_STORE0_L0n.dff8n(ENOB_STORE0_CLKp, sprite_store.SPR_TRI_L0.qp());
+    /* p30.CUFO*/ sprite_store.CUFO_STORE0_L1n.dff8n(ENOB_STORE0_CLKp, sprite_store.SPR_TRI_L1.qp());
+    /* p30.BOZU*/ sprite_store.BOZU_STORE0_L2n.dff8n(ENOB_STORE0_CLKp, sprite_store.SPR_TRI_L2.qp());
+    /* p30.FYHY*/ sprite_store.FYHY_STORE0_L3n.dff8n(ENOB_STORE0_CLKp, sprite_store.SPR_TRI_L3.qp());
+    /*#p31.XEPE*/ sprite_store.XEPE_STORE0_X0p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _ZAGO_X0n);
+    /* p31.YLAH*/ sprite_store.YLAH_STORE0_X1p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _ZOCY_X1n);
+    /* p31.ZOLA*/ sprite_store.ZOLA_STORE0_X2p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _YPUR_X2n);
+    /* p31.ZULU*/ sprite_store.ZULU_STORE0_X3p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _YVOK_X3n);
+    /* p31.WELO*/ sprite_store.WELO_STORE0_X4p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _COSE_X4n);
+    /* p31.XUNY*/ sprite_store.XUNY_STORE0_X5p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _AROP_X5n);
+    /* p31.WOTE*/ sprite_store.WOTE_STORE0_X6p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _XATU_X6n);
+    /* p31.XAKO*/ sprite_store.XAKO_STORE0_X7p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, _BADY_X7n);
 
-      /*p29.ENOB*/ wire ENOB_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
-      /*p29.ENOB*/ wire ENOB_STORE0_CLKn = not1(ENOB_STORE0_CLKp);
+    sprite_store.YGUS_STORE0_I0n.commit();
+    sprite_store.YSOK_STORE0_I1n.commit();
+    sprite_store.YZEP_STORE0_I2n.commit();
+    sprite_store.WYTE_STORE0_I3n.commit();
+    sprite_store.ZONY_STORE0_I4n.commit();
+    sprite_store.YWAK_STORE0_I5n.commit();
+    sprite_store.GYHO_STORE0_L0n.commit();
+    sprite_store.CUFO_STORE0_L1n.commit();
+    sprite_store.BOZU_STORE0_L2n.commit();
+    sprite_store.FYHY_STORE0_L3n.commit();
+    sprite_store.XEPE_STORE0_X0p.commit();
+    sprite_store.YLAH_STORE0_X1p.commit();
+    sprite_store.ZOLA_STORE0_X2p.commit();
+    sprite_store.ZULU_STORE0_X3p.commit();
+    sprite_store.WELO_STORE0_X4p.commit();
+    sprite_store.XUNY_STORE0_X5p.commit();
+    sprite_store.WOTE_STORE0_X6p.commit();
+    sprite_store.XAKO_STORE0_X7p.commit();
 
-      /*p30.GYHO*/ sprite_store.GYHO_STORE0_L0n.dff8n(ENOB_STORE0_CLKp, ENOB_STORE0_CLKn, sprite_store.SPR_TRI_L0.qp());
-      /*p30.CUFO*/ sprite_store.CUFO_STORE0_L1n.dff8n(ENOB_STORE0_CLKp, ENOB_STORE0_CLKn, sprite_store.SPR_TRI_L1.qp());
-      /*p30.BOZU*/ sprite_store.BOZU_STORE0_L2n.dff8n(ENOB_STORE0_CLKp, ENOB_STORE0_CLKn, sprite_store.SPR_TRI_L2.qp());
-      /*p30.FYHY*/ sprite_store.FYHY_STORE0_L3n.dff8n(ENOB_STORE0_CLKp, ENOB_STORE0_CLKn, sprite_store.SPR_TRI_L3.qp());
+    /*p29.BYVY*/ wire BYVY_STORE1_CLKp = not1(BUCO_STORE1_CLKn);
+    /*p29.AHOF*/ wire AHOF_STORE1_CLKp = not1(BUCO_STORE1_CLKn);
+    /*p29.ASYS*/ wire ASYS_STORE1_CLKp = not1(BUCO_STORE1_CLKn);
 
-      /*p29.FUXU*/ wire FUXU_STORE0_CLKp = not1(DYHU_STORE0_CLKn);
-      /*p29.FUXU*/ wire FUXU_STORE0_CLKn = not1(FUXU_STORE0_CLKp);
+    /*p30.CADU*/ sprite_store.CADU_STORE1_I0n.dff8n(BYVY_STORE1_CLKp, sprite_store.SPR_TRI_I0p.qp());
+    /*p30.CEBO*/ sprite_store.CEBO_STORE1_I1n.dff8n(BYVY_STORE1_CLKp, sprite_store.SPR_TRI_I1p.qp());
+    /*p30.CUFA*/ sprite_store.CUFA_STORE1_I2n.dff8n(BYVY_STORE1_CLKp, sprite_store.SPR_TRI_I2p.qp());
+    /*p30.COMA*/ sprite_store.COMA_STORE1_I3n.dff8n(BYVY_STORE1_CLKp, sprite_store.SPR_TRI_I3p.qp());
+    /*p30.CUZA*/ sprite_store.CUZA_STORE1_I4n.dff8n(BYVY_STORE1_CLKp, sprite_store.SPR_TRI_I4p.qp());
+    /*p30.CAJY*/ sprite_store.CAJY_STORE1_I5n.dff8n(BYVY_STORE1_CLKp, sprite_store.SPR_TRI_I5p.qp());
+    /*p30.AMES*/ sprite_store.AMES_STORE1_L0n.dff8n(AHOF_STORE1_CLKp, sprite_store.SPR_TRI_L0.qp());
+    /*p30.AROF*/ sprite_store.AROF_STORE1_L1n.dff8n(AHOF_STORE1_CLKp, sprite_store.SPR_TRI_L1.qp());
+    /*p30.ABOP*/ sprite_store.ABOP_STORE1_L2n.dff8n(AHOF_STORE1_CLKp, sprite_store.SPR_TRI_L2.qp());
+    /*p30.ABUG*/ sprite_store.ABUG_STORE1_L3n.dff8n(AHOF_STORE1_CLKp, sprite_store.SPR_TRI_L3.qp());
+    /*p31.DANY*/ sprite_store.DANY_STORE1_X0p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _ZAGO_X0n);
+    /*p31.DUKO*/ sprite_store.DUKO_STORE1_X1p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _ZOCY_X1n);
+    /*p31.DESU*/ sprite_store.DESU_STORE1_X2p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _YPUR_X2n);
+    /*p31.DAZO*/ sprite_store.DAZO_STORE1_X3p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _YVOK_X3n);
+    /*p31.DAKE*/ sprite_store.DAKE_STORE1_X4p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _COSE_X4n);
+    /*p31.CESO*/ sprite_store.CESO_STORE1_X5p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _AROP_X5n);
+    /*p31.DYFU*/ sprite_store.DYFU_STORE1_X6p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _XATU_X6n);
+    /*p31.CUSY*/ sprite_store.CUSY_STORE1_X7p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, _BADY_X7n);
 
-      /*#p31.XEPE*/ sprite_store.XEPE_STORE0_X0p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _ZAGO_X0n);
-      /* p31.YLAH*/ sprite_store.YLAH_STORE0_X1p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _ZOCY_X1n);
-      /* p31.ZOLA*/ sprite_store.ZOLA_STORE0_X2p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _YPUR_X2n);
-      /* p31.ZULU*/ sprite_store.ZULU_STORE0_X3p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _YVOK_X3n);
-      /* p31.WELO*/ sprite_store.WELO_STORE0_X4p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _COSE_X4n);
-      /* p31.XUNY*/ sprite_store.XUNY_STORE0_X5p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _AROP_X5n);
-      /* p31.WOTE*/ sprite_store.WOTE_STORE0_X6p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _XATU_X6n);
-      /* p31.XAKO*/ sprite_store.XAKO_STORE0_X7p.dff9(FUXU_STORE0_CLKp, FUXU_STORE0_CLKn, DYNA_STORE0_RSTn, _BADY_X7n);
-    }
-
-    {
-      /*p29.BYVY*/ wire BYVY_STORE1_CLKp = not1(BUCO_STORE1_CLKn);
-      /*p29.BYVY*/ wire BYVY_STORE1_CLKn = not1(BYVY_STORE1_CLKp);
-
-      /*p30.CADU*/ sprite_store.CADU_STORE1_I0n.dff8n(BYVY_STORE1_CLKp, BYVY_STORE1_CLKn, sprite_store.SPR_TRI_I0p.qp());
-      /*p30.CEBO*/ sprite_store.CEBO_STORE1_I1n.dff8n(BYVY_STORE1_CLKp, BYVY_STORE1_CLKn, sprite_store.SPR_TRI_I1p.qp());
-      /*p30.CUFA*/ sprite_store.CUFA_STORE1_I2n.dff8n(BYVY_STORE1_CLKp, BYVY_STORE1_CLKn, sprite_store.SPR_TRI_I2p.qp());
-      /*p30.COMA*/ sprite_store.COMA_STORE1_I3n.dff8n(BYVY_STORE1_CLKp, BYVY_STORE1_CLKn, sprite_store.SPR_TRI_I3p.qp());
-      /*p30.CUZA*/ sprite_store.CUZA_STORE1_I4n.dff8n(BYVY_STORE1_CLKp, BYVY_STORE1_CLKn, sprite_store.SPR_TRI_I4p.qp());
-      /*p30.CAJY*/ sprite_store.CAJY_STORE1_I5n.dff8n(BYVY_STORE1_CLKp, BYVY_STORE1_CLKn, sprite_store.SPR_TRI_I5p.qp());
-
-      /*p29.AHOF*/ wire AHOF_STORE1_CLKp = not1(BUCO_STORE1_CLKn);
-      /*p29.AHOF*/ wire AHOF_STORE1_CLKn = not1(AHOF_STORE1_CLKp);
-
-      /*p30.AMES*/ sprite_store.AMES_STORE1_L0n.dff8n(AHOF_STORE1_CLKp, AHOF_STORE1_CLKn, sprite_store.SPR_TRI_L0.qp());
-      /*p30.AROF*/ sprite_store.AROF_STORE1_L1n.dff8n(AHOF_STORE1_CLKp, AHOF_STORE1_CLKn, sprite_store.SPR_TRI_L1.qp());
-      /*p30.ABOP*/ sprite_store.ABOP_STORE1_L2n.dff8n(AHOF_STORE1_CLKp, AHOF_STORE1_CLKn, sprite_store.SPR_TRI_L2.qp());
-      /*p30.ABUG*/ sprite_store.ABUG_STORE1_L3n.dff8n(AHOF_STORE1_CLKp, AHOF_STORE1_CLKn, sprite_store.SPR_TRI_L3.qp());
-
-      /*p29.ASYS*/ wire ASYS_STORE1_CLKp = not1(BUCO_STORE1_CLKn);
-      /*p29.ASYS*/ wire ASYS_STORE1_CLKn = not1(ASYS_STORE1_CLKp);
-
-      /*p31.DANY*/ sprite_store.DANY_STORE1_X0p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _ZAGO_X0n);
-      /*p31.DUKO*/ sprite_store.DUKO_STORE1_X1p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _ZOCY_X1n);
-      /*p31.DESU*/ sprite_store.DESU_STORE1_X2p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _YPUR_X2n);
-      /*p31.DAZO*/ sprite_store.DAZO_STORE1_X3p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _YVOK_X3n);
-      /*p31.DAKE*/ sprite_store.DAKE_STORE1_X4p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _COSE_X4n);
-      /*p31.CESO*/ sprite_store.CESO_STORE1_X5p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _AROP_X5n);
-      /*p31.DYFU*/ sprite_store.DYFU_STORE1_X6p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _XATU_X6n);
-      /*p31.CUSY*/ sprite_store.CUSY_STORE1_X7p.dff9(ASYS_STORE1_CLKp, ASYS_STORE1_CLKn, DOKU_STORE1_RSTn, _BADY_X7n);
-    }
+    sprite_store.CADU_STORE1_I0n.commit();
+    sprite_store.CEBO_STORE1_I1n.commit();
+    sprite_store.CUFA_STORE1_I2n.commit();
+    sprite_store.COMA_STORE1_I3n.commit();
+    sprite_store.CUZA_STORE1_I4n.commit();
+    sprite_store.CAJY_STORE1_I5n.commit();
+    sprite_store.AMES_STORE1_L0n.commit();
+    sprite_store.AROF_STORE1_L1n.commit();
+    sprite_store.ABOP_STORE1_L2n.commit();
+    sprite_store.ABUG_STORE1_L3n.commit();
+    sprite_store.DANY_STORE1_X0p.commit();
+    sprite_store.DUKO_STORE1_X1p.commit();
+    sprite_store.DESU_STORE1_X2p.commit();
+    sprite_store.DAZO_STORE1_X3p.commit();
+    sprite_store.DAKE_STORE1_X4p.commit();
+    sprite_store.CESO_STORE1_X5p.commit();
+    sprite_store.DYFU_STORE1_X6p.commit();
+    sprite_store.CUSY_STORE1_X7p.commit();
 
     /*p29.BUZY*/ wire BUZY_STORE2_CLKp = not1(GYFO_STORE2_CLKn);
     /*p29.FUKE*/ wire FUKE_STORE2_CLKp = not1(GYFO_STORE2_CLKn);
@@ -1579,12 +1620,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.BULU*/ sprite_store.BULU_STORE2_I3n.dff8n(BUZY_STORE2_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.BUNA*/ sprite_store.BUNA_STORE2_I4n.dff8n(BUZY_STORE2_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.BOXA*/ sprite_store.BOXA_STORE2_I5n.dff8n(BUZY_STORE2_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.YLOV*/ sprite_store.YLOV_STORE2_L0n.dff8n(FUKE_STORE2_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.XOSY*/ sprite_store.XOSY_STORE2_L1n.dff8n(FUKE_STORE2_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.XAZY*/ sprite_store.XAZY_STORE2_L2n.dff8n(FUKE_STORE2_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.YKUK*/ sprite_store.YKUK_STORE2_L3n.dff8n(FUKE_STORE2_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.FOKA*/ sprite_store.FOKA_STORE2_X0p.dff9(CACU_STORE2_CLKp, GAMY_STORE2_RSTn, _ZAGO_X0n);
     /*p31.FYTY*/ sprite_store.FYTY_STORE2_X1p.dff9(CACU_STORE2_CLKp, GAMY_STORE2_RSTn, _ZOCY_X1n);
     /*p31.FUBY*/ sprite_store.FUBY_STORE2_X2p.dff9(CACU_STORE2_CLKp, GAMY_STORE2_RSTn, _YPUR_X2n);
@@ -1593,6 +1632,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.EJUF*/ sprite_store.EJUF_STORE2_X5p.dff9(CACU_STORE2_CLKp, GAMY_STORE2_RSTn, _AROP_X5n);
     /*p31.ENOR*/ sprite_store.ENOR_STORE2_X6p.dff9(CACU_STORE2_CLKp, GAMY_STORE2_RSTn, _XATU_X6n);
     /*p31.DEPY*/ sprite_store.DEPY_STORE2_X7p.dff9(CACU_STORE2_CLKp, GAMY_STORE2_RSTn, _BADY_X7n);
+
+    sprite_store.BUHE_STORE2_I0n.commit();
+    sprite_store.BYHU_STORE2_I1n.commit();
+    sprite_store.BECA_STORE2_I2n.commit();
+    sprite_store.BULU_STORE2_I3n.commit();
+    sprite_store.BUNA_STORE2_I4n.commit();
+    sprite_store.BOXA_STORE2_I5n.commit();
+    sprite_store.YLOV_STORE2_L0n.commit();
+    sprite_store.XOSY_STORE2_L1n.commit();
+    sprite_store.XAZY_STORE2_L2n.commit();
+    sprite_store.YKUK_STORE2_L3n.commit();
+    sprite_store.FOKA_STORE2_X0p.commit();
+    sprite_store.FYTY_STORE2_X1p.commit();
+    sprite_store.FUBY_STORE2_X2p.commit();
+    sprite_store.GOXU_STORE2_X3p.commit();
+    sprite_store.DUHY_STORE2_X4p.commit();
+    sprite_store.EJUF_STORE2_X5p.commit();
+    sprite_store.ENOR_STORE2_X6p.commit();
+    sprite_store.DEPY_STORE2_X7p.commit();
 
     /*p29.FEKA*/ wire FEKA_STORE3_CLKp = not1(GUSA_STORE3_CLKn);
     /*p29.XYHA*/ wire XYHA_STORE3_CLKp = not1(GUSA_STORE3_CLKn);
@@ -1604,12 +1662,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.DUHA*/ sprite_store.DUHA_STORE3_I3n.dff8n(FEKA_STORE3_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.DEBA*/ sprite_store.DEBA_STORE3_I4n.dff8n(FEKA_STORE3_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.DAFU*/ sprite_store.DAFU_STORE3_I5n.dff8n(FEKA_STORE3_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.ZURO*/ sprite_store.ZURO_STORE3_L0n.dff8n(XYHA_STORE3_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.ZYLU*/ sprite_store.ZYLU_STORE3_L1n.dff8n(XYHA_STORE3_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.ZENE*/ sprite_store.ZENE_STORE3_L2n.dff8n(XYHA_STORE3_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.ZURY*/ sprite_store.ZURY_STORE3_L3n.dff8n(XYHA_STORE3_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.XOLY*/ sprite_store.XOLY_STORE3_X0p.dff9(YFAG_STORE3_CLKp, WUPA_STORE3_RSTn, _ZAGO_X0n);
     /*p31.XYBA*/ sprite_store.XYBA_STORE3_X1p.dff9(YFAG_STORE3_CLKp, WUPA_STORE3_RSTn, _ZOCY_X1n);
     /*p31.XABE*/ sprite_store.XABE_STORE3_X2p.dff9(YFAG_STORE3_CLKp, WUPA_STORE3_RSTn, _YPUR_X2n);
@@ -1618,6 +1674,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.WUHA*/ sprite_store.WUHA_STORE3_X5p.dff9(YFAG_STORE3_CLKp, WUPA_STORE3_RSTn, _AROP_X5n);
     /*p31.WYNA*/ sprite_store.WYNA_STORE3_X6p.dff9(YFAG_STORE3_CLKp, WUPA_STORE3_RSTn, _XATU_X6n);
     /*p31.WECO*/ sprite_store.WECO_STORE3_X7p.dff9(YFAG_STORE3_CLKp, WUPA_STORE3_RSTn, _BADY_X7n);
+
+    sprite_store.DEVY_STORE3_I0n.commit();
+    sprite_store.DESE_STORE3_I1n.commit();
+    sprite_store.DUNY_STORE3_I2n.commit();
+    sprite_store.DUHA_STORE3_I3n.commit();
+    sprite_store.DEBA_STORE3_I4n.commit();
+    sprite_store.DAFU_STORE3_I5n.commit();
+    sprite_store.ZURO_STORE3_L0n.commit();
+    sprite_store.ZYLU_STORE3_L1n.commit();
+    sprite_store.ZENE_STORE3_L2n.commit();
+    sprite_store.ZURY_STORE3_L3n.commit();
+    sprite_store.XOLY_STORE3_X0p.commit();
+    sprite_store.XYBA_STORE3_X1p.commit();
+    sprite_store.XABE_STORE3_X2p.commit();
+    sprite_store.XEKA_STORE3_X3p.commit();
+    sprite_store.XOMY_STORE3_X4p.commit();
+    sprite_store.WUHA_STORE3_X5p.commit();
+    sprite_store.WYNA_STORE3_X6p.commit();
+    sprite_store.WECO_STORE3_X7p.commit();
 
     /*p29.WOFO*/ wire WOFO_STORE4_CLKp = not1(DUKE_STORE4_CLKn);
     /*p29.WYLU*/ wire WYLU_STORE4_CLKp = not1(DUKE_STORE4_CLKn);
@@ -1629,12 +1704,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.XABO*/ sprite_store.XABO_STORE4_I3n.dff8n(WYLU_STORE4_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.XEGE*/ sprite_store.XEGE_STORE4_I4n.dff8n(WYLU_STORE4_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.XYNU*/ sprite_store.XYNU_STORE4_I5n.dff8n(WYLU_STORE4_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.CAPO*/ sprite_store.CAPO_STORE4_L0n.dff8n(EWOT_STORE4_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.CAJU*/ sprite_store.CAJU_STORE4_L1n.dff8n(EWOT_STORE4_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.CONO*/ sprite_store.CONO_STORE4_L2n.dff8n(EWOT_STORE4_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.CUMU*/ sprite_store.CUMU_STORE4_L3n.dff8n(EWOT_STORE4_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.WEDU*/ sprite_store.WEDU_STORE4_X0p.dff9(WOFO_STORE4_CLKp, WUNU_STORE4_RSTn, _ZAGO_X0n);
     /*p31.YGAJ*/ sprite_store.YGAJ_STORE4_X1p.dff9(WOFO_STORE4_CLKp, WUNU_STORE4_RSTn, _ZOCY_X1n);
     /*p31.ZYJO*/ sprite_store.ZYJO_STORE4_X2p.dff9(WOFO_STORE4_CLKp, WUNU_STORE4_RSTn, _YPUR_X2n);
@@ -1643,6 +1716,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.ZALA*/ sprite_store.ZALA_STORE4_X5p.dff9(WOFO_STORE4_CLKp, WUNU_STORE4_RSTn, _AROP_X5n);
     /*p31.WYDE*/ sprite_store.WYDE_STORE4_X6p.dff9(WOFO_STORE4_CLKp, WUNU_STORE4_RSTn, _XATU_X6n);
     /*p31.XEPA*/ sprite_store.XEPA_STORE4_X7p.dff9(WOFO_STORE4_CLKp, WUNU_STORE4_RSTn, _BADY_X7n);
+
+    sprite_store.XAVE_STORE4_I0n.commit();
+    sprite_store.XEFE_STORE4_I1n.commit();
+    sprite_store.WANU_STORE4_I2n.commit();
+    sprite_store.XABO_STORE4_I3n.commit();
+    sprite_store.XEGE_STORE4_I4n.commit();
+    sprite_store.XYNU_STORE4_I5n.commit();
+    sprite_store.CAPO_STORE4_L0n.commit();
+    sprite_store.CAJU_STORE4_L1n.commit();
+    sprite_store.CONO_STORE4_L2n.commit();
+    sprite_store.CUMU_STORE4_L3n.commit();
+    sprite_store.WEDU_STORE4_X0p.commit();
+    sprite_store.YGAJ_STORE4_X1p.commit();
+    sprite_store.ZYJO_STORE4_X2p.commit();
+    sprite_store.XURY_STORE4_X3p.commit();
+    sprite_store.YBED_STORE4_X4p.commit();
+    sprite_store.ZALA_STORE4_X5p.commit();
+    sprite_store.WYDE_STORE4_X6p.commit();
+    sprite_store.XEPA_STORE4_X7p.commit();
 
     /*p29.CYLA*/ wire CYLA_STORE5_CLKp = not1(BEDE_STORE5_CLKn);
     /*p29.DYMO*/ wire DYMO_STORE5_CLKp = not1(BEDE_STORE5_CLKn);
@@ -1654,12 +1746,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.EBEX*/ sprite_store.EBEX_STORE5_I3n.dff8n(DYMO_STORE5_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.ETAV*/ sprite_store.ETAV_STORE5_I4n.dff8n(DYMO_STORE5_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.EKAP*/ sprite_store.EKAP_STORE5_I5n.dff8n(DYMO_STORE5_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.ACEP*/ sprite_store.ACEP_STORE5_L0n.dff8n(BUCY_STORE5_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.ABEG*/ sprite_store.ABEG_STORE5_L1n.dff8n(BUCY_STORE5_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.ABUX*/ sprite_store.ABUX_STORE5_L2n.dff8n(BUCY_STORE5_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.ANED*/ sprite_store.ANED_STORE5_L3n.dff8n(BUCY_STORE5_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.FUSA*/ sprite_store.FUSA_STORE5_X0p.dff9(CYLA_STORE5_CLKp, EJAD_STORE5_RSTn, _ZAGO_X0n);
     /*p31.FAXA*/ sprite_store.FAXA_STORE5_X1p.dff9(CYLA_STORE5_CLKp, EJAD_STORE5_RSTn, _ZOCY_X1n);
     /*p31.FOZY*/ sprite_store.FOZY_STORE5_X2p.dff9(CYLA_STORE5_CLKp, EJAD_STORE5_RSTn, _YPUR_X2n);
@@ -1668,6 +1758,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.DYBY*/ sprite_store.DYBY_STORE5_X5p.dff9(CYLA_STORE5_CLKp, EJAD_STORE5_RSTn, _AROP_X5n);
     /*p31.DURY*/ sprite_store.DURY_STORE5_X6p.dff9(CYLA_STORE5_CLKp, EJAD_STORE5_RSTn, _XATU_X6n);
     /*p31.CUVY*/ sprite_store.CUVY_STORE5_X7p.dff9(CYLA_STORE5_CLKp, EJAD_STORE5_RSTn, _BADY_X7n);
+
+    sprite_store.EKOP_STORE5_I0n.commit();
+    sprite_store.ETYM_STORE5_I1n.commit();
+    sprite_store.GORU_STORE5_I2n.commit();
+    sprite_store.EBEX_STORE5_I3n.commit();
+    sprite_store.ETAV_STORE5_I4n.commit();
+    sprite_store.EKAP_STORE5_I5n.commit();
+    sprite_store.ACEP_STORE5_L0n.commit();
+    sprite_store.ABEG_STORE5_L1n.commit();
+    sprite_store.ABUX_STORE5_L2n.commit();
+    sprite_store.ANED_STORE5_L3n.commit();
+    sprite_store.FUSA_STORE5_X0p.commit();
+    sprite_store.FAXA_STORE5_X1p.commit();
+    sprite_store.FOZY_STORE5_X2p.commit();
+    sprite_store.FESY_STORE5_X3p.commit();
+    sprite_store.CYWE_STORE5_X4p.commit();
+    sprite_store.DYBY_STORE5_X5p.commit();
+    sprite_store.DURY_STORE5_X6p.commit();
+    sprite_store.CUVY_STORE5_X7p.commit();
 
     /*p29.ZAPE*/ wire ZAPE_STORE6_CLKp = not1(WEKA_STORE6_CLKn);
     /*p29.WUSE*/ wire WUSE_STORE6_CLKp = not1(WEKA_STORE6_CLKn);
@@ -1679,12 +1788,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.GOHU*/ sprite_store.GOHU_STORE6_I3n.dff8n(WUSE_STORE6_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.FOXY*/ sprite_store.FOXY_STORE6_I4n.dff8n(WUSE_STORE6_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.GECU*/ sprite_store.GECU_STORE6_I5n.dff8n(WUSE_STORE6_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.ZUMY*/ sprite_store.ZUMY_STORE6_L0n.dff8n(ZURU_STORE6_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.ZAFU*/ sprite_store.ZAFU_STORE6_L1n.dff8n(ZURU_STORE6_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.ZEXO*/ sprite_store.ZEXO_STORE6_L2n.dff8n(ZURU_STORE6_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.ZUBE*/ sprite_store.ZUBE_STORE6_L3n.dff8n(ZURU_STORE6_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.YCOL*/ sprite_store.YCOL_STORE6_X0p.dff9(ZAPE_STORE6_CLKp, XAHO_STORE6_RSTn, _ZAGO_X0n);
     /*p31.YRAC*/ sprite_store.YRAC_STORE6_X1p.dff9(ZAPE_STORE6_CLKp, XAHO_STORE6_RSTn, _ZOCY_X1n);
     /*p31.YMEM*/ sprite_store.YMEM_STORE6_X2p.dff9(ZAPE_STORE6_CLKp, XAHO_STORE6_RSTn, _YPUR_X2n);
@@ -1693,6 +1800,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.ZOGO*/ sprite_store.ZOGO_STORE6_X5p.dff9(ZAPE_STORE6_CLKp, XAHO_STORE6_RSTn, _AROP_X5n);
     /*p31.ZECU*/ sprite_store.ZECU_STORE6_X6p.dff9(ZAPE_STORE6_CLKp, XAHO_STORE6_RSTn, _XATU_X6n);
     /*p31.ZESA*/ sprite_store.ZESA_STORE6_X7p.dff9(ZAPE_STORE6_CLKp, XAHO_STORE6_RSTn, _BADY_X7n);
+
+    sprite_store.GABO_STORE6_I0n.commit();
+    sprite_store.GACY_STORE6_I1n.commit();
+    sprite_store.FOGO_STORE6_I2n.commit();
+    sprite_store.GOHU_STORE6_I3n.commit();
+    sprite_store.FOXY_STORE6_I4n.commit();
+    sprite_store.GECU_STORE6_I5n.commit();
+    sprite_store.ZUMY_STORE6_L0n.commit();
+    sprite_store.ZAFU_STORE6_L1n.commit();
+    sprite_store.ZEXO_STORE6_L2n.commit();
+    sprite_store.ZUBE_STORE6_L3n.commit();
+    sprite_store.YCOL_STORE6_X0p.commit();
+    sprite_store.YRAC_STORE6_X1p.commit();
+    sprite_store.YMEM_STORE6_X2p.commit();
+    sprite_store.YVAG_STORE6_X3p.commit();
+    sprite_store.ZOLY_STORE6_X4p.commit();
+    sprite_store.ZOGO_STORE6_X5p.commit();
+    sprite_store.ZECU_STORE6_X6p.commit();
+    sprite_store.ZESA_STORE6_X7p.commit();
 
     /*p29.GECY*/ wire GECY_STORE7_CLKp = not1(GYVO_STORE7_CLKn);
     /*p29.FEFO*/ wire FEFO_STORE7_CLKp = not1(GYVO_STORE7_CLKn);
@@ -1704,12 +1830,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.FYSU*/ sprite_store.FYSU_STORE7_I3n.dff8n(FEFO_STORE7_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.GESY*/ sprite_store.GESY_STORE7_I4n.dff8n(FEFO_STORE7_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.FUZO*/ sprite_store.FUZO_STORE7_I5n.dff8n(FEFO_STORE7_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.XYNA*/ sprite_store.XYNA_STORE7_L0n.dff8n(WABE_STORE7_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.YGUM*/ sprite_store.YGUM_STORE7_L1n.dff8n(WABE_STORE7_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.XAKU*/ sprite_store.XAKU_STORE7_L2n.dff8n(WABE_STORE7_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.XYGO*/ sprite_store.XYGO_STORE7_L3n.dff8n(WABE_STORE7_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.ERAZ*/ sprite_store.ERAZ_STORE7_X0p.dff9(GECY_STORE7_CLKp, GAFY_STORE7_RSTn, _ZAGO_X0n);
     /*p31.EPUM*/ sprite_store.EPUM_STORE7_X1p.dff9(GECY_STORE7_CLKp, GAFY_STORE7_RSTn, _ZOCY_X1n);
     /*p31.EROL*/ sprite_store.EROL_STORE7_X2p.dff9(GECY_STORE7_CLKp, GAFY_STORE7_RSTn, _YPUR_X2n);
@@ -1718,6 +1842,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.FAXE*/ sprite_store.FAXE_STORE7_X5p.dff9(GECY_STORE7_CLKp, GAFY_STORE7_RSTn, _AROP_X5n);
     /*p31.EXUK*/ sprite_store.EXUK_STORE7_X6p.dff9(GECY_STORE7_CLKp, GAFY_STORE7_RSTn, _XATU_X6n);
     /*p31.FEDE*/ sprite_store.FEDE_STORE7_X7p.dff9(GECY_STORE7_CLKp, GAFY_STORE7_RSTn, _BADY_X7n);
+
+    sprite_store.GULE_STORE7_I0n.commit();
+    sprite_store.GYNO_STORE7_I1n.commit();
+    sprite_store.FEFA_STORE7_I2n.commit();
+    sprite_store.FYSU_STORE7_I3n.commit();
+    sprite_store.GESY_STORE7_I4n.commit();
+    sprite_store.FUZO_STORE7_I5n.commit();
+    sprite_store.XYNA_STORE7_L0n.commit();
+    sprite_store.YGUM_STORE7_L1n.commit();
+    sprite_store.XAKU_STORE7_L2n.commit();
+    sprite_store.XYGO_STORE7_L3n.commit();
+    sprite_store.ERAZ_STORE7_X0p.commit();
+    sprite_store.EPUM_STORE7_X1p.commit();
+    sprite_store.EROL_STORE7_X2p.commit();
+    sprite_store.EHYN_STORE7_X3p.commit();
+    sprite_store.FAZU_STORE7_X4p.commit();
+    sprite_store.FAXE_STORE7_X5p.commit();
+    sprite_store.EXUK_STORE7_X6p.commit();
+    sprite_store.FEDE_STORE7_X7p.commit();
 
     /*p29.CEXU*/ wire CEXU_STORE8_CLKp = not1(BUKA_STORE8_CLKn);
     /*p29.AKOL*/ wire AKOL_STORE8_CLKp = not1(BUKA_STORE8_CLKn);
@@ -1729,12 +1872,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.BADO*/ sprite_store.BADO_STORE8_I3n.dff8n(AKOL_STORE8_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.BEXY*/ sprite_store.BEXY_STORE8_I4n.dff8n(AKOL_STORE8_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.BYHE*/ sprite_store.BYHE_STORE8_I5n.dff8n(AKOL_STORE8_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.AZAP*/ sprite_store.AZAP_STORE8_L0n.dff8n(BYMY_STORE8_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.AFYX*/ sprite_store.AFYX_STORE8_L1n.dff8n(BYMY_STORE8_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.AFUT*/ sprite_store.AFUT_STORE8_L2n.dff8n(BYMY_STORE8_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.AFYM*/ sprite_store.AFYM_STORE8_L3n.dff8n(BYMY_STORE8_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.EZUF*/ sprite_store.EZUF_STORE8_X0p.dff9(CEXU_STORE8_CLKp, WUZO_STORE8_RSTn, _COSE_X4n);
     /*p31.ENAD*/ sprite_store.ENAD_STORE8_X1p.dff9(CEXU_STORE8_CLKp, WUZO_STORE8_RSTn, _AROP_X5n);
     /*p31.EBOW*/ sprite_store.EBOW_STORE8_X2p.dff9(CEXU_STORE8_CLKp, WUZO_STORE8_RSTn, _XATU_X6n);
@@ -1743,6 +1884,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.GYPU*/ sprite_store.GYPU_STORE8_X5p.dff9(CEXU_STORE8_CLKp, WUZO_STORE8_RSTn, _ZOCY_X1n);
     /*p31.GADY*/ sprite_store.GADY_STORE8_X6p.dff9(CEXU_STORE8_CLKp, WUZO_STORE8_RSTn, _YPUR_X2n);
     /*p31.GAZA*/ sprite_store.GAZA_STORE8_X7p.dff9(CEXU_STORE8_CLKp, WUZO_STORE8_RSTn, _YVOK_X3n);
+
+    sprite_store.AXUV_STORE8_I0n.commit();
+    sprite_store.BADA_STORE8_I1n.commit();
+    sprite_store.APEV_STORE8_I2n.commit();
+    sprite_store.BADO_STORE8_I3n.commit();
+    sprite_store.BEXY_STORE8_I4n.commit();
+    sprite_store.BYHE_STORE8_I5n.commit();
+    sprite_store.AZAP_STORE8_L0n.commit();
+    sprite_store.AFYX_STORE8_L1n.commit();
+    sprite_store.AFUT_STORE8_L2n.commit();
+    sprite_store.AFYM_STORE8_L3n.commit();
+    sprite_store.EZUF_STORE8_X0p.commit();
+    sprite_store.ENAD_STORE8_X1p.commit();
+    sprite_store.EBOW_STORE8_X2p.commit();
+    sprite_store.FYCA_STORE8_X3p.commit();
+    sprite_store.GAVY_STORE8_X4p.commit();
+    sprite_store.GYPU_STORE8_X5p.commit();
+    sprite_store.GADY_STORE8_X6p.commit();
+    sprite_store.GAZA_STORE8_X7p.commit();
 
     /*p29.WEME*/ wire WEME_STORE9_CLKp = not1(DECU_STORE9_CLKn);
     /*p29.WUFA*/ wire WUFA_STORE9_CLKp = not1(DECU_STORE9_CLKn);
@@ -1754,12 +1914,10 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p30.XOTU*/ sprite_store.XOTU_STORE9_I3n.dff8n(WUFA_STORE9_CLKp, sprite_store.SPR_TRI_I3p.qp());
     /*p30.XUTE*/ sprite_store.XUTE_STORE9_I4n.dff8n(WUFA_STORE9_CLKp, sprite_store.SPR_TRI_I4p.qp());
     /*p30.XUFO*/ sprite_store.XUFO_STORE9_I5n.dff8n(WUFA_STORE9_CLKp, sprite_store.SPR_TRI_I5p.qp());
-
     /*p30.CANA*/ sprite_store.CANA_STORE9_L0n.dff8n(FAKA_STORE9_CLKp, sprite_store.SPR_TRI_L0.qp());
     /*p30.FOFO*/ sprite_store.FOFO_STORE9_L1n.dff8n(FAKA_STORE9_CLKp, sprite_store.SPR_TRI_L1.qp());
     /*p30.DYSY*/ sprite_store.DYSY_STORE9_L2n.dff8n(FAKA_STORE9_CLKp, sprite_store.SPR_TRI_L2.qp());
     /*p30.DEWU*/ sprite_store.DEWU_STORE9_L3n.dff8n(FAKA_STORE9_CLKp, sprite_store.SPR_TRI_L3.qp());
-
     /*p31.XUVY*/ sprite_store.XUVY_STORE9_X0p.dff9(WEME_STORE9_CLKp, DOSY_STORE9_RSTn, _ZAGO_X0n);
     /*p31.XERE*/ sprite_store.XERE_STORE9_X1p.dff9(WEME_STORE9_CLKp, DOSY_STORE9_RSTn, _ZOCY_X1n);
     /*p31.XUZO*/ sprite_store.XUZO_STORE9_X2p.dff9(WEME_STORE9_CLKp, DOSY_STORE9_RSTn, _YPUR_X2n);
@@ -1768,6 +1926,25 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*p31.YROP*/ sprite_store.YROP_STORE9_X5p.dff9(WEME_STORE9_CLKp, DOSY_STORE9_RSTn, _AROP_X5n);
     /*p31.YNEP*/ sprite_store.YNEP_STORE9_X6p.dff9(WEME_STORE9_CLKp, DOSY_STORE9_RSTn, _XATU_X6n);
     /*p31.YZOF*/ sprite_store.YZOF_STORE9_X7p.dff9(WEME_STORE9_CLKp, DOSY_STORE9_RSTn, _BADY_X7n);
+
+    sprite_store.YBER_STORE9_I0n.commit();
+    sprite_store.YZOR_STORE9_I1n.commit();
+    sprite_store.XYFE_STORE9_I2n.commit();
+    sprite_store.XOTU_STORE9_I3n.commit();
+    sprite_store.XUTE_STORE9_I4n.commit();
+    sprite_store.XUFO_STORE9_I5n.commit();
+    sprite_store.CANA_STORE9_L0n.commit();
+    sprite_store.FOFO_STORE9_L1n.commit();
+    sprite_store.DYSY_STORE9_L2n.commit();
+    sprite_store.DEWU_STORE9_L3n.commit();
+    sprite_store.XUVY_STORE9_X0p.commit();
+    sprite_store.XERE_STORE9_X1p.commit();
+    sprite_store.XUZO_STORE9_X2p.commit();
+    sprite_store.XEXA_STORE9_X3p.commit();
+    sprite_store.YPOD_STORE9_X4p.commit();
+    sprite_store.YROP_STORE9_X5p.commit();
+    sprite_store.YNEP_STORE9_X6p.commit();
+    sprite_store.YZOF_STORE9_X7p.commit();
   }
 
   //------------------------------------------------------------------------------
@@ -1936,35 +2113,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   pix_pipe.VOGA_HBLANKp.commit();
 
   //----------------------------------------
-  // Pixel counter, has carry lookahead because this can increment every tcycle
-
-  {
-    /*p21.RYBO*/ wire _RYBO = xor2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.SAVY_X1p.qp17()); // XOR layout 1, feet facing gnd, this should def be regular xor
-    /*p21.XUKE*/ wire _XUKE = and2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.SAVY_X1p.qp17());
-
-    /*p21.XYLE*/ wire _XYLE = and2(pix_pipe.XODU_X2p.qp17(), _XUKE);
-    /*p21.XEGY*/ wire _XEGY = xor2(pix_pipe.XODU_X2p.qp17(), _XUKE); // feet facing gnd
-    /*p21.XORA*/ wire _XORA = xor2(pix_pipe.XYDO_X3p.qp17(), _XYLE); // feet facing gnd
-
-    /*p21.XEHO*/ pix_pipe.XEHO_X0p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, pix_pipe.XEHO_X0p.qn16());
-    /*p21.SAVY*/ pix_pipe.SAVY_X1p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, _RYBO);
-    /*p21.XODU*/ pix_pipe.XODU_X2p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, _XEGY);
-    /*p21.XYDO*/ pix_pipe.XYDO_X3p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, _XORA);
-
-    /*p21.SAKE*/ wire _SAKE = xor2(pix_pipe.TUHU_X4p.qp17(), pix_pipe.TUKY_X5p.qp17());
-    /*p21.TYBA*/ wire _TYBA = and2(pix_pipe.TUHU_X4p.qp17(), pix_pipe.TUKY_X5p.qp17());
-    /*p21.SURY*/ wire _SURY = and2(pix_pipe.TAKO_X6p.qp17(), _TYBA);
-    /*p21.TYGE*/ wire _TYGE = xor2(pix_pipe.TAKO_X6p.qp17(), _TYBA);
-    /*p21.ROKU*/ wire _ROKU = xor2(pix_pipe.SYBE_X7p.qp17(), _SURY);
-
-    /*p24.TOCA*/ wire _TOCA_CLKPIPE_HI = not1(pix_pipe.XYDO_X3p.qp17());
-    /*p21.TUHU*/ pix_pipe.TUHU_X4p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, pix_pipe.TUHU_X4p.qn16());
-    /*p21.TUKY*/ pix_pipe.TUKY_X5p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, _SAKE);
-    /*p21.TAKO*/ pix_pipe.TAKO_X6p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, _TYGE);
-    /*p21.SYBE*/ pix_pipe.SYBE_X7p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, _ROKU);
-  }
-
-  //----------------------------------------
   // LCD pins that are controlled by the pixel counter
 
   /*#p27.POVA*/ wire _POVA_FINE_MATCHpe = and2(pix_pipe.NYZE_SCX_FINE_MATCH_B.qn16(), pix_pipe.PUXA_SCX_FINE_MATCH_A.qp17());
@@ -1977,6 +2125,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
 
     PIN_LCD_CLOCK.io_pin(_RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
+    PIN_LCD_CLOCK.commit();
   }
 
   {
@@ -1997,6 +2146,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
     /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(pix_pipe.POFY);
     PIN_LCD_HSYNC.io_pin(_RUZE_HSYNCn, _RUZE_HSYNCn);
+    PIN_LCD_HSYNC.commit();
   }
 
   //----------------------------------------
@@ -2004,15 +2154,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(pix_pipe.RUBU_FINE_CNT2.qp17(), pix_pipe.ROGA_FINE_CNT1.qp17(), pix_pipe.RYKU_FINE_CNT0.qp17());
   /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn03());
-
-  {
-    /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPEp, _ROZE_FINE_COUNT_7n);
-    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, _TEVO_FETCH_TRIGp);
-
-    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK,                     _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn16());
-    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn16(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn16());
-    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn16(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn16());
-  }
 
   //----------------------------------------
 
@@ -2025,57 +2166,29 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p27.POHU*/ wire _POHU_SCX_FINE_MATCHp = not1(_RONE_SCX_FINE_MATCHn);
 
     /* p27.MOXE*/ wire _MOXE_AxCxExGx = not1(_ALET_xBxDxFxH);
-    /*#p27.PUXA*/ pix_pipe.PUXA_SCX_FINE_MATCH_A.dff17(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), _POHU_SCX_FINE_MATCHp);
+
     /*#p27.NYZE*/ pix_pipe.NYZE_SCX_FINE_MATCH_B.dff17(_MOXE_AxCxExGx, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.PUXA_SCX_FINE_MATCH_A.qp17());
+    pix_pipe.NYZE_SCX_FINE_MATCH_B.commit();
+
+    /*#p27.PUXA*/ pix_pipe.PUXA_SCX_FINE_MATCH_A.dff17(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), _POHU_SCX_FINE_MATCHp);
+    pix_pipe.PUXA_SCX_FINE_MATCH_A.commit();
 
     /*#p27.ROXY*/ pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCHpe);
-  }
-
-  //----------------------------------------
-  // Window matcher
-
-  {
-    /*#p27.NAZE*/ wire _NAZE_WY_MATCH0 = xnor2(pix_pipe.NESO_WY0n.qn08(), lcd_reg.MUWY_Y0p.qp17());
-    /* p27.PEBO*/ wire _PEBO_WY_MATCH1 = xnor2(pix_pipe.NYRO_WY1n.qn08(), lcd_reg.MYRO_Y1p.qp17());
-    /* p27.POMO*/ wire _POMO_WY_MATCH2 = xnor2(pix_pipe.NAGA_WY2n.qn08(), lcd_reg.LEXA_Y2p.qp17());
-    /* p27.NEVU*/ wire _NEVU_WY_MATCH3 = xnor2(pix_pipe.MELA_WY3n.qn08(), lcd_reg.LYDO_Y3p.qp17());
-    /* p27.NOJO*/ wire _NOJO_WY_MATCH4 = xnor2(pix_pipe.NULO_WY4n.qn08(), lcd_reg.LOVU_Y4p.qp17());
-    /* p27.PAGA*/ wire _PAGA_WY_MATCH5 = xnor2(pix_pipe.NENE_WY5n.qn08(), lcd_reg.LEMA_Y5p.qp17());
-    /* p27.PEZO*/ wire _PEZO_WY_MATCH6 = xnor2(pix_pipe.NUKA_WY6n.qn08(), lcd_reg.MATO_Y6p.qp17());
-    /* p27.NUPA*/ wire _NUPA_WY_MATCH7 = xnor2(pix_pipe.NAFU_WY7n.qn08(), lcd_reg.LAFO_Y7p.qp17());
-
-    /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn  = nand5(pix_pipe.WYMO_LCDC_WINENn.qn08(), _NOJO_WY_MATCH4, _PAGA_WY_MATCH5, _PEZO_WY_MATCH6, _NUPA_WY_MATCH7);
-    /* p27.NELE*/ wire _NELE_WY_MATCH_HI   = not1(_PALO_WY_MATCH_HIn);
-    /* p27.PAFU*/ wire _PAFU_WY_MATCHn     = nand5(_NELE_WY_MATCH_HI, _NAZE_WY_MATCH0, _PEBO_WY_MATCH1, _POMO_WY_MATCH2, _NEVU_WY_MATCH3);
-    /* p27.ROGE*/ wire _ROGE_WY_MATCHp = not1(_PAFU_WY_MATCHn);
-    /* p27.SARY*/ pix_pipe.SARY_WY_MATCH.dff17(_TALU_xxCDEFxx, _XAPO_VID_RSTn, _ROGE_WY_MATCHp);
-    /* p27.REJO*/ pix_pipe.REJO_WY_MATCH_LATCH.nor_latch(pix_pipe.SARY_WY_MATCH.qp17(), _REPU_VBLANK_RSTp);
+    pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.commit();
   }
 
   {
-    /*#p27.MYLO*/ wire _MYLO_WX_MATCH0 = xnor2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.MYPA_WX0n.qn08());
-    /* p27.PUWU*/ wire _PUWU_WX_MATCH1 = xnor2(pix_pipe.SAVY_X1p.qp17(), pix_pipe.NOFE_WX1n.qn08());
-    /* p27.PUHO*/ wire _PUHO_WX_MATCH2 = xnor2(pix_pipe.XODU_X2p.qp17(), pix_pipe.NOKE_WX2n.qn08());
-    /* p27.NYTU*/ wire _NYTU_WX_MATCH3 = xnor2(pix_pipe.XYDO_X3p.qp17(), pix_pipe.MEBY_WX3n.qn08());
-    /* p27.NEZO*/ wire _NEZO_WX_MATCH4 = xnor2(pix_pipe.TUHU_X4p.qp17(), pix_pipe.MYPU_WX4n.qn08());
-    /* p27.NORY*/ wire _NORY_WX_MATCH5 = xnor2(pix_pipe.TUKY_X5p.qp17(), pix_pipe.MYCE_WX5n.qn08());
-    /* p27.NONO*/ wire _NONO_WX_MATCH6 = xnor2(pix_pipe.TAKO_X6p.qp17(), pix_pipe.MUVO_WX6n.qn08());
-    /* p27.PASE*/ wire _PASE_WX_MATCH7 = xnor2(pix_pipe.SYBE_X7p.qp17(), pix_pipe.NUKU_WX7n.qn08());
+    /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPEp, _ROZE_FINE_COUNT_7n);
+    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, _TEVO_FETCH_TRIGp);
 
-    /*p27.PUKY*/ wire _PUKY_WX_MATCH_HIn  = nand5(pix_pipe.REJO_WY_MATCH_LATCH.qp04(), _NEZO_WX_MATCH4, _NORY_WX_MATCH5, _NONO_WX_MATCH6, _PASE_WX_MATCH7);
-    /*p27.NUFA*/ wire _NUFA_WX_MATCH_HI   = not1(_PUKY_WX_MATCH_HIn);
-    /*p27.NOGY*/ wire _NOGY_WX_MATCHn     = nand5(_NUFA_WX_MATCH_HI, _MYLO_WX_MATCH0, _PUWU_WX_MATCH1, _PUHO_WX_MATCH2, _NYTU_WX_MATCH3);
-    /*p27.NUKO*/ wire _NUKO_WX_MATCHp = not1(_NOGY_WX_MATCHn);
+    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn16(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn16());
+    pix_pipe.RUBU_FINE_CNT2.commit();
 
-    // This trigger fires on the pixel _at_ WX
-    /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not1(_SEGU_CLKPIPEn);
-    /*p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_A.dff17(_ROCO_CLKPIPEp, _XAPO_VID_RSTn, _NUKO_WX_MATCHp);
-    /*p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_B.dff17(_MEHE_AxCxExGx, _XAPO_VID_RSTn, pix_pipe.PYCO_WX_MATCH_A.qp17());
+    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn16(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn16());
+    pix_pipe.ROGA_FINE_CNT1.commit();
 
-    /*p27.PANY*/ wire _PANY_FETCHn = nor2(_NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
-
-    /*p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17(_SEGU_CLKPIPEn, pix_pipe.XYMU_RENDERINGn.qn03(), _PANY_FETCHn);
-    /*p27.RENE*/ pix_pipe.RENE_FETCHn_B.dff17(_ALET_xBxDxFxH, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.RYFA_FETCHn_A.qp17());
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK,                 _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn16());
+    pix_pipe.RYKU_FINE_CNT0.commit();
   }
 
   //----------------------------------------
@@ -2099,6 +2212,61 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     pix_pipe.PUKU.commit();
     pix_pipe.RYDY.commit();
 
+  }
+
+  //----------------------------------------
+  // Window matcher
+
+  {
+    /*#p27.NAZE*/ wire _NAZE_WY_MATCH0 = xnor2(pix_pipe.NESO_WY0n.qn08(), lcd_reg.MUWY_Y0p.qp17());
+    /* p27.PEBO*/ wire _PEBO_WY_MATCH1 = xnor2(pix_pipe.NYRO_WY1n.qn08(), lcd_reg.MYRO_Y1p.qp17());
+    /* p27.POMO*/ wire _POMO_WY_MATCH2 = xnor2(pix_pipe.NAGA_WY2n.qn08(), lcd_reg.LEXA_Y2p.qp17());
+    /* p27.NEVU*/ wire _NEVU_WY_MATCH3 = xnor2(pix_pipe.MELA_WY3n.qn08(), lcd_reg.LYDO_Y3p.qp17());
+    /* p27.NOJO*/ wire _NOJO_WY_MATCH4 = xnor2(pix_pipe.NULO_WY4n.qn08(), lcd_reg.LOVU_Y4p.qp17());
+    /* p27.PAGA*/ wire _PAGA_WY_MATCH5 = xnor2(pix_pipe.NENE_WY5n.qn08(), lcd_reg.LEMA_Y5p.qp17());
+    /* p27.PEZO*/ wire _PEZO_WY_MATCH6 = xnor2(pix_pipe.NUKA_WY6n.qn08(), lcd_reg.MATO_Y6p.qp17());
+    /* p27.NUPA*/ wire _NUPA_WY_MATCH7 = xnor2(pix_pipe.NAFU_WY7n.qn08(), lcd_reg.LAFO_Y7p.qp17());
+
+    /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn  = nand5(pix_pipe.WYMO_LCDC_WINENn.qn08(), _NOJO_WY_MATCH4, _PAGA_WY_MATCH5, _PEZO_WY_MATCH6, _NUPA_WY_MATCH7);
+    /* p27.NELE*/ wire _NELE_WY_MATCH_HI   = not1(_PALO_WY_MATCH_HIn);
+    /* p27.PAFU*/ wire _PAFU_WY_MATCHn     = nand5(_NELE_WY_MATCH_HI, _NAZE_WY_MATCH0, _PEBO_WY_MATCH1, _POMO_WY_MATCH2, _NEVU_WY_MATCH3);
+    /* p27.ROGE*/ wire _ROGE_WY_MATCHp = not1(_PAFU_WY_MATCHn);
+
+    /*#p27.MYLO*/ wire _MYLO_WX_MATCH0 = xnor2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.MYPA_WX0n.qn08());
+    /* p27.PUWU*/ wire _PUWU_WX_MATCH1 = xnor2(pix_pipe.SAVY_X1p.qp17(), pix_pipe.NOFE_WX1n.qn08());
+    /* p27.PUHO*/ wire _PUHO_WX_MATCH2 = xnor2(pix_pipe.XODU_X2p.qp17(), pix_pipe.NOKE_WX2n.qn08());
+    /* p27.NYTU*/ wire _NYTU_WX_MATCH3 = xnor2(pix_pipe.XYDO_X3p.qp17(), pix_pipe.MEBY_WX3n.qn08());
+    /* p27.NEZO*/ wire _NEZO_WX_MATCH4 = xnor2(pix_pipe.TUHU_X4p.qp17(), pix_pipe.MYPU_WX4n.qn08());
+    /* p27.NORY*/ wire _NORY_WX_MATCH5 = xnor2(pix_pipe.TUKY_X5p.qp17(), pix_pipe.MYCE_WX5n.qn08());
+    /* p27.NONO*/ wire _NONO_WX_MATCH6 = xnor2(pix_pipe.TAKO_X6p.qp17(), pix_pipe.MUVO_WX6n.qn08());
+    /* p27.PASE*/ wire _PASE_WX_MATCH7 = xnor2(pix_pipe.SYBE_X7p.qp17(), pix_pipe.NUKU_WX7n.qn08());
+
+    /*p27.PUKY*/ wire _PUKY_WX_MATCH_HIn  = nand5(pix_pipe.REJO_WY_MATCH_LATCH.qp04(), _NEZO_WX_MATCH4, _NORY_WX_MATCH5, _NONO_WX_MATCH6, _PASE_WX_MATCH7);
+    /*p27.NUFA*/ wire _NUFA_WX_MATCH_HI   = not1(_PUKY_WX_MATCH_HIn);
+    /*p27.NOGY*/ wire _NOGY_WX_MATCHn     = nand5(_NUFA_WX_MATCH_HI, _MYLO_WX_MATCH0, _PUWU_WX_MATCH1, _PUHO_WX_MATCH2, _NYTU_WX_MATCH3);
+    /*p27.NUKO*/ wire _NUKO_WX_MATCHp = not1(_NOGY_WX_MATCHn);
+
+    /* p27.REJO*/ pix_pipe.REJO_WY_MATCH_LATCH.nor_latch(pix_pipe.SARY_WY_MATCH.qp17(), _REPU_VBLANK_RSTp);
+    pix_pipe.REJO_WY_MATCH_LATCH.commit();
+
+    /* p27.SARY*/ pix_pipe.SARY_WY_MATCH.dff17(_TALU_xxCDEFxx, _XAPO_VID_RSTn, _ROGE_WY_MATCHp);
+    pix_pipe.SARY_WY_MATCH.commit();
+
+    // This trigger fires on the pixel _at_ WX
+    /*p27.ROCO*/ wire _ROCO_CLKPIPEp = not1(_SEGU_CLKPIPEn);
+    /*p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_B.dff17(_MEHE_AxCxExGx, _XAPO_VID_RSTn, pix_pipe.PYCO_WX_MATCH_A.qp17());
+    pix_pipe.NUNU_WX_MATCH_B.commit();
+
+    /*p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_A.dff17(_ROCO_CLKPIPEp, _XAPO_VID_RSTn, _NUKO_WX_MATCHp);
+    pix_pipe.PYCO_WX_MATCH_A.commit();
+
+    /*p27.PANY*/ wire _PANY_FETCHn = nor2(_NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
+
+    /*p27.RENE*/ pix_pipe.RENE_FETCHn_B.dff17(_ALET_xBxDxFxH, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.RYFA_FETCHn_A.qp17());
+    pix_pipe.RENE_FETCHn_B.commit();
+
+    /*p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17(_SEGU_CLKPIPEn, pix_pipe.XYMU_RENDERINGn.qn03(), _PANY_FETCHn);
+    pix_pipe.RYFA_FETCHn_A.commit();
   }
 
   //----------------------------------------
@@ -3520,6 +3688,43 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   //----------------------------------------
+  // Pixel counter, has carry lookahead because this can increment every tcycle
+
+  {
+    /*p21.RYBO*/ wire _RYBO = xor2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.SAVY_X1p.qp17()); // XOR layout 1, feet facing gnd, this should def be regular xor
+    /*p21.XUKE*/ wire _XUKE = and2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.SAVY_X1p.qp17());
+
+    /*p21.XYLE*/ wire _XYLE = and2(pix_pipe.XODU_X2p.qp17(), _XUKE);
+    /*p21.XEGY*/ wire _XEGY = xor2(pix_pipe.XODU_X2p.qp17(), _XUKE); // feet facing gnd
+    /*p21.XORA*/ wire _XORA = xor2(pix_pipe.XYDO_X3p.qp17(), _XYLE); // feet facing gnd
+
+    /*p21.XEHO*/ pix_pipe.XEHO_X0p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, pix_pipe.XEHO_X0p.qn16());
+    /*p21.SAVY*/ pix_pipe.SAVY_X1p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, _RYBO);
+    /*p21.XODU*/ pix_pipe.XODU_X2p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, _XEGY);
+    /*p21.XYDO*/ pix_pipe.XYDO_X3p.dff17(_SACU_CLKPIPEp, _TADY_LINE_START_RSTn, _XORA);
+
+    /*p21.SAKE*/ wire _SAKE = xor2(pix_pipe.TUHU_X4p.qp17(), pix_pipe.TUKY_X5p.qp17());
+    /*p21.TYBA*/ wire _TYBA = and2(pix_pipe.TUHU_X4p.qp17(), pix_pipe.TUKY_X5p.qp17());
+    /*p21.SURY*/ wire _SURY = and2(pix_pipe.TAKO_X6p.qp17(), _TYBA);
+    /*p21.TYGE*/ wire _TYGE = xor2(pix_pipe.TAKO_X6p.qp17(), _TYBA);
+    /*p21.ROKU*/ wire _ROKU = xor2(pix_pipe.SYBE_X7p.qp17(), _SURY);
+
+    /*p24.TOCA*/ wire _TOCA_CLKPIPE_HI = not1(pix_pipe.XYDO_X3p.qp17());
+    /*p21.TUHU*/ pix_pipe.TUHU_X4p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, pix_pipe.TUHU_X4p.qn16());
+    /*p21.TUKY*/ pix_pipe.TUKY_X5p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, _SAKE);
+    /*p21.TAKO*/ pix_pipe.TAKO_X6p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, _TYGE);
+    /*p21.SYBE*/ pix_pipe.SYBE_X7p.dff17(_TOCA_CLKPIPE_HI, _TADY_LINE_START_RSTn, _ROKU);
+    pix_pipe.XEHO_X0p.commit();
+    pix_pipe.SAVY_X1p.commit();
+    pix_pipe.XODU_X2p.commit();
+    pix_pipe.XYDO_X3p.commit();
+    pix_pipe.TUHU_X4p.commit();
+    pix_pipe.TUKY_X5p.commit();
+    pix_pipe.TAKO_X6p.commit();
+    pix_pipe.SYBE_X7p.commit();
+  }
+
+  //----------------------------------------
   // OAM data in
 
   // OBL -> temp
@@ -3682,7 +3887,7 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(sprite_store.CUXY_SPRITE_COUNT1.qp17(), sprite_store.DYBE_SPRITE_COUNT3.qp17());
     /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, sprite_store.DEZY_STORE_ENn.qp17());
 
-    /*p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_CLKp,                                 _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
+    /*p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_CLKp,                             _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
     /*p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17(sprite_store.BESE_SPRITE_COUNT0.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
     /*p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17(sprite_store.CUXY_SPRITE_COUNT1.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
     /*p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17(sprite_store.BEGO_SPRITE_COUNT2.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
@@ -3694,12 +3899,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   }
 
   {
-    // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
-
-    /*#p30.CUCU*/ sprite_store.SPR_TRI_L0.tri_6nn(_FEPO_STORE_MATCHp, DEGE_SPRITE_DELTA0);
-    /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(_FEPO_STORE_MATCHp, DABY_SPRITE_DELTA1);
-    /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(_FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
-    /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(_FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
     sprite_store.SPR_TRI_L0.commit();
     sprite_store.SPR_TRI_L1.commit();
     sprite_store.SPR_TRI_L2.commit();

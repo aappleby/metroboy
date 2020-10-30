@@ -313,6 +313,7 @@ struct RegBase {
 struct Gate : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::commit;
 
   operator wire() const { return as_wire(); }
 

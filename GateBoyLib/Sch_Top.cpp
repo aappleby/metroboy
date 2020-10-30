@@ -3538,16 +3538,24 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
     /*#p04.LOKO*/ wire _LOKO_DMA_RSTp = nand2(dma_reg.LENE_DMA_TRIG_d4.qn16(), _CUNU_SYS_RSTn);
     /*#p04.LAPA*/ wire _LAPA_DMA_RSTn = not1(_LOKO_DMA_RSTp);
+    /*#p04.META*/ wire _META_DMA_CLKp = and2(_UVYT_ABCDxxxx, dma_reg.LOKY_DMA_LATCHp.qp03());
 
     {
-      /*#p04.LYXE*/ dma_reg.LYXE_DMA_LATCHp.nor_latch(_LAVY_FF46_WRp, _LOKO_DMA_RSTp);
+      /*#p04.MATU*/ dma_reg.MATU_DMA_RUNNINGp .dff17(_UVYT_ABCDxxxx, _CUNU_SYS_RSTn, dma_reg.LOKY_DMA_LATCHp.qp03());
+      dma_reg.MATU_DMA_RUNNINGp.commit();
+
+      /*#p04.LOKY*/ dma_reg.LOKY_DMA_LATCHp.nand_latch(dma_reg.LENE_DMA_TRIG_d4.qn16(), and2(dma_reg.MYTE_DMA_DONE.qn16(), _CUNU_SYS_RSTn));
+      dma_reg.LOKY_DMA_LATCHp.commit();
+
+      /*#p04.LENE*/ dma_reg.LENE_DMA_TRIG_d4  .dff17(_MOPA_xxxxEFGH, _CUNU_SYS_RSTn, dma_reg.LUVY_DMA_TRIG_d0.qp17());
+      dma_reg.LENE_DMA_TRIG_d4.commit();
 
       /*#p04.LUPA*/ wire _LUPA_DMA_TRIG = nor2(_LAVY_FF46_WRp, dma_reg.LYXE_DMA_LATCHp.qn03());
       /*#p04.LUVY*/ dma_reg.LUVY_DMA_TRIG_d0  .dff17(_UVYT_ABCDxxxx, _CUNU_SYS_RSTn, _LUPA_DMA_TRIG);
-      /*#p04.LENE*/ dma_reg.LENE_DMA_TRIG_d4  .dff17(_MOPA_xxxxEFGH, _CUNU_SYS_RSTn, dma_reg.LUVY_DMA_TRIG_d0.qp17());
+      dma_reg.LUVY_DMA_TRIG_d0.commit();
 
-      /*#p04.LOKY*/ dma_reg.LOKY_DMA_LATCHp.nand_latch(dma_reg.LENE_DMA_TRIG_d4.qn16(), and2(dma_reg.MYTE_DMA_DONE.qn16(), _CUNU_SYS_RSTn));
-      /*#p04.MATU*/ dma_reg.MATU_DMA_RUNNINGp .dff17(_UVYT_ABCDxxxx, _CUNU_SYS_RSTn, dma_reg.LOKY_DMA_LATCHp.qp03());
+      /*#p04.LYXE*/ dma_reg.LYXE_DMA_LATCHp.nor_latch(_LAVY_FF46_WRp, _LOKO_DMA_RSTp);
+      dma_reg.LYXE_DMA_LATCHp.commit();
     }
 
     {
@@ -3558,12 +3566,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
                                                  dma_reg.NYKO_DMA_A04p.qp17(), dma_reg.MUGU_DMA_A07p.qp17());
       /*#p04.NOLO*/ wire _NOLO_DMA_DONEp = not1(_NAVO_DMA_DONEn);
       /*#p04.MYTE*/ dma_reg.MYTE_DMA_DONE.dff17(_MOPA_xxxxEFGH, _LAPA_DMA_RSTn, _NOLO_DMA_DONEp);
+      dma_reg.MYTE_DMA_DONE.commit();
     }
 
     {
-      /*#p04.META*/ wire _META_DMA_CLKp = and2(_UVYT_ABCDxxxx, dma_reg.LOKY_DMA_LATCHp.qp03());
-
-      /*#p04.NAKY*/ dma_reg.NAKY_DMA_A00p.dff17(_META_DMA_CLKp,                   _LAPA_DMA_RSTn, dma_reg.NAKY_DMA_A00p.qn16());
+      /*#p04.NAKY*/ dma_reg.NAKY_DMA_A00p.dff17(_META_DMA_CLKp,               _LAPA_DMA_RSTn, dma_reg.NAKY_DMA_A00p.qn16());
       /*#p04.PYRO*/ dma_reg.PYRO_DMA_A01p.dff17(dma_reg.NAKY_DMA_A00p.qn16(), _LAPA_DMA_RSTn, dma_reg.PYRO_DMA_A01p.qn16());
       /* p04.NEFY*/ dma_reg.NEFY_DMA_A02p.dff17(dma_reg.PYRO_DMA_A01p.qn16(), _LAPA_DMA_RSTn, dma_reg.NEFY_DMA_A02p.qn16());
       /* p04.MUTY*/ dma_reg.MUTY_DMA_A03p.dff17(dma_reg.NEFY_DMA_A02p.qn16(), _LAPA_DMA_RSTn, dma_reg.MUTY_DMA_A03p.qn16());

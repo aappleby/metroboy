@@ -1246,35 +1246,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p31.BADY*/ wire _BADY_X7n = not1(oam_bus.DEPO_OAM_DB7p.qp08());
 
   //----------------------------------------
-  // Sprite scan Y matcher
-
-  {
-    // Sprite store counter.
-    // The sprite count clock stops ticking once we have 10 sprites.
-
-    /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(sprite_store.CUXY_SPRITE_COUNT1.qp17(), sprite_store.DYBE_SPRITE_COUNT3.qp17());
-    /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, sprite_store.DEZY_STORE_ENn.qp17());
-
-    /*p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_CLKp,                                 _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
-    /*p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17(sprite_store.BESE_SPRITE_COUNT0.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
-    /*p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17(sprite_store.CUXY_SPRITE_COUNT1.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
-    /*p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17(sprite_store.BEGO_SPRITE_COUNT2.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
-  }
-
-  //----------------------------------------
-
-  {
-    // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
-
-    /*#p30.CUCU*/ sprite_store.SPR_TRI_L0.tri_6nn(_FEPO_STORE_MATCHp, DEGE_SPRITE_DELTA0);
-    /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(_FEPO_STORE_MATCHp, DABY_SPRITE_DELTA1);
-    /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(_FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
-    /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(_FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
-
-    /* p29.DEZY*/ sprite_store.DEZY_STORE_ENn.dff17(_ZEME_AxCxExGx, _XAPO_VID_RSTn, _DYTY_STORE_ENn_xxCDxxGH);
-  }
-
-  //----------------------------------------
   // Sprite store getter
 
   {
@@ -3789,6 +3760,42 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     vram_bus.PIN_VRAM_D05p.commit();
     vram_bus.PIN_VRAM_D06p.commit();
     vram_bus.PIN_VRAM_D07p.commit();
+  }
+
+  {
+    // Sprite store counter.
+    // The sprite count clock stops ticking once we have 10 sprites.
+
+    /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(sprite_store.CUXY_SPRITE_COUNT1.qp17(), sprite_store.DYBE_SPRITE_COUNT3.qp17());
+    /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, sprite_store.DEZY_STORE_ENn.qp17());
+
+    /*p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_CLKp,                                 _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
+    /*p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17(sprite_store.BESE_SPRITE_COUNT0.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
+    /*p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17(sprite_store.CUXY_SPRITE_COUNT1.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
+    /*p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17(sprite_store.BEGO_SPRITE_COUNT2.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
+
+    sprite_store.BESE_SPRITE_COUNT0.commit();
+    sprite_store.CUXY_SPRITE_COUNT1.commit();
+    sprite_store.BEGO_SPRITE_COUNT2.commit();
+    sprite_store.DYBE_SPRITE_COUNT3.commit();
+  }
+
+  {
+    // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
+
+    /*#p30.CUCU*/ sprite_store.SPR_TRI_L0.tri_6nn(_FEPO_STORE_MATCHp, DEGE_SPRITE_DELTA0);
+    /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(_FEPO_STORE_MATCHp, DABY_SPRITE_DELTA1);
+    /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(_FEPO_STORE_MATCHp, DABU_SPRITE_DELTA2);
+    /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(_FEPO_STORE_MATCHp, GYSA_SPRITE_DELTA3);
+
+    /* p29.DEZY*/ sprite_store.DEZY_STORE_ENn.dff17(_ZEME_AxCxExGx, _XAPO_VID_RSTn, _DYTY_STORE_ENn_xxCDxxGH);
+
+    sprite_store.SPR_TRI_L0.commit();
+    sprite_store.SPR_TRI_L1.commit();
+    sprite_store.SPR_TRI_L2.commit();
+    sprite_store.SPR_TRI_L3.commit();
+
+    sprite_store.DEZY_STORE_ENn.commit();
   }
 
   //------------------------------------------------------------------------------

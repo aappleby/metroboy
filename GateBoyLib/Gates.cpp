@@ -9,13 +9,13 @@ bool RegBase::tock_running = false;
 bool RegBase::bus_collision = false;
 bool RegBase::bus_floating = false;
 
-#define SANITY_CHECK
-
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b) {
   a = _byteswap_uint64((a ^ b) * 0xff51afd7ed558ccd);
 }
+
+//-----------------------------------------------------------------------------
 
 uint64_t commit_and_hash(void* blob, int size) {
   uint64_t h = HASH_INIT;
@@ -24,44 +24,34 @@ uint64_t commit_and_hash(void* blob, int size) {
 
   for (int i = 0; i < size; i++) {
 
-    uint8_t s1 = base[i];
+    uint8_t s = base[i];
 
-    uint8_t d1 = (s1 >> 4);
-    if (d1 != DELTA_LOCK && d1 != DELTA_COMM) {
+#ifdef SANITY_CHECK
+    CHECK_N((s & 0x0F) == ERR_XXXX);
+#endif
+
+    uint8_t d = (s >> 4);
+
+    if (d == DELTA_COMM) {
+      s = s & 0x0F;
+    }
+    else if (d == DELTA_LOCK) {
+    }
+    else {
       printf("xxx\n");
     }
 
 
-    uint8_t s2 = logic_lut1.tab[s1];
-
-    //printf("%04d 0x%02x 0x%02x\n", i, s1, s2);
-
 #ifdef SANITY_CHECK
-    CHECK_N((s1 & 0x0F) == ERR_XXXX);
-    CHECK_N((s2 & 0x0F) == ERR_XXXX);
+    CHECK_N((s & 0x0F) == ERR_XXXX);
 #endif
 
-    //combine_hash(h, s2);
-    h = _byteswap_uint64((h ^ s2) * 0xff51afd7ed558ccd);
-
-    base[i] = s2;
+    combine_hash(h, s);
+    base[i] = s;
   }
 
   return h;
 }
-
-/*
-template<typename T>
-inline uint64_t hash_obj(T const& obj) {
-  uint64_t hash = HASH_INIT;
-  const uint8_t* base = (const uint8_t*)(&obj);
-  for (int i = 0; i < sizeof(T); i++) {
-    uint8_t s2 = base[i];
-    combine_hash(hash, s2);
-  }
-  return hash;
-}
-*/
 
 //-----------------------------------------------------------------------------
 

@@ -4,6 +4,9 @@
 
 #pragma warning(disable : 5054) // or'ing different enums deprecated
 
+//#define SINGLE_PHASE_COMMIT
+#define SANITY_CHECK
+
 //-----------------------------------------------------------------------------
 
 inline wire not1(wire a) { return !a; }
@@ -238,19 +241,6 @@ struct RegBase {
   void unlock() {
     //CHECK_P(delta == DELTA_LOCK);
     delta = DELTA_NONE;
-  }
-
-  void preset(RegDelta d) {
-    if (delta != DELTA_NONE) {
-      CHECK_P(delta == DELTA_NONE);
-    }
-    delta = d;
-    value = logic_lut1[value];
-    delta = d;
-  }
-
-  void preset(wire d) {
-    preset(d ? DELTA_TRI1 : DELTA_TRI0);
   }
 
   void merge_tri_delta(RegDelta new_d) {

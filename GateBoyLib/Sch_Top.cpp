@@ -4230,6 +4230,79 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   tock_oam_bus (RST, oam_ram);
   ser_reg.set_pins(DELTA_TRIZ, DELTA_TRIZ);
 
+
+
+
+  {
+    oam_bus.MAKA_HOLD_MEMp.commit();
+    oam_bus.WUJE_CPU_OAM_WRn.commit();
+
+    oam_bus.XYKY_OAM_LATCH_DB0n.commit();
+    oam_bus.YRUM_OAM_LATCH_DB1n.commit();
+    oam_bus.YSEX_OAM_LATCH_DB2n.commit();
+    oam_bus.YVEL_OAM_LATCH_DB3n.commit();
+    oam_bus.WYNO_OAM_LATCH_DB4n.commit();
+    oam_bus.CYRA_OAM_LATCH_DB5n.commit();
+    oam_bus.ZUVE_OAM_LATCH_DB6n.commit();
+    oam_bus.ECED_OAM_LATCH_DB7n.commit();
+    oam_bus.YDYV_OAM_LATCH_DA0n.commit();
+    oam_bus.YCEB_OAM_LATCH_DA1n.commit();
+    oam_bus.ZUCA_OAM_LATCH_DA2n.commit();
+    oam_bus.WONE_OAM_LATCH_DA3n.commit();
+    oam_bus.ZAXE_OAM_LATCH_DA4n.commit();
+    oam_bus.XAFU_OAM_LATCH_DA5n.commit();
+    oam_bus.YSES_OAM_LATCH_DA6n.commit();
+    oam_bus.ZECA_OAM_LATCH_DA7n.commit();
+
+    oam_bus.XUSO_OAM_DA0p.commit();
+    oam_bus.XEGU_OAM_DA1p.commit();
+    oam_bus.YJEX_OAM_DA2p.commit();
+    oam_bus.XYJU_OAM_DA3p.commit();
+    oam_bus.YBOG_OAM_DA4p.commit();
+    oam_bus.WYSO_OAM_DA5p.commit();
+    oam_bus.XOTE_OAM_DA6p.commit();
+    oam_bus.YZAB_OAM_DA7p.commit();
+    oam_bus.YLOR_OAM_DB0p.commit();
+    oam_bus.ZYTY_OAM_DB1p.commit();
+    oam_bus.ZYVE_OAM_DB2p.commit();
+    oam_bus.ZEZY_OAM_DB3p.commit();
+    oam_bus.GOMO_OAM_DB4p.commit();
+    oam_bus.BAXO_OAM_DB5p.commit();
+    oam_bus.YZOS_OAM_DB6p.commit();
+    oam_bus.DEPO_OAM_DB7p.commit();
+
+    oam_bus.PIN_OAM_CLK .commit();
+    oam_bus.PIN_OAM_OE  .commit();
+    oam_bus.PIN_OAM_WR_A.commit();
+    oam_bus.PIN_OAM_WR_B.commit();
+    oam_bus.BUS_OAM_A0n .commit();
+    oam_bus.BUS_OAM_A1n .commit();
+    oam_bus.BUS_OAM_A2n .commit();
+    oam_bus.BUS_OAM_A3n .commit();
+    oam_bus.BUS_OAM_A4n .commit();
+    oam_bus.BUS_OAM_A5n .commit();
+    oam_bus.BUS_OAM_A6n .commit();
+    oam_bus.BUS_OAM_A7n .commit();
+
+    oam_bus.BUS_OAM_DA0n.commit();
+    oam_bus.BUS_OAM_DA1n.commit();
+    oam_bus.BUS_OAM_DA2n.commit();
+    oam_bus.BUS_OAM_DA3n.commit();
+    oam_bus.BUS_OAM_DA4n.commit();
+    oam_bus.BUS_OAM_DA5n.commit();
+    oam_bus.BUS_OAM_DA6n.commit();
+    oam_bus.BUS_OAM_DA7n.commit();
+    oam_bus.BUS_OAM_DB0n.commit();
+    oam_bus.BUS_OAM_DB1n.commit();
+    oam_bus.BUS_OAM_DB2n.commit();
+    oam_bus.BUS_OAM_DB3n.commit();
+    oam_bus.BUS_OAM_DB4n.commit();
+    oam_bus.BUS_OAM_DB5n.commit();
+    oam_bus.BUS_OAM_DB6n.commit();
+    oam_bus.BUS_OAM_DB7n.commit();
+  }
+
+
   RegBase::tock_running = false;
 }
 

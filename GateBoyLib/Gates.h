@@ -210,9 +210,9 @@ struct RegBase {
   bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
   bool has_delta() const { return delta != DELTA_NONE; }
   wire as_wire()   const {
-    if (delta == DELTA_COMM) {
-      CHECK_N(delta == DELTA_COMM);
-    }
+    //CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    CHECK_N(delta == DELTA_COMM);
+
     /*
     if (state == TRI_HZNP) {
       //printf("bus floating?\n");
@@ -275,16 +275,20 @@ struct RegBase {
   }
 
   void commit() {
-    CHECK_N(delta == DELTA_NONE);
-    CHECK_N(delta == DELTA_COMM);
+    if (delta != DELTA_COMM) {
+      CHECK_N(delta == DELTA_NONE);
 
-    uint8_t s1 = value;
-    uint8_t s2 = logic_lut1.tab[s1];
+      uint8_t s1 = value;
+      uint8_t s2 = logic_lut1.tab[s1];
 
-    CHECK_N((s1 & 0x0F) == ERR_XXXX);
-    CHECK_N((s2 & 0x0F) == ERR_XXXX);
+      CHECK_N((s1 & 0x0F) == ERR_XXXX);
+      CHECK_N((s2 & 0x0F) == ERR_XXXX);
 
-    value = s2 | (DELTA_COMM << 4);
+      value = s2 | (DELTA_COMM << 4);
+    }
+    else {
+      printf("?");
+    }
   }
 
   union {
@@ -617,6 +621,11 @@ struct DFF20 : private RegBase{
       delta = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(state & 1) << 0));
     }
   }
+
+  void dff20c(wire CLKn, wire LOADp, bool newD) {
+    dff20(CLKn, LOADp, newD);
+    commit();
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -829,6 +838,7 @@ struct Pin : private RegBase {
 struct NorLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::cn;
   using RegBase::commit;
 
   wire qn03() const { return !as_wire(); }
@@ -848,40 +858,11 @@ struct NorLatch : private RegBase {
   }
 
   void nor_latchc(wire SETp, wire RSTp) {
-    CHECK_N(has_delta());
-    if (RSTp) {
-      delta = DELTA_TRI0;
-    }
-    else if (SETp) {
-      delta = DELTA_TRI1;
-    }
-    else {
-      delta = DELTA_HOLD;
-    }
-    commit();
-  }
-};
+    CHECK_P(delta == DELTA_NONE);
+    if (SETp) state = TRI_D1NP;
+    if (RSTp) state = TRI_D0NP;
+    delta = DELTA_COMM;
 
-struct NorLatch2 : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
-  using RegBase::cn;
-  using RegBase::commit;
-
-  wire qn03() const { return !as_wire(); }
-  wire qp04() const { return  as_wire(); }
-
-  void nor_latch(wire SETp, wire RSTp) {
-    CHECK_N(has_delta());
-    if (RSTp) {
-      delta = DELTA_TRI0;
-    }
-    else if (SETp) {
-      delta = DELTA_TRI1;
-    }
-    else {
-      delta = DELTA_HOLD;
-    }
   }
 };
 
@@ -951,6 +932,11 @@ struct TpLatch : private RegBase {
     else {
       delta = D ? DELTA_TRI1 : DELTA_TRI0;
     }
+  }
+
+  void tp_latchc(wire HOLDn, wire D) {
+    tp_latch(HOLDn, D);
+    commit();
   }
 };
 

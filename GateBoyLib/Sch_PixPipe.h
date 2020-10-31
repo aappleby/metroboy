@@ -446,7 +446,7 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p21.XYMU*/ NorLatch2 XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
 
   /*p27.PUKU*/ Gate PUKU;

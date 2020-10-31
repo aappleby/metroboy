@@ -160,58 +160,6 @@ struct CpuBus {
     BUS_CPU_D7p.unlock();
   }
 
-  //-----------------------------------------------------------------------------
-  // Address decoders
-
-  /*p25.SYRO*/ wire SYRO_FE00_FFFFp() const { return not1(TUNA_0000_FDFFp()); }
-  /*p07.RYCU*/ wire RYCU_0000_FDFFn() const { return not1(TUNA_0000_FDFFp()); }
-  /*p07.SYKE*/ wire SYKE_FF00_FFFFp() const { return nor2(TUNA_0000_FDFFp(), TONA_A08n()); }
-  /*p07.SOHA*/ wire SOHA_FF00_FFFFn() const { return not1(SYKE_FF00_FFFFp()); }
-  /*p07.ROPE*/ wire ROPE_FE00_FEFFn() const { return nand2(RYCU_0000_FDFFn(), SOHA_FF00_FFFFn()); }
-  /*p07.SARO*/ wire SARO_FE00_FEFFp() const { return not1(ROPE_FE00_FEFFn()); }
-  /*p28.ADAH*/ wire ADAH_FE00_FEFFn() const { return not1(SARO_FE00_FEFFp()); }
-
-  /*p22.XOLA*/ wire XOLA_A00n() const { return not1(BUS_CPU_A00.qp()); }
-  /*p22.XENO*/ wire XENO_A01n() const { return not1(BUS_CPU_A01.qp()); }
-  /*p22.XUSY*/ wire XUSY_A02n() const { return not1(BUS_CPU_A02.qp()); }
-  /*p22.XERA*/ wire XERA_A03n() const { return not1(BUS_CPU_A03.qp()); }
-  /*p07.TONA*/ wire TONA_A08n() const { return not1(BUS_CPU_A08.qp()); }
-
-  /*p22.WADO*/ wire WADO_A00p() const { return not1(XOLA_A00n()); }
-  /*p22.WESA*/ wire WESA_A01p() const { return not1(XENO_A01n()); }
-  /*p22.WALO*/ wire WALO_A02p() const { return not1(XUSY_A02n()); }
-  /*p22.WEPO*/ wire WEPO_A03p() const { return not1(XERA_A03n()); }
-
-  /*p03.TOVY*/ wire TOVY_A00n() const { return not1(BUS_CPU_A00.qp()); }
-  /*p08.TOLA*/ wire TOLA_A01n() const { return not1(BUS_CPU_A01.qp()); }
-  /*p06.SEFY*/ wire SEFY_A02n() const { return not1(BUS_CPU_A02.qp()); }
-
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp() const {
-    return nand7(BUS_CPU_A15.qp(), BUS_CPU_A14.qp(), BUS_CPU_A13.qp(),
-                 BUS_CPU_A12.qp(), BUS_CPU_A11.qp(), BUS_CPU_A10.qp(),
-                 BUS_CPU_A09.qp());
-  }
-
-  /*p22.WERO*/ wire WERO_FF4Xp() const {
-    /*p22.XALY*/ wire XALY_0x00xxxxp  = nor3(BUS_CPU_A07.qp(), BUS_CPU_A05.qp(), BUS_CPU_A04.qp());
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor2(TUNA_0000_FDFFp(), TONA_A08n());
-    /*p22.WUTU*/ wire WUTU_FF4Xn = nand3(SYKE_FF00_FFFFp, BUS_CPU_A06.qp(), XALY_0x00xxxxp);
-    return not1(WUTU_FF4Xn);
-  }
-
-  /*p06.SARE*/ wire SARE_XX00_XX07p() const { return nor5(BUS_CPU_A07.qp(), BUS_CPU_A06.qp(), BUS_CPU_A05.qp(), BUS_CPU_A04.qp(), BUS_CPU_A03.qp()); }
-
-
-  /*p07.TULO*/ wire TULO_ADDR_00XXp() const {
-    return nor8(BUS_CPU_A15.qp(), BUS_CPU_A14.qp(), BUS_CPU_A13.qp(), BUS_CPU_A12.qp(),
-                BUS_CPU_A11.qp(), BUS_CPU_A10.qp(), BUS_CPU_A09.qp(), BUS_CPU_A08.qp());
-  }
-
-  /*p07.ZUFA*/ wire ZUFA_ADDR_00XX() const {
-    /*p07.ZORO*/ wire ZORO_ADDR_0XXX = nor4(BUS_CPU_A15.qp(), BUS_CPU_A14.qp(), BUS_CPU_A13.qp(), BUS_CPU_A12.qp());
-    /*p07.ZADU*/ wire ZADU_ADDR_X0XX = nor4(BUS_CPU_A11.qp(), BUS_CPU_A10.qp(), BUS_CPU_A09.qp(), BUS_CPU_A08.qp());
-    return and2(ZORO_ADDR_0XXX, ZADU_ADDR_X0XX);
-  }
 
   //-----------------------------------------------------------------------------
 

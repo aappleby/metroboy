@@ -608,16 +608,16 @@ struct DFF20 : private RegBase{
   wire qn17() const { return !as_wire(); }
 
   void dff20c(wire CLKn, wire LOADp, bool newD) {
-    (void)LOADp;
-    (void)newD;
+    uint8_t ca = state & 2;
+    uint8_t cb = (!CLKn) << 1;
 
-    if (LOADp) {
-      delta = RegDelta(DELTA_A0C0 | (!CLKn << 1) | (newD << 0));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (!CLKn << 1) | (!(state & 1) << 0));
-    }
-    commit();
+    wire Qp = (state & 1);
+    wire Qn = !Qp;
+
+    if (LOADp)           state = RegState(REG_D0C0 + cb + newD);
+    else if (!ca && cb)  state = RegState(REG_D0C0 + cb + Qn  );
+    else                 state = RegState(REG_D0C0 + cb + Qp  );
+    delta = DELTA_COMM;
   }
 };
 
@@ -657,7 +657,9 @@ struct DFF22 : private RegBase {
   wire qn15() const { return !as_wire(); }
   wire qp16() const { return  as_wire(); }
 
-  void dff22c(wire CLKp, wire SETn, wire RSTn, bool D) { dffc(CLKp, !CLKp, SETn, RSTn, D); }
+  void dff22c(wire CLKp, wire SETn, wire RSTn, bool D) {
+    dffc(CLKp, !CLKp, SETn, RSTn, D);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -850,16 +852,9 @@ struct NandLatch : private RegBase {
 
   void nand_latchc(wire SETn, wire RSTn) {
     CHECK_N(has_delta());
-    if (!RSTn) {
-      delta = DELTA_TRI0;
-    }
-    else if (!SETn) {
-      delta = DELTA_TRI1;
-    }
-    else {
-      delta = DELTA_HOLD;
-    }
-    commit();
+    if (!SETn) state = TRI_D1NP;
+    if (!RSTn) state = TRI_D0NP;
+    delta = DELTA_COMM;
   }
 };
 
@@ -890,13 +885,8 @@ struct TpLatch : private RegBase {
 
   void tp_latchc(wire HOLDn, wire D) {
     CHECK_N(has_delta());
-    if (!HOLDn) {
-      delta = DELTA_HOLD;
-    }
-    else {
-      delta = D ? DELTA_TRI1 : DELTA_TRI0;
-    }
-    commit();
+    if (HOLDn) state = RegState(TRI_D0NP + D);
+    delta = DELTA_COMM;
   }
 };
 

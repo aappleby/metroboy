@@ -433,6 +433,9 @@ struct DFF8n : private RegBase {
 
   void dff8n(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); }
   void dff8n(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); }
+
+  void dff8nc(wire CLKn, bool Dn)            { dff8n(CLKn, Dn);       commit();}
+  void dff8nc(wire CLKn, wire CLKp, bool Dn) { dff8n(CLKn, CLKp, Dn); commit(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -903,6 +906,11 @@ struct NandLatch : private RegBase {
     else {
       delta = DELTA_HOLD;
     }
+  }
+
+  void nand_latchc(wire SETn, wire RSTn) {
+    nand_latch(SETn, RSTn);
+    commit();
   }
 };
 

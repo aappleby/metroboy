@@ -1905,19 +1905,18 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     // That would be a loooot of gate delay.
     // Could we possibly be incrementing X3p one phase early?
 
-    /*#p24.POME*/ pix_pipe.POME = nor2(AVAP_RENDER_START_TRIGp, pix_pipe.POFY);
-    /*#p24.RUJU*/ pix_pipe.RUJU = or3(pix_pipe.PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, pix_pipe.POME);
-    /*#p24.POFY*/ pix_pipe.POFY = not1(pix_pipe.RUJU);
+    wire _POME = pix_pipe.POME;
+    wire _RUJU = pix_pipe.RUJU;
+    wire _POFY = pix_pipe.POFY;
 
-    /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(pix_pipe.POFY);
+    /*#p24.POME*/ pix_pipe.POME.set_gate(nor2(AVAP_RENDER_START_TRIGp, _POFY));
+    /*#p24.RUJU*/ pix_pipe.RUJU.set_gate(or3(pix_pipe.PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, _POME));
+    /*#p24.POFY*/ pix_pipe.POFY.set_gate(not1(_RUJU));
+
+    /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(_POFY);
     PIN_LCD_HSYNC.io_pinc(_RUZE_HSYNCn, _RUZE_HSYNCn);
 
     /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17c(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.XYDO_X3p.qp17());
-
-    pix_pipe.POME.commit();
-    pix_pipe.RUJU.commit();
-    pix_pipe.POFY.commit();
-
   }
 
   //----------------------------------------
@@ -1963,10 +1962,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_A.nor_latchc(pix_pipe.NUNU_WX_MATCH_B.qp17(), _XOFO_WIN_RSTp);
     /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17c(_ALET_xBxDxFxH, _XAPO_VID_RSTn, pix_pipe.RYDY);
 
-    /* p27.PUKU*/ pix_pipe.PUKU = nor2(_NUNY_WX_MATCH_TRIGp, pix_pipe.RYDY);
-    /* p27.RYDY*/ pix_pipe.RYDY = nor3(pix_pipe.PUKU, tile_fetcher.PORY_FETCH_DONE_P12.qp17(), _PYRY_VID_RSTp);
-    pix_pipe.PUKU.commit();
-    pix_pipe.RYDY.commit();
+    wire _PUKU = pix_pipe.PUKU;
+    wire _RYDY = pix_pipe.RYDY;
+
+    /* p27.PUKU*/ pix_pipe.PUKU.set_gate(nor2(_NUNY_WX_MATCH_TRIGp, _RYDY));
+    /* p27.RYDY*/ pix_pipe.RYDY.set_gate(nor3(_PUKU, tile_fetcher.PORY_FETCH_DONE_P12.qp17(), _PYRY_VID_RSTp));
   }
 
   //----------------------------------------

@@ -275,8 +275,30 @@ struct RegBase {
   }
 
   void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
+    (void)CLKn;
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!RSTn) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
+    }
+    else if (!SETn) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + 1);
+    }
+    else if (!ca && cb) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + D);
+    }
+    else {
+      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
+    }
+
+    delta = DELTA_COMM;
+
+    /*
     dff(CLKp, CLKn, SETn, RSTn, D);
     commit();
+    */
   }
 
   void commit() {
@@ -316,8 +338,9 @@ struct Gate : private RegBase {
 
   operator wire() const { return as_wire(); }
 
-  void operator = (const wire D) {
-    dff(0, 1, !D, D, 0);
+  void set_gate(const wire D) {
+    state = RegState(REG_D0C0 | D);
+    delta = DELTA_COMM;
   }
 };
 
@@ -511,7 +534,23 @@ struct DFF11 : private RegBase {
 
   wire q11p() const { return as_wire(); }
 
-  void dff11c(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); commit(); }
+  void dff11c(wire CLKp, wire RSTn, wire D) {
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!RSTn) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
+    }
+    else if (!ca && cb) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + D);
+    }
+    else {
+      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
+    }
+
+    delta = DELTA_COMM;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -538,7 +577,23 @@ struct DFF13 : private RegBase {
   wire qn12() const { return !as_wire(); }
   wire qp13() const { return  as_wire(); }
 
-  void dff13c(wire CLKp, wire RSTn, wire D) { dff(CLKp, !CLKp, 1, RSTn, D); commit(); }
+  void dff13c(wire CLKp, wire RSTn, wire D) {
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!RSTn) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
+    }
+    else if (!ca && cb) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + D);
+    }
+    else {
+      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
+    }
+
+    delta = DELTA_COMM;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -570,8 +625,21 @@ struct DFF17 : private RegBase {
   wire qp17() const { return  as_wire(); }
 
   void dff17c(wire CLKp, wire RSTn, wire D) {
-    dff(CLKp, !CLKp, 1, RSTn, D);
-    commit();
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!RSTn) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
+    }
+    else if (!ca && cb) {
+      state = RegState(REG_D0C0 + (CLKp << 1) + D);
+    }
+    else {
+      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
+    }
+
+    delta = DELTA_COMM;
   }
 };
 

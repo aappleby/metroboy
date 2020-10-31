@@ -274,6 +274,11 @@ struct RegBase {
     }
   }
 
+  void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
+    dff(CLKp, CLKn, SETn, RSTn, D);
+    commit();
+  }
+
   void commit() {
     if (delta != DELTA_COMM) {
       CHECK_N(delta == DELTA_NONE);
@@ -665,6 +670,8 @@ struct DFF22 : private RegBase {
   wire qp16() const { return  as_wire(); }
 
   void dff22(wire CLKp, wire SETn, wire RSTn, bool D) { dff(CLKp, !CLKp, SETn, RSTn, D); }
+
+  void dff22c(wire CLKp, wire SETn, wire RSTn, bool D) { dffc(CLKp, !CLKp, SETn, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------

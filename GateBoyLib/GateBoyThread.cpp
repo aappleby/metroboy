@@ -791,10 +791,12 @@ void GateBoyThread::dump5(Dumper& d) {
     top.sprite_store.SPR_TRI_I5p.c(), top.sprite_store.SPR_TRI_I4p.c(), top.sprite_store.SPR_TRI_I3p.c(), top.sprite_store.SPR_TRI_I2p.c(),
     top.sprite_store.SPR_TRI_I1p.c(), top.sprite_store.SPR_TRI_I0p.c());
 
+  /*
   int spr_tri_line = pack_p(top.sprite_store.SPR_TRI_L0.qp(), top.sprite_store.SPR_TRI_L1.qp(), top.sprite_store.SPR_TRI_L2.qp(), top.sprite_store.SPR_TRI_L3.qp());
   d("SPR_TRI_LINE = %2d %c%c%c%c\n",
     spr_tri_line,
     top.sprite_store.SPR_TRI_L0.c(), top.sprite_store.SPR_TRI_L1.c(), top.sprite_store.SPR_TRI_L2.c(), top.sprite_store.SPR_TRI_L3.c());
+  */
 
   d("STORE0 R%d I%02d L%02d X%03d\n",
     top.sprite_store.EBOJ_STORE0_RSTp.qp17(),

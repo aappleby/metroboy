@@ -16,11 +16,6 @@ struct SpriteStore {
     SPR_TRI_I4p.reset(TRI_D1PU);
     SPR_TRI_I5p.reset(TRI_D0PU);
 
-    SPR_TRI_L0.reset(TRI_D1PU);
-    SPR_TRI_L1.reset(TRI_D1PU);
-    SPR_TRI_L2.reset(TRI_D1PU);
-    SPR_TRI_L3.reset(TRI_D1PU);
-
     DEZY_STORE_ENn.reset(REG_D1C1);
     BESE_SPRITE_COUNT0.reset(REG_D0C1);
     CUXY_SPRITE_COUNT1.reset(REG_D0C1);
@@ -274,11 +269,6 @@ struct SpriteStore {
     SPR_TRI_I3p.reset(TRI_HZPU);
     SPR_TRI_I4p.reset(TRI_HZPU);
     SPR_TRI_I5p.reset(TRI_HZPU);
-
-    SPR_TRI_L0.reset(TRI_HZPU);
-    SPR_TRI_L1.reset(TRI_HZPU);
-    SPR_TRI_L2.reset(TRI_HZPU);
-    SPR_TRI_L3.reset(TRI_HZPU);
 
     DEZY_STORE_ENn.reset(REG_D0C0);
     BESE_SPRITE_COUNT0.reset(REG_D0C0);

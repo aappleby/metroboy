@@ -1221,9 +1221,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
   //------------------------------------------------------------------------------
 
-
-  //----------------------------------------
-
   {
     /*p29.WEFU*/ wire WEFU_STORE0_MATCH = not1(_YDUG_STORE0_MATCHn);
     /*p29.GAJA*/ wire GAJA_STORE1_MATCH = not1(_DYDU_STORE1_MATCHn);
@@ -1349,6 +1346,12 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p30.WUCO*/ sprite_store.SPR_TRI_I4p.tri_6nn(_BUZA_STORE_SPRITE_INDXn, sprite_scanner.YDUF_SPRITE_IDX4p.qn12());
     /* p30.WEZA*/ sprite_store.SPR_TRI_I5p.tri_6nn(_BUZA_STORE_SPRITE_INDXn, sprite_scanner.XECU_SPRITE_IDX5p.qn12());
 
+    //----------------------------------------
+
+    sprite_store.SPR_TRI_L0.reset();
+    sprite_store.SPR_TRI_L1.reset();
+    sprite_store.SPR_TRI_L2.reset();
+    sprite_store.SPR_TRI_L3.reset();
 
     /* p30.WEHE*/ sprite_store.SPR_TRI_L0.tri_6nn(FURO_SPRITE0_GETn, sprite_store.GYHO_STORE0_L0n.qp08());
     /* p30.BUKY*/ sprite_store.SPR_TRI_L1.tri_6nn(FURO_SPRITE0_GETn, sprite_store.CUFO_STORE0_L1n.qp08());
@@ -1406,6 +1409,11 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /*#p30.CUCA*/ sprite_store.SPR_TRI_L1.tri_6nn(_FEPO_STORE_MATCHp, _DABY_SPRITE_DELTA1);
     /*#p30.CEGA*/ sprite_store.SPR_TRI_L2.tri_6nn(_FEPO_STORE_MATCHp, _DABU_SPRITE_DELTA2);
     /*#p30.WENU*/ sprite_store.SPR_TRI_L3.tri_6nn(_FEPO_STORE_MATCHp, _GYSA_SPRITE_DELTA3);
+
+    sprite_store.SPR_TRI_L0.commit();
+    sprite_store.SPR_TRI_L1.commit();
+    sprite_store.SPR_TRI_L2.commit();
+    sprite_store.SPR_TRI_L3.commit();
 
     //----------------------------------------
     // Sprite store setter
@@ -3927,11 +3935,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p23.WOKY*/ pix_pipe.WOKY_LCDC_WINMAPn .dff9c(_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.BUS_CPU_D6p.qp());
     /* p23.XONA*/ pix_pipe.XONA_LCDC_LCDENn  .dff9c(_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.BUS_CPU_D7p.qp());
   }
-
-  sprite_store.SPR_TRI_L0.commit();
-  sprite_store.SPR_TRI_L1.commit();
-  sprite_store.SPR_TRI_L2.commit();
-  sprite_store.SPR_TRI_L3.commit();
 
   sprite_store.SPR_TRI_I0p.commit();
   sprite_store.SPR_TRI_I1p.commit();

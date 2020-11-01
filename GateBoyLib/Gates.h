@@ -733,94 +733,57 @@ struct Bus : private RegBase {
 
 // Must be NP - see KOVA/KEJO
 
-struct Bus2 : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
-  using RegBase::cn;
+#pragma warning(push)
+#pragma warning(disable:4201)
 
-  void lock(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = d;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
+struct Bus2 {
 
-  void lock(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  void unlock() {
-    //CHECK_P(delta == DELTA_LOCK);
+  Bus2() {
+    state = TRI_HZNP;
     delta = DELTA_NONE;
   }
 
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
-
-  void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-
-  void tri10_np(wire OEn, wire D) {
-    if (!OEn) {
-      merge_tri_delta(D ? DELTA_TRI1 : DELTA_TRI0);
-    }
-    else {
-      merge_tri_delta(DELTA_TRIZ);
-    }
+  void reset() {
+    state = TRI_HZNP;
+    delta = DELTA_NONE;
   }
 
   // top rung tadpole _not_ facing second rung dot.
 
   void tri_6nn(wire OEn, wire Dn) {
-    if (!OEn) {
-      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
-    }
-    else {
-      merge_tri_delta(DELTA_TRIZ);
-    }
-  }
+    if (OEn) return;
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
 
-  // top rung tadpole facing second rung dot.
+    wire D = !Dn;
 
-  void tri_6pn(wire OEp, wire Dn) {
-    if (OEp) {
-      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
+    if (state == TRI_HZNP) {
+      state = RegState(D ? TRI_D1NP : TRI_D0NP);
     }
-    else {
-      merge_tri_delta(DELTA_TRIZ);
+    else if (state == TRI_D0NP) {
+      if (D)  RegBase::bus_collision = true;
     }
-  }
-
-  void merge_tri_delta(RegDelta new_d) {
-    if (delta == DELTA_NONE) {
-      delta = new_d;
-    }
-    else if (delta == DELTA_HOLD) {
-    }
-    else if (delta == DELTA_TRIZ) {
-      delta = new_d;
-    }
-    else if (new_d != DELTA_TRIZ) {
-      RegBase::bus_collision = true;
-    }
-  }
-
-  void commit() {
-    if (delta == DELTA_LOCK) return;
-    if (delta == DELTA_COMM) {
-      printf("?");
-      return;
+    else if (state == TRI_D1NP) {
+      if (!D) RegBase::bus_collision = true;
     }
 
-    CHECK_N(delta == DELTA_NONE);
-    state = RegState(logic_lut1.tab[value]);
     delta = DELTA_COMM;
   }
 
+  void commit() {
+    CHECK_P(delta == DELTA_COMM);
+    delta = DELTA_LOCK;
+  }
+
+  wire qp() const { CHECK_N(state == TRI_HZNP); CHECK_P(delta == DELTA_LOCK); return  (state & 1); }
+  wire qn() const { CHECK_N(state == TRI_HZNP); CHECK_P(delta == DELTA_LOCK); return !(state & 1); }
+
+  struct {
+    RegState state : 4;
+    RegDelta delta : 4;
+  };
 };
 
+#pragma warning(pop)
 
 //-----------------------------------------------------------------------------
 // Tristate io pin, can have only one driver.

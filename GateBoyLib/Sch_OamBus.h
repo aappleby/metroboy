@@ -132,32 +132,6 @@ struct OamBus {
     PIN_OAM_OE  .reset(TRI_D1NP, TRI_D1NP);
     PIN_OAM_WR_A.reset(TRI_D1NP, TRI_D1NP);
     PIN_OAM_WR_B.reset(TRI_D1NP, TRI_D1NP);
-
-    BUS_OAM_A0n .reset(TRI_D1NP);
-    BUS_OAM_A1n .reset(TRI_D1NP);
-    BUS_OAM_A2n .reset(TRI_D1NP);
-    BUS_OAM_A3n .reset(TRI_D1NP);
-    BUS_OAM_A4n .reset(TRI_D0NP);
-    BUS_OAM_A5n .reset(TRI_D1NP);
-    BUS_OAM_A6n .reset(TRI_D0NP);
-    BUS_OAM_A7n .reset(TRI_D1NP);
-
-    BUS_OAM_DA0n.reset(TRI_D0PU);
-    BUS_OAM_DA1n.reset(TRI_D0PU);
-    BUS_OAM_DA2n.reset(TRI_D0PU);
-    BUS_OAM_DA3n.reset(TRI_D0PU);
-    BUS_OAM_DA4n.reset(TRI_D0PU);
-    BUS_OAM_DA5n.reset(TRI_D0PU);
-    BUS_OAM_DA6n.reset(TRI_D0PU);
-    BUS_OAM_DA7n.reset(TRI_D0PU);
-    BUS_OAM_DB0n.reset(TRI_D0PU);
-    BUS_OAM_DB1n.reset(TRI_D0PU);
-    BUS_OAM_DB2n.reset(TRI_D0PU);
-    BUS_OAM_DB3n.reset(TRI_D0PU);
-    BUS_OAM_DB4n.reset(TRI_D0PU);
-    BUS_OAM_DB5n.reset(TRI_D0PU);
-    BUS_OAM_DB6n.reset(TRI_D0PU);
-    BUS_OAM_DB7n.reset(TRI_D0PU);
   }
 
   void reset_boot() {
@@ -204,32 +178,6 @@ struct OamBus {
     PIN_OAM_OE.reset(TRI_D1NP);
     PIN_OAM_WR_A.reset(TRI_D1NP);
     PIN_OAM_WR_B.reset(TRI_D1NP);
-
-    BUS_OAM_A0n.reset(TRI_D0NP);
-    BUS_OAM_A1n.reset(TRI_D0NP);
-    BUS_OAM_A2n.reset(TRI_D0NP);
-    BUS_OAM_A3n.reset(TRI_D0NP);
-    BUS_OAM_A4n.reset(TRI_D0NP);
-    BUS_OAM_A5n.reset(TRI_D0NP);
-    BUS_OAM_A6n.reset(TRI_D0NP);
-    BUS_OAM_A7n.reset(TRI_D0NP);
-
-    BUS_OAM_DA0n.reset(TRI_D0PU);
-    BUS_OAM_DA1n.reset(TRI_D0PU);
-    BUS_OAM_DA2n.reset(TRI_D0PU);
-    BUS_OAM_DA3n.reset(TRI_D0PU);
-    BUS_OAM_DA4n.reset(TRI_D0PU);
-    BUS_OAM_DA5n.reset(TRI_D0PU);
-    BUS_OAM_DA6n.reset(TRI_D0PU);
-    BUS_OAM_DA7n.reset(TRI_D0PU);
-    BUS_OAM_DB0n.reset(TRI_D0PU);
-    BUS_OAM_DB1n.reset(TRI_D0PU);
-    BUS_OAM_DB2n.reset(TRI_D0PU);
-    BUS_OAM_DB3n.reset(TRI_D0PU);
-    BUS_OAM_DB4n.reset(TRI_D0PU);
-    BUS_OAM_DB5n.reset(TRI_D0PU);
-    BUS_OAM_DB6n.reset(TRI_D0PU);
-    BUS_OAM_DB7n.reset(TRI_D0PU);
   }
 
   //----------------------------------------
@@ -247,28 +195,6 @@ struct OamBus {
   uint8_t get_oam_pin_data_b() const {
     return ~(uint8_t)pack_p(BUS_OAM_DB0n.qp(), BUS_OAM_DB1n.qp(), BUS_OAM_DB2n.qp(), BUS_OAM_DB3n.qp(),
                             BUS_OAM_DB4n.qp(), BUS_OAM_DB5n.qp(), BUS_OAM_DB6n.qp(), BUS_OAM_DB7n.qp());
-  }
-
-  void set_pin_data_a(uint8_t data) {
-    BUS_OAM_DA0n.set(!(data & 0x01));
-    BUS_OAM_DA1n.set(!(data & 0x02));
-    BUS_OAM_DA2n.set(!(data & 0x04));
-    BUS_OAM_DA3n.set(!(data & 0x08));
-    BUS_OAM_DA4n.set(!(data & 0x10));
-    BUS_OAM_DA5n.set(!(data & 0x20));
-    BUS_OAM_DA6n.set(!(data & 0x40));
-    BUS_OAM_DA7n.set(!(data & 0x80));
-  }
-
-  void set_pin_data_b(uint8_t data) {
-    BUS_OAM_DB0n.set(!(data & 0x01));
-    BUS_OAM_DB1n.set(!(data & 0x02));
-    BUS_OAM_DB2n.set(!(data & 0x04));
-    BUS_OAM_DB3n.set(!(data & 0x08));
-    BUS_OAM_DB4n.set(!(data & 0x10));
-    BUS_OAM_DB5n.set(!(data & 0x20));
-    BUS_OAM_DB6n.set(!(data & 0x40));
-    BUS_OAM_DB7n.set(!(data & 0x80));
   }
 
   //----------------------------------------
@@ -319,32 +245,32 @@ struct OamBus {
   Pin PIN_OAM_WR_A;
   Pin PIN_OAM_WR_B;
 
-  Bus BUS_OAM_A0n ;
-  Bus BUS_OAM_A1n ;
-  Bus BUS_OAM_A2n ;
-  Bus BUS_OAM_A3n ;
-  Bus BUS_OAM_A4n ;
-  Bus BUS_OAM_A5n ;
-  Bus BUS_OAM_A6n ;
-  Bus BUS_OAM_A7n ;
+  Bus2 BUS_OAM_A0n ;
+  Bus2 BUS_OAM_A1n ;
+  Bus2 BUS_OAM_A2n ;
+  Bus2 BUS_OAM_A3n ;
+  Bus2 BUS_OAM_A4n ;
+  Bus2 BUS_OAM_A5n ;
+  Bus2 BUS_OAM_A6n ;
+  Bus2 BUS_OAM_A7n ;
 
-  Bus BUS_OAM_DA0n;
-  Bus BUS_OAM_DA1n;
-  Bus BUS_OAM_DA2n;
-  Bus BUS_OAM_DA3n;
-  Bus BUS_OAM_DA4n;
-  Bus BUS_OAM_DA5n;
-  Bus BUS_OAM_DA6n;
-  Bus BUS_OAM_DA7n;
+  Bus2 BUS_OAM_DA0n;
+  Bus2 BUS_OAM_DA1n;
+  Bus2 BUS_OAM_DA2n;
+  Bus2 BUS_OAM_DA3n;
+  Bus2 BUS_OAM_DA4n;
+  Bus2 BUS_OAM_DA5n;
+  Bus2 BUS_OAM_DA6n;
+  Bus2 BUS_OAM_DA7n;
 
-  Bus BUS_OAM_DB0n;
-  Bus BUS_OAM_DB1n;
-  Bus BUS_OAM_DB2n;
-  Bus BUS_OAM_DB3n;
-  Bus BUS_OAM_DB4n;
-  Bus BUS_OAM_DB5n;
-  Bus BUS_OAM_DB6n;
-  Bus BUS_OAM_DB7n;
+  Bus2 BUS_OAM_DB0n;
+  Bus2 BUS_OAM_DB1n;
+  Bus2 BUS_OAM_DB2n;
+  Bus2 BUS_OAM_DB3n;
+  Bus2 BUS_OAM_DB4n;
+  Bus2 BUS_OAM_DB5n;
+  Bus2 BUS_OAM_DB6n;
+  Bus2 BUS_OAM_DB7n;
 
   //DelayGlitch oam_glitch;
 };

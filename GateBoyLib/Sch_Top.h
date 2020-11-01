@@ -144,7 +144,6 @@ struct SchematicTop {
                  uint8_t* rom_buf, uint8_t* vid_ram, uint8_t* cart_ram, uint8_t* ext_ram, uint8_t* oam_ram, uint8_t* zero_ram);
 
   void tock_ext_bus (wire RST, const uint8_t* cart_rom, uint8_t* cart_ram, uint8_t* ext_ram);
-  void tock_oam_bus (wire RST, uint8_t* oam_ram);
   void tock_zram_bus(wire RST, uint8_t* zero_ram, wire TAPU_CPU_WRp_xxxxEFGx, wire TEDO_CPU_RDp);
 
   //-----------------------------------------------------------------------------

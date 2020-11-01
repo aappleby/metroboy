@@ -744,6 +744,7 @@ struct Bus2 {
   }
 
   char c() const  { return reg_state_to_c(state); }
+  char cn() const { return reg_state_to_cn(state); }
 
   void reset() {
     state = TRI_HZPU;

@@ -83,20 +83,6 @@ struct VramBus {
     SEMO_SPRITE_DA6n.reset(REG_D1C0);
     SEGA_SPRITE_DA7n.reset(REG_D1C0);
 
-    BUS_VRAM_A00n.reset(TRI_D1PU);
-    BUS_VRAM_A01n.reset(TRI_D1PU);
-    BUS_VRAM_A02n.reset(TRI_D1PU);
-    BUS_VRAM_A03n.reset(TRI_D1PU);
-    BUS_VRAM_A04n.reset(TRI_D0PU);
-    BUS_VRAM_A05n.reset(TRI_D1PU);
-    BUS_VRAM_A06n.reset(TRI_D0PU);
-    BUS_VRAM_A07n.reset(TRI_D1PU);
-    BUS_VRAM_A08n.reset(TRI_D1PU);
-    BUS_VRAM_A09n.reset(TRI_D1PU);
-    BUS_VRAM_A10n.reset(TRI_D1PU);
-    BUS_VRAM_A11n.reset(TRI_D1PU);
-    BUS_VRAM_A12n.reset(TRI_D1PU);
-
     PIN_VRAM_CSn .reset(TRI_D1NP);
     PIN_VRAM_OEn .reset(TRI_D0NP);
     PIN_VRAM_WRn .reset(TRI_D1NP);
@@ -163,19 +149,6 @@ struct VramBus {
     SEMO_SPRITE_DA6n.reset(REG_D0C0);
     SEGA_SPRITE_DA7n.reset(REG_D0C0);
 
-    BUS_VRAM_A00n.reset(TRI_HZPU);
-    BUS_VRAM_A01n.reset(TRI_HZPU);
-    BUS_VRAM_A02n.reset(TRI_HZPU);
-    BUS_VRAM_A03n.reset(TRI_HZPU);
-    BUS_VRAM_A04n.reset(TRI_HZPU);
-    BUS_VRAM_A05n.reset(TRI_HZPU);
-    BUS_VRAM_A06n.reset(TRI_HZPU);
-    BUS_VRAM_A07n.reset(TRI_HZPU);
-    BUS_VRAM_A08n.reset(TRI_HZPU);
-    BUS_VRAM_A09n.reset(TRI_HZPU);
-    BUS_VRAM_A10n.reset(TRI_HZPU);
-    BUS_VRAM_A11n.reset(TRI_HZPU);
-    BUS_VRAM_A12n.reset(TRI_HZPU);
     PIN_VRAM_CSn .reset(TRI_D0NP);
     PIN_VRAM_OEn .reset(TRI_D0NP);
     PIN_VRAM_WRn .reset(TRI_D0NP);
@@ -276,19 +249,19 @@ struct VramBus {
   Bus2 BUS_VRAM_D6p;
   Bus2 BUS_VRAM_D7p;
 
-  Bus BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
-  Bus BUS_VRAM_A01n;
-  Bus BUS_VRAM_A02n;
-  Bus BUS_VRAM_A03n;
-  Bus BUS_VRAM_A04n;
-  Bus BUS_VRAM_A05n;
-  Bus BUS_VRAM_A06n;
-  Bus BUS_VRAM_A07n;
-  Bus BUS_VRAM_A08n;
-  Bus BUS_VRAM_A09n;
-  Bus BUS_VRAM_A10n;
-  Bus BUS_VRAM_A11n;
-  Bus BUS_VRAM_A12n;
+  Bus2 BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
+  Bus2 BUS_VRAM_A01n;
+  Bus2 BUS_VRAM_A02n;
+  Bus2 BUS_VRAM_A03n;
+  Bus2 BUS_VRAM_A04n;
+  Bus2 BUS_VRAM_A05n;
+  Bus2 BUS_VRAM_A06n;
+  Bus2 BUS_VRAM_A07n;
+  Bus2 BUS_VRAM_A08n;
+  Bus2 BUS_VRAM_A09n;
+  Bus2 BUS_VRAM_A10n;
+  Bus2 BUS_VRAM_A11n;
+  Bus2 BUS_VRAM_A12n;
 
   //----------------------------------------
   // VRAM pins

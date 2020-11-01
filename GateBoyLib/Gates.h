@@ -738,7 +738,7 @@ struct Bus : private RegBase {
 
 struct Bus2 {
 
-  Bus2() {
+  void reset() {
     state = TRI_HZPU;
     delta = DELTA_NONE;
   }
@@ -746,38 +746,14 @@ struct Bus2 {
   char c() const  { return reg_state_to_c(state); }
   char cn() const { return reg_state_to_cn(state); }
 
-  void reset() {
-    state = TRI_HZPU;
-    delta = DELTA_NONE;
-  }
+  void tri_6nn (wire OEn, wire Dn) { tri(!OEn, !Dn); } // top rung tadpole _not_ facing second rung dot.
+  void tri_6pn (wire OEp, wire Dn) { tri( OEp, !Dn); } // top rung tadpole facing second rung dot.
+  void tri10_np(wire OEn, wire Dp) { tri(!OEn,  Dp); }
 
-  // top rung tadpole _not_ facing second rung dot.
-
-  void tri_6nn(wire OEn, wire Dn) {
-    if (OEn) return;
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
-
-    wire D = !Dn;
-
-    if (state == TRI_HZPU) {
-      state = RegState(D ? TRI_D1NP : TRI_D0NP);
-    }
-    else if (state == TRI_D0NP) {
-      if (D)  RegBase::bus_collision = true;
-    }
-    else if (state == TRI_D1NP) {
-      if (!D) RegBase::bus_collision = true;
-    }
-
-    delta = DELTA_COMM;
-  }
-
-  void tri_6pn(wire OEp, wire Dn) {
+  void tri(wire OEp, wire D) {
     if (!OEp) return;
     CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
 
-    wire D = !Dn;
-
     if (state == TRI_HZPU) {
       state = RegState(D ? TRI_D1NP : TRI_D0NP);
     }
@@ -791,34 +767,13 @@ struct Bus2 {
     delta = DELTA_COMM;
   }
 
-  void tri10_np(wire OEn, wire D) {
-    if (OEn) return;
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
-
-    if (state == TRI_HZPU) {
-      state = RegState(D ? TRI_D1NP : TRI_D0NP);
-    }
-    else if (state == TRI_D0NP) {
-      if (D)  RegBase::bus_collision = true;
-    }
-    else if (state == TRI_D1NP) {
-      if (!D) RegBase::bus_collision = true;
-    }
-
-    delta = DELTA_COMM;
-  }
-
-  void commit() {
-    delta = DELTA_LOCK;
-  }
+  void commit() { delta = DELTA_LOCK; }
 
   wire qp() const { CHECK_P(delta == DELTA_LOCK); return  (state & 1); }
   wire qn() const { CHECK_P(delta == DELTA_LOCK); return !(state & 1); }
 
-  struct {
-    RegState state : 4;
-    RegDelta delta : 4;
-  };
+  RegState state : 4;
+  RegDelta delta : 4;
 };
 
 #pragma warning(pop)

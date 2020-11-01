@@ -3144,7 +3144,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   //------------------------------------------------------------------------------
   // ext_bus.tock(top);
 
-  //tock_ext_bus (RST, rom_buf, cart_ram, ext_ram);
   if (!RST) {
     uint16_t ext_addr = ext_bus.get_pin_addr();
 

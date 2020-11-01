@@ -241,33 +241,6 @@ struct VramBus {
                   PIN_VRAM_A12p.qp(), 0, 0, 0);
   }
 
-  int get_pin_data() const {
-    return pack_p(PIN_VRAM_D00p.qp(), PIN_VRAM_D01p.qp(), PIN_VRAM_D02p.qp(), PIN_VRAM_D03p.qp(),
-                  PIN_VRAM_D04p.qp(), PIN_VRAM_D05p.qp(), PIN_VRAM_D06p.qp(), PIN_VRAM_D07p.qp());
-  }
-
-  void set_pin_data_in(uint8_t data) {
-    PIN_VRAM_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_VRAM_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
-  }
-
-  void set_pin_data_z() {
-    PIN_VRAM_D00p = DELTA_TRIZ;
-    PIN_VRAM_D01p = DELTA_TRIZ;
-    PIN_VRAM_D02p = DELTA_TRIZ;
-    PIN_VRAM_D03p = DELTA_TRIZ;
-    PIN_VRAM_D04p = DELTA_TRIZ;
-    PIN_VRAM_D05p = DELTA_TRIZ;
-    PIN_VRAM_D06p = DELTA_TRIZ;
-    PIN_VRAM_D07p = DELTA_TRIZ;
-  }
-
   //-----------------------------------------------------------------------------
 
   /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n;

@@ -9,13 +9,6 @@ struct SchematicTop;
 
 struct SpriteStore {
   void reset_cart() {
-    SPR_TRI_I0p.reset(TRI_D0PU);
-    SPR_TRI_I1p.reset(TRI_D0PU);
-    SPR_TRI_I2p.reset(TRI_D1PU);
-    SPR_TRI_I3p.reset(TRI_D0PU);
-    SPR_TRI_I4p.reset(TRI_D1PU);
-    SPR_TRI_I5p.reset(TRI_D0PU);
-
     DEZY_STORE_ENn.reset(REG_D1C1);
     BESE_SPRITE_COUNT0.reset(REG_D0C1);
     CUXY_SPRITE_COUNT1.reset(REG_D0C1);
@@ -263,13 +256,6 @@ struct SpriteStore {
   }
 
   void reset_boot() {
-    SPR_TRI_I0p.reset(TRI_HZPU);
-    SPR_TRI_I1p.reset(TRI_HZPU);
-    SPR_TRI_I2p.reset(TRI_HZPU);
-    SPR_TRI_I3p.reset(TRI_HZPU);
-    SPR_TRI_I4p.reset(TRI_HZPU);
-    SPR_TRI_I5p.reset(TRI_HZPU);
-
     DEZY_STORE_ENn.reset(REG_D0C0);
     BESE_SPRITE_COUNT0.reset(REG_D0C0);
     CUXY_SPRITE_COUNT1.reset(REG_D0C0);
@@ -516,12 +502,12 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  Bus SPR_TRI_I0p; // -> oam bus
-  Bus SPR_TRI_I1p;
-  Bus SPR_TRI_I2p;
-  Bus SPR_TRI_I3p;
-  Bus SPR_TRI_I4p;
-  Bus SPR_TRI_I5p;
+  Bus2 SPR_TRI_I0p; // -> oam bus
+  Bus2 SPR_TRI_I1p;
+  Bus2 SPR_TRI_I2p;
+  Bus2 SPR_TRI_I3p;
+  Bus2 SPR_TRI_I4p;
+  Bus2 SPR_TRI_I5p;
 
   Bus2 SPR_TRI_L0; // -> vram bus
   Bus2 SPR_TRI_L1;

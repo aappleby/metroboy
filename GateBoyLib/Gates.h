@@ -739,12 +739,14 @@ struct Bus : private RegBase {
 struct Bus2 {
 
   Bus2() {
-    state = TRI_HZNP;
+    state = TRI_HZPU;
     delta = DELTA_NONE;
   }
 
+  char c() const  { return reg_state_to_c(state); }
+
   void reset() {
-    state = TRI_HZNP;
+    state = TRI_HZPU;
     delta = DELTA_NONE;
   }
 
@@ -756,7 +758,7 @@ struct Bus2 {
 
     wire D = !Dn;
 
-    if (state == TRI_HZNP) {
+    if (state == TRI_HZPU) {
       state = RegState(D ? TRI_D1NP : TRI_D0NP);
     }
     else if (state == TRI_D0NP) {
@@ -770,12 +772,11 @@ struct Bus2 {
   }
 
   void commit() {
-    CHECK_P(delta == DELTA_COMM);
     delta = DELTA_LOCK;
   }
 
-  wire qp() const { CHECK_N(state == TRI_HZNP); CHECK_P(delta == DELTA_LOCK); return  (state & 1); }
-  wire qn() const { CHECK_N(state == TRI_HZNP); CHECK_P(delta == DELTA_LOCK); return !(state & 1); }
+  wire qp() const { CHECK_P(delta == DELTA_LOCK); return  (state & 1); }
+  wire qn() const { CHECK_P(delta == DELTA_LOCK); return !(state & 1); }
 
   struct {
     RegState state : 4;

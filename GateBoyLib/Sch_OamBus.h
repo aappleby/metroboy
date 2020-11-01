@@ -31,6 +31,7 @@ struct OamBus {
     int oam_latch_data_b = pack_p(XYKY_OAM_LATCH_DB0n.c(), YRUM_OAM_LATCH_DB1n.c(), YSEX_OAM_LATCH_DB2n.c(), YVEL_OAM_LATCH_DB3n.c(),
                                   WYNO_OAM_LATCH_DB4n.c(), CYRA_OAM_LATCH_DB5n.c(), ZUVE_OAM_LATCH_DB6n.c(), ECED_OAM_LATCH_DB7n.c());
 
+    /*
     d("OAM BUS ADDR   %03d %02x -%c%c%c%c%c%c%c\n",
       get_oam_pin_addr(),
       get_oam_pin_addr(),
@@ -48,6 +49,7 @@ struct OamBus {
       get_oam_pin_data_b(),
       BUS_OAM_DB7n.c(), BUS_OAM_DB6n.c(), BUS_OAM_DB5n.c(), BUS_OAM_DB4n.c(),
       BUS_OAM_DB3n.c(), BUS_OAM_DB2n.c(), BUS_OAM_DB1n.c(), BUS_OAM_DB0n.c());
+    */
 
     d("MAKA_HOLD_MEMp   %c\n", MAKA_HOLD_MEMp.c());
     d("WUJE_CPU_OAM_WRn %c\n", WUJE_CPU_OAM_WRn.c());
@@ -178,23 +180,6 @@ struct OamBus {
     PIN_OAM_OE.reset(TRI_D1NP);
     PIN_OAM_WR_A.reset(TRI_D1NP);
     PIN_OAM_WR_B.reset(TRI_D1NP);
-  }
-
-  //----------------------------------------
-
-  uint8_t get_oam_pin_addr() const {
-    return (uint8_t)pack_p(BUS_OAM_A1n.qn(), BUS_OAM_A2n.qn(), BUS_OAM_A3n.qn(), BUS_OAM_A4n.qn(),
-                           BUS_OAM_A5n.qn(), BUS_OAM_A6n.qn(), BUS_OAM_A7n.qn(), 0);
-  }
-
-  uint8_t get_oam_pin_data_a() const {
-    return ~(uint8_t)pack_p(BUS_OAM_DA0n.qp(), BUS_OAM_DA1n.qp(), BUS_OAM_DA2n.qp(), BUS_OAM_DA3n.qp(),
-                            BUS_OAM_DA4n.qp(), BUS_OAM_DA5n.qp(), BUS_OAM_DA6n.qp(), BUS_OAM_DA7n.qp());
-  }
-
-  uint8_t get_oam_pin_data_b() const {
-    return ~(uint8_t)pack_p(BUS_OAM_DB0n.qp(), BUS_OAM_DB1n.qp(), BUS_OAM_DB2n.qp(), BUS_OAM_DB3n.qp(),
-                            BUS_OAM_DB4n.qp(), BUS_OAM_DB5n.qp(), BUS_OAM_DB6n.qp(), BUS_OAM_DB7n.qp());
   }
 
   //----------------------------------------

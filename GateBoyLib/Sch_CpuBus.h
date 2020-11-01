@@ -115,52 +115,6 @@ struct CpuBus {
 
   void dump(Dumper& d) const;
 
-  uint16_t get_bus_addr() const {
-    return (uint16_t)pack_p(BUS_CPU_A00.qp(), BUS_CPU_A01.qp(), BUS_CPU_A02.qp(), BUS_CPU_A03.qp(),
-                          BUS_CPU_A04.qp(), BUS_CPU_A05.qp(), BUS_CPU_A06.qp(), BUS_CPU_A07.qp(),
-                          BUS_CPU_A08.qp(), BUS_CPU_A09.qp(), BUS_CPU_A10.qp(), BUS_CPU_A11.qp(),
-                          BUS_CPU_A12.qp(), BUS_CPU_A13.qp(), BUS_CPU_A14.qp(), BUS_CPU_A15.qp());
-  }
-
-  uint8_t get_bus_data() const {
-    return (uint8_t)pack_p(BUS_CPU_D0p.qp(), BUS_CPU_D1p.qp(), BUS_CPU_D2p.qp(), BUS_CPU_D3p.qp(),
-                           BUS_CPU_D4p.qp(), BUS_CPU_D5p.qp(), BUS_CPU_D6p.qp(), BUS_CPU_D7p.qp());
-  }
-
-  void set_data(uint8_t data) {
-    BUS_CPU_D0p.set(data & 0x01);
-    BUS_CPU_D1p.set(data & 0x02);
-    BUS_CPU_D2p.set(data & 0x04);
-    BUS_CPU_D3p.set(data & 0x08);
-    BUS_CPU_D4p.set(data & 0x10);
-    BUS_CPU_D5p.set(data & 0x20);
-    BUS_CPU_D6p.set(data & 0x40);
-    BUS_CPU_D7p.set(data & 0x80);
-  }
-
-  void lock_data(uint8_t data) {
-    BUS_CPU_D0p.lock(data & 0x01);
-    BUS_CPU_D1p.lock(data & 0x02);
-    BUS_CPU_D2p.lock(data & 0x04);
-    BUS_CPU_D3p.lock(data & 0x08);
-    BUS_CPU_D4p.lock(data & 0x10);
-    BUS_CPU_D5p.lock(data & 0x20);
-    BUS_CPU_D6p.lock(data & 0x40);
-    BUS_CPU_D7p.lock(data & 0x80);
-  }
-
-  void unlock_data() {
-    BUS_CPU_D0p.unlock();
-    BUS_CPU_D1p.unlock();
-    BUS_CPU_D2p.unlock();
-    BUS_CPU_D3p.unlock();
-    BUS_CPU_D4p.unlock();
-    BUS_CPU_D5p.unlock();
-    BUS_CPU_D6p.unlock();
-    BUS_CPU_D7p.unlock();
-  }
-
-
   //-----------------------------------------------------------------------------
 
   Bus BUS_CPU_A00;  // bottom right port PORTB_00: -> A00

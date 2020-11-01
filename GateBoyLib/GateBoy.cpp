@@ -238,7 +238,10 @@ void GateBoy::next_pass() {
   if (pass_count == 0) {
     probes.begin_phase();
 
-    cpu_data_latch = top.cpu_bus.get_bus_data();
+    cpu_data_latch = (uint8_t)pack_p(top.cpu_bus.BUS_CPU_D0p.qp(), top.cpu_bus.BUS_CPU_D1p.qp(), top.cpu_bus.BUS_CPU_D2p.qp(), top.cpu_bus.BUS_CPU_D3p.qp(),
+                                     top.cpu_bus.BUS_CPU_D4p.qp(), top.cpu_bus.BUS_CPU_D5p.qp(), top.cpu_bus.BUS_CPU_D6p.qp(), top.cpu_bus.BUS_CPU_D7p.qp());
+
+
     imask_latch = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
 
     if (DELTA_DE) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
@@ -311,7 +314,16 @@ void GateBoy::next_pass() {
     }
 
     top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-    top.cpu_bus.unlock_data();
+
+    top.cpu_bus.BUS_CPU_D0p.unlock();
+    top.cpu_bus.BUS_CPU_D1p.unlock();
+    top.cpu_bus.BUS_CPU_D2p.unlock();
+    top.cpu_bus.BUS_CPU_D3p.unlock();
+    top.cpu_bus.BUS_CPU_D4p.unlock();
+    top.cpu_bus.BUS_CPU_D5p.unlock();
+    top.cpu_bus.BUS_CPU_D6p.unlock();
+    top.cpu_bus.BUS_CPU_D7p.unlock();
+
 
     // not at all certain about this. seems to break some oam read glitches.
     if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
@@ -320,7 +332,16 @@ void GateBoy::next_pass() {
 
     // Data has to be driven on EFGH or we fail the wave tests
     if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      if (bus_req.write) top.cpu_bus.lock_data(bus_req.data_lo);
+      if (bus_req.write) {
+        top.cpu_bus.BUS_CPU_D0p.lock(bus_req.data_lo & 0x01);
+        top.cpu_bus.BUS_CPU_D1p.lock(bus_req.data_lo & 0x02);
+        top.cpu_bus.BUS_CPU_D2p.lock(bus_req.data_lo & 0x04);
+        top.cpu_bus.BUS_CPU_D3p.lock(bus_req.data_lo & 0x08);
+        top.cpu_bus.BUS_CPU_D4p.lock(bus_req.data_lo & 0x10);
+        top.cpu_bus.BUS_CPU_D5p.lock(bus_req.data_lo & 0x20);
+        top.cpu_bus.BUS_CPU_D6p.lock(bus_req.data_lo & 0x40);
+        top.cpu_bus.BUS_CPU_D7p.lock(bus_req.data_lo & 0x80);
+      }
     }
 
     top.joypad.set_buttons(sys_buttons);

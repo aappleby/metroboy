@@ -83,15 +83,6 @@ struct VramBus {
     SEMO_SPRITE_DA6n.reset(REG_D1C0);
     SEGA_SPRITE_DA7n.reset(REG_D1C0);
 
-    BUS_VRAM_D0p .reset(TRI_D0NP);
-    BUS_VRAM_D1p .reset(TRI_D0NP);
-    BUS_VRAM_D2p .reset(TRI_D0NP);
-    BUS_VRAM_D3p .reset(TRI_D0NP);
-    BUS_VRAM_D4p .reset(TRI_D0NP);
-    BUS_VRAM_D5p .reset(TRI_D0NP);
-    BUS_VRAM_D6p .reset(TRI_D0NP);
-    BUS_VRAM_D7p .reset(TRI_D0NP);
-
     BUS_VRAM_A00n.reset(TRI_D1PU);
     BUS_VRAM_A01n.reset(TRI_D1PU);
     BUS_VRAM_A02n.reset(TRI_D1PU);
@@ -172,14 +163,6 @@ struct VramBus {
     SEMO_SPRITE_DA6n.reset(REG_D0C0);
     SEGA_SPRITE_DA7n.reset(REG_D0C0);
 
-    BUS_VRAM_D0p .reset(TRI_D0NP);
-    BUS_VRAM_D1p .reset(TRI_D0NP);
-    BUS_VRAM_D2p .reset(TRI_D0NP);
-    BUS_VRAM_D3p .reset(TRI_D0NP);
-    BUS_VRAM_D4p .reset(TRI_D0NP);
-    BUS_VRAM_D5p .reset(TRI_D0NP);
-    BUS_VRAM_D6p .reset(TRI_D0NP);
-    BUS_VRAM_D7p .reset(TRI_D0NP);
     BUS_VRAM_A00n.reset(TRI_HZPU);
     BUS_VRAM_A01n.reset(TRI_HZPU);
     BUS_VRAM_A02n.reset(TRI_HZPU);
@@ -284,14 +267,14 @@ struct VramBus {
   //----------------------------------------
   // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
-  Bus BUS_VRAM_D0p;
-  Bus BUS_VRAM_D1p;
-  Bus BUS_VRAM_D2p;
-  Bus BUS_VRAM_D3p;
-  Bus BUS_VRAM_D4p;
-  Bus BUS_VRAM_D5p;
-  Bus BUS_VRAM_D6p;
-  Bus BUS_VRAM_D7p;
+  Bus2 BUS_VRAM_D0p;
+  Bus2 BUS_VRAM_D1p;
+  Bus2 BUS_VRAM_D2p;
+  Bus2 BUS_VRAM_D3p;
+  Bus2 BUS_VRAM_D4p;
+  Bus2 BUS_VRAM_D5p;
+  Bus2 BUS_VRAM_D6p;
+  Bus2 BUS_VRAM_D7p;
 
   Bus BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
   Bus BUS_VRAM_A01n;

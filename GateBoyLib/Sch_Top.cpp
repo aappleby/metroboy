@@ -681,6 +681,15 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   //==============================================================================
   //==============================================================================
 
+  vram_bus.BUS_VRAM_D0p.reset();
+  vram_bus.BUS_VRAM_D1p.reset();
+  vram_bus.BUS_VRAM_D2p.reset();
+  vram_bus.BUS_VRAM_D3p.reset();
+  vram_bus.BUS_VRAM_D4p.reset();
+  vram_bus.BUS_VRAM_D5p.reset();
+  vram_bus.BUS_VRAM_D6p.reset();
+  vram_bus.BUS_VRAM_D7p.reset();
+
   // VPD -> VBD
   /* p25.RODY*/ vram_bus.BUS_VRAM_D0p.tri_6pn(_RENA_CBD_TO_VPDn, vram_bus.PIN_VRAM_D00p.qn());
   /* p25.REBA*/ vram_bus.BUS_VRAM_D1p.tri_6pn(_RENA_CBD_TO_VPDn, vram_bus.PIN_VRAM_D01p.qn());
@@ -700,7 +709,14 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /* p25.TOFA*/ vram_bus.BUS_VRAM_D6p.tri10_np(_RAHU_CBD_TO_VPDn, cpu_bus.BUS_CPU_D6p.qp());
   /* p25.SUZA*/ vram_bus.BUS_VRAM_D7p.tri10_np(_RAHU_CBD_TO_VPDn, cpu_bus.BUS_CPU_D7p.qp());
 
-
+  vram_bus.BUS_VRAM_D0p.commit();
+  vram_bus.BUS_VRAM_D1p.commit();
+  vram_bus.BUS_VRAM_D2p.commit();
+  vram_bus.BUS_VRAM_D3p.commit();
+  vram_bus.BUS_VRAM_D4p.commit();
+  vram_bus.BUS_VRAM_D5p.commit();
+  vram_bus.BUS_VRAM_D6p.commit();
+  vram_bus.BUS_VRAM_D7p.commit();
 
 
 

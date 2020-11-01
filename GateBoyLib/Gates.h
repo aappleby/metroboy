@@ -771,6 +771,42 @@ struct Bus2 {
     delta = DELTA_COMM;
   }
 
+  void tri_6pn(wire OEp, wire Dn) {
+    if (!OEp) return;
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
+
+    wire D = !Dn;
+
+    if (state == TRI_HZPU) {
+      state = RegState(D ? TRI_D1NP : TRI_D0NP);
+    }
+    else if (state == TRI_D0NP) {
+      if (D)  RegBase::bus_collision = true;
+    }
+    else if (state == TRI_D1NP) {
+      if (!D) RegBase::bus_collision = true;
+    }
+
+    delta = DELTA_COMM;
+  }
+
+  void tri10_np(wire OEn, wire D) {
+    if (OEn) return;
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
+
+    if (state == TRI_HZPU) {
+      state = RegState(D ? TRI_D1NP : TRI_D0NP);
+    }
+    else if (state == TRI_D0NP) {
+      if (D)  RegBase::bus_collision = true;
+    }
+    else if (state == TRI_D1NP) {
+      if (!D) RegBase::bus_collision = true;
+    }
+
+    delta = DELTA_COMM;
+  }
+
   void commit() {
     delta = DELTA_LOCK;
   }

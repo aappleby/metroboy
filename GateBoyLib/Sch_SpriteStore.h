@@ -533,10 +533,10 @@ struct SpriteStore {
   Bus SPR_TRI_I4p;
   Bus SPR_TRI_I5p;
 
-  Bus SPR_TRI_L0; // -> vram bus
-  Bus SPR_TRI_L1;
-  Bus SPR_TRI_L2;
-  Bus SPR_TRI_L3;
+  Bus2 SPR_TRI_L0; // -> vram bus
+  Bus2 SPR_TRI_L1;
+  Bus2 SPR_TRI_L2;
+  Bus2 SPR_TRI_L3;
 
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals

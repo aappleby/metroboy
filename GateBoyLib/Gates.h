@@ -718,6 +718,111 @@ struct Bus : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
+// Tristate bus, can have multiple drivers.
+
+// TYGO_01 << BUS_CPU_D2p
+// TYGO_02 nc
+// TYGO_03 nc
+// TYGO_04 nc
+// TYGO_05 << RAHU_04
+// TYGO_06 << BUS_CPU_D2p
+// TYGO_07 nc
+// TYGO_08 nc
+// TYGO_09 >> BUS_VRAM_D2p
+// TYGO_10 nc
+
+// Must be NP - see KOVA/KEJO
+
+struct Bus2 : private RegBase {
+  using RegBase::reset;
+  using RegBase::c;
+  using RegBase::cn;
+
+  void lock(RegDelta d) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = d;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  void unlock() {
+    //CHECK_P(delta == DELTA_LOCK);
+    delta = DELTA_NONE;
+  }
+
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
+
+  void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
+
+  void tri10_np(wire OEn, wire D) {
+    if (!OEn) {
+      merge_tri_delta(D ? DELTA_TRI1 : DELTA_TRI0);
+    }
+    else {
+      merge_tri_delta(DELTA_TRIZ);
+    }
+  }
+
+  // top rung tadpole _not_ facing second rung dot.
+
+  void tri_6nn(wire OEn, wire Dn) {
+    if (!OEn) {
+      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
+    }
+    else {
+      merge_tri_delta(DELTA_TRIZ);
+    }
+  }
+
+  // top rung tadpole facing second rung dot.
+
+  void tri_6pn(wire OEp, wire Dn) {
+    if (OEp) {
+      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
+    }
+    else {
+      merge_tri_delta(DELTA_TRIZ);
+    }
+  }
+
+  void merge_tri_delta(RegDelta new_d) {
+    if (delta == DELTA_NONE) {
+      delta = new_d;
+    }
+    else if (delta == DELTA_HOLD) {
+    }
+    else if (delta == DELTA_TRIZ) {
+      delta = new_d;
+    }
+    else if (new_d != DELTA_TRIZ) {
+      RegBase::bus_collision = true;
+    }
+  }
+
+  void commit() {
+    if (delta == DELTA_LOCK) return;
+    if (delta == DELTA_COMM) {
+      printf("?");
+      return;
+    }
+
+    CHECK_N(delta == DELTA_NONE);
+    state = RegState(logic_lut1.tab[value]);
+    delta = DELTA_COMM;
+  }
+
+};
+
+
+//-----------------------------------------------------------------------------
 // Tristate io pin, can have only one driver.
 
 struct Pin : private RegBase {

@@ -89,17 +89,17 @@ enum RegState : uint8_t {
   REG_D0C1 = 0b0010, // 02: state 0 + clock 1
   REG_D1C1 = 0b0011, // 03: state 1 + clock 1
 
-  REG_XXXX = 0b0100, // 04:
-  REG_YYYY = 0b0101, // 05:
+  //REG_XXXX = 0b0100, // 04:
+  //REG_YYYY = 0b0101, // 05:
 
-  TRI_D0PD = 0b0110, // 06: pin driven 0 + pull down
-  TRI_D1PD = 0b0111, // 07: pin driven 1 + pull down
+  //TRI_D0PD = 0b0110, // 06: pin driven 0 + pull down
+  //TRI_D1PD = 0b0111, // 07: pin driven 1 + pull down
   TRI_D0PU = 0b1000, // 08: pin driven 0 + pull up
   TRI_D1PU = 0b1001, // 09: pin driven 1 + pull up
   TRI_D0NP = 0b1010, // 10: pin driven 0 + no pull
   TRI_D1NP = 0b1011, // 11: pin driven 1 + no pull
 
-  TRI_HZPD = 0b1100, // 12: pin driven Z + pull down
+  //TRI_HZPD = 0b1100, // 12: pin driven Z + pull down
   TRI_HZPU = 0b1101, // 13: pin driven Z + pull up
   TRI_HZNP = 0b1110, // 14: pin driven Z + no pull
 
@@ -112,13 +112,13 @@ inline char reg_state_to_c(RegState state) {
     case REG_D1C0: return '1';
     case REG_D0C1: return '0';
     case REG_D1C1: return '1';
-    case TRI_D0PD: return '0';
-    case TRI_D1PD: return '1';
+    //case TRI_D0PD: return '0';
+    //case TRI_D1PD: return '1';
     case TRI_D0PU: return '0';
     case TRI_D1PU: return '1';
     case TRI_D0NP: return '0';
     case TRI_D1NP: return '1';
-    case TRI_HZPD: return 'v';
+    //case TRI_HZPD: return 'v';
     case TRI_HZPU: return '^';
     case TRI_HZNP: return 'Z';
     default:       return 'E';
@@ -131,13 +131,13 @@ inline char reg_state_to_cn(RegState state) {
     case REG_D1C0: return '0';
     case REG_D0C1: return '1';
     case REG_D1C1: return '0';
-    case TRI_D0PD: return '1';
-    case TRI_D1PD: return '0';
+    //case TRI_D0PD: return '1';
+    //case TRI_D1PD: return '0';
     case TRI_D0PU: return '1';
     case TRI_D1PU: return '0';
     case TRI_D0NP: return '1';
     case TRI_D1NP: return '0';
-    case TRI_HZPD: return '^';
+    //case TRI_HZPD: return '^';
     case TRI_HZPU: return 'v';
     case TRI_HZNP: return 'Z';
     default:       return 'E';
@@ -151,18 +151,20 @@ enum RegDelta : uint8_t {
   DELTA_COMM = 0b0001, // 01: delta committed early, will change to NONE during final commit.
   DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches and config bits
   DELTA_LOCK = 0b0011, // 03: do not change tri when committed, sticky. used for buses.
+
   DELTA_TRIZ = 0b0100, // 04:
   DELTA_TRI1 = 0b0101, // 05:
   DELTA_TRI0 = 0b0110, // 06:
   DELTA_TRIX = 0b0111, // 07:
-  DELTA_D0C0 = 0b1000, // 08: data 0    + clock 0
-  DELTA_D1C0 = 0b1001, // 09: data 1    + clock 0
-  DELTA_D0C1 = 0b1010, // 10: data 0    + clock 1
-  DELTA_D1C1 = 0b1011, // 11: data 1    + clock 1
-  DELTA_A0C0 = 0b1100, // 12: async rst + clock 0
-  DELTA_A1C0 = 0b1101, // 13: async set + clock 0
-  DELTA_A0C1 = 0b1110, // 14: async rst + clock 1
-  DELTA_A1C1 = 0b1111, // 15: async set + clock 1
+
+  //DELTA_D0C0 = 0b1000, // 08: data 0    + clock 0
+  //DELTA_D1C0 = 0b1001, // 09: data 1    + clock 0
+  //DELTA_D0C1 = 0b1010, // 10: data 0    + clock 1
+  //DELTA_D1C1 = 0b1011, // 11: data 1    + clock 1
+  //DELTA_A0C0 = 0b1100, // 12: async rst + clock 0
+  //DELTA_A1C0 = 0b1101, // 13: async set + clock 0
+  //DELTA_A0C1 = 0b1110, // 14: async rst + clock 1
+  //DELTA_A1C1 = 0b1111, // 15: async set + clock 1
 };
 
 //-----------------------------------------------------------------------------
@@ -206,72 +208,9 @@ struct RegBase {
   char c() const  { return reg_state_to_c(state); }
   char cn() const { return reg_state_to_cn(state); }
 
-  bool is_reg()    const { return (state >= REG_D0C0) && (state <= REG_YYYY); }
-  bool is_tri()    const { return (state >= TRI_D0PD) && (state <= TRI_HZNP); }
-  bool has_delta() const { return delta != DELTA_NONE; }
   wire as_wire()   const {
-    //CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
     CHECK_N(delta == DELTA_COMM);
-
-    /*
-    if (state == TRI_HZNP) {
-      //printf("bus floating?\n");
-      bus_floating = true;
-    }
-    */
-    //CHECK_N(delta);
-
     return wire(state & 1);
-  }
-
-  void lock(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = d;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  void lock(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  void unlock() {
-    //CHECK_P(delta == DELTA_LOCK);
-    delta = DELTA_NONE;
-  }
-
-  void merge_tri_delta(RegDelta new_d) {
-    CHECK_P(is_tri());
-    if (delta == DELTA_NONE) {
-      delta = new_d;
-    }
-    else if (delta == DELTA_HOLD) {
-      CHECK_P(new_d == DELTA_TRIZ);
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(new_d == DELTA_TRIZ || new_d == DELTA_TRI0 || new_d == DELTA_TRI1);
-      delta = new_d;
-    }
-    else if (new_d != DELTA_TRIZ) {
-      RegBase::bus_collision = true;
-    }
-  }
-
-  void dff(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
-    (void)CLKn;
-    CHECK_P(is_reg() && !has_delta());
-    if (!RSTn) {
-      delta = RegDelta(DELTA_A0C0 | (CLKp << 1));
-    }
-    else if (!SETn) {
-      delta = RegDelta(DELTA_A1C0 | (CLKp << 1));
-    }
-    else {
-      delta = RegDelta(DELTA_D0C0 | (CLKp << 1) | (D << 0));
-    }
   }
 
   void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
@@ -294,28 +233,6 @@ struct RegBase {
     }
 
     delta = DELTA_COMM;
-
-    /*
-    dff(CLKp, CLKn, SETn, RSTn, D);
-    commit();
-    */
-  }
-
-  void commit() {
-    if (delta != DELTA_COMM) {
-      CHECK_N(delta == DELTA_NONE);
-
-      uint8_t s1 = value;
-      uint8_t s2 = logic_lut1.tab[s1];
-
-      CHECK_N((s1 & 0x0F) == ERR_XXXX);
-      CHECK_N((s2 & 0x0F) == ERR_XXXX);
-
-      value = s2 | (DELTA_COMM << 4);
-    }
-    else {
-      printf("?");
-    }
   }
 
   union {
@@ -334,7 +251,6 @@ struct RegBase {
 struct Gate : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   operator wire() const { return as_wire(); }
 
@@ -346,6 +262,7 @@ struct Gate : private RegBase {
 
 //-----------------------------------------------------------------------------
 
+/*
 struct DelayGlitch {
 
   // fixme
@@ -417,6 +334,7 @@ struct DelayGlitch {
   wire q8() const { return dh.as_wire(); }
   wire q9() const { return di.as_wire(); }
 };
+*/
 
 //-----------------------------------------------------------------------------
 // Generic DFF
@@ -424,13 +342,12 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
-  void dffc(wire CLKp, bool D)            { RegBase::dff(CLKp, !CLKp, 1, 1, D); commit(); }
-  void dffc(wire CLKp, bool RSTn, bool D) { RegBase::dff(CLKp, !CLKp, 1, RSTn, D); commit(); }
+  void dffc(wire CLKp, bool D)            { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
+  void dffc(wire CLKp, bool RSTn, bool D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -449,13 +366,12 @@ struct DFF : private RegBase {
 struct DFF8n : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qn07() const { return !as_wire(); }
   wire qp08() const { return  as_wire(); }
 
-  void dff8nc(wire CLKn, bool Dn)            { dff(!CLKn, CLKn, 1, 1, !Dn); commit(); }
-  void dff8nc(wire CLKn, wire CLKp, bool Dn) { dff( CLKp, CLKn, 1, 1, !Dn); commit(); }
+  void dff8nc(wire CLKn, bool Dn)            { RegBase::dffc(!CLKn, CLKn, 1, 1, !Dn); }
+  void dff8nc(wire CLKn, wire CLKp, bool Dn) { RegBase::dffc( CLKp, CLKn, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -474,12 +390,11 @@ struct DFF8n : private RegBase {
 struct DFF8p : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qn07() const { return !as_wire(); }
   wire qp08() const { return  as_wire(); }
 
-  void dff8pc(wire CLKp, bool Dn) { dff( CLKp, !CLKp, 1, 1, !Dn); commit(); }
+  void dff8pc(wire CLKp, bool Dn) { RegBase::dffc( CLKp, !CLKp, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -500,15 +415,14 @@ struct DFF8p : private RegBase {
 struct DFF9 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qn08() const { return !as_wire(); }
   wire qp09() const { return  as_wire(); }
 
   // FIXME the SETn here is slightly weird. too many inversions?
 
-  void dff9c(wire CLKp, wire SETn, bool Dn)            { dff(CLKp, !CLKp, SETn, 1, !Dn); commit(); }
-  void dff9c(wire CLKp, wire CLKn, wire SETn, bool Dn) { dff(CLKp,  CLKn, SETn, 1, !Dn); commit(); }
+  void dff9c(wire CLKp, wire SETn, bool Dn)            { RegBase::dffc(CLKp, !CLKp, SETn, 1, !Dn); }
+  void dff9c(wire CLKp, wire CLKn, wire SETn, bool Dn) { RegBase::dffc(CLKp,  CLKn, SETn, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -530,27 +444,10 @@ struct DFF9 : private RegBase {
 struct DFF11 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire q11p() const { return as_wire(); }
 
-  void dff11c(wire CLKp, wire RSTn, wire D) {
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!RSTn) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
-    }
-    else if (!ca && cb) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + D);
-    }
-    else {
-      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
-    }
-
-    delta = DELTA_COMM;
-  }
+  void dff11c(wire CLKp, wire RSTn, wire D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -572,28 +469,11 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qn12() const { return !as_wire(); }
   wire qp13() const { return  as_wire(); }
 
-  void dff13c(wire CLKp, wire RSTn, wire D) {
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!RSTn) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
-    }
-    else if (!ca && cb) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + D);
-    }
-    else {
-      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
-    }
-
-    delta = DELTA_COMM;
-  }
+  void dff13c(wire CLKp, wire RSTn, wire D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -619,28 +499,11 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qn16() const { return !as_wire(); }
   wire qp17() const { return  as_wire(); }
 
-  void dff17c(wire CLKp, wire RSTn, wire D) {
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!RSTn) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
-    }
-    else if (!ca && cb) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + D);
-    }
-    else {
-      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
-    }
-
-    delta = DELTA_COMM;
-  }
+  void dff17c(wire CLKp, wire RSTn, wire D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -670,7 +533,6 @@ struct DFF17 : private RegBase {
 struct DFF20 : private RegBase{
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qp01() const { return  as_wire(); }
   wire qn17() const { return !as_wire(); }
@@ -720,7 +582,6 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qn15() const { return !as_wire(); }
   wire qp16() const { return  as_wire(); }
@@ -740,12 +601,10 @@ struct Sig : private RegBase {
   wire qp() const { return  as_wire(); }
 
   operator wire() const {
-    CHECK_P(has_delta() == sim_running);
     return wire(state & 1);
   }
 
   void operator = (wire s) {
-    CHECK_N(has_delta());
     CHECK_P(tick_running);
 
     state = RegState(TRI_D0NP | int(s));
@@ -774,9 +633,25 @@ struct Bus : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::lock;
-  using RegBase::unlock;
-  using RegBase::commit;
+
+  void lock(RegDelta d) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = d;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  void unlock() {
+    //CHECK_P(delta == DELTA_LOCK);
+    delta = DELTA_NONE;
+  }
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
@@ -813,6 +688,33 @@ struct Bus : private RegBase {
       merge_tri_delta(DELTA_TRIZ);
     }
   }
+
+  void merge_tri_delta(RegDelta new_d) {
+    if (delta == DELTA_NONE) {
+      delta = new_d;
+    }
+    else if (delta == DELTA_HOLD) {
+    }
+    else if (delta == DELTA_TRIZ) {
+      delta = new_d;
+    }
+    else if (new_d != DELTA_TRIZ) {
+      RegBase::bus_collision = true;
+    }
+  }
+
+  void commit() {
+    if (delta == DELTA_LOCK) return;
+    if (delta == DELTA_COMM) {
+      printf("?");
+      return;
+    }
+
+    CHECK_N(delta == DELTA_NONE);
+    state = RegState(logic_lut1.tab[value]);
+    delta = DELTA_COMM;
+  }
+
 };
 
 //-----------------------------------------------------------------------------
@@ -820,8 +722,25 @@ struct Bus : private RegBase {
 
 struct Pin : private RegBase {
   using RegBase::c;
-  using RegBase::lock;
-  using RegBase::commit;
+
+  void lock(RegDelta d) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = d;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  void lock(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    value = logic_lut1[value];
+    delta = DELTA_LOCK;
+  }
+
+  void unlock() {
+    //CHECK_P(delta == DELTA_LOCK);
+    delta = DELTA_NONE;
+  }
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
@@ -845,10 +764,11 @@ struct Pin : private RegBase {
   }
 
   void setc(wire w) {
+    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
     old_value = state | (DELTA_LOCK << 4);
-    CHECK_N(has_delta());
-    merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0);
-    commit();
+    delta = w ? DELTA_TRI1 : DELTA_TRI0;
+    state = RegState(logic_lut1.tab[value] & 0x0F);
+    delta = DELTA_COMM;
   }
 
   void operator = (RegDelta d) {
@@ -865,8 +785,27 @@ struct Pin : private RegBase {
     else if (!HI &&  LO) __debugbreak();
     else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
     else                 __debugbreak();
-    commit();
+
+    state = RegState(logic_lut1.tab[value] & 0x0F);
+    delta = DELTA_COMM;
   }
+
+  void merge_tri_delta(RegDelta new_d) {
+    if (delta == DELTA_NONE) {
+      delta = new_d;
+    }
+    else if (delta == DELTA_HOLD) {
+      CHECK_P(new_d == DELTA_TRIZ);
+    }
+    else if (delta == DELTA_TRIZ) {
+      CHECK_P(new_d == DELTA_TRIZ || new_d == DELTA_TRI0 || new_d == DELTA_TRI1);
+      delta = new_d;
+    }
+    else if (new_d != DELTA_TRIZ) {
+      RegBase::bus_collision = true;
+    }
+  }
+
 
   uint8_t old_value = TRI_HZNP | (DELTA_LOCK << 4);
 };
@@ -885,7 +824,6 @@ struct NorLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::commit;
 
   wire qn03() const { return !as_wire(); }
   wire qp04() const { return  as_wire(); }
@@ -913,13 +851,12 @@ struct NandLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::cn;
-  using RegBase::commit;
 
   wire qp03() const { return  as_wire(); }
   wire qn04() const { return !as_wire(); }
 
   void nand_latchc(wire SETn, wire RSTn) {
-    CHECK_N(has_delta());
+    CHECK_P(delta == DELTA_NONE);
     if (!SETn) state = TRI_D1NP;
     if (!RSTn) state = TRI_D0NP;
     delta = DELTA_COMM;
@@ -946,13 +883,12 @@ struct NandLatch : private RegBase {
 struct TpLatch : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::commit;
 
   wire qp08() const { return  as_wire(); }
   wire qn10() const { return !as_wire(); }
 
   void tp_latchc(wire HOLDn, wire D) {
-    CHECK_N(has_delta());
+    CHECK_P(delta == DELTA_NONE);
     if (HOLDn) state = RegState(TRI_D0NP + D);
     delta = DELTA_COMM;
   }

@@ -4436,23 +4436,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     /* p23.XONA*/ pix_pipe.XONA_LCDC_LCDENn  .dff9c(_XUBO_FF40_WRn, _XARE_RSTn, cpu_bus.BUS_CPU_D7p.qp());
   }
 
-  cpu_bus.BUS_CPU_A00.commit();
-  cpu_bus.BUS_CPU_A01.commit();
-  cpu_bus.BUS_CPU_A02.commit();
-  cpu_bus.BUS_CPU_A03.commit();
-  cpu_bus.BUS_CPU_A04.commit();
-  cpu_bus.BUS_CPU_A05.commit();
-  cpu_bus.BUS_CPU_A06.commit();
-  cpu_bus.BUS_CPU_A07.commit();
-  cpu_bus.BUS_CPU_A08.commit();
-  cpu_bus.BUS_CPU_A09.commit();
-  cpu_bus.BUS_CPU_A10.commit();
-  cpu_bus.BUS_CPU_A11.commit();
-  cpu_bus.BUS_CPU_A12.commit();
-  cpu_bus.BUS_CPU_A13.commit();
-  cpu_bus.BUS_CPU_A14.commit();
-  cpu_bus.BUS_CPU_A15.commit();
-
   cpu_bus.BUS_CPU_D0p.commit();
   cpu_bus.BUS_CPU_D1p.commit();
   cpu_bus.BUS_CPU_D2p.commit();

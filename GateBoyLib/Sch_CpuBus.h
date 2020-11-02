@@ -9,23 +9,6 @@ struct SchematicTop;
 
 struct CpuBus {
   void reset_cart() {
-    BUS_CPU_A00.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A01.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A02.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A03.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A04.reset(TRI_D1PU | (DELTA_LOCK << 4));
-    BUS_CPU_A05.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A06.reset(TRI_D1PU | (DELTA_LOCK << 4));
-    BUS_CPU_A07.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A08.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A09.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A10.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A11.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A12.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A13.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A14.reset(TRI_D0PU | (DELTA_LOCK << 4));
-    BUS_CPU_A15.reset(TRI_D0PU | (DELTA_LOCK << 4));
-
     BUS_CPU_D0p.reset(TRI_HZPU);
     BUS_CPU_D1p.reset(TRI_HZPU);
     BUS_CPU_D2p.reset(TRI_HZPU);
@@ -63,23 +46,6 @@ struct CpuBus {
   }
 
   void reset_boot() {
-    BUS_CPU_A00.reset(TRI_HZPU);
-    BUS_CPU_A01.reset(TRI_HZPU);
-    BUS_CPU_A02.reset(TRI_HZPU);
-    BUS_CPU_A03.reset(TRI_HZPU);
-    BUS_CPU_A04.reset(TRI_HZPU);
-    BUS_CPU_A05.reset(TRI_HZPU);
-    BUS_CPU_A06.reset(TRI_HZPU);
-    BUS_CPU_A07.reset(TRI_HZPU);
-    BUS_CPU_A08.reset(TRI_HZPU);
-    BUS_CPU_A09.reset(TRI_HZPU);
-    BUS_CPU_A10.reset(TRI_HZPU);
-    BUS_CPU_A11.reset(TRI_HZPU);
-    BUS_CPU_A12.reset(TRI_HZPU);
-    BUS_CPU_A13.reset(TRI_HZPU);
-    BUS_CPU_A14.reset(TRI_HZPU);
-    BUS_CPU_A15.reset(TRI_HZPU);
-
     BUS_CPU_D0p.reset(TRI_HZPU);
     BUS_CPU_D1p.reset(TRI_HZPU);
     BUS_CPU_D2p.reset(TRI_HZPU);
@@ -117,22 +83,22 @@ struct CpuBus {
 
   //-----------------------------------------------------------------------------
 
-  Bus BUS_CPU_A00;  // bottom right port PORTB_00: -> A00
-  Bus BUS_CPU_A01;  // bottom right port PORTB_04: -> A01
-  Bus BUS_CPU_A02;  // bottom right port PORTB_08: -> A02
-  Bus BUS_CPU_A03;  // bottom right port PORTB_12: -> A03
-  Bus BUS_CPU_A04;  // bottom right port PORTB_16: -> A04
-  Bus BUS_CPU_A05;  // bottom right port PORTB_20: -> A05
-  Bus BUS_CPU_A06;  // bottom right port PORTB_24: -> A06
-  Bus BUS_CPU_A07;  // bottom right port PORTB_28: -> A07
-  Bus BUS_CPU_A08;  // bottom right port PORTB_02: -> A08
-  Bus BUS_CPU_A09;  // bottom right port PORTB_06: -> A09
-  Bus BUS_CPU_A10;  // bottom right port PORTB_10: -> A10
-  Bus BUS_CPU_A11;  // bottom right port PORTB_14: -> A11
-  Bus BUS_CPU_A12;  // bottom right port PORTB_18: -> A12
-  Bus BUS_CPU_A13;  // bottom right port PORTB_22: -> A13
-  Bus BUS_CPU_A14;  // bottom right port PORTB_26: -> A14
-  Bus BUS_CPU_A15;  // bottom right port PORTB_30: -> A15
+  Sig2 BUS_CPU_A00;  // bottom right port PORTB_00: -> A00
+  Sig2 BUS_CPU_A01;  // bottom right port PORTB_04: -> A01
+  Sig2 BUS_CPU_A02;  // bottom right port PORTB_08: -> A02
+  Sig2 BUS_CPU_A03;  // bottom right port PORTB_12: -> A03
+  Sig2 BUS_CPU_A04;  // bottom right port PORTB_16: -> A04
+  Sig2 BUS_CPU_A05;  // bottom right port PORTB_20: -> A05
+  Sig2 BUS_CPU_A06;  // bottom right port PORTB_24: -> A06
+  Sig2 BUS_CPU_A07;  // bottom right port PORTB_28: -> A07
+  Sig2 BUS_CPU_A08;  // bottom right port PORTB_02: -> A08
+  Sig2 BUS_CPU_A09;  // bottom right port PORTB_06: -> A09
+  Sig2 BUS_CPU_A10;  // bottom right port PORTB_10: -> A10
+  Sig2 BUS_CPU_A11;  // bottom right port PORTB_14: -> A11
+  Sig2 BUS_CPU_A12;  // bottom right port PORTB_18: -> A12
+  Sig2 BUS_CPU_A13;  // bottom right port PORTB_22: -> A13
+  Sig2 BUS_CPU_A14;  // bottom right port PORTB_26: -> A14
+  Sig2 BUS_CPU_A15;  // bottom right port PORTB_30: -> A15
 
   Bus BUS_CPU_D0p;  // bottom left port: <>
   Bus BUS_CPU_D1p;  // bottom left port: <>

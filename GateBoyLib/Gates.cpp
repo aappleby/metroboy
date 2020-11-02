@@ -173,17 +173,21 @@ Lut8 generate_lut() {
   temp.tab[REG_D1C0 | (DELTA_COMM << 4)] = REG_D1C0;
   temp.tab[REG_D0C1 | (DELTA_COMM << 4)] = REG_D0C1;
   temp.tab[REG_D1C1 | (DELTA_COMM << 4)] = REG_D1C1;
-  //temp.tab[REG_XXXX | (DELTA_COMM << 4)] = REG_XXXX;
-  //temp.tab[REG_YYYY | (DELTA_COMM << 4)] = REG_YYYY;
-  //temp.tab[TRI_D0PD | (DELTA_COMM << 4)] = TRI_D0PD;
-  //temp.tab[TRI_D1PD | (DELTA_COMM << 4)] = TRI_D1PD;
+
+  temp.tab[TRI_HZPU | (DELTA_COMM << 4)] = TRI_HZPU;
   temp.tab[TRI_D0PU | (DELTA_COMM << 4)] = TRI_D0PU;
   temp.tab[TRI_D1PU | (DELTA_COMM << 4)] = TRI_D1PU;
+
+  temp.tab[TRI_HZNP | (DELTA_COMM << 4)] = TRI_HZNP;
   temp.tab[TRI_D0NP | (DELTA_COMM << 4)] = TRI_D0NP;
   temp.tab[TRI_D1NP | (DELTA_COMM << 4)] = TRI_D1NP;
-  //temp.tab[TRI_HZPD | (DELTA_COMM << 4)] = TRI_HZPD;
-  temp.tab[TRI_HZPU | (DELTA_COMM << 4)] = TRI_HZPU;
-  temp.tab[TRI_HZNP | (DELTA_COMM << 4)] = TRI_HZNP;
+
+  //----------
+
+  temp.tab[SIG_D0NP | (DELTA_NONE << 4)] = ERR_XXXX;
+  temp.tab[SIG_D1NP | (DELTA_NONE << 4)] = ERR_XXXX;
+  temp.tab[SIG_D0NP | (DELTA_COMM << 4)] = SIG_D0NP;
+  temp.tab[SIG_D1NP | (DELTA_COMM << 4)] = SIG_D1NP;
 
   //----------
 

@@ -89,6 +89,9 @@ enum RegState : uint8_t {
   REG_D0C1 = 0b0010, // 02: state 0 + clock 1
   REG_D1C1 = 0b0011, // 03: state 1 + clock 1
 
+  SIG_D0NP = 0b1000,
+  SIG_D1NP = 0b1001,
+
   //REG_XXXX = 0b0100, // 04:
   //REG_YYYY = 0b0101, // 05:
 
@@ -733,10 +736,12 @@ struct Bus : private RegBase {
 
 // Must be NP - see KOVA/KEJO
 
-#pragma warning(push)
-#pragma warning(disable:4201)
-
 struct Bus2 {
+
+  Bus2() {
+    state = TRI_HZPU;
+    delta = DELTA_NONE;
+  }
 
   void reset() {
     state = TRI_HZPU;
@@ -769,6 +774,13 @@ struct Bus2 {
 
   void commit() { delta = DELTA_LOCK; }
 
+  void set(wire D) {
+    CHECK_P(delta == DELTA_NONE);
+    state = RegState(D ? TRI_D1NP : TRI_D0NP);
+    delta = DELTA_LOCK;
+  }
+
+
   wire qp() const { CHECK_P(delta == DELTA_LOCK); return  (state & 1); }
   wire qn() const { CHECK_P(delta == DELTA_LOCK); return !(state & 1); }
 
@@ -776,7 +788,44 @@ struct Bus2 {
   RegDelta delta : 4;
 };
 
-#pragma warning(pop)
+//-----------------------------------------------------------------------------
+// Tristate bus, can have multiple drivers.
+
+// TYGO_01 << BUS_CPU_D2p
+// TYGO_02 nc
+// TYGO_03 nc
+// TYGO_04 nc
+// TYGO_05 << RAHU_04
+// TYGO_06 << BUS_CPU_D2p
+// TYGO_07 nc
+// TYGO_08 nc
+// TYGO_09 >> BUS_VRAM_D2p
+// TYGO_10 nc
+
+// Must be NP - see KOVA/KEJO
+
+struct Sig2 {
+
+  Sig2() {
+    state = SIG_D0NP;
+    delta = DELTA_NONE;
+  }
+
+  char c() const  { return reg_state_to_c(state); }
+  char cn() const { return reg_state_to_cn(state); }
+
+  void set(wire D) {
+    CHECK_P(delta == DELTA_NONE);
+    state = RegState(D ? TRI_D1NP : TRI_D0NP);
+    delta = DELTA_COMM;
+  }
+
+  wire qp() const { CHECK_P(delta == DELTA_COMM); return  (state & 1); }
+  wire qn() const { CHECK_P(delta == DELTA_COMM); return !(state & 1); }
+
+  RegState state : 4;
+  RegDelta delta : 4;
+};
 
 //-----------------------------------------------------------------------------
 // Tristate io pin, can have only one driver.

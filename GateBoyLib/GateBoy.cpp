@@ -288,22 +288,22 @@ void GateBoy::next_pass() {
     top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
     top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
 
-    top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
-    top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
-    top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
-    top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
-    top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
-    top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
-    top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
-    top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
-    top.cpu_bus.BUS_CPU_A08.lock(wire(bus_req.addr & 0x0100));
-    top.cpu_bus.BUS_CPU_A09.lock(wire(bus_req.addr & 0x0200));
-    top.cpu_bus.BUS_CPU_A10.lock(wire(bus_req.addr & 0x0400));
-    top.cpu_bus.BUS_CPU_A11.lock(wire(bus_req.addr & 0x0800));
-    top.cpu_bus.BUS_CPU_A12.lock(wire(bus_req.addr & 0x1000));
-    top.cpu_bus.BUS_CPU_A13.lock(wire(bus_req.addr & 0x2000));
-    top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
-    top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
+    top.cpu_bus.BUS_CPU_A00.set(wire(bus_req.addr & 0x0001));
+    top.cpu_bus.BUS_CPU_A01.set(wire(bus_req.addr & 0x0002));
+    top.cpu_bus.BUS_CPU_A02.set(wire(bus_req.addr & 0x0004));
+    top.cpu_bus.BUS_CPU_A03.set(wire(bus_req.addr & 0x0008));
+    top.cpu_bus.BUS_CPU_A04.set(wire(bus_req.addr & 0x0010));
+    top.cpu_bus.BUS_CPU_A05.set(wire(bus_req.addr & 0x0020));
+    top.cpu_bus.BUS_CPU_A06.set(wire(bus_req.addr & 0x0040));
+    top.cpu_bus.BUS_CPU_A07.set(wire(bus_req.addr & 0x0080));
+    top.cpu_bus.BUS_CPU_A08.set(wire(bus_req.addr & 0x0100));
+    top.cpu_bus.BUS_CPU_A09.set(wire(bus_req.addr & 0x0200));
+    top.cpu_bus.BUS_CPU_A10.set(wire(bus_req.addr & 0x0400));
+    top.cpu_bus.BUS_CPU_A11.set(wire(bus_req.addr & 0x0800));
+    top.cpu_bus.BUS_CPU_A12.set(wire(bus_req.addr & 0x1000));
+    top.cpu_bus.BUS_CPU_A13.set(wire(bus_req.addr & 0x2000));
+    top.cpu_bus.BUS_CPU_A14.set(wire(bus_req.addr & 0x4000));
+    top.cpu_bus.BUS_CPU_A15.set(wire(bus_req.addr & 0x8000));
   }
   else {
     // This seems wrong, but it passes tests. *shrug*
@@ -317,22 +317,22 @@ void GateBoy::next_pass() {
     top.cpu_bus.PIN_CPU_RDp.lock(0);
     top.cpu_bus.PIN_CPU_WRp.lock(0);
 
-    top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
-    top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
-    top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
-    top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
-    top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
-    top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
-    top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
-    top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
-    top.cpu_bus.BUS_CPU_A08.lock(0);
-    top.cpu_bus.BUS_CPU_A09.lock(0);
-    top.cpu_bus.BUS_CPU_A10.lock(0);
-    top.cpu_bus.BUS_CPU_A11.lock(0);
-    top.cpu_bus.BUS_CPU_A12.lock(0);
-    top.cpu_bus.BUS_CPU_A13.lock(0);
-    top.cpu_bus.BUS_CPU_A14.lock(0);
-    top.cpu_bus.BUS_CPU_A15.lock(0);
+    top.cpu_bus.BUS_CPU_A00.set(wire(bus_req.addr & 0x0001));
+    top.cpu_bus.BUS_CPU_A01.set(wire(bus_req.addr & 0x0002));
+    top.cpu_bus.BUS_CPU_A02.set(wire(bus_req.addr & 0x0004));
+    top.cpu_bus.BUS_CPU_A03.set(wire(bus_req.addr & 0x0008));
+    top.cpu_bus.BUS_CPU_A04.set(wire(bus_req.addr & 0x0010));
+    top.cpu_bus.BUS_CPU_A05.set(wire(bus_req.addr & 0x0020));
+    top.cpu_bus.BUS_CPU_A06.set(wire(bus_req.addr & 0x0040));
+    top.cpu_bus.BUS_CPU_A07.set(wire(bus_req.addr & 0x0080));
+    top.cpu_bus.BUS_CPU_A08.set(0);
+    top.cpu_bus.BUS_CPU_A09.set(0);
+    top.cpu_bus.BUS_CPU_A10.set(0);
+    top.cpu_bus.BUS_CPU_A11.set(0);
+    top.cpu_bus.BUS_CPU_A12.set(0);
+    top.cpu_bus.BUS_CPU_A13.set(0);
+    top.cpu_bus.BUS_CPU_A14.set(0);
+    top.cpu_bus.BUS_CPU_A15.set(0);
   }
 
   // not at all certain about this. seems to break some oam read glitches.

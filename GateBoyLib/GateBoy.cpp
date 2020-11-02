@@ -283,10 +283,10 @@ void GateBoy::next_pass() {
 
   if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
 
-    top.cpu_bus.PIN_CPU_EXT_BUSp.lock(addr_ext);
+    top.cpu_bus.PIN_CPU_EXT_BUSp.set(addr_ext);
 
-    top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
-    top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+    top.cpu_bus.PIN_CPU_RDp.set(bus_req.read);
+    top.cpu_bus.PIN_CPU_WRp.set(bus_req.write);
 
     top.cpu_bus.BUS_CPU_A00.set(wire(bus_req.addr & 0x0001));
     top.cpu_bus.BUS_CPU_A01.set(wire(bus_req.addr & 0x0002));
@@ -308,14 +308,14 @@ void GateBoy::next_pass() {
   else {
     // This seems wrong, but it passes tests. *shrug*
     if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-      top.cpu_bus.PIN_CPU_EXT_BUSp.lock(0);
+      top.cpu_bus.PIN_CPU_EXT_BUSp.set(0);
     }
     else {
-      top.cpu_bus.PIN_CPU_EXT_BUSp.lock(addr_ext);
+      top.cpu_bus.PIN_CPU_EXT_BUSp.set(addr_ext);
     }
 
-    top.cpu_bus.PIN_CPU_RDp.lock(0);
-    top.cpu_bus.PIN_CPU_WRp.lock(0);
+    top.cpu_bus.PIN_CPU_RDp.set(0);
+    top.cpu_bus.PIN_CPU_WRp.set(0);
 
     top.cpu_bus.BUS_CPU_A00.set(wire(bus_req.addr & 0x0001));
     top.cpu_bus.BUS_CPU_A01.set(wire(bus_req.addr & 0x0002));
@@ -335,12 +335,14 @@ void GateBoy::next_pass() {
     top.cpu_bus.BUS_CPU_A15.set(0);
   }
 
+  top.cpu_bus.PIN_CPU_6.set(0);
+
   // not at all certain about this. seems to break some oam read glitches.
   if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(1);
+    top.cpu_bus.PIN_CPU_LATCH_EXT.set(1);
   }
   else {
-    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
+    top.cpu_bus.PIN_CPU_LATCH_EXT.set(0);
   }
 
   // Data has to be driven on EFGH or we fail the wave tests
@@ -393,8 +395,8 @@ void GateBoy::next_pass() {
 
   //----------
 
-  probe(1, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
-  probe(2, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
+  //probe(1, "PIN_CPU_RDp",       top.cpu_bus.PIN_CPU_RDp.qp());
+  //probe(2, "PIN_CPU_WRp",       top.cpu_bus.PIN_CPU_WRp.qp());
   //probe(3, "SADU_STAT_MODE0",      !top.pix_pipe.SADU_STAT_MODE0n);
   //probe(4, "XATY_STAT_MODE1",      !top.pix_pipe.XATY_STAT_MODE1n);
   //probe(5, "ROPO_LY_MATCH_SYNCp",  top.lcd_reg.ROPO_LY_MATCH_SYNCp.qp17());
@@ -438,10 +440,10 @@ void GateBoy::next_pass() {
   //probe(22, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D6p.c());
   //probe(23, "BUS_CPU_D0p", top.cpu_bus.BUS_CPU_D7p.c());
 
-  probe(10, "PIN_OAM_CLK",  top.oam_bus.PIN_OAM_CLK.qp());
-  probe(11, "PIN_OAM_OE",   top.oam_bus.PIN_OAM_OE.qp());
-  probe(12, "PIN_OAM_WR_A", top.oam_bus.PIN_OAM_WR_A.qp());
-  probe(13, "PIN_OAM_WR_B", top.oam_bus.PIN_OAM_WR_B.qp());
+  //probe(10, "PIN_OAM_CLK",  top.oam_bus.PIN_OAM_CLK.qp());
+  //probe(11, "PIN_OAM_OE",   top.oam_bus.PIN_OAM_OE.qp());
+  //probe(12, "PIN_OAM_WR_A", top.oam_bus.PIN_OAM_WR_A.qp());
+  //probe(13, "PIN_OAM_WR_B", top.oam_bus.PIN_OAM_WR_B.qp());
 
   //----------------------------------------
 

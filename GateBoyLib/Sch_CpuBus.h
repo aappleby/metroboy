@@ -18,14 +18,6 @@ struct CpuBus {
     BUS_CPU_D6p.reset(TRI_HZPU);
     BUS_CPU_D7p.reset(TRI_HZPU);
 
-    //PIN_CPU_6.reset(0x3E, 0x0F); // ?
-    PIN_CPU_6.reset(TRI_HZNP | (DELTA_LOCK << 4));
-
-    PIN_CPU_LATCH_EXT.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_RDp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_WRp      .reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
-    PIN_CPU_EXT_BUSp.reset(TRI_HZNP, TRI_D0NP | (DELTA_LOCK << 4));
-
     PIN_CPU_BOOTp         .reset(TRI_D0NP);
     PIN_CPU_ADDR_HIp      .reset(TRI_D0NP);
     PIN_CPU_STARTp        .reset(TRI_D0NP);
@@ -54,12 +46,6 @@ struct CpuBus {
     BUS_CPU_D5p.reset(TRI_HZPU);
     BUS_CPU_D6p.reset(TRI_HZPU);
     BUS_CPU_D7p.reset(TRI_HZPU);
-
-    PIN_CPU_6.reset(TRI_HZNP | (DELTA_LOCK << 4));
-    PIN_CPU_LATCH_EXT.reset(TRI_HZNP);
-    PIN_CPU_RDp.reset(TRI_HZNP);
-    PIN_CPU_WRp.reset(TRI_HZNP);
-    PIN_CPU_EXT_BUSp.reset(TRI_HZNP);
 
     PIN_CPU_BOOTp         .reset(TRI_HZNP);
     PIN_CPU_ADDR_HIp      .reset(TRI_HZNP);
@@ -112,12 +98,12 @@ struct CpuBus {
   //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
-  Pin PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
-  Pin PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  Sig2 PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
+  Sig2 PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
 
-  Pin PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  Pin PIN_CPU_WRp;           // top right port PORTA_01: ->
-  Pin PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
+  Sig2 PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Sig2 PIN_CPU_WRp;           // top right port PORTA_01: ->
+  Sig2 PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals

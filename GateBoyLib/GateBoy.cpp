@@ -238,24 +238,28 @@ void GateBoy::next_pass() {
   if (pass_count == 0) {
     probes.begin_phase();
 
-    cpu_data_latch = (uint8_t)pack_p(top.cpu_bus.BUS_CPU_D0p.qp(), top.cpu_bus.BUS_CPU_D1p.qp(), top.cpu_bus.BUS_CPU_D2p.qp(), top.cpu_bus.BUS_CPU_D3p.qp(),
-                                     top.cpu_bus.BUS_CPU_D4p.qp(), top.cpu_bus.BUS_CPU_D5p.qp(), top.cpu_bus.BUS_CPU_D6p.qp(), top.cpu_bus.BUS_CPU_D7p.qp());
+    if (DELTA_DE) {
+      int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+      int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
+      int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+      int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+    }
 
+    if (DELTA_HA) {
+      imask_latch = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
 
-    imask_latch = (uint8_t)pack_p(top.IE_D0.qp(), top.IE_D1.qp(), top.IE_D2.qp(), top.IE_D3.qp(), top.IE_D4.qp(), 0, 0, 0);
+      cpu_data_latch = (uint8_t)pack_p(top.cpu_bus.BUS_CPU_D0p.qp(), top.cpu_bus.BUS_CPU_D1p.qp(), top.cpu_bus.BUS_CPU_D2p.qp(), top.cpu_bus.BUS_CPU_D3p.qp(),
+                                       top.cpu_bus.BUS_CPU_D4p.qp(), top.cpu_bus.BUS_CPU_D5p.qp(), top.cpu_bus.BUS_CPU_D6p.qp(), top.cpu_bus.BUS_CPU_D7p.qp());
 
-    if (DELTA_DE) int_vblank_halt = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_DE) int_stat_halt   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_DE) int_serial_halt = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_DE) int_joypad_halt = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+      // this one latches funny on HA, some hardware bug
+      int_timer_halt = top.int_reg.PIN_CPU_INT_TIMER.qp();
 
-    if (DELTA_HA) int_timer_halt  = top.int_reg.PIN_CPU_INT_TIMER.qp(); // this one latches funny on HA, some hardware bug
-
-    if (DELTA_HA) int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
-    if (DELTA_HA) int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
-    if (DELTA_HA) int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
-    if (DELTA_HA) int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
-    if (DELTA_HA) int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+      int_vblank = top.int_reg.PIN_CPU_INT_VBLANK.qp();
+      int_stat   = top.int_reg.PIN_CPU_INT_STAT.qp();
+      int_timer  = top.int_reg.PIN_CPU_INT_TIMER.qp();
+      int_serial = top.int_reg.PIN_CPU_INT_SERIAL.qp();
+      int_joypad = top.int_reg.PIN_CPU_INT_JOYPAD.qp();
+    }
 
     if (DELTA_AB) {
       cpu_req = cpu.bus_req;
@@ -268,19 +272,21 @@ void GateBoy::next_pass() {
 
   //----------------------------------------
 
-  if (DELTA_AB) {
-    top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
-    top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
+  top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
+  top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
+  top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));
+  top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu.int_ack & INT_SERIAL_MASK));
+  top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu.int_ack & INT_JOYPAD_MASK));
 
-    bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
-    if (bus_req.addr <= 0x00FF && top.cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
+  bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
+  if (bus_req.addr <= 0x00FF && top.cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
+
+  if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
+
     top.cpu_bus.PIN_CPU_EXT_BUSp.lock(addr_ext);
 
-    top.int_reg.PIN_CPU_ACK_VBLANK.lock(wire(cpu.int_ack & INT_VBLANK_MASK));
-    top.int_reg.PIN_CPU_ACK_STAT  .lock(wire(cpu.int_ack & INT_STAT_MASK));
-    top.int_reg.PIN_CPU_ACK_TIMER .lock(wire(cpu.int_ack & INT_TIMER_MASK));
-    top.int_reg.PIN_CPU_ACK_SERIAL.lock(wire(cpu.int_ack & INT_SERIAL_MASK));
-    top.int_reg.PIN_CPU_ACK_JOYPAD.lock(wire(cpu.int_ack & INT_JOYPAD_MASK));
+    top.cpu_bus.PIN_CPU_RDp.lock(bus_req.read);
+    top.cpu_bus.PIN_CPU_WRp.lock(bus_req.write);
 
     top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
     top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
@@ -299,15 +305,26 @@ void GateBoy::next_pass() {
     top.cpu_bus.BUS_CPU_A14.lock(wire(bus_req.addr & 0x4000));
     top.cpu_bus.BUS_CPU_A15.lock(wire(bus_req.addr & 0x8000));
   }
-
-  if (DELTA_HA) {
+  else {
     // This seems wrong, but it passes tests. *shrug*
     if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
       top.cpu_bus.PIN_CPU_EXT_BUSp.lock(0);
     }
+    else {
+      top.cpu_bus.PIN_CPU_EXT_BUSp.lock(addr_ext);
+    }
 
     top.cpu_bus.PIN_CPU_RDp.lock(0);
     top.cpu_bus.PIN_CPU_WRp.lock(0);
+
+    top.cpu_bus.BUS_CPU_A00.lock(wire(bus_req.addr & 0x0001));
+    top.cpu_bus.BUS_CPU_A01.lock(wire(bus_req.addr & 0x0002));
+    top.cpu_bus.BUS_CPU_A02.lock(wire(bus_req.addr & 0x0004));
+    top.cpu_bus.BUS_CPU_A03.lock(wire(bus_req.addr & 0x0008));
+    top.cpu_bus.BUS_CPU_A04.lock(wire(bus_req.addr & 0x0010));
+    top.cpu_bus.BUS_CPU_A05.lock(wire(bus_req.addr & 0x0020));
+    top.cpu_bus.BUS_CPU_A06.lock(wire(bus_req.addr & 0x0040));
+    top.cpu_bus.BUS_CPU_A07.lock(wire(bus_req.addr & 0x0080));
     top.cpu_bus.BUS_CPU_A08.lock(0);
     top.cpu_bus.BUS_CPU_A09.lock(0);
     top.cpu_bus.BUS_CPU_A10.lock(0);
@@ -318,11 +335,12 @@ void GateBoy::next_pass() {
     top.cpu_bus.BUS_CPU_A15.lock(0);
   }
 
-  top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
-
   // not at all certain about this. seems to break some oam read glitches.
-  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    if (bus_req.read && (bus_req.addr < 0xFF00)) top.cpu_bus.PIN_CPU_LATCH_EXT.lock(1);
+  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
+    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(1);
+  }
+  else {
+    top.cpu_bus.PIN_CPU_LATCH_EXT.lock(0);
   }
 
   // Data has to be driven on EFGH or we fail the wave tests

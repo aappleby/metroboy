@@ -21,8 +21,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   wire VYPO = 1;
   wire _PESU_VCC = 1;
 
-  RegBase::tick_running = true;
-
   //----------------------------------------
   // reset
 
@@ -787,7 +785,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
   /*p29.DENY*/ wire DENY_SPRITE8_GETn = not1(FOXA_SPRITE8_GETp);
   /*p29.FADO*/ wire FADO_SPRITE9_GETn = not1(GUZE_SPRITE9_GETp);
 
-  RegBase::tick_running = false;
 
 
 
@@ -2643,13 +2640,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
 
 
 
-
-  RegBase::tock_running = true;
-
-  //------------------------------------------------------------------------------
-
-  {
-  }
 
   //------------------------------------------------------------------------------
 
@@ -4637,8 +4627,6 @@ void SchematicTop::tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2
     lcd_pix_lo.nor_latch(PIN_LCD_DATA0.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
     lcd_pix_hi.nor_latch(PIN_LCD_DATA1.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
   }
-
-  RegBase::tock_running = false;
 }
 
 //-----------------------------------------------------------------------------

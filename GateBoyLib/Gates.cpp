@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-bool BitBase::sim_running = false;
-bool BitBase::tick_running = false;
-bool BitBase::tock_running = false;
 bool BitBase::bus_collision = false;
 bool BitBase::bus_floating = false;
 

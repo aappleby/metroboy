@@ -138,9 +138,6 @@ struct BitBase {
   BitBase() : state(0) {}
   BitBase& operator=(const BitBase&) = delete;
 
-  static bool sim_running;
-  static bool tick_running;
-  static bool tock_running;
   static bool bus_collision;
   static bool bus_floating;
 

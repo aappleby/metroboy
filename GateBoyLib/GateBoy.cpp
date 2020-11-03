@@ -378,19 +378,8 @@ void GateBoy::next_pass() {
 
   wire CLK = !(phase_total & 1) & sys_clken;
 
-  RegBase::sim_running = true;
-
   top.tock_slow(sys_rst, CLK, sys_clkgood, sys_t1, sys_t2, sys_cpuready, sys_buttons,
                 rom_buf, vid_ram, cart_ram, ext_ram, oam_ram, zero_ram);
-  RegBase::sim_running = false;
-
-  uint64_t pass_hash_new = commit_and_hash(top);
-
-  sim_stable = pass_hash_old == pass_hash_new;
-  pass_hash = pass_hash_new;
-  pass_count++;
-
-  if (pass_count > 90) printf("!!!STUCK!!!\n");
 
   //----------
 
@@ -503,6 +492,17 @@ void GateBoy::next_pass() {
 
   old_lcd_clock = top.PIN_LCD_CLOCK.qp();
   old_lcd_latch = top.PIN_LCD_LATCH.qp();
+
+  //----------------------------------------
+
+  uint64_t pass_hash_new = commit_and_hash(top);
+
+  sim_stable = pass_hash_old == pass_hash_new;
+  pass_hash = pass_hash_new;
+  pass_count++;
+
+  if (pass_count > 90) printf("!!!STUCK!!!\n");
+
 
   //----------------------------------------
   // Once the simulation converges, latch the data that needs to go back to the

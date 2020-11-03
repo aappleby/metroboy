@@ -502,17 +502,17 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  Bus2 SPR_TRI_I0p; // -> oam bus
-  Bus2 SPR_TRI_I1p;
-  Bus2 SPR_TRI_I2p;
-  Bus2 SPR_TRI_I3p;
-  Bus2 SPR_TRI_I4p;
-  Bus2 SPR_TRI_I5p;
+  BusNP SPR_TRI_I0p; // -> oam bus
+  BusNP SPR_TRI_I1p;
+  BusNP SPR_TRI_I2p;
+  BusNP SPR_TRI_I3p;
+  BusNP SPR_TRI_I4p;
+  BusNP SPR_TRI_I5p;
 
-  Bus2 SPR_TRI_L0; // -> vram bus
-  Bus2 SPR_TRI_L1;
-  Bus2 SPR_TRI_L2;
-  Bus2 SPR_TRI_L3;
+  BusNP SPR_TRI_L0; // -> vram bus
+  BusNP SPR_TRI_L1;
+  BusNP SPR_TRI_L2;
+  BusNP SPR_TRI_L3;
 
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals

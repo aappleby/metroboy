@@ -130,6 +130,9 @@ struct GateBoy {
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];
 
+  bool old_lcd_clock = 0;
+  bool old_lcd_latch = 0;
+
   uint8_t framebuffer[160*144];
   uint8_t screen_x = 0;
   uint8_t screen_y = 0;

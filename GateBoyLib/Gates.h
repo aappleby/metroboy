@@ -83,101 +83,44 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 //-----------------------------------------------------------------------------
 
-enum RegState : uint8_t {
-  REG_D0C0 = 0b0000, // 00: state 0 + clock 0
-  REG_D1C0 = 0b0001, // 01: state 1 + clock 0
-  REG_D0C1 = 0b0010, // 02: state 0 + clock 1
-  REG_D1C1 = 0b0011, // 03: state 1 + clock 1
-
-  SIG_D0NP = 0b1000,
-  SIG_D1NP = 0b1001,
-
-  //REG_XXXX = 0b0100, // 04:
-  //REG_YYYY = 0b0101, // 05:
-
-  //TRI_D0PD = 0b0110, // 06: pin driven 0 + pull down
-  //TRI_D1PD = 0b0111, // 07: pin driven 1 + pull down
-  TRI_D0PU = 0b1000, // 08: pin driven 0 + pull up
-  TRI_D1PU = 0b1001, // 09: pin driven 1 + pull up
-  TRI_D0NP = 0b1010, // 10: pin driven 0 + no pull
-  TRI_D1NP = 0b1011, // 11: pin driven 1 + no pull
-
-  //TRI_HZPD = 0b1100, // 12: pin driven Z + pull down
-  TRI_HZPU = 0b1101, // 13: pin driven Z + pull up
-  TRI_HZNP = 0b1110, // 14: pin driven Z + no pull
-
-  ERR_XXXX = 0b1111, // 15: combined error state
+enum RegBits : uint8_t {
+  BIT_DATA   = 0b00000001,
+  BIT_CLOCK  = 0b00000010,
+  BIT_PULLUP = 0b00000100,
+  BIT_DRIVEN = 0b00001000,
+  BIT_DIRTY  = 0b00010000,
+  BIT_LOCKED = 0b00100000,
+  BIT_ERROR  = 0b10000000,
 };
 
-inline char reg_state_to_c(RegState state) {
-  switch(state) {
-    case REG_D0C0: return '0';
-    case REG_D1C0: return '1';
-    case REG_D0C1: return '0';
-    case REG_D1C1: return '1';
-    //case TRI_D0PD: return '0';
-    //case TRI_D1PD: return '1';
-    case TRI_D0PU: return '0';
-    case TRI_D1PU: return '1';
-    case TRI_D0NP: return '0';
-    case TRI_D1NP: return '1';
-    //case TRI_HZPD: return 'v';
-    case TRI_HZPU: return '^';
-    case TRI_HZNP: return 'Z';
-    default:       return 'E';
+constexpr uint8_t REG_D0C0 = 0b00;
+constexpr uint8_t REG_D1C0 = 0b01;
+constexpr uint8_t REG_D0C1 = 0b10;
+constexpr uint8_t REG_D1C1 = 0b11;
+
+inline char reg_state_to_c(uint8_t state) {
+  if (state & BIT_DRIVEN) {
+    return (state & BIT_DATA) ? '1' : '0';
+  }
+  else if (state & BIT_PULLUP) {
+    return '^';
+  }
+  else {
+    return 'Z';
   }
 }
 
-inline char reg_state_to_cn(RegState state) {
-  switch(state) {
-    case REG_D0C0: return '1';
-    case REG_D1C0: return '0';
-    case REG_D0C1: return '1';
-    case REG_D1C1: return '0';
-    //case TRI_D0PD: return '1';
-    //case TRI_D1PD: return '0';
-    case TRI_D0PU: return '1';
-    case TRI_D1PU: return '0';
-    case TRI_D0NP: return '1';
-    case TRI_D1NP: return '0';
-    //case TRI_HZPD: return '^';
-    case TRI_HZPU: return 'v';
-    case TRI_HZNP: return 'Z';
-    default:       return 'E';
+inline char reg_state_to_cn(uint8_t state) {
+  if (state & BIT_DRIVEN) {
+    return (state & BIT_DATA) ? '0' : '1';
+  }
+  else if (state & BIT_PULLUP) {
+    return 'v';
+  }
+  else {
+    return 'Z';
   }
 }
-
-//-----------------------------------------------------------------------------
-
-enum RegDelta : uint8_t {
-  DELTA_NONE = 0b0000, // 00: delta not set yet
-  DELTA_COMM = 0b0001, // 01: delta committed early, will change to NONE during final commit.
-  DELTA_HOLD = 0b0010, // 02: do not change tri when committed, used for latches and config bits
-  DELTA_LOCK = 0b0011, // 03: do not change tri when committed, sticky. used for buses.
-
-  DELTA_TRIZ = 0b0100, // 04:
-  DELTA_TRI1 = 0b0101, // 05:
-  DELTA_TRI0 = 0b0110, // 06:
-  DELTA_TRIX = 0b0111, // 07:
-
-  //DELTA_D0C0 = 0b1000, // 08: data 0    + clock 0
-  //DELTA_D1C0 = 0b1001, // 09: data 1    + clock 0
-  //DELTA_D0C1 = 0b1010, // 10: data 0    + clock 1
-  //DELTA_D1C1 = 0b1011, // 11: data 1    + clock 1
-  //DELTA_A0C0 = 0b1100, // 12: async rst + clock 0
-  //DELTA_A1C0 = 0b1101, // 13: async set + clock 0
-  //DELTA_A0C1 = 0b1110, // 14: async rst + clock 1
-  //DELTA_A1C1 = 0b1111, // 15: async set + clock 1
-};
-
-//-----------------------------------------------------------------------------
-
-struct Lut8 {
-  uint8_t operator[](int x) const { return tab[x]; }
-  uint8_t tab[256];
-};
-
-extern const Lut8 logic_lut1;
 
 //-----------------------------------------------------------------------------
 
@@ -191,16 +134,9 @@ inline uint64_t commit_and_hash(T& obj) {
 
 //-----------------------------------------------------------------------------
 
-#pragma warning(push)
-#pragma warning(disable:4201)
-
-struct RegBase {
-  RegBase() : state(ERR_XXXX), delta(DELTA_NONE) {}
-  RegBase& operator=(const RegBase&) = delete;
-
-  void reset(int s) {
-    value = (uint8_t)s;
-  }
+struct BitBase {
+  BitBase() : state(0) {}
+  BitBase& operator=(const BitBase&) = delete;
 
   static bool sim_running;
   static bool tick_running;
@@ -208,59 +144,122 @@ struct RegBase {
   static bool bus_collision;
   static bool bus_floating;
 
-  char c() const  { return reg_state_to_c(state); }
-  char cn() const { return reg_state_to_cn(state); }
+  void reset(int s) { state = (uint8_t)s; }
+  char c() const    { return reg_state_to_c(state); }
+  char cn() const   { return reg_state_to_cn(state); }
+
+  uint8_t state;
+};
+
+//-----------------------------------------------------------------------------
+// Registers must be read _before_ they are written.
+
+struct RegBase : public BitBase {
 
   wire as_wire()   const {
-    CHECK_N(delta == DELTA_COMM);
-    return wire(state & 1);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
   }
 
-  void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, bool D) {
+  void setc(wire D) {
+    CHECK_N(state & BIT_LOCKED);
+    state = BIT_LOCKED | uint8_t(D);
+  }
+
+  void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, wire D) {
+    CHECK_N(state & BIT_LOCKED);
+
     (void)CLKn;
     uint8_t qp = state & 1;
     uint8_t ca = state & 2;
     uint8_t cb = CLKp << 1;
 
     if (!RSTn) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + 0);
+      state = BIT_LOCKED | (CLKp << 1) + 0;
     }
     else if (!SETn) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + 1);
+      state = BIT_LOCKED | (CLKp << 1) + 1;
     }
     else if (!ca && cb) {
-      state = RegState(REG_D0C0 + (CLKp << 1) + D);
+      state = BIT_LOCKED | (CLKp << 1) + D;
     }
     else {
-      state = RegState(REG_D0C0 + (CLKp << 1) + qp);
+      state = BIT_LOCKED | (CLKp << 1) + qp;
     }
-
-    delta = DELTA_COMM;
   }
-
-  union {
-    struct {
-      RegState state : 4;
-      RegDelta delta : 4;
-    };
-    uint8_t value;
-  };
 };
 
-#pragma warning(pop)
+//-----------------------------------------------------------------------------
+// Signals must be read _after_ they are written.
+
+struct SigBase : public BitBase {
+
+  void setc(wire D) {
+    tri(1, D);
+    commit();
+  }
+
+  void tri(wire OEp, wire D) {
+    CHECK_N(state & BIT_LOCKED);
+    if (OEp) {
+      if (state & BIT_DRIVEN) {
+        RegBase::bus_collision |= ((state & BIT_DATA) != D);
+      }
+      else {
+        state = BIT_DRIVEN | uint8_t(D);
+      }
+    }
+    state |= BIT_DIRTY;
+  }
+
+  // multiple commits are _not_ an error, see bowtied VBD->CBD and CBD->VBD
+  void commit() {
+    CHECK_P(state & BIT_DIRTY);
+    state |= BIT_LOCKED;
+  }
+
+  wire as_wire() const {
+    CHECK_P(state & BIT_LOCKED);
+    if (state & BIT_DRIVEN) {
+      return wire(state & BIT_DATA);
+    }
+    else if (state & BIT_PULLUP) {
+      return 1;
+    }
+    else {
+      printf("Signal floating!\n");
+      return 0;
+    }
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Latches can be read before or after they are written, which helps model
+// various asynchronous timing weirdnesses.
+
+struct LatchBase : public BitBase {
+
+  void latch(wire SETp, wire RSTp) {
+    CHECK_N(state & BIT_DIRTY);
+
+    if (SETp) state |= BIT_DATA;
+    if (RSTp) state &= ~BIT_DATA;
+    state |= BIT_DIRTY;
+  }
+
+  wire as_wire() const {
+    return state & BIT_DATA;
+  }
+};
 
 //-----------------------------------------------------------------------------
 
 struct Gate : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::setc;
 
   operator wire() const { return as_wire(); }
-
-  void set_gate(const wire D) {
-    state = RegState(REG_D0C0 | D);
-    delta = DELTA_COMM;
-  }
 };
 
 //-----------------------------------------------------------------------------
@@ -349,8 +348,8 @@ struct DFF : private RegBase {
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
-  void dffc(wire CLKp, bool D)            { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
-  void dffc(wire CLKp, bool RSTn, bool D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff(wire CLKp, bool D)            { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
+  void dff(wire CLKp, bool RSTn, bool D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -541,16 +540,10 @@ struct DFF20 : private RegBase{
   wire qn17() const { return !as_wire(); }
 
   void dff20c(wire CLKn, wire LOADp, bool newD) {
-    uint8_t ca = state & 2;
-    uint8_t cb = (!CLKn) << 1;
-
-    wire Qp = (state & 1);
-    wire Qn = !Qp;
-
-    if (LOADp)           state = RegState(REG_D0C0 + cb + newD);
-    else if (!ca && cb)  state = RegState(REG_D0C0 + cb + Qn  );
-    else                 state = RegState(REG_D0C0 + cb + Qp  );
-    delta = DELTA_COMM;
+    wire SETp = LOADp &&  newD;
+    wire RSTp = LOADp && !newD;
+    wire Qn = !(state & BIT_DATA);
+    dffc(!CLKn, CLKn, !SETp, !RSTp, Qn);
   }
 };
 
@@ -595,28 +588,6 @@ struct DFF22 : private RegBase {
 };
 
 //-----------------------------------------------------------------------------
-
-/*
-struct Sig : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
-
-  wire qp() const { return  as_wire(); }
-
-  operator wire() const {
-    return wire(state & 1);
-  }
-
-  void operator = (wire s) {
-    CHECK_P(tick_running);
-
-    state = RegState(TRI_D0NP | int(s));
-    delta = s ? DELTA_TRI1 : DELTA_TRI0;
-  }
-};
-*/
-
-//-----------------------------------------------------------------------------
 // Tristate bus, can have multiple drivers.
 
 // TYGO_01 << BUS_CPU_D2p
@@ -632,292 +603,132 @@ struct Sig : private RegBase {
 
 // Must be NP - see KOVA/KEJO
 
-struct Bus : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
-  using RegBase::cn;
+// tri_6nn : top rung tadpole _not_ facing second rung dot.
+// tri_6pn : top rung tadpole facing second rung dot.
 
-  void lock(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = d;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
+struct BusNP : private SigBase {
+  BusNP() { state = 0; }
 
-  void lock(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  void unlock() {
-    //CHECK_P(delta == DELTA_LOCK);
-    delta = DELTA_NONE;
-  }
+  using SigBase::c;
+  using SigBase::cn;
+  using SigBase::setc;
+  using SigBase::commit;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
-  void set(wire w) { merge_tri_delta(w ? DELTA_TRI1 : DELTA_TRI0); }
-
-  void tri10_np(wire OEn, wire D) {
-    if (!OEn) {
-      merge_tri_delta(D ? DELTA_TRI1 : DELTA_TRI0);
-    }
-    else {
-      merge_tri_delta(DELTA_TRIZ);
-    }
-  }
-
-  // top rung tadpole _not_ facing second rung dot.
-
-  void tri_6nn(wire OEn, wire Dn) {
-    if (!OEn) {
-      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
-    }
-    else {
-      merge_tri_delta(DELTA_TRIZ);
-    }
-  }
-
-  // top rung tadpole facing second rung dot.
-
-  void tri_6pn(wire OEp, wire Dn) {
-    if (OEp) {
-      merge_tri_delta(!Dn ? DELTA_TRI1 : DELTA_TRI0);
-    }
-    else {
-      merge_tri_delta(DELTA_TRIZ);
-    }
-  }
-
-  void merge_tri_delta(RegDelta new_d) {
-    if (delta == DELTA_NONE) {
-      delta = new_d;
-    }
-    else if (delta == DELTA_HOLD) {
-    }
-    else if (delta == DELTA_TRIZ) {
-      delta = new_d;
-    }
-    else if (new_d != DELTA_TRIZ) {
-      RegBase::bus_collision = true;
-    }
-  }
-
-  void commit() {
-    if (delta == DELTA_LOCK) return;
-    if (delta == DELTA_COMM) {
-      printf("?");
-      return;
-    }
-
-    CHECK_N(delta == DELTA_NONE);
-    state = RegState(logic_lut1.tab[value]);
-    delta = DELTA_COMM;
-  }
-
+  void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
+  void tri_6nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
+  void tri_6pn(wire OEp, wire Dn) { tri(OEp, !Dn);}
 };
 
-//-----------------------------------------------------------------------------
-// Tristate bus, can have multiple drivers.
+struct BusPU : private SigBase {
+  BusPU() { state = BIT_PULLUP; }
 
-// TYGO_01 << BUS_CPU_D2p
-// TYGO_02 nc
-// TYGO_03 nc
-// TYGO_04 nc
-// TYGO_05 << RAHU_04
-// TYGO_06 << BUS_CPU_D2p
-// TYGO_07 nc
-// TYGO_08 nc
-// TYGO_09 >> BUS_VRAM_D2p
-// TYGO_10 nc
-
-// Must be NP - see KOVA/KEJO
-
-struct Bus2 {
-
-  Bus2() {
-    state = TRI_HZPU;
-    delta = DELTA_NONE;
-  }
-
-  void reset() {
-    state = TRI_HZPU;
-    delta = DELTA_NONE;
-  }
-
-  char c() const  { return reg_state_to_c(state); }
-  char cn() const { return reg_state_to_cn(state); }
-
-  void tri_6nn (wire OEn, wire Dn) { tri(!OEn, !Dn); } // top rung tadpole _not_ facing second rung dot.
-  void tri_6pn (wire OEp, wire Dn) { tri( OEp, !Dn); } // top rung tadpole facing second rung dot.
-  void tri10_np(wire OEn, wire Dp) { tri(!OEn,  Dp); }
-
-  void tri(wire OEp, wire D) {
-    if (!OEp) return;
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_COMM);
-
-    if (state == TRI_HZPU) {
-      state = RegState(D ? TRI_D1NP : TRI_D0NP);
-    }
-    else if (state == TRI_D0NP) {
-      if (D)  RegBase::bus_collision = true;
-    }
-    else if (state == TRI_D1NP) {
-      if (!D) RegBase::bus_collision = true;
-    }
-
-    delta = DELTA_COMM;
-  }
-
-  void commit() { delta = DELTA_LOCK; }
-
-  void set(wire D) {
-    CHECK_P(delta == DELTA_NONE);
-    state = RegState(D ? TRI_D1NP : TRI_D0NP);
-    delta = DELTA_LOCK;
-  }
-
-
-  wire qp() const { CHECK_P(delta == DELTA_LOCK); return  (state & 1); }
-  wire qn() const { CHECK_P(delta == DELTA_LOCK); return !(state & 1); }
-
-  RegState state : 4;
-  RegDelta delta : 4;
-};
-
-//-----------------------------------------------------------------------------
-// Tristate bus, can have multiple drivers.
-
-// TYGO_01 << BUS_CPU_D2p
-// TYGO_02 nc
-// TYGO_03 nc
-// TYGO_04 nc
-// TYGO_05 << RAHU_04
-// TYGO_06 << BUS_CPU_D2p
-// TYGO_07 nc
-// TYGO_08 nc
-// TYGO_09 >> BUS_VRAM_D2p
-// TYGO_10 nc
-
-// Must be NP - see KOVA/KEJO
-
-struct Sig2 {
-
-  Sig2() {
-    state = SIG_D0NP;
-    delta = DELTA_NONE;
-  }
-
-  char c() const  { return reg_state_to_c(state); }
-  char cn() const { return reg_state_to_cn(state); }
-
-  void set(wire D) {
-    CHECK_P(delta == DELTA_NONE);
-    state = RegState(D ? TRI_D1NP : TRI_D0NP);
-    delta = DELTA_COMM;
-  }
-
-  wire qp() const { CHECK_P(delta == DELTA_COMM); return  (state & 1); }
-  wire qn() const { CHECK_P(delta == DELTA_COMM); return !(state & 1); }
-
-  RegState state : 4;
-  RegDelta delta : 4;
-};
-
-//-----------------------------------------------------------------------------
-// Tristate io pin, can have only one driver.
-
-struct Pin : private RegBase {
-  using RegBase::c;
-
-  void lock(RegDelta d) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = d;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  void lock(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    value = logic_lut1[value];
-    delta = DELTA_LOCK;
-  }
-
-  void unlock() {
-    //CHECK_P(delta == DELTA_LOCK);
-    delta = DELTA_NONE;
-  }
+  using SigBase::c;
+  using SigBase::cn;
+  using SigBase::setc;
+  using SigBase::commit;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
-  void reset(int s) {
-    old_value = (uint8_t)(s | DELTA_LOCK << 4);
-    value = (uint8_t)s;
-  }
+  void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
+  void tri_6nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
+  void tri_6pn(wire OEp, wire Dn) { tri(OEp, !Dn);}
+};
 
-  void reset(int s1, int s2) {
-    old_value = (uint8_t)(s1 | DELTA_LOCK << 4);
-    value = (uint8_t)s2;
-  }
+//-----------------------------------------------------------------------------
+// Generic signal
 
-  bool posedge() const { return  (value & 1) && !(old_value & 1); }
-  bool negedge() const { return !(value & 1) &&  (old_value & 1); }
+struct Signal : public SigBase {
+  using SigBase::c;
+  using SigBase::setc;
+
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
+};
+
+//-----------------------------------------------------------------------------
+// External pin with no pull-up
+
+struct PinNP : private SigBase {
+  PinNP() { state = 0; }
+
+  using SigBase::c;
+  using SigBase::setc;
+  using SigBase::commit;
 
   void dump(Dumper& d) const {
-    char edge = posedge() ? '^' : negedge() ? 'v' : '-';
-    d("%c%c%c", reg_state_to_c(state), reg_state_to_c(RegState(old_value & 0x0F)), edge);
+    //char edge = posedge() ? '^' : negedge() ? 'v' : '-';
+    //d("%c%c%c", reg_state_to_c(state), reg_state_to_c(old_state), edge);
+    d("%c", reg_state_to_c(state));
   }
 
-  void setc(wire w) {
-    CHECK_P(delta == DELTA_NONE || delta == DELTA_LOCK);
-    old_value = state | (DELTA_LOCK << 4);
-    delta = w ? DELTA_TRI1 : DELTA_TRI0;
-    state = RegState(logic_lut1.tab[value] & 0x0F);
-    delta = DELTA_COMM;
-  }
-
-  void operator = (RegDelta d) {
-    old_value = state | (DELTA_LOCK << 4);
-    merge_tri_delta(d);
-  }
-
-  void io_pinc(wire HI, wire LO, wire OEp = true) {
-    old_value = state | (DELTA_LOCK << 4);
-
-    if      (!OEp)       merge_tri_delta(DELTA_TRIZ);
-    else if ( HI &&  LO) merge_tri_delta(DELTA_TRI0);
-    else if ( HI && !LO) merge_tri_delta(DELTA_TRIZ);
-    else if (!HI &&  LO) __debugbreak();
-    else if (!HI && !LO) merge_tri_delta(DELTA_TRI1);
+  // Pin internal interface
+  void pin_int(wire OEp, wire HI, wire LO) {
+    if      (!OEp)       tri(0, 0);
+    else if ( HI &&  LO) tri(1, 0);
+    else if (!HI && !LO) tri(1, 1);
+    else if ( HI && !LO) tri(0, 0);
     else                 __debugbreak();
-
-    state = RegState(logic_lut1.tab[value] & 0x0F);
-    delta = DELTA_COMM;
   }
 
-  void merge_tri_delta(RegDelta new_d) {
-    if (delta == DELTA_NONE) {
-      delta = new_d;
-    }
-    else if (delta == DELTA_HOLD) {
-      CHECK_P(new_d == DELTA_TRIZ);
-    }
-    else if (delta == DELTA_TRIZ) {
-      CHECK_P(new_d == DELTA_TRIZ || new_d == DELTA_TRI0 || new_d == DELTA_TRI1);
-      delta = new_d;
-    }
-    else if (new_d != DELTA_TRIZ) {
-      RegBase::bus_collision = true;
-    }
+  void pin_int(wire HI, wire LO) {
+    pin_int(1, HI, LO);
   }
 
+  void pin_intc(wire HI, wire LO)           { pin_int(HI, LO); commit(); }
+  void pin_intc(wire OEp, wire HI, wire LO) { pin_int(OEp, HI, LO); commit(); }
 
-  uint8_t old_value = TRI_HZNP | (DELTA_LOCK << 4);
+  // Pin external interface
+  void pin_ext(wire OEp, wire D) {
+    tri(OEp, D);
+  }
+
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
+};
+
+//-----------------------------------------------------------------------------
+// External pin with a pull-up
+
+struct PinPU : private SigBase {
+  PinPU() { state = BIT_PULLUP; }
+
+  using SigBase::c;
+  using SigBase::setc;
+  using SigBase::commit;
+
+  void dump(Dumper& d) const {
+    //char edge = posedge() ? '^' : negedge() ? 'v' : '-';
+    //d("%c%c%c", reg_state_to_c(state), reg_state_to_c(old_state), edge);
+    d("%c", reg_state_to_c(state));
+  }
+
+  // Pin internal interface
+  void pin_int(wire OEp, wire HI, wire LO) {
+    if      (!OEp)       tri(0, 0);
+    else if ( HI &&  LO) tri(1, 0);
+    else if (!HI && !LO) tri(1, 1);
+    else if ( HI && !LO) tri(0, 0);
+    else                 __debugbreak();
+  }
+
+  void pin_int(wire HI, wire LO) {
+    pin_int(1, HI, LO);
+  }
+
+  void pin_intc(wire HI, wire LO)           { pin_int(HI, LO); commit(); }
+  void pin_intc(wire OEp, wire HI, wire LO) { pin_int(OEp, HI, LO); commit(); }
+
+  // Pin external interface
+  void pin_ext(wire OEp, wire D) {
+    tri(OEp, D);
+  }
+
+  wire qp() const { return  as_wire(); }
+  wire qn() const { return !as_wire(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -930,21 +741,15 @@ struct Pin : private RegBase {
 // NORLATCH_05 nc
 // NORLATCH_06 << RST
 
-struct NorLatch : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
-  using RegBase::cn;
+struct NorLatch : private LatchBase {
+  using LatchBase::reset;
+  using LatchBase::c;
+  using LatchBase::cn;
 
   wire qn03() const { return !as_wire(); }
   wire qp04() const { return  as_wire(); }
 
-  void nor_latchc(wire SETp, wire RSTp) {
-    CHECK_P(delta == DELTA_NONE);
-    if (SETp) state = TRI_D1NP;
-    if (RSTp) state = TRI_D0NP;
-    delta = DELTA_COMM;
-
-  }
+  void nor_latch(wire SETp, wire RSTp) { latch(SETp, RSTp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -957,20 +762,15 @@ struct NorLatch : private RegBase {
 // NANDLATCH_05 nc
 // NANDLATCH_06 << RSTn
 
-struct NandLatch : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
-  using RegBase::cn;
+struct NandLatch : private LatchBase {
+  using LatchBase::reset;
+  using LatchBase::c;
+  using LatchBase::cn;
 
   wire qp03() const { return  as_wire(); }
   wire qn04() const { return !as_wire(); }
 
-  void nand_latchc(wire SETn, wire RSTn) {
-    CHECK_P(delta == DELTA_NONE);
-    if (!SETn) state = TRI_D1NP;
-    if (!RSTn) state = TRI_D0NP;
-    delta = DELTA_COMM;
-  }
+  void nand_latchc(wire SETn, wire RSTn) { latch(!SETn, !RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -990,17 +790,17 @@ struct NandLatch : private RegBase {
 // Output 08 must _not_ be inverting, see PIN_EXT_A14p
 // Output 10 _must_ be inverting...?
 
-struct TpLatch : private RegBase {
-  using RegBase::reset;
-  using RegBase::c;
+struct TpLatch : private LatchBase {
+  using LatchBase::reset;
+  using LatchBase::c;
 
   wire qp08() const { return  as_wire(); }
   wire qn10() const { return !as_wire(); }
 
   void tp_latchc(wire HOLDn, wire D) {
-    CHECK_P(delta == DELTA_NONE);
-    if (HOLDn) state = RegState(TRI_D0NP + D);
-    delta = DELTA_COMM;
+    bool SETp = HOLDn && D;
+    bool RSTp = HOLDn && !D;
+    latch(SETp, RSTp);
   }
 };
 

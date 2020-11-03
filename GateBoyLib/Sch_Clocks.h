@@ -32,8 +32,8 @@ struct ClockRegisters {
   }
 
   void reset_cart() {
-    TUBO_WAITINGp.reset(TRI_D0NP);
-    ASOL_POR_DONEn.reset(TRI_D0NP);
+    TUBO_WAITINGp.reset(0);
+    ASOL_POR_DONEn.reset(0);
     AFER_SYS_RSTp.reset(REG_D0C1);
     AFUR_xxxxEFGH.reset(REG_D0C1);
     ALEF_AxxxxFGH.reset(REG_D1C0);
@@ -45,8 +45,8 @@ struct ClockRegisters {
   }
 
   void reset_boot() {
-    TUBO_WAITINGp.reset(TRI_D0NP);
-    ASOL_POR_DONEn.reset(TRI_D0NP);
+    TUBO_WAITINGp.reset(0);
+    ASOL_POR_DONEn.reset(0);
     AFER_SYS_RSTp.reset(REG_D0C0);
     AFUR_xxxxEFGH.reset(REG_D0C0);
     ALEF_AxxxxFGH.reset(REG_D0C0);

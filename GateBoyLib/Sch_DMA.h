@@ -52,13 +52,13 @@ struct DmaRegisters {
     POKU_DMA_A14n.reset(REG_D0C1);
     MARU_DMA_A15n.reset(REG_D0C1);
 
-    LYXE_DMA_LATCHp.reset(TRI_D0NP);
+    LYXE_DMA_LATCHp.reset(0);
 
     MYTE_DMA_DONE.reset(REG_D0C0);
     LUVY_DMA_TRIG_d0.reset(REG_D0C1);
     LENE_DMA_TRIG_d4.reset(REG_D0C0);
 
-    LOKY_DMA_LATCHp.reset(TRI_D0NP);
+    LOKY_DMA_LATCHp.reset(0);
   }
 
   void reset_boot() {
@@ -82,13 +82,13 @@ struct DmaRegisters {
     POKU_DMA_A14n.reset(REG_D0C0);
     MARU_DMA_A15n.reset(REG_D0C0);
 
-    LYXE_DMA_LATCHp.reset(TRI_D0NP);
+    LYXE_DMA_LATCHp.reset(0);
 
     MYTE_DMA_DONE.reset(REG_D0C0);
     LUVY_DMA_TRIG_d0.reset(REG_D0C0);
     LENE_DMA_TRIG_d4.reset(REG_D0C0);
 
-    LOKY_DMA_LATCHp.reset(TRI_D0NP);
+    LOKY_DMA_LATCHp.reset(0);
   }
 
   /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;

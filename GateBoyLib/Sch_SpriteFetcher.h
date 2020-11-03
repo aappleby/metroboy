@@ -10,7 +10,7 @@ struct VramBus;
 
 struct SpriteFetcher {
   void reset_cart() {
-    TAKA_SFETCH_RUNNINGp.reset(TRI_D0NP);
+    TAKA_SFETCH_RUNNINGp.reset(0);
     SOBU_SFETCH_REQp.reset(REG_D0C0);
     SUDA_SFETCH_REQp.reset(REG_D0C1);
 
@@ -24,7 +24,7 @@ struct SpriteFetcher {
   }
 
   void reset_boot() {
-    TAKA_SFETCH_RUNNINGp.reset(TRI_D0NP);
+    TAKA_SFETCH_RUNNINGp.reset(0);
     SOBU_SFETCH_REQp.reset(REG_D0C0);
     SUDA_SFETCH_REQp.reset(REG_D0C0);
 

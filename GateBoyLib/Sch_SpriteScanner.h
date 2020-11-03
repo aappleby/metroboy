@@ -10,7 +10,7 @@ struct OamBus;
 
 struct SpriteScanner {
   void reset_cart() {
-    BESU_SCANNINGp.reset(TRI_D0NP);
+    BESU_SCANNINGp.reset(0);
     CENO_SCANNINGp.reset(REG_D0C1);
 
     YFEL_SCAN0.reset(REG_D1C1);
@@ -32,7 +32,7 @@ struct SpriteScanner {
   }
 
   void reset_boot() {
-    BESU_SCANNINGp.reset(TRI_D0NP);
+    BESU_SCANNINGp.reset(0);
     CENO_SCANNINGp.reset(REG_D0C0);
 
     YFEL_SCAN0.reset(REG_D0C0);

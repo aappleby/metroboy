@@ -12,8 +12,8 @@ struct OamBus;
 
 struct TileFetcher {
   void reset_cart() {
-    POKY_PRELOAD_LATCHp.reset(TRI_D0NP);
-    LONY_BG_FETCH_RUNNINGp.reset(TRI_D0NP);
+    POKY_PRELOAD_LATCHp.reset(0);
+    LONY_BG_FETCH_RUNNINGp.reset(0);
 
     NYKA_FETCH_DONE_P11.reset(REG_D0C0);
     PORY_FETCH_DONE_P12.reset(REG_D0C1);
@@ -28,8 +28,8 @@ struct TileFetcher {
   }
 
   void reset_boot() {
-    POKY_PRELOAD_LATCHp.reset(TRI_D0NP);
-    LONY_BG_FETCH_RUNNINGp.reset(TRI_D0NP);
+    POKY_PRELOAD_LATCHp.reset(0);
+    LONY_BG_FETCH_RUNNINGp.reset(0);
 
     NYKA_FETCH_DONE_P11.reset(REG_D0C0);
     PORY_FETCH_DONE_P12.reset(REG_D0C0);

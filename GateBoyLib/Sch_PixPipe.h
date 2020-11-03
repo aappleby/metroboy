@@ -10,8 +10,8 @@ struct CpuBus;
 
 struct PixelPipe {
   void reset_cart() {
-    XYMU_RENDERINGn.reset(TRI_D1NP);
-    PYNU_WIN_MODE_A.reset(TRI_D0NP);
+    XYMU_RENDERINGn.reset(1);
+    PYNU_WIN_MODE_A.reset(0);
 
     PUKU.reset(REG_D1C0);
     RYDY.reset(REG_D0C0);
@@ -74,22 +74,22 @@ struct PixelPipe {
     RUGU_STAT_LYI_ENn.reset(REG_D1C1);
 
     NOPA_WIN_MODE_B.reset(REG_D0C0);
-    REJO_WY_MATCH_LATCH.reset(TRI_D0NP);
+    REJO_WY_MATCH_LATCH.reset(0);
     SARY_WY_MATCH.reset(REG_D0C0);
     RYFA_FETCHn_A.reset(REG_D0C1);
     RENE_FETCHn_B.reset(REG_D0C0);
     PYCO_WX_MATCH_A.reset(REG_D0C0);
     NUNU_WX_MATCH_B.reset(REG_D0C1);
 
-    ROXY_SCX_FINE_MATCH_LATCHn.reset(TRI_D1NP);
+    ROXY_SCX_FINE_MATCH_LATCHn.reset(1);
 
     RYKU_FINE_CNT0.reset(REG_D0C1);
     ROGA_FINE_CNT1.reset(REG_D0C1);
     RUBU_FINE_CNT2.reset(REG_D0C1);
 
-    RUPO_LYC_MATCH_LATCHn.reset(TRI_D0NP);
+    RUPO_LYC_MATCH_LATCHn.reset(0);
 
-    WUSA_LCD_CLOCK_GATE.reset(TRI_D0NP);
+    WUSA_LCD_CLOCK_GATE.reset(0);
     VOGA_HBLANKp.reset(REG_D1C0);
     PUXA_SCX_FINE_MATCH_A.reset(REG_D0C0);
     NYZE_SCX_FINE_MATCH_B.reset(REG_D0C1);
@@ -223,8 +223,8 @@ struct PixelPipe {
   }
 
   void reset_boot() {
-    XYMU_RENDERINGn.reset(TRI_D0NP);
-    PYNU_WIN_MODE_A.reset(TRI_D0NP);
+    XYMU_RENDERINGn.reset(0);
+    PYNU_WIN_MODE_A.reset(0);
 
     // FIXME check boot state
     PUKU.reset(REG_D1C0);
@@ -290,22 +290,22 @@ struct PixelPipe {
     RUGU_STAT_LYI_ENn.reset(REG_D0C0);
 
     NOPA_WIN_MODE_B.reset(REG_D0C0);
-    REJO_WY_MATCH_LATCH.reset(TRI_D0NP);;
+    REJO_WY_MATCH_LATCH.reset(0);;
     SARY_WY_MATCH.reset(REG_D0C0);
     RYFA_FETCHn_A.reset(REG_D0C0);
     RENE_FETCHn_B.reset(REG_D0C0);
     PYCO_WX_MATCH_A.reset(REG_D0C0);
     NUNU_WX_MATCH_B.reset(REG_D0C0);
 
-    ROXY_SCX_FINE_MATCH_LATCHn.reset(TRI_D0NP);;
+    ROXY_SCX_FINE_MATCH_LATCHn.reset(0);
 
     RYKU_FINE_CNT0.reset(REG_D0C0);
     ROGA_FINE_CNT1.reset(REG_D0C0);
     RUBU_FINE_CNT2.reset(REG_D0C0);
 
-    RUPO_LYC_MATCH_LATCHn.reset(TRI_D0NP);;
+    RUPO_LYC_MATCH_LATCHn.reset(0);
 
-    WUSA_LCD_CLOCK_GATE.reset(TRI_D0NP);;
+    WUSA_LCD_CLOCK_GATE.reset(0);
     VOGA_HBLANKp.reset(REG_D0C0);
     PUXA_SCX_FINE_MATCH_A.reset(REG_D0C0);
     NYZE_SCX_FINE_MATCH_B.reset(REG_D0C0);

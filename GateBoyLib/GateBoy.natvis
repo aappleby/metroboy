@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="RegBase">
-    <DisplayString>{state,en} {delta,en}</DisplayString>
+    <DisplayString>{state,b}</DisplayString>
+  </Type>
+  <Type Name="SigBase">
+    <DisplayString>{state,b}</DisplayString>
+  </Type>
+  <Type Name="LatchBase">
+    <DisplayString>{state,b}</DisplayString>
   </Type>
 </AutoVisualizer>

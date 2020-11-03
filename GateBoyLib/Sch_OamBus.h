@@ -92,25 +92,25 @@ struct OamBus {
 
   void reset_cart() {
     MAKA_HOLD_MEMp.reset(REG_D0C1);
-    WUJE_CPU_OAM_WRn.reset(TRI_D1NP);
+    WUJE_CPU_OAM_WRn.reset(1);
 
-    XYKY_OAM_LATCH_DB0n.reset(TRI_D1NP);
-    YRUM_OAM_LATCH_DB1n.reset(TRI_D1NP);
-    YSEX_OAM_LATCH_DB2n.reset(TRI_D1NP);
-    YVEL_OAM_LATCH_DB3n.reset(TRI_D1NP);
-    WYNO_OAM_LATCH_DB4n.reset(TRI_D1NP);
-    CYRA_OAM_LATCH_DB5n.reset(TRI_D1NP);
-    ZUVE_OAM_LATCH_DB6n.reset(TRI_D1NP);
-    ECED_OAM_LATCH_DB7n.reset(TRI_D1NP);
+    XYKY_OAM_LATCH_DB0n.reset(1);
+    YRUM_OAM_LATCH_DB1n.reset(1);
+    YSEX_OAM_LATCH_DB2n.reset(1);
+    YVEL_OAM_LATCH_DB3n.reset(1);
+    WYNO_OAM_LATCH_DB4n.reset(1);
+    CYRA_OAM_LATCH_DB5n.reset(1);
+    ZUVE_OAM_LATCH_DB6n.reset(1);
+    ECED_OAM_LATCH_DB7n.reset(1);
 
-    YDYV_OAM_LATCH_DA0n.reset(TRI_D1NP);
-    YCEB_OAM_LATCH_DA1n.reset(TRI_D1NP);
-    ZUCA_OAM_LATCH_DA2n.reset(TRI_D1NP);
-    WONE_OAM_LATCH_DA3n.reset(TRI_D1NP);
-    ZAXE_OAM_LATCH_DA4n.reset(TRI_D1NP);
-    XAFU_OAM_LATCH_DA5n.reset(TRI_D1NP);
-    YSES_OAM_LATCH_DA6n.reset(TRI_D1NP);
-    ZECA_OAM_LATCH_DA7n.reset(TRI_D1NP);
+    YDYV_OAM_LATCH_DA0n.reset(1);
+    YCEB_OAM_LATCH_DA1n.reset(1);
+    ZUCA_OAM_LATCH_DA2n.reset(1);
+    WONE_OAM_LATCH_DA3n.reset(1);
+    ZAXE_OAM_LATCH_DA4n.reset(1);
+    XAFU_OAM_LATCH_DA5n.reset(1);
+    YSES_OAM_LATCH_DA6n.reset(1);
+    ZECA_OAM_LATCH_DA7n.reset(1);
 
     XUSO_OAM_DA0p.reset(REG_D0C1);
     XEGU_OAM_DA1p.reset(REG_D0C1);
@@ -129,34 +129,29 @@ struct OamBus {
     BAXO_OAM_DB5p.reset(REG_D0C1);
     YZOS_OAM_DB6p.reset(REG_D0C1);
     DEPO_OAM_DB7p.reset(REG_D0C1);
-
-    PIN_OAM_CLK .reset(TRI_D1NP, TRI_D1NP);
-    PIN_OAM_OE  .reset(TRI_D1NP, TRI_D1NP);
-    PIN_OAM_WR_A.reset(TRI_D1NP, TRI_D1NP);
-    PIN_OAM_WR_B.reset(TRI_D1NP, TRI_D1NP);
   }
 
   void reset_boot() {
     MAKA_HOLD_MEMp.reset(REG_D0C0);
-    WUJE_CPU_OAM_WRn.reset(TRI_D0NP);
+    WUJE_CPU_OAM_WRn.reset(0);
 
-    XYKY_OAM_LATCH_DB0n.reset(TRI_D0NP);
-    YRUM_OAM_LATCH_DB1n.reset(TRI_D0NP);
-    YSEX_OAM_LATCH_DB2n.reset(TRI_D0NP);
-    YVEL_OAM_LATCH_DB3n.reset(TRI_D0NP);
-    WYNO_OAM_LATCH_DB4n.reset(TRI_D0NP);
-    CYRA_OAM_LATCH_DB5n.reset(TRI_D0NP);
-    ZUVE_OAM_LATCH_DB6n.reset(TRI_D0NP);
-    ECED_OAM_LATCH_DB7n.reset(TRI_D0NP);
+    XYKY_OAM_LATCH_DB0n.reset(0);
+    YRUM_OAM_LATCH_DB1n.reset(0);
+    YSEX_OAM_LATCH_DB2n.reset(0);
+    YVEL_OAM_LATCH_DB3n.reset(0);
+    WYNO_OAM_LATCH_DB4n.reset(0);
+    CYRA_OAM_LATCH_DB5n.reset(0);
+    ZUVE_OAM_LATCH_DB6n.reset(0);
+    ECED_OAM_LATCH_DB7n.reset(0);
 
-    YDYV_OAM_LATCH_DA0n.reset(TRI_D0NP);
-    YCEB_OAM_LATCH_DA1n.reset(TRI_D0NP);
-    ZUCA_OAM_LATCH_DA2n.reset(TRI_D0NP);
-    WONE_OAM_LATCH_DA3n.reset(TRI_D0NP);
-    ZAXE_OAM_LATCH_DA4n.reset(TRI_D0NP);
-    XAFU_OAM_LATCH_DA5n.reset(TRI_D0NP);
-    YSES_OAM_LATCH_DA6n.reset(TRI_D0NP);
-    ZECA_OAM_LATCH_DA7n.reset(TRI_D0NP);
+    YDYV_OAM_LATCH_DA0n.reset(0);
+    YCEB_OAM_LATCH_DA1n.reset(0);
+    ZUCA_OAM_LATCH_DA2n.reset(0);
+    WONE_OAM_LATCH_DA3n.reset(0);
+    ZAXE_OAM_LATCH_DA4n.reset(0);
+    XAFU_OAM_LATCH_DA5n.reset(0);
+    YSES_OAM_LATCH_DA6n.reset(0);
+    ZECA_OAM_LATCH_DA7n.reset(0);
 
     XUSO_OAM_DA0p.reset(REG_D0C0);
     XEGU_OAM_DA1p.reset(REG_D0C0);
@@ -175,11 +170,6 @@ struct OamBus {
     BAXO_OAM_DB5p.reset(REG_D0C0);
     YZOS_OAM_DB6p.reset(REG_D0C0);
     DEPO_OAM_DB7p.reset(REG_D0C0);
-
-    PIN_OAM_CLK.reset(TRI_D0NP);
-    PIN_OAM_OE.reset(TRI_D1NP);
-    PIN_OAM_WR_A.reset(TRI_D1NP);
-    PIN_OAM_WR_B.reset(TRI_D1NP);
   }
 
   //----------------------------------------
@@ -225,39 +215,37 @@ struct OamBus {
   /*p31.YZOS*/ DFF8n YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip
   /*p31.DEPO*/ DFF8n DEPO_OAM_DB7p; // sprite x bit 7, sprite priority
 
-  Pin PIN_OAM_CLK ;
-  Pin PIN_OAM_OE  ;
-  Pin PIN_OAM_WR_A;
-  Pin PIN_OAM_WR_B;
+  PinNP PIN_OAM_CLK ;
+  PinNP PIN_OAM_OE  ;
+  PinNP PIN_OAM_WR_A;
+  PinNP PIN_OAM_WR_B;
 
-  Bus2 BUS_OAM_A0n ;
-  Bus2 BUS_OAM_A1n ;
-  Bus2 BUS_OAM_A2n ;
-  Bus2 BUS_OAM_A3n ;
-  Bus2 BUS_OAM_A4n ;
-  Bus2 BUS_OAM_A5n ;
-  Bus2 BUS_OAM_A6n ;
-  Bus2 BUS_OAM_A7n ;
+  BusNP BUS_OAM_A0n ;
+  BusNP BUS_OAM_A1n ;
+  BusNP BUS_OAM_A2n ;
+  BusNP BUS_OAM_A3n ;
+  BusNP BUS_OAM_A4n ;
+  BusNP BUS_OAM_A5n ;
+  BusNP BUS_OAM_A6n ;
+  BusNP BUS_OAM_A7n ;
 
-  Bus2 BUS_OAM_DA0n;
-  Bus2 BUS_OAM_DA1n;
-  Bus2 BUS_OAM_DA2n;
-  Bus2 BUS_OAM_DA3n;
-  Bus2 BUS_OAM_DA4n;
-  Bus2 BUS_OAM_DA5n;
-  Bus2 BUS_OAM_DA6n;
-  Bus2 BUS_OAM_DA7n;
+  BusNP BUS_OAM_DA0n;
+  BusNP BUS_OAM_DA1n;
+  BusNP BUS_OAM_DA2n;
+  BusNP BUS_OAM_DA3n;
+  BusNP BUS_OAM_DA4n;
+  BusNP BUS_OAM_DA5n;
+  BusNP BUS_OAM_DA6n;
+  BusNP BUS_OAM_DA7n;
 
-  Bus2 BUS_OAM_DB0n;
-  Bus2 BUS_OAM_DB1n;
-  Bus2 BUS_OAM_DB2n;
-  Bus2 BUS_OAM_DB3n;
-  Bus2 BUS_OAM_DB4n;
-  Bus2 BUS_OAM_DB5n;
-  Bus2 BUS_OAM_DB6n;
-  Bus2 BUS_OAM_DB7n;
-
-  //DelayGlitch oam_glitch;
+  BusNP BUS_OAM_DB0n;
+  BusNP BUS_OAM_DB1n;
+  BusNP BUS_OAM_DB2n;
+  BusNP BUS_OAM_DB3n;
+  BusNP BUS_OAM_DB4n;
+  BusNP BUS_OAM_DB5n;
+  BusNP BUS_OAM_DB6n;
+  BusNP BUS_OAM_DB7n;
 };
 
 //-----------------------------------------------------------------------------

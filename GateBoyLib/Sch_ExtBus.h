@@ -35,184 +35,63 @@ struct ExtBus {
       SAZY_EXT_DATA_LATCH_D7n.c(), RUPA_EXT_DATA_LATCH_D6n.c(), SAGO_EXT_DATA_LATCH_D5n.c(), SODY_EXT_DATA_LATCH_D4n.c(),
       SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
     d("\n");
-
-    //d("ext_glitch.da %c\n", ext_glitch.da.c());
-    //d("ext_glitch.db %c\n", ext_glitch.db.c());
-    //d("ext_glitch.dc %c\n", ext_glitch.dc.c());
-    //d("ext_glitch.dd %c\n", ext_glitch.dd.c());
-    //d("ext_glitch.de %c\n", ext_glitch.de.c());
-    //d("ext_glitch.df %c\n", ext_glitch.df.c());
-    //d("ext_glitch.dg %c\n", ext_glitch.dg.c());
-    //d("ext_glitch.dh %c\n", ext_glitch.dh.c());
-    //d("ext_glitch.di %c\n", ext_glitch.di.c());
   }
 
-
   void reset_cart() {
-    //ext_glitch.da.value = 0x0F;
-    //ext_glitch.db.value = 0x0F;
-    //ext_glitch.dc.value = 0x0F;
-    //ext_glitch.dd.value = 0x0F;
-    //ext_glitch.de.value = 0x0F;
-    //ext_glitch.df.value = 0x0F;
-    //ext_glitch.dg.value = 0x0F;
-    //ext_glitch.dh.value = 0x0F;
-    //ext_glitch.di.value = 0x0F;
+    ALOR_EXT_ADDR_LATCH_00p.reset(1);
+    APUR_EXT_ADDR_LATCH_01p.reset(0);
+    ALYR_EXT_ADDR_LATCH_02p.reset(1);
+    ARET_EXT_ADDR_LATCH_03p.reset(1);
+    AVYS_EXT_ADDR_LATCH_04p.reset(0);
+    ATEV_EXT_ADDR_LATCH_05p.reset(0);
+    AROS_EXT_ADDR_LATCH_06p.reset(1);
+    ARYM_EXT_ADDR_LATCH_07p.reset(0);
+    LUNO_EXT_ADDR_LATCH_08p.reset(0);
+    LYSA_EXT_ADDR_LATCH_09p.reset(0);
+    PATE_EXT_ADDR_LATCH_10p.reset(0);
+    LUMY_EXT_ADDR_LATCH_11p.reset(0);
+    LOBU_EXT_ADDR_LATCH_12p.reset(0);
+    LONU_EXT_ADDR_LATCH_13p.reset(0);
+    NYRE_EXT_ADDR_LATCH_14p.reset(0);
 
-    ALOR_EXT_ADDR_LATCH_00p.reset(TRI_D1NP);
-    APUR_EXT_ADDR_LATCH_01p.reset(TRI_D0NP);
-    ALYR_EXT_ADDR_LATCH_02p.reset(TRI_D1NP);
-    ARET_EXT_ADDR_LATCH_03p.reset(TRI_D1NP);
-    AVYS_EXT_ADDR_LATCH_04p.reset(TRI_D0NP);
-    ATEV_EXT_ADDR_LATCH_05p.reset(TRI_D0NP);
-    AROS_EXT_ADDR_LATCH_06p.reset(TRI_D1NP);
-    ARYM_EXT_ADDR_LATCH_07p.reset(TRI_D0NP);
-    LUNO_EXT_ADDR_LATCH_08p.reset(TRI_D0NP);
-    LYSA_EXT_ADDR_LATCH_09p.reset(TRI_D0NP);
-    PATE_EXT_ADDR_LATCH_10p.reset(TRI_D0NP);
-    LUMY_EXT_ADDR_LATCH_11p.reset(TRI_D0NP);
-    LOBU_EXT_ADDR_LATCH_12p.reset(TRI_D0NP);
-    LONU_EXT_ADDR_LATCH_13p.reset(TRI_D0NP);
-    NYRE_EXT_ADDR_LATCH_14p.reset(TRI_D0NP);
-
-    SOMA_EXT_DATA_LATCH_D0n.reset(TRI_D0NP);
-    RONY_EXT_DATA_LATCH_D1n.reset(TRI_D0NP);
-    RAXY_EXT_DATA_LATCH_D2n.reset(TRI_D0NP);
-    SELO_EXT_DATA_LATCH_D3n.reset(TRI_D0NP);
-    SODY_EXT_DATA_LATCH_D4n.reset(TRI_D0NP);
-    SAGO_EXT_DATA_LATCH_D5n.reset(TRI_D0NP);
-    RUPA_EXT_DATA_LATCH_D6n.reset(TRI_D0NP);
-    SAZY_EXT_DATA_LATCH_D7n.reset(TRI_D0NP);
-
-    PIN_EXT_CLK.reset(TRI_D1NP, TRI_D1NP);
-    PIN_EXT_WRn.reset(TRI_D1NP, TRI_D1NP);
-    PIN_EXT_RDn.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_CSn.reset(TRI_D1NP, TRI_D1NP);
-
-    PIN_EXT_A00p.reset(TRI_D1NP, TRI_D1NP);
-    PIN_EXT_A01p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A02p.reset(TRI_D1NP, TRI_D1NP);
-    PIN_EXT_A03p.reset(TRI_D1NP, TRI_D1NP);
-    PIN_EXT_A04p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A05p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A06p.reset(TRI_D1NP, TRI_D1NP);
-    PIN_EXT_A07p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A08p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A09p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A10p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A11p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A12p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A13p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A14p.reset(TRI_D0NP, TRI_D0NP);
-    PIN_EXT_A15p.reset(TRI_D1NP, TRI_D1NP);
-
-    PIN_EXT_D00p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D01p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D02p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D03p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D04p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D05p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D06p.reset(TRI_HZPU, TRI_HZPU);
-    PIN_EXT_D07p.reset(TRI_HZPU, TRI_HZPU);
+    SOMA_EXT_DATA_LATCH_D0n.reset(0);
+    RONY_EXT_DATA_LATCH_D1n.reset(0);
+    RAXY_EXT_DATA_LATCH_D2n.reset(0);
+    SELO_EXT_DATA_LATCH_D3n.reset(0);
+    SODY_EXT_DATA_LATCH_D4n.reset(0);
+    SAGO_EXT_DATA_LATCH_D5n.reset(0);
+    RUPA_EXT_DATA_LATCH_D6n.reset(0);
+    SAZY_EXT_DATA_LATCH_D7n.reset(0);
   }
 
   void reset_boot() {
-    //ext_glitch.reset();
+    ALOR_EXT_ADDR_LATCH_00p.reset(0);
+    APUR_EXT_ADDR_LATCH_01p.reset(0);
+    ALYR_EXT_ADDR_LATCH_02p.reset(0);
+    ARET_EXT_ADDR_LATCH_03p.reset(0);
+    AVYS_EXT_ADDR_LATCH_04p.reset(0);
+    ATEV_EXT_ADDR_LATCH_05p.reset(0);
+    AROS_EXT_ADDR_LATCH_06p.reset(0);
+    ARYM_EXT_ADDR_LATCH_07p.reset(0);
+    LUNO_EXT_ADDR_LATCH_08p.reset(0);
+    LYSA_EXT_ADDR_LATCH_09p.reset(0);
+    PATE_EXT_ADDR_LATCH_10p.reset(0);
+    LUMY_EXT_ADDR_LATCH_11p.reset(0);
+    LOBU_EXT_ADDR_LATCH_12p.reset(0);
+    LONU_EXT_ADDR_LATCH_13p.reset(0);
+    NYRE_EXT_ADDR_LATCH_14p.reset(0);
 
-    ALOR_EXT_ADDR_LATCH_00p.reset(TRI_D0NP);
-    APUR_EXT_ADDR_LATCH_01p.reset(TRI_D0NP);
-    ALYR_EXT_ADDR_LATCH_02p.reset(TRI_D0NP);
-    ARET_EXT_ADDR_LATCH_03p.reset(TRI_D0NP);
-    AVYS_EXT_ADDR_LATCH_04p.reset(TRI_D0NP);
-    ATEV_EXT_ADDR_LATCH_05p.reset(TRI_D0NP);
-    AROS_EXT_ADDR_LATCH_06p.reset(TRI_D0NP);
-    ARYM_EXT_ADDR_LATCH_07p.reset(TRI_D0NP);
-    LUNO_EXT_ADDR_LATCH_08p.reset(TRI_D0NP);
-    LYSA_EXT_ADDR_LATCH_09p.reset(TRI_D0NP);
-    PATE_EXT_ADDR_LATCH_10p.reset(TRI_D0NP);
-    LUMY_EXT_ADDR_LATCH_11p.reset(TRI_D0NP);
-    LOBU_EXT_ADDR_LATCH_12p.reset(TRI_D0NP);
-    LONU_EXT_ADDR_LATCH_13p.reset(TRI_D0NP);
-    NYRE_EXT_ADDR_LATCH_14p.reset(TRI_D0NP);
-
-    SOMA_EXT_DATA_LATCH_D0n.reset(TRI_D0NP);
-    RONY_EXT_DATA_LATCH_D1n.reset(TRI_D0NP);
-    RAXY_EXT_DATA_LATCH_D2n.reset(TRI_D0NP);
-    SELO_EXT_DATA_LATCH_D3n.reset(TRI_D0NP);
-    SODY_EXT_DATA_LATCH_D4n.reset(TRI_D0NP);
-    SAGO_EXT_DATA_LATCH_D5n.reset(TRI_D0NP);
-    RUPA_EXT_DATA_LATCH_D6n.reset(TRI_D0NP);
-    SAZY_EXT_DATA_LATCH_D7n.reset(TRI_D0NP);
-
-    PIN_EXT_CLK.reset(TRI_D0NP);
-    PIN_EXT_WRn.reset(TRI_D0NP);
-    PIN_EXT_RDn.reset(TRI_D0NP);
-    PIN_EXT_CSn.reset(TRI_D0NP);
-
-    PIN_EXT_A00p.reset(TRI_D0NP);
-    PIN_EXT_A01p.reset(TRI_D0NP);
-    PIN_EXT_A02p.reset(TRI_D0NP);
-    PIN_EXT_A03p.reset(TRI_D0NP);
-    PIN_EXT_A04p.reset(TRI_D0NP);
-    PIN_EXT_A05p.reset(TRI_D0NP);
-    PIN_EXT_A06p.reset(TRI_D0NP);
-    PIN_EXT_A07p.reset(TRI_D0NP);
-    PIN_EXT_A08p.reset(TRI_D0NP);
-    PIN_EXT_A09p.reset(TRI_D0NP);
-    PIN_EXT_A10p.reset(TRI_D0NP);
-    PIN_EXT_A11p.reset(TRI_D0NP);
-    PIN_EXT_A12p.reset(TRI_D0NP);
-    PIN_EXT_A13p.reset(TRI_D0NP);
-    PIN_EXT_A14p.reset(TRI_D0NP);
-    PIN_EXT_A15p.reset(TRI_D0NP);
-
-    PIN_EXT_D00p.reset(TRI_HZPU);
-    PIN_EXT_D01p.reset(TRI_HZPU);
-    PIN_EXT_D02p.reset(TRI_HZPU);
-    PIN_EXT_D03p.reset(TRI_HZPU);
-    PIN_EXT_D04p.reset(TRI_HZPU);
-    PIN_EXT_D05p.reset(TRI_HZPU);
-    PIN_EXT_D06p.reset(TRI_HZPU);
-    PIN_EXT_D07p.reset(TRI_HZPU);
-  }
-
-  uint16_t get_pin_addr() {
-    return (uint16_t)pack_p(PIN_EXT_A00p.qp(), PIN_EXT_A01p.qp(), PIN_EXT_A02p.qp(), PIN_EXT_A03p.qp(),
-                            PIN_EXT_A04p.qp(), PIN_EXT_A05p.qp(), PIN_EXT_A06p.qp(), PIN_EXT_A07p.qp(),
-                            PIN_EXT_A08p.qp(), PIN_EXT_A09p.qp(), PIN_EXT_A10p.qp(), PIN_EXT_A11p.qp(),
-                            PIN_EXT_A12p.qp(), PIN_EXT_A13p.qp(), PIN_EXT_A14p.qp(), PIN_EXT_A15p.qp());
-  }
-
-  uint8_t get_pin_data() {
-    return (uint8_t)pack_p(PIN_EXT_D00p.qp(), PIN_EXT_D01p.qp(), PIN_EXT_D02p.qp(), PIN_EXT_D03p.qp(),
-                           PIN_EXT_D04p.qp(), PIN_EXT_D05p.qp(), PIN_EXT_D06p.qp(), PIN_EXT_D07p.qp());
-  }
-
-  void set_pin_data(uint8_t data) {
-    PIN_EXT_D00p = (data & 0x01) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D01p = (data & 0x02) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D02p = (data & 0x04) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D03p = (data & 0x08) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D04p = (data & 0x10) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D05p = (data & 0x20) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D06p = (data & 0x40) ? DELTA_TRI1 : DELTA_TRI0;
-    PIN_EXT_D07p = (data & 0x80) ? DELTA_TRI1 : DELTA_TRI0;
-  }
-
-  void set_pin_data_z() {
-    PIN_EXT_D00p = DELTA_TRIZ;
-    PIN_EXT_D01p = DELTA_TRIZ;
-    PIN_EXT_D02p = DELTA_TRIZ;
-    PIN_EXT_D03p = DELTA_TRIZ;
-    PIN_EXT_D04p = DELTA_TRIZ;
-    PIN_EXT_D05p = DELTA_TRIZ;
-    PIN_EXT_D06p = DELTA_TRIZ;
-    PIN_EXT_D07p = DELTA_TRIZ;
+    SOMA_EXT_DATA_LATCH_D0n.reset(0);
+    RONY_EXT_DATA_LATCH_D1n.reset(0);
+    RAXY_EXT_DATA_LATCH_D2n.reset(0);
+    SELO_EXT_DATA_LATCH_D3n.reset(0);
+    SODY_EXT_DATA_LATCH_D4n.reset(0);
+    SAGO_EXT_DATA_LATCH_D5n.reset(0);
+    RUPA_EXT_DATA_LATCH_D6n.reset(0);
+    SAZY_EXT_DATA_LATCH_D7n.reset(0);
   }
 
   //-----------------------------------------------------------------------------
-
-  //DelayGlitch ext_glitch;
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p;
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p;
@@ -242,36 +121,36 @@ struct ExtBus {
   //-----------------------------------------------------------------------------
   // Ext bus
 
-  Pin PIN_EXT_CLK;    // PIN_75
-  Pin PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  Pin PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
-  Pin PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
+  PinNP PIN_EXT_CLK;    // PIN_75
+  PinNP PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
+  PinNP PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
+  PinNP PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
 
-  Pin PIN_EXT_A00p;   // PIN_01 // Address changees on B for CPU read/write, on A for DMA read
-  Pin PIN_EXT_A01p;   // PIN_02
-  Pin PIN_EXT_A02p;   // PIN_03
-  Pin PIN_EXT_A03p;   // PIN_04
-  Pin PIN_EXT_A04p;   // PIN_05
-  Pin PIN_EXT_A05p;   // PIN_06
-  Pin PIN_EXT_A06p;   // PIN_07
-  Pin PIN_EXT_A07p;   // PIN_08
-  Pin PIN_EXT_A08p;   // PIN_09
-  Pin PIN_EXT_A09p;   // PIN_10
-  Pin PIN_EXT_A10p;   // PIN_11
-  Pin PIN_EXT_A11p;   // PIN_12
-  Pin PIN_EXT_A12p;   // PIN_13
-  Pin PIN_EXT_A13p;   // PIN_14
-  Pin PIN_EXT_A14p;   // PIN_15
-  Pin PIN_EXT_A15p;   // PIN_16 // A15 changes on C
+  PinNP PIN_EXT_A00p;   // PIN_01 // Address changees on B for CPU read/write, on A for DMA read
+  PinNP PIN_EXT_A01p;   // PIN_02
+  PinNP PIN_EXT_A02p;   // PIN_03
+  PinNP PIN_EXT_A03p;   // PIN_04
+  PinNP PIN_EXT_A04p;   // PIN_05
+  PinNP PIN_EXT_A05p;   // PIN_06
+  PinNP PIN_EXT_A06p;   // PIN_07
+  PinNP PIN_EXT_A07p;   // PIN_08
+  PinNP PIN_EXT_A08p;   // PIN_09
+  PinNP PIN_EXT_A09p;   // PIN_10
+  PinNP PIN_EXT_A10p;   // PIN_11
+  PinNP PIN_EXT_A11p;   // PIN_12
+  PinNP PIN_EXT_A12p;   // PIN_13
+  PinNP PIN_EXT_A13p;   // PIN_14
+  PinNP PIN_EXT_A14p;   // PIN_15
+  PinNP PIN_EXT_A15p;   // PIN_16 // A15 changes on C
 
-  Pin PIN_EXT_D00p;   // PIN_17
-  Pin PIN_EXT_D01p;   // PIN_18
-  Pin PIN_EXT_D02p;   // PIN_19
-  Pin PIN_EXT_D03p;   // PIN_20
-  Pin PIN_EXT_D04p;   // PIN_21
-  Pin PIN_EXT_D05p;   // PIN_22
-  Pin PIN_EXT_D06p;   // PIN_23
-  Pin PIN_EXT_D07p;   // PIN_24
+  PinPU PIN_EXT_D00p;   // PIN_17
+  PinPU PIN_EXT_D01p;   // PIN_18
+  PinPU PIN_EXT_D02p;   // PIN_19
+  PinPU PIN_EXT_D03p;   // PIN_20
+  PinPU PIN_EXT_D04p;   // PIN_21
+  PinPU PIN_EXT_D05p;   // PIN_22
+  PinPU PIN_EXT_D06p;   // PIN_23
+  PinPU PIN_EXT_D07p;   // PIN_24
 };
 
 //-----------------------------------------------------------------------------

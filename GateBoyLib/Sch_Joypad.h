@@ -11,8 +11,7 @@ struct CpuBus;
 struct Joypad {
 
   void reset_cart() {
-    AWOB_WAKE_CPU.reset(TRI_D0NP);
-    PIN_CPU_WAKE.reset(TRI_D0NP);
+    AWOB_WAKE_CPU.reset(0);
 
     BATU_JP_GLITCH0.reset(REG_D0C1);
     ACEF_JP_GLITCH1.reset(REG_D0C1);
@@ -28,22 +27,14 @@ struct Joypad {
     KUKO_DBG_FF00_D6.reset(REG_D0C1);
     KERU_DBG_FF00_D7.reset(REG_D0C1);
 
-    KEVU_JOYP_L0.reset(TRI_D0NP);
-    KAPA_JOYP_L1.reset(TRI_D0NP);
-    KEJA_JOYP_L2.reset(TRI_D0NP);
-    KOLO_JOYP_L3.reset(TRI_D0NP);
-
-    PIN_JOY_P10.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
-    PIN_JOY_P11.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
-    PIN_JOY_P12.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
-    PIN_JOY_P13.reset(TRI_HZPU, TRI_HZPU | (DELTA_LOCK << 4));
-    PIN_JOY_P14.reset(TRI_D0PU, TRI_D0PU);
-    PIN_JOY_P15.reset(TRI_D0PU, TRI_D0PU);
+    KEVU_JOYP_L0.reset(0);
+    KAPA_JOYP_L1.reset(0);
+    KEJA_JOYP_L2.reset(0);
+    KOLO_JOYP_L3.reset(0);
   }
 
   void reset_boot() {
-    AWOB_WAKE_CPU.reset(TRI_D0NP);
-    PIN_CPU_WAKE.reset(TRI_HZNP);
+    AWOB_WAKE_CPU.reset(0);
 
     BATU_JP_GLITCH0.reset(REG_D0C0);
     ACEF_JP_GLITCH1.reset(REG_D0C0);
@@ -59,40 +50,10 @@ struct Joypad {
     KUKO_DBG_FF00_D6.reset(REG_D0C0);
     KERU_DBG_FF00_D7.reset(REG_D0C0);
 
-    KEVU_JOYP_L0.reset(TRI_D0NP);
-    KAPA_JOYP_L1.reset(TRI_D0NP);
-    KEJA_JOYP_L2.reset(TRI_D0NP);
-    KOLO_JOYP_L3.reset(TRI_D0NP);
-
-    PIN_JOY_P10.reset(TRI_HZPU);
-    PIN_JOY_P11.reset(TRI_HZPU);
-    PIN_JOY_P12.reset(TRI_HZPU);
-    PIN_JOY_P13.reset(TRI_HZPU);
-    PIN_JOY_P14.reset(TRI_HZPU);
-    PIN_JOY_P15.reset(TRI_HZPU);
-  }
-
-  void set_buttons(uint8_t buttons) {
-    // Pressing a button pulls the corresponding pin _down_.
-
-    PIN_JOY_P10.lock(DELTA_TRIZ);
-    PIN_JOY_P11.lock(DELTA_TRIZ);
-    PIN_JOY_P12.lock(DELTA_TRIZ);
-    PIN_JOY_P13.lock(DELTA_TRIZ);
-
-    if (PIN_JOY_P14.qp()) {
-      if (buttons & 0x01) PIN_JOY_P10.lock(DELTA_TRI0);
-      if (buttons & 0x02) PIN_JOY_P11.lock(DELTA_TRI0);
-      if (buttons & 0x04) PIN_JOY_P12.lock(DELTA_TRI0);
-      if (buttons & 0x08) PIN_JOY_P13.lock(DELTA_TRI0);
-    }
-
-    if (PIN_JOY_P15.qp()) {
-      if (buttons & 0x10) PIN_JOY_P10.lock(DELTA_TRI0);
-      if (buttons & 0x20) PIN_JOY_P11.lock(DELTA_TRI0);
-      if (buttons & 0x40) PIN_JOY_P12.lock(DELTA_TRI0);
-      if (buttons & 0x80) PIN_JOY_P13.lock(DELTA_TRI0);
-    }
+    KEVU_JOYP_L0.reset(0);
+    KAPA_JOYP_L1.reset(0);
+    KEJA_JOYP_L2.reset(0);
+    KOLO_JOYP_L3.reset(0);
   }
 
 //private:
@@ -100,7 +61,7 @@ struct Joypad {
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
-  Pin PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
+  Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
 
   /*p02.BATU*/ DFF17 BATU_JP_GLITCH0;
   /*p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
@@ -121,12 +82,12 @@ struct Joypad {
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3; // 10-rung, looks like pass gate or something
 
-  Pin PIN_JOY_P10; // PIN_67
-  Pin PIN_JOY_P11; // PIN_66
-  Pin PIN_JOY_P12; // PIN_65
-  Pin PIN_JOY_P13; // PIN_64
-  Pin PIN_JOY_P14; // PIN_63
-  Pin PIN_JOY_P15; // PIN_62
+  PinNP PIN_JOY_P10; // PIN_67
+  PinNP PIN_JOY_P11; // PIN_66
+  PinNP PIN_JOY_P12; // PIN_65
+  PinNP PIN_JOY_P13; // PIN_64
+  PinPU PIN_JOY_P14; // PIN_63
+  PinPU PIN_JOY_P15; // PIN_62
 };
 
 //-----------------------------------------------------------------------------

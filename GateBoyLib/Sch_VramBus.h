@@ -8,16 +8,26 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct VramBus {
+
   void dump(Dumper& d, const SchematicTop& /*top*/) const {
     d("\002===== VRAM Bus =====\001\n");
 
+    uint16_t bus_addr = (uint16_t)pack_p(!BUS_VRAM_A00n.qp(), !BUS_VRAM_A01n.qp(), !BUS_VRAM_A02n.qp(), !BUS_VRAM_A03n.qp(),
+                                         !BUS_VRAM_A04n.qp(), !BUS_VRAM_A05n.qp(), !BUS_VRAM_A06n.qp(), !BUS_VRAM_A07n.qp(),
+                                         !BUS_VRAM_A08n.qp(), !BUS_VRAM_A09n.qp(), !BUS_VRAM_A10n.qp(), !BUS_VRAM_A11n.qp(),
+                                         !BUS_VRAM_A12n.qp(), 0, 0, 0);
+
+    uint8_t bus_data = (uint8_t)pack_p(BUS_VRAM_D0p.qp(), BUS_VRAM_D1p.qp(), BUS_VRAM_D2p.qp(), BUS_VRAM_D3p.qp(),
+                                       BUS_VRAM_D4p.qp(), BUS_VRAM_D5p.qp(), BUS_VRAM_D6p.qp(), BUS_VRAM_D7p.qp());
+
     d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      get_bus_addr() | 0x8000,
+      bus_addr | 0x8000,
       BUS_VRAM_A12n.c(), BUS_VRAM_A11n.c(), BUS_VRAM_A10n.c(), BUS_VRAM_A09n.c(),
       BUS_VRAM_A08n.c(), BUS_VRAM_A07n.c(), BUS_VRAM_A06n.c(), BUS_VRAM_A05n.c(),
       BUS_VRAM_A04n.c(), BUS_VRAM_A03n.c(), BUS_VRAM_A02n.c(), BUS_VRAM_A01n.c(),
       BUS_VRAM_A00n.c());
-    d("VRAM BUS DATA : %c%c%c%c%c%c%c%c\n",
+    d("VRAM BUS DATA : %02x %c%c%c%c%c%c%c%c\n",
+      bus_data,
       BUS_VRAM_D7p.c(), BUS_VRAM_D6p.c(), BUS_VRAM_D5p.c(), BUS_VRAM_D4p.c(),
       BUS_VRAM_D3p.c(), BUS_VRAM_D2p.c(), BUS_VRAM_D1p.c(), BUS_VRAM_D0p.c());
     d("\n");
@@ -25,9 +35,18 @@ struct VramBus {
     d("VRAM PIN MCSn : %c\n", PIN_VRAM_CSn.c());
     d("VRAM PIN MOEn : %c\n", PIN_VRAM_OEn.c());
     d("VRAM PIN MWRn : %c\n", PIN_VRAM_WRn.c());
-    d("VRAM PIN ADDR : 0x%04x\n", get_pin_addr() | 0x8000);
+
+    uint16_t pin_addr = (uint16_t)pack_p(PIN_VRAM_A00p.qp(), PIN_VRAM_A01p.qp(), PIN_VRAM_A02p.qp(), PIN_VRAM_A03p.qp(),
+                                         PIN_VRAM_A04p.qp(), PIN_VRAM_A05p.qp(), PIN_VRAM_A06p.qp(), PIN_VRAM_A07p.qp(),
+                                         PIN_VRAM_A08p.qp(), PIN_VRAM_A09p.qp(), PIN_VRAM_A10p.qp(), PIN_VRAM_A11p.qp(),
+                                         PIN_VRAM_A12p.qp(), 0, 0, 0);
+    uint8_t pin_data = (uint8_t)pack_p(PIN_VRAM_D07p.c(), PIN_VRAM_D06p.c(), PIN_VRAM_D05p.c(), PIN_VRAM_D04p.c(),
+                                       PIN_VRAM_D03p.c(), PIN_VRAM_D02p.c(), PIN_VRAM_D01p.c(), PIN_VRAM_D00p.c());
+
+
+    d("VRAM PIN ADDR : 0x%04x\n", pin_addr | 0x8000);
     d("VRAM PIN DATA : %02x %c%c%c%c%c%c%c%c\n",
-      get_bus_data(),
+      pin_data,
       PIN_VRAM_D07p.c(), PIN_VRAM_D06p.c(), PIN_VRAM_D05p.c(), PIN_VRAM_D04p.c(),
       PIN_VRAM_D03p.c(), PIN_VRAM_D02p.c(), PIN_VRAM_D01p.c(), PIN_VRAM_D00p.c());
     d("\n");
@@ -82,36 +101,6 @@ struct VramBus {
     SUNY_SPRITE_DA5n.reset(REG_D1C0);
     SEMO_SPRITE_DA6n.reset(REG_D1C0);
     SEGA_SPRITE_DA7n.reset(REG_D1C0);
-
-    PIN_VRAM_CSn .reset(TRI_D1NP);
-    PIN_VRAM_OEn .reset(TRI_D0NP);
-    PIN_VRAM_WRn .reset(TRI_D1NP);
-
-    PIN_VRAM_A00p.reset(TRI_D0NP);
-    PIN_VRAM_A01p.reset(TRI_D0NP);
-    PIN_VRAM_A02p.reset(TRI_D0NP);
-    PIN_VRAM_A03p.reset(TRI_D0NP);
-    PIN_VRAM_A04p.reset(TRI_D1NP);
-    PIN_VRAM_A05p.reset(TRI_D0NP);
-    PIN_VRAM_A06p.reset(TRI_D1NP);
-    PIN_VRAM_A07p.reset(TRI_D0NP);
-    PIN_VRAM_A08p.reset(TRI_D0NP);
-    PIN_VRAM_A09p.reset(TRI_D0NP);
-    PIN_VRAM_A10p.reset(TRI_D0NP);
-    PIN_VRAM_A11p.reset(TRI_D0NP);
-    PIN_VRAM_A12p.reset(TRI_D0NP);
-
-    PIN_VRAM_D00p.reset(TRI_D0PU);
-    PIN_VRAM_D01p.reset(TRI_D0PU);
-    PIN_VRAM_D02p.reset(TRI_D0PU);
-    PIN_VRAM_D03p.reset(TRI_D0PU);
-    PIN_VRAM_D04p.reset(TRI_D0PU);
-    PIN_VRAM_D05p.reset(TRI_D0PU);
-    PIN_VRAM_D06p.reset(TRI_D0PU);
-    PIN_VRAM_D07p.reset(TRI_D0PU);
-
-    //latch_sprite_a_delay.reset(TRI_D1NP);
-    //latch_sprite_b_delay.reset(TRI_D1NP);
   }
 
   void reset_boot() {
@@ -148,53 +137,6 @@ struct VramBus {
     SUNY_SPRITE_DA5n.reset(REG_D0C0);
     SEMO_SPRITE_DA6n.reset(REG_D0C0);
     SEGA_SPRITE_DA7n.reset(REG_D0C0);
-
-    PIN_VRAM_CSn .reset(TRI_D0NP);
-    PIN_VRAM_OEn .reset(TRI_D0NP);
-    PIN_VRAM_WRn .reset(TRI_D0NP);
-    PIN_VRAM_A00p.reset(TRI_D0NP);
-    PIN_VRAM_A01p.reset(TRI_D0NP);
-    PIN_VRAM_A02p.reset(TRI_D0NP);
-    PIN_VRAM_A03p.reset(TRI_D0NP);
-    PIN_VRAM_A04p.reset(TRI_D0NP);
-    PIN_VRAM_A05p.reset(TRI_D0NP);
-    PIN_VRAM_A06p.reset(TRI_D0NP);
-    PIN_VRAM_A07p.reset(TRI_D0NP);
-    PIN_VRAM_A08p.reset(TRI_D0NP);
-    PIN_VRAM_A09p.reset(TRI_D0NP);
-    PIN_VRAM_A10p.reset(TRI_D0NP);
-    PIN_VRAM_A11p.reset(TRI_D0NP);
-    PIN_VRAM_A12p.reset(TRI_D0NP);
-    PIN_VRAM_D00p.reset(TRI_HZPU);
-    PIN_VRAM_D01p.reset(TRI_HZPU);
-    PIN_VRAM_D02p.reset(TRI_HZPU);
-    PIN_VRAM_D03p.reset(TRI_HZPU);
-    PIN_VRAM_D04p.reset(TRI_HZPU);
-    PIN_VRAM_D05p.reset(TRI_HZPU);
-    PIN_VRAM_D06p.reset(TRI_HZPU);
-    PIN_VRAM_D07p.reset(TRI_HZPU);
-
-    //latch_sprite_a_delay.reset();
-    //latch_sprite_b_delay.reset();
-  }
-
-  int get_bus_addr() const {
-    return pack_p(!BUS_VRAM_A00n.qp(), !BUS_VRAM_A01n.qp(), !BUS_VRAM_A02n.qp(), !BUS_VRAM_A03n.qp(),
-                  !BUS_VRAM_A04n.qp(), !BUS_VRAM_A05n.qp(), !BUS_VRAM_A06n.qp(), !BUS_VRAM_A07n.qp(),
-                  !BUS_VRAM_A08n.qp(), !BUS_VRAM_A09n.qp(), !BUS_VRAM_A10n.qp(), !BUS_VRAM_A11n.qp(),
-                  !BUS_VRAM_A12n.qp(), 0, 0, 0);
-  }
-
-  int get_bus_data() const {
-    return pack_p(BUS_VRAM_D0p.qp(), BUS_VRAM_D1p.qp(), BUS_VRAM_D2p.qp(), BUS_VRAM_D3p.qp(),
-                  BUS_VRAM_D4p.qp(), BUS_VRAM_D5p.qp(), BUS_VRAM_D6p.qp(), BUS_VRAM_D7p.qp());
-  }
-
-  int get_pin_addr() const {
-    return pack_p(PIN_VRAM_A00p.qp(), PIN_VRAM_A01p.qp(), PIN_VRAM_A02p.qp(), PIN_VRAM_A03p.qp(),
-                  PIN_VRAM_A04p.qp(), PIN_VRAM_A05p.qp(), PIN_VRAM_A06p.qp(), PIN_VRAM_A07p.qp(),
-                  PIN_VRAM_A08p.qp(), PIN_VRAM_A09p.qp(), PIN_VRAM_A10p.qp(), PIN_VRAM_A11p.qp(),
-                  PIN_VRAM_A12p.qp(), 0, 0, 0);
   }
 
   //-----------------------------------------------------------------------------
@@ -240,58 +182,58 @@ struct VramBus {
   //----------------------------------------
   // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
-  Bus2 BUS_VRAM_D0p;
-  Bus2 BUS_VRAM_D1p;
-  Bus2 BUS_VRAM_D2p;
-  Bus2 BUS_VRAM_D3p;
-  Bus2 BUS_VRAM_D4p;
-  Bus2 BUS_VRAM_D5p;
-  Bus2 BUS_VRAM_D6p;
-  Bus2 BUS_VRAM_D7p;
+  BusNP BUS_VRAM_D0p;
+  BusNP BUS_VRAM_D1p;
+  BusNP BUS_VRAM_D2p;
+  BusNP BUS_VRAM_D3p;
+  BusNP BUS_VRAM_D4p;
+  BusNP BUS_VRAM_D5p;
+  BusNP BUS_VRAM_D6p;
+  BusNP BUS_VRAM_D7p;
 
-  Bus2 BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
-  Bus2 BUS_VRAM_A01n;
-  Bus2 BUS_VRAM_A02n;
-  Bus2 BUS_VRAM_A03n;
-  Bus2 BUS_VRAM_A04n;
-  Bus2 BUS_VRAM_A05n;
-  Bus2 BUS_VRAM_A06n;
-  Bus2 BUS_VRAM_A07n;
-  Bus2 BUS_VRAM_A08n;
-  Bus2 BUS_VRAM_A09n;
-  Bus2 BUS_VRAM_A10n;
-  Bus2 BUS_VRAM_A11n;
-  Bus2 BUS_VRAM_A12n;
+  BusPU BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
+  BusPU BUS_VRAM_A01n;
+  BusPU BUS_VRAM_A02n;
+  BusPU BUS_VRAM_A03n;
+  BusPU BUS_VRAM_A04n;
+  BusPU BUS_VRAM_A05n;
+  BusPU BUS_VRAM_A06n;
+  BusPU BUS_VRAM_A07n;
+  BusPU BUS_VRAM_A08n;
+  BusPU BUS_VRAM_A09n;
+  BusPU BUS_VRAM_A10n;
+  BusPU BUS_VRAM_A11n;
+  BusPU BUS_VRAM_A12n;
 
   //----------------------------------------
   // VRAM pins
 
-  Pin PIN_VRAM_CSn ; // PIN_43
-  Pin PIN_VRAM_OEn ; // PIN_45
-  Pin PIN_VRAM_WRn ; // PIN_49
+  PinNP PIN_VRAM_CSn ; // PIN_43
+  PinNP PIN_VRAM_OEn ; // PIN_45
+  PinNP PIN_VRAM_WRn ; // PIN_49
 
-  Pin PIN_VRAM_A00p; // PIN_34
-  Pin PIN_VRAM_A01p; // PIN_35
-  Pin PIN_VRAM_A02p; // PIN_36
-  Pin PIN_VRAM_A03p; // PIN_37
-  Pin PIN_VRAM_A04p; // PIN_38
-  Pin PIN_VRAM_A05p; // PIN_39
-  Pin PIN_VRAM_A06p; // PIN_40
-  Pin PIN_VRAM_A07p; // PIN_41
-  Pin PIN_VRAM_A08p; // PIN_48
-  Pin PIN_VRAM_A09p; // PIN_47
-  Pin PIN_VRAM_A10p; // PIN_44
-  Pin PIN_VRAM_A11p; // PIN_46
-  Pin PIN_VRAM_A12p; // PIN_42
+  PinNP PIN_VRAM_A00p; // PIN_34
+  PinNP PIN_VRAM_A01p; // PIN_35
+  PinNP PIN_VRAM_A02p; // PIN_36
+  PinNP PIN_VRAM_A03p; // PIN_37
+  PinNP PIN_VRAM_A04p; // PIN_38
+  PinNP PIN_VRAM_A05p; // PIN_39
+  PinNP PIN_VRAM_A06p; // PIN_40
+  PinNP PIN_VRAM_A07p; // PIN_41
+  PinNP PIN_VRAM_A08p; // PIN_48
+  PinNP PIN_VRAM_A09p; // PIN_47
+  PinNP PIN_VRAM_A10p; // PIN_44
+  PinNP PIN_VRAM_A11p; // PIN_46
+  PinNP PIN_VRAM_A12p; // PIN_42
 
-  Pin PIN_VRAM_D00p; // PIN_33 // This pin isn't driven between tile fetches while rendering; where's the pullup?
-  Pin PIN_VRAM_D01p; // PIN_31
-  Pin PIN_VRAM_D02p; // PIN_30
-  Pin PIN_VRAM_D03p; // PIN_29
-  Pin PIN_VRAM_D04p; // PIN_28
-  Pin PIN_VRAM_D05p; // PIN_27
-  Pin PIN_VRAM_D06p; // PIN_26
-  Pin PIN_VRAM_D07p; // PIN_25
+  PinPU PIN_VRAM_D00p; // PIN_33 // This pin isn't driven between tile fetches while rendering; where's the pullup?
+  PinPU PIN_VRAM_D01p; // PIN_31
+  PinPU PIN_VRAM_D02p; // PIN_30
+  PinPU PIN_VRAM_D03p; // PIN_29
+  PinPU PIN_VRAM_D04p; // PIN_28
+  PinPU PIN_VRAM_D05p; // PIN_27
+  PinPU PIN_VRAM_D06p; // PIN_26
+  PinPU PIN_VRAM_D07p; // PIN_25
 
   //DelayGlitch latch_sprite_a_delay;
   //DelayGlitch latch_sprite_b_delay;

@@ -26,11 +26,7 @@
     <ClCompile Include="Sch_Channel2.cpp" />
     <ClCompile Include="Sch_Channel3.cpp" />
     <ClCompile Include="Sch_Channel4.cpp" />
-    <ClCompile Include="Sch_CpuBus.cpp" />
-    <ClCompile Include="Sch_ExtBus.cpp" />
-    <ClCompile Include="Sch_OamBus.cpp" />
     <ClCompile Include="Sch_Top.cpp" />
-    <ClCompile Include="Sch_VramBus.cpp" />
     <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>

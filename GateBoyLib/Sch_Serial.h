@@ -45,10 +45,6 @@ struct SerialRegisters {
     EDER_SER_DATA7.reset(REG_D0C1);
 
     ELYS_SER_OUT.reset(REG_D0C0);
-
-    PIN_SCK.reset(TRI_HZNP);
-    PIN_SIN.reset(TRI_HZNP);
-    PIN_SOUT.reset(TRI_D1NP);
   }
 
   void reset_boot() {
@@ -70,18 +66,9 @@ struct SerialRegisters {
     EDER_SER_DATA7.reset(REG_D0C0);
 
     ELYS_SER_OUT.reset(REG_D0C0);
-
-    PIN_SCK.reset(TRI_HZNP);
-    PIN_SIN.reset(TRI_HZNP);
-    PIN_SOUT.reset(TRI_HZNP);
   }
 
   void tock(SchematicTop& top, CpuBus& cpu_bus);
-
-  void set_pins(RegDelta d_sck, RegDelta d_sin) {
-    PIN_SCK = d_sck;
-    PIN_SIN = d_sin;
-  }
 
   int get_data() const {
     return pack_p(EDER_SER_DATA7.qp16(), EROD_SER_DATA6.qp16(), EJAB_SER_DATA5.qp16(), DOVU_SER_DATA4.qp16(),
@@ -112,9 +99,9 @@ struct SerialRegisters {
   //----------
   // Serial pins
 
-  /* PIN_68 */ Pin PIN_SCK;
-  /* PIN_69 */ Pin PIN_SIN;
-  /* PIN_70 */ Pin PIN_SOUT;
+  /* PIN_68 */ PinNP PIN_SCK;
+  /* PIN_69 */ PinNP PIN_SIN;
+  /* PIN_70 */ PinNP PIN_SOUT;
 };
 
 //-----------------------------------------------------------------------------

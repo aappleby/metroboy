@@ -28,7 +28,6 @@ struct SchematicTop {
   void reset_cart() {
     oam_bus.reset_cart();
     ext_bus.reset_cart();
-    cpu_bus.reset_cart();
     vram_bus.reset_cart();
 
     clk_reg.reset_cart();
@@ -47,23 +46,14 @@ struct SchematicTop {
 
     SOTO_DBG_VRAM.reset(REG_D0C1);
 
-    PIN_LCD_DATA1.reset(TRI_D0NP);
-    PIN_LCD_DATA0.reset(TRI_D0NP);
-    PIN_LCD_CNTRL.reset(TRI_D0NP);
-    PIN_LCD_CLOCK.reset(TRI_D0NP);
-    PIN_LCD_HSYNC.reset(TRI_D0NP);
-    PIN_LCD_LATCH.reset(TRI_D0NP);
-    PIN_LCD_FLIPS.reset(TRI_D0NP);
-    PIN_LCD_VSYNC.reset(TRI_D0NP);
-
     IE_D0.reset(REG_D0C1);
     IE_D1.reset(REG_D0C1);
     IE_D2.reset(REG_D0C1);
     IE_D3.reset(REG_D0C1);
     IE_D4.reset(REG_D0C1);
 
-    lcd_pix_lo.reset(TRI_D0NP);
-    lcd_pix_hi.reset(TRI_D0NP);
+    lcd_pix_lo.reset(0);
+    lcd_pix_hi.reset(0);
 
     for (int i = 0; i < 160; i++) {
       lcd_pipe_lo[i].reset(REG_D0C0);
@@ -74,7 +64,6 @@ struct SchematicTop {
   void reset_boot() {
     oam_bus.reset_boot();
     ext_bus.reset_boot();
-    cpu_bus.reset_boot();
     vram_bus.reset_boot();
 
     clk_reg.reset_boot();
@@ -93,23 +82,14 @@ struct SchematicTop {
 
     SOTO_DBG_VRAM.reset(REG_D0C0);
 
-    PIN_LCD_DATA1.reset(TRI_HZNP);
-    PIN_LCD_DATA0.reset(TRI_HZNP);
-    PIN_LCD_CNTRL.reset(TRI_HZNP);
-    PIN_LCD_CLOCK.reset(TRI_HZNP);
-    PIN_LCD_HSYNC.reset(TRI_HZNP);
-    PIN_LCD_LATCH.reset(TRI_HZNP);
-    PIN_LCD_FLIPS.reset(TRI_HZNP);
-    PIN_LCD_VSYNC.reset(TRI_HZNP);
-
     IE_D0.reset(REG_D0C0);
     IE_D1.reset(REG_D0C0);
     IE_D2.reset(REG_D0C0);
     IE_D3.reset(REG_D0C0);
     IE_D4.reset(REG_D0C0);
 
-    lcd_pix_lo.reset(TRI_D0NP);
-    lcd_pix_hi.reset(TRI_D0NP);
+    lcd_pix_lo.reset(0);
+    lcd_pix_hi.reset(0);
 
     for (int i = 0; i < 160; i++) {
       lcd_pipe_lo[i].reset(REG_D0C0);
@@ -117,7 +97,7 @@ struct SchematicTop {
     }
   }
 
-  void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY,
+  void tock_slow(wire RST, wire CLK, wire CLKGOOD, wire T1n, wire T2n, wire CPUREADY, uint8_t sys_buttons,
                  uint8_t* rom_buf, uint8_t* vid_ram, uint8_t* cart_ram, uint8_t* ext_ram, uint8_t* oam_ram, uint8_t* zero_ram);
 
   //-----------------------------------------------------------------------------
@@ -147,14 +127,14 @@ struct SchematicTop {
   //DelayGlitch lcd_data1_delay;
   //DelayGlitch lcd_data0_delay;
 
-  /*PIN_50*/ Pin PIN_LCD_DATA1;
-  /*PIN_51*/ Pin PIN_LCD_DATA0;
-  /*PIN_52*/ Pin PIN_LCD_CNTRL;
-  /*PIN_53*/ Pin PIN_LCD_CLOCK;
-  /*PIN_54*/ Pin PIN_LCD_HSYNC;
-  /*PIN_55*/ Pin PIN_LCD_LATCH;
-  /*PIN_56*/ Pin PIN_LCD_FLIPS;
-  /*PIN_57*/ Pin PIN_LCD_VSYNC;
+  /*PIN_50*/ PinNP PIN_LCD_DATA1;
+  /*PIN_51*/ PinNP PIN_LCD_DATA0;
+  /*PIN_52*/ PinNP PIN_LCD_CNTRL;
+  /*PIN_53*/ PinNP PIN_LCD_CLOCK;
+  /*PIN_54*/ PinNP PIN_LCD_HSYNC;
+  /*PIN_55*/ PinNP PIN_LCD_LATCH;
+  /*PIN_56*/ PinNP PIN_LCD_FLIPS;
+  /*PIN_57*/ PinNP PIN_LCD_VSYNC;
 
   DFF IE_D0;
   DFF IE_D1;

@@ -360,6 +360,7 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::RSTn;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }

@@ -1,7 +1,5 @@
 #pragma once
 
-namespace Schematics {
-
 //-----------------------------------------------------------------------------
 
 // Noise
@@ -77,7 +75,7 @@ struct Channel4 {
 
   /*p20.GENA*/ bool CH4_ACTIVE;
 
-  
+
   /*p20.GONE*/ bool RESTART1;
   /*p20.GORA*/ bool RESTART2;
 
@@ -158,7 +156,7 @@ struct Channel4 {
   /*p20.ALOP*/ bool CLK_128n;
 
   /*p20.ABEL*/ bool ENV_TIMER_CLKa;
-  
+
   /*p20.BUXO*/ bool ENV_TIMER_CLKb;
 
 
@@ -177,12 +175,12 @@ struct Channel4 {
   /*p20.ETEF*/ bool VOL_CLK1;
   /*p20.EDYF*/ bool VOL_CLK2;
   /*p20.ELAF*/ bool VOL_CLK3;
-  
+
   /*p20.FEKO*/ bool VOL0;
   /*p20.FATY*/ bool VOL1;
   /*p20.FERU*/ bool VOL2;
   /*p20.FYRO*/ bool VOL3;
- 
+
 
   //----------
   // Output
@@ -204,5 +202,3 @@ struct Channel4 {
 };
 
 //-----------------------------------------------------------------------------
-
-};

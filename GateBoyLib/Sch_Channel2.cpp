@@ -1,7 +1,5 @@
 #include "GateBoyLib/Sch_Channel2.h"
 
-namespace Schematics {
-
 #if 0
 
 //-----------------------------------------------------------------------------
@@ -56,7 +54,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
   // FF17 NR22
 
   {
-    /*p10.DUVU*/ wire ADDR_0111an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
+    /*p10.DUVU*/ wire ADDR_0111an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1);
     /*p10.DUTU*/ wire ADDR_FF17  = nor4(b.apu.ADDR_FF1Xn, ADDR_0111an);
 
     /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
@@ -108,7 +106,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
     /*p10.DAFY*/ wire ADDR_1000an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
     /*p10.DARA*/ wire ADDR_FF18  = nor4(b.apu.ADDR_FF1Xn, ADDR_1000an);
 
-    /*p10.DEJY*/ wire ADDR_1001an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DEJY*/ wire ADDR_1001an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.DOZA*/ wire ADDR_FF19  = nor4(b.apu.ADDR_FF1Xn, ADDR_1001an);
 
     /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
@@ -153,7 +151,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
   // FF19 NR24
 
   {
-    /*p10.DEJY*/ wire ADDR_1001an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DEJY*/ wire ADDR_1001an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.DOZA*/ wire ADDR_FF19  = nor4(b.apu.ADDR_FF1Xn, ADDR_1001an);
 
     next.ch2.JENU = and2(ADDR_FF19, b.apu.APU_WR);
@@ -185,7 +183,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
     next.ch2.EVYF = nand2(CPU_WR_WEIRD, ADDR_FF19);
     next.ch2.HUMA = nor4(ADDR_FF19, b.ch2.GADO);
   }
-  
+
 
 
   //----------
@@ -274,8 +272,8 @@ void P14_Ch2Regs_tick(const Gameboy& a,
   /*p15.DEFU*/ next.ch2.CH2_ACTIVEn = not1(b.ch2.DANE);
   /*p15.BYMO*/ next.ch2.BYMO = not1(b.ch2.FF16_WR);
   /*p15.AGET*/ next.ch2.AGET = not1(b.ch2.FF16_WR);
-  
-  
+
+
   /*p15.ERYC*/ next.ch2.ERYC_00 = count_pos(a.ch2.DYRO,     b.ch2.DYRO,     b.ch2.BYMO, b.ch2.ERYC_00, b.bus.TS_D0());
   /*p15.CERA*/ next.ch2.CERA_01 = count_pos(a.ch2.ERYC_00,  b.ch2.ERYC_00,  b.ch2.BYMO, b.ch2.CERA_01, b.bus.TS_D1());
   /*p15.CONU*/ next.ch2.CONU_02 = count_pos(a.ch2.CERA_01,  b.ch2.CERA_01,  b.ch2.BYMO, b.ch2.CONU_02, b.bus.TS_D2());
@@ -342,5 +340,3 @@ void P14_Ch2Regs_tick(const Gameboy& a,
 #endif
 
 //-----------------------------------------------------------------------------
-
-};

@@ -4,11 +4,8 @@
 struct Probes {
   Probes();
   void probe(int index, const char* signal_name, char s);
-  void begin_pass(int phase_total);
+  void begin_pass(int pass_count);
   void end_pass(bool stable);
-
-  void begin_phase();
-  void end_phase();
 
   void dump(Dumper& d, bool draw_passes = true);
 

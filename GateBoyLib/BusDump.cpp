@@ -1,7 +1,4 @@
 #include "GateBoyLib/BusDump.h"
-#include "GateBoyLib/Sch_Top.h"
-
-using namespace Schematics;
 
 void dump_bus_dump(Dumper& d, BusDump* dump, int start, int count) {
   for (int i = start; i < start + count; i++) {

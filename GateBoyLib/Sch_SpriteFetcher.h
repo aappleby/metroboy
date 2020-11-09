@@ -1,11 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-struct VramBus;
-
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
@@ -53,5 +48,3 @@ struct SpriteFetcher {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

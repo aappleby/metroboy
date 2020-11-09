@@ -1,42 +1,11 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
+struct GateBoy;
 
 //-----------------------------------------------------------------------------
 
 struct ExtBus {
-  void dump(Dumper& d) const {
-    d("\002===== Ext Bus =====\001\n");
-    d("PIN CLK    : %c\n", PIN_EXT_CLK.c());
-    d("PIN RDn    : %c\n", PIN_EXT_RDn.c());
-    d("PIN WRn    : %c\n", PIN_EXT_WRn.c());
-    d("PIN CSn    : %c\n", PIN_EXT_CSn.c());
-    d("\n");
-
-    d("PIN ADDR   : %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      PIN_EXT_A15p.c(), PIN_EXT_A14p.c(), PIN_EXT_A13p.c(), PIN_EXT_A12p.c(),
-      PIN_EXT_A11p.c(), PIN_EXT_A10p.c(), PIN_EXT_A09p.c(), PIN_EXT_A08p.c(),
-      PIN_EXT_A07p.c(), PIN_EXT_A06p.c(), PIN_EXT_A05p.c(), PIN_EXT_A04p.c(),
-      PIN_EXT_A03p.c(), PIN_EXT_A02p.c(), PIN_EXT_A01p.c(), PIN_EXT_A00p.c());
-    d("PIN DATA   : %c%c%c%c%c%c%c%c\n",
-      PIN_EXT_D07p.c(), PIN_EXT_D06p.c(), PIN_EXT_D05p.c(), PIN_EXT_D04p.c(),
-      PIN_EXT_D03p.c(), PIN_EXT_D02p.c(), PIN_EXT_D01p.c(), PIN_EXT_D00p.c());
-    d("\n");
-
-    d("ADDR LATCH : _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      NYRE_EXT_ADDR_LATCH_14p.c(), LONU_EXT_ADDR_LATCH_13p.c(), LOBU_EXT_ADDR_LATCH_12p.c(), LUMY_EXT_ADDR_LATCH_11p.c(),
-      PATE_EXT_ADDR_LATCH_10p.c(), LYSA_EXT_ADDR_LATCH_09p.c(), LUNO_EXT_ADDR_LATCH_08p.c(), ARYM_EXT_ADDR_LATCH_07p.c(),
-      AROS_EXT_ADDR_LATCH_06p.c(), ATEV_EXT_ADDR_LATCH_05p.c(), AVYS_EXT_ADDR_LATCH_04p.c(), ARET_EXT_ADDR_LATCH_03p.c(),
-      ALYR_EXT_ADDR_LATCH_02p.c(), APUR_EXT_ADDR_LATCH_01p.c(), ALOR_EXT_ADDR_LATCH_00p.c());
-    d("DATA LATCH : %c%c%c%c%c%c%c%c\n",
-      SAZY_EXT_DATA_LATCH_D7n.c(), RUPA_EXT_DATA_LATCH_D6n.c(), SAGO_EXT_DATA_LATCH_D5n.c(), SODY_EXT_DATA_LATCH_D4n.c(),
-      SELO_EXT_DATA_LATCH_D3n.c(), RAXY_EXT_DATA_LATCH_D2n.c(), RONY_EXT_DATA_LATCH_D1n.c(), SOMA_EXT_DATA_LATCH_D0n.c());
-    d("\n");
-  }
-
   void reset_cart() {
     ALOR_EXT_ADDR_LATCH_00p.reset(1);
     APUR_EXT_ADDR_LATCH_01p.reset(0);
@@ -154,5 +123,3 @@ struct ExtBus {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

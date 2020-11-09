@@ -1,7 +1,5 @@
 #include "GateBoyLib/Sch_Channel3.h"
 
-namespace Schematics {
-
 //-----------------------------------------------------------------------------
 
 #if 0
@@ -41,7 +39,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
     /*p18.GENU*/ next.ch3.GENU_CLK = not1(GEPY);
     /*p18.FALU*/ next.ch3.FALU_CLK = not1(b.ch3.CH3_LEN3);
 
-    /*p10.EMAX*/ wire ADDR_1011an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
+    /*p10.EMAX*/ wire ADDR_1011an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1);
     /*p10.DUSA*/ wire ADDR_FF1B  = nor4(b.apu.ADDR_FF1Xn, ADDR_1011an);
 
     /*p16.DERY*/ wire FF1B_WR = nand2(b.apu.APU_WR, ADDR_FF1B);
@@ -108,9 +106,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
 
   //----------
   // FF1D - NR33 - Channel 3 Frequency's lower data (W)
-  
+
   {
-    /*p10.EMOS*/ wire ADDR_1101an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.EMOS*/ wire ADDR_1101an = nand2(b.apu.ADDR_1xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.FENY*/ wire ADDR_FF1D  = nor4(b.apu.ADDR_FF1Xn, ADDR_1101an);
     /*p16.HOXA*/ wire ADDR_FF1Dn = not1(ADDR_FF1D);
 
@@ -233,7 +231,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
     /*p18.KYKO*/ wire FREQ_RSTn = not1(FREQ_RST);
     /*p18.JERA*/ wire FREQ_RSTo = not1(FREQ_RST);
     /*p18.KASO*/ wire FREQ_RSTp = not1(FREQ_RST);
-    
+
     /*p18.JUTY*/ next.ch3.FREQ_CLKa = not1(FREQ_CLKn);
     /*p18.KYRU*/ next.ch3.FREQ_CLKb = not1(!b.ch3.FREQ_03);
     /*p18.KESE*/ next.ch3.FREQ_CLKc = not1(!b.ch3.FREQ_07);
@@ -254,7 +252,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
   {
     /*p18.HUPA*/ wire HUPA = and2(b.ch3.WAVE_CLKo, b.apu.CERY);
     /*p18.GAFU*/ wire GAFU = nor4(b.apu.APU_RESET1, b.ch3.GARA, HUPA);
-    
+
     /*p18.JYFO*/ next.ch3.JYFO_CLK  = not1(b.ch3.FREQ_10);
     /*p18.HUNO*/ next.ch3.WAVE_CLKo = tock_pos(a.ch3.JYFO_CLK, b.ch3.JYFO_CLK, GAFU, b.ch3.WAVE_CLKo, !b.ch3.WAVE_CLKo);
 
@@ -354,7 +352,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
     /*p18.COKA*/ wire CH3_ACTIVE = not1(!b.ch3.CH3_ACTIVEo);
 
     /*p18.BENO*/ wire WAVE_RAM_CTRL3n = mux2(SAMPLE_CLK, CPU_WAVE_RDn, CH3_ACTIVE);
-    /*p18.ATOK*/ next.ch3.WAVE_RAM_CTRL3 = not1(WAVE_RAM_CTRL3n);  
+    /*p18.ATOK*/ next.ch3.WAVE_RAM_CTRL3 = not1(WAVE_RAM_CTRL3n);
   }
 
   {
@@ -462,5 +460,3 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
 #endif
 
 //-----------------------------------------------------------------------------
-
-};

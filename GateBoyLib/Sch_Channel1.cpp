@@ -1,7 +1,5 @@
 #include "GateBoyLib/Sch_Channel1.h"
 
-namespace Schematics {
-
 #if 0
 
 //-----------------------------------------------------------------------------
@@ -53,7 +51,7 @@ void Channel1_tick(const Pins& pins,
   // FF11 NR11
   {
     /*p11.CEPO*/ wire RESET1n = not1(b.apu.APU_RESET1);
-    /*p10.DUNO*/ wire ADDR_0001an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DUNO*/ wire ADDR_0001an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.CAXE*/ wire ADDR_FF11  = nor4(b.apu.ADDR_FF1Xn, ADDR_0001an);
 
     /*p10.BAFU*/ wire CPU_WRn = not1(b.ctl.TAPU_CPUWR);
@@ -77,10 +75,10 @@ void Channel1_tick(const Pins& pins,
   // FF12 NR12
 
   {
-    
+
     /*p10.DAMY*/ wire ADDR_0010an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
     /*p10.EDAF*/ wire ADDR_FF12  = nor4(b.apu.ADDR_FF1Xn, ADDR_0010an);
-  
+
     /*p10.BAFU*/ wire CPU_WRn = not1(b.ctl.TAPU_CPUWR);
     /*p10.BOGY*/ wire APU_WR  = not1(CPU_WRn);
 
@@ -120,7 +118,7 @@ void Channel1_tick(const Pins& pins,
   // Frequency can be read from FF13/FF14 in debug mode
 
   {
-    /*p10.ETUF*/ wire ADDR_0011an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
+    /*p10.ETUF*/ wire ADDR_0011an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1);
     /*p10.DECO*/ wire ADDR_FF13  = nor4(b.apu.ADDR_FF1Xn, ADDR_0011an);
 
     /*p10.ESOT*/ wire ADDR_0100an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
@@ -164,7 +162,7 @@ void Channel1_tick(const Pins& pins,
     /*p13.DADO*/ wire NR14_RSTb = nor4(b.apu.APU_RESET1, b.ch1.START);
 
 #if 0
-    NR14_CLKa   = nand2(b.cpu.PIN_CPU_HOLD_MEM, TAPU_CPU_WRp_xxxxEFGx, ADDR_FF14); 
+    NR14_CLKa   = nand2(b.cpu.PIN_CPU_HOLD_MEM, TAPU_CPU_WRp_xxxxEFGx, ADDR_FF14);
     next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.TS_D6());
 
 #endif
@@ -173,7 +171,7 @@ void Channel1_tick(const Pins& pins,
     /*p10.BOGY*/ wire APU_WR  = not1(CPU_WRn);
     /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.PIN_CPU_HOLD_MEM, APU_WR);
 
-    /*p11.BAGE*/ next.ch1.NR14_CLKa   = nand2(CPU_WR_WEIRD, ADDR_FF14); 
+    /*p11.BAGE*/ next.ch1.NR14_CLKa   = nand2(CPU_WR_WEIRD, ADDR_FF14);
     /*p11.BOKO*/ next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.TS_D6());
 
     /*p13.DOGE*/ next.ch1.FF14_WRnb = nand2(APU_WR, ADDR_FF14);
@@ -292,7 +290,7 @@ void Channel1_tick(const Pins& pins,
 
     /*p12.ATYS*/ next.ch1.FREQ_OVERFLOW = or2(/*p12.BYLE*/ nor4(NR10_SWEEP_DIRn, SUMMER10_C), NR10_SWEEP_DIRn);  // polarity
 
-    /*p10.ETUF*/ wire ADDR_0011an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
+    /*p10.ETUF*/ wire ADDR_0011an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1);
     /*p10.DECO*/ wire ADDR_FF13  = nor4(b.apu.ADDR_FF1Xn, ADDR_0011an);
 
     /*p10.ESOT*/ wire ADDR_0100an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
@@ -347,7 +345,7 @@ void Channel1_tick(const Pins& pins,
   // Frequency shifter
 
   {
-  
+
     /*p13.BUGE*/ next.ch1.SHIFTER_EN = nand2(!b.ch1.NR10_SHIFT0, !b.ch1.NR10_SHIFT1, !b.ch1.NR10_SHIFT2);
 
     /*p13.EPUK*/ wire EPUK = nor4(b.ch1.SHIFT_DONE_SYNC, b.apu.APU_RESET1);
@@ -447,7 +445,7 @@ void Channel1_tick(const Pins& pins,
   // Length timer
 
   {
-    /*p10.DUNO*/ wire ADDR_0001an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DUNO*/ wire ADDR_0001an = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.CAXE*/ wire ADDR_FF11  = nor4(b.apu.ADDR_FF1Xn, ADDR_0001an);
 
     /*p10.BAFU*/ wire CPU_WRn = not1(b.ctl.TAPU_CPUWR);
@@ -597,7 +595,7 @@ void Channel1_tick(const Pins& pins,
     /*p13.KYNO*/ next.ch1.ENV_STOP = tock_pos(a.ch1.ENV_CLK, b.ch1.ENV_CLK, /*p13.KORU*/ nor4(b.ch1.RESTART0, b.apu.APU_RESET1), b.ch1.ENV_STOP, ENV_MAX);
 
     /*p13.KEKO*/ wire KEKO = or2(b.apu.APU_RESET1, b.ch1.RESTART0);
-    
+
     // weird latch?
     /*p13.KEZU*/ wire KEZU = or2(b.ch1.ENV_STOP, KEKO);
 
@@ -632,7 +630,3 @@ void Channel1_tick(const Pins& pins,
 }
 
 #endif
-
-//-----------------------------------------------------------------------------
-
-};

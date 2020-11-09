@@ -1,14 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-struct CpuBus;
-
 //-----------------------------------------------------------------------------
 
-struct Timer {
+struct TimerRegisters {
   void reset_cart() {
     UKUP_DIV_00.reset(REG_D1C1);
     UFOR_DIV_01.reset(REG_D1C0);
@@ -242,5 +237,3 @@ struct Timer {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

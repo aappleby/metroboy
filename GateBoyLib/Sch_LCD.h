@@ -1,11 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-struct CpuBus;
-
 //-----------------------------------------------------------------------------
 
 struct LcdRegisters {
@@ -93,8 +88,6 @@ struct LcdRegisters {
     RAHA_LYC7n.reset(REG_D0C0);
   }
 
-  void tock(SchematicTop& top, CpuBus& cpu_bus);
-
   uint8_t get_lx() const {
     return (uint8_t)pack_p(SAXO_X0p.qp17(), TYPO_X1p.qp17(), VYZO_X2p.qp17(), TELU_X3p.qp17(), SUDE_X4p.qp17(), TAHA_X5p.qp17(), TYRY_X6p.qp17(), 0);
   }
@@ -153,5 +146,3 @@ struct LcdRegisters {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

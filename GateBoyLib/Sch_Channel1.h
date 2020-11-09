@@ -1,7 +1,5 @@
 #pragma once
 
-namespace Schematics {
-
 //-----------------------------------------------------------------------------
 
 struct Channel1 {
@@ -150,7 +148,7 @@ struct Channel1 {
   /*p13.BYTE*/ bool SHIFT_DONE_SYNC;
   /*p13.ATAT*/ bool SHIFT_DONE_SYNC_RST;
   /*p13.ADAD*/ bool SHIFT_DONE_SYNCn;
-  
+
   /*p13.EGOR*/ bool SHIFTER_CLKn;
 
   /*p13.BACY*/ bool NR11_LEN0;
@@ -160,7 +158,7 @@ struct Channel1 {
   /*p13.CUSO*/ bool NR11_LEN3n;
   /*p13.CURA*/ bool NR11_LEN4;
   /*p13.ERAM*/ bool NR11_LEN5;
-    
+
   /*p13.CERO*/ bool CH1_LEN_DONE;
 
   /*p13.CUPO*/ bool SWEEP_DELAY0;
@@ -220,7 +218,7 @@ struct Channel1 {
 
   /*p13.JONE*/ bool CLK_128n;
   /*p13.KALY*/ bool CLK_64a;
-   
+
   /*p13.CANU*/ bool CH1_LEN_CLK;
   /*p13.CAPY*/ bool CH1_LEN_CLKn;
   /*p13.CYTO*/ bool CH1_ACTIVE;
@@ -239,5 +237,3 @@ struct Channel1 {
 };
 
 //-----------------------------------------------------------------------------
-
-};

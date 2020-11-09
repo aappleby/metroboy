@@ -1,14 +1,12 @@
 #pragma once
 #include "CoreLib/Types.h"
 
-namespace Schematics {
-
 //-----------------------------------------------------------------------------
 
 struct ApuControl {
 
   /*p09.JYRO*/ bool APU_RST; // This is the root of the APU reset tree
-    
+
   /*p09.KEBA*/ bool APU_RESET1;
   /*p10.TACE*/ bool AMP_ENn;
   /*p10.BOGY*/ bool APU_WR;
@@ -98,7 +96,7 @@ struct ApuControl {
 
   //----------
   // FF26 NR52
-  
+
   /*p09.HAWU*/ bool NR52_WRn1;
   /*p09.BOPY*/ bool NR52_WRn2;
   /*p09.FOKU*/ bool NR52_WRn3;
@@ -110,5 +108,3 @@ struct ApuControl {
 };
 
 //-----------------------------------------------------------------------------
-
-};

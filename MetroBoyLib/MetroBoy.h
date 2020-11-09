@@ -40,7 +40,7 @@ struct MetroBoy {
   //----------
 
   Z80     z80;
-  Timer   timer;
+  TimerRegisters   timer;
   Cart    cart;
   VRAM    vram;
   OAM     oam;

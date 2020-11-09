@@ -1,36 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct GateBoy;
-struct GateBoyTests;
-
-namespace Schematics {
-
-struct SchematicTop;
-
 //-----------------------------------------------------------------------------
 
 struct ClockRegisters {
-  void dump(Dumper& d) const {
-    d("\002===== Clocks =====\001\n");
-    d("PHASE %c%c%c%c\n", AFUR_xxxxEFGH.c(), ALEF_AxxxxFGH.c(), APUK_ABxxxxGH.c(), ADYK_ABCxxxxH.c());
-    d("\n");
-    d("AFUR_xxxxEFGH %c\n", AFUR_xxxxEFGH.c());
-    d("ALEF_AxxxxFGH %c\n", ALEF_AxxxxFGH.c());
-    d("APUK_ABxxxxGH %c\n", APUK_ABxxxxGH.c());
-    d("ADYK_ABCxxxxH %c\n", ADYK_ABCxxxxH.c());
-    d("VENA_ABCDxxxx %c\n", VENA_xxCDEFxx.c());
-    d("WOSU_xBCxxFGx %c\n", WOSU_AxxDExxH.c());
-    d("WUVU_xxCDxxGH %c\n", WUVU_ABxxEFxx.c());
-    d("\n");
-
-    d("\002===== Reset =====\001\n");
-    d("TUBO_WAITINGp  %c\n", TUBO_WAITINGp.c());
-    d("ASOL_POR_DONEn %c\n", ASOL_POR_DONEn.c());
-    d("AFER_SYS_RSTp  %c\n", AFER_SYS_RSTp.c());
-    d("\n");
-  }
-
   void reset_cart() {
     TUBO_WAITINGp.reset(0);
     ASOL_POR_DONEn.reset(0);
@@ -57,11 +30,6 @@ struct ClockRegisters {
     WOSU_AxxDExxH.reset(REG_D0C0);
   }
 
-  void tock_clk_slow(SchematicTop& top, wire CLKGOOD);
-  void tock_rst_slow(SchematicTop& top, wire RST, wire CLKGOOD, wire CPUREADY);
-  void tock_dbg_slow(SchematicTop& top);
-  void tock_vid_slow(SchematicTop& top, wire CLK);
-
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
   /*p01.AFER*/ DFF13 AFER_SYS_RSTp; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
@@ -77,5 +45,3 @@ struct ClockRegisters {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

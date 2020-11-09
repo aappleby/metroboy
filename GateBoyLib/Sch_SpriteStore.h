@@ -1,10 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-
 //-----------------------------------------------------------------------------
 
 struct SpriteStore {
@@ -767,5 +763,3 @@ struct SpriteStore {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

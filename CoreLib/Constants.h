@@ -5,6 +5,14 @@ extern const uint8_t DMG_ROM_bin[];
 
 extern const char* op_strings[256];
 extern const char* op_strings2[256];
+
+constexpr uint16_t BOOT_DIV = 0xEAF3;
+
+constexpr uint64_t SENTINEL1 = 0xBEEFBEEFBEEFBEEF;
+constexpr uint64_t SENTINEL2 = 0xC0DEC0DEC0DEC0DE;
+constexpr uint64_t SENTINEL3 = 0xCAFECAFECAFECAFE;
+constexpr uint64_t SENTINEL4 = 0xDEADDEADDEADDEAD;
+
 //-----------------------------------------------------------------------------
 // Audio config
 

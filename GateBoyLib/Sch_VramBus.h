@@ -1,71 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-
 //-----------------------------------------------------------------------------
 
 struct VramBus {
-
-  void dump(Dumper& d, const SchematicTop& /*top*/) const {
-    d("\002===== VRAM Bus =====\001\n");
-
-    uint16_t bus_addr = (uint16_t)pack_p(!BUS_VRAM_A00n.qp(), !BUS_VRAM_A01n.qp(), !BUS_VRAM_A02n.qp(), !BUS_VRAM_A03n.qp(),
-                                         !BUS_VRAM_A04n.qp(), !BUS_VRAM_A05n.qp(), !BUS_VRAM_A06n.qp(), !BUS_VRAM_A07n.qp(),
-                                         !BUS_VRAM_A08n.qp(), !BUS_VRAM_A09n.qp(), !BUS_VRAM_A10n.qp(), !BUS_VRAM_A11n.qp(),
-                                         !BUS_VRAM_A12n.qp(), 0, 0, 0);
-
-    uint8_t bus_data = (uint8_t)pack_p(BUS_VRAM_D0p.qp(), BUS_VRAM_D1p.qp(), BUS_VRAM_D2p.qp(), BUS_VRAM_D3p.qp(),
-                                       BUS_VRAM_D4p.qp(), BUS_VRAM_D5p.qp(), BUS_VRAM_D6p.qp(), BUS_VRAM_D7p.qp());
-
-    d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-      bus_addr | 0x8000,
-      BUS_VRAM_A12n.c(), BUS_VRAM_A11n.c(), BUS_VRAM_A10n.c(), BUS_VRAM_A09n.c(),
-      BUS_VRAM_A08n.c(), BUS_VRAM_A07n.c(), BUS_VRAM_A06n.c(), BUS_VRAM_A05n.c(),
-      BUS_VRAM_A04n.c(), BUS_VRAM_A03n.c(), BUS_VRAM_A02n.c(), BUS_VRAM_A01n.c(),
-      BUS_VRAM_A00n.c());
-    d("VRAM BUS DATA : %02x %c%c%c%c%c%c%c%c\n",
-      bus_data,
-      BUS_VRAM_D7p.c(), BUS_VRAM_D6p.c(), BUS_VRAM_D5p.c(), BUS_VRAM_D4p.c(),
-      BUS_VRAM_D3p.c(), BUS_VRAM_D2p.c(), BUS_VRAM_D1p.c(), BUS_VRAM_D0p.c());
-    d("\n");
-
-    d("VRAM PIN MCSn : %c\n", PIN_VRAM_CSn.c());
-    d("VRAM PIN MOEn : %c\n", PIN_VRAM_OEn.c());
-    d("VRAM PIN MWRn : %c\n", PIN_VRAM_WRn.c());
-
-    uint16_t pin_addr = (uint16_t)pack_p(PIN_VRAM_A00p.qp(), PIN_VRAM_A01p.qp(), PIN_VRAM_A02p.qp(), PIN_VRAM_A03p.qp(),
-                                         PIN_VRAM_A04p.qp(), PIN_VRAM_A05p.qp(), PIN_VRAM_A06p.qp(), PIN_VRAM_A07p.qp(),
-                                         PIN_VRAM_A08p.qp(), PIN_VRAM_A09p.qp(), PIN_VRAM_A10p.qp(), PIN_VRAM_A11p.qp(),
-                                         PIN_VRAM_A12p.qp(), 0, 0, 0);
-    uint8_t pin_data = (uint8_t)pack_p(PIN_VRAM_D07p.c(), PIN_VRAM_D06p.c(), PIN_VRAM_D05p.c(), PIN_VRAM_D04p.c(),
-                                       PIN_VRAM_D03p.c(), PIN_VRAM_D02p.c(), PIN_VRAM_D01p.c(), PIN_VRAM_D00p.c());
-
-
-    d("VRAM PIN ADDR : 0x%04x\n", pin_addr | 0x8000);
-    d("VRAM PIN DATA : %02x %c%c%c%c%c%c%c%c\n",
-      pin_data,
-      PIN_VRAM_D07p.c(), PIN_VRAM_D06p.c(), PIN_VRAM_D05p.c(), PIN_VRAM_D04p.c(),
-      PIN_VRAM_D03p.c(), PIN_VRAM_D02p.c(), PIN_VRAM_D01p.c(), PIN_VRAM_D00p.c());
-    d("\n");
-
-    int TILE_DA = pack_p(LEGU_TILE_DA0n.qn07(), NUDU_TILE_DA1n.qn07(), MUKU_TILE_DA2n.qn07(), LUZO_TILE_DA3n.qn07(),
-                         MEGU_TILE_DA4n.qn07(), MYJY_TILE_DA5n.qn07(), NASA_TILE_DA6n.qn07(), NEFO_TILE_DA7n.qn07());
-    int TILE_DB = pack_p(RAWU_TILE_DB0p.q11p(), POZO_TILE_DB1p.q11p(), PYZO_TILE_DB2p.q11p(), POXA_TILE_DB3p.q11p(),
-                         PULO_TILE_DB4p.q11p(), POJU_TILE_DB5p.q11p(), POWY_TILE_DB6p.q11p(), PYJU_TILE_DB7p.q11p());
-    int SPRITE_DA = pack_p(PEFO_SPRITE_DB0n.qn07(), ROKA_SPRITE_DB1n.qn07(), MYTU_SPRITE_DB2n.qn07(), RAMU_SPRITE_DB3n.qn07(),
-                           SELE_SPRITE_DB4n.qn07(), SUTO_SPRITE_DB5n.qn07(), RAMA_SPRITE_DB6n.qn07(), RYDU_SPRITE_DB7n.qn07());
-    int SPRITE_DB = pack_p(REWO_SPRITE_DA0n.qn07(), PEBA_SPRITE_DA1n.qn07(), MOFO_SPRITE_DA2n.qn07(), PUDU_SPRITE_DA3n.qn07(),
-                           SAJA_SPRITE_DA4n.qn07(), SUNY_SPRITE_DA5n.qn07(), SEMO_SPRITE_DA6n.qn07(), SEGA_SPRITE_DA7n.qn07());
-
-    d("TILE_DA       : 0x%02x\n", TILE_DA);
-    d("TILE_DB       : 0x%02x\n", TILE_DB);
-    d("SPRITE_DA     : 0x%02x\n", SPRITE_DA);
-    d("SPRITE_DB     : 0x%02x\n", SPRITE_DB);
-    d("\n");
-  }
 
   void reset_cart() {
     LEGU_TILE_DA0n.reset(REG_D1C1);
@@ -240,5 +178,3 @@ struct VramBus {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

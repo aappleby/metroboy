@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+bool BitBase::sim_running = false;
 bool BitBase::bus_collision = false;
 bool BitBase::bus_floating = false;
 
@@ -22,7 +23,7 @@ uint64_t commit_and_hash(void* blob, int size) {
   for (int i = 0; i < size; i++) {
     uint8_t s = base[i];
     CHECK_P((s & BIT_DIRTY) || (s & BIT_LOCKED));
-    s = s & (BIT_DATA | BIT_CLOCK | BIT_PULLUP);
+    s = s & (BIT_DATA | BIT_CLOCK | BIT_PULLUP | BIT_DRIVEN);
     combine_hash(h, s);
     base[i] = s;
   }

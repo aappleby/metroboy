@@ -81,6 +81,37 @@ inline int pack_p(wire a, wire b, wire c, wire d,
   return (pack_p(a, b, c, d, e, f, g, h) << 0) | (pack_p(i, j, k, l, m, n, o, p) << 8);
 }
 
+inline uint8_t pack7(void* b) {
+  uint8_t* d = (uint8_t*)b;
+  uint8_t r = 0;
+  r |= (d[0] & 1) << 0;
+  r |= (d[1] & 1) << 1;
+  r |= (d[2] & 1) << 2;
+  r |= (d[3] & 1) << 3;
+  r |= (d[4] & 1) << 4;
+  r |= (d[5] & 1) << 5;
+  r |= (d[6] & 1) << 6;
+  return r;
+}
+
+inline uint8_t pack8(void* b) {
+  uint8_t* d = (uint8_t*)b;
+  uint8_t r = 0;
+  r |= (d[0] & 1) << 0;
+  r |= (d[1] & 1) << 1;
+  r |= (d[2] & 1) << 2;
+  r |= (d[3] & 1) << 3;
+  r |= (d[4] & 1) << 4;
+  r |= (d[5] & 1) << 5;
+  r |= (d[6] & 1) << 6;
+  r |= (d[7] & 1) << 7;
+  return r;
+}
+
+inline uint8_t pack8_n(void* d) {
+  return ~pack8(d);
+}
+
 //-----------------------------------------------------------------------------
 
 inline int pack_n(wire a, wire b, wire c, wire d) {

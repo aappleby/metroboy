@@ -1,7 +1,5 @@
 #pragma once
 
-namespace Schematics {
-
 //-----------------------------------------------------------------------------
 
 struct Channel3 {
@@ -51,7 +49,7 @@ struct Channel3 {
 
 
   /*p16.GUCY*/ bool FF1A_WRn;
-  
+
 
 
 
@@ -130,7 +128,7 @@ struct Channel3 {
   /*p18.EFUZ*/ bool WAVE_IDX2;
   /*p18.EXEL*/ bool WAVE_IDX3;
   /*p18.EFAL*/ bool WAVE_IDX4;
-  
+
   /*p18.FETY*/ bool WAVE_LOOP;
 
 
@@ -196,5 +194,3 @@ struct Channel3 {
 };
 
 //-----------------------------------------------------------------------------
-
-};

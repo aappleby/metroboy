@@ -88,9 +88,11 @@ enum RegBits : uint8_t {
   BIT_CLOCK  = 0b00000010,
   BIT_PULLUP = 0b00000100,
   BIT_DRIVEN = 0b00001000,
-  BIT_DIRTY  = 0b00010000,
-  BIT_LOCKED = 0b00100000,
-  BIT_ERROR  = 0b10000000,
+
+  BIT_RESET  = 0b00010000,
+  BIT_ERROR  = 0b00100000,
+  BIT_DIRTY  = 0b01000000,
+  BIT_LOCKED = 0b10000000,
 };
 
 constexpr uint8_t REG_D0C0 = 0b00;
@@ -138,6 +140,7 @@ struct BitBase {
   BitBase() : state(0) {}
   BitBase& operator=(const BitBase&) = delete;
 
+  static bool sim_running;
   static bool bus_collision;
   static bool bus_floating;
 
@@ -153,14 +156,23 @@ struct BitBase {
 
 struct RegBase : public BitBase {
 
-  wire as_wire()   const {
-    CHECK_N(state & BIT_LOCKED);
-    return wire(state & BIT_DATA);
+  void SETn(bool s) {
+    CHECK_N(state & BIT_RESET);
+    if (!s) state |= BIT_DATA;
+    state |= BIT_RESET;
   }
 
-  void setc(wire D) {
-    CHECK_N(state & BIT_LOCKED);
-    state = BIT_LOCKED | uint8_t(D);
+  void RSTn(bool r) {
+    CHECK_N(state & BIT_RESET);
+    if (!r) state &= ~BIT_DATA;
+    state |= BIT_RESET;
+  }
+
+  void SETnRSTn(wire s, wire r) {
+    CHECK_N(state & BIT_RESET);
+    if (!s) state |= BIT_DATA;
+    if (!r) state &= ~BIT_DATA;
+    state |= BIT_RESET;
   }
 
   void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, wire D) {
@@ -184,6 +196,17 @@ struct RegBase : public BitBase {
       state = BIT_LOCKED | (CLKp << 1) + qp;
     }
   }
+
+  void setc(wire D) {
+    CHECK_N(state & BIT_LOCKED);
+    state = BIT_LOCKED | uint8_t(D);
+  }
+
+  wire as_wire()   const {
+    CHECK_P(state & BIT_RESET);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -198,14 +221,23 @@ struct SigBase : public BitBase {
 
   void tri(wire OEp, wire D) {
     CHECK_N(state & BIT_LOCKED);
-    if (OEp) {
-      if (state & BIT_DRIVEN) {
+
+    if (!(state & BIT_DIRTY)) {
+      // First hit this pass, clear everything except the pullup.
+      state &= BIT_PULLUP;
+    }
+    else {
+      // Second+ hit this pass, check for bus collision.
+      if (OEp && (state & BIT_DRIVEN)) {
         RegBase::bus_collision |= ((state & BIT_DATA) != D);
       }
-      else {
-        state = BIT_DRIVEN | uint8_t(D);
-      }
     }
+
+    if (OEp) {
+      state |= BIT_DRIVEN;
+      state |= uint8_t(D);
+    }
+
     state |= BIT_DIRTY;
   }
 
@@ -216,7 +248,7 @@ struct SigBase : public BitBase {
   }
 
   wire as_wire() const {
-    CHECK_P(state & BIT_LOCKED);
+    CHECK_P(!sim_running || state & BIT_LOCKED);
     if (state & BIT_DRIVEN) {
       return wire(state & BIT_DATA);
     }
@@ -225,27 +257,9 @@ struct SigBase : public BitBase {
     }
     else {
       printf("Signal floating!\n");
+      bus_floating = true;
       return 0;
     }
-  }
-};
-
-//-----------------------------------------------------------------------------
-// Latches can be read before or after they are written, which helps model
-// various asynchronous timing weirdnesses.
-
-struct LatchBase : public BitBase {
-
-  void latch(wire SETp, wire RSTp) {
-    CHECK_N(state & BIT_DIRTY);
-
-    if (SETp) state |= BIT_DATA;
-    if (RSTp) state &= ~BIT_DATA;
-    state |= BIT_DIRTY;
-  }
-
-  wire as_wire() const {
-    return state & BIT_DATA;
   }
 };
 
@@ -257,6 +271,11 @@ struct Gate : private RegBase {
   using RegBase::setc;
 
   operator wire() const { return as_wire(); }
+
+  wire as_wire()   const {
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -371,6 +390,11 @@ struct DFF8n : private RegBase {
 
   void dff8nc(wire CLKn, bool Dn)            { RegBase::dffc(!CLKn, CLKn, 1, 1, !Dn); }
   void dff8nc(wire CLKn, wire CLKp, bool Dn) { RegBase::dffc( CLKp, CLKn, 1, 1, !Dn); }
+
+  wire as_wire()   const {
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -394,6 +418,11 @@ struct DFF8p : private RegBase {
   wire qp08() const { return  as_wire(); }
 
   void dff8pc(wire CLKp, bool Dn) { RegBase::dffc( CLKp, !CLKp, 1, 1, !Dn); }
+
+  wire as_wire()   const {
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -414,6 +443,7 @@ struct DFF8p : private RegBase {
 struct DFF9 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::SETn;
 
   wire qn08() const { return !as_wire(); }
   wire qp09() const { return  as_wire(); }
@@ -443,6 +473,7 @@ struct DFF9 : private RegBase {
 struct DFF11 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::RSTn;
 
   wire q11p() const { return as_wire(); }
 
@@ -468,6 +499,7 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::RSTn;
 
   wire qn12() const { return !as_wire(); }
   wire qp13() const { return  as_wire(); }
@@ -498,6 +530,7 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::RSTn;
 
   wire qn16() const { return !as_wire(); }
   wire qp17() const { return  as_wire(); }
@@ -535,6 +568,10 @@ struct DFF20 : private RegBase{
 
   wire qp01() const { return  as_wire(); }
   wire qn17() const { return !as_wire(); }
+
+  void LOADp(wire LOADp, bool newD) {
+    SETnRSTn(!(LOADp && newD), !(LOADp && !newD));
+  }
 
   void dff20c(wire CLKn, wire LOADp, bool newD) {
     wire SETp = LOADp &&  newD;
@@ -575,6 +612,7 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
+  using RegBase::SETnRSTn;
 
   wire qn15() const { return !as_wire(); }
   wire qp16() const { return  as_wire(); }
@@ -624,6 +662,7 @@ struct BusPU : private SigBase {
 
   using SigBase::c;
   using SigBase::cn;
+  using SigBase::tri;
   using SigBase::setc;
   using SigBase::commit;
 
@@ -729,6 +768,26 @@ struct PinPU : private SigBase {
 };
 
 //-----------------------------------------------------------------------------
+// Latches can be read before or after they are written, which helps model
+// various asynchronous timing weirdnesses.
+
+struct LatchBase : public BitBase {
+
+  void latch(wire SETp, wire RSTp) {
+    CHECK_N(state & BIT_DIRTY);
+
+    if (SETp) state |= BIT_DATA;
+    if (RSTp) state &= ~BIT_DATA;
+    state |= BIT_DIRTY;
+  }
+
+  wire as_wire() const {
+    CHECK_P(state & BIT_DIRTY);
+    return state & BIT_DATA;
+  }
+};
+
+//-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
 
 // NORLATCH_01 << SET
@@ -795,9 +854,21 @@ struct TpLatch : private LatchBase {
   wire qn10() const { return !as_wire(); }
 
   void tp_latchc(wire HOLDn, wire D) {
-    bool SETp = HOLDn && D;
-    bool RSTp = HOLDn && !D;
-    latch(SETp, RSTp);
+    if (HOLDn) {
+      bool SETp = HOLDn && D;
+      bool RSTp = HOLDn && !D;
+      latch(SETp, RSTp);
+    }
+    state |= BIT_DIRTY;
+  }
+
+  void tp_latchc(wire HOLDn, BusNP& bus) {
+    if (HOLDn) {
+      bool SETp = HOLDn && bus.qp();
+      bool RSTp = HOLDn && !bus.qp();
+      latch(SETp, RSTp);
+    }
+    state |= BIT_DIRTY;
   }
 };
 

@@ -1,7 +1,5 @@
 #include "GateBoyLib/Sch_Channel4.h"
 
-namespace Schematics {
-
 //-----------------------------------------------------------------------------
 
 #if 0
@@ -24,9 +22,9 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.GAPY*/ wire LEN_RSTn = nor4(FF20_WRa, RSTa, b.ch4.RESTART1);
 
     /*p19.DODA*/ wire LEN_CLKn = nor4(b.apu.CLK_256a, b.ch4.LEN_STOP, b.ch4.NR43_FREQ2); // this doesn't seem right
-    
+
     /*p19.CUWA*/ next.ch4.LEN_CLKa   = not1(LEN_CLKn);
-    /*p19.DOPU*/ next.ch4.NR41_LEN3b = not1(!b.ch4.NR41_LEN3);                     
+    /*p19.DOPU*/ next.ch4.NR41_LEN3b = not1(!b.ch4.NR41_LEN3);
     /*p19.DANO*/ next.ch4.NR41_LEN0  = count_pos(a.ch4.LEN_CLKa,   b.ch4.LEN_CLKa,   FF20_WRb, b.ch4.NR41_LEN0, b.bus.TS_D0());
     /*p19.FAVY*/ next.ch4.NR41_LEN1  = count_pos(a.ch4.NR41_LEN0,  b.ch4.NR41_LEN0,  FF20_WRb, b.ch4.NR41_LEN1, b.bus.TS_D1());
     /*p19.DENA*/ next.ch4.NR41_LEN2  = count_pos(a.ch4.NR41_LEN1,  b.ch4.NR41_LEN1,  FF20_WRb, b.ch4.NR41_LEN2, b.bus.TS_D2());
@@ -42,7 +40,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   // FF21
 
   {
-    /*p10.DEWA*/ wire ADDR_0001bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DEWA*/ wire ADDR_0001bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.COVO*/ wire FF21a    = nor4(b.apu.ADDR_FF2Xn, ADDR_0001bn);
     /*p19.BOFY*/ wire FF21n    = not1(FF21a);
     /*p19.GONY*/ wire FF21o    = not1(FF21a);
@@ -90,7 +88,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     /*p19.HUMO*/ wire FF22_WRa = and2(FF22a, b.apu.APU_WR);
     /*p19.GETU*/ wire FF22_WRn = nand2(FF22a, b.apu.APU_WR);
-    
+
     /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
     /*p19.KEKA*/ wire FF22_RDa = or2(CPU_RDn, FF22n);
 
@@ -135,8 +133,8 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
     /*p19.BYLO*/ wire CPU_RDb = not1(CPU_RDn);
 
-    /*p10.DUFE*/ wire ADDR_0011bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
-    
+    /*p10.DUFE*/ wire ADDR_0011bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1);
+
     /*p10.CUGE*/ wire FF23a    = nor4(b.apu.ADDR_FF2Xn, ADDR_0011bn);
     /*p19.BARE*/ wire FF23_RDa = nand2(FF23a, CPU_RDb); // polarity?
 
@@ -217,7 +215,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
     /*p20.COSA*/ wire CPU_RDc = not1(CPU_RDn);
     /*p20.CEPY*/ wire NR44_STOPn = not1(b.ch4.NR44_STOP);
-    /*p10.DUFE*/ wire ADDR_0011bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
+    /*p10.DUFE*/ wire ADDR_0011bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1);
     /*p10.CUGE*/ wire FF23a    = nor4(b.apu.ADDR_FF2Xn, ADDR_0011bn);
 
     /*p20.DYRY*/ next.ch4.DBG_CH4 = and2(NR44_STOPn, b.apu.NR52_DBG_APU);
@@ -367,7 +365,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     // Schematic wrong, non-inverting FELO goes to EROX
     /*p20.ENUR*/ wire ENV_CLK1 = or2(RSTa, b.ch4.RESTART1);
-    /*p20.EROX*/ wire ENV_CLK2 = or2(!b.ch4.ENV_STOP, ENV_CLK1); 
+    /*p20.EROX*/ wire ENV_CLK2 = or2(!b.ch4.ENV_STOP, ENV_CLK1);
 
     // I should pull this out and test it standalone
 
@@ -406,5 +404,3 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 #endif
 
 //-----------------------------------------------------------------------------
-
-};

@@ -31,24 +31,19 @@ void Probes::probe(int index, const char* signal_name, char s) {
   }
 }
 
-void Probes::begin_pass(int phase_total) {
+void Probes::begin_pass(int pass_count) {
   CHECK_P(thread_probes == nullptr);
   thread_probes = this;
-  (void)phase_total;
   pass_cursor = (pass_cursor + 1) % sample_count;
+  if (pass_count == 0) {
+    phase_cursor = (phase_cursor + 1) % sample_count;
+  }
 }
 
 void Probes::end_pass(bool _stable) {
   CHECK_P(thread_probes == this);
   stable[pass_cursor] = _stable;
   thread_probes = nullptr;
-}
-
-void Probes::begin_phase() {
-  phase_cursor = (phase_cursor + 1) % sample_count;
-}
-
-void Probes::end_phase() {
 }
 
 void Probes::dump(Dumper& d, bool draw_passes) {

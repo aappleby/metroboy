@@ -1,7 +1,5 @@
 #include "GateBoyLib/Sch_ApuControl.h"
 
-namespace Schematics {
-
 #if 0
 
 ///*p01.ATAG*/ wire ATAG_xBxDxFxH = not1(AZOF_AxCxExGx);
@@ -16,10 +14,10 @@ void P09_ApuControl_tick(const Gameboy& a,
                          const TimerSignals& tim_sig,
                          Gameboy& next) {
 
- 
+
   /*P10.TACE*/ next.apu.AMP_ENn = and2(b.ch1.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
 
-  
+
   {
     /*P09.HAPO*/ wire SYS_RESET2  = not1(b.rst_sig.SYS_RESETn);
     /*p09.JYRO*/ next.apu.APU_RST = or2(SYS_RESET2, !b.apu.NR52_ALL_SOUND_ON);
@@ -153,7 +151,7 @@ void P09_ApuControl_tick(const Gameboy& a,
   // FF25 NR51
 
   {
-    /*p10.DURA*/ wire ADDR_0101bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DURA*/ wire ADDR_0101bn = nand2(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1);
     /*p10.CORA*/ wire ADDR_FF25  = nor4(b.apu.ADDR_FF2Xn, ADDR_0101bn);
     /*p09.GEPA*/ wire ADDR_FF25n = not1(ADDR_FF25);
     /*p09.BUPO*/ next.apu.NR51_WRn = nand2(ADDR_FF25, b.apu.APU_WR);
@@ -236,7 +234,3 @@ void P09_ApuControl_tick(const Gameboy& a,
   }
 }
 #endif
-
-//-----------------------------------------------------------------------------
-
-};

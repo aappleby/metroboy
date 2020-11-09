@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct Timer {
+struct TimerRegisters {
   void reset();
 
   void tick(int phase_total, const Req& req, Ack& ack);

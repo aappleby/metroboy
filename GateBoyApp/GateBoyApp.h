@@ -21,6 +21,11 @@ public:
   void app_init() override;
   void app_close() override;
 
+  void load_raw_dump();
+  void save_raw_dump();
+  void load_flat_dump(const char* filename);
+  void load_rom(const char* filename);
+
   void begin_frame() { frame_begin = timestamp(); }
   void app_update(double delta) override;
   void app_render_frame(Viewport view) override;

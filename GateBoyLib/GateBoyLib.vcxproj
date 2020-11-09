@@ -26,7 +26,6 @@
     <ClCompile Include="Sch_Channel2.cpp" />
     <ClCompile Include="Sch_Channel3.cpp" />
     <ClCompile Include="Sch_Channel4.cpp" />
-    <ClCompile Include="Sch_Top.cpp" />
     <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -36,7 +35,6 @@
     <ClInclude Include="Gates.h" />
     <ClInclude Include="Probe.h" />
     <ClInclude Include="Sch_ApuControl.h" />
-    <ClInclude Include="Sch_Bootrom.h" />
     <ClInclude Include="Sch_Channel1.h" />
     <ClInclude Include="Sch_Channel2.h" />
     <ClInclude Include="Sch_Channel3.h" />
@@ -56,7 +54,6 @@
     <ClInclude Include="Sch_SpriteStore.h" />
     <ClInclude Include="Sch_TileFetcher.h" />
     <ClInclude Include="Sch_Timer.h" />
-    <ClInclude Include="Sch_Top.h" />
     <ClInclude Include="Sch_VramBus.h" />
   </ItemGroup>
   <ItemGroup>

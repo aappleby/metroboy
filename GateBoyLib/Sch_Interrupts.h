@@ -1,11 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-struct CpuBus;
-
 //-----------------------------------------------------------------------------
 
 struct InterruptRegisters {
@@ -65,5 +60,3 @@ struct InterruptRegisters {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

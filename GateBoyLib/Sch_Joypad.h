@@ -1,14 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-namespace Schematics {
-
-struct SchematicTop;
-struct CpuBus;
-
 //-----------------------------------------------------------------------------
 
-struct Joypad {
+struct JoypadRegisters {
 
   void reset_cart() {
     AWOB_WAKE_CPU.reset(0);
@@ -57,7 +52,7 @@ struct Joypad {
   }
 
 //private:
-  friend struct SchematicTop;
+  friend struct GateBoy;
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
@@ -91,5 +86,3 @@ struct Joypad {
 };
 
 //-----------------------------------------------------------------------------
-
-}; // namespace Schematics

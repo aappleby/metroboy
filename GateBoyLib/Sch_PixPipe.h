@@ -410,30 +410,11 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D0C0);
   }
 
-  int get_wx() const {
-    return pack_p(MYPA_WX0n.qp09(), NOFE_WX1n.qp09(), NOKE_WX2n.qp09(), MEBY_WX3n.qp09(),
-                  MYPU_WX4n.qp09(), MYCE_WX5n.qp09(), MUVO_WX6n.qp09(), NUKU_WX7n.qp09());
-  }
-
-  int get_wy() const {
-    return pack_p(NESO_WY0n.qp09(), NYRO_WY1n.qp09(), NAGA_WY2n.qp09(), MELA_WY3n.qp09(),
-                  NULO_WY4n.qp09(), NENE_WY5n.qp09(), NUKA_WY6n.qp09(), NAFU_WY7n.qp09());
-  }
-
-  int get_win_x() const {
-    return pack_p(0, 0, 0, WYKA_WIN_X3.qp17(),
-                  WODY_WIN_X4.qp17(), WOBO_WIN_X5.qp17(), WYKO_WIN_X6.qp17(), XOLO_WIN_X7.qp17());
-  }
-
-  int get_win_y() const {
-    return pack_p(VYNO_WIN_Y0.qp17(), VUJO_WIN_Y1.qp17(), VYMU_WIN_Y2.qp17(), TUFU_WIN_Y3.qp17(),
-                  TAXA_WIN_Y4.qp17(), TOZO_WIN_Y5.qp17(), TATE_WIN_Y6.qp17(), TEKE_WIN_Y7.qp17());
-  }
-
-  int get_pix_count() const {
-    return pack_p(XEHO_X0p.qp17(), SAVY_X1p.qp17(), XODU_X2p.qp17(), XYDO_X3p.qp17(),
-                  TUHU_X4p.qp17(), TUKY_X5p.qp17(), TAKO_X6p.qp17(), SYBE_X7p.qp17());
-  }
+  int get_wx() const        { return pack_u8n(8, &MYPA_WX0n); }
+  int get_wy() const        { return pack_u8n(8, &NESO_WY0n); }
+  int get_win_x() const     { return pack_u8(5, &WYKA_WIN_X3); }
+  int get_win_y() const     { return pack_u8(8, &VYNO_WIN_Y0); }
+  int get_pix_count() const { return pack_u8(8, &XEHO_X0p); }
 
   wire lcd_on() {
     return XONA_LCDC_LCDENn.qn08();

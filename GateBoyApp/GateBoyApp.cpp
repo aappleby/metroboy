@@ -393,13 +393,8 @@ void dump_ext_bus(Dumper& d, const ExtBus& ext_bus) {
 void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
   d("\002===== VRAM Bus =====\001\n");
 
-  uint16_t bus_addr = (uint16_t)pack_p(!vram_bus.BUS_VRAM_A00n.qp(), !vram_bus.BUS_VRAM_A01n.qp(), !vram_bus.BUS_VRAM_A02n.qp(), !vram_bus.BUS_VRAM_A03n.qp(),
-                                       !vram_bus.BUS_VRAM_A04n.qp(), !vram_bus.BUS_VRAM_A05n.qp(), !vram_bus.BUS_VRAM_A06n.qp(), !vram_bus.BUS_VRAM_A07n.qp(),
-                                       !vram_bus.BUS_VRAM_A08n.qp(), !vram_bus.BUS_VRAM_A09n.qp(), !vram_bus.BUS_VRAM_A10n.qp(), !vram_bus.BUS_VRAM_A11n.qp(),
-                                       !vram_bus.BUS_VRAM_A12n.qp(), 0, 0, 0);
-
-  uint8_t bus_data = (uint8_t)pack_p(vram_bus.BUS_VRAM_D0p.qp(), vram_bus.BUS_VRAM_D1p.qp(), vram_bus.BUS_VRAM_D2p.qp(), vram_bus.BUS_VRAM_D3p.qp(),
-                                     vram_bus.BUS_VRAM_D4p.qp(), vram_bus.BUS_VRAM_D5p.qp(), vram_bus.BUS_VRAM_D6p.qp(), vram_bus.BUS_VRAM_D7p.qp());
+  uint16_t bus_addr = pack_u16n(13, &vram_bus.BUS_VRAM_A00n);
+  uint8_t  bus_data = pack_u8(8, &vram_bus.BUS_VRAM_D0p);
 
   d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     bus_addr | 0x8000,
@@ -417,12 +412,8 @@ void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
   d("VRAM PIN MOEn : %c\n", vram_bus.PIN_VRAM_OEn.c());
   d("VRAM PIN MWRn : %c\n", vram_bus.PIN_VRAM_WRn.c());
 
-  uint16_t pin_addr = (uint16_t)pack_p(vram_bus.PIN_VRAM_A00p.qp(), vram_bus.PIN_VRAM_A01p.qp(), vram_bus.PIN_VRAM_A02p.qp(), vram_bus.PIN_VRAM_A03p.qp(),
-                                       vram_bus.PIN_VRAM_A04p.qp(), vram_bus.PIN_VRAM_A05p.qp(), vram_bus.PIN_VRAM_A06p.qp(), vram_bus.PIN_VRAM_A07p.qp(),
-                                       vram_bus.PIN_VRAM_A08p.qp(), vram_bus.PIN_VRAM_A09p.qp(), vram_bus.PIN_VRAM_A10p.qp(), vram_bus.PIN_VRAM_A11p.qp(),
-                                       vram_bus.PIN_VRAM_A12p.qp(), 0, 0, 0);
-  uint8_t pin_data = (uint8_t)pack_p(vram_bus.PIN_VRAM_D07p.c(), vram_bus.PIN_VRAM_D06p.c(), vram_bus.PIN_VRAM_D05p.c(), vram_bus.PIN_VRAM_D04p.c(),
-                                     vram_bus.PIN_VRAM_D03p.c(), vram_bus.PIN_VRAM_D02p.c(), vram_bus.PIN_VRAM_D01p.c(), vram_bus.PIN_VRAM_D00p.c());
+  uint16_t pin_addr = pack_u16(13, &vram_bus.PIN_VRAM_A00p);
+  uint8_t pin_data = pack_u8(8, &vram_bus.PIN_VRAM_D00p);
 
 
   d("VRAM PIN ADDR : 0x%04x\n", pin_addr | 0x8000);
@@ -432,14 +423,10 @@ void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
     vram_bus.PIN_VRAM_D03p.c(), vram_bus.PIN_VRAM_D02p.c(), vram_bus.PIN_VRAM_D01p.c(), vram_bus.PIN_VRAM_D00p.c());
   d("\n");
 
-  int TILE_DA = pack_p(vram_bus.LEGU_TILE_DA0n.qn07(), vram_bus.NUDU_TILE_DA1n.qn07(), vram_bus.MUKU_TILE_DA2n.qn07(), vram_bus.LUZO_TILE_DA3n.qn07(),
-                       vram_bus.MEGU_TILE_DA4n.qn07(), vram_bus.MYJY_TILE_DA5n.qn07(), vram_bus.NASA_TILE_DA6n.qn07(), vram_bus.NEFO_TILE_DA7n.qn07());
-  int TILE_DB = pack_p(vram_bus.RAWU_TILE_DB0p.q11p(), vram_bus.POZO_TILE_DB1p.q11p(), vram_bus.PYZO_TILE_DB2p.q11p(), vram_bus.POXA_TILE_DB3p.q11p(),
-                       vram_bus.PULO_TILE_DB4p.q11p(), vram_bus.POJU_TILE_DB5p.q11p(), vram_bus.POWY_TILE_DB6p.q11p(), vram_bus.PYJU_TILE_DB7p.q11p());
-  int SPRITE_DA = pack_p(vram_bus.PEFO_SPRITE_DB0n.qn07(), vram_bus.ROKA_SPRITE_DB1n.qn07(), vram_bus.MYTU_SPRITE_DB2n.qn07(), vram_bus.RAMU_SPRITE_DB3n.qn07(),
-                         vram_bus.SELE_SPRITE_DB4n.qn07(), vram_bus.SUTO_SPRITE_DB5n.qn07(), vram_bus.RAMA_SPRITE_DB6n.qn07(), vram_bus.RYDU_SPRITE_DB7n.qn07());
-  int SPRITE_DB = pack_p(vram_bus.REWO_SPRITE_DA0n.qn07(), vram_bus.PEBA_SPRITE_DA1n.qn07(), vram_bus.MOFO_SPRITE_DA2n.qn07(), vram_bus.PUDU_SPRITE_DA3n.qn07(),
-                         vram_bus.SAJA_SPRITE_DA4n.qn07(), vram_bus.SUNY_SPRITE_DA5n.qn07(), vram_bus.SEMO_SPRITE_DA6n.qn07(), vram_bus.SEGA_SPRITE_DA7n.qn07());
+  int TILE_DA   = pack_u8(8, &vram_bus.LEGU_TILE_DA0n);
+  int TILE_DB   = pack_u8(8, &vram_bus.RAWU_TILE_DB0p);
+  int SPRITE_DA = pack_u8(8, &vram_bus.PEFO_SPRITE_DB0n);
+  int SPRITE_DB = pack_u8(8, &vram_bus.REWO_SPRITE_DA0n);
 
   d("TILE_DA       : 0x%02x\n", TILE_DA);
   d("TILE_DB       : 0x%02x\n", TILE_DB);
@@ -456,8 +443,7 @@ void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
   d("PIN_OAM_WR_A   %c\n", oam_bus.PIN_OAM_WR_A.c());
   d("PIN_OAM_WR_B   %c\n", oam_bus.PIN_OAM_WR_B.c());
 
-  int oam_tri_addr = pack_p(oam_bus.BUS_OAM_A0n.qn(), oam_bus.BUS_OAM_A1n.qn(), oam_bus.BUS_OAM_A2n.qn(), oam_bus.BUS_OAM_A3n.qn(),
-                            oam_bus.BUS_OAM_A4n.qn(), oam_bus.BUS_OAM_A5n.qn(), oam_bus.BUS_OAM_A6n.qn(), oam_bus.BUS_OAM_A7n.qn());
+  int oam_tri_addr = pack_u8(8, &oam_bus.BUS_OAM_A0n);
 
   d("OAM TRI ADDR   %03d %02x %c%c%c%c%c%c%c%c\n",
     oam_tri_addr,
@@ -465,11 +451,8 @@ void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
     oam_bus.BUS_OAM_A7n.cn(), oam_bus.BUS_OAM_A6n.cn(), oam_bus.BUS_OAM_A5n.cn(), oam_bus.BUS_OAM_A4n.cn(),
     oam_bus.BUS_OAM_A3n.cn(), oam_bus.BUS_OAM_A2n.cn(), oam_bus.BUS_OAM_A1n.cn(), oam_bus.BUS_OAM_A0n.cn());
 
-  int oam_latch_data_a = pack_p(oam_bus.YDYV_OAM_LATCH_DA0n.c(), oam_bus.YCEB_OAM_LATCH_DA1n.c(), oam_bus.ZUCA_OAM_LATCH_DA2n.c(), oam_bus.WONE_OAM_LATCH_DA3n.c(),
-                                oam_bus.ZAXE_OAM_LATCH_DA4n.c(), oam_bus.XAFU_OAM_LATCH_DA5n.c(), oam_bus.YSES_OAM_LATCH_DA6n.c(), oam_bus.ZECA_OAM_LATCH_DA7n.c());
-
-  int oam_latch_data_b = pack_p(oam_bus.XYKY_OAM_LATCH_DB0n.c(), oam_bus.YRUM_OAM_LATCH_DB1n.c(), oam_bus.YSEX_OAM_LATCH_DB2n.c(), oam_bus.YVEL_OAM_LATCH_DB3n.c(),
-                                oam_bus.WYNO_OAM_LATCH_DB4n.c(), oam_bus.CYRA_OAM_LATCH_DB5n.c(), oam_bus.ZUVE_OAM_LATCH_DB6n.c(), oam_bus.ECED_OAM_LATCH_DB7n.c());
+  int oam_latch_data_a = pack_u8(8, &oam_bus.YDYV_OAM_LATCH_DA0n);
+  int oam_latch_data_b = pack_u8(8, &oam_bus.XYKY_OAM_LATCH_DB0n);
 
   /*
   d("OAM BUS ADDR   %03d %02x -%c%c%c%c%c%c%c\n",
@@ -506,12 +489,8 @@ void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
     oam_bus.ECED_OAM_LATCH_DB7n.c(), oam_bus.ZUVE_OAM_LATCH_DB6n.c(), oam_bus.CYRA_OAM_LATCH_DB5n.c(), oam_bus.WYNO_OAM_LATCH_DB4n.c(),
     oam_bus.YVEL_OAM_LATCH_DB3n.c(), oam_bus.YSEX_OAM_LATCH_DB2n.c(), oam_bus.YRUM_OAM_LATCH_DB1n.c(), oam_bus.XYKY_OAM_LATCH_DB0n.c());
 
-  int oam_temp_a = pack_p(oam_bus.XUSO_OAM_DA0p.qp08(), oam_bus.XEGU_OAM_DA1p.qp08(), oam_bus.YJEX_OAM_DA2p.qp08(), oam_bus.XYJU_OAM_DA3p.qp08(),
-                          oam_bus.YBOG_OAM_DA4p.qp08(), oam_bus.WYSO_OAM_DA5p.qp08(), oam_bus.XOTE_OAM_DA6p.qp08(), oam_bus.YZAB_OAM_DA7p.qp08());
-
-  int oam_temp_b = pack_p(oam_bus.YLOR_OAM_DB0p.qp08(), oam_bus.ZYTY_OAM_DB1p.qp08(), oam_bus.ZYVE_OAM_DB2p.qp08(), oam_bus.ZEZY_OAM_DB3p.qp08(),
-                          oam_bus.GOMO_OAM_DB4p.qp08(), oam_bus.BAXO_OAM_DB5p.qp08(), oam_bus.YZOS_OAM_DB6p.qp08(), oam_bus.DEPO_OAM_DB7p.qp08());
-
+  int oam_temp_a = pack_u8(8, &oam_bus.XUSO_OAM_DA0p);
+  int oam_temp_b = pack_u8(8, &oam_bus.YLOR_OAM_DB0p);
 
   d("OAM TEMP A     %03d %02x %c%c%c%c%c%c%c%c\n",
     oam_temp_a,
@@ -661,8 +640,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Timer =====\001\n");
   d("DIV    : 0x%04x %d\n", gb->tim_reg.get_div(),    gb->tim_reg.get_div());
-  d("TIMA A : 0x%02x %d\n", gb->tim_reg.get_tima_a(), gb->tim_reg.get_tima_a());
-  d("TIMA B : 0x%02x %d\n", gb->tim_reg.get_tima_b(), gb->tim_reg.get_tima_b());
+  d("TIMA   : 0x%02x %d\n", gb->tim_reg.get_tima(),   gb->tim_reg.get_tima());
   d("TMA    : 0x%02x %d\n", gb->tim_reg.get_tma(),    gb->tim_reg.get_tma());
   d("TAC    : 0x%02x %d\n", gb->tim_reg.get_tac(),    gb->tim_reg.get_tac());
   d("NYDU_TIMA_D7_DELAY   %c\n", gb->tim_reg.NYDU_TIMA_D7_DELAY.c());
@@ -757,7 +735,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("XFER_START  %c\n", gb->ser_reg.ETAF_XFER_START.c());
   d("XFER_DIR    %c\n", gb->ser_reg.CULY_XFER_DIR.c());
   d("SER_CLK     %c\n", gb->ser_reg.COTY_SER_CLK.c());
-  d("SER_CNT     %d\n", pack_p(!gb->ser_reg.CAFA_SER_CNT0.qn16(), !gb->ser_reg.CYLO_SER_CNT1.qn16(), !gb->ser_reg.CYDE_SER_CNT2.qn16(), 0));
+  d("SER_CNT     %d\n", pack_u8(3, &gb->ser_reg.CAFA_SER_CNT0));
   d("SER_DATA    0x%02x\n", gb->ser_reg.get_data());
   d("SER_OUT     %c\n", gb->ser_reg.ELYS_SER_OUT.c());
   d("SCK         %c\n", gb->ser_reg.PIN_SCK.c());
@@ -781,13 +759,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== DMA Reg =====\001\n");
   const auto& dma_reg = gb->dma_reg;
 
-  int dma_addr_hi = pack_p(!dma_reg.NAFA_DMA_A08n.qp08(), !dma_reg.PYNE_DMA_A09n.qp08(), !dma_reg.PARA_DMA_A10n.qp08(), !dma_reg.NYDO_DMA_A11n.qp08(),
-                           !dma_reg.NYGY_DMA_A12n.qp08(), !dma_reg.PULA_DMA_A13n.qp08(), !dma_reg.POKU_DMA_A14n.qp08(), !dma_reg.MARU_DMA_A15n.qp08());
+  uint8_t dma_addr_lo =  pack_u8(8, &dma_reg.NAKY_DMA_A00p);
+  uint8_t dma_addr_hi = ~pack_u8(8, &dma_reg.NAFA_DMA_A08n);
 
-  int dma_addr_lo = pack_p(dma_reg.NAKY_DMA_A00p.qp17(), dma_reg.PYRO_DMA_A01p.qp17(), dma_reg.NEFY_DMA_A02p.qp17(), dma_reg.MUTY_DMA_A03p.qp17(),
-                           dma_reg.NYKO_DMA_A04p.qp17(), dma_reg.PYLO_DMA_A05p.qp17(), dma_reg.NUTO_DMA_A06p.qp17(), dma_reg.MUGU_DMA_A07p.qp17());
-
-  d("DMA Addr 0x%02x:%02x\n",dma_addr_hi, dma_addr_lo);
+  d("DMA Addr 0x%02x:%02x\n", dma_addr_hi, dma_addr_lo);
   d("MATU_DMA_RUNNINGp   %d\n",  dma_reg.MATU_DMA_RUNNINGp.qp17());
   d("LYXE_DMA_LATCHn     %d\n",  dma_reg.LYXE_DMA_LATCHp);
   d("MYTE_DMA_DONE       %d\n", !dma_reg.MYTE_DMA_DONE.qn16());
@@ -830,157 +805,38 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Pix Pipe =====\001\n");
 
-  d.dump_reg("PIX COUNT",
-    gb->pix_pipe.XEHO_X0p.qp17(), gb->pix_pipe.SAVY_X1p.qp17(), gb->pix_pipe.XODU_X2p.qp17(), gb->pix_pipe.XYDO_X3p.qp17(),
-    gb->pix_pipe.TUHU_X4p.qp17(), gb->pix_pipe.TUKY_X5p.qp17(), gb->pix_pipe.TAKO_X6p.qp17(), gb->pix_pipe.SYBE_X7p.qp17());
-
-
-  d.dump_reg("FF40 LCDC",
-    gb->pix_pipe.VYXE_LCDC_BGENn.qn08(),
-    gb->pix_pipe.XYLO_LCDC_SPENn.qn08(),
-    gb->pix_pipe.XYMO_LCDC_SPSIZEn.qn08(),
-    gb->pix_pipe.XAFO_LCDC_BGMAPn.qn08(),
-    gb->pix_pipe.WEXU_LCDC_BGTILEn.qn08(),
-    gb->pix_pipe.WYMO_LCDC_WINENn.qn08(),
-    gb->pix_pipe.WOKY_LCDC_WINMAPn.qn08(),
-    gb->pix_pipe.XONA_LCDC_LCDENn.qn08());
+  d.dump_reg("PIX COUNT", &gb->pix_pipe.XEHO_X0p);
+  d.dump_reg("FF40 LCDC", &gb->pix_pipe.VYXE_LCDC_BGENn);
 
   // FIXME plumb sadu/xaty in here somehow
   d.dump_reg("FF41 STAT",
-    0, //!gb->pix_pipe.SADU_STAT_MODE0n,
-    0, //!gb->pix_pipe.XATY_STAT_MODE1n,
-    gb->pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03(),
-    gb->pix_pipe.ROXE_STAT_HBI_ENn.qn08(),
-    gb->pix_pipe.RUFO_STAT_VBI_ENn.qn08(),
-    gb->pix_pipe.REFE_STAT_OAI_ENn.qn08(),
-    gb->pix_pipe.RUGU_STAT_LYI_ENn.qn08(),
-    1
-  );
+    pack_u8(
+      0, //!gb->pix_pipe.SADU_STAT_MODE0n,
+      0, //!gb->pix_pipe.XATY_STAT_MODE1n,
+      gb->pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03(),
+      gb->pix_pipe.ROXE_STAT_HBI_ENn.qn08(),
+      gb->pix_pipe.RUFO_STAT_VBI_ENn.qn08(),
+      gb->pix_pipe.REFE_STAT_OAI_ENn.qn08(),
+      gb->pix_pipe.RUGU_STAT_LYI_ENn.qn08(),
+      1));
 
-  d.dump_reg("FF42 SCY",
-    gb->pix_pipe.GAVE_SCY0n.qn08(),
-    gb->pix_pipe.FYMO_SCY1n.qn08(),
-    gb->pix_pipe.FEZU_SCY2n.qn08(),
-    gb->pix_pipe.FUJO_SCY3n.qn08(),
-    gb->pix_pipe.DEDE_SCY4n.qn08(),
-    gb->pix_pipe.FOTY_SCY5n.qn08(),
-    gb->pix_pipe.FOHA_SCY6n.qn08(),
-    gb->pix_pipe.FUNY_SCY7n.qn08()
-  );
+  d.dump_reg("FF42 SCY",   &gb->pix_pipe.GAVE_SCY0n);
+  d.dump_reg("FF43 SCX",   &gb->pix_pipe.DATY_SCX0n);
+  d.dump_reg("FF47 BGP",   &gb->pix_pipe.PAVO_BGP_D0n);
+  d.dump_reg("FF48 OBP0",  &gb->pix_pipe.XUFU_OBP0_D0n);
+  d.dump_reg("FF49 OBP1",  &gb->pix_pipe.MOXY_OBP1_D0n);
+  d.dump_reg("FF4A WY",    &gb->pix_pipe.NESO_WY0n);
+  d.dump_reg("FF4B WX",    &gb->pix_pipe.MYPA_WX0n);
+  d.dump_reg("BG_PIPE_A",  &gb->pix_pipe.MYDE_BG_PIPE_A0);
+  d.dump_reg("BG_PIPE_B",  &gb->pix_pipe.TOMY_BG_PIPE_B0);
+  d.dump_reg("SPR_PIPE_A", &gb->pix_pipe.NYLU_SPR_PIPE_B0);
+  d.dump_reg("SPR_PIPE_B", &gb->pix_pipe.NURO_SPR_PIPE_A0);
+  d.dump_reg("PAL_PIPE",   &gb->pix_pipe.RUGO_PAL_PIPE_0);
 
-  d.dump_reg("FF43 SCX",
-    gb->pix_pipe.DATY_SCX0n.qn08(),
-    gb->pix_pipe.DUZU_SCX1n.qn08(),
-    gb->pix_pipe.CYXU_SCX2n.qn08(),
-    gb->pix_pipe.GUBO_SCX3n.qn08(),
-    gb->pix_pipe.BEMY_SCX4n.qn08(),
-    gb->pix_pipe.CUZY_SCX5n.qn08(),
-    gb->pix_pipe.CABU_SCX6n.qn08(),
-    gb->pix_pipe.BAKE_SCX7n.qn08()
-  );
+  d.dump_reg("MASK_PIPE",  &gb->pix_pipe.VEZO_MASK_PIPE_0);
 
-  d.dump_reg("FF47 BGP",
-    gb->pix_pipe.PAVO_BGP_D0n.qn07(),
-    gb->pix_pipe.NUSY_BGP_D1n.qn07(),
-    gb->pix_pipe.PYLU_BGP_D2n.qn07(),
-    gb->pix_pipe.MAXY_BGP_D3n.qn07(),
-    gb->pix_pipe.MUKE_BGP_D4n.qn07(),
-    gb->pix_pipe.MORU_BGP_D5n.qn07(),
-    gb->pix_pipe.MOGY_BGP_D6n.qn07(),
-    gb->pix_pipe.MENA_BGP_D7n.qn07()
-  );
-
-  d.dump_reg("FF48 OBP0",
-    gb->pix_pipe.XUFU_OBP0_D0n.qn07(),
-    gb->pix_pipe.XUKY_OBP0_D1n.qn07(),
-    gb->pix_pipe.XOVA_OBP0_D2n.qn07(),
-    gb->pix_pipe.XALO_OBP0_D3n.qn07(),
-    gb->pix_pipe.XERU_OBP0_D4n.qn07(),
-    gb->pix_pipe.XYZE_OBP0_D5n.qn07(),
-    gb->pix_pipe.XUPO_OBP0_D6n.qn07(),
-    gb->pix_pipe.XANA_OBP0_D7n.qn07()
-  );
-
-  d.dump_reg("FF49 OBP1",
-    gb->pix_pipe.MOXY_OBP1_D0n.qn07(),
-    gb->pix_pipe.LAWO_OBP1_D1n.qn07(),
-    gb->pix_pipe.MOSA_OBP1_D2n.qn07(),
-    gb->pix_pipe.LOSE_OBP1_D3n.qn07(),
-    gb->pix_pipe.LUNE_OBP1_D4n.qn07(),
-    gb->pix_pipe.LUGU_OBP1_D5n.qn07(),
-    gb->pix_pipe.LEPU_OBP1_D6n.qn07(),
-    gb->pix_pipe.LUXO_OBP1_D7n.qn07()
-  );
-
-  d.dump_reg("FF4A WY",
-    gb->pix_pipe.NESO_WY0n.qn08(),
-    gb->pix_pipe.NYRO_WY1n.qn08(),
-    gb->pix_pipe.NAGA_WY2n.qn08(),
-    gb->pix_pipe.MELA_WY3n.qn08(),
-    gb->pix_pipe.NULO_WY4n.qn08(),
-    gb->pix_pipe.NENE_WY5n.qn08(),
-    gb->pix_pipe.NUKA_WY6n.qn08(),
-    gb->pix_pipe.NAFU_WY7n.qn08()
-  );
-
-  d.dump_reg("FF4B WX",
-    gb->pix_pipe.MYPA_WX0n.qn08(),
-    gb->pix_pipe.NOFE_WX1n.qn08(),
-    gb->pix_pipe.NOKE_WX2n.qn08(),
-    gb->pix_pipe.MEBY_WX3n.qn08(),
-    gb->pix_pipe.MYPU_WX4n.qn08(),
-    gb->pix_pipe.MYCE_WX5n.qn08(),
-    gb->pix_pipe.MUVO_WX6n.qn08(),
-    gb->pix_pipe.NUKU_WX7n.qn08()
-  );
-
-  d.dump_reg("BG_PIPE_A",
-    gb->pix_pipe.MYDE_BG_PIPE_A0.qp16(), gb->pix_pipe.NOZO_BG_PIPE_A1.qp16(), gb->pix_pipe.MOJU_BG_PIPE_A2.qp16(), gb->pix_pipe.MACU_BG_PIPE_A3.qp16(),
-    gb->pix_pipe.NEPO_BG_PIPE_A4.qp16(), gb->pix_pipe.MODU_BG_PIPE_A5.qp16(), gb->pix_pipe.NEDA_BG_PIPE_A6.qp16(), gb->pix_pipe.PYBO_BG_PIPE_A7.qp16());
-
-  d.dump_reg("BG_PIPE_B",
-    gb->pix_pipe.TOMY_BG_PIPE_B0.qp16(), gb->pix_pipe.TACA_BG_PIPE_B1.qp16(), gb->pix_pipe.SADY_BG_PIPE_B2.qp16(), gb->pix_pipe.RYSA_BG_PIPE_B3.qp16(),
-    gb->pix_pipe.SOBO_BG_PIPE_B4.qp16(), gb->pix_pipe.SETU_BG_PIPE_B5.qp16(), gb->pix_pipe.RALU_BG_PIPE_B6.qp16(), gb->pix_pipe.SOHU_BG_PIPE_B7.qp16());
-
-  d.dump_reg("SPR_PIPE_A",
-    gb->pix_pipe.NYLU_SPR_PIPE_B0.qp16(), gb->pix_pipe.PEFU_SPR_PIPE_B1.qp16(), gb->pix_pipe.NATY_SPR_PIPE_B2.qp16(), gb->pix_pipe.PYJO_SPR_PIPE_B3.qp16(),
-    gb->pix_pipe.VARE_SPR_PIPE_B4.qp16(), gb->pix_pipe.WEBA_SPR_PIPE_B5.qp16(), gb->pix_pipe.VANU_SPR_PIPE_B6.qp16(), gb->pix_pipe.VUPY_SPR_PIPE_B7.qp16());
-
-  d.dump_reg("SPR_PIPE_B",
-    gb->pix_pipe.NURO_SPR_PIPE_A0.qp16(), gb->pix_pipe.MASO_SPR_PIPE_A1.qp16(), gb->pix_pipe.LEFE_SPR_PIPE_A2.qp16(), gb->pix_pipe.LESU_SPR_PIPE_A3.qp16(),
-    gb->pix_pipe.WYHO_SPR_PIPE_A4.qp16(), gb->pix_pipe.WORA_SPR_PIPE_A5.qp16(), gb->pix_pipe.VAFO_SPR_PIPE_A6.qp16(), gb->pix_pipe.WUFY_SPR_PIPE_A7.qp16());
-
-  d.dump_reg("PAL_PIPE",
-    gb->pix_pipe.RUGO_PAL_PIPE_0.qp16(), gb->pix_pipe.SATA_PAL_PIPE_1.qp16(), gb->pix_pipe.ROSA_PAL_PIPE_2.qp16(), gb->pix_pipe.SOMY_PAL_PIPE_3.qp16(),
-    gb->pix_pipe.PALU_PAL_PIPE_4.qp16(), gb->pix_pipe.NUKE_PAL_PIPE_5.qp16(), gb->pix_pipe.MODA_PAL_PIPE_6.qp16(), gb->pix_pipe.LYME_PAL_PIPE_7.qp16()
-  );
-
-  d.dump_reg("MASK_PIPE",
-    gb->pix_pipe.VEZO_MASK_PIPE_0.qp16(), gb->pix_pipe.WURU_MASK_PIPE_1.qp16(), gb->pix_pipe.VOSA_MASK_PIPE_2.qp16(), gb->pix_pipe.WYFU_MASK_PIPE_3.qp16(),
-    gb->pix_pipe.XETE_MASK_PIPE_4.qp16(), gb->pix_pipe.WODA_MASK_PIPE_5.qp16(), gb->pix_pipe.VUMO_MASK_PIPE_6.qp16(), gb->pix_pipe.VAVA_MASK_PIPE_7.qp16()
-  );
-
-  d.dump_reg("WIN X",
-    0,
-    0,
-    0,
-    gb->pix_pipe.WYKA_WIN_X3.qp17(),
-    gb->pix_pipe.WODY_WIN_X4.qp17(),
-    gb->pix_pipe.WOBO_WIN_X5.qp17(),
-    gb->pix_pipe.WYKO_WIN_X6.qp17(),
-    gb->pix_pipe.XOLO_WIN_X7.qp17()
-  );
-
-  d.dump_reg("WIN Y",
-    gb->pix_pipe.VYNO_WIN_Y0.qp17(),
-    gb->pix_pipe.VUJO_WIN_Y1.qp17(),
-    gb->pix_pipe.VYMU_WIN_Y2.qp17(),
-    gb->pix_pipe.TUFU_WIN_Y3.qp17(),
-    gb->pix_pipe.TAXA_WIN_Y4.qp17(),
-    gb->pix_pipe.TOZO_WIN_Y5.qp17(),
-    gb->pix_pipe.TATE_WIN_Y6.qp17(),
-    gb->pix_pipe.TEKE_WIN_Y7.qp17()
-  );
+  d.dump_reg("WIN X",      pack_u8(5, &gb->pix_pipe.WYKA_WIN_X3));
+  d.dump_reg("WIN Y",      pack_u8(8, &gb->pix_pipe.VYNO_WIN_Y0));
 
   d("\n");
 
@@ -1039,10 +895,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== SpriteScan =====\001\n");
 
-  d("SCAN INDEX       %02d\n", pack_p(gb->sprite_scanner.YFEL_SCAN0.qp17(), gb->sprite_scanner.WEWY_SCAN1.qp17(), gb->sprite_scanner.GOSO_SCAN2.qp17(), gb->sprite_scanner.ELYN_SCAN3.qp17(),
-                                      gb->sprite_scanner.FAHA_SCAN4.qp17(), gb->sprite_scanner.FONY_SCAN5.qp17(), 0, 0));
-  d("SPRITE INDEX     %02d\n", pack_p(gb->sprite_scanner.XADU_SPRITE_IDX0p.qn12(), gb->sprite_scanner.XEDY_SPRITE_IDX1p.qn12(), gb->sprite_scanner.ZUZE_SPRITE_IDX2p.qn12(), gb->sprite_scanner.XOBE_SPRITE_IDX3p.qn12(),
-                                      gb->sprite_scanner.YDUF_SPRITE_IDX4p.qn12(), gb->sprite_scanner.XECU_SPRITE_IDX5p.qn12(), 0, 0));
+  d("SCAN INDEX       %02d\n", pack_u8(6, &gb->sprite_scanner.YFEL_SCAN0));
+  d("SPRITE INDEX     %02d\n", pack_u8(6, &gb->sprite_scanner.XADU_SPRITE_IDX0p));
 
   d("BESU_SCANNINGp   %c\n", gb->sprite_scanner.BESU_SCANNINGp  .c());
   d("CENO_SCANNINGp   %c\n", gb->sprite_scanner.CENO_SCANNINGp  .c());
@@ -1053,94 +907,31 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\n");
 
+  {
+    const auto& ss = gb->sprite_store;
+    d("\002===== SpriteStore =====\001\n");
+    d("DEZY_STORE_ENn %c\n", ss.DEZY_STORE_ENn.c());
 
-  d("\002===== SpriteStore =====\001\n");
-  d("DEZY_STORE_ENn %c\n", gb->sprite_store.DEZY_STORE_ENn.c());
+    d("SPRITE COUNT %02d\n", pack_u8(4, &ss.BESE_SPRITE_COUNT0));
 
-  d("SPRITE COUNT %02d\n", pack_p(gb->sprite_store.BESE_SPRITE_COUNT0.qp17(), gb->sprite_store.CUXY_SPRITE_COUNT1.qp17(), gb->sprite_store.BEGO_SPRITE_COUNT2.qp17(), gb->sprite_store.DYBE_SPRITE_COUNT3.qp17()));
+    int spr_tri_idx  = pack_u8(6, &ss.SPR_TRI_I0p);
+    int spr_tri_line = pack_u8(4, &ss.SPR_TRI_L0);
 
-  int spr_tri_idx = pack_p(gb->sprite_store.SPR_TRI_I0p.qp(), gb->sprite_store.SPR_TRI_I1p.qp(), gb->sprite_store.SPR_TRI_I2p.qp(), gb->sprite_store.SPR_TRI_I3p.qp(), gb->sprite_store.SPR_TRI_I4p.qp(), gb->sprite_store.SPR_TRI_I5p.qp(), 0, 0);
-  d("SPR_TRI_IDX  = %2d %c%c%c%c%c%c\n",
-    spr_tri_idx,
-    gb->sprite_store.SPR_TRI_I5p.c(), gb->sprite_store.SPR_TRI_I4p.c(), gb->sprite_store.SPR_TRI_I3p.c(), gb->sprite_store.SPR_TRI_I2p.c(),
-    gb->sprite_store.SPR_TRI_I1p.c(), gb->sprite_store.SPR_TRI_I0p.c());
+    d("SPR_TRI_IDX  = %2d %c%c%c%c%c%c\n", spr_tri_idx,  ss.SPR_TRI_I5p.c(), ss.SPR_TRI_I4p.c(), ss.SPR_TRI_I3p.c(), ss.SPR_TRI_I2p.c(), ss.SPR_TRI_I1p.c(), ss.SPR_TRI_I0p.c());
+    d("SPR_TRI_LINE = %2d %c%c%c%c\n",     spr_tri_line, ss.SPR_TRI_L0.c(),  ss.SPR_TRI_L1.c(),  ss.SPR_TRI_L2.c(),  ss.SPR_TRI_L3.c());
 
-  int spr_tri_line = pack_p(gb->sprite_store.SPR_TRI_L0.qp(), gb->sprite_store.SPR_TRI_L1.qp(), gb->sprite_store.SPR_TRI_L2.qp(), gb->sprite_store.SPR_TRI_L3.qp());
-  d("SPR_TRI_LINE = %2d %c%c%c%c\n",
-    spr_tri_line,
-    gb->sprite_store.SPR_TRI_L0.c(), gb->sprite_store.SPR_TRI_L1.c(), gb->sprite_store.SPR_TRI_L2.c(), gb->sprite_store.SPR_TRI_L3.c());
-
-  d("STORE0 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.EBOJ_STORE0_RSTp.qp17(),
-    pack_n(gb->sprite_store.YGUS_STORE0_I0n.qp08(), gb->sprite_store.YSOK_STORE0_I1n.qp08(), gb->sprite_store.YZEP_STORE0_I2n.qp08(), gb->sprite_store.WYTE_STORE0_I3n.qp08(), gb->sprite_store.ZONY_STORE0_I4n.qp08(), gb->sprite_store.YWAK_STORE0_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.GYHO_STORE0_L0n.qp08(), gb->sprite_store.CUFO_STORE0_L1n.qp08(), gb->sprite_store.BOZU_STORE0_L2n.qp08(), gb->sprite_store.FYHY_STORE0_L3n.qp08()),
-    pack_n(gb->sprite_store.XEPE_STORE0_X0p.qn08(), gb->sprite_store.YLAH_STORE0_X1p.qn08(), gb->sprite_store.ZOLA_STORE0_X2p.qn08(), gb->sprite_store.ZULU_STORE0_X3p.qn08(), gb->sprite_store.WELO_STORE0_X4p.qn08(), gb->sprite_store.XUNY_STORE0_X5p.qn08(), gb->sprite_store.WOTE_STORE0_X6p.qn08(), gb->sprite_store.XAKO_STORE0_X7p.qn08())
-  );
-
-  d("STORE1 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.CEDY_STORE1_RSTp.qp17(),
-    pack_n(gb->sprite_store.CADU_STORE1_I0n.qp08(), gb->sprite_store.CEBO_STORE1_I1n.qp08(), gb->sprite_store.CUFA_STORE1_I2n.qp08(), gb->sprite_store.COMA_STORE1_I3n.qp08(), gb->sprite_store.CUZA_STORE1_I4n.qp08(), gb->sprite_store.CAJY_STORE1_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.AMES_STORE1_L0n.qp08(), gb->sprite_store.AROF_STORE1_L1n.qp08(), gb->sprite_store.ABOP_STORE1_L2n.qp08(), gb->sprite_store.ABUG_STORE1_L3n.qp08()),
-    pack_n(gb->sprite_store.DANY_STORE1_X0p.qn08(), gb->sprite_store.DUKO_STORE1_X1p.qn08(), gb->sprite_store.DESU_STORE1_X2p.qn08(), gb->sprite_store.DAZO_STORE1_X3p.qn08(), gb->sprite_store.DAKE_STORE1_X4p.qn08(), gb->sprite_store.CESO_STORE1_X5p.qn08(), gb->sprite_store.DYFU_STORE1_X6p.qn08(), gb->sprite_store.CUSY_STORE1_X7p.qn08())
-  );
-
-  d("STORE2 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.EGAV_STORE2_RSTp.qp17(),
-    pack_n(gb->sprite_store.BUHE_STORE2_I0n.qp08(), gb->sprite_store.BYHU_STORE2_I1n.qp08(), gb->sprite_store.BECA_STORE2_I2n.qp08(), gb->sprite_store.BULU_STORE2_I3n.qp08(), gb->sprite_store.BUNA_STORE2_I4n.qp08(), gb->sprite_store.BOXA_STORE2_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.YLOV_STORE2_L0n.qp08(), gb->sprite_store.XOSY_STORE2_L1n.qp08(), gb->sprite_store.XAZY_STORE2_L2n.qp08(), gb->sprite_store.YKUK_STORE2_L3n.qp08()),
-    pack_n(gb->sprite_store.FOKA_STORE2_X0p.qn08(), gb->sprite_store.FYTY_STORE2_X1p.qn08(), gb->sprite_store.FUBY_STORE2_X2p.qn08(), gb->sprite_store.GOXU_STORE2_X3p.qn08(), gb->sprite_store.DUHY_STORE2_X4p.qn08(), gb->sprite_store.EJUF_STORE2_X5p.qn08(), gb->sprite_store.ENOR_STORE2_X6p.qn08(), gb->sprite_store.DEPY_STORE2_X7p.qn08())
-  );
-
-  d("STORE3 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.GOTA_STORE3_RSTp.qp17(),
-    pack_n(gb->sprite_store.DEVY_STORE3_I0n.qp08(), gb->sprite_store.DESE_STORE3_I1n.qp08(), gb->sprite_store.DUNY_STORE3_I2n.qp08(), gb->sprite_store.DUHA_STORE3_I3n.qp08(), gb->sprite_store.DEBA_STORE3_I4n.qp08(), gb->sprite_store.DAFU_STORE3_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.ZURO_STORE3_L0n.qp08(), gb->sprite_store.ZYLU_STORE3_L1n.qp08(), gb->sprite_store.ZENE_STORE3_L2n.qp08(), gb->sprite_store.ZURY_STORE3_L3n.qp08()),
-    pack_n(gb->sprite_store.XOLY_STORE3_X0p.qn08(), gb->sprite_store.XYBA_STORE3_X1p.qn08(), gb->sprite_store.XABE_STORE3_X2p.qn08(), gb->sprite_store.XEKA_STORE3_X3p.qn08(), gb->sprite_store.XOMY_STORE3_X4p.qn08(), gb->sprite_store.WUHA_STORE3_X5p.qn08(), gb->sprite_store.WYNA_STORE3_X6p.qn08(), gb->sprite_store.WECO_STORE3_X7p.qn08())
-  );
-
-  d("STORE4 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.XUDY_STORE4_RSTp.qp17(),
-    pack_n(gb->sprite_store.XAVE_STORE4_I0n.qp08(), gb->sprite_store.XEFE_STORE4_I1n.qp08(), gb->sprite_store.WANU_STORE4_I2n.qp08(), gb->sprite_store.XABO_STORE4_I3n.qp08(), gb->sprite_store.XEGE_STORE4_I4n.qp08(), gb->sprite_store.XYNU_STORE4_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.CAPO_STORE4_L0n.qp08(), gb->sprite_store.CAJU_STORE4_L1n.qp08(), gb->sprite_store.CONO_STORE4_L2n.qp08(), gb->sprite_store.CUMU_STORE4_L3n.qp08()),
-    pack_n(gb->sprite_store.WEDU_STORE4_X0p.qn08(), gb->sprite_store.YGAJ_STORE4_X1p.qn08(), gb->sprite_store.ZYJO_STORE4_X2p.qn08(), gb->sprite_store.XURY_STORE4_X3p.qn08(), gb->sprite_store.YBED_STORE4_X4p.qn08(), gb->sprite_store.ZALA_STORE4_X5p.qn08(), gb->sprite_store.WYDE_STORE4_X6p.qn08(), gb->sprite_store.XEPA_STORE4_X7p.qn08())
-  );
-
-  d("STORE5 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.WAFY_STORE5_RSTp.qp17(),
-    pack_n(gb->sprite_store.EKOP_STORE5_I0n.qp08(), gb->sprite_store.ETYM_STORE5_I1n.qp08(), gb->sprite_store.GORU_STORE5_I2n.qp08(), gb->sprite_store.EBEX_STORE5_I3n.qp08(), gb->sprite_store.ETAV_STORE5_I4n.qp08(), gb->sprite_store.EKAP_STORE5_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.ACEP_STORE5_L0n.qp08(), gb->sprite_store.ABEG_STORE5_L1n.qp08(), gb->sprite_store.ABUX_STORE5_L2n.qp08(), gb->sprite_store.ANED_STORE5_L3n.qp08()),
-    pack_n(gb->sprite_store.FUSA_STORE5_X0p.qn08(), gb->sprite_store.FAXA_STORE5_X1p.qn08(), gb->sprite_store.FOZY_STORE5_X2p.qn08(), gb->sprite_store.FESY_STORE5_X3p.qn08(), gb->sprite_store.CYWE_STORE5_X4p.qn08(), gb->sprite_store.DYBY_STORE5_X5p.qn08(), gb->sprite_store.DURY_STORE5_X6p.qn08(), gb->sprite_store.CUVY_STORE5_X7p.qn08())
-  );
-
-  d("STORE6 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.WOMY_STORE6_RSTp.qp17(),
-    pack_n(gb->sprite_store.GABO_STORE6_I0n.qp08(), gb->sprite_store.GACY_STORE6_I1n.qp08(), gb->sprite_store.FOGO_STORE6_I2n.qp08(), gb->sprite_store.GOHU_STORE6_I3n.qp08(), gb->sprite_store.FOXY_STORE6_I4n.qp08(), gb->sprite_store.GECU_STORE6_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.ZUMY_STORE6_L0n.qp08(), gb->sprite_store.ZAFU_STORE6_L1n.qp08(), gb->sprite_store.ZEXO_STORE6_L2n.qp08(), gb->sprite_store.ZUBE_STORE6_L3n.qp08()),
-    pack_n(gb->sprite_store.YCOL_STORE6_X0p.qn08(), gb->sprite_store.YRAC_STORE6_X1p.qn08(), gb->sprite_store.YMEM_STORE6_X2p.qn08(), gb->sprite_store.YVAG_STORE6_X3p.qn08(), gb->sprite_store.ZOLY_STORE6_X4p.qn08(), gb->sprite_store.ZOGO_STORE6_X5p.qn08(), gb->sprite_store.ZECU_STORE6_X6p.qn08(), gb->sprite_store.ZESA_STORE6_X7p.qn08())
-  );
-
-  d("STORE7 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.WAPO_STORE7_RSTp.qp17(),
-    pack_n(gb->sprite_store.GULE_STORE7_I0n.qp08(), gb->sprite_store.GYNO_STORE7_I1n.qp08(), gb->sprite_store.FEFA_STORE7_I2n.qp08(), gb->sprite_store.FYSU_STORE7_I3n.qp08(), gb->sprite_store.GESY_STORE7_I4n.qp08(), gb->sprite_store.FUZO_STORE7_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.XYNA_STORE7_L0n.qp08(), gb->sprite_store.YGUM_STORE7_L1n.qp08(), gb->sprite_store.XAKU_STORE7_L2n.qp08(), gb->sprite_store.XYGO_STORE7_L3n.qp08()),
-    pack_n(gb->sprite_store.ERAZ_STORE7_X0p.qn08(), gb->sprite_store.EPUM_STORE7_X1p.qn08(), gb->sprite_store.EROL_STORE7_X2p.qn08(), gb->sprite_store.EHYN_STORE7_X3p.qn08(), gb->sprite_store.FAZU_STORE7_X4p.qn08(), gb->sprite_store.FAXE_STORE7_X5p.qn08(), gb->sprite_store.EXUK_STORE7_X6p.qn08(), gb->sprite_store.FEDE_STORE7_X7p.qn08())
-  );
-
-  d("STORE8 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.EXUQ_STORE8_RSTp.qp17(),
-    pack_n(gb->sprite_store.AXUV_STORE8_I0n.qp08(), gb->sprite_store.BADA_STORE8_I1n.qp08(), gb->sprite_store.APEV_STORE8_I2n.qp08(), gb->sprite_store.BADO_STORE8_I3n.qp08(), gb->sprite_store.BEXY_STORE8_I4n.qp08(), gb->sprite_store.BYHE_STORE8_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.AZAP_STORE8_L0n.qp08(), gb->sprite_store.AFYX_STORE8_L1n.qp08(), gb->sprite_store.AFUT_STORE8_L2n.qp08(), gb->sprite_store.AFYM_STORE8_L3n.qp08()),
-    pack_n(gb->sprite_store.EZUF_STORE8_X0p.qn08(), gb->sprite_store.ENAD_STORE8_X1p.qn08(), gb->sprite_store.EBOW_STORE8_X2p.qn08(), gb->sprite_store.FYCA_STORE8_X3p.qn08(), gb->sprite_store.GAVY_STORE8_X4p.qn08(), gb->sprite_store.GYPU_STORE8_X5p.qn08(), gb->sprite_store.GADY_STORE8_X6p.qn08(), gb->sprite_store.GAZA_STORE8_X7p.qn08())
-  );
-
-  d("STORE9 R%d I%02d L%02d X%03d\n",
-    gb->sprite_store.FONO_STORE9_RSTp.qp17(),
-    pack_n(gb->sprite_store.YBER_STORE9_I0n.qp08(), gb->sprite_store.YZOR_STORE9_I1n.qp08(), gb->sprite_store.XYFE_STORE9_I2n.qp08(), gb->sprite_store.XOTU_STORE9_I3n.qp08(), gb->sprite_store.XUTE_STORE9_I4n.qp08(), gb->sprite_store.XUFO_STORE9_I5n.qp08(), 1, 1),
-    pack_n(gb->sprite_store.CANA_STORE9_L0n.qp08(), gb->sprite_store.FOFO_STORE9_L1n.qp08(), gb->sprite_store.DYSY_STORE9_L2n.qp08(), gb->sprite_store.DEWU_STORE9_L3n.qp08()),
-    pack_n(gb->sprite_store.XUVY_STORE9_X0p.qn08(), gb->sprite_store.XERE_STORE9_X1p.qn08(), gb->sprite_store.XUZO_STORE9_X2p.qn08(), gb->sprite_store.XEXA_STORE9_X3p.qn08(), gb->sprite_store.YPOD_STORE9_X4p.qn08(), gb->sprite_store.YROP_STORE9_X5p.qn08(), gb->sprite_store.YNEP_STORE9_X6p.qn08(), gb->sprite_store.YZOF_STORE9_X7p.qn08())
-  );
-
-  d("\n");
+    d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
+    d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));
+    d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp17(), pack_u8n(6, &ss.BUHE_STORE2_I0n), pack_u8n(4, &ss.YLOV_STORE2_L0n), pack_u8n(8, &ss.FOKA_STORE2_X0p));
+    d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp17(), pack_u8n(6, &ss.DEVY_STORE3_I0n), pack_u8n(4, &ss.ZURO_STORE3_L0n), pack_u8n(8, &ss.XOLY_STORE3_X0p));
+    d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp17(), pack_u8n(6, &ss.XAVE_STORE4_I0n), pack_u8n(4, &ss.CAPO_STORE4_L0n), pack_u8n(8, &ss.WEDU_STORE4_X0p));
+    d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp17(), pack_u8n(6, &ss.EKOP_STORE5_I0n), pack_u8n(4, &ss.ACEP_STORE5_L0n), pack_u8n(8, &ss.FUSA_STORE5_X0p));
+    d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp17(), pack_u8n(6, &ss.GABO_STORE6_I0n), pack_u8n(4, &ss.ZUMY_STORE6_L0n), pack_u8n(8, &ss.YCOL_STORE6_X0p));
+    d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17(), pack_u8n(6, &ss.GULE_STORE7_I0n), pack_u8n(4, &ss.XYNA_STORE7_L0n), pack_u8n(8, &ss.ERAZ_STORE7_X0p));
+    d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17(), pack_u8n(6, &ss.AXUV_STORE8_I0n), pack_u8n(4, &ss.AZAP_STORE8_L0n), pack_u8n(8, &ss.EZUF_STORE8_X0p));
+    d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17(), pack_u8n(6, &ss.YBER_STORE9_I0n), pack_u8n(4, &ss.CANA_STORE9_L0n), pack_u8n(8, &ss.XUVY_STORE9_X0p));
+    d("\n");
+  }
 
 
   d("\002=====TileFetcher=====\001\n");

@@ -2,84 +2,7 @@
 #include "CoreLib/Types.h"
 #include <stdio.h>
 
-#pragma warning(disable : 5054) // or'ing different enums deprecated
-
-//#define SINGLE_PHASE_COMMIT
 #define SANITY_CHECK
-
-//-----------------------------------------------------------------------------
-
-inline wire not1(wire a) { return !a; }
-
-inline wire and2(wire a, wire b) { return a & b; }
-inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
-inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
-inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
-inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
-inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
-
-inline wire or2(wire a, wire b) { return a | b; }
-inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
-inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
-inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
-
-inline wire xor2 (wire a, wire b) { return a ^ b; }
-inline wire xnor2(wire a, wire b) { return a == b; }
-
-inline wire nor2(wire a, wire b) { return !(a | b); }
-inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
-inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
-inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
-inline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
-inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
-
-inline wire nand2(wire a, wire b) { return !(a & b); }
-inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
-inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
-inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
-inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
-inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
-
-inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
-inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
-
-//-----------------------------------------------------------------------------
-
-inline wire add_c(wire a, wire b, wire c) {
-  return (a + b + c) & 2;
-}
-
-inline wire add_s(wire a, wire b, wire c) {
-  return (a + b + c) & 1;
-}
-
-//-----------------------------------------------------------------------------
-
-// Six-rung mux cells are _non_inverting_. m = 1 selects input A
-inline wire mux2p(wire m, wire a, wire b) {
-  return m ? a : b;
-}
-
-// Five-rung mux cells are _inverting_. m = 1 selects input A
-inline wire mux2n(wire m, wire a, wire b) {
-  return !(m ? a : b);
-}
-
-inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
-  return (b0 & a0) | (b1 & a1);
-}
-
-inline wire amux3(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2) {
-  return (b0 & a0) | (b1 & a1) | (b2 & a2);
-}
-
-inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3) {
-  return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3);
-}
-
-inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3, wire a4, wire b4, wire a5, wire b5) {
-  return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
-}
 
 //-----------------------------------------------------------------------------
 
@@ -89,7 +12,6 @@ enum RegBits : uint8_t {
   BIT_PULLUP = 0b00000100,
   BIT_DRIVEN = 0b00001000,
 
-  BIT_RESET  = 0b00010000,
   BIT_ERROR  = 0b00100000,
   BIT_DIRTY  = 0b01000000,
   BIT_LOCKED = 0b10000000,
@@ -137,9 +59,6 @@ inline uint64_t commit_and_hash(T& obj) {
 //-----------------------------------------------------------------------------
 
 struct BitBase {
-  BitBase() : state(0) {}
-  BitBase& operator=(const BitBase&) = delete;
-
   static bool sim_running;
   static bool bus_collision;
   static bool bus_floating;
@@ -148,7 +67,20 @@ struct BitBase {
   char c() const    { return reg_state_to_c(state); }
   char cn() const   { return reg_state_to_cn(state); }
 
-  uint8_t state;
+  wire as_wire() {
+    if (state & BIT_DRIVEN) {
+      return state & BIT_DATA;
+    }
+    else if (state & BIT_PULLUP) {
+      return 1;
+    }
+    else {
+      CHECK_P(false);
+      return 0;
+    }
+  }
+
+  uint8_t state = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -156,23 +88,26 @@ struct BitBase {
 
 struct RegBase : public BitBase {
 
-  void SETn(bool s) {
-    CHECK_N(state & BIT_RESET);
-    if (!s) state |= BIT_DATA;
-    state |= BIT_RESET;
-  }
+  void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, BitBase D) {
+    CHECK_N(state & BIT_LOCKED);
 
-  void RSTn(bool r) {
-    CHECK_N(state & BIT_RESET);
-    if (!r) state &= ~BIT_DATA;
-    state |= BIT_RESET;
-  }
+    (void)CLKn;
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
 
-  void SETnRSTn(wire s, wire r) {
-    CHECK_N(state & BIT_RESET);
-    if (!s) state |= BIT_DATA;
-    if (!r) state &= ~BIT_DATA;
-    state |= BIT_RESET;
+    if (!RSTn) {
+      state = BIT_LOCKED | (CLKp << 1) + 0;
+    }
+    else if (!SETn) {
+      state = BIT_LOCKED | (CLKp << 1) + 1;
+    }
+    else if (!ca && cb) {
+      state = BIT_LOCKED | (CLKp << 1) + D.as_wire();
+    }
+    else {
+      state = BIT_LOCKED | (CLKp << 1) + qp;
+    }
   }
 
   void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, wire D) {
@@ -203,20 +138,41 @@ struct RegBase : public BitBase {
   }
 
   wire as_wire()   const {
-    CHECK_P(state & BIT_RESET);
     CHECK_N(state & BIT_LOCKED);
     return wire(state & BIT_DATA);
   }
 };
 
 //-----------------------------------------------------------------------------
-// Signals must be read _after_ they are written.
+// Tristate signals must be read _after_ they are written.
 
-struct SigBase : public BitBase {
+struct TriBase : public BitBase {
 
   void setc(wire D) {
     tri(1, D);
     commit();
+  }
+
+  void tri(wire OEp, BitBase D) {
+    CHECK_N(state & BIT_LOCKED);
+
+    if (!(state & BIT_DIRTY)) {
+      // First hit this pass, clear everything except the pullup.
+      state &= BIT_PULLUP;
+    }
+    else {
+      // Second+ hit this pass, check for bus collision.
+      if (OEp && (state & BIT_DRIVEN)) {
+        RegBase::bus_collision |= ((state & BIT_DATA) != D.as_wire());
+      }
+    }
+
+    if (OEp) {
+      state |= BIT_DRIVEN;
+      state |= uint8_t(D.as_wire());
+    }
+
+    state |= BIT_DIRTY;
   }
 
   void tri(wire OEp, wire D) {
@@ -248,7 +204,6 @@ struct SigBase : public BitBase {
   }
 
   wire as_wire() const {
-    CHECK_P(!sim_running || state & BIT_LOCKED);
     if (state & BIT_DRIVEN) {
       return wire(state & BIT_DATA);
     }
@@ -269,8 +224,6 @@ struct Gate : private RegBase {
   using RegBase::reset;
   using RegBase::c;
   using RegBase::setc;
-
-  operator wire() const { return as_wire(); }
 
   wire as_wire()   const {
     CHECK_N(state & BIT_LOCKED);
@@ -360,13 +313,14 @@ struct DelayGlitch {
 struct DFF : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::RSTn;
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 
-  void dff(wire CLKp, bool D)            { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
-  void dff(wire CLKp, bool RSTn, bool D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff(wire CLKp, bool D)               { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
+  void dff(wire CLKp, BitBase D)            { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
+  void dff(wire CLKp, bool RSTn, bool D)    { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff(wire CLKp, bool RSTn, BitBase D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -390,6 +344,13 @@ struct DFF8n : private RegBase {
   wire qp08() const { return  as_wire(); }
 
   void dff8nc(wire CLKn, bool Dn)            { RegBase::dffc(!CLKn, CLKn, 1, 1, !Dn); }
+
+  void dff8nc(wire CLKn, BitBase Dn) {
+    BitBase D = Dn;
+    D.state ^= 1;
+    RegBase::dffc(!CLKn, CLKn, 1, 1, D);
+  }
+
   void dff8nc(wire CLKn, wire CLKp, bool Dn) { RegBase::dffc( CLKp, CLKn, 1, 1, !Dn); }
 
   wire as_wire()   const {
@@ -419,6 +380,7 @@ struct DFF8p : private RegBase {
   wire qp08() const { return  as_wire(); }
 
   void dff8pc(wire CLKp, bool Dn) { RegBase::dffc( CLKp, !CLKp, 1, 1, !Dn); }
+  void dff8pc(wire CLKp, BitBase Dn) { RegBase::dffc( CLKp, !CLKp, 1, 1, !Dn.as_wire()); }
 
   wire as_wire()   const {
     CHECK_N(state & BIT_LOCKED);
@@ -444,7 +406,6 @@ struct DFF8p : private RegBase {
 struct DFF9 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::SETn;
 
   wire qn08() const { return !as_wire(); }
   wire qp09() const { return  as_wire(); }
@@ -452,6 +413,12 @@ struct DFF9 : private RegBase {
   // FIXME the SETn here is slightly weird. too many inversions?
 
   void dff9c(wire CLKp, wire SETn, bool Dn)            { RegBase::dffc(CLKp, !CLKp, SETn, 1, !Dn); }
+  void dff9c(wire CLKp, wire SETn, BitBase Dn)         {
+    BitBase D = Dn;
+    D.state ^= 1;
+    RegBase::dffc(CLKp, !CLKp, SETn, 1, D);
+  }
+
   void dff9c(wire CLKp, wire CLKn, wire SETn, bool Dn) { RegBase::dffc(CLKp,  CLKn, SETn, 1, !Dn); }
 };
 
@@ -474,11 +441,11 @@ struct DFF9 : private RegBase {
 struct DFF11 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::RSTn;
 
   wire q11p() const { return as_wire(); }
 
-  void dff11c(wire CLKp, wire RSTn, wire D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff11c(wire CLKp, wire RSTn, wire D)    { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff11c(wire CLKp, wire RSTn, BitBase D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -500,7 +467,6 @@ struct DFF11 : private RegBase {
 struct DFF13 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::RSTn;
 
   wire qn12() const { return !as_wire(); }
   wire qp13() const { return  as_wire(); }
@@ -531,12 +497,12 @@ struct DFF13 : private RegBase {
 struct DFF17 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::RSTn;
 
   wire qn16() const { return !as_wire(); }
   wire qp17() const { return  as_wire(); }
 
-  void dff17c(wire CLKp, wire RSTn, wire D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff17c(wire CLKp, wire RSTn, wire D)    { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff17c(wire CLKp, wire RSTn, BitBase D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -569,10 +535,6 @@ struct DFF20 : private RegBase{
 
   wire qp01() const { return  as_wire(); }
   wire qn17() const { return !as_wire(); }
-
-  void LOADp(wire LOADp, bool newD) {
-    SETnRSTn(!(LOADp && newD), !(LOADp && !newD));
-  }
 
   void dff20c(wire CLKn, wire LOADp, bool newD) {
     wire SETp = LOADp &&  newD;
@@ -613,7 +575,6 @@ struct DFF20 : private RegBase{
 struct DFF22 : private RegBase {
   using RegBase::reset;
   using RegBase::c;
-  using RegBase::SETnRSTn;
 
   wire qn15() const { return !as_wire(); }
   wire qp16() const { return  as_wire(); }
@@ -642,33 +603,26 @@ struct DFF22 : private RegBase {
 // tri_6nn : top rung tadpole _not_ facing second rung dot.
 // tri_6pn : top rung tadpole facing second rung dot.
 
-struct BusNP : private SigBase {
+struct BusNP : public TriBase {
   BusNP() { state = 0; }
-
-  using SigBase::c;
-  using SigBase::cn;
-  using SigBase::setc;
-  using SigBase::commit;
-
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
 
   void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
   void tri_6nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
   void tri_6pn(wire OEp, wire Dn) { tri(OEp, !Dn);}
+
+  void tri_6nn(wire OEn, BitBase Dn) {
+    BitBase D = Dn;
+    D.state ^= 1;
+    tri(!OEn, D);
+  }
+
+  void tri10_np(wire OEn, BitBase D) {
+    tri(!OEn, D);
+  }
 };
 
-struct BusPU : private SigBase {
+struct BusPU : public TriBase {
   BusPU() { state = BIT_PULLUP; }
-
-  using SigBase::c;
-  using SigBase::cn;
-  using SigBase::tri;
-  using SigBase::setc;
-  using SigBase::commit;
-
-  wire qp() const { return  as_wire(); }
-  wire qn() const { return !as_wire(); }
 
   void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
   void tri_6nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
@@ -678,10 +632,7 @@ struct BusPU : private SigBase {
 //-----------------------------------------------------------------------------
 // Generic signal
 
-struct Signal : public SigBase {
-  using SigBase::c;
-  using SigBase::setc;
-
+struct Signal : public TriBase {
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
 };
@@ -689,12 +640,8 @@ struct Signal : public SigBase {
 //-----------------------------------------------------------------------------
 // External pin with no pull-up
 
-struct PinNP : private SigBase {
+struct PinNP : public TriBase {
   PinNP() { state = 0; }
-
-  using SigBase::c;
-  using SigBase::setc;
-  using SigBase::commit;
 
   void dump(Dumper& d) const {
     //char edge = posedge() ? '^' : negedge() ? 'v' : '-';
@@ -730,12 +677,12 @@ struct PinNP : private SigBase {
 //-----------------------------------------------------------------------------
 // External pin with a pull-up
 
-struct PinPU : private SigBase {
+struct PinPU : private TriBase {
   PinPU() { state = BIT_PULLUP; }
 
-  using SigBase::c;
-  using SigBase::setc;
-  using SigBase::commit;
+  using TriBase::c;
+  using TriBase::setc;
+  using TriBase::commit;
 
   void dump(Dumper& d) const {
     //char edge = posedge() ? '^' : negedge() ? 'v' : '-';
@@ -863,10 +810,10 @@ struct TpLatch : private LatchBase {
     state |= BIT_DIRTY;
   }
 
-  void tp_latchc(wire HOLDn, BusNP& bus) {
+  void tp_latchc(wire HOLDn, BitBase D) {
     if (HOLDn) {
-      bool SETp = HOLDn && bus.qp();
-      bool RSTp = HOLDn && !bus.qp();
+      bool SETp = HOLDn && D.as_wire();
+      bool RSTp = HOLDn && !D.as_wire();
       latch(SETp, RSTp);
     }
     state |= BIT_DIRTY;
@@ -874,3 +821,114 @@ struct TpLatch : private LatchBase {
 };
 
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+
+inline wire not1(wire a) { return !a; }
+
+inline wire not1(BitBase a) { return !a.as_wire(); }
+
+inline wire and2(wire a, wire b) { return a & b; }
+inline wire and2(BitBase a, wire b) { return a.as_wire() & b; }
+
+inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
+inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
+inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
+inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
+inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
+
+inline wire or2(wire a, wire b) { return a | b; }
+
+inline wire or2(BitBase a, wire b) { return a.as_wire() | b; }
+inline wire or2(wire a, BitBase b) { return a | b.as_wire(); }
+
+inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
+inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
+inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
+
+inline wire xor2 (wire a, wire b) { return a ^ b; }
+
+inline wire xor2 (wire a, BitBase b) { return a ^ b.as_wire(); }
+
+inline wire xnor2(wire a, wire b) { return a == b; }
+
+inline wire nor2(wire a, wire b) { return !(a | b); }
+
+inline wire nor2(BitBase a, wire b) { return !(a.as_wire() | b); }
+
+inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
+inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
+inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
+inline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
+inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
+
+inline wire nand2(wire a, wire b) { return !(a & b); }
+inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
+
+inline wire nand3(wire a, wire b, BitBase c) { return !(a & b & c.as_wire()); }
+
+inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
+inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
+inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
+inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
+
+inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
+inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
+
+inline wire nand2(BitBase a, wire b) {
+  if (!b) return 1;
+  return !a.as_wire();
+}
+
+inline wire or_and3(wire a, BitBase b, wire c) {
+  if (!c) return 0;
+  if (a) return 1;
+  return b.as_wire();
+}
+
+//-----------------------------------------------------------------------------
+
+inline wire add_c(wire a, wire b, wire c) {
+  return (a + b + c) & 2;
+}
+
+inline wire add_s(wire a, wire b, wire c) {
+  return (a + b + c) & 1;
+}
+
+//-----------------------------------------------------------------------------
+
+// Six-rung mux cells are _non_inverting_. m = 1 selects input A
+inline wire mux2p(wire m, wire a, wire b) {
+  return m ? a : b;
+}
+
+inline wire mux2p(wire m, BitBase a, BitBase b) {
+  return m ? a.as_wire() : b.as_wire();
+}
+
+// Five-rung mux cells are _inverting_. m = 1 selects input A
+inline wire mux2n(wire m, wire a, wire b) {
+  return !(m ? a : b);
+}
+
+inline wire mux2n(wire m, wire a, BitBase b) {
+  return !(m ? a : b.as_wire());
+}
+
+inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
+  return (b0 & a0) | (b1 & a1);
+}
+
+inline wire amux3(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2) {
+  return (b0 & a0) | (b1 & a1) | (b2 & a2);
+}
+
+inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3) {
+  return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3);
+}
+
+inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3, wire a4, wire b4, wire a5, wire b5) {
+  return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
+}
+

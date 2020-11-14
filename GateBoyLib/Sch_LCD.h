@@ -88,18 +88,9 @@ struct LcdRegisters {
     RAHA_LYC7n.reset(REG_D0C0);
   }
 
-  uint8_t get_lx() const {
-    return (uint8_t)pack_p(SAXO_X0p.qp17(), TYPO_X1p.qp17(), VYZO_X2p.qp17(), TELU_X3p.qp17(), SUDE_X4p.qp17(), TAHA_X5p.qp17(), TYRY_X6p.qp17(), 0);
-  }
-
-  uint8_t get_ly() const {
-    return (uint8_t)pack_p(MUWY_Y0p.qp17(), MYRO_Y1p.qp17(), LEXA_Y2p.qp17(), LYDO_Y3p.qp17(), LOVU_Y4p.qp17(), LEMA_Y5p.qp17(), MATO_Y6p.qp17(), LAFO_Y7p.qp17());
-  }
-
-  uint8_t get_lyc() const {
-    return (uint8_t)pack_p(SYRY_LYC0n.qn08(), VUCE_LYC1n.qn08(), SEDY_LYC2n.qn08(), SALO_LYC3n.qn08(),
-                           SOTA_LYC4n.qn08(), VAFA_LYC5n.qn08(), VEVO_LYC6n.qn08(), RAHA_LYC7n.qn08());
-  }
+  uint8_t get_lx() const  { return pack_u8(7, &SAXO_X0p); }
+  uint8_t get_ly() const  { return pack_u8(8, &MUWY_Y0p); }
+  uint8_t get_lyc() const { return pack_u8n(8, &SYRY_LYC0n); }
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 

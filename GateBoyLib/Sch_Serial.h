@@ -48,10 +48,7 @@ struct SerialRegisters {
     ELYS_SER_OUT.reset(REG_D0C0);
   }
 
-  int get_data() const {
-    return pack_p(EDER_SER_DATA7.qp16(), EROD_SER_DATA6.qp16(), EJAB_SER_DATA5.qp16(), DOVU_SER_DATA4.qp16(),
-                  DOJO_SER_DATA3.qp16(), DYRA_SER_DATA2.qp16(), DEGU_SER_DATA1.qp16(), CUBA_SER_DATA0.qp16());
-  }
+  int get_data() const { return pack_u8(8, &CUBA_SER_DATA0); }
 
   /*p06.CALY*/ DFF17 CALY_INT_SERp;
   /*p06.ETAF*/ DFF17 ETAF_XFER_START;

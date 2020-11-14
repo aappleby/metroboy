@@ -65,69 +65,51 @@ inline T clamp_val(S a, T min, T max) {
 
 //-----------------------------------------------------------------------------
 
-inline int pack_p(wire a, wire b, wire c, wire d) {
+inline uint8_t pack_u8(int c, const void* b) {
+  const uint8_t* d = (uint8_t*)b;
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= (d[i] & 1) << i;
+  }
+  return r;
+}
+
+inline uint8_t pack_u8n(int c, const void* b) {
+  const uint8_t* d = (uint8_t*)b;
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= (!(d[i] & 1)) << i;
+  }
+  return r;
+}
+
+inline uint8_t pack_u8(wire a, wire b, wire c, wire d) {
   return (a << 0) | (b << 1) | (c << 2) | (d << 3);
 }
 
-inline int pack_p(wire a, wire b, wire c, wire d,
-                wire e, wire f, wire g, wire h) {
-  return (pack_p(a, b, c, d) << 0) | (pack_p(e, f, g, h) << 4);
-}
-
-inline int pack_p(wire a, wire b, wire c, wire d,
-                wire e, wire f, wire g, wire h,
-                wire i, wire j, wire k, wire l,
-                wire m, wire n, wire o, wire p) {
-  return (pack_p(a, b, c, d, e, f, g, h) << 0) | (pack_p(i, j, k, l, m, n, o, p) << 8);
-}
-
-inline uint8_t pack7(void* b) {
-  uint8_t* d = (uint8_t*)b;
-  uint8_t r = 0;
-  r |= (d[0] & 1) << 0;
-  r |= (d[1] & 1) << 1;
-  r |= (d[2] & 1) << 2;
-  r |= (d[3] & 1) << 3;
-  r |= (d[4] & 1) << 4;
-  r |= (d[5] & 1) << 5;
-  r |= (d[6] & 1) << 6;
-  return r;
-}
-
-inline uint8_t pack8(void* b) {
-  uint8_t* d = (uint8_t*)b;
-  uint8_t r = 0;
-  r |= (d[0] & 1) << 0;
-  r |= (d[1] & 1) << 1;
-  r |= (d[2] & 1) << 2;
-  r |= (d[3] & 1) << 3;
-  r |= (d[4] & 1) << 4;
-  r |= (d[5] & 1) << 5;
-  r |= (d[6] & 1) << 6;
-  r |= (d[7] & 1) << 7;
-  return r;
-}
-
-inline uint8_t pack8_n(void* d) {
-  return ~pack8(d);
+inline uint8_t pack_u8(wire a, wire b, wire c, wire d,
+                      wire e, wire f, wire g, wire h) {
+  return (pack_u8(a, b, c, d) << 0) | (pack_u8(e, f, g, h) << 4);
 }
 
 //-----------------------------------------------------------------------------
 
-inline int pack_n(wire a, wire b, wire c, wire d) {
-  return (!a << 0) | (!b << 1) | (!c << 2) | (!d << 3);
+inline uint16_t pack_u16(int c, const void* b) {
+  const uint8_t* d = (uint8_t*)b;
+  uint16_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= (d[i] & 1) << i;
+  }
+  return r;
 }
 
-inline int pack_n(wire a, wire b, wire c, wire d,
-                wire e, wire f, wire g, wire h) {
-  return (pack_n(a, b, c, d) << 0) | (pack_n(e, f, g, h) << 4);
-}
-
-inline int pack_n(wire a, wire b, wire c, wire d,
-                  wire e, wire f, wire g, wire h,
-                  wire i, wire j, wire k, wire l,
-                  wire m, wire n, wire o, wire p) {
-  return (pack_n(a, b, c, d, e, f, g, h) << 0) | (pack_n(i, j, k, l, m, n, o, p) << 8);
+inline uint16_t pack_u16n(int c, const void* b) {
+  const uint8_t* d = (uint8_t*)b;
+  uint16_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= (!(d[i] & 1)) << i;
+  }
+  return r;
 }
 
 //-----------------------------------------------------------------------------
@@ -219,9 +201,27 @@ struct Dumper {
   virtual void indent() {}
   virtual void dedent() {}
 
+  /*
   inline void dump_reg(const char* tag, wire D0, wire D1, wire D2, wire D3, wire D4, wire D5, wire D6, wire D7) {
-    int D = pack_p(D0, D1, D2, D3, D4, D5, D6, D7);
+    uint8_t D = pack_u8(8, D0, D1, D2, D3, D4, D5, D6, D7);
     operator()("%-10s : %-3d 0x%02x 0b%d%d%d%d%d%d%d%d\n", tag, D, D, D7, D6, D5, D4, D3, D2, D1, D0);
+  }
+  */
+
+  inline void dump_reg(const char* tag, const void* bits) {
+    dump_reg(tag, pack_u8(8, bits));
+  }
+
+  inline void dump_reg(const char* tag, uint8_t D) {
+    operator()("%-10s : %-3d 0x%02x 0b%d%d%d%d%d%d%d%d\n", tag, D, D,
+      wire(D & 0x80),
+      wire(D & 0x40),
+      wire(D & 0x20),
+      wire(D & 0x10),
+      wire(D & 0x08),
+      wire(D & 0x04),
+      wire(D & 0x02),
+      wire(D & 0x01));
   }
 };
 

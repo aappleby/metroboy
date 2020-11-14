@@ -211,6 +211,7 @@ struct TriBase : public BitBase {
       return 1;
     }
     else {
+      CHECK_P(false);
       printf("Signal floating!\n");
       bus_floating = true;
       return 0;
@@ -672,6 +673,11 @@ struct PinNP : public TriBase {
 
   wire qp() const { return  as_wire(); }
   wire qn() const { return !as_wire(); }
+
+  wire as_wire() const {
+    CHECK_P(state & BIT_DRIVEN);
+    return wire(state & BIT_DATA);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -730,7 +736,7 @@ struct LatchBase : public BitBase {
   }
 
   wire as_wire() const {
-    CHECK_P(state & BIT_DIRTY);
+    CHECK_P(!sim_running || state & BIT_DIRTY);
     return state & BIT_DATA;
   }
 };

@@ -21,6 +21,12 @@ void GateBoyThread::reset() {
 void GateBoyThread::thread_main() {
   std::unique_lock<std::mutex> lock(mut, std::defer_lock);
 
+  printf("Thread starting\n");
+  gb->tock_slow();
+  gb->commit_and_hash();
+
+
+  printf("Command loop starting\n");
   while(!sig_exit) {
     // Lock and wait until we're unpaused and we have a job in the queue.
     lock.lock();

@@ -4,6 +4,8 @@
 #include "SDL/include/SDL.h"
 #include "glad/glad.h"
 
+#include "CoreLib/Tests.h"
+
 // using an OpenGL ES 3.0 context causes the gamma to be wrong due to some
 // incorrect SRGB conversion (I think). So, we use OpenGL 4.3 (which supports glDebugMessageCallback).
 
@@ -38,6 +40,9 @@ void APIENTRY debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLe
 //-----------------------------------------------------------------------------
 
 void* init_gl(void* window) {
+  LOG_G("init_gl\n");
+  LOG_INDENT();
+
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
                       SDL_GL_CONTEXT_DEBUG_FLAG |
                           SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
@@ -64,11 +69,10 @@ void* init_gl(void* window) {
   //gladLoadGLES2Loader(SDL_GL_GetProcAddress);
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-  printf("OpenGL loaded\n");
-  printf("Vendor:   %s\n", glGetString(GL_VENDOR));
-  printf("Renderer: %s\n", glGetString(GL_RENDERER));
-  printf("Version:  %s\n", glGetString(GL_VERSION));
-  printf("GLSL:     %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  LOG_B("Vendor:   "); LOG_G("%s\n", glGetString(GL_VENDOR));
+  LOG_B("Renderer: "); LOG_G("%s\n", glGetString(GL_RENDERER));
+  LOG_B("Version:  "); LOG_G("%s\n", glGetString(GL_VERSION));
+  LOG_B("GLSL:     "); LOG_G("%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 #ifndef USE_OPENGL_ES
   glEnable(GL_DEBUG_OUTPUT);
@@ -79,7 +83,7 @@ void* init_gl(void* window) {
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
-  printf("Ext count %d\n", ext_count);
+  LOG_B("Ext count "); LOG_G("%d\n", ext_count);
 #if 0
   for (int i = 0; i < ext_count; i++) {
     printf("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
@@ -102,6 +106,7 @@ void* init_gl(void* window) {
   glClearDepthf(1.0);
 #endif
 
+  LOG_DEDENT();
   return (void*)gl_context;
 }
 
@@ -314,7 +319,7 @@ void bind_table(int prog, const char* name, int index, int tex) {
 int create_shader(const char* name, const char* src) {
   static bool verbose = false;
 
-  printf("Compiling %s\n", name);
+  LOG_B("Compiling %s\n", name);
 
   auto vert_srcs = {
     "#version 300 es\n",
@@ -438,7 +443,7 @@ int create_shader(const char* name, const char* src) {
     }
   }
 
-  printf("Compiling %s done\n", name);
+  LOG_B("Compiling %s done\n", name);
   if (verbose) printf("\n");
 
   return shaderProgram;

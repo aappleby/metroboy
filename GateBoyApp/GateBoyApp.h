@@ -21,6 +21,7 @@ public:
   void app_init() override;
   void app_close() override;
 
+  void reset_to_bootrom();
   void load_raw_dump();
   void save_raw_dump();
   void load_flat_dump(const char* filename);

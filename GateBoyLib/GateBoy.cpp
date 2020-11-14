@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "CoreLib/Constants.h"
+#include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
 
 
@@ -31,19 +32,22 @@ void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
 
 void GateBoy::run_reset_sequence() {
 
+  LOG_G("Run reset sequence\n");
+  LOG_SCOPE_INDENT();
+
   //----------------------------------------
 
   CHECK_P(rom_buf != nullptr);
   CHECK_P(rom_size);
 
   // In reset
-  printf("In reset\n");
+  LOG_B("In reset\n");
   sys_rst = 1;
   run(5);
 
   // Out of reset
   // Start clock and sync with phase
-  printf("Out of reset\n");
+  LOG_B("Out of reset\n");
   sys_rst = 0;
   sys_clken = 1;
   sys_clkgood = 1;
@@ -55,7 +59,7 @@ void GateBoy::run_reset_sequence() {
   CHECK_P(clk_reg.ADYK_ABCxxxxH.qp09());
 
   // Wait for PIN_CPU_START
-  printf("Wait for PIN_CPU_START\n");
+  LOG_B("Wait for PIN_CPU_START\n");
   while(!cpu_bus.PIN_CPU_STARTp.qp()) {
     run(8);
   }
@@ -65,7 +69,7 @@ void GateBoy::run_reset_sequence() {
   run(8);
 
   // Done, initialize bus with whatever the CPU wants.
-  printf("Reset done\n");
+  LOG_B("Reset done\n");
   cpu.reset_boot();
   sys_cpuready = 1;
   sys_cpu_en = true;

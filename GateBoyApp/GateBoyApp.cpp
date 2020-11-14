@@ -2,6 +2,7 @@
 
 #include "CoreLib/Constants.h"
 #include "CoreLib/Debug.h" // for StringDumper
+#include "CoreLib/Tests.h"
 
 #include "AppLib/AppHost.h"
 #include "AppLib/GLBase.h"
@@ -26,7 +27,8 @@ int main(int argc, char** argv) {
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_init() {
-  printf("GateBoyApp::app_init()\n");
+  LOG_G("GateBoyApp::app_init()\n");
+  LOG_SCOPE_INDENT();
 
   grid_painter.init();
   text_painter.init();
@@ -39,21 +41,11 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-
-  //gb_thread.init();
-
-  load_rom("roms/tetris.gb");
-
+#if 1
   // regenerate post-bootrom dump
-#if 0
-  gb->reset_boot();
-  rom_buf = load_blob("roms/tetris.gb");
-  gb->set_rom(rom_buf.data(), rom_buf.size());
-  gb->run_reset_sequence();
-
-  for (int i = 0; i < 8192; i++) {
-    gb->vid_ram[i] = (uint8_t)rand();
-  }
+  reset_to_bootrom();
+#else
+  load_rom("roms/tetris.gb");
 #endif
 
 #if 0
@@ -153,6 +145,7 @@ void GateBoyApp::app_init() {
 
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 
+  LOG_G("GateBoyApp::app_init() done\n");
   gb_thread.start();
 }
 
@@ -174,6 +167,19 @@ void GateBoyApp::load_raw_dump() {
 void GateBoyApp::save_raw_dump() {
   printf("Saving raw dump to %s\n", "gateboy.raw.dump");
   gb_thread.gb->save_dump("gateboy.raw.dump");
+}
+
+//------------------------------------------------------------------------------
+
+void GateBoyApp::reset_to_bootrom() {
+  gb_thread.gb->reset_boot();
+  gb_thread.rom_buf = load_blob("roms/tetris.gb");
+  gb_thread.gb->set_rom(gb_thread.rom_buf.data(), gb_thread.rom_buf.size());
+  gb_thread.gb->run_reset_sequence();
+
+  for (int i = 0; i < 8192; i++) {
+    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
+  }
 }
 
 //------------------------------------------------------------------------------

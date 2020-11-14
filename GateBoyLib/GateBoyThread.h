@@ -21,7 +21,6 @@ struct GateBoyThread {
     int64_t count;
   };
 
-  void init();
   void reset();
   void start();
   void stop();

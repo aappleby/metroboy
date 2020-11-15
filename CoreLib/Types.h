@@ -65,55 +65,6 @@ inline T clamp_val(S a, T min, T max) {
 
 //-----------------------------------------------------------------------------
 
-inline uint8_t pack_u8(int c, const void* b) {
-  const uint8_t* d = (uint8_t*)b;
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= (d[i] & 1) << i;
-  }
-  return r;
-}
-
-inline uint8_t pack_u8n(int c, const void* b) {
-  const uint8_t* d = (uint8_t*)b;
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= (!(d[i] & 1)) << i;
-  }
-  return r;
-}
-
-inline uint8_t pack_u8(wire a, wire b, wire c, wire d) {
-  return (a << 0) | (b << 1) | (c << 2) | (d << 3);
-}
-
-inline uint8_t pack_u8(wire a, wire b, wire c, wire d,
-                      wire e, wire f, wire g, wire h) {
-  return (pack_u8(a, b, c, d) << 0) | (pack_u8(e, f, g, h) << 4);
-}
-
-//-----------------------------------------------------------------------------
-
-inline uint16_t pack_u16(int c, const void* b) {
-  const uint8_t* d = (uint8_t*)b;
-  uint16_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= (d[i] & 1) << i;
-  }
-  return r;
-}
-
-inline uint16_t pack_u16n(int c, const void* b) {
-  const uint8_t* d = (uint8_t*)b;
-  uint16_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= (!(d[i] & 1)) << i;
-  }
-  return r;
-}
-
-//-----------------------------------------------------------------------------
-
 //#define PHASE(A) ((A) & (1 << (7 - phase)))
 
 #define DELTA_HA  ((((phase_total + 0) & 7) == 7) && (((phase_total + 1) & 7) == 0))
@@ -208,9 +159,11 @@ struct Dumper {
   }
   */
 
+  /*
   inline void dump_reg(const char* tag, const void* bits) {
     dump_reg(tag, pack_u8(8, bits));
   }
+  */
 
   inline void dump_reg(const char* tag, uint8_t D) {
     operator()("%-10s : %-3d 0x%02x 0b%d%d%d%d%d%d%d%d\n", tag, D, D,

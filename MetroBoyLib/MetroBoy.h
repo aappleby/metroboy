@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreLib/Types.h"
-#include "CoreLib/Z80.h"
+#include "CoreLib/CPU.h"
 
 #include "MetroBoyLib/Bootrom.h"
 #include "MetroBoyLib/Cart.h"
@@ -39,7 +39,7 @@ struct MetroBoy {
 
   //----------
 
-  Z80     z80;
+  CPU     cpu;
   TimerRegisters   timer;
   Cart    cart;
   VRAM    vram;

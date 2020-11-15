@@ -120,14 +120,16 @@ struct VramBus {
   //----------------------------------------
   // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
 
-  BusNP BUS_VRAM_D0p;
-  BusNP BUS_VRAM_D1p;
-  BusNP BUS_VRAM_D2p;
-  BusNP BUS_VRAM_D3p;
-  BusNP BUS_VRAM_D4p;
-  BusNP BUS_VRAM_D5p;
-  BusNP BUS_VRAM_D6p;
-  BusNP BUS_VRAM_D7p;
+  // FIXME not sure if this is actually pulled up or not
+
+  BusPU BUS_VRAM_D0p;
+  BusPU BUS_VRAM_D1p;
+  BusPU BUS_VRAM_D2p;
+  BusPU BUS_VRAM_D3p;
+  BusPU BUS_VRAM_D4p;
+  BusPU BUS_VRAM_D5p;
+  BusPU BUS_VRAM_D6p;
+  BusPU BUS_VRAM_D7p;
 
   BusPU BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
   BusPU BUS_VRAM_A01n;

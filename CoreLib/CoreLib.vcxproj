@@ -18,7 +18,7 @@
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="StateManager2.cpp" />
     <ClCompile Include="Types.cpp" />
-    <ClCompile Include="Z80.cpp" />
+    <ClCompile Include="CPU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assembler.h" />
@@ -31,7 +31,7 @@
     <ClInclude Include="StateManager2.h" />
     <ClInclude Include="Tests.h" />
     <ClInclude Include="Types.h" />
-    <ClInclude Include="Z80.h" />
+    <ClInclude Include="CPU.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

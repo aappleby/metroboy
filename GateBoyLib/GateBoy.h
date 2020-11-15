@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreLib/File.h"
-#include "CoreLib/Z80.h"
+#include "CoreLib/CPU.h"
 #include "CoreLib/Constants.h"
 
 #include "GateBoyLib/Probe.h"
@@ -96,6 +96,9 @@ struct GateBoy {
   void tock_slow();
   void commit_and_hash();
 
+  uint8_t* reg_begin() { return (uint8_t*)(&sentinel2) + sizeof(sentinel2); }
+  uint8_t* reg_end()   { return (uint8_t*)(&sentinel3); }
+
   uint64_t sentinel1 = 0xBEEFBEEFBEEFBEEF;
 
   //-----------------------------------------------------------------------------
@@ -122,7 +125,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // CPU
 
-  Z80      cpu;
+  CPU      cpu;
   Req      cpu_req = {0};
   Req      dbg_req = {0};
   Req      bus_req = {0};

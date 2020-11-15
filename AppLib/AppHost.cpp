@@ -4,6 +4,8 @@
 //#include "imgui/imgui.h"
 #include "glad/glad.h"
 
+#include "CoreLib/Tests.h"
+
 #ifdef _MSC_VER
 #include "SDL/include/SDL.h"
 #else
@@ -62,7 +64,7 @@ void main() {
 //-----------------------------------------------------------------------------
 
 int AppHost::app_main(int, char**) {
-  printf("AppHost::app_main()\n");
+  LOG_G("AppHost::app_main()\n");
 
   //----------------------------------------
   // Create window

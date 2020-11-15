@@ -14,7 +14,7 @@
 void MetroBoy::reset_cart(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  z80.reset_cart();
+  cpu.reset_cart();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
   ppu.reset_cart();
@@ -46,7 +46,7 @@ void MetroBoy::reset_cart(uint8_t* new_rom, size_t new_rom_size) {
 void MetroBoy::reset_boot(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  z80.reset_boot();
+  cpu.reset_boot();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
   ppu.reset_boot();
@@ -127,11 +127,11 @@ void MetroBoy::next_phase() {
     else if (cpu_has_vbus_req) bus_data = vbus_ack.data_lo;
     else if (cpu_has_obus_req) bus_data = obus_ack.data_lo;
 
-    z80.tock_ha(ints.imask, ints.intf, bus_data);
+    cpu.tock_ha(ints.imask, ints.intf, bus_data);
 
     /*
-    z80.tock_ack(imask_delay, intf_delay, bus_data);
-    z80.tock_req(imask_delay, intf_delay);
+    cpu.tock_ack(imask_delay, intf_delay, bus_data);
+    cpu.tock_req(imask_delay, intf_delay);
 
     intf_delay = ints.intf;
     imask_delay = ints.imask;
@@ -149,7 +149,7 @@ void MetroBoy::next_phase() {
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  ints.  tock(phase_total, ibus_req, z80.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
+  ints.  tock(phase_total, ibus_req, cpu.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
 
   //----------
 
@@ -164,7 +164,7 @@ void MetroBoy::next_phase() {
   // prioritize reqs
 
   if (DELTA_AB) {
-    cpu_req = z80.bus_req;
+    cpu_req = cpu.bus_req;
 
     ibus_req = {0};
     ebus_req = {0};
@@ -250,7 +250,7 @@ void MetroBoy::dump_bus(Dumper& d) {
 void MetroBoy::dump_disasm(Dumper& d) {
   d("\002--------------DISASM-----------\001\n");
 
-  uint16_t pc = z80.op_addr;
+  uint16_t pc = cpu.op_addr;
 
   Assembler a;
   if (ADDR_CART_ROM_BEGIN <= pc && pc <= ADDR_CART_ROM_END) {

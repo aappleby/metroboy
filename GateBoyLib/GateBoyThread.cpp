@@ -123,7 +123,6 @@ void GateBoyThread::run_step_pass() {
 
 void GateBoyThread::run_step_back() {
   for(;command.count && !sig_pause; command.count--) {
-    printf("pop\n");
     gb.pop();
   }
 }

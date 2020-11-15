@@ -23,73 +23,36 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-  //err += t.test_post_bootrom_state();
-
-  {
-    GateBoy gb;
-    gb.reset_boot();
-    blob rom = load_blob("roms/tetris.gb");
-    gb.set_rom(rom.data(), rom.size());
-    gb.phase_total = 0;
-
-    printf("reset sequence\n");
-
-    gb.run_reset_sequence();
-
-    printf("reset done\n");
-
-    gb.tock_slow();
-    gb.commit_and_hash();
-    printf("0x%016llx\n", gb.pass_hash);
-    gb.tock_slow();
-    gb.commit_and_hash();
-    printf("0x%016llx\n", gb.pass_hash);
-    gb.tock_slow();
-    gb.commit_and_hash();
-    printf("0x%016llx\n", gb.pass_hash);
-    gb.tock_slow();
-    gb.commit_and_hash();
-    printf("0x%016llx\n", gb.pass_hash);
-    gb.tock_slow();
-    gb.commit_and_hash();
-    printf("0x%016llx\n", gb.pass_hash);
-
-    LOG_G("sjklfdlskjdf\n");
-  }
-
-#if 0
-
 #ifdef RUN_SLOW_TESTS
-  err += t.test_init();
   err += t.test_bootrom();
 #endif
 
-  err += t.test_clk();
-  err += t.test_ext_bus();
-  /*
-  err += t.test_mem();
-  err += t.test_dma();
-  err += t.test_interrupts();
-  err += t.test_joypad();
-  err += t.test_ppu();
-  err += t.test_serial();
-  err += t.test_timer();
+  //err += t.test_post_bootrom_state();
 
-  err += t.test_micro_poweron();
-  err += t.test_micro_lcden();
-  err += t.test_micro_timer();
-  err += t.test_micro_int_vblank();
-  err += t.test_micro_int_stat();
-  err += t.test_micro_int_timer();
-  err += t.test_micro_int_serial();
-  err += t.test_micro_int_joypad();
-  err += t.test_micro_lock_oam();
-  err += t.test_micro_lock_vram();
-  err += t.test_micro_window();
-  err += t.test_micro_dma();
-  err += t.test_micro_ppu();
-  */
-#endif
+  err += t.test_init();
+  err += t.test_clk();
+  err += t.test_mem();
+  //err += t.test_ext_bus();
+  //err += t.test_dma();
+  //err += t.test_interrupts();
+  //err += t.test_joypad();
+  //err += t.test_ppu();
+  //err += t.test_serial();
+  //err += t.test_timer();
+
+  //err += t.test_micro_poweron();
+  //err += t.test_micro_lcden();
+  //err += t.test_micro_timer();
+  //err += t.test_micro_int_vblank();
+  //err += t.test_micro_int_stat();
+  //err += t.test_micro_int_timer();
+  //err += t.test_micro_int_serial();
+  //err += t.test_micro_int_joypad();
+  //err += t.test_micro_lock_oam();
+  //err += t.test_micro_lock_vram();
+  //err += t.test_micro_window();
+  //err += t.test_micro_dma();
+  //err += t.test_micro_ppu();
 
   auto finish = timestamp();
 
@@ -822,9 +785,9 @@ int GateBoyTests::run_microtest(const char* filename) {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::test_init() {
-  TEST_START("Init");
+  TEST_START();
 
-  blob rom(32768);
+  blob rom(32768, 0);
 
   GateBoy gb;
   gb.reset_boot();
@@ -832,32 +795,34 @@ int GateBoyTests::test_init() {
   gb.run_reset_sequence();
 
   // FIXME should not be hashing pointers
-  gb.set_rom(nullptr, 0);
-  uint64_t top_hash = hash_states(&gb, sizeof(gb));
-  LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
-  EXPECT_EQ(0x6242fa077bd36b15, top_hash, "Top hash mismatch");
+  //gb.set_rom(nullptr, 0);
+  //uint64_t top_hash = hash_states(&gb, sizeof(gb));
+  //LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
+  //EXPECT_EQ(0x6242fa077bd36b15, top_hash, "Top hash mismatch");
+  //gb.set_rom(rom.data(), rom.size());
+
+  LOG_G("Checking reg flags\n");
 
   // All regs should be clean and unlocked
-  for (int i = 0; i < sizeof(gb); i++) {
-    uint8_t state = ((uint8_t*)&gb)[i];
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
+  for (uint8_t* cursor = gb.reg_begin(); cursor != gb.reg_end(); cursor++) {
+    CHECK_N(*cursor & BIT_DIRTY);
+    CHECK_N(*cursor & BIT_LOCKED);
   }
 
+  LOG_G("Checking mem\n");
   // Mem should be clear
-  //for (int i = 0; i < 32768; i++) ASSERT_EQ(0, gb.cart_rom[i]);
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.cart_ram[i]);
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.ext_ram[i]);
 
   // Framebuffer should be 0x04 (yellow) except for the first pixel, which
   // always gets written to because XONA_LCDCENn is 0 at boot
 
+  LOG_G("Checking framebuffer\n");
   for (int i = 1; i < 160*144; i++) {
     ASSERT_EQ(4, gb.framebuffer[i], "bad framebuffer at %d\n", i);
   }
 
-  // we don't really care much about the pre-bootrom reg values
-#if 0
+  LOG_G("Checking reg values\n");
   EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
   EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
@@ -867,7 +832,7 @@ int GateBoyTests::test_init() {
   EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
   EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
-  //EXPECT_EQ(0x84, gb.dbg_read(ADDR_STAT), "Bad STAT reset value"); // 85 after bootrom unstable latch problem
+  EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom unstable latch problem
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
@@ -878,17 +843,6 @@ int GateBoyTests::test_init() {
   EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
-
-  // Button signals should be pulled high
-  EXPECT_EQ('^', gb.joypad.PIN_JOY_P10.c());
-  EXPECT_EQ('^', gb.joypad.PIN_JOY_P11.c());
-  EXPECT_EQ('^', gb.joypad.PIN_JOY_P12.c());
-  EXPECT_EQ('^', gb.joypad.PIN_JOY_P13.c());
-
-  // Button scan signals should be driven low
-  EXPECT_EQ('0', gb.joypad.PIN_JOY_P14.c());
-  EXPECT_EQ('0', gb.joypad.PIN_JOY_P15.c());
-#endif
 
   TEST_END();
 }

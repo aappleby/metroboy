@@ -22,9 +22,6 @@ struct TimerRegisters {
     UKET_DIV_14.reset(REG_D1C0);
     UPOF_DIV_15.reset(REG_D1C0);
 
-    NYDU_TIMA_D7_DELAY.reset(REG_D0C1);
-    MOBA_TIMER_OVERFLOWp.reset(REG_D0C1);
-
     REGA_TIMA_D0.reset(REG_D0C1);
     POVY_TIMA_D1.reset(REG_D0C1);
     PERU_TIMA_D2.reset(REG_D0C1);
@@ -46,6 +43,9 @@ struct TimerRegisters {
     SOPU_TAC_D0.reset(REG_D0C1);
     SAMY_TAC_D1.reset(REG_D0C1);
     SABO_TAC_D2.reset(REG_D0C1);
+
+    NYDU_TIMA_D7_DELAY.reset(REG_D0C1);
+    MOBA_TIMER_OVERFLOWp.reset(REG_D0C1);
   }
 
   void reset_boot() {
@@ -65,9 +65,6 @@ struct TimerRegisters {
     TEKA_DIV_13.reset(REG_D0C0);
     UKET_DIV_14.reset(REG_D0C0);
     UPOF_DIV_15.reset(REG_D0C0);
-
-    NYDU_TIMA_D7_DELAY.reset(REG_D0C0);
-    MOBA_TIMER_OVERFLOWp.reset(REG_D0C0);
 
     REGA_TIMA_D0.reset(REG_D0C0);
     POVY_TIMA_D1.reset(REG_D0C0);
@@ -90,6 +87,9 @@ struct TimerRegisters {
     SOPU_TAC_D0.reset(REG_D0C0);
     SAMY_TAC_D1.reset(REG_D0C0);
     SABO_TAC_D2.reset(REG_D0C0);
+
+    NYDU_TIMA_D7_DELAY.reset(REG_D0C0);
+    MOBA_TIMER_OVERFLOWp.reset(REG_D0C0);
   }
 
   int get_div() const  { return pack_u16(16, &UKUP_DIV_00); }
@@ -112,14 +112,6 @@ struct TimerRegisters {
   }
 
   void force_set_div(uint16_t div) {
-
-    // 0b1111001111011011
-
-    //REG_D0C0 = 0b0000, // 00: state 0 + clock 0
-    //REG_D1C0 = 0b0001, // 01: state 1 + clock 0
-    //REG_D0C1 = 0b0010, // 02: state 0 + clock 1
-    //REG_D1C1 = 0b0011, // 03: state 1 + clock 1
-
     uint16_t div_a = div;
     uint16_t div_b = ((~div) << 2);
 
@@ -139,25 +131,6 @@ struct TimerRegisters {
     TEKA_DIV_13.reset(((div_a >> 13) & 1) | ((div_b >> 13) & 2));
     UKET_DIV_14.reset(((div_a >> 14) & 1) | ((div_b >> 14) & 2));
     UPOF_DIV_15.reset(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
-
-    /*
-    UKUP_DIV_00.force_state(REG_D1C0);
-    UFOR_DIV_01.force_state(REG_D1C0);
-    UNER_DIV_02.force_state(REG_D0C0);
-    TERO_DIV_03.force_state(REG_D1C1);
-    UNYK_DIV_04.force_state(REG_D1C0);
-    TAMA_DIV_05.force_state(REG_D0C0);
-    UGOT_DIV_06.force_state(REG_D1C1);
-    TULU_DIV_07.force_state(REG_D1C0);
-    TUGO_DIV_08.force_state(REG_D1C0);
-    TOFE_DIV_09.force_state(REG_D1C0);
-    TERU_DIV_10.force_state(REG_D0C0);
-    SOLA_DIV_11.force_state(REG_D0C1);
-    SUBU_DIV_12.force_state(REG_D1C1);
-    TEKA_DIV_13.force_state(REG_D1C0);
-    UKET_DIV_14.force_state(REG_D1C0);
-    UPOF_DIV_15.force_state(REG_D1C0);
-    */
   }
 
   //----------
@@ -179,9 +152,6 @@ struct TimerRegisters {
   /*p01.TEKA*/ DFF17 TEKA_DIV_13;
   /*p01.UKET*/ DFF17 UKET_DIV_14;
   /*p01.UPOF*/ DFF17 UPOF_DIV_15; // -> UNUT_POR_TRIGn
-
-  /*p03.NYDU*/ DFF17 NYDU_TIMA_D7_DELAY;
-  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // -> interrupts
 
   //----------
   // FF05 TIMA
@@ -213,6 +183,9 @@ struct TimerRegisters {
   /*p03.SOPU*/ DFF17 SOPU_TAC_D0;
   /*p03.SAMY*/ DFF17 SAMY_TAC_D1;
   /*p03.SABO*/ DFF17 SABO_TAC_D2;
+
+  /*p03.NYDU*/ DFF17 NYDU_TIMA_D7_DELAY;
+  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // -> interrupts
 };
 
 //-----------------------------------------------------------------------------

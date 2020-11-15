@@ -40,8 +40,8 @@ void APIENTRY debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLe
 //-----------------------------------------------------------------------------
 
 void* init_gl(void* window) {
-  LOG_G("init_gl\n");
-  LOG_INDENT();
+  LOG_SCOPE_INDENT();
+  LOG_G("GLBase::init_gl\n");
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
                       SDL_GL_CONTEXT_DEBUG_FLAG |
@@ -106,7 +106,6 @@ void* init_gl(void* window) {
   glClearDepthf(1.0);
 #endif
 
-  LOG_DEDENT();
   return (void*)gl_context;
 }
 

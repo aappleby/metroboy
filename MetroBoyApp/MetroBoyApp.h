@@ -40,7 +40,7 @@ public:
   }
 
   void run_to_breakpoint(uint16_t breakpoint) {
-    while (gb->z80.op_addr != breakpoint) step_cycle();
+    while (gb->cpu.op_addr != breakpoint) step_cycle();
   }
 
   void step_phase(int count = 1) {

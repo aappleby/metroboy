@@ -32,13 +32,13 @@ int main(int argc, char** argv) {
   err += t.test_init();
   err += t.test_clk();
   err += t.test_mem();
-  //err += t.test_ext_bus();
+  err += t.test_ext_bus();
   err += t.test_dma();
   err += t.test_interrupts();
-  //err += t.test_joypad();
-  //err += t.test_ppu();
-  //err += t.test_serial();
-  //err += t.test_timer();
+  err += t.test_joypad();
+  err += t.test_ppu();
+  err += t.test_serial();
+  err += t.test_timer();
 
   //err += t.test_micro_poweron();
   //err += t.test_micro_lcden();
@@ -921,11 +921,11 @@ int GateBoyTests::test_ext_bus() {
 
     // Run through the first loop iteration.
     for (int i = 0; i < 119; i++) {
-      printf("phase %d, a = 0x%02x\n", i, gb.cpu.a);
+      //printf("phase %d, a = 0x%02x\n", i, gb.cpu.a);
       gb.next_phase();
     }
 
-    printf("phase %d, a = 0x%02x\n", 119, gb.cpu.a);
+    //printf("phase %d, a = 0x%02x\n", 119, gb.cpu.a);
     gb.next_phase();
 
 #if 0

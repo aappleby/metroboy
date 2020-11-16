@@ -799,7 +799,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== Pix Pipe =====\001\n");
 
   d("PIX COUNT  0x%02x\n", pack_u8(8, &gb->pix_pipe.XEHO_X0p));
-  d("FF40 LCDC  0x%02x\n", pack_u8(8, &gb->pix_pipe.VYXE_LCDC_BGENn));
+  d("FF40 LCDC  0x%02x\n", pack_u8n(8, &gb->pix_pipe.VYXE_LCDC_BGENn));
 
   // FIXME plumb sadu/xaty in here somehow
   /*
@@ -815,13 +815,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
       1));
   */
 
-  d("FF42 SCY   0x%02x\n", pack_u8(8, &gb->pix_pipe.GAVE_SCY0n));
-  d("FF43 SCX   0x%02x\n", pack_u8(8, &gb->pix_pipe.DATY_SCX0n));
-  d("FF47 BGP   0x%02x\n", pack_u8(8, &gb->pix_pipe.PAVO_BGP_D0n));
-  d("FF48 OBP0  0x%02x\n", pack_u8(8, &gb->pix_pipe.XUFU_OBP0_D0n));
-  d("FF49 OBP1  0x%02x\n", pack_u8(8, &gb->pix_pipe.MOXY_OBP1_D0n));
-  d("FF4A WY    0x%02x\n", pack_u8(8, &gb->pix_pipe.NESO_WY0n));
-  d("FF4B WX    0x%02x\n", pack_u8(8, &gb->pix_pipe.MYPA_WX0n));
+  d("FF42 SCY   0x%02x\n", pack_u8n(8, &gb->pix_pipe.GAVE_SCY0n));
+  d("FF43 SCX   0x%02x\n", pack_u8n(8, &gb->pix_pipe.DATY_SCX0n));
+  d("FF47 BGP   0x%02x\n", pack_u8n(8, &gb->pix_pipe.PAVO_BGP_D0n));
+  d("FF48 OBP0  0x%02x\n", pack_u8n(8, &gb->pix_pipe.XUFU_OBP0_D0n));
+  d("FF49 OBP1  0x%02x\n", pack_u8n(8, &gb->pix_pipe.MOXY_OBP1_D0n));
+  d("FF4A WY    0x%02x\n", pack_u8n(8, &gb->pix_pipe.NESO_WY0n));
+  d("FF4B WX    0x%02x\n", pack_u8n(8, &gb->pix_pipe.MYPA_WX0n));
   d("BG_PIPE_A  0x%02x\n", pack_u8(8, &gb->pix_pipe.MYDE_BG_PIPE_A0));
   d("BG_PIPE_B  0x%02x\n", pack_u8(8, &gb->pix_pipe.TOMY_BG_PIPE_B0));
   d("SPR_PIPE_A 0x%02x\n", pack_u8(8, &gb->pix_pipe.NYLU_SPR_PIPE_B0));

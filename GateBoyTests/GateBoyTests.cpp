@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
   err += t.test_clk();
   err += t.test_mem();
   //err += t.test_ext_bus();
-  //err += t.test_dma();
-  //err += t.test_interrupts();
+  err += t.test_dma();
+  err += t.test_interrupts();
   //err += t.test_joypad();
   //err += t.test_ppu();
   //err += t.test_serial();
@@ -788,7 +788,6 @@ int GateBoyTests::test_init() {
   TEST_START();
 
   blob rom(32768, 0);
-
   GateBoy gb;
   gb.reset_boot();
   gb.set_rom(rom.data(), rom.size());
@@ -1693,6 +1692,7 @@ int GateBoyTests::test_ppu() {
 int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
+  /*
   GateBoy gb;
   gb.reset_cart();
 
@@ -1701,6 +1701,15 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
+  */
+
+  blob rom(32768, 0);
+  GateBoy gb;
+  gb.reset_boot();
+  gb.set_rom(rom.data(), rom.size());
+  gb.sys_cpu_en = 0;
+  gb.run_reset_sequence(true);
+  gb.dbg_write(0xFF50, 1);
 
   int len = addr_end - addr_start + 1;
   uint8_t* mem = get_flat_ptr(gb, addr_start);
@@ -1739,13 +1748,12 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
+  blob rom(32768, 0);
   GateBoy gb;
-  gb.reset_cart();
-
-  blob rom(32768);
+  gb.reset_boot();
   gb.set_rom(rom.data(), rom.size());
-
   gb.sys_cpu_en = 0;
+  gb.run_reset_sequence(true);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);

@@ -31,7 +31,7 @@ struct GateBoy {
 
   void set_rom(uint8_t* rom_buf, size_t rom_size);
   void load_post_bootrom_state();
-  void run_reset_sequence();
+  void run_reset_sequence(bool fastboot = true);
 
   //----------------------------------------
 
@@ -112,6 +112,7 @@ struct GateBoy {
   int32_t  sys_cpuready = 0;
   int32_t  sys_cpu_en = 0;
   uint8_t  sys_buttons = 0;
+  bool     sys_fastboot = 0;
 
   uint8_t  sim_stable = 0;
   double   sim_time = 0;

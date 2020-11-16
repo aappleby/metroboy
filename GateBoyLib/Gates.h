@@ -514,7 +514,8 @@ struct DFF22 : public RegBase {
 
 struct TriBase : public BitBase {
 
-  wire to_wire() const {
+#pragma optimize("", off)
+  __declspec(noinline) wire to_wire() const {
     if (state & BIT_DRIVEN) {
       return wire(state & BIT_DATA);
     }
@@ -522,9 +523,11 @@ struct TriBase : public BitBase {
       return 1;
     }
     else {
-      CHECK_P(false);
-      printf("Signal floating!\n");
-      bus_floating = true;
+      if (sim_running) {
+        //CHECK_P(false);
+        printf("Signal floating!\n");
+        bus_floating = true;
+      }
       return 0;
     }
   }

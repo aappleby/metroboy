@@ -1645,14 +1645,9 @@ int GateBoyTests::test_ppu() {
   err += test_reg("WX",   ADDR_WX,   0b11111111);
 
   // slow
-  /*
-  {
+  if (0) {
     LOG("Checking LY increment rate... ");
-    GateBoy gb;
-    gb.reset_post_bootrom(nullptr, 0);
-    gb.sys_cpu_en = 0;
-
-    gb.dbg_write(ADDR_LCDC, 0x00);
+    GateBoy gb = create_test_gb_boot();
     gb.dbg_write(ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
@@ -1675,7 +1670,6 @@ int GateBoyTests::test_ppu() {
     if (!err) LOG_B("Pass");
   }
   LOG("\n");
-  */
 
   TEST_END();
 }

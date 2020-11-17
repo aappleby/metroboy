@@ -41,10 +41,19 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+  blob* rom = new blob(32768, 0);
+  gb_thread.gb->reset_boot();
+  gb_thread.gb->set_rom(rom->data(), rom->size());
+  gb_thread.gb->sys_cpu_en = 0;
+  gb_thread.gb->run_reset_sequence(true);
+  gb_thread.gb->dbg_write(ADDR_LCDC, 0x80);
+
+#if 0
   // regenerate post-bootrom dump
   reset_to_bootrom();
-#else
+#endif
+
+#if 0
   load_rom("roms/tetris.gb");
 #endif
 

@@ -1852,6 +1852,11 @@ void GateBoy::tock_slow() {
   /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or3(_ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03(), dma_reg.MATU_DMA_RUNNINGp.qp17());
   /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not1(_AJON_PPU_OAM_ENp);
 
+  probe(3, "_APAR_SCAN_OAM_RDn", _APAR_SCAN_OAM_RDn);
+  probe(4, "_DUGA_DMA_OAM_RDn", _DUGA_DMA_OAM_RDn);
+  probe(5, "_ASAM_CPU_OAM_RDn", _ASAM_CPU_OAM_RDn);
+  probe(6, "_BETE_PPU_OAM_RDn", _BETE_PPU_OAM_RDn);
+
   {
 
     /* SCAN  -> OBA */

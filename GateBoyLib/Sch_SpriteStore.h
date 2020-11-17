@@ -498,12 +498,13 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  BusNP SPR_TRI_I0p; // -> oam bus
-  BusNP SPR_TRI_I1p;
-  BusNP SPR_TRI_I2p;
-  BusNP SPR_TRI_I3p;
-  BusNP SPR_TRI_I4p;
-  BusNP SPR_TRI_I5p;
+  // this has to be pulled up, otherwise it's floating during rendering if there's no sprite hit.
+  BusPU SPR_TRI_I0p; // -> oam bus
+  BusPU SPR_TRI_I1p;
+  BusPU SPR_TRI_I2p;
+  BusPU SPR_TRI_I3p;
+  BusPU SPR_TRI_I4p;
+  BusPU SPR_TRI_I5p;
 
   BusNP SPR_TRI_L0; // -> vram bus
   BusNP SPR_TRI_L1;

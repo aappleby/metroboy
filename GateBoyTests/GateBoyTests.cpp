@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
 
   GateBoyTests t;
   t.print_passes = false;
+  t.dummy_rom.resize(32768, 0);
 
   auto start = timestamp();
 
@@ -75,6 +76,15 @@ int diff(void* a, void* b, int size) {
   }
 
   return -1;
+}
+
+GateBoy GateBoyTests::create_test_gb_boot() {
+  GateBoy gb;
+  gb.reset_boot();
+  gb.set_rom(dummy_rom.data(), dummy_rom.size());
+  gb.sys_cpu_en = 0;
+  gb.run_reset_sequence(true);
+  return gb;
 }
 
 int GateBoyTests::test_post_bootrom_state() {
@@ -787,11 +797,7 @@ int GateBoyTests::run_microtest(const char* filename) {
 int GateBoyTests::test_init() {
   TEST_START();
 
-  blob rom(32768, 0);
-  GateBoy gb;
-  gb.reset_boot();
-  gb.set_rom(rom.data(), rom.size());
-  gb.run_reset_sequence();
+  GateBoy gb = create_test_gb_boot();
 
   // FIXME should not be hashing pointers
   //gb.set_rom(nullptr, 0);
@@ -853,15 +859,9 @@ int GateBoyTests::test_init() {
 int GateBoyTests::test_clk() {
   TEST_START();
 
-  GateBoy gb;
-  gb.reset_cart();
-
-  blob rom(32768);
-  gb.set_rom(rom.data(), rom.size());
-
-  gb.sys_cpu_en = false;
-
-  gb.run(32);
+  GateBoy gb = create_test_gb_boot();
+  gb.dbg_write(ADDR_LCDC, 0x80);
+  gb.run(8);
 
   auto& top = gb;
   auto& clk_reg = top.clk_reg;
@@ -1358,13 +1358,7 @@ int GateBoyTests::test_mem() {
 int GateBoyTests::test_interrupts() {
   TEST_START();
 
-  GateBoy gb;
-  gb.reset_cart();
-
-  blob rom(32768);
-  gb.set_rom(rom.data(), rom.size());
-
-  gb.sys_cpu_en = 0;
+  GateBoy gb = create_test_gb_boot();
 
   // hblank no stat int
   // vblank no stat int
@@ -1386,6 +1380,8 @@ int GateBoyTests::test_interrupts() {
 }
 
 //------------------------------------------------------------------------------
+
+// FIXME dis brokn
 
 extern const uint8_t DMG_ROM_bin[];
 
@@ -1419,11 +1415,9 @@ int GateBoyTests::test_timer() {
   // TAC 110 - 128 phases per TIMA tick
   // TAC 111 - 512 phases per TIMA tick
 
-#if 0
-  LOG("Testing TIMA tick rate and reset_states to TMA... ");
+  LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
-    GateBoy gb;
-    gb.reset_to_bootrom();
+    GateBoy gb = create_test_gb_boot();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1440,11 +1434,11 @@ int GateBoyTests::test_timer() {
     gb.run(2048);
     EXPECT_EQ(0x81, gb.tim_reg.get_tima());
     gb.run(2048);
-    if (!err) LOG_B("TAC 0b100 pass ");
+    if (!err) LOG_B("TAC 0b100 pass\n");
   }
+
   {
-    GateBoy gb;
-    gb.reset_to_bootrom();
+    GateBoy gb = create_test_gb_boot();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1461,11 +1455,10 @@ int GateBoyTests::test_timer() {
     gb.run(32);
     EXPECT_EQ(0x81, gb.tim_reg.get_tima());
     gb.run(32);
-    if (!err) LOG_B("TAC 0b101 pass ");
+    if (!err) LOG_B("TAC 0b101 pass\n");
   }
   {
-    GateBoy gb;
-    gb.reset_to_bootrom();
+    GateBoy gb = create_test_gb_boot();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1482,11 +1475,10 @@ int GateBoyTests::test_timer() {
     gb.run(128);
     EXPECT_EQ(0x81, gb.tim_reg.get_tima());
     gb.run(128);
-    if (!err) LOG_B("TAC 0b110 pass ");
+    if (!err) LOG_B("TAC 0b110 pass\n");
   }
   {
-    GateBoy gb;
-    gb.reset_to_bootrom();
+    GateBoy gb = create_test_gb_boot();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1503,24 +1495,28 @@ int GateBoyTests::test_timer() {
     gb.run(512);
     EXPECT_EQ(0x81, gb.tim_reg.get_tima());
     gb.run(512);
-    if (!err) LOG_B("TAC 0b111 pass ");
+    if (!err) LOG_B("TAC 0b111 pass\n");
   }
   if (!err) LOG("\n");
-#endif
 
 #if 0
-  GateBoy gb;
-  gb.reset();
+  {
+    GateBoy gb;
+    gb.reset_boot();
+    gb.set_rom(rom.data(), rom.size());
+    gb.sys_cpu_en = 0;
+    gb.run_reset_sequence(true);
 
-  // passes, but slow :/
-  LOG("Testing div reset_states + rollover, this takes a minute...");
-  gb.dbg_write(ADDR_DIV, 0);
-  for (int i = 1; i < 32768; i++) {
-    int div_a = gb.dbg_read(ADDR_DIV);
-    int div_b = (i >> 6) & 0xFF;
-    EXPECT_EQ(div_a, div_b, "div match fail");
+    // passes, but slow :/
+    LOG("Testing div reset_states + rollover, this takes a minute...");
+    gb.dbg_write(ADDR_DIV, 0);
+    for (int i = 1; i < 32768; i++) {
+      int div_a = gb.dbg_read(ADDR_DIV);
+      int div_b = (i >> 6) & 0xFF;
+      EXPECT_EQ(div_a, div_b, "div match fail");
+    }
+    LOG("\n");
   }
-  LOG("\n");
 #endif
 
   TEST_END();
@@ -1626,11 +1622,8 @@ int GateBoyTests::test_dma(uint16_t src) {
 
 int GateBoyTests::test_serial() {
   TEST_START();
-
-  GateBoy gb;
   err += test_reg("SB", ADDR_SB, 0b11111111);
   err += test_reg("SC", ADDR_SC, 0b10000001);
-
   TEST_END();
 }
 
@@ -1692,23 +1685,7 @@ int GateBoyTests::test_ppu() {
 int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
-  /*
-  GateBoy gb;
-  gb.reset_cart();
-
-  blob rom(32768);
-  gb.set_rom(rom.data(), rom.size());
-
-  gb.sys_cpu_en = 0;
-  gb.dbg_write(ADDR_LCDC, 0);
-  */
-
-  blob rom(32768, 0);
-  GateBoy gb;
-  gb.reset_boot();
-  gb.set_rom(rom.data(), rom.size());
-  gb.sys_cpu_en = 0;
-  gb.run_reset_sequence(true);
+  GateBoy gb = create_test_gb_boot();
   gb.dbg_write(0xFF50, 1);
 
   int len = addr_end - addr_start + 1;
@@ -1748,12 +1725,7 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  blob rom(32768, 0);
-  GateBoy gb;
-  gb.reset_boot();
-  gb.set_rom(rom.data(), rom.size());
-  gb.sys_cpu_en = 0;
-  gb.run_reset_sequence(true);
+  GateBoy gb = create_test_gb_boot();
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);

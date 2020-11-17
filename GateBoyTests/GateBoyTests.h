@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include "CoreLib/File.h"
 
 struct GateBoy;
 
@@ -42,5 +43,9 @@ struct GateBoyTests {
 
   void run_benchmark();
 
+  GateBoy create_test_gb_boot();
+
   bool print_passes = true;
+  blob dummy_rom;
+
 };

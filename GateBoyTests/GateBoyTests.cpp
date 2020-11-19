@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
   static const bool skip_passing_tests = true;
 
   GateBoyTests t;
-  t.print_passes = false;
-  t.dummy_rom.resize(32768, 0);
+  //t.print_passes = true;
+  t.cart_rom.resize(32768, 0);
 
   auto start = timestamp();
 
@@ -30,30 +30,30 @@ int main(int argc, char** argv) {
 
   //err += t.test_post_bootrom_state();
 
-  err += t.test_init();
-  err += t.test_clk();
-  err += t.test_mem();
+  //err += t.test_init();
+  //err += t.test_clk();
+  //err += t.test_mem();
   err += t.test_ext_bus();
-  err += t.test_dma();
-  err += t.test_interrupts();
-  err += t.test_joypad();
-  err += t.test_ppu();
-  err += t.test_serial();
-  err += t.test_timer();
+  //err += t.test_dma();
+  //err += t.test_interrupts();
+  //err += t.test_joypad();
+  //err += t.test_ppu();
+  //err += t.test_serial();
+  //err += t.test_timer();
 
-  //err += t.test_micro_poweron();
-  //err += t.test_micro_lcden();
-  //err += t.test_micro_timer();
-  //err += t.test_micro_int_vblank();
-  //err += t.test_micro_int_stat();
-  //err += t.test_micro_int_timer();
-  //err += t.test_micro_int_serial();
-  //err += t.test_micro_int_joypad();
-  //err += t.test_micro_lock_oam();
-  //err += t.test_micro_lock_vram();
-  //err += t.test_micro_window();
-  //err += t.test_micro_dma();
-  //err += t.test_micro_ppu();
+  err += t.test_micro_poweron();
+  err += t.test_micro_lcden();
+  err += t.test_micro_timer();
+  err += t.test_micro_int_vblank();
+  err += t.test_micro_int_stat();
+  err += t.test_micro_int_timer();
+  err += t.test_micro_int_serial();
+  err += t.test_micro_int_joypad();
+  err += t.test_micro_lock_oam();
+  err += t.test_micro_lock_vram();
+  err += t.test_micro_window();
+  err += t.test_micro_dma();
+  err += t.test_micro_ppu();
 
   auto finish = timestamp();
 
@@ -80,10 +80,8 @@ int diff(void* a, void* b, int size) {
 
 GateBoy GateBoyTests::create_test_gb_boot() {
   GateBoy gb;
-  gb.reset_boot();
-  gb.set_rom(dummy_rom.data(), dummy_rom.size());
+  gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
   gb.sys_cpu_en = 0;
-  gb.run_reset_sequence(true);
   return gb;
 }
 
@@ -96,7 +94,7 @@ int GateBoyTests::test_post_bootrom_state() {
   GateBoy gb2;
 
   gb1.load_post_bootrom_state();
-  gb2.reset_cart();
+  gb2.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
 
   memset(&gb1.probes, 0, sizeof(gb1.probes));
   memset(&gb2.probes, 0, sizeof(gb2.probes));
@@ -743,17 +741,16 @@ int GateBoyTests::test_micro_window() {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::run_microtest(const char* filename) {
-  blob rom = load_blob(std::string("microtests/build/dmg/") + filename);
+  cart_rom = load_blob(std::string("microtests/build/dmg/") + filename);
 
-  if (rom.empty()) {
+  if (cart_rom.empty()) {
     LOG_B("%-30s ", filename);
     LOG_Y("FILE NOT FOUND\n");
     return 1;
   }
 
   GateBoy gb;
-  gb.reset_cart();
-  gb.set_rom(rom.data(), rom.size());
+  gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
   gb.phase_total = 0;
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
@@ -913,22 +910,13 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    blob rom = as.link();
+    cart_rom = as.link();
 
     GateBoy gb;
-    gb.reset_cart();
-    gb.set_rom(rom.data(), rom.size());
+    gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+    gb.run(120);
 
-    // Run through the first loop iteration.
-    for (int i = 0; i < 119; i++) {
-      //printf("phase %d, a = 0x%02x\n", i, gb.cpu.a);
-      gb.next_phase();
-    }
-
-    //printf("phase %d, a = 0x%02x\n", 119, gb.cpu.a);
-    gb.next_phase();
-
-#if 0
+#if 1
     // Start checking each phase
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11110001 11111111 11111111 11111111";
@@ -1032,7 +1020,7 @@ int GateBoyTests::test_ext_bus() {
 #endif
   }
 
-#if 0
+#if 1
   if (1) {
     LOG_B("Testing vram write external bus waves\n");
 
@@ -1046,16 +1034,11 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    blob rom = as.link();
+    cart_rom = as.link();
 
     GateBoy gb;
-    gb.reset_cart();
-    gb.set_rom(rom.data(), rom.size());
-
-    // Run through the first loop iteration.
+    gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.run(120);
-
-    // Start checking each phase
 
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1163,7 +1146,7 @@ int GateBoyTests::test_ext_bus() {
   }
 #endif
 
-#if 0
+#if 1
   if (1) {
     LOG_B("Testing zram write external bus waves\n");
 
@@ -1177,13 +1160,10 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    blob rom = as.link();
+    cart_rom = as.link();
 
     GateBoy gb;
-    gb.reset_cart();
-    gb.set_rom(rom.data(), rom.size());
-
-    // Run through the first loop iteration.
+    gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.run(120);
 
     // Start checking each phase
@@ -1383,19 +1363,15 @@ int GateBoyTests::test_interrupts() {
 
 // FIXME dis brokn
 
-extern const uint8_t DMG_ROM_bin[];
-
 int GateBoyTests::test_bootrom() {
   TEST_START();
 
   GateBoy gb;
-  gb.set_rom(nullptr, 0);
-  gb.reset_boot();
-  gb.run_reset_sequence();
+  gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0);
 
   for (int i = 0; i < 16; i++) {
     uint8_t byte = gb.dbg_read(i);
-    EXPECT_EQ(byte, DMG_ROM_bin[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
+    EXPECT_EQ(byte, DMG_ROM_blob[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
   }
 
   TEST_END();
@@ -1502,10 +1478,8 @@ int GateBoyTests::test_timer() {
 #if 0
   {
     GateBoy gb;
-    gb.reset_boot();
-    gb.set_rom(rom.data(), rom.size());
+    gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), rom.data(), rom.size());
     gb.sys_cpu_en = 0;
-    gb.run_reset_sequence(true);
 
     // passes, but slow :/
     LOG("Testing div reset_states + rollover, this takes a minute...");
@@ -1548,7 +1522,7 @@ int GateBoyTests::test_dma() {
 
 uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
   if (addr >= 0x0000 && addr <= 0x7FFF) {
-    return gb.rom_buf + (addr & 0x7FFF);
+    return gb.cart_buf + (addr & 0x7FFF);
   }
   else if (addr >= 0x8000 && addr <= 0x9FFF) {
     return gb.vid_ram + (addr & 0x1FFF);
@@ -1580,10 +1554,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
   GateBoy gb;
-  gb.reset_cart();
-
-  blob rom(32768);
-  gb.set_rom(rom.data(), rom.size());
+  gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
 
@@ -1594,7 +1565,7 @@ int GateBoyTests::test_dma(uint16_t src) {
 
   if (src < 0x8000) {
     for (int i = 0; i < 256; i++) {
-      gb.rom_buf[src + i] = blob[i];
+      gb.cart_buf[src + i] = blob[i];
     }
   }
   else {
@@ -1734,7 +1705,7 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::run_benchmark() {
-  GateBoy gateboy;
+  GateBoy gb;
 
 #if _DEBUG
   const int iter_count = 16;
@@ -1757,30 +1728,28 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gateboy.set_rom(nullptr, 0);
-    gateboy.reset_boot();
-    gateboy.run_reset_sequence();
-    gateboy.dbg_req.addr = 0x0150;
-    gateboy.dbg_req.data = 0;
-    gateboy.dbg_req.read = 1;
-    gateboy.dbg_req.write = 0;
-    gateboy.sys_cpu_en = false;
-    gateboy.phase_total = 0;
-    gateboy.pass_total = 0;
+    gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0);
+    gb.dbg_req.addr = 0x0150;
+    gb.dbg_req.data = 0;
+    gb.dbg_req.read = 1;
+    gb.dbg_req.write = 0;
+    gb.sys_cpu_en = false;
+    gb.phase_total = 0;
+    gb.pass_total = 0;
 
     auto start = timestamp();
-    gateboy.run(phase_per_iter);
+    gb.run(phase_per_iter);
     auto finish = timestamp();
 
     if (iter >= warmup) {
       double time = (finish - start);
 
-      double phase_rate = double(gateboy.phase_total) / time;
+      double phase_rate = double(gb.phase_total) / time;
       phase_rate_sum1 += phase_rate;
       phase_rate_sum2 += phase_rate * phase_rate;
       phase_rate_n++;
 
-      double pass_rate = double(gateboy.pass_total) / time;
+      double pass_rate = double(gb.pass_total) / time;
       pass_rate_sum1 += pass_rate;
       pass_rate_sum2 += pass_rate * pass_rate;
       pass_rate_n++;
@@ -1789,8 +1758,8 @@ void GateBoyTests::run_benchmark() {
   }
   LOG("Done\n");
 
-  LOG("Phase total %d\n", gateboy.phase_total);
-  LOG("Pass total %d\n", gateboy.pass_total);
+  LOG("Phase total %d\n", gb.phase_total);
+  LOG("Pass total %d\n", gb.pass_total);
 
   double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
   double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);

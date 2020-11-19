@@ -21,7 +21,9 @@ struct GateBoyThread {
     int64_t count;
   };
 
-  void reset();
+  void reset_cart(const blob& _boot, const blob& _cart);
+  void reset_boot(const blob& _boot, const blob& _cart);
+
   void start();
   void stop();
 
@@ -42,7 +44,8 @@ struct GateBoyThread {
   std::thread* main;
 
   StateStack<GateBoy> gb;
-  blob rom_buf;
+  blob boot;
+  blob cart;
   Assembler assembler;
 
   int pause_count = 0;

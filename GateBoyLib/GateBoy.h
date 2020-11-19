@@ -29,7 +29,14 @@ struct GateBoy {
 
   void dump(Dumper& d) const;
 
-  void set_rom(uint8_t* rom_buf, size_t rom_size);
+  void reset_boot(uint8_t* _boot_buf, size_t _boot_size,
+                  uint8_t* _cart_buf, size_t _cart_size,
+                  bool fastboot = true);
+  void reset_cart(uint8_t* _boot_buf, size_t _boot_size,
+                  uint8_t* _cart_buf, size_t _cart_size);
+
+
+
   void load_post_bootrom_state();
   void run_reset_sequence(bool fastboot = true);
 
@@ -69,6 +76,15 @@ struct GateBoy {
     }
   }
 
+  uint8_t dbg_read (int addr);
+  void dbg_write(int addr, uint8_t data);
+
+  void set_boot_bit() {
+    dbg_write(0xFF50, 0xFF);
+  }
+
+  //-----------------------------------------------------------------------------
+
   void next_phase() {
     do {
       next_pass();
@@ -81,20 +97,12 @@ struct GateBoy {
     }
   }
 
-  uint8_t dbg_read (int addr);
-  void dbg_write(int addr, uint8_t data);
-
-  void set_boot_bit() {
-    dbg_write(0xFF50, 0xFF);
-  }
-
-  void reset_cart();
-  void reset_boot();
-
   void next_pass();
 
   void tock_slow();
   void commit_and_hash();
+
+  //-----------------------------------------------------------------------------
 
   uint8_t* reg_begin() { return (uint8_t*)(&sentinel2) + sizeof(sentinel2); }
   uint8_t* reg_end()   { return (uint8_t*)(&sentinel3); }
@@ -151,14 +159,17 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Memory
 
+  uint8_t* boot_buf = nullptr;
+  size_t   boot_size = 0;
+
+  uint8_t* cart_buf = nullptr;
+  size_t   cart_size = 0;
+
   uint8_t vid_ram [8192];
   uint8_t cart_ram[8192];
   uint8_t ext_ram [8192];
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];
-
-  uint8_t* rom_buf = nullptr;
-  size_t   rom_size = 0;
 
   //-----------------------------------------------------------------------------
   // LCD and framebuffer
@@ -171,7 +182,8 @@ struct GateBoy {
   uint8_t lcd_data_latch = 0;
 
   //-----------------------------------------------------------------------------
-  // All the SOC registers, pins, buses
+  // All the SOC registers, pins, buses. Everything in this section should derive
+  // from BitBase.
 
   uint64_t sentinel2 = 0xC0DEC0DEC0DEC0DE;
 

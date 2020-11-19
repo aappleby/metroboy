@@ -7,11 +7,210 @@
 #include "GateBoyLib/Probe.h"
 
 
-extern const uint8_t DMG_ROM_bin[];
-
 #define FAST_BOOT
 
 //#pragma warning(disable:4189) // local variable unused
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
+                         uint8_t* _cart_buf, size_t _cart_size,
+                         bool fastboot) {
+  boot_buf  = _boot_buf;
+  boot_size = _boot_size;
+  cart_buf  = _cart_buf;
+  cart_size = _cart_size;
+
+  sentinel1 = SENTINEL1;
+
+  cpu.reset_boot();
+
+  cpu_req = {0};
+  dbg_req = {0};
+  bus_req = {0};
+  cpu_data_latch = 0;
+  imask_latch = 0;
+
+  int_vblank = 0;
+  int_vblank_halt = 0;
+
+  int_stat = 0;
+  int_stat_halt = 0;
+
+  int_timer = 0;
+  int_timer_halt = 0;
+
+  int_serial = 0;
+  int_serial_halt = 0;
+
+  int_joypad = 0;
+  int_joypad_halt = 0;
+
+  sim_stable = 0;
+  phase_total = 0;
+  pass_count = 0;
+  pass_total = 0;
+  pass_hash = HASH_INIT;
+  total_hash = HASH_INIT;
+
+  sys_rst = 1;
+  sys_t1 = 0;
+  sys_t2 = 0;
+  sys_clken = 0;
+  sys_clkgood = 0;
+  sys_cpuready = 0;
+  sys_cpu_en = 0;
+  sys_buttons = 0;
+
+  memset(vid_ram,  0, 8192);
+  memset(cart_ram, 0, 8192);
+  memset(ext_ram,  0, 8192);
+  memset(oam_ram,  0, 256);
+  memset(zero_ram, 0, 128);
+  memset(framebuffer, 4, 160*144);
+
+  sentinel2 = SENTINEL2;
+
+  oam_bus.reset_boot();
+  ext_bus.reset_boot();
+  vram_bus.reset_boot();
+
+  clk_reg.reset_boot();
+  dma_reg.reset_boot();
+  int_reg.reset_boot();
+  joypad.reset_boot();
+  lcd_reg.reset_boot();
+  pix_pipe.reset_boot();
+  ser_reg.reset_boot();
+  sprite_store.reset_boot();
+  tim_reg.reset_boot();
+  tile_fetcher.reset_boot();
+  sprite_fetcher.reset_boot();
+  sprite_scanner.reset_boot();
+  BOOT_BITn.reset(REG_D0C0);
+
+  SOTO_DBG_VRAM.reset(REG_D0C0);
+
+  IE_D0.reset(REG_D0C0);
+  IE_D1.reset(REG_D0C0);
+  IE_D2.reset(REG_D0C0);
+  IE_D3.reset(REG_D0C0);
+  IE_D4.reset(REG_D0C0);
+
+  lcd_pix_lo.reset(0);
+  lcd_pix_hi.reset(0);
+
+  for (int i = 0; i < 160; i++) {
+    lcd_pipe_lo[i].reset(REG_D0C0);
+    lcd_pipe_hi[i].reset(REG_D0C0);
+  }
+
+  sentinel3 = SENTINEL3;
+
+  run_reset_sequence(fastboot);
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
+                         uint8_t* _cart_buf, size_t _cart_size) {
+  boot_buf  = _boot_buf;
+  boot_size = _boot_size;
+  cart_buf  = _cart_buf;
+  cart_size = _cart_size;
+
+  sentinel1 = SENTINEL1;
+
+  cpu.reset_cart();
+
+  cpu_req.addr = 0xff50;
+  cpu_req.data = 1;
+  cpu_req.read = 0;
+  cpu_req.write = 1;
+  dbg_req = {0};
+  bus_req = cpu_req;
+
+  cpu_data_latch = 1;
+  imask_latch = 0;
+
+  int_vblank = true;
+  int_vblank_halt = true;
+  int_stat = false;
+  int_stat_halt = false;
+  int_timer = false;
+  int_timer_halt = false;
+  int_serial = false;
+  int_serial_halt = false;
+  int_joypad = false;
+  int_joypad_halt = false;
+
+  sim_stable = 1;
+  phase_total = 0x02cf5798;
+  pass_count = 0;
+  pass_total = 0x0c23db7e;
+  pass_hash = 0xdd0849d964666f73;
+  total_hash = 0xdfa0b6a3a264e502;
+
+  sys_rst = 0;
+  sys_t1 = 0;
+  sys_t2 = 0;
+  sys_clken = 1;
+  sys_clkgood = 1;
+  sys_cpuready = 1;
+  sys_cpu_en = 1;
+
+  memcpy(vid_ram, vram_boot, 8192);
+  memset(cart_ram, 0, sizeof(cart_ram));
+  memset(ext_ram, 0, sizeof(ext_ram));
+  memset(oam_ram, 0, sizeof(oam_ram));
+  memset(zero_ram, 0, sizeof(zero_ram));
+  zero_ram[0x7A] = 0x39;
+  zero_ram[0x7B] = 0x01;
+  zero_ram[0x7C] = 0x2E;
+  memcpy(framebuffer, framebuffer_boot, 160*144);
+
+  screen_x = 0;
+  screen_y = 152;
+  lcd_data_latch = 0;
+
+  sentinel2 = SENTINEL2;
+
+  oam_bus.reset_cart();
+  ext_bus.reset_cart();
+  vram_bus.reset_cart();
+
+  clk_reg.reset_cart();
+  dma_reg.reset_cart();
+  int_reg.reset_cart();
+  joypad.reset_cart();
+  lcd_reg.reset_cart();
+  pix_pipe.reset_cart();
+  ser_reg.reset_cart();
+  sprite_store.reset_cart();
+  tim_reg.reset_cart();
+  tile_fetcher.reset_cart();
+  sprite_fetcher.reset_cart();
+  sprite_scanner.reset_cart();
+  BOOT_BITn.reset(REG_D1C1);
+
+  SOTO_DBG_VRAM.reset(REG_D0C1);
+
+  IE_D0.reset(REG_D0C1);
+  IE_D1.reset(REG_D0C1);
+  IE_D2.reset(REG_D0C1);
+  IE_D3.reset(REG_D0C1);
+  IE_D4.reset(REG_D0C1);
+
+  lcd_pix_lo.reset(0);
+  lcd_pix_hi.reset(0);
+
+  for (int i = 0; i < 160; i++) {
+    lcd_pipe_lo[i].reset(REG_D0C0);
+    lcd_pipe_hi[i].reset(REG_D0C0);
+  }
+
+  sentinel3 = SENTINEL3;
+}
 
 //------------------------------------------------------------------------------
 
@@ -19,13 +218,8 @@ void GateBoy::load_post_bootrom_state() {
   load_obj("gateboy_post_bootrom.raw.dump", *this);
   check_sentinel();
   check_div();
-  rom_buf = nullptr;
-  rom_size = 0;
-}
-
-void GateBoy::set_rom(uint8_t* _rom_buf, size_t _rom_size) {
-  rom_buf = _rom_buf;
-  rom_size = _rom_size;
+  cart_buf = nullptr;
+  cart_size = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -37,8 +231,8 @@ void GateBoy::run_reset_sequence(bool fastboot) {
 
   //----------------------------------------
 
-  CHECK_P(rom_buf != nullptr);
-  CHECK_P(rom_size);
+  CHECK_P(cart_buf != nullptr);
+  CHECK_P(cart_size);
 
   // In reset
   //LOG_B("In reset\n");
@@ -103,194 +297,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 }
 
 
-//-----------------------------------------------------------------------------
-
-void GateBoy::reset_cart() {
-  sentinel1 = SENTINEL1;
-
-  cpu_req.addr = 0xff50;
-  cpu_req.data = 1;
-  cpu_req.read = 0;
-  cpu_req.write = 1;
-  dbg_req = {0};
-  bus_req = cpu_req;
-
-  cpu_data_latch = 1;
-  imask_latch = 0;
-
-  int_vblank = true;
-  int_vblank_halt = true;
-  int_stat = false;
-  int_stat_halt = false;
-  int_timer = false;
-  int_timer_halt = false;
-  int_serial = false;
-  int_serial_halt = false;
-  int_joypad = false;
-  int_joypad_halt = false;
-
-  sim_stable = 1;
-  phase_total = 0x02cf5798;
-  pass_count = 0;
-  pass_total = 0x0c23db7e;
-  pass_hash = 0xdd0849d964666f73;
-  total_hash = 0xdfa0b6a3a264e502;
-
-  sys_rst = 0;
-  sys_t1 = 0;
-  sys_t2 = 0;
-  sys_clken = 1;
-  sys_clkgood = 1;
-  sys_cpuready = 1;
-  sys_cpu_en = 1;
-
-  memcpy(vid_ram, vram_boot, 8192);
-  memset(cart_ram, 0, sizeof(cart_ram));
-  memset(ext_ram, 0, sizeof(ext_ram));
-  memset(oam_ram, 0, sizeof(oam_ram));
-  memset(zero_ram, 0, sizeof(zero_ram));
-  zero_ram[0x7A] = 0x39;
-  zero_ram[0x7B] = 0x01;
-  zero_ram[0x7C] = 0x2E;
-  memcpy(framebuffer, framebuffer_boot, 160*144);
-
-  screen_x = 0;
-  screen_y = 152;
-  lcd_data_latch = 0;
-
-  rom_buf = nullptr;
-  rom_size = 0;
-
-  sentinel2 = SENTINEL2;
-
-  oam_bus.reset_cart();
-  ext_bus.reset_cart();
-  vram_bus.reset_cart();
-
-  clk_reg.reset_cart();
-  dma_reg.reset_cart();
-  int_reg.reset_cart();
-  joypad.reset_cart();
-  lcd_reg.reset_cart();
-  pix_pipe.reset_cart();
-  ser_reg.reset_cart();
-  sprite_store.reset_cart();
-  tim_reg.reset_cart();
-  tile_fetcher.reset_cart();
-  sprite_fetcher.reset_cart();
-  sprite_scanner.reset_cart();
-  BOOT_BITn.reset(REG_D1C1);
-
-  SOTO_DBG_VRAM.reset(REG_D0C1);
-
-  IE_D0.reset(REG_D0C1);
-  IE_D1.reset(REG_D0C1);
-  IE_D2.reset(REG_D0C1);
-  IE_D3.reset(REG_D0C1);
-  IE_D4.reset(REG_D0C1);
-
-  lcd_pix_lo.reset(0);
-  lcd_pix_hi.reset(0);
-
-  for (int i = 0; i < 160; i++) {
-    lcd_pipe_lo[i].reset(REG_D0C0);
-    lcd_pipe_hi[i].reset(REG_D0C0);
-  }
-
-  sentinel3 = SENTINEL3;
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::reset_boot() {
-  sentinel1 = SENTINEL1;
-
-  cpu.reset_boot();
-
-  cpu_req = {0};
-  dbg_req = {0};
-  bus_req = {0};
-  cpu_data_latch = 0;
-  imask_latch = 0;
-
-  int_vblank = 0;
-  int_vblank_halt = 0;
-
-  int_stat = 0;
-  int_stat_halt = 0;
-
-  int_timer = 0;
-  int_timer_halt = 0;
-
-  int_serial = 0;
-  int_serial_halt = 0;
-
-  int_joypad = 0;
-  int_joypad_halt = 0;
-
-  sim_stable = 0;
-  phase_total = 0;
-  pass_count = 0;
-  pass_total = 0;
-  pass_hash = HASH_INIT;
-  total_hash = HASH_INIT;
-
-  sys_rst = 1;
-  sys_t1 = 0;
-  sys_t2 = 0;
-  sys_clken = 0;
-  sys_clkgood = 0;
-  sys_cpuready = 0;
-  sys_cpu_en = 0;
-  sys_buttons = 0;
-
-  memset(vid_ram,  0, 8192);
-  memset(cart_ram, 0, 8192);
-  memset(ext_ram,  0, 8192);
-  memset(oam_ram,  0, 256);
-  memset(zero_ram, 0, 128);
-  memset(framebuffer, 4, 160*144);
-
-  rom_buf = nullptr;
-  rom_size = 0;
-  sentinel2 = SENTINEL2;
-
-  oam_bus.reset_boot();
-  ext_bus.reset_boot();
-  vram_bus.reset_boot();
-
-  clk_reg.reset_boot();
-  dma_reg.reset_boot();
-  int_reg.reset_boot();
-  joypad.reset_boot();
-  lcd_reg.reset_boot();
-  pix_pipe.reset_boot();
-  ser_reg.reset_boot();
-  sprite_store.reset_boot();
-  tim_reg.reset_boot();
-  tile_fetcher.reset_boot();
-  sprite_fetcher.reset_boot();
-  sprite_scanner.reset_boot();
-  BOOT_BITn.reset(REG_D0C0);
-
-  SOTO_DBG_VRAM.reset(REG_D0C0);
-
-  IE_D0.reset(REG_D0C0);
-  IE_D1.reset(REG_D0C0);
-  IE_D2.reset(REG_D0C0);
-  IE_D3.reset(REG_D0C0);
-  IE_D4.reset(REG_D0C0);
-
-  lcd_pix_lo.reset(0);
-  lcd_pix_hi.reset(0);
-
-  for (int i = 0; i < 160; i++) {
-    lcd_pipe_lo[i].reset(REG_D0C0);
-    lcd_pipe_hi[i].reset(REG_D0C0);
-  }
-
-  sentinel3 = SENTINEL3;
-}
 //-----------------------------------------------------------------------------
 
 void GateBoy::next_pass() {
@@ -795,6 +801,8 @@ void GateBoy::tock_slow() {
     /*p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, _UNOR_MODE_DBG2p);
     ext_bus.PIN_EXT_WRn.pin_int(_UVER_WR_A, _USUF_WR_D);
     ext_bus.PIN_EXT_WRn.commit();
+
+    probe(3, "PIN_EXT_WRn", ext_bus.PIN_EXT_WRn.qp());
 
     /*p08.SOGY*/ wire _SOGY_A14n = not1(cpu_bus.BUS_CPU_A14.qp());
     /*p08.TUMA*/ wire _TUMA_CART_RAM = and3(cpu_bus.BUS_CPU_A13.qp(), _SOGY_A14n, cpu_bus.BUS_CPU_A15.qp());
@@ -1852,10 +1860,10 @@ void GateBoy::tock_slow() {
   /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or3(_ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03(), dma_reg.MATU_DMA_RUNNINGp.qp17());
   /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not1(_AJON_PPU_OAM_ENp);
 
-  probe(3, "_APAR_SCAN_OAM_RDn", _APAR_SCAN_OAM_RDn);
-  probe(4, "_DUGA_DMA_OAM_RDn", _DUGA_DMA_OAM_RDn);
-  probe(5, "_ASAM_CPU_OAM_RDn", _ASAM_CPU_OAM_RDn);
-  probe(6, "_BETE_PPU_OAM_RDn", _BETE_PPU_OAM_RDn);
+  //probe(3, "_APAR_SCAN_OAM_RDn", _APAR_SCAN_OAM_RDn);
+  //probe(4, "_DUGA_DMA_OAM_RDn", _DUGA_DMA_OAM_RDn);
+  //probe(5, "_ASAM_CPU_OAM_RDn", _ASAM_CPU_OAM_RDn);
+  //probe(6, "_BETE_PPU_OAM_RDn", _BETE_PPU_OAM_RDn);
 
   {
 
@@ -2336,16 +2344,16 @@ void GateBoy::tock_slow() {
     uint16_t rom_addr = ext_addr & 0x7FFF;
     wire rom_OEn = ext_bus.PIN_EXT_RDn.qp();
     wire rom_CEn = ext_bus.PIN_EXT_A15p.qp();
-    wire rom_OEp = !rom_CEn && !rom_OEn && rom_buf;
+    wire rom_OEp = !rom_CEn && !rom_OEn && cart_buf;
 
-    ext_bus.PIN_EXT_D00p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x01);
-    ext_bus.PIN_EXT_D01p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x02);
-    ext_bus.PIN_EXT_D02p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x04);
-    ext_bus.PIN_EXT_D03p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x08);
-    ext_bus.PIN_EXT_D04p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x10);
-    ext_bus.PIN_EXT_D05p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x20);
-    ext_bus.PIN_EXT_D06p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x40);
-    ext_bus.PIN_EXT_D07p.pin_ext(rom_OEp, rom_buf[rom_addr] & 0x80);
+    ext_bus.PIN_EXT_D00p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x01);
+    ext_bus.PIN_EXT_D01p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x02);
+    ext_bus.PIN_EXT_D02p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x04);
+    ext_bus.PIN_EXT_D03p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x08);
+    ext_bus.PIN_EXT_D04p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x10);
+    ext_bus.PIN_EXT_D05p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x20);
+    ext_bus.PIN_EXT_D06p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x40);
+    ext_bus.PIN_EXT_D07p.pin_ext(rom_OEp, cart_buf[rom_addr] & 0x80);
 
     // Ext RAM read
     uint16_t eram_addr = (ext_addr & 0x1FFF);
@@ -3269,7 +3277,7 @@ void GateBoy::tock_slow() {
 #endif
 
     // this is kind of a hack
-    uint8_t bootrom_data = DMG_ROM_bin[cpu_bus_addr & 0xFF];
+    uint8_t bootrom_data = boot_buf[cpu_bus_addr & 0xFF];
 
     cpu_bus.BUS_CPU_D0p.tri_6pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x01));
     cpu_bus.BUS_CPU_D1p.tri_6pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x02));
@@ -4335,6 +4343,8 @@ void GateBoy::tock_slow() {
 
 
   /*#p24.SACU*/ wire _SACU_CLKPIPEp = or2(_SEGU_CLKPIPEn, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp04()); // Schematic wrong, this is OR
+
+  probe(2, "_SACU_CLKPIPEp", _SACU_CLKPIPEp);
 
 
   //----------------------------------------

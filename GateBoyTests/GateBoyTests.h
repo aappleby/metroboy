@@ -45,7 +45,6 @@ struct GateBoyTests {
 
   GateBoy create_test_gb_boot();
 
-  bool print_passes = true;
-  blob dummy_rom;
-
+  bool print_passes = false;
+  blob cart_rom;
 };

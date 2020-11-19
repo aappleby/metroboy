@@ -1,4 +1,5 @@
 #pragma once
+#include <vector> // for blob
 
 typedef signed char        int8_t;
 typedef short              int16_t;
@@ -10,6 +11,8 @@ typedef unsigned int       uint32_t;
 typedef unsigned long long uint64_t;
 
 typedef int16_t sample_t;
+
+typedef std::vector<uint8_t> blob;
 
 //typedef const bool wire;
 typedef bool wire;

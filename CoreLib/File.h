@@ -1,9 +1,6 @@
 #pragma once
-
+#include "CoreLib/Types.h"
 #include <string>
-#include <vector> // for blob
-
-typedef std::vector<uint8_t> blob;
 
 //-----------------------------------------------------------------------------
 

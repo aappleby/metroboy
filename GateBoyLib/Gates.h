@@ -2,8 +2,6 @@
 #include "CoreLib/Types.h"
 #include <stdio.h>
 
-#define SANITY_CHECK
-
 //-----------------------------------------------------------------------------
 
 template<typename T>
@@ -514,8 +512,7 @@ struct DFF22 : public RegBase {
 
 struct TriBase : public BitBase {
 
-#pragma optimize("", off)
-  __declspec(noinline) wire to_wire() const {
+  wire to_wire() const {
     if (state & BIT_DRIVEN) {
       return wire(state & BIT_DATA);
     }
@@ -674,7 +671,7 @@ struct PinNP : public TriBase {
     else if ( HI &&  LO) tri(1, wire(0));
     else if (!HI && !LO) tri(1, wire(1));
     else if ( HI && !LO) tri(0, wire(0));
-    else                 __debugbreak();
+    else                 CHECK_P(false);
   }
 
   void pin_int (wire HI, wire LO)           { pin_int(1, HI, LO); }
@@ -703,7 +700,7 @@ struct PinPU : public TriBase {
     else if ( HI &&  LO) tri(1, wire(0));
     else if (!HI && !LO) tri(1, wire(1));
     else if ( HI && !LO) tri(0, wire(0));
-    else                 __debugbreak();
+    else                 CHECK_P(false);
   }
 
   void pin_int (wire HI, wire LO)           { pin_int(1, HI, LO); }

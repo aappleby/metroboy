@@ -30,16 +30,16 @@ int main(int argc, char** argv) {
 
   //err += t.test_post_bootrom_state();
 
-  //err += t.test_init();
-  //err += t.test_clk();
-  //err += t.test_mem();
+  err += t.test_init();
+  err += t.test_clk();
+  err += t.test_mem();
   err += t.test_ext_bus();
-  //err += t.test_dma();
-  //err += t.test_interrupts();
-  //err += t.test_joypad();
-  //err += t.test_ppu();
-  //err += t.test_serial();
-  //err += t.test_timer();
+  err += t.test_dma();
+  err += t.test_interrupts();
+  err += t.test_joypad();
+  err += t.test_ppu();
+  err += t.test_serial();
+  err += t.test_timer();
 
   err += t.test_micro_poweron();
   err += t.test_micro_lcden();
@@ -426,8 +426,6 @@ int GateBoyTests::test_micro_int_stat() {
 
 int GateBoyTests::test_micro_int_timer() {
   TEST_START();
-  LOG_B("===== Timer interrupt =====\n");
-
   err += run_microtest("int_timer_halt.gb"); // int fires on 296 A
   err += run_microtest("int_timer_halt_div_a.gb");
   err += run_microtest("int_timer_halt_div_b.gb");
@@ -435,7 +433,6 @@ int GateBoyTests::test_micro_int_timer() {
   err += run_microtest("int_timer_nops.gb");
   err += run_microtest("int_timer_nops_div_a.gb");
   err += run_microtest("int_timer_nops_div_b.gb");
-
   TEST_END();
 }
 
@@ -452,7 +449,6 @@ int GateBoyTests::test_micro_int_joypad() {
   TEST_START();
   TEST_END();
 }
-
 
 //-----------------------------------------------------------------------------
 

@@ -5399,12 +5399,12 @@ void GateBoy::tock_slow() {
 
   {
     for (int i = 0; i < 159; i++) {
-      lcd_pipe_lo[i].dffc(PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
-      lcd_pipe_hi[i].dffc(PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+      lcd_pipe_lo[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
+      lcd_pipe_hi[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
     }
 
-    lcd_pipe_lo[159].dffc(PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
-    lcd_pipe_hi[159].dffc(PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
+    lcd_pipe_lo[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
+    lcd_pipe_hi[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
 
   }
 

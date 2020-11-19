@@ -41,6 +41,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+#if 0
   const char* app = R"(
   0150:
     ld a, $55
@@ -54,15 +55,17 @@ void GateBoyApp::app_init() {
   blob boot = as.link();
 
   gb_thread.reset_cart(DMG_ROM_blob, boot);
+#endif
 
 #if 0
   // regenerate post-bootrom dump
   reset_to_bootrom();
 #endif
 
-#if 0
-  load_rom("roms/tetris.gb");
-#endif
+  gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  for (int i = 0; i < 8192; i++) {
+    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
+  }
 
 #if 0
   // run tiny app
@@ -104,8 +107,8 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  //load_flat_dump("roms/LinksAwakening_dog.dump");
-  //gb_thread.gb->sys_cpu_en = false;
+  load_flat_dump("roms/LinksAwakening_dog.dump");
+  gb_thread.gb->sys_cpu_en = false;
 
   /*
 
@@ -182,16 +185,6 @@ void GateBoyApp::load_raw_dump() {
 void GateBoyApp::save_raw_dump() {
   printf("Saving raw dump to %s\n", "gateboy.raw.dump");
   gb_thread.gb->save_dump("gateboy.raw.dump");
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyApp::reset_to_bootrom() {
-  gb_thread.reset_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
-
-  for (int i = 0; i < 8192; i++) {
-    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -797,6 +790,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("LYC       : %03d\n", gb->lcd_reg.get_lyc());
   d("\n");
 
+  d("lcd_pix_lo      : %c\n", gb->lcd_pix_lo.c());
+  d("lcd_pix_hi      : %c\n", gb->lcd_pix_hi.c());
   d("PIN_LCD_CLOCK   : %c\n", gb->PIN_LCD_CLOCK.c());
   d("PIN_LCD_HSYNC   : %c\n", gb->PIN_LCD_HSYNC.c());
   d("PIN_LCD_VSYNC   : %c\n", gb->PIN_LCD_VSYNC.c());
@@ -1060,7 +1055,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb_blitter.blit_map   (view, 1632, 736, 1, vid_ram, 1, 1);
 
   // Draw screen overlay
-  /*
   if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
     memset(overlay, 0, sizeof(overlay));
 
@@ -1086,8 +1080,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
     update_texture_u32(overlay_tex, 160, 144, overlay);
     blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
   }
-  */
 
+  /*
   {
     memset(overlay, 0, sizeof(overlay));
 
@@ -1105,6 +1099,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     update_texture_u32(overlay_tex, 160, 144, overlay);
     blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
   }
+  */
 
   // Status bar under screen
 

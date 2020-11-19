@@ -186,8 +186,8 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 
-//#if _DEBUG
-#if 1
+#if _DEBUG
+//#if 1
 
 inline void CHECK_P (wire A)         { if (!A)     __debugbreak(); }
 inline void CHECK_N (wire A)         { if (A)      __debugbreak(); }

@@ -535,17 +535,48 @@ void GateBoy::tock_slow() {
   /* p08.TOVA*/ wire _TOVA_MODE_DBG2n = not1(_UNOR_MODE_DBG2p);
 
   //----------------------------------------
+  // root clocks - ignoring the deglitcher here
+
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = CLK;
+  /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
+  /* p01.ZAXY*/ wire _ZAXY_xBxDxFxH = not1(_AZOF_AxCxExGx);
+
+
+  {
+    wire _ADYK_ABCxxxxH = clk_reg.ADYK_ABCxxxxH.qp09();
+    wire _AFUR_xxxxEFGH = clk_reg.AFUR_xxxxEFGH.qn08();
+    wire _ALEF_AxxxxFGH = clk_reg.ALEF_AxxxxFGH.qn08();
+    wire _APUK_ABxxxxGH = clk_reg.APUK_ABxxxxGH.qn08();
+
+    /*p01.AFUR*/ clk_reg.AFUR_xxxxEFGH.dff9c(!_ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _ADYK_ABCxxxxH);
+    /*p01.ALEF*/ clk_reg.ALEF_AxxxxFGH.dff9c( _ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _AFUR_xxxxEFGH);
+    /*p01.APUK*/ clk_reg.APUK_ABxxxxGH.dff9c(!_ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _ALEF_AxxxxFGH);
+    /*p01.ADYK*/ clk_reg.ADYK_ABCxxxxH.dff9c( _ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _APUK_ABxxxxGH);
+  }
+
+  /*#p01.ADAR*/ wire _ADAR_ABCxxxxH = not1(clk_reg.ADYK_ABCxxxxH.qn08_next());
+  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH = not1(clk_reg.ALEF_AxxxxFGH.qn08_next());
+  /*#p01.ATYP*/ wire _ATYP_ABCDxxxx = not1(clk_reg.AFUR_xxxxEFGH.qp09_next());
+  /*#p01.AROV*/ wire _AROV_xxCDEFxx = not1(clk_reg.APUK_ABxxxxGH.qp09_next());
+
+  //----------------------------------------
 
   /* p01.ATEZ*/ wire _ATEZ_CLKBAD  = not1(sys_clkgood);
   /* p01.UCOB*/ wire _UCOB_CLKBADp = not1(sys_clkgood);
   /* p01.ABOL*/ wire _ABOL_CLKREQn = not1(sys_cpuready);
   /*#p01.BUTY*/ wire _BUTY_CLKREQ  = not1(_ABOL_CLKREQn);
 
-  /*#p01.ADAR*/ wire _ADAR_ABCxxxxH = not1(clk_reg.ADYK_ABCxxxxH.qn08());
-  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH = not1(clk_reg.ALEF_AxxxxFGH.qn08());
-  /*#p01.ATYP*/ wire _ATYP_ABCDxxxx = not1(clk_reg.AFUR_xxxxEFGH.qp09());
-  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(_ADAR_ABCxxxxH, _ATYP_ABCDxxxx);
 
+
+
+
+
+
+
+  //----------------------------------------
+  // cpu write signal
+
+  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(_ADAR_ABCxxxxH, _ATYP_ABCDxxxx);
   /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx);
   /* p01.APOV*/ wire _APOV_CPU_WRp_xxxxEFGx = not1(_AREV_CPU_WRn_ABCDxxxH);
 
@@ -557,7 +588,6 @@ void GateBoy::tock_slow() {
   /* p07.UBAL*/ wire _UBAL_CPU_WRn_ABCDxxxH = !_APOV_CPU_WRp_xxxxEFGx;
 #endif
   /* p07.TAPU*/ wire _TAPU_CPU_WRp_xxxxEFGx = not1(_UBAL_CPU_WRn_ABCDxxxH);
-
 
   //----------------------------------------
 
@@ -714,15 +744,8 @@ void GateBoy::tock_slow() {
   /*#p25.SOTO*/ SOTO_DBG_VRAM.dff17c(_SYCY_DBG_CLOCKn, _CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn16());
 
   //----------------------------------------
-  // root clocks
-
-  // ignoring the deglitcher here
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = CLK;
-  /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
-  /* p01.ZAXY*/ wire _ZAXY_xBxDxFxH = not1(_AZOF_AxCxExGx);
 
   /*#p01.AJAX*/ wire _AJAX_xxxxEFGH = not1(_ATYP_ABCDxxxx);
-  /*#p01.AROV*/ wire _AROV_xxCDEFxx = not1(clk_reg.APUK_ABxxxxGH.qp09());
 
   /*#p01.BAPY*/ wire _BAPY_xxxxxxGH = nor3(_ABOL_CLKREQn, _AROV_xxCDEFxx, _ATYP_ABCDxxxx);
 
@@ -3824,16 +3847,6 @@ void GateBoy::tock_slow() {
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
   {
-    wire _ADYK_ABCxxxxH = clk_reg.ADYK_ABCxxxxH.qp09();
-    wire _AFUR_xxxxEFGH = clk_reg.AFUR_xxxxEFGH.qn08();
-    wire _ALEF_AxxxxFGH = clk_reg.ALEF_AxxxxFGH.qn08();
-    wire _APUK_ABxxxxGH = clk_reg.APUK_ABxxxxGH.qn08();
-
-    /*p01.AFUR*/ clk_reg.AFUR_xxxxEFGH.dff9c(!_ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _ADYK_ABCxxxxH);
-    /*p01.ALEF*/ clk_reg.ALEF_AxxxxFGH.dff9c( _ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _AFUR_xxxxEFGH);
-    /*p01.APUK*/ clk_reg.APUK_ABxxxxGH.dff9c(!_ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _ALEF_AxxxxFGH);
-    /*p01.ADYK*/ clk_reg.ADYK_ABCxxxxH.dff9c( _ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _APUK_ABxxxxGH);
-
     ext_bus.PIN_EXT_CLK.pin_int(_BUDE_xxxxEFGH, _BUDE_xxxxEFGH);
 
     cpu_bus.PIN_CPU_EXT_CLKGOOD.setc(sys_clkgood);

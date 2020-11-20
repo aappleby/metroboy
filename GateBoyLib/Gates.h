@@ -298,6 +298,9 @@ struct DFF9 : public RegBase {
   wire qn08() const { return !to_wire(); }
   wire qp09() const { return  to_wire(); }
 
+  wire qn08_next() const { return !to_wire_next(); }
+  wire qp09_next() const { return  to_wire_next(); }
+
   // FIXME the SETn here is slightly weird. too many inversions?
 
   template<typename T>

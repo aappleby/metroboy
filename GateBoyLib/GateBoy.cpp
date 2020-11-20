@@ -588,19 +588,17 @@ void GateBoy::tock_slow() {
   /* p08.TOVA*/ wire _TOVA_MODE_DBG2n = not1(_UNOR_MODE_DBG2p);
 
   //----------------------------------------
+  // Power-on reset handler
 
   /* p01.ATEZ*/ wire _ATEZ_CLKBAD  = not1(sys_clkgood);
   /* p01.UCOB*/ wire _UCOB_CLKBADp = not1(sys_clkgood);
   /* p01.ABOL*/ wire _ABOL_CLKREQn = not1(sys_cpuready);
   /*#p01.BUTY*/ wire _BUTY_CLKREQ  = not1(_ABOL_CLKREQn);
 
-  {
-    /* p01.UPYF*/ wire _UPYF = or2(sys_rst, _UCOB_CLKBADp);
-    /* p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, sys_cpuready);
-  }
+  /* p01.UPYF*/ wire _UPYF = or2(sys_rst, _UCOB_CLKBADp);
+  /* p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, sys_cpuready);
 
   bool _UNUT_POR_TRIGn = false;
-
   if (sys_fastboot) {
     /*p01.UNUT*/ _UNUT_POR_TRIGn = and2(clk_reg.TUBO_WAITINGp.qp04(), tim_reg.TERO_DIV_03.qp17());
   }
@@ -616,7 +614,7 @@ void GateBoy::tock_slow() {
   /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(clk_reg.AFER_SYS_RSTp.qp13(), clk_reg.ASOL_POR_DONEn.qp04());
 
   //----------------------------------------
-  // root clocks - ignoring the deglitcher here
+  // Root clocks - ignoring the deglitcher here
 
   /* p01.ATAL*/ wire _ATAL_xBxDxFxH = CLK;
   /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
@@ -624,9 +622,12 @@ void GateBoy::tock_slow() {
   /*#p01.ZEME*/ wire _ZEME_AxCxExGx = not1(_ZAXY_xBxDxFxH);
   /*#p01.ALET*/ wire _ALET_xBxDxFxH = not1(_ZEME_AxCxExGx);
   /*#p27.MYVO*/ wire _MYVO_AxCxExGx = not1(_ALET_xBxDxFxH);
+  /* p29.XYVA*/ wire _XYVA_xBxDxFxH = not1(_ZEME_AxCxExGx);
+  /* p29.XOTA*/ wire _XOTA_AxCxExGx = not1(_XYVA_xBxDxFxH);
+  /* p29.XYFY*/ wire _XYFY_xBxDxFxH = not1(_XOTA_AxCxExGx);
 
   //----------------------------------------
-  // phase clocks
+  // Phase clocks
 
   {
     wire _ADYK_ABCxxxxH = clk_reg.ADYK_ABCxxxxH.qp09();
@@ -645,6 +646,53 @@ void GateBoy::tock_slow() {
   /*#p01.ATYP*/ wire _ATYP_ABCDxxxx = not1(clk_reg.AFUR_xxxxEFGH.qp09_next());
   /*#p01.AROV*/ wire _AROV_xxCDEFxx = not1(clk_reg.APUK_ABxxxxGH.qp09_next());
 
+  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(_ADAR_ABCxxxxH, _ATYP_ABCDxxxx);
+  /*#p01.AJAX*/ wire _AJAX_xxxxEFGH = not1(_ATYP_ABCDxxxx);
+
+  /*#p01.BAPY*/ wire _BAPY_xxxxxxGH = nor3(_ABOL_CLKREQn, _AROV_xxCDEFxx, _ATYP_ABCDxxxx);
+
+  /*#p01.BELU*/ wire _BELU_xxxxEFGH = nor2(_ATYP_ABCDxxxx, _ABOL_CLKREQn);
+  /*#p01.BYRY*/ wire _BYRY_ABCDxxxx = not1(_BELU_xxxxEFGH);
+  /*#p01.BUDE*/ wire _BUDE_xxxxEFGH = not1(_BYRY_ABCDxxxx);
+
+  /*#p01.BERU*/ wire _BERU_ABCDEFxx = not1(_BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire _BUFA_xxxxxxGH = not1(_BERU_ABCDEFxx);
+  /*#p01.BOLO*/ wire _BOLO_ABCDEFxx = not1(_BUFA_xxxxxxGH);
+
+  /*#p01.BEKO*/ wire _BEKO_ABCDxxxx = not1(_BUDE_xxxxEFGH); // BEKO+BAVY parallel
+  /*#p01.BEJA*/ wire _BEJA_xxxxEFGH = nand4(_BOLO_ABCDEFxx, _BOLO_ABCDEFxx, _BEKO_ABCDxxxx, _BEKO_ABCDxxxx);
+  /*#p01.BANE*/ wire _BANE_ABCDxxxx = not1(_BEJA_xxxxEFGH);
+  /*#p01.BELO*/ wire _BELO_xxxxEFGH = not1(_BANE_ABCDxxxx);
+  /*#p01.BAZE*/ wire _BAZE_ABCDxxxx = not1(_BELO_xxxxEFGH);
+
+  /*#p01.BUTO*/ wire _BUTO_xBCDEFGH = nand3(_AFEP_AxxxxFGH, _ATYP_ABCDxxxx, _BAZE_ABCDxxxx);
+  /*#p01.BELE*/ wire _BELE_Axxxxxxx = not1(_BUTO_xBCDEFGH);
+  /*#p01.BYJU*/ wire _BYJU_Axxxxxxx = or2(_BELE_Axxxxxxx, _ATEZ_CLKBAD);
+
+  /*#p01.BALY*/ wire _BALY_xBCDEFGH = not1(_BYJU_Axxxxxxx);
+  /* p01.BOGA*/ wire _BOGA_Axxxxxxx = not1(_BALY_xBCDEFGH);
+
+  /* p01.UVYT*/ wire _UVYT_ABCDxxxx = not1(_BUDE_xxxxEFGH);
+  /* p04.MOPA*/ wire _MOPA_xxxxEFGH = not1(_UVYT_ABCDxxxx);
+
+  /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
+  /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx, _AROV_xxCDEFxx, _ABOL_CLKREQn);
+  /*#p01.BASU*/ wire _BASU_xBCDEFxx = not1(_BATE_AxxxxxGH);
+
+  /*#p01.BUKE*/ wire _BUKE_AxxxxxGH = not1(_BASU_xBCDEFxx);
+  /*#p01.BOMA*/ wire _BOMA_xBCDEFGH = not1(_BOGA_Axxxxxxx);
+
+  /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(_BALY_xBCDEFGH, _BUTY_CLKREQ);
+  /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
+  /*#p01.BEDO*/ wire _BEDO_Axxxxxxx = not1(_BYXO_xBCDEFGH);
+  /*#p01.BOWA*/ wire _BOWA_xBCDEFGH = not1(_BEDO_Axxxxxxx);
+  /* p28.XYNY*/ wire _XYNY_ABCDxxxx = not1(_MOPA_xxxxEFGH);
+
+  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(_AROV_xxCDEFxx, _AJAX_xxxxEFGH, cpu_bus.PIN_CPU_EXT_BUSp.qp());
+  /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(_UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
+  /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
+
+
   //----------------------------------------
   // Reset signals
 
@@ -656,23 +704,6 @@ void GateBoy::tock_slow() {
   /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(_XORE_SYS_RSTp);
   /*#p01.WALU*/ wire _WALU_SYS_RSTn = not1(_XORE_SYS_RSTp);
 
-  //----------------------------------------
-
-
-
-
-
-  /*#p29.XUPY*/ wire _XUPY_ABxxEFxx = not1(clk_reg.WUVU_ABxxEFxx.qn16());
-  /*#p21.TALU*/ wire _TALU_xxCDEFxx = not1(clk_reg.VENA_xxCDEFxx.qn16());
-  /*#p29.XOCE*/ wire _XOCE_xBCxxFGx = not1(clk_reg.WOSU_AxxDExxH.qp17());
-
-
-  /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not1(_ZEME_AxCxExGx);
-  /*p29.XOTA*/ wire _XOTA_AxCxExGx = not1(_XYVA_xBxDxFxH);
-  /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not1(_XOTA_AxCxExGx);
-
-  // inverting the clock to VENA doesn't seem to break anything, which is really weird
-
   /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, pix_pipe.XONA_LCDC_LCDENn.qn08());
   /* p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
   /*#p01.ATAR*/ wire _ATAR_VID_RSTp = not1(_XAPO_VID_RSTn);
@@ -680,18 +711,26 @@ void GateBoy::tock_slow() {
   /* p01.LYHA*/ wire _LYHA_VID_RSTp = not1(_XAPO_VID_RSTn);
   /* p01.LYFE*/ wire _LYFE_LCD_RSTn = not1(_LYHA_VID_RSTp);
 
-  /*p29.WOSU*/ clk_reg.WOSU_AxxDExxH.dff17c(_XYFY_xBxDxFxH,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
-  /*p29.WUVU*/ clk_reg.WUVU_ABxxEFxx.dff17c(_XOTA_AxCxExGx,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
-  /*p21.VENA*/ clk_reg.VENA_xxCDEFxx.dff17c(clk_reg.WUVU_ABxxEFxx.qn16_next(), _XAPO_VID_RSTn, clk_reg.VENA_xxCDEFxx.qn16());
+  //----------------------------------------
+  // Video clocks
 
+  // inverting the clock to VENA doesn't seem to break anything, which is really weird
 
+  /* p29.WOSU*/ clk_reg.WOSU_AxxDExxH.dff17c(_XYFY_xBxDxFxH,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+  /* p29.WUVU*/ clk_reg.WUVU_ABxxEFxx.dff17c(_XOTA_AxCxExGx,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+  /* p21.VENA*/ clk_reg.VENA_xxCDEFxx.dff17c(clk_reg.WUVU_ABxxEFxx.qn16_next(), _XAPO_VID_RSTn, clk_reg.VENA_xxCDEFxx.qn16());
 
+  /*#p29.XUPY*/ wire _XUPY_ABxxEFxx = not1(clk_reg.WUVU_ABxxEFxx.qn16_next());
+  /*#p21.TALU*/ wire _TALU_xxCDEFxx = not1(clk_reg.VENA_xxCDEFxx.qn16_next());
+  /*#p29.XOCE*/ wire _XOCE_xBCxxFGx = not1(clk_reg.WOSU_AxxDExxH.qp17_next());
 
+  /*#p21.SONO*/ wire _SONO_ABxxxxGH = not1(_TALU_xxCDEFxx);
+  /*#p30.CYKE*/ wire _CYKE_ABxxEFxx = not1(_XUPY_ABxxEFxx);
+  /*#p30.WUDA*/ wire _WUDA_xxCDxxGH = not1(_CYKE_ABxxEFxx);
 
   //----------------------------------------
-  // cpu write signal
+  // CPU write signal
 
-  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(_ADAR_ABCxxxxH, _ATYP_ABCDxxxx);
   /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx);
   /* p01.APOV*/ wire _APOV_CPU_WRp_xxxxEFGx = not1(_AREV_CPU_WRn_ABCDxxxH);
 
@@ -760,51 +799,6 @@ void GateBoy::tock_slow() {
   /*#p25.SOTO*/ SOTO_DBG_VRAM.dff17c(_SYCY_DBG_CLOCKn, _CUNU_SYS_RSTn, SOTO_DBG_VRAM.qn16());
 
   //----------------------------------------
-
-  /*#p01.AJAX*/ wire _AJAX_xxxxEFGH = not1(_ATYP_ABCDxxxx);
-
-  /*#p01.BAPY*/ wire _BAPY_xxxxxxGH = nor3(_ABOL_CLKREQn, _AROV_xxCDEFxx, _ATYP_ABCDxxxx);
-
-  /*#p01.BELU*/ wire _BELU_xxxxEFGH = nor2(_ATYP_ABCDxxxx, _ABOL_CLKREQn);
-  /*#p01.BYRY*/ wire _BYRY_ABCDxxxx = not1(_BELU_xxxxEFGH);
-  /*#p01.BUDE*/ wire _BUDE_xxxxEFGH = not1(_BYRY_ABCDxxxx);
-
-  /*#p01.BERU*/ wire _BERU_ABCDEFxx = not1(_BAPY_xxxxxxGH);
-  /*#p01.BUFA*/ wire _BUFA_xxxxxxGH = not1(_BERU_ABCDEFxx);
-  /*#p01.BOLO*/ wire _BOLO_ABCDEFxx = not1(_BUFA_xxxxxxGH);
-
-  /*#p01.BEKO*/ wire _BEKO_ABCDxxxx = not1(_BUDE_xxxxEFGH); // BEKO+BAVY parallel
-  /*#p01.BEJA*/ wire _BEJA_xxxxEFGH = nand4(_BOLO_ABCDEFxx, _BOLO_ABCDEFxx, _BEKO_ABCDxxxx, _BEKO_ABCDxxxx);
-  /*#p01.BANE*/ wire _BANE_ABCDxxxx = not1(_BEJA_xxxxEFGH);
-  /*#p01.BELO*/ wire _BELO_xxxxEFGH = not1(_BANE_ABCDxxxx);
-  /*#p01.BAZE*/ wire _BAZE_ABCDxxxx = not1(_BELO_xxxxEFGH);
-
-  /*#p01.BUTO*/ wire _BUTO_xBCDEFGH = nand3(_AFEP_AxxxxFGH, _ATYP_ABCDxxxx, _BAZE_ABCDxxxx);
-  /*#p01.BELE*/ wire _BELE_Axxxxxxx = not1(_BUTO_xBCDEFGH);
-  /*#p01.BYJU*/ wire _BYJU_Axxxxxxx = or2(_BELE_Axxxxxxx, _ATEZ_CLKBAD);
-
-  /*#p01.BALY*/ wire _BALY_xBCDEFGH = not1(_BYJU_Axxxxxxx);
-  /* p01.BOGA*/ wire _BOGA_Axxxxxxx = not1(_BALY_xBCDEFGH);
-
-  /* p01.UVYT*/ wire _UVYT_ABCDxxxx = not1(_BUDE_xxxxEFGH);
-  /* p04.MOPA*/ wire _MOPA_xxxxEFGH = not1(_UVYT_ABCDxxxx);
-
-  /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
-  /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx, _AROV_xxCDEFxx, _ABOL_CLKREQn);
-  /*#p01.BASU*/ wire _BASU_xBCDEFxx = not1(_BATE_AxxxxxGH);
-
-  /*#p01.BUKE*/ wire _BUKE_AxxxxxGH = not1(_BASU_xBCDEFxx);
-  /*#p01.BOMA*/ wire _BOMA_xBCDEFGH = not1(_BOGA_Axxxxxxx);
-
-  /*#p01.BUVU*/ wire _BUVU_Axxxxxxx = and2(_BALY_xBCDEFGH, _BUTY_CLKREQ);
-  /*#p01.BYXO*/ wire _BYXO_xBCDEFGH = not1(_BUVU_Axxxxxxx);
-  /*#p01.BEDO*/ wire _BEDO_Axxxxxxx = not1(_BYXO_xBCDEFGH);
-  /*#p01.BOWA*/ wire _BOWA_xBCDEFGH = not1(_BEDO_Axxxxxxx);
-  /* p28.XYNY*/ wire _XYNY_ABCDxxxx = not1(_MOPA_xxxxEFGH);
-
-  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(_AROV_xxCDEFxx, _AJAX_xxxxEFGH, cpu_bus.PIN_CPU_EXT_BUSp.qp());
-  /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(_UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
-  /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
 
   //----------------------------------------
   // dma signals
@@ -5005,9 +4999,6 @@ void GateBoy::tock_slow() {
     }
 
     {
-      /*#p30.CYKE*/ wire _CYKE_ABxxEFxx = not1(_XUPY_ABxxEFxx);
-      /*#p30.WUDA*/ wire _WUDA_xxCDxxGH = not1(_CYKE_ABxxEFxx);
-
       /* p28.YFOT*/ wire _YFOT_OAM_A2p = not1(oam_bus.BUS_OAM_A2n);
       /* p28.YFOC*/ wire _YFOC_OAM_A3p = not1(oam_bus.BUS_OAM_A3n);
       /* p28.YVOM*/ wire _YVOM_OAM_A4p = not1(oam_bus.BUS_OAM_A4n);
@@ -5226,7 +5217,6 @@ void GateBoy::tock_slow() {
   /*#p28.AWOH*/ wire _AWOH_xxCDxxGH = not1(_XUPY_ABxxEFxx);
 
   {
-    /*#p21.SONO*/ wire _SONO_ABxxxxGH = not1(_TALU_xxCDEFxx);
 
     /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn08());
 

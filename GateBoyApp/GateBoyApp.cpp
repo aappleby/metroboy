@@ -109,6 +109,9 @@ void GateBoyApp::app_init() {
 
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
+  gb_thread.gb->phase_total = 0;
+  gb_thread.gb->pass_count = 0;
+  gb_thread.gb->pass_total = 0;
 
   /*
 
@@ -513,8 +516,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   uint8_t* framebuffer = gb->framebuffer;
   uint8_t* vid_ram = gb->vid_ram;
-  int fb_x = gb->screen_x;
-  int fb_y = gb->screen_y;
   int64_t phase_total = gb->phase_total;
   bool sim_stable = gb->sim_stable;
 
@@ -602,8 +603,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("sys_fastboot   %d\n", gb->sys_fastboot);
 
 
-  d("screen_x       %d\n", gb->screen_x);
-  d("screen_y       %d\n", gb->screen_y);
+  d("screen_x       %d\n", gb->gb_screen_x);
+  d("screen_y       %d\n", gb->gb_screen_y);
   d("lcd_data_latch %d\n", gb->lcd_data_latch);
   d("lcd_pix_lo     %c\n",  gb->lcd_pix_lo.c());
   d("lcd_pix_hi     %c\n",  gb->lcd_pix_hi.c());
@@ -792,6 +793,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("lcd_pix_lo      : %c\n", gb->lcd_pix_lo.c());
   d("lcd_pix_hi      : %c\n", gb->lcd_pix_hi.c());
+  /*
   d("PIN_LCD_CLOCK   : %c\n", gb->PIN_LCD_CLOCK.c());
   d("PIN_LCD_HSYNC   : %c\n", gb->PIN_LCD_HSYNC.c());
   d("PIN_LCD_VSYNC   : %c\n", gb->PIN_LCD_VSYNC.c());
@@ -800,6 +802,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("PIN_LCD_CNTRL   : %c\n", gb->PIN_LCD_CNTRL.c());
   d("PIN_LCD_DATALCH : %c\n", gb->PIN_LCD_LATCH.c());
   d("PIN_LCD_ALTSIGL : %c\n", gb->PIN_LCD_FLIPS.c());
+  */
   d("\n");
 
   d("CATU_LINE_P000      %c\n", gb->lcd_reg.CATU_LINE_P000.c());
@@ -1055,51 +1058,35 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb_blitter.blit_map   (view, 1632, 736, 1, vid_ram, 1, 1);
 
   // Draw screen overlay
-  if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
-    memset(overlay, 0, sizeof(overlay));
-
-    for (int x = 0; x < fb_x; x++) {
-      uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp();
-      uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp();
-
-      int r = (3 - (p0 + p1 * 2)) * 30 + 50;
-      int g = (3 - (p0 + p1 * 2)) * 30 + 50;
-      int b = (3 - (p0 + p1 * 2)) * 30 + 30;
-
-      overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
-    }
-    {
-      uint8_t p0 = gb->lcd_pix_lo.qp04();
-      uint8_t p1 = gb->lcd_pix_hi.qp04();
-
-      int c = (3 - (p0 + p1 * 2)) * 85;
-
-      overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
-    }
-
-    update_texture_u32(overlay_tex, 160, 144, overlay);
-    blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
-  }
-
-  /*
   {
-    memset(overlay, 0, sizeof(overlay));
+    int fb_x = gb->gb_screen_x;
+    int fb_y = gb->gb_screen_y;
+    if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
+      memset(overlay, 0, sizeof(overlay));
 
-    for (int x = 0; x < 160; x++) {
-      uint8_t p0 = gb->lcd_pipe_lo[x].qp();
-      uint8_t p1 = gb->lcd_pipe_hi[x].qp();
+      for (int x = 0; x < fb_x; x++) {
+        uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp();
+        uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp();
 
-      int r = (3 - (p0 + p1 * 2)) * 30 + 50;
-      int g = (3 - (p0 + p1 * 2)) * 30 + 50;
-      int b = (3 - (p0 + p1 * 2)) * 30 + 30;
+        int r = (3 - (p0 + p1 * 2)) * 30 + 50;
+        int g = (3 - (p0 + p1 * 2)) * 30 + 50;
+        int b = (3 - (p0 + p1 * 2)) * 30 + 30;
 
-      overlay[x] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
+        overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
+      }
+      {
+        uint8_t p0 = gb->lcd_pix_lo.qp04();
+        uint8_t p1 = gb->lcd_pix_hi.qp04();
+
+        int c = (3 - (p0 + p1 * 2)) * 85;
+
+        overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
+      }
+
+      update_texture_u32(overlay_tex, 160, 144, overlay);
+      blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
     }
-
-    update_texture_u32(overlay_tex, 160, 144, overlay);
-    blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
   }
-  */
 
   // Status bar under screen
 

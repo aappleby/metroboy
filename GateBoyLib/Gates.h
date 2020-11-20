@@ -89,6 +89,11 @@ struct RegBase : public BitBase {
     return wire(state & BIT_DATA);
   }
 
+  wire to_wire_next() const {
+    CHECK_P(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
   template<typename T>
   void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, T D) {
     CHECK_N(state & BIT_LOCKED);
@@ -376,6 +381,8 @@ struct DFF13 : public RegBase {
 struct DFF17 : public RegBase {
   wire qn16() const { return !to_wire(); }
   wire qp17() const { return  to_wire(); }
+
+  wire qp17_next() const { return  to_wire_next(); }
 
   template<typename T>
   void dff17c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }

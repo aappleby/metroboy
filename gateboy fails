@@ -1,3 +1,11 @@
+new after refactor - probably because of removed glitch delays
+    int_hblank_halt_scx3.gb          98   99   -1  255 FAIL @ 138
+    int_hblank_halt_scx3.gb          98   99   -1  255 FAIL @ 138
+    int_hblank_halt_scx7.gb          99  100   -1  255 FAIL @ 139
+    int_hblank_halt_scx7.gb          99  100   -1  255 FAIL @ 139
+
+
+
 need to trace clocks for RUPO_LYC_MATCH_LATCH
   inverting ROPO clock delays it even more
 
@@ -90,25 +98,29 @@ poweron_140_vram.gb
 //----------
 // MEALYBUG
 
+pass w/ sprite latch clock delayed 6 passes
+  m3_lcdc_obj_size_change.gb
+  m3_lcdc_obj_size_change_scx.gb
 
-m3_lcdc_win_en_change_multiple_wx.gb - pass, reference image from mealybug wrong
-m3_bgp_change_sprites.gb - pass
-m3_lcdc_obj_size_change.gb - pass w/ sprite latch clock delayed 6 passes
-m3_lcdc_obj_size_change_scx.gb - pass w/ sprite latch clock delayed 6 passes
-m3_lcdc_bg_en_change.gb pass w pix delay 1 pass
-m3_bgp_change.gb pass w pix delay 1 pass
-m3_lcdc_obj_en_change.gb  pass w pix delay 1 pass
-m3_lcdc_obj_en_change_variant.gb  pass w pix delay 1 pass
-m3_obp0_change.gb  pass!
-m3_lcdc_bg_map_change.gb  pass!
-m3_lcdc_tile_sel_change.gb  pass!
-m3_lcdc_tile_sel_win_change.gb  pass!
-m3_lcdc_win_en_change_multiple.gb  pass!
-m3_lcdc_win_map_change.gb  pass!
-m3_scx_low_3_bits.gb  pass!
-m3_window_timing.gb  pass!
-m3_window_timing_wx_0.gb  pass!
-m3_wx_4_change.gb  pass!
-m3_wx_4_change_sprites.gb  pass!
-m3_wx_5_change.gb  pass!
-m3_wx_6_change.gb  pass!
+pass w pix delay 1 pass  
+  m3_lcdc_bg_en_change.gb 
+  m3_bgp_change.gb
+  m3_lcdc_obj_en_change.gb
+  m3_lcdc_obj_en_change_variant.gb
+
+pass
+  m3_lcdc_win_en_change_multiple_wx.gb -  image from mealybug wrong
+  m3_bgp_change_sprites.gb
+  m3_obp0_change.gb
+  m3_lcdc_bg_map_change.gb
+  m3_lcdc_tile_sel_change.gb
+  m3_lcdc_tile_sel_win_change.gb
+  m3_lcdc_win_en_change_multiple.gb
+  m3_lcdc_win_map_change.gb
+  m3_scx_low_3_bits.gb
+  m3_window_timing.gb
+  m3_window_timing_wx_0.gb
+  m3_wx_4_change.gb
+  m3_wx_4_change_sprites.gb
+  m3_wx_5_change.gb
+  m3_wx_6_change.gb

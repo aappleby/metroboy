@@ -169,8 +169,8 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   zero_ram[0x7C] = 0x2E;
   memcpy(framebuffer, framebuffer_boot, 160*144);
 
-  screen_x = 0;
-  screen_y = 152;
+  gb_screen_x = 0;
+  gb_screen_y = 152;
   lcd_data_latch = 0;
 
   sentinel2 = SENTINEL2;
@@ -802,8 +802,6 @@ void GateBoy::tock_slow() {
     ext_bus.PIN_EXT_WRn.pin_int(_UVER_WR_A, _USUF_WR_D);
     ext_bus.PIN_EXT_WRn.commit();
 
-    probe(3, "PIN_EXT_WRn", ext_bus.PIN_EXT_WRn.qp());
-
     /*p08.SOGY*/ wire _SOGY_A14n = not1(cpu_bus.BUS_CPU_A14.qp());
     /*p08.TUMA*/ wire _TUMA_CART_RAM = and3(cpu_bus.BUS_CPU_A13.qp(), _SOGY_A14n, cpu_bus.BUS_CPU_A15.qp());
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = and_or3(cpu_bus.BUS_CPU_A15.qp(), cpu_bus.BUS_CPU_A14.qp(), _TUMA_CART_RAM);
@@ -908,17 +906,6 @@ void GateBoy::tock_slow() {
   /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(_ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
   /* p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
   /* p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
-
-  /* p29.DYWE*/ wire _DYWE_STORE0_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EBOJ_STORE0_RSTp.qp17());
-  /* p29.EFEV*/ wire _EFEV_STORE1_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.CEDY_STORE1_RSTp.qp17());
-  /* p29.FOKO*/ wire _FOKO_STORE2_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EGAV_STORE2_RSTp.qp17());
-  /* p29.GAKE*/ wire _GAKE_STORE3_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.GOTA_STORE3_RSTp.qp17());
-  /* p29.WOHU*/ wire _WOHU_STORE4_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.XUDY_STORE4_RSTp.qp17());
-  /* p29.FEVE*/ wire _FEVE_STORE5_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WAFY_STORE5_RSTp.qp17());
-  /* p29.WACY*/ wire _WACY_STORE6_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WOMY_STORE6_RSTp.qp17());
-  /* p29.GUKY*/ wire _GUKY_STORE7_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WAPO_STORE7_RSTp.qp17());
-  /* p29.GORO*/ wire _GORO_STORE8_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EXUQ_STORE8_RSTp.qp17());
-  /* p29.DUBU*/ wire _DUBU_STORE9_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.FONO_STORE9_RSTp.qp17());
 
   /* p29.YDUG*/ bool _YDUG_STORE0_MATCHn;
   /* p29.DYDU*/ bool _DYDU_STORE1_MATCHn;
@@ -1291,7 +1278,6 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
-
   // Map scroll adder
 #pragma warning(push)
 #pragma warning(disable:4189)
@@ -1330,49 +1316,6 @@ void GateBoy::tock_slow() {
   /* p26.ACUL*/ wire _ACUL_MAP_X4C  = add_c(pix_pipe.SYBE_X7p.qp17(), pix_pipe.BAKE_SCX7n.qn08(), _BYCA_MAP_X3C);
 #pragma warning(pop)
 
-  /*p29.WEFU*/ wire WEFU_STORE0_MATCH = not1(_YDUG_STORE0_MATCHn);
-  /*p29.GAJA*/ wire GAJA_STORE1_MATCH = not1(_DYDU_STORE1_MATCHn);
-  /*p29.GUPO*/ wire GUPO_STORE2_MATCH = not1(_DEGO_STORE2_MATCHn);
-  /*p29.WEBO*/ wire WEBO_STORE3_MATCH = not1(_YLOZ_STORE3_MATCHn);
-  /*p29.WUNA*/ wire WUNA_STORE4_MATCH = not1(_XAGE_STORE4_MATCHn);
-  /*p29.GABA*/ wire GABA_STORE5_MATCH = not1(_EGOM_STORE5_MATCHn);
-  /*p29.WASE*/ wire WASE_STORE6_MATCH = not1(_YBEZ_STORE6_MATCHn);
-  /*p29.GYTE*/ wire GYTE_STORE7_MATCH = not1(_DYKA_STORE7_MATCHn);
-  /*p29.GEKE*/ wire GEKE_STORE8_MATCH = not1(_EFYL_STORE8_MATCHn);
-
-  // Priority encoder so we fetch the first sprite that matches
-
-  /*p29.GEZE*/ wire GEZE_STORE0_MATCH_OUT = or2(WEFU_STORE0_MATCH, GND);
-  /*p29.FUMA*/ wire FUMA_STORE1_MATCH_OUT = or2(GAJA_STORE1_MATCH, GEZE_STORE0_MATCH_OUT);
-  /*p29.GEDE*/ wire GEDE_STORE2_MATCH_OUT = or2(GUPO_STORE2_MATCH, FUMA_STORE1_MATCH_OUT);
-  /*p29.WUTO*/ wire WUTO_STORE3_MATCH_OUT = or2(WEBO_STORE3_MATCH, GEDE_STORE2_MATCH_OUT);
-  /*p29.XYLA*/ wire XYLA_STORE4_MATCH_OUT = or2(WUNA_STORE4_MATCH, WUTO_STORE3_MATCH_OUT);
-  /*p29.WEJA*/ wire WEJA_STORE5_MATCH_OUT = or2(GABA_STORE5_MATCH, XYLA_STORE4_MATCH_OUT);
-  /*p29.WYLA*/ wire WYLA_STORE6_MATCH_OUT = or2(WASE_STORE6_MATCH, WEJA_STORE5_MATCH_OUT);
-  /*p29.FAVO*/ wire FAVO_STORE7_MATCH_OUT = or2(GYTE_STORE7_MATCH, WYLA_STORE6_MATCH_OUT);
-  /*p29.GYGA*/ wire GYGA_STORE8_MATCH_OUT = or2(GEKE_STORE8_MATCH, FAVO_STORE7_MATCH_OUT);
-
-  /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor2(_YDUG_STORE0_MATCHn, GND);
-  /*p29.ENUT*/ wire ENUT_SPRITE1_GETp = nor2(_DYDU_STORE1_MATCHn, GEZE_STORE0_MATCH_OUT);
-  /*p29.EMOL*/ wire EMOL_SPRITE2_GETp = nor2(_DEGO_STORE2_MATCHn, FUMA_STORE1_MATCH_OUT);
-  /*p29.GYFY*/ wire GYFY_SPRITE3_GETp = nor2(_YLOZ_STORE3_MATCHn, GEDE_STORE2_MATCH_OUT);
-  /*p29.GONO*/ wire GONO_SPRITE4_GETp = nor2(_XAGE_STORE4_MATCHn, WUTO_STORE3_MATCH_OUT);
-  /*p29.GEGA*/ wire GEGA_SPRITE5_GETp = nor2(_EGOM_STORE5_MATCHn, XYLA_STORE4_MATCH_OUT);
-  /*p29.XOJA*/ wire XOJA_SPRITE6_GETp = nor2(_YBEZ_STORE6_MATCHn, WEJA_STORE5_MATCH_OUT);
-  /*p29.GUTU*/ wire GUTU_SPRITE7_GETp = nor2(_DYKA_STORE7_MATCHn, WYLA_STORE6_MATCH_OUT);
-  /*p29.FOXA*/ wire FOXA_SPRITE8_GETp = nor2(_EFYL_STORE8_MATCHn, FAVO_STORE7_MATCH_OUT);
-  /*p29.GUZE*/ wire GUZE_SPRITE9_GETp = nor2(_YGEM_STORE9_MATCHn, GYGA_STORE8_MATCH_OUT);
-
-  /*p29.FURO*/ wire FURO_SPRITE0_GETn = not1(GUVA_SPRITE0_GETp);
-  /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not1(ENUT_SPRITE1_GETp);
-  /*p29.FAME*/ wire FAME_SPRITE2_GETn = not1(EMOL_SPRITE2_GETp);
-  /*p29.GYMA*/ wire GYMA_SPRITE3_GETn = not1(GYFY_SPRITE3_GETp);
-  /*p29.GOWO*/ wire GOWO_SPRITE4_GETn = not1(GONO_SPRITE4_GETp);
-  /*p29.GYGY*/ wire GYGY_SPRITE5_GETn = not1(GEGA_SPRITE5_GETp);
-  /*p29.XYME*/ wire XYME_SPRITE6_GETn = not1(XOJA_SPRITE6_GETp);
-  /*p29.GUGY*/ wire GUGY_SPRITE7_GETn = not1(GUTU_SPRITE7_GETp);
-  /*p29.DENY*/ wire DENY_SPRITE8_GETn = not1(FOXA_SPRITE8_GETp);
-  /*p29.FADO*/ wire FADO_SPRITE9_GETn = not1(GUZE_SPRITE9_GETp);
 
 
 
@@ -1674,9 +1617,63 @@ void GateBoy::tock_slow() {
 
 
 
-
-  /* SPR_I */
   {
+    /*p29.WEFU*/ wire WEFU_STORE0_MATCH = not1(_YDUG_STORE0_MATCHn);
+    /*p29.GAJA*/ wire GAJA_STORE1_MATCH = not1(_DYDU_STORE1_MATCHn);
+    /*p29.GUPO*/ wire GUPO_STORE2_MATCH = not1(_DEGO_STORE2_MATCHn);
+    /*p29.WEBO*/ wire WEBO_STORE3_MATCH = not1(_YLOZ_STORE3_MATCHn);
+    /*p29.WUNA*/ wire WUNA_STORE4_MATCH = not1(_XAGE_STORE4_MATCHn);
+    /*p29.GABA*/ wire GABA_STORE5_MATCH = not1(_EGOM_STORE5_MATCHn);
+    /*p29.WASE*/ wire WASE_STORE6_MATCH = not1(_YBEZ_STORE6_MATCHn);
+    /*p29.GYTE*/ wire GYTE_STORE7_MATCH = not1(_DYKA_STORE7_MATCHn);
+    /*p29.GEKE*/ wire GEKE_STORE8_MATCH = not1(_EFYL_STORE8_MATCHn);
+
+    // Priority encoder so we fetch the first sprite that matches
+
+    /*p29.GEZE*/ wire GEZE_STORE0_MATCH_OUT = or2(WEFU_STORE0_MATCH, GND);
+    /*p29.FUMA*/ wire FUMA_STORE1_MATCH_OUT = or2(GAJA_STORE1_MATCH, GEZE_STORE0_MATCH_OUT);
+    /*p29.GEDE*/ wire GEDE_STORE2_MATCH_OUT = or2(GUPO_STORE2_MATCH, FUMA_STORE1_MATCH_OUT);
+    /*p29.WUTO*/ wire WUTO_STORE3_MATCH_OUT = or2(WEBO_STORE3_MATCH, GEDE_STORE2_MATCH_OUT);
+    /*p29.XYLA*/ wire XYLA_STORE4_MATCH_OUT = or2(WUNA_STORE4_MATCH, WUTO_STORE3_MATCH_OUT);
+    /*p29.WEJA*/ wire WEJA_STORE5_MATCH_OUT = or2(GABA_STORE5_MATCH, XYLA_STORE4_MATCH_OUT);
+    /*p29.WYLA*/ wire WYLA_STORE6_MATCH_OUT = or2(WASE_STORE6_MATCH, WEJA_STORE5_MATCH_OUT);
+    /*p29.FAVO*/ wire FAVO_STORE7_MATCH_OUT = or2(GYTE_STORE7_MATCH, WYLA_STORE6_MATCH_OUT);
+    /*p29.GYGA*/ wire GYGA_STORE8_MATCH_OUT = or2(GEKE_STORE8_MATCH, FAVO_STORE7_MATCH_OUT);
+
+    /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor2(_YDUG_STORE0_MATCHn, GND);
+    /*p29.ENUT*/ wire ENUT_SPRITE1_GETp = nor2(_DYDU_STORE1_MATCHn, GEZE_STORE0_MATCH_OUT);
+    /*p29.EMOL*/ wire EMOL_SPRITE2_GETp = nor2(_DEGO_STORE2_MATCHn, FUMA_STORE1_MATCH_OUT);
+    /*p29.GYFY*/ wire GYFY_SPRITE3_GETp = nor2(_YLOZ_STORE3_MATCHn, GEDE_STORE2_MATCH_OUT);
+    /*p29.GONO*/ wire GONO_SPRITE4_GETp = nor2(_XAGE_STORE4_MATCHn, WUTO_STORE3_MATCH_OUT);
+    /*p29.GEGA*/ wire GEGA_SPRITE5_GETp = nor2(_EGOM_STORE5_MATCHn, XYLA_STORE4_MATCH_OUT);
+    /*p29.XOJA*/ wire XOJA_SPRITE6_GETp = nor2(_YBEZ_STORE6_MATCHn, WEJA_STORE5_MATCH_OUT);
+    /*p29.GUTU*/ wire GUTU_SPRITE7_GETp = nor2(_DYKA_STORE7_MATCHn, WYLA_STORE6_MATCH_OUT);
+    /*p29.FOXA*/ wire FOXA_SPRITE8_GETp = nor2(_EFYL_STORE8_MATCHn, FAVO_STORE7_MATCH_OUT);
+    /*p29.GUZE*/ wire GUZE_SPRITE9_GETp = nor2(_YGEM_STORE9_MATCHn, GYGA_STORE8_MATCH_OUT);
+
+    /*p29.FURO*/ wire FURO_SPRITE0_GETn = not1(GUVA_SPRITE0_GETp);
+    /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not1(ENUT_SPRITE1_GETp);
+    /*p29.FAME*/ wire FAME_SPRITE2_GETn = not1(EMOL_SPRITE2_GETp);
+    /*p29.GYMA*/ wire GYMA_SPRITE3_GETn = not1(GYFY_SPRITE3_GETp);
+    /*p29.GOWO*/ wire GOWO_SPRITE4_GETn = not1(GONO_SPRITE4_GETp);
+    /*p29.GYGY*/ wire GYGY_SPRITE5_GETn = not1(GEGA_SPRITE5_GETp);
+    /*p29.XYME*/ wire XYME_SPRITE6_GETn = not1(XOJA_SPRITE6_GETp);
+    /*p29.GUGY*/ wire GUGY_SPRITE7_GETn = not1(GUTU_SPRITE7_GETp);
+    /*p29.DENY*/ wire DENY_SPRITE8_GETn = not1(FOXA_SPRITE8_GETp);
+    /*p29.FADO*/ wire FADO_SPRITE9_GETn = not1(GUZE_SPRITE9_GETp);
+
+    /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUVA_SPRITE0_GETp);
+    /* p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, ENUT_SPRITE1_GETp);
+    /* p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, EMOL_SPRITE2_GETp);
+    /* p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GYFY_SPRITE3_GETp);
+    /* p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GONO_SPRITE4_GETp);
+    /* p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GEGA_SPRITE5_GETp);
+    /* p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, XOJA_SPRITE6_GETp);
+    /* p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUTU_SPRITE7_GETp);
+    /* p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, FOXA_SPRITE8_GETp);
+    /* p29.FONO*/ sprite_store.FONO_STORE9_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUZE_SPRITE9_GETp);
+
+    /* SPR_I */
     /* p30.ZETU*/ sprite_store.SPR_TRI_I0p.tri_6nn(FURO_SPRITE0_GETn, sprite_store.YGUS_STORE0_I0n.qp08());
     /* p30.ZECE*/ sprite_store.SPR_TRI_I1p.tri_6nn(FURO_SPRITE0_GETn, sprite_store.YSOK_STORE0_I1n.qp08());
     /* p30.ZAVE*/ sprite_store.SPR_TRI_I2p.tri_6nn(FURO_SPRITE0_GETn, sprite_store.YZEP_STORE0_I2n.qp08());
@@ -1760,9 +1757,8 @@ void GateBoy::tock_slow() {
     sprite_store.SPR_TRI_I3p.commit();
     sprite_store.SPR_TRI_I4p.commit();
     sprite_store.SPR_TRI_I5p.commit();
-  }
 
-  /* SPR_L */{
+    /* SPR_L */
     /* p30.WEHE*/ sprite_store.SPR_TRI_L0.tri_6nn(FURO_SPRITE0_GETn, sprite_store.GYHO_STORE0_L0n.qp08());
     /* p30.BUKY*/ sprite_store.SPR_TRI_L1.tri_6nn(FURO_SPRITE0_GETn, sprite_store.CUFO_STORE0_L1n.qp08());
     /* p30.AJAL*/ sprite_store.SPR_TRI_L2.tri_6nn(FURO_SPRITE0_GETn, sprite_store.BOZU_STORE0_L2n.qp08());
@@ -1859,11 +1855,6 @@ void GateBoy::tock_slow() {
   /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn  = not1(dma_reg.MATU_DMA_RUNNINGp.qp17());
   /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn  = or3(_ACYL_SCANNINGp, pix_pipe.XYMU_RENDERINGn.qn03(), dma_reg.MATU_DMA_RUNNINGp.qp17());
   /*p28.BETE*/ wire _BETE_PPU_OAM_RDn  = not1(_AJON_PPU_OAM_ENp);
-
-  //probe(3, "_APAR_SCAN_OAM_RDn", _APAR_SCAN_OAM_RDn);
-  //probe(4, "_DUGA_DMA_OAM_RDn", _DUGA_DMA_OAM_RDn);
-  //probe(5, "_ASAM_CPU_OAM_RDn", _ASAM_CPU_OAM_RDn);
-  //probe(6, "_BETE_PPU_OAM_RDn", _BETE_PPU_OAM_RDn);
 
   {
 
@@ -3885,17 +3876,6 @@ void GateBoy::tock_slow() {
 
     // Delayed reset signal for the selected store once sprite fetch is done.
 
-    /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUVA_SPRITE0_GETp);
-    /* p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, ENUT_SPRITE1_GETp);
-    /* p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, EMOL_SPRITE2_GETp);
-    /* p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GYFY_SPRITE3_GETp);
-    /* p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GONO_SPRITE4_GETp);
-    /* p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GEGA_SPRITE5_GETp);
-    /* p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, XOJA_SPRITE6_GETp);
-    /* p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUTU_SPRITE7_GETp);
-    /* p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, FOXA_SPRITE8_GETp);
-    /* p29.FONO*/ sprite_store.FONO_STORE9_RSTp.dff17c(_WUTY_SPRITE_DONEp, _BYVA_VID_LINE_TRIGn, GUZE_SPRITE9_GETp);
-
     /* p29.EDEN*/ wire EDEN_SPRITE_COUNT0n = not1(sprite_store.BESE_SPRITE_COUNT0.qp17());
     /* p29.CYPY*/ wire CYPY_SPRITE_COUNT1n = not1(sprite_store.CUXY_SPRITE_COUNT1.qp17());
     /* p29.CAPE*/ wire CAPE_SPRITE_COUNT2n = not1(sprite_store.BEGO_SPRITE_COUNT2.qp17());
@@ -3957,6 +3937,17 @@ void GateBoy::tock_slow() {
     // 10 sprite stores
     // Resetting the store X coords to 0 doesn't make sense, as they'd fire during a line even if we never stored any sprites.
     // I guess it must store inverted X, so that when reset X = 0xFF?
+
+    /* p29.DYWE*/ wire _DYWE_STORE0_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EBOJ_STORE0_RSTp.qp17_next());
+    /* p29.EFEV*/ wire _EFEV_STORE1_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.CEDY_STORE1_RSTp.qp17_next());
+    /* p29.FOKO*/ wire _FOKO_STORE2_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EGAV_STORE2_RSTp.qp17_next());
+    /* p29.GAKE*/ wire _GAKE_STORE3_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.GOTA_STORE3_RSTp.qp17_next());
+    /* p29.WOHU*/ wire _WOHU_STORE4_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.XUDY_STORE4_RSTp.qp17_next());
+    /* p29.FEVE*/ wire _FEVE_STORE5_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WAFY_STORE5_RSTp.qp17_next());
+    /* p29.WACY*/ wire _WACY_STORE6_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WOMY_STORE6_RSTp.qp17_next());
+    /* p29.GUKY*/ wire _GUKY_STORE7_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.WAPO_STORE7_RSTp.qp17_next());
+    /* p29.GORO*/ wire _GORO_STORE8_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.EXUQ_STORE8_RSTp.qp17_next());
+    /* p29.DUBU*/ wire _DUBU_STORE9_RSTp = or2(_DYBA_VID_LINE_TRIGp, sprite_store.FONO_STORE9_RSTp.qp17_next());
 
     /* p29.DYNA*/ wire _DYNA_STORE0_RSTn = not1(_DYWE_STORE0_RSTp);
     /* p29.DOKU*/ wire _DOKU_STORE1_RSTn = not1(_EFEV_STORE1_RSTp);
@@ -4343,8 +4334,6 @@ void GateBoy::tock_slow() {
 
 
   /*#p24.SACU*/ wire _SACU_CLKPIPEp = or2(_SEGU_CLKPIPEn, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp04()); // Schematic wrong, this is OR
-
-  probe(2, "_SACU_CLKPIPEp", _SACU_CLKPIPEp);
 
 
   //----------------------------------------
@@ -5294,8 +5283,6 @@ void GateBoy::tock_slow() {
       /* p21.RAPE*/ wire _RAPE_LY_MATCHn = nand2(_SOVU_LY_MATCHA,  _SUBO_LY_MATCHB); // def nand2
       /* p21.PALY*/ wire _PALY_LY_MATCHa = not1(_RAPE_LY_MATCHn); // def not
 
-      //probe(4, "PALY_LY_MATCHA", _PALY_LY_MATCHa);
-
       /*#p21.ROPO*/ lcd_reg.ROPO_LY_MATCH_SYNCp.dff17c(_TALU_xxCDEFxx, _WESY_SYS_RSTn, _PALY_LY_MATCHa);
     }
 
@@ -5367,33 +5354,44 @@ void GateBoy::tock_slow() {
   //------------------------------------------------------------------------------
   // LCD pixel pipe
 
+  /*
+  probe(16, "PIN_LCD_DATA1", PIN_LCD_DATA1.qp());
+  probe(17, "PIN_LCD_DATA0", PIN_LCD_DATA0.qp());
+  probe(18, "PIN_LCD_CNTRL", PIN_LCD_CNTRL.qp());
+  probe(19, "PIN_LCD_CLOCK", PIN_LCD_CLOCK.qp());
+  probe(20, "PIN_LCD_HSYNC", PIN_LCD_HSYNC.qp());
+  probe(21, "PIN_LCD_LATCH", PIN_LCD_LATCH.qp());
+  probe(22, "PIN_LCD_FLIPS", PIN_LCD_FLIPS.qp());
+  probe(23, "PIN_LCD_VSYNC", PIN_LCD_VSYNC.qp());
+  */
+
   if (!old_lcd_clock && PIN_LCD_CLOCK.qp()) {
-    screen_x++;
+    gb_screen_x++;
   }
   if (PIN_LCD_HSYNC.qp() || PIN_LCD_LATCH.qp()) {
-    screen_x = 0;
+    gb_screen_x = 0;
   }
 
   lcd_pix_lo.nor_latch(PIN_LCD_DATA0.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
   lcd_pix_hi.nor_latch(PIN_LCD_DATA1.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
 
   if (!old_lcd_latch && PIN_LCD_LATCH.qp()) {
-    if (screen_y < 144) {
+    if (gb_screen_y < 144) {
       for (int x = 0; x < 159; x++) {
         uint8_t p0 = lcd_pipe_lo[x + 1].qp();
         uint8_t p1 = lcd_pipe_hi[x + 1].qp();
-        framebuffer[x + screen_y * 160] = p0 + p1 * 2;
+        framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
       }
       {
         uint8_t p0 = lcd_pix_lo.qp04();
         uint8_t p1 = lcd_pix_hi.qp04();
-        framebuffer[159 + screen_y * 160] = p0 + p1 * 2;
+        framebuffer[159 + gb_screen_y * 160] = p0 + p1 * 2;
       }
     }
 
-    screen_y++;
+    gb_screen_y++;
     if (PIN_LCD_VSYNC.qp()) {
-      screen_y = 0;
+      gb_screen_y = 0;
     }
   }
 
@@ -5437,8 +5435,54 @@ void GateBoy::tock_slow() {
 
 //-----------------------------------------------------------------------------
 
-#if 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Debug stuff I disabled
+#if 0
 
 /*p07.APET*/ wire APET_MODE_DBG = or2(clk_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
 /*p07.APER*/ wire FF60_WRn = nand2(APET_MODE_DBG, BUS_CPU_A05, BUS_CPU_A06, TAPU_CPUWR, ADDR_111111110xx00000);
@@ -5505,10 +5549,8 @@ if (VYPO_GND) bus_out.set_data(
 /*p08.SAJO*/ if (DBG_D_RDn) BUS_CPU_D5p = not1(/*p08.RATU*/ not1(pins.PIN_D5_C));
 /*p08.TEMY*/ if (DBG_D_RDn) BUS_CPU_D6p = not1(/*p08.SOCA*/ not1(pins.PIN_D6_C));
 /*p08.ROPA*/ if (DBG_D_RDn) BUS_CPU_D7p = not1(/*p08.RYBA*/ not1(pins.PIN_D7_C));
-#endif
 
 // hack, not correct
-#if 0
 {
   // FF60 debug state
   /*p07.APET*/ wire APET_MODE_DBG = or2(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
@@ -5522,10 +5564,8 @@ if (VYPO_GND) bus_out.set_data(
   ///*p05.KURA*/ wire FF60_0n = not1(FF60);
   ///*p05.JEVA*/ wire FF60_0o = not1(FF60);
 }
-#endif
 
 
-#if 0
 // so the address bus is technically a tribuf, but we're going to ignore
 // this debug circuit for now.
 {
@@ -5576,7 +5616,6 @@ if (VYPO_GND) bus_out.set_data(
   /* p08.NEFE*/ cpu_bus.BUS_CPU_A14 = tribuf_10np(TOVA_MODE_DBG2n, PEVO_A14p);
   /* p08.SYZU*/ cpu_bus.BUS_CPU_A15 = tribuf_10np(TOVA_MODE_DBG2n, RAZA_A15p);
 }
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -5666,3 +5705,4 @@ if (VYPO_GND) bus_out.set_data(
 
 
 
+#endif

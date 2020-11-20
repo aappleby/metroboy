@@ -175,8 +175,8 @@ struct GateBoy {
   // LCD and framebuffer
 
   uint8_t framebuffer[160*144];
-  uint8_t screen_x = 0;
-  uint8_t screen_y = 0;
+  uint8_t gb_screen_x = 0;
+  uint8_t gb_screen_y = 0;
   bool old_lcd_clock = 0;
   bool old_lcd_latch = 0;
   uint8_t lcd_data_latch = 0;

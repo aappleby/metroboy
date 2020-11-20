@@ -517,6 +517,7 @@ void GateBoy::tock_slow() {
   wire _PESU_VCC = 1;
 
   //----------------------------------------
+  // Address decoders
 
   /* p06.SARE*/ wire _SARE_XX00_XX07p = nor5 (cpu_bus.BUS_CPU_A07.qp(), cpu_bus.BUS_CPU_A06.qp(), cpu_bus.BUS_CPU_A05.qp(),
                                               cpu_bus.BUS_CPU_A04.qp(), cpu_bus.BUS_CPU_A03.qp());
@@ -587,6 +588,34 @@ void GateBoy::tock_slow() {
   /* p08.TOVA*/ wire _TOVA_MODE_DBG2n = not1(_UNOR_MODE_DBG2p);
 
   //----------------------------------------
+
+  /* p01.ATEZ*/ wire _ATEZ_CLKBAD  = not1(sys_clkgood);
+  /* p01.UCOB*/ wire _UCOB_CLKBADp = not1(sys_clkgood);
+  /* p01.ABOL*/ wire _ABOL_CLKREQn = not1(sys_cpuready);
+  /*#p01.BUTY*/ wire _BUTY_CLKREQ  = not1(_ABOL_CLKREQn);
+
+  {
+    /* p01.UPYF*/ wire _UPYF = or2(sys_rst, _UCOB_CLKBADp);
+    /* p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, sys_cpuready);
+  }
+
+  bool _UNUT_POR_TRIGn = false;
+
+  if (sys_fastboot) {
+    /*p01.UNUT*/ _UNUT_POR_TRIGn = and2(clk_reg.TUBO_WAITINGp.qp04(), tim_reg.TERO_DIV_03.qp17());
+  }
+  else {
+    /*p01.UNUT*/ _UNUT_POR_TRIGn = and2(clk_reg.TUBO_WAITINGp.qp04(), tim_reg.UPOF_DIV_15.qp17());
+  }
+
+  /*p01.TABA*/ wire _TABA_POR_TRIGn = or3(_UNOR_MODE_DBG2p, _UMUT_MODE_DBG1p, _UNUT_POR_TRIGn);
+  /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
+
+  /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(sys_rst, _ALYP_RSTn);
+  /* p01.ASOL*/ clk_reg.ASOL_POR_DONEn.nor_latch(sys_rst, _AFAR_RSTp); // Schematic wrong, this is a latch.
+  /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(clk_reg.AFER_SYS_RSTp.qp13(), clk_reg.ASOL_POR_DONEn.qp04());
+
+  //----------------------------------------
   // root clocks - ignoring the deglitcher here
 
   /* p01.ATAL*/ wire _ATAL_xBxDxFxH = CLK;
@@ -617,14 +646,43 @@ void GateBoy::tock_slow() {
   /*#p01.AROV*/ wire _AROV_xxCDEFxx = not1(clk_reg.APUK_ABxxxxGH.qp09_next());
 
   //----------------------------------------
+  // Reset signals
 
-  /* p01.ATEZ*/ wire _ATEZ_CLKBAD  = not1(sys_clkgood);
-  /* p01.UCOB*/ wire _UCOB_CLKBADp = not1(sys_clkgood);
-  /* p01.ABOL*/ wire _ABOL_CLKREQn = not1(sys_cpuready);
-  /*#p01.BUTY*/ wire _BUTY_CLKREQ  = not1(_ABOL_CLKREQn);
+  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire _DULA_SYS_RSTp = not1(_ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ wire _CUNU_SYS_RSTn = not1(_DULA_SYS_RSTp);
+  /*#p01.XORE*/ wire _XORE_SYS_RSTp = not1(_CUNU_SYS_RSTn);
+  /* p01.WESY*/ wire _WESY_SYS_RSTn = not1(_XORE_SYS_RSTp);
+  /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(_XORE_SYS_RSTp);
+  /*#p01.WALU*/ wire _WALU_SYS_RSTn = not1(_XORE_SYS_RSTp);
+
+  //----------------------------------------
 
 
 
+
+
+  /*#p29.XUPY*/ wire _XUPY_ABxxEFxx = not1(clk_reg.WUVU_ABxxEFxx.qn16());
+  /*#p21.TALU*/ wire _TALU_xxCDEFxx = not1(clk_reg.VENA_xxCDEFxx.qn16());
+  /*#p29.XOCE*/ wire _XOCE_xBCxxFGx = not1(clk_reg.WOSU_AxxDExxH.qp17());
+
+
+  /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not1(_ZEME_AxCxExGx);
+  /*p29.XOTA*/ wire _XOTA_AxCxExGx = not1(_XYVA_xBxDxFxH);
+  /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not1(_XOTA_AxCxExGx);
+
+  // inverting the clock to VENA doesn't seem to break anything, which is really weird
+
+  /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, pix_pipe.XONA_LCDC_LCDENn.qn08());
+  /* p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
+  /*#p01.ATAR*/ wire _ATAR_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn = not1(_ATAR_VID_RSTp);
+  /* p01.LYHA*/ wire _LYHA_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /* p01.LYFE*/ wire _LYFE_LCD_RSTn = not1(_LYHA_VID_RSTp);
+
+  /*p29.WOSU*/ clk_reg.WOSU_AxxDExxH.dff17c(_XYFY_xBxDxFxH,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+  /*p29.WUVU*/ clk_reg.WUVU_ABxxEFxx.dff17c(_XOTA_AxCxExGx,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+  /*p21.VENA*/ clk_reg.VENA_xxCDEFxx.dff17c(clk_reg.WUVU_ABxxEFxx.qn16_next(), _XAPO_VID_RSTn, clk_reg.VENA_xxCDEFxx.qn16());
 
 
 
@@ -647,60 +705,11 @@ void GateBoy::tock_slow() {
   /* p07.TAPU*/ wire _TAPU_CPU_WRp_xxxxEFGx = not1(_UBAL_CPU_WRn_ABCDxxxH);
 
   //----------------------------------------
-
-  {
-    /* p01.UPYF*/ wire _UPYF = or2(sys_rst, _UCOB_CLKBADp);
-    /* p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF, sys_cpuready);
-  }
-
-  bool _UNUT_POR_TRIGn = false;
-
-  if (sys_fastboot) {
-    /*p01.UNUT*/ _UNUT_POR_TRIGn = and2(clk_reg.TUBO_WAITINGp.qp04(), tim_reg.TERO_DIV_03.qp17());
-  }
-  else {
-    /*p01.UNUT*/ _UNUT_POR_TRIGn = and2(clk_reg.TUBO_WAITINGp.qp04(), tim_reg.UPOF_DIV_15.qp17());
-  }
-
-  /*p01.TABA*/ wire _TABA_POR_TRIGn = or3(_UNOR_MODE_DBG2p, _UMUT_MODE_DBG1p, _UNUT_POR_TRIGn);
-  /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
-
-  /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(sys_rst, _ALYP_RSTn);
-  /* p01.ASOL*/ clk_reg.ASOL_POR_DONEn.nor_latch(sys_rst, _AFAR_RSTp); // Schematic wrong, this is a latch.
-  /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(clk_reg.AFER_SYS_RSTp.qp13(), clk_reg.ASOL_POR_DONEn.qp04());
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
-
-  {
-    /* p07.TULO*/ wire _TULO_ADDR_00XXp = nor8 (cpu_bus.BUS_CPU_A15.qp(), cpu_bus.BUS_CPU_A14.qp(), cpu_bus.BUS_CPU_A13.qp(), cpu_bus.BUS_CPU_A12.qp(),
-                                                cpu_bus.BUS_CPU_A11.qp(), cpu_bus.BUS_CPU_A10.qp(), cpu_bus.BUS_CPU_A09.qp(), cpu_bus.BUS_CPU_A08.qp());
-    /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn.qp17());
-    /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
-    cpu_bus.PIN_CPU_BOOTp.setc(_TUTU_ADDR_BOOTp);
-  }
+  // Bootrom bit
 
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn.qp17());
   /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
-
-  //----------------------------------------
-  // debug
-
-  /*#p01.DULA*/ wire _DULA_SYS_RSTp = not1(_ALUR_SYS_RSTn);
-  /*#p01.CUNU*/ wire _CUNU_SYS_RSTn = not1(_DULA_SYS_RSTp);
-  /*#p01.XORE*/ wire _XORE_SYS_RSTp = not1(_CUNU_SYS_RSTn);
-  /* p01.WESY*/ wire _WESY_SYS_RSTn = not1(_XORE_SYS_RSTp);
-  /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(_XORE_SYS_RSTp);
-  /*#p01.WALU*/ wire _WALU_SYS_RSTn = not1(_XORE_SYS_RSTp);
-
-  /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, pix_pipe.XONA_LCDC_LCDENn.qn08());
-  /* p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
-  /*#p01.ATAR*/ wire _ATAR_VID_RSTp = not1(_XAPO_VID_RSTn);
-  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn = not1(_ATAR_VID_RSTp);
-  /* p01.LYHA*/ wire _LYHA_VID_RSTp = not1(_XAPO_VID_RSTn);
-  /* p01.LYFE*/ wire _LYFE_LCD_RSTn = not1(_LYHA_VID_RSTp);
-
-  /*#p29.XUPY*/ wire _XUPY_ABxxEFxx = not1(clk_reg.WUVU_ABxxEFxx.qn16());
-  /*#p21.TALU*/ wire _TALU_xxCDEFxx = not1(clk_reg.VENA_xxCDEFxx.qn16());
-  /*#p29.XOCE*/ wire _XOCE_xBCxxFGx = not1(clk_reg.WOSU_AxxDExxH.qp17());
+  cpu_bus.PIN_CPU_BOOTp.setc(_TUTU_ADDR_BOOTp);
 
   //----------------------------------------
   // cpu read/write signals
@@ -2777,7 +2786,7 @@ void GateBoy::tock_slow() {
     }
 
     {
-      /*#p29.WOJO*/ wire _WOJO_AxxxExxx   = nor2(clk_reg.WOSU_AxxDExxH.qn16(), clk_reg.WUVU_ABxxEFxx.qn16());
+      /*#p29.WOJO*/ wire _WOJO_AxxxExxx   = nor2(clk_reg.WOSU_AxxDExxH.qn16_next(), clk_reg.WUVU_ABxxEFxx.qn16_next());
       /* p29.XYSO*/ wire _XYSO_xBCDxFGH   = not1(_WOJO_AxxxExxx);
       /* p25.AVER*/ wire _AVER_AxxxExxx   = nand2(_ACYL_SCANNINGp, _XYSO_xBCDxFGH);
       /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(_TUVO_PPU_OAM_RDp, _TACU_SPR_SEQ_5_TRIG);
@@ -3871,18 +3880,6 @@ void GateBoy::tock_slow() {
     cpu_bus.PIN_CPU_BOGA_Axxxxxxx.setc(_BOGA_Axxxxxxx);
 
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13c(_BOGA_Axxxxxxx, _UPOJ_MODE_PRODn, clk_reg.ASOL_POR_DONEn.qp04());
-
-    /*p29.XYVA*/ wire _XYVA_xBxDxFxH = not1(_ZEME_AxCxExGx);
-    /*p29.XOTA*/ wire _XOTA_AxCxExGx = not1(_XYVA_xBxDxFxH);
-    /*p29.XYFY*/ wire _XYFY_xBxDxFxH = not1(_XOTA_AxCxExGx);
-
-    // inverting the clock to VENA doesn't seem to break anything, which is really weird
-
-    /*p29.WOSU*/ clk_reg.WOSU_AxxDExxH.dff17c(_XYFY_xBxDxFxH,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
-    /*p29.WUVU*/ clk_reg.WUVU_ABxxEFxx.dff17c(_XOTA_AxCxExGx,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
-    /*p21.VENA*/ clk_reg.VENA_xxCDEFxx.dff17c(clk_reg.WUVU_ABxxEFxx.qn16_next(), _XAPO_VID_RSTn, clk_reg.VENA_xxCDEFxx.qn16());
-
-
   }
 
   //------------------------------------------------------------------------------

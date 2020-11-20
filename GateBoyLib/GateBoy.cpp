@@ -807,44 +807,50 @@ void GateBoy::tock_slow() {
   //------------------------------------------------------------------------------
   // Line trigger stuff
 
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(lcd_reg.CATU_LINE_P000.qp17());
-  /* p28.BYHA*/ wire _BYHA_VID_LINE_END_TRIGn = or_and3(lcd_reg.ANEL_LINE_P002.qp17(), _ABAF_LINE_P000n, _ABEZ_VID_RSTn); // so if this is or_and, BYHA should go low on 910 and 911
+  /*#p21.SANU*/ wire _SANU_x113p = and4(lcd_reg.TYRY_X6p.qp17(), lcd_reg.TAHA_X5p.qp17(), lcd_reg.SUDE_X4p.qp17(), lcd_reg.SAXO_X0p.qp17()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+  /*#p21.RUTU*/ lcd_reg.RUTU_LINE_P910.dff17c(_SONO_ABxxxxGH, _LYFE_LCD_RSTn, _SANU_x113p);
+  /*#p21.PURE*/ wire _PURE_LINE_P908n     = not1(lcd_reg.RUTU_LINE_P910.qp17_next());
+  /*#p21.SELA*/ wire _SELA_LINE_P908p     = not1(_PURE_LINE_P908n);
+
+  /*#p21.XYVO*/ wire _XYVO_IN_VBLANKp = and2(lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LAFO_Y7p.qp17()); // 128 + 16 = 144
+  /*#p29.ALES*/ wire _ALES_IN_VBLANKn     = not1(_XYVO_IN_VBLANKp);
+  /*#p29.ABOV*/ wire _ABOV_VID_LINE_P908p = and2(_SELA_LINE_P908p, _ALES_IN_VBLANKn);
+  /*#p29.CATU*/ lcd_reg.CATU_LINE_P000 .dff17c(_XUPY_ABxxEFxx,                     _ABEZ_VID_RSTn,   _ABOV_VID_LINE_P908p);
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(lcd_reg.CATU_LINE_P000.qp17_next());
+
+  /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002 .dff17c(_AWOH_xxCDxxGH,                     _ABEZ_VID_RSTn,   lcd_reg.CATU_LINE_P000.qp17_next());
+  /* p28.BYHA*/ wire _BYHA_VID_LINE_END_TRIGn = or_and3(lcd_reg.ANEL_LINE_P002.qp17_next(), _ABAF_LINE_P000n, _ABEZ_VID_RSTn); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp = not1(_BYHA_VID_LINE_END_TRIGn);
   /* p27.XAHY*/ wire _XAHY_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
-  /*#p21.PARU*/ wire _PARU_VBLANKp_d4 = not1(lcd_reg.POPU_IN_VBLANKp.qn16());
-  /*#p21.TOLU*/ wire _TOLU_VBLANKn = not1(_PARU_VBLANKp_d4);
-
-  /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002 .dff17c(_AWOH_xxCDxxGH,                     _ABEZ_VID_RSTn,   lcd_reg.CATU_LINE_P000.qp17());
+  /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
 
   /*#p28.ANOM*/ wire _ANOM_LINE_RSTn = nor2(_ATEJ_LINE_TRIGp, _ATAR_VID_RSTp);
   /*#p29.BALU*/ wire _BALU_LINE_RSTp = not1(_ANOM_LINE_RSTn);
   /*#p29.BAGY*/ wire _BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
-  /*#p28.AZYB*/ wire _AZYB_VID_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
+
   /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(_ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
   /* p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
   /* p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
+
   /* p21.TADY*/ wire _TADY_LINE_START_RSTn = nor2(_ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
 
-  /*#p21.XYVO*/ wire _XYVO_IN_VBLANKp = and2(lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LAFO_Y7p.qp17()); // 128 + 16 = 144
-  /*#p21.PURE*/ wire _PURE_LINE_P908n = not1(lcd_reg.RUTU_LINE_P910.qp17());
+  /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002 .dff17c(_TALU_xxCDEFxx,                     _LYFE_LCD_RSTn,   lcd_reg.RUTU_LINE_P910.qp17_next());
+
+  /*#p21.POPU*/ lcd_reg.POPU_IN_VBLANKp.dff17c(lcd_reg.NYPE_LINE_P002.qp17_next(), _LYFE_LCD_RSTn,   _XYVO_IN_VBLANKp);
+  /*#p21.PARU*/ wire _PARU_VBLANKp_d4 = not1(lcd_reg.POPU_IN_VBLANKp.qn16_next());
+  /*#p21.TOLU*/ wire _TOLU_VBLANKn = not1(_PARU_VBLANKp_d4);
+
+  {
+    /*#p21.NOKO*/ wire _NOKO_LINE_153 = and4(lcd_reg.LAFO_Y7p.qp17(), lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LYDO_Y3p.qp17(), lcd_reg.MUWY_Y0p.qp17()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+    /*#p21.MYTA*/ lcd_reg.MYTA_LINE_153p .dff17c(lcd_reg.NYPE_LINE_P002.qn16_next(), _LYFE_LCD_RSTn,   _NOKO_LINE_153);
+  }
 
 
   {
-    /*#p21.SANU*/ wire _SANU_x113p = and4(lcd_reg.TYRY_X6p.qp17(), lcd_reg.TAHA_X5p.qp17(), lcd_reg.SUDE_X4p.qp17(), lcd_reg.SAXO_X0p.qp17()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*#p21.NOKO*/ wire _NOKO_LINE_153 = and4(lcd_reg.LAFO_Y7p.qp17(), lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LYDO_Y3p.qp17(), lcd_reg.MUWY_Y0p.qp17()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
     // NERU looks a little odd, not 100% positive it's a big nor but it does make sense as one
     /*#p24.NERU*/ wire _NERU_LINE_000p = nor8(lcd_reg.LAFO_Y7p.qp17(), lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LYDO_Y3p.qp17(), lcd_reg.MUWY_Y0p.qp17(),
                                               lcd_reg.MYRO_Y1p.qp17(), lcd_reg.LEXA_Y2p.qp17(), lcd_reg.LEMA_Y5p.qp17(), lcd_reg.MATO_Y6p.qp17());
-    /*#p29.ALES*/ wire _ALES_IN_VBLANKn = not1(_XYVO_IN_VBLANKp);
-    /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_P908n);
-    /*#p29.ABOV*/ wire _ABOV_VID_LINE_P908p = and2(_SELA_LINE_P908p, _ALES_IN_VBLANKn);
-
-    /*#p21.RUTU*/ lcd_reg.RUTU_LINE_P910 .dff17c(_SONO_ABxxxxGH,                     _LYFE_LCD_RSTn,   _SANU_x113p);
-    /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002 .dff17c(_TALU_xxCDEFxx,                     _LYFE_LCD_RSTn,   lcd_reg.RUTU_LINE_P910.qp17_next());
-    /*#p21.POPU*/ lcd_reg.POPU_IN_VBLANKp.dff17c(lcd_reg.NYPE_LINE_P002.qp17_next(), _LYFE_LCD_RSTn,   _XYVO_IN_VBLANKp);
     /*#p24.MEDA*/ lcd_reg.MEDA_VSYNC_OUTn.dff17c(lcd_reg.NYPE_LINE_P002.qn16_next(), _LYFE_LCD_RSTn,   _NERU_LINE_000p);
-    /*#p21.MYTA*/ lcd_reg.MYTA_LINE_153p .dff17c(lcd_reg.NYPE_LINE_P002.qn16_next(), _LYFE_LCD_RSTn,   _NOKO_LINE_153);
-    /*#p29.CATU*/ lcd_reg.CATU_LINE_P000 .dff17c(_XUPY_ABxxEFxx,                      _ABEZ_VID_RSTn,   _ABOV_VID_LINE_P908p);
   }
 
   //------------------------------------------------------------------------------
@@ -3931,10 +3937,10 @@ void GateBoy::tock_slow() {
     /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(sprite_store.CUXY_SPRITE_COUNT1.qp17(), sprite_store.DYBE_SPRITE_COUNT3.qp17());
     /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, sprite_store.DEZY_STORE_ENn.qp17());
 
-    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17c(_CAKE_CLKp,                                  _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
-    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17c(sprite_store.BESE_SPRITE_COUNT0.qn16_next(), _AZYB_VID_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
-    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17c(sprite_store.CUXY_SPRITE_COUNT1.qn16_next(), _AZYB_VID_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
-    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17c(sprite_store.BEGO_SPRITE_COUNT2.qn16_next(), _AZYB_VID_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
+    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17c(_CAKE_CLKp,                                  _AZYB_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
+    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17c(sprite_store.BESE_SPRITE_COUNT0.qn16_next(), _AZYB_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
+    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17c(sprite_store.CUXY_SPRITE_COUNT1.qn16_next(), _AZYB_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
+    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17c(sprite_store.BEGO_SPRITE_COUNT2.qn16_next(), _AZYB_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
 
     /* p29.DEZY*/ sprite_store.DEZY_STORE_ENn.dff17c(_ZEME_AxCxExGx, _XAPO_VID_RSTn, _DYTY_STORE_ENn_xxCDxxGH);
 

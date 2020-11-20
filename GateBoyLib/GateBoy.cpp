@@ -5310,22 +5310,22 @@ void GateBoy::tock_slow() {
     {
       // LCD main timer, 912 phases per line
 
-      /*#p21.TYRY*/ lcd_reg.TYRY_X6p.dff17c(lcd_reg.TAHA_X5p.qn16(), _MUDE_X_RSTn, lcd_reg.TYRY_X6p.qn16());
-      /*#p21.TAHA*/ lcd_reg.TAHA_X5p.dff17c(lcd_reg.SUDE_X4p.qn16(), _MUDE_X_RSTn, lcd_reg.TAHA_X5p.qn16());
-      /*#p21.SUDE*/ lcd_reg.SUDE_X4p.dff17c(lcd_reg.TELU_X3p.qn16(), _MUDE_X_RSTn, lcd_reg.SUDE_X4p.qn16());
-      /*#p21.TELU*/ lcd_reg.TELU_X3p.dff17c(lcd_reg.VYZO_X2p.qn16(), _MUDE_X_RSTn, lcd_reg.TELU_X3p.qn16());
-      /*#p21.VYZO*/ lcd_reg.VYZO_X2p.dff17c(lcd_reg.TYPO_X1p.qn16(), _MUDE_X_RSTn, lcd_reg.VYZO_X2p.qn16());
-      /*#p21.TYPO*/ lcd_reg.TYPO_X1p.dff17c(lcd_reg.SAXO_X0p.qn16(), _MUDE_X_RSTn, lcd_reg.TYPO_X1p.qn16());
-      /*#p21.SAXO*/ lcd_reg.SAXO_X0p.dff17c(_TALU_xxCDEFxx,          _MUDE_X_RSTn, lcd_reg.SAXO_X0p.qn16());
+      /*#p21.SAXO*/ lcd_reg.SAXO_X0p.dff17c(_TALU_xxCDEFxx,               _MUDE_X_RSTn, lcd_reg.SAXO_X0p.qn16());
+      /*#p21.TYPO*/ lcd_reg.TYPO_X1p.dff17c(lcd_reg.SAXO_X0p.qn16_next(), _MUDE_X_RSTn, lcd_reg.TYPO_X1p.qn16());
+      /*#p21.VYZO*/ lcd_reg.VYZO_X2p.dff17c(lcd_reg.TYPO_X1p.qn16_next(), _MUDE_X_RSTn, lcd_reg.VYZO_X2p.qn16());
+      /*#p21.TELU*/ lcd_reg.TELU_X3p.dff17c(lcd_reg.VYZO_X2p.qn16_next(), _MUDE_X_RSTn, lcd_reg.TELU_X3p.qn16());
+      /*#p21.SUDE*/ lcd_reg.SUDE_X4p.dff17c(lcd_reg.TELU_X3p.qn16_next(), _MUDE_X_RSTn, lcd_reg.SUDE_X4p.qn16());
+      /*#p21.TAHA*/ lcd_reg.TAHA_X5p.dff17c(lcd_reg.SUDE_X4p.qn16_next(), _MUDE_X_RSTn, lcd_reg.TAHA_X5p.qn16());
+      /*#p21.TYRY*/ lcd_reg.TYRY_X6p.dff17c(lcd_reg.TAHA_X5p.qn16_next(), _MUDE_X_RSTn, lcd_reg.TYRY_X6p.qn16());
 
-      /*#p21.LAFO*/ lcd_reg.LAFO_Y7p.dff17c(lcd_reg.MATO_Y6p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.LAFO_Y7p.qn16());
-      /*#p21.MATO*/ lcd_reg.MATO_Y6p.dff17c(lcd_reg.LEMA_Y5p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.MATO_Y6p.qn16());
-      /*#p21.LEMA*/ lcd_reg.LEMA_Y5p.dff17c(lcd_reg.LOVU_Y4p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.LEMA_Y5p.qn16());
-      /*#p21.LOVU*/ lcd_reg.LOVU_Y4p.dff17c(lcd_reg.LYDO_Y3p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.LOVU_Y4p.qn16());
-      /*#p21.LYDO*/ lcd_reg.LYDO_Y3p.dff17c(lcd_reg.LEXA_Y2p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.LYDO_Y3p.qn16());
-      /*#p21.LEXA*/ lcd_reg.LEXA_Y2p.dff17c(lcd_reg.MYRO_Y1p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.LEXA_Y2p.qn16());
-      /*#p21.MYRO*/ lcd_reg.MYRO_Y1p.dff17c(lcd_reg.MUWY_Y0p.qn16(),       _LAMA_FRAME_RSTn, lcd_reg.MYRO_Y1p.qn16());
       /*#p21.MUWY*/ lcd_reg.MUWY_Y0p.dff17c(lcd_reg.RUTU_LINE_P910.qp17(), _LAMA_FRAME_RSTn, lcd_reg.MUWY_Y0p.qn16());
+      /*#p21.MYRO*/ lcd_reg.MYRO_Y1p.dff17c(lcd_reg.MUWY_Y0p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.MYRO_Y1p.qn16());
+      /*#p21.LEXA*/ lcd_reg.LEXA_Y2p.dff17c(lcd_reg.MYRO_Y1p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.LEXA_Y2p.qn16());
+      /*#p21.LYDO*/ lcd_reg.LYDO_Y3p.dff17c(lcd_reg.LEXA_Y2p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.LYDO_Y3p.qn16());
+      /*#p21.LOVU*/ lcd_reg.LOVU_Y4p.dff17c(lcd_reg.LYDO_Y3p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.LOVU_Y4p.qn16());
+      /*#p21.LEMA*/ lcd_reg.LEMA_Y5p.dff17c(lcd_reg.LOVU_Y4p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.LEMA_Y5p.qn16());
+      /*#p21.MATO*/ lcd_reg.MATO_Y6p.dff17c(lcd_reg.LEMA_Y5p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.MATO_Y6p.qn16());
+      /*#p21.LAFO*/ lcd_reg.LAFO_Y7p.dff17c(lcd_reg.MATO_Y6p.qn16_next(),  _LAMA_FRAME_RSTn, lcd_reg.LAFO_Y7p.qn16());
     }
 
     /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002.dff17c(_TALU_xxCDEFxx, _LYFE_LCD_RSTn, lcd_reg.RUTU_LINE_P910.qp17());

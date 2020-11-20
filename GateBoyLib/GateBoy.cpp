@@ -614,6 +614,28 @@ void GateBoy::tock_slow() {
   /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(clk_reg.AFER_SYS_RSTp.qp13(), clk_reg.ASOL_POR_DONEn.qp04());
 
   //----------------------------------------
+  // Reset signals
+
+  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire _DULA_SYS_RSTp = not1(_ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ wire _CUNU_SYS_RSTn = not1(_DULA_SYS_RSTp);
+  /*#p01.XORE*/ wire _XORE_SYS_RSTp = not1(_CUNU_SYS_RSTn);
+  /* p01.WESY*/ wire _WESY_SYS_RSTn = not1(_XORE_SYS_RSTp);
+  /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(_XORE_SYS_RSTp);
+  /*#p01.WALU*/ wire _WALU_SYS_RSTn = not1(_XORE_SYS_RSTp);
+
+  /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, pix_pipe.XONA_LCDC_LCDENn.qn08());
+  /* p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
+  /*#p01.ATAR*/ wire _ATAR_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn = not1(_ATAR_VID_RSTp);
+  /* p01.LYHA*/ wire _LYHA_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /* p01.LYFE*/ wire _LYFE_LCD_RSTn = not1(_LYHA_VID_RSTp);
+  /* p01.PYRY*/ wire _PYRY_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /* p01.ROSY*/ wire _ROSY_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /* p01.AMYG*/ wire _AMYG_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /* p01.TOFU*/ wire _TOFU_VID_RSTp = not1(_XAPO_VID_RSTn);
+
+  //----------------------------------------
   // Root clocks - ignoring the deglitcher here
 
   /* p01.ATAL*/ wire _ATAL_xBxDxFxH = CLK;
@@ -630,10 +652,10 @@ void GateBoy::tock_slow() {
   // Phase clocks
 
   {
-    wire _ADYK_ABCxxxxH = clk_reg.ADYK_ABCxxxxH.qp09();
     wire _AFUR_xxxxEFGH = clk_reg.AFUR_xxxxEFGH.qn08();
     wire _ALEF_AxxxxFGH = clk_reg.ALEF_AxxxxFGH.qn08();
     wire _APUK_ABxxxxGH = clk_reg.APUK_ABxxxxGH.qn08();
+    wire _ADYK_ABCxxxxH = clk_reg.ADYK_ABCxxxxH.qp09();
 
     /*p01.AFUR*/ clk_reg.AFUR_xxxxEFGH.dff9c(!_ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _ADYK_ABCxxxxH);
     /*p01.ALEF*/ clk_reg.ALEF_AxxxxFGH.dff9c( _ATAL_xBxDxFxH, _UPOJ_MODE_PRODn, _AFUR_xxxxEFGH);
@@ -692,24 +714,6 @@ void GateBoy::tock_slow() {
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(_UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
 
-
-  //----------------------------------------
-  // Reset signals
-
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
-  /*#p01.DULA*/ wire _DULA_SYS_RSTp = not1(_ALUR_SYS_RSTn);
-  /*#p01.CUNU*/ wire _CUNU_SYS_RSTn = not1(_DULA_SYS_RSTp);
-  /*#p01.XORE*/ wire _XORE_SYS_RSTp = not1(_CUNU_SYS_RSTn);
-  /* p01.WESY*/ wire _WESY_SYS_RSTn = not1(_XORE_SYS_RSTp);
-  /* p01.XEBE*/ wire _XEBE_SYS_RSTn = not1(_XORE_SYS_RSTp);
-  /*#p01.WALU*/ wire _WALU_SYS_RSTn = not1(_XORE_SYS_RSTp);
-
-  /* p01.XODO*/ wire _XODO_VID_RSTp = nand2(_XEBE_SYS_RSTn, pix_pipe.XONA_LCDC_LCDENn.qn08());
-  /* p01.XAPO*/ wire _XAPO_VID_RSTn = not1(_XODO_VID_RSTp);
-  /*#p01.ATAR*/ wire _ATAR_VID_RSTp = not1(_XAPO_VID_RSTn);
-  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn = not1(_ATAR_VID_RSTp);
-  /* p01.LYHA*/ wire _LYHA_VID_RSTp = not1(_XAPO_VID_RSTn);
-  /* p01.LYFE*/ wire _LYFE_LCD_RSTn = not1(_LYHA_VID_RSTp);
 
   //----------------------------------------
   // Video clocks
@@ -836,23 +840,38 @@ void GateBoy::tock_slow() {
   }
 
   //------------------------------------------------------------------------------
-  // lcd_reg.tick(top);
+  // Line trigger stuff
 
   /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(lcd_reg.CATU_LINE_P000.qp17());
   /* p28.BYHA*/ wire _BYHA_VID_LINE_END_TRIGn = or_and3(lcd_reg.ANEL_LINE_P002.qp17(), _ABAF_LINE_P000n, _ABEZ_VID_RSTn); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp = not1(_BYHA_VID_LINE_END_TRIGn);
+  /* p27.XAHY*/ wire _XAHY_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
   /*#p21.PARU*/ wire _PARU_VBLANKp_d4 = not1(lcd_reg.POPU_IN_VBLANKp.qn16());
   /*#p21.TOLU*/ wire _TOLU_VBLANKn = not1(_PARU_VBLANKp_d4);
   /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp = not1(_TOLU_VBLANKn);
 
   /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002 .dff17c(_AWOH_xxCDxxGH,                     _ABEZ_VID_RSTn,   lcd_reg.CATU_LINE_P000.qp17());
 
+  /*#p28.ANOM*/ wire _ANOM_LINE_RSTn = nor2(_ATEJ_LINE_TRIGp, _ATAR_VID_RSTp);
+  /*#p29.BALU*/ wire _BALU_LINE_RSTp = not1(_ANOM_LINE_RSTn);
+  /*#p29.BAGY*/ wire _BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
+  /*#p28.AZYB*/ wire _AZYB_VID_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
+  /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(_ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
+  /* p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
+  /* p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
+  /* p21.TADY*/ wire _TADY_LINE_START_RSTn = nor2(_ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
+
+  /*#p21.XYVO*/ wire _XYVO_IN_VBLANKp = and2(lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LAFO_Y7p.qp17()); // 128 + 16 = 144
+  /*#p21.PURE*/ wire _PURE_LINE_P908n = not1(lcd_reg.RUTU_LINE_P910.qp17());
+  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_P908n);
+  /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
+
+  /*#p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor2(lcd_reg.MYTA_LINE_153p.qp17(), _LYHA_VID_RSTp);
+
   //------------------------------------------------------------------------------
   // sprite_scanner.tick()
 
   // this is using an adder as a subtracter by inverting the first input.
-
-  /*#p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor2(lcd_reg.MYTA_LINE_153p.qp17(), _LYHA_VID_RSTp);
 
   /*#p29.EBOS*/ wire _EBOS_Y0n = not1(lcd_reg.MUWY_Y0p.qp17());
   /* p29.DASA*/ wire _DASA_Y1n = not1(lcd_reg.MYRO_Y1p.qp17());
@@ -889,11 +908,8 @@ void GateBoy::tock_slow() {
   /* p29.GYDA*/ wire _GYDA_SPRITE_DELTA6 = not1(_GOJU_YDIFF_S6);
   /* p29.GEWY*/ wire _GEWY_SPRITE_DELTA7 = not1(_WUHU_YDIFF_S7);
 
-  /*#p28.ANOM*/ wire _ANOM_LINE_RSTn = nor2(_ATEJ_LINE_TRIGp, _ATAR_VID_RSTp);
-  /*#p29.BALU*/ wire _BALU_LINE_RSTp = not1(_ANOM_LINE_RSTn);
-  /*#p29.BAGY*/ wire _BAGY_LINE_RSTn = not1(_BALU_LINE_RSTp);
-
-  /* p29.CEHA*/ wire _CEHA_SCANNINGp     = not1(sprite_scanner.CENO_SCANNINGp.qn16());
+  /* p29.CEHA*/ wire _CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGp.qn16());
+  /*#p29.BYJO*/ wire _BYJO_SCANNINGn = not1(_CEHA_SCANNINGp);
 
   /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_B.qp17(), _BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_A.qn16());
   /*#p29.AVAP*/ wire _AVAP_RENDER_START_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
@@ -903,33 +919,12 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
-  /* p01.TOFU*/ wire _TOFU_VID_RSTp = not1(_XAPO_VID_RSTn);
-  /* p21.TADY*/ wire _TADY_LINE_START_RSTn = nor2(_ATEJ_LINE_TRIGp, _TOFU_VID_RSTp);
-
-  /*#p21.ACAM*/ wire _ACAM_X0n = not1(pix_pipe.XEHO_X0p.qp17());
-  /* p21.AZUB*/ wire _AZUB_X1n = not1(pix_pipe.SAVY_X1p.qp17());
-  /* p21.AMEL*/ wire _AMEL_X2n = not1(pix_pipe.XODU_X2p.qp17());
-  /* p21.AHAL*/ wire _AHAL_X3n = not1(pix_pipe.XYDO_X3p.qp17());
-  /* p21.APUX*/ wire _APUX_X4n = not1(pix_pipe.TUHU_X4p.qp17());
-  /* p21.ABEF*/ wire _ABEF_X5n = not1(pix_pipe.TUKY_X5p.qp17());
-  /* p21.ADAZ*/ wire _ADAZ_X6n = not1(pix_pipe.TAKO_X6p.qp17());
-  /* p21.ASAH*/ wire _ASAH_X7n = not1(pix_pipe.SYBE_X7p.qp17());
-
   /*#p21.WEGO*/ wire _WEGO_HBLANKp = or2(_TOFU_VID_RSTp, pix_pipe.VOGA_HBLANKp.qp17());
   /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp, _AVAP_RENDER_START_TRIGp);
 
-  /*#p29.BYJO*/ wire _BYJO_SCANNINGn  = not1(_CEHA_SCANNINGp);
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(_BYJO_SCANNINGn, pix_pipe.XYMU_RENDERINGn.qn03());
-  /*#p29.AROR*/ wire _AROR_MATCH_ENp  = and2(_AZEM_RENDERINGp, pix_pipe.XYLO_LCDC_SPENn.qn08());
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(_BYJO_SCANNINGn,  pix_pipe.XYMU_RENDERINGn.qn03());
 
   //------------------------------------------------------------------------------
-
-  /* p01.AMYG*/ wire _AMYG_VID_RSTp = not1(_XAPO_VID_RSTn);
-
-  /*#p28.AZYB*/ wire _AZYB_VID_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
-  /* p28.ABAK*/ wire _ABAK_VID_LINE_TRIGp = or2(_ATEJ_LINE_TRIGp, _AMYG_VID_RSTp);
-  /* p28.BYVA*/ wire _BYVA_VID_LINE_TRIGn = not1(_ABAK_VID_LINE_TRIGp);
-  /* p29.DYBA*/ wire _DYBA_VID_LINE_TRIGp = not1(_BYVA_VID_LINE_TRIGn);
 
   /* p29.YDUG*/ bool _YDUG_STORE0_MATCHn;
   /* p29.DYDU*/ bool _DYDU_STORE1_MATCHn;
@@ -947,6 +942,15 @@ void GateBoy::tock_slow() {
   /* p29.FEPO*/ bool _FEPO_STORE_MATCHp;
 
   {
+    /*#p21.ACAM*/ wire _ACAM_X0n = not1(pix_pipe.XEHO_X0p.qp17());
+    /* p21.AZUB*/ wire _AZUB_X1n = not1(pix_pipe.SAVY_X1p.qp17());
+    /* p21.AMEL*/ wire _AMEL_X2n = not1(pix_pipe.XODU_X2p.qp17());
+    /* p21.AHAL*/ wire _AHAL_X3n = not1(pix_pipe.XYDO_X3p.qp17());
+    /* p21.APUX*/ wire _APUX_X4n = not1(pix_pipe.TUHU_X4p.qp17());
+    /* p21.ABEF*/ wire _ABEF_X5n = not1(pix_pipe.TUKY_X5p.qp17());
+    /* p21.ADAZ*/ wire _ADAZ_X6n = not1(pix_pipe.TAKO_X6p.qp17());
+    /* p21.ASAH*/ wire _ASAH_X7n = not1(pix_pipe.SYBE_X7p.qp17());
+
     /*#p31.ZOGY*/ wire ZOGY_STORE0_MATCH0n = xor2(sprite_store.XEPE_STORE0_X0p.qn08(), _ACAM_X0n);
     /* p31.ZEBA*/ wire ZEBA_STORE0_MATCH1n = xor2(sprite_store.YLAH_STORE0_X1p.qn08(), _AZUB_X1n);
     /* p31.ZAHA*/ wire ZAHA_STORE0_MATCH2n = xor2(sprite_store.ZOLA_STORE0_X2p.qn08(), _AMEL_X2n);
@@ -1058,6 +1062,7 @@ void GateBoy::tock_slow() {
     /* p31.YLEV*/ wire YLEV_STORE9_MATCHAp = nor4(YMAM_STORE9_MATCH0n, YTYP_STORE9_MATCH1n, YFOP_STORE9_MATCH2n, YVAC_STORE9_MATCH3n);
     /* p31.YTUB*/ wire YTUB_STORE9_MATCHBp = nor4(ZYWU_STORE9_MATCH4n, ZUZA_STORE9_MATCH5n, ZEJO_STORE9_MATCH6n, ZEDA_STORE9_MATCH7n);
 
+    /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, pix_pipe.XYLO_LCDC_SPENn.qn08());
     /* p29.YDUG*/ _YDUG_STORE0_MATCHn = nand3(_AROR_MATCH_ENp, ZAKO_STORE0_MATCHAp, XEBA_STORE0_MATCHBp);
     /* p29.DYDU*/ _DYDU_STORE1_MATCHn = nand3(_AROR_MATCH_ENp, EWAM_STORE1_MATCHAp, CYVY_STORE1_MATCHBp);
     /* p29.DEGO*/ _DEGO_STORE2_MATCHn = nand3(_AROR_MATCH_ENp, CEHU_STORE2_MATCHAp, EKES_STORE2_MATCHBp);
@@ -1082,10 +1087,6 @@ void GateBoy::tock_slow() {
   /*#p21.XENA*/ wire _XENA_STORE_MATCHn = not1(_FEPO_STORE_MATCHp);
   /*#p21.WODU*/ wire _WODU_HBLANKp = and2(_XENA_STORE_MATCHn, _XANO_X_167p);
 
-  /*#p21.XYVO*/ wire _XYVO_IN_VBLANKp = and2(lcd_reg.LOVU_Y4p.qp17(), lcd_reg.LAFO_Y7p.qp17()); // 128 + 16 = 144
-  /*#p21.PURE*/ wire _PURE_LINE_P908n = not1(lcd_reg.RUTU_LINE_P910.qp17());
-  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_P908n);
-  /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
   /*#p21.TARU*/ wire _TARU_INT_HBL = and2(_WODU_HBLANKp, _TOLU_VBLANKn);
 
   /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn08(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp17(),
@@ -1096,16 +1097,16 @@ void GateBoy::tock_slow() {
   /*#p21.TUVA*/ wire _TUVA_INT_STATn = not1(_SUKO_INT_STATp);
   /*#p21.VOTY*/ wire _VOTY_INT_STATp = not1(_TUVA_INT_STATn);
 
-  /* p27.XAHY*/ wire _XAHY_VID_LINE_TRIG_d4n = not1(_ATEJ_LINE_TRIGp);
-  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08(), _XAHY_VID_LINE_TRIG_d4n, _XAPO_VID_RSTn);
+  //------------------------------------------------------------------------------
+
+  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08(), _XAHY_LINE_TRIGn, _XAPO_VID_RSTn);
 
   /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_A.nor_latch(pix_pipe.NUNU_WX_MATCH_B.qp17(), _XOFO_WIN_RSTp);
 
   /*#p27.NOCU*/ wire _NOCU_WIN_MODEn = not1(pix_pipe.PYNU_WIN_MODE_A.qp04());
   /* p27.PORE*/ wire _PORE_WIN_MODEp = not1(_NOCU_WIN_MODEn);
 
-    /*#p27.NUNY*/ wire _NUNY_WX_MATCH_TRIGp = and2(pix_pipe.PYNU_WIN_MODE_A.qp04(), pix_pipe.NOPA_WIN_MODE_B.qn16());
-  /* p01.PYRY*/ wire _PYRY_VID_RSTp = not1(_XAPO_VID_RSTn);
+  /*#p27.NUNY*/ wire _NUNY_WX_MATCH_TRIGp = and2(pix_pipe.PYNU_WIN_MODE_A.qp04(), pix_pipe.NOPA_WIN_MODE_B.qn16());
 
   /* p27.NYFO*/ wire _NYFO_WIN_FETCH_TRIGn = not1(_NUNY_WX_MATCH_TRIGp);
   /* p27.MOSU*/ wire _MOSU_WIN_FETCH_TRIGp = not1(_NYFO_WIN_FETCH_TRIGn);
@@ -1118,7 +1119,7 @@ void GateBoy::tock_slow() {
   /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILE_NE = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17());
   /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILE_NE);
 
-  //----------
+  //------------------------------------------------------------------------------
 
   /*p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONE_P13.qp17(), _LOBY_RENDERINGn);
 
@@ -1203,7 +1204,6 @@ void GateBoy::tock_slow() {
 
   //------------------------------------------------------------------------------
 
-  /* p01.ROSY*/ wire _ROSY_VID_RSTp = not1(_XAPO_VID_RSTn);
   /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp17(),  sprite_fetcher.SUDA_SFETCH_REQp.qn16());
   /*#p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp, _ATEJ_LINE_TRIGp);
 

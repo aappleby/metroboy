@@ -8,7 +8,7 @@ struct SerialRegisters {
     reset_boot();
 
     CALY_SER_CNT3.reset(REG_D0C1);
-    ETAF_XFER_START.reset(REG_D0C1);
+    ETAF_SER_RUNNING.reset(REG_D0C1);
     CULY_XFER_DIR.reset(REG_D0C1);
     COTY_SER_CLK.reset(REG_D0C0);
     CAFA_SER_CNT0.reset(REG_D0C1);
@@ -29,7 +29,7 @@ struct SerialRegisters {
 
   void reset_boot() {
     CALY_SER_CNT3.reset(REG_D0C0);
-    ETAF_XFER_START.reset(REG_D0C0);
+    ETAF_SER_RUNNING.reset(REG_D0C0);
     CULY_XFER_DIR.reset(REG_D0C0);
     COTY_SER_CLK.reset(REG_D0C0);
     CAFA_SER_CNT0.reset(REG_D0C0);
@@ -51,7 +51,7 @@ struct SerialRegisters {
   int get_data() const { return pack_u8(8, &CUBA_SER_DATA0); }
 
   /*p06.CALY*/ DFF17 CALY_SER_CNT3;
-  /*p06.ETAF*/ DFF17 ETAF_XFER_START;
+  /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING;
   /*p06.CULY*/ DFF17 CULY_XFER_DIR;
 
   /*p06.COTY*/ DFF17 COTY_SER_CLK;

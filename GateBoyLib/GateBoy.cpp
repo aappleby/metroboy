@@ -2901,7 +2901,7 @@ void GateBoy::tock_slow() {
     /* p06.UCOM*/ wire _UCOM_FF02_RD = and4(_TEDO_CPU_RDp, _SANO_ADDR_FF00_FF03, _TOVY_A00n, cpu_bus.BUS_CPU_A01.qp());
 
     /* p06.CORE*/ cpu_bus.BUS_CPU_D0p.tri_6pn(_UCOM_FF02_RD,  ser_reg.CULY_XFER_DIR.qn16());
-    /* p06.ELUV*/ cpu_bus.BUS_CPU_D7p.tri_6pn(_UCOM_FF02_RD,  ser_reg.ETAF_XFER_START.qn16());
+    /* p06.ELUV*/ cpu_bus.BUS_CPU_D7p.tri_6pn(_UCOM_FF02_RD,  ser_reg.ETAF_SER_RUNNING.qn16());
 
     /*#p06.CUGY*/ cpu_bus.BUS_CPU_D0p.tri_6pn(_UFEG_FF01_RDp, ser_reg.CUBA_SER_DATA0.qn15());
     /* p06.DUDE*/ cpu_bus.BUS_CPU_D1p.tri_6pn(_UFEG_FF01_RDp, ser_reg.DEGU_SER_DATA1.qn15());
@@ -3543,7 +3543,6 @@ void GateBoy::tock_slow() {
     /* p06.KUJO*/ wire _KUJO = nor2 (ser_reg.COTY_SER_CLK.qp17(), /*p06.JAGO*/ not1(ser_reg.CULY_XFER_DIR.qp17()));
 
     /* p06.KEXU*/ ser_reg.PIN_SCK.pin_intc(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17());
-    /* hack */    ser_reg.PIN_SIN.pin_intc(1, 1);
     /* p05.KENA*/ ser_reg.PIN_SOUT.pin_intc(ser_reg.ELYS_SER_OUT.qp17(), ser_reg.ELYS_SER_OUT.qp17());
 
     /* p06.SANO*/ wire _SANO_ADDR_FF00_FF03 = and3(_SARE_XX00_XX07p, _SEFY_A02n, _SYKE_FF00_FFFFp);
@@ -3571,39 +3570,47 @@ void GateBoy::tock_slow() {
     /* p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx, _SANO_ADDR_FF00_FF03, _TOVY_A00n, cpu_bus.BUS_CPU_A01.qp());
     /* p06.CARO*/ wire _CARO_SER_RST = and2(_UWAM_FF02_WRn, _ALUR_SYS_RSTn);
 
-    /* p06.COBA*/ wire _COBA_SER_CNT3n = not1(ser_reg.CALY_SER_CNT3.qp17());
-    /* p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, _ALUR_SYS_RSTn);
 
     /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp17(), ser_reg.COTY_SER_CLK.qp17(), ser_reg.PIN_SCK.qn());
-    /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_XFER_START.qn16()); // this must stop the clock or something when the transmit's done
+    /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_SER_RUNNING.qn16()); // this must stop the clock or something when the transmit's done
     /* p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
-    /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
-    /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
-    /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
 
-    /* p06.CAGE*/ wire _CAGE_SIN_Cp = not1(ser_reg.PIN_SIN.qn());
 
     // FIXME hacking out debug stuff
     ///*p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
 
     /* p06.COTY*/ ser_reg.COTY_SER_CLK   .dff17c(_UVYN_DIV_05n,  _UWAM_FF02_WRn,   ser_reg.COTY_SER_CLK.qn16());
-    /* p06.ETAF*/ ser_reg.ETAF_XFER_START.dff17c(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D7p);
+
     /* p06.CULY*/ ser_reg.CULY_XFER_DIR  .dff17c(_UWAM_FF02_WRn, _ALUR_SYS_RSTn,   cpu_bus.BUS_CPU_D0p);
-    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT   .dff17c(_EDYL_SER_CLK,  _ALUR_SYS_RSTn,   ser_reg.EDER_SER_DATA7.qp16());
 
     /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17c(_DAWA_SER_CLK,                     _CARO_SER_RST, ser_reg.CAFA_SER_CNT0.qn16());
     /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17c(ser_reg.CAFA_SER_CNT0.qn16_next(), _CARO_SER_RST, ser_reg.CYLO_SER_CNT1.qn16());
     /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17c(ser_reg.CYLO_SER_CNT1.qn16_next(), _CARO_SER_RST, ser_reg.CYDE_SER_CNT2.qn16());
     /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17c(ser_reg.CYDE_SER_CNT2.qn16_next(), _CARO_SER_RST, ser_reg.CALY_SER_CNT3.qn16());
 
-    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22c(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, ser_reg.EROD_SER_DATA6.qp16());
-    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22c(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, ser_reg.EJAB_SER_DATA5.qp16());
-    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22c(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, ser_reg.DOVU_SER_DATA4.qp16());
-    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22c(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, ser_reg.DOJO_SER_DATA3.qp16());
-    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22c(_DAWE_SER_CLK, _DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn, ser_reg.DYRA_SER_DATA2.qp16());
-    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22c(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, ser_reg.DEGU_SER_DATA1.qp16());
-    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22c(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, ser_reg.CUBA_SER_DATA0.qp16());
-    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22c(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SIN_Cp);
+    {
+      /* p06.COBA*/ wire _COBA_SER_CNT3n = not1(ser_reg.CALY_SER_CNT3.qp17_next());
+      /* p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, _ALUR_SYS_RSTn);
+      /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17c(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D7p);
+    }
+
+    {
+      /* hack */    ser_reg.PIN_SIN.pin_intc(1, 1);
+      /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(ser_reg.PIN_SIN.qn());
+      /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
+      /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
+      /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
+
+      /* p06.ELYS*/ ser_reg.ELYS_SER_OUT  .dff17c(_EDYL_SER_CLK, _ALUR_SYS_RSTn,                             ser_reg.EDER_SER_DATA7.qp16());
+      /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22c(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, ser_reg.EROD_SER_DATA6.qp16());
+      /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22c(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, ser_reg.EJAB_SER_DATA5.qp16());
+      /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22c(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, ser_reg.DOVU_SER_DATA4.qp16());
+      /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22c(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, ser_reg.DOJO_SER_DATA3.qp16());
+      /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22c(_DAWE_SER_CLK, _DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn, ser_reg.DYRA_SER_DATA2.qp16());
+      /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22c(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, ser_reg.DEGU_SER_DATA1.qp16());
+      /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22c(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, ser_reg.CUBA_SER_DATA0.qp16());
+      /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22c(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SER_IN);
+    }
   }
 
 
@@ -3854,9 +3861,9 @@ void GateBoy::tock_slow() {
 
     // inverting the clock to VENA doesn't seem to break anything, which is really weird
 
-    /*p29.WOSU*/ clk_reg.WOSU_AxxDExxH.dff17c(_XYFY_xBxDxFxH,                _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
-    /*p21.VENA*/ clk_reg.VENA_xxCDEFxx.dff17c( clk_reg.WUVU_ABxxEFxx.qn16(), _XAPO_VID_RSTn, clk_reg.VENA_xxCDEFxx.qn16());
-    /*p29.WUVU*/ clk_reg.WUVU_ABxxEFxx.dff17c(_XOTA_AxCxExGx,                _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+    /*p29.WOSU*/ clk_reg.WOSU_AxxDExxH.dff17c(_XYFY_xBxDxFxH,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+    /*p29.WUVU*/ clk_reg.WUVU_ABxxEFxx.dff17c(_XOTA_AxCxExGx,                    _XAPO_VID_RSTn, clk_reg.WUVU_ABxxEFxx.qn16());
+    /*p21.VENA*/ clk_reg.VENA_xxCDEFxx.dff17c(clk_reg.WUVU_ABxxEFxx.qn16_next(), _XAPO_VID_RSTn, clk_reg.VENA_xxCDEFxx.qn16());
 
 
   }

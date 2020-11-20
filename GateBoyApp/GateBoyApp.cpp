@@ -739,7 +739,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Serial =====\001\n");
-  d("XFER_START  %c\n", gb->ser_reg.ETAF_XFER_START.c());
+  d("XFER_START  %c\n", gb->ser_reg.ETAF_SER_RUNNING.c());
   d("XFER_DIR    %c\n", gb->ser_reg.CULY_XFER_DIR.c());
   d("SER_CLK     %c\n", gb->ser_reg.COTY_SER_CLK.c());
   d("SER_CNT     %d\n", pack_u8(3, &gb->ser_reg.CAFA_SER_CNT0));

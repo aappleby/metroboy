@@ -7,7 +7,7 @@ struct SerialRegisters {
   void reset_cart() {
     reset_boot();
 
-    CALY_INT_SERp.reset(REG_D0C1);
+    CALY_SER_CNT3.reset(REG_D0C1);
     ETAF_XFER_START.reset(REG_D0C1);
     CULY_XFER_DIR.reset(REG_D0C1);
     COTY_SER_CLK.reset(REG_D0C0);
@@ -28,7 +28,7 @@ struct SerialRegisters {
   }
 
   void reset_boot() {
-    CALY_INT_SERp.reset(REG_D0C0);
+    CALY_SER_CNT3.reset(REG_D0C0);
     ETAF_XFER_START.reset(REG_D0C0);
     CULY_XFER_DIR.reset(REG_D0C0);
     COTY_SER_CLK.reset(REG_D0C0);
@@ -50,7 +50,7 @@ struct SerialRegisters {
 
   int get_data() const { return pack_u8(8, &CUBA_SER_DATA0); }
 
-  /*p06.CALY*/ DFF17 CALY_INT_SERp;
+  /*p06.CALY*/ DFF17 CALY_SER_CNT3;
   /*p06.ETAF*/ DFF17 ETAF_XFER_START;
   /*p06.CULY*/ DFF17 CULY_XFER_DIR;
 

@@ -417,6 +417,9 @@ struct DFF20 : public RegBase{
   wire qp01() const { return  to_wire(); }
   wire qn17() const { return !to_wire(); }
 
+  wire qp01_next() const { return  to_wire_next(); }
+  wire qn17_next() const { return !to_wire_next(); }
+
   template<typename T>
   void dff20c(wire CLKn, wire LOADp, T newD) {
     wire SETp = LOADp &&  as_wire(newD);

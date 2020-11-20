@@ -748,7 +748,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("SCK         %c\n", gb->ser_reg.PIN_SCK.c());
   d("SIN         %c\n", gb->ser_reg.PIN_SIN.c());
   d("SOUT        %c\n", gb->ser_reg.PIN_SOUT.c());
-  d("_CALY_SER_INTp %c\n", gb->ser_reg.CALY_INT_SERp.c());
+  d("_CALY_SER_INTp %c\n", gb->ser_reg.CALY_SER_CNT3.c());
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);

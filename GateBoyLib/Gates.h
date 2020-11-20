@@ -382,6 +382,7 @@ struct DFF17 : public RegBase {
   wire qn16() const { return !to_wire(); }
   wire qp17() const { return  to_wire(); }
 
+  wire qn16_next() const { return !to_wire_next(); }
   wire qp17_next() const { return  to_wire_next(); }
 
   template<typename T>

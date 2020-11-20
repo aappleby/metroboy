@@ -3768,27 +3768,29 @@ void GateBoy::tock_slow() {
     /*p01.TAPE*/ wire _TAPE_FF04_WRp = and4(_TAPU_CPU_WRp_xxxxEFGx, _RYFO_FF04_FF07p, _TOLA_A01n, _TOVY_A00n);
     /*p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(_UCOB_CLKBADp, sys_rst, _TAPE_FF04_WRp);
 
-    // this is hacked up because we're ignoring the debug reg for the moment
-    ///*p01.ULUR*/ wire ULUR_DIV_06_CLK = mux2p(BOGA_AxCDEFGH, DIV_05, FF60_1);
-    /* p01.ULUR*/ wire _ULUR_DIV_06_CLK = tim_reg.TAMA_DIV_05.qn16();
 
     // FF04 DIV
-    /* p01.UPOF*/ tim_reg.UPOF_DIV_15.dff17c(tim_reg.UKET_DIV_14.qn16(), _UFOL_DIV_RSTn, tim_reg.UPOF_DIV_15.qn16());
-    /* p01.UKET*/ tim_reg.UKET_DIV_14.dff17c(tim_reg.TEKA_DIV_13.qn16(), _UFOL_DIV_RSTn, tim_reg.UKET_DIV_14.qn16());
-    /* p01.TEKA*/ tim_reg.TEKA_DIV_13.dff17c(tim_reg.SUBU_DIV_12.qn16(), _UFOL_DIV_RSTn, tim_reg.TEKA_DIV_13.qn16());
-    /* p01.SUBU*/ tim_reg.SUBU_DIV_12.dff17c(tim_reg.SOLA_DIV_11.qn16(), _UFOL_DIV_RSTn, tim_reg.SUBU_DIV_12.qn16());
-    /* p01.SOLA*/ tim_reg.SOLA_DIV_11.dff17c(tim_reg.TERU_DIV_10.qn16(), _UFOL_DIV_RSTn, tim_reg.SOLA_DIV_11.qn16());
-    /* p01.TERU*/ tim_reg.TERU_DIV_10.dff17c(tim_reg.TOFE_DIV_09.qn16(), _UFOL_DIV_RSTn, tim_reg.TERU_DIV_10.qn16());
-    /* p01.TOFE*/ tim_reg.TOFE_DIV_09.dff17c(tim_reg.TUGO_DIV_08.qn16(), _UFOL_DIV_RSTn, tim_reg.TOFE_DIV_09.qn16());
-    /* p01.TUGO*/ tim_reg.TUGO_DIV_08.dff17c(tim_reg.TULU_DIV_07.qn16(), _UFOL_DIV_RSTn, tim_reg.TUGO_DIV_08.qn16());
-    /* p01.TULU*/ tim_reg.TULU_DIV_07.dff17c(tim_reg.UGOT_DIV_06.qn16(), _UFOL_DIV_RSTn, tim_reg.TULU_DIV_07.qn16());
+
+    /* p01.UKUP*/ tim_reg.UKUP_DIV_00.dff17c(_BOGA_Axxxxxxx,                  _UFOL_DIV_RSTn, tim_reg.UKUP_DIV_00.qn16());
+    /* p01.UFOR*/ tim_reg.UFOR_DIV_01.dff17c(tim_reg.UKUP_DIV_00.qn16_next(), _UFOL_DIV_RSTn, tim_reg.UFOR_DIV_01.qn16());
+    /* p01.UNER*/ tim_reg.UNER_DIV_02.dff17c(tim_reg.UFOR_DIV_01.qn16_next(), _UFOL_DIV_RSTn, tim_reg.UNER_DIV_02.qn16());
+    /*#p01.TERO*/ tim_reg.TERO_DIV_03.dff17c(tim_reg.UNER_DIV_02.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TERO_DIV_03.qn16());
+    /* p01.UNYK*/ tim_reg.UNYK_DIV_04.dff17c(tim_reg.TERO_DIV_03.qn16_next(), _UFOL_DIV_RSTn, tim_reg.UNYK_DIV_04.qn16());
+    /* p01.TAMA*/ tim_reg.TAMA_DIV_05.dff17c(tim_reg.UNYK_DIV_04.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TAMA_DIV_05.qn16());
+
+    // this is hacked up because we're ignoring the debug reg for the moment
+    ///*p01.ULUR*/ wire ULUR_DIV_06_CLK = mux2p(BOGA_AxCDEFGH, DIV_05, FF60_1);
+    /* p01.ULUR*/ wire _ULUR_DIV_06_CLK = tim_reg.TAMA_DIV_05.qn16_next();
     /* p01.UGOT*/ tim_reg.UGOT_DIV_06.dff17c(_ULUR_DIV_06_CLK,           _UFOL_DIV_RSTn, tim_reg.UGOT_DIV_06.qn16());
-    /* p01.TAMA*/ tim_reg.TAMA_DIV_05.dff17c(tim_reg.UNYK_DIV_04.qn16(), _UFOL_DIV_RSTn, tim_reg.TAMA_DIV_05.qn16());
-    /* p01.UNYK*/ tim_reg.UNYK_DIV_04.dff17c(tim_reg.TERO_DIV_03.qn16(), _UFOL_DIV_RSTn, tim_reg.UNYK_DIV_04.qn16());
-    /*#p01.TERO*/ tim_reg.TERO_DIV_03.dff17c(tim_reg.UNER_DIV_02.qn16(), _UFOL_DIV_RSTn, tim_reg.TERO_DIV_03.qn16());
-    /* p01.UNER*/ tim_reg.UNER_DIV_02.dff17c(tim_reg.UFOR_DIV_01.qn16(), _UFOL_DIV_RSTn, tim_reg.UNER_DIV_02.qn16());
-    /* p01.UFOR*/ tim_reg.UFOR_DIV_01.dff17c(tim_reg.UKUP_DIV_00.qn16(), _UFOL_DIV_RSTn, tim_reg.UFOR_DIV_01.qn16());
-    /* p01.UKUP*/ tim_reg.UKUP_DIV_00.dff17c(_BOGA_Axxxxxxx,             _UFOL_DIV_RSTn, tim_reg.UKUP_DIV_00.qn16());
+    /* p01.TULU*/ tim_reg.TULU_DIV_07.dff17c(tim_reg.UGOT_DIV_06.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TULU_DIV_07.qn16());
+    /* p01.TUGO*/ tim_reg.TUGO_DIV_08.dff17c(tim_reg.TULU_DIV_07.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TUGO_DIV_08.qn16());
+    /* p01.TOFE*/ tim_reg.TOFE_DIV_09.dff17c(tim_reg.TUGO_DIV_08.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TOFE_DIV_09.qn16());
+    /* p01.TERU*/ tim_reg.TERU_DIV_10.dff17c(tim_reg.TOFE_DIV_09.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TERU_DIV_10.qn16());
+    /* p01.SOLA*/ tim_reg.SOLA_DIV_11.dff17c(tim_reg.TERU_DIV_10.qn16_next(), _UFOL_DIV_RSTn, tim_reg.SOLA_DIV_11.qn16());
+    /* p01.SUBU*/ tim_reg.SUBU_DIV_12.dff17c(tim_reg.SOLA_DIV_11.qn16_next(), _UFOL_DIV_RSTn, tim_reg.SUBU_DIV_12.qn16());
+    /* p01.TEKA*/ tim_reg.TEKA_DIV_13.dff17c(tim_reg.SUBU_DIV_12.qn16_next(), _UFOL_DIV_RSTn, tim_reg.TEKA_DIV_13.qn16());
+    /* p01.UKET*/ tim_reg.UKET_DIV_14.dff17c(tim_reg.TEKA_DIV_13.qn16_next(), _UFOL_DIV_RSTn, tim_reg.UKET_DIV_14.qn16());
+    /* p01.UPOF*/ tim_reg.UPOF_DIV_15.dff17c(tim_reg.UKET_DIV_14.qn16_next(), _UFOL_DIV_RSTn, tim_reg.UPOF_DIV_15.qn16());
 
 
     /*#p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(cpu_bus.BUS_CPU_A00.qp(), _TOLA_A01n, _TAPU_CPU_WRp_xxxxEFGx, _RYFO_FF04_FF07p);
@@ -3927,10 +3929,11 @@ void GateBoy::tock_slow() {
     /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(sprite_store.CUXY_SPRITE_COUNT1.qp17(), sprite_store.DYBE_SPRITE_COUNT3.qp17());
     /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, sprite_store.DEZY_STORE_ENn.qp17());
 
-    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17c(sprite_store.BEGO_SPRITE_COUNT2.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
-    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17c(sprite_store.CUXY_SPRITE_COUNT1.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
-    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17c(sprite_store.BESE_SPRITE_COUNT0.qn16(), _AZYB_VID_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
-    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17c(_CAKE_CLKp,                             _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
+    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17c(_CAKE_CLKp,                                  _AZYB_VID_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn16());
+    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17c(sprite_store.BESE_SPRITE_COUNT0.qn16_next(), _AZYB_VID_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn16());
+    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17c(sprite_store.CUXY_SPRITE_COUNT1.qn16_next(), _AZYB_VID_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn16());
+    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17c(sprite_store.BEGO_SPRITE_COUNT2.qn16_next(), _AZYB_VID_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn16());
+
     /* p29.DEZY*/ sprite_store.DEZY_STORE_ENn.dff17c(_ZEME_AxCxExGx, _XAPO_VID_RSTn, _DYTY_STORE_ENn_xxCDxxGH);
 
     //----------------------------------------

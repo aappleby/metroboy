@@ -4406,9 +4406,9 @@ void GateBoy::tock_slow() {
     /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPEp, _ROZE_FINE_COUNT_7n);
     /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, _TEVO_FETCH_TRIGp);
 
-    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17c(pix_pipe.ROGA_FINE_CNT1.qn16(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn16());
-    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17c(pix_pipe.RYKU_FINE_CNT0.qn16(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn16());
-    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17c(_PECU_FINE_CLK,                 _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn16());
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17c(_PECU_FINE_CLK,                      _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn16());
+    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17c(pix_pipe.RYKU_FINE_CNT0.qn16_next(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn16());
+    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17c(pix_pipe.ROGA_FINE_CNT1.qn16_next(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn16());
   }
 
   //----------------------------------------
@@ -4761,13 +4761,14 @@ void GateBoy::tock_slow() {
     /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand2(sprite_fetcher.TESE_SFETCH_S2.qp17(), sprite_fetcher.TOXE_SFETCH_S0.qp17());
     /*#p29.TOMA*/ wire _TOMA_SFETCH_CLK_xBxDxFxH = nand2(_LAPE_AxCxExGx, _TAME_SFETCH_CLK_GATE);
 
-    /*#p29.TYFO*/ sprite_fetcher.TYFO_SFETCH_S0_D1.dff17c(_LAPE_AxCxExGx,                          _VYPO_VCC,                             sprite_fetcher.TOXE_SFETCH_S0.qp17());
-    /*#p29.SEBA*/ sprite_fetcher.SEBA_SFETCH_S1_D5.dff17c(_LAPE_AxCxExGx,                          pix_pipe.XYMU_RENDERINGn.qn03(),  sprite_fetcher.VONU_SFETCH_S1_D4.qp17());
-    /*#p29.VONU*/ sprite_fetcher.VONU_SFETCH_S1_D4.dff17c(_TAVA_xBxDxFxH,                          pix_pipe.XYMU_RENDERINGn.qn03(),  sprite_fetcher.TOBU_SFETCH_S1_D2.qp17());
-    /*#p29.TOBU*/ sprite_fetcher.TOBU_SFETCH_S1_D2.dff17c(_TAVA_xBxDxFxH,                          pix_pipe.XYMU_RENDERINGn.qn03(),  sprite_fetcher.TULY_SFETCH_S1.qp17());
-    /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2   .dff17c(sprite_fetcher.TULY_SFETCH_S1.qn16(),    _SECA_SFETCH_RUNNING_SETn,        sprite_fetcher.TESE_SFETCH_S2.qn16());
-    /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1   .dff17c(sprite_fetcher.TOXE_SFETCH_S0.qn16(),    _SECA_SFETCH_RUNNING_SETn,        sprite_fetcher.TULY_SFETCH_S1.qn16());
-    /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0   .dff17c(_TOMA_SFETCH_CLK_xBxDxFxH,               _SECA_SFETCH_RUNNING_SETn,        sprite_fetcher.TOXE_SFETCH_S0.qn16());
+    /*#p29.TYFO*/ sprite_fetcher.TYFO_SFETCH_S0_D1.dff17c(_LAPE_AxCxExGx, _VYPO_VCC,                        sprite_fetcher.TOXE_SFETCH_S0.qp17());
+    /*#p29.SEBA*/ sprite_fetcher.SEBA_SFETCH_S1_D5.dff17c(_LAPE_AxCxExGx, pix_pipe.XYMU_RENDERINGn.qn03(),  sprite_fetcher.VONU_SFETCH_S1_D4.qp17());
+    /*#p29.VONU*/ sprite_fetcher.VONU_SFETCH_S1_D4.dff17c(_TAVA_xBxDxFxH, pix_pipe.XYMU_RENDERINGn.qn03(),  sprite_fetcher.TOBU_SFETCH_S1_D2.qp17());
+    /*#p29.TOBU*/ sprite_fetcher.TOBU_SFETCH_S1_D2.dff17c(_TAVA_xBxDxFxH, pix_pipe.XYMU_RENDERINGn.qn03(),  sprite_fetcher.TULY_SFETCH_S1.qp17());
+
+    /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0.dff17c(_TOMA_SFETCH_CLK_xBxDxFxH,                 _SECA_SFETCH_RUNNING_SETn, sprite_fetcher.TOXE_SFETCH_S0.qn16());
+    /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1.dff17c(sprite_fetcher.TOXE_SFETCH_S0.qn16_next(), _SECA_SFETCH_RUNNING_SETn, sprite_fetcher.TULY_SFETCH_S1.qn16());
+    /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2.dff17c(sprite_fetcher.TULY_SFETCH_S1.qn16_next(), _SECA_SFETCH_RUNNING_SETn, sprite_fetcher.TESE_SFETCH_S2.qn16());
   }
 
   //------------------------------------------------------------------------------

@@ -387,12 +387,6 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
-  wire CLK = !(phase_total & 1) & sys_clken;
-  wire GND = 0;
-  wire _WEFE_VCC = 1;
-  wire _VYPO_VCC = 1;
-  wire _PESU_VCC = 1;
-
   if (DELTA_AB) {
     cpu_req = cpu.bus_req;
     bus_req = {0};
@@ -465,6 +459,63 @@ void GateBoy::tock_slow() {
     }
   }
 
+  // PIN_CPU_EXT_BUSp
+  {
+    bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
+    if (bus_req.addr <= 0x00FF && cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
+
+    if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
+      cpu_bus.PIN_CPU_EXT_BUSp.setc(addr_ext);
+    }
+    else {
+      // This seems wrong, but it passes tests. *shrug*
+      if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
+        cpu_bus.PIN_CPU_EXT_BUSp.setc(0);
+      }
+      else {
+        cpu_bus.PIN_CPU_EXT_BUSp.setc(addr_ext);
+      }
+    }
+  }
+
+  // PIN_CPU_LATCH_EXT
+  {
+    // not at all certain about this. seems to break some oam read glitches.
+    if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
+      cpu_bus.PIN_CPU_LATCH_EXT.setc(1);
+    }
+    else {
+      cpu_bus.PIN_CPU_LATCH_EXT.setc(0);
+    }
+  }
+
+  cpu_bus.PIN_CPU_6.setc(0);
+
+
+  // Data has to be driven on EFGH or we fail the wave tests
+  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write) {
+    cpu_bus.BUS_CPU_D0p.tri(1, bus_req.data_lo & 0x01);
+    cpu_bus.BUS_CPU_D1p.tri(1, bus_req.data_lo & 0x02);
+    cpu_bus.BUS_CPU_D2p.tri(1, bus_req.data_lo & 0x04);
+    cpu_bus.BUS_CPU_D3p.tri(1, bus_req.data_lo & 0x08);
+    cpu_bus.BUS_CPU_D4p.tri(1, bus_req.data_lo & 0x10);
+    cpu_bus.BUS_CPU_D5p.tri(1, bus_req.data_lo & 0x20);
+    cpu_bus.BUS_CPU_D6p.tri(1, bus_req.data_lo & 0x40);
+    cpu_bus.BUS_CPU_D7p.tri(1, bus_req.data_lo & 0x80);
+  }
+
+  if (DELTA_HA) {
+    imask_latch = pack_u8(5, &IE_D0);
+  }
+
+  //----------------------------------------
+
+  wire CLK = !(phase_total & 1) & sys_clken;
+  wire GND = 0;
+  wire _WEFE_VCC = 1;
+  wire _VYPO_VCC = 1;
+  wire _PESU_VCC = 1;
+
   //----------------------------------------
 
   /* p06.SARE*/ wire _SARE_XX00_XX07p = nor5 (cpu_bus.BUS_CPU_A07.qp(), cpu_bus.BUS_CPU_A06.qp(), cpu_bus.BUS_CPU_A05.qp(),
@@ -525,6 +576,7 @@ void GateBoy::tock_slow() {
   /*#p08.TEVY*/ wire _TEVY_8000_9FFFn = or3(cpu_bus.BUS_CPU_A13.qp(), cpu_bus.BUS_CPU_A14.qp(), _SORE_0000_7FFFp);
 
   //----------------------------------------
+  // Debug control signals.
 
   /* p07.UBET*/ wire _UBET_T1p  = not1(wire(sys_t1));
   /* p07.UVAR*/ wire _UVAR_T2p  = not1(wire(sys_t2));
@@ -535,12 +587,17 @@ void GateBoy::tock_slow() {
   /* p08.TOVA*/ wire _TOVA_MODE_DBG2n = not1(_UNOR_MODE_DBG2p);
 
   //----------------------------------------
-  // root clocks - ignoring the deglitcher here
+  // Root clocks - ignoring the deglitcher here
 
   /* p01.ATAL*/ wire _ATAL_xBxDxFxH = CLK;
   /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
   /* p01.ZAXY*/ wire _ZAXY_xBxDxFxH = not1(_AZOF_AxCxExGx);
+  /*#p01.ZEME*/ wire _ZEME_AxCxExGx = not1(_ZAXY_xBxDxFxH);
+  /*#p01.ALET*/ wire _ALET_xBxDxFxH = not1(_ZEME_AxCxExGx);
+  /*#p27.MYVO*/ wire _MYVO_AxCxExGx = not1(_ALET_xBxDxFxH);
 
+  //----------------------------------------
+  // Phase clocks
 
   {
     wire _ADYK_ABCxxxxH = clk_reg.ADYK_ABCxxxxH.qp09();
@@ -574,7 +631,7 @@ void GateBoy::tock_slow() {
 
 
   //----------------------------------------
-  // cpu write signal
+  // Cpu write signal
 
   /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(_ADAR_ABCxxxxH, _ATYP_ABCDxxxx);
   /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx);
@@ -611,7 +668,6 @@ void GateBoy::tock_slow() {
   /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(sys_rst, _ALYP_RSTn);
   /* p01.ASOL*/ clk_reg.ASOL_POR_DONEn.nor_latch(sys_rst, _AFAR_RSTp); // Schematic wrong, this is a latch.
   /*#p01.AVOR*/ wire _AVOR_SYS_RSTp = or2(clk_reg.AFER_SYS_RSTp.qp13(), clk_reg.ASOL_POR_DONEn.qp04());
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
 
   {
     /* p07.TULO*/ wire _TULO_ADDR_00XXp = nor8 (cpu_bus.BUS_CPU_A15.qp(), cpu_bus.BUS_CPU_A14.qp(), cpu_bus.BUS_CPU_A13.qp(), cpu_bus.BUS_CPU_A12.qp(),
@@ -621,62 +677,13 @@ void GateBoy::tock_slow() {
     cpu_bus.PIN_CPU_BOOTp.setc(_TUTU_ADDR_BOOTp);
   }
 
-  // PIN_CPU_EXT_BUSp
-  {
-    bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
-    if (bus_req.addr <= 0x00FF && cpu_bus.PIN_CPU_BOOTp.qp()) addr_ext = false;
-
-    if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      cpu_bus.PIN_CPU_EXT_BUSp.setc(addr_ext);
-    }
-    else {
-      // This seems wrong, but it passes tests. *shrug*
-      if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-        cpu_bus.PIN_CPU_EXT_BUSp.setc(0);
-      }
-      else {
-        cpu_bus.PIN_CPU_EXT_BUSp.setc(addr_ext);
-      }
-    }
-  }
-
-  // PIN_CPU_LATCH_EXT
-  {
-    // not at all certain about this. seems to break some oam read glitches.
-    if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-      cpu_bus.PIN_CPU_LATCH_EXT.setc(1);
-    }
-    else {
-      cpu_bus.PIN_CPU_LATCH_EXT.setc(0);
-    }
-  }
-
-  cpu_bus.PIN_CPU_6.setc(0);
-
-
-  // Data has to be driven on EFGH or we fail the wave tests
-  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write) {
-    cpu_bus.BUS_CPU_D0p.tri(1, bus_req.data_lo & 0x01);
-    cpu_bus.BUS_CPU_D1p.tri(1, bus_req.data_lo & 0x02);
-    cpu_bus.BUS_CPU_D2p.tri(1, bus_req.data_lo & 0x04);
-    cpu_bus.BUS_CPU_D3p.tri(1, bus_req.data_lo & 0x08);
-    cpu_bus.BUS_CPU_D4p.tri(1, bus_req.data_lo & 0x10);
-    cpu_bus.BUS_CPU_D5p.tri(1, bus_req.data_lo & 0x20);
-    cpu_bus.BUS_CPU_D6p.tri(1, bus_req.data_lo & 0x40);
-    cpu_bus.BUS_CPU_D7p.tri(1, bus_req.data_lo & 0x80);
-  }
-
-  if (DELTA_HA) {
-    imask_latch = pack_u8(5, &IE_D0);
-  }
-
-
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn.qp17());
   /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
 
   //----------------------------------------
-  // debug
+  // Reset signals
 
+  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(_AVOR_SYS_RSTp);
   /*#p01.DULA*/ wire _DULA_SYS_RSTp = not1(_ALUR_SYS_RSTn);
   /*#p01.CUNU*/ wire _CUNU_SYS_RSTn = not1(_DULA_SYS_RSTp);
   /*#p01.XORE*/ wire _XORE_SYS_RSTp = not1(_CUNU_SYS_RSTn);
@@ -770,11 +777,8 @@ void GateBoy::tock_slow() {
   /*#p01.BALY*/ wire _BALY_xBCDEFGH = not1(_BYJU_Axxxxxxx);
   /* p01.BOGA*/ wire _BOGA_Axxxxxxx = not1(_BALY_xBCDEFGH);
 
-  /*#p01.ZEME*/ wire _ZEME_AxCxExGx = not1(_ZAXY_xBxDxFxH);
   /* p01.UVYT*/ wire _UVYT_ABCDxxxx = not1(_BUDE_xxxxEFGH);
   /* p04.MOPA*/ wire _MOPA_xxxxEFGH = not1(_UVYT_ABCDxxxx);
-  /*#p01.ALET*/ wire _ALET_xBxDxFxH = not1(_ZEME_AxCxExGx);
-  /*#p27.MYVO*/ wire _MYVO_AxCxExGx = not1(_ALET_xBxDxFxH);
 
   /*#p01.BUGO*/ wire _BUGO_xBCDExxx = not1(_AFEP_AxxxxFGH);
   /*#p01.BATE*/ wire _BATE_AxxxxxGH = nor3(_BUGO_xBCDExxx, _AROV_xxCDEFxx, _ABOL_CLKREQn);

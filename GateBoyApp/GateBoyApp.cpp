@@ -462,6 +462,7 @@ void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
 void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
   d("\002===== OAM Bus =====\001\n");
 
+#if 0
   d("PIN_OAM_CLK    %c\n", oam_bus.PIN_OAM_CLK.c());
   d("PIN_OAM_OE     %c\n", oam_bus.PIN_OAM_OEn.c());
   d("PIN_OAM_WR_A   %c\n", oam_bus.PIN_OAM_WR_A.c());
@@ -490,6 +491,7 @@ void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
     pack_u8n(8, &oam_bus.BUS_OAM_DB0n),
     oam_bus.BUS_OAM_DB7n.c(), oam_bus.BUS_OAM_DB6n.c(), oam_bus.BUS_OAM_DB5n.c(), oam_bus.BUS_OAM_DB4n.c(),
     oam_bus.BUS_OAM_DB3n.c(), oam_bus.BUS_OAM_DB2n.c(), oam_bus.BUS_OAM_DB1n.c(), oam_bus.BUS_OAM_DB0n.c());
+#endif
 
   d("MAKA_HOLD_MEMp   %c\n", oam_bus.MAKA_HOLD_MEMp.c());
   d("WUJE_CPU_OAM_WRn %c\n", oam_bus.WUJE_CPU_OAM_WRn.c());

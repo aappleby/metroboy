@@ -131,38 +131,6 @@ struct OamBus {
   /*p31.BAXO*/ DFF8n BAXO_OAM_DB5p; // sprite x bit 5, sprite x flip
   /*p31.YZOS*/ DFF8n YZOS_OAM_DB6p; // sprite x bit 6, sprite y flip
   /*p31.DEPO*/ DFF8n DEPO_OAM_DB7p; // sprite x bit 7, sprite priority
-
-  PinNP PIN_OAM_CLK ;
-  PinNP PIN_OAM_OEn  ;
-  PinNP PIN_OAM_WR_A;
-  PinNP PIN_OAM_WR_B;
-
-  BusNP BUS_OAM_A0n ;
-  BusNP BUS_OAM_A1n ;
-  BusNP BUS_OAM_A2n ;
-  BusNP BUS_OAM_A3n ;
-  BusNP BUS_OAM_A4n ;
-  BusNP BUS_OAM_A5n ;
-  BusNP BUS_OAM_A6n ;
-  BusNP BUS_OAM_A7n ;
-
-  BusNP BUS_OAM_DA0n;
-  BusNP BUS_OAM_DA1n;
-  BusNP BUS_OAM_DA2n;
-  BusNP BUS_OAM_DA3n;
-  BusNP BUS_OAM_DA4n;
-  BusNP BUS_OAM_DA5n;
-  BusNP BUS_OAM_DA6n;
-  BusNP BUS_OAM_DA7n;
-
-  BusNP BUS_OAM_DB0n;
-  BusNP BUS_OAM_DB1n;
-  BusNP BUS_OAM_DB2n;
-  BusNP BUS_OAM_DB3n;
-  BusNP BUS_OAM_DB4n;
-  BusNP BUS_OAM_DB5n;
-  BusNP BUS_OAM_DB6n;
-  BusNP BUS_OAM_DB7n;
 };
 
 //-----------------------------------------------------------------------------

@@ -270,6 +270,9 @@ struct DFF8p : public RegBase {
   wire qn07() const { return !to_wire(); }
   wire qp08() const { return  to_wire(); }
 
+  wire qn07_next() const { return !to_wire_next(); }
+  wire qp08_next() const { return  to_wire_next(); }
+
   template<typename T>
   void dff8pc(wire CLKp, T Dn) { RegBase::dffc( CLKp, !CLKp, 1, 1, !as_wire(Dn)); }
 

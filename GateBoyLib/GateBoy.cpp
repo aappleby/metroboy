@@ -21,8 +21,6 @@ void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
   cart_buf  = _cart_buf;
   cart_size = _cart_size;
 
-  sentinel1 = SENTINEL1;
-
   cpu.reset_boot();
 
   cpu_req = {0};
@@ -69,8 +67,6 @@ void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
   memset(zero_ram, 0, 128);
   memset(framebuffer, 4, 160*144);
 
-  sentinel2 = SENTINEL2;
-
   oam_bus.reset_boot();
   ext_bus.reset_boot();
   vram_bus.reset_boot();
@@ -105,8 +101,6 @@ void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
     lcd_pipe_hi[i].reset(REG_D0C0);
   }
 
-  sentinel3 = SENTINEL3;
-
   run_reset_sequence(fastboot);
 }
 
@@ -118,8 +112,6 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   boot_size = _boot_size;
   cart_buf  = _cart_buf;
   cart_size = _cart_size;
-
-  sentinel1 = SENTINEL1;
 
   cpu.reset_cart();
 
@@ -173,8 +165,6 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   gb_screen_y = 152;
   lcd_data_latch = 0;
 
-  sentinel2 = SENTINEL2;
-
   oam_bus.reset_cart();
   ext_bus.reset_cart();
   vram_bus.reset_cart();
@@ -208,8 +198,6 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
     lcd_pipe_lo[i].reset(REG_D0C0);
     lcd_pipe_hi[i].reset(REG_D0C0);
   }
-
-  sentinel3 = SENTINEL3;
 }
 
 //------------------------------------------------------------------------------
@@ -299,13 +287,54 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
+struct GateBoyOffsets {
+  const int o_oam_bus        = offsetof(GateBoy, oam_bus);
+  const int o_ext_bus        = offsetof(GateBoy, ext_bus);
+  const int o_cpu_bus        = offsetof(GateBoy, cpu_bus);
+  const int o_vram_bus       = offsetof(GateBoy, vram_bus);
+  const int o_clk_reg        = offsetof(GateBoy, clk_reg);
+  const int o_dma_reg        = offsetof(GateBoy, dma_reg);
+  const int o_int_reg        = offsetof(GateBoy, int_reg);
+  const int o_joypad         = offsetof(GateBoy, joypad);
+  const int o_lcd_reg        = offsetof(GateBoy, lcd_reg);
+  const int o_pix_pipe       = offsetof(GateBoy, pix_pipe);
+  const int o_ser_reg        = offsetof(GateBoy, ser_reg);
+  const int o_sprite_store   = offsetof(GateBoy, sprite_store);
+  const int o_tim_reg        = offsetof(GateBoy, tim_reg);
+  const int o_tile_fetcher   = offsetof(GateBoy, tile_fetcher);
+  const int o_sprite_fetcher = offsetof(GateBoy, sprite_fetcher);
+  const int o_sprite_scanner = offsetof(GateBoy, sprite_scanner);
+
+} gb_offsets;
+
 void GateBoy::next_pass() {
 
   //----------------------------------------
   // Run one pass of our simulation.
 
+  static GateBoy gb_old;
+
+  if (sys_statediff) {
+    gb_old = *this;
+  }
+
   tock_slow();
   commit_and_hash();
+
+  if (sys_statediff && pass_count > 1) {
+    int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
+    int end   = offsetof(GateBoy, sentinel2);
+
+    uint8_t* blob_old = (uint8_t*)&gb_old;
+    uint8_t* blob_new = (uint8_t*)this;
+
+    for (int i = start; i < end; i++) {
+      if (blob_old[i] != blob_new[i]) {
+        printf("%06d %02d %04d %02d %02d\n", phase_total, pass_count, i, blob_old[i], blob_new[i]);
+      }
+    }
+    printf("\n");
+  }
 
   //----------------------------------------
   // Once the simulation converges, latch the data that needs to go back to the
@@ -361,8 +390,8 @@ void GateBoy::next_pass() {
 
 void GateBoy::commit_and_hash() {
   BitBase::sim_running = false;
-  uint8_t* blob_begin = ((uint8_t*)&sentinel2) + sizeof(sentinel2);
-  uint8_t* blob_end   = ((uint8_t*)&sentinel3);
+  uint8_t* blob_begin = ((uint8_t*)&sentinel1) + sizeof(sentinel1);
+  uint8_t* blob_end   = ((uint8_t*)&sentinel2);
   uint64_t pass_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
 
   uint64_t pass_hash_old = pass_hash;

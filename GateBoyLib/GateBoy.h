@@ -70,7 +70,7 @@ struct GateBoy {
       printf("sentinel2 fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
     }
-    if (sentinel2 != SENTINEL3) {
+    if (sentinel3 != SENTINEL3) {
       printf("sentinel2 fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
     }
@@ -104,25 +104,84 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  uint8_t* reg_begin() { return (uint8_t*)(&sentinel2) + sizeof(sentinel2); }
-  uint8_t* reg_end()   { return (uint8_t*)(&sentinel3); }
+  uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
+  uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
 
-  uint64_t sentinel1 = 0xBEEFBEEFBEEFBEEF;
+
+  //-----------------------------------------------------------------------------
+  // All the SOC registers, pins, buses. Everything in this section should derive
+  // from BitBase.
+
+  uint64_t sentinel1 = SENTINEL1;
+
+  OamBus oam_bus;
+  ExtBus ext_bus;
+  CpuBus cpu_bus;
+  VramBus vram_bus;
+
+
+  ClockRegisters     clk_reg;
+  DmaRegisters       dma_reg;
+  InterruptRegisters int_reg;
+  JoypadRegisters    joypad;
+  LcdRegisters       lcd_reg;
+  PixelPipe          pix_pipe;
+  SerialRegisters    ser_reg;
+  SpriteStore        sprite_store;
+  TimerRegisters     tim_reg;
+  TileFetcher        tile_fetcher;
+  SpriteFetcher      sprite_fetcher;
+  SpriteScanner      sprite_scanner;
+
+  // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
+  // In run mode, BOOT_BITn must _not_ be reset.
+  /*p07.TEPU*/ DFF17 BOOT_BITn;
+
+  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAM;
+
+  //DelayGlitch lcd_data1_delay;
+  //DelayGlitch lcd_data0_delay;
+
+  /*PIN_50*/ PinNP PIN_LCD_DATA1;
+  /*PIN_51*/ PinNP PIN_LCD_DATA0;
+  /*PIN_52*/ PinNP PIN_LCD_CNTRL;
+  /*PIN_53*/ PinNP PIN_LCD_CLOCK;
+  /*PIN_54*/ PinNP PIN_LCD_HSYNC;
+  /*PIN_55*/ PinNP PIN_LCD_LATCH;
+  /*PIN_56*/ PinNP PIN_LCD_FLIPS;
+  /*PIN_57*/ PinNP PIN_LCD_VSYNC;
+
+  DFF IE_D0;
+  DFF IE_D1;
+  DFF IE_D2;
+  DFF IE_D3;
+  DFF IE_D4;
+
+  // ok this is technically part of the lcd, but registers need to go in this section...
+  NorLatch lcd_pix_lo;
+  NorLatch lcd_pix_hi;
+
+  DFF lcd_pipe_lo[160];
+  DFF lcd_pipe_hi[160];
+
+  uint64_t sentinel2 = SENTINEL2;
 
   //-----------------------------------------------------------------------------
   // Control stuff
 
-  int32_t  sys_rst = 1;
-  int32_t  sys_t1 = 0;
-  int32_t  sys_t2 = 0;
-  int32_t  sys_clken = 0;
-  int32_t  sys_clkgood = 0;
-  int32_t  sys_cpuready = 0;
-  int32_t  sys_cpu_en = 0;
-  uint8_t  sys_buttons = 0;
-  bool     sys_fastboot = 0;
+  bool sys_rst = 1;
+  bool sys_t1 = 0;
+  bool sys_t2 = 0;
+  bool sys_clken = 0;
+  bool sys_clkgood = 0;
+  bool sys_cpuready = 0;
+  bool sys_cpu_en = 0;
+  bool sys_fastboot = 0;
+  bool sys_statediff = 0;
 
-  uint8_t  sim_stable = 0;
+  uint8_t sys_buttons = 0;
+
+  bool     sim_stable = 0;
   double   sim_time = 0;
   int32_t  phase_total = 0;
   int32_t  pass_count = 0;
@@ -182,63 +241,8 @@ struct GateBoy {
   uint8_t lcd_data_latch = 0;
 
   //-----------------------------------------------------------------------------
-  // All the SOC registers, pins, buses. Everything in this section should derive
-  // from BitBase.
 
-  uint64_t sentinel2 = 0xC0DEC0DEC0DEC0DE;
-
-  OamBus oam_bus;
-  ExtBus ext_bus;
-  CpuBus cpu_bus;
-  VramBus vram_bus;
-
-
-  ClockRegisters  clk_reg;
-
-  DmaRegisters dma_reg;
-  InterruptRegisters int_reg;
-  JoypadRegisters joypad;
-  LcdRegisters lcd_reg;
-  PixelPipe pix_pipe;
-  SerialRegisters ser_reg;
-  SpriteStore sprite_store;
-  TimerRegisters tim_reg;
-  TileFetcher tile_fetcher;
-  SpriteFetcher sprite_fetcher;
-  SpriteScanner sprite_scanner;
-
-  // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
-  // In run mode, BOOT_BITn must _not_ be reset.
-  /*p07.TEPU*/ DFF17 BOOT_BITn;
-
-  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAM;
-
-  //DelayGlitch lcd_data1_delay;
-  //DelayGlitch lcd_data0_delay;
-
-  /*PIN_50*/ PinNP PIN_LCD_DATA1;
-  /*PIN_51*/ PinNP PIN_LCD_DATA0;
-  /*PIN_52*/ PinNP PIN_LCD_CNTRL;
-  /*PIN_53*/ PinNP PIN_LCD_CLOCK;
-  /*PIN_54*/ PinNP PIN_LCD_HSYNC;
-  /*PIN_55*/ PinNP PIN_LCD_LATCH;
-  /*PIN_56*/ PinNP PIN_LCD_FLIPS;
-  /*PIN_57*/ PinNP PIN_LCD_VSYNC;
-
-  DFF IE_D0;
-  DFF IE_D1;
-  DFF IE_D2;
-  DFF IE_D3;
-  DFF IE_D4;
-
-  // ok this is technically part of the lcd, but registers need to go in this section...
-  NorLatch lcd_pix_lo;
-  NorLatch lcd_pix_hi;
-
-  DFF lcd_pipe_lo[160];
-  DFF lcd_pipe_hi[160];
-
-  uint64_t sentinel3 = 0xCAFECAFECAFECAFE;
+  uint64_t sentinel3 = SENTINEL3;
 };
 #pragma pack(pop)
 

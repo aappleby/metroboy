@@ -260,6 +260,11 @@ void GateBoyApp::app_update(double /*delta*/) {
 
     case SDLK_SPACE: { gb_thread.sig_pause ? gb_thread.resume() : gb_thread.pause(); break; }
 
+    case SDLK_d: {
+      gb_thread.gb->sys_statediff = !gb_thread.gb->sys_statediff;
+      break;
+    }
+
     case SDLK_f: {
       gb_thread.clear_work();
       if (runmode != RUN_FAST) {
@@ -283,7 +288,7 @@ void GateBoyApp::app_update(double /*delta*/) {
     case SDLK_F1:   load_raw_dump();            break;
     case SDLK_F4:   save_raw_dump();            break;
     case SDLK_r:    gb_thread.reset_cart(gb_thread.boot, gb_thread.cart);          break;
-    case SDLK_d:    show_diff   = !show_diff;   break;
+    //case SDLK_d:    show_diff   = !show_diff;   break;
     case SDLK_g:    show_golden = !show_golden; break;
     case SDLK_o:    draw_passes = !draw_passes; break;
     case SDLK_UP:   stepmode = STEP_PHASE;      break;

@@ -457,23 +457,22 @@ void GateBoy::tock_slow() {
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
-  PinNP PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinNP PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  PinNP PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
-  PinNP PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
-  PinNP PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  PinNP PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  PinNP PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-  PinNP PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinNP PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: // this is the "put address on bus" clock
-  PinNP PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02:
-  PinNP PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: // this is the "reset for next cycle" clock
-  PinNP PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: // this is the "put write data on bus" clock
-  PinNP PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05:
-  PinNP PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: // this is probably the "latch bus data" clock
-  // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
-  PinNP PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: (RESET_CLK)
-  PinNP PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
+  Pin2 PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Pin2 PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
+  Pin2 PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
+  Pin2 PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
+  Pin2 PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  Pin2 PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  Pin2 PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  Pin2 PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  Pin2 PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: // this is the "put address on bus" clock
+  Pin2 PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02:
+  Pin2 PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: // this is the "reset for next cycle" clock
+  Pin2 PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: // this is the "put write data on bus" clock
+  Pin2 PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05:
+  Pin2 PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  Pin2 PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
+  Pin2 PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
 
   bool BUS_CPU_A[16];
   BusPU  BUS_CPU_D[8];
@@ -1325,25 +1324,13 @@ void GateBoy::tock_slow() {
 
   //------------------------------------------------------------------------------
 
-  PinNP PIN_JOY_P10; // PIN_67
-  PinNP PIN_JOY_P11; // PIN_66
-  PinNP PIN_JOY_P12; // PIN_65
-  PinNP PIN_JOY_P13; // PIN_64
-  PinPU PIN_JOY_P14; // PIN_63
-  PinPU PIN_JOY_P15; // PIN_62
-
   {
-    // non-debug-mode
-
-    /*
-    PIN_JOY_P10.io_pin(1, 0); // hi z
-    PIN_JOY_P11.io_pin(1, 0); // hi z
-    PIN_JOY_P12.io_pin(1, 0); // hi z
-    PIN_JOY_P13.io_pin(1, 0); // hi z
-
-    PIN_JOY_P14.io_pin(1, KELY_JOYP_UDLR.qn()); // open drain
-    PIN_JOY_P15.io_pin(1, COFY_JOYP_ABCS.qn()); // open drain
-    */
+    Pin2 PIN_JOY_P10; // PIN_67
+    Pin2 PIN_JOY_P11; // PIN_66
+    Pin2 PIN_JOY_P12; // PIN_65
+    Pin2 PIN_JOY_P13; // PIN_64
+    Pin2 PIN_JOY_P14; // PIN_63
+    Pin2 PIN_JOY_P15; // PIN_62
 
     wire BURO_FF60_0p = 0; // FIXME hacking out debug stuff
     /* p05.KURA*/ wire _KURA = not1(BURO_FF60_0p);
@@ -1378,8 +1365,8 @@ void GateBoy::tock_slow() {
     09 0 diodes 3 & 4
     */
 
-    PIN_JOY_P14.pin_intc_hilo(_KARU, joypad.KELY_JOYP_UDLR.qn16(), joypad.KELY_JOYP_UDLR.qn16());
-    PIN_JOY_P15.pin_intc_hilo(_CELA, joypad.COFY_JOYP_ABCS.qn16(), joypad.COFY_JOYP_ABCS.qn16());
+    PIN_JOY_P14.pin_out(_KARU, joypad.KELY_JOYP_UDLR.qn16(), joypad.KELY_JOYP_UDLR.qn16());
+    PIN_JOY_P15.pin_out(_CELA, joypad.COFY_JOYP_ABCS.qn16(), joypad.COFY_JOYP_ABCS.qn16());
 
     // Pressing a button pulls the corresponding pin _down_.
 
@@ -1402,10 +1389,7 @@ void GateBoy::tock_slow() {
       PIN_JOY_P13.setc(1);
     }
 
-  }
-
-  Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
-  {
+    Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
     /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN_JOY_P13.qn(), PIN_JOY_P12.qn(), PIN_JOY_P11.qn(), PIN_JOY_P10.qn());
     /* p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latchc(_BOGA_Axxxxxxx, _KERY_ANY_BUTTONp);
     PIN_CPU_WAKE.set(joypad.AWOB_WAKE_CPU.qp08());
@@ -1415,6 +1399,25 @@ void GateBoy::tock_slow() {
     /* p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17c(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, joypad.ACEF_JP_GLITCH1.qp17());
     /* p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17c(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, joypad.BATU_JP_GLITCH0.qp17());
     /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17c(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, _KERY_ANY_BUTTONp);
+
+    /* FF00 JOYP */ {
+      /* p10.ACAT*/ wire _ACAT_FF00_RDp = and4(_TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
+      /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
+
+      /* p05.KEVU*/ joypad.KEVU_JOYP_L0.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P10.qn());
+      /* p05.KAPA*/ joypad.KAPA_JOYP_L1.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P11.qn());
+      /* p05.KEJA*/ joypad.KEJA_JOYP_L2.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P12.qn());
+      /* p05.KOLO*/ joypad.KOLO_JOYP_L3.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P13.qn());
+
+      /* p05.KEMA*/ BUS_CPU_D[0].tri6_nn(_BYZO_FF00_RDn, joypad.KEVU_JOYP_L0.qp08());
+      /* p05.KURO*/ BUS_CPU_D[1].tri6_nn(_BYZO_FF00_RDn, joypad.KAPA_JOYP_L1.qp08());
+      /* p05.KUVE*/ BUS_CPU_D[2].tri6_nn(_BYZO_FF00_RDn, joypad.KEJA_JOYP_L2.qp08());
+      /* p05.JEKU*/ BUS_CPU_D[3].tri6_nn(_BYZO_FF00_RDn, joypad.KOLO_JOYP_L3.qp08());
+      /* p05.KOCE*/ BUS_CPU_D[4].tri6_nn(_BYZO_FF00_RDn, joypad.KELY_JOYP_UDLR.qn16());
+      /* p05.CUDY*/ BUS_CPU_D[5].tri6_nn(_BYZO_FF00_RDn, joypad.COFY_JOYP_ABCS.qn16());
+      /* p??.????*/ BUS_CPU_D[6].tri6_nn(_BYZO_FF00_RDn, joypad.KUKO_DBG_FF00_D6.qp17());
+      /* p??.????*/ BUS_CPU_D[7].tri6_nn(_BYZO_FF00_RDn, joypad.KERU_DBG_FF00_D7.qp17());
+    }
   }
 
 
@@ -1663,11 +1666,6 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
   // OAM address bus
-
-  Pin2 PIN_OAM_CLK;
-  Pin2 PIN_OAM_OEn;
-  Pin2 PIN_OAM_WR_A;
-  Pin2 PIN_OAM_WR_B;
 
   Bus2 BUS_OAM_An[8];
   Bus2 BUS_OAM_DAn[8];
@@ -2966,6 +2964,8 @@ void GateBoy::tock_slow() {
     /*#p28.GEKA*/ wire _GEKA_OAM_A0p = not1(BUS_OAM_An[0]); // -> WAFO, YLYC, WUKU
     /* p28.WAFO*/ wire _WAFO_OAM_A0n = not1(_GEKA_OAM_A0p);
 
+    /* p04.MAKA*/ oam_bus.MAKA_HOLD_MEMp.dff17c(_ZEME_AxCxExGx, _CUNU_SYS_RSTn, _CATY_LATCH_EXTp);
+
     {
       /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(_ACYL_SCANNINGp, _XOCE_xBCxxFGx); // schematic wrong, is def nand2
       /* p28.WEFY*/ wire _WEFY_SPR_READp = and2(_TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1.qp17());
@@ -2977,48 +2977,35 @@ void GateBoy::tock_slow() {
       /*#p28.YVAL*/ wire _YVAL_OAM_OEn = not1(_BODE_OAM_OEp);
       /*#p28.YRYV*/ wire _YRYU_OAM_OEp = not1(_YVAL_OAM_OEn);
       /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYU_OAM_OEp);
-      PIN_OAM_OEn.setc(_ZODO_OAM_OEn);
-    }
 
-    /* oam_ram -> OBD */
-    if (!sys_rst && !PIN_OAM_OEn.qp()) {
+      Pin2 PIN_OAM_OEn;
+      PIN_OAM_OEn.setc(_ZODO_OAM_OEn);
+
+      /* oam_ram -> OBD */
       // FIXME This should be using PIN_OAM_CLK (which might actually be PIN_OAM_CSn?)
       uint8_t oam_addr   = pack_u8n(7, &BUS_OAM_An[1]);
       uint8_t oam_data_a = oam_ram[(oam_addr << 1) + 0];
       uint8_t oam_data_b = oam_ram[(oam_addr << 1) + 1];
 
-      BUS_OAM_DAn[0].tri6_nn(0, (oam_data_a & 0x01));
-      BUS_OAM_DAn[1].tri6_nn(0, (oam_data_a & 0x02));
-      BUS_OAM_DAn[2].tri6_nn(0, (oam_data_a & 0x04));
-      BUS_OAM_DAn[3].tri6_nn(0, (oam_data_a & 0x08));
-      BUS_OAM_DAn[4].tri6_nn(0, (oam_data_a & 0x10));
-      BUS_OAM_DAn[5].tri6_nn(0, (oam_data_a & 0x20));
-      BUS_OAM_DAn[6].tri6_nn(0, (oam_data_a & 0x40));
-      BUS_OAM_DAn[7].tri6_nn(0, (oam_data_a & 0x80));
+      BUS_OAM_DAn[0].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x01));
+      BUS_OAM_DAn[1].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x02));
+      BUS_OAM_DAn[2].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x04));
+      BUS_OAM_DAn[3].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x08));
+      BUS_OAM_DAn[4].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x10));
+      BUS_OAM_DAn[5].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x20));
+      BUS_OAM_DAn[6].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x40));
+      BUS_OAM_DAn[7].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_a & 0x80));
 
-      BUS_OAM_DBn[0].tri6_nn(0, (oam_data_b & 0x01));
-      BUS_OAM_DBn[1].tri6_nn(0, (oam_data_b & 0x02));
-      BUS_OAM_DBn[2].tri6_nn(0, (oam_data_b & 0x04));
-      BUS_OAM_DBn[3].tri6_nn(0, (oam_data_b & 0x08));
-      BUS_OAM_DBn[4].tri6_nn(0, (oam_data_b & 0x10));
-      BUS_OAM_DBn[5].tri6_nn(0, (oam_data_b & 0x20));
-      BUS_OAM_DBn[6].tri6_nn(0, (oam_data_b & 0x40));
-      BUS_OAM_DBn[7].tri6_nn(0, (oam_data_b & 0x80));
+      BUS_OAM_DBn[0].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x01));
+      BUS_OAM_DBn[1].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x02));
+      BUS_OAM_DBn[2].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x04));
+      BUS_OAM_DBn[3].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x08));
+      BUS_OAM_DBn[4].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x10));
+      BUS_OAM_DBn[5].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x20));
+      BUS_OAM_DBn[6].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x40));
+      BUS_OAM_DBn[7].tri6_nn(PIN_OAM_OEn.qp(), (oam_data_b & 0x80));
     }
 
-    {
-      /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp = nor2(_UVYT_ABCDxxxx, oam_bus.MAKA_HOLD_MEMp.qp17()); // def nor2
-      /* p04.POWU*/ wire _POWU_DMA_OAM_WRp  = and2(dma_reg.MATU_DMA_RUNNINGp.qp17(), _NAXY_DMA_OAM_WRp); // def and
-      /* p04.WYJA*/ wire _WYJA_OAM_WRp      = and_or3(_AMAB_CPU_OAM_ENp, _CUPA_CPU_WRp_xxxxEFGx, _POWU_DMA_OAM_WRp);
-      /* p28.YNYC*/ wire _YNYC_OAM_A_WRp = and2(_WYJA_OAM_WRp, _WAFO_OAM_A0n);
-      /* p28.YLYC*/ wire _YLYC_OAM_B_WRp = and2(_WYJA_OAM_WRp, _GEKA_OAM_A0p);
-      /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1(_YNYC_OAM_A_WRp);
-      /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1(_YLYC_OAM_B_WRp);
-      PIN_OAM_WR_A.setc(_ZOFE_OAM_A_WRn);
-      PIN_OAM_WR_B.setc(_ZONE_OAM_B_WRn);
-    }
-
-    /* p04.MAKA*/ oam_bus.MAKA_HOLD_MEMp.dff17c(_ZEME_AxCxExGx, _CUNU_SYS_RSTn, _CATY_LATCH_EXTp);
 
     {
       /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(_ACYL_SCANNINGp, _XOCE_xBCxxFGx); // schematic wrong, is def nand2
@@ -3048,17 +3035,16 @@ void GateBoy::tock_slow() {
       /* p31.ECED*/ oam_bus.ECED_OAM_LATCH_DB7n.tp_latchc(_BODE_OAM_OEp, BUS_OAM_DBn[7]);
     }
 
-    {
-      /*#p29.WOJO*/ wire _WOJO_AxxxExxx   = nor2(clk_reg.WOSU_AxxDExxH.qn16_next(), clk_reg.WUVU_ABxxEFxx.qn16_next());
-      /* p29.XYSO*/ wire _XYSO_xBCDxFGH   = not1(_WOJO_AxxxExxx);
-      /* p25.AVER*/ wire _AVER_AxxxExxx   = nand2(_ACYL_SCANNINGp, _XYSO_xBCDxFGH);
-      /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(_TUVO_PPU_OAM_RDp, _TACU_SPR_SEQ_5_TRIG);
-      /* p25.XUJY*/ wire _XUJY_OAM_CLKENp = not1(_VAPE_OAM_CLKENn);
-      /* p25.CUFE*/ wire _CUFE_OAM_CLKENp = not1(or_and3(_SARO_FE00_FEFFp, dma_reg.MATU_DMA_RUNNINGp.qp17(), _MOPA_xxxxEFGH)); // CUFE looks like BYHA minus an inverter
-      /* p25.BYCU*/ wire _BYCU_xBCDxFGH   = nand3(_AVER_AxxxExxx, _XUJY_OAM_CLKENp, _CUFE_OAM_CLKENp);
-      /* p25.COTA*/ wire _COTA_AxxxxExxx  = not1(_BYCU_xBCDxFGH);
-      PIN_OAM_CLK.setc(_COTA_AxxxxExxx);
+    /*#p29.WOJO*/ wire _WOJO_AxxxExxx   = nor2(clk_reg.WOSU_AxxDExxH.qn16_next(), clk_reg.WUVU_ABxxEFxx.qn16_next());
+    /* p29.XYSO*/ wire _XYSO_xBCDxFGH   = not1(_WOJO_AxxxExxx);
+    /* p25.AVER*/ wire _AVER_AxxxExxx   = nand2(_ACYL_SCANNINGp, _XYSO_xBCDxFGH);
+    /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(_TUVO_PPU_OAM_RDp, _TACU_SPR_SEQ_5_TRIG);
+    /* p25.XUJY*/ wire _XUJY_OAM_CLKENp = not1(_VAPE_OAM_CLKENn);
+    /* p25.CUFE*/ wire _CUFE_OAM_CLKENp = not1(or_and3(_SARO_FE00_FEFFp, dma_reg.MATU_DMA_RUNNINGp.qp17(), _MOPA_xxxxEFGH)); // CUFE looks like BYHA minus an inverter
+    /* p25.BYCU*/ wire _BYCU_xBCDxFGH   = nand3(_AVER_AxxxExxx, _XUJY_OAM_CLKENp, _CUFE_OAM_CLKENp);
+    /* p25.COTA*/ wire _COTA_AxxxxExxx  = not1(_BYCU_xBCDxFGH);
 
+    {
       // OBL -> temp
       /* p29.YWOK*/ wire _YWOK_OAM_CLKn = not1(_COTA_AxxxxExxx);
       /* p29.YWOK*/ wire _YWOK_OAM_CLKp = not1(_YWOK_OAM_CLKn);
@@ -3085,9 +3071,26 @@ void GateBoy::tock_slow() {
       /* p31.DEPO*/ oam_bus.DEPO_OAM_DB7p.dff8nc(_XEGA_OAM_CLKp, _XEGA_OAM_CLKn, oam_bus.ECED_OAM_LATCH_DB7n.qp08());
     }
 
-    // OAM write, should probably be moved elsewhere
     // FIXME This should be using PIN_OAM_CLK (which might actually be PIN_OAM_CSn?)
-    if (!sys_rst) {
+    {
+      Pin2 PIN_OAM_CLK;
+
+      PIN_OAM_CLK.setc(_COTA_AxxxxExxx);
+
+      /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp = nor2(_UVYT_ABCDxxxx, oam_bus.MAKA_HOLD_MEMp.qp17_next()); // def nor2
+      /* p04.POWU*/ wire _POWU_DMA_OAM_WRp  = and2(dma_reg.MATU_DMA_RUNNINGp.qp17(), _NAXY_DMA_OAM_WRp); // def and
+      /* p04.WYJA*/ wire _WYJA_OAM_WRp      = and_or3(_AMAB_CPU_OAM_ENp, _CUPA_CPU_WRp_xxxxEFGx, _POWU_DMA_OAM_WRp);
+      /* p28.YNYC*/ wire _YNYC_OAM_A_WRp = and2(_WYJA_OAM_WRp, _WAFO_OAM_A0n);
+      /* p28.YLYC*/ wire _YLYC_OAM_B_WRp = and2(_WYJA_OAM_WRp, _GEKA_OAM_A0p);
+      /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1(_YNYC_OAM_A_WRp);
+      /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1(_YLYC_OAM_B_WRp);
+
+      Pin2 PIN_OAM_WR_A;
+      Pin2 PIN_OAM_WR_B;
+
+      PIN_OAM_WR_A.setc(_ZOFE_OAM_A_WRn);
+      PIN_OAM_WR_B.setc(_ZONE_OAM_B_WRn);
+
       uint8_t oam_addr = pack_u8n(7, &BUS_OAM_An[1]);
 
       if (!PIN_OAM_WR_A.qp()) {
@@ -3190,24 +3193,6 @@ void GateBoy::tock_slow() {
   uint16_t cpu_bus_addr = pack_u16(16, &BUS_CPU_A[ 0]);
 
 
-  /* FF00 JOYP */ {
-    /* p10.ACAT*/ wire _ACAT_FF00_RDp = and4(_TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
-    /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
-
-    /* p05.KEVU*/ joypad.KEVU_JOYP_L0.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P10.qn());
-    /* p05.KAPA*/ joypad.KAPA_JOYP_L1.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P11.qn());
-    /* p05.KEJA*/ joypad.KEJA_JOYP_L2.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P12.qn());
-    /* p05.KOLO*/ joypad.KOLO_JOYP_L3.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P13.qn());
-
-    /* p05.KEMA*/ BUS_CPU_D[0].tri6_nn(_BYZO_FF00_RDn, joypad.KEVU_JOYP_L0.qp08());
-    /* p05.KURO*/ BUS_CPU_D[1].tri6_nn(_BYZO_FF00_RDn, joypad.KAPA_JOYP_L1.qp08());
-    /* p05.KUVE*/ BUS_CPU_D[2].tri6_nn(_BYZO_FF00_RDn, joypad.KEJA_JOYP_L2.qp08());
-    /* p05.JEKU*/ BUS_CPU_D[3].tri6_nn(_BYZO_FF00_RDn, joypad.KOLO_JOYP_L3.qp08());
-    /* p05.KOCE*/ BUS_CPU_D[4].tri6_nn(_BYZO_FF00_RDn, joypad.KELY_JOYP_UDLR.qn16());
-    /* p05.CUDY*/ BUS_CPU_D[5].tri6_nn(_BYZO_FF00_RDn, joypad.COFY_JOYP_ABCS.qn16());
-    /* p??.????*/ BUS_CPU_D[6].tri6_nn(_BYZO_FF00_RDn, joypad.KUKO_DBG_FF00_D6.qp17());
-    /* p??.????*/ BUS_CPU_D[7].tri6_nn(_BYZO_FF00_RDn, joypad.KERU_DBG_FF00_D7.qp17());
-  }
   /** FF01 SER */ {
     /* p06.SANO*/ wire _SANO_ADDR_FF00_FF03 = and3(_SARE_XX00_XX07p, _SEFY_A02n, _SYKE_FF00_FFFFp);
     /* p06.UFEG*/ wire _UFEG_FF01_RDp = and4(_TEDO_CPU_RDp, _SANO_ADDR_FF00_FF03, BUS_CPU_A[ 0], _TOLA_A01n);

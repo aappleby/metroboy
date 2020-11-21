@@ -1320,12 +1320,12 @@ int GateBoyTests::test_ext_bus() {
 int GateBoyTests::test_mem() {
   TEST_START();
 
+  err += test_mem("OAM",  0xFE00, 0xFEFF, 1,   true);
   err += test_mem("ROM",  0x0000, 0x7FFF, 256, false);
   err += test_mem("VRAM", 0x8000, 0x9FFF, 256, true);
   err += test_mem("CRAM", 0xA000, 0xBFFF, 256, true);
   err += test_mem("IRAM", 0xC000, 0xDFFF, 256, true);
   err += test_mem("ERAM", 0xE000, 0xFDFF, 256, true);
-  err += test_mem("OAM",  0xFE00, 0xFEFF, 1,   true);
   err += test_mem("ZRAM", 0xFF80, 0xFFFE, 1,   true);
 
   TEST_END();

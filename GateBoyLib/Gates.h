@@ -528,58 +528,6 @@ struct DFF22 : public RegBase {
 
 
 //-----------------------------------------------------------------------------
-// Tristate signals must be read _after_ they are written.
-
-struct TriBase : public BitBase {
-
-  wire to_wire() const {
-    if (state & BIT_DRIVEN) {
-      return wire(state & BIT_DATA);
-    }
-    else if (state & BIT_PULLUP) {
-      return 1;
-    }
-    else {
-      if (sim_running) {
-        //CHECK_P(false);
-        printf("Signal floating!\n");
-        bus_floating = true;
-      }
-      return 0;
-    }
-  }
-
-  template<typename T>
-  void tri(wire OEp, T D) {
-    CHECK_N(state & BIT_LOCKED);
-
-    if (!(state & BIT_DIRTY)) {
-      // First hit this pass, clear everything except the pullup.
-      state &= BIT_PULLUP;
-    }
-    else {
-      // Second+ hit this pass, check for bus collision.
-      if (OEp && (state & BIT_DRIVEN)) {
-        RegBase::bus_collision |= ((state & BIT_DATA) != as_wire(D));
-      }
-    }
-
-    if (OEp) {
-      state |= BIT_DRIVEN;
-      state |= uint8_t(as_wire(D));
-    }
-
-    state |= BIT_DIRTY;
-  }
-
-  // multiple commits are _not_ an error, see bowtied VBD->CBD and CBD->VBD
-  void commit() {
-    CHECK_P(state & BIT_DIRTY);
-    state |= BIT_LOCKED;
-  }
-};
-
-//-----------------------------------------------------------------------------
 // Tristate bus, can have multiple drivers.
 
 // TYGO_01 << BUS_CPU_D2p
@@ -599,22 +547,6 @@ struct TriBase : public BitBase {
 // tri6_pn : top rung tadpole facing second rung dot.
 
 //-----------------------------------------------------------------------------
-
-struct BusPU : public TriBase {
-  BusPU() { state = BIT_PULLUP; }
-
-  void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
-  void tri6_nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
-  void tri6_pn(wire OEp, wire Dn) { tri(OEp, !Dn);}
-
-  template<typename T>
-  void tri6_nn(wire OEn, T Dn) { tri(!OEn, !as_wire(Dn)); }
-
-  template<typename T>
-  void tri10_np(wire OEn, T D) { tri(!OEn, D); }
-};
-
-//-----------------------------------------------------------------------------
 // Bus with pull-up, testing new stuff.
 
 struct Bus2 : public BitBase {
@@ -622,9 +554,8 @@ struct Bus2 : public BitBase {
   void tri(wire OEp, wire Dp) {
     CHECK_N(state & BIT_LOCKED);
     if (OEp) {
-#if _DEBUG
+      CHECK_N(state & BIT_DRIVEN);
       RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != Dp);
-#endif
       state |= BIT_DRIVEN;
       state |= uint8_t(Dp);
     }
@@ -640,10 +571,6 @@ struct Bus2 : public BitBase {
   template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire(Dn) : 0); }
   template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire(Dn) : 0); }
   template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire(Dp) : 0); }
-
-private:
-  static void * operator new(std::size_t);
-  static void * operator new [] (std::size_t);
 };
 
 //-----------------------------------------------------------------------------
@@ -659,7 +586,8 @@ struct Pin2 : public BitBase {
   wire qp() { return  to_wire(); }
   wire qn() { return !to_wire(); }
 
-  void setc(wire D) {
+  void set(wire D) {
+    CHECK_N(state & BIT_DRIVEN);
     CHECK_N(state & BIT_LOCKED);
     CHECK_N(state & BIT_DIRTY);
     RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
@@ -671,6 +599,7 @@ struct Pin2 : public BitBase {
   void pin_in(wire OEp, wire D) {
     CHECK_N(state & BIT_LOCKED);
     if (OEp) {
+      CHECK_N(state & BIT_DRIVEN);
       RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
       state |= BIT_DRIVEN;
       state |= uint8_t(D);
@@ -683,6 +612,7 @@ struct Pin2 : public BitBase {
     CHECK_N(!HI && LO);
     wire D = !HI;
     if (OEp && (HI == LO)) {
+      CHECK_N(state & BIT_DRIVEN);
       RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
       state |= BIT_DRIVEN;
       state |= uint8_t(D);
@@ -707,67 +637,7 @@ struct Signal : public BitBase {
   }
 };
 
-//-----------------------------------------------------------------------------
-// External pin with no pull-up
 
-struct PinNP : public TriBase {
-
-  wire to_wire() const {
-    CHECK_P(state & BIT_DRIVEN);
-    return wire(state & BIT_DATA);
-  }
-
-  wire qp() const { return  to_wire(); }
-  wire qn() const { return !to_wire(); }
-
-  void setc(wire D) {
-    tri(1, D);
-    commit();
-  }
-
-  // Pin internal interface
-  void pin_out_hilo(wire OEp, wire HI, wire LO) {
-    if      (!OEp)       tri(0, wire(0));
-    else if ( HI &&  LO) tri(1, wire(0));
-    else if (!HI && !LO) tri(1, wire(1));
-    else if ( HI && !LO) tri(0, wire(0));
-    else                 CHECK_P(false);
-    commit();
-  }
-
-  void pin_in      (wire OEp, wire D) {
-    tri(OEp, D);
-  }
-};
-
-//-----------------------------------------------------------------------------
-// External pin with a pull-up
-
-struct PinPU : public TriBase {
-  PinPU() { state = BIT_PULLUP; }
-
-  wire qp() const { return  to_wire(); }
-  wire qn() const { return !to_wire(); }
-
-  void setc(wire D) {
-    tri(1, D);
-    commit();
-  }
-
-  // Pin internal interface
-  void pin_int(wire OEp, wire HI, wire LO) {
-    if      (!OEp)       tri(0, wire(0));
-    else if ( HI &&  LO) tri(1, wire(0));
-    else if (!HI && !LO) tri(1, wire(1));
-    else if ( HI && !LO) tri(0, wire(0));
-    else                 CHECK_P(false);
-  }
-
-  void pin_int_hilo (wire HI, wire LO)           { pin_int(1, HI, LO); }
-  //void pin_intc_hilo(wire HI, wire LO)           { pin_int_hilo(HI, LO); commit(); }
-  void pin_intc_hilo(wire OEp, wire HI, wire LO) { pin_int(OEp, HI, LO); commit(); }
-  void pin_out      (wire OEp, wire D)            { tri(OEp, D); }
-};
 
 
 

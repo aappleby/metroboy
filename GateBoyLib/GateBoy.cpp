@@ -806,7 +806,7 @@ void GateBoy::tock_slow() {
 
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn.qp17());
   /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
-  PIN_CPU_BOOTp.setc(_TUTU_ADDR_BOOTp);
+  PIN_CPU_BOOTp.set(_TUTU_ADDR_BOOTp);
 
   //----------------------------------------
   // CPU write signal
@@ -1360,22 +1360,22 @@ void GateBoy::tock_slow() {
     // Pressing a button pulls the corresponding pin _down_.
 
     if (PIN_JOY_P14.qp()) {
-      PIN_JOY_P10.setc(!(sys_buttons & 0x01));
-      PIN_JOY_P11.setc(!(sys_buttons & 0x02));
-      PIN_JOY_P12.setc(!(sys_buttons & 0x04));
-      PIN_JOY_P13.setc(!(sys_buttons & 0x08));
+      PIN_JOY_P10.set(!(sys_buttons & 0x01));
+      PIN_JOY_P11.set(!(sys_buttons & 0x02));
+      PIN_JOY_P12.set(!(sys_buttons & 0x04));
+      PIN_JOY_P13.set(!(sys_buttons & 0x08));
     }
     else if (PIN_JOY_P15.qp()) {
-      PIN_JOY_P10.setc(!(sys_buttons & 0x10));
-      PIN_JOY_P11.setc(!(sys_buttons & 0x20));
-      PIN_JOY_P12.setc(!(sys_buttons & 0x40));
-      PIN_JOY_P13.setc(!(sys_buttons & 0x80));
+      PIN_JOY_P10.set(!(sys_buttons & 0x10));
+      PIN_JOY_P11.set(!(sys_buttons & 0x20));
+      PIN_JOY_P12.set(!(sys_buttons & 0x40));
+      PIN_JOY_P13.set(!(sys_buttons & 0x80));
     }
     else {
-      PIN_JOY_P10.setc(1);
-      PIN_JOY_P11.setc(1);
-      PIN_JOY_P12.setc(1);
-      PIN_JOY_P13.setc(1);
+      PIN_JOY_P10.set(1);
+      PIN_JOY_P11.set(1);
+      PIN_JOY_P12.set(1);
+      PIN_JOY_P13.set(1);
     }
 
     Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
@@ -2982,7 +2982,7 @@ void GateBoy::tock_slow() {
     /* p25.CUFE*/ wire _CUFE_OAM_CLKENp  = not1(or_and3(_SARO_FE00_FEFFp, dma_reg.MATU_DMA_RUNNINGp.qp17(), _MOPA_xxxxEFGH)); // CUFE looks like BYHA minus an inverter
     /* p25.BYCU*/ wire _BYCU_xBCDxFGH    = nand3(_AVER_AxxxExxx, _XUJY_OAM_CLKENp, _CUFE_OAM_CLKENp);
     /* p25.COTA*/ wire _COTA_AxxxxExxx   = not1(_BYCU_xBCDxFGH);
-    PIN_OAM_CLK.setc(_COTA_AxxxxExxx);
+    PIN_OAM_CLK.set(_COTA_AxxxxExxx);
 
     {
       /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(_ACYL_SCANNINGp, _XOCE_xBCxxFGx); // schematic wrong, is def nand2
@@ -2997,7 +2997,7 @@ void GateBoy::tock_slow() {
       /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYU_OAM_OEp);
 
       Pin2 PIN_OAM_OEn;
-      PIN_OAM_OEn.setc(_ZODO_OAM_OEn);
+      PIN_OAM_OEn.set(_ZODO_OAM_OEn);
 
       /* oam_ram -> OBD */
       // FIXME This should be using PIN_OAM_CLK (which might actually be PIN_OAM_CSn?)
@@ -3124,8 +3124,8 @@ void GateBoy::tock_slow() {
       Pin2 PIN_OAM_WR_A;
       Pin2 PIN_OAM_WR_B;
 
-      PIN_OAM_WR_A.setc(_ZOFE_OAM_A_WRn);
-      PIN_OAM_WR_B.setc(_ZONE_OAM_B_WRn);
+      PIN_OAM_WR_A.set(_ZOFE_OAM_A_WRn);
+      PIN_OAM_WR_B.set(_ZONE_OAM_B_WRn);
 
       uint8_t oam_addr = pack_u8n(7, &BUS_OAM_An[1]);
 
@@ -4130,22 +4130,22 @@ void GateBoy::tock_slow() {
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
   {
-    PIN_CPU_EXT_CLKGOOD.setc(sys_clkgood);
-    PIN_CPU_STARTp.setc(_TABA_POR_TRIGn);
-    PIN_CPU_SYS_RSTp.setc(clk_reg.AFER_SYS_RSTp.qp13());
-    PIN_CPU_EXT_RST.setc(sys_rst);
-    PIN_CPU_UNOR_DBG.setc(_UNOR_MODE_DBG2p);
-    PIN_CPU_UMUT_DBG.setc(_UMUT_MODE_DBG1p);
-    PIN_CPU_ADDR_HIp.setc(_SYRO_FE00_FFFFp);
+    PIN_CPU_EXT_CLKGOOD.set(sys_clkgood);
+    PIN_CPU_STARTp.set(_TABA_POR_TRIGn);
+    PIN_CPU_SYS_RSTp.set(clk_reg.AFER_SYS_RSTp.qp13());
+    PIN_CPU_EXT_RST.set(sys_rst);
+    PIN_CPU_UNOR_DBG.set(_UNOR_MODE_DBG2p);
+    PIN_CPU_UMUT_DBG.set(_UMUT_MODE_DBG1p);
+    PIN_CPU_ADDR_HIp.set(_SYRO_FE00_FFFFp);
 
-    PIN_CPU_BOWA_Axxxxxxx.setc(_BOWA_xBCDEFGH);
-    PIN_CPU_BEDO_xBCDEFGH.setc(_BEDO_Axxxxxxx);
-    PIN_CPU_BEKO_ABCDxxxx.setc(_BEKO_ABCDxxxx);
-    PIN_CPU_BUDE_xxxxEFGH.setc(_BUDE_xxxxEFGH);
-    PIN_CPU_BOLO_ABCDEFxx.setc(_BOLO_ABCDEFxx);
-    PIN_CPU_BUKE_AxxxxxGH.setc(_BUKE_AxxxxxGH);
-    PIN_CPU_BOMA_xBCDEFGH.setc(_BOMA_xBCDEFGH);
-    PIN_CPU_BOGA_Axxxxxxx.setc(_BOGA_Axxxxxxx);
+    PIN_CPU_BOWA_Axxxxxxx.set(_BOWA_xBCDEFGH);
+    PIN_CPU_BEDO_xBCDEFGH.set(_BEDO_Axxxxxxx);
+    PIN_CPU_BEKO_ABCDxxxx.set(_BEKO_ABCDxxxx);
+    PIN_CPU_BUDE_xxxxEFGH.set(_BUDE_xxxxEFGH);
+    PIN_CPU_BOLO_ABCDEFxx.set(_BOLO_ABCDEFxx);
+    PIN_CPU_BUKE_AxxxxxGH.set(_BUKE_AxxxxxGH);
+    PIN_CPU_BOMA_xBCDEFGH.set(_BOMA_xBCDEFGH);
+    PIN_CPU_BOGA_Axxxxxxx.set(_BOGA_Axxxxxxx);
 
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13c(_BOGA_Axxxxxxx, _UPOJ_MODE_PRODn, clk_reg.ASOL_POR_DONEn.qp04());
 

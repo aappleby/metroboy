@@ -4708,8 +4708,8 @@ void GateBoy::tock_slow() {
     wire _PUKU = as_wire(pix_pipe.PUKU);
     wire _RYDY = as_wire(pix_pipe.RYDY);
 
-    /* p27.PUKU*/ pix_pipe.PUKU.setc(nor2(_NUNY_WX_MATCH_TRIGp, _RYDY));
-    /* p27.RYDY*/ pix_pipe.RYDY.setc(nor3(_PUKU, tile_fetcher.PORY_FETCH_DONE_P12.qp17_new(), _PYRY_VID_RSTp));
+    /* p27.PUKU*/ pix_pipe.PUKU.set(nor2(_NUNY_WX_MATCH_TRIGp, _RYDY));
+    /* p27.RYDY*/ pix_pipe.RYDY.set(nor3(_PUKU, tile_fetcher.PORY_FETCH_DONE_P12.qp17_new(), _PYRY_VID_RSTp));
   }
 
 
@@ -5288,17 +5288,17 @@ void GateBoy::tock_slow() {
     wire FFFF_HIT = cpu_bus_addr == 0xFFFF;
     wire FFFF_WRn = nand2(_TAPU_CPU_WRp_xxxxEFGx, FFFF_HIT);
 
-    IE_D0.dff_ff(FFFF_WRn, BUS_CPU_D[0]);
-    IE_D1.dff_ff(FFFF_WRn, BUS_CPU_D[1]);
-    IE_D2.dff_ff(FFFF_WRn, BUS_CPU_D[2]);
-    IE_D3.dff_ff(FFFF_WRn, BUS_CPU_D[3]);
-    IE_D4.dff_ff(FFFF_WRn, BUS_CPU_D[4]);
+    IE_D0.dff_pp(FFFF_WRn, BUS_CPU_D[0]);
+    IE_D1.dff_pp(FFFF_WRn, BUS_CPU_D[1]);
+    IE_D2.dff_pp(FFFF_WRn, BUS_CPU_D[2]);
+    IE_D3.dff_pp(FFFF_WRn, BUS_CPU_D[3]);
+    IE_D4.dff_pp(FFFF_WRn, BUS_CPU_D[4]);
 
-    IE_D0.dff_rs(!sys_rst);
-    IE_D1.dff_rs(!sys_rst);
-    IE_D2.dff_rs(!sys_rst);
-    IE_D3.dff_rs(!sys_rst);
-    IE_D4.dff_rs(!sys_rst);
+    IE_D0.dff_RSTn(!sys_rst);
+    IE_D1.dff_RSTn(!sys_rst);
+    IE_D2.dff_RSTn(!sys_rst);
+    IE_D3.dff_RSTn(!sys_rst);
+    IE_D4.dff_RSTn(!sys_rst);
   }
 
   //------------------------------------------------------------------------------
@@ -5877,9 +5877,9 @@ void GateBoy::tock_slow() {
     wire _RUJU = as_wire(pix_pipe.RUJU);
     wire _POFY = as_wire(pix_pipe.POFY);
 
-    /*#p24.POME*/ pix_pipe.POME.setc(nor2(_AVAP_RENDER_START_TRIGp, _POFY));
-    /*#p24.RUJU*/ pix_pipe.RUJU.setc(or3(pix_pipe.PAHO_X_8_SYNC.qp17_new(), _TOFU_VID_RSTp, _POME));
-    /*#p24.POFY*/ pix_pipe.POFY.setc(not1(_RUJU));
+    /*#p24.POME*/ pix_pipe.POME.set(nor2(_AVAP_RENDER_START_TRIGp, _POFY));
+    /*#p24.RUJU*/ pix_pipe.RUJU.set(or3(pix_pipe.PAHO_X_8_SYNC.qp17_new(), _TOFU_VID_RSTp, _POME));
+    /*#p24.POFY*/ pix_pipe.POFY.set(not1(_RUJU));
 
     /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(_POFY);
     PIN_LCD_HSYNC.pin_out(1, _RUZE_HSYNCn, _RUZE_HSYNCn);
@@ -5952,12 +5952,12 @@ void GateBoy::tock_slow() {
 
     {
       for (int i = 0; i < 159; i++) {
-        lcd_pipe_lo[i].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
-        lcd_pipe_hi[i].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+        lcd_pipe_lo[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
+        lcd_pipe_hi[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
       }
 
-      lcd_pipe_lo[159].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
-      lcd_pipe_hi[159].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
+      lcd_pipe_lo[159].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
+      lcd_pipe_hi[159].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
 
     }
 

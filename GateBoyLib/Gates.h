@@ -87,29 +87,29 @@ struct BitBase {
     return '1';
   }
 
-  uint8_t state = 0;
-};
-
-//-----------------------------------------------------------------------------
-
-struct Gate : public BitBase {
-  wire to_wire() const { return to_wire_old(); }
-
-  void setc(wire D) {
+  void set(wire D) {
     CHECK_N(state & BIT_LOCKED);
     state = BIT_LOCKED | BIT_DIRTY | uint8_t(D);
   }
-};
 
-//-----------------------------------------------------------------------------
-// Generic DFF
+  void dff_RSTn(wire RSTn) {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
 
-struct DFF : public BitBase {
-  wire qp() const { return  to_wire(); }
-  wire qn() const { return !to_wire(); }
+    if (!RSTn) { state &= ~BIT_DATA; }
+    state |= BIT_LOCKED;
+  }
+
+  void dff_SETn(wire SETn) {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    if (!SETn) { state |= BIT_DATA; }
+    state |= BIT_LOCKED;
+  }
 
   template<typename T>
-  void dff_ff(wire CLKp, T D) {
+  void dff_pp(wire CLKp, T Dp) {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
@@ -118,7 +118,7 @@ struct DFF : public BitBase {
     uint8_t cb = CLKp << 1;
 
     if (!ca && cb) {
-      state = (CLKp << 1) + as_wire(D);
+      state = (CLKp << 1) + as_wire(Dp);
     }
     else {
       state = (CLKp << 1) + qp;
@@ -126,13 +126,56 @@ struct DFF : public BitBase {
     state |= BIT_DIRTY;
   }
 
-  void dff_rs(wire RSTn) {
-    CHECK_P(state & BIT_DIRTY);
+  template<typename T>
+  void dff_nn(wire CLKn, T Dn) {
+    CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
-    if (!RSTn) { state &= ~BIT_DATA; }
-    state |= BIT_LOCKED;
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = (!CLKn) << 1;
+
+    if (!ca && cb) {
+      state = ((!CLKn) << 1) + !as_wire(Dn);
+    }
+    else {
+      state = ((!CLKn) << 1) + qp;
+    }
+    state |= BIT_DIRTY;
   }
+
+  template<typename T>
+  void dff_pn(wire CLKp, T Dn) {
+    CHECK_N(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!ca && cb) {
+      state = (CLKp << 1) + !as_wire(Dn);
+    }
+    else {
+      state = (CLKp << 1) + qp;
+    }
+    state |= BIT_DIRTY;
+  }
+
+  uint8_t state = 0;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Gate : public BitBase {
+};
+
+//-----------------------------------------------------------------------------
+// Generic DFF
+
+struct DFF : public BitBase {
+  wire qp() const { return  to_wire(); }
+  wire qn() const { return !to_wire(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -157,20 +200,8 @@ struct DFF8n : public BitBase {
 
   template<typename T>
   void dff8n_ff(wire CLKn, T Dn) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = (!CLKn) << 1;
-
-    if (!ca && cb) {
-      state = ((!CLKn) << 1) + !as_wire(Dn);
-    }
-    else {
-      state = ((!CLKn) << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+    dff_nn(CLKn, Dn);
+    state |= BIT_LOCKED;
   }
 };
 
@@ -196,20 +227,8 @@ struct DFF8p : public BitBase {
 
   template<typename T>
   void dff8p_ff(wire CLKp, T Dn) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = (CLKp << 1) + !as_wire(Dn);
-    }
-    else {
-      state = (CLKp << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+    dff_pn(CLKp, Dn);
+    state |= BIT_LOCKED;
   }
 };
 
@@ -237,20 +256,7 @@ struct DFF9 : public BitBase {
 
   template<typename T>
   void dff9_ff(wire CLKp, T Dn) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = (CLKp << 1) + !as_wire(Dn);
-    }
-    else {
-      state = (CLKp << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+    dff_pn(CLKp, Dn);
   }
 
   // FIXME the SETn here is slightly weird. too many inversions?
@@ -284,21 +290,8 @@ struct DFF11 : public BitBase {
   wire q11p_next() const { return to_wire_new(); }
 
   template<typename T>
-  void dff11_ff(wire CLKp, T D) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = (CLKp << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+  void dff11_ff(wire CLKp, T Dp) {
+    dff_pp(CLKp, Dp);
   }
 
   void dff11_rs(wire RSTn) {
@@ -331,21 +324,8 @@ struct DFF13 : public BitBase {
   wire qn12() const { return !to_wire_old(); }
   wire qp13() const { return  to_wire_old(); }
 
-  void dff13_ff(wire CLKp, wire D) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = (CLKp << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+  void dff13_ff(wire CLKp, wire Dp) {
+    dff_pp(CLKp, Dp);
   }
 
   void dff13_rs(wire RSTn) {
@@ -388,21 +368,8 @@ struct DFF17 : public BitBase {
   wire qn16_new() const { return !to_wire_new(); }
   wire qp17_new() const { return  to_wire_new(); }
 
-  void dff17_ff(wire CLKp, wire D) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = (CLKp << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+  void dff17_ff(wire CLKp, wire Dp) {
+    dff_pp(CLKp, Dp);
   }
 
   void dff17_rs(wire RSTn) {
@@ -521,21 +488,8 @@ struct DFF22 : public BitBase {
   wire qn15_next() const { return !to_wire_new(); }
   wire qp16_next() const { return  to_wire_new(); }
 
-  void dff22_ff(wire CLKp, wire D) {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = (CLKp << 1) + qp;
-    }
-    state |= BIT_DIRTY;
+  void dff22_ff(wire CLKp, wire Dp) {
+    dff_pp(CLKp, Dp);
   }
 
   void dff22_sr(wire SETn, wire RSTn) {

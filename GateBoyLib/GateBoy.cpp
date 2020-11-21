@@ -2035,9 +2035,9 @@ void GateBoy::tock_slow() {
     //----------------------------------------
     // VRAM pins
 
-    PinNP PIN_VRAM_CSn; // PIN_43
-    PinNP PIN_VRAM_OEn; // PIN_45
-    PinNP PIN_VRAM_WRn; // PIN_49
+    Pin2 PIN_VRAM_CSn; // PIN_43
+    Pin2 PIN_VRAM_OEn; // PIN_45
+    Pin2 PIN_VRAM_WRn; // PIN_49
 
     {
       /* p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and2(_SOSE_8000_9FFFp, _APOV_CPU_WRp_xxxxEFGx);
@@ -2056,7 +2056,7 @@ void GateBoy::tock_slow() {
       /* p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
       /* p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
 
-      PIN_VRAM_WRn.pin_out_hilo(1, _SYSY_MWRp_A, _RAGU_MWRp_D);
+      PIN_VRAM_WRn.pin_out(1, _SYSY_MWRp_A, _RAGU_MWRp_D);
 
       /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(_SALE_CPU_VRAM_WRn, _XANE_VRAM_LOCKn);
 
@@ -2071,7 +2071,7 @@ void GateBoy::tock_slow() {
       /* p25.REFO*/ wire _REFO_MOEn_A = not1(_SEMA_MOEn_A);
       /* p25.SAHA*/ wire _SAHA_MOEn_D = not1(_RUTE_MOEn_D);
 
-      PIN_VRAM_OEn.pin_out_hilo(1, _REFO_MOEn_A, _SAHA_MOEn_D);
+      PIN_VRAM_OEn.pin_out(1, _REFO_MOEn_A, _SAHA_MOEn_D);
 
       /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(_LENA_BGW_VRM_RDp,
                                            _LUFA_DMA_VRAMp,
@@ -2083,7 +2083,7 @@ void GateBoy::tock_slow() {
       /* p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
       /* p25.SETY*/ wire _SETY_MCSp_D = not1(_SEWO_MCSn_D);
 
-      PIN_VRAM_CSn.pin_out_hilo(1, _SOKY_MCSp_A, _SETY_MCSp_D);
+      PIN_VRAM_CSn.pin_out(1, _SOKY_MCSp_A, _SETY_MCSp_D);
     }
 
     //----------------------------------------
@@ -2822,9 +2822,6 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // OAM data out
 
-  /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp17(), _ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
-  /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(_SARO_FE00_FEFFp, _AJUJ_OAM_BUSYn); // def and
-
   {
     Bus2 BUS_OAM_An[8];
 
@@ -2890,6 +2887,9 @@ void GateBoy::tock_slow() {
 
     Bus2 BUS_OAM_DBn[8];
     Bus2 BUS_OAM_DAn[8];
+
+    /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp17(), _ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
+    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(_SARO_FE00_FEFFp, _AJUJ_OAM_BUSYn); // def and
 
     {
       /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp = and2(_SARO_FE00_FEFFp, _CUPA_CPU_WRp_xxxxEFGx);
@@ -3848,16 +3848,16 @@ void GateBoy::tock_slow() {
     //----------
     // Serial pins
 
-    /* PIN_68 */ PinNP PIN_SCK;
-    /* PIN_69 */ PinNP PIN_SIN;
-    /* PIN_70 */ PinNP PIN_SOUT;
+    /* PIN_68 */ Pin2 PIN_SCK;
+    /* PIN_69 */ Pin2 PIN_SIN;
+    /* PIN_70 */ Pin2 PIN_SOUT;
 
     /* p06.KEXU*/ wire _KEXU = nand2(ser_reg.COTY_SER_CLK.qp17(), ser_reg.CULY_XFER_DIR.qp17());
     /* p06.KUJO*/ wire _KUJO = nor2 (ser_reg.COTY_SER_CLK.qp17(), /* p06.JAGO*/ not1(ser_reg.CULY_XFER_DIR.qp17()));
 
     // FIXME this doesn't look right
-    /* p06.KEXU*/ PIN_SCK.pin_out_hilo(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17());
-    /* p05.KENA*/ PIN_SOUT.pin_out_hilo(1, ser_reg.ELYS_SER_OUT.qp17(), ser_reg.ELYS_SER_OUT.qp17());
+    /* p06.KEXU*/ PIN_SCK.pin_out(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17());
+    /* p05.KENA*/ PIN_SOUT.pin_out(1, ser_reg.ELYS_SER_OUT.qp17(), ser_reg.ELYS_SER_OUT.qp17());
 
     /* p06.SANO*/ wire _SANO_ADDR_FF00_FF03 = and3(_SARE_XX00_XX07p, _SEFY_A02n, _SYKE_FF00_FFFFp);
     /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx, _SANO_ADDR_FF00_FF03, BUS_CPU_A[ 0], _TOLA_A01n);
@@ -3909,7 +3909,7 @@ void GateBoy::tock_slow() {
     }
 
     {
-      /* hack */    PIN_SIN.pin_out_hilo(1, 1, 1);
+      /* hack */    PIN_SIN.pin_out(1, 1, 1);
       /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(PIN_SIN.qn());
       /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
       /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
@@ -4175,14 +4175,8 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // Pixel merge + emit
 
-  /*PIN_50*/ PinNP PIN_LCD_DATA1;
-  /*PIN_51*/ PinNP PIN_LCD_DATA0;
-  /*PIN_52*/ PinNP PIN_LCD_CNTRL;
-  /*PIN_53*/ PinNP PIN_LCD_CLOCK;
-  /*PIN_54*/ PinNP PIN_LCD_HSYNC;
-  /*PIN_55*/ PinNP PIN_LCD_LATCH;
-  /*PIN_56*/ PinNP PIN_LCD_FLIPS;
-  /*PIN_57*/ PinNP PIN_LCD_VSYNC;
+  /*PIN_50*/ Pin2 PIN_LCD_DATA1;
+  /*PIN_51*/ Pin2 PIN_LCD_DATA0;
 
   {
     /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp  = and2(pix_pipe.PYBO_BG_PIPE_A7.qp16(), pix_pipe.VYXE_LCDC_BGENn.qn08());
@@ -4288,8 +4282,8 @@ void GateBoy::tock_slow() {
     //lcd_data1_delay.set(_RAVO_LD1n);
 
     // so q1 works but q2 has tiny errors? wat?
-    PIN_LCD_DATA0.pin_out_hilo(1, /*lcd_data0_delay.q1()*/ _REMY_LD0n, /*lcd_data0_delay.q1()*/ _REMY_LD0n);
-    PIN_LCD_DATA1.pin_out_hilo(1, /*lcd_data1_delay.q1()*/ _RAVO_LD1n, /*lcd_data1_delay.q1()*/ _RAVO_LD1n);
+    PIN_LCD_DATA0.pin_out(1, /*lcd_data0_delay.q1()*/ _REMY_LD0n, /*lcd_data0_delay.q1()*/ _REMY_LD0n);
+    PIN_LCD_DATA1.pin_out(1, /*lcd_data1_delay.q1()*/ _RAVO_LD1n, /*lcd_data1_delay.q1()*/ _RAVO_LD1n);
   }
 
   //------------------------------------------------------------------------------
@@ -4331,42 +4325,7 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // LCD pins that are controlled by the pixel counter
 
-  {
-    /*#p21.XAJO*/ wire _XAJO_X_009p = and2(pix_pipe.XEHO_X0p.qp17(), pix_pipe.XYDO_X3p.qp17());
-
-    /*#p21.WUSA*/ pix_pipe.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, _WEGO_HBLANKp);
-
-    /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(pix_pipe.WUSA_LCD_CLOCK_GATE.qp04(), _SACU_CLKPIPEp);
-    /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, _POVA_FINE_MATCHpe);
-    /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
-
-
-    PIN_LCD_CLOCK.pin_out_hilo(1, _RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
-  }
-
-  {
-    // LCD horizontal sync pin latch
-
-    // FIXME inversion
-    // I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
-    // seems to be correct and makes it match the trace. With that change, HSYNC is 30 phases.
-    // Is it possible that it should be 29 phases and it only looks like 30 phases because of gate delay?
-    // That would be a loooot of gate delay.
-    // Could we possibly be incrementing X3p one phase early?
-
-    wire _POME = as_wire(pix_pipe.POME);
-    wire _RUJU = as_wire(pix_pipe.RUJU);
-    wire _POFY = as_wire(pix_pipe.POFY);
-
-    /*#p24.POME*/ pix_pipe.POME.setc(nor2(_AVAP_RENDER_START_TRIGp, _POFY));
-    /*#p24.RUJU*/ pix_pipe.RUJU.setc(or3(pix_pipe.PAHO_X_8_SYNC.qp17(), _TOFU_VID_RSTp, _POME));
-    /*#p24.POFY*/ pix_pipe.POFY.setc(not1(_RUJU));
-
-    /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(_POFY);
-    PIN_LCD_HSYNC.pin_out_hilo(1, _RUZE_HSYNCn, _RUZE_HSYNCn);
-
-    /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17c(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.XYDO_X3p.qp17());
-  }
+  /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17c(_ROXO_CLKPIPEp, pix_pipe.XYMU_RENDERINGn.qn03(), pix_pipe.XYDO_X3p.qp17());
 
   //----------------------------------------
   // Fine counter.
@@ -5172,58 +5131,29 @@ void GateBoy::tock_slow() {
   //------------------------------------------------------------------------------
   // lcd_reg.tock();
 
+  {
+    /*#p24.LOFU*/ wire _LOFU_LINE_ENDn = not1(lcd_reg.RUTU_LINE_P910.qp17_next());
+    /*#p24.LUCA*/ lcd_reg.LUCA_LINE_EVEN .dff17c(_LOFU_LINE_ENDn,                     _LYFE_LCD_RSTn, lcd_reg.LUCA_LINE_EVEN.qn16());
+    /*#p21.NAPO*/ lcd_reg.NAPO_FRAME_EVEN.dff17c(lcd_reg.POPU_IN_VBLANKp.qp17_next(), _LYFE_LCD_RSTn, lcd_reg.NAPO_FRAME_EVEN.qn16());
+
+    /*#p21.TOCU*/ wire _TOCU_C0n = not1(lcd_reg.SAXO_X0p.qp17());
+    /*#p21.VEPE*/ wire _VEPE_C1n = not1(lcd_reg.TYPO_X1p.qp17());
+    /* p21.VUTY*/ wire _VUTY_C2n = not1(lcd_reg.VYZO_X2p.qp17());
+    /* p21.VATE*/ wire _VATE_C3n = not1(lcd_reg.TELU_X3p.qp17());
+    /* p21.TUDA*/ wire _TUDA_C4n = not1(lcd_reg.SUDE_X4p.qp17());
+    /* p21.TAFY*/ wire _TAFY_C5n = not1(lcd_reg.TAHA_X5p.qp17());
+    /* p21.TUJU*/ wire _TUJU_C6n = not1(lcd_reg.TYRY_X6p.qp17());
+
+    /* p21.VOKU*/ wire _VOKU_000n = nand7(_TUJU_C6n,       _TAFY_C5n,       _TUDA_C4n,       _VATE_C3n,       _VUTY_C2n,       _VEPE_C1n,       _TOCU_C0n);       // 0000000 == 0
+    /* p21.TOZU*/ wire _TOZU_007n = nand7(_TUJU_C6n,       _TAFY_C5n,       _TUDA_C4n,       _VATE_C3n,       lcd_reg.VYZO_X2p.qp17(), lcd_reg.TYPO_X1p.qp17(), lcd_reg.SAXO_X0p.qp17()); // 0000111 == 7
+    /* p21.TECE*/ wire _TECE_045n = nand7(_TUJU_C6n,       lcd_reg.TAHA_X5p.qp17(), _TUDA_C4n,       lcd_reg.TELU_X3p.qp17(), lcd_reg.VYZO_X2p.qp17(), _VEPE_C1n,       lcd_reg.SAXO_X0p.qp17()); // 0101101 == 45
+    /*#p21.TEBO*/ wire _TEBO_083n = nand7(lcd_reg.TYRY_X6p.qp17(), _TAFY_C5n,       lcd_reg.SUDE_X4p.qp17(), _VATE_C3n,       _VUTY_C2n,       lcd_reg.TYPO_X1p.qp17(), lcd_reg.SAXO_X0p.qp17()); // 1010011 == 83
+    /*#p21.TEGY*/ wire _TEGY_LINE_STROBE = nand4(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
+    /*#p21.SYGU*/ lcd_reg.SYGU_LINE_STROBE.dff17c(_SONO_ABxxxxGH, _LYFE_LCD_RSTn, _TEGY_LINE_STROBE);
+  }
+
 
   {
-    {
-      // if LCDC_ENn, LCD_PIN_ALTSG = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
-
-      /*#p24.MAGU*/ wire _MAGU = xor2(lcd_reg.NAPO_FRAME_EVEN.qp17(), lcd_reg.LUCA_LINE_EVEN.qn16());
-      /*#p24.MECO*/ wire _MECO = not1(_MAGU);
-      /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
-      /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn08());
-      /*#p24.USEC*/ wire _USEC_DIV_07p = not1(_UREK_DIV_07n);
-      /*#p24.KUPA*/ wire _KUPA = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08(), _KEBO, _KEDY_LCDC_ENn, _USEC_DIV_07p);
-      /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
-
-      PIN_LCD_FLIPS.pin_out_hilo(1, _KOFO, _KOFO);
-
-      /*#p24.LOFU*/ wire _LOFU_LINE_ENDn = not1(lcd_reg.RUTU_LINE_P910.qp17_next());
-      /*#p24.LUCA*/ lcd_reg.LUCA_LINE_EVEN .dff17c(_LOFU_LINE_ENDn,                     _LYFE_LCD_RSTn, lcd_reg.LUCA_LINE_EVEN.qn16());
-      /*#p21.NAPO*/ lcd_reg.NAPO_FRAME_EVEN.dff17c(lcd_reg.POPU_IN_VBLANKp.qp17_next(), _LYFE_LCD_RSTn, lcd_reg.NAPO_FRAME_EVEN.qn16());
-    }
-
-    {
-      /*#p21.TOCU*/ wire _TOCU_C0n = not1(lcd_reg.SAXO_X0p.qp17());
-      /*#p21.VEPE*/ wire _VEPE_C1n = not1(lcd_reg.TYPO_X1p.qp17());
-      /* p21.VUTY*/ wire _VUTY_C2n = not1(lcd_reg.VYZO_X2p.qp17());
-      /* p21.VATE*/ wire _VATE_C3n = not1(lcd_reg.TELU_X3p.qp17());
-      /* p21.TUDA*/ wire _TUDA_C4n = not1(lcd_reg.SUDE_X4p.qp17());
-      /* p21.TAFY*/ wire _TAFY_C5n = not1(lcd_reg.TAHA_X5p.qp17());
-      /* p21.TUJU*/ wire _TUJU_C6n = not1(lcd_reg.TYRY_X6p.qp17());
-
-      /* p21.VOKU*/ wire _VOKU_000n = nand7(_TUJU_C6n,       _TAFY_C5n,       _TUDA_C4n,       _VATE_C3n,       _VUTY_C2n,       _VEPE_C1n,       _TOCU_C0n);       // 0000000 == 0
-      /* p21.TOZU*/ wire _TOZU_007n = nand7(_TUJU_C6n,       _TAFY_C5n,       _TUDA_C4n,       _VATE_C3n,       lcd_reg.VYZO_X2p.qp17(), lcd_reg.TYPO_X1p.qp17(), lcd_reg.SAXO_X0p.qp17()); // 0000111 == 7
-      /* p21.TECE*/ wire _TECE_045n = nand7(_TUJU_C6n,       lcd_reg.TAHA_X5p.qp17(), _TUDA_C4n,       lcd_reg.TELU_X3p.qp17(), lcd_reg.VYZO_X2p.qp17(), _VEPE_C1n,       lcd_reg.SAXO_X0p.qp17()); // 0101101 == 45
-      /*#p21.TEBO*/ wire _TEBO_083n = nand7(lcd_reg.TYRY_X6p.qp17(), _TAFY_C5n,       lcd_reg.SUDE_X4p.qp17(), _VATE_C3n,       _VUTY_C2n,       lcd_reg.TYPO_X1p.qp17(), lcd_reg.SAXO_X0p.qp17()); // 1010011 == 83
-
-      /*#p21.TEGY*/ wire _TEGY_LINE_STROBE = nand4(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
-      /*#p21.SYGU*/ lcd_reg.SYGU_LINE_STROBE.dff17c(_SONO_ABxxxxGH, _LYFE_LCD_RSTn, _TEGY_LINE_STROBE);
-      /*#p21.RYNO*/ wire _RYNO = or2(lcd_reg.SYGU_LINE_STROBE.qp17_next(), lcd_reg.RUTU_LINE_P910.qp17_next());
-      /*#p21.POGU*/ wire _POGU = not1(_RYNO);
-      PIN_LCD_CNTRL.pin_out_hilo(1, _POGU, _POGU);
-    }
-
-    {
-
-      /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(_PURE_LINE_P908n);
-
-      /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(_UMEK_DIV_06n);
-      /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn08());
-      /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
-      /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1(_KAHE_LINE_ENDp);
-      PIN_LCD_LATCH.pin_out_hilo(1, _KYMO_LINE_ENDn, _KYMO_LINE_ENDn);
-    }
-
     // ly match
     {
       /* p21.RYME*/ wire _RYME_LY_MATCH0n = xor2(lcd_reg.MUWY_Y0p.qp17(), lcd_reg.SYRY_LYC0n.qn08());
@@ -5285,12 +5215,6 @@ void GateBoy::tock_slow() {
     }
   }
 
-  // LCD vertical sync pin
-  {
-    /*#p24.MURE*/ wire _MURE_VSYNC = not1(lcd_reg.MEDA_VSYNC_OUTn.qp17_next());
-    /*#*/ PIN_LCD_VSYNC.pin_out_hilo(1, _MURE_VSYNC, _MURE_VSYNC);
-  }
-
   //----------------------------------------
 
   {
@@ -5315,49 +5239,112 @@ void GateBoy::tock_slow() {
   //------------------------------------------------------------------------------
   // LCD pixel pipe
 
-  if (!old_lcd_clock && PIN_LCD_CLOCK.qp()) {
-    gb_screen_x++;
-  }
-  if (PIN_LCD_HSYNC.qp() || PIN_LCD_LATCH.qp()) {
-    gb_screen_x = 0;
-  }
-
-  lcd_pix_lo.nor_latch(PIN_LCD_DATA0.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
-  lcd_pix_hi.nor_latch(PIN_LCD_DATA1.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
-
-  if (!old_lcd_latch && PIN_LCD_LATCH.qp()) {
-    if (gb_screen_y < 144) {
-      for (int x = 0; x < 159; x++) {
-        uint8_t p0 = lcd_pipe_lo[x + 1].qp();
-        uint8_t p1 = lcd_pipe_hi[x + 1].qp();
-        framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
-      }
-      {
-        uint8_t p0 = lcd_pix_lo.qp04();
-        uint8_t p1 = lcd_pix_hi.qp04();
-        framebuffer[159 + gb_screen_y * 160] = p0 + p1 * 2;
-      }
-    }
-
-    gb_screen_y++;
-    if (PIN_LCD_VSYNC.qp()) {
-      gb_screen_y = 0;
-    }
-  }
-
   {
-    for (int i = 0; i < 159; i++) {
-      lcd_pipe_lo[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
-      lcd_pipe_hi[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+    /*PIN_52*/ Pin2 PIN_LCD_CNTRL;
+    /*PIN_54*/ Pin2 PIN_LCD_HSYNC;
+    /*PIN_55*/ Pin2 PIN_LCD_LATCH;
+    /*PIN_56*/ Pin2 PIN_LCD_FLIPS;
+
+    // LCD horizontal sync pin latch
+
+    // FIXME inversion
+    // I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
+    // seems to be correct and makes it match the trace. With that change, HSYNC is 30 phases.
+    // Is it possible that it should be 29 phases and it only looks like 30 phases because of gate delay?
+    // That would be a loooot of gate delay.
+    // Could we possibly be incrementing X3p one phase early?
+
+    wire _POME = as_wire(pix_pipe.POME);
+    wire _RUJU = as_wire(pix_pipe.RUJU);
+    wire _POFY = as_wire(pix_pipe.POFY);
+
+    /*#p24.POME*/ pix_pipe.POME.setc(nor2(_AVAP_RENDER_START_TRIGp, _POFY));
+    /*#p24.RUJU*/ pix_pipe.RUJU.setc(or3(pix_pipe.PAHO_X_8_SYNC.qp17_next(), _TOFU_VID_RSTp, _POME));
+    /*#p24.POFY*/ pix_pipe.POFY.setc(not1(_RUJU));
+
+    /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(_POFY);
+    PIN_LCD_HSYNC.pin_out(1, _RUZE_HSYNCn, _RUZE_HSYNCn);
+
+    // if LCDC_ENn, LCD_PIN_ALTSG = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
+
+    /*#p24.MAGU*/ wire _MAGU = xor2(lcd_reg.NAPO_FRAME_EVEN.qp17_next(), lcd_reg.LUCA_LINE_EVEN.qn16_next());
+    /*#p24.MECO*/ wire _MECO = not1(_MAGU);
+    /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
+    /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn08_next());
+    /*#p24.USEC*/ wire _USEC_DIV_07p = not1(_UREK_DIV_07n);
+    /*#p24.KUPA*/ wire _KUPA = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08_next(), _KEBO, _KEDY_LCDC_ENn, _USEC_DIV_07p);
+    /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
+
+    PIN_LCD_FLIPS.pin_out(1, _KOFO, _KOFO);
+
+
+
+    /*#p21.RYNO*/ wire _RYNO = or2(lcd_reg.SYGU_LINE_STROBE.qp17_next(), lcd_reg.RUTU_LINE_P910.qp17_next());
+    /*#p21.POGU*/ wire _POGU = not1(_RYNO);
+    PIN_LCD_CNTRL.pin_out(1, _POGU, _POGU);
+
+    /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(_PURE_LINE_P908n);
+    /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(_UMEK_DIV_06n);
+    /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08_next(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
+    /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1(_KAHE_LINE_ENDp);
+    PIN_LCD_LATCH.pin_out(1, _KYMO_LINE_ENDn, _KYMO_LINE_ENDn);
+
+    /*PIN_53*/ Pin2 PIN_LCD_CLOCK;
+    /*#p21.XAJO*/ wire _XAJO_X_009p = and2(pix_pipe.XEHO_X0p.qp17_next(), pix_pipe.XYDO_X3p.qp17_next());
+    /*#p21.WUSA*/ pix_pipe.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, _WEGO_HBLANKp);
+    /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(pix_pipe.WUSA_LCD_CLOCK_GATE.qp04(), _SACU_CLKPIPEp);
+    /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, _POVA_FINE_MATCHpe);
+    /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
+    PIN_LCD_CLOCK.pin_out(1, _RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
+
+    /*PIN_57*/ Pin2 PIN_LCD_VSYNC;
+    /*#p24.MURE*/ wire _MURE_VSYNC = not1(lcd_reg.MEDA_VSYNC_OUTn.qp17_next());
+    /*#*/ PIN_LCD_VSYNC.pin_out(1, _MURE_VSYNC, _MURE_VSYNC);
+
+    if (!old_lcd_clock && PIN_LCD_CLOCK.qp()) {
+      gb_screen_x++;
+    }
+    if (PIN_LCD_HSYNC.qp() || PIN_LCD_LATCH.qp()) {
+      gb_screen_x = 0;
     }
 
-    lcd_pipe_lo[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
-    lcd_pipe_hi[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
+    lcd_pix_lo.nor_latch(PIN_LCD_DATA0.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
+    lcd_pix_hi.nor_latch(PIN_LCD_DATA1.qp(), PIN_LCD_CLOCK.qp() | PIN_LCD_HSYNC.qp());
 
+    if (!old_lcd_latch && PIN_LCD_LATCH.qp()) {
+      if (gb_screen_y < 144) {
+        for (int x = 0; x < 159; x++) {
+          uint8_t p0 = lcd_pipe_lo[x + 1].qp();
+          uint8_t p1 = lcd_pipe_hi[x + 1].qp();
+          framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
+        }
+        {
+          uint8_t p0 = lcd_pix_lo.qp04();
+          uint8_t p1 = lcd_pix_hi.qp04();
+          framebuffer[159 + gb_screen_y * 160] = p0 + p1 * 2;
+        }
+      }
+
+      gb_screen_y++;
+      if (PIN_LCD_VSYNC.qp()) {
+        gb_screen_y = 0;
+      }
+    }
+
+    {
+      for (int i = 0; i < 159; i++) {
+        lcd_pipe_lo[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
+        lcd_pipe_hi[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+      }
+
+      lcd_pipe_lo[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
+      lcd_pipe_hi[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
+
+    }
+
+    old_lcd_clock = PIN_LCD_CLOCK.qp();
+    old_lcd_latch = PIN_LCD_LATCH.qp();
   }
-
-  old_lcd_clock = PIN_LCD_CLOCK.qp();
-  old_lcd_latch = PIN_LCD_LATCH.qp();
 
   //------------------------------------------------------------------------------
   // Latch stuff for CPU

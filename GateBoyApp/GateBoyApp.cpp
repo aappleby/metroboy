@@ -45,7 +45,7 @@ void GateBoyApp::app_init() {
   const char* app = R"(
   0150:
     ld a, $55
-    ld hl, $c003
+    ld hl, $8000
     ld (hl), a
     jr -3
   )";
@@ -59,45 +59,52 @@ void GateBoyApp::app_init() {
 
 #if 0
   // regenerate post-bootrom dump
-  reset_to_bootrom();
-#endif
-
   gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
   }
+#endif
+
 
 #if 0
   // run tiny app
   if (1) {
-    std::string app;
-    app += "0150:\n";
+    std::string app = R"(
+    0150:
+      ld a, $00
+      ldh ($40), a
+      ld a, $73
+      ld hl, $8000
+      ld (hl), a
+      ld hl, $809F
+      ld (hl), a
 
-    app += "ld a, $00\n";
-    app += "ldh ($40), a\n";
-    app += "ld a, $73\n";
-    app += "ld hl, $8000\n";
-    app += "ld (hl), a\n";
-    app += "ld hl, $809F\n";
-    app += "ld (hl), a\n";
+      ld hl, $FF80
+      ld a, $E0
+      ld (hl+), a
+      ld a, $46
+      ld (hl+), a
+      ld a, $3E
+      ld (hl+), a
+      ld a, $28
+      ld (hl+), a
+      ld a, $3D
+      ld (hl+), a
+      ld a, $20
+      ld (hl+), a
+      ld a, $FD
+      ld (hl+), a
+      ld a, $C9
+      ld (hl+), a
 
-    app += "ld hl, $FF80\n";
-    app += "ld a, $E0\n"; app += "ld (hl+), a\n";
-    app += "ld a, $46\n"; app += "ld (hl+), a\n";
-    app += "ld a, $3E\n"; app += "ld (hl+), a\n";
-    app += "ld a, $28\n"; app += "ld (hl+), a\n";
-    app += "ld a, $3D\n"; app += "ld (hl+), a\n";
-    app += "ld a, $20\n"; app += "ld (hl+), a\n";
-    app += "ld a, $FD\n"; app += "ld (hl+), a\n";
-    app += "ld a, $C9\n"; app += "ld (hl+), a\n";
+      ld a, $80
+      call $ff80
 
-    app += "ld a, $80\n";
-    app += "call $ff80\n";
-
-    app += "ld a, $00\n";
-    app += "ld hl, $8000\n";
-    app += "add (hl)\n";
-    app += "jr -2\n";
+      ld a, $00
+      ld hl, $8000
+      add (hl)
+      jr -2
+    )";
 
     Assembler as;
     as.assemble(app.c_str());
@@ -414,6 +421,7 @@ void dump_ext_bus(Dumper& d, const ExtBus& ext_bus) {
 void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
   d("\002===== VRAM Bus =====\001\n");
 
+  /*
   d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     pack_u16n(13, &vram_bus.BUS_VRAM_A00n) | 0x8000,
     vram_bus.BUS_VRAM_A12n.c(), vram_bus.BUS_VRAM_A11n.c(), vram_bus.BUS_VRAM_A10n.c(), vram_bus.BUS_VRAM_A09n.c(),
@@ -436,6 +444,7 @@ void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
     vram_bus.PIN_VRAM_D07p.c(), vram_bus.PIN_VRAM_D06p.c(), vram_bus.PIN_VRAM_D05p.c(), vram_bus.PIN_VRAM_D04p.c(),
     vram_bus.PIN_VRAM_D03p.c(), vram_bus.PIN_VRAM_D02p.c(), vram_bus.PIN_VRAM_D01p.c(), vram_bus.PIN_VRAM_D00p.c());
   d("\n");
+  */
 
   d("TILE_DA       : 0x%02x\n", pack_u8n(8, &vram_bus.LEGU_TILE_DA0n));
   d("TILE_DB       : 0x%02x\n", pack_u8 (8, &vram_bus.RAWU_TILE_DB0p));

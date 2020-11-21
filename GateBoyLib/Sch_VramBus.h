@@ -117,64 +117,6 @@ struct VramBus {
   /*p33.SEMO*/ DFF8n SEMO_SPRITE_DA6n;
   /*p33.SEGA*/ DFF8n SEGA_SPRITE_DA7n;
 
-  //----------------------------------------
-  // BUS_VRAM_D* must _not_ be inverting, see CBD->VBD->VPD chain
-
-  // FIXME not sure if this is actually pulled up or not
-
-  BusPU BUS_VRAM_D0p;
-  BusPU BUS_VRAM_D1p;
-  BusPU BUS_VRAM_D2p;
-  BusPU BUS_VRAM_D3p;
-  BusPU BUS_VRAM_D4p;
-  BusPU BUS_VRAM_D5p;
-  BusPU BUS_VRAM_D6p;
-  BusPU BUS_VRAM_D7p;
-
-  BusPU BUS_VRAM_A00n; // This bus isn't driven between tile fetches while rendering; where's the pullup?
-  BusPU BUS_VRAM_A01n;
-  BusPU BUS_VRAM_A02n;
-  BusPU BUS_VRAM_A03n;
-  BusPU BUS_VRAM_A04n;
-  BusPU BUS_VRAM_A05n;
-  BusPU BUS_VRAM_A06n;
-  BusPU BUS_VRAM_A07n;
-  BusPU BUS_VRAM_A08n;
-  BusPU BUS_VRAM_A09n;
-  BusPU BUS_VRAM_A10n;
-  BusPU BUS_VRAM_A11n;
-  BusPU BUS_VRAM_A12n;
-
-  //----------------------------------------
-  // VRAM pins
-
-  PinNP PIN_VRAM_CSn ; // PIN_43
-  PinNP PIN_VRAM_OEn ; // PIN_45
-  PinNP PIN_VRAM_WRn ; // PIN_49
-
-  PinNP PIN_VRAM_A00p; // PIN_34
-  PinNP PIN_VRAM_A01p; // PIN_35
-  PinNP PIN_VRAM_A02p; // PIN_36
-  PinNP PIN_VRAM_A03p; // PIN_37
-  PinNP PIN_VRAM_A04p; // PIN_38
-  PinNP PIN_VRAM_A05p; // PIN_39
-  PinNP PIN_VRAM_A06p; // PIN_40
-  PinNP PIN_VRAM_A07p; // PIN_41
-  PinNP PIN_VRAM_A08p; // PIN_48
-  PinNP PIN_VRAM_A09p; // PIN_47
-  PinNP PIN_VRAM_A10p; // PIN_44
-  PinNP PIN_VRAM_A11p; // PIN_46
-  PinNP PIN_VRAM_A12p; // PIN_42
-
-  PinPU PIN_VRAM_D00p; // PIN_33 // This pin isn't driven between tile fetches while rendering; where's the pullup?
-  PinPU PIN_VRAM_D01p; // PIN_31
-  PinPU PIN_VRAM_D02p; // PIN_30
-  PinPU PIN_VRAM_D03p; // PIN_29
-  PinPU PIN_VRAM_D04p; // PIN_28
-  PinPU PIN_VRAM_D05p; // PIN_27
-  PinPU PIN_VRAM_D06p; // PIN_26
-  PinPU PIN_VRAM_D07p; // PIN_25
-
   //DelayGlitch latch_sprite_a_delay;
   //DelayGlitch latch_sprite_b_delay;
 };

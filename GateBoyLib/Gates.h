@@ -607,8 +607,8 @@ struct TriBase : public BitBase {
 
 // Must be NP - see KOVA/KEJO
 
-// tri_6nn : top rung tadpole _not_ facing second rung dot.
-// tri_6pn : top rung tadpole facing second rung dot.
+// tri6_nn : top rung tadpole _not_ facing second rung dot.
+// tri6_pn : top rung tadpole facing second rung dot.
 
 struct BusNP : public TriBase {
   BusNP() { state = 0; }
@@ -618,10 +618,10 @@ struct BusNP : public TriBase {
   }
 
   template<typename T>
-  void tri_6pn(wire OEp, wire Dn) { tri(OEp, !as_wire(Dn));}
+  void tri6_pn(wire OEp, wire Dn) { tri(OEp, !as_wire(Dn));}
 
   template<typename T>
-  void tri_6nn(wire OEn, T Dn) { tri(!OEn, !as_wire(Dn)); }
+  void tri6_nn(wire OEn, T Dn) { tri(!OEn, !as_wire(Dn)); }
 
   template<typename T>
   void tri10_np(wire OEn, T D) { tri(!OEn, D); }
@@ -637,14 +637,88 @@ struct BusPU : public TriBase {
   }
 
   void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
-  void tri_6nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
-  void tri_6pn(wire OEp, wire Dn) { tri(OEp, !Dn);}
+  void tri6_nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }
+  void tri6_pn(wire OEp, wire Dn) { tri(OEp, !Dn);}
 
   template<typename T>
-  void tri_6nn(wire OEn, T Dn) { tri(!OEn, !as_wire(Dn)); }
+  void tri6_nn(wire OEn, T Dn) { tri(!OEn, !as_wire(Dn)); }
 
   template<typename T>
   void tri10_np(wire OEn, T D) { tri(!OEn, D); }
+};
+
+//-----------------------------------------------------------------------------
+// Bus with pull-up, testing new stuff.
+
+struct VramBus2 : public BitBase {
+
+  void tri(wire OEp, wire Dp) {
+    CHECK_N(state & BIT_LOCKED);
+    if (OEp) {
+#if _DEBUG
+      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != Dp);
+#endif
+      state |= BIT_DRIVEN;
+      state |= uint8_t(Dp);
+    }
+    state |= BIT_DIRTY;
+  }
+
+  wire to_wire() {
+    CHECK_P(state & BIT_DIRTY);
+    state |= BIT_LOCKED;
+    return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
+  }
+
+  template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire(Dn) : 0); }
+  template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire(Dn) : 0); }
+  template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire(Dp) : 0); }
+
+private:
+  static void * operator new(std::size_t);
+  static void * operator new [] (std::size_t);
+};
+
+//-----------------------------------------------------------------------------
+
+struct VramPin2 : public BitBase {
+  void tri(wire OEp, wire Dp) {
+    CHECK_N(state & BIT_LOCKED);
+    if (OEp) {
+#if _DEBUG
+      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != Dp);
+#endif
+      state |= BIT_DRIVEN;
+      state |= uint8_t(Dp);
+    }
+    state |= BIT_DIRTY;
+  }
+
+  wire to_wire() {
+    CHECK_P(state & BIT_DIRTY);
+    state |= BIT_LOCKED;
+    return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
+  }
+
+  wire qp() { return  to_wire(); }
+  wire qn() { return !to_wire(); }
+
+  void setc(wire D) {
+    tri(1, D);
+  }
+
+  void pin_in(wire OEp, wire D) {
+    tri(OEp, D);
+  }
+
+  void pin_out(wire OEp, wire HI, wire LO) {
+    if      (!OEp)       tri(0, wire(0));
+    else if ( HI &&  LO) tri(1, wire(0));
+    else if (!HI && !LO) tri(1, wire(1));
+    else if ( HI && !LO) tri(0, wire(0));
+    else                 CHECK_P(false);
+  }
+
 };
 
 //-----------------------------------------------------------------------------

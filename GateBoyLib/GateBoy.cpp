@@ -243,7 +243,7 @@ void GateBoy::run_reset_sequence(bool fastboot) {
 
   // Wait for PIN_CPU_START
   //LOG_B("Wait for PIN_CPU_START\n");
-  while(!cpu_bus.PIN_CPU_STARTp.qp()) {
+  while(!sys_cpu_start) {
     run(8);
   }
 
@@ -439,6 +439,36 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
+  //-----------------------------------------------------------------------------
+  // CPU-to-SOC control signals
+
+  Signal PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
+  Signal PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  Signal PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Signal PIN_CPU_WRp;           // top right port PORTA_01: ->
+  Signal PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
+
+  //-----------------------------------------------------------------------------
+  // SOC-to-CPU control signals
+
+  PinNP PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  PinNP PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
+  PinNP PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
+  PinNP PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
+  PinNP PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  PinNP PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  PinNP PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  PinNP PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  PinNP PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: // this is the "put address on bus" clock
+  PinNP PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02:
+  PinNP PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: // this is the "reset for next cycle" clock
+  PinNP PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: // this is the "put write data on bus" clock
+  PinNP PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05:
+  PinNP PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: // this is probably the "latch bus data" clock
+  // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
+  PinNP PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: (RESET_CLK)
+  PinNP PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
+
   Signal BUS_CPU_A[16];
   BusPU  BUS_CPU_D[8];
 
@@ -483,12 +513,12 @@ void GateBoy::tock_slow() {
   // PIN_CPU_RDp / PIN_CPU_WRp
   {
     if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      cpu_bus.PIN_CPU_RDp.setc(bus_req.read);
-      cpu_bus.PIN_CPU_WRp.setc(bus_req.write);
+      PIN_CPU_RDp.setc(bus_req.read);
+      PIN_CPU_WRp.setc(bus_req.write);
     }
     else {
-      cpu_bus.PIN_CPU_RDp.setc(0);
-      cpu_bus.PIN_CPU_WRp.setc(0);
+      PIN_CPU_RDp.setc(0);
+      PIN_CPU_WRp.setc(0);
     }
   }
 
@@ -496,14 +526,14 @@ void GateBoy::tock_slow() {
   {
     // not at all certain about this. seems to break some oam read glitches.
     if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-      cpu_bus.PIN_CPU_LATCH_EXT.setc(1);
+      PIN_CPU_LATCH_EXT.setc(1);
     }
     else {
-      cpu_bus.PIN_CPU_LATCH_EXT.setc(0);
+      PIN_CPU_LATCH_EXT.setc(0);
     }
   }
 
-  cpu_bus.PIN_CPU_6.setc(0);
+  PIN_CPU_6.setc(0);
 
 
   // Data has to be driven on EFGH or we fail the wave tests
@@ -524,15 +554,15 @@ void GateBoy::tock_slow() {
     if (bus_req.addr <= 0x00FF && !BOOT_BITn.qp17()) addr_ext = false;
 
     if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      cpu_bus.PIN_CPU_EXT_BUSp.setc(addr_ext);
+      PIN_CPU_EXT_BUSp.setc(addr_ext);
     }
     else {
       // This seems wrong, but it passes tests. *shrug*
       if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-        cpu_bus.PIN_CPU_EXT_BUSp.setc(0);
+        PIN_CPU_EXT_BUSp.setc(0);
       }
       else {
-        cpu_bus.PIN_CPU_EXT_BUSp.setc(addr_ext);
+        PIN_CPU_EXT_BUSp.setc(addr_ext);
       }
     }
   }
@@ -743,7 +773,7 @@ void GateBoy::tock_slow() {
   /*#p01.BOWA*/ wire _BOWA_xBCDEFGH = not1(_BEDO_Axxxxxxx);
   /* p28.XYNY*/ wire _XYNY_ABCDxxxx = not1(_MOPA_xxxxEFGH);
 
-  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(_AROV_xxCDEFxx, _AJAX_xxxxEFGH, cpu_bus.PIN_CPU_EXT_BUSp.qp());
+  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(_AROV_xxCDEFxx, _AJAX_xxxxEFGH, PIN_CPU_EXT_BUSp.qp());
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(_UNOR_MODE_DBG2p, _AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
 
@@ -771,12 +801,12 @@ void GateBoy::tock_slow() {
 
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn.qp17());
   /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
-  cpu_bus.PIN_CPU_BOOTp.setc(_TUTU_ADDR_BOOTp);
+  PIN_CPU_BOOTp.setc(_TUTU_ADDR_BOOTp);
 
   //----------------------------------------
   // CPU write signal
 
-  /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand2(cpu_bus.PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx);
+  /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH = nand2(PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx);
   /* p01.APOV*/ wire _APOV_CPU_WRp_xxxxEFGx = not1(_AREV_CPU_WRn_ABCDxxxH);
 
 
@@ -790,30 +820,30 @@ void GateBoy::tock_slow() {
   /* p07.DYKY*/ wire _DYKY_CPU_WRn_ABCDxxxH = not1(_TAPU_CPU_WRp_xxxxEFGx);
   /* p07.CUPA*/ wire _CUPA_CPU_WRp_xxxxEFGx = not1(_DYKY_CPU_WRn_ABCDxxxH);
 
-  /*#p08.TEXO*/ wire _TEXO_8000_9FFFn = and2(cpu_bus.PIN_CPU_EXT_BUSp.qp(), _TEVY_8000_9FFFn);
+  /*#p08.TEXO*/ wire _TEXO_8000_9FFFn = and2(PIN_CPU_EXT_BUSp.qp(), _TEVY_8000_9FFFn);
   /*#p25.TEFA*/ wire _TEFA_8000_9FFFp = nor2(_SYRO_FE00_FFFFp, _TEXO_8000_9FFFn);
   /*#p25.SOSE*/ wire _SOSE_8000_9FFFp = and2(BUS_CPU_A[15].qp(), _TEFA_8000_9FFFp);
 
 
   /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(_TEXO_8000_9FFFn, _UMUT_MODE_DBG1p);
   /* p08.LEVO*/ wire _LEVO_ADDR_INT_OR_ADDR_VRAM = not1(_TEXO_8000_9FFFn);
-  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.PIN_CPU_RDp.qp(), _LEVO_ADDR_INT_OR_ADDR_VRAM, cpu_bus.PIN_CPU_WRp.qp());
+  /* p08.LAGU*/ wire _LAGU = and_or3(PIN_CPU_RDp.qp(), _LEVO_ADDR_INT_OR_ADDR_VRAM, PIN_CPU_WRp.qp());
   /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
 
 
   // Ignoring debug stuff for now
 #if 0
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(_UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), cpu_bus.PIN_CPU_RDp.qp());
+  /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(_UNOR_MODE_DBG2p, ext_bus.PIN_EXT_RDn.qn(), PIN_CPU_RDp.qp());
 #else
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn = !cpu_bus.PIN_CPU_RDp.qp();
+  /* p07.UJYV*/ wire _UJYV_CPU_RDn = !PIN_CPU_RDp.qp();
 #endif
 
   /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
   /* p07.AJAS*/ wire _AJAS_CPU_RDn = not1(_TEDO_CPU_RDp);
   /* p07.ASOT*/ wire _ASOT_CPU_RDp = not1(_AJAS_CPU_RDn);
 
-  /* p04.DECY*/ wire _DECY_LATCH_EXTn = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp());
+  /* p04.DECY*/ wire _DECY_LATCH_EXTn = not1(PIN_CPU_LATCH_EXT.qp());
   /* p04.CATY*/ wire _CATY_LATCH_EXTp = not1(_DECY_LATCH_EXTn);
   /* p28.MYNU*/ wire _MYNU_CPU_RDn    = nand2(_ASOT_CPU_RDp, _CATY_LATCH_EXTp);
   /* p28.LEKO*/ wire _LEKO_CPU_RDp    = not1(_MYNU_CPU_RDn);
@@ -1194,7 +1224,7 @@ void GateBoy::tock_slow() {
   /*#p25.TOLE*/ wire _TOLE_VRAM_RDp    = _TUCA_CPU_VRAM_RDp;
   /*#p25.SERE*/ wire _SERE_CPU_VRM_RDp = and2(_TOLE_VRAM_RDp, _ROPY_RENDERINGn);
 
-  /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(_SOSE_8000_9FFFp, cpu_bus.PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
+  /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(_SOSE_8000_9FFFp, PIN_CPU_WRp.qp());  // Schematic wrong, second input is PIN_CPU_WRp
 
   // Ignoring debug stuff for now
 #if 0
@@ -3187,7 +3217,7 @@ void GateBoy::tock_slow() {
 
   /* EBL  -> CBD */ {
     // Ext pin -> Ext latch
-    /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.PIN_CPU_RDp.qp(), _TEXO_8000_9FFFn, cpu_bus.PIN_CPU_LATCH_EXT.qp());
+    /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(PIN_CPU_RDp.qp(), _TEXO_8000_9FFFn, PIN_CPU_LATCH_EXT.qp());
     /*#p08.SOMA*/ ext_bus.SOMA_EXT_DATA_LATCH_D0n.tp_latchc(_LAVO_HOLDn, ext_bus.PIN_EXT_D00p.qn());
     /* p08.RONY*/ ext_bus.RONY_EXT_DATA_LATCH_D1n.tp_latchc(_LAVO_HOLDn, ext_bus.PIN_EXT_D01p.qn());
     /* p08.RAXY*/ ext_bus.RAXY_EXT_DATA_LATCH_D2n.tp_latchc(_LAVO_HOLDn, ext_bus.PIN_EXT_D02p.qn());
@@ -3357,7 +3387,7 @@ void GateBoy::tock_slow() {
   {
     /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp = nor2(tim_reg.NUGA_TIMA_D7.qp01(), tim_reg.NYDU_TIMA_D7_DELAY.qn16());
     /*#p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(BUS_CPU_A[ 0].qp(), _TOLA_A01n, _TAPU_CPU_WRp_xxxxEFGx, _RYFO_FF04_FF07p);
-    /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(cpu_bus.PIN_CPU_LATCH_EXT.qp(), _TOPE_FF05_WRn);
+    /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(PIN_CPU_LATCH_EXT.qp(), _TOPE_FF05_WRn);
     /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn = not1(tim_reg.MOBA_TIMER_OVERFLOWp.qp17());
     /*#p03.MEXU*/ wire _MEXU_TIMA_LOADp      = nand3(_MUZU_CPU_LOAD_TIMAn, _ALUR_SYS_RSTn, _MEKE_TIMER_OVERFLOWn);
     /*#p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn = not1(_MEXU_TIMA_LOADp);
@@ -3812,24 +3842,26 @@ void GateBoy::tock_slow() {
   {
     ext_bus.PIN_EXT_CLK.pin_int(_BUDE_xxxxEFGH, _BUDE_xxxxEFGH);
 
-    cpu_bus.PIN_CPU_EXT_CLKGOOD.setc(sys_clkgood);
-    cpu_bus.PIN_CPU_STARTp.setc(_TABA_POR_TRIGn);
-    cpu_bus.PIN_CPU_SYS_RSTp.setc(clk_reg.AFER_SYS_RSTp.qp13());
-    cpu_bus.PIN_CPU_EXT_RST.setc(sys_rst);
-    cpu_bus.PIN_CPU_UNOR_DBG.setc(_UNOR_MODE_DBG2p);
-    cpu_bus.PIN_CPU_UMUT_DBG.setc(_UMUT_MODE_DBG1p);
-    cpu_bus.PIN_CPU_ADDR_HIp.setc(_SYRO_FE00_FFFFp);
+    PIN_CPU_EXT_CLKGOOD.setc(sys_clkgood);
+    PIN_CPU_STARTp.setc(_TABA_POR_TRIGn);
+    PIN_CPU_SYS_RSTp.setc(clk_reg.AFER_SYS_RSTp.qp13());
+    PIN_CPU_EXT_RST.setc(sys_rst);
+    PIN_CPU_UNOR_DBG.setc(_UNOR_MODE_DBG2p);
+    PIN_CPU_UMUT_DBG.setc(_UMUT_MODE_DBG1p);
+    PIN_CPU_ADDR_HIp.setc(_SYRO_FE00_FFFFp);
 
-    cpu_bus.PIN_CPU_BOWA_Axxxxxxx.setc(_BOWA_xBCDEFGH);
-    cpu_bus.PIN_CPU_BEDO_xBCDEFGH.setc(_BEDO_Axxxxxxx);
-    cpu_bus.PIN_CPU_BEKO_ABCDxxxx.setc(_BEKO_ABCDxxxx);
-    cpu_bus.PIN_CPU_BUDE_xxxxEFGH.setc(_BUDE_xxxxEFGH);
-    cpu_bus.PIN_CPU_BOLO_ABCDEFxx.setc(_BOLO_ABCDEFxx);
-    cpu_bus.PIN_CPU_BUKE_AxxxxxGH.setc(_BUKE_AxxxxxGH);
-    cpu_bus.PIN_CPU_BOMA_xBCDEFGH.setc(_BOMA_xBCDEFGH);
-    cpu_bus.PIN_CPU_BOGA_Axxxxxxx.setc(_BOGA_Axxxxxxx);
+    PIN_CPU_BOWA_Axxxxxxx.setc(_BOWA_xBCDEFGH);
+    PIN_CPU_BEDO_xBCDEFGH.setc(_BEDO_Axxxxxxx);
+    PIN_CPU_BEKO_ABCDxxxx.setc(_BEKO_ABCDxxxx);
+    PIN_CPU_BUDE_xxxxEFGH.setc(_BUDE_xxxxEFGH);
+    PIN_CPU_BOLO_ABCDEFxx.setc(_BOLO_ABCDEFxx);
+    PIN_CPU_BUKE_AxxxxxGH.setc(_BUKE_AxxxxxGH);
+    PIN_CPU_BOMA_xBCDEFGH.setc(_BOMA_xBCDEFGH);
+    PIN_CPU_BOGA_Axxxxxxx.setc(_BOGA_Axxxxxxx);
 
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13c(_BOGA_Axxxxxxx, _UPOJ_MODE_PRODn, clk_reg.ASOL_POR_DONEn.qp04());
+
+    sys_cpu_start = PIN_CPU_STARTp.qp();
   }
 
   //------------------------------------------------------------------------------

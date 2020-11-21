@@ -8,34 +8,6 @@ struct GateBoy;
 struct CpuBus {
 
   //-----------------------------------------------------------------------------
-
-  Signal BUS_CPU_A00;  // bottom right port PORTB_00: -> A00
-  Signal BUS_CPU_A01;  // bottom right port PORTB_04: -> A01
-  Signal BUS_CPU_A02;  // bottom right port PORTB_08: -> A02
-  Signal BUS_CPU_A03;  // bottom right port PORTB_12: -> A03
-  Signal BUS_CPU_A04;  // bottom right port PORTB_16: -> A04
-  Signal BUS_CPU_A05;  // bottom right port PORTB_20: -> A05
-  Signal BUS_CPU_A06;  // bottom right port PORTB_24: -> A06
-  Signal BUS_CPU_A07;  // bottom right port PORTB_28: -> A07
-  Signal BUS_CPU_A08;  // bottom right port PORTB_02: -> A08
-  Signal BUS_CPU_A09;  // bottom right port PORTB_06: -> A09
-  Signal BUS_CPU_A10;  // bottom right port PORTB_10: -> A10
-  Signal BUS_CPU_A11;  // bottom right port PORTB_14: -> A11
-  Signal BUS_CPU_A12;  // bottom right port PORTB_18: -> A12
-  Signal BUS_CPU_A13;  // bottom right port PORTB_22: -> A13
-  Signal BUS_CPU_A14;  // bottom right port PORTB_26: -> A14
-  Signal BUS_CPU_A15;  // bottom right port PORTB_30: -> A15
-
-  BusPU BUS_CPU_D0p;  // bottom left port: <>
-  BusPU BUS_CPU_D1p;  // bottom left port: <>
-  BusPU BUS_CPU_D2p;  // bottom left port: <>
-  BusPU BUS_CPU_D3p;  // bottom left port: <>
-  BusPU BUS_CPU_D4p;  // bottom left port: <>
-  BusPU BUS_CPU_D5p;  // bottom left port: <>
-  BusPU BUS_CPU_D6p;  // bottom left port: <>
-  BusPU BUS_CPU_D7p;  // bottom left port: <>
-
-  //-----------------------------------------------------------------------------
   // CPU-to-SOC control signals
 
   Signal PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?

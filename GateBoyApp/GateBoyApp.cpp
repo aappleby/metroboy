@@ -341,6 +341,7 @@ void GateBoyApp::app_update(double /*delta*/) {
 
 void dump_cpu_bus(Dumper& d, const CpuBus& cpu_bus) {
   d("\002===== CPU Bus =====\001\n");
+#if 0
   d("BUS ADDR 0x%04x  %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     pack_u16(16, &cpu_bus.BUS_CPU_A00),
     cpu_bus.BUS_CPU_A15.c(), cpu_bus.BUS_CPU_A14.c(), cpu_bus.BUS_CPU_A13.c(), cpu_bus.BUS_CPU_A12.c(),
@@ -352,6 +353,7 @@ void dump_cpu_bus(Dumper& d, const CpuBus& cpu_bus) {
     cpu_bus.BUS_CPU_D7p.c(), cpu_bus.BUS_CPU_D6p.c(), cpu_bus.BUS_CPU_D5p.c(), cpu_bus.BUS_CPU_D4p.c(),
     cpu_bus.BUS_CPU_D3p.c(), cpu_bus.BUS_CPU_D2p.c(), cpu_bus.BUS_CPU_D1p.c(), cpu_bus.BUS_CPU_D0p.c());
   d("\n");
+#endif
 
   d("PIN_CPU_6         %c\n", cpu_bus.PIN_CPU_6.c());
   d("PIN_CPU_LATCH_EXT %c\n", cpu_bus.PIN_CPU_LATCH_EXT.c());

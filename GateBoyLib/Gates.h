@@ -52,6 +52,8 @@ struct BitBase {
     state = s | BIT_DRIVEN;
   }
 
+  wire to_wire() const { return to_wire_old(); }
+
   wire to_wire_old() const {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
@@ -89,84 +91,6 @@ struct BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// Registers must be read _before_ they are written.
-
-struct RegBase : public BitBase {
-
-  wire to_wire() const {
-    CHECK_N(sim_running && (state & BIT_LOCKED));
-    return wire(state & BIT_DATA);
-  }
-
-  wire to_wire_new() const {
-    CHECK_P(state & BIT_LOCKED);
-    return wire(state & BIT_DATA);
-  }
-
-  template<typename T>
-  void dffc(wire CLKp, T D) {
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!ca && cb) {
-      state = BIT_LOCKED | (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = BIT_LOCKED | (CLKp << 1) + qp;
-    }
-  }
-
-  template<typename T>
-  void dffc(wire CLKp, wire RSTn, T D) {
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!RSTn) {
-      state = BIT_LOCKED | (CLKp << 1) + 0;
-    }
-    else if (!ca && cb) {
-      state = BIT_LOCKED | (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = BIT_LOCKED | (CLKp << 1) + qp;
-    }
-  }
-
-  template<typename T>
-  void dffc(wire CLKp, wire SETn, wire RSTn, T D) {
-    CHECK_N(state & BIT_LOCKED);
-
-    uint8_t qp = state & 1;
-    uint8_t ca = state & 2;
-    uint8_t cb = CLKp << 1;
-
-    if (!RSTn) {
-      state = BIT_LOCKED | (CLKp << 1) + 0;
-    }
-    else if (!SETn) {
-      state = BIT_LOCKED | (CLKp << 1) + 1;
-    }
-    else if (!ca && cb) {
-      state = BIT_LOCKED | (CLKp << 1) + as_wire(D);
-    }
-    else {
-      state = BIT_LOCKED | (CLKp << 1) + qp;
-    }
-  }
-
-  void setc(wire D) {
-    CHECK_N(state & BIT_LOCKED);
-    state = BIT_LOCKED | uint8_t(D);
-  }
-};
-
-//-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
   wire to_wire() const { return to_wire_old(); }
@@ -183,8 +107,6 @@ struct Gate : public BitBase {
 struct DFF : public BitBase {
   wire qp() const { return  to_wire(); }
   wire qn() const { return !to_wire(); }
-
-  wire to_wire() const { return to_wire_old(); }
 
   template<typename T>
   void dff_ff(wire CLKp, T D) {
@@ -211,17 +133,6 @@ struct DFF : public BitBase {
     if (!RSTn) { state &= ~BIT_DATA; }
     state |= BIT_LOCKED;
   }
-
-  template<typename T>
-  void dffc(wire CLKp, T D) {
-    dff_ff(CLKp, D);
-  }
-
-  template<typename T>
-  void dffc(wire CLKp, bool RSTn, T D) {
-    dff_ff(CLKp, D);
-    dff_rs(RSTn);
-  }
 };
 
 //-----------------------------------------------------------------------------
@@ -243,8 +154,6 @@ struct DFF8n : public BitBase {
 
   wire qn07_next() const { return !to_wire_new(); }
   wire qp08_next() const { return  to_wire_new(); }
-
-  wire to_wire() const { return to_wire_old(); }
 
   template<typename T>
   void dff8n_ff(wire CLKn, T Dn) {
@@ -284,8 +193,6 @@ struct DFF8p : public BitBase {
 
   wire qn07_next() const { return !to_wire_new(); }
   wire qp08_next() const { return  to_wire_new(); }
-
-  wire to_wire() const { return to_wire_old(); }
 
   template<typename T>
   void dff8p_ff(wire CLKp, T Dn) {
@@ -327,8 +234,6 @@ struct DFF9 : public BitBase {
 
   wire qn08_next() const { return !to_wire_new(); }
   wire qp09_next() const { return  to_wire_new(); }
-
-  wire to_wire() const { return to_wire_old(); }
 
   template<typename T>
   void dff9_ff(wire CLKp, T Dn) {
@@ -378,8 +283,6 @@ struct DFF11 : public BitBase {
   wire q11p() const { return to_wire(); }
   wire q11p_next() const { return to_wire_new(); }
 
-  wire to_wire() const { return to_wire_old(); }
-
   template<typename T>
   void dff11_ff(wire CLKp, T D) {
     CHECK_N(state & BIT_DIRTY);
@@ -427,8 +330,6 @@ struct DFF13 : public BitBase {
 
   wire qn12() const { return !to_wire_old(); }
   wire qp13() const { return  to_wire_old(); }
-
-  wire to_wire() const { return to_wire_old(); }
 
   void dff13_ff(wire CLKp, wire D) {
     CHECK_N(state & BIT_DIRTY);
@@ -487,8 +388,6 @@ struct DFF17 : public BitBase {
   wire qn16_new() const { return !to_wire_new(); }
   wire qp17_new() const { return  to_wire_new(); }
 
-  wire to_wire() const { return to_wire_old(); }
-
   void dff17_ff(wire CLKp, wire D) {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
@@ -545,8 +444,6 @@ struct DFF20 : public BitBase{
 
   wire qp01_next() const { return  to_wire_new(); }
   wire qn17_next() const { return !to_wire_new(); }
-
-  wire to_wire() const { return to_wire_old(); }
 
   void dff20_ff(wire CLKn) {
     CHECK_N(state & BIT_DIRTY);
@@ -615,6 +512,15 @@ struct DFF20 : public BitBase{
 
 struct DFF22 : public BitBase {
 
+  wire qn15()      const { return !to_wire_old(); }
+  wire qp16()      const { return  to_wire_old(); }
+
+  wire qn15_mid()  const { return !to_wire_mid(); }
+  wire qp16_mid()  const { return  to_wire_mid(); }
+
+  wire qn15_next() const { return !to_wire_new(); }
+  wire qp16_next() const { return  to_wire_new(); }
+
   void dff22_ff(wire CLKp, wire D) {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
@@ -640,47 +546,6 @@ struct DFF22 : public BitBase {
     if (!RSTn) { state &= ~BIT_DATA; }
     state |= BIT_LOCKED;
   }
-
-  wire qn15() const { return !to_wire(); }
-  wire qp16() const { return  to_wire(); }
-
-  wire qn15_mid() const { return !to_wire_mid(); }
-  wire qp16_mid() const { return  to_wire_mid(); }
-
-  wire qn15_next() const { return !to_wire_next(); }
-  wire qp16_next() const { return  to_wire_next(); }
-
-  wire to_wire() const {
-    CHECK_N(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-    return wire(state & BIT_DATA);
-  }
-
-  wire to_wire_mid() const {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-    return wire(state & BIT_DATA);
-  }
-
-  wire to_wire_next() const {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_P(state & BIT_LOCKED);
-    return wire(state & BIT_DATA);
-  }
-
-
-
-  /*
-  template<typename T>
-  void dff22c(wire CLKp, wire SETn, wire RSTn, T D) {
-    dffc(CLKp, SETn, RSTn, D);
-  }
-
-  template<typename T>
-  void dff22c(wire CLKp, wire SETn, wire RSTn, T D) {
-    dffc(CLKp, SETn, RSTn, D);
-  }
-  */
 };
 
 

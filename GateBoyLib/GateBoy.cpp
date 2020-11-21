@@ -371,8 +371,8 @@ void GateBoy::next_pass() {
     //----------
     // If the sim is stable and there's still a bus collision or float, we have a problem.
 
-    if (RegBase::bus_collision) printf("Bus collision!\n");
-    if (RegBase::bus_floating)  printf("Bus floating!\n");
+    if (BitBase::bus_collision) printf("Bus collision!\n");
+    if (BitBase::bus_floating)  printf("Bus floating!\n");
 
     //----------
     // Done, move to the next phase.
@@ -408,8 +408,8 @@ void GateBoy::commit_and_hash() {
 
 void GateBoy::tock_slow() {
   BitBase::sim_running = true;
-  RegBase::bus_collision = false;
-  RegBase::bus_floating = false;
+  BitBase::bus_collision = false;
+  BitBase::bus_floating = false;
 
   probes.begin_pass(pass_count);
 
@@ -5288,11 +5288,17 @@ void GateBoy::tock_slow() {
     wire FFFF_HIT = cpu_bus_addr == 0xFFFF;
     wire FFFF_WRn = nand2(_TAPU_CPU_WRp_xxxxEFGx, FFFF_HIT);
 
-    IE_D0.dffc(FFFF_WRn, !sys_rst, BUS_CPU_D[0]);
-    IE_D1.dffc(FFFF_WRn, !sys_rst, BUS_CPU_D[1]);
-    IE_D2.dffc(FFFF_WRn, !sys_rst, BUS_CPU_D[2]);
-    IE_D3.dffc(FFFF_WRn, !sys_rst, BUS_CPU_D[3]);
-    IE_D4.dffc(FFFF_WRn, !sys_rst, BUS_CPU_D[4]);
+    IE_D0.dff_ff(FFFF_WRn, BUS_CPU_D[0]);
+    IE_D1.dff_ff(FFFF_WRn, BUS_CPU_D[1]);
+    IE_D2.dff_ff(FFFF_WRn, BUS_CPU_D[2]);
+    IE_D3.dff_ff(FFFF_WRn, BUS_CPU_D[3]);
+    IE_D4.dff_ff(FFFF_WRn, BUS_CPU_D[4]);
+
+    IE_D0.dff_rs(!sys_rst);
+    IE_D1.dff_rs(!sys_rst);
+    IE_D2.dff_rs(!sys_rst);
+    IE_D3.dff_rs(!sys_rst);
+    IE_D4.dff_rs(!sys_rst);
   }
 
   //------------------------------------------------------------------------------
@@ -5946,12 +5952,12 @@ void GateBoy::tock_slow() {
 
     {
       for (int i = 0; i < 159; i++) {
-        lcd_pipe_lo[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
-        lcd_pipe_hi[i].dffc(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+        lcd_pipe_lo[i].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
+        lcd_pipe_hi[i].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
       }
 
-      lcd_pipe_lo[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
-      lcd_pipe_hi[159].dffc(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
+      lcd_pipe_lo[159].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());
+      lcd_pipe_hi[159].dff_ff(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04());
 
     }
 

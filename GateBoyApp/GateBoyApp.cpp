@@ -683,6 +683,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("NEJY_FF0F_L3p      %c\n", gb->int_reg.NEJY_FF0F_L3p.c());
   d("NUTY_FF0F_L4p      %c\n", gb->int_reg.NUTY_FF0F_L4p.c());
   d("\n");
+#if 0
   d("PIN_CPU_INT_VBLANK %c\n", gb->int_reg.PIN_CPU_INT_VBLANK.c());
   d("PIN_CPU_INT_STAT   %c\n", gb->int_reg.PIN_CPU_INT_STAT.c());
   d("PIN_CPU_INT_TIMER  %c\n", gb->int_reg.PIN_CPU_INT_TIMER.c());
@@ -695,6 +696,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("PIN_CPU_ACK_SERIAL %c\n", gb->int_reg.PIN_CPU_ACK_SERIAL.c());
   d("PIN_CPU_ACK_JOYPAD %c\n", gb->int_reg.PIN_CPU_ACK_JOYPAD.c());
   d("\n");
+#endif
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224 - 32;
@@ -736,7 +738,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("PIN_JOY_P13      %c\n", gb->joypad.PIN_JOY_P13.c());
   d("PIN_JOY_P14      %c\n", gb->joypad.PIN_JOY_P14.c());
   d("PIN_JOY_P15      %c\n", gb->joypad.PIN_JOY_P15.c());
-  d("PIN_CPU_WAKE     %c\n", gb->joypad.PIN_CPU_WAKE .c());
+  //d("PIN_CPU_WAKE     %c\n", gb->joypad.PIN_CPU_WAKE .c());
   d("AWOB_WAKE_CPU    %c\n", gb->joypad.AWOB_WAKE_CPU.c());
   d("BATU_JP_GLITCH0  %c\n", gb->joypad.BATU_JP_GLITCH0.c());
   d("ACEF_JP_GLITCH1  %c\n", gb->joypad.ACEF_JP_GLITCH1.c());

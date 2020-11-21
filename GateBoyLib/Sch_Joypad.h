@@ -56,8 +56,7 @@ struct JoypadRegisters {
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
-  Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
-
+  
   /*p02.BATU*/ DFF17 BATU_JP_GLITCH0;
   /*p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
   /*p02.AGEM*/ DFF17 AGEM_JP_GLITCH2;

@@ -430,11 +430,18 @@ void GateBoy::tock_slow() {
     if (dbg_req.read || dbg_req.write) bus_req = dbg_req;
   }
 
-  int_reg.PIN_CPU_ACK_VBLANK.setc(wire(cpu.int_ack & INT_VBLANK_MASK));
-  int_reg.PIN_CPU_ACK_STAT  .setc(wire(cpu.int_ack & INT_STAT_MASK));
-  int_reg.PIN_CPU_ACK_TIMER .setc(wire(cpu.int_ack & INT_TIMER_MASK));
-  int_reg.PIN_CPU_ACK_SERIAL.setc(wire(cpu.int_ack & INT_SERIAL_MASK));
-  int_reg.PIN_CPU_ACK_JOYPAD.setc(wire(cpu.int_ack & INT_JOYPAD_MASK));
+  // Interrupt acks
+  Signal PIN_CPU_ACK_VBLANK; // bottom right port PORTB_01: -> P02.LETY, vblank int ack
+  Signal PIN_CPU_ACK_STAT  ; // bottom right port PORTB_05: -> P02.LEJA, stat int ack
+  Signal PIN_CPU_ACK_TIMER ; // bottom right port PORTB_09: -> P02.LESA, timer int ack
+  Signal PIN_CPU_ACK_SERIAL; // bottom right port PORTB_13: -> P02.LUFE, serial int ack
+  Signal PIN_CPU_ACK_JOYPAD; // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
+
+  PIN_CPU_ACK_VBLANK.setc(wire(cpu.int_ack & INT_VBLANK_MASK));
+  PIN_CPU_ACK_STAT  .setc(wire(cpu.int_ack & INT_STAT_MASK));
+  PIN_CPU_ACK_TIMER .setc(wire(cpu.int_ack & INT_TIMER_MASK));
+  PIN_CPU_ACK_SERIAL.setc(wire(cpu.int_ack & INT_SERIAL_MASK));
+  PIN_CPU_ACK_JOYPAD.setc(wire(cpu.int_ack & INT_JOYPAD_MASK));
 
   //----------------------------------------
 
@@ -1500,10 +1507,11 @@ void GateBoy::tock_slow() {
 
   }
 
+  Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
   {
     /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(joypad.PIN_JOY_P13.qn(), joypad.PIN_JOY_P12.qn(), joypad.PIN_JOY_P11.qn(), joypad.PIN_JOY_P10.qn());
     /* p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latchc(_BOGA_Axxxxxxx, _KERY_ANY_BUTTONp);
-    joypad.PIN_CPU_WAKE.setc(joypad.AWOB_WAKE_CPU.qp08());
+    PIN_CPU_WAKE.setc(joypad.AWOB_WAKE_CPU.qp08());
 
     // this chunk can _not_ use _next()
     /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17c(_BOGA_Axxxxxxx, _ALUR_SYS_RSTn, joypad.AGEM_JP_GLITCH2.qp17());
@@ -3472,6 +3480,13 @@ void GateBoy::tock_slow() {
   //------------------------------------------------------------------------------
   // FF0F INTF
 
+  // Interrupts
+  Signal PIN_CPU_INT_VBLANK; // bottom right port PORTB_03: <- P02.LOPE, vblank int
+  Signal PIN_CPU_INT_STAT  ; // bottom right port PORTB_07: <- P02.LALU, stat int
+  Signal PIN_CPU_INT_TIMER ; // bottom right port PORTB_11: <- P02.NYBO, timer int
+  Signal PIN_CPU_INT_SERIAL; // bottom right port PORTB_15: <- P02.UBUL, serial int
+  Signal PIN_CPU_INT_JOYPAD; // bottom right port PORTB_19: <- P02.ULAK, joypad int
+
   {
     // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
     // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -3482,11 +3497,11 @@ void GateBoy::tock_slow() {
     /* p07.REFA*/ wire _REFA_FF0F_WRn  = nand4(_SEMY_ADDR_XX0X, _SAPA_ADDR_XXXF, _SYKE_FF00_FFFFp, _TAPU_CPU_WRp_xxxxEFGx); // schematic wrong, is NAND
     /* p02.ROTU*/ wire _ROTU_FF0F_WRp  = not1(_REFA_FF0F_WRn);
 
-    /* p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(int_reg.PIN_CPU_ACK_VBLANK.qp());
-    /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not1(int_reg.PIN_CPU_ACK_STAT.qp());
-    /* p02.LESA*/ wire _LESA_INT_TIM_ACKn  = not1(int_reg.PIN_CPU_ACK_TIMER.qp());
-    /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn  = not1(int_reg.PIN_CPU_ACK_SERIAL.qp());
-    /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(int_reg.PIN_CPU_ACK_JOYPAD.qp());
+    /* p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(PIN_CPU_ACK_VBLANK.qp());
+    /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not1(PIN_CPU_ACK_STAT.qp());
+    /* p02.LESA*/ wire _LESA_INT_TIM_ACKn  = not1(PIN_CPU_ACK_TIMER.qp());
+    /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn  = not1(PIN_CPU_ACK_SERIAL.qp());
+    /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(PIN_CPU_ACK_JOYPAD.qp());
 
     /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  BUS_CPU_D[0]);
     /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, BUS_CPU_D[1]);
@@ -3505,12 +3520,6 @@ void GateBoy::tock_slow() {
     /* p02.PYGA*/ wire _PYGA_FF0F_RST2n = and3(_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  _ALUR_SYS_RSTn);
     /* p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  _ALUR_SYS_RSTn);
     /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  _ALUR_SYS_RSTn);
-
-    int_reg.PIN_CPU_INT_VBLANK.setc(int_reg.LOPE_FF0F_D0p.qp16());
-    int_reg.PIN_CPU_INT_STAT  .setc(int_reg.LALU_FF0F_D1p.qp16());
-    int_reg.PIN_CPU_INT_TIMER .setc(int_reg.NYBO_FF0F_D2p.qp16());
-    int_reg.PIN_CPU_INT_SERIAL.setc(int_reg.UBUL_FF0F_D3p.qp16());
-    int_reg.PIN_CPU_INT_JOYPAD.setc(int_reg.ULAK_FF0F_D4p.qp16());
 
     /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_P908n);
     /*#p21.TAPA*/ wire _TAPA_INT_OAM = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
@@ -3531,6 +3540,12 @@ void GateBoy::tock_slow() {
     /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22c(tim_reg.MOBA_TIMER_OVERFLOWp.qp17_next(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, _PESU_VCC);
     /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22c(ser_reg.CALY_SER_CNT3.qp17(),             _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, _PESU_VCC);
     /* p02.ULAK*/ int_reg.ULAK_FF0F_D4p.dff22c(_ASOK_INT_JOYp,                           _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, _PESU_VCC);
+
+    PIN_CPU_INT_VBLANK.setc(int_reg.LOPE_FF0F_D0p.qp16_next());
+    PIN_CPU_INT_STAT  .setc(int_reg.LALU_FF0F_D1p.qp16_next());
+    PIN_CPU_INT_TIMER .setc(int_reg.NYBO_FF0F_D2p.qp16_next());
+    PIN_CPU_INT_SERIAL.setc(int_reg.UBUL_FF0F_D3p.qp16_next());
+    PIN_CPU_INT_JOYPAD.setc(int_reg.ULAK_FF0F_D4p.qp16_next());
   }
 
 
@@ -5388,23 +5403,23 @@ void GateBoy::tock_slow() {
   // Latch stuff for CPU
 
   if (DELTA_DE) {
-    int_vblank_halt = int_reg.PIN_CPU_INT_VBLANK.qp();
-    int_stat_halt   = int_reg.PIN_CPU_INT_STAT.qp();
-    int_serial_halt = int_reg.PIN_CPU_INT_SERIAL.qp();
-    int_joypad_halt = int_reg.PIN_CPU_INT_JOYPAD.qp();
+    int_vblank_halt = PIN_CPU_INT_VBLANK.qp();
+    int_stat_halt   = PIN_CPU_INT_STAT.qp();
+    int_serial_halt = PIN_CPU_INT_SERIAL.qp();
+    int_joypad_halt = PIN_CPU_INT_JOYPAD.qp();
   }
 
   if (DELTA_GH) {
     cpu_data_latch = pack_u8(8, &BUS_CPU_D[0]);
 
     // this one latches funny on HA, some hardware bug
-    int_timer_halt = int_reg.PIN_CPU_INT_TIMER.qp();
+    int_timer_halt = PIN_CPU_INT_TIMER.qp();
 
-    int_vblank = int_reg.PIN_CPU_INT_VBLANK.qp();
-    int_stat   = int_reg.PIN_CPU_INT_STAT.qp();
-    int_timer  = int_reg.PIN_CPU_INT_TIMER.qp();
-    int_serial = int_reg.PIN_CPU_INT_SERIAL.qp();
-    int_joypad = int_reg.PIN_CPU_INT_JOYPAD.qp();
+    int_vblank = PIN_CPU_INT_VBLANK.qp();
+    int_stat   = PIN_CPU_INT_STAT.qp();
+    int_timer  = PIN_CPU_INT_TIMER.qp();
+    int_serial = PIN_CPU_INT_SERIAL.qp();
+    int_joypad = PIN_CPU_INT_JOYPAD.qp();
   }
 }
 

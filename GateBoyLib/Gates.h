@@ -464,6 +464,9 @@ struct DFF22 : public RegBase {
   wire qn15() const { return !to_wire(); }
   wire qp16() const { return  to_wire(); }
 
+  wire qn15_next() const { return !to_wire_next(); }
+  wire qp16_next() const { return  to_wire_next(); }
+
   template<typename T>
   void dff22c(wire CLKp, wire SETn, wire RSTn, T D) {
     dffc(CLKp, !CLKp, SETn, RSTn, D);
@@ -724,13 +727,20 @@ struct VramPin2 : public BitBase {
 //-----------------------------------------------------------------------------
 // Generic signal
 
-struct Signal : public TriBase {
-  wire qp() const { return  to_wire(); }
-  wire qn() const { return !to_wire(); }
+struct Signal : public BitBase {
+
+  wire qp() const {
+    CHECK_P(state & BIT_DIRTY);
+    return (state & BIT_DATA);
+  }
+  wire qn() const {
+    CHECK_P(state & BIT_DIRTY);
+    return !(state & BIT_DATA);
+  }
 
   void setc(wire D) {
-    tri(1, D);
-    commit();
+    CHECK_N(state & BIT_DIRTY);
+    state = uint8_t(D) | BIT_DIRTY;
   }
 };
 

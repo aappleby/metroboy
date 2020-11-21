@@ -734,12 +734,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Joypad =====\001\n");
+#if 0
   d("PIN_JOY_P10      %c\n", gb->joypad.PIN_JOY_P10.c());
   d("PIN_JOY_P11      %c\n", gb->joypad.PIN_JOY_P11.c());
   d("PIN_JOY_P12      %c\n", gb->joypad.PIN_JOY_P12.c());
   d("PIN_JOY_P13      %c\n", gb->joypad.PIN_JOY_P13.c());
   d("PIN_JOY_P14      %c\n", gb->joypad.PIN_JOY_P14.c());
   d("PIN_JOY_P15      %c\n", gb->joypad.PIN_JOY_P15.c());
+#endif
   //d("PIN_CPU_WAKE     %c\n", gb->joypad.PIN_CPU_WAKE .c());
   d("AWOB_WAKE_CPU    %c\n", gb->joypad.AWOB_WAKE_CPU.c());
   d("BATU_JP_GLITCH0  %c\n", gb->joypad.BATU_JP_GLITCH0.c());
@@ -767,9 +769,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("SER_CNT     %d\n", pack_u8(3, &gb->ser_reg.CAFA_SER_CNT0));
   d("SER_DATA    0x%02x\n", gb->ser_reg.get_data());
   d("SER_OUT     %c\n", gb->ser_reg.ELYS_SER_OUT.c());
+#if 0
   d("SCK         %c\n", gb->ser_reg.PIN_SCK.c());
   d("SIN         %c\n", gb->ser_reg.PIN_SIN.c());
   d("SOUT        %c\n", gb->ser_reg.PIN_SOUT.c());
+#endif
   d("_CALY_SER_INTp %c\n", gb->ser_reg.CALY_SER_CNT3.c());
   d("\n");
 

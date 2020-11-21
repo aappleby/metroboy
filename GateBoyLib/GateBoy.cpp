@@ -1435,6 +1435,13 @@ void GateBoy::tock_slow() {
 
   //------------------------------------------------------------------------------
 
+  PinNP PIN_JOY_P10; // PIN_67
+  PinNP PIN_JOY_P11; // PIN_66
+  PinNP PIN_JOY_P12; // PIN_65
+  PinNP PIN_JOY_P13; // PIN_64
+  PinPU PIN_JOY_P14; // PIN_63
+  PinPU PIN_JOY_P15; // PIN_62
+
   {
     // non-debug-mode
 
@@ -1462,10 +1469,10 @@ void GateBoy::tock_slow() {
     /* p05.KORY*/ wire _KORY = nand2(joypad.KYME_JOYP_DS.qp17(), BURO_FF60_0p);
     /* p05.KALE*/ wire _KALE = nor2 (joypad.KYME_JOYP_DS.qp17(), _KURA);
 
-    joypad.PIN_JOY_P10.pin_int(_KOLE, _KYBU);
-    joypad.PIN_JOY_P11.pin_int(_KYTO, _KABU);
-    joypad.PIN_JOY_P12.pin_int(_KYHU, _KASY);
-    joypad.PIN_JOY_P13.pin_int(_KORY, _KALE);
+    PIN_JOY_P10.pin_int(_KOLE, _KYBU);
+    PIN_JOY_P11.pin_int(_KYTO, _KABU);
+    PIN_JOY_P12.pin_int(_KYHU, _KASY);
+    PIN_JOY_P13.pin_int(_KORY, _KALE);
 #endif
 
     /* p05.KARU*/ wire _KARU = or2(joypad.KELY_JOYP_UDLR.qn16(), _KURA);
@@ -1481,35 +1488,35 @@ void GateBoy::tock_slow() {
     09 0 diodes 3 & 4
     */
 
-    joypad.PIN_JOY_P14.pin_intc_hilo(_KARU, joypad.KELY_JOYP_UDLR.qn16(), joypad.KELY_JOYP_UDLR.qn16());
-    joypad.PIN_JOY_P15.pin_intc_hilo(_CELA, joypad.COFY_JOYP_ABCS.qn16(), joypad.COFY_JOYP_ABCS.qn16());
+    PIN_JOY_P14.pin_intc_hilo(_KARU, joypad.KELY_JOYP_UDLR.qn16(), joypad.KELY_JOYP_UDLR.qn16());
+    PIN_JOY_P15.pin_intc_hilo(_CELA, joypad.COFY_JOYP_ABCS.qn16(), joypad.COFY_JOYP_ABCS.qn16());
 
     // Pressing a button pulls the corresponding pin _down_.
 
-    if (joypad.PIN_JOY_P14.qp()) {
-      joypad.PIN_JOY_P10.setc(!(sys_buttons & 0x01));
-      joypad.PIN_JOY_P11.setc(!(sys_buttons & 0x02));
-      joypad.PIN_JOY_P12.setc(!(sys_buttons & 0x04));
-      joypad.PIN_JOY_P13.setc(!(sys_buttons & 0x08));
+    if (PIN_JOY_P14.qp()) {
+      PIN_JOY_P10.setc(!(sys_buttons & 0x01));
+      PIN_JOY_P11.setc(!(sys_buttons & 0x02));
+      PIN_JOY_P12.setc(!(sys_buttons & 0x04));
+      PIN_JOY_P13.setc(!(sys_buttons & 0x08));
     }
-    else if (joypad.PIN_JOY_P15.qp()) {
-      joypad.PIN_JOY_P10.setc(!(sys_buttons & 0x10));
-      joypad.PIN_JOY_P11.setc(!(sys_buttons & 0x20));
-      joypad.PIN_JOY_P12.setc(!(sys_buttons & 0x40));
-      joypad.PIN_JOY_P13.setc(!(sys_buttons & 0x80));
+    else if (PIN_JOY_P15.qp()) {
+      PIN_JOY_P10.setc(!(sys_buttons & 0x10));
+      PIN_JOY_P11.setc(!(sys_buttons & 0x20));
+      PIN_JOY_P12.setc(!(sys_buttons & 0x40));
+      PIN_JOY_P13.setc(!(sys_buttons & 0x80));
     }
     else {
-      joypad.PIN_JOY_P10.setc(1);
-      joypad.PIN_JOY_P11.setc(1);
-      joypad.PIN_JOY_P12.setc(1);
-      joypad.PIN_JOY_P13.setc(1);
+      PIN_JOY_P10.setc(1);
+      PIN_JOY_P11.setc(1);
+      PIN_JOY_P12.setc(1);
+      PIN_JOY_P13.setc(1);
     }
 
   }
 
   Signal PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
   {
-    /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(joypad.PIN_JOY_P13.qn(), joypad.PIN_JOY_P12.qn(), joypad.PIN_JOY_P11.qn(), joypad.PIN_JOY_P10.qn());
+    /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN_JOY_P13.qn(), PIN_JOY_P12.qn(), PIN_JOY_P11.qn(), PIN_JOY_P10.qn());
     /* p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latchc(_BOGA_Axxxxxxx, _KERY_ANY_BUTTONp);
     PIN_CPU_WAKE.set(joypad.AWOB_WAKE_CPU.qp08());
 
@@ -3209,10 +3216,10 @@ void GateBoy::tock_slow() {
     /* p10.ACAT*/ wire _ACAT_FF00_RDp = and4(_TEDO_CPU_RDp, _ANAP_FF_0xx00000, _AKUG_A06n, _BYKO_A05n);
     /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
 
-    /* p05.KEVU*/ joypad.KEVU_JOYP_L0.tp_latchc(_BYZO_FF00_RDn, joypad.PIN_JOY_P10.qn());
-    /* p05.KAPA*/ joypad.KAPA_JOYP_L1.tp_latchc(_BYZO_FF00_RDn, joypad.PIN_JOY_P11.qn());
-    /* p05.KEJA*/ joypad.KEJA_JOYP_L2.tp_latchc(_BYZO_FF00_RDn, joypad.PIN_JOY_P12.qn());
-    /* p05.KOLO*/ joypad.KOLO_JOYP_L3.tp_latchc(_BYZO_FF00_RDn, joypad.PIN_JOY_P13.qn());
+    /* p05.KEVU*/ joypad.KEVU_JOYP_L0.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P10.qn());
+    /* p05.KAPA*/ joypad.KAPA_JOYP_L1.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P11.qn());
+    /* p05.KEJA*/ joypad.KEJA_JOYP_L2.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P12.qn());
+    /* p05.KOLO*/ joypad.KOLO_JOYP_L3.tp_latchc(_BYZO_FF00_RDn, PIN_JOY_P13.qn());
 
     /* p05.KEMA*/ BUS_CPU_D[0].tri6_nn(_BYZO_FF00_RDn, joypad.KEVU_JOYP_L0.qp08());
     /* p05.KURO*/ BUS_CPU_D[1].tri6_nn(_BYZO_FF00_RDn, joypad.KAPA_JOYP_L1.qp08());
@@ -3660,14 +3667,14 @@ void GateBoy::tock_slow() {
       }
 
       if (_TEDO_CPU_RDp) {
-        BUS_CPU_D[0].set(data & 0x01);
-        BUS_CPU_D[1].set(data & 0x02);
-        BUS_CPU_D[2].set(data & 0x04);
-        BUS_CPU_D[3].set(data & 0x08);
-        BUS_CPU_D[4].set(data & 0x10);
-        BUS_CPU_D[5].set(data & 0x20);
-        BUS_CPU_D[6].set(data & 0x40);
-        BUS_CPU_D[7].set(data & 0x80);
+        BUS_CPU_D[0].tri(1, data & 0x01);
+        BUS_CPU_D[1].tri(1, data & 0x02);
+        BUS_CPU_D[2].tri(1, data & 0x04);
+        BUS_CPU_D[3].tri(1, data & 0x08);
+        BUS_CPU_D[4].tri(1, data & 0x10);
+        BUS_CPU_D[5].tri(1, data & 0x20);
+        BUS_CPU_D[6].tri(1, data & 0x40);
+        BUS_CPU_D[7].tri(1, data & 0x80);
       }
     }
   }
@@ -3865,12 +3872,19 @@ void GateBoy::tock_slow() {
 
 
   {
+    //----------
+    // Serial pins
+
+    /* PIN_68 */ PinNP PIN_SCK;
+    /* PIN_69 */ PinNP PIN_SIN;
+    /* PIN_70 */ PinNP PIN_SOUT;
+
     /* p06.KEXU*/ wire _KEXU = nand2(ser_reg.COTY_SER_CLK.qp17(), ser_reg.CULY_XFER_DIR.qp17());
     /* p06.KUJO*/ wire _KUJO = nor2 (ser_reg.COTY_SER_CLK.qp17(), /* p06.JAGO*/ not1(ser_reg.CULY_XFER_DIR.qp17()));
 
     // FIXME this doesn't look right
-    /* p06.KEXU*/ ser_reg.PIN_SCK.pin_out_hilo(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17());
-    /* p05.KENA*/ ser_reg.PIN_SOUT.pin_out_hilo(1, ser_reg.ELYS_SER_OUT.qp17(), ser_reg.ELYS_SER_OUT.qp17());
+    /* p06.KEXU*/ PIN_SCK.pin_out_hilo(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17());
+    /* p05.KENA*/ PIN_SOUT.pin_out_hilo(1, ser_reg.ELYS_SER_OUT.qp17(), ser_reg.ELYS_SER_OUT.qp17());
 
     /* p06.SANO*/ wire _SANO_ADDR_FF00_FF03 = and3(_SARE_XX00_XX07p, _SEFY_A02n, _SYKE_FF00_FFFFp);
     /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx, _SANO_ADDR_FF00_FF03, BUS_CPU_A[ 0], _TOLA_A01n);
@@ -3898,7 +3912,7 @@ void GateBoy::tock_slow() {
     /* p06.CARO*/ wire _CARO_SER_RST = and2(_UWAM_FF02_WRn, _ALUR_SYS_RSTn);
 
 
-    /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp17(), ser_reg.COTY_SER_CLK.qp17(), ser_reg.PIN_SCK.qn());
+    /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp17(), ser_reg.COTY_SER_CLK.qp17(), PIN_SCK.qn());
     /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_SER_RUNNING.qn16()); // this must stop the clock or something when the transmit's done
     /* p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
 
@@ -3922,8 +3936,8 @@ void GateBoy::tock_slow() {
     }
 
     {
-      /* hack */    ser_reg.PIN_SIN.pin_out_hilo(1, 1, 1);
-      /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(ser_reg.PIN_SIN.qn());
+      /* hack */    PIN_SIN.pin_out_hilo(1, 1, 1);
+      /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(PIN_SIN.qn());
       /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
       /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
       /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
@@ -4189,6 +4203,15 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
   // Pixel merge + emit
+
+  /*PIN_50*/ PinNP PIN_LCD_DATA1;
+  /*PIN_51*/ PinNP PIN_LCD_DATA0;
+  /*PIN_52*/ PinNP PIN_LCD_CNTRL;
+  /*PIN_53*/ PinNP PIN_LCD_CLOCK;
+  /*PIN_54*/ PinNP PIN_LCD_HSYNC;
+  /*PIN_55*/ PinNP PIN_LCD_LATCH;
+  /*PIN_56*/ PinNP PIN_LCD_FLIPS;
+  /*PIN_57*/ PinNP PIN_LCD_VSYNC;
 
   {
     /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp  = and2(pix_pipe.PYBO_BG_PIPE_A7.qp16(), pix_pipe.VYXE_LCDC_BGENn.qn08());

@@ -546,24 +546,6 @@ struct TriBase : public BitBase {
     }
   }
 
-  char c() const    {
-    if (state & BIT_ERROR)  return 'E';
-    if (state & BIT_DIRTY)  return 'D';
-    if (state & BIT_LOCKED) return 'L';
-    if (state & BIT_DRIVEN) return (state & BIT_DATA) ? '1' : '0';
-    if (state & BIT_PULLUP) return '^';
-    return 'Z';
-  }
-
-  char cn() const   {
-    if (state & BIT_ERROR)  return 'E';
-    if (state & BIT_DIRTY)  return 'D';
-    if (state & BIT_LOCKED) return 'L';
-    if (state & BIT_DRIVEN) return (state & BIT_DATA) ? '0' : '1';
-    if (state & BIT_PULLUP) return 'v';
-    return 'Z';
-  }
-
   template<typename T>
   void tri(wire OEp, T D) {
     CHECK_N(state & BIT_LOCKED);
@@ -617,10 +599,6 @@ struct TriBase : public BitBase {
 
 struct BusPU : public TriBase {
   BusPU() { state = BIT_PULLUP; }
-
-  void set(wire D) {
-    tri(1, D);
-  }
 
   void tri10_np(wire OEn, wire D) { tri(!OEn, D); }
   void tri6_nn(wire OEn, wire Dn) { tri(!OEn, !Dn); }

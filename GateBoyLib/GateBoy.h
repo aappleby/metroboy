@@ -140,15 +140,6 @@ struct GateBoy {
   //DelayGlitch lcd_data1_delay;
   //DelayGlitch lcd_data0_delay;
 
-  /*PIN_50*/ PinNP PIN_LCD_DATA1;
-  /*PIN_51*/ PinNP PIN_LCD_DATA0;
-  /*PIN_52*/ PinNP PIN_LCD_CNTRL;
-  /*PIN_53*/ PinNP PIN_LCD_CLOCK;
-  /*PIN_54*/ PinNP PIN_LCD_HSYNC;
-  /*PIN_55*/ PinNP PIN_LCD_LATCH;
-  /*PIN_56*/ PinNP PIN_LCD_FLIPS;
-  /*PIN_57*/ PinNP PIN_LCD_VSYNC;
-
   DFF IE_D0;
   DFF IE_D1;
   DFF IE_D2;

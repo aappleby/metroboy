@@ -70,13 +70,6 @@ struct SerialRegisters {
   /*p06.EDER*/ DFF22 EDER_SER_DATA7;
 
   /*p06.ELYS*/ DFF17 ELYS_SER_OUT;
-
-  //----------
-  // Serial pins
-
-  /* PIN_68 */ PinNP PIN_SCK;
-  /* PIN_69 */ PinNP PIN_SIN;
-  /* PIN_70 */ PinNP PIN_SOUT;
 };
 
 //-----------------------------------------------------------------------------

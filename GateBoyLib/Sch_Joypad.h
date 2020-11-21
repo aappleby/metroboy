@@ -56,7 +56,7 @@ struct JoypadRegisters {
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
-  
+
   /*p02.BATU*/ DFF17 BATU_JP_GLITCH0;
   /*p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
   /*p02.AGEM*/ DFF17 AGEM_JP_GLITCH2;
@@ -75,13 +75,6 @@ struct JoypadRegisters {
   /*p05.KAPA*/ TpLatch KAPA_JOYP_L1; // 10-rung, looks like pass gate or something
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3; // 10-rung, looks like pass gate or something
-
-  PinNP PIN_JOY_P10; // PIN_67
-  PinNP PIN_JOY_P11; // PIN_66
-  PinNP PIN_JOY_P12; // PIN_65
-  PinNP PIN_JOY_P13; // PIN_64
-  PinPU PIN_JOY_P14; // PIN_63
-  PinPU PIN_JOY_P15; // PIN_62
 };
 
 //-----------------------------------------------------------------------------

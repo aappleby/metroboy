@@ -17,7 +17,6 @@
 #include "GateBoyLib/Sch_SpriteFetcher.h"
 #include "GateBoyLib/Sch_TileFetcher.h"
 #include "GateBoyLib/Sch_SpriteScanner.h"
-#include "GateBoyLib/Sch_CpuBus.h"
 #include "GateBoyLib/Sch_ExtBus.h"
 #include "GateBoyLib/Sch_OamBus.h"
 #include "GateBoyLib/Sch_VramBus.h"
@@ -116,7 +115,6 @@ struct GateBoy {
 
   OamBus oam_bus;
   ExtBus ext_bus;
-  CpuBus cpu_bus;
   VramBus vram_bus;
 
 

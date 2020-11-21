@@ -40,7 +40,6 @@
     <ClInclude Include="Sch_Channel3.h" />
     <ClInclude Include="Sch_Channel4.h" />
     <ClInclude Include="Sch_Clocks.h" />
-    <ClInclude Include="Sch_CpuBus.h" />
     <ClInclude Include="Sch_DMA.h" />
     <ClInclude Include="Sch_ExtBus.h" />
     <ClInclude Include="Sch_Interrupts.h" />

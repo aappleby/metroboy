@@ -754,18 +754,18 @@ struct PinNP : public TriBase {
   }
 
   // Pin internal interface
-  void pin_int(wire OEp, wire HI, wire LO) {
+  void pin_out_hilo(wire OEp, wire HI, wire LO) {
     if      (!OEp)       tri(0, wire(0));
     else if ( HI &&  LO) tri(1, wire(0));
     else if (!HI && !LO) tri(1, wire(1));
     else if ( HI && !LO) tri(0, wire(0));
     else                 CHECK_P(false);
+    commit();
   }
 
-  void pin_int (wire HI, wire LO)           { pin_int(1, HI, LO); }
-  void pin_intc(wire HI, wire LO)           { pin_int(HI, LO); commit(); }
-  void pin_intc(wire OEp, wire HI, wire LO) { pin_int(OEp, HI, LO); commit(); }
-  void pin_ext(wire OEp, wire D)            { tri(OEp, D); }
+  void pin_in      (wire OEp, wire D) {
+    tri(OEp, D);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -791,10 +791,10 @@ struct PinPU : public TriBase {
     else                 CHECK_P(false);
   }
 
-  void pin_int (wire HI, wire LO)           { pin_int(1, HI, LO); }
-  void pin_intc(wire HI, wire LO)           { pin_int(HI, LO); commit(); }
-  void pin_intc(wire OEp, wire HI, wire LO) { pin_int(OEp, HI, LO); commit(); }
-  void pin_ext(wire OEp, wire D)            { tri(OEp, D); }
+  void pin_int_hilo (wire HI, wire LO)           { pin_int(1, HI, LO); }
+  //void pin_intc_hilo(wire HI, wire LO)           { pin_int_hilo(HI, LO); commit(); }
+  void pin_intc_hilo(wire OEp, wire HI, wire LO) { pin_int(OEp, HI, LO); commit(); }
+  void pin_out      (wire OEp, wire D)            { tri(OEp, D); }
 };
 
 

@@ -339,9 +339,9 @@ void GateBoyApp::app_update(double /*delta*/) {
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void dump_cpu_bus(Dumper& d, const CpuBus& /*cpu_bus*/) {
   d("\002===== CPU Bus =====\001\n");
-#if 0
   d("BUS ADDR 0x%04x  %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
     pack_u16(16, &cpu_bus.BUS_CPU_A00),
     cpu_bus.BUS_CPU_A15.c(), cpu_bus.BUS_CPU_A14.c(), cpu_bus.BUS_CPU_A13.c(), cpu_bus.BUS_CPU_A12.c(),
@@ -380,11 +380,12 @@ void dump_cpu_bus(Dumper& d, const CpuBus& /*cpu_bus*/) {
   d("PIN BOMA_Axxxxxxx %d\n", cpu_bus.PIN_CPU_BOMA_xBCDEFGH.qp());
   d("PIN BOGA_xBCDEFGH %d\n", cpu_bus.PIN_CPU_BOGA_Axxxxxxx.qp());
   d("\n");
-#endif
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void dump_ext_bus(Dumper& d, const ExtBus& ext_bus) {
   d("\002===== Ext Bus =====\001\n");
   d("PIN CLK    : %c\n", ext_bus.PIN_EXT_CLK.c());
@@ -417,6 +418,7 @@ void dump_ext_bus(Dumper& d, const ExtBus& ext_bus) {
     ext_bus.SELO_EXT_DATA_LATCH_D3n.c(), ext_bus.RAXY_EXT_DATA_LATCH_D2n.c(), ext_bus.RONY_EXT_DATA_LATCH_D1n.c(), ext_bus.SOMA_EXT_DATA_LATCH_D0n.c());
   d("\n");
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -773,8 +775,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //----------------------------------------
 
-  dump_cpu_bus(d, gb->cpu_bus);
-  dump_ext_bus(d, gb->ext_bus);
+  //dump_cpu_bus(d, gb->cpu_bus);
+  //dump_ext_bus(d, gb->ext_bus);
   dump_vram_bus(d, gb->vram_bus);
   dump_oam_bus(d, gb->oam_bus);
 

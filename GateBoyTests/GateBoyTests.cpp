@@ -879,8 +879,8 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.qp(), 0b10000011);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.qp(), 0b01111111);
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.qp(), 0b10000000);
-#endif
     EXPECT_CLK(top.ext_bus.PIN_EXT_CLK.qp(),           0b11110000);
+#endif
     gb.next_phase();
   }
 
@@ -914,7 +914,7 @@ int GateBoyTests::test_ext_bus() {
     gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.run(120);
 
-#if 1
+#if 0
     // Start checking each phase
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11110001 11111111 11111111 11111111";
@@ -1018,7 +1018,7 @@ int GateBoyTests::test_ext_bus() {
 #endif
   }
 
-#if 1
+#if 0
   if (1) {
     LOG_B("Testing vram write external bus waves\n");
 
@@ -1144,7 +1144,7 @@ int GateBoyTests::test_ext_bus() {
   }
 #endif
 
-#if 1
+#if 0
   if (1) {
     LOG_B("Testing zram write external bus waves\n");
 

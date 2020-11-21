@@ -1535,17 +1535,17 @@ void GateBoy::tock_slow() {
 
 
   // this has to be pulled up, otherwise it's floating during rendering if there's no sprite hit.
-  BusPU SPR_TRI_I0p; // -> oam bus
-  BusPU SPR_TRI_I1p;
-  BusPU SPR_TRI_I2p;
-  BusPU SPR_TRI_I3p;
-  BusPU SPR_TRI_I4p;
-  BusPU SPR_TRI_I5p;
+  Bus2 SPR_TRI_I0p; // -> oam bus
+  Bus2 SPR_TRI_I1p;
+  Bus2 SPR_TRI_I2p;
+  Bus2 SPR_TRI_I3p;
+  Bus2 SPR_TRI_I4p;
+  Bus2 SPR_TRI_I5p;
 
-  BusNP SPR_TRI_L0; // -> vram bus
-  BusNP SPR_TRI_L1;
-  BusNP SPR_TRI_L2;
-  BusNP SPR_TRI_L3;
+  Bus2 SPR_TRI_L0; // -> vram bus
+  Bus2 SPR_TRI_L1;
+  Bus2 SPR_TRI_L2;
+  Bus2 SPR_TRI_L3;
 
   {
     /* p29.WEFU*/ wire WEFU_STORE0_MATCH = not1(_YDUG_STORE0_MATCHn);
@@ -1681,13 +1681,6 @@ void GateBoy::tock_slow() {
     /* p30.WUCO*/ SPR_TRI_I4p.tri6_nn(_BUZA_STORE_SPRITE_INDXn, sprite_scanner.YDUF_SPRITE_IDX4p.qn12());
     /* p30.WEZA*/ SPR_TRI_I5p.tri6_nn(_BUZA_STORE_SPRITE_INDXn, sprite_scanner.XECU_SPRITE_IDX5p.qn12());
 
-    SPR_TRI_I0p.commit();
-    SPR_TRI_I1p.commit();
-    SPR_TRI_I2p.commit();
-    SPR_TRI_I3p.commit();
-    SPR_TRI_I4p.commit();
-    SPR_TRI_I5p.commit();
-
     /* SPR_L */
     /* p30.WEHE*/ SPR_TRI_L0.tri6_nn(FURO_SPRITE0_GETn, sprite_store.GYHO_STORE0_L0n.qp08());
     /* p30.BUKY*/ SPR_TRI_L1.tri6_nn(FURO_SPRITE0_GETn, sprite_store.CUFO_STORE0_L1n.qp08());
@@ -1745,11 +1738,6 @@ void GateBoy::tock_slow() {
     /*#p30.CUCA*/ SPR_TRI_L1.tri6_nn(_FEPO_STORE_MATCHp, _DABY_SPRITE_DELTA1);
     /*#p30.CEGA*/ SPR_TRI_L2.tri6_nn(_FEPO_STORE_MATCHp, _DABU_SPRITE_DELTA2);
     /*#p30.WENU*/ SPR_TRI_L3.tri6_nn(_FEPO_STORE_MATCHp, _GYSA_SPRITE_DELTA3);
-
-    SPR_TRI_L0.commit();
-    SPR_TRI_L1.commit();
-    SPR_TRI_L2.commit();
-    SPR_TRI_L3.commit();
   }
 
 
@@ -1779,14 +1767,14 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // OAM address bus
 
-  PinNP PIN_OAM_CLK ;
-  PinNP PIN_OAM_OEn  ;
-  PinNP PIN_OAM_WR_A;
-  PinNP PIN_OAM_WR_B;
+  Pin2 PIN_OAM_CLK;
+  Pin2 PIN_OAM_OEn;
+  Pin2 PIN_OAM_WR_A;
+  Pin2 PIN_OAM_WR_B;
 
-  BusNP BUS_OAM_An[8];
-  BusNP BUS_OAM_DAn[8];
-  BusNP BUS_OAM_DBn[8];
+  Bus2 BUS_OAM_An[8];
+  Bus2 BUS_OAM_DAn[8];
+  Bus2 BUS_OAM_DBn[8];
 
   /* p28.AJON*/ wire _AJON_PPU_OAM_ENp = and2(_BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGn.qn03()); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor3(dma_reg.MATU_DMA_RUNNINGp.qp17(), _ACYL_SCANNINGp, _AJON_PPU_OAM_ENp); // def nor
@@ -1836,16 +1824,6 @@ void GateBoy::tock_slow() {
     /* p28.FACO*/ BUS_OAM_An[5].tri6_nn(_BETE_PPU_OAM_RDn, SPR_TRI_I3p);
     /* p28.FUGU*/ BUS_OAM_An[6].tri6_nn(_BETE_PPU_OAM_RDn, SPR_TRI_I4p);
     /* p28.FYKE*/ BUS_OAM_An[7].tri6_nn(_BETE_PPU_OAM_RDn, SPR_TRI_I5p);
-
-    /* OBA commit   */
-    BUS_OAM_An[0].commit();
-    BUS_OAM_An[1].commit();
-    BUS_OAM_An[2].commit();
-    BUS_OAM_An[3].commit();
-    BUS_OAM_An[4].commit();
-    BUS_OAM_An[5].commit();
-    BUS_OAM_An[6].commit();
-    BUS_OAM_An[7].commit();
   }
 
   //------------------------------------------------------------------------------
@@ -3042,24 +3020,6 @@ void GateBoy::tock_slow() {
       BUS_OAM_DBn[6].tri6_nn(0, (oam_data_b & 0x40));
       BUS_OAM_DBn[7].tri6_nn(0, (oam_data_b & 0x80));
     }
-
-    /* OBD commit */
-    BUS_OAM_DAn[0].commit();
-    BUS_OAM_DAn[1].commit();
-    BUS_OAM_DAn[2].commit();
-    BUS_OAM_DAn[3].commit();
-    BUS_OAM_DAn[4].commit();
-    BUS_OAM_DAn[5].commit();
-    BUS_OAM_DAn[6].commit();
-    BUS_OAM_DAn[7].commit();
-    BUS_OAM_DBn[0].commit();
-    BUS_OAM_DBn[1].commit();
-    BUS_OAM_DBn[2].commit();
-    BUS_OAM_DBn[3].commit();
-    BUS_OAM_DBn[4].commit();
-    BUS_OAM_DBn[5].commit();
-    BUS_OAM_DBn[6].commit();
-    BUS_OAM_DBn[7].commit();
 
     {
       /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp = nor2(_UVYT_ABCDxxxx, oam_bus.MAKA_HOLD_MEMp.qp17()); // def nor2

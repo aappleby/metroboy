@@ -613,23 +613,6 @@ struct TriBase : public BitBase {
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
 // tri6_pn : top rung tadpole facing second rung dot.
 
-struct BusNP : public TriBase {
-  BusNP() { state = 0; }
-
-  void set(wire D) {
-    tri(1, D);
-  }
-
-  template<typename T>
-  void tri6_pn(wire OEp, wire Dn) { tri(OEp, !as_wire(Dn));}
-
-  template<typename T>
-  void tri6_nn(wire OEn, T Dn) { tri(!OEn, !as_wire(Dn)); }
-
-  template<typename T>
-  void tri10_np(wire OEn, T D) { tri(!OEn, D); }
-};
-
 //-----------------------------------------------------------------------------
 
 struct BusPU : public TriBase {

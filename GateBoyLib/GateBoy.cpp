@@ -475,7 +475,7 @@ void GateBoy::tock_slow() {
   Pin2 PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
 
   bool BUS_CPU_A[16];
-  BusPU  BUS_CPU_D[8];
+  Bus2 BUS_CPU_D[8];
 
 
   if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
@@ -3621,7 +3621,7 @@ void GateBoy::tock_slow() {
 
   //------------------------------------------------------------------------------
 
-  if (!sys_rst) {
+  {
     // ZRAM control signals are
 
     // clk_reg.PIN_CPU_BUKE_AxxxxxGH
@@ -3651,16 +3651,6 @@ void GateBoy::tock_slow() {
       }
     }
   }
-
-  BUS_CPU_D[0].commit();
-  BUS_CPU_D[1].commit();
-  BUS_CPU_D[2].commit();
-  BUS_CPU_D[3].commit();
-  BUS_CPU_D[4].commit();
-  BUS_CPU_D[5].commit();
-  BUS_CPU_D[6].commit();
-  BUS_CPU_D[7].commit();
-
 
 
 

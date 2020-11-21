@@ -335,13 +335,18 @@ struct DFF17 : public BitBase {
     state = s | BIT_DRIVEN;
   }
 
-  wire qn16() const { return !to_wire(); }
-  wire qp17() const { return  to_wire(); }
+  wire qn16_old() const { return !to_wire_old(); }
+  wire qp17_old() const { return  to_wire_old(); }
 
-  wire qn16_next() const { return !to_wire_next(); }
-  wire qp17_next() const { return  to_wire_next(); }
+  wire qn16_mid() const { return !to_wire_mid(); }
+  wire qp17_mid() const { return  to_wire_mid(); }
 
-  wire to_wire() const {
+  wire qn16_new() const { return !to_wire_new(); }
+  wire qp17_new() const { return  to_wire_new(); }
+
+  wire to_wire() const { return to_wire_old(); }
+
+  wire to_wire_old() const {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
     return wire(state & BIT_DATA);
@@ -353,7 +358,7 @@ struct DFF17 : public BitBase {
     return wire(state & BIT_DATA);
   }
 
-  wire to_wire_next() const {
+  wire to_wire_new() const {
     CHECK_P(state & BIT_DIRTY);
     CHECK_P(state & BIT_LOCKED);
     return wire(state & BIT_DATA);
@@ -376,18 +381,12 @@ struct DFF17 : public BitBase {
     state |= BIT_DIRTY;
   }
 
-  void dff17_rst(wire RSTn) {
+  void dff17_rs(wire RSTn) {
     CHECK_P(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
     if (!RSTn) { state &= ~BIT_DATA; }
     state |= BIT_LOCKED;
-  }
-
-  template<typename T>
-  void dff17c(wire CLKp, wire RSTn, T D) {
-    dff17_ff(CLKp, as_wire(D));
-    dff17_rst(RSTn);
   }
 };
 

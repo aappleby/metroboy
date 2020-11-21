@@ -800,11 +800,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   uint8_t dma_addr_hi = ~pack_u8(8, &dma_reg.NAFA_DMA_A08n);
 
   d("DMA Addr 0x%02x:%02x\n", dma_addr_hi, dma_addr_lo);
-  d("MATU_DMA_RUNNINGp   %d\n",  dma_reg.MATU_DMA_RUNNINGp.qp17());
+  d("MATU_DMA_RUNNINGp   %d\n",  dma_reg.MATU_DMA_RUNNINGp.qp17_old());
   d("LYXE_DMA_LATCHn     %d\n",  dma_reg.LYXE_DMA_LATCHp);
-  d("MYTE_DMA_DONE       %d\n", !dma_reg.MYTE_DMA_DONE.qn16());
-  d("LUVY_DMA_TRIG_d0    %d\n",  dma_reg.LUVY_DMA_TRIG_d0.qp17());
-  d("LENE_DMA_TRIG_d4    %d\n", !dma_reg.LENE_DMA_TRIG_d4.qn16());
+  d("MYTE_DMA_DONE       %d\n", !dma_reg.MYTE_DMA_DONE.qn16_old());
+  d("LUVY_DMA_TRIG_d0    %d\n",  dma_reg.LUVY_DMA_TRIG_d0.qp17_old());
+  d("LENE_DMA_TRIG_d4    %d\n", !dma_reg.LENE_DMA_TRIG_d4.qn16_old());
   d("LOKY_DMA_LATCHp     %d\n",  dma_reg.LOKY_DMA_LATCHp.qp03());
   d("\n");
 
@@ -965,16 +965,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("SPR_TRI_LINE = %2d %c%c%c%c\n",     spr_tri_line, ss.SPR_TRI_L0.c(),  ss.SPR_TRI_L1.c(),  ss.SPR_TRI_L2.c(),  ss.SPR_TRI_L3.c());
 #endif
 
-  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
-  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));
-  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp17(), pack_u8n(6, &ss.BUHE_STORE2_I0n), pack_u8n(4, &ss.YLOV_STORE2_L0n), pack_u8n(8, &ss.FOKA_STORE2_X0p));
-  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp17(), pack_u8n(6, &ss.DEVY_STORE3_I0n), pack_u8n(4, &ss.ZURO_STORE3_L0n), pack_u8n(8, &ss.XOLY_STORE3_X0p));
-  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp17(), pack_u8n(6, &ss.XAVE_STORE4_I0n), pack_u8n(4, &ss.CAPO_STORE4_L0n), pack_u8n(8, &ss.WEDU_STORE4_X0p));
-  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp17(), pack_u8n(6, &ss.EKOP_STORE5_I0n), pack_u8n(4, &ss.ACEP_STORE5_L0n), pack_u8n(8, &ss.FUSA_STORE5_X0p));
-  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp17(), pack_u8n(6, &ss.GABO_STORE6_I0n), pack_u8n(4, &ss.ZUMY_STORE6_L0n), pack_u8n(8, &ss.YCOL_STORE6_X0p));
-  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17(), pack_u8n(6, &ss.GULE_STORE7_I0n), pack_u8n(4, &ss.XYNA_STORE7_L0n), pack_u8n(8, &ss.ERAZ_STORE7_X0p));
-  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17(), pack_u8n(6, &ss.AXUV_STORE8_I0n), pack_u8n(4, &ss.AZAP_STORE8_L0n), pack_u8n(8, &ss.EZUF_STORE8_X0p));
-  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17(), pack_u8n(6, &ss.YBER_STORE9_I0n), pack_u8n(4, &ss.CANA_STORE9_L0n), pack_u8n(8, &ss.XUVY_STORE9_X0p));
+  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
+  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17_old(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));
+  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp17_old(), pack_u8n(6, &ss.BUHE_STORE2_I0n), pack_u8n(4, &ss.YLOV_STORE2_L0n), pack_u8n(8, &ss.FOKA_STORE2_X0p));
+  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp17_old(), pack_u8n(6, &ss.DEVY_STORE3_I0n), pack_u8n(4, &ss.ZURO_STORE3_L0n), pack_u8n(8, &ss.XOLY_STORE3_X0p));
+  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp17_old(), pack_u8n(6, &ss.XAVE_STORE4_I0n), pack_u8n(4, &ss.CAPO_STORE4_L0n), pack_u8n(8, &ss.WEDU_STORE4_X0p));
+  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp17_old(), pack_u8n(6, &ss.EKOP_STORE5_I0n), pack_u8n(4, &ss.ACEP_STORE5_L0n), pack_u8n(8, &ss.FUSA_STORE5_X0p));
+  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp17_old(), pack_u8n(6, &ss.GABO_STORE6_I0n), pack_u8n(4, &ss.ZUMY_STORE6_L0n), pack_u8n(8, &ss.YCOL_STORE6_X0p));
+  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17_old(), pack_u8n(6, &ss.GULE_STORE7_I0n), pack_u8n(4, &ss.XYNA_STORE7_L0n), pack_u8n(8, &ss.ERAZ_STORE7_X0p));
+  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17_old(), pack_u8n(6, &ss.AXUV_STORE8_I0n), pack_u8n(4, &ss.AZAP_STORE8_L0n), pack_u8n(8, &ss.EZUF_STORE8_X0p));
+  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17_old(), pack_u8n(6, &ss.YBER_STORE9_I0n), pack_u8n(4, &ss.CANA_STORE9_L0n), pack_u8n(8, &ss.XUVY_STORE9_X0p));
   d("\n");
 
   //----------------------------------------
@@ -1007,7 +1007,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->BOOT_BITn.qp17()) {
+    if (!gb->BOOT_BITn.qp17_old()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;

@@ -188,6 +188,9 @@ struct DFF8n : public RegBase {
   wire qn07() const { return !to_wire(); }
   wire qp08() const { return  to_wire(); }
 
+  wire qn07_next() const { return !to_wire_next(); }
+  wire qp08_next() const { return  to_wire_next(); }
+
   template<typename T>
   void dff8nc(wire CLKn, T Dn) {
     RegBase::dffc(!CLKn, !as_wire(Dn));
@@ -277,6 +280,8 @@ struct DFF9 : public RegBase {
 struct DFF11 : public RegBase {
   wire q11p() const { return to_wire(); }
 
+  wire q11p_next() const { return to_wire_next(); }
+
   template<typename T>
   void dff11c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, RSTn, D); }
 };
@@ -325,15 +330,65 @@ struct DFF13 : public RegBase {
 // DFF17_16 >> QN   _MUST_ be QN - see TERO
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-struct DFF17 : public RegBase {
+struct DFF17 : public BitBase {
+  void reset(uint8_t s) {
+    state = s | BIT_DRIVEN;
+  }
+
   wire qn16() const { return !to_wire(); }
   wire qp17() const { return  to_wire(); }
 
   wire qn16_next() const { return !to_wire_next(); }
   wire qp17_next() const { return  to_wire_next(); }
 
+  wire to_wire() const {
+    CHECK_N(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  wire to_wire_mid() const {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  wire to_wire_next() const {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_P(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  void dff17_ff(wire CLKp, wire D) {
+    CHECK_N(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!ca && cb) {
+      state = (CLKp << 1) + as_wire(D);
+    }
+    else {
+      state = (CLKp << 1) + qp;
+    }
+    state |= BIT_DIRTY;
+  }
+
+  void dff17_rst(wire RSTn) {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    if (!RSTn) { state &= ~BIT_DATA; }
+    state |= BIT_LOCKED;
+  }
+
   template<typename T>
-  void dff17c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, RSTn, D); }
+  void dff17c(wire CLKp, wire RSTn, T D) {
+    dff17_ff(CLKp, as_wire(D));
+    dff17_rst(RSTn);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -404,17 +459,77 @@ struct DFF20 : public RegBase{
 // DFF22_21 sc
 // DFF22_22 << CLKp
 
-struct DFF22 : public RegBase {
+struct DFF22 : public BitBase {
+  void reset(uint8_t s) {
+    state = s | BIT_DRIVEN;
+  }
+
+  void dff22_ff(wire CLKp, wire D) {
+    CHECK_N(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!ca && cb) {
+      state = (CLKp << 1) + as_wire(D);
+    }
+    else {
+      state = (CLKp << 1) + qp;
+    }
+    state |= BIT_DIRTY;
+  }
+
+  void dff22_sr(wire SETn, wire RSTn) {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    if (!SETn) { state |=  BIT_DATA; }
+    if (!RSTn) { state &= ~BIT_DATA; }
+    state |= BIT_LOCKED;
+  }
+
   wire qn15() const { return !to_wire(); }
   wire qp16() const { return  to_wire(); }
 
+  wire qn15_mid() const { return !to_wire_mid(); }
+  wire qp16_mid() const { return  to_wire_mid(); }
+
   wire qn15_next() const { return !to_wire_next(); }
   wire qp16_next() const { return  to_wire_next(); }
+
+  wire to_wire() const {
+    CHECK_N(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  wire to_wire_mid() const {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  wire to_wire_next() const {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_P(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+
+
+  /*
+  template<typename T>
+  void dff22c(wire CLKp, wire SETn, wire RSTn, T D) {
+    dffc(CLKp, SETn, RSTn, D);
+  }
 
   template<typename T>
   void dff22c(wire CLKp, wire SETn, wire RSTn, T D) {
     dffc(CLKp, SETn, RSTn, D);
   }
+  */
 };
 
 

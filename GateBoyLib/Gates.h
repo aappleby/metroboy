@@ -63,15 +63,6 @@ struct BitBase {
     return '1';
   }
 
-  /*
-  wire to_wire() const {
-    if (state & BIT_DRIVEN) return state & BIT_DATA;
-    if (state & BIT_PULLUP) return 1;
-    CHECK_P(false);
-    return 0;
-  }
-  */
-
   uint8_t state = 0;
 };
 
@@ -95,10 +86,44 @@ struct RegBase : public BitBase {
   }
 
   template<typename T>
-  void dffc(wire CLKp, wire CLKn, wire SETn, wire RSTn, T D) {
+  void dffc(wire CLKp, T D) {
     CHECK_N(state & BIT_LOCKED);
 
-    (void)CLKn;
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!ca && cb) {
+      state = BIT_LOCKED | (CLKp << 1) + as_wire(D);
+    }
+    else {
+      state = BIT_LOCKED | (CLKp << 1) + qp;
+    }
+  }
+
+  template<typename T>
+  void dffc(wire CLKp, wire RSTn, T D) {
+    CHECK_N(state & BIT_LOCKED);
+
+    uint8_t qp = state & 1;
+    uint8_t ca = state & 2;
+    uint8_t cb = CLKp << 1;
+
+    if (!RSTn) {
+      state = BIT_LOCKED | (CLKp << 1) + 0;
+    }
+    else if (!ca && cb) {
+      state = BIT_LOCKED | (CLKp << 1) + as_wire(D);
+    }
+    else {
+      state = BIT_LOCKED | (CLKp << 1) + qp;
+    }
+  }
+
+  template<typename T>
+  void dffc(wire CLKp, wire SETn, wire RSTn, T D) {
+    CHECK_N(state & BIT_LOCKED);
+
     uint8_t qp = state & 1;
     uint8_t ca = state & 2;
     uint8_t cb = CLKp << 1;
@@ -133,82 +158,6 @@ struct Gate : public RegBase {
 };
 
 //-----------------------------------------------------------------------------
-
-/*
-struct DelayGlitch {
-
-  // fixme
-  void reset_cart() {
-    da.reset(ERR_XXXX);
-    db.reset(ERR_XXXX);
-    dc.reset(ERR_XXXX);
-    dd.reset(ERR_XXXX);
-    de.reset(ERR_XXXX);
-    df.reset(ERR_XXXX);
-    dg.reset(ERR_XXXX);
-    dh.reset(ERR_XXXX);
-    di.reset(ERR_XXXX);
-  }
-
-  void reset() {
-    da.reset(TRI_D0NP);
-    db.reset(TRI_D0NP);
-    dc.reset(TRI_D0NP);
-    dd.reset(TRI_D0NP);
-    de.reset(TRI_D0NP);
-    df.reset(TRI_D0NP);
-    dg.reset(TRI_D0NP);
-    dh.reset(TRI_D0NP);
-    di.reset(TRI_D0NP);
-  }
-
-  void reset(RegState s) {
-    da.reset(s);
-    db.reset(s);
-    dc.reset(s);
-    dd.reset(s);
-    de.reset(s);
-    df.reset(s);
-    dg.reset(s);
-    dh.reset(s);
-    di.reset(s);
-  }
-
-  RegBase da;
-  RegBase db;
-  RegBase dc;
-  RegBase dd;
-  RegBase de;
-  RegBase df;
-  RegBase dg;
-  RegBase dh;
-  RegBase di;
-
-  void set(wire w) {
-    di.merge_tri_delta(as_wire(dh) ? DELTA_TRI1 : DELTA_TRI0);
-    dh.merge_tri_delta(as_wire(dg) ? DELTA_TRI1 : DELTA_TRI0);
-    dg.merge_tri_delta(as_wire(df) ? DELTA_TRI1 : DELTA_TRI0);
-    df.merge_tri_delta(as_wire(de) ? DELTA_TRI1 : DELTA_TRI0);
-    de.merge_tri_delta(as_wire(dd) ? DELTA_TRI1 : DELTA_TRI0);
-    dd.merge_tri_delta(as_wire(dc) ? DELTA_TRI1 : DELTA_TRI0);
-    dc.merge_tri_delta(as_wire(db) ? DELTA_TRI1 : DELTA_TRI0);
-    db.merge_tri_delta(as_wire(da) ? DELTA_TRI1 : DELTA_TRI0);
-    da.merge_tri_delta(w           ? DELTA_TRI1 : DELTA_TRI0);
-  }
-
-  wire q1() const { return as_wire(da); }
-  wire q2() const { return as_wire(db); }
-  wire q3() const { return as_wire(dc); }
-  wire q4() const { return as_wire(dd); }
-  wire q5() const { return as_wire(de); }
-  wire q6() const { return as_wire(df); }
-  wire q7() const { return as_wire(dg); }
-  wire q8() const { return as_wire(dh); }
-  wire q9() const { return as_wire(di); }
-};
-*/
-
-//-----------------------------------------------------------------------------
 // Generic DFF
 
 struct DFF : public RegBase {
@@ -216,10 +165,10 @@ struct DFF : public RegBase {
   wire qn() const { return !to_wire(); }
 
   template<typename T>
-  void dffc(wire CLKp, T D)            { RegBase::dffc(CLKp, !CLKp, 1, 1, D); }
+  void dffc(wire CLKp, T D)            { RegBase::dffc(CLKp, D); }
 
   template<typename T>
-  void dffc(wire CLKp, bool RSTn, T D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dffc(wire CLKp, bool RSTn, T D) { RegBase::dffc(CLKp, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -241,11 +190,8 @@ struct DFF8n : public RegBase {
 
   template<typename T>
   void dff8nc(wire CLKn, T Dn) {
-    RegBase::dffc(!CLKn, CLKn, 1, 1, !as_wire(Dn));
+    RegBase::dffc(!CLKn, !as_wire(Dn));
   }
-
-  template<typename T>
-  void dff8nc(wire CLKn, wire CLKp, T Dn) { RegBase::dffc( CLKp, CLKn, 1, 1, !as_wire(Dn)); }
 
   wire to_wire()   const {
     CHECK_N(state & BIT_LOCKED);
@@ -274,7 +220,7 @@ struct DFF8p : public RegBase {
   wire qp08_next() const { return  to_wire_next(); }
 
   template<typename T>
-  void dff8pc(wire CLKp, T Dn) { RegBase::dffc( CLKp, !CLKp, 1, 1, !as_wire(Dn)); }
+  void dff8pc(wire CLKp, T Dn) { RegBase::dffc(CLKp, !as_wire(Dn)); }
 
   wire to_wire()   const {
     CHECK_N(state & BIT_LOCKED);
@@ -308,12 +254,7 @@ struct DFF9 : public RegBase {
 
   template<typename T>
   void dff9c(wire CLKp, wire SETn, T Dn) {
-    RegBase::dffc(CLKp, !CLKp, SETn, 1, !as_wire(Dn));
-  }
-
-  template<typename T>
-  void dff9c(wire CLKp, wire CLKn, wire SETn, T Dn) {
-    RegBase::dffc(CLKp,  CLKn, SETn, 1, !as_wire(Dn));
+    RegBase::dffc(CLKp, SETn, 1, !as_wire(Dn));
   }
 };
 
@@ -337,7 +278,7 @@ struct DFF11 : public RegBase {
   wire q11p() const { return to_wire(); }
 
   template<typename T>
-  void dff11c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff11c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -361,7 +302,7 @@ struct DFF13 : public RegBase {
   wire qp13() const { return  to_wire(); }
 
   template<typename T>
-  void dff13c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff13c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -392,7 +333,7 @@ struct DFF17 : public RegBase {
   wire qp17_next() const { return  to_wire_next(); }
 
   template<typename T>
-  void dff17c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, !CLKp, 1, RSTn, D); }
+  void dff17c(wire CLKp, wire RSTn, T D) { RegBase::dffc(CLKp, RSTn, D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -431,7 +372,7 @@ struct DFF20 : public RegBase{
     wire SETp = LOADp &&  as_wire(newD);
     wire RSTp = LOADp && !as_wire(newD);
     wire Qn = !(state & BIT_DATA);
-    dffc(!CLKn, CLKn, !SETp, !RSTp, Qn);
+    dffc(!CLKn, !SETp, !RSTp, Qn);
   }
 };
 
@@ -472,7 +413,7 @@ struct DFF22 : public RegBase {
 
   template<typename T>
   void dff22c(wire CLKp, wire SETn, wire RSTn, T D) {
-    dffc(CLKp, !CLKp, SETn, RSTn, D);
+    dffc(CLKp, SETn, RSTn, D);
   }
 };
 
@@ -555,7 +496,6 @@ struct Bus2 : public BitBase {
     CHECK_N(state & BIT_LOCKED);
     if (OEp) {
       CHECK_N(state & BIT_DRIVEN);
-      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != Dp);
       state |= BIT_DRIVEN;
       state |= uint8_t(Dp);
     }
@@ -590,7 +530,6 @@ struct Pin2 : public BitBase {
     CHECK_N(state & BIT_DRIVEN);
     CHECK_N(state & BIT_LOCKED);
     CHECK_N(state & BIT_DIRTY);
-    RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
     state |= BIT_DRIVEN;
     state |= uint8_t(D);
     state |= BIT_DIRTY;
@@ -600,7 +539,6 @@ struct Pin2 : public BitBase {
     CHECK_N(state & BIT_LOCKED);
     if (OEp) {
       CHECK_N(state & BIT_DRIVEN);
-      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
       state |= BIT_DRIVEN;
       state |= uint8_t(D);
     }
@@ -613,27 +551,10 @@ struct Pin2 : public BitBase {
     wire D = !HI;
     if (OEp && (HI == LO)) {
       CHECK_N(state & BIT_DRIVEN);
-      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
       state |= BIT_DRIVEN;
       state |= uint8_t(D);
     }
     state |= BIT_DIRTY;
-  }
-};
-
-//-----------------------------------------------------------------------------
-// Generic signal
-
-struct Signal : public BitBase {
-
-  wire qp() const {
-    CHECK_P(state & BIT_DIRTY);
-    return (state & BIT_DATA);
-  }
-
-  void set(wire D) {
-    CHECK_N(state & BIT_DIRTY);
-    state = uint8_t(D) | BIT_DIRTY;
   }
 };
 
@@ -681,7 +602,6 @@ struct LatchBase : public BitBase {
 
   void latch(wire SETp, wire RSTp) {
     CHECK_N(state & BIT_DIRTY);
-
     if (SETp) state |= BIT_DATA;
     if (RSTp) state &= ~BIT_DATA;
     state |= BIT_DIRTY;

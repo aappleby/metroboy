@@ -653,7 +653,7 @@ struct BusPU : public TriBase {
 //-----------------------------------------------------------------------------
 // Bus with pull-up, testing new stuff.
 
-struct VramBus2 : public BitBase {
+struct Bus2 : public BitBase {
 
   void tri(wire OEp, wire Dp) {
     CHECK_N(state & BIT_LOCKED);
@@ -684,18 +684,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-struct VramPin2 : public BitBase {
-  void tri(wire OEp, wire Dp) {
-    CHECK_N(state & BIT_LOCKED);
-    if (OEp) {
-#if _DEBUG
-      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != Dp);
-#endif
-      state |= BIT_DRIVEN;
-      state |= uint8_t(Dp);
-    }
-    state |= BIT_DIRTY;
-  }
+struct Pin2 : public BitBase {
 
   wire to_wire() {
     CHECK_P(state & BIT_DIRTY);
@@ -707,21 +696,35 @@ struct VramPin2 : public BitBase {
   wire qn() { return !to_wire(); }
 
   void setc(wire D) {
-    tri(1, D);
+    CHECK_N(state & BIT_LOCKED);
+    CHECK_N(state & BIT_DIRTY);
+    RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
+    state |= BIT_DRIVEN;
+    state |= uint8_t(D);
+    state |= BIT_DIRTY;
   }
 
   void pin_in(wire OEp, wire D) {
-    tri(OEp, D);
+    CHECK_N(state & BIT_LOCKED);
+    if (OEp) {
+      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
+      state |= BIT_DRIVEN;
+      state |= uint8_t(D);
+    }
+    state |= BIT_DIRTY;
   }
 
   void pin_out(wire OEp, wire HI, wire LO) {
-    if      (!OEp)       tri(0, wire(0));
-    else if ( HI &&  LO) tri(1, wire(0));
-    else if (!HI && !LO) tri(1, wire(1));
-    else if ( HI && !LO) tri(0, wire(0));
-    else                 CHECK_P(false);
+    CHECK_N(state & BIT_LOCKED);
+    CHECK_N(!HI && LO);
+    wire D = !HI;
+    if (OEp && (HI == LO)) {
+      RegBase::bus_collision |= (state & BIT_DIRTY) && (state & BIT_DRIVEN) && ((state & BIT_DATA) != D);
+      state |= BIT_DRIVEN;
+      state |= uint8_t(D);
+    }
+    state |= BIT_DIRTY;
   }
-
 };
 
 //-----------------------------------------------------------------------------
@@ -733,12 +736,8 @@ struct Signal : public BitBase {
     CHECK_P(state & BIT_DIRTY);
     return (state & BIT_DATA);
   }
-  wire qn() const {
-    CHECK_P(state & BIT_DIRTY);
-    return !(state & BIT_DATA);
-  }
 
-  void setc(wire D) {
+  void set(wire D) {
     CHECK_N(state & BIT_DIRTY);
     state = uint8_t(D) | BIT_DIRTY;
   }
@@ -748,7 +747,6 @@ struct Signal : public BitBase {
 // External pin with no pull-up
 
 struct PinNP : public TriBase {
-  PinNP() { state = 0; }
 
   wire to_wire() const {
     CHECK_P(state & BIT_DRIVEN);

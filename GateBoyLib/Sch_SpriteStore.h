@@ -498,19 +498,6 @@ struct SpriteStore {
     YZOF_STORE9_X7p.reset(REG_D0C0);
   }
 
-  // this has to be pulled up, otherwise it's floating during rendering if there's no sprite hit.
-  BusPU SPR_TRI_I0p; // -> oam bus
-  BusPU SPR_TRI_I1p;
-  BusPU SPR_TRI_I2p;
-  BusPU SPR_TRI_I3p;
-  BusPU SPR_TRI_I4p;
-  BusPU SPR_TRI_I5p;
-
-  BusNP SPR_TRI_L0; // -> vram bus
-  BusNP SPR_TRI_L1;
-  BusNP SPR_TRI_L2;
-  BusNP SPR_TRI_L3;
-
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
 

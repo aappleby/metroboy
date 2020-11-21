@@ -947,11 +947,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("SPRITE COUNT %02d\n", pack_u8(4, &ss.BESE_SPRITE_COUNT0));
 
+#if 0
   int spr_tri_idx  = pack_u8(6, &ss.SPR_TRI_I0p);
   int spr_tri_line = pack_u8(4, &ss.SPR_TRI_L0);
 
   d("SPR_TRI_IDX  = %2d %c%c%c%c%c%c\n", spr_tri_idx,  ss.SPR_TRI_I5p.c(), ss.SPR_TRI_I4p.c(), ss.SPR_TRI_I3p.c(), ss.SPR_TRI_I2p.c(), ss.SPR_TRI_I1p.c(), ss.SPR_TRI_I0p.c());
   d("SPR_TRI_LINE = %2d %c%c%c%c\n",     spr_tri_line, ss.SPR_TRI_L0.c(),  ss.SPR_TRI_L1.c(),  ss.SPR_TRI_L2.c(),  ss.SPR_TRI_L3.c());
+#endif
 
   d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
   d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));

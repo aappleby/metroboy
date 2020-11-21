@@ -1318,7 +1318,7 @@ void GateBoy::tock_slow() {
   //------------------------------------------------------------------------------
 
   Pin2 PIN_EXT_A[16];
-  PinPU PIN_EXT_D[8];
+  Pin2 PIN_EXT_D[8];
 
   /*#p04.LOKO*/ wire _LOKO_DMA_RSTp = nand2(dma_reg.LENE_DMA_TRIG_d4.qn16(), _CUNU_SYS_RSTn);
   /*#p04.LAPA*/ wire _LAPA_DMA_RSTn = not1(_LOKO_DMA_RSTp);
@@ -2658,23 +2658,25 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // Ext pins
 
-  PinNP PIN_EXT_CLK;    // PIN_75
-  PinNP PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  PinNP PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
-  PinNP PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
-
   {
+    Pin2 PIN_EXT_CLK;    // PIN_75
+    Pin2 PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
+    Pin2 PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
+    Pin2 PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
+
+    PIN_EXT_CLK.pin_out(1, _BUDE_xxxxEFGH, _BUDE_xxxxEFGH);
+
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(_LUMA_DMA_CARTp, _MOTY_CPU_EXT_RD);
     /* p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, _TOVA_MODE_DBG2n);
     /* p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, _UNOR_MODE_DBG2p);
-    PIN_EXT_RDn.pin_out_hilo(1, _UGAC_RD_A, _URUN_RD_D);
+    PIN_EXT_RDn.pin_out(1, _UGAC_RD_A, _URUN_RD_D);
 
     /* p08.MEXO*/ wire _MEXO_CPU_WRn_ABCDxxxH = not1(_APOV_CPU_WRp_xxxxEFGx);
     /* p08.NEVY*/ wire _NEVY = or2(_MEXO_CPU_WRn_ABCDxxxH, _MOCA_DBG_EXT_RD);
     /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, _LUMA_DMA_CARTp);
     /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, _TOVA_MODE_DBG2n);
     /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, _UNOR_MODE_DBG2p);
-    PIN_EXT_WRn.pin_out_hilo(1, _UVER_WR_A, _USUF_WR_D);
+    PIN_EXT_WRn.pin_out(1, _UVER_WR_A, _USUF_WR_D);
 
     /* p08.SOGY*/ wire _SOGY_A14n = not1(BUS_CPU_A[14]);
     /* p08.TUMA*/ wire _TUMA_CART_RAM = and3(BUS_CPU_A[13], _SOGY_A14n, BUS_CPU_A[15]);
@@ -2682,11 +2684,8 @@ void GateBoy::tock_slow() {
 
     /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A_xxCDEFGH = and3(_ABUZ_xxCDEFGH, _TYNU_ADDR_RAM, _TUNA_0000_FDFFp);
     /* p08.TYHO*/ wire _TYHO_PIN_EXT_CS_A_xxCDEFGH = mux2p(_LUMA_DMA_CARTp, dma_reg.MARU_DMA_A15n.qn07(), _TOZA_PIN_EXT_CS_A_xxCDEFGH);
-    PIN_EXT_CSn.pin_out_hilo(1, _TYHO_PIN_EXT_CS_A_xxCDEFGH, _TYHO_PIN_EXT_CS_A_xxCDEFGH);
-  }
+    PIN_EXT_CSn.pin_out(1, _TYHO_PIN_EXT_CS_A_xxCDEFGH, _TYHO_PIN_EXT_CS_A_xxCDEFGH);
 
-
-  /*if (!sys_rst)*/ {
     uint16_t ext_addr = pack_u16(16, &PIN_EXT_A[ 0]);
 
     // ROM read
@@ -2695,14 +2694,14 @@ void GateBoy::tock_slow() {
     wire rom_CEn = PIN_EXT_A[15].qp();
     wire rom_OEp = !rom_CEn && !rom_OEn && cart_buf;
 
-    PIN_EXT_D[0].pin_out(rom_OEp, cart_buf[rom_addr] & 0x01);
-    PIN_EXT_D[1].pin_out(rom_OEp, cart_buf[rom_addr] & 0x02);
-    PIN_EXT_D[2].pin_out(rom_OEp, cart_buf[rom_addr] & 0x04);
-    PIN_EXT_D[3].pin_out(rom_OEp, cart_buf[rom_addr] & 0x08);
-    PIN_EXT_D[4].pin_out(rom_OEp, cart_buf[rom_addr] & 0x10);
-    PIN_EXT_D[5].pin_out(rom_OEp, cart_buf[rom_addr] & 0x20);
-    PIN_EXT_D[6].pin_out(rom_OEp, cart_buf[rom_addr] & 0x40);
-    PIN_EXT_D[7].pin_out(rom_OEp, cart_buf[rom_addr] & 0x80);
+    PIN_EXT_D[0].pin_in(rom_OEp, cart_buf[rom_addr] & 0x01);
+    PIN_EXT_D[1].pin_in(rom_OEp, cart_buf[rom_addr] & 0x02);
+    PIN_EXT_D[2].pin_in(rom_OEp, cart_buf[rom_addr] & 0x04);
+    PIN_EXT_D[3].pin_in(rom_OEp, cart_buf[rom_addr] & 0x08);
+    PIN_EXT_D[4].pin_in(rom_OEp, cart_buf[rom_addr] & 0x10);
+    PIN_EXT_D[5].pin_in(rom_OEp, cart_buf[rom_addr] & 0x20);
+    PIN_EXT_D[6].pin_in(rom_OEp, cart_buf[rom_addr] & 0x40);
+    PIN_EXT_D[7].pin_in(rom_OEp, cart_buf[rom_addr] & 0x80);
 
     // Ext RAM read
     uint16_t eram_addr = (ext_addr & 0x1FFF);
@@ -2712,14 +2711,14 @@ void GateBoy::tock_slow() {
     wire eram_OEn  = PIN_EXT_RDn.qp();
     wire eram_OEp = !eram_CE1n && eram_CE2 && eram_WRn && !eram_OEn;
 
-    PIN_EXT_D[0].pin_out(eram_OEp, ext_ram[eram_addr] & 0x01);
-    PIN_EXT_D[1].pin_out(eram_OEp, ext_ram[eram_addr] & 0x02);
-    PIN_EXT_D[2].pin_out(eram_OEp, ext_ram[eram_addr] & 0x04);
-    PIN_EXT_D[3].pin_out(eram_OEp, ext_ram[eram_addr] & 0x08);
-    PIN_EXT_D[4].pin_out(eram_OEp, ext_ram[eram_addr] & 0x10);
-    PIN_EXT_D[5].pin_out(eram_OEp, ext_ram[eram_addr] & 0x20);
-    PIN_EXT_D[6].pin_out(eram_OEp, ext_ram[eram_addr] & 0x40);
-    PIN_EXT_D[7].pin_out(eram_OEp, ext_ram[eram_addr] & 0x80);
+    PIN_EXT_D[0].pin_in(eram_OEp, ext_ram[eram_addr] & 0x01);
+    PIN_EXT_D[1].pin_in(eram_OEp, ext_ram[eram_addr] & 0x02);
+    PIN_EXT_D[2].pin_in(eram_OEp, ext_ram[eram_addr] & 0x04);
+    PIN_EXT_D[3].pin_in(eram_OEp, ext_ram[eram_addr] & 0x08);
+    PIN_EXT_D[4].pin_in(eram_OEp, ext_ram[eram_addr] & 0x10);
+    PIN_EXT_D[5].pin_in(eram_OEp, ext_ram[eram_addr] & 0x20);
+    PIN_EXT_D[6].pin_in(eram_OEp, ext_ram[eram_addr] & 0x40);
+    PIN_EXT_D[7].pin_in(eram_OEp, ext_ram[eram_addr] & 0x80);
 
     // Cart RAM read
     uint16_t cram_addr = (ext_addr & 0x1FFF);
@@ -2729,14 +2728,14 @@ void GateBoy::tock_slow() {
     wire cram_OEn  = PIN_EXT_RDn.qp();
     wire cram_OEp = !cram_CS1n && cram_CS2 && !cram_OEn;
 
-    PIN_EXT_D[0].pin_out(cram_OEp, cart_ram[cram_addr] & 0x01);
-    PIN_EXT_D[1].pin_out(cram_OEp, cart_ram[cram_addr] & 0x02);
-    PIN_EXT_D[2].pin_out(cram_OEp, cart_ram[cram_addr] & 0x04);
-    PIN_EXT_D[3].pin_out(cram_OEp, cart_ram[cram_addr] & 0x08);
-    PIN_EXT_D[4].pin_out(cram_OEp, cart_ram[cram_addr] & 0x10);
-    PIN_EXT_D[5].pin_out(cram_OEp, cart_ram[cram_addr] & 0x20);
-    PIN_EXT_D[6].pin_out(cram_OEp, cart_ram[cram_addr] & 0x40);
-    PIN_EXT_D[7].pin_out(cram_OEp, cart_ram[cram_addr] & 0x80);
+    PIN_EXT_D[0].pin_in(cram_OEp, cart_ram[cram_addr] & 0x01);
+    PIN_EXT_D[1].pin_in(cram_OEp, cart_ram[cram_addr] & 0x02);
+    PIN_EXT_D[2].pin_in(cram_OEp, cart_ram[cram_addr] & 0x04);
+    PIN_EXT_D[3].pin_in(cram_OEp, cart_ram[cram_addr] & 0x08);
+    PIN_EXT_D[4].pin_in(cram_OEp, cart_ram[cram_addr] & 0x10);
+    PIN_EXT_D[5].pin_in(cram_OEp, cart_ram[cram_addr] & 0x20);
+    PIN_EXT_D[6].pin_in(cram_OEp, cart_ram[cram_addr] & 0x40);
+    PIN_EXT_D[7].pin_in(cram_OEp, cart_ram[cram_addr] & 0x80);
 
     // CPU data bus -> external data bus
     // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
@@ -2764,23 +2763,14 @@ void GateBoy::tock_slow() {
     /* p08.ROGY*/ wire _ROGY = nor2 (BUS_CPU_D[6], _RORU_CBD_TO_EPDn);
     /* p08.RYDA*/ wire _RYDA = nor2 (BUS_CPU_D[7], _RORU_CBD_TO_EPDn);
 
-    PIN_EXT_D[0].pin_int(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
-    PIN_EXT_D[1].pin_int(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
-    PIN_EXT_D[2].pin_int(_LULA_CBD_TO_EPDp, _RABY, _SULY);
-    PIN_EXT_D[3].pin_int(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
-    PIN_EXT_D[4].pin_int(_LULA_CBD_TO_EPDp, _RORY, _RESY);
-    PIN_EXT_D[5].pin_int(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
-    PIN_EXT_D[6].pin_int(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
-    PIN_EXT_D[7].pin_int(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
-
-    PIN_EXT_D[0].commit();
-    PIN_EXT_D[1].commit();
-    PIN_EXT_D[2].commit();
-    PIN_EXT_D[3].commit();
-    PIN_EXT_D[4].commit();
-    PIN_EXT_D[5].commit();
-    PIN_EXT_D[6].commit();
-    PIN_EXT_D[7].commit();
+    PIN_EXT_D[0].pin_out(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
+    PIN_EXT_D[1].pin_out(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
+    PIN_EXT_D[2].pin_out(_LULA_CBD_TO_EPDp, _RABY, _SULY);
+    PIN_EXT_D[3].pin_out(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
+    PIN_EXT_D[4].pin_out(_LULA_CBD_TO_EPDp, _RORY, _RESY);
+    PIN_EXT_D[5].pin_out(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
+    PIN_EXT_D[6].pin_out(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
+    PIN_EXT_D[7].pin_out(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 
     // ERAM write
     if (!eram_CE1n && eram_CE2 && !eram_WRn) {
@@ -4167,8 +4157,6 @@ void GateBoy::tock_slow() {
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
   {
-    PIN_EXT_CLK.pin_out_hilo(1, _BUDE_xxxxEFGH, _BUDE_xxxxEFGH);
-
     PIN_CPU_EXT_CLKGOOD.setc(sys_clkgood);
     PIN_CPU_STARTp.setc(_TABA_POR_TRIGn);
     PIN_CPU_SYS_RSTp.setc(clk_reg.AFER_SYS_RSTp.qp13());

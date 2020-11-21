@@ -14,9 +14,13 @@
 #include <SDL2/SDL.h>
 #endif
 
+#include <windows.h>
+
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+  SetPriorityClass(GetCurrentProcess(), 0x00000080);
+
   App* app = new GateBoyApp();
   AppHost* app_host = new AppHost(app);
   int ret = app_host->app_main(argc, argv);

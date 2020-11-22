@@ -135,7 +135,7 @@ struct GateBoy {
   // In run mode, BOOT_BITn must _not_ be reset.
   /*p07.TEPU*/ DFF17 BOOT_BITn;
 
-  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAM;
+  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
   //DelayGlitch lcd_data1_delay;
   //DelayGlitch lcd_data0_delay;

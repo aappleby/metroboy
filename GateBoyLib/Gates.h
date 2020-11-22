@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------------
 
 template<typename T>
-inline wire as_wire(T a) { return a.to_wire(); }
+inline wire as_wire_old(T a) { return a.to_wire(); }
 
 template<>
-inline wire as_wire(wire a) { return a; }
+inline wire as_wire_old(wire a) { return a; }
 
 template<>
-inline wire as_wire(int32_t a) { return wire(a); }
+inline wire as_wire_old(int32_t a) { return wire(a); }
 
 //-----------------------------------------------------------------------------
 
@@ -92,6 +92,15 @@ struct BitBase {
     state = BIT_LOCKED | BIT_DIRTY | uint8_t(D);
   }
 
+  void dff_SETnRSTn(wire SETn, wire RSTn) {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+
+    if (!SETn) { state |= BIT_DATA; }
+    if (!RSTn) { state &= ~BIT_DATA; }
+    state |= BIT_LOCKED;
+  }
+
   void dff_RSTn(wire RSTn) {
     CHECK_P(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
@@ -118,7 +127,7 @@ struct BitBase {
     uint8_t cb = CLKp << 1;
 
     if (!ca && cb) {
-      state = (CLKp << 1) + as_wire(Dp);
+      state = (CLKp << 1) + as_wire_old(Dp);
     }
     else {
       state = (CLKp << 1) + qp;
@@ -136,7 +145,7 @@ struct BitBase {
     uint8_t cb = (!CLKn) << 1;
 
     if (!ca && cb) {
-      state = ((!CLKn) << 1) + !as_wire(Dn);
+      state = ((!CLKn) << 1) + !as_wire_old(Dn);
     }
     else {
       state = ((!CLKn) << 1) + qp;
@@ -154,7 +163,7 @@ struct BitBase {
     uint8_t cb = CLKp << 1;
 
     if (!ca && cb) {
-      state = (CLKp << 1) + !as_wire(Dn);
+      state = (CLKp << 1) + !as_wire_old(Dn);
     }
     else {
       state = (CLKp << 1) + qp;
@@ -192,17 +201,14 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public BitBase {
-  wire qn07() const { return !to_wire(); }
-  wire qp08() const { return  to_wire(); }
+  wire qn07_old() const { return !to_wire_old(); }
+  wire qp08_old() const { return  to_wire_old(); }
 
-  wire qn07_next() const { return !to_wire_new(); }
-  wire qp08_next() const { return  to_wire_new(); }
+  wire qn07_new() const { return !to_wire_new(); }
+  wire qp08_new() const { return  to_wire_new(); }
 
   template<typename T>
-  void dff8n_ff(wire CLKn, T Dn) {
-    dff_nn(CLKn, Dn);
-    state |= BIT_LOCKED;
-  }
+  void dff8n_ff(wire CLKn, T Dn) { dff_nn(CLKn, Dn); state |= BIT_LOCKED; }
 };
 
 //-----------------------------------------------------------------------------
@@ -219,17 +225,14 @@ struct DFF8n : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public BitBase {
-  wire qn07() const { return !to_wire(); }
-  wire qp08() const { return  to_wire(); }
+  wire qn07_old() const { return !to_wire_old(); }
+  wire qp08_old() const { return  to_wire_old(); }
 
-  wire qn07_next() const { return !to_wire_new(); }
-  wire qp08_next() const { return  to_wire_new(); }
+  wire qn07_new() const { return !to_wire_new(); }
+  wire qp08_new() const { return  to_wire_new(); }
 
   template<typename T>
-  void dff8p_ff(wire CLKp, T Dn) {
-    dff_pn(CLKp, Dn);
-    state |= BIT_LOCKED;
-  }
+  void dff8p_ff(wire CLKp, T Dn) { dff_pn(CLKp, Dn); state |= BIT_LOCKED; }
 };
 
 //-----------------------------------------------------------------------------
@@ -248,25 +251,15 @@ struct DFF8p : public BitBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public BitBase {
-  wire qn08() const { return !to_wire(); }
-  wire qp09() const { return  to_wire(); }
+  wire qn08_old() const { return !to_wire_old(); }
+  wire qp09_old() const { return  to_wire_old(); }
 
-  wire qn08_next() const { return !to_wire_new(); }
-  wire qp09_next() const { return  to_wire_new(); }
+  wire qn08_new() const { return !to_wire_new(); }
+  wire qp09_new() const { return  to_wire_new(); }
 
   template<typename T>
-  void dff9_ff(wire CLKp, T Dn) {
-    dff_pn(CLKp, Dn);
-  }
-
-  // FIXME the SETn here is slightly weird. too many inversions?
-  void dff9_set(wire SETn) {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    if (!SETn) { state |= BIT_DATA; }
-    state |= BIT_LOCKED;
-  }
+  void dff9_ff(wire CLKp, T Dn) { dff_pn(CLKp, Dn); }
+  void dff9_set(wire SETn) { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
 };
 
 //-----------------------------------------------------------------------------
@@ -286,21 +279,12 @@ struct DFF9 : public BitBase {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public BitBase {
-  wire q11p() const { return to_wire(); }
-  wire q11p_next() const { return to_wire_new(); }
+  wire q11p_old() const { return to_wire_old(); }
+  wire q11p_new() const { return to_wire_new(); }
 
   template<typename T>
-  void dff11_ff(wire CLKp, T Dp) {
-    dff_pp(CLKp, Dp);
-  }
-
-  void dff11_rs(wire RSTn) {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    if (!RSTn) { state &= ~BIT_DATA; }
-    state |= BIT_LOCKED;
-  }
+  void dff11_ff(wire CLKp, T Dp) { dff_pp(CLKp, Dp); }
+  void dff11_rs(wire RSTn) { dff_RSTn(RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -321,20 +305,11 @@ struct DFF11 : public BitBase {
 
 struct DFF13 : public BitBase {
 
-  wire qn12() const { return !to_wire_old(); }
-  wire qp13() const { return  to_wire_old(); }
+  wire qn12_old() const { return !to_wire_old(); }
+  wire qp13_old() const { return  to_wire_old(); }
 
-  void dff13_ff(wire CLKp, wire Dp) {
-    dff_pp(CLKp, Dp);
-  }
-
-  void dff13_rs(wire RSTn) {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    if (!RSTn) { state &= ~BIT_DATA; }
-    state |= BIT_LOCKED;
-  }
+  void dff13_ff(wire CLKp, wire Dp) { dff_pp(CLKp, Dp); }
+  void dff13_rs(wire RSTn)          { dff_RSTn(RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -368,17 +343,8 @@ struct DFF17 : public BitBase {
   wire qn16_new() const { return !to_wire_new(); }
   wire qp17_new() const { return  to_wire_new(); }
 
-  void dff17_ff(wire CLKp, wire Dp) {
-    dff_pp(CLKp, Dp);
-  }
-
-  void dff17_rs(wire RSTn) {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    if (!RSTn) { state &= ~BIT_DATA; }
-    state |= BIT_LOCKED;
-  }
+  void dff17_ff(wire CLKp, wire Dp) { dff_pp(CLKp, Dp); }
+  void dff17_rs(wire RSTn) { dff_RSTn(RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -406,11 +372,14 @@ struct DFF17 : public BitBase {
 // DFF20_20 << CLKn
 
 struct DFF20 : public BitBase{
-  wire qp01() const { return  to_wire(); }
-  wire qn17() const { return !to_wire(); }
+  wire qp01_old() const { return  to_wire_old(); }
+  wire qn17_old() const { return !to_wire_old(); }
 
-  wire qp01_next() const { return  to_wire_new(); }
-  wire qn17_next() const { return !to_wire_new(); }
+  wire qp01_mid() const { return  to_wire_mid(); }
+  wire qn17_mid() const { return !to_wire_mid(); }
+
+  wire qp01_new() const { return  to_wire_new(); }
+  wire qn17_new() const { return !to_wire_new(); }
 
   void dff20_ff(wire CLKn) {
     CHECK_N(state & BIT_DIRTY);
@@ -436,16 +405,10 @@ struct DFF20 : public BitBase{
 
     if (LOADp) {
       state &= ~BIT_DATA;
-      state |= (uint8_t)as_wire(newD);
+      state |= (uint8_t)as_wire_old(newD);
     }
 
     state |= BIT_LOCKED;
-  }
-
-  template<typename T>
-  void dff20c(wire CLKn, wire LOADp, T newD) {
-    dff20_ff(CLKn);
-    dff20_load(LOADp, newD);
   }
 };
 
@@ -479,8 +442,8 @@ struct DFF20 : public BitBase{
 
 struct DFF22 : public BitBase {
 
-  wire qn15()      const { return !to_wire_old(); }
-  wire qp16()      const { return  to_wire_old(); }
+  wire qn15_old()  const { return !to_wire_old(); }
+  wire qp16_old()  const { return  to_wire_old(); }
 
   wire qn15_mid()  const { return !to_wire_mid(); }
   wire qp16_mid()  const { return  to_wire_mid(); }
@@ -488,18 +451,8 @@ struct DFF22 : public BitBase {
   wire qn15_next() const { return !to_wire_new(); }
   wire qp16_next() const { return  to_wire_new(); }
 
-  void dff22_ff(wire CLKp, wire Dp) {
-    dff_pp(CLKp, Dp);
-  }
-
-  void dff22_sr(wire SETn, wire RSTn) {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-
-    if (!SETn) { state |=  BIT_DATA; }
-    if (!RSTn) { state &= ~BIT_DATA; }
-    state |= BIT_LOCKED;
-  }
+  void dff22_ff(wire CLKp, wire Dp)   { dff_pp(CLKp, Dp); }
+  void dff22_sr(wire SETn, wire RSTn) { dff_SETnRSTn(SETn, RSTn); }
 };
 
 
@@ -593,9 +546,9 @@ struct Bus2 : public BitBase {
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
 
-  template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire(Dn) : 0); }
-  template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire(Dn) : 0); }
-  template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire(Dp) : 0); }
+  template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire_old(Dn) : 0); }
+  template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire_old(Dn) : 0); }
+  template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire_old(Dp) : 0); }
 };
 
 //-----------------------------------------------------------------------------
@@ -757,8 +710,8 @@ struct TpLatch : public LatchBase {
   template<typename T>
   void tp_latchc(wire HOLDn, T D) {
     if (HOLDn) {
-      bool SETp = HOLDn &&  as_wire(D);
-      bool RSTp = HOLDn && !as_wire(D);
+      bool SETp = HOLDn &&  as_wire_old(D);
+      bool RSTp = HOLDn && !as_wire_old(D);
       latch(SETp, RSTp);
     }
     state |= BIT_DIRTY;
@@ -782,7 +735,7 @@ inline uint8_t pack_u8(int c, const T* b) {
   static_assert(sizeof(T) == 1, "bad bitbase");
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= as_wire(b[i]) << i;
+    r |= as_wire_old(b[i]) << i;
   }
   return r;
 }
@@ -792,7 +745,7 @@ inline uint8_t pack_u8n(int c, const T* b) {
   static_assert(sizeof(T) == 1, "bad bitbase");
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= (!as_wire(b[i])) << i;
+    r |= (!as_wire_old(b[i])) << i;
   }
   return r;
 }
@@ -804,7 +757,7 @@ inline uint16_t pack_u16(int c, const T* b) {
   static_assert(sizeof(T) == 1, "bad bitbase");
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= as_wire(b[i]) << i;
+    r |= as_wire_old(b[i]) << i;
   }
   return r;
 }
@@ -814,7 +767,7 @@ inline uint16_t pack_u16n(int c, const T* b) {
   static_assert(sizeof(T) == 1, "bad bitbase");
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= (!as_wire(b[i])) << i;
+    r |= (!as_wire_old(b[i])) << i;
   }
   return r;
 }
@@ -851,12 +804,12 @@ inline uint16_t pack_u16n(int c, const T* b) {
 inline wire not1(wire a) { return !a; }
 
 template<typename T>
-inline wire not1(T a) { return !as_wire(a); }
+inline wire not1(T a) { return !as_wire_old(a); }
 
 inline wire and2(wire a, wire b) { return a & b; }
 
 template<typename T>
-inline wire and2(T a, wire b) { return as_wire(a) & b; }
+inline wire and2(T a, wire b) { return as_wire_old(a) & b; }
 
 inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
 inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
@@ -867,10 +820,10 @@ inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { retur
 inline wire or2(wire a, wire b) { return a | b; }
 
 template<typename T>
-inline wire or2(T a, wire b) { return as_wire(a) | b; }
+inline wire or2(T a, wire b) { return as_wire_old(a) | b; }
 
 template<typename T>
-inline wire or2(wire a, T b) { return a | as_wire(b); }
+inline wire or2(wire a, T b) { return a | as_wire_old(b); }
 
 inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
 inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
@@ -879,14 +832,14 @@ inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d
 inline wire xor2 (wire a, wire b) { return a ^ b; }
 
 template<typename T>
-inline wire xor2 (wire a, T b) { return a ^ as_wire(b); }
+inline wire xor2 (wire a, T b) { return a ^ as_wire_old(b); }
 
 inline wire xnor2(wire a, wire b) { return a == b; }
 
 inline wire nor2(wire a, wire b) { return !(a | b); }
 
 template<typename T>
-inline wire nor2(T a, wire b) { return !(as_wire(a) | b); }
+inline wire nor2(T a, wire b) { return !(as_wire_old(a) | b); }
 
 inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
 inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
@@ -898,7 +851,7 @@ inline wire nand2(wire a, wire b) { return !(a & b); }
 inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
 
 template<typename T>
-inline wire nand3(wire a, wire b, T c) { return !(a & b & as_wire(c)); }
+inline wire nand3(wire a, wire b, T c) { return !(a & b & as_wire_old(c)); }
 
 inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
 inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
@@ -911,14 +864,14 @@ inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
 template<typename T>
 inline wire nand2(T a, wire b) {
   if (!b) return 1;
-  return !as_wire(a);
+  return !as_wire_old(a);
 }
 
 template<typename T>
 inline wire or_and3(wire a, T b, wire c) {
   if (!c) return 0;
   if (a) return 1;
-  return as_wire(b);
+  return as_wire_old(b);
 }
 
 //-----------------------------------------------------------------------------
@@ -940,7 +893,7 @@ inline wire mux2p(wire m, wire a, wire b) {
 
 template<typename T>
 inline wire mux2p(wire m, T a, T b) {
-  return m ? as_wire(a) : as_wire(b);
+  return m ? as_wire_old(a) : as_wire_old(b);
 }
 
 // Five-rung mux cells are _inverting_. m = 1 selects input A
@@ -950,7 +903,7 @@ inline wire mux2n(wire m, wire a, wire b) {
 
 template<typename T>
 inline wire mux2n(wire m, wire a, T b) {
-  return !(m ? a : as_wire(b));
+  return !(m ? a : as_wire_old(b));
 }
 
 inline wire amux2(wire a0, wire b0, wire a1, wire b1) {

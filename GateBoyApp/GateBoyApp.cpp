@@ -711,19 +711,19 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Clocks =====\001\n");
-  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGH.c(), gb->clk_reg.ALEF_AxxxxFGH.c(), gb->clk_reg.APUK_ABxxxxGH.c(), gb->clk_reg.ADYK_ABCxxxxH.c());
+  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGH_t1.c(), gb->clk_reg.ALEF_AxxxxFGH_t1.c(), gb->clk_reg.APUK_ABxxxxGH_t1.c(), gb->clk_reg.ADYK_ABCxxxxH_t1.c());
   d("\n");
-  d("AFUR_xxxxEFGH %c\n", gb->clk_reg.AFUR_xxxxEFGH.c());
-  d("ALEF_AxxxxFGH %c\n", gb->clk_reg.ALEF_AxxxxFGH.c());
-  d("APUK_ABxxxxGH %c\n", gb->clk_reg.APUK_ABxxxxGH.c());
-  d("ADYK_ABCxxxxH %c\n", gb->clk_reg.ADYK_ABCxxxxH.c());
-  d("VENA_ABCDxxxx %c\n", gb->clk_reg.VENA_xxCDEFxx.c());
-  d("WOSU_xBCxxFGx %c\n", gb->clk_reg.WOSU_AxxDExxH.c());
-  d("WUVU_xxCDxxGH %c\n", gb->clk_reg.WUVU_ABxxEFxx.c());
+  d("AFUR_xxxxEFGH %c\n", gb->clk_reg.AFUR_xxxxEFGH_t1.c());
+  d("ALEF_AxxxxFGH %c\n", gb->clk_reg.ALEF_AxxxxFGH_t1.c());
+  d("APUK_ABxxxxGH %c\n", gb->clk_reg.APUK_ABxxxxGH_t1.c());
+  d("ADYK_ABCxxxxH %c\n", gb->clk_reg.ADYK_ABCxxxxH_t1.c());
+  d("VENA_ABCDxxxx %c\n", gb->clk_reg.VENA_xxCDEFxx_t1.c());
+  d("WOSU_xBCxxFGx %c\n", gb->clk_reg.WOSU_AxxDExxH_t1.c());
+  d("WUVU_xxCDxxGH %c\n", gb->clk_reg.WUVU_ABxxEFxx_t1.c());
   d("\n");
 
   d("\002===== Reset =====\001\n");
-  d("TUBO_WAITINGp  %c\n", gb->clk_reg.TUBO_WAITINGp.c());
+  d("TUBO_WAITINGp  %c\n", gb->clk_reg.TUBO_WAITINGp_t0.c());
   d("ASOL_POR_DONEn %c\n", gb->clk_reg.ASOL_POR_DONEn.c());
   d("AFER_SYS_RSTp  %c\n", gb->clk_reg.AFER_SYS_RSTp.c());
   d("\n");

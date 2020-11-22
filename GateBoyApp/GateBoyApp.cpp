@@ -711,19 +711,19 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Clocks =====\001\n");
-  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGH_t1.c(), gb->clk_reg.ALEF_AxxxxFGH_t1.c(), gb->clk_reg.APUK_ABxxxxGH_t1.c(), gb->clk_reg.ADYK_ABCxxxxH_t1.c());
+  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGHp.c(), gb->clk_reg.ALEF_AxxxxFGHp.c(), gb->clk_reg.APUK_ABxxxxGHp.c(), gb->clk_reg.ADYK_ABCxxxxHp.c());
   d("\n");
-  d("AFUR_xxxxEFGH %c\n", gb->clk_reg.AFUR_xxxxEFGH_t1.c());
-  d("ALEF_AxxxxFGH %c\n", gb->clk_reg.ALEF_AxxxxFGH_t1.c());
-  d("APUK_ABxxxxGH %c\n", gb->clk_reg.APUK_ABxxxxGH_t1.c());
-  d("ADYK_ABCxxxxH %c\n", gb->clk_reg.ADYK_ABCxxxxH_t1.c());
-  d("VENA_ABCDxxxx %c\n", gb->clk_reg.VENA_xxCDEFxx_t1.c());
-  d("WOSU_xBCxxFGx %c\n", gb->clk_reg.WOSU_AxxDExxH_t1.c());
-  d("WUVU_xxCDxxGH %c\n", gb->clk_reg.WUVU_ABxxEFxx_t1.c());
+  d("AFUR_xxxxEFGH %c\n", gb->clk_reg.AFUR_xxxxEFGHp.c());
+  d("ALEF_AxxxxFGH %c\n", gb->clk_reg.ALEF_AxxxxFGHp.c());
+  d("APUK_ABxxxxGH %c\n", gb->clk_reg.APUK_ABxxxxGHp.c());
+  d("ADYK_ABCxxxxH %c\n", gb->clk_reg.ADYK_ABCxxxxHp.c());
+  d("VENA_ABCDxxxx %c\n", gb->clk_reg.VENA_xxCDEFxxp.c());
+  d("WOSU_xBCxxFGx %c\n", gb->clk_reg.WOSU_AxxDExxHp.c());
+  d("WUVU_xxCDxxGH %c\n", gb->clk_reg.WUVU_ABxxEFxxp.c());
   d("\n");
 
   d("\002===== Reset =====\001\n");
-  d("TUBO_WAITINGp  %c\n", gb->clk_reg.TUBO_WAITINGp_t0.c());
+  d("TUBO_WAITINGp  %c\n", gb->clk_reg.TUBO_WAITINGp.c());
   d("ASOL_POR_DONEn %c\n", gb->clk_reg.ASOL_POR_DONEn.c());
   d("AFER_SYS_RSTp  %c\n", gb->clk_reg.AFER_SYS_RSTp.c());
   d("\n");
@@ -733,7 +733,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("TIMA   : 0x%02x %d\n",      gb->tim_reg.get_tima(),   gb->tim_reg.get_tima());
   d("TMA    : 0x%02x %d\n",      gb->tim_reg.get_tma(),    gb->tim_reg.get_tma());
   d("TAC    : 0x%02x %d\n",      gb->tim_reg.get_tac(),    gb->tim_reg.get_tac());
-  d("NYDU_TIMA_D7_DELAY   %c\n", gb->tim_reg.NYDU_TIMA_D7_DELAY.c());
+  d("NYDU_TIMA_D7_DELAY   %c\n", gb->tim_reg.NYDU_TIMA7p_DELAY.c());
   d("MOBA_TIMER_OVERFLOWp %c\n", gb->tim_reg.MOBA_TIMER_OVERFLOWp.c());
   d("\n");
 

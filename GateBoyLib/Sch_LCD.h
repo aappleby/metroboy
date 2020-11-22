@@ -13,22 +13,22 @@ struct LcdRegisters {
     ANEL_LINE_P002p.reset(REG_D0C0);
     RUTU_LINE_P910p.reset(REG_D0C1);
 
-    MUWY_Y0p.reset(REG_D0C0);
-    MYRO_Y1p.reset(REG_D0C1);
-    LEXA_Y2p.reset(REG_D0C1);
-    LYDO_Y3p.reset(REG_D0C1);
-    LOVU_Y4p.reset(REG_D0C1);
-    LEMA_Y5p.reset(REG_D0C1);
-    MATO_Y6p.reset(REG_D0C1);
-    LAFO_Y7p.reset(REG_D0C1);
+    MUWY_LY0p.reset(REG_D0C0);
+    MYRO_LY1p.reset(REG_D0C1);
+    LEXA_LY2p.reset(REG_D0C1);
+    LYDO_LY3p.reset(REG_D0C1);
+    LOVU_LY4p.reset(REG_D0C1);
+    LEMA_LY5p.reset(REG_D0C1);
+    MATO_LY6p.reset(REG_D0C1);
+    LAFO_LY7p.reset(REG_D0C1);
 
-    SAXO_X0p.reset(REG_D0C0);
-    TYPO_X1p.reset(REG_D1C1);
-    VYZO_X2p.reset(REG_D0C0);
-    TELU_X3p.reset(REG_D0C1);
-    SUDE_X4p.reset(REG_D0C1);
-    TAHA_X5p.reset(REG_D1C1);
-    TYRY_X6p.reset(REG_D1C0);
+    SAXO_LX0p.reset(REG_D0C0);
+    TYPO_LX1p.reset(REG_D1C1);
+    VYZO_LX2p.reset(REG_D0C0);
+    TELU_LX3p.reset(REG_D0C1);
+    SUDE_LX4p.reset(REG_D0C1);
+    TAHA_LX5p.reset(REG_D1C1);
+    TYRY_LX6p.reset(REG_D1C0);
 
     POPU_VBLANKp .reset(REG_D1C0);
     MYTA_y153p  .reset(REG_D1C1);
@@ -55,21 +55,21 @@ struct LcdRegisters {
     ANEL_LINE_P002p.reset(REG_D0C0);
     RUTU_LINE_P910p.reset(REG_D0C0);
 
-    MUWY_Y0p.reset(REG_D0C0);
-    MYRO_Y1p.reset(REG_D0C0);
-    LEXA_Y2p.reset(REG_D0C0);
-    LYDO_Y3p.reset(REG_D0C0);
-    LOVU_Y4p.reset(REG_D0C0);
-    LEMA_Y5p.reset(REG_D0C0);
-    MATO_Y6p.reset(REG_D0C0);
-    LAFO_Y7p.reset(REG_D0C0);
-    SAXO_X0p.reset(REG_D0C0);
-    TYPO_X1p.reset(REG_D0C0);
-    VYZO_X2p.reset(REG_D0C0);
-    TELU_X3p.reset(REG_D0C0);
-    SUDE_X4p.reset(REG_D0C0);
-    TAHA_X5p.reset(REG_D0C0);
-    TYRY_X6p.reset(REG_D0C0);
+    MUWY_LY0p.reset(REG_D0C0);
+    MYRO_LY1p.reset(REG_D0C0);
+    LEXA_LY2p.reset(REG_D0C0);
+    LYDO_LY3p.reset(REG_D0C0);
+    LOVU_LY4p.reset(REG_D0C0);
+    LEMA_LY5p.reset(REG_D0C0);
+    MATO_LY6p.reset(REG_D0C0);
+    LAFO_LY7p.reset(REG_D0C0);
+    SAXO_LX0p.reset(REG_D0C0);
+    TYPO_LX1p.reset(REG_D0C0);
+    VYZO_LX2p.reset(REG_D0C0);
+    TELU_LX3p.reset(REG_D0C0);
+    SUDE_LX4p.reset(REG_D0C0);
+    TAHA_LX5p.reset(REG_D0C0);
+    TYRY_LX6p.reset(REG_D0C0);
 
     POPU_VBLANKp.reset(REG_D0C0);
     MYTA_y153p.reset(REG_D0C0);
@@ -88,8 +88,8 @@ struct LcdRegisters {
     RAHA_LYC7n.reset(REG_D0C0);
   }
 
-  uint8_t get_lx() const  { return pack_u8(7, &SAXO_X0p); }
-  uint8_t get_ly() const  { return pack_u8(8, &MUWY_Y0p); }
+  uint8_t get_lx() const  { return pack_u8(7, &SAXO_LX0p); }
+  uint8_t get_ly() const  { return pack_u8(8, &MUWY_LY0p); }
   uint8_t get_lyc() const { return pack_u8n(8, &SYRY_LYC0n); }
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
@@ -100,23 +100,23 @@ struct LcdRegisters {
   /*p21.RUTU*/ DFF17 RUTU_LINE_P910p; // -> pix pipe, could move PURE here.
 
   // -> pix pipe, sprite scanner, vram bus. Increments at P910
-  /*p21.MUWY*/ DFF17 MUWY_Y0p;
-  /*p21.MYRO*/ DFF17 MYRO_Y1p;
-  /*p21.LEXA*/ DFF17 LEXA_Y2p;
-  /*p21.LYDO*/ DFF17 LYDO_Y3p;
-  /*p21.LOVU*/ DFF17 LOVU_Y4p;
-  /*p21.LEMA*/ DFF17 LEMA_Y5p;
-  /*p21.MATO*/ DFF17 MATO_Y6p;
-  /*p21.LAFO*/ DFF17 LAFO_Y7p;
+  /*p21.MUWY*/ DFF17 MUWY_LY0p;
+  /*p21.MYRO*/ DFF17 MYRO_LY1p;
+  /*p21.LEXA*/ DFF17 LEXA_LY2p;
+  /*p21.LYDO*/ DFF17 LYDO_LY3p;
+  /*p21.LOVU*/ DFF17 LOVU_LY4p;
+  /*p21.LEMA*/ DFF17 LEMA_LY5p;
+  /*p21.MATO*/ DFF17 MATO_LY6p;
+  /*p21.LAFO*/ DFF17 LAFO_LY7p;
 
   // Increments at P010 (because of RUTU holding it in reset) and then at every A phase.
-  /*p21.SAXO*/ DFF17 SAXO_X0p;
-  /*p21.TYPO*/ DFF17 TYPO_X1p;
-  /*p21.VYZO*/ DFF17 VYZO_X2p;
-  /*p21.TELU*/ DFF17 TELU_X3p;
-  /*p21.SUDE*/ DFF17 SUDE_X4p;
-  /*p21.TAHA*/ DFF17 TAHA_X5p;
-  /*p21.TYRY*/ DFF17 TYRY_X6p;
+  /*p21.SAXO*/ DFF17 SAXO_LX0p;
+  /*p21.TYPO*/ DFF17 TYPO_LX1p;
+  /*p21.VYZO*/ DFF17 VYZO_LX2p;
+  /*p21.TELU*/ DFF17 TELU_LX3p;
+  /*p21.SUDE*/ DFF17 SUDE_LX4p;
+  /*p21.TAHA*/ DFF17 TAHA_LX5p;
+  /*p21.TYRY*/ DFF17 TYRY_LX6p;
 
   /*p21.POPU*/ DFF17 POPU_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
   /*p21.MYTA*/ DFF17 MYTA_y153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002

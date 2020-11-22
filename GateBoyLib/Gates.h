@@ -630,7 +630,8 @@ struct Pin2 : public BitBase {
 struct LatchBase : public BitBase {
 
   wire to_wire() const {
-    CHECK_P(!sim_running || state & BIT_DIRTY);
+    // Can't check dirty here, as we need to read XYMU before it's been updated.
+    //CHECK_P(!sim_running || state & BIT_DIRTY);
     return state & BIT_DATA;
   }
 

@@ -835,12 +835,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   */
   d("\n");
 
-  d("CATU_LINE_P000      %c\n", gb->lcd_reg.CATU_LINE_P000.c());
-  d("NYPE_LINE_P002      %c\n", gb->lcd_reg.NYPE_LINE_P002.c());
-  d("ANEL_LINE_P002      %c\n", gb->lcd_reg.ANEL_LINE_P002.c());
-  d("RUTU_LINE_P910      %c\n", gb->lcd_reg.RUTU_LINE_P910.c());
-  d("MYTA_LINE_153p      %c\n", gb->lcd_reg.MYTA_LINE_153p     .c());
-  d("POPU_IN_VBLANKp     %c\n", gb->lcd_reg.POPU_IN_VBLANKp    .c());
+  d("CATU_LINE_P000      %c\n", gb->lcd_reg.CATU_LINE_P000p.c());
+  d("NYPE_LINE_P002      %c\n", gb->lcd_reg.NYPE_LINE_P002p.c());
+  d("ANEL_LINE_P002      %c\n", gb->lcd_reg.ANEL_LINE_P002p.c());
+  d("RUTU_LINE_P910      %c\n", gb->lcd_reg.RUTU_LINE_P910p.c());
+  d("MYTA_LINE_153p      %c\n", gb->lcd_reg.MYTA_y153p     .c());
+  d("POPU_IN_VBLANKp     %c\n", gb->lcd_reg.POPU_VBLANKp    .c());
   d("ROPO_LY_MATCH_SYNCp %c\n", gb->lcd_reg.ROPO_LY_MATCH_SYNCp.c());
   d("\n");
 

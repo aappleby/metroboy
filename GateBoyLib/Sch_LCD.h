@@ -8,10 +8,10 @@ struct LcdRegisters {
   void reset_cart() {
     ROPO_LY_MATCH_SYNCp.reset(REG_D1C0);
 
-    CATU_LINE_P000.reset(REG_D0C1);
-    NYPE_LINE_P002.reset(REG_D0C0);
-    ANEL_LINE_P002.reset(REG_D0C0);
-    RUTU_LINE_P910.reset(REG_D0C1);
+    CATU_LINE_P000p.reset(REG_D0C1);
+    NYPE_LINE_P002p.reset(REG_D0C0);
+    ANEL_LINE_P002p.reset(REG_D0C0);
+    RUTU_LINE_P910p.reset(REG_D0C1);
 
     MUWY_Y0p.reset(REG_D0C0);
     MYRO_Y1p.reset(REG_D0C1);
@@ -30,8 +30,8 @@ struct LcdRegisters {
     TAHA_X5p.reset(REG_D1C1);
     TYRY_X6p.reset(REG_D1C0);
 
-    POPU_IN_VBLANKp .reset(REG_D1C0);
-    MYTA_LINE_153p  .reset(REG_D1C1);
+    POPU_VBLANKp .reset(REG_D1C0);
+    MYTA_y153p  .reset(REG_D1C1);
     SYGU_LINE_STROBE.reset(REG_D0C1);
     MEDA_VSYNC_OUTn .reset(REG_D0C1);
     LUCA_LINE_EVEN  .reset(REG_D1C1);
@@ -50,10 +50,10 @@ struct LcdRegisters {
   void reset_boot() {
     ROPO_LY_MATCH_SYNCp.reset(REG_D0C0);
 
-    CATU_LINE_P000.reset(REG_D0C0);
-    NYPE_LINE_P002.reset(REG_D0C0);
-    ANEL_LINE_P002.reset(REG_D0C0);
-    RUTU_LINE_P910.reset(REG_D0C0);
+    CATU_LINE_P000p.reset(REG_D0C0);
+    NYPE_LINE_P002p.reset(REG_D0C0);
+    ANEL_LINE_P002p.reset(REG_D0C0);
+    RUTU_LINE_P910p.reset(REG_D0C0);
 
     MUWY_Y0p.reset(REG_D0C0);
     MYRO_Y1p.reset(REG_D0C0);
@@ -71,8 +71,8 @@ struct LcdRegisters {
     TAHA_X5p.reset(REG_D0C0);
     TYRY_X6p.reset(REG_D0C0);
 
-    POPU_IN_VBLANKp.reset(REG_D0C0);
-    MYTA_LINE_153p.reset(REG_D0C0);
+    POPU_VBLANKp.reset(REG_D0C0);
+    MYTA_y153p.reset(REG_D0C0);
     SYGU_LINE_STROBE.reset(REG_D0C0);
     MEDA_VSYNC_OUTn.reset(REG_D0C0);
     LUCA_LINE_EVEN.reset(REG_D0C0);
@@ -94,10 +94,10 @@ struct LcdRegisters {
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 
-  /*p29.CATU*/ DFF17 CATU_LINE_P000; // -> pix pipe, scanner.
-  /*p21.NYPE*/ DFF17 NYPE_LINE_P002;
-  /*p28.ANEL*/ DFF17 ANEL_LINE_P002; // -> pix pipe for BYHA?
-  /*p21.RUTU*/ DFF17 RUTU_LINE_P910; // -> pix pipe, could move PURE here.
+  /*p29.CATU*/ DFF17 CATU_LINE_P000p; // -> pix pipe, scanner.
+  /*p21.NYPE*/ DFF17 NYPE_LINE_P002p;
+  /*p28.ANEL*/ DFF17 ANEL_LINE_P002p; // -> pix pipe for BYHA?
+  /*p21.RUTU*/ DFF17 RUTU_LINE_P910p; // -> pix pipe, could move PURE here.
 
   // -> pix pipe, sprite scanner, vram bus. Increments at P910
   /*p21.MUWY*/ DFF17 MUWY_Y0p;
@@ -118,8 +118,8 @@ struct LcdRegisters {
   /*p21.TAHA*/ DFF17 TAHA_X5p;
   /*p21.TYRY*/ DFF17 TYRY_X6p;
 
-  /*p21.POPU*/ DFF17 POPU_IN_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
-  /*p21.MYTA*/ DFF17 MYTA_LINE_153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
+  /*p21.POPU*/ DFF17 POPU_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.MYTA*/ DFF17 MYTA_y153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
   /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;
   /*p24.LUCA*/ DFF17 LUCA_LINE_EVEN;

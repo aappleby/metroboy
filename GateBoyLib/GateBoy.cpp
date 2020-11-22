@@ -1435,9 +1435,10 @@ void GateBoy::tock_slow() {
   /*#p21.WODU*/ bool _WODU_HBLANKp;
 
   /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp_t0, _AVAP_SCAN_DONE_TRIGp_t2);
+  /*#p21.XYMU*/ wire _XYMU_RENDERINGp_t2 = pix_pipe.XYMU_RENDERINGn.qn03();
 
-  /* p24.LOBY*/ _LOBY_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn03());
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(_BYJO_SCANNINGn_t0, pix_pipe.XYMU_RENDERINGn.qn03());
+  /* p24.LOBY*/ _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp_t2);
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(_BYJO_SCANNINGn_t0, _XYMU_RENDERINGp_t2);
 
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, pix_pipe.XYLO_LCDC_SPENn.qn08_old());
   /* p29.YDUG*/ _YDUG_STORE0_MATCHn = nand3(_AROR_MATCH_ENp, ZAKO_STORE0_MATCHAp_t0, XEBA_STORE0_MATCHBp_t0);

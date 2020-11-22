@@ -853,6 +853,12 @@ void GateBoy::tock_slow() {
   /*#p29.ALES*/ wire _ALES_y144n_t0 = not1(_XYVO_y144p_t0);
   /*#p21.NOKO*/ wire _NOKO_y153p_t0 = and4(_LAFO_Y7p_t0, _LOVU_Y4p_t0, _LYDO_Y3p_t0, _MUWY_Y0p_t0); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
 
+  /*#p29.CATU*/ wire _CATU_LINE_P000p_t0 = lcd_reg.CATU_LINE_P000.qp17_old();
+  /*#p21.RUTU*/ wire _RUTU_LINE_P910p_t0 = lcd_reg.RUTU_LINE_P910.qp17_old();
+  /*#p21.PURE*/ wire _PURE_LINE_P908n_t0 = not1(_RUTU_LINE_P910p_t0);
+  /*#p21.SELA*/ wire _SELA_LINE_P908p_t0 = not1(_PURE_LINE_P908n_t0);
+  /*#p29.ABOV*/ wire _ABOV_LINE_P908p_t0 = and2(_SELA_LINE_P908p_t0, _ALES_y144n_t0);
+
   //----------------------------------------
 
   /* p07.TERA*/ wire _TERA_BOOT_BITp_t0  = not1(BOOT_BITn.qp17_old());
@@ -1069,25 +1075,28 @@ void GateBoy::tock_slow() {
   /*#p21.RUTU*/ lcd_reg.RUTU_LINE_P910.dff17_ff(_SONO_ABxxxxGH_t1, _SANU_x113p_t0);
   /*#p21.RUTU*/ lcd_reg.RUTU_LINE_P910.dff17_rs(_LYFE_LCD_RSTn_t0);
 
-  /*#p21.RUTU*/ wire _RUTU_LINE_P910p_t2 = lcd_reg.RUTU_LINE_P910.qp17_new();
-
-  /*#p21.PURE*/ wire _PURE_LINE_P908n_t2     = not1(_RUTU_LINE_P910p_t2);
-  /*#p21.SELA*/ wire _SELA_LINE_P908p_t2     = not1(_PURE_LINE_P908n_t2);
-  /*#p29.ABOV*/ wire _ABOV_VID_LINE_P908p_t2 = and2(_SELA_LINE_P908p_t2, _ALES_y144n_t0);
-
-
-  /*#p29.CATU*/ lcd_reg.CATU_LINE_P000.dff17_ff(_XUPY_ABxxEFxx_t1, _ABOV_VID_LINE_P908p_t2); // FIXME
+  /*#p29.CATU*/ lcd_reg.CATU_LINE_P000.dff17_ff(_XUPY_ABxxEFxx_t1, _ABOV_LINE_P908p_t0); // FIXME
   /*#p29.CATU*/ lcd_reg.CATU_LINE_P000.dff17_rs(_ABEZ_VID_RSTn_t0);
 
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000.qp17_new());
-
-  /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002.dff17_ff(_TALU_xxCDEFxx_t1, _RUTU_LINE_P910p_t2);
+  /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002.dff17_ff(_TALU_xxCDEFxx_t1, _RUTU_LINE_P910p_t0);
   /*#p21.NYPE*/ lcd_reg.NYPE_LINE_P002.dff17_rs(_LYFE_LCD_RSTn_t0);
 
-  /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002.dff17_ff(_AWOH_xxCDxxGH_t1, lcd_reg.CATU_LINE_P000.qp17_new());
+  /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002.dff17_ff(_AWOH_xxCDxxGH_t1, _CATU_LINE_P000p_t0);
   /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002.dff17_rs(_ABEZ_VID_RSTn_t0);
 
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(lcd_reg.ANEL_LINE_P002.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+  /*#p21.RUTU*/ wire _RUTU_LINE_P910p_t2 = lcd_reg.RUTU_LINE_P910.qp17_new();
+  /*#p29.CATU*/ wire _CATU_LINE_P000p_t2 = lcd_reg.CATU_LINE_P000.qp17_new();
+  /*#p28.ANEL*/ wire _ANEL_LINE_P002p_t2 = lcd_reg.ANEL_LINE_P002.qp17_new();
+
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(_CATU_LINE_P000p_t2);
+  /*#p21.PURE*/ wire _PURE_LINE_P908n_t2 = not1(_RUTU_LINE_P910p_t2);
+  /*#p21.SELA*/ wire _SELA_LINE_P908p_t2 = not1(_PURE_LINE_P908n_t2);
+  /*#p29.ABOV*/ wire _ABOV_LINE_P908p_t2 = and2(_SELA_LINE_P908p_t2, _ALES_y144n_t0);
+
+
+
+
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(_ANEL_LINE_P002p_t2, _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp = not1(_BYHA_LINE_TRIGn);
   /* p27.XAHY*/ wire _XAHY_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
   /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);

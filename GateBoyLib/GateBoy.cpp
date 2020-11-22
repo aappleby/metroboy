@@ -763,6 +763,21 @@ void GateBoy::tock_slow() {
   /* p29.XOTA*/ wire _XOTA_AxCxExGx_t0 = not1(_XYVA_xBxDxFxH_t0);
   /* p29.XYFY*/ wire _XYFY_xBxDxFxH_t0 = not1(_XOTA_AxCxExGx_t0);
 
+  /* p01.AFUR*/ wire _AFUR_xxxxEFGHn_t0 = clk_reg.AFUR_xxxxEFGHp.qn08_old();
+  /* p01.ALEF*/ wire _ALEF_AxxxxFGHn_t0 = clk_reg.ALEF_AxxxxFGHp.qn08_old();
+  /* p01.APUK*/ wire _APUK_ABxxxxGHn_t0 = clk_reg.APUK_ABxxxxGHp.qn08_old();
+  /* p01.ADYK*/ wire _ADYK_ABCxxxxHp_t0 = clk_reg.ADYK_ABCxxxxHp.qp09_old();
+
+  /* p29.WOSU*/ wire _WOSU_AxxDExxHn_t0 = clk_reg.WOSU_AxxDExxHp.qn16_old();
+  /* p29.WUVU*/ wire _WUVU_ABxxEFxxn_t0 = clk_reg.WUVU_ABxxEFxxp.qn16_old();
+  /* p21.VENA*/ wire _VENA_xxCDEFxxn_t0 = clk_reg.VENA_xxCDEFxxp.qn16_old();
+
+  //----------------------------------------
+
+  /* p07.TERA*/ wire _TERA_BOOT_BITp_t0  = not1(BOOT_BITn.qp17_old());
+  /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp_t0 = and2(_TERA_BOOT_BITp_t0, _TULO_ADDR_00XXp_t0);
+  PIN_CPU_BOOTp.set(_TUTU_ADDR_BOOTp_t0);
+
 
 
 
@@ -801,27 +816,25 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // Phase clocks
 
-  {
-    wire _AFUR_xxxxEFGH_t0 = clk_reg.AFUR_xxxxEFGHp.qn08_old();
-    wire _ALEF_AxxxxFGH_t0 = clk_reg.ALEF_AxxxxFGHp.qn08_old();
-    wire _APUK_ABxxxxGH_t0 = clk_reg.APUK_ABxxxxGHp.qn08_old();
-    wire _ADYK_ABCxxxxH_t0 = clk_reg.ADYK_ABCxxxxHp.qp09_old();
+  /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9_ff(!_ATAL_xBxDxFxH_t0, _ADYK_ABCxxxxHp_t0);
+  /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9_ff( _ATAL_xBxDxFxH_t0, _AFUR_xxxxEFGHn_t0);
+  /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9_ff(!_ATAL_xBxDxFxH_t0, _ALEF_AxxxxFGHn_t0);
+  /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9_ff( _ATAL_xBxDxFxH_t0, _APUK_ABxxxxGHn_t0);
 
-    /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9_ff(!_ATAL_xBxDxFxH_t0, _ADYK_ABCxxxxH_t0);
-    /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9_ff( _ATAL_xBxDxFxH_t0, _AFUR_xxxxEFGH_t0);
-    /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9_ff(!_ATAL_xBxDxFxH_t0, _ALEF_AxxxxFGH_t0);
-    /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9_ff( _ATAL_xBxDxFxH_t0, _APUK_ABxxxxGH_t0);
+  /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9_set(_UPOJ_MODE_PRODn_t0);
+  /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9_set(_UPOJ_MODE_PRODn_t0);
+  /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9_set(_UPOJ_MODE_PRODn_t0);
+  /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9_set(_UPOJ_MODE_PRODn_t0);
 
-    /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9_set(_UPOJ_MODE_PRODn_t0);
-    /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9_set(_UPOJ_MODE_PRODn_t0);
-    /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9_set(_UPOJ_MODE_PRODn_t0);
-    /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9_set(_UPOJ_MODE_PRODn_t0);
-  }
+  /* p01.AFUR*/ wire _AFUR_xxxxEFGHp_t1 = clk_reg.AFUR_xxxxEFGHp.qp09_new();
+  /* p01.ALEF*/ wire _ALEF_AxxxxFGHn_t1 = clk_reg.ALEF_AxxxxFGHp.qn08_new();
+  /* p01.APUK*/ wire _APUK_ABxxxxGHp_t1 = clk_reg.APUK_ABxxxxGHp.qp09_new();
+  /* p01.ADYK*/ wire _ADYK_ABCxxxxHn_t1 = clk_reg.ADYK_ABCxxxxHp.qn08_new();
 
-  /*#p01.ADAR*/ wire _ADAR_ABCxxxxH_t1 = not1(clk_reg.ADYK_ABCxxxxHp.qn08_new());
-  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH_t1 = not1(clk_reg.ALEF_AxxxxFGHp.qn08_new());
-  /*#p01.ATYP*/ wire _ATYP_ABCDxxxx_t1 = not1(clk_reg.AFUR_xxxxEFGHp.qp09_new());
-  /*#p01.AROV*/ wire _AROV_xxCDEFxx_t1 = not1(clk_reg.APUK_ABxxxxGHp.qp09_new());
+  /*#p01.ATYP*/ wire _ATYP_ABCDxxxx_t1 = not1(_AFUR_xxxxEFGHp_t1);
+  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH_t1 = not1(_ALEF_AxxxxFGHn_t1);
+  /*#p01.AROV*/ wire _AROV_xxCDEFxx_t1 = not1(_APUK_ABxxxxGHp_t1);
+  /*#p01.ADAR*/ wire _ADAR_ABCxxxxH_t1 = not1(_ADYK_ABCxxxxHn_t1);
 
   /*#p01.AFAS*/ wire _AFAS_xxxxEFGx_t1 = nor2(_ADAR_ABCxxxxH_t1, _ATYP_ABCDxxxx_t1);
   /*#p01.AJAX*/ wire _AJAX_xxxxEFGH_t1 = not1(_ATYP_ABCDxxxx_t1);
@@ -869,28 +882,38 @@ void GateBoy::tock_slow() {
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx_t1 = nor2(_UNOR_MODE_DBG2p_t0, _AGUT_xxCDEFGH_t1);
   /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH_t1 = not1(_AWOD_ABxxxxxx_t1);
 
-
   //----------------------------------------
   // Video clocks
 
   // inverting the clock to VENA doesn't seem to break anything, which is really weird
 
-  /* p29.WOSU*/ clk_reg.WOSU_AxxDExxHp.dff17_ff(_XYFY_xBxDxFxH_t0,                   clk_reg.WUVU_ABxxEFxxp.qn16_old());
-  /* p29.WUVU*/ clk_reg.WUVU_ABxxEFxxp.dff17_ff(_XOTA_AxCxExGx_t0,                   clk_reg.WUVU_ABxxEFxxp.qn16_old());
-  /* p21.VENA*/ clk_reg.VENA_xxCDEFxxp.dff17_ff(clk_reg.WUVU_ABxxEFxxp.qn16_mid(), clk_reg.VENA_xxCDEFxxp.qn16_old());
+  /* p29.WOSU*/ clk_reg.WOSU_AxxDExxHp.dff17_ff(_XYFY_xBxDxFxH_t0,                 _WUVU_ABxxEFxxn_t0);
+  /* p29.WUVU*/ clk_reg.WUVU_ABxxEFxxp.dff17_ff(_XOTA_AxCxExGx_t0,                 _WUVU_ABxxEFxxn_t0);
+  /* p21.VENA*/ clk_reg.VENA_xxCDEFxxp.dff17_ff(clk_reg.WUVU_ABxxEFxxp.qn16_mid(), _VENA_xxCDEFxxn_t0);
 
   /* p29.WOSU*/ clk_reg.WOSU_AxxDExxHp.dff17_rs(_XAPO_VID_RSTn);
   /* p29.WUVU*/ clk_reg.WUVU_ABxxEFxxp.dff17_rs(_XAPO_VID_RSTn);
   /* p21.VENA*/ clk_reg.VENA_xxCDEFxxp.dff17_rs(_XAPO_VID_RSTn);
 
-  /*#p29.XUPY*/ wire _XUPY_ABxxEFxx_t1 = not1(clk_reg.WUVU_ABxxEFxxp.qn16_new());
-  /*#p21.TALU*/ wire _TALU_xxCDEFxx_t1 = not1(clk_reg.VENA_xxCDEFxxp.qn16_new());
-  /*#p29.XOCE*/ wire _XOCE_xBCxxFGx_t1 = not1(clk_reg.WOSU_AxxDExxHp.qp17_new());
+  /* p29.WOSU*/ wire _WOSU_AxxDExxHp_t1 = clk_reg.WOSU_AxxDExxHp.qp17_new();
+  /* p29.WUVU*/ wire _WUVU_ABxxEFxxn_t1 = clk_reg.WUVU_ABxxEFxxp.qn16_new();
+  /* p21.VENA*/ wire _VENA_xxCDEFxxn_t1 = clk_reg.VENA_xxCDEFxxp.qn16_new();
+
+  /*#p29.XOCE*/ wire _XOCE_xBCxxFGx_t1 = not1(_WOSU_AxxDExxHp_t1);
+  /*#p29.XUPY*/ wire _XUPY_ABxxEFxx_t1 = not1(_WUVU_ABxxEFxxn_t1);
+  /*#p21.TALU*/ wire _TALU_xxCDEFxx_t1 = not1(_VENA_xxCDEFxxn_t1);
 
   /*#p21.SONO*/ wire _SONO_ABxxxxGH_t1 = not1(_TALU_xxCDEFxx_t1);
   /*#p30.CYKE*/ wire _CYKE_ABxxEFxx_t1 = not1(_XUPY_ABxxEFxx_t1);
   /*#p30.WUDA*/ wire _WUDA_xxCDxxGH_t1 = not1(_CYKE_ABxxEFxx_t1);
   /*#p28.AWOH*/ wire _AWOH_xxCDxxGH_t1 = not1(_XUPY_ABxxEFxx_t1);
+
+  //----------------------------------------
+  // CPU write signal
+
+  /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH_t1 = nand2(PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx_t1);
+  /* p01.APOV*/ wire _APOV_CPU_WRp_xxxxEFGx_t1 = not1(_AREV_CPU_WRn_ABCDxxxH_t1);
+
 
 
 
@@ -983,20 +1006,6 @@ void GateBoy::tock_slow() {
 
 
 
-
-
-  //----------------------------------------
-  // Bootrom bit
-
-  /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn.qp17_old());
-  /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and2(_TERA_BOOT_BITp, _TULO_ADDR_00XXp_t0);
-  PIN_CPU_BOOTp.set(_TUTU_ADDR_BOOTp);
-
-  //----------------------------------------
-  // CPU write signal
-
-  /* p01.AREV*/ wire _AREV_CPU_WRn_ABCDxxxH_t1 = nand2(PIN_CPU_WRp.qp(), _AFAS_xxxxEFGx_t1);
-  /* p01.APOV*/ wire _APOV_CPU_WRp_xxxxEFGx_t1 = not1(_AREV_CPU_WRn_ABCDxxxH_t1);
 
 
   // Ignoring debug stuff for now
@@ -2957,7 +2966,7 @@ void GateBoy::tock_slow() {
 
     // A15 is "special"
 
-    /* p08.SOBY*/ wire _SOBY_A15n = nor2(BUS_CPU_A_t0[15], _TUTU_ADDR_BOOTp);
+    /* p08.SOBY*/ wire _SOBY_A15n = nor2(BUS_CPU_A_t0[15], _TUTU_ADDR_BOOTp_t0);
     /* p08.SEPY*/ wire _SEPY_A15p_ABxxxxxx = nand2(_ABUZ_xxCDEFGH_t1, _SOBY_A15n);
     /* p08.TAZY*/ wire _TAZY_A15p = mux2p(_LUMA_DMA_CARTp, dma_reg.MARU_DMA_A15n.qn07_old(), _SEPY_A15p_ABxxxxxx);
     /* p08.SUZE*/ wire _SUZE_PIN_EXT_A15n = nand2(_TAZY_A15p, _RYCA_MODE_DBG2n_t0);
@@ -3920,7 +3929,7 @@ void GateBoy::tock_slow() {
 
   /* BOOT -> CBD */ {
     /* p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(_UMUT_MODE_DBG1p_t0);
-    /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(_TEDO_CPU_RDp, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
+    /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(_TEDO_CPU_RDp, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp_t0); // def AND
     /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_ADDR_00XX_t0);
     /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
 

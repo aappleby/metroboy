@@ -12,14 +12,14 @@ struct PixelPipe {
     RYDY.reset(REG_D0C0);
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
 
-    XEHO_X0p.reset(REG_D1C1);
-    SAVY_X1p.reset(REG_D1C1);
-    XODU_X2p.reset(REG_D1C1);
-    XYDO_X3p.reset(REG_D0C1);
-    TUHU_X4p.reset(REG_D0C1);
-    TUKY_X5p.reset(REG_D1C1);
-    TAKO_X6p.reset(REG_D0C1);
-    SYBE_X7p.reset(REG_D1C1);
+    XEHO_PX0p.reset(REG_D1C1);
+    SAVY_PX1p.reset(REG_D1C1);
+    XODU_PX2p.reset(REG_D1C1);
+    XYDO_PX3p.reset(REG_D0C1);
+    TUHU_PX4p.reset(REG_D0C1);
+    TUKY_PX5p.reset(REG_D1C1);
+    TAKO_PX6p.reset(REG_D0C1);
+    SYBE_PX7p.reset(REG_D1C1);
 
     WYKA_WIN_X3.reset(REG_D0C0);
     WODY_WIN_X4.reset(REG_D0C1);
@@ -228,14 +228,14 @@ struct PixelPipe {
 
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
 
-    XEHO_X0p.reset(REG_D0C0);
-    SAVY_X1p.reset(REG_D0C0);
-    XODU_X2p.reset(REG_D0C0);
-    XYDO_X3p.reset(REG_D0C0);
-    TUHU_X4p.reset(REG_D0C0);
-    TUKY_X5p.reset(REG_D0C0);
-    TAKO_X6p.reset(REG_D0C0);
-    SYBE_X7p.reset(REG_D0C0);
+    XEHO_PX0p.reset(REG_D0C0);
+    SAVY_PX1p.reset(REG_D0C0);
+    XODU_PX2p.reset(REG_D0C0);
+    XYDO_PX3p.reset(REG_D0C0);
+    TUHU_PX4p.reset(REG_D0C0);
+    TUKY_PX5p.reset(REG_D0C0);
+    TAKO_PX6p.reset(REG_D0C0);
+    SYBE_PX7p.reset(REG_D0C0);
 
     WYKA_WIN_X3.reset(REG_D0C0);
     WODY_WIN_X4.reset(REG_D0C0);
@@ -414,7 +414,7 @@ struct PixelPipe {
   int get_wy() const        { return pack_u8n(8, &NESO_WY0n); }
   int get_win_x() const     { return pack_u8(5, &WYKA_WIN_X3); }
   int get_win_y() const     { return pack_u8(8, &VYNO_WIN_Y0); }
-  int get_pix_count() const { return pack_u8(8, &XEHO_X0p); }
+  int get_pix_count() const { return pack_u8(8, &XEHO_PX0p); }
 
   wire lcd_on() {
     return XONA_LCDC_LCDENn.qn08_old();
@@ -433,14 +433,14 @@ struct PixelPipe {
   /*p27.SOVY*/ DFF17 SOVY_WIN_FIRST_TILE_B;
 
   // Pixel counter
-  /*p21.XEHO*/ DFF17 XEHO_X0p;
-  /*p21.SAVY*/ DFF17 SAVY_X1p;
-  /*p21.XODU*/ DFF17 XODU_X2p;
-  /*p21.XYDO*/ DFF17 XYDO_X3p;
-  /*p21.TUHU*/ DFF17 TUHU_X4p;
-  /*p21.TUKY*/ DFF17 TUKY_X5p;
-  /*p21.TAKO*/ DFF17 TAKO_X6p;
-  /*p21.SYBE*/ DFF17 SYBE_X7p;
+  /*p21.XEHO*/ DFF17 XEHO_PX0p;
+  /*p21.SAVY*/ DFF17 SAVY_PX1p;
+  /*p21.XODU*/ DFF17 XODU_PX2p;
+  /*p21.XYDO*/ DFF17 XYDO_PX3p;
+  /*p21.TUHU*/ DFF17 TUHU_PX4p;
+  /*p21.TUKY*/ DFF17 TUKY_PX5p;
+  /*p21.TAKO*/ DFF17 TAKO_PX6p;
+  /*p21.SYBE*/ DFF17 SYBE_PX7p;
 
   // Current window pixel coord
   /*p27.WYKA*/ DFF17 WYKA_WIN_X3;

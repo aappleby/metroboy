@@ -15,8 +15,8 @@ struct SpriteScanner {
     FAHA_SCAN4.reset(REG_D0C1);
     FONY_SCAN5.reset(REG_D1C1);
 
-    BYBA_SCAN_DONE_A.reset(REG_D1C1);
-    DOBA_SCAN_DONE_B.reset(REG_D1C0);
+    BYBA_SCAN_DONE_Ap.reset(REG_D1C1);
+    DOBA_SCAN_DONE_Bp.reset(REG_D1C0);
 
     XADU_SPRITE_IDX0p.reset(REG_D0C1);
     XEDY_SPRITE_IDX1p.reset(REG_D0C1);
@@ -37,8 +37,8 @@ struct SpriteScanner {
     FAHA_SCAN4.reset(REG_D0C0);
     FONY_SCAN5.reset(REG_D0C0);
 
-    BYBA_SCAN_DONE_A.reset(REG_D0C0);
-    DOBA_SCAN_DONE_B.reset(REG_D0C0);
+    BYBA_SCAN_DONE_Ap.reset(REG_D0C0);
+    DOBA_SCAN_DONE_Bp.reset(REG_D0C0);
 
     XADU_SPRITE_IDX0p.reset(REG_D0C0);
     XEDY_SPRITE_IDX1p.reset(REG_D0C0);
@@ -61,8 +61,8 @@ struct SpriteScanner {
   /*p28.FAHA*/ DFF17 FAHA_SCAN4;
   /*p28.FONY*/ DFF17 FONY_SCAN5;
 
-  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_A;
-  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_B;
+  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap;
+  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp;
 
   /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
   /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;

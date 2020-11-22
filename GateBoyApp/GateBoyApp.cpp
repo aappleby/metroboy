@@ -846,7 +846,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Pix Pipe =====\001\n");
 
-  d("PIX COUNT  0x%02x\n", pack_u8(8, &gb->pix_pipe.XEHO_X0p));
+  d("PIX COUNT  0x%02x\n", pack_u8(8, &gb->pix_pipe.XEHO_PX0p));
   d("FF40 LCDC  0x%02x\n", pack_u8n(8, &gb->pix_pipe.VYXE_LCDC_BGENn));
 
   // FIXME plumb sadu/xaty in here somehow
@@ -942,8 +942,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("BESU_SCANNINGp   %c\n", gb->sprite_scanner.BESU_SCANNINGp  .c());
   d("CENO_SCANNINGp   %c\n", gb->sprite_scanner.CENO_SCANNINGp  .c());
-  d("BYBA_SCAN_DONE_A %c\n", gb->sprite_scanner.BYBA_SCAN_DONE_A.c());
-  d("DOBA_SCAN_DONE_B %c\n", gb->sprite_scanner.DOBA_SCAN_DONE_B.c());
+  d("BYBA_SCAN_DONE_A %c\n", gb->sprite_scanner.BYBA_SCAN_DONE_Ap.c());
+  d("DOBA_SCAN_DONE_B %c\n", gb->sprite_scanner.DOBA_SCAN_DONE_Bp.c());
   d("\n");
   d("LCD Y      %03d\n", gb->lcd_reg.get_ly());
 

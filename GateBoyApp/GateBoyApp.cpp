@@ -985,9 +985,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("NYVA_BFETCH_S2           %c\n", gb->tile_fetcher.NYVA_BFETCH_S2.c());
   d("LYZU_BFETCH_S0_D1        %c\n", gb->tile_fetcher.LYZU_BFETCH_S0_D1.c());
   d("\n");
-  d("NYKA_FETCH_DONE_P11      %c\n", gb->tile_fetcher.NYKA_FETCH_DONE_P11.c());
-  d("PORY_FETCH_DONE_P12      %c\n", gb->tile_fetcher.PORY_FETCH_DONE_P12.c());
-  d("PYGO_FETCH_DONE_P13      %c\n", gb->tile_fetcher.PYGO_FETCH_DONE_P13.c());
+  d("NYKA_FETCH_DONE_P11      %c\n", gb->tile_fetcher.NYKA_FETCH_DONEp_P11.c());
+  d("PORY_FETCH_DONE_P12      %c\n", gb->tile_fetcher.PORY_FETCH_DONEp_P12.c());
+  d("PYGO_FETCH_DONE_P13      %c\n", gb->tile_fetcher.PYGO_FETCH_DONEp_P13.c());
   d("POKY_PRELOAD_DONEp       %c\n", gb->tile_fetcher.POKY_PRELOAD_LATCHp.c());
   d("\n");
   d("LONY_FETCH_RUNNINGp      %c\n", gb->tile_fetcher.LONY_BG_FETCH_RUNNINGp.c()); // 1 for phases 0-11, 0 for 12-15

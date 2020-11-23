@@ -804,8 +804,8 @@ inline uint16_t pack_u16n(int c, const T* b) {
 
 inline wire not1(wire a) { return !a; }
 
-template<typename T>
-inline wire not1(T a) { return !as_wire_old(a); }
+//template<typename T>
+//inline wire not1(T a) { return !as_wire_old(a); }
 
 inline wire and2(wire a, wire b) { return a & b; }
 

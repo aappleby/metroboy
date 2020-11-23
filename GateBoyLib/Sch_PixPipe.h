@@ -6,10 +6,10 @@
 struct PixelPipe {
   void reset_cart() {
     XYMU_RENDERINGn.reset(1);
-    PYNU_WIN_MODE_A.reset(0);
+    PYNU_WIN_MODE_Ap.reset(0);
 
-    PUKU.reset(REG_D1C0);
-    RYDY.reset(REG_D0C0);
+    PUKU_WIN_HITn.reset(REG_D1C0);
+    RYDY_WIN_HITp.reset(REG_D0C0);
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
 
     XEHO_PX0p.reset(REG_D1C1);
@@ -68,13 +68,13 @@ struct PixelPipe {
     REFE_STAT_OAI_ENn.reset(REG_D1C1);
     RUGU_STAT_LYI_ENn.reset(REG_D1C1);
 
-    NOPA_WIN_MODE_B.reset(REG_D0C0);
+    NOPA_WIN_MODE_Bp.reset(REG_D0C0);
     REJO_WY_MATCH_LATCH.reset(0);
     SARY_WY_MATCH.reset(REG_D0C0);
     RYFA_FETCHn_A.reset(REG_D0C1);
     RENE_FETCHn_B.reset(REG_D0C0);
     PYCO_WX_MATCH_A.reset(REG_D0C0);
-    NUNU_WX_MATCH_B.reset(REG_D0C1);
+    NUNU_WX_MATCH_Bp.reset(REG_D0C1);
 
     ROXY_SCX_FINE_MATCH_LATCHn.reset(1);
 
@@ -219,11 +219,11 @@ struct PixelPipe {
 
   void reset_boot() {
     XYMU_RENDERINGn.reset(0);
-    PYNU_WIN_MODE_A.reset(0);
+    PYNU_WIN_MODE_Ap.reset(0);
 
     // FIXME check boot state
-    PUKU.reset(REG_D1C0);
-    RYDY.reset(REG_D0C0);
+    PUKU_WIN_HITn.reset(REG_D1C0);
+    RYDY_WIN_HITp.reset(REG_D0C0);
     //RYDY_WIN_FIRST_TILE_A.reset(TRI_D0NP);
 
     SOVY_WIN_FIRST_TILE_B.reset(REG_D0C0);
@@ -284,13 +284,13 @@ struct PixelPipe {
     REFE_STAT_OAI_ENn.reset(REG_D0C0);
     RUGU_STAT_LYI_ENn.reset(REG_D0C0);
 
-    NOPA_WIN_MODE_B.reset(REG_D0C0);
+    NOPA_WIN_MODE_Bp.reset(REG_D0C0);
     REJO_WY_MATCH_LATCH.reset(0);;
     SARY_WY_MATCH.reset(REG_D0C0);
     RYFA_FETCHn_A.reset(REG_D0C0);
     RENE_FETCHn_B.reset(REG_D0C0);
     PYCO_WX_MATCH_A.reset(REG_D0C0);
-    NUNU_WX_MATCH_B.reset(REG_D0C0);
+    NUNU_WX_MATCH_Bp.reset(REG_D0C0);
 
     ROXY_SCX_FINE_MATCH_LATCHn.reset(0);
 
@@ -423,10 +423,10 @@ struct PixelPipe {
   //----------------------------------------
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
-  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
+  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;
 
-  /*p27.PUKU*/ Gate PUKU;
-  /*p27.RYDY*/ Gate RYDY;
+  /*p27.PUKU*/ Gate PUKU_WIN_HITn;
+  /*p27.RYDY*/ Gate RYDY_WIN_HITp;
 
   ///*p27.RYDY*/ Gate RYDY_WIN_FIRST_TILE_A; // NorLatch with p27.PUKU
 
@@ -496,13 +496,13 @@ struct PixelPipe {
   /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn;
   /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn;
 
-  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_B;
+  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;
   /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCH;
   /*p27.SARY*/ DFF17 SARY_WY_MATCH;
   /*p27.RYFA*/ DFF17 RYFA_FETCHn_A;
   /*p27.RENE*/ DFF17 RENE_FETCHn_B;
   /*p27.PYCO*/ DFF17 PYCO_WX_MATCH_A;
-  /*p27.NUNU*/ DFF17 NUNU_WX_MATCH_B;
+  /*p27.NUNU*/ DFF17 NUNU_WX_MATCH_Bp;
 
   /*p??.ROXY*/ NorLatch ROXY_SCX_FINE_MATCH_LATCHn;
 

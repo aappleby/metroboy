@@ -229,9 +229,6 @@ struct DFF8n : public DFF {
   wire qn07_new() const { return !to_wire_new(); }
   wire qp08_new() const { return  to_wire_new(); }
 
-  //template<typename T>
-  //void dff8n_ff(wire CLKn, T Dn) { dff_nn(CLKn, Dn); state |= BIT_LOCKED; }
-
   void dff8n_ff(wire CLKn, wire Dn) { dff_nn(CLKn, Dn); state |= BIT_LOCKED; }
 };
 
@@ -280,8 +277,10 @@ struct DFF9 : public DFF {
   wire qn08_new() const { return !to_wire_new(); }
   wire qp09_new() const { return  to_wire_new(); }
 
-  template<typename T>
-  void dff9_ff(wire CLKp, T Dn) { dff_pn(CLKp, Dn); }
+  //template<typename T>
+  //void dff9_ff(wire CLKp, T Dn) { dff_pn(CLKp, Dn); }
+  void dff9_ff(wire CLKp, wire Dn) { dff_pn(CLKp, Dn); }
+
   void dff9_set(wire SETn) { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
 };
 

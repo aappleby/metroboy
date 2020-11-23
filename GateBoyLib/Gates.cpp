@@ -22,8 +22,8 @@ uint64_t commit_and_hash(void* blob, int size) {
 
   for (int i = 0; i < size; i++) {
     uint8_t s = base[i];
-    CHECK_P((s & BIT_DIRTY) || (s & BIT_LOCKED));
-    s = s & (BIT_DATA | BIT_CLOCK | BIT_PULLUP | BIT_DRIVEN);
+    CHECK_P(s & BIT_DIRTY);
+    s &= 0x0F;
     combine_hash(h, s);
     base[i] = s;
   }

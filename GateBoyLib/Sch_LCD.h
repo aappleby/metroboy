@@ -88,9 +88,9 @@ struct LcdRegisters {
     RAHA_LYC7n.reset(REG_D0C0);
   }
 
-  uint8_t get_lx() const  { return pack_u8(7, &SAXO_LX0p); }
-  uint8_t get_ly() const  { return pack_u8(8, &MUWY_LY0p); }
-  uint8_t get_lyc() const { return pack_u8n(8, &SYRY_LYC0n); }
+  uint8_t get_lx() const  { return pack_u8p_old(7, &SAXO_LX0p); }
+  uint8_t get_ly() const  { return pack_u8p_old(8, &MUWY_LY0p); }
+  uint8_t get_lyc() const { return pack_u8n_old(8, &SYRY_LYC0n); }
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
 

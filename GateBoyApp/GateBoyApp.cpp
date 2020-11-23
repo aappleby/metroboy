@@ -454,10 +454,10 @@ void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
   d("\n");
   */
 
-  d("TILE_DA       : 0x%02x\n", pack_u8n(8, &vram_bus.LEGU_TILE_DA0n));
-  d("TILE_DB       : 0x%02x\n", pack_u8 (8, &vram_bus.RAWU_TILE_DB0p));
-  d("SPRITE_DA     : 0x%02x\n", pack_u8n(8, &vram_bus.REWO_SPRITE_DA0n));
-  d("SPRITE_DB     : 0x%02x\n", pack_u8n(8, &vram_bus.PEFO_SPRITE_DB0n));
+  d("TILE_DA       : 0x%02x\n", pack_u8n_old(8, &vram_bus.LEGU_TILE_DA0n));
+  d("TILE_DB       : 0x%02x\n", pack_u8p_old(8, &vram_bus.RAWU_TILE_DB0p));
+  d("SPRITE_DA     : 0x%02x\n", pack_u8n_old(8, &vram_bus.REWO_SPRITE_DA0n));
+  d("SPRITE_DB     : 0x%02x\n", pack_u8n_old(8, &vram_bus.PEFO_SPRITE_DB0n));
   d("\n");
 }
 
@@ -501,26 +501,26 @@ void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
   d("WUJE_CPU_OAM_WRn %c\n", oam_bus.WUJE_CPU_OAM_WRn.c());
 
   d("OAM LATCH A    %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &oam_bus.YDYV_OAM_LATCH_DA0n),
-    pack_u8(8, &oam_bus.YDYV_OAM_LATCH_DA0n),
+    pack_u8p_old(8, &oam_bus.YDYV_OAM_LATCH_DA0n),
+    pack_u8p_old(8, &oam_bus.YDYV_OAM_LATCH_DA0n),
     oam_bus.ZECA_OAM_LATCH_DA7n.c(), oam_bus.YSES_OAM_LATCH_DA6n.c(), oam_bus.XAFU_OAM_LATCH_DA5n.c(), oam_bus.ZAXE_OAM_LATCH_DA4n.c(),
     oam_bus.WONE_OAM_LATCH_DA3n.c(), oam_bus.ZUCA_OAM_LATCH_DA2n.c(), oam_bus.YCEB_OAM_LATCH_DA1n.c(), oam_bus.YDYV_OAM_LATCH_DA0n.c());
 
   d("OAM LATCH B    %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &oam_bus.XYKY_OAM_LATCH_DB0n),
-    pack_u8(8, &oam_bus.XYKY_OAM_LATCH_DB0n),
+    pack_u8p_old(8, &oam_bus.XYKY_OAM_LATCH_DB0n),
+    pack_u8p_old(8, &oam_bus.XYKY_OAM_LATCH_DB0n),
     oam_bus.ECED_OAM_LATCH_DB7n.c(), oam_bus.ZUVE_OAM_LATCH_DB6n.c(), oam_bus.CYRA_OAM_LATCH_DB5n.c(), oam_bus.WYNO_OAM_LATCH_DB4n.c(),
     oam_bus.YVEL_OAM_LATCH_DB3n.c(), oam_bus.YSEX_OAM_LATCH_DB2n.c(), oam_bus.YRUM_OAM_LATCH_DB1n.c(), oam_bus.XYKY_OAM_LATCH_DB0n.c());
 
   d("OAM TEMP A     %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &oam_bus.XUSO_OAM_DA0p),
-    pack_u8(8, &oam_bus.XUSO_OAM_DA0p),
+    pack_u8p_old(8, &oam_bus.XUSO_OAM_DA0p),
+    pack_u8p_old(8, &oam_bus.XUSO_OAM_DA0p),
     oam_bus.YZAB_OAM_DA7p.c(), oam_bus.XOTE_OAM_DA6p.c(), oam_bus.WYSO_OAM_DA5p.c(), oam_bus.YBOG_OAM_DA4p.c(),
     oam_bus.XYJU_OAM_DA3p.c(), oam_bus.YJEX_OAM_DA2p.c(), oam_bus.XEGU_OAM_DA1p.c(), oam_bus.XUSO_OAM_DA0p.c());
 
   d("OAM TEMP B     %03d %2x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &oam_bus.YLOR_OAM_DB0p),
-    pack_u8(8, &oam_bus.YLOR_OAM_DB0p),
+    pack_u8p_old(8, &oam_bus.YLOR_OAM_DB0p),
+    pack_u8p_old(8, &oam_bus.YLOR_OAM_DB0p),
     oam_bus.DEPO_OAM_DB7p.c(), oam_bus.YZOS_OAM_DB6p.c(), oam_bus.BAXO_OAM_DB5p.c(), oam_bus.GOMO_OAM_DB4p.c(),
     oam_bus.ZEZY_OAM_DB3p.c(), oam_bus.ZYVE_OAM_DB2p.c(), oam_bus.ZYTY_OAM_DB1p.c(), oam_bus.YLOR_OAM_DB0p.c());
 
@@ -770,7 +770,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("XFER_START  %c\n", gb->ser_reg.ETAF_SER_RUNNING.c());
   d("XFER_DIR    %c\n", gb->ser_reg.CULY_XFER_DIR.c());
   d("SER_CLK     %c\n", gb->ser_reg.COTY_SER_CLK.c());
-  d("SER_CNT     %d\n", pack_u8(3, &gb->ser_reg.CAFA_SER_CNT0));
+  d("SER_CNT     %d\n", pack_u8p_old(3, &gb->ser_reg.CAFA_SER_CNT0));
   d("SER_DATA    0x%02x\n", gb->ser_reg.get_data());
   d("SER_OUT     %c\n", gb->ser_reg.ELYS_SER_OUT.c());
 #if 0
@@ -796,8 +796,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== DMA Reg =====\001\n");
   const auto& dma_reg = gb->dma_reg;
 
-  uint8_t dma_addr_lo =  pack_u8(8, &dma_reg.NAKY_DMA_A00p);
-  uint8_t dma_addr_hi = ~pack_u8(8, &dma_reg.NAFA_DMA_A08n);
+  uint8_t dma_addr_lo = pack_u8p_old(8, &dma_reg.NAKY_DMA_A00p);
+  uint8_t dma_addr_hi = pack_u8n_old(8, &dma_reg.NAFA_DMA_A08n);
 
   d("DMA Addr 0x%02x:%02x\n", dma_addr_hi, dma_addr_lo);
   d("MATU_DMA_RUNNINGp   %d\n",  dma_reg.MATU_DMA_RUNNINGp.qp17_old());
@@ -805,7 +805,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("MYTE_DMA_DONE       %d\n", !dma_reg.MYTE_DMA_DONE.qn16_old());
   d("LUVY_DMA_TRIG_d0    %d\n",  dma_reg.LUVY_DMA_TRIG_d0.qp17_old());
   d("LENE_DMA_TRIG_d4    %d\n", !dma_reg.LENE_DMA_TRIG_d4.qn16_old());
-  d("LOKY_DMA_LATCHp     %d\n",  dma_reg.LOKY_DMA_LATCHp.qp03());
+  d("LOKY_DMA_LATCHp     %d\n",  dma_reg.LOKY_DMA_LATCHp.qp03_old());
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -846,8 +846,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Pix Pipe =====\001\n");
 
-  d("PIX COUNT  0x%02x\n", pack_u8(8, &gb->pix_pipe.XEHO_PX0p));
-  d("FF40 LCDC  0x%02x\n", pack_u8n(8, &gb->pix_pipe.VYXE_LCDC_BGENn));
+  d("PIX COUNT  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.XEHO_PX0p));
+  d("FF40 LCDC  0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.VYXE_LCDC_BGENn));
 
   // FIXME plumb sadu/xaty in here somehow
   /*
@@ -863,22 +863,22 @@ void GateBoyApp::app_render_frame(Viewport view) {
       1));
   */
 
-  d("FF42 SCY   0x%02x\n", pack_u8n(8, &gb->pix_pipe.GAVE_SCY0n));
-  d("FF43 SCX   0x%02x\n", pack_u8n(8, &gb->pix_pipe.DATY_SCX0n));
-  d("FF47 BGP   0x%02x\n", pack_u8n(8, &gb->pix_pipe.PAVO_BGP_D0n));
-  d("FF48 OBP0  0x%02x\n", pack_u8n(8, &gb->pix_pipe.XUFU_OBP0_D0n));
-  d("FF49 OBP1  0x%02x\n", pack_u8n(8, &gb->pix_pipe.MOXY_OBP1_D0n));
-  d("FF4A WY    0x%02x\n", pack_u8n(8, &gb->pix_pipe.NESO_WY0n));
-  d("FF4B WX    0x%02x\n", pack_u8n(8, &gb->pix_pipe.MYPA_WX0n));
-  d("BG_PIPE_A  0x%02x\n", pack_u8(8, &gb->pix_pipe.MYDE_BG_PIPE_A0));
-  d("BG_PIPE_B  0x%02x\n", pack_u8(8, &gb->pix_pipe.TOMY_BG_PIPE_B0));
-  d("SPR_PIPE_A 0x%02x\n", pack_u8(8, &gb->pix_pipe.NYLU_SPR_PIPE_B0));
-  d("SPR_PIPE_B 0x%02x\n", pack_u8(8, &gb->pix_pipe.NURO_SPR_PIPE_A0));
-  d("PAL_PIPE   0x%02x\n", pack_u8(8, &gb->pix_pipe.RUGO_PAL_PIPE_0));
-  d("MASK_PIPE  0x%02x\n", pack_u8(8, &gb->pix_pipe.VEZO_MASK_PIPE_0));
+  d("FF42 SCY   0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.GAVE_SCY0n));
+  d("FF43 SCX   0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.DATY_SCX0n));
+  d("FF47 BGP   0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.PAVO_BGP_D0n));
+  d("FF48 OBP0  0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.XUFU_OBP0_D0n));
+  d("FF49 OBP1  0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.MOXY_OBP1_D0n));
+  d("FF4A WY    0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.NESO_WY0n));
+  d("FF4B WX    0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.MYPA_WX0n));
+  d("BG_PIPE_A  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.MYDE_BG_PIPE_A0));
+  d("BG_PIPE_B  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.TOMY_BG_PIPE_B0));
+  d("SPR_PIPE_A 0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.NYLU_SPR_PIPE_B0));
+  d("SPR_PIPE_B 0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.NURO_SPR_PIPE_A0));
+  d("PAL_PIPE   0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.RUGO_PAL_PIPE_0));
+  d("MASK_PIPE  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.VEZO_MASK_PIPE_0));
 
-  d("WIN X      0x%02x\n", pack_u8(5, &gb->pix_pipe.WYKA_WIN_X3));
-  d("WIN Y      0x%02x\n", pack_u8(8, &gb->pix_pipe.VYNO_WIN_Y0));
+  d("WIN X      0x%02x\n", pack_u8p_old(5, &gb->pix_pipe.WYKA_WIN_X3));
+  d("WIN Y      0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.VYNO_WIN_Y0));
 
   d("\n");
 
@@ -937,8 +937,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== SpriteScan =====\001\n");
 
-  d("SCAN INDEX       %02d\n", pack_u8(6, &gb->sprite_scanner.YFEL_SCAN0));
-  d("SPRITE INDEX     %02d\n", pack_u8(6, &gb->sprite_scanner.XADU_SPRITE_IDX0p));
+  d("SCAN INDEX       %02d\n", pack_u8p_old(6, &gb->sprite_scanner.YFEL_SCAN0));
+  d("SPRITE INDEX     %02d\n", pack_u8p_old(6, &gb->sprite_scanner.XADU_SPRITE_IDX0p));
 
   d("BESU_SCANNINGp   %c\n", gb->sprite_scanner.BESU_SCANNINGp  .c());
   d("CENO_SCANNINGp   %c\n", gb->sprite_scanner.CENO_SCANNINGp  .c());
@@ -955,7 +955,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== SpriteStore =====\001\n");
   d("DEZY_STORE_ENn %c\n", ss.DEZY_STORE_ENn.c());
 
-  d("SPRITE COUNT %02d\n", pack_u8(4, &ss.BESE_SPRITE_COUNT0));
+  d("SPRITE COUNT %02d\n", pack_u8p_old(4, &ss.BESE_SPRITE_COUNT0));
 
 #if 0
   int spr_tri_idx  = pack_u8(6, &ss.SPR_TRI_I0p);
@@ -965,16 +965,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("SPR_TRI_LINE = %2d %c%c%c%c\n",     spr_tri_line, ss.SPR_TRI_L0.c(),  ss.SPR_TRI_L1.c(),  ss.SPR_TRI_L2.c(),  ss.SPR_TRI_L3.c());
 #endif
 
-  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
-  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17_old(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));
-  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp17_old(), pack_u8n(6, &ss.BUHE_STORE2_I0n), pack_u8n(4, &ss.YLOV_STORE2_L0n), pack_u8n(8, &ss.FOKA_STORE2_X0p));
-  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp17_old(), pack_u8n(6, &ss.DEVY_STORE3_I0n), pack_u8n(4, &ss.ZURO_STORE3_L0n), pack_u8n(8, &ss.XOLY_STORE3_X0p));
-  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp17_old(), pack_u8n(6, &ss.XAVE_STORE4_I0n), pack_u8n(4, &ss.CAPO_STORE4_L0n), pack_u8n(8, &ss.WEDU_STORE4_X0p));
-  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp17_old(), pack_u8n(6, &ss.EKOP_STORE5_I0n), pack_u8n(4, &ss.ACEP_STORE5_L0n), pack_u8n(8, &ss.FUSA_STORE5_X0p));
-  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp17_old(), pack_u8n(6, &ss.GABO_STORE6_I0n), pack_u8n(4, &ss.ZUMY_STORE6_L0n), pack_u8n(8, &ss.YCOL_STORE6_X0p));
-  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17_old(), pack_u8n(6, &ss.GULE_STORE7_I0n), pack_u8n(4, &ss.XYNA_STORE7_L0n), pack_u8n(8, &ss.ERAZ_STORE7_X0p));
-  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17_old(), pack_u8n(6, &ss.AXUV_STORE8_I0n), pack_u8n(4, &ss.AZAP_STORE8_L0n), pack_u8n(8, &ss.EZUF_STORE8_X0p));
-  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17_old(), pack_u8n(6, &ss.YBER_STORE9_I0n), pack_u8n(4, &ss.CANA_STORE9_L0n), pack_u8n(8, &ss.XUVY_STORE9_X0p));
+  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17_old(), pack_u8n_old(6, &ss.YGUS_STORE0_I0n), pack_u8n_old(4, &ss.GYHO_STORE0_L0n), pack_u8n_old(8, &ss.XEPE_STORE0_X0p));
+  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17_old(), pack_u8n_old(6, &ss.CADU_STORE1_I0n), pack_u8n_old(4, &ss.AMES_STORE1_L0n), pack_u8n_old(8, &ss.DANY_STORE1_X0p));
+  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp17_old(), pack_u8n_old(6, &ss.BUHE_STORE2_I0n), pack_u8n_old(4, &ss.YLOV_STORE2_L0n), pack_u8n_old(8, &ss.FOKA_STORE2_X0p));
+  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp17_old(), pack_u8n_old(6, &ss.DEVY_STORE3_I0n), pack_u8n_old(4, &ss.ZURO_STORE3_L0n), pack_u8n_old(8, &ss.XOLY_STORE3_X0p));
+  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp17_old(), pack_u8n_old(6, &ss.XAVE_STORE4_I0n), pack_u8n_old(4, &ss.CAPO_STORE4_L0n), pack_u8n_old(8, &ss.WEDU_STORE4_X0p));
+  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp17_old(), pack_u8n_old(6, &ss.EKOP_STORE5_I0n), pack_u8n_old(4, &ss.ACEP_STORE5_L0n), pack_u8n_old(8, &ss.FUSA_STORE5_X0p));
+  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp17_old(), pack_u8n_old(6, &ss.GABO_STORE6_I0n), pack_u8n_old(4, &ss.ZUMY_STORE6_L0n), pack_u8n_old(8, &ss.YCOL_STORE6_X0p));
+  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17_old(), pack_u8n_old(6, &ss.GULE_STORE7_I0n), pack_u8n_old(4, &ss.XYNA_STORE7_L0n), pack_u8n_old(8, &ss.ERAZ_STORE7_X0p));
+  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17_old(), pack_u8n_old(6, &ss.AXUV_STORE8_I0n), pack_u8n_old(4, &ss.AZAP_STORE8_L0n), pack_u8n_old(8, &ss.EZUF_STORE8_X0p));
+  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17_old(), pack_u8n_old(6, &ss.YBER_STORE9_I0n), pack_u8n_old(4, &ss.CANA_STORE9_L0n), pack_u8n_old(8, &ss.XUVY_STORE9_X0p));
   d("\n");
 
   //----------------------------------------
@@ -1107,8 +1107,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
         overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
       {
-        uint8_t p0 = gb->lcd_pix_lo.qp04();
-        uint8_t p1 = gb->lcd_pix_hi.qp04();
+        uint8_t p0 = gb->lcd_pix_lo.qp04_old();
+        uint8_t p1 = gb->lcd_pix_hi.qp04_old();
 
         int c = (3 - (p0 + p1 * 2)) * 85;
 

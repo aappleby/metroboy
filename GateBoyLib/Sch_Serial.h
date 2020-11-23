@@ -48,7 +48,7 @@ struct SerialRegisters {
     ELYS_SER_OUT.reset(REG_D0C0);
   }
 
-  int get_data() const { return pack_u8(8, &CUBA_SER_DATA0); }
+  int get_data() const { return pack_u8p_old(8, &CUBA_SER_DATA0); }
 
   /*p06.CALY*/ DFF17 CALY_SER_CNT3;
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING;

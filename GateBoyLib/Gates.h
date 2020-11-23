@@ -7,7 +7,6 @@
 enum RegBits : uint8_t {
   BIT_DATA   = 0b00000001,
   BIT_CLOCK  = 0b00000010,
-  BIT_PULLUP = 0b00000100,
   BIT_DRIVEN = 0b00001000,
   BIT_SET    = 0b00000100,
   BIT_RST    = 0b00001000,
@@ -545,13 +544,11 @@ struct Bus2 : public BitBase {
     state |= BIT_DIRTY;
   }
 
-  wire to_wire() {
+  wire to_wire_new() {
     CHECK_P(state & BIT_DIRTY);
     state |= BIT_LOCKED;
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
-
-  wire to_wire_old() { return to_wire(); }
 
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
@@ -562,15 +559,13 @@ struct Bus2 : public BitBase {
 
 struct Pin2 : public BitBase {
 
-  wire to_wire() {
+  wire to_wire_new() {
     CHECK_P(state & BIT_DIRTY);
     state |= BIT_LOCKED;
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
-  wire to_wire_old() { return to_wire(); }
-
-  wire qp() { return  to_wire(); }
-  wire qn() { return !to_wire(); }
+  wire qp() { return  to_wire_new(); }
+  wire qn() { return !to_wire_new(); }
 
   void set(wire D) {
     CHECK_N(state & BIT_DRIVEN);
@@ -650,12 +645,15 @@ struct LatchBase : public BitBase {
     return '1';
   }
 
-  wire to_wire() const {
-    // Can't check dirty here, as we need to read XYMU before it's been updated.
-    //CHECK_P(!sim_running || state & BIT_DIRTY);
+  wire to_wire_old() const {
+    CHECK_N(state & BIT_DIRTY);
     return state & BIT_DATA;
   }
-  wire to_wire_old() { return to_wire(); }
+
+  wire to_wire_new() const {
+    CHECK_P(state & BIT_DIRTY);
+    return state & BIT_DATA;
+  }
 
   void latch(wire SETp, wire RSTp) {
     CHECK_N(state & BIT_DIRTY);
@@ -677,8 +675,11 @@ struct LatchBase : public BitBase {
 // NORLATCH_06 << RST
 
 struct NorLatch : public LatchBase {
-  wire qn03() const { return !to_wire(); }
-  wire qp04() const { return  to_wire(); }
+  wire qn03_old() const { return !to_wire_old(); }
+  wire qp04_old() const { return  to_wire_old(); }
+
+  wire qn03_new() const { return !to_wire_new(); }
+  wire qp04_new() const { return  to_wire_new(); }
 
   void nor_latch(wire SETp, wire RSTp) { latch(SETp, RSTp); }
 
@@ -710,8 +711,11 @@ struct NorLatch : public LatchBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public LatchBase {
-  wire qp03() const { return  to_wire(); }
-  wire qn04() const { return !to_wire(); }
+  wire qp03_old() const { return  to_wire_old(); }
+  wire qn04_old() const { return !to_wire_old(); }
+
+  wire qp03_new() const { return  to_wire_new(); }
+  wire qn04_new() const { return !to_wire_new(); }
 
   void nand_latchc(wire SETn, wire RSTn) { latch(!SETn, !RSTn); }
 };
@@ -734,8 +738,11 @@ struct NandLatch : public LatchBase {
 // Output 10 _must_ be inverting...?
 
 struct TpLatch : public LatchBase {
-  wire qp08() const { return  to_wire(); }
-  wire qn10() const { return !to_wire(); }
+  wire qp08_old() const { return  to_wire_old(); }
+  wire qn10_old() const { return !to_wire_old(); }
+
+  wire qp08_new() const { return  to_wire_new(); }
+  wire qn10_new() const { return !to_wire_new(); }
 
   void tp_latchc(wire HOLDn, wire D) {
     if (HOLDn) {
@@ -758,55 +765,80 @@ struct TpLatch : public LatchBase {
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
-inline wire as_wire_old(T a) { return a.to_wire_old(); }
-
-template<>
-inline wire as_wire_old(wire a) { return a; }
-
-template<>
-inline wire as_wire_old(int32_t a) { return wire(a); }
-
-//-----------------------------------------------------------------------------
-
-template<typename T>
-inline uint8_t pack_u8(int c, const T* b) {
-  static_assert(sizeof(T) == 1, "bad bitbase");
+inline uint8_t pack_u8p_old(int c, const DFF* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= as_wire_old(b[i]) << i;
+    r |= b[i].to_wire_old() << i;
   }
   return r;
 }
 
-template<typename T>
-inline uint8_t pack_u8n(int c, const T* b) {
-  static_assert(sizeof(T) == 1, "bad bitbase");
+inline uint8_t pack_u8n_old(int c, const DFF* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= (!as_wire_old(b[i])) << i;
+    r |= !b[i].to_wire_old() << i;
+  }
+  return r;
+}
+
+inline uint16_t pack_u16p_old(int c, const DFF* b) {
+  uint16_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= b[i].to_wire_old() << i;
   }
   return r;
 }
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
-inline uint16_t pack_u16(int c, const T* b) {
-  static_assert(sizeof(T) == 1, "bad bitbase");
-  uint16_t r = 0;
+inline uint8_t pack_u8p_new(int c, Bus2* b) {
+  uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= as_wire_old(b[i]) << i;
+    r |= b[i].to_wire_new() << i;
   }
   return r;
 }
 
-template<typename T>
-inline uint16_t pack_u16n(int c, const T* b) {
-  static_assert(sizeof(T) == 1, "bad bitbase");
+inline uint8_t pack_u8n_new(int c, Bus2* b) {
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= !b[i].to_wire_new() << i;
+  }
+  return r;
+}
+
+//-----------------------------------------------------------------------------
+
+inline uint8_t pack_u8p_new(int c, Pin2* b) {
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= b[i].to_wire_new() << i;
+  }
+  return r;
+}
+
+inline uint16_t pack_u16p_new(int c, Pin2* b) {
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= (!as_wire_old(b[i])) << i;
+    r |= b[i].to_wire_new() << i;
+  }
+  return r;
+}
+
+//-----------------------------------------------------------------------------
+
+inline uint8_t pack_u8p_old(int c, const LatchBase* b) {
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= b[i].to_wire_old() << i;
+  }
+  return r;
+}
+
+inline uint8_t pack_u8p_new(int c, const LatchBase* b) {
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= b[i].to_wire_new() << i;
   }
   return r;
 }
@@ -892,19 +924,9 @@ inline wire mux2p(wire m, wire a, wire b) {
   return m ? a : b;
 }
 
-template<typename T>
-inline wire mux2p(wire m, T a, T b) {
-  return m ? as_wire_old(a) : as_wire_old(b);
-}
-
 // Five-rung mux cells are _inverting_. m = 1 selects input A
 inline wire mux2n(wire m, wire a, wire b) {
   return !(m ? a : b);
-}
-
-template<typename T>
-inline wire mux2n(wire m, wire a, T b) {
-  return !(m ? a : as_wire_old(b));
 }
 
 inline wire amux2(wire a0, wire b0, wire a1, wire b1) {

@@ -448,8 +448,8 @@ struct DFF22 : public BitBase {
   wire qn15_mid()  const { return !to_wire_mid(); }
   wire qp16_mid()  const { return  to_wire_mid(); }
 
-  wire qn15_next() const { return !to_wire_new(); }
-  wire qp16_next() const { return  to_wire_new(); }
+  wire qn15_new() const { return !to_wire_new(); }
+  wire qp16_new() const { return  to_wire_new(); }
 
   void dff22_ff(wire CLKp, wire Dp)   { dff_pp(CLKp, Dp); }
   void dff22_sr(wire SETn, wire RSTn) { dff_SETnRSTn(SETn, RSTn); }

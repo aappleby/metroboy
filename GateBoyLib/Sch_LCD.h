@@ -34,8 +34,8 @@ struct LcdRegisters {
     MYTA_y153p  .reset(REG_D1C1);
     SYGU_LINE_STROBE.reset(REG_D0C1);
     MEDA_VSYNC_OUTn .reset(REG_D0C1);
-    LUCA_LINE_EVEN  .reset(REG_D1C1);
-    NAPO_FRAME_EVEN .reset(REG_D0C1);
+    LUCA_LINE_EVENp  .reset(REG_D1C1);
+    NAPO_FRAME_EVENp .reset(REG_D0C1);
 
     SYRY_LYC0n.reset(REG_D1C1);
     VUCE_LYC1n.reset(REG_D1C1);
@@ -75,8 +75,8 @@ struct LcdRegisters {
     MYTA_y153p.reset(REG_D0C0);
     SYGU_LINE_STROBE.reset(REG_D0C0);
     MEDA_VSYNC_OUTn.reset(REG_D0C0);
-    LUCA_LINE_EVEN.reset(REG_D0C0);
-    NAPO_FRAME_EVEN.reset(REG_D0C0);
+    LUCA_LINE_EVENp.reset(REG_D0C0);
+    NAPO_FRAME_EVENp.reset(REG_D0C0);
 
     SYRY_LYC0n.reset(REG_D0C0);
     VUCE_LYC1n.reset(REG_D0C0);
@@ -122,8 +122,8 @@ struct LcdRegisters {
   /*p21.MYTA*/ DFF17 MYTA_y153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
   /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;
-  /*p24.LUCA*/ DFF17 LUCA_LINE_EVEN;
-  /*p21.NAPO*/ DFF17 NAPO_FRAME_EVEN;
+  /*p24.LUCA*/ DFF17 LUCA_LINE_EVENp;
+  /*p21.NAPO*/ DFF17 NAPO_FRAME_EVENp;
 
   // FF45 - LYC
   /*p23.SYRY*/ DFF9 SYRY_LYC0n;

@@ -277,8 +277,6 @@ struct DFF9 : public DFF {
   wire qn08_new() const { return !to_wire_new(); }
   wire qp09_new() const { return  to_wire_new(); }
 
-  //template<typename T>
-  //void dff9_ff(wire CLKp, T Dn) { dff_pn(CLKp, Dn); }
   void dff9_ff(wire CLKp, wire Dn) { dff_pn(CLKp, Dn); }
 
   void dff9_set(wire SETn) { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
@@ -304,8 +302,8 @@ struct DFF11 : public DFF {
   wire q11p_old() const { return to_wire_old(); }
   wire q11p_new() const { return to_wire_new(); }
 
-  template<typename T>
-  void dff11_ff(wire CLKp, T Dp) { dff_pp(CLKp, Dp); }
+  void dff11_ff(wire CLKp, wire Dp) { dff_pp(CLKp, Dp); }
+
   void dff11_rs(wire RSTn) { dff_RSTn(RSTn); }
 };
 
@@ -420,8 +418,7 @@ struct DFF20 : public DFF {
     state |= BIT_DIRTY;
   }
 
-  template<typename T>
-  void dff20_load(wire LOADp, T newD) {
+  void dff20_load(wire LOADp, wire newD) {
     CHECK_P(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
@@ -553,7 +550,6 @@ struct DFF22 : public DFF {
 struct Bus2 : public BitBase {
 
   void tri(wire OEp, wire Dp) {
-    CHECK_N(state & BIT_LOCKED);
     if (OEp) {
       CHECK_N(state & BIT_DRIVEN);
       state |= BIT_DRIVEN;
@@ -564,15 +560,18 @@ struct Bus2 : public BitBase {
 
   wire to_wire() {
     CHECK_P(state & BIT_DIRTY);
-    state |= BIT_LOCKED;
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
 
   wire to_wire_old() { return to_wire(); }
 
-  template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire_old(Dn) : 0); }
-  template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire_old(Dn) : 0); }
-  template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire_old(Dp) : 0); }
+  //template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire_old(Dn) : 0); }
+  //template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire_old(Dn) : 0); }
+  //template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire_old(Dp) : 0); }
+
+  void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
+  void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
+  void tri10_np(wire OEn, wire Dp) { tri(!OEn, !OEn ?  Dp : 0); }
 };
 
 //-----------------------------------------------------------------------------
@@ -758,16 +757,6 @@ struct TpLatch : public LatchBase {
     if (HOLDn) {
       bool SETp = HOLDn && D;
       bool RSTp = HOLDn && !D;
-      latch(SETp, RSTp);
-    }
-    state |= BIT_DIRTY;
-  }
-
-  template<typename T>
-  void tp_latchc(wire HOLDn, T D) {
-    if (HOLDn) {
-      bool SETp = HOLDn &&  as_wire_old(D);
-      bool RSTp = HOLDn && !as_wire_old(D);
       latch(SETp, RSTp);
     }
     state |= BIT_DIRTY;

@@ -369,12 +369,6 @@ void GateBoy::next_pass() {
     }
 
     //----------
-    // If the sim is stable and there's still a bus collision or float, we have a problem.
-
-    if (BitBase::bus_collision) printf("Bus collision!\n");
-    if (BitBase::bus_floating)  printf("Bus floating!\n");
-
-    //----------
     // Done, move to the next phase.
 
     pass_total += pass_count;
@@ -388,7 +382,6 @@ void GateBoy::next_pass() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::commit_and_hash() {
-  BitBase::sim_running = false;
   uint8_t* blob_begin = ((uint8_t*)&sentinel1) + sizeof(sentinel1);
   uint8_t* blob_end   = ((uint8_t*)&sentinel2);
   uint64_t pass_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
@@ -407,10 +400,6 @@ void GateBoy::commit_and_hash() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_slow() {
-  BitBase::sim_running = true;
-  BitBase::bus_collision = false;
-  BitBase::bus_floating = false;
-
   probes.begin_pass(pass_count);
 
   //----------------------------------------
@@ -6237,14 +6226,14 @@ void GateBoy::tock_slow() {
   // Sanity check
 
   // Can't drive the cpu bus in both directions at once.
-  CHECK_N((BUS_C2S_D[0].state & BIT_DRIVEN) && (BUS_S2C_D[0].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[1].state & BIT_DRIVEN) && (BUS_S2C_D[1].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[2].state & BIT_DRIVEN) && (BUS_S2C_D[2].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[3].state & BIT_DRIVEN) && (BUS_S2C_D[3].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[4].state & BIT_DRIVEN) && (BUS_S2C_D[4].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[5].state & BIT_DRIVEN) && (BUS_S2C_D[5].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[6].state & BIT_DRIVEN) && (BUS_S2C_D[6].state & BIT_DRIVEN));
-  CHECK_N((BUS_C2S_D[7].state & BIT_DRIVEN) && (BUS_S2C_D[7].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[0].bit_driven) && (BUS_S2C_D[0].bit_driven));
+  CHECK_N((BUS_C2S_D[1].bit_driven) && (BUS_S2C_D[1].bit_driven));
+  CHECK_N((BUS_C2S_D[2].bit_driven) && (BUS_S2C_D[2].bit_driven));
+  CHECK_N((BUS_C2S_D[3].bit_driven) && (BUS_S2C_D[3].bit_driven));
+  CHECK_N((BUS_C2S_D[4].bit_driven) && (BUS_S2C_D[4].bit_driven));
+  CHECK_N((BUS_C2S_D[5].bit_driven) && (BUS_S2C_D[5].bit_driven));
+  CHECK_N((BUS_C2S_D[6].bit_driven) && (BUS_S2C_D[6].bit_driven));
+  CHECK_N((BUS_C2S_D[7].bit_driven) && (BUS_S2C_D[7].bit_driven));
 }
 
 //-----------------------------------------------------------------------------

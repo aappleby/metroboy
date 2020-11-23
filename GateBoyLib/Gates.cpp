@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-bool BitBase::sim_running = false;
-bool BitBase::bus_collision = false;
-bool BitBase::bus_floating = false;
-
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b) {
@@ -22,7 +18,7 @@ uint64_t commit_and_hash(void* blob, int size) {
 
   for (int i = 0; i < size; i++) {
     uint8_t s = base[i];
-    CHECK_P(s & BIT_DIRTY);
+    CHECK_P(s & 0xF0);
     s &= 0x0F;
     combine_hash(h, s);
     base[i] = s;

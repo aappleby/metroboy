@@ -803,8 +803,7 @@ int GateBoyTests::test_init() {
 
   // All regs should be clean and unlocked
   for (uint8_t* cursor = gb.reg_begin(); cursor != gb.reg_end(); cursor++) {
-    CHECK_N(*cursor & BIT_DIRTY);
-    CHECK_N(*cursor & BIT_LOCKED);
+    CHECK_N(*cursor & 0xF0);
   }
 
   LOG_G("Checking mem\n");

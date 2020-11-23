@@ -902,11 +902,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("RYDY_WIN_FIRST_TILE_A : %c\n", gb->pix_pipe.RYDY_WIN_HITp.c());
   d("NOPA_WIN_MODE_B       : %c\n", gb->pix_pipe.NOPA_WIN_MODE_Bp.c());
   d("SOVY_WIN_FIRST_TILE_B : %c\n", gb->pix_pipe.SOVY_WIN_FIRST_TILE_B.c());
-  d("REJO_WY_MATCH_LATCH   : %c\n", gb->pix_pipe.REJO_WY_MATCH_LATCH.c());
-  d("SARY_WY_MATCH         : %c\n", gb->pix_pipe.SARY_WY_MATCH.c());
+  d("REJO_WY_MATCH_LATCH   : %c\n", gb->pix_pipe.REJO_WY_MATCHp.c());
+  d("SARY_WY_MATCH         : %c\n", gb->pix_pipe.SARY_WY_MATCHp.c());
   d("RYFA_FETCHn_A         : %c\n", gb->pix_pipe.RYFA_FETCHn_A.c());
   d("RENE_FETCHn_B         : %c\n", gb->pix_pipe.RENE_FETCHn_B.c());
-  d("PYCO_WX_MATCH_A       : %c\n", gb->pix_pipe.PYCO_WX_MATCH_A.c());
+  d("PYCO_WX_MATCH_A       : %c\n", gb->pix_pipe.PYCO_WX_MATCH_Ap.c());
   d("NUNU_WX_MATCH_B       : %c\n", gb->pix_pipe.NUNU_WX_MATCH_Bp.c());
   d("\n");
 

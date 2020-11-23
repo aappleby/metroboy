@@ -69,11 +69,11 @@ struct PixelPipe {
     RUGU_STAT_LYI_ENn.reset(REG_D1C1);
 
     NOPA_WIN_MODE_Bp.reset(REG_D0C0);
-    REJO_WY_MATCH_LATCH.reset(0);
-    SARY_WY_MATCH.reset(REG_D0C0);
+    REJO_WY_MATCHp.reset(0);
+    SARY_WY_MATCHp.reset(REG_D0C0);
     RYFA_FETCHn_A.reset(REG_D0C1);
     RENE_FETCHn_B.reset(REG_D0C0);
-    PYCO_WX_MATCH_A.reset(REG_D0C0);
+    PYCO_WX_MATCH_Ap.reset(REG_D0C0);
     NUNU_WX_MATCH_Bp.reset(REG_D0C1);
 
     ROXY_SCX_FINE_MATCH_LATCHn.reset(1);
@@ -285,11 +285,11 @@ struct PixelPipe {
     RUGU_STAT_LYI_ENn.reset(REG_D0C0);
 
     NOPA_WIN_MODE_Bp.reset(REG_D0C0);
-    REJO_WY_MATCH_LATCH.reset(0);;
-    SARY_WY_MATCH.reset(REG_D0C0);
+    REJO_WY_MATCHp.reset(0);;
+    SARY_WY_MATCHp.reset(REG_D0C0);
     RYFA_FETCHn_A.reset(REG_D0C0);
     RENE_FETCHn_B.reset(REG_D0C0);
-    PYCO_WX_MATCH_A.reset(REG_D0C0);
+    PYCO_WX_MATCH_Ap.reset(REG_D0C0);
     NUNU_WX_MATCH_Bp.reset(REG_D0C0);
 
     ROXY_SCX_FINE_MATCH_LATCHn.reset(0);
@@ -497,11 +497,11 @@ struct PixelPipe {
   /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn;
 
   /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;
-  /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCH;
-  /*p27.SARY*/ DFF17 SARY_WY_MATCH;
+  /*p27.REJO*/ NorLatch REJO_WY_MATCHp;
+  /*p27.SARY*/ DFF17 SARY_WY_MATCHp;
   /*p27.RYFA*/ DFF17 RYFA_FETCHn_A;
   /*p27.RENE*/ DFF17 RENE_FETCHn_B;
-  /*p27.PYCO*/ DFF17 PYCO_WX_MATCH_A;
+  /*p27.PYCO*/ DFF17 PYCO_WX_MATCH_Ap;
   /*p27.NUNU*/ DFF17 NUNU_WX_MATCH_Bp;
 
   /*p??.ROXY*/ NorLatch ROXY_SCX_FINE_MATCH_LATCHn;

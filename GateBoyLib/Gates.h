@@ -17,6 +17,9 @@ inline wire as_wire_old(int32_t a) { return wire(a); }
 
 enum RegBits : uint8_t {
   BIT_DATA   = 0b00000001,
+  BIT_SET    = 0b00000010,
+  BIT_RST    = 0b00000100,
+
   BIT_CLOCK  = 0b00000010,
   BIT_PULLUP = 0b00000100,
   BIT_DRIVEN = 0b00001000,
@@ -24,6 +27,7 @@ enum RegBits : uint8_t {
   BIT_ERROR  = 0b00100000,
   BIT_DIRTY  = 0b01000000,
   BIT_LOCKED = 0b10000000,
+
 };
 
 constexpr uint8_t REG_D0C0 = 0b00;
@@ -200,7 +204,7 @@ struct DFF : public BitBase {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
-struct DFF8n : public BitBase {
+struct DFF8n : public DFF {
   wire qn07_old() const { return !to_wire_old(); }
   wire qp08_old() const { return  to_wire_old(); }
 
@@ -224,7 +228,7 @@ struct DFF8n : public BitBase {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
-struct DFF8p : public BitBase {
+struct DFF8p : public DFF {
   wire qn07_old() const { return !to_wire_old(); }
   wire qp08_old() const { return  to_wire_old(); }
 
@@ -250,7 +254,7 @@ struct DFF8p : public BitBase {
 // DFF9_08 |xxx-O-xxx| >> Qn
 // DFF9_09 |xxx-O-xxx| >> Q
 
-struct DFF9 : public BitBase {
+struct DFF9 : public DFF {
   wire qn08_old() const { return !to_wire_old(); }
   wire qp09_old() const { return  to_wire_old(); }
 
@@ -278,7 +282,7 @@ struct DFF9 : public BitBase {
 // DFF11_10 nc
 // DFF11_11 >> Qp?
 
-struct DFF11 : public BitBase {
+struct DFF11 : public DFF {
   wire q11p_old() const { return to_wire_old(); }
   wire q11p_new() const { return to_wire_new(); }
 
@@ -303,7 +307,7 @@ struct DFF11 : public BitBase {
 // DFF13_12 >> Qn
 // DFF13_13 >> Q
 
-struct DFF13 : public BitBase {
+struct DFF13 : public DFF {
 
   wire qn12_old() const { return !to_wire_old(); }
   wire qp13_old() const { return  to_wire_old(); }
@@ -332,7 +336,7 @@ struct DFF13 : public BitBase {
 // DFF17_16 >> QN   _MUST_ be QN - see TERO
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-struct DFF17 : public BitBase {
+struct DFF17 : public DFF {
 
   wire qn16_old() const { return !to_wire_old(); }
   wire qp17_old() const { return  to_wire_old(); }
@@ -371,7 +375,7 @@ struct DFF17 : public BitBase {
 // DFF20_19 sc
 // DFF20_20 << CLKn
 
-struct DFF20 : public BitBase{
+struct DFF20 : public DFF {
   wire qp01_old() const { return  to_wire_old(); }
   wire qn17_old() const { return !to_wire_old(); }
 
@@ -440,7 +444,7 @@ struct DFF20 : public BitBase{
 // DFF22_21 sc
 // DFF22_22 << CLKp
 
-struct DFF22 : public BitBase {
+struct DFF22 : public DFF {
 
   wire qn15_old()  const { return !to_wire_old(); }
   wire qp16_old()  const { return  to_wire_old(); }
@@ -659,6 +663,22 @@ struct NorLatch : public LatchBase {
   wire qp04() const { return  to_wire(); }
 
   void nor_latch(wire SETp, wire RSTp) { latch(SETp, RSTp); }
+
+  /*
+  void SETp(wire SETp, wire RSTp) {
+    CHECK_N(state & BIT_DIRTY);
+    if (SETp) state |= BIT_DATA;
+    if (RSTp) state &= ~BIT_DATA;
+    state |= BIT_DIRTY;
+  }
+
+  void RSTp(wire SETp, wire RSTp) {
+    CHECK_N(state & BIT_DIRTY);
+    if (SETp) state |= BIT_DATA;
+    if (RSTp) state &= ~BIT_DATA;
+    state |= BIT_DIRTY;
+  }
+  */
 };
 
 //-----------------------------------------------------------------------------

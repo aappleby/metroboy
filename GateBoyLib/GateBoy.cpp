@@ -2863,10 +2863,10 @@ void GateBoy::tock_slow() {
 
     /*#p29.WUKY*/ wire _WUKY_FLIP_Yp_t0 = not1(_YZOS_OAM_DB6p_t0);
 
-    /*#p29.CYVU*/ wire _CYVU_L0_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L0_t2);
-    /*#p29.BORE*/ wire _BORE_L1_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L1_t2);
-    /*#p29.BUVY*/ wire _BUVY_L2_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L2_t2);
-    /*#p29.WAGO*/ wire _WAGO_L3_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L3_t2);
+    /*#p29.CYVU*/ wire _CYVU_L0_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L0_t2.to_wire());
+    /*#p29.BORE*/ wire _BORE_L1_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L1_t2.to_wire());
+    /*#p29.BUVY*/ wire _BUVY_L2_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L2_t2.to_wire());
+    /*#p29.WAGO*/ wire _WAGO_L3_t2 = xor2(_WUKY_FLIP_Yp_t0, SPR_TRI_L3_t2.to_wire());
     /*#p29.GEJY*/ wire _GEJY_L3_t2 = amux2(_XUSO_OAM_DA0p_t0, _FUFO_LCDC_SPSIZEn_t0,
                                             _XYMO_LCDC_SPSIZEp_t0, _WAGO_L3_t2);
 
@@ -3114,23 +3114,23 @@ void GateBoy::tock_slow() {
       Pin2 PIN_VRAM_Dp_out[8]; // This pin isn't driven between tile fetches while rendering; where's the pullup?
       static_assert(sizeof(PIN_VRAM_Dp_out) == 8, "bad bitbase");
 
-      /*#p25.SEFA*/ wire _SEFA_D0p = and2(BUS_VRAM_Dp[0], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SOGO*/ wire _SOGO_D1p = and2(BUS_VRAM_Dp[1], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SEFU*/ wire _SEFU_D2p = and2(BUS_VRAM_Dp[2], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SUNA*/ wire _SUNA_D3p = and2(BUS_VRAM_Dp[3], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SUMO*/ wire _SUMO_D4p = and2(BUS_VRAM_Dp[4], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SAZU*/ wire _SAZU_D5p = and2(BUS_VRAM_Dp[5], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SAMO*/ wire _SAMO_D6p = and2(BUS_VRAM_Dp[6], _ROVE_CBD_TO_VPDp_t2);
-      /* p25.SUKE*/ wire _SUKE_D7p = and2(BUS_VRAM_Dp[7], _ROVE_CBD_TO_VPDp_t2);
+      /*#p25.SEFA*/ wire _SEFA_D0p = and2(BUS_VRAM_Dp[0].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SOGO*/ wire _SOGO_D1p = and2(BUS_VRAM_Dp[1].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SEFU*/ wire _SEFU_D2p = and2(BUS_VRAM_Dp[2].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SUNA*/ wire _SUNA_D3p = and2(BUS_VRAM_Dp[3].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SUMO*/ wire _SUMO_D4p = and2(BUS_VRAM_Dp[4].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SAZU*/ wire _SAZU_D5p = and2(BUS_VRAM_Dp[5].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SAMO*/ wire _SAMO_D6p = and2(BUS_VRAM_Dp[6].to_wire(), _ROVE_CBD_TO_VPDp_t2);
+      /* p25.SUKE*/ wire _SUKE_D7p = and2(BUS_VRAM_Dp[7].to_wire(), _ROVE_CBD_TO_VPDp_t2);
 
-      /*#p25.SYNU*/ wire _SYNU_D0p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[0]);
-      /* p25.SYMA*/ wire _SYMA_D1p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[1]);
-      /* p25.ROKO*/ wire _ROKO_D2p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[2]);
-      /* p25.SYBU*/ wire _SYBU_D3p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[3]);
-      /* p25.SAKO*/ wire _SAKO_D4p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[4]);
-      /* p25.SEJY*/ wire _SEJY_D5p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[5]);
-      /* p25.SEDO*/ wire _SEDO_D6p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[6]);
-      /* p25.SAWU*/ wire _SAWU_D7p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[7]);
+      /*#p25.SYNU*/ wire _SYNU_D0p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[0].to_wire());
+      /* p25.SYMA*/ wire _SYMA_D1p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[1].to_wire());
+      /* p25.ROKO*/ wire _ROKO_D2p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[2].to_wire());
+      /* p25.SYBU*/ wire _SYBU_D3p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[3].to_wire());
+      /* p25.SAKO*/ wire _SAKO_D4p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[4].to_wire());
+      /* p25.SEJY*/ wire _SEJY_D5p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[5].to_wire());
+      /* p25.SEDO*/ wire _SEDO_D6p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[6].to_wire());
+      /* p25.SAWU*/ wire _SAWU_D7p = or2(_RAHU_CBD_TO_VPDn_t2, BUS_VRAM_Dp[7].to_wire());
 
       /*#p25.REGE*/ wire _REGE_D0n = not1(_SEFA_D0p);
       /* p25.RYKY*/ wire _RYKY_D1n = not1(_SOGO_D1p);
@@ -3418,23 +3418,23 @@ void GateBoy::tock_slow() {
     /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(_UNOR_MODE_DBG2p_t0, _REDU_CPU_RDn_t0, _MOTY_CPU_EXT_RD_t0);
     /* p08.LULA*/ wire _LULA_CBD_TO_EPDp = not1(_RORU_CBD_TO_EPDn);
 
-    /* p25.RUXA*/ wire _RUXA = nand2(BUS_C2S_D[0], _LULA_CBD_TO_EPDp);
-    /* p25.RUJA*/ wire _RUJA = nand2(BUS_C2S_D[1], _LULA_CBD_TO_EPDp);
-    /* p25.RABY*/ wire _RABY = nand2(BUS_C2S_D[2], _LULA_CBD_TO_EPDp);
-    /* p25.RERA*/ wire _RERA = nand2(BUS_C2S_D[3], _LULA_CBD_TO_EPDp);
-    /* p25.RORY*/ wire _RORY = nand2(BUS_C2S_D[4], _LULA_CBD_TO_EPDp);
-    /* p25.RYVO*/ wire _RYVO = nand2(BUS_C2S_D[5], _LULA_CBD_TO_EPDp);
-    /* p25.RAFY*/ wire _RAFY = nand2(BUS_C2S_D[6], _LULA_CBD_TO_EPDp);
-    /* p25.RAVU*/ wire _RAVU = nand2(BUS_C2S_D[7], _LULA_CBD_TO_EPDp);
+    /* p25.RUXA*/ wire _RUXA = nand2(BUS_C2S_D[0].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RUJA*/ wire _RUJA = nand2(BUS_C2S_D[1].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RABY*/ wire _RABY = nand2(BUS_C2S_D[2].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RERA*/ wire _RERA = nand2(BUS_C2S_D[3].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RORY*/ wire _RORY = nand2(BUS_C2S_D[4].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RYVO*/ wire _RYVO = nand2(BUS_C2S_D[5].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RAFY*/ wire _RAFY = nand2(BUS_C2S_D[6].to_wire(), _LULA_CBD_TO_EPDp);
+    /* p25.RAVU*/ wire _RAVU = nand2(BUS_C2S_D[7].to_wire(), _LULA_CBD_TO_EPDp);
 
-    /* p08.RUNE*/ wire _RUNE = nor2 (BUS_C2S_D[0], _RORU_CBD_TO_EPDn);
-    /* p08.RYPU*/ wire _RYPU = nor2 (BUS_C2S_D[1], _RORU_CBD_TO_EPDn);
-    /* p08.SULY*/ wire _SULY = nor2 (BUS_C2S_D[2], _RORU_CBD_TO_EPDn);
-    /* p08.SEZE*/ wire _SEZE = nor2 (BUS_C2S_D[3], _RORU_CBD_TO_EPDn);
-    /* p08.RESY*/ wire _RESY = nor2 (BUS_C2S_D[4], _RORU_CBD_TO_EPDn);
-    /* p08.TAMU*/ wire _TAMU = nor2 (BUS_C2S_D[5], _RORU_CBD_TO_EPDn);
-    /* p08.ROGY*/ wire _ROGY = nor2 (BUS_C2S_D[6], _RORU_CBD_TO_EPDn);
-    /* p08.RYDA*/ wire _RYDA = nor2 (BUS_C2S_D[7], _RORU_CBD_TO_EPDn);
+    /* p08.RUNE*/ wire _RUNE = nor2 (BUS_C2S_D[0].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.RYPU*/ wire _RYPU = nor2 (BUS_C2S_D[1].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.SULY*/ wire _SULY = nor2 (BUS_C2S_D[2].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.SEZE*/ wire _SEZE = nor2 (BUS_C2S_D[3].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.RESY*/ wire _RESY = nor2 (BUS_C2S_D[4].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.TAMU*/ wire _TAMU = nor2 (BUS_C2S_D[5].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.ROGY*/ wire _ROGY = nor2 (BUS_C2S_D[6].to_wire(), _RORU_CBD_TO_EPDn);
+    /* p08.RYDA*/ wire _RYDA = nor2 (BUS_C2S_D[7].to_wire(), _RORU_CBD_TO_EPDn);
 
     PIN_EXT_D[0].pin_out(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
     PIN_EXT_D[1].pin_out(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
@@ -4417,17 +4417,17 @@ void GateBoy::tock_slow() {
     /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn_t0  = not1(PIN_CPU_ACK_SERIAL_t0.qp());
     /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn_t0  = not1(PIN_CPU_ACK_JOYPAD_t0.qp());
 
-    /* p02.MYZU*/ wire _MYZU_FF0F_SET0n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LETY_INT_VBL_ACKn_t0,  BUS_C2S_D[0]);
-    /* p02.MODY*/ wire _MODY_FF0F_SET1n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LEJA_INT_STAT_ACKn_t0, BUS_C2S_D[1]);
-    /* p02.PYHU*/ wire _PYHU_FF0F_SET2n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LESA_INT_TIM_ACKn_t0,  BUS_C2S_D[2]);
-    /* p02.TOME*/ wire _TOME_FF0F_SET3n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LUFE_INT_SER_ACKn_t0,  BUS_C2S_D[3]);
-    /* p02.TOGA*/ wire _TOGA_FF0F_SET4n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LAMO_INT_JOY_ACKn_t0,  BUS_C2S_D[4]);
+    /* p02.MYZU*/ wire _MYZU_FF0F_SET0n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LETY_INT_VBL_ACKn_t0,  BUS_C2S_D[0].to_wire());
+    /* p02.MODY*/ wire _MODY_FF0F_SET1n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LEJA_INT_STAT_ACKn_t0, BUS_C2S_D[1].to_wire());
+    /* p02.PYHU*/ wire _PYHU_FF0F_SET2n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LESA_INT_TIM_ACKn_t0,  BUS_C2S_D[2].to_wire());
+    /* p02.TOME*/ wire _TOME_FF0F_SET3n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LUFE_INT_SER_ACKn_t0,  BUS_C2S_D[3].to_wire());
+    /* p02.TOGA*/ wire _TOGA_FF0F_SET4n_t1 = nand3(_ROTU_FF0F_WRp_t1, _LAMO_INT_JOY_ACKn_t0,  BUS_C2S_D[4].to_wire());
 
-    /*#p02.MUXE*/ wire _MUXE_INT0_WRn_t1 = or2(BUS_C2S_D[0], _REFA_FF0F_WRn_t1);
-    /* p02.NABE*/ wire _NABE_INT1_WRn_t1 = or2(BUS_C2S_D[1], _REFA_FF0F_WRn_t1);
-    /* p02.RAKE*/ wire _RAKE_INT2_WRn_t1 = or2(BUS_C2S_D[2], _REFA_FF0F_WRn_t1);
-    /* p02.SULO*/ wire _SULO_INT3_WRn_t1 = or2(BUS_C2S_D[3], _REFA_FF0F_WRn_t1);
-    /* p02.SEME*/ wire _SEME_INT4_WRn_t1 = or2(BUS_C2S_D[4], _REFA_FF0F_WRn_t1);
+    /*#p02.MUXE*/ wire _MUXE_INT0_WRn_t1 = or2(BUS_C2S_D[0].to_wire(), _REFA_FF0F_WRn_t1);
+    /* p02.NABE*/ wire _NABE_INT1_WRn_t1 = or2(BUS_C2S_D[1].to_wire(), _REFA_FF0F_WRn_t1);
+    /* p02.RAKE*/ wire _RAKE_INT2_WRn_t1 = or2(BUS_C2S_D[2].to_wire(), _REFA_FF0F_WRn_t1);
+    /* p02.SULO*/ wire _SULO_INT3_WRn_t1 = or2(BUS_C2S_D[3].to_wire(), _REFA_FF0F_WRn_t1);
+    /* p02.SEME*/ wire _SEME_INT4_WRn_t1 = or2(BUS_C2S_D[4].to_wire(), _REFA_FF0F_WRn_t1);
 
     /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n_t1 = and3(_MUXE_INT0_WRn_t1, _LETY_INT_VBL_ACKn_t0,  _ALUR_SYS_RSTn_t0);
     /* p02.MOVU*/ wire _MOVU_FF0F_RST1n_t1 = and3(_NABE_INT1_WRn_t1, _LEJA_INT_STAT_ACKn_t0, _ALUR_SYS_RSTn_t0);
@@ -4527,23 +4527,23 @@ void GateBoy::tock_slow() {
       /* p06.KEXU*/ PIN_SCK.pin_out(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17_new());
     }
 
-    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(BUS_C2S_D[0], _DAKU_FF01_WRp);
-    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(BUS_C2S_D[1], _DAKU_FF01_WRp);
-    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(BUS_C2S_D[2], _DAKU_FF01_WRp);
-    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(BUS_C2S_D[3], _DAKU_FF01_WRp);
-    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(BUS_C2S_D[4], _DAKU_FF01_WRp);
-    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(BUS_C2S_D[5], _DAKU_FF01_WRp);
-    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(BUS_C2S_D[6], _DAKU_FF01_WRp);
-    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(BUS_C2S_D[7], _DAKU_FF01_WRp);
+    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(BUS_C2S_D[0].to_wire(), _DAKU_FF01_WRp);
+    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(BUS_C2S_D[1].to_wire(), _DAKU_FF01_WRp);
+    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(BUS_C2S_D[2].to_wire(), _DAKU_FF01_WRp);
+    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(BUS_C2S_D[3].to_wire(), _DAKU_FF01_WRp);
+    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(BUS_C2S_D[4].to_wire(), _DAKU_FF01_WRp);
+    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(BUS_C2S_D[5].to_wire(), _DAKU_FF01_WRp);
+    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(BUS_C2S_D[6].to_wire(), _DAKU_FF01_WRp);
+    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(BUS_C2S_D[7].to_wire(), _DAKU_FF01_WRp);
 
-    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[0], _ALUR_SYS_RSTn_t0);
-    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[1], _ALUR_SYS_RSTn_t0);
-    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[2], _ALUR_SYS_RSTn_t0);
-    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[3], _ALUR_SYS_RSTn_t0);
-    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[4], _ALUR_SYS_RSTn_t0);
-    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[5], _ALUR_SYS_RSTn_t0);
-    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[6], _ALUR_SYS_RSTn_t0);
-    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[7], _ALUR_SYS_RSTn_t0);
+    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[0].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[1].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[2].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[3].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[4].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[5].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[6].to_wire(), _ALUR_SYS_RSTn_t0);
+    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, BUS_C2S_D[7].to_wire(), _ALUR_SYS_RSTn_t0);
 
     /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp17_new(), ser_reg.COTY_SER_CLK.qp17_new(), PIN_SCK.qn());
     /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_SER_RUNNING.qn16_old()); // this must stop the clock or something when the transmit's done
@@ -5015,7 +5015,7 @@ void GateBoy::tock_slow() {
   {
     // FF50 - disable bootrom bit
     /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx_t1, _SYKE_FF00_FFFFp_t0, _TYFO_XX_0x0x0000p_t0, _TUFA_XX_x1x1xxxxp_t0);
-    /* p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(BUS_C2S_D[0], BOOT_BITn.qp17_old());
+    /* p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(BUS_C2S_D[0].to_wire(), BOOT_BITn.qp17_old());
     /* p07.TEPU*/ BOOT_BITn.dff17_ff(_TUGE_FF50_WRn, _SATO_BOOT_BIT_IN);
     /* p07.TEPU*/ BOOT_BITn.dff17_rs(_ALUR_SYS_RSTn_t0);
   }
@@ -5647,11 +5647,11 @@ void GateBoy::tock_slow() {
     // This is technically in the CPU, but we're going to implement it here for now.
     wire FFFF_WRn = nand2(_TAPU_CPU_WRp_xxxxEFGx_t1, FFFF_HIT);
 
-    IE_D0.dff_pp(FFFF_WRn, BUS_C2S_D[0]);
-    IE_D1.dff_pp(FFFF_WRn, BUS_C2S_D[1]);
-    IE_D2.dff_pp(FFFF_WRn, BUS_C2S_D[2]);
-    IE_D3.dff_pp(FFFF_WRn, BUS_C2S_D[3]);
-    IE_D4.dff_pp(FFFF_WRn, BUS_C2S_D[4]);
+    IE_D0.dff_pp(FFFF_WRn, BUS_C2S_D[0].to_wire());
+    IE_D1.dff_pp(FFFF_WRn, BUS_C2S_D[1].to_wire());
+    IE_D2.dff_pp(FFFF_WRn, BUS_C2S_D[2].to_wire());
+    IE_D3.dff_pp(FFFF_WRn, BUS_C2S_D[3].to_wire());
+    IE_D4.dff_pp(FFFF_WRn, BUS_C2S_D[4].to_wire());
 
     IE_D0.dff_RSTn(!sys_rst);
     IE_D1.dff_RSTn(!sys_rst);
@@ -6232,6 +6232,19 @@ void GateBoy::tock_slow() {
   if (DELTA_GH) {
     cpu_data_latch = pack_u8(8, &BUS_S2C_D[0]);
   }
+
+  //------------------------------------------------------------------------------
+  // Sanity check
+
+  // Can't drive the cpu bus in both directions at once.
+  CHECK_N((BUS_C2S_D[0].state & BIT_DRIVEN) && (BUS_S2C_D[0].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[1].state & BIT_DRIVEN) && (BUS_S2C_D[1].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[2].state & BIT_DRIVEN) && (BUS_S2C_D[2].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[3].state & BIT_DRIVEN) && (BUS_S2C_D[3].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[4].state & BIT_DRIVEN) && (BUS_S2C_D[4].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[5].state & BIT_DRIVEN) && (BUS_S2C_D[5].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[6].state & BIT_DRIVEN) && (BUS_S2C_D[6].state & BIT_DRIVEN));
+  CHECK_N((BUS_C2S_D[7].state & BIT_DRIVEN) && (BUS_S2C_D[7].state & BIT_DRIVEN));
 }
 
 //-----------------------------------------------------------------------------

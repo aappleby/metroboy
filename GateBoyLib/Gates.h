@@ -4,17 +4,6 @@
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
-inline wire as_wire_old(T a) { return a.to_wire_old(); }
-
-template<>
-inline wire as_wire_old(wire a) { return a; }
-
-template<>
-inline wire as_wire_old(int32_t a) { return wire(a); }
-
-//-----------------------------------------------------------------------------
-
 enum RegBits : uint8_t {
   BIT_DATA   = 0b00000001,
   BIT_CLOCK  = 0b00000010,
@@ -154,8 +143,7 @@ struct DFF : public BitBase {
     state |= BIT_LOCKED;
   }
 
-  template<typename T>
-  void dff_pp(wire CLKp, T Dp) {
+  void dff_pp(wire CLKp, wire Dp) {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
@@ -164,7 +152,7 @@ struct DFF : public BitBase {
     uint8_t cb = CLKp << 1;
 
     if (!ca && cb) {
-      state = (CLKp << 1) + as_wire_old(Dp);
+      state = (CLKp << 1) + Dp;
     }
     else {
       state = (CLKp << 1) + qp;
@@ -172,8 +160,7 @@ struct DFF : public BitBase {
     state |= BIT_DIRTY;
   }
 
-  template<typename T>
-  void dff_nn(wire CLKn, T Dn) {
+  void dff_nn(wire CLKn, wire Dn) {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
@@ -182,7 +169,7 @@ struct DFF : public BitBase {
     uint8_t cb = (!CLKn) << 1;
 
     if (!ca && cb) {
-      state = ((!CLKn) << 1) + !as_wire_old(Dn);
+      state = ((!CLKn) << 1) + !Dn;
     }
     else {
       state = ((!CLKn) << 1) + qp;
@@ -190,8 +177,7 @@ struct DFF : public BitBase {
     state |= BIT_DIRTY;
   }
 
-  template<typename T>
-  void dff_pn(wire CLKp, T Dn) {
+  void dff_pn(wire CLKp, wire Dn) {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
 
@@ -200,7 +186,7 @@ struct DFF : public BitBase {
     uint8_t cb = CLKp << 1;
 
     if (!ca && cb) {
-      state = (CLKp << 1) + !as_wire_old(Dn);
+      state = (CLKp << 1) + !Dn;
     }
     else {
       state = (CLKp << 1) + qp;
@@ -424,7 +410,7 @@ struct DFF20 : public DFF {
 
     if (LOADp) {
       state &= ~BIT_DATA;
-      state |= (uint8_t)as_wire_old(newD);
+      state |= (uint8_t)newD;
     }
 
     state |= BIT_LOCKED;
@@ -564,10 +550,6 @@ struct Bus2 : public BitBase {
   }
 
   wire to_wire_old() { return to_wire(); }
-
-  //template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire_old(Dn) : 0); }
-  //template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire_old(Dn) : 0); }
-  //template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire_old(Dp) : 0); }
 
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
@@ -772,6 +754,16 @@ struct TpLatch : public LatchBase {
 
 
 
+//-----------------------------------------------------------------------------
+
+template<typename T>
+inline wire as_wire_old(T a) { return a.to_wire_old(); }
+
+template<>
+inline wire as_wire_old(wire a) { return a; }
+
+template<>
+inline wire as_wire_old(int32_t a) { return wire(a); }
 
 //-----------------------------------------------------------------------------
 
@@ -848,14 +840,7 @@ inline uint16_t pack_u16n(int c, const T* b) {
 
 inline wire not1(wire a) { return !a; }
 
-//template<typename T>
-//inline wire not1(T a) { return !as_wire_old(a); }
-
 inline wire and2(wire a, wire b) { return a & b; }
-
-template<typename T>
-inline wire and2(T a, wire b) { return as_wire_old(a) & b; }
-
 inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
 inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
 inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
@@ -863,29 +848,15 @@ inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & 
 inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
 
 inline wire or2(wire a, wire b) { return a | b; }
-
-template<typename T>
-inline wire or2(T a, wire b) { return as_wire_old(a) | b; }
-
-template<typename T>
-inline wire or2(wire a, T b) { return a | as_wire_old(b); }
-
 inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
 inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
 inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
 
 inline wire xor2 (wire a, wire b) { return a ^ b; }
 
-template<typename T>
-inline wire xor2 (wire a, T b) { return a ^ as_wire_old(b); }
-
 inline wire xnor2(wire a, wire b) { return a == b; }
 
 inline wire nor2(wire a, wire b) { return !(a | b); }
-
-template<typename T>
-inline wire nor2(T a, wire b) { return !(as_wire_old(a) | b); }
-
 inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
 inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
 inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
@@ -894,10 +865,6 @@ inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h)
 
 inline wire nand2(wire a, wire b) { return !(a & b); }
 inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
-
-template<typename T>
-inline wire nand3(wire a, wire b, T c) { return !(a & b & as_wire_old(c)); }
-
 inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
 inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
 inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
@@ -905,19 +872,6 @@ inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { retu
 
 inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
 inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
-
-template<typename T>
-inline wire nand2(T a, wire b) {
-  if (!b) return 1;
-  return !as_wire_old(a);
-}
-
-template<typename T>
-inline wire or_and3(wire a, T b, wire c) {
-  if (!c) return 0;
-  if (a) return 1;
-  return as_wire_old(b);
-}
 
 //-----------------------------------------------------------------------------
 

@@ -4191,11 +4191,11 @@ void GateBoy::tock_slow() {
     /* p07.SYPU*/ BUS_CPU_D[0].tri6_pn(_TEXE_FF50_RDp_t0, BOOT_BITn.qp17_old());
 
     /* FFFF IE */ // This is technically in the CPU, but we're going to implement it here for now.
-    BUS_CPU_D[0].tri6_nn(FFFF_RDn, IE_D0.qn());
-    BUS_CPU_D[1].tri6_nn(FFFF_RDn, IE_D1.qn());
-    BUS_CPU_D[2].tri6_nn(FFFF_RDn, IE_D2.qn());
-    BUS_CPU_D[3].tri6_nn(FFFF_RDn, IE_D3.qn());
-    BUS_CPU_D[4].tri6_nn(FFFF_RDn, IE_D4.qn());
+    BUS_CPU_D[0].tri6_nn(FFFF_RDn, IE_D0.qn_old());
+    BUS_CPU_D[1].tri6_nn(FFFF_RDn, IE_D1.qn_old());
+    BUS_CPU_D[2].tri6_nn(FFFF_RDn, IE_D2.qn_old());
+    BUS_CPU_D[3].tri6_nn(FFFF_RDn, IE_D3.qn_old());
+    BUS_CPU_D[4].tri6_nn(FFFF_RDn, IE_D4.qn_old());
 
     /* EBL -> CBD */
     /*#p08.RYMA*/ BUS_CPU_D[0].tri6_nn(_LAVO_HOLDn, ext_bus.SOMA_EXT_DATA_LATCH_D0n.qp08());
@@ -6130,9 +6130,9 @@ void GateBoy::tock_slow() {
     // That would be a loooot of gate delay.
     // Could we possibly be incrementing X3p one phase early?
 
-    wire _POME = as_wire_old(pix_pipe.POME);
-    wire _RUJU = as_wire_old(pix_pipe.RUJU);
-    wire _POFY = as_wire_old(pix_pipe.POFY);
+    wire _POME = pix_pipe.POME.to_wire_old();
+    wire _RUJU = pix_pipe.RUJU.to_wire_old();
+    wire _POFY = pix_pipe.POFY.to_wire_old();
 
     /*#p24.POME*/ pix_pipe.POME.set(nor2(_AVAP_SCAN_DONE_TRIGp_t2, _POFY));
     /*#p24.RUJU*/ pix_pipe.RUJU.set(or3(pix_pipe.PAHO_X_8_SYNC.qp17_new(), _TOFU_VID_RSTp_t0, _POME));
@@ -6190,8 +6190,8 @@ void GateBoy::tock_slow() {
     if (!old_lcd_latch && PIN_LCD_LATCH.qp()) {
       if (gb_screen_y < 144) {
         for (int x = 0; x < 159; x++) {
-          uint8_t p0 = lcd_pipe_lo[x + 1].qp();
-          uint8_t p1 = lcd_pipe_hi[x + 1].qp();
+          uint8_t p0 = lcd_pipe_lo[x + 1].qp_old();
+          uint8_t p1 = lcd_pipe_hi[x + 1].qp_old();
           framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
         }
         {
@@ -6209,8 +6209,8 @@ void GateBoy::tock_slow() {
 
     {
       for (int i = 0; i < 159; i++) {
-        lcd_pipe_lo[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp());
-        lcd_pipe_hi[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp());
+        lcd_pipe_lo[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp_old());
+        lcd_pipe_hi[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp_old());
       }
 
       lcd_pipe_lo[159].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04());

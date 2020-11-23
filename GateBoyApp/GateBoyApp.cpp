@@ -1097,8 +1097,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
       memset(overlay, 0, sizeof(overlay));
 
       for (int x = 0; x < fb_x; x++) {
-        uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp();
-        uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp();
+        uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
+        uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
 
         int r = (3 - (p0 + p1 * 2)) * 30 + 50;
         int g = (3 - (p0 + p1 * 2)) * 30 + 50;

@@ -68,12 +68,6 @@ struct Gate : public BitBase {
     return wire(state & BIT_DATA);
   }
 
-  wire to_wire_mid() const {
-    CHECK_P(state & BIT_DIRTY);
-    CHECK_N(state & BIT_LOCKED);
-    return wire(state & BIT_DATA);
-  }
-
   wire to_wire_new() const {
     CHECK_P(state & BIT_DIRTY);
     CHECK_P(state & BIT_LOCKED);
@@ -103,7 +97,7 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-  wire to_wire() const { return to_wire_old(); }
+  //wire to_wire() const { return to_wire_old(); }
 
   wire to_wire_old() const {
     CHECK_N(state & BIT_DIRTY);
@@ -124,8 +118,8 @@ struct DFF : public BitBase {
   }
 
 
-  wire qp() const { return  to_wire(); }
-  wire qn() const { return !to_wire(); }
+  wire qp_old() const { return  to_wire_old(); }
+  wire qn_old() const { return !to_wire_old(); }
 
   char c() const    {
     if (state & BIT_DIRTY)  return 'D';

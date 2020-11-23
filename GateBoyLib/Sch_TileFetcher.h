@@ -11,7 +11,7 @@ struct TileFetcher {
     NYKA_FETCH_DONEp_P11.reset(REG_D0C0);
     PORY_FETCH_DONEp_P12.reset(REG_D0C1);
 
-    LAXU_BFETCH_S0.reset(REG_D1C1);
+    LAXU_BFETCH_S0p.reset(REG_D1C1);
     MESU_BFETCH_S1p.reset(REG_D0C0);
     NYVA_BFETCH_S2p.reset(REG_D1C1);
 
@@ -27,7 +27,7 @@ struct TileFetcher {
     NYKA_FETCH_DONEp_P11.reset(REG_D0C0);
     PORY_FETCH_DONEp_P12.reset(REG_D0C0);
 
-    LAXU_BFETCH_S0.reset(REG_D0C0);
+    LAXU_BFETCH_S0p.reset(REG_D0C0);
     MESU_BFETCH_S1p.reset(REG_D0C0);
     NYVA_BFETCH_S2p.reset(REG_D0C0);
 
@@ -42,7 +42,7 @@ struct TileFetcher {
   /*p24.NYKA*/ DFF17 NYKA_FETCH_DONEp_P11; // -> top
   /*p24.PORY*/ DFF17 PORY_FETCH_DONEp_P12; // -> top
 
-  /*p27.LAXU*/ DFF17 LAXU_BFETCH_S0;
+  /*p27.LAXU*/ DFF17 LAXU_BFETCH_S0p;
   /*p27.MESU*/ DFF17 MESU_BFETCH_S1p;
   /*p27.NYVA*/ DFF17 NYVA_BFETCH_S2p;
 

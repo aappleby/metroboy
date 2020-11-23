@@ -980,7 +980,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002=====TileFetcher=====\001\n");
-  d("LAXU_BFETCH_S0           %c\n", gb->tile_fetcher.LAXU_BFETCH_S0.c());
+  d("LAXU_BFETCH_S0           %c\n", gb->tile_fetcher.LAXU_BFETCH_S0p.c());
   d("MESU_BFETCH_S1           %c\n", gb->tile_fetcher.MESU_BFETCH_S1p.c());
   d("NYVA_BFETCH_S2           %c\n", gb->tile_fetcher.NYVA_BFETCH_S2p.c());
   d("LYZU_BFETCH_S0_D1        %c\n", gb->tile_fetcher.LYZU_BFETCH_S0_D1.c());

@@ -756,14 +756,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("KECY_JOYP_LB     %c\n", gb->joypad.KECY_JOYP_LB.c());
   d("JALE_JOYP_UC     %c\n", gb->joypad.JALE_JOYP_UC.c());
   d("KYME_JOYP_DS     %c\n", gb->joypad.KYME_JOYP_DS.c());
-  d("KELY_JOYP_UDLR   %c\n", gb->joypad.KELY_JOYP_UDLR.c());
-  d("COFY_JOYP_ABCS   %c\n", gb->joypad.COFY_JOYP_ABCS.c());
-  d("KUKO_DBG_FF00_D6 %c\n", gb->joypad.KUKO_DBG_FF00_D6.c());
-  d("KERU_DBG_FF00_D7 %c\n", gb->joypad.KERU_DBG_FF00_D7.c());
-  d("KEVU_JOYP_L0     %c\n", gb->joypad.KEVU_JOYP_L0.c());
-  d("KAPA_JOYP_L1     %c\n", gb->joypad.KAPA_JOYP_L1.c());
-  d("KEJA_JOYP_L2     %c\n", gb->joypad.KEJA_JOYP_L2.c());
-  d("KOLO_JOYP_L3     %c\n", gb->joypad.KOLO_JOYP_L3.c());
+  d("KELY_JOYP_UDLR   %c\n", gb->joypad.KELY_JOYP_UDLRp.c());
+  d("COFY_JOYP_ABCS   %c\n", gb->joypad.COFY_JOYP_ABCSp.c());
+  d("KUKO_DBG_FF00_D6 %c\n", gb->joypad.KUKO_DBG_FF00_D6n.c());
+  d("KERU_DBG_FF00_D7 %c\n", gb->joypad.KERU_DBG_FF00_D7n.c());
+  d("KEVU_JOYP_L0     %c\n", gb->joypad.KEVU_JOYP_L0n.c());
+  d("KAPA_JOYP_L1     %c\n", gb->joypad.KAPA_JOYP_L1n.c());
+  d("KEJA_JOYP_L2     %c\n", gb->joypad.KEJA_JOYP_L2n.c());
+  d("KOLO_JOYP_L3     %c\n", gb->joypad.KOLO_JOYP_L3n.c());
   d("\n");
 
   d("\002===== Serial =====\001\n");
@@ -922,15 +922,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   d("TAKA_SFETCH_RUNNINGp %c\n", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp.c());
   d("\n");
-  d("TOXE_SFETCH_S0       %c\n", gb->sprite_fetcher.TOXE_SFETCH_S0      .c());
-  d("TYFO_SFETCH_S0_D1    %c\n", gb->sprite_fetcher.TYFO_SFETCH_S0_D1   .c());
+  d("TOXE_SFETCH_S0       %c\n", gb->sprite_fetcher.TOXE_SFETCH_S0p      .c());
+  d("TYFO_SFETCH_S0_D1    %c\n", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1   .c());
   d("\n");
-  d("TULY_SFETCH_S1       %c\n", gb->sprite_fetcher.TULY_SFETCH_S1      .c());
-  d("TOBU_SFETCH_S1_D2    %c\n", gb->sprite_fetcher.TOBU_SFETCH_S1_D2   .c());
-  d("VONU_SFETCH_S1_D4    %c\n", gb->sprite_fetcher.VONU_SFETCH_S1_D4   .c());
-  d("SEBA_SFETCH_S1_D5    %c\n", gb->sprite_fetcher.SEBA_SFETCH_S1_D5   .c());
+  d("TULY_SFETCH_S1       %c\n", gb->sprite_fetcher.TULY_SFETCH_S1p      .c());
+  d("TOBU_SFETCH_S1_D2    %c\n", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2   .c());
+  d("VONU_SFETCH_S1_D4    %c\n", gb->sprite_fetcher.VONU_SFETCH_S1p_D4   .c());
+  d("SEBA_SFETCH_S1_D5    %c\n", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5   .c());
   d("\n");
-  d("TESE_SFETCH_S2       %c\n", gb->sprite_fetcher.TESE_SFETCH_S2      .c());
+  d("TESE_SFETCH_S2       %c\n", gb->sprite_fetcher.TESE_SFETCH_S2p      .c());
   d("\n");
 
   //----------------------------------------

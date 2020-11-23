@@ -536,6 +536,7 @@ struct DFF22 : public DFF {
 struct Bus2 : public BitBase {
 
   void tri(wire OEp, wire Dp) {
+    CHECK_N(state & BIT_LOCKED);
     if (OEp) {
       CHECK_N(state & BIT_DRIVEN);
       state |= BIT_DRIVEN;
@@ -546,6 +547,7 @@ struct Bus2 : public BitBase {
 
   wire to_wire() {
     CHECK_P(state & BIT_DIRTY);
+    state |= BIT_LOCKED;
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
 

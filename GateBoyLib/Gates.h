@@ -60,8 +60,6 @@ struct BitBase {
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
-  //wire to_wire() const { return to_wire_old(); }
-
   wire to_wire_old() const {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
@@ -97,8 +95,6 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-  //wire to_wire() const { return to_wire_old(); }
-
   wire to_wire_old() const {
     CHECK_N(state & BIT_DIRTY);
     CHECK_N(state & BIT_LOCKED);
@@ -116,7 +112,6 @@ struct DFF : public BitBase {
     CHECK_P(state & BIT_LOCKED);
     return wire(state & BIT_DATA);
   }
-
 
   wire qp_old() const { return  to_wire_old(); }
   wire qn_old() const { return !to_wire_old(); }
@@ -234,8 +229,10 @@ struct DFF8n : public DFF {
   wire qn07_new() const { return !to_wire_new(); }
   wire qp08_new() const { return  to_wire_new(); }
 
-  template<typename T>
-  void dff8n_ff(wire CLKn, T Dn) { dff_nn(CLKn, Dn); state |= BIT_LOCKED; }
+  //template<typename T>
+  //void dff8n_ff(wire CLKn, T Dn) { dff_nn(CLKn, Dn); state |= BIT_LOCKED; }
+
+  void dff8n_ff(wire CLKn, wire Dn) { dff_nn(CLKn, Dn); state |= BIT_LOCKED; }
 };
 
 //-----------------------------------------------------------------------------
@@ -258,8 +255,7 @@ struct DFF8p : public DFF {
   wire qn07_new() const { return !to_wire_new(); }
   wire qp08_new() const { return  to_wire_new(); }
 
-  template<typename T>
-  void dff8p_ff(wire CLKp, T Dn) { dff_pn(CLKp, Dn); state |= BIT_LOCKED; }
+  void dff8p_ff(wire CLKp, wire Dn) { dff_pn(CLKp, Dn); state |= BIT_LOCKED; }
 };
 
 //-----------------------------------------------------------------------------

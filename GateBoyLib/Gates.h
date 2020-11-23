@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 template<typename T>
-inline wire as_wire_old(T a) { return a.to_wire(); }
+inline wire as_wire_old(T a) { return a.to_wire_old(); }
 
 template<>
 inline wire as_wire_old(wire a) { return a; }
@@ -17,14 +17,12 @@ inline wire as_wire_old(int32_t a) { return wire(a); }
 
 enum RegBits : uint8_t {
   BIT_DATA   = 0b00000001,
-  BIT_SET    = 0b00000010,
-  BIT_RST    = 0b00000100,
-
   BIT_CLOCK  = 0b00000010,
   BIT_PULLUP = 0b00000100,
   BIT_DRIVEN = 0b00001000,
+  BIT_SET    = 0b00000100,
+  BIT_RST    = 0b00001000,
 
-  BIT_ERROR  = 0b00100000,
   BIT_DIRTY  = 0b01000000,
   BIT_LOCKED = 0b10000000,
 
@@ -56,7 +54,13 @@ struct BitBase {
     state = s | BIT_DRIVEN;
   }
 
-  wire to_wire() const { return to_wire_old(); }
+  uint8_t state = 0;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Gate : public BitBase {
+  //wire to_wire() const { return to_wire_old(); }
 
   wire to_wire_old() const {
     CHECK_N(state & BIT_DIRTY);
@@ -77,14 +81,12 @@ struct BitBase {
   }
 
   char c() const    {
-    if (state & BIT_ERROR)  return 'E';
     if (state & BIT_DIRTY)  return 'D';
     if (state & BIT_LOCKED) return 'L';
     if (state & BIT_DATA)   return '1';
     return '0';
   }
   char cn() const {
-    if (state & BIT_ERROR)  return 'E';
     if (state & BIT_DIRTY)  return 'D';
     if (state & BIT_LOCKED) return 'L';
     if (state & BIT_DATA)   return '0';
@@ -94,6 +96,48 @@ struct BitBase {
   void set(wire D) {
     CHECK_N(state & BIT_LOCKED);
     state = BIT_LOCKED | BIT_DIRTY | uint8_t(D);
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Generic DFF
+
+struct DFF : public BitBase {
+  wire to_wire() const { return to_wire_old(); }
+
+  wire to_wire_old() const {
+    CHECK_N(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  wire to_wire_mid() const {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_N(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+  wire to_wire_new() const {
+    CHECK_P(state & BIT_DIRTY);
+    CHECK_P(state & BIT_LOCKED);
+    return wire(state & BIT_DATA);
+  }
+
+
+  wire qp() const { return  to_wire(); }
+  wire qn() const { return !to_wire(); }
+
+  char c() const    {
+    if (state & BIT_DIRTY)  return 'D';
+    if (state & BIT_LOCKED) return 'L';
+    if (state & BIT_DATA)   return '1';
+    return '0';
+  }
+  char cn() const {
+    if (state & BIT_DIRTY)  return 'D';
+    if (state & BIT_LOCKED) return 'L';
+    if (state & BIT_DATA)   return '0';
+    return '1';
   }
 
   void dff_SETnRSTn(wire SETn, wire RSTn) {
@@ -174,21 +218,6 @@ struct BitBase {
     }
     state |= BIT_DIRTY;
   }
-
-  uint8_t state = 0;
-};
-
-//-----------------------------------------------------------------------------
-
-struct Gate : public BitBase {
-};
-
-//-----------------------------------------------------------------------------
-// Generic DFF
-
-struct DFF : public BitBase {
-  wire qp() const { return  to_wire(); }
-  wire qn() const { return !to_wire(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -550,6 +579,8 @@ struct Bus2 : public BitBase {
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
 
+  wire to_wire_old() { return to_wire(); }
+
   template<typename T> void tri6_nn (wire OEn, T Dn) { tri(!OEn, !OEn ? !as_wire_old(Dn) : 0); }
   template<typename T> void tri6_pn (wire OEp, T Dn) { tri( OEp,  OEp ? !as_wire_old(Dn) : 0); }
   template<typename T> void tri10_np(wire OEn, T Dp) { tri(!OEn, !OEn ?  as_wire_old(Dp) : 0); }
@@ -564,6 +595,7 @@ struct Pin2 : public BitBase {
     state |= BIT_LOCKED;
     return (state & BIT_DRIVEN) ? wire(state & BIT_DATA) : 1;
   }
+  wire to_wire_old() { return to_wire(); }
 
   wire qp() { return  to_wire(); }
   wire qn() { return !to_wire(); }
@@ -633,11 +665,25 @@ struct Pin2 : public BitBase {
 
 struct LatchBase : public BitBase {
 
+  char c() const    {
+    if (state & BIT_DIRTY)  return 'D';
+    if (state & BIT_LOCKED) return 'L';
+    if (state & BIT_DATA)   return '1';
+    return '0';
+  }
+  char cn() const {
+    if (state & BIT_DIRTY)  return 'D';
+    if (state & BIT_LOCKED) return 'L';
+    if (state & BIT_DATA)   return '0';
+    return '1';
+  }
+
   wire to_wire() const {
     // Can't check dirty here, as we need to read XYMU before it's been updated.
     //CHECK_P(!sim_running || state & BIT_DIRTY);
     return state & BIT_DATA;
   }
+  wire to_wire_old() { return to_wire(); }
 
   void latch(wire SETp, wire RSTp) {
     CHECK_N(state & BIT_DIRTY);

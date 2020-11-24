@@ -4,7 +4,6 @@
 
 //-----------------------------------------------------------------------------
 
-
 void combine_hash(uint64_t& a, uint64_t b);
 uint64_t commit_and_hash(void* blob, int size);
 
@@ -20,7 +19,7 @@ inline uint64_t commit_and_hash(T& obj) {
 #pragma pack(push, 1)
 struct BitBase {
   void reset(uint8_t s) {
-    *(uint8_t*)this = s;
+    state = s;
   }
 
   wire to_wire_old() const {
@@ -39,14 +38,14 @@ struct BitBase {
   union {
     uint8_t state = 0;
     struct {
-      bool bit_data : 1;
-      bool bit_clock : 1;
-      bool bit_set : 1;
-      bool bit_rst : 1;
-      bool bit_driven : 1;
-      bool bit_dirty : 1;
-      bool bit_locked : 1;
-      bool bit_error : 1;
+      uint8_t bit_data : 1;
+      uint8_t bit_clock : 1;
+      uint8_t bit_set : 1;
+      uint8_t bit_rst : 1;
+      uint8_t bit_driven : 1;
+      uint8_t bit_dirty : 1;
+      uint8_t bit_locked : 1;
+      uint8_t bit_error : 1;
     };
   };
 };
@@ -64,7 +63,7 @@ constexpr uint8_t REG_D1C1 = 0b00000011;
 struct Gate : public BitBase {
   void set(wire D) {
     CHECK_N(bit_dirty);
-    *(uint8_t*)this = D;
+    state = D;
     bit_dirty = 1;
   }
 };
@@ -73,21 +72,6 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-  wire to_wire_old() const {
-    CHECK_N(bit_dirty);
-    return bit_data;
-  }
-
-  wire to_wire_mid() const {
-    CHECK_P(bit_dirty);
-    return bit_data;
-  }
-
-  wire to_wire_new() const {
-    CHECK_P(bit_dirty);
-    return bit_data;
-  }
-
   wire qp_old() const { return  to_wire_old(); }
   wire qn_old() const { return !to_wire_old(); }
 
@@ -105,28 +89,15 @@ struct DFF : public BitBase {
     bit_dirty = 1;
   }
 
-  void dff_SETnRSTn(wire SETn, wire RSTn) {
-    CHECK_P(bit_dirty);
-
+  void dff_SETn(wire SETn) {
     bit_set = !SETn;
-    bit_rst = !RSTn;
     bit_data = (bit_data || bit_set) && !bit_rst;
   }
 
   void dff_RSTn(wire RSTn) {
-    CHECK_P(bit_dirty);
-
     bit_rst = !RSTn;
     bit_data = (bit_data || bit_set) && !bit_rst;
   }
-
-  void dff_SETn(wire SETn) {
-    CHECK_P(bit_dirty);
-
-    bit_set = !SETn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-  }
-
 };
 
 //-----------------------------------------------------------------------------
@@ -198,8 +169,7 @@ struct DFF9 : public DFF {
   wire qp09_new() const { return qp_new(); }
 
   void dff9_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
-
-  void dff9_set(wire SETn) { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
+  void dff9_set(wire SETn)         { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
 };
 
 //-----------------------------------------------------------------------------
@@ -224,8 +194,7 @@ struct DFF11 : public DFF {
   wire q11p_new() const { return qp_new(); }
 
   void dff11_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-
-  void dff11_rs(wire RSTn) { dff_RSTn(RSTn); }
+  void dff11_rst(wire RSTn)         { dff_RSTn(RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -245,7 +214,6 @@ struct DFF11 : public DFF {
 // DFF13_13 >> Q
 
 struct DFF13 : public DFF {
-
   wire qn12_old() const { return qn_old(); }
   wire qp13_old() const { return qp_old(); }
 
@@ -253,7 +221,7 @@ struct DFF13 : public DFF {
   wire qp13_new() const { return qp_new(); }
 
   void dff13_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-  void dff13_rs(wire RSTn)          { dff_RSTn(RSTn); }
+  void dff13_rst(wire RSTn)         { dff_RSTn(RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -277,18 +245,14 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
-
   wire qn16_old() const { return qn_old(); }
   wire qp17_old() const { return qp_old(); }
-
-  wire qn16_mid() const { return !to_wire_mid(); }
-  wire qp17_mid() const { return  to_wire_mid(); }
 
   wire qn16_new() const { return qn_new(); }
   wire qp17_new() const { return qp_new(); }
 
   void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-  void dff17_rs(wire RSTn) { dff_RSTn(RSTn); }
+  void dff17_rst(wire RSTn)         { dff_RSTn(RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -319,26 +283,11 @@ struct DFF20 : public DFF {
   wire qp01_old() const { return  to_wire_old(); }
   wire qn17_old() const { return !to_wire_old(); }
 
-  wire qp01_mid() const { return  to_wire_mid(); }
-  wire qn17_mid() const { return !to_wire_mid(); }
-
   wire qp01_new() const { return  to_wire_new(); }
   wire qn17_new() const { return !to_wire_new(); }
 
-  void dff20_ff(wire CLKn) {
-    CHECK_N(bit_dirty);
-    wire CLKp = !CLKn;
-
-    if (!bit_clock && CLKp) bit_data = !bit_data;
-    bit_clock = !CLKn;
-    bit_dirty = 1;
-  }
-
-  void dff20_load(wire LOADp, wire newD) {
-    bit_set = LOADp && newD;
-    bit_rst = LOADp && !newD;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-  }
+  void dff20_ff(wire CLKn)               { dff(!CLKn, !bit_data); }
+  void dff20_load(wire LOADp, wire newD) { dff_SETn(!(LOADp && newD)); dff_RSTn(!(LOADp && !newD)); }
 };
 
 //-----------------------------------------------------------------------------
@@ -370,73 +319,40 @@ struct DFF20 : public DFF {
 // DFF22_22 << CLKp
 
 struct DFF22 : public DFF {
-
   wire qn15_old()  const { return !to_wire_old(); }
   wire qp16_old()  const { return  to_wire_old(); }
-
-  wire qn15_mid()  const { return !to_wire_mid(); }
-  wire qp16_mid()  const { return  to_wire_mid(); }
 
   wire qn15_new() const { return !to_wire_new(); }
   wire qp16_new() const { return  to_wire_new(); }
 
-  void dff22_ff(wire CLKp, wire Dp)   { dff(CLKp, Dp); }
-  void dff22_sr(wire SETn, wire RSTn) { dff_SETnRSTn(SETn, RSTn); }
+  void dff22_ff(wire CLKp, wire Dp)        { dff(CLKp, Dp); }
+  void dff22_set_rst(wire SETn, wire RSTn) { dff_SETn(SETn); dff_RSTn(RSTn); }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 // Tristate bus, can have multiple drivers.
+
+struct TriBase : public BitBase {
+  wire to_wire_new() {
+    CHECK_P(bit_dirty);
+    return bit_data | !bit_driven;
+  }
+
+  wire qp() { return  to_wire_new(); }
+  wire qn() { return !to_wire_new(); }
+
+  void tri(wire OEp, wire Dp) {
+    if (OEp) {
+      CHECK_N(bit_driven);
+      bit_driven = 1;
+      bit_data = Dp;
+    }
+    bit_dirty = 1;
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Bus with pull-up, testing new stuff.
 
 // TYGO_01 << BUS_CPU_D2p
 // TYGO_02 nc
@@ -449,30 +365,10 @@ struct DFF22 : public DFF {
 // TYGO_09 >> BUS_VRAM_D2p
 // TYGO_10 nc
 
-// Must be NP - see KOVA/KEJO
-
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
 // tri6_pn : top rung tadpole facing second rung dot.
 
-//-----------------------------------------------------------------------------
-// Bus with pull-up, testing new stuff.
-
-struct Bus2 : public BitBase {
-
-  void tri(wire OEp, wire Dp) {
-    if (OEp) {
-      CHECK_N(bit_driven);
-      bit_driven = 1;
-      bit_data = Dp;
-    }
-    bit_dirty = 1;
-  }
-
-  wire to_wire_new() {
-    CHECK_P(bit_dirty);
-    return bit_data | !bit_driven;
-  }
-
+struct Bus2 : public TriBase {
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
   void tri10_np(wire OEn, wire Dp) { tri(!OEn, !OEn ?  Dp : 0); }
@@ -480,63 +376,10 @@ struct Bus2 : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct Pin2 : public BitBase {
-
-  wire to_wire_new() {
-    CHECK_P(bit_dirty);
-    return (bit_driven) ? bit_data : 1;
-  }
-  wire qp() { return  to_wire_new(); }
-  wire qn() { return !to_wire_new(); }
-
-  void pin_in(wire OEp, wire D) {
-    if (OEp) {
-      CHECK_N(bit_driven);
-      bit_driven = 1;
-      bit_data = D;
-    }
-    bit_dirty = 1;
-  }
-
-  void pin_out(wire OEp, wire HI, wire LO) {
-    CHECK_N(!HI && LO);
-    wire D = !HI;
-    if (OEp && (HI == LO)) {
-      CHECK_N(bit_driven);
-      bit_driven = 1;
-      bit_data = D;
-    }
-    bit_dirty = 1;
-  }
+struct Pin2 : public TriBase {
+  void pin_in(wire OEp, wire D)            { tri(OEp, D); }
+  void pin_out(wire OEp, wire HI, wire LO) { CHECK_N(!HI && LO); tri(OEp, !HI); }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side

@@ -21,3 +21,6 @@ struct Probes {
 };
 
 void probe(int index, const char* signal_name, char s);
+
+
+#define PROBE(A, B) probe(A, #B, B)

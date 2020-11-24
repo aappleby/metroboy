@@ -319,15 +319,20 @@ void GateBoyApp::app_update(double /*delta*/) {
 
     case SDLK_RIGHT:  {
       if (runmode == RUN_STEP) {
-        if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-          gb_thread.step_phase(114 * 8 * 8);
+        if (stepmode == STEP_PHASE) {
+          if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
+            gb_thread.step_phase(114 * 8 * 8);
+          }
+          else if (keyboard_state[SDL_SCANCODE_LALT]) {
+            gb_thread.step_phase(114 * 8);
+          } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+            gb_thread.step_phase(8);
+          } else {
+            gb_thread.step_phase(1);
+          }
         }
-        else if (keyboard_state[SDL_SCANCODE_LALT]) {
-          gb_thread.step_phase(114 * 8);
-        } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          gb_thread.step_phase(8);
-        } else {
-          gb_thread.step_phase(1);
+        else {
+          gb_thread.step_pass(1);
         }
       }
       break;
@@ -820,6 +825,35 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("LCD Y     : %03d\n", gb->lcd_reg.get_ly());
   d("LYC       : %03d\n", gb->lcd_reg.get_lyc());
   d("\n");
+
+  d.dump_reg("SAXO_LX0p", gb->lcd_reg.SAXO_LX0p.state);
+  d.dump_reg("TYPO_LX1p", gb->lcd_reg.TYPO_LX1p.state);
+  d.dump_reg("VYZO_LX2p", gb->lcd_reg.VYZO_LX2p.state);
+  d.dump_reg("TELU_LX3p", gb->lcd_reg.TELU_LX3p.state);
+  d.dump_reg("SUDE_LX4p", gb->lcd_reg.SUDE_LX4p.state);
+  d.dump_reg("TAHA_LX5p", gb->lcd_reg.TAHA_LX5p.state);
+  d.dump_reg("TYRY_LX6p", gb->lcd_reg.TYRY_LX6p.state);
+
+  /*
+  lcd_reg.SAXO_LX0p.
+  lcd_reg.TYPO_LX1p.
+  lcd_reg.VYZO_LX2p.
+  lcd_reg.TELU_LX3p.
+  lcd_reg.SUDE_LX4p.
+  lcd_reg.TAHA_LX5p.
+  lcd_reg.TYRY_LX6p.
+
+  lcd_reg.MUWY_LY0p.
+  lcd_reg.MYRO_LY1p.
+  lcd_reg.LEXA_LY2p.
+  lcd_reg.LYDO_LY3p.
+  lcd_reg.LOVU_LY4p.
+  lcd_reg.LEMA_LY5p.
+  lcd_reg.MATO_LY6p.
+  lcd_reg.LAFO_LY7p.
+  */
+
+
 
   d("lcd_pix_lo      : %c\n", gb->lcd_pix_lo.c());
   d("lcd_pix_hi      : %c\n", gb->lcd_pix_hi.c());

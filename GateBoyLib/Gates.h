@@ -286,8 +286,11 @@ struct DFF20 : public DFF {
   wire qp01_new() const { return  to_wire_new(); }
   wire qn17_new() const { return !to_wire_new(); }
 
-  void dff20_ff(wire CLKn)               { dff(!CLKn, !bit_data); }
-  void dff20_load(wire LOADp, wire newD) { dff_SETn(!(LOADp && newD)); dff_RSTn(!(LOADp && !newD)); }
+  void dff20(wire CLKn, wire LOADp, wire newD) {
+    dff(!CLKn, !bit_data);
+    dff_SETn(!(LOADp && newD));
+    dff_RSTn(!(LOADp && !newD));
+  }
 };
 
 //-----------------------------------------------------------------------------

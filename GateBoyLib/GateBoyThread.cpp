@@ -52,6 +52,7 @@ void GateBoyThread::thread_main() {
     if (command.count == 0 && (cursor_r != cursor_w)) {
       command = ring[cursor_r++];
       if (command.op == CMD_StepPhase) gb.push();
+      if (command.op == CMD_StepPass)  gb.push();
     }
 
     // Unlock and do the job if we have one.

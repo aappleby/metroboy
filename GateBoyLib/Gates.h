@@ -253,6 +253,8 @@ struct DFF17 : public DFF {
 
   void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
   void dff17_rst(wire RSTn)         { dff_RSTn(RSTn); }
+
+  void dff17(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
 };
 
 //-----------------------------------------------------------------------------

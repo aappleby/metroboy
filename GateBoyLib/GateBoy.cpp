@@ -4999,30 +4999,19 @@ void GateBoy::tock_slow() {
     /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17_rst(_XYMU_RENDERINGp_t2);
 
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_t0 = nand3(_RUBU_FINE_CNT2p_t0, _ROGA_FINE_CNT1p_t0, _RYKU_FINE_CNT0p_t0);
-    /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPEp_t2, _ROZE_FINE_COUNT_7n_t0);
-    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn_t2, _TEVO_FETCH_TRIGp_t2);
+    /*#p27.PECU*/ wire _PECU_FINE_CLK_t2 = nand2(_ROXO_CLKPIPEp_t2, _ROZE_FINE_COUNT_7n_t0);
+    /*#p27.PASO*/ wire _PASO_FINE_RST_t2 = nor2(_PAHA_RENDERINGn_t2, _TEVO_FETCH_TRIGp_t2);
 
-    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17_ff(_PECU_FINE_CLK,                     pix_pipe.RYKU_FINE_CNT0.qn16_old());
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17_ff(_PECU_FINE_CLK_t2,                  pix_pipe.RYKU_FINE_CNT0.qn16_old());
     /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17_ff(pix_pipe.RYKU_FINE_CNT0.qn16_new(), pix_pipe.ROGA_FINE_CNT1.qn16_old());
     /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17_ff(pix_pipe.ROGA_FINE_CNT1.qn16_new(), pix_pipe.RUBU_FINE_CNT2.qn16_old());
 
-    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17_rst(_PASO_FINE_RST);
-    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17_rst(_PASO_FINE_RST);
-    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17_rst(_PASO_FINE_RST);
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17_rst(_PASO_FINE_RST_t2);
+    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17_rst(_PASO_FINE_RST_t2);
+    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17_rst(_PASO_FINE_RST_t2);
   }
 
-  //----------------------------------------
-  // Window sequencer
-
-  {
-    /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17_ff(_ALET_xBxDxFxH_t0, pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
-    /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17_ff(_ALET_xBxDxFxH_t0, pix_pipe.RYDY_WIN_HITp.to_wire_new());
-    /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17_rst(_XAPO_VID_RSTn_t0);
-    /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17_rst(_XAPO_VID_RSTn_t0);
-  }
-
-
-  #pragma region Window_Matcher
+  #pragma region Window
   {
     /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p_t0 = xnor2(pix_pipe.NESO_WY0n.qn08_old(), _MUWY_LY0p_t0);
     /* p27.PEBO*/ wire _PEBO_WY_MATCH1p_t0 = xnor2(pix_pipe.NYRO_WY1n.qn08_old(), _MYRO_LY1p_t0);
@@ -5042,43 +5031,45 @@ void GateBoy::tock_slow() {
     /* p27.NONO*/ wire _NONO_WX_MATCH6p_t0 = xnor2(_TAKO_PX6p_t0, pix_pipe.MUVO_WX6n.qn08_old());
     /* p27.PASE*/ wire _PASE_WX_MATCH7p_t0 = xnor2(_SYBE_PX7p_t0, pix_pipe.NUKU_WX7n.qn08_old());
 
-    /* p27.REJO*/ wire _REJO_WY_MATCHp_t0 = pix_pipe.REJO_WY_MATCHp.qp04_old();
     /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn_t0  = nand5(_WYMO_LCDC_WINENp_t0, _NOJO_WY_MATCH4p_t0, _PAGA_WY_MATCH5p_t0, _PEZO_WY_MATCH6p_t0, _NUPA_WY_MATCH7p_t0);
     /* p27.NELE*/ wire _NELE_WY_MATCH_HIp_t0  = not1(_PALO_WY_MATCH_HIn_t0);
     /* p27.PAFU*/ wire _PAFU_WY_MATCHn_t0     = nand5(_NELE_WY_MATCH_HIp_t0, _NAZE_WY_MATCH0p_t0, _PEBO_WY_MATCH1p_t0, _POMO_WY_MATCH2p_t0, _NEVU_WY_MATCH3p_t0);
     /* p27.ROGE*/ wire _ROGE_WY_MATCHp_t0     = not1(_PAFU_WY_MATCHn_t0);
 
+    /* p27.REJO*/ wire _REJO_WY_MATCHp_t0     = pix_pipe.REJO_WY_MATCHp.qp04_old();
     /* p27.PUKY*/ wire _PUKY_WX_MATCH_HIn_t0  = nand5(_REJO_WY_MATCHp_t0, _NEZO_WX_MATCH4p_t0, _NORY_WX_MATCH5p_t0, _NONO_WX_MATCH6p_t0, _PASE_WX_MATCH7p_t0);
     /* p27.NUFA*/ wire _NUFA_WX_MATCH_HIp_t0  = not1(_PUKY_WX_MATCH_HIn_t0);
     /* p27.NOGY*/ wire _NOGY_WX_MATCHn_t0     = nand5(_NUFA_WX_MATCH_HIp_t0, _MYLO_WX_MATCH0p_t0, _PUWU_WX_MATCH1p_t0, _PUHO_WX_MATCH2p_t0, _NYTU_WX_MATCH3p_t0);
     /* p27.NUKO*/ wire _NUKO_WX_MATCHp_t0     = not1(_NOGY_WX_MATCHn_t0);
 
-    /* p27.SARY*/ wire _SARY_WY_MATCHp_t0 = pix_pipe.SARY_WY_MATCHp.qp17_old();
+    {
+      /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
+      /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(pix_pipe.SARY_WY_MATCHp.qp17_old(), _REPU_VBLANK_RSTp_t3);
+    }
 
-    /* p27.PYCO*/ wire _PYCO_WX_MATCH_Ap_t0 = pix_pipe.PYCO_WX_MATCH_Ap.qp17_old();
-    /* p27.NUNU*/ wire _NUNU_WX_MATCH_Bp_t0 = pix_pipe.NUNU_WX_MATCH_Bp.qp17_old();
-
-    /* p27.RENE*/ wire _RENE_FETCHn_Bp_t0 = pix_pipe.RENE_FETCHn_B.qp17_old();
-    /* p27.RYFA*/ wire _RYFA_FETCHn_Ap_t0 = pix_pipe.RYFA_FETCHn_A.qp17_old();
-    /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
-    /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(_SARY_WY_MATCHp_t0, _REPU_VBLANK_RSTp_t3);
     /* p27.SARY*/ pix_pipe.SARY_WY_MATCHp.dff17_ff(_TALU_xxCDEFxx_t1, _ROGE_WY_MATCHp_t0);
     /* p27.SARY*/ pix_pipe.SARY_WY_MATCHp.dff17_rst(_XAPO_VID_RSTn_t0);
 
     /* p27.ROCO*/ wire _ROCO_CLKPIPEp_t2 = not1(_SEGU_CLKPIPEn_t2);
+    /* p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_Bp.dff17_ff(_MEHE_AxCxExGx_t0, pix_pipe.PYCO_WX_MATCH_Ap.qp17_old());
     /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17_ff(_ROCO_CLKPIPEp_t2, _NUKO_WX_MATCHp_t0);
-    /* p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_Bp.dff17_ff(_MEHE_AxCxExGx_t0, _PYCO_WX_MATCH_Ap_t0);
-    /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17_rst(_XAPO_VID_RSTn_t0);
     /* p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_Bp.dff17_rst(_XAPO_VID_RSTn_t0);
+    /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17_rst(_XAPO_VID_RSTn_t0);
 
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_t0 = nand3(_RUBU_FINE_CNT2p_t0, _ROGA_FINE_CNT1p_t0, _RYKU_FINE_CNT0p_t0);
-    /* p27.PANY*/ wire _PANY_FETCHn = nor2(_NUKO_WX_MATCHp_t0, _ROZE_FINE_COUNT_7n_t0);
+    /* p27.RENE*/ pix_pipe.RENE_FETCHn_B.dff17(_ALET_xBxDxFxH_t0, _XYMU_RENDERINGp_t2, pix_pipe.RYFA_FETCHn_A.qp17_old());
 
-    /* p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17_ff(_SEGU_CLKPIPEn_t2, _PANY_FETCHn);
-    /* p27.RENE*/ pix_pipe.RENE_FETCHn_B.dff17_ff(_ALET_xBxDxFxH_t0, _RYFA_FETCHn_Ap_t0);
+    {
+      // If we use the "new" values of FINE_CNT here, things break because the signal is then "newer" than the clock to RYFA
+      /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_t0 = nand3(_RUBU_FINE_CNT2p_t0, _ROGA_FINE_CNT1p_t0, _RYKU_FINE_CNT0p_t0);
+      /* p27.PANY*/ wire _PANY_FETCHn_t0 = nor2(_NUKO_WX_MATCHp_t0, _ROZE_FINE_COUNT_7n_t0);
+      /* p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17(_SEGU_CLKPIPEn_t2, _XYMU_RENDERINGp_t2, _PANY_FETCHn_t0);
+    }
 
-    /* p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17_rst(_XYMU_RENDERINGp_t2);
-    /* p27.RENE*/ pix_pipe.RENE_FETCHn_B.dff17_rst(_XYMU_RENDERINGp_t2);
+
+    /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17_ff(_ALET_xBxDxFxH_t0, pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
+    /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17_ff(_ALET_xBxDxFxH_t0, pix_pipe.RYDY_WIN_HITp.to_wire_new());
+    /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17_rst(_XAPO_VID_RSTn_t0);
+    /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17_rst(_XAPO_VID_RSTn_t0);
   }
   #pragma endregion
 

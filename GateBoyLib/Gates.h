@@ -114,10 +114,10 @@ struct DFF : public BitBase {
     CHECK_P(bit_dirty);
     CHECK_N(bit_locked);
 
-    wire SETp = !SETn;
+    bit_set = !SETn;
+    bit_rst = !RSTn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
 
-    bit_data |= SETp;
-    bit_data &= RSTn;
     bit_locked = 1;
   }
 
@@ -125,7 +125,9 @@ struct DFF : public BitBase {
     CHECK_P(bit_dirty);
     CHECK_N(bit_locked);
 
-    bit_data &= RSTn;
+    bit_rst = !RSTn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+
     bit_locked = 1;
   }
 
@@ -133,8 +135,9 @@ struct DFF : public BitBase {
     CHECK_P(bit_dirty);
     CHECK_N(bit_locked);
 
-    wire SETp = !SETn;
-    bit_data |= SETp;
+    bit_set = !SETn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+
     bit_locked = 1;
   }
 

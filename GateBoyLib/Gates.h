@@ -558,32 +558,6 @@ struct Pin2 : public BitBase {
 
 
 
-//-----------------------------------------------------------------------------
-// Latches can be read before or after they are written, which helps model
-// various asynchronous timing weirdnesses.
-
-struct LatchBase : public BitBase {
-
-  void latch(wire SETp, wire RSTp) {
-    CHECK_N(bit_dirty);
-    bit_set = SETp;
-    bit_rst = RSTp;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_dirty = 1;
-  }
-
-  void SETp(wire SETp) {
-    bit_set = SETp;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_dirty = 1;
-  }
-
-  void RSTp(wire RSTp) {
-    bit_rst = RSTp;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_dirty = 1;
-  }
-};
 
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
@@ -595,15 +569,19 @@ struct LatchBase : public BitBase {
 // NORLATCH_05 nc
 // NORLATCH_06 << RST
 
-struct NorLatch : public LatchBase {
+struct NorLatch : public BitBase {
   wire qn03_old() const { return !to_wire_old(); }
   wire qp04_old() const { return  to_wire_old(); }
 
   wire qn03_new() const { return !to_wire_new(); }
   wire qp04_new() const { return  to_wire_new(); }
 
-  void nor_latch(wire SETp, wire RSTp) { latch(SETp, RSTp); }
-
+  void nor_latch(wire SETp, wire RSTp) {
+    bit_set = SETp;
+    bit_rst = RSTp;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_dirty = 1;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -616,14 +594,19 @@ struct NorLatch : public LatchBase {
 // NANDLATCH_05 nc
 // NANDLATCH_06 << RSTn
 
-struct NandLatch : public LatchBase {
+struct NandLatch : public BitBase {
   wire qp03_old() const { return  to_wire_old(); }
   wire qn04_old() const { return !to_wire_old(); }
 
   wire qp03_new() const { return  to_wire_new(); }
   wire qn04_new() const { return !to_wire_new(); }
 
-  void nand_latchc(wire SETn, wire RSTn) { latch(!SETn, !RSTn); }
+  void nand_latch(wire SETn, wire RSTn) {
+    bit_set = !SETn;
+    bit_rst = !RSTn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_dirty = 1;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -643,19 +626,15 @@ struct NandLatch : public LatchBase {
 // Output 08 must _not_ be inverting, see PIN_EXT_A14p
 // Output 10 _must_ be inverting...?
 
-struct TpLatch : public LatchBase {
+struct TpLatch : public BitBase {
   wire qp08_old() const { return  to_wire_old(); }
   wire qn10_old() const { return !to_wire_old(); }
 
   wire qp08_new() const { return  to_wire_new(); }
   wire qn10_new() const { return !to_wire_new(); }
 
-  void tp_latchc(wire HOLDn, wire D) {
-    if (HOLDn) {
-      bool SETp = HOLDn && D;
-      bool RSTp = HOLDn && !D;
-      latch(SETp, RSTp);
-    }
+  void tp_latch(wire HOLDn, wire D) {
+    if (HOLDn) bit_data = D;
     bit_dirty = 1;
   }
 };
@@ -733,7 +712,7 @@ inline uint16_t pack_u16p_new(int c, Pin2* b) {
 
 //-----------------------------------------------------------------------------
 
-inline uint8_t pack_u8p_old(int c, const LatchBase* b) {
+inline uint8_t pack_u8p_old(int c, const BitBase* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
     r |= b[i].to_wire_old() << i;
@@ -741,7 +720,7 @@ inline uint8_t pack_u8p_old(int c, const LatchBase* b) {
   return r;
 }
 
-inline uint8_t pack_u8p_new(int c, const LatchBase* b) {
+inline uint8_t pack_u8p_new(int c, const BitBase* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
     r |= b[i].to_wire_new() << i;

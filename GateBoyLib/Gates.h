@@ -138,7 +138,7 @@ struct DFF : public BitBase {
     bit_locked = 1;
   }
 
-  void dff_pp(wire CLKp, wire Dp) {
+  void dff(wire CLKp, wire Dp) {
     CHECK_N(bit_dirty);
     CHECK_N(bit_locked);
 
@@ -146,9 +146,6 @@ struct DFF : public BitBase {
     bit_clock = CLKp;
     bit_dirty = 1;
   }
-
-  void dff_nn(wire CLKn, wire Dn) { dff_pp(!CLKn, !Dn); }
-  void dff_pn(wire CLKp, wire Dn) { dff_pp( CLKp, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -171,7 +168,7 @@ struct DFF8n : public DFF {
   wire qn07_new() const { return !to_wire_new(); }
   wire qp08_new() const { return  to_wire_new(); }
 
-  void dff8n_ff(wire CLKn, wire Dn) { dff_nn(CLKn, Dn); bit_locked = 1; }
+  void dff8n_ff(wire CLKn, wire Dn) { dff(!CLKn, !Dn); bit_locked = 1; }
 };
 
 //-----------------------------------------------------------------------------
@@ -194,7 +191,7 @@ struct DFF8p : public DFF {
   wire qn07_new() const { return !to_wire_new(); }
   wire qp08_new() const { return  to_wire_new(); }
 
-  void dff8p_ff(wire CLKp, wire Dn) { dff_pn(CLKp, Dn); bit_locked = 1; }
+  void dff8p_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); bit_locked = 1; }
 };
 
 //-----------------------------------------------------------------------------
@@ -219,7 +216,7 @@ struct DFF9 : public DFF {
   wire qn08_new() const { return !to_wire_new(); }
   wire qp09_new() const { return  to_wire_new(); }
 
-  void dff9_ff(wire CLKp, wire Dn) { dff_pn(CLKp, Dn); }
+  void dff9_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
 
   void dff9_set(wire SETn) { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
 };
@@ -244,7 +241,7 @@ struct DFF11 : public DFF {
   wire q11p_old() const { return to_wire_old(); }
   wire q11p_new() const { return to_wire_new(); }
 
-  void dff11_ff(wire CLKp, wire Dp) { dff_pp(CLKp, Dp); }
+  void dff11_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
 
   void dff11_rs(wire RSTn) { dff_RSTn(RSTn); }
 };
@@ -270,7 +267,7 @@ struct DFF13 : public DFF {
   wire qn12_old() const { return !to_wire_old(); }
   wire qp13_old() const { return  to_wire_old(); }
 
-  void dff13_ff(wire CLKp, wire Dp) { dff_pp(CLKp, Dp); }
+  void dff13_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
   void dff13_rs(wire RSTn)          { dff_RSTn(RSTn); }
 };
 
@@ -305,7 +302,7 @@ struct DFF17 : public DFF {
   wire qn16_new() const { return !to_wire_new(); }
   wire qp17_new() const { return  to_wire_new(); }
 
-  void dff17_ff(wire CLKp, wire Dp) { dff_pp(CLKp, Dp); }
+  void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
   void dff17_rs(wire RSTn) { dff_RSTn(RSTn); }
 };
 
@@ -401,7 +398,7 @@ struct DFF22 : public DFF {
   wire qn15_new() const { return !to_wire_new(); }
   wire qp16_new() const { return  to_wire_new(); }
 
-  void dff22_ff(wire CLKp, wire Dp)   { dff_pp(CLKp, Dp); }
+  void dff22_ff(wire CLKp, wire Dp)   { dff(CLKp, Dp); }
   void dff22_sr(wire SETn, wire RSTn) { dff_SETnRSTn(SETn, RSTn); }
 };
 
@@ -603,11 +600,23 @@ struct LatchBase : public BitBase {
 
   void latch(wire SETp, wire RSTp) {
     CHECK_N(bit_dirty);
-
-    bit_data = (bit_data | SETp) & !RSTp;
+    bit_set = SETp;
+    bit_rst = RSTp;
+    bit_data = (bit_data || bit_set) && !bit_rst;
     bit_dirty = 1;
   }
 
+  void SETp(wire SETp) {
+    bit_set = SETp;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_dirty = 1;
+  }
+
+  void RSTp(wire RSTp) {
+    bit_rst = RSTp;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_dirty = 1;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -629,17 +638,6 @@ struct NorLatch : public LatchBase {
 
   void nor_latch(wire SETp, wire RSTp) { latch(SETp, RSTp); }
 
-  void SETp(wire SETp) {
-    bit_set = SETp;
-    bit_data = (bit_data | bit_set) & !bit_rst;
-    bit_dirty = 1;
-  }
-
-  void RSTp(wire RSTp) {
-    bit_rst = RSTp;
-    bit_data = (bit_data | bit_set) & !bit_rst;
-    bit_dirty = 1;
-  }
 };
 
 //-----------------------------------------------------------------------------

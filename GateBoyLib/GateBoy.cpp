@@ -5636,11 +5636,11 @@ void GateBoy::tock_slow() {
     // This is technically in the CPU, but we're going to implement it here for now.
     wire FFFF_WRn = nand2(_TAPU_CPU_WRp_xxxxEFGx_t1, FFFF_HIT);
 
-    IE_D0.dff_pp(FFFF_WRn, BUS_C2S_D[0].to_wire_new());
-    IE_D1.dff_pp(FFFF_WRn, BUS_C2S_D[1].to_wire_new());
-    IE_D2.dff_pp(FFFF_WRn, BUS_C2S_D[2].to_wire_new());
-    IE_D3.dff_pp(FFFF_WRn, BUS_C2S_D[3].to_wire_new());
-    IE_D4.dff_pp(FFFF_WRn, BUS_C2S_D[4].to_wire_new());
+    IE_D0.dff(FFFF_WRn, BUS_C2S_D[0].to_wire_new());
+    IE_D1.dff(FFFF_WRn, BUS_C2S_D[1].to_wire_new());
+    IE_D2.dff(FFFF_WRn, BUS_C2S_D[2].to_wire_new());
+    IE_D3.dff(FFFF_WRn, BUS_C2S_D[3].to_wire_new());
+    IE_D4.dff(FFFF_WRn, BUS_C2S_D[4].to_wire_new());
 
     IE_D0.dff_RSTn(!sys_rst);
     IE_D1.dff_RSTn(!sys_rst);
@@ -6202,12 +6202,12 @@ void GateBoy::tock_slow() {
 
     {
       for (int i = 0; i < 159; i++) {
-        lcd_pipe_lo[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp_old());
-        lcd_pipe_hi[i].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp_old());
+        lcd_pipe_lo[i].dff(!PIN_LCD_CLOCK.qp(), lcd_pipe_lo[i + 1].qp_old());
+        lcd_pipe_hi[i].dff(!PIN_LCD_CLOCK.qp(), lcd_pipe_hi[i + 1].qp_old());
       }
 
-      lcd_pipe_lo[159].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04_new());
-      lcd_pipe_hi[159].dff_pp(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04_new());
+      lcd_pipe_lo[159].dff(!PIN_LCD_CLOCK.qp(), lcd_pix_lo.qp04_new());
+      lcd_pipe_hi[159].dff(!PIN_LCD_CLOCK.qp(), lcd_pix_hi.qp04_new());
 
     }
 

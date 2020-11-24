@@ -919,15 +919,11 @@ void GateBoy::tock_slow() {
   /*#p29.DOBA*/ wire _DOBA_SCAN_DONE_Bp_t0 = sprite_scanner.DOBA_SCAN_DONE_Bp.qp17_old();
   /*#p29.BYBA*/ wire _BYBA_SCAN_DONE_Ap_t0 = sprite_scanner.BYBA_SCAN_DONE_Ap.qn16_old();
   /*#p21.VOGA*/ wire _VOGA_HBLANKp_t0 = pix_pipe.VOGA_HBLANKp.qp17_old();
-  /*#p21.XYMU*/ wire _XYMU_RENDERINGp_t0 = pix_pipe.XYMU_RENDERINGn.qn03_old();
 
   /* p29.CEHA*/ wire _CEHA_SCANNINGp_t0 = not1(_CENO_SCANNINGn_t0);
   /*#p29.BYJO*/ wire _BYJO_SCANNINGn_t0 = not1(_CEHA_SCANNINGp_t0);
 
   /*#p21.WEGO*/ wire _WEGO_HBLANKp_t0 = or2(_TOFU_VID_RSTp_t0, _VOGA_HBLANKp_t0);
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn_t0 = not1(_XYMU_RENDERINGp_t0);
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_t0 = and2(_BYJO_SCANNINGn_t0, _XYMU_RENDERINGp_t0);
-  /*#p29.AROR*/ wire _AROR_MATCH_ENp_t0 = and2(_AZEM_RENDERINGp_t0, _XYLO_LCDC_SPENp_t0);
 
   //----------------------------------------
 
@@ -1589,20 +1585,6 @@ void GateBoy::tock_slow() {
 
   /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17_rst(_TADY_LINE_RSTn_t2);
 
-  PROBE(7, _TADY_LINE_RSTn_t2);
-  PROBE(13, _WEGO_HBLANKp_t0);
-
-  /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp_t0, _AVAP_SCAN_DONE_TRIGp_t2);
-  /*#p21.XYMU*/ wire _XYMU_RENDERINGp_t2 = pix_pipe.XYMU_RENDERINGn.qn03_new();
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /* p29.TEPA*/ wire _TEPA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /*#p25.ROPY*/ wire _ROPY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /*#p27.PAHA*/ wire _PAHA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_t2 = and2(_XYMU_RENDERINGp_t2, _BYJO_SCANNINGn_t0);
-
-  /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(_PYGO_FETCH_DONE_P13p_t0, _LOBY_RENDERINGn_t2);
-  /* p24.POKY*/ wire _POKY_PRELOAD_LATCHp_t2  = tile_fetcher.POKY_PRELOAD_LATCHp.qp04_new();
-
   /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_t2 = nand3(_WYMO_LCDC_WINENp_t0, _XAHY_LINE_TRIGn_t2, _XAPO_VID_RSTn_t0);
   /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(_NUNU_WX_MATCHp_B_t0, _XOFO_WIN_RSTp_t2);
   /* p27.PYNU*/ wire _PYNU_WIN_MODE_Ap_t2 = pix_pipe.PYNU_WIN_MODE_Ap.qp04_new();
@@ -1615,38 +1597,10 @@ void GateBoy::tock_slow() {
 
 
 
-  /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_t2 = not1(_POKY_PRELOAD_LATCHp_t2);
-  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_t2 = nand4(_XYMU_RENDERINGp_t2, _ROMO_PRELOAD_DONEn_t2, _NYKA_FETCH_DONEp_P11_t0, _PORY_FETCH_DONEp_P12_t0);
-  /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_t2 = not1(_SUVU_PRELOAD_DONE_TRIGn_t2);
-
-  /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp_t2 = or3(_SEKO_FETCH_TRIGp_t0, _SUZU_WIN_FIRST_TILEne_t0, _TAVE_PRELOAD_DONE_TRIGp_t2); // Schematic wrong, this is OR
-
-  /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_t2 = nor3(_AVAP_SCAN_DONE_TRIGp_t2, _MOSU_WIN_FETCH_TRIGp_t0, _TEVO_FETCH_TRIGp_t2);
-
-  /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn_t2 = and2(_LOVY_BG_FETCH_DONEn_t0, _XYMU_RENDERINGp_t2);
-
-  /* p27.LONY*/ tile_fetcher.LONY_BG_FETCH_RUNNINGp.nand_latch(_NYXU_FETCH_TRIGn_t2, _LURY_BG_FETCH_DONEn_t2);
-  wire _LONY_BG_FETCH_RUNNINGp_t2 = tile_fetcher.LONY_BG_FETCH_RUNNINGp.qp03_new();
-
-  /* p27.LUSU*/ wire _LUSU_BGW_VRAM_RDn_t2 = not1(_LONY_BG_FETCH_RUNNINGp_t2);
-  /* p27.LENA*/ wire _LENA_BGW_VRAM_RDp_t2 = not1(_LUSU_BGW_VRAM_RDn_t2);
-
-  /* p29.TYSO*/ wire _TYSO_SPRITE_READn_t2 = or2(_SAKY_SFETCH_MYSTERY_t0, _TEPA_RENDERINGn_t2); // def or
-  /* p29.TEXY*/ wire _TEXY_SPR_READ_VRAMp_t2 = not1(_TYSO_SPRITE_READn_t2);
-  /* p29.ABON*/ wire _ABON_SPR_VRM_RDn_t2 = not1(_TEXY_SPR_READ_VRAMp_t2);
-  /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp_t2 = and2(_TACU_SPR_SEQ_5_TRIG_t0, _TEXY_SPR_READ_VRAMp_t2);
 
 
-  /*#p25.SERE*/ wire _SERE_CPU_VRM_RDp_t2  = and2(_TOLE_VRAM_RDp_t1, _ROPY_RENDERINGn_t2);
-  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_t2 = nor2(_LUFA_DMA_VRAMp_t0, _XYMU_RENDERINGp_t2);
-  /* p25.XEDU*/ wire _XEDU_VRAM_LOCKp_t2 = not1(_XANE_VRAM_LOCKn_t2);
 
-  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(_SERE_CPU_VRM_RDp_t2, _LEKO_CPU_RDp_t0);
-  /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
 
-  /* p28.AJON*/ wire _AJON_PPU_OAM_ENp_t2 = and2(_BOGE_DMA_RUNNINGn_t0, _XYMU_RENDERINGp_t2); // def AND. ppu can read oam when there's rendering but no dma
-
-  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_t2 = and2(_CENO_SCANNINGn_t0, _XYMU_RENDERINGp_t2);
 
 
 
@@ -2084,6 +2038,14 @@ void GateBoy::tock_slow() {
   /* p31.YLEV*/ wire _YLEV_STORE9_MATCHAp_t0 = nor4(_YMAM_STORE9_MATCH0n_t0, _YTYP_STORE9_MATCH1n_t0, _YFOP_STORE9_MATCH2n_t0, _YVAC_STORE9_MATCH3n_t0);
   /* p31.YTUB*/ wire _YTUB_STORE9_MATCHBp_t0 = nor4(_ZYWU_STORE9_MATCH4n_t0, _ZUZA_STORE9_MATCH5n_t0, _ZEJO_STORE9_MATCH6n_t0, _ZEDA_STORE9_MATCH7n_t0);
 
+#if 1
+  /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp_t0, _AVAP_SCAN_DONE_TRIGp_t2);
+  /*#p21.XYMU*/ wire _XYMU_RENDERINGp_t2 = pix_pipe.XYMU_RENDERINGn.qn03_new();
+
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn_t0 = not1(_XYMU_RENDERINGp_t2);
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_t0 = and2(_BYJO_SCANNINGn_t0, _XYMU_RENDERINGp_t2);
+  /*#p29.AROR*/ wire _AROR_MATCH_ENp_t0 = and2(_AZEM_RENDERINGp_t0, _XYLO_LCDC_SPENp_t0);
+
   /* p29.YDUG*/ wire _YDUG_STORE0_MATCHn_t0 = nand3(_AROR_MATCH_ENp_t0, _ZAKO_STORE0_MATCHAp_t0, _XEBA_STORE0_MATCHBp_t0);
   /* p29.DYDU*/ wire _DYDU_STORE1_MATCHn_t0 = nand3(_AROR_MATCH_ENp_t0, _EWAM_STORE1_MATCHAp_t0, _CYVY_STORE1_MATCHBp_t0);
   /* p29.DEGO*/ wire _DEGO_STORE2_MATCHn_t0 = nand3(_AROR_MATCH_ENp_t0, _CEHU_STORE2_MATCHAp_t0, _EKES_STORE2_MATCHBp_t0);
@@ -2103,6 +2065,39 @@ void GateBoy::tock_slow() {
   /*#p21.XANO*/ wire _XANO_PX167p_t0 = not1(_XUGU_PX167n_t0);
   /*#p21.WODU*/ wire _WODU_HBLANKp_t0 = and2(_XENA_STORE_MATCHn_t0, _XANO_PX167p_t0);
   /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17_ff(_ALET_xBxDxFxH_t0, _WODU_HBLANKp_t0);
+
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /* p29.TEPA*/ wire _TEPA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /*#p25.ROPY*/ wire _ROPY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /*#p27.PAHA*/ wire _PAHA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_t2 = and2(_XYMU_RENDERINGp_t2, _BYJO_SCANNINGn_t0);
+  /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(_PYGO_FETCH_DONE_P13p_t0, _LOBY_RENDERINGn_t2);
+  /* p24.POKY*/ wire _POKY_PRELOAD_LATCHp_t2  = tile_fetcher.POKY_PRELOAD_LATCHp.qp04_new();
+  /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_t2 = not1(_POKY_PRELOAD_LATCHp_t2);
+
+  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_t2 = nand4(_XYMU_RENDERINGp_t2, _ROMO_PRELOAD_DONEn_t2, _NYKA_FETCH_DONEp_P11_t0, _PORY_FETCH_DONEp_P12_t0);
+  /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_t2 = not1(_SUVU_PRELOAD_DONE_TRIGn_t2);
+  /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp_t2 = or3(_SEKO_FETCH_TRIGp_t0, _SUZU_WIN_FIRST_TILEne_t0, _TAVE_PRELOAD_DONE_TRIGp_t2); // Schematic wrong, this is OR
+  /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_t2 = nor3(_AVAP_SCAN_DONE_TRIGp_t2, _MOSU_WIN_FETCH_TRIGp_t0, _TEVO_FETCH_TRIGp_t2);
+  /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn_t2 = and2(_LOVY_BG_FETCH_DONEn_t0, _XYMU_RENDERINGp_t2);
+
+  /* p27.LONY*/ tile_fetcher.LONY_BG_FETCH_RUNNINGp.nand_latch(_NYXU_FETCH_TRIGn_t2, _LURY_BG_FETCH_DONEn_t2);
+  wire _LONY_BG_FETCH_RUNNINGp_t2 = tile_fetcher.LONY_BG_FETCH_RUNNINGp.qp03_new();
+
+  /* p27.LUSU*/ wire _LUSU_BGW_VRAM_RDn_t2 = not1(_LONY_BG_FETCH_RUNNINGp_t2);
+  /* p27.LENA*/ wire _LENA_BGW_VRAM_RDp_t2 = not1(_LUSU_BGW_VRAM_RDn_t2);
+  /* p29.TYSO*/ wire _TYSO_SPRITE_READn_t2 = or2(_SAKY_SFETCH_MYSTERY_t0, _TEPA_RENDERINGn_t2); // def or
+  /* p29.TEXY*/ wire _TEXY_SPR_READ_VRAMp_t2 = not1(_TYSO_SPRITE_READn_t2);
+  /* p29.ABON*/ wire _ABON_SPR_VRM_RDn_t2 = not1(_TEXY_SPR_READ_VRAMp_t2);
+  /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp_t2 = and2(_TACU_SPR_SEQ_5_TRIG_t0, _TEXY_SPR_READ_VRAMp_t2);
+  /*#p25.SERE*/ wire _SERE_CPU_VRM_RDp_t2  = and2(_TOLE_VRAM_RDp_t1, _ROPY_RENDERINGn_t2);
+  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_t2 = nor2(_LUFA_DMA_VRAMp_t0, _XYMU_RENDERINGp_t2);
+  /* p25.XEDU*/ wire _XEDU_VRAM_LOCKp_t2 = not1(_XANE_VRAM_LOCKn_t2);
+  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(_SERE_CPU_VRM_RDp_t2, _LEKO_CPU_RDp_t0);
+  /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
+  /* p28.AJON*/ wire _AJON_PPU_OAM_ENp_t2 = and2(_BOGE_DMA_RUNNINGn_t0, _XYMU_RENDERINGp_t2); // def AND. ppu can read oam when there's rendering but no dma
+  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_t2 = and2(_CENO_SCANNINGn_t0, _XYMU_RENDERINGp_t2);
+#endif
 
   /*#p29.AROR*/ wire _AROR_MATCH_ENp_t2 = and2(_AZEM_RENDERINGp_t2, _XYLO_LCDC_SPENp_t0);
   /* p29.YDUG*/ wire _YDUG_STORE0_MATCHn_t2 = nand3(_AROR_MATCH_ENp_t2, _ZAKO_STORE0_MATCHAp_t0, _XEBA_STORE0_MATCHBp_t0);

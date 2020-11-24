@@ -335,8 +335,9 @@ struct DFF20 : public DFF {
   }
 
   void dff20_load(wire LOADp, wire newD) {
-    CHECK_P(bit_dirty);
-    if (LOADp) bit_data = newD;
+    bit_set = LOADp && newD;
+    bit_rst = LOADp && !newD;
+    bit_data = (bit_data || bit_set) && !bit_rst;
   }
 };
 

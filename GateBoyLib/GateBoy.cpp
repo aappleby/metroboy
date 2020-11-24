@@ -1611,7 +1611,6 @@ void GateBoy::tock_slow() {
 
 
 
-
   // 88888888888 8888888 888b     d888 8888888888       .d8888b.
   //     888       888   8888b   d8888 888             d88P  Y88b
   //     888       888   88888b.d88888 888                  .d88P
@@ -5145,7 +5144,68 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // Background pipes
 
+#if 1
   /*#p24.SACU*/ wire _SACU_CLKPIPEp = or2(_SEGU_CLKPIPEn_t2, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp04_new()); // Schematic wrong, this is OR
+
+  //----------------------------------------
+  // Pixel counter, has carry lookahead because this can increment every tcycle
+
+  {
+    /* p21.XEHO*/ wire _XEHO_PX0n_t0 = pix_pipe.XEHO_PX0p.qn16_old();
+    /* p21.SAVY*/ wire _SAVY_PX1n_t0 = pix_pipe.SAVY_PX1p.qn16_old();
+    /* p21.XODU*/ wire _XODU_PX2n_t0 = pix_pipe.XODU_PX2p.qn16_old();
+    /* p21.XYDO*/ wire _XYDO_PX3n_t0 = pix_pipe.XYDO_PX3p.qn16_old();
+    /* p21.TUHU*/ wire _TUHU_PX4n_t0 = pix_pipe.TUHU_PX4p.qn16_old();
+    /* p21.TUKY*/ wire _TUKY_PX5n_t0 = pix_pipe.TUKY_PX5p.qn16_old();
+    /* p21.TAKO*/ wire _TAKO_PX6n_t0 = pix_pipe.TAKO_PX6p.qn16_old();
+    /* p21.SYBE*/ wire _SYBE_PX7n_t0 = pix_pipe.SYBE_PX7p.qn16_old();
+
+    /* p21.XEHO*/ wire _XEHO_PX0p_t0 = pix_pipe.XEHO_PX0p.qp17_old();
+    /* p21.SAVY*/ wire _SAVY_PX1p_t0 = pix_pipe.SAVY_PX1p.qp17_old();
+    /* p21.XODU*/ wire _XODU_PX2p_t0 = pix_pipe.XODU_PX2p.qp17_old();
+    /* p21.XYDO*/ wire _XYDO_PX3p_t0 = pix_pipe.XYDO_PX3p.qp17_old();
+    /* p21.TUHU*/ wire _TUHU_PX4p_t0 = pix_pipe.TUHU_PX4p.qp17_old();
+    /* p21.TUKY*/ wire _TUKY_PX5p_t0 = pix_pipe.TUKY_PX5p.qp17_old();
+    /* p21.TAKO*/ wire _TAKO_PX6p_t0 = pix_pipe.TAKO_PX6p.qp17_old();
+    /* p21.SYBE*/ wire _SYBE_PX7p_t0 = pix_pipe.SYBE_PX7p.qp17_old();
+
+    /* p21.RYBO*/ wire _RYBO_t0 = xor2(_XEHO_PX0p_t0, _SAVY_PX1p_t0); // XOR layout 1, feet facing gnd, this should def be regular xor
+    /* p21.XUKE*/ wire _XUKE_t0 = and2(_XEHO_PX0p_t0, _SAVY_PX1p_t0);
+
+    /* p21.XYLE*/ wire _XYLE_t0 = and2(_XODU_PX2p_t0, _XUKE_t0);
+    /* p21.XEGY*/ wire _XEGY_t0 = xor2(_XODU_PX2p_t0, _XUKE_t0); // feet facing gnd
+    /* p21.XORA*/ wire _XORA_t0 = xor2(_XYDO_PX3p_t0, _XYLE_t0); // feet facing gnd
+
+    /* p21.SAKE*/ wire _SAKE_t0 = xor2(_TUHU_PX4p_t0, _TUKY_PX5p_t0);
+    /* p21.TYBA*/ wire _TYBA_t0 = and2(_TUHU_PX4p_t0, _TUKY_PX5p_t0);
+    /* p21.SURY*/ wire _SURY_t0 = and2(_TAKO_PX6p_t0, _TYBA_t0);
+    /* p21.TYGE*/ wire _TYGE_t0 = xor2(_TAKO_PX6p_t0, _TYBA_t0);
+    /* p21.ROKU*/ wire _ROKU_t0 = xor2(_SYBE_PX7p_t0, _SURY_t0);
+    /* p24.TOCA*/ wire _TOCA_CLKPIPE_HI_t0 = not1(_XYDO_PX3p_t0);
+
+    /* p21.SYBE*/ pix_pipe.SYBE_PX7p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _ROKU_t0);
+    /* p21.TAKO*/ pix_pipe.TAKO_PX6p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _TYGE_t0);
+    /* p21.TUKY*/ pix_pipe.TUKY_PX5p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _SAKE_t0);
+    /* p21.TUHU*/ pix_pipe.TUHU_PX4p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _TUHU_PX4n_t0);
+    /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17_ff(_SACU_CLKPIPEp,      _XORA_t0);
+    /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17_ff(_SACU_CLKPIPEp,      _XEGY_t0);
+    /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17_ff(_SACU_CLKPIPEp,      _RYBO_t0);
+    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17_ff(_SACU_CLKPIPEp,      _XEHO_PX0n_t0);
+
+    /* p21.SYBE*/ pix_pipe.SYBE_PX7p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.TAKO*/ pix_pipe.TAKO_PX6p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.TUKY*/ pix_pipe.TUKY_PX5p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.TUHU*/ pix_pipe.TUHU_PX4p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17_rst(_TADY_LINE_RSTn_t2);
+    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17_rst(_TADY_LINE_RSTn_t2);
+
+    PROBE(12, _TADY_LINE_RSTn_t2);
+  }
+#endif
+
+
 
   /* p32.PYBO*/ pix_pipe.PYBO_BG_PIPE_A7.dff22_ff(_SACU_CLKPIPEp, pix_pipe.NEDA_BG_PIPE_A6.qp16_old());
   /* p32.NEDA*/ pix_pipe.NEDA_BG_PIPE_A6.dff22_ff(_SACU_CLKPIPEp, pix_pipe.MODU_BG_PIPE_A5.qp16_old());
@@ -5460,45 +5520,6 @@ void GateBoy::tock_slow() {
       /* p26.WURU*/ pix_pipe.WURU_MASK_PIPE_1.dff22_set_rst(XALA_MASK_PIPE_SET1, WEDE_MASK_PIPE_RST1);
       /* p26.VEZO*/ pix_pipe.VEZO_MASK_PIPE_0.dff22_set_rst(TEDE_MASK_PIPE_SET0, WOKA_MASK_PIPE_RST0);
     }
-  }
-
-  //----------------------------------------
-  // Pixel counter, has carry lookahead because this can increment every tcycle
-
-  {
-    /* p21.RYBO*/ wire _RYBO_t0 = xor2(_XEHO_PX0p_t0, _SAVY_PX1p_t0); // XOR layout 1, feet facing gnd, this should def be regular xor
-    /* p21.XUKE*/ wire _XUKE_t0 = and2(_XEHO_PX0p_t0, _SAVY_PX1p_t0);
-
-    /* p21.XYLE*/ wire _XYLE_t0 = and2(_XODU_PX2p_t0, _XUKE_t0);
-    /* p21.XEGY*/ wire _XEGY_t0 = xor2(_XODU_PX2p_t0, _XUKE_t0); // feet facing gnd
-    /* p21.XORA*/ wire _XORA_t0 = xor2(_XYDO_PX3p_t0, _XYLE_t0); // feet facing gnd
-
-    /* p21.SAKE*/ wire _SAKE_t0 = xor2(_TUHU_PX4p_t0, _TUKY_PX5p_t0);
-    /* p21.TYBA*/ wire _TYBA_t0 = and2(_TUHU_PX4p_t0, _TUKY_PX5p_t0);
-    /* p21.SURY*/ wire _SURY_t0 = and2(_TAKO_PX6p_t0, _TYBA_t0);
-    /* p21.TYGE*/ wire _TYGE_t0 = xor2(_TAKO_PX6p_t0, _TYBA_t0);
-    /* p21.ROKU*/ wire _ROKU_t0 = xor2(_SYBE_PX7p_t0, _SURY_t0);
-    /* p24.TOCA*/ wire _TOCA_CLKPIPE_HI_t0 = not1(_XYDO_PX3p_t0);
-
-    /* p21.SYBE*/ pix_pipe.SYBE_PX7p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _ROKU_t0);
-    /* p21.TAKO*/ pix_pipe.TAKO_PX6p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _TYGE_t0);
-    /* p21.TUKY*/ pix_pipe.TUKY_PX5p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _SAKE_t0);
-    /* p21.TUHU*/ pix_pipe.TUHU_PX4p.dff17_ff(_TOCA_CLKPIPE_HI_t0, _TUHU_PX4n_t0);
-    /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17_ff(_SACU_CLKPIPEp,      _XORA_t0);
-    /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17_ff(_SACU_CLKPIPEp,      _XEGY_t0);
-    /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17_ff(_SACU_CLKPIPEp,      _RYBO_t0);
-    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17_ff(_SACU_CLKPIPEp,      _XEHO_PX0n_t0);
-
-    /* p21.SYBE*/ pix_pipe.SYBE_PX7p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.TAKO*/ pix_pipe.TAKO_PX6p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.TUKY*/ pix_pipe.TUKY_PX5p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.TUHU*/ pix_pipe.TUHU_PX4p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17_rst(_TADY_LINE_RSTn_t2);
-    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17_rst(_TADY_LINE_RSTn_t2);
-
-    PROBE(12, _TADY_LINE_RSTn_t2);
   }
 
   //----------------------------------------

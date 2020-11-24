@@ -75,19 +75,16 @@ struct Gate : public BitBase {
 struct DFF : public BitBase {
   wire to_wire_old() const {
     CHECK_N(bit_dirty);
-    CHECK_N(bit_locked);
     return bit_data;
   }
 
   wire to_wire_mid() const {
     CHECK_P(bit_dirty);
-    CHECK_N(bit_locked);
     return bit_data;
   }
 
   wire to_wire_new() const {
     CHECK_P(bit_dirty);
-    CHECK_P(bit_locked);
     return bit_data;
   }
 
@@ -99,7 +96,6 @@ struct DFF : public BitBase {
 
   void dff(wire CLKp, wire Dp) {
     CHECK_N(bit_dirty);
-    CHECK_N(bit_locked);
 
     if (!bit_clock && CLKp) {
       bit_data = (Dp || bit_set) && !bit_rst;
@@ -111,33 +107,24 @@ struct DFF : public BitBase {
 
   void dff_SETnRSTn(wire SETn, wire RSTn) {
     CHECK_P(bit_dirty);
-    CHECK_N(bit_locked);
 
     bit_set = !SETn;
     bit_rst = !RSTn;
     bit_data = (bit_data || bit_set) && !bit_rst;
-
-    bit_locked = 1;
   }
 
   void dff_RSTn(wire RSTn) {
     CHECK_P(bit_dirty);
-    CHECK_N(bit_locked);
 
     bit_rst = !RSTn;
     bit_data = (bit_data || bit_set) && !bit_rst;
-
-    bit_locked = 1;
   }
 
   void dff_SETn(wire SETn) {
     CHECK_P(bit_dirty);
-    CHECK_N(bit_locked);
 
     bit_set = !SETn;
     bit_data = (bit_data || bit_set) && !bit_rst;
-
-    bit_locked = 1;
   }
 
 };
@@ -162,7 +149,7 @@ struct DFF8n : public DFF {
   wire qn07_new() const { return qn_new(); }
   wire qp08_new() const { return qp_new(); }
 
-  void dff8n_ff(wire CLKn, wire Dn) { dff(!CLKn, !Dn); bit_locked = 1; }
+  void dff8n_ff(wire CLKn, wire Dn) { dff(!CLKn, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -185,7 +172,7 @@ struct DFF8p : public DFF {
   wire qn07_new() const { return qn_new(); }
   wire qp08_new() const { return qp_new(); }
 
-  void dff8p_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); bit_locked = 1; }
+  void dff8p_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -340,7 +327,6 @@ struct DFF20 : public DFF {
 
   void dff20_ff(wire CLKn) {
     CHECK_N(bit_dirty);
-    CHECK_N(bit_locked);
     wire CLKp = !CLKn;
 
     if (!bit_clock && CLKp) bit_data = !bit_data;
@@ -350,10 +336,7 @@ struct DFF20 : public DFF {
 
   void dff20_load(wire LOADp, wire newD) {
     CHECK_P(bit_dirty);
-    CHECK_N(bit_locked);
-
     if (LOADp) bit_data = newD;
-    bit_locked = 1;
   }
 };
 
@@ -476,7 +459,6 @@ struct DFF22 : public DFF {
 struct Bus2 : public BitBase {
 
   void tri(wire OEp, wire Dp) {
-    CHECK_N(bit_locked);
     if (OEp) {
       CHECK_N(bit_driven);
       bit_driven = 1;
@@ -487,7 +469,6 @@ struct Bus2 : public BitBase {
 
   wire to_wire_new() {
     CHECK_P(bit_dirty);
-    bit_locked = 1;
     return bit_data | !bit_driven;
   }
 
@@ -502,14 +483,12 @@ struct Pin2 : public BitBase {
 
   wire to_wire_new() {
     CHECK_P(bit_dirty);
-    bit_locked = 1;
     return (bit_driven) ? bit_data : 1;
   }
   wire qp() { return  to_wire_new(); }
   wire qn() { return !to_wire_new(); }
 
   void pin_in(wire OEp, wire D) {
-    CHECK_N(bit_locked);
     if (OEp) {
       CHECK_N(bit_driven);
       bit_driven = 1;
@@ -519,7 +498,6 @@ struct Pin2 : public BitBase {
   }
 
   void pin_out(wire OEp, wire HI, wire LO) {
-    CHECK_N(bit_locked);
     CHECK_N(!HI && LO);
     wire D = !HI;
     if (OEp && (HI == LO)) {

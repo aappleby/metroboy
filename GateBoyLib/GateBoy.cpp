@@ -426,11 +426,11 @@ void GateBoy::tock_slow() {
   Pin2 PIN_CPU_ACK_SERIAL_t0; // bottom right port PORTB_13: -> P02.LUFE, serial int ack
   Pin2 PIN_CPU_ACK_JOYPAD_t0; // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
 
-  PIN_CPU_ACK_VBLANK_t0.set(wire(cpu.int_ack & INT_VBLANK_MASK));
-  PIN_CPU_ACK_STAT_t0  .set(wire(cpu.int_ack & INT_STAT_MASK));
-  PIN_CPU_ACK_TIMER_t0 .set(wire(cpu.int_ack & INT_TIMER_MASK));
-  PIN_CPU_ACK_SERIAL_t0.set(wire(cpu.int_ack & INT_SERIAL_MASK));
-  PIN_CPU_ACK_JOYPAD_t0.set(wire(cpu.int_ack & INT_JOYPAD_MASK));
+  PIN_CPU_ACK_VBLANK_t0.pin_in(1, wire(cpu.int_ack & INT_VBLANK_MASK));
+  PIN_CPU_ACK_STAT_t0  .pin_in(1, wire(cpu.int_ack & INT_STAT_MASK));
+  PIN_CPU_ACK_TIMER_t0 .pin_in(1, wire(cpu.int_ack & INT_TIMER_MASK));
+  PIN_CPU_ACK_SERIAL_t0.pin_in(1, wire(cpu.int_ack & INT_SERIAL_MASK));
+  PIN_CPU_ACK_JOYPAD_t0.pin_in(1, wire(cpu.int_ack & INT_JOYPAD_MASK));
 
   //----------------------------------------
 
@@ -497,12 +497,12 @@ void GateBoy::tock_slow() {
   // PIN_CPU_RDp / PIN_CPU_WRp
   {
     if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      PIN_CPU_RDp_t0.set(bus_req.read);
-      PIN_CPU_WRp_t0.set(bus_req.write);
+      PIN_CPU_RDp_t0.pin_in(1, bus_req.read);
+      PIN_CPU_WRp_t0.pin_in(1, bus_req.write);
     }
     else {
-      PIN_CPU_RDp_t0.set(0);
-      PIN_CPU_WRp_t0.set(0);
+      PIN_CPU_RDp_t0.pin_in(1, 0);
+      PIN_CPU_WRp_t0.pin_in(1, 0);
     }
   }
 
@@ -510,14 +510,14 @@ void GateBoy::tock_slow() {
   {
     // not at all certain about this. seems to break some oam read glitches.
     if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-      PIN_CPU_LATCH_EXT_t0.set(1);
+      PIN_CPU_LATCH_EXT_t0.pin_in(1, 1);
     }
     else {
-      PIN_CPU_LATCH_EXT_t0.set(0);
+      PIN_CPU_LATCH_EXT_t0.pin_in(1, 0);
     }
   }
 
-  PIN_CPU_6_t0.set(0);
+  PIN_CPU_6_t0.pin_in(1, 0);
 
 
   // Data has to be driven on EFGH or we fail the wave tests
@@ -539,15 +539,15 @@ void GateBoy::tock_slow() {
     if (bus_req.addr <= 0x00FF && !BOOT_BITn.qp17_old()) addr_ext = false;
 
     if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      PIN_CPU_EXT_BUSp_t0.set(addr_ext);
+      PIN_CPU_EXT_BUSp_t0.pin_in(1, addr_ext);
     }
     else {
       // This seems wrong, but it passes tests. *shrug*
       if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-        PIN_CPU_EXT_BUSp_t0.set(0);
+        PIN_CPU_EXT_BUSp_t0.pin_in(1, 0);
       }
       else {
-        PIN_CPU_EXT_BUSp_t0.set(addr_ext);
+        PIN_CPU_EXT_BUSp_t0.pin_in(1, addr_ext);
       }
     }
   }
@@ -1418,7 +1418,7 @@ void GateBoy::tock_slow() {
   /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_0000_00FFp_t0);
   /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
 
-  PIN_CPU_BOOTp_t0.set(_TUTU_ADDR_BOOTp_t0);
+  PIN_CPU_BOOTp_t0.pin_in(1, _TUTU_ADDR_BOOTp_t0);
 
   //----------------------------------------
 
@@ -2162,22 +2162,22 @@ void GateBoy::tock_slow() {
 
 
   if (PIN_JOY_P14_t0.qp()) {
-    PIN_JOY_P10_t0.set(!(sys_buttons & 0x01));
-    PIN_JOY_P11_t0.set(!(sys_buttons & 0x02));
-    PIN_JOY_P12_t0.set(!(sys_buttons & 0x04));
-    PIN_JOY_P13_t0.set(!(sys_buttons & 0x08));
+    PIN_JOY_P10_t0.pin_in(1, !(sys_buttons & 0x01));
+    PIN_JOY_P11_t0.pin_in(1, !(sys_buttons & 0x02));
+    PIN_JOY_P12_t0.pin_in(1, !(sys_buttons & 0x04));
+    PIN_JOY_P13_t0.pin_in(1, !(sys_buttons & 0x08));
   }
   else if (PIN_JOY_P15_t0.qp()) {
-    PIN_JOY_P10_t0.set(!(sys_buttons & 0x10));
-    PIN_JOY_P11_t0.set(!(sys_buttons & 0x20));
-    PIN_JOY_P12_t0.set(!(sys_buttons & 0x40));
-    PIN_JOY_P13_t0.set(!(sys_buttons & 0x80));
+    PIN_JOY_P10_t0.pin_in(1, !(sys_buttons & 0x10));
+    PIN_JOY_P11_t0.pin_in(1, !(sys_buttons & 0x20));
+    PIN_JOY_P12_t0.pin_in(1, !(sys_buttons & 0x40));
+    PIN_JOY_P13_t0.pin_in(1, !(sys_buttons & 0x80));
   }
   else {
-    PIN_JOY_P10_t0.set(1);
-    PIN_JOY_P11_t0.set(1);
-    PIN_JOY_P12_t0.set(1);
-    PIN_JOY_P13_t0.set(1);
+    PIN_JOY_P10_t0.pin_in(1, 1);
+    PIN_JOY_P11_t0.pin_in(1, 1);
+    PIN_JOY_P12_t0.pin_in(1, 1);
+    PIN_JOY_P13_t0.pin_in(1, 1);
   }
   /* p02.KERY*/ wire _KERY_ANY_BUTTONp_t0 = or4(PIN_JOY_P13_t0.qn(), PIN_JOY_P12_t0.qn(), PIN_JOY_P11_t0.qn(), PIN_JOY_P10_t0.qn());
 
@@ -2186,7 +2186,7 @@ void GateBoy::tock_slow() {
     wire _AWOB_WAKE_CPUp_t1 = joypad.AWOB_WAKE_CPU.qp08_new();
 
     Pin2 PIN_CPU_WAKE_t1; // top right wire by itself <- P02.AWOB
-    PIN_CPU_WAKE_t1.set(_AWOB_WAKE_CPUp_t1);
+    PIN_CPU_WAKE_t1.pin_in(1, _AWOB_WAKE_CPUp_t1);
 
     // this chunk can _not_ use _next()
     /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17_ff(_BOGA_Axxxxxxx_t1, _AGEM_JP_GLITCH2_t0);
@@ -3741,7 +3741,7 @@ void GateBoy::tock_slow() {
     /* p28.WEWU*/ wire _WEWU_OBL_TO_CBDn = not1(_WUKU_OBL_TO_CBDp);
 
     Pin2 PIN_OAM_CLK_t2;
-    PIN_OAM_CLK_t2.set(_COTA_AxxxxExxx_t2);
+    PIN_OAM_CLK_t2.pin_in(1, _COTA_AxxxxExxx_t2);
 
     /* p04.MAKA*/ oam_bus.MAKA_HOLD_MEMp.dff17_ff(_ZEME_AxCxExGx_t0, _CATY_LATCH_EXTp_t0);
     /* p04.MAKA*/ oam_bus.MAKA_HOLD_MEMp.dff17_rs(_CUNU_SYS_RSTn_t0);
@@ -3759,7 +3759,7 @@ void GateBoy::tock_slow() {
     {
 
       Pin2 PIN_OAM_OEn;
-      PIN_OAM_OEn.set(_ZODO_OAM_OEn);
+      PIN_OAM_OEn.pin_in(1, _ZODO_OAM_OEn);
 
       /* oam_ram -> OBD */
       // FIXME This should be using PIN_OAM_CLK (which might actually be PIN_OAM_CSn?)
@@ -3855,8 +3855,8 @@ void GateBoy::tock_slow() {
       Pin2 PIN_OAM_WR_A;
       Pin2 PIN_OAM_WR_B;
 
-      PIN_OAM_WR_A.set(_ZOFE_OAM_A_WRn);
-      PIN_OAM_WR_B.set(_ZONE_OAM_B_WRn);
+      PIN_OAM_WR_A.pin_in(1, _ZOFE_OAM_A_WRn);
+      PIN_OAM_WR_B.pin_in(1, _ZONE_OAM_B_WRn);
 
       if (!PIN_OAM_WR_A.qp()) {
         oam_ram[(oam_addr << 1) + 0] = pack_u8n_new(8, &BUS_OAM_DAn[0]);
@@ -4454,11 +4454,11 @@ void GateBoy::tock_slow() {
     /* p02.UBUL*/ wire _UBUL_FF0F_D3p_t4 = int_reg.UBUL_FF0F_D3p.qp16_new();
     /* p02.ULAK*/ wire _ULAK_FF0F_D4p_t4 = int_reg.ULAK_FF0F_D4p.qp16_new();
 
-    PIN_CPU_INT_VBLANK.set(_LOPE_FF0F_D0p_t4);
-    PIN_CPU_INT_STAT  .set(_LALU_FF0F_D1p_t4);
-    PIN_CPU_INT_TIMER .set(_NYBO_FF0F_D2p_t4);
-    PIN_CPU_INT_SERIAL.set(_UBUL_FF0F_D3p_t4);
-    PIN_CPU_INT_JOYPAD.set(_ULAK_FF0F_D4p_t4);
+    PIN_CPU_INT_VBLANK.pin_in(1, _LOPE_FF0F_D0p_t4);
+    PIN_CPU_INT_STAT  .pin_in(1, _LALU_FF0F_D1p_t4);
+    PIN_CPU_INT_TIMER .pin_in(1, _NYBO_FF0F_D2p_t4);
+    PIN_CPU_INT_SERIAL.pin_in(1, _UBUL_FF0F_D3p_t4);
+    PIN_CPU_INT_JOYPAD.pin_in(1, _ULAK_FF0F_D4p_t4);
 
     if (DELTA_DE) {
       int_vblank_halt = PIN_CPU_INT_VBLANK.qp();
@@ -4976,22 +4976,22 @@ void GateBoy::tock_slow() {
   // the comp clock is unmarked on the die trace but it's directly to the left of ATAL
 
   {
-    PIN_CPU_EXT_CLKGOOD.set(sys_clkgood);
-    PIN_CPU_STARTp.set(_TABA_POR_TRIGn_t0);
-    PIN_CPU_SYS_RSTp.set(clk_reg.AFER_SYS_RSTp.qp13_old());
-    PIN_CPU_EXT_RST.set(sys_rst);
-    PIN_CPU_UNOR_DBG.set(_UNOR_MODE_DBG2p_t0);
-    PIN_CPU_UMUT_DBG.set(_UMUT_MODE_DBG1p_t0);
-    PIN_CPU_ADDR_HIp.set(_SYRO_FE00_FFFFp_t0);
+    PIN_CPU_EXT_CLKGOOD.pin_in(1, sys_clkgood);
+    PIN_CPU_STARTp.pin_in(1, _TABA_POR_TRIGn_t0);
+    PIN_CPU_SYS_RSTp.pin_in(1, clk_reg.AFER_SYS_RSTp.qp13_old());
+    PIN_CPU_EXT_RST.pin_in(1, sys_rst);
+    PIN_CPU_UNOR_DBG.pin_in(1, _UNOR_MODE_DBG2p_t0);
+    PIN_CPU_UMUT_DBG.pin_in(1, _UMUT_MODE_DBG1p_t0);
+    PIN_CPU_ADDR_HIp.pin_in(1, _SYRO_FE00_FFFFp_t0);
 
-    PIN_CPU_BOWA_Axxxxxxx.set(_BOWA_xBCDEFGH_t1);
-    PIN_CPU_BEDO_xBCDEFGH.set(_BEDO_Axxxxxxx_t1);
-    PIN_CPU_BEKO_ABCDxxxx.set(_BEKO_ABCDxxxx_t1);
-    PIN_CPU_BUDE_xxxxEFGH.set(_BUDE_xxxxEFGH_t1);
-    PIN_CPU_BOLO_ABCDEFxx.set(_BOLO_ABCDEFxx_t1);
-    PIN_CPU_BUKE_AxxxxxGH.set(_BUKE_AxxxxxGH_t1);
-    PIN_CPU_BOMA_xBCDEFGH.set(_BOMA_xBCDEFGH_t1);
-    PIN_CPU_BOGA_Axxxxxxx.set(_BOGA_Axxxxxxx_t1);
+    PIN_CPU_BOWA_Axxxxxxx.pin_in(1, _BOWA_xBCDEFGH_t1);
+    PIN_CPU_BEDO_xBCDEFGH.pin_in(1, _BEDO_Axxxxxxx_t1);
+    PIN_CPU_BEKO_ABCDxxxx.pin_in(1, _BEKO_ABCDxxxx_t1);
+    PIN_CPU_BUDE_xxxxEFGH.pin_in(1, _BUDE_xxxxEFGH_t1);
+    PIN_CPU_BOLO_ABCDEFxx.pin_in(1, _BOLO_ABCDEFxx_t1);
+    PIN_CPU_BUKE_AxxxxxGH.pin_in(1, _BUKE_AxxxxxGH_t1);
+    PIN_CPU_BOMA_xBCDEFGH.pin_in(1, _BOMA_xBCDEFGH_t1);
+    PIN_CPU_BOGA_Axxxxxxx.pin_in(1, _BOGA_Axxxxxxx_t1);
 
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13_ff(_BOGA_Axxxxxxx_t1, clk_reg.ASOL_POR_DONEn.qp04_new());
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13_rs(_UPOJ_MODE_PRODn_t0);

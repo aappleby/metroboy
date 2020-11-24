@@ -23,6 +23,19 @@ struct BitBase {
     *(uint8_t*)this = s;
   }
 
+  wire to_wire_old() const {
+    CHECK_N(bit_dirty);
+    return bit_data;
+  }
+
+  wire to_wire_new() const {
+    CHECK_P(bit_dirty);
+    return bit_data;
+  }
+
+  char c() const    { return bit_data ? '1' : '0'; }
+  char cn() const   { return bit_data ? '0' : '1'; }
+
   union {
     uint8_t state = 0;
     struct {
@@ -49,26 +62,10 @@ constexpr uint8_t REG_D1C1 = 0b00000011;
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
-  wire to_wire_old() const {
-    CHECK_N(bit_dirty);
-    CHECK_N(bit_locked);
-    return bit_data;
-  }
-
-  wire to_wire_new() const {
-    CHECK_P(bit_dirty);
-    CHECK_P(bit_locked);
-    return bit_data;
-  }
-
-  char c() const    { return bit_data ? '1' : '0'; }
-  char cn() const   { return bit_data ? '0' : '1'; }
-
   void set(wire D) {
-    CHECK_N(bit_locked);
+    CHECK_N(bit_dirty);
     *(uint8_t*)this = D;
     bit_dirty = 1;
-    bit_locked = 1;
   }
 };
 
@@ -97,17 +94,19 @@ struct DFF : public BitBase {
   wire qp_old() const { return  to_wire_old(); }
   wire qn_old() const { return !to_wire_old(); }
 
-  char c() const    {
-    if (bit_dirty)  return 'D';
-    if (bit_locked) return 'L';
-    if (bit_data)   return '1';
-    return '0';
-  }
-  char cn() const {
-    if (bit_dirty)  return 'D';
-    if (bit_locked) return 'L';
-    if (bit_data)   return '0';
-    return '1';
+  wire qp_new() const { return  to_wire_new(); }
+  wire qn_new() const { return !to_wire_new(); }
+
+  void dff(wire CLKp, wire Dp) {
+    CHECK_N(bit_dirty);
+    CHECK_N(bit_locked);
+
+    if (!bit_clock && CLKp) {
+      bit_data = (Dp || bit_set) && !bit_rst;
+    }
+
+    bit_clock = CLKp;
+    bit_dirty = 1;
   }
 
   void dff_SETnRSTn(wire SETn, wire RSTn) {
@@ -141,14 +140,6 @@ struct DFF : public BitBase {
     bit_locked = 1;
   }
 
-  void dff(wire CLKp, wire Dp) {
-    CHECK_N(bit_dirty);
-    CHECK_N(bit_locked);
-
-    if (!bit_clock && CLKp) bit_data = Dp;
-    bit_clock = CLKp;
-    bit_dirty = 1;
-  }
 };
 
 //-----------------------------------------------------------------------------
@@ -165,11 +156,11 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public DFF {
-  wire qn07_old() const { return !to_wire_old(); }
-  wire qp08_old() const { return  to_wire_old(); }
+  wire qn07_old() const { return qn_old(); }
+  wire qp08_old() const { return qp_old(); }
 
-  wire qn07_new() const { return !to_wire_new(); }
-  wire qp08_new() const { return  to_wire_new(); }
+  wire qn07_new() const { return qn_new(); }
+  wire qp08_new() const { return qp_new(); }
 
   void dff8n_ff(wire CLKn, wire Dn) { dff(!CLKn, !Dn); bit_locked = 1; }
 };
@@ -188,11 +179,11 @@ struct DFF8n : public DFF {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public DFF {
-  wire qn07_old() const { return !to_wire_old(); }
-  wire qp08_old() const { return  to_wire_old(); }
+  wire qn07_old() const { return qn_old(); }
+  wire qp08_old() const { return qp_old(); }
 
-  wire qn07_new() const { return !to_wire_new(); }
-  wire qp08_new() const { return  to_wire_new(); }
+  wire qn07_new() const { return qn_new(); }
+  wire qp08_new() const { return qp_new(); }
 
   void dff8p_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); bit_locked = 1; }
 };
@@ -213,11 +204,11 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
-  wire qn08_old() const { return !to_wire_old(); }
-  wire qp09_old() const { return  to_wire_old(); }
+  wire qn08_old() const { return qn_old(); }
+  wire qp09_old() const { return qp_old(); }
 
-  wire qn08_new() const { return !to_wire_new(); }
-  wire qp09_new() const { return  to_wire_new(); }
+  wire qn08_new() const { return qn_new(); }
+  wire qp09_new() const { return qp_new(); }
 
   void dff9_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
 
@@ -241,8 +232,9 @@ struct DFF9 : public DFF {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public DFF {
-  wire q11p_old() const { return to_wire_old(); }
-  wire q11p_new() const { return to_wire_new(); }
+  wire q11p_old() const { return qp_old(); }
+
+  wire q11p_new() const { return qp_new(); }
 
   void dff11_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
 
@@ -267,8 +259,11 @@ struct DFF11 : public DFF {
 
 struct DFF13 : public DFF {
 
-  wire qn12_old() const { return !to_wire_old(); }
-  wire qp13_old() const { return  to_wire_old(); }
+  wire qn12_old() const { return qn_old(); }
+  wire qp13_old() const { return qp_old(); }
+
+  wire qn12_new() const { return qn_new(); }
+  wire qp13_new() const { return qp_new(); }
 
   void dff13_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
   void dff13_rs(wire RSTn)          { dff_RSTn(RSTn); }
@@ -296,14 +291,14 @@ struct DFF13 : public DFF {
 
 struct DFF17 : public DFF {
 
-  wire qn16_old() const { return !to_wire_old(); }
-  wire qp17_old() const { return  to_wire_old(); }
+  wire qn16_old() const { return qn_old(); }
+  wire qp17_old() const { return qp_old(); }
 
   wire qn16_mid() const { return !to_wire_mid(); }
   wire qp17_mid() const { return  to_wire_mid(); }
 
-  wire qn16_new() const { return !to_wire_new(); }
-  wire qp17_new() const { return  to_wire_new(); }
+  wire qn16_new() const { return qn_new(); }
+  wire qp17_new() const { return qp_new(); }
 
   void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
   void dff17_rs(wire RSTn) { dff_RSTn(RSTn); }
@@ -513,15 +508,6 @@ struct Pin2 : public BitBase {
   wire qp() { return  to_wire_new(); }
   wire qn() { return !to_wire_new(); }
 
-  void set(wire D) {
-    CHECK_N(bit_driven);
-    CHECK_N(bit_locked);
-    CHECK_N(bit_dirty);
-    bit_driven = 1;
-    bit_data = D;
-    bit_dirty = 1;
-  }
-
   void pin_in(wire OEp, wire D) {
     CHECK_N(bit_locked);
     if (OEp) {
@@ -577,29 +563,6 @@ struct Pin2 : public BitBase {
 // various asynchronous timing weirdnesses.
 
 struct LatchBase : public BitBase {
-
-  char c() const    {
-    if (bit_dirty)  return 'D';
-    if (bit_locked) return 'L';
-    if (bit_data)   return '1';
-    return '0';
-  }
-  char cn() const {
-    if (bit_dirty)  return 'D';
-    if (bit_locked) return 'L';
-    if (bit_data)   return '0';
-    return '1';
-  }
-
-  wire to_wire_old() const {
-    CHECK_N(bit_dirty);
-    return bit_data;
-  }
-
-  wire to_wire_new() const {
-    CHECK_P(bit_dirty);
-    return bit_data;
-  }
 
   void latch(wire SETp, wire RSTp) {
     CHECK_N(bit_dirty);

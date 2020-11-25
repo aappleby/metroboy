@@ -1162,6 +1162,7 @@ void GateBoy::tock_slow() {
 
   /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(_PYNU_WIN_MODEp_A_t0);
   /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
+  /* p27.WAZY*/ wire _WAZY_WIN_MODEn_t0 = not1(_PORE_WIN_MODEp_t0);
   /* p26.AXAD*/ wire _AXAD_WIN_MODEn_t0 = not1(_PORE_WIN_MODEp_t0);
 
   /* p27.PUKU*/ wire _PUKU_WIN_HITn_t0 = pix_pipe.PUKU_WIN_HITn.to_wire_old();
@@ -1541,6 +1542,8 @@ void GateBoy::tock_slow() {
   /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17_rst(_TADY_LINE_RSTn_t2);
 
   /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_t2 = nand3(_WYMO_LCDC_WINENp_t0, _XAHY_LINE_TRIGn_t2, _XAPO_VID_RSTn_t0);
+  /* p27.XACO*/ wire _XACO_WIN_RSTn_t2 = not1(_XOFO_WIN_RSTp_t2);
+
   /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(_NUNU_WX_MATCHp_B_t0, _XOFO_WIN_RSTp_t2);
   /* p27.PYNU*/ wire _PYNU_WIN_MODE_Ap_t2 = pix_pipe.PYNU_WIN_MODE_Ap.qp04_new();
 
@@ -1591,6 +1594,8 @@ void GateBoy::tock_slow() {
 
   /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(_POPU_VBLANKn_t3);
   /*#p21.TOLU*/ wire _TOLU_VBLANKn_t3 = not1(_PARU_VBLANKp_t3);
+  /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
+  /* p27.SYNY*/ wire _SYNY_VBLANK_RSTn_t3 = not1(_REPU_VBLANK_RSTp_t3);
 
 
 
@@ -5025,7 +5030,6 @@ void GateBoy::tock_slow() {
     /* p27.NUKO*/ wire _NUKO_WX_MATCHp_t0     = not1(_NOGY_WX_MATCHn_t0);
 
     {
-      /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
       /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(pix_pipe.SARY_WY_MATCHp.qp17_old(), _REPU_VBLANK_RSTp_t3);
     }
 
@@ -5373,42 +5377,21 @@ void GateBoy::tock_slow() {
   #pragma region Window_Coordinates
   {
     /* p27.VETU*/ wire _VETU_WIN_MAP_CLK = and2(_TEVO_FETCH_TRIGp_t2, _PORE_WIN_MODEp_t0);
-
-    /* p27.WYKA*/ pix_pipe.WYKA_WIN_X3.dff17_ff(_VETU_WIN_MAP_CLK,               pix_pipe.WYKA_WIN_X3.qn16_old());
-    /* p27.WODY*/ pix_pipe.WODY_WIN_X4.dff17_ff(pix_pipe.WYKA_WIN_X3.qn16_new(), pix_pipe.WODY_WIN_X4.qn16_old());
-    /* p27.WOBO*/ pix_pipe.WOBO_WIN_X5.dff17_ff(pix_pipe.WODY_WIN_X4.qn16_new(), pix_pipe.WOBO_WIN_X5.qn16_old());
-    /* p27.WYKO*/ pix_pipe.WYKO_WIN_X6.dff17_ff(pix_pipe.WOBO_WIN_X5.qn16_new(), pix_pipe.WYKO_WIN_X6.qn16_old());
-    /* p27.XOLO*/ pix_pipe.XOLO_WIN_X7.dff17_ff(pix_pipe.WYKO_WIN_X6.qn16_new(), pix_pipe.XOLO_WIN_X7.qn16_old());
-
-    /* p27.XACO*/ wire _XACO_WIN_RSTn_t2 = not1(_XOFO_WIN_RSTp_t2);
-    /* p27.WYKA*/ pix_pipe.WYKA_WIN_X3.dff17_rst(_XACO_WIN_RSTn_t2);
-    /* p27.WODY*/ pix_pipe.WODY_WIN_X4.dff17_rst(_XACO_WIN_RSTn_t2);
-    /* p27.WOBO*/ pix_pipe.WOBO_WIN_X5.dff17_rst(_XACO_WIN_RSTn_t2);
-    /* p27.WYKO*/ pix_pipe.WYKO_WIN_X6.dff17_rst(_XACO_WIN_RSTn_t2);
-    /* p27.XOLO*/ pix_pipe.XOLO_WIN_X7.dff17_rst(_XACO_WIN_RSTn_t2);
-
-    /* p27.WAZY*/ wire _WAZY_WIN_Y_CLKp = not1(_PORE_WIN_MODEp_t0);
-    /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
-    /* p27.SYNY*/ wire _SYNY_WIN_Y_RSTn = not1(_REPU_VBLANK_RSTp_t3);
+    /* p27.WYKA*/ pix_pipe.WYKA_WIN_X3.dff17(_VETU_WIN_MAP_CLK,               _XACO_WIN_RSTn_t2, pix_pipe.WYKA_WIN_X3.qn16_old());
+    /* p27.WODY*/ pix_pipe.WODY_WIN_X4.dff17(pix_pipe.WYKA_WIN_X3.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.WODY_WIN_X4.qn16_old());
+    /* p27.WOBO*/ pix_pipe.WOBO_WIN_X5.dff17(pix_pipe.WODY_WIN_X4.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.WOBO_WIN_X5.qn16_old());
+    /* p27.WYKO*/ pix_pipe.WYKO_WIN_X6.dff17(pix_pipe.WOBO_WIN_X5.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.WYKO_WIN_X6.qn16_old());
+    /* p27.XOLO*/ pix_pipe.XOLO_WIN_X7.dff17(pix_pipe.WYKO_WIN_X6.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.XOLO_WIN_X7.qn16_old());
 
     // Every time we leave win mode we increment win_y
-    /* p27.VYNO*/ pix_pipe.VYNO_WIN_Y0.dff17_ff(_WAZY_WIN_Y_CLKp,                pix_pipe.VYNO_WIN_Y0.qn16_old());
-    /* p27.VUJO*/ pix_pipe.VUJO_WIN_Y1.dff17_ff(pix_pipe.VYNO_WIN_Y0.qn16_new(), pix_pipe.VUJO_WIN_Y1.qn16_old());
-    /* p27.VYMU*/ pix_pipe.VYMU_WIN_Y2.dff17_ff(pix_pipe.VUJO_WIN_Y1.qn16_new(), pix_pipe.VYMU_WIN_Y2.qn16_old());
-    /* p27.TUFU*/ pix_pipe.TUFU_WIN_Y3.dff17_ff(pix_pipe.VYMU_WIN_Y2.qn16_new(), pix_pipe.TUFU_WIN_Y3.qn16_old());
-    /* p27.TAXA*/ pix_pipe.TAXA_WIN_Y4.dff17_ff(pix_pipe.TUFU_WIN_Y3.qn16_new(), pix_pipe.TAXA_WIN_Y4.qn16_old());
-    /* p27.TOZO*/ pix_pipe.TOZO_WIN_Y5.dff17_ff(pix_pipe.TAXA_WIN_Y4.qn16_new(), pix_pipe.TOZO_WIN_Y5.qn16_old());
-    /* p27.TATE*/ pix_pipe.TATE_WIN_Y6.dff17_ff(pix_pipe.TOZO_WIN_Y5.qn16_new(), pix_pipe.TATE_WIN_Y6.qn16_old());
-    /* p27.TEKE*/ pix_pipe.TEKE_WIN_Y7.dff17_ff(pix_pipe.TATE_WIN_Y6.qn16_new(), pix_pipe.TEKE_WIN_Y7.qn16_old());
-
-    /* p27.VYNO*/ pix_pipe.VYNO_WIN_Y0.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.VUJO*/ pix_pipe.VUJO_WIN_Y1.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.VYMU*/ pix_pipe.VYMU_WIN_Y2.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.TUFU*/ pix_pipe.TUFU_WIN_Y3.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.TAXA*/ pix_pipe.TAXA_WIN_Y4.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.TOZO*/ pix_pipe.TOZO_WIN_Y5.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.TATE*/ pix_pipe.TATE_WIN_Y6.dff17_rst(_SYNY_WIN_Y_RSTn);
-    /* p27.TEKE*/ pix_pipe.TEKE_WIN_Y7.dff17_rst(_SYNY_WIN_Y_RSTn);
+    /* p27.VYNO*/ pix_pipe.VYNO_WIN_Y0.dff17(_WAZY_WIN_MODEn_t0,              _SYNY_VBLANK_RSTn_t3, pix_pipe.VYNO_WIN_Y0.qn16_old());
+    /* p27.VUJO*/ pix_pipe.VUJO_WIN_Y1.dff17(pix_pipe.VYNO_WIN_Y0.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.VUJO_WIN_Y1.qn16_old());
+    /* p27.VYMU*/ pix_pipe.VYMU_WIN_Y2.dff17(pix_pipe.VUJO_WIN_Y1.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.VYMU_WIN_Y2.qn16_old());
+    /* p27.TUFU*/ pix_pipe.TUFU_WIN_Y3.dff17(pix_pipe.VYMU_WIN_Y2.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.TUFU_WIN_Y3.qn16_old());
+    /* p27.TAXA*/ pix_pipe.TAXA_WIN_Y4.dff17(pix_pipe.TUFU_WIN_Y3.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.TAXA_WIN_Y4.qn16_old());
+    /* p27.TOZO*/ pix_pipe.TOZO_WIN_Y5.dff17(pix_pipe.TAXA_WIN_Y4.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.TOZO_WIN_Y5.qn16_old());
+    /* p27.TATE*/ pix_pipe.TATE_WIN_Y6.dff17(pix_pipe.TOZO_WIN_Y5.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.TATE_WIN_Y6.qn16_old());
+    /* p27.TEKE*/ pix_pipe.TEKE_WIN_Y7.dff17(pix_pipe.TATE_WIN_Y6.qn16_new(), _SYNY_VBLANK_RSTn_t3, pix_pipe.TEKE_WIN_Y7.qn16_old());
   }
   #pragma endregion
 

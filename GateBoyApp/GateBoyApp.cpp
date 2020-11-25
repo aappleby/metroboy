@@ -123,6 +123,7 @@ void GateBoyApp::app_init() {
   gb_thread.gb->phase_total = 0;
   gb_thread.gb->pass_count = 0;
   gb_thread.gb->pass_total = 0;
+  gb_thread.gb->sys_statediff = 1;
 
   /*
 

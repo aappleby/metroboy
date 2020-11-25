@@ -1052,7 +1052,20 @@ void GateBoy::tock_slow() {
   /* p21.RUPO*/ pix_pipe.RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST_t1, lcd_reg.ROPO_LY_MATCH_SYNCp.qp17_old());
 
 
-#pragma region PPU_Regs_Write
+#pragma region Regs_Write
+  {
+    // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
+    // That also means that _both_ P14 and P15 are selected at reset :/
+    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[0].to_wire_new());
+    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[1].to_wire_new());
+    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[2].to_wire_new());
+    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[3].to_wire_new());
+    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[4].to_wire_new());
+    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[5].to_wire_new());
+    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[6].to_wire_new());
+    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn_t1, _ALUR_SYS_RSTn_t0, BUS_CPU_Dp_in[7].to_wire_new());
+  }
+
   {
     // FF40 LCDC
     /*#p23.VYXE*/ pix_pipe.VYXE_LCDC_BGENn  .dff9(_XUBO_FF40_WRn_t1, _XARE_SYS_RSTn_t0, BUS_CPU_Dp_in[0].to_wire_new());
@@ -1456,24 +1469,13 @@ void GateBoy::tock_slow() {
     09 0 diodes 3 & 4
     */
 
-    wire _APUG_JP_GLITCH3_t0   = joypad.APUG_JP_GLITCH3.qp17_old();
-    wire _AGEM_JP_GLITCH2_t0   = joypad.AGEM_JP_GLITCH2.qp17_old();
-    wire _ACEF_JP_GLITCH1_t0   = joypad.ACEF_JP_GLITCH1.qp17_old();
-    wire _BATU_JP_GLITCH0_t0   = joypad.BATU_JP_GLITCH0.qp17_old();
-
-    wire _KELY_JOYP_UDLRn_t0   = joypad.KELY_JOYP_UDLRp.qn16_old();
-    wire _COFY_JOYP_ABCSn_t0   = joypad.COFY_JOYP_ABCSp.qn16_old();
-    wire _KUKO_DBG_FF00_D6n_t0 = joypad.KUKO_DBG_FF00_D6n.qp17_old();
-    wire _KERU_DBG_FF00_D7n_t0 = joypad.KERU_DBG_FF00_D7n.qp17_old();
-
-
-    /* p05.KARU*/ wire _KARU_OEp_t0 = or2(_KELY_JOYP_UDLRn_t0, _KURA_JOYP_DBGn_t0);
-    /* p05.CELA*/ wire _CELA_OEp_t0 = or2(_COFY_JOYP_ABCSn_t0, _KURA_JOYP_DBGn_t0);
+    /* p05.KARU*/ wire _KARU_OEp_t0 = or2(joypad.KELY_JOYP_UDLRp.qn16_new(), _KURA_JOYP_DBGn_t0);
+    /* p05.CELA*/ wire _CELA_OEp_t0 = or2(joypad.COFY_JOYP_ABCSp.qn16_new(), _KURA_JOYP_DBGn_t0);
 
     Pin2 PIN_JOY_P14_t0; // PIN_63
     Pin2 PIN_JOY_P15_t0; // PIN_62
-    PIN_JOY_P14_t0.pin_out(_KARU_OEp_t0, _KELY_JOYP_UDLRn_t0, _KELY_JOYP_UDLRn_t0);
-    PIN_JOY_P15_t0.pin_out(_CELA_OEp_t0, _COFY_JOYP_ABCSn_t0, _COFY_JOYP_ABCSn_t0);
+    PIN_JOY_P14_t0.pin_out(_KARU_OEp_t0, joypad.KELY_JOYP_UDLRp.qn16_new(), joypad.KELY_JOYP_UDLRp.qn16_new());
+    PIN_JOY_P15_t0.pin_out(_CELA_OEp_t0, joypad.COFY_JOYP_ABCSp.qn16_new(), joypad.COFY_JOYP_ABCSp.qn16_new());
 
     // Pressing a button pulls the corresponding pin _down_.
 
@@ -1526,36 +1528,25 @@ void GateBoy::tock_slow() {
       Pin2 PIN_CPU_WAKE_t1; // top right wire by itself <- P02.AWOB
       PIN_CPU_WAKE_t1.pin_in(1, _AWOB_WAKE_CPUp_t1);
 
-      // this chunk can _not_ use _next()
-      /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17_ff(_BOGA_Axxxxxxx_t1, _AGEM_JP_GLITCH2_t0);
-      /* p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17_ff(_BOGA_Axxxxxxx_t1, _ACEF_JP_GLITCH1_t0);
-      /* p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17_ff(_BOGA_Axxxxxxx_t1, _BATU_JP_GLITCH0_t0);
-      /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17_ff(_BOGA_Axxxxxxx_t1, _KERY_ANY_BUTTONp_t0);
-
-      /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17_rst(_ALUR_SYS_RSTn_t0);
-      /* p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17_rst(_ALUR_SYS_RSTn_t0);
-      /* p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17_rst(_ALUR_SYS_RSTn_t0);
-      /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17_rst(_ALUR_SYS_RSTn_t0);
+      /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17(_BOGA_Axxxxxxx_t1, _ALUR_SYS_RSTn_t0, joypad.AGEM_JP_GLITCH2.qp17_old());
+      /* p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17(_BOGA_Axxxxxxx_t1, _ALUR_SYS_RSTn_t0, joypad.ACEF_JP_GLITCH1.qp17_old());
+      /* p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17(_BOGA_Axxxxxxx_t1, _ALUR_SYS_RSTn_t0, joypad.BATU_JP_GLITCH0.qp17_old());
+      /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17(_BOGA_Axxxxxxx_t1, _ALUR_SYS_RSTn_t0, _KERY_ANY_BUTTONp_t0);
 
       /* p05.KEVU*/ joypad.KEVU_JOYP_L0n.tp_latch(_BYZO_FF00_RDn_t0, PIN_JOY_P10_t0.qn());
       /* p05.KAPA*/ joypad.KAPA_JOYP_L1n.tp_latch(_BYZO_FF00_RDn_t0, PIN_JOY_P11_t0.qn());
       /* p05.KEJA*/ joypad.KEJA_JOYP_L2n.tp_latch(_BYZO_FF00_RDn_t0, PIN_JOY_P12_t0.qn());
       /* p05.KOLO*/ joypad.KOLO_JOYP_L3n.tp_latch(_BYZO_FF00_RDn_t0, PIN_JOY_P13_t0.qn());
 
-      /* p05.KEVU*/ wire _KEVU_JOYP_L0n_t0 = joypad.KEVU_JOYP_L0n.qp08_new();
-      /* p05.KAPA*/ wire _KAPA_JOYP_L1n_t0 = joypad.KAPA_JOYP_L1n.qp08_new();
-      /* p05.KEJA*/ wire _KEJA_JOYP_L2n_t0 = joypad.KEJA_JOYP_L2n.qp08_new();
-      /* p05.KOLO*/ wire _KOLO_JOYP_L3n_t0 = joypad.KOLO_JOYP_L3n.qp08_new();
-
       /* FF00 JOYP */
-      /* p05.KEMA*/ BUS_CPU_Dp_out[0].tri6_nn(_BYZO_FF00_RDn_t0, _KEVU_JOYP_L0n_t0);
-      /* p05.KURO*/ BUS_CPU_Dp_out[1].tri6_nn(_BYZO_FF00_RDn_t0, _KAPA_JOYP_L1n_t0);
-      /* p05.KUVE*/ BUS_CPU_Dp_out[2].tri6_nn(_BYZO_FF00_RDn_t0, _KEJA_JOYP_L2n_t0);
-      /* p05.JEKU*/ BUS_CPU_Dp_out[3].tri6_nn(_BYZO_FF00_RDn_t0, _KOLO_JOYP_L3n_t0);
-      /* p05.KOCE*/ BUS_CPU_Dp_out[4].tri6_nn(_BYZO_FF00_RDn_t0, _KELY_JOYP_UDLRn_t0);
-      /* p05.CUDY*/ BUS_CPU_Dp_out[5].tri6_nn(_BYZO_FF00_RDn_t0, _COFY_JOYP_ABCSn_t0);
-      /* p??.????*/ BUS_CPU_Dp_out[6].tri6_nn(_BYZO_FF00_RDn_t0, _KUKO_DBG_FF00_D6n_t0);
-      /* p??.????*/ BUS_CPU_Dp_out[7].tri6_nn(_BYZO_FF00_RDn_t0, _KERU_DBG_FF00_D7n_t0);
+      /* p05.KEMA*/ BUS_CPU_Dp_out[0].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KEVU_JOYP_L0n.qp08_new());
+      /* p05.KURO*/ BUS_CPU_Dp_out[1].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KAPA_JOYP_L1n.qp08_new());
+      /* p05.KUVE*/ BUS_CPU_Dp_out[2].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KEJA_JOYP_L2n.qp08_new());
+      /* p05.JEKU*/ BUS_CPU_Dp_out[3].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KOLO_JOYP_L3n.qp08_new());
+      /* p05.KOCE*/ BUS_CPU_Dp_out[4].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KELY_JOYP_UDLRp.qn16_new());
+      /* p05.CUDY*/ BUS_CPU_Dp_out[5].tri6_nn(_BYZO_FF00_RDn_t0, joypad.COFY_JOYP_ABCSp.qn16_new());
+      /* p??.????*/ BUS_CPU_Dp_out[6].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KUKO_DBG_FF00_D6n.qp17_new());
+      /* p??.????*/ BUS_CPU_Dp_out[7].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KERU_DBG_FF00_D7n.qp17_new());
     }
   }
 #pragma endregion
@@ -4290,30 +4281,6 @@ void GateBoy::tock_slow() {
 #pragma endregion
 
 
-  //------------------------------------------------------------------------------
-  // Simple register writes
-
-  {
-    // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
-    // That also means that _both_ P14 and P15 are selected at reset :/
-    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[0].to_wire_new());
-    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[1].to_wire_new());
-    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[2].to_wire_new());
-    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[3].to_wire_new());
-    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[4].to_wire_new());
-    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[5].to_wire_new());
-    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[6].to_wire_new());
-    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17_ff(_ATOZ_FF00_WRn_t1, BUS_CPU_Dp_in[7].to_wire_new());
-
-    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17_rst(_ALUR_SYS_RSTn_t0);
-    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17_rst(_ALUR_SYS_RSTn_t0);
-  }
 
 
 

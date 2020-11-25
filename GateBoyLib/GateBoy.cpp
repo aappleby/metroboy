@@ -2828,22 +2828,22 @@ void GateBoy::tock_slow() {
       /* p26.EJOK*/ wire _EJOK_MAP_Y4S_t0  = add_s(_LAFO_LY7p_t0, _FUNY_SCY7p_t0, _EFYK_MAP_Y3C_t0);
       /* p26.EJOK*/ wire _EJOK_MAP_Y4C_t0  = add_c(_LAFO_LY7p_t0, _FUNY_SCY7p_t0, _EFYK_MAP_Y3C_t0);
 
-      /*#p26.ATAD*/ wire _ATAD_TILE_X0S_t0 = add_s(_XEHO_PX0p_t0, _DATY_SCX0p_t0, 0);
-      /*#p26.ATAD*/ wire _ATAD_TILE_X0C_t0 = add_c(_XEHO_PX0p_t0, _DATY_SCX0p_t0, 0);
-      /* p26.BEHU*/ wire _BEHU_TILE_X1S_t0 = add_s(_SAVY_PX1p_t0, _DUZU_SCX1p_t0, _ATAD_TILE_X0C_t0);
-      /* p26.BEHU*/ wire _BEHU_TILE_X1C_t0 = add_c(_SAVY_PX1p_t0, _DUZU_SCX1p_t0, _ATAD_TILE_X0C_t0);
-      /* p26.APYH*/ wire _APYH_TILE_X2S_t0 = add_s(_XODU_PX2p_t0, _CYXU_SCX2p_t0, _BEHU_TILE_X1C_t0);
-      /* p26.APYH*/ wire _APYH_TILE_X2C_t0 = add_c(_XODU_PX2p_t0, _CYXU_SCX2p_t0, _BEHU_TILE_X1C_t0);
-      /* p26.BABE*/ wire _BABE_MAP_X0S_t0  = add_s(_XYDO_PX3p_t0, _GUBO_SCX3p_t0, _APYH_TILE_X2C_t0);
-      /* p26.BABE*/ wire _BABE_MAP_X0C_t0  = add_c(_XYDO_PX3p_t0, _GUBO_SCX3p_t0, _APYH_TILE_X2C_t0);
-      /* p26.ABOD*/ wire _ABOD_MAP_X1S_t0  = add_s(_TUHU_PX4p_t0, _BEMY_SCX4p_t0, _BABE_MAP_X0C_t0);
-      /* p26.ABOD*/ wire _ABOD_MAP_X1C_t0  = add_c(_TUHU_PX4p_t0, _BEMY_SCX4p_t0, _BABE_MAP_X0C_t0);
-      /* p26.BEWY*/ wire _BEWY_MAP_X2S_t0  = add_s(_TUKY_PX5p_t0, _CUZY_SCX5p_t0, _ABOD_MAP_X1C_t0);
-      /* p26.BEWY*/ wire _BEWY_MAP_X2C_t0  = add_c(_TUKY_PX5p_t0, _CUZY_SCX5p_t0, _ABOD_MAP_X1C_t0);
-      /* p26.BYCA*/ wire _BYCA_MAP_X3S_t0  = add_s(_TAKO_PX6p_t0, _CABU_SCX6p_t0, _BEWY_MAP_X2C_t0);
-      /* p26.BYCA*/ wire _BYCA_MAP_X3C_t0  = add_c(_TAKO_PX6p_t0, _CABU_SCX6p_t0, _BEWY_MAP_X2C_t0);
-      /* p26.ACUL*/ wire _ACUL_MAP_X4S_t0  = add_s(_SYBE_PX7p_t0, _BAKE_SCX7p_t0, _BYCA_MAP_X3C_t0);
-      /* p26.ACUL*/ wire _ACUL_MAP_X4C_t0  = add_c(_SYBE_PX7p_t0, _BAKE_SCX7p_t0, _BYCA_MAP_X3C_t0);
+      /*#p26.ATAD*/ wire _ATAD_TILE_X0S_t0 = add_s(pix_pipe.XEHO_PX0p.qp17_new(), _DATY_SCX0p_t0, 0);
+      /*#p26.ATAD*/ wire _ATAD_TILE_X0C_t0 = add_c(pix_pipe.XEHO_PX0p.qp17_new(), _DATY_SCX0p_t0, 0);
+      /* p26.BEHU*/ wire _BEHU_TILE_X1S_t0 = add_s(pix_pipe.SAVY_PX1p.qp17_new(), _DUZU_SCX1p_t0, _ATAD_TILE_X0C_t0);
+      /* p26.BEHU*/ wire _BEHU_TILE_X1C_t0 = add_c(pix_pipe.SAVY_PX1p.qp17_new(), _DUZU_SCX1p_t0, _ATAD_TILE_X0C_t0);
+      /* p26.APYH*/ wire _APYH_TILE_X2S_t0 = add_s(pix_pipe.XODU_PX2p.qp17_new(), _CYXU_SCX2p_t0, _BEHU_TILE_X1C_t0);
+      /* p26.APYH*/ wire _APYH_TILE_X2C_t0 = add_c(pix_pipe.XODU_PX2p.qp17_new(), _CYXU_SCX2p_t0, _BEHU_TILE_X1C_t0);
+      /* p26.BABE*/ wire _BABE_MAP_X0S_t0  = add_s(pix_pipe.XYDO_PX3p.qp17_new(), _GUBO_SCX3p_t0, _APYH_TILE_X2C_t0);
+      /* p26.BABE*/ wire _BABE_MAP_X0C_t0  = add_c(pix_pipe.XYDO_PX3p.qp17_new(), _GUBO_SCX3p_t0, _APYH_TILE_X2C_t0);
+      /* p26.ABOD*/ wire _ABOD_MAP_X1S_t0  = add_s(pix_pipe.TUHU_PX4p.qp17_new(), _BEMY_SCX4p_t0, _BABE_MAP_X0C_t0);
+      /* p26.ABOD*/ wire _ABOD_MAP_X1C_t0  = add_c(pix_pipe.TUHU_PX4p.qp17_new(), _BEMY_SCX4p_t0, _BABE_MAP_X0C_t0);
+      /* p26.BEWY*/ wire _BEWY_MAP_X2S_t0  = add_s(pix_pipe.TUKY_PX5p.qp17_new(), _CUZY_SCX5p_t0, _ABOD_MAP_X1C_t0);
+      /* p26.BEWY*/ wire _BEWY_MAP_X2C_t0  = add_c(pix_pipe.TUKY_PX5p.qp17_new(), _CUZY_SCX5p_t0, _ABOD_MAP_X1C_t0);
+      /* p26.BYCA*/ wire _BYCA_MAP_X3S_t0  = add_s(pix_pipe.TAKO_PX6p.qp17_new(), _CABU_SCX6p_t0, _BEWY_MAP_X2C_t0);
+      /* p26.BYCA*/ wire _BYCA_MAP_X3C_t0  = add_c(pix_pipe.TAKO_PX6p.qp17_new(), _CABU_SCX6p_t0, _BEWY_MAP_X2C_t0);
+      /* p26.ACUL*/ wire _ACUL_MAP_X4S_t0  = add_s(pix_pipe.SYBE_PX7p.qp17_new(), _BAKE_SCX7p_t0, _BYCA_MAP_X3C_t0);
+      /* p26.ACUL*/ wire _ACUL_MAP_X4C_t0  = add_c(pix_pipe.SYBE_PX7p.qp17_new(), _BAKE_SCX7p_t0, _BYCA_MAP_X3C_t0);
 
       /* Background map read */
 
@@ -4974,14 +4974,14 @@ void GateBoy::tock_slow() {
     /* p27.PEZO*/ wire _PEZO_WY_MATCH6p_t0 = xnor2(pix_pipe.NUKA_WY6n.qn08_old(), _MATO_LY6p_t0);
     /* p27.NUPA*/ wire _NUPA_WY_MATCH7p_t0 = xnor2(pix_pipe.NAFU_WY7n.qn08_old(), _LAFO_LY7p_t0);
 
-    /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p_t0 = xnor2(_XEHO_PX0p_t0, pix_pipe.MYPA_WX0n.qn08_old());
-    /* p27.PUWU*/ wire _PUWU_WX_MATCH1p_t0 = xnor2(_SAVY_PX1p_t0, pix_pipe.NOFE_WX1n.qn08_old());
-    /* p27.PUHO*/ wire _PUHO_WX_MATCH2p_t0 = xnor2(_XODU_PX2p_t0, pix_pipe.NOKE_WX2n.qn08_old());
-    /* p27.NYTU*/ wire _NYTU_WX_MATCH3p_t0 = xnor2(_XYDO_PX3p_t0, pix_pipe.MEBY_WX3n.qn08_old());
-    /* p27.NEZO*/ wire _NEZO_WX_MATCH4p_t0 = xnor2(_TUHU_PX4p_t0, pix_pipe.MYPU_WX4n.qn08_old());
-    /* p27.NORY*/ wire _NORY_WX_MATCH5p_t0 = xnor2(_TUKY_PX5p_t0, pix_pipe.MYCE_WX5n.qn08_old());
-    /* p27.NONO*/ wire _NONO_WX_MATCH6p_t0 = xnor2(_TAKO_PX6p_t0, pix_pipe.MUVO_WX6n.qn08_old());
-    /* p27.PASE*/ wire _PASE_WX_MATCH7p_t0 = xnor2(_SYBE_PX7p_t0, pix_pipe.NUKU_WX7n.qn08_old());
+    /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p_t0 = xnor2(pix_pipe.XEHO_PX0p.qp17_new(), pix_pipe.MYPA_WX0n.qn08_old());
+    /* p27.PUWU*/ wire _PUWU_WX_MATCH1p_t0 = xnor2(pix_pipe.SAVY_PX1p.qp17_new(), pix_pipe.NOFE_WX1n.qn08_old());
+    /* p27.PUHO*/ wire _PUHO_WX_MATCH2p_t0 = xnor2(pix_pipe.XODU_PX2p.qp17_new(), pix_pipe.NOKE_WX2n.qn08_old());
+    /* p27.NYTU*/ wire _NYTU_WX_MATCH3p_t0 = xnor2(pix_pipe.XYDO_PX3p.qp17_new(), pix_pipe.MEBY_WX3n.qn08_old());
+    /* p27.NEZO*/ wire _NEZO_WX_MATCH4p_t0 = xnor2(pix_pipe.TUHU_PX4p.qp17_new(), pix_pipe.MYPU_WX4n.qn08_old());
+    /* p27.NORY*/ wire _NORY_WX_MATCH5p_t0 = xnor2(pix_pipe.TUKY_PX5p.qp17_new(), pix_pipe.MYCE_WX5n.qn08_old());
+    /* p27.NONO*/ wire _NONO_WX_MATCH6p_t0 = xnor2(pix_pipe.TAKO_PX6p.qp17_new(), pix_pipe.MUVO_WX6n.qn08_old());
+    /* p27.PASE*/ wire _PASE_WX_MATCH7p_t0 = xnor2(pix_pipe.SYBE_PX7p.qp17_new(), pix_pipe.NUKU_WX7n.qn08_old());
 
     /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn_t0  = nand5(_WYMO_LCDC_WINENp_t0, _NOJO_WY_MATCH4p_t0, _PAGA_WY_MATCH5p_t0, _PEZO_WY_MATCH6p_t0, _NUPA_WY_MATCH7p_t0);
     /* p27.NELE*/ wire _NELE_WY_MATCH_HIp_t0  = not1(_PALO_WY_MATCH_HIn_t0);

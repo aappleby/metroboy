@@ -32,6 +32,7 @@ struct DmaRegisters {
     LUVY_DMA_TRIG_d0.reset(REG_D0C1);
     LENE_DMA_TRIG_d4.reset(REG_D0C0);
 
+    LARA_DMA_LATCHn.reset(1);
     LOKY_DMA_LATCHp.reset(0);
   }
 
@@ -62,10 +63,18 @@ struct DmaRegisters {
     LUVY_DMA_TRIG_d0.reset(REG_D0C0);
     LENE_DMA_TRIG_d4.reset(REG_D0C0);
 
+    LARA_DMA_LATCHn.reset(1);
     LOKY_DMA_LATCHp.reset(0);
   }
 
   /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;
+  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp;
+  /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;
+  /*p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;
+  /*p04.LENE*/ DFF17 LENE_DMA_TRIG_d4;
+
+  /*p04.LARA*/ Gate LARA_DMA_LATCHn; // NAND latch w/ LOKY
+  /*p04.LOKY*/ Gate LOKY_DMA_LATCHp; // NAND latch w/ LARA
 
   /*p04.NAKY*/ DFF17 NAKY_DMA_A00p;
   /*p04.PYRO*/ DFF17 PYRO_DMA_A01p;
@@ -85,13 +94,6 @@ struct DmaRegisters {
   /*p04.POKU*/ DFF8p POKU_DMA_A14n;
   /*p04.MARU*/ DFF8p MARU_DMA_A15n;
 
-  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp;
-  /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;
-  /*p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;
-  /*p04.LENE*/ DFF17 LENE_DMA_TRIG_d4;
-
-  /*p04.LOKY*/ NandLatch LOKY_DMA_LATCHp; // NAND latch w/ LARA
-  ///*p04.LARA*/ Tri   LARA_DMA_LATCHn = TRI_D1NP; // NAND latch w/ LOKY
 };
 
 //-----------------------------------------------------------------------------

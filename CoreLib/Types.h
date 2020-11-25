@@ -179,6 +179,133 @@ struct Dumper {
       wire(D & 0x02),
       wire(D & 0x01));
   }
+
+  inline void dump_bitp(const char* tag, uint8_t b) {
+    operator()("%s : ", tag);
+    add_char((b & 0x02) ? '\002' : '\003');
+
+    if      (b & 0x08) add_char('R');
+    else if (b & 0x04) add_char('S');
+    else               add_char((b & 0x01) ? '1' : '0');
+    add_char('\001');
+    add_char('\n');
+  }
+
+  inline void dump_bitn(const char* tag, uint8_t b) {
+    operator()("%s : ", tag);
+    add_char((b & 0x02) ? '\002' : '\003');
+
+    if      (b & 0x08) add_char('R');
+    else if (b & 0x04) add_char('S');
+    else               add_char((b & 0x01) ? '0' : '1');
+    add_char('\001');
+    add_char('\n');
+  }
+
+  void dump_slice2p(const char* tag, const void* blob, int byte_count) {
+    const uint8_t* d = (const uint8_t*)blob;
+
+    uint8_t val = 0;
+    for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
+
+    operator()("%s : ", tag);
+    for (int i = byte_count; i < 8; i++) add_char(' ');
+    for (int i = byte_count - 1; i >= 0; i--) {
+      add_char((d[i] & 0x02) ? '\002' : '\003');
+
+      if      (d[i] & 0x08) add_char('R');
+      else if (d[i] & 0x04) add_char('S');
+      else                  add_char((d[i] & 0x01) ? '1' : '0');
+    }
+    add_char('\001');
+
+    if (byte_count <= 8) {
+      operator()(" 0x%02x %d\n", val, val);
+    } else {
+      operator()("\n%s : 0x%04x %d\n", tag, val, val);
+    }
+  }
+
+  void dump_slice2n(const char* tag, const void* blob, int byte_count) {
+    const uint8_t* d = (const uint8_t*)blob;
+
+    uint8_t val = 0;
+    for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
+
+    operator()("%s : ", tag);
+    for (int i = byte_count; i < 8; i++) add_char(' ');
+    for (int i = byte_count - 1; i >= 0; i--) {
+      add_char((d[i] & 0x02) ? '\002' : '\003');
+
+      if      (d[i] & 0x08) add_char('R');
+      else if (d[i] & 0x04) add_char('S');
+      else                  add_char((d[i] & 0x01) ? '0' : '1');
+    }
+    add_char('\001');
+
+    if (byte_count <= 8) {
+      operator()(" 0x%02x %d\n", val, val);
+    } else {
+      operator()("\n%s : 0x%04x %d\n", tag, val, val);
+    }
+  }
+
+  void dump_slice(const char* tag, int bit_index, uint8_t* d, int byte_count, const char a, const char b) {
+    operator()("%s : ", tag);
+    const int mask = 1 << bit_index;
+    for (int i = 0; i < byte_count; i++) {
+      add_char((d[i] & mask) ? b : a);
+    }
+    add_char('\n');
+  }
+
+  void dump_bit_d(const char* tag, uint8_t* d) {
+    operator()("%s : %c%c%c%c%c%c%c%c\n",
+      tag,
+      (d[0] & 0x01) ? '1' : '0',
+      (d[1] & 0x01) ? '1' : '0',
+      (d[2] & 0x01) ? '1' : '0',
+      (d[3] & 0x01) ? '1' : '0',
+      (d[4] & 0x01) ? '1' : '0',
+      (d[5] & 0x01) ? '1' : '0',
+      (d[6] & 0x01) ? '1' : '0');
+  }
+
+  void dump_bit_clk(const char* tag, uint8_t* d) {
+    operator()("%s : %c%c%c%c%c%c%c%c\n",
+      tag,
+      (d[0] & 0x02) ? '1' : '0',
+      (d[1] & 0x02) ? '1' : '0',
+      (d[2] & 0x02) ? '1' : '0',
+      (d[3] & 0x02) ? '1' : '0',
+      (d[4] & 0x02) ? '1' : '0',
+      (d[5] & 0x02) ? '1' : '0',
+      (d[6] & 0x02) ? '1' : '0');
+  }
+
+  void dump_bit_set(const char* tag, uint8_t* d) {
+    operator()("%s : %c%c%c%c%c%c%c%c\n",
+      tag,
+      (d[0] & 0x04) ? '1' : '0',
+      (d[1] & 0x04) ? '1' : '0',
+      (d[2] & 0x04) ? '1' : '0',
+      (d[3] & 0x04) ? '1' : '0',
+      (d[4] & 0x04) ? '1' : '0',
+      (d[5] & 0x04) ? '1' : '0',
+      (d[6] & 0x04) ? '1' : '0');
+  }
+
+  void dump_bit_rst(const char* tag, uint8_t* d) {
+    operator()("%s : %c%c%c%c%c%c%c%c\n",
+      tag,
+      (d[0] & 0x08) ? '1' : '0',
+      (d[1] & 0x08) ? '1' : '0',
+      (d[2] & 0x08) ? '1' : '0',
+      (d[3] & 0x08) ? '1' : '0',
+      (d[4] & 0x08) ? '1' : '0',
+      (d[5] & 0x08) ? '1' : '0',
+      (d[6] & 0x08) ? '1' : '0');
+  }
 };
 
 void dump_req(Dumper& d, const Req& req);

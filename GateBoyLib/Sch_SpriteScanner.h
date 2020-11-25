@@ -53,6 +53,8 @@ struct SpriteScanner {
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp; // -> oam bus
   /*p29.CENO*/ DFF17 CENO_SCANNINGp;    // -> oam bus
+  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap;
+  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp;
 
   /*p28.YFEL*/ DFF17 YFEL_SCAN0; // -> oam bus address mux
   /*p28.WEWY*/ DFF17 WEWY_SCAN1;
@@ -60,9 +62,6 @@ struct SpriteScanner {
   /*p28.ELYN*/ DFF17 ELYN_SCAN3;
   /*p28.FAHA*/ DFF17 FAHA_SCAN4;
   /*p28.FONY*/ DFF17 FONY_SCAN5;
-
-  /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap;
-  /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp;
 
   /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
   /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;

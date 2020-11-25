@@ -348,192 +348,6 @@ void GateBoyApp::app_update(double /*delta*/) {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-void dump_cpu_bus(Dumper& d, const CpuBus& /*cpu_bus*/) {
-  d("\002===== CPU Bus =====\001\n");
-  d("BUS ADDR 0x%04x  %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-    pack_u16(16, &cpu_bus.BUS_CPU_A00),
-    cpu_bus.BUS_CPU_A15.c(), cpu_bus.BUS_CPU_A14.c(), cpu_bus.BUS_CPU_A13.c(), cpu_bus.BUS_CPU_A12.c(),
-    cpu_bus.BUS_CPU_A11.c(), cpu_bus.BUS_CPU_A10.c(), cpu_bus.BUS_CPU_A09.c(), cpu_bus.BUS_CPU_A08.c(),
-    cpu_bus.BUS_CPU_A07.c(), cpu_bus.BUS_CPU_A06.c(), cpu_bus.BUS_CPU_A05.c(), cpu_bus.BUS_CPU_A04.c(),
-    cpu_bus.BUS_CPU_A03.c(), cpu_bus.BUS_CPU_A02.c(), cpu_bus.BUS_CPU_A01.c(), cpu_bus.BUS_CPU_A00.c());
-  d("BUS DATA 0x%02x    %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &cpu_bus.BUS_CPU_D0p),
-    cpu_bus.BUS_CPU_D7p.c(), cpu_bus.BUS_CPU_D6p.c(), cpu_bus.BUS_CPU_D5p.c(), cpu_bus.BUS_CPU_D4p.c(),
-    cpu_bus.BUS_CPU_D3p.c(), cpu_bus.BUS_CPU_D2p.c(), cpu_bus.BUS_CPU_D1p.c(), cpu_bus.BUS_CPU_D0p.c());
-  d("\n");
-
-  d("PIN_CPU_6         %c\n", cpu_bus.PIN_CPU_6.c());
-  d("PIN_CPU_LATCH_EXT %c\n", cpu_bus.PIN_CPU_LATCH_EXT.c());
-  d("PIN_CPU_RDp       %c\n", cpu_bus.PIN_CPU_RDp.c());
-  d("PIN_CPU_WRp       %c\n", cpu_bus.PIN_CPU_WRp.c());
-  d("PIN_CPU_EXT_BUSp  %c\n", cpu_bus.PIN_CPU_EXT_BUSp.c());
-  d("\n");
-
-  d("PIN_CPU_BOOTp     %c\n", cpu_bus.PIN_CPU_BOOTp.c());
-  d("PIN_CPU_ADDR_HIp  %c\n", cpu_bus.PIN_CPU_ADDR_HIp.c());
-  d("PIN STARTp        %d\n", cpu_bus.PIN_CPU_STARTp.qp());
-  d("PIN SYS_RSTp      %d\n", cpu_bus.PIN_CPU_SYS_RSTp.qp());
-  d("PIN EXT_RST       %d\n", cpu_bus.PIN_CPU_EXT_RST.qp());
-  d("PIN UNOR_DBG      %d\n", cpu_bus.PIN_CPU_UNOR_DBG.qp());
-  d("PIN UMUT_DBG      %d\n", cpu_bus.PIN_CPU_UMUT_DBG.qp());
-  d("PIN EXT_CLKGOOD   %d\n", cpu_bus.PIN_CPU_EXT_CLKGOOD.qp());
-  d("\n");
-
-  d("PIN BOWA_xBCDEFGH %d\n", cpu_bus.PIN_CPU_BOWA_Axxxxxxx.qp());
-  d("PIN BEDO_Axxxxxxx %d\n", cpu_bus.PIN_CPU_BEDO_xBCDEFGH.qp());
-  d("PIN BEKO_ABCDxxxx %d\n", cpu_bus.PIN_CPU_BEKO_ABCDxxxx.qp());
-  d("PIN BUDE_xxxxEFGH %d\n", cpu_bus.PIN_CPU_BUDE_xxxxEFGH.qp());
-  d("PIN BOLO_ABCDEFxx %d\n", cpu_bus.PIN_CPU_BOLO_ABCDEFxx.qp());
-  d("PIN BUKE_AxxxxxGH %d\n", cpu_bus.PIN_CPU_BUKE_AxxxxxGH.qp());
-  d("PIN BOMA_Axxxxxxx %d\n", cpu_bus.PIN_CPU_BOMA_xBCDEFGH.qp());
-  d("PIN BOGA_xBCDEFGH %d\n", cpu_bus.PIN_CPU_BOGA_Axxxxxxx.qp());
-  d("\n");
-}
-#endif
-
-//-----------------------------------------------------------------------------
-
-#if 0
-void dump_ext_bus(Dumper& d, const ExtBus& ext_bus) {
-  d("\002===== Ext Bus =====\001\n");
-  d("PIN CLK    : %c\n", ext_bus.PIN_EXT_CLK.c());
-  d("PIN RDn    : %c\n", ext_bus.PIN_EXT_RDn.c());
-  d("PIN WRn    : %c\n", ext_bus.PIN_EXT_WRn.c());
-  d("PIN CSn    : %c\n", ext_bus.PIN_EXT_CSn.c());
-  d("\n");
-
-  d("PIN ADDR   : 0x%04x %c%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-    pack_u16(16, &ext_bus.PIN_EXT_A00p),
-    ext_bus.PIN_EXT_A15p.c(), ext_bus.PIN_EXT_A14p.c(), ext_bus.PIN_EXT_A13p.c(), ext_bus.PIN_EXT_A12p.c(),
-    ext_bus.PIN_EXT_A11p.c(), ext_bus.PIN_EXT_A10p.c(), ext_bus.PIN_EXT_A09p.c(), ext_bus.PIN_EXT_A08p.c(),
-    ext_bus.PIN_EXT_A07p.c(), ext_bus.PIN_EXT_A06p.c(), ext_bus.PIN_EXT_A05p.c(), ext_bus.PIN_EXT_A04p.c(),
-    ext_bus.PIN_EXT_A03p.c(), ext_bus.PIN_EXT_A02p.c(), ext_bus.PIN_EXT_A01p.c(), ext_bus.PIN_EXT_A00p.c());
-  d("PIN DATA   : 0x%02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &ext_bus.PIN_EXT_D00p),
-    ext_bus.PIN_EXT_D07p.c(), ext_bus.PIN_EXT_D06p.c(), ext_bus.PIN_EXT_D05p.c(), ext_bus.PIN_EXT_D04p.c(),
-    ext_bus.PIN_EXT_D03p.c(), ext_bus.PIN_EXT_D02p.c(), ext_bus.PIN_EXT_D01p.c(), ext_bus.PIN_EXT_D00p.c());
-  d("\n");
-
-  d("ADDR LATCH : 0x%04x _%c%c%c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-    pack_u16(15, &ext_bus.ALOR_EXT_ADDR_LATCH_00p),
-    ext_bus.NYRE_EXT_ADDR_LATCH_14p.c(), ext_bus.LONU_EXT_ADDR_LATCH_13p.c(), ext_bus.LOBU_EXT_ADDR_LATCH_12p.c(), ext_bus.LUMY_EXT_ADDR_LATCH_11p.c(),
-    ext_bus.PATE_EXT_ADDR_LATCH_10p.c(), ext_bus.LYSA_EXT_ADDR_LATCH_09p.c(), ext_bus.LUNO_EXT_ADDR_LATCH_08p.c(), ext_bus.ARYM_EXT_ADDR_LATCH_07p.c(),
-    ext_bus.AROS_EXT_ADDR_LATCH_06p.c(), ext_bus.ATEV_EXT_ADDR_LATCH_05p.c(), ext_bus.AVYS_EXT_ADDR_LATCH_04p.c(), ext_bus.ARET_EXT_ADDR_LATCH_03p.c(),
-    ext_bus.ALYR_EXT_ADDR_LATCH_02p.c(), ext_bus.APUR_EXT_ADDR_LATCH_01p.c(), ext_bus.ALOR_EXT_ADDR_LATCH_00p.c());
-  d("DATA LATCH : 0x%02x %c%c%c%c%c%c%c%c\n",
-    pack_u8n(8, &ext_bus.SOMA_EXT_DATA_LATCH_D0n),
-    ext_bus.SAZY_EXT_DATA_LATCH_D7n.c(), ext_bus.RUPA_EXT_DATA_LATCH_D6n.c(), ext_bus.SAGO_EXT_DATA_LATCH_D5n.c(), ext_bus.SODY_EXT_DATA_LATCH_D4n.c(),
-    ext_bus.SELO_EXT_DATA_LATCH_D3n.c(), ext_bus.RAXY_EXT_DATA_LATCH_D2n.c(), ext_bus.RONY_EXT_DATA_LATCH_D1n.c(), ext_bus.SOMA_EXT_DATA_LATCH_D0n.c());
-  d("\n");
-}
-#endif
-
-//-----------------------------------------------------------------------------
-
-void dump_vram_bus(Dumper& d, const VramBus& vram_bus) {
-  d("\002===== VRAM Bus =====\001\n");
-
-  /*
-  d("VRAM BUS ADDR : %04x %c%c%c%c%c:%c%c%c%c%c%c%c%c\n",
-    pack_u16n(13, &vram_bus.BUS_VRAM_A00n) | 0x8000,
-    vram_bus.BUS_VRAM_A12n.c(), vram_bus.BUS_VRAM_A11n.c(), vram_bus.BUS_VRAM_A10n.c(), vram_bus.BUS_VRAM_A09n.c(),
-    vram_bus.BUS_VRAM_A08n.c(), vram_bus.BUS_VRAM_A07n.c(), vram_bus.BUS_VRAM_A06n.c(), vram_bus.BUS_VRAM_A05n.c(),
-    vram_bus.BUS_VRAM_A04n.c(), vram_bus.BUS_VRAM_A03n.c(), vram_bus.BUS_VRAM_A02n.c(), vram_bus.BUS_VRAM_A01n.c(),
-    vram_bus.BUS_VRAM_A00n.c());
-  d("VRAM BUS DATA : %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &vram_bus.BUS_VRAM_D0p),
-    vram_bus.BUS_VRAM_D7p.c(), vram_bus.BUS_VRAM_D6p.c(), vram_bus.BUS_VRAM_D5p.c(), vram_bus.BUS_VRAM_D4p.c(),
-    vram_bus.BUS_VRAM_D3p.c(), vram_bus.BUS_VRAM_D2p.c(), vram_bus.BUS_VRAM_D1p.c(), vram_bus.BUS_VRAM_D0p.c());
-  d("\n");
-
-  d("VRAM PIN MCSn : %c\n", vram_bus.PIN_VRAM_CSn.c());
-  d("VRAM PIN MOEn : %c\n", vram_bus.PIN_VRAM_OEn.c());
-  d("VRAM PIN MWRn : %c\n", vram_bus.PIN_VRAM_WRn.c());
-
-  d("VRAM PIN ADDR : 0x%04x\n", pack_u16(13, &vram_bus.PIN_VRAM_A00p) | 0x8000);
-  d("VRAM PIN DATA : %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &vram_bus.PIN_VRAM_D00p),
-    vram_bus.PIN_VRAM_D07p.c(), vram_bus.PIN_VRAM_D06p.c(), vram_bus.PIN_VRAM_D05p.c(), vram_bus.PIN_VRAM_D04p.c(),
-    vram_bus.PIN_VRAM_D03p.c(), vram_bus.PIN_VRAM_D02p.c(), vram_bus.PIN_VRAM_D01p.c(), vram_bus.PIN_VRAM_D00p.c());
-  d("\n");
-  */
-
-  d("TILE_DA       : 0x%02x\n", pack_u8n_old(8, &vram_bus.LEGU_TILE_DA0n));
-  d("TILE_DB       : 0x%02x\n", pack_u8p_old(8, &vram_bus.RAWU_TILE_DB0p));
-  d("SPRITE_DA     : 0x%02x\n", pack_u8n_old(8, &vram_bus.REWO_SPRITE_DA0n));
-  d("SPRITE_DB     : 0x%02x\n", pack_u8n_old(8, &vram_bus.PEFO_SPRITE_DB0n));
-  d("\n");
-}
-
-//-----------------------------------------------------------------------------
-
-void dump_oam_bus(Dumper& d, const OamBus& oam_bus) {
-  d("\002===== OAM Bus =====\001\n");
-
-#if 0
-  d("PIN_OAM_CLK    %c\n", oam_bus.PIN_OAM_CLK.c());
-  d("PIN_OAM_OE     %c\n", oam_bus.PIN_OAM_OEn.c());
-  d("PIN_OAM_WR_A   %c\n", oam_bus.PIN_OAM_WR_A.c());
-  d("PIN_OAM_WR_B   %c\n", oam_bus.PIN_OAM_WR_B.c());
-
-  d("OAM TRI ADDR   %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8(8, &oam_bus.BUS_OAM_A0n),
-    pack_u8(8, &oam_bus.BUS_OAM_A0n),
-    oam_bus.BUS_OAM_A7n.cn(), oam_bus.BUS_OAM_A6n.cn(), oam_bus.BUS_OAM_A5n.cn(), oam_bus.BUS_OAM_A4n.cn(),
-    oam_bus.BUS_OAM_A3n.cn(), oam_bus.BUS_OAM_A2n.cn(), oam_bus.BUS_OAM_A1n.cn(), oam_bus.BUS_OAM_A0n.cn());
-
-  d("OAM BUS ADDR   %03d %02x -%c%c%c%c%c%c%c\n",
-    pack_u8n(7, &oam_bus.BUS_OAM_A1n),
-    pack_u8n(7, &oam_bus.BUS_OAM_A1n),
-    oam_bus.BUS_OAM_A7n.cn(), oam_bus.BUS_OAM_A6n.cn(), oam_bus.BUS_OAM_A5n.cn(), oam_bus.BUS_OAM_A4n.cn(),
-    oam_bus.BUS_OAM_A3n.cn(), oam_bus.BUS_OAM_A2n.cn(), oam_bus.BUS_OAM_A1n.cn());
-
-  d("OAM BUS DATA A %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8n(8, &oam_bus.BUS_OAM_DA0n),
-    pack_u8n(8, &oam_bus.BUS_OAM_DA0n),
-    oam_bus.BUS_OAM_DA7n.c(), oam_bus.BUS_OAM_DA6n.c(), oam_bus.BUS_OAM_DA5n.c(), oam_bus.BUS_OAM_DA4n.c(),
-    oam_bus.BUS_OAM_DA3n.c(), oam_bus.BUS_OAM_DA2n.c(), oam_bus.BUS_OAM_DA1n.c(), oam_bus.BUS_OAM_DA0n.c());
-
-  d("OAM BUS DATA B %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8n(8, &oam_bus.BUS_OAM_DB0n),
-    pack_u8n(8, &oam_bus.BUS_OAM_DB0n),
-    oam_bus.BUS_OAM_DB7n.c(), oam_bus.BUS_OAM_DB6n.c(), oam_bus.BUS_OAM_DB5n.c(), oam_bus.BUS_OAM_DB4n.c(),
-    oam_bus.BUS_OAM_DB3n.c(), oam_bus.BUS_OAM_DB2n.c(), oam_bus.BUS_OAM_DB1n.c(), oam_bus.BUS_OAM_DB0n.c());
-#endif
-
-  d("MAKA_HOLD_MEMp   %c\n", oam_bus.MAKA_HOLD_MEMp.c());
-  d("WUJE_CPU_OAM_WRn %c\n", oam_bus.WUJE_CPU_OAM_WRn.c());
-
-  d("OAM LATCH A    %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8p_old(8, &oam_bus.YDYV_OAM_LATCH_DA0n),
-    pack_u8p_old(8, &oam_bus.YDYV_OAM_LATCH_DA0n),
-    oam_bus.ZECA_OAM_LATCH_DA7n.c(), oam_bus.YSES_OAM_LATCH_DA6n.c(), oam_bus.XAFU_OAM_LATCH_DA5n.c(), oam_bus.ZAXE_OAM_LATCH_DA4n.c(),
-    oam_bus.WONE_OAM_LATCH_DA3n.c(), oam_bus.ZUCA_OAM_LATCH_DA2n.c(), oam_bus.YCEB_OAM_LATCH_DA1n.c(), oam_bus.YDYV_OAM_LATCH_DA0n.c());
-
-  d("OAM LATCH B    %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8p_old(8, &oam_bus.XYKY_OAM_LATCH_DB0n),
-    pack_u8p_old(8, &oam_bus.XYKY_OAM_LATCH_DB0n),
-    oam_bus.ECED_OAM_LATCH_DB7n.c(), oam_bus.ZUVE_OAM_LATCH_DB6n.c(), oam_bus.CYRA_OAM_LATCH_DB5n.c(), oam_bus.WYNO_OAM_LATCH_DB4n.c(),
-    oam_bus.YVEL_OAM_LATCH_DB3n.c(), oam_bus.YSEX_OAM_LATCH_DB2n.c(), oam_bus.YRUM_OAM_LATCH_DB1n.c(), oam_bus.XYKY_OAM_LATCH_DB0n.c());
-
-  d("OAM TEMP A     %03d %02x %c%c%c%c%c%c%c%c\n",
-    pack_u8p_old(8, &oam_bus.XUSO_OAM_DA0p),
-    pack_u8p_old(8, &oam_bus.XUSO_OAM_DA0p),
-    oam_bus.YZAB_OAM_DA7p.c(), oam_bus.XOTE_OAM_DA6p.c(), oam_bus.WYSO_OAM_DA5p.c(), oam_bus.YBOG_OAM_DA4p.c(),
-    oam_bus.XYJU_OAM_DA3p.c(), oam_bus.YJEX_OAM_DA2p.c(), oam_bus.XEGU_OAM_DA1p.c(), oam_bus.XUSO_OAM_DA0p.c());
-
-  d("OAM TEMP B     %03d %2x %c%c%c%c%c%c%c%c\n",
-    pack_u8p_old(8, &oam_bus.YLOR_OAM_DB0p),
-    pack_u8p_old(8, &oam_bus.YLOR_OAM_DB0p),
-    oam_bus.DEPO_OAM_DB7p.c(), oam_bus.YZOS_OAM_DB6p.c(), oam_bus.BAXO_OAM_DB5p.c(), oam_bus.GOMO_OAM_DB4p.c(),
-    oam_bus.ZEZY_OAM_DB3p.c(), oam_bus.ZYVE_OAM_DB2p.c(), oam_bus.ZYTY_OAM_DB1p.c(), oam_bus.YLOR_OAM_DB0p.c());
-
-  d("\n");
-}
-
-//-----------------------------------------------------------------------------
-
 #pragma warning(disable:4189)
 
 void GateBoyApp::app_render_frame(Viewport view) {
@@ -674,41 +488,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("int_ack   0x%02x\n", gb->cpu.int_ack);
   d("\n");
 
-  d("\002===== Ints =====\001\n");
-  d("IE_D0              %c\n", gb->IE_D0.c());
-  d("IE_D1              %c\n", gb->IE_D1.c());
-  d("IE_D2              %c\n", gb->IE_D2.c());
-  d("IE_D3              %c\n", gb->IE_D3.c());
-  d("IE_D4              %c\n", gb->IE_D4.c());
-  d("\n");
-
-  d("LOPE_FF0F_0        %c\n", gb->int_reg.LOPE_FF0F_D0p.c());
-  d("LALU_FF0F_1        %c\n", gb->int_reg.LALU_FF0F_D1p.c());
-  d("NYBO_FF0F_2        %c\n", gb->int_reg.NYBO_FF0F_D2p.c());
-  d("UBUL_FF0F_3        %c\n", gb->int_reg.UBUL_FF0F_D3p.c());
-  d("ULAK_FF0F_4        %c\n", gb->int_reg.ULAK_FF0F_D4p.c());
-  d("\n");
-  d("MATY_FF0F_L0p      %c\n", gb->int_reg.MATY_FF0F_L0p.c());
-  d("MOPO_FF0F_L1p      %c\n", gb->int_reg.MOPO_FF0F_L1p.c());
-  d("PAVY_FF0F_L2p      %c\n", gb->int_reg.PAVY_FF0F_L2p.c());
-  d("NEJY_FF0F_L3p      %c\n", gb->int_reg.NEJY_FF0F_L3p.c());
-  d("NUTY_FF0F_L4p      %c\n", gb->int_reg.NUTY_FF0F_L4p.c());
-  d("\n");
-#if 0
-  d("PIN_CPU_INT_VBLANK %c\n", gb->int_reg.PIN_CPU_INT_VBLANK.c());
-  d("PIN_CPU_INT_STAT   %c\n", gb->int_reg.PIN_CPU_INT_STAT.c());
-  d("PIN_CPU_INT_TIMER  %c\n", gb->int_reg.PIN_CPU_INT_TIMER.c());
-  d("PIN_CPU_INT_SERIAL %c\n", gb->int_reg.PIN_CPU_INT_SERIAL.c());
-  d("PIN_CPU_INT_JOYPAD %c\n", gb->int_reg.PIN_CPU_INT_JOYPAD.c());
-  d("\n");
-  d("PIN_CPU_ACK_VBLANK %c\n", gb->int_reg.PIN_CPU_ACK_VBLANK.c());
-  d("PIN_CPU_ACK_STAT   %c\n", gb->int_reg.PIN_CPU_ACK_STAT.c());
-  d("PIN_CPU_ACK_TIMER  %c\n", gb->int_reg.PIN_CPU_ACK_TIMER.c());
-  d("PIN_CPU_ACK_SERIAL %c\n", gb->int_reg.PIN_CPU_ACK_SERIAL.c());
-  d("PIN_CPU_ACK_JOYPAD %c\n", gb->int_reg.PIN_CPU_ACK_JOYPAD.c());
-  d("\n");
-#endif
-
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224 - 32;
   d.clear();
@@ -718,72 +497,80 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== Clocks =====\001\n");
   d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGHp.c(), gb->clk_reg.ALEF_AxxxxFGHp.c(), gb->clk_reg.APUK_ABxxxxGHp.c(), gb->clk_reg.ADYK_ABCxxxxHp.c());
   d("\n");
-  d("AFUR_xxxxEFGH %c\n", gb->clk_reg.AFUR_xxxxEFGHp.c());
-  d("ALEF_AxxxxFGH %c\n", gb->clk_reg.ALEF_AxxxxFGHp.c());
-  d("APUK_ABxxxxGH %c\n", gb->clk_reg.APUK_ABxxxxGHp.c());
-  d("ADYK_ABCxxxxH %c\n", gb->clk_reg.ADYK_ABCxxxxHp.c());
-  d("VENA_ABCDxxxx %c\n", gb->clk_reg.VENA_xxCDEFxxp.c());
-  d("WOSU_xBCxxFGx %c\n", gb->clk_reg.WOSU_AxxDExxHp.c());
-  d("WUVU_xxCDxxGH %c\n", gb->clk_reg.WUVU_ABxxEFxxp.c());
+  d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp.state);
+  d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp.state);
   d("\n");
-
-  d("\002===== Reset =====\001\n");
-  d("TUBO_WAITINGp  %c\n", gb->clk_reg.TUBO_WAITINGp.c());
-  d("ASOL_POR_DONEn %c\n", gb->clk_reg.ASOL_POR_DONEn.c());
-  d("AFER_SYS_RSTp  %c\n", gb->clk_reg.AFER_SYS_RSTp.c());
+  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp.state);
+  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp.state);
+  d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp.state);
+  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp.state);
+  d("\n");
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->clk_reg.WOSU_AxxDExxHp.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  d("DIV    : 0x%04x %d\n",      gb->tim_reg.get_div(),    gb->tim_reg.get_div());
-  d("TIMA   : 0x%02x %d\n",      gb->tim_reg.get_tima(),   gb->tim_reg.get_tima());
-  d("TMA    : 0x%02x %d\n",      gb->tim_reg.get_tma(),    gb->tim_reg.get_tma());
-  d("TAC    : 0x%02x %d\n",      gb->tim_reg.get_tac(),    gb->tim_reg.get_tac());
-  d("NYDU_TIMA_D7_DELAY   %c\n", gb->tim_reg.NYDU_TIMA7p_DELAY.c());
-  d("MOBA_TIMER_OVERFLOWp %c\n", gb->tim_reg.MOBA_TIMER_OVERFLOWp.c());
+  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY.state);
+  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp.state);
+  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p, 16);
+  d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p, 8);
+  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p, 8);
+  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p, 3);
+  d("\n");
+
+  d("\002===== Ints =====\001\n");
+  d.dump_bitp("IE_D0        ", gb->IE_D0.state);
+  d.dump_bitp("IE_D1        ", gb->IE_D1.state);
+  d.dump_bitp("IE_D2        ", gb->IE_D2.state);
+  d.dump_bitp("IE_D3        ", gb->IE_D3.state);
+  d.dump_bitp("IE_D4        ", gb->IE_D4.state);
+  d("\n");
+  d.dump_bitp("LOPE_FF0F_0  ", gb->int_reg.LOPE_FF0F_D0p.state);
+  d.dump_bitp("LALU_FF0F_1  ", gb->int_reg.LALU_FF0F_D1p.state);
+  d.dump_bitp("NYBO_FF0F_2  ", gb->int_reg.NYBO_FF0F_D2p.state);
+  d.dump_bitp("UBUL_FF0F_3  ", gb->int_reg.UBUL_FF0F_D3p.state);
+  d.dump_bitp("ULAK_FF0F_4  ", gb->int_reg.ULAK_FF0F_D4p.state);
+  d("\n");
+  d.dump_bitp("MATY_FF0F_L0p", gb->int_reg.MATY_FF0F_L0p.state);
+  d.dump_bitp("MOPO_FF0F_L1p", gb->int_reg.MOPO_FF0F_L1p.state);
+  d.dump_bitp("PAVY_FF0F_L2p", gb->int_reg.PAVY_FF0F_L2p.state);
+  d.dump_bitp("NEJY_FF0F_L3p", gb->int_reg.NEJY_FF0F_L3p.state);
+  d.dump_bitp("NUTY_FF0F_L4p", gb->int_reg.NUTY_FF0F_L4p.state);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
-#if 0
-  d("PIN_JOY_P10      %c\n", gb->joypad.PIN_JOY_P10.c());
-  d("PIN_JOY_P11      %c\n", gb->joypad.PIN_JOY_P11.c());
-  d("PIN_JOY_P12      %c\n", gb->joypad.PIN_JOY_P12.c());
-  d("PIN_JOY_P13      %c\n", gb->joypad.PIN_JOY_P13.c());
-  d("PIN_JOY_P14      %c\n", gb->joypad.PIN_JOY_P14.c());
-  d("PIN_JOY_P15      %c\n", gb->joypad.PIN_JOY_P15.c());
-#endif
-  //d("PIN_CPU_WAKE     %c\n", gb->joypad.PIN_CPU_WAKE .c());
-  d("AWOB_WAKE_CPU    %c\n", gb->joypad.AWOB_WAKE_CPU.c());
-  d("BATU_JP_GLITCH0  %c\n", gb->joypad.BATU_JP_GLITCH0.c());
-  d("ACEF_JP_GLITCH1  %c\n", gb->joypad.ACEF_JP_GLITCH1.c());
-  d("AGEM_JP_GLITCH2  %c\n", gb->joypad.AGEM_JP_GLITCH2.c());
-  d("APUG_JP_GLITCH3  %c\n", gb->joypad.APUG_JP_GLITCH3.c());
-  d("JUTE_JOYP_RA     %c\n", gb->joypad.JUTE_JOYP_RA.c());
-  d("KECY_JOYP_LB     %c\n", gb->joypad.KECY_JOYP_LB.c());
-  d("JALE_JOYP_UC     %c\n", gb->joypad.JALE_JOYP_UC.c());
-  d("KYME_JOYP_DS     %c\n", gb->joypad.KYME_JOYP_DS.c());
-  d("KELY_JOYP_UDLR   %c\n", gb->joypad.KELY_JOYP_UDLRp.c());
-  d("COFY_JOYP_ABCS   %c\n", gb->joypad.COFY_JOYP_ABCSp.c());
-  d("KUKO_DBG_FF00_D6 %c\n", gb->joypad.KUKO_DBG_FF00_D6n.c());
-  d("KERU_DBG_FF00_D7 %c\n", gb->joypad.KERU_DBG_FF00_D7n.c());
-  d("KEVU_JOYP_L0     %c\n", gb->joypad.KEVU_JOYP_L0n.c());
-  d("KAPA_JOYP_L1     %c\n", gb->joypad.KAPA_JOYP_L1n.c());
-  d("KEJA_JOYP_L2     %c\n", gb->joypad.KEJA_JOYP_L2n.c());
-  d("KOLO_JOYP_L3     %c\n", gb->joypad.KOLO_JOYP_L3n.c());
+  d.dump_bitp("AWOB_WAKE_CPU  ", gb->joypad.AWOB_WAKE_CPU.state);
+  d("\n");
+  d.dump_bitp("BATU_JP_GLITCH0", gb->joypad.BATU_JP_GLITCH0.state);
+  d.dump_bitp("ACEF_JP_GLITCH1", gb->joypad.ACEF_JP_GLITCH1.state);
+  d.dump_bitp("AGEM_JP_GLITCH2", gb->joypad.AGEM_JP_GLITCH2.state);
+  d.dump_bitp("APUG_JP_GLITCH3", gb->joypad.APUG_JP_GLITCH3.state);
+  d("\n");
+  d.dump_bitp("JUTE_JOYP_RA   ", gb->joypad.JUTE_JOYP_RA.state);
+  d.dump_bitp("KECY_JOYP_LB   ", gb->joypad.KECY_JOYP_LB.state);
+  d.dump_bitp("JALE_JOYP_UC   ", gb->joypad.JALE_JOYP_UC.state);
+  d.dump_bitp("KYME_JOYP_DS   ", gb->joypad.KYME_JOYP_DS.state);
+  d.dump_bitp("KELY_JOYP_UDLR ", gb->joypad.KELY_JOYP_UDLRp.state);
+  d.dump_bitp("COFY_JOYP_ABCS ", gb->joypad.COFY_JOYP_ABCSp.state);
+  d("\n");
+  d.dump_bitn("KUKO_DBG_FF00_D", gb->joypad.KUKO_DBG_FF00_D6n.state);
+  d.dump_bitn("KERU_DBG_FF00_D", gb->joypad.KERU_DBG_FF00_D7n.state);
+  d("\n");
+  d.dump_bitn("KEVU_JOYP_L0   ", gb->joypad.KEVU_JOYP_L0n.state);
+  d.dump_bitn("KAPA_JOYP_L1   ", gb->joypad.KAPA_JOYP_L1n.state);
+  d.dump_bitn("KEJA_JOYP_L2   ", gb->joypad.KEJA_JOYP_L2n.state);
+  d.dump_bitn("KOLO_JOYP_L3   ", gb->joypad.KOLO_JOYP_L3n.state);
   d("\n");
 
   d("\002===== Serial =====\001\n");
-  d("XFER_START  %c\n", gb->ser_reg.ETAF_SER_RUNNING.c());
-  d("XFER_DIR    %c\n", gb->ser_reg.CULY_XFER_DIR.c());
-  d("SER_CLK     %c\n", gb->ser_reg.COTY_SER_CLK.c());
-  d("SER_CNT     %d\n", pack_u8p_old(3, &gb->ser_reg.CAFA_SER_CNT0));
-  d("SER_DATA    0x%02x\n", gb->ser_reg.get_data());
-  d("SER_OUT     %c\n", gb->ser_reg.ELYS_SER_OUT.c());
-#if 0
-  d("SCK         %c\n", gb->ser_reg.PIN_SCK.c());
-  d("SIN         %c\n", gb->ser_reg.PIN_SIN.c());
-  d("SOUT        %c\n", gb->ser_reg.PIN_SOUT.c());
-#endif
-  d("_CALY_SER_INTp %c\n", gb->ser_reg.CALY_SER_CNT3.c());
+  d.dump_bitp   ("ETAF_SER_RUNNING", gb->ser_reg.ETAF_SER_RUNNING.state);
+  d.dump_bitp   ("CULY_XFER_DIR   ", gb->ser_reg.CULY_XFER_DIR.state);
+  d.dump_bitp   ("COTY_SER_CLK    ", gb->ser_reg.COTY_SER_CLK.state);
+  d.dump_bitp   ("ELYS_SER_OUT    ", gb->ser_reg.ELYS_SER_OUT.state);
+  d.dump_slice2p("CAFA_SER_CNT    ", &gb->ser_reg.CAFA_SER_CNT0, 4);
+  d.dump_slice2p("CUBA_SER_DATA   ", &gb->ser_reg.CUBA_SER_DATA0, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -792,25 +579,77 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //----------------------------------------
 
-  //dump_cpu_bus(d, gb->cpu_bus);
-  //dump_ext_bus(d, gb->ext_bus);
-  dump_vram_bus(d, gb->vram_bus);
-  dump_oam_bus(d, gb->oam_bus);
-
+  d("\002===== Buses =====\001\n");
+  d("MAKA_HOLD_MEMp   %c\n",    gb->oam_bus.MAKA_HOLD_MEMp.c());
+  d("WUJE_CPU_OAM_WRn %c\n",    gb->oam_bus.WUJE_CPU_OAM_WRn.c());
+  d.dump_slice2p("EXT_ADDR      ", &gb->ext_bus.ALOR_EXT_ADDR_LATCH_00p, 15);
+  d.dump_slice2n("EXT_DATA      ", &gb->ext_bus.SOMA_EXT_DATA_LATCH_D0n, 8);
+  d.dump_slice2n("TILE TEMP A   ", &gb->vram_bus.LEGU_TILE_DA0n, 8);
+  d.dump_slice2p("TILE TEMP B   ", &gb->vram_bus.RAWU_TILE_DB0p, 8);
+  d.dump_slice2n("SPRITE TEMP A ", &gb->vram_bus.REWO_SPRITE_DA0n, 8);
+  d.dump_slice2n("SPRITE TEMP B ", &gb->vram_bus.PEFO_SPRITE_DB0n, 8);
+  d.dump_slice2n("OAM LATCH A   ", &gb->oam_bus.YDYV_OAM_LATCH_DA0n, 8);
+  d.dump_slice2n("OAM LATCH B   ", &gb->oam_bus.XYKY_OAM_LATCH_DB0n, 8);
+  d.dump_slice2p("OAM TEMP A    ", &gb->oam_bus.XUSO_OAM_DA0p, 8);
+  d.dump_slice2p("OAM TEMP B    ", &gb->oam_bus.YLOR_OAM_DB0p, 8);
+  d("\n");
 
   d("\002===== DMA Reg =====\001\n");
-  const auto& dma_reg = gb->dma_reg;
+  d("DMA Addr 0x%02x:%02x\n", pack_u8n_old(8, &gb->dma_reg.NAFA_DMA_A08n), pack_u8p_old(8, &gb->dma_reg.NAKY_DMA_A00p));
+  d("\n");
+  d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma_reg.MATU_DMA_RUNNINGp.state);
+  d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma_reg.LYXE_DMA_LATCHp  .state);
+  d.dump_bitp("MYTE_DMA_DONE    ", gb->dma_reg.MYTE_DMA_DONE    .state);
+  d.dump_bitp("LUVY_DMA_TRIG_d0 ", gb->dma_reg.LUVY_DMA_TRIG_d0 .state);
+  d.dump_bitp("LENE_DMA_TRIG_d4 ", gb->dma_reg.LENE_DMA_TRIG_d4 .state);
+  d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma_reg.LOKY_DMA_LATCHp  .state);
+  d("\n");
+  d.dump_slice2p("DMA_A_LOW ", &gb->dma_reg.NAKY_DMA_A00p, 8);
+  d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n, 8);
+  d("\n");
 
-  uint8_t dma_addr_lo = pack_u8p_old(8, &dma_reg.NAKY_DMA_A00p);
-  uint8_t dma_addr_hi = pack_u8n_old(8, &dma_reg.NAFA_DMA_A08n);
+  d("\002===== Int Reg =====\001\n");
+  d.dump_bitp("IE_D0        ", gb->IE_D0.state);
+  d.dump_bitp("IE_D1        ", gb->IE_D0.state);
+  d.dump_bitp("IE_D2        ", gb->IE_D0.state);
+  d.dump_bitp("IE_D3        ", gb->IE_D0.state);
+  d.dump_bitp("IE_D4        ", gb->IE_D0.state);
+  d("\n");
+  d.dump_bitp("LOPE_FF0F_D0p", gb->int_reg.LOPE_FF0F_D0p.state);
+  d.dump_bitp("UBUL_FF0F_D3p", gb->int_reg.UBUL_FF0F_D3p.state);
+  d.dump_bitp("ULAK_FF0F_D4p", gb->int_reg.ULAK_FF0F_D4p.state);
+  d.dump_bitp("LALU_FF0F_D1p", gb->int_reg.LALU_FF0F_D1p.state);
+  d.dump_bitp("NYBO_FF0F_D2p", gb->int_reg.NYBO_FF0F_D2p.state);
+  d("\n");
+  d.dump_bitp("MATY_FF0F_L0p", gb->int_reg.MATY_FF0F_L0p.state);
+  d.dump_bitp("NEJY_FF0F_L3p", gb->int_reg.NEJY_FF0F_L3p.state);
+  d.dump_bitp("NUTY_FF0F_L4p", gb->int_reg.NUTY_FF0F_L4p.state);
+  d.dump_bitp("MOPO_FF0F_L1p", gb->int_reg.MOPO_FF0F_L1p.state);
+  d.dump_bitp("PAVY_FF0F_L2p", gb->int_reg.PAVY_FF0F_L2p.state);
+  d("\n");
 
-  d("DMA Addr 0x%02x:%02x\n", dma_addr_hi, dma_addr_lo);
-  d("MATU_DMA_RUNNINGp   %d\n",  dma_reg.MATU_DMA_RUNNINGp.qp17_old());
-  d("LYXE_DMA_LATCHn     %d\n",  dma_reg.LYXE_DMA_LATCHp);
-  d("MYTE_DMA_DONE       %d\n", !dma_reg.MYTE_DMA_DONE.qn16_old());
-  d("LUVY_DMA_TRIG_d0    %d\n",  dma_reg.LUVY_DMA_TRIG_d0.qp17_old());
-  d("LENE_DMA_TRIG_d4    %d\n", !dma_reg.LENE_DMA_TRIG_d4.qn16_old());
-  d("LOKY_DMA_LATCHp     %d\n",  dma_reg.LOKY_DMA_LATCHp.qp03_old());
+  d("\002===== LCD =====\001\n");
+  d("PIX COUNT : %03d\n", gb->pix_pipe.get_pix_count());
+  d("LX        : %03d\n", gb->lcd_reg.get_lx());
+  d("LY        : %03d\n", gb->lcd_reg.get_ly());
+  d("LYC       : %03d\n", gb->lcd_reg.get_lyc());
+  d("\n");
+
+  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp.state);
+  d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANKp.state);
+  d.dump_bitp("MYTA_y153p         ", gb->lcd_reg.MYTA_y153p.state);
+  d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd_reg.SYGU_LINE_STROBE.state);
+  d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd_reg.MEDA_VSYNC_OUTn.state);
+  d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd_reg.LUCA_LINE_EVENp.state);
+  d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd_reg.NAPO_FRAME_EVENp.state);
+  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p.state);
+  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_LINE_P002p.state);
+  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p.state);
+  d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_LINE_P910p.state);
+  d("\n");
+  d.dump_slice2p("LX  ", &gb->lcd_reg.SAXO_LX0p.state,  7);
+  d.dump_slice2p("LY  ", &gb->lcd_reg.MUWY_LY0p.state,  8);
+  d.dump_slice2n("LYC ", &gb->lcd_reg.SYRY_LYC0n.state, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -818,131 +657,56 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.clear();
 
   //----------------------------------------
-
-  d("\002===== LCD =====\001\n");
-  d("PIX COUNT : %03d\n", gb->pix_pipe.get_pix_count());
-  d("LCD X     : %03d\n", gb->lcd_reg.get_lx());
-  d("LCD Y     : %03d\n", gb->lcd_reg.get_ly());
-  d("LYC       : %03d\n", gb->lcd_reg.get_lyc());
-  d("\n");
-
-  d.dump_reg("SAXO_LX0p", gb->lcd_reg.SAXO_LX0p.state);
-  d.dump_reg("TYPO_LX1p", gb->lcd_reg.TYPO_LX1p.state);
-  d.dump_reg("VYZO_LX2p", gb->lcd_reg.VYZO_LX2p.state);
-  d.dump_reg("TELU_LX3p", gb->lcd_reg.TELU_LX3p.state);
-  d.dump_reg("SUDE_LX4p", gb->lcd_reg.SUDE_LX4p.state);
-  d.dump_reg("TAHA_LX5p", gb->lcd_reg.TAHA_LX5p.state);
-  d.dump_reg("TYRY_LX6p", gb->lcd_reg.TYRY_LX6p.state);
-
-  /*
-  lcd_reg.SAXO_LX0p.
-  lcd_reg.TYPO_LX1p.
-  lcd_reg.VYZO_LX2p.
-  lcd_reg.TELU_LX3p.
-  lcd_reg.SUDE_LX4p.
-  lcd_reg.TAHA_LX5p.
-  lcd_reg.TYRY_LX6p.
-
-  lcd_reg.MUWY_LY0p.
-  lcd_reg.MYRO_LY1p.
-  lcd_reg.LEXA_LY2p.
-  lcd_reg.LYDO_LY3p.
-  lcd_reg.LOVU_LY4p.
-  lcd_reg.LEMA_LY5p.
-  lcd_reg.MATO_LY6p.
-  lcd_reg.LAFO_LY7p.
-  */
-
-
-
-  d("lcd_pix_lo      : %c\n", gb->lcd_pix_lo.c());
-  d("lcd_pix_hi      : %c\n", gb->lcd_pix_hi.c());
-  /*
-  d("PIN_LCD_CLOCK   : %c\n", gb->PIN_LCD_CLOCK.c());
-  d("PIN_LCD_HSYNC   : %c\n", gb->PIN_LCD_HSYNC.c());
-  d("PIN_LCD_VSYNC   : %c\n", gb->PIN_LCD_VSYNC.c());
-  d("PIN_LCD_DATA1   : %c\n", gb->PIN_LCD_DATA1.c());
-  d("PIN_LCD_DATA0   : %c\n", gb->PIN_LCD_DATA0.c());
-  d("PIN_LCD_CNTRL   : %c\n", gb->PIN_LCD_CNTRL.c());
-  d("PIN_LCD_DATALCH : %c\n", gb->PIN_LCD_LATCH.c());
-  d("PIN_LCD_ALTSIGL : %c\n", gb->PIN_LCD_FLIPS.c());
-  */
-  d("\n");
-
-  d("CATU_LINE_P000      %c\n", gb->lcd_reg.CATU_LINE_P000p.c());
-  d("NYPE_LINE_P002      %c\n", gb->lcd_reg.NYPE_LINE_P002p.c());
-  d("ANEL_LINE_P002      %c\n", gb->lcd_reg.ANEL_LINE_P002p.c());
-  d("RUTU_LINE_P910      %c\n", gb->lcd_reg.RUTU_LINE_P910p.c());
-  d("MYTA_LINE_153p      %c\n", gb->lcd_reg.MYTA_y153p     .c());
-  d("POPU_IN_VBLANKp     %c\n", gb->lcd_reg.POPU_VBLANKp    .c());
-  d("ROPO_LY_MATCH_SYNCp %c\n", gb->lcd_reg.ROPO_LY_MATCH_SYNCp.c());
-  d("\n");
 
   d("\002===== Pix Pipe =====\001\n");
 
   d("PIX COUNT  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.XEHO_PX0p));
-  d("FF40 LCDC  0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.VYXE_LCDC_BGENn));
-
-  // FIXME plumb sadu/xaty in here somehow
-  /*
-  d.dump_reg("FF41 STAT",
-    pack_u8(
-      0, //!gb->pix_pipe.SADU_STAT_MODE0n,
-      0, //!gb->pix_pipe.XATY_STAT_MODE1n,
-      gb->pix_pipe.RUPO_LYC_MATCH_LATCHn.qn03(),
-      gb->pix_pipe.ROXE_STAT_HBI_ENn.qn08(),
-      gb->pix_pipe.RUFO_STAT_VBI_ENn.qn08(),
-      gb->pix_pipe.REFE_STAT_OAI_ENn.qn08(),
-      gb->pix_pipe.RUGU_STAT_LYI_ENn.qn08(),
-      1));
-  */
-
-  d("FF42 SCY   0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.GAVE_SCY0n));
-  d("FF43 SCX   0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.DATY_SCX0n));
-  d("FF47 BGP   0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.PAVO_BGP_D0n));
-  d("FF48 OBP0  0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.XUFU_OBP0_D0n));
-  d("FF49 OBP1  0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.MOXY_OBP1_D0n));
-  d("FF4A WY    0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.NESO_WY0n));
-  d("FF4B WX    0x%02x\n", pack_u8n_old(8, &gb->pix_pipe.MYPA_WX0n));
-  d("BG_PIPE_A  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.MYDE_BG_PIPE_A0));
-  d("BG_PIPE_B  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.TOMY_BG_PIPE_B0));
-  d("SPR_PIPE_A 0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.NYLU_SPR_PIPE_B0));
-  d("SPR_PIPE_B 0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.NURO_SPR_PIPE_A0));
-  d("PAL_PIPE   0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.RUGO_PAL_PIPE_0));
-  d("MASK_PIPE  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.VEZO_MASK_PIPE_0));
-
-  d("WIN X      0x%02x\n", pack_u8p_old(5, &gb->pix_pipe.WYKA_WIN_X3));
-  d("WIN Y      0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.VYNO_WIN_Y0));
-
   d("\n");
-
-  d("ROXY_FINE_SCROLL_DONEn %c\n", gb->pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.c());
-  d("RYKU_FINE_CNT0         %c\n", gb->pix_pipe.RYKU_FINE_CNT0.c());
-  d("ROGA_FINE_CNT1         %c\n", gb->pix_pipe.ROGA_FINE_CNT1.c());
-  d("RUBU_FINE_CNT2         %c\n", gb->pix_pipe.RUBU_FINE_CNT2.c());
-  d("XYMU_RENDERINGp        %c\n", gb->pix_pipe.XYMU_RENDERINGn.c());
-  d("RUPO_LYC_MATCH_LATCHn  %c\n", gb->pix_pipe.RUPO_LYC_MATCH_LATCHn.c());
-  d("WUSA_LCD_CLOCK_GATE    %c\n", gb->pix_pipe.WUSA_LCD_CLOCK_GATE.c());
-  d("VOGA_RENDER_DONE_SYNC  %c\n", gb->pix_pipe.VOGA_HBLANKp.c());
-  d("PUXA_FINE_MATCH_A      %c\n", gb->pix_pipe.PUXA_SCX_FINE_MATCH_A.c());
-  d("NYZE_FINE_MATCH_B      %c\n", gb->pix_pipe.NYZE_SCX_FINE_MATCH_B.c());
-  d("PAHO_X_8_SYNC          %c\n", gb->pix_pipe.PAHO_X_8_SYNC.c());
-  d("POFY_HSYNCp            %c\n", gb->pix_pipe.POFY.c());
+  d.dump_bitp("XYMU_RENDERINGn       ", gb->pix_pipe.XYMU_RENDERINGn.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->pix_pipe.PYNU_WIN_MODE_Ap.state);
+  d.dump_bitp("PUKU_WIN_HITn         ", gb->pix_pipe.PUKU_WIN_HITn.state);
+  d.dump_bitp("RYDY_WIN_HITp         ", gb->pix_pipe.RYDY_WIN_HITp.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->pix_pipe.SOVY_WIN_FIRST_TILE_B.state);
+  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->pix_pipe.NOPA_WIN_MODE_Bp.state);
+  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->pix_pipe.PYCO_WX_MATCH_Ap.state);
+  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->pix_pipe.NUNU_WX_MATCH_Bp.state);
+  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->pix_pipe.REJO_WY_MATCHp.state);
+  d.dump_bitp("SARY_WY_MATCH         ", gb->pix_pipe.SARY_WY_MATCHp.state);
+  d.dump_bitp("RYFA_FETCHn_A         ", gb->pix_pipe.RYFA_FETCHn_A.state);
+  d.dump_bitp("RENE_FETCHn_B         ", gb->pix_pipe.RENE_FETCHn_B.state);
+  d.dump_bitp("RYKU_FINE_CNT0        ", gb->pix_pipe.RYKU_FINE_CNT0.state);
+  d.dump_bitp("ROGA_FINE_CNT1        ", gb->pix_pipe.ROGA_FINE_CNT1.state);
+  d.dump_bitp("RUBU_FINE_CNT2        ", gb->pix_pipe.RUBU_FINE_CNT2.state);
+  d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->pix_pipe.PUXA_SCX_FINE_MATCH_A.state);
+  d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->pix_pipe.NYZE_SCX_FINE_MATCH_B.state);
+  d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.state);
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->pix_pipe.RUPO_LYC_MATCH_LATCHn.state);
+  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->pix_pipe.WUSA_LCD_CLOCK_GATE.state);
+  d.dump_bitp("VOGA_HBLANKp          ", gb->pix_pipe.VOGA_HBLANKp.state);
+  d.dump_bitp("PAHO_X_8_SYNC         ", gb->pix_pipe.PAHO_X_8_SYNC.state);
+  d.dump_bitp("RUJU                  ", gb->pix_pipe.RUJU.state);
+  d.dump_bitp("POFY                  ", gb->pix_pipe.POFY.state);
+  d.dump_bitp("POME                  ", gb->pix_pipe.POME.state);
   d("\n");
-
-
-  d("\002===== Window =====\001\n");
-  d("PYNU_WIN_MODE_A       : %c\n", gb->pix_pipe.PYNU_WIN_MODE_Ap.c());
-  d("RYDY_WIN_FIRST_TILE_A : %c\n", gb->pix_pipe.RYDY_WIN_HITp.c());
-  d("NOPA_WIN_MODE_B       : %c\n", gb->pix_pipe.NOPA_WIN_MODE_Bp.c());
-  d("SOVY_WIN_FIRST_TILE_B : %c\n", gb->pix_pipe.SOVY_WIN_FIRST_TILE_B.c());
-  d("REJO_WY_MATCH_LATCH   : %c\n", gb->pix_pipe.REJO_WY_MATCHp.c());
-  d("SARY_WY_MATCH         : %c\n", gb->pix_pipe.SARY_WY_MATCHp.c());
-  d("RYFA_FETCHn_A         : %c\n", gb->pix_pipe.RYFA_FETCHn_A.c());
-  d("RENE_FETCHn_B         : %c\n", gb->pix_pipe.RENE_FETCHn_B.c());
-  d("PYCO_WX_MATCH_A       : %c\n", gb->pix_pipe.PYCO_WX_MATCH_Ap.c());
-  d("NUNU_WX_MATCH_B       : %c\n", gb->pix_pipe.NUNU_WX_MATCH_Bp.c());
+  d.dump_slice2p("PIX COUNT ", &gb->pix_pipe.XEHO_PX0p, 8);
+  d.dump_slice2p("WIN MAP X ", &gb->pix_pipe.WYKA_WIN_X3, 5);
+  d.dump_slice2p("WIN Y     ", &gb->pix_pipe.VYNO_WIN_Y0, 8);
+  d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BG_PIPE_A0, 8);
+  d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BG_PIPE_B0, 8);
+  d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NYLU_SPR_PIPE_B0, 8);
+  d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NURO_SPR_PIPE_A0, 8);
+  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_0, 8);
+  d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0, 8);
   d("\n");
+  d.dump_slice2n("FF40 LCDC ", &gb->pix_pipe.VYXE_LCDC_BGENn, 8);
+  d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn, 4);
+  d.dump_slice2n("FF42 SCY  ", &gb->pix_pipe.GAVE_SCY0n, 8);
+  d.dump_slice2n("FF43 SCX  ", &gb->pix_pipe.DATY_SCX0n, 8);
+  d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n, 8);
+  d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n, 8);
+  d.dump_slice2n("FF49 OBP1 ", &gb->pix_pipe.MOXY_OBP1_D0n, 8);
+  d.dump_slice2n("FF4A WY   ", &gb->pix_pipe.NESO_WY0n, 8);
+  d.dump_slice2n("FF4B WX   ", &gb->pix_pipe.MYPA_WX0n, 8);
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;
@@ -950,54 +714,61 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //----------------------------------------
 
-  d("\002===== SpriteFetch =====\001\n");
-  d("SOBU_SFETCH_REQp     %c\n", gb->sprite_fetcher.SOBU_SFETCH_REQp    .c());
-  d("SUDA_SFETCH_REQp     %c\n", gb->sprite_fetcher.SUDA_SFETCH_REQp    .c());
+  d("\002===== Tile Fetch =====\001\n");
+  d.dump_bitp("POKY_PRELOAD_LATCHp", gb->tile_fetcher.POKY_PRELOAD_LATCHp.state);
+  d.dump_bitp("LONY_FETCHINGp     ", gb->tile_fetcher.LONY_FETCHINGp.state);
+  d.dump_bitp("LOVY_FETCH_DONEp   ", gb->tile_fetcher.LOVY_FETCH_DONEp.state);
+  d.dump_bitp("NYKA_FETCH_DONEp   ", gb->tile_fetcher.NYKA_FETCH_DONEp.state);
+  d.dump_bitp("PORY_FETCH_DONEp   ", gb->tile_fetcher.PORY_FETCH_DONEp.state);
+  d.dump_bitp("PYGO_FETCH_DONEp   ", gb->tile_fetcher.PYGO_FETCH_DONEp.state);
   d("\n");
-  d("TAKA_SFETCH_RUNNINGp %c\n", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp.c());
-  d("\n");
-  d("TOXE_SFETCH_S0       %c\n", gb->sprite_fetcher.TOXE_SFETCH_S0p      .c());
-  d("TYFO_SFETCH_S0_D1    %c\n", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1   .c());
-  d("\n");
-  d("TULY_SFETCH_S1       %c\n", gb->sprite_fetcher.TULY_SFETCH_S1p      .c());
-  d("TOBU_SFETCH_S1_D2    %c\n", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2   .c());
-  d("VONU_SFETCH_S1_D4    %c\n", gb->sprite_fetcher.VONU_SFETCH_S1p_D4   .c());
-  d("SEBA_SFETCH_S1_D5    %c\n", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5   .c());
-  d("\n");
-  d("TESE_SFETCH_S2       %c\n", gb->sprite_fetcher.TESE_SFETCH_S2p      .c());
+  d.dump_bitp("LAXU_BFETCH_S0p    ", gb->tile_fetcher.LAXU_BFETCH_S0p.state);
+  d.dump_bitp("MESU_BFETCH_S1p    ", gb->tile_fetcher.MESU_BFETCH_S1p.state);
+  d.dump_bitp("NYVA_BFETCH_S2p    ", gb->tile_fetcher.NYVA_BFETCH_S2p.state);
+  d.dump_bitp("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher.LYZU_BFETCH_S0p_D1.state);
   d("\n");
 
-  //----------------------------------------
-
-  d("\002===== SpriteScan =====\001\n");
-
-  d("SCAN INDEX       %02d\n", pack_u8p_old(6, &gb->sprite_scanner.YFEL_SCAN0));
-  d("SPRITE INDEX     %02d\n", pack_u8p_old(6, &gb->sprite_scanner.XADU_SPRITE_IDX0p));
-
-  d("BESU_SCANNINGp   %c\n", gb->sprite_scanner.BESU_SCANNINGp  .c());
-  d("CENO_SCANNINGp   %c\n", gb->sprite_scanner.CENO_SCANNINGp  .c());
-  d("BYBA_SCAN_DONE_A %c\n", gb->sprite_scanner.BYBA_SCAN_DONE_Ap.c());
-  d("DOBA_SCAN_DONE_B %c\n", gb->sprite_scanner.DOBA_SCAN_DONE_Bp.c());
-  d("\n");
-  d("LCD Y      %03d\n", gb->lcd_reg.get_ly());
-
+  d("\002===== Sprite Fetch =====\001\n");
+  d.dump_bitp("TAKA_SFETCH_RUNNINGp", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp.state);
+  d.dump_bitp("SOBU_SFETCH_REQp    ", gb->sprite_fetcher.SOBU_SFETCH_REQp    .state);
+  d.dump_bitp("SUDA_SFETCH_REQp    ", gb->sprite_fetcher.SUDA_SFETCH_REQp    .state);
+  d.dump_bitp("TOXE_SFETCH_S0      ", gb->sprite_fetcher.TOXE_SFETCH_S0p     .state);
+  d.dump_bitp("TULY_SFETCH_S1      ", gb->sprite_fetcher.TULY_SFETCH_S1p     .state);
+  d.dump_bitp("TESE_SFETCH_S2      ", gb->sprite_fetcher.TESE_SFETCH_S2p     .state);
+  d.dump_bitp("TYFO_SFETCH_S0_D1   ", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1  .state);
+  d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2  .state);
+  d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4  .state);
+  d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5  .state);
   d("\n");
 
-  //----------------------------------------
+  d("\002===== Sprite Scan =====\001\n");
+  d("SCAN INDEX        : %02d\n", pack_u8p_old(6, &gb->sprite_scanner.YFEL_SCAN0));
+  d("SPRITE INDEX      : %02d\n", pack_u8p_old(6, &gb->sprite_scanner.XADU_SPRITE_IDX0p));
+  d("\n");
+  d.dump_bitp("BESU_SCANNINGp   ", gb->sprite_scanner.BESU_SCANNINGp.state);
+  d.dump_bitp("CENO_SCANNINGp   ", gb->sprite_scanner.CENO_SCANNINGp.state);
+  d.dump_bitp("BYBA_SCAN_DONE_Ap", gb->sprite_scanner.BYBA_SCAN_DONE_Ap.state);
+  d.dump_bitp("DOBA_SCAN_DONE_Bp", gb->sprite_scanner.DOBA_SCAN_DONE_Bp.state);
+  d("\n");
+  d.dump_bitp("YFEL_SCAN0       ", gb->sprite_scanner.YFEL_SCAN0.state);
+  d.dump_bitp("WEWY_SCAN1       ", gb->sprite_scanner.WEWY_SCAN1.state);
+  d.dump_bitp("GOSO_SCAN2       ", gb->sprite_scanner.GOSO_SCAN2.state);
+  d.dump_bitp("ELYN_SCAN3       ", gb->sprite_scanner.ELYN_SCAN3.state);
+  d.dump_bitp("FAHA_SCAN4       ", gb->sprite_scanner.FAHA_SCAN4.state);
+  d.dump_bitp("FONY_SCAN5       ", gb->sprite_scanner.FONY_SCAN5.state);
+  d("\n");
+  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_scanner.XADU_SPRITE_IDX0p.state);
+  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_scanner.XEDY_SPRITE_IDX1p.state);
+  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_scanner.ZUZE_SPRITE_IDX2p.state);
+  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_scanner.XOBE_SPRITE_IDX3p.state);
+  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_scanner.YDUF_SPRITE_IDX4p.state);
+  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_scanner.XECU_SPRITE_IDX5p.state);
+  d("\n");
 
   const auto& ss = gb->sprite_store;
-  d("\002===== SpriteStore =====\001\n");
-  d("DEZY_STORE_ENn %c\n", ss.DEZY_STORE_ENn.c());
-
-  d("SPRITE COUNT %02d\n", pack_u8p_old(4, &ss.BESE_SPRITE_COUNT0));
-
-#if 0
-  int spr_tri_idx  = pack_u8(6, &ss.SPR_TRI_I0p);
-  int spr_tri_line = pack_u8(4, &ss.SPR_TRI_L0);
-
-  d("SPR_TRI_IDX  = %2d %c%c%c%c%c%c\n", spr_tri_idx,  ss.SPR_TRI_I5p.c(), ss.SPR_TRI_I4p.c(), ss.SPR_TRI_I3p.c(), ss.SPR_TRI_I2p.c(), ss.SPR_TRI_I1p.c(), ss.SPR_TRI_I0p.c());
-  d("SPR_TRI_LINE = %2d %c%c%c%c\n",     spr_tri_line, ss.SPR_TRI_L0.c(),  ss.SPR_TRI_L1.c(),  ss.SPR_TRI_L2.c(),  ss.SPR_TRI_L3.c());
-#endif
+  d("\002===== Sprite Store =====\001\n");
+  d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_STORE_ENn.state);
+  d.dump_slice2p("SPRITE COUNT", &ss.BESE_SPRITE_COUNT0, 4);
 
   d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17_old(), pack_u8n_old(6, &ss.YGUS_STORE0_I0n), pack_u8n_old(4, &ss.GYHO_STORE0_L0n), pack_u8n_old(8, &ss.XEPE_STORE0_X0p));
   d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17_old(), pack_u8n_old(6, &ss.CADU_STORE1_I0n), pack_u8n_old(4, &ss.AMES_STORE1_L0n), pack_u8n_old(8, &ss.DANY_STORE1_X0p));
@@ -1009,23 +780,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17_old(), pack_u8n_old(6, &ss.GULE_STORE7_I0n), pack_u8n_old(4, &ss.XYNA_STORE7_L0n), pack_u8n_old(8, &ss.ERAZ_STORE7_X0p));
   d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17_old(), pack_u8n_old(6, &ss.AXUV_STORE8_I0n), pack_u8n_old(4, &ss.AZAP_STORE8_L0n), pack_u8n_old(8, &ss.EZUF_STORE8_X0p));
   d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17_old(), pack_u8n_old(6, &ss.YBER_STORE9_I0n), pack_u8n_old(4, &ss.CANA_STORE9_L0n), pack_u8n_old(8, &ss.XUVY_STORE9_X0p));
-  d("\n");
-
-  //----------------------------------------
-
-  d("\002=====TileFetcher=====\001\n");
-  d("LAXU_BFETCH_S0           %c\n", gb->tile_fetcher.LAXU_BFETCH_S0p.c());
-  d("MESU_BFETCH_S1           %c\n", gb->tile_fetcher.MESU_BFETCH_S1p.c());
-  d("NYVA_BFETCH_S2           %c\n", gb->tile_fetcher.NYVA_BFETCH_S2p.c());
-  d("LYZU_BFETCH_S0_D1        %c\n", gb->tile_fetcher.LYZU_BFETCH_S0_D1.c());
-  d("\n");
-  d("NYKA_FETCH_DONE_P11      %c\n", gb->tile_fetcher.NYKA_FETCH_DONEp_P11.c());
-  d("PORY_FETCH_DONE_P12      %c\n", gb->tile_fetcher.PORY_FETCH_DONEp_P12.c());
-  d("PYGO_FETCH_DONE_P13      %c\n", gb->tile_fetcher.PYGO_FETCH_DONEp_P13.c());
-  d("POKY_PRELOAD_DONEp       %c\n", gb->tile_fetcher.POKY_PRELOAD_LATCHp.c());
-  d("\n");
-  d("LONY_FETCH_RUNNINGp      %c\n", gb->tile_fetcher.LONY_BG_FETCH_RUNNINGp.c()); // 1 for phases 0-11, 0 for 12-15
-  d("LOVY_FETCH_DONEp         %c\n", gb->tile_fetcher.LOVY_BG_FETCH_DONEp.c());    // 0 for phases 0-11, 1 for 12-15
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);

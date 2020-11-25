@@ -48,17 +48,15 @@ struct SerialRegisters {
     ELYS_SER_OUT.reset(REG_D0C0);
   }
 
-  int get_data() const { return pack_u8p_old(8, &CUBA_SER_DATA0); }
-
-  /*p06.CALY*/ DFF17 CALY_SER_CNT3;
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING;
   /*p06.CULY*/ DFF17 CULY_XFER_DIR;
-
   /*p06.COTY*/ DFF17 COTY_SER_CLK;
+  /*p06.ELYS*/ DFF17 ELYS_SER_OUT;
 
   /*p06.CAFA*/ DFF17 CAFA_SER_CNT0;
   /*p06.CYLO*/ DFF17 CYLO_SER_CNT1;
   /*p06.CYDE*/ DFF17 CYDE_SER_CNT2;
+  /*p06.CALY*/ DFF17 CALY_SER_CNT3;
 
   /*p06.CUBA*/ DFF22 CUBA_SER_DATA0;
   /*p06.DEGU*/ DFF22 DEGU_SER_DATA1;
@@ -69,7 +67,6 @@ struct SerialRegisters {
   /*p06.EROD*/ DFF22 EROD_SER_DATA6;
   /*p06.EDER*/ DFF22 EDER_SER_DATA7;
 
-  /*p06.ELYS*/ DFF17 ELYS_SER_OUT;
 };
 
 //-----------------------------------------------------------------------------

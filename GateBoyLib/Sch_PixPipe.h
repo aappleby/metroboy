@@ -422,15 +422,33 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn; // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;
-
   /*p27.PUKU*/ Gate PUKU_WIN_HITn;
   /*p27.RYDY*/ Gate RYDY_WIN_HITp;
-
-  ///*p27.RYDY*/ Gate RYDY_WIN_FIRST_TILE_A; // NorLatch with p27.PUKU
-
   /*p27.SOVY*/ DFF17 SOVY_WIN_FIRST_TILE_B;
+  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;
+  /*p27.PYCO*/ DFF17 PYCO_WX_MATCH_Ap;
+  /*p27.NUNU*/ DFF17 NUNU_WX_MATCH_Bp;
+  /*p27.REJO*/ NorLatch REJO_WY_MATCHp;
+  /*p27.SARY*/ DFF17 SARY_WY_MATCHp;
+  /*p27.RYFA*/ DFF17 RYFA_FETCHn_A;
+  /*p27.RENE*/ DFF17 RENE_FETCHn_B;
+  /*p27.RYKU*/ DFF17 RYKU_FINE_CNT0;
+  /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;
+  /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;
+  /*p??.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;
+  /*p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;
+  /*p??.ROXY*/ NorLatch ROXY_SCX_FINE_MATCH_LATCHn;
+  /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
+  /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE;
+  /*p21.VOGA*/ DFF17 VOGA_HBLANKp;
+  /*p24.PAHO*/ DFF17 PAHO_X_8_SYNC;
+  /*p24.RUJU*/ Gate RUJU; // RUJU+POFY+POME form a nor latch
+  /*p24.POFY*/ Gate POFY;
+  /*p24.POME*/ Gate POME;
+
+  //----------------------------------------
 
   // Pixel counter
   /*p21.XEHO*/ DFF17 XEHO_PX0p;
@@ -458,72 +476,7 @@ struct PixelPipe {
   /*p27.TATE*/ DFF17 TATE_WIN_Y6;
   /*p27.TEKE*/ DFF17 TEKE_WIN_Y7;
 
-  // FF40 - LCDC
-  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;
-  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;
-  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn;
-  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;
-  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn;
-  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;
-  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn;
-  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn;
-
-  // FF42 - SCY -> vram bus
-  /*p23.GAVE*/ DFF9 GAVE_SCY0n;
-  /*p23.FYMO*/ DFF9 FYMO_SCY1n;
-  /*p23.FEZU*/ DFF9 FEZU_SCY2n;
-  /*p23.FUJO*/ DFF9 FUJO_SCY3n;
-  /*p23.DEDE*/ DFF9 DEDE_SCY4n;
-  /*p23.FOTY*/ DFF9 FOTY_SCY5n;
-  /*p23.FOHA*/ DFF9 FOHA_SCY6n;
-  /*p23.FUNY*/ DFF9 FUNY_SCY7n;
-
-  // FF43 - SCX -> ppu, vram bus
-  /*p23.DATY*/ DFF9 DATY_SCX0n;
-  /*p23.DUZU*/ DFF9 DUZU_SCX1n;
-  /*p23.CYXU*/ DFF9 CYXU_SCX2n;
-  /*p23.GUBO*/ DFF9 GUBO_SCX3n;
-  /*p23.BEMY*/ DFF9 BEMY_SCX4n;
-  /*p23.CUZY*/ DFF9 CUZY_SCX5n;
-  /*p23.CABU*/ DFF9 CABU_SCX6n;
-  /*p23.BAKE*/ DFF9 BAKE_SCX7n;
-
   //----------------------------------------
-
-  // FF41 - STAT
-  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn;
-  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn;
-  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn;
-  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn;
-
-  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;
-  /*p27.REJO*/ NorLatch REJO_WY_MATCHp;
-  /*p27.SARY*/ DFF17 SARY_WY_MATCHp;
-  /*p27.RYFA*/ DFF17 RYFA_FETCHn_A;
-  /*p27.RENE*/ DFF17 RENE_FETCHn_B;
-  /*p27.PYCO*/ DFF17 PYCO_WX_MATCH_Ap;
-  /*p27.NUNU*/ DFF17 NUNU_WX_MATCH_Bp;
-
-  /*p??.ROXY*/ NorLatch ROXY_SCX_FINE_MATCH_LATCHn;
-
-  /*p27.RYKU*/ DFF17 RYKU_FINE_CNT0;
-  /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;
-  /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;
-
-  /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
-
-  /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE;
-  /*p21.VOGA*/ DFF17 VOGA_HBLANKp;
-  /*p??.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;
-  /*p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;
-
-  /*p24.PAHO*/ DFF17 PAHO_X_8_SYNC;
-
-  /*p24.RUJU*/ Gate RUJU;
-  /*p24.POFY*/ Gate POFY;
-  /*p24.POME*/ Gate POME;
-
-  ///*p24.POFY*/ NorLatch POFY_HSYNCp; // RUJU+POFY+POME form a nor latch
 
   /*p32.MYDE*/ DFF22 MYDE_BG_PIPE_A0;
   /*p32.NOZO*/ DFF22 NOZO_BG_PIPE_A1;
@@ -578,6 +531,44 @@ struct PixelPipe {
   /*p26.WODA*/ DFF22 WODA_MASK_PIPE_5;
   /*p26.VUMO*/ DFF22 VUMO_MASK_PIPE_6;
   /*p26.VAVA*/ DFF22 VAVA_MASK_PIPE_7;
+
+  //----------------------------------------
+
+  // FF40 - LCDC
+  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;
+  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;
+  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn;
+  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;
+  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn;
+  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;
+  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn;
+  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn;
+
+  // FF41 - STAT
+  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn;
+  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn;
+  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn;
+  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn;
+
+  // FF42 - SCY -> vram bus
+  /*p23.GAVE*/ DFF9 GAVE_SCY0n;
+  /*p23.FYMO*/ DFF9 FYMO_SCY1n;
+  /*p23.FEZU*/ DFF9 FEZU_SCY2n;
+  /*p23.FUJO*/ DFF9 FUJO_SCY3n;
+  /*p23.DEDE*/ DFF9 DEDE_SCY4n;
+  /*p23.FOTY*/ DFF9 FOTY_SCY5n;
+  /*p23.FOHA*/ DFF9 FOHA_SCY6n;
+  /*p23.FUNY*/ DFF9 FUNY_SCY7n;
+
+  // FF43 - SCX -> ppu, vram bus
+  /*p23.DATY*/ DFF9 DATY_SCX0n;
+  /*p23.DUZU*/ DFF9 DUZU_SCX1n;
+  /*p23.CYXU*/ DFF9 CYXU_SCX2n;
+  /*p23.GUBO*/ DFF9 GUBO_SCX3n;
+  /*p23.BEMY*/ DFF9 BEMY_SCX4n;
+  /*p23.CUZY*/ DFF9 CUZY_SCX5n;
+  /*p23.CABU*/ DFF9 CABU_SCX6n;
+  /*p23.BAKE*/ DFF9 BAKE_SCX7n;
 
   // FF47 - BGP
   /*p36.PAVO*/ DFF8p PAVO_BGP_D0n;

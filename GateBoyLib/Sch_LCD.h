@@ -93,21 +93,16 @@ struct LcdRegisters {
   uint8_t get_lyc() const { return pack_u8n_old(8, &SYRY_LYC0n); }
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
-
   /*p29.CATU*/ DFF17 CATU_LINE_P000p; // -> pix pipe, scanner.
   /*p21.NYPE*/ DFF17 NYPE_LINE_P002p;
   /*p28.ANEL*/ DFF17 ANEL_LINE_P002p; // -> pix pipe for BYHA?
   /*p21.RUTU*/ DFF17 RUTU_LINE_P910p; // -> pix pipe, could move PURE here.
-
-  // -> pix pipe, sprite scanner, vram bus. Increments at P910
-  /*p21.MUWY*/ DFF17 MUWY_LY0p;
-  /*p21.MYRO*/ DFF17 MYRO_LY1p;
-  /*p21.LEXA*/ DFF17 LEXA_LY2p;
-  /*p21.LYDO*/ DFF17 LYDO_LY3p;
-  /*p21.LOVU*/ DFF17 LOVU_LY4p;
-  /*p21.LEMA*/ DFF17 LEMA_LY5p;
-  /*p21.MATO*/ DFF17 MATO_LY6p;
-  /*p21.LAFO*/ DFF17 LAFO_LY7p;
+  /*p21.POPU*/ DFF17 POPU_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.MYTA*/ DFF17 MYTA_y153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
+  /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
+  /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;
+  /*p24.LUCA*/ DFF17 LUCA_LINE_EVENp;
+  /*p21.NAPO*/ DFF17 NAPO_FRAME_EVENp;
 
   // Increments at P010 (because of RUTU holding it in reset) and then at every A phase.
   /*p21.SAXO*/ DFF17 SAXO_LX0p;
@@ -118,12 +113,15 @@ struct LcdRegisters {
   /*p21.TAHA*/ DFF17 TAHA_LX5p;
   /*p21.TYRY*/ DFF17 TYRY_LX6p;
 
-  /*p21.POPU*/ DFF17 POPU_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
-  /*p21.MYTA*/ DFF17 MYTA_y153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
-  /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
-  /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;
-  /*p24.LUCA*/ DFF17 LUCA_LINE_EVENp;
-  /*p21.NAPO*/ DFF17 NAPO_FRAME_EVENp;
+  // -> pix pipe, sprite scanner, vram bus. Increments at P910
+  /*p21.MUWY*/ DFF17 MUWY_LY0p;
+  /*p21.MYRO*/ DFF17 MYRO_LY1p;
+  /*p21.LEXA*/ DFF17 LEXA_LY2p;
+  /*p21.LYDO*/ DFF17 LYDO_LY3p;
+  /*p21.LOVU*/ DFF17 LOVU_LY4p;
+  /*p21.LEMA*/ DFF17 LEMA_LY5p;
+  /*p21.MATO*/ DFF17 MATO_LY6p;
+  /*p21.LAFO*/ DFF17 LAFO_LY7p;
 
   // FF45 - LYC
   /*p23.SYRY*/ DFF9 SYRY_LYC0n;

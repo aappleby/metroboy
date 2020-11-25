@@ -66,6 +66,8 @@ struct Gate : public BitBase {
     state = D;
     bit_dirty = 1;
   }
+
+  void operator = (wire D) { set(D); }
 };
 
 //-----------------------------------------------------------------------------
@@ -120,7 +122,7 @@ struct DFF8n : public DFF {
   wire qn07_new() const { return qn_new(); }
   wire qp08_new() const { return qp_new(); }
 
-  void dff8n_ff(wire CLKn, wire Dn) { dff(!CLKn, !Dn); }
+  void dff8n(wire CLKn, wire Dn) { dff(!CLKn, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -143,7 +145,7 @@ struct DFF8p : public DFF {
   wire qn07_new() const { return qn_new(); }
   wire qp08_new() const { return qp_new(); }
 
-  void dff8p_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
+  void dff8p(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -170,6 +172,8 @@ struct DFF9 : public DFF {
 
   void dff9_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
   void dff9_set(wire SETn)         { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
+
+  void dff9(wire CLKp, wire SETn, wire Dn) { dff_SETn(SETn); dff(CLKp, !Dn); }
 };
 
 //-----------------------------------------------------------------------------

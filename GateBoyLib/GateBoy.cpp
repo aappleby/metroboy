@@ -686,37 +686,12 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
-  /*#p21.SAXO*/ wire _SAXO_LX0p_t0 = lcd_reg.SAXO_LX0p.qp17_old();
-  /*#p21.TYPO*/ wire _TYPO_LX1p_t0 = lcd_reg.TYPO_LX1p.qp17_old();
-  /*#p21.VYZO*/ wire _VYZO_LX2p_t0 = lcd_reg.VYZO_LX2p.qp17_old();
-  /*#p21.TELU*/ wire _TELU_LX3p_t0 = lcd_reg.TELU_LX3p.qp17_old();
-  /*#p21.SUDE*/ wire _SUDE_LX4p_t0 = lcd_reg.SUDE_LX4p.qp17_old();
-  /*#p21.TAHA*/ wire _TAHA_LX5p_t0 = lcd_reg.TAHA_LX5p.qp17_old();
-  /*#p21.TYRY*/ wire _TYRY_LX6p_t0 = lcd_reg.TYRY_LX6p.qp17_old();
-
-  /*#p21.MUWY*/ wire _MUWY_LY0p_t0 = lcd_reg.MUWY_LY0p.qp17_old();
-  /*#p21.MYRO*/ wire _MYRO_LY1p_t0 = lcd_reg.MYRO_LY1p.qp17_old();
-  /*#p21.LEXA*/ wire _LEXA_LY2p_t0 = lcd_reg.LEXA_LY2p.qp17_old();
-  /*#p21.LYDO*/ wire _LYDO_LY3p_t0 = lcd_reg.LYDO_LY3p.qp17_old();
-  /*#p21.LOVU*/ wire _LOVU_LY4p_t0 = lcd_reg.LOVU_LY4p.qp17_old();
-  /*#p21.LEMA*/ wire _LEMA_LY5p_t0 = lcd_reg.LEMA_LY5p.qp17_old();
-  /*#p21.MATO*/ wire _MATO_LY6p_t0 = lcd_reg.MATO_LY6p.qp17_old();
-  /*#p21.LAFO*/ wire _LAFO_LY7p_t0 = lcd_reg.LAFO_LY7p.qp17_old();
-
-  /* p23.SYRY*/ wire _SYRY_LYC0p_t0 = lcd_reg.SYRY_LYC0n.qn08_old();
-  /* p23.VUCE*/ wire _VUCE_LYC1p_t0 = lcd_reg.VUCE_LYC1n.qn08_old();
-  /* p23.SEDY*/ wire _SEDY_LYC2p_t0 = lcd_reg.SEDY_LYC2n.qn08_old();
-  /* p23.SALO*/ wire _SALO_LYC3p_t0 = lcd_reg.SALO_LYC3n.qn08_old();
-  /* p23.SOTA*/ wire _SOTA_LYC4p_t0 = lcd_reg.SOTA_LYC4n.qn08_old();
-  /* p23.VAFA*/ wire _VAFA_LYC5p_t0 = lcd_reg.VAFA_LYC5n.qn08_old();
-  /* p23.VEVO*/ wire _VEVO_LYC6p_t0 = lcd_reg.VEVO_LYC6n.qn08_old();
-  /* p23.RAHA*/ wire _RAHA_LYC7p_t0 = lcd_reg.RAHA_LYC7n.qn08_old();
-
-  /*#p21.SANU*/ wire _SANU_x113p_t0 = and4(_TYRY_LX6p_t0, _TAHA_LX5p_t0, _SUDE_LX4p_t0, _SAXO_LX0p_t0); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-  /*#p24.NERU*/ wire _NERU_y000p_t0 = nor8(_LAFO_LY7p_t0, _LOVU_LY4p_t0, _LYDO_LY3p_t0, _MUWY_LY0p_t0, _MYRO_LY1p_t0, _LEXA_LY2p_t0, _LEMA_LY5p_t0, _MATO_LY6p_t0);
-  /*#p21.XYVO*/ wire _XYVO_y144p_t0 = and2(_LOVU_LY4p_t0, _LAFO_LY7p_t0); // 128 + 16 = 144
+  /*#p21.SANU*/ wire _SANU_x113p_t0 = and4(lcd_reg.TYRY_LX6p.qp17_old(), lcd_reg.TAHA_LX5p.qp17_old(), lcd_reg.SUDE_LX4p.qp17_old(), lcd_reg.SAXO_LX0p.qp17_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+  /*#p24.NERU*/ wire _NERU_y000p_t0 = nor8(lcd_reg.LAFO_LY7p.qp17_old(), lcd_reg.LOVU_LY4p.qp17_old(), lcd_reg.LYDO_LY3p.qp17_old(), lcd_reg.MUWY_LY0p.qp17_old(),
+                                           lcd_reg.MYRO_LY1p.qp17_old(), lcd_reg.LEXA_LY2p.qp17_old(), lcd_reg.LEMA_LY5p.qp17_old(), lcd_reg.MATO_LY6p.qp17_old());
+  /*#p21.XYVO*/ wire _XYVO_y144p_t0 = and2(lcd_reg.LOVU_LY4p.qp17_old(), lcd_reg.LAFO_LY7p.qp17_old()); // 128 + 16 = 144
   /*#p29.ALES*/ wire _ALES_y144n_t0 = not1(_XYVO_y144p_t0);
-  /*#p21.NOKO*/ wire _NOKO_y153p_t0 = and4(_LAFO_LY7p_t0, _LOVU_LY4p_t0, _LYDO_LY3p_t0, _MUWY_LY0p_t0); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+  /*#p21.NOKO*/ wire _NOKO_y153p_t0 = and4(lcd_reg.LAFO_LY7p.qp17_old(), lcd_reg.LOVU_LY4p.qp17_old(), lcd_reg.LYDO_LY3p.qp17_old(), lcd_reg.MUWY_LY0p.qp17_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
 
   /*#p29.CATU*/ wire _CATU_LINE_P000p_t0 = lcd_reg.CATU_LINE_P000p.qp17_old();
   /*#p21.RUTU*/ wire _RUTU_LINE_P910p_t0 = lcd_reg.RUTU_LINE_P910p.qp17_old();
@@ -724,21 +699,6 @@ void GateBoy::tock_slow() {
   /*#p21.PURE*/ wire _PURE_LINE_P908n_t0 = not1(_RUTU_LINE_P910p_t0);
   /*#p21.SELA*/ wire _SELA_LINE_P908p_t0 = not1(_PURE_LINE_P908n_t0);
   /*#p29.ABOV*/ wire _ABOV_LINE_P908p_t0 = and2(_SELA_LINE_P908p_t0, _ALES_y144n_t0);
-
-  // LYC matcher
-  /* p21.RYME*/ wire _RYME_LY_MATCH0n_t0 = xor2(_MUWY_LY0p_t0, _SYRY_LYC0p_t0);
-  /* p21.TYDE*/ wire _TYDE_LY_MATCH1n_t0 = xor2(_MYRO_LY1p_t0, _VUCE_LYC1p_t0);
-  /* p21.REDA*/ wire _REDA_LY_MATCH2n_t0 = xor2(_LEXA_LY2p_t0, _SEDY_LYC2p_t0);
-  /* p21.RASY*/ wire _RASY_LY_MATCH3n_t0 = xor2(_LYDO_LY3p_t0, _SALO_LYC3p_t0);
-  /* p21.TYKU*/ wire _TYKU_LY_MATCH4n_t0 = xor2(_LOVU_LY4p_t0, _SOTA_LYC4p_t0);
-  /* p21.TUCY*/ wire _TUCY_LY_MATCH5n_t0 = xor2(_LEMA_LY5p_t0, _VAFA_LYC5p_t0);
-  /* p21.TERY*/ wire _TERY_LY_MATCH6n_t0 = xor2(_MATO_LY6p_t0, _VEVO_LYC6p_t0);
-  /* p21.SYFU*/ wire _SYFU_LY_MATCH7n_t0 = xor2(_LAFO_LY7p_t0, _RAHA_LYC7p_t0);
-
-  /* p21.SOVU*/ wire _SOVU_LY_MATCHA_t0 = nor4 (_SYFU_LY_MATCH7n_t0, _TERY_LY_MATCH6n_t0, _TUCY_LY_MATCH5n_t0, _TYKU_LY_MATCH4n_t0); // def nor4
-  /* p21.SUBO*/ wire _SUBO_LY_MATCHB_t0 = nor4 (_RASY_LY_MATCH3n_t0, _REDA_LY_MATCH2n_t0, _TYDE_LY_MATCH1n_t0, _RYME_LY_MATCH0n_t0); // def nor4
-  /* p21.RAPE*/ wire _RAPE_LY_MATCHn_t0 = nand2(_SOVU_LY_MATCHA_t0, _SUBO_LY_MATCHB_t0); // def nand2
-  /* p21.PALY*/ wire _PALY_LY_MATCHa_t0 = not1(_RAPE_LY_MATCHn_t0); // def not
 
   //----------------------------------------
 
@@ -4000,14 +3960,14 @@ void GateBoy::tock_slow() {
     /* p23.CASY*/ BUS_CPU_Dp_out[7].tri6_nn(_BEBA_FF43_RDn_t0, pix_pipe.BAKE_SCX7n.qp09_old());
 
     /* FF44 LY */
-    /*#p23.WURY*/ wire _WURY_LY0n_t0 = not1(_MUWY_LY0p_t0);
-    /* p23.XEPO*/ wire _XEPO_LY1n_t0 = not1(_MYRO_LY1p_t0);
-    /* p23.MYFA*/ wire _MYFA_LY2n_t0 = not1(_LEXA_LY2p_t0);
-    /* p23.XUHY*/ wire _XUHY_LY3n_t0 = not1(_LYDO_LY3p_t0);
-    /* p23.WATA*/ wire _WATA_LY4n_t0 = not1(_LOVU_LY4p_t0);
-    /* p23.XAGA*/ wire _XAGA_LY5n_t0 = not1(_LEMA_LY5p_t0);
-    /* p23.XUCE*/ wire _XUCE_LY6n_t0 = not1(_MATO_LY6p_t0);
-    /* p23.XOWO*/ wire _XOWO_LY7n_t0 = not1(_LAFO_LY7p_t0);
+    /*#p23.WURY*/ wire _WURY_LY0n_t0 = not1(lcd_reg.MUWY_LY0p.qp17_old());
+    /* p23.XEPO*/ wire _XEPO_LY1n_t0 = not1(lcd_reg.MYRO_LY1p.qp17_old());
+    /* p23.MYFA*/ wire _MYFA_LY2n_t0 = not1(lcd_reg.LEXA_LY2p.qp17_old());
+    /* p23.XUHY*/ wire _XUHY_LY3n_t0 = not1(lcd_reg.LYDO_LY3p.qp17_old());
+    /* p23.WATA*/ wire _WATA_LY4n_t0 = not1(lcd_reg.LOVU_LY4p.qp17_old());
+    /* p23.XAGA*/ wire _XAGA_LY5n_t0 = not1(lcd_reg.LEMA_LY5p.qp17_old());
+    /* p23.XUCE*/ wire _XUCE_LY6n_t0 = not1(lcd_reg.MATO_LY6p.qp17_old());
+    /* p23.XOWO*/ wire _XOWO_LY7n_t0 = not1(lcd_reg.LAFO_LY7p.qp17_old());
 
     /* p23.VEGA*/ BUS_CPU_Dp_out[0].tri6_nn(_VARO_FF44_RDn_t0, _WURY_LY0n_t0);
     /* p23.WUVA*/ BUS_CPU_Dp_out[1].tri6_nn(_VARO_FF44_RDn_t0, _XEPO_LY1n_t0);
@@ -5386,9 +5346,34 @@ void GateBoy::tock_slow() {
 
 #pragma region LCD_Regs
   {
+    //----------------------------------------
+    // LYC matcher
+
+    /* p21.RYME*/ wire _RYME_LY_MATCH0n_t0 = xor2(lcd_reg.MUWY_LY0p.qp17_old(), lcd_reg.SYRY_LYC0n.qn08_old());
+    /* p21.TYDE*/ wire _TYDE_LY_MATCH1n_t0 = xor2(lcd_reg.MYRO_LY1p.qp17_old(), lcd_reg.VUCE_LYC1n.qn08_old());
+    /* p21.REDA*/ wire _REDA_LY_MATCH2n_t0 = xor2(lcd_reg.LEXA_LY2p.qp17_old(), lcd_reg.SEDY_LYC2n.qn08_old());
+    /* p21.RASY*/ wire _RASY_LY_MATCH3n_t0 = xor2(lcd_reg.LYDO_LY3p.qp17_old(), lcd_reg.SALO_LYC3n.qn08_old());
+    /* p21.TYKU*/ wire _TYKU_LY_MATCH4n_t0 = xor2(lcd_reg.LOVU_LY4p.qp17_old(), lcd_reg.SOTA_LYC4n.qn08_old());
+    /* p21.TUCY*/ wire _TUCY_LY_MATCH5n_t0 = xor2(lcd_reg.LEMA_LY5p.qp17_old(), lcd_reg.VAFA_LYC5n.qn08_old());
+    /* p21.TERY*/ wire _TERY_LY_MATCH6n_t0 = xor2(lcd_reg.MATO_LY6p.qp17_old(), lcd_reg.VEVO_LYC6n.qn08_old());
+    /* p21.SYFU*/ wire _SYFU_LY_MATCH7n_t0 = xor2(lcd_reg.LAFO_LY7p.qp17_old(), lcd_reg.RAHA_LYC7n.qn08_old());
+
+    /* p21.SOVU*/ wire _SOVU_LY_MATCHA_t0 = nor4 (_SYFU_LY_MATCH7n_t0, _TERY_LY_MATCH6n_t0, _TUCY_LY_MATCH5n_t0, _TYKU_LY_MATCH4n_t0); // def nor4
+    /* p21.SUBO*/ wire _SUBO_LY_MATCHB_t0 = nor4 (_RASY_LY_MATCH3n_t0, _REDA_LY_MATCH2n_t0, _TYDE_LY_MATCH1n_t0, _RYME_LY_MATCH0n_t0); // def nor4
+    /* p21.RAPE*/ wire _RAPE_LY_MATCHn_t0 = nand2(_SOVU_LY_MATCHA_t0, _SUBO_LY_MATCHB_t0); // def nand2
+    /* p21.PALY*/ wire _PALY_LY_MATCHa_t0 = not1(_RAPE_LY_MATCHn_t0); // def not
+
     /*#p24.LOFU*/ wire _LOFU_LINE_ENDn_t2 = not1(_RUTU_LINE_P910p_t2);
     /*#p21.MUDE*/ wire _MUDE_X_RSTn_t2 = nor2(_RUTU_LINE_P910p_t2, _LYHA_VID_RSTp_t0);
     /*#p21.LAMA*/ wire _LAMA_FRAME_RSTn_t3 = nor2(_MYTA_y153p_t3, _LYHA_VID_RSTp_t0);
+
+    /*#p21.SAXO*/ wire _SAXO_LX0p_t0 = lcd_reg.SAXO_LX0p.qp17_old();
+    /*#p21.TYPO*/ wire _TYPO_LX1p_t0 = lcd_reg.TYPO_LX1p.qp17_old();
+    /*#p21.VYZO*/ wire _VYZO_LX2p_t0 = lcd_reg.VYZO_LX2p.qp17_old();
+    /*#p21.TELU*/ wire _TELU_LX3p_t0 = lcd_reg.TELU_LX3p.qp17_old();
+    /*#p21.SUDE*/ wire _SUDE_LX4p_t0 = lcd_reg.SUDE_LX4p.qp17_old();
+    /*#p21.TAHA*/ wire _TAHA_LX5p_t0 = lcd_reg.TAHA_LX5p.qp17_old();
+    /*#p21.TYRY*/ wire _TYRY_LX6p_t0 = lcd_reg.TYRY_LX6p.qp17_old();
 
     /*#p21.TOCU*/ wire _TOCU_LX0n_t0 = not1(_SAXO_LX0p_t0);
     /*#p21.VEPE*/ wire _VEPE_LX1n_t0 = not1(_TYPO_LX1p_t0);

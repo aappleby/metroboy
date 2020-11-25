@@ -1833,21 +1833,6 @@ void GateBoy::tock_slow() {
   /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp_t0, _AVAP_SCAN_DONE_TRIGp_t2);
   /*#p21.XYMU*/ wire _XYMU_RENDERINGp_t2 = pix_pipe.XYMU_RENDERINGn.qn03_new();
 
-  /* p21.XEHO*/ wire _XEHO_PX0p_t0 = pix_pipe.XEHO_PX0p.qp17_old();
-  /* p21.SAVY*/ wire _SAVY_PX1p_t0 = pix_pipe.SAVY_PX1p.qp17_old();
-  /* p21.XODU*/ wire _XODU_PX2p_t0 = pix_pipe.XODU_PX2p.qp17_old();
-  /* p21.XYDO*/ wire _XYDO_PX3p_t0 = pix_pipe.XYDO_PX3p.qp17_old();
-  /* p21.TUHU*/ wire _TUHU_PX4p_t0 = pix_pipe.TUHU_PX4p.qp17_old();
-  /* p21.TUKY*/ wire _TUKY_PX5p_t0 = pix_pipe.TUKY_PX5p.qp17_old();
-  /* p21.TAKO*/ wire _TAKO_PX6p_t0 = pix_pipe.TAKO_PX6p.qp17_old();
-  /* p21.SYBE*/ wire _SYBE_PX7p_t0 = pix_pipe.SYBE_PX7p.qp17_old();
-
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /* p29.TEPA*/ wire _TEPA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /*#p25.ROPY*/ wire _ROPY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-  /*#p27.PAHA*/ wire _PAHA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
-
-
   bool _YDUG_STORE0_MATCHn_t0;
   bool _DYDU_STORE1_MATCHn_t0;
   bool _DEGO_STORE2_MATCHn_t0;
@@ -1861,14 +1846,14 @@ void GateBoy::tock_slow() {
   bool _FEPO_STORE_MATCHp_t0;
   bool _WODU_HBLANKp_t0;
   {
-    /*#p21.ACAM*/ wire _ACAM_PX0n_t0 = not1(_XEHO_PX0p_t0);
-    /* p21.AZUB*/ wire _AZUB_PX1n_t0 = not1(_SAVY_PX1p_t0);
-    /* p21.AMEL*/ wire _AMEL_PX2n_t0 = not1(_XODU_PX2p_t0);
-    /* p21.AHAL*/ wire _AHAL_PX3n_t0 = not1(_XYDO_PX3p_t0);
-    /* p21.APUX*/ wire _APUX_PX4n_t0 = not1(_TUHU_PX4p_t0);
-    /* p21.ABEF*/ wire _ABEF_PX5n_t0 = not1(_TUKY_PX5p_t0);
-    /* p21.ADAZ*/ wire _ADAZ_PX6n_t0 = not1(_TAKO_PX6p_t0);
-    /* p21.ASAH*/ wire _ASAH_PX7n_t0 = not1(_SYBE_PX7p_t0);
+    /*#p21.ACAM*/ wire _ACAM_PX0n_t0 = not1(pix_pipe.XEHO_PX0p.qp17_old());
+    /* p21.AZUB*/ wire _AZUB_PX1n_t0 = not1(pix_pipe.SAVY_PX1p.qp17_old());
+    /* p21.AMEL*/ wire _AMEL_PX2n_t0 = not1(pix_pipe.XODU_PX2p.qp17_old());
+    /* p21.AHAL*/ wire _AHAL_PX3n_t0 = not1(pix_pipe.XYDO_PX3p.qp17_old());
+    /* p21.APUX*/ wire _APUX_PX4n_t0 = not1(pix_pipe.TUHU_PX4p.qp17_old());
+    /* p21.ABEF*/ wire _ABEF_PX5n_t0 = not1(pix_pipe.TUKY_PX5p.qp17_old());
+    /* p21.ADAZ*/ wire _ADAZ_PX6n_t0 = not1(pix_pipe.TAKO_PX6p.qp17_old());
+    /* p21.ASAH*/ wire _ASAH_PX7n_t0 = not1(pix_pipe.SYBE_PX7p.qp17_old());
 
     /*#p31.ZOGY*/ wire _ZOGY_STORE0_MATCH0n_t0 = xor2(sprite_store.XEPE_STORE0_X0p.qn08_old(), _ACAM_PX0n_t0);
     /* p31.ZEBA*/ wire _ZEBA_STORE0_MATCH1n_t0 = xor2(sprite_store.YLAH_STORE0_X1p.qn08_old(), _AZUB_PX1n_t0);
@@ -1999,7 +1984,11 @@ void GateBoy::tock_slow() {
     /* p29.FEPO*/ _FEPO_STORE_MATCHp_t0 = or2(_FEFY_STORE_MATCHp_t0, _FOVE_STORE_MATCHp_t0);
 
     /*#p21.XENA*/ wire _XENA_STORE_MATCHn_t0 = not1(_FEPO_STORE_MATCHp_t0);
-    /*#p21.XUGU*/ wire _XUGU_PX167n_t0 = nand5(_XEHO_PX0p_t0, _SAVY_PX1p_t0, _XODU_PX2p_t0, _TUKY_PX5p_t0, _SYBE_PX7p_t0); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XUGU*/ wire _XUGU_PX167n_t0 = nand5(pix_pipe.XEHO_PX0p.qp17_old(),
+                                               pix_pipe.SAVY_PX1p.qp17_old(),
+                                               pix_pipe.XODU_PX2p.qp17_old(),
+                                               pix_pipe.TUKY_PX5p.qp17_old(),
+                                               pix_pipe.SYBE_PX7p.qp17_old()); // 128 + 32 + 4 + 2 + 1 = 167
     /*#p21.XANO*/ wire _XANO_PX167p_t0 = not1(_XUGU_PX167n_t0);
     /*#p21.WODU*/ _WODU_HBLANKp_t0 = and2(_XENA_STORE_MATCHn_t0, _XANO_PX167p_t0);
   }
@@ -2008,6 +1997,11 @@ void GateBoy::tock_slow() {
   {
     /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17_ff(_ALET_xBxDxFxH_t0, _WODU_HBLANKp_t0);
   }
+
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /* p29.TEPA*/ wire _TEPA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /*#p25.ROPY*/ wire _ROPY_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
+  /*#p27.PAHA*/ wire _PAHA_RENDERINGn_t2 = not1(_XYMU_RENDERINGp_t2);
 
   /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(_PYGO_FETCH_DONE_P13p_t0, _LOBY_RENDERINGn_t2);
 

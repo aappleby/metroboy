@@ -694,15 +694,6 @@ void GateBoy::tock_slow() {
   /*#p21.TAHA*/ wire _TAHA_LX5p_t0 = lcd_reg.TAHA_LX5p.qp17_old();
   /*#p21.TYRY*/ wire _TYRY_LX6p_t0 = lcd_reg.TYRY_LX6p.qp17_old();
 
-  /*#p21.MUWY*/ wire _MUWY_LY0n_t0 = lcd_reg.MUWY_LY0p.qn16_old();
-  /*#p21.MYRO*/ wire _MYRO_LY1n_t0 = lcd_reg.MYRO_LY1p.qn16_old();
-  /*#p21.LEXA*/ wire _LEXA_LY2n_t0 = lcd_reg.LEXA_LY2p.qn16_old();
-  /*#p21.LYDO*/ wire _LYDO_LY3n_t0 = lcd_reg.LYDO_LY3p.qn16_old();
-  /*#p21.LOVU*/ wire _LOVU_LY4n_t0 = lcd_reg.LOVU_LY4p.qn16_old();
-  /*#p21.LEMA*/ wire _LEMA_LY5n_t0 = lcd_reg.LEMA_LY5p.qn16_old();
-  /*#p21.MATO*/ wire _MATO_LY6n_t0 = lcd_reg.MATO_LY6p.qn16_old();
-  /*#p21.LAFO*/ wire _LAFO_LY7n_t0 = lcd_reg.LAFO_LY7p.qn16_old();
-
   /*#p21.MUWY*/ wire _MUWY_LY0p_t0 = lcd_reg.MUWY_LY0p.qp17_old();
   /*#p21.MYRO*/ wire _MYRO_LY1p_t0 = lcd_reg.MYRO_LY1p.qp17_old();
   /*#p21.LEXA*/ wire _LEXA_LY2p_t0 = lcd_reg.LEXA_LY2p.qp17_old();
@@ -5426,14 +5417,14 @@ void GateBoy::tock_slow() {
     /*#p21.TAHA*/ lcd_reg.TAHA_LX5p.dff17(lcd_reg.SUDE_LX4p.qn16_new(), _MUDE_X_RSTn_t2, lcd_reg.TAHA_LX5p.qn16_old());
     /*#p21.TYRY*/ lcd_reg.TYRY_LX6p.dff17(lcd_reg.TAHA_LX5p.qn16_new(), _MUDE_X_RSTn_t2, lcd_reg.TYRY_LX6p.qn16_old());
 
-    /*#p21.MUWY*/ lcd_reg.MUWY_LY0p.dff17(_RUTU_LINE_P910p_t2,          _LAMA_FRAME_RSTn_t3, _MUWY_LY0n_t0);
-    /*#p21.MYRO*/ lcd_reg.MYRO_LY1p.dff17(lcd_reg.MUWY_LY0p.qn16_new(), _LAMA_FRAME_RSTn_t3, _MYRO_LY1n_t0);
-    /*#p21.LEXA*/ lcd_reg.LEXA_LY2p.dff17(lcd_reg.MYRO_LY1p.qn16_new(), _LAMA_FRAME_RSTn_t3, _LEXA_LY2n_t0);
-    /*#p21.LYDO*/ lcd_reg.LYDO_LY3p.dff17(lcd_reg.LEXA_LY2p.qn16_new(), _LAMA_FRAME_RSTn_t3, _LYDO_LY3n_t0);
-    /*#p21.LOVU*/ lcd_reg.LOVU_LY4p.dff17(lcd_reg.LYDO_LY3p.qn16_new(), _LAMA_FRAME_RSTn_t3, _LOVU_LY4n_t0);
-    /*#p21.LEMA*/ lcd_reg.LEMA_LY5p.dff17(lcd_reg.LOVU_LY4p.qn16_new(), _LAMA_FRAME_RSTn_t3, _LEMA_LY5n_t0);
-    /*#p21.MATO*/ lcd_reg.MATO_LY6p.dff17(lcd_reg.LEMA_LY5p.qn16_new(), _LAMA_FRAME_RSTn_t3, _MATO_LY6n_t0);
-    /*#p21.LAFO*/ lcd_reg.LAFO_LY7p.dff17(lcd_reg.MATO_LY6p.qn16_new(), _LAMA_FRAME_RSTn_t3, _LAFO_LY7n_t0);
+    /*#p21.MUWY*/ lcd_reg.MUWY_LY0p.dff17(_RUTU_LINE_P910p_t2,          _LAMA_FRAME_RSTn_t3, lcd_reg.MUWY_LY0p.qn16_old());
+    /*#p21.MYRO*/ lcd_reg.MYRO_LY1p.dff17(lcd_reg.MUWY_LY0p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.MYRO_LY1p.qn16_old());
+    /*#p21.LEXA*/ lcd_reg.LEXA_LY2p.dff17(lcd_reg.MYRO_LY1p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.LEXA_LY2p.qn16_old());
+    /*#p21.LYDO*/ lcd_reg.LYDO_LY3p.dff17(lcd_reg.LEXA_LY2p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.LYDO_LY3p.qn16_old());
+    /*#p21.LOVU*/ lcd_reg.LOVU_LY4p.dff17(lcd_reg.LYDO_LY3p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.LOVU_LY4p.qn16_old());
+    /*#p21.LEMA*/ lcd_reg.LEMA_LY5p.dff17(lcd_reg.LOVU_LY4p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.LEMA_LY5p.qn16_old());
+    /*#p21.MATO*/ lcd_reg.MATO_LY6p.dff17(lcd_reg.LEMA_LY5p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.MATO_LY6p.qn16_old());
+    /*#p21.LAFO*/ lcd_reg.LAFO_LY7p.dff17(lcd_reg.MATO_LY6p.qn16_new(), _LAMA_FRAME_RSTn_t3, lcd_reg.LAFO_LY7p.qn16_old());
   }
 #pragma endregion
 

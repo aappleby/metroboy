@@ -558,24 +558,24 @@ void GateBoy::tock_slow() {
   }
 
   //----------------------------------------
-  // Timer signals
+  // Root clocks - ignoring the deglitcher here
 
-  /* p01.UKUP*/ wire _UKUP_DIV00n_t0 = tim_reg.UKUP_DIV00p.qn16_old();
-  /* p01.UFOR*/ wire _UFOR_DIV01n_t0 = tim_reg.UFOR_DIV01p.qn16_old();
-  /* p01.UNER*/ wire _UNER_DIV02n_t0 = tim_reg.UNER_DIV02p.qn16_old();
-  /*#p01.TERO*/ wire _TERO_DIV03n_t0 = tim_reg.TERO_DIV03p.qn16_old();
-  /* p01.UNYK*/ wire _UNYK_DIV04n_t0 = tim_reg.UNYK_DIV04p.qn16_old();
-  /* p01.TAMA*/ wire _TAMA_DIV05n_t0 = tim_reg.TAMA_DIV05p.qn16_old();
-  /* p01.UGOT*/ wire _UGOT_DIV06n_t0 = tim_reg.UGOT_DIV06p.qn16_old();
-  /* p01.TULU*/ wire _TULU_DIV07n_t0 = tim_reg.TULU_DIV07p.qn16_old();
-  /* p01.TUGO*/ wire _TUGO_DIV08n_t0 = tim_reg.TUGO_DIV08p.qn16_old();
-  /* p01.TOFE*/ wire _TOFE_DIV09n_t0 = tim_reg.TOFE_DIV09p.qn16_old();
-  /* p01.TERU*/ wire _TERU_DIV10n_t0 = tim_reg.TERU_DIV10p.qn16_old();
-  /* p01.SOLA*/ wire _SOLA_DIV11n_t0 = tim_reg.SOLA_DIV11p.qn16_old();
-  /* p01.SUBU*/ wire _SUBU_DIV12n_t0 = tim_reg.SUBU_DIV12p.qn16_old();
-  /* p01.TEKA*/ wire _TEKA_DIV13n_t0 = tim_reg.TEKA_DIV13p.qn16_old();
-  /* p01.UKET*/ wire _UKET_DIV14n_t0 = tim_reg.UKET_DIV14p.qn16_old();
-  /* p01.UPOF*/ wire _UPOF_DIV15n_t0 = tim_reg.UPOF_DIV15p.qn16_old();
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH_t0 = CLK_t0;
+  {
+
+    wire AFUR_xxxxEFGHp = clk_reg.ADYK_ABCxxxxHp.qp09_old();
+    wire ALEF_AxxxxFGHn = clk_reg.AFUR_xxxxEFGHp.qn08_old();
+    wire APUK_ABxxxxGHn = clk_reg.ALEF_AxxxxFGHp.qn08_old();
+    wire ADYK_ABCxxxxHn = clk_reg.APUK_ABxxxxGHp.qn08_old();
+
+    /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9(!_ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, AFUR_xxxxEFGHp);
+    /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9( _ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, ALEF_AxxxxFGHn);
+    /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9(!_ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, APUK_ABxxxxGHn);
+    /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9( _ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, ADYK_ABCxxxxHn);
+  }
+
+  //----------------------------------------
+  // Timer signals
 
   /* p01.UKUP*/ wire _UKUP_DIV00p_t0 = tim_reg.UKUP_DIV00p.qp17_old();
   /* p01.UFOR*/ wire _UFOR_DIV01p_t0 = tim_reg.UFOR_DIV01p.qp17_old();
@@ -594,27 +594,40 @@ void GateBoy::tock_slow() {
   /* p01.UKET*/ wire _UKET_DIV14p_t0 = tim_reg.UKET_DIV14p.qp17_old();
   /* p01.UPOF*/ wire _UPOF_DIV15p_t0 = tim_reg.UPOF_DIV15p.qp17_old();
 
-  /*#p03.UBOT*/ wire _UBOT_DIV01n_t0 = not1(_UFOR_DIV01p_t0);
-  /*#p03.UVYR*/ wire _UVYR_DIV03n_t0 = not1(_TERO_DIV03p_t0);
-  /* p01.UVYN*/ wire _UVYN_DIV05n_t0 = not1(_TAMA_DIV05p_t0);
-  /* p01.UMEK*/ wire _UMEK_DIV06n_t0 = not1(_UGOT_DIV06p_t0);
-  /* p01.UREK*/ wire _UREK_DIV07n_t0 = not1(_TULU_DIV07p_t0);
-  /* p01.UTOK*/ wire _UTOK_DIV08n_t0 = not1(_TUGO_DIV08p_t0);
-  /* p01.SAPY*/ wire _SAPY_DIV09n_t0 = not1(_TOFE_DIV09p_t0);
-  /* p01.UMER*/ wire _UMER_DIV10n_t0 = not1(_TERU_DIV10p_t0);
-  /* p01.RAVE*/ wire _RAVE_DIV11n_t0 = not1(_SOLA_DIV11p_t0);
-  /* p01.RYSO*/ wire _RYSO_DIV12n_t0 = not1(_SUBU_DIV12p_t0);
-  /* p01.UDOR*/ wire _UDOR_DIV13n_t0 = not1(_TEKA_DIV13p_t0);
+  //----------------------------------------
+  // Clock signals
+
+  /* p01.ABOL*/ wire _ABOL_CLKREQn_t0 = not1(sys_cpuready);
+  /* p01.ATEZ*/ wire _ATEZ_CLKBAD_t0   = not1(sys_clkgood);
+
+  /*#p01.ATYP*/ wire _ATYP_ABCDxxxx_t1 = not1(clk_reg.AFUR_xxxxEFGHp.qp09_new());
+  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH_t1 = not1(clk_reg.ALEF_AxxxxFGHp.qn08_new());
+  /*#p01.AROV*/ wire _AROV_xxCDEFxx_t1 = not1(clk_reg.APUK_ABxxxxGHp.qp09_new());
+  /*#p01.BELU*/ wire _BELU_xxxxEFGH_t1 = nor2(_ATYP_ABCDxxxx_t1, _ABOL_CLKREQn_t0);
+  /*#p01.BYRY*/ wire _BYRY_ABCDxxxx_t1 = not1(_BELU_xxxxEFGH_t1);
+  /*#p01.BUDE*/ wire _BUDE_xxxxEFGH_t1 = not1(_BYRY_ABCDxxxx_t1);
+  /*#p01.BAPY*/ wire _BAPY_xxxxxxGH_t1 = nor3(_ABOL_CLKREQn_t0, _AROV_xxCDEFxx_t1, _ATYP_ABCDxxxx_t1);
+  /*#p01.BERU*/ wire _BERU_ABCDEFxx_t1 = not1(_BAPY_xxxxxxGH_t1);
+  /*#p01.BUFA*/ wire _BUFA_xxxxxxGH_t1 = not1(_BERU_ABCDEFxx_t1);
+  /*#p01.BOLO*/ wire _BOLO_ABCDEFxx_t1 = not1(_BUFA_xxxxxxGH_t1);
+  /*#p01.BEKO*/ wire _BEKO_ABCDxxxx_t1 = not1(_BUDE_xxxxEFGH_t1); // BEKO+BAVY parallel
+  /*#p01.BEJA*/ wire _BEJA_xxxxEFGH_t1 = nand4(_BOLO_ABCDEFxx_t1, _BOLO_ABCDEFxx_t1, _BEKO_ABCDxxxx_t1, _BEKO_ABCDxxxx_t1);
+  /*#p01.BANE*/ wire _BANE_ABCDxxxx_t1 = not1(_BEJA_xxxxEFGH_t1);
+  /*#p01.BELO*/ wire _BELO_xxxxEFGH_t1 = not1(_BANE_ABCDxxxx_t1);
+  /*#p01.BAZE*/ wire _BAZE_ABCDxxxx_t1 = not1(_BELO_xxxxEFGH_t1);
+  /*#p01.BUTO*/ wire _BUTO_xBCDEFGH_t1 = nand3(_AFEP_AxxxxFGH_t1, _ATYP_ABCDxxxx_t1, _BAZE_ABCDxxxx_t1);
+  /*#p01.BELE*/ wire _BELE_Axxxxxxx_t1 = not1(_BUTO_xBCDEFGH_t1);
+  /*#p01.BYJU*/ wire _BYJU_Axxxxxxx_t1 = or2(_BELE_Axxxxxxx_t1, _ATEZ_CLKBAD_t0);
+  /*#p01.BALY*/ wire _BALY_xBCDEFGH_t1 = not1(_BYJU_Axxxxxxx_t1);
+  /* p01.BOGA*/ wire _BOGA_Axxxxxxx_t1 = not1(_BALY_xBCDEFGH_t1);
 
   //----------------------------------------
   // Power-on reset handler
 
   bool _UCOB_CLKBADp_t0;
-  bool _ABOL_CLKREQn_t0;
   bool _ASOL_POR_DONEn_t0;
   {
     /* p01.UCOB*/ _UCOB_CLKBADp_t0 = not1(sys_clkgood);
-    /* p01.ABOL*/ _ABOL_CLKREQn_t0 = not1(sys_cpuready);
 
     /* p01.UPYF*/ wire _UPYF_t0 = or2(sys_rst, _UCOB_CLKBADp_t0);
     /* p01.TUBO*/ clk_reg.TUBO_WAITINGp.nor_latch(_UPYF_t0, sys_cpuready);
@@ -638,52 +651,8 @@ void GateBoy::tock_slow() {
     PIN_CPU_EXT_RST.pin_in(1, sys_rst);
     PIN_CPU_STARTp.pin_in(1, _TABA_POR_TRIGn_t0);
     sys_cpu_start = PIN_CPU_STARTp.qp();
-  }
 
-  //----------------------------------------
-  // Clock signals
-
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH_t0 = CLK_t0;
-
-  {
-    // Root clocks - ignoring the deglitcher here
-
-    wire AFUR_xxxxEFGHp = clk_reg.ADYK_ABCxxxxHp.qp09_old();
-    wire ALEF_AxxxxFGHn = clk_reg.AFUR_xxxxEFGHp.qn08_old();
-    wire APUK_ABxxxxGHn = clk_reg.ALEF_AxxxxFGHp.qn08_old();
-    wire ADYK_ABCxxxxHn = clk_reg.APUK_ABxxxxGHp.qn08_old();
-
-    /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9(!_ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, AFUR_xxxxEFGHp);
-    /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9( _ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, ALEF_AxxxxFGHn);
-    /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9(!_ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, APUK_ABxxxxGHn);
-    /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9( _ATAL_xBxDxFxH_t0, _UPOJ_MODE_PRODn_t0, ADYK_ABCxxxxHn);
-  }
-
-  /*#p01.ATYP*/ wire _ATYP_ABCDxxxx_t1 = not1(clk_reg.AFUR_xxxxEFGHp.qp09_new());
-  /*#p01.AFEP*/ wire _AFEP_AxxxxFGH_t1 = not1(clk_reg.ALEF_AxxxxFGHp.qn08_new());
-  /*#p01.AROV*/ wire _AROV_xxCDEFxx_t1 = not1(clk_reg.APUK_ABxxxxGHp.qp09_new());
-  /*#p01.BELU*/ wire _BELU_xxxxEFGH_t1 = nor2(_ATYP_ABCDxxxx_t1, _ABOL_CLKREQn_t0);
-  /*#p01.BYRY*/ wire _BYRY_ABCDxxxx_t1 = not1(_BELU_xxxxEFGH_t1);
-  /*#p01.BUDE*/ wire _BUDE_xxxxEFGH_t1 = not1(_BYRY_ABCDxxxx_t1);
-  /*#p01.BAPY*/ wire _BAPY_xxxxxxGH_t1 = nor3(_ABOL_CLKREQn_t0, _AROV_xxCDEFxx_t1, _ATYP_ABCDxxxx_t1);
-  /*#p01.BERU*/ wire _BERU_ABCDEFxx_t1 = not1(_BAPY_xxxxxxGH_t1);
-  /*#p01.BUFA*/ wire _BUFA_xxxxxxGH_t1 = not1(_BERU_ABCDEFxx_t1);
-  /*#p01.BOLO*/ wire _BOLO_ABCDEFxx_t1 = not1(_BUFA_xxxxxxGH_t1);
-  /*#p01.BEKO*/ wire _BEKO_ABCDxxxx_t1 = not1(_BUDE_xxxxEFGH_t1); // BEKO+BAVY parallel
-  /*#p01.BEJA*/ wire _BEJA_xxxxEFGH_t1 = nand4(_BOLO_ABCDEFxx_t1, _BOLO_ABCDEFxx_t1, _BEKO_ABCDxxxx_t1, _BEKO_ABCDxxxx_t1);
-  /*#p01.BANE*/ wire _BANE_ABCDxxxx_t1 = not1(_BEJA_xxxxEFGH_t1);
-  /*#p01.BELO*/ wire _BELO_xxxxEFGH_t1 = not1(_BANE_ABCDxxxx_t1);
-  /*#p01.BAZE*/ wire _BAZE_ABCDxxxx_t1 = not1(_BELO_xxxxEFGH_t1);
-  /*#p01.BUTO*/ wire _BUTO_xBCDEFGH_t1 = nand3(_AFEP_AxxxxFGH_t1, _ATYP_ABCDxxxx_t1, _BAZE_ABCDxxxx_t1);
-  /*#p01.BELE*/ wire _BELE_Axxxxxxx_t1 = not1(_BUTO_xBCDEFGH_t1);
-  /* p01.ATEZ*/ wire _ATEZ_CLKBAD_t0   = not1(sys_clkgood);
-  /*#p01.BYJU*/ wire _BYJU_Axxxxxxx_t1 = or2(_BELE_Axxxxxxx_t1, _ATEZ_CLKBAD_t0);
-  /*#p01.BALY*/ wire _BALY_xBCDEFGH_t1 = not1(_BYJU_Axxxxxxx_t1);
-  /* p01.BOGA*/ wire _BOGA_Axxxxxxx_t1 = not1(_BALY_xBCDEFGH_t1);
-
-  {
-    /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13_ff(_BOGA_Axxxxxxx_t1, clk_reg.ASOL_POR_DONEn.qp04_new());
-    /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13_rst(_UPOJ_MODE_PRODn_t0);
+    /* p01.AFER*/ clk_reg.AFER_SYS_RSTp.dff13(_BOGA_Axxxxxxx_t1, _UPOJ_MODE_PRODn_t0, clk_reg.ASOL_POR_DONEn.qp04_new());
     Pin2 PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
     PIN_CPU_SYS_RSTp.pin_in(1, clk_reg.AFER_SYS_RSTp.qp13_new());
   }
@@ -3958,6 +3927,16 @@ void GateBoy::tock_slow() {
     /* p06.ELUV*/ BUS_CPU_Dp_out[7].tri6_pn(_UCOM_FF02_RDp_t0, ser_reg.ETAF_SER_RUNNING.qn16_old());
 
     /* FF04 DIV */
+
+    /* p01.UMEK*/ wire _UMEK_DIV06n_t0 = not1(_UGOT_DIV06p_t0);
+    /* p01.UREK*/ wire _UREK_DIV07n_t0 = not1(_TULU_DIV07p_t0);
+    /* p01.UTOK*/ wire _UTOK_DIV08n_t0 = not1(_TUGO_DIV08p_t0);
+    /* p01.SAPY*/ wire _SAPY_DIV09n_t0 = not1(_TOFE_DIV09p_t0);
+    /* p01.UMER*/ wire _UMER_DIV10n_t0 = not1(_TERU_DIV10p_t0);
+    /* p01.RAVE*/ wire _RAVE_DIV11n_t0 = not1(_SOLA_DIV11p_t0);
+    /* p01.RYSO*/ wire _RYSO_DIV12n_t0 = not1(_SUBU_DIV12p_t0);
+    /* p01.UDOR*/ wire _UDOR_DIV13n_t0 = not1(_TEKA_DIV13p_t0);
+
     /* p01.TAWU*/ BUS_CPU_Dp_out[0].tri6_pn(_TAGY_FF04_RDp_t0, _UMEK_DIV06n_t0);
     /* p01.TAKU*/ BUS_CPU_Dp_out[1].tri6_pn(_TAGY_FF04_RDp_t0, _UREK_DIV07n_t0);
     /* p01.TEMU*/ BUS_CPU_Dp_out[2].tri6_pn(_TAGY_FF04_RDp_t0, _UTOK_DIV08n_t0);
@@ -4253,23 +4232,23 @@ void GateBoy::tock_slow() {
     /*#p03.NYDU*/ tim_reg.NYDU_TIMA7p_DELAY.dff17_ff(_BOGA_Axxxxxxx_t1, tim_reg.NUGA_TIMA7p.qp01_old());
 
     // FF04 DIV
-    /* p01.UKUP*/ tim_reg.UKUP_DIV00p.dff17_ff(_BOGA_Axxxxxxx_t1,              _UKUP_DIV00n_t0);
-    /* p01.UFOR*/ tim_reg.UFOR_DIV01p.dff17_ff(tim_reg.UKUP_DIV00p.qn16_new(), _UFOR_DIV01n_t0);
-    /* p01.UNER*/ tim_reg.UNER_DIV02p.dff17_ff(tim_reg.UFOR_DIV01p.qn16_new(), _UNER_DIV02n_t0);
-    /*#p01.TERO*/ tim_reg.TERO_DIV03p.dff17_ff(tim_reg.UNER_DIV02p.qn16_new(), _TERO_DIV03n_t0);
-    /* p01.UNYK*/ tim_reg.UNYK_DIV04p.dff17_ff(tim_reg.TERO_DIV03p.qn16_new(), _UNYK_DIV04n_t0);
-    /* p01.TAMA*/ tim_reg.TAMA_DIV05p.dff17_ff(tim_reg.UNYK_DIV04p.qn16_new(), _TAMA_DIV05n_t0);
+    /* p01.UKUP*/ tim_reg.UKUP_DIV00p.dff17_ff(_BOGA_Axxxxxxx_t1,              tim_reg.UKUP_DIV00p.qn16_old());
+    /* p01.UFOR*/ tim_reg.UFOR_DIV01p.dff17_ff(tim_reg.UKUP_DIV00p.qn16_new(), tim_reg.UFOR_DIV01p.qn16_old());
+    /* p01.UNER*/ tim_reg.UNER_DIV02p.dff17_ff(tim_reg.UFOR_DIV01p.qn16_new(), tim_reg.UNER_DIV02p.qn16_old());
+    /*#p01.TERO*/ tim_reg.TERO_DIV03p.dff17_ff(tim_reg.UNER_DIV02p.qn16_new(), tim_reg.TERO_DIV03p.qn16_old());
+    /* p01.UNYK*/ tim_reg.UNYK_DIV04p.dff17_ff(tim_reg.TERO_DIV03p.qn16_new(), tim_reg.UNYK_DIV04p.qn16_old());
+    /* p01.TAMA*/ tim_reg.TAMA_DIV05p.dff17_ff(tim_reg.UNYK_DIV04p.qn16_new(), tim_reg.TAMA_DIV05p.qn16_old());
     /* p01.ULUR*/ wire _ULUR_DIV_06_CLK = /*mux2p(FF60_1, _BOGA_Axxxxxxx_t1,*/ tim_reg.TAMA_DIV05p.qn16_new() /*)*/; // this is hacked up because we're ignoring the debug reg for the moment
-    /* p01.UGOT*/ tim_reg.UGOT_DIV06p.dff17_ff(_ULUR_DIV_06_CLK,               _UGOT_DIV06n_t0);
-    /* p01.TULU*/ tim_reg.TULU_DIV07p.dff17_ff(tim_reg.UGOT_DIV06p.qn16_new(), _TULU_DIV07n_t0);
-    /* p01.TUGO*/ tim_reg.TUGO_DIV08p.dff17_ff(tim_reg.TULU_DIV07p.qn16_new(), _TUGO_DIV08n_t0);
-    /* p01.TOFE*/ tim_reg.TOFE_DIV09p.dff17_ff(tim_reg.TUGO_DIV08p.qn16_new(), _TOFE_DIV09n_t0);
-    /* p01.TERU*/ tim_reg.TERU_DIV10p.dff17_ff(tim_reg.TOFE_DIV09p.qn16_new(), _TERU_DIV10n_t0);
-    /* p01.SOLA*/ tim_reg.SOLA_DIV11p.dff17_ff(tim_reg.TERU_DIV10p.qn16_new(), _SOLA_DIV11n_t0);
-    /* p01.SUBU*/ tim_reg.SUBU_DIV12p.dff17_ff(tim_reg.SOLA_DIV11p.qn16_new(), _SUBU_DIV12n_t0);
-    /* p01.TEKA*/ tim_reg.TEKA_DIV13p.dff17_ff(tim_reg.SUBU_DIV12p.qn16_new(), _TEKA_DIV13n_t0);
-    /* p01.UKET*/ tim_reg.UKET_DIV14p.dff17_ff(tim_reg.TEKA_DIV13p.qn16_new(), _UKET_DIV14n_t0);
-    /* p01.UPOF*/ tim_reg.UPOF_DIV15p.dff17_ff(tim_reg.UKET_DIV14p.qn16_new(), _UPOF_DIV15n_t0);
+    /* p01.UGOT*/ tim_reg.UGOT_DIV06p.dff17_ff(_ULUR_DIV_06_CLK,               tim_reg.UGOT_DIV06p.qn16_old());
+    /* p01.TULU*/ tim_reg.TULU_DIV07p.dff17_ff(tim_reg.UGOT_DIV06p.qn16_new(), tim_reg.TULU_DIV07p.qn16_old());
+    /* p01.TUGO*/ tim_reg.TUGO_DIV08p.dff17_ff(tim_reg.TULU_DIV07p.qn16_new(), tim_reg.TUGO_DIV08p.qn16_old());
+    /* p01.TOFE*/ tim_reg.TOFE_DIV09p.dff17_ff(tim_reg.TUGO_DIV08p.qn16_new(), tim_reg.TOFE_DIV09p.qn16_old());
+    /* p01.TERU*/ tim_reg.TERU_DIV10p.dff17_ff(tim_reg.TOFE_DIV09p.qn16_new(), tim_reg.TERU_DIV10p.qn16_old());
+    /* p01.SOLA*/ tim_reg.SOLA_DIV11p.dff17_ff(tim_reg.TERU_DIV10p.qn16_new(), tim_reg.SOLA_DIV11p.qn16_old());
+    /* p01.SUBU*/ tim_reg.SUBU_DIV12p.dff17_ff(tim_reg.SOLA_DIV11p.qn16_new(), tim_reg.SUBU_DIV12p.qn16_old());
+    /* p01.TEKA*/ tim_reg.TEKA_DIV13p.dff17_ff(tim_reg.SUBU_DIV12p.qn16_new(), tim_reg.TEKA_DIV13p.qn16_old());
+    /* p01.UKET*/ tim_reg.UKET_DIV14p.dff17_ff(tim_reg.TEKA_DIV13p.qn16_new(), tim_reg.UKET_DIV14p.qn16_old());
+    /* p01.UPOF*/ tim_reg.UPOF_DIV15p.dff17_ff(tim_reg.UKET_DIV14p.qn16_new(), tim_reg.UPOF_DIV15p.qn16_old());
 
     // FF06 TMA
     /* p03.SABU*/ tim_reg.SABU_TMA0p.dff17_ff(_TYJU_FF06_WRn_t1, BUS_CPU_Dp_in[0].to_wire_new());
@@ -4342,6 +4321,11 @@ void GateBoy::tock_slow() {
     /*#p03.PAGU*/ wire _PAGU_TIMA_D7 = nor2(_MULO_SYS_RSTn_t0, _RATO_TIMA_D7);
 
     // FF05 TIMA
+    /*#p03.UBOT*/ wire _UBOT_DIV01n_t0 = not1(_UFOR_DIV01p_t0);
+    /*#p03.UVYR*/ wire _UVYR_DIV03n_t0 = not1(_TERO_DIV03p_t0);
+    /* p01.UVYN*/ wire _UVYN_DIV05n_t0 = not1(_TAMA_DIV05p_t0);
+    /* p01.UREK*/ wire _UREK_DIV07n_t0 = not1(_TULU_DIV07p_t0);
+
     /*#p03.UKAP*/ wire _UKAP_CLK_MUXa = mux2n(tim_reg.SOPU_TAC0p.qp17_new(), _UVYN_DIV05n_t0, _UVYR_DIV03n_t0);
     /*#p03.TEKO*/ wire _TEKO_CLK_MUXb = mux2n(tim_reg.SOPU_TAC0p.qp17_new(), _UBOT_DIV01n_t0, _UREK_DIV07n_t0);
     /*#p03.TECY*/ wire _TECY_CLK_MUXc = mux2n(tim_reg.SAMY_TAC1p.qp17_new(), _UKAP_CLK_MUXa, _TEKO_CLK_MUXb);
@@ -5841,6 +5825,7 @@ void GateBoy::tock_slow() {
     /*#p24.MECO*/ wire _MECO = not1(_MAGU);
     /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
     /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn08_new());
+    /* p01.UREK*/ wire _UREK_DIV07n_t0 = not1(_TULU_DIV07p_t0);
     /*#p24.USEC*/ wire _USEC_DIV_07p = not1(_UREK_DIV07n_t0);
     /*#p24.KUPA*/ wire _KUPA = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08_new(), _KEBO, _KEDY_LCDC_ENn, _USEC_DIV_07p);
     /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
@@ -5854,6 +5839,7 @@ void GateBoy::tock_slow() {
     PIN_LCD_CNTRL.pin_out(1, _POGU, _POGU);
 
     /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(_PURE_LINE_P908n_t2);
+    /* p01.UMEK*/ wire _UMEK_DIV06n_t0 = not1(_UGOT_DIV06p_t0);
     /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(_UMEK_DIV06n_t0);
     /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(pix_pipe.XONA_LCDC_LCDENn.qn08_new(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
     /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1(_KAHE_LINE_ENDp);

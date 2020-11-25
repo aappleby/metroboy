@@ -830,11 +830,8 @@ void GateBoy::tock_slow() {
   /* p28.LEKO*/ wire _LEKO_CPU_RDp_t0    = not1(_MYNU_CPU_RDn_t0);
 
 
-  wire _POKY_PRELOAD_LATCHp_t0  = tile_fetcher.POKY_PRELOAD_LATCHp.qp04_old();
   /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp_t0 = nor2(pix_pipe.RYFA_FETCHn_A.qn16_old(), pix_pipe.RENE_FETCHn_B.qp17_old());
 
-  /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_old());
-  /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
 
   {
     /*#p27.NUNY*/ wire _NUNY_WX_MATCH_TRIGp_t0 = and2(pix_pipe.PYNU_WIN_MODE_Ap.qp04_old(), pix_pipe.NOPA_WIN_MODE_Bp.qn16_old());
@@ -2405,6 +2402,8 @@ void GateBoy::tock_slow() {
 
     Bus2 BUS_VRAM_An_t2[13];
 
+    /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
+    /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
     /* p26.AXAD*/ wire _AXAD_WIN_MODEn_t0 = not1(_PORE_WIN_MODEp_t0);
     /* p27.LUSU*/ wire   _LUSU_BGW_VRAM_RDn_t2 = not1(tile_fetcher.LONY_FETCHINGp.qp03_new());
     /* p27.LENA*/ wire _LENA_BGW_VRAM_RDp_t2 = not1(_LUSU_BGW_VRAM_RDn_t2);
@@ -4793,6 +4792,8 @@ void GateBoy::tock_slow() {
 
 #pragma region Window_Coordinates
   {
+    /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
+    /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
     /* p27.VETU*/ wire _VETU_WIN_MAP_CLK = and2(_TEVO_FETCH_TRIGp_t2, _PORE_WIN_MODEp_t0);
     /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_t2 = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08_new(), _XAHY_LINE_TRIGn_t2, _XAPO_VID_RSTn_t0);
     /* p27.XACO*/ wire _XACO_WIN_RSTn_t2 = not1(_XOFO_WIN_RSTp_t2);
@@ -4805,6 +4806,8 @@ void GateBoy::tock_slow() {
 
   // Every time we leave win mode we increment win_y
   {
+    /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
+    /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
     /* p27.WAZY*/ wire _WAZY_WIN_MODEn_t0 = not1(_PORE_WIN_MODEp_t0);
     /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
     /* p27.SYNY*/ wire _SYNY_VBLANK_RSTn_t3 = not1(_REPU_VBLANK_RSTp_t3);

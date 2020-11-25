@@ -1117,6 +1117,12 @@ void GateBoy::tock_slow() {
     /* p23.WYMO*/ pix_pipe.WYMO_LCDC_WINENn .dff9(_XUBO_FF40_WRn_t1, _XARE_SYS_RSTn_t0, BUS_CPU_Dp_in[5].to_wire_new());
     /* p23.WOKY*/ pix_pipe.WOKY_LCDC_WINMAPn.dff9(_XUBO_FF40_WRn_t1, _XARE_SYS_RSTn_t0, BUS_CPU_Dp_in[6].to_wire_new());
     /* p23.XONA*/ pix_pipe.XONA_LCDC_LCDENn .dff9(_XUBO_FF40_WRn_t1, _XARE_SYS_RSTn_t0, BUS_CPU_Dp_in[7].to_wire_new());
+
+    // FF41 STAT
+    /* p21.ROXE*/ pix_pipe.ROXE_STAT_HBI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[3].to_wire_new());
+    /* p21.RUFO*/ pix_pipe.RUFO_STAT_VBI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[4].to_wire_new());
+    /* p21.REFE*/ pix_pipe.REFE_STAT_OAI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[5].to_wire_new());
+    /* p21.RUGU*/ pix_pipe.RUGU_STAT_LYI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[6].to_wire_new());
   }
 #pragma endregion
 
@@ -3940,10 +3946,10 @@ void GateBoy::tock_slow() {
     /*#p21.TEBY*/ BUS_CPU_Dp_out[0].tri6_pn(_TOBE_FF41_RDp_t0, _SADU_STAT_MODE0n);
     /*#p21.WUGA*/ BUS_CPU_Dp_out[1].tri6_pn(_TOBE_FF41_RDp_t0, _XATY_STAT_MODE1n);
     /*#p21.SEGO*/ BUS_CPU_Dp_out[2].tri6_pn(_TOBE_FF41_RDp_t0, pix_pipe.RUPO_LYC_MATCH_LATCHn.qp04_new());
-    /* p21.PUZO*/ BUS_CPU_Dp_out[3].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.ROXE_STAT_HBI_ENn.qp09_old());
-    /* p21.POFO*/ BUS_CPU_Dp_out[4].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.RUFO_STAT_VBI_ENn.qp09_old());
-    /* p21.SASY*/ BUS_CPU_Dp_out[5].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.REFE_STAT_OAI_ENn.qp09_old());
-    /* p21.POTE*/ BUS_CPU_Dp_out[6].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.RUGU_STAT_LYI_ENn.qp09_old());
+    /* p21.PUZO*/ BUS_CPU_Dp_out[3].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.ROXE_STAT_HBI_ENn.qp09_new());
+    /* p21.POFO*/ BUS_CPU_Dp_out[4].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.RUFO_STAT_VBI_ENn.qp09_new());
+    /* p21.SASY*/ BUS_CPU_Dp_out[5].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.REFE_STAT_OAI_ENn.qp09_new());
+    /* p21.POTE*/ BUS_CPU_Dp_out[6].tri6_nn(_VAVE_FF41_RDn_t0, pix_pipe.RUGU_STAT_LYI_ENn.qp09_new());
 
     /* FF42 SCY */
     /*#p23.WARE*/ BUS_CPU_Dp_out[0].tri6_nn(_BUWY_FF42_RDn_t0, pix_pipe.GAVE_SCY0n.qp09_old());
@@ -4319,10 +4325,10 @@ void GateBoy::tock_slow() {
 
     /*#p21.TAPA*/ wire _TAPA_INT_OAM_t3   = and2(_TOLU_VBLANKn_t3, _SELA_LINE_P908p_t2);
     /*#p21.TARU*/ wire _TARU_INT_HBL_t3   = and2(_WODU_HBLANKp_t0, _TOLU_VBLANKn_t3);
-    /*#p21.SUKO*/ wire _SUKO_INT_STATp_t3 = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn08_old(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp17_old(),
-                                                  pix_pipe.REFE_STAT_OAI_ENn.qn08_old(), _TAPA_INT_OAM_t3,
-                                                  pix_pipe.RUFO_STAT_VBI_ENn.qn08_old(), _PARU_VBLANKp_t3, // polarity?
-                                                  pix_pipe.ROXE_STAT_HBI_ENn.qn08_old(), _TARU_INT_HBL_t3);
+    /*#p21.SUKO*/ wire _SUKO_INT_STATp_t3 = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn08_new(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp17_old(),
+                                                  pix_pipe.REFE_STAT_OAI_ENn.qn08_new(), _TAPA_INT_OAM_t3,
+                                                  pix_pipe.RUFO_STAT_VBI_ENn.qn08_new(), _PARU_VBLANKp_t3, // polarity?
+                                                  pix_pipe.ROXE_STAT_HBI_ENn.qn08_new(), _TARU_INT_HBL_t3);
 
     /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp_t3 = not1(_TOLU_VBLANKn_t3);
     /* p02.ASOK*/ wire _ASOK_INT_JOYp       = and2(joypad.APUG_JP_GLITCH3.qp17_new(), joypad.BATU_JP_GLITCH0.qp17_new());
@@ -5422,12 +5428,6 @@ void GateBoy::tock_slow() {
 
 #pragma region PPU_Regs_Write
   {
-    // FF41 STAT
-    /* p21.ROXE*/ pix_pipe.ROXE_STAT_HBI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[3].to_wire_new());
-    /* p21.RUFO*/ pix_pipe.RUFO_STAT_VBI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[4].to_wire_new());
-    /* p21.REFE*/ pix_pipe.REFE_STAT_OAI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[5].to_wire_new());
-    /* p21.RUGU*/ pix_pipe.RUGU_STAT_LYI_ENn.dff9(_RYVE_FF41_WRn_t1, _WESY_SYS_RSTn_t0, BUS_CPU_Dp_in[6].to_wire_new());
-
     // FF42 SCY
     /* p23.GAVE*/ pix_pipe.GAVE_SCY0n.dff9(_CAVO_FF42_WRn_t1, _CUNU_SYS_RSTn_t0, BUS_CPU_Dp_in[0].to_wire_new());
     /* p23.FYMO*/ pix_pipe.FYMO_SCY1n.dff9(_CAVO_FF42_WRn_t1, _CUNU_SYS_RSTn_t0, BUS_CPU_Dp_in[1].to_wire_new());

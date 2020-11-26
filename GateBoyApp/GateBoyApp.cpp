@@ -640,14 +640,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp.state);
-  d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANKp.state);
+  d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANK_CLKp.state);
   d.dump_bitp("MYTA_y153p         ", gb->lcd_reg.MYTA_y153p.state);
   d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd_reg.SYGU_LINE_STROBE.state);
   d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd_reg.MEDA_VSYNC_OUTn.state);
   d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd_reg.LUCA_LINE_EVENp.state);
   d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd_reg.NAPO_FRAME_EVENp.state);
   d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p.state);
-  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_LINE_P002p.state);
+  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_VBLANK_CLKp.state);
   d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p.state);
   d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_LINE_P910p.state);
   d("\n");

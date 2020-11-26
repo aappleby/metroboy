@@ -1258,12 +1258,12 @@ void GateBoy::tock_slow() {
 
   /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17_rst(_TADY_LINE_RSTn_t2);
 
-
   {
     /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_t2 = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08_new(), _XAHY_LINE_TRIGn_t2, _XAPO_VID_RSTn_t0);
     /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(pix_pipe.NUNU_WX_MATCH_Bp.qp17_old(), _XOFO_WIN_RSTp_t2);
   }
 
+#pragma region LCD_Regs
   {
     /*#p21.XYVO*/ wire _XYVO_y144p_t0 = and2(lcd_reg.LOVU_LY4p.qp17_old(), lcd_reg.LAFO_LY7p.qp17_old()); // 128 + 16 = 144
     /*#p21.POPU*/ lcd_reg.POPU_VBLANKp.dff17_ff(lcd_reg.NYPE_LINE_P002p.qp17_new(), _XYVO_y144p_t0);
@@ -1283,13 +1283,6 @@ void GateBoy::tock_slow() {
     /*#p24.MEDA*/ lcd_reg.MEDA_VSYNC_OUTn.dff17_rst(_LYFE_LCD_RSTn_t0);
   }
 
-  /*#p21.POPU*/ wire _POPU_VBLANKn_t3 = lcd_reg.POPU_VBLANKp.qn16_new();
-  /*#p21.POPU*/ wire _POPU_VBLANKp_t3 = lcd_reg.POPU_VBLANKp.qp17_new();
-
-  /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(_POPU_VBLANKn_t3);
-  /*#p21.TOLU*/ wire _TOLU_VBLANKn_t3 = not1(_PARU_VBLANKp_t3);
-
-#pragma region LCD_Regs
   {
     /*#p21.MUDE*/ wire _MUDE_X_RSTn_t2 = nor2(lcd_reg.RUTU_LINE_P910p.qp17_new(), _LYHA_VID_RSTp_t0);
     /*#p21.SAXO*/ lcd_reg.SAXO_LX0p.dff17(_TALU_xxCDEFxx_t1,            _MUDE_X_RSTn_t2, lcd_reg.SAXO_LX0p.qn16_old());
@@ -1315,8 +1308,8 @@ void GateBoy::tock_slow() {
 
   {
     /*#p24.LOFU*/ wire _LOFU_LINE_ENDn_t2 = not1(lcd_reg.RUTU_LINE_P910p.qp17_new());
-    /*#p24.LUCA*/ lcd_reg.LUCA_LINE_EVENp .dff17(_LOFU_LINE_ENDn_t2, _LYFE_LCD_RSTn_t0, lcd_reg.LUCA_LINE_EVENp.qn16_old());
-    /*#p21.NAPO*/ lcd_reg.NAPO_FRAME_EVENp.dff17(_POPU_VBLANKp_t3,   _LYFE_LCD_RSTn_t0, lcd_reg.NAPO_FRAME_EVENp.qn16_old());
+    /*#p24.LUCA*/ lcd_reg.LUCA_LINE_EVENp .dff17(_LOFU_LINE_ENDn_t2,              _LYFE_LCD_RSTn_t0, lcd_reg.LUCA_LINE_EVENp.qn16_old());
+    /*#p21.NAPO*/ lcd_reg.NAPO_FRAME_EVENp.dff17(lcd_reg.POPU_VBLANKp.qp17_new(), _LYFE_LCD_RSTn_t0, lcd_reg.NAPO_FRAME_EVENp.qn16_old());
   }
 
   {
@@ -4057,6 +4050,8 @@ void GateBoy::tock_slow() {
     /* p02.TUNY*/ wire _TUNY_FF0F_RST3n_t1 = and3(_SULO_INT3_WRn_t1, _LUFE_INT_SER_ACKn_t0,  _ALUR_SYS_RSTn_t0);
     /* p02.TYME*/ wire _TYME_FF0F_RST4n_t1 = and3(_SEME_INT4_WRn_t1, _LAMO_INT_JOY_ACKn_t0,  _ALUR_SYS_RSTn_t0);
 
+    /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(lcd_reg.POPU_VBLANKp.qn16_new());
+    /*#p21.TOLU*/ wire _TOLU_VBLANKn_t3 = not1(_PARU_VBLANKp_t3);
     /*#p21.TAPA*/ wire _TAPA_INT_OAM_t3   = and2(_TOLU_VBLANKn_t3, _SELA_LINE_P908p_t2);
     /*#p21.TARU*/ wire _TARU_INT_HBL_t3   = and2(_WODU_HBLANKp_t0, _TOLU_VBLANKn_t3);
     /*#p21.SUKO*/ wire _SUKO_INT_STATp_t3 = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn08_new(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp17_new(),
@@ -4319,6 +4314,7 @@ void GateBoy::tock_slow() {
     /* p27.NOGY*/ wire _NOGY_WX_MATCHn_t0     = nand5(_NUFA_WX_MATCH_HIp_t0, _MYLO_WX_MATCH0p_t0, _PUWU_WX_MATCH1p_t0, _PUHO_WX_MATCH2p_t0, _NYTU_WX_MATCH3p_t0);
     /* p27.NUKO*/ wire _NUKO_WX_MATCHp_t0     = not1(_NOGY_WX_MATCHn_t0);
 
+    /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(lcd_reg.POPU_VBLANKp.qn16_new());
     /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
     /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(pix_pipe.SARY_WY_MATCHp.qp17_old(), _REPU_VBLANK_RSTp_t3);
     /* p27.SARY*/ pix_pipe.SARY_WY_MATCHp.dff17(_TALU_xxCDEFxx_t1, _XAPO_VID_RSTn_t0, _ROGE_WY_MATCHp_t0);
@@ -4359,6 +4355,7 @@ void GateBoy::tock_slow() {
   {
     // Every time we leave win mode we increment win_y
 
+    /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(lcd_reg.POPU_VBLANKp.qn16_new());
     /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
     /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
     /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
@@ -5163,6 +5160,7 @@ void GateBoy::tock_slow() {
     /* p21.PAGO*/ wire _PAGO_LYC_MATCH_RST_t1 = or2(_WESY_SYS_RSTn_t0, _RYJU_FF41_WRn_t1);
     /* p21.RUPO*/ pix_pipe.RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST_t1, lcd_reg.ROPO_LY_MATCH_SYNCp.qp17_new());
 
+    /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(lcd_reg.POPU_VBLANKp.qn16_new());
     /* p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(pix_pipe.XYMU_RENDERINGn.qn03_new(), _PARU_VBLANKp_t3); // die NOR
     /*#p28.BOGE*/ wire _BOGE_DMA_RUNNINGn_t0 = not1(dma_reg.MATU_DMA_RUNNINGp.qp17_new());
     /*#p28.ACYL*/ wire _ACYL_SCANNINGp_t2 = and2(_BOGE_DMA_RUNNINGn_t0, sprite_scanner.BESU_SCANNINGp.qp04_new());

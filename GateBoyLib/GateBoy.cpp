@@ -1549,17 +1549,6 @@ void GateBoy::tock_slow() {
   /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_t2 = not1(_SUVU_PRELOAD_DONE_TRIGn_t2);
 
   {
-    /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp_t0 = nor2(pix_pipe.RYFA_FETCHn_A.qn16_old(), pix_pipe.RENE_FETCHn_B.qp17_old());
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_t0 = not1(pix_pipe.RYDY_WIN_HITp.to_wire_new());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_t0 = nand2(_SYLO_WIN_HITn_t0, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17_old());
-    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_t0 = not1(_TUXY_WIN_FIRST_TILEne_t0);
-    /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp_t2 = or3(_SEKO_FETCH_TRIGp_t0, _SUZU_WIN_FIRST_TILEne_t0, _TAVE_PRELOAD_DONE_TRIGp_t2); // Schematic wrong, this is OR
-    /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_t2 = nor3(_AVAP_SCAN_DONE_TRIGp_t2, _MOSU_WIN_FETCH_TRIGp_t0, _TEVO_FETCH_TRIGp_t2);
-    /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn_t2 = and2(tile_fetcher.LOVY_FETCH_DONEp.qn16_old(), pix_pipe.XYMU_RENDERINGn.qn03_new());
-    /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(_NYXU_FETCH_TRIGn_t2, _LURY_BG_FETCH_DONEn_t2);
-  }
-
-  {
     /*#p27.PAHA*/ wire _PAHA_RENDERINGn_t2 = not1(pix_pipe.XYMU_RENDERINGn.qn03_new());
     /*#p27.POVA*/ wire _POVA_FINE_MATCHpe_t0 = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp17_old(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn16_old());
     /*#p27.ROXY*/ pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn_t2, _POVA_FINE_MATCHpe_t0);
@@ -2397,6 +2386,17 @@ void GateBoy::tock_slow() {
 
 
 
+
+  {
+    /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp_t0 = nor2(pix_pipe.RYFA_FETCHn_A.qn16_old(), pix_pipe.RENE_FETCHn_B.qp17_old());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_t0 = not1(pix_pipe.RYDY_WIN_HITp.to_wire_new());
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_t0 = nand2(_SYLO_WIN_HITn_t0, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17_old());
+    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_t0 = not1(_TUXY_WIN_FIRST_TILEne_t0);
+    /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp_t2 = or3(_SEKO_FETCH_TRIGp_t0, _SUZU_WIN_FIRST_TILEne_t0, _TAVE_PRELOAD_DONE_TRIGp_t2); // Schematic wrong, this is OR
+    /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_t2 = nor3(_AVAP_SCAN_DONE_TRIGp_t2, _MOSU_WIN_FETCH_TRIGp_t0, _TEVO_FETCH_TRIGp_t2);
+    /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn_t2 = and2(tile_fetcher.LOVY_FETCH_DONEp.qn16_old(), pix_pipe.XYMU_RENDERINGn.qn03_new());
+    /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(_NYXU_FETCH_TRIGn_t2, _LURY_BG_FETCH_DONEn_t2);
+  }
 
 
 
@@ -3791,9 +3791,6 @@ void GateBoy::tock_slow() {
 
     /*#p27.PUXA*/ pix_pipe.PUXA_SCX_FINE_MATCH_A.dff17_rst(pix_pipe.XYMU_RENDERINGn.qn03_new());
     /*#p27.NYZE*/ pix_pipe.NYZE_SCX_FINE_MATCH_B.dff17_rst(pix_pipe.XYMU_RENDERINGn.qn03_new());
-
-    /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17_ff(_ROXO_CLKPIPEp_t2, pix_pipe.XYDO_PX3p.qp17_new());
-    /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17_rst(pix_pipe.XYMU_RENDERINGn.qn03_new());
   }
 
   {
@@ -3841,7 +3838,9 @@ void GateBoy::tock_slow() {
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_t0 = nand3(pix_pipe.RUBU_FINE_CNT2.qp17_old(), pix_pipe.ROGA_FINE_CNT1.qp17_old(), pix_pipe.RYKU_FINE_CNT0.qp17_old());
     /* p27.PANY*/ wire _PANY_FETCHn_t0 = nor2(_NUKO_WX_MATCHp_t0, _ROZE_FINE_COUNT_7n_t0);
     /* p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17(_SEGU_CLKPIPEn_t2, pix_pipe.XYMU_RENDERINGn.qn03_new(), _PANY_FETCHn_t0);
+  }
 
+  {
     /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17     (_ALET_xBxDxFxH_t0, _XAPO_VID_RSTn_t0, pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
     /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_t0, _XAPO_VID_RSTn_t0, pix_pipe.RYDY_WIN_HITp.to_wire_new());
   }
@@ -3948,103 +3947,6 @@ void GateBoy::tock_slow() {
 
 
 
-#pragma region Serial
-  {
-    //----------
-    // Serial pins
-
-    /* PIN_68 */ Pin2 PIN_SCK;
-    /* PIN_69 */ Pin2 PIN_SIN;
-    /* PIN_70 */ Pin2 PIN_SOUT;
-
-    /* hack */    PIN_SIN.pin_out(1, 1, 1);
-
-    /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17_ff(_UWAM_FF02_WRn, BUS_CPU_Dp_in[0].to_wire_new());
-    /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17_rst(_ALUR_SYS_RSTn_t0);
-
-    /* p01.UVYN*/ wire _UVYN_DIV_05n_next = not1(tim_reg.TAMA_DIV05p.qp17_new());
-    /* p06.COTY*/ ser_reg.COTY_SER_CLK.dff17_ff(_UVYN_DIV_05n_next, ser_reg.COTY_SER_CLK.qn16_old());
-    /* p06.COTY*/ ser_reg.COTY_SER_CLK.dff17_rst(_UWAM_FF02_WRn);
-
-    {
-      /* p06.KEXU*/ wire _KEXU = nand2(ser_reg.COTY_SER_CLK.qp17_new(), ser_reg.CULY_XFER_DIR.qp17_new());
-      /* p06.JAGO*/ wire _JAGO = not1(ser_reg.CULY_XFER_DIR.qp17_new());
-      /* p06.KUJO*/ wire _KUJO = nor2(ser_reg.COTY_SER_CLK.qp17_new(), _JAGO);
-
-      // FIXME this doesn't look quite right
-      /* p06.KEXU*/ PIN_SCK.pin_out(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17_new());
-    }
-
-    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(BUS_CPU_Dp_in[0].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(BUS_CPU_Dp_in[1].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(BUS_CPU_Dp_in[2].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(BUS_CPU_Dp_in[3].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(BUS_CPU_Dp_in[4].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(BUS_CPU_Dp_in[5].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(BUS_CPU_Dp_in[6].to_wire_new(), _DAKU_FF01_WRp);
-    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(BUS_CPU_Dp_in[7].to_wire_new(), _DAKU_FF01_WRp);
-
-    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[0].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[1].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[2].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[3].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[4].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[5].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[6].to_wire_new(), _ALUR_SYS_RSTn_t0);
-    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[7].to_wire_new(), _ALUR_SYS_RSTn_t0);
-
-    /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp17_new(), ser_reg.COTY_SER_CLK.qp17_new(), PIN_SCK.qn());
-    /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_SER_RUNNING.qn16_old()); // this must stop the clock or something when the transmit's done
-    /* p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
-    /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
-    /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
-    /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
-
-    /* p06.CARO*/ wire _CARO_SER_RST = and2(_UWAM_FF02_WRn, _ALUR_SYS_RSTn_t0);
-    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17_ff(_DAWA_SER_CLK,                    ser_reg.CAFA_SER_CNT0.qn16_old());
-    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17_ff(ser_reg.CAFA_SER_CNT0.qn16_new(), ser_reg.CYLO_SER_CNT1.qn16_old());
-    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17_ff(ser_reg.CYLO_SER_CNT1.qn16_new(), ser_reg.CYDE_SER_CNT2.qn16_old());
-    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17_ff(ser_reg.CYDE_SER_CNT2.qn16_new(), ser_reg.CALY_SER_CNT3.qn16_old());
-
-    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17_rst(_CARO_SER_RST);
-    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17_rst(_CARO_SER_RST);
-    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17_rst(_CARO_SER_RST);
-    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17_rst(_CARO_SER_RST);
-
-    /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(PIN_SIN.qn());
-
-    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT.dff17_ff(_EDYL_SER_CLK, ser_reg.EDER_SER_DATA7.qp16_old());
-    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT.dff17_rst(_ALUR_SYS_RSTn_t0);
-
-    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22_ff(_EPYT_SER_CLK, ser_reg.EROD_SER_DATA6.qp16_old());
-    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22_ff(_EPYT_SER_CLK, ser_reg.EJAB_SER_DATA5.qp16_old());
-    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22_ff(_EPYT_SER_CLK, ser_reg.DOVU_SER_DATA4.qp16_old());
-    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22_ff(_EPYT_SER_CLK, ser_reg.DOJO_SER_DATA3.qp16_old());
-    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22_ff(_DAWE_SER_CLK, ser_reg.DYRA_SER_DATA2.qp16_old());
-    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22_ff(_DAWE_SER_CLK, ser_reg.DEGU_SER_DATA1.qp16_old());
-    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22_ff(_DAWE_SER_CLK, ser_reg.CUBA_SER_DATA0.qp16_old());
-    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22_ff(_DAWE_SER_CLK, _CAGE_SER_IN);
-
-    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22_set_rst(_EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn);
-    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22_set_rst(_EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn);
-    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22_set_rst(_ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn);
-    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22_set_rst(_DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn);
-    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22_set_rst(_DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn);
-    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22_set_rst(_DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn);
-    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22_set_rst(_DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn);
-    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22_set_rst(_CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn);
-
-    // FIXME hacking out debug stuff
-    ///* p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
-    /* p05.KENA*/ PIN_SOUT.pin_out(1, ser_reg.ELYS_SER_OUT.qp17_new(), ser_reg.ELYS_SER_OUT.qp17_new());
-
-    /* p06.COBA*/ wire _COBA_SER_CNT3n  = not1(ser_reg.CALY_SER_CNT3.qp17_new());
-    /* p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, _ALUR_SYS_RSTn_t0);
-    /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17_ff(_UWAM_FF02_WRn, BUS_CPU_Dp_in[7].to_wire_new());
-    /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17_rst(_CABY_XFER_RESET);
-  }
-#pragma endregion
-
   //------------------------------------------------------------------------------
 
   {
@@ -4084,8 +3986,7 @@ void GateBoy::tock_slow() {
   }
 
   //------------------------------------------------------------------------------
-  // VRAM data in
-
+  // VRAM data in to pixel pipe temp
 
   {
     // VBD -> tile pix temp
@@ -4507,7 +4408,7 @@ void GateBoy::tock_slow() {
   }
 #pragma endregion
 
-#pragma region JOYPAD
+#pragma region Joypad
   {
     wire BURO_FF60_0p_t0 = 0; // FIXME hacking out debug stuff
     /* p05.KURA*/ wire _KURA_JOYP_DBGn_t0 = not1(BURO_FF60_0p_t0);
@@ -4601,6 +4502,103 @@ void GateBoy::tock_slow() {
       /* p??.????*/ BUS_CPU_Dp_out[6].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KUKO_DBG_FF00_D6n.qp17_new());
       /* p??.????*/ BUS_CPU_Dp_out[7].tri6_nn(_BYZO_FF00_RDn_t0, joypad.KERU_DBG_FF00_D7n.qp17_new());
     }
+  }
+#pragma endregion
+
+#pragma region Serial
+  {
+    //----------
+    // Serial pins
+
+    /* PIN_68 */ Pin2 PIN_SCK;
+    /* PIN_69 */ Pin2 PIN_SIN;
+    /* PIN_70 */ Pin2 PIN_SOUT;
+
+    /* hack */    PIN_SIN.pin_out(1, 1, 1);
+
+    /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17_ff(_UWAM_FF02_WRn, BUS_CPU_Dp_in[0].to_wire_new());
+    /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17_rst(_ALUR_SYS_RSTn_t0);
+
+    /* p01.UVYN*/ wire _UVYN_DIV_05n_next = not1(tim_reg.TAMA_DIV05p.qp17_new());
+    /* p06.COTY*/ ser_reg.COTY_SER_CLK.dff17_ff(_UVYN_DIV_05n_next, ser_reg.COTY_SER_CLK.qn16_old());
+    /* p06.COTY*/ ser_reg.COTY_SER_CLK.dff17_rst(_UWAM_FF02_WRn);
+
+    {
+      /* p06.KEXU*/ wire _KEXU = nand2(ser_reg.COTY_SER_CLK.qp17_new(), ser_reg.CULY_XFER_DIR.qp17_new());
+      /* p06.JAGO*/ wire _JAGO = not1(ser_reg.CULY_XFER_DIR.qp17_new());
+      /* p06.KUJO*/ wire _KUJO = nor2(ser_reg.COTY_SER_CLK.qp17_new(), _JAGO);
+
+      // FIXME this doesn't look quite right
+      /* p06.KEXU*/ PIN_SCK.pin_out(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp17_new());
+    }
+
+    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(BUS_CPU_Dp_in[0].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(BUS_CPU_Dp_in[1].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(BUS_CPU_Dp_in[2].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(BUS_CPU_Dp_in[3].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(BUS_CPU_Dp_in[4].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(BUS_CPU_Dp_in[5].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(BUS_CPU_Dp_in[6].to_wire_new(), _DAKU_FF01_WRp);
+    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(BUS_CPU_Dp_in[7].to_wire_new(), _DAKU_FF01_WRp);
+
+    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[0].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[1].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[2].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[3].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[4].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[5].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[6].to_wire_new(), _ALUR_SYS_RSTn_t0);
+    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, BUS_CPU_Dp_in[7].to_wire_new(), _ALUR_SYS_RSTn_t0);
+
+    /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp17_new(), ser_reg.COTY_SER_CLK.qp17_new(), PIN_SCK.qn());
+    /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_SER_RUNNING.qn16_old()); // this must stop the clock or something when the transmit's done
+    /* p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
+    /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
+    /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
+    /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
+
+    /* p06.CARO*/ wire _CARO_SER_RST = and2(_UWAM_FF02_WRn, _ALUR_SYS_RSTn_t0);
+    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17_ff(_DAWA_SER_CLK,                    ser_reg.CAFA_SER_CNT0.qn16_old());
+    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17_ff(ser_reg.CAFA_SER_CNT0.qn16_new(), ser_reg.CYLO_SER_CNT1.qn16_old());
+    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17_ff(ser_reg.CYLO_SER_CNT1.qn16_new(), ser_reg.CYDE_SER_CNT2.qn16_old());
+    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17_ff(ser_reg.CYDE_SER_CNT2.qn16_new(), ser_reg.CALY_SER_CNT3.qn16_old());
+
+    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17_rst(_CARO_SER_RST);
+    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17_rst(_CARO_SER_RST);
+    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17_rst(_CARO_SER_RST);
+    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17_rst(_CARO_SER_RST);
+
+    /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(PIN_SIN.qn());
+
+    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT.dff17_ff(_EDYL_SER_CLK, ser_reg.EDER_SER_DATA7.qp16_old());
+    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT.dff17_rst(_ALUR_SYS_RSTn_t0);
+
+    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22_ff(_EPYT_SER_CLK, ser_reg.EROD_SER_DATA6.qp16_old());
+    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22_ff(_EPYT_SER_CLK, ser_reg.EJAB_SER_DATA5.qp16_old());
+    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22_ff(_EPYT_SER_CLK, ser_reg.DOVU_SER_DATA4.qp16_old());
+    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22_ff(_EPYT_SER_CLK, ser_reg.DOJO_SER_DATA3.qp16_old());
+    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22_ff(_DAWE_SER_CLK, ser_reg.DYRA_SER_DATA2.qp16_old());
+    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22_ff(_DAWE_SER_CLK, ser_reg.DEGU_SER_DATA1.qp16_old());
+    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22_ff(_DAWE_SER_CLK, ser_reg.CUBA_SER_DATA0.qp16_old());
+    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22_ff(_DAWE_SER_CLK, _CAGE_SER_IN);
+
+    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22_set_rst(_EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn);
+    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22_set_rst(_EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn);
+    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22_set_rst(_ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn);
+    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22_set_rst(_DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn);
+    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22_set_rst(_DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn);
+    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22_set_rst(_DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn);
+    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22_set_rst(_DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn);
+    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22_set_rst(_CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn);
+
+    // FIXME hacking out debug stuff
+    ///* p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
+    /* p05.KENA*/ PIN_SOUT.pin_out(1, ser_reg.ELYS_SER_OUT.qp17_new(), ser_reg.ELYS_SER_OUT.qp17_new());
+
+    /* p06.COBA*/ wire _COBA_SER_CNT3n  = not1(ser_reg.CALY_SER_CNT3.qp17_new());
+    /* p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, _ALUR_SYS_RSTn_t0);
+    /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17_ff(_UWAM_FF02_WRn, BUS_CPU_Dp_in[7].to_wire_new());
+    /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17_rst(_CABY_XFER_RESET);
   }
 #pragma endregion
 
@@ -4944,6 +4942,9 @@ void GateBoy::tock_slow() {
 
     /*PIN_54*/ Pin2 PIN_LCD_HSYNC;
     {
+      /*#p24.ROXO*/ wire _ROXO_CLKPIPEp_t2 = not1(_SEGU_CLKPIPEn_t2);
+      /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPEp_t2, pix_pipe.XYMU_RENDERINGn.qn03_new(), pix_pipe.XYDO_PX3p.qp17_new());
+
       wire _POME = pix_pipe.POME.to_wire_old();
       wire _RUJU = pix_pipe.RUJU.to_wire_old();
       wire _POFY = pix_pipe.POFY.to_wire_old();

@@ -322,15 +322,15 @@ void GateBoy::next_pass() {
 
   if (sys_statediff && pass_count > 1) {
     int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
-    int end   = offsetof(GateBoy, sentinel2);
+    int end   = offsetof(GateBoy, lcd_pix_lo); // don't include pix pipe in diff
 
     uint8_t* blob_old = (uint8_t*)&gb_old;
     uint8_t* blob_new = (uint8_t*)this;
 
     for (int i = start; i < end; i++) {
       if (blob_old[i] != blob_new[i]) {
-        printf("%06d %02d %04d %02d %02d\n", phase_total, pass_count, i, blob_old[i], blob_new[i]);
-        (void)1;
+        //printf("%06d %02d %04d %02d %02d\n", phase_total, pass_count, i, blob_old[i], blob_new[i]);
+        printf("%d\n", i);
       }
     }
   }

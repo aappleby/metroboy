@@ -1232,19 +1232,18 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
-
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
-
-
-
   {
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /* p21.TADY*/ wire _TADY_LINE_RSTn_t2 = nor2(_ATEJ_LINE_TRIGp_t2, _TOFU_VID_RSTp_t0);
     /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17_rst(_TADY_LINE_RSTn_t2);
   }
 
   {
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /* p27.XAHY*/ wire _XAHY_LINE_TRIGn_t2 = not1(_ATEJ_LINE_TRIGp_t2);
     /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_t2 = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08_new(), _XAHY_LINE_TRIGn_t2, _XAPO_VID_RSTn_t0);
     /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(pix_pipe.NUNU_WX_MATCH_Bp.qp17_old(), _XOFO_WIN_RSTp_t2);
@@ -1330,6 +1329,9 @@ void GateBoy::tock_slow() {
 
   /*#p29.AVAP*/ bool _AVAP_SCAN_DONE_TRIGp_t2;
   {
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /*#p28.ANOM*/ wire _ANOM_LINE_RSTn_t2 = nor2(_ATEJ_LINE_TRIGp_t2, _ATAR_VID_RSTp_t0);
     /*#p29.BALU*/ wire _BALU_LINE_RSTp_t2 = not1(_ANOM_LINE_RSTn_t2);
     /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_t2 = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp17_old(), _BALU_LINE_RSTp_t2, sprite_scanner.BYBA_SCAN_DONE_Ap.qn16_old());
@@ -1549,6 +1551,9 @@ void GateBoy::tock_slow() {
   // Pixel counter, has carry lookahead because this can increment every tcycle
 
   {
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /* p21.TADY*/ wire _TADY_LINE_RSTn_t2 = nor2(_ATEJ_LINE_TRIGp_t2, _TOFU_VID_RSTp_t0);
 
     /* p21.RYBO*/ wire _RYBO = xor2(pix_pipe.XEHO_PX0p.qp17_old(), pix_pipe.SAVY_PX1p.qp17_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
@@ -1713,6 +1718,9 @@ void GateBoy::tock_slow() {
     /*#p29.TOMA*/ wire _TOMA_SFETCH_CLK_xBxDxFxH_t0 = nand2(_LAPE_AxCxExGx_t0, _TAME_SFETCH_CLK_GATE_t0);
 
     /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp_t0 = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp17_old(), sprite_fetcher.SUDA_SFETCH_REQp.qn16_old());
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /*#p27.SECA*/ wire _SECA_SFETCH_RUNNING_SETn_t2 = nor3(_RYCE_SFETCH_TRIGp_t0, _ROSY_VID_RSTp_t0, _ATEJ_LINE_TRIGp_t2);
 
     /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn_t2, _VEKU_SFETCH_RUNNING_RSTn_t2);
@@ -1818,6 +1826,9 @@ void GateBoy::tock_slow() {
       // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
       /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_t0 = and2(sprite_store.CUXY_SPRITE_COUNT1.qp17_old(), sprite_store.DYBE_SPRITE_COUNT3.qp17_old());
       /*#p29.CAKE*/ wire _CAKE_CLKp_t0 = or2(_BAKY_SPRITES_FULL_t0, sprite_store.DEZY_STORE_ENn.qp17_old());
+      /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+      /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+      /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
       /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn_t2 = not1(_ATEJ_LINE_TRIGp_t2);
       /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_CLKp_t0,                              _AZYB_LINE_TRIGn_t2, sprite_store.BESE_SPRITE_COUNT0.qn16_old());
       /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17(sprite_store.BESE_SPRITE_COUNT0.qn16_new(), _AZYB_LINE_TRIGn_t2, sprite_store.CUXY_SPRITE_COUNT1.qn16_old());
@@ -1856,6 +1867,9 @@ void GateBoy::tock_slow() {
     /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn_t0  = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn16_new(), _TYNO_t0);
     /* p29.WUTY*/ wire _WUTY_SPRITE_DONEp_t0 = not1(_VUSA_SPRITE_DONEn_t0);
 
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /* p28.ABAK*/ wire _ABAK_LINE_RSTp_t2 =  or2(_ATEJ_LINE_TRIGp_t2, _AMYG_VID_RSTp_t0);
     /* p28.BYVA*/ wire _BYVA_LINE_RSTn_t2 = not1(_ABAK_LINE_RSTp_t2);
     /* p29.DYBA*/ wire _DYBA_LINE_RSTp_t2 = not1(_BYVA_LINE_RSTn_t2);
@@ -2474,6 +2488,9 @@ void GateBoy::tock_slow() {
     /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
     /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
     /* p27.VETU*/ wire _VETU_WIN_MAP_CLK = and2(_TEVO_FETCH_TRIGp_t2, _PORE_WIN_MODEp_t0);
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /* p27.XAHY*/ wire _XAHY_LINE_TRIGn_t2 = not1(_ATEJ_LINE_TRIGp_t2);
     /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_t2 = nand3(pix_pipe.WYMO_LCDC_WINENn.qn08_new(), _XAHY_LINE_TRIGn_t2, _XAPO_VID_RSTn_t0);
     /* p27.XACO*/ wire _XACO_WIN_RSTn_t2 = not1(_XOFO_WIN_RSTp_t2);
@@ -3409,6 +3426,9 @@ void GateBoy::tock_slow() {
     /*#p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and4(sprite_scanner.YFEL_SCAN0.qp17_old(), sprite_scanner.WEWY_SCAN1.qp17_old(), sprite_scanner.GOSO_SCAN2.qp17_old(), sprite_scanner.FONY_SCAN5.qp17_old());
     /* p28.GAVA*/ wire _GAVA_SCAN_CLK = or2(_FETO_SCAN_DONE_d0, _XUPY_ABxxEFxx_t1);
 
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_t2 = not1(lcd_reg.CATU_LINE_P000p.qp17_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_t2 = or_and3(lcd_reg.ANEL_LINE_P002p.qp17_new(), _ABAF_LINE_P000n_t2, _ABEZ_VID_RSTn_t0); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_t2 = not1(_BYHA_LINE_TRIGn_t2);
     /*#p28.ANOM*/ wire _ANOM_LINE_RSTn_t2 = nor2(_ATEJ_LINE_TRIGp_t2, _ATAR_VID_RSTp_t0);
     /*#p29.BALU*/ wire _BALU_LINE_RSTp_t2 = not1(_ANOM_LINE_RSTn_t2);
     /*#p29.BAGY*/ wire _BAGY_LINE_RSTn_t2 = not1(_BALU_LINE_RSTp_t2);

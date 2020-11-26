@@ -22,6 +22,8 @@ struct BitBase {
     state = s;
   }
 
+  wire to_wire_chain() const { return to_wire_old(); }
+
   wire to_wire_old() const {
     CHECK_N(bit_dirty);
     return bit_data;
@@ -74,6 +76,8 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
+  wire qp_chain() const { return  to_wire_old(); }
+
   wire qp_old() const { return  to_wire_old(); }
   wire qn_old() const { return !to_wire_old(); }
 
@@ -164,6 +168,9 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
+  wire qn08_chain() const { return qn_old(); }
+  wire qp09_chain() const { return qp_old(); }
+
   wire qn08_old() const { return qn_old(); }
   wire qp09_old() const { return qp_old(); }
 
@@ -250,6 +257,9 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
+  wire qn16_chain() const { return qn_old(); }
+  wire qp17_chain() const { return qp_old(); }
+
   wire qn16_old() const { return qn_old(); }
   wire qp17_old() const { return qp_old(); }
 
@@ -329,6 +339,8 @@ struct DFF20 : public DFF {
 // DFF22_22 << CLKp
 
 struct DFF22 : public DFF {
+  wire qp16_chain()  const { return  to_wire_old(); }
+
   wire qn15_old()  const { return !to_wire_old(); }
   wire qp16_old()  const { return  to_wire_old(); }
 
@@ -337,6 +349,8 @@ struct DFF22 : public DFF {
 
   void dff22_ff(wire CLKp, wire Dp)        { dff(CLKp, Dp); }
   void dff22_set_rst(wire SETn, wire RSTn) { dff_SETn(SETn); dff_RSTn(RSTn); }
+
+  void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) { dff_SETn(SETn); dff_RSTn(RSTn); dff(CLKp, Dp); }
 };
 
 //-----------------------------------------------------------------------------

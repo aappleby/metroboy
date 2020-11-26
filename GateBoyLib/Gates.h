@@ -357,13 +357,13 @@ struct DFF22 : public DFF {
 // Tristate bus, can have multiple drivers.
 
 struct TriBase : public BitBase {
-  wire to_wire_new() {
+  wire to_wire_new() const {
     CHECK_P(bit_dirty);
     return bit_data | !bit_driven;
   }
 
-  wire qp() { return  to_wire_new(); }
-  wire qn() { return !to_wire_new(); }
+  wire qp() const { return  to_wire_new(); }
+  wire qn() const { return !to_wire_new(); }
 
   void tri(wire OEp, wire Dp) {
     if (OEp) {

@@ -4287,15 +4287,9 @@ void GateBoy::tock_slow() {
 
     /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17_ff(_ROXO_CLKPIPEp_t2, pix_pipe.XYDO_PX3p.qp17_new());
     /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17_rst(pix_pipe.XYMU_RENDERINGn.qn03_new());
+  }
 
-    // If we use the "new" values of FINE_CNT here, things break because the signal is then "newer" than the clock to RYFA
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_t0 = nand3(pix_pipe.RUBU_FINE_CNT2.qp17_old(), pix_pipe.ROGA_FINE_CNT1.qp17_old(), pix_pipe.RYKU_FINE_CNT0.qp17_old());
-    /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp_t0 = nor2(pix_pipe.RYFA_FETCHn_A.qn16_old(), pix_pipe.RENE_FETCHn_B.qp17_old());
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_t0 = not1(pix_pipe.RYDY_WIN_HITp.to_wire_new());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_t0 = nand2(_SYLO_WIN_HITn_t0, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17_old());
-    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_t0 = not1(_TUXY_WIN_FIRST_TILEne_t0);
-    /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp_t2 = or3(_SEKO_FETCH_TRIGp_t0, _SUZU_WIN_FIRST_TILEne_t0, _TAVE_PRELOAD_DONE_TRIGp_t2); // Schematic wrong, this is OR
-
+  {
     /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p_t0 = xnor2(pix_pipe.NESO_WY0n.qn08_new(), lcd_reg.MUWY_LY0p.qp17_new());
     /* p27.PEBO*/ wire _PEBO_WY_MATCH1p_t0 = xnor2(pix_pipe.NYRO_WY1n.qn08_new(), lcd_reg.MYRO_LY1p.qp17_new());
     /* p27.POMO*/ wire _POMO_WY_MATCH2p_t0 = xnor2(pix_pipe.NAGA_WY2n.qn08_new(), lcd_reg.LEXA_LY2p.qp17_new());
@@ -4327,7 +4321,6 @@ void GateBoy::tock_slow() {
 
     /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
     /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(pix_pipe.SARY_WY_MATCHp.qp17_old(), _REPU_VBLANK_RSTp_t3);
-
     /* p27.SARY*/ pix_pipe.SARY_WY_MATCHp.dff17(_TALU_xxCDEFxx_t1, _XAPO_VID_RSTn_t0, _ROGE_WY_MATCHp_t0);
 
     /* p27.ROCO*/ wire _ROCO_CLKPIPEp_t2 = not1(_SEGU_CLKPIPEn_t2);
@@ -4336,12 +4329,21 @@ void GateBoy::tock_slow() {
 
     /* p27.RENE*/ pix_pipe.RENE_FETCHn_B.dff17(_ALET_xBxDxFxH_t0, pix_pipe.XYMU_RENDERINGn.qn03_new(), pix_pipe.RYFA_FETCHn_A.qp17_old());
 
+    // If we use the "new" values of FINE_CNT here, things break because the signal is then "newer" than the clock to RYFA
+    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_t0 = nand3(pix_pipe.RUBU_FINE_CNT2.qp17_old(), pix_pipe.ROGA_FINE_CNT1.qp17_old(), pix_pipe.RYKU_FINE_CNT0.qp17_old());
     /* p27.PANY*/ wire _PANY_FETCHn_t0 = nor2(_NUKO_WX_MATCHp_t0, _ROZE_FINE_COUNT_7n_t0);
     /* p27.RYFA*/ pix_pipe.RYFA_FETCHn_A.dff17(_SEGU_CLKPIPEn_t2, pix_pipe.XYMU_RENDERINGn.qn03_new(), _PANY_FETCHn_t0);
 
     /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17     (_ALET_xBxDxFxH_t0, _XAPO_VID_RSTn_t0, pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
     /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_t0, _XAPO_VID_RSTn_t0, pix_pipe.RYDY_WIN_HITp.to_wire_new());
+  }
 
+  {
+    /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp_t0 = nor2(pix_pipe.RYFA_FETCHn_A.qn16_new(), pix_pipe.RENE_FETCHn_B.qp17_new());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_t0 = not1(pix_pipe.RYDY_WIN_HITp.to_wire_new());
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_t0 = nand2(_SYLO_WIN_HITn_t0, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp17_new());
+    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_t0 = not1(_TUXY_WIN_FIRST_TILEne_t0);
+    /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp_t2 = or3(_SEKO_FETCH_TRIGp_t0, _SUZU_WIN_FIRST_TILEne_t0, _TAVE_PRELOAD_DONE_TRIGp_t2); // Schematic wrong, this is OR
     /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
     /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
     /* p27.VETU*/ wire _VETU_WIN_MAP_CLK = and2(_TEVO_FETCH_TRIGp_t2, _PORE_WIN_MODEp_t0);
@@ -4352,8 +4354,14 @@ void GateBoy::tock_slow() {
     /* p27.WOBO*/ pix_pipe.WOBO_WIN_X5.dff17(pix_pipe.WODY_WIN_X4.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.WOBO_WIN_X5.qn16_old());
     /* p27.WYKO*/ pix_pipe.WYKO_WIN_X6.dff17(pix_pipe.WOBO_WIN_X5.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.WYKO_WIN_X6.qn16_old());
     /* p27.XOLO*/ pix_pipe.XOLO_WIN_X7.dff17(pix_pipe.WYKO_WIN_X6.qn16_new(), _XACO_WIN_RSTn_t2, pix_pipe.XOLO_WIN_X7.qn16_old());
+  }
 
+  {
     // Every time we leave win mode we increment win_y
+
+    /*#p27.NOCU*/ wire _NOCU_WIN_MODEn_t0 = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
+    /* p27.PORE*/ wire _PORE_WIN_MODEp_t0 = not1(_NOCU_WIN_MODEn_t0);
+    /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_t0);
     /* p27.WAZY*/ wire _WAZY_WIN_MODEn_t0 = not1(_PORE_WIN_MODEp_t0);
     /* p27.SYNY*/ wire _SYNY_VBLANK_RSTn_t3 = not1(_REPU_VBLANK_RSTp_t3);
     /* p27.VYNO*/ pix_pipe.VYNO_WIN_Y0.dff17(_WAZY_WIN_MODEn_t0,              _SYNY_VBLANK_RSTn_t3, pix_pipe.VYNO_WIN_Y0.qn16_old());

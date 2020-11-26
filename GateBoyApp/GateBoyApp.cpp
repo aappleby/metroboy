@@ -235,8 +235,12 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   gb_thread.gb->dbg_write(ADDR_OBP1, gb_thread.cart[ADDR_OBP1]);
   gb_thread.gb->dbg_write(ADDR_SCY,  gb_thread.cart[ADDR_SCY]);
   gb_thread.gb->dbg_write(ADDR_SCX,  gb_thread.cart[ADDR_SCX]);
-  gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
-  gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
+
+  //gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
+  //gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
+
+  gb_thread.gb->dbg_write(ADDR_WY,   113);
+  gb_thread.gb->dbg_write(ADDR_WX,   17);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)

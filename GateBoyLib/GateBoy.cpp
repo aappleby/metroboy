@@ -911,7 +911,14 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
 
-  /* p07.TERA*/ wire _TERA_BOOT_BITp_t0  = not1(BOOT_BITn.qp17_old());
+  {
+    // FF50 - disable bootrom bit
+    /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx_t1, _SYKE_FF00_FFFFp_t0, _TYFO_XX_0x0x0000p_t0, _TUFA_XX_x1x1xxxxp_t0);
+    /* p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(BUS_CPU_Dp_in[0].to_wire_new(), BOOT_BITn.qp17_old());
+    /* p07.TEPU*/ BOOT_BITn.dff17(_TUGE_FF50_WRn, _ALUR_SYS_RSTn_t0, _SATO_BOOT_BIT_IN);
+  }
+
+  /* p07.TERA*/ wire _TERA_BOOT_BITp_t0  = not1(BOOT_BITn.qp17_new());
   /* p07.TUTU*/ wire _TUTU_ADDR_BOOTp_t0 = and2(_TERA_BOOT_BITp_t0, _TULO_00000000_XXp_t0);
   /* p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(_UMUT_MODE_DBG1p_t0);
   /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(_TEDO_CPU_RDp_t0, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp_t0); // def AND
@@ -4172,17 +4179,6 @@ void GateBoy::tock_slow() {
     /* p33.SEMO*/ vram_bus.SEMO_SPRITE_DA6n.dff8n(/*vram_bus.latch_sprite_b_delay.q6()*/ _XADO_CLKn, _PAWE_FLIP6p_t2);
     /* p33.SEGA*/ vram_bus.SEGA_SPRITE_DA7n.dff8n(/*vram_bus.latch_sprite_b_delay.q6()*/ _XADO_CLKn, _PULY_FLIP7p_t2);
   }
-
-  //------------------------------------------------------------------------------
-
-  {
-    // FF50 - disable bootrom bit
-    /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(_TAPU_CPU_WRp_xxxxEFGx_t1, _SYKE_FF00_FFFFp_t0, _TYFO_XX_0x0x0000p_t0, _TUFA_XX_x1x1xxxxp_t0);
-    /* p07.SATO*/ wire _SATO_BOOT_BIT_IN = or2(BUS_CPU_Dp_in[0].to_wire_new(), BOOT_BITn.qp17_old());
-    /* p07.TEPU*/ BOOT_BITn.dff17_ff(_TUGE_FF50_WRn, _SATO_BOOT_BIT_IN);
-    /* p07.TEPU*/ BOOT_BITn.dff17_rst(_ALUR_SYS_RSTn_t0);
-  }
-
 
   //------------------------------------------------------------------------------
 

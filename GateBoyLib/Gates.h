@@ -197,8 +197,7 @@ struct DFF11 : public DFF {
 
   wire q11p_new() const { return qp_new(); }
 
-  void dff11_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-  void dff11_rst(wire RSTn)         { dff_RSTn(RSTn); }
+  void dff11(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
 };
 
 //-----------------------------------------------------------------------------

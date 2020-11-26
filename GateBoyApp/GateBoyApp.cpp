@@ -235,12 +235,11 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   gb_thread.gb->dbg_write(ADDR_OBP1, gb_thread.cart[ADDR_OBP1]);
   gb_thread.gb->dbg_write(ADDR_SCY,  gb_thread.cart[ADDR_SCY]);
   gb_thread.gb->dbg_write(ADDR_SCX,  gb_thread.cart[ADDR_SCX]);
+  gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
+  gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
 
-  //gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
-  //gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
-
-  gb_thread.gb->dbg_write(ADDR_WY,   113);
-  gb_thread.gb->dbg_write(ADDR_WX,   17);
+  //gb_thread.gb->dbg_write(ADDR_WY,   113);
+  //gb_thread.gb->dbg_write(ADDR_WX,   13 + 7);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
@@ -397,7 +396,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("Phase count %d\n",      gb->phase_total);
   d("Pass count  %d\n",      gb->pass_count);
   d("Pass total  %d\n",      gb->pass_total);
-  d("Pass avg    %4.2f\n",   float(gb->pass_total) / float(gb->phase_total));
+  d("Pass avg    %f\n",      float(gb->pass_total) / float(gb->phase_total));
   d("Pass hash   %016llx\n", gb->pass_hash);
   d("Total hash  %016llx\n", gb->total_hash);
   d("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);

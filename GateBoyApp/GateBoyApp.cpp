@@ -238,8 +238,8 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
   gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
 
-  //gb_thread.gb->dbg_write(ADDR_WY,   113);
-  //gb_thread.gb->dbg_write(ADDR_WX,   13 + 7);
+  gb_thread.gb->dbg_write(ADDR_WY,   113);
+  gb_thread.gb->dbg_write(ADDR_WX,   13 + 7);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
@@ -675,8 +675,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("NUNU_WX_MATCH_B       ", gb->pix_pipe.NUNU_WX_MATCH_Bp.state);
   d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->pix_pipe.REJO_WY_MATCHp.state);
   d.dump_bitp("SARY_WY_MATCH         ", gb->pix_pipe.SARY_WY_MATCHp.state);
-  d.dump_bitp("RYFA_FETCHn_A         ", gb->pix_pipe.RYFA_FETCHn_A.state);
-  d.dump_bitp("RENE_FETCHn_B         ", gb->pix_pipe.RENE_FETCHn_B.state);
+  d.dump_bitp("RYFA_FETCHn_A         ", gb->pix_pipe.RYFA_WIN_FETCHn_A.state);
+  d.dump_bitp("RENE_FETCHn_B         ", gb->pix_pipe.RENE_WIN_FETCHn_B.state);
   d.dump_bitp("RYKU_FINE_CNT0        ", gb->pix_pipe.RYKU_FINE_CNT0.state);
   d.dump_bitp("ROGA_FINE_CNT1        ", gb->pix_pipe.ROGA_FINE_CNT1.state);
   d.dump_bitp("RUBU_FINE_CNT2        ", gb->pix_pipe.RUBU_FINE_CNT2.state);

@@ -160,6 +160,9 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
+  wire qn08() const { return qn(); }
+  wire qp09() const { return qp(); }
+
   wire qn08_chain() const { return qn_old(); }
   wire qp09_chain() const { return qp_old(); }
 

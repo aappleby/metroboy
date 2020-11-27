@@ -236,10 +236,10 @@ void GateBoy::run_reset_sequence(bool fastboot) {
   sys_clkgood = 1;
   run(3);
 
-  CHECK_N(clk_reg.AFUR_xxxxEFGHp_s.qp09_old());
-  CHECK_P(clk_reg.ALEF_AxxxxFGHp_s.qp09_old());
-  CHECK_P(clk_reg.APUK_ABxxxxGHp_s.qp09_old());
-  CHECK_P(clk_reg.ADYK_ABCxxxxHp_s.qp09_old());
+  CHECK_N(clk_reg.AFUR_xxxxEFGHp_s.qp09());
+  CHECK_P(clk_reg.ALEF_AxxxxFGHp_s.qp09());
+  CHECK_P(clk_reg.APUK_ABxxxxGHp_s.qp09());
+  CHECK_P(clk_reg.ADYK_ABCxxxxHp_s.qp09());
 
   // Wait for PIN_CPU_START
   //LOG_B("Wait for PIN_CPU_START\n");
@@ -479,26 +479,6 @@ void GateBoy::tock_slow() {
   BUS_CPU_Dp_in_s[6].tri(BUS_CPU_OEp_s, bus_req.data_lo & 0x40);
   BUS_CPU_Dp_in_s[7].tri(BUS_CPU_OEp_s, bus_req.data_lo & 0x80);
 
-  // PIN_CPU_EXT_BUSp
-  Pin2 PIN_CPU_EXT_BUSp_s;      // top right port PORTA_06: -> TEXO, APAP
-  {
-    bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
-    if (bus_req.addr <= 0x00FF && !BOOT_BITn_s.qp17_old()) addr_ext = false;
-
-    if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      PIN_CPU_EXT_BUSp_s.pin_in(1, addr_ext);
-    }
-    else {
-      // This seems wrong, but it passes tests. *shrug*
-      if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-        PIN_CPU_EXT_BUSp_s.pin_in(1, 0);
-      }
-      else {
-        PIN_CPU_EXT_BUSp_s.pin_in(1, addr_ext);
-      }
-    }
-  }
-
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   wire GND = 0;
@@ -572,9 +552,6 @@ void GateBoy::tock_slow() {
   /* p28.ADAH*/ wire _ADAH_FE00_FEFFn_s  = not1(_SARO_FE00_FEFFp_s);
   /*#p08.SORE*/ wire _SORE_0000_7FFFp_s  = not1(BUS_CPU_A_s[15]);
   /*#p08.TEVY*/ wire _TEVY_8000_9FFFn_s  = or3(BUS_CPU_A_s[13], BUS_CPU_A_s[14], _SORE_0000_7FFFp_s);
-  /*#p08.TEXO*/ wire _TEXO_8000_9FFFn_s  = and2(PIN_CPU_EXT_BUSp_s.qp_new(), _TEVY_8000_9FFFn_s);
-  /*#p25.TEFA*/ wire _TEFA_8000_9FFFp_s  = nor2(_SYRO_FE00_FFFFp_s, _TEXO_8000_9FFFn_s);
-  /*#p25.SOSE*/ wire _SOSE_8000_9FFFp_s  = and2(_TEFA_8000_9FFFp_s, BUS_CPU_A_s[15]);
   /* p06.SANO*/ wire _SANO_FF00_FF03p_s  = and3(_SARE_XX00_XX07p_s, _SEFY_A02n_s, _SYKE_FF00_FFFFp_s);
   /* p10.ANAP*/ wire _ANAP_FF_0xx00000_s = and2(_SYKE_FF00_FFFFp_s, _AMUS_XX_0xx00000p_s);
   /* p22.WUTU*/ wire _WUTU_FF40_FF4Fn_s  = nand3(_SYKE_FF00_FFFFp_s, BUS_CPU_A_s[ 6], _XALY_XX_0x00xxxxp_s);
@@ -696,67 +673,6 @@ void GateBoy::tock_slow() {
   /*#p01.AJAX*/ wire _AJAX_xxxxEFGH_s = not1(_ATYP_ABCDxxxx_s);
   /* p01.UVYT*/ wire _UVYT_ABCDxxxx_s = not1(_BUDE_xxxxEFGH_s);
   /* p04.MOPA*/ wire _MOPA_xxxxEFGH_s = not1(_UVYT_ABCDxxxx_s);
-  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH_s = or_and3(_AROV_xxCDEFxx_s, _AJAX_xxxxEFGH_s, PIN_CPU_EXT_BUSp_s.qp_new());
-  /*#p01.AWOD*/ wire _AWOD_ABxxxxxx_s = nor2(_UNOR_MODE_DBG2p_s, _AGUT_xxCDEFGH_s);
-  /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH_s = not1(_AWOD_ABxxxxxx_s);
-
-  //----------------------------------------
-  // CPU read signals
-
-  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD_s = nor2(_TEXO_8000_9FFFn_s, _UMUT_MODE_DBG1p_s);
-  /* p08.LEVO*/ wire _LEVO_ADDR_INT_OR_ADDR_VRAM_s = not1(_TEXO_8000_9FFFn_s);
-  /* p08.LAGU*/ wire _LAGU_s = and_or3(PIN_CPU_RDp_s.qp_new(), _LEVO_ADDR_INT_OR_ADDR_VRAM_s, PIN_CPU_WRp_s.qp_new());
-  /* p08.LYWE*/ wire _LYWE_s = not1(_LAGU_s);
-  /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD_s = or2(_MOCA_DBG_EXT_RD_s, _LYWE_s);
-
-  // Ignoring debug stuff for now
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn_s = mux2n(_UNOR_MODE_DBG2p_s, /*PIN_EXT_RDn.qn()*/ 0, PIN_CPU_RDp_s.qp_new());
-  /* p07.TEDO*/ wire _TEDO_CPU_RDp_s = not1(_UJYV_CPU_RDn_s);
-  /* p07.AJAS*/ wire _AJAS_CPU_RDn_s = not1(_TEDO_CPU_RDp_s);
-  /* p07.ASOT*/ wire _ASOT_CPU_RDp_s = not1(_AJAS_CPU_RDn_s);
-  /* p08.REDU*/ wire _REDU_CPU_RDn_s = not1(_TEDO_CPU_RDp_s);
-
-  /* p10.ACAT*/ wire _ACAT_FF00_RDp_s =  and4(_TEDO_CPU_RDp_s, _ANAP_FF_0xx00000_s,  _AKUG_A06n_s,         _BYKO_A05n_s);
-  /* p06.UFEG*/ wire _UFEG_FF01_RDp_s =  and4(_TEDO_CPU_RDp_s, _SANO_FF00_FF03p_s,    BUS_CPU_A_s[ 0],     _TOLA_A01n_s);
-  /* p06.UCOM*/ wire _UCOM_FF02_RDp_s =  and4(_TEDO_CPU_RDp_s, _SANO_FF00_FF03p_s,    _TOVY_A00n_s,        BUS_CPU_A_s[ 1]);
-  /* p01.TAGY*/ wire _TAGY_FF04_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   _TOLA_A01n_s,         _TOVY_A00n_s);
-  /*#p03.TEDA*/ wire _TEDA_FF05_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   _TOLA_A01n_s,         BUS_CPU_A_s[ 0]);
-  /* p03.TUBY*/ wire _TUBY_FF06_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   BUS_CPU_A_s[ 1],      _TOVY_A00n_s);
-  /* p03.SORA*/ wire _SORA_FF07_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   BUS_CPU_A_s[ 1],      BUS_CPU_A_s[ 0]);
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_s = nand4(_TEDO_CPU_RDp_s, _SYKE_FF00_FFFFp_s,   _SEMY_XX_0000xxxxp_s, _SAPA_XX_xxxx1111p_s); // schematic wrong, is NAND
-  /* p07.TEXE*/ wire _TEXE_FF50_RDp_s =  and4(_TEDO_CPU_RDp_s, _SYKE_FF00_FFFFp_s,   _TYFO_XX_0x0x0000p_s, _TUFA_XX_x1x1xxxxp_s);
-  /* p23.VYRE*/ wire _VYRE_FF40_RDp_s =  and2(_ASOT_CPU_RDp_s, _VOCA_FF40p_s);
-  /* p21.TOBE*/ wire _TOBE_FF41_RDp_s =  and2(_ASOT_CPU_RDp_s, _VARY_FF41p_s);
-  /* p23.ANYP*/ wire _ANYP_FF42_RDp_s =  and2(_ASOT_CPU_RDp_s, _XARO_FF42p_s);
-  /* p23.AVOG*/ wire _AVOG_FF43_RDp_s =  and2(_ASOT_CPU_RDp_s, _XAVY_FF43p_s);
-  /* p23.WAFU*/ wire _WAFU_FF44_RDp_s =  and2(_ASOT_CPU_RDp_s, _XOGY_FF44p_s);
-  /* p23.XYLY*/ wire _XYLY_FF45_RDp_s =  and2(_ASOT_CPU_RDp_s, _XAYU_FF45p_s);
-  /*#p04.MOLU*/ wire _MOLU_FF46_RDp_s =  and2(_ASOT_CPU_RDp_s, _XEDA_FF46p_s);
-  /* p36.VUSO*/ wire _VUSO_FF47_RDp_s =  and2(_ASOT_CPU_RDp_s, _WERA_FF47p_s);
-  /* p36.XUFY*/ wire _XUFY_FF48_RDp_s =  and2(_ASOT_CPU_RDp_s, _XAYO_FF48p_s);
-  /* p36.MUMY*/ wire _MUMY_FF49_RDp_s =  and2(_ASOT_CPU_RDp_s, _TEGO_FF49p_s);
-  /* p23.WAXU*/ wire _WAXU_FF4A_RDp_s =  and2(_ASOT_CPU_RDp_s, _VYGA_FF4Ap_s);
-  /* p23.WYZE*/ wire _WYZE_FF4B_RDp_s =  and2(_ASOT_CPU_RDp_s, _VUMY_FF4Bp_s);
-
-  /* p05.BYZO*/ wire _BYZO_FF00_RDn_s = not1(_ACAT_FF00_RDp_s);
-  /* p02.POLA*/ wire _POLA_FF0F_RDp_s = not1(_ROLO_FF0F_RDn_s);
-  /* p23.WYCE*/ wire _WYCE_FF40_RDn_s = not1(_VYRE_FF40_RDp_s);
-  /* p21.VAVE*/ wire _VAVE_FF41_RDn_s = not1(_TOBE_FF41_RDp_s);
-  /* p23.BUWY*/ wire _BUWY_FF42_RDn_s = not1(_ANYP_FF42_RDp_s);
-  /* p23.BEBA*/ wire _BEBA_FF43_RDn_s = not1(_AVOG_FF43_RDp_s);
-  /* p23.VARO*/ wire _VARO_FF44_RDn_s = not1(_WAFU_FF44_RDp_s);
-  /* p23.WEKU*/ wire _WEKU_FF45_RDn_s = not1(_XYLY_FF45_RDp_s);
-  /*#p04.NYGO*/ wire _NYGO_FF46_RDn_s = not1(_MOLU_FF46_RDp_s);
-  /* p36.TEPY*/ wire _TEPY_FF47_RDn_s = not1(_VUSO_FF47_RDp_s);
-  /* p36.XOZY*/ wire _XOZY_FF48_RDn_s = not1(_XUFY_FF48_RDp_s);
-  /* p36.LOTE*/ wire _LOTE_FF49_RDn_s = not1(_MUMY_FF49_RDp_s);
-  /* p23.VOMY*/ wire _VOMY_FF4A_RDn_s = not1(_WAXU_FF4A_RDp_s);
-  /* p23.VYCU*/ wire _VYCU_FF4B_RDn_s = not1(_WYZE_FF4B_RDp_s);
-
-  /*#p04.PUSY*/ wire _PUSY_FF46_RDp_s = not1(_NYGO_FF46_RDn_s);
-
-  wire FFFF_HIT_s = cpu_bus_addr_s == 0xFFFF;
-  wire FFFF_RDn_s = nand2(_TEDO_CPU_RDp_s, FFFF_HIT_s);
 
   //----------------------------------------
   // CPU write signals
@@ -839,6 +755,58 @@ void GateBoy::tock_slow() {
   }
 
   //----------------------------------------
+  // CPU read signals
+
+  // Ignoring debug stuff for now
+  /* p07.UJYV*/ wire _UJYV_CPU_RDn_s = mux2n(_UNOR_MODE_DBG2p_s, /*PIN_EXT_RDn.qn()*/ 0, PIN_CPU_RDp_s.qp_new());
+  /* p07.TEDO*/ wire _TEDO_CPU_RDp_s = not1(_UJYV_CPU_RDn_s);
+  /* p07.AJAS*/ wire _AJAS_CPU_RDn_s = not1(_TEDO_CPU_RDp_s);
+  /* p07.ASOT*/ wire _ASOT_CPU_RDp_s = not1(_AJAS_CPU_RDn_s);
+  /* p08.REDU*/ wire _REDU_CPU_RDn_s = not1(_TEDO_CPU_RDp_s);
+
+  /* p10.ACAT*/ wire _ACAT_FF00_RDp_s =  and4(_TEDO_CPU_RDp_s, _ANAP_FF_0xx00000_s,  _AKUG_A06n_s,         _BYKO_A05n_s);
+  /* p06.UFEG*/ wire _UFEG_FF01_RDp_s =  and4(_TEDO_CPU_RDp_s, _SANO_FF00_FF03p_s,    BUS_CPU_A_s[ 0],     _TOLA_A01n_s);
+  /* p06.UCOM*/ wire _UCOM_FF02_RDp_s =  and4(_TEDO_CPU_RDp_s, _SANO_FF00_FF03p_s,    _TOVY_A00n_s,        BUS_CPU_A_s[ 1]);
+  /* p01.TAGY*/ wire _TAGY_FF04_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   _TOLA_A01n_s,         _TOVY_A00n_s);
+  /*#p03.TEDA*/ wire _TEDA_FF05_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   _TOLA_A01n_s,         BUS_CPU_A_s[ 0]);
+  /* p03.TUBY*/ wire _TUBY_FF06_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   BUS_CPU_A_s[ 1],      _TOVY_A00n_s);
+  /* p03.SORA*/ wire _SORA_FF07_RDp_s =  and4(_TEDO_CPU_RDp_s, _RYFO_FF04_FF07p_s,   BUS_CPU_A_s[ 1],      BUS_CPU_A_s[ 0]);
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_s = nand4(_TEDO_CPU_RDp_s, _SYKE_FF00_FFFFp_s,   _SEMY_XX_0000xxxxp_s, _SAPA_XX_xxxx1111p_s); // schematic wrong, is NAND
+  /* p07.TEXE*/ wire _TEXE_FF50_RDp_s =  and4(_TEDO_CPU_RDp_s, _SYKE_FF00_FFFFp_s,   _TYFO_XX_0x0x0000p_s, _TUFA_XX_x1x1xxxxp_s);
+  /* p23.VYRE*/ wire _VYRE_FF40_RDp_s =  and2(_ASOT_CPU_RDp_s, _VOCA_FF40p_s);
+  /* p21.TOBE*/ wire _TOBE_FF41_RDp_s =  and2(_ASOT_CPU_RDp_s, _VARY_FF41p_s);
+  /* p23.ANYP*/ wire _ANYP_FF42_RDp_s =  and2(_ASOT_CPU_RDp_s, _XARO_FF42p_s);
+  /* p23.AVOG*/ wire _AVOG_FF43_RDp_s =  and2(_ASOT_CPU_RDp_s, _XAVY_FF43p_s);
+  /* p23.WAFU*/ wire _WAFU_FF44_RDp_s =  and2(_ASOT_CPU_RDp_s, _XOGY_FF44p_s);
+  /* p23.XYLY*/ wire _XYLY_FF45_RDp_s =  and2(_ASOT_CPU_RDp_s, _XAYU_FF45p_s);
+  /*#p04.MOLU*/ wire _MOLU_FF46_RDp_s =  and2(_ASOT_CPU_RDp_s, _XEDA_FF46p_s);
+  /* p36.VUSO*/ wire _VUSO_FF47_RDp_s =  and2(_ASOT_CPU_RDp_s, _WERA_FF47p_s);
+  /* p36.XUFY*/ wire _XUFY_FF48_RDp_s =  and2(_ASOT_CPU_RDp_s, _XAYO_FF48p_s);
+  /* p36.MUMY*/ wire _MUMY_FF49_RDp_s =  and2(_ASOT_CPU_RDp_s, _TEGO_FF49p_s);
+  /* p23.WAXU*/ wire _WAXU_FF4A_RDp_s =  and2(_ASOT_CPU_RDp_s, _VYGA_FF4Ap_s);
+  /* p23.WYZE*/ wire _WYZE_FF4B_RDp_s =  and2(_ASOT_CPU_RDp_s, _VUMY_FF4Bp_s);
+
+  /* p05.BYZO*/ wire _BYZO_FF00_RDn_s = not1(_ACAT_FF00_RDp_s);
+  /* p02.POLA*/ wire _POLA_FF0F_RDp_s = not1(_ROLO_FF0F_RDn_s);
+  /* p23.WYCE*/ wire _WYCE_FF40_RDn_s = not1(_VYRE_FF40_RDp_s);
+  /* p21.VAVE*/ wire _VAVE_FF41_RDn_s = not1(_TOBE_FF41_RDp_s);
+  /* p23.BUWY*/ wire _BUWY_FF42_RDn_s = not1(_ANYP_FF42_RDp_s);
+  /* p23.BEBA*/ wire _BEBA_FF43_RDn_s = not1(_AVOG_FF43_RDp_s);
+  /* p23.VARO*/ wire _VARO_FF44_RDn_s = not1(_WAFU_FF44_RDp_s);
+  /* p23.WEKU*/ wire _WEKU_FF45_RDn_s = not1(_XYLY_FF45_RDp_s);
+  /*#p04.NYGO*/ wire _NYGO_FF46_RDn_s = not1(_MOLU_FF46_RDp_s);
+  /* p36.TEPY*/ wire _TEPY_FF47_RDn_s = not1(_VUSO_FF47_RDp_s);
+  /* p36.XOZY*/ wire _XOZY_FF48_RDn_s = not1(_XUFY_FF48_RDp_s);
+  /* p36.LOTE*/ wire _LOTE_FF49_RDn_s = not1(_MUMY_FF49_RDp_s);
+  /* p23.VOMY*/ wire _VOMY_FF4A_RDn_s = not1(_WAXU_FF4A_RDp_s);
+  /* p23.VYCU*/ wire _VYCU_FF4B_RDn_s = not1(_WYZE_FF4B_RDp_s);
+
+  /*#p04.PUSY*/ wire _PUSY_FF46_RDp_s = not1(_NYGO_FF46_RDn_s);
+
+  wire FFFF_HIT_s = cpu_bus_addr_s == 0xFFFF;
+  wire FFFF_RDn_s = nand2(_TEDO_CPU_RDp_s, FFFF_HIT_s);
+
+  //----------------------------------------
 
 #pragma region DIV
   {
@@ -905,6 +873,48 @@ void GateBoy::tock_slow() {
   /* p01.XARE*/ wire _XARE_SYS_RSTn_s = not1(_XORE_SYS_RSTp_s);
 
 #pragma endregion
+
+  //----------------------------------------
+
+  {
+    // FF50 - disable bootrom bit
+    /* p07.TUGE*/ wire _TUGE_FF50_WRn_s = nand4(_TAPU_CPU_WRp_xxxxEFGx_s, _SYKE_FF00_FFFFp_s, _TYFO_XX_0x0x0000p_s, _TUFA_XX_x1x1xxxxp_s);
+    /* p07.SATO*/ wire _SATO_BOOT_BIT_IN_s = or2(BUS_CPU_Dp_in_s[0].to_wire_new(), BOOT_BITn_s.qp17_chain());
+    /* p07.TEPU*/ BOOT_BITn_s.dff17(_TUGE_FF50_WRn_s, _ALUR_SYS_RSTn_s, _SATO_BOOT_BIT_IN_s);
+  }
+
+  // PIN_CPU_EXT_BUSp
+  Pin2 PIN_CPU_EXT_BUSp_s;      // top right port PORTA_06: -> TEXO, APAP
+  {
+    bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
+    if (bus_req.addr <= 0x00FF && !BOOT_BITn_s.qp17_new()) addr_ext = false;
+
+    if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
+      PIN_CPU_EXT_BUSp_s.pin_in(1, addr_ext);
+    }
+    else {
+      // This seems wrong, but it passes tests. *shrug*
+      if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
+        PIN_CPU_EXT_BUSp_s.pin_in(1, 0);
+      }
+      else {
+        PIN_CPU_EXT_BUSp_s.pin_in(1, addr_ext);
+      }
+    }
+  }
+
+  /*#p08.TEXO*/ wire _TEXO_8000_9FFFn_s  = and2(PIN_CPU_EXT_BUSp_s.qp_new(), _TEVY_8000_9FFFn_s);
+  /*#p25.TEFA*/ wire _TEFA_8000_9FFFp_s  = nor2(_SYRO_FE00_FFFFp_s, _TEXO_8000_9FFFn_s);
+  /*#p25.SOSE*/ wire _SOSE_8000_9FFFp_s  = and2(_TEFA_8000_9FFFp_s, BUS_CPU_A_s[15]);
+  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH_s = or_and3(_AROV_xxCDEFxx_s, _AJAX_xxxxEFGH_s, PIN_CPU_EXT_BUSp_s.qp_new());
+  /*#p01.AWOD*/ wire _AWOD_ABxxxxxx_s = nor2(_UNOR_MODE_DBG2p_s, _AGUT_xxCDEFGH_s);
+  /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH_s = not1(_AWOD_ABxxxxxx_s);
+
+  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD_s = nor2(_TEXO_8000_9FFFn_s, _UMUT_MODE_DBG1p_s);
+  /* p08.LEVO*/ wire _LEVO_ADDR_INT_OR_ADDR_VRAM_s = not1(_TEXO_8000_9FFFn_s);
+  /* p08.LAGU*/ wire _LAGU_s = and_or3(PIN_CPU_RDp_s.qp_new(), _LEVO_ADDR_INT_OR_ADDR_VRAM_s, PIN_CPU_WRp_s.qp_new());
+  /* p08.LYWE*/ wire _LYWE_s = not1(_LAGU_s);
+  /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD_s = or2(_MOCA_DBG_EXT_RD_s, _LYWE_s);
 
   //----------------------------------------
 
@@ -1097,12 +1107,6 @@ void GateBoy::tock_slow() {
     /* p23.MYCE*/ pix_pipe.MYCE_WX5n_s.dff9(_VOXU_FF4B_WRn_s, _WALU_SYS_RSTn_s, BUS_CPU_Dp_in_s[5].to_wire_new());
     /* p23.MUVO*/ pix_pipe.MUVO_WX6n_s.dff9(_VOXU_FF4B_WRn_s, _WALU_SYS_RSTn_s, BUS_CPU_Dp_in_s[6].to_wire_new());
     /* p23.NUKU*/ pix_pipe.NUKU_WX7n_s.dff9(_VOXU_FF4B_WRn_s, _WALU_SYS_RSTn_s, BUS_CPU_Dp_in_s[7].to_wire_new());
-  }
-  {
-    // FF50 - disable bootrom bit
-    /* p07.TUGE*/ wire _TUGE_FF50_WRn_s = nand4(_TAPU_CPU_WRp_xxxxEFGx_s, _SYKE_FF00_FFFFp_s, _TYFO_XX_0x0x0000p_s, _TUFA_XX_x1x1xxxxp_s);
-    /* p07.SATO*/ wire _SATO_BOOT_BIT_IN_s = or2(BUS_CPU_Dp_in_s[0].to_wire_new(), BOOT_BITn_s.qp17_old());
-    /* p07.TEPU*/ BOOT_BITn_s.dff17(_TUGE_FF50_WRn_s, _ALUR_SYS_RSTn_s, _SATO_BOOT_BIT_IN_s);
   }
 #pragma endregion
 

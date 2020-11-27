@@ -166,7 +166,7 @@ struct GateBoy {
   bool sys_cpuready = 0;
   bool sys_cpu_en = 0;
   bool sys_fastboot = 0;
-  bool sys_statediff = 1;
+  bool sys_statediff = 0;
   bool sys_cpu_start = 0;
 
   uint8_t sys_buttons = 0;

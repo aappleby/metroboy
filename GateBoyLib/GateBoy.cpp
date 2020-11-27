@@ -6,6 +6,7 @@
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
 
+#include <set>
 
 #define FAST_BOOT
 
@@ -306,6 +307,8 @@ struct GateBoyOffsets {
 
 } gb_offsets;
 
+static std::set<int> bad_bits;
+
 void GateBoy::next_pass() {
 
   //----------------------------------------
@@ -329,8 +332,11 @@ void GateBoy::next_pass() {
 
     for (int i = start; i < end; i++) {
       if (blob_old[i] != blob_new[i]) {
+        if (!bad_bits.count(i)) {
+          printf("##### %d\n", i);
+          bad_bits.insert(i);
+        }
         //printf("%06d %02d %04d %02d %02d\n", phase_total, pass_count, i, blob_old[i], blob_new[i]);
-        printf("%d\n", i);
       }
     }
   }
@@ -1254,6 +1260,26 @@ void GateBoy::tock_slow() {
   /*#p21.PURE*/ wire _PURE_LINE_ENDn  = not1(lcd_reg.RUTU_x113p.qp17_new());
   /*#p21.SELA*/ wire _SELA_LINE_ENDp  = not1(_PURE_LINE_ENDn);
 
+  //----------------------------------------
+  // Map scroll adder
+
+  /*#p26.FAFO*/ wire _FAFO_TILE_Y0S_t0 = add_s(lcd_reg.MUWY_LY0p.qp17_new(), pix_pipe.GAVE_SCY0n_s.qn08_new(), 0);
+  /*#p26.FAFO*/ wire _FAFO_TILE_Y0C_t0 = add_c(lcd_reg.MUWY_LY0p.qp17_new(), pix_pipe.GAVE_SCY0n_s.qn08_new(), 0);
+  /* p26.EMUX*/ wire _EMUX_TILE_Y1S_t0 = add_s(lcd_reg.MYRO_LY1p.qp17_new(), pix_pipe.FYMO_SCY1n_s.qn08_new(), _FAFO_TILE_Y0C_t0);
+  /* p26.EMUX*/ wire _EMUX_TILE_Y1C_t0 = add_c(lcd_reg.MYRO_LY1p.qp17_new(), pix_pipe.FYMO_SCY1n_s.qn08_new(), _FAFO_TILE_Y0C_t0);
+  /* p26.ECAB*/ wire _ECAB_TILE_Y2S_t0 = add_s(lcd_reg.LEXA_LY2p.qp17_new(), pix_pipe.FEZU_SCY2n_s.qn08_new(), _EMUX_TILE_Y1C_t0);
+  /* p26.ECAB*/ wire _ECAB_TILE_Y2C_t0 = add_c(lcd_reg.LEXA_LY2p.qp17_new(), pix_pipe.FEZU_SCY2n_s.qn08_new(), _EMUX_TILE_Y1C_t0);
+  /* p26.ETAM*/ wire _ETAM_MAP_Y0S_t0  = add_s(lcd_reg.LYDO_LY3p.qp17_new(), pix_pipe.FUJO_SCY3n_s.qn08_new(), _ECAB_TILE_Y2C_t0);
+  /* p26.ETAM*/ wire _ETAM_MAP_Y0C_t0  = add_c(lcd_reg.LYDO_LY3p.qp17_new(), pix_pipe.FUJO_SCY3n_s.qn08_new(), _ECAB_TILE_Y2C_t0);
+  /* p26.DOTO*/ wire _DOTO_MAP_Y1S_t0  = add_s(lcd_reg.LOVU_LY4p.qp17_new(), pix_pipe.DEDE_SCY4n_s.qn08_new(), _ETAM_MAP_Y0C_t0);
+  /* p26.DOTO*/ wire _DOTO_MAP_Y1C_t0  = add_c(lcd_reg.LOVU_LY4p.qp17_new(), pix_pipe.DEDE_SCY4n_s.qn08_new(), _ETAM_MAP_Y0C_t0);
+  /* p26.DABA*/ wire _DABA_MAP_Y2S_t0  = add_s(lcd_reg.LEMA_LY5p.qp17_new(), pix_pipe.FOTY_SCY5n_s.qn08_new(), _DOTO_MAP_Y1C_t0);
+  /* p26.DABA*/ wire _DABA_MAP_Y2C_t0  = add_c(lcd_reg.LEMA_LY5p.qp17_new(), pix_pipe.FOTY_SCY5n_s.qn08_new(), _DOTO_MAP_Y1C_t0);
+  /* p26.EFYK*/ wire _EFYK_MAP_Y3S_t0  = add_s(lcd_reg.MATO_LY6p.qp17_new(), pix_pipe.FOHA_SCY6n_s.qn08_new(), _DABA_MAP_Y2C_t0);
+  /* p26.EFYK*/ wire _EFYK_MAP_Y3C_t0  = add_c(lcd_reg.MATO_LY6p.qp17_new(), pix_pipe.FOHA_SCY6n_s.qn08_new(), _DABA_MAP_Y2C_t0);
+  /* p26.EJOK*/ wire _EJOK_MAP_Y4S_t0  = add_s(lcd_reg.LAFO_LY7p.qp17_new(), pix_pipe.FUNY_SCY7n_s.qn08_new(), _EFYK_MAP_Y3C_t0);
+  ///* p26.EJOK*/ wire _EJOK_MAP_Y4C_t0  = add_c(lcd_reg.LAFO_LY7p.qp17_new(), pix_pipe.FUNY_SCY7n.qn08_new(), _EFYK_MAP_Y3C_t0);
+
 #pragma endregion
 
   {
@@ -1791,24 +1817,7 @@ void GateBoy::tock_slow() {
 #pragma endregion
 
   //----------------------------------------
-  // Map scroll adder
-
-  /*#p26.FAFO*/ wire _FAFO_TILE_Y0S_t0 = add_s(lcd_reg.MUWY_LY0p.qp17_new(), pix_pipe.GAVE_SCY0n_s.qn08_new(), 0);
-  /*#p26.FAFO*/ wire _FAFO_TILE_Y0C_t0 = add_c(lcd_reg.MUWY_LY0p.qp17_new(), pix_pipe.GAVE_SCY0n_s.qn08_new(), 0);
-  /* p26.EMUX*/ wire _EMUX_TILE_Y1S_t0 = add_s(lcd_reg.MYRO_LY1p.qp17_new(), pix_pipe.FYMO_SCY1n_s.qn08_new(), _FAFO_TILE_Y0C_t0);
-  /* p26.EMUX*/ wire _EMUX_TILE_Y1C_t0 = add_c(lcd_reg.MYRO_LY1p.qp17_new(), pix_pipe.FYMO_SCY1n_s.qn08_new(), _FAFO_TILE_Y0C_t0);
-  /* p26.ECAB*/ wire _ECAB_TILE_Y2S_t0 = add_s(lcd_reg.LEXA_LY2p.qp17_new(), pix_pipe.FEZU_SCY2n_s.qn08_new(), _EMUX_TILE_Y1C_t0);
-  /* p26.ECAB*/ wire _ECAB_TILE_Y2C_t0 = add_c(lcd_reg.LEXA_LY2p.qp17_new(), pix_pipe.FEZU_SCY2n_s.qn08_new(), _EMUX_TILE_Y1C_t0);
-  /* p26.ETAM*/ wire _ETAM_MAP_Y0S_t0  = add_s(lcd_reg.LYDO_LY3p.qp17_new(), pix_pipe.FUJO_SCY3n_s.qn08_new(), _ECAB_TILE_Y2C_t0);
-  /* p26.ETAM*/ wire _ETAM_MAP_Y0C_t0  = add_c(lcd_reg.LYDO_LY3p.qp17_new(), pix_pipe.FUJO_SCY3n_s.qn08_new(), _ECAB_TILE_Y2C_t0);
-  /* p26.DOTO*/ wire _DOTO_MAP_Y1S_t0  = add_s(lcd_reg.LOVU_LY4p.qp17_new(), pix_pipe.DEDE_SCY4n_s.qn08_new(), _ETAM_MAP_Y0C_t0);
-  /* p26.DOTO*/ wire _DOTO_MAP_Y1C_t0  = add_c(lcd_reg.LOVU_LY4p.qp17_new(), pix_pipe.DEDE_SCY4n_s.qn08_new(), _ETAM_MAP_Y0C_t0);
-  /* p26.DABA*/ wire _DABA_MAP_Y2S_t0  = add_s(lcd_reg.LEMA_LY5p.qp17_new(), pix_pipe.FOTY_SCY5n_s.qn08_new(), _DOTO_MAP_Y1C_t0);
-  /* p26.DABA*/ wire _DABA_MAP_Y2C_t0  = add_c(lcd_reg.LEMA_LY5p.qp17_new(), pix_pipe.FOTY_SCY5n_s.qn08_new(), _DOTO_MAP_Y1C_t0);
-  /* p26.EFYK*/ wire _EFYK_MAP_Y3S_t0  = add_s(lcd_reg.MATO_LY6p.qp17_new(), pix_pipe.FOHA_SCY6n_s.qn08_new(), _DABA_MAP_Y2C_t0);
-  /* p26.EFYK*/ wire _EFYK_MAP_Y3C_t0  = add_c(lcd_reg.MATO_LY6p.qp17_new(), pix_pipe.FOHA_SCY6n_s.qn08_new(), _DABA_MAP_Y2C_t0);
-  /* p26.EJOK*/ wire _EJOK_MAP_Y4S_t0  = add_s(lcd_reg.LAFO_LY7p.qp17_new(), pix_pipe.FUNY_SCY7n_s.qn08_new(), _EFYK_MAP_Y3C_t0);
-  ///* p26.EJOK*/ wire _EJOK_MAP_Y4C_t0  = add_c(lcd_reg.LAFO_LY7p.qp17_new(), pix_pipe.FUNY_SCY7n.qn08_new(), _EFYK_MAP_Y3C_t0);
+  // Window matcher
 
   ///*#p26.ATAD*/ wire _ATAD_TILE_X0S_t0 = add_s(pix_pipe.XEHO_PX0p.qp17_new(), pix_pipe.DATY_SCX0n.qn08_new(), 0);
   /*#p26.ATAD*/ wire _ATAD_TILE_X0C_t0 = add_c(pix_pipe.XEHO_PX0p.qp17_new(), pix_pipe.DATY_SCX0n_s.qn08_new(), 0);
@@ -1828,7 +1837,6 @@ void GateBoy::tock_slow() {
   ///* p26.ACUL*/ wire _ACUL_MAP_X4C_t0  = add_c(pix_pipe.SYBE_PX7p.qp17_new(), pix_pipe.BAKE_SCX7n.qn08_new(), _BYCA_MAP_X3C_t0);
 
   //----------------------------------------
-  // Window matcher
 
   /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_t2      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp04_new());
   /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_t2 = nand4(pix_pipe.XYMU_RENDERINGn.qn03_new(), _ROMO_PRELOAD_DONEn_t2, tile_fetcher.NYKA_FETCH_DONEp.qp17_old(), tile_fetcher.PORY_FETCH_DONEp.qp17_old());
@@ -2219,6 +2227,296 @@ void GateBoy::tock_slow() {
   /* p27.NETA*/ wire _NETA_TILE_READp = and2(_LENA_BGW_VRAM_RDp, _NOGU_BFETCH_01p_t0);
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // THE LINE OF DESPAIR AND ANGUISH
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_t2 = nor2(_LUFA_DMA_VRAMp_t0, pix_pipe.XYMU_RENDERINGn.qn03_new());
 
@@ -2623,298 +2921,6 @@ void GateBoy::tock_slow() {
     /* p32.PYJU*/ vram_bus.PYJU_TILE_DB7p.dff11(_LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp_in[7].to_wire_new());
   }
 #pragma endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // THE LINE OF DESPAIR AND ANGUISH
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   //----------------------------------------
   // 10 sprite stores

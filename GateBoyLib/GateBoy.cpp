@@ -1219,51 +1219,45 @@ void GateBoy::tock_slow() {
 
 
 
+  {
+    /*#p21.PURE*/ wire _PURE_LINE_P908n_t0 = not1(lcd_reg.RUTU_x113p.qp17_new());
+    /*#p21.SELA*/ wire _SELA_LINE_P908p_t0 = not1(_PURE_LINE_P908n_t0);
+    /*#p21.XYVO*/ wire _XYVO_y144p_t0 = and2(lcd_reg.LOVU_LY4p.qp17_new(), lcd_reg.LAFO_LY7p.qp17_new()); // 128 + 16 = 144
+    /*#p29.ALES*/ wire _ALES_y144n_t0 = not1(_XYVO_y144p_t0);
+    /*#p29.ABOV*/ wire _ABOV_LINE_P908p_t0 = and2(_SELA_LINE_P908p_t0, _ALES_y144n_t0);
+    /*#p29.CATU*/ lcd_reg.CATU_LINE_P000p.dff17(_XUPY_ABxxEFxx_s, _ABEZ_VID_RSTn_s, _ABOV_LINE_P908p_t0);
+  }
+
+
+  {
+    /*#p21.XYVO*/ wire _XYVO_y144p_t0_s = and2(lcd_reg.LOVU_LY4p.qp17_new(), lcd_reg.LAFO_LY7p.qp17_new()); // 128 + 16 = 144
+    /*#p21.POPU*/ lcd_reg.POPU_VBLANK_CLKp.dff17(lcd_reg.NYPE_x113p.qp17_new(), _LYFE_VID_RSTn_s, _XYVO_y144p_t0_s);
+  }
 
 
 
 
+  {
+    /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p_t0 = xnor2(pix_pipe.NESO_WY0n_s.qn08_new(), lcd_reg.MUWY_LY0p.qp17_new());
+    /* p27.PEBO*/ wire _PEBO_WY_MATCH1p_t0 = xnor2(pix_pipe.NYRO_WY1n_s.qn08_new(), lcd_reg.MYRO_LY1p.qp17_new());
+    /* p27.POMO*/ wire _POMO_WY_MATCH2p_t0 = xnor2(pix_pipe.NAGA_WY2n_s.qn08_new(), lcd_reg.LEXA_LY2p.qp17_new());
+    /* p27.NEVU*/ wire _NEVU_WY_MATCH3p_t0 = xnor2(pix_pipe.MELA_WY3n_s.qn08_new(), lcd_reg.LYDO_LY3p.qp17_new());
+    /* p27.NOJO*/ wire _NOJO_WY_MATCH4p_t0 = xnor2(pix_pipe.NULO_WY4n_s.qn08_new(), lcd_reg.LOVU_LY4p.qp17_new());
+    /* p27.PAGA*/ wire _PAGA_WY_MATCH5p_t0 = xnor2(pix_pipe.NENE_WY5n_s.qn08_new(), lcd_reg.LEMA_LY5p.qp17_new());
+    /* p27.PEZO*/ wire _PEZO_WY_MATCH6p_t0 = xnor2(pix_pipe.NUKA_WY6n_s.qn08_new(), lcd_reg.MATO_LY6p.qp17_new());
+    /* p27.NUPA*/ wire _NUPA_WY_MATCH7p_t0 = xnor2(pix_pipe.NAFU_WY7n_s.qn08_new(), lcd_reg.LAFO_LY7p.qp17_new());
 
+    /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn_t0  = nand5(pix_pipe.WYMO_LCDC_WINENn_s.qn08_new(), _NOJO_WY_MATCH4p_t0, _PAGA_WY_MATCH5p_t0, _PEZO_WY_MATCH6p_t0, _NUPA_WY_MATCH7p_t0);
+    /* p27.NELE*/ wire _NELE_WY_MATCH_HIp_t0  = not1(_PALO_WY_MATCH_HIn_t0);
+    /* p27.PAFU*/ wire _PAFU_WY_MATCHn_t0     = nand5(_NELE_WY_MATCH_HIp_t0, _NAZE_WY_MATCH0p_t0, _PEBO_WY_MATCH1p_t0, _POMO_WY_MATCH2p_t0, _NEVU_WY_MATCH3p_t0);
+    /* p27.ROGE*/ wire _ROGE_WY_MATCHp_t0     = not1(_PAFU_WY_MATCHn_t0);
 
+    /* p27.SARY*/ pix_pipe.SARY_WY_MATCHp.dff17(_TALU_xxCDEFxx_s, _XAPO_VID_RSTn_s, _ROGE_WY_MATCHp_t0);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(lcd_reg.POPU_VBLANK_CLKp.qn16_new());
+    /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_s);
+    /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(pix_pipe.SARY_WY_MATCHp.qp17_new(), _REPU_VBLANK_RSTp_t3);
+  }
 
 
 
@@ -1314,14 +1308,6 @@ void GateBoy::tock_slow() {
   }
 
 
-  {
-    /*#p21.PURE*/ wire _PURE_LINE_P908n_t0 = not1(lcd_reg.RUTU_x113p.qp17_new());
-    /*#p21.SELA*/ wire _SELA_LINE_P908p_t0 = not1(_PURE_LINE_P908n_t0);
-    /*#p21.XYVO*/ wire _XYVO_y144p_t0 = and2(lcd_reg.LOVU_LY4p.qp17_new(), lcd_reg.LAFO_LY7p.qp17_new()); // 128 + 16 = 144
-    /*#p29.ALES*/ wire _ALES_y144n_t0 = not1(_XYVO_y144p_t0);
-    /*#p29.ABOV*/ wire _ABOV_LINE_P908p_t0 = and2(_SELA_LINE_P908p_t0, _ALES_y144n_t0);
-    /*#p29.CATU*/ lcd_reg.CATU_LINE_P000p.dff17(_XUPY_ABxxEFxx_s, _ABEZ_VID_RSTn_s, _ABOV_LINE_P908p_t0);
-  }
 
   {
     /*#p28.AWOH*/ wire _AWOH_xxCDxxGH_t1 = not1(_XUPY_ABxxEFxx_s);
@@ -1337,11 +1323,6 @@ void GateBoy::tock_slow() {
     /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(pix_pipe.NUNU_WX_MATCH_Bp.qp17_old(), _XOFO_WIN_RSTp_t2);
     /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17     (_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.PYNU_WIN_MODE_Ap.qp04_new());
     /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.RYDY_WIN_HITp.to_wire_new());
-  }
-
-  {
-    /*#p21.XYVO*/ wire _XYVO_y144p_t0 = and2(lcd_reg.LOVU_LY4p.qp17_new(), lcd_reg.LAFO_LY7p.qp17_new()); // 128 + 16 = 144
-    /*#p21.POPU*/ lcd_reg.POPU_VBLANK_CLKp.dff17(lcd_reg.NYPE_x113p.qp17_new(), _LYFE_VID_RSTn_s, _XYVO_y144p_t0);
   }
 
 
@@ -1558,10 +1539,11 @@ void GateBoy::tock_slow() {
   //----------------------------------------
   // Pixel counter, has carry lookahead because this can increment every tcycle
 
-  /*#p24.VYBO*/ wire _VYBO_CLKPIPEp_t2 = nor3(_FEPO_STORE_MATCHp_t0, _WODU_HBLANKp_t0, _MYVO_AxCxExGx_s);
   /*#p27.SYLO*/ wire _SYLO_WIN_HITn_t0 = not1(pix_pipe.RYDY_WIN_HITp.to_wire_new());
   /*#p24.TOMU*/ wire _TOMU_WIN_HITp_t0 = not1(_SYLO_WIN_HITn_t0);
   /*#p24.SOCY*/ wire _SOCY_WIN_HITn_t0 = not1(_TOMU_WIN_HITp_t0);
+
+  /*#p24.VYBO*/ wire _VYBO_CLKPIPEp_t2 = nor3(_FEPO_STORE_MATCHp_t0, _WODU_HBLANKp_t0, _MYVO_AxCxExGx_s);
   /*#p24.TYFA*/ wire _TYFA_CLKPIPEp_t2 = and3(_SOCY_WIN_HITn_t0, tile_fetcher.POKY_PRELOAD_LATCHp.qp04_new(), _VYBO_CLKPIPEp_t2);
   /*#p24.SEGU*/ wire _SEGU_CLKPIPEn_t2 = not1(_TYFA_CLKPIPEp_t2);
   /*#p24.SACU*/ wire _SACU_CLKPIPEp_t2 = or2(_SEGU_CLKPIPEn_t2, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp04_new()); // Schematic wrong, this is OR
@@ -1599,28 +1581,6 @@ void GateBoy::tock_slow() {
 
   //----------------------------------------
   // Window matcher
-
-  {
-    /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p_t0 = xnor2(pix_pipe.NESO_WY0n_s.qn08_new(), lcd_reg.MUWY_LY0p.qp17_new());
-    /* p27.PEBO*/ wire _PEBO_WY_MATCH1p_t0 = xnor2(pix_pipe.NYRO_WY1n_s.qn08_new(), lcd_reg.MYRO_LY1p.qp17_new());
-    /* p27.POMO*/ wire _POMO_WY_MATCH2p_t0 = xnor2(pix_pipe.NAGA_WY2n_s.qn08_new(), lcd_reg.LEXA_LY2p.qp17_new());
-    /* p27.NEVU*/ wire _NEVU_WY_MATCH3p_t0 = xnor2(pix_pipe.MELA_WY3n_s.qn08_new(), lcd_reg.LYDO_LY3p.qp17_new());
-    /* p27.NOJO*/ wire _NOJO_WY_MATCH4p_t0 = xnor2(pix_pipe.NULO_WY4n_s.qn08_new(), lcd_reg.LOVU_LY4p.qp17_new());
-    /* p27.PAGA*/ wire _PAGA_WY_MATCH5p_t0 = xnor2(pix_pipe.NENE_WY5n_s.qn08_new(), lcd_reg.LEMA_LY5p.qp17_new());
-    /* p27.PEZO*/ wire _PEZO_WY_MATCH6p_t0 = xnor2(pix_pipe.NUKA_WY6n_s.qn08_new(), lcd_reg.MATO_LY6p.qp17_new());
-    /* p27.NUPA*/ wire _NUPA_WY_MATCH7p_t0 = xnor2(pix_pipe.NAFU_WY7n_s.qn08_new(), lcd_reg.LAFO_LY7p.qp17_new());
-
-    /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn_t0  = nand5(pix_pipe.WYMO_LCDC_WINENn_s.qn08_new(), _NOJO_WY_MATCH4p_t0, _PAGA_WY_MATCH5p_t0, _PEZO_WY_MATCH6p_t0, _NUPA_WY_MATCH7p_t0);
-    /* p27.NELE*/ wire _NELE_WY_MATCH_HIp_t0  = not1(_PALO_WY_MATCH_HIn_t0);
-    /* p27.PAFU*/ wire _PAFU_WY_MATCHn_t0     = nand5(_NELE_WY_MATCH_HIp_t0, _NAZE_WY_MATCH0p_t0, _PEBO_WY_MATCH1p_t0, _POMO_WY_MATCH2p_t0, _NEVU_WY_MATCH3p_t0);
-    /* p27.ROGE*/ wire _ROGE_WY_MATCHp_t0     = not1(_PAFU_WY_MATCHn_t0);
-
-    /* p27.SARY*/ pix_pipe.SARY_WY_MATCHp.dff17(_TALU_xxCDEFxx_s, _XAPO_VID_RSTn_s, _ROGE_WY_MATCHp_t0);
-
-    /*#p21.PARU*/ wire _PARU_VBLANKp_t3 = not1(lcd_reg.POPU_VBLANK_CLKp.qn16_new());
-    /* p27.REPU*/ wire _REPU_VBLANK_RSTp_t3 = or2(_PARU_VBLANKp_t3, _PYRY_VID_RSTp_s);
-    /* p27.REJO*/ pix_pipe.REJO_WY_MATCHp.nor_latch(pix_pipe.SARY_WY_MATCHp.qp17_new(), _REPU_VBLANK_RSTp_t3);
-  }
 
   {
     /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p_t0 = xnor2(pix_pipe.XEHO_PX0p.qp17_new(), pix_pipe.MYPA_WX0n_s.qn08_new());

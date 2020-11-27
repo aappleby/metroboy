@@ -598,7 +598,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
-  d("DMA Addr 0x%02x:%02x\n", pack_u8n_old(8, &gb->dma_reg.NAFA_DMA_A08n_s), pack_u8p_old(8, &gb->dma_reg.NAKY_DMA_A00p));
+  d("DMA Addr 0x%02x:%02x\n", pack_u8n_old(8, &gb->dma_reg.NAFA_DMA_A08n), pack_u8p_old(8, &gb->dma_reg.NAKY_DMA_A00p));
   d("\n");
   d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma_reg.MATU_DMA_RUNNINGp.state);
   d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma_reg.LYXE_DMA_LATCHp  .state);
@@ -608,7 +608,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma_reg.LOKY_DMA_LATCHp  .state);
   d("\n");
   d.dump_slice2p("DMA_A_LOW ", &gb->dma_reg.NAKY_DMA_A00p, 8);
-  d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n_s, 8);
+  d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n, 8);
   d("\n");
 
   d("\002===== Int Reg =====\001\n");

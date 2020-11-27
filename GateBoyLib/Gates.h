@@ -138,6 +138,9 @@ struct DFF8n : public DFF {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public DFF {
+  wire qn07() const { return qn(); }
+  wire qp08() const { return qp(); }
+
   wire qn07_old() const { return qn_old(); }
   wire qp08_old() const { return qp_old(); }
 
@@ -198,9 +201,10 @@ struct DFF9 : public DFF {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public DFF {
-  wire q11p_old() const { return qp_old(); }
+  wire qp11() const { return qp(); }
 
-  wire q11p_new() const { return qp_new(); }
+  wire qp11_old() const { return qp_old(); }
+  wire qp11_new() const { return qp_new(); }
 
   void dff11(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
 };

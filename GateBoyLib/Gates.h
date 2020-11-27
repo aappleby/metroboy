@@ -112,6 +112,9 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public DFF {
+  wire qn07()     const { return qn(); }
+  wire qp08()     const { return qp(); }
+
   wire qn07_old() const { return qn_old(); }
   wire qp08_old() const { return qp_old(); }
 

@@ -18,21 +18,12 @@ inline uint64_t commit_and_hash(T& obj) {
 
 #pragma pack(push, 1)
 struct BitBase {
-  void reset(uint8_t s) {
-    state = s;
-  }
+  void reset(uint8_t s) { state = s; }
 
-  wire to_wire_chain() const { return to_wire_old(); }
-
-  wire to_wire_old() const {
-    CHECK_N(bit_dirty);
-    return bit_data;
-  }
-
-  wire to_wire_new() const {
-    CHECK_P(bit_dirty);
-    return bit_data;
-  }
+  wire to_wire()       const { return bit_data; }
+  wire to_wire_chain() const { CHECK_N(bit_dirty); return bit_data; }
+  wire to_wire_old()   const { CHECK_N(bit_dirty); return bit_data; }
+  wire to_wire_new()   const { CHECK_P(bit_dirty); return bit_data; }
 
   char c() const    { return bit_data ? '1' : '0'; }
   char cn() const   { return bit_data ? '0' : '1'; }
@@ -63,8 +54,9 @@ constexpr uint8_t REG_D1C1 = 0b00000011;
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
+  wire qp()       const { return  to_wire(); }
+
   void set(wire D) {
-    CHECK_N(bit_dirty);
     state = D;
     bit_dirty = 1;
   }
@@ -76,17 +68,17 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
+
+  wire qp()       const { return  to_wire(); }
+  wire qn()       const { return !to_wire(); }
   wire qp_chain() const { return  to_wire_old(); }
-
-  wire qp_old() const { return  to_wire_old(); }
-  wire qn_old() const { return !to_wire_old(); }
-
-  wire qp_new() const { return  to_wire_new(); }
-  wire qn_new() const { return !to_wire_new(); }
+  wire qn_chain() const { return  to_wire_old(); }
+  wire qp_old()   const { return  to_wire_old(); }
+  wire qn_old()   const { return !to_wire_old(); }
+  wire qp_new()   const { return  to_wire_new(); }
+  wire qn_new()   const { return !to_wire_new(); }
 
   void dff(wire CLKp, wire Dp) {
-    CHECK_N(bit_dirty);
-
     if (!bit_clock && CLKp) {
       bit_data = (Dp || bit_set) && !bit_rst;
     }
@@ -257,6 +249,9 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
+  wire qn16() const { return qn(); }
+  wire qp17() const { return qp(); }
+
   wire qn16_chain() const { return qn_old(); }
   wire qp17_chain() const { return qp_old(); }
 
@@ -266,8 +261,8 @@ struct DFF17 : public DFF {
   wire qn16_new() const { return qn_new(); }
   wire qp17_new() const { return qp_new(); }
 
-  void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-  void dff17_rst(wire RSTn)         { dff_RSTn(RSTn); }
+  //void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
+  //void dff17_rst(wire RSTn)         { dff_RSTn(RSTn); }
 
   void dff17(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
 };
@@ -297,11 +292,23 @@ struct DFF17 : public DFF {
 // DFF20_20 << CLKn
 
 struct DFF20 : public DFF {
+  wire qp01()     const { return  to_wire(); }
+  wire qn17()     const { return !to_wire(); }
+
   wire qp01_old() const { return  to_wire_old(); }
   wire qn17_old() const { return !to_wire_old(); }
 
   wire qp01_new() const { return  to_wire_new(); }
   wire qn17_new() const { return !to_wire_new(); }
+
+  void dff20_ff(wire CLKn) {
+    dff(!CLKn, !bit_data);
+  }
+
+  void dff20_load(wire LOADp, wire newD) {
+    dff_SETn(!(LOADp && newD));
+    dff_RSTn(!(LOADp && !newD));
+  }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {
     dff(!CLKn, !bit_data);
@@ -357,13 +364,14 @@ struct DFF22 : public DFF {
 // Tristate bus, can have multiple drivers.
 
 struct TriBase : public BitBase {
-  wire to_wire_new() const {
-    CHECK_P(bit_dirty);
-    return bit_data | !bit_driven;
-  }
+  wire to_wire()     const { return bit_data | !bit_driven; }
+  wire to_wire_new() const { CHECK_P(bit_dirty); return to_wire(); }
 
-  wire qp() const { return  to_wire_new(); }
-  wire qn() const { return !to_wire_new(); }
+  wire qp()     const { return  to_wire(); }
+  wire qn()     const { return !to_wire(); }
+
+  wire qp_new() const { return  to_wire_new(); }
+  wire qn_new() const { return !to_wire_new(); }
 
   void tri(wire OEp, wire Dp) {
     if (OEp) {
@@ -416,9 +424,10 @@ struct Pin2 : public TriBase {
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
+  wire qn03()     const { return !to_wire(); }
+  wire qp04()     const { return  to_wire(); }
   wire qn03_old() const { return !to_wire_old(); }
   wire qp04_old() const { return  to_wire_old(); }
-
   wire qn03_new() const { return !to_wire_new(); }
   wire qp04_new() const { return  to_wire_new(); }
 

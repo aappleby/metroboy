@@ -17,14 +17,14 @@ struct DmaRegisters {
     NUTO_DMA_A06p.reset(REG_D0C1);
     MUGU_DMA_A07p.reset(REG_D0C1);
 
-    NAFA_DMA_A08n.reset(REG_D0C1);
-    PYNE_DMA_A09n.reset(REG_D0C1);
-    PARA_DMA_A10n.reset(REG_D0C1);
-    NYDO_DMA_A11n.reset(REG_D0C1);
-    NYGY_DMA_A12n.reset(REG_D0C1);
-    PULA_DMA_A13n.reset(REG_D0C1);
-    POKU_DMA_A14n.reset(REG_D0C1);
-    MARU_DMA_A15n.reset(REG_D0C1);
+    NAFA_DMA_A08n_s.reset(REG_D0C1);
+    PYNE_DMA_A09n_s.reset(REG_D0C1);
+    PARA_DMA_A10n_s.reset(REG_D0C1);
+    NYDO_DMA_A11n_s.reset(REG_D0C1);
+    NYGY_DMA_A12n_s.reset(REG_D0C1);
+    PULA_DMA_A13n_s.reset(REG_D0C1);
+    POKU_DMA_A14n_s.reset(REG_D0C1);
+    MARU_DMA_A15n_s.reset(REG_D0C1);
 
     LYXE_DMA_LATCHp.reset(0);
 
@@ -48,14 +48,14 @@ struct DmaRegisters {
     NUTO_DMA_A06p.reset(REG_D0C0);
     MUGU_DMA_A07p.reset(REG_D0C0);
 
-    NAFA_DMA_A08n.reset(REG_D0C0);
-    PYNE_DMA_A09n.reset(REG_D0C0);
-    PARA_DMA_A10n.reset(REG_D0C0);
-    NYDO_DMA_A11n.reset(REG_D0C0);
-    NYGY_DMA_A12n.reset(REG_D0C0);
-    PULA_DMA_A13n.reset(REG_D0C0);
-    POKU_DMA_A14n.reset(REG_D0C0);
-    MARU_DMA_A15n.reset(REG_D0C0);
+    NAFA_DMA_A08n_s.reset(REG_D0C0);
+    PYNE_DMA_A09n_s.reset(REG_D0C0);
+    PARA_DMA_A10n_s.reset(REG_D0C0);
+    NYDO_DMA_A11n_s.reset(REG_D0C0);
+    NYGY_DMA_A12n_s.reset(REG_D0C0);
+    PULA_DMA_A13n_s.reset(REG_D0C0);
+    POKU_DMA_A14n_s.reset(REG_D0C0);
+    MARU_DMA_A15n_s.reset(REG_D0C0);
 
     LYXE_DMA_LATCHp.reset(0);
 
@@ -85,14 +85,14 @@ struct DmaRegisters {
   /*p04.NUTO*/ DFF17 NUTO_DMA_A06p;
   /*p04.MUGU*/ DFF17 MUGU_DMA_A07p;
 
-  /*p04.NAFA*/ DFF8p NAFA_DMA_A08n;
-  /*p04.PYNE*/ DFF8p PYNE_DMA_A09n;
-  /*p04.PARA*/ DFF8p PARA_DMA_A10n;
-  /*p04.NYDO*/ DFF8p NYDO_DMA_A11n;
-  /*p04.NYGY*/ DFF8p NYGY_DMA_A12n;
-  /*p04.PULA*/ DFF8p PULA_DMA_A13n;
-  /*p04.POKU*/ DFF8p POKU_DMA_A14n;
-  /*p04.MARU*/ DFF8p MARU_DMA_A15n;
+  /*p04.NAFA*/ DFF8p NAFA_DMA_A08n_s;
+  /*p04.PYNE*/ DFF8p PYNE_DMA_A09n_s;
+  /*p04.PARA*/ DFF8p PARA_DMA_A10n_s;
+  /*p04.NYDO*/ DFF8p NYDO_DMA_A11n_s;
+  /*p04.NYGY*/ DFF8p NYGY_DMA_A12n_s;
+  /*p04.PULA*/ DFF8p PULA_DMA_A13n_s;
+  /*p04.POKU*/ DFF8p POKU_DMA_A14n_s;
+  /*p04.MARU*/ DFF8p MARU_DMA_A15n_s;
 
 };
 

@@ -498,29 +498,29 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Clocks =====\001\n");
-  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGHp.c(), gb->clk_reg.ALEF_AxxxxFGHp.c(), gb->clk_reg.APUK_ABxxxxGHp.c(), gb->clk_reg.ADYK_ABCxxxxHp.c());
+  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGHp_s.c(), gb->clk_reg.ALEF_AxxxxFGHp_s.c(), gb->clk_reg.APUK_ABxxxxGHp_s.c(), gb->clk_reg.ADYK_ABCxxxxHp_s.c());
   d("\n");
-  d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp.state);
-  d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp.state);
+  d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp_s.state);
+  d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn_s.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp_s.state);
   d("\n");
-  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp.state);
-  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp.state);
-  d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp.state);
-  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp.state);
+  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp_s.state);
+  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp_s.state);
+  d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp_s.state);
+  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp_s.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->clk_reg.WOSU_AxxDExxHp.state);
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp_s.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp_s.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->clk_reg.WOSU_AxxDExxHp_s.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");
   d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY.state);
   d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp.state);
-  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p, 16);
+  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p_s, 16);
   d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p, 8);
-  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p, 8);
-  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p, 3);
+  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p_s, 8);
+  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p_s, 3);
   d("\n");
 
   d("\002===== Ints =====\001\n");
@@ -551,15 +551,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("AGEM_JP_GLITCH2", gb->joypad.AGEM_JP_GLITCH2.state);
   d.dump_bitp("APUG_JP_GLITCH3", gb->joypad.APUG_JP_GLITCH3.state);
   d("\n");
-  d.dump_bitp("JUTE_JOYP_RA   ", gb->joypad.JUTE_JOYP_RA.state);
-  d.dump_bitp("KECY_JOYP_LB   ", gb->joypad.KECY_JOYP_LB.state);
-  d.dump_bitp("JALE_JOYP_UC   ", gb->joypad.JALE_JOYP_UC.state);
-  d.dump_bitp("KYME_JOYP_DS   ", gb->joypad.KYME_JOYP_DS.state);
-  d.dump_bitp("KELY_JOYP_UDLR ", gb->joypad.KELY_JOYP_UDLRp.state);
-  d.dump_bitp("COFY_JOYP_ABCS ", gb->joypad.COFY_JOYP_ABCSp.state);
+  d.dump_bitp("JUTE_JOYP_RA   ", gb->joypad.JUTE_JOYP_RA_s.state);
+  d.dump_bitp("KECY_JOYP_LB   ", gb->joypad.KECY_JOYP_LB_s.state);
+  d.dump_bitp("JALE_JOYP_UC   ", gb->joypad.JALE_JOYP_UC_s.state);
+  d.dump_bitp("KYME_JOYP_DS   ", gb->joypad.KYME_JOYP_DS_s.state);
+  d.dump_bitp("KELY_JOYP_UDLR ", gb->joypad.KELY_JOYP_UDLRp_s.state);
+  d.dump_bitp("COFY_JOYP_ABCS ", gb->joypad.COFY_JOYP_ABCSp_s.state);
   d("\n");
-  d.dump_bitn("KUKO_DBG_FF00_D", gb->joypad.KUKO_DBG_FF00_D6n.state);
-  d.dump_bitn("KERU_DBG_FF00_D", gb->joypad.KERU_DBG_FF00_D7n.state);
+  d.dump_bitn("KUKO_DBG_FF00_D", gb->joypad.KUKO_DBG_FF00_D6n_s.state);
+  d.dump_bitn("KERU_DBG_FF00_D", gb->joypad.KERU_DBG_FF00_D7n_s.state);
   d("\n");
   d.dump_bitn("KEVU_JOYP_L0   ", gb->joypad.KEVU_JOYP_L0n.state);
   d.dump_bitn("KAPA_JOYP_L1   ", gb->joypad.KAPA_JOYP_L1n.state);
@@ -598,7 +598,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
-  d("DMA Addr 0x%02x:%02x\n", pack_u8n_old(8, &gb->dma_reg.NAFA_DMA_A08n), pack_u8p_old(8, &gb->dma_reg.NAKY_DMA_A00p));
+  d("DMA Addr 0x%02x:%02x\n", pack_u8n_old(8, &gb->dma_reg.NAFA_DMA_A08n_s), pack_u8p_old(8, &gb->dma_reg.NAKY_DMA_A00p));
   d("\n");
   d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma_reg.MATU_DMA_RUNNINGp.state);
   d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma_reg.LYXE_DMA_LATCHp  .state);
@@ -608,7 +608,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma_reg.LOKY_DMA_LATCHp  .state);
   d("\n");
   d.dump_slice2p("DMA_A_LOW ", &gb->dma_reg.NAKY_DMA_A00p, 8);
-  d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n, 8);
+  d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n_s, 8);
   d("\n");
 
   d("\002===== Int Reg =====\001\n");
@@ -646,13 +646,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd_reg.LUCA_LINE_EVENp.state);
   d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd_reg.NAPO_FRAME_EVENp.state);
   d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p.state);
-  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_VBLANK_CLKp.state);
+  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_x113p.state);
   d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p.state);
-  d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_LINE_P910p.state);
+  d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_x113p.state);
   d("\n");
   d.dump_slice2p("LX  ", &gb->lcd_reg.SAXO_LX0p.state,  7);
   d.dump_slice2p("LY  ", &gb->lcd_reg.MUWY_LY0p.state,  8);
-  d.dump_slice2n("LYC ", &gb->lcd_reg.SYRY_LYC0n.state, 8);
+  d.dump_slice2n("LYC ", &gb->lcd_reg.SYRY_LYC0n_s.state, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -701,15 +701,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_0, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0, 8);
   d("\n");
-  d.dump_slice2n("FF40 LCDC ", &gb->pix_pipe.VYXE_LCDC_BGENn, 8);
-  d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn, 4);
-  d.dump_slice2n("FF42 SCY  ", &gb->pix_pipe.GAVE_SCY0n, 8);
-  d.dump_slice2n("FF43 SCX  ", &gb->pix_pipe.DATY_SCX0n, 8);
-  d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n, 8);
-  d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n, 8);
-  d.dump_slice2n("FF49 OBP1 ", &gb->pix_pipe.MOXY_OBP1_D0n, 8);
-  d.dump_slice2n("FF4A WY   ", &gb->pix_pipe.NESO_WY0n, 8);
-  d.dump_slice2n("FF4B WX   ", &gb->pix_pipe.MYPA_WX0n, 8);
+  d.dump_slice2n("FF40 LCDC ", &gb->pix_pipe.VYXE_LCDC_BGENn_s, 8);
+  d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn_s, 4);
+  d.dump_slice2n("FF42 SCY  ", &gb->pix_pipe.GAVE_SCY0n_s, 8);
+  d.dump_slice2n("FF43 SCX  ", &gb->pix_pipe.DATY_SCX0n_s, 8);
+  d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n_s, 8);
+  d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n_s, 8);
+  d.dump_slice2n("FF49 OBP1 ", &gb->pix_pipe.MOXY_OBP1_D0n_s, 8);
+  d.dump_slice2n("FF4A WY   ", &gb->pix_pipe.NESO_WY0n_s, 8);
+  d.dump_slice2n("FF4B WX   ", &gb->pix_pipe.MYPA_WX0n_s, 8);
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;
@@ -798,7 +798,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->BOOT_BITn.qp17_old()) {
+    if (!gb->BOOT_BITn_s.qp17_old()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;

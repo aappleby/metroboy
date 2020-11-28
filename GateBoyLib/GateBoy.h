@@ -84,19 +84,13 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void next_phase() {
-    do {
-      next_pass();
-    } while(!sim_stable);
-  }
-
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();
     }
   }
 
-  void next_pass();
+  void next_phase();
 
   void tock_slow();
   void commit_and_hash();

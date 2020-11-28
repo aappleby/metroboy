@@ -313,6 +313,9 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 
+inline void ASSERT_P (wire A)         { if (!A)     __debugbreak(); }
+inline void ASSERT_N (wire A)         { if (A)      __debugbreak(); }
+
 //#if _DEBUG
 #if 1
 

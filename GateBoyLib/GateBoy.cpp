@@ -310,23 +310,24 @@ struct GateBoyOffsets {
 
 static std::set<int> bad_bits;
 
-void GateBoy::next_pass() {
+void GateBoy::next_phase() {
 
   //----------------------------------------
   // Run one pass of our simulation.
 
   static GateBoy gb_old;
 
-  if (sys_statediff) {
-    gb_old = *this;
-  }
-
   probes.begin_pass(pass_count);
 
   tock_slow();
   commit_and_hash();
 
-  sim_stable = true;
+  if (sys_statediff) {
+    gb_old = *this;
+  }
+
+  tock_slow();
+  commit_and_hash();
 
   probes.end_pass(sim_stable);
 
@@ -356,6 +357,8 @@ void GateBoy::next_pass() {
       }
     }
   }
+
+  ASSERT_P(sim_stable);
 
   //----------------------------------------
   // Once the simulation converges, latch the data that needs to go back to the

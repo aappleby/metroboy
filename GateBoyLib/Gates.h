@@ -204,6 +204,10 @@ struct DFF17 : public DFF {
     bit_clock = CLKp;
     bit_data = bit_data && RSTn;
   }
+
+  void RSTn(wire RSTn) {
+    bit_data = bit_data && RSTn;
+  }
 };
 
 //-----------------------------------------------------------------------------

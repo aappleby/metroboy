@@ -45,12 +45,12 @@ struct BitBase {
     struct {
       uint8_t bit_data : 1;
       uint8_t bit_clock : 1;
-      uint8_t bit_set : 1;
-      uint8_t bit_rst : 1;
+      uint8_t bit_pad1 : 1;
+      uint8_t bit_pad2 : 1;
       uint8_t bit_driven : 1;
-      uint8_t bit_pad : 1;
-      uint8_t bit_locked : 1;
-      uint8_t bit_error : 1;
+      uint8_t bit_pad3 : 1;
+      uint8_t bit_pad4 : 1;
+      uint8_t bit_pad5 : 1;
     };
   };
 };
@@ -90,14 +90,9 @@ struct DFF : public BitBase {
   wire qn_new()   const { return !to_wire_new(); }
 
   void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    if (!bit_clock && CLKp) {
-      bit_data = (Dp || bit_set) && !bit_rst;
-    }
-
-    if (!SETn) bit_data = 0;
-    if (!RSTn) bit_data = 1;
-
+    if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
+    bit_data = (bit_data || !SETn) && RSTn;
   }
 };
 
@@ -374,15 +369,9 @@ struct DFF22 : public DFF {
 
   // SETn and RSTn _must_ be asynchronous, as they're used to load the pixel pipes when the pixel clock is _not_ running.
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    if (!bit_clock && CLKp) {
-      bit_data = (Dp || bit_set) && !bit_rst;
-    }
-
+    if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
-    bit_set = !SETn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_rst = !RSTn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_data = (bit_data || !SETn) && RSTn;
   }
 };
 
@@ -390,7 +379,11 @@ struct DFF22 : public DFF {
 // Tristate bus, can have multiple drivers.
 
 struct TriBase : public BitBase {
-  wire to_wire()     const { return bit_data | !bit_driven; }
+  TriBase() {
+    bit_data = 1;
+  }
+
+  wire to_wire()     const { return bit_data; }
   wire to_wire_new() const { CHECK_DIRTY_P(); return to_wire(); }
 
   wire qp()     const { return  to_wire(); }
@@ -457,9 +450,8 @@ struct NorLatch : public BitBase {
   wire qp04_new() const { return  to_wire_new(); }
 
   void nor_latch(wire SETp, wire RSTp) {
-    bit_set = SETp;
-    bit_rst = RSTp;
-    bit_data = (bit_data || bit_set) && !bit_rst;
+    if (SETp) bit_data = 1;
+    if (RSTp) bit_data = 0;
   }
 };
 
@@ -484,9 +476,8 @@ struct NandLatch : public BitBase {
   wire qn04_new() const { return !to_wire_new(); }
 
   void nand_latch(wire SETn, wire RSTn) {
-    bit_set = !SETn;
-    bit_rst = !RSTn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
+    if (!SETn) bit_data = 1;
+    if (!RSTn) bit_data = 0;
   }
 };
 

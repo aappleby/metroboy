@@ -188,14 +188,9 @@ struct DFF9 : public DFF {
   wire qp09_new() const { return qp_new(); }
 
   void dff9(wire CLKp, wire SETn, wire Dn) {
-    if (!bit_clock && CLKp) {
-      bit_data = ((!Dn) || bit_set);
-    }
-
+    if (!bit_clock && CLKp) bit_data = !Dn;
     bit_clock = CLKp;
-
-    bit_set = !SETn;
-    bit_data = (bit_data || bit_set);
+    bit_data = bit_data || !SETn;
   }
 };
 

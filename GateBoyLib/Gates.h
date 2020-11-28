@@ -365,6 +365,7 @@ struct DFF22 : public DFF {
   wire qn15_new() const { return !to_wire_new(); }
   wire qp16_new() const { return  to_wire_new(); }
 
+  // SETn and RSTn _must_ be asynchronous, as they're used to load the pixel pipes when the pixel clock is _not_ running.
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     dff(CLKp, Dp);
     dff_SETn(SETn);

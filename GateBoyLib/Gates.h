@@ -328,19 +328,9 @@ struct DFF20 : public DFF {
   wire qn17_new() const { return !to_wire_new(); }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {
-    wire SETn = !(LOADp && newD);
-    wire RSTn = !(LOADp && !newD);
-
-    if (!bit_clock && !CLKn) {
-      bit_data = (!bit_data || bit_set) && !bit_rst;
-    }
-
+    if (!bit_clock && !CLKn) bit_data = !bit_data;
     bit_clock = !CLKn;
-
-    bit_set = !SETn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_rst = !RSTn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
+    if (LOADp) bit_data = newD;
   }
 };
 

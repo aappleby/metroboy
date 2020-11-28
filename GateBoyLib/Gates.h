@@ -48,7 +48,7 @@ struct BitBase {
       uint8_t bit_set : 1;
       uint8_t bit_rst : 1;
       uint8_t bit_driven : 1;
-      uint8_t bit_dirty : 1;
+      uint8_t bit_pad : 1;
       uint8_t bit_locked : 1;
       uint8_t bit_error : 1;
     };
@@ -70,7 +70,6 @@ struct Gate : public BitBase {
 
   void set(wire D) {
     state = D;
-    bit_dirty = 1;
   }
 
   void operator = (wire D) { set(D); }
@@ -96,7 +95,6 @@ struct DFF : public BitBase {
     }
 
     bit_clock = CLKp;
-    bit_dirty = 1;
   }
 
   void dff_SETn(wire SETn) {
@@ -118,7 +116,6 @@ struct DFF : public BitBase {
     if (!RSTn) bit_data = 1;
 
     bit_clock = CLKp;
-    bit_dirty = 1;
   }
 };
 
@@ -207,8 +204,14 @@ struct DFF9 : public DFF {
   wire qp09_new() const { return qp_new(); }
 
   void dff9(wire CLKp, wire SETn, wire Dn) {
-    dff_SETn(SETn);
-    dff(CLKp, !Dn);
+    if (!bit_clock && CLKp) {
+      bit_data = ((!Dn) || bit_set);
+    }
+
+    bit_clock = CLKp;
+
+    bit_set = !SETn;
+    bit_data = (bit_data || bit_set);
   }
 };
 
@@ -299,8 +302,10 @@ struct DFF17 : public DFF {
   wire qp17_new() const { return qp_new(); }
 
   void dff17(wire CLKp, wire RSTn, wire Dp) {
-    dff_RSTn(RSTn);
-    dff(CLKp, Dp);
+    if (!bit_clock && CLKp) bit_data = Dp;
+
+    bit_clock = CLKp;
+    bit_data = bit_data && RSTn;
   }
 };
 
@@ -411,7 +416,6 @@ struct TriBase : public BitBase {
       bit_driven = 1;
       bit_data = Dp;
     }
-    bit_dirty = 1;
   }
 };
 
@@ -467,7 +471,6 @@ struct NorLatch : public BitBase {
     bit_set = SETp;
     bit_rst = RSTp;
     bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_dirty = 1;
   }
 };
 
@@ -495,7 +498,6 @@ struct NandLatch : public BitBase {
     bit_set = !SETn;
     bit_rst = !RSTn;
     bit_data = (bit_data || bit_set) && !bit_rst;
-    bit_dirty = 1;
   }
 };
 
@@ -525,7 +527,6 @@ struct TpLatch : public BitBase {
 
   void tp_latch(wire HOLDn, wire D) {
     if (HOLDn) bit_data = D;
-    bit_dirty = 1;
   }
 };
 

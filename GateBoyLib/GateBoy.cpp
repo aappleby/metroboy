@@ -324,8 +324,8 @@ void GateBoy::next_pass() {
   probes.begin_pass(pass_count);
 
   tock_slow();
-  //commit_and_hash();
-  sim_stable = true;
+  commit_and_hash();
+  //sim_stable = true;
 
   probes.end_pass(sim_stable);
 

@@ -2,18 +2,6 @@
 #include "CoreLib/Types.h"
 #include <stdio.h>
 
-#if 0
-#define CHECK_DRIVEN_N()   CHECK_N(bit_driven)
-#define CHECK_DRIVEN_P()   CHECK_P(bit_driven)
-#define CHECK_DIRTY_P()    CHECK_P(bit_dirty)
-#define CHECK_DIRTY_N()    CHECK_N(bit_dirty)
-#else
-#define CHECK_DRIVEN_N()
-#define CHECK_DRIVEN_P()
-#define CHECK_DIRTY_P()
-#define CHECK_DIRTY_N()
-#endif
-
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
@@ -32,13 +20,8 @@ inline uint64_t commit_and_hash(T& obj) {
 struct BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire to_wire()       const { return bit_data; }
-  wire to_wire_chain() const { CHECK_DIRTY_N(); return bit_data; }
-  wire to_wire_old()   const { CHECK_DIRTY_N(); return bit_data; }
-  wire to_wire_new()   const { CHECK_DIRTY_P(); return bit_data; }
-
-  char c() const    { return bit_data ? '1' : '0'; }
-  char cn() const   { return bit_data ? '0' : '1'; }
+  wire qp() const { return  bit_data; }
+  wire qn() const { return !bit_data; }
 
   union {
     uint8_t state = 0;
@@ -66,8 +49,6 @@ constexpr uint8_t REG_D1C1 = 0b00000011;
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
-  wire qp()       const { return  to_wire(); }
-
   void set(wire D) {
     state = D;
   }
@@ -79,16 +60,6 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-
-  wire qp()       const { return  to_wire(); }
-  wire qn()       const { return !to_wire(); }
-  wire qp_chain() const { return  to_wire_old(); }
-  wire qn_chain() const { return  to_wire_old(); }
-  wire qp_old()   const { return  to_wire_old(); }
-  wire qn_old()   const { return !to_wire_old(); }
-  wire qp_new()   const { return  to_wire_new(); }
-  wire qn_new()   const { return !to_wire_new(); }
-
   void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
@@ -110,15 +81,6 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public DFF {
-  wire qn07()     const { return qn(); }
-  wire qp08()     const { return qp(); }
-
-  wire qn07_old() const { return qn_old(); }
-  wire qp08_old() const { return qp_old(); }
-
-  wire qn07_new() const { return qn_new(); }
-  wire qp08_new() const { return qp_new(); }
-
   void dff8n(wire CLKn, wire Dn) {
     if (!bit_clock && !CLKn) bit_data = !Dn;
     bit_clock = !CLKn;
@@ -139,15 +101,6 @@ struct DFF8n : public DFF {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public DFF {
-  wire qn07() const { return qn(); }
-  wire qp08() const { return qp(); }
-
-  wire qn07_old() const { return qn_old(); }
-  wire qp08_old() const { return qp_old(); }
-
-  wire qn07_new() const { return qn_new(); }
-  wire qp08_new() const { return qp_new(); }
-
   void dff8p(wire CLKp, wire Dn) {
     if (!bit_clock && CLKp) bit_data = !Dn;
     bit_clock = CLKp;
@@ -170,18 +123,6 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
-  wire qn08() const { return qn(); }
-  wire qp09() const { return qp(); }
-
-  wire qn08_chain() const { return qn_old(); }
-  wire qp09_chain() const { return qp_old(); }
-
-  wire qn08_old() const { return qn_old(); }
-  wire qp09_old() const { return qp_old(); }
-
-  wire qn08_new() const { return qn_new(); }
-  wire qp09_new() const { return qp_new(); }
-
   void dff9(wire CLKp, wire SETn, wire Dn) {
     if (!bit_clock && CLKp) bit_data = !Dn;
     bit_clock = CLKp;
@@ -206,11 +147,6 @@ struct DFF9 : public DFF {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public DFF {
-  wire qp11() const { return qp(); }
-
-  wire qp11_old() const { return qp_old(); }
-  wire qp11_new() const { return qp_new(); }
-
   void dff11(wire CLKp, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
@@ -235,12 +171,6 @@ struct DFF11 : public DFF {
 // DFF13_13 >> Q
 
 struct DFF13 : public DFF {
-  wire qn12_old() const { return qn_old(); }
-  wire qp13_old() const { return qp_old(); }
-
-  wire qn12_new() const { return qn_new(); }
-  wire qp13_new() const { return qp_new(); }
-
   void dff13(wire CLKp, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
@@ -269,18 +199,6 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
-  wire qn16() const { return qn(); }
-  wire qp17() const { return qp(); }
-
-  wire qn16_chain() const { return qn_old(); }
-  wire qp17_chain() const { return qp_old(); }
-
-  wire qn16_old() const { return qn_old(); }
-  wire qp17_old() const { return qp_old(); }
-
-  wire qn16_new() const { return qn_new(); }
-  wire qp17_new() const { return qp_new(); }
-
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
@@ -313,15 +231,6 @@ struct DFF17 : public DFF {
 // DFF20_20 << CLKn
 
 struct DFF20 : public DFF {
-  wire qp01()     const { return  to_wire(); }
-  wire qn17()     const { return !to_wire(); }
-
-  wire qp01_old() const { return  to_wire_old(); }
-  wire qn17_old() const { return !to_wire_old(); }
-
-  wire qp01_new() const { return  to_wire_new(); }
-  wire qn17_new() const { return !to_wire_new(); }
-
   void dff20(wire CLKn, wire LOADp, wire newD) {
     if (!bit_clock && !CLKn) bit_data = !bit_data;
     bit_clock = !CLKn;
@@ -358,16 +267,6 @@ struct DFF20 : public DFF {
 // DFF22_22 << CLKp
 
 struct DFF22 : public DFF {
-  wire qn15()  const { return !to_wire(); }
-  wire qp16()  const { return  to_wire(); }
-
-  wire qn15_old()  const { return !to_wire_old(); }
-  wire qp16_old()  const { return  to_wire_old(); }
-
-  wire qn15_new() const { return !to_wire_new(); }
-  wire qp16_new() const { return  to_wire_new(); }
-
-  // SETn and RSTn _must_ be asynchronous, as they're used to load the pixel pipes when the pixel clock is _not_ running.
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) bit_data = Dp;
     bit_clock = CLKp;
@@ -379,25 +278,10 @@ struct DFF22 : public DFF {
 // Tristate bus, can have multiple drivers.
 
 struct TriBase : public BitBase {
-  TriBase() {
-    bit_data = 1;
-  }
-
-  wire to_wire()     const { return bit_data; }
-  wire to_wire_new() const { CHECK_DIRTY_P(); return to_wire(); }
-
-  wire qp()     const { return  to_wire(); }
-  wire qn()     const { return !to_wire(); }
-
-  wire qp_new() const { return  to_wire_new(); }
-  wire qn_new() const { return !to_wire_new(); }
+  TriBase() { bit_data = 1; }
 
   void tri(wire OEp, wire Dp) {
-    if (OEp) {
-      CHECK_DRIVEN_N();
-      bit_driven = 1;
-      bit_data = Dp;
-    }
+    if (OEp) bit_data = Dp;
   }
 };
 
@@ -442,13 +326,6 @@ struct Pin2 : public TriBase {
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
-  wire qn03()     const { return !to_wire(); }
-  wire qp04()     const { return  to_wire(); }
-  wire qn03_old() const { return !to_wire_old(); }
-  wire qp04_old() const { return  to_wire_old(); }
-  wire qn03_new() const { return !to_wire_new(); }
-  wire qp04_new() const { return  to_wire_new(); }
-
   void nor_latch(wire SETp, wire RSTp) {
     if (SETp) bit_data = 1;
     if (RSTp) bit_data = 0;
@@ -466,15 +343,6 @@ struct NorLatch : public BitBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public BitBase {
-  wire qp03() const { return  to_wire(); }
-  wire qn04() const { return !to_wire(); }
-
-  wire qp03_old() const { return  to_wire_old(); }
-  wire qn04_old() const { return !to_wire_old(); }
-
-  wire qp03_new() const { return  to_wire_new(); }
-  wire qn04_new() const { return !to_wire_new(); }
-
   void nand_latch(wire SETn, wire RSTn) {
     if (!SETn) bit_data = 1;
     if (!RSTn) bit_data = 0;
@@ -499,12 +367,6 @@ struct NandLatch : public BitBase {
 // Output 10 _must_ be inverting...?
 
 struct TpLatch : public BitBase {
-  wire qp08_old() const { return  to_wire_old(); }
-  wire qn10_old() const { return !to_wire_old(); }
-
-  wire qp08_new() const { return  to_wire_new(); }
-  wire qn10_new() const { return !to_wire_new(); }
-
   void tp_latch(wire HOLDn, wire D) {
     if (HOLDn) bit_data = D;
   }
@@ -524,7 +386,7 @@ struct TpLatch : public BitBase {
 inline uint8_t pack_u8p_old(int c, const DFF* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_old() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }
@@ -532,7 +394,7 @@ inline uint8_t pack_u8p_old(int c, const DFF* b) {
 inline uint8_t pack_u8n_old(int c, const DFF* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].to_wire_old() << i;
+    r |= !b[i].qp() << i;
   }
   return r;
 }
@@ -540,7 +402,7 @@ inline uint8_t pack_u8n_old(int c, const DFF* b) {
 inline uint16_t pack_u16p_old(int c, const DFF* b) {
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_old() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }
@@ -550,7 +412,7 @@ inline uint16_t pack_u16p_old(int c, const DFF* b) {
 inline uint8_t pack_u8p_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_new() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }
@@ -558,7 +420,7 @@ inline uint8_t pack_u8p_new(int c, Bus2* b) {
 inline uint8_t pack_u8n_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].to_wire_new() << i;
+    r |= !b[i].qp() << i;
   }
   return r;
 }
@@ -568,7 +430,7 @@ inline uint8_t pack_u8n_new(int c, Bus2* b) {
 inline uint8_t pack_u8p_new(int c, Pin2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_new() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }
@@ -576,7 +438,7 @@ inline uint8_t pack_u8p_new(int c, Pin2* b) {
 inline uint16_t pack_u16p_new(int c, Pin2* b) {
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_new() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }
@@ -586,7 +448,7 @@ inline uint16_t pack_u16p_new(int c, Pin2* b) {
 inline uint8_t pack_u8p_old(int c, const BitBase* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_old() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }
@@ -594,7 +456,7 @@ inline uint8_t pack_u8p_old(int c, const BitBase* b) {
 inline uint8_t pack_u8p_new(int c, const BitBase* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].to_wire_new() << i;
+    r |= b[i].qp() << i;
   }
   return r;
 }

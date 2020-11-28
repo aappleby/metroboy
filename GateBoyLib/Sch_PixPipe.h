@@ -417,7 +417,7 @@ struct PixelPipe {
   int get_pix_count() const { return pack_u8p_old(8, &XEHO_PX0p); }
 
   wire lcd_on() {
-    return XONA_LCDC_LCDENn_s.qn08_old();
+    return XONA_LCDC_LCDENn_s.qn();
   }
 
   //----------------------------------------

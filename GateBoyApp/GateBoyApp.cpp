@@ -452,15 +452,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("screen_x       %d\n", gb->gb_screen_x);
   d("screen_y       %d\n", gb->gb_screen_y);
   d("lcd_data_latch %d\n", gb->lcd_data_latch);
-  d("lcd_pix_lo     %c\n",  gb->lcd_pix_lo.c());
-  d("lcd_pix_hi     %c\n",  gb->lcd_pix_hi.c());
+  d.dump_bitp("lcd_pix_lo     ",  gb->lcd_pix_lo.state);
+  d.dump_bitp("lcd_pix_hi     ",  gb->lcd_pix_hi.state);
 
-  d("lcd_pipe_lo    %c%c%c%c%c%c%c%c\n",
-    gb->lcd_pipe_lo[0].c(), gb->lcd_pipe_lo[1].c(), gb->lcd_pipe_lo[2].c(), gb->lcd_pipe_lo[3].c(),
-    gb->lcd_pipe_lo[4].c(), gb->lcd_pipe_lo[5].c(), gb->lcd_pipe_lo[6].c(), gb->lcd_pipe_lo[7].c());
-  d("lcd_pipe_hi    %c%c%c%c%c%c%c%c\n",
-    gb->lcd_pipe_hi[0].c(), gb->lcd_pipe_hi[1].c(), gb->lcd_pipe_hi[2].c(), gb->lcd_pipe_hi[3].c(),
-    gb->lcd_pipe_hi[4].c(), gb->lcd_pipe_hi[5].c(), gb->lcd_pipe_hi[6].c(), gb->lcd_pipe_hi[7].c());
+  d.dump_slice2p("lcd_pipe_lo", gb->lcd_pipe_lo, 8);
+  d.dump_slice2p("lcd_pipe_hi", gb->lcd_pipe_hi, 8);
 
   d("\n");
 
@@ -498,7 +494,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Clocks =====\001\n");
-  d("PHASE %c%c%c%c\n", gb->clk_reg.AFUR_xxxxEFGHp_s.c(), gb->clk_reg.ALEF_AxxxxFGHp_s.c(), gb->clk_reg.APUK_ABxxxxGHp_s.c(), gb->clk_reg.ADYK_ABCxxxxHp_s.c());
+  d("PHASE %d%d%d%d\n",
+    gb->clk_reg.AFUR_xxxxEFGHp_s.bit_data,
+    gb->clk_reg.ALEF_AxxxxFGHp_s.bit_data,
+    gb->clk_reg.APUK_ABxxxxGHp_s.bit_data,
+    gb->clk_reg.ADYK_ABCxxxxHp_s.bit_data);
   d("\n");
   d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp_s.state);
   d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn_s.state);
@@ -583,8 +583,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Buses =====\001\n");
-  d("MAKA_HOLD_MEMp   %c\n",    gb->oam_bus.MAKA_HOLD_MEMp.c());
-  d("WUJE_CPU_OAM_WRn %c\n",    gb->oam_bus.WUJE_CPU_OAM_WRn.c());
+  d.dump_bitp("MAKA_HOLD_MEMp  ",  gb->oam_bus.MAKA_HOLD_MEMp.state);
+  d.dump_bitp("WUJE_CPU_OAM_WRn",  gb->oam_bus.WUJE_CPU_OAM_WRn.state);
   d.dump_slice2p("EXT_ADDR      ", &gb->ext_bus.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("EXT_DATA      ", &gb->ext_bus.SOMA_EXT_DATA_LATCH_D0n, 8);
   d.dump_slice2n("TILE TEMP A   ", &gb->vram_bus.LEGU_TILE_DA0n, 8);
@@ -776,16 +776,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_STORE_ENn.state);
   d.dump_slice2p("SPRITE COUNT", &ss.BESE_SPRITE_COUNT0, 4);
 
-  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp17_old(), pack_u8n_old(6, &ss.YGUS_STORE0_I0n), pack_u8n_old(4, &ss.GYHO_STORE0_L0n), pack_u8n_old(8, &ss.XEPE_STORE0_X0p));
-  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp17_old(), pack_u8n_old(6, &ss.CADU_STORE1_I0n), pack_u8n_old(4, &ss.AMES_STORE1_L0n), pack_u8n_old(8, &ss.DANY_STORE1_X0p));
-  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp17_old(), pack_u8n_old(6, &ss.BUHE_STORE2_I0n), pack_u8n_old(4, &ss.YLOV_STORE2_L0n), pack_u8n_old(8, &ss.FOKA_STORE2_X0p));
-  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp17_old(), pack_u8n_old(6, &ss.DEVY_STORE3_I0n), pack_u8n_old(4, &ss.ZURO_STORE3_L0n), pack_u8n_old(8, &ss.XOLY_STORE3_X0p));
-  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp17_old(), pack_u8n_old(6, &ss.XAVE_STORE4_I0n), pack_u8n_old(4, &ss.CAPO_STORE4_L0n), pack_u8n_old(8, &ss.WEDU_STORE4_X0p));
-  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp17_old(), pack_u8n_old(6, &ss.EKOP_STORE5_I0n), pack_u8n_old(4, &ss.ACEP_STORE5_L0n), pack_u8n_old(8, &ss.FUSA_STORE5_X0p));
-  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp17_old(), pack_u8n_old(6, &ss.GABO_STORE6_I0n), pack_u8n_old(4, &ss.ZUMY_STORE6_L0n), pack_u8n_old(8, &ss.YCOL_STORE6_X0p));
-  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp17_old(), pack_u8n_old(6, &ss.GULE_STORE7_I0n), pack_u8n_old(4, &ss.XYNA_STORE7_L0n), pack_u8n_old(8, &ss.ERAZ_STORE7_X0p));
-  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp17_old(), pack_u8n_old(6, &ss.AXUV_STORE8_I0n), pack_u8n_old(4, &ss.AZAP_STORE8_L0n), pack_u8n_old(8, &ss.EZUF_STORE8_X0p));
-  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp17_old(), pack_u8n_old(6, &ss.YBER_STORE9_I0n), pack_u8n_old(4, &ss.CANA_STORE9_L0n), pack_u8n_old(8, &ss.XUVY_STORE9_X0p));
+  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp(), pack_u8n_old(6, &ss.YGUS_STORE0_I0n), pack_u8n_old(4, &ss.GYHO_STORE0_L0n), pack_u8n_old(8, &ss.XEPE_STORE0_X0p));
+  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp(), pack_u8n_old(6, &ss.CADU_STORE1_I0n), pack_u8n_old(4, &ss.AMES_STORE1_L0n), pack_u8n_old(8, &ss.DANY_STORE1_X0p));
+  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp(), pack_u8n_old(6, &ss.BUHE_STORE2_I0n), pack_u8n_old(4, &ss.YLOV_STORE2_L0n), pack_u8n_old(8, &ss.FOKA_STORE2_X0p));
+  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp(), pack_u8n_old(6, &ss.DEVY_STORE3_I0n), pack_u8n_old(4, &ss.ZURO_STORE3_L0n), pack_u8n_old(8, &ss.XOLY_STORE3_X0p));
+  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp(), pack_u8n_old(6, &ss.XAVE_STORE4_I0n), pack_u8n_old(4, &ss.CAPO_STORE4_L0n), pack_u8n_old(8, &ss.WEDU_STORE4_X0p));
+  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp(), pack_u8n_old(6, &ss.EKOP_STORE5_I0n), pack_u8n_old(4, &ss.ACEP_STORE5_L0n), pack_u8n_old(8, &ss.FUSA_STORE5_X0p));
+  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp(), pack_u8n_old(6, &ss.GABO_STORE6_I0n), pack_u8n_old(4, &ss.ZUMY_STORE6_L0n), pack_u8n_old(8, &ss.YCOL_STORE6_X0p));
+  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp(), pack_u8n_old(6, &ss.GULE_STORE7_I0n), pack_u8n_old(4, &ss.XYNA_STORE7_L0n), pack_u8n_old(8, &ss.ERAZ_STORE7_X0p));
+  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp(), pack_u8n_old(6, &ss.AXUV_STORE8_I0n), pack_u8n_old(4, &ss.AZAP_STORE8_L0n), pack_u8n_old(8, &ss.EZUF_STORE8_X0p));
+  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp(), pack_u8n_old(6, &ss.YBER_STORE9_I0n), pack_u8n_old(4, &ss.CANA_STORE9_L0n), pack_u8n_old(8, &ss.XUVY_STORE9_X0p));
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -801,7 +801,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->BOOT_BITn_s.qp17_old()) {
+    if (!gb->BOOT_BITn_s.qp()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;
@@ -891,8 +891,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
       memset(overlay, 0, sizeof(overlay));
 
       for (int x = 0; x < fb_x; x++) {
-        uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
-        uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
+        uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp();
+        uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp();
 
         int r = (3 - (p0 + p1 * 2)) * 30 + 50;
         int g = (3 - (p0 + p1 * 2)) * 30 + 50;
@@ -901,8 +901,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
         overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
       {
-        uint8_t p0 = gb->lcd_pix_lo.qp04_old();
-        uint8_t p1 = gb->lcd_pix_hi.qp04_old();
+        uint8_t p0 = gb->lcd_pix_lo.qp();
+        uint8_t p1 = gb->lcd_pix_hi.qp();
 
         int c = (3 - (p0 + p1 * 2)) * 85;
 

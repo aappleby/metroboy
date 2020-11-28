@@ -3651,7 +3651,7 @@ XYMU_LOOP:
 #pragma endregion
 
 #pragma region Pixel_Pipes
-  // Reload all the pipes using _SYNCHRONOUS_? set/rst
+  // Reload all the pipes using set/rst
   {
     /* p32.LOZE*/ wire _LOZE_PIPE_A_LOADp = not1(_NYXU_FETCH_TRIGn);
     /* p32.LAKY*/ wire BG_PIPE_A_SET0 = nand2(_LOZE_PIPE_A_LOADp, vram_bus.LEGU_TILE_DA0n.qn07());
@@ -4126,17 +4126,11 @@ XYMU_LOOP:
     /*#p21.TUVA*/ wire _TUVA_INT_STATn_t3   = not1(_SUKO_INT_STATp_t3);
     /*#p21.VOTY*/ wire _VOTY_INT_STATp_t3   = not1(_TUVA_INT_STATn_t3);
 
-    /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22_ff(_VYPU_INT_VBLANKp_t3, _PESU_VCC);
-    /* p02.LALU*/ int_reg.LALU_FF0F_D1p.dff22_ff(_VOTY_INT_STATp_t3, _PESU_VCC);
-    /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22_ff(tim_reg.MOBA_TIMER_OVERFLOWp.qp17_new(), _PESU_VCC);
-    /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22_ff(ser_reg.CALY_SER_CNT3.qp17_new(), _PESU_VCC); // FIXME should use new
-    /* p02.ULAK*/ int_reg.ULAK_FF0F_D4p.dff22_ff(_ASOK_INT_JOYp, _PESU_VCC);
-
-    /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22_set_rst(_MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n);
-    /* p02.LALU*/ int_reg.LALU_FF0F_D1p.dff22_set_rst(_MODY_FF0F_SET1n, _MOVU_FF0F_RST1n);
-    /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22_set_rst(_PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n);
-    /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22_set_rst(_TOME_FF0F_SET3n, _TUNY_FF0F_RST3n);
-    /* p02.ULAK*/ int_reg.ULAK_FF0F_D4p.dff22_set_rst(_TOGA_FF0F_SET4n, _TYME_FF0F_RST4n);
+    /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp_t3,                    _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, _PESU_VCC);
+    /* p02.LALU*/ int_reg.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp_t3,                      _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, _PESU_VCC);
+    /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22(tim_reg.MOBA_TIMER_OVERFLOWp.qp17_new(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, _PESU_VCC);
+    /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22(ser_reg.CALY_SER_CNT3.qp17_new(),        _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, _PESU_VCC); // FIXME should use new
+    /* p02.ULAK*/ int_reg.ULAK_FF0F_D4p.dff22(_ASOK_INT_JOYp,                          _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, _PESU_VCC);
 
     /* p02.LOPE*/ wire _LOPE_FF0F_D0p_t4 = int_reg.LOPE_FF0F_D0p.qp16_new();
     /* p02.LALU*/ wire _LALU_FF0F_D1p_t4 = int_reg.LALU_FF0F_D1p.qp16_new();

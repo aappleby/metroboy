@@ -365,10 +365,12 @@ struct DFF22 : public DFF {
   wire qn15_new() const { return !to_wire_new(); }
   wire qp16_new() const { return  to_wire_new(); }
 
-  void dff22_ff(wire CLKp, wire Dp)        { dff(CLKp, Dp); }
-  void dff22_set_rst(wire SETn, wire RSTn) { dff_SETn(SETn); dff_RSTn(RSTn); }
-
-  void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) { dff_SETn(SETn); dff_RSTn(RSTn); dff(CLKp, Dp); }
+  void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+    dff(CLKp, Dp);
+    dff_SETn(SETn);
+    dff_RSTn(RSTn);
+    //dff(CLKp, (Dp | SETn) & !RSTn);
+  }
 };
 
 //-----------------------------------------------------------------------------

@@ -1000,26 +1000,24 @@ void GateBoy::tock_slow() {
     /*#p03.TECY*/ wire _TECY_CLK_MUXc_s  = mux2n(tim_reg.SAMY_TAC1p_s.qp17(), _UKAP_CLK_MUXa_s, _TEKO_CLK_MUXb_s);
     /*#p03.SOGU*/ wire _SOGU_TIMA_CLKn_s = nor2(_TECY_CLK_MUXc_s, tim_reg.SABO_TAC2p_s.qn16());
 
-    for (int loop = 0; loop < 3; loop++) {
-      /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(PIN_CPU_LATCH_EXT_s.qp(), _TOPE_FF05_WRn_s);
-      /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn = not1(tim_reg.MOBA_TIMER_OVERFLOWp.qp17());
-      /*#p03.MEXU*/ wire _MEXU_TIMA_LOADp      = nand3(_MUZU_CPU_LOAD_TIMAn, _ALUR_SYS_RSTn_s, _MEKE_TIMER_OVERFLOWn);
-      /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp = nor2(tim_reg.NUGA_TIMA7p.qp01(), tim_reg.NYDU_TIMA7p_DELAY.qn16());
-      /*#p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn   = not1(_MEXU_TIMA_LOADp);
+    /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(PIN_CPU_LATCH_EXT_s.qp(), _TOPE_FF05_WRn_s);
+    /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn = not1(tim_reg.MOBA_TIMER_OVERFLOWp.qp17());
+    /*#p03.MEXU*/ wire _MEXU_TIMA_LOADp      = nand3(_MUZU_CPU_LOAD_TIMAn, _ALUR_SYS_RSTn_s, _MEKE_TIMER_OVERFLOWn);
+    /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp = nor2(tim_reg.NUGA_TIMA7p.qp01(), tim_reg.NYDU_TIMA7p_DELAY.qn16());
+    /*#p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn   = not1(_MEXU_TIMA_LOADp);
 
-      /*#p03.MOBA*/ tim_reg.MOBA_TIMER_OVERFLOWp.dff17(_BOGA_Axxxxxxx_s, _ALUR_SYS_RSTn_s,    _MERY_TIMER_OVERFLOWp);
-      /*#p03.NYDU*/ tim_reg.NYDU_TIMA7p_DELAY   .dff17(_BOGA_Axxxxxxx_s, _MUGY_TIMA_MAX_RSTn, tim_reg.NUGA_TIMA7p.qp01());
-      /*#p03.NYDU*/ tim_reg.NYDU_TIMA7p_DELAY   .dff17(_BOGA_Axxxxxxx_s, _MUGY_TIMA_MAX_RSTn, tim_reg.NUGA_TIMA7p.qp01());
+    /*#p03.MOBA*/ tim_reg.MOBA_TIMER_OVERFLOWp.dff17(_BOGA_Axxxxxxx_s, _ALUR_SYS_RSTn_s,    _MERY_TIMER_OVERFLOWp);
+    /*#p03.NYDU*/ tim_reg.NYDU_TIMA7p_DELAY   .dff17(_BOGA_Axxxxxxx_s, _MUGY_TIMA_MAX_RSTn, tim_reg.NUGA_TIMA7p.qp01());
+    /*#p03.NYDU*/ tim_reg.NYDU_TIMA7p_DELAY   .dff17(_BOGA_Axxxxxxx_s, _MUGY_TIMA_MAX_RSTn, tim_reg.NUGA_TIMA7p.qp01());
 
-      /*#p03.REGA*/ tim_reg.REGA_TIMA0p.dff20(_SOGU_TIMA_CLKn_s,          _MEXU_TIMA_LOADp, _PUXY_TIMA_D0_s);
-      /*#p03.POVY*/ tim_reg.POVY_TIMA1p.dff20(tim_reg.REGA_TIMA0p.qp01(), _MEXU_TIMA_LOADp, _NERO_TIMA_D1_s);
-      /*#p03.PERU*/ tim_reg.PERU_TIMA2p.dff20(tim_reg.POVY_TIMA1p.qp01(), _MEXU_TIMA_LOADp, _NADA_TIMA_D2_s);
-      /*#p03.RATE*/ tim_reg.RATE_TIMA3p.dff20(tim_reg.PERU_TIMA2p.qp01(), _MEXU_TIMA_LOADp, _REPA_TIMA_D3_s);
-      /*#p03.RUBY*/ tim_reg.RUBY_TIMA4p.dff20(tim_reg.RATE_TIMA3p.qp01(), _MEXU_TIMA_LOADp, _ROLU_TIMA_D4_s);
-      /*#p03.RAGE*/ tim_reg.RAGE_TIMA5p.dff20(tim_reg.RUBY_TIMA4p.qp01(), _MEXU_TIMA_LOADp, _RUGY_TIMA_D5_s);
-      /*#p03.PEDA*/ tim_reg.PEDA_TIMA6p.dff20(tim_reg.RAGE_TIMA5p.qp01(), _MEXU_TIMA_LOADp, _PYMA_TIMA_D6_s);
-      /*#p03.NUGA*/ tim_reg.NUGA_TIMA7p.dff20(tim_reg.PEDA_TIMA6p.qp01(), _MEXU_TIMA_LOADp, _PAGU_TIMA_D7_s);
-    }
+    /*#p03.REGA*/ tim_reg.REGA_TIMA0p.dff20(_SOGU_TIMA_CLKn_s,          _MEXU_TIMA_LOADp, _PUXY_TIMA_D0_s);
+    /*#p03.POVY*/ tim_reg.POVY_TIMA1p.dff20(tim_reg.REGA_TIMA0p.qp01(), _MEXU_TIMA_LOADp, _NERO_TIMA_D1_s);
+    /*#p03.PERU*/ tim_reg.PERU_TIMA2p.dff20(tim_reg.POVY_TIMA1p.qp01(), _MEXU_TIMA_LOADp, _NADA_TIMA_D2_s);
+    /*#p03.RATE*/ tim_reg.RATE_TIMA3p.dff20(tim_reg.PERU_TIMA2p.qp01(), _MEXU_TIMA_LOADp, _REPA_TIMA_D3_s);
+    /*#p03.RUBY*/ tim_reg.RUBY_TIMA4p.dff20(tim_reg.RATE_TIMA3p.qp01(), _MEXU_TIMA_LOADp, _ROLU_TIMA_D4_s);
+    /*#p03.RAGE*/ tim_reg.RAGE_TIMA5p.dff20(tim_reg.RUBY_TIMA4p.qp01(), _MEXU_TIMA_LOADp, _RUGY_TIMA_D5_s);
+    /*#p03.PEDA*/ tim_reg.PEDA_TIMA6p.dff20(tim_reg.RAGE_TIMA5p.qp01(), _MEXU_TIMA_LOADp, _PYMA_TIMA_D6_s);
+    /*#p03.NUGA*/ tim_reg.NUGA_TIMA7p.dff20(tim_reg.PEDA_TIMA6p.qp01(), _MEXU_TIMA_LOADp, _PAGU_TIMA_D7_s);
   }
 #pragma endregion
 

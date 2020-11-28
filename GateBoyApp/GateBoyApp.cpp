@@ -396,7 +396,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("Phase count %d\n",      gb->phase_total);
   d("Pass count  %d\n",      gb->pass_count);
   d("Pass total  %d\n",      gb->pass_total);
-  d("Pass avg    %f\n",      float(gb->pass_total) / float(gb->phase_total));
+  d("Pass avg    %f\n",      (float(gb->pass_total) / float(gb->phase_total)) - 2.0);
   d("Pass hash   %016llx\n", gb->pass_hash);
   d("Total hash  %016llx\n", gb->total_hash);
   d("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);
@@ -700,7 +700,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BG_PIPE_A0, 8);
   d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BG_PIPE_B0, 8);
   d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NURO_SPR_PIPE_A0, 8);
-  d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NYLU_SPR_PIPE_B0, 8);  
+  d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NYLU_SPR_PIPE_B0, 8);
   d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_0, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0, 8);
   d("\n");

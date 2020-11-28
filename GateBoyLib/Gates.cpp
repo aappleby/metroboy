@@ -19,7 +19,8 @@ uint64_t commit_and_hash(void* blob, int size) {
   for (int i = 0; i < size; i++) {
     uint8_t s = base[i];
     CHECK_P(s & 0xF0);
-    s &= 0x0F;
+    //s &= 0x0F;
+    s &= 0x03;
     combine_hash(h, s);
     base[i] = s;
   }

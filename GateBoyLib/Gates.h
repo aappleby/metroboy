@@ -108,6 +108,18 @@ struct DFF : public BitBase {
     bit_rst = !RSTn;
     bit_data = (bit_data || bit_set) && !bit_rst;
   }
+
+  void dff_SETn_RSTn(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+    if (!bit_clock && CLKp) {
+      bit_data = (Dp || bit_set) && !bit_rst;
+    }
+
+    if (!SETn) bit_data = 0;
+    if (!RSTn) bit_data = 1;
+
+    bit_clock = CLKp;
+    bit_dirty = 1;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -133,7 +145,9 @@ struct DFF8n : public DFF {
   wire qn07_new() const { return qn_new(); }
   wire qp08_new() const { return qp_new(); }
 
-  void dff8n(wire CLKn, wire Dn) { dff(!CLKn, !Dn); }
+  void dff8n(wire CLKn, wire Dn) {
+    dff_SETn_RSTn(!CLKn, 1, 1, !Dn);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -159,7 +173,9 @@ struct DFF8p : public DFF {
   wire qn07_new() const { return qn_new(); }
   wire qp08_new() const { return qp_new(); }
 
-  void dff8p(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
+  void dff8p(wire CLKp, wire Dn) {
+    dff_SETn_RSTn(CLKp, 1, 1, !Dn);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -190,10 +206,10 @@ struct DFF9 : public DFF {
   wire qn08_new() const { return qn_new(); }
   wire qp09_new() const { return qp_new(); }
 
-  void dff9_ff(wire CLKp, wire Dn) { dff(CLKp, !Dn); }
-  void dff9_set(wire SETn)         { dff_SETn(SETn); } // FIXME the SETn here is slightly weird. too many inversions?
-
-  void dff9(wire CLKp, wire SETn, wire Dn) { dff_SETn(SETn); dff(CLKp, !Dn); }
+  void dff9(wire CLKp, wire SETn, wire Dn) {
+    dff_SETn(SETn);
+    dff(CLKp, !Dn);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -218,7 +234,9 @@ struct DFF11 : public DFF {
   wire qp11_old() const { return qp_old(); }
   wire qp11_new() const { return qp_new(); }
 
-  void dff11(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
+  void dff11(wire CLKp, wire RSTn, wire Dp) {
+    dff_SETn_RSTn(CLKp, 1, RSTn, Dp);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -244,10 +262,7 @@ struct DFF13 : public DFF {
   wire qn12_new() const { return qn_new(); }
   wire qp13_new() const { return qp_new(); }
 
-  void dff13_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-  void dff13_rst(wire RSTn)         { dff_RSTn(RSTn); }
-
-  void dff13(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
+  void dff13(wire CLKp, wire RSTn, wire Dp) { dff_SETn_RSTn(CLKp, 1, RSTn, Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -283,10 +298,10 @@ struct DFF17 : public DFF {
   wire qn16_new() const { return qn_new(); }
   wire qp17_new() const { return qp_new(); }
 
-  //void dff17_ff(wire CLKp, wire Dp) { dff(CLKp, Dp); }
-  //void dff17_rst(wire RSTn)         { dff_RSTn(RSTn); }
-
-  void dff17(wire CLKp, wire RSTn, wire Dp) { dff_RSTn(RSTn); dff(CLKp, Dp); }
+  void dff17(wire CLKp, wire RSTn, wire Dp) {
+    dff_RSTn(RSTn);
+    dff(CLKp, Dp);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -322,15 +337,6 @@ struct DFF20 : public DFF {
 
   wire qp01_new() const { return  to_wire_new(); }
   wire qn17_new() const { return !to_wire_new(); }
-
-  void dff20_ff(wire CLKn) {
-    dff(!CLKn, !bit_data);
-  }
-
-  void dff20_load(wire LOADp, wire newD) {
-    dff_SETn(!(LOADp && newD));
-    dff_RSTn(!(LOADp && !newD));
-  }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {
     dff(!CLKn, !bit_data);

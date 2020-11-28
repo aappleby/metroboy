@@ -127,7 +127,7 @@ void GateBoyThread::run_step_phase() {
 
 void GateBoyThread::run_step_pass() {
   for(;command.count && !sig_pause; command.count--) {
-    gb->next_pass();
+    //gb->next_pass();
   }
 }
 

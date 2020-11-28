@@ -2,6 +2,18 @@
 #include "CoreLib/Types.h"
 #include <stdio.h>
 
+#if 0
+#define CHECK_DRIVEN_N()   CHECK_N(bit_driven)
+#define CHECK_DRIVEN_P()   CHECK_P(bit_driven)
+#define CHECK_DIRTY_P()    CHECK_P(bit_dirty)
+#define CHECK_DIRTY_N()    CHECK_N(bit_dirty)
+#else
+#define CHECK_DRIVEN_N()
+#define CHECK_DRIVEN_P()
+#define CHECK_DIRTY_P()
+#define CHECK_DIRTY_N()
+#endif
+
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
@@ -21,9 +33,9 @@ struct BitBase {
   void reset(uint8_t s) { state = s; }
 
   wire to_wire()       const { return bit_data; }
-  wire to_wire_chain() const { CHECK_N(bit_dirty); return bit_data; }
-  wire to_wire_old()   const { CHECK_N(bit_dirty); return bit_data; }
-  wire to_wire_new()   const { CHECK_P(bit_dirty); return bit_data; }
+  wire to_wire_chain() const { CHECK_DIRTY_N(); return bit_data; }
+  wire to_wire_old()   const { CHECK_DIRTY_N(); return bit_data; }
+  wire to_wire_new()   const { CHECK_DIRTY_P(); return bit_data; }
 
   char c() const    { return bit_data ? '1' : '0'; }
   char cn() const   { return bit_data ? '0' : '1'; }
@@ -379,7 +391,7 @@ struct DFF22 : public DFF {
 
 struct TriBase : public BitBase {
   wire to_wire()     const { return bit_data | !bit_driven; }
-  wire to_wire_new() const { CHECK_P(bit_dirty); return to_wire(); }
+  wire to_wire_new() const { CHECK_DIRTY_P(); return to_wire(); }
 
   wire qp()     const { return  to_wire(); }
   wire qn()     const { return !to_wire(); }
@@ -389,7 +401,7 @@ struct TriBase : public BitBase {
 
   void tri(wire OEp, wire Dp) {
     if (OEp) {
-      CHECK_N(bit_driven);
+      CHECK_DRIVEN_N();
       bit_driven = 1;
       bit_data = Dp;
     }
@@ -424,7 +436,7 @@ struct Bus2 : public TriBase {
 
 struct Pin2 : public TriBase {
   void pin_in(wire OEp, wire D)            { tri(OEp, D); }
-  void pin_out(wire OEp, wire HI, wire LO) { CHECK_N(!HI && LO); tri(OEp, !HI); }
+  void pin_out(wire OEp, wire HI, wire /*LO*/) { /*CHECK_N(!HI && LO)*/; tri(OEp, !HI); }
 };
 
 //-----------------------------------------------------------------------------

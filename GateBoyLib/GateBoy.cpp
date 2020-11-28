@@ -321,8 +321,13 @@ void GateBoy::next_pass() {
     gb_old = *this;
   }
 
+  probes.begin_pass(pass_count);
+
   tock_slow();
-  commit_and_hash();
+  //commit_and_hash();
+  sim_stable = true;
+
+  probes.end_pass(sim_stable);
 
   if (sys_statediff && pass_count > 1) {
     if (pass_count > 2) printf("pass count %d\n", pass_count);
@@ -408,7 +413,6 @@ void GateBoy::commit_and_hash() {
   pass_count++;
 
   probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
-  probes.end_pass(sim_stable);
 
   if (pass_count > 90) printf("!!!STUCK!!!\n");
 }
@@ -416,10 +420,6 @@ void GateBoy::commit_and_hash() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_slow() {
-  probes.begin_pass(pass_count);
-
-  //----------------------------------------
-
   if (DELTA_AB) {
     cpu_req = cpu.bus_req;
     bus_req = {0};

@@ -4170,17 +4170,11 @@ XYMU_LOOP:
       // This is technically in the CPU, but we're going to implement it here for now.
       wire FFFF_WRn = nand2(_TAPU_CPU_WRp_xxxxEFGx_s, FFFF_HIT_s);
 
-      IE_D0.dff(FFFF_WRn, BUS_CPU_Dp_in_s[0].to_wire_new());
-      IE_D1.dff(FFFF_WRn, BUS_CPU_Dp_in_s[1].to_wire_new());
-      IE_D2.dff(FFFF_WRn, BUS_CPU_Dp_in_s[2].to_wire_new());
-      IE_D3.dff(FFFF_WRn, BUS_CPU_Dp_in_s[3].to_wire_new());
-      IE_D4.dff(FFFF_WRn, BUS_CPU_Dp_in_s[4].to_wire_new());
-
-      IE_D0.dff_RSTn(!sys_rst);
-      IE_D1.dff_RSTn(!sys_rst);
-      IE_D2.dff_RSTn(!sys_rst);
-      IE_D3.dff_RSTn(!sys_rst);
-      IE_D4.dff_RSTn(!sys_rst);
+      IE_D0.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_in_s[0].to_wire_new());
+      IE_D1.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_in_s[1].to_wire_new());
+      IE_D2.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_in_s[2].to_wire_new());
+      IE_D3.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_in_s[3].to_wire_new());
+      IE_D4.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_in_s[4].to_wire_new());
 
       if (DELTA_HA) {
         imask_latch = pack_u8p_new(5, &IE_D0);
@@ -4714,12 +4708,12 @@ XYMU_LOOP:
 
     {
       for (int i = 0; i < 159; i++) {
-        lcd_pipe_lo[i].dff(!PIN_LCD_CLOCK.qp_new(), lcd_pipe_lo[i + 1].qp_chain());
-        lcd_pipe_hi[i].dff(!PIN_LCD_CLOCK.qp_new(), lcd_pipe_hi[i + 1].qp_chain());
+        lcd_pipe_lo[i].dff(!PIN_LCD_CLOCK.qp_new(), 1, 1, lcd_pipe_lo[i + 1].qp_chain());
+        lcd_pipe_hi[i].dff(!PIN_LCD_CLOCK.qp_new(), 1, 1, lcd_pipe_hi[i + 1].qp_chain());
       }
 
-      lcd_pipe_lo[159].dff(!PIN_LCD_CLOCK.qp_new(), lcd_pix_lo.qp04_new());
-      lcd_pipe_hi[159].dff(!PIN_LCD_CLOCK.qp_new(), lcd_pix_hi.qp04_new());
+      lcd_pipe_lo[159].dff(!PIN_LCD_CLOCK.qp_new(), 1, 1, lcd_pix_lo.qp04_new());
+      lcd_pipe_hi[159].dff(!PIN_LCD_CLOCK.qp_new(), 1, 1, lcd_pix_hi.qp04_new());
 
     }
 

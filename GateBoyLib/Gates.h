@@ -89,25 +89,7 @@ struct DFF : public BitBase {
   wire qp_new()   const { return  to_wire_new(); }
   wire qn_new()   const { return !to_wire_new(); }
 
-  void dff(wire CLKp, wire Dp) {
-    if (!bit_clock && CLKp) {
-      bit_data = (Dp || bit_set) && !bit_rst;
-    }
-
-    bit_clock = CLKp;
-  }
-
-  void dff_SETn(wire SETn) {
-    bit_set = !SETn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-  }
-
-  void dff_RSTn(wire RSTn) {
-    bit_rst = !RSTn;
-    bit_data = (bit_data || bit_set) && !bit_rst;
-  }
-
-  void dff_SETn_RSTn(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+  void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) {
       bit_data = (Dp || bit_set) && !bit_rst;
     }
@@ -143,7 +125,8 @@ struct DFF8n : public DFF {
   wire qp08_new() const { return qp_new(); }
 
   void dff8n(wire CLKn, wire Dn) {
-    dff_SETn_RSTn(!CLKn, 1, 1, !Dn);
+    if (!bit_clock && !CLKn) bit_data = !Dn;
+    bit_clock = !CLKn;
   }
 };
 
@@ -171,7 +154,8 @@ struct DFF8p : public DFF {
   wire qp08_new() const { return qp_new(); }
 
   void dff8p(wire CLKp, wire Dn) {
-    dff_SETn_RSTn(CLKp, 1, 1, !Dn);
+    if (!bit_clock && CLKp) bit_data = !Dn;
+    bit_clock = CLKp;
   }
 };
 
@@ -238,7 +222,9 @@ struct DFF11 : public DFF {
   wire qp11_new() const { return qp_new(); }
 
   void dff11(wire CLKp, wire RSTn, wire Dp) {
-    dff_SETn_RSTn(CLKp, 1, RSTn, Dp);
+    if (!bit_clock && CLKp) bit_data = Dp;
+    bit_clock = CLKp;
+    bit_data = bit_data && RSTn;
   }
 };
 
@@ -265,7 +251,11 @@ struct DFF13 : public DFF {
   wire qn12_new() const { return qn_new(); }
   wire qp13_new() const { return qp_new(); }
 
-  void dff13(wire CLKp, wire RSTn, wire Dp) { dff_SETn_RSTn(CLKp, 1, RSTn, Dp); }
+  void dff13(wire CLKp, wire RSTn, wire Dp) {
+    if (!bit_clock && CLKp) bit_data = Dp;
+    bit_clock = CLKp;
+    bit_data = bit_data && RSTn;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -303,7 +293,6 @@ struct DFF17 : public DFF {
 
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     if (!bit_clock && CLKp) bit_data = Dp;
-
     bit_clock = CLKp;
     bit_data = bit_data && RSTn;
   }
@@ -344,9 +333,19 @@ struct DFF20 : public DFF {
   wire qn17_new() const { return !to_wire_new(); }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {
-    dff(!CLKn, !bit_data);
-    dff_SETn(!(LOADp && newD));
-    dff_RSTn(!(LOADp && !newD));
+    wire SETn = !(LOADp && newD);
+    wire RSTn = !(LOADp && !newD);
+
+    if (!bit_clock && !CLKn) {
+      bit_data = (!bit_data || bit_set) && !bit_rst;
+    }
+
+    bit_clock = !CLKn;
+
+    bit_set = !SETn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_rst = !RSTn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
   }
 };
 
@@ -390,10 +389,15 @@ struct DFF22 : public DFF {
 
   // SETn and RSTn _must_ be asynchronous, as they're used to load the pixel pipes when the pixel clock is _not_ running.
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    dff(CLKp, Dp);
-    dff_SETn(SETn);
-    dff_RSTn(RSTn);
-    //dff(CLKp, (Dp | SETn) & !RSTn);
+    if (!bit_clock && CLKp) {
+      bit_data = (Dp || bit_set) && !bit_rst;
+    }
+
+    bit_clock = CLKp;
+    bit_set = !SETn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
+    bit_rst = !RSTn;
+    bit_data = (bit_data || bit_set) && !bit_rst;
   }
 };
 

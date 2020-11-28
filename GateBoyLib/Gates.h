@@ -356,7 +356,8 @@ struct DFF20 : public DFF {
 // DFF22_22 << CLKp
 
 struct DFF22 : public DFF {
-  wire qp16_chain()  const { return  to_wire_old(); }
+  wire qn15()  const { return !to_wire(); }
+  wire qp16()  const { return  to_wire(); }
 
   wire qn15_old()  const { return !to_wire_old(); }
   wire qp16_old()  const { return  to_wire_old(); }
@@ -460,6 +461,9 @@ struct NorLatch : public BitBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public BitBase {
+  wire qp03() const { return  to_wire(); }
+  wire qn04() const { return !to_wire(); }
+
   wire qp03_old() const { return  to_wire_old(); }
   wire qn04_old() const { return !to_wire_old(); }
 

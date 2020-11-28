@@ -636,6 +636,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("LX        : %03d\n", gb->lcd_reg.get_lx());
   d("LY        : %03d\n", gb->lcd_reg.get_ly());
   d("LYC       : %03d\n", gb->lcd_reg.get_lyc());
+  d.dump_bitp("lcd_pix_lo", gb->lcd_pix_lo.state);
+  d.dump_bitp("lcd_pix_lo", gb->lcd_pix_hi.state);
+
   d("\n");
 
   d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp.state);
@@ -696,8 +699,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("WIN Y     ", &gb->pix_pipe.VYNO_WIN_Y0, 8);
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BG_PIPE_A0, 8);
   d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BG_PIPE_B0, 8);
-  d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NYLU_SPR_PIPE_B0, 8);
-  d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NURO_SPR_PIPE_A0, 8);
+  d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NURO_SPR_PIPE_A0, 8);
+  d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NYLU_SPR_PIPE_B0, 8);  
   d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_0, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0, 8);
   d("\n");

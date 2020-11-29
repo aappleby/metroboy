@@ -121,7 +121,6 @@ void GateBoyApp::app_init() {
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
-  gb_thread.gb->pass_count = 0;
   gb_thread.gb->pass_total = 0;
 
   /*
@@ -209,7 +208,6 @@ void GateBoyApp::load_rom(const char* filename) {
 
   gb_thread.reset_cart(DMG_ROM_blob, load_blob(filename));
   gb_thread.gb->phase_total = 0;
-  gb_thread.gb->pass_count = 0;
   gb_thread.gb->pass_total = 0;
 
   printf("Loaded %zd bytes from rom %s\n", gb_thread.cart.size(), filename);
@@ -363,7 +361,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   uint8_t* framebuffer = gb->framebuffer;
   uint8_t* vid_ram = gb->vid_ram;
   int64_t phase_total = gb->phase_total;
-  bool sim_stable = gb->sim_stable;
 
   StringDumper d;
   float cursor = 0;
@@ -394,7 +391,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
     d("State size  %d M\n", state_size / (1024 * 1024));
   }
   d("Phase count %d\n",      gb->phase_total);
-  d("Pass count  %d\n",      gb->pass_count);
   d("Pass total  %d\n",      gb->pass_total);
   d("Pass avg    %f\n",      (float(gb->pass_total) / float(gb->phase_total)) - 2.0);
   d("Pass hash   %016llx\n", gb->pass_hash);
@@ -921,12 +917,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   double sim_ratio = 0.0;
   double sim_time_smooth = 0.0;
 
-  d("%s %s Sim clock %8.3f %s %c %s\n",
+  d("%s %s Sim clock %8.3f %s %s\n",
     runmode_names[runmode],
     stepmode_names[stepmode],
     double(phase_total) / (4194304.0 * 2),
     phase_names[phase_total & 7],
-    sim_stable ? ' ' : '*',
     show_golden ? "GOLDEN IMAGE " : "");
   d("Sim time %f, sim ratio %f, frame time %f\n", sim_time_smooth, sim_ratio, frame_time_smooth);
   text_painter.render(view, d.s, gb_x, gb_y + 144 * 2);

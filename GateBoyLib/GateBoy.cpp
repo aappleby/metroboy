@@ -45,9 +45,7 @@ void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
   int_joypad = 0;
   int_joypad_halt = 0;
 
-  sim_stable = 0;
   phase_total = 0;
-  pass_count = 0;
   pass_total = 0;
   pass_hash = HASH_INIT;
   total_hash = HASH_INIT;
@@ -137,9 +135,7 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   int_joypad = false;
   int_joypad_halt = false;
 
-  sim_stable = 1;
   phase_total = 0x02cf5798;
-  pass_count = 0;
   pass_total = 0x0c23db7e;
   pass_hash = 0xdd0849d964666f73;
   total_hash = 0xdfa0b6a3a264e502;
@@ -315,20 +311,29 @@ void GateBoy::next_phase() {
   //----------------------------------------
   // Run one pass of our simulation.
 
-  static GateBoy gb_old;
+  uint8_t* blob_begin = ((uint8_t*)&sentinel1) + sizeof(sentinel1);
+  uint8_t* blob_end   = ((uint8_t*)&sentinel2);
 
-  probes.begin_pass(pass_count);
-
+  probes.begin_pass(0);
+  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
   tock_slow();
-  commit_and_hash();
+  pass_total++;
+  probes.end_pass(false);
 
-  gb_old = *this;
+  uint64_t pass_hash_old = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
 
+  probes.begin_pass(1);
+  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
   tock_slow();
-  commit_and_hash();
+  pass_total++;
+  probes.end_pass(true);
 
-  probes.end_pass(sim_stable);
+  uint64_t pass_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
+  ASSERT_P(pass_hash_old == pass_hash_new);
 
+  pass_hash = pass_hash_new;
+
+  /*
   int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
   int end   = offsetof(GateBoy, sentinel2);
 
@@ -340,68 +345,44 @@ void GateBoy::next_phase() {
       printf("%06d %02d %04d %02d %02d\n", phase_total, pass_count, i, blob_old[i], blob_new[i]);
     }
   }
-
-  ASSERT_P(sim_stable);
+  */
 
   //----------------------------------------
   // Once the simulation converges, latch the data that needs to go back to the
   // CPU or test function and update the CPU if necessary.
 
-  if (sim_stable) {
+  if (DELTA_DE && sys_cpu_en) {
 
-    if (DELTA_DE && sys_cpu_en) {
+    uint8_t intf = 0;
+    if (int_vblank_halt) intf |= INT_VBLANK_MASK;
+    if (int_stat_halt)   intf |= INT_STAT_MASK;
+    if (int_timer_halt)  intf |= INT_TIMER_MASK;
+    if (int_serial_halt) intf |= INT_SERIAL_MASK;
+    if (int_joypad_halt) intf |= INT_JOYPAD_MASK;
 
-      uint8_t intf = 0;
-      if (int_vblank_halt) intf |= INT_VBLANK_MASK;
-      if (int_stat_halt)   intf |= INT_STAT_MASK;
-      if (int_timer_halt)  intf |= INT_TIMER_MASK;
-      if (int_serial_halt) intf |= INT_SERIAL_MASK;
-      if (int_joypad_halt) intf |= INT_JOYPAD_MASK;
-
-      cpu.tock_de(imask_latch, intf);
-    }
-
-    //----------
-    // CPU updates after HA.
-
-    if (DELTA_HA && sys_cpu_en) {
-
-      uint8_t intf = 0;
-      if (int_vblank) intf |= INT_VBLANK_MASK;
-      if (int_stat)   intf |= INT_STAT_MASK;
-      if (int_timer)  intf |= INT_TIMER_MASK;
-      if (int_serial) intf |= INT_SERIAL_MASK;
-      if (int_joypad) intf |= INT_JOYPAD_MASK;
-
-      cpu.tock_ha(imask_latch, intf, cpu_data_latch);
-    }
-
-    //----------
-    // Done, move to the next phase.
-
-    pass_total += pass_count;
-    pass_count = 0;
-    phase_total++;
-    combine_hash(total_hash, pass_hash);
+    cpu.tock_de(imask_latch, intf);
   }
 
-}
+  //----------
+  // CPU updates after HA.
 
-//-----------------------------------------------------------------------------
+  if (DELTA_HA && sys_cpu_en) {
 
-void GateBoy::commit_and_hash() {
-  uint8_t* blob_begin = ((uint8_t*)&sentinel1) + sizeof(sentinel1);
-  uint8_t* blob_end   = ((uint8_t*)&sentinel2);
-  uint64_t pass_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
+    uint8_t intf = 0;
+    if (int_vblank) intf |= INT_VBLANK_MASK;
+    if (int_stat)   intf |= INT_STAT_MASK;
+    if (int_timer)  intf |= INT_TIMER_MASK;
+    if (int_serial) intf |= INT_SERIAL_MASK;
+    if (int_joypad) intf |= INT_JOYPAD_MASK;
 
-  uint64_t pass_hash_old = pass_hash;
-  sim_stable = pass_hash_old == pass_hash_new;
-  pass_hash = pass_hash_new;
-  pass_count++;
+    cpu.tock_ha(imask_latch, intf, cpu_data_latch);
+  }
 
-  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
+  //----------
+  // Done, move to the next phase.
 
-  if (pass_count > 90) printf("!!!STUCK!!!\n");
+  phase_total++;
+  combine_hash(total_hash, pass_hash);
 }
 
 //-----------------------------------------------------------------------------
@@ -2183,128 +2164,9 @@ void GateBoy::tock_slow() {
     /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(_NYXU_FETCH_TRIGn, _LURY_BG_FETCH_DONEn);
   }
 
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  #pragma region Sprite_Scanner
+#pragma region Sprite_Scanner
   {
     // 32 + 4 + 2 + 1 = 39
     /*#p28.FETO*/ wire _FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp(), sprite_scanner.WEWY_SCAN1.qp(), sprite_scanner.GOSO_SCAN2.qp(), sprite_scanner.FONY_SCAN5.qp());
@@ -2354,10 +2216,7 @@ void GateBoy::tock_slow() {
   /*#p24.SOCY*/ _SOCY_WIN_HITn = not1(_TOMU_WIN_HITp);
   /* p27.TUKU*/ _TUKU_WIN_HITn = not1(_TOMU_WIN_HITp);
 
-  /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.RYDY_WIN_HITp.qp());
   /* p27.TUXY*/ _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
-
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   /*#p21.WEGO*/ _WEGO_HBLANKp = or2(_TOFU_VID_RSTp_s, pix_pipe.VOGA_HBLANKp.qp());
   /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp, _AVAP_SCAN_DONE_TRIGp);

@@ -33,8 +33,9 @@ void GateBoyThread::thread_main() {
   std::unique_lock<std::mutex> lock(mut, std::defer_lock);
 
   printf("Thread starting\n");
-  gb->tock_slow();
-  gb->commit_and_hash();
+
+  //gb->tock_slow();
+  //gb->commit_and_hash();
 
 
   printf("Command loop starting\n");

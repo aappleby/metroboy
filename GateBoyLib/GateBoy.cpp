@@ -1789,7 +1789,7 @@ void GateBoy::tock_slow() {
   }
 #pragma endregion
 
-  //----------------------------------------
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
   /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
@@ -1815,8 +1815,6 @@ void GateBoy::tock_slow() {
   /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(pix_pipe.RUBU_FINE_CNT2.qp(), pix_pipe.ROGA_FINE_CNT1.qp(), pix_pipe.RYKU_FINE_CNT0.qp());
   /* p27.PANY*/ wire _PANY_WIN_FETCHn = nor2(_NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
 
-  /* p27.RYFA*/ pix_pipe.RYFA_WIN_FETCHn_A.dff17(_SEGU_CLKPIPE_AxCxExGx, pix_pipe.XYMU_RENDERINGn.qn(), _PANY_WIN_FETCHn);
-  /* p27.RENE*/ pix_pipe.RENE_WIN_FETCHn_B.dff17(_ALET_xBxDxFxH_s,  pix_pipe.XYMU_RENDERINGn.qn(), pix_pipe.RYFA_WIN_FETCHn_A.qp());
   /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn(), pix_pipe.RENE_WIN_FETCHn_B.qp());
 
   /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
@@ -1824,9 +1822,6 @@ void GateBoy::tock_slow() {
   /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, _TEVO_FETCH_TRIGp);
 
   /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx = nand2(_ROXO_CLKPIPE_xBxDxFxH, _ROZE_FINE_COUNT_7n);
-  /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx,            _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn());
-  /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn());
-  /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn());
 
   /* p28.AJON*/ wire _AJON_PPU_OAM_ENp = and2(_BOGE_DMA_RUNNINGn, pix_pipe.XYMU_RENDERINGn.qn()); // def AND. ppu can read oam when there's rendering but no dma
   /* p04.DUGA*/ wire _DUGA_DMA_OAM_RDn  = not1(dma_reg.MATU_DMA_RUNNINGp.qp());
@@ -1838,8 +1833,6 @@ void GateBoy::tock_slow() {
   Bus2 SPR_TRI_L_in[4]; // from sprite store
   Bus2 BUS_OAM_An[8];
   uint8_t oam_addr;
-
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma region SpriteFetcher
 

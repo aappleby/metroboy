@@ -1633,6 +1633,18 @@ void GateBoy::tock_slow() {
 
 
 
+  /*#p27.MYLO*/ const wire _MYLO_WX_MATCH0p = xnor2(pix_pipe.XEHO_PX0p.qp(), pix_pipe.MYPA_WX0n_s.qn());
+  /* p27.PUWU*/ const wire _PUWU_WX_MATCH1p = xnor2(pix_pipe.SAVY_PX1p.qp(), pix_pipe.NOFE_WX1n_s.qn());
+  /* p27.PUHO*/ const wire _PUHO_WX_MATCH2p = xnor2(pix_pipe.XODU_PX2p.qp(), pix_pipe.NOKE_WX2n_s.qn());
+  /* p27.NYTU*/ const wire _NYTU_WX_MATCH3p = xnor2(pix_pipe.XYDO_PX3p.qp(), pix_pipe.MEBY_WX3n_s.qn());
+  /* p27.NEZO*/ const wire _NEZO_WX_MATCH4p = xnor2(pix_pipe.TUHU_PX4p.qp(), pix_pipe.MYPU_WX4n_s.qn());
+  /* p27.NORY*/ const wire _NORY_WX_MATCH5p = xnor2(pix_pipe.TUKY_PX5p.qp(), pix_pipe.MYCE_WX5n_s.qn());
+  /* p27.NONO*/ const wire _NONO_WX_MATCH6p = xnor2(pix_pipe.TAKO_PX6p.qp(), pix_pipe.MUVO_WX6n_s.qn());
+  /* p27.PASE*/ const wire _PASE_WX_MATCH7p = xnor2(pix_pipe.SYBE_PX7p.qp(), pix_pipe.NUKU_WX7n_s.qn());
+  /* p27.PUKY*/ const wire _PUKY_WX_MATCH_HIn  = nand5(pix_pipe.REJO_WY_MATCHp.qp(), _NEZO_WX_MATCH4p, _NORY_WX_MATCH5p, _NONO_WX_MATCH6p, _PASE_WX_MATCH7p);
+  /* p27.NUFA*/ const wire _NUFA_WX_MATCH_HIp  = not1(_PUKY_WX_MATCH_HIn);
+  /* p27.NOGY*/ const wire _NOGY_WX_MATCHn     = nand5(_NUFA_WX_MATCH_HIp, _MYLO_WX_MATCH0p, _PUWU_WX_MATCH1p, _PUHO_WX_MATCH2p, _NYTU_WX_MATCH3p);
+  /* p27.NUKO*/ const wire _NUKO_WX_MATCHp     = not1(_NOGY_WX_MATCHn);
 
 
   /*#p29.AZEM*/ const wire _AZEM_RENDERINGp = and2(pix_pipe.XYMU_RENDERINGn.qn(), _BYJO_SCANNINGn);
@@ -1695,11 +1707,7 @@ void GateBoy::tock_slow() {
   /* p29.FEPO*/ const wire _FEPO_STORE_MATCHp = or2(_FEFY_STORE_MATCHp, _FOVE_STORE_MATCHp);
   /*#p21.XENA*/ const wire _XENA_STORE_MATCHn = not1(_FEPO_STORE_MATCHp);
 
-  /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(pix_pipe.XEHO_PX0p.qp(),
-                                          pix_pipe.SAVY_PX1p.qp(),
-                                          pix_pipe.XODU_PX2p.qp(),
-                                          pix_pipe.TUKY_PX5p.qp(),
-                                          pix_pipe.SYBE_PX7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
+  /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(pix_pipe.XEHO_PX0p.qp(), pix_pipe.SAVY_PX1p.qp(), pix_pipe.XODU_PX2p.qp(), pix_pipe.TUKY_PX5p.qp(), pix_pipe.SYBE_PX7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
   /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
   /*#p21.WODU*/ wire _WODU_HBLANKp = and2(_XENA_STORE_MATCHn, _XANO_PX167p);
   /*#p21.VOGA*/ pix_pipe.VOGA_HBLANKp.dff17(_ALET_xBxDxFxH_s, _TADY_LINE_RSTn, _WODU_HBLANKp);
@@ -1710,12 +1718,62 @@ void GateBoy::tock_slow() {
 
 
 
+
   /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(pix_pipe.RYDY_WIN_HITp.qp());
   /*#p24.TOMU*/ wire _TOMU_WIN_HITp = not1(_SYLO_WIN_HITn);
   /*#p24.SOCY*/ wire _SOCY_WIN_HITn = not1(_TOMU_WIN_HITp);
   /*#p24.VYBO*/ wire _VYBO_CLKPIPE_xBxDxFxH = nor3(_FEPO_STORE_MATCHp, _WODU_HBLANKp, _MYVO_AxCxExGx_s);
   /*#p24.TYFA*/ wire _TYFA_CLKPIPE_xBxDxFxH = and3(_SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp(), _VYBO_CLKPIPE_xBxDxFxH);
   /*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx = not1(_TYFA_CLKPIPE_xBxDxFxH);
+  /* p27.ROCO*/ wire _ROCO_CLKPIPE_xBxDxFxH = not1(_SEGU_CLKPIPE_AxCxExGx);
+  {
+    /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH, _XAPO_VID_RSTn_s, _NUKO_WX_MATCHp);
+    /* p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_Bp.dff17(_MEHE_AxCxExGx_s,       _XAPO_VID_RSTn_s, pix_pipe.PYCO_WX_MATCH_Ap.qp());
+  }
+
+
+
+
+
+
+
+
+
+
+
+  /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.RYDY_WIN_HITp.qp());
+  /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
+  /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
+  /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn(), pix_pipe.RENE_WIN_FETCHn_B.qp());
+
+
+
+
+
+
+
+
+
+
+
+  /* p27.ROMO*/ const wire _ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
+  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
+  /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
+  /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp = or3(_SEKO_FETCH_TRIGp, _SUZU_WIN_FIRST_TILEne, _TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
+  /*#p27.NUNY*/ wire _NUNY_WX_MATCH_TRIGp = and2(pix_pipe.PYNU_WIN_MODE_Ap.qp(), pix_pipe.NOPA_WIN_MODE_Bp.qn());
+  /* p27.NYFO*/ wire _NYFO_WX_MATCH_TRIGn = not1(_NUNY_WX_MATCH_TRIGp);
+  /* p27.MOSU*/ wire _MOSU_WX_MATCH_TRIGp = not1(_NYFO_WX_MATCH_TRIGn);
+  /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp, _MOSU_WX_MATCH_TRIGp, _TEVO_FETCH_TRIGp);
+  /* p27.MOCE*/ const wire _MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp(), tile_fetcher.NYVA_BFETCH_S2p.qp(), _NYXU_FETCH_TRIGn);
+  /* p27.LYRY*/ const wire _LYRY_BFETCH_DONEp = not1(_MOCE_BFETCH_DONEn);
+
+  /* p24.LOBY*/ const wire _LOBY_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn());
+  /* p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(_MOSU_WX_MATCH_TRIGp, _LOBY_RENDERINGn);
+  /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(_ALET_xBxDxFxH_s, _NAFY_RENDERING_AND_NOT_WIN_TRIG, _LYRY_BFETCH_DONEp);
+
+
+
+
   /*#p24.SACU*/ wire _SACU_CLKPIPE_AxCxExGx = or2(_SEGU_CLKPIPE_AxCxExGx, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp()); // Schematic wrong, this is OR
   {
     // Pixel counter, has carry lookahead because this can increment every tcycle
@@ -1742,64 +1800,30 @@ void GateBoy::tock_slow() {
     /* p21.TAKO*/ pix_pipe.TAKO_PX6p.dff17(_TOCA, _TADY_LINE_RSTn, _TYGE);
     /* p21.SYBE*/ pix_pipe.SYBE_PX7p.dff17(_TOCA, _TADY_LINE_RSTn, _ROKU);
   }
-  /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p = xnor2(pix_pipe.XEHO_PX0p.qp(), pix_pipe.MYPA_WX0n_s.qn());
-  /* p27.PUWU*/ wire _PUWU_WX_MATCH1p = xnor2(pix_pipe.SAVY_PX1p.qp(), pix_pipe.NOFE_WX1n_s.qn());
-  /* p27.PUHO*/ wire _PUHO_WX_MATCH2p = xnor2(pix_pipe.XODU_PX2p.qp(), pix_pipe.NOKE_WX2n_s.qn());
-  /* p27.NYTU*/ wire _NYTU_WX_MATCH3p = xnor2(pix_pipe.XYDO_PX3p.qp(), pix_pipe.MEBY_WX3n_s.qn());
-  /* p27.NEZO*/ wire _NEZO_WX_MATCH4p = xnor2(pix_pipe.TUHU_PX4p.qp(), pix_pipe.MYPU_WX4n_s.qn());
-  /* p27.NORY*/ wire _NORY_WX_MATCH5p = xnor2(pix_pipe.TUKY_PX5p.qp(), pix_pipe.MYCE_WX5n_s.qn());
-  /* p27.NONO*/ wire _NONO_WX_MATCH6p = xnor2(pix_pipe.TAKO_PX6p.qp(), pix_pipe.MUVO_WX6n_s.qn());
-  /* p27.PASE*/ wire _PASE_WX_MATCH7p = xnor2(pix_pipe.SYBE_PX7p.qp(), pix_pipe.NUKU_WX7n_s.qn());
-  /* p27.PUKY*/ wire _PUKY_WX_MATCH_HIn  = nand5(pix_pipe.REJO_WY_MATCHp.qp(), _NEZO_WX_MATCH4p, _NORY_WX_MATCH5p, _NONO_WX_MATCH6p, _PASE_WX_MATCH7p);
-  /* p27.NUFA*/ wire _NUFA_WX_MATCH_HIp  = not1(_PUKY_WX_MATCH_HIn);
-  /* p27.NOGY*/ wire _NOGY_WX_MATCHn     = nand5(_NUFA_WX_MATCH_HIp, _MYLO_WX_MATCH0p, _PUWU_WX_MATCH1p, _PUHO_WX_MATCH2p, _NYTU_WX_MATCH3p);
-  /* p27.NUKO*/ wire _NUKO_WX_MATCHp     = not1(_NOGY_WX_MATCHn);
-  /* p27.ROCO*/ wire _ROCO_CLKPIPE_xBxDxFxH = not1(_SEGU_CLKPIPE_AxCxExGx);
-  {
-    /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH, _XAPO_VID_RSTn_s, _NUKO_WX_MATCHp);
-    /* p27.NUNU*/ pix_pipe.NUNU_WX_MATCH_Bp.dff17(_MEHE_AxCxExGx_s,       _XAPO_VID_RSTn_s, pix_pipe.PYCO_WX_MATCH_Ap.qp());
-  }
-
-  /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.RYDY_WIN_HITp.qp());
-  /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
-  /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
-  /* p27.SEKO*/ wire _SEKO_FETCH_TRIGp = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn(), pix_pipe.RENE_WIN_FETCHn_B.qp());
-  /* p27.ROMO*/ const wire _ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
-  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
-  /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
-  /* p27.TEVO*/ wire _TEVO_FETCH_TRIGp = or3(_SEKO_FETCH_TRIGp, _SUZU_WIN_FIRST_TILEne, _TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  /*#p27.NUNY*/ wire _NUNY_WX_MATCH_TRIGp = and2(pix_pipe.PYNU_WIN_MODE_Ap.qp(), pix_pipe.NOPA_WIN_MODE_Bp.qn());
-  /* p27.NYFO*/ wire _NYFO_WX_MATCH_TRIGn = not1(_NUNY_WX_MATCH_TRIGp);
-  /* p27.MOSU*/ wire _MOSU_WX_MATCH_TRIGp = not1(_NYFO_WX_MATCH_TRIGn);
-  /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp, _MOSU_WX_MATCH_TRIGp, _TEVO_FETCH_TRIGp);
-  /* p27.MOCE*/ const wire _MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp(), tile_fetcher.NYVA_BFETCH_S2p.qp(), _NYXU_FETCH_TRIGn);
-  /* p27.LYRY*/ const wire _LYRY_BFETCH_DONEp = not1(_MOCE_BFETCH_DONEn);
-
-  /* p24.LOBY*/ const wire _LOBY_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn());
-  /* p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(_MOSU_WX_MATCH_TRIGp, _LOBY_RENDERINGn);
-  /* p27.LOVY*/ tile_fetcher.LOVY_FETCH_DONEp.dff17(_MYVO_AxCxExGx_s, _NYXU_FETCH_TRIGn,                _LYRY_BFETCH_DONEp);
-  /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(_ALET_xBxDxFxH_s, _NAFY_RENDERING_AND_NOT_WIN_TRIG, _LYRY_BFETCH_DONEp);
-  /*#p21.XUGU*/ _XUGU_PX167n = nand5(pix_pipe.XEHO_PX0p.qp(),
-                                          pix_pipe.SAVY_PX1p.qp(),
-                                          pix_pipe.XODU_PX2p.qp(),
-                                          pix_pipe.TUKY_PX5p.qp(),
-                                          pix_pipe.SYBE_PX7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
+  /*#p21.XUGU*/ _XUGU_PX167n = nand5(pix_pipe.XEHO_PX0p.qp(), pix_pipe.SAVY_PX1p.qp(), pix_pipe.XODU_PX2p.qp(), pix_pipe.TUKY_PX5p.qp(), pix_pipe.SYBE_PX7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
   /*#p21.XANO*/ _XANO_PX167p = not1(_XUGU_PX167n);
   /*#p21.WODU*/ _WODU_HBLANKp = and2(_XENA_STORE_MATCHn, _XANO_PX167p);
-  /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.dff17(_MYVO_AxCxExGx_s, _NAFY_RENDERING_AND_NOT_WIN_TRIG, tile_fetcher.NYKA_FETCH_DONEp.qp());
-  /* p24.PYGO*/ tile_fetcher.PYGO_FETCH_DONEp.dff17(_ALET_xBxDxFxH_s, pix_pipe.XYMU_RENDERINGn.qn(), tile_fetcher.PORY_FETCH_DONEp.qp());
-  /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.qp(), _LOBY_RENDERINGn);
   /*#p24.VYBO*/ _VYBO_CLKPIPE_xBxDxFxH = nor3(_FEPO_STORE_MATCHp, _WODU_HBLANKp, _MYVO_AxCxExGx_s);
+
+
+
+  {
+    /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.dff17(_MYVO_AxCxExGx_s, _NAFY_RENDERING_AND_NOT_WIN_TRIG, tile_fetcher.NYKA_FETCH_DONEp.qp());
+    /* p24.PYGO*/ tile_fetcher.PYGO_FETCH_DONEp.dff17(_ALET_xBxDxFxH_s, pix_pipe.XYMU_RENDERINGn.qn(), tile_fetcher.PORY_FETCH_DONEp.qp());
+    /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.qp(), _LOBY_RENDERINGn);
+  }
+
+
   /* p27.RYDY*/ pix_pipe.RYDY_WIN_HITp = nor3(pix_pipe.PUKU_WIN_HITn.qp(), tile_fetcher.PORY_FETCH_DONEp.qp(), _PYRY_VID_RSTp_s);
   /*#p27.SYLO*/ _SYLO_WIN_HITn = not1(pix_pipe.RYDY_WIN_HITp.qp());
   /*#p24.TOMU*/ _TOMU_WIN_HITp = not1(_SYLO_WIN_HITn);
   /*#p24.SOCY*/ _SOCY_WIN_HITn = not1(_TOMU_WIN_HITp);
   /*#p24.TYFA*/ _TYFA_CLKPIPE_xBxDxFxH = and3(_SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp(), _VYBO_CLKPIPE_xBxDxFxH);
   /*#p24.SEGU*/ _SEGU_CLKPIPE_AxCxExGx = not1(_TYFA_CLKPIPE_xBxDxFxH);
-  /* p27.PUKY*/ _PUKY_WX_MATCH_HIn  = nand5(pix_pipe.REJO_WY_MATCHp.qp(), _NEZO_WX_MATCH4p, _NORY_WX_MATCH5p, _NONO_WX_MATCH6p, _PASE_WX_MATCH7p);
-  /* p27.NUFA*/ _NUFA_WX_MATCH_HIp  = not1(_PUKY_WX_MATCH_HIn);
-  /* p27.NOGY*/ _NOGY_WX_MATCHn     = nand5(_NUFA_WX_MATCH_HIp, _MYLO_WX_MATCH0p, _PUWU_WX_MATCH1p, _PUHO_WX_MATCH2p, _NYTU_WX_MATCH3p);
-  /* p27.NUKO*/ _NUKO_WX_MATCHp     = not1(_NOGY_WX_MATCHn);
+
+
+
+
 
 
 
@@ -1810,14 +1834,19 @@ void GateBoy::tock_slow() {
   /* p27.PANY*/ const wire _PANY_WIN_FETCHn = nor2(_NUKO_WX_MATCHp, _ROZE_FINE_COUNT_7n);
   /* p27.RYFA*/ pix_pipe.RYFA_WIN_FETCHn_A.dff17(_SEGU_CLKPIPE_AxCxExGx, pix_pipe.XYMU_RENDERINGn.qn(), _PANY_WIN_FETCHn);
   /* p27.RENE*/ pix_pipe.RENE_WIN_FETCHn_B.dff17(_ALET_xBxDxFxH_s,  pix_pipe.XYMU_RENDERINGn.qn(), pix_pipe.RYFA_WIN_FETCHn_A.qp());
+
   /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(pix_pipe.NUNU_WX_MATCH_Bp.qp(), _XOFO_WIN_RSTp);
   /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.PYNU_WIN_MODE_Ap.qp());
   /*#p27.NUNY*/ _NUNY_WX_MATCH_TRIGp = and2(pix_pipe.PYNU_WIN_MODE_Ap.qp(), pix_pipe.NOPA_WIN_MODE_Bp.qn());
+  /* p27.PUKU*/ pix_pipe.PUKU_WIN_HITn = nor2(pix_pipe.RYDY_WIN_HITp.qp(), _NUNY_WX_MATCH_TRIGp);
+
+
   /* p27.NYFO*/ _NYFO_WX_MATCH_TRIGn = not1(_NUNY_WX_MATCH_TRIGp);
   /* p27.MOSU*/ _MOSU_WX_MATCH_TRIGp = not1(_NYFO_WX_MATCH_TRIGn);
   /* p24.NAFY*/ _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(_MOSU_WX_MATCH_TRIGp, _LOBY_RENDERINGn);
   /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.RSTn(_NAFY_RENDERING_AND_NOT_WIN_TRIG);
   /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.RSTn(_NAFY_RENDERING_AND_NOT_WIN_TRIG);
+  /* p27.RYDY*/ pix_pipe.RYDY_WIN_HITp = nor3(pix_pipe.PUKU_WIN_HITn.qp(), tile_fetcher.PORY_FETCH_DONEp.qp(), _PYRY_VID_RSTp_s);
 
   /* p27.SEKO*/ _SEKO_FETCH_TRIGp = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn(), pix_pipe.RENE_WIN_FETCHn_B.qp());
   /* p27.TUXY*/ _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
@@ -1825,8 +1854,8 @@ void GateBoy::tock_slow() {
   /* p27.SUVU*/ _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
   /* p27.TAVE*/ _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
   /* p27.TEVO*/ _TEVO_FETCH_TRIGp = or3(_SEKO_FETCH_TRIGp, _SUZU_WIN_FIRST_TILEne, _TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
+
   /* p27.NYXU*/ _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp, _MOSU_WX_MATCH_TRIGp, _TEVO_FETCH_TRIGp);
-  /* p27.LOVY*/ tile_fetcher.LOVY_FETCH_DONEp.dff17(_MYVO_AxCxExGx_s, _NYXU_FETCH_TRIGn, _LYRY_BFETCH_DONEp);
   {
     /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(_ALET_xBxDxFxH_s, _MOCE_BFETCH_DONEn);
     /* p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p   .dff17(_LEBO_AxCxExGx,                    _NYXU_FETCH_TRIGn,             tile_fetcher.LAXU_BFETCH_S0p.qn());
@@ -1835,8 +1864,6 @@ void GateBoy::tock_slow() {
     /* p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(_ALET_xBxDxFxH_s,                  pix_pipe.XYMU_RENDERINGn.qn(), tile_fetcher.LAXU_BFETCH_S0p.qp());
   }
 
-  /* p27.PUKU*/ pix_pipe.PUKU_WIN_HITn = nor2(pix_pipe.RYDY_WIN_HITp.qp(), _NUNY_WX_MATCH_TRIGp);
-  /* p27.RYDY*/ pix_pipe.RYDY_WIN_HITp = nor3(pix_pipe.PUKU_WIN_HITn.qp(), tile_fetcher.PORY_FETCH_DONEp.qp(), _PYRY_VID_RSTp_s);
 
 
 
@@ -1868,7 +1895,7 @@ void GateBoy::tock_slow() {
   }
 
 
-  /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn());
+  /*#p27.POVA*/ const wire _POVA_FINE_MATCH_TRIGp = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn());
   /*#p27.ROXY*/ pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);
   /*#p24.SACU*/ _SACU_CLKPIPE_AxCxExGx = or2(_SEGU_CLKPIPE_AxCxExGx, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp()); // Schematic wrong, this is OR
   {
@@ -2433,6 +2460,7 @@ void GateBoy::tock_slow() {
   }
 
 
+  /* p27.LOVY*/ tile_fetcher.LOVY_FETCH_DONEp.dff17(_MYVO_AxCxExGx_s, _NYXU_FETCH_TRIGn, _LYRY_BFETCH_DONEp);
   /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(tile_fetcher.LOVY_FETCH_DONEp.qn(), pix_pipe.XYMU_RENDERINGn.qn());
   /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(_NYXU_FETCH_TRIGn, _LURY_BG_FETCH_DONEn);
 

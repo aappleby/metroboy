@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "CoreLib/Tests.h"
+
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b) {
@@ -18,7 +20,10 @@ uint64_t commit_and_hash(void* blob, int size) {
 
   for (int i = 0; i < size; i++) {
     uint8_t s = base[i];
-    CHECK_P(s & 0x80); // bit_dirty
+    if (!(s & 0x80)) {
+      LOG_Y("Bit %d not dirty after sim pass!\n", i);
+      ASSERT_P(false);
+    }
     s &= 0x03;
     combine_hash(h, s);
     base[i] = s;

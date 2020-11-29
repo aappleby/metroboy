@@ -329,9 +329,11 @@ void GateBoy::next_phase() {
   probes.end_pass(true);
 
   uint64_t pass_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
-  ASSERT_P(pass_hash_old == pass_hash_new);
 
-  pass_hash = pass_hash_new;
+  if (pass_hash_old != pass_hash_new) {
+    LOG_Y("Sim not stable after second pass!\n");
+    ASSERT_P(false);
+  }
 
   /*
   int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
@@ -382,6 +384,7 @@ void GateBoy::next_phase() {
   // Done, move to the next phase.
 
   phase_total++;
+  pass_hash = pass_hash_new;
   combine_hash(total_hash, pass_hash);
 }
 
@@ -2126,16 +2129,8 @@ void GateBoy::tock_slow() {
   /* p29.CARE*/ wire _CARE_STORE_ENp_ABxxEFxx = and3(_XOCE_xBCxxFGx_s, _CEHA_SCANNINGp, _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
   /* p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH = not1(_CARE_STORE_ENp_ABxxEFxx);
 
-  // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
-  {
-    /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL = and2(sprite_store.CUXY_SPRITE_COUNT1.qp(), sprite_store.DYBE_SPRITE_COUNT3.qp());
-    /*#p29.CAKE*/ wire _CAKE_CLKp = or2(_BAKY_SPRITES_FULL, sprite_store.DEZY_STORE_ENn.qp());
-    /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp);
-    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_CLKp,                                 _AZYB_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn());
-    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17(sprite_store.BESE_SPRITE_COUNT0.qn(), _AZYB_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn());
-    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17(sprite_store.CUXY_SPRITE_COUNT1.qn(), _AZYB_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn());
-    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17(sprite_store.BEGO_SPRITE_COUNT2.qn(), _AZYB_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn());
-  }
+
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   {
     /* p29.DEZY*/ sprite_store.DEZY_STORE_ENn.dff17(_ZEME_AxCxExGx_s, _XAPO_VID_RSTn_s, _DYTY_STORE_ENn_xxCDxxGH);
@@ -2163,8 +2158,6 @@ void GateBoy::tock_slow() {
     /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(tile_fetcher.LOVY_FETCH_DONEp.qn(), pix_pipe.XYMU_RENDERINGn.qn());
     /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(_NYXU_FETCH_TRIGn, _LURY_BG_FETCH_DONEn);
   }
-
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma region Sprite_Scanner
   {

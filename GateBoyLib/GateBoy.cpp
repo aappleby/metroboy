@@ -2586,35 +2586,7 @@ void GateBoy::tock_slow() {
     /*#p27.NYZE*/ pix_pipe.NYZE_SCX_FINE_MATCH_B.dff17(_MOXE_AxCxExGx_s,       pix_pipe.XYMU_RENDERINGn.qn(), pix_pipe.PUXA_SCX_FINE_MATCH_A.qp());
   }
 
-#pragma region PixelCounter
-  {
-    // Pixel counter, has carry lookahead because this can increment every tcycle
-    /* p21.RYBO*/ wire _RYBO = xor2(pix_pipe.XEHO_PX0p.qp(), pix_pipe.SAVY_PX1p.qp()); // XOR layout 1, feet facing gnd, this should def be regular xor
-    /* p21.XUKE*/ wire _XUKE = and2(pix_pipe.XEHO_PX0p.qp(), pix_pipe.SAVY_PX1p.qp());
-    /* p21.XYLE*/ wire _XYLE = and2(pix_pipe.XODU_PX2p.qp(), _XUKE);
-    /* p21.XEGY*/ wire _XEGY = xor2(pix_pipe.XODU_PX2p.qp(), _XUKE); // feet facing gnd
-    /* p21.XORA*/ wire _XORA = xor2(pix_pipe.XYDO_PX3p.qp(), _XYLE); // feet facing gnd
-
-    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17(_SACU_CLKPIPE_AxCxExGx, _TADY_LINE_RSTn, pix_pipe.XEHO_PX0p.qn());
-    /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17(_SACU_CLKPIPE_AxCxExGx, _TADY_LINE_RSTn, _RYBO);
-    /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17(_SACU_CLKPIPE_AxCxExGx, _TADY_LINE_RSTn, _XEGY);
-    /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17(_SACU_CLKPIPE_AxCxExGx, _TADY_LINE_RSTn, _XORA);
-
-    /* p21.SAKE*/ wire _SAKE = xor2(pix_pipe.TUHU_PX4p.qp(), pix_pipe.TUKY_PX5p.qp());
-    /* p21.TYBA*/ wire _TYBA = and2(pix_pipe.TUHU_PX4p.qp(), pix_pipe.TUKY_PX5p.qp());
-    /* p21.SURY*/ wire _SURY = and2(pix_pipe.TAKO_PX6p.qp(), _TYBA);
-    /* p21.TYGE*/ wire _TYGE = xor2(pix_pipe.TAKO_PX6p.qp(), _TYBA);
-    /* p21.ROKU*/ wire _ROKU = xor2(pix_pipe.SYBE_PX7p.qp(), _SURY);
-
-    /* p24.TOCA*/ wire _TOCA = not1(pix_pipe.XYDO_PX3p.qp());
-    /* p21.TUHU*/ pix_pipe.TUHU_PX4p.dff17(_TOCA, _TADY_LINE_RSTn, pix_pipe.TUHU_PX4p.qn());
-    /* p21.TUKY*/ pix_pipe.TUKY_PX5p.dff17(_TOCA, _TADY_LINE_RSTn, _SAKE);
-    /* p21.TAKO*/ pix_pipe.TAKO_PX6p.dff17(_TOCA, _TADY_LINE_RSTn, _TYGE);
-    /* p21.SYBE*/ pix_pipe.SYBE_PX7p.dff17(_TOCA, _TADY_LINE_RSTn, _ROKU);
-  }
-#pragma endregion
-
-  //----------------------------------------
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   /* p27.ROMO*/ _ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
   /* p27.SUVU*/ _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
@@ -2846,8 +2818,6 @@ void GateBoy::tock_slow() {
 
   /* p27.RYCE*/ _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp(), sprite_fetcher.SUDA_SFETCH_REQp.qn());
   /*#p27.SECA*/ _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp_s, _ATEJ_LINE_TRIGp);
-
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
   /* p27.SOWO*/ _SOWO_SFETCH_RUNNINGn = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp());

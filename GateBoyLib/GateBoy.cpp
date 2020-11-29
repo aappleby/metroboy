@@ -1942,6 +1942,12 @@ void GateBoy::tock_slow() {
 
 
   /* p27.NYXU*/ _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp, _MOSU_WX_MATCH_TRIGp, _TEVO_FETCH_TRIGp);
+  {
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(_ALET_xBxDxFxH_s, _MOCE_BFETCH_DONEn);
+    /* p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p.dff17(_LEBO_AxCxExGx,                    _NYXU_FETCH_TRIGn, tile_fetcher.LAXU_BFETCH_S0p.qn());
+    /* p27.MESU*/ tile_fetcher.MESU_BFETCH_S1p.dff17(tile_fetcher.LAXU_BFETCH_S0p.qn(), _NYXU_FETCH_TRIGn, tile_fetcher.MESU_BFETCH_S1p.qn());
+    /* p27.NYVA*/ tile_fetcher.NYVA_BFETCH_S2p.dff17(tile_fetcher.MESU_BFETCH_S1p.qn(), _NYXU_FETCH_TRIGn, tile_fetcher.NYVA_BFETCH_S2p.qn());
+  }
 
   /* p29.TYNO*/ const wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp());
   /* p29.VUSA*/ const wire _VUSA_SPRITE_DONEn  = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn(), _TYNO);
@@ -1968,10 +1974,6 @@ void GateBoy::tock_slow() {
 
   /* p24.NAFY*/ _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor2(_MOSU_WX_MATCH_TRIGp, _LOBY_RENDERINGn);
 
-  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(_ALET_xBxDxFxH_s, _MOCE_BFETCH_DONEn);
-  /* p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p.dff17(_LEBO_AxCxExGx,                          _NYXU_FETCH_TRIGn, tile_fetcher.LAXU_BFETCH_S0p.qn());
-  /* p27.MESU*/ tile_fetcher.MESU_BFETCH_S1p.dff17(tile_fetcher.LAXU_BFETCH_S0p.qn(), _NYXU_FETCH_TRIGn, tile_fetcher.MESU_BFETCH_S1p.qn());
-  /* p27.NYVA*/ tile_fetcher.NYVA_BFETCH_S2p.dff17(tile_fetcher.MESU_BFETCH_S1p.qn(), _NYXU_FETCH_TRIGn, tile_fetcher.NYVA_BFETCH_S2p.qn());
 
 
   /* p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(_ALET_xBxDxFxH_s, pix_pipe.XYMU_RENDERINGn.qn(), tile_fetcher.LAXU_BFETCH_S0p.qp());

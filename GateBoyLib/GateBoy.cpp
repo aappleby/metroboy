@@ -1878,37 +1878,39 @@ void GateBoy::tock_slow() {
   /* p27.RENE*/ pix_pipe.RENE_WIN_FETCHn_B.dff17(_ALET_xBxDxFxH_s,  pix_pipe.XYMU_RENDERINGn.qn(), pix_pipe.RYFA_WIN_FETCHn_A.qp());
   /* p27.SEKO*/ _SEKO_FETCH_TRIGp = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn(), pix_pipe.RENE_WIN_FETCHn_B.qp());
 
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
   /* p27.TUXY*/ _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
   /* p27.SUZU*/ _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
-  /* p27.ROMO*/ _ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp());
   /* p27.SUVU*/ _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
   /* p27.TAVE*/ _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
   /* p27.TEVO*/ _TEVO_FETCH_TRIGp = or3(_SEKO_FETCH_TRIGp, _SUZU_WIN_FIRST_TILEne, _TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, _TEVO_FETCH_TRIGp);
 
-  /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx = nand2(_ROXO_CLKPIPE_xBxDxFxH, _ROZE_FINE_COUNT_7n);
-  /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx,      _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn());
-  /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn());
-  /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn());
+  {
+    /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx = nand2(_ROXO_CLKPIPE_xBxDxFxH, _ROZE_FINE_COUNT_7n);
+    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, _TEVO_FETCH_TRIGp);
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx,      _PASO_FINE_RST, pix_pipe.RYKU_FINE_CNT0.qn());
+    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn(), _PASO_FINE_RST, pix_pipe.ROGA_FINE_CNT1.qn());
+    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn(), _PASO_FINE_RST, pix_pipe.RUBU_FINE_CNT2.qn());
+  }
+
+
+  /* p27.NYXU*/ _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp, _MOSU_WX_MATCH_TRIGp, _TEVO_FETCH_TRIGp);
 
   /* p29.TYNO*/ wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp());
   /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn  = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn(), _TYNO);
   /* p29.WUTY*/ wire _WUTY_SPRITE_DONEp = not1(_VUSA_SPRITE_DONEn);
-  /* p27.NYXU*/ _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp, _MOSU_WX_MATCH_TRIGp, _TEVO_FETCH_TRIGp);
-  /* p27.MOCE*/ _MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp(), tile_fetcher.NYVA_BFETCH_S2p.qp(), _NYXU_FETCH_TRIGn);
-  /* p27.LYRY*/ _LYRY_BFETCH_DONEp = not1(_MOCE_BFETCH_DONEn);
-  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(_WUTY_SPRITE_DONEp, _TAVE_PRELOAD_DONE_TRIGp); // def nor
+  {
+    /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(_WUTY_SPRITE_DONEp, _TAVE_PRELOAD_DONE_TRIGp); // def nor
+    /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
+  }
 
   /*#p29.TAME*/ _TAME_SFETCH_CLK_GATE = nand2(sprite_fetcher.TESE_SFETCH_S2p.qp(), sprite_fetcher.TOXE_SFETCH_S0p.qp());
   /*#p29.TOMA*/ _TOMA_SFETCH_CLK_xBxDxFxH = nand2(_LAPE_AxCxExGx_s, _TAME_SFETCH_CLK_GATE);
-
-  /* p27.RYCE*/ _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp(), sprite_fetcher.SUDA_SFETCH_REQp.qn());
-  /*#p27.SECA*/ _SECA_SFETCH_RUNNING_SETn = nor3(_RYCE_SFETCH_TRIGp, _ROSY_VID_RSTp_s, _ATEJ_LINE_TRIGp);
-  /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RUNNING_SETn, _VEKU_SFETCH_RUNNING_RSTn);
-
   /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p.dff17(_TOMA_SFETCH_CLK_xBxDxFxH,           _SECA_SFETCH_RUNNING_SETn, sprite_fetcher.TOXE_SFETCH_S0p.qn());
   /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1p.dff17(sprite_fetcher.TOXE_SFETCH_S0p.qn(), _SECA_SFETCH_RUNNING_SETn, sprite_fetcher.TULY_SFETCH_S1p.qn());
   /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p.dff17(sprite_fetcher.TULY_SFETCH_S1p.qn(), _SECA_SFETCH_RUNNING_SETn, sprite_fetcher.TESE_SFETCH_S2p.qn());
+
 
   //----------------------------------------
 

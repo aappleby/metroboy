@@ -3138,16 +3138,7 @@ void GateBoy::tock_slow() {
 
 #pragma endregion
 
-  {
-    /* p27.PYNU*/ pix_pipe.PYNU_WIN_MODE_Ap.nor_latch(pix_pipe.NUNU_WX_MATCH_Bp.qp(), _XOFO_WIN_RSTp);
-    /* p27.NOPA*/ pix_pipe.NOPA_WIN_MODE_Bp.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.PYNU_WIN_MODE_Ap.qp());
-  }
-  /*#p27.NUNY*/ _NUNY_WX_MATCH_TRIGp = and2(pix_pipe.PYNU_WIN_MODE_Ap.qp(), pix_pipe.NOPA_WIN_MODE_Bp.qn());
-  /* p27.NYFO*/ _NYFO_WX_MATCH_TRIGn = not1(_NUNY_WX_MATCH_TRIGp);
-  /* p27.MOSU*/ _MOSU_WX_MATCH_TRIGp = not1(_NYFO_WX_MATCH_TRIGn);
-  /*#p27.NOCU*/ _NOCU_WIN_MODEn = not1(pix_pipe.PYNU_WIN_MODE_Ap.qp());
-  /* p27.PORE*/ _PORE_WIN_MODEp = not1(_NOCU_WIN_MODEn);
-  /* p26.AXAD*/ _AXAD_WIN_MODEn = not1(_PORE_WIN_MODEp);
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   {
     /* p27.PUKU*/ pix_pipe.PUKU_WIN_HITn = nor2(pix_pipe.RYDY_WIN_HITp.qp(), _NUNY_WX_MATCH_TRIGp);
@@ -3159,27 +3150,6 @@ void GateBoy::tock_slow() {
   /*#p24.TOMU*/ _TOMU_WIN_HITp = not1(_SYLO_WIN_HITn);
   /*#p24.SOCY*/ _SOCY_WIN_HITn = not1(_TOMU_WIN_HITp);
   /* p27.TUKU*/ _TUKU_WIN_HITn = not1(_TOMU_WIN_HITp);
-
-  /* p27.SOVY*/ pix_pipe.SOVY_WIN_FIRST_TILE_B.dff17(_ALET_xBxDxFxH_s, _XAPO_VID_RSTn_s, pix_pipe.RYDY_WIN_HITp.qp());
-  /* p27.TUXY*/ _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp());
-
-  /*#p21.WEGO*/ _WEGO_HBLANKp = or2(_TOFU_VID_RSTp_s, pix_pipe.VOGA_HBLANKp.qp());
-  /*#p21.XYMU*/ pix_pipe.XYMU_RENDERINGn.nor_latch(_WEGO_HBLANKp, _AVAP_SCAN_DONE_TRIGp);
-  /* p29.TEPA*/ _TEPA_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn());
-  /* p24.LOBY*/ _LOBY_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn());
-  /*#p27.PAHA*/ _PAHA_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn());
-  /*#p25.ROPY*/ _ROPY_RENDERINGn = not1(pix_pipe.XYMU_RENDERINGn.qn());
-
-
-  /*#p25.SERE*/ _SERE_CPU_VRM_RDp  = and2(_TOLE_VRAM_RDp, _ROPY_RENDERINGn);
-  /*#p25.RUVY*/ _RUVY_CPU_VRAM_WRp = not1(_SALE_CPU_VRAM_WRn);
-  /*#p25.SAZO*/ _SAZO_CBD_TO_VPDp  = and2(_SERE_CPU_VRM_RDp, _RUVY_CPU_VRAM_WRp);
-  /*#p25.RYJE*/ _RYJE_CBD_TO_VPDn  = not1(_SAZO_CBD_TO_VPDp);
-  /*#p25.REVO*/ _REVO_CBD_TO_VPDp  = not1(_RYJE_CBD_TO_VPDn);
-  /*#p25.RELA*/ _RELA_CBD_TO_VPDp  = or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
-  /*#p25.RENA*/ _RENA_CBD_TO_VPDn  = not1(_RELA_CBD_TO_VPDp);
-
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   /*#p27.POVA*/ _POVA_FINE_MATCH_TRIGp = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn());
   /*#p27.ROXY*/ pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);

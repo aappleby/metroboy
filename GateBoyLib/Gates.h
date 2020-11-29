@@ -213,6 +213,13 @@ struct DFF17 : public DFF {
     bit_dirty = 1;
   }
 
+  void dff17_n(wire CLKp, wire RSTn) {
+    CHECK_N((!bit_clock && CLKp) && RSTn);
+    bit_clock = CLKp;
+    bit_data = bit_data && RSTn;
+    bit_dirty = 1;
+  }
+
   void RSTn(wire RSTn) {
     bit_data = bit_data && RSTn;
   }

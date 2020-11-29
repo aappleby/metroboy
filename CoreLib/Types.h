@@ -79,6 +79,9 @@ inline T clamp_val(S a, T min, T max) {
 #define DELTA_FG  ((((phase_total + 0) & 7) == 5) && (((phase_total + 1) & 7) == 6))
 #define DELTA_GH  ((((phase_total + 0) & 7) == 6) && (((phase_total + 1) & 7) == 7))
 
+#define DELTA_EVEN ((phase_total & 1) == 0)
+#define DELTA_ODD  ((phase_total & 1) == 1)
+
 //-----------------------------------------------------------------------------
 
 #pragma warning(push)

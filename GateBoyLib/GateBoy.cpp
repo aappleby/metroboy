@@ -1800,10 +1800,6 @@ void GateBoy::tock_slow() {
   /* p27.NUFA*/ _NUFA_WX_MATCH_HIp  = not1(_PUKY_WX_MATCH_HIn);
   /* p27.NOGY*/ _NOGY_WX_MATCHn     = nand5(_NUFA_WX_MATCH_HIp, _MYLO_WX_MATCH0p, _PUWU_WX_MATCH1p, _PUHO_WX_MATCH2p, _NYTU_WX_MATCH3p);
   /* p27.NUKO*/ _NUKO_WX_MATCHp     = not1(_NOGY_WX_MATCHn);
-  /* p27.ROCO*/ _ROCO_CLKPIPE_xBxDxFxH = not1(_SEGU_CLKPIPE_AxCxExGx);
-  {
-    /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH, _XAPO_VID_RSTn_s, _NUKO_WX_MATCHp);
-  }
 
 
 
@@ -1845,6 +1841,10 @@ void GateBoy::tock_slow() {
 
 
 
+  /* p27.ROCO*/ _ROCO_CLKPIPE_xBxDxFxH = not1(_SEGU_CLKPIPE_AxCxExGx);
+  {
+    /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH, _XAPO_VID_RSTn_s, _NUKO_WX_MATCHp);
+  }
 
 
 

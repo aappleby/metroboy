@@ -1756,13 +1756,17 @@ void GateBoy::tock_slow() {
 
 
 
+  /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(pix_pipe.RYDY_WIN_HITp.qp_old());
+  /*#p24.TOMU*/ wire _TOMU_WIN_HITp_old = not1(_SYLO_WIN_HITn_old);
+  /*#p24.SOCY*/ wire _SOCY_WIN_HITn_old = not1(_TOMU_WIN_HITp_old);
 
-#if 0
+
   /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_old      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_old());
   /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_old = nand4(pix_pipe.XYMU_RENDERINGn.qn_old(), _ROMO_PRELOAD_DONEn_old, tile_fetcher.NYKA_FETCH_DONEp.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_old());
   /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_old = not1(_SUVU_PRELOAD_DONE_TRIGn_old);
   /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp_old    = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn_old(), pix_pipe.RENE_WIN_FETCHn_B.qp_old());
-#endif
+  /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_old = nand2(_SYLO_WIN_HITn_old, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp_old());
+  /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_old = not1(_TUXY_WIN_FIRST_TILEne_old);
 
 
 
@@ -1825,9 +1829,8 @@ void GateBoy::tock_slow() {
   /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
 
   // FIXME old/new
-  /* p27.SUVU*/ bool _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
-  /* p27.TAVE*/ bool _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
-  /* p27.SEKO*/ bool _SEKO_WIN_FETCH_TRIGp_old2 = nor2(pix_pipe.RYFA_WIN_FETCHn_A.qn_old(), pix_pipe.RENE_WIN_FETCHn_B.qp_old());
+  /* p27.SUVU*/ bool _SUVU_PRELOAD_DONE_TRIGn_xxx = nand4(pix_pipe.XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
+  /* p27.TAVE*/ bool _TAVE_PRELOAD_DONE_TRIGp_xxx = not1(_SUVU_PRELOAD_DONE_TRIGn_xxx);
 
   /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(pix_pipe.RYDY_WIN_HITp.qp_new());
   /*#p24.TOMU*/ wire _TOMU_WIN_HITp_new = not1(_SYLO_WIN_HITn_new);
@@ -1840,11 +1843,11 @@ void GateBoy::tock_slow() {
   /* p27.ROCO*/ wire _ROCO_CLKPIPE_xBxDxFxH = not1(_SEGU_CLKPIPE_AxCxExGx);
   /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH, _XAPO_VID_RSTn_new, _NUKO_WX_MATCHp_old);
 
-  /* p27.TUXY*/ bool _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp_new());
-  /* p27.SUZU*/ bool _SUZU_WIN_FIRST_TILEne_new = not1(_TUXY_WIN_FIRST_TILEne_new);
+  /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp_new());
+  /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_new = not1(_TUXY_WIN_FIRST_TILEne_new);
 
   // FIXME old/new
-  /* p27.TEVO*/ bool _TEVO_FETCH_TRIGp = or3(_SEKO_WIN_FETCH_TRIGp_old2, _SUZU_WIN_FIRST_TILEne_new, _TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
+  /* p27.TEVO*/ bool _TEVO_FETCH_TRIGp = or3(_SEKO_WIN_FETCH_TRIGp_old, _SUZU_WIN_FIRST_TILEne_new, _TAVE_PRELOAD_DONE_TRIGp_xxx); // Schematic wrong, this is OR
 
 
 
@@ -1864,8 +1867,8 @@ void GateBoy::tock_slow() {
   /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp(), tile_fetcher.NYVA_BFETCH_S2p.qp(), _NYXU_FETCH_TRIGn);
   /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp = not1(_MOCE_BFETCH_DONEn);
   /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(_ALET_xBxDxFxH_clk, _NAFY_RENDERING_AND_NOT_WIN_TRIG_new, _LYRY_BFETCH_DONEp);
-  /* p27.SUVU*/ _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp(), tile_fetcher.PORY_FETCH_DONEp.qp());
-  /* p27.TAVE*/ _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
+  /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(pix_pipe.XYMU_RENDERINGn.qn(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
+  /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
   /* p27.TEVO*/ _TEVO_FETCH_TRIGp = or3(_SEKO_WIN_FETCH_TRIGp_new, _SUZU_WIN_FIRST_TILEne_new, _TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
   /* p27.NYXU*/ _NYXU_FETCH_TRIGn = nor3(_AVAP_SCAN_DONE_TRIGp_new, _MOSU_WX_MATCH_TRIGp_new, _TEVO_FETCH_TRIGp);
 

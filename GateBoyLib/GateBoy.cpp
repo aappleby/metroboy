@@ -2325,7 +2325,6 @@ void GateBoy::tock_slow() {
   Bus2 SPR_TRI_I_in[6]; // from sprite store
   Bus2 SPR_TRI_L_in[4]; // from sprite store
   Bus2 BUS_OAM_An[8];
-  uint8_t oam_addr;
 
   {
     /* p30.ZETU*/ SPR_TRI_I_in[0].tri6_nn(_FURO_SPRITE0_GETn_old, sprite_store.YGUS_STORE0_I0n.qp_old());
@@ -2495,7 +2494,9 @@ void GateBoy::tock_slow() {
     /* p30.YDUF*/ sprite_scanner.YDUF_SPRITE_IDX4p.dff13(_WUDA_xxCDxxGH, _WEFE_VCC, _XEMU_OAM_A6p);
     /* p30.XECU*/ sprite_scanner.XECU_SPRITE_IDX5p.dff13(_WUDA_xxCDxxGH, _WEFE_VCC, _YZET_OAM_A7p);
 
-    oam_addr = pack_u8n_new(7, &BUS_OAM_An[1]);
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      oam_addr_latch = pack_u8n_new(7, &BUS_OAM_An[1]);
+    }
   }
 
 
@@ -2830,8 +2831,8 @@ void GateBoy::tock_slow() {
     Pin2 PIN_OAM_OEn;
     PIN_OAM_OEn.pin_in(1, _ZODO_OAM_OEn);
 
-    uint8_t oam_data_a = oam_ram[(oam_addr << 1) + 0];
-    uint8_t oam_data_b = oam_ram[(oam_addr << 1) + 1];
+    uint8_t oam_data_a = oam_ram[(oam_addr_latch << 1) + 0];
+    uint8_t oam_data_b = oam_ram[(oam_addr_latch << 1) + 1];
 
     Bus2 BUS_OAM_DAn_in[8];
     Bus2 BUS_OAM_DBn_in[8];
@@ -4435,11 +4436,11 @@ void GateBoy::tock_slow() {
     PIN_OAM_WR_B.pin_in(1, _ZONE_OAM_B_WRn);
 
     if (!PIN_OAM_WR_A.qp_new()) {
-      oam_ram[(oam_addr << 1) + 0] = pack_u8n_new(8, &BUS_OAM_DAn_out[0]);
+      oam_ram[(oam_addr_latch << 1) + 0] = pack_u8n_new(8, &BUS_OAM_DAn_out[0]);
     }
 
     if (!PIN_OAM_WR_B.qp_new()) {
-      oam_ram[(oam_addr << 1) + 1] = pack_u8n_new(8, &BUS_OAM_DBn_out[0]);
+      oam_ram[(oam_addr_latch << 1) + 1] = pack_u8n_new(8, &BUS_OAM_DBn_out[0]);
     }
   }
 #pragma endregion

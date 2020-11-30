@@ -205,6 +205,8 @@ struct GateBoy {
   uint8_t* cart_buf = nullptr;
   size_t   cart_size = 0;
 
+  uint8_t oam_addr_latch;
+
   uint8_t vid_ram [8192];
   uint8_t cart_ram[8192];
   uint8_t ext_ram [8192];

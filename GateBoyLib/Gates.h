@@ -73,6 +73,19 @@ struct DFF : public BitBase {
     bit_data = (bit_data || !SETn) && RSTn;
     bit_dirty = 1;
   }
+
+  void clkp_new(wire CLKp) {
+    CHECK_N(!bit_clock && CLKp);
+    CHECK_P(bit_dirty);
+    bit_clock = CLKp;
+  }
+
+  void clkn_new(wire CLKn) {
+    CHECK_N(!bit_clock && !CLKn);
+    CHECK_P(bit_dirty);
+    bit_clock = !CLKn;
+  }
+
 };
 
 //-----------------------------------------------------------------------------

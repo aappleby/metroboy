@@ -1781,19 +1781,14 @@ void GateBoy::tock_slow() {
 
   /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_old = nor3(_AVAP_SCAN_DONE_TRIGp_new, _MOSU_WX_MATCH_TRIGp_old, _TEVO_FETCH_TRIGp_old);
 
-  // If we use the "new" values of FINE_CNT here, things break because the signal is then "newer" than the clock to RYFA
   /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(pix_pipe.RUBU_FINE_CNT2.qp_old(), pix_pipe.ROGA_FINE_CNT1.qp_old(), pix_pipe.RYKU_FINE_CNT0.qp_old());
   /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp_old, _ROZE_FINE_COUNT_7n_old);
-
-  /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_old = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_old(), tile_fetcher.NYVA_BFETCH_S2p.qp_old(), _NYXU_FETCH_TRIGn_old);
-  /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_old = not1(_MOCE_BFETCH_DONEn_old);
 
   /*#p24.SOCY*/ wire _SOCY_WIN_HITn_old = not1(_TOMU_WIN_HITp_old);
 
   /*#p24.VYBO*/ wire _VYBO_CLKPIPE_xBxDxFxH_old = nor3(_FEPO_STORE_MATCHp_old, _WODU_HBLANKp_old, _MYVO_AxCxExGx_clk);
   /*#p24.TYFA*/ wire _TYFA_CLKPIPE_xBxDxFxH_old = and3(_SOCY_WIN_HITn_old, tile_fetcher.POKY_PRELOAD_LATCHp.qp_old(), _VYBO_CLKPIPE_xBxDxFxH_old);
   /*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx_old = not1(_TYFA_CLKPIPE_xBxDxFxH_old);
-  /* p27.ROCO*/ wire _ROCO_CLKPIPE_xBxDxFxH_old = not1(_SEGU_CLKPIPE_AxCxExGx_old);
 
 
 
@@ -1852,8 +1847,6 @@ void GateBoy::tock_slow() {
   /*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx_new = not1(_TYFA_CLKPIPE_xBxDxFxH_new);
   /* p27.ROCO*/ wire _ROCO_CLKPIPE_xBxDxFxH_new = not1(_SEGU_CLKPIPE_AxCxExGx_new);
 
-  /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH_old, _XAPO_VID_RSTn_new, _NUKO_WX_MATCHp_old);
-
   /* p27.PYCO*/ pix_pipe.PYCO_WX_MATCH_Ap.dff17(_ROCO_CLKPIPE_xBxDxFxH_new, _XAPO_VID_RSTn_new, _NUKO_WX_MATCHp_old);
 
   /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, pix_pipe.SOVY_WIN_FIRST_TILE_B.qp_new());
@@ -1870,6 +1863,8 @@ void GateBoy::tock_slow() {
 
 
 
+  /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_old = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_old(), tile_fetcher.NYVA_BFETCH_S2p.qp_old(), _NYXU_FETCH_TRIGn_old);
+  /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_old = not1(_MOCE_BFETCH_DONEn_old);
   /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(_ALET_xBxDxFxH_clk, _NAFY_RENDERING_AND_NOT_WIN_TRIG_new, _LYRY_BFETCH_DONEp_old);
   /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4(pix_pipe.XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
   /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new = not1(_SUVU_PRELOAD_DONE_TRIGn_new);
@@ -1880,17 +1875,27 @@ void GateBoy::tock_slow() {
 
 
 
-  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(_ALET_xBxDxFxH_clk, _MOCE_BFETCH_DONEn_old);
+
   /* p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(_ALET_xBxDxFxH_clk,                pix_pipe.XYMU_RENDERINGn.qn_new(), tile_fetcher.LAXU_BFETCH_S0p.qp_old());
 
 
-  /* p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p   .dff17(_LEBO_AxCxExGx,                    _NYXU_FETCH_TRIGn_new,             tile_fetcher.LAXU_BFETCH_S0p.qn_old());
-  /* p27.MESU*/ tile_fetcher.MESU_BFETCH_S1p   .dff17(tile_fetcher.LAXU_BFETCH_S0p.qn(), _NYXU_FETCH_TRIGn_new,             tile_fetcher.MESU_BFETCH_S1p.qn_old());
-  /* p27.NYVA*/ tile_fetcher.NYVA_BFETCH_S2p   .dff17(tile_fetcher.MESU_BFETCH_S1p.qn(), _NYXU_FETCH_TRIGn_new,             tile_fetcher.NYVA_BFETCH_S2p.qn_old());
+  {
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx_old = nand2(_ALET_xBxDxFxH_clk, _MOCE_BFETCH_DONEn_old);
+    /* p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p   .dff17(_LEBO_AxCxExGx_old,                _NYXU_FETCH_TRIGn_new,             tile_fetcher.LAXU_BFETCH_S0p.qn_old());
+    /* p27.MESU*/ tile_fetcher.MESU_BFETCH_S1p   .dff17(tile_fetcher.LAXU_BFETCH_S0p.qn(), _NYXU_FETCH_TRIGn_new,             tile_fetcher.MESU_BFETCH_S1p.qn_old());
+    /* p27.NYVA*/ tile_fetcher.NYVA_BFETCH_S2p   .dff17(tile_fetcher.MESU_BFETCH_S1p.qn(), _NYXU_FETCH_TRIGn_new,             tile_fetcher.NYVA_BFETCH_S2p.qn_old());
+  }
+
+  {
+    /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_new = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_new(), tile_fetcher.NYVA_BFETCH_S2p.qp_new(), _NYXU_FETCH_TRIGn_new);
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx_new = nand2(_ALET_xBxDxFxH_clk, _MOCE_BFETCH_DONEn_new);
+
+    /* p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p   .dff17(_LEBO_AxCxExGx_new,                _NYXU_FETCH_TRIGn_new,             tile_fetcher.LAXU_BFETCH_S0p.qn_new());
+    /* p27.MESU*/ tile_fetcher.MESU_BFETCH_S1p   .dff17(tile_fetcher.LAXU_BFETCH_S0p.qn(), _NYXU_FETCH_TRIGn_new,             tile_fetcher.MESU_BFETCH_S1p.qn_new());
+    /* p27.NYVA*/ tile_fetcher.NYVA_BFETCH_S2p   .dff17(tile_fetcher.MESU_BFETCH_S1p.qn(), _NYXU_FETCH_TRIGn_new,             tile_fetcher.NYVA_BFETCH_S2p.qn_new());
+  }
 
 
-  ///* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_new = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_new(), tile_fetcher.NYVA_BFETCH_S2p.qp_new(), _NYXU_FETCH_TRIGn_new);
-  ///* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_new = not1(_MOCE_BFETCH_DONEn_new);
 
 
 
@@ -1920,17 +1925,17 @@ void GateBoy::tock_slow() {
     /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_old = nand2(_ROXO_CLKPIPE_xBxDxFxH_old, _ROZE_FINE_COUNT_7n_old);
     /*#p27.PASO*/ wire _PASO_FINE_RST_new = nor2(_PAHA_RENDERINGn_new, _TEVO_FETCH_TRIGp_new);
 
-    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_old,  _PASO_FINE_RST_new, pix_pipe.RYKU_FINE_CNT0.qn_old());
-    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn(), _PASO_FINE_RST_new, pix_pipe.ROGA_FINE_CNT1.qn_old());
-    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn(), _PASO_FINE_RST_new, pix_pipe.RUBU_FINE_CNT2.qn_old());
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_old,      _PASO_FINE_RST_new, pix_pipe.RYKU_FINE_CNT0.qn_old());
+    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn_new(), _PASO_FINE_RST_new, pix_pipe.ROGA_FINE_CNT1.qn_old());
+    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn_new(), _PASO_FINE_RST_new, pix_pipe.RUBU_FINE_CNT2.qn_old());
 
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_new = nand3(pix_pipe.RUBU_FINE_CNT2.qp_new(), pix_pipe.ROGA_FINE_CNT1.qp_new(), pix_pipe.RYKU_FINE_CNT0.qp_new());
     /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_new = nand2(_ROXO_CLKPIPE_xBxDxFxH_new, _ROZE_FINE_COUNT_7n_new);
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.clkp_new(_PECU_FINE_CLK_AxCxExGx_new);
+    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.clkp_new(pix_pipe.RYKU_FINE_CNT0.qn());
+    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.clkp_new(pix_pipe.ROGA_FINE_CNT1.qn());
 
-    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_new,  _PASO_FINE_RST_new, pix_pipe.RYKU_FINE_CNT0.qn_new());
-    /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn(), _PASO_FINE_RST_new, pix_pipe.ROGA_FINE_CNT1.qn_new());
-    /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn(), _PASO_FINE_RST_new, pix_pipe.RUBU_FINE_CNT2.qn_new());
-
+    /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.clkp_new(_PECU_FINE_CLK_AxCxExGx_new);
 
 
 

@@ -160,7 +160,7 @@ struct GateBoy {
   Pin2 PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: // this is the "reset for next cycle" clock
   Pin2 PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: // this is the "put write data on bus" clock
   Pin2 PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05:
-  Pin2 PIN_CPU_LATCH_EXT_s;   // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  Pin2 PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
   Pin2 PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: // this is probably the "latch bus data" clock
   Pin2 PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
   Pin2 PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
@@ -193,6 +193,8 @@ struct GateBoy {
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
   Pin2 PIN_OAM_OEn;
+  Bus2 BUS_OAM_DAn_in[8];
+  Bus2 BUS_OAM_DBn_in[8];
 
   Pin2 PIN_VRAM_CSn; // PIN_43
   Pin2 PIN_VRAM_OEn; // PIN_45
@@ -201,8 +203,8 @@ struct GateBoy {
   // not yet stable
   //Bus2 BUS_VRAM_An[13];
   //Pin2 PIN_VRAM_Ap[13];
-  //Bus2 BUS_VRAM_Dp_in[8];
-  //Pin2 PIN_VRAM_Dp_in[8];
+  Bus2 BUS_VRAM_Dp_in[8];
+  Pin2 PIN_VRAM_Dp_in[8];
   //Bus2 BUS_VRAM_Dp_out[8];
   //Pin2 PIN_VRAM_Dp_out[8];
 
@@ -285,7 +287,8 @@ struct GateBoy {
 
   uint16_t ext_addr_latch = 0;
   uint16_t vram_addr_latch = 0;
-  uint8_t oam_addr_latch = 0;
+  uint8_t  vram_data_latch = 0;
+  uint8_t  oam_addr_latch = 0;
 
   uint8_t vid_ram [8192];
   uint8_t cart_ram[8192];

@@ -20,9 +20,6 @@ inline uint64_t commit_and_hash(T& obj) {
 struct BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire qp()     const { return  bit_data; }
-  wire qn()     const { return !bit_data; }
-
   wire qp_old() const { CHECK_N(bit_dirty); return  bit_data; }
   wire qn_old() const { CHECK_N(bit_dirty); return !bit_data; }
 
@@ -430,7 +427,7 @@ struct TpLatch : public BitBase {
 inline uint8_t pack_u8p_old(int c, const DFF* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_old() << i;
   }
   return r;
 }
@@ -438,7 +435,7 @@ inline uint8_t pack_u8p_old(int c, const DFF* b) {
 inline uint8_t pack_u8n_old(int c, const DFF* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].qp() << i;
+    r |= !b[i].qp_old() << i;
   }
   return r;
 }
@@ -446,7 +443,7 @@ inline uint8_t pack_u8n_old(int c, const DFF* b) {
 inline uint16_t pack_u16p_old(int c, const DFF* b) {
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_old() << i;
   }
   return r;
 }
@@ -456,7 +453,7 @@ inline uint16_t pack_u16p_old(int c, const DFF* b) {
 inline uint8_t pack_u8p_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_new() << i;
   }
   return r;
 }
@@ -464,7 +461,7 @@ inline uint8_t pack_u8p_new(int c, Bus2* b) {
 inline uint8_t pack_u8n_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].qp() << i;
+    r |= !b[i].qp_new() << i;
   }
   return r;
 }
@@ -474,7 +471,7 @@ inline uint8_t pack_u8n_new(int c, Bus2* b) {
 inline uint8_t pack_u8p_new(int c, Pin2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_new() << i;
   }
   return r;
 }
@@ -482,7 +479,7 @@ inline uint8_t pack_u8p_new(int c, Pin2* b) {
 inline uint16_t pack_u16p_new(int c, Pin2* b) {
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_new() << i;
   }
   return r;
 }
@@ -492,7 +489,7 @@ inline uint16_t pack_u16p_new(int c, Pin2* b) {
 inline uint8_t pack_u8p_old(int c, const BitBase* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_old() << i;
   }
   return r;
 }
@@ -500,7 +497,7 @@ inline uint8_t pack_u8p_old(int c, const BitBase* b) {
 inline uint8_t pack_u8p_new(int c, const BitBase* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp() << i;
+    r |= b[i].qp_new() << i;
   }
   return r;
 }

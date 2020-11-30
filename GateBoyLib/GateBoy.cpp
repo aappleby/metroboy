@@ -3486,94 +3486,70 @@ void GateBoy::tock_slow() {
     /* p08.TAZY*/ wire _TAZY_A15p = mux2p(_LUMA_DMA_CARTp_new, dma_reg.MARU_DMA_A15n.qn_new(), _SEPY_A15p_ABxxxxxx);
     /* p08.SUZE*/ wire _SUZE_PIN_EXT_A15n = nand2(_TAZY_A15p, _RYCA_MODE_DBG2n_new);
     /* p08.RULO*/ wire _RULO_PIN_EXT_A15n = nor2 (_TAZY_A15p, _UNOR_MODE_DBG2p_new);
-
     PIN_EXT_A[15].pin_out(1, _SUZE_PIN_EXT_A15n, _RULO_PIN_EXT_A15n);
-  }
 
-  {
     PIN_EXT_CLK.pin_out(1, _BUDE_xxxxEFGH_new, _BUDE_xxxxEFGH_new);
-  }
 
-  {
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(_LUMA_DMA_CARTp_new, _MOTY_CPU_EXT_RD_new);
     /* p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, _TOVA_MODE_DBG2n_new);
     /* p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, _UNOR_MODE_DBG2p_new);
     PIN_EXT_RDn.pin_out(1, _UGAC_RD_A, _URUN_RD_D);
-  }
 
-  {
     /* p08.MEXO*/ wire _MEXO_CPU_WRn_ABCDxxxH = not1(_APOV_CPU_WRp_xxxxEFGx_new);
     /* p08.NEVY*/ wire _NEVY = or2(_MEXO_CPU_WRn_ABCDxxxH, _MOCA_DBG_EXT_RD_new);
     /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, _LUMA_DMA_CARTp_new);
     /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, _TOVA_MODE_DBG2n_new);
     /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, _UNOR_MODE_DBG2p_new);
     PIN_EXT_WRn.pin_out(1, _UVER_WR_A, _USUF_WR_D);
-  }
 
-  {
     /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A_xxCDEFGH = and3(_ABUZ_xxCDEFGH_new, _TYNU_ADDR_RAM, _TUNA_0000_FDFFp);
     /* p08.TYHO*/ wire _TYHO_PIN_EXT_CS_A_xxCDEFGH = mux2p(_LUMA_DMA_CARTp_new, dma_reg.MARU_DMA_A15n.qn_new(), _TOZA_PIN_EXT_CS_A_xxCDEFGH);
     PIN_EXT_CSn.pin_out(1, _TYHO_PIN_EXT_CS_A_xxCDEFGH, _TYHO_PIN_EXT_CS_A_xxCDEFGH);
   }
 
-  if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-    ext_addr_latch = pack_u16p_new(16, &PIN_EXT_A[ 0]);
-  }
-
+  //----------------------------------------------------------------------------------------------------
+  // External device interface
 
   {
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      ext_addr_latch = pack_u16p_new(16, &PIN_EXT_A[ 0]);
+    }
+
     // ROM read
     uint16_t rom_addr = ext_addr_latch & 0x7FFF;
-    wire rom_OEn = PIN_EXT_RDn.qp_new();
     wire rom_CEn = PIN_EXT_A[15].qp_new();
-    wire rom_OEp = !rom_CEn && !rom_OEn && cart_buf;
+    wire rom_OEp = !rom_CEn && !PIN_EXT_RDn.qp_new() && cart_buf;
 
-    PIN_EXT_D_in[0].pin_in(rom_OEp, cart_buf[rom_addr] & 0x01);
-    PIN_EXT_D_in[1].pin_in(rom_OEp, cart_buf[rom_addr] & 0x02);
-    PIN_EXT_D_in[2].pin_in(rom_OEp, cart_buf[rom_addr] & 0x04);
-    PIN_EXT_D_in[3].pin_in(rom_OEp, cart_buf[rom_addr] & 0x08);
-    PIN_EXT_D_in[4].pin_in(rom_OEp, cart_buf[rom_addr] & 0x10);
-    PIN_EXT_D_in[5].pin_in(rom_OEp, cart_buf[rom_addr] & 0x20);
-    PIN_EXT_D_in[6].pin_in(rom_OEp, cart_buf[rom_addr] & 0x40);
-    PIN_EXT_D_in[7].pin_in(rom_OEp, cart_buf[rom_addr] & 0x80);
-  }
-  {
     // Ext RAM read
     uint16_t eram_addr = (ext_addr_latch & 0x1FFF);
     wire eram_CE1n = PIN_EXT_CSn.qp_new();
     wire eram_CE2  = PIN_EXT_A[14].qp_new();
-    wire eram_WRn  = PIN_EXT_WRn.qp_new();
-    wire eram_OEn  = PIN_EXT_RDn.qp_new();
-    wire eram_OEp  = !eram_CE1n && eram_CE2 && eram_WRn && !eram_OEn;
+    wire eram_WRp  = !eram_CE1n && eram_CE2 && !PIN_EXT_WRn.qp_new();
+    wire eram_OEp  = !eram_CE1n && eram_CE2 && !eram_WRp && !PIN_EXT_RDn.qp_new();
 
-    PIN_EXT_D_in[0].pin_in(eram_OEp, ext_ram[eram_addr] & 0x01);
-    PIN_EXT_D_in[1].pin_in(eram_OEp, ext_ram[eram_addr] & 0x02);
-    PIN_EXT_D_in[2].pin_in(eram_OEp, ext_ram[eram_addr] & 0x04);
-    PIN_EXT_D_in[3].pin_in(eram_OEp, ext_ram[eram_addr] & 0x08);
-    PIN_EXT_D_in[4].pin_in(eram_OEp, ext_ram[eram_addr] & 0x10);
-    PIN_EXT_D_in[5].pin_in(eram_OEp, ext_ram[eram_addr] & 0x20);
-    PIN_EXT_D_in[6].pin_in(eram_OEp, ext_ram[eram_addr] & 0x40);
-    PIN_EXT_D_in[7].pin_in(eram_OEp, ext_ram[eram_addr] & 0x80);
-  }
-  {
     // Cart RAM read
     uint16_t cram_addr = (ext_addr_latch & 0x1FFF);
     wire cram_CS1n = PIN_EXT_CSn.qp_new();
     wire cram_CS2  = PIN_EXT_A[13].qp_new() && !PIN_EXT_A[14].qp_new() && PIN_EXT_A[15].qp_new();
-    wire cram_OEn  = PIN_EXT_RDn.qp_new();
-    wire cram_OEp  = !cram_CS1n && cram_CS2 && !cram_OEn;
+    wire cram_WRp  = !cram_CS1n && cram_CS2 && !PIN_EXT_WRn.qp_new();
+    wire cram_OEp  = !cram_CS1n && cram_CS2 && !PIN_EXT_RDn.qp_new();
 
-    PIN_EXT_D_in[0].pin_in(cram_OEp, cart_ram[cram_addr] & 0x01);
-    PIN_EXT_D_in[1].pin_in(cram_OEp, cart_ram[cram_addr] & 0x02);
-    PIN_EXT_D_in[2].pin_in(cram_OEp, cart_ram[cram_addr] & 0x04);
-    PIN_EXT_D_in[3].pin_in(cram_OEp, cart_ram[cram_addr] & 0x08);
-    PIN_EXT_D_in[4].pin_in(cram_OEp, cart_ram[cram_addr] & 0x10);
-    PIN_EXT_D_in[5].pin_in(cram_OEp, cart_ram[cram_addr] & 0x20);
-    PIN_EXT_D_in[6].pin_in(cram_OEp, cart_ram[cram_addr] & 0x40);
-    PIN_EXT_D_in[7].pin_in(cram_OEp, cart_ram[cram_addr] & 0x80);
-  }
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+      if (rom_OEp)  ext_data_latch = cart_buf[rom_addr];
+      if (eram_OEp) ext_data_latch = ext_ram[eram_addr];
+      if (cram_OEp) ext_data_latch = cart_ram[cram_addr];
+    }
 
-  {
+    wire ext_OEp = rom_OEp || eram_OEp || cram_OEp;
+    PIN_EXT_D_in[0].pin_in(ext_OEp, wire(ext_data_latch & 0x01));
+    PIN_EXT_D_in[1].pin_in(ext_OEp, wire(ext_data_latch & 0x02));
+    PIN_EXT_D_in[2].pin_in(ext_OEp, wire(ext_data_latch & 0x04));
+    PIN_EXT_D_in[3].pin_in(ext_OEp, wire(ext_data_latch & 0x08));
+    PIN_EXT_D_in[4].pin_in(ext_OEp, wire(ext_data_latch & 0x10));
+    PIN_EXT_D_in[5].pin_in(ext_OEp, wire(ext_data_latch & 0x20));
+    PIN_EXT_D_in[6].pin_in(ext_OEp, wire(ext_data_latch & 0x40));
+    PIN_EXT_D_in[7].pin_in(ext_OEp, wire(ext_data_latch & 0x80));
+
     // CPU data bus -> external data bus
     // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
@@ -3608,28 +3584,14 @@ void GateBoy::tock_slow() {
     PIN_EXT_D_out[6].pin_out(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
     PIN_EXT_D_out[7].pin_out(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 
-    {
-      // ERAM write
-      uint16_t eram_addr = (ext_addr_latch & 0x1FFF);
-      wire eram_WRn  = PIN_EXT_WRn.qp_new();
-      wire eram_CE1n = PIN_EXT_CSn.qp_new();
-      wire eram_CE2  = PIN_EXT_A[14].qp_new();
-      if (!eram_CE1n && eram_CE2 && !eram_WRn) {
-        ext_ram[eram_addr] = pack_u8p_new(8, &PIN_EXT_D_out[0]);
-      }
-    }
+    // Ext RAM write
+    if (eram_WRp) ext_ram[eram_addr]  = pack_u8p_new(8, &PIN_EXT_D_out[0]);
 
-    {
-      // CRAM write
-      uint16_t cram_addr = (ext_addr_latch & 0x1FFF);
-      wire cram_WRn  = PIN_EXT_WRn.qp_new();
-      wire cram_CS1n = PIN_EXT_CSn.qp_new();
-      wire cram_CS2  = PIN_EXT_A[13].qp_new() && !PIN_EXT_A[14].qp_new() && PIN_EXT_A[15].qp_new();
-      if (!cram_CS1n && cram_CS2 && !cram_WRn) {
-        cart_ram[cram_addr] = pack_u8p_new(8, &PIN_EXT_D_out[0]);
-      }
-    }
+    // Cart RAM write
+    if (cram_WRp) cart_ram[cram_addr] = pack_u8p_new(8, &PIN_EXT_D_out[0]);
   }
+
+  //----------------------------------------------------------------------------------------------------
 
   // FIXME - implement MBC1
 

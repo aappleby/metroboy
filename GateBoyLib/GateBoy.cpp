@@ -1302,7 +1302,6 @@ void GateBoy::tock_slow() {
 
     /*#p28.FETO*/ wire _FETO_SCAN_DONEp_old = and4(sprite_scanner.YFEL_SCAN0.qp_old(), sprite_scanner.WEWY_SCAN1.qp_old(), sprite_scanner.GOSO_SCAN2.qp_old(), sprite_scanner.FONY_SCAN5.qp_old()); // 32 + 4 + 2 + 1 = 39
     /* p28.GAVA*/ wire _GAVA_ABxxEFxx_old = or2(_FETO_SCAN_DONEp_old, _XUPY_ABxxEFxx_new);
-    // FIXME this is weird
 
     /* p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17(_GAVA_ABxxEFxx_old,                 _ANOM_LINE_RSTn_new, sprite_scanner.YFEL_SCAN0.qn_old());
     /* p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17(sprite_scanner.YFEL_SCAN0.qn_new(), _ANOM_LINE_RSTn_new, sprite_scanner.WEWY_SCAN1.qn_old());
@@ -1910,6 +1909,12 @@ void GateBoy::tock_slow() {
     /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_old = nand2(_ROXO_CLKPIPE_xBxDxFxH_old, _ROZE_FINE_COUNT_7n_old);
     /*#p27.PASO*/ wire _PASO_FINE_RST_new = nor2(_PAHA_RENDERINGn_new, _TEVO_FETCH_TRIGp_new);
 
+    /* p27.SUHA*/ wire _SUHA_SCX_FINE_MATCHp_old = xnor2(pix_pipe.DATY_SCX0n_s.qn_new(), pix_pipe.RYKU_FINE_CNT0.qp_old());
+    /* p27.SYBY*/ wire _SYBY_SCX_FINE_MATCHp_old = xnor2(pix_pipe.DUZU_SCX1n_s.qn_new(), pix_pipe.ROGA_FINE_CNT1.qp_old());
+    /* p27.SOZU*/ wire _SOZU_SCX_FINE_MATCHp_old = xnor2(pix_pipe.CYXU_SCX2n_s.qn_new(), pix_pipe.RUBU_FINE_CNT2.qp_old());
+    /*#p27.RONE*/ wire _RONE_SCX_FINE_MATCHn_old = nand4(pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp_old(), _SUHA_SCX_FINE_MATCHp_old, _SYBY_SCX_FINE_MATCHp_old, _SOZU_SCX_FINE_MATCHp_old);
+    /*#p27.POHU*/ wire _POHU_SCX_FINE_MATCHp_old = not1(_RONE_SCX_FINE_MATCHn_old);
+
     /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_old,      _PASO_FINE_RST_new, pix_pipe.RYKU_FINE_CNT0.qn_old());
     /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn_new(), _PASO_FINE_RST_new, pix_pipe.ROGA_FINE_CNT1.qn_old());
     /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn_new(), _PASO_FINE_RST_new, pix_pipe.RUBU_FINE_CNT2.qn_old());
@@ -1918,20 +1923,14 @@ void GateBoy::tock_slow() {
     /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_new = nand2(_ROXO_CLKPIPE_xBxDxFxH_new, _ROZE_FINE_COUNT_7n_new);
     /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.clkp_new(_PECU_FINE_CLK_AxCxExGx_new);
 
-    /* p27.SUHA*/ wire _SUHA_SCX_FINE_MATCHp = xnor2(pix_pipe.DATY_SCX0n_s.qn_new(), pix_pipe.RYKU_FINE_CNT0.qp_new());
-    /* p27.SYBY*/ wire _SYBY_SCX_FINE_MATCHp = xnor2(pix_pipe.DUZU_SCX1n_s.qn_new(), pix_pipe.ROGA_FINE_CNT1.qp_new());
-    /* p27.SOZU*/ wire _SOZU_SCX_FINE_MATCHp = xnor2(pix_pipe.CYXU_SCX2n_s.qn_new(), pix_pipe.RUBU_FINE_CNT2.qp_new());
-    /*#p27.RONE*/ wire _RONE_SCX_FINE_MATCHn = nand4(pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp(), _SUHA_SCX_FINE_MATCHp, _SYBY_SCX_FINE_MATCHp, _SOZU_SCX_FINE_MATCHp);
-    /*#p27.POHU*/ wire _POHU_SCX_FINE_MATCHp = not1(_RONE_SCX_FINE_MATCHn);
 
     /*#p27.NYZE*/ pix_pipe.NYZE_SCX_FINE_MATCH_B.dff17(_MOXE_AxCxExGx_new,         pix_pipe.XYMU_RENDERINGn.qn(), pix_pipe.PUXA_SCX_FINE_MATCH_A.qp_old());
-    /*#p27.PUXA*/ pix_pipe.PUXA_SCX_FINE_MATCH_A.dff17(_ROXO_CLKPIPE_xBxDxFxH_new, pix_pipe.XYMU_RENDERINGn.qn(), _POHU_SCX_FINE_MATCHp);
+    /*#p27.PUXA*/ pix_pipe.PUXA_SCX_FINE_MATCH_A.dff17(_ROXO_CLKPIPE_xBxDxFxH_new, pix_pipe.XYMU_RENDERINGn.qn(), _POHU_SCX_FINE_MATCHp_old);
 
     /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp_new = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp_new(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn_new());
     /*#p27.ROXY*/ pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn_new, _POVA_FINE_MATCH_TRIGp_new);
   }
 
-  /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPE_xBxDxFxH_old, pix_pipe.XYMU_RENDERINGn.qn_new(), pix_pipe.XYDO_PX3p.qp_old());
   /* p24.PAHO*/ pix_pipe.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPE_xBxDxFxH_new, pix_pipe.XYMU_RENDERINGn.qn_new(), pix_pipe.XYDO_PX3p.qp_old());
 
 
@@ -1945,12 +1944,7 @@ void GateBoy::tock_slow() {
     /* p21.XEGY*/ wire _XEGY_old = xor2(pix_pipe.XODU_PX2p.qp_old(), _XUKE_old); // feet facing gnd
     /* p21.XORA*/ wire _XORA_old = xor2(pix_pipe.XYDO_PX3p.qp_old(), _XYLE_old); // feet facing gnd
 
-    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17(_SACU_CLKPIPE_AxCxExGx_old, _TADY_LINE_RSTn_new, pix_pipe.XEHO_PX0p.qn_old());
-    /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17(_SACU_CLKPIPE_AxCxExGx_old, _TADY_LINE_RSTn_new, _RYBO_old);
-    /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17(_SACU_CLKPIPE_AxCxExGx_old, _TADY_LINE_RSTn_new, _XEGY_old);
-    /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17(_SACU_CLKPIPE_AxCxExGx_old, _TADY_LINE_RSTn_new, _XORA_old);
-
-    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17(_SACU_CLKPIPE_AxCxExGx_new, _TADY_LINE_RSTn_new, pix_pipe.XEHO_PX0p.qn_new());
+    /* p21.XEHO*/ pix_pipe.XEHO_PX0p.dff17(_SACU_CLKPIPE_AxCxExGx_new, _TADY_LINE_RSTn_new, pix_pipe.XEHO_PX0p.qn_old());
     /* p21.SAVY*/ pix_pipe.SAVY_PX1p.dff17(_SACU_CLKPIPE_AxCxExGx_new, _TADY_LINE_RSTn_new, _RYBO_old);
     /* p21.XODU*/ pix_pipe.XODU_PX2p.dff17(_SACU_CLKPIPE_AxCxExGx_new, _TADY_LINE_RSTn_new, _XEGY_old);
     /* p21.XYDO*/ pix_pipe.XYDO_PX3p.dff17(_SACU_CLKPIPE_AxCxExGx_new, _TADY_LINE_RSTn_new, _XORA_old);

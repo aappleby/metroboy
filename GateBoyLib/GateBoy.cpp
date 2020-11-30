@@ -1199,50 +1199,49 @@ void GateBoy::tock_slow() {
 
 #pragma region LCD_Regs
 
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(lcd_reg.CATU_LINE_P000p.qp_old());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(lcd_reg.ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, _ABEZ_VID_RSTn_new); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_old = not1(_BYHA_LINE_TRIGn_old);
+  /*#p21.XYVO*/ wire _XYVO_y144p_old = and2(lcd_reg.LOVU_LY4p.qp_old(), lcd_reg.LAFO_LY7p.qp_old()); // 128 + 16 = 144
+  /*#p29.ALES*/ wire _ALES_y144n_old = not1(_XYVO_y144p_old);
+  /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(lcd_reg.RUTU_x113p.qp_old());
+  /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
+  /*#p29.ABOV*/ wire _ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
+
 
   {
-    /*#p21.SANU*/ wire _SANU_x113p  = and4(lcd_reg.TYRY_LX6p.qp_old(), lcd_reg.TAHA_LX5p.qp_old(), lcd_reg.SUDE_LX4p.qp_old(), lcd_reg.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*#p21.NOKO*/ wire _NOKO_y153p  = and4(lcd_reg.LAFO_LY7p.qp_old(), lcd_reg.LOVU_LY4p.qp_old(), lcd_reg.LYDO_LY3p.qp_old(), lcd_reg.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-    /*#p21.NYPE*/ lcd_reg.NYPE_x113p.dff17(_TALU_xxCDEFxx_new,            _LYFE_VID_RSTn_new, lcd_reg.RUTU_x113p.qp_old());
-    /*#p21.RUTU*/ lcd_reg.RUTU_x113p.dff17(_SONO_ABxxxxGH_new,            _LYFE_VID_RSTn_new, _SANU_x113p);
-    /*#p21.MYTA*/ lcd_reg.MYTA_y153p.dff17(lcd_reg.NYPE_x113p.qn_new(), _LYFE_VID_RSTn_new, _NOKO_y153p);
+    /*#p21.SANU*/ wire _SANU_x113p_old  = and4(lcd_reg.TYRY_LX6p.qp_old(), lcd_reg.TAHA_LX5p.qp_old(), lcd_reg.SUDE_LX4p.qp_old(), lcd_reg.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+    /*#p21.NOKO*/ wire _NOKO_y153p_old  = and4(lcd_reg.LAFO_LY7p.qp_old(), lcd_reg.LOVU_LY4p.qp_old(), lcd_reg.LYDO_LY3p.qp_old(), lcd_reg.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+    /*#p21.NYPE*/ lcd_reg.NYPE_x113p.dff17(_TALU_xxCDEFxx_new,          _LYFE_VID_RSTn_new, lcd_reg.RUTU_x113p.qp_old());
+    /*#p21.RUTU*/ lcd_reg.RUTU_x113p.dff17(_SONO_ABxxxxGH_new,          _LYFE_VID_RSTn_new, _SANU_x113p_old);
+    /*#p21.MYTA*/ lcd_reg.MYTA_y153p.dff17(lcd_reg.NYPE_x113p.qn_new(), _LYFE_VID_RSTn_new, _NOKO_y153p_old);
   }
 
   {
     /*#p21.MUDE*/ wire _MUDE_X_RSTn = nor2(lcd_reg.RUTU_x113p.qp_new(), _LYHA_VID_RSTp_new);
-    /*#p21.SAXO*/ lcd_reg.SAXO_LX0p.dff17(_TALU_xxCDEFxx_new,         _MUDE_X_RSTn, lcd_reg.SAXO_LX0p.qn());
-    /*#p21.TYPO*/ lcd_reg.TYPO_LX1p.dff17(lcd_reg.SAXO_LX0p.qn(),   _MUDE_X_RSTn, lcd_reg.TYPO_LX1p.qn());
-    /*#p21.VYZO*/ lcd_reg.VYZO_LX2p.dff17(lcd_reg.TYPO_LX1p.qn(),   _MUDE_X_RSTn, lcd_reg.VYZO_LX2p.qn());
-    /*#p21.TELU*/ lcd_reg.TELU_LX3p.dff17(lcd_reg.VYZO_LX2p.qn(),   _MUDE_X_RSTn, lcd_reg.TELU_LX3p.qn());
-    /*#p21.SUDE*/ lcd_reg.SUDE_LX4p.dff17(lcd_reg.TELU_LX3p.qn(),   _MUDE_X_RSTn, lcd_reg.SUDE_LX4p.qn());
-    /*#p21.TAHA*/ lcd_reg.TAHA_LX5p.dff17(lcd_reg.SUDE_LX4p.qn(),   _MUDE_X_RSTn, lcd_reg.TAHA_LX5p.qn());
-    /*#p21.TYRY*/ lcd_reg.TYRY_LX6p.dff17(lcd_reg.TAHA_LX5p.qn(),   _MUDE_X_RSTn, lcd_reg.TYRY_LX6p.qn());
+    /*#p21.SAXO*/ lcd_reg.SAXO_LX0p.dff17(_TALU_xxCDEFxx_new,           _MUDE_X_RSTn, lcd_reg.SAXO_LX0p.qn_old());
+    /*#p21.TYPO*/ lcd_reg.TYPO_LX1p.dff17(lcd_reg.SAXO_LX0p.qn_new(),   _MUDE_X_RSTn, lcd_reg.TYPO_LX1p.qn_old());
+    /*#p21.VYZO*/ lcd_reg.VYZO_LX2p.dff17(lcd_reg.TYPO_LX1p.qn_new(),   _MUDE_X_RSTn, lcd_reg.VYZO_LX2p.qn_old());
+    /*#p21.TELU*/ lcd_reg.TELU_LX3p.dff17(lcd_reg.VYZO_LX2p.qn_new(),   _MUDE_X_RSTn, lcd_reg.TELU_LX3p.qn_old());
+    /*#p21.SUDE*/ lcd_reg.SUDE_LX4p.dff17(lcd_reg.TELU_LX3p.qn_new(),   _MUDE_X_RSTn, lcd_reg.SUDE_LX4p.qn_old());
+    /*#p21.TAHA*/ lcd_reg.TAHA_LX5p.dff17(lcd_reg.SUDE_LX4p.qn_new(),   _MUDE_X_RSTn, lcd_reg.TAHA_LX5p.qn_old());
+    /*#p21.TYRY*/ lcd_reg.TYRY_LX6p.dff17(lcd_reg.TAHA_LX5p.qn_new(),   _MUDE_X_RSTn, lcd_reg.TYRY_LX6p.qn_old());
   }
 
   {
-    /*#p21.LAMA*/ wire _LAMA_Y_RSTn = nor2(lcd_reg.MYTA_y153p.qp(), _LYHA_VID_RSTp_new);
-    /*#p21.MUWY*/ lcd_reg.MUWY_LY0p.dff17(lcd_reg.RUTU_x113p.qp(),  _LAMA_Y_RSTn, lcd_reg.MUWY_LY0p.qn());
-    /*#p21.MYRO*/ lcd_reg.MYRO_LY1p.dff17(lcd_reg.MUWY_LY0p.qn(),   _LAMA_Y_RSTn, lcd_reg.MYRO_LY1p.qn());
-    /*#p21.LEXA*/ lcd_reg.LEXA_LY2p.dff17(lcd_reg.MYRO_LY1p.qn(),   _LAMA_Y_RSTn, lcd_reg.LEXA_LY2p.qn());
-    /*#p21.LYDO*/ lcd_reg.LYDO_LY3p.dff17(lcd_reg.LEXA_LY2p.qn(),   _LAMA_Y_RSTn, lcd_reg.LYDO_LY3p.qn());
-    /*#p21.LOVU*/ lcd_reg.LOVU_LY4p.dff17(lcd_reg.LYDO_LY3p.qn(),   _LAMA_Y_RSTn, lcd_reg.LOVU_LY4p.qn());
-    /*#p21.LEMA*/ lcd_reg.LEMA_LY5p.dff17(lcd_reg.LOVU_LY4p.qn(),   _LAMA_Y_RSTn, lcd_reg.LEMA_LY5p.qn());
-    /*#p21.MATO*/ lcd_reg.MATO_LY6p.dff17(lcd_reg.LEMA_LY5p.qn(),   _LAMA_Y_RSTn, lcd_reg.MATO_LY6p.qn());
-    /*#p21.LAFO*/ lcd_reg.LAFO_LY7p.dff17(lcd_reg.MATO_LY6p.qn(),   _LAMA_Y_RSTn, lcd_reg.LAFO_LY7p.qn());
+    /*#p21.LAMA*/ wire _LAMA_Y_RSTn = nor2(lcd_reg.MYTA_y153p.qp_new(), _LYHA_VID_RSTp_new);
+    /*#p21.MUWY*/ lcd_reg.MUWY_LY0p.dff17(lcd_reg.RUTU_x113p.qp_new(),  _LAMA_Y_RSTn, lcd_reg.MUWY_LY0p.qn_old());
+    /*#p21.MYRO*/ lcd_reg.MYRO_LY1p.dff17(lcd_reg.MUWY_LY0p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.MYRO_LY1p.qn_old());
+    /*#p21.LEXA*/ lcd_reg.LEXA_LY2p.dff17(lcd_reg.MYRO_LY1p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.LEXA_LY2p.qn_old());
+    /*#p21.LYDO*/ lcd_reg.LYDO_LY3p.dff17(lcd_reg.LEXA_LY2p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.LYDO_LY3p.qn_old());
+    /*#p21.LOVU*/ lcd_reg.LOVU_LY4p.dff17(lcd_reg.LYDO_LY3p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.LOVU_LY4p.qn_old());
+    /*#p21.LEMA*/ lcd_reg.LEMA_LY5p.dff17(lcd_reg.LOVU_LY4p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.LEMA_LY5p.qn_old());
+    /*#p21.MATO*/ lcd_reg.MATO_LY6p.dff17(lcd_reg.LEMA_LY5p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.MATO_LY6p.qn_old());
+    /*#p21.LAFO*/ lcd_reg.LAFO_LY7p.dff17(lcd_reg.MATO_LY6p.qn_new(),   _LAMA_Y_RSTn, lcd_reg.LAFO_LY7p.qn_old());
   }
 
   {
-    /*#p21.XYVO*/ wire _XYVO_y144p = and2(lcd_reg.LOVU_LY4p.qp(), lcd_reg.LAFO_LY7p.qp()); // 128 + 16 = 144
-    /*#p29.ALES*/ wire _ALES_y144n = not1(_XYVO_y144p);
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd_reg.RUTU_x113p.qp());
-    /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_ENDn);
-    /*#p29.ABOV*/ wire _ABOV_LINE_P908p = and2(_SELA_LINE_P908p, _ALES_y144n);
-    /*#p29.CATU*/ lcd_reg.CATU_LINE_P000p .dff17(_XUPY_ABxxEFxx_new,        _ABEZ_VID_RSTn_new, _ABOV_LINE_P908p);
-    /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002p .dff17(_AWOH_xxCDxxGH_new,        _ABEZ_VID_RSTn_new, lcd_reg.CATU_LINE_P000p.qp());
-    /*#p21.POPU*/ lcd_reg.POPU_VBLANK_CLKp.dff17(lcd_reg.NYPE_x113p.qp(), _LYFE_VID_RSTn_new, _XYVO_y144p);
+    /*#p29.CATU*/ lcd_reg.CATU_LINE_P000p .dff17(_XUPY_ABxxEFxx_new,          _ABEZ_VID_RSTn_new, _ABOV_LINE_P908p_old);
+
+    /*#p28.ANEL*/ lcd_reg.ANEL_LINE_P002p .dff17(_AWOH_xxCDxxGH_new,          _ABEZ_VID_RSTn_new, lcd_reg.CATU_LINE_P000p.qp_new());
+    /*#p21.POPU*/ lcd_reg.POPU_VBLANK_CLKp.dff17(lcd_reg.NYPE_x113p.qp_new(), _LYFE_VID_RSTn_new, _XYVO_y144p_old);
   }
 
   /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(lcd_reg.CATU_LINE_P000p.qp_new());

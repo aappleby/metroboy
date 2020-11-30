@@ -18,12 +18,20 @@ uint64_t commit_and_hash(void* blob, int size) {
 
   uint8_t* base = (uint8_t*)blob;
 
+  bool bad_bits = false;
+
   for (int i = 0; i < size; i++) {
     uint8_t s = base[i];
     if (!(s & 0x80)) {
       LOG_Y("Bit %d not dirty after sim pass!\n", i);
-      ASSERT_P(false);
+      bad_bits = true;
     }
+  }
+
+  ASSERT_N(bad_bits);
+
+  for (int i = 0; i < size; i++) {
+    uint8_t s = base[i];
     s &= 0x03;
     combine_hash(h, s);
     base[i] = s;

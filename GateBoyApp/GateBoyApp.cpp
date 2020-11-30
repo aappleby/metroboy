@@ -505,18 +505,18 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp_s.state);
   d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp_s.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp_s.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp_s.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->clk_reg.WOSU_AxxDExxHp_s.state);
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->clk_reg.WOSU_AxxDExxHp.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");
   d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY.state);
   d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp.state);
-  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p_s, 16);
+  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p, 16);
   d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p, 8);
-  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p_s, 8);
-  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p_s, 3);
+  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p, 8);
+  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p, 3);
   d("\n");
 
   d("\002===== Ints =====\001\n");
@@ -797,7 +797,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->BOOT_BITn_s.qp()) {
+    if (!gb->BOOT_BITn.qp()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;

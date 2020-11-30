@@ -36,14 +36,14 @@ struct PixelPipe {
     TATE_WIN_Y6.reset(REG_D0C1);
     TEKE_WIN_Y7.reset(REG_D0C1);
 
-    VYXE_LCDC_BGENn_s  .reset(REG_D0C1);
-    XYLO_LCDC_SPENn_s  .reset(REG_D1C1);
-    XYMO_LCDC_SPSIZEn_s.reset(REG_D1C1);
-    XAFO_LCDC_BGMAPn_s .reset(REG_D1C1);
-    WEXU_LCDC_BGTILEn_s.reset(REG_D0C1);
-    WYMO_LCDC_WINENn_s .reset(REG_D1C1);
-    WOKY_LCDC_WINMAPn_s.reset(REG_D1C1);
-    XONA_LCDC_LCDENn_s .reset(REG_D0C1);
+    VYXE_LCDC_BGENn  .reset(REG_D0C1);
+    XYLO_LCDC_SPENn  .reset(REG_D1C1);
+    XYMO_LCDC_SPSIZEn.reset(REG_D1C1);
+    XAFO_LCDC_BGMAPn .reset(REG_D1C1);
+    WEXU_LCDC_BGTILEn.reset(REG_D0C1);
+    WYMO_LCDC_WINENn .reset(REG_D1C1);
+    WOKY_LCDC_WINMAPn.reset(REG_D1C1);
+    XONA_LCDC_LCDENn .reset(REG_D0C1);
 
     GAVE_SCY0n_s.reset(REG_D1C1);
     FYMO_SCY1n_s.reset(REG_D1C1);
@@ -252,14 +252,14 @@ struct PixelPipe {
     TATE_WIN_Y6.reset(REG_D0C0);
     TEKE_WIN_Y7.reset(REG_D0C0);
 
-    VYXE_LCDC_BGENn_s.reset(REG_D0C0);
-    XYLO_LCDC_SPENn_s.reset(REG_D0C0);
-    XYMO_LCDC_SPSIZEn_s.reset(REG_D0C0);
-    XAFO_LCDC_BGMAPn_s.reset(REG_D0C0);
-    WEXU_LCDC_BGTILEn_s.reset(REG_D0C0);
-    WYMO_LCDC_WINENn_s.reset(REG_D0C0);
-    WOKY_LCDC_WINMAPn_s.reset(REG_D0C0);
-    XONA_LCDC_LCDENn_s.reset(REG_D0C0);
+    VYXE_LCDC_BGENn.reset(REG_D0C0);
+    XYLO_LCDC_SPENn.reset(REG_D0C0);
+    XYMO_LCDC_SPSIZEn.reset(REG_D0C0);
+    XAFO_LCDC_BGMAPn.reset(REG_D0C0);
+    WEXU_LCDC_BGTILEn.reset(REG_D0C0);
+    WYMO_LCDC_WINENn.reset(REG_D0C0);
+    WOKY_LCDC_WINMAPn.reset(REG_D0C0);
+    XONA_LCDC_LCDENn.reset(REG_D0C0);
 
     GAVE_SCY0n_s.reset(REG_D0C0);
     FYMO_SCY1n_s.reset(REG_D0C0);
@@ -417,7 +417,7 @@ struct PixelPipe {
   int get_pix_count() const { return pack_u8p_old(8, &XEHO_PX0p); }
 
   wire lcd_on() {
-    return XONA_LCDC_LCDENn_s.qn();
+    return XONA_LCDC_LCDENn.qn();
   }
 
   //----------------------------------------
@@ -535,14 +535,14 @@ struct PixelPipe {
   //----------------------------------------
 
   // FF40 - LCDC
-  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn_s;
-  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn_s;
-  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn_s;
-  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn_s;
-  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn_s;
-  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn_s;
-  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn_s;
-  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn_s;
+  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;
+  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;
+  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn;
+  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;
+  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn;
+  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;
+  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn;
+  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn;
 
   // FF41 - STAT
   /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn_s;

@@ -20,8 +20,14 @@ inline uint64_t commit_and_hash(T& obj) {
 struct BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire qp() const { return  bit_data; }
-  wire qn() const { return !bit_data; }
+  wire qp()     const { return  bit_data; }
+  wire qn()     const { return !bit_data; }
+
+  wire qp_old() const { CHECK_N(bit_dirty); return  bit_data; }
+  wire qn_old() const { CHECK_N(bit_dirty); return !bit_data; }
+
+  wire qp_new() const { CHECK_P(bit_dirty); return  bit_data; }
+  wire qn_new() const { CHECK_P(bit_dirty); return !bit_data; }
 
   union {
     uint8_t state = 0;

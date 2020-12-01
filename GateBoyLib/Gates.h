@@ -71,7 +71,7 @@ struct DFF : public BitBase {
     bit_dirty = 1;
   }
 
-  void clkp_new(wire CLKp) {
+  void clknew(wire CLKp) {
     CHECK_N(!bit_clock && CLKp);
     CHECK_P(bit_dirty);
     bit_clock = CLKp;

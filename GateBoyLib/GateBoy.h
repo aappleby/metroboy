@@ -193,8 +193,8 @@ struct GateBoy {
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
   Pin2 PIN_OAM_OEn;
-  Bus2 BUS_OAM_DAn_in[8];
-  Bus2 BUS_OAM_DBn_in[8];
+  Bus2 BUS_OAM_DAn_new[8];
+  Bus2 BUS_OAM_DBn_new[8];
 
   Pin2 PIN_VRAM_CSn; // PIN_43
   Pin2 PIN_VRAM_OEn; // PIN_45

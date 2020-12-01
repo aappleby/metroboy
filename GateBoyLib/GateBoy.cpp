@@ -800,6 +800,18 @@ void GateBoy::tock_slow() {
   // Power-on reset handler
 
 #pragma region RESET
+
+  /*#p01.AVOR*/ wire _AVOR_SYS_RSTp_old = or2(clk_reg.AFER_SYS_RSTp_s.qp_old(), clk_reg.ASOL_POR_DONEn_s.qp_old());
+  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_old = not1(_AVOR_SYS_RSTp_old);
+  /*#p01.DULA*/ wire _DULA_SYS_RSTp_old = not1(_ALUR_SYS_RSTn_old);
+  /*#p01.CUNU*/ wire _CUNU_SYS_RSTn_old = not1(_DULA_SYS_RSTp_old);
+  /*#p01.XORE*/ wire _XORE_SYS_RSTp_old = not1(_CUNU_SYS_RSTn_old);
+  ///* p01.WESY*/ wire _WESY_SYS_RSTn_old = not1(_XORE_SYS_RSTp_old);
+  /* p01.XEBE*/ wire _XEBE_SYS_RSTn_old = not1(_XORE_SYS_RSTp_old);
+  ///*#p01.WALU*/ wire _WALU_SYS_RSTn_old = not1(_XORE_SYS_RSTp_old);
+  ///* p01.XARE*/ wire _XARE_SYS_RSTn_old = not1(_XORE_SYS_RSTp_old);
+
+
   {
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp_s.dff13(_BOGA_Axxxxxxx_new, _UPOJ_MODE_PRODn_new, clk_reg.ASOL_POR_DONEn_s.qp_old());
 
@@ -821,7 +833,6 @@ void GateBoy::tock_slow() {
 
 
   /*#p01.AVOR*/ wire _AVOR_SYS_RSTp_new = or2(clk_reg.AFER_SYS_RSTp_s.qp_new(), clk_reg.ASOL_POR_DONEn_s.qp_new());
-
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(_AVOR_SYS_RSTp_new);
   /*#p01.DULA*/ wire _DULA_SYS_RSTp_new = not1(_ALUR_SYS_RSTn_new);
   /*#p01.CUNU*/ wire _CUNU_SYS_RSTn_new = not1(_DULA_SYS_RSTp_new);
@@ -959,6 +970,19 @@ void GateBoy::tock_slow() {
     /*#p03.NUGA*/ tim_reg.NUGA_TIMA7p.dff20(tim_reg.PEDA_TIMA6p.qp_new(), _MEXU_TIMA_LOADp_new, _PAGU_TIMA_D7_new);
   }
 #pragma endregion
+
+  //----------------------------------------
+
+  /* p01.XODO*/ wire _XODO_VID_RSTp_old = nand2(_XEBE_SYS_RSTn_old, pix_pipe.XONA_LCDC_LCDENn.qn_old());
+  /* p01.XAPO*/ wire _XAPO_VID_RSTn_old = not1(_XODO_VID_RSTp_old);
+  /*#p01.ATAR*/ wire _ATAR_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
+  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn_old = not1(_ATAR_VID_RSTp_old);
+  ///* p01.LYHA*/ wire _LYHA_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
+  ///* p01.LYFE*/ wire _LYFE_VID_RSTn_old = not1(_LYHA_VID_RSTp_old);
+  ///* p01.PYRY*/ wire _PYRY_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
+  ///* p01.ROSY*/ wire _ROSY_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
+  ///* p01.AMYG*/ wire _AMYG_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
+  ///* p01.TOFU*/ wire _TOFU_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
 
   //----------------------------------------
 
@@ -1190,6 +1214,10 @@ void GateBoy::tock_slow() {
 
 #pragma region LCD_Regs
 
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(lcd_reg.CATU_LINE_P000p.qp_old());
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(lcd_reg.ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, _ABEZ_VID_RSTn_old); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_old = not1(_BYHA_LINE_TRIGn_old);
+
   {
     /*#p21.SANU*/ wire _SANU_x113p_old = and4(lcd_reg.TYRY_LX6p.qp_old(), lcd_reg.TAHA_LX5p.qp_old(), lcd_reg.SUDE_LX4p.qp_old(), lcd_reg.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
     /*#p21.NOKO*/ wire _NOKO_y153p_old = and4(lcd_reg.LAFO_LY7p.qp_old(), lcd_reg.LOVU_LY4p.qp_old(), lcd_reg.LYDO_LY3p.qp_old(), lcd_reg.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
@@ -1269,6 +1297,13 @@ void GateBoy::tock_slow() {
   /* p29.CEHA*/ wire _CEHA_SCANNINGp_old = not1(sprite_scanner.CENO_SCANNINGp.qn_old());
   /*#p29.BYJO*/ wire _BYJO_SCANNINGn_old = not1(_CEHA_SCANNINGp_old);
 
+  /*#p28.ANOM*/ wire _ANOM_LINE_RSTn_old  = nor2(_ATEJ_LINE_TRIGp_old, _ATAR_VID_RSTp_old);
+  /*#p29.BALU*/ wire _BALU_LINE_RSTp_old  = not1(_ANOM_LINE_RSTn_old);
+
+  /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_old = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_old(), _BALU_LINE_RSTp_old, sprite_scanner.BYBA_SCAN_DONE_Ap.qn_old());
+  /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_old = not1(_BEBU_SCAN_DONE_TRIGn_old);
+
+
   /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_new = [&]() {
     /*#p28.ANOM*/ wire _ANOM_LINE_RSTn_new  = nor2(_ATEJ_LINE_TRIGp_new, _ATAR_VID_RSTp_new);
 
@@ -1298,29 +1333,6 @@ void GateBoy::tock_slow() {
 
     return _AVAP_SCAN_DONE_TRIGp_new;
   }();
-
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  // The Line Of Audits And Danger
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 
   /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p_old = xnor2(pix_pipe.XEHO_PX0p.qp_old(), pix_pipe.MYPA_WX0n.qn_new());
   /* p27.PUWU*/ wire _PUWU_WX_MATCH1p_old = xnor2(pix_pipe.SAVY_PX1p.qp_old(), pix_pipe.NOFE_WX1n.qn_new());
@@ -1519,44 +1531,6 @@ void GateBoy::tock_slow() {
   /*#p21.XANO*/ wire _XANO_PX167p_old = not1(_XUGU_PX167n_old);
   /*#p21.WODU*/ wire _WODU_HBLANKp_old = and2(_XENA_STORE_MATCHn_old, _XANO_PX167p_old);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(pix_pipe.RYDY_WIN_HITp.qp_old());
   /*#p24.TOMU*/ wire _TOMU_WIN_HITp_old = not1(_SYLO_WIN_HITn_old);
 
@@ -1575,7 +1549,29 @@ void GateBoy::tock_slow() {
   /* p27.NYFO*/ wire _NYFO_WX_MATCH_TRIGn_old = not1(_NUNY_WX_MATCH_TRIGp_old);
   /* p27.MOSU*/ wire _MOSU_WX_MATCH_TRIGp_old = not1(_NYFO_WX_MATCH_TRIGn_old);
 
-  /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_old = nor3(_AVAP_SCAN_DONE_TRIGp_new, _MOSU_WX_MATCH_TRIGp_old, _TEVO_FETCH_TRIGp_old);
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // The Line Of Audits And Danger
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  /* p27.NYXU*/ wire _NYXU_FETCH_TRIGn_old = nor3(_AVAP_SCAN_DONE_TRIGp_old, _MOSU_WX_MATCH_TRIGp_old, _TEVO_FETCH_TRIGp_old);
 
   /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(pix_pipe.RUBU_FINE_CNT2.qp_old(), pix_pipe.ROGA_FINE_CNT1.qp_old(), pix_pipe.RYKU_FINE_CNT0.qp_old());
   /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp_old, _ROZE_FINE_COUNT_7n_old);

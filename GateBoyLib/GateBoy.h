@@ -92,7 +92,7 @@ struct GateBoy {
 
   void next_phase();
 
-  void tock_slow();
+  void tock_slow(int pass_index);
 
   //-----------------------------------------------------------------------------
 
@@ -189,6 +189,10 @@ struct GateBoy {
   Pin2 PIN_SIN; // PIN_69
   Pin2 PIN_SOUT; // PIN_70
 
+  Bus2 SPR_TRI_I_out_new[6];
+  Bus2 SPR_TRI_L_out_new[4];
+  Bus2 BUS_OAM_An_new[8]; // not yet stable
+
   Pin2 PIN_OAM_CLK;
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
@@ -205,6 +209,8 @@ struct GateBoy {
   //Pin2 PIN_VRAM_Ap[13];
   //Bus2 BUS_VRAM_Dp_in_old[8];
   //Pin2 PIN_VRAM_Dp_in[8];
+  //Pin2 PIN_VRAM_Dp_in_new[8];
+
   //Bus2 BUS_VRAM_Dp_out[8];
   //Pin2 PIN_VRAM_Dp_out[8];
 

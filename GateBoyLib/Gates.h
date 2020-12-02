@@ -71,34 +71,9 @@ struct DFF : public BitBase {
     bit_dirty = 1;
   }
 
-  void clk_new(wire CLKp) {
-    CHECK_N(!bit_clock && CLKp);
-    CHECK_P(bit_dirty);
-    bit_clock = CLKp;
-  }
-
-  void must_rstn(wire RSTn) {
-    CHECK_N(RSTn);
-    CHECK_N(bit_dirty);
-    bit_clock = 0;
-    bit_data = 0;
+  void RSTn(wire RSTn) {
     bit_dirty = 1;
-  }
-
-  void clk_even(wire CLKp, wire RSTn = 1) {
-    CHECK_N(!bit_clock && CLKp);
-    CHECK_N(bit_dirty);
-    bit_clock = CLKp;
     bit_data = bit_data && RSTn;
-    bit_dirty = 1;
-  }
-
-  void clk_odd(wire CLKp, wire RSTn = 1) {
-    CHECK_N(!bit_clock && CLKp);
-    CHECK_N(bit_dirty);
-    bit_clock = CLKp;
-    bit_data = bit_data && RSTn;
-    bit_dirty = 1;
   }
 };
 
@@ -251,11 +226,6 @@ struct DFF17 : public DFF {
     bit_clock = CLKp;
     bit_data = bit_data && RSTn;
     bit_dirty = 1;
-  }
-
-  void RSTn(wire RSTn) {
-    bit_dirty = 1;
-    bit_data = bit_data && RSTn;
   }
 };
 
@@ -492,10 +462,18 @@ inline uint8_t pack_u8p_new(int c, Bus2* b) {
   return r;
 }
 
+inline uint8_t pack_u8n_old(int c, Bus2* b) {
+  uint8_t r = 0;
+  for (int i = 0; i < c; i++) {
+    r |= !b[i].qp_old() << i;
+  }
+  return r;
+}
+
 inline uint8_t pack_u8n_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].qp_ext() << i;
+    r |= !b[i].qp_new() << i;
   }
   return r;
 }

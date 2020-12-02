@@ -309,6 +309,17 @@ struct DFF22 : public DFF {
     bit_data = (bit_data || !SETn) && RSTn;
     bit_dirty = 1;
   }
+
+  void dff22(wire CLKp, wire Dp) {
+    if (!bit_clock && CLKp) bit_data = Dp;
+    bit_clock = CLKp;
+    bit_dirty = 1;
+  }
+
+  void SETnRSTn(wire SETn, wire RSTn) {
+    CHECK_P(bit_dirty);
+    bit_data = (bit_data || !SETn) && RSTn;
+  }
 };
 
 //-----------------------------------------------------------------------------

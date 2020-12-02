@@ -693,11 +693,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("PIX COUNT ", &gb->pix_pipe.XEHO_PX0p, 8);
   d.dump_slice2p("WIN MAP X ", &gb->pix_pipe.WYKA_WIN_X3, 5);
   d.dump_slice2p("WIN Y     ", &gb->pix_pipe.VYNO_WIN_Y0, 8);
-  d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BG_PIPE_A0, 8);
-  d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BG_PIPE_B0, 8);
+  d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BGW_PIPE_A0, 8);
+  d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BGW_PIPE_B0, 8);
   d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NURO_SPR_PIPE_A0, 8);
   d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NYLU_SPR_PIPE_B0, 8);
-  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_0, 8);
+  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_D0, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0, 8);
   d("\n");
   d.dump_slice2n("FF40 LCDC ", &gb->pix_pipe.VYXE_LCDC_BGENn, 8);

@@ -128,6 +128,8 @@ struct GateBoy {
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
   Gate DYTY_STORE_ENn;
+  Gate LYRY_BFETCH_DONEp;
+  Gate TEKY_SFETCH_REQp;
 
   DFF IE_D0;
   DFF IE_D1;

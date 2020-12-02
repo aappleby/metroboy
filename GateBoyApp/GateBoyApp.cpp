@@ -491,19 +491,19 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Clocks =====\001\n");
   d("PHASE %d%d%d%d\n",
-    gb->clk_reg.AFUR_xxxxEFGHp_s.bit_data,
-    gb->clk_reg.ALEF_AxxxxFGHp_s.bit_data,
-    gb->clk_reg.APUK_ABxxxxGHp_s.bit_data,
-    gb->clk_reg.ADYK_ABCxxxxHp_s.bit_data);
+    gb->clk_reg.AFUR_xxxxEFGHp.bit_data,
+    gb->clk_reg.ALEF_AxxxxFGHp.bit_data,
+    gb->clk_reg.APUK_ABxxxxGHp.bit_data,
+    gb->clk_reg.ADYK_ABCxxxxHp.bit_data);
   d("\n");
   d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp_s.state);
   d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn_s.state);
   d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp_s.state);
   d("\n");
-  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp_s.state);
-  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp_s.state);
-  d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp_s.state);
-  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp_s.state);
+  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp.state);
+  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp.state);
+  d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp.state);
+  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp.state);
   d("\n");
   d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp.state);
   d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp.state);

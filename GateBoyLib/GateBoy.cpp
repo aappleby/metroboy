@@ -2781,6 +2781,21 @@ void GateBoy::tock_slow(int pass_index) {
     /* p25.PONY*/ wire _PONYn_new = not1(_REHOp_new);
 
     Pin2 PIN_VRAM_Ap[13];
+
+    PIN_VRAM_Ap[ 0].reset();
+    PIN_VRAM_Ap[ 1].reset();
+    PIN_VRAM_Ap[ 2].reset();
+    PIN_VRAM_Ap[ 3].reset();
+    PIN_VRAM_Ap[ 4].reset();
+    PIN_VRAM_Ap[ 5].reset();
+    PIN_VRAM_Ap[ 6].reset();
+    PIN_VRAM_Ap[ 7].reset();
+    PIN_VRAM_Ap[ 8].reset();
+    PIN_VRAM_Ap[ 9].reset();
+    PIN_VRAM_Ap[10].reset();
+    PIN_VRAM_Ap[11].reset();
+    PIN_VRAM_Ap[12].reset();
+
     PIN_VRAM_Ap[ 0].pin_out(1, _LEXEn_new, _LEXEn_new);
     PIN_VRAM_Ap[ 1].pin_out(1, _LOZUn_new, _LOZUn_new);
     PIN_VRAM_Ap[ 2].pin_out(1, _LACAn_new, _LACAn_new);
@@ -4310,7 +4325,15 @@ void GateBoy::tock_slow(int pass_index) {
 
       /*#p25.ROFA*/ wire _ROFA_CBD_TO_VPDp_new = not1(_RENA_CBD_TO_VPDn_new);
 
-      Pin2 PIN_VRAM_Dp_out[8];
+      PIN_VRAM_Dp_out[0].reset();
+      PIN_VRAM_Dp_out[1].reset();
+      PIN_VRAM_Dp_out[2].reset();
+      PIN_VRAM_Dp_out[3].reset();
+      PIN_VRAM_Dp_out[4].reset();
+      PIN_VRAM_Dp_out[5].reset();
+      PIN_VRAM_Dp_out[6].reset();
+      PIN_VRAM_Dp_out[7].reset();
+
       PIN_VRAM_Dp_out[0].pin_out(_ROFA_CBD_TO_VPDp_new, _REGE_D0n_new, _RURA_D0n_new);
       PIN_VRAM_Dp_out[1].pin_out(_ROFA_CBD_TO_VPDp_new, _RYKY_D1n_new, _RULY_D1n_new);
       PIN_VRAM_Dp_out[2].pin_out(_ROFA_CBD_TO_VPDp_new, _RAZO_D2n_new, _RARE_D2n_new);

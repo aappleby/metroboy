@@ -349,6 +349,7 @@ struct Bus2 : public TriBase {
 //-----------------------------------------------------------------------------
 
 struct Pin2 : public TriBase {
+  wire qp_ext() { return TriBase::qp_new(); }
   void pin_in(wire OEp, wire D)            { tri(OEp, D); }
   void pin_out(wire OEp, wire HI, wire /*LO*/) { /*CHECK_N(!HI && LO)*/; tri(OEp, !HI); }
 };
@@ -471,7 +472,7 @@ inline uint8_t pack_u8n_new(int c, Bus2* b) {
 inline uint8_t pack_u8p_new(int c, Pin2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp_new() << i;
+    r |= b[i].qp_ext() << i;
   }
   return r;
 }
@@ -479,7 +480,7 @@ inline uint8_t pack_u8p_new(int c, Pin2* b) {
 inline uint16_t pack_u16p_new(int c, Pin2* b) {
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp_new() << i;
+    r |= b[i].qp_ext() << i;
   }
   return r;
 }

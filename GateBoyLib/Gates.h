@@ -352,6 +352,9 @@ struct TriBase : public BitBase {
 // tri6_pn : top rung tadpole facing second rung dot.
 
 struct Bus2 : public TriBase {
+  wire qp_ext() { return TriBase::qp_new(); }
+  wire qn_ext() { return TriBase::qn_new(); }
+
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
   void tri10_np(wire OEn, wire Dp) { tri(!OEn, !OEn ?  Dp : 0); }
@@ -361,6 +364,7 @@ struct Bus2 : public TriBase {
 
 struct Pin2 : public TriBase {
   wire qp_ext() { return TriBase::qp_new(); }
+  wire qn_ext() { return TriBase::qn_new(); }
   void pin_in(wire OEp, wire D)            { tri(OEp, D); }
   void pin_out(wire OEp, wire HI, wire /*LO*/) { /*CHECK_N(!HI && LO)*/; tri(OEp, !HI); }
 };
@@ -465,7 +469,7 @@ inline uint16_t pack_u16p_old(int c, const DFF* b) {
 inline uint8_t pack_u8p_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp_new() << i;
+    r |= b[i].qp_ext() << i;
   }
   return r;
 }
@@ -473,7 +477,7 @@ inline uint8_t pack_u8p_new(int c, Bus2* b) {
 inline uint8_t pack_u8n_new(int c, Bus2* b) {
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].qp_new() << i;
+    r |= !b[i].qp_ext() << i;
   }
   return r;
 }

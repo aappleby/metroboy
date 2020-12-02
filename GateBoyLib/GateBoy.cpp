@@ -438,8 +438,8 @@ void GateBoy::tock_slow() {
   else {
     PIN_CPU_LATCH_EXT.pin_in(1, 0);
   }
-  /* p04.DECY*/ wire _DECY_LATCH_EXTn_new = not1(PIN_CPU_LATCH_EXT.qp_ext());
-  /* p04.CATY*/ wire _CATY_LATCH_EXTp_new = not1(_DECY_LATCH_EXTn_new);
+  /* p04.DECY*/ wire _DECY_LATCH_EXTn_ext = not1(PIN_CPU_LATCH_EXT.qp_ext());
+  /* p04.CATY*/ wire _CATY_LATCH_EXTp_ext = not1(_DECY_LATCH_EXTn_ext);
 
   PIN_CPU_6.pin_in(1, 0);
 
@@ -849,7 +849,7 @@ void GateBoy::tock_slow() {
   {
     // FF50 - disable bootrom bit
     /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(_TAPU_CPU_WRp_xxxxEFGx_clk, _SYKE_FF00_FFFFp_ext, _TYFO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
-    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(BUS_CPU_Dp_ext[0].qp_new(), BOOT_BITn.qp_old());
+    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(BUS_CPU_Dp_ext[0].qp_ext(), BOOT_BITn.qp_old());
     /* p07.TEPU*/ BOOT_BITn.dff17(_TUGE_FF50_WRn_clk, _ALUR_SYS_RSTn_new, _SATO_BOOT_BITn_old);
   }
   /* p07.TERA*/ wire _TERA_BOOT_BITp_new  = not1(BOOT_BITn.qp_new());
@@ -919,28 +919,28 @@ void GateBoy::tock_slow() {
     /*#p03.NYDU*/ tim_reg.NYDU_TIMA7p_DELAY   .dff17(_BOGA_Axxxxxxx_clk, _MUGY_TIMA_MAX_RSTn_new, tim_reg.NUGA_TIMA7p.qp_old());
 
     // FF06 TMA
-    /* p03.SABU*/ tim_reg.SABU_TMA0p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p03.NYKE*/ tim_reg.NYKE_TMA1p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p03.MURU*/ tim_reg.MURU_TMA2p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p03.TYVA*/ tim_reg.TYVA_TMA3p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p03.TYRU*/ tim_reg.TYRU_TMA4p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p03.SUFY*/ tim_reg.SUFY_TMA5p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p03.PETO*/ tim_reg.PETO_TMA6p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p03.SETA*/ tim_reg.SETA_TMA7p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p03.SABU*/ tim_reg.SABU_TMA0p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p03.NYKE*/ tim_reg.NYKE_TMA1p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p03.MURU*/ tim_reg.MURU_TMA2p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p03.TYVA*/ tim_reg.TYVA_TMA3p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p03.TYRU*/ tim_reg.TYRU_TMA4p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p03.SUFY*/ tim_reg.SUFY_TMA5p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p03.PETO*/ tim_reg.PETO_TMA6p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p03.SETA*/ tim_reg.SETA_TMA7p.dff17(_TYJU_FF06_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
 
     // FF07 TAC
-    /* p03.SOPU*/ tim_reg.SOPU_TAC0p.dff17(_SARA_FF07_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p03.SAMY*/ tim_reg.SAMY_TAC1p.dff17(_SARA_FF07_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p03.SABO*/ tim_reg.SABO_TAC2p.dff17(_SARA_FF07_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
+    /* p03.SOPU*/ tim_reg.SOPU_TAC0p.dff17(_SARA_FF07_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p03.SAMY*/ tim_reg.SAMY_TAC1p.dff17(_SARA_FF07_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p03.SABO*/ tim_reg.SABO_TAC2p.dff17(_SARA_FF07_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
 
-    /*#p03.ROKE*/ wire _ROKE_TIMA_D0_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.SABU_TMA0p.qp_new(), BUS_CPU_Dp_ext[0].qp_new());
-    /*#p03.PETU*/ wire _PETU_TIMA_D1_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.NYKE_TMA1p.qp_new(), BUS_CPU_Dp_ext[1].qp_new());
-    /*#p03.NYKU*/ wire _NYKU_TIMA_D2_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.MURU_TMA2p.qp_new(), BUS_CPU_Dp_ext[2].qp_new());
-    /*#p03.SOCE*/ wire _SOCE_TIMA_D3_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.TYVA_TMA3p.qp_new(), BUS_CPU_Dp_ext[3].qp_new());
-    /*#p03.SALA*/ wire _SALA_TIMA_D4_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.TYRU_TMA4p.qp_new(), BUS_CPU_Dp_ext[4].qp_new());
-    /*#p03.SYRU*/ wire _SYRU_TIMA_D5_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.SUFY_TMA5p.qp_new(), BUS_CPU_Dp_ext[5].qp_new());
-    /*#p03.REFU*/ wire _REFU_TIMA_D6_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.PETO_TMA6p.qp_new(), BUS_CPU_Dp_ext[6].qp_new());
-    /*#p03.RATO*/ wire _RATO_TIMA_D7_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.SETA_TMA7p.qp_new(), BUS_CPU_Dp_ext[7].qp_new());
+    /*#p03.ROKE*/ wire _ROKE_TIMA_D0_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.SABU_TMA0p.qp_new(), BUS_CPU_Dp_ext[0].qp_ext());
+    /*#p03.PETU*/ wire _PETU_TIMA_D1_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.NYKE_TMA1p.qp_new(), BUS_CPU_Dp_ext[1].qp_ext());
+    /*#p03.NYKU*/ wire _NYKU_TIMA_D2_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.MURU_TMA2p.qp_new(), BUS_CPU_Dp_ext[2].qp_ext());
+    /*#p03.SOCE*/ wire _SOCE_TIMA_D3_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.TYVA_TMA3p.qp_new(), BUS_CPU_Dp_ext[3].qp_ext());
+    /*#p03.SALA*/ wire _SALA_TIMA_D4_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.TYRU_TMA4p.qp_new(), BUS_CPU_Dp_ext[4].qp_ext());
+    /*#p03.SYRU*/ wire _SYRU_TIMA_D5_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.SUFY_TMA5p.qp_new(), BUS_CPU_Dp_ext[5].qp_ext());
+    /*#p03.REFU*/ wire _REFU_TIMA_D6_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.PETO_TMA6p.qp_new(), BUS_CPU_Dp_ext[6].qp_ext());
+    /*#p03.RATO*/ wire _RATO_TIMA_D7_new = mux2n(_TOPE_FF05_WRn_clk, tim_reg.SETA_TMA7p.qp_new(), BUS_CPU_Dp_ext[7].qp_ext());
 
     /* p03.MULO*/ wire _MULO_SYS_RSTn_new = not1(_ALUR_SYS_RSTn_new);
     /*#p03.PUXY*/ wire _PUXY_TIMA_D0_new = nor2(_MULO_SYS_RSTn_new, _ROKE_TIMA_D0_new);
@@ -1292,109 +1292,109 @@ void GateBoy::tock_slow() {
   {
     // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
     // That also means that _both_ P14 and P15 are selected at reset :/
-    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF40 LCDC
-    /*#p23.VYXE*/ pix_pipe.VYXE_LCDC_BGENn  .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p23.XYLO*/ pix_pipe.XYLO_LCDC_SPENn  .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p23.XYMO*/ pix_pipe.XYMO_LCDC_SPSIZEn.dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p23.XAFO*/ pix_pipe.XAFO_LCDC_BGMAPn .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p23.WEXU*/ pix_pipe.WEXU_LCDC_BGTILEn.dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p23.WYMO*/ pix_pipe.WYMO_LCDC_WINENn .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p23.WOKY*/ pix_pipe.WOKY_LCDC_WINMAPn.dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p23.XONA*/ pix_pipe.XONA_LCDC_LCDENn .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /*#p23.VYXE*/ pix_pipe.VYXE_LCDC_BGENn  .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p23.XYLO*/ pix_pipe.XYLO_LCDC_SPENn  .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p23.XYMO*/ pix_pipe.XYMO_LCDC_SPSIZEn.dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p23.XAFO*/ pix_pipe.XAFO_LCDC_BGMAPn .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p23.WEXU*/ pix_pipe.WEXU_LCDC_BGTILEn.dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p23.WYMO*/ pix_pipe.WYMO_LCDC_WINENn .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p23.WOKY*/ pix_pipe.WOKY_LCDC_WINMAPn.dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p23.XONA*/ pix_pipe.XONA_LCDC_LCDENn .dff9(_XUBO_FF40_WRn_clk, _XARE_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF41 STAT
-    /* p21.ROXE*/ pix_pipe.ROXE_STAT_HBI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p21.RUFO*/ pix_pipe.RUFO_STAT_VBI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p21.REFE*/ pix_pipe.REFE_STAT_OAI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p21.RUGU*/ pix_pipe.RUGU_STAT_LYI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
+    /* p21.ROXE*/ pix_pipe.ROXE_STAT_HBI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p21.RUFO*/ pix_pipe.RUFO_STAT_VBI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p21.REFE*/ pix_pipe.REFE_STAT_OAI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p21.RUGU*/ pix_pipe.RUGU_STAT_LYI_ENn.dff9(_RYVE_FF41_WRn_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
   }
   {
     // FF42 SCY
-    /* p23.GAVE*/ pix_pipe.GAVE_SCY0n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p23.FYMO*/ pix_pipe.FYMO_SCY1n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p23.FEZU*/ pix_pipe.FEZU_SCY2n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p23.FUJO*/ pix_pipe.FUJO_SCY3n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p23.DEDE*/ pix_pipe.DEDE_SCY4n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p23.FOTY*/ pix_pipe.FOTY_SCY5n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p23.FOHA*/ pix_pipe.FOHA_SCY6n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p23.FUNY*/ pix_pipe.FUNY_SCY7n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p23.GAVE*/ pix_pipe.GAVE_SCY0n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p23.FYMO*/ pix_pipe.FYMO_SCY1n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p23.FEZU*/ pix_pipe.FEZU_SCY2n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p23.FUJO*/ pix_pipe.FUJO_SCY3n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p23.DEDE*/ pix_pipe.DEDE_SCY4n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p23.FOTY*/ pix_pipe.FOTY_SCY5n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p23.FOHA*/ pix_pipe.FOHA_SCY6n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p23.FUNY*/ pix_pipe.FUNY_SCY7n.dff9(_CAVO_FF42_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF43 SCX
-    /* p23.DATY*/ pix_pipe.DATY_SCX0n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p23.DUZU*/ pix_pipe.DUZU_SCX1n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p23.CYXU*/ pix_pipe.CYXU_SCX2n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p23.GUBO*/ pix_pipe.GUBO_SCX3n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p23.BEMY*/ pix_pipe.BEMY_SCX4n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p23.CUZY*/ pix_pipe.CUZY_SCX5n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p23.CABU*/ pix_pipe.CABU_SCX6n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p23.BAKE*/ pix_pipe.BAKE_SCX7n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p23.DATY*/ pix_pipe.DATY_SCX0n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p23.DUZU*/ pix_pipe.DUZU_SCX1n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p23.CYXU*/ pix_pipe.CYXU_SCX2n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p23.GUBO*/ pix_pipe.GUBO_SCX3n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p23.BEMY*/ pix_pipe.BEMY_SCX4n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p23.CUZY*/ pix_pipe.CUZY_SCX5n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p23.CABU*/ pix_pipe.CABU_SCX6n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p23.BAKE*/ pix_pipe.BAKE_SCX7n.dff9(_AMUN_FF43_WRn_clk, _CUNU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF47 BGP
-    /*#p36.PAVO*/ pix_pipe.PAVO_BGP_D0n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[0].qp_new());
-    /* p36.NUSY*/ pix_pipe.NUSY_BGP_D1n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[1].qp_new());
-    /* p36.PYLU*/ pix_pipe.PYLU_BGP_D2n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[2].qp_new());
-    /* p36.MAXY*/ pix_pipe.MAXY_BGP_D3n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[3].qp_new());
-    /* p36.MUKE*/ pix_pipe.MUKE_BGP_D4n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[4].qp_new());
-    /* p36.MORU*/ pix_pipe.MORU_BGP_D5n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[5].qp_new());
-    /* p36.MOGY*/ pix_pipe.MOGY_BGP_D6n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[6].qp_new());
-    /* p36.MENA*/ pix_pipe.MENA_BGP_D7n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[7].qp_new());
+    /*#p36.PAVO*/ pix_pipe.PAVO_BGP_D0n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p36.NUSY*/ pix_pipe.NUSY_BGP_D1n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p36.PYLU*/ pix_pipe.PYLU_BGP_D2n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p36.MAXY*/ pix_pipe.MAXY_BGP_D3n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p36.MUKE*/ pix_pipe.MUKE_BGP_D4n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p36.MORU*/ pix_pipe.MORU_BGP_D5n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p36.MOGY*/ pix_pipe.MOGY_BGP_D6n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p36.MENA*/ pix_pipe.MENA_BGP_D7n.dff8p(_TEPO_FF47_WRp_clk, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF48 OBP0
-    /* p36.XUFU*/ pix_pipe.XUFU_OBP0_D0n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[0].qp_new());
-    /* p36.XUKY*/ pix_pipe.XUKY_OBP0_D1n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[1].qp_new());
-    /* p36.XOVA*/ pix_pipe.XOVA_OBP0_D2n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[2].qp_new());
-    /* p36.XALO*/ pix_pipe.XALO_OBP0_D3n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[3].qp_new());
-    /* p36.XERU*/ pix_pipe.XERU_OBP0_D4n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[4].qp_new());
-    /* p36.XYZE*/ pix_pipe.XYZE_OBP0_D5n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[5].qp_new());
-    /* p36.XUPO*/ pix_pipe.XUPO_OBP0_D6n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[6].qp_new());
-    /* p36.XANA*/ pix_pipe.XANA_OBP0_D7n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[7].qp_new());
+    /* p36.XUFU*/ pix_pipe.XUFU_OBP0_D0n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p36.XUKY*/ pix_pipe.XUKY_OBP0_D1n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p36.XOVA*/ pix_pipe.XOVA_OBP0_D2n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p36.XALO*/ pix_pipe.XALO_OBP0_D3n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p36.XERU*/ pix_pipe.XERU_OBP0_D4n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p36.XYZE*/ pix_pipe.XYZE_OBP0_D5n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p36.XUPO*/ pix_pipe.XUPO_OBP0_D6n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p36.XANA*/ pix_pipe.XANA_OBP0_D7n.dff8p(_XELO_FF48_WRn_clk, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF49 OBP1
-    /* p36.MOXY*/ pix_pipe.MOXY_OBP1_D0n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[0].qp_new());
-    /* p36.LAWO*/ pix_pipe.LAWO_OBP1_D1n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[1].qp_new());
-    /* p36.MOSA*/ pix_pipe.MOSA_OBP1_D2n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[2].qp_new());
-    /* p36.LOSE*/ pix_pipe.LOSE_OBP1_D3n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[3].qp_new());
-    /* p36.LUNE*/ pix_pipe.LUNE_OBP1_D4n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[4].qp_new());
-    /* p36.LUGU*/ pix_pipe.LUGU_OBP1_D5n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[5].qp_new());
-    /* p36.LEPU*/ pix_pipe.LEPU_OBP1_D6n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[6].qp_new());
-    /* p36.LUXO*/ pix_pipe.LUXO_OBP1_D7n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[7].qp_new());
+    /* p36.MOXY*/ pix_pipe.MOXY_OBP1_D0n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p36.LAWO*/ pix_pipe.LAWO_OBP1_D1n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p36.MOSA*/ pix_pipe.MOSA_OBP1_D2n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p36.LOSE*/ pix_pipe.LOSE_OBP1_D3n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p36.LUNE*/ pix_pipe.LUNE_OBP1_D4n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p36.LUGU*/ pix_pipe.LUGU_OBP1_D5n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p36.LEPU*/ pix_pipe.LEPU_OBP1_D6n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p36.LUXO*/ pix_pipe.LUXO_OBP1_D7n.dff8p(_LEHO_FF49_WRn_clk, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF4A WY
-    /* p23.NESO*/ pix_pipe.NESO_WY0n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p23.NYRO*/ pix_pipe.NYRO_WY1n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p23.NAGA*/ pix_pipe.NAGA_WY2n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p23.MELA*/ pix_pipe.MELA_WY3n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p23.NULO*/ pix_pipe.NULO_WY4n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p23.NENE*/ pix_pipe.NENE_WY5n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p23.NUKA*/ pix_pipe.NUKA_WY6n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p23.NAFU*/ pix_pipe.NAFU_WY7n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p23.NESO*/ pix_pipe.NESO_WY0n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p23.NYRO*/ pix_pipe.NYRO_WY1n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p23.NAGA*/ pix_pipe.NAGA_WY2n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p23.MELA*/ pix_pipe.MELA_WY3n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p23.NULO*/ pix_pipe.NULO_WY4n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p23.NENE*/ pix_pipe.NENE_WY5n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p23.NUKA*/ pix_pipe.NUKA_WY6n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p23.NAFU*/ pix_pipe.NAFU_WY7n.dff9(_VEFU_FF4A_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
   {
     // FF4B WX
-    /* p23.MYPA*/ pix_pipe.MYPA_WX0n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p23.NOFE*/ pix_pipe.NOFE_WX1n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p23.NOKE*/ pix_pipe.NOKE_WX2n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p23.MEBY*/ pix_pipe.MEBY_WX3n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p23.MYPU*/ pix_pipe.MYPU_WX4n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p23.MYCE*/ pix_pipe.MYCE_WX5n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p23.MUVO*/ pix_pipe.MUVO_WX6n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p23.NUKU*/ pix_pipe.NUKU_WX7n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p23.MYPA*/ pix_pipe.MYPA_WX0n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p23.NOFE*/ pix_pipe.NOFE_WX1n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p23.NOKE*/ pix_pipe.NOKE_WX2n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p23.MEBY*/ pix_pipe.MEBY_WX3n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p23.MYPU*/ pix_pipe.MYPU_WX4n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p23.MYCE*/ pix_pipe.MYCE_WX5n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p23.MUVO*/ pix_pipe.MUVO_WX6n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p23.NUKU*/ pix_pipe.NUKU_WX7n.dff9(_VOXU_FF4B_WRn_clk, _WALU_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
 #pragma endregion
 
@@ -1454,14 +1454,14 @@ void GateBoy::tock_slow() {
   }
   {
     // FF45 LYC
-    /* p23.SYRY*/ lcd_reg.SYRY_LYC0n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p23.VUCE*/ lcd_reg.VUCE_LYC1n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p23.SEDY*/ lcd_reg.SEDY_LYC2n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p23.SALO*/ lcd_reg.SALO_LYC3n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p23.SOTA*/ lcd_reg.SOTA_LYC4n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p23.VAFA*/ lcd_reg.VAFA_LYC5n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p23.VEVO*/ lcd_reg.VEVO_LYC6n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p23.RAHA*/ lcd_reg.RAHA_LYC7n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /* p23.SYRY*/ lcd_reg.SYRY_LYC0n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p23.VUCE*/ lcd_reg.VUCE_LYC1n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p23.SEDY*/ lcd_reg.SEDY_LYC2n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p23.SALO*/ lcd_reg.SALO_LYC3n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p23.SOTA*/ lcd_reg.SOTA_LYC4n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p23.VAFA*/ lcd_reg.VAFA_LYC5n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p23.VEVO*/ lcd_reg.VEVO_LYC6n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p23.RAHA*/ lcd_reg.RAHA_LYC7n_s.dff9(_WANE_FF45_WRp_clk, _WESY_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
 #pragma endregion
 
@@ -1519,14 +1519,14 @@ void GateBoy::tock_slow() {
     /* p04.NUTO*/ dma_reg.NUTO_DMA_A06p.dff17(dma_reg.PYLO_DMA_A05p.qn_new(), _LAPA_DMA_RSTn_new, dma_reg.NUTO_DMA_A06p.qn_old());
     /* p04.MUGU*/ dma_reg.MUGU_DMA_A07p.dff17(dma_reg.NUTO_DMA_A06p.qn_new(), _LAPA_DMA_RSTn_new, dma_reg.MUGU_DMA_A07p.qn_old());
 
-    /*#p04.NAFA*/ dma_reg.NAFA_DMA_A08n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[0].qp_new());
-    /* p04.PYNE*/ dma_reg.PYNE_DMA_A09n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[1].qp_new());
-    /* p04.PARA*/ dma_reg.PARA_DMA_A10n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[2].qp_new());
-    /* p04.NYDO*/ dma_reg.NYDO_DMA_A11n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[3].qp_new());
-    /* p04.NYGY*/ dma_reg.NYGY_DMA_A12n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[4].qp_new());
-    /* p04.PULA*/ dma_reg.PULA_DMA_A13n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[5].qp_new());
-    /* p04.POKU*/ dma_reg.POKU_DMA_A14n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[6].qp_new());
-    /* p04.MARU*/ dma_reg.MARU_DMA_A15n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[7].qp_new());
+    /*#p04.NAFA*/ dma_reg.NAFA_DMA_A08n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p04.PYNE*/ dma_reg.PYNE_DMA_A09n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p04.PARA*/ dma_reg.PARA_DMA_A10n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p04.NYDO*/ dma_reg.NYDO_DMA_A11n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p04.NYGY*/ dma_reg.NYGY_DMA_A12n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p04.PULA*/ dma_reg.PULA_DMA_A13n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p04.POKU*/ dma_reg.POKU_DMA_A14n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p04.MARU*/ dma_reg.MARU_DMA_A15n.dff8p(_LORU_FF46_WRn_new, BUS_CPU_Dp_ext[7].qp_ext());
 
     /*#p04.MATU*/ dma_reg.MATU_DMA_RUNNINGp.dff17(_UVYT_ABCDxxxx_clk, _CUNU_SYS_RSTn_new, _LOKY_DMA_LATCHp_old);
   }
@@ -1810,7 +1810,7 @@ void GateBoy::tock_slow() {
 
 
 
-  /*#p24.SACU*/ wire _SACU_CLKPIPE_AxCxExGx_clkold = or2(_SEGU_CLKPIPE_AxCxExGx_clkold, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp_old()); // Schematic wrong, this is OR
+  ///*#p24.SACU*/ wire _SACU_CLKPIPE_AxCxExGx_clkold = or2(_SEGU_CLKPIPE_AxCxExGx_clkold, pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.qp_old()); // Schematic wrong, this is OR
 
   /*#p24.ROXO*/ wire _ROXO_CLKPIPE_xBxDxFxH_clkold = not1(_SEGU_CLKPIPE_AxCxExGx_clkold);
   /*#p24.ROXO*/ wire _ROXO_CLKPIPE_xBxDxFxH_clknew = not1(_SEGU_CLKPIPE_AxCxExGx_clknew);
@@ -2073,19 +2073,19 @@ void GateBoy::tock_slow() {
     /* SPR_I -> OBA */
     /* p28.GECA*/ BUS_OAM_An_old[0].tri6_nn(_BETE_PPU_OAM_RDn_new, _WEFE_VCC);
     /* p28.WYDU*/ BUS_OAM_An_old[1].tri6_nn(_BETE_PPU_OAM_RDn_new, _WEFE_VCC);
-    /* p28.GYBU*/ BUS_OAM_An_old[2].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[0].qp_new());
-    /* p28.GYKA*/ BUS_OAM_An_old[3].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[1].qp_new());
-    /* p28.FABY*/ BUS_OAM_An_old[4].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[2].qp_new());
-    /* p28.FACO*/ BUS_OAM_An_old[5].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[3].qp_new());
-    /* p28.FUGU*/ BUS_OAM_An_old[6].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[4].qp_new());
-    /* p28.FYKE*/ BUS_OAM_An_old[7].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[5].qp_new());
+    /* p28.GYBU*/ BUS_OAM_An_old[2].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[0].qp_ext());
+    /* p28.GYKA*/ BUS_OAM_An_old[3].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[1].qp_ext());
+    /* p28.FABY*/ BUS_OAM_An_old[4].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[2].qp_ext());
+    /* p28.FACO*/ BUS_OAM_An_old[5].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[3].qp_ext());
+    /* p28.FUGU*/ BUS_OAM_An_old[6].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[4].qp_ext());
+    /* p28.FYKE*/ BUS_OAM_An_old[7].tri6_nn(_BETE_PPU_OAM_RDn_new, SPR_TRI_I_out_old[5].qp_ext());
 
-    /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(BUS_OAM_An_old[2].qp_new());
-    /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(BUS_OAM_An_old[3].qp_new());
-    /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(BUS_OAM_An_old[4].qp_new());
-    /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(BUS_OAM_An_old[5].qp_new());
-    /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(BUS_OAM_An_old[6].qp_new());
-    /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(BUS_OAM_An_old[7].qp_new());
+    /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(BUS_OAM_An_old[2].qp_ext());
+    /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(BUS_OAM_An_old[3].qp_ext());
+    /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(BUS_OAM_An_old[4].qp_ext());
+    /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(BUS_OAM_An_old[5].qp_ext());
+    /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(BUS_OAM_An_old[6].qp_ext());
+    /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(BUS_OAM_An_old[7].qp_ext());
 
     /*#p30.CYKE*/ wire _CYKE_ABxxEFxx_new = not1(_XUPY_ABxxEFxx_clknew);
     /*#p30.WUDA*/ wire _WUDA_xxCDxxGH_new = not1(_CYKE_ABxxEFxx_new);
@@ -2281,7 +2281,7 @@ void GateBoy::tock_slow() {
     /* p28.WEFY*/ wire _WEFY_SPR_READp_new = and2(_TUVO_PPU_OAM_RDp_new, sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
     /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn_new  = not1(_WEFY_SPR_READp_new);
     /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn_new = nand2(_ACYL_SCANNINGp_new, _XOCE_xBCxxFGx_clknew); // schematic wrong, is def nand2
-    /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn_new = not1(_CATY_LATCH_EXTp_new);
+    /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn_new = not1(_CATY_LATCH_EXTp_ext);
     /*#p28.BOTA*/ wire _BOTA_OAM_OEn_new  = nand3(_BOFE_LATCH_EXTn_new, _SARO_FE00_FEFFp_ext, _ASOT_CPU_RDp_ext); // Schematic wrong, this is NAND
     /*#p28.ASYT*/ wire _ASYT_OAM_OEn_new = and3(_AJEP_SCAN_OAM_LATCHn_new, _XUJA_SPR_OAM_LATCHn_new, _BOTA_OAM_OEn_new); // def and
     /*#p28.BODE*/ wire _BODE_OAM_OEp_new = not1(_ASYT_OAM_OEn_new);
@@ -2313,23 +2313,23 @@ void GateBoy::tock_slow() {
     BUS_OAM_DBn_new[7].tri6_nn(PIN_OAM_OEn.qp_ext(), (oam_data_b & 0x80));
 
     // OPD -> OBL
-    /* p29.YDYV*/ oam_bus.YDYV_OAM_LATCH_DA0n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[0].qp_new());
-    /* p29.YCEB*/ oam_bus.YCEB_OAM_LATCH_DA1n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[1].qp_new());
-    /* p29.ZUCA*/ oam_bus.ZUCA_OAM_LATCH_DA2n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[2].qp_new());
-    /* p29.WONE*/ oam_bus.WONE_OAM_LATCH_DA3n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[3].qp_new());
-    /* p29.ZAXE*/ oam_bus.ZAXE_OAM_LATCH_DA4n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[4].qp_new());
-    /* p29.XAFU*/ oam_bus.XAFU_OAM_LATCH_DA5n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[5].qp_new());
-    /* p29.YSES*/ oam_bus.YSES_OAM_LATCH_DA6n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[6].qp_new());
-    /* p29.ZECA*/ oam_bus.ZECA_OAM_LATCH_DA7n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[7].qp_new());
+    /* p29.YDYV*/ oam_bus.YDYV_OAM_LATCH_DA0n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[0].qp_ext());
+    /* p29.YCEB*/ oam_bus.YCEB_OAM_LATCH_DA1n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[1].qp_ext());
+    /* p29.ZUCA*/ oam_bus.ZUCA_OAM_LATCH_DA2n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[2].qp_ext());
+    /* p29.WONE*/ oam_bus.WONE_OAM_LATCH_DA3n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[3].qp_ext());
+    /* p29.ZAXE*/ oam_bus.ZAXE_OAM_LATCH_DA4n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[4].qp_ext());
+    /* p29.XAFU*/ oam_bus.XAFU_OAM_LATCH_DA5n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[5].qp_ext());
+    /* p29.YSES*/ oam_bus.YSES_OAM_LATCH_DA6n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[6].qp_ext());
+    /* p29.ZECA*/ oam_bus.ZECA_OAM_LATCH_DA7n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DAn_new[7].qp_ext());
 
-    /*#p31.XYKY*/ oam_bus.XYKY_OAM_LATCH_DB0n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[0].qp_new());
-    /* p31.YRUM*/ oam_bus.YRUM_OAM_LATCH_DB1n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[1].qp_new());
-    /* p31.YSEX*/ oam_bus.YSEX_OAM_LATCH_DB2n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[2].qp_new());
-    /* p31.YVEL*/ oam_bus.YVEL_OAM_LATCH_DB3n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[3].qp_new());
-    /* p31.WYNO*/ oam_bus.WYNO_OAM_LATCH_DB4n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[4].qp_new());
-    /* p31.CYRA*/ oam_bus.CYRA_OAM_LATCH_DB5n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[5].qp_new());
-    /* p31.ZUVE*/ oam_bus.ZUVE_OAM_LATCH_DB6n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[6].qp_new());
-    /* p31.ECED*/ oam_bus.ECED_OAM_LATCH_DB7n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[7].qp_new());
+    /*#p31.XYKY*/ oam_bus.XYKY_OAM_LATCH_DB0n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[0].qp_ext());
+    /* p31.YRUM*/ oam_bus.YRUM_OAM_LATCH_DB1n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[1].qp_ext());
+    /* p31.YSEX*/ oam_bus.YSEX_OAM_LATCH_DB2n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[2].qp_ext());
+    /* p31.YVEL*/ oam_bus.YVEL_OAM_LATCH_DB3n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[3].qp_ext());
+    /* p31.WYNO*/ oam_bus.WYNO_OAM_LATCH_DB4n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[4].qp_ext());
+    /* p31.CYRA*/ oam_bus.CYRA_OAM_LATCH_DB5n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[5].qp_ext());
+    /* p31.ZUVE*/ oam_bus.ZUVE_OAM_LATCH_DB6n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[6].qp_ext());
+    /* p31.ECED*/ oam_bus.ECED_OAM_LATCH_DB7n.tp_latch(_BODE_OAM_OEp_new, BUS_OAM_DBn_new[7].qp_ext());
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2378,7 +2378,7 @@ void GateBoy::tock_slow() {
   // FIXME old/new mixed up here :/
   // The signals to OAM should be old
 
-  Bus2 BUS_VRAM_Dp_in_old[8];
+  Bus2 BUS_VRAM_Dp_in[8];
   Pin2 PIN_VRAM_Dp_in_old[8];
 
   {
@@ -2423,40 +2423,40 @@ void GateBoy::tock_slow() {
     PIN_VRAM_Dp_in_old[6].pin_in(!PIN_VRAM_OEn_old.qp_ext(), (vram_data_latch & 0x40));
     PIN_VRAM_Dp_in_old[7].pin_in(!PIN_VRAM_OEn_old.qp_ext(), (vram_data_latch & 0x80));
 
-    /* p25.RODY*/ BUS_VRAM_Dp_in_old[0].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[0].qn_new());
-    /* p25.REBA*/ BUS_VRAM_Dp_in_old[1].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[1].qn_new());
-    /* p25.RYDO*/ BUS_VRAM_Dp_in_old[2].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[2].qn_new());
-    /* p25.REMO*/ BUS_VRAM_Dp_in_old[3].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[3].qn_new());
-    /* p25.ROCE*/ BUS_VRAM_Dp_in_old[4].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[4].qn_new());
-    /* p25.ROPU*/ BUS_VRAM_Dp_in_old[5].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[5].qn_new());
-    /* p25.RETA*/ BUS_VRAM_Dp_in_old[6].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[6].qn_new());
-    /* p25.RAKU*/ BUS_VRAM_Dp_in_old[7].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[7].qn_new());
+    /* p25.RODY*/ BUS_VRAM_Dp_in[0].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[0].qn_new());
+    /* p25.REBA*/ BUS_VRAM_Dp_in[1].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[1].qn_new());
+    /* p25.RYDO*/ BUS_VRAM_Dp_in[2].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[2].qn_new());
+    /* p25.REMO*/ BUS_VRAM_Dp_in[3].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[3].qn_new());
+    /* p25.ROCE*/ BUS_VRAM_Dp_in[4].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[4].qn_new());
+    /* p25.ROPU*/ BUS_VRAM_Dp_in[5].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[5].qn_new());
+    /* p25.RETA*/ BUS_VRAM_Dp_in[6].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[6].qn_new());
+    /* p25.RAKU*/ BUS_VRAM_Dp_in[7].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[7].qn_new());
 
     /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn_new = nand3(_MYSO_BG_TRIGp_new, tile_fetcher.MESU_BFETCH_S1p.qp_new(), _NOFU_BFETCH_S2n_new); // NYDY on fetch phase 6
     /*#p32.METE*/ wire _METE_LATCH_TILE_DAp_new = not1(_NYDY_LATCH_TILE_DAn_new);
     /*#p32.LOMA*/ wire _LOMA_LATCH_TILE_DAn_new = not1(_METE_LATCH_TILE_DAp_new);
-    /* p32.LEGU*/ vram_bus.LEGU_TILE_DA0n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[0].qp_new());
-    /* p32.NUDU*/ vram_bus.NUDU_TILE_DA1n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[1].qp_new());
-    /* p32.MUKU*/ vram_bus.MUKU_TILE_DA2n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[2].qp_new());
-    /* p32.LUZO*/ vram_bus.LUZO_TILE_DA3n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[3].qp_new());
-    /* p32.MEGU*/ vram_bus.MEGU_TILE_DA4n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[4].qp_new());
-    /* p32.MYJY*/ vram_bus.MYJY_TILE_DA5n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[5].qp_new());
-    /* p32.NASA*/ vram_bus.NASA_TILE_DA6n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[6].qp_new());
-    /* p32.NEFO*/ vram_bus.NEFO_TILE_DA7n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in_old[7].qp_new());
+    /* p32.LEGU*/ vram_bus.LEGU_TILE_DA0n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[0].qp_ext());
+    /* p32.NUDU*/ vram_bus.NUDU_TILE_DA1n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[1].qp_ext());
+    /* p32.MUKU*/ vram_bus.MUKU_TILE_DA2n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[2].qp_ext());
+    /* p32.LUZO*/ vram_bus.LUZO_TILE_DA3n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[3].qp_ext());
+    /* p32.MEGU*/ vram_bus.MEGU_TILE_DA4n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[4].qp_ext());
+    /* p32.MYJY*/ vram_bus.MYJY_TILE_DA5n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[5].qp_ext());
+    /* p32.NASA*/ vram_bus.NASA_TILE_DA6n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[6].qp_ext());
+    /* p32.NEFO*/ vram_bus.NEFO_TILE_DA7n.dff8p(_LOMA_LATCH_TILE_DAn_new, BUS_VRAM_Dp_in[7].qp_ext());
 
     // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
     /* p27.MOFU*/ wire _MOFU_LATCH_TILE_DBp_new = and2(_MYSO_BG_TRIGp_new, _NAKO_BFETCH_S1n_new); // MOFU fires on fetch phase 2 and 10
     /* p32.LESO*/ wire _LESO_LATCH_TILE_DBn_new = not1(_MOFU_LATCH_TILE_DBp_new);
     /* p??.LUVE*/ wire _LUVE_LATCH_TILE_DBp_new = not1(_LESO_LATCH_TILE_DBn_new); // Schematic wrong, was labeled AJAR
     /* p32.LABU*/ wire _LABU_LATCH_TILE_DBn_new = not1(_LUVE_LATCH_TILE_DBp_new);
-    /* p32.RAWU*/ vram_bus.RAWU_TILE_DB0p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[0].qp_new());
-    /* p32.POZO*/ vram_bus.POZO_TILE_DB1p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[1].qp_new());
-    /* p32.PYZO*/ vram_bus.PYZO_TILE_DB2p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[2].qp_new());
-    /* p32.POXA*/ vram_bus.POXA_TILE_DB3p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[3].qp_new());
-    /* p32.PULO*/ vram_bus.PULO_TILE_DB4p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[4].qp_new());
-    /* p32.POJU*/ vram_bus.POJU_TILE_DB5p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[5].qp_new());
-    /* p32.POWY*/ vram_bus.POWY_TILE_DB6p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[6].qp_new());
-    /* p32.PYJU*/ vram_bus.PYJU_TILE_DB7p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in_old[7].qp_new());
+    /* p32.RAWU*/ vram_bus.RAWU_TILE_DB0p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[0].qp_ext());
+    /* p32.POZO*/ vram_bus.POZO_TILE_DB1p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[1].qp_ext());
+    /* p32.PYZO*/ vram_bus.PYZO_TILE_DB2p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[2].qp_ext());
+    /* p32.POXA*/ vram_bus.POXA_TILE_DB3p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[3].qp_ext());
+    /* p32.PULO*/ vram_bus.PULO_TILE_DB4p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[4].qp_ext());
+    /* p32.POJU*/ vram_bus.POJU_TILE_DB5p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[5].qp_ext());
+    /* p32.POWY*/ vram_bus.POWY_TILE_DB6p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[6].qp_ext());
+    /* p32.PYJU*/ vram_bus.PYJU_TILE_DB7p.dff11(_LABU_LATCH_TILE_DBn_new, _VYPO_VCC, BUS_VRAM_Dp_in[7].qp_ext());
   }
 #pragma endregion
 
@@ -2520,10 +2520,10 @@ void GateBoy::tock_slow() {
     {
       /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn_new = not1(pix_pipe.XYMO_LCDC_SPSIZEn.qn_new());
       /*#p29.WUKY*/ wire _WUKY_FLIP_Yp_new = not1(oam_bus.YZOS_OAM_DB6p.qp_new());
-      /*#p29.CYVU*/ wire _CYVU_L0_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[0].qp_new());
-      /*#p29.BORE*/ wire _BORE_L1_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[1].qp_new());
-      /*#p29.BUVY*/ wire _BUVY_L2_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[2].qp_new());
-      /*#p29.WAGO*/ wire _WAGO_L3_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[3].qp_new());
+      /*#p29.CYVU*/ wire _CYVU_L0_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[0].qp_ext());
+      /*#p29.BORE*/ wire _BORE_L1_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[1].qp_ext());
+      /*#p29.BUVY*/ wire _BUVY_L2_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[2].qp_ext());
+      /*#p29.WAGO*/ wire _WAGO_L3_new = xor2(_WUKY_FLIP_Yp_new, SPR_TRI_L_out_old[3].qp_ext());
       /*#p29.GEJY*/ wire _GEJY_L3_new = amux2(oam_bus.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn_new, pix_pipe.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3_new);
 
       /* p29.ABON*/ wire _ABON_SPR_VRM_RDn_new = not1(_TEXY_SPR_READ_VRAMp_new);
@@ -2633,19 +2633,19 @@ void GateBoy::tock_slow() {
 
     {
       // VRAM addr bus -> VRAM addr pin
-      /* p25.MYFU*/ wire _MYFUp_new = not1(BUS_VRAM_An[ 0].qp_new());
-      /* p25.MASA*/ wire _MASAp_new = not1(BUS_VRAM_An[ 1].qp_new());
-      /* p25.MYRE*/ wire _MYREp_new = not1(BUS_VRAM_An[ 2].qp_new());
-      /* p25.MAVU*/ wire _MAVUp_new = not1(BUS_VRAM_An[ 3].qp_new());
-      /* p25.MEPA*/ wire _MEPAp_new = not1(BUS_VRAM_An[ 4].qp_new());
-      /* p25.MYSA*/ wire _MYSAp_new = not1(BUS_VRAM_An[ 5].qp_new());
-      /* p25.MEWY*/ wire _MEWYp_new = not1(BUS_VRAM_An[ 6].qp_new());
-      /* p25.MUME*/ wire _MUMEp_new = not1(BUS_VRAM_An[ 7].qp_new());
-      /* p25.VOVA*/ wire _VOVAp_new = not1(BUS_VRAM_An[ 8].qp_new());
-      /* p25.VODE*/ wire _VODEp_new = not1(BUS_VRAM_An[ 9].qp_new());
-      /* p25.RUKY*/ wire _RUKYp_new = not1(BUS_VRAM_An[10].qp_new());
-      /* p25.RUMA*/ wire _RUMAp_new = not1(BUS_VRAM_An[11].qp_new());
-      /* p25.REHO*/ wire _REHOp_new = not1(BUS_VRAM_An[12].qp_new());
+      /* p25.MYFU*/ wire _MYFUp_new = not1(BUS_VRAM_An[ 0].qp_ext());
+      /* p25.MASA*/ wire _MASAp_new = not1(BUS_VRAM_An[ 1].qp_ext());
+      /* p25.MYRE*/ wire _MYREp_new = not1(BUS_VRAM_An[ 2].qp_ext());
+      /* p25.MAVU*/ wire _MAVUp_new = not1(BUS_VRAM_An[ 3].qp_ext());
+      /* p25.MEPA*/ wire _MEPAp_new = not1(BUS_VRAM_An[ 4].qp_ext());
+      /* p25.MYSA*/ wire _MYSAp_new = not1(BUS_VRAM_An[ 5].qp_ext());
+      /* p25.MEWY*/ wire _MEWYp_new = not1(BUS_VRAM_An[ 6].qp_ext());
+      /* p25.MUME*/ wire _MUMEp_new = not1(BUS_VRAM_An[ 7].qp_ext());
+      /* p25.VOVA*/ wire _VOVAp_new = not1(BUS_VRAM_An[ 8].qp_ext());
+      /* p25.VODE*/ wire _VODEp_new = not1(BUS_VRAM_An[ 9].qp_ext());
+      /* p25.RUKY*/ wire _RUKYp_new = not1(BUS_VRAM_An[10].qp_ext());
+      /* p25.RUMA*/ wire _RUMAp_new = not1(BUS_VRAM_An[11].qp_ext());
+      /* p25.REHO*/ wire _REHOp_new = not1(BUS_VRAM_An[12].qp_ext());
 
       /* p25.LEXE*/ wire _LEXEn_new = not1(_MYFUp_new);
       /* p25.LOZU*/ wire _LOZUn_new = not1(_MASAp_new);
@@ -2749,16 +2749,16 @@ void GateBoy::tock_slow() {
       /* p29.ENOB*/ wire _ENOB_STORE0_CLKp_new = not1(_DYHU_STORE0_CLKn_new);
       /* p29.FUXU*/ wire _FUXU_STORE0_CLKp_new = not1(_DYHU_STORE0_CLKn_new);
 
-      /* p30.YGUS*/ sprite_store.YGUS_STORE0_I0n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.YSOK*/ sprite_store.YSOK_STORE0_I1n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.YZEP*/ sprite_store.YZEP_STORE0_I2n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.WYTE*/ sprite_store.WYTE_STORE0_I3n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.ZONY*/ sprite_store.ZONY_STORE0_I4n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.YWAK*/ sprite_store.YWAK_STORE0_I5n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.GYHO*/ sprite_store.GYHO_STORE0_L0n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.CUFO*/ sprite_store.CUFO_STORE0_L1n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.BOZU*/ sprite_store.BOZU_STORE0_L2n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.FYHY*/ sprite_store.FYHY_STORE0_L3n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.YGUS*/ sprite_store.YGUS_STORE0_I0n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.YSOK*/ sprite_store.YSOK_STORE0_I1n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.YZEP*/ sprite_store.YZEP_STORE0_I2n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.WYTE*/ sprite_store.WYTE_STORE0_I3n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.ZONY*/ sprite_store.ZONY_STORE0_I4n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.YWAK*/ sprite_store.YWAK_STORE0_I5n.dff8n(_GENY_STORE0_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.GYHO*/ sprite_store.GYHO_STORE0_L0n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.CUFO*/ sprite_store.CUFO_STORE0_L1n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.BOZU*/ sprite_store.BOZU_STORE0_L2n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.FYHY*/ sprite_store.FYHY_STORE0_L3n.dff8n(_ENOB_STORE0_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _GUVA_SPRITE0_GETp_old);
       /* p29.DYWE*/ wire _DYWE_STORE0_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.EBOJ_STORE0_RSTp.qp_new());
@@ -2783,16 +2783,16 @@ void GateBoy::tock_slow() {
       /* p29.AHOF*/ wire _AHOF_STORE1_CLKp_new = not1(_BUCO_STORE1_CLKn_new);
       /* p29.ASYS*/ wire _ASYS_STORE1_CLKp_new = not1(_BUCO_STORE1_CLKn_new);
 
-      /* p30.CADU*/ sprite_store.CADU_STORE1_I0n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.CEBO*/ sprite_store.CEBO_STORE1_I1n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.CUFA*/ sprite_store.CUFA_STORE1_I2n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.COMA*/ sprite_store.COMA_STORE1_I3n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.CUZA*/ sprite_store.CUZA_STORE1_I4n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.CAJY*/ sprite_store.CAJY_STORE1_I5n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.AMES*/ sprite_store.AMES_STORE1_L0n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.AROF*/ sprite_store.AROF_STORE1_L1n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.ABOP*/ sprite_store.ABOP_STORE1_L2n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.ABUG*/ sprite_store.ABUG_STORE1_L3n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.CADU*/ sprite_store.CADU_STORE1_I0n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.CEBO*/ sprite_store.CEBO_STORE1_I1n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.CUFA*/ sprite_store.CUFA_STORE1_I2n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.COMA*/ sprite_store.COMA_STORE1_I3n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.CUZA*/ sprite_store.CUZA_STORE1_I4n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.CAJY*/ sprite_store.CAJY_STORE1_I5n.dff8n(_BYVY_STORE1_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.AMES*/ sprite_store.AMES_STORE1_L0n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.AROF*/ sprite_store.AROF_STORE1_L1n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.ABOP*/ sprite_store.ABOP_STORE1_L2n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.ABUG*/ sprite_store.ABUG_STORE1_L3n.dff8n(_AHOF_STORE1_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _ENUT_SPRITE1_GETp_old);
       /* p29.EFEV*/ wire _EFEV_STORE1_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.CEDY_STORE1_RSTp.qp_new());
@@ -2818,16 +2818,16 @@ void GateBoy::tock_slow() {
       /* p29.FUKE*/ wire _FUKE_STORE2_CLKp_new = not1(_GYFO_STORE2_CLKn_new);
       /* p29.CACU*/ wire _CACU_STORE2_CLKp_new = not1(_GYFO_STORE2_CLKn_new);
 
-      /* p30.BUHE*/ sprite_store.BUHE_STORE2_I0n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.BYHU*/ sprite_store.BYHU_STORE2_I1n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.BECA*/ sprite_store.BECA_STORE2_I2n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.BULU*/ sprite_store.BULU_STORE2_I3n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.BUNA*/ sprite_store.BUNA_STORE2_I4n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.BOXA*/ sprite_store.BOXA_STORE2_I5n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.YLOV*/ sprite_store.YLOV_STORE2_L0n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.XOSY*/ sprite_store.XOSY_STORE2_L1n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.XAZY*/ sprite_store.XAZY_STORE2_L2n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.YKUK*/ sprite_store.YKUK_STORE2_L3n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.BUHE*/ sprite_store.BUHE_STORE2_I0n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.BYHU*/ sprite_store.BYHU_STORE2_I1n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.BECA*/ sprite_store.BECA_STORE2_I2n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.BULU*/ sprite_store.BULU_STORE2_I3n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.BUNA*/ sprite_store.BUNA_STORE2_I4n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.BOXA*/ sprite_store.BOXA_STORE2_I5n.dff8n(_BUZY_STORE2_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.YLOV*/ sprite_store.YLOV_STORE2_L0n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.XOSY*/ sprite_store.XOSY_STORE2_L1n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.XAZY*/ sprite_store.XAZY_STORE2_L2n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.YKUK*/ sprite_store.YKUK_STORE2_L3n.dff8n(_FUKE_STORE2_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _EMOL_SPRITE2_GETp_old);
       /* p29.FOKO*/ wire _FOKO_STORE2_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.EGAV_STORE2_RSTp.qp_new());
@@ -2852,16 +2852,16 @@ void GateBoy::tock_slow() {
       /* p29.XYHA*/ wire _XYHA_STORE3_CLKp_new = not1(_GUSA_STORE3_CLKn_new);
       /* p29.YFAG*/ wire _YFAG_STORE3_CLKp_new = not1(_GUSA_STORE3_CLKn_new);
 
-      /* p30.DEVY*/ sprite_store.DEVY_STORE3_I0n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.DESE*/ sprite_store.DESE_STORE3_I1n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.DUNY*/ sprite_store.DUNY_STORE3_I2n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.DUHA*/ sprite_store.DUHA_STORE3_I3n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.DEBA*/ sprite_store.DEBA_STORE3_I4n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.DAFU*/ sprite_store.DAFU_STORE3_I5n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.ZURO*/ sprite_store.ZURO_STORE3_L0n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.ZYLU*/ sprite_store.ZYLU_STORE3_L1n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.ZENE*/ sprite_store.ZENE_STORE3_L2n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.ZURY*/ sprite_store.ZURY_STORE3_L3n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.DEVY*/ sprite_store.DEVY_STORE3_I0n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.DESE*/ sprite_store.DESE_STORE3_I1n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.DUNY*/ sprite_store.DUNY_STORE3_I2n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.DUHA*/ sprite_store.DUHA_STORE3_I3n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.DEBA*/ sprite_store.DEBA_STORE3_I4n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.DAFU*/ sprite_store.DAFU_STORE3_I5n.dff8n(_FEKA_STORE3_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.ZURO*/ sprite_store.ZURO_STORE3_L0n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.ZYLU*/ sprite_store.ZYLU_STORE3_L1n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.ZENE*/ sprite_store.ZENE_STORE3_L2n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.ZURY*/ sprite_store.ZURY_STORE3_L3n.dff8n(_XYHA_STORE3_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _GYFY_SPRITE3_GETp_old);
       /* p29.GAKE*/ wire _GAKE_STORE3_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.GOTA_STORE3_RSTp.qp_new());
@@ -2886,16 +2886,16 @@ void GateBoy::tock_slow() {
       /* p29.WYLU*/ wire _WYLU_STORE4_CLKp_new = not1(_DUKE_STORE4_CLKn_new);
       /* p29.EWOT*/ wire _EWOT_STORE4_CLKp_new = not1(_DUKE_STORE4_CLKn_new);
 
-      /* p30.XAVE*/ sprite_store.XAVE_STORE4_I0n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.XEFE*/ sprite_store.XEFE_STORE4_I1n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.WANU*/ sprite_store.WANU_STORE4_I2n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.XABO*/ sprite_store.XABO_STORE4_I3n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.XEGE*/ sprite_store.XEGE_STORE4_I4n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.XYNU*/ sprite_store.XYNU_STORE4_I5n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.CAPO*/ sprite_store.CAPO_STORE4_L0n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.CAJU*/ sprite_store.CAJU_STORE4_L1n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.CONO*/ sprite_store.CONO_STORE4_L2n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.CUMU*/ sprite_store.CUMU_STORE4_L3n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.XAVE*/ sprite_store.XAVE_STORE4_I0n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.XEFE*/ sprite_store.XEFE_STORE4_I1n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.WANU*/ sprite_store.WANU_STORE4_I2n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.XABO*/ sprite_store.XABO_STORE4_I3n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.XEGE*/ sprite_store.XEGE_STORE4_I4n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.XYNU*/ sprite_store.XYNU_STORE4_I5n.dff8n(_WYLU_STORE4_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.CAPO*/ sprite_store.CAPO_STORE4_L0n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.CAJU*/ sprite_store.CAJU_STORE4_L1n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.CONO*/ sprite_store.CONO_STORE4_L2n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.CUMU*/ sprite_store.CUMU_STORE4_L3n.dff8n(_EWOT_STORE4_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _GONO_SPRITE4_GETp_old);
       /* p29.WOHU*/ wire _WOHU_STORE4_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.XUDY_STORE4_RSTp.qp_new());
@@ -2920,16 +2920,16 @@ void GateBoy::tock_slow() {
       /* p29.DYMO*/ wire _DYMO_STORE5_CLKp_new = not1(_BEDE_STORE5_CLKn_new);
       /* p29.BUCY*/ wire _BUCY_STORE5_CLKp_new = not1(_BEDE_STORE5_CLKn_new);
 
-      /* p30.EKOP*/ sprite_store.EKOP_STORE5_I0n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.ETYM*/ sprite_store.ETYM_STORE5_I1n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.GORU*/ sprite_store.GORU_STORE5_I2n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.EBEX*/ sprite_store.EBEX_STORE5_I3n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.ETAV*/ sprite_store.ETAV_STORE5_I4n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.EKAP*/ sprite_store.EKAP_STORE5_I5n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.ACEP*/ sprite_store.ACEP_STORE5_L0n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.ABEG*/ sprite_store.ABEG_STORE5_L1n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.ABUX*/ sprite_store.ABUX_STORE5_L2n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.ANED*/ sprite_store.ANED_STORE5_L3n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.EKOP*/ sprite_store.EKOP_STORE5_I0n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.ETYM*/ sprite_store.ETYM_STORE5_I1n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.GORU*/ sprite_store.GORU_STORE5_I2n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.EBEX*/ sprite_store.EBEX_STORE5_I3n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.ETAV*/ sprite_store.ETAV_STORE5_I4n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.EKAP*/ sprite_store.EKAP_STORE5_I5n.dff8n(_DYMO_STORE5_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.ACEP*/ sprite_store.ACEP_STORE5_L0n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.ABEG*/ sprite_store.ABEG_STORE5_L1n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.ABUX*/ sprite_store.ABUX_STORE5_L2n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.ANED*/ sprite_store.ANED_STORE5_L3n.dff8n(_BUCY_STORE5_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _GEGA_SPRITE5_GETp_old);
       /* p29.FEVE*/ wire _FEVE_STORE5_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.WAFY_STORE5_RSTp.qp_new());
@@ -2954,16 +2954,16 @@ void GateBoy::tock_slow() {
       /* p29.WUSE*/ wire _WUSE_STORE6_CLKp_new = not1(_WEKA_STORE6_CLKn_new);
       /* p29.ZURU*/ wire _ZURU_STORE6_CLKp_new = not1(_WEKA_STORE6_CLKn_new);
 
-      /* p30.GABO*/ sprite_store.GABO_STORE6_I0n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.GACY*/ sprite_store.GACY_STORE6_I1n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.FOGO*/ sprite_store.FOGO_STORE6_I2n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.GOHU*/ sprite_store.GOHU_STORE6_I3n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.FOXY*/ sprite_store.FOXY_STORE6_I4n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.GECU*/ sprite_store.GECU_STORE6_I5n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.ZUMY*/ sprite_store.ZUMY_STORE6_L0n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.ZAFU*/ sprite_store.ZAFU_STORE6_L1n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.ZEXO*/ sprite_store.ZEXO_STORE6_L2n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.ZUBE*/ sprite_store.ZUBE_STORE6_L3n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.GABO*/ sprite_store.GABO_STORE6_I0n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.GACY*/ sprite_store.GACY_STORE6_I1n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.FOGO*/ sprite_store.FOGO_STORE6_I2n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.GOHU*/ sprite_store.GOHU_STORE6_I3n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.FOXY*/ sprite_store.FOXY_STORE6_I4n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.GECU*/ sprite_store.GECU_STORE6_I5n.dff8n(_WUSE_STORE6_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.ZUMY*/ sprite_store.ZUMY_STORE6_L0n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.ZAFU*/ sprite_store.ZAFU_STORE6_L1n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.ZEXO*/ sprite_store.ZEXO_STORE6_L2n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.ZUBE*/ sprite_store.ZUBE_STORE6_L3n.dff8n(_ZURU_STORE6_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _XOJA_SPRITE6_GETp_old);
       /* p29.WACY*/ wire _WACY_STORE6_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.WOMY_STORE6_RSTp.qp_new());
@@ -2988,16 +2988,16 @@ void GateBoy::tock_slow() {
       /* p29.FEFO*/ wire _FEFO_STORE7_CLKp_new = not1(_GYVO_STORE7_CLKn_new);
       /* p29.WABE*/ wire _WABE_STORE7_CLKp_new = not1(_GYVO_STORE7_CLKn_new);
 
-      /* p30.GULE*/ sprite_store.GULE_STORE7_I0n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.GYNO*/ sprite_store.GYNO_STORE7_I1n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.FEFA*/ sprite_store.FEFA_STORE7_I2n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.FYSU*/ sprite_store.FYSU_STORE7_I3n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.GESY*/ sprite_store.GESY_STORE7_I4n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.FUZO*/ sprite_store.FUZO_STORE7_I5n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.XYNA*/ sprite_store.XYNA_STORE7_L0n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.YGUM*/ sprite_store.YGUM_STORE7_L1n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.XAKU*/ sprite_store.XAKU_STORE7_L2n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.XYGO*/ sprite_store.XYGO_STORE7_L3n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.GULE*/ sprite_store.GULE_STORE7_I0n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.GYNO*/ sprite_store.GYNO_STORE7_I1n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.FEFA*/ sprite_store.FEFA_STORE7_I2n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.FYSU*/ sprite_store.FYSU_STORE7_I3n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.GESY*/ sprite_store.GESY_STORE7_I4n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.FUZO*/ sprite_store.FUZO_STORE7_I5n.dff8n(_FEFO_STORE7_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.XYNA*/ sprite_store.XYNA_STORE7_L0n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.YGUM*/ sprite_store.YGUM_STORE7_L1n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.XAKU*/ sprite_store.XAKU_STORE7_L2n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.XYGO*/ sprite_store.XYGO_STORE7_L3n.dff8n(_WABE_STORE7_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _GUTU_SPRITE7_GETp_old);
       /* p29.GUKY*/ wire _GUKY_STORE7_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.WAPO_STORE7_RSTp.qp_new());
@@ -3022,16 +3022,16 @@ void GateBoy::tock_slow() {
       /* p29.AKOL*/ wire _AKOL_STORE8_CLKp_new = not1(_BUKA_STORE8_CLKn_new);
       /* p29.BYMY*/ wire _BYMY_STORE8_CLKp_new = not1(_BUKA_STORE8_CLKn_new);
 
-      /* p30.AXUV*/ sprite_store.AXUV_STORE8_I0n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.BADA*/ sprite_store.BADA_STORE8_I1n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.APEV*/ sprite_store.APEV_STORE8_I2n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.BADO*/ sprite_store.BADO_STORE8_I3n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.BEXY*/ sprite_store.BEXY_STORE8_I4n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.BYHE*/ sprite_store.BYHE_STORE8_I5n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.AZAP*/ sprite_store.AZAP_STORE8_L0n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.AFYX*/ sprite_store.AFYX_STORE8_L1n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.AFUT*/ sprite_store.AFUT_STORE8_L2n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.AFYM*/ sprite_store.AFYM_STORE8_L3n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.AXUV*/ sprite_store.AXUV_STORE8_I0n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.BADA*/ sprite_store.BADA_STORE8_I1n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.APEV*/ sprite_store.APEV_STORE8_I2n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.BADO*/ sprite_store.BADO_STORE8_I3n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.BEXY*/ sprite_store.BEXY_STORE8_I4n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.BYHE*/ sprite_store.BYHE_STORE8_I5n.dff8n(_AKOL_STORE8_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.AZAP*/ sprite_store.AZAP_STORE8_L0n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.AFYX*/ sprite_store.AFYX_STORE8_L1n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.AFUT*/ sprite_store.AFUT_STORE8_L2n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.AFYM*/ sprite_store.AFYM_STORE8_L3n.dff8n(_BYMY_STORE8_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _FOXA_SPRITE8_GETp_old);
       /* p29.GORO*/ wire _GORO_STORE8_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.EXUQ_STORE8_RSTp.qp_new());
@@ -3055,16 +3055,16 @@ void GateBoy::tock_slow() {
       /* p29.WUFA*/ wire _WUFA_STORE9_CLKp_new = not1(_DECU_STORE9_CLKn_new);
       /* p29.FAKA*/ wire _FAKA_STORE9_CLKp_new = not1(_DECU_STORE9_CLKn_new);
 
-      /* p30.YBER*/ sprite_store.YBER_STORE9_I0n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[0].qp_new());
-      /* p30.YZOR*/ sprite_store.YZOR_STORE9_I1n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[1].qp_new());
-      /* p30.XYFE*/ sprite_store.XYFE_STORE9_I2n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[2].qp_new());
-      /* p30.XOTU*/ sprite_store.XOTU_STORE9_I3n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[3].qp_new());
-      /* p30.XUTE*/ sprite_store.XUTE_STORE9_I4n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[4].qp_new());
-      /* p30.XUFO*/ sprite_store.XUFO_STORE9_I5n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[5].qp_new());
-      /* p30.CANA*/ sprite_store.CANA_STORE9_L0n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[0].qp_new());
-      /* p30.FOFO*/ sprite_store.FOFO_STORE9_L1n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[1].qp_new());
-      /* p30.DYSY*/ sprite_store.DYSY_STORE9_L2n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[2].qp_new());
-      /* p30.DEWU*/ sprite_store.DEWU_STORE9_L3n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[3].qp_new());
+      /* p30.YBER*/ sprite_store.YBER_STORE9_I0n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[0].qp_ext());
+      /* p30.YZOR*/ sprite_store.YZOR_STORE9_I1n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[1].qp_ext());
+      /* p30.XYFE*/ sprite_store.XYFE_STORE9_I2n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[2].qp_ext());
+      /* p30.XOTU*/ sprite_store.XOTU_STORE9_I3n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[3].qp_ext());
+      /* p30.XUTE*/ sprite_store.XUTE_STORE9_I4n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[4].qp_ext());
+      /* p30.XUFO*/ sprite_store.XUFO_STORE9_I5n.dff8n(_WUFA_STORE9_CLKp_new, SPR_TRI_I_in_old[5].qp_ext());
+      /* p30.CANA*/ sprite_store.CANA_STORE9_L0n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[0].qp_ext());
+      /* p30.FOFO*/ sprite_store.FOFO_STORE9_L1n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[1].qp_ext());
+      /* p30.DYSY*/ sprite_store.DYSY_STORE9_L2n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[2].qp_ext());
+      /* p30.DEWU*/ sprite_store.DEWU_STORE9_L3n.dff8n(_FAKA_STORE9_CLKp_new, SPR_TRI_L_in_old[3].qp_ext());
 
       /* p29.FONO*/ sprite_store.FONO_STORE9_RSTp.dff17(_WUTY_SPRITE_DONEp_new, _BYVA_LINE_RSTn_new, _GUZE_SPRITE9_GETp_old);
       /* p29.DUBU*/ wire _DUBU_STORE9_RSTp_new = or2(_DYBA_LINE_RSTp_new, sprite_store.FONO_STORE9_RSTp.qp_new());
@@ -3245,23 +3245,23 @@ void GateBoy::tock_slow() {
     /* p08.RORU*/ wire _RORU_CBD_TO_EPDn_new = mux2p(_UNOR_MODE_DBG2p_ext, _REDU_CPU_RDn_ext, _MOTY_CPU_EXT_RD_ext);
     /* p08.LULA*/ wire _LULA_CBD_TO_EPDp_new = not1(_RORU_CBD_TO_EPDn_new);
 
-    /* p25.RUXA*/ wire _RUXA_new = nand2(BUS_CPU_Dp_ext[0].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RUJA*/ wire _RUJA_new = nand2(BUS_CPU_Dp_ext[1].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RABY*/ wire _RABY_new = nand2(BUS_CPU_Dp_ext[2].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RERA*/ wire _RERA_new = nand2(BUS_CPU_Dp_ext[3].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RORY*/ wire _RORY_new = nand2(BUS_CPU_Dp_ext[4].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RYVO*/ wire _RYVO_new = nand2(BUS_CPU_Dp_ext[5].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RAFY*/ wire _RAFY_new = nand2(BUS_CPU_Dp_ext[6].qp_new(), _LULA_CBD_TO_EPDp_new);
-    /* p25.RAVU*/ wire _RAVU_new = nand2(BUS_CPU_Dp_ext[7].qp_new(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RUXA*/ wire _RUXA_new = nand2(BUS_CPU_Dp_ext[0].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RUJA*/ wire _RUJA_new = nand2(BUS_CPU_Dp_ext[1].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RABY*/ wire _RABY_new = nand2(BUS_CPU_Dp_ext[2].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RERA*/ wire _RERA_new = nand2(BUS_CPU_Dp_ext[3].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RORY*/ wire _RORY_new = nand2(BUS_CPU_Dp_ext[4].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RYVO*/ wire _RYVO_new = nand2(BUS_CPU_Dp_ext[5].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RAFY*/ wire _RAFY_new = nand2(BUS_CPU_Dp_ext[6].qp_ext(), _LULA_CBD_TO_EPDp_new);
+    /* p25.RAVU*/ wire _RAVU_new = nand2(BUS_CPU_Dp_ext[7].qp_ext(), _LULA_CBD_TO_EPDp_new);
 
-    /* p08.RUNE*/ wire _RUNE_new = nor2 (BUS_CPU_Dp_ext[0].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.RYPU*/ wire _RYPU_new = nor2 (BUS_CPU_Dp_ext[1].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.SULY*/ wire _SULY_new = nor2 (BUS_CPU_Dp_ext[2].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.SEZE*/ wire _SEZE_new = nor2 (BUS_CPU_Dp_ext[3].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.RESY*/ wire _RESY_new = nor2 (BUS_CPU_Dp_ext[4].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.TAMU*/ wire _TAMU_new = nor2 (BUS_CPU_Dp_ext[5].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.ROGY*/ wire _ROGY_new = nor2 (BUS_CPU_Dp_ext[6].qp_new(), _RORU_CBD_TO_EPDn_new);
-    /* p08.RYDA*/ wire _RYDA_new = nor2 (BUS_CPU_Dp_ext[7].qp_new(), _RORU_CBD_TO_EPDn_new);
+    /* p08.RUNE*/ wire _RUNE_new = nor2 (BUS_CPU_Dp_ext[0].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.RYPU*/ wire _RYPU_new = nor2 (BUS_CPU_Dp_ext[1].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.SULY*/ wire _SULY_new = nor2 (BUS_CPU_Dp_ext[2].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.SEZE*/ wire _SEZE_new = nor2 (BUS_CPU_Dp_ext[3].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.RESY*/ wire _RESY_new = nor2 (BUS_CPU_Dp_ext[4].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.TAMU*/ wire _TAMU_new = nor2 (BUS_CPU_Dp_ext[5].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.ROGY*/ wire _ROGY_new = nor2 (BUS_CPU_Dp_ext[6].qp_ext(), _RORU_CBD_TO_EPDn_new);
+    /* p08.RYDA*/ wire _RYDA_new = nor2 (BUS_CPU_Dp_ext[7].qp_ext(), _RORU_CBD_TO_EPDn_new);
 
     PIN_EXT_D_out_new[0].pin_out(_LULA_CBD_TO_EPDp_new, _RUXA_new, _RUNE_new);
     PIN_EXT_D_out_new[1].pin_out(_LULA_CBD_TO_EPDp_new, _RUJA_new, _RYPU_new);
@@ -3337,14 +3337,14 @@ void GateBoy::tock_slow() {
 #pragma region SpriteData
   // VRAM tri -> sprite pix temp + x flip
   {
-    /* p33.PUTE*/ wire _PUTE_FLIP0p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[7].qp_new(), BUS_VRAM_Dp_in_old[0].qp_new());
-    /* p33.PELO*/ wire _PELO_FLIP1p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[6].qp_new(), BUS_VRAM_Dp_in_old[1].qp_new());
-    /* p33.PONO*/ wire _PONO_FLIP2p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[5].qp_new(), BUS_VRAM_Dp_in_old[2].qp_new());
-    /* p33.POBE*/ wire _POBE_FLIP3p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[4].qp_new(), BUS_VRAM_Dp_in_old[3].qp_new());
-    /* p33.PACY*/ wire _PACY_FLIP4p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[3].qp_new(), BUS_VRAM_Dp_in_old[4].qp_new());
-    /* p33.PUGU*/ wire _PUGU_FLIP5p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[2].qp_new(), BUS_VRAM_Dp_in_old[5].qp_new());
-    /* p33.PAWE*/ wire _PAWE_FLIP6p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[1].qp_new(), BUS_VRAM_Dp_in_old[6].qp_new());
-    /* p33.PULY*/ wire _PULY_FLIP7p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in_old[0].qp_new(), BUS_VRAM_Dp_in_old[7].qp_new());
+    /* p33.PUTE*/ wire _PUTE_FLIP0p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[7].qp_ext(), BUS_VRAM_Dp_in[0].qp_ext());
+    /* p33.PELO*/ wire _PELO_FLIP1p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[6].qp_ext(), BUS_VRAM_Dp_in[1].qp_ext());
+    /* p33.PONO*/ wire _PONO_FLIP2p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[5].qp_ext(), BUS_VRAM_Dp_in[2].qp_ext());
+    /* p33.POBE*/ wire _POBE_FLIP3p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[4].qp_ext(), BUS_VRAM_Dp_in[3].qp_ext());
+    /* p33.PACY*/ wire _PACY_FLIP4p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[3].qp_ext(), BUS_VRAM_Dp_in[4].qp_ext());
+    /* p33.PUGU*/ wire _PUGU_FLIP5p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[2].qp_ext(), BUS_VRAM_Dp_in[5].qp_ext());
+    /* p33.PAWE*/ wire _PAWE_FLIP6p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[1].qp_ext(), BUS_VRAM_Dp_in[6].qp_ext());
+    /* p33.PULY*/ wire _PULY_FLIP7p_old = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp_in[0].qp_ext(), BUS_VRAM_Dp_in[7].qp_ext());
 
     /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe_new = nor3(_TYTU_SFETCH_S0n_new, _LOBY_RENDERINGn_new, sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
 
@@ -3692,12 +3692,10 @@ void GateBoy::tock_slow() {
   }
 #pragma endregion
 
-  //+++++++++
-
 #pragma region Joypad
   {
-    wire BURO_FF60_0p = 0; // FIXME hacking out debug stuff
-    /* p05.KURA*/ wire _KURA_JOYP_DBGn = not1(BURO_FF60_0p);
+    wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
+    /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);
 
     /*
     // lcd ribbon voltages after bootrom
@@ -3709,11 +3707,11 @@ void GateBoy::tock_slow() {
     09 0 diodes 3 & 4
     */
 
-    /* p05.KARU*/ wire _KARU_OEp = or2(joypad.KELY_JOYP_UDLRp.qn_new(), _KURA_JOYP_DBGn);
-    /* p05.CELA*/ wire _CELA_OEp = or2(joypad.COFY_JOYP_ABCSp.qn_new(), _KURA_JOYP_DBGn);
+    /* p05.KARU*/ wire _KARU_OEp_new = or2(joypad.KELY_JOYP_UDLRp.qn_new(), _KURA_JOYP_DBGn_new);
+    /* p05.CELA*/ wire _CELA_OEp_new = or2(joypad.COFY_JOYP_ABCSp.qn_new(), _KURA_JOYP_DBGn_new);
 
-    PIN_JOY_P14.pin_out(_KARU_OEp, joypad.KELY_JOYP_UDLRp.qn_new(), joypad.KELY_JOYP_UDLRp.qn_new());
-    PIN_JOY_P15.pin_out(_CELA_OEp, joypad.COFY_JOYP_ABCSp.qn_new(), joypad.COFY_JOYP_ABCSp.qn_new());
+    PIN_JOY_P14.pin_out(_KARU_OEp_new, joypad.KELY_JOYP_UDLRp.qn_new(), joypad.KELY_JOYP_UDLRp.qn_new());
+    PIN_JOY_P15.pin_out(_CELA_OEp_new, joypad.COFY_JOYP_ABCSp.qn_new(), joypad.COFY_JOYP_ABCSp.qn_new());
 
 
   #if 0
@@ -3751,94 +3749,102 @@ void GateBoy::tock_slow() {
       PIN_JOY_P12.pin_in(1, 1);
       PIN_JOY_P13.pin_in(1, 1);
     }
-    /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN_JOY_P13.qn_new(), PIN_JOY_P12.qn_new(), PIN_JOY_P11.qn_new(), PIN_JOY_P10.qn_new());
+    /* p02.KERY*/ wire _KERY_ANY_BUTTONp_ext = or4(PIN_JOY_P13.qn_ext(), PIN_JOY_P12.qn_ext(), PIN_JOY_P11.qn_ext(), PIN_JOY_P10.qn_ext());
 
     {
-      /* p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latch(_BOGA_Axxxxxxx_clk, _KERY_ANY_BUTTONp);
-      wire _AWOB_WAKE_CPUp = joypad.AWOB_WAKE_CPU.qp_new();
+      /* p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latch(_BOGA_Axxxxxxx_clk, _KERY_ANY_BUTTONp_ext);
+      wire _AWOB_WAKE_CPUp_new = joypad.AWOB_WAKE_CPU.qp_new();
 
-      PIN_CPU_WAKE.pin_in(1, _AWOB_WAKE_CPUp);
+      PIN_CPU_WAKE.pin_in(1, _AWOB_WAKE_CPUp_new);
 
       /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17(_BOGA_Axxxxxxx_clk, _ALUR_SYS_RSTn_new, joypad.AGEM_JP_GLITCH2.qp_old());
       /* p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17(_BOGA_Axxxxxxx_clk, _ALUR_SYS_RSTn_new, joypad.ACEF_JP_GLITCH1.qp_old());
       /* p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17(_BOGA_Axxxxxxx_clk, _ALUR_SYS_RSTn_new, joypad.BATU_JP_GLITCH0.qp_old());
-      /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17(_BOGA_Axxxxxxx_clk, _ALUR_SYS_RSTn_new, _KERY_ANY_BUTTONp);
+      /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17(_BOGA_Axxxxxxx_clk, _ALUR_SYS_RSTn_new, _KERY_ANY_BUTTONp_ext);
 
-      /* p05.KEVU*/ joypad.KEVU_JOYP_L0n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P10.qn_new());
-      /* p05.KAPA*/ joypad.KAPA_JOYP_L1n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P11.qn_new());
-      /* p05.KEJA*/ joypad.KEJA_JOYP_L2n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P12.qn_new());
-      /* p05.KOLO*/ joypad.KOLO_JOYP_L3n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P13.qn_new());
+      /* p05.KEVU*/ joypad.KEVU_JOYP_L0n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P10.qn_ext());
+      /* p05.KAPA*/ joypad.KAPA_JOYP_L1n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P11.qn_ext());
+      /* p05.KEJA*/ joypad.KEJA_JOYP_L2n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P12.qn_ext());
+      /* p05.KOLO*/ joypad.KOLO_JOYP_L3n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P13.qn_ext());
     }
   }
 #pragma endregion
 
 #pragma region Serial
   {
+    /* p06.CAVE*/ wire _CAVE_SER_clkold = mux2n(ser_reg.CULY_XFER_DIR.qp_old(), ser_reg.COTY_SER_CLK.qp_old(), PIN_SCK.qn_old());
+    /* p06.DAWA*/ wire _DAWA_SER_clkold = or2(_CAVE_SER_clkold, ser_reg.ETAF_SER_RUNNING.qn_old()); // this must stop the clock or something when the transmit's done
+
     //----------
     // Serial pins
 
     /* hack */    PIN_SIN.pin_out(1, 1, 1);
 
-    /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17(_UWAM_FF02_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_new());
+    /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17(_UWAM_FF02_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
 
     /* p01.UVYN*/ wire _UVYN_DIV_05n_next = not1(tim_reg.TAMA_DIV05p.qp_new());
     /* p06.COTY*/ ser_reg.COTY_SER_CLK.dff17(_UVYN_DIV_05n_next, _UWAM_FF02_WRn_clk, ser_reg.COTY_SER_CLK.qn_old());
 
     {
-      /* p06.KEXU*/ wire _KEXU = nand2(ser_reg.COTY_SER_CLK.qp_new(), ser_reg.CULY_XFER_DIR.qp_new());
-      /* p06.JAGO*/ wire _JAGO = not1(ser_reg.CULY_XFER_DIR.qp_new());
-      /* p06.KUJO*/ wire _KUJO = nor2(ser_reg.COTY_SER_CLK.qp_new(), _JAGO);
+      /* p06.KEXU*/ wire _KEXU_new = nand2(ser_reg.COTY_SER_CLK.qp_new(), ser_reg.CULY_XFER_DIR.qp_new());
+      /* p06.JAGO*/ wire _JAGO_new = not1(ser_reg.CULY_XFER_DIR.qp_new());
+      /* p06.KUJO*/ wire _KUJO_new = nor2(ser_reg.COTY_SER_CLK.qp_new(), _JAGO_new);
 
       // FIXME this doesn't look quite right
-      /* p06.KEXU*/ PIN_SCK.pin_out(_KEXU, _KUJO, ser_reg.CULY_XFER_DIR.qp_new());
+      /* p06.KEXU*/ PIN_SCK.pin_out(_KEXU_new, _KUJO_new, ser_reg.CULY_XFER_DIR.qp_new());
     }
 
-    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(BUS_CPU_Dp_ext[0].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(BUS_CPU_Dp_ext[1].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(BUS_CPU_Dp_ext[2].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(BUS_CPU_Dp_ext[3].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(BUS_CPU_Dp_ext[4].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(BUS_CPU_Dp_ext[5].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(BUS_CPU_Dp_ext[6].qp_new(), _DAKU_FF01_WRp_clk);
-    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(BUS_CPU_Dp_ext[7].qp_new(), _DAKU_FF01_WRp_clk);
+    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn_new = nand2(BUS_CPU_Dp_ext[0].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn_new = nand2(BUS_CPU_Dp_ext[1].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn_new = nand2(BUS_CPU_Dp_ext[2].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn_new = nand2(BUS_CPU_Dp_ext[3].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn_new = nand2(BUS_CPU_Dp_ext[4].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn_new = nand2(BUS_CPU_Dp_ext[5].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn_new = nand2(BUS_CPU_Dp_ext[6].qp_ext(), _DAKU_FF01_WRp_clk);
+    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn_new = nand2(BUS_CPU_Dp_ext[7].qp_ext(), _DAKU_FF01_WRp_clk);
 
-    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[0].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[1].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[2].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[3].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[4].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[5].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[6].qp_new(), _ALUR_SYS_RSTn_new);
-    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[7].qp_new(), _ALUR_SYS_RSTn_new);
+    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[0].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[1].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[2].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[3].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[4].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[5].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[6].qp_ext(), _ALUR_SYS_RSTn_new);
+    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_Dp_ext[7].qp_ext(), _ALUR_SYS_RSTn_new);
 
-    /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(ser_reg.CULY_XFER_DIR.qp_new(), ser_reg.COTY_SER_CLK.qp_new(), PIN_SCK.qn_new());
-    /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ser_reg.ETAF_SER_RUNNING.qn_old()); // this must stop the clock or something when the transmit's done
+    /* p06.CARO*/ wire _CARO_SER_RST_new = and2(_UWAM_FF02_WRn_clk, _ALUR_SYS_RSTn_new);
+    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17(_DAWA_SER_clkold,               _CARO_SER_RST_new, ser_reg.CAFA_SER_CNT0.qn_old());
+    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17(ser_reg.CAFA_SER_CNT0.qn_new(), _CARO_SER_RST_new, ser_reg.CYLO_SER_CNT1.qn_old());
+    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17(ser_reg.CYLO_SER_CNT1.qn_new(), _CARO_SER_RST_new, ser_reg.CYDE_SER_CNT2.qn_old());
+    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17(ser_reg.CYDE_SER_CNT2.qn_new(), _CARO_SER_RST_new, ser_reg.CALY_SER_CNT3.qn_old());
 
-    /* p06.CARO*/ wire _CARO_SER_RST = and2(_UWAM_FF02_WRn_clk, _ALUR_SYS_RSTn_new);
-    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17(_DAWA_SER_CLK,              _CARO_SER_RST, ser_reg.CAFA_SER_CNT0.qn_old());
-    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17(ser_reg.CAFA_SER_CNT0.qn_new(), _CARO_SER_RST, ser_reg.CYLO_SER_CNT1.qn_old());
-    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17(ser_reg.CYLO_SER_CNT1.qn_new(), _CARO_SER_RST, ser_reg.CYDE_SER_CNT2.qn_old());
-    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17(ser_reg.CYDE_SER_CNT2.qn_new(), _CARO_SER_RST, ser_reg.CALY_SER_CNT3.qn_old());
+    /* p06.COBA*/ wire _COBA_SER_CNT3n_new  = not1(ser_reg.CALY_SER_CNT3.qp_new());
+    /* p06.CABY*/ wire _CABY_XFER_RESET_new = and2(_COBA_SER_CNT3n_new, _ALUR_SYS_RSTn_new);
+    /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17(_UWAM_FF02_WRn_clk, _CABY_XFER_RESET_new, BUS_CPU_Dp_ext[7].qp_ext());
 
-    /* p06.COBA*/ wire _COBA_SER_CNT3n  = not1(ser_reg.CALY_SER_CNT3.qp_new());
-    /* p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, _ALUR_SYS_RSTn_new);
-    /* p06.ETAF*/ ser_reg.ETAF_SER_RUNNING.dff17(_UWAM_FF02_WRn_clk, _CABY_XFER_RESET, BUS_CPU_Dp_ext[7].qp_new());
+    /* p06.CAVE*/ wire _CAVE_SER_clknew = mux2n(ser_reg.CULY_XFER_DIR.qp_new(), ser_reg.COTY_SER_CLK.qp_new(), PIN_SCK.qn_new());
+    /* p06.DAWA*/ wire _DAWA_SER_clknew = or2(_CAVE_SER_clknew, ser_reg.ETAF_SER_RUNNING.qn_new()); // this must stop the clock or something when the transmit's done
 
-    /* p06.CAGE*/ wire _CAGE_SER_IN  = not1(PIN_SIN.qn_new());
-    /* p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
-    /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
-    /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
-    /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
+    /* p06.CAFA*/ ser_reg.CAFA_SER_CNT0.dff17(_DAWA_SER_clknew,               _CARO_SER_RST_new, ser_reg.CAFA_SER_CNT0.qn_new());
+    /* p06.CYLO*/ ser_reg.CYLO_SER_CNT1.dff17(ser_reg.CAFA_SER_CNT0.qn_new(), _CARO_SER_RST_new, ser_reg.CYLO_SER_CNT1.qn_new());
+    /* p06.CYDE*/ ser_reg.CYDE_SER_CNT2.dff17(ser_reg.CYLO_SER_CNT1.qn_new(), _CARO_SER_RST_new, ser_reg.CYDE_SER_CNT2.qn_new());
+    /* p06.CALY*/ ser_reg.CALY_SER_CNT3.dff17(ser_reg.CYDE_SER_CNT2.qn_new(), _CARO_SER_RST_new, ser_reg.CALY_SER_CNT3.qn_new());
 
-    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, _ALUR_SYS_RSTn_new,                         ser_reg.EDER_SER_DATA7.qp_old());
-    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, ser_reg.EROD_SER_DATA6.qp_old());
-    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, ser_reg.EJAB_SER_DATA5.qp_old());
-    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, ser_reg.DOVU_SER_DATA4.qp_old());
-    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, ser_reg.DOJO_SER_DATA3.qp_old());
-    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22(_DAWE_SER_CLK, _DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn, ser_reg.DYRA_SER_DATA2.qp_old());
-    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, ser_reg.DEGU_SER_DATA1.qp_old());
-    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, ser_reg.CUBA_SER_DATA0.qp_old());
-    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SER_IN);
+    /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(PIN_SIN.qn_new());
+    /* p06.EDYL*/ wire _EDYL_SER_CLK_new = not1(_DAWA_SER_clkold);
+    /* p06.EPYT*/ wire _EPYT_SER_CLK_new = not1(_EDYL_SER_CLK_new);
+    /* p06.DEHO*/ wire _DEHO_SER_CLK_new = not1(_EPYT_SER_CLK_new);
+    /* p06.DAWE*/ wire _DAWE_SER_CLK_new = not1(_DEHO_SER_CLK_new);
+
+    /* p06.ELYS*/ ser_reg.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK_new, _ALUR_SYS_RSTn_new,                                 ser_reg.EDER_SER_DATA7.qp_old());
+    /* p06.EDER*/ ser_reg.EDER_SER_DATA7.dff22(_EPYT_SER_CLK_new, _EFEL_SER_DATA7_SETn_new, _EGUV_SER_DATA7_RSTn_new, ser_reg.EROD_SER_DATA6.qp_old());
+    /* p06.EROD*/ ser_reg.EROD_SER_DATA6.dff22(_EPYT_SER_CLK_new, _EDEL_SER_DATA6_SETn_new, _EFAK_SER_DATA6_RSTn_new, ser_reg.EJAB_SER_DATA5.qp_old());
+    /* p06.EJAB*/ ser_reg.EJAB_SER_DATA5.dff22(_EPYT_SER_CLK_new, _ELOK_SER_DATA5_SETn_new, _EHUJ_SER_DATA5_RSTn_new, ser_reg.DOVU_SER_DATA4.qp_old());
+    /* p06.DOVU*/ ser_reg.DOVU_SER_DATA4.dff22(_EPYT_SER_CLK_new, _DOLA_SER_DATA4_SETn_new, _DYLY_SER_DATA4_RSTn_new, ser_reg.DOJO_SER_DATA3.qp_old());
+    /* p06.DOJO*/ ser_reg.DOJO_SER_DATA3.dff22(_DAWE_SER_CLK_new, _DYGE_SER_DATA3_SETn_new, _DAJU_SER_DATA3_RSTn_new, ser_reg.DYRA_SER_DATA2.qp_old());
+    /* p06.DYRA*/ ser_reg.DYRA_SER_DATA2.dff22(_DAWE_SER_CLK_new, _DELA_SER_DATA2_SETn_new, _DYBO_SER_DATA2_RSTn_new, ser_reg.DEGU_SER_DATA1.qp_old());
+    /* p06.DEGU*/ ser_reg.DEGU_SER_DATA1.dff22(_DAWE_SER_CLK_new, _DOCU_SER_DATA1_SETn_new, _DUMO_SER_DATA1_RSTn_new, ser_reg.CUBA_SER_DATA0.qp_old());
+    /* p06.CUBA*/ ser_reg.CUBA_SER_DATA0.dff22(_DAWE_SER_CLK_new, _CUFU_SER_DATA0_SETn_new, _COHY_SER_DATA0_RSTn_new, _CAGE_SER_IN_new);
 
     // FIXME hacking out debug stuff
     ///* p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
@@ -3855,63 +3861,63 @@ void GateBoy::tock_slow() {
     // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
     // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
-    /* p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(PIN_CPU_ACK_VBLANK.qp_ext());
-    /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not1(PIN_CPU_ACK_STAT.qp_ext());
-    /* p02.LESA*/ wire _LESA_INT_TIM_ACKn  = not1(PIN_CPU_ACK_TIMER.qp_ext());
-    /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn  = not1(PIN_CPU_ACK_SERIAL.qp_ext());
-    /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(PIN_CPU_ACK_JOYPAD.qp_ext());
+    /* p02.LETY*/ wire _LETY_INT_VBL_ACKn_ext  = not1(PIN_CPU_ACK_VBLANK.qp_ext());
+    /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn_ext = not1(PIN_CPU_ACK_STAT.qp_ext());
+    /* p02.LESA*/ wire _LESA_INT_TIM_ACKn_ext  = not1(PIN_CPU_ACK_TIMER.qp_ext());
+    /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn_ext  = not1(PIN_CPU_ACK_SERIAL.qp_ext());
+    /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn_ext  = not1(PIN_CPU_ACK_JOYPAD.qp_ext());
 
-    /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp_clk, _LETY_INT_VBL_ACKn,  BUS_CPU_Dp_ext[0].qp_new());
-    /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3(_ROTU_FF0F_WRp_clk, _LEJA_INT_STAT_ACKn, BUS_CPU_Dp_ext[1].qp_new());
-    /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3(_ROTU_FF0F_WRp_clk, _LESA_INT_TIM_ACKn,  BUS_CPU_Dp_ext[2].qp_new());
-    /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3(_ROTU_FF0F_WRp_clk, _LUFE_INT_SER_ACKn,  BUS_CPU_Dp_ext[3].qp_new());
-    /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3(_ROTU_FF0F_WRp_clk, _LAMO_INT_JOY_ACKn,  BUS_CPU_Dp_ext[4].qp_new());
+    /* p02.MYZU*/ wire _MYZU_FF0F_SET0n_new = nand3(_ROTU_FF0F_WRp_clk, _LETY_INT_VBL_ACKn_ext,  BUS_CPU_Dp_ext[0].qp_ext());
+    /* p02.MODY*/ wire _MODY_FF0F_SET1n_new = nand3(_ROTU_FF0F_WRp_clk, _LEJA_INT_STAT_ACKn_ext, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p02.PYHU*/ wire _PYHU_FF0F_SET2n_new = nand3(_ROTU_FF0F_WRp_clk, _LESA_INT_TIM_ACKn_ext,  BUS_CPU_Dp_ext[2].qp_ext());
+    /* p02.TOME*/ wire _TOME_FF0F_SET3n_new = nand3(_ROTU_FF0F_WRp_clk, _LUFE_INT_SER_ACKn_ext,  BUS_CPU_Dp_ext[3].qp_ext());
+    /* p02.TOGA*/ wire _TOGA_FF0F_SET4n_new = nand3(_ROTU_FF0F_WRp_clk, _LAMO_INT_JOY_ACKn_ext,  BUS_CPU_Dp_ext[4].qp_ext());
 
-    /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(BUS_CPU_Dp_ext[0].qp_new(), _REFA_FF0F_WRn_clk);
-    /* p02.NABE*/ wire _NABE_INT1_WRn = or2(BUS_CPU_Dp_ext[1].qp_new(), _REFA_FF0F_WRn_clk);
-    /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(BUS_CPU_Dp_ext[2].qp_new(), _REFA_FF0F_WRn_clk);
-    /* p02.SULO*/ wire _SULO_INT3_WRn = or2(BUS_CPU_Dp_ext[3].qp_new(), _REFA_FF0F_WRn_clk);
-    /* p02.SEME*/ wire _SEME_INT4_WRn = or2(BUS_CPU_Dp_ext[4].qp_new(), _REFA_FF0F_WRn_clk);
+    /*#p02.MUXE*/ wire _MUXE_INT0_WRn_new = or2(BUS_CPU_Dp_ext[0].qp_ext(), _REFA_FF0F_WRn_clk);
+    /* p02.NABE*/ wire _NABE_INT1_WRn_new = or2(BUS_CPU_Dp_ext[1].qp_ext(), _REFA_FF0F_WRn_clk);
+    /* p02.RAKE*/ wire _RAKE_INT2_WRn_new = or2(BUS_CPU_Dp_ext[2].qp_ext(), _REFA_FF0F_WRn_clk);
+    /* p02.SULO*/ wire _SULO_INT3_WRn_new = or2(BUS_CPU_Dp_ext[3].qp_ext(), _REFA_FF0F_WRn_clk);
+    /* p02.SEME*/ wire _SEME_INT4_WRn_new = or2(BUS_CPU_Dp_ext[4].qp_ext(), _REFA_FF0F_WRn_clk);
 
-    /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n = and3(_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  _ALUR_SYS_RSTn_new);
-    /* p02.MOVU*/ wire _MOVU_FF0F_RST1n = and3(_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, _ALUR_SYS_RSTn_new);
-    /* p02.PYGA*/ wire _PYGA_FF0F_RST2n = and3(_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  _ALUR_SYS_RSTn_new);
-    /* p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  _ALUR_SYS_RSTn_new);
-    /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  _ALUR_SYS_RSTn_new);
+    /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n_new = and3(_MUXE_INT0_WRn_new, _LETY_INT_VBL_ACKn_ext,  _ALUR_SYS_RSTn_new);
+    /* p02.MOVU*/ wire _MOVU_FF0F_RST1n_new = and3(_NABE_INT1_WRn_new, _LEJA_INT_STAT_ACKn_ext, _ALUR_SYS_RSTn_new);
+    /* p02.PYGA*/ wire _PYGA_FF0F_RST2n_new = and3(_RAKE_INT2_WRn_new, _LESA_INT_TIM_ACKn_ext,  _ALUR_SYS_RSTn_new);
+    /* p02.TUNY*/ wire _TUNY_FF0F_RST3n_new = and3(_SULO_INT3_WRn_new, _LUFE_INT_SER_ACKn_ext,  _ALUR_SYS_RSTn_new);
+    /* p02.TYME*/ wire _TYME_FF0F_RST4n_new = and3(_SEME_INT4_WRn_new, _LAMO_INT_JOY_ACKn_ext,  _ALUR_SYS_RSTn_new);
 
-    /*#p21.PARU*/ wire _PARU_VBLANKp = not1(lcd_reg.POPU_VBLANK_CLKp.qn_new());
-    /*#p21.TOLU*/ wire _TOLU_VBLANKn    = not1(_PARU_VBLANKp);
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd_reg.RUTU_x113p.qp_new());
-    /*#p21.SELA*/ wire _SELA_LINE_ENDp  = not1(_PURE_LINE_ENDn);
-    /*#p21.TAPA*/ wire _TAPA_INT_OAM_t3   = and2(_TOLU_VBLANKn, _SELA_LINE_ENDp);
-    /*#p21.TARU*/ wire _TARU_INT_HBL_t3   = and2(_WODU_HBLANKp_new, _TOLU_VBLANKn);
-    /*#p21.SUKO*/ wire _SUKO_INT_STATp_t3 = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn_new(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp_new(),
-                                                  pix_pipe.REFE_STAT_OAI_ENn.qn_new(), _TAPA_INT_OAM_t3,
-                                                  pix_pipe.RUFO_STAT_VBI_ENn.qn_new(), _PARU_VBLANKp, // polarity?
-                                                  pix_pipe.ROXE_STAT_HBI_ENn.qn_new(), _TARU_INT_HBL_t3);
+    /*#p21.PARU*/ wire _PARU_VBLANKp_new = not1(lcd_reg.POPU_VBLANK_CLKp.qn_new());
+    /*#p21.TOLU*/ wire _TOLU_VBLANKn_new    = not1(_PARU_VBLANKp_new);
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new = not1(lcd_reg.RUTU_x113p.qp_new());
+    /*#p21.SELA*/ wire _SELA_LINE_ENDp_new  = not1(_PURE_LINE_ENDn_new);
+    /*#p21.TAPA*/ wire _TAPA_INT_OAM_t3_new   = and2(_TOLU_VBLANKn_new, _SELA_LINE_ENDp_new);
+    /*#p21.TARU*/ wire _TARU_INT_HBL_t3_new   = and2(_WODU_HBLANKp_new, _TOLU_VBLANKn_new);
+    /*#p21.SUKO*/ wire _SUKO_INT_STATp_t3_new = amux4(pix_pipe.RUGU_STAT_LYI_ENn.qn_new(), lcd_reg.ROPO_LY_MATCH_SYNCp.qp_new(),
+                                                      pix_pipe.REFE_STAT_OAI_ENn.qn_new(), _TAPA_INT_OAM_t3_new,
+                                                      pix_pipe.RUFO_STAT_VBI_ENn.qn_new(), _PARU_VBLANKp_new, // polarity?
+                                                      pix_pipe.ROXE_STAT_HBI_ENn.qn_new(), _TARU_INT_HBL_t3_new);
 
-    /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp_t3 = not1(_TOLU_VBLANKn);
-    /* p02.ASOK*/ wire _ASOK_INT_JOYp       = and2(joypad.APUG_JP_GLITCH3.qp_new(), joypad.BATU_JP_GLITCH0.qp_new());
-    /*#p21.TUVA*/ wire _TUVA_INT_STATn_t3   = not1(_SUKO_INT_STATp_t3);
-    /*#p21.VOTY*/ wire _VOTY_INT_STATp_t3   = not1(_TUVA_INT_STATn_t3);
+    /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp_t3_new = not1(_TOLU_VBLANKn_new);
+    /* p02.ASOK*/ wire _ASOK_INT_JOYp_new       = and2(joypad.APUG_JP_GLITCH3.qp_new(), joypad.BATU_JP_GLITCH0.qp_new());
+    /*#p21.TUVA*/ wire _TUVA_INT_STATn_t3_new   = not1(_SUKO_INT_STATp_t3_new);
+    /*#p21.VOTY*/ wire _VOTY_INT_STATp_t3_new   = not1(_TUVA_INT_STATn_t3_new);
 
-    /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp_t3,                  _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, _PESU_VCC);
-    /* p02.LALU*/ int_reg.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp_t3,                    _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, _PESU_VCC);
-    /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22(tim_reg.MOBA_TIMER_OVERFLOWp.qp_new(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, _PESU_VCC);
-    /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22(ser_reg.CALY_SER_CNT3.qp_new(),        _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, _PESU_VCC); // FIXME should use new
-    /* p02.ULAK*/ int_reg.ULAK_FF0F_D4p.dff22(_ASOK_INT_JOYp,                        _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, _PESU_VCC);
+    /* p02.LOPE*/ int_reg.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp_t3_new,              _MYZU_FF0F_SET0n_new, _LYTA_FF0F_RST0n_new, _PESU_VCC);
+    /* p02.LALU*/ int_reg.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp_t3_new,                _MODY_FF0F_SET1n_new, _MOVU_FF0F_RST1n_new, _PESU_VCC);
+    /* p02.NYBO*/ int_reg.NYBO_FF0F_D2p.dff22(tim_reg.MOBA_TIMER_OVERFLOWp.qp_new(), _PYHU_FF0F_SET2n_new, _PYGA_FF0F_RST2n_new, _PESU_VCC);
+    /* p02.UBUL*/ int_reg.UBUL_FF0F_D3p.dff22(ser_reg.CALY_SER_CNT3.qp_new(),        _TOME_FF0F_SET3n_new, _TUNY_FF0F_RST3n_new, _PESU_VCC);
+    /* p02.ULAK*/ int_reg.ULAK_FF0F_D4p.dff22(_ASOK_INT_JOYp_new,                    _TOGA_FF0F_SET4n_new, _TYME_FF0F_RST4n_new, _PESU_VCC);
 
-    /* p02.LOPE*/ wire _LOPE_FF0F_D0p_t4 = int_reg.LOPE_FF0F_D0p.qp_new();
-    /* p02.LALU*/ wire _LALU_FF0F_D1p_t4 = int_reg.LALU_FF0F_D1p.qp_new();
-    /* p02.NYBO*/ wire _NYBO_FF0F_D2p_t4 = int_reg.NYBO_FF0F_D2p.qp_new();
-    /* p02.UBUL*/ wire _UBUL_FF0F_D3p_t4 = int_reg.UBUL_FF0F_D3p.qp_new();
-    /* p02.ULAK*/ wire _ULAK_FF0F_D4p_t4 = int_reg.ULAK_FF0F_D4p.qp_new();
+    /* p02.LOPE*/ wire _LOPE_FF0F_D0p_t4_new = int_reg.LOPE_FF0F_D0p.qp_new();
+    /* p02.LALU*/ wire _LALU_FF0F_D1p_t4_new = int_reg.LALU_FF0F_D1p.qp_new();
+    /* p02.NYBO*/ wire _NYBO_FF0F_D2p_t4_new = int_reg.NYBO_FF0F_D2p.qp_new();
+    /* p02.UBUL*/ wire _UBUL_FF0F_D3p_t4_new = int_reg.UBUL_FF0F_D3p.qp_new();
+    /* p02.ULAK*/ wire _ULAK_FF0F_D4p_t4_new = int_reg.ULAK_FF0F_D4p.qp_new();
 
-    PIN_CPU_INT_VBLANK.pin_in(1, _LOPE_FF0F_D0p_t4);
-    PIN_CPU_INT_STAT  .pin_in(1, _LALU_FF0F_D1p_t4);
-    PIN_CPU_INT_TIMER .pin_in(1, _NYBO_FF0F_D2p_t4);
-    PIN_CPU_INT_SERIAL.pin_in(1, _UBUL_FF0F_D3p_t4);
-    PIN_CPU_INT_JOYPAD.pin_in(1, _ULAK_FF0F_D4p_t4);
+    PIN_CPU_INT_VBLANK.pin_in(1, _LOPE_FF0F_D0p_t4_new);
+    PIN_CPU_INT_STAT  .pin_in(1, _LALU_FF0F_D1p_t4_new);
+    PIN_CPU_INT_TIMER .pin_in(1, _NYBO_FF0F_D2p_t4_new);
+    PIN_CPU_INT_SERIAL.pin_in(1, _UBUL_FF0F_D3p_t4_new);
+    PIN_CPU_INT_JOYPAD.pin_in(1, _ULAK_FF0F_D4p_t4_new);
 
     if (DELTA_DE) {
       int_vblank_halt = PIN_CPU_INT_VBLANK.qp_ext();
@@ -3934,13 +3940,13 @@ void GateBoy::tock_slow() {
     {
       // FFFF - IE
       // This is technically in the CPU, but we're going to implement it here for now.
-      wire FFFF_WRn = nand2(_TAPU_CPU_WRp_xxxxEFGx_clk, FFFF_HIT_ext);
+      wire FFFF_WRn_ext = nand2(_TAPU_CPU_WRp_xxxxEFGx_clk, FFFF_HIT_ext);
 
-      IE_D0.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_ext[0].qp_new());
-      IE_D1.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_ext[1].qp_new());
-      IE_D2.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_ext[2].qp_new());
-      IE_D3.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_ext[3].qp_new());
-      IE_D4.dff(FFFF_WRn, 1, !sys_rst, BUS_CPU_Dp_ext[4].qp_new());
+      IE_D0.dff(FFFF_WRn_ext, 1, !sys_rst, BUS_CPU_Dp_ext[0].qp_ext());
+      IE_D1.dff(FFFF_WRn_ext, 1, !sys_rst, BUS_CPU_Dp_ext[1].qp_ext());
+      IE_D2.dff(FFFF_WRn_ext, 1, !sys_rst, BUS_CPU_Dp_ext[2].qp_ext());
+      IE_D3.dff(FFFF_WRn_ext, 1, !sys_rst, BUS_CPU_Dp_ext[3].qp_ext());
+      IE_D4.dff(FFFF_WRn_ext, 1, !sys_rst, BUS_CPU_Dp_ext[4].qp_ext());
 
       if (DELTA_HA) {
         imask_latch = pack_u8p_new(5, &IE_D0);
@@ -3951,11 +3957,13 @@ void GateBoy::tock_slow() {
 
 
 
-  /*#p28.GEKA*/ wire _GEKA_OAM_A0p = not1(BUS_OAM_An_old[0].qp_new());
-  /* p28.WAFO*/ wire _WAFO_OAM_A0n = not1(_GEKA_OAM_A0p);
-  /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn      = nor3(dma_reg.MATU_DMA_RUNNINGp.qp_new(), _ACYL_SCANNINGp_new, _AJON_PPU_OAM_ENp_new); // def nor
-  /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(_SARO_FE00_FEFFp_ext, _AJUJ_OAM_BUSYn); // def and
+  /*#p28.GEKA*/ wire _GEKA_OAM_A0p_new     = not1(BUS_OAM_An_old[0].qp_ext());
+  /* p28.WAFO*/ wire _WAFO_OAM_A0n_new     = not1(_GEKA_OAM_A0p_new);
+  /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn_new   = nor3(dma_reg.MATU_DMA_RUNNINGp.qp_new(), _ACYL_SCANNINGp_new, _AJON_PPU_OAM_ENp_new); // def nor
+  /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new = and2(_SARO_FE00_FEFFp_ext, _AJUJ_OAM_BUSYn_new); // def and
 
+
+  //+++++++++
 
 
 
@@ -3965,96 +3973,96 @@ void GateBoy::tock_slow() {
 
   /* DMA EBD -> OBD */
   {
-    /* p25.RALO*/ wire _RALO_EXT_D0p = not1(PIN_EXT_D_in_new[0].qn_new());
-    /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(PIN_EXT_D_in_new[1].qn_new());
-    /* p25.SERA*/ wire _SERA_EXT_D2p = not1(PIN_EXT_D_in_new[2].qn_new());
-    /* p25.TENU*/ wire _TENU_EXT_D3p = not1(PIN_EXT_D_in_new[3].qn_new());
-    /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(PIN_EXT_D_in_new[4].qn_new());
-    /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(PIN_EXT_D_in_new[5].qn_new());
-    /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(PIN_EXT_D_in_new[6].qn_new());
-    /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(PIN_EXT_D_in_new[7].qn_new());
+    /* p25.RALO*/ wire _RALO_EXT_D0p_new = not1(PIN_EXT_D_in_new[0].qn_new());
+    /* p25.TUNE*/ wire _TUNE_EXT_D1p_new = not1(PIN_EXT_D_in_new[1].qn_new());
+    /* p25.SERA*/ wire _SERA_EXT_D2p_new = not1(PIN_EXT_D_in_new[2].qn_new());
+    /* p25.TENU*/ wire _TENU_EXT_D3p_new = not1(PIN_EXT_D_in_new[3].qn_new());
+    /* p25.SYSA*/ wire _SYSA_EXT_D4p_new = not1(PIN_EXT_D_in_new[4].qn_new());
+    /* p25.SUGY*/ wire _SUGY_EXT_D5p_new = not1(PIN_EXT_D_in_new[5].qn_new());
+    /* p25.TUBE*/ wire _TUBE_EXT_D6p_new = not1(PIN_EXT_D_in_new[6].qn_new());
+    /* p25.SYZO*/ wire _SYZO_EXT_D7p_new = not1(PIN_EXT_D_in_new[7].qn_new());
 
-    /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(_LUMA_DMA_CARTp_new);
-    /* p25.WASA*/ BUS_OAM_DAn_out[0].tri6_nn(_CEDE_EBD_TO_OBDn, _RALO_EXT_D0p);
-    /* p25.BOMO*/ BUS_OAM_DAn_out[1].tri6_nn(_CEDE_EBD_TO_OBDn, _TUNE_EXT_D1p);
-    /* p25.BASA*/ BUS_OAM_DAn_out[2].tri6_nn(_CEDE_EBD_TO_OBDn, _SERA_EXT_D2p);
-    /* p25.CAKO*/ BUS_OAM_DAn_out[3].tri6_nn(_CEDE_EBD_TO_OBDn, _TENU_EXT_D3p);
-    /* p25.BUMA*/ BUS_OAM_DAn_out[4].tri6_nn(_CEDE_EBD_TO_OBDn, _SYSA_EXT_D4p);
-    /* p25.BUPY*/ BUS_OAM_DAn_out[5].tri6_nn(_CEDE_EBD_TO_OBDn, _SUGY_EXT_D5p);
-    /* p25.BASY*/ BUS_OAM_DAn_out[6].tri6_nn(_CEDE_EBD_TO_OBDn, _TUBE_EXT_D6p);
-    /* p25.BAPE*/ BUS_OAM_DAn_out[7].tri6_nn(_CEDE_EBD_TO_OBDn, _SYZO_EXT_D7p);
+    /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn_new = not1(_LUMA_DMA_CARTp_new);
+    /* p25.WASA*/ BUS_OAM_DAn_out[0].tri6_nn(_CEDE_EBD_TO_OBDn_new, _RALO_EXT_D0p_new);
+    /* p25.BOMO*/ BUS_OAM_DAn_out[1].tri6_nn(_CEDE_EBD_TO_OBDn_new, _TUNE_EXT_D1p_new);
+    /* p25.BASA*/ BUS_OAM_DAn_out[2].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SERA_EXT_D2p_new);
+    /* p25.CAKO*/ BUS_OAM_DAn_out[3].tri6_nn(_CEDE_EBD_TO_OBDn_new, _TENU_EXT_D3p_new);
+    /* p25.BUMA*/ BUS_OAM_DAn_out[4].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SYSA_EXT_D4p_new);
+    /* p25.BUPY*/ BUS_OAM_DAn_out[5].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SUGY_EXT_D5p_new);
+    /* p25.BASY*/ BUS_OAM_DAn_out[6].tri6_nn(_CEDE_EBD_TO_OBDn_new, _TUBE_EXT_D6p_new);
+    /* p25.BAPE*/ BUS_OAM_DAn_out[7].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SYZO_EXT_D7p_new);
 
-    /* p25.WEJO*/ BUS_OAM_DBn_out[0].tri6_nn(_CEDE_EBD_TO_OBDn, _RALO_EXT_D0p);
-    /* p25.BUBO*/ BUS_OAM_DBn_out[1].tri6_nn(_CEDE_EBD_TO_OBDn, _TUNE_EXT_D1p);
-    /* p25.BETU*/ BUS_OAM_DBn_out[2].tri6_nn(_CEDE_EBD_TO_OBDn, _SERA_EXT_D2p);
-    /* p25.CYME*/ BUS_OAM_DBn_out[3].tri6_nn(_CEDE_EBD_TO_OBDn, _TENU_EXT_D3p);
-    /* p25.BAXU*/ BUS_OAM_DBn_out[4].tri6_nn(_CEDE_EBD_TO_OBDn, _SYSA_EXT_D4p);
-    /* p25.BUHU*/ BUS_OAM_DBn_out[5].tri6_nn(_CEDE_EBD_TO_OBDn, _SUGY_EXT_D5p);
-    /* p25.BYNY*/ BUS_OAM_DBn_out[6].tri6_nn(_CEDE_EBD_TO_OBDn, _TUBE_EXT_D6p);
-    /* p25.BYPY*/ BUS_OAM_DBn_out[7].tri6_nn(_CEDE_EBD_TO_OBDn, _SYZO_EXT_D7p);
+    /* p25.WEJO*/ BUS_OAM_DBn_out[0].tri6_nn(_CEDE_EBD_TO_OBDn_new, _RALO_EXT_D0p_new);
+    /* p25.BUBO*/ BUS_OAM_DBn_out[1].tri6_nn(_CEDE_EBD_TO_OBDn_new, _TUNE_EXT_D1p_new);
+    /* p25.BETU*/ BUS_OAM_DBn_out[2].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SERA_EXT_D2p_new);
+    /* p25.CYME*/ BUS_OAM_DBn_out[3].tri6_nn(_CEDE_EBD_TO_OBDn_new, _TENU_EXT_D3p_new);
+    /* p25.BAXU*/ BUS_OAM_DBn_out[4].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SYSA_EXT_D4p_new);
+    /* p25.BUHU*/ BUS_OAM_DBn_out[5].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SUGY_EXT_D5p_new);
+    /* p25.BYNY*/ BUS_OAM_DBn_out[6].tri6_nn(_CEDE_EBD_TO_OBDn_new, _TUBE_EXT_D6p_new);
+    /* p25.BYPY*/ BUS_OAM_DBn_out[7].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SYZO_EXT_D7p_new);
   }
 
   /* DMA VBD -> OBD */
   {
-    /* p28.AZAR*/ wire _AZAR_VBD_TO_OBDn = not1(_LUFA_DMA_VRAMp_new);
-    /* p28.WUZU*/ BUS_OAM_DAn_out[0].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[0].qp_new());
-    /* p28.AXER*/ BUS_OAM_DAn_out[1].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[1].qp_new());
-    /* p28.ASOX*/ BUS_OAM_DAn_out[2].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[2].qp_new());
-    /* p28.CETU*/ BUS_OAM_DAn_out[3].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[3].qp_new());
-    /* p28.ARYN*/ BUS_OAM_DAn_out[4].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[4].qp_new());
-    /* p28.ACOT*/ BUS_OAM_DAn_out[5].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[5].qp_new());
-    /* p28.CUJE*/ BUS_OAM_DAn_out[6].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[6].qp_new());
-    /* p28.ATER*/ BUS_OAM_DAn_out[7].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[7].qp_new());
+    /* p28.AZAR*/ wire _AZAR_VBD_TO_OBDn_new = not1(_LUFA_DMA_VRAMp_new);
+    /* p28.WUZU*/ BUS_OAM_DAn_out[0].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[0].qp_ext());
+    /* p28.AXER*/ BUS_OAM_DAn_out[1].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[1].qp_ext());
+    /* p28.ASOX*/ BUS_OAM_DAn_out[2].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[2].qp_ext());
+    /* p28.CETU*/ BUS_OAM_DAn_out[3].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[3].qp_ext());
+    /* p28.ARYN*/ BUS_OAM_DAn_out[4].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[4].qp_ext());
+    /* p28.ACOT*/ BUS_OAM_DAn_out[5].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[5].qp_ext());
+    /* p28.CUJE*/ BUS_OAM_DAn_out[6].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[6].qp_ext());
+    /* p28.ATER*/ BUS_OAM_DAn_out[7].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[7].qp_ext());
 
-    /* p28.WOWA*/ BUS_OAM_DBn_out[0].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[0].qp_new());
-    /* p28.AVEB*/ BUS_OAM_DBn_out[1].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[1].qp_new());
-    /* p28.AMUH*/ BUS_OAM_DBn_out[2].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[2].qp_new());
-    /* p28.COFO*/ BUS_OAM_DBn_out[3].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[3].qp_new());
-    /* p28.AZOZ*/ BUS_OAM_DBn_out[4].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[4].qp_new());
-    /* p28.AGYK*/ BUS_OAM_DBn_out[5].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[5].qp_new());
-    /* p28.BUSE*/ BUS_OAM_DBn_out[6].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[6].qp_new());
-    /* p28.ANUM*/ BUS_OAM_DBn_out[7].tri6_nn(_AZAR_VBD_TO_OBDn, BUS_VRAM_Dp_in_old[7].qp_new());
+    /* p28.WOWA*/ BUS_OAM_DBn_out[0].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[0].qp_ext());
+    /* p28.AVEB*/ BUS_OAM_DBn_out[1].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[1].qp_ext());
+    /* p28.AMUH*/ BUS_OAM_DBn_out[2].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[2].qp_ext());
+    /* p28.COFO*/ BUS_OAM_DBn_out[3].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[3].qp_ext());
+    /* p28.AZOZ*/ BUS_OAM_DBn_out[4].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[4].qp_ext());
+    /* p28.AGYK*/ BUS_OAM_DBn_out[5].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[5].qp_ext());
+    /* p28.BUSE*/ BUS_OAM_DBn_out[6].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[6].qp_ext());
+    /* p28.ANUM*/ BUS_OAM_DBn_out[7].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp_in[7].qp_ext());
   }
 
   {
-    /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp = and2(_SARO_FE00_FEFFp_ext, _CUPA_CPU_WRp_xxxxEFGx_clk);
-    /* p28.XYNY*/ wire _XYNY_ABCDxxxx = not1(_MOPA_xxxxEFGH_clk);
-    /* p28.WUJE*/ oam_bus.WUJE_CPU_OAM_WRn.nor_latch(_XYNY_ABCDxxxx, _XUTO_CPU_OAM_WRp);
-    /* p28.XUPA*/ wire _XUPA_CPU_OAM_WRp = not1(oam_bus.WUJE_CPU_OAM_WRn.qp_new());
-    /* p28.APAG*/ wire _APAG_CBD_TO_OBDp = amux2(_XUPA_CPU_OAM_WRp, _AMAB_CPU_OAM_ENp, _AJUJ_OAM_BUSYn, _ADAH_FE00_FEFFn_ext);
-    /* p28.AZUL*/ wire _AZUL_CBD_TO_OBDn = not1(_APAG_CBD_TO_OBDp);
-    /* p28.ZAXA*/ BUS_OAM_DAn_out[0].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[0].qp_new());
-    /* p28.ZAKY*/ BUS_OAM_DAn_out[1].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[1].qp_new());
-    /* p28.WULE*/ BUS_OAM_DAn_out[2].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[2].qp_new());
-    /* p28.ZOZO*/ BUS_OAM_DAn_out[3].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[3].qp_new());
-    /* p28.ZUFO*/ BUS_OAM_DAn_out[4].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[4].qp_new());
-    /* p28.ZATO*/ BUS_OAM_DAn_out[5].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[5].qp_new());
-    /* p28.YVUC*/ BUS_OAM_DAn_out[6].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[6].qp_new());
-    /* p28.ZUFE*/ BUS_OAM_DAn_out[7].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[7].qp_new());
+    /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp_ext = and2(_SARO_FE00_FEFFp_ext, _CUPA_CPU_WRp_xxxxEFGx_clk);
+    /* p28.XYNY*/ wire _XYNY_ABCDxxxx_clk = not1(_MOPA_xxxxEFGH_clk);
+    /* p28.WUJE*/ oam_bus.WUJE_CPU_OAM_WRn.nor_latch(_XYNY_ABCDxxxx_clk, _XUTO_CPU_OAM_WRp_ext);
+    /* p28.XUPA*/ wire _XUPA_CPU_OAM_WRp_new = not1(oam_bus.WUJE_CPU_OAM_WRn.qp_new());
+    /* p28.APAG*/ wire _APAG_CBD_TO_OBDp_new = amux2(_XUPA_CPU_OAM_WRp_new, _AMAB_CPU_OAM_ENp_new, _AJUJ_OAM_BUSYn_new, _ADAH_FE00_FEFFn_ext);
+    /* p28.AZUL*/ wire _AZUL_CBD_TO_OBDn_new = not1(_APAG_CBD_TO_OBDp_new);
+    /* p28.ZAXA*/ BUS_OAM_DAn_out[0].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p28.ZAKY*/ BUS_OAM_DAn_out[1].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p28.WULE*/ BUS_OAM_DAn_out[2].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p28.ZOZO*/ BUS_OAM_DAn_out[3].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p28.ZUFO*/ BUS_OAM_DAn_out[4].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p28.ZATO*/ BUS_OAM_DAn_out[5].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p28.YVUC*/ BUS_OAM_DAn_out[6].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p28.ZUFE*/ BUS_OAM_DAn_out[7].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[7].qp_ext());
 
-    /* p28.ZAMY*/ BUS_OAM_DBn_out[0].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[0].qp_new());
-    /* p28.ZOPU*/ BUS_OAM_DBn_out[1].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[1].qp_new());
-    /* p28.WYKY*/ BUS_OAM_DBn_out[2].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[2].qp_new());
-    /* p28.ZAJA*/ BUS_OAM_DBn_out[3].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[3].qp_new());
-    /* p28.ZUGA*/ BUS_OAM_DBn_out[4].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[4].qp_new());
-    /* p28.ZUMO*/ BUS_OAM_DBn_out[5].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[5].qp_new());
-    /* p28.XYTO*/ BUS_OAM_DBn_out[6].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[6].qp_new());
-    /* p28.ZYFA*/ BUS_OAM_DBn_out[7].tri6_nn(_AZUL_CBD_TO_OBDn, BUS_CPU_Dp_ext[7].qp_new());
+    /* p28.ZAMY*/ BUS_OAM_DBn_out[0].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p28.ZOPU*/ BUS_OAM_DBn_out[1].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p28.WYKY*/ BUS_OAM_DBn_out[2].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p28.ZAJA*/ BUS_OAM_DBn_out[3].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p28.ZUGA*/ BUS_OAM_DBn_out[4].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p28.ZUMO*/ BUS_OAM_DBn_out[5].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p28.XYTO*/ BUS_OAM_DBn_out[6].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p28.ZYFA*/ BUS_OAM_DBn_out[7].tri6_nn(_AZUL_CBD_TO_OBDn_new, BUS_CPU_Dp_ext[7].qp_ext());
   }
 
   {
-    /* p04.MAKA*/ oam_bus.MAKA_HOLD_MEMp.dff17(_ZEME_AxCxExGx_clk, _CUNU_SYS_RSTn_new, _CATY_LATCH_EXTp_new);
-    /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp = nor2(_UVYT_ABCDxxxx_clk, oam_bus.MAKA_HOLD_MEMp.qp_new()); // def nor2
-    /* p04.POWU*/ wire _POWU_DMA_OAM_WRp  = and2(dma_reg.MATU_DMA_RUNNINGp.qp_new(), _NAXY_DMA_OAM_WRp); // def and
-    /* p04.WYJA*/ wire _WYJA_OAM_WRp   = and_or3(_AMAB_CPU_OAM_ENp, _CUPA_CPU_WRp_xxxxEFGx_clk, _POWU_DMA_OAM_WRp);
-    /* p28.YNYC*/ wire _YNYC_OAM_A_WRp = and2(_WYJA_OAM_WRp, _WAFO_OAM_A0n);
-    /* p28.YLYC*/ wire _YLYC_OAM_B_WRp = and2(_WYJA_OAM_WRp, _GEKA_OAM_A0p);
-    /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1(_YNYC_OAM_A_WRp);
-    /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1(_YLYC_OAM_B_WRp);
+    /* p04.MAKA*/ oam_bus.MAKA_HOLD_MEMp.dff17(_ZEME_AxCxExGx_clk, _CUNU_SYS_RSTn_new, _CATY_LATCH_EXTp_ext);
+    /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp_new = nor2(_UVYT_ABCDxxxx_clk, oam_bus.MAKA_HOLD_MEMp.qp_new()); // def nor2
+    /* p04.POWU*/ wire _POWU_DMA_OAM_WRp_new  = and2(dma_reg.MATU_DMA_RUNNINGp.qp_new(), _NAXY_DMA_OAM_WRp_new); // def and
+    /* p04.WYJA*/ wire _WYJA_OAM_WRp_new   = and_or3(_AMAB_CPU_OAM_ENp_new, _CUPA_CPU_WRp_xxxxEFGx_clk, _POWU_DMA_OAM_WRp_new);
+    /* p28.YNYC*/ wire _YNYC_OAM_A_WRp_new = and2(_WYJA_OAM_WRp_new, _WAFO_OAM_A0n_new);
+    /* p28.YLYC*/ wire _YLYC_OAM_B_WRp_new = and2(_WYJA_OAM_WRp_new, _GEKA_OAM_A0p_new);
+    /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn_new = not1(_YNYC_OAM_A_WRp_new);
+    /* p28.ZONE*/ wire _ZONE_OAM_B_WRn_new = not1(_YLYC_OAM_B_WRp_new);
 
     // FIXME This should be using PIN_OAM_CLK (which might actually be PIN_OAM_CSn?)
-    PIN_OAM_WR_A.pin_in(1, _ZOFE_OAM_A_WRn);
-    PIN_OAM_WR_B.pin_in(1, _ZONE_OAM_B_WRn);
+    PIN_OAM_WR_A.pin_in(1, _ZOFE_OAM_A_WRn_new);
+    PIN_OAM_WR_B.pin_in(1, _ZONE_OAM_B_WRn_new);
 
     if (!PIN_OAM_WR_A.qp_ext()) {
       oam_ram[(oam_addr_latch << 1) + 0] = pack_u8n_new(8, &BUS_OAM_DAn_out[0]);
@@ -4069,95 +4077,95 @@ void GateBoy::tock_slow() {
 #pragma region VRAM_write
   {
     /* CBD -> VBD */
-    /* p25.ROCY*/ wire _ROCY_CBD_TO_VPDp = and2(_REVO_CBD_TO_VPDp_new, _SAZO_CBD_TO_VPDp_new);
-    /* p25.RAHU*/ wire _RAHU_CBD_TO_VPDn = not1(_ROCY_CBD_TO_VPDp);
-    /*#p25.ROVE*/ wire _ROVE_CBD_TO_VPDp = not1(_RAHU_CBD_TO_VPDn);
+    /* p25.ROCY*/ wire _ROCY_CBD_TO_VPDp_new = and2(_REVO_CBD_TO_VPDp_new, _SAZO_CBD_TO_VPDp_new);
+    /* p25.RAHU*/ wire _RAHU_CBD_TO_VPDn_new = not1(_ROCY_CBD_TO_VPDp_new);
+    /*#p25.ROVE*/ wire _ROVE_CBD_TO_VPDp_new = not1(_RAHU_CBD_TO_VPDn_new);
 
     {
-      /* p25.TEME*/ BUS_VRAM_Dp_out[0].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[0].qp_new());
-      /* p25.TEWU*/ BUS_VRAM_Dp_out[1].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[1].qp_new());
-      /*#p25.TYGO*/ BUS_VRAM_Dp_out[2].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[2].qp_new());
-      /* p25.SOTE*/ BUS_VRAM_Dp_out[3].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[3].qp_new());
-      /* p25.SEKE*/ BUS_VRAM_Dp_out[4].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[4].qp_new());
-      /* p25.RUJO*/ BUS_VRAM_Dp_out[5].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[5].qp_new());
-      /* p25.TOFA*/ BUS_VRAM_Dp_out[6].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[6].qp_new());
-      /* p25.SUZA*/ BUS_VRAM_Dp_out[7].tri10_np(_RAHU_CBD_TO_VPDn, BUS_CPU_Dp_ext[7].qp_new());
+      /* p25.TEME*/ BUS_VRAM_Dp_out[0].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[0].qp_ext());
+      /* p25.TEWU*/ BUS_VRAM_Dp_out[1].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[1].qp_ext());
+      /*#p25.TYGO*/ BUS_VRAM_Dp_out[2].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[2].qp_ext());
+      /* p25.SOTE*/ BUS_VRAM_Dp_out[3].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[3].qp_ext());
+      /* p25.SEKE*/ BUS_VRAM_Dp_out[4].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[4].qp_ext());
+      /* p25.RUJO*/ BUS_VRAM_Dp_out[5].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[5].qp_ext());
+      /* p25.TOFA*/ BUS_VRAM_Dp_out[6].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[6].qp_ext());
+      /* p25.SUZA*/ BUS_VRAM_Dp_out[7].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[7].qp_ext());
     }
 
 
     {
-      /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(_LENA_BGW_VRAM_RDp_new, _LUFA_DMA_VRAMp_new, _TEXY_SPR_READ_VRAMp_new, _SERE_CPU_VRM_RDp_new);
-      /* p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn_new);
-      /* p25.SEWO*/ wire _SEWO_MCSn_D = or2(_SUTU_MCSn, _TUTO_DBG_VRAMp_new);
-      /* p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
-      /* p25.SETY*/ wire _SETY_MCSp_D = not1(_SEWO_MCSn_D);
+      /*#p25.SUTU*/ wire _SUTU_MCSn_new = nor4(_LENA_BGW_VRAM_RDp_new, _LUFA_DMA_VRAMp_new, _TEXY_SPR_READ_VRAMp_new, _SERE_CPU_VRM_RDp_new);
+      /* p25.TODE*/ wire _TODE_MCSn_A_new = and2(_SUTU_MCSn_new, _RACO_DBG_VRAMn_new);
+      /* p25.SEWO*/ wire _SEWO_MCSn_D_new = or2(_SUTU_MCSn_new, _TUTO_DBG_VRAMp_new);
+      /* p25.SOKY*/ wire _SOKY_MCSp_A_new = not1(_TODE_MCSn_A_new);
+      /* p25.SETY*/ wire _SETY_MCSp_D_new = not1(_SEWO_MCSn_D_new);
 
       // FIXME not actually using this pin, but we should
-      PIN_VRAM_CSn.pin_out(1, _SOKY_MCSp_A, _SETY_MCSp_D);
+      PIN_VRAM_CSn.pin_out(1, _SOKY_MCSp_A_new, _SETY_MCSp_D_new);
     }
 
 
 
 
     {
-      /* p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and2(_SOSE_8000_9FFFp_ext, _APOV_CPU_WRp_xxxxEFGx_clk);
-      /* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
-      /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(_TUTO_DBG_VRAMp_new, _SUDO_MWRp, _TUJA_CPU_VRAM_WRp);
-      /* p25.SOHY*/ wire _SOHY_MWRn = nand2(_TYJY_VRAM_WRp, _SERE_CPU_VRM_RDp_new);
-      /* p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn_new);
-      /* p25.SOFY*/ wire _SOFY_MWRn_D = or2(_SOHY_MWRn, _TUTO_DBG_VRAMp_new);
-      /* p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
-      /* p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
+      /* p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp_ext = and2(_SOSE_8000_9FFFp_ext, _APOV_CPU_WRp_xxxxEFGx_clk);
+      /* p25.SUDO*/ wire _SUDO_MWRp_new = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
+      /* p25.TYJY*/ wire _TYJY_VRAM_WRp_new = mux2p(_TUTO_DBG_VRAMp_new, _SUDO_MWRp_new, _TUJA_CPU_VRAM_WRp_ext);
+      /* p25.SOHY*/ wire _SOHY_MWRn_new = nand2(_TYJY_VRAM_WRp_new, _SERE_CPU_VRM_RDp_new);
+      /* p25.TAXY*/ wire _TAXY_MWRn_A_new = and2(_SOHY_MWRn_new, _RACO_DBG_VRAMn_new);
+      /* p25.SOFY*/ wire _SOFY_MWRn_D_new = or2(_SOHY_MWRn_new, _TUTO_DBG_VRAMp_new);
+      /* p25.SYSY*/ wire _SYSY_MWRp_A_new = not1(_TAXY_MWRn_A_new);
+      /* p25.RAGU*/ wire _RAGU_MWRp_D_new = not1(_SOFY_MWRn_D_new);
 
-      PIN_VRAM_WRn.pin_out(1, _SYSY_MWRp_A, _RAGU_MWRp_D);
+      PIN_VRAM_WRn.pin_out(1, _SYSY_MWRp_A_new, _RAGU_MWRp_D_new);
 
 
-      /*#p25.SEFA*/ wire _SEFA_D0p = and2(BUS_VRAM_Dp_out[0].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SOGO*/ wire _SOGO_D1p = and2(BUS_VRAM_Dp_out[1].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SEFU*/ wire _SEFU_D2p = and2(BUS_VRAM_Dp_out[2].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SUNA*/ wire _SUNA_D3p = and2(BUS_VRAM_Dp_out[3].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SUMO*/ wire _SUMO_D4p = and2(BUS_VRAM_Dp_out[4].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SAZU*/ wire _SAZU_D5p = and2(BUS_VRAM_Dp_out[5].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SAMO*/ wire _SAMO_D6p = and2(BUS_VRAM_Dp_out[6].qp_new(), _ROVE_CBD_TO_VPDp);
-      /* p25.SUKE*/ wire _SUKE_D7p = and2(BUS_VRAM_Dp_out[7].qp_new(), _ROVE_CBD_TO_VPDp);
+      /*#p25.SEFA*/ wire _SEFA_D0p_new = and2(BUS_VRAM_Dp_out[0].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SOGO*/ wire _SOGO_D1p_new = and2(BUS_VRAM_Dp_out[1].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SEFU*/ wire _SEFU_D2p_new = and2(BUS_VRAM_Dp_out[2].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SUNA*/ wire _SUNA_D3p_new = and2(BUS_VRAM_Dp_out[3].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SUMO*/ wire _SUMO_D4p_new = and2(BUS_VRAM_Dp_out[4].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SAZU*/ wire _SAZU_D5p_new = and2(BUS_VRAM_Dp_out[5].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SAMO*/ wire _SAMO_D6p_new = and2(BUS_VRAM_Dp_out[6].qp_ext(), _ROVE_CBD_TO_VPDp_new);
+      /* p25.SUKE*/ wire _SUKE_D7p_new = and2(BUS_VRAM_Dp_out[7].qp_ext(), _ROVE_CBD_TO_VPDp_new);
 
-      /*#p25.SYNU*/ wire _SYNU_D0p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[0].qp_new());
-      /* p25.SYMA*/ wire _SYMA_D1p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[1].qp_new());
-      /* p25.ROKO*/ wire _ROKO_D2p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[2].qp_new());
-      /* p25.SYBU*/ wire _SYBU_D3p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[3].qp_new());
-      /* p25.SAKO*/ wire _SAKO_D4p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[4].qp_new());
-      /* p25.SEJY*/ wire _SEJY_D5p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[5].qp_new());
-      /* p25.SEDO*/ wire _SEDO_D6p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[6].qp_new());
-      /* p25.SAWU*/ wire _SAWU_D7p = or2(_RAHU_CBD_TO_VPDn, BUS_VRAM_Dp_out[7].qp_new());
+      /*#p25.SYNU*/ wire _SYNU_D0p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[0].qp_ext());
+      /* p25.SYMA*/ wire _SYMA_D1p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[1].qp_ext());
+      /* p25.ROKO*/ wire _ROKO_D2p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[2].qp_ext());
+      /* p25.SYBU*/ wire _SYBU_D3p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[3].qp_ext());
+      /* p25.SAKO*/ wire _SAKO_D4p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[4].qp_ext());
+      /* p25.SEJY*/ wire _SEJY_D5p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[5].qp_ext());
+      /* p25.SEDO*/ wire _SEDO_D6p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[6].qp_ext());
+      /* p25.SAWU*/ wire _SAWU_D7p_new = or2(_RAHU_CBD_TO_VPDn_new, BUS_VRAM_Dp_out[7].qp_ext());
 
-      /*#p25.REGE*/ wire _REGE_D0n = not1(_SEFA_D0p);
-      /* p25.RYKY*/ wire _RYKY_D1n = not1(_SOGO_D1p);
-      /* p25.RAZO*/ wire _RAZO_D2n = not1(_SEFU_D2p);
-      /* p25.RADA*/ wire _RADA_D3n = not1(_SUNA_D3p);
-      /* p25.RYRO*/ wire _RYRO_D4n = not1(_SUMO_D4p);
-      /* p25.REVU*/ wire _REVU_D5n = not1(_SAZU_D5p);
-      /* p25.REKU*/ wire _REKU_D6n = not1(_SAMO_D6p);
-      /* p25.RYZE*/ wire _RYZE_D7n = not1(_SUKE_D7p);
+      /*#p25.REGE*/ wire _REGE_D0n_new = not1(_SEFA_D0p_new);
+      /* p25.RYKY*/ wire _RYKY_D1n_new = not1(_SOGO_D1p_new);
+      /* p25.RAZO*/ wire _RAZO_D2n_new = not1(_SEFU_D2p_new);
+      /* p25.RADA*/ wire _RADA_D3n_new = not1(_SUNA_D3p_new);
+      /* p25.RYRO*/ wire _RYRO_D4n_new = not1(_SUMO_D4p_new);
+      /* p25.REVU*/ wire _REVU_D5n_new = not1(_SAZU_D5p_new);
+      /* p25.REKU*/ wire _REKU_D6n_new = not1(_SAMO_D6p_new);
+      /* p25.RYZE*/ wire _RYZE_D7n_new = not1(_SUKE_D7p_new);
 
-      /*#p25.RURA*/ wire _RURA_D0n = not1(_SYNU_D0p);
-      /* p25.RULY*/ wire _RULY_D1n = not1(_SYMA_D1p);
-      /* p25.RARE*/ wire _RARE_D2n = not1(_ROKO_D2p);
-      /* p25.RODU*/ wire _RODU_D3n = not1(_SYBU_D3p);
-      /* p25.RUBE*/ wire _RUBE_D4n = not1(_SAKO_D4p);
-      /* p25.RUMU*/ wire _RUMU_D5n = not1(_SEJY_D5p);
-      /* p25.RYTY*/ wire _RYTY_D6n = not1(_SEDO_D6p);
-      /* p25.RADY*/ wire _RADY_D7n = not1(_SAWU_D7p);
+      /*#p25.RURA*/ wire _RURA_D0n_new = not1(_SYNU_D0p_new);
+      /* p25.RULY*/ wire _RULY_D1n_new = not1(_SYMA_D1p_new);
+      /* p25.RARE*/ wire _RARE_D2n_new = not1(_ROKO_D2p_new);
+      /* p25.RODU*/ wire _RODU_D3n_new = not1(_SYBU_D3p_new);
+      /* p25.RUBE*/ wire _RUBE_D4n_new = not1(_SAKO_D4p_new);
+      /* p25.RUMU*/ wire _RUMU_D5n_new = not1(_SEJY_D5p_new);
+      /* p25.RYTY*/ wire _RYTY_D6n_new = not1(_SEDO_D6p_new);
+      /* p25.RADY*/ wire _RADY_D7n_new = not1(_SAWU_D7p_new);
 
-      /*#p25.ROFA*/ wire _ROFA_CBD_TO_VPDp = not1(_RENA_CBD_TO_VPDn_new);
+      /*#p25.ROFA*/ wire _ROFA_CBD_TO_VPDp_new = not1(_RENA_CBD_TO_VPDn_new);
 
-      PIN_VRAM_Dp_out[0].pin_out(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n);
-      PIN_VRAM_Dp_out[1].pin_out(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n);
-      PIN_VRAM_Dp_out[2].pin_out(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n);
-      PIN_VRAM_Dp_out[3].pin_out(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n);
-      PIN_VRAM_Dp_out[4].pin_out(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n);
-      PIN_VRAM_Dp_out[5].pin_out(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n);
-      PIN_VRAM_Dp_out[6].pin_out(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n);
-      PIN_VRAM_Dp_out[7].pin_out(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n);
+      PIN_VRAM_Dp_out[0].pin_out(_ROFA_CBD_TO_VPDp_new, _REGE_D0n_new, _RURA_D0n_new);
+      PIN_VRAM_Dp_out[1].pin_out(_ROFA_CBD_TO_VPDp_new, _RYKY_D1n_new, _RULY_D1n_new);
+      PIN_VRAM_Dp_out[2].pin_out(_ROFA_CBD_TO_VPDp_new, _RAZO_D2n_new, _RARE_D2n_new);
+      PIN_VRAM_Dp_out[3].pin_out(_ROFA_CBD_TO_VPDp_new, _RADA_D3n_new, _RODU_D3n_new);
+      PIN_VRAM_Dp_out[4].pin_out(_ROFA_CBD_TO_VPDp_new, _RYRO_D4n_new, _RUBE_D4n_new);
+      PIN_VRAM_Dp_out[5].pin_out(_ROFA_CBD_TO_VPDp_new, _REVU_D5n_new, _RUMU_D5n_new);
+      PIN_VRAM_Dp_out[6].pin_out(_ROFA_CBD_TO_VPDp_new, _REKU_D6n_new, _RYTY_D6n_new);
+      PIN_VRAM_Dp_out[7].pin_out(_ROFA_CBD_TO_VPDp_new, _RYZE_D7n_new, _RADY_D7n_new);
 
       // We're getting a fake write on the first phase because PIN_VRAM_WRn resets to 0...
       // ignore it if we're in reset
@@ -4175,111 +4183,111 @@ void GateBoy::tock_slow() {
   {
     {
       // Pixel merge + emit
-      /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp  = and2(pix_pipe.PYBO_BGW_PIPE_A7.qp_new(), pix_pipe.VYXE_LCDC_BGENn.qn_new());
-      /*#p35.TADE*/ wire TADE_PIX_BG_HIp  = and2(pix_pipe.SOHU_BGW_PIPE_B7.qp_new(), pix_pipe.VYXE_LCDC_BGENn.qn_new());
-      /*#p35.XULA*/ wire XULA_PIX_SP_LOp  = and2(pix_pipe.XYLO_LCDC_SPENn.qn_new(), pix_pipe.WUFY_SPR_PIPE_A7.qp_new());
-      /*#p35.WOXA*/ wire WOXA_PIX_SP_HIp  = and2(pix_pipe.XYLO_LCDC_SPENn.qn_new(), pix_pipe.VUPY_SPR_PIPE_B7.qp_new());
+      /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp_new  = and2(pix_pipe.PYBO_BGW_PIPE_A7.qp_new(), pix_pipe.VYXE_LCDC_BGENn.qn_new());
+      /*#p35.TADE*/ wire TADE_PIX_BG_HIp_new  = and2(pix_pipe.SOHU_BGW_PIPE_B7.qp_new(), pix_pipe.VYXE_LCDC_BGENn.qn_new());
+      /*#p35.XULA*/ wire XULA_PIX_SP_LOp_new  = and2(pix_pipe.XYLO_LCDC_SPENn.qn_new(), pix_pipe.WUFY_SPR_PIPE_A7.qp_new());
+      /*#p35.WOXA*/ wire WOXA_PIX_SP_HIp_new  = and2(pix_pipe.XYLO_LCDC_SPENn.qn_new(), pix_pipe.VUPY_SPR_PIPE_B7.qp_new());
 
-      /*#p35.NULY*/ wire NULY_PIX_SP_MASKn = nor2(WOXA_PIX_SP_HIp, XULA_PIX_SP_LOp);
+      /*#p35.NULY*/ wire NULY_PIX_SP_MASKn_new = nor2(WOXA_PIX_SP_HIp_new, XULA_PIX_SP_LOp_new);
 
-      /*#p35.RYFU*/ wire RYFU_MASK_BG0 = and2(RAJY_PIX_BG_LOp, pix_pipe.VAVA_MASK_PIPE_7.qp_new());
-      /*#p35.RUTA*/ wire RUTA_MASK_BG1 = and2(TADE_PIX_BG_HIp, pix_pipe.VAVA_MASK_PIPE_7.qp_new());
-      /*#p35.POKA*/ wire POKA_BGPIXELn = nor3(NULY_PIX_SP_MASKn, RUTA_MASK_BG1, RYFU_MASK_BG0);
+      /*#p35.RYFU*/ wire RYFU_MASK_BG0_new = and2(RAJY_PIX_BG_LOp_new, pix_pipe.VAVA_MASK_PIPE_7.qp_new());
+      /*#p35.RUTA*/ wire RUTA_MASK_BG1_new = and2(TADE_PIX_BG_HIp_new, pix_pipe.VAVA_MASK_PIPE_7.qp_new());
+      /*#p35.POKA*/ wire POKA_BGPIXELn_new = nor3(NULY_PIX_SP_MASKn_new, RUTA_MASK_BG1_new, RYFU_MASK_BG0_new);
 
-      /*#p34.LOME*/ wire LOME_PAL_PIPE_7n = not1(pix_pipe.LYME_PAL_PIPE_D7.qp_new());
-      /*#p34.LAFU*/ wire LAFU_OBP0PIXELn = nand2(LOME_PAL_PIPE_7n, POKA_BGPIXELn);
-      /*#p34.LEKA*/ wire LEKA_OBP1PIXELn = nand2(pix_pipe.LYME_PAL_PIPE_D7.qp_new(), POKA_BGPIXELn);
+      /*#p34.LOME*/ wire LOME_PAL_PIPE_7n_new = not1(pix_pipe.LYME_PAL_PIPE_D7.qp_new());
+      /*#p34.LAFU*/ wire LAFU_OBP0PIXELn_new = nand2(LOME_PAL_PIPE_7n_new, POKA_BGPIXELn_new);
+      /*#p34.LEKA*/ wire LEKA_OBP1PIXELn_new = nand2(pix_pipe.LYME_PAL_PIPE_D7.qp_new(), POKA_BGPIXELn_new);
 
       //----------
       // Sprite palette 0 lookup
 
-      /*#p35.WELE*/ wire WELE_PIX_SP_LOn = not1(XULA_PIX_SP_LOp);
-      /*#p35.WOLO*/ wire WOLO_PIX_SP_LOp = not1(WELE_PIX_SP_LOn);
-      /*#p35.VUMU*/ wire VUMU_PIX_SP_HIn = not1(WOXA_PIX_SP_HIp);
-      /*#p35.WYRU*/ wire WYRU_PIX_SP_HIp = not1(VUMU_PIX_SP_HIn);
+      /*#p35.WELE*/ wire WELE_PIX_SP_LOn_new = not1(XULA_PIX_SP_LOp_new);
+      /*#p35.WOLO*/ wire WOLO_PIX_SP_LOp_new = not1(WELE_PIX_SP_LOn_new);
+      /*#p35.VUMU*/ wire VUMU_PIX_SP_HIn_new = not1(WOXA_PIX_SP_HIp_new);
+      /*#p35.WYRU*/ wire WYRU_PIX_SP_HIp_new = not1(VUMU_PIX_SP_HIn_new);
 
-      /*#p35.LAVA*/ wire LAVA_MASK_OPB0  = not1(LAFU_OBP0PIXELn);
+      /*#p35.LAVA*/ wire LAVA_MASK_OPB0_new  = not1(LAFU_OBP0PIXELn_new);
 
-      /*#p35.VUGO*/ wire VUGO_PAL_OBP0A = and3(VUMU_PIX_SP_HIn, WELE_PIX_SP_LOn, LAVA_MASK_OPB0); // does not have vcc arm
-      /*#p35.VOLO*/ wire VOLO_PAL_OBP0B = and3(VUMU_PIX_SP_HIn, WOLO_PIX_SP_LOp, LAVA_MASK_OPB0); // does not have vcc arm
-      /*#p35.VATA*/ wire VATA_PAL_OBP0C = and3(WYRU_PIX_SP_HIp, WELE_PIX_SP_LOn, LAVA_MASK_OPB0); // does not have vcc arm
-      /*#p35.VYRO*/ wire VYRO_PAL_OBP0D = and3(WYRU_PIX_SP_HIp, WOLO_PIX_SP_LOp, LAVA_MASK_OPB0); // does not have vcc arm
+      /*#p35.VUGO*/ wire VUGO_PAL_OBP0A_new = and3(VUMU_PIX_SP_HIn_new, WELE_PIX_SP_LOn_new, LAVA_MASK_OPB0_new); // does not have vcc arm
+      /*#p35.VOLO*/ wire VOLO_PAL_OBP0B_new = and3(VUMU_PIX_SP_HIn_new, WOLO_PIX_SP_LOp_new, LAVA_MASK_OPB0_new); // does not have vcc arm
+      /*#p35.VATA*/ wire VATA_PAL_OBP0C_new = and3(WYRU_PIX_SP_HIp_new, WELE_PIX_SP_LOn_new, LAVA_MASK_OPB0_new); // does not have vcc arm
+      /*#p35.VYRO*/ wire VYRO_PAL_OBP0D_new = and3(WYRU_PIX_SP_HIp_new, WOLO_PIX_SP_LOp_new, LAVA_MASK_OPB0_new); // does not have vcc arm
 
-      /*#p35.WUFU*/ wire WUFU_COL_OBP0_HI = amux4(pix_pipe.XANA_OBP0_D7n.qn_new(), VYRO_PAL_OBP0D,
-                                                  pix_pipe.XYZE_OBP0_D5n.qn_new(), VATA_PAL_OBP0C,
-                                                  pix_pipe.XALO_OBP0_D3n.qn_new(), VOLO_PAL_OBP0B,
-                                                  pix_pipe.XUKY_OBP0_D1n.qn_new(), VUGO_PAL_OBP0A);
+      /*#p35.WUFU*/ wire WUFU_COL_OBP0_HI_new = amux4(pix_pipe.XANA_OBP0_D7n.qn_new(), VYRO_PAL_OBP0D_new,
+                                                      pix_pipe.XYZE_OBP0_D5n.qn_new(), VATA_PAL_OBP0C_new,
+                                                      pix_pipe.XALO_OBP0_D3n.qn_new(), VOLO_PAL_OBP0B_new,
+                                                      pix_pipe.XUKY_OBP0_D1n.qn_new(), VUGO_PAL_OBP0A_new);
 
-      /*#p35.WALY*/ wire WALY_COL_OBP0_LO = amux4(pix_pipe.XUPO_OBP0_D6n.qn_new(), VYRO_PAL_OBP0D,
-                                                  pix_pipe.XERU_OBP0_D4n.qn_new(), VATA_PAL_OBP0C,
-                                                  pix_pipe.XOVA_OBP0_D2n.qn_new(), VOLO_PAL_OBP0B,
-                                                  pix_pipe.XUFU_OBP0_D0n.qn_new(), VUGO_PAL_OBP0A);
+      /*#p35.WALY*/ wire WALY_COL_OBP0_LO_new = amux4(pix_pipe.XUPO_OBP0_D6n.qn_new(), VYRO_PAL_OBP0D_new,
+                                                      pix_pipe.XERU_OBP0_D4n.qn_new(), VATA_PAL_OBP0C_new,
+                                                      pix_pipe.XOVA_OBP0_D2n.qn_new(), VOLO_PAL_OBP0B_new,
+                                                      pix_pipe.XUFU_OBP0_D0n.qn_new(), VUGO_PAL_OBP0A_new);
 
       //----------
       // Sprite palette 1 lookup
 
-      /*#p35.MABY*/ wire MABY_PIX_SP_LOn = not1(XULA_PIX_SP_LOp);
-      /*#p35.LYLE*/ wire LYLE_PIX_SP_LOp = not1(MABY_PIX_SP_LOn);
-      /*#p35.MEXA*/ wire MEXA_PIX_SP_HIn = not1(WOXA_PIX_SP_HIp);
-      /*#p35.LOZO*/ wire LOZO_PIX_SP_HIp = not1(MEXA_PIX_SP_HIn);
+      /*#p35.MABY*/ wire MABY_PIX_SP_LOn_new = not1(XULA_PIX_SP_LOp_new);
+      /*#p35.LYLE*/ wire LYLE_PIX_SP_LOp_new = not1(MABY_PIX_SP_LOn_new);
+      /*#p35.MEXA*/ wire MEXA_PIX_SP_HIn_new = not1(WOXA_PIX_SP_HIp_new);
+      /*#p35.LOZO*/ wire LOZO_PIX_SP_HIp_new = not1(MEXA_PIX_SP_HIn_new);
 
-      /*#p35.LUKU*/ wire LUKU_MASK_OBP1  = not1(LEKA_OBP1PIXELn);
+      /*#p35.LUKU*/ wire LUKU_MASK_OBP1_new  = not1(LEKA_OBP1PIXELn_new);
 
-      /* p#35.LOPU*/ wire LOPU_PAL_OBP1A = and3(MEXA_PIX_SP_HIn, MABY_PIX_SP_LOn, LUKU_MASK_OBP1); // does not have vcc arm
-      /* p#35.LYKY*/ wire LYKY_PAL_OBP1B = and3(MEXA_PIX_SP_HIn, LYLE_PIX_SP_LOp, LUKU_MASK_OBP1); // does not have vcc arm
-      /* p#35.LARU*/ wire LARU_PAL_OBP1C = and3(LOZO_PIX_SP_HIp, MABY_PIX_SP_LOn, LUKU_MASK_OBP1); // does not have vcc arm
-      /* p#35.LEDO*/ wire LEDO_PAL_OBP1D = and3(LOZO_PIX_SP_HIp, LYLE_PIX_SP_LOp, LUKU_MASK_OBP1); // does not have vcc arm
+      /* p#35.LOPU*/ wire LOPU_PAL_OBP1A_new = and3(MEXA_PIX_SP_HIn_new, MABY_PIX_SP_LOn_new, LUKU_MASK_OBP1_new); // does not have vcc arm
+      /* p#35.LYKY*/ wire LYKY_PAL_OBP1B_new = and3(MEXA_PIX_SP_HIn_new, LYLE_PIX_SP_LOp_new, LUKU_MASK_OBP1_new); // does not have vcc arm
+      /* p#35.LARU*/ wire LARU_PAL_OBP1C_new = and3(LOZO_PIX_SP_HIp_new, MABY_PIX_SP_LOn_new, LUKU_MASK_OBP1_new); // does not have vcc arm
+      /* p#35.LEDO*/ wire LEDO_PAL_OBP1D_new = and3(LOZO_PIX_SP_HIp_new, LYLE_PIX_SP_LOp_new, LUKU_MASK_OBP1_new); // does not have vcc arm
 
-      /*#p35.MOKA*/ wire MOKA_COL_OBP1_HI = amux4(pix_pipe.LUXO_OBP1_D7n.qn_new(), LEDO_PAL_OBP1D,
-                                                  pix_pipe.LUGU_OBP1_D5n.qn_new(), LARU_PAL_OBP1C,
-                                                  pix_pipe.LOSE_OBP1_D3n.qn_new(), LYKY_PAL_OBP1B,
-                                                  pix_pipe.LAWO_OBP1_D1n.qn_new(), LOPU_PAL_OBP1A);
+      /*#p35.MOKA*/ wire MOKA_COL_OBP1_HI_new = amux4(pix_pipe.LUXO_OBP1_D7n.qn_new(), LEDO_PAL_OBP1D_new,
+                                                      pix_pipe.LUGU_OBP1_D5n.qn_new(), LARU_PAL_OBP1C_new,
+                                                      pix_pipe.LOSE_OBP1_D3n.qn_new(), LYKY_PAL_OBP1B_new,
+                                                      pix_pipe.LAWO_OBP1_D1n.qn_new(), LOPU_PAL_OBP1A_new);
 
-      /*#p35.MUFA*/ wire MUFA_COL_OBP1_LO = amux4(LEDO_PAL_OBP1D, pix_pipe.LEPU_OBP1_D6n.qn_new(),
-                                                  LARU_PAL_OBP1C, pix_pipe.LUNE_OBP1_D4n.qn_new(),
-                                                  LYKY_PAL_OBP1B, pix_pipe.MOSA_OBP1_D2n.qn_new(),
-                                                  LOPU_PAL_OBP1A, pix_pipe.MOXY_OBP1_D0n.qn_new());
+      /*#p35.MUFA*/ wire MUFA_COL_OBP1_LO_new = amux4(LEDO_PAL_OBP1D_new, pix_pipe.LEPU_OBP1_D6n.qn_new(),
+                                                      LARU_PAL_OBP1C_new, pix_pipe.LUNE_OBP1_D4n.qn_new(),
+                                                      LYKY_PAL_OBP1B_new, pix_pipe.MOSA_OBP1_D2n.qn_new(),
+                                                      LOPU_PAL_OBP1A_new, pix_pipe.MOXY_OBP1_D0n.qn_new());
 
       //----------
       // Background/window palette lookup
 
-      /* p35.SOBA*/ wire SOBA_PIX_BG_LOn = not1(RAJY_PIX_BG_LOp);
-      /* p35.NUPO*/ wire NUPO_PIX_BG_LOp = not1(SOBA_PIX_BG_LOn);
-      /* p35.VYCO*/ wire VYCO_PIX_BG_HIn = not1(TADE_PIX_BG_HIp);
-      /* p35.NALE*/ wire NALE_PIX_BG_HIp = not1(VYCO_PIX_BG_HIn);
+      /* p35.SOBA*/ wire SOBA_PIX_BG_LOn_new = not1(RAJY_PIX_BG_LOp_new);
+      /* p35.NUPO*/ wire NUPO_PIX_BG_LOp_new = not1(SOBA_PIX_BG_LOn_new);
+      /* p35.VYCO*/ wire VYCO_PIX_BG_HIn_new = not1(TADE_PIX_BG_HIp_new);
+      /* p35.NALE*/ wire NALE_PIX_BG_HIp_new = not1(VYCO_PIX_BG_HIn_new);
 
-      /* p35.MUVE*/ wire MUVE_MASK_BGP = not1(POKA_BGPIXELn);
+      /* p35.MUVE*/ wire MUVE_MASK_BGP_new = not1(POKA_BGPIXELn_new);
 
-      /* p35.POBU*/ wire POBU_PAL_BGPA = and3(VYCO_PIX_BG_HIn, SOBA_PIX_BG_LOn, MUVE_MASK_BGP); // does not have vcc arm
-      /* p35.NUXO*/ wire NUXO_PAL_BGPB = and3(VYCO_PIX_BG_HIn, NUPO_PIX_BG_LOp, MUVE_MASK_BGP); // does not have vcc arm
-      /* p35.NUMA*/ wire NUMA_PAL_BGPC = and3(NALE_PIX_BG_HIp, SOBA_PIX_BG_LOn, MUVE_MASK_BGP); // does not have vcc arm
-      /* p35.NYPO*/ wire NYPO_PAL_BGPD = and3(NALE_PIX_BG_HIp, NUPO_PIX_BG_LOp, MUVE_MASK_BGP); // does not have vcc arm
+      /* p35.POBU*/ wire POBU_PAL_BGPA_new = and3(VYCO_PIX_BG_HIn_new, SOBA_PIX_BG_LOn_new, MUVE_MASK_BGP_new); // does not have vcc arm
+      /* p35.NUXO*/ wire NUXO_PAL_BGPB_new = and3(VYCO_PIX_BG_HIn_new, NUPO_PIX_BG_LOp_new, MUVE_MASK_BGP_new); // does not have vcc arm
+      /* p35.NUMA*/ wire NUMA_PAL_BGPC_new = and3(NALE_PIX_BG_HIp_new, SOBA_PIX_BG_LOn_new, MUVE_MASK_BGP_new); // does not have vcc arm
+      /* p35.NYPO*/ wire NYPO_PAL_BGPD_new = and3(NALE_PIX_BG_HIp_new, NUPO_PIX_BG_LOp_new, MUVE_MASK_BGP_new); // does not have vcc arm
 
-      /*#p35.NELO*/ wire NELO_COL_BG_LO = amux4(NYPO_PAL_BGPD, pix_pipe.MOGY_BGP_D6n.qn_new(),
-                                                NUMA_PAL_BGPC, pix_pipe.MUKE_BGP_D4n.qn_new(),
-                                                NUXO_PAL_BGPB, pix_pipe.PYLU_BGP_D2n.qn_new(),
-                                                POBU_PAL_BGPA, pix_pipe.PAVO_BGP_D0n.qn_new());
+      /*#p35.NELO*/ wire NELO_COL_BG_LO_new = amux4(NYPO_PAL_BGPD_new, pix_pipe.MOGY_BGP_D6n.qn_new(),
+                                                    NUMA_PAL_BGPC_new, pix_pipe.MUKE_BGP_D4n.qn_new(),
+                                                    NUXO_PAL_BGPB_new, pix_pipe.PYLU_BGP_D2n.qn_new(),
+                                                    POBU_PAL_BGPA_new, pix_pipe.PAVO_BGP_D0n.qn_new());
 
-      /*#p35.NURA*/ wire NURA_COL_BG_HI = amux4(pix_pipe.MENA_BGP_D7n.qn_new(), NYPO_PAL_BGPD,
-                                                pix_pipe.MORU_BGP_D5n.qn_new(), NUMA_PAL_BGPC,
-                                                pix_pipe.MAXY_BGP_D3n.qn_new(), NUXO_PAL_BGPB,
-                                                pix_pipe.NUSY_BGP_D1n.qn_new(), POBU_PAL_BGPA);
+      /*#p35.NURA*/ wire NURA_COL_BG_HI_new = amux4(pix_pipe.MENA_BGP_D7n.qn_new(), NYPO_PAL_BGPD_new,
+                                                    pix_pipe.MORU_BGP_D5n.qn_new(), NUMA_PAL_BGPC_new,
+                                                    pix_pipe.MAXY_BGP_D3n.qn_new(), NUXO_PAL_BGPB_new,
+                                                    pix_pipe.NUSY_BGP_D1n.qn_new(), POBU_PAL_BGPA_new);
 
       //----------
       // Pixel merge and send
 
-      /*#p35.PERO*/ wire _PERO_COL_LO = or3(NELO_COL_BG_LO, WALY_COL_OBP0_LO, MUFA_COL_OBP1_LO);
-      /*#p35.PATY*/ wire _PATY_COL_HI = or3(NURA_COL_BG_HI, WUFU_COL_OBP0_HI, MOKA_COL_OBP1_HI);
+      /*#p35.PERO*/ wire _PERO_COL_LO_new = or3(NELO_COL_BG_LO_new, WALY_COL_OBP0_LO_new, MUFA_COL_OBP1_LO_new);
+      /*#p35.PATY*/ wire _PATY_COL_HI_new = or3(NURA_COL_BG_HI_new, WUFU_COL_OBP0_HI_new, MOKA_COL_OBP1_HI_new);
 
-      /*#p35.REMY*/ wire _REMY_LD0n = not1(_PERO_COL_LO);
-      /*#p35.RAVO*/ wire _RAVO_LD1n = not1(_PATY_COL_HI);
+      /*#p35.REMY*/ wire _REMY_LD0n_new = not1(_PERO_COL_LO_new);
+      /*#p35.RAVO*/ wire _RAVO_LD1n_new = not1(_PATY_COL_HI_new);
 
       //lcd_data0_delay.set(_REMY_LD0n);
       //lcd_data1_delay.set(_RAVO_LD1n);
 
       // so q1 works but q2 has tiny errors? wat?
-      PIN_LCD_DATA0.pin_out(1, /*lcd_data0_delay.q1_new()*/ _REMY_LD0n, /*lcd_data0_delay.q1_new()*/ _REMY_LD0n);
-      PIN_LCD_DATA1.pin_out(1, /*lcd_data1_delay.q1_new()*/ _RAVO_LD1n, /*lcd_data1_delay.q1_new()*/ _RAVO_LD1n);
+      PIN_LCD_DATA0.pin_out(1, /*lcd_data0_delay.q1_new()*/ _REMY_LD0n_new, /*lcd_data0_delay.q1_new()*/ _REMY_LD0n_new);
+      PIN_LCD_DATA1.pin_out(1, /*lcd_data1_delay.q1_new()*/ _RAVO_LD1n_new, /*lcd_data1_delay.q1_new()*/ _RAVO_LD1n_new);
     }
 
     // LCD horizontal sync pin latch
@@ -4297,84 +4305,86 @@ void GateBoy::tock_slow() {
       /*#p24.RUJU*/ pix_pipe.RUJU.set(or3(pix_pipe.PAHO_X_8_SYNC.qp_new(), _TOFU_VID_RSTp_new, pix_pipe.POME.qp_new()));
       /*#p24.POFY*/ pix_pipe.POFY.set(not1(pix_pipe.RUJU.qp_new()));
       /*#p24.POME*/ pix_pipe.POME.set(nor2(_AVAP_SCAN_DONE_TRIGp_new, pix_pipe.POFY.qp_new()));
+      /*#p24.RUJU*/ pix_pipe.RUJU.set(or3(pix_pipe.PAHO_X_8_SYNC.qp_new(), _TOFU_VID_RSTp_new, pix_pipe.POME.qp_new()));
+      /*#p24.POFY*/ pix_pipe.POFY.set(not1(pix_pipe.RUJU.qp_new()));
 
-      /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(pix_pipe.POFY.qp_new());
-      PIN_LCD_HSYNC.pin_out(1, _RUZE_HSYNCn, _RUZE_HSYNCn);
+      /*#p24.RUZE*/ wire _RUZE_HSYNCn_new = not1(pix_pipe.POFY.qp_new());
+      PIN_LCD_HSYNC.pin_out(1, _RUZE_HSYNCn_new, _RUZE_HSYNCn_new);
     }
 
     {
-      /*#p24.LOFU*/ wire _LOFU_LINE_ENDn  = not1(lcd_reg.RUTU_x113p.qp_new());
-      /*#p24.LUCA*/ lcd_reg.LUCA_LINE_EVENp .dff17(_LOFU_LINE_ENDn,                   _LYFE_VID_RSTn_new, lcd_reg.LUCA_LINE_EVENp.qn_old());
+      /*#p24.LOFU*/ wire _LOFU_LINE_ENDn_new  = not1(lcd_reg.RUTU_x113p.qp_new());
+      /*#p24.LUCA*/ lcd_reg.LUCA_LINE_EVENp .dff17(_LOFU_LINE_ENDn_new,               _LYFE_VID_RSTn_new, lcd_reg.LUCA_LINE_EVENp.qn_old());
       /*#p21.NAPO*/ lcd_reg.NAPO_FRAME_EVENp.dff17(lcd_reg.POPU_VBLANK_CLKp.qp_new(), _LYFE_VID_RSTn_new, lcd_reg.NAPO_FRAME_EVENp.qn_old());
       // if LCDC_ENn, LCD_PIN_ALTSG = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
-      /*#p24.MAGU*/ wire _MAGU = xor2(lcd_reg.NAPO_FRAME_EVENp.qp_new(), lcd_reg.LUCA_LINE_EVENp.qn_new());
-      /*#p24.MECO*/ wire _MECO = not1(_MAGU);
-      /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
-      /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn_new());
-      /* p01.UREK*/ wire _UREK_DIV07n = not1(tim_reg.TULU_DIV07p.qp_new());
-      /*#p24.USEC*/ wire _USEC_DIV_07p = not1(_UREK_DIV07n);
-      /*#p24.KUPA*/ wire _KUPA = amux2(pix_pipe.XONA_LCDC_LCDENn.qn_new(), _KEBO, _KEDY_LCDC_ENn, _USEC_DIV_07p);
-      /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
+      /*#p24.MAGU*/ wire _MAGU_new = xor2(lcd_reg.NAPO_FRAME_EVENp.qp_new(), lcd_reg.LUCA_LINE_EVENp.qn_new());
+      /*#p24.MECO*/ wire _MECO_new = not1(_MAGU_new);
+      /*#p24.KEBO*/ wire _KEBO_new = not1(_MECO_new);
+      /*#p24.KEDY*/ wire _KEDY_LCDC_ENn_new = not1(pix_pipe.XONA_LCDC_LCDENn.qn_new());
+      /* p01.UREK*/ wire _UREK_DIV07n_new = not1(tim_reg.TULU_DIV07p.qp_new());
+      /*#p24.USEC*/ wire _USEC_DIV_07p_new = not1(_UREK_DIV07n_new);
+      /*#p24.KUPA*/ wire _KUPA_new = amux2(pix_pipe.XONA_LCDC_LCDENn.qn_new(), _KEBO_new, _KEDY_LCDC_ENn_new, _USEC_DIV_07p_new);
+      /*#p24.KOFO*/ wire _KOFO_new = not1(_KUPA_new);
 
-      PIN_LCD_FLIPS.pin_out(1, _KOFO, _KOFO);
+      PIN_LCD_FLIPS.pin_out(1, _KOFO_new, _KOFO_new);
     }
 
     {
-      /*#p21.SAXO*/ wire _SAXO_LX0p = lcd_reg.SAXO_LX0p.qp_new();
-      /*#p21.TYPO*/ wire _TYPO_LX1p = lcd_reg.TYPO_LX1p.qp_new();
-      /*#p21.VYZO*/ wire _VYZO_LX2p = lcd_reg.VYZO_LX2p.qp_new();
-      /*#p21.TELU*/ wire _TELU_LX3p = lcd_reg.TELU_LX3p.qp_new();
-      /*#p21.SUDE*/ wire _SUDE_LX4p = lcd_reg.SUDE_LX4p.qp_new();
-      /*#p21.TAHA*/ wire _TAHA_LX5p = lcd_reg.TAHA_LX5p.qp_new();
-      /*#p21.TYRY*/ wire _TYRY_LX6p = lcd_reg.TYRY_LX6p.qp_new();
+      /*#p21.SAXO*/ wire _SAXO_LX0p_new = lcd_reg.SAXO_LX0p.qp_new();
+      /*#p21.TYPO*/ wire _TYPO_LX1p_new = lcd_reg.TYPO_LX1p.qp_new();
+      /*#p21.VYZO*/ wire _VYZO_LX2p_new = lcd_reg.VYZO_LX2p.qp_new();
+      /*#p21.TELU*/ wire _TELU_LX3p_new = lcd_reg.TELU_LX3p.qp_new();
+      /*#p21.SUDE*/ wire _SUDE_LX4p_new = lcd_reg.SUDE_LX4p.qp_new();
+      /*#p21.TAHA*/ wire _TAHA_LX5p_new = lcd_reg.TAHA_LX5p.qp_new();
+      /*#p21.TYRY*/ wire _TYRY_LX6p_new = lcd_reg.TYRY_LX6p.qp_new();
 
-      /*#p21.TOCU*/ wire _TOCU_LX0n = not1(_SAXO_LX0p);
-      /*#p21.VEPE*/ wire _VEPE_LX1n = not1(_TYPO_LX1p);
-      /* p21.VUTY*/ wire _VUTY_LX2n = not1(_VYZO_LX2p);
-      /* p21.VATE*/ wire _VATE_LX3n = not1(_TELU_LX3p);
-      /* p21.TUDA*/ wire _TUDA_LX4n = not1(_SUDE_LX4p);
-      /* p21.TAFY*/ wire _TAFY_LX5n = not1(_TAHA_LX5p);
-      /* p21.TUJU*/ wire _TUJU_LX6n = not1(_TYRY_LX6p);
+      /*#p21.TOCU*/ wire _TOCU_LX0n_new = not1(_SAXO_LX0p_new);
+      /*#p21.VEPE*/ wire _VEPE_LX1n_new = not1(_TYPO_LX1p_new);
+      /* p21.VUTY*/ wire _VUTY_LX2n_new = not1(_VYZO_LX2p_new);
+      /* p21.VATE*/ wire _VATE_LX3n_new = not1(_TELU_LX3p_new);
+      /* p21.TUDA*/ wire _TUDA_LX4n_new = not1(_SUDE_LX4p_new);
+      /* p21.TAFY*/ wire _TAFY_LX5n_new = not1(_TAHA_LX5p_new);
+      /* p21.TUJU*/ wire _TUJU_LX6n_new = not1(_TYRY_LX6p_new);
 
-      /* p21.VOKU*/ wire _VOKU_LX000n = nand7(_TUJU_LX6n, _TAFY_LX5n, _TUDA_LX4n, _VATE_LX3n, _VUTY_LX2n, _VEPE_LX1n, _TOCU_LX0n); // 0000000 == 0
-      /* p21.TOZU*/ wire _TOZU_LX007n = nand7(_TUJU_LX6n, _TAFY_LX5n, _TUDA_LX4n, _VATE_LX3n, _VYZO_LX2p, _TYPO_LX1p, _SAXO_LX0p); // 0000111 == 7
-      /* p21.TECE*/ wire _TECE_LX045n = nand7(_TUJU_LX6n, _TAHA_LX5p, _TUDA_LX4n, _TELU_LX3p, _VYZO_LX2p, _VEPE_LX1n, _SAXO_LX0p); // 0101101 == 45
-      /*#p21.TEBO*/ wire _TEBO_LX083n = nand7(_TYRY_LX6p, _TAFY_LX5n, _SUDE_LX4p, _VATE_LX3n, _VUTY_LX2n, _TYPO_LX1p, _SAXO_LX0p); // 1010011 == 83
-      /*#p21.TEGY*/ wire _TEGY_STROBE = nand4(_VOKU_LX000n, _TOZU_LX007n, _TECE_LX045n, _TEBO_LX083n);
-      /*#p21.SYGU*/ lcd_reg.SYGU_LINE_STROBE.dff17(_SONO_ABxxxxGH_clknew,  _LYFE_VID_RSTn_new, _TEGY_STROBE);
+      /* p21.VOKU*/ wire _VOKU_LX000n_new = nand7(_TUJU_LX6n_new, _TAFY_LX5n_new, _TUDA_LX4n_new, _VATE_LX3n_new, _VUTY_LX2n_new, _VEPE_LX1n_new, _TOCU_LX0n_new); // 0000000 == 0
+      /* p21.TOZU*/ wire _TOZU_LX007n_new = nand7(_TUJU_LX6n_new, _TAFY_LX5n_new, _TUDA_LX4n_new, _VATE_LX3n_new, _VYZO_LX2p_new, _TYPO_LX1p_new, _SAXO_LX0p_new); // 0000111 == 7
+      /* p21.TECE*/ wire _TECE_LX045n_new = nand7(_TUJU_LX6n_new, _TAHA_LX5p_new, _TUDA_LX4n_new, _TELU_LX3p_new, _VYZO_LX2p_new, _VEPE_LX1n_new, _SAXO_LX0p_new); // 0101101 == 45
+      /*#p21.TEBO*/ wire _TEBO_LX083n_new = nand7(_TYRY_LX6p_new, _TAFY_LX5n_new, _SUDE_LX4p_new, _VATE_LX3n_new, _VUTY_LX2n_new, _TYPO_LX1p_new, _SAXO_LX0p_new); // 1010011 == 83
+      /*#p21.TEGY*/ wire _TEGY_STROBE_new = nand4(_VOKU_LX000n_new, _TOZU_LX007n_new, _TECE_LX045n_new, _TEBO_LX083n_new);
+      /*#p21.SYGU*/ lcd_reg.SYGU_LINE_STROBE.dff17(_SONO_ABxxxxGH_clknew,  _LYFE_VID_RSTn_new, _TEGY_STROBE_new);
 
-      /*#p21.RYNO*/ wire _RYNO = or2(lcd_reg.SYGU_LINE_STROBE.qp_new(), lcd_reg.RUTU_x113p.qp_new());
-      /*#p21.POGU*/ wire _POGU = not1(_RYNO);
-      PIN_LCD_CNTRL.pin_out(1, _POGU, _POGU);
+      /*#p21.RYNO*/ wire _RYNO_new = or2(lcd_reg.SYGU_LINE_STROBE.qp_new(), lcd_reg.RUTU_x113p.qp_new());
+      /*#p21.POGU*/ wire _POGU_new = not1(_RYNO_new);
+      PIN_LCD_CNTRL.pin_out(1, _POGU_new, _POGU_new);
     }
 
     {
-      /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd_reg.RUTU_x113p.qp_new());
-      /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(_PURE_LINE_ENDn);
-      /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(pix_pipe.XONA_LCDC_LCDENn.qn_new());
-      /* p01.UMEK*/ wire _UMEK_DIV06n = not1(tim_reg.UGOT_DIV06p.qp_new());
-      /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(_UMEK_DIV06n);
-      /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(pix_pipe.XONA_LCDC_LCDENn.qn_new(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, UMOB_DIV_06p);
-      /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1(_KAHE_LINE_ENDp);
-      PIN_LCD_LATCH.pin_out(1, _KYMO_LINE_ENDn, _KYMO_LINE_ENDn);
+      /*#p21.PURE*/ wire _PURE_LINE_ENDn_new = not1(lcd_reg.RUTU_x113p.qp_new());
+      /*#p24.KASA*/ wire _KASA_LINE_ENDp_new = not1(_PURE_LINE_ENDn_new);
+      /*#p24.KEDY*/ wire _KEDY_LCDC_ENn_new = not1(pix_pipe.XONA_LCDC_LCDENn.qn_new());
+      /* p01.UMEK*/ wire _UMEK_DIV06n_new = not1(tim_reg.UGOT_DIV06p.qp_new());
+      /*#p24.UMOB*/ wire _UMOB_DIV_06p_new = not1(_UMEK_DIV06n_new);
+      /*#p24.KAHE*/ wire _KAHE_LINE_ENDp_new = amux2(pix_pipe.XONA_LCDC_LCDENn.qn_new(), _KASA_LINE_ENDp_new, _KEDY_LCDC_ENn_new, _UMOB_DIV_06p_new);
+      /*#p24.KYMO*/ wire _KYMO_LINE_ENDn_new = not1(_KAHE_LINE_ENDp_new);
+      PIN_LCD_LATCH.pin_out(1, _KYMO_LINE_ENDn_new, _KYMO_LINE_ENDn_new);
     }
 
     {
-      /*#p21.XAJO*/ wire _XAJO_X_009p = and2(pix_pipe.XEHO_PX0p.qp_new(), pix_pipe.XYDO_PX3p.qp_new());
-      /*#p21.WUSA*/ pix_pipe.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, _WEGO_HBLANKp_new);
-      /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(pix_pipe.WUSA_LCD_CLOCK_GATE.qp_new(), _SACU_CLKPIPE_AxCxExGx_clkold);
-      /*#p27.POVA*/ wire _POVA_FINE_MATCHpe = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp_new(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn_new());
-      /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, _POVA_FINE_MATCHpe);
-      /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
-      PIN_LCD_CLOCK.pin_out(1, _RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
+      /*#p21.XAJO*/ wire _XAJO_X_009p_new = and2(pix_pipe.XEHO_PX0p.qp_new(), pix_pipe.XYDO_PX3p.qp_new());
+      /*#p21.WUSA*/ pix_pipe.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p_new, _WEGO_HBLANKp_new);
+      /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK_new = and2(pix_pipe.WUSA_LCD_CLOCK_GATE.qp_new(), _SACU_CLKPIPE_AxCxExGx_clknew);
+      /*#p27.POVA*/ wire _POVA_FINE_MATCHpe_new = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp_new(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn_new());
+      /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK_new = or2(_TOBA_LCD_CLOCK_new, _POVA_FINE_MATCHpe_new);
+      /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK_new = not1(_SEMU_LCD_CLOCK_new);
+      PIN_LCD_CLOCK.pin_out(1, _RYPO_LCD_CLOCK_new, _RYPO_LCD_CLOCK_new);
     }
 
     {
-      /*#p24.NERU*/ wire _NERU_y000p = nor8(lcd_reg.LAFO_LY7p.qp_new(), lcd_reg.LOVU_LY4p.qp_new(), lcd_reg.LYDO_LY3p.qp_new(), lcd_reg.MUWY_LY0p.qp_new(),
-                                            lcd_reg.MYRO_LY1p.qp_new(), lcd_reg.LEXA_LY2p.qp_new(), lcd_reg.LEMA_LY5p.qp_new(), lcd_reg.MATO_LY6p.qp_new());
-      /*#p24.MEDA*/ lcd_reg.MEDA_VSYNC_OUTn.dff17(lcd_reg.NYPE_x113p.qn_new(), _LYFE_VID_RSTn_new, _NERU_y000p);
-      /*#p24.MURE*/ wire _MURE_VSYNC = not1(lcd_reg.MEDA_VSYNC_OUTn.qp_new());
-      /*#*/ PIN_LCD_VSYNC.pin_out(1, _MURE_VSYNC, _MURE_VSYNC);
+      /*#p24.NERU*/ wire _NERU_y000p_new = nor8(lcd_reg.LAFO_LY7p.qp_new(), lcd_reg.LOVU_LY4p.qp_new(), lcd_reg.LYDO_LY3p.qp_new(), lcd_reg.MUWY_LY0p.qp_new(),
+                                                lcd_reg.MYRO_LY1p.qp_new(), lcd_reg.LEXA_LY2p.qp_new(), lcd_reg.LEMA_LY5p.qp_new(), lcd_reg.MATO_LY6p.qp_new());
+      /*#p24.MEDA*/ lcd_reg.MEDA_VSYNC_OUTn.dff17(lcd_reg.NYPE_x113p.qn_new(), _LYFE_VID_RSTn_new, _NERU_y000p_new);
+      /*#p24.MURE*/ wire _MURE_VSYNC_new = not1(lcd_reg.MEDA_VSYNC_OUTn.qp_new());
+      /*#*/ PIN_LCD_VSYNC.pin_out(1, _MURE_VSYNC_new, _MURE_VSYNC_new);
     }
 
     if (!old_lcd_clock && PIN_LCD_CLOCK.qp_ext()) {
@@ -4539,14 +4549,14 @@ void GateBoy::tock_slow() {
   {
     /* FF41 STAT */
     // This latch isn't actually used as a latch, it's effectively an inverter.
-    /* p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = or2(_WESY_SYS_RSTn_new, _RYJU_FF41_WRn_clk);
-    /* p21.RUPO*/ pix_pipe.RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, lcd_reg.ROPO_LY_MATCH_SYNCp.qp_new());
+    /* p21.PAGO*/ wire _PAGO_LYC_MATCH_RST_new = or2(_WESY_SYS_RSTn_new, _RYJU_FF41_WRn_clk);
+    /* p21.RUPO*/ pix_pipe.RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST_new, lcd_reg.ROPO_LY_MATCH_SYNCp.qp_new());
 
-    /*#p21.PARU*/ wire _PARU_VBLANKp = not1(lcd_reg.POPU_VBLANK_CLKp.qn_new());
-    /* p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(pix_pipe.XYMU_RENDERINGn.qn_new(), _PARU_VBLANKp); // die NOR
-    /* p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(_ACYL_SCANNINGp_new, pix_pipe.XYMU_RENDERINGn.qn_new()); // die NOR
-    /*#p21.TEBY*/ BUS_CPU_Dp_new[0].tri6_pn(_TOBE_FF41_RDp_ext, _SADU_STAT_MODE0n);
-    /*#p21.WUGA*/ BUS_CPU_Dp_new[1].tri6_pn(_TOBE_FF41_RDp_ext, _XATY_STAT_MODE1n);
+    /*#p21.PARU*/ wire _PARU_VBLANKp_new = not1(lcd_reg.POPU_VBLANK_CLKp.qn_new());
+    /* p21.SADU*/ wire _SADU_STAT_MODE0n_new = nor2(pix_pipe.XYMU_RENDERINGn.qn_new(), _PARU_VBLANKp_new); // die NOR
+    /* p21.XATY*/ wire _XATY_STAT_MODE1n_new = nor2(_ACYL_SCANNINGp_new, pix_pipe.XYMU_RENDERINGn.qn_new()); // die NOR
+    /*#p21.TEBY*/ BUS_CPU_Dp_new[0].tri6_pn(_TOBE_FF41_RDp_ext, _SADU_STAT_MODE0n_new);
+    /*#p21.WUGA*/ BUS_CPU_Dp_new[1].tri6_pn(_TOBE_FF41_RDp_ext, _XATY_STAT_MODE1n_new);
     /*#p21.SEGO*/ BUS_CPU_Dp_new[2].tri6_pn(_TOBE_FF41_RDp_ext, pix_pipe.RUPO_LYC_MATCH_LATCHn.qp_new());
     /* p21.PUZO*/ BUS_CPU_Dp_new[3].tri6_nn(_VAVE_FF41_RDn_ext, pix_pipe.ROXE_STAT_HBI_ENn.qp_new());
     /* p21.POFO*/ BUS_CPU_Dp_new[4].tri6_nn(_VAVE_FF41_RDn_ext, pix_pipe.RUFO_STAT_VBI_ENn.qp_new());
@@ -4580,23 +4590,23 @@ void GateBoy::tock_slow() {
 
   {
     /* FF44 LY */
-    /*#p23.WURY*/ wire _WURY_LY0n = not1(lcd_reg.MUWY_LY0p.qp_new());
-    /* p23.XEPO*/ wire _XEPO_LY1n = not1(lcd_reg.MYRO_LY1p.qp_new());
-    /* p23.MYFA*/ wire _MYFA_LY2n = not1(lcd_reg.LEXA_LY2p.qp_new());
-    /* p23.XUHY*/ wire _XUHY_LY3n = not1(lcd_reg.LYDO_LY3p.qp_new());
-    /* p23.WATA*/ wire _WATA_LY4n = not1(lcd_reg.LOVU_LY4p.qp_new());
-    /* p23.XAGA*/ wire _XAGA_LY5n = not1(lcd_reg.LEMA_LY5p.qp_new());
-    /* p23.XUCE*/ wire _XUCE_LY6n = not1(lcd_reg.MATO_LY6p.qp_new());
-    /* p23.XOWO*/ wire _XOWO_LY7n = not1(lcd_reg.LAFO_LY7p.qp_new());
+    /*#p23.WURY*/ wire _WURY_LY0n_new = not1(lcd_reg.MUWY_LY0p.qp_new());
+    /* p23.XEPO*/ wire _XEPO_LY1n_new = not1(lcd_reg.MYRO_LY1p.qp_new());
+    /* p23.MYFA*/ wire _MYFA_LY2n_new = not1(lcd_reg.LEXA_LY2p.qp_new());
+    /* p23.XUHY*/ wire _XUHY_LY3n_new = not1(lcd_reg.LYDO_LY3p.qp_new());
+    /* p23.WATA*/ wire _WATA_LY4n_new = not1(lcd_reg.LOVU_LY4p.qp_new());
+    /* p23.XAGA*/ wire _XAGA_LY5n_new = not1(lcd_reg.LEMA_LY5p.qp_new());
+    /* p23.XUCE*/ wire _XUCE_LY6n_new = not1(lcd_reg.MATO_LY6p.qp_new());
+    /* p23.XOWO*/ wire _XOWO_LY7n_new = not1(lcd_reg.LAFO_LY7p.qp_new());
 
-    /* p23.VEGA*/ BUS_CPU_Dp_new[0].tri6_nn(_VARO_FF44_RDn_ext, _WURY_LY0n);
-    /* p23.WUVA*/ BUS_CPU_Dp_new[1].tri6_nn(_VARO_FF44_RDn_ext, _XEPO_LY1n);
-    /* p23.LYCO*/ BUS_CPU_Dp_new[2].tri6_nn(_VARO_FF44_RDn_ext, _MYFA_LY2n);
-    /* p23.WOJY*/ BUS_CPU_Dp_new[3].tri6_nn(_VARO_FF44_RDn_ext, _XUHY_LY3n);
-    /* p23.VYNE*/ BUS_CPU_Dp_new[4].tri6_nn(_VARO_FF44_RDn_ext, _WATA_LY4n);
-    /* p23.WAMA*/ BUS_CPU_Dp_new[5].tri6_nn(_VARO_FF44_RDn_ext, _XAGA_LY5n);
-    /* p23.WAVO*/ BUS_CPU_Dp_new[6].tri6_nn(_VARO_FF44_RDn_ext, _XUCE_LY6n);
-    /* p23.WEZE*/ BUS_CPU_Dp_new[7].tri6_nn(_VARO_FF44_RDn_ext, _XOWO_LY7n);
+    /* p23.VEGA*/ BUS_CPU_Dp_new[0].tri6_nn(_VARO_FF44_RDn_ext, _WURY_LY0n_new);
+    /* p23.WUVA*/ BUS_CPU_Dp_new[1].tri6_nn(_VARO_FF44_RDn_ext, _XEPO_LY1n_new);
+    /* p23.LYCO*/ BUS_CPU_Dp_new[2].tri6_nn(_VARO_FF44_RDn_ext, _MYFA_LY2n_new);
+    /* p23.WOJY*/ BUS_CPU_Dp_new[3].tri6_nn(_VARO_FF44_RDn_ext, _XUHY_LY3n_new);
+    /* p23.VYNE*/ BUS_CPU_Dp_new[4].tri6_nn(_VARO_FF44_RDn_ext, _WATA_LY4n_new);
+    /* p23.WAMA*/ BUS_CPU_Dp_new[5].tri6_nn(_VARO_FF44_RDn_ext, _XAGA_LY5n_new);
+    /* p23.WAVO*/ BUS_CPU_Dp_new[6].tri6_nn(_VARO_FF44_RDn_ext, _XUCE_LY6n_new);
+    /* p23.WEZE*/ BUS_CPU_Dp_new[7].tri6_nn(_VARO_FF44_RDn_ext, _XOWO_LY7n_new);
   }
 
   {
@@ -4699,24 +4709,24 @@ void GateBoy::tock_slow() {
 
   {
     /* EBL -> CBD */
-    /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(PIN_CPU_RDp.qp_ext(), _TEXO_8000_9FFFn_ext, PIN_CPU_LATCH_EXT.qp_ext());
-    /*#p08.SOMA*/ ext_bus.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[0].qn_new());
-    /* p08.RONY*/ ext_bus.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[1].qn_new());
-    /* p08.RAXY*/ ext_bus.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[2].qn_new());
-    /* p08.SELO*/ ext_bus.SELO_EXT_DATA_LATCH_D3n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[3].qn_new());
-    /* p08.SODY*/ ext_bus.SODY_EXT_DATA_LATCH_D4n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[4].qn_new());
-    /* p08.SAGO*/ ext_bus.SAGO_EXT_DATA_LATCH_D5n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[5].qn_new());
-    /* p08.RUPA*/ ext_bus.RUPA_EXT_DATA_LATCH_D6n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[6].qn_new());
-    /* p08.SAZY*/ ext_bus.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn, PIN_EXT_D_in_new[7].qn_new());
+    /* p08.LAVO*/ wire _LAVO_HOLDn_new = nand3(PIN_CPU_RDp.qp_ext(), _TEXO_8000_9FFFn_ext, PIN_CPU_LATCH_EXT.qp_ext());
+    /*#p08.SOMA*/ ext_bus.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[0].qn_new());
+    /* p08.RONY*/ ext_bus.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[1].qn_new());
+    /* p08.RAXY*/ ext_bus.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[2].qn_new());
+    /* p08.SELO*/ ext_bus.SELO_EXT_DATA_LATCH_D3n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[3].qn_new());
+    /* p08.SODY*/ ext_bus.SODY_EXT_DATA_LATCH_D4n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[4].qn_new());
+    /* p08.SAGO*/ ext_bus.SAGO_EXT_DATA_LATCH_D5n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[5].qn_new());
+    /* p08.RUPA*/ ext_bus.RUPA_EXT_DATA_LATCH_D6n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[6].qn_new());
+    /* p08.SAZY*/ ext_bus.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn_new, PIN_EXT_D_in_new[7].qn_new());
 
-    /*#p08.RYMA*/ BUS_CPU_Dp_new[0].tri6_nn(_LAVO_HOLDn, ext_bus.SOMA_EXT_DATA_LATCH_D0n.qp_new());
-    /* p08.RUVO*/ BUS_CPU_Dp_new[1].tri6_nn(_LAVO_HOLDn, ext_bus.RONY_EXT_DATA_LATCH_D1n.qp_new());
-    /* p08.RYKO*/ BUS_CPU_Dp_new[2].tri6_nn(_LAVO_HOLDn, ext_bus.RAXY_EXT_DATA_LATCH_D2n.qp_new());
-    /* p08.TAVO*/ BUS_CPU_Dp_new[3].tri6_nn(_LAVO_HOLDn, ext_bus.SELO_EXT_DATA_LATCH_D3n.qp_new());
-    /* p08.TEPE*/ BUS_CPU_Dp_new[4].tri6_nn(_LAVO_HOLDn, ext_bus.SODY_EXT_DATA_LATCH_D4n.qp_new());
-    /* p08.SAFO*/ BUS_CPU_Dp_new[5].tri6_nn(_LAVO_HOLDn, ext_bus.SAGO_EXT_DATA_LATCH_D5n.qp_new());
-    /* p08.SEVU*/ BUS_CPU_Dp_new[6].tri6_nn(_LAVO_HOLDn, ext_bus.RUPA_EXT_DATA_LATCH_D6n.qp_new());
-    /* p08.TAJU*/ BUS_CPU_Dp_new[7].tri6_nn(_LAVO_HOLDn, ext_bus.SAZY_EXT_DATA_LATCH_D7n.qp_new());
+    /*#p08.RYMA*/ BUS_CPU_Dp_new[0].tri6_nn(_LAVO_HOLDn_new, ext_bus.SOMA_EXT_DATA_LATCH_D0n.qp_new());
+    /* p08.RUVO*/ BUS_CPU_Dp_new[1].tri6_nn(_LAVO_HOLDn_new, ext_bus.RONY_EXT_DATA_LATCH_D1n.qp_new());
+    /* p08.RYKO*/ BUS_CPU_Dp_new[2].tri6_nn(_LAVO_HOLDn_new, ext_bus.RAXY_EXT_DATA_LATCH_D2n.qp_new());
+    /* p08.TAVO*/ BUS_CPU_Dp_new[3].tri6_nn(_LAVO_HOLDn_new, ext_bus.SELO_EXT_DATA_LATCH_D3n.qp_new());
+    /* p08.TEPE*/ BUS_CPU_Dp_new[4].tri6_nn(_LAVO_HOLDn_new, ext_bus.SODY_EXT_DATA_LATCH_D4n.qp_new());
+    /* p08.SAFO*/ BUS_CPU_Dp_new[5].tri6_nn(_LAVO_HOLDn_new, ext_bus.SAGO_EXT_DATA_LATCH_D5n.qp_new());
+    /* p08.SEVU*/ BUS_CPU_Dp_new[6].tri6_nn(_LAVO_HOLDn_new, ext_bus.RUPA_EXT_DATA_LATCH_D6n.qp_new());
+    /* p08.TAJU*/ BUS_CPU_Dp_new[7].tri6_nn(_LAVO_HOLDn_new, ext_bus.SAZY_EXT_DATA_LATCH_D7n.qp_new());
   }
 
   {
@@ -4747,74 +4757,74 @@ void GateBoy::tock_slow() {
 
     // this is kind of a hack
     uint8_t bootrom_data = boot_buf[cpu_bus_addr & 0xFF];
-    /* p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(_UMUT_MODE_DBG1p_ext);
-    /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(_TEDO_CPU_RDp_ext, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp_new); // def AND
-    /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_0000_00FFp_ext);
-    /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
-    BUS_CPU_Dp_new[0].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x01));
-    BUS_CPU_Dp_new[1].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x02));
-    BUS_CPU_Dp_new[2].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x04));
-    BUS_CPU_Dp_new[3].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x08));
-    BUS_CPU_Dp_new[4].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x10));
-    BUS_CPU_Dp_new[5].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x20));
-    BUS_CPU_Dp_new[6].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x40));
-    BUS_CPU_Dp_new[7].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x80));
+    /* p07.YAZA*/ wire _YAZA_MODE_DBG1n_ext = not1(_UMUT_MODE_DBG1p_ext);
+    /* p07.YULA*/ wire _YULA_BOOT_RDp_new   = and3(_TEDO_CPU_RDp_ext, _YAZA_MODE_DBG1n_ext, _TUTU_ADDR_BOOTp_new); // def AND
+    /* p07.ZADO*/ wire _ZADO_BOOT_CSn_new   = nand2(_YULA_BOOT_RDp_new, _ZUFA_0000_00FFp_ext);
+    /* p07.ZERY*/ wire _ZERY_BOOT_CSp_new   = not1(_ZADO_BOOT_CSn_new);
+    BUS_CPU_Dp_new[0].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x01));
+    BUS_CPU_Dp_new[1].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x02));
+    BUS_CPU_Dp_new[2].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x04));
+    BUS_CPU_Dp_new[3].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x08));
+    BUS_CPU_Dp_new[4].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x10));
+    BUS_CPU_Dp_new[5].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x20));
+    BUS_CPU_Dp_new[6].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x40));
+    BUS_CPU_Dp_new[7].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x80));
 
     PIN_CPU_BOOTp.pin_in(1, _TUTU_ADDR_BOOTp_new);
   }
 
 
   {
-    /* p28.MYNU*/ wire _MYNU_CPU_RDn = nand2(_ASOT_CPU_RDp_ext, _CATY_LATCH_EXTp_new);
-    /* p28.LEKO*/ wire _LEKO_CPU_RDp = not1(_MYNU_CPU_RDn);
+    /* p28.MYNU*/ wire _MYNU_CPU_RDn_ext = nand2(_ASOT_CPU_RDp_ext, _CATY_LATCH_EXTp_ext);
+    /* p28.LEKO*/ wire _LEKO_CPU_RDp_ext = not1(_MYNU_CPU_RDn_ext);
 
     /* VBD  -> CBD */
     {
-      /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(_SERE_CPU_VRM_RDp_new, _LEKO_CPU_RDp);
-      /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
-      /* p25.RERY*/ wire _RERY_VBUS_D0n = not1(BUS_VRAM_Dp_in_old[0].qp_new());
-      /* p25.RUNA*/ wire _RUNA_VBUS_D1n = not1(BUS_VRAM_Dp_in_old[1].qp_new());
-      /* p25.RONA*/ wire _RONA_VBUS_D2n = not1(BUS_VRAM_Dp_in_old[2].qp_new());
-      /* p25.RUNO*/ wire _RUNO_VBUS_D3n = not1(BUS_VRAM_Dp_in_old[3].qp_new());
-      /* p25.SANA*/ wire _SANA_VBUS_D4n = not1(BUS_VRAM_Dp_in_old[4].qp_new());
-      /* p25.RORO*/ wire _RORO_VBUS_D5n = not1(BUS_VRAM_Dp_in_old[5].qp_new());
-      /* p25.RABO*/ wire _RABO_VBUS_D6n = not1(BUS_VRAM_Dp_in_old[6].qp_new());
-      /* p25.SAME*/ wire _SAME_VBUS_D7n = not1(BUS_VRAM_Dp_in_old[7].qp_new());
+      /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn_new = nand2(_SERE_CPU_VRM_RDp_new, _LEKO_CPU_RDp_ext);
+      /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp_new = not1(_TYVY_VBD_TO_CBDn_new);
+      /* p25.RERY*/ wire _RERY_VBUS_D0n_ext = not1(BUS_VRAM_Dp_in[0].qp_ext());
+      /* p25.RUNA*/ wire _RUNA_VBUS_D1n_ext = not1(BUS_VRAM_Dp_in[1].qp_ext());
+      /* p25.RONA*/ wire _RONA_VBUS_D2n_ext = not1(BUS_VRAM_Dp_in[2].qp_ext());
+      /* p25.RUNO*/ wire _RUNO_VBUS_D3n_ext = not1(BUS_VRAM_Dp_in[3].qp_ext());
+      /* p25.SANA*/ wire _SANA_VBUS_D4n_ext = not1(BUS_VRAM_Dp_in[4].qp_ext());
+      /* p25.RORO*/ wire _RORO_VBUS_D5n_ext = not1(BUS_VRAM_Dp_in[5].qp_ext());
+      /* p25.RABO*/ wire _RABO_VBUS_D6n_ext = not1(BUS_VRAM_Dp_in[6].qp_ext());
+      /* p25.SAME*/ wire _SAME_VBUS_D7n_ext = not1(BUS_VRAM_Dp_in[7].qp_ext());
 
-      /*#p25.RUGA*/ BUS_CPU_Dp_new[0].tri6_pn(_SEBY_VBD_TO_CBDp, _RERY_VBUS_D0n);
-      /* p25.ROTA*/ BUS_CPU_Dp_new[1].tri6_pn(_SEBY_VBD_TO_CBDp, _RUNA_VBUS_D1n);
-      /* p25.RYBU*/ BUS_CPU_Dp_new[2].tri6_pn(_SEBY_VBD_TO_CBDp, _RONA_VBUS_D2n);
-      /* p25.RAJU*/ BUS_CPU_Dp_new[3].tri6_pn(_SEBY_VBD_TO_CBDp, _RUNO_VBUS_D3n);
-      /* p25.TYJA*/ BUS_CPU_Dp_new[4].tri6_pn(_SEBY_VBD_TO_CBDp, _SANA_VBUS_D4n);
-      /* p25.REXU*/ BUS_CPU_Dp_new[5].tri6_pn(_SEBY_VBD_TO_CBDp, _RORO_VBUS_D5n);
-      /* p25.RUPY*/ BUS_CPU_Dp_new[6].tri6_pn(_SEBY_VBD_TO_CBDp, _RABO_VBUS_D6n);
-      /* p25.TOKU*/ BUS_CPU_Dp_new[7].tri6_pn(_SEBY_VBD_TO_CBDp, _SAME_VBUS_D7n);
+      /*#p25.RUGA*/ BUS_CPU_Dp_new[0].tri6_pn(_SEBY_VBD_TO_CBDp_new, _RERY_VBUS_D0n_ext);
+      /* p25.ROTA*/ BUS_CPU_Dp_new[1].tri6_pn(_SEBY_VBD_TO_CBDp_new, _RUNA_VBUS_D1n_ext);
+      /* p25.RYBU*/ BUS_CPU_Dp_new[2].tri6_pn(_SEBY_VBD_TO_CBDp_new, _RONA_VBUS_D2n_ext);
+      /* p25.RAJU*/ BUS_CPU_Dp_new[3].tri6_pn(_SEBY_VBD_TO_CBDp_new, _RUNO_VBUS_D3n_ext);
+      /* p25.TYJA*/ BUS_CPU_Dp_new[4].tri6_pn(_SEBY_VBD_TO_CBDp_new, _SANA_VBUS_D4n_ext);
+      /* p25.REXU*/ BUS_CPU_Dp_new[5].tri6_pn(_SEBY_VBD_TO_CBDp_new, _RORO_VBUS_D5n_ext);
+      /* p25.RUPY*/ BUS_CPU_Dp_new[6].tri6_pn(_SEBY_VBD_TO_CBDp_new, _RABO_VBUS_D6n_ext);
+      /* p25.TOKU*/ BUS_CPU_Dp_new[7].tri6_pn(_SEBY_VBD_TO_CBDp_new, _SAME_VBUS_D7n_ext);
     }
 
     /* OBL  -> CBD */
     {
-      /* p28.WUKU*/ wire _WUKU_OBL_TO_CBDp = and3(_LEKO_CPU_RDp, _AMAB_CPU_OAM_ENp, _GEKA_OAM_A0p);
-      /* p28.WEWU*/ wire _WEWU_OBL_TO_CBDn = not1(_WUKU_OBL_TO_CBDp);
-      /* p31.XACA*/ BUS_CPU_Dp_new[0].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.XYKY_OAM_LATCH_DB0n.qn_new());
-      /* p31.XAGU*/ BUS_CPU_Dp_new[1].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.YRUM_OAM_LATCH_DB1n.qn_new());
-      /* p31.XEPU*/ BUS_CPU_Dp_new[2].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.YSEX_OAM_LATCH_DB2n.qn_new());
-      /* p31.XYGU*/ BUS_CPU_Dp_new[3].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.YVEL_OAM_LATCH_DB3n.qn_new());
-      /* p31.XUNA*/ BUS_CPU_Dp_new[4].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.WYNO_OAM_LATCH_DB4n.qn_new());
-      /* p31.DEVE*/ BUS_CPU_Dp_new[5].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.CYRA_OAM_LATCH_DB5n.qn_new());
-      /* p31.ZEHA*/ BUS_CPU_Dp_new[6].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.ZUVE_OAM_LATCH_DB6n.qn_new());
-      /* p31.FYRA*/ BUS_CPU_Dp_new[7].tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.ECED_OAM_LATCH_DB7n.qn_new());
+      /* p28.WUKU*/ wire _WUKU_OBL_TO_CBDp_new = and3(_LEKO_CPU_RDp_ext, _AMAB_CPU_OAM_ENp_new, _GEKA_OAM_A0p_new);
+      /* p28.WEWU*/ wire _WEWU_OBL_TO_CBDn_new = not1(_WUKU_OBL_TO_CBDp_new);
+      /* p31.XACA*/ BUS_CPU_Dp_new[0].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.XYKY_OAM_LATCH_DB0n.qn_new());
+      /* p31.XAGU*/ BUS_CPU_Dp_new[1].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.YRUM_OAM_LATCH_DB1n.qn_new());
+      /* p31.XEPU*/ BUS_CPU_Dp_new[2].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.YSEX_OAM_LATCH_DB2n.qn_new());
+      /* p31.XYGU*/ BUS_CPU_Dp_new[3].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.YVEL_OAM_LATCH_DB3n.qn_new());
+      /* p31.XUNA*/ BUS_CPU_Dp_new[4].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.WYNO_OAM_LATCH_DB4n.qn_new());
+      /* p31.DEVE*/ BUS_CPU_Dp_new[5].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.CYRA_OAM_LATCH_DB5n.qn_new());
+      /* p31.ZEHA*/ BUS_CPU_Dp_new[6].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.ZUVE_OAM_LATCH_DB6n.qn_new());
+      /* p31.FYRA*/ BUS_CPU_Dp_new[7].tri10_np(_WEWU_OBL_TO_CBDn_new, oam_bus.ECED_OAM_LATCH_DB7n.qn_new());
     }
     {
-      /* p28.GUKO*/ wire _GUKO_OBL_TO_CBDp = and3(_LEKO_CPU_RDp, _AMAB_CPU_OAM_ENp, _WAFO_OAM_A0n);
-      /* p28.WUME*/ wire _WUME_OBL_TO_CBDn = not1(_GUKO_OBL_TO_CBDp);
-      /* p29.YFAP*/ BUS_CPU_Dp_new[0].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.YDYV_OAM_LATCH_DA0n.qn_new());
-      /* p29.XELE*/ BUS_CPU_Dp_new[1].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.YCEB_OAM_LATCH_DA1n.qn_new());
-      /* p29.YPON*/ BUS_CPU_Dp_new[2].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.ZUCA_OAM_LATCH_DA2n.qn_new());
-      /* p29.XUVO*/ BUS_CPU_Dp_new[3].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.WONE_OAM_LATCH_DA3n.qn_new());
-      /* p29.ZYSA*/ BUS_CPU_Dp_new[4].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.ZAXE_OAM_LATCH_DA4n.qn_new());
-      /* p29.YWEG*/ BUS_CPU_Dp_new[5].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.XAFU_OAM_LATCH_DA5n.qn_new());
-      /* p29.XABU*/ BUS_CPU_Dp_new[6].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.YSES_OAM_LATCH_DA6n.qn_new());
-      /* p29.YTUX*/ BUS_CPU_Dp_new[7].tri10_np(_WUME_OBL_TO_CBDn, oam_bus.ZECA_OAM_LATCH_DA7n.qn_new());
+      /* p28.GUKO*/ wire _GUKO_OBL_TO_CBDp_new = and3(_LEKO_CPU_RDp_ext, _AMAB_CPU_OAM_ENp_new, _WAFO_OAM_A0n_new);
+      /* p28.WUME*/ wire _WUME_OBL_TO_CBDn_new = not1(_GUKO_OBL_TO_CBDp_new);
+      /* p29.YFAP*/ BUS_CPU_Dp_new[0].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.YDYV_OAM_LATCH_DA0n.qn_new());
+      /* p29.XELE*/ BUS_CPU_Dp_new[1].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.YCEB_OAM_LATCH_DA1n.qn_new());
+      /* p29.YPON*/ BUS_CPU_Dp_new[2].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.ZUCA_OAM_LATCH_DA2n.qn_new());
+      /* p29.XUVO*/ BUS_CPU_Dp_new[3].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.WONE_OAM_LATCH_DA3n.qn_new());
+      /* p29.ZYSA*/ BUS_CPU_Dp_new[4].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.ZAXE_OAM_LATCH_DA4n.qn_new());
+      /* p29.YWEG*/ BUS_CPU_Dp_new[5].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.XAFU_OAM_LATCH_DA5n.qn_new());
+      /* p29.XABU*/ BUS_CPU_Dp_new[6].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.YSES_OAM_LATCH_DA6n.qn_new());
+      /* p29.YTUX*/ BUS_CPU_Dp_new[7].tri10_np(_WUME_OBL_TO_CBDn_new, oam_bus.ZECA_OAM_LATCH_DA7n.qn_new());
     }
   }
 

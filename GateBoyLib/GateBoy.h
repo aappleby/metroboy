@@ -141,7 +141,7 @@ struct GateBoy {
   Pin2 PIN_CPU_WRp;           // top right port PORTA_01: ->
   Pin2 PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   Pin2 PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  //Pin2 PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Pin2 PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   Pin2 PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   Pin2 PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
@@ -212,14 +212,13 @@ struct GateBoy {
 
 
   Pin2 PIN_VRAM_CSn; // PIN_43
-  //Pin2 PIN_VRAM_OEn_old; // PIN_45
+  Pin2 PIN_VRAM_OEn; // PIN_45
   Pin2 PIN_VRAM_WRn; // PIN_49
 
-  // not yet stable
   //Bus2 BUS_VRAM_An[13];
   //Pin2 PIN_VRAM_Ap[13];
   //Bus2 BUS_VRAM_Dp_in_old[8];
-  //Pin2 PIN_VRAM_Dp_in[8];
+  //Pin2 PIN_VRAM_Dp_in_old[8];
   //Pin2 PIN_VRAM_Dp_in_new[8];
 
   //Bus2 BUS_VRAM_Dp_out[8];

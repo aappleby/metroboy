@@ -1706,11 +1706,11 @@ void GateBoy::tock_slow() {
   /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(pix_pipe.RUBU_FINE_CNT2.qp_old(), pix_pipe.ROGA_FINE_CNT1.qp_old(), pix_pipe.RYKU_FINE_CNT0.qp_old());
   /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp_old, _ROZE_FINE_COUNT_7n_old);
 
-  /*#p24.SOCY*/ wire _SOCY_WIN_HITn_old = not1(_TOMU_WIN_HITp_old);
+  ///*#p24.SOCY*/ wire _SOCY_WIN_HITn_old = not1(_TOMU_WIN_HITp_old);
 
-  /*#p24.VYBO*/ wire _VYBO_CLKPIPE_xBxDxFxH_clkold = nor3(_FEPO_STORE_MATCHp_old, _WODU_HBLANKp_old, _MYVO_AxCxExGx_clk);
-  /*#p24.TYFA*/ wire _TYFA_CLKPIPE_xBxDxFxH_clkold = and3(_SOCY_WIN_HITn_old, tile_fetcher.POKY_PRELOAD_LATCHp.qp_old(), _VYBO_CLKPIPE_xBxDxFxH_clkold);
-  /*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx_clkold = not1(_TYFA_CLKPIPE_xBxDxFxH_clkold);
+  ///*#p24.VYBO*/ wire _VYBO_CLKPIPE_xBxDxFxH_clkold = nor3(_FEPO_STORE_MATCHp_old, _WODU_HBLANKp_old, _MYVO_AxCxExGx_clk);
+  ///*#p24.TYFA*/ wire _TYFA_CLKPIPE_xBxDxFxH_clkold = and3(_SOCY_WIN_HITn_old, tile_fetcher.POKY_PRELOAD_LATCHp.qp_old(), _VYBO_CLKPIPE_xBxDxFxH_clkold);
+  ///*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx_clkold = not1(_TYFA_CLKPIPE_xBxDxFxH_clkold);
 
 
   /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_old = nor2(_LUFA_DMA_VRAMp_old, pix_pipe.XYMU_RENDERINGn.qn_old());
@@ -1791,8 +1791,8 @@ void GateBoy::tock_slow() {
   /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new = not1(_SUVU_PRELOAD_DONE_TRIGn_new);
   /* p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(_ALET_xBxDxFxH_clk,                pix_pipe.XYMU_RENDERINGn.qn_new(), tile_fetcher.LAXU_BFETCH_S0p.qp_old());
   ///* p27.LEBO*/ wire _LEBO_AxCxExGx_clkold = nand2(_ALET_xBxDxFxH_clk, _MOCE_BFETCH_DONEn_old);
-  /*#p24.ROXO*/ wire _ROXO_CLKPIPE_xBxDxFxH_clkold = not1(_SEGU_CLKPIPE_AxCxExGx_clkold);
-  /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clkold = nand2(_ROXO_CLKPIPE_xBxDxFxH_clkold, _ROZE_FINE_COUNT_7n_old);
+  ///*#p24.ROXO*/ wire _ROXO_CLKPIPE_xBxDxFxH_clkold = not1(_SEGU_CLKPIPE_AxCxExGx_clkold);
+  ///*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clkold = nand2(_ROXO_CLKPIPE_xBxDxFxH_clkold, _ROZE_FINE_COUNT_7n_old);
   /*#p27.NYZE*/ pix_pipe.NYZE_SCX_FINE_MATCH_B.dff17(_MOXE_AxCxExGx_clk,            pix_pipe.XYMU_RENDERINGn.qn_new(), pix_pipe.PUXA_SCX_FINE_MATCH_A.qp_old());
 
 
@@ -1943,12 +1943,31 @@ void GateBoy::tock_slow() {
 
   /*#p24.ROXO*/ wire _ROXO_CLKPIPE_xBxDxFxH_clknew = not1(_SEGU_CLKPIPE_AxCxExGx_clknew);
   /*#p27.PASO*/ wire _PASO_FINE_RST_new = nor2(_PAHA_RENDERINGn_new, _TEVO_FETCH_TRIGp_new);
+
+
+
+#if 0
   /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_clkold,   _PASO_FINE_RST_new, pix_pipe.RYKU_FINE_CNT0.qn_old());
   /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn_new(), _PASO_FINE_RST_new, pix_pipe.ROGA_FINE_CNT1.qn_old());
   /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn_new(), _PASO_FINE_RST_new, pix_pipe.RUBU_FINE_CNT2.qn_old());
   /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_new = nand3(pix_pipe.RUBU_FINE_CNT2.qp_new(), pix_pipe.ROGA_FINE_CNT1.qp_new(), pix_pipe.RYKU_FINE_CNT0.qp_new());
   /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clknew = nand2(_ROXO_CLKPIPE_xBxDxFxH_clknew, _ROZE_FINE_COUNT_7n_new);
   /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.clk_new(_PECU_FINE_CLK_AxCxExGx_clknew);
+#endif
+
+  /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.RSTn(_PASO_FINE_RST_new);
+  /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.RSTn(_PASO_FINE_RST_new);
+  /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.RSTn(_PASO_FINE_RST_new);
+
+  /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_new = nand3(pix_pipe.RUBU_FINE_CNT2.qp_new(), pix_pipe.ROGA_FINE_CNT1.qp_new(), pix_pipe.RYKU_FINE_CNT0.qp_new());
+  /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clknew = nand2(_ROXO_CLKPIPE_xBxDxFxH_clknew, _ROZE_FINE_COUNT_7n_new);
+  /*#p27.RYKU*/ pix_pipe.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_clknew,   _PASO_FINE_RST_new, pix_pipe.RYKU_FINE_CNT0.qn_new());
+  /*#p27.ROGA*/ pix_pipe.ROGA_FINE_CNT1.dff17(pix_pipe.RYKU_FINE_CNT0.qn_new(), _PASO_FINE_RST_new, pix_pipe.ROGA_FINE_CNT1.qn_new());
+  /*#p27.RUBU*/ pix_pipe.RUBU_FINE_CNT2.dff17(pix_pipe.ROGA_FINE_CNT1.qn_new(), _PASO_FINE_RST_new, pix_pipe.RUBU_FINE_CNT2.qn_new());
+
+
+
+
   /*#p27.PUXA*/ pix_pipe.PUXA_SCX_FINE_MATCH_A.dff17(_ROXO_CLKPIPE_xBxDxFxH_clknew, pix_pipe.XYMU_RENDERINGn.qn_new(), _POHU_SCX_FINE_MATCHp_old);
   /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp_new = and2(pix_pipe.PUXA_SCX_FINE_MATCH_A.qp_new(), pix_pipe.NYZE_SCX_FINE_MATCH_B.qn_new());
   /*#p27.ROXY*/ pix_pipe.ROXY_SCX_FINE_MATCH_LATCHn.nor_latch(_PAHA_RENDERINGn_new, _POVA_FINE_MATCH_TRIGp_new);
@@ -2243,8 +2262,8 @@ void GateBoy::tock_slow() {
 
 
 
-  /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE_old = nand2(sprite_fetcher.TESE_SFETCH_S2p.qp_old(), sprite_fetcher.TOXE_SFETCH_S0p.qp_old());
-  /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_clkold = nand2(_LAPE_AxCxExGx_clk, _TAME_SFETCH_CLK_GATE_old);
+  ///*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE_old = nand2(sprite_fetcher.TESE_SFETCH_S2p.qp_old(), sprite_fetcher.TOXE_SFETCH_S0p.qp_old());
+  ///*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_clkold = nand2(_LAPE_AxCxExGx_clk, _TAME_SFETCH_CLK_GATE_old);
 
   /* p27.SOWO*/ wire _SOWO_SFETCH_RUNNINGn_old = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_old());
   /* p27.TUKU*/ wire _TUKU_WIN_HITn_old = not1(_TOMU_WIN_HITp_old);
@@ -2269,6 +2288,7 @@ void GateBoy::tock_slow() {
   /*#p29.VONU*/ sprite_fetcher.VONU_SFETCH_S1p_D4.dff17(_TAVA_xBxDxFxH_clk, pix_pipe.XYMU_RENDERINGn.qn_new(), sprite_fetcher.TOBU_SFETCH_S1p_D2.qp_old());
   /*#p29.TOBU*/ sprite_fetcher.TOBU_SFETCH_S1p_D2.dff17(_TAVA_xBxDxFxH_clk, pix_pipe.XYMU_RENDERINGn.qn_new(), sprite_fetcher.TULY_SFETCH_S1p.qp_old());
 
+#if 0
   /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p.dff17(_TOMA_SFETCH_xBxDxFxH_clkold,            _SECA_SFETCH_RUNNING_SETn_new, sprite_fetcher.TOXE_SFETCH_S0p.qn_old());
   /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1p.dff17(sprite_fetcher.TOXE_SFETCH_S0p.qn_new(), _SECA_SFETCH_RUNNING_SETn_new, sprite_fetcher.TULY_SFETCH_S1p.qn_old());
   /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p.dff17(sprite_fetcher.TULY_SFETCH_S1p.qn_new(), _SECA_SFETCH_RUNNING_SETn_new, sprite_fetcher.TESE_SFETCH_S2p.qn_old());
@@ -2276,6 +2296,19 @@ void GateBoy::tock_slow() {
   /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE_new = nand2(sprite_fetcher.TESE_SFETCH_S2p.qp_new(), sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
   /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_clknew = nand2(_LAPE_AxCxExGx_clk, _TAME_SFETCH_CLK_GATE_new);
   /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p.clk_new(_TOMA_SFETCH_xBxDxFxH_clknew);
+#endif
+
+  /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p.RSTn(_SECA_SFETCH_RUNNING_SETn_new);
+  /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1p.RSTn(_SECA_SFETCH_RUNNING_SETn_new);
+  /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p.RSTn(_SECA_SFETCH_RUNNING_SETn_new);
+
+  /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE_new = nand2(sprite_fetcher.TESE_SFETCH_S2p.qp_new(), sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
+  /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_clknew = nand2(_LAPE_AxCxExGx_clk, _TAME_SFETCH_CLK_GATE_new);
+  /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p.dff17(_TOMA_SFETCH_xBxDxFxH_clknew,            _SECA_SFETCH_RUNNING_SETn_new, sprite_fetcher.TOXE_SFETCH_S0p.qn_new());
+  /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1p.dff17(sprite_fetcher.TOXE_SFETCH_S0p.qn_new(), _SECA_SFETCH_RUNNING_SETn_new, sprite_fetcher.TULY_SFETCH_S1p.qn_new());
+  /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p.dff17(sprite_fetcher.TULY_SFETCH_S1p.qn_new(), _SECA_SFETCH_RUNNING_SETn_new, sprite_fetcher.TESE_SFETCH_S2p.qn_new());
+
+
 
   /* p29.TYNO*/ wire _TYNO_new = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp_new(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
   /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn_new = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn_new(), _TYNO_new);
@@ -3057,8 +3090,8 @@ void GateBoy::tock_slow() {
     ///* p29.CAXU*/ wire _CAXU_SPRITE_COUNT3n_old = not1(sprite_store.DYBE_SPRITE_COUNT3.qp_old());
 
 
-    /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_old = and2(sprite_store.CUXY_SPRITE_COUNT1.qp_old(), sprite_store.DYBE_SPRITE_COUNT3.qp_old());
-    /*#p29.CAKE*/ wire _CAKE_clkold = or2(_BAKY_SPRITES_FULL_old, sprite_store.DEZY_STORE_ENn.qp_old());
+    ///*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_old = and2(sprite_store.CUXY_SPRITE_COUNT1.qp_old(), sprite_store.DYBE_SPRITE_COUNT3.qp_old());
+    ///*#p29.CAKE*/ wire _CAKE_clkold = or2(_BAKY_SPRITES_FULL_old, sprite_store.DEZY_STORE_ENn.qp_old());
 
     /* p29.CARE*/ wire _CARE_STORE_ENp_ABxxEFxx_new = and3(_XOCE_xBCxxFGx_clknew, _CEHA_SCANNINGp_new, _GESE_SCAN_MATCH_Yp_new); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /* p29.DYTY*/ wire _DYTY_STORE_ENn_xxCDxxGH_new = not1(_CARE_STORE_ENp_ABxxEFxx_new);
@@ -3069,12 +3102,10 @@ void GateBoy::tock_slow() {
 
     // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
     /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(_ATEJ_LINE_TRIGp_new);
-    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_clkold,                             _AZYB_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn_old());
-    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17(sprite_store.BESE_SPRITE_COUNT0.qn_new(), _AZYB_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn_old());
-    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17(sprite_store.CUXY_SPRITE_COUNT1.qn_new(), _AZYB_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn_old());
-    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17(sprite_store.BEGO_SPRITE_COUNT2.qn_new(), _AZYB_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn_old());
-
-    // FIXME not sure why we have to run this twice with old/new clock
+    /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.RSTn(_AZYB_LINE_TRIGn);
+    /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.RSTn(_AZYB_LINE_TRIGn);
+    /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.RSTn(_AZYB_LINE_TRIGn);
+    /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.RSTn(_AZYB_LINE_TRIGn);
     /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_new = and2(sprite_store.CUXY_SPRITE_COUNT1.qp_new(), sprite_store.DYBE_SPRITE_COUNT3.qp_new());
     /*#p29.CAKE*/ wire _CAKE_clknew = or2(_BAKY_SPRITES_FULL_new, sprite_store.DEZY_STORE_ENn.qp_new());
     /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17(_CAKE_clknew,                             _AZYB_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn_new());

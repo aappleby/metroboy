@@ -2451,36 +2451,6 @@ void GateBoy::tock_slow(int pass_index) {
   // The signals to OAM should be old
 
   Bus2 BUS_VRAM_Dp_in[8];
-
-#if 0
-  {
-    /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn_new = nand2(_SALE_CPU_VRAM_WRn_ext, _XANE_VRAM_LOCKn_new);
-    /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp_new = and2(_TACU_SPR_SEQ_5_TRIG_new, _TEXY_SPR_READ_VRAMp_new);
-    /* p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn_new = not1(_SOHO_SPR_VRAM_RDp_new);
-
-    /* p25.APAM*/ wire _APAM_DMA_VRAMn_new    = not1(_LUFA_DMA_VRAMp_new);
-    /* p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn_new = not1(tile_fetcher.LONY_FETCHINGp.qp_new());
-    /* p25.RACU*/ wire _RACU_MOEn_new = and4(_RYLU_CPU_VRAM_RDn_new, _RAWA_SPR_VRAM_RDn_new, _MYMA_BGW_VRAM_RDn_new, _APAM_DMA_VRAMn_new); // def and
-    /* p25.SEMA*/ wire _SEMA_MOEn_A_new = and2(_RACU_MOEn_new, _RACO_DBG_VRAMn_new);
-    /* p25.RUTE*/ wire _RUTE_MOEn_D_new = or2(_RACU_MOEn_new, _TUTO_DBG_VRAMp_new); // schematic wrong, second input is RACU
-    /* p25.REFO*/ wire _REFO_MOEn_A_new = not1(_SEMA_MOEn_A_new);
-    /* p25.SAHA*/ wire _SAHA_MOEn_D_new = not1(_RUTE_MOEn_D_new);
-    Pin2 PIN_VRAM_OEn_new;
-    PIN_VRAM_OEn_new.pin_out(1, _REFO_MOEn_A_new, _SAHA_MOEn_D_new);
-
-    uint8_t vram_data = vid_ram[vram_addr_latch];
-
-    PIN_VRAM_Dp_in_new[0].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x01));
-    PIN_VRAM_Dp_in_new[1].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x02));
-    PIN_VRAM_Dp_in_new[2].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x04));
-    PIN_VRAM_Dp_in_new[3].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x08));
-    PIN_VRAM_Dp_in_new[4].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x10));
-    PIN_VRAM_Dp_in_new[5].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x20));
-    PIN_VRAM_Dp_in_new[6].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x40));
-    PIN_VRAM_Dp_in_new[7].pin_in(!PIN_VRAM_OEn_new.qp_ext(), (vram_data & 0x80));
-  }
-#endif
-
   {
 
     if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
@@ -2553,7 +2523,21 @@ void GateBoy::tock_slow(int pass_index) {
 
   // FIXME same thing here, signals to vram should be old
 
-  Bus2 BUS_VRAM_An[13];
+  Bus2 BUS_VRAM_An[13]; // not stable
+
+  BUS_VRAM_An[ 0].reset();
+  BUS_VRAM_An[ 1].reset();
+  BUS_VRAM_An[ 2].reset();
+  BUS_VRAM_An[ 3].reset();
+  BUS_VRAM_An[ 4].reset();
+  BUS_VRAM_An[ 5].reset();
+  BUS_VRAM_An[ 6].reset();
+  BUS_VRAM_An[ 7].reset();
+  BUS_VRAM_An[ 8].reset();
+  BUS_VRAM_An[ 9].reset();
+  BUS_VRAM_An[10].reset();
+  BUS_VRAM_An[11].reset();
+  BUS_VRAM_An[12].reset();
 
   {
     {
@@ -4227,7 +4211,6 @@ void GateBoy::tock_slow(int pass_index) {
 #pragma endregion
 
 #pragma region VRAM_write
-  Bus2 BUS_VRAM_Dp_out[8];
   {
     /* CBD -> VBD */
     /* p25.ROCY*/ wire _ROCY_CBD_TO_VPDp_new = and2(_REVO_CBD_TO_VPDp_new, _SAZO_CBD_TO_VPDp_new);
@@ -4235,6 +4218,15 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p25.ROVE*/ wire _ROVE_CBD_TO_VPDp_new = not1(_RAHU_CBD_TO_VPDn_new);
 
     {
+      BUS_VRAM_Dp_out[0].reset();
+      BUS_VRAM_Dp_out[1].reset();
+      BUS_VRAM_Dp_out[2].reset();
+      BUS_VRAM_Dp_out[3].reset();
+      BUS_VRAM_Dp_out[4].reset();
+      BUS_VRAM_Dp_out[5].reset();
+      BUS_VRAM_Dp_out[6].reset();
+      BUS_VRAM_Dp_out[7].reset();
+
       /* p25.TEME*/ BUS_VRAM_Dp_out[0].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[0].qp_ext());
       /* p25.TEWU*/ BUS_VRAM_Dp_out[1].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[1].qp_ext());
       /*#p25.TYGO*/ BUS_VRAM_Dp_out[2].tri10_np(_RAHU_CBD_TO_VPDn_new, BUS_CPU_Dp_ext[2].qp_ext());

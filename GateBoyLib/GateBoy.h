@@ -191,6 +191,9 @@ struct GateBoy {
 
   Bus2 SPR_TRI_I_out_new[6];
   Bus2 SPR_TRI_L_out_new[4];
+  Bus2 SPR_TRI_I_in_new[6];
+  Bus2 SPR_TRI_L_in_new[4];
+
   Bus2 BUS_OAM_An_new[8]; // not yet stable
 
   Pin2 PIN_OAM_CLK;

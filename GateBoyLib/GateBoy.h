@@ -131,6 +131,18 @@ struct GateBoy {
   Gate LYRY_BFETCH_DONEp;
   Gate TEKY_SFETCH_REQp;
   Gate WODU_HBLANKp;
+  Gate FEPO_STORE_MATCHp;
+
+  /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
+  /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
+  /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
+  /* p29.GYFY*/ Gate GYFY_SPRITE3_GETp;
+  /* p29.GONO*/ Gate GONO_SPRITE4_GETp;
+  /* p29.GEGA*/ Gate GEGA_SPRITE5_GETp;
+  /* p29.XOJA*/ Gate XOJA_SPRITE6_GETp;
+  /* p29.GUTU*/ Gate GUTU_SPRITE7_GETp;
+  /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
+  /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 
   DFF IE_D0;
   DFF IE_D1;

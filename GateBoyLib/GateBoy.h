@@ -191,19 +191,25 @@ struct GateBoy {
   Pin2 PIN_SIN; // PIN_69
   Pin2 PIN_SOUT; // PIN_70
 
-  Bus2 SPR_TRI_I_out_new[6];
-  Bus2 SPR_TRI_L_out_new[4];
-  Bus2 SPR_TRI_I_in_new[6];
-  Bus2 SPR_TRI_L_in_new[4];
+  Bus2 SPR_TRI_I_out_new[6]; // reset
+  Bus2 SPR_TRI_L_out_new[4]; // reset
+  Bus2 SPR_TRI_I_in_new[6];  // reset
+  Bus2 SPR_TRI_L_in_new[4];  // reset
 
-  Bus2 BUS_OAM_An_new[8]; // not yet stable
+  Bus2 BUS_CPU_Dp_ext[8]; // reset
+  Bus2 BUS_CPU_Dp_new[8]; // reset
 
-  Pin2 PIN_OAM_CLK;
+  Bus2 BUS_OAM_An[8]; // reset
+
+  Pin2 PIN_OAM_CLKn;
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
   Pin2 PIN_OAM_OEn;
-  Bus2 BUS_OAM_DAn_new[8];
-  Bus2 BUS_OAM_DBn_new[8];
+  Bus2 BUS_OAM_DAn_new[8]; // reset
+  Bus2 BUS_OAM_DBn_new[8]; // reset
+  Bus2 BUS_OAM_DAn_out[8]; // reset
+  Bus2 BUS_OAM_DBn_out[8]; // reset
+
 
   Pin2 PIN_VRAM_CSn; // PIN_43
   //Pin2 PIN_VRAM_OEn_old; // PIN_45

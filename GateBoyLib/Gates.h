@@ -340,6 +340,11 @@ struct TriBase : public BitBase {
 // tri6_pn : top rung tadpole facing second rung dot.
 
 struct Bus2 : public TriBase {
+  void reset() {
+    bit_data = 1;
+    bit_dirty = 1;
+  }
+
   wire qp_ext() { return TriBase::qp_new(); }
   wire qn_ext() { return TriBase::qn_new(); }
 

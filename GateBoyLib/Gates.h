@@ -77,12 +77,29 @@ struct DFF : public BitBase {
     bit_clock = CLKp;
   }
 
-  void clkn_new(wire CLKn) {
-    CHECK_N(!bit_clock && !CLKn);
-    CHECK_P(bit_dirty);
-    bit_clock = !CLKn;
+  void must_rstn(wire RSTn) {
+    CHECK_N(RSTn);
+    CHECK_N(bit_dirty);
+    bit_clock = 0;
+    bit_data = 0;
+    bit_dirty = 1;
   }
 
+  void clk_even(wire CLKp, wire RSTn = 1) {
+    CHECK_N(!bit_clock && CLKp);
+    CHECK_N(bit_dirty);
+    bit_clock = CLKp;
+    bit_data = bit_data && RSTn;
+    bit_dirty = 1;
+  }
+
+  void clk_odd(wire CLKp, wire RSTn = 1) {
+    CHECK_N(!bit_clock && CLKp);
+    CHECK_N(bit_dirty);
+    bit_clock = CLKp;
+    bit_data = bit_data && RSTn;
+    bit_dirty = 1;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -237,6 +254,7 @@ struct DFF17 : public DFF {
   }
 
   void RSTn(wire RSTn) {
+    bit_dirty = 1;
     bit_data = bit_data && RSTn;
   }
 };

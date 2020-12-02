@@ -139,7 +139,7 @@ struct GateBoy {
   Pin2 PIN_CPU_WRp;           // top right port PORTA_01: ->
   Pin2 PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   Pin2 PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  Pin2 PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  //Pin2 PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   Pin2 PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   Pin2 PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
@@ -241,6 +241,7 @@ struct GateBoy {
   bool sys_fastboot = 0;
   bool sys_statediff = 1;
   bool sys_cpu_start = 0;
+  bool sys_in_reset_sequence = 0;
 
   uint8_t sys_buttons = 0;
 

@@ -130,6 +130,7 @@ struct GateBoy {
   Gate DYTY_STORE_ENn;
   Gate LYRY_BFETCH_DONEp;
   Gate TEKY_SFETCH_REQp;
+  Gate WODU_HBLANKp;
 
   DFF IE_D0;
   DFF IE_D1;

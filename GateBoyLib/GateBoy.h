@@ -127,6 +127,8 @@ struct GateBoy {
   /*p07.TEPU*/ DFF17 BOOT_BITn;
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
+  Gate DYTY_STORE_ENn;
+
   DFF IE_D0;
   DFF IE_D1;
   DFF IE_D2;

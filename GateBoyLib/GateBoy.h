@@ -174,9 +174,9 @@ struct GateBoy {
   Pin2 PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
   Pin2 PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
   Pin2 PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  Pin2 PIN_EXT_A[16];
-  Pin2 PIN_EXT_D_in[8];
-  Pin2 PIN_EXT_D_out[8];
+  Pin2 PIN_EXT_A_new[16];
+  Pin2 PIN_EXT_D_in_new[8];
+  Pin2 PIN_EXT_D_out_new[8];
 
   Pin2 PIN_JOY_P14; // PIN_63
   Pin2 PIN_JOY_P15; // PIN_62

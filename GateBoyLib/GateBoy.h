@@ -217,7 +217,7 @@ struct GateBoy {
 
   //Bus2 BUS_VRAM_An[13];
   //Pin2 PIN_VRAM_Ap[13];
-  //Bus2 BUS_VRAM_Dp_in_old[8];
+  //Bus2 BUS_VRAM_Dp_in[8];
   //Pin2 PIN_VRAM_Dp_in_old[8];
   //Pin2 PIN_VRAM_Dp_in_new[8];
 

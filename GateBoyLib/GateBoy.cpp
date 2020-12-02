@@ -397,6 +397,10 @@ void GateBoy::next_phase() {
 
 void GateBoy::tock_slow(int pass_index) {
 
+  if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+    vram_data_latch = vid_ram[vram_addr_latch];
+  }
+
   if (pass_index == 0) {
     oam_data_latch_a = oam_ram[(oam_addr_latch << 1) + 0];
     oam_data_latch_b = oam_ram[(oam_addr_latch << 1) + 1];
@@ -2450,13 +2454,8 @@ void GateBoy::tock_slow(int pass_index) {
   // FIXME old/new mixed up here :/
   // The signals to OAM should be old
 
-  Bus2 BUS_VRAM_Dp_in[8];
+  Bus2 BUS_VRAM_Dp_in[8]; // not stable
   {
-
-    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
-      vram_data_latch = vid_ram[vram_addr_latch];
-    }
-
     Pin2 PIN_VRAM_Dp_in_old[8]; // not stable
 
     PIN_VRAM_Dp_in_old[0].reset();
@@ -2476,6 +2475,15 @@ void GateBoy::tock_slow(int pass_index) {
     PIN_VRAM_Dp_in_old[5].pin_in(!PIN_VRAM_OEn.qp_old(), (vram_data_latch & 0x20));
     PIN_VRAM_Dp_in_old[6].pin_in(!PIN_VRAM_OEn.qp_old(), (vram_data_latch & 0x40));
     PIN_VRAM_Dp_in_old[7].pin_in(!PIN_VRAM_OEn.qp_old(), (vram_data_latch & 0x80));
+
+    BUS_VRAM_Dp_in[0].reset();
+    BUS_VRAM_Dp_in[1].reset();
+    BUS_VRAM_Dp_in[2].reset();
+    BUS_VRAM_Dp_in[3].reset();
+    BUS_VRAM_Dp_in[4].reset();
+    BUS_VRAM_Dp_in[5].reset();
+    BUS_VRAM_Dp_in[6].reset();
+    BUS_VRAM_Dp_in[7].reset();
 
     /* p25.RODY*/ BUS_VRAM_Dp_in[0].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[0].qn_new());
     /* p25.REBA*/ BUS_VRAM_Dp_in[1].tri6_pn(_RENA_CBD_TO_VPDn_old, PIN_VRAM_Dp_in_old[1].qn_new());
@@ -2714,73 +2722,6 @@ void GateBoy::tock_slow(int pass_index) {
       /*#p25.SUVO*/ BUS_VRAM_An[10].tri6_pn(_NETA_TILE_READp_new,    vram_bus.POWY_TILE_DB6p.qp_new());
       /*#p25.TOBO*/ BUS_VRAM_An[11].tri6_pn(_NETA_TILE_READp_new,    vram_bus.PYJU_TILE_DB7p.qp_new());
       /*#p25.VURY*/ BUS_VRAM_An[12].tri6_pn(_NETA_TILE_READp_new,    _VUZA_TILE_BANKp_new);
-    }
-  }
-
-  //----------------------------------------
-
-  {
-    // VRAM addr bus -> VRAM addr pin
-    /* p25.MYFU*/ wire _MYFUp_new = not1(BUS_VRAM_An[ 0].qp_ext());
-    /* p25.MASA*/ wire _MASAp_new = not1(BUS_VRAM_An[ 1].qp_ext());
-    /* p25.MYRE*/ wire _MYREp_new = not1(BUS_VRAM_An[ 2].qp_ext());
-    /* p25.MAVU*/ wire _MAVUp_new = not1(BUS_VRAM_An[ 3].qp_ext());
-    /* p25.MEPA*/ wire _MEPAp_new = not1(BUS_VRAM_An[ 4].qp_ext());
-    /* p25.MYSA*/ wire _MYSAp_new = not1(BUS_VRAM_An[ 5].qp_ext());
-    /* p25.MEWY*/ wire _MEWYp_new = not1(BUS_VRAM_An[ 6].qp_ext());
-    /* p25.MUME*/ wire _MUMEp_new = not1(BUS_VRAM_An[ 7].qp_ext());
-    /* p25.VOVA*/ wire _VOVAp_new = not1(BUS_VRAM_An[ 8].qp_ext());
-    /* p25.VODE*/ wire _VODEp_new = not1(BUS_VRAM_An[ 9].qp_ext());
-    /* p25.RUKY*/ wire _RUKYp_new = not1(BUS_VRAM_An[10].qp_ext());
-    /* p25.RUMA*/ wire _RUMAp_new = not1(BUS_VRAM_An[11].qp_ext());
-    /* p25.REHO*/ wire _REHOp_new = not1(BUS_VRAM_An[12].qp_ext());
-
-    /* p25.LEXE*/ wire _LEXEn_new = not1(_MYFUp_new);
-    /* p25.LOZU*/ wire _LOZUn_new = not1(_MASAp_new);
-    /* p25.LACA*/ wire _LACAn_new = not1(_MYREp_new);
-    /* p25.LUVO*/ wire _LUVOn_new = not1(_MAVUp_new);
-    /* p25.LOLY*/ wire _LOLYn_new = not1(_MEPAp_new);
-    /* p25.LALO*/ wire _LALOn_new = not1(_MYSAp_new);
-    /* p25.LEFA*/ wire _LEFAn_new = not1(_MEWYp_new);
-    /* p25.LUBY*/ wire _LUBYn_new = not1(_MUMEp_new);
-    /* p25.TUJY*/ wire _TUJYn_new = not1(_VOVAp_new);
-    /* p25.TAGO*/ wire _TAGOn_new = not1(_VODEp_new);
-    /* p25.NUVA*/ wire _NUVAn_new = not1(_RUKYp_new);
-    /* p25.PEDU*/ wire _PEDUn_new = not1(_RUMAp_new);
-    /* p25.PONY*/ wire _PONYn_new = not1(_REHOp_new);
-
-    Pin2 PIN_VRAM_Ap[13];
-
-    PIN_VRAM_Ap[ 0].reset();
-    PIN_VRAM_Ap[ 1].reset();
-    PIN_VRAM_Ap[ 2].reset();
-    PIN_VRAM_Ap[ 3].reset();
-    PIN_VRAM_Ap[ 4].reset();
-    PIN_VRAM_Ap[ 5].reset();
-    PIN_VRAM_Ap[ 6].reset();
-    PIN_VRAM_Ap[ 7].reset();
-    PIN_VRAM_Ap[ 8].reset();
-    PIN_VRAM_Ap[ 9].reset();
-    PIN_VRAM_Ap[10].reset();
-    PIN_VRAM_Ap[11].reset();
-    PIN_VRAM_Ap[12].reset();
-
-    PIN_VRAM_Ap[ 0].pin_out(1, _LEXEn_new, _LEXEn_new);
-    PIN_VRAM_Ap[ 1].pin_out(1, _LOZUn_new, _LOZUn_new);
-    PIN_VRAM_Ap[ 2].pin_out(1, _LACAn_new, _LACAn_new);
-    PIN_VRAM_Ap[ 3].pin_out(1, _LUVOn_new, _LUVOn_new);
-    PIN_VRAM_Ap[ 4].pin_out(1, _LOLYn_new, _LOLYn_new);
-    PIN_VRAM_Ap[ 5].pin_out(1, _LALOn_new, _LALOn_new);
-    PIN_VRAM_Ap[ 6].pin_out(1, _LEFAn_new, _LEFAn_new);
-    PIN_VRAM_Ap[ 7].pin_out(1, _LUBYn_new, _LUBYn_new);
-    PIN_VRAM_Ap[ 8].pin_out(1, _TUJYn_new, _TUJYn_new);
-    PIN_VRAM_Ap[ 9].pin_out(1, _TAGOn_new, _TAGOn_new);
-    PIN_VRAM_Ap[10].pin_out(1, _NUVAn_new, _NUVAn_new);
-    PIN_VRAM_Ap[11].pin_out(1, _PEDUn_new, _PEDUn_new);
-    PIN_VRAM_Ap[12].pin_out(1, _PONYn_new, _PONYn_new);
-
-    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-      vram_addr_latch = pack_u16p_new(13, PIN_VRAM_Ap);
     }
   }
 
@@ -4319,10 +4260,6 @@ void GateBoy::tock_slow(int pass_index) {
       PIN_VRAM_Dp_out[5].pin_out(_ROFA_CBD_TO_VPDp_new, _REVU_D5n_new, _RUMU_D5n_new);
       PIN_VRAM_Dp_out[6].pin_out(_ROFA_CBD_TO_VPDp_new, _REKU_D6n_new, _RYTY_D6n_new);
       PIN_VRAM_Dp_out[7].pin_out(_ROFA_CBD_TO_VPDp_new, _RYZE_D7n_new, _RADY_D7n_new);
-
-      if (!PIN_VRAM_WRn.qp_ext()) {
-        vid_ram[vram_addr_latch] = pack_u8p_new(8, PIN_VRAM_Dp_out);
-      }
     }
   }
 #pragma endregion
@@ -5463,6 +5400,74 @@ void GateBoy::tock_slow(int pass_index) {
 
     PIN_VRAM_OEn.reset();
     PIN_VRAM_OEn.pin_out(1, _REFO_MOEn_A_new, _SAHA_MOEn_D_new);
+  }
+
+  Pin2 PIN_VRAM_Ap[13]; // not stable
+  {
+    // VRAM addr bus -> VRAM addr pin
+    /* p25.MYFU*/ wire _MYFUp_new = not1(BUS_VRAM_An[ 0].qp_ext());
+    /* p25.MASA*/ wire _MASAp_new = not1(BUS_VRAM_An[ 1].qp_ext());
+    /* p25.MYRE*/ wire _MYREp_new = not1(BUS_VRAM_An[ 2].qp_ext());
+    /* p25.MAVU*/ wire _MAVUp_new = not1(BUS_VRAM_An[ 3].qp_ext());
+    /* p25.MEPA*/ wire _MEPAp_new = not1(BUS_VRAM_An[ 4].qp_ext());
+    /* p25.MYSA*/ wire _MYSAp_new = not1(BUS_VRAM_An[ 5].qp_ext());
+    /* p25.MEWY*/ wire _MEWYp_new = not1(BUS_VRAM_An[ 6].qp_ext());
+    /* p25.MUME*/ wire _MUMEp_new = not1(BUS_VRAM_An[ 7].qp_ext());
+    /* p25.VOVA*/ wire _VOVAp_new = not1(BUS_VRAM_An[ 8].qp_ext());
+    /* p25.VODE*/ wire _VODEp_new = not1(BUS_VRAM_An[ 9].qp_ext());
+    /* p25.RUKY*/ wire _RUKYp_new = not1(BUS_VRAM_An[10].qp_ext());
+    /* p25.RUMA*/ wire _RUMAp_new = not1(BUS_VRAM_An[11].qp_ext());
+    /* p25.REHO*/ wire _REHOp_new = not1(BUS_VRAM_An[12].qp_ext());
+
+    /* p25.LEXE*/ wire _LEXEn_new = not1(_MYFUp_new);
+    /* p25.LOZU*/ wire _LOZUn_new = not1(_MASAp_new);
+    /* p25.LACA*/ wire _LACAn_new = not1(_MYREp_new);
+    /* p25.LUVO*/ wire _LUVOn_new = not1(_MAVUp_new);
+    /* p25.LOLY*/ wire _LOLYn_new = not1(_MEPAp_new);
+    /* p25.LALO*/ wire _LALOn_new = not1(_MYSAp_new);
+    /* p25.LEFA*/ wire _LEFAn_new = not1(_MEWYp_new);
+    /* p25.LUBY*/ wire _LUBYn_new = not1(_MUMEp_new);
+    /* p25.TUJY*/ wire _TUJYn_new = not1(_VOVAp_new);
+    /* p25.TAGO*/ wire _TAGOn_new = not1(_VODEp_new);
+    /* p25.NUVA*/ wire _NUVAn_new = not1(_RUKYp_new);
+    /* p25.PEDU*/ wire _PEDUn_new = not1(_RUMAp_new);
+    /* p25.PONY*/ wire _PONYn_new = not1(_REHOp_new);
+
+    PIN_VRAM_Ap[ 0].reset();
+    PIN_VRAM_Ap[ 1].reset();
+    PIN_VRAM_Ap[ 2].reset();
+    PIN_VRAM_Ap[ 3].reset();
+    PIN_VRAM_Ap[ 4].reset();
+    PIN_VRAM_Ap[ 5].reset();
+    PIN_VRAM_Ap[ 6].reset();
+    PIN_VRAM_Ap[ 7].reset();
+    PIN_VRAM_Ap[ 8].reset();
+    PIN_VRAM_Ap[ 9].reset();
+    PIN_VRAM_Ap[10].reset();
+    PIN_VRAM_Ap[11].reset();
+    PIN_VRAM_Ap[12].reset();
+
+    PIN_VRAM_Ap[ 0].pin_out(1, _LEXEn_new, _LEXEn_new);
+    PIN_VRAM_Ap[ 1].pin_out(1, _LOZUn_new, _LOZUn_new);
+    PIN_VRAM_Ap[ 2].pin_out(1, _LACAn_new, _LACAn_new);
+    PIN_VRAM_Ap[ 3].pin_out(1, _LUVOn_new, _LUVOn_new);
+    PIN_VRAM_Ap[ 4].pin_out(1, _LOLYn_new, _LOLYn_new);
+    PIN_VRAM_Ap[ 5].pin_out(1, _LALOn_new, _LALOn_new);
+    PIN_VRAM_Ap[ 6].pin_out(1, _LEFAn_new, _LEFAn_new);
+    PIN_VRAM_Ap[ 7].pin_out(1, _LUBYn_new, _LUBYn_new);
+    PIN_VRAM_Ap[ 8].pin_out(1, _TUJYn_new, _TUJYn_new);
+    PIN_VRAM_Ap[ 9].pin_out(1, _TAGOn_new, _TAGOn_new);
+    PIN_VRAM_Ap[10].pin_out(1, _NUVAn_new, _NUVAn_new);
+    PIN_VRAM_Ap[11].pin_out(1, _PEDUn_new, _PEDUn_new);
+    PIN_VRAM_Ap[12].pin_out(1, _PONYn_new, _PONYn_new);
+  }
+
+  if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+    vram_addr_latch = pack_u16p_new(13, PIN_VRAM_Ap);
+  }
+
+  if (!PIN_VRAM_WRn.qp_ext()) {
+    vid_ram[vram_addr_latch] = pack_u8p_new(8, PIN_VRAM_Dp_out);
   }
 }
 

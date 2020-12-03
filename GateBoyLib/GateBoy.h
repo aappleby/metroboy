@@ -225,6 +225,8 @@ struct GateBoy {
   Bus2 BUS_OAM_DAn_out[8]; // reset
   Bus2 BUS_OAM_DBn_out[8]; // reset
 
+  Bus2 BUS_VRAM_Dp_in_new[8]; // not stable
+  Pin2 PIN_VRAM_Dp_in_new[8]; // not stable
 
   Pin2 PIN_VRAM_CSn; // PIN_43
   Pin2 PIN_VRAM_OEn; // PIN_45

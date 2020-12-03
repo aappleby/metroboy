@@ -697,7 +697,6 @@ void GateBoy::tock_slow(int pass_index) {
   /* p23.WEKO*/ wire _WEKO_FF4A_WRp_clk = and2(_CUPA_CPU_WRp_xxxxEFGx_clk, _VYGA_FF4Ap_ext);
   /* p23.WUZA*/ wire _WUZA_FF4B_WRp_clk = and2(_CUPA_CPU_WRp_xxxxEFGx_clk, _VUMY_FF4Bp_ext);
 
-  /* p06.DAKU*/ wire _DAKU_FF01_WRp_clk = not1(_URYS_FF01_WRn_clk);
   /* p23.XUBO*/ wire _XUBO_FF40_WRn_clk = not1(_WARU_FF40_WRp_clk);
   /* p21.RYVE*/ wire _RYVE_FF41_WRn_clk = not1(_SEPA_FF41_WRp_clk);
   /* p21.RYJU*/ wire _RYJU_FF41_WRn_clk = not1(_SEPA_FF41_WRp_clk);
@@ -835,9 +834,7 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Power-on reset handler
 
-#pragma region RESET
-
-  {
+  [this, _UCOB_CLKBADp_ext, _UMUT_MODE_DBG1p_ext, _UNOR_MODE_DBG2p_ext, _UPOJ_MODE_PRODn_ext, _BOGA_Axxxxxxx_clk]() {
     /* p01.AFER*/ clk_reg.AFER_SYS_RSTp_s.dff13(_BOGA_Axxxxxxx_clk, _UPOJ_MODE_PRODn_ext, clk_reg.ASOL_POR_DONEn_s.qp_old());
 
     /* p01.UPYF*/ wire _UPYF_ext = or2(sys_rst, _UCOB_CLKBADp_ext);
@@ -854,14 +851,13 @@ void GateBoy::tock_slow(int pass_index) {
     sys_cpu_start = PIN_CPU_STARTp.qp_ext();
 
     PIN_CPU_SYS_RSTp.pin_in(1, clk_reg.AFER_SYS_RSTp_s.qp_new());
-  }
+  }();
+
   /*#p01.AVOR*/ wire _AVOR_SYS_RSTp_new = or2(clk_reg.AFER_SYS_RSTp_s.qp_new(), clk_reg.ASOL_POR_DONEn_s.qp_new());
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(_AVOR_SYS_RSTp_new);
   /*#p01.DULA*/ wire _DULA_SYS_RSTp_new = not1(_ALUR_SYS_RSTn_new);
   /*#p01.CUNU*/ wire _CUNU_SYS_RSTn_new = not1(_DULA_SYS_RSTp_new);
   /*#p01.XORE*/ wire _XORE_SYS_RSTp_new = not1(_CUNU_SYS_RSTn_new);
-
-#pragma endregion
 
   //----------------------------------------
 
@@ -924,7 +920,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#pragma region Timer
   [this, _ALUR_SYS_RSTn_new, _BOGA_Axxxxxxx_clk, _TEDA_FF05_RDp_ext, _TUBY_FF06_RDp_ext, _SORA_FF07_RDp_ext, _TOPE_FF05_WRn_clk, _TYJU_FF06_WRn_clk, _SARA_FF07_WRn_clk]() {
     /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp_old = nor2(tim_reg.NUGA_TIMA7p.qp_old(), tim_reg.NYDU_TIMA7p_DELAY.qn_old());
     /*#p03.MOBA*/ tim_reg.MOBA_TIMER_OVERFLOWp.dff17(_BOGA_Axxxxxxx_clk, _ALUR_SYS_RSTn_new, _MERY_TIMER_OVERFLOWp_old);
@@ -1014,25 +1009,12 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p03.ROTE*/ BUS_CPU_Dp_out[1].tri6_pn(_SORA_FF07_RDp_ext, tim_reg.SAMY_TAC1p.qn_new());
     /*#p03.SUPE*/ BUS_CPU_Dp_out[2].tri6_pn(_SORA_FF07_RDp_ext, tim_reg.SABO_TAC2p.qn_new());
   }();
-#pragma endregion
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   /* p23.WYMO*/ wire _WYMO_LCDC_WINENp_old = pix_pipe.WYMO_LCDC_WINENn.qn_old();
 
 #pragma region Regs_Write
-  {
-    // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
-    // That also means that _both_ P14 and P15 are selected at reset :/
-    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
-    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
-    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
-    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
-    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
-    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
-    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
-    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
-  }
   {
     // FF40 LCDC
     /* p01.XARE*/ wire _XARE_SYS_RSTn_new = not1(_XORE_SYS_RSTp_new);
@@ -2967,8 +2949,20 @@ void GateBoy::tock_slow(int pass_index) {
   }
 #pragma endregion
 
-#pragma region Joypad
-  {
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+  [this, _ALUR_SYS_RSTn_new, _BOGA_Axxxxxxx_clk, _BYZO_FF00_RDn_ext, _ATOZ_FF00_WRn_clk]() {
+    // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
+    // That also means that _both_ P14 and P15 are selected at reset :/
+    /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[0].qp_ext());
+    /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[1].qp_ext());
+    /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[2].qp_ext());
+    /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[3].qp_ext());
+    /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[4].qp_ext());
+    /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[5].qp_ext());
+    /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[6].qp_ext());
+    /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_Dp_ext[7].qp_ext());
+
     wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
     /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);
 
@@ -3042,11 +3036,11 @@ void GateBoy::tock_slow(int pass_index) {
       /* p05.KEJA*/ joypad.KEJA_JOYP_L2n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P12.qn_ext());
       /* p05.KOLO*/ joypad.KOLO_JOYP_L3n.tp_latch(_BYZO_FF00_RDn_ext, PIN_JOY_P13.qn_ext());
     }
-  }
-#pragma endregion
+  }();
 
-#pragma region Serial
-  {
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+  [this, _ALUR_SYS_RSTn_new, _UFEG_FF01_RDp_ext, _URYS_FF01_WRn_clk, _UCOM_FF02_RDp_ext, _UWAM_FF02_WRn_clk]() {
     /* p06.CAVE*/ wire _CAVE_SER_clkold = mux2n(ser_reg.CULY_XFER_DIR.qp_old(), ser_reg.COTY_SER_CLK.qp_old(), PIN_SCK.qn_old());
     /* p06.DAWA*/ wire _DAWA_SER_clkold = or2(_CAVE_SER_clkold, ser_reg.ETAF_SER_RUNNING.qn_old()); // this must stop the clock or something when the transmit's done
 
@@ -3068,6 +3062,7 @@ void GateBoy::tock_slow(int pass_index) {
       /* p06.KEXU*/ PIN_SCK.pin_out(ser_reg.CULY_XFER_DIR.qp_new(), _KEXU_new, _KUJO_new);
     }
 
+    /* p06.DAKU*/ wire _DAKU_FF01_WRp_clk = not1(_URYS_FF01_WRn_clk);
     /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn_new = nand2(BUS_CPU_Dp_ext[0].qp_ext(), _DAKU_FF01_WRp_clk);
     /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn_new = nand2(BUS_CPU_Dp_ext[1].qp_ext(), _DAKU_FF01_WRp_clk);
     /* p06.DELA*/ wire _DELA_SER_DATA2_SETn_new = nand2(BUS_CPU_Dp_ext[2].qp_ext(), _DAKU_FF01_WRp_clk);
@@ -3124,8 +3119,22 @@ void GateBoy::tock_slow(int pass_index) {
     ///* p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
     /* p05.KENA*/ PIN_SOUT.pin_out(1, ser_reg.ELYS_SER_OUT.qp_new(), ser_reg.ELYS_SER_OUT.qp_new());
 
-  }
-#pragma endregion
+    /* FF01 SER */
+    /*#p06.CUGY*/ BUS_CPU_Dp_out[0].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.CUBA_SER_DATA0.qn_new());
+    /* p06.DUDE*/ BUS_CPU_Dp_out[1].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DEGU_SER_DATA1.qn_new());
+    /* p06.DETU*/ BUS_CPU_Dp_out[2].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DYRA_SER_DATA2.qn_new());
+    /* p06.DASO*/ BUS_CPU_Dp_out[3].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DOJO_SER_DATA3.qn_new());
+    /* p06.DAME*/ BUS_CPU_Dp_out[4].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DOVU_SER_DATA4.qn_new());
+    /* p06.EVOK*/ BUS_CPU_Dp_out[5].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.EJAB_SER_DATA5.qn_new());
+    /* p06.EFAB*/ BUS_CPU_Dp_out[6].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.EROD_SER_DATA6.qn_new());
+    /*#p06.ETAK*/ BUS_CPU_Dp_out[7].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.EDER_SER_DATA7.qn_new());
+
+    /* FF02 SER */
+    /* p06.CORE*/ BUS_CPU_Dp_out[0].tri6_pn(_UCOM_FF02_RDp_ext, ser_reg.CULY_XFER_DIR.qn_new());
+    /* p06.ELUV*/ BUS_CPU_Dp_out[7].tri6_pn(_UCOM_FF02_RDp_ext, ser_reg.ETAF_SER_RUNNING.qn_new());
+  }();
+
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -3804,21 +3813,6 @@ void GateBoy::tock_slow(int pass_index) {
       /* p05.CUDY*/ BUS_CPU_Dp_out[5].tri6_nn(_BYZO_FF00_RDn_ext, joypad.COFY_JOYP_ABCSp.qn_new());
       /* p??.????*/ BUS_CPU_Dp_out[6].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KUKO_DBG_FF00_D6n.qp_new());
       /* p??.????*/ BUS_CPU_Dp_out[7].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KERU_DBG_FF00_D7n.qp_new());
-    }
-    {
-      /* FF01 SER */
-      /*#p06.CUGY*/ BUS_CPU_Dp_out[0].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.CUBA_SER_DATA0.qn_new());
-      /* p06.DUDE*/ BUS_CPU_Dp_out[1].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DEGU_SER_DATA1.qn_new());
-      /* p06.DETU*/ BUS_CPU_Dp_out[2].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DYRA_SER_DATA2.qn_new());
-      /* p06.DASO*/ BUS_CPU_Dp_out[3].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DOJO_SER_DATA3.qn_new());
-      /* p06.DAME*/ BUS_CPU_Dp_out[4].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.DOVU_SER_DATA4.qn_new());
-      /* p06.EVOK*/ BUS_CPU_Dp_out[5].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.EJAB_SER_DATA5.qn_new());
-      /* p06.EFAB*/ BUS_CPU_Dp_out[6].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.EROD_SER_DATA6.qn_new());
-      /*#p06.ETAK*/ BUS_CPU_Dp_out[7].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.EDER_SER_DATA7.qn_new());
-
-      /* FF02 SER */
-      /* p06.CORE*/ BUS_CPU_Dp_out[0].tri6_pn(_UCOM_FF02_RDp_ext, ser_reg.CULY_XFER_DIR.qn_new());
-      /* p06.ELUV*/ BUS_CPU_Dp_out[7].tri6_pn(_UCOM_FF02_RDp_ext, ser_reg.ETAF_SER_RUNNING.qn_new());
     }
 
     {

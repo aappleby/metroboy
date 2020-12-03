@@ -1114,7 +1114,7 @@ void GateBoy::tock_slow(int pass_index) {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Frame sequencer, probably needs more cleanup
 
-  /*#p21.XYMU*/ wire _XYMU_RENDERINGn_old = pix_pipe.XYMU_RENDERINGn.qp_old();
+  /* p29.TEPA*/ wire _TEPA_RENDERINGp_old = not1(pix_pipe.XYMU_RENDERINGn.qn_old());
 
   [this, _LYFE_VID_RSTn_new, _ATAR_VID_RSTp_new, _TOFU_VID_RSTp_new, _ALET_xBxDxFxH_clk]() {
     /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn_new = not1(_ATAR_VID_RSTp_new);
@@ -1676,8 +1676,8 @@ void GateBoy::tock_slow(int pass_index) {
     /* p25.AVER*/ wire _AVER_AxxxExxx_clknew   = nand2(_ACYL_SCANNINGp_new, _XYSO_AxxxExxxn_clk);
     /* p29.TYTU*/ wire _TYTU_SFETCH_S0n_new = not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
     /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG_new = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), _TYTU_SFETCH_S0n_new);
-    /* p29.TEPA*/ wire _TEPA_RENDERINGn_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
-    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp_new = nor3(_TEPA_RENDERINGn_new, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
+    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp_new = nor3(_TEPA_RENDERINGp_new, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
     /* p25.VAPE*/ wire _VAPE_OAM_CLKENn_new = and2(_TUVO_PPU_OAM_RDp_new, _TACU_SPR_SEQ_5_TRIG_new);
     /* p25.XUJY*/ wire _XUJY_OAM_CLKENp_new = not1(_VAPE_OAM_CLKENn_new);
     /* p25.CUFE*/ wire _CUFE_OAM_CLKENp_clknew = not1(or_and3(_SARO_FE00_FEFFp_ext, dma_reg.MATU_DMA_RUNNINGp.qp_new(), _MOPA_xxxxEFGH_clk)); // CUFE looks like BYHA minus an inverter
@@ -2302,11 +2302,10 @@ void GateBoy::tock_slow(int pass_index) {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Sprite flipper + sprite temp storage
 
-  [this, _XYMU_RENDERINGn_old, _TULY_SFETCH_S1p_old, _VONU_SFETCH_S1p_D4_old, _BAXO_OAM_DB5p_old]() {
+  [this, _TEPA_RENDERINGp_old, _TULY_SFETCH_S1p_old, _VONU_SFETCH_S1p_D4_old, _BAXO_OAM_DB5p_old]() {
     /* p24.LOBY*/ wire _LOBY_RENDERINGn_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
     /* p29.SAKY*/ wire _SAKY_SFETCH_MYSTERY_old = nor2(_TULY_SFETCH_S1p_old, _VONU_SFETCH_S1p_D4_old);
-    /* p29.TEPA*/ wire _TEPA_RENDERINGn_old = not1(_XYMU_RENDERINGn_old);
-    /* p29.TYSO*/ wire _TYSO_SPRITE_READn_old = or2(_SAKY_SFETCH_MYSTERY_old, _TEPA_RENDERINGn_old); // def or
+    /* p29.TYSO*/ wire _TYSO_SPRITE_READn_old = or2(_SAKY_SFETCH_MYSTERY_old, _TEPA_RENDERINGp_old); // def or
     /* p29.TEXY*/ wire _TEXY_SPR_READ_VRAMp_old = not1(_TYSO_SPRITE_READn_old);
     /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(_BAXO_OAM_DB5p_old, _TEXY_SPR_READ_VRAMp_old);
 
@@ -4067,8 +4066,8 @@ void GateBoy::tock_slow(int pass_index) {
 
     /*#p29.XUQU*/ wire _XUQU_SPRITE_AB_new = not1(sprite_fetcher.VONU_SFETCH_S1p_D4.qn_new());
     /* p29.SAKY*/ wire _SAKY_SFETCH_MYSTERY_new = nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
-    /* p29.TEPA*/ wire _TEPA_RENDERINGn_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
-    /* p29.TYSO*/ wire _TYSO_SPRITE_READn_new = or2(_SAKY_SFETCH_MYSTERY_new, _TEPA_RENDERINGn_new); // def or
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
+    /* p29.TYSO*/ wire _TYSO_SPRITE_READn_new = or2(_SAKY_SFETCH_MYSTERY_new, _TEPA_RENDERINGp_new); // def or
     /* p29.TEXY*/ wire _TEXY_SPR_READ_VRAMp_new = not1(_TYSO_SPRITE_READn_new);
 
     /* p29.ABON*/ wire _ABON_SPR_VRM_RDn_new = not1(_TEXY_SPR_READ_VRAMp_new);
@@ -4461,8 +4460,8 @@ void GateBoy::tock_slow(int pass_index) {
     /* p04.CATY*/ wire _CATY_LATCH_EXTp_ext = not1(_DECY_LATCH_EXTn_ext);
     /*#p28.BOGE*/ wire _BOGE_DMA_RUNNINGn_new = not1(dma_reg.MATU_DMA_RUNNINGp.qp_new());
     /*#p28.ACYL*/ wire _ACYL_SCANNINGp_new   = and2(_BOGE_DMA_RUNNINGn_new, sprite_scanner.BESU_SCANNINGp.qp_new());
-    /* p29.TEPA*/ wire _TEPA_RENDERINGn_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
-    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp_new = nor3(_TEPA_RENDERINGn_new, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp_new = not1(pix_pipe.XYMU_RENDERINGn.qn_new());
+    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp_new = nor3(_TEPA_RENDERINGp_new, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
     /* p28.WEFY*/ wire _WEFY_SPR_READp_new = and2(_TUVO_PPU_OAM_RDp_new, sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
     /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn_new  = not1(_WEFY_SPR_READp_new);
     /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn_new = nand2(_ACYL_SCANNINGp_new, _XOCE_xBCxxFGx_clknew); // schematic wrong, is def nand2

@@ -638,7 +638,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp.state);
-  d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANK_CLKp.state);
+  d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANKp.state);
   d.dump_bitp("MYTA_y153p         ", gb->lcd_reg.MYTA_y153p.state);
   d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd_reg.SYGU_LINE_STROBE.state);
   d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd_reg.MEDA_VSYNC_OUTn.state);

@@ -30,7 +30,7 @@ struct LcdRegisters {
     TAHA_LX5p.reset(REG_D1C1);
     TYRY_LX6p.reset(REG_D1C0);
 
-    POPU_VBLANK_CLKp .reset(REG_D1C0);
+    POPU_VBLANKp .reset(REG_D1C0);
     MYTA_y153p  .reset(REG_D1C1);
     SYGU_LINE_STROBE.reset(REG_D0C1);
     MEDA_VSYNC_OUTn .reset(REG_D0C1);
@@ -71,7 +71,7 @@ struct LcdRegisters {
     TAHA_LX5p.reset(REG_D0C0);
     TYRY_LX6p.reset(REG_D0C0);
 
-    POPU_VBLANK_CLKp.reset(REG_D0C0);
+    POPU_VBLANKp.reset(REG_D0C0);
     MYTA_y153p.reset(REG_D0C0);
     SYGU_LINE_STROBE.reset(REG_D0C0);
     MEDA_VSYNC_OUTn.reset(REG_D0C0);
@@ -97,7 +97,7 @@ struct LcdRegisters {
   /*p21.NYPE*/ DFF17 NYPE_x113p;
   /*p28.ANEL*/ DFF17 ANEL_LINE_P002p; // -> pix pipe for BYHA?
   /*p21.RUTU*/ DFF17 RUTU_x113p; // -> pix pipe, could move PURE here.
-  /*p21.POPU*/ DFF17 POPU_VBLANK_CLKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
+  /*p21.POPU*/ DFF17 POPU_VBLANKp; // FIXME firee on line 144, phase 002. clears on line 000, phase 004 (the real line 000 not the stubby 000 @ 153)
   /*p21.MYTA*/ DFF17 MYTA_y153p;  // FIXME fires on line 153, phase 002. clears on line 000, phase 002
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE;
   /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;

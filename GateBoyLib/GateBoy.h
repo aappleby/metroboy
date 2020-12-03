@@ -322,7 +322,6 @@ struct GateBoy {
   uint16_t ext_addr_latch = 0;
   uint8_t  ext_data_latch = 0;
 
-  uint16_t vram_addr_latch = 0;
   uint8_t  vram_data_latch = 0;
 
   uint8_t  oam_addr_latch = 0;

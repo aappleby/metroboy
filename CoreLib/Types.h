@@ -1,4 +1,6 @@
 #pragma once
+
+#include "Config.h"
 #include <vector> // for blob
 
 typedef signed char        int8_t;
@@ -319,8 +321,7 @@ void dump_ack(Dumper& d, const Ack& ack);
 inline void ASSERT_P (wire A)         { if (!A)     __debugbreak(); }
 inline void ASSERT_N (wire A)         { if (A)      __debugbreak(); }
 
-//#if _DEBUG
-#if 1
+#ifdef ALWAYS_CHECK
 
 inline void CHECK_P (wire A)         { if (!A)     __debugbreak(); }
 inline void CHECK_N (wire A)         { if (A)      __debugbreak(); }

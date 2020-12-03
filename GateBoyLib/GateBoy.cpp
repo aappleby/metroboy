@@ -8,10 +8,6 @@
 
 #include <set>
 
-#define FAST_BOOT
-
-#define CHECK_SINGLE_PASS
-
 //#pragma warning(disable:4189) // local variable unused
 
 //-----------------------------------------------------------------------------

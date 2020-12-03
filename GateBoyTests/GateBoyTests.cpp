@@ -6,8 +6,6 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
-//#define RUN_SLOW_TESTS
-
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {

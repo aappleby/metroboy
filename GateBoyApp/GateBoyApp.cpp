@@ -491,10 +491,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Clocks =====\001\n");
   d("PHASE %d%d%d%d\n",
-    gb->clk_reg.AFUR_xxxxEFGHp.bit_data,
-    gb->clk_reg.ALEF_AxxxxFGHp.bit_data,
-    gb->clk_reg.APUK_ABxxxxGHp.bit_data,
-    gb->clk_reg.ADYK_ABCxxxxHp.bit_data);
+    gb->clk_reg.AFUR_xxxxEFGHp.bit_data(),
+    gb->clk_reg.ALEF_AxxxxFGHp.bit_data(),
+    gb->clk_reg.APUK_ABxxxxGHp.bit_data(),
+    gb->clk_reg.ADYK_ABCxxxxHp.bit_data());
   d("\n");
   d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp_s.state);
   d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn_s.state);

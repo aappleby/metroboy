@@ -37,14 +37,14 @@ struct LcdRegisters {
     LUCA_LINE_EVENp  .reset(REG_D1C1);
     NAPO_FRAME_EVENp .reset(REG_D0C1);
 
-    SYRY_LYC0n_s.reset(REG_D1C1);
-    VUCE_LYC1n_s.reset(REG_D1C1);
-    SEDY_LYC2n_s.reset(REG_D1C1);
-    SALO_LYC3n_s.reset(REG_D1C1);
-    SOTA_LYC4n_s.reset(REG_D1C1);
-    VAFA_LYC5n_s.reset(REG_D1C1);
-    VEVO_LYC6n_s.reset(REG_D1C1);
-    RAHA_LYC7n_s.reset(REG_D1C1);
+    SYRY_LYC0n.reset(REG_D1C1);
+    VUCE_LYC1n.reset(REG_D1C1);
+    SEDY_LYC2n.reset(REG_D1C1);
+    SALO_LYC3n.reset(REG_D1C1);
+    SOTA_LYC4n.reset(REG_D1C1);
+    VAFA_LYC5n.reset(REG_D1C1);
+    VEVO_LYC6n.reset(REG_D1C1);
+    RAHA_LYC7n.reset(REG_D1C1);
   }
 
   void reset_boot() {
@@ -78,19 +78,19 @@ struct LcdRegisters {
     LUCA_LINE_EVENp.reset(REG_D0C0);
     NAPO_FRAME_EVENp.reset(REG_D0C0);
 
-    SYRY_LYC0n_s.reset(REG_D0C0);
-    VUCE_LYC1n_s.reset(REG_D0C0);
-    SEDY_LYC2n_s.reset(REG_D0C0);
-    SALO_LYC3n_s.reset(REG_D0C0);
-    SOTA_LYC4n_s.reset(REG_D0C0);
-    VAFA_LYC5n_s.reset(REG_D0C0);
-    VEVO_LYC6n_s.reset(REG_D0C0);
-    RAHA_LYC7n_s.reset(REG_D0C0);
+    SYRY_LYC0n.reset(REG_D0C0);
+    VUCE_LYC1n.reset(REG_D0C0);
+    SEDY_LYC2n.reset(REG_D0C0);
+    SALO_LYC3n.reset(REG_D0C0);
+    SOTA_LYC4n.reset(REG_D0C0);
+    VAFA_LYC5n.reset(REG_D0C0);
+    VEVO_LYC6n.reset(REG_D0C0);
+    RAHA_LYC7n.reset(REG_D0C0);
   }
 
   uint8_t get_lx() const  { return pack_u8p_old(7, &SAXO_LX0p); }
   uint8_t get_ly() const  { return pack_u8p_old(8, &MUWY_LY0p); }
-  uint8_t get_lyc() const { return pack_u8n_old(8, &SYRY_LYC0n_s); }
+  uint8_t get_lyc() const { return pack_u8n_old(8, &SYRY_LYC0n); }
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp; // -> pix pipe for int stat, fires on P002, clears on the following P002
   /*p29.CATU*/ DFF17 CATU_LINE_P000p; // -> pix pipe, scanner.
@@ -124,14 +124,14 @@ struct LcdRegisters {
   /*p21.LAFO*/ DFF17 LAFO_LY7p;
 
   // FF45 - LYC
-  /*p23.SYRY*/ DFF9 SYRY_LYC0n_s;
-  /*p23.VUCE*/ DFF9 VUCE_LYC1n_s;
-  /*p23.SEDY*/ DFF9 SEDY_LYC2n_s;
-  /*p23.SALO*/ DFF9 SALO_LYC3n_s;
-  /*p23.SOTA*/ DFF9 SOTA_LYC4n_s;
-  /*p23.VAFA*/ DFF9 VAFA_LYC5n_s;
-  /*p23.VEVO*/ DFF9 VEVO_LYC6n_s;
-  /*p23.RAHA*/ DFF9 RAHA_LYC7n_s;
+  /*p23.SYRY*/ DFF9 SYRY_LYC0n;
+  /*p23.VUCE*/ DFF9 VUCE_LYC1n;
+  /*p23.SEDY*/ DFF9 SEDY_LYC2n;
+  /*p23.SALO*/ DFF9 SALO_LYC3n;
+  /*p23.SOTA*/ DFF9 SOTA_LYC4n;
+  /*p23.VAFA*/ DFF9 VAFA_LYC5n;
+  /*p23.VEVO*/ DFF9 VEVO_LYC6n;
+  /*p23.RAHA*/ DFF9 RAHA_LYC7n;
 };
 
 //-----------------------------------------------------------------------------

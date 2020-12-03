@@ -651,7 +651,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   d.dump_slice2p("LX  ", &gb->lcd_reg.SAXO_LX0p.state,  7);
   d.dump_slice2p("LY  ", &gb->lcd_reg.MUWY_LY0p.state,  8);
-  d.dump_slice2n("LYC ", &gb->lcd_reg.SYRY_LYC0n_s.state, 8);
+  d.dump_slice2n("LYC ", &gb->lcd_reg.SYRY_LYC0n.state, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);

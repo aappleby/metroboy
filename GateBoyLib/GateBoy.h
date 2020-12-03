@@ -212,7 +212,7 @@ struct GateBoy {
   Bus2 SPR_TRI_L_in_new[4];  // reset
 
   Bus2 BUS_CPU_Dp_ext[8]; // reset
-  Bus2 BUS_CPU_Dp_new[8]; // reset
+  Bus2 BUS_CPU_Dp_out[8]; // reset
 
   Bus2 BUS_OAM_An[8]; // reset
 
@@ -220,13 +220,13 @@ struct GateBoy {
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
   Pin2 PIN_OAM_OEn;
-  Bus2 BUS_OAM_DAn_new[8]; // reset
-  Bus2 BUS_OAM_DBn_new[8]; // reset
+  Bus2 BUS_OAM_DAn_in[8]; // reset
+  Bus2 BUS_OAM_DBn_in[8]; // reset
   Bus2 BUS_OAM_DAn_out[8]; // reset
   Bus2 BUS_OAM_DBn_out[8]; // reset
 
-  Bus2 BUS_VRAM_Dp_in_new[8]; // not stable
-  Pin2 PIN_VRAM_Dp_in_new[8]; // not stable
+  Bus2 BUS_VRAM_Dp_in[8]; // not stable
+  Pin2 PIN_VRAM_Dp_in[8]; // not stable
 
   Pin2 PIN_VRAM_CSn; // PIN_43
   Pin2 PIN_VRAM_OEn; // PIN_45

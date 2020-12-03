@@ -144,6 +144,16 @@ struct GateBoy {
   Gate WODU_HBLANKp;
   Gate FEPO_STORE_MATCHp;
 
+  Gate ATEJ_LINE_TRIGp;
+  Gate AVAP_SCAN_DONE_TRIGp;
+  Gate NYXU_FETCH_TRIGn;
+  Gate TEVO_FETCH_TRIGp;
+  Gate TAVE_PRELOAD_DONE_TRIGp;
+  Gate NUNY_WIN_MODE_TRIGp;
+
+  Gate NUKO_WX_MATCHp;
+  Gate ROGE_WY_MATCHp;
+
   /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
   /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
   /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
@@ -202,9 +212,8 @@ struct GateBoy {
   Pin2 PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
   Pin2 PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
   Pin2 PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  Pin2 PIN_EXT_A_new[16];
-  Pin2 PIN_EXT_D_in_new[8];
-  Pin2 PIN_EXT_D_out_new[8];
+  Pin2 PIN_EXT_A[16];
+  Pin2 PIN_EXT_D[8];
 
   Pin2 PIN_JOY_P14; // PIN_63
   Pin2 PIN_JOY_P15; // PIN_62
@@ -217,38 +226,33 @@ struct GateBoy {
   Pin2 PIN_SIN; // PIN_69
   Pin2 PIN_SOUT; // PIN_70
 
-  Bus2 SPR_TRI_I_out_new[6]; // reset
-  Bus2 SPR_TRI_L_out_new[4]; // reset
-  Bus2 SPR_TRI_I_in_new[6];  // reset
-  Bus2 SPR_TRI_L_in_new[4];  // reset
+  Bus2 SPR_TRI_I_out_new[6];
+  Bus2 SPR_TRI_L_out_new[4];
+  Bus2 SPR_TRI_I_in_new[6];
+  Bus2 SPR_TRI_L_in_new[4];
 
-  Bus2 BUS_CPU_Dp_ext[8]; // reset
-  Bus2 BUS_CPU_Dp_out[8]; // reset
+  Bus2 BUS_CPU_Dp_ext[8];
+  Bus2 BUS_CPU_Dp_out[8];
 
-  Bus2 BUS_OAM_An[8]; // reset
+  Bus2 BUS_OAM_An[8];
 
   Pin2 PIN_OAM_CLKn;
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
   Pin2 PIN_OAM_OEn;
-  Bus2 BUS_OAM_DAn_in[8]; // reset
-  Bus2 BUS_OAM_DBn_in[8]; // reset
-  Bus2 BUS_OAM_DAn_out[8]; // reset
-  Bus2 BUS_OAM_DBn_out[8]; // reset
+  Bus2 BUS_OAM_DAn_in[8];
+  Bus2 BUS_OAM_DBn_in[8];
+  Bus2 BUS_OAM_DAn_out[8];
+  Bus2 BUS_OAM_DBn_out[8];
 
-  Bus2 BUS_VRAM_Dp_in[8]; // not stable
-  Pin2 PIN_VRAM_Dp_in[8]; // not stable
+  Bus2 BUS_VRAM_Dp_in[8];
+  Pin2 PIN_VRAM_Dp_in[8];
 
   Pin2 PIN_VRAM_CSn; // PIN_43
   Pin2 PIN_VRAM_OEn; // PIN_45
   Pin2 PIN_VRAM_WRn; // PIN_49
-
-  //Bus2 BUS_VRAM_An[13];
-  //Pin2 PIN_VRAM_Ap[13];
-  //Bus2 BUS_VRAM_Dp_in[8];
-  //Pin2 PIN_VRAM_Dp_in_old[8];
-  //Pin2 PIN_VRAM_Dp_in_new[8];
-
+  Bus2 BUS_VRAM_An[13];
+  Pin2 PIN_VRAM_Ap[13];
   Bus2 BUS_VRAM_Dp_out[8];
   Pin2 PIN_VRAM_Dp_out[8];
 
@@ -329,15 +333,6 @@ struct GateBoy {
 
   uint8_t* cart_buf = nullptr;
   size_t   cart_size = 0;
-
-  uint16_t ext_addr_latch = 0;
-  uint8_t  ext_data_latch = 0;
-
-  uint8_t  vram_data_latch = 0;
-
-  uint8_t  oam_addr_latch = 0;
-  uint8_t  oam_data_latch_a = 0;
-  uint8_t  oam_data_latch_b = 0;
 
   uint8_t vid_ram [8192];
   uint8_t cart_ram[8192];

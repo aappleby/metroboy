@@ -120,8 +120,8 @@ struct GateBoy {
   //----------
   // CPU interface
 
-  BusIO BUS_CPU_A[16];
-  BusIO BUS_CPU_D[8];
+  BusIn  BUS_CPU_A[16];
+  BusIO  BUS_CPU_D[8];
 
   PinOut PIN_CPU_WAKE;          // top right wire by itself <- P02.AWOB
 
@@ -164,7 +164,7 @@ struct GateBoy {
 
   OamBus oam_bus;
   Gate   oam_clk;
-  BusIO  BUS_OAM_An[8];
+  BusOut BUS_OAM_An[8];
   BusIO  BUS_OAM_DAn[8];
   BusIO  BUS_OAM_DBn[8];
   PinOut PIN_OAM_CLKn;
@@ -185,8 +185,8 @@ struct GateBoy {
   //----------
 
   VramBus vram_bus;
-  BusIO BUS_VRAM_An[13];
-  BusIO BUS_VRAM_Dp[8];
+  BusOut BUS_VRAM_An[13];
+  BusIO  BUS_VRAM_Dp[8];
   PinOut PIN_VRAM_CSn; // PIN_43
   PinOut PIN_VRAM_OEn; // PIN_45
   PinOut PIN_VRAM_WRn; // PIN_49

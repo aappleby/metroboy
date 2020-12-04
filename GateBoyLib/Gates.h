@@ -350,14 +350,33 @@ struct TriBase : public BitBase {
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
 // tri6_pn : top rung tadpole facing second rung dot.
 
-struct BusIO : public TriBase {
-  wire qp_ext() const { return TriBase::qp_new(); }
-  wire qn_ext() const { return TriBase::qn_new(); }
+struct BusIO : private TriBase {
+  using TriBase::tri;
+  using TriBase::qp_old;
+  using TriBase::qp_new;
+  using TriBase::reset;
 
-  void set     (wire Dp)           { tri(1, Dp); }
+  void setp_old(wire Dp) { CHECK_DIRTYn(); set_data(Dp); }
+
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
   void tri10_np(wire OEn, wire Dp) { tri(!OEn, !OEn ?  Dp : 0); }
+};
+
+struct BusIn : private TriBase {
+  wire qp_ext() const { return TriBase::qp_new(); }
+  wire qn_ext() const { return TriBase::qn_new(); }
+
+  void setp(wire Dp) { set_data(Dp); set_dirty(); }
+};
+
+struct BusOut : private TriBase {
+  using TriBase::reset;
+  using TriBase::qp_old;
+  using TriBase::qp_new;
+
+  void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
+  void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
 };
 
 //-----------------------------------------------------------------------------
@@ -393,14 +412,13 @@ struct PinIn : private TriBase {
 //----------
 
 struct PinOut : private TriBase {
-  using TriBase::reset;
 
   wire qp_new() { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() { CHECK_DIRTYp(); return !bit_data(); }
 
-  void setp   (wire Dp)                    { tri(1, Dp); }
-  void pin_out(wire HI, wire LO)           { tri(HI == LO, !HI); }
-  void pin_out(wire OEp, wire HI, wire LO) { tri(OEp && (HI == LO), !HI); }
+  void setp   (wire Dp)                    { set_data(Dp);                          set_dirty(); }
+  void pin_out(wire HI, wire LO)           { set_data((!HI) || (HI != LO));         set_dirty(); }
+  void pin_out(wire OEp, wire HI, wire LO) { set_data((!HI) || (HI != LO) || !OEp); set_dirty(); }
 };
 
 //-----------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 struct PixelPipe {
   void reset_cart() {
     XYMU_RENDERINGn.reset(1);
-    PYNU_WIN_MODEp.reset(0);
+    PYNU_WIN_MODE_Ap.reset(0);
 
     PUKU_WIN_HITn.reset(REG_D1C0);
     RYDY_WIN_HITp.reset(REG_D0C0);
@@ -219,7 +219,7 @@ struct PixelPipe {
 
   void reset_boot() {
     XYMU_RENDERINGn.reset(0);
-    PYNU_WIN_MODEp.reset(0);
+    PYNU_WIN_MODE_Ap.reset(0);
 
     // FIXME check boot state
     PUKU_WIN_HITn.reset(REG_D1C0);
@@ -419,7 +419,7 @@ struct PixelPipe {
   //----------------------------------------
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;
-  /*p27.PYNU*/ NorLatch PYNU_WIN_MODEp;
+  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;
   /*p27.PUKU*/ Gate PUKU_WIN_HITn;
   /*p27.RYDY*/ Gate RYDY_WIN_HITp;
   /*p27.SOVY*/ DFF17 SOVY_WIN_HITp;

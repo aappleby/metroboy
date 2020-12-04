@@ -325,11 +325,7 @@ struct DFF22 : public DFF {
 
 struct TriBase : public BitBase {
   TriBase() { state = 1; }
-
-  void reset() {
-    set_data(1);
-    set_dirty();
-  }
+  void reset() { state = 1; }
 
   void tri(wire OEp, wire Dp) {
     if (OEp) set_data(Dp);
@@ -368,8 +364,11 @@ struct Bus2 : public TriBase {
 struct Pin2 : public TriBase {
   wire qp_ext() { return TriBase::qp_new(); }
   wire qn_ext() { return TriBase::qn_new(); }
-  void pin_in(wire OEp, wire D)            { tri(OEp, D); }
-  void pin_out(wire OEp, wire HI, wire /*LO*/) { /*CHECK_N(!HI && LO)*/; tri(OEp, !HI); }
+
+  void set    (wire Dp)                    { tri(1, Dp); }
+  void pin_in (wire OEp, wire Dp)          { tri(OEp, Dp); }
+  void pin_out(wire HI, wire LO)           { tri(HI == LO, !HI); }
+  void pin_out(wire OEp, wire HI, wire LO) { tri(OEp && (HI == LO), !HI); }
 };
 
 //-----------------------------------------------------------------------------

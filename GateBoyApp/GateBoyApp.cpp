@@ -665,7 +665,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("PIX COUNT  0x%02x\n", pack_u8p_old(8, &gb->pix_pipe.XEHO_PX0p));
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn       ", gb->pix_pipe.XYMU_RENDERINGn.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->pix_pipe.PYNU_WIN_MODEp.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->pix_pipe.PYNU_WIN_MODE_Ap.state);
   d.dump_bitp("PUKU_WIN_HITn         ", gb->pix_pipe.PUKU_WIN_HITn.state);
   d.dump_bitp("RYDY_WIN_HITp         ", gb->pix_pipe.RYDY_WIN_HITp.state);
   d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->pix_pipe.SOVY_WIN_HITp.state);

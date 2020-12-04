@@ -146,10 +146,11 @@ struct GateBoy {
 
   Gate ATEJ_LINE_TRIGp;
   Gate AVAP_SCAN_DONE_TRIGp;
-  Gate NYXU_FETCH_TRIGn;
+  Gate NYXU_BFETCH_RSTn;
   Gate TEVO_FETCH_TRIGp;
   Gate TAVE_PRELOAD_DONE_TRIGp;
   Gate NUNY_WIN_MODE_TRIGp;
+  Gate WUTY_SFETCH_DONEp;
 
   Gate NUKO_WX_MATCHp;
   Gate ROGE_WY_MATCHp;
@@ -226,35 +227,28 @@ struct GateBoy {
   Pin2 PIN_SIN; // PIN_69
   Pin2 PIN_SOUT; // PIN_70
 
-  Bus2 SPR_TRI_I_out_new[6];
-  Bus2 SPR_TRI_L_out_new[4];
-  Bus2 SPR_TRI_I_in_new[6];
-  Bus2 SPR_TRI_L_in_new[4];
+  Bus2 SPR_TRI_I[6];
+  Bus2 SPR_TRI_L[4];
 
-  Bus2 BUS_CPU_Dp_ext[8];
-  Bus2 BUS_CPU_Dp_out[8];
+  bool BUS_CPU_A[16];
+  Bus2 BUS_CPU_D[8];
 
   Bus2 BUS_OAM_An[8];
+  Bus2 BUS_OAM_DAn[8];
+  Bus2 BUS_OAM_DBn[8];
 
   Pin2 PIN_OAM_CLKn;
   Pin2 PIN_OAM_WR_A;
   Pin2 PIN_OAM_WR_B;
   Pin2 PIN_OAM_OEn;
-  Bus2 BUS_OAM_DAn_in[8];
-  Bus2 BUS_OAM_DBn_in[8];
-  Bus2 BUS_OAM_DAn_out[8];
-  Bus2 BUS_OAM_DBn_out[8];
 
-  Bus2 BUS_VRAM_Dp_in[8];
-  Pin2 PIN_VRAM_Dp_in[8];
-
+  Bus2 BUS_VRAM_An[13];
+  Bus2 BUS_VRAM_Dp[8];
   Pin2 PIN_VRAM_CSn; // PIN_43
   Pin2 PIN_VRAM_OEn; // PIN_45
   Pin2 PIN_VRAM_WRn; // PIN_49
-  Bus2 BUS_VRAM_An[13];
   Pin2 PIN_VRAM_Ap[13];
-  Bus2 BUS_VRAM_Dp_out[8];
-  Pin2 PIN_VRAM_Dp_out[8];
+  Pin2 PIN_VRAM_Dp[8];
 
   /*PIN_50*/ Pin2 PIN_LCD_DATA1;
   /*PIN_51*/ Pin2 PIN_LCD_DATA0;

@@ -22,6 +22,15 @@ struct SpriteStore {
     EXUQ_STORE8_RSTp.reset(REG_D0C0);
     FONO_STORE9_RSTp.reset(REG_D0C0);
 
+    XADU_SPRITE_IDX0p.reset(REG_D0C1);
+    XEDY_SPRITE_IDX1p.reset(REG_D0C1);
+    ZUZE_SPRITE_IDX2p.reset(REG_D1C1);
+    XOBE_SPRITE_IDX3p.reset(REG_D0C1);
+    YDUF_SPRITE_IDX4p.reset(REG_D1C1);
+    XECU_SPRITE_IDX5p.reset(REG_D0C1);
+
+
+
     YGUS_STORE0_I0n.reset(REG_D0C0);
     YSOK_STORE0_I1n.reset(REG_D0C0);
     YZEP_STORE0_I2n.reset(REG_D0C0);
@@ -269,6 +278,15 @@ struct SpriteStore {
     EXUQ_STORE8_RSTp.reset(REG_D0C0);
     FONO_STORE9_RSTp.reset(REG_D0C0);
 
+    XADU_SPRITE_IDX0p.reset(REG_D0C0);
+    XEDY_SPRITE_IDX1p.reset(REG_D0C0);
+    ZUZE_SPRITE_IDX2p.reset(REG_D0C0);
+    XOBE_SPRITE_IDX3p.reset(REG_D0C0);
+    YDUF_SPRITE_IDX4p.reset(REG_D0C0);
+    XECU_SPRITE_IDX5p.reset(REG_D0C0);
+
+
+
     YGUS_STORE0_I0n.reset(REG_D0C0);
     YSOK_STORE0_I1n.reset(REG_D0C0);
     YZEP_STORE0_I2n.reset(REG_D0C0);
@@ -322,8 +340,7 @@ struct SpriteStore {
     BUNA_STORE2_I4n.reset(REG_D0C0);
     BOXA_STORE2_I5n.reset(REG_D0C0);
 
-    YLOV_STORE2_L0n.reset(REG_D0C0);
-    XOSY_STORE2_L1n.reset(REG_D0C0);
+    YLOV_STORE2_L0n.reset(REG_D0C0);XOSY_STORE2_L1n.reset(REG_D0C0);
     XAZY_STORE2_L2n.reset(REG_D0C0);
     YKUK_STORE2_L3n.reset(REG_D0C0);
 
@@ -517,6 +534,16 @@ struct SpriteStore {
   /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp;
   /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp;
   /*p29.FONO*/ DFF17 FONO_STORE9_RSTp;
+
+  //----------------------------------------
+  // Sprite index latch selects which store to write
+
+  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
+  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
+  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p;
+  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p;
+  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p;
+  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p;
 
   //----------------------------------------
   // All 10 of the sprite stores

@@ -747,7 +747,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Sprite Scan =====\001\n");
   d("SCAN INDEX        : %02d\n", pack_u8p(6, &gb->sprite_scanner.YFEL_SCAN0));
-  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_scanner.XADU_SPRITE_IDX0p));
   d("\n");
   d.dump_bitp("BESU_SCANNINGp   ", gb->sprite_scanner.BESU_SCANNINGp.state);
   d.dump_bitp("CENO_SCANNINGp   ", gb->sprite_scanner.CENO_SCANNINGp.state);
@@ -761,18 +760,19 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("FAHA_SCAN4       ", gb->sprite_scanner.FAHA_SCAN4.state);
   d.dump_bitp("FONY_SCAN5       ", gb->sprite_scanner.FONY_SCAN5.state);
   d("\n");
-  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_scanner.XADU_SPRITE_IDX0p.state);
-  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_scanner.XEDY_SPRITE_IDX1p.state);
-  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_scanner.ZUZE_SPRITE_IDX2p.state);
-  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_scanner.XOBE_SPRITE_IDX3p.state);
-  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_scanner.YDUF_SPRITE_IDX4p.state);
-  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_scanner.XECU_SPRITE_IDX5p.state);
-  d("\n");
 
   const auto& ss = gb->sprite_store;
   d("\002===== Sprite Store =====\001\n");
   d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_STORE_ENn.state);
+  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p));
   d.dump_slice2p("SPRITE COUNT", &ss.BESE_SPRITE_COUNT0, 4);
+  d("\n");
+  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_store.XADU_SPRITE_IDX0p.state);
+  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_store.XEDY_SPRITE_IDX1p.state);
+  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_store.ZUZE_SPRITE_IDX2p.state);
+  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_store.XOBE_SPRITE_IDX3p.state);
+  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_store.YDUF_SPRITE_IDX4p.state);
+  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_store.XECU_SPRITE_IDX5p.state);
 
   d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
   d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp_old(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));

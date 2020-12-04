@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 #ifdef USE_DIRTY_BIT
-#define CHECK_DIRTYn() CHECK_N(bit_dirty())
-#define CHECK_DIRTYp() CHECK_P(bit_dirty())
+#define CHECK_DIRTYn() CHECK_N(wire(state & 0x80))
+#define CHECK_DIRTYp() CHECK_P(wire(state & 0x80))
 #define SET_DIRTY() { state |= 0b10000000; }
 #else
 #define CHECK_DIRTYn()
@@ -13,10 +13,10 @@
 #endif
 
 #ifdef USE_OLDNEW_BIT
-#define CHECK_OLDn() CHECK_N(bit_old())
-#define CHECK_OLDp() CHECK_P(bit_old())
-#define CHECK_NEWn() CHECK_N(bit_new())
-#define CHECK_NEWp() CHECK_P(bit_new())
+#define CHECK_OLDn() CHECK_P(wire(state & 0x40))
+#define CHECK_OLDp() CHECK_N(wire(state & 0x40))
+#define CHECK_NEWn() CHECK_N(wire(state & 0x40))
+#define CHECK_NEWp() CHECK_P(wire(state & 0x40))
 #define SET_NEW()    { state |= 0b01000000; }
 #else
 #define CHECK_OLDn()
@@ -235,6 +235,18 @@ struct DFF13 : public DFF {
 
 struct DFF17 : public DFF {
   void dff17(wire CLKp, wire RSTn, wire Dp) { dff(CLKp, 1, RSTn, Dp); }
+
+  void dff17b(wire CLKp, wire RSTn, BitBase new_bit) {
+    wire CLKp_old = wire(state & 0x02);
+    wire CLKp_new = CLKp;
+
+    if (!CLKp_old && CLKp_new) {
+      CHECK_N(new_bit.state & 0x40);
+      state = 0xC0 | (CLKp_new << 1) | ((new_bit.state & 1) & RSTn);
+    } else {
+      state = 0xC0 | (CLKp_new << 1) | ((state & 1) & RSTn);
+    }
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -339,14 +351,7 @@ struct TriBase : public BitBase {
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
 // tri6_pn : top rung tadpole facing second rung dot.
 
-struct BusIO : private TriBase {
-  using TriBase::reset;
-  using TriBase::tri;
-  using TriBase::tri_old;
-  using TriBase::qp_old;
-  using TriBase::qp_new;
-  using TriBase::qp_any;
-
+struct BusIO : public TriBase {
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !Dn); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp, !Dn); }
   void tri10_np(wire OEn, wire Dp) { tri(!OEn,  Dp); }

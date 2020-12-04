@@ -266,7 +266,7 @@ struct GateBoy {
   //----------
 
   SpriteFetcher      sprite_fetcher;
-  Gate WUTY_SFETCH_DONEp;
+  Gate WUTY_SFETCH_DONEp; // WUTY is only high on odd phases.
 
   //----------
 

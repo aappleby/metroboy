@@ -6,9 +6,13 @@
 #include "CoreLib/File.h"
 #include <stddef.h>
 
+#include <windows.h>
+
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+  SetPriorityClass(GetCurrentProcess(), 0x00000080);
+
   TEST_START("Maaaaaain");
 
   (void)argc;

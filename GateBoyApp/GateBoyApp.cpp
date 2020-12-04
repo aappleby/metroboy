@@ -496,9 +496,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
     gb->clk_reg.APUK_ABxxxxGHp.bit_data(),
     gb->clk_reg.ADYK_ABCxxxxHp.bit_data());
   d("\n");
-  d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp_s.state);
-  d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn_s.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp_s.state);
+  d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp.state);
+  d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp.state);
   d("\n");
   d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp.state);
   d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp.state);
@@ -728,6 +728,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("MESU_BFETCH_S1p    ", gb->tile_fetcher.MESU_BFETCH_S1p.state);
   d.dump_bitp("NYVA_BFETCH_S2p    ", gb->tile_fetcher.NYVA_BFETCH_S2p.state);
   d.dump_bitp("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher.LYZU_BFETCH_S0p_D1.state);
+  d.dump_bitn("NYXU_BFETCH_RSTp   ", gb->NYXU_BFETCH_RSTn.state);
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
@@ -741,6 +742,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2  .state);
   d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4  .state);
   d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5  .state);
+  d.dump_bitp("WUTY_SFETCH_DONEp   ", gb->WUTY_SFETCH_DONEp                  .state);
   d("\n");
 
   d("\002===== Sprite Scan =====\001\n");

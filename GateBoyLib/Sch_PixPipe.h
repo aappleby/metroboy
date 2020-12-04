@@ -410,11 +410,11 @@ struct PixelPipe {
     NUKU_WX7n.reset(REG_D0C0);
   }
 
-  int get_wx() const        { return pack_u8n_old(8, &MYPA_WX0n); }
-  int get_wy() const        { return pack_u8n_old(8, &NESO_WY0n); }
-  int get_win_x() const     { return pack_u8p_old(5, &WYKA_WIN_X3); }
-  int get_win_y() const     { return pack_u8p_old(8, &VYNO_WIN_Y0); }
-  int get_pix_count() const { return pack_u8p_old(8, &XEHO_PX0p); }
+  int get_wx() const        { return pack_u8n(8, &MYPA_WX0n); }
+  int get_wy() const        { return pack_u8n(8, &NESO_WY0n); }
+  int get_win_x() const     { return pack_u8p(5, &WYKA_WIN_X3); }
+  int get_win_y() const     { return pack_u8p(8, &VYNO_WIN_Y0); }
+  int get_pix_count() const { return pack_u8p(8, &XEHO_PX0p); }
 
   //----------------------------------------
 

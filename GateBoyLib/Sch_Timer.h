@@ -92,10 +92,10 @@ struct TimerRegisters {
     MOBA_TIMER_OVERFLOWp.reset(REG_D0C0);
   }
 
-  int get_div() const  { return pack_u16p_old(16, &UKUP_DIV00p); }
-  int get_tima() const { return pack_u8p_old (8,  &REGA_TIMA0p); }
-  int get_tma() const  { return pack_u8p_old (8,  &SABU_TMA0p); }
-  int get_tac() const  { return pack_u8p_old (3,  &SOPU_TAC0p); }
+  int get_div() const  { return pack_u16p(16, &UKUP_DIV00p); }
+  int get_tima() const { return pack_u8p (8,  &REGA_TIMA0p); }
+  int get_tma() const  { return pack_u8p (8,  &SABU_TMA0p); }
+  int get_tac() const  { return pack_u8p (3,  &SOPU_TAC0p); }
 
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;

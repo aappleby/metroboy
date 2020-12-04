@@ -117,44 +117,129 @@ struct GateBoy {
 
   uint64_t sentinel1 = SENTINEL1;
 
+  //----------
+  // CPU interface
+
+  BusIO BUS_CPU_A[16];
+  BusIO BUS_CPU_D[8];
+
+  PinOut PIN_CPU_WAKE;          // top right wire by itself <- P02.AWOB
+
+  PinIn  PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  PinIn  PIN_CPU_WRp;           // top right port PORTA_01: ->
+  PinOut PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  PinOut PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
+  PinOut PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  PinOut PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  PinIn  PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
+
+  PinIn  PIN_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
+  PinOut PIN_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
+  PinIn  PIN_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
+  PinOut PIN_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
+  PinIn  PIN_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
+  PinOut PIN_CPU_INT_TIMER ;    // bottom right port PORTB_11: <- P02.NYBO, timer int
+  PinIn  PIN_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
+  PinOut PIN_CPU_INT_SERIAL;    // bottom right port PORTB_15: <- P02.UBUL, serial int
+  PinIn  PIN_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
+  PinOut PIN_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joypad int
+
+  PinIn  PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
+  PinOut PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
+  PinOut PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
+  PinOut PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
+  PinOut PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
+  PinOut PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
+  PinIn  PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  PinOut PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
+  PinOut PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
+  PinOut PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
+
+  PinOut PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  PinOut PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  PinOut PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
+  PinOut PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
+
+  //----------
+
   OamBus oam_bus;
+  Gate   oam_clk;
+  BusIO  BUS_OAM_An[8];
+  BusIO  BUS_OAM_DAn[8];
+  BusIO  BUS_OAM_DBn[8];
+  PinOut PIN_OAM_CLKn;
+  PinOut PIN_OAM_WRn_A;
+  PinOut PIN_OAM_WRn_B;
+  PinOut PIN_OAM_OEn;
+
+  //----------
+
   ExtBus ext_bus;
+  PinOut PIN_EXT_CLK;    // PIN_75
+  PinOut PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
+  PinOut PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
+  PinOut PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
+  PinOut PIN_EXT_A[16];
+  PinIO  PIN_EXT_D[8];
+
+  //----------
+
   VramBus vram_bus;
+  BusIO BUS_VRAM_An[13];
+  BusIO BUS_VRAM_Dp[8];
+  PinOut PIN_VRAM_CSn; // PIN_43
+  PinOut PIN_VRAM_OEn; // PIN_45
+  PinOut PIN_VRAM_WRn; // PIN_49
+  PinOut PIN_VRAM_Ap[13];
+  PinIO  PIN_VRAM_Dp[8];
 
+  //----------
 
-  ClockRegisters     clk_reg;
-  DmaRegisters       dma_reg;
-  InterruptRegisters int_reg;
-  JoypadRegisters    joypad;
-  LcdRegisters       lcd_reg;
-  PixelPipe          pix_pipe;
-  SerialRegisters    ser_reg;
-  SpriteStore        sprite_store;
-  TimerRegisters     tim_reg;
-  TileFetcher        tile_fetcher;
-  SpriteFetcher      sprite_fetcher;
-  SpriteScanner      sprite_scanner;
-
+  ClockRegisters clk_reg;
   /*p07.TEPU*/ DFF17 BOOT_BITn;
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
-  Gate DYTY_STORE_ENn;
-  Gate LYRY_BFETCH_DONEp;
-  Gate TEKY_SFETCH_REQp;
-  Gate WODU_HBLANKp;
+  //----------
+
+  TimerRegisters tim_reg;
+
+  //----------
+
+  DmaRegisters dma_reg;
+
+  //----------
+
+  InterruptRegisters int_reg;
+  DFF IE_D0;
+  DFF IE_D1;
+  DFF IE_D2;
+  DFF IE_D3;
+  DFF IE_D4;
+
+  //----------
+
+  JoypadRegisters joypad;
+  PinOut PIN_JOY_P14; // PIN_63
+  PinOut PIN_JOY_P15; // PIN_62
+  PinIn  PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
+  PinIn  PIN_JOY_P11; // PIN_66
+  PinIn  PIN_JOY_P12; // PIN_65
+  PinIn  PIN_JOY_P13; // PIN_64
+
+  //----------
+
+  SerialRegisters ser_reg;
+  PinIO  PIN_SCK; // PIN_68
+  PinIn  PIN_SIN; // PIN_69
+  PinOut PIN_SOUT; // PIN_70
+
+  //----------
+
+  SpriteStore        sprite_store;
   Gate FEPO_STORE_MATCHp;
-
-  Gate ATEJ_LINE_TRIGp;
-  Gate AVAP_SCAN_DONE_TRIGp;
-  Gate NYXU_BFETCH_RSTn;
-  Gate TEVO_FETCH_TRIGp;
-  Gate TAVE_PRELOAD_DONE_TRIGp;
-  Gate NUNY_WIN_MODE_TRIGp;
-  Gate WUTY_SFETCH_DONEp;
-
-  Gate NUKO_WX_MATCHp;
-  Gate ROGE_WY_MATCHp;
-
+  BusIO SPR_TRI_I[6];
+  BusIO SPR_TRI_L[4];
+  Gate DYTY_STORE_ENn;
   /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
   /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
   /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
@@ -166,107 +251,49 @@ struct GateBoy {
   /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
   /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 
-  DFF IE_D0;
-  DFF IE_D1;
-  DFF IE_D2;
-  DFF IE_D3;
-  DFF IE_D4;
+  //----------
 
-  Pin2 PIN_CPU_WAKE; // top right wire by itself <- P02.AWOB
+  SpriteScanner      sprite_scanner;
+  Gate AVAP_SCAN_DONE_TRIGp;
 
-  Pin2 PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  Pin2 PIN_CPU_WRp;           // top right port PORTA_01: ->
-  Pin2 PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  Pin2 PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  Pin2 PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  Pin2 PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-  Pin2 PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
+  //----------
 
-  Pin2 PIN_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
-  Pin2 PIN_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
-  Pin2 PIN_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
-  Pin2 PIN_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
-  Pin2 PIN_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
-  Pin2 PIN_CPU_INT_TIMER ;    // bottom right port PORTB_11: <- P02.NYBO, timer int
-  Pin2 PIN_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
-  Pin2 PIN_CPU_INT_SERIAL;    // bottom right port PORTB_15: <- P02.UBUL, serial int
-  Pin2 PIN_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
-  Pin2 PIN_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joypad int
+  TileFetcher        tile_fetcher;
+  Gate TAVE_PRELOAD_DONE_TRIGp;
+  Gate NYXU_BFETCH_RSTn;
+  Gate TEVO_FETCH_TRIGp;
 
-  Pin2 PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
-  Pin2 PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: // this is the "put address on bus" clock
-  Pin2 PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02:
-  Pin2 PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: // this is the "reset for next cycle" clock
-  Pin2 PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: // this is the "put write data on bus" clock
-  Pin2 PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05:
-  Pin2 PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
-  Pin2 PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: // this is probably the "latch bus data" clock
-  Pin2 PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
-  Pin2 PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: - test pad 3
+  //----------
 
-  Pin2 PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  Pin2 PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  Pin2 PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
-  Pin2 PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
+  SpriteFetcher      sprite_fetcher;
+  Gate WUTY_SFETCH_DONEp;
 
-  Pin2 PIN_EXT_CLK;    // PIN_75
-  Pin2 PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
-  Pin2 PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
-  Pin2 PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  Pin2 PIN_EXT_A[16];
-  Pin2 PIN_EXT_D[8];
+  //----------
 
-  Pin2 PIN_JOY_P14; // PIN_63
-  Pin2 PIN_JOY_P15; // PIN_62
-  Pin2 PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
-  Pin2 PIN_JOY_P11; // PIN_66
-  Pin2 PIN_JOY_P12; // PIN_65
-  Pin2 PIN_JOY_P13; // PIN_64
+  PixelPipe          pix_pipe;
+  Gate NUNY_WIN_MODE_TRIGp;
 
-  Pin2 PIN_SCK; // PIN_68
-  Pin2 PIN_SIN; // PIN_69
-  Pin2 PIN_SOUT; // PIN_70
+  //----------
 
-  Bus2 SPR_TRI_I[6];
-  Bus2 SPR_TRI_L[4];
+  LcdRegisters lcd_reg;
+  Gate ATEJ_LINE_TRIGp;
 
-  bool BUS_CPU_A[16];
-  Bus2 BUS_CPU_D[8];
+  /*PIN_50*/ PinOut PIN_LCD_DATA1;
+  /*PIN_51*/ PinOut PIN_LCD_DATA0;
+  /*PIN_54*/ PinOut PIN_LCD_HSYNC;
+  /*PIN_56*/ PinOut PIN_LCD_FLIPS;
+  /*PIN_52*/ PinOut PIN_LCD_CNTRL;
+  /*PIN_55*/ PinOut PIN_LCD_LATCH;
+  /*PIN_53*/ PinOut PIN_LCD_CLOCK;
+  /*PIN_57*/ PinOut PIN_LCD_VSYNC;
 
-  Bus2 BUS_OAM_An[8];
-  Bus2 BUS_OAM_DAn[8];
-  Bus2 BUS_OAM_DBn[8];
-
-  Pin2 PIN_OAM_CLKn;
-  Pin2 PIN_OAM_WR_A;
-  Pin2 PIN_OAM_WR_B;
-  Pin2 PIN_OAM_OEn;
-
-  Bus2 BUS_VRAM_An[13];
-  Bus2 BUS_VRAM_Dp[8];
-  Pin2 PIN_VRAM_CSn; // PIN_43
-  Pin2 PIN_VRAM_OEn; // PIN_45
-  Pin2 PIN_VRAM_WRn; // PIN_49
-  Pin2 PIN_VRAM_Ap[13];
-  Pin2 PIN_VRAM_Dp[8];
-
-  /*PIN_50*/ Pin2 PIN_LCD_DATA1;
-  /*PIN_51*/ Pin2 PIN_LCD_DATA0;
-  /*PIN_54*/ Pin2 PIN_LCD_HSYNC;
-  /*PIN_56*/ Pin2 PIN_LCD_FLIPS;
-  /*PIN_52*/ Pin2 PIN_LCD_CNTRL;
-  /*PIN_55*/ Pin2 PIN_LCD_LATCH;
-  /*PIN_53*/ Pin2 PIN_LCD_CLOCK;
-  /*PIN_57*/ Pin2 PIN_LCD_VSYNC;
-
-
-
-  // ok this is technically part of the lcd, but registers need to go in this section...
   NorLatch lcd_pix_lo;
   NorLatch lcd_pix_hi;
 
   DFF lcd_pipe_lo[160];
   DFF lcd_pipe_hi[160];
+
+  //----------
 
   uint64_t sentinel2 = SENTINEL2;
 

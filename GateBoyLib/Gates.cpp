@@ -18,7 +18,7 @@ uint64_t commit_and_hash(void* blob, int size) {
 
   uint8_t* base = (uint8_t*)blob;
 
-#ifdef USE_DIRTY_BITS
+#ifdef USE_DIRTY_BIT
   bool bad_bits = false;
 
   for (int i = 0; i < size; i++) {

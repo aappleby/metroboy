@@ -350,10 +350,11 @@ struct TriBase : public BitBase {
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
 // tri6_pn : top rung tadpole facing second rung dot.
 
-struct Bus2 : public TriBase {
+struct BusIO : public TriBase {
   wire qp_ext() const { return TriBase::qp_new(); }
   wire qn_ext() const { return TriBase::qn_new(); }
 
+  void set     (wire Dp)           { tri(1, Dp); }
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !OEn ? !Dn : 0); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp,  OEp ? !Dn : 0); }
   void tri10_np(wire OEn, wire Dp) { tri(!OEn, !OEn ?  Dp : 0); }
@@ -361,12 +362,43 @@ struct Bus2 : public TriBase {
 
 //-----------------------------------------------------------------------------
 
-struct Pin2 : public TriBase {
+struct PinIO : public TriBase {
+  using TriBase::reset;
+  using TriBase::qp_old;
+  using TriBase::qp_new;
+
+  using TriBase::qn_new;
+
   wire qp_ext() { return TriBase::qp_new(); }
   wire qn_ext() { return TriBase::qn_new(); }
 
   void set    (wire Dp)                    { tri(1, Dp); }
   void pin_in (wire OEp, wire Dp)          { tri(OEp, Dp); }
+  void pin_out(wire HI, wire LO)           { tri(HI == LO, !HI); }
+  void pin_out(wire OEp, wire HI, wire LO) { tri(OEp && (HI == LO), !HI); }
+};
+
+//----------
+
+struct PinIn : private TriBase {
+  using TriBase::reset;
+
+  wire qp_old() { CHECK_DIRTYp(); return  bit_data(); }
+
+  void setp   (wire Dp)           { tri(1, Dp); }
+  void setn   (wire Dn)           { tri(1, Dn); }
+  void pin_in (wire OEp, wire Dp) { tri(OEp, Dp); }
+};
+
+//----------
+
+struct PinOut : private TriBase {
+  using TriBase::reset;
+
+  wire qp_new() { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() { CHECK_DIRTYp(); return !bit_data(); }
+
+  void setp   (wire Dp)                    { tri(1, Dp); }
   void pin_out(wire HI, wire LO)           { tri(HI == LO, !HI); }
   void pin_out(wire OEp, wire HI, wire LO) { tri(OEp && (HI == LO), !HI); }
 };
@@ -442,88 +474,40 @@ struct TpLatch : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-inline uint8_t pack_u8p_old(int c, const DFF* b) {
+inline uint8_t pack_u8p(int c, const void* blob) {
+  const uint8_t* b = (const uint8_t*)blob;
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp_old() << i;
+    r |= (b[i] & 1) << i;
   }
   return r;
 }
 
-inline uint8_t pack_u8n_old(int c, const DFF* b) {
+inline uint8_t pack_u8n(int c, const void* blob) {
+  const uint8_t* b = (const uint8_t*)blob;
   uint8_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= !b[i].qp_old() << i;
+    r |= !(b[i] & 1) << i;
   }
   return r;
 }
 
-inline uint16_t pack_u16p_old(int c, const DFF* b) {
+//-----------------------------------------------------------------------------
+
+inline uint16_t pack_u16p(int c, const void* blob) {
+  const uint8_t* b = (const uint8_t*)blob;
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp_old() << i;
+    r |= (b[i] & 1) << i;
   }
   return r;
 }
 
-//-----------------------------------------------------------------------------
-
-inline uint8_t pack_u8p_new(int c, Bus2* b) {
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= b[i].qp_ext() << i;
-  }
-  return r;
-}
-
-inline uint8_t pack_u8n_old(int c, Bus2* b) {
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= !b[i].qp_old() << i;
-  }
-  return r;
-}
-
-inline uint8_t pack_u8n_new(int c, Bus2* b) {
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= !b[i].qp_new() << i;
-  }
-  return r;
-}
-
-//-----------------------------------------------------------------------------
-
-inline uint8_t pack_u8p_new(int c, Pin2* b) {
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= b[i].qp_ext() << i;
-  }
-  return r;
-}
-
-inline uint16_t pack_u16p_new(int c, Pin2* b) {
+inline uint16_t pack_u16n(int c, const void* blob) {
+  const uint8_t* b = (const uint8_t*)blob;
   uint16_t r = 0;
   for (int i = 0; i < c; i++) {
-    r |= b[i].qp_ext() << i;
-  }
-  return r;
-}
-
-//-----------------------------------------------------------------------------
-
-inline uint8_t pack_u8p_old(int c, const BitBase* b) {
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= b[i].qp_old() << i;
-  }
-  return r;
-}
-
-inline uint8_t pack_u8p_new(int c, const BitBase* b) {
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= b[i].qp_new() << i;
+    r |= !(b[i] & 1) << i;
   }
   return r;
 }

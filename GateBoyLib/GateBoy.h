@@ -275,7 +275,6 @@ struct GateBoy {
   //----------
 
   LcdRegisters lcd_reg;
-  Gate ATEJ_LINE_TRIGp;
 
   /*PIN_50*/ PinOut PIN_LCD_DATA1;
   /*PIN_51*/ PinOut PIN_LCD_DATA0;

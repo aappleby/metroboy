@@ -254,7 +254,6 @@ struct GateBoy {
   //----------
 
   SpriteScanner      sprite_scanner;
-  Gate AVAP_SCAN_DONE_TRIGp;
 
   //----------
 

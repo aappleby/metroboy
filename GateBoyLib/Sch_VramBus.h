@@ -6,23 +6,6 @@
 struct VramBus {
 
   void reset_cart() {
-    LEGU_TILE_DA0n.reset(REG_D1C1);
-    NUDU_TILE_DA1n.reset(REG_D1C1);
-    MUKU_TILE_DA2n.reset(REG_D1C1);
-    LUZO_TILE_DA3n.reset(REG_D1C1);
-    MEGU_TILE_DA4n.reset(REG_D1C1);
-    MYJY_TILE_DA5n.reset(REG_D1C1);
-    NASA_TILE_DA6n.reset(REG_D1C1);
-    NEFO_TILE_DA7n.reset(REG_D1C1);
-    RAWU_TILE_DB0p.reset(REG_D0C1);
-    POZO_TILE_DB1p.reset(REG_D0C1);
-    PYZO_TILE_DB2p.reset(REG_D0C1);
-    POXA_TILE_DB3p.reset(REG_D0C1);
-    PULO_TILE_DB4p.reset(REG_D0C1);
-    POJU_TILE_DB5p.reset(REG_D0C1);
-    POWY_TILE_DB6p.reset(REG_D0C1);
-    PYJU_TILE_DB7p.reset(REG_D0C1);
-
     PEFO_SPRITE_DB0n.reset(REG_D1C0);
     ROKA_SPRITE_DB1n.reset(REG_D1C0);
     MYTU_SPRITE_DB2n.reset(REG_D1C0);
@@ -42,23 +25,6 @@ struct VramBus {
   }
 
   void reset_boot() {
-    LEGU_TILE_DA0n.reset(REG_D0C0);
-    NUDU_TILE_DA1n.reset(REG_D0C0);
-    MUKU_TILE_DA2n.reset(REG_D0C0);
-    LUZO_TILE_DA3n.reset(REG_D0C0);
-    MEGU_TILE_DA4n.reset(REG_D0C0);
-    MYJY_TILE_DA5n.reset(REG_D0C0);
-    NASA_TILE_DA6n.reset(REG_D0C0);
-    NEFO_TILE_DA7n.reset(REG_D0C0);
-    RAWU_TILE_DB0p.reset(REG_D0C0);
-    POZO_TILE_DB1p.reset(REG_D0C0);
-    PYZO_TILE_DB2p.reset(REG_D0C0);
-    POXA_TILE_DB3p.reset(REG_D0C0);
-    PULO_TILE_DB4p.reset(REG_D0C0);
-    POJU_TILE_DB5p.reset(REG_D0C0);
-    POWY_TILE_DB6p.reset(REG_D0C0);
-    PYJU_TILE_DB7p.reset(REG_D0C0);
-
     PEFO_SPRITE_DB0n.reset(REG_D0C0);
     ROKA_SPRITE_DB1n.reset(REG_D0C0);
     MYTU_SPRITE_DB2n.reset(REG_D0C0);
@@ -78,24 +44,6 @@ struct VramBus {
   }
 
   //-----------------------------------------------------------------------------
-
-  /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n;
-  /*p32.NUDU*/ DFF8p NUDU_TILE_DA1n;
-  /*p32.MUKU*/ DFF8p MUKU_TILE_DA2n;
-  /*p32.LUZO*/ DFF8p LUZO_TILE_DA3n;
-  /*p32.MEGU*/ DFF8p MEGU_TILE_DA4n;
-  /*p32.MYJY*/ DFF8p MYJY_TILE_DA5n;
-  /*p32.NASA*/ DFF8p NASA_TILE_DA6n;
-  /*p32.NEFO*/ DFF8p NEFO_TILE_DA7n; // color wrong on die
-
-  /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p; // def holds inverted pix, also holds tile index during fetch
-  /*p32.POZO*/ DFF11 POZO_TILE_DB1p;
-  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p;
-  /*p32.POXA*/ DFF11 POXA_TILE_DB3p;
-  /*p32.PULO*/ DFF11 PULO_TILE_DB4p;
-  /*p32.POJU*/ DFF11 POJU_TILE_DB5p;
-  /*p32.POWY*/ DFF11 POWY_TILE_DB6p;
-  /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p;
 
   // switching these to DFF8n breaks sprites
 

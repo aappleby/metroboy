@@ -8,7 +8,7 @@ struct CpuBus;
 
 struct OamBus {
   void reset_cart() {
-    MAKA_HOLD_MEMp.reset(REG_D0C1);
+    MAKA_LATCH_EXTp.reset(REG_D0C1);
     WUJE_CPU_OAM_WRn.reset(1);
 
     XYKY_OAM_LATCH_DB0n.reset(1);
@@ -49,7 +49,7 @@ struct OamBus {
   }
 
   void reset_boot() {
-    MAKA_HOLD_MEMp.reset(REG_D0C0);
+    MAKA_LATCH_EXTp.reset(REG_D0C0);
     WUJE_CPU_OAM_WRn.reset(0);
 
     XYKY_OAM_LATCH_DB0n.reset(0);
@@ -91,7 +91,7 @@ struct OamBus {
 
   //----------------------------------------
 
-  /*p04.MAKA*/ DFF17 MAKA_HOLD_MEMp;
+  /*p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;
 
   /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n;

@@ -579,12 +579,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Buses =====\001\n");
-  d.dump_bitp("MAKA_HOLD_MEMp  ",  gb->oam_bus.MAKA_HOLD_MEMp.state);
+  d.dump_bitp("MAKA_HOLD_MEMp  ",  gb->oam_bus.MAKA_LATCH_EXTp.state);
   d.dump_bitp("WUJE_CPU_OAM_WRn",  gb->oam_bus.WUJE_CPU_OAM_WRn.state);
   d.dump_slice2p("EXT_ADDR      ", &gb->ext_bus.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("EXT_DATA      ", &gb->ext_bus.SOMA_EXT_DATA_LATCH_D0n, 8);
-  d.dump_slice2n("TILE TEMP A   ", &gb->vram_bus.LEGU_TILE_DA0n, 8);
-  d.dump_slice2p("TILE TEMP B   ", &gb->vram_bus.RAWU_TILE_DB0p, 8);
   d.dump_slice2n("SPRITE TEMP A ", &gb->vram_bus.REWO_SPRITE_DA0n, 8);
   d.dump_slice2n("SPRITE TEMP B ", &gb->vram_bus.PEFO_SPRITE_DB0n, 8);
   d.dump_slice2n("OAM LATCH A   ", &gb->oam_bus.YDYV_OAM_LATCH_DA0n, 8);
@@ -691,8 +689,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("POME                  ", gb->pix_pipe.POME.state);
   d("\n");
   d.dump_slice2p("PIX COUNT ", &gb->pix_pipe.XEHO_PX0p, 8);
-  d.dump_slice2p("WIN MAP X ", &gb->pix_pipe.WYKA_WIN_X3, 5);
-  d.dump_slice2p("WIN Y     ", &gb->pix_pipe.VYNO_WIN_Y0, 8);
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BGW_PIPE_A0, 8);
   d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BGW_PIPE_B0, 8);
   d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NURO_SPR_PIPE_A0, 8);
@@ -702,8 +698,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   d.dump_slice2n("FF40 LCDC ", &gb->pix_pipe.VYXE_LCDC_BGENn, 8);
   d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn, 4);
-  d.dump_slice2n("FF42 SCY  ", &gb->pix_pipe.GAVE_SCY0n, 8);
-  d.dump_slice2n("FF43 SCX  ", &gb->pix_pipe.DATY_SCX0n, 8);
   d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n, 8);
   d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n, 8);
   d.dump_slice2n("FF49 OBP1 ", &gb->pix_pipe.MOXY_OBP1_D0n, 8);
@@ -717,18 +711,27 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Tile Fetch =====\001\n");
-  d.dump_bitp("POKY_PRELOAD_LATCHp", gb->tile_fetcher.POKY_PRELOAD_LATCHp.state);
-  d.dump_bitp("LONY_FETCHINGp     ", gb->tile_fetcher.LONY_FETCHINGp.state);
-  d.dump_bitp("LOVY_FETCH_DONEp   ", gb->tile_fetcher.LOVY_FETCH_DONEp.state);
-  d.dump_bitp("NYKA_FETCH_DONEp   ", gb->tile_fetcher.NYKA_FETCH_DONEp.state);
-  d.dump_bitp("PORY_FETCH_DONEp   ", gb->tile_fetcher.PORY_FETCH_DONEp.state);
-  d.dump_bitp("PYGO_FETCH_DONEp   ", gb->tile_fetcher.PYGO_FETCH_DONEp.state);
+  d.dump_bitp   ("POKY_PRELOAD_LATCHp", gb->tile_fetcher.POKY_PRELOAD_LATCHp.state);
+  d.dump_bitp   ("LONY_FETCHINGp     ", gb->tile_fetcher.LONY_FETCHINGp.state);
+  d.dump_bitp   ("LOVY_FETCH_DONEp   ", gb->tile_fetcher.LOVY_FETCH_DONEp.state);
+  d.dump_bitp   ("NYKA_FETCH_DONEp   ", gb->tile_fetcher.NYKA_FETCH_DONEp.state);
+  d.dump_bitp   ("PORY_FETCH_DONEp   ", gb->tile_fetcher.PORY_FETCH_DONEp.state);
+  d.dump_bitp   ("PYGO_FETCH_DONEp   ", gb->tile_fetcher.PYGO_FETCH_DONEp.state);
   d("\n");
-  d.dump_bitp("LAXU_BFETCH_S0p    ", gb->tile_fetcher.LAXU_BFETCH_S0p.state);
-  d.dump_bitp("MESU_BFETCH_S1p    ", gb->tile_fetcher.MESU_BFETCH_S1p.state);
-  d.dump_bitp("NYVA_BFETCH_S2p    ", gb->tile_fetcher.NYVA_BFETCH_S2p.state);
-  d.dump_bitp("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher.LYZU_BFETCH_S0p_D1.state);
-  d.dump_bitn("NYXU_BFETCH_RSTp   ", gb->NYXU_BFETCH_RSTn.state);
+  d.dump_bitp   ("LAXU_BFETCH_S0p    ", gb->tile_fetcher.LAXU_BFETCH_S0p.state);
+  d.dump_bitp   ("MESU_BFETCH_S1p    ", gb->tile_fetcher.MESU_BFETCH_S1p.state);
+  d.dump_bitp   ("NYVA_BFETCH_S2p    ", gb->tile_fetcher.NYVA_BFETCH_S2p.state);
+  d.dump_bitp   ("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher.LYZU_BFETCH_S0p_D1.state);
+  d.dump_bitn   ("NYXU_BFETCH_RSTp   ", gb->NYXU_BFETCH_RSTn.state);
+  d("\n");
+  d.dump_slice2p("WIN MAP X          ", &gb->tile_fetcher.WYKA_WIN_X3, 5);
+  d.dump_slice2p("WIN Y              ", &gb->tile_fetcher.VYNO_WIN_Y0, 8);
+  d("\n");
+  d.dump_slice2n("FF42 SCY           ", &gb->tile_fetcher.GAVE_SCY0n, 8);
+  d.dump_slice2n("FF43 SCX           ", &gb->tile_fetcher.DATY_SCX0n, 8);
+  d("\n");
+  d.dump_slice2n("TILE TEMP A        ", &gb->tile_fetcher.LEGU_TILE_DA0n, 8);
+  d.dump_slice2p("TILE TEMP B        ", &gb->tile_fetcher.RAWU_TILE_DB0p, 8);
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
@@ -763,7 +766,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   const auto& ss = gb->sprite_store;
   d("\002===== Sprite Store =====\001\n");
-  d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_STORE_ENn.state);
+  d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_COUNT_CLKp.state);
   d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p));
   d.dump_slice2p("SPRITE COUNT", &ss.BESE_SPRITE_COUNT0, 4);
   d("\n");

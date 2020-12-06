@@ -236,6 +236,7 @@ struct DFF13 : public DFF {
 struct DFF17 : public DFF {
   void dff17(wire CLKp, wire RSTn, wire Dp) { dff(CLKp, 1, RSTn, Dp); }
 
+  /*
   void dff17b(wire CLKp, wire RSTn, BitBase new_bit) {
     wire CLKp_old = wire(state & 0x02);
     wire CLKp_new = CLKp;
@@ -247,6 +248,7 @@ struct DFF17 : public DFF {
       state = 0xC0 | (CLKp_new << 1) | ((state & 1) & RSTn);
     }
   }
+  */
 };
 
 //-----------------------------------------------------------------------------
@@ -358,7 +360,8 @@ struct BusIO : public TriBase {
 };
 
 struct BusIn : private TriBase {
-  using TriBase::qp_old;
+  using TriBase::qp_any;
+  //using TriBase::qp_old;
 
   void setp_old(wire Dp) {
     CHECK_DIRTYn();
@@ -398,8 +401,7 @@ struct PinIO : public TriBase {
 
 struct PinIn : private TriBase {
   using TriBase::reset;
-
-  wire qp_old() { CHECK_DIRTYp(); return  bit_data(); }
+  using TriBase::qp_any;
 
   void setp   (wire Dp)           { tri(1, Dp); }
   void setn   (wire Dn)           { tri(1, Dn); }

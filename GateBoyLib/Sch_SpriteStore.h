@@ -5,7 +5,7 @@
 
 struct SpriteStore {
   void reset_cart() {
-    DEZY_STORE_ENn.reset(REG_D1C1);
+    DEZY_COUNT_CLKp.reset(REG_D1C1);
     BESE_SPRITE_COUNT0.reset(REG_D0C1);
     CUXY_SPRITE_COUNT1.reset(REG_D0C1);
     BEGO_SPRITE_COUNT2.reset(REG_D0C1);
@@ -261,7 +261,7 @@ struct SpriteStore {
   }
 
   void reset_boot() {
-    DEZY_STORE_ENn.reset(REG_D0C0);
+    DEZY_COUNT_CLKp.reset(REG_D0C0);
     BESE_SPRITE_COUNT0.reset(REG_D0C0);
     CUXY_SPRITE_COUNT1.reset(REG_D0C0);
     BEGO_SPRITE_COUNT2.reset(REG_D0C0);
@@ -518,7 +518,7 @@ struct SpriteStore {
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
 
-  /*p29.DEZY*/ DFF17 DEZY_STORE_ENn;
+  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;
   /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0;
   /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1;
   /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2;

@@ -163,7 +163,6 @@ struct GateBoy {
   //----------
 
   OamBus oam_bus;
-  Gate   oam_clk;
   BusOut BUS_OAM_An[8];
   BusIO  BUS_OAM_DAn[8];
   BusIO  BUS_OAM_DBn[8];
@@ -236,20 +235,8 @@ struct GateBoy {
   //----------
 
   SpriteStore        sprite_store;
-  Gate FEPO_STORE_MATCHp;
   BusIO SPR_TRI_I[6];
   BusIO SPR_TRI_L[4];
-  Gate DYTY_STORE_ENn;
-  /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
-  /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
-  /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
-  /* p29.GYFY*/ Gate GYFY_SPRITE3_GETp;
-  /* p29.GONO*/ Gate GONO_SPRITE4_GETp;
-  /* p29.GEGA*/ Gate GEGA_SPRITE5_GETp;
-  /* p29.XOJA*/ Gate XOJA_SPRITE6_GETp;
-  /* p29.GUTU*/ Gate GUTU_SPRITE7_GETp;
-  /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
-  /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 
   //----------
 
@@ -258,19 +245,14 @@ struct GateBoy {
   //----------
 
   TileFetcher        tile_fetcher;
-  Gate TAVE_PRELOAD_DONE_TRIGp;
-  Gate NYXU_BFETCH_RSTn;
-  Gate TEVO_FETCH_TRIGp;
 
   //----------
 
   SpriteFetcher      sprite_fetcher;
-  Gate WUTY_SFETCH_DONEp; // WUTY is only high on odd phases.
 
   //----------
 
   PixelPipe          pix_pipe;
-  Gate NUNY_WIN_MODE_TRIGp;
 
   //----------
 
@@ -294,6 +276,48 @@ struct GateBoy {
   //----------
 
   uint64_t sentinel2 = SENTINEL2;
+
+  bool oam_clk_old;
+
+  bool XYMU_RENDERINGp_old;
+  bool MATU_DMA_RUNNINGp_old;
+  bool BAXO_OAM_DB5p_old;
+  bool BESU_SCANNINGp_old;
+  bool WYMO_LCDC_WINENp_old;
+
+  bool WODU_HBLANKp_old;
+  bool NYXU_BFETCH_RSTn_old;
+  bool TAVE_PRELOAD_DONE_TRIGp_old;
+  bool FEPO_STORE_MATCHp_old;
+  bool MOCE_BFETCH_DONEn_old;
+
+  bool DATY_SCX0n_old;
+  bool DUZU_SCX1n_old;
+  bool CYXU_SCX2n_old;
+
+  bool RYKU_FINE_CNT0_old;
+  bool ROGA_FINE_CNT1_old;
+  bool RUBU_FINE_CNT2_old;
+
+  bool BUS_VRAM_Dp0_old;
+  bool BUS_VRAM_Dp1_old;
+  bool BUS_VRAM_Dp2_old;
+  bool BUS_VRAM_Dp3_old;
+  bool BUS_VRAM_Dp4_old;
+  bool BUS_VRAM_Dp5_old;
+  bool BUS_VRAM_Dp6_old;
+  bool BUS_VRAM_Dp7_old;
+
+  bool GUVA_SPRITE0_GETp_old;
+  bool ENUT_SPRITE1_GETp_old;
+  bool EMOL_SPRITE2_GETp_old;
+  bool GYFY_SPRITE3_GETp_old;
+  bool GONO_SPRITE4_GETp_old;
+  bool GEGA_SPRITE5_GETp_old;
+  bool XOJA_SPRITE6_GETp_old;
+  bool GUTU_SPRITE7_GETp_old;
+  bool FOXA_SPRITE8_GETp_old;
+  bool GUZE_SPRITE9_GETp_old;
 
   //-----------------------------------------------------------------------------
   // Control stuff

@@ -551,7 +551,7 @@ struct SpriteStore {
 
   // STORE_I - xBxxxFxx
   // STORE_L - xBxxxFxx
-  // STORE_X - AxCDExGH (weird, because resets? probably d/h set, aceg reset)
+  // STORE_X - During scan, xxxDxxxH. During line, AxCxExGx
 
   /*p30.YGUS*/ DFF8n YGUS_STORE0_I0n;
   /*p30.YSOK*/ DFF8n YSOK_STORE0_I1n;

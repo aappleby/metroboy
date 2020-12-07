@@ -341,27 +341,29 @@ struct PixelPipe {
 
   //----------------------------------------
 
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH // looks like set on A, cleared on BDFH
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx
   /*p27.RYDY*/ Gate RYDY_WIN_HITp_evn;                   // xxCxxxGx
   /*p27.SOVY*/ DFF17 SOVY_WIN_HITp_odd;                  // xxxDxxxH
-  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_xxx;               // xBxxxxxH
+  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_xxx;               // xBxxxxxH Set on H, cleared on B
   /*p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_odd;                // xxxDxxxH
   /*p27.NUNU*/ DFF17 NUNU_WIN_MATCHp_evn;                // xxxxExGx
   /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp_evn;        // xxCxxxxx
   /*p27.SARY*/ DFF17 SARY_WY_MATCHp_evn;                 // xxCxxxxx
   /*p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A_evn;              // AxCxExGx
   /*p27.RENE*/ DFF17 RENE_WIN_FETCHn_B_odd;              // xBxDxFxH
-  /*p27.RYKU*/ DFF17 _RYKU_FINE_CNT0_xxx;                // ABCDEFGH
-  /*p27.ROGA*/ DFF17 _ROGA_FINE_CNT1_xxx;                // ABCDEFGH
-  /*p27.RUBU*/ DFF17 _RUBU_FINE_CNT2_xxx;                // ABCDEFGH
+
+  /*p27.RYKU*/ DFF17 _RYKU_FINE_CNT0_xxx;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+  /*p27.ROGA*/ DFF17 _ROGA_FINE_CNT1_xxx;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+  /*p27.RUBU*/ DFF17 _RUBU_FINE_CNT2_xxx;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+
   /*p??.PUXA*/ DFF17 _PUXA_SCX_FINE_MATCH_A_odd;         // xxxxxFxH
   /*p27.NYZE*/ DFF17 _NYZE_SCX_FINE_MATCH_B_evn;         // AxxxxxGx
   /*p??.ROXY*/ NorLatch _ROXY_SCX_FINE_MATCH_LATCHn_odd; // xBxDxFxH
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn_evn;       // xxCxxxxx
-  /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE_xxx;         // xBxDxFGH // BDFH G?
-  /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH // BDFH A?
+  /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE_xxx;         // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
+  /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
   /*p24.PAHO*/ DFF17 _PAHO_X_8_SYNC_odd;                 // xBxDxFxH
 
   // RUJU+POFY+POME form a nor latch

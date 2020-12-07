@@ -94,7 +94,7 @@ struct OamBus {
   /*p04.MAKA*/ DFF17 MAKA_LATCH_EXTp_evn;       // AxxxExxx
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn_evn;   // AxxxExxx
 
-  /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n_odd; // xBxxxFxx
+  /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n_odd; // xBxxxFxx // Proooobably all odd clocks?
   /*p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n_odd; // xBxxxFxx
   /*p31.YSEX*/ TpLatch YSEX_OAM_LATCH_DB2n_odd; // xBxxxFxx
   /*p31.YVEL*/ TpLatch YVEL_OAM_LATCH_DB3n_odd; // xBxxxFxx
@@ -103,11 +103,11 @@ struct OamBus {
   /*p31.ZUVE*/ TpLatch ZUVE_OAM_LATCH_DB6n_odd; // xBxxxFxx
   /*p31.ECED*/ TpLatch ECED_OAM_LATCH_DB7n_odd; // xBxxxFxx
 
-  /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n_odd; // xBxDxFxx
+  /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n_odd; // xBxDxFxx // Proooobably all odd clocks?
   /*p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n_odd; // xBxDxFxx
   /*p29.ZUCA*/ TpLatch ZUCA_OAM_LATCH_DA2n_odd; // xBxDxFxx
   /*p29.WONE*/ TpLatch WONE_OAM_LATCH_DA3n_odd; // xBxDxFxx
-  /*p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n_odd; // xBxDxFxx  // d here is weird
+  /*p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n_odd; // xBxDxFxx
   /*p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n_odd; // xBxDxFxx
   /*p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n_odd; // xBxDxFxx
   /*p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n_odd; // xBxDxFxx

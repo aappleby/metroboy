@@ -3274,7 +3274,7 @@ void GateBoy::tock_slow(int pass_index) {
 
       /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE_new = nand2(sprite_fetcher.TESE_SFETCH_S2p_xxx.qp_new(), sprite_fetcher.TOXE_SFETCH_S0p_xxx.qp_new());
       /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_clknew = nand2(_LAPE_AxCxExGx_clk, _TAME_SFETCH_CLK_GATE_new);
-      /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p_xxx.dff17(_TOMA_SFETCH_xBxDxFxH_clknew,            _SECA_SFETCH_RSTn_new, sprite_fetcher.TOXE_SFETCH_S0p_xxx.qn_new());
+      /*#p29.TOXE*/ sprite_fetcher.TOXE_SFETCH_S0p_xxx.dff17(_TOMA_SFETCH_xBxDxFxH_clknew,                _SECA_SFETCH_RSTn_new, sprite_fetcher.TOXE_SFETCH_S0p_xxx.qn_new());
       /*#p29.TULY*/ sprite_fetcher.TULY_SFETCH_S1p_odd.dff17(sprite_fetcher.TOXE_SFETCH_S0p_xxx.qn_new(), _SECA_SFETCH_RSTn_new, sprite_fetcher.TULY_SFETCH_S1p_odd.qn_new());
       /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p_xxx.dff17(sprite_fetcher.TULY_SFETCH_S1p_odd.qn_new(), _SECA_SFETCH_RSTn_new, sprite_fetcher.TESE_SFETCH_S2p_xxx.qn_new());
     }

@@ -147,11 +147,11 @@ struct TileFetcher {
   }
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_odd; // xBxDxFxG
-  /*p27.LONY*/ NandLatch LONY_FETCHINGp_xxx;      // ABCDEFGX
+  /*p27.LONY*/ NandLatch LONY_FETCHINGp_xxx;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?
 
   /*p27.LOVY*/ DFF17 LOVY_FETCH_DONEp_evn;        // AxCxExGx
-  /*p24.NYKA*/ DFF17 NYKA_FETCH_DONEp_xxx;        // ABCDEFGH
-  /*p24.PORY*/ DFF17 PORY_FETCH_DONEp_xxx;        // ABCDEFGH
+  /*p24.NYKA*/ DFF17 NYKA_FETCH_DONEp_xxx;        // Usually changes on even. Changes on odd phase at end of line if we're in a window?
+  /*p24.PORY*/ DFF17 PORY_FETCH_DONEp_xxx;        // Usually changes on even. Changes on odd phase at end of line if we're in a window?
   /*p24.PYGO*/ DFF17 PYGO_FETCH_DONEp_odd;        // xBxDxFxG
 
   /*p27.LAXU*/ DFF17 LAXU_BFETCH_S0p_evn;         // AxCxExGx

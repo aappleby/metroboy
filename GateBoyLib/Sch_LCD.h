@@ -107,23 +107,23 @@ struct LcdRegisters {
   /*p21.NAPO*/ DFF17 NAPO_FRAME_EVENp_evn;    // xxCxxxxx
 
   // Increments at P010 (because of RUTU holding it in reset) and then at every A phase.
-  /*p21.SAXO*/ DFF17 SAXO_LX0p_evn; // xxCxxxxx but sometimes G?
-  /*p21.TYPO*/ DFF17 TYPO_LX1p_evn; // xxCxxxxx but sometimes G?
-  /*p21.VYZO*/ DFF17 VYZO_LX2p_evn; // xxCxxxxx but sometimes G?
-  /*p21.TELU*/ DFF17 TELU_LX3p_evn; // xxCxxxxx but sometimes G?
-  /*p21.SUDE*/ DFF17 SUDE_LX4p_evn; // xxCxxxxx but sometimes G?
-  /*p21.TAHA*/ DFF17 TAHA_LX5p_evn; // xxCxxxxx but sometimes G?
-  /*p21.TYRY*/ DFF17 TYRY_LX6p_evn; // xxCxxxxx but sometimes G?
+  /*p21.SAXO*/ DFF17 SAXO_LX0p_evn; // xxCxxxGx Ticks on C, reset on G
+  /*p21.TYPO*/ DFF17 TYPO_LX1p_evn; // xxCxxxGx Ticks on C, reset on G
+  /*p21.VYZO*/ DFF17 VYZO_LX2p_evn; // xxCxxxGx Ticks on C, reset on G
+  /*p21.TELU*/ DFF17 TELU_LX3p_evn; // xxCxxxGx Ticks on C, reset on G
+  /*p21.SUDE*/ DFF17 SUDE_LX4p_evn; // xxCxxxGx Ticks on C, reset on G
+  /*p21.TAHA*/ DFF17 TAHA_LX5p_evn; // xxCxxxGx Ticks on C, reset on G
+  /*p21.TYRY*/ DFF17 TYRY_LX6p_evn; // xxCxxxGx Ticks on C, reset on G
 
   // -> pix pipe, sprite scanner, vram bus. Increments at P910
-  /*p21.MUWY*/ DFF17 MUWY_LY0p_evn; // xxxxxxGx but sometimes C?
-  /*p21.MYRO*/ DFF17 MYRO_LY1p_evn; // xxxxxxGx but sometimes C?
-  /*p21.LEXA*/ DFF17 LEXA_LY2p_evn; // xxxxxxGx but sometimes C?
-  /*p21.LYDO*/ DFF17 LYDO_LY3p_evn; // xxxxxxGx but sometimes C?
-  /*p21.LOVU*/ DFF17 LOVU_LY4p_evn; // xxxxxxGx but sometimes C?
-  /*p21.LEMA*/ DFF17 LEMA_LY5p_evn; // xxxxxxGx but sometimes C?
-  /*p21.MATO*/ DFF17 MATO_LY6p_evn; // xxxxxxGx but sometimes C?
-  /*p21.LAFO*/ DFF17 LAFO_LY7p_evn; // xxxxxxGx but sometimes C?
+  /*p21.MUWY*/ DFF17 MUWY_LY0p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.MYRO*/ DFF17 MYRO_LY1p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.LEXA*/ DFF17 LEXA_LY2p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.LYDO*/ DFF17 LYDO_LY3p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.LOVU*/ DFF17 LOVU_LY4p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.LEMA*/ DFF17 LEMA_LY5p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.MATO*/ DFF17 MATO_LY6p_evn; // xxCxxxGx Ticks on G, reset on C
+  /*p21.LAFO*/ DFF17 LAFO_LY7p_evn; // xxCxxxGx Ticks on G, reset on C
 
   // FF45 - LYC
   /*p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH

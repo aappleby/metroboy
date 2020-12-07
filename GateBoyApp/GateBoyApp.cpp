@@ -735,16 +735,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
-  d.dump_bitp("TAKA_SFETCH_RUNNINGp", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp.state);
-  d.dump_bitp("SOBU_SFETCH_REQp    ", gb->sprite_fetcher.SOBU_SFETCH_REQp    .state);
-  d.dump_bitp("SUDA_SFETCH_REQp    ", gb->sprite_fetcher.SUDA_SFETCH_REQp    .state);
-  d.dump_bitp("TOXE_SFETCH_S0      ", gb->sprite_fetcher.TOXE_SFETCH_S0p     .state);
-  d.dump_bitp("TULY_SFETCH_S1      ", gb->sprite_fetcher.TULY_SFETCH_S1p     .state);
-  d.dump_bitp("TESE_SFETCH_S2      ", gb->sprite_fetcher.TESE_SFETCH_S2p     .state);
-  d.dump_bitp("TYFO_SFETCH_S0_D1   ", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1  .state);
-  d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2  .state);
-  d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4  .state);
-  d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5  .state);
+  d.dump_bitp("TAKA_SFETCH_RUNNINGp", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp_xxx.state);
+  d.dump_bitp("SOBU_SFETCH_REQp    ", gb->sprite_fetcher.SOBU_SFETCH_REQp_odd    .state);
+  d.dump_bitp("SUDA_SFETCH_REQp    ", gb->sprite_fetcher.SUDA_SFETCH_REQp_evn    .state);
+  d.dump_bitp("TOXE_SFETCH_S0      ", gb->sprite_fetcher.TOXE_SFETCH_S0p_xxx     .state);
+  d.dump_bitp("TULY_SFETCH_S1      ", gb->sprite_fetcher.TULY_SFETCH_S1p_odd     .state);
+  d.dump_bitp("TESE_SFETCH_S2      ", gb->sprite_fetcher.TESE_SFETCH_S2p_xxx     .state);
+  d.dump_bitp("TYFO_SFETCH_S0_D1   ", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1_evn  .state);
+  d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2_odd  .state);
+  d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4_odd  .state);
+  d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5_evn  .state);
   //d.dump_bitp("WUTY_SFETCH_DONEp   ", gb->WUTY_SFETCH_DONEp                  .state);
   d("\n");
 

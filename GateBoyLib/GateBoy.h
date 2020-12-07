@@ -289,7 +289,7 @@ struct GateBoy {
   bool NYXU_BFETCH_RSTn_old_xxx;
   bool TAVE_PRELOAD_DONE_TRIGp_old;
   bool FEPO_STORE_MATCHp_old_evn;
-  bool MOCE_BFETCH_DONEn_old;
+  bool MOCE_BFETCH_DONEn_old_xxx;
 
   bool DATY_SCX0n_old_h;
   bool DUZU_SCX1n_old_h;

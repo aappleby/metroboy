@@ -3923,7 +3923,7 @@ void GateBoy::tock_slow(int pass_index) {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Sprite store matcher
 
-  /* p29.FEPO*/ bool FEPO_STORE_MATCHp_new; // AxCxExGx
+  /* p29.FEPO*/ bool FEPO_STORE_MATCHp_new_evn; // AxCxExGx
   /* p29.GUVA*/ bool GUVA_SPRITE0_GETp_new; // AxCxExGx
   /* p29.ENUT*/ bool ENUT_SPRITE1_GETp_new; // AxCxExGx
   /* p29.EMOL*/ bool EMOL_SPRITE2_GETp_new; // AxCxExGx
@@ -3948,7 +3948,7 @@ void GateBoy::tock_slow(int pass_index) {
     ADAZ_PX6n_new_evn,
     ASAH_PX7n_new_evn,
 
-    &FEPO_STORE_MATCHp_new,
+    &FEPO_STORE_MATCHp_new_evn,
     &GUVA_SPRITE0_GETp_new,
     &ENUT_SPRITE1_GETp_new,
     &EMOL_SPRITE2_GETp_new,
@@ -4091,8 +4091,8 @@ void GateBoy::tock_slow(int pass_index) {
 
     /* p29.FEFY*/ wire _FEFY_STORE_MATCHp_new = nand5(_XAGE_STORE4_MATCHn_new, _YLOZ_STORE3_MATCHn_new, _DEGO_STORE2_MATCHn_new, _DYDU_STORE1_MATCHn_new, _YDUG_STORE0_MATCHn_new);
     /* p29.FOVE*/ wire _FOVE_STORE_MATCHp_new = nand5(_YGEM_STORE9_MATCHn_new, _EFYL_STORE8_MATCHn_new, _DYKA_STORE7_MATCHn_new, _YBEZ_STORE6_MATCHn_new, _EGOM_STORE5_MATCHn_new);
-    /* p29.FEPO*/ FEPO_STORE_MATCHp_new = or2(_FEFY_STORE_MATCHp_new, _FOVE_STORE_MATCHp_new);
-    FEPO_STORE_MATCHp_old_evn = FEPO_STORE_MATCHp_new;
+    /* p29.FEPO*/ FEPO_STORE_MATCHp_new_evn = or2(_FEFY_STORE_MATCHp_new, _FOVE_STORE_MATCHp_new);
+    FEPO_STORE_MATCHp_old_evn = FEPO_STORE_MATCHp_new_evn;
 
     /* p29.WEFU*/ wire _WEFU_STORE0_MATCH_new = not1(_YDUG_STORE0_MATCHn_new);
     /* p29.GAJA*/ wire _GAJA_STORE1_MATCH_new = not1(_DYDU_STORE1_MATCHn_new);
@@ -4331,7 +4331,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   [
     this,
-    FEPO_STORE_MATCHp_new,
+    FEPO_STORE_MATCHp_new_evn,
     EBOS_LY0n_new_evn,
     DASA_LY1n_new_evn,
     FUKY_LY2n_new_evn,
@@ -4351,10 +4351,10 @@ void GateBoy::tock_slow(int pass_index) {
     /* p29.DABU*/ wire _DABU_SPRITE_DELTA2_new = not1(_FECO_YDIFF_S2_new);
     /* p29.GYSA*/ wire _GYSA_SPRITE_DELTA3_new = not1(_GYKY_YDIFF_S3_new);
 
-    /*#p30.CUCU*/ SPR_TRI_L[0].tri6_nn(FEPO_STORE_MATCHp_new, _DEGE_SPRITE_DELTA0_new);
-    /*#p30.CUCA*/ SPR_TRI_L[1].tri6_nn(FEPO_STORE_MATCHp_new, _DABY_SPRITE_DELTA1_new);
-    /*#p30.CEGA*/ SPR_TRI_L[2].tri6_nn(FEPO_STORE_MATCHp_new, _DABU_SPRITE_DELTA2_new);
-    /*#p30.WENU*/ SPR_TRI_L[3].tri6_nn(FEPO_STORE_MATCHp_new, _GYSA_SPRITE_DELTA3_new);
+    /*#p30.CUCU*/ SPR_TRI_L[0].tri6_nn(FEPO_STORE_MATCHp_new_evn, _DEGE_SPRITE_DELTA0_new);
+    /*#p30.CUCA*/ SPR_TRI_L[1].tri6_nn(FEPO_STORE_MATCHp_new_evn, _DABY_SPRITE_DELTA1_new);
+    /*#p30.CEGA*/ SPR_TRI_L[2].tri6_nn(FEPO_STORE_MATCHp_new_evn, _DABU_SPRITE_DELTA2_new);
+    /*#p30.WENU*/ SPR_TRI_L[3].tri6_nn(FEPO_STORE_MATCHp_new_evn, _GYSA_SPRITE_DELTA3_new);
   }();
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -4696,7 +4696,7 @@ void GateBoy::tock_slow(int pass_index) {
     cpu_addr,
     SYKE_ADDR_HIp_ext,
 
-    FEPO_STORE_MATCHp_new,
+    FEPO_STORE_MATCHp_new_evn,
     PARU_VBLANKp_new_evn,
     PURE_LINE_ENDn_new_evn,
     ROPO_LY_MATCH_SYNCp_new_evn,
@@ -4748,7 +4748,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p02.TUNY*/ wire _TUNY_FF0F_RST3n_new = and3(_SULO_INT3_WRn_new, _LUFE_INT_SER_ACKn_ext,  _ALUR_SYS_RSTn_new);
     /* p02.TYME*/ wire _TYME_FF0F_RST4n_new = and3(_SEME_INT4_WRn_new, _LAMO_INT_JOY_ACKn_ext,  _ALUR_SYS_RSTn_new);
 
-    /*#p21.XENA*/ wire _XENA_STORE_MATCHn_new = not1(FEPO_STORE_MATCHp_new);
+    /*#p21.XENA*/ wire _XENA_STORE_MATCHn_new = not1(FEPO_STORE_MATCHp_new_evn);
     /*#p21.WODU*/ WODU_HBLANKp_new = and2(_XENA_STORE_MATCHn_new, XANO_PX167p_new_evn);
 
     /*#p21.TOLU*/ wire _TOLU_VBLANKn_new    = not1(PARU_VBLANKp_new_evn);
@@ -5942,7 +5942,7 @@ void GateBoy::tock_slow(int pass_index) {
   WODU_HBLANKp_old = WODU_HBLANKp_new;
   NYXU_BFETCH_RSTn_old_xxx = NYXU_BFETCH_RSTn_new_xxx;
   TAVE_PRELOAD_DONE_TRIGp_old = TAVE_PRELOAD_DONE_TRIGp_new_any;
-  FEPO_STORE_MATCHp_old_evn = FEPO_STORE_MATCHp_new;
+  FEPO_STORE_MATCHp_old_evn = FEPO_STORE_MATCHp_new_evn;
   MOCE_BFETCH_DONEn_old_xxx = MOCE_BFETCH_DONEn_new_xxx;
 
   DATY_SCX0n_old_h = tile_fetcher.DATY_SCX0n_h.qn_new();

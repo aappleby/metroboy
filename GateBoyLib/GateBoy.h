@@ -166,10 +166,10 @@ struct GateBoy {
   BusOut BUS_OAM_An[8];
   BusIO  BUS_OAM_DAn[8];
   BusIO  BUS_OAM_DBn[8];
-  PinOut PIN_OAM_CLKn;
-  PinOut PIN_OAM_WRn_A;
-  PinOut PIN_OAM_WRn_B;
-  PinOut PIN_OAM_OEn;
+  PinOut PIN_OAM_CLKn;  // ABCDEFGH
+  PinOut PIN_OAM_WRn_A; // AxxxExxH
+  PinOut PIN_OAM_WRn_B; // AxxxExxH
+  PinOut PIN_OAM_OEn;   // ABCDEFGH
 
   //----------
 
@@ -228,15 +228,15 @@ struct GateBoy {
   //----------
 
   SerialRegisters ser_reg;
-  PinIO  PIN_SCK; // PIN_68
-  PinIn  PIN_SIN; // PIN_69
+  PinIO  PIN_SCK;  // PIN_68
+  PinIn  PIN_SIN;  // PIN_69
   PinOut PIN_SOUT; // PIN_70
 
   //----------
 
   SpriteStore        sprite_store;
-  BusIO SPR_TRI_I[6];
-  BusIO SPR_TRI_L[4];
+  BusIO SPR_TRI_I[6]; // AxCxExGx
+  BusIO SPR_TRI_L[4]; // AxCxExGx
 
   //----------
 
@@ -259,13 +259,13 @@ struct GateBoy {
   LcdRegisters lcd_reg;
 
   /*PIN_50*/ PinOut PIN_LCD_DATA1;
-  /*PIN_51*/ PinOut PIN_LCD_DATA0;
-  /*PIN_54*/ PinOut PIN_LCD_HSYNC;
-  /*PIN_56*/ PinOut PIN_LCD_FLIPS;
-  /*PIN_52*/ PinOut PIN_LCD_CNTRL;
-  /*PIN_55*/ PinOut PIN_LCD_LATCH;
-  /*PIN_53*/ PinOut PIN_LCD_CLOCK;
-  /*PIN_57*/ PinOut PIN_LCD_VSYNC;
+  /*PIN_51*/ PinOut PIN_LCD_DATA0_evn;
+  /*PIN_54*/ PinOut PIN_LCD_HSYNC_evn;
+  /*PIN_56*/ PinOut PIN_LCD_FLIPS_evn;
+  /*PIN_52*/ PinOut PIN_LCD_CNTRL_evn;
+  /*PIN_55*/ PinOut PIN_LCD_LATCH_evn;
+  /*PIN_53*/ PinOut PIN_LCD_CLOCK_xxx;
+  /*PIN_57*/ PinOut PIN_LCD_VSYNC_evn;
 
   NorLatch lcd_pix_lo;
   NorLatch lcd_pix_hi;
@@ -279,25 +279,25 @@ struct GateBoy {
 
   bool oam_clk_old;
 
-  bool XYMU_RENDERINGp_old;
-  bool MATU_DMA_RUNNINGp_old;
-  bool BAXO_OAM_DB5p_old;
-  bool BESU_SCANNINGp_old;
-  bool WYMO_LCDC_WINENp_old;
+  bool XYMU_RENDERINGp_old_xxx;
+  bool MATU_DMA_RUNNINGp_old_evn;
+  bool BAXO_OAM_DB5p_old_evn;
+  bool BESU_SCANNINGp_old_evn;
+  bool WYMO_LCDC_WINENp_old_h;
 
   bool WODU_HBLANKp_old;
-  bool NYXU_BFETCH_RSTn_old;
+  bool NYXU_BFETCH_RSTn_old_xxx;
   bool TAVE_PRELOAD_DONE_TRIGp_old;
-  bool FEPO_STORE_MATCHp_old;
+  bool FEPO_STORE_MATCHp_old_evn;
   bool MOCE_BFETCH_DONEn_old;
 
-  bool DATY_SCX0n_old;
-  bool DUZU_SCX1n_old;
-  bool CYXU_SCX2n_old;
+  bool DATY_SCX0n_old_h;
+  bool DUZU_SCX1n_old_h;
+  bool CYXU_SCX2n_old_h;
 
-  bool RYKU_FINE_CNT0_old;
-  bool ROGA_FINE_CNT1_old;
-  bool RUBU_FINE_CNT2_old;
+  bool RYKU_FINE_CNT0_old_xxx;
+  bool ROGA_FINE_CNT1_old_xxx;
+  bool RUBU_FINE_CNT2_old_xxx;
 
   bool BUS_VRAM_Dp0_old;
   bool BUS_VRAM_Dp1_old;

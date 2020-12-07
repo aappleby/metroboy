@@ -518,35 +518,39 @@ struct SpriteStore {
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
 
-  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;
-  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0;
-  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1;
-  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2;
-  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3;
+  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
+  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
+  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
+  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx
+  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3; // AxxxExxx
 
-  /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp;
-  /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp;
-  /*p29.EGAV*/ DFF17 EGAV_STORE2_RSTp;
-  /*p29.GOTA*/ DFF17 GOTA_STORE3_RSTp;
-  /*p29.XUDY*/ DFF17 XUDY_STORE4_RSTp;
-  /*p29.WAFY*/ DFF17 WAFY_STORE5_RSTp;
-  /*p29.WOMY*/ DFF17 WOMY_STORE6_RSTp;
-  /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp;
-  /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp;
-  /*p29.FONO*/ DFF17 FONO_STORE9_RSTp;
+  /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp;   // AxCxExGx
+  /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp;   // AxCxExGx
+  /*p29.EGAV*/ DFF17 EGAV_STORE2_RSTp;   // AxCxExGx
+  /*p29.GOTA*/ DFF17 GOTA_STORE3_RSTp;   // AxCxExGx
+  /*p29.XUDY*/ DFF17 XUDY_STORE4_RSTp;   // AxCxExGx
+  /*p29.WAFY*/ DFF17 WAFY_STORE5_RSTp;   // AxCxExGx
+  /*p29.WOMY*/ DFF17 WOMY_STORE6_RSTp;   // AxCxExGx
+  /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp;   // AxCxExGx
+  /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp;   // AxCxExGx
+  /*p29.FONO*/ DFF17 FONO_STORE9_RSTp;   // AxCxExGx
 
   //----------------------------------------
   // Sprite index latch selects which store to write
 
-  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
-  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
-  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p;
-  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p;
-  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p;
-  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p;
+  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
+  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
+  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
+  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
+  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
+  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
 
   //----------------------------------------
   // All 10 of the sprite stores
+
+  // STORE_I - xBxxxFxx
+  // STORE_L - xBxxxFxx
+  // STORE_X - AxCDExGH (weird, because resets? probably d/h set, aceg reset)
 
   /*p30.YGUS*/ DFF8n YGUS_STORE0_I0n;
   /*p30.YSOK*/ DFF8n YSOK_STORE0_I1n;

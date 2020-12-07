@@ -31,7 +31,7 @@ struct PixelPipe {
     REFE_STAT_OAI_ENn_h.reset(REG_D1C1);
     RUGU_STAT_LYI_ENn_h.reset(REG_D1C1);
 
-    NOPA_WIN_MODE_Bp_xxx.reset(REG_D0C0);
+    NOPA_WIN_MODE_Bp_odd.reset(REG_D0C0);
     REJO_WY_MATCH_LATCHp_evn.reset(0);
     SARY_WY_MATCHp_evn.reset(REG_D0C0);
     RYFA_WIN_FETCHn_A_evn.reset(REG_D0C1);
@@ -209,7 +209,7 @@ struct PixelPipe {
     REFE_STAT_OAI_ENn_h.reset(REG_D0C0);
     RUGU_STAT_LYI_ENn_h.reset(REG_D0C0);
 
-    NOPA_WIN_MODE_Bp_xxx.reset(REG_D0C0);
+    NOPA_WIN_MODE_Bp_odd.reset(REG_D0C0);
     REJO_WY_MATCH_LATCHp_evn.reset(0);;
     SARY_WY_MATCHp_evn.reset(REG_D0C0);
     RYFA_WIN_FETCHn_A_evn.reset(REG_D0C0);
@@ -346,7 +346,7 @@ struct PixelPipe {
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx
   /*p27.RYDY*/ Gate RYDY_WIN_HITp_evn;                   // xxCxxxGx
   /*p27.SOVY*/ DFF17 SOVY_WIN_HITp_odd;                  // xxxDxxxH
-  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_xxx;               // xBxxxxxH Set on H, cleared on B
+  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_odd;               // xBxDxFxH
   /*p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_odd;                // xxxDxxxH
   /*p27.NUNU*/ DFF17 NUNU_WIN_MATCHp_evn;                // xxxxExGx
   /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp_evn;        // xxCxxxxx

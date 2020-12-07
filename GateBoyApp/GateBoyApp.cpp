@@ -667,7 +667,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("PUKU_WIN_HITn         ", gb->pix_pipe.PUKU_WIN_HITn_evn.state);
   d.dump_bitp("RYDY_WIN_HITp         ", gb->pix_pipe.RYDY_WIN_HITp_evn.state);
   d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->pix_pipe.SOVY_WIN_HITp_odd.state);
-  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->pix_pipe.NOPA_WIN_MODE_Bp_xxx.state);
+  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->pix_pipe.NOPA_WIN_MODE_Bp_odd.state);
   d.dump_bitp("PYCO_WX_MATCH_A       ", gb->pix_pipe.PYCO_WIN_MATCHp_odd.state);
   d.dump_bitp("NUNU_WX_MATCH_B       ", gb->pix_pipe.NUNU_WIN_MATCHp_evn.state);
   d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->pix_pipe.REJO_WY_MATCH_LATCHp_evn.state);

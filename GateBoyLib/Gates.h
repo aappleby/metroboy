@@ -234,6 +234,8 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
+  void dff17(wire CLKp, wire Dp) { dff(CLKp, 1, 1, Dp); }
+
   void dff17(wire CLKp, wire RSTn, wire Dp) { dff(CLKp, 1, RSTn, Dp); }
 
   /*

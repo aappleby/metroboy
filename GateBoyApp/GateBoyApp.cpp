@@ -511,12 +511,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY.state);
-  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp.state);
-  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p, 16);
-  d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p, 8);
-  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p, 8);
-  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p, 3);
+  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY_evn.state);
+  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp_evn.state);
+  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p_evn, 16);
+  d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p_evn, 8);
+  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p_h, 8);
+  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p_h, 3);
   d("\n");
 
   d("\002===== Ints =====\001\n");

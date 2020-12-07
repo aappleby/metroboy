@@ -340,7 +340,8 @@ struct SpriteStore {
     BUNA_STORE2_I4n.reset(REG_D0C0);
     BOXA_STORE2_I5n.reset(REG_D0C0);
 
-    YLOV_STORE2_L0n.reset(REG_D0C0);XOSY_STORE2_L1n.reset(REG_D0C0);
+    YLOV_STORE2_L0n.reset(REG_D0C0);
+    XOSY_STORE2_L1n.reset(REG_D0C0);
     XAZY_STORE2_L2n.reset(REG_D0C0);
     YKUK_STORE2_L3n.reset(REG_D0C0);
 

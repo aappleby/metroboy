@@ -278,6 +278,7 @@ struct GateBoy {
   uint64_t sentinel2 = SENTINEL2;
 
   bool oam_clk_old;
+  bool zram_clk_old;
 
   //bool XYMU_RENDERINGp_old_xxx;
   //bool MATU_DMA_RUNNINGp_old_evn;

@@ -32,6 +32,7 @@ int main(int argc, char** argv) {
 
   //err += t.test_post_bootrom_state();
 
+#if 1
   err += t.test_init();
   err += t.test_clk();
   err += t.test_mem();
@@ -56,6 +57,7 @@ int main(int argc, char** argv) {
   err += t.test_micro_window();
   err += t.test_micro_dma();
   err += t.test_micro_ppu();
+#endif
 
   auto finish = timestamp();
 

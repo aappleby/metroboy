@@ -99,6 +99,8 @@ void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
     lcd_pipe_hi[i].reset(REG_D0C0);
   }
 
+  zram_clk_old = 1;
+
   run_reset_sequence(fastboot);
 }
 
@@ -190,6 +192,8 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
 
   lcd_pix_lo.reset(0);
   lcd_pix_hi.reset(0);
+
+  zram_clk_old = 1;
 
   for (int i = 0; i < 160; i++) {
     lcd_pipe_lo[i].reset(REG_D0C0);
@@ -7112,6 +7116,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   [
     this,
+    BUS_CPU_D,
     cpu_addr,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn
@@ -7123,15 +7128,19 @@ void GateBoy::tock_slow(int pass_index) {
     // _SYKE_FF00_FFFFp
     // and there's somes gates WUTA/WOLY/WALE that do the check for FFXX && !FFFF
 
-    uint8_t zram_data_latch = pack_u8p(8, &BUS_CPU_D_out[0]);
+    uint8_t zram_data_latch = pack_u8p(8, BUS_CPU_D);
 
-    if ((cpu_addr >= 0xFF80) && (cpu_addr <= 0xFFFE)) {
-      if (TAPU_CPU_WRp_clkevn) {
-        zero_ram[cpu_addr & 0x007F] = zram_data_latch;
-      }
-      if (TEDO_CPU_RDp_ext) {
-        zram_data_latch = zero_ram[cpu_addr & 0x007F];
-      }
+    wire zram_hit = (cpu_addr >= 0xFF80) && (cpu_addr <= 0xFFFE);
+
+    wire zram_clk_new = nand2(TAPU_CPU_WRp_clkevn, zram_hit);
+
+    if (!zram_clk_old && zram_clk_new) {
+      zero_ram[cpu_addr & 0x007F] = zram_data_latch;
+    }
+    zram_clk_old = zram_clk_new;
+
+    if (zram_hit && TEDO_CPU_RDp_ext) {
+      zram_data_latch = zero_ram[cpu_addr & 0x007F];
     }
 
     if ((cpu_addr >= 0xFF80) && (cpu_addr <= 0xFFFE)) {

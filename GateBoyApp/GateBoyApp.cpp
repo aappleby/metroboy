@@ -46,22 +46,6 @@ void GateBoyApp::app_init() {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
 #if 0
-  const char* app = R"(
-  0150:
-    ld a, $55
-    ld hl, $8000
-    ld (hl), a
-    jr -3
-  )";
-
-  Assembler as;
-  as.assemble(app);
-  blob boot = as.link();
-
-  gb_thread.reset_cart(DMG_ROM_blob, boot);
-#endif
-
-#if 0
   // regenerate post-bootrom dump
   gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   for (int i = 0; i < 8192; i++) {
@@ -73,6 +57,7 @@ void GateBoyApp::app_init() {
 #if 0
   // run tiny app
   if (1) {
+    /*
     std::string app = R"(
     0150:
       ld a, $00
@@ -109,19 +94,34 @@ void GateBoyApp::app_init() {
       add (hl)
       jr -2
     )";
+    */
+
+    std::string app = R"(
+    0150:
+      ld a, ($FF40)
+      ld a, ($FF40)
+      ld a, ($FF40)
+      ld a, ($FF40)
+      ld a, ($FF40)
+      ld a, ($FF40)
+      ld a, ($FF40)
+      jp $0150
+    )";
 
     Assembler as;
     as.assemble(app.c_str());
     blob rom = as.link();
 
-    gb->reset_post_bootrom(rom.data(), rom.size());
+    gb_thread.reset_cart(DMG_ROM_blob, rom);
   }
 #endif
 
+  /*
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
   gb_thread.gb->pass_total = 0;
+  */
 
   /*
 
@@ -175,7 +175,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
   //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
-  //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
+  load_rom("microtests/build/dmg/poweron_000_div.gb");
 
   LOG_G("GateBoyApp::app_init() done\n");
   gb_thread.start();
@@ -483,6 +483,26 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("int_ack   0x%02x\n", gb->cpu.int_ack);
   d("\n");
 
+  d("\002===== Ints =====\001\n");
+  d.dump_bitp("IE_D0        ", gb->IE_D0.state);
+  d.dump_bitp("IE_D1        ", gb->IE_D1.state);
+  d.dump_bitp("IE_D2        ", gb->IE_D2.state);
+  d.dump_bitp("IE_D3        ", gb->IE_D3.state);
+  d.dump_bitp("IE_D4        ", gb->IE_D4.state);
+  d("\n");
+  d.dump_bitp("LOPE_FF0F_0  ", gb->int_reg.LOPE_FF0F_D0p.state);
+  d.dump_bitp("LALU_FF0F_1  ", gb->int_reg.LALU_FF0F_D1p.state);
+  d.dump_bitp("NYBO_FF0F_2  ", gb->int_reg.NYBO_FF0F_D2p.state);
+  d.dump_bitp("UBUL_FF0F_3  ", gb->int_reg.UBUL_FF0F_D3p.state);
+  d.dump_bitp("ULAK_FF0F_4  ", gb->int_reg.ULAK_FF0F_D4p.state);
+  d("\n");
+  d.dump_bitp("MATY_FF0F_L0p", gb->int_reg.MATY_FF0F_L0p.state);
+  d.dump_bitp("MOPO_FF0F_L1p", gb->int_reg.MOPO_FF0F_L1p.state);
+  d.dump_bitp("PAVY_FF0F_L2p", gb->int_reg.PAVY_FF0F_L2p.state);
+  d.dump_bitp("NEJY_FF0F_L3p", gb->int_reg.NEJY_FF0F_L3p.state);
+  d.dump_bitp("NUTY_FF0F_L4p", gb->int_reg.NUTY_FF0F_L4p.state);
+  d("\n");
+
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224 - 32;
   d.clear();
@@ -517,26 +537,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p_evn, 8);
   d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p_h, 8);
   d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p_h, 3);
-  d("\n");
-
-  d("\002===== Ints =====\001\n");
-  d.dump_bitp("IE_D0        ", gb->IE_D0.state);
-  d.dump_bitp("IE_D1        ", gb->IE_D1.state);
-  d.dump_bitp("IE_D2        ", gb->IE_D2.state);
-  d.dump_bitp("IE_D3        ", gb->IE_D3.state);
-  d.dump_bitp("IE_D4        ", gb->IE_D4.state);
-  d("\n");
-  d.dump_bitp("LOPE_FF0F_0  ", gb->int_reg.LOPE_FF0F_D0p.state);
-  d.dump_bitp("LALU_FF0F_1  ", gb->int_reg.LALU_FF0F_D1p.state);
-  d.dump_bitp("NYBO_FF0F_2  ", gb->int_reg.NYBO_FF0F_D2p.state);
-  d.dump_bitp("UBUL_FF0F_3  ", gb->int_reg.UBUL_FF0F_D3p.state);
-  d.dump_bitp("ULAK_FF0F_4  ", gb->int_reg.ULAK_FF0F_D4p.state);
-  d("\n");
-  d.dump_bitp("MATY_FF0F_L0p", gb->int_reg.MATY_FF0F_L0p.state);
-  d.dump_bitp("MOPO_FF0F_L1p", gb->int_reg.MOPO_FF0F_L1p.state);
-  d.dump_bitp("PAVY_FF0F_L2p", gb->int_reg.PAVY_FF0F_L2p.state);
-  d.dump_bitp("NEJY_FF0F_L3p", gb->int_reg.NEJY_FF0F_L3p.state);
-  d.dump_bitp("NUTY_FF0F_L4p", gb->int_reg.NUTY_FF0F_L4p.state);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
@@ -579,16 +579,17 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Buses =====\001\n");
-  d.dump_bitp("MAKA_HOLD_MEMp  ",  gb->oam_bus.MAKA_LATCH_EXTp_evn.state);
-  d.dump_bitp("WUJE_CPU_OAM_WRn",  gb->oam_bus.WUJE_CPU_OAM_WRn_evn.state);
-  d.dump_slice2p("EXT_ADDR      ", &gb->ext_bus.ALOR_EXT_ADDR_LATCH_00p, 15);
-  d.dump_slice2n("EXT_DATA      ", &gb->ext_bus.SOMA_EXT_DATA_LATCH_D0n, 8);
-  d.dump_slice2n("SPRITE TEMP A ", &gb->vram_bus.REWO_SPRITE_DA0n, 8);
-  d.dump_slice2n("SPRITE TEMP B ", &gb->vram_bus.PEFO_SPRITE_DB0n, 8);
-  d.dump_slice2n("OAM LATCH A   ", &gb->oam_bus.YDYV_OAM_LATCH_DA0n_odd, 8);
-  d.dump_slice2n("OAM LATCH B   ", &gb->oam_bus.XYKY_OAM_LATCH_DB0n_odd, 8);
-  d.dump_slice2p("OAM TEMP A    ", &gb->oam_bus.XUSO_OAM_DA0p_evn, 8);
-  d.dump_slice2p("OAM TEMP B    ", &gb->oam_bus.YLOR_OAM_DB0p_evn, 8);
+  d.dump_slice2p("BUS_CPU_D_out    ", &gb->BUS_CPU_D_out, 8);
+  d.dump_bitp   ("MAKA_HOLD_MEMp   ",  gb->oam_bus.MAKA_LATCH_EXTp_evn.state);
+  d.dump_bitp   ("WUJE_CPU_OAM_WRn ",  gb->oam_bus.WUJE_CPU_OAM_WRn_evn.state);
+  d.dump_slice2p("EXT_ADDR         ", &gb->ext_bus.ALOR_EXT_ADDR_LATCH_00p, 15);
+  d.dump_slice2n("EXT_DATA         ", &gb->ext_bus.SOMA_EXT_DATA_LATCH_D0n, 8);
+  d.dump_slice2n("SPRITE TEMP A    ", &gb->vram_bus.REWO_SPRITE_DA0n, 8);
+  d.dump_slice2n("SPRITE TEMP B    ", &gb->vram_bus.PEFO_SPRITE_DB0n, 8);
+  d.dump_slice2n("OAM LATCH A      ", &gb->oam_bus.YDYV_OAM_LATCH_DA0n_odd, 8);
+  d.dump_slice2n("OAM LATCH B      ", &gb->oam_bus.XYKY_OAM_LATCH_DB0n_odd, 8);
+  d.dump_slice2p("OAM TEMP A       ", &gb->oam_bus.XUSO_OAM_DA0p_evn, 8);
+  d.dump_slice2p("OAM TEMP B       ", &gb->oam_bus.YLOR_OAM_DB0p_evn, 8);
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
@@ -603,26 +604,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   d.dump_slice2p("DMA_A_LOW ", &gb->dma_reg.NAKY_DMA_A00p_evn, 8);
   d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n_h, 8);
-  d("\n");
-
-  d("\002===== Int Reg =====\001\n");
-  d.dump_bitp("IE_D0        ", gb->IE_D0.state);
-  d.dump_bitp("IE_D1        ", gb->IE_D0.state);
-  d.dump_bitp("IE_D2        ", gb->IE_D0.state);
-  d.dump_bitp("IE_D3        ", gb->IE_D0.state);
-  d.dump_bitp("IE_D4        ", gb->IE_D0.state);
-  d("\n");
-  d.dump_bitp("LOPE_FF0F_D0p", gb->int_reg.LOPE_FF0F_D0p.state);
-  d.dump_bitp("UBUL_FF0F_D3p", gb->int_reg.UBUL_FF0F_D3p.state);
-  d.dump_bitp("ULAK_FF0F_D4p", gb->int_reg.ULAK_FF0F_D4p.state);
-  d.dump_bitp("LALU_FF0F_D1p", gb->int_reg.LALU_FF0F_D1p.state);
-  d.dump_bitp("NYBO_FF0F_D2p", gb->int_reg.NYBO_FF0F_D2p.state);
-  d("\n");
-  d.dump_bitp("MATY_FF0F_L0p", gb->int_reg.MATY_FF0F_L0p.state);
-  d.dump_bitp("NEJY_FF0F_L3p", gb->int_reg.NEJY_FF0F_L3p.state);
-  d.dump_bitp("NUTY_FF0F_L4p", gb->int_reg.NUTY_FF0F_L4p.state);
-  d.dump_bitp("MOPO_FF0F_L1p", gb->int_reg.MOPO_FF0F_L1p.state);
-  d.dump_bitp("PAVY_FF0F_L2p", gb->int_reg.PAVY_FF0F_L2p.state);
   d("\n");
 
   d("\002===== LCD =====\001\n");
@@ -653,7 +634,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 224;
+  cursor += 240;
   d.clear();
 
   //----------------------------------------

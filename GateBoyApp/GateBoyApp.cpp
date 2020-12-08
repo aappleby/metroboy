@@ -513,7 +513,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== Timer =====\001\n");
   d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY_evn.state);
   d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp_evn.state);
-  d.dump_slice2p("DIV ", &gb->tim_reg.UKUP_DIV00p_evn, 16);
+  d.dump_slice2p("DIV ", &gb->div_reg.UKUP_DIV00p_evn, 16);
   d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p_evn, 8);
   d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p_h, 8);
   d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p_h, 3);
@@ -635,17 +635,17 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\n");
 
-  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp_evn.state);
+  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp_c.state);
   d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANKp_evn.state);
   d.dump_bitp("MYTA_y153p         ", gb->lcd_reg.MYTA_y153p_evn.state);
   d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd_reg.SYGU_LINE_STROBE_evn.state);
   d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd_reg.MEDA_VSYNC_OUTn_evn.state);
   d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd_reg.LUCA_LINE_EVENp_evn.state);
   d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd_reg.NAPO_FRAME_EVENp_evn.state);
-  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p_evn.state);
-  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_x113p_evn.state);
-  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p_evn.state);
-  d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_x113p_evn.state);
+  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p_a.state);
+  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_x113p_c.state);
+  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p_c.state);
+  d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_x113p_g.state);
   d("\n");
   d.dump_slice2p("LX  ", &gb->lcd_reg.SAXO_LX0p_evn.state,  7);
   d.dump_slice2p("LY  ", &gb->lcd_reg.MUWY_LY0p_evn.state,  8);
@@ -680,7 +680,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->pix_pipe._PUXA_SCX_FINE_MATCH_A_odd.state);
   d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->pix_pipe._NYZE_SCX_FINE_MATCH_B_evn.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->pix_pipe._ROXY_SCX_FINE_MATCH_LATCHn_odd.state);
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->pix_pipe.RUPO_LYC_MATCH_LATCHn_evn.state);
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->pix_pipe.RUPO_STAT_LYC_MATCHn_evn.state);
   d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->pix_pipe.WUSA_LCD_CLOCK_GATE_xxx.state);
   d.dump_bitp("VOGA_HBLANKp          ", gb->pix_pipe.VOGA_HBLANKp_xxx.state);
   d.dump_bitp("PAHO_X_8_SYNC         ", gb->pix_pipe._PAHO_X_8_SYNC_odd.state);
@@ -766,27 +766,27 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   const auto& ss = gb->sprite_store;
   d("\002===== Sprite Store =====\001\n");
-  d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_COUNT_CLKp.state);
-  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p));
-  d.dump_slice2p("SPRITE COUNT", &ss.BESE_SPRITE_COUNT0, 4);
+  d.dump_bitp   ("DEZY_STORE_ENn", ss.DEZY_COUNT_CLKp_evn.state);
+  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p_evn));
+  d.dump_slice2p("SPRITE COUNT", &ss.BESE_SPRITE_COUNT0_evn, 4);
   d("\n");
-  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_store.XADU_SPRITE_IDX0p.state);
-  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_store.XEDY_SPRITE_IDX1p.state);
-  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_store.ZUZE_SPRITE_IDX2p.state);
-  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_store.XOBE_SPRITE_IDX3p.state);
-  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_store.YDUF_SPRITE_IDX4p.state);
-  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_store.XECU_SPRITE_IDX5p.state);
+  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_store.XADU_SPRITE_IDX0p_evn.state);
+  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_store.XEDY_SPRITE_IDX1p_evn.state);
+  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_store.ZUZE_SPRITE_IDX2p_evn.state);
+  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_store.XOBE_SPRITE_IDX3p_evn.state);
+  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_store.YDUF_SPRITE_IDX4p_evn.state);
+  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_store.XECU_SPRITE_IDX5p_evn.state);
 
-  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp.qp_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n), pack_u8n(4, &ss.GYHO_STORE0_L0n), pack_u8n(8, &ss.XEPE_STORE0_X0p));
-  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp.qp_old(), pack_u8n(6, &ss.CADU_STORE1_I0n), pack_u8n(4, &ss.AMES_STORE1_L0n), pack_u8n(8, &ss.DANY_STORE1_X0p));
-  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp.qp_old(), pack_u8n(6, &ss.BUHE_STORE2_I0n), pack_u8n(4, &ss.YLOV_STORE2_L0n), pack_u8n(8, &ss.FOKA_STORE2_X0p));
-  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp.qp_old(), pack_u8n(6, &ss.DEVY_STORE3_I0n), pack_u8n(4, &ss.ZURO_STORE3_L0n), pack_u8n(8, &ss.XOLY_STORE3_X0p));
-  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp.qp_old(), pack_u8n(6, &ss.XAVE_STORE4_I0n), pack_u8n(4, &ss.CAPO_STORE4_L0n), pack_u8n(8, &ss.WEDU_STORE4_X0p));
-  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp.qp_old(), pack_u8n(6, &ss.EKOP_STORE5_I0n), pack_u8n(4, &ss.ACEP_STORE5_L0n), pack_u8n(8, &ss.FUSA_STORE5_X0p));
-  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp.qp_old(), pack_u8n(6, &ss.GABO_STORE6_I0n), pack_u8n(4, &ss.ZUMY_STORE6_L0n), pack_u8n(8, &ss.YCOL_STORE6_X0p));
-  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp.qp_old(), pack_u8n(6, &ss.GULE_STORE7_I0n), pack_u8n(4, &ss.XYNA_STORE7_L0n), pack_u8n(8, &ss.ERAZ_STORE7_X0p));
-  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp.qp_old(), pack_u8n(6, &ss.AXUV_STORE8_I0n), pack_u8n(4, &ss.AZAP_STORE8_L0n), pack_u8n(8, &ss.EZUF_STORE8_X0p));
-  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp.qp_old(), pack_u8n(6, &ss.YBER_STORE9_I0n), pack_u8n(4, &ss.CANA_STORE9_L0n), pack_u8n(8, &ss.XUVY_STORE9_X0p));
+  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp_evn.qp_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n_odd), pack_u8n(4, &ss.GYHO_STORE0_L0n_odd), pack_u8n(8, &ss.XEPE_STORE0_X0p_odd));
+  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp_evn.qp_old(), pack_u8n(6, &ss.CADU_STORE1_I0n_odd), pack_u8n(4, &ss.AMES_STORE1_L0n_odd), pack_u8n(8, &ss.DANY_STORE1_X0p_odd));
+  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp_evn.qp_old(), pack_u8n(6, &ss.BUHE_STORE2_I0n_odd), pack_u8n(4, &ss.YLOV_STORE2_L0n_odd), pack_u8n(8, &ss.FOKA_STORE2_X0p_odd));
+  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp_evn.qp_old(), pack_u8n(6, &ss.DEVY_STORE3_I0n_odd), pack_u8n(4, &ss.ZURO_STORE3_L0n_odd), pack_u8n(8, &ss.XOLY_STORE3_X0p_odd));
+  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp_evn.qp_old(), pack_u8n(6, &ss.XAVE_STORE4_I0n_odd), pack_u8n(4, &ss.CAPO_STORE4_L0n_odd), pack_u8n(8, &ss.WEDU_STORE4_X0p_odd));
+  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp_evn.qp_old(), pack_u8n(6, &ss.EKOP_STORE5_I0n_odd), pack_u8n(4, &ss.ACEP_STORE5_L0n_odd), pack_u8n(8, &ss.FUSA_STORE5_X0p_odd));
+  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp_evn.qp_old(), pack_u8n(6, &ss.GABO_STORE6_I0n_odd), pack_u8n(4, &ss.ZUMY_STORE6_L0n_odd), pack_u8n(8, &ss.YCOL_STORE6_X0p_odd));
+  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp_evn.qp_old(), pack_u8n(6, &ss.GULE_STORE7_I0n_odd), pack_u8n(4, &ss.XYNA_STORE7_L0n_odd), pack_u8n(8, &ss.ERAZ_STORE7_X0p_odd));
+  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp_evn.qp_old(), pack_u8n(6, &ss.AXUV_STORE8_I0n_odd), pack_u8n(4, &ss.AZAP_STORE8_L0n_odd), pack_u8n(8, &ss.EZUF_STORE8_X0p_odd));
+  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp_evn.qp_old(), pack_u8n(6, &ss.YBER_STORE9_I0n_odd), pack_u8n(4, &ss.CANA_STORE9_L0n_odd), pack_u8n(8, &ss.XUVY_STORE9_X0p_odd));
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -802,7 +802,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->BOOT_BITn.qp_old()) {
+    if (!gb->BOOT_BITn_h.qp_old()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;

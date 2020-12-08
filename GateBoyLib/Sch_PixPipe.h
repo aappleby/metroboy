@@ -47,7 +47,7 @@ struct PixelPipe {
     _NYZE_SCX_FINE_MATCH_B_evn.reset(REG_D0C1);
     _PAHO_X_8_SYNC_odd.reset(REG_D0C0);
 
-    RUPO_LYC_MATCH_LATCHn_evn.reset(0);
+    RUPO_STAT_LYC_MATCHn_evn.reset(0);
 
     WUSA_LCD_CLOCK_GATE_xxx.reset(0);
     VOGA_HBLANKp_xxx.reset(REG_D1C0);
@@ -223,7 +223,7 @@ struct PixelPipe {
     _ROGA_FINE_CNT1_xxx.reset(REG_D0C0);
     _RUBU_FINE_CNT2_xxx.reset(REG_D0C0);
 
-    RUPO_LYC_MATCH_LATCHn_evn.reset(0);
+    RUPO_STAT_LYC_MATCHn_evn.reset(0);
 
     WUSA_LCD_CLOCK_GATE_xxx.reset(0);
     VOGA_HBLANKp_xxx.reset(REG_D0C0);
@@ -361,7 +361,7 @@ struct PixelPipe {
   /*p??.PUXA*/ DFF17 _PUXA_SCX_FINE_MATCH_A_odd;         // xxxxxFxH
   /*p27.NYZE*/ DFF17 _NYZE_SCX_FINE_MATCH_B_evn;         // AxxxxxGx
   /*p??.ROXY*/ NorLatch _ROXY_SCX_FINE_MATCH_LATCHn_odd; // xBxDxFxH
-  /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn_evn;       // xxCxxxxx
+  /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
   /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE_xxx;         // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
   /*p24.PAHO*/ DFF17 _PAHO_X_8_SYNC_odd;                 // xBxDxFxH

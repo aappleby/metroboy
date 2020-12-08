@@ -53,7 +53,7 @@ struct GateBoy {
   //----------------------------------------
 
   void check_div() const {
-    int div = tim_reg.get_div();
+    int div = div_reg.get_div();
     if (div != BOOT_DIV) {
       printf("div fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
@@ -120,8 +120,7 @@ struct GateBoy {
   //----------
   // CPU interface
 
-  BusIn  BUS_CPU_A[16];
-  BusIO  BUS_CPU_D[8];
+  BusOut BUS_CPU_D_out[8];
 
   PinOut PIN_CPU_WAKE;          // top right wire by itself <- P02.AWOB
 
@@ -163,13 +162,13 @@ struct GateBoy {
   //----------
 
   OamBus oam_bus;
-  BusOut BUS_OAM_An[8];
+  BusOut BUS_OAM_An[8];  // ABCDEFGH
   BusIO  BUS_OAM_DAn[8];
   BusIO  BUS_OAM_DBn[8];
-  PinOut PIN_OAM_CLKn;  // ABCDEFGH
-  PinOut PIN_OAM_WRn_A; // AxxxExxH
-  PinOut PIN_OAM_WRn_B; // AxxxExxH
-  PinOut PIN_OAM_OEn;   // ABCDEFGH
+  PinOut PIN_OAM_CLKn;   // ABCDEFGH
+  PinOut PIN_OAM_WRn_A;  // AxxxExxH
+  PinOut PIN_OAM_WRn_B;  // AxxxExxH
+  PinOut PIN_OAM_OEn;    // ABCDEFGH
 
   //----------
 
@@ -195,11 +194,12 @@ struct GateBoy {
   //----------
 
   ClockRegisters clk_reg;
-  /*p07.TEPU*/ DFF17 BOOT_BITn;
+  /*p07.TEPU*/ DFF17 BOOT_BITn_h;
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
   //----------
 
+  DivRegister    div_reg;
   TimerRegisters tim_reg;
 
   //----------
@@ -235,8 +235,8 @@ struct GateBoy {
   //----------
 
   SpriteStore        sprite_store;
-  BusIO SPR_TRI_I[6]; // AxCxExGx
-  BusIO SPR_TRI_L[4]; // AxCxExGx
+  BusIO SPR_TRI_I_evn[6]; // AxCxExGx
+  BusIO SPR_TRI_L_evn[4]; // AxCxExGx
 
   //----------
 
@@ -279,34 +279,17 @@ struct GateBoy {
 
   bool oam_clk_old;
 
-  bool XYMU_RENDERINGp_old_xxx;
-  bool MATU_DMA_RUNNINGp_old_evn;
-  bool BAXO_OAM_DB5p_old_evn;
-  bool BESU_SCANNINGp_old_evn;
-  bool WYMO_LCDC_WINENp_old_h;
+  //bool XYMU_RENDERINGp_old_xxx;
+  //bool MATU_DMA_RUNNINGp_old_evn;
+  //bool BAXO_OAM_DB5p_old_evn;
+  //bool BESU_SCANNINGp_old_evn;
+  //bool WYMO_LCDC_WINENp_old_h;
 
   bool WODU_HBLANKp_old;
   bool NYXU_BFETCH_RSTn_old_xxx;
   bool TAVE_PRELOAD_DONE_TRIGp_old;
   bool FEPO_STORE_MATCHp_old_evn;
   bool MOCE_BFETCH_DONEn_old_xxx;
-
-  bool DATY_SCX0n_old_h;
-  bool DUZU_SCX1n_old_h;
-  bool CYXU_SCX2n_old_h;
-
-  bool RYKU_FINE_CNT0_old_xxx;
-  bool ROGA_FINE_CNT1_old_xxx;
-  bool RUBU_FINE_CNT2_old_xxx;
-
-  bool BUS_VRAM_Dp0_old;
-  bool BUS_VRAM_Dp1_old;
-  bool BUS_VRAM_Dp2_old;
-  bool BUS_VRAM_Dp3_old;
-  bool BUS_VRAM_Dp4_old;
-  bool BUS_VRAM_Dp5_old;
-  bool BUS_VRAM_Dp6_old;
-  bool BUS_VRAM_Dp7_old;
 
   bool GUVA_SPRITE0_GETp_old;
   bool ENUT_SPRITE1_GETp_old;

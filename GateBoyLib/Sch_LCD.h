@@ -6,12 +6,12 @@
 struct LcdRegisters {
 
   void reset_cart() {
-    ROPO_LY_MATCH_SYNCp_evn.reset(REG_D1C0);
+    ROPO_LY_MATCH_SYNCp_c.reset(REG_D1C0);
 
-    CATU_LINE_P000p_evn.reset(REG_D0C1);
-    NYPE_x113p_evn.reset(REG_D0C0);
-    ANEL_LINE_P002p_evn.reset(REG_D0C0);
-    RUTU_x113p_evn.reset(REG_D0C1);
+    CATU_LINE_P000p_a.reset(REG_D0C1);
+    NYPE_x113p_c.reset(REG_D0C0);
+    ANEL_LINE_P002p_c.reset(REG_D0C0);
+    RUTU_x113p_g.reset(REG_D0C1);
 
     MUWY_LY0p_evn.reset(REG_D0C0);
     MYRO_LY1p_evn.reset(REG_D0C1);
@@ -48,12 +48,12 @@ struct LcdRegisters {
   }
 
   void reset_boot() {
-    ROPO_LY_MATCH_SYNCp_evn.reset(REG_D0C0);
+    ROPO_LY_MATCH_SYNCp_c.reset(REG_D0C0);
 
-    CATU_LINE_P000p_evn.reset(REG_D0C0);
-    NYPE_x113p_evn.reset(REG_D0C0);
-    ANEL_LINE_P002p_evn.reset(REG_D0C0);
-    RUTU_x113p_evn.reset(REG_D0C0);
+    CATU_LINE_P000p_a.reset(REG_D0C0);
+    NYPE_x113p_c.reset(REG_D0C0);
+    ANEL_LINE_P002p_c.reset(REG_D0C0);
+    RUTU_x113p_g.reset(REG_D0C0);
 
     MUWY_LY0p_evn.reset(REG_D0C0);
     MYRO_LY1p_evn.reset(REG_D0C0);
@@ -94,11 +94,12 @@ struct LcdRegisters {
   uint8_t get_lyc() const { return pack_u8n(8, &SYRY_LYC0n); }
 
   // H deltas are due to reg writes
-  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp_evn; // xxCxxxxx
-  /*p29.CATU*/ DFF17 CATU_LINE_P000p_evn;     // Axxxxxxx
-  /*p21.NYPE*/ DFF17 NYPE_x113p_evn;          // xxCxxxxx
-  /*p28.ANEL*/ DFF17 ANEL_LINE_P002p_evn;     // xxCxxxxx
-  /*p21.RUTU*/ DFF17 RUTU_x113p_evn;          // xxxxxxGx
+  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp_c;   // xxCxxxxx
+  /*p29.CATU*/ DFF17 CATU_LINE_P000p_a;       // Axxxxxxx
+  /*p21.NYPE*/ DFF17 NYPE_x113p_c;            // xxCxxxxx
+  /*p28.ANEL*/ DFF17 ANEL_LINE_P002p_c;       // xxCxxxxx
+  /*p21.RUTU*/ DFF17 RUTU_x113p_g;            // xxxxxxGx
+
   /*p21.POPU*/ DFF17 POPU_VBLANKp_evn;        // xxCxxxxH
   /*p21.MYTA*/ DFF17 MYTA_y153p_evn;          // xxCxxxxH
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE_evn;    // xxxxxxGH

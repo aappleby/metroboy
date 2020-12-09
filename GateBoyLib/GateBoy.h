@@ -105,7 +105,60 @@ struct GateBoy {
 
   void tock_slow(int pass_index);
 
-  void tock_ext();
+  void tock_pix_pipe(
+    wire BUS_CPU_D[8],
+    wire XODO_VID_RSTp_new_h,
+
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn,
+
+    wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
+    wire NYXU_BFETCH_RSTn_new_xxx,
+    wire WUTY_SFETCH_DONE_TRIGp_odd_new,
+
+    wire WERO_ADDR_PPUp_ext,
+    wire XOLA_A00n_ext,
+    wire WADO_A00p_ext,
+    wire XENO_A01n_ext,
+    wire WESA_A01p_ext,
+    wire XUSY_A02n_ext,
+    wire WALO_A02p_ext,
+    wire XERA_A03n_ext,
+    wire WEPO_A03p_ext,
+
+    wire &REMY_LD0n_new,
+    wire &RAVO_LD1n_new
+  );
+
+  void tock_lcd(
+    wire XODO_VID_RSTp_new_h,
+    wire TALU_xxCDEFxx_clkevn,
+    wire TYFA_CLKPIPE_xBxDxFxH_clknew_odd,
+    wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
+    wire XONA_LCDC_LCDENp_h_new,
+    wire XEHO_PX0p_new_evn,
+    wire XYDO_PX3p_new_evn,
+    wire TULU_DIV07p_evn_new,
+    wire XYMU_RENDERINGp_new_xxx,
+    wire AVAP_SCAN_DONE_TRIGp_new_xxx,
+    wire WEGO_HBLANKp_new_any,
+    wire PURE_LINE_ENDn_new_evn,
+    wire REMY_LD0n_new,
+    wire RAVO_LD1n_new
+  );
+
+  void tock_ext(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire ABUZ_xxCDEFGH_clk_evn,
+    wire TEDO_CPU_RDp_ext,
+    wire APOV_CPU_WRp_clkevn,
+    wire TUNA_0000_FDFF_ext,
+    wire TEXO_ADDR_VRAMn_ext,
+    wire LUMA_DMA_CARTp_new_xxx,
+    wire TUTU_READ_BOOTROMp_new,
+    wire MARU_DMA_A15p_new_h
+  );
 
 
   void tock_vram(
@@ -325,7 +378,7 @@ struct GateBoy {
   LcdRegisters lcd_reg;
 
   /*PIN_50*/ PinOut PIN_LCD_DATA1;
-  /*PIN_51*/ PinOut PIN_LCD_DATA0_evn;
+  /*PIN_51*/ PinOut PIN_LCD_DATA0;
   /*PIN_54*/ PinOut PIN_LCD_HSYNC_evn;
   /*PIN_56*/ PinOut PIN_LCD_FLIPS_evn;
   /*PIN_52*/ PinOut PIN_LCD_CNTRL_evn;

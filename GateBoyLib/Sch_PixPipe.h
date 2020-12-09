@@ -39,7 +39,7 @@ struct PixelPipe {
     PYCO_WIN_MATCHp_odd.reset(REG_D0C0);
     NUNU_WIN_MATCHp_evn.reset(REG_D0C1);
 
-    _ROXY_SCX_FINE_MATCH_LATCHn_odd.reset(1);
+    _ROXY_FINE_SCROLL_DONEn_odd.reset(1);
     _RYKU_FINE_CNT0_xxx.reset(REG_D0C1);
     _ROGA_FINE_CNT1_xxx.reset(REG_D0C1);
     _RUBU_FINE_CNT2_xxx.reset(REG_D0C1);
@@ -217,7 +217,7 @@ struct PixelPipe {
     PYCO_WIN_MATCHp_odd.reset(REG_D0C0);
     NUNU_WIN_MATCHp_evn.reset(REG_D0C0);
 
-    _ROXY_SCX_FINE_MATCH_LATCHn_odd.reset(0);
+    _ROXY_FINE_SCROLL_DONEn_odd.reset(0);
 
     _RYKU_FINE_CNT0_xxx.reset(REG_D0C0);
     _ROGA_FINE_CNT1_xxx.reset(REG_D0C0);
@@ -360,7 +360,7 @@ struct PixelPipe {
 
   /*p??.PUXA*/ DFF17 _PUXA_SCX_FINE_MATCH_A_odd;         // xxxxxFxH
   /*p27.NYZE*/ DFF17 _NYZE_SCX_FINE_MATCH_B_evn;         // AxxxxxGx
-  /*p??.ROXY*/ NorLatch _ROXY_SCX_FINE_MATCH_LATCHn_odd; // xBxDxFxH
+  /*p??.ROXY*/ NorLatch _ROXY_FINE_SCROLL_DONEn_odd; // xBxDxFxH
   /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
   /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE_xxx;         // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A

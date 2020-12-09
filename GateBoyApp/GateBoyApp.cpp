@@ -116,12 +116,12 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-  /*
+#if 1
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
   gb_thread.gb->pass_total = 0;
-  */
+#endif
 
   /*
 
@@ -175,7 +175,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
   //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
-  load_rom("microtests/build/dmg/win10_scx3_a.gb");
+  //load_rom("microtests/build/dmg/win10_scx3_a.gb");
 
   LOG_G("GateBoyApp::app_init() done\n");
   gb_thread.start();

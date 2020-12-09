@@ -303,6 +303,8 @@ struct GateBoy {
   bool FOXA_SPRITE8_GETp_old;
   bool GUZE_SPRITE9_GETp_old;
 
+  bool WUTY_SFETCH_DONEp_old;
+
   //-----------------------------------------------------------------------------
   // Control stuff
 

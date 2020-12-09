@@ -121,6 +121,10 @@ void GateBoyApp::app_init() {
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
   gb_thread.gb->pass_total = 0;
+
+  gb_thread.gb->dbg_write(ADDR_WY, 113);
+  gb_thread.gb->dbg_write(ADDR_WX, 13 + 7);
+
 #endif
 
   /*
@@ -235,9 +239,6 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   gb_thread.gb->dbg_write(ADDR_SCX,  gb_thread.cart[ADDR_SCX]);
   gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
   gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
-
-  gb_thread.gb->dbg_write(ADDR_WY,   113);
-  gb_thread.gb->dbg_write(ADDR_WX,   13 + 7);
 
   // Bit 7 - LCD Display Enable             (0=Off, 1=On)
   // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)

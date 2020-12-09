@@ -132,6 +132,12 @@ struct DFF : public BitBase {
     SET_NEW();
     SET_DIRTY();
   }
+
+  void SETn(wire SETn) {
+    set_data(bit_data() || !SETn);
+    SET_NEW();
+    SET_DIRTY();
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -186,6 +192,7 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
+  void dff9(wire CLKp, wire Dn)               { Dn ^= 1;       dff(CLKp, 1, 1, Dn); }
   void dff9(wire CLKp, wire SETn, wire Dn)    { Dn ^= 1;       dff(CLKp, SETn, 1, Dn); }
   //void dff9(wire CLKp, wire SETn, BitBase Dn) { Dn.state ^= 1; dff(CLKp, SETn, 1, Dn); }
 };
@@ -339,6 +346,10 @@ struct BusIO : public BitBase {
 
   wire qp_in_old() const {
     CHECK_OLDp();
+    return  bit_data();
+  }
+
+  wire qp_in_any() const {
     return  bit_data();
   }
 

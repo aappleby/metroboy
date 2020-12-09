@@ -175,7 +175,7 @@ void GateBoyApp::app_init() {
   //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
   //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
 
-  load_rom("microtests/build/dmg/poweron_000_div.gb");
+  load_rom("microtests/build/dmg/win10_scx3_a.gb");
 
   LOG_G("GateBoyApp::app_init() done\n");
   gb_thread.start();

@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
   static const bool skip_passing_tests = true;
 
   GateBoyTests t;
-  //t.print_passes = true;
+  //t.verbose = true;
   t.cart_rom.resize(32768, 0);
 
   auto start = timestamp();
@@ -749,6 +749,8 @@ int GateBoyTests::run_microtest(const char* filename) {
     return 1;
   }
 
+  if (verbose) LOG_B("%-30s ", filename);
+
   GateBoy gb;
   gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
   gb.phase_total = 0;
@@ -765,26 +767,21 @@ int GateBoyTests::run_microtest(const char* filename) {
   uint8_t result_b = gb.zero_ram[1]; // expected
   uint8_t result_c = gb.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
 
-  if (mcycle == timeout) {
-    LOG_B("%-30s ", filename);
-    LOG_Y("TIMEOUT\n");
-    return 1;
-  }
-  else if (result_c == 0x01) {
-    if (print_passes) {
-      LOG_B("%-30s ", filename);
-      LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
-    }
+  bool pass = (result_c == 0x01) && (mcycle < timeout);
+
+  if (pass) {
+    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
     return 0;
   }
-  else if (result_c == 0xFF) {
-    LOG_B("%-30s ", filename);
-    LOG_R("%4d %4d %4d %4d FAIL @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
-    return 1;
-  }
   else {
-    LOG_B("%-30s ", filename);
-    LOG_Y("%4d %4d %4d %4d ERROR @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
+    if (!verbose) LOG_B("%-30s ", filename);
+
+    const char* reason = "ERROR";
+    if      (mcycle == timeout)    reason = "TIMEOUT";
+    else if (result_a != result_b) reason = "MISMATCH";
+    else if (result_c == 0xFF)     reason = "FAIL";
+
+    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb.phase_total);
     return 1;
   }
 }

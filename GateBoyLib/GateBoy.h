@@ -105,6 +105,70 @@ struct GateBoy {
 
   void tock_slow(int pass_index);
 
+  void tock_joypad(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp_new,
+    wire BOGA_Axxxxxxx_clkevn,
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn,
+    wire SYKE_ADDR_HIp_ext
+  );
+
+  void tock_serial(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp_new,
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn,
+    wire SYKE_ADDR_HIp_ext
+  );
+
+  void tock_interrupts(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp_new,
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn,
+
+    wire SYKE_ADDR_HIp_ext,
+
+    wire FEPO_STORE_MATCHp_new_evn,
+    wire PARU_VBLANKp_new_evn,
+    wire PURE_LINE_ENDn_new_evn,
+    wire MOBA_TIMER_OVERFLOWp_evn_new,
+    wire WODU_HBLANKp_new_odd);
+
+  void tock_reg_lyc(
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp_new,
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn,
+
+    wire WERO_ADDR_PPUp_ext,
+    wire XOLA_A00n_ext, wire WADO_A00p_ext,
+    wire XENO_A01n_ext, wire WESA_A01p_ext,
+    wire XUSY_A02n_ext, wire WALO_A02p_ext,
+    wire XERA_A03n_ext, wire WEPO_A03p_ext
+  );
+
+  void tock_reg_stat(
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp_new,
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn,
+
+    wire ACYL_SCANNINGp_new_evn,
+    wire XYMU_RENDERINGp_new_xxx,
+    wire PARU_VBLANKp_new_evn,
+
+    wire WERO_ADDR_PPUp_ext,
+    wire XOLA_A00n_ext, wire WADO_A00p_ext,
+    wire XENO_A01n_ext, wire WESA_A01p_ext,
+    wire XUSY_A02n_ext, wire WALO_A02p_ext,
+    wire XERA_A03n_ext, wire WEPO_A03p_ext
+  );
+
   void tock_pix_pipe(
     wire BUS_CPU_D[8],
     wire XODO_VID_RSTp_new_h,
@@ -112,9 +176,19 @@ struct GateBoy {
     wire TEDO_CPU_RDp_ext,
     wire TAPU_CPU_WRp_clkevn,
 
+    wire XYMU_RENDERINGp_new_xxx,
     wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
     wire NYXU_BFETCH_RSTn_new_xxx,
     wire WUTY_SFETCH_DONE_TRIGp_odd_new,
+
+    wire PUTE_FLIP0p_old,
+    wire PELO_FLIP1p_old,
+    wire PONO_FLIP2p_old,
+    wire POBE_FLIP3p_old,
+    wire PACY_FLIP4p_old,
+    wire PUGU_FLIP5p_old,
+    wire PAWE_FLIP6p_old,
+    wire PULY_FLIP7p_old,
 
     wire WERO_ADDR_PPUp_ext,
     wire XOLA_A00n_ext,
@@ -155,11 +229,8 @@ struct GateBoy {
     wire APOV_CPU_WRp_clkevn,
     wire TUNA_0000_FDFF_ext,
     wire TEXO_ADDR_VRAMn_ext,
-    wire LUMA_DMA_CARTp_new_xxx,
-    wire TUTU_READ_BOOTROMp_new,
-    wire MARU_DMA_A15p_new_h
+    wire TUTU_READ_BOOTROMp_new
   );
-
 
   void tock_vram(
     wire BUS_CPU_A[16],
@@ -185,7 +256,6 @@ struct GateBoy {
 
     wire TUTO_DBG_VRAMp_new,
 
-    wire LUFA_DMA_VRAMp_new_xxx,
     wire ATEJ_LINE_TRIGp_new_evn,
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
@@ -221,8 +291,12 @@ struct GateBoy {
     wire ACYL_SCANNINGp_new_evn
   );
 
-  void tock_zram(uint16_t cpu_addr, wire BUS_CPU_D[8], wire TEDO_CPU_RDp_ext, wire TAPU_CPU_WRp_clkevn);
-
+  void tock_zram(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp_clkevn
+  );
 
   //-----------------------------------------------------------------------------
 
@@ -405,25 +479,20 @@ struct GateBoy {
   //bool BESU_SCANNINGp_old_evn;
   //bool WYMO_LCDC_WINENp_old_h;
 
-  bool WODU_HBLANKp_old;
-  bool NYXU_BFETCH_RSTn_old_xxx;
-  bool TAVE_PRELOAD_DONE_TRIGp_old;
-  bool FEPO_STORE_MATCHp_old_evn;
-  bool MOCE_BFETCH_DONEn_old_xxx;
+  bool _WODU_HBLANKp_old;
+  bool _FEPO_STORE_MATCHp_old_evn;
+  bool _MOCE_BFETCH_DONEn_old_xxx;
 
-  bool GUVA_SPRITE0_GETp_old_evn;
-  bool ENUT_SPRITE1_GETp_old_evn;
-  bool EMOL_SPRITE2_GETp_old_evn;
-  bool GYFY_SPRITE3_GETp_old_evn;
-  bool GONO_SPRITE4_GETp_old_evn;
-  bool GEGA_SPRITE5_GETp_old_evn;
-  bool XOJA_SPRITE6_GETp_old_evn;
-  bool GUTU_SPRITE7_GETp_old_evn;
-  bool FOXA_SPRITE8_GETp_old_evn;
-  bool GUZE_SPRITE9_GETp_old_evn;
-
-  bool WODU_old;
-  bool WODU_older;
+  bool _GUVA_SPRITE0_GETp_old_evn;
+  bool _ENUT_SPRITE1_GETp_old_evn;
+  bool _EMOL_SPRITE2_GETp_old_evn;
+  bool _GYFY_SPRITE3_GETp_old_evn;
+  bool _GONO_SPRITE4_GETp_old_evn;
+  bool _GEGA_SPRITE5_GETp_old_evn;
+  bool _XOJA_SPRITE6_GETp_old_evn;
+  bool _GUTU_SPRITE7_GETp_old_evn;
+  bool _FOXA_SPRITE8_GETp_old_evn;
+  bool _GUZE_SPRITE9_GETp_old_evn;
 
   //-----------------------------------------------------------------------------
   // Control stuff

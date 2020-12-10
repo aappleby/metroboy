@@ -67,6 +67,24 @@ struct DmaRegisters {
     LOKY_DMA_LATCHp_evn.reset(0);
   }
 
+  wire LUMA_DMA_CARTp_new() const {
+    /*#p04.LEBU*/ wire _LEBU_DMA_A15n_new_h  = not1(MARU_DMA_A15n_h.qn_new());
+    /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp_new = nor3(PULA_DMA_A13n_h.qn_new(), POKU_DMA_A14n_h.qn_new(), _LEBU_DMA_A15n_new_h);
+    /* p04.LOGO*/ wire _LOGO_DMA_VRAMn_new_evn = not1(_MUDA_DMA_VRAMp_new);
+    /* p04.MORY*/ wire _MORY_DMA_CARTn_new_evn = nand2(MATU_DMA_RUNNINGp_evn.qp_new(), _LOGO_DMA_VRAMn_new_evn);
+    /* p04.LUMA*/ wire _LUMA_DMA_CARTp_new_evn = not1(_MORY_DMA_CARTn_new_evn);
+    return _LUMA_DMA_CARTp_new_evn;
+  }
+
+  wire LUFA_DMA_VRAMp_new() const {
+    /*#p04.LEBU*/ wire _LEBU_DMA_A15n_new_h  = not1(MARU_DMA_A15n_h.qn_new());
+    /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp_new = nor3(PULA_DMA_A13n_h.qn_new(), POKU_DMA_A14n_h.qn_new(), _LEBU_DMA_A15n_new_h);
+    /* p04.MUHO*/ wire _MUHO_DMA_VRAMp_new = nand2(MATU_DMA_RUNNINGp_evn.qp_new(), _MUDA_DMA_VRAMp_new);
+    /* p04.LUFA*/ wire _LUFA_DMA_VRAMp_new = not1(_MUHO_DMA_VRAMp_new);
+    return _LUFA_DMA_VRAMp_new;
+  }
+
+
   /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp_evn;  // Axxxxxxx
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp_evn; // xxxxExxx
   /*p04.MYTE*/ DFF17 MYTE_DMA_DONE_evn;      // xxxxExxx

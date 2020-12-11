@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
-uint64_t commit_and_hash(void* blob, int size);
+uint64_t commit_and_hash(void* blob, size_t size);
 
 template<typename T>
 inline uint64_t commit_and_hash(T& obj) {
@@ -304,7 +304,7 @@ struct DFF22 : public DFF {
 
 struct BusIO : public BitBase {
   BusIO() { state = 1; }
-  void reset() { state = 1; }
+  //void reset() { state = 1; }
 
   wire qp_in_old() const {
     return  bit_data();
@@ -388,7 +388,7 @@ struct PinIO : public BitBase {
 
 //----------
 
-struct PinIn : private BitBase {
+struct PinIn : public BitBase {
   wire qp_in() const { CHECK_DIRTYp(); return  bit_data(); }
 
   void setp   (wire Dp)           { tri(1, Dp); }
@@ -405,7 +405,9 @@ struct PinIn : private BitBase {
 
 //----------
 
-struct PinOut : private BitBase {
+struct PinOut : public BitBase {
+  using BitBase::reset;
+
   wire qp_out() const { CHECK_DIRTYp(); return  bit_data(); }
 
   void setp   (wire Dp)                    { set_data(Dp);                          SET_DIRTY(); }

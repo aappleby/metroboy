@@ -18,20 +18,6 @@ struct SpriteFetcher {
     SEBA_SFETCH_S1p_D5_evn.reset(REG_D0C1);
   }
 
-  void reset_boot() {
-    TAKA_SFETCH_RUNNINGp_xxx.reset(0);
-    SOBU_SFETCH_REQp_odd.reset(REG_D0C0);
-    SUDA_SFETCH_REQp_evn.reset(REG_D0C0);
-
-    TOXE_SFETCH_S0p_odd.reset(REG_D0C0);
-    TYFO_SFETCH_S0p_D1_evn.reset(REG_D0C0);
-    TULY_SFETCH_S1p_odd.reset(REG_D0C0);
-    TESE_SFETCH_S2p_odd.reset(REG_D0C0);
-    TOBU_SFETCH_S1p_D2_odd.reset(REG_D0C0);
-    VONU_SFETCH_S1p_D4_odd.reset(REG_D0C0);
-    SEBA_SFETCH_S1p_D5_evn.reset(REG_D0C0);
-  }
-
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp_xxx; // ABCDEFGH Set on odd, cleared on even
   /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp_odd;         // xBxDxFxH
   /*p27.SUDA*/ DFF17 SUDA_SFETCH_REQp_evn;         // AxBxExGx

@@ -24,25 +24,6 @@ struct DivRegister {
     UPOF_DIV15p_evn.reset(REG_D1C0);
   }
 
-  void reset_boot() {
-    UKUP_DIV00p_evn.reset(REG_D0C0);
-    UFOR_DIV01p_evn.reset(REG_D0C0);
-    UNER_DIV02p_evn.reset(REG_D0C0);
-    TERO_DIV03p_evn.reset(REG_D0C0);
-    UNYK_DIV04p_evn.reset(REG_D0C0);
-    TAMA_DIV05p_evn.reset(REG_D0C0);
-    UGOT_DIV06p_evn.reset(REG_D0C0);
-    TULU_DIV07p_evn.reset(REG_D0C0);
-    TUGO_DIV08p_evn.reset(REG_D0C0);
-    TOFE_DIV09p_evn.reset(REG_D0C0);
-    TERU_DIV10p_evn.reset(REG_D0C0);
-    SOLA_DIV11p_evn.reset(REG_D0C0);
-    SUBU_DIV12p_evn.reset(REG_D0C0);
-    TEKA_DIV13p_evn.reset(REG_D0C0);
-    UKET_DIV14p_evn.reset(REG_D0C0);
-    UPOF_DIV15p_evn.reset(REG_D0C0);
-  }
-
   int get_div() const  { return pack_u16p(16, &UKUP_DIV00p_evn); }
 
   void force_set_div(uint16_t div) {
@@ -113,33 +94,6 @@ struct TimerRegisters {
     SOPU_TAC0p_h.reset(REG_D0C1);
     SAMY_TAC1p_h.reset(REG_D0C1);
     SABO_TAC2p_h.reset(REG_D0C1);
-  }
-
-  void reset_boot() {
-    NYDU_TIMA7p_DELAY_evn.reset(REG_D0C0);
-    MOBA_TIMER_OVERFLOWp_evn.reset(REG_D0C0);
-
-    REGA_TIMA0p_evn.reset(REG_D0C0);
-    POVY_TIMA1p_evn.reset(REG_D0C0);
-    PERU_TIMA2p_evn.reset(REG_D0C0);
-    RATE_TIMA3p_evn.reset(REG_D0C0);
-    RUBY_TIMA4p_evn.reset(REG_D0C0);
-    RAGE_TIMA5p_evn.reset(REG_D0C0);
-    PEDA_TIMA6p_evn.reset(REG_D0C0);
-    NUGA_TIMA7p_evn.reset(REG_D0C0);
-
-    SABU_TMA0p_h.reset(REG_D0C0);
-    NYKE_TMA1p_h.reset(REG_D0C0);
-    MURU_TMA2p_h.reset(REG_D0C0);
-    TYVA_TMA3p_h.reset(REG_D0C0);
-    TYRU_TMA4p_h.reset(REG_D0C0);
-    SUFY_TMA5p_h.reset(REG_D0C0);
-    PETO_TMA6p_h.reset(REG_D0C0);
-    SETA_TMA7p_h.reset(REG_D0C0);
-
-    SOPU_TAC0p_h.reset(REG_D0C0);
-    SAMY_TAC1p_h.reset(REG_D0C0);
-    SABO_TAC2p_h.reset(REG_D0C0);
   }
 
   int get_tima() const { return pack_u8p (8,  &REGA_TIMA0p_evn); }

@@ -45,9 +45,9 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
   // regenerate post-bootrom dump
-  gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  gb_thread.reset_poweron(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
   }
@@ -116,7 +116,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -198,7 +198,7 @@ void GateBoyApp::app_close() {
 void GateBoyApp::load_raw_dump() {
   printf("Loading raw dump from %s\n", "gateboy.raw.dump");
   gb_thread.gb->load_dump("gateboy.raw.dump");
-  gb_thread.reset_cart(DMG_ROM_blob, gb_thread.cart);
+  gb_thread.set_cart(DMG_ROM_blob, gb_thread.cart);
 }
 
 void GateBoyApp::save_raw_dump() {
@@ -274,11 +274,6 @@ void GateBoyApp::app_update(double /*delta*/) {
     switch (event.key.keysym.sym) {
 
     case SDLK_SPACE: { gb_thread.sig_pause ? gb_thread.resume() : gb_thread.pause(); break; }
-
-    case SDLK_d: {
-      gb_thread.gb->sys_statediff = !gb_thread.gb->sys_statediff;
-      break;
-    }
 
     case SDLK_f: {
       gb_thread.clear_work();
@@ -708,14 +703,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp   ("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher.LYZU_BFETCH_S0p_D1_odd.state);
   //d.dump_bitn   ("NYXU_BFETCH_RSTp   ", gb->NYXU_BFETCH_RSTn.state);
   d("\n");
-  d.dump_slice2p("WIN MAP X          ", &gb->tile_fetcher.WYKA_WIN_X3_evn, 5);
-  d.dump_slice2p("WIN Y              ", &gb->tile_fetcher.VYNO_WIN_Y0_evn, 8);
+  d.dump_slice2p("WIN MAP X ", &gb->tile_fetcher.WYKA_WIN_X3_evn, 5);
+  d.dump_slice2p("WIN Y     ", &gb->tile_fetcher.VYNO_WIN_Y0_evn, 8);
   d("\n");
-  d.dump_slice2n("FF42 SCY           ", &gb->tile_fetcher.GAVE_SCY0n_h, 8);
-  d.dump_slice2n("FF43 SCX           ", &gb->tile_fetcher.DATY_SCX0n_h, 8);
+  d.dump_slice2n("FF42 SCY  ", &gb->tile_fetcher.GAVE_SCY0n_h, 8);
+  d.dump_slice2n("FF43 SCX  ", &gb->tile_fetcher.DATY_SCX0n_h, 8);
   d("\n");
-  d.dump_slice2n("TILE TEMP A        ", &gb->tile_fetcher.LEGU_TILE_DA0n_odd, 8);
-  d.dump_slice2p("TILE TEMP B        ", &gb->tile_fetcher.RAWU_TILE_DB0p_odd, 8);
+  d.dump_slice2n("TEMP A    ", &gb->tile_fetcher.LEGU_TILE_DA0n_odd, 8);
+  d.dump_slice2p("TEMP B    ", &gb->tile_fetcher.RAWU_TILE_DB0p_odd, 8);
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");

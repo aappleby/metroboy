@@ -13,98 +13,69 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
-                         uint8_t* _cart_buf, size_t _cart_size,
-                         bool fastboot) {
+void GateBoy::reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
+                            uint8_t* _cart_buf, size_t _cart_size,
+                            bool fastboot)
+{
+  memset(this, 0, sizeof(*this));
+  sentinel1 = SENTINEL1;
+  sentinel2 = SENTINEL2;
+  sentinel3 = SENTINEL3;
+
   boot_buf  = _boot_buf;
   boot_size = _boot_size;
   cart_buf  = _cart_buf;
   cart_size = _cart_size;
 
-  cpu.reset_boot();
+  tock_slow(0);
+  commit_and_hash();
+  tock_slow(0);
+  commit_and_hash();
 
-  cpu_req = {0};
-  dbg_req = {0};
-  bus_req = {0};
-  cpu_data_latch = 0;
-  imask_latch = 0;
+  //----------------------------------------
+  // In reset
 
-  int_vblank = 0;
-  int_vblank_halt = 0;
-
-  int_stat = 0;
-  int_stat_halt = 0;
-
-  int_timer = 0;
-  int_timer_halt = 0;
-
-  int_serial = 0;
-  int_serial_halt = 0;
-
-  int_joypad = 0;
-  int_joypad_halt = 0;
-
-  phase_total = 0;
-  pass_total = 0;
-  pass_hash = HASH_INIT;
-  total_hash = HASH_INIT;
-
+  sys_in_reset_sequence = 1;
   sys_rst = 1;
-  sys_t1 = 0;
-  sys_t2 = 0;
-  sys_clken = 0;
-  sys_clkgood = 0;
-  sys_cpuready = 0;
-  sys_cpu_en = 0;
-  sys_buttons = 0;
+  sys_fastboot = fastboot;
+  run(5);
 
-  memset(vid_ram, 0, 8192);
-  memset(cart_ram, 0, 8192);
-  memset(ext_ram, 0, 8192);
-  memset(oam_ram, 0, 256);
-  memset(zero_ram, 0, 128);
-  memset(framebuffer, 4, 160*144);
+  // Out of reset
+  // Start clock and sync with phase
+  sys_rst = 0;
+  sys_clken = 1;
+  sys_clkgood = 1;
+  run(3);
 
-  oam_bus.reset_boot();
-  ext_bus.reset_boot();
-  vram_bus.reset_boot();
+  CHECK_N(clk_reg.AFUR_xxxxEFGHp.qp_old());
+  CHECK_P(clk_reg.ALEF_AxxxxFGHp.qp_old());
+  CHECK_P(clk_reg.APUK_ABxxxxGHp.qp_old());
+  CHECK_P(clk_reg.ADYK_ABCxxxxHp.qp_old());
 
-  clk_reg.reset_boot();
-  dma_reg.reset_boot();
-  int_reg.reset_boot();
-  joypad.reset_boot();
-  lcdc.reset_boot();
-  lyc.reset_boot();
-  lcd_reg.reset_boot();
-  pix_pipe.reset_boot();
-  ser_reg.reset_boot();
-  sprite_store.reset_boot();
-  div_reg.reset_boot();
-  tim_reg.reset_boot();
-  tile_fetcher.reset_boot();
-  sprite_fetcher.reset_boot();
-  sprite_scanner.reset_boot();
-  BOOT_BITn_h.reset(REG_D0C0);
-
-  SOTO_DBG_VRAMp.reset(REG_D0C0);
-
-  IE_D0.reset(REG_D0C0);
-  IE_D1.reset(REG_D0C0);
-  IE_D2.reset(REG_D0C0);
-  IE_D3.reset(REG_D0C0);
-  IE_D4.reset(REG_D0C0);
-
-  lcd_pix_lo.reset(0);
-  lcd_pix_hi.reset(0);
-
-  for (int i = 0; i < 160; i++) {
-    lcd_pipe_lo[i].reset(REG_D0C0);
-    lcd_pipe_hi[i].reset(REG_D0C0);
+  // Wait for PIN_CPU_START
+  while(!sys_cpu_start) {
+    run(8);
   }
 
-  zram_clk_old = 1;
+  // Delay to sync w/ expected div value after bootrom
+  run(8);
+  run(8);
 
-  run_reset_sequence(fastboot);
+  // Done, initialize bus with whatever the CPU wants.
+  cpu.reset_boot();
+  sys_cpuready = 1;
+  sys_cpu_en = true;
+
+  sys_in_reset_sequence = 0;
+
+  if (fastboot) {
+    div_reg.TERO_DIV03p_evn.reset(REG_D0C1);
+    div_reg.UNYK_DIV04p_evn.reset(REG_D0C1);
+    div_reg.UPOF_DIV15p_evn.reset(REG_D1C1);
+  }
+
+  // And clear the framebuffer
+  memset(framebuffer, 4, sizeof(framebuffer));
 }
 
 //-----------------------------------------------------------------------------
@@ -206,6 +177,16 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   }
 }
 
+void GateBoy::set_cart(uint8_t* _boot_buf, size_t _boot_size,
+                       uint8_t* _cart_buf, size_t _cart_size)
+{
+  boot_buf  = _boot_buf;
+  boot_size = _boot_size;
+  cart_buf  = _cart_buf;
+  cart_size = _cart_size;
+}
+
+
 //------------------------------------------------------------------------------
 
 void GateBoy::load_post_bootrom_state() {
@@ -214,53 +195,6 @@ void GateBoy::load_post_bootrom_state() {
   check_div();
   cart_buf = nullptr;
   cart_size = 0;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::run_reset_sequence(bool fastboot) {
-  sys_in_reset_sequence = 1;
-
-  //LOG_G("Run reset sequence\n");
-  //LOG_SCOPE_INDENT();
-
-  //----------------------------------------
-
-  CHECK_P(cart_buf != nullptr);
-  CHECK_P(cart_size);
-
-  // In reset
-  sys_rst = 1;
-  sys_fastboot = fastboot;
-  run(5);
-
-  // Out of reset
-  // Start clock and sync with phase
-  sys_rst = 0;
-  sys_clken = 1;
-  sys_clkgood = 1;
-  run(3);
-
-  CHECK_N(clk_reg.AFUR_xxxxEFGHp.qp_old());
-  CHECK_P(clk_reg.ALEF_AxxxxFGHp.qp_old());
-  CHECK_P(clk_reg.APUK_ABxxxxGHp.qp_old());
-  CHECK_P(clk_reg.ADYK_ABCxxxxHp.qp_old());
-
-  // Wait for PIN_CPU_START
-  while(!sys_cpu_start) {
-    run(8);
-  }
-
-  // Delay to sync w/ expected div value after bootrom
-  run(8);
-  run(8);
-
-  // Done, initialize bus with whatever the CPU wants.
-  cpu.reset_boot();
-  sys_cpuready = 1;
-  sys_cpu_en = true;
-
-  sys_in_reset_sequence = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -297,6 +231,7 @@ struct GateBoyOffsets {
   const int o_ext_bus        = offsetof(GateBoy, ext_bus);
   const int o_vram_bus       = offsetof(GateBoy, vram_bus);
   const int o_clk_reg        = offsetof(GateBoy, clk_reg);
+  const int o_div_reg        = offsetof(GateBoy, div_reg);
   const int o_tim_reg        = offsetof(GateBoy, tim_reg);
   const int o_dma_reg        = offsetof(GateBoy, dma_reg);
   const int o_int_reg        = offsetof(GateBoy, int_reg);

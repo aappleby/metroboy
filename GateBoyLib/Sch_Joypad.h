@@ -28,29 +28,6 @@ struct JoypadRegisters {
     KOLO_JOYP_L3n.reset(0);
   }
 
-  void reset_boot() {
-    AWOB_WAKE_CPU.reset(0);
-
-    BATU_JP_GLITCH0.reset(REG_D0C0);
-    ACEF_JP_GLITCH1.reset(REG_D0C0);
-    AGEM_JP_GLITCH2.reset(REG_D0C0);
-    APUG_JP_GLITCH3.reset(REG_D0C0);
-
-    JUTE_JOYP_RA.reset(REG_D0C0);
-    KECY_JOYP_LB.reset(REG_D0C0);
-    JALE_JOYP_UC.reset(REG_D0C0);
-    KYME_JOYP_DS.reset(REG_D0C0);
-    KELY_JOYP_UDLRp.reset(REG_D0C0);
-    COFY_JOYP_ABCSp.reset(REG_D0C0);
-    KUKO_DBG_FF00_D6n.reset(REG_D0C0);
-    KERU_DBG_FF00_D7n.reset(REG_D0C0);
-
-    KEVU_JOYP_L0n.reset(0);
-    KAPA_JOYP_L1n.reset(0);
-    KEJA_JOYP_L2n.reset(0);
-    KOLO_JOYP_L3n.reset(0);
-  }
-
 //private:
   friend struct GateBoy;
 

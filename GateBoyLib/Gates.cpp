@@ -13,7 +13,7 @@ void combine_hash(uint64_t& a, uint64_t b) {
 
 //-----------------------------------------------------------------------------
 
-uint64_t commit_and_hash(void* blob, int size) {
+uint64_t commit_and_hash(void* blob, size_t size) {
   uint64_t h = HASH_INIT;
 
   uint8_t* base = (uint8_t*)blob;
@@ -21,7 +21,7 @@ uint64_t commit_and_hash(void* blob, int size) {
 #ifdef USE_DIRTY_BIT
   bool bad_bits = false;
 
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     uint8_t s = base[i];
     if (!(s & 0x80)) {
       LOG_Y("Bit %d not dirty after sim pass!\n", i);
@@ -32,7 +32,7 @@ uint64_t commit_and_hash(void* blob, int size) {
   ASSERT_N(bad_bits);
 #endif
 
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     uint8_t s = base[i];
     s &= 0x03;
     s |= ((s & 1) << 2);

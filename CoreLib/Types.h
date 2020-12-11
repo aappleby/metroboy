@@ -189,9 +189,10 @@ struct Dumper {
     operator()("%s : ", tag);
     add_char((b & 0x02) ? '\002' : '\003');
 
-    if      (b & 0x08) add_char('R');
-    else if (b & 0x04) add_char('S');
-    else               add_char((b & 0x01) ? '1' : '0');
+    //if      (b & 0x08) add_char('R');
+    //else if (b & 0x04) add_char('S');
+    //else               add_char((b & 0x01) ? '1' : '0');
+    add_char((b & 0x01) ? '1' : '0');
     add_char('\001');
     add_char('\n');
   }
@@ -200,9 +201,10 @@ struct Dumper {
     operator()("%s : ", tag);
     add_char((b & 0x02) ? '\002' : '\003');
 
-    if      (b & 0x08) add_char('R');
-    else if (b & 0x04) add_char('S');
-    else               add_char((b & 0x01) ? '0' : '1');
+    //if      (b & 0x08) add_char('R');
+    //else if (b & 0x04) add_char('S');
+    //else               add_char((b & 0x01) ? '0' : '1');
+    add_char((b & 0x01) ? '0' : '1');
     add_char('\001');
     add_char('\n');
   }
@@ -218,9 +220,12 @@ struct Dumper {
     for (int i = byte_count - 1; i >= 0; i--) {
       add_char((d[i] & 0x02) ? '\002' : '\003');
 
+      /*
       if      (d[i] & 0x08) add_char('R');
       else if (d[i] & 0x04) add_char('S');
       else                  add_char((d[i] & 0x01) ? '1' : '0');
+      */
+      add_char((d[i] & 0x01) ? '1' : '0');
     }
     add_char('\001');
 
@@ -235,16 +240,17 @@ struct Dumper {
     const uint8_t* d = (const uint8_t*)blob;
 
     uint8_t val = 0;
-    for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
+    for (int i = 0; i < byte_count; i++) val |= ((~d[i] & 1) << i);
 
     operator()("%s : ", tag);
     for (int i = byte_count; i < 8; i++) add_char(' ');
     for (int i = byte_count - 1; i >= 0; i--) {
       add_char((d[i] & 0x02) ? '\002' : '\003');
 
-      if      (d[i] & 0x08) add_char('R');
-      else if (d[i] & 0x04) add_char('S');
-      else                  add_char((d[i] & 0x01) ? '0' : '1');
+      //if      (d[i] & 0x08) add_char('R');
+      //else if (d[i] & 0x04) add_char('S');
+      //else                  add_char((d[i] & 0x01) ? '0' : '1');
+      add_char((d[i] & 0x01) ? '0' : '1');
     }
     add_char('\001');
 

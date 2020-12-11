@@ -5,15 +5,15 @@
 
 struct SerialRegisters {
   void reset_cart() {
-    reset_boot();
-
-    CALY_SER_CNT3.reset(REG_D0C1);
     ETAF_SER_RUNNING.reset(REG_D0C1);
     CULY_XFER_DIR.reset(REG_D0C1);
     COTY_SER_CLK.reset(REG_D0C0);
+    ELYS_SER_OUT.reset(REG_D0C0);
+
     CAFA_SER_CNT0.reset(REG_D0C1);
     CYLO_SER_CNT1.reset(REG_D0C1);
     CYDE_SER_CNT2.reset(REG_D0C1);
+    CALY_SER_CNT3.reset(REG_D0C1);
 
     CUBA_SER_DATA0.reset(REG_D0C1);
     DEGU_SER_DATA1.reset(REG_D0C1);
@@ -23,29 +23,6 @@ struct SerialRegisters {
     EJAB_SER_DATA5.reset(REG_D0C1);
     EROD_SER_DATA6.reset(REG_D0C1);
     EDER_SER_DATA7.reset(REG_D0C1);
-
-    ELYS_SER_OUT.reset(REG_D0C0);
-  }
-
-  void reset_boot() {
-    CALY_SER_CNT3.reset(REG_D0C0);
-    ETAF_SER_RUNNING.reset(REG_D0C0);
-    CULY_XFER_DIR.reset(REG_D0C0);
-    COTY_SER_CLK.reset(REG_D0C0);
-    CAFA_SER_CNT0.reset(REG_D0C0);
-    CYLO_SER_CNT1.reset(REG_D0C0);
-    CYDE_SER_CNT2.reset(REG_D0C0);
-
-    CUBA_SER_DATA0.reset(REG_D0C0);
-    DEGU_SER_DATA1.reset(REG_D0C0);
-    DYRA_SER_DATA2.reset(REG_D0C0);
-    DOJO_SER_DATA3.reset(REG_D0C0);
-    DOVU_SER_DATA4.reset(REG_D0C0);
-    EJAB_SER_DATA5.reset(REG_D0C0);
-    EROD_SER_DATA6.reset(REG_D0C0);
-    EDER_SER_DATA7.reset(REG_D0C0);
-
-    ELYS_SER_OUT.reset(REG_D0C0);
   }
 
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
@@ -66,7 +43,6 @@ struct SerialRegisters {
   /*p06.EJAB*/ DFF22 EJAB_SER_DATA5; // xxxxExxx
   /*p06.EROD*/ DFF22 EROD_SER_DATA6; // xxxxExxx
   /*p06.EDER*/ DFF22 EDER_SER_DATA7; // xxxxExxx
-
 };
 
 //-----------------------------------------------------------------------------

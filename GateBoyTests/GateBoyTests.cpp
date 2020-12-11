@@ -30,7 +30,9 @@ int main(int argc, char** argv) {
   err += t.test_bootrom();
 #endif
 
+
   //err += t.test_post_bootrom_state();
+  //err += t.test_fastboot_vs_slowboot();
 
 #if 1
   err += t.test_init();
@@ -82,9 +84,9 @@ int diff(void* a, void* b, int size) {
   return -1;
 }
 
-GateBoy GateBoyTests::create_test_gb_boot() {
+GateBoy GateBoyTests::create_gb_poweron() {
   GateBoy gb;
-  gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
   gb.sys_cpu_en = 0;
   return gb;
 }
@@ -787,11 +789,38 @@ int GateBoyTests::run_microtest(const char* filename) {
 }
 
 //-----------------------------------------------------------------------------
+// Power-on reset state should be stable
+
+int GateBoyTests::test_fastboot_vs_slowboot() {
+  TEST_START();
+
+  LOG_B("reset_poweron wtih fastboot = true\n");
+  GateBoy gb1;
+  gb1.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
+  LOG_G("reset_poweron wtih fastboot = true done\n");
+
+  LOG_B("reset_poweron wtih fastboot = false\n");
+  GateBoy gb2;
+  gb2.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), false);
+  LOG_G("reset_poweron wtih fastboot = false done\n");
+
+  int start = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1);
+  int end   = offsetof(GateBoy, sentinel2);
+
+  uint8_t* blob1 = (uint8_t*)&gb1;
+  uint8_t* blob2 = (uint8_t*)&gb2;
+
+  for (int i = start; i < end; i++) {
+    EXPECT_EQ(blob1[i], blob2[i], "Fastboot != slowboot @ %d 0x%02x 0x%02x\n", i, blob1[i], blob2[i]);
+  }
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
 
 int GateBoyTests::test_init() {
   TEST_START();
-
-  GateBoy gb = create_test_gb_boot();
 
   // FIXME should not be hashing pointers
   //gb.set_rom(nullptr, 0);
@@ -799,6 +828,8 @@ int GateBoyTests::test_init() {
   //LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
   //EXPECT_EQ(0x6242fa077bd36b15, top_hash, "Top hash mismatch");
   //gb.set_rom(rom.data(), rom.size());
+
+  GateBoy gb = create_gb_poweron();
 
   LOG_G("Checking reg flags\n");
 
@@ -854,7 +885,7 @@ int GateBoyTests::test_init() {
 int GateBoyTests::test_clk() {
   TEST_START();
 
-  GateBoy gb = create_test_gb_boot();
+  GateBoy gb = create_gb_poweron();
   gb.dbg_write(ADDR_LCDC, 0x80);
   gb.run(8);
 
@@ -1338,7 +1369,7 @@ int GateBoyTests::test_mem() {
 int GateBoyTests::test_interrupts() {
   TEST_START();
 
-  GateBoy gb = create_test_gb_boot();
+  GateBoy gb = create_gb_poweron();
 
   // hblank no stat int
   // vblank no stat int
@@ -1366,8 +1397,7 @@ int GateBoyTests::test_interrupts() {
 int GateBoyTests::test_bootrom() {
   TEST_START();
 
-  GateBoy gb;
-  gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0);
+  GateBoy gb = create_gb_poweron();
 
   for (int i = 0; i < 16; i++) {
     uint8_t byte = gb.dbg_read(i);
@@ -1393,7 +1423,7 @@ int GateBoyTests::test_timer() {
 
   LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
-    GateBoy gb = create_test_gb_boot();
+    GateBoy gb = create_gb_poweron();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1414,7 +1444,7 @@ int GateBoyTests::test_timer() {
   }
 
   {
-    GateBoy gb = create_test_gb_boot();
+    GateBoy gb = create_gb_poweron();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1434,7 +1464,7 @@ int GateBoyTests::test_timer() {
     if (!err) LOG_B("TAC 0b101 pass\n");
   }
   {
-    GateBoy gb = create_test_gb_boot();
+    GateBoy gb = create_gb_poweron();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1454,7 +1484,7 @@ int GateBoyTests::test_timer() {
     if (!err) LOG_B("TAC 0b110 pass\n");
   }
   {
-    GateBoy gb = create_test_gb_boot();
+    GateBoy gb = create_gb_poweron();
 
     gb.dbg_write(ADDR_TMA, 0x80);
     gb.dbg_write(ADDR_TIMA,0xFD);
@@ -1477,8 +1507,7 @@ int GateBoyTests::test_timer() {
 
 #if 0
   {
-    GateBoy gb;
-    gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), rom.data(), rom.size());
+    GateBoy gb = create_gb_poweron();
     gb.sys_cpu_en = 0;
 
     // passes, but slow :/
@@ -1618,7 +1647,7 @@ int GateBoyTests::test_ppu() {
   // slow
   if (0) {
     LOG("Checking LY increment rate... ");
-    GateBoy gb = create_test_gb_boot();
+    GateBoy gb = create_gb_poweron();
     gb.dbg_write(ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
@@ -1650,7 +1679,7 @@ int GateBoyTests::test_ppu() {
 int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
-  GateBoy gb = create_test_gb_boot();
+  GateBoy gb = create_gb_poweron();
   gb.dbg_write(0xFF50, 1);
 
   int len = addr_end - addr_start + 1;
@@ -1690,7 +1719,7 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  GateBoy gb = create_test_gb_boot();
+  GateBoy gb = create_gb_poweron();
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
@@ -1728,7 +1757,7 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0);
+    gb.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0, true);
     gb.dbg_req.addr = 0x0150;
     gb.dbg_req.data = 0;
     gb.dbg_req.read = 1;

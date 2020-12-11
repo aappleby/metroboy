@@ -15,17 +15,6 @@ struct LCDC {
     WOKY_LCDC_WINMAPn_h.reset(REG_D1C1);
   }
 
-  void reset_boot() {
-    VYXE_LCDC_BGENn_h  .reset(REG_D0C0);
-    XYLO_LCDC_SPENn_h  .reset(REG_D0C0);
-    XYMO_LCDC_SPSIZEn_h.reset(REG_D0C0);
-    XONA_LCDC_LCDENn_h .reset(REG_D0C0);
-    XAFO_LCDC_BGMAPn_h .reset(REG_D0C0);
-    WEXU_LCDC_BGTILEn_h.reset(REG_D0C0);
-    WYMO_LCDC_WINENn_h .reset(REG_D0C0);
-    WOKY_LCDC_WINMAPn_h.reset(REG_D0C0);
-  }
-
   /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn_h;   // xxxxxxxH
   /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn_h;   // xxxxxxxH
   /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn_h; // xxxxxxxH
@@ -46,17 +35,6 @@ struct LYC {
     VAFA_LYC5n.reset(REG_D1C1);
     VEVO_LYC6n.reset(REG_D1C1);
     RAHA_LYC7n.reset(REG_D1C1);
-  }
-
-  void reset_boot() {
-    SYRY_LYC0n.reset(REG_D0C0);
-    VUCE_LYC1n.reset(REG_D0C0);
-    SEDY_LYC2n.reset(REG_D0C0);
-    SALO_LYC3n.reset(REG_D0C0);
-    SOTA_LYC4n.reset(REG_D0C0);
-    VAFA_LYC5n.reset(REG_D0C0);
-    VEVO_LYC6n.reset(REG_D0C0);
-    RAHA_LYC7n.reset(REG_D0C0);
   }
 
   uint8_t get_lyc() const { return pack_u8n(8, &SYRY_LYC0n); }
@@ -155,39 +133,6 @@ struct LcdRegisters {
     MEDA_VSYNC_OUTn_evn .reset(REG_D0C1);
     LUCA_LINE_EVENp_evn  .reset(REG_D1C1);
     NAPO_FRAME_EVENp_evn .reset(REG_D0C1);
-  }
-
-  void reset_boot() {
-    ROPO_LY_MATCH_SYNCp_c.reset(REG_D0C0);
-
-    CATU_LINE_P000p_a.reset(REG_D0C0);
-    NYPE_x113p_c.reset(REG_D0C0);
-    ANEL_LINE_P002p_c.reset(REG_D0C0);
-    RUTU_x113p_g.reset(REG_D0C0);
-
-    MUWY_LY0p_evn.reset(REG_D0C0);
-    MYRO_LY1p_evn.reset(REG_D0C0);
-    LEXA_LY2p_evn.reset(REG_D0C0);
-    LYDO_LY3p_evn.reset(REG_D0C0);
-    LOVU_LY4p_evn.reset(REG_D0C0);
-    LEMA_LY5p_evn.reset(REG_D0C0);
-    MATO_LY6p_evn.reset(REG_D0C0);
-    LAFO_LY7p_evn.reset(REG_D0C0);
-
-    SAXO_LX0p_evn.reset(REG_D0C0);
-    TYPO_LX1p_evn.reset(REG_D0C0);
-    VYZO_LX2p_evn.reset(REG_D0C0);
-    TELU_LX3p_evn.reset(REG_D0C0);
-    SUDE_LX4p_evn.reset(REG_D0C0);
-    TAHA_LX5p_evn.reset(REG_D0C0);
-    TYRY_LX6p_evn.reset(REG_D0C0);
-
-    POPU_VBLANKp_evn.reset(REG_D0C0);
-    MYTA_y153p_evn.reset(REG_D0C0);
-    SYGU_LINE_STROBE_evn.reset(REG_D0C0);
-    MEDA_VSYNC_OUTn_evn.reset(REG_D0C0);
-    LUCA_LINE_EVENp_evn.reset(REG_D0C0);
-    NAPO_FRAME_EVENp_evn.reset(REG_D0C0);
   }
 
   uint8_t get_lx() const  { return pack_u8p(7, &SAXO_LX0p_evn); }

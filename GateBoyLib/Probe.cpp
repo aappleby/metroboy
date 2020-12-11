@@ -7,6 +7,10 @@
 thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
+  reset();
+}
+
+void Probes::reset() {
   pass_cursor = 0;
 
   for (int i = 0; i < channel_count; i++) {
@@ -75,6 +79,6 @@ void probe(int index, const char* signal_name, char s) {
     thread_probes->probe(index, signal_name, s);
   }
   else {
-    printf("<no probes for current thread>\n");
+    //printf("<no probes for current thread>\n");
   }
 }

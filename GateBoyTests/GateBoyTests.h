@@ -6,6 +6,8 @@ struct GateBoy;
 
 struct GateBoyTests {
 
+  int test_fastboot_vs_slowboot();
+
   int test_init();
   int test_bootrom();
   int test_clk();
@@ -43,7 +45,7 @@ struct GateBoyTests {
 
   void run_benchmark();
 
-  GateBoy create_test_gb_boot();
+  GateBoy create_gb_poweron();
 
   bool verbose = false;
   blob cart_rom;

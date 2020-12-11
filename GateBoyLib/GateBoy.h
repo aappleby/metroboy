@@ -28,16 +28,17 @@ struct GateBoy {
 
   void dump(Dumper& d) const;
 
-  void reset_boot(uint8_t* _boot_buf, size_t _boot_size,
-                  uint8_t* _cart_buf, size_t _cart_size,
-                  bool fastboot = true);
+  void reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
+                     uint8_t* _cart_buf, size_t _cart_size, bool fastboot);
+
   void reset_cart(uint8_t* _boot_buf, size_t _boot_size,
                   uint8_t* _cart_buf, size_t _cart_size);
 
+  void set_cart(uint8_t* _boot_buf, size_t _boot_size,
+                uint8_t* _cart_buf, size_t _cart_size);
 
 
   void load_post_bootrom_state();
-  void run_reset_sequence(bool fastboot = true);
 
   //----------------------------------------
 
@@ -104,6 +105,12 @@ struct GateBoy {
   void next_phase();
 
   void tock_slow(int pass_index);
+
+  uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
+  uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
+  int64_t commit_and_hash() {
+    return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
+  }
 
   void tock_joypad(
     wire BUS_CPU_A[16],
@@ -290,12 +297,6 @@ struct GateBoy {
   );
 
   //-----------------------------------------------------------------------------
-
-  uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
-  uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
-
-
-  //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive
   // from BitBase.
 
@@ -402,12 +403,12 @@ struct GateBoy {
   //----------
 
   JoypadRegisters joypad;
-  PinOut PIN_JOY_P14; // PIN_63
-  PinOut PIN_JOY_P15; // PIN_62
   PinIn  PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
   PinIn  PIN_JOY_P11; // PIN_66
   PinIn  PIN_JOY_P12; // PIN_65
   PinIn  PIN_JOY_P13; // PIN_64
+  PinOut PIN_JOY_P14; // PIN_63
+  PinOut PIN_JOY_P15; // PIN_62
 
   //----------
 
@@ -424,19 +425,19 @@ struct GateBoy {
 
   //----------
 
-  SpriteScanner      sprite_scanner;
+  SpriteScanner sprite_scanner;
 
   //----------
 
-  TileFetcher        tile_fetcher;
+  TileFetcher tile_fetcher;
 
   //----------
 
-  SpriteFetcher      sprite_fetcher;
+  SpriteFetcher sprite_fetcher;
 
   //----------
 
-  PixelPipe          pix_pipe;
+  PixelPipe pix_pipe;
 
   //----------
 
@@ -464,24 +465,24 @@ struct GateBoy {
 
   uint64_t sentinel2 = SENTINEL2;
 
-  bool oam_clk_old;
-  bool zram_clk_old;
+  bool oam_clk_old = 0;
+  bool zram_clk_old = 0;
 
-  bool _GUVA_SPRITE0_GETp_old_evn;
-  bool _ENUT_SPRITE1_GETp_old_evn;
-  bool _EMOL_SPRITE2_GETp_old_evn;
-  bool _GYFY_SPRITE3_GETp_old_evn;
-  bool _GONO_SPRITE4_GETp_old_evn;
-  bool _GEGA_SPRITE5_GETp_old_evn;
-  bool _XOJA_SPRITE6_GETp_old_evn;
-  bool _GUTU_SPRITE7_GETp_old_evn;
-  bool _FOXA_SPRITE8_GETp_old_evn;
-  bool _GUZE_SPRITE9_GETp_old_evn;
+  bool _GUVA_SPRITE0_GETp_old_evn = 0;
+  bool _ENUT_SPRITE1_GETp_old_evn = 0;
+  bool _EMOL_SPRITE2_GETp_old_evn = 0;
+  bool _GYFY_SPRITE3_GETp_old_evn = 0;
+  bool _GONO_SPRITE4_GETp_old_evn = 0;
+  bool _GEGA_SPRITE5_GETp_old_evn = 0;
+  bool _XOJA_SPRITE6_GETp_old_evn = 0;
+  bool _GUTU_SPRITE7_GETp_old_evn = 0;
+  bool _FOXA_SPRITE8_GETp_old_evn = 0;
+  bool _GUZE_SPRITE9_GETp_old_evn = 0;
 
   //-----------------------------------------------------------------------------
   // Control stuff
 
-  bool sys_rst = 1;
+  bool sys_rst = 0;
   bool sys_t1 = 0;
   bool sys_t2 = 0;
   bool sys_clken = 0;
@@ -489,7 +490,6 @@ struct GateBoy {
   bool sys_cpuready = 0;
   bool sys_cpu_en = 0;
   bool sys_fastboot = 0;
-  bool sys_statediff = 1;
   bool sys_cpu_start = 0;
   bool sys_in_reset_sequence = 0;
 
@@ -498,8 +498,8 @@ struct GateBoy {
   double   sim_time = 0;
   int32_t  phase_total = 0;
   int32_t  pass_total = 0;
-  uint64_t pass_hash = HASH_INIT;
-  uint64_t total_hash = HASH_INIT;
+  uint64_t pass_hash = 0;
+  uint64_t total_hash = 0;
   Probes   probes;
 
   //-----------------------------------------------------------------------------

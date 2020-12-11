@@ -33,33 +33,6 @@ struct ExtBus {
     SAZY_EXT_DATA_LATCH_D7n.reset(0);
   }
 
-  void reset_boot() {
-    ALOR_EXT_ADDR_LATCH_00p.reset(0);
-    APUR_EXT_ADDR_LATCH_01p.reset(0);
-    ALYR_EXT_ADDR_LATCH_02p.reset(0);
-    ARET_EXT_ADDR_LATCH_03p.reset(0);
-    AVYS_EXT_ADDR_LATCH_04p.reset(0);
-    ATEV_EXT_ADDR_LATCH_05p.reset(0);
-    AROS_EXT_ADDR_LATCH_06p.reset(0);
-    ARYM_EXT_ADDR_LATCH_07p.reset(0);
-    LUNO_EXT_ADDR_LATCH_08p.reset(0);
-    LYSA_EXT_ADDR_LATCH_09p.reset(0);
-    PATE_EXT_ADDR_LATCH_10p.reset(0);
-    LUMY_EXT_ADDR_LATCH_11p.reset(0);
-    LOBU_EXT_ADDR_LATCH_12p.reset(0);
-    LONU_EXT_ADDR_LATCH_13p.reset(0);
-    NYRE_EXT_ADDR_LATCH_14p.reset(0);
-
-    SOMA_EXT_DATA_LATCH_D0n.reset(0);
-    RONY_EXT_DATA_LATCH_D1n.reset(0);
-    RAXY_EXT_DATA_LATCH_D2n.reset(0);
-    SELO_EXT_DATA_LATCH_D3n.reset(0);
-    SODY_EXT_DATA_LATCH_D4n.reset(0);
-    SAGO_EXT_DATA_LATCH_D5n.reset(0);
-    RUPA_EXT_DATA_LATCH_D6n.reset(0);
-    SAZY_EXT_DATA_LATCH_D7n.reset(0);
-  }
-
   //-----------------------------------------------------------------------------
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx

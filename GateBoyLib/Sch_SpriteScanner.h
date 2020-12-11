@@ -19,21 +19,6 @@ struct SpriteScanner {
     DOBA_SCAN_DONE_Bp_xxx.reset(REG_D1C0);
   }
 
-  void reset_boot() {
-    BESU_SCANNINGp_evn.reset(0);
-    CENO_SCANNINGp_evn.reset(REG_D0C0);
-
-    YFEL_SCAN0_evn.reset(REG_D0C0);
-    WEWY_SCAN1_evn.reset(REG_D0C0);
-    GOSO_SCAN2_evn.reset(REG_D0C0);
-    ELYN_SCAN3_evn.reset(REG_D0C0);
-    FAHA_SCAN4_evn.reset(REG_D0C0);
-    FONY_SCAN5_evn.reset(REG_D0C0);
-
-    BYBA_SCAN_DONE_Ap_evn.reset(REG_D0C0);
-    DOBA_SCAN_DONE_Bp_xxx.reset(REG_D0C0);
-  }
-
   //----------------------------------------
   // States
 

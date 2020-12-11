@@ -12,20 +12,6 @@
 #define SET_DIRTY()
 #endif
 
-#ifdef USE_OLDNEW_BIT
-#define CHECK_OLDn() CHECK_P(wire(state & 0x40))
-#define CHECK_OLDp() CHECK_N(wire(state & 0x40))
-#define CHECK_NEWn() CHECK_N(wire(state & 0x40))
-#define CHECK_NEWp() CHECK_P(wire(state & 0x40))
-#define SET_NEW()    { state |= 0b01000000; }
-#else
-#define CHECK_OLDn()
-#define CHECK_OLDp()
-#define CHECK_NEWn()
-#define CHECK_NEWp()
-#define SET_NEW()
-#endif
-
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
@@ -44,12 +30,6 @@ inline uint64_t commit_and_hash(T& obj) {
 struct BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire bit_data()  const { return  wire(state & 0x01); }
-  wire bit_clock() const { return  wire(state & 0x02); }
-  wire bit_old()   const { return !wire(state & 0x40); }
-  wire bit_new()   const { return  wire(state & 0x40); }
-  wire bit_dirty() const { return  wire(state & 0x80); }
-
   void set_data(wire data)   {
     state = (state & 0b11111110) | (data << 0);
   }
@@ -58,31 +38,36 @@ struct BitBase {
   }
 
   uint8_t state = 0;
+
+protected:
+  wire bit_data()  const { return wire(state & 0x01); }
+  wire bit_clock() const { return wire(state & 0x02); }
+  wire bit_old()   const { return wire(state & 0x04); }
+  wire bit_dirty() const { return wire(state & 0x80); }
 };
 #pragma pack(pop)
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 
 constexpr uint8_t REG_D0C0 = 0b00000000;
-constexpr uint8_t REG_D1C0 = 0b00000001;
+constexpr uint8_t REG_D1C0 = 0b00000101;
 constexpr uint8_t REG_D0C1 = 0b00000010;
-constexpr uint8_t REG_D1C1 = 0b00000011;
+constexpr uint8_t REG_D1C1 = 0b00000111;
 
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
-  wire qp_old() const   { CHECK_OLDp(); return  bit_data(); }
-  wire qn_old() const   { CHECK_OLDp(); return !bit_data(); }
+  wire qp_old() const   { return  bit_old(); }
+  wire qn_old() const   { return !bit_old(); }
 
-  wire qp_new() const   { CHECK_NEWp(); return  bit_data(); }
-  wire qn_new() const   { CHECK_NEWp(); return !bit_data(); }
+  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
   wire qp_any() const   { return  bit_data(); }
   wire qn_any() const   { return !bit_data(); }
 
   void set(wire D) {
-    state = D;
-    SET_NEW();
+    state = (state & 0xFE) | uint8_t(D);
     SET_DIRTY();
   }
 
@@ -93,11 +78,11 @@ struct Gate : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-  wire qp_old() const   { CHECK_OLDp(); return  bit_data(); }
-  wire qn_old() const   { CHECK_OLDp(); return !bit_data(); }
+  wire qp_old() const   { return  bit_old(); }
+  wire qn_old() const   { return !bit_old(); }
 
-  wire qp_new() const   { CHECK_NEWp(); return  bit_data(); }
-  wire qn_new() const   { CHECK_NEWp(); return !bit_data(); }
+  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
   wire qp_any() const   { return  bit_data(); }
   wire qn_any() const   { return !bit_data(); }
@@ -106,36 +91,16 @@ struct DFF : public BitBase {
     if (!bit_clock() && CLKp) set_data(Dp);
     set_clock(CLKp);
     set_data((bit_data() || !SETn) && RSTn);
-    SET_NEW();
     SET_DIRTY();
   }
 
-  /*
-  void dff(wire CLKp, wire SETn, wire RSTn, BitBase D) {
-    wire CLKp_old = wire(state & 0x02);
-    wire CLKp_new = CLKp;
-
-    uint8_t D_old = (bit_data() || !SETn) && RSTn;
-    uint8_t D_new = (D.bit_data() || !SETn) && RSTn;
-
-    if (!CLKp_old && CLKp_new) {
-      CHECK_N(D.state & 0x40);
-      state = 0xC0 | (CLKp_new << 1) | D_new;
-    } else {
-      state = 0xC0 | (CLKp_new << 1) | D_old;
-    }
-  }
-  */
-
   void RSTn(wire RSTn) {
     set_data(bit_data() && RSTn);
-    SET_NEW();
     SET_DIRTY();
   }
 
   void SETn(wire SETn) {
     set_data(bit_data() || !SETn);
-    SET_NEW();
     SET_DIRTY();
   }
 };
@@ -345,7 +310,6 @@ struct BusIO : public BitBase {
   void reset() { state = 1; }
 
   wire qp_in_old() const {
-    CHECK_OLDp();
     return  bit_data();
   }
 
@@ -360,7 +324,6 @@ struct BusIO : public BitBase {
 
   void bus_in_old(wire OEp, wire Dp) {
     CHECK_DIRTYn();
-    CHECK_NEWn();
     if (OEp) {
       set_data(Dp);
     }
@@ -370,7 +333,6 @@ struct BusIO : public BitBase {
   void tri(wire OEp, wire Dp) {
     if (OEp) {
       set_data(Dp);
-      SET_NEW();
     }
     SET_DIRTY();
   }
@@ -385,7 +347,6 @@ struct BusIn : public BitBase {
 
   void bus_in_old(wire Dp) {
     CHECK_DIRTYn();
-    CHECK_NEWn();
     set_data(Dp);
     SET_DIRTY();
   }
@@ -395,13 +356,12 @@ struct BusOut : public BitBase {
   BusOut() { state = 1; }
   void reset() { state = 1; }
 
-  wire qp_old() const { CHECK_OLDp(); return  bit_data(); } // only used by sprite index latching old oam bus value
+  wire qp_old() const { return bit_old(); } // only used by sprite index latching old oam bus value
   wire qp_out() const { CHECK_DIRTYp(); return  bit_data(); }
 
   void tri(wire OEp, wire Dp) {
     if (OEp) {
       set_data(Dp);
-      SET_NEW();
     }
     SET_DIRTY();
   }
@@ -424,7 +384,6 @@ struct PinIO : public BitBase {
   void tri(wire OEp, wire Dp) {
     if (OEp) {
       set_data(Dp);
-      SET_NEW();
     }
     SET_DIRTY();
   }
@@ -442,7 +401,6 @@ struct PinIn : private BitBase {
   void tri(wire OEp, wire Dp) {
     if (OEp) {
       set_data(Dp);
-      SET_NEW();
     }
     SET_DIRTY();
   }
@@ -453,9 +411,9 @@ struct PinIn : private BitBase {
 struct PinOut : private BitBase {
   wire qp_out() const { CHECK_DIRTYp(); return  bit_data(); }
 
-  void setp   (wire Dp)                    { set_data(Dp);                          SET_NEW(); SET_DIRTY(); }
-  void pin_out(wire HI, wire LO)           { set_data((!HI) || (HI != LO));         SET_NEW(); SET_DIRTY(); }
-  void pin_out(wire OEp, wire HI, wire LO) { set_data((!HI) || (HI != LO) || !OEp); SET_NEW(); SET_DIRTY(); }
+  void setp   (wire Dp)                    { set_data(Dp);                          SET_DIRTY(); }
+  void pin_out(wire HI, wire LO)           { set_data((!HI) || (HI != LO));         SET_DIRTY(); }
+  void pin_out(wire OEp, wire HI, wire LO) { set_data((!HI) || (HI != LO) || !OEp); SET_DIRTY(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -469,11 +427,11 @@ struct PinOut : private BitBase {
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
-  wire qp_old() const   { CHECK_OLDp(); return  bit_data(); }
-  wire qn_old() const   { CHECK_OLDp(); return !bit_data(); }
+  wire qp_old() const   { return  bit_old(); }
+  wire qn_old() const   { return !bit_old(); }
 
-  wire qp_new() const   { CHECK_NEWp(); return  bit_data(); }
-  wire qn_new() const   { CHECK_NEWp(); return !bit_data(); }
+  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
   wire qp_any() const   { return  bit_data(); }
   wire qn_any() const   { return !bit_data(); }
@@ -481,7 +439,6 @@ struct NorLatch : public BitBase {
   void nor_latch(wire SETp, wire RSTp) {
     if (SETp) set_data(1);
     if (RSTp) set_data(0);
-    SET_NEW();
     SET_DIRTY();
   }
 };
@@ -497,11 +454,11 @@ struct NorLatch : public BitBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public BitBase {
-  wire qp_old() const   { CHECK_OLDp(); return  bit_data(); }
-  wire qn_old() const   { CHECK_OLDp(); return !bit_data(); }
+  wire qp_old() const   { return  bit_old(); }
+  wire qn_old() const   { return !bit_old(); }
 
-  wire qp_new() const   { CHECK_NEWp(); return  bit_data(); }
-  wire qn_new() const   { CHECK_NEWp(); return !bit_data(); }
+  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
   wire qp_any() const   { return  bit_data(); }
   wire qn_any() const   { return !bit_data(); }
@@ -510,7 +467,6 @@ struct NandLatch : public BitBase {
   void nand_latch(wire SETn, wire RSTn) {
     if (!SETn) set_data(1);
     if (!RSTn) set_data(0);
-    SET_NEW();
     SET_DIRTY();
   }
 };
@@ -533,18 +489,17 @@ struct NandLatch : public BitBase {
 // Output 10 _must_ be inverting...?
 
 struct TpLatch : public BitBase {
-  wire qp_old() const   { CHECK_OLDp(); return  bit_data(); }
-  wire qn_old() const   { CHECK_OLDp(); return !bit_data(); }
+  wire qp_old() const   { return  bit_old(); }
+  wire qn_old() const   { return !bit_old(); }
 
-  wire qp_new() const   { CHECK_NEWp(); return  bit_data(); }
-  wire qn_new() const   { CHECK_NEWp(); return !bit_data(); }
+  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
   wire qp_any() const   { return  bit_data(); }
   wire qn_any() const   { return !bit_data(); }
 
   void tp_latch(wire HOLDn, wire D) {
     if (HOLDn) set_data(D);
-    SET_NEW();
     SET_DIRTY();
   }
 };

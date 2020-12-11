@@ -514,10 +514,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Clocks =====\001\n");
   d("PHASE %d%d%d%d\n",
-    gb->clk_reg.AFUR_xxxxEFGHp.bit_data(),
-    gb->clk_reg.ALEF_AxxxxFGHp.bit_data(),
-    gb->clk_reg.APUK_ABxxxxGHp.bit_data(),
-    gb->clk_reg.ADYK_ABCxxxxHp.bit_data());
+    gb->clk_reg.AFUR_xxxxEFGHp.qp_old(),
+    gb->clk_reg.ALEF_AxxxxFGHp.qp_old(),
+    gb->clk_reg.APUK_ABxxxxGHp.qp_old(),
+    gb->clk_reg.ADYK_ABCxxxxHp.qp_old());
   d("\n");
   d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp.state);
   d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn.state);
@@ -613,7 +613,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("PIX COUNT : %03d\n", gb->pix_pipe.get_pix_count());
   d("LX        : %03d\n", gb->lcd_reg.get_lx());
   d("LY        : %03d\n", gb->lcd_reg.get_ly());
-  d("LYC       : %03d\n", gb->lcd_reg.get_lyc());
+  d("LYC       : %03d\n", gb->lyc.get_lyc());
   d.dump_bitp("lcd_pix_lo", gb->lcd_pix_lo.state);
   d.dump_bitp("lcd_pix_lo", gb->lcd_pix_hi.state);
 
@@ -633,7 +633,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   d.dump_slice2p("LX  ", &gb->lcd_reg.SAXO_LX0p_evn.state,  7);
   d.dump_slice2p("LY  ", &gb->lcd_reg.MUWY_LY0p_evn.state,  8);
-  d.dump_slice2n("LYC ", &gb->lcd_reg.SYRY_LYC0n.state, 8);
+  d.dump_slice2n("LYC ", &gb->lyc.SYRY_LYC0n.state, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -680,7 +680,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_D0_evn, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0_evn, 8);
   d("\n");
-  d.dump_slice2n("FF40 LCDC ", &gb->pix_pipe.VYXE_LCDC_BGENn_h, 8);
+  d.dump_slice2n("FF40 LCDC ", &gb->lcdc.VYXE_LCDC_BGENn_h, 8);
   d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn_h, 4);
   d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n_h, 8);
   d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n_h, 8);

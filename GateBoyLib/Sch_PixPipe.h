@@ -21,11 +21,6 @@ struct PixelPipe {
     TAKO_PX6p_evn.reset(REG_D0C1);
     SYBE_PX7p_evn.reset(REG_D1C1);
 
-    VYXE_LCDC_BGENn_h  .reset(REG_D0C1);
-    XYLO_LCDC_SPENn_h  .reset(REG_D1C1);
-    XYMO_LCDC_SPSIZEn_h.reset(REG_D1C1);
-    XONA_LCDC_LCDENn_h .reset(REG_D0C1);
-
     ROXE_STAT_HBI_ENn_h.reset(REG_D1C1);
     RUFO_STAT_VBI_ENn_h.reset(REG_D1C1);
     REFE_STAT_OAI_ENn_h.reset(REG_D1C1);
@@ -198,11 +193,6 @@ struct PixelPipe {
     TUKY_PX5p_evn.reset(REG_D0C0);
     TAKO_PX6p_evn.reset(REG_D0C0);
     SYBE_PX7p_evn.reset(REG_D0C0);
-
-    VYXE_LCDC_BGENn_h.reset(REG_D0C0);
-    XYLO_LCDC_SPENn_h.reset(REG_D0C0);
-    XYMO_LCDC_SPSIZEn_h.reset(REG_D0C0);
-    XONA_LCDC_LCDENn_h.reset(REG_D0C0);
 
     ROXE_STAT_HBI_ENn_h.reset(REG_D0C0);
     RUFO_STAT_VBI_ENn_h.reset(REG_D0C0);
@@ -440,12 +430,6 @@ struct PixelPipe {
   /*p26.VAVA*/ DFF22 VAVA_MASK_PIPE_7_evn; // AxCxExGx
 
   //----------------------------------------
-
-  // FF40 - LCDC
-  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn_h;   // xxxxxxxH
-  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn_h;   // xxxxxxxH
-  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn_h; // xxxxxxxH
-  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn_h;  // xxxxxxxH
 
   // FF41 - STAT
   /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn_h; // xxxxxxxH

@@ -52,11 +52,6 @@ struct TileFetcher {
     TATE_WIN_Y6_evn.reset(REG_D0C1);
     TEKE_WIN_Y7_evn.reset(REG_D0C1);
 
-    XAFO_LCDC_BGMAPn_h.reset(REG_D1C1);
-    WEXU_LCDC_BGTILEn_h.reset(REG_D0C1);
-    WYMO_LCDC_WINENn_h.reset(REG_D1C1);
-    WOKY_LCDC_WINMAPn_h.reset(REG_D1C1);
-
     LEGU_TILE_DA0n_odd.reset(REG_D1C1);
     NUDU_TILE_DA1n_odd.reset(REG_D1C1);
     MUKU_TILE_DA2n_odd.reset(REG_D1C1);
@@ -122,11 +117,6 @@ struct TileFetcher {
     TOZO_WIN_Y5_evn.reset(REG_D0C0);
     TATE_WIN_Y6_evn.reset(REG_D0C0);
     TEKE_WIN_Y7_evn.reset(REG_D0C0);
-
-    XAFO_LCDC_BGMAPn_h.reset(REG_D0C0);
-    WEXU_LCDC_BGTILEn_h.reset(REG_D0C0);
-    WYMO_LCDC_WINENn_h.reset(REG_D0C0);
-    WOKY_LCDC_WINMAPn_h.reset(REG_D0C0);
 
     LEGU_TILE_DA0n_odd.reset(REG_D0C0);
     NUDU_TILE_DA1n_odd.reset(REG_D0C0);
@@ -194,11 +184,6 @@ struct TileFetcher {
   /*p27.TOZO*/ DFF17 TOZO_WIN_Y5_evn;      // AxCxExGh probably, but not enough data.
   /*p27.TATE*/ DFF17 TATE_WIN_Y6_evn;      // AxCxExGh probably, but not enough data.
   /*p27.TEKE*/ DFF17 TEKE_WIN_Y7_evn;      // AxCxExGh probably, but not enough data.
-
-  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn_h;    // xxxxxxxH
-  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn_h;   // xxxxxxxH
-  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn_h;    // xxxxxxxH
-  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn_h;   // xxxxxxxH
 
   /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n_odd;   // xBxDxFxH
   /*p32.NUDU*/ DFF8p NUDU_TILE_DA1n_odd;   // xBxDxFxH

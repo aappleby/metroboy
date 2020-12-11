@@ -2,7 +2,6 @@
 
 #define ALWAYS_CHECK
 #define USE_DIRTY_BIT
-#define USE_OLDNEW_BIT
 #define CHECK_SINGLE_PASS
 #define FAST_BOOT
 

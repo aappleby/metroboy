@@ -181,15 +181,6 @@ struct GateBoy {
     wire NYXU_BFETCH_RSTn_new_xxx,
     wire WUTY_SFETCH_DONE_TRIGp_odd_new,
 
-    wire PUTE_FLIP0p_old,
-    wire PELO_FLIP1p_old,
-    wire PONO_FLIP2p_old,
-    wire POBE_FLIP3p_old,
-    wire PACY_FLIP4p_old,
-    wire PUGU_FLIP5p_old,
-    wire PAWE_FLIP6p_old,
-    wire PULY_FLIP7p_old,
-
     wire WERO_ADDR_PPUp_ext,
     wire XOLA_A00n_ext,
     wire WADO_A00p_ext,
@@ -449,6 +440,9 @@ struct GateBoy {
 
   //----------
 
+  LCDC lcdc;
+  LYC  lyc;
+
   LcdRegisters lcd_reg;
 
   /*PIN_50*/ PinOut PIN_LCD_DATA1;
@@ -472,16 +466,6 @@ struct GateBoy {
 
   bool oam_clk_old;
   bool zram_clk_old;
-
-  //bool XYMU_RENDERINGp_old_xxx;
-  //bool MATU_DMA_RUNNINGp_old_evn;
-  //bool BAXO_OAM_DB5p_old_evn;
-  //bool BESU_SCANNINGp_old_evn;
-  //bool WYMO_LCDC_WINENp_old_h;
-
-  bool _WODU_HBLANKp_old;
-  bool _FEPO_STORE_MATCHp_old_evn;
-  bool _MOCE_BFETCH_DONEn_old_xxx;
 
   bool _GUVA_SPRITE0_GETp_old_evn;
   bool _ENUT_SPRITE1_GETp_old_evn;

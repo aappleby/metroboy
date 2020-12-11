@@ -241,10 +241,10 @@ void GateBoy::run_reset_sequence(bool fastboot) {
   sys_clkgood = 1;
   run(3);
 
-  CHECK_N(clk_reg.AFUR_xxxxEFGHp.qp_any());
-  CHECK_P(clk_reg.ALEF_AxxxxFGHp.qp_any());
-  CHECK_P(clk_reg.APUK_ABxxxxGHp.qp_any());
-  CHECK_P(clk_reg.ADYK_ABCxxxxHp.qp_any());
+  CHECK_N(clk_reg.AFUR_xxxxEFGHp.qp_old());
+  CHECK_P(clk_reg.ALEF_AxxxxFGHp.qp_old());
+  CHECK_P(clk_reg.APUK_ABxxxxGHp.qp_old());
+  CHECK_P(clk_reg.ADYK_ABCxxxxHp.qp_old());
 
   // Wait for PIN_CPU_START
   while(!sys_cpu_start) {
@@ -602,15 +602,10 @@ void GateBoy::tock_slow(int pass_index) {
   /* p01.BOGA*/ bool BOGA_Axxxxxxx_clkevn;
 
   {
-    wire ADYK_ABCxxxxHp_chain = clk_reg.ADYK_ABCxxxxHp.qp_any();
-    wire AFUR_xxxxEFGHn_chain = clk_reg.AFUR_xxxxEFGHp.qn_any();
-    wire ALEF_AxxxxFGHn_chain = clk_reg.ALEF_AxxxxFGHp.qn_any();
-    wire APUK_ABxxxxGHn_chain = clk_reg.APUK_ABxxxxGHp.qn_any();
-
-    /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9(!ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), ADYK_ABCxxxxHp_chain);
-    /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), AFUR_xxxxEFGHn_chain);
-    /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9(!ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), ALEF_AxxxxFGHn_chain);
-    /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), APUK_ABxxxxGHn_chain);
+    /* p01.AFUR*/ clk_reg.AFUR_xxxxEFGHp.dff9(!ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), clk_reg.ADYK_ABCxxxxHp.qp_old());
+    /* p01.ALEF*/ clk_reg.ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), clk_reg.AFUR_xxxxEFGHp.qn_old());
+    /* p01.APUK*/ clk_reg.APUK_ABxxxxGHp.dff9(!ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), clk_reg.ALEF_AxxxxFGHp.qn_old());
+    /* p01.ADYK*/ clk_reg.ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH_clk_odd, UPOJ_MODE_PRODn_ext(), clk_reg.APUK_ABxxxxGHp.qn_old());
 
     /*#p01.ATYP*/ ATYP_ABCDxxxx_clkevn = not1(clk_reg.AFUR_xxxxEFGHp.qp_new());
     /*#p01.AFEP*/ AFEP_AxxxxFGH_clkodd = not1(clk_reg.ALEF_AxxxxFGHp.qn_new());
@@ -1210,7 +1205,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p01.DULA*/ wire _DULA_SYS_RSTp_new = not1(_ALUR_SYS_RSTn_new);
     /*#p01.CUNU*/ wire _CUNU_SYS_RSTn_new = not1(_DULA_SYS_RSTp_new);
 
-    /* p04.LARA*/ dma_reg.LARA_DMA_LATCHn_evn = nand3(dma_reg.LOKY_DMA_LATCHp_evn.qp_any(), dma_reg.MYTE_DMA_DONE_evn.qn_new(), _CUNU_SYS_RSTn_new);
+    /* p04.LARA*/ dma_reg.LARA_DMA_LATCHn_evn = nand3(dma_reg.LOKY_DMA_LATCHp_evn.qp_old(), dma_reg.MYTE_DMA_DONE_evn.qn_new(), _CUNU_SYS_RSTn_new);
     /*#p04.LOKY*/ dma_reg.LOKY_DMA_LATCHp_evn = nand2(dma_reg.LARA_DMA_LATCHn_evn.qp_new(), dma_reg.LENE_DMA_TRIG_d4_evn.qn_new());
     /* p04.LARA*/ dma_reg.LARA_DMA_LATCHn_evn = nand3(dma_reg.LOKY_DMA_LATCHp_evn.qp_new(), dma_reg.MYTE_DMA_DONE_evn.qn_new(), _CUNU_SYS_RSTn_new);
   }();
@@ -2922,7 +2917,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p01.ALET*/ wire _ALET_xBxDxFxH_clk_odd = not1(_ZEME_AxCxExGx_clk_evn);
 
     /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp_new_h);
-    /* p27.SOVY*/ pix_pipe.SOVY_WIN_HITp_odd.dff17(_ALET_xBxDxFxH_clk_odd, _XAPO_VID_RSTn_new_evn, pix_pipe.RYDY_WIN_HITp_evn.qp_any());
+    /* p27.SOVY*/ pix_pipe.SOVY_WIN_HITp_odd.dff17(_ALET_xBxDxFxH_clk_odd, _XAPO_VID_RSTn_new_evn, pix_pipe.RYDY_WIN_HITp_evn.qp_old());
   }();
 
   [this, TYFA_CLKPIPE_xBxDxFxH_clknew_odd, XYMU_RENDERINGp_new_xxx, NUKO_WX_MATCHp_old_evn](){
@@ -4957,7 +4952,7 @@ void GateBoy::tock_lcd(
     probe(11, "AVAP_SCAN_DONE", AVAP_SCAN_DONE_TRIGp_new_xxx);
     probe(12, "_PAHO_X_8_SYNC_odd", pix_pipe._PAHO_X_8_SYNC_odd.qp_new());
 
-    /*#p24.POME*/ pix_pipe.POME_xxx.set(nor2(AVAP_SCAN_DONE_TRIGp_new_xxx, pix_pipe.POFY_xxx.qp_any()));
+    /*#p24.POME*/ pix_pipe.POME_xxx.set(nor2(AVAP_SCAN_DONE_TRIGp_new_xxx, pix_pipe.POFY_xxx.qp_old()));
     /*#p24.RUJU*/ pix_pipe.RUJU_xxx.set(or3(pix_pipe._PAHO_X_8_SYNC_odd.qp_new(), _TOFU_VID_RSTp_new, pix_pipe.POME_xxx.qp_new()));
     /*#p24.POFY*/ pix_pipe.POFY_xxx.set(not1(pix_pipe.RUJU_xxx.qp_new()));
     /*#p24.POME*/ pix_pipe.POME_xxx.set(nor2(AVAP_SCAN_DONE_TRIGp_new_xxx, pix_pipe.POFY_xxx.qp_new()));

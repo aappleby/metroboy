@@ -63,9 +63,6 @@ struct Gate : public BitBase {
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
-  wire qp_any() const   { return  bit_data(); }
-  wire qn_any() const   { return !bit_data(); }
-
   void set(wire D) {
     state = (state & 0xFE) | uint8_t(D);
     SET_DIRTY();
@@ -433,9 +430,6 @@ struct NorLatch : public BitBase {
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
-  wire qp_any() const   { return  bit_data(); }
-  wire qn_any() const   { return !bit_data(); }
-
   void nor_latch(wire SETp, wire RSTp) {
     if (SETp) set_data(1);
     if (RSTp) set_data(0);
@@ -459,10 +453,6 @@ struct NandLatch : public BitBase {
 
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
-
-  wire qp_any() const   { return  bit_data(); }
-  wire qn_any() const   { return !bit_data(); }
-
 
   void nand_latch(wire SETn, wire RSTn) {
     if (!SETn) set_data(1);
@@ -494,9 +484,6 @@ struct TpLatch : public BitBase {
 
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
-
-  wire qp_any() const   { return  bit_data(); }
-  wire qn_any() const   { return !bit_data(); }
 
   void tp_latch(wire HOLDn, wire D) {
     if (HOLDn) set_data(D);

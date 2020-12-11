@@ -299,14 +299,14 @@ struct SpriteStore {
     BOZU_STORE0_L2n_odd.reset(REG_D0C0);
     FYHY_STORE0_L3n_odd.reset(REG_D0C0);
 
-    XEPE_STORE0_X0p_odd.reset(REG_D0C0);
-    YLAH_STORE0_X1p_odd.reset(REG_D0C0);
-    ZOLA_STORE0_X2p_odd.reset(REG_D0C0);
-    ZULU_STORE0_X3p_odd.reset(REG_D0C0);
-    WELO_STORE0_X4p_odd.reset(REG_D0C0);
-    XUNY_STORE0_X5p_odd.reset(REG_D0C0);
-    WOTE_STORE0_X6p_odd.reset(REG_D0C0);
-    XAKO_STORE0_X7p_odd.reset(REG_D0C0);
+    XEPE_STORE0_X0p_odd.reset(REG_D1C1);
+    YLAH_STORE0_X1p_odd.reset(REG_D1C1);
+    ZOLA_STORE0_X2p_odd.reset(REG_D1C1);
+    ZULU_STORE0_X3p_odd.reset(REG_D1C1);
+    WELO_STORE0_X4p_odd.reset(REG_D1C1);
+    XUNY_STORE0_X5p_odd.reset(REG_D1C1);
+    WOTE_STORE0_X6p_odd.reset(REG_D1C1);
+    XAKO_STORE0_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -322,14 +322,14 @@ struct SpriteStore {
     ABOP_STORE1_L2n_odd.reset(REG_D0C0);
     ABUG_STORE1_L3n_odd.reset(REG_D0C0);
 
-    DANY_STORE1_X0p_odd.reset(REG_D0C0);
-    DUKO_STORE1_X1p_odd.reset(REG_D0C0);
-    DESU_STORE1_X2p_odd.reset(REG_D0C0);
-    DAZO_STORE1_X3p_odd.reset(REG_D0C0);
-    DAKE_STORE1_X4p_odd.reset(REG_D0C0);
-    CESO_STORE1_X5p_odd.reset(REG_D0C0);
-    DYFU_STORE1_X6p_odd.reset(REG_D0C0);
-    CUSY_STORE1_X7p_odd.reset(REG_D0C0);
+    DANY_STORE1_X0p_odd.reset(REG_D1C1);
+    DUKO_STORE1_X1p_odd.reset(REG_D1C1);
+    DESU_STORE1_X2p_odd.reset(REG_D1C1);
+    DAZO_STORE1_X3p_odd.reset(REG_D1C1);
+    DAKE_STORE1_X4p_odd.reset(REG_D1C1);
+    CESO_STORE1_X5p_odd.reset(REG_D1C1);
+    DYFU_STORE1_X6p_odd.reset(REG_D1C1);
+    CUSY_STORE1_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -345,14 +345,14 @@ struct SpriteStore {
     XAZY_STORE2_L2n_odd.reset(REG_D0C0);
     YKUK_STORE2_L3n_odd.reset(REG_D0C0);
 
-    FOKA_STORE2_X0p_odd.reset(REG_D0C0);
-    FYTY_STORE2_X1p_odd.reset(REG_D0C0);
-    FUBY_STORE2_X2p_odd.reset(REG_D0C0);
-    GOXU_STORE2_X3p_odd.reset(REG_D0C0);
-    DUHY_STORE2_X4p_odd.reset(REG_D0C0);
-    EJUF_STORE2_X5p_odd.reset(REG_D0C0);
-    ENOR_STORE2_X6p_odd.reset(REG_D0C0);
-    DEPY_STORE2_X7p_odd.reset(REG_D0C0);
+    FOKA_STORE2_X0p_odd.reset(REG_D1C1);
+    FYTY_STORE2_X1p_odd.reset(REG_D1C1);
+    FUBY_STORE2_X2p_odd.reset(REG_D1C1);
+    GOXU_STORE2_X3p_odd.reset(REG_D1C1);
+    DUHY_STORE2_X4p_odd.reset(REG_D1C1);
+    EJUF_STORE2_X5p_odd.reset(REG_D1C1);
+    ENOR_STORE2_X6p_odd.reset(REG_D1C1);
+    DEPY_STORE2_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -368,14 +368,14 @@ struct SpriteStore {
     ZENE_STORE3_L2n_odd.reset(REG_D0C0);
     ZURY_STORE3_L3n_odd.reset(REG_D0C0);
 
-    XOLY_STORE3_X0p_odd.reset(REG_D0C0);
-    XYBA_STORE3_X1p_odd.reset(REG_D0C0);
-    XABE_STORE3_X2p_odd.reset(REG_D0C0);
-    XEKA_STORE3_X3p_odd.reset(REG_D0C0);
-    XOMY_STORE3_X4p_odd.reset(REG_D0C0);
-    WUHA_STORE3_X5p_odd.reset(REG_D0C0);
-    WYNA_STORE3_X6p_odd.reset(REG_D0C0);
-    WECO_STORE3_X7p_odd.reset(REG_D0C0);
+    XOLY_STORE3_X0p_odd.reset(REG_D1C1);
+    XYBA_STORE3_X1p_odd.reset(REG_D1C1);
+    XABE_STORE3_X2p_odd.reset(REG_D1C1);
+    XEKA_STORE3_X3p_odd.reset(REG_D1C1);
+    XOMY_STORE3_X4p_odd.reset(REG_D1C1);
+    WUHA_STORE3_X5p_odd.reset(REG_D1C1);
+    WYNA_STORE3_X6p_odd.reset(REG_D1C1);
+    WECO_STORE3_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -391,14 +391,14 @@ struct SpriteStore {
     CONO_STORE4_L2n_odd.reset(REG_D0C0);
     CUMU_STORE4_L3n_odd.reset(REG_D0C0);
 
-    WEDU_STORE4_X0p_odd.reset(REG_D0C0);
-    YGAJ_STORE4_X1p_odd.reset(REG_D0C0);
-    ZYJO_STORE4_X2p_odd.reset(REG_D0C0);
-    XURY_STORE4_X3p_odd.reset(REG_D0C0);
-    YBED_STORE4_X4p_odd.reset(REG_D0C0);
-    ZALA_STORE4_X5p_odd.reset(REG_D0C0);
-    WYDE_STORE4_X6p_odd.reset(REG_D0C0);
-    XEPA_STORE4_X7p_odd.reset(REG_D0C0);
+    WEDU_STORE4_X0p_odd.reset(REG_D1C1);
+    YGAJ_STORE4_X1p_odd.reset(REG_D1C1);
+    ZYJO_STORE4_X2p_odd.reset(REG_D1C1);
+    XURY_STORE4_X3p_odd.reset(REG_D1C1);
+    YBED_STORE4_X4p_odd.reset(REG_D1C1);
+    ZALA_STORE4_X5p_odd.reset(REG_D1C1);
+    WYDE_STORE4_X6p_odd.reset(REG_D1C1);
+    XEPA_STORE4_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -414,14 +414,14 @@ struct SpriteStore {
     ABUX_STORE5_L2n_odd.reset(REG_D0C0);
     ANED_STORE5_L3n_odd.reset(REG_D0C0);
 
-    FUSA_STORE5_X0p_odd.reset(REG_D0C0);
-    FAXA_STORE5_X1p_odd.reset(REG_D0C0);
-    FOZY_STORE5_X2p_odd.reset(REG_D0C0);
-    FESY_STORE5_X3p_odd.reset(REG_D0C0);
-    CYWE_STORE5_X4p_odd.reset(REG_D0C0);
-    DYBY_STORE5_X5p_odd.reset(REG_D0C0);
-    DURY_STORE5_X6p_odd.reset(REG_D0C0);
-    CUVY_STORE5_X7p_odd.reset(REG_D0C0);
+    FUSA_STORE5_X0p_odd.reset(REG_D1C1);
+    FAXA_STORE5_X1p_odd.reset(REG_D1C1);
+    FOZY_STORE5_X2p_odd.reset(REG_D1C1);
+    FESY_STORE5_X3p_odd.reset(REG_D1C1);
+    CYWE_STORE5_X4p_odd.reset(REG_D1C1);
+    DYBY_STORE5_X5p_odd.reset(REG_D1C1);
+    DURY_STORE5_X6p_odd.reset(REG_D1C1);
+    CUVY_STORE5_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -437,14 +437,14 @@ struct SpriteStore {
     ZEXO_STORE6_L2n_odd.reset(REG_D0C0);
     ZUBE_STORE6_L3n_odd.reset(REG_D0C0);
 
-    YCOL_STORE6_X0p_odd.reset(REG_D0C0);
-    YRAC_STORE6_X1p_odd.reset(REG_D0C0);
-    YMEM_STORE6_X2p_odd.reset(REG_D0C0);
-    YVAG_STORE6_X3p_odd.reset(REG_D0C0);
-    ZOLY_STORE6_X4p_odd.reset(REG_D0C0);
-    ZOGO_STORE6_X5p_odd.reset(REG_D0C0);
-    ZECU_STORE6_X6p_odd.reset(REG_D0C0);
-    ZESA_STORE6_X7p_odd.reset(REG_D0C0);
+    YCOL_STORE6_X0p_odd.reset(REG_D1C1);
+    YRAC_STORE6_X1p_odd.reset(REG_D1C1);
+    YMEM_STORE6_X2p_odd.reset(REG_D1C1);
+    YVAG_STORE6_X3p_odd.reset(REG_D1C1);
+    ZOLY_STORE6_X4p_odd.reset(REG_D1C1);
+    ZOGO_STORE6_X5p_odd.reset(REG_D1C1);
+    ZECU_STORE6_X6p_odd.reset(REG_D1C1);
+    ZESA_STORE6_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -460,14 +460,14 @@ struct SpriteStore {
     XAKU_STORE7_L2n_odd.reset(REG_D0C0);
     XYGO_STORE7_L3n_odd.reset(REG_D0C0);
 
-    ERAZ_STORE7_X0p_odd.reset(REG_D0C0);
-    EPUM_STORE7_X1p_odd.reset(REG_D0C0);
-    EROL_STORE7_X2p_odd.reset(REG_D0C0);
-    EHYN_STORE7_X3p_odd.reset(REG_D0C0);
-    FAZU_STORE7_X4p_odd.reset(REG_D0C0);
-    FAXE_STORE7_X5p_odd.reset(REG_D0C0);
-    EXUK_STORE7_X6p_odd.reset(REG_D0C0);
-    FEDE_STORE7_X7p_odd.reset(REG_D0C0);
+    ERAZ_STORE7_X0p_odd.reset(REG_D1C1);
+    EPUM_STORE7_X1p_odd.reset(REG_D1C1);
+    EROL_STORE7_X2p_odd.reset(REG_D1C1);
+    EHYN_STORE7_X3p_odd.reset(REG_D1C1);
+    FAZU_STORE7_X4p_odd.reset(REG_D1C1);
+    FAXE_STORE7_X5p_odd.reset(REG_D1C1);
+    EXUK_STORE7_X6p_odd.reset(REG_D1C1);
+    FEDE_STORE7_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -483,14 +483,14 @@ struct SpriteStore {
     AFUT_STORE8_L2n_odd.reset(REG_D0C0);
     AFYM_STORE8_L3n_odd.reset(REG_D0C0);
 
-    EZUF_STORE8_X0p_odd.reset(REG_D0C0);
-    ENAD_STORE8_X1p_odd.reset(REG_D0C0);
-    EBOW_STORE8_X2p_odd.reset(REG_D0C0);
-    FYCA_STORE8_X3p_odd.reset(REG_D0C0);
-    GAVY_STORE8_X4p_odd.reset(REG_D0C0);
-    GYPU_STORE8_X5p_odd.reset(REG_D0C0);
-    GADY_STORE8_X6p_odd.reset(REG_D0C0);
-    GAZA_STORE8_X7p_odd.reset(REG_D0C0);
+    EZUF_STORE8_X0p_odd.reset(REG_D1C1);
+    ENAD_STORE8_X1p_odd.reset(REG_D1C1);
+    EBOW_STORE8_X2p_odd.reset(REG_D1C1);
+    FYCA_STORE8_X3p_odd.reset(REG_D1C1);
+    GAVY_STORE8_X4p_odd.reset(REG_D1C1);
+    GYPU_STORE8_X5p_odd.reset(REG_D1C1);
+    GADY_STORE8_X6p_odd.reset(REG_D1C1);
+    GAZA_STORE8_X7p_odd.reset(REG_D1C1);
 
 
 
@@ -506,14 +506,14 @@ struct SpriteStore {
     DYSY_STORE9_L2n_odd.reset(REG_D0C0);
     DEWU_STORE9_L3n_odd.reset(REG_D0C0);
 
-    XUVY_STORE9_X0p_odd.reset(REG_D0C0);
-    XERE_STORE9_X1p_odd.reset(REG_D0C0);
-    XUZO_STORE9_X2p_odd.reset(REG_D0C0);
-    XEXA_STORE9_X3p_odd.reset(REG_D0C0);
-    YPOD_STORE9_X4p_odd.reset(REG_D0C0);
-    YROP_STORE9_X5p_odd.reset(REG_D0C0);
-    YNEP_STORE9_X6p_odd.reset(REG_D0C0);
-    YZOF_STORE9_X7p_odd.reset(REG_D0C0);
+    XUVY_STORE9_X0p_odd.reset(REG_D1C1);
+    XERE_STORE9_X1p_odd.reset(REG_D1C1);
+    XUZO_STORE9_X2p_odd.reset(REG_D1C1);
+    XEXA_STORE9_X3p_odd.reset(REG_D1C1);
+    YPOD_STORE9_X4p_odd.reset(REG_D1C1);
+    YROP_STORE9_X5p_odd.reset(REG_D1C1);
+    YNEP_STORE9_X6p_odd.reset(REG_D1C1);
+    YZOF_STORE9_X7p_odd.reset(REG_D1C1);
   }
 
   //----------------------------------------

@@ -45,7 +45,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+#if 0
   // regenerate post-bootrom dump
   gb_thread.reset_poweron(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   for (int i = 0; i < 8192; i++) {
@@ -116,7 +116,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 0
+#if 1
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;

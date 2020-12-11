@@ -208,9 +208,6 @@ struct GateBoy {
     wire TYFA_CLKPIPE_xBxDxFxH_clknew_odd,
     wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
     wire XONA_LCDC_LCDENp_h_new,
-    wire XEHO_PX0p_new_evn,
-    wire XYDO_PX3p_new_evn,
-    wire TULU_DIV07p_evn_new,
     wire XYMU_RENDERINGp_new_xxx,
     wire AVAP_SCAN_DONE_TRIGp_new_xxx,
     wire WEGO_HBLANKp_new_any,
@@ -260,16 +257,7 @@ struct GateBoy {
     wire PARU_VBLANKp_new_evn,
     wire PORE_WIN_MODEp_new_evn,
     wire WYMO_LCDC_WINENn_new,
-    wire XYMU_RENDERINGp_new_xxx,
-
-    wire XEHO_PX0p_new_evn,
-    wire SAVY_PX1p_new_evn,
-    wire XODU_PX2p_new_evn,
-    wire XYDO_PX3p_new_evn,
-    wire TUHU_PX4p_new_evn,
-    wire TUKY_PX5p_new_evn,
-    wire TAKO_PX6p_new_evn,
-    wire SYBE_PX7p_new_evn
+    wire XYMU_RENDERINGp_new_xxx
   );
 
   void tock_oam(

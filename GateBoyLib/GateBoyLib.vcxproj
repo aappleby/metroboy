@@ -21,6 +21,7 @@
     <ClCompile Include="GateBoyThread.cpp" />
     <ClCompile Include="Gates.cpp" />
     <ClCompile Include="Probe.cpp" />
+    <ClCompile Include="RegLCD.cpp" />
     <ClCompile Include="Sch_ApuControl.cpp" />
     <ClCompile Include="Sch_Channel1.cpp" />
     <ClCompile Include="Sch_Channel2.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="GateBoyThread.h" />
     <ClInclude Include="Gates.h" />
     <ClInclude Include="Probe.h" />
+    <ClInclude Include="RegLCD.h" />
     <ClInclude Include="Sch_ApuControl.h" />
     <ClInclude Include="Sch_Channel1.h" />
     <ClInclude Include="Sch_Channel2.h" />
@@ -44,7 +46,6 @@
     <ClInclude Include="Sch_ExtBus.h" />
     <ClInclude Include="Sch_Interrupts.h" />
     <ClInclude Include="Sch_Joypad.h" />
-    <ClInclude Include="Sch_LCD.h" />
     <ClInclude Include="Sch_OamBus.h" />
     <ClInclude Include="Sch_PixPipe.h" />
     <ClInclude Include="Sch_Serial.h" />

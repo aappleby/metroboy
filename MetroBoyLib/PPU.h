@@ -59,12 +59,12 @@ struct PPU {
   //----------
   // Registers
 
-  uint8_t lcdc = 0; // FF40
+  uint8_t reg_lcdc = 0; // FF40
   uint8_t stat = 0; // FF41
   uint8_t scy = 0;  // FF42
   uint8_t scx = 0;  // FF43
   uint8_t ly = 0;   // FF44 // this line counter contains glitches
-  uint8_t lyc = 0;  // FF45
+  uint8_t reg_lyc = 0;  // FF45
   uint8_t bgp = 0;  // FF47
   uint8_t obp0 = 0; // FF48
   uint8_t obp1 = 0; // FF49

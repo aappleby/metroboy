@@ -105,12 +105,12 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 
   memcpy(gb->vram.ram, &buf[0x8000], 8192);
 
-  gb->ppu.lcdc = buf[0xFF40];
+  gb->ppu.reg_lcdc = buf[0xFF40];
   gb->ppu.stat = buf[0xFF41];
   gb->ppu.scy  = buf[0xFF42];
   gb->ppu.scx  = buf[0xFF43];
   gb->ppu.ly   = buf[0xFF44];
-  gb->ppu.lyc  = buf[0xFF45];
+  gb->ppu.reg_lyc  = buf[0xFF45];
   //metroboy->ppu.dma  = buf[0xFF46];
   gb->ppu.bgp  = buf[0xFF47];
   gb->ppu.obp0 = buf[0xFF48];

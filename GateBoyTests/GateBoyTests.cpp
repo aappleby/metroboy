@@ -1652,20 +1652,20 @@ int GateBoyTests::test_ppu() {
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (int i = 0; i < 153; i++) {
-      EXPECT_EQ(i, gb.lcd_reg.get_ly());
+      EXPECT_EQ(i, gb.reg_ly.get());
       gb.run(114 * 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, gb.lcd_reg.get_ly());
+    EXPECT_EQ(0, gb.reg_ly.get());
     gb.run(114 * 8);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, gb.lcd_reg.get_ly());
+    EXPECT_EQ(0, gb.reg_ly.get());
     gb.run(114 * 8);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, gb.lcd_reg.get_ly());
+    EXPECT_EQ(1, gb.reg_ly.get());
 
     if (!err) LOG_B("Pass");
   }

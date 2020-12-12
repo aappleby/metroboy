@@ -37,7 +37,7 @@ void PPU::reset_cart() {
   obp0 = 0xFF;
   obp1 = 0xFF;
   update_palettes();
-  lcdc = 0x91;
+  reg_lcdc = 0x91;
 }
 
 //-----------------------------------------------------------------------------
@@ -72,27 +72,27 @@ uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty) {
   return base + (tile << 4) + (ty << 1);
 }
 
-uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
-  uint16_t base = (lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+uint16_t tile_map_address(uint8_t reg_lcdc, uint8_t map_x, uint8_t map_y) {
+  uint16_t base = (reg_lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
   return base + (map_y << 5) + map_x;
 }
 
-uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
-  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
-  map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
+uint16_t tile_base_address(uint8_t reg_lcdc, uint8_t scy, uint8_t line, uint8_t map) {
+  uint16_t base = (reg_lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
+  map = (reg_lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
   uint8_t ty = (scy + line) & 7;
   return pack_tile_addr(base, map, ty);
 }
 
-uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter) {
-  uint16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+uint16_t win_map_address(uint8_t reg_lcdc, uint8_t map_x, int wy_counter) {
+  uint16_t base = (reg_lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
   uint8_t win_y = uint8_t(wy_counter >> 3);
   return base + (win_y << 5) + map_x;
 }
 
-uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
-  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
-  map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
+uint16_t win_base_address(uint8_t reg_lcdc, int wy_counter, uint8_t map) {
+  uint16_t base = (reg_lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
+  map = (reg_lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
   return pack_tile_addr(base, map, wy_counter & 7);
 }
 
@@ -188,7 +188,7 @@ bool PPU::read(uint16_t addr, uint8_t& out) {
   bool rendering = phase_count >= 160 && !hblank;
 
   switch (addr) {
-    case ADDR_LCDC: out = lcdc; return true;
+    case ADDR_LCDC: out = reg_lcdc; return true;
     case ADDR_STAT: {
       out = stat & 0b01111000;
       if (rendering || vblank)   out |= 0b001;
@@ -199,7 +199,7 @@ bool PPU::read(uint16_t addr, uint8_t& out) {
     case ADDR_SCY:  out = scy;  return true;
     case ADDR_SCX:  out = scx;  return true;
     case ADDR_LY:   out = line; return true; // FIXME needs glitches added
-    case ADDR_LYC:  out = lyc;  return true;
+    case ADDR_LYC:  out = reg_lyc;  return true;
     case ADDR_BGP:  out = bgp;  return true;
     case ADDR_OBP0: out = obp0; return true;
     case ADDR_OBP1: out = obp1; return true;
@@ -213,11 +213,11 @@ bool PPU::read(uint16_t addr, uint8_t& out) {
 
 bool PPU::write(uint16_t addr, uint8_t data) {
   switch (addr) {
-  case ADDR_LCDC: lcdc = data; return true;
+  case ADDR_LCDC: reg_lcdc = data; return true;
   case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); return true;
   case ADDR_SCY:  scy = data;  return true;
   case ADDR_SCX:  scx = data;  return true;
-  case ADDR_LYC:  lyc = data;  return true;
+  case ADDR_LYC:  reg_lyc = data;  return true;
   case ADDR_BGP:  bgp = data;  update_palettes(); return true;;
   case ADDR_OBP0: obp0 = data; update_palettes(); return true;;
   case ADDR_OBP1: obp1 = data; update_palettes(); return true;;
@@ -243,7 +243,7 @@ void PPU::tick(int phase_total, const Req& req, Ack& ack) {
   }
 
   if (DELTA_BC) {
-    lyc_match = (line == lyc);
+    lyc_match = (line == reg_lyc);
   }
 
   if (req.read) {
@@ -256,7 +256,7 @@ void PPU::tick(int phase_total, const Req& req, Ack& ack) {
 void PPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, const Ack /*obus_ack*/) {
 
   // phase timer and stuff
-  if (lcdc & FLAG_LCD_ON) {
+  if (reg_lcdc & FLAG_LCD_ON) {
     phase_count++;
     if (phase_count == 912) {
       phase_count = 0;
@@ -277,7 +277,7 @@ void PPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, const Ac
   //---------
 
   if (phase_count == 2) {
-    lyc_match = (line == lyc);
+    lyc_match = (line == reg_lyc);
   }
 
   if (phase_count == 160) {

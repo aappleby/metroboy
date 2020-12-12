@@ -2,6 +2,82 @@
 #include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
+// FF4A - WY
+
+struct RegWY {
+  void reset_cart() {
+    NESO_WY0n_h.reset(REG_D1C1);
+    NYRO_WY1n_h.reset(REG_D1C1);
+    NAGA_WY2n_h.reset(REG_D1C1);
+    MELA_WY3n_h.reset(REG_D1C1);
+    NULO_WY4n_h.reset(REG_D1C1);
+    NENE_WY5n_h.reset(REG_D1C1);
+    NUKA_WY6n_h.reset(REG_D1C1);
+    NAFU_WY7n_h.reset(REG_D1C1);
+  }
+
+  void set(uint8_t wy) {
+    NESO_WY0n_h.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
+    NYRO_WY1n_h.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
+    NAGA_WY2n_h.reset((wy & 0x04) ? REG_D0C1 : REG_D1C1);
+    MELA_WY3n_h.reset((wy & 0x08) ? REG_D0C1 : REG_D1C1);
+    NULO_WY4n_h.reset((wy & 0x10) ? REG_D0C1 : REG_D1C1);
+    NENE_WY5n_h.reset((wy & 0x20) ? REG_D0C1 : REG_D1C1);
+    NUKA_WY6n_h.reset((wy & 0x40) ? REG_D0C1 : REG_D1C1);
+    NAFU_WY7n_h.reset((wy & 0x80) ? REG_D0C1 : REG_D1C1);
+  }
+
+  int get() const { return pack_u8n(8, &NESO_WY0n_h); }
+
+  /*p23.NESO*/ DFF9 NESO_WY0n_h; // xxxxxxxH
+  /*p23.NYRO*/ DFF9 NYRO_WY1n_h; // xxxxxxxH
+  /*p23.NAGA*/ DFF9 NAGA_WY2n_h; // xxxxxxxH
+  /*p23.MELA*/ DFF9 MELA_WY3n_h; // xxxxxxxH
+  /*p23.NULO*/ DFF9 NULO_WY4n_h; // xxxxxxxH
+  /*p23.NENE*/ DFF9 NENE_WY5n_h; // xxxxxxxH
+  /*p23.NUKA*/ DFF9 NUKA_WY6n_h; // xxxxxxxH
+  /*p23.NAFU*/ DFF9 NAFU_WY7n_h; // xxxxxxxH
+};
+
+//-----------------------------------------------------------------------------
+// FF4B - WX
+
+struct RegWX {
+  void reset_cart() {
+    MYPA_WX0n_h.reset(REG_D1C1);
+    NOFE_WX1n_h.reset(REG_D1C1);
+    NOKE_WX2n_h.reset(REG_D1C1);
+    MEBY_WX3n_h.reset(REG_D1C1);
+    MYPU_WX4n_h.reset(REG_D1C1);
+    MYCE_WX5n_h.reset(REG_D1C1);
+    MUVO_WX6n_h.reset(REG_D1C1);
+    NUKU_WX7n_h.reset(REG_D1C1);
+  }
+
+  void set(uint8_t wx) {
+    MYPA_WX0n_h.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
+    NOFE_WX1n_h.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
+    NOKE_WX2n_h.reset((wx & 0x04) ? REG_D0C1 : REG_D1C1);
+    MEBY_WX3n_h.reset((wx & 0x08) ? REG_D0C1 : REG_D1C1);
+    MYPU_WX4n_h.reset((wx & 0x10) ? REG_D0C1 : REG_D1C1);
+    MYCE_WX5n_h.reset((wx & 0x20) ? REG_D0C1 : REG_D1C1);
+    MUVO_WX6n_h.reset((wx & 0x40) ? REG_D0C1 : REG_D1C1);
+    NUKU_WX7n_h.reset((wx & 0x80) ? REG_D0C1 : REG_D1C1);
+  }
+
+  int get() const        { return pack_u8n(8, &MYPA_WX0n_h); }
+
+  /*p23.MYPA*/ DFF9 MYPA_WX0n_h; // xxxxxxxH
+  /*p23.NOFE*/ DFF9 NOFE_WX1n_h; // xxxxxxxH
+  /*p23.NOKE*/ DFF9 NOKE_WX2n_h; // xxxxxxxH
+  /*p23.MEBY*/ DFF9 MEBY_WX3n_h; // xxxxxxxH
+  /*p23.MYPU*/ DFF9 MYPU_WX4n_h; // xxxxxxxH
+  /*p23.MYCE*/ DFF9 MYCE_WX5n_h; // xxxxxxxH
+  /*p23.MUVO*/ DFF9 MUVO_WX6n_h; // xxxxxxxH
+  /*p23.NUKU*/ DFF9 NUKU_WX7n_h; // xxxxxxxH
+};
+
+//-----------------------------------------------------------------------------
 
 struct PixelPipe {
   void reset_cart() {
@@ -133,49 +209,8 @@ struct PixelPipe {
     LUGU_OBP1_D5n_h.reset(REG_D0C1);
     LEPU_OBP1_D6n_h.reset(REG_D0C1);
     LUXO_OBP1_D7n_h.reset(REG_D0C1);
-
-    NESO_WY0n_h.reset(REG_D1C1);
-    NYRO_WY1n_h.reset(REG_D1C1);
-    NAGA_WY2n_h.reset(REG_D1C1);
-    MELA_WY3n_h.reset(REG_D1C1);
-    NULO_WY4n_h.reset(REG_D1C1);
-    NENE_WY5n_h.reset(REG_D1C1);
-    NUKA_WY6n_h.reset(REG_D1C1);
-    NAFU_WY7n_h.reset(REG_D1C1);
-    MYPA_WX0n_h.reset(REG_D1C1);
-    NOFE_WX1n_h.reset(REG_D1C1);
-    NOKE_WX2n_h.reset(REG_D1C1);
-    MEBY_WX3n_h.reset(REG_D1C1);
-    MYPU_WX4n_h.reset(REG_D1C1);
-    MYCE_WX5n_h.reset(REG_D1C1);
-    MUVO_WX6n_h.reset(REG_D1C1);
-    NUKU_WX7n_h.reset(REG_D1C1);
   }
 
-  void set_wx(uint8_t wx) {
-    MYPA_WX0n_h.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
-    NOFE_WX1n_h.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
-    NOKE_WX2n_h.reset((wx & 0x04) ? REG_D0C1 : REG_D1C1);
-    MEBY_WX3n_h.reset((wx & 0x08) ? REG_D0C1 : REG_D1C1);
-    MYPU_WX4n_h.reset((wx & 0x10) ? REG_D0C1 : REG_D1C1);
-    MYCE_WX5n_h.reset((wx & 0x20) ? REG_D0C1 : REG_D1C1);
-    MUVO_WX6n_h.reset((wx & 0x40) ? REG_D0C1 : REG_D1C1);
-    NUKU_WX7n_h.reset((wx & 0x80) ? REG_D0C1 : REG_D1C1);
-  }
-
-  void set_wy(uint8_t wy) {
-    NESO_WY0n_h.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
-    NYRO_WY1n_h.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
-    NAGA_WY2n_h.reset((wy & 0x04) ? REG_D0C1 : REG_D1C1);
-    MELA_WY3n_h.reset((wy & 0x08) ? REG_D0C1 : REG_D1C1);
-    NULO_WY4n_h.reset((wy & 0x10) ? REG_D0C1 : REG_D1C1);
-    NENE_WY5n_h.reset((wy & 0x20) ? REG_D0C1 : REG_D1C1);
-    NUKA_WY6n_h.reset((wy & 0x40) ? REG_D0C1 : REG_D1C1);
-    NAFU_WY7n_h.reset((wy & 0x80) ? REG_D0C1 : REG_D1C1);
-  }
-
-  int get_wx() const        { return pack_u8n(8, &MYPA_WX0n_h); }
-  int get_wy() const        { return pack_u8n(8, &NESO_WY0n_h); }
   int get_pix_count() const { return pack_u8p(8, &XEHO_PX0p_evn); }
 
   //----------------------------------------
@@ -315,26 +350,6 @@ struct PixelPipe {
   /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n_h; // xxxxxxxH
   /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n_h; // xxxxxxxH
   /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n_h; // xxxxxxxH
-
-  // FF4A - WY
-  /*p23.NESO*/ DFF9 NESO_WY0n_h; // xxxxxxxH
-  /*p23.NYRO*/ DFF9 NYRO_WY1n_h; // xxxxxxxH
-  /*p23.NAGA*/ DFF9 NAGA_WY2n_h; // xxxxxxxH
-  /*p23.MELA*/ DFF9 MELA_WY3n_h; // xxxxxxxH
-  /*p23.NULO*/ DFF9 NULO_WY4n_h; // xxxxxxxH
-  /*p23.NENE*/ DFF9 NENE_WY5n_h; // xxxxxxxH
-  /*p23.NUKA*/ DFF9 NUKA_WY6n_h; // xxxxxxxH
-  /*p23.NAFU*/ DFF9 NAFU_WY7n_h; // xxxxxxxH
-
-  // FF4B - WX
-  /*p23.MYPA*/ DFF9 MYPA_WX0n_h; // xxxxxxxH
-  /*p23.NOFE*/ DFF9 NOFE_WX1n_h; // xxxxxxxH
-  /*p23.NOKE*/ DFF9 NOKE_WX2n_h; // xxxxxxxH
-  /*p23.MEBY*/ DFF9 MEBY_WX3n_h; // xxxxxxxH
-  /*p23.MYPU*/ DFF9 MYPU_WX4n_h; // xxxxxxxH
-  /*p23.MYCE*/ DFF9 MYCE_WX5n_h; // xxxxxxxH
-  /*p23.MUVO*/ DFF9 MUVO_WX6n_h; // xxxxxxxH
-  /*p23.NUKU*/ DFF9 NUKU_WX7n_h; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

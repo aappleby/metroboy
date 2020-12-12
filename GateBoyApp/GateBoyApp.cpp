@@ -606,29 +606,31 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== LCD =====\001\n");
   d("PIX COUNT : %03d\n", gb->pix_pipe.get_pix_count());
-  d("LX        : %03d\n", gb->lcd_reg.get_lx());
-  d("LY        : %03d\n", gb->lcd_reg.get_ly());
-  d("LYC       : %03d\n", gb->lyc.get_lyc());
+  d("LX        : %03d\n", gb->reg_lx.get());
+  d("LY        : %03d\n", gb->reg_ly.get());
+  d("LYC       : %03d\n", gb->reg_lyc.get());
   d.dump_bitp("lcd_pix_lo", gb->lcd_pix_lo.state);
   d.dump_bitp("lcd_pix_lo", gb->lcd_pix_hi.state);
 
   d("\n");
 
-  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->lcd_reg.ROPO_LY_MATCH_SYNCp_c.state);
+  d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx.NYPE_x113p_c.state);
+  d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx.RUTU_x113p_g.state);
+
+  d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p_evn.state);
+  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp_c.state);
+
   d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANKp_evn.state);
-  d.dump_bitp("MYTA_y153p         ", gb->lcd_reg.MYTA_y153p_evn.state);
   d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd_reg.SYGU_LINE_STROBE_evn.state);
   d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd_reg.MEDA_VSYNC_OUTn_evn.state);
   d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd_reg.LUCA_LINE_EVENp_evn.state);
   d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd_reg.NAPO_FRAME_EVENp_evn.state);
   d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p_a.state);
-  d.dump_bitp("NYPE_LINE_P002p    ", gb->lcd_reg.NYPE_x113p_c.state);
   d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p_c.state);
-  d.dump_bitp("RUTU_LINE_P910p    ", gb->lcd_reg.RUTU_x113p_g.state);
   d("\n");
-  d.dump_slice2p("LX  ", &gb->lcd_reg.SAXO_LX0p_evn.state,  7);
-  d.dump_slice2p("LY  ", &gb->lcd_reg.MUWY_LY0p_evn.state,  8);
-  d.dump_slice2n("LYC ", &gb->lyc.SYRY_LYC0n.state, 8);
+  d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p_evn.state,  7);
+  d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p_evn.state,  8);
+  d.dump_slice2n("LYC ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -675,13 +677,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_D0_evn, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0_evn, 8);
   d("\n");
-  d.dump_slice2n("FF40 LCDC ", &gb->lcdc.VYXE_LCDC_BGENn_h, 8);
+  d.dump_slice2n("FF40 LCDC ", &gb->reg_lcdc.VYXE_LCDC_BGENn_h, 8);
   d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn_h, 4);
   d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n_h, 8);
   d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n_h, 8);
   d.dump_slice2n("FF49 OBP1 ", &gb->pix_pipe.MOXY_OBP1_D0n_h, 8);
-  d.dump_slice2n("FF4A WY   ", &gb->pix_pipe.NESO_WY0n_h, 8);
-  d.dump_slice2n("FF4B WX   ", &gb->pix_pipe.MYPA_WX0n_h, 8);
+  d.dump_slice2n("FF4A WY   ", &gb->reg_wy.NESO_WY0n_h, 8);
+  d.dump_slice2n("FF4B WX   ", &gb->reg_wx.MYPA_WX0n_h, 8);
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;
@@ -781,7 +783,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->BOOT_BITn_h.qp_old()) {
+    if (!gb->bootrom.BOOT_BITn_h.qp_old()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;

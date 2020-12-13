@@ -642,7 +642,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Pix Pipe =====\001\n");
-  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p_evn));
+  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p));
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn_xxx.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap_evn.state);
@@ -667,7 +667,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->ppu_reg.RUPO_STAT_LYC_MATCHn_evn.state);
   d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp_xxx.state);
   d("\n");
-  d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p_evn, 8);
+  d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0_evn, 8);
   d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0_evn, 8);
   d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0_evn, 8);

@@ -111,14 +111,20 @@ struct RegWX {
 // Pixel counter
 
 struct PixCounter {
-  /*p21.XEHO*/ DFF17 XEHO_PX0p_evn; // AxCxExGx
-  /*p21.SAVY*/ DFF17 SAVY_PX1p_evn; // AxCxExGx
-  /*p21.XODU*/ DFF17 XODU_PX2p_evn; // AxCxExGx
-  /*p21.XYDO*/ DFF17 XYDO_PX3p_evn; // AxCxExGx
-  /*p21.TUHU*/ DFF17 TUHU_PX4p_evn; // AxCxExGx
-  /*p21.TUKY*/ DFF17 TUKY_PX5p_evn; // AxCxExGx
-  /*p21.TAKO*/ DFF17 TAKO_PX6p_evn; // AxCxExGx
-  /*p21.SYBE*/ DFF17 SYBE_PX7p_evn; // AxCxExGx
+  /*#p21.XUGU*/ wire XANO_PX167p() const {
+    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp_any(), SAVY_PX1p.qp_any(), XODU_PX2p.qp_any(), TUKY_PX5p.qp_any(), SYBE_PX7p.qp_any()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
+    return _XANO_PX167p;
+  }
+
+  /*p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
+  /*p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
+  /*p21.XODU*/ DFF17 XODU_PX2p; // AxCxExGx
+  /*p21.XYDO*/ DFF17 XYDO_PX3p; // AxCxExGx
+  /*p21.TUHU*/ DFF17 TUHU_PX4p; // AxCxExGx
+  /*p21.TUKY*/ DFF17 TUKY_PX5p; // AxCxExGx
+  /*p21.TAKO*/ DFF17 TAKO_PX6p; // AxCxExGx
+  /*p21.SYBE*/ DFF17 SYBE_PX7p; // AxCxExGx
 };
 
 //-----------------------------------------------------------------------------

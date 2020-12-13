@@ -544,8 +544,6 @@ struct GateBoy {
   bool oam_clk_old = 0;
   bool zram_clk_old = 0;
 
-  SpriteFlag old_sprite_flag;
-
   //-----------------------------------------------------------------------------
   // Control stuff
 

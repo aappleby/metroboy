@@ -1109,23 +1109,6 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp_evn.nor_latch(lcd.CATU_LINE_P000p_a.qp_new(), ASEN_SCAN_DONE_TRIGp);
   /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma_reg.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp_evn.qp_new());
 
-  {
-    /* p28.YFEL*/ scan_counter.YFEL_SCAN0_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
-    /* p28.WEWY*/ scan_counter.WEWY_SCAN1_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
-    /* p28.GOSO*/ scan_counter.GOSO_SCAN2_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
-    /* p28.ELYN*/ scan_counter.ELYN_SCAN3_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
-    /* p28.FAHA*/ scan_counter.FAHA_SCAN4_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
-    /* p28.FONY*/ scan_counter.FONY_SCAN5_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
-
-    /* p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(scan_counter.FETO_SCAN_DONEp(), vclk_reg.XUPY_ABxxEFxx());
-    /* p28.YFEL*/ scan_counter.YFEL_SCAN0_evn.dff17(GAVA_SCAN_CLOCKp,                     lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.YFEL_SCAN0_evn.qn_any());
-    /* p28.WEWY*/ scan_counter.WEWY_SCAN1_evn.dff17(scan_counter.YFEL_SCAN0_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.WEWY_SCAN1_evn.qn_any());
-    /* p28.GOSO*/ scan_counter.GOSO_SCAN2_evn.dff17(scan_counter.WEWY_SCAN1_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.GOSO_SCAN2_evn.qn_any());
-    /* p28.ELYN*/ scan_counter.ELYN_SCAN3_evn.dff17(scan_counter.GOSO_SCAN2_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.ELYN_SCAN3_evn.qn_any());
-    /* p28.FAHA*/ scan_counter.FAHA_SCAN4_evn.dff17(scan_counter.ELYN_SCAN3_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.FAHA_SCAN4_evn.qn_any());
-    /* p28.FONY*/ scan_counter.FONY_SCAN5_evn.dff17(scan_counter.FAHA_SCAN4_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.FONY_SCAN5_evn.qn_any());
-  }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   /*#p21.XYMU*/ ppu_reg.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp_new_any, AVAP_SCAN_DONE_TRIGp);
@@ -1566,6 +1549,23 @@ void GateBoy::tock_slow(int pass_index) {
     WYMO_LCDC_WINENn_new,
     XYMU_RENDERINGp
   );
+
+  {
+    /* p28.YFEL*/ scan_counter.YFEL_SCAN0_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
+    /* p28.WEWY*/ scan_counter.WEWY_SCAN1_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
+    /* p28.GOSO*/ scan_counter.GOSO_SCAN2_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
+    /* p28.ELYN*/ scan_counter.ELYN_SCAN3_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
+    /* p28.FAHA*/ scan_counter.FAHA_SCAN4_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
+    /* p28.FONY*/ scan_counter.FONY_SCAN5_evn.RSTn(lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
+
+    /* p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(scan_counter.FETO_SCAN_DONEp(), vclk_reg.XUPY_ABxxEFxx());
+    /* p28.YFEL*/ scan_counter.YFEL_SCAN0_evn.dff17(GAVA_SCAN_CLOCKp,                     lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.YFEL_SCAN0_evn.qn_any());
+    /* p28.WEWY*/ scan_counter.WEWY_SCAN1_evn.dff17(scan_counter.YFEL_SCAN0_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.WEWY_SCAN1_evn.qn_any());
+    /* p28.GOSO*/ scan_counter.GOSO_SCAN2_evn.dff17(scan_counter.WEWY_SCAN1_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.GOSO_SCAN2_evn.qn_any());
+    /* p28.ELYN*/ scan_counter.ELYN_SCAN3_evn.dff17(scan_counter.GOSO_SCAN2_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.ELYN_SCAN3_evn.qn_any());
+    /* p28.FAHA*/ scan_counter.FAHA_SCAN4_evn.dff17(scan_counter.ELYN_SCAN3_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.FAHA_SCAN4_evn.qn_any());
+    /* p28.FONY*/ scan_counter.FONY_SCAN5_evn.dff17(scan_counter.FAHA_SCAN4_evn.qn_any(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp), scan_counter.FONY_SCAN5_evn.qn_any());
+  }
 
   tock_oam(
     BUS_CPU_A,

@@ -5,9 +5,13 @@
 
 struct TileFetcher {
 
+  /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const {
+    return not1(POKY_PRELOAD_LATCHp_odd.qp_any());
+  }
+
   wire TAVE_PRELOAD_DONE_TRIGp(wire XYMU_RENDERINGp) const {
-    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new_any      = not1(POKY_PRELOAD_LATCHp_odd.qp_new());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new_any = nand4(XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn_new_any, NYKA_FETCH_DONEp_xxx.qp_new(), PORY_FETCH_DONEp_xxx.qp_new());
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new_any      = not1(POKY_PRELOAD_LATCHp_odd.qp_any());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new_any = nand4(XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn_new_any, NYKA_FETCH_DONEp_xxx.qp_any(), PORY_FETCH_DONEp_xxx.qp_any());
     /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new_any = not1(_SUVU_PRELOAD_DONE_TRIGn_new_any);
     return _TAVE_PRELOAD_DONE_TRIGp_new_any;
   }

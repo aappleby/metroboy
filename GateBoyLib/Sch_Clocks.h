@@ -4,6 +4,8 @@
 //-----------------------------------------------------------------------------
 
 struct ResetRegisters {
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp_evn.qp_any(), ASOL_POR_DONEn.qp_any()); }
+
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
   /*p01.AFER*/ DFF13 AFER_SYS_RSTp_evn;     // AFER should keep clocking even if PIN_CPU_CLKREQ = 0

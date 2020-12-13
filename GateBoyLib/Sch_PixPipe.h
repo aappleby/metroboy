@@ -212,30 +212,37 @@ struct WindowRegisters {
 
   void tock(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH) {
     /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp);
-    /* p27.SOVY*/ SOVY_WIN_HITp_odd.dff17(ALET_xBxDxFxH(ATAL_xBxDxFxH), _XAPO_VID_RSTn_new_evn, RYDY_WIN_HITp_evn.qp_old());
+    /* p27.SOVY*/ SOVY_WIN_HITp.dff17(ALET_xBxDxFxH(ATAL_xBxDxFxH), _XAPO_VID_RSTn_new_evn, RYDY_WIN_HITp_evn.qp_old());
   }
 
-  wire NUNY_WIN_MODE_TRIGp() {
-    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_new(), NOPA_WIN_MODE_Bp_odd.qn_new());
+  wire NUNY_WIN_MODE_TRIGp() const {
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_any(), NOPA_WIN_MODE_Bp_odd.qn_any());
     return _NUNY_WIN_MODE_TRIGp;
   }
 
-  wire SUZU_WIN_FIRST_TILEne() {
+  /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn() const { return not1(NUNY_WIN_MODE_TRIGp()); }
+  /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp() const { return not1(NYFO_WIN_MODE_TRIGn()); }
+
+  wire SUZU_WIN_FIRST_TILEne() const {
     /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp_evn.qp_any());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp_odd.qp_any());
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp.qp_any());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
     return _SUZU_WIN_FIRST_TILEne;
   }
 
-  wire SEKO_WIN_FETCH_TRIGp() {
+  wire SEKO_WIN_FETCH_TRIGp() const {
     /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A_evn.qn_any(), RENE_WIN_FETCHn_B_odd.qp_any());
     return _SEKO_WIN_FETCH_TRIGp;
   }
 
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp_evn.qp_any()); }
+  /*#p24.TOMU*/ wire TOMU_WIN_HITp() const { return not1(SYLO_WIN_HITn()); }
+  /* p27.TUKU*/ wire TUKU_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
+
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx
   /*p27.RYDY*/ Gate RYDY_WIN_HITp_evn;                   // xxCxxxGx
-  /*p27.SOVY*/ DFF17 SOVY_WIN_HITp_odd;                  // xxxDxxxH
+  /*p27.SOVY*/ DFF17 SOVY_WIN_HITp;                      // xxxDxxxH
   /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_odd;               // xBxDxFxH
   /*p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_odd;                // xxxDxxxH
   /*p27.NUNU*/ DFF17 NUNU_WIN_MATCHp_evn;                // xxxxExGx
@@ -270,7 +277,7 @@ struct FineScroll {
 //-----------------------------------------------------------------------------
 
 struct PPURegisters {
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
   /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
 };

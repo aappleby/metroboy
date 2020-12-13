@@ -644,11 +644,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== Pix Pipe =====\001\n");
   d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p));
   d("\n");
-  d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn_xxx.state);
+  d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap_evn.state);
   d.dump_bitp("PUKU_WIN_HITn         ", gb->win_reg.PUKU_WIN_HITn_evn.state);
   d.dump_bitp("RYDY_WIN_HITp         ", gb->win_reg.RYDY_WIN_HITp_evn.state);
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->win_reg.SOVY_WIN_HITp_odd.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->win_reg.SOVY_WIN_HITp.state);
   d.dump_bitp("NOPA_WIN_MODE_B       ", gb->win_reg.NOPA_WIN_MODE_Bp_odd.state);
   d.dump_bitp("PYCO_WX_MATCH_A       ", gb->win_reg.PYCO_WIN_MATCHp_odd.state);
   d.dump_bitp("NUNU_WX_MATCH_B       ", gb->win_reg.NUNU_WIN_MATCHp_evn.state);

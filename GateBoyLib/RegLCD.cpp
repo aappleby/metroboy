@@ -2,30 +2,6 @@
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-wire LcdRegisters::ATEJ_LINE_TRIGp_old(wire XODO_VID_RSTp_old) const {
-  /* p01.XAPO*/ wire _XAPO_VID_RSTn_old = not1(XODO_VID_RSTp_old);
-  /*#p01.ATAR*/ wire _ATAR_VID_RSTp_old = not1(_XAPO_VID_RSTn_old);
-  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn_old = not1(_ATAR_VID_RSTp_old);
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(CATU_LINE_P000p_a.qp_old());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(ANEL_LINE_P002p_c.qp_old(), _ABAF_LINE_P000n_old, _ABEZ_VID_RSTn_old); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_old = not1(_BYHA_LINE_TRIGn_old);
-  return _ATEJ_LINE_TRIGp_old;
-}
-
-//----------------------------------------
-
-wire LcdRegisters::ATEJ_LINE_TRIGp(wire XODO_VID_RSTp_new_h) const {
-  /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp_new_h);
-  /*#p01.ATAR*/ wire _ATAR_VID_RSTp_new_evn = not1(_XAPO_VID_RSTn_new_evn);
-  /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn_new_evn = not1(_ATAR_VID_RSTp_new_evn);
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_new_evn = not1(CATU_LINE_P000p_a.qp_any());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_new_evn = or_and3(ANEL_LINE_P002p_c.qp_any(), _ABAF_LINE_P000n_new_evn, _ABEZ_VID_RSTn_new_evn); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp_new_evn = not1(_BYHA_LINE_TRIGn_new_evn);
-  return _ATEJ_LINE_TRIGp_new_evn;
-}
-
-//----------------------------------------
-
 void LcdRegisters::tock(
   wire XODO_VID_RSTp_new_h,
   wire XUPY_ABxxEFxx_clk_evn,

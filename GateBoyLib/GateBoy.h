@@ -429,13 +429,6 @@ struct GateBoy {
   OamLatchA oam_latch_a;
   OamLatchB oam_latch_b;
   OamBus oam_bus;
-  BusOut BUS_OAM_An[8];  // ABCDEFGH
-  BusIO  BUS_OAM_DAn[8];
-  BusIO  BUS_OAM_DBn[8];
-  PinOut PIN_OAM_CLKn;   // ABCDEFGH
-  PinOut PIN_OAM_WRn_A;  // AxxxExxH
-  PinOut PIN_OAM_WRn_B;  // AxxxExxH
-  PinOut PIN_OAM_OEn;    // ABCDEFGH
 
   //----------
 

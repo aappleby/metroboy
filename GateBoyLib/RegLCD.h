@@ -222,6 +222,10 @@ struct LcdRegisters {
   wire ATEJ_LINE_TRIGp_old(wire XODO_VID_RSTp_old) const;
   wire ATEJ_LINE_TRIGp(wire XODO_VID_RSTp_new_h) const;
 
+  /* p28.ABAK*/ wire ABAK_LINE_RSTp(wire XODO_VID_RSTp) { return or2(ATEJ_LINE_TRIGp(XODO_VID_RSTp), AMYG_VID_RSTp(XODO_VID_RSTp)); }
+  /* p28.BYVA*/ wire BYVA_LINE_RSTn(wire XODO_VID_RSTp) { return not1(ABAK_LINE_RSTp(XODO_VID_RSTp)); }
+  /* p29.DYBA*/ wire DYBA_LINE_RSTp(wire XODO_VID_RSTp) { return not1(BYVA_LINE_RSTn(XODO_VID_RSTp)); }
+
   /*#p28.ANOM*/ wire ANOM_SCAN_RSTn(wire XODO_VID_RSTp) { return nor2(ATEJ_LINE_TRIGp(XODO_VID_RSTp), ATAR_VID_RSTp(XODO_VID_RSTp)); }
   /*#p29.BALU*/ wire BALU_SCAN_RSTp(wire XODO_VID_RSTp) { return not1(ANOM_SCAN_RSTn(XODO_VID_RSTp)); }
   /*#p29.BAGY*/ wire BAGY_SCAN_RSTn(wire XODO_VID_RSTp) { return not1(BALU_SCAN_RSTp(XODO_VID_RSTp)); }

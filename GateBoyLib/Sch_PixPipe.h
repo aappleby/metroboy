@@ -110,7 +110,7 @@ struct RegWX {
 //-----------------------------------------------------------------------------
 // Pixel counter
 
-struct PixCountRegister {
+struct PixCounter {
   /*p21.XEHO*/ DFF17 XEHO_PX0p_evn; // AxCxExGx
   /*p21.SAVY*/ DFF17 SAVY_PX1p_evn; // AxCxExGx
   /*p21.XODU*/ DFF17 XODU_PX2p_evn; // AxCxExGx
@@ -175,8 +175,13 @@ struct RegOBP1 {
 
 //-----------------------------------------------------------------------------
 
-struct PPURegisters {
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH
+struct WindowRegisters {
+
+  void tock(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH) {
+    /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp);
+    /* p27.SOVY*/ SOVY_WIN_HITp_odd.dff17(ALET_xBxDxFxH(ATAL_xBxDxFxH), _XAPO_VID_RSTn_new_evn, RYDY_WIN_HITp_evn.qp_old());
+  }
+
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx
   /*p27.RYDY*/ Gate RYDY_WIN_HITp_evn;                   // xxCxxxGx
@@ -188,14 +193,34 @@ struct PPURegisters {
   /*p27.SARY*/ DFF17 SARY_WY_MATCHp_evn;                 // xxCxxxxx
   /*p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A_evn;              // AxCxExGx
   /*p27.RENE*/ DFF17 RENE_WIN_FETCHn_B_odd;              // xBxDxFxH
+};
 
-  /*p27.RYKU*/ DFF17 _RYKU_FINE_CNT0_xxx;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
-  /*p27.ROGA*/ DFF17 _ROGA_FINE_CNT1_xxx;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
-  /*p27.RUBU*/ DFF17 _RUBU_FINE_CNT2_xxx;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+struct FineScroll {
 
-  /*p??.PUXA*/ DFF17 _PUXA_SCX_FINE_MATCH_A_odd;         // xxxxxFxH
-  /*p27.NYZE*/ DFF17 _NYZE_SCX_FINE_MATCH_B_evn;         // AxxxxxGx
-  /*p??.ROXY*/ NorLatch _ROXY_FINE_SCROLL_DONEn_odd; // xBxDxFxH
+  /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_old() {
+    wire _ROZE_FINE_COUNT_7n_old = nand3(RUBU_FINE_CNT2.qp_old(), ROGA_FINE_CNT1.qp_old(), RYKU_FINE_CNT0.qp_old());
+    return _ROZE_FINE_COUNT_7n_old;
+  }
+
+
+  /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp() {
+    wire _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new(), NYZE_SCX_FINE_MATCH_B.qn_new());
+    return _POVA_FINE_MATCH_TRIGp;
+  }
+
+  /*p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+  /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+  /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+
+  /*p??.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
+  /*p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
+  /*p??.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
+};
+
+//-----------------------------------------------------------------------------
+
+struct PPURegisters {
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH
   /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
 };

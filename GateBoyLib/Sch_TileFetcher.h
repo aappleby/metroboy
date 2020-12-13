@@ -4,6 +4,14 @@
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
+
+  wire TAVE_PRELOAD_DONE_TRIGp(wire XYMU_RENDERINGp) const {
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new_any      = not1(POKY_PRELOAD_LATCHp_odd.qp_new());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new_any = nand4(XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn_new_any, NYKA_FETCH_DONEp_xxx.qp_new(), PORY_FETCH_DONEp_xxx.qp_new());
+    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new_any = not1(_SUVU_PRELOAD_DONE_TRIGn_new_any);
+    return _TAVE_PRELOAD_DONE_TRIGp_new_any;
+  }
+
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_odd; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp_xxx;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?
 

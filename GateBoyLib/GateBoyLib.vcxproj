@@ -22,6 +22,7 @@
     <ClCompile Include="Gates.cpp" />
     <ClCompile Include="Probe.cpp" />
     <ClCompile Include="RegLCD.cpp" />
+    <ClCompile Include="RegSpriteStore.cpp" />
     <ClCompile Include="Sch_ApuControl.cpp" />
     <ClCompile Include="Sch_Channel1.cpp" />
     <ClCompile Include="Sch_Channel2.cpp" />
@@ -51,7 +52,7 @@
     <ClInclude Include="Sch_Serial.h" />
     <ClInclude Include="Sch_SpriteFetcher.h" />
     <ClInclude Include="Sch_SpriteScanner.h" />
-    <ClInclude Include="Sch_SpriteStore.h" />
+    <ClInclude Include="RegSpriteStore.h" />
     <ClInclude Include="Sch_TileFetcher.h" />
     <ClInclude Include="Sch_Timer.h" />
     <ClInclude Include="Sch_VramBus.h" />

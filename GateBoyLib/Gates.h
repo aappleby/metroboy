@@ -662,6 +662,9 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 /* p01.ROSY*/ inline wire ROSY_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
 /*#p01.ATAR*/ inline wire ATAR_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
 /*#p01.ABEZ*/ inline wire ABEZ_VID_RSTn (const wire XODO_VID_RSTp) { return not1(ATAR_VID_RSTp(XODO_VID_RSTp)); }
+/* p01.PYRY*/ inline wire PYRY_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.AMYG*/ inline wire AMYG_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+
 
 /* p01.AZOF*/ inline wire AZOF_AxCxExGx (const wire ATAL_xBxDxFxH) { return not1(ATAL_xBxDxFxH); }
 /* p01.ZAXY*/ inline wire ZAXY_xBxDxFxH (const wire ATAL_xBxDxFxH) { return not1(AZOF_AxCxExGx(ATAL_xBxDxFxH)); }

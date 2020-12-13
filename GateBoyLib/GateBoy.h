@@ -8,7 +8,7 @@
 #include "GateBoyLib/Sch_Timer.h"
 #include "GateBoyLib/RegLCD.h"
 #include "GateBoyLib/Sch_DMA.h"
-#include "GateBoyLib/Sch_SpriteStore.h"
+#include "GateBoyLib/RegSpriteStore.h"
 #include "GateBoyLib/Sch_Clocks.h"
 #include "GateBoyLib/Sch_PixPipe.h"
 #include "GateBoyLib/Sch_Joypad.h"
@@ -500,8 +500,8 @@ struct GateBoy {
   //----------
 
   SpriteStore        sprite_store;
-  BusIO SPR_TRI_I_evn[6]; // AxCxExGx
-  BusIO SPR_TRI_L_evn[4]; // AxCxExGx
+  BusIO SPR_TRI_I[6]; // AxCxExGx
+  BusIO SPR_TRI_L[4]; // AxCxExGx
 
   //----------
 
@@ -517,11 +517,13 @@ struct GateBoy {
 
   //----------
 
-  PixCountRegister pix_count;
+  PixCounter pix_count;
   RegStat reg_stat;
   RegBGP  reg_bgp;
   RegOBP0 reg_obp0;
   RegOBP1 reg_obp1;
+  WindowRegisters win_reg;
+  FineScroll fine_scroll;
   PPURegisters ppu_reg;
   PixelPipes pix_pipes;
   RegWY reg_wy;

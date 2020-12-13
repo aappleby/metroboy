@@ -37,6 +37,20 @@ struct SpriteFetcher {
     return _WUTY_SFETCH_DONE_TRIGp;
   }
 
+  wire SYCU_SFETCH_S0pe(wire XYMU_RENDERINGp) const {
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn_new = not1(XYMU_RENDERINGp);
+    /* p29.TYTU*/ wire _TYTU_SFETCH_S0n_new = not1(TOXE_SFETCH_S0p_odd.qp_new());
+    /*#p29.TYFO*/ wire _TYFO_SFETCH_S0p_D1_new = TYFO_SFETCH_S0p_D1_evn.qp_new();
+    /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe_new = nor3(_TYTU_SFETCH_S0n_new, _LOBY_RENDERINGn_new, _TYFO_SFETCH_S0p_D1_new);
+    return _SYCU_SFETCH_S0pe_new;
+  }
+
+  wire SECA_SFETCH_RSTn(wire XODO_VID_RSTp, wire ATEJ_LINE_TRIGp) const {
+    /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp_new = and2(SOBU_SFETCH_REQp_odd.qp_new(), SUDA_SFETCH_REQp_evn.qn_new());
+    /*#p27.SECA*/ wire _SECA_SFETCH_RSTn_new = nor3(_RYCE_SFETCH_TRIGp_new, ROSY_VID_RSTp(XODO_VID_RSTp), ATEJ_LINE_TRIGp);
+    return _SECA_SFETCH_RSTn_new;
+  }
+
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp_xxx; // ABCDEFGH Set on odd, cleared on even
   /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp_odd;         // xBxDxFxH
   /*p27.SUDA*/ DFF17 SUDA_SFETCH_REQp_evn;         // AxBxExGx

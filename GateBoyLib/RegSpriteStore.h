@@ -100,15 +100,24 @@ struct SpriteMatch {
 
 //-----------------------------------------------------------------------------
 
+struct SpriteCounter {
+  void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
+  SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
+
+  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp_evn;    // AxCxExGx
+  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0_evn; // AxxxExxx
+  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1_evn; // AxxxExxx
+  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2_evn; // AxxxExxx
+  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3_evn; // AxxxExxx
+};
+
+//-----------------------------------------------------------------------------
+
 struct SpriteStore {
 
   SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCounter& _pix_count);
   void get_sprite(SpriteMatch sprite_match, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]);
   void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteGetFlag sprite_flag);
-
-  void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
-
-  SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
 
   void store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I[6]);
   void store_sprite_line (SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]);
@@ -116,12 +125,6 @@ struct SpriteStore {
 
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
-
-  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp_evn;    // AxCxExGx
-  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0_evn; // AxxxExxx
-  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1_evn; // AxxxExxx
-  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2_evn; // AxxxExxx
-  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3_evn; // AxxxExxx
 
   /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp_evn;   // AxCxExGx
   /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp_evn;   // AxCxExGx

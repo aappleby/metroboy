@@ -219,9 +219,15 @@ struct WindowRegisters {
     /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_any(), NOPA_WIN_MODE_Bp_odd.qn_any());
     return _NUNY_WIN_MODE_TRIGp;
   }
-
   /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn() const { return not1(NUNY_WIN_MODE_TRIGp()); }
   /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp() const { return not1(NYFO_WIN_MODE_TRIGn()); }
+
+
+  wire NAFY_WIN_MODE_TRIGn(wire XYMU_RENDERINGp) const {
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
+    /* p24.NAFY*/ wire _NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp(), _LOBY_RENDERINGn);
+    return _NAFY_WIN_MODE_TRIGn;
+  }
 
   wire SUZU_WIN_FIRST_TILEne() const {
     /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp_evn.qp_any());
@@ -238,6 +244,11 @@ struct WindowRegisters {
   /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp_evn.qp_any()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp() const { return not1(SYLO_WIN_HITn()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
+  /*#p24.SOCY*/ wire SOCY_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
+
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not1(PYNU_WIN_MODE_Ap_evn.qp_new()); }
+  /* p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
+
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx

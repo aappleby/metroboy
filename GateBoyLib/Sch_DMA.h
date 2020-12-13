@@ -65,6 +65,7 @@ struct DmaRegisters {
     /* p04.MUGU*/ MUGU_DMA_A07p_evn.dff17(NUTO_DMA_A06p_evn.qn_new(), _LAPA_DMA_RSTn, MUGU_DMA_A07p_evn.qn_any());
   }
 
+  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp_evn.qp_new()); }
 
   wire LUMA_DMA_CARTp_new() const {
     /*#p04.LEBU*/ wire _LEBU_DMA_A15n_new_h  = not1(MARU_DMA_A15n_h.qn_new());

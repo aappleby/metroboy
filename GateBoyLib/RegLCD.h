@@ -222,15 +222,16 @@ struct RegLYC {
 
 struct LcdRegisters {
 
-  wire ATEJ_LINE_TRIGp(wire XODO_VID_RSTp) const {
+  wire ATEJ_LINE_RSTp(wire XODO_VID_RSTp) const {
     /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(CATU_LINE_P000p_a.qp_any());
     /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(ANEL_LINE_P002p_c.qp_any(), _ABAF_LINE_P000n, ABEZ_VID_RSTn(XODO_VID_RSTp)); // so if this is or_and, BYHA should go low on 910 and 911
-    /* p28.ATEJ*/ wire _ATEJ_LINE_TRIGp = not1(_BYHA_LINE_TRIGn);
-    return _ATEJ_LINE_TRIGp;
+    /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp = not1(_BYHA_LINE_TRIGn);
+    return _ATEJ_LINE_RSTp;
   }
+  /* p27.XAHY*/ wire XAHY_LINE_RSTn(wire XODO_VID_RSTp) const { return not1(ATEJ_LINE_RSTp(XODO_VID_RSTp)); }
 
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn(wire XODO_VID_RSTp) const { return nor2(ATEJ_LINE_TRIGp(XODO_VID_RSTp), ATAR_VID_RSTp(XODO_VID_RSTp)); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp(wire XODO_VID_RSTp) const { return  or2(ATEJ_LINE_TRIGp(XODO_VID_RSTp), AMYG_VID_RSTp(XODO_VID_RSTp)); }
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn(wire XODO_VID_RSTp) const { return nor2(ATEJ_LINE_RSTp(XODO_VID_RSTp), ATAR_VID_RSTp(XODO_VID_RSTp)); }
+  /* p28.ABAK*/ wire ABAK_LINE_RSTp(wire XODO_VID_RSTp) const { return  or2(ATEJ_LINE_RSTp(XODO_VID_RSTp), AMYG_VID_RSTp(XODO_VID_RSTp)); }
   /*#p29.BALU*/ wire BALU_LINE_RSTp(wire XODO_VID_RSTp) const { return not1(ANOM_LINE_RSTn(XODO_VID_RSTp)); }
   /* p28.BYVA*/ wire BYVA_LINE_RSTn(wire XODO_VID_RSTp) const { return not1(ABAK_LINE_RSTp(XODO_VID_RSTp)); }
   /* p29.DYBA*/ wire DYBA_LINE_RSTp(wire XODO_VID_RSTp) const { return not1(BYVA_LINE_RSTn(XODO_VID_RSTp)); }

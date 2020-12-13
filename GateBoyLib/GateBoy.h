@@ -280,10 +280,10 @@ struct GateBoy {
   /* p07.UBET*/ wire UBETp_ext()           const { return not1(wire(sys_t1)); }
   /* p07.UVAR*/ wire UVARp_ext()           const { return not1(wire(sys_t2)); }
   /* p07.UMUT*/ wire UMUT_MODE_DBG1p_ext() const { return and2(wire(sys_t1), UVARp_ext()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p_ext() const { return and2(wire(sys_t2), UBETp_ext()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(wire(sys_t2), UBETp_ext()); }
   /* p07.UPOJ*/ wire UPOJ_MODE_PRODn_ext() const { return nand3(UBETp_ext(), UVARp_ext(), wire(sys_rst)); }
-  /* p08.RYCA*/ wire RYCA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p_ext()); }
-  /* p08.TOVA*/ wire TOVA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p_ext()); }
+  /* p08.RYCA*/ wire RYCA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
+  /* p08.TOVA*/ wire TOVA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n_ext() const { return not1(UMUT_MODE_DBG1p_ext()); }
 
   //-----------------------------------------------------------------------------
@@ -418,7 +418,7 @@ struct GateBoy {
 
     wire TUTO_DBG_VRAMp_new,
 
-    wire ATEJ_LINE_TRIGp,
+    wire ATEJ_LINE_RSTp,
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
     wire PARU_VBLANKp_new_evn,
@@ -493,11 +493,6 @@ struct GateBoy {
   PinOut PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
   PinOut PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 
-  PinOut PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  PinOut PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
-  PinOut PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
-
   //----------
 
   OamTempA oam_temp_a;
@@ -508,7 +503,8 @@ struct GateBoy {
 
   //----------
 
-  ExtBus ext_bus;
+  ExtDataLatch ext_data_latch;
+  ExtAddrLatch ext_addr_latch;
   PinOut PIN_EXT_CLK;    // PIN_75
   PinOut PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
   PinOut PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
@@ -518,7 +514,8 @@ struct GateBoy {
 
   //----------
 
-  VramBus vram_bus;
+  SpriteTempA sprite_temp_a;
+  SpriteTempB sprite_temp_b;
   BusOut BUS_VRAM_An[13];
   BusIO  BUS_VRAM_Dp[8];
   PinOut PIN_VRAM_CSn; // PIN_43
@@ -572,6 +569,7 @@ struct GateBoy {
 
   //----------
 
+  SpriteCounter sprite_counter;
   SpriteStore        sprite_store;
   BusIO SPR_TRI_I[6]; // AxCxExGx
   BusIO SPR_TRI_L[4]; // AxCxExGx
@@ -579,10 +577,17 @@ struct GateBoy {
   //----------
 
   SpriteScanner sprite_scanner;
+  ScanCounter scan_counter;
 
   //----------
 
   TileFetcher tile_fetcher;
+  TileTempA tile_temp_a;
+  TileTempB tile_temp_b;
+  RegSCX reg_scx;
+  RegSCY reg_scy;
+  WinMapX win_map_x;
+  WinLineY win_line_y;
 
   //----------
 

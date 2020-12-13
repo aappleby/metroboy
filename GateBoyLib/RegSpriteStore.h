@@ -90,6 +90,10 @@ struct SpriteStore {
 
   SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCounter& _pix_count);
 
+  void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFlag sprite_flag);
+
+  void get_sprite(SpriteFlag sprite_flag, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]);
+
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
 

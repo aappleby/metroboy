@@ -424,6 +424,10 @@ struct GateBoy {
 
   //----------
 
+  OamTempA oam_temp_a;
+  OamTempB oam_temp_b;
+  OamLatchA oam_latch_a;
+  OamLatchB oam_latch_b;
   OamBus oam_bus;
   BusOut BUS_OAM_An[8];  // ABCDEFGH
   BusIO  BUS_OAM_DAn[8];

@@ -3,7 +3,7 @@
 
 struct PixCounter;
 
-struct SpriteFlag {
+struct SpriteGetFlag {
   /* p29.GUVA*/ wire GUVA_SPRITE0_GETp;
   /* p29.ENUT*/ wire ENUT_SPRITE1_GETp;
   /* p29.EMOL*/ wire EMOL_SPRITE2_GETp;
@@ -16,6 +16,19 @@ struct SpriteFlag {
   /* p29.GUZE*/ wire GUZE_SPRITE9_GETp;
 };
 
+struct SpriteStoreFlag {
+  /* p29.DYHU*/ wire DYHU_STORE0_CLKn;
+  /* p29.BUCO*/ wire BUCO_STORE1_CLKn;
+  /* p29.GYFO*/ wire GYFO_STORE2_CLKn;
+  /* p29.GUSA*/ wire GUSA_STORE3_CLKn;
+  /* p29.DUKE*/ wire DUKE_STORE4_CLKn;
+  /* p29.BEDE*/ wire BEDE_STORE5_CLKn;
+  /* p29.WEKA*/ wire WEKA_STORE6_CLKn;
+  /* p29.GYVO*/ wire GYVO_STORE7_CLKn;
+  /* p29.BUKA*/ wire BUKA_STORE8_CLKn;
+  /* p29.DECU*/ wire DECU_STORE9_CLKn;
+};
+
 struct SpriteMatch {
 
   wire FEPO_STORE_MATCHp() const {
@@ -25,7 +38,7 @@ struct SpriteMatch {
     return _FEPO_STORE_MATCHp_new_evn;
   }
 
-  SpriteFlag get_flag() const {
+  SpriteGetFlag get_flag() const {
     wire GND = 0;
     /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(YDUG_STORE0_MATCHn);
     /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1(DYDU_STORE1_MATCHn);
@@ -89,10 +102,13 @@ struct SpriteMatch {
 struct SpriteStore {
 
   SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCounter& _pix_count);
+  void get_sprite(SpriteMatch sprite_match, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]);
+  void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteGetFlag sprite_flag);
 
-  void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFlag sprite_flag);
+  SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
 
-  void get_sprite(SpriteFlag sprite_flag, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]);
+  void store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I[6]);
+  void store_sprite_line (SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]);
 
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals

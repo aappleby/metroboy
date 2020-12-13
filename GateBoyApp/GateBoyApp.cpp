@@ -582,10 +582,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2n("EXT_DATA         ", &gb->ext_bus.SOMA_EXT_DATA_LATCH_D0n, 8);
   d.dump_slice2n("SPRITE TEMP A    ", &gb->vram_bus.REWO_SPRITE_DA0n, 8);
   d.dump_slice2n("SPRITE TEMP B    ", &gb->vram_bus.PEFO_SPRITE_DB0n, 8);
-  d.dump_slice2n("OAM LATCH A      ", &gb->oam_bus.YDYV_OAM_LATCH_DA0n_odd, 8);
-  d.dump_slice2n("OAM LATCH B      ", &gb->oam_bus.XYKY_OAM_LATCH_DB0n_odd, 8);
-  d.dump_slice2p("OAM TEMP A       ", &gb->oam_bus.XUSO_OAM_DA0p_evn, 8);
-  d.dump_slice2p("OAM TEMP B       ", &gb->oam_bus.YLOR_OAM_DB0p_evn, 8);
+  d.dump_slice2n("OAM LATCH A      ", &gb->oam_latch_a.YDYV_OAM_LATCH_DA0n_odd, 8);
+  d.dump_slice2n("OAM LATCH B      ", &gb->oam_latch_b.XYKY_OAM_LATCH_DB0n_odd, 8);
+  d.dump_slice2p("OAM TEMP A       ", &gb->oam_temp_a.XUSO_OAM_DA0p_evn, 8);
+  d.dump_slice2p("OAM TEMP B       ", &gb->oam_temp_b.YLOR_OAM_DB0p_evn, 8);
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");

@@ -60,6 +60,9 @@ struct Gate : public BitBase {
   wire qp_old() const   { return  bit_old(); }
   wire qn_old() const   { return !bit_old(); }
 
+  wire qp_any() const   { return  bit_data(); }
+  wire qn_any() const   { return !bit_data(); }
+
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 

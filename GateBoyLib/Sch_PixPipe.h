@@ -111,6 +111,33 @@ struct RegWX {
 // Pixel counter
 
 struct PixCounter {
+
+  void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
+    // Pixel counter, has carry lookahead because this can increment every tcycle
+    /* p21.RYBO*/ wire RYBO_old_evn = xor2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
+    /* p21.XUKE*/ wire XUKE_old_evn = and2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old());
+    /* p21.XYLE*/ wire XYLE_old_evn = and2(XODU_PX2p.qp_old(), XUKE_old_evn);
+    /* p21.XEGY*/ wire XEGY_old_evn = xor2(XODU_PX2p.qp_old(), XUKE_old_evn); // feet facing gnd
+    /* p21.XORA*/ wire XORA_old_evn = xor2(XYDO_PX3p.qp_old(), XYLE_old_evn); // feet facing gnd
+
+    /* p21.XEHO*/ XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEHO_PX0p.qn_old());
+    /* p21.SAVY*/ SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, RYBO_old_evn);
+    /* p21.XODU*/ XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEGY_old_evn);
+    /* p21.XYDO*/ XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XORA_old_evn);
+
+    /* p24.TOCA*/ wire TOCA_new_evn = not1(XYDO_PX3p.qp_new());
+    /* p21.SAKE*/ wire SAKE_old_evn = xor2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
+    /* p21.TYBA*/ wire TYBA_old_evn = and2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
+    /* p21.SURY*/ wire SURY_old_evn = and2(TAKO_PX6p.qp_old(), TYBA_old_evn);
+    /* p21.TYGE*/ wire TYGE_old_evn = xor2(TAKO_PX6p.qp_old(), TYBA_old_evn);
+    /* p21.ROKU*/ wire ROKU_old_evn = xor2(SYBE_PX7p.qp_old(), SURY_old_evn);
+
+    /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new_evn, TADY_LINE_RSTn, TUHU_PX4p.qn_any());
+    /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new_evn, TADY_LINE_RSTn, SAKE_old_evn);
+    /* p21.TAKO*/ TAKO_PX6p.dff17(TOCA_new_evn, TADY_LINE_RSTn, TYGE_old_evn);
+    /* p21.SYBE*/ SYBE_PX7p.dff17(TOCA_new_evn, TADY_LINE_RSTn, ROKU_old_evn);
+  }
+
   /*#p21.XUGU*/ wire XANO_PX167p() const {
     /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp_any(), SAVY_PX1p.qp_any(), XODU_PX2p.qp_any(), TUKY_PX5p.qp_any(), SYBE_PX7p.qp_any()); // 128 + 32 + 4 + 2 + 1 = 167
     /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
@@ -186,6 +213,23 @@ struct WindowRegisters {
   void tock(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH) {
     /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp);
     /* p27.SOVY*/ SOVY_WIN_HITp_odd.dff17(ALET_xBxDxFxH(ATAL_xBxDxFxH), _XAPO_VID_RSTn_new_evn, RYDY_WIN_HITp_evn.qp_old());
+  }
+
+  wire NUNY_WIN_MODE_TRIGp() {
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_new(), NOPA_WIN_MODE_Bp_odd.qn_new());
+    return _NUNY_WIN_MODE_TRIGp;
+  }
+
+  wire SUZU_WIN_FIRST_TILEne() {
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp_evn.qp_any());
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp_odd.qp_any());
+    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
+    return _SUZU_WIN_FIRST_TILEne;
+  }
+
+  wire SEKO_WIN_FETCH_TRIGp() {
+    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A_evn.qn_any(), RENE_WIN_FETCHn_B_odd.qp_any());
+    return _SEKO_WIN_FETCH_TRIGp;
   }
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx

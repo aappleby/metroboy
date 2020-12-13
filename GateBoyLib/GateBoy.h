@@ -294,7 +294,6 @@ struct GateBoy {
     wire XYMU_RENDERINGp_new_xxx,
     wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
     wire NYXU_BFETCH_RSTn_new_xxx,
-    wire WUTY_SFETCH_DONE_TRIGp_odd_new,
 
     wire &REMY_LD0n_new,
     wire &RAVO_LD1n_new
@@ -343,7 +342,7 @@ struct GateBoy {
 
     wire TUTO_DBG_VRAMp_new,
 
-    wire ATEJ_LINE_TRIGp_new_evn,
+    wire ATEJ_LINE_TRIGp,
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
     wire PARU_VBLANKp_new_evn,
@@ -457,8 +456,10 @@ struct GateBoy {
 
   //----------
 
-  ClockRegisters clk_reg;
-  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
+  ResetRegisters      rst_reg;
+  PhaseClockRegisters pclk_reg;
+  VideoClockRegisters vclk_reg;
+  DebugRegisters      dbg_reg;
 
   //----------
 
@@ -516,7 +517,13 @@ struct GateBoy {
 
   //----------
 
-  PixelPipe pix_pipe;
+  PixCountRegister pix_count;
+  RegStat reg_stat;
+  RegBGP  reg_bgp;
+  RegOBP0 reg_obp0;
+  RegOBP1 reg_obp1;
+  PPURegisters ppu_reg;
+  PixelPipes pix_pipes;
   RegWY reg_wy;
   RegWX reg_wx;
 

@@ -652,6 +652,16 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 /* p01.XEBE*/ inline wire XEBE_SYS_RSTn (const wire AVOR_SYS_RSTp) { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
 /*#p01.WALU*/ inline wire WALU_SYS_RSTn (const wire AVOR_SYS_RSTp) { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
 /* p01.WESY*/ inline wire WESY_SYS_RSTn (const wire AVOR_SYS_RSTp) { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
+/* p01.XARE*/ inline wire XARE_SYS_RSTn (const wire AVOR_SYS_RSTp) { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
+/* p03.MULO*/ inline wire MULO_SYS_RSTn (const wire AVOR_SYS_RSTp) { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
+
+/* p01.XAPO*/ inline wire XAPO_VID_RSTn (const wire XODO_VID_RSTp) { return not1(XODO_VID_RSTp); }
+/* p01.LYHA*/ inline wire LYHA_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.LYFE*/ inline wire LYFE_VID_RSTn (const wire XODO_VID_RSTp) { return not1(LYHA_VID_RSTp(XODO_VID_RSTp)); }
+/* p01.TOFU*/ inline wire TOFU_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.ROSY*/ inline wire ROSY_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/*#p01.ATAR*/ inline wire ATAR_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/*#p01.ABEZ*/ inline wire ABEZ_VID_RSTn (const wire XODO_VID_RSTp) { return not1(ATAR_VID_RSTp(XODO_VID_RSTp)); }
 
 /* p01.AZOF*/ inline wire AZOF_AxCxExGx (const wire ATAL_xBxDxFxH) { return not1(ATAL_xBxDxFxH); }
 /* p01.ZAXY*/ inline wire ZAXY_xBxDxFxH (const wire ATAL_xBxDxFxH) { return not1(AZOF_AxCxExGx(ATAL_xBxDxFxH)); }

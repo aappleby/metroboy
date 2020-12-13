@@ -18,6 +18,32 @@ struct RegWY {
 
   int get() const { return pack_u8n(8, &NESO_WY0n_h); }
 
+  void tock(const wire BUS_CPU_A[16], const wire BUS_CPU_D[8], wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8]) {
+    // FF4A WY
+    /* p23.WEKO*/ wire _WEKO_FF4A_WRp_clk_evn = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), VYGA_FF4Ap_ext(BUS_CPU_A));
+    /* p23.VEFU*/ wire _VEFU_FF4A_WRn_clk_evn = not1(_WEKO_FF4A_WRp_clk_evn);
+    /* p23.NESO*/ NESO_WY0n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[0]);
+    /* p23.NYRO*/ NYRO_WY1n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[1]);
+    /* p23.NAGA*/ NAGA_WY2n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[2]);
+    /* p23.MELA*/ MELA_WY3n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[3]);
+    /* p23.NULO*/ NULO_WY4n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[4]);
+    /* p23.NENE*/ NENE_WY5n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[5]);
+    /* p23.NUKA*/ NUKA_WY6n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[6]);
+    /* p23.NAFU*/ NAFU_WY7n_h.dff9(_VEFU_FF4A_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[7]);
+
+    // FF4A WY
+    /* p23.WAXU*/ wire _WAXU_FF4A_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), VYGA_FF4Ap_ext(BUS_CPU_A));
+    /* p23.VOMY*/ wire _VOMY_FF4A_RDn_ext = not1(_WAXU_FF4A_RDp_ext);
+    /*#p23.PUNU*/ BUS_CPU_D_out[0].tri6_nn(_VOMY_FF4A_RDn_ext, NESO_WY0n_h.qp_new());
+    /* p23.PODA*/ BUS_CPU_D_out[1].tri6_nn(_VOMY_FF4A_RDn_ext, NYRO_WY1n_h.qp_new());
+    /* p23.PYGU*/ BUS_CPU_D_out[2].tri6_nn(_VOMY_FF4A_RDn_ext, NAGA_WY2n_h.qp_new());
+    /* p23.LOKA*/ BUS_CPU_D_out[3].tri6_nn(_VOMY_FF4A_RDn_ext, MELA_WY3n_h.qp_new());
+    /* p23.MEGA*/ BUS_CPU_D_out[4].tri6_nn(_VOMY_FF4A_RDn_ext, NULO_WY4n_h.qp_new());
+    /* p23.PELA*/ BUS_CPU_D_out[5].tri6_nn(_VOMY_FF4A_RDn_ext, NENE_WY5n_h.qp_new());
+    /* p23.POLO*/ BUS_CPU_D_out[6].tri6_nn(_VOMY_FF4A_RDn_ext, NUKA_WY6n_h.qp_new());
+    /* p23.MERA*/ BUS_CPU_D_out[7].tri6_nn(_VOMY_FF4A_RDn_ext, NAFU_WY7n_h.qp_new());
+  }
+
   /*p23.NESO*/ DFF9 NESO_WY0n_h; // xxxxxxxH
   /*p23.NYRO*/ DFF9 NYRO_WY1n_h; // xxxxxxxH
   /*p23.NAGA*/ DFF9 NAGA_WY2n_h; // xxxxxxxH
@@ -45,6 +71,32 @@ struct RegWX {
 
   int get() const        { return pack_u8n(8, &MYPA_WX0n_h); }
 
+  void tock(const wire BUS_CPU_A[16], const wire BUS_CPU_D[8], wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8]) {
+    // FF4B WX
+    /* p23.WUZA*/ wire _WUZA_FF4B_WRp_clk_evn = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), VUMY_FF4Bp_ext(BUS_CPU_A));
+    /* p23.VOXU*/ wire _VOXU_FF4B_WRn_clk_evn = not1(_WUZA_FF4B_WRp_clk_evn);
+    /* p23.MYPA*/ MYPA_WX0n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[0]);
+    /* p23.NOFE*/ NOFE_WX1n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[1]);
+    /* p23.NOKE*/ NOKE_WX2n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[2]);
+    /* p23.MEBY*/ MEBY_WX3n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[3]);
+    /* p23.MYPU*/ MYPU_WX4n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[4]);
+    /* p23.MYCE*/ MYCE_WX5n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[5]);
+    /* p23.MUVO*/ MUVO_WX6n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[6]);
+    /* p23.NUKU*/ NUKU_WX7n_h.dff9(_VOXU_FF4B_WRn_clk_evn, WALU_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[7]);
+
+    // FF4B WX
+    /* p23.WYZE*/ wire _WYZE_FF4B_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), VUMY_FF4Bp_ext(BUS_CPU_A));
+    /* p23.VYCU*/ wire _VYCU_FF4B_RDn_ext = not1(_WYZE_FF4B_RDp_ext);
+    /*#p23.LOVA*/ BUS_CPU_D_out[0].tri6_nn(_VYCU_FF4B_RDn_ext, MYPA_WX0n_h.qp_new());
+    /* p23.MUKA*/ BUS_CPU_D_out[1].tri6_nn(_VYCU_FF4B_RDn_ext, NOFE_WX1n_h.qp_new());
+    /* p23.MOKO*/ BUS_CPU_D_out[2].tri6_nn(_VYCU_FF4B_RDn_ext, NOKE_WX2n_h.qp_new());
+    /* p23.LOLE*/ BUS_CPU_D_out[3].tri6_nn(_VYCU_FF4B_RDn_ext, MEBY_WX3n_h.qp_new());
+    /* p23.MELE*/ BUS_CPU_D_out[4].tri6_nn(_VYCU_FF4B_RDn_ext, MYPU_WX4n_h.qp_new());
+    /* p23.MUFE*/ BUS_CPU_D_out[5].tri6_nn(_VYCU_FF4B_RDn_ext, MYCE_WX5n_h.qp_new());
+    /* p23.MULY*/ BUS_CPU_D_out[6].tri6_nn(_VYCU_FF4B_RDn_ext, MUVO_WX6n_h.qp_new());
+    /* p23.MARA*/ BUS_CPU_D_out[7].tri6_nn(_VYCU_FF4B_RDn_ext, NUKU_WX7n_h.qp_new());
+  }
+
   /*p23.MYPA*/ DFF9 MYPA_WX0n_h; // xxxxxxxH
   /*p23.NOFE*/ DFF9 NOFE_WX1n_h; // xxxxxxxH
   /*p23.NOKE*/ DFF9 NOKE_WX2n_h; // xxxxxxxH
@@ -56,8 +108,74 @@ struct RegWX {
 };
 
 //-----------------------------------------------------------------------------
+// Pixel counter
 
-struct PixelPipe {
+struct PixCountRegister {
+  /*p21.XEHO*/ DFF17 XEHO_PX0p_evn; // AxCxExGx
+  /*p21.SAVY*/ DFF17 SAVY_PX1p_evn; // AxCxExGx
+  /*p21.XODU*/ DFF17 XODU_PX2p_evn; // AxCxExGx
+  /*p21.XYDO*/ DFF17 XYDO_PX3p_evn; // AxCxExGx
+  /*p21.TUHU*/ DFF17 TUHU_PX4p_evn; // AxCxExGx
+  /*p21.TUKY*/ DFF17 TUKY_PX5p_evn; // AxCxExGx
+  /*p21.TAKO*/ DFF17 TAKO_PX6p_evn; // AxCxExGx
+  /*p21.SYBE*/ DFF17 SYBE_PX7p_evn; // AxCxExGx
+};
+
+//-----------------------------------------------------------------------------
+// FF41 - STAT
+
+struct RegStat {
+  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn_h; // xxxxxxxH
+  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn_h; // xxxxxxxH
+  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn_h; // xxxxxxxH
+  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn_h; // xxxxxxxH
+};
+
+//-----------------------------------------------------------------------------
+// FF47 - BGP
+
+struct RegBGP {
+  /*p36.PAVO*/ DFF8p PAVO_BGP_D0n_h; // xxxxxxxH
+  /*p36.NUSY*/ DFF8p NUSY_BGP_D1n_h; // xxxxxxxH
+  /*p36.PYLU*/ DFF8p PYLU_BGP_D2n_h; // xxxxxxxH
+  /*p36.MAXY*/ DFF8p MAXY_BGP_D3n_h; // xxxxxxxH
+  /*p36.MUKE*/ DFF8p MUKE_BGP_D4n_h; // xxxxxxxH
+  /*p36.MORU*/ DFF8p MORU_BGP_D5n_h; // xxxxxxxH
+  /*p36.MOGY*/ DFF8p MOGY_BGP_D6n_h; // xxxxxxxH
+  /*p36.MENA*/ DFF8p MENA_BGP_D7n_h; // xxxxxxxH
+};
+
+//-----------------------------------------------------------------------------
+// FF48 - OBP0
+
+struct RegOBP0 {
+  /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n_h; // xxxxxxxH
+  /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n_h; // xxxxxxxH
+  /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n_h; // xxxxxxxH
+  /*p36.XALO*/ DFF8p XALO_OBP0_D3n_h; // xxxxxxxH
+  /*p36.XERU*/ DFF8p XERU_OBP0_D4n_h; // xxxxxxxH
+  /*p36.XYZE*/ DFF8p XYZE_OBP0_D5n_h; // xxxxxxxH
+  /*p36.XUPO*/ DFF8p XUPO_OBP0_D6n_h; // xxxxxxxH
+  /*p36.XANA*/ DFF8p XANA_OBP0_D7n_h; // xxxxxxxH
+};
+
+//-----------------------------------------------------------------------------
+// FF49 - OBP1
+
+struct RegOBP1 {
+  /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n_h; // xxxxxxxH
+  /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n_h; // xxxxxxxH
+  /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n_h; // xxxxxxxH
+  /*p36.LOSE*/ DFF8p LOSE_OBP1_D3n_h; // xxxxxxxH
+  /*p36.LUNE*/ DFF8p LUNE_OBP1_D4n_h; // xxxxxxxH
+  /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n_h; // xxxxxxxH
+  /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n_h; // xxxxxxxH
+  /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n_h; // xxxxxxxH
+};
+
+//-----------------------------------------------------------------------------
+
+struct PPURegisters {
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx
@@ -80,20 +198,11 @@ struct PixelPipe {
   /*p??.ROXY*/ NorLatch _ROXY_FINE_SCROLL_DONEn_odd; // xBxDxFxH
   /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
+};
 
-  //----------------------------------------
+//-----------------------------------------------------------------------------
 
-  // Pixel counter
-  /*p21.XEHO*/ DFF17 XEHO_PX0p_evn; // AxCxExGx
-  /*p21.SAVY*/ DFF17 SAVY_PX1p_evn; // AxCxExGx
-  /*p21.XODU*/ DFF17 XODU_PX2p_evn; // AxCxExGx
-  /*p21.XYDO*/ DFF17 XYDO_PX3p_evn; // AxCxExGx
-  /*p21.TUHU*/ DFF17 TUHU_PX4p_evn; // AxCxExGx
-  /*p21.TUKY*/ DFF17 TUKY_PX5p_evn; // AxCxExGx
-  /*p21.TAKO*/ DFF17 TAKO_PX6p_evn; // AxCxExGx
-  /*p21.SYBE*/ DFF17 SYBE_PX7p_evn; // AxCxExGx
-
-  //----------------------------------------
+struct PixelPipes {
 
   /*p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0_evn; // AxCxExGx
   /*p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1_evn; // AxCxExGx
@@ -148,44 +257,6 @@ struct PixelPipe {
   /*p26.WODA*/ DFF22 WODA_MASK_PIPE_5_evn; // AxCxExGx
   /*p26.VUMO*/ DFF22 VUMO_MASK_PIPE_6_evn; // AxCxExGx
   /*p26.VAVA*/ DFF22 VAVA_MASK_PIPE_7_evn; // AxCxExGx
-
-  //----------------------------------------
-
-  // FF41 - STAT
-  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn_h; // xxxxxxxH
-  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn_h; // xxxxxxxH
-  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn_h; // xxxxxxxH
-  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn_h; // xxxxxxxH
-
-  // FF47 - BGP
-  /*p36.PAVO*/ DFF8p PAVO_BGP_D0n_h; // xxxxxxxH
-  /*p36.NUSY*/ DFF8p NUSY_BGP_D1n_h; // xxxxxxxH
-  /*p36.PYLU*/ DFF8p PYLU_BGP_D2n_h; // xxxxxxxH
-  /*p36.MAXY*/ DFF8p MAXY_BGP_D3n_h; // xxxxxxxH
-  /*p36.MUKE*/ DFF8p MUKE_BGP_D4n_h; // xxxxxxxH
-  /*p36.MORU*/ DFF8p MORU_BGP_D5n_h; // xxxxxxxH
-  /*p36.MOGY*/ DFF8p MOGY_BGP_D6n_h; // xxxxxxxH
-  /*p36.MENA*/ DFF8p MENA_BGP_D7n_h; // xxxxxxxH
-
-  // FF48 - OBP0
-  /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n_h; // xxxxxxxH
-  /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n_h; // xxxxxxxH
-  /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n_h; // xxxxxxxH
-  /*p36.XALO*/ DFF8p XALO_OBP0_D3n_h; // xxxxxxxH
-  /*p36.XERU*/ DFF8p XERU_OBP0_D4n_h; // xxxxxxxH
-  /*p36.XYZE*/ DFF8p XYZE_OBP0_D5n_h; // xxxxxxxH
-  /*p36.XUPO*/ DFF8p XUPO_OBP0_D6n_h; // xxxxxxxH
-  /*p36.XANA*/ DFF8p XANA_OBP0_D7n_h; // xxxxxxxH
-
-  // FF49 - OBP1
-  /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n_h; // xxxxxxxH
-  /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n_h; // xxxxxxxH
-  /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n_h; // xxxxxxxH
-  /*p36.LOSE*/ DFF8p LOSE_OBP1_D3n_h; // xxxxxxxH
-  /*p36.LUNE*/ DFF8p LUNE_OBP1_D4n_h; // xxxxxxxH
-  /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n_h; // xxxxxxxH
-  /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n_h; // xxxxxxxH
-  /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n_h; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

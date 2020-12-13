@@ -925,18 +925,19 @@ int GateBoyTests::test_clk() {
   gb.run(8);
 
   auto& top = gb;
-  auto& clk_reg = top.clk_reg;
+  auto& pclk_reg = top.pclk_reg;
+  auto& vclk_reg = top.vclk_reg;
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    EXPECT_CLK(clk_reg.AFUR_xxxxEFGHp.qp_old(), 0b00001111);
-    EXPECT_CLK(clk_reg.ALEF_AxxxxFGHp.qp_old(), 0b10000111);
-    EXPECT_CLK(clk_reg.APUK_ABxxxxGHp.qp_old(), 0b11000011);
-    EXPECT_CLK(clk_reg.ADYK_ABCxxxxHp.qp_old(), 0b11100001);
+    EXPECT_CLK(pclk_reg.AFUR_xxxxEFGHp.qp_old(), 0b00001111);
+    EXPECT_CLK(pclk_reg.ALEF_AxxxxFGHp.qp_old(), 0b10000111);
+    EXPECT_CLK(pclk_reg.APUK_ABxxxxGHp.qp_old(), 0b11000011);
+    EXPECT_CLK(pclk_reg.ADYK_ABCxxxxHp.qp_old(), 0b11100001);
 
-    EXPECT_CLK(clk_reg.WUVU_ABxxEFxxp.qp_old(), 0b11001100);
-    EXPECT_CLK(clk_reg.VENA_xxCDEFxxp.qp_old(), 0b00111100);
-    EXPECT_CLK(clk_reg.WOSU_AxxDExxHp.qp_old(), 0b10011001);
+    EXPECT_CLK(vclk_reg.WUVU_ABxxEFxxp.qp_old(), 0b11001100);
+    EXPECT_CLK(vclk_reg.VENA_xxCDEFxxp.qp_old(), 0b00111100);
+    EXPECT_CLK(vclk_reg.WOSU_AxxDExxHp.qp_old(), 0b10011001);
 
 #if 0
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);

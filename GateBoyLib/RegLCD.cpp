@@ -14,7 +14,7 @@ wire LcdRegisters::ATEJ_LINE_TRIGp_old(wire XODO_VID_RSTp_old) const {
 
 //----------------------------------------
 
-wire LcdRegisters::ATEJ_LINE_TRIGp_new_evn(wire XODO_VID_RSTp_new_h) const {
+wire LcdRegisters::ATEJ_LINE_TRIGp(wire XODO_VID_RSTp_new_h) const {
   /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp_new_h);
   /*#p01.ATAR*/ wire _ATAR_VID_RSTp_new_evn = not1(_XAPO_VID_RSTn_new_evn);
   /*#p01.ABEZ*/ wire _ABEZ_VID_RSTn_new_evn = not1(_ATAR_VID_RSTp_new_evn);

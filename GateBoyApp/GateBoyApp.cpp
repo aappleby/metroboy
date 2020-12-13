@@ -45,7 +45,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+#if 0
   // regenerate post-bootrom dump
   gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   for (int i = 0; i < 8192; i++) {
@@ -116,7 +116,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 0
+#if 1
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -507,23 +507,23 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Clocks =====\001\n");
   d("PHASE %d%d%d%d\n",
-    gb->clk_reg.AFUR_xxxxEFGHp.qp_old(),
-    gb->clk_reg.ALEF_AxxxxFGHp.qp_old(),
-    gb->clk_reg.APUK_ABxxxxGHp.qp_old(),
-    gb->clk_reg.ADYK_ABCxxxxHp.qp_old());
+    gb->pclk_reg.AFUR_xxxxEFGHp.qp_old(),
+    gb->pclk_reg.ALEF_AxxxxFGHp.qp_old(),
+    gb->pclk_reg.APUK_ABxxxxGHp.qp_old(),
+    gb->pclk_reg.ADYK_ABCxxxxHp.qp_old());
   d("\n");
-  d.dump_bitp("TUBO_WAITINGp ", gb->clk_reg.TUBO_WAITINGp.state);
-  d.dump_bitn("ASOL_POR_DONEn", gb->clk_reg.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->clk_reg.AFER_SYS_RSTp_evn.state);
+  d.dump_bitp("TUBO_WAITINGp ", gb->rst_reg.TUBO_WAITINGp.state);
+  d.dump_bitn("ASOL_POR_DONEn", gb->rst_reg.ASOL_POR_DONEn.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->rst_reg.AFER_SYS_RSTp_evn.state);
   d("\n");
-  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk_reg.AFUR_xxxxEFGHp.state);
-  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk_reg.ALEF_AxxxxFGHp.state);
-  d.dump_bitp("APUK_ABxxxxGHp", gb->clk_reg.APUK_ABxxxxGHp.state);
-  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk_reg.ADYK_ABCxxxxHp.state);
+  d.dump_bitp("AFUR_xxxxEFGHp", gb->pclk_reg.AFUR_xxxxEFGHp.state);
+  d.dump_bitp("ALEF_AxxxxFGHp", gb->pclk_reg.ALEF_AxxxxFGHp.state);
+  d.dump_bitp("APUK_ABxxxxGHp", gb->pclk_reg.APUK_ABxxxxGHp.state);
+  d.dump_bitp("ADYK_ABCxxxxHp", gb->pclk_reg.ADYK_ABCxxxxHp.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk_reg.WUVU_ABxxEFxxp.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->clk_reg.VENA_xxCDEFxxp.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->clk_reg.WOSU_AxxDExxHp.state);
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->vclk_reg.WUVU_ABxxEFxxp.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->vclk_reg.VENA_xxCDEFxxp.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->vclk_reg.WOSU_AxxDExxHp.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");
@@ -642,44 +642,44 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Pix Pipe =====\001\n");
-  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_pipe.XEHO_PX0p_evn));
+  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p_evn));
   d("\n");
-  d.dump_bitp("XYMU_RENDERINGn       ", gb->pix_pipe.XYMU_RENDERINGn_xxx.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->pix_pipe.PYNU_WIN_MODE_Ap_evn.state);
-  d.dump_bitp("PUKU_WIN_HITn         ", gb->pix_pipe.PUKU_WIN_HITn_evn.state);
-  d.dump_bitp("RYDY_WIN_HITp         ", gb->pix_pipe.RYDY_WIN_HITp_evn.state);
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->pix_pipe.SOVY_WIN_HITp_odd.state);
-  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->pix_pipe.NOPA_WIN_MODE_Bp_odd.state);
-  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->pix_pipe.PYCO_WIN_MATCHp_odd.state);
-  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->pix_pipe.NUNU_WIN_MATCHp_evn.state);
-  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->pix_pipe.REJO_WY_MATCH_LATCHp_evn.state);
-  d.dump_bitp("SARY_WY_MATCH         ", gb->pix_pipe.SARY_WY_MATCHp_evn.state);
-  d.dump_bitp("RYFA_FETCHn_A         ", gb->pix_pipe.RYFA_WIN_FETCHn_A_evn.state);
-  d.dump_bitp("RENE_FETCHn_B         ", gb->pix_pipe.RENE_WIN_FETCHn_B_odd.state);
-  d.dump_bitp("RYKU_FINE_CNT0        ", gb->pix_pipe._RYKU_FINE_CNT0_xxx.state);
-  d.dump_bitp("ROGA_FINE_CNT1        ", gb->pix_pipe._ROGA_FINE_CNT1_xxx.state);
-  d.dump_bitp("RUBU_FINE_CNT2        ", gb->pix_pipe._RUBU_FINE_CNT2_xxx.state);
-  d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->pix_pipe._PUXA_SCX_FINE_MATCH_A_odd.state);
-  d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->pix_pipe._NYZE_SCX_FINE_MATCH_B_evn.state);
-  d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->pix_pipe._ROXY_FINE_SCROLL_DONEn_odd.state);
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->pix_pipe.RUPO_STAT_LYC_MATCHn_evn.state);
-  d.dump_bitp("VOGA_HBLANKp          ", gb->pix_pipe.VOGA_HBLANKp_xxx.state);
+  d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn_xxx.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->ppu_reg.PYNU_WIN_MODE_Ap_evn.state);
+  d.dump_bitp("PUKU_WIN_HITn         ", gb->ppu_reg.PUKU_WIN_HITn_evn.state);
+  d.dump_bitp("RYDY_WIN_HITp         ", gb->ppu_reg.RYDY_WIN_HITp_evn.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->ppu_reg.SOVY_WIN_HITp_odd.state);
+  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->ppu_reg.NOPA_WIN_MODE_Bp_odd.state);
+  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->ppu_reg.PYCO_WIN_MATCHp_odd.state);
+  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->ppu_reg.NUNU_WIN_MATCHp_evn.state);
+  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->ppu_reg.REJO_WY_MATCH_LATCHp_evn.state);
+  d.dump_bitp("SARY_WY_MATCH         ", gb->ppu_reg.SARY_WY_MATCHp_evn.state);
+  d.dump_bitp("RYFA_FETCHn_A         ", gb->ppu_reg.RYFA_WIN_FETCHn_A_evn.state);
+  d.dump_bitp("RENE_FETCHn_B         ", gb->ppu_reg.RENE_WIN_FETCHn_B_odd.state);
+  d.dump_bitp("RYKU_FINE_CNT0        ", gb->ppu_reg._RYKU_FINE_CNT0_xxx.state);
+  d.dump_bitp("ROGA_FINE_CNT1        ", gb->ppu_reg._ROGA_FINE_CNT1_xxx.state);
+  d.dump_bitp("RUBU_FINE_CNT2        ", gb->ppu_reg._RUBU_FINE_CNT2_xxx.state);
+  d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->ppu_reg._PUXA_SCX_FINE_MATCH_A_odd.state);
+  d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->ppu_reg._NYZE_SCX_FINE_MATCH_B_evn.state);
+  d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->ppu_reg._ROXY_FINE_SCROLL_DONEn_odd.state);
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->ppu_reg.RUPO_STAT_LYC_MATCHn_evn.state);
+  d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp_xxx.state);
   d("\n");
-  d.dump_slice2p("PIX COUNT ", &gb->pix_pipe.XEHO_PX0p_evn, 8);
-  d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BGW_PIPE_A0_evn, 8);
-  d.dump_slice2p("BG PIPE B ", &gb->pix_pipe.TOMY_BGW_PIPE_B0_evn, 8);
-  d.dump_slice2p("SPR PIPE A", &gb->pix_pipe.NURO_SPR_PIPE_A0_evn, 8);
-  d.dump_slice2p("SPR PIPE B", &gb->pix_pipe.NYLU_SPR_PIPE_B0_evn, 8);
-  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipe.RUGO_PAL_PIPE_D0_evn, 8);
-  d.dump_slice2p("MASK PIPE ", &gb->pix_pipe.VEZO_MASK_PIPE_0_evn, 8);
+  d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p_evn, 8);
+  d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0_evn, 8);
+  d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0_evn, 8);
+  d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0_evn, 8);
+  d.dump_slice2p("SPR PIPE B", &gb->pix_pipes.NYLU_SPR_PIPE_B0_evn, 8);
+  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0_evn, 8);
+  d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0_evn, 8);
   d("\n");
   d.dump_slice2n("FF40 LCDC ", &gb->reg_lcdc.VYXE_LCDC_BGENn_h, 8);
-  d.dump_slice2n("FF41 STAT ", &gb->pix_pipe.ROXE_STAT_HBI_ENn_h, 4);
-  d.dump_slice2n("FF47 BGP  ", &gb->pix_pipe.PAVO_BGP_D0n_h, 8);
-  d.dump_slice2n("FF48 OBP0 ", &gb->pix_pipe.XUFU_OBP0_D0n_h, 8);
-  d.dump_slice2n("FF49 OBP1 ", &gb->pix_pipe.MOXY_OBP1_D0n_h, 8);
-  d.dump_slice2n("FF4A WY   ", &gb->reg_wy.NESO_WY0n_h, 8);
-  d.dump_slice2n("FF4B WX   ", &gb->reg_wx.MYPA_WX0n_h, 8);
+  d.dump_slice2n("FF41 STAT ", &gb->reg_stat.ROXE_STAT_HBI_ENn_h, 4);
+  d.dump_slice2n("FF47 BGP  ", &gb->reg_bgp. PAVO_BGP_D0n_h, 8);
+  d.dump_slice2n("FF48 OBP0 ", &gb->reg_obp0.XUFU_OBP0_D0n_h, 8);
+  d.dump_slice2n("FF49 OBP1 ", &gb->reg_obp1.MOXY_OBP1_D0n_h, 8);
+  d.dump_slice2n("FF4A WY   ", &gb->reg_wy.  NESO_WY0n_h, 8);
+  d.dump_slice2n("FF4B WX   ", &gb->reg_wx.  MYPA_WX0n_h, 8);
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;

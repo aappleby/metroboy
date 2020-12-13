@@ -205,8 +205,6 @@ struct PixelPipe {
     LUXO_OBP1_D7n_h.reset(REG_D0C1);
   }
 
-  int get_pix_count() const { return pack_u8p(8, &XEHO_PX0p_evn); }
-
   //----------------------------------------
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH

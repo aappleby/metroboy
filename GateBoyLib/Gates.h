@@ -644,3 +644,34 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
 
+
+/* p07.TUNA*/ inline wire TUNA_0000_FDFF_ext    (const wire BUS_CPU_A[16]) { return nand7(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12], BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9]); }
+/* p07.RYCU*/ inline wire RYCU_FE00_FFFF_ext    (const wire BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF_ext(BUS_CPU_A)); }
+/* p25.SYRO*/ inline wire SYRO_FE00_FFFF_ext    (const wire BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF_ext(BUS_CPU_A)); }
+/* p03.TOVY*/ inline wire TOVY_A00n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0]); }
+/* p08.TOLA*/ inline wire TOLA_A01n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1]); }
+/* p22.XOLA*/ inline wire XOLA_A00n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0]); }
+/* p22.XENO*/ inline wire XENO_A01n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1]); }
+/* p22.XUSY*/ inline wire XUSY_A02n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2]); }
+/* p22.XERA*/ inline wire XERA_A03n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 3]); }
+/* p07.TONA*/ inline wire TONA_A08n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 8]); }
+/*#p08.SORE*/ inline wire SORE_A15n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[15]); }
+/* p22.WADO*/ inline wire WADO_A00p_ext         (const wire BUS_CPU_A[16]) { return not1(XOLA_A00n_ext(BUS_CPU_A)); }
+/* p22.WESA*/ inline wire WESA_A01p_ext         (const wire BUS_CPU_A[16]) { return not1(XENO_A01n_ext(BUS_CPU_A)); }
+/* p22.WALO*/ inline wire WALO_A02p_ext         (const wire BUS_CPU_A[16]) { return not1(XUSY_A02n_ext(BUS_CPU_A)); }
+/* p22.WEPO*/ inline wire WEPO_A03p_ext         (const wire BUS_CPU_A[16]) { return not1(XERA_A03n_ext(BUS_CPU_A)); }
+/* p07.SYKE*/ inline wire SYKE_ADDR_HIp_ext     (const wire BUS_CPU_A[16]) { return nor2(TUNA_0000_FDFF_ext(BUS_CPU_A), TONA_A08n_ext(BUS_CPU_A)); }
+/* p07.SOHA*/ inline wire SOHA_ADDR_HIn_ext     (const wire BUS_CPU_A[16]) { return not1(SYKE_ADDR_HIp_ext(BUS_CPU_A)); }
+/* p07.ROPE*/ inline wire ROPE_ADDR_OAMn_ext    (const wire BUS_CPU_A[16]) { return nand2(SOHA_ADDR_HIn_ext(BUS_CPU_A), RYCU_FE00_FFFF_ext(BUS_CPU_A)); }
+/* p07.SARO*/ inline wire SARO_ADDR_OAMp_ext    (const wire BUS_CPU_A[16]) { return not1(ROPE_ADDR_OAMn_ext(BUS_CPU_A)); }
+/* p22.XALY*/ inline wire XALY_0x00xxxx_ext     (const wire BUS_CPU_A[16]) { return nor3(BUS_CPU_A[ 7], BUS_CPU_A[ 5], BUS_CPU_A[ 4]); }
+/* p22.WUTU*/ inline wire WUTU_ADDR_PPUn_ext    (const wire BUS_CPU_A[16]) { return nand3(SYKE_ADDR_HIp_ext(BUS_CPU_A), BUS_CPU_A[ 6], XALY_0x00xxxx_ext(BUS_CPU_A)); }
+/* p22.WERO*/ inline wire WERO_ADDR_PPUp_ext    (const wire BUS_CPU_A[16]) { return not1(WUTU_ADDR_PPUn_ext(BUS_CPU_A)); }
+/*#p08.TEVY*/ inline wire TEVY_ADDR_VRAMn_ext   (const wire BUS_CPU_A[16]) { return or3(BUS_CPU_A[13], BUS_CPU_A[14], SORE_A15n_ext(BUS_CPU_A)); }
+/* p06.SARE*/ inline wire SARE_XX00_XX07p_ext   (const wire BUS_CPU_A[16]) { return nor5 (BUS_CPU_A[ 7], BUS_CPU_A[ 6], BUS_CPU_A[ 5], BUS_CPU_A[ 4], BUS_CPU_A[ 3]); }
+/* p03.RYFO*/ inline wire RYFO_FF04_FF07p_ext   (const wire BUS_CPU_A[16]) { return and3(SYKE_ADDR_HIp_ext(BUS_CPU_A), BUS_CPU_A[ 2], SARE_XX00_XX07p_ext(BUS_CPU_A)); }
+/* p10.AMUS*/ inline wire AMUS_XX_0xx00000p_ext (const wire BUS_CPU_A[16]) { return nor6(BUS_CPU_A[ 0], BUS_CPU_A[ 1], BUS_CPU_A[ 2], BUS_CPU_A[ 3], BUS_CPU_A[ 4], BUS_CPU_A[ 7]); }
+/* p07.SAPA*/ inline wire SAPA_XX_xxxx1111p_ext (const wire BUS_CPU_A[16]) { return and4(BUS_CPU_A[ 0], BUS_CPU_A[ 1], BUS_CPU_A[ 2], BUS_CPU_A[ 3]); }
+/* p07.SEMY*/ inline wire SEMY_XX_0000xxxxp_ext (const wire BUS_CPU_A[16]) { return nor4(BUS_CPU_A[ 7], BUS_CPU_A[ 6], BUS_CPU_A[ 5], BUS_CPU_A[ 4]); }
+/* p06.SEFY*/ inline wire SEFY_A02n_ext         (const wire BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2]); }
+/* p06.SANO*/ inline wire SANO_FF00_FF03p_ext   (const wire BUS_CPU_A[16]) { return and3(SARE_XX00_XX07p_ext(BUS_CPU_A), SEFY_A02n_ext(BUS_CPU_A), SYKE_ADDR_HIp_ext(BUS_CPU_A)); }

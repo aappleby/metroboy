@@ -475,42 +475,13 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Address decoders
 
-  /* p07.TUNA*/ wire TUNA_0000_FDFF_ext = nand7(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13],
-                                                BUS_CPU_A[12], BUS_CPU_A[11], BUS_CPU_A[10],
-                                                BUS_CPU_A[ 9]);
-  /* p07.RYCU*/ wire RYCU_FE00_FFFF_ext  = not1(TUNA_0000_FDFF_ext);
-  /* p25.SYRO*/ wire SYRO_FE00_FFFF_ext  = not1(TUNA_0000_FDFF_ext);
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(PIN_CPU_EXT_BUSp.qp_in(), TEVY_ADDR_VRAMn_ext(BUS_CPU_A));
 
-  /* p22.XOLA*/ wire XOLA_A00n_ext = not1(BUS_CPU_A[ 0]);
-  /* p22.XENO*/ wire XENO_A01n_ext = not1(BUS_CPU_A[ 1]);
-  /* p22.XUSY*/ wire XUSY_A02n_ext = not1(BUS_CPU_A[ 2]);
-  /* p22.XERA*/ wire XERA_A03n_ext = not1(BUS_CPU_A[ 3]);
-  /* p07.TONA*/ wire TONA_A08n_ext = not1(BUS_CPU_A[ 8]);
-  /*#p08.SORE*/ wire SORE_A15n_ext = not1(BUS_CPU_A[15]);
-
-  /* p22.WADO*/ wire WADO_A00p_ext = not1(XOLA_A00n_ext);
-  /* p22.WESA*/ wire WESA_A01p_ext = not1(XENO_A01n_ext);
-  /* p22.WALO*/ wire WALO_A02p_ext = not1(XUSY_A02n_ext);
-  /* p22.WEPO*/ wire WEPO_A03p_ext = not1(XERA_A03n_ext);
-
-  /* p07.SYKE*/ wire SYKE_ADDR_HIp_ext = nor2(TUNA_0000_FDFF_ext, TONA_A08n_ext);
-  /* p07.SOHA*/ wire SOHA_ADDR_HIn_ext = not1(SYKE_ADDR_HIp_ext);
-
-  /* p07.ROPE*/ wire ROPE_ADDR_OAMn_ext  = nand2(SOHA_ADDR_HIn_ext, RYCU_FE00_FFFF_ext);
-  /* p07.SARO*/ wire SARO_ADDR_OAMp_ext = not1(ROPE_ADDR_OAMn_ext);
-
-  /* p22.XALY*/ wire XALY_0x00xxxx_ext = nor3(BUS_CPU_A[ 7], BUS_CPU_A[ 5], BUS_CPU_A[ 4]);
-  /* p22.WUTU*/ wire WUTU_ADDR_PPUn_ext  = nand3(SYKE_ADDR_HIp_ext, BUS_CPU_A[ 6], XALY_0x00xxxx_ext);
-  /* p22.WERO*/ wire WERO_ADDR_PPUp_ext  = not1(WUTU_ADDR_PPUn_ext);
-
-  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_ext = or3(BUS_CPU_A[13], BUS_CPU_A[14], SORE_A15n_ext);
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(PIN_CPU_EXT_BUSp.qp_in(), TEVY_ADDR_VRAMn_ext);
-
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF_ext, TEXO_ADDR_VRAMn_ext);
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF_ext(BUS_CPU_A), TEXO_ADDR_VRAMn_ext);
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_ext = and2(TEFA_ADDR_VRAMp_ext, BUS_CPU_A[15]);
 
   {
-    PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF_ext);
+    PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF_ext(BUS_CPU_A));
   }
 
   //----------------------------------------
@@ -636,7 +607,6 @@ void GateBoy::tock_slow(int pass_index) {
     BOGA_Axxxxxxx_clkevn,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-    SYKE_ADDR_HIp_ext,
     BUS_CPU_D_out
   );
 
@@ -712,7 +682,6 @@ void GateBoy::tock_slow(int pass_index) {
     AVOR_SYS_RSTp_new,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-    SYKE_ADDR_HIp_ext,
     boot_buf,
     BUS_CPU_D_out
   );
@@ -729,7 +698,6 @@ void GateBoy::tock_slow(int pass_index) {
     BOGA_Axxxxxxx_clkevn,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-    SYKE_ADDR_HIp_ext,
     PIN_CPU_LATCH_EXT.qp_in(),
     BUS_CPU_D_out,
     div_reg);
@@ -740,15 +708,11 @@ void GateBoy::tock_slow(int pass_index) {
   // LCDC. Has to be near the top as it controls the video reset signal
 
   reg_lcdc.tock(
+    BUS_CPU_A,
     BUS_CPU_D,
     AVOR_SYS_RSTp_new,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext,
-    XENO_A01n_ext,
-    XUSY_A02n_ext,
-    XERA_A03n_ext,
     BUS_CPU_D_out
   );
 
@@ -805,14 +769,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire LAVY_FF46_WRp_clk_evn = [
     this,
+    BUS_CPU_A,
     TEDO_CPU_RDp_ext,
-    TAPU_CPU_WRp_clkevn,
-
-    WERO_ADDR_PPUp_ext, XOLA_A00n_ext, WESA_A01p_ext, WALO_A02p_ext, XERA_A03n_ext
+    TAPU_CPU_WRp_clkevn
   ](){
     /* p07.DYKY*/ wire _DYKY_CPU_WRn_clk_evn = not1(TAPU_CPU_WRp_clkevn);
     /* p07.CUPA*/ wire _CUPA_CPU_WRp_clk_evn = not1(_DYKY_CPU_WRn_clk_evn);
-    /*#p22.WATE*/ wire _WATE_FF46n_ext    = nand5(WERO_ADDR_PPUp_ext, XOLA_A00n_ext, WESA_A01p_ext, WALO_A02p_ext, XERA_A03n_ext);
+    /*#p22.WATE*/ wire _WATE_FF46n_ext    = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), XOLA_A00n_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), WALO_A02p_ext(BUS_CPU_A), XERA_A03n_ext(BUS_CPU_A));
     /*#p22.XEDA*/ wire _XEDA_FF46p_ext    = not1(_WATE_FF46n_ext);
     /*#p04.LAVY*/ wire _LAVY_FF46_WRp_clk_evn = and2(_CUPA_CPU_WRp_clk_evn, _XEDA_FF46p_ext);
     return _LAVY_FF46_WRp_clk_evn;
@@ -907,15 +870,10 @@ void GateBoy::tock_slow(int pass_index) {
 
   [
     this,
+    BUS_CPU_A,
     BUS_CPU_D,
     TEDO_CPU_RDp_ext,
-    TAPU_CPU_WRp_clkevn,
-
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext, WADO_A00p_ext,
-    XENO_A01n_ext, WESA_A01p_ext,
-    XUSY_A02n_ext, WALO_A02p_ext,
-    XERA_A03n_ext, WEPO_A03p_ext
+    TAPU_CPU_WRp_clkevn
   ](){
     /* p07.AJAS*/ wire _AJAS_CPU_RDn_ext = not1(TEDO_CPU_RDp_ext);
     /* p07.ASOT*/ wire _ASOT_CPU_RDp_ext = not1(_AJAS_CPU_RDn_ext);
@@ -923,7 +881,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p07.DYKY*/ wire _DYKY_CPU_WRn_clk_evn = not1(TAPU_CPU_WRp_clkevn);
     /* p07.CUPA*/ wire _CUPA_CPU_WRp_clk_evn = not1(_DYKY_CPU_WRn_clk_evn);
 
-    /*#p22.WATE*/ wire _WATE_FF46n_ext    = nand5(WERO_ADDR_PPUp_ext, XOLA_A00n_ext, WESA_A01p_ext, WALO_A02p_ext, XERA_A03n_ext);
+    /*#p22.WATE*/ wire _WATE_FF46n_ext    = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), XOLA_A00n_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), WALO_A02p_ext(BUS_CPU_A), XERA_A03n_ext(BUS_CPU_A));
     /*#p22.XEDA*/ wire _XEDA_FF46p_ext    = not1(_WATE_FF46n_ext);
 
     /*#p04.LAVY*/ wire _LAVY_FF46_WRp_clk_evn = and2(_CUPA_CPU_WRp_clk_evn, _XEDA_FF46p_ext);
@@ -960,28 +918,20 @@ void GateBoy::tock_slow(int pass_index) {
     TALU_xxCDEFxx_clkevn);
 
   reg_ly.tock(
+    BUS_CPU_A,
     XODO_VID_RSTp_new_h,
     TEDO_CPU_RDp_ext,
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext,
-    XENO_A01n_ext,
-    WALO_A02p_ext,
-    XERA_A03n_ext,
     reg_lx.NYPE_x113p_c.qp_new(),
     reg_lx.RUTU_x113p_g.qp_new(),
     BUS_CPU_D_out);
 
   reg_lyc.tock(
+    BUS_CPU_A,
     BUS_CPU_D,
     AVOR_SYS_RSTp_new,
     TALU_xxCDEFxx_clkevn,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-    WERO_ADDR_PPUp_ext,
-    WADO_A00p_ext,
-    XENO_A01n_ext,
-    WALO_A02p_ext,
-    XERA_A03n_ext,
     reg_ly,
     BUS_CPU_D_out);
 
@@ -1226,18 +1176,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   [
     this,
+    BUS_CPU_A,
     BUS_CPU_D,
     AVOR_SYS_RSTp_new,
     TALU_xxCDEFxx_clkevn,
 
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext, WADO_A00p_ext,
-    XENO_A01n_ext, WESA_A01p_ext,
-    XUSY_A02n_ext, WALO_A02p_ext,
-    XERA_A03n_ext, WEPO_A03p_ext,
 
     XODO_VID_RSTp_new_h,
     PARU_VBLANKp_new_evn,
@@ -1292,8 +1237,8 @@ void GateBoy::tock_slow(int pass_index) {
       /* p07.DYKY*/ wire _DYKY_CPU_WRn_clk_evn = not1(TAPU_CPU_WRp_clkevn);
       /* p07.CUPA*/ wire _CUPA_CPU_WRp_clk_evn = not1(_DYKY_CPU_WRn_clk_evn);
 
-      /* p22.WYVO*/ wire _WYVO_FF4An_ext    = nand5(WERO_ADDR_PPUp_ext, XOLA_A00n_ext, WESA_A01p_ext, XUSY_A02n_ext, WEPO_A03p_ext);
-      /* p22.WAGE*/ wire _WAGE_FF4Bn_ext    = nand5(WERO_ADDR_PPUp_ext, WADO_A00p_ext, WESA_A01p_ext, XUSY_A02n_ext, WEPO_A03p_ext);
+      /* p22.WYVO*/ wire _WYVO_FF4An_ext    = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), XOLA_A00n_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), WEPO_A03p_ext(BUS_CPU_A));
+      /* p22.WAGE*/ wire _WAGE_FF4Bn_ext    = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), WADO_A00p_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), WEPO_A03p_ext(BUS_CPU_A));
       /* p22.VYGA*/ wire _VYGA_FF4Ap_ext    = not1(_WYVO_FF4An_ext);
       /* p22.VUMY*/ wire _VUMY_FF4Bp_ext    = not1(_WAGE_FF4Bn_ext);
       /* p23.WAXU*/ wire _WAXU_FF4A_RDp_ext = and2(_ASOT_CPU_RDp_ext, _VYGA_FF4Ap_ext);
@@ -2622,11 +2567,11 @@ void GateBoy::tock_slow(int pass_index) {
 
   [
     this,
+    BUS_CPU_A,
     XYMU_RENDERINGp_new_xxx,
     ACYL_SCANNINGp_new_evn,
     UVYT_ABCDxxxx_clkevn,
     XYSO_xBCDxFGH_clkodd,
-    SARO_ADDR_OAMp_ext,
     MATU_DMA_RUNNINGp_new_evn
   ](){
 
@@ -2639,7 +2584,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p25.VAPE*/ wire _VAPE_OAM_CLKENn_new = and2(_TUVO_PPU_OAM_RDp_new, _TACU_SPR_SEQ_5_TRIG_new);
     /* p25.XUJY*/ wire _XUJY_OAM_CLKENp_new = not1(_VAPE_OAM_CLKENn_new);
     /* p04.MOPA*/ wire _MOPA_xxxxEFGH_clk = not1(UVYT_ABCDxxxx_clkevn);
-    /* p25.CUFE*/ wire _CUFE_OAM_CLKENp_clknew = not1(or_and3(SARO_ADDR_OAMp_ext, MATU_DMA_RUNNINGp_new_evn, _MOPA_xxxxEFGH_clk)); // CUFE looks like BYHA minus an inverter
+    /* p25.CUFE*/ wire _CUFE_OAM_CLKENp_clknew = not1(or_and3(SARO_ADDR_OAMp_ext(BUS_CPU_A), MATU_DMA_RUNNINGp_new_evn, _MOPA_xxxxEFGH_clk)); // CUFE looks like BYHA minus an inverter
 
     /* p25.BYCU*/ wire _BYCU_OAM_CLKp_new = nand3(_AVER_AxxxExxx_clknew, _XUJY_OAM_CLKENp_new, _CUFE_OAM_CLKENp_clknew);
     /* p25.COTA*/ wire _COTA_OAM_CLKn_new = not1(_BYCU_OAM_CLKp_new);
@@ -3120,6 +3065,7 @@ void GateBoy::tock_slow(int pass_index) {
   }();
 
   tock_reg_stat(
+    BUS_CPU_A,
     BUS_CPU_D,
     AVOR_SYS_RSTp_new,
     TEDO_CPU_RDp_ext,
@@ -3127,48 +3073,8 @@ void GateBoy::tock_slow(int pass_index) {
 
     ACYL_SCANNINGp_new_evn,
     XYMU_RENDERINGp_new_xxx,
-    PARU_VBLANKp_new_evn,
-
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext, WADO_A00p_ext,
-    XENO_A01n_ext, WESA_A01p_ext,
-    XUSY_A02n_ext, WALO_A02p_ext,
-    XERA_A03n_ext, WEPO_A03p_ext
+    PARU_VBLANKp_new_evn
   );
-
-  tock_joypad(
-    BUS_CPU_A,
-    BUS_CPU_D,
-    AVOR_SYS_RSTp_new,
-    BOGA_Axxxxxxx_clkevn,
-    TEDO_CPU_RDp_ext,
-    TAPU_CPU_WRp_clkevn,
-    SYKE_ADDR_HIp_ext
-  );
-
-  tock_serial(
-    BUS_CPU_A,
-    BUS_CPU_D,
-    AVOR_SYS_RSTp_new,
-    TEDO_CPU_RDp_ext,
-    TAPU_CPU_WRp_clkevn,
-    SYKE_ADDR_HIp_ext
-  );
-
-  tock_interrupts(
-    BUS_CPU_A,
-    BUS_CPU_D,
-    AVOR_SYS_RSTp_new,
-    TEDO_CPU_RDp_ext,
-    TAPU_CPU_WRp_clkevn,
-
-    SYKE_ADDR_HIp_ext,
-
-    FEPO_STORE_MATCHp_new_evn,
-    PARU_VBLANKp_new_evn,
-    PURE_LINE_ENDn_new_evn,
-    MOBA_TIMER_OVERFLOWp_evn_new,
-    WODU_HBLANKp_new_odd);
 
   /* p27.NYXU*/ bool NYXU_BFETCH_RSTn_new_xxx;
   [
@@ -3247,20 +3153,11 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1_odd.dff17(_ALET_xBxDxFxH_clk_odd, XYMU_RENDERINGp_new_xxx, LAXU_BFETCH_S0p_evn_new);
   }();
 
-
-
-
-
-
-
-
-
   /*#p35.REMY*/ bool REMY_LD0n_new;
   /*#p35.RAVO*/ bool RAVO_LD1n_new;
 
-
-
   tock_pix_pipe(
+    BUS_CPU_A,
     BUS_CPU_D,
     XODO_VID_RSTp_new_h,
 
@@ -3271,16 +3168,6 @@ void GateBoy::tock_slow(int pass_index) {
     SACU_CLKPIPE_AxCxExGx_clknew_evn,
     NYXU_BFETCH_RSTn_new_xxx,
     WUTY_SFETCH_DONE_TRIGp_odd_new,
-
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext,
-    WADO_A00p_ext,
-    XENO_A01n_ext,
-    WESA_A01p_ext,
-    XUSY_A02n_ext,
-    WALO_A02p_ext,
-    XERA_A03n_ext,
-    WEPO_A03p_ext,
 
     REMY_LD0n_new,
     RAVO_LD1n_new
@@ -3300,13 +3187,42 @@ void GateBoy::tock_slow(int pass_index) {
     RAVO_LD1n_new
   );
 
+  tock_joypad(
+    BUS_CPU_A,
+    BUS_CPU_D,
+    AVOR_SYS_RSTp_new,
+    BOGA_Axxxxxxx_clkevn,
+    TEDO_CPU_RDp_ext,
+    TAPU_CPU_WRp_clkevn
+  );
+
+  tock_serial(
+    BUS_CPU_A,
+    BUS_CPU_D,
+    AVOR_SYS_RSTp_new,
+    TEDO_CPU_RDp_ext,
+    TAPU_CPU_WRp_clkevn
+  );
+
+  tock_interrupts(
+    BUS_CPU_A,
+    BUS_CPU_D,
+    AVOR_SYS_RSTp_new,
+    TEDO_CPU_RDp_ext,
+    TAPU_CPU_WRp_clkevn,
+
+    FEPO_STORE_MATCHp_new_evn,
+    PARU_VBLANKp_new_evn,
+    PURE_LINE_ENDn_new_evn,
+    MOBA_TIMER_OVERFLOWp_evn_new,
+    WODU_HBLANKp_new_odd);
+
   tock_ext(
     BUS_CPU_A,
     BUS_CPU_D,
     ABUZ_xxCDEFGH_clk_evn,
     TEDO_CPU_RDp_ext,
     APOV_CPU_WRp_clkevn,
-    TUNA_0000_FDFF_ext,
     TEXO_ADDR_VRAMn_ext,
     bootrom.TUTU_READ_BOOTROMp_new(BUS_CPU_A)
   );
@@ -3323,11 +3239,6 @@ void GateBoy::tock_slow(int pass_index) {
 
     CATY_LATCH_EXTp_ext,
     SOSE_ADDR_VRAMp_ext,
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext, WADO_A00p_ext,
-    XENO_A01n_ext, WESA_A01p_ext,
-    XERA_A03n_ext, WEPO_A03p_ext,
-    XUSY_A02n_ext, WALO_A02p_ext,
 
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
@@ -3354,7 +3265,6 @@ void GateBoy::tock_slow(int pass_index) {
     XYSO_xBCDxFGH_clkodd,
     TAPU_CPU_WRp_clkevn,
     TEDO_CPU_RDp_ext,
-    SARO_ADDR_OAMp_ext,
     CATY_LATCH_EXTp_ext,
     MATU_DMA_RUNNINGp_new_evn,
     XYMU_RENDERINGp_new_xxx,
@@ -3378,6 +3288,7 @@ void GateBoy::tock_slow(int pass_index) {
 // STAT register
 
 void GateBoy::tock_reg_stat(
+  wire BUS_CPU_A[16],
   wire BUS_CPU_D[8],
   wire AVOR_SYS_RSTp_new,
   wire TEDO_CPU_RDp_ext,
@@ -3385,13 +3296,7 @@ void GateBoy::tock_reg_stat(
 
   wire ACYL_SCANNINGp_new_evn,
   wire XYMU_RENDERINGp_new_xxx,
-  wire PARU_VBLANKp_new_evn,
-
-  wire WERO_ADDR_PPUp_ext,
-  wire XOLA_A00n_ext, wire WADO_A00p_ext,
-  wire XENO_A01n_ext, wire WESA_A01p_ext,
-  wire XUSY_A02n_ext, wire WALO_A02p_ext,
-  wire XERA_A03n_ext, wire WEPO_A03p_ext)
+  wire PARU_VBLANKp_new_evn)
 {
 
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp_new);
@@ -3406,7 +3311,7 @@ void GateBoy::tock_reg_stat(
   /* p07.DYKY*/ wire _DYKY_CPU_WRn_clk = not1(TAPU_CPU_WRp_clkevn);
   /* p07.CUPA*/ wire _CUPA_CPU_WRp_clk = not1(_DYKY_CPU_WRn_clk);
 
-  /* p22.WOFA*/ wire _WOFA_FF41n_ext = nand5(WERO_ADDR_PPUp_ext, WADO_A00p_ext, XENO_A01n_ext, XUSY_A02n_ext, XERA_A03n_ext);
+  /* p22.WOFA*/ wire _WOFA_FF41n_ext = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), WADO_A00p_ext(BUS_CPU_A), XENO_A01n_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), XERA_A03n_ext(BUS_CPU_A));
   /* p22.VARY*/ wire _VARY_FF41p_ext = not1(_WOFA_FF41n_ext);
   /* p21.TOBE*/ wire _TOBE_FF41_RDp_ext = and2(_ASOT_CPU_RDp_ext, _VARY_FF41p_ext);
   /* p21.SEPA*/ wire _SEPA_FF41_WRp_clk = and2(_CUPA_CPU_WRp_clk, _VARY_FF41p_ext);
@@ -3443,18 +3348,10 @@ void GateBoy::tock_serial(
   wire BUS_CPU_D[8],
   wire AVOR_SYS_RSTp_new,
   wire TEDO_CPU_RDp_ext,
-  wire TAPU_CPU_WRp_clkevn,
-  wire SYKE_ADDR_HIp_ext)
+  wire TAPU_CPU_WRp_clkevn)
 {
 
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp_new);
-
-  /* p03.TOVY*/ wire _TOVY_A00n_ext = not1(BUS_CPU_A[ 0]);
-  /* p08.TOLA*/ wire _TOLA_A01n_ext = not1(BUS_CPU_A[ 1]);
-
-  /* p06.SARE*/ wire _SARE_XX00_XX07p_ext = nor5 (BUS_CPU_A[ 7], BUS_CPU_A[ 6], BUS_CPU_A[ 5], BUS_CPU_A[ 4], BUS_CPU_A[ 3]);
-  /* p06.SEFY*/ wire _SEFY_A02n_ext       = not1(BUS_CPU_A[ 2]);
-  /* p06.SANO*/ wire _SANO_FF00_FF03p_ext = and3(_SARE_XX00_XX07p_ext, _SEFY_A02n_ext, SYKE_ADDR_HIp_ext);
 
   //----------
 
@@ -3465,7 +3362,7 @@ void GateBoy::tock_serial(
   bool DAWA_SER_clknew;
   {
     /* p01.UVYN*/ wire _UVYN_DIV_05n_next = not1(div_reg.TAMA_DIV05p_evn.qp_new());
-    /* p06.UWAM*/ wire _UWAM_FF02_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, _SANO_FF00_FF03p_ext,  BUS_CPU_A[ 1], _TOVY_A00n_ext);
+    /* p06.UWAM*/ wire _UWAM_FF02_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, SANO_FF00_FF03p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], TOVY_A00n_ext(BUS_CPU_A));
     /* p06.COTY*/ ser_reg.COTY_SER_CLK .dff17(_UVYN_DIV_05n_next, _UWAM_FF02_WRn_clk, ser_reg.COTY_SER_CLK.qn_old());
     /* p06.CULY*/ ser_reg.CULY_XFER_DIR.dff17(_UWAM_FF02_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[0]);
 
@@ -3507,7 +3404,7 @@ void GateBoy::tock_serial(
   }
 
   {
-    /* p06.URYS*/ wire _URYS_FF01_WRn_clk   = nand4(TAPU_CPU_WRp_clkevn, _SANO_FF00_FF03p_ext,  _TOLA_A01n_ext,          BUS_CPU_A[ 0]);
+    /* p06.URYS*/ wire _URYS_FF01_WRn_clk   = nand4(TAPU_CPU_WRp_clkevn, SANO_FF00_FF03p_ext(BUS_CPU_A), TOLA_A01n_ext(BUS_CPU_A), BUS_CPU_A[ 0]);
 
     /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_D[0], _ALUR_SYS_RSTn_new);
     /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_D[1], _ALUR_SYS_RSTn_new);
@@ -3546,8 +3443,8 @@ void GateBoy::tock_serial(
   }
 
   {
-    /* p06.UFEG*/ wire _UFEG_FF01_RDp_ext   =  and4(TEDO_CPU_RDp_ext, _SANO_FF00_FF03p_ext,  _TOLA_A01n_ext, BUS_CPU_A[ 0]);
-    /* p06.UCOM*/ wire _UCOM_FF02_RDp_ext   =  and4(TEDO_CPU_RDp_ext, _SANO_FF00_FF03p_ext,  BUS_CPU_A[ 1],  _TOVY_A00n_ext);
+    /* p06.UFEG*/ wire _UFEG_FF01_RDp_ext   =  and4(TEDO_CPU_RDp_ext, SANO_FF00_FF03p_ext(BUS_CPU_A),  TOLA_A01n_ext(BUS_CPU_A), BUS_CPU_A[ 0]);
+    /* p06.UCOM*/ wire _UCOM_FF02_RDp_ext   =  and4(TEDO_CPU_RDp_ext, SANO_FF00_FF03p_ext(BUS_CPU_A),  BUS_CPU_A[ 1],            TOVY_A00n_ext(BUS_CPU_A));
 
     /* FF01 SER */
     /*#p06.CUGY*/ BUS_CPU_D_out[0].tri6_pn(_UFEG_FF01_RDp_ext, ser_reg.CUBA_SER_DATA0.qn_new());
@@ -3574,8 +3471,6 @@ void GateBoy::tock_interrupts(
   wire TEDO_CPU_RDp_ext,
   wire TAPU_CPU_WRp_clkevn,
 
-  wire SYKE_ADDR_HIp_ext,
-
   wire FEPO_STORE_MATCHp_new_evn,
   wire PARU_VBLANKp_new_evn,
   wire PURE_LINE_ENDn_new_evn,
@@ -3584,10 +3479,8 @@ void GateBoy::tock_interrupts(
 {
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp_new);
 
-  /* p07.SAPA*/ wire _SAPA_XX_xxxx1111p_ext = and4(BUS_CPU_A[ 0], BUS_CPU_A[ 1], BUS_CPU_A[ 2], BUS_CPU_A[ 3]);
-  /* p07.SEMY*/ wire _SEMY_XX_0000xxxxp_ext = nor4(BUS_CPU_A[ 7], BUS_CPU_A[ 6], BUS_CPU_A[ 5], BUS_CPU_A[ 4]);
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_ext = nand4(TEDO_CPU_RDp_ext, SYKE_ADDR_HIp_ext,  _SEMY_XX_0000xxxxp_ext, _SAPA_XX_xxxx1111p_ext); // schematic wrong, is NAND
-  /* p07.REFA*/ wire _REFA_FF0F_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, SYKE_ADDR_HIp_ext,  _SEMY_XX_0000xxxxp_ext, _SAPA_XX_xxxx1111p_ext); // schematic wrong, is NAND
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_ext = nand4(TEDO_CPU_RDp_ext,    SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
+  /* p07.REFA*/ wire _REFA_FF0F_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -3723,14 +3616,12 @@ void GateBoy::tock_joypad(
   wire AVOR_SYS_RSTp_new,
   wire BOGA_Axxxxxxx_clkevn,
   wire TEDO_CPU_RDp_ext,
-  wire TAPU_CPU_WRp_clkevn,
-  wire SYKE_ADDR_HIp_ext)
+  wire TAPU_CPU_WRp_clkevn)
 {
 
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp_new);
 
-  /* p10.AMUS*/ wire _AMUS_XX_0xx00000p_ext =  nor6(BUS_CPU_A[ 0], BUS_CPU_A[ 1], BUS_CPU_A[ 2], BUS_CPU_A[ 3], BUS_CPU_A[ 4], BUS_CPU_A[ 7]);
-  /* p10.ANAP*/ wire _ANAP_FF_0xx00000_ext  =  and2(SYKE_ADDR_HIp_ext, _AMUS_XX_0xx00000p_ext);
+  /* p10.ANAP*/ wire _ANAP_FF_0xx00000_ext  =  and2(SYKE_ADDR_HIp_ext(BUS_CPU_A), AMUS_XX_0xx00000p_ext(BUS_CPU_A));
   /* p10.BYKO*/ wire _BYKO_A05n_ext = not1(BUS_CPU_A[ 5]);
   /* p10.AKUG*/ wire _AKUG_A06n_ext = not1(BUS_CPU_A[ 6]);
 
@@ -3835,6 +3726,7 @@ void GateBoy::tock_joypad(
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_pix_pipe(
+  wire BUS_CPU_A[16],
   wire BUS_CPU_D[8],
   wire XODO_VID_RSTp_new_h,
 
@@ -3845,16 +3737,6 @@ void GateBoy::tock_pix_pipe(
   wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
   wire NYXU_BFETCH_RSTn_new_xxx,
   wire WUTY_SFETCH_DONE_TRIGp_odd_new,
-
-  wire WERO_ADDR_PPUp_ext,
-  wire XOLA_A00n_ext,
-  wire WADO_A00p_ext,
-  wire XENO_A01n_ext,
-  wire WESA_A01p_ext,
-  wire XUSY_A02n_ext,
-  wire WALO_A02p_ext,
-  wire XERA_A03n_ext,
-  wire WEPO_A03p_ext,
 
   wire &REMY_LD0n_new,
   wire &RAVO_LD1n_new)
@@ -4244,16 +4126,11 @@ void GateBoy::tock_pix_pipe(
 
   [
     this,
+    BUS_CPU_A,
     BUS_CPU_D,
     XODO_VID_RSTp_new_h,
     TEDO_CPU_RDp_ext,
     TAPU_CPU_WRp_clkevn,
-
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext, WADO_A00p_ext,
-    XENO_A01n_ext, WESA_A01p_ext,
-    XUSY_A02n_ext, WALO_A02p_ext,
-    XERA_A03n_ext, WEPO_A03p_ext,
 
     &REMY_LD0n_new,
     &RAVO_LD1n_new
@@ -4266,7 +4143,7 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF47 BGP
-      /* p22.WYBO*/ wire WYBO_FF47n_ext = nand5(WERO_ADDR_PPUp_ext, WADO_A00p_ext, WESA_A01p_ext, WALO_A02p_ext, XERA_A03n_ext);
+      /* p22.WYBO*/ wire WYBO_FF47n_ext = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), WADO_A00p_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), WALO_A02p_ext(BUS_CPU_A), XERA_A03n_ext(BUS_CPU_A));
       /* p22.WERA*/ wire _WERA_FF47p_ext = not1(WYBO_FF47n_ext);
       /* p36.VUSO*/ wire _VUSO_FF47_RDp_ext = and2(ASOT_CPU_RDp_ext, _WERA_FF47p_ext);
       /* p36.VELY*/ wire _VELY_FF47_WRp_clk = and2(CUPA_CPU_WRp_clk, _WERA_FF47p_ext);
@@ -4294,7 +4171,7 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF48 OBP0
-      /* p22.WETA*/ wire WETA_FF48n_ext = nand5(WERO_ADDR_PPUp_ext, XOLA_A00n_ext, XENO_A01n_ext, XUSY_A02n_ext, WEPO_A03p_ext);
+      /* p22.WETA*/ wire WETA_FF48n_ext = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), XOLA_A00n_ext(BUS_CPU_A), XENO_A01n_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), WEPO_A03p_ext(BUS_CPU_A));
       /* p22.XAYO*/ wire _XAYO_FF48p_ext = not1(WETA_FF48n_ext);
       /* p36.XUFY*/ wire _XUFY_FF48_RDp_ext = and2(ASOT_CPU_RDp_ext, _XAYO_FF48p_ext);
       /* p36.XOMA*/ wire _XOMA_FF48_WRp_clk = and2(CUPA_CPU_WRp_clk, _XAYO_FF48p_ext);
@@ -4322,7 +4199,7 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF49 OBP1
-      /* p22.VAMA*/ wire VAMA_FF49n_ext = nand5(WERO_ADDR_PPUp_ext, WADO_A00p_ext, XENO_A01n_ext, XUSY_A02n_ext, WEPO_A03p_ext);
+      /* p22.VAMA*/ wire VAMA_FF49n_ext = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), WADO_A00p_ext(BUS_CPU_A), XENO_A01n_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), WEPO_A03p_ext(BUS_CPU_A));
       /* p22.TEGO*/ wire TEGO_FF49p_ext = not1(VAMA_FF49n_ext);
       /* p36.MUMY*/ wire MUMY_FF49_RDp_ext = and2(ASOT_CPU_RDp_ext, TEGO_FF49p_ext);
       /* p36.MYXE*/ wire MYXE_FF49_WRp_clk = and2(CUPA_CPU_WRp_clk, TEGO_FF49p_ext);
@@ -4572,7 +4449,6 @@ void GateBoy::tock_ext(
     wire ABUZ_xxCDEFGH_clk_evn,
     wire TEDO_CPU_RDp_ext,
     wire APOV_CPU_WRp_clkevn,
-    wire TUNA_0000_FDFF_ext,
     wire TEXO_ADDR_VRAMn_ext,
     wire TUTU_READ_BOOTROMp_new)
 {
@@ -4756,11 +4632,11 @@ void GateBoy::tock_ext(
     PIN_EXT_WRn.pin_out(_UVER_WR_A_new, _USUF_WR_D_new);
   }();
 
-  [this, BUS_CPU_A, ABUZ_xxCDEFGH_clk_evn, TUNA_0000_FDFF_ext](){
+  [this, BUS_CPU_A, ABUZ_xxCDEFGH_clk_evn](){
     /* p08.SOGY*/ wire _SOGY_A14n_ext = not1(BUS_CPU_A[14]);
     /* p08.TUMA*/ wire _TUMA_A000_BFFFp_ext  = and3(BUS_CPU_A[13], _SOGY_A14n_ext, BUS_CPU_A[15]);
     /* p08.TYNU*/ wire _TYNU_A000_FFFFp_ext  = and_or3(BUS_CPU_A[15], BUS_CPU_A[14], _TUMA_A000_BFFFp_ext);
-    /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A_xxCDEFGH_clk = and3(ABUZ_xxCDEFGH_clk_evn, _TYNU_A000_FFFFp_ext, TUNA_0000_FDFF_ext);
+    /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A_xxCDEFGH_clk = and3(ABUZ_xxCDEFGH_clk_evn, _TYNU_A000_FFFFp_ext, TUNA_0000_FDFF_ext(BUS_CPU_A));
     /* p08.TYHO*/ wire _TYHO_PIN_EXT_CS_A_xxCDEFGH_clknew = mux2p(dma_reg.LUMA_DMA_CARTp_new(), dma_reg.MARU_DMA_A15n_h.qn_new(), _TOZA_PIN_EXT_CS_A_xxCDEFGH_clk);
     PIN_EXT_CSn.pin_out(_TYHO_PIN_EXT_CS_A_xxCDEFGH_clknew, _TYHO_PIN_EXT_CS_A_xxCDEFGH_clknew);
   }();
@@ -4903,11 +4779,6 @@ void GateBoy::tock_vram(
 
     wire CATY_LATCH_EXTp_ext,
     wire SOSE_ADDR_VRAMp_ext,
-    wire WERO_ADDR_PPUp_ext,
-    wire XOLA_A00n_ext, wire WADO_A00p_ext,
-    wire XENO_A01n_ext, wire WESA_A01p_ext,
-    wire XERA_A03n_ext, wire WEPO_A03p_ext,
-    wire XUSY_A02n_ext, wire WALO_A02p_ext,
 
     wire TEDO_CPU_RDp_ext,
     wire TAPU_CPU_WRp_clkevn,
@@ -5039,16 +4910,11 @@ void GateBoy::tock_vram(
 
   [
     this,
+    BUS_CPU_A,
     BUS_CPU_D,
     AVOR_SYS_RSTp_new,
     TEDO_CPU_RDp_ext,
-    TAPU_CPU_WRp_clkevn,
-
-    WERO_ADDR_PPUp_ext,
-    XOLA_A00n_ext, WADO_A00p_ext,
-    XENO_A01n_ext, WESA_A01p_ext,
-    XUSY_A02n_ext, WALO_A02p_ext,
-    XERA_A03n_ext, WEPO_A03p_ext
+    TAPU_CPU_WRp_clkevn
   ](){
     // FF42 SCY, FF43 SCX
     /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp_new);
@@ -5060,12 +4926,12 @@ void GateBoy::tock_vram(
     /* p07.DYKY*/ wire _DYKY_CPU_WRn_clk = not1(TAPU_CPU_WRp_clkevn);
     /* p07.CUPA*/ wire _CUPA_CPU_WRp_clk = not1(_DYKY_CPU_WRn_clk);
 
-    /* p22.WEBU*/ wire _WEBU_FF42n_ext = nand5(WERO_ADDR_PPUp_ext, XOLA_A00n_ext, WESA_A01p_ext, XUSY_A02n_ext, XERA_A03n_ext);
+    /* p22.WEBU*/ wire _WEBU_FF42n_ext = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), XOLA_A00n_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), XERA_A03n_ext(BUS_CPU_A));
     /* p22.XARO*/ wire _XARO_FF42p_ext = not1(_WEBU_FF42n_ext);
     /* p23.ANYP*/ wire _ANYP_FF42_RDp_ext = and2(_ASOT_CPU_RDp_ext, _XARO_FF42p_ext);
     /* p23.BEDY*/ wire _BEDY_FF42_WRp_clk = and2(_CUPA_CPU_WRp_clk, _XARO_FF42p_ext);
 
-    /* p22.WAVU*/ wire _WAVU_FF43n_ext = nand5(WERO_ADDR_PPUp_ext, WADO_A00p_ext, WESA_A01p_ext, XUSY_A02n_ext, XERA_A03n_ext);
+    /* p22.WAVU*/ wire _WAVU_FF43n_ext = nand5(WERO_ADDR_PPUp_ext(BUS_CPU_A), WADO_A00p_ext(BUS_CPU_A), WESA_A01p_ext(BUS_CPU_A), XUSY_A02n_ext(BUS_CPU_A), XERA_A03n_ext(BUS_CPU_A));
     /* p22.XAVY*/ wire _XAVY_FF43p_ext = not1(_WAVU_FF43n_ext);
     /* p23.AVOG*/ wire _AVOG_FF43_RDp_ext = and2(_ASOT_CPU_RDp_ext, _XAVY_FF43p_ext);
     /* p23.ARUR*/ wire _ARUR_FF43_WRp_clk = and2(_CUPA_CPU_WRp_clk, _XAVY_FF43p_ext);
@@ -5643,7 +5509,6 @@ void GateBoy::tock_oam(
     wire XYSO_xBCDxFGH_clkodd,
     wire TAPU_CPU_WRp_clkevn,
     wire TEDO_CPU_RDp_ext,
-    wire SARO_ADDR_OAMp_ext,
     wire CATY_LATCH_EXTp_ext,
     wire MATU_DMA_RUNNINGp_new_evn,
     wire XYMU_RENDERINGp_new_xxx,
@@ -5792,13 +5657,13 @@ void GateBoy::tock_oam(
 
   [
     this,
+    BUS_CPU_A,
     BUS_CPU_D,
     UVYT_ABCDxxxx_clkevn,
     TAPU_CPU_WRp_clkevn,
     XYMU_RENDERINGp_new_xxx,
     MATU_DMA_RUNNINGp_new_evn,
-    ACYL_SCANNINGp_new_evn,
-    SARO_ADDR_OAMp_ext
+    ACYL_SCANNINGp_new_evn
   ](){
     /* p04.MOPA*/ wire _MOPA_xxxxEFGH_clk = not1(UVYT_ABCDxxxx_clkevn);
     /* p28.XYNY*/ wire _XYNY_ABCDxxxx_clk = not1(_MOPA_xxxxEFGH_clk);
@@ -5807,15 +5672,15 @@ void GateBoy::tock_oam(
     /* p07.CUPA*/ wire _CUPA_CPU_WRp_clk = not1(_DYKY_CPU_WRn_clk);
 
     // CPU write OAM
-    /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp_ext = and2(SARO_ADDR_OAMp_ext, _CUPA_CPU_WRp_clk);
+    /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp_ext = and2(SARO_ADDR_OAMp_ext(BUS_CPU_A), _CUPA_CPU_WRp_clk);
     /* p28.WUJE*/ oam_bus.WUJE_CPU_OAM_WRn_evn.nor_latch(_XYNY_ABCDxxxx_clk, _XUTO_CPU_OAM_WRp_ext); // slightly weird
 
     /* p28.XUPA*/ wire _XUPA_CPU_OAM_WRp_new = not1(oam_bus.WUJE_CPU_OAM_WRn_evn.qp_new());
-    /* p28.ADAH*/ wire _ADAH_FE00_FEFFn_ext  = not1(SARO_ADDR_OAMp_ext);
+    /* p28.ADAH*/ wire _ADAH_FE00_FEFFn_ext  = not1(SARO_ADDR_OAMp_ext(BUS_CPU_A));
     /*#p28.BOGE*/ wire _BOGE_DMA_RUNNINGn_new_evn = not1(MATU_DMA_RUNNINGp_new_evn);
     /* p28.AJON*/ wire _AJON_RENDERINGp_new_evn = and2(_BOGE_DMA_RUNNINGn_new_evn, XYMU_RENDERINGp_new_xxx); // def AND. ppu can read oam when there's rendering but no dma
     /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn_new   = nor3(MATU_DMA_RUNNINGp_new_evn, ACYL_SCANNINGp_new_evn, _AJON_RENDERINGp_new_evn); // def nor
-    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new = and2(SARO_ADDR_OAMp_ext, _AJUJ_OAM_BUSYn_new); // def and
+    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new = and2(SARO_ADDR_OAMp_ext(BUS_CPU_A), _AJUJ_OAM_BUSYn_new); // def and
     /* p28.APAG*/ wire _APAG_CBD_TO_OBDp_new = amux2(_XUPA_CPU_OAM_WRp_new, _AMAB_CPU_OAM_ENp_new, _AJUJ_OAM_BUSYn_new, _ADAH_FE00_FEFFn_ext);
     /* p28.AZUL*/ wire _AZUL_CBD_TO_OBDn_new = not1(_APAG_CBD_TO_OBDp_new);
 
@@ -5842,11 +5707,11 @@ void GateBoy::tock_oam(
 
   [
     this,
+    BUS_CPU_A,
     XYMU_RENDERINGp_new_xxx,
     ACYL_SCANNINGp_new_evn,
     UVYT_ABCDxxxx_clkevn,
     XYSO_xBCDxFGH_clkodd,
-    SARO_ADDR_OAMp_ext,
     MATU_DMA_RUNNINGp_new_evn
   ](){
 
@@ -5861,7 +5726,7 @@ void GateBoy::tock_oam(
     /* p25.VAPE*/ wire _VAPE_OAM_CLKENn_new = and2(_TUVO_PPU_OAM_RDp_new, _TACU_SPR_SEQ_5_TRIG_new);
     /* p25.XUJY*/ wire _XUJY_OAM_CLKENp_new = not1(_VAPE_OAM_CLKENn_new);
     /* p04.MOPA*/ wire _MOPA_xxxxEFGH_clk = not1(UVYT_ABCDxxxx_clkevn);
-    /* p25.CUFE*/ wire _CUFE_OAM_CLKENp_clknew = not1(or_and3(SARO_ADDR_OAMp_ext, MATU_DMA_RUNNINGp_new_evn, _MOPA_xxxxEFGH_clk)); // CUFE looks like BYHA minus an inverter
+    /* p25.CUFE*/ wire _CUFE_OAM_CLKENp_clknew = not1(or_and3(SARO_ADDR_OAMp_ext(BUS_CPU_A), MATU_DMA_RUNNINGp_new_evn, _MOPA_xxxxEFGH_clk)); // CUFE looks like BYHA minus an inverter
 
     /* p25.BYCU*/ wire _BYCU_OAM_CLKp_new = nand3(AVER_AxxxExxx_clknew, _XUJY_OAM_CLKENp_new, _CUFE_OAM_CLKENp_clknew);
     /* p25.COTA*/ wire _COTA_OAM_CLKn_new = not1(_BYCU_OAM_CLKp_new);
@@ -5873,12 +5738,12 @@ void GateBoy::tock_oam(
 
   [
     this,
+    BUS_CPU_A,
     AVOR_SYS_RSTp_new,
     ATAL_xBxDxFxH_clk_odd,
     UVYT_ABCDxxxx_clkevn,
     TAPU_CPU_WRp_clkevn,
 
-    SARO_ADDR_OAMp_ext,
     CATY_LATCH_EXTp_ext,
 
     XYMU_RENDERINGp_new_xxx,
@@ -5906,7 +5771,7 @@ void GateBoy::tock_oam(
     /*#p28.BOGE*/ wire _BOGE_DMA_RUNNINGn_new_evn = not1(MATU_DMA_RUNNINGp_new_evn);
     /* p28.AJON*/ wire _AJON_RENDERINGp_new_evn = and2(_BOGE_DMA_RUNNINGn_new_evn, XYMU_RENDERINGp_new_xxx); // def AND. ppu can read oam when there's rendering but no dma
     /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn_new   = nor3(MATU_DMA_RUNNINGp_new_evn, ACYL_SCANNINGp_new_evn, _AJON_RENDERINGp_new_evn); // def nor
-    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new = and2(SARO_ADDR_OAMp_ext, _AJUJ_OAM_BUSYn_new); // def and
+    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new = and2(SARO_ADDR_OAMp_ext(BUS_CPU_A), _AJUJ_OAM_BUSYn_new); // def and
     /* p04.NAXY*/ wire   _NAXY_DMA_OAM_WRp_new = nor2(UVYT_ABCDxxxx_clkevn, oam_bus.MAKA_LATCH_EXTp_evn.qp_new()); // def nor2
     /* p04.POWU*/ wire   _POWU_DMA_OAM_WRp_new = and2(MATU_DMA_RUNNINGp_new_evn, _NAXY_DMA_OAM_WRp_new); // def and
     /* p04.WYJA*/ wire   _WYJA_OAM_WRp_new     = and_or3(_AMAB_CPU_OAM_ENp_new, _CUPA_CPU_WRp_clk, _POWU_DMA_OAM_WRp_new);
@@ -5923,11 +5788,11 @@ void GateBoy::tock_oam(
 
   [
     this,
+    BUS_CPU_A,
     XYMU_RENDERINGp_new_xxx,
     ACYL_SCANNINGp_new_evn,
     XOCE_xBCxxFGx_clkodd,
     CATY_LATCH_EXTp_ext,
-    SARO_ADDR_OAMp_ext,
     TEDO_CPU_RDp_ext
   ](){
 
@@ -5941,7 +5806,7 @@ void GateBoy::tock_oam(
     /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn_new  = not1(_WEFY_SPR_READp_new);
     /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn_new = nand2(ACYL_SCANNINGp_new_evn, XOCE_xBCxxFGx_clkodd); // schematic wrong, is def nand2
     /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn_new = not1(CATY_LATCH_EXTp_ext);
-    /*#p28.BOTA*/ wire _BOTA_OAM_OEn_new  = nand3(_BOFE_LATCH_EXTn_new, SARO_ADDR_OAMp_ext, _ASOT_CPU_RDp_ext); // Schematic wrong, this is NAND
+    /*#p28.BOTA*/ wire _BOTA_OAM_OEn_new  = nand3(_BOFE_LATCH_EXTn_new, SARO_ADDR_OAMp_ext(BUS_CPU_A), _ASOT_CPU_RDp_ext); // Schematic wrong, this is NAND
     /*#p28.ASYT*/ wire _ASYT_OAM_OEn_new = and3(_AJEP_SCAN_OAM_LATCHn_new, _XUJA_SPR_OAM_LATCHn_new, _BOTA_OAM_OEn_new); // def and
     /*#p28.BODE*/ wire _BODE_OAM_OEp_new = not1(_ASYT_OAM_OEn_new);
     /*#p28.YVAL*/ wire _YVAL_OAM_OEn_new = not1(_BODE_OAM_OEp_new);
@@ -5974,11 +5839,11 @@ void GateBoy::tock_oam(
 
   [
     this,
+    BUS_CPU_A,
     XYMU_RENDERINGp_new_xxx,
     ACYL_SCANNINGp_new_evn,
     XOCE_xBCxxFGx_clkodd,
     CATY_LATCH_EXTp_ext,
-    SARO_ADDR_OAMp_ext,
     TEDO_CPU_RDp_ext,
     oam_data_latch_a,
     oam_data_latch_b
@@ -5994,7 +5859,7 @@ void GateBoy::tock_oam(
     /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn_new  = not1(_WEFY_SPR_READp_new);
     /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn_new = nand2(ACYL_SCANNINGp_new_evn, XOCE_xBCxxFGx_clkodd); // schematic wrong, is def nand2
     /*#p28.BOFE*/ wire _BOFE_LATCH_EXTn_new = not1(CATY_LATCH_EXTp_ext);
-    /*#p28.BOTA*/ wire _BOTA_OAM_OEn_new  = nand3(_BOFE_LATCH_EXTn_new, SARO_ADDR_OAMp_ext, _ASOT_CPU_RDp_ext); // Schematic wrong, this is NAND
+    /*#p28.BOTA*/ wire _BOTA_OAM_OEn_new  = nand3(_BOFE_LATCH_EXTn_new, SARO_ADDR_OAMp_ext(BUS_CPU_A), _ASOT_CPU_RDp_ext); // Schematic wrong, this is NAND
     /*#p28.ASYT*/ wire _ASYT_OAM_OEn_new = and3(_AJEP_SCAN_OAM_LATCHn_new, _XUJA_SPR_OAM_LATCHn_new, _BOTA_OAM_OEn_new); // def and
     /*#p28.BODE*/ wire _BODE_OAM_OEp_new = not1(_ASYT_OAM_OEn_new);
     /*#p28.YVAL*/ wire _YVAL_OAM_OEn_new = not1(_BODE_OAM_OEp_new);
@@ -6043,12 +5908,12 @@ void GateBoy::tock_oam(
 
   [
     this,
+    BUS_CPU_A,
     TEDO_CPU_RDp_ext,
     CATY_LATCH_EXTp_ext,
     MATU_DMA_RUNNINGp_new_evn,
     ACYL_SCANNINGp_new_evn,
-    XYMU_RENDERINGp_new_xxx,
-    SARO_ADDR_OAMp_ext
+    XYMU_RENDERINGp_new_xxx
   ](){
     /* p07.AJAS*/ wire _AJAS_CPU_RDn_ext = not1(TEDO_CPU_RDp_ext);
     /* p07.ASOT*/ wire _ASOT_CPU_RDp_ext = not1(_AJAS_CPU_RDn_ext);
@@ -6061,7 +5926,7 @@ void GateBoy::tock_oam(
     /*#p28.BOGE*/ wire _BOGE_DMA_RUNNINGn_new_evn = not1(MATU_DMA_RUNNINGp_new_evn);
     /* p28.AJON*/ wire _AJON_RENDERINGp_new_evn = and2(_BOGE_DMA_RUNNINGn_new_evn, XYMU_RENDERINGp_new_xxx); // def AND. ppu can read oam when there's rendering but no dma
     /* p28.AJUJ*/ wire _AJUJ_OAM_BUSYn_new_evn   = nor3(MATU_DMA_RUNNINGp_new_evn, ACYL_SCANNINGp_new_evn, _AJON_RENDERINGp_new_evn); // FIXME old/new
-    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new_evn = and2(SARO_ADDR_OAMp_ext, _AJUJ_OAM_BUSYn_new_evn); // def and
+    /* p28.AMAB*/ wire _AMAB_CPU_OAM_ENp_new_evn = and2(SARO_ADDR_OAMp_ext(BUS_CPU_A), _AJUJ_OAM_BUSYn_new_evn); // def and
 
     // OAM data latch A to CPU
     /* p28.GUKO*/ wire _GUKO_OBL_TO_CBDp_new = and3(_LEKO_CPU_RDp_ext, _AMAB_CPU_OAM_ENp_new_evn, _WAFO_OAM_A0n_new);

@@ -54,17 +54,11 @@ struct DivRegister {
             wire BOGA_Axxxxxxx_clkevn,
             wire TEDO_CPU_RDp_ext,
             wire TAPU_CPU_WRp_clkevn,
-            wire SYKE_ADDR_HIp_ext,
             BusOut BUS_CPU_D_out[8])
   {
 
-    /* p03.TOVY*/ wire _TOVY_A00n_ext = not1(BUS_CPU_A[ 0]);
-    /* p08.TOLA*/ wire _TOLA_A01n_ext = not1(BUS_CPU_A[ 1]);
-    /* p06.SARE*/ wire SARE_XX00_XX07p_ext = nor5(BUS_CPU_A[ 7], BUS_CPU_A[ 6], BUS_CPU_A[ 5],
-                                                  BUS_CPU_A[ 4], BUS_CPU_A[ 3]);
-    /* p03.RYFO*/ wire _RYFO_FF04_FF07p_ext = and3(SYKE_ADDR_HIp_ext, BUS_CPU_A[ 2], SARE_XX00_XX07p_ext);
-    /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext   = and4(TEDO_CPU_RDp_ext, _RYFO_FF04_FF07p_ext, _TOLA_A01n_ext, _TOVY_A00n_ext);
-    /* p01.TAPE*/ wire _TAPE_FF04_WRp_clkevn   = and4(TAPU_CPU_WRp_clkevn, _RYFO_FF04_FF07p_ext, _TOLA_A01n_ext, _TOVY_A00n_ext);
+    /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext    = and4(TEDO_CPU_RDp_ext,    RYFO_FF04_FF07p_ext(BUS_CPU_A), TOLA_A01n_ext(BUS_CPU_A), TOVY_A00n_ext(BUS_CPU_A));
+    /* p01.TAPE*/ wire _TAPE_FF04_WRp_clkevn = and4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext(BUS_CPU_A), TOLA_A01n_ext(BUS_CPU_A), TOVY_A00n_ext(BUS_CPU_A));
 
     /* p01.UFOL*/ wire _UFOL_DIV_RSTn_evn_ext = nor3(UCOB_CLKBADp_ext, sys_rst, _TAPE_FF04_WRp_clkevn);
 
@@ -182,28 +176,23 @@ struct TimerRegisters {
     wire BOGA_Axxxxxxx_clkevn,
     wire TEDO_CPU_RDp_ext,
     wire TAPU_CPU_WRp_clkevn,
-    wire SYKE_ADDR_HIp_ext,
     wire PIN_CPU_LATCH_EXT,
     BusOut BUS_CPU_D_out[8],
     const DivRegister& div_reg)
   {
     /*#p01.ALUR*/ wire ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp_new);
 
-    /* p06.SARE*/ wire SARE_XX00_XX07p_ext = nor5 (BUS_CPU_A[ 7], BUS_CPU_A[ 6], BUS_CPU_A[ 5],
-                                                   BUS_CPU_A[ 4], BUS_CPU_A[ 3]);
-    /* p03.RYFO*/ wire RYFO_FF04_FF07p_ext  = and3(SYKE_ADDR_HIp_ext, BUS_CPU_A[ 2], SARE_XX00_XX07p_ext);
-
     /* p03.TOVY*/ wire TOVY_A00n_ext = not1(BUS_CPU_A[ 0]);
     /* p08.TOLA*/ wire TOLA_A01n_ext = not1(BUS_CPU_A[ 1]);
 
-    /*#p03.TEDA*/ wire _TEDA_FF05_RDp_ext =  and4(TEDO_CPU_RDp_ext, RYFO_FF04_FF07p_ext,  TOLA_A01n_ext,          BUS_CPU_A[ 0]);
-    /*#p03.TOPE*/ wire _TOPE_FF05_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext,  TOLA_A01n_ext,          BUS_CPU_A[ 0]);
+    /*#p03.TEDA*/ wire _TEDA_FF05_RDp_ext =  and4(TEDO_CPU_RDp_ext,    RYFO_FF04_FF07p_ext(BUS_CPU_A),  TOLA_A01n_ext,          BUS_CPU_A[ 0]);
+    /*#p03.TOPE*/ wire _TOPE_FF05_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext(BUS_CPU_A),  TOLA_A01n_ext,          BUS_CPU_A[ 0]);
 
-    /* p03.TUBY*/ wire _TUBY_FF06_RDp_ext =  and4(TEDO_CPU_RDp_ext, RYFO_FF04_FF07p_ext,  BUS_CPU_A[ 1], TOVY_A00n_ext);
-    /* p03.TYJU*/ wire _TYJU_FF06_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext,  BUS_CPU_A[ 1], TOVY_A00n_ext);
+    /* p03.TUBY*/ wire _TUBY_FF06_RDp_ext =  and4(TEDO_CPU_RDp_ext,    RYFO_FF04_FF07p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], TOVY_A00n_ext);
+    /* p03.TYJU*/ wire _TYJU_FF06_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], TOVY_A00n_ext);
 
-    /* p03.SORA*/ wire _SORA_FF07_RDp_ext =  and4(TEDO_CPU_RDp_ext, RYFO_FF04_FF07p_ext,  BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
-    /* p03.SARA*/ wire _SARA_FF07_WRn_clk_evn = nand4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext,  BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
+    /* p03.SORA*/ wire _SORA_FF07_RDp_ext =  and4(TEDO_CPU_RDp_ext,        RYFO_FF04_FF07p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
+    /* p03.SARA*/ wire _SARA_FF07_WRn_clk_evn = nand4(TAPU_CPU_WRp_clkevn, RYFO_FF04_FF07p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
 
     /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp_old = nor2(NUGA_TIMA7p_evn.qp_old(), NYDU_TIMA7p_DELAY_evn.qn_old());
     /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp_evn.dff17(BOGA_Axxxxxxx_clkevn, ALUR_SYS_RSTn_new, _MERY_TIMER_OVERFLOWp_old);

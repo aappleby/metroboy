@@ -605,7 +605,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== LCD =====\001\n");
-  d("PIX COUNT : %03d\n", gb->pix_pipe.get_pix_count());
   d("LX        : %03d\n", gb->reg_lx.get());
   d("LY        : %03d\n", gb->reg_ly.get());
   d("LYC       : %03d\n", gb->reg_lyc.get());
@@ -631,6 +630,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p_evn.state,  7);
   d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p_evn.state,  8);
   d.dump_slice2n("LYC ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
+  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE_xxx.state);
+  d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd._PAHO_X_8_SYNC_odd.state);
+  d.dump_bitp("RUJU                  ", gb->lcd.RUJU_xxx.state);
+  d.dump_bitp("POFY                  ", gb->lcd.POFY_xxx.state);
+  d.dump_bitp("POME                  ", gb->lcd.POME_xxx.state);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -640,7 +644,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Pix Pipe =====\001\n");
-
   d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_pipe.XEHO_PX0p_evn));
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn       ", gb->pix_pipe.XYMU_RENDERINGn_xxx.state);
@@ -662,12 +665,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->pix_pipe._NYZE_SCX_FINE_MATCH_B_evn.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->pix_pipe._ROXY_FINE_SCROLL_DONEn_odd.state);
   d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->pix_pipe.RUPO_STAT_LYC_MATCHn_evn.state);
-  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE_xxx.state);
   d.dump_bitp("VOGA_HBLANKp          ", gb->pix_pipe.VOGA_HBLANKp_xxx.state);
-  d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd._PAHO_X_8_SYNC_odd.state);
-  d.dump_bitp("RUJU                  ", gb->lcd.RUJU_xxx.state);
-  d.dump_bitp("POFY                  ", gb->lcd.POFY_xxx.state);
-  d.dump_bitp("POME                  ", gb->lcd.POME_xxx.state);
   d("\n");
   d.dump_slice2p("PIX COUNT ", &gb->pix_pipe.XEHO_PX0p_evn, 8);
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BGW_PIPE_A0_evn, 8);

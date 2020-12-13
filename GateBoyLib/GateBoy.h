@@ -52,18 +52,18 @@ struct Bootrom {
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
     wire UMUT_MODE_DBG1p_ext,
-    wire AVOR_SYS_RSTp_new,
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn,
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
     uint8_t* boot_buf,
     BusOut BUS_CPU_D_out[8])
   {
     {
       /* p07.TYRO*/ wire _TYRO_XX_0x0x0000p_ext = nor6(BUS_CPU_A[ 7], BUS_CPU_A[ 5], BUS_CPU_A[ 3], BUS_CPU_A[ 2], BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
       /* p07.TUFA*/ wire _TUFA_XX_x1x1xxxxp_ext = and2(BUS_CPU_A[ 4], BUS_CPU_A[ 6]);
-      /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new =  not1(AVOR_SYS_RSTp_new);
-      /* p07.TEXE*/ wire _TEXE_FF50_RDp_ext =  and4(TEDO_CPU_RDp_ext,    SYKE_ADDR_HIp_ext(BUS_CPU_A), _TYRO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
-      /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(TAPU_CPU_WRp_clkevn, SYKE_ADDR_HIp_ext(BUS_CPU_A), _TYRO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
+      /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new =  not1(AVOR_SYS_RSTp);
+      /* p07.TEXE*/ wire _TEXE_FF50_RDp_ext =  and4(TEDO_CPU_RDp,    SYKE_ADDR_HIp_ext(BUS_CPU_A), _TYRO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
+      /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(TAPU_CPU_WRp, SYKE_ADDR_HIp_ext(BUS_CPU_A), _TYRO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
       // FF50 - disable bootrom bit
       /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(BUS_CPU_D[0], BOOT_BITn_h.qp_old());
       /* p07.TEPU*/ BOOT_BITn_h.dff17(_TUGE_FF50_WRn_clk, _ALUR_SYS_RSTn_new, _SATO_BOOT_BITn_old);
@@ -108,7 +108,7 @@ struct Bootrom {
     /* p07.ZADU*/ wire _ZADU_xxxx0000_XXp_ext = nor4(BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]);
     /* p07.ZUFA*/ wire _ZUFA_0000_00FFp_ext  = and2(_ZORO_0000xxxx_XXp_ext, _ZADU_xxxx0000_XXp_ext);
     /* p07.YAZA*/ wire _YAZA_MODE_DBG1n_ext = not1(UMUT_MODE_DBG1p_ext);
-    /* p07.YULA*/ wire _YULA_BOOT_RDp_new   = and3(TEDO_CPU_RDp_ext, _YAZA_MODE_DBG1n_ext, _TUTU_READ_BOOTROMp_new); // def AND
+    /* p07.YULA*/ wire _YULA_BOOT_RDp_new   = and3(TEDO_CPU_RDp, _YAZA_MODE_DBG1n_ext, _TUTU_READ_BOOTROMp_new); // def AND
     /* p07.ZADO*/ wire _ZADO_BOOT_CSn_new   = nand2(_YULA_BOOT_RDp_new, _ZUFA_0000_00FFp_ext);
     /* p07.ZERY*/ wire _ZERY_BOOT_CSp_new   = not1(_ZADO_BOOT_CSn_new);
     BUS_CPU_D_out[0].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x01));
@@ -227,26 +227,26 @@ struct GateBoy {
   void tock_joypad(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp_new,
+    wire AVOR_SYS_RSTp,
     wire BOGA_Axxxxxxx_clkevn,
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp
   );
 
   void tock_serial(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp_new,
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp
   );
 
   void tock_interrupts(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp_new,
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn,
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
 
     wire FEPO_STORE_MATCHp_new_evn,
     wire PARU_VBLANKp_new_evn,
@@ -256,9 +256,9 @@ struct GateBoy {
 
   void tock_reg_lyc(
     wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp_new,
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn,
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
 
     wire WERO_ADDR_PPUp_ext,
     wire XOLA_A00n_ext, wire WADO_A00p_ext,
@@ -270,9 +270,9 @@ struct GateBoy {
   void tock_reg_stat(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp_new,
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn,
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
 
     wire ACYL_SCANNINGp_new_evn,
     wire XYMU_RENDERINGp_new_xxx,
@@ -284,8 +284,8 @@ struct GateBoy {
     wire BUS_CPU_D[8],
     wire XODO_VID_RSTp_new_h,
 
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
 
     wire XYMU_RENDERINGp_new_xxx,
     wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
@@ -314,7 +314,7 @@ struct GateBoy {
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
     wire ABUZ_xxCDEFGH_clk_evn,
-    wire TEDO_CPU_RDp_ext,
+    wire TEDO_CPU_RDp,
     wire APOV_CPU_WRp_clkevn,
     wire TEXO_ADDR_VRAMn_ext,
     wire TUTU_READ_BOOTROMp_new
@@ -324,7 +324,7 @@ struct GateBoy {
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
 
-    wire AVOR_SYS_RSTp_new,
+    wire AVOR_SYS_RSTp,
     wire XODO_VID_RSTp_new_h,
 
     wire ATAL_xBxDxFxH_clk_odd,
@@ -333,8 +333,8 @@ struct GateBoy {
     wire CATY_LATCH_EXTp_ext,
     wire SOSE_ADDR_VRAMp_ext,
 
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
     wire APOV_CPU_WRp_clkevn,
 
     wire TUTO_DBG_VRAMp_new,
@@ -351,13 +351,13 @@ struct GateBoy {
   void tock_oam(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp_new,
+    wire AVOR_SYS_RSTp,
     wire ATAL_xBxDxFxH_clk_odd,
     wire UVYT_ABCDxxxx_clkevn,
     wire XOCE_xBCxxFGx_clkodd,
     wire XYSO_xBCDxFGH_clkodd,
-    wire TAPU_CPU_WRp_clkevn,
-    wire TEDO_CPU_RDp_ext,
+    wire TAPU_CPU_WRp,
+    wire TEDO_CPU_RDp,
     wire CATY_LATCH_EXTp_ext,
     wire MATU_DMA_RUNNINGp_new_evn,
     wire XYMU_RENDERINGp_new_xxx,
@@ -367,8 +367,8 @@ struct GateBoy {
   void tock_zram(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
-    wire TEDO_CPU_RDp_ext,
-    wire TAPU_CPU_WRp_clkevn
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp
   );
 
   //-----------------------------------------------------------------------------

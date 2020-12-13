@@ -935,9 +935,9 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(pclk_reg.APUK_ABxxxxGHp.qp_old(), 0b11000011);
     EXPECT_CLK(pclk_reg.ADYK_ABCxxxxHp.qp_old(), 0b11100001);
 
-    EXPECT_CLK(vclk_reg.WUVU_ABxxEFxxp.qp_old(), 0b11001100);
-    EXPECT_CLK(vclk_reg.VENA_xxCDEFxxp.qp_old(), 0b00111100);
-    EXPECT_CLK(vclk_reg.WOSU_AxxDExxHp.qp_old(), 0b10011001);
+    EXPECT_CLK(vclk_reg.WUVU_ABxxEFxx.qp_old(), 0b11001100);
+    EXPECT_CLK(vclk_reg.VENA_xxCDEFxx.qp_old(), 0b00111100);
+    EXPECT_CLK(vclk_reg.WOSU_AxxDExxH.qp_old(), 0b10011001);
 
 #if 0
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);

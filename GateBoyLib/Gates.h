@@ -304,28 +304,10 @@ struct DFF22 : public DFF {
 
 struct BusIO : public BitBase {
   BusIO() { state = 1; }
-  //void reset() { state = 1; }
 
-  wire qp_in_old() const {
-    return  bit_data();
-  }
-
-  wire qp_in_any() const {
-    return  bit_data();
-  }
-
-  wire qp_in_new() const {
-    CHECK_DIRTYp();
-    return bit_data();
-  }
-
-  void bus_in_old(wire OEp, wire Dp) {
-    CHECK_DIRTYn();
-    if (OEp) {
-      set_data(Dp);
-    }
-    //SET_DIRTY();
-  }
+  wire qp_old() const { return bit_old(); }
+  wire qp_any() const { return bit_data(); }
+  wire qp_new() const { CHECK_DIRTYp(); return bit_data(); }
 
   void tri(wire OEp, wire Dp) {
     if (OEp) {
@@ -351,11 +333,11 @@ struct BusIn : public BitBase {
 
 struct BusOut : public BitBase {
   BusOut() { state = 1; }
-  void reset() { state = 1; }
   void reset(uint8_t s) { state = s; }
 
-  wire qp_old() const { return bit_old(); } // only used by sprite index latching old oam bus value
-  wire qp_out() const { CHECK_DIRTYp(); return  bit_data(); }
+  wire qp_old() const { return bit_old(); }
+  wire qp_any() const { return bit_data(); }
+  wire qp_new() const { CHECK_DIRTYp(); return  bit_data(); }
 
   void tri(wire OEp, wire Dp) {
     if (OEp) {
@@ -372,7 +354,9 @@ struct BusOut : public BitBase {
 //-----------------------------------------------------------------------------
 
 struct PinIO : public BitBase {
-  wire qn_in()    const { CHECK_DIRTYp(); return !bit_data(); }
+  wire qp_old() const { return  bit_old(); }
+  wire qp_any() const { return  bit_data(); }
+  wire qn_new() const { CHECK_DIRTYp(); return !bit_data(); }
 
   void set    (wire Dp)                    { tri(1, Dp); }
   void pin_in (wire OEp, wire Dp)          { tri(OEp, Dp); }
@@ -390,7 +374,9 @@ struct PinIO : public BitBase {
 //----------
 
 struct PinIn : public BitBase {
-  wire qp_in() const { CHECK_DIRTYp(); return  bit_data(); }
+  wire qp_old() const { return  bit_old(); }
+  wire qp_any() const { return  bit_data(); }
+  wire qp_new() const { CHECK_DIRTYp(); return  bit_data(); }
 
   void setp   (wire Dp)           { tri(1, Dp); }
   void setn   (wire Dn)           { tri(1, Dn); }
@@ -409,7 +395,9 @@ struct PinIn : public BitBase {
 struct PinOut : public BitBase {
   using BitBase::reset;
 
-  wire qp_out() const { CHECK_DIRTYp(); return  bit_data(); }
+  wire qp_old() const { return  bit_old(); }
+  wire qp_any() const { return  bit_data(); }
+  wire qp_new() const { CHECK_DIRTYp(); return  bit_data(); }
 
   void setp   (wire Dp)                    { set_data(Dp);                          SET_DIRTY(); }
   void pin_out(wire HI, wire LO)           { set_data((!HI) || (HI != LO));         SET_DIRTY(); }
@@ -429,6 +417,9 @@ struct PinOut : public BitBase {
 struct NorLatch : public BitBase {
   wire qp_old() const   { return  bit_old(); }
   wire qn_old() const   { return !bit_old(); }
+
+  wire qp_any() const   { return  bit_data(); }
+  wire qn_any() const   { return !bit_data(); }
 
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
@@ -453,6 +444,9 @@ struct NorLatch : public BitBase {
 struct NandLatch : public BitBase {
   wire qp_old() const   { return  bit_old(); }
   wire qn_old() const   { return !bit_old(); }
+
+  wire qp_any() const   { return  bit_data(); }
+  wire qn_any() const   { return !bit_data(); }
 
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
@@ -484,6 +478,9 @@ struct NandLatch : public BitBase {
 struct TpLatch : public BitBase {
   wire qp_old() const   { return  bit_old(); }
   wire qn_old() const   { return !bit_old(); }
+
+  wire qp_any() const   { return  bit_data(); }
+  wire qn_any() const   { return !bit_data(); }
 
   wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
   wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }

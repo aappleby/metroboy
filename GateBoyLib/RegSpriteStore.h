@@ -2,6 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 struct PixCounter;
+struct OamTempB;
 
 struct SpriteGetFlag {
   /* p29.GUVA*/ wire GUVA_SPRITE0_GETp;
@@ -105,10 +106,13 @@ struct SpriteStore {
   void get_sprite(SpriteMatch sprite_match, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]);
   void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteGetFlag sprite_flag);
 
+  void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
+
   SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
 
   void store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I[6]);
   void store_sprite_line (SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]);
+  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b);
 
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals

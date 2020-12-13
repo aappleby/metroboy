@@ -17,9 +17,17 @@ struct PhaseClockRegisters {
 };
 
 struct VideoClockRegisters {
-  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxxp;
-  /*p21.VENA*/ DFF17 VENA_xxCDEFxxp;
-  /*p29.WOSU*/ DFF17 WOSU_AxxDExxHp;
+  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
+  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }
+  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(WOSU_AxxDExxH.qp_new()); }
+  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
+  /* p29.XYSO*/ wire XYSO_xBCDxFGH() const { return not1(WOJO_AxxxExxx()); }
+  /*#p30.CYKE*/ wire CYKE_ABxxEFxx() const { return not1(XUPY_ABxxEFxx()); }
+  /*#p30.WUDA*/ wire WUDA_xxCDxxGH() const { return not1(CYKE_ABxxEFxx()); }
+
+  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
+  /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
+  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 };
 
 struct DebugRegisters {

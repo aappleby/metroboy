@@ -521,9 +521,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("APUK_ABxxxxGHp", gb->pclk_reg.APUK_ABxxxxGHp.state);
   d.dump_bitp("ADYK_ABCxxxxHp", gb->pclk_reg.ADYK_ABCxxxxHp.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->vclk_reg.WUVU_ABxxEFxxp.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->vclk_reg.VENA_xxCDEFxxp.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->vclk_reg.WOSU_AxxDExxHp.state);
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->vclk_reg.WUVU_ABxxEFxx.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->vclk_reg.VENA_xxCDEFxx.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->vclk_reg.WOSU_AxxDExxH.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");

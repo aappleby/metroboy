@@ -5,6 +5,8 @@
 
 struct SpriteFetcher {
 
+  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn() const { return not1(TAKA_SFETCH_RUNNINGp_xxx.qp_any()); }
+
   wire TACU_SPR_SEQ_5_TRIG() const {
     /*#p29.TYFO*/ wire _TYFO_SFETCH_S0p_D1 = TYFO_SFETCH_S0p_D1_evn.qp_new();
     /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(TOXE_SFETCH_S0p_odd.qp_new());

@@ -5,6 +5,20 @@
 
 struct TileFetcher {
 
+  void tock(wire ATAL_xBxDxFxH, wire NYXU_BFETCH_RSTn)
+  {
+    /* p27.LAXU*/ LAXU_BFETCH_S0p_evn.RSTn(NYXU_BFETCH_RSTn);
+    /* p27.MESU*/ MESU_BFETCH_S1p_evn.RSTn(NYXU_BFETCH_RSTn);
+    /* p27.NYVA*/ NYVA_BFETCH_S2p_evn.RSTn(NYXU_BFETCH_RSTn);
+
+    /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid_any = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(ALET_xBxDxFxH(ATAL_xBxDxFxH), _MOCE_BFETCH_DONEn_mid_any);
+
+    /* p27.LAXU*/ LAXU_BFETCH_S0p_evn.dff17(_LEBO_AxCxExGx,               NYXU_BFETCH_RSTn, LAXU_BFETCH_S0p_evn.qn_new());
+    /* p27.MESU*/ MESU_BFETCH_S1p_evn.dff17(LAXU_BFETCH_S0p_evn.qn_new(), NYXU_BFETCH_RSTn, MESU_BFETCH_S1p_evn.qn_new());
+    /* p27.NYVA*/ NYVA_BFETCH_S2p_evn.dff17(MESU_BFETCH_S1p_evn.qn_new(), NYXU_BFETCH_RSTn, NYVA_BFETCH_S2p_evn.qn_new());
+  }
+
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const {
     return not1(POKY_PRELOAD_LATCHp_odd.qp_any());
   }
@@ -15,6 +29,10 @@ struct TileFetcher {
     /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new_any = not1(_SUVU_PRELOAD_DONE_TRIGn_new_any);
     return _TAVE_PRELOAD_DONE_TRIGp_new_any;
   }
+
+  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn(wire NYXU_BFETCH_RSTn) const { return nand3(LAXU_BFETCH_S0p_evn.qp_any(), NYVA_BFETCH_S2p_evn.qp_any(), NYXU_BFETCH_RSTn); }
+  /* p27.LYRY*/ wire LYRY_BFETCH_DONEp(wire NYXU_BFETCH_RSTn) const { return not1(MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn)); }
+
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_odd; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp_xxx;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?

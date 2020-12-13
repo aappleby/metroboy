@@ -33,6 +33,7 @@ int main(int argc, char** argv) {
 
   //err += t.test_post_bootrom_state();
   //err += t.test_fastboot_vs_slowboot();
+  //err += t.test_reset_cart_vs_dump();
 
 #if 1
   err += t.test_init();
@@ -86,7 +87,7 @@ int diff(void* a, void* b, int size) {
 
 GateBoy GateBoyTests::create_gb_poweron() {
   GateBoy gb;
-  gb.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
+  gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
   gb.sys_cpu_en = 0;
   return gb;
 }
@@ -796,12 +797,12 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
 
   LOG_B("reset_poweron wtih fastboot = true\n");
   GateBoy gb1;
-  gb1.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
+  gb1.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
   LOG_G("reset_poweron wtih fastboot = true done\n");
 
   LOG_B("reset_poweron wtih fastboot = false\n");
   GateBoy gb2;
-  gb2.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), false);
+  gb2.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), false);
   LOG_G("reset_poweron wtih fastboot = false done\n");
 
   int start = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1);
@@ -812,6 +813,40 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
 
   for (int i = start; i < end; i++) {
     EXPECT_EQ(blob1[i], blob2[i], "Fastboot != slowboot @ %d 0x%02x 0x%02x\n", i, blob1[i], blob2[i]);
+  }
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+// reset_cart() should match dumped reset state.
+
+int GateBoyTests::test_reset_cart_vs_dump() {
+  TEST_START();
+
+  LOG_B("gateboy_post_bootrom.raw.dump\n");
+  GateBoy gb1;
+  gb1.load_dump("gateboy_post_bootrom.raw.dump");
+  LOG_G("gateboy_post_bootrom.raw.dump done\n");
+
+  LOG_B("reset_poweron wtih fastboot = true\n");
+  GateBoy gb2;
+  gb2.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  LOG_G("reset_cart2 done\n");
+
+  // Ignore the framebuffers for now
+  memset(gb1.framebuffer, 0, sizeof(gb1.framebuffer));
+  memset(gb2.framebuffer, 0, sizeof(gb2.framebuffer));
+
+  int start = 0;
+  int end   = offsetof(GateBoy, sentinel3);
+
+  uint8_t* blob1 = (uint8_t*)&gb1;
+  uint8_t* blob2 = (uint8_t*)&gb2;
+
+  for (int i = start; i < end; i++) {
+    //EXPECT_EQ(blob1[i], blob2[i], "reset_cart != gateboy_post_bootrom @ %d 0x%02x 0x%02x\n", i, blob1[i], blob2[i]);
+    if (blob1[i] != blob2[i]) printf("reset_cart != gateboy_post_bootrom @ %d 0x%02x 0x%02x\n", i, blob1[i], blob2[i]);
   }
 
   TEST_END();
@@ -1750,21 +1785,16 @@ void GateBoyTests::run_benchmark() {
   double phase_rate_sum2 = 0;
   double phase_rate_n = 0;
 
-  double pass_rate_sum1 = 0;
-  double pass_rate_sum2 = 0;
-  double pass_rate_n = 0;
-
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gb.reset_poweron(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0, true);
+    gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0, true);
     gb.dbg_req.addr = 0x0150;
     gb.dbg_req.data = 0;
     gb.dbg_req.read = 1;
     gb.dbg_req.write = 0;
     gb.sys_cpu_en = false;
     gb.phase_total = 0;
-    gb.pass_total = 0;
 
     auto start = timestamp();
     gb.run(phase_per_iter);
@@ -1777,28 +1807,17 @@ void GateBoyTests::run_benchmark() {
       phase_rate_sum1 += phase_rate;
       phase_rate_sum2 += phase_rate * phase_rate;
       phase_rate_n++;
-
-      double pass_rate = double(gb.pass_total) / time;
-      pass_rate_sum1 += pass_rate;
-      pass_rate_sum2 += pass_rate * pass_rate;
-      pass_rate_n++;
     }
     LOG(".");
   }
   LOG("Done\n");
 
   LOG("Phase total %d\n", gb.phase_total);
-  LOG("Pass total %d\n", gb.pass_total);
 
   double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
   double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);
   double phase_rate_sigma    = sqrt(phase_rate_variance);
   LOG("Mean phase/sec %f sigma %f\n", phase_rate_mean, phase_rate_sigma);
-
-  double pass_rate_mean     = pass_rate_sum1 / pass_rate_n;
-  double pass_rate_variance = (pass_rate_sum2 / pass_rate_n) - (pass_rate_mean * pass_rate_mean);
-  double pass_rate_sigma    = sqrt(pass_rate_variance);
-  LOG("Mean pass/sec %f sigma %f\n", pass_rate_mean, pass_rate_sigma);
 }
 
 //-----------------------------------------------------------------------------

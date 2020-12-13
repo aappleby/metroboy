@@ -4,33 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct JoypadRegisters {
-
-  void reset_cart() {
-    AWOB_WAKE_CPU.reset(0);
-
-    BATU_JP_GLITCH0.reset(REG_D0C1);
-    ACEF_JP_GLITCH1.reset(REG_D0C1);
-    AGEM_JP_GLITCH2.reset(REG_D0C1);
-    APUG_JP_GLITCH3.reset(REG_D0C1);
-
-    JUTE_JOYP_RA.reset(REG_D0C1);
-    KECY_JOYP_LB.reset(REG_D0C1);
-    JALE_JOYP_UC.reset(REG_D0C1);
-    KYME_JOYP_DS.reset(REG_D0C1);
-    KELY_JOYP_UDLRp.reset(REG_D0C1);
-    COFY_JOYP_ABCSp.reset(REG_D0C1);
-    KUKO_DBG_FF00_D6n.reset(REG_D0C1);
-    KERU_DBG_FF00_D7n.reset(REG_D0C1);
-
-    KEVU_JOYP_L0n.reset(0);
-    KAPA_JOYP_L1n.reset(0);
-    KEJA_JOYP_L2n.reset(0);
-    KOLO_JOYP_L3n.reset(0);
-  }
-
-//private:
-  friend struct GateBoy;
-
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
 

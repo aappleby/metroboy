@@ -45,9 +45,9 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
   // regenerate post-bootrom dump
-  gb_thread.reset_poweron(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
   }
@@ -116,11 +116,10 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
-  gb_thread.gb->pass_total = 0;
 
   gb_thread.gb->dbg_write(ADDR_WY, 113);
   gb_thread.gb->dbg_write(ADDR_WX, 13 + 7);
@@ -213,8 +212,6 @@ void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
   gb_thread.reset_cart(DMG_ROM_blob, load_blob(filename));
-  gb_thread.gb->phase_total = 0;
-  gb_thread.gb->pass_total = 0;
 
   printf("Loaded %zd bytes from rom %s\n", gb_thread.cart.size(), filename);
 }
@@ -388,17 +385,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   else {
     d("State size  %d M\n", state_size / (1024 * 1024));
   }
-  d("Phase count %d\n",      gb->phase_total);
-  d("Pass total  %d\n",      gb->pass_total);
-  d("Pass avg    %f\n",      (float(gb->pass_total) / float(gb->phase_total)) - 2.0);
-  d("Pass hash   %016llx\n", gb->pass_hash);
-  d("Total hash  %016llx\n", gb->total_hash);
   d("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock   %f\n",      double(gb->phase_total) / (4194304.0 * 2));
 
   d("Commands left %d\n",    uint8_t(gb_thread.cursor_w - gb_thread.cursor_r));
   d("Steps left    %d\n",    gb_thread.command.count);
-  d("Sim time      %f\n",    gb->sim_time);
   d("Waiting       %d\n",    gb_thread.sig_waiting.load());
 
   double phase_rate = (gb->phase_total - gb_thread.old_phase_total) / (gb->sim_time - gb_thread.old_sim_time);
@@ -410,6 +401,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb_thread.phase_rate_smooth = (gb_thread.phase_rate_smooth * 0.99) + (phase_rate * 0.01);
 
   d("Phase rate    %f\n",      gb_thread.phase_rate_smooth);
+  d("Sim fps       %f\n",      60.0 * gb_thread.phase_rate_smooth / PHASES_PER_SECOND);
+
   gb_thread.old_phase_total = gb->phase_total;
   gb_thread.old_sim_time = gb->sim_time;
 
@@ -431,27 +424,32 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== GateBoy =====\001\n");
+  d("sys_rst        %d\n",      gb->sys_rst);
+  d("sys_t1         %d\n",      gb->sys_t1);
+  d("sys_t2         %d\n",      gb->sys_t2);
+  d("sys_clken      %d\n",      gb->sys_clken);
+  d("sys_clkgood    %d\n",      gb->sys_clkgood);
+  d("sys_cpuready   %d\n",      gb->sys_cpuready);
+  d("sys_cpu_en     %d\n",      gb->sys_cpu_en);
+  d("sys_fastboot   %d\n",      gb->sys_fastboot);
+  d("sys_cpu_start  %d\n",      gb->sys_cpu_start);
+  d("sys_buttons    %d\n",      gb->sys_buttons);
+  d("\n");
 
-  d("sys_rst        %d\n", gb->sys_rst);
-  d("sys_t1         %d\n", gb->sys_t1);
-  d("sys_t2         %d\n", gb->sys_t2);
-  d("sys_clken      %d\n", gb->sys_clken);
-  d("sys_clkgood    %d\n", gb->sys_clkgood);
-  d("sys_cpuready   %d\n", gb->sys_cpuready);
-  d("sys_cpu_en     %d\n", gb->sys_cpu_en);
-  d("sys_buttons    %d\n", gb->sys_buttons);
-  d("sys_fastboot   %d\n", gb->sys_fastboot);
-
-
-  d("screen_x       %d\n", gb->gb_screen_x);
-  d("screen_y       %d\n", gb->gb_screen_y);
+  d("gb_screen_x    %d\n",      gb->gb_screen_x);
+  d("gb_screen_y    %d\n",      gb->gb_screen_y);
   d("lcd_data_latch %d\n", gb->lcd_data_latch);
-  d.dump_bitp("lcd_pix_lo     ",  gb->lcd.lcd_pix_lo.state);
-  d.dump_bitp("lcd_pix_hi     ",  gb->lcd.lcd_pix_hi.state);
+  d.dump_bitp("lcd_pix_lo ",  gb->lcd.lcd_pix_lo.state);
+  d.dump_bitp("lcd_pix_hi ",  gb->lcd.lcd_pix_hi.state);
 
   d.dump_slice2p("lcd_pipe_lo", gb->lcd.lcd_pipe_lo, 8);
   d.dump_slice2p("lcd_pipe_hi", gb->lcd.lcd_pipe_hi, 8);
+  d("\n");
 
+  d("sim_time    %f\n",      gb->sim_time);
+  d("phase_total %d\n",      gb->phase_total);
+  d("pass_hash   %016llx\n", gb->phase_hash);
+  d("total_hash  %016llx\n", gb->cumulative_hash);
   d("\n");
 
   d("\002===== CPU =====\001\n");

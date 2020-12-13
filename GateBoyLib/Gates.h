@@ -352,6 +352,7 @@ struct BusIn : public BitBase {
 struct BusOut : public BitBase {
   BusOut() { state = 1; }
   void reset() { state = 1; }
+  void reset(uint8_t s) { state = s; }
 
   wire qp_old() const { return bit_old(); } // only used by sprite index latching old oam bus value
   wire qp_out() const { CHECK_DIRTYp(); return  bit_data(); }

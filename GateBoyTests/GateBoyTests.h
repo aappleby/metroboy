@@ -7,6 +7,7 @@ struct GateBoy;
 struct GateBoyTests {
 
   int test_fastboot_vs_slowboot();
+  int test_reset_cart_vs_dump();
 
   int test_init();
   int test_bootrom();

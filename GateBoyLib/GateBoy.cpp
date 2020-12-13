@@ -13,7 +13,7 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
+void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
                             uint8_t* _cart_buf, size_t _cart_size,
                             bool fastboot)
 {
@@ -21,6 +21,7 @@ void GateBoy::reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
   sentinel1 = SENTINEL1;
   sentinel2 = SENTINEL2;
   sentinel3 = SENTINEL3;
+  sentinel4 = SENTINEL4;
 
   boot_buf  = _boot_buf;
   boot_size = _boot_size;
@@ -35,7 +36,6 @@ void GateBoy::reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
   //----------------------------------------
   // In reset
 
-  sys_in_reset_sequence = 1;
   sys_rst = 1;
   sys_fastboot = fastboot;
   run(5);
@@ -66,8 +66,6 @@ void GateBoy::reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
   sys_cpuready = 1;
   sys_cpu_en = true;
 
-  sys_in_reset_sequence = 0;
-
   if (fastboot) {
     div_reg.TERO_DIV03p_evn.reset(REG_D0C1);
     div_reg.UNYK_DIV04p_evn.reset(REG_D0C1);
@@ -80,12 +78,313 @@ void GateBoy::reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
-                         uint8_t* _cart_buf, size_t _cart_size) {
-  boot_buf  = _boot_buf;
-  boot_size = _boot_size;
-  cart_buf  = _cart_buf;
-  cart_size = _cart_size;
+void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size, uint8_t* _cart_buf, size_t _cart_size) {
+  reset_boot(_boot_buf, _boot_size, _cart_buf, _cart_size, true);
+
+  PIN_CPU_BOOTp.reset(REG_D0C0);
+  PIN_CPU_INT_VBLANK.reset(REG_D1C0);
+  PIN_CPU_STARTp.reset(REG_D0C0);
+
+  PIN_CPU_BUKE_AxxxxxGH.reset(REG_D1C0);
+
+  oam_bus.XYKY_OAM_LATCH_DB0n_odd.reset(REG_D1C0);
+  oam_bus.YRUM_OAM_LATCH_DB1n_odd.reset(REG_D1C0);
+  oam_bus.YSEX_OAM_LATCH_DB2n_odd.reset(REG_D1C0);
+  oam_bus.YVEL_OAM_LATCH_DB3n_odd.reset(REG_D1C0);
+  oam_bus.WYNO_OAM_LATCH_DB4n_odd.reset(REG_D1C0);
+  oam_bus.CYRA_OAM_LATCH_DB5n_odd.reset(REG_D1C0);
+  oam_bus.ZUVE_OAM_LATCH_DB6n_odd.reset(REG_D1C0);
+  oam_bus.ECED_OAM_LATCH_DB7n_odd.reset(REG_D1C0);
+
+  oam_bus.YDYV_OAM_LATCH_DA0n_odd.reset(REG_D1C0);
+  oam_bus.YCEB_OAM_LATCH_DA1n_odd.reset(REG_D1C0);
+  oam_bus.ZUCA_OAM_LATCH_DA2n_odd.reset(REG_D1C0);
+  oam_bus.WONE_OAM_LATCH_DA3n_odd.reset(REG_D1C0);
+  oam_bus.ZAXE_OAM_LATCH_DA4n_odd.reset(REG_D1C0);
+  oam_bus.XAFU_OAM_LATCH_DA5n_odd.reset(REG_D1C0);
+  oam_bus.YSES_OAM_LATCH_DA6n_odd.reset(REG_D1C0);
+  oam_bus.ZECA_OAM_LATCH_DA7n_odd.reset(REG_D1C0);
+
+  oam_bus.XUSO_OAM_DA0p_evn.reset(REG_D0C1);
+  oam_bus.XEGU_OAM_DA1p_evn.reset(REG_D0C1);
+  oam_bus.YJEX_OAM_DA2p_evn.reset(REG_D0C1);
+  oam_bus.XYJU_OAM_DA3p_evn.reset(REG_D0C1);
+  oam_bus.YBOG_OAM_DA4p_evn.reset(REG_D0C1);
+  oam_bus.WYSO_OAM_DA5p_evn.reset(REG_D0C1);
+  oam_bus.XOTE_OAM_DA6p_evn.reset(REG_D0C1);
+  oam_bus.YZAB_OAM_DA7p_evn.reset(REG_D0C1);
+
+  oam_bus.YLOR_OAM_DB0p_evn.reset(REG_D0C1);
+  oam_bus.ZYTY_OAM_DB1p_evn.reset(REG_D0C1);
+  oam_bus.ZYVE_OAM_DB2p_evn.reset(REG_D0C1);
+  oam_bus.ZEZY_OAM_DB3p_evn.reset(REG_D0C1);
+  oam_bus.GOMO_OAM_DB4p_evn.reset(REG_D0C1);
+  oam_bus.BAXO_OAM_DB5p_evn.reset(REG_D0C1);
+  oam_bus.YZOS_OAM_DB6p_evn.reset(REG_D0C1);
+  oam_bus.DEPO_OAM_DB7p_evn.reset(REG_D0C1);
+
+  BUS_OAM_An[0].reset(REG_D1C0);
+  BUS_OAM_An[1].reset(REG_D1C0);
+  BUS_OAM_An[2].reset(REG_D1C0);
+  BUS_OAM_An[3].reset(REG_D1C0);
+  BUS_OAM_An[4].reset(REG_D0C0);
+  BUS_OAM_An[5].reset(REG_D1C0);
+  BUS_OAM_An[6].reset(REG_D0C0);
+  BUS_OAM_An[7].reset(REG_D1C0);
+
+  ext_bus.ALOR_EXT_ADDR_LATCH_00p.reset(REG_D1C0);
+  ext_bus.APUR_EXT_ADDR_LATCH_01p.reset(REG_D0C0);
+  ext_bus.ALYR_EXT_ADDR_LATCH_02p.reset(REG_D1C0);
+  ext_bus.ARET_EXT_ADDR_LATCH_03p.reset(REG_D1C0);
+  ext_bus.AVYS_EXT_ADDR_LATCH_04p.reset(REG_D0C0);
+  ext_bus.ATEV_EXT_ADDR_LATCH_05p.reset(REG_D0C0);
+  ext_bus.AROS_EXT_ADDR_LATCH_06p.reset(REG_D1C0);
+  ext_bus.ARYM_EXT_ADDR_LATCH_07p.reset(REG_D0C0);
+  ext_bus.LUNO_EXT_ADDR_LATCH_08p.reset(REG_D0C0);
+  ext_bus.LYSA_EXT_ADDR_LATCH_09p.reset(REG_D0C0);
+  ext_bus.PATE_EXT_ADDR_LATCH_10p.reset(REG_D0C0);
+  ext_bus.LUMY_EXT_ADDR_LATCH_11p.reset(REG_D0C0);
+  ext_bus.LOBU_EXT_ADDR_LATCH_12p.reset(REG_D0C0);
+  ext_bus.LONU_EXT_ADDR_LATCH_13p.reset(REG_D0C0);
+  ext_bus.NYRE_EXT_ADDR_LATCH_14p.reset(REG_D0C0);
+
+  ext_bus.SOMA_EXT_DATA_LATCH_D0n.reset(REG_D1C0);
+  ext_bus.RONY_EXT_DATA_LATCH_D1n.reset(REG_D0C0);
+  ext_bus.RAXY_EXT_DATA_LATCH_D2n.reset(REG_D1C0);
+  ext_bus.SELO_EXT_DATA_LATCH_D3n.reset(REG_D0C0);
+  ext_bus.SODY_EXT_DATA_LATCH_D4n.reset(REG_D1C0);
+  ext_bus.SAGO_EXT_DATA_LATCH_D5n.reset(REG_D1C0);
+  ext_bus.RUPA_EXT_DATA_LATCH_D6n.reset(REG_D1C0);
+  ext_bus.SAZY_EXT_DATA_LATCH_D7n.reset(REG_D1C0);
+
+  PIN_EXT_A[ 0].reset(REG_D1C0);
+  PIN_EXT_A[ 1].reset(REG_D0C0);
+  PIN_EXT_A[ 2].reset(REG_D1C0);
+  PIN_EXT_A[ 3].reset(REG_D1C0);
+  PIN_EXT_A[ 4].reset(REG_D0C0);
+  PIN_EXT_A[ 5].reset(REG_D0C0);
+  PIN_EXT_A[ 6].reset(REG_D1C0);
+  PIN_EXT_A[ 7].reset(REG_D0C0);
+  PIN_EXT_A[ 8].reset(REG_D0C0);
+  PIN_EXT_A[ 9].reset(REG_D0C0);
+  PIN_EXT_A[10].reset(REG_D0C0);
+  PIN_EXT_A[11].reset(REG_D0C0);
+  PIN_EXT_A[12].reset(REG_D0C0);
+  PIN_EXT_A[13].reset(REG_D0C0);
+  PIN_EXT_A[14].reset(REG_D0C0);
+  PIN_EXT_A[15].reset(REG_D1C0);
+
+  PIN_EXT_D[0].reset(REG_D0C0);
+  PIN_EXT_D[1].reset(REG_D1C0);
+  PIN_EXT_D[2].reset(REG_D0C0);
+  PIN_EXT_D[3].reset(REG_D1C0);
+  PIN_EXT_D[4].reset(REG_D0C0);
+  PIN_EXT_D[5].reset(REG_D0C0);
+  PIN_EXT_D[6].reset(REG_D0C0);
+  PIN_EXT_D[7].reset(REG_D0C0);
+
+  BUS_VRAM_An[ 0].reset(REG_D1C0);
+  BUS_VRAM_An[ 1].reset(REG_D1C0);
+  BUS_VRAM_An[ 2].reset(REG_D1C0);
+  BUS_VRAM_An[ 3].reset(REG_D1C0);
+  BUS_VRAM_An[ 4].reset(REG_D0C0);
+  BUS_VRAM_An[ 5].reset(REG_D1C0);
+  BUS_VRAM_An[ 6].reset(REG_D0C0);
+  BUS_VRAM_An[ 7].reset(REG_D1C0);
+  BUS_VRAM_An[ 8].reset(REG_D1C0);
+  BUS_VRAM_An[ 9].reset(REG_D1C0);
+  BUS_VRAM_An[10].reset(REG_D1C0);
+  BUS_VRAM_An[11].reset(REG_D1C0);
+  BUS_VRAM_An[12].reset(REG_D1C0);
+
+  PIN_VRAM_Ap[ 0].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 1].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 2].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 3].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 4].reset(REG_D1C0);
+  PIN_VRAM_Ap[ 5].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 6].reset(REG_D1C0);
+  PIN_VRAM_Ap[ 7].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 8].reset(REG_D0C0);
+  PIN_VRAM_Ap[ 9].reset(REG_D0C0);
+  PIN_VRAM_Ap[10].reset(REG_D0C0);
+  PIN_VRAM_Ap[11].reset(REG_D0C0);
+  PIN_VRAM_Ap[12].reset(REG_D0C0);
+
+  clk_reg.TUBO_WAITINGp.reset(REG_D0C0);
+  clk_reg.WUVU_ABxxEFxxp.reset(REG_D1C1);
+  clk_reg.VENA_xxCDEFxxp.reset(REG_D0C0);
+  clk_reg.WOSU_AxxDExxHp.reset(REG_D1C0);
+
+  div_reg.UKUP_DIV00p_evn.reset(REG_D1C1);
+  div_reg.UFOR_DIV01p_evn.reset(REG_D1C0);
+  div_reg.UNER_DIV02p_evn.reset(REG_D0C0);
+  div_reg.TERO_DIV03p_evn.reset(REG_D0C1);
+  div_reg.UNYK_DIV04p_evn.reset(REG_D1C1);
+  div_reg.TAMA_DIV05p_evn.reset(REG_D1C0);
+  div_reg.UGOT_DIV06p_evn.reset(REG_D1C0);
+  div_reg.TULU_DIV07p_evn.reset(REG_D1C0);
+  div_reg.TUGO_DIV08p_evn.reset(REG_D0C0);
+  div_reg.TOFE_DIV09p_evn.reset(REG_D1C1);
+  div_reg.TERU_DIV10p_evn.reset(REG_D0C0);
+  div_reg.SOLA_DIV11p_evn.reset(REG_D1C1);
+  div_reg.SUBU_DIV12p_evn.reset(REG_D0C0);
+  div_reg.TEKA_DIV13p_evn.reset(REG_D1C1);
+  div_reg.UKET_DIV14p_evn.reset(REG_D1C0);
+  div_reg.UPOF_DIV15p_evn.reset(REG_D1C0);
+
+  bootrom.BOOT_BITn_h.reset(REG_D1C1);
+
+  int_reg.LOPE_FF0F_D0p.reset(REG_D1C1);
+
+  ser_reg.COTY_SER_CLK.reset(REG_D0C0);
+
+  sprite_store.DEZY_COUNT_CLKp_evn.reset(REG_D1C1);
+  sprite_store.BESE_SPRITE_COUNT0_evn.reset(REG_D0C1);
+  sprite_store.CUXY_SPRITE_COUNT1_evn.reset(REG_D0C1);
+  sprite_store.BEGO_SPRITE_COUNT2_evn.reset(REG_D0C1);
+  sprite_store.DYBE_SPRITE_COUNT3_evn.reset(REG_D0C1);
+
+  sprite_store.XADU_SPRITE_IDX0p_evn.reset(REG_D0C1);
+  sprite_store.XEDY_SPRITE_IDX1p_evn.reset(REG_D0C1);
+  sprite_store.ZUZE_SPRITE_IDX2p_evn.reset(REG_D1C1);
+  sprite_store.XOBE_SPRITE_IDX3p_evn.reset(REG_D0C1);
+  sprite_store.YDUF_SPRITE_IDX4p_evn.reset(REG_D1C1);
+  sprite_store.XECU_SPRITE_IDX5p_evn.reset(REG_D0C1);
+
+  SPR_TRI_I_evn[0].reset(REG_D0C0);
+  SPR_TRI_I_evn[1].reset(REG_D0C0);
+  SPR_TRI_I_evn[2].reset(REG_D1C0);
+  SPR_TRI_I_evn[3].reset(REG_D0C0);
+  SPR_TRI_I_evn[4].reset(REG_D1C0);
+  SPR_TRI_I_evn[5].reset(REG_D0C0);
+
+  SPR_TRI_L_evn[0].reset(REG_D1C0);
+  SPR_TRI_L_evn[1].reset(REG_D1C0);
+  SPR_TRI_L_evn[2].reset(REG_D1C0);
+  SPR_TRI_L_evn[3].reset(REG_D1C0);
+
+  sprite_scanner.BESU_SCANNINGp_evn.reset(REG_D0C0);
+  sprite_scanner.CENO_SCANNINGp_evn.reset(REG_D0C1);
+
+  sprite_scanner.BYBA_SCAN_DONE_Ap_evn.reset(REG_D1C1);
+  sprite_scanner.DOBA_SCAN_DONE_Bp_xxx.reset(REG_D1C0);
+
+  sprite_scanner.YFEL_SCAN0_evn.reset(REG_D1C1);
+  sprite_scanner.WEWY_SCAN1_evn.reset(REG_D1C0);
+  sprite_scanner.GOSO_SCAN2_evn.reset(REG_D1C0);
+  sprite_scanner.ELYN_SCAN3_evn.reset(REG_D0C0);
+  sprite_scanner.FAHA_SCAN4_evn.reset(REG_D0C1);
+  sprite_scanner.FONY_SCAN5_evn.reset(REG_D1C1);
+
+  sprite_fetcher.TAKA_SFETCH_RUNNINGp_xxx.reset(REG_D0C0);
+  sprite_fetcher.SOBU_SFETCH_REQp_odd.reset(REG_D0C0);
+  sprite_fetcher.SUDA_SFETCH_REQp_evn.reset(REG_D0C1);
+  sprite_fetcher.TOXE_SFETCH_S0p_odd.reset(REG_D1C1);
+  sprite_fetcher.TULY_SFETCH_S1p_odd.reset(REG_D0C0);
+  sprite_fetcher.TESE_SFETCH_S2p_odd.reset(REG_D1C1);
+  sprite_fetcher.TYFO_SFETCH_S0p_D1_evn.reset(REG_D1C1);
+  sprite_fetcher.TOBU_SFETCH_S1p_D2_odd.reset(REG_D0C0);
+  sprite_fetcher.VONU_SFETCH_S1p_D4_odd.reset(REG_D0C0);
+  sprite_fetcher.SEBA_SFETCH_S1p_D5_evn.reset(REG_D0C1);
+
+  pix_pipe.RUPO_STAT_LYC_MATCHn_evn.reset(REG_D0C0);
+  pix_pipe.VOGA_HBLANKp_xxx.reset(REG_D1C0);
+
+  pix_pipe.XEHO_PX0p_evn.reset(REG_D1C1);
+  pix_pipe.SAVY_PX1p_evn.reset(REG_D1C1);
+  pix_pipe.XODU_PX2p_evn.reset(REG_D1C1);
+  pix_pipe.XYDO_PX3p_evn.reset(REG_D0C1);
+  pix_pipe.TUHU_PX4p_evn.reset(REG_D0C1);
+  pix_pipe.TUKY_PX5p_evn.reset(REG_D1C1);
+  pix_pipe.TAKO_PX6p_evn.reset(REG_D0C1);
+  pix_pipe.SYBE_PX7p_evn.reset(REG_D1C1);
+
+  pix_pipe.VEZO_MASK_PIPE_0_evn.reset(REG_D1C1);
+  pix_pipe.WURU_MASK_PIPE_1_evn.reset(REG_D1C1);
+  pix_pipe.VOSA_MASK_PIPE_2_evn.reset(REG_D1C1);
+  pix_pipe.WYFU_MASK_PIPE_3_evn.reset(REG_D1C1);
+  pix_pipe.XETE_MASK_PIPE_4_evn.reset(REG_D1C1);
+  pix_pipe.WODA_MASK_PIPE_5_evn.reset(REG_D1C1);
+  pix_pipe.VUMO_MASK_PIPE_6_evn.reset(REG_D1C1);
+  pix_pipe.VAVA_MASK_PIPE_7_evn.reset(REG_D1C1);
+
+  pix_pipe.PAVO_BGP_D0n_h.reset(REG_D1C1);
+  pix_pipe.NUSY_BGP_D1n_h.reset(REG_D1C1);
+  pix_pipe.PYLU_BGP_D2n_h.reset(REG_D0C1);
+  pix_pipe.MAXY_BGP_D3n_h.reset(REG_D0C1);
+  pix_pipe.MUKE_BGP_D4n_h.reset(REG_D0C1);
+  pix_pipe.MORU_BGP_D5n_h.reset(REG_D0C1);
+  pix_pipe.MOGY_BGP_D6n_h.reset(REG_D0C1);
+  pix_pipe.MENA_BGP_D7n_h.reset(REG_D0C1);
+
+  reg_lcdc.VYXE_LCDC_BGENn_h  .reset(REG_D0C1);
+  reg_lcdc.XYLO_LCDC_SPENn_h  .reset(REG_D1C1);
+  reg_lcdc.XYMO_LCDC_SPSIZEn_h.reset(REG_D1C1);
+  reg_lcdc.XONA_LCDC_LCDENn_h .reset(REG_D0C1);
+  reg_lcdc.XAFO_LCDC_BGMAPn_h .reset(REG_D1C1);
+  reg_lcdc.WEXU_LCDC_BGTILEn_h.reset(REG_D0C1);
+  reg_lcdc.WYMO_LCDC_WINENn_h .reset(REG_D1C1);
+  reg_lcdc.WOKY_LCDC_WINMAPn_h.reset(REG_D1C1);
+
+  reg_lx.RUTU_x113p_g.reset(REG_D0C1);
+  reg_lx.NYPE_x113p_c.reset(REG_D0C0);
+  reg_lx.SAXO_LX0p_evn.reset(REG_D0C0);
+  reg_lx.TYPO_LX1p_evn.reset(REG_D1C1);
+  reg_lx.VYZO_LX2p_evn.reset(REG_D0C0);
+  reg_lx.TELU_LX3p_evn.reset(REG_D0C1);
+  reg_lx.SUDE_LX4p_evn.reset(REG_D0C1);
+  reg_lx.TAHA_LX5p_evn.reset(REG_D1C1);
+  reg_lx.TYRY_LX6p_evn.reset(REG_D1C0);
+
+  reg_ly.MYTA_y153p_evn.reset(REG_D1C0);
+  reg_ly.MUWY_LY0p_evn.reset(REG_D0C0);
+  reg_ly.MYRO_LY1p_evn.reset(REG_D0C1);
+  reg_ly.LEXA_LY2p_evn.reset(REG_D0C1);
+  reg_ly.LYDO_LY3p_evn.reset(REG_D0C1);
+  reg_ly.LOVU_LY4p_evn.reset(REG_D0C1);
+  reg_ly.LEMA_LY5p_evn.reset(REG_D0C1);
+  reg_ly.MATO_LY6p_evn.reset(REG_D0C1);
+  reg_ly.LAFO_LY7p_evn.reset(REG_D0C1);
+
+  reg_lyc.ROPO_LY_MATCH_SYNCp_c.reset(REG_D1C0);
+
+  lcd.CATU_LINE_P000p_a.reset(REG_D0C1);
+  lcd.ANEL_LINE_P002p_c.reset(REG_D0C0);
+  lcd.POPU_VBLANKp_evn.reset(REG_D1C0);
+  lcd.SYGU_LINE_STROBE_evn.reset(REG_D0C1);
+  lcd.MEDA_VSYNC_OUTn_evn.reset(REG_D1C1);
+  lcd.LUCA_LINE_EVENp_evn.reset(REG_D1C1);
+  lcd.NAPO_FRAME_EVENp_evn.reset(REG_D0C1);
+  lcd.RUJU_xxx.reset(REG_D1C0);
+  lcd.POFY_xxx.reset(REG_D0C0);
+  lcd.POME_xxx.reset(REG_D1C0);
+  lcd.PAHO_X_8_SYNC_odd.reset(REG_D0C1);
+  lcd.WUSA_LCD_CLOCK_GATE_xxx.reset(REG_D0C0);
+
+  lcd.PIN_LCD_DATA1.reset(REG_D0C0);
+  lcd.PIN_LCD_DATA0.reset(REG_D0C0);
+  lcd.PIN_LCD_HSYNC_evn.reset(REG_D0C0);
+  lcd.PIN_LCD_FLIPS_evn.reset(REG_D0C0);
+  lcd.PIN_LCD_CNTRL_evn.reset(REG_D0C0);
+  lcd.PIN_LCD_LATCH_evn.reset(REG_D0C0);
+  lcd.PIN_LCD_CLOCK_xxx.reset(REG_D0C0);
+  lcd.PIN_LCD_VSYNC_evn.reset(REG_D1C0);
+
+  lcd.lcd_pix_lo.reset(REG_D0C0);
+  lcd.lcd_pix_hi.reset(REG_D0C0);
+  memset(lcd.lcd_pipe_lo, 0x02, sizeof(lcd.lcd_pipe_lo));
+  memset(lcd.lcd_pipe_hi, 0x02, sizeof(lcd.lcd_pipe_hi));
+
+  sys_rst = false;
+  sys_t1 = false;
+  sys_t2 = false;
+  sys_clken = true;
+  sys_clkgood = true;
+  sys_cpuready = true;
+  sys_cpu_en = true;
+  sys_fastboot = true;
+  sys_cpu_start = false;
 
   cpu.reset_cart();
 
@@ -96,7 +395,7 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   dbg_req = {0};
   bus_req = cpu_req;
 
-  cpu_data_latch = 1;
+  cpu_data_latch = 0xFF;
   imask_latch = 0;
 
   int_vblank = true;
@@ -110,76 +409,21 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size,
   int_joypad = false;
   int_joypad_halt = false;
 
-  phase_total = 0x02cf5798;
-  pass_total = 0x0c23db7e;
-  pass_hash = 0xdd0849d964666f73;
-  total_hash = 0xdfa0b6a3a264e502;
-
-  sys_rst = 0;
-  sys_t1 = 0;
-  sys_t2 = 0;
-  sys_clken = 1;
-  sys_clkgood = 1;
-  sys_cpuready = 1;
-  sys_cpu_en = 1;
-
   memcpy(vid_ram, vram_boot, 8192);
-  memset(cart_ram, 0, sizeof(cart_ram));
-  memset(ext_ram, 0, sizeof(ext_ram));
-  memset(oam_ram, 0, sizeof(oam_ram));
-  memset(zero_ram, 0, sizeof(zero_ram));
+
   zero_ram[0x7A] = 0x39;
   zero_ram[0x7B] = 0x01;
   zero_ram[0x7C] = 0x2E;
+
   memcpy(framebuffer, framebuffer_boot, 160*144);
 
-  gb_screen_x = 0;
+  gb_screen_x = 159;
   gb_screen_y = 152;
-  lcd_data_latch = 0;
 
-  oam_bus.reset_cart();
-  ext_bus.reset_cart();
-  vram_bus.reset_cart();
-
-  clk_reg.reset_cart();
-  dma_reg.reset_cart();
-  int_reg.reset_cart();
-  joypad.reset_cart();
-
-  reg_lcdc.reset_cart();
-  reg_lx.reset_cart();
-  reg_ly.reset_cart();
-  reg_lyc.reset_cart();
-  lcd.reset_cart();
-
-  pix_pipe.reset_cart();
-  reg_wy.reset_cart();
-  reg_wx.reset_cart();
-  ser_reg.reset_cart();
-  sprite_store.reset_cart();
-  div_reg.reset_cart();
-  tim_reg.reset_cart();
-  tile_fetcher.reset_cart();
-  sprite_fetcher.reset_cart();
-  sprite_scanner.reset_cart();
-  bootrom.reset_cart();
-  SOTO_DBG_VRAMp.reset(REG_D0C1);
-
-  IE_D0.reset(REG_D0C1);
-  IE_D1.reset(REG_D0C1);
-  IE_D2.reset(REG_D0C1);
-  IE_D3.reset(REG_D0C1);
-  IE_D4.reset(REG_D0C1);
-
-  lcd.lcd_pix_lo.reset(0);
-  lcd.lcd_pix_hi.reset(0);
-
-  zram_clk_old = 1;
-
-  for (int i = 0; i < 160; i++) {
-    lcd.lcd_pipe_lo[i].reset(REG_D0C0);
-    lcd.lcd_pipe_hi[i].reset(REG_D0C0);
-  }
+  sim_time = 169.62587129999756;
+  phase_total = 46880728;
+  phase_hash = 0xd53410c0b6bcb522;
+  cumulative_hash = 0x2532ab22e64c63aa;
 }
 
 void GateBoy::set_cart(uint8_t* _boot_buf, size_t _boot_size,
@@ -249,6 +493,15 @@ struct GateBoyOffsets {
   const int o_pix_pipe       = offsetof(GateBoy, pix_pipe);
   const int o_lcd_reg        = offsetof(GateBoy, lcd);
 
+  const int o_cpu            = offsetof(GateBoy, cpu);
+  const int o_vid_ram        = offsetof(GateBoy, vid_ram);
+  const int o_cart_ram       = offsetof(GateBoy, cart_ram);
+  const int o_ext_ram        = offsetof(GateBoy, ext_ram);
+  const int o_oam_ram        = offsetof(GateBoy, oam_ram);
+  const int o_zero_ram       = offsetof(GateBoy, zero_ram);
+  const int o_framebuffer    = offsetof(GateBoy, framebuffer);
+  const int o_gb_screen_x    = offsetof(GateBoy, gb_screen_x);
+
 } gb_offsets;
 
 static std::set<int> bad_bits;
@@ -273,7 +526,6 @@ void GateBoy::next_phase() {
   probes.begin_pass(0);
   probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
   tock_slow(0);
-  pass_total++;
   probes.end_pass(false);
 
   /*
@@ -296,14 +548,13 @@ void GateBoy::next_phase() {
   probes.begin_pass(1);
   probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
   tock_slow(1);
-  pass_total++;
   probes.end_pass(true);
 #endif
 
-  uint64_t pass_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
+  uint64_t phase_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
 
 #ifdef CHECK_SINGLE_PASS
-  if (pass_hash_old != pass_hash_new) {
+  if (pass_hash_old != phase_hash_new) {
     LOG_Y("Sim not stable after second pass!\n");
 
     int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
@@ -365,8 +616,8 @@ void GateBoy::next_phase() {
   // Done, move to the next phase.
 
   phase_total++;
-  pass_hash = pass_hash_new;
-  combine_hash(total_hash, pass_hash);
+  phase_hash = phase_hash_new;
+  combine_hash(cumulative_hash, phase_hash);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

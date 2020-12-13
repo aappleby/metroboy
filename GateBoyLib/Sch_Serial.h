@@ -4,27 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
-  void reset_cart() {
-    ETAF_SER_RUNNING.reset(REG_D0C1);
-    CULY_XFER_DIR.reset(REG_D0C1);
-    COTY_SER_CLK.reset(REG_D0C0);
-    ELYS_SER_OUT.reset(REG_D0C0);
-
-    CAFA_SER_CNT0.reset(REG_D0C1);
-    CYLO_SER_CNT1.reset(REG_D0C1);
-    CYDE_SER_CNT2.reset(REG_D0C1);
-    CALY_SER_CNT3.reset(REG_D0C1);
-
-    CUBA_SER_DATA0.reset(REG_D0C1);
-    DEGU_SER_DATA1.reset(REG_D0C1);
-    DYRA_SER_DATA2.reset(REG_D0C1);
-    DOJO_SER_DATA3.reset(REG_D0C1);
-    DOVU_SER_DATA4.reset(REG_D0C1);
-    EJAB_SER_DATA5.reset(REG_D0C1);
-    EROD_SER_DATA6.reset(REG_D0C1);
-    EDER_SER_DATA7.reset(REG_D0C1);
-  }
-
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
   /*p06.CULY*/ DFF17 CULY_XFER_DIR;    // AxxxDxxH ?
   /*p06.COTY*/ DFF17 COTY_SER_CLK;     // AxxxDxxH ?

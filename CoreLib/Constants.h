@@ -24,6 +24,9 @@ constexpr int samples_per_frame = output_hz / 60;
 //-----------------------------------------------------------------------------
 // Timing config
 
+constexpr double TCYCLES_PER_SECOND = 4194304.0;
+constexpr double PHASES_PER_SECOND = TCYCLES_PER_SECOND * 2.0;
+
 #define TCYCLES_LINE      456
 #define TCYCLES_OAM       80
 #define TCYCLES_VRAM      172

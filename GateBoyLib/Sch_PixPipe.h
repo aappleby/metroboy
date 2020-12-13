@@ -5,17 +5,6 @@
 // FF4A - WY
 
 struct RegWY {
-  void reset_cart() {
-    NESO_WY0n_h.reset(REG_D1C1);
-    NYRO_WY1n_h.reset(REG_D1C1);
-    NAGA_WY2n_h.reset(REG_D1C1);
-    MELA_WY3n_h.reset(REG_D1C1);
-    NULO_WY4n_h.reset(REG_D1C1);
-    NENE_WY5n_h.reset(REG_D1C1);
-    NUKA_WY6n_h.reset(REG_D1C1);
-    NAFU_WY7n_h.reset(REG_D1C1);
-  }
-
   void set(uint8_t wy) {
     NESO_WY0n_h.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
     NYRO_WY1n_h.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
@@ -43,17 +32,6 @@ struct RegWY {
 // FF4B - WX
 
 struct RegWX {
-  void reset_cart() {
-    MYPA_WX0n_h.reset(REG_D1C1);
-    NOFE_WX1n_h.reset(REG_D1C1);
-    NOKE_WX2n_h.reset(REG_D1C1);
-    MEBY_WX3n_h.reset(REG_D1C1);
-    MYPU_WX4n_h.reset(REG_D1C1);
-    MYCE_WX5n_h.reset(REG_D1C1);
-    MUVO_WX6n_h.reset(REG_D1C1);
-    NUKU_WX7n_h.reset(REG_D1C1);
-  }
-
   void set(uint8_t wx) {
     MYPA_WX0n_h.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
     NOFE_WX1n_h.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
@@ -80,133 +58,6 @@ struct RegWX {
 //-----------------------------------------------------------------------------
 
 struct PixelPipe {
-  void reset_cart() {
-    XYMU_RENDERINGn_xxx.reset(1);
-    PYNU_WIN_MODE_Ap_evn.reset(0);
-
-    PUKU_WIN_HITn_evn.reset(REG_D1C0);
-    RYDY_WIN_HITp_evn.reset(REG_D0C0);
-    SOVY_WIN_HITp_odd.reset(REG_D0C0);
-
-    XEHO_PX0p_evn.reset(REG_D1C1);
-    SAVY_PX1p_evn.reset(REG_D1C1);
-    XODU_PX2p_evn.reset(REG_D1C1);
-    XYDO_PX3p_evn.reset(REG_D0C1);
-    TUHU_PX4p_evn.reset(REG_D0C1);
-    TUKY_PX5p_evn.reset(REG_D1C1);
-    TAKO_PX6p_evn.reset(REG_D0C1);
-    SYBE_PX7p_evn.reset(REG_D1C1);
-
-    ROXE_STAT_HBI_ENn_h.reset(REG_D1C1);
-    RUFO_STAT_VBI_ENn_h.reset(REG_D1C1);
-    REFE_STAT_OAI_ENn_h.reset(REG_D1C1);
-    RUGU_STAT_LYI_ENn_h.reset(REG_D1C1);
-
-    NOPA_WIN_MODE_Bp_odd.reset(REG_D0C0);
-    REJO_WY_MATCH_LATCHp_evn.reset(0);
-    SARY_WY_MATCHp_evn.reset(REG_D0C0);
-    RYFA_WIN_FETCHn_A_evn.reset(REG_D0C1);
-    RENE_WIN_FETCHn_B_odd.reset(REG_D0C0);
-    PYCO_WIN_MATCHp_odd.reset(REG_D0C0);
-    NUNU_WIN_MATCHp_evn.reset(REG_D0C1);
-
-    _ROXY_FINE_SCROLL_DONEn_odd.reset(1);
-    _RYKU_FINE_CNT0_xxx.reset(REG_D0C1);
-    _ROGA_FINE_CNT1_xxx.reset(REG_D0C1);
-    _RUBU_FINE_CNT2_xxx.reset(REG_D0C1);
-    _PUXA_SCX_FINE_MATCH_A_odd.reset(REG_D0C0);
-    _NYZE_SCX_FINE_MATCH_B_evn.reset(REG_D0C1);
-
-    RUPO_STAT_LYC_MATCHn_evn.reset(0);
-
-    VOGA_HBLANKp_xxx.reset(REG_D1C0);
-
-    //POFY_HSYNCp.reset(TRI_D0NP);
-
-    MYDE_BGW_PIPE_A0_evn.reset(REG_D0C1);
-    NOZO_BGW_PIPE_A1_evn.reset(REG_D0C1);
-    MOJU_BGW_PIPE_A2_evn.reset(REG_D0C1);
-    MACU_BGW_PIPE_A3_evn.reset(REG_D0C1);
-    NEPO_BGW_PIPE_A4_evn.reset(REG_D0C1);
-    MODU_BGW_PIPE_A5_evn.reset(REG_D0C1);
-    NEDA_BGW_PIPE_A6_evn.reset(REG_D0C1);
-    PYBO_BGW_PIPE_A7_evn.reset(REG_D0C1);
-
-    TOMY_BGW_PIPE_B0_evn.reset(REG_D0C1);
-    TACA_BGW_PIPE_B1_evn.reset(REG_D0C1);
-    SADY_BGW_PIPE_B2_evn.reset(REG_D0C1);
-    RYSA_BGW_PIPE_B3_evn.reset(REG_D0C1);
-    SOBO_BGW_PIPE_B4_evn.reset(REG_D0C1);
-    SETU_BGW_PIPE_B5_evn.reset(REG_D0C1);
-    RALU_BGW_PIPE_B6_evn.reset(REG_D0C1);
-    SOHU_BGW_PIPE_B7_evn.reset(REG_D0C1);
-
-    NURO_SPR_PIPE_A0_evn.reset(REG_D0C1);
-    MASO_SPR_PIPE_A1_evn.reset(REG_D0C1);
-    LEFE_SPR_PIPE_A2_evn.reset(REG_D0C1);
-    LESU_SPR_PIPE_A3_evn.reset(REG_D0C1);
-    WYHO_SPR_PIPE_A4_evn.reset(REG_D0C1);
-    WORA_SPR_PIPE_A5_evn.reset(REG_D0C1);
-    VAFO_SPR_PIPE_A6_evn.reset(REG_D0C1);
-    WUFY_SPR_PIPE_A7_evn.reset(REG_D0C1);
-
-    NYLU_SPR_PIPE_B0_evn.reset(REG_D0C1);
-    PEFU_SPR_PIPE_B1_evn.reset(REG_D0C1);
-    NATY_SPR_PIPE_B2_evn.reset(REG_D0C1);
-    PYJO_SPR_PIPE_B3_evn.reset(REG_D0C1);
-    VARE_SPR_PIPE_B4_evn.reset(REG_D0C1);
-    WEBA_SPR_PIPE_B5_evn.reset(REG_D0C1);
-    VANU_SPR_PIPE_B6_evn.reset(REG_D0C1);
-    VUPY_SPR_PIPE_B7_evn.reset(REG_D0C1);
-
-    RUGO_PAL_PIPE_D0_evn.reset(REG_D0C1);
-    SATA_PAL_PIPE_D1_evn.reset(REG_D0C1);
-    ROSA_PAL_PIPE_D2_evn.reset(REG_D0C1);
-    SOMY_PAL_PIPE_D3_evn.reset(REG_D0C1);
-    PALU_PAL_PIPE_D4_evn.reset(REG_D0C1);
-    NUKE_PAL_PIPE_D5_evn.reset(REG_D0C1);
-    MODA_PAL_PIPE_D6_evn.reset(REG_D0C1);
-    LYME_PAL_PIPE_D7_evn.reset(REG_D0C1);
-
-    VEZO_MASK_PIPE_0_evn.reset(REG_D1C1);
-    WURU_MASK_PIPE_1_evn.reset(REG_D1C1);
-    VOSA_MASK_PIPE_2_evn.reset(REG_D1C1);
-    WYFU_MASK_PIPE_3_evn.reset(REG_D1C1);
-    XETE_MASK_PIPE_4_evn.reset(REG_D1C1);
-    WODA_MASK_PIPE_5_evn.reset(REG_D1C1);
-    VUMO_MASK_PIPE_6_evn.reset(REG_D1C1);
-    VAVA_MASK_PIPE_7_evn.reset(REG_D1C1);
-
-    PAVO_BGP_D0n_h.reset(REG_D1C1);
-    NUSY_BGP_D1n_h.reset(REG_D1C1);
-    PYLU_BGP_D2n_h.reset(REG_D0C1);
-    MAXY_BGP_D3n_h.reset(REG_D0C1);
-    MUKE_BGP_D4n_h.reset(REG_D0C1);
-    MORU_BGP_D5n_h.reset(REG_D0C1);
-    MOGY_BGP_D6n_h.reset(REG_D0C1);
-    MENA_BGP_D7n_h.reset(REG_D0C1);
-
-    XUFU_OBP0_D0n_h.reset(REG_D0C1);
-    XUKY_OBP0_D1n_h.reset(REG_D0C1);
-    XOVA_OBP0_D2n_h.reset(REG_D0C1);
-    XALO_OBP0_D3n_h.reset(REG_D0C1);
-    XERU_OBP0_D4n_h.reset(REG_D0C1);
-    XYZE_OBP0_D5n_h.reset(REG_D0C1);
-    XUPO_OBP0_D6n_h.reset(REG_D0C1);
-    XANA_OBP0_D7n_h.reset(REG_D0C1);
-
-    MOXY_OBP1_D0n_h.reset(REG_D0C1);
-    LAWO_OBP1_D1n_h.reset(REG_D0C1);
-    MOSA_OBP1_D2n_h.reset(REG_D0C1);
-    LOSE_OBP1_D3n_h.reset(REG_D0C1);
-    LUNE_OBP1_D4n_h.reset(REG_D0C1);
-    LUGU_OBP1_D5n_h.reset(REG_D0C1);
-    LEPU_OBP1_D6n_h.reset(REG_D0C1);
-    LUXO_OBP1_D7n_h.reset(REG_D0C1);
-  }
-
-  //----------------------------------------
-
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn_xxx;             // ABxDxFxH Cleared on A, set on BDFH
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx

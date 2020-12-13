@@ -7,49 +7,6 @@ struct CpuBus;
 //-----------------------------------------------------------------------------
 
 struct OamBus {
-  void reset_cart() {
-    MAKA_LATCH_EXTp_evn.reset(REG_D0C1);
-    WUJE_CPU_OAM_WRn_evn.reset(1);
-
-    XYKY_OAM_LATCH_DB0n_odd.reset(1);
-    YRUM_OAM_LATCH_DB1n_odd.reset(1);
-    YSEX_OAM_LATCH_DB2n_odd.reset(1);
-    YVEL_OAM_LATCH_DB3n_odd.reset(1);
-    WYNO_OAM_LATCH_DB4n_odd.reset(1);
-    CYRA_OAM_LATCH_DB5n_odd.reset(1);
-    ZUVE_OAM_LATCH_DB6n_odd.reset(1);
-    ECED_OAM_LATCH_DB7n_odd.reset(1);
-
-    YDYV_OAM_LATCH_DA0n_odd.reset(1);
-    YCEB_OAM_LATCH_DA1n_odd.reset(1);
-    ZUCA_OAM_LATCH_DA2n_odd.reset(1);
-    WONE_OAM_LATCH_DA3n_odd.reset(1);
-    ZAXE_OAM_LATCH_DA4n_odd.reset(1);
-    XAFU_OAM_LATCH_DA5n_odd.reset(1);
-    YSES_OAM_LATCH_DA6n_odd.reset(1);
-    ZECA_OAM_LATCH_DA7n_odd.reset(1);
-
-    XUSO_OAM_DA0p_evn.reset(REG_D0C1);
-    XEGU_OAM_DA1p_evn.reset(REG_D0C1);
-    YJEX_OAM_DA2p_evn.reset(REG_D0C1);
-    XYJU_OAM_DA3p_evn.reset(REG_D0C1);
-    YBOG_OAM_DA4p_evn.reset(REG_D0C1);
-    WYSO_OAM_DA5p_evn.reset(REG_D0C1);
-    XOTE_OAM_DA6p_evn.reset(REG_D0C1);
-    YZAB_OAM_DA7p_evn.reset(REG_D0C1);
-
-    YLOR_OAM_DB0p_evn.reset(REG_D0C1);
-    ZYTY_OAM_DB1p_evn.reset(REG_D0C1);
-    ZYVE_OAM_DB2p_evn.reset(REG_D0C1);
-    ZEZY_OAM_DB3p_evn.reset(REG_D0C1);
-    GOMO_OAM_DB4p_evn.reset(REG_D0C1);
-    BAXO_OAM_DB5p_evn.reset(REG_D0C1);
-    YZOS_OAM_DB6p_evn.reset(REG_D0C1);
-    DEPO_OAM_DB7p_evn.reset(REG_D0C1);
-  }
-
-  //----------------------------------------
-
   /*p04.MAKA*/ DFF17 MAKA_LATCH_EXTp_evn;       // AxxxExxx
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn_evn;   // AxxxExxx
 

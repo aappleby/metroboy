@@ -140,11 +140,11 @@ struct GateBoy {
 
   void dump(Dumper& d) const;
 
-  void reset_poweron(uint8_t* _boot_buf, size_t _boot_size,
+  void reset_boot(uint8_t* _boot_buf, size_t _boot_size,
                      uint8_t* _cart_buf, size_t _cart_size, bool fastboot);
 
   void reset_cart(uint8_t* _boot_buf, size_t _boot_size,
-                  uint8_t* _cart_buf, size_t _cart_size);
+                   uint8_t* _cart_buf, size_t _cart_size);
 
   void set_cart(uint8_t* _boot_buf, size_t _boot_size,
                 uint8_t* _cart_buf, size_t _cart_size);
@@ -183,7 +183,11 @@ struct GateBoy {
       *reinterpret_cast<int*>(SENTINEL4) = 1;
     }
     if (sentinel3 != SENTINEL3) {
-      printf("sentinel2 fail!\n");
+      printf("sentinel3 fail!\n");
+      *reinterpret_cast<int*>(SENTINEL4) = 1;
+    }
+    if (sentinel4 != SENTINEL4) {
+      printf("sentinel4 fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
     }
   }
@@ -554,16 +558,7 @@ struct GateBoy {
   bool sys_cpu_en = 0;
   bool sys_fastboot = 0;
   bool sys_cpu_start = 0;
-  bool sys_in_reset_sequence = 0;
-
   uint8_t sys_buttons = 0;
-
-  double   sim_time = 0;
-  int32_t  phase_total = 0;
-  int32_t  pass_total = 0;
-  uint64_t pass_hash = 0;
-  uint64_t total_hash = 0;
-  Probes   probes;
 
   //-----------------------------------------------------------------------------
   // CPU
@@ -593,12 +588,6 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Memory
 
-  uint8_t* boot_buf = nullptr;
-  size_t   boot_size = 0;
-
-  uint8_t* cart_buf = nullptr;
-  size_t   cart_size = 0;
-
   uint8_t vid_ram [8192];
   uint8_t cart_ram[8192];
   uint8_t ext_ram [8192];
@@ -618,6 +607,21 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
 
   uint64_t sentinel3 = SENTINEL3;
+
+  double   sim_time = 0;
+  int32_t  phase_total = 0;
+  uint64_t phase_hash = 0;
+  uint64_t cumulative_hash = 0;
+
+  Probes   probes;
+
+  uint8_t* boot_buf = nullptr;
+  size_t   boot_size = 0;
+
+  uint8_t* cart_buf = nullptr;
+  size_t   cart_size = 0;
+
+  uint64_t sentinel4 = SENTINEL4;
 };
 #pragma pack(pop)
 

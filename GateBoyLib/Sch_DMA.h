@@ -5,37 +5,6 @@
 
 struct DmaRegisters {
 
-  void reset_cart() {
-    MATU_DMA_RUNNINGp_evn.reset(REG_D0C1);
-
-    NAKY_DMA_A00p_evn.reset(REG_D0C0);
-    PYRO_DMA_A01p_evn.reset(REG_D0C1);
-    NEFY_DMA_A02p_evn.reset(REG_D0C1);
-    MUTY_DMA_A03p_evn.reset(REG_D0C1);
-    NYKO_DMA_A04p_evn.reset(REG_D0C1);
-    PYLO_DMA_A05p_evn.reset(REG_D0C1);
-    NUTO_DMA_A06p_evn.reset(REG_D0C1);
-    MUGU_DMA_A07p_evn.reset(REG_D0C1);
-
-    NAFA_DMA_A08n_h.reset(REG_D0C1);
-    PYNE_DMA_A09n_h.reset(REG_D0C1);
-    PARA_DMA_A10n_h.reset(REG_D0C1);
-    NYDO_DMA_A11n_h.reset(REG_D0C1);
-    NYGY_DMA_A12n_h.reset(REG_D0C1);
-    PULA_DMA_A13n_h.reset(REG_D0C1);
-    POKU_DMA_A14n_h.reset(REG_D0C1);
-    MARU_DMA_A15n_h.reset(REG_D0C1);
-
-    LYXE_DMA_LATCHp_evn.reset(0);
-
-    MYTE_DMA_DONE_evn.reset(REG_D0C0);
-    LUVY_DMA_TRIG_d0_evn.reset(REG_D0C1);
-    LENE_DMA_TRIG_d4_evn.reset(REG_D0C0);
-
-    LARA_DMA_LATCHn_evn.reset(1);
-    LOKY_DMA_LATCHp_evn.reset(0);
-  }
-
   wire LUMA_DMA_CARTp_new() const {
     /*#p04.LEBU*/ wire _LEBU_DMA_A15n_new_h  = not1(MARU_DMA_A15n_h.qn_new());
     /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp_new = nor3(PULA_DMA_A13n_h.qn_new(), POKU_DMA_A14n_h.qn_new(), _LEBU_DMA_A15n_new_h);

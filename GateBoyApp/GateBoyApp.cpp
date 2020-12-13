@@ -446,11 +446,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("screen_x       %d\n", gb->gb_screen_x);
   d("screen_y       %d\n", gb->gb_screen_y);
   d("lcd_data_latch %d\n", gb->lcd_data_latch);
-  d.dump_bitp("lcd_pix_lo     ",  gb->lcd_pix_lo.state);
-  d.dump_bitp("lcd_pix_hi     ",  gb->lcd_pix_hi.state);
+  d.dump_bitp("lcd_pix_lo     ",  gb->lcd.lcd_pix_lo.state);
+  d.dump_bitp("lcd_pix_hi     ",  gb->lcd.lcd_pix_hi.state);
 
-  d.dump_slice2p("lcd_pipe_lo", gb->lcd_pipe_lo, 8);
-  d.dump_slice2p("lcd_pipe_hi", gb->lcd_pipe_hi, 8);
+  d.dump_slice2p("lcd_pipe_lo", gb->lcd.lcd_pipe_lo, 8);
+  d.dump_slice2p("lcd_pipe_hi", gb->lcd.lcd_pipe_hi, 8);
 
   d("\n");
 
@@ -609,8 +609,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("LX        : %03d\n", gb->reg_lx.get());
   d("LY        : %03d\n", gb->reg_ly.get());
   d("LYC       : %03d\n", gb->reg_lyc.get());
-  d.dump_bitp("lcd_pix_lo", gb->lcd_pix_lo.state);
-  d.dump_bitp("lcd_pix_lo", gb->lcd_pix_hi.state);
+  d.dump_bitp("lcd_pix_lo", gb->lcd.lcd_pix_lo.state);
+  d.dump_bitp("lcd_pix_lo", gb->lcd.lcd_pix_hi.state);
 
   d("\n");
 
@@ -620,13 +620,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p_evn.state);
   d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp_c.state);
 
-  d.dump_bitp("POPU_VBLANKp       ", gb->lcd_reg.POPU_VBLANKp_evn.state);
-  d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd_reg.SYGU_LINE_STROBE_evn.state);
-  d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd_reg.MEDA_VSYNC_OUTn_evn.state);
-  d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd_reg.LUCA_LINE_EVENp_evn.state);
-  d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd_reg.NAPO_FRAME_EVENp_evn.state);
-  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd_reg.CATU_LINE_P000p_a.state);
-  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd_reg.ANEL_LINE_P002p_c.state);
+  d.dump_bitp("POPU_VBLANKp       ", gb->lcd.POPU_VBLANKp_evn.state);
+  d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd.SYGU_LINE_STROBE_evn.state);
+  d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd.MEDA_VSYNC_OUTn_evn.state);
+  d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd.LUCA_LINE_EVENp_evn.state);
+  d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd.NAPO_FRAME_EVENp_evn.state);
+  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd.CATU_LINE_P000p_a.state);
+  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd.ANEL_LINE_P002p_c.state);
   d("\n");
   d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p_evn.state,  7);
   d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p_evn.state,  8);
@@ -662,12 +662,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->pix_pipe._NYZE_SCX_FINE_MATCH_B_evn.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->pix_pipe._ROXY_FINE_SCROLL_DONEn_odd.state);
   d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->pix_pipe.RUPO_STAT_LYC_MATCHn_evn.state);
-  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->pix_pipe.WUSA_LCD_CLOCK_GATE_xxx.state);
+  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE_xxx.state);
   d.dump_bitp("VOGA_HBLANKp          ", gb->pix_pipe.VOGA_HBLANKp_xxx.state);
-  d.dump_bitp("PAHO_X_8_SYNC         ", gb->pix_pipe._PAHO_X_8_SYNC_odd.state);
-  d.dump_bitp("RUJU                  ", gb->pix_pipe.RUJU_xxx.state);
-  d.dump_bitp("POFY                  ", gb->pix_pipe.POFY_xxx.state);
-  d.dump_bitp("POME                  ", gb->pix_pipe.POME_xxx.state);
+  d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd._PAHO_X_8_SYNC_odd.state);
+  d.dump_bitp("RUJU                  ", gb->lcd.RUJU_xxx.state);
+  d.dump_bitp("POFY                  ", gb->lcd.POFY_xxx.state);
+  d.dump_bitp("POME                  ", gb->lcd.POME_xxx.state);
   d("\n");
   d.dump_slice2p("PIX COUNT ", &gb->pix_pipe.XEHO_PX0p_evn, 8);
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipe.MYDE_BGW_PIPE_A0_evn, 8);
@@ -873,8 +873,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
       memset(overlay, 0, sizeof(overlay));
 
       for (int x = 0; x < fb_x; x++) {
-        uint8_t p0 = gb->lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
-        uint8_t p1 = gb->lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
+        uint8_t p0 = gb->lcd.lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
+        uint8_t p1 = gb->lcd.lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
 
         int r = (3 - (p0 + p1 * 2)) * 30 + 50;
         int g = (3 - (p0 + p1 * 2)) * 30 + 50;
@@ -883,8 +883,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
         overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
       {
-        uint8_t p0 = gb->lcd_pix_lo.qp_old();
-        uint8_t p1 = gb->lcd_pix_hi.qp_old();
+        uint8_t p0 = gb->lcd.lcd_pix_lo.qp_old();
+        uint8_t p1 = gb->lcd.lcd_pix_hi.qp_old();
 
         int c = (3 - (p0 + p1 * 2)) * 85;
 

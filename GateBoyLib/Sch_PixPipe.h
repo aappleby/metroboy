@@ -116,17 +116,11 @@ struct PixelPipe {
     _RUBU_FINE_CNT2_xxx.reset(REG_D0C1);
     _PUXA_SCX_FINE_MATCH_A_odd.reset(REG_D0C0);
     _NYZE_SCX_FINE_MATCH_B_evn.reset(REG_D0C1);
-    _PAHO_X_8_SYNC_odd.reset(REG_D0C0);
 
     RUPO_STAT_LYC_MATCHn_evn.reset(0);
 
-    WUSA_LCD_CLOCK_GATE_xxx.reset(0);
     VOGA_HBLANKp_xxx.reset(REG_D1C0);
 
-
-    RUJU_xxx.reset(REG_D1C0);
-    POFY_xxx.reset(REG_D0C0);
-    POME_xxx.reset(REG_D1C0);
     //POFY_HSYNCp.reset(TRI_D0NP);
 
     MYDE_BGW_PIPE_A0_evn.reset(REG_D0C1);
@@ -236,14 +230,7 @@ struct PixelPipe {
   /*p27.NYZE*/ DFF17 _NYZE_SCX_FINE_MATCH_B_evn;         // AxxxxxGx
   /*p??.ROXY*/ NorLatch _ROXY_FINE_SCROLL_DONEn_odd; // xBxDxFxH
   /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
-  /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE_xxx;         // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
-  /*p24.PAHO*/ DFF17 _PAHO_X_8_SYNC_odd;                 // xBxDxFxH
-
-  // RUJU+POFY+POME form a nor latch
-  /*p24.RUJU*/ Gate RUJU_xxx; // AxxxxFxx
-  /*p24.POFY*/ Gate POFY_xxx; // AxxxxFxx
-  /*p24.POME*/ Gate POME_xxx; // AxxxxFxx
 
   //----------------------------------------
 

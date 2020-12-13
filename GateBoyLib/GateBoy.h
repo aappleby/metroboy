@@ -528,22 +528,7 @@ struct GateBoy {
   RegLX   reg_lx;
   RegLY   reg_ly;
   RegLYC  reg_lyc;
-  LcdRegisters lcd_reg;
-
-  /*PIN_50*/ PinOut PIN_LCD_DATA1;
-  /*PIN_51*/ PinOut PIN_LCD_DATA0;
-  /*PIN_54*/ PinOut PIN_LCD_HSYNC_evn;
-  /*PIN_56*/ PinOut PIN_LCD_FLIPS_evn;
-  /*PIN_52*/ PinOut PIN_LCD_CNTRL_evn;
-  /*PIN_55*/ PinOut PIN_LCD_LATCH_evn;
-  /*PIN_53*/ PinOut PIN_LCD_CLOCK_xxx;
-  /*PIN_57*/ PinOut PIN_LCD_VSYNC_evn;
-
-  NorLatch lcd_pix_lo;
-  NorLatch lcd_pix_hi;
-
-  DFF lcd_pipe_lo[160];
-  DFF lcd_pipe_hi[160];
+  LcdRegisters lcd;
 
   //----------
 

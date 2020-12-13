@@ -544,16 +544,7 @@ struct GateBoy {
   bool oam_clk_old = 0;
   bool zram_clk_old = 0;
 
-  bool _GUVA_SPRITE0_GETp_old_evn = 0;
-  bool _ENUT_SPRITE1_GETp_old_evn = 0;
-  bool _EMOL_SPRITE2_GETp_old_evn = 0;
-  bool _GYFY_SPRITE3_GETp_old_evn = 0;
-  bool _GONO_SPRITE4_GETp_old_evn = 0;
-  bool _GEGA_SPRITE5_GETp_old_evn = 0;
-  bool _XOJA_SPRITE6_GETp_old_evn = 0;
-  bool _GUTU_SPRITE7_GETp_old_evn = 0;
-  bool _FOXA_SPRITE8_GETp_old_evn = 0;
-  bool _GUZE_SPRITE9_GETp_old_evn = 0;
+  SpriteFlag old_sprite_flag;
 
   //-----------------------------------------------------------------------------
   // Control stuff

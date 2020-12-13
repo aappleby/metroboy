@@ -78,11 +78,11 @@ struct DFF : public BitBase {
   wire qp_old() const   { return  bit_old(); }
   wire qn_old() const   { return !bit_old(); }
 
-  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
-  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
-
   wire qp_any() const   { return  bit_data(); }
   wire qn_any() const   { return !bit_data(); }
+
+  wire qp_new() const   { CHECK_DIRTYp(); return  bit_data(); }
+  wire qn_new() const   { CHECK_DIRTYp(); return !bit_data(); }
 
   void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     if (!bit_clock() && CLKp) set_data(Dp);

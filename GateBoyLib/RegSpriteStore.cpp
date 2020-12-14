@@ -1,6 +1,7 @@
 #include "RegSpriteStore.h"
 #include "Sch_PixPipe.h"
 #include "Sch_OamBus.h"
+#include "RegLCD.h"
 
 //----------------------------------------
 
@@ -233,7 +234,7 @@ SpriteMatch SpriteStore::get_match(wire _AROR_MATCH_ENp_new, const PixCounter& _
   };
 }
 
-void SpriteStore::get_sprite(SpriteMatch sprite_match, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]) {
+void SpriteStore::get_sprite(SpriteMatch sprite_match) {
   SpriteGetFlag sprite_flag = sprite_match.get_flag();
 
   /* p29.FURO*/ wire _FURO_SPRITE0_GETn_new_evn = not1(sprite_flag.GUVA_SPRITE0_GETp);
@@ -489,7 +490,7 @@ void SpriteStore::reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DON
   /* p31.YZOF*/ YZOF_STORE9_X7p_odd.SETn(_DOSY_STORE9_RSTn_new_evn);
 }
 
-void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I[6]) {
+void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag) {
   /* p29.GENY*/ wire _GENY_STORE0_CLKp_new_odd = not1(store_flag.DYHU_STORE0_CLKn);
   /* p29.BYVY*/ wire _BYVY_STORE1_CLKp_new_odd = not1(store_flag.BUCO_STORE1_CLKn);
   /* p29.BUZY*/ wire _BUZY_STORE2_CLKp_new_odd = not1(store_flag.GYFO_STORE2_CLKn);
@@ -572,7 +573,7 @@ void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I
   /* p30.XUFO*/ XUFO_STORE9_I5n_odd.dff8n(_WUFA_STORE9_CLKp_new_odd, SPR_TRI_I[5].qp_any());
 }
 
-void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]) {
+void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag) {
   /* p29.ENOB*/ wire _ENOB_STORE0_CLKp_new_odd = not1(store_flag.DYHU_STORE0_CLKn);
   /* p29.AHOF*/ wire _AHOF_STORE1_CLKp_new_odd = not1(store_flag.BUCO_STORE1_CLKn);
   /* p29.FUKE*/ wire _FUKE_STORE2_CLKp_new_odd = not1(store_flag.GYFO_STORE2_CLKn);
@@ -745,4 +746,57 @@ void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam
   /* p31.YROP*/ YROP_STORE9_X5p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _AROP_SPX5n_new_any);
   /* p31.YNEP*/ YNEP_STORE9_X6p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _XATU_SPX6n_new_any);
   /* p31.YZOF*/ YZOF_STORE9_X7p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _BADY_SPX7n_new_any);
+}
+
+void SpriteStore::get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, BusOut BUS_OAM_An[8]) {
+  wire VCC = 1;
+  /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(BUS_OAM_An[2].qp_old());
+  /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(BUS_OAM_An[3].qp_old());
+  /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(BUS_OAM_An[4].qp_old());
+  /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(BUS_OAM_An[5].qp_old());
+  /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(BUS_OAM_An[6].qp_old());
+  /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(BUS_OAM_An[7].qp_old());
+
+  // Sprite store grabs the sprite index off the _old_ oam address bus
+  /* p30.XADU*/ XADU_SPRITE_IDX0p_evn.dff13(WUDA_xxCDxxGH, VCC, _YFOT_OAM_A2p_old);
+  /* p30.XEDY*/ XEDY_SPRITE_IDX1p_evn.dff13(WUDA_xxCDxxGH, VCC, _YFOC_OAM_A3p_old);
+  /* p30.ZUZE*/ ZUZE_SPRITE_IDX2p_evn.dff13(WUDA_xxCDxxGH, VCC, _YVOM_OAM_A4p_old);
+  /* p30.XOBE*/ XOBE_SPRITE_IDX3p_evn.dff13(WUDA_xxCDxxGH, VCC, _YMEV_OAM_A5p_old);
+  /* p30.YDUF*/ YDUF_SPRITE_IDX4p_evn.dff13(WUDA_xxCDxxGH, VCC, _XEMU_OAM_A6p_old);
+  /* p30.XECU*/ XECU_SPRITE_IDX5p_evn.dff13(WUDA_xxCDxxGH, VCC, _YZET_OAM_A7p_old);
+
+  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(CENO_SCANNINGn, XYMU_RENDERINGp);
+  /*#p30.WUZY*/ SPR_TRI_I[0].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XADU_SPRITE_IDX0p_evn.qn_new());
+  /* p30.WYSE*/ SPR_TRI_I[1].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XEDY_SPRITE_IDX1p_evn.qn_new());
+  /* p30.ZYSU*/ SPR_TRI_I[2].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, ZUZE_SPRITE_IDX2p_evn.qn_new());
+  /* p30.WYDA*/ SPR_TRI_I[3].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XOBE_SPRITE_IDX3p_evn.qn_new());
+  /* p30.WUCO*/ SPR_TRI_I[4].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, YDUF_SPRITE_IDX4p_evn.qn_new());
+  /* p30.WEZA*/ SPR_TRI_I[5].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XECU_SPRITE_IDX5p_evn.qn_new());
+}
+
+void SpriteStore::get_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a) {
+  wire GND = 0;
+
+  /*#p29.EBOS*/ wire EBOS_LY0n_new_evn = not1(reg_ly.MUWY_LY0p_evn.qp_new());
+  /* p29.DASA*/ wire DASA_LY1n_new_evn = not1(reg_ly.MYRO_LY1p_evn.qp_new());
+  /* p29.FUKY*/ wire FUKY_LY2n_new_evn = not1(reg_ly.LEXA_LY2p_evn.qp_new());
+  /* p29.FUVE*/ wire FUVE_LY3n_new_evn = not1(reg_ly.LYDO_LY3p_evn.qp_new());
+
+  /* p29.ERUC*/ wire _ERUC_YDIFF_S0_new = add_s(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p_evn.qp_new(), GND);
+  /* p29.ERUC*/ wire _ERUC_YDIFF_C0_new = add_c(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p_evn.qp_new(), GND);
+  /* p29.ENEF*/ wire _ENEF_YDIFF_S1_new = add_s(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p_evn.qp_new(), _ERUC_YDIFF_C0_new);
+  /* p29.ENEF*/ wire _ENEF_YDIFF_C1_new = add_c(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p_evn.qp_new(), _ERUC_YDIFF_C0_new);
+  /* p29.FECO*/ wire _FECO_YDIFF_S2_new = add_s(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p_evn.qp_new(), _ENEF_YDIFF_C1_new);
+  /* p29.FECO*/ wire _FECO_YDIFF_C2_new = add_c(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p_evn.qp_new(), _ENEF_YDIFF_C1_new);
+  /* p29.GYKY*/ wire _GYKY_YDIFF_S3_new = add_s(FUVE_LY3n_new_evn, oam_temp_a.XYJU_OAM_DA3p_evn.qp_new(), _FECO_YDIFF_C2_new);
+
+  /* p29.DEGE*/ wire _DEGE_SPRITE_DELTA0_new = not1(_ERUC_YDIFF_S0_new);
+  /* p29.DABY*/ wire _DABY_SPRITE_DELTA1_new = not1(_ENEF_YDIFF_S1_new);
+  /* p29.DABU*/ wire _DABU_SPRITE_DELTA2_new = not1(_FECO_YDIFF_S2_new);
+  /* p29.GYSA*/ wire _GYSA_SPRITE_DELTA3_new = not1(_GYKY_YDIFF_S3_new);
+
+  /*#p30.CUCU*/ SPR_TRI_L[0].tri6_nn(FEPO_STORE_MATCHp_new_evn, _DEGE_SPRITE_DELTA0_new);
+  /*#p30.CUCA*/ SPR_TRI_L[1].tri6_nn(FEPO_STORE_MATCHp_new_evn, _DABY_SPRITE_DELTA1_new);
+  /*#p30.CEGA*/ SPR_TRI_L[2].tri6_nn(FEPO_STORE_MATCHp_new_evn, _DABU_SPRITE_DELTA2_new);
+  /*#p30.WENU*/ SPR_TRI_L[3].tri6_nn(FEPO_STORE_MATCHp_new_evn, _GYSA_SPRITE_DELTA3_new);
 }

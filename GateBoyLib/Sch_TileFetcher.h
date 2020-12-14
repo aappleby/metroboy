@@ -99,6 +99,17 @@ struct TileFetcher {
   /* p27.MOCE*/ wire MOCE_BFETCH_DONEn(wire NYXU_BFETCH_RSTn) const { return nand3(LAXU_BFETCH_S0p_evn.qp_any(), NYVA_BFETCH_S2p_evn.qp_any(), NYXU_BFETCH_RSTn); }
   /* p27.LYRY*/ wire LYRY_BFETCH_DONEp(wire NYXU_BFETCH_RSTn) const { return not1(MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn)); }
 
+  /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1(LONY_FETCHINGp_xxx.qp_new()); }
+  /* p27.MESU*/ wire MESU_BFETCH_S1p()     const { return MESU_BFETCH_S1p_evn.qp_new(); }
+  /* p27.NYVA*/ wire NYVA_BFETCH_S2p()     const { return NYVA_BFETCH_S2p_evn.qp_new(); }
+
+  /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1(LUSU_FETCHINGn()); }
+  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1(MESU_BFETCH_S1p()); }
+  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1(NYVA_BFETCH_S2p()); }
+  /* p27.NOGU*/ wire NOGU_BFETCH_01p()     const { return nand2(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
+  /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1(NOGU_BFETCH_01p()); }
+  /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
+  /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_odd; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp_xxx;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?

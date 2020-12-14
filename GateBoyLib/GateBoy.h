@@ -422,7 +422,6 @@ struct GateBoy {
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
     wire PARU_VBLANKp_new_evn,
-    wire PORE_WIN_MODEp_new_evn,
     wire WYMO_LCDC_WINENn_new,
     wire XYMU_RENDERINGp_new_xxx
   );

@@ -104,7 +104,7 @@ struct RegLY {
 
 struct RegLCDC {
 
-  /* p01.XODO*/ wire XODO_VID_RSTp(wire AVOR_SYS_RSTp) const { return nand2(XEBE_SYS_RSTn(AVOR_SYS_RSTp), XONA_LCDC_LCDENn_h.qn_old()); }
+  wire XONA_LCDC_LCDENp() const { return XONA_LCDC_LCDENn_h.qn_old(); }
 
   void tock(wire BUS_CPU_A[16],
             wire BUS_CPU_D[8],

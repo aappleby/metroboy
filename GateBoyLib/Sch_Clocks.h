@@ -15,6 +15,21 @@ struct ResetRegisters {
   /* p01.XARE*/ wire XARE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
   /* p03.MULO*/ wire MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
 
+  /* p01.XODO*/ wire XODO_VID_RSTp(wire XONA_LCDC_LCDENp) const { return nand2(XEBE_SYS_RSTn(), XONA_LCDC_LCDENp); }
+#if 0
+  /* p01.XAPO*/ wire XAPO_VID_RSTn(wire AVOR_SYS_RSTp) const { return not1(XODO_VID_RSTp(AVOR_SYS_RSTp)); }
+  /* p01.LYHA*/ wire LYHA_VID_RSTp(wire AVOR_SYS_RSTp) const { return not1(XAPO_VID_RSTn(AVOR_SYS_RSTp)); }
+  /* p01.LYFE*/ wire LYFE_VID_RSTn(wire AVOR_SYS_RSTp) const { return not1(LYHA_VID_RSTp(AVOR_SYS_RSTp)); }
+  /* p01.TOFU*/ wire TOFU_VID_RSTp(wire AVOR_SYS_RSTp) const { return not1(XAPO_VID_RSTn(AVOR_SYS_RSTp)); }
+  /* p01.ROSY*/ wire ROSY_VID_RSTp(wire AVOR_SYS_RSTp) const { return not1(XAPO_VID_RSTn(AVOR_SYS_RSTp)); }
+  /*#p01.ATAR*/ wire ATAR_VID_RSTp(wire AVOR_SYS_RSTp) const { return not1(XAPO_VID_RSTn(AVOR_SYS_RSTp)); }
+  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn(wire AVOR_SYS_RSTp) const { return not1(ATAR_VID_RSTp(AVOR_SYS_RSTp)); }
+  /* p01.PYRY*/ wire PYRY_VID_RSTp(wire AVOR_SYS_RSTp) const { return not1(XAPO_VID_RSTn(AVOR_SYS_RSTp)); }
+  /* p01.AMYG*/ wire AMYG_VID_RSTp(wire AVOR_SYS_RSTp) const { return not1(XAPO_VID_RSTn(AVOR_SYS_RSTp)); }
+#endif
+
+
+
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
   /*p01.AFER*/ DFF13 AFER_SYS_RSTp_evn;     // AFER should keep clocking even if PIN_CPU_CLKREQ = 0

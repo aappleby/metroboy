@@ -628,11 +628,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p_evn.state,  7);
   d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p_evn.state,  8);
   d.dump_slice2n("LYC ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE_xxx.state);
+  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE.state);
   d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd.PAHO_X_8_SYNC_odd.state);
-  d.dump_bitp("RUJU                  ", gb->lcd.RUJU_xxx.state);
-  d.dump_bitp("POFY                  ", gb->lcd.POFY_xxx.state);
-  d.dump_bitp("POME                  ", gb->lcd.POME_xxx.state);
+  d.dump_bitp("RUJU                  ", gb->lcd.RUJU.state);
+  d.dump_bitp("POFY                  ", gb->lcd.POFY.state);
+  d.dump_bitp("POME                  ", gb->lcd.POME.state);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);

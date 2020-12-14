@@ -1,29 +1,38 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-//-----------------------------------------------------------------------------
+struct OamTempA;
+struct RegLY;
+
+//------------------------------------------------------------------------------------------------------------------------
+
+struct SpriteDeltaY {
+
+  wire GESE_SCAN_MATCH_Yp(wire XYMO_LCDC_SPSIZEn);
+
+  /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
+  /* p29.DABY*/ wire DABY_SPRITE_DELTA1;
+  /* p29.DABU*/ wire DABU_SPRITE_DELTA2;
+  /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3;
+  /* p29.GACE*/ wire GACE_SPRITE_DELTA4;
+  /* p29.GUVU*/ wire GUVU_SPRITE_DELTA5;
+  /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
+  /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
+
+  /* p29.GYKY*/ wire GYKY_YDIFF_S3;
+  /* p29.WUHU*/ wire WUHU_YDIFF_C7;
+};
+
+SpriteDeltaY sprite_delta_y(const OamTempA& oam_temp_a, const RegLY& reg_ly);
+
+//------------------------------------------------------------------------------------------------------------------------
 
 struct ScanCounter {
    /*#p28.FETO*/ wire FETO_SCAN_DONEp() const {
      return and4(YFEL_SCAN0_evn.qp_any(), WEWY_SCAN1_evn.qp_any(), GOSO_SCAN2_evn.qp_any(), FONY_SCAN5_evn.qp_any()); // 32 + 4 + 2 + 1 = 39
    }
 
-   void tock(wire XUPY_ABxxEFxx, wire ANOM_LINE_RSTn) {
-    /* p28.YFEL*/ YFEL_SCAN0_evn.RSTn(ANOM_LINE_RSTn);
-    /* p28.WEWY*/ WEWY_SCAN1_evn.RSTn(ANOM_LINE_RSTn);
-    /* p28.GOSO*/ GOSO_SCAN2_evn.RSTn(ANOM_LINE_RSTn);
-    /* p28.ELYN*/ ELYN_SCAN3_evn.RSTn(ANOM_LINE_RSTn);
-    /* p28.FAHA*/ FAHA_SCAN4_evn.RSTn(ANOM_LINE_RSTn);
-    /* p28.FONY*/ FONY_SCAN5_evn.RSTn(ANOM_LINE_RSTn);
-
-    /* p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(FETO_SCAN_DONEp(), XUPY_ABxxEFxx);
-    /* p28.YFEL*/ YFEL_SCAN0_evn.dff17(GAVA_SCAN_CLOCKp,        ANOM_LINE_RSTn, YFEL_SCAN0_evn.qn_any());
-    /* p28.WEWY*/ WEWY_SCAN1_evn.dff17(YFEL_SCAN0_evn.qn_any(), ANOM_LINE_RSTn, WEWY_SCAN1_evn.qn_any());
-    /* p28.GOSO*/ GOSO_SCAN2_evn.dff17(WEWY_SCAN1_evn.qn_any(), ANOM_LINE_RSTn, GOSO_SCAN2_evn.qn_any());
-    /* p28.ELYN*/ ELYN_SCAN3_evn.dff17(GOSO_SCAN2_evn.qn_any(), ANOM_LINE_RSTn, ELYN_SCAN3_evn.qn_any());
-    /* p28.FAHA*/ FAHA_SCAN4_evn.dff17(ELYN_SCAN3_evn.qn_any(), ANOM_LINE_RSTn, FAHA_SCAN4_evn.qn_any());
-    /* p28.FONY*/ FONY_SCAN5_evn.dff17(FAHA_SCAN4_evn.qn_any(), ANOM_LINE_RSTn, FONY_SCAN5_evn.qn_any());
-   }
+   void tock(wire XUPY_ABxxEFxx, wire ANOM_LINE_RSTn);
 
   /*p28.YFEL*/ DFF17 YFEL_SCAN0_evn;        // AxxxExxx
   /*p28.WEWY*/ DFF17 WEWY_SCAN1_evn;        // Axxxxxxx
@@ -32,6 +41,8 @@ struct ScanCounter {
   /*p28.FAHA*/ DFF17 FAHA_SCAN4_evn;        // Axxxxxxx
   /*p28.FONY*/ DFF17 FONY_SCAN5_evn;        // Axxxxxxx
 };
+
+//------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteScanner {
 
@@ -49,4 +60,4 @@ struct SpriteScanner {
   /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp_xxx; // ABxxxxxx Cleared on A, set on B
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

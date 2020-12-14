@@ -18,6 +18,7 @@
   <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
+    <ClCompile Include="GateBoyBootrom.cpp" />
     <ClCompile Include="GateBoyClocks.cpp" />
     <ClCompile Include="GateBoyDMA.cpp" />
     <ClCompile Include="GateBoyExtBus.cpp" />
@@ -46,6 +47,7 @@
   <ItemGroup>
     <ClInclude Include="BusDump.h" />
     <ClInclude Include="GateBoy.h" />
+    <ClInclude Include="GateBoyBootrom.h" />
     <ClInclude Include="GateBoyThread.h" />
     <ClInclude Include="Gates.h" />
     <ClInclude Include="Probe.h" />

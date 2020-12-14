@@ -45,6 +45,19 @@ struct GateBoyResetDbg {
     /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n_ext, rstdbg.CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn_any());
   }
 
+#if 1
+  void tock2(wire BUS_CPU_A[16],
+             wire BUS_CPU_D[8],
+             wire TEDO_CPU_RDp,
+             wire TAPU_CPU_WRp,
+             BusOut BUS_CPU_D_out[8]);
+
+  wire XONA_LCDC_LCDENp() const { return XONA_LCDC_LCDENn_h.qn_any(); }
+
+  // This is here because it controls the reset signals for all the graphics stuff.
+  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn_h;  // xxxxxxxH
+#endif
+
   //----------------------------------------
 
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed

@@ -480,11 +480,11 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Ints =====\001\n");
-  d.dump_bitp("IE_D0        ", gb->IE_D0.state);
-  d.dump_bitp("IE_D1        ", gb->IE_D1.state);
-  d.dump_bitp("IE_D2        ", gb->IE_D2.state);
-  d.dump_bitp("IE_D3        ", gb->IE_D3.state);
-  d.dump_bitp("IE_D4        ", gb->IE_D4.state);
+  d.dump_bitp("IE_D0        ", gb->int_reg.IE_D0.state);
+  d.dump_bitp("IE_D1        ", gb->int_reg.IE_D1.state);
+  d.dump_bitp("IE_D2        ", gb->int_reg.IE_D2.state);
+  d.dump_bitp("IE_D3        ", gb->int_reg.IE_D3.state);
+  d.dump_bitp("IE_D4        ", gb->int_reg.IE_D4.state);
   d("\n");
   d.dump_bitp("LOPE_FF0F_0  ", gb->int_reg.LOPE_FF0F_D0p.state);
   d.dump_bitp("LALU_FF0F_1  ", gb->int_reg.LALU_FF0F_D1p.state);
@@ -560,12 +560,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Serial =====\001\n");
-  d.dump_bitp   ("ETAF_SER_RUNNING", gb->ser_reg.ETAF_SER_RUNNING.state);
-  d.dump_bitp   ("CULY_XFER_DIR   ", gb->ser_reg.CULY_XFER_DIR.state);
-  d.dump_bitp   ("COTY_SER_CLK    ", gb->ser_reg.COTY_SER_CLK.state);
-  d.dump_bitp   ("ELYS_SER_OUT    ", gb->ser_reg.ELYS_SER_OUT.state);
-  d.dump_slice2p("CAFA_SER_CNT    ", &gb->ser_reg.CAFA_SER_CNT0, 4);
-  d.dump_slice2p("CUBA_SER_DATA   ", &gb->ser_reg.CUBA_SER_DATA0, 8);
+  d.dump_bitp   ("ETAF_SER_RUNNING", gb->serial.ETAF_SER_RUNNING.state);
+  d.dump_bitp   ("CULY_XFER_DIR   ", gb->serial.CULY_XFER_DIR.state);
+  d.dump_bitp   ("COTY_SER_CLK    ", gb->serial.COTY_SER_CLK.state);
+  d.dump_bitp   ("ELYS_SER_OUT    ", gb->serial.ELYS_SER_OUT.state);
+  d.dump_slice2p("CAFA_SER_CNT    ", &gb->serial.CAFA_SER_CNT0, 4);
+  d.dump_slice2p("CUBA_SER_DATA   ", &gb->serial.CUBA_SER_DATA0, 8);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);

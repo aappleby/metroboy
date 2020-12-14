@@ -18,11 +18,12 @@
   <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
+    <ClCompile Include="GateBoySerial.cpp" />
     <ClCompile Include="GateBoyThread.cpp" />
     <ClCompile Include="Gates.cpp" />
     <ClCompile Include="Probe.cpp" />
-    <ClCompile Include="RegLCD.cpp" />
-    <ClCompile Include="RegSpriteStore.cpp" />
+    <ClCompile Include="GateBoyLCD.cpp" />
+    <ClCompile Include="GateBoySpriteStore.cpp" />
     <ClCompile Include="Sch_ApuControl.cpp" />
     <ClCompile Include="Sch_Channel1.cpp" />
     <ClCompile Include="Sch_Channel2.cpp" />
@@ -36,26 +37,26 @@
     <ClInclude Include="GateBoyThread.h" />
     <ClInclude Include="Gates.h" />
     <ClInclude Include="Probe.h" />
-    <ClInclude Include="RegLCD.h" />
+    <ClInclude Include="GateBoyLCD.h" />
     <ClInclude Include="Sch_ApuControl.h" />
     <ClInclude Include="Sch_Channel1.h" />
     <ClInclude Include="Sch_Channel2.h" />
     <ClInclude Include="Sch_Channel3.h" />
     <ClInclude Include="Sch_Channel4.h" />
-    <ClInclude Include="Sch_Clocks.h" />
-    <ClInclude Include="Sch_DMA.h" />
-    <ClInclude Include="Sch_ExtBus.h" />
-    <ClInclude Include="Sch_Interrupts.h" />
-    <ClInclude Include="Sch_Joypad.h" />
-    <ClInclude Include="Sch_OamBus.h" />
-    <ClInclude Include="Sch_PixPipe.h" />
-    <ClInclude Include="Sch_Serial.h" />
-    <ClInclude Include="Sch_SpriteFetcher.h" />
-    <ClInclude Include="Sch_SpriteScanner.h" />
-    <ClInclude Include="RegSpriteStore.h" />
-    <ClInclude Include="Sch_TileFetcher.h" />
-    <ClInclude Include="Sch_Timer.h" />
-    <ClInclude Include="Sch_VramBus.h" />
+    <ClInclude Include="GateBoyClocks.h" />
+    <ClInclude Include="GateBoyDMA.h" />
+    <ClInclude Include="GateBoyExtBus.h" />
+    <ClInclude Include="GateBoyInterrupts.h" />
+    <ClInclude Include="GateBoyJoypad.h" />
+    <ClInclude Include="GateBoyOamBus.h" />
+    <ClInclude Include="GateBoyPixPipe.h" />
+    <ClInclude Include="GateBoySerial.h" />
+    <ClInclude Include="GateBoySpriteFetcher.h" />
+    <ClInclude Include="GateBoySpriteScanner.h" />
+    <ClInclude Include="GateBoySpriteStore.h" />
+    <ClInclude Include="GateBoyTileFetcher.h" />
+    <ClInclude Include="GateBoyTimer.h" />
+    <ClInclude Include="GateBoyVramBus.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="GateBoy.natvis" />

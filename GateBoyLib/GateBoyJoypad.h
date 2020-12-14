@@ -25,6 +25,13 @@ struct JoypadRegisters {
   /*p05.KAPA*/ TpLatch KAPA_JOYP_L1n; // 10-rung, looks like pass gate or something
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2n; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3n; // 10-rung, looks like pass gate or something
+
+  PinIn  PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
+  PinIn  PIN_JOY_P11; // PIN_66
+  PinIn  PIN_JOY_P12; // PIN_65
+  PinIn  PIN_JOY_P13; // PIN_64
+  PinOut PIN_JOY_P14; // PIN_63
+  PinOut PIN_JOY_P15; // PIN_62
 };
 
 //-----------------------------------------------------------------------------

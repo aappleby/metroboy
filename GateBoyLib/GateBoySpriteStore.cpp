@@ -1,7 +1,7 @@
-#include "RegSpriteStore.h"
-#include "Sch_PixPipe.h"
-#include "Sch_OamBus.h"
-#include "RegLCD.h"
+#include "GateBoyLib/GateBoySpriteStore.h"
+#include "GateBoyLib/GateBoyPixPipe.h"
+#include "GateBoyLib/GateBoyOamBus.h"
+#include "GateBoyLib/GateBoyLCD.h"
 
 //----------------------------------------
 

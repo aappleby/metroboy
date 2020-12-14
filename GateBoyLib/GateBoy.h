@@ -5,21 +5,22 @@
 #include "CoreLib/Constants.h"
 
 #include "GateBoyLib/Probe.h"
-#include "GateBoyLib/Sch_Timer.h"
-#include "GateBoyLib/RegLCD.h"
-#include "GateBoyLib/Sch_DMA.h"
-#include "GateBoyLib/RegSpriteStore.h"
-#include "GateBoyLib/Sch_Clocks.h"
-#include "GateBoyLib/Sch_PixPipe.h"
-#include "GateBoyLib/Sch_Joypad.h"
-#include "GateBoyLib/Sch_Serial.h"
-#include "GateBoyLib/Sch_Interrupts.h"
-#include "GateBoyLib/Sch_SpriteFetcher.h"
-#include "GateBoyLib/Sch_TileFetcher.h"
-#include "GateBoyLib/Sch_SpriteScanner.h"
-#include "GateBoyLib/Sch_ExtBus.h"
-#include "GateBoyLib/Sch_OamBus.h"
-#include "GateBoyLib/Sch_VramBus.h"
+
+#include "GateBoyLib/GateBoyTimer.h"
+#include "GateBoyLib/GateBoyLCD.h"
+#include "GateBoyLib/GateBoyDMA.h"
+#include "GateBoyLib/GateBoySpriteStore.h"
+#include "GateBoyLib/GateBoyClocks.h"
+#include "GateBoyLib/GateBoyPixPipe.h"
+#include "GateBoyLib/GateBoyJoypad.h"
+#include "GateBoyLib/GateBoySerial.h"
+#include "GateBoyLib/GateBoyInterrupts.h"
+#include "GateBoyLib/GateBoySpriteFetcher.h"
+#include "GateBoyLib/GateBoyTileFetcher.h"
+#include "GateBoyLib/GateBoySpriteScanner.h"
+#include "GateBoyLib/GateBoyExtBus.h"
+#include "GateBoyLib/GateBoyOamBus.h"
+#include "GateBoyLib/GateBoyVramBus.h"
 
 //-----------------------------------------------------------------------------
 
@@ -302,14 +303,6 @@ struct GateBoy {
     wire TAPU_CPU_WRp
   );
 
-  void tock_serial(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp
-  );
-
   void tock_interrupts(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
@@ -492,12 +485,7 @@ struct GateBoy {
 
   ExtDataLatch ext_data_latch;
   ExtAddrLatch ext_addr_latch;
-  PinOut PIN_EXT_CLK;    // PIN_75
-  PinOut PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
-  PinOut PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
-  PinOut PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
-  PinOut PIN_EXT_A[16];
-  PinIO  PIN_EXT_D[8];
+  ExtBus ext_bus;
 
   //----------
 
@@ -524,28 +512,14 @@ struct GateBoy {
   //----------
 
   InterruptRegisters int_reg;
-  DFF IE_D0;
-  DFF IE_D1;
-  DFF IE_D2;
-  DFF IE_D3;
-  DFF IE_D4;
 
   //----------
 
   JoypadRegisters joypad;
-  PinIn  PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
-  PinIn  PIN_JOY_P11; // PIN_66
-  PinIn  PIN_JOY_P12; // PIN_65
-  PinIn  PIN_JOY_P13; // PIN_64
-  PinOut PIN_JOY_P14; // PIN_63
-  PinOut PIN_JOY_P15; // PIN_62
 
   //----------
 
-  SerialRegisters ser_reg;
-  PinIO  PIN_SCK;  // PIN_68
-  PinIn  PIN_SIN;  // PIN_69
-  PinOut PIN_SOUT; // PIN_70
+  GateBoySerial serial;
 
   //----------
 

@@ -15,6 +15,12 @@ struct InterruptRegisters {
   /*p02.NUTY*/ TpLatch NUTY_FF0F_L4p;
   /*p02.MOPO*/ TpLatch MOPO_FF0F_L1p;
   /*p02.PAVY*/ TpLatch PAVY_FF0F_L2p;
+
+  DFF IE_D0;
+  DFF IE_D1;
+  DFF IE_D2;
+  DFF IE_D3;
+  DFF IE_D4;
 };
 
 //-----------------------------------------------------------------------------

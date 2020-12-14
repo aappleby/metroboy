@@ -34,4 +34,13 @@ struct ExtAddrLatch {
   /*p08.NYRE*/ TpLatch NYRE_EXT_ADDR_LATCH_14p; // ABxxxxxx
 };
 
+struct ExtBus {
+  PinOut PIN_EXT_CLK;    // PIN_75
+  PinOut PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
+  PinOut PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
+  PinOut PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write
+  PinOut PIN_EXT_A[16];
+  PinIO  PIN_EXT_D[8];
+};
+
 //-----------------------------------------------------------------------------

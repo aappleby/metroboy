@@ -3,7 +3,17 @@
 
 //-----------------------------------------------------------------------------
 
-struct SerialRegisters {
+struct GateBoySerial {
+
+  void tock(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
+    wire TAMA_DIV05p,
+    BusOut BUS_CPU_D_out[8]);
+
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
   /*p06.CULY*/ DFF17 CULY_XFER_DIR;    // AxxxDxxH ?
   /*p06.COTY*/ DFF17 COTY_SER_CLK;     // AxxxDxxH ?
@@ -22,6 +32,10 @@ struct SerialRegisters {
   /*p06.EJAB*/ DFF22 EJAB_SER_DATA5; // xxxxExxx
   /*p06.EROD*/ DFF22 EROD_SER_DATA6; // xxxxExxx
   /*p06.EDER*/ DFF22 EDER_SER_DATA7; // xxxxExxx
+
+  PinIO  PIN_SCK;  // PIN_68
+  PinIn  PIN_SIN;  // PIN_69
+  PinOut PIN_SOUT; // PIN_70
 };
 
 //-----------------------------------------------------------------------------

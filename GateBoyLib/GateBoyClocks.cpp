@@ -2,10 +2,10 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 
 void GateBoyPhaseClock::tock(const GateBoyResetDebug& rst) {
-  /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn_ext(), ADYK_ABCxxxxHp.qp_old());
-  /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn_ext(), AFUR_xxxxEFGHp.qn_old());
-  /* p01.APUK*/ APUK_ABxxxxGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn_ext(), ALEF_AxxxxFGHp.qn_old());
-  /* p01.ADYK*/ ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn_ext(), APUK_ABxxxxGHp.qn_old());
+  /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp.qp_old());
+  /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp.qn_old());
+  /* p01.APUK*/ APUK_ABxxxxGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGHp.qn_old());
+  /* p01.ADYK*/ ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGHp.qn_old());
 
   PIN_EXT_CLK.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
   PIN_CPU_BOWA_Axxxxxxx.setp(BOWA_xBCDEFGH());

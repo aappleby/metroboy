@@ -28,14 +28,14 @@ struct GateBoyResetDebug {
   /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /* p07.UBET*/ wire UBETp_ext()           const { return not1(PIN_SYS_T1.qp_any()); }
-  /* p07.UVAR*/ wire UVARp_ext()           const { return not1(PIN_SYS_T2.qp_any()); }
-  /* p07.UMUT*/ wire UMUT_MODE_DBG1p_ext() const { return and2(PIN_SYS_T1.qp_any(), UVARp_ext()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p()     const { return and2(PIN_SYS_T2.qp_any(), UBETp_ext()); }
-  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn_ext() const { return nand3(UBETp_ext(), UVARp_ext(), PIN_SYS_RST.qp_any()); }
-  /* p08.RYCA*/ wire RYCA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
-  /* p08.TOVA*/ wire TOVA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
-  /* p08.MULE*/ wire MULE_MODE_DBG1n_ext() const { return not1(UMUT_MODE_DBG1p_ext()); }
+  /* p07.UBET*/ wire UBETp()           const { return not1(PIN_SYS_T1.qp_any()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN_SYS_T2.qp_any()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_SYS_T1.qp_any(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p()     const { return and2(PIN_SYS_T2.qp_any(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_SYS_RST.qp_any()); }
+  /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
+  /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
+  /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
 
   wire TUTO_DBG_VRAMp(wire UNOR_MODE_DBG2p) {
     /* p25.TUTO*/ wire _TUTO_DBG_VRAMp_new = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAMp.qn_new());

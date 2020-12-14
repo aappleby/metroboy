@@ -12,8 +12,8 @@ void GateBoyJoypad::tock(
 
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp);
 
-  /* p10.ACAT*/ wire _ACAT_FF00_RDp_ext     =  and4(TEDO_CPU_RDp,    ANAP_FF_0xx00000_ext(BUS_CPU_A), AKUG_A06n_ext(BUS_CPU_A), BYKO_A05n_ext(BUS_CPU_A));
-  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn_clk     = nand4(TAPU_CPU_WRp, ANAP_FF_0xx00000_ext(BUS_CPU_A), AKUG_A06n_ext(BUS_CPU_A), BYKO_A05n_ext(BUS_CPU_A));
+  /* p10.ACAT*/ wire _ACAT_FF00_RDp_ext     =  and4(TEDO_CPU_RDp,    ANAP_FF_0xx00000(BUS_CPU_A), AKUG_A06n(BUS_CPU_A), BYKO_A05n(BUS_CPU_A));
+  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn_clk     = nand4(TAPU_CPU_WRp, ANAP_FF_0xx00000(BUS_CPU_A), AKUG_A06n(BUS_CPU_A), BYKO_A05n(BUS_CPU_A));
 
   // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
   // That also means that _both_ P14 and P15 are selected at reset :/

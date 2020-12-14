@@ -28,8 +28,8 @@ void GateBoyInterrupts::tock(
 {
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(rst.AVOR_SYS_RSTp());
 
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_ext = nand4(TEDO_CPU_RDp, SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
-  /* p07.REFA*/ wire _REFA_FF0F_WRn_clk = nand4(TAPU_CPU_WRp, SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_ext = nand4(TEDO_CPU_RDp, SYKE_ADDR_HIp(BUS_CPU_A),  SEMY_XX_0000xxxxp(BUS_CPU_A), SAPA_XX_xxxx1111p(BUS_CPU_A)); // schematic wrong, is NAND
+  /* p07.REFA*/ wire _REFA_FF0F_WRn_clk = nand4(TAPU_CPU_WRp, SYKE_ADDR_HIp(BUS_CPU_A),  SEMY_XX_0000xxxxp(BUS_CPU_A), SAPA_XX_xxxx1111p(BUS_CPU_A)); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)

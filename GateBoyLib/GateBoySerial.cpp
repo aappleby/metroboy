@@ -16,7 +16,7 @@ void GateBoySerial::tock(
   bool DAWA_SER_clknew;
   {
     /* p01.UVYN*/ wire _UVYN_DIV_05n_next = not1(TAMA_DIV05p);
-    /* p06.UWAM*/ wire _UWAM_FF02_WRn_clk = nand4(TAPU_CPU_WRp, SANO_FF00_FF03p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], TOVY_A00n_ext(BUS_CPU_A));
+    /* p06.UWAM*/ wire _UWAM_FF02_WRn_clk = nand4(TAPU_CPU_WRp, SANO_FF00_FF03p(BUS_CPU_A),  BUS_CPU_A[ 1], TOVY_A00n(BUS_CPU_A));
     /* p06.COTY*/ COTY_SER_CLK .dff17(_UVYN_DIV_05n_next, _UWAM_FF02_WRn_clk, COTY_SER_CLK.qn_old());
     /* p06.CULY*/ CULY_XFER_DIR.dff17(_UWAM_FF02_WRn_clk, ALUR_SYS_RSTn, BUS_CPU_D[0]);
 
@@ -58,7 +58,7 @@ void GateBoySerial::tock(
   }
 
   {
-    /* p06.URYS*/ wire _URYS_FF01_WRn_clk   = nand4(TAPU_CPU_WRp, SANO_FF00_FF03p_ext(BUS_CPU_A), TOLA_A01n_ext(BUS_CPU_A), BUS_CPU_A[ 0]);
+    /* p06.URYS*/ wire _URYS_FF01_WRn_clk   = nand4(TAPU_CPU_WRp, SANO_FF00_FF03p(BUS_CPU_A), TOLA_A01n(BUS_CPU_A), BUS_CPU_A[ 0]);
 
     /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_D[0], ALUR_SYS_RSTn);
     /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn_new = or_and3(_URYS_FF01_WRn_clk, BUS_CPU_D[1], ALUR_SYS_RSTn);
@@ -97,8 +97,8 @@ void GateBoySerial::tock(
   }
 
   {
-    /* p06.UFEG*/ wire _UFEG_FF01_RDp_ext   =  and4(TEDO_CPU_RDp, SANO_FF00_FF03p_ext(BUS_CPU_A),  TOLA_A01n_ext(BUS_CPU_A), BUS_CPU_A[ 0]);
-    /* p06.UCOM*/ wire _UCOM_FF02_RDp_ext   =  and4(TEDO_CPU_RDp, SANO_FF00_FF03p_ext(BUS_CPU_A),  BUS_CPU_A[ 1],            TOVY_A00n_ext(BUS_CPU_A));
+    /* p06.UFEG*/ wire _UFEG_FF01_RDp_ext   =  and4(TEDO_CPU_RDp, SANO_FF00_FF03p(BUS_CPU_A),  TOLA_A01n(BUS_CPU_A), BUS_CPU_A[ 0]);
+    /* p06.UCOM*/ wire _UCOM_FF02_RDp_ext   =  and4(TEDO_CPU_RDp, SANO_FF00_FF03p(BUS_CPU_A),  BUS_CPU_A[ 1],            TOVY_A00n(BUS_CPU_A));
 
     /* FF01 SER */
     /*#p06.CUGY*/ BUS_CPU_D_out[0].tri6_pn(_UFEG_FF01_RDp_ext, CUBA_SER_DATA0.qn_new());

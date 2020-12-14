@@ -7,7 +7,7 @@ struct GateBoyDMA {
 
   void tock(wire AVOR_SYS_RSTp, wire UVYT_ABCDxxxx, Signal BUS_CPU_A[16], Signal BUS_CPU_D[8], wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8])
   {
-    /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XEDA_FF46p_ext(BUS_CPU_A));
+    /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XEDA_FF46p(BUS_CPU_A));
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
     /*#p04.NAFA*/ NAFA_DMA_A08n_h.dff8p(LORU_FF46_WRn, BUS_CPU_D[0]);
     /* p04.PYNE*/ PYNE_DMA_A09n_h.dff8p(LORU_FF46_WRn, BUS_CPU_D[1]);
@@ -18,7 +18,7 @@ struct GateBoyDMA {
     /* p04.POKU*/ POKU_DMA_A14n_h.dff8p(LORU_FF46_WRn, BUS_CPU_D[6]);
     /* p04.MARU*/ MARU_DMA_A15n_h.dff8p(LORU_FF46_WRn, BUS_CPU_D[7]);
 
-    /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XEDA_FF46p_ext(BUS_CPU_A));
+    /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XEDA_FF46p(BUS_CPU_A));
     /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
     /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
     /*#p04.POLY*/ BUS_CPU_D_out[0].tri6_pn(PUSY_FF46_RDp, NAFA_DMA_A08n_h.qp_new());

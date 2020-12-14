@@ -10,8 +10,8 @@ void GateBoyDiv::tock(
   GateBoyCpuBus& cpu_bus)
 {
 
-  /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext    = and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p_ext(), cpu_bus.TOLA_A01n_ext(), cpu_bus.TOVY_A00n_ext());
-  /* p01.TAPE*/ wire _TAPE_FF04_WRp_clkevn = and4(cpu_bus.TAPU_CPU_WRp, cpu_bus.RYFO_FF04_FF07p_ext(), cpu_bus.TOLA_A01n_ext(), cpu_bus.TOVY_A00n_ext());
+  /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext    = and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
+  /* p01.TAPE*/ wire _TAPE_FF04_WRp_clkevn = and4(cpu_bus.TAPU_CPU_WRp, cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
 
   /* p01.UFOL*/ wire _UFOL_DIV_RSTn_evn_ext = nor3(pclk.UCOB_CLKBADp(), rst.PIN_SYS_RST.qp_new(), _TAPE_FF04_WRp_clkevn);
 

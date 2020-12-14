@@ -41,7 +41,7 @@ void RegLY::tock(Signal BUS_CPU_A[16],
   /*#p21.MATO*/ MATO_LY6p_evn.dff17(LEMA_LY5p_evn.qn_new(), _LAMA_Y_RSTn_new_evn, MATO_LY6p_evn.qn_any());
   /*#p21.LAFO*/ LAFO_LY7p_evn.dff17(MATO_LY6p_evn.qn_new(), _LAMA_Y_RSTn_new_evn, LAFO_LY7p_evn.qn_any());
 
-  /* p23.WAFU*/ wire _WAFU_FF44_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XOGY_FF44p_ext(BUS_CPU_A));
+  /* p23.WAFU*/ wire _WAFU_FF44_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XOGY_FF44p(BUS_CPU_A));
   /* p23.VARO*/ wire _VARO_FF44_RDn_ext = not1(_WAFU_FF44_RDp_ext);
 
   /*#p23.WURY*/ wire _WURY_LY0n_new = not1(MUWY_LY0p_evn.qp_new());
@@ -73,7 +73,7 @@ void RegLCDC::tock(Signal BUS_CPU_A[16],
                    BusOut BUS_CPU_D_out[8])
 {
   // FF40 LCDC
-  /* p23.WARU*/ wire _WARU_FF40_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), VOCA_FF40p_ext(BUS_CPU_A));
+  /* p23.WARU*/ wire _WARU_FF40_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), VOCA_FF40p(BUS_CPU_A));
   /* p23.XUBO*/ wire _XUBO_FF40_WRn_clk = not1(_WARU_FF40_WRp_clk);
   /*#p23.VYXE*/ VYXE_LCDC_BGENn_h  .dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[0]);
   /* p23.XYLO*/ XYLO_LCDC_SPENn_h  .dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[1]);
@@ -85,7 +85,7 @@ void RegLCDC::tock(Signal BUS_CPU_A[16],
   /* p23.WOKY*/ XONA_LCDC_LCDENn_h. dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[7]);
 
   // FF40 LCDC
-  /* p23.VYRE*/ wire _VYRE_FF40_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), VOCA_FF40p_ext(BUS_CPU_A));
+  /* p23.VYRE*/ wire _VYRE_FF40_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), VOCA_FF40p(BUS_CPU_A));
   /* p23.WYCE*/ wire _WYCE_FF40_RDn_ext = not1(_VYRE_FF40_RDp_ext);
   /*#p23.WYPO*/ BUS_CPU_D_out[0].tri6_nn(_WYCE_FF40_RDn_ext, VYXE_LCDC_BGENn_h.qp_new());
   /*#p23.XERO*/ BUS_CPU_D_out[1].tri6_nn(_WYCE_FF40_RDn_ext, XYLO_LCDC_SPENn_h.qp_new());
@@ -129,7 +129,7 @@ void RegLYC::tock(
 
   /*#p21.ROPO*/ ROPO_LY_MATCH_SYNCp_c.dff17(TALU_xxCDEFxx_clkevn, WESY_SYS_RSTn(AVOR_SYS_RSTp), _PALY_LY_MATCHa_old_evn);
 
-  /* p23.XUFA*/ wire _XUFA_FF45_WRn_clk_evn = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAYU_FF45p_ext(BUS_CPU_A));
+  /* p23.XUFA*/ wire _XUFA_FF45_WRn_clk_evn = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAYU_FF45p(BUS_CPU_A));
   /* p23.WANE*/ wire _WANE_FF45_WRp_clk_evn = not1(_XUFA_FF45_WRn_clk_evn);
   /* p23.SYRY*/ SYRY_LYC0n.dff9(_WANE_FF45_WRp_clk_evn, WESY_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[0]);
   /* p23.VUCE*/ VUCE_LYC1n.dff9(_WANE_FF45_WRp_clk_evn, WESY_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[1]);
@@ -140,7 +140,7 @@ void RegLYC::tock(
   /* p23.VEVO*/ VEVO_LYC6n.dff9(_WANE_FF45_WRp_clk_evn, WESY_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[6]);
   /* p23.RAHA*/ RAHA_LYC7n.dff9(_WANE_FF45_WRp_clk_evn, WESY_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[7]);
 
-  /* p23.XYLY*/ wire _XYLY_FF45_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAYU_FF45p_ext(BUS_CPU_A));
+  /* p23.XYLY*/ wire _XYLY_FF45_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAYU_FF45p(BUS_CPU_A));
   /* p23.WEKU*/ wire _WEKU_FF45_RDn_ext = not1(_XYLY_FF45_RDp_ext);
   /*#p23.RETU*/ BUS_CPU_D_out[0].tri6_nn(_WEKU_FF45_RDn_ext, SYRY_LYC0n.qp_new());
   /* p23.VOJO*/ BUS_CPU_D_out[1].tri6_nn(_WEKU_FF45_RDn_ext, VUCE_LYC1n.qp_new());

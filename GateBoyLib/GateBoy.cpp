@@ -732,9 +732,9 @@ void GateBoy::tock_slow(int pass_index) {
     }
   }
 
-  cpu_bus.PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF_ext(cpu_bus.BUS_CPU_A));
+  cpu_bus.PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF(cpu_bus.BUS_CPU_A));
   cpu_bus.PIN_CPU_UNOR_DBG.setp(rst.UNOR_MODE_DBG2p());
-  cpu_bus.PIN_CPU_UMUT_DBG.setp(rst.UMUT_MODE_DBG1p_ext());
+  cpu_bus.PIN_CPU_UMUT_DBG.setp(rst.UMUT_MODE_DBG1p());
 
   //-----------------------------------------------------------------------------
   // We need the sprite match result from the previous cycle, so we recalculate it here. :/
@@ -1200,8 +1200,8 @@ void GateBoy::tock_slow(int pass_index) {
     cpu_bus.BUS_CPU_D_out);
 
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(cpu_bus.PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn_ext(cpu_bus.BUS_CPU_A));
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF_ext(cpu_bus.BUS_CPU_A), TEXO_ADDR_VRAMn_ext);
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(cpu_bus.PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn(cpu_bus.BUS_CPU_A));
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF(cpu_bus.BUS_CPU_A), TEXO_ADDR_VRAMn_ext);
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_ext = and2(TEFA_ADDR_VRAMp_ext, cpu_bus.BUS_CPU_A[15]);
 
   ext_addr_latch.tock(rst, cpu_bus.BUS_CPU_A, TEXO_ADDR_VRAMn_ext);
@@ -1647,8 +1647,8 @@ void GateBoy::tock_pix_pipe(
   ]() {
     {
       // FF47 BGP
-      /* p36.VUSO*/ wire _VUSO_FF47_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), WERA_FF47p_ext(cpu_bus.BUS_CPU_A));
-      /* p36.VELY*/ wire _VELY_FF47_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), WERA_FF47p_ext(cpu_bus.BUS_CPU_A));
+      /* p36.VUSO*/ wire _VUSO_FF47_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), WERA_FF47p(cpu_bus.BUS_CPU_A));
+      /* p36.VELY*/ wire _VELY_FF47_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), WERA_FF47p(cpu_bus.BUS_CPU_A));
       /* p36.TEPO*/ wire _TEPO_FF47_WRp_clk = not1(_VELY_FF47_WRp_clk);
       /* p36.TEPY*/ wire _TEPY_FF47_RDn_ext = not1(_VUSO_FF47_RDp_ext);
 
@@ -1673,8 +1673,8 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF48 OBP0
-      /* p36.XUFY*/ wire _XUFY_FF48_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAYO_FF48p_ext(cpu_bus.BUS_CPU_A));
-      /* p36.XOMA*/ wire _XOMA_FF48_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAYO_FF48p_ext(cpu_bus.BUS_CPU_A));
+      /* p36.XUFY*/ wire _XUFY_FF48_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAYO_FF48p(cpu_bus.BUS_CPU_A));
+      /* p36.XOMA*/ wire _XOMA_FF48_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAYO_FF48p(cpu_bus.BUS_CPU_A));
       /* p36.XELO*/ wire _XELO_FF48_WRn_clk = not1(_XOMA_FF48_WRp_clk);
       /* p36.XOZY*/ wire _XOZY_FF48_RDn_ext = not1(_XUFY_FF48_RDp_ext);
 
@@ -1699,8 +1699,8 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF49 OBP1
-      /* p36.MUMY*/ wire MUMY_FF49_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), TEGO_FF49p_ext(cpu_bus.BUS_CPU_A));
-      /* p36.MYXE*/ wire MYXE_FF49_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), TEGO_FF49p_ext(cpu_bus.BUS_CPU_A));
+      /* p36.MUMY*/ wire MUMY_FF49_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), TEGO_FF49p(cpu_bus.BUS_CPU_A));
+      /* p36.MYXE*/ wire MYXE_FF49_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), TEGO_FF49p(cpu_bus.BUS_CPU_A));
       /* p36.LEHO*/ wire _LEHO_FF49_WRn_clk = not1(MYXE_FF49_WRp_clk);
       /* p36.LOTE*/ wire _LOTE_FF49_RDn_ext = not1(MUMY_FF49_RDp_ext);
 
@@ -2065,11 +2065,11 @@ void GateBoy::tock_vram(
   ](){
     // FF42 SCY, FF43 SCX
 
-    /* p23.ANYP*/ wire _ANYP_FF42_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XARO_FF42p_ext(cpu_bus.BUS_CPU_A));
-    /* p23.BEDY*/ wire _BEDY_FF42_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XARO_FF42p_ext(cpu_bus.BUS_CPU_A));
+    /* p23.ANYP*/ wire _ANYP_FF42_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XARO_FF42p(cpu_bus.BUS_CPU_A));
+    /* p23.BEDY*/ wire _BEDY_FF42_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XARO_FF42p(cpu_bus.BUS_CPU_A));
 
-    /* p23.AVOG*/ wire _AVOG_FF43_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAVY_FF43p_ext(cpu_bus.BUS_CPU_A));
-    /* p23.ARUR*/ wire _ARUR_FF43_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAVY_FF43p_ext(cpu_bus.BUS_CPU_A));
+    /* p23.AVOG*/ wire _AVOG_FF43_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAVY_FF43p(cpu_bus.BUS_CPU_A));
+    /* p23.ARUR*/ wire _ARUR_FF43_WRp_clk = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAVY_FF43p(cpu_bus.BUS_CPU_A));
 
     /* FF42 SCY */
     /* p23.CAVO*/ wire _CAVO_FF42_WRn_clk = not1(_BEDY_FF42_WRp_clk);

@@ -19,8 +19,8 @@ void GateBoyBootrom::tock(
 {
   {
     ///*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new =  not1(AVOR_SYS_RSTp);
-    /* p07.TEXE*/ wire _TEXE_FF50_RDp_ext =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SYKE_ADDR_HIp_ext(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
-    /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SYKE_ADDR_HIp_ext(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
+    /* p07.TEXE*/ wire _TEXE_FF50_RDp_ext =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
+    /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
     // FF50 - disable bootrom bit
     /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0], BOOT_BITn_h.qp_old());
     /* p07.TEPU*/ BOOT_BITn_h.dff17(_TUGE_FF50_WRn_clk, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
@@ -64,7 +64,7 @@ void GateBoyBootrom::tock(
   /* p07.ZORO*/ wire _ZORO_0000xxxx_XXp_ext = nor4(cpu_bus.BUS_CPU_A[15], cpu_bus.BUS_CPU_A[14], cpu_bus.BUS_CPU_A[13], cpu_bus.BUS_CPU_A[12]);
   /* p07.ZADU*/ wire _ZADU_xxxx0000_XXp_ext = nor4(cpu_bus.BUS_CPU_A[11], cpu_bus.BUS_CPU_A[10], cpu_bus.BUS_CPU_A[ 9], cpu_bus.BUS_CPU_A[ 8]);
   /* p07.ZUFA*/ wire _ZUFA_0000_00FFp_ext  = and2(_ZORO_0000xxxx_XXp_ext, _ZADU_xxxx0000_XXp_ext);
-  /* p07.YAZA*/ wire _YAZA_MODE_DBG1n_ext = not1(rst.UMUT_MODE_DBG1p_ext());
+  /* p07.YAZA*/ wire _YAZA_MODE_DBG1n_ext = not1(rst.UMUT_MODE_DBG1p());
   /* p07.YULA*/ wire _YULA_BOOT_RDp_new   = and3(cpu_bus.TEDO_CPU_RDp, _YAZA_MODE_DBG1n_ext, _TUTU_READ_BOOTROMp_new); // def AND
   /* p07.ZADO*/ wire _ZADO_BOOT_CSn_new   = nand2(_YULA_BOOT_RDp_new, _ZUFA_0000_00FFp_ext);
   /* p07.ZERY*/ wire _ZERY_BOOT_CSp_new   = not1(_ZADO_BOOT_CSn_new);

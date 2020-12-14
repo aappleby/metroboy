@@ -108,19 +108,6 @@ struct GateBoy {
     return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
   }
 
-  void tock_interrupts(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-
-    wire FEPO_STORE_MATCHp_new_evn,
-    wire PARU_VBLANKp_new_evn,
-    wire PURE_LINE_ENDn_new_evn,
-    wire MOBA_TIMER_OVERFLOWp_evn_new,
-    wire WODU_HBLANKp_new_odd);
-
   void tock_reg_lyc(
     wire BUS_CPU_D[8],
     wire AVOR_SYS_RSTp,

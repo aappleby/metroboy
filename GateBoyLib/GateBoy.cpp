@@ -1445,18 +1445,52 @@ void GateBoy::tock_slow(int pass_index) {
     BUS_CPU_D_out
   );
 
-  tock_interrupts(
+  interrupts.PIN_CPU_ACK_VBLANK.setp(wire(cpu.int_ack & INT_VBLANK_MASK));
+  interrupts.PIN_CPU_ACK_STAT  .setp(wire(cpu.int_ack & INT_STAT_MASK));
+  interrupts.PIN_CPU_ACK_TIMER .setp(wire(cpu.int_ack & INT_TIMER_MASK));
+  interrupts.PIN_CPU_ACK_SERIAL.setp(wire(cpu.int_ack & INT_SERIAL_MASK));
+  interrupts.PIN_CPU_ACK_JOYPAD.setp(wire(cpu.int_ack & INT_JOYPAD_MASK));
+
+  interrupts.tock(
+    rstdbg,
+    joypad,
+    reg_stat,
+    reg_lyc,
+    serial,
+
     BUS_CPU_A,
     BUS_CPU_D,
-    rstdbg.AVOR_SYS_RSTp(),
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
 
-    FEPO_STORE_MATCHp_new_evn,
     PARU_VBLANKp_new_evn,
     reg_lx.PURE_LINE_ENDn_new_evn(),
     MOBA_TIMER_OVERFLOWp_evn_new,
-    WODU_HBLANKp_new);
+    WODU_HBLANKp_new,
+    BUS_CPU_D_out);
+
+
+  if (DELTA_DE) {
+    int_vblank_halt = interrupts.LOPE_FF0F_D0p.qp_new();
+    int_stat_halt   = interrupts.LALU_FF0F_D1p.qp_new();
+    int_serial_halt = interrupts.UBUL_FF0F_D3p.qp_new();
+    int_joypad_halt = interrupts.ULAK_FF0F_D4p.qp_new();
+  }
+
+  if (DELTA_GH) {
+    // this one latches funny, some hardware bug
+    int_timer_halt = interrupts.NYBO_FF0F_D2p.qp_new();
+
+    int_vblank = interrupts.LOPE_FF0F_D0p.qp_new();
+    int_stat   = interrupts.LALU_FF0F_D1p.qp_new();
+    int_timer  = interrupts.NYBO_FF0F_D2p.qp_new();
+    int_serial = interrupts.UBUL_FF0F_D3p.qp_new();
+    int_joypad = interrupts.ULAK_FF0F_D4p.qp_new();
+  }
+
+  if (DELTA_HA) {
+    imask_latch = pack_u8p(5, &interrupts.IE_D0);
+  }
 
   /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn_ext(BUS_CPU_A));
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF_ext(BUS_CPU_A), TEXO_ADDR_VRAMn_ext);
@@ -1572,148 +1606,6 @@ void GateBoy::tock_reg_stat(
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_interrupts(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
-  wire AVOR_SYS_RSTp,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-
-  wire FEPO_STORE_MATCHp_new_evn,
-  wire PARU_VBLANKp_new_evn,
-  wire PURE_LINE_ENDn_new_evn,
-  wire MOBA_TIMER_OVERFLOWp_evn_new,
-  wire WODU_HBLANKp_new_odd)
-{
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp);
-
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn_ext = nand4(TEDO_CPU_RDp,    SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
-  /* p07.REFA*/ wire _REFA_FF0F_WRn_clk = nand4(TAPU_CPU_WRp, SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
-
-  // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
-  // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
-  // Bit 2 : Timer    Interrupt Request(INT 50h)  (1=Request)
-  // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
-  // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
-
-  interrupts.PIN_CPU_ACK_VBLANK.setp(wire(cpu.int_ack & INT_VBLANK_MASK));
-  interrupts.PIN_CPU_ACK_STAT  .setp(wire(cpu.int_ack & INT_STAT_MASK));
-  interrupts.PIN_CPU_ACK_TIMER .setp(wire(cpu.int_ack & INT_TIMER_MASK));
-  interrupts.PIN_CPU_ACK_SERIAL.setp(wire(cpu.int_ack & INT_SERIAL_MASK));
-  interrupts.PIN_CPU_ACK_JOYPAD.setp(wire(cpu.int_ack & INT_JOYPAD_MASK));
-
-  /* p02.LETY*/ wire _LETY_INT_VBL_ACKn_ext  = not1(interrupts.PIN_CPU_ACK_VBLANK.qp_new());
-  /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn_ext = not1(interrupts.PIN_CPU_ACK_STAT.qp_new());
-  /* p02.LESA*/ wire _LESA_INT_TIM_ACKn_ext  = not1(interrupts.PIN_CPU_ACK_TIMER.qp_new());
-  /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn_ext  = not1(interrupts.PIN_CPU_ACK_SERIAL.qp_new());
-  /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn_ext  = not1(interrupts.PIN_CPU_ACK_JOYPAD.qp_new());
-
-  /* p02.ROTU*/ wire _ROTU_FF0F_WRp_clk = not1(_REFA_FF0F_WRn_clk);
-  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n_new = nand3(_ROTU_FF0F_WRp_clk, _LETY_INT_VBL_ACKn_ext,  BUS_CPU_D[0]);
-  /* p02.MODY*/ wire _MODY_FF0F_SET1n_new = nand3(_ROTU_FF0F_WRp_clk, _LEJA_INT_STAT_ACKn_ext, BUS_CPU_D[1]);
-  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n_new = nand3(_ROTU_FF0F_WRp_clk, _LESA_INT_TIM_ACKn_ext,  BUS_CPU_D[2]);
-  /* p02.TOME*/ wire _TOME_FF0F_SET3n_new = nand3(_ROTU_FF0F_WRp_clk, _LUFE_INT_SER_ACKn_ext,  BUS_CPU_D[3]);
-  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n_new = nand3(_ROTU_FF0F_WRp_clk, _LAMO_INT_JOY_ACKn_ext,  BUS_CPU_D[4]);
-
-  /*#p02.MUXE*/ wire _MUXE_INT0_WRn_new = or2(BUS_CPU_D[0], _REFA_FF0F_WRn_clk);
-  /* p02.NABE*/ wire _NABE_INT1_WRn_new = or2(BUS_CPU_D[1], _REFA_FF0F_WRn_clk);
-  /* p02.RAKE*/ wire _RAKE_INT2_WRn_new = or2(BUS_CPU_D[2], _REFA_FF0F_WRn_clk);
-  /* p02.SULO*/ wire _SULO_INT3_WRn_new = or2(BUS_CPU_D[3], _REFA_FF0F_WRn_clk);
-  /* p02.SEME*/ wire _SEME_INT4_WRn_new = or2(BUS_CPU_D[4], _REFA_FF0F_WRn_clk);
-
-  /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n_new = and3(_MUXE_INT0_WRn_new, _LETY_INT_VBL_ACKn_ext,  _ALUR_SYS_RSTn_new);
-  /* p02.MOVU*/ wire _MOVU_FF0F_RST1n_new = and3(_NABE_INT1_WRn_new, _LEJA_INT_STAT_ACKn_ext, _ALUR_SYS_RSTn_new);
-  /* p02.PYGA*/ wire _PYGA_FF0F_RST2n_new = and3(_RAKE_INT2_WRn_new, _LESA_INT_TIM_ACKn_ext,  _ALUR_SYS_RSTn_new);
-  /* p02.TUNY*/ wire _TUNY_FF0F_RST3n_new = and3(_SULO_INT3_WRn_new, _LUFE_INT_SER_ACKn_ext,  _ALUR_SYS_RSTn_new);
-  /* p02.TYME*/ wire _TYME_FF0F_RST4n_new = and3(_SEME_INT4_WRn_new, _LAMO_INT_JOY_ACKn_ext,  _ALUR_SYS_RSTn_new);
-
-  /*#p21.TOLU*/ wire _TOLU_VBLANKn_new    = not1(PARU_VBLANKp_new_evn);
-  /*#p21.SELA*/ wire _SELA_LINE_ENDp_new  = not1(PURE_LINE_ENDn_new_evn);
-  /*#p21.TAPA*/ wire _TAPA_INT_OAM_t3_new   = and2(_TOLU_VBLANKn_new, _SELA_LINE_ENDp_new);
-  /*#p21.TARU*/ wire _TARU_INT_HBL_t3_new   = and2(WODU_HBLANKp_new_odd, _TOLU_VBLANKn_new);
-  /*#p21.SUKO*/ wire _SUKO_INT_STATp_t3_new = amux4(reg_stat.RUGU_STAT_LYI_ENn_h.qn_new(), reg_lyc.ROPO_LY_MATCH_SYNCp_c.qp_new(),
-                                                    reg_stat.REFE_STAT_OAI_ENn_h.qn_new(), _TAPA_INT_OAM_t3_new,
-                                                    reg_stat.RUFO_STAT_VBI_ENn_h.qn_new(), PARU_VBLANKp_new_evn, // polarity?
-                                                    reg_stat.ROXE_STAT_HBI_ENn_h.qn_new(), _TARU_INT_HBL_t3_new);
-
-  /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp_t3_new = not1(_TOLU_VBLANKn_new);
-  /* p02.ASOK*/ wire _ASOK_INT_JOYp_new       = and2(joypad.APUG_JP_GLITCH3.qp_new(), joypad.BATU_JP_GLITCH0.qp_new());
-  /*#p21.TUVA*/ wire _TUVA_INT_STATn_t3_new   = not1(_SUKO_INT_STATp_t3_new);
-  /*#p21.VOTY*/ wire _VOTY_INT_STATp_t3_new   = not1(_TUVA_INT_STATn_t3_new);
-
-  wire _PESU_VCC = 1;
-  /* p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp_t3_new,       _MYZU_FF0F_SET0n_new, _LYTA_FF0F_RST0n_new, _PESU_VCC);
-  /* p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp_t3_new,         _MODY_FF0F_SET1n_new, _MOVU_FF0F_RST1n_new, _PESU_VCC);
-  /* p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp_evn_new,   _PYHU_FF0F_SET2n_new, _PYGA_FF0F_RST2n_new, _PESU_VCC);
-  /* p02.UBUL*/ interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n_new, _TUNY_FF0F_RST3n_new, _PESU_VCC);
-  /* p02.ULAK*/ interrupts.ULAK_FF0F_D4p.dff22(_ASOK_INT_JOYp_new,             _TOGA_FF0F_SET4n_new, _TYME_FF0F_RST4n_new, _PESU_VCC);
-
-  // FIXME this inversion fixes a bunch of tests...
-  // MATY is one of those big yellow latchy things
-  /* p02.MATY*/ interrupts.MATY_FF0F_L0p.tp_latch(!_ROLO_FF0F_RDn_ext, interrupts.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ interrupts.MOPO_FF0F_L1p.tp_latch(!_ROLO_FF0F_RDn_ext, interrupts.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ interrupts.PAVY_FF0F_L2p.tp_latch(!_ROLO_FF0F_RDn_ext, interrupts.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latch(!_ROLO_FF0F_RDn_ext, interrupts.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latch(!_ROLO_FF0F_RDn_ext, interrupts.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
-
-  interrupts.PIN_CPU_INT_VBLANK.setp(interrupts.LOPE_FF0F_D0p.qp_new());
-  interrupts.PIN_CPU_INT_STAT  .setp(interrupts.LALU_FF0F_D1p.qp_new());
-  interrupts.PIN_CPU_INT_TIMER .setp(interrupts.NYBO_FF0F_D2p.qp_new());
-  interrupts.PIN_CPU_INT_SERIAL.setp(interrupts.UBUL_FF0F_D3p.qp_new());
-  interrupts.PIN_CPU_INT_JOYPAD.setp(interrupts.ULAK_FF0F_D4p.qp_new());
-
-  if (DELTA_DE) {
-    int_vblank_halt = interrupts.LOPE_FF0F_D0p.qp_new();
-    int_stat_halt   = interrupts.LALU_FF0F_D1p.qp_new();
-    int_serial_halt = interrupts.UBUL_FF0F_D3p.qp_new();
-    int_joypad_halt = interrupts.ULAK_FF0F_D4p.qp_new();
-  }
-
-  if (DELTA_GH) {
-    // this one latches funny, some hardware bug
-    int_timer_halt = interrupts.NYBO_FF0F_D2p.qp_new();
-
-    int_vblank = interrupts.LOPE_FF0F_D0p.qp_new();
-    int_stat   = interrupts.LALU_FF0F_D1p.qp_new();
-    int_timer  = interrupts.NYBO_FF0F_D2p.qp_new();
-    int_serial = interrupts.UBUL_FF0F_D3p.qp_new();
-    int_joypad = interrupts.ULAK_FF0F_D4p.qp_new();
-  }
-
-  // FF0F INTF
-  /* p02.POLA*/ wire _POLA_FF0F_RDp_ext = not1(_ROLO_FF0F_RDn_ext);
-  /*#p02.NELA*/ BUS_CPU_D_out[0].tri6_pn(_POLA_FF0F_RDp_ext, interrupts.MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO*/ BUS_CPU_D_out[1].tri6_pn(_POLA_FF0F_RDp_ext, interrupts.MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA*/ BUS_CPU_D_out[2].tri6_pn(_POLA_FF0F_RDp_ext, interrupts.PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO*/ BUS_CPU_D_out[3].tri6_pn(_POLA_FF0F_RDp_ext, interrupts.NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY*/ BUS_CPU_D_out[4].tri6_pn(_POLA_FF0F_RDp_ext, interrupts.NUTY_FF0F_L4p.qn_new());
-
-  {
-    // FFFF - IE
-    // This is technically in the CPU, but we're going to implement it here for now.
-
-    uint16_t cpu_addr = pack_u16p(16, BUS_CPU_A);
-    wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
-    wire FFFF_RDn_ext = nand2(TEDO_CPU_RDp, FFFF_HIT_ext);
-    wire FFFF_WRn_ext = nand2(TAPU_CPU_WRp, FFFF_HIT_ext);
-
-    interrupts.IE_D0.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[0]);
-    interrupts.IE_D1.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[1]);
-    interrupts.IE_D2.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[2]);
-    interrupts.IE_D3.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[3]);
-    interrupts.IE_D4.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[4]);
-
-    BUS_CPU_D_out[0].tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
-    BUS_CPU_D_out[1].tri6_nn(FFFF_RDn_ext, interrupts.IE_D1.qn_new());
-    BUS_CPU_D_out[2].tri6_nn(FFFF_RDn_ext, interrupts.IE_D2.qn_new());
-    BUS_CPU_D_out[3].tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
-    BUS_CPU_D_out[4].tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
-  }
-
-  if (DELTA_HA) {
-    imask_latch = pack_u8p(5, &interrupts.IE_D0);
-  }
-}
 
 //------------------------------------------------------------------------------------------------------------------------
 

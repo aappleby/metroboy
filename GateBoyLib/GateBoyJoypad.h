@@ -14,6 +14,7 @@ struct GateBoyJoypad {
     wire TAPU_CPU_WRp,
     BusOut BUS_CPU_D_out[8]);
 
+  /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new(), BATU_JP_GLITCH0.qp_new()); }
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;

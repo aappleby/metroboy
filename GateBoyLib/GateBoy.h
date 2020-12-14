@@ -117,10 +117,7 @@ struct GateBoy {
 
     wire XYMU_RENDERINGp_new_xxx,
     wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
-    wire NYXU_BFETCH_RSTn_new_xxx,
-
-    wire &REMY_LD0n_new,
-    wire &RAVO_LD1n_new
+    wire NYXU_BFETCH_RSTn_new_xxx
   );
 
   void tock_lcd(
@@ -132,8 +129,8 @@ struct GateBoy {
     wire AVAP_SCAN_DONE_TRIGp,
     wire WEGO_HBLANKp,
     wire PURE_LINE_ENDn,
-    wire REMY_LD0n,
-    wire RAVO_LD1n
+    Signal REMY_LD0n,
+    Signal RAVO_LD1n
   );
 
   void tock_vram(

@@ -5,7 +5,20 @@ struct GateBoyDMA;
 
 //-----------------------------------------------------------------------------
 
+struct SpriteFlipX {
+  wire PUTE_FLIP0p;
+  wire PELO_FLIP1p;
+  wire PONO_FLIP2p;
+  wire POBE_FLIP3p;
+  wire PACY_FLIP4p;
+  wire PUGU_FLIP5p;
+  wire PAWE_FLIP6p;
+  wire PULY_FLIP7p;
+};
+
 struct SpriteTempA {
+  void store_sprite(SpriteFlipX sprite, wire XADO_STORE_SPRITE_An);
+
   /*p33.REWO*/ DFF8n REWO_SPRITE_DA0n; // xBxDxFxH
   /*p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n; // xBxDxFxH
   /*p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n; // xBxDxFxH
@@ -17,6 +30,8 @@ struct SpriteTempA {
 };
 
 struct SpriteTempB {
+  void store_sprite(SpriteFlipX sprite, wire PUCO_STORE_SPRITE_Bn);
+
   /*p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n; // xBxDxFxH
   /*p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n; // xBxDxFxH
   /*p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n; // xBxDxFxH

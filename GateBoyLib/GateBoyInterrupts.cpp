@@ -9,7 +9,7 @@
 #include "GateBoyLib/GateBoySerial.h"
 
 void GateBoyInterrupts::tock(
-  const GateBoyResetDebug& rstdbg,
+  const GateBoyResetDebug& rst,
   const GateBoyJoypad& joypad,
   const RegStat& reg_stat,
   const RegLYC& reg_lyc,
@@ -26,7 +26,7 @@ void GateBoyInterrupts::tock(
   wire WODU_HBLANKp,
   BusOut BUS_CPU_D_out[8])
 {
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(rstdbg.AVOR_SYS_RSTp());
+  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(rst.AVOR_SYS_RSTp());
 
   /* p07.ROLO*/ wire _ROLO_FF0F_RDn_ext = nand4(TEDO_CPU_RDp, SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
   /* p07.REFA*/ wire _REFA_FF0F_WRn_clk = nand4(TAPU_CPU_WRp, SYKE_ADDR_HIp_ext(BUS_CPU_A),  SEMY_XX_0000xxxxp_ext(BUS_CPU_A), SAPA_XX_xxxx1111p_ext(BUS_CPU_A)); // schematic wrong, is NAND
@@ -113,11 +113,11 @@ void GateBoyInterrupts::tock(
     wire FFFF_RDn_ext = nand2(TEDO_CPU_RDp, FFFF_HIT_ext);
     wire FFFF_WRn_ext = nand2(TAPU_CPU_WRp, FFFF_HIT_ext);
 
-    IE_D0.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[0]);
-    IE_D1.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[1]);
-    IE_D2.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[2]);
-    IE_D3.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[3]);
-    IE_D4.dff(FFFF_WRn_ext, 1, !rstdbg.PIN_SYS_RST.qp_any(), BUS_CPU_D[4]);
+    IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), BUS_CPU_D[0]);
+    IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), BUS_CPU_D[1]);
+    IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), BUS_CPU_D[2]);
+    IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), BUS_CPU_D[3]);
+    IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), BUS_CPU_D[4]);
 
     BUS_CPU_D_out[0].tri6_nn(FFFF_RDn_ext, IE_D0.qn_new());
     BUS_CPU_D_out[1].tri6_nn(FFFF_RDn_ext, IE_D1.qn_new());

@@ -511,9 +511,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
     gb->pclk.APUK_ABxxxxGHp.qp_old(),
     gb->pclk.ADYK_ABCxxxxHp.qp_old());
   d("\n");
-  d.dump_bitp("TUBO_WAITINGp ", gb->rstdbg.TUBO_WAITINGp.state);
-  d.dump_bitn("ASOL_POR_DONEn", gb->rstdbg.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->rstdbg.AFER_SYS_RSTp_evn.state);
+  d.dump_bitp("TUBO_WAITINGp ", gb->rst.TUBO_WAITINGp.state);
+  d.dump_bitn("ASOL_POR_DONEn", gb->rst.ASOL_POR_DONEn.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->rst.AFER_SYS_RSTp_evn.state);
   d("\n");
   d.dump_bitp("AFUR_xxxxEFGHp", gb->pclk.AFUR_xxxxEFGHp.state);
   d.dump_bitp("ALEF_AxxxxFGHp", gb->pclk.ALEF_AxxxxFGHp.state);

@@ -7,7 +7,7 @@ struct GateBoyResetDebug;
 
 struct GateBoyPhaseClock {
 
-  void tock(const GateBoyResetDebug& rstdbg);
+  void tock(const GateBoyResetDebug& rst);
 
   //----------------------------------------
   // Root clocks - ignoring the deglitcher here
@@ -88,7 +88,7 @@ struct GateBoyPhaseClock {
 //-----------------------------------------------------------------------------
 
 struct GateBoyVideoClock {
-  void tock(const GateBoyResetDebug& rstdbg, const GateBoyPhaseClock& pclk);
+  void tock(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk);
 
   /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
   /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }

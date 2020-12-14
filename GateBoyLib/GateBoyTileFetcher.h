@@ -1,9 +1,15 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+struct GateBoyVramBus;
+struct GateBoyPhaseClock;
+
 //-----------------------------------------------------------------------------
 
 struct TileTempA {
+
+  void tock(const GateBoyVramBus& vram_bus, wire LOMA_LATCH_TILE_DAn);
+
   /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n_odd;   // xBxDxFxH
   /*p32.NUDU*/ DFF8p NUDU_TILE_DA1n_odd;   // xBxDxFxH
   /*p32.MUKU*/ DFF8p MUKU_TILE_DA2n_odd;   // xBxDxFxH
@@ -14,7 +20,11 @@ struct TileTempA {
   /*p32.NEFO*/ DFF8p NEFO_TILE_DA7n_odd;   // xBxDxFxH
 };
 
+//-----------------------------------------------------------------------------
+
 struct TileTempB {
+  void tock(const GateBoyVramBus& vram_bus, wire _LABU_LATCH_TILE_DBn);
+
   /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p_odd;   // xBxDxFxH
   /*p32.POZO*/ DFF11 POZO_TILE_DB1p_odd;   // xBxDxFxH
   /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p_odd;   // xBxDxFxH
@@ -24,6 +34,8 @@ struct TileTempB {
   /*p32.POWY*/ DFF11 POWY_TILE_DB6p_odd;   // xBxDxFxH
   /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p_odd;   // xBxDxFxH
 };
+
+//-----------------------------------------------------------------------------
 
 struct RegSCX {
   // FF43 - SCX -> ppu, vram bus
@@ -37,6 +49,8 @@ struct RegSCX {
   /*p23.BAKE*/ DFF9 BAKE_SCX7n_h;          // xxxxxxxH
 };
 
+//-----------------------------------------------------------------------------
+
 struct RegSCY {
   // FF42 - SCY -> vram bus
   /*p23.GAVE*/ DFF9 GAVE_SCY0n_h;          // xxxxxxxH
@@ -49,6 +63,8 @@ struct RegSCY {
   /*p23.FUNY*/ DFF9 FUNY_SCY7n_h;          // xxxxxxxH
 };
 
+//-----------------------------------------------------------------------------
+
 struct WinMapX {
   // Current window map coord
   /*p27.WYKA*/ DFF17 WYKA_WIN_X3_evn;      // AxCxExGx
@@ -57,6 +73,8 @@ struct WinMapX {
   /*p27.WYKO*/ DFF17 WYKO_WIN_X6_evn;      // AxCxExGx
   /*p27.XOLO*/ DFF17 XOLO_WIN_X7_evn;      // AxCxExGx
 };
+
+//-----------------------------------------------------------------------------
 
 struct WinLineY {
   /*p27.VYNO*/ DFF17 VYNO_WIN_Y0_evn;      // AxCxExGh probably, but not enough data.
@@ -69,21 +87,11 @@ struct WinLineY {
   /*p27.TEKE*/ DFF17 TEKE_WIN_Y7_evn;      // AxCxExGh probably, but not enough data.
 };
 
+//-----------------------------------------------------------------------------
+
 struct TileFetcher {
 
-  void tock2(wire ALET_xBxDxFxH, wire NYXU_BFETCH_RSTn)
-  {
-    /* p27.LAXU*/ LAXU_BFETCH_S0p_evn.RSTn(NYXU_BFETCH_RSTn);
-    /* p27.MESU*/ MESU_BFETCH_S1p_evn.RSTn(NYXU_BFETCH_RSTn);
-    /* p27.NYVA*/ NYVA_BFETCH_S2p_evn.RSTn(NYXU_BFETCH_RSTn);
-
-    /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid_any = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
-    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(ALET_xBxDxFxH, _MOCE_BFETCH_DONEn_mid_any);
-
-    /* p27.LAXU*/ LAXU_BFETCH_S0p_evn.dff17(_LEBO_AxCxExGx,               NYXU_BFETCH_RSTn, LAXU_BFETCH_S0p_evn.qn_new());
-    /* p27.MESU*/ MESU_BFETCH_S1p_evn.dff17(LAXU_BFETCH_S0p_evn.qn_new(), NYXU_BFETCH_RSTn, MESU_BFETCH_S1p_evn.qn_new());
-    /* p27.NYVA*/ NYVA_BFETCH_S2p_evn.dff17(MESU_BFETCH_S1p_evn.qn_new(), NYXU_BFETCH_RSTn, NYVA_BFETCH_S2p_evn.qn_new());
-  }
+  void tock2(GateBoyPhaseClock& pclk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const {
     return not1(POKY_PRELOAD_LATCHp_odd.qp_any());
@@ -110,6 +118,11 @@ struct TileFetcher {
   /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1(NOGU_BFETCH_01p()); }
   /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
   /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
+
+
+  wire LOMA_LATCH_TILE_DAn(wire XYMU_RENDERINGp) const;
+  wire LABU_LATCH_TILE_DBn(wire XYMU_RENDERINGp) const;
+
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_odd; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp_xxx;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?

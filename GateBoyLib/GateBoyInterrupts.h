@@ -12,7 +12,7 @@ struct GateBoySerial;
 struct GateBoyInterrupts {
 
   void tock(
-    const GateBoyResetDebug& rstdbg,
+    const GateBoyResetDebug& rst,
     const GateBoyJoypad& joypad,
     const RegStat& reg_stat,
     const RegLYC& reg_lyc,

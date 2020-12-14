@@ -53,6 +53,22 @@ struct SpriteFetcher {
     return _SECA_SFETCH_RSTn_new;
   }
 
+  wire XADO_STORE_SPRITE_An(wire XYMU_RENDERINGp) const {
+    /*#p29.TOPU*/ wire _TOPU_STORE_SPRITE_Ap = and2(TULY_SFETCH_S1p_odd.qp_new(), SYCU_SFETCH_S0pe(XYMU_RENDERINGp));
+    /*#p29.VYWA*/ wire _VYWA_STORE_SPRITE_An = not1(_TOPU_STORE_SPRITE_Ap);
+    /*#p29.WENY*/ wire _WENY_STORE_SPRITE_Ap = not1(_VYWA_STORE_SPRITE_An);
+    /*#p29.XADO*/ wire _XADO_STORE_SPRITE_An = not1(_WENY_STORE_SPRITE_Ap);
+    return _XADO_STORE_SPRITE_An;
+  }
+
+  wire PUCO_STORE_SPRITE_Bn(wire XYMU_RENDERINGp) const {
+    /*#p29.RACA*/ wire _RACA_STORE_SPRITE_Bp = and2(VONU_SFETCH_S1p_D4_odd.qp_new(), SYCU_SFETCH_S0pe(XYMU_RENDERINGp));
+    /*#p29.PEBY*/ wire _PEBY_STORE_SPRITE_Bn = not1(_RACA_STORE_SPRITE_Bp);
+    /*#p29.NYBE*/ wire _NYBE_STORE_SPRITE_Bp = not1(_PEBY_STORE_SPRITE_Bn);
+    /*#p29.PUCO*/ wire _PUCO_STORE_SPRITE_Bn = not1(_NYBE_STORE_SPRITE_Bp);
+    return _PUCO_STORE_SPRITE_Bn;
+  }
+
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp_xxx; // ABCDEFGH Set on odd, cleared on even
   /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp_odd;         // xBxDxFxH
   /*p27.SUDA*/ DFF17 SUDA_SFETCH_REQp_evn;         // AxBxExGx

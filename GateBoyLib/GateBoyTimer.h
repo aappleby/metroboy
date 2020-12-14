@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 // FF04 DIV
 
-struct DivRegister {
+struct GateBoyDiv {
   int get_div() const  { return pack_u16p(16, &UKUP_DIV00p_evn); }
 
   void force_set_div(uint16_t div) {
@@ -104,7 +104,7 @@ struct DivRegister {
 
 //-----------------------------------------------------------------------------
 
-struct TimerRegisters {
+struct GateBoyTimer {
   int get_tima() const { return pack_u8p (8,  &REGA_TIMA0p_evn); }
   int get_tma() const  { return pack_u8p (8,  &SABU_TMA0p_h); }
   int get_tac() const  { return pack_u8p (3,  &SOPU_TAC0p_h); }
@@ -132,7 +132,7 @@ struct TimerRegisters {
     wire TAPU_CPU_WRp,
     wire PIN_CPU_LATCH_EXT,
     BusOut BUS_CPU_D_out[8],
-    const DivRegister& div_reg)
+    const GateBoyDiv& div)
   {
     /* p03.TOVY*/ wire TOVY_A00n_ext = not1(BUS_CPU_A[ 0]);
     /* p08.TOLA*/ wire TOLA_A01n_ext = not1(BUS_CPU_A[ 1]);
@@ -188,10 +188,10 @@ struct TimerRegisters {
     /*#p03.PYMA*/ wire _PYMA_TIMA_D6_new = nor2(MULO_SYS_RSTn(AVOR_SYS_RSTp), _REFU_TIMA_D6_new);
     /*#p03.PAGU*/ wire _PAGU_TIMA_D7_new = nor2(MULO_SYS_RSTn(AVOR_SYS_RSTp), _RATO_TIMA_D7_new);
 
-    /*#p03.UBOT*/ wire _UBOT_DIV01n_new_evn = not1(div_reg.UFOR_DIV01p_evn.qp_new());
-    /*#p03.UVYR*/ wire _UVYR_DIV03n_new_evn = not1(div_reg.TERO_DIV03p_evn.qp_new());
-    /* p01.UVYN*/ wire _UVYN_DIV05n_new_evn = not1(div_reg.TAMA_DIV05p_evn.qp_new());
-    /* p01.UREK*/ wire _UREK_DIV07n_new_evn = not1(div_reg.TULU_DIV07p_evn.qp_new());
+    /*#p03.UBOT*/ wire _UBOT_DIV01n_new_evn = not1(div.UFOR_DIV01p_evn.qp_new());
+    /*#p03.UVYR*/ wire _UVYR_DIV03n_new_evn = not1(div.TERO_DIV03p_evn.qp_new());
+    /* p01.UVYN*/ wire _UVYN_DIV05n_new_evn = not1(div.TAMA_DIV05p_evn.qp_new());
+    /* p01.UREK*/ wire _UREK_DIV07n_new_evn = not1(div.TULU_DIV07p_evn.qp_new());
 
     /*#p03.UKAP*/ wire _UKAP_CLK_MUXa_new_evn  = mux2n(SOPU_TAC0p_h.qp_new(), _UVYN_DIV05n_new_evn, _UVYR_DIV03n_new_evn);
     /*#p03.TEKO*/ wire _TEKO_CLK_MUXb_new_evn  = mux2n(SOPU_TAC0p_h.qp_new(), _UBOT_DIV01n_new_evn, _UREK_DIV07n_new_evn);

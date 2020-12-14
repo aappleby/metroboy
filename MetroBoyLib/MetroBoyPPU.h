@@ -1,13 +1,13 @@
 #pragma once
-#include "MetroBoyLib/OAM.h"
-#include "MetroBoyLib/VRAM.h"
+#include "MetroBoyLib/MetroBoyOAM.h"
+#include "MetroBoyLib/MetroBoyVRAM.h"
 #include "CoreLib/Constants.h"
 
 struct LCD;
 
 //-----------------------------------------------------------------------------
 
-struct PPU {
+struct MetroBoyPPU {
   void reset_cart();
   void reset_boot();
 

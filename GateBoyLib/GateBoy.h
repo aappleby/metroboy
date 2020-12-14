@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreLib/File.h"
-#include "CoreLib/CPU.h"
+#include "CoreLib/MetroBoyCPU.h"
 #include "CoreLib/Constants.h"
 
 #include "GateBoyLib/Probe.h"
@@ -120,7 +120,7 @@ inline SpriteDeltaY sprite_delta_y(const OamTempA& oam_temp_a, const RegLY& reg_
 
 //-----------------------------------------------------------------------------
 
-struct Bootrom {
+struct GateBoyBootrom {
   void reset_cart() {
     BOOT_BITn_h.reset(REG_D1C1);
   }
@@ -243,8 +243,8 @@ struct GateBoy {
   //----------------------------------------
 
   void check_div() const {
-    int div = div_reg.get_div();
-    if (div != BOOT_DIV) {
+    int div_val = div.get_div();
+    if (div_val != BOOT_DIV) {
       printf("div fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
     }
@@ -451,27 +451,8 @@ struct GateBoy {
   PinOut PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   PinIn  PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
-  PinIn  PIN_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
-  PinOut PIN_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
-  PinIn  PIN_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
-  PinOut PIN_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
-  PinIn  PIN_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
-  PinOut PIN_CPU_INT_TIMER ;    // bottom right port PORTB_11: <- P02.NYBO, timer int
-  PinIn  PIN_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
-  PinOut PIN_CPU_INT_SERIAL;    // bottom right port PORTB_15: <- P02.UBUL, serial int
-  PinIn  PIN_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
-  PinOut PIN_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joypad int
-
   PinIn  PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
-  PinOut PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
-  PinOut PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
-  PinOut PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
-  PinOut PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
-  PinOut PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
   PinIn  PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
-  PinOut PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
-  PinOut PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
-  PinOut PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 
   //----------
 
@@ -479,57 +460,46 @@ struct GateBoy {
   OamTempB oam_temp_b;
   OamLatchA oam_latch_a;
   OamLatchB oam_latch_b;
-  OamBus oam_bus;
+  GateBoyOamBus oam_bus;
 
   //----------
 
   ExtDataLatch ext_data_latch;
   ExtAddrLatch ext_addr_latch;
-  ExtBus ext_bus;
+  GateBoyExtBus ext_bus;
 
   //----------
 
   SpriteTempA sprite_temp_a;
   SpriteTempB sprite_temp_b;
-  VramBus vram_bus;
+  GateBoyVramBus vram_bus;
 
   //----------
 
-  ResetRegisters      rst_reg;
-  PhaseClockRegisters pclk_reg;
-  VideoClockRegisters vclk_reg;
+  GateBoyResetDbg   rstdbg;
+  GateBoyPhaseClock pclk;
+  GateBoyVideoClock vclk;
 
   //----------
 
-  DivRegister    div_reg;
-  TimerRegisters tim_reg;
-  Bootrom        bootrom;
+  GateBoyDiv     div;
+  GateBoyTimer   timer;
+  GateBoyBootrom bootrom;
 
-  //----------
+  GateBoyDMA dma;
 
-  DmaRegisters dma_reg;
+  GateBoyInterrupts interrupts;
 
-  //----------
-
-  InterruptRegisters int_reg;
-
-  //----------
-
-  JoypadRegisters joypad;
-
-  //----------
+  GateBoyJoypad joypad;
 
   GateBoySerial serial;
 
   //----------
 
   SpriteCounter sprite_counter;
-  SpriteStore        sprite_store;
-
-  //----------
-
+  SpriteStore   sprite_store;
   SpriteScanner sprite_scanner;
-  ScanCounter scan_counter;
+  ScanCounter   scan_counter;
 
   //----------
 
@@ -565,7 +535,7 @@ struct GateBoy {
   RegLX   reg_lx;
   RegLY   reg_ly;
   RegLYC  reg_lyc;
-  LcdRegisters lcd;
+  GateBoyLCD lcd;
 
   //----------
 
@@ -591,7 +561,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // CPU
 
-  CPU      cpu;
+  MetroBoyCPU      cpu;
   Req      cpu_req = {0};
   Req      dbg_req = {0};
   Req      bus_req = {0};

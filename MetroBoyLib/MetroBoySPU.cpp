@@ -1,4 +1,4 @@
-#include "MetroBoyLib/SPU.h"
+#include "MetroBoyLib/MetroBoySPU.h"
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
@@ -6,7 +6,7 @@ const char* byte_to_bits(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-void SPU::reset() {
+void MetroBoySPU::reset() {
   *this = {0};
 
   nr10 = 0x80;
@@ -39,14 +39,14 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tick(int phase_total, const Req& req, Ack& ack) const {
+void MetroBoySPU::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
   if (req.read) bus_read(req, ack);
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(int phase_total, const Req& req) {
+void MetroBoySPU::tock(int phase_total, const Req& req) {
   if (DELTA_GH && req.write) bus_write(req);
 
   if (!DELTA_HA) return;
@@ -311,7 +311,7 @@ void SPU::tock(int phase_total, const Req& req) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(const Req& req, Ack& ack) const {
+void MetroBoySPU::bus_read(const Req& req, Ack& ack) const {
   if (req.addr < 0xFF10) return;
   if (req.addr > 0xFF26 && req.addr < 0xFF30) return;
   if (req.addr > 0xFF3F) return;
@@ -370,7 +370,7 @@ void SPU::bus_read(const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_write(const Req& req) {
+void MetroBoySPU::bus_write(const Req& req) {
   bool sound_on = (nr52 & 0x80);
 
   if (!sound_on) {
@@ -509,7 +509,7 @@ void SPU::bus_write(const Req& req) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::dump(Dumper& d) const {
+void MetroBoySPU::dump(Dumper& d) const {
   d("\002--------------SPU--------------\001\n");
 
   d("NR10 %s\n", byte_to_bits(nr10));

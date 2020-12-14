@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct JoypadRegisters {
+struct GateBoyJoypad {
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
 

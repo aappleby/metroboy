@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct DmaRegisters {
+struct GateBoyDMA {
 
   void tock(wire AVOR_SYS_RSTp, wire UVYT_ABCDxxxx, wire BUS_CPU_A[16], wire BUS_CPU_D[8], wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8])
   {

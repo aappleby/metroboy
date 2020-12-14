@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct DMA {
+struct MetroBoyDMA {
 
   void tick(int phase_total, const Req& req, Ack& ack);
   void tock(int phase_total, const Req& req);

@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct SPU {
+struct MetroBoySPU {
   void reset();
 
   void tick(int phase_total, const Req& req, Ack& ibus_ack) const;

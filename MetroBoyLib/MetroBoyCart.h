@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct Cart {
+struct MetroBoyCart {
   void set_rom(uint8_t* new_rom, size_t new_rom_size);
   void reset();
 

@@ -1,4 +1,4 @@
-#include "MetroBoyLib/VRAM.h"
+#include "MetroBoyLib/MetroBoyVRAM.h"
 
 #include "CoreLib/Constants.h"
 #include <assert.h>
@@ -38,14 +38,14 @@ static const uint8_t bootrom_logo[] = {
 
 //-----------------------------------------------------------------------------
 
-void VRAM::reset() {
+void MetroBoyVRAM::reset() {
   memset(ram, 0, sizeof(ram));
   memcpy(ram, bootrom_logo, 416);
 }
 
 //-----------------------------------------------------------------------------
 
-void VRAM::tick(int phase_total, const Req& req, Ack& ack) const {
+void MetroBoyVRAM::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
   if (req.read && (req.addr >= 0x8000) && (req.addr <= 0x9FFF)) {
     ack.addr = req.addr;
@@ -54,7 +54,7 @@ void VRAM::tick(int phase_total, const Req& req, Ack& ack) const {
   }
 }
 
-void VRAM::tock(int phase_total, const Req& req) {
+void MetroBoyVRAM::tock(int phase_total, const Req& req) {
   if (DELTA_GH && req.write && (req.addr >= 0x8000) && (req.addr <= 0x9FFF)) {
     ram[req.addr & 0x1FFF] = uint8_t(req.data_lo);
   }

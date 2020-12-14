@@ -1,4 +1,4 @@
-#include "MetroBoyLib/DMA.h"
+#include "MetroBoyLib/MetroBoyDMA.h"
 #include "CoreLib/Constants.h"
 #include <assert.h>
 #include <stdio.h>
@@ -41,7 +41,7 @@ void DMA1::get_obus_req(Req& r) const {
 //-----------------------------------------------------------------------------
 // FIXME the phases are totally off here
 
-void DMA::tick(int phase_total, const Req& req, Ack& ack) {
+void MetroBoyDMA::tick(int phase_total, const Req& req, Ack& ack) {
   (void)phase_total;
 
   if (req.read && req.addr == 0xFF46) {
@@ -53,7 +53,7 @@ void DMA::tick(int phase_total, const Req& req, Ack& ack) {
 
 //-----------------------------------------------------------------------------
 
-void DMA::tock(int phase_total, const Req& req) {
+void MetroBoyDMA::tock(int phase_total, const Req& req) {
   bool DMA_WR = (req.addr == 0xFF46) && req.write && (DELTA_FG || DELTA_GH || DELTA_HA);
   bool DMA_RST = DMA_RUN_TRIG_d4;
 
@@ -88,7 +88,7 @@ void DMA::tock(int phase_total, const Req& req) {
 
 //-----------------------------------------------------------------------------
 
-void DMA::dump(Dumper& d) const {
+void MetroBoyDMA::dump(Dumper& d) const {
   d("\002--------------DMA2--------------\001\n");
 
   d("DMA_WR_LATCH    %d\n", (bool)DMA_WR_LATCH);

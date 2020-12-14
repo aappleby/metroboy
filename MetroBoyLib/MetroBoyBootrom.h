@@ -3,15 +3,13 @@
 
 //-----------------------------------------------------------------------------
 
-struct OAM {
+struct MetroBoyBootrom {
+  MetroBoyBootrom() = default;
 
-  void reset();
-  void tock(int phase_total, const Req& req);
   void tick(int phase_total, const Req& req, Ack& ack) const;
+  void tock(int phase_total, const Req& req);
 
-  void dump(Dumper& dump) const;
-
-  uint16_t ram[128] = {0};
+  int disable_bootrom = 1;
 };
 
 //-----------------------------------------------------------------------------

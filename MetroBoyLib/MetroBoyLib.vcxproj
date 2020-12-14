@@ -11,34 +11,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bootrom.cpp" />
-    <ClCompile Include="Cart.cpp" />
-    <ClCompile Include="DMA.cpp" />
+    <ClCompile Include="MetroBoyBootrom.cpp" />
+    <ClCompile Include="MetroBoyCart.cpp" />
+    <ClCompile Include="MetroBoyDMA.cpp" />
     <ClCompile Include="MetroBoy.cpp" />
-    <ClCompile Include="Interrupts.cpp" />
-    <ClCompile Include="Joypad.cpp" />
-    <ClCompile Include="OAM.cpp" />
-    <ClCompile Include="PPU.cpp" />
-    <ClCompile Include="Serial.cpp" />
-    <ClCompile Include="SPU.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="VRAM.cpp" />
-    <ClCompile Include="ZRAM.cpp" />
+    <ClCompile Include="MetroBoyInterrupts.cpp" />
+    <ClCompile Include="MetroBoyJoypad.cpp" />
+    <ClCompile Include="MetroBoyOAM.cpp" />
+    <ClCompile Include="MetroBoyPPU.cpp" />
+    <ClCompile Include="MetroBoySerial.cpp" />
+    <ClCompile Include="MetroBoySPU.cpp" />
+    <ClCompile Include="MetroBoyTimer.cpp" />
+    <ClCompile Include="MetroBoyVRAM.cpp" />
+    <ClCompile Include="MetroBoyZRAM.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bootrom.h" />
-    <ClInclude Include="Cart.h" />
-    <ClInclude Include="DMA.h" />
-    <ClInclude Include="Interrupts.h" />
+    <ClInclude Include="MetroBoyBootrom.h" />
+    <ClInclude Include="MetroBoyCart.h" />
+    <ClInclude Include="MetroBoyDMA.h" />
+    <ClInclude Include="MetroBoyInterrupts.h" />
     <ClInclude Include="MetroBoy.h" />
-    <ClInclude Include="Joypad.h" />
-    <ClInclude Include="OAM.h" />
-    <ClInclude Include="PPU.h" />
-    <ClInclude Include="Serial.h" />
-    <ClInclude Include="SPU.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="VRAM.h" />
-    <ClInclude Include="ZRAM.h" />
+    <ClInclude Include="MetroBoyJoypad.h" />
+    <ClInclude Include="MetroBoyOAM.h" />
+    <ClInclude Include="MetroBoyPPU.h" />
+    <ClInclude Include="MetroBoySerial.h" />
+    <ClInclude Include="MetroBoySPU.h" />
+    <ClInclude Include="MetroBoyTimer.h" />
+    <ClInclude Include="MetroBoyVRAM.h" />
+    <ClInclude Include="MetroBoyZRAM.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -265,7 +265,7 @@ struct OamTempB {
 
 //-----------------------------------------------------------------------------
 
-struct OamBus {
+struct GateBoyOamBus {
 
   void ext_to_bus(
     PinIO PIN_EXT_D[8],

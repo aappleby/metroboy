@@ -1,4 +1,4 @@
-#include "MetroBoyLib/Timer.h"
+#include "MetroBoyLib/MetroBoyTimer.h"
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
@@ -8,7 +8,7 @@ static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };
 
 //-----------------------------------------------------------------------------
 
-void TimerRegisters::reset() {
+void MetroBoyTimer::reset() {
   div  = 0xEAF2;
   tima = 0;
   tma  = 0;
@@ -21,7 +21,7 @@ void TimerRegisters::reset() {
 
 //-----------------------------------------------------------------------------
 
-void TimerRegisters::tick(int phase_total, const Req& req, Ack& ack) {
+void MetroBoyTimer::tick(int phase_total, const Req& req, Ack& ack) {
   (void)phase_total;
 
   if (req.read) switch(req.addr) {
@@ -36,7 +36,7 @@ void TimerRegisters::tick(int phase_total, const Req& req, Ack& ack) {
 // Timer interrupt fires when the high bit of tima (after sync with phase C)
 // goes low. Writing to tima clears the synchronized bit for some reason.
 
-void TimerRegisters::tock(int phase_total, const Req& req) {
+void MetroBoyTimer::tock(int phase_total, const Req& req) {
 
   if (DELTA_CD) {
     div++;
@@ -66,7 +66,7 @@ void TimerRegisters::tock(int phase_total, const Req& req) {
 //-----------------------------------------------------------------------------
 // tima is "clocked" off a signal derived from div and tac.
 
-void TimerRegisters::update_tima() {
+void MetroBoyTimer::update_tima() {
   bool tima_clk_ = (div & masks[tac & 3]) && (tac & TAC_RUN);
   if (tima_clk && !tima_clk_) tima++;
   tima_clk = tima_clk_;
@@ -79,7 +79,7 @@ void TimerRegisters::update_tima() {
 
 //-----------------------------------------------------------------------------
 
-void TimerRegisters::dump(Dumper& d) const {
+void MetroBoyTimer::dump(Dumper& d) const {
   d("\002--------------TIMER2------------\001\n");
   d("cnt         0x%04x\n", div);
   d("div         0x%02x\n", uint8_t(div >> 6));

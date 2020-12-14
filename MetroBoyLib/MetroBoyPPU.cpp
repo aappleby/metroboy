@@ -1,4 +1,4 @@
-#include "MetroBoyLib/PPU.h"
+#include "MetroBoyLib/MetroBoyPPU.h"
 
 #include "CoreLib/Constants.h"
 #include <assert.h>
@@ -7,7 +7,7 @@ extern const uint32_t gb_colors[];
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset_cart() {
+void MetroBoyPPU::reset_cart() {
   *this = {0};
 
   phase_count = 0;
@@ -42,7 +42,7 @@ void PPU::reset_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset_boot() {
+void MetroBoyPPU::reset_boot() {
   *this = {0};
 
   phase_count = 0;
@@ -112,7 +112,7 @@ uint8_t flip2(uint8_t b) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::get_vbus_req(Req& /*r*/) const {
+void MetroBoyPPU::get_vbus_req(Req& /*r*/) const {
 #if 0
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
@@ -149,7 +149,7 @@ void PPU::get_vbus_req(Req& /*r*/) const {
 
 //----------------------------------------
 
-void PPU::get_obus_req(Req& /*r*/) const {
+void MetroBoyPPU::get_obus_req(Req& /*r*/) const {
 #if 0
   uint16_t fetch_addr = 0;
 
@@ -181,7 +181,7 @@ void PPU::get_obus_req(Req& /*r*/) const {
 
 //-----------------------------------------------------------------------------
 
-bool PPU::read(uint16_t addr, uint8_t& out) {
+bool MetroBoyPPU::read(uint16_t addr, uint8_t& out) {
   bool hblank    = pix_count >= 167;
   bool vblank    = line >= 144;
   bool scanning  = phase_count < 160;
@@ -211,7 +211,7 @@ bool PPU::read(uint16_t addr, uint8_t& out) {
 
 //-----------------------------------------------------------------------------
 
-bool PPU::write(uint16_t addr, uint8_t data) {
+bool MetroBoyPPU::write(uint16_t addr, uint8_t data) {
   switch (addr) {
   case ADDR_LCDC: reg_lcdc = data; return true;
   case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); return true;
@@ -229,7 +229,7 @@ bool PPU::write(uint16_t addr, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tick(int phase_total, const Req& req, Ack& ack) {
+void MetroBoyPPU::tick(int phase_total, const Req& req, Ack& ack) {
 
   bool hblank    = pix_count >= 167;
   bool vblank    = line >= 144;
@@ -253,7 +253,7 @@ void PPU::tick(int phase_total, const Req& req, Ack& ack) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, const Ack /*obus_ack*/) {
+void MetroBoyPPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, const Ack /*obus_ack*/) {
 
   // phase timer and stuff
   if (reg_lcdc & FLAG_LCD_ON) {
@@ -631,7 +631,7 @@ void PPU::tock_lcdoff() {
 //-----------------------------------------------------------------------------
 // Emit pixel if we have some in the pipe and we're not stalled.
 
-void PPU::emit_pixel() {
+void MetroBoyPPU::emit_pixel() {
 #if 0
   if (sprite_index != -1) {
     return;
@@ -727,7 +727,7 @@ const char* fetch_names2[] = {
 };
 
 
-void PPU::dump(Dumper& d) const {
+void MetroBoyPPU::dump(Dumper& d) const {
   d("\002--------------PPU--------------\001\n");
 
   d("phase_count = %d\n", phase_count);

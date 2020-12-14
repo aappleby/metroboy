@@ -1,19 +1,20 @@
 #pragma once
 
 #include "CoreLib/Types.h"
-#include "CoreLib/CPU.h"
+#include "CoreLib/MetroBoyCPU.h"
 
-#include "MetroBoyLib/Bootrom.h"
-#include "MetroBoyLib/Cart.h"
-#include "MetroBoyLib/DMA.h"
-#include "MetroBoyLib/Interrupts.h"
-#include "MetroBoyLib/Joypad.h"
-#include "MetroBoyLib/PPU.h"
-#include "MetroBoyLib/Serial.h"
-#include "MetroBoyLib/SPU.h"
-#include "MetroBoyLib/Timer.h"
-#include "MetroBoyLib/VRAM.h"
-#include "MetroBoyLib/ZRAM.h"
+#include "MetroBoyLib/MetroBoyBootrom.h"
+#include "MetroBoyLib/MetroBoyCart.h"
+#include "MetroBoyLib/MetroBoyDMA.h"
+#include "MetroBoyLib/MetroBoyInterrupts.h"
+#include "MetroBoyLib/MetroBoyJoypad.h"
+#include "MetroBoyLib/MetroBoyOAM.h"
+#include "MetroBoyLib/MetroBoyPPU.h"
+#include "MetroBoyLib/MetroBoySerial.h"
+#include "MetroBoyLib/MetroBoySPU.h"
+#include "MetroBoyLib/MetroBoyTimer.h"
+#include "MetroBoyLib/MetroBoyVRAM.h"
+#include "MetroBoyLib/MetroBoyZRAM.h"
 
 //-----------------------------------------------------------------------------
 
@@ -39,19 +40,19 @@ struct MetroBoy {
 
   //----------
 
-  CPU     cpu;
-  TimerRegisters   timer;
-  Cart    cart;
-  VRAM    vram;
-  OAM     oam;
-  ZRAM    zram;
-  Joypad  joypad;
-  Serial  serial;
-  PPU     ppu;
-  SPU     spu;
-  DMA     dma;
-  Bootrom boot;
-  Interrupts ints;
+  MetroBoyCPU     cpu;
+  MetroBoyTimer   timer;
+  MetroBoyCart    cart;
+  MetroBoyVRAM    vram;
+  MetroBoyOAM     oam;
+  MetroBoyZRAM    zram;
+  MetroBoyJoypad  joypad;
+  MetroBoySerial  serial;
+  MetroBoyPPU     ppu;
+  MetroBoySPU     spu;
+  MetroBoyDMA     dma;
+  MetroBoyBootrom boot;
+  MetroBoyInterrupts ints;
 
   uint8_t intf_delay = 0;
   uint8_t imask_delay = 0;

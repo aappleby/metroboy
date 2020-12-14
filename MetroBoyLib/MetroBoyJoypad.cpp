@@ -1,13 +1,13 @@
-#include "MetroBoyLib/Joypad.h"
+#include "MetroBoyLib/MetroBoyJoypad.h"
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
-void Joypad::reset() {
+void MetroBoyJoypad::reset() {
   val = 0xFF;
   p1 = 0xCF; // FF00
 }
 
-void Joypad::tick(int phase_total, const Req& req, Ack& ack) const {
+void MetroBoyJoypad::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
 
   if (req.read && req.addr == ADDR_P1) {
@@ -17,7 +17,7 @@ void Joypad::tick(int phase_total, const Req& req, Ack& ack) const {
   }
 }
 
-void Joypad::tock(int phase_total, const Req& req) {
+void MetroBoyJoypad::tock(int phase_total, const Req& req) {
   if (DELTA_GH && req.write && req.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (req.data_lo & 0x30);
     switch (p1 & 0x30) {
@@ -28,7 +28,7 @@ void Joypad::tock(int phase_total, const Req& req) {
   }
 }
 
-void Joypad::set(uint8_t new_val) {
+void MetroBoyJoypad::set(uint8_t new_val) {
   val = new_val;
   switch (p1 & 0x30) {
   case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;
@@ -37,7 +37,7 @@ void Joypad::set(uint8_t new_val) {
   }
 }
 
-void Joypad::dump(Dumper& dump) const {
+void MetroBoyJoypad::dump(Dumper& dump) const {
   dump("\002--------------JOYPAD----------\001\n");
   dump("%c %c %c %c %c %c %c %c\n",
           val & 0x01 ? '-' : 'R',

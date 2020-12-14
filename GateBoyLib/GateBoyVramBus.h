@@ -25,7 +25,7 @@ struct SpriteTempB {
   /*p33.RYDU*/ DFF8n RYDU_SPRITE_DB7n; // xBxDxFxH
 };
 
-struct VramBus {
+struct GateBoyVramBus {
   BusOut BUS_VRAM_An[13];
   BusIO  BUS_VRAM_Dp[8];
   PinOut PIN_VRAM_CSn; // PIN_43

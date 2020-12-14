@@ -1,8 +1,8 @@
 #pragma once
 #include "CoreLib/Types.h"
 
-struct Joypad {
-  Joypad() = default;
+struct MetroBoyJoypad {
+  MetroBoyJoypad() = default;
 
   void reset();
 

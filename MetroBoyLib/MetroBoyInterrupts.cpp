@@ -1,9 +1,9 @@
+#include "MetroBoyLib/MetroBoyInterrupts.h"
 #include "CoreLib/Constants.h"
-#include "MetroBoyLib/Interrupts.h"
 
 //-----------------------------------------------------------------------------
 
-void Interrupts::tick(int phase_total, const Req& req, Ack& ack) const {
+void MetroBoyInterrupts::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
 
   if (req.read) {
@@ -22,7 +22,7 @@ void Interrupts::tick(int phase_total, const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void Interrupts::tock(int phase_total, const Req& req,
+void MetroBoyInterrupts::tock(int phase_total, const Req& req,
                       uint8_t cpu_int_ack,
                       bool vblank_int,
                       bool stat_int,
@@ -49,7 +49,7 @@ void Interrupts::tock(int phase_total, const Req& req,
 
 //-----------------------------------------------------------------------------
 
-void Interrupts::dump(Dumper& d) const {
+void MetroBoyInterrupts::dump(Dumper& d) const {
   d("\002--------------INTERRUPTS----------\001\n");
 
   d("imask  %s\n", byte_to_bits(imask));

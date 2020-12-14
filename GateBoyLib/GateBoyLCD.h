@@ -220,7 +220,7 @@ struct RegLYC {
 
 //-----------------------------------------------------------------------------
 
-struct LcdRegisters {
+struct GateBoyLCD {
 
   wire ATEJ_LINE_RSTp(wire XODO_VID_RSTp) const {
     /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(CATU_LINE_P000p_a.qp_any());

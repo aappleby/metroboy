@@ -1,8 +1,8 @@
 #pragma once
 #include "CoreLib/Types.h"
 
-struct Interrupts {
-  Interrupts() = default;
+struct MetroBoyInterrupts {
+  MetroBoyInterrupts() = default;
 
   void tick(int phase_total, const Req& req, Ack& ack) const;
   void tock(int phase_total, const Req& req,

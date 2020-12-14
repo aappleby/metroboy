@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct CPU {
+struct MetroBoyCPU {
   void reset_boot();
   void reset_cart();
 

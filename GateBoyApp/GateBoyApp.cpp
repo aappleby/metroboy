@@ -480,23 +480,23 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Ints =====\001\n");
-  d.dump_bitp("IE_D0        ", gb->int_reg.IE_D0.state);
-  d.dump_bitp("IE_D1        ", gb->int_reg.IE_D1.state);
-  d.dump_bitp("IE_D2        ", gb->int_reg.IE_D2.state);
-  d.dump_bitp("IE_D3        ", gb->int_reg.IE_D3.state);
-  d.dump_bitp("IE_D4        ", gb->int_reg.IE_D4.state);
+  d.dump_bitp("IE_D0        ", gb->interrupts.IE_D0.state);
+  d.dump_bitp("IE_D1        ", gb->interrupts.IE_D1.state);
+  d.dump_bitp("IE_D2        ", gb->interrupts.IE_D2.state);
+  d.dump_bitp("IE_D3        ", gb->interrupts.IE_D3.state);
+  d.dump_bitp("IE_D4        ", gb->interrupts.IE_D4.state);
   d("\n");
-  d.dump_bitp("LOPE_FF0F_0  ", gb->int_reg.LOPE_FF0F_D0p.state);
-  d.dump_bitp("LALU_FF0F_1  ", gb->int_reg.LALU_FF0F_D1p.state);
-  d.dump_bitp("NYBO_FF0F_2  ", gb->int_reg.NYBO_FF0F_D2p.state);
-  d.dump_bitp("UBUL_FF0F_3  ", gb->int_reg.UBUL_FF0F_D3p.state);
-  d.dump_bitp("ULAK_FF0F_4  ", gb->int_reg.ULAK_FF0F_D4p.state);
+  d.dump_bitp("LOPE_FF0F_0  ", gb->interrupts.LOPE_FF0F_D0p.state);
+  d.dump_bitp("LALU_FF0F_1  ", gb->interrupts.LALU_FF0F_D1p.state);
+  d.dump_bitp("NYBO_FF0F_2  ", gb->interrupts.NYBO_FF0F_D2p.state);
+  d.dump_bitp("UBUL_FF0F_3  ", gb->interrupts.UBUL_FF0F_D3p.state);
+  d.dump_bitp("ULAK_FF0F_4  ", gb->interrupts.ULAK_FF0F_D4p.state);
   d("\n");
-  d.dump_bitp("MATY_FF0F_L0p", gb->int_reg.MATY_FF0F_L0p.state);
-  d.dump_bitp("MOPO_FF0F_L1p", gb->int_reg.MOPO_FF0F_L1p.state);
-  d.dump_bitp("PAVY_FF0F_L2p", gb->int_reg.PAVY_FF0F_L2p.state);
-  d.dump_bitp("NEJY_FF0F_L3p", gb->int_reg.NEJY_FF0F_L3p.state);
-  d.dump_bitp("NUTY_FF0F_L4p", gb->int_reg.NUTY_FF0F_L4p.state);
+  d.dump_bitp("MATY_FF0F_L0p", gb->interrupts.MATY_FF0F_L0p.state);
+  d.dump_bitp("MOPO_FF0F_L1p", gb->interrupts.MOPO_FF0F_L1p.state);
+  d.dump_bitp("PAVY_FF0F_L2p", gb->interrupts.PAVY_FF0F_L2p.state);
+  d.dump_bitp("NEJY_FF0F_L3p", gb->interrupts.NEJY_FF0F_L3p.state);
+  d.dump_bitp("NUTY_FF0F_L4p", gb->interrupts.NUTY_FF0F_L4p.state);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -507,32 +507,32 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Clocks =====\001\n");
   d("PHASE %d%d%d%d\n",
-    gb->pclk_reg.AFUR_xxxxEFGHp.qp_old(),
-    gb->pclk_reg.ALEF_AxxxxFGHp.qp_old(),
-    gb->pclk_reg.APUK_ABxxxxGHp.qp_old(),
-    gb->pclk_reg.ADYK_ABCxxxxHp.qp_old());
+    gb->pclk.AFUR_xxxxEFGHp.qp_old(),
+    gb->pclk.ALEF_AxxxxFGHp.qp_old(),
+    gb->pclk.APUK_ABxxxxGHp.qp_old(),
+    gb->pclk.ADYK_ABCxxxxHp.qp_old());
   d("\n");
-  d.dump_bitp("TUBO_WAITINGp ", gb->rst_reg.TUBO_WAITINGp.state);
-  d.dump_bitn("ASOL_POR_DONEn", gb->rst_reg.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->rst_reg.AFER_SYS_RSTp_evn.state);
+  d.dump_bitp("TUBO_WAITINGp ", gb->rstdbg.TUBO_WAITINGp.state);
+  d.dump_bitn("ASOL_POR_DONEn", gb->rstdbg.ASOL_POR_DONEn.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->rstdbg.AFER_SYS_RSTp_evn.state);
   d("\n");
-  d.dump_bitp("AFUR_xxxxEFGHp", gb->pclk_reg.AFUR_xxxxEFGHp.state);
-  d.dump_bitp("ALEF_AxxxxFGHp", gb->pclk_reg.ALEF_AxxxxFGHp.state);
-  d.dump_bitp("APUK_ABxxxxGHp", gb->pclk_reg.APUK_ABxxxxGHp.state);
-  d.dump_bitp("ADYK_ABCxxxxHp", gb->pclk_reg.ADYK_ABCxxxxHp.state);
+  d.dump_bitp("AFUR_xxxxEFGHp", gb->pclk.AFUR_xxxxEFGHp.state);
+  d.dump_bitp("ALEF_AxxxxFGHp", gb->pclk.ALEF_AxxxxFGHp.state);
+  d.dump_bitp("APUK_ABxxxxGHp", gb->pclk.APUK_ABxxxxGHp.state);
+  d.dump_bitp("ADYK_ABCxxxxHp", gb->pclk.ADYK_ABCxxxxHp.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->vclk_reg.WUVU_ABxxEFxx.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->vclk_reg.VENA_xxCDEFxx.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->vclk_reg.WOSU_AxxDExxH.state);
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->vclk.WUVU_ABxxEFxx.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->vclk.VENA_xxCDEFxx.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->vclk.WOSU_AxxDExxH.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->tim_reg.NYDU_TIMA7p_DELAY_evn.state);
-  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->tim_reg.MOBA_TIMER_OVERFLOWp_evn.state);
-  d.dump_slice2p("DIV ", &gb->div_reg.UKUP_DIV00p_evn, 16);
-  d.dump_slice2p("TIMA", &gb->tim_reg.REGA_TIMA0p_evn, 8);
-  d.dump_slice2p("TMA ", &gb->tim_reg.SABU_TMA0p_h, 8);
-  d.dump_slice2p("TAC ", &gb->tim_reg.SOPU_TAC0p_h, 3);
+  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->timer.NYDU_TIMA7p_DELAY_evn.state);
+  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->timer.MOBA_TIMER_OVERFLOWp_evn.state);
+  d.dump_slice2p("DIV ", &gb->div.UKUP_DIV00p_evn, 16);
+  d.dump_slice2p("TIMA", &gb->timer.REGA_TIMA0p_evn, 8);
+  d.dump_slice2p("TMA ", &gb->timer.SABU_TMA0p_h, 8);
+  d.dump_slice2p("TAC ", &gb->timer.SOPU_TAC0p_h, 3);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
@@ -589,17 +589,17 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
-  d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &gb->dma_reg.NAFA_DMA_A08n_h), pack_u8p(8, &gb->dma_reg.NAKY_DMA_A00p_evn));
+  d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &gb->dma.NAFA_DMA_A08n_h), pack_u8p(8, &gb->dma.NAKY_DMA_A00p_evn));
   d("\n");
-  d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma_reg.MATU_DMA_RUNNINGp_evn.state);
-  d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma_reg.LYXE_DMA_LATCHp_evn  .state);
-  d.dump_bitp("MYTE_DMA_DONE    ", gb->dma_reg.MYTE_DMA_DONE_evn    .state);
-  d.dump_bitp("LUVY_DMA_TRIG_d0 ", gb->dma_reg.LUVY_DMA_TRIG_d0_evn .state);
-  d.dump_bitp("LENE_DMA_TRIG_d4 ", gb->dma_reg.LENE_DMA_TRIG_d4_evn .state);
-  d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma_reg.LOKY_DMA_LATCHp_evn  .state);
+  d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma.MATU_DMA_RUNNINGp_evn.state);
+  d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma.LYXE_DMA_LATCHp_evn  .state);
+  d.dump_bitp("MYTE_DMA_DONE    ", gb->dma.MYTE_DMA_DONE_evn    .state);
+  d.dump_bitp("LUVY_DMA_TRIG_d0 ", gb->dma.LUVY_DMA_TRIG_d0_evn .state);
+  d.dump_bitp("LENE_DMA_TRIG_d4 ", gb->dma.LENE_DMA_TRIG_d4_evn .state);
+  d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma.LOKY_DMA_LATCHp_evn  .state);
   d("\n");
-  d.dump_slice2p("DMA_A_LOW ", &gb->dma_reg.NAKY_DMA_A00p_evn, 8);
-  d.dump_slice2n("DMA_A_HIGH", &gb->dma_reg.NAFA_DMA_A08n_h, 8);
+  d.dump_slice2p("DMA_A_LOW ", &gb->dma.NAKY_DMA_A00p_evn, 8);
+  d.dump_slice2n("DMA_A_HIGH", &gb->dma.NAFA_DMA_A08n_h, 8);
   d("\n");
 
   d("\002===== LCD =====\001\n");

@@ -1,4 +1,4 @@
-#include "CoreLib/CPU.h"
+#include "CoreLib/MetroBoyCPU.h"
 #include "CoreLib/Constants.h"
 #include <assert.h>
 #include <stdio.h>
@@ -144,8 +144,8 @@ constexpr uint8_t F_ZERO = 0x80;
 
 //-----------------------------------------------------------------------------
 
-void CPU::reset_boot() {
-  *this = CPU();
+void MetroBoyCPU::reset_boot() {
+  *this = MetroBoyCPU();
 
   ime = ime_delay = 0;
 
@@ -171,7 +171,7 @@ void CPU::reset_boot() {
 
 //-----------------------------------------------------------------------------
 
-void CPU::reset_cart() {
+void MetroBoyCPU::reset_cart() {
   state = 2;
   state_ = 0;
   op_addr = 0xFE;
@@ -208,7 +208,7 @@ void CPU::reset_cart() {
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 
-void CPU::tock_ha(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
+void MetroBoyCPU::tock_ha(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   state = state_;
   ime = ime_delay;
 
@@ -243,7 +243,7 @@ void CPU::tock_ha(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   }
 }
 
-void CPU::tock_de(uint8_t imask, uint8_t intf_cd) {
+void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_cd) {
   if (HALT) {
     if ((imask & intf_cd) && ime) {
       state_ = 0;
@@ -253,7 +253,7 @@ void CPU::tock_de(uint8_t imask, uint8_t intf_cd) {
 
 //-----------------------------------------------------------------------------
 
-void CPU::execute_int(uint8_t imask_, uint8_t intf_) {
+void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
   uint8_t _int_addr = 0;
   uint8_t _int_ack = 0;
 
@@ -279,7 +279,7 @@ void CPU::execute_int(uint8_t imask_, uint8_t intf_) {
 
 //-----------------------------------------------------------------------------
 
-void CPU::execute_halt(uint8_t imask_, uint8_t intf_) {
+void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
   uint16_t ad = bus_req.addr;
   uint16_t adp = ad + 1;
   uint16_t adm = ad - 1;
@@ -299,7 +299,7 @@ void CPU::execute_halt(uint8_t imask_, uint8_t intf_) {
 
 //-----------------------------------------------------------------------------
 
-void CPU::execute_op() {
+void MetroBoyCPU::execute_op() {
   state_ = state + 1;
 
   uint16_t ad = bus_req.addr;
@@ -627,7 +627,7 @@ void CPU::execute_op() {
 
 //-----------------------------------------------------------------------------
 
-uint8_t CPU::get_reg(int mux) {
+uint8_t MetroBoyCPU::get_reg(int mux) {
   switch(mux) {
   case 0: return b;
   case 1: return c;
@@ -641,7 +641,7 @@ uint8_t CPU::get_reg(int mux) {
   return 0;
 }
 
-void CPU::set_reg(int mux, uint8_t data) {
+void MetroBoyCPU::set_reg(int mux, uint8_t data) {
   switch(mux) {
   case 0: b = data; break;
   case 1: c = data; break;
@@ -656,7 +656,7 @@ void CPU::set_reg(int mux, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-void CPU::set_f(uint8_t mask) {
+void MetroBoyCPU::set_f(uint8_t mask) {
   f = (f & ~mask) | (alu_f & mask);
   if (ADD_SP_R8)   { f &= ~(F_ZERO | F_NEGATIVE); }
   if (LD_HL_SP_R8) { f &= ~(F_ZERO | F_NEGATIVE); }
@@ -664,13 +664,13 @@ void CPU::set_f(uint8_t mask) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t CPU::alu(uint8_t arg1, uint8_t arg2, int op, uint8_t flags) {
+uint8_t MetroBoyCPU::alu(uint8_t arg1, uint8_t arg2, int op, uint8_t flags) {
   alu_x = arg1;
   alu_y = arg2;
   return alu(op, flags);
 }
 
-uint8_t CPU::alu(int op, uint8_t flags) {
+uint8_t MetroBoyCPU::alu(int op, uint8_t flags) {
   alu_f = flags;
   const uint8_t x = alu_x;
   const uint8_t y = alu_y;
@@ -703,7 +703,7 @@ uint8_t CPU::alu(int op, uint8_t flags) {
 //-----------------------------------------------------------------------------
 // The logic is more annoying, but this can be implemented as two 4-bit additions
 
-uint8_t CPU::daa(uint8_t x, uint8_t f) {
+uint8_t MetroBoyCPU::daa(uint8_t x, uint8_t f) {
   bool c = f & F_CARRY;
   bool h = f & F_HALF_CARRY;
   bool n = f & F_NEGATIVE;
@@ -738,7 +738,7 @@ uint8_t CPU::daa(uint8_t x, uint8_t f) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t CPU::rlu(int op, uint8_t flags) {
+uint8_t MetroBoyCPU::rlu(int op, uint8_t flags) {
   alu_f = flags;
   const uint8_t x = a;
   const uint8_t f = alu_f;
@@ -792,7 +792,7 @@ uint8_t CPU::rlu(int op, uint8_t flags) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t CPU::alu_cb(int op, uint8_t flags) {
+uint8_t MetroBoyCPU::alu_cb(int op, uint8_t flags) {
   alu_f = flags;
   const uint8_t x = alu_x;
   const uint8_t quad = ((op >> 6) & 3);
@@ -862,7 +862,7 @@ uint8_t CPU::alu_cb(int op, uint8_t flags) {
 
 //-----------------------------------------------------------------------------
 
-void CPU::dump(Dumper& d_) const {
+void MetroBoyCPU::dump(Dumper& d_) const {
   d_("\002===== CPU =====\001\n");
   d_("state    %d\n", state);
   d_("state_   %d\n", state_);

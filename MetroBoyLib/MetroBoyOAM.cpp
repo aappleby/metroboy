@@ -1,4 +1,4 @@
-#include "MetroBoyLib/OAM.h"
+#include "MetroBoyLib/MetroBoyOAM.h"
 
 #include "CoreLib/Constants.h"
 #include <assert.h>
@@ -6,13 +6,13 @@
 
 //-----------------------------------------------------------------------------
 
-void OAM::reset() {
+void MetroBoyOAM::reset() {
   memset(ram, 0, sizeof(ram));
 }
 
 //-----------------------------------------------------------------------------
 
-void OAM::tick(int phase_total, const Req& req, Ack& ack) const {
+void MetroBoyOAM::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
 
   if (req.read && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
@@ -29,7 +29,7 @@ void OAM::tick(int phase_total, const Req& req, Ack& ack) const {
 
 // FIXME this probably writes on phases other than GH during DMA...
 
-void OAM::tock(int phase_total, const Req& req) {
+void MetroBoyOAM::tock(int phase_total, const Req& req) {
   if (DELTA_GH && req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     uint16_t oam_addr = req.addr & 0x00FF;
     uint16_t d = ram[oam_addr >> 1];
@@ -41,7 +41,7 @@ void OAM::tock(int phase_total, const Req& req) {
 
 //-----------------------------------------------------------------------------
 
-void OAM::dump(Dumper& d) const {
+void MetroBoyOAM::dump(Dumper& d) const {
   d("\002--------------OAM--------------\001\n");
 
   uint8_t* flat = (uint8_t*)ram;

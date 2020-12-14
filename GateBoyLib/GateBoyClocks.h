@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct ResetRegisters {
+struct GateBoyResetDbg {
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp_evn.qp_any(), ASOL_POR_DONEn.qp_any()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
@@ -35,9 +35,22 @@ struct ResetRegisters {
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n_ext() const { return not1(UMUT_MODE_DBG1p_ext()); }
 
+  wire TUTO_DBG_VRAMp(wire UNOR_MODE_DBG2p) {
+    /* p25.TUTO*/ wire _TUTO_DBG_VRAMp_new = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAMp.qn_new());
+    return _TUTO_DBG_VRAMp_new;
+  }
+
+  void tock(wire UNOR_MODE_DBG2p, GateBoyResetDbg& rstdbg) {
+    /*#p25.SYCY*/ wire _SYCY_MODE_DBG2n_ext = not1(UNOR_MODE_DBG2p);
+    /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n_ext, rstdbg.CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn_any());
+  }
+
+  //----------------------------------------
+
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
   /*p01.AFER*/ DFF13 AFER_SYS_RSTp_evn; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
+  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
   PinIn PIN_SYS_RST;
   PinIn PIN_SYS_T1;
@@ -47,23 +60,11 @@ struct ResetRegisters {
   PinOut PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
   PinOut PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
   PinOut PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
-
-  wire TUTO_DBG_VRAMp(wire UNOR_MODE_DBG2p) {
-    /* p25.TUTO*/ wire _TUTO_DBG_VRAMp_new = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAMp.qn_new());
-    return _TUTO_DBG_VRAMp_new;
-  }
-
-  void tock(wire UNOR_MODE_DBG2p, ResetRegisters& rst_reg) {
-    /*#p25.SYCY*/ wire _SYCY_MODE_DBG2n_ext = not1(UNOR_MODE_DBG2p);
-    /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n_ext, rst_reg.CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn_any());
-  }
-
-  /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 };
 
 //-----------------------------------------------------------------------------
 
-struct PhaseClockRegisters {
+struct GateBoyPhaseClock {
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
   /*p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;
   /*p01.APUK*/ DFF9 APUK_ABxxxxGHp;
@@ -71,11 +72,20 @@ struct PhaseClockRegisters {
 
   PinIn PIN_SYS_CLKGOOD;
   PinIn PIN_SYS_CLK;
+
+  PinOut PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
+  PinOut PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
+  PinOut PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
+  PinOut PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
+  PinOut PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
+  PinOut PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
+  PinOut PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
+  PinOut PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 };
 
 //-----------------------------------------------------------------------------
 
-struct VideoClockRegisters {
+struct GateBoyVideoClock {
   /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
   /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }
   /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(WOSU_AxxDExxH.qp_new()); }

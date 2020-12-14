@@ -1,4 +1,4 @@
-#include "MetroBoyLib/Cart.h"
+#include "MetroBoyLib/MetroBoyCart.h"
 
 #include <assert.h>
 
@@ -17,14 +17,14 @@
 
 //-----------------------------------------------------------------------------
 
-void Cart::set_rom(uint8_t* new_rom, size_t new_rom_size) {
+void MetroBoyCart::set_rom(uint8_t* new_rom, size_t new_rom_size) {
   cart_rom  = new_rom;
   cart_size = new_rom_size;
 }
 
 //-----------------------------------------------------------------------------
 
-void Cart::reset() {
+void MetroBoyCart::reset() {
   ram_enable = false;
   mode = 0;
   bank_latch1 = 0;
@@ -65,7 +65,7 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Cart::tick(int phase_total, const Req& req, Ack& ack) const {
+void MetroBoyCart::tick(int phase_total, const Req& req, Ack& ack) const {
   (void)phase_total;
 
   const int region = req.addr >> 13;
@@ -123,7 +123,7 @@ void Cart::tick(int phase_total, const Req& req, Ack& ack) const {
 
 //-----------------------------------------------------------------------------
 
-void Cart::tock(int phase_total, const Req& req) {
+void MetroBoyCart::tock(int phase_total, const Req& req) {
   const int region = req.addr >> 13;
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
@@ -165,7 +165,7 @@ void Cart::tock(int phase_total, const Req& req) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t* Cart::get_flat_ptr(uint16_t addr) {
+uint8_t* MetroBoyCart::get_flat_ptr(uint16_t addr) {
   const int region = addr >> 13;
   const uint16_t ram_addr = addr & 0x1FFF;
   const uint16_t rom_addr = addr & 0x7FFF;
@@ -203,7 +203,7 @@ uint8_t* Cart::get_flat_ptr(uint16_t addr) {
 
 //-----------------------------------------------------------------------------
 
-void Cart::dump(Dumper& d) const {
+void MetroBoyCart::dump(Dumper& d) const {
   d("\002--------------CART--------------\001\n");
 
   d("cart_rom       %p\n", cart_rom);

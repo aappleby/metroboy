@@ -925,19 +925,19 @@ int GateBoyTests::test_clk() {
   gb.run(8);
 
   auto& top = gb;
-  auto& pclk_reg = top.pclk_reg;
-  auto& vclk_reg = top.vclk_reg;
+  auto& pclk = top.pclk;
+  auto& vclk = top.vclk;
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    EXPECT_CLK(pclk_reg.AFUR_xxxxEFGHp.qp_old(), 0b00001111);
-    EXPECT_CLK(pclk_reg.ALEF_AxxxxFGHp.qp_old(), 0b10000111);
-    EXPECT_CLK(pclk_reg.APUK_ABxxxxGHp.qp_old(), 0b11000011);
-    EXPECT_CLK(pclk_reg.ADYK_ABCxxxxHp.qp_old(), 0b11100001);
+    EXPECT_CLK(pclk.AFUR_xxxxEFGHp.qp_old(), 0b00001111);
+    EXPECT_CLK(pclk.ALEF_AxxxxFGHp.qp_old(), 0b10000111);
+    EXPECT_CLK(pclk.APUK_ABxxxxGHp.qp_old(), 0b11000011);
+    EXPECT_CLK(pclk.ADYK_ABCxxxxHp.qp_old(), 0b11100001);
 
-    EXPECT_CLK(vclk_reg.WUVU_ABxxEFxx.qp_old(), 0b11001100);
-    EXPECT_CLK(vclk_reg.VENA_xxCDEFxx.qp_old(), 0b00111100);
-    EXPECT_CLK(vclk_reg.WOSU_AxxDExxH.qp_old(), 0b10011001);
+    EXPECT_CLK(vclk.WUVU_ABxxEFxx.qp_old(), 0b11001100);
+    EXPECT_CLK(vclk.VENA_xxCDEFxx.qp_old(), 0b00111100);
+    EXPECT_CLK(vclk.WOSU_AxxDExxH.qp_old(), 0b10011001);
 
 #if 0
     EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);
@@ -1466,15 +1466,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(ADDR_DIV, 0x00);
     gb.dbg_write(ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFD, gb.timer.get_tima());
     gb.run(2048);
-    EXPECT_EQ(0xFE, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFE, gb.timer.get_tima());
     gb.run(2048);
-    EXPECT_EQ(0xFF, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFF, gb.timer.get_tima());
     gb.run(2048);
-    EXPECT_EQ(0x80, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x80, gb.timer.get_tima());
     gb.run(2048);
-    EXPECT_EQ(0x81, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x81, gb.timer.get_tima());
     gb.run(2048);
     if (!err) LOG_B("TAC 0b100 pass\n");
   }
@@ -1487,15 +1487,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(ADDR_DIV, 0x00);
     gb.dbg_write(ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFD, gb.timer.get_tima());
     gb.run(32);
-    EXPECT_EQ(0xFE, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFE, gb.timer.get_tima());
     gb.run(32);
-    EXPECT_EQ(0xFF, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFF, gb.timer.get_tima());
     gb.run(32);
-    EXPECT_EQ(0x80, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x80, gb.timer.get_tima());
     gb.run(32);
-    EXPECT_EQ(0x81, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x81, gb.timer.get_tima());
     gb.run(32);
     if (!err) LOG_B("TAC 0b101 pass\n");
   }
@@ -1507,15 +1507,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(ADDR_DIV, 0x00);
     gb.dbg_write(ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFD, gb.timer.get_tima());
     gb.run(128);
-    EXPECT_EQ(0xFE, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFE, gb.timer.get_tima());
     gb.run(128);
-    EXPECT_EQ(0xFF, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFF, gb.timer.get_tima());
     gb.run(128);
-    EXPECT_EQ(0x80, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x80, gb.timer.get_tima());
     gb.run(128);
-    EXPECT_EQ(0x81, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x81, gb.timer.get_tima());
     gb.run(128);
     if (!err) LOG_B("TAC 0b110 pass\n");
   }
@@ -1527,15 +1527,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(ADDR_DIV, 0x00);
     gb.dbg_write(ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFD, gb.timer.get_tima());
     gb.run(512);
-    EXPECT_EQ(0xFE, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFE, gb.timer.get_tima());
     gb.run(512);
-    EXPECT_EQ(0xFF, gb.tim_reg.get_tima());
+    EXPECT_EQ(0xFF, gb.timer.get_tima());
     gb.run(512);
-    EXPECT_EQ(0x80, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x80, gb.timer.get_tima());
     gb.run(512);
-    EXPECT_EQ(0x81, gb.tim_reg.get_tima());
+    EXPECT_EQ(0x81, gb.timer.get_tima());
     gb.run(512);
     if (!err) LOG_B("TAC 0b111 pass\n");
   }

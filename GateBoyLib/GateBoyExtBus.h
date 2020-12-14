@@ -1,7 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct GateBoy;
+struct GateBoyDMA;
+struct GateBoyResetDebug;
 
 //-----------------------------------------------------------------------------
 
@@ -17,6 +18,8 @@ struct ExtDataLatch {
 };
 
 struct ExtAddrLatch {
+  void tock(const GateBoyResetDebug& rstdbg, wire BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
+
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p; // xBxxxxxx
   /*p08.ALYR*/ TpLatch ALYR_EXT_ADDR_LATCH_02p; // xBxxxxxx
@@ -35,6 +38,35 @@ struct ExtAddrLatch {
 };
 
 struct GateBoyExtBus {
+  void addr_latch_to_pins(
+    const GateBoyResetDebug& rstdbg,
+    const GateBoyDMA& dma,
+    const ExtAddrLatch& ext_addr_latch,
+    wire BUS_CPU_A[16],
+    wire ABUZ_xxCDEFGH_clk_evn,
+    wire TUTU_READ_BOOTROMp_new
+  );
+
+  void cpu_data_to_pins(
+    const GateBoyResetDebug& rstdbg,
+    wire BUS_CPU_D[8],
+    wire PIN_CPU_RDp,
+    wire PIN_CPU_WRp,
+    wire TEDO_CPU_RDp,
+    wire TEXO_ADDR_VRAMn
+  );
+
+  void tock_pins(
+    const GateBoyResetDebug& rstdbg,
+    const GateBoyDMA& dma,
+    wire BUS_CPU_A[16],
+    wire PIN_CPU_RDp,
+    wire PIN_CPU_WRp,
+    wire ABUZ_xxCDEFGH_clk_evn,
+    wire TEXO_ADDR_VRAMn_ext,
+    wire APOV_CPU_WRp_clkevn
+  );
+
   PinOut PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
   PinOut PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write
   PinOut PIN_EXT_WRn;    // PIN_78 // WRn idles high, goes low during EFG if there's a write

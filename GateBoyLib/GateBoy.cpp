@@ -83,7 +83,7 @@ void GateBoy::reset_boot(uint8_t* _boot_buf, size_t _boot_size,
 void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size, uint8_t* _cart_buf, size_t _cart_size) {
   reset_boot(_boot_buf, _boot_size, _cart_buf, _cart_size, true);
 
-  PIN_CPU_BOOTp.reset(REG_D0C0);
+  cpu_bus.PIN_CPU_BOOTp.reset(REG_D0C0);
   interrupts.PIN_CPU_INT_VBLANK.reset(REG_D1C0);
   rstdbg.PIN_CPU_STARTp.reset(REG_D0C0);
 
@@ -655,23 +655,23 @@ void GateBoy::tock_slow(int pass_index) {
 
   // PIN_CPU_RDp / PIN_CPU_WRp
   if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    PIN_CPU_RDp.setp(bus_req.read);
-    PIN_CPU_WRp.setp(bus_req.write);
+    cpu_bus.PIN_CPU_RDp.setp(bus_req.read);
+    cpu_bus.PIN_CPU_WRp.setp(bus_req.write);
   }
   else {
-    PIN_CPU_RDp.setp(0);
-    PIN_CPU_WRp.setp(0);
+    cpu_bus.PIN_CPU_RDp.setp(0);
+    cpu_bus.PIN_CPU_WRp.setp(0);
   }
 
   // not at all certain about this. seems to break some oam read glitches.
   if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-    PIN_CPU_LATCH_EXT.setp(1);
+    cpu_bus.PIN_CPU_LATCH_EXT.setp(1);
   }
   else {
-    PIN_CPU_LATCH_EXT.setp(0);
+    cpu_bus.PIN_CPU_LATCH_EXT.setp(0);
   }
 
-  PIN_CPU_6.setp(0);
+  cpu_bus.PIN_CPU_6.setp(0);
 
   // Data has to be driven on EFGH or we fail the wave tests
   wire BUS_CPU_OEp = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write;
@@ -719,22 +719,22 @@ void GateBoy::tock_slow(int pass_index) {
     if (bus_req.addr <= 0x00FF && !bootrom.BOOT_BITn_h.qp_old()) addr_ext = false;
 
     if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      PIN_CPU_EXT_BUSp.setp(addr_ext);
+      cpu_bus.PIN_CPU_EXT_BUSp.setp(addr_ext);
     }
     else {
       // This seems wrong, but it passes tests. *shrug*
       if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-        PIN_CPU_EXT_BUSp.setp(0);
+        cpu_bus.PIN_CPU_EXT_BUSp.setp(0);
       }
       else {
-        PIN_CPU_EXT_BUSp.setp(addr_ext);
+        cpu_bus.PIN_CPU_EXT_BUSp.setp(addr_ext);
       }
     }
   }
 
-  PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF_ext(BUS_CPU_A));
-  PIN_CPU_UNOR_DBG.setp(rstdbg.UNOR_MODE_DBG2p());
-  PIN_CPU_UMUT_DBG.setp(rstdbg.UMUT_MODE_DBG1p_ext());
+  cpu_bus.PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF_ext(BUS_CPU_A));
+  cpu_bus.PIN_CPU_UNOR_DBG.setp(rstdbg.UNOR_MODE_DBG2p());
+  cpu_bus.PIN_CPU_UMUT_DBG.setp(rstdbg.UMUT_MODE_DBG1p_ext());
 
   //-----------------------------------------------------------------------------
   // We need the sprite match result from the previous cycle, so we recalculate it here. :/
@@ -780,11 +780,11 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // CPU read signals
 
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rstdbg.UNOR_MODE_DBG2p(), /*PIN_EXT_RDn.qn_new()*/ 0, PIN_CPU_RDp.qp_new()); // Ignoring debug stuff for now
+  /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rstdbg.UNOR_MODE_DBG2p(), /*PIN_EXT_RDn.qn_new()*/ 0, cpu_bus.PIN_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   /* p07.TEDO*/ wire TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
   /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(pclk.ADAR_ABCxxxxH(), pclk.ATYP_ABCDxxxx());
-  /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(PIN_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+  /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_bus.PIN_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
   /* p01.APOV*/ wire APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
   /* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rstdbg.UNOR_MODE_DBG2p(), /*PIN_EXT_WRn.qn_new()*/ 0, APOV_CPU_WRp); // Ignoring debug stuff for now
@@ -815,7 +815,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   //------------------------------------------------------------------------------------------------------------------------
 
-  /* p04.DECY*/ wire DECY_LATCH_EXTn_ext = not1(PIN_CPU_LATCH_EXT.qp_new());
+  /* p04.DECY*/ wire DECY_LATCH_EXTn_ext = not1(cpu_bus.PIN_CPU_LATCH_EXT.qp_new());
   /* p04.CATY*/ wire CATY_LATCH_EXTp_ext = not1(DECY_LATCH_EXTn_ext);
 
   /* p04.MAKA*/ oam_bus.MAKA_LATCH_EXTp_evn.dff17(pclk.ZEME_AxCxExGx(), rstdbg.AVOR_SYS_RSTp(), CATY_LATCH_EXTp_ext);
@@ -835,7 +835,7 @@ void GateBoy::tock_slow(int pass_index) {
     BUS_CPU_D_out
   );
 
-  PIN_CPU_BOOTp.setp(bootrom.TUTU_READ_BOOTROMp_new(BUS_CPU_A));
+  cpu_bus.PIN_CPU_BOOTp.setp(bootrom.TUTU_READ_BOOTROMp_new(BUS_CPU_A));
 
   //------------------------------------------------------------------------------------------------------------------------
   // Timer
@@ -847,7 +847,7 @@ void GateBoy::tock_slow(int pass_index) {
     pclk.BOGA_Axxxxxxx(),
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
-    PIN_CPU_LATCH_EXT.qp_new(),
+    cpu_bus.PIN_CPU_LATCH_EXT.qp_new(),
     BUS_CPU_D_out,
     div);
 
@@ -1155,7 +1155,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire ABUZ_xxCDEFGH = [this](){
     /*#p01.AJAX*/ wire _AJAX_xxxxEFGH = not1(pclk.ATYP_ABCDxxxx());
-    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(pclk.AROV_xxCDEFxx(), _AJAX_xxxxEFGH, PIN_CPU_EXT_BUSp.qp_new());
+    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(pclk.AROV_xxCDEFxx(), _AJAX_xxxxEFGH, cpu_bus.PIN_CPU_EXT_BUSp.qp_new());
     /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(rstdbg.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
     /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
     return _ABUZ_xxCDEFGH;
@@ -1236,7 +1236,7 @@ void GateBoy::tock_slow(int pass_index) {
     BUS_CPU_D_out);
 
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn_ext(BUS_CPU_A));
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_ext = and2(cpu_bus.PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn_ext(BUS_CPU_A));
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF_ext(BUS_CPU_A), TEXO_ADDR_VRAMn_ext);
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_ext = and2(TEFA_ADDR_VRAMp_ext, BUS_CPU_A[15]);
 
@@ -1245,8 +1245,8 @@ void GateBoy::tock_slow(int pass_index) {
   ext_bus.cpu_data_to_pins(
     rstdbg,
     BUS_CPU_D,
-    PIN_CPU_RDp.qp_new(),
-    PIN_CPU_WRp.qp_new(),
+    cpu_bus.PIN_CPU_RDp.qp_new(),
+    cpu_bus.PIN_CPU_WRp.qp_new(),
     TEDO_CPU_RDp,
     TEXO_ADDR_VRAMn_ext
   );
@@ -1254,22 +1254,22 @@ void GateBoy::tock_slow(int pass_index) {
     rstdbg,
     dma,
     BUS_CPU_A,
-    PIN_CPU_RDp.qp_new(),
-    PIN_CPU_WRp.qp_new(),
+    cpu_bus.PIN_CPU_RDp.qp_new(),
+    cpu_bus.PIN_CPU_WRp.qp_new(),
     ABUZ_xxCDEFGH,
     TEXO_ADDR_VRAMn_ext,
     APOV_CPU_WRp
   );
   ext_bus.cart_to_pins(cart_buf, cart_ram, ext_ram);
   ext_bus.pins_to_data_latch(
-    PIN_CPU_RDp.qp_new(),
-    PIN_CPU_LATCH_EXT.qp_new(),
+    cpu_bus.PIN_CPU_RDp.qp_new(),
+    cpu_bus.PIN_CPU_LATCH_EXT.qp_new(),
     TEXO_ADDR_VRAMn_ext,
     ext_data_latch);
   ext_bus.data_latch_to_cpu_bus(
     ext_data_latch,
-    PIN_CPU_RDp.qp_new(),
-    PIN_CPU_LATCH_EXT.qp_new(),
+    cpu_bus.PIN_CPU_RDp.qp_new(),
+    cpu_bus.PIN_CPU_LATCH_EXT.qp_new(),
     TEXO_ADDR_VRAMn_ext,
     BUS_CPU_D_out);
 
@@ -2103,7 +2103,7 @@ void GateBoy::tock_vram(
   ](){
     // Ignoring debug for now
     /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp_new =  and2(SOSE_ADDR_VRAMp, ABUZ_xxCDEFGH);
-    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn_new = nand2(SOSE_ADDR_VRAMp, PIN_CPU_WRp.qp_new());  // Schematic wrong, second input is PIN_CPU_WRp
+    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn_new = nand2(SOSE_ADDR_VRAMp, cpu_bus.PIN_CPU_WRp.qp_new());  // Schematic wrong, second input is PIN_CPU_WRp
 
     ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN_VRAM_OEn.qn_new());
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_VRAM_CSn.qn_new());

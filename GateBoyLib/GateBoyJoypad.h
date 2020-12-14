@@ -4,6 +4,17 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyJoypad {
+
+  void tock(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp,
+    wire BOGA_Axxxxxxx_clkevn,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
+    BusOut BUS_CPU_D_out[8]);
+
+
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
 
@@ -25,6 +36,8 @@ struct GateBoyJoypad {
   /*p05.KAPA*/ TpLatch KAPA_JOYP_L1n; // 10-rung, looks like pass gate or something
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2n; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3n; // 10-rung, looks like pass gate or something
+
+  PinOut PIN_CPU_WAKE;          // top right wire by itself <- P02.AWOB
 
   PinIn  PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
   PinIn  PIN_JOY_P11; // PIN_66

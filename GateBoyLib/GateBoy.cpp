@@ -770,9 +770,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire XYMU_RENDERINGp_old = ppu_reg.XYMU_RENDERINGp();
 
-  wire XONA_LCDC_LCDENp_old = rstdbg.XONA_LCDC_LCDENp();
-
-  wire XODO_VID_RSTp_old = rstdbg.XODO_VID_RSTp(XONA_LCDC_LCDENp_old);
+  wire XODO_VID_RSTp_old = rstdbg.XODO_VID_RSTp();
 
   wire TAVE_PRELOAD_DONE_TRIGp_old = tile_fetcher.TAVE_PRELOAD_DONE_TRIGp(XYMU_RENDERINGp_old);
 
@@ -800,11 +798,6 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Sys clock signals
 
-  /*#p01.ATYP*/ bool ATYP_ABCDxxxx;
-  /* p01.ALEF*/ bool AFEP_AxxxxFGH;
-  /* p01.APUK*/ bool AROV_xxCDEFxx;
-  /*#p01.ADAR*/ bool ADAR_ABCxxxxH;
-
   /* p01.UVYT*/ bool UVYT_ABCDxxxx;
   /* p01.BOGA*/ bool BOGA_Axxxxxxx;
 
@@ -813,10 +806,6 @@ void GateBoy::tock_slow(int pass_index) {
     ATEZ_CLKBADp,
     ABOL_CLKREQn,
     ATAL_xBxDxFxH,
-    &ATYP_ABCDxxxx,
-    &AFEP_AxxxxFGH,
-    &AROV_xxCDEFxx,
-    &ADAR_ABCxxxxH,
     &UVYT_ABCDxxxx,
     &BOGA_Axxxxxxx
   ](){
@@ -825,10 +814,10 @@ void GateBoy::tock_slow(int pass_index) {
     /* p01.APUK*/ pclk.APUK_ABxxxxGHp.dff9(!ATAL_xBxDxFxH, rstdbg.UPOJ_MODE_PRODn_ext(), pclk.ALEF_AxxxxFGHp.qn_old());
     /* p01.ADYK*/ pclk.ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH, rstdbg.UPOJ_MODE_PRODn_ext(), pclk.APUK_ABxxxxGHp.qn_old());
 
-    /*#p01.ATYP*/ ATYP_ABCDxxxx = not1(pclk.AFUR_xxxxEFGHp.qp_new());
-    /*#p01.AFEP*/ AFEP_AxxxxFGH = not1(pclk.ALEF_AxxxxFGHp.qn_new());
-    /*#p01.AROV*/ AROV_xxCDEFxx = not1(pclk.APUK_ABxxxxGHp.qp_new());
-    /*#p01.ADAR*/ ADAR_ABCxxxxH = not1(pclk.ADYK_ABCxxxxHp.qn_new());
+    /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(pclk.AFUR_xxxxEFGHp.qp_new());
+    /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(pclk.ALEF_AxxxxFGHp.qn_new());
+    /*#p01.AROV*/ wire AROV_xxCDEFxx = not1(pclk.APUK_ABxxxxGHp.qp_new());
+    ///*#p01.ADAR*/ wire ADAR_ABCxxxxH = not1(pclk.ADYK_ABCxxxxHp.qn_new());
 
     /*#p01.BELU*/ wire _BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
     /*#p01.BYRY*/ wire _BYRY_ABCDxxxx = not1(_BELU_xxxxEFGH);
@@ -885,9 +874,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   [
     this,
-    ADAR_ABCxxxxH,
-    ATYP_ABCDxxxx,
-
     &TEDO_CPU_RDp,
     &APOV_CPU_WRp,
     &TAPU_CPU_WRp
@@ -895,7 +881,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rstdbg.UNOR_MODE_DBG2p(), /*PIN_EXT_RDn.qn_new()*/ 0, PIN_CPU_RDp.qp_new()); // Ignoring debug stuff for now
     /* p07.TEDO*/ TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
-    /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH, ATYP_ABCDxxxx);
+    /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(pclk.ADAR_ABCxxxxH(), pclk.ATYP_ABCDxxxx());
     /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(PIN_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
     /* p01.APOV*/ APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
@@ -1399,12 +1385,12 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1_odd.dff17(ALET_xBxDxFxH(ATAL_xBxDxFxH), XYMU_RENDERINGp, tile_fetcher.LAXU_BFETCH_S0p_evn.qp_new());
   }();
 
-  wire ABUZ_xxCDEFGH_clk_evn = [this, ATYP_ABCDxxxx, AROV_xxCDEFxx](){
-    /*#p01.AJAX*/ wire _AJAX_xxxxEFGH_clk_evn = not1(ATYP_ABCDxxxx);
-    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH_clk_evn = or_and3(AROV_xxCDEFxx, _AJAX_xxxxEFGH_clk_evn, PIN_CPU_EXT_BUSp.qp_new());
-    /*#p01.AWOD*/ wire _AWOD_ABxxxxxx_clk_evn = nor2(rstdbg.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH_clk_evn);
-    /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH_clk_evn = not1(_AWOD_ABxxxxxx_clk_evn);
-    return _ABUZ_xxCDEFGH_clk_evn;
+  wire ABUZ_xxCDEFGH = [this](){
+    /*#p01.AJAX*/ wire _AJAX_xxxxEFGH = not1(pclk.ATYP_ABCDxxxx());
+    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(pclk.AROV_xxCDEFxx(), _AJAX_xxxxEFGH, PIN_CPU_EXT_BUSp.qp_new());
+    /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(rstdbg.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
+    /*#p01.ABUZ*/ wire _ABUZ_xxCDEFGH = not1(_AWOD_ABxxxxxx);
+    return _ABUZ_xxCDEFGH;
   }();
 
   /*#p35.REMY*/ bool REMY_LD0n_new;
@@ -1427,7 +1413,6 @@ void GateBoy::tock_slow(int pass_index) {
   );
 
   tock_lcd(
-    XODO_VID_RSTp,
     vclk.TALU_xxCDEFxx(),
     TYFA_CLKPIPE_odd,
     SACU_CLKPIPE_evn,
@@ -1440,13 +1425,14 @@ void GateBoy::tock_slow(int pass_index) {
     RAVO_LD1n_new
   );
 
-  tock_joypad(
+  joypad.tock(
     BUS_CPU_A,
     BUS_CPU_D,
     rstdbg.AVOR_SYS_RSTp(),
     BOGA_Axxxxxxx,
     TEDO_CPU_RDp,
-    TAPU_CPU_WRp
+    TAPU_CPU_WRp,
+    BUS_CPU_D_out
   );
 
   serial.tock(
@@ -1479,7 +1465,7 @@ void GateBoy::tock_slow(int pass_index) {
   tock_ext(
     BUS_CPU_A,
     BUS_CPU_D,
-    ABUZ_xxCDEFGH_clk_evn,
+    ABUZ_xxCDEFGH,
     TEDO_CPU_RDp,
     APOV_CPU_WRp,
     TEXO_ADDR_VRAMn_ext,
@@ -1494,7 +1480,7 @@ void GateBoy::tock_slow(int pass_index) {
     XODO_VID_RSTp,
 
     ATAL_xBxDxFxH,
-    ABUZ_xxCDEFGH_clk_evn,
+    ABUZ_xxCDEFGH,
 
     CATY_LATCH_EXTp_ext,
     SOSE_ADDR_VRAMp_ext,
@@ -1727,100 +1713,6 @@ void GateBoy::tock_interrupts(
   if (DELTA_HA) {
     imask_latch = pack_u8p(5, &interrupts.IE_D0);
   }
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-// Joypad
-
-void GateBoy::tock_joypad(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
-  wire AVOR_SYS_RSTp,
-  wire BOGA_Axxxxxxx_clkevn,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp)
-{
-
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new = not1(AVOR_SYS_RSTp);
-
-  /* p10.ACAT*/ wire _ACAT_FF00_RDp_ext     =  and4(TEDO_CPU_RDp,    ANAP_FF_0xx00000_ext(BUS_CPU_A), AKUG_A06n_ext(BUS_CPU_A), BYKO_A05n_ext(BUS_CPU_A));
-  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn_clk     = nand4(TAPU_CPU_WRp, ANAP_FF_0xx00000_ext(BUS_CPU_A), AKUG_A06n_ext(BUS_CPU_A), BYKO_A05n_ext(BUS_CPU_A));
-
-  // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
-  // That also means that _both_ P14 and P15 are selected at reset :/
-  /* p05.JUTE*/ joypad.JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[0]);
-  /* p05.KECY*/ joypad.KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[1]);
-  /* p05.JALE*/ joypad.JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[2]);
-  /* p05.KYME*/ joypad.KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[3]);
-  /* p05.KELY*/ joypad.KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[4]);
-  /* p05.COFY*/ joypad.COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[5]);
-  /* p05.KUKO*/ joypad.KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[6]);
-  /* p05.KERU*/ joypad.KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn_clk, _ALUR_SYS_RSTn_new, BUS_CPU_D[7]);
-
-  wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
-  /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);
-
-  /*
-  // lcd ribbon voltages after bootrom
-  04 5 left & b
-  05 0 diodes 1&2
-  06 5 down & start
-  07 5 up & select
-  08 5 right & a
-  09 0 diodes 3 & 4
-  */
-
-  /* p05.KARU*/ wire _KARU_OEp_new = or2(joypad.KELY_JOYP_UDLRp.qn_new(), _KURA_JOYP_DBGn_new);
-  /* p05.CELA*/ wire _CELA_OEp_new = or2(joypad.COFY_JOYP_ABCSp.qn_new(), _KURA_JOYP_DBGn_new);
-
-  joypad.PIN_JOY_P14.pin_out(_KARU_OEp_new, joypad.KELY_JOYP_UDLRp.qn_new(), joypad.KELY_JOYP_UDLRp.qn_new());
-  joypad.PIN_JOY_P15.pin_out(_CELA_OEp_new, joypad.COFY_JOYP_ABCSp.qn_new(), joypad.COFY_JOYP_ABCSp.qn_new());
-
-
-#if 0
-  /* p05.KOLE*/ wire _KOLE = nand2(joypad.JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
-  /* p05.KYBU*/ wire _KYBU = nor2 (joypad.JUTE_JOYP_RA.qp17(), _KURA);
-  /* p05.KYTO*/ wire _KYTO = nand2(joypad.KECY_JOYP_LB.qp17(), BURO_FF60_0p);
-  /* p05.KABU*/ wire _KABU = nor2 (joypad.KECY_JOYP_LB.qp17(), _KURA);
-  /* p05.KYHU*/ wire _KYHU = nand2(joypad.JALE_JOYP_UC.qp17(), BURO_FF60_0p);
-  /* p05.KASY*/ wire _KASY = nor2 (joypad.JALE_JOYP_UC.qp17(), _KURA);
-  /* p05.KORY*/ wire _KORY = nand2(joypad.KYME_JOYP_DS.qp17(), BURO_FF60_0p);
-  /* p05.KALE*/ wire _KALE = nor2 (joypad.KYME_JOYP_DS.qp17(), _KURA);
-
-  PIN_JOY_P10.pin_out(_KOLE, _KYBU);
-  PIN_JOY_P11.pin_out(_KYTO, _KABU);
-  PIN_JOY_P12.pin_out(_KYHU, _KASY);
-  PIN_JOY_P13.pin_out(_KORY, _KALE);
-#endif
-
-
-  /* p02.KERY*/ wire _KERY_ANY_BUTTONp_ext = or4(joypad.PIN_JOY_P13.qp_new(), joypad.PIN_JOY_P12.qp_new(), joypad.PIN_JOY_P11.qp_new(), joypad.PIN_JOY_P10.qp_new());
-
-  /* p02.AWOB*/ joypad.AWOB_WAKE_CPU.tp_latch(BOGA_Axxxxxxx_clkevn, _KERY_ANY_BUTTONp_ext);
-  wire _AWOB_WAKE_CPUp_new = joypad.AWOB_WAKE_CPU.qp_new();
-
-  PIN_CPU_WAKE.setp(_AWOB_WAKE_CPUp_new);
-
-  /* p02.APUG*/ joypad.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn_new, joypad.AGEM_JP_GLITCH2.qp_old());
-  /* p02.AGEM*/ joypad.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn_new, joypad.ACEF_JP_GLITCH1.qp_old());
-  /* p02.ACEF*/ joypad.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn_new, joypad.BATU_JP_GLITCH0.qp_old());
-  /* p02.BATU*/ joypad.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn_new, _KERY_ANY_BUTTONp_ext);
-
-  /* p05.BYZO*/ wire _BYZO_FF00_RDn_ext = not1(_ACAT_FF00_RDp_ext);
-  /* p05.KEVU*/ joypad.KEVU_JOYP_L0n.tp_latch(_BYZO_FF00_RDn_ext, joypad.PIN_JOY_P10.qp_new());
-  /* p05.KAPA*/ joypad.KAPA_JOYP_L1n.tp_latch(_BYZO_FF00_RDn_ext, joypad.PIN_JOY_P11.qp_new());
-  /* p05.KEJA*/ joypad.KEJA_JOYP_L2n.tp_latch(_BYZO_FF00_RDn_ext, joypad.PIN_JOY_P12.qp_new());
-  /* p05.KOLO*/ joypad.KOLO_JOYP_L3n.tp_latch(_BYZO_FF00_RDn_ext, joypad.PIN_JOY_P13.qp_new());
-
-    // FF00 P1 / JOYP
-  /* p05.KEMA*/ BUS_CPU_D_out[0].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KEVU_JOYP_L0n.qp_new());
-  /* p05.KURO*/ BUS_CPU_D_out[1].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KAPA_JOYP_L1n.qp_new());
-  /* p05.KUVE*/ BUS_CPU_D_out[2].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KEJA_JOYP_L2n.qp_new());
-  /* p05.JEKU*/ BUS_CPU_D_out[3].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KOLO_JOYP_L3n.qp_new());
-  /* p05.KOCE*/ BUS_CPU_D_out[4].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KELY_JOYP_UDLRp.qn_new());
-  /* p05.CUDY*/ BUS_CPU_D_out[5].tri6_nn(_BYZO_FF00_RDn_ext, joypad.COFY_JOYP_ABCSp.qn_new());
-  /* p??.????*/ BUS_CPU_D_out[6].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KUKO_DBG_FF00_D6n.qp_new());
-  /* p??.????*/ BUS_CPU_D_out[7].tri6_nn(_BYZO_FF00_RDn_ext, joypad.KERU_DBG_FF00_D7n.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -2415,7 +2307,6 @@ void GateBoy::tock_pix_pipe(
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_lcd(
-    wire XODO_VID_RSTp_new_h,
     wire TALU_xxCDEFxx_clkevn,
     wire TYFA_CLKPIPE_xBxDxFxH_clknew_odd,
     wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
@@ -2428,7 +2319,7 @@ void GateBoy::tock_lcd(
     wire RAVO_LD1n_new)
 {
   lcd.tock_pins(
-    XODO_VID_RSTp_new_h,
+    rstdbg.XODO_VID_RSTp(),
     TALU_xxCDEFxx_clkevn,
     TYFA_CLKPIPE_xBxDxFxH_clknew_odd,
     XONA_LCDC_LCDENp_h_new,

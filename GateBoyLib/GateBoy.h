@@ -22,6 +22,7 @@
 #include "GateBoyLib/GateBoyExtBus.h"
 #include "GateBoyLib/GateBoyOamBus.h"
 #include "GateBoyLib/GateBoyVramBus.h"
+#include "GateBoyLib/GateBoyResetDebug.h"
 
 //-----------------------------------------------------------------------------
 
@@ -107,15 +108,6 @@ struct GateBoy {
     return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
   }
 
-  void tock_joypad(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire BOGA_Axxxxxxx_clkevn,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp
-  );
-
   void tock_interrupts(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
@@ -171,17 +163,16 @@ struct GateBoy {
   );
 
   void tock_lcd(
-    wire XODO_VID_RSTp_new_h,
-    wire TALU_xxCDEFxx_clkevn,
-    wire TYFA_CLKPIPE_xBxDxFxH_clknew_odd,
-    wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
-    wire XONA_LCDC_LCDENp_h_new,
-    wire XYMU_RENDERINGp_new_xxx,
-    wire AVAP_SCAN_DONE_TRIGp_new_xxx,
-    wire WEGO_HBLANKp_new_any,
-    wire PURE_LINE_ENDn_new_evn,
-    wire REMY_LD0n_new,
-    wire RAVO_LD1n_new
+    wire TALU_xxCDEFxx,
+    wire TYFA_CLKPIPE_odd,
+    wire SACU_CLKPIPE_evn,
+    wire XONA_LCDC_LCDENp,
+    wire XYMU_RENDERINGp,
+    wire AVAP_SCAN_DONE_TRIGp,
+    wire WEGO_HBLANKp,
+    wire PURE_LINE_ENDn,
+    wire REMY_LD0n,
+    wire RAVO_LD1n
   );
 
   void tock_ext(
@@ -254,8 +245,6 @@ struct GateBoy {
 
   BusOut BUS_CPU_D_out[8];
 
-  PinOut PIN_CPU_WAKE;          // top right wire by itself <- P02.AWOB
-
   PinIn  PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
   PinIn  PIN_CPU_WRp;           // top right port PORTA_01: ->
   PinOut PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
@@ -289,7 +278,7 @@ struct GateBoy {
 
   //----------
 
-  GateBoyResetDbg   rstdbg;
+  GateBoyResetDebug   rstdbg;
   GateBoyPhaseClock pclk;
   GateBoyVideoClock vclk;
 

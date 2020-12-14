@@ -51,6 +51,7 @@ struct RegLY {
 };
 
 //-----------------------------------------------------------------------------
+// XONA_LCDC_LCDENn is in GateBoyResetDebug
 
 struct RegLCDC {
 
@@ -67,7 +68,6 @@ struct RegLCDC {
   /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn_h;   // xxxxxxxH
   /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn_h;   // xxxxxxxH
   /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn_h; // xxxxxxxH
-  ///*p23.XONA*/ DFF9 XONA_LCDC_LCDENn_h;  // xxxxxxxH
   /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn_h;  // xxxxxxxH
   /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn_h; // xxxxxxxH
   /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn_h;  // xxxxxxxH

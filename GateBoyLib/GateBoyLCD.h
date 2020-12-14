@@ -124,7 +124,7 @@ struct GateBoyLCD {
     const RegLX& reg_lx,
     const RegLY& reg_ly);
 
-  void tock_pins(
+  void set_pins(
     wire XODO_VID_RSTp,
     wire TALU_xxCDEFxx,
     wire TYFA_CLKPIPE_odd,

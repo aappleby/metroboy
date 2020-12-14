@@ -195,7 +195,7 @@ void GateBoyLCD::tock(
 
 //--------------------------------------------------------------------------------
 
-void GateBoyLCD::tock_pins(
+void GateBoyLCD::set_pins(
   wire XODO_VID_RSTp,
   wire TALU_xxCDEFxx,
   wire TYFA_CLKPIPE_odd,

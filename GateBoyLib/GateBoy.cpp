@@ -1291,15 +1291,38 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_ext = nor2(SYRO_FE00_FFFF_ext(BUS_CPU_A), TEXO_ADDR_VRAMn_ext);
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_ext = and2(TEFA_ADDR_VRAMp_ext, BUS_CPU_A[15]);
 
-  tock_ext(
-    BUS_CPU_A,
+  ext_addr_latch.tock(rstdbg, BUS_CPU_A, TEXO_ADDR_VRAMn_ext);
+  ext_bus.addr_latch_to_pins(rstdbg, dma, ext_addr_latch, BUS_CPU_A, ABUZ_xxCDEFGH, bootrom.TUTU_READ_BOOTROMp_new(BUS_CPU_A));
+  ext_bus.cpu_data_to_pins(
+    rstdbg,
     BUS_CPU_D,
-    ABUZ_xxCDEFGH,
+    PIN_CPU_RDp.qp_new(),
+    PIN_CPU_WRp.qp_new(),
     TEDO_CPU_RDp,
-    APOV_CPU_WRp,
-    TEXO_ADDR_VRAMn_ext,
-    bootrom.TUTU_READ_BOOTROMp_new(BUS_CPU_A)
+    TEXO_ADDR_VRAMn_ext
   );
+  ext_bus.set_pins(
+    rstdbg,
+    dma,
+    BUS_CPU_A,
+    PIN_CPU_RDp.qp_new(),
+    PIN_CPU_WRp.qp_new(),
+    ABUZ_xxCDEFGH,
+    TEXO_ADDR_VRAMn_ext,
+    APOV_CPU_WRp
+  );
+  ext_bus.cart_to_pins(cart_buf, cart_ram, ext_ram);
+  ext_bus.pins_to_data_latch(
+    PIN_CPU_RDp.qp_new(),
+    PIN_CPU_LATCH_EXT.qp_new(),
+    TEXO_ADDR_VRAMn_ext,
+    ext_data_latch);
+  ext_bus.data_latch_to_cpu_bus(
+    ext_data_latch,
+    PIN_CPU_RDp.qp_new(),
+    PIN_CPU_LATCH_EXT.qp_new(),
+    TEXO_ADDR_VRAMn_ext,
+    BUS_CPU_D_out);
 
   tock_vram(
     BUS_CPU_A,
@@ -1961,7 +1984,7 @@ void GateBoy::tock_lcd(
     wire REMY_LD0n_new,
     wire RAVO_LD1n_new)
 {
-  lcd.tock_pins(
+  lcd.set_pins(
     rstdbg.XODO_VID_RSTp(),
     TALU_xxCDEFxx_clkevn,
     TYFA_CLKPIPE_xBxDxFxH_clknew_odd,
@@ -2051,184 +2074,6 @@ void GateBoy::tock_lcd(
 
     old_lcd_clock = lcd.PIN_LCD_CLOCK_xxx.qp_new();
     old_lcd_latch = lcd.PIN_LCD_LATCH_evn.qp_new();
-  }();
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_ext(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-    wire ABUZ_xxCDEFGH_clk_evn,
-    wire TEDO_CPU_RDp,
-    wire APOV_CPU_WRp_clkevn,
-    wire TEXO_ADDR_VRAMn_ext,
-    wire TUTU_READ_BOOTROMp_new)
-{
-  // Don't think I need this.
-  /*
-  PIN_EXT_D[0].reset();
-  PIN_EXT_D[1].reset();
-  PIN_EXT_D[2].reset();
-  PIN_EXT_D[3].reset();
-  PIN_EXT_D[4].reset();
-  PIN_EXT_D[5].reset();
-  PIN_EXT_D[6].reset();
-  PIN_EXT_D[7].reset();
-  */
-
-  //----------------------------------------
-  // External address mux
-
-  ext_addr_latch.tock(rstdbg, BUS_CPU_A, TEXO_ADDR_VRAMn_ext);
-  ext_bus.addr_latch_to_pins(rstdbg, dma, ext_addr_latch, BUS_CPU_A, ABUZ_xxCDEFGH_clk_evn, TUTU_READ_BOOTROMp_new);
-
-  //----------------------------------------
-  // CPU data bus to data pins
-
-  ext_bus.cpu_data_to_pins(
-    rstdbg,
-    BUS_CPU_D,
-    PIN_CPU_RDp.qp_new(),
-    PIN_CPU_WRp.qp_new(),
-    TEDO_CPU_RDp,
-    TEXO_ADDR_VRAMn_ext
-  );
-
-  //----------------------------------------
-  // Pins
-
-  ext_bus.tock_pins(
-    rstdbg,
-    dma,
-    BUS_CPU_A,
-    PIN_CPU_RDp.qp_new(),
-    PIN_CPU_WRp.qp_new(),
-    ABUZ_xxCDEFGH_clk_evn,
-    TEXO_ADDR_VRAMn_ext,
-    APOV_CPU_WRp_clkevn
-  );
-
-  //----------------------------------------
-  // FIXME - implement MBC1
-
-  // 0000-3FFF - ROM Bank 00 (Read Only) This area always contains the first 16KBytes of the cartridge ROM.
-  // 4000-7FFF - ROM Bank 01-7F (Read Only) This area may contain any of the further 16KByte banks of the ROM, allowing to address up to 125 ROM Banks (almost 2MByte). As described below, bank numbers 20h, 40h, and 60h cannot be used, resulting in the odd amount of 125 banks.
-  // A000-BFFF - RAM Bank 00-03, if any (Read/Write) This area is used to address external RAM in the cartridge (if any). External RAM is often battery buffered, allowing to store game positions or high score tables, even if the gameboy is turned off, or if the cartridge is removed from the gameboy. Available RAM sizes are: 2KByte (at A000-A7FF), 8KByte (at A000-BFFF), and 32KByte (in form of four 8K banks at A000-BFFF).
-
-  // 0000-1FFF - RAM Enable (Write Only)   00h  Disable RAM (default)   ?Ah  Enable RAM Practically any value with 0Ah in the lower 4 bits enables RAM, and any other value disables RAM.
-  // 2000-3FFF - ROM Bank Number (Write Only) Writing to this address space selects the lower 5 bits of the ROM Bank Number (in range 01-1Fh). When 00h is written, the MBC translates that to bank 01h also. That doesn't harm so far, because ROM Bank 00h can be always directly accessed by reading from 0000-3FFF.
-  // But (when using the register below to specify the upper ROM Bank bits), the same happens for Bank 20h, 40h, and 60h. Any attempt to address these ROM Banks will select Bank 21h, 41h, and 61h instead.
-  // 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) This 2bit register can be used to select a RAM Bank in range from 00-03h, or to specify the upper two bits (Bit 5-6) of the ROM Bank number, depending on the current ROM/RAM Mode. (See below.)
-  // 6000-7FFF - ROM/RAM Mode Select (Write Only)  00h = ROM Banking Mode (up to 8KByte RAM, 2MByte ROM) (default)   01h = RAM Banking Mode (up to 32KByte RAM, 512KByte ROM)
-
-  // MBC1_RAM_EN
-
-  // MBC1_BANK_D0
-  // MBC1_BANK_D1
-  // MBC1_BANK_D2
-  // MBC1_BANK_D3
-  // MBC1_BANK_D4
-  // MBC1_BANK_D5
-  // MBC1_BANK_D6
-
-  // MBC1_MODE
-
-  /*
-  {
-
-    bool bank_0 = nor(MBC1_BANK_D0, MBC1_BANK_D1, MBC1_BANK_D2, MBC1_BANK_D3, MBC1_BANK_D4);
-
-    wire cart_rom_a14 = bank_0 ? 1 : MBC1_BANK_D0.qp_new();
-    wire cart_rom_a15 = bank_0 ? 0 : MBC1_BANK_D1.qp_new();
-    wire cart_rom_a16 = bank_0 ? 0 : MBC1_BANK_D2.qp_new();
-    wire cart_rom_a17 = bank_0 ? 0 : MBC1_BANK_D3.qp_new();
-    wire cart_rom_a18 = bank_0 ? 0 : MBC1_BANK_D4.qp_new();
-    wire cart_rom_a19 = MBC1_MODE.qp_new() ? 0 : bank_0 ? 0 : MBC1_BANK_D5.qp_new();
-    wire cart_rom_a20 = MBC1_MODE.qp_new() ? 0 : bank_0 ? 0 : MBC1_BANK_D6.qp_new();
-
-    wire cart_ram_a13 = MBC1_MODE.qp_new() ? MBC1_BANK_D5.qp_new() : 0;
-    wire cart_ram_a14 = MBC1_MODE.qp_new() ? MBC1_BANK_D6.qp_new() : 0;
-
-    // ROM read
-    {
-      uint16_t rom_addr = ext_addr & 0x7FFF;
-      wire OEn = PIN_EXT_RDn.qp_new();
-      wire CEn = PIN_EXT_A[15].qp_new();
-
-      if (!CEn && !OEn) {
-        ext_bus.set_pin_data(cart_rom[rom_addr]);
-      }
-    }
-  }
-  */
-
-  //----------------------------------------
-  // The actual "cart" stuff.
-
-  [this](){
-    uint16_t ext_addr_latch = pack_u16p(16, &ext_bus.PIN_EXT_A[ 0]);
-    uint8_t ext_data_latch = pack_u8p(8, &ext_bus.PIN_EXT_D[0]);
-
-    // ROM read
-    uint16_t rom_addr = ext_addr_latch & 0x7FFF;
-    wire rom_CEn_new = ext_bus.PIN_EXT_A[15].qp_new();
-    wire rom_OEp_new = !rom_CEn_new && !ext_bus.PIN_EXT_RDn.qp_new() && cart_buf;
-    if (rom_OEp_new)  ext_data_latch = cart_buf[rom_addr];
-
-    // Ext RAM read
-    uint16_t eram_addr = (ext_addr_latch & 0x1FFF);
-    wire eram_CE1n_new = ext_bus.PIN_EXT_CSn.qp_new();
-    wire eram_CE2_new  = ext_bus.PIN_EXT_A[14].qp_new();
-    wire eram_WRp_new  = !eram_CE1n_new && eram_CE2_new && !ext_bus.PIN_EXT_WRn.qp_new();
-    wire eram_OEp_new  = !eram_CE1n_new && eram_CE2_new && !eram_WRp_new && !ext_bus.PIN_EXT_RDn.qp_new();
-    if (eram_WRp_new) ext_ram[eram_addr]  = ext_data_latch;
-    if (eram_OEp_new) ext_data_latch = ext_ram[eram_addr];
-
-    // Cart RAM read
-    uint16_t cram_addr = (ext_addr_latch & 0x1FFF);
-    wire cram_CS1n_new = ext_bus.PIN_EXT_CSn.qp_new();
-    wire cram_CS2_new  = ext_bus.PIN_EXT_A[13].qp_new() && !ext_bus.PIN_EXT_A[14].qp_new() && ext_bus.PIN_EXT_A[15].qp_new();
-    wire cram_WRp_new  = !cram_CS1n_new && cram_CS2_new && !ext_bus.PIN_EXT_WRn.qp_new();
-    wire cram_OEp_new  = !cram_CS1n_new && cram_CS2_new && !ext_bus.PIN_EXT_RDn.qp_new();
-
-    if (cram_WRp_new) cart_ram[cram_addr] = ext_data_latch;
-    if (cram_OEp_new) ext_data_latch = cart_ram[cram_addr];
-
-    wire ext_OEp = rom_OEp_new || eram_OEp_new || cram_OEp_new;
-    ext_bus.PIN_EXT_D[0].pin_in(ext_OEp, wire(ext_data_latch & 0x01));
-    ext_bus.PIN_EXT_D[1].pin_in(ext_OEp, wire(ext_data_latch & 0x02));
-    ext_bus.PIN_EXT_D[2].pin_in(ext_OEp, wire(ext_data_latch & 0x04));
-    ext_bus.PIN_EXT_D[3].pin_in(ext_OEp, wire(ext_data_latch & 0x08));
-    ext_bus.PIN_EXT_D[4].pin_in(ext_OEp, wire(ext_data_latch & 0x10));
-    ext_bus.PIN_EXT_D[5].pin_in(ext_OEp, wire(ext_data_latch & 0x20));
-    ext_bus.PIN_EXT_D[6].pin_in(ext_OEp, wire(ext_data_latch & 0x40));
-    ext_bus.PIN_EXT_D[7].pin_in(ext_OEp, wire(ext_data_latch & 0x80));
-  }();
-
-  //----------------------------------------
-  // Data pins to data latch, and back to cpu bus.
-
-  [this, TEXO_ADDR_VRAMn_ext](){
-    // External data bus -> latch -> CPU data bus
-    /* p08.LAVO*/ wire _LAVO_HOLDn_new = nand3(PIN_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn_ext, PIN_CPU_LATCH_EXT.qp_new());
-    /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[0].qn_new());
-    /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[1].qn_new());
-    /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[2].qn_new());
-    /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[3].qn_new());
-    /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[4].qn_new());
-    /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[5].qn_new());
-    /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[6].qn_new());
-    /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn_new, ext_bus.PIN_EXT_D[7].qn_new());
-
-    /*#p08.RYMA*/ BUS_CPU_D_out[0].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
-    /* p08.RUVO*/ BUS_CPU_D_out[1].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
-    /* p08.RYKO*/ BUS_CPU_D_out[2].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
-    /* p08.TAVO*/ BUS_CPU_D_out[3].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
-    /* p08.TEPE*/ BUS_CPU_D_out[4].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
-    /* p08.SAFO*/ BUS_CPU_D_out[5].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
-    /* p08.SEVU*/ BUS_CPU_D_out[6].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
-    /* p08.TAJU*/ BUS_CPU_D_out[7].tri6_nn(_LAVO_HOLDn_new, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
   }();
 }
 

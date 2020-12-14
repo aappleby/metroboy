@@ -150,16 +150,6 @@ struct GateBoy {
     wire RAVO_LD1n
   );
 
-  void tock_ext(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-    wire ABUZ_xxCDEFGH_clk_evn,
-    wire TEDO_CPU_RDp,
-    wire APOV_CPU_WRp_clkevn,
-    wire TEXO_ADDR_VRAMn_ext,
-    wire TUTU_READ_BOOTROMp_new
-  );
-
   void tock_vram(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],

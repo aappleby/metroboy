@@ -47,6 +47,20 @@ struct GateBoyExtBus {
     wire TUTU_READ_BOOTROMp_new
   );
 
+  void pins_to_data_latch(
+    wire PIN_CPU_RDp,
+    wire PIN_CPU_LATCH_EXT,
+    wire TEXO_ADDR_VRAMn_ext,
+    ExtDataLatch& ext_data_latch);
+
+  void data_latch_to_cpu_bus(
+    const ExtDataLatch& ext_data_latch,
+    wire PIN_CPU_RDp,
+    wire PIN_CPU_LATCH_EXT,
+    wire TEXO_ADDR_VRAMn_ext,
+    BusOut BUS_CPU_D_out[8]
+  );
+
   void cpu_data_to_pins(
     const GateBoyResetDebug& rstdbg,
     wire BUS_CPU_D[8],
@@ -56,7 +70,7 @@ struct GateBoyExtBus {
     wire TEXO_ADDR_VRAMn
   );
 
-  void tock_pins(
+  void set_pins(
     const GateBoyResetDebug& rstdbg,
     const GateBoyDMA& dma,
     wire BUS_CPU_A[16],
@@ -66,6 +80,8 @@ struct GateBoyExtBus {
     wire TEXO_ADDR_VRAMn_ext,
     wire APOV_CPU_WRp_clkevn
   );
+
+  void cart_to_pins(const uint8_t* cart_buf, uint8_t* cart_ram, uint8_t* ext_ram);
 
   PinOut PIN_EXT_CSn;    // PIN_80 // CS changes on phase C if addr in [A000,FDFF]
   PinOut PIN_EXT_RDn;    // PIN_79 // RDn idles low, goes high on phase B for an external write

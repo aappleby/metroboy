@@ -4,6 +4,28 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyPhaseClock {
+
+  //----------------------------------------
+  // Root clocks - ignoring the deglitcher here
+
+  /* p01.UCOB*/ wire UCOB_CLKBADp()  const { return  not1(PIN_SYS_CLKGOOD.qp_any()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp()  const { return  not1(PIN_SYS_CLKGOOD.qp_any()); }
+  /* p01.ABOL*/ wire ABOL_CLKREQn()  const { return  not1(PIN_SYS_CLKREQ.qp_any()); }
+
+  /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN_SYS_CLK.qp_new(); }
+  /* p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); }
+  /* p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); }
+  /* p29.XYVA*/ wire XYVA_xBxDxFxH() const { return not1(ZEME_AxCxExGx()); }
+  /* p29.XOTA*/ wire XOTA_AxCxExGx() const { return not1(XYVA_xBxDxFxH()); }
+  /* p29.XYFY*/ wire XYFY_xBxDxFxH() const { return not1(XOTA_AxCxExGx()); }
+  /*#p01.ALET*/ wire ALET_xBxDxFxH() const { return not1(ZEME_AxCxExGx()); }
+  /* p01.LAPE*/ wire LAPE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
+  /*#p27.MEHE*/ wire MEHE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
+  /*#p27.MYVO*/ wire MYVO_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
+  /* p27.MOXE*/ wire MOXE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
+  /* p27.TAVA*/ wire TAVA_xBxDxFxH() const { return not1(LAPE_AxCxExGx()); }
+
   /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(AFUR_xxxxEFGHp.qp_new()); }
   /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(ALEF_AxxxxFGHp.qn_new()); }
   /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(APUK_ABxxxxGHp.qp_new()); }
@@ -16,6 +38,7 @@ struct GateBoyPhaseClock {
 
   PinIn PIN_SYS_CLKGOOD;
   PinIn PIN_SYS_CLK;
+  PinIn PIN_SYS_CLKREQ;
 
   PinOut PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   PinOut PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-

@@ -665,7 +665,7 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 /* p01.PYRY*/ inline wire PYRY_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
 /* p01.AMYG*/ inline wire AMYG_VID_RSTp (const wire XODO_VID_RSTp) { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
 
-
+#if 1
 /* p01.AZOF*/ inline wire AZOF_AxCxExGx (const wire ATAL_xBxDxFxH) { return not1(ATAL_xBxDxFxH); }
 /* p01.ZAXY*/ inline wire ZAXY_xBxDxFxH (const wire ATAL_xBxDxFxH) { return not1(AZOF_AxCxExGx(ATAL_xBxDxFxH)); }
 /*#p01.ZEME*/ inline wire ZEME_AxCxExGx (const wire ATAL_xBxDxFxH) { return not1(ZAXY_xBxDxFxH(ATAL_xBxDxFxH)); }
@@ -678,6 +678,7 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 /*#p27.MYVO*/ inline wire MYVO_AxCxExGx (const wire ATAL_xBxDxFxH) { return not1(ALET_xBxDxFxH(ATAL_xBxDxFxH)); }
 /* p27.MOXE*/ inline wire MOXE_AxCxExGx (const wire ATAL_xBxDxFxH) { return not1(ALET_xBxDxFxH(ATAL_xBxDxFxH)); }
 /* p27.TAVA*/ inline wire TAVA_xBxDxFxH (const wire ATAL_xBxDxFxH) { return not1(LAPE_AxCxExGx(ATAL_xBxDxFxH)); }
+#endif
 
 
 /* p07.AJAS*/ inline wire AJAS_CPU_RDn          (const wire TEDO_CPU_RDp) { return not1(TEDO_CPU_RDp); }

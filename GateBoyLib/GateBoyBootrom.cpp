@@ -1,5 +1,9 @@
 #include "GateBoyLib/GateBoyBootrom.h"
 
+#include "GateBoyLib/GateBoyCpuBus.h"
+#include "GateBoyLib/GateBoyResetDebug.h"
+#include "GateBoyLib/GateBoyClocks.h"
+
 //--------------------------------------------------------------------------------
 
 void GateBoyBootrom::reset_cart() {
@@ -9,25 +13,18 @@ void GateBoyBootrom::reset_cart() {
 //--------------------------------------------------------------------------------
 
 void GateBoyBootrom::tock(
-  Signal BUS_CPU_A[16],
-  Signal BUS_CPU_D[8],
-  wire UMUT_MODE_DBG1p_ext,
-  wire AVOR_SYS_RSTp,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-  uint8_t* boot_buf,
-  BusOut BUS_CPU_D_out[8])
+  GateBoyResetDebug& rst,
+  GateBoyCpuBus& cpu_bus,
+  uint8_t* boot_buf)
 {
   {
-    /* p07.TYRO*/ wire _TYRO_XX_0x0x0000p_ext = nor6(BUS_CPU_A[ 7], BUS_CPU_A[ 5], BUS_CPU_A[ 3], BUS_CPU_A[ 2], BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
-    /* p07.TUFA*/ wire _TUFA_XX_x1x1xxxxp_ext = and2(BUS_CPU_A[ 4], BUS_CPU_A[ 6]);
-    /*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new =  not1(AVOR_SYS_RSTp);
-    /* p07.TEXE*/ wire _TEXE_FF50_RDp_ext =  and4(TEDO_CPU_RDp,    SYKE_ADDR_HIp_ext(BUS_CPU_A), _TYRO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
-    /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(TAPU_CPU_WRp, SYKE_ADDR_HIp_ext(BUS_CPU_A), _TYRO_XX_0x0x0000p_ext, _TUFA_XX_x1x1xxxxp_ext);
+    ///*#p01.ALUR*/ wire _ALUR_SYS_RSTn_new =  not1(AVOR_SYS_RSTp);
+    /* p07.TEXE*/ wire _TEXE_FF50_RDp_ext =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SYKE_ADDR_HIp_ext(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
+    /* p07.TUGE*/ wire _TUGE_FF50_WRn_clk = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SYKE_ADDR_HIp_ext(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
     // FF50 - disable bootrom bit
-    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(BUS_CPU_D[0], BOOT_BITn_h.qp_old());
-    /* p07.TEPU*/ BOOT_BITn_h.dff17(_TUGE_FF50_WRn_clk, _ALUR_SYS_RSTn_new, _SATO_BOOT_BITn_old);
-    /* p07.SYPU*/ BUS_CPU_D_out[0].tri6_pn(_TEXE_FF50_RDp_ext, BOOT_BITn_h.qp_new());
+    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0], BOOT_BITn_h.qp_old());
+    /* p07.TEPU*/ BOOT_BITn_h.dff17(_TUGE_FF50_WRn_clk, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
+    /* p07.SYPU*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_TEXE_FF50_RDp_ext, BOOT_BITn_h.qp_new());
   }
 
   /* BOOT -> CBD */
@@ -56,29 +53,29 @@ void GateBoyBootrom::tock(
 #endif
 
   // this is kind of a hack
-  uint16_t cpu_addr = pack_u16p(16, BUS_CPU_A);
+  uint16_t cpu_addr = pack_u16p(16, cpu_bus.BUS_CPU_A);
   uint8_t bootrom_data = boot_buf[cpu_addr & 0xFF];
 
-  /* p07.TULO*/ wire _TULO_ADDR_BOOTROMp_new = nor8(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12],
-                                                    BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]);
+  /* p07.TULO*/ wire _TULO_ADDR_BOOTROMp_new = nor8(cpu_bus.BUS_CPU_A[15], cpu_bus.BUS_CPU_A[14], cpu_bus.BUS_CPU_A[13], cpu_bus.BUS_CPU_A[12],
+                                                    cpu_bus.BUS_CPU_A[11], cpu_bus.BUS_CPU_A[10], cpu_bus.BUS_CPU_A[ 9], cpu_bus.BUS_CPU_A[ 8]);
   /* p07.TERA*/ wire _TERA_BOOT_BITp_new  = not1(BOOT_BITn_h.qp_new());
   /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp_new = and2(_TERA_BOOT_BITp_new, _TULO_ADDR_BOOTROMp_new);
 
-  /* p07.ZORO*/ wire _ZORO_0000xxxx_XXp_ext = nor4(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12]);
-  /* p07.ZADU*/ wire _ZADU_xxxx0000_XXp_ext = nor4(BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]);
+  /* p07.ZORO*/ wire _ZORO_0000xxxx_XXp_ext = nor4(cpu_bus.BUS_CPU_A[15], cpu_bus.BUS_CPU_A[14], cpu_bus.BUS_CPU_A[13], cpu_bus.BUS_CPU_A[12]);
+  /* p07.ZADU*/ wire _ZADU_xxxx0000_XXp_ext = nor4(cpu_bus.BUS_CPU_A[11], cpu_bus.BUS_CPU_A[10], cpu_bus.BUS_CPU_A[ 9], cpu_bus.BUS_CPU_A[ 8]);
   /* p07.ZUFA*/ wire _ZUFA_0000_00FFp_ext  = and2(_ZORO_0000xxxx_XXp_ext, _ZADU_xxxx0000_XXp_ext);
-  /* p07.YAZA*/ wire _YAZA_MODE_DBG1n_ext = not1(UMUT_MODE_DBG1p_ext);
-  /* p07.YULA*/ wire _YULA_BOOT_RDp_new   = and3(TEDO_CPU_RDp, _YAZA_MODE_DBG1n_ext, _TUTU_READ_BOOTROMp_new); // def AND
+  /* p07.YAZA*/ wire _YAZA_MODE_DBG1n_ext = not1(rst.UMUT_MODE_DBG1p_ext());
+  /* p07.YULA*/ wire _YULA_BOOT_RDp_new   = and3(cpu_bus.TEDO_CPU_RDp, _YAZA_MODE_DBG1n_ext, _TUTU_READ_BOOTROMp_new); // def AND
   /* p07.ZADO*/ wire _ZADO_BOOT_CSn_new   = nand2(_YULA_BOOT_RDp_new, _ZUFA_0000_00FFp_ext);
   /* p07.ZERY*/ wire _ZERY_BOOT_CSp_new   = not1(_ZADO_BOOT_CSn_new);
-  BUS_CPU_D_out[0].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x01));
-  BUS_CPU_D_out[1].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x02));
-  BUS_CPU_D_out[2].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x04));
-  BUS_CPU_D_out[3].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x08));
-  BUS_CPU_D_out[4].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x10));
-  BUS_CPU_D_out[5].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x20));
-  BUS_CPU_D_out[6].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x40));
-  BUS_CPU_D_out[7].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x80));
+  cpu_bus.BUS_CPU_D_out[0].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x01));
+  cpu_bus.BUS_CPU_D_out[1].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x02));
+  cpu_bus.BUS_CPU_D_out[2].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x04));
+  cpu_bus.BUS_CPU_D_out[3].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x08));
+  cpu_bus.BUS_CPU_D_out[4].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x10));
+  cpu_bus.BUS_CPU_D_out[5].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x20));
+  cpu_bus.BUS_CPU_D_out[6].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x40));
+  cpu_bus.BUS_CPU_D_out[7].tri6_pn(_ZERY_BOOT_CSp_new, !bool(bootrom_data & 0x80));
 }
 
 //--------------------------------------------------------------------------------

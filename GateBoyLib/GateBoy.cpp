@@ -819,17 +819,7 @@ void GateBoy::tock_slow(int pass_index) {
   //------------------------------------------------------------------------------------------------------------------------
   // CPU Bootrom read
 
-  bootrom.tock
-  (
-    cpu_bus.BUS_CPU_A,
-    cpu_bus.BUS_CPU_D,
-    rst.UMUT_MODE_DBG1p_ext(),
-    rst.AVOR_SYS_RSTp(),
-    TEDO_CPU_RDp,
-    TAPU_CPU_WRp,
-    boot_buf,
-    cpu_bus.BUS_CPU_D_out
-  );
+  bootrom.tock(rst, cpu_bus, boot_buf);
 
   cpu_bus.PIN_CPU_BOOTp.setp(bootrom.TUTU_READ_BOOTROMp_new(cpu_bus.BUS_CPU_A));
 

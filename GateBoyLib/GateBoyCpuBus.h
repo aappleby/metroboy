@@ -43,6 +43,9 @@ struct GateBoyCpuBus {
   /* p22.WALO*/ wire WALO_A02p_ext         () { return not1(XUSY_A02n_ext()); }
   /* p22.WEPO*/ wire WEPO_A03p_ext         () { return not1(XERA_A03n_ext()); }
 
+  /* p07.TYRO*/ wire TYRO_XX_0x0x0000p     () { return nor6(BUS_CPU_A[ 7], BUS_CPU_A[ 5], BUS_CPU_A[ 3], BUS_CPU_A[ 2], BUS_CPU_A[ 1], BUS_CPU_A[ 0]); }
+  /* p07.TUFA*/ wire TUFA_XX_x1x1xxxxp     () { return and2(BUS_CPU_A[ 4], BUS_CPU_A[ 6]); }
+
   /* p07.SYKE*/ wire SYKE_ADDR_HIp_ext     () { return nor2(TUNA_0000_FDFF_ext(), TONA_A08n_ext()); }
   /* p07.SOHA*/ wire SOHA_ADDR_HIn_ext     () { return not1(SYKE_ADDR_HIp_ext()); }
   /* p07.ROPE*/ wire ROPE_ADDR_OAMn_ext    () { return nand2(SOHA_ADDR_HIn_ext(), RYCU_FE00_FFFF_ext()); }

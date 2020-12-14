@@ -1,19 +1,15 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+struct GateBoyResetDebug;
+struct GateBoyCpuBus;
+
 //-----------------------------------------------------------------------------
 
 struct GateBoyBootrom {
   void reset_cart();
 
-  void tock(Signal BUS_CPU_A[16],
-            Signal BUS_CPU_D[8],
-            wire UMUT_MODE_DBG1p_ext,
-            wire AVOR_SYS_RSTp,
-            wire TEDO_CPU_RDp,
-            wire TAPU_CPU_WRp,
-            uint8_t* boot_buf,
-            BusOut BUS_CPU_D_out[8]);
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, uint8_t* boot_buf);
 
   wire TUTU_READ_BOOTROMp_new(Signal BUS_CPU_A[16]);
 

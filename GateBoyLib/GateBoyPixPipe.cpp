@@ -43,9 +43,24 @@ void RegStat::tock(
 }
 
 
-void WindowRegisters::tock(wire XODO_VID_RSTp, wire ALET_xBxDxFxH) {
+void WindowRegisters::tock(
+  wire XODO_VID_RSTp,
+  wire ALET_xBxDxFxH,
+  wire TYFA_CLKPIPE_odd,
+  wire XAPO_VID_RSTn,
+  wire NUKO_WX_MATCHp,
+  wire XYMU_RENDERINGp,
+  wire ROZE_FINE_COUNT_7n)
+{
+  /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
+  /* p27.ROCO*/ wire _ROCO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
+  /* p27.PYCO*/ PYCO_WIN_MATCHp_odd.dff17(_ROCO_CLKPIPE_odd, XAPO_VID_RSTn, NUKO_WX_MATCHp);
+
   /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp);
   /* p27.SOVY*/ SOVY_WIN_HITp.dff17(ALET_xBxDxFxH, _XAPO_VID_RSTn_new_evn, RYDY_WIN_HITp_evn.qp_old());
+
+  /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(NUKO_WX_MATCHp, ROZE_FINE_COUNT_7n);
+  /* p27.RYFA*/ RYFA_WIN_FETCHn_A_evn.dff17(_SEGU_CLKPIPE_evn, XYMU_RENDERINGp, _PANY_WIN_FETCHn_old);
 }
 
 #if 0

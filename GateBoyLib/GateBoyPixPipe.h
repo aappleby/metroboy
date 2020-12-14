@@ -227,7 +227,14 @@ struct RegOBP1 {
 
 struct WindowRegisters {
 
-  void tock(wire XODO_VID_RSTp, wire ALET_xBxDxFxH);
+  void tock(
+    wire XODO_VID_RSTp,
+    wire ALET_xBxDxFxH,
+    wire TYFA_CLKPIPE_odd,
+    wire XAPO_VID_RSTn,
+    wire NUKO_WX_MATCHp,
+    wire XYMU_RENDERINGp,
+    wire ROZE_FINE_COUNT_7n);
 
   wire NUNY_WIN_MODE_TRIGp() const {
     /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_any(), NOPA_WIN_MODE_Bp_odd.qn_any());
@@ -279,6 +286,25 @@ struct WindowRegisters {
 };
 
 struct FineScroll {
+
+  void tock(wire XYMU_RENDERINGp, wire TYFA_CLKPIPE_odd, wire TEVO_FETCH_TRIGp) {
+    // Fine match counter. Registers are only read as old, so this can go down as far in the list as needed.
+
+    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
+    /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
+
+    /*#p27.PAHA*/ wire _PAHA_RENDERINGn_new_evn = not1(XYMU_RENDERINGp);
+    /*#p27.PASO*/ wire _PASO_FINE_RST_new = nor2(_PAHA_RENDERINGn_new_evn, TEVO_FETCH_TRIGp);
+    /*#p27.RYKU*/ RYKU_FINE_CNT0.RSTn(_PASO_FINE_RST_new);
+    /*#p27.ROGA*/ ROGA_FINE_CNT1.RSTn(_PASO_FINE_RST_new);
+    /*#p27.RUBU*/ RUBU_FINE_CNT2.RSTn(_PASO_FINE_RST_new);
+
+    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_new_evn = nand3(RUBU_FINE_CNT2.qp_new(), ROGA_FINE_CNT1.qp_new(), RYKU_FINE_CNT0.qp_new());
+    /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clknew_evn = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n_new_evn);
+    /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_clknew_evn, _PASO_FINE_RST_new, RYKU_FINE_CNT0.qn_new());
+    /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17(RYKU_FINE_CNT0.qn_new(),            _PASO_FINE_RST_new, ROGA_FINE_CNT1.qn_new());
+    /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17(ROGA_FINE_CNT1.qn_new(),            _PASO_FINE_RST_new, RUBU_FINE_CNT2.qn_new());
+  }
 
   /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_old() {
     wire _ROZE_FINE_COUNT_7n_old = nand3(RUBU_FINE_CNT2.qp_old(), ROGA_FINE_CNT1.qp_old(), RYKU_FINE_CNT0.qp_old());

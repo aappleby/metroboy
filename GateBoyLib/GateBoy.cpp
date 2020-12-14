@@ -961,7 +961,7 @@ void GateBoy::tock_slow(int pass_index) {
   // Sprite scanner
 
   /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_Bp_xxx.dff17(pclk.ALET_xBxDxFxH(), lcd.BAGY_LINE_RSTn(XODO_VID_RSTp), sprite_scanner.BYBA_SCAN_DONE_Ap_evn.qp_old());
-  /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_Ap_evn.dff17(vclk.XUPY_ABxxEFxx(),     lcd.BAGY_LINE_RSTn(XODO_VID_RSTp), /*old*/ scan_counter.FETO_SCAN_DONEp());
+  /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_Ap_evn.dff17(vclk.XUPY_ABxxEFxx(), lcd.BAGY_LINE_RSTn(XODO_VID_RSTp), /*old*/ scan_counter.FETO_SCAN_DONEp());
 
   /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_Bp_xxx.qp_new(), lcd.BALU_LINE_RSTp(XODO_VID_RSTp), sprite_scanner.BYBA_SCAN_DONE_Ap_evn.qn_new());
   /*#p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
@@ -1086,21 +1086,14 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp_xxx.nand_latch(SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn_new);
   }();
 
-  [this, TYFA_CLKPIPE_odd, _NUKO_WX_MATCHp](){
-    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx_clknew_evn = not1(TYFA_CLKPIPE_odd);
-    /* p27.ROCO*/ wire _ROCO_CLKPIPE_xBxDxFxH_clknew_odd = not1(_SEGU_CLKPIPE_AxCxExGx_clknew_evn);
-    /* p27.PYCO*/ win_reg.PYCO_WIN_MATCHp_odd.dff17(_ROCO_CLKPIPE_xBxDxFxH_clknew_odd, rstdbg.XAPO_VID_RSTn(), _NUKO_WX_MATCHp);
-  }();
-
-  //------------------------------------------------------------------------------------------------------------------------
-
-  win_reg.tock(XODO_VID_RSTp, pclk.ALET_xBxDxFxH());
-
-  [this, TYFA_CLKPIPE_odd, XYMU_RENDERINGp, _NUKO_WX_MATCHp](){
-    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_AxCxExGx_clknew_evn = not1(TYFA_CLKPIPE_odd);
-    /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp, fine_scroll.ROZE_FINE_COUNT_7n_old());
-    /* p27.RYFA*/ win_reg.RYFA_WIN_FETCHn_A_evn.dff17(_SEGU_CLKPIPE_AxCxExGx_clknew_evn, XYMU_RENDERINGp, _PANY_WIN_FETCHn_old);
-  }();
+  win_reg.tock(
+    XODO_VID_RSTp,
+    pclk.ALET_xBxDxFxH(),
+    TYFA_CLKPIPE_odd,
+    rstdbg.XAPO_VID_RSTn(),
+    _NUKO_WX_MATCHp,
+    XYMU_RENDERINGp,
+    fine_scroll.ROZE_FINE_COUNT_7n_old());
 
   [this, XYMU_RENDERINGp](){
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B_odd.dff17(pclk.ALET_xBxDxFxH(), XYMU_RENDERINGp, win_reg.RYFA_WIN_FETCHn_A_evn.qp_old());
@@ -1117,29 +1110,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp, win_reg.MOSU_WIN_MODE_TRIGp(), TEVO_FETCH_TRIGp);
 
-  [
-    this,
-    XYMU_RENDERINGp,
-    TYFA_CLKPIPE_odd,
-    TEVO_FETCH_TRIGp
-  ]() {
-    // Fine match counter. Registers are only read as old, so this can go down as far in the list as needed.
-
-    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-    /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
-
-    /*#p27.PAHA*/ wire _PAHA_RENDERINGn_new_evn = not1(XYMU_RENDERINGp);
-    /*#p27.PASO*/ wire _PASO_FINE_RST_new = nor2(_PAHA_RENDERINGn_new_evn, TEVO_FETCH_TRIGp);
-    /*#p27.RYKU*/ fine_scroll.RYKU_FINE_CNT0.RSTn(_PASO_FINE_RST_new);
-    /*#p27.ROGA*/ fine_scroll.ROGA_FINE_CNT1.RSTn(_PASO_FINE_RST_new);
-    /*#p27.RUBU*/ fine_scroll.RUBU_FINE_CNT2.RSTn(_PASO_FINE_RST_new);
-
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_new_evn = nand3(fine_scroll.RUBU_FINE_CNT2.qp_new(), fine_scroll.ROGA_FINE_CNT1.qp_new(), fine_scroll.RYKU_FINE_CNT0.qp_new());
-    /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clknew_evn = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n_new_evn);
-    /*#p27.RYKU*/ fine_scroll.RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_clknew_evn,      _PASO_FINE_RST_new, fine_scroll.RYKU_FINE_CNT0.qn_new());
-    /*#p27.ROGA*/ fine_scroll.ROGA_FINE_CNT1.dff17(fine_scroll.RYKU_FINE_CNT0.qn_new(), _PASO_FINE_RST_new, fine_scroll.ROGA_FINE_CNT1.qn_new());
-    /*#p27.RUBU*/ fine_scroll.RUBU_FINE_CNT2.dff17(fine_scroll.ROGA_FINE_CNT1.qn_new(), _PASO_FINE_RST_new, fine_scroll.RUBU_FINE_CNT2.qn_new());
-  }();
+  fine_scroll.tock(XYMU_RENDERINGp, TYFA_CLKPIPE_odd, TEVO_FETCH_TRIGp);
 
   //------------------------------------------------------------------------------------------------------------------------
 

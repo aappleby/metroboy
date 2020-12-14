@@ -267,7 +267,7 @@ struct OamTempB {
 
 struct GateBoyOamBus {
 
-  void ext_to_bus(
+  void ext_to_data_bus(
     PinIO PIN_EXT_D[8],
     wire MATU_DMA_RUNNINGp,
     wire PULA_DMA_A13n_h,
@@ -310,7 +310,7 @@ struct GateBoyOamBus {
     /* p25.BYPY*/ BUS_OAM_DBn[7].tri6_nn(_CEDE_EBD_TO_OBDn_new, _SYZO_EXT_D7p_new);
   }
 
-  void vram_to_bus(
+  void vram_to_data_bus(
     BusIO BUS_VRAM_Dp[8],
     wire MATU_DMA_RUNNINGp,
     wire PULA_DMA_A13n_h,
@@ -342,7 +342,7 @@ struct GateBoyOamBus {
     /* p28.ANUM*/ BUS_OAM_DBn[7].tri6_nn(_AZAR_VBD_TO_OBDn_new, BUS_VRAM_Dp[7].qp_new());
   }
 
-  void cpu_to_bus(
+  void cpu_to_data_bus(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
     wire UVYT_ABCDxxxx,

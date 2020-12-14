@@ -123,6 +123,9 @@ struct SpriteStore {
   void store_sprite_line (SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]);
   void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b);
 
+  BusIO SPR_TRI_I[6]; // AxCxExGx
+  BusIO SPR_TRI_L[4]; // AxCxExGx
+
   //----------------------------------------
   // Active sprite counter, 10 match signals, 10 reset signals
 

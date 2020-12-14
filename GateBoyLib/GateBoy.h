@@ -438,7 +438,6 @@ struct GateBoy {
     wire TAPU_CPU_WRp,
     wire TEDO_CPU_RDp,
     wire CATY_LATCH_EXTp_ext,
-    wire MATU_DMA_RUNNINGp_new_evn,
     wire XYMU_RENDERINGp_new_xxx,
     wire ACYL_SCANNINGp_new_evn
   );
@@ -516,13 +515,7 @@ struct GateBoy {
 
   SpriteTempA sprite_temp_a;
   SpriteTempB sprite_temp_b;
-  BusOut BUS_VRAM_An[13];
-  BusIO  BUS_VRAM_Dp[8];
-  PinOut PIN_VRAM_CSn; // PIN_43
-  PinOut PIN_VRAM_OEn; // PIN_45
-  PinOut PIN_VRAM_WRn; // PIN_49
-  PinOut PIN_VRAM_Ap[13];
-  PinIO  PIN_VRAM_Dp[8];
+  VramBus vram_bus;
 
   //----------
 
@@ -571,8 +564,6 @@ struct GateBoy {
 
   SpriteCounter sprite_counter;
   SpriteStore        sprite_store;
-  BusIO SPR_TRI_I[6]; // AxCxExGx
-  BusIO SPR_TRI_L[4]; // AxCxExGx
 
   //----------
 

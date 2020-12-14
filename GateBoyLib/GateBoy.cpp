@@ -676,35 +676,35 @@ void GateBoy::tock_slow(int pass_index) {
   // Data has to be driven on EFGH or we fail the wave tests
   wire BUS_CPU_OEp = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write;
 
-  wire BUS_CPU_A[16] = {
-    wire((cpu_addr >>  0) & 1),
-    wire((cpu_addr >>  1) & 1),
-    wire((cpu_addr >>  2) & 1),
-    wire((cpu_addr >>  3) & 1),
-    wire((cpu_addr >>  4) & 1),
-    wire((cpu_addr >>  5) & 1),
-    wire((cpu_addr >>  6) & 1),
-    wire((cpu_addr >>  7) & 1),
-    wire((cpu_addr >>  8) & 1),
-    wire((cpu_addr >>  9) & 1),
-    wire((cpu_addr >> 10) & 1),
-    wire((cpu_addr >> 11) & 1),
-    wire((cpu_addr >> 12) & 1),
-    wire((cpu_addr >> 13) & 1),
-    wire((cpu_addr >> 14) & 1),
-    wire((cpu_addr >> 15) & 1)
-  };
+  bool BUS_CPU_A[16];
 
-  wire BUS_CPU_D[8] = {
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 0) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 1) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 2) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 3) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 4) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 5) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 6) & 1),
-    wire(!BUS_CPU_OEp || (bus_req.data_lo >> 7) & 1)
-  };
+  BUS_CPU_A[ 0] = wire((cpu_addr >>  0) & 1);
+  BUS_CPU_A[ 1] = wire((cpu_addr >>  1) & 1);
+  BUS_CPU_A[ 2] = wire((cpu_addr >>  2) & 1);
+  BUS_CPU_A[ 3] = wire((cpu_addr >>  3) & 1);
+  BUS_CPU_A[ 4] = wire((cpu_addr >>  4) & 1);
+  BUS_CPU_A[ 5] = wire((cpu_addr >>  5) & 1);
+  BUS_CPU_A[ 6] = wire((cpu_addr >>  6) & 1);
+  BUS_CPU_A[ 7] = wire((cpu_addr >>  7) & 1);
+  BUS_CPU_A[ 8] = wire((cpu_addr >>  8) & 1);
+  BUS_CPU_A[ 9] = wire((cpu_addr >>  9) & 1);
+  BUS_CPU_A[10] = wire((cpu_addr >> 10) & 1);
+  BUS_CPU_A[11] = wire((cpu_addr >> 11) & 1);
+  BUS_CPU_A[12] = wire((cpu_addr >> 12) & 1);
+  BUS_CPU_A[13] = wire((cpu_addr >> 13) & 1);
+  BUS_CPU_A[14] = wire((cpu_addr >> 14) & 1);
+  BUS_CPU_A[15] = wire((cpu_addr >> 15) & 1);
+
+  bool BUS_CPU_D[8];
+
+  BUS_CPU_D[0] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 0) & 1);
+  BUS_CPU_D[1] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 1) & 1);
+  BUS_CPU_D[2] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 2) & 1);
+  BUS_CPU_D[3] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 3) & 1);
+  BUS_CPU_D[4] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 4) & 1);
+  BUS_CPU_D[5] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 5) & 1);
+  BUS_CPU_D[6] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 6) & 1);
+  BUS_CPU_D[7] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 7) & 1);
 
   BUS_CPU_D_out[0].reset(REG_D1C0);
   BUS_CPU_D_out[1].reset(REG_D1C0);

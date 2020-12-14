@@ -5,7 +5,7 @@
 
 //----------------------------------------
 
-void SpriteCounter::update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_RSTp, wire _DYTY_STORE_CLKp_new_odd) {
+void SpriteCounter::update_count(wire XODO_VID_RSTp, wire ZEME_AxCxExGx, wire ATEJ_LINE_RSTp, wire _DYTY_STORE_CLKp_new_odd) {
   // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
   // Sprite Y matcher. This is using an adder as a subtracter by inverting the first input.
 
@@ -17,7 +17,7 @@ void SpriteCounter::update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire AT
 
   /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_new = and2(CUXY_SPRITE_COUNT1_evn.qp_new(), DYBE_SPRITE_COUNT3_evn.qp_new());
 
-  /* p29.DEZY*/ DEZY_COUNT_CLKp_evn.dff17(ZEME_AxCxExGx(ATAL_xBxDxFxH), XAPO_VID_RSTn(XODO_VID_RSTp), _DYTY_STORE_CLKp_new_odd);
+  /* p29.DEZY*/ DEZY_COUNT_CLKp_evn.dff17(ZEME_AxCxExGx, XAPO_VID_RSTn(XODO_VID_RSTp), _DYTY_STORE_CLKp_new_odd);
   /*#p29.CAKE*/ wire _CAKE_COUNT_CLKp_new = or2(_BAKY_SPRITES_FULL_new, DEZY_COUNT_CLKp_evn.qp_new());
 
   /* p29.BESE*/ BESE_SPRITE_COUNT0_evn.dff17(_CAKE_COUNT_CLKp_new,            _AZYB_LINE_TRIGn, BESE_SPRITE_COUNT0_evn.qn_new());

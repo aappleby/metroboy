@@ -8,9 +8,10 @@ struct GateBoyPhaseClock {
   //----------------------------------------
   // Root clocks - ignoring the deglitcher here
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp()  const { return  not1(PIN_SYS_CLKGOOD.qp_any()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp()  const { return  not1(PIN_SYS_CLKGOOD.qp_any()); }
-  /* p01.ABOL*/ wire ABOL_CLKREQn()  const { return  not1(PIN_SYS_CLKREQ.qp_any()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_SYS_CLKGOOD.qp_any()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_SYS_CLKGOOD.qp_any()); }
+  /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(PIN_SYS_CLKREQ.qp_any()); }
+  /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN_SYS_CLK.qp_new(); }
   /* p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); }
@@ -30,6 +31,34 @@ struct GateBoyPhaseClock {
   /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(ALEF_AxxxxFGHp.qn_new()); }
   /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(APUK_ABxxxxGHp.qp_new()); }
   /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(ADYK_ABCxxxxHp.qn_new()); }
+
+  /*#p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
+  /*#p01.BAPY*/ wire BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }
+  /*#p01.BERU*/ wire BERU_ABCDEFxx() const { return not1(BAPY_xxxxxxGH()); }
+  /*#p01.BUFA*/ wire BUFA_xxxxxxGH() const { return not1(BERU_ABCDEFxx()); }
+  /*#p01.BOLO*/ wire BOLO_ABCDEFxx() const { return not1(BUFA_xxxxxxGH()); }
+  /*#p01.BEJA*/ wire BEJA_xxxxEFGH() const { return nand4(BOLO_ABCDEFxx(), BOLO_ABCDEFxx(), BEKO_ABCDxxxx(), BEKO_ABCDxxxx()); }
+  /*#p01.BANE*/ wire BANE_ABCDxxxx() const { return not1(BEJA_xxxxEFGH()); }
+  /*#p01.BELO*/ wire BELO_xxxxEFGH() const { return not1(BANE_ABCDxxxx()); }
+  /*#p01.BAZE*/ wire BAZE_ABCDxxxx() const { return not1(BELO_xxxxEFGH()); }
+  /*#p01.BUTO*/ wire BUTO_xBCDEFGH() const { return nand3(AFEP_AxxxxFGH(), ATYP_ABCDxxxx(), BAZE_ABCDxxxx()); }
+  /*#p01.BELE*/ wire BELE_Axxxxxxx() const { return not1(BUTO_xBCDEFGH()); }
+  /*#p01.BYJU*/ wire BYJU_Axxxxxxx() const { return or2(BELE_Axxxxxxx(), ATEZ_CLKBADp()); }
+  /*#p01.BALY*/ wire BALY_xBCDEFGH() const { return not1(BYJU_Axxxxxxx()); }
+  /* p01.BOGA*/ wire BOGA_Axxxxxxx() const { return not1(BALY_xBCDEFGH()); }
+  /*#p01.BUVU*/ wire BUVU_Axxxxxxx() const { return and2(BALY_xBCDEFGH(), BUTY_CLKREQp()); }
+  /*#p01.BYXO*/ wire BYXO_xBCDEFGH() const { return not1(BUVU_Axxxxxxx()); }
+  /*#p01.BEDO*/ wire BEDO_Axxxxxxx() const { return not1(BYXO_xBCDEFGH()); }
+  /*#p01.BOWA*/ wire BOWA_xBCDEFGH() const { return not1(BEDO_Axxxxxxx()); }
+  /*#p01.BUGO*/ wire BUGO_xBCDExxx() const { return not1(AFEP_AxxxxFGH()); }
+  /*#p01.BATE*/ wire BATE_AxxxxxGH() const { return nor3(BUGO_xBCDExxx(), AROV_xxCDEFxx(), ABOL_CLKREQn()); }
+  /*#p01.BASU*/ wire BASU_xBCDEFxx() const { return not1(BATE_AxxxxxGH()); }
+  /*#p01.BUKE*/ wire BUKE_AxxxxxGH() const { return not1(BASU_xBCDEFxx()); }
+  /*#p01.BOMA*/ wire BOMA_xBCDEFGH() const { return not1(BOGA_Axxxxxxx()); }
+  /*#p01.BELU*/ wire BELU_xxxxEFGH() const { return nor2(ATYP_ABCDxxxx(), ABOL_CLKREQn()); }
+  /*#p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH()); }
+  /*#p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not1(BYRY_ABCDxxxx()); }
+  /* p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); }
 
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
   /*p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;

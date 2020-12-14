@@ -71,14 +71,14 @@ struct WinLineY {
 
 struct TileFetcher {
 
-  void tock(wire ATAL_xBxDxFxH, wire NYXU_BFETCH_RSTn)
+  void tock2(wire ALET_xBxDxFxH, wire NYXU_BFETCH_RSTn)
   {
     /* p27.LAXU*/ LAXU_BFETCH_S0p_evn.RSTn(NYXU_BFETCH_RSTn);
     /* p27.MESU*/ MESU_BFETCH_S1p_evn.RSTn(NYXU_BFETCH_RSTn);
     /* p27.NYVA*/ NYVA_BFETCH_S2p_evn.RSTn(NYXU_BFETCH_RSTn);
 
     /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid_any = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
-    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(ALET_xBxDxFxH(ATAL_xBxDxFxH), _MOCE_BFETCH_DONEn_mid_any);
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(ALET_xBxDxFxH, _MOCE_BFETCH_DONEn_mid_any);
 
     /* p27.LAXU*/ LAXU_BFETCH_S0p_evn.dff17(_LEBO_AxCxExGx,               NYXU_BFETCH_RSTn, LAXU_BFETCH_S0p_evn.qn_new());
     /* p27.MESU*/ MESU_BFETCH_S1p_evn.dff17(LAXU_BFETCH_S0p_evn.qn_new(), NYXU_BFETCH_RSTn, MESU_BFETCH_S1p_evn.qn_new());

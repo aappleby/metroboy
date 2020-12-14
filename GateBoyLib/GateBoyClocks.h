@@ -1,9 +1,13 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+struct GateBoyResetDebug;
+
 //-----------------------------------------------------------------------------
 
 struct GateBoyPhaseClock {
+
+  void tock(const GateBoyResetDebug& rstdbg);
 
   //----------------------------------------
   // Root clocks - ignoring the deglitcher here
@@ -69,6 +73,8 @@ struct GateBoyPhaseClock {
   PinIn PIN_SYS_CLK;
   PinIn PIN_SYS_CLKREQ;
 
+  PinOut PIN_EXT_CLK;    // PIN_75
+
   PinOut PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   PinOut PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
   PinOut PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
@@ -82,6 +88,8 @@ struct GateBoyPhaseClock {
 //-----------------------------------------------------------------------------
 
 struct GateBoyVideoClock {
+  void tock(const GateBoyResetDebug& rstdbg, const GateBoyPhaseClock& pclk);
+
   /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
   /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }
   /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(WOSU_AxxDExxH.qp_new()); }

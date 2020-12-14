@@ -121,18 +121,6 @@ struct GateBoy {
     wire XERA_A03n_ext, wire WEPO_A03p_ext
   );
 
-  void tock_reg_stat(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-
-    wire ACYL_SCANNINGp_new_evn,
-    wire XYMU_RENDERINGp_new_xxx,
-    wire PARU_VBLANKp_new_evn
-  );
-
   void tock_pix_pipe(
     wire BUS_CPU_A[16],
     wire BUS_CPU_D[8],
@@ -344,7 +332,6 @@ struct GateBoy {
   bool sys_clkreq = 0;
   bool sys_cpu_en = 0;
   bool sys_fastboot = 0;
-  bool sys_cpu_start = 0;
   uint8_t sys_buttons = 0;
 
   //-----------------------------------------------------------------------------

@@ -115,6 +115,8 @@ struct GateBoyLCD {
   /* p29.DYBA*/ wire DYBA_LINE_RSTp(wire XODO_VID_RSTp) const { return not1(BYVA_LINE_RSTn(XODO_VID_RSTp)); }
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn(wire XODO_VID_RSTp) const { return not1(BALU_LINE_RSTp(XODO_VID_RSTp)); }
 
+  /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(POPU_VBLANKp_evn.qn_new()); }
+
   void tock(
     wire XODO_VID_RSTp_new_h,
     wire XUPY_ABxxEFxx_clk_evn,

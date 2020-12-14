@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+struct RegLYC;
+
 //-----------------------------------------------------------------------------
 // FF4A - WY
 
@@ -158,6 +160,21 @@ struct PixCounter {
 // FF41 - STAT
 
 struct RegStat {
+
+  void tock(
+    wire BUS_CPU_A[16],
+    wire BUS_CPU_D[8],
+    wire AVOR_SYS_RSTp,
+    wire TEDO_CPU_RDp,
+    wire TAPU_CPU_WRp,
+    wire ACYL_SCANNINGp,
+    wire XYMU_RENDERINGp,
+    wire PARU_VBLANKp,
+    const RegLYC& reg_lyc,
+    BusOut BUS_CPU_D_out[8]);
+
+  /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
+
   /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn_h; // xxxxxxxH
   /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn_h; // xxxxxxxH
   /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn_h; // xxxxxxxH
@@ -292,7 +309,6 @@ struct PPURegisters {
   wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_any(); }
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-  /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn_evn;       // xxCxxxxx
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
 };
 

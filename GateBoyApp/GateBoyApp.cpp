@@ -432,7 +432,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("sys_cpuready   %d\n",      gb->sys_clkreq);
   d("sys_cpu_en     %d\n",      gb->sys_cpu_en);
   d("sys_fastboot   %d\n",      gb->sys_fastboot);
-  d("sys_cpu_start  %d\n",      gb->sys_cpu_start);
   d("sys_buttons    %d\n",      gb->sys_buttons);
   d("\n");
 
@@ -664,7 +663,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
 
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->ppu_reg.RUPO_STAT_LYC_MATCHn_evn.state);
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_STAT_LYC_MATCHn_evn.state);
   d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp_xxx.state);
   d("\n");
   d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);

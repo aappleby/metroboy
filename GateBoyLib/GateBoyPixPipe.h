@@ -227,10 +227,7 @@ struct RegOBP1 {
 
 struct WindowRegisters {
 
-  void tock(wire XODO_VID_RSTp, wire ALET_xBxDxFxH) {
-    /* p01.XAPO*/ wire _XAPO_VID_RSTn_new_evn = not1(XODO_VID_RSTp);
-    /* p27.SOVY*/ SOVY_WIN_HITp.dff17(ALET_xBxDxFxH, _XAPO_VID_RSTn_new_evn, RYDY_WIN_HITp_evn.qp_old());
-  }
+  void tock(wire XODO_VID_RSTp, wire ALET_xBxDxFxH);
 
   wire NUNY_WIN_MODE_TRIGp() const {
     /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_any(), NOPA_WIN_MODE_Bp_odd.qn_any());

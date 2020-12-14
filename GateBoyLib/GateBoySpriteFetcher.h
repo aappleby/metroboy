@@ -47,9 +47,9 @@ struct SpriteFetcher {
     return _SYCU_SFETCH_S0pe_new;
   }
 
-  wire SECA_SFETCH_RSTn(wire XODO_VID_RSTp, wire ATEJ_LINE_RSTp) const {
+  wire SECA_SFETCH_RSTn(wire ROSY_VID_RSTp, wire ATEJ_LINE_RSTp) const {
     /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp_new = and2(SOBU_SFETCH_REQp_odd.qp_new(), SUDA_SFETCH_REQp_evn.qn_new());
-    /*#p27.SECA*/ wire _SECA_SFETCH_RSTn_new = nor3(_RYCE_SFETCH_TRIGp_new, ROSY_VID_RSTp(XODO_VID_RSTp), ATEJ_LINE_RSTp);
+    /*#p27.SECA*/ wire _SECA_SFETCH_RSTn_new = nor3(_RYCE_SFETCH_TRIGp_new, ROSY_VID_RSTp, ATEJ_LINE_RSTp);
     return _SECA_SFETCH_RSTn_new;
   }
 

@@ -527,7 +527,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Timer =====\001\n");
   d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->timer.NYDU_TIMA7p_DELAY_evn.state);
-  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->timer.MOBA_TIMER_OVERFLOWp_evn.state);
+  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->timer.MOBA_TIMER_OVERFLOWp.state);
   d.dump_slice2p("DIV ", &gb->div.UKUP_DIV00p_evn, 16);
   d.dump_slice2p("TIMA", &gb->timer.REGA_TIMA0p_evn, 8);
   d.dump_slice2p("TMA ", &gb->timer.SABU_TMA0p_h, 8);

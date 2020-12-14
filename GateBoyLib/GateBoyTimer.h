@@ -147,9 +147,9 @@ struct GateBoyTimer {
     /* p03.SARA*/ wire _SARA_FF07_WRn_clk = nand4(TAPU_CPU_WRp, RYFO_FF04_FF07p_ext(BUS_CPU_A),  BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
 
     /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp_old = nor2(NUGA_TIMA7p_evn.qp_old(), NYDU_TIMA7p_DELAY_evn.qn_old());
-    /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp_evn.dff17(BOGA_Axxxxxxx_clkevn, ALUR_SYS_RSTn(AVOR_SYS_RSTp), _MERY_TIMER_OVERFLOWp_old);
+    /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx_clkevn, ALUR_SYS_RSTn(AVOR_SYS_RSTp), _MERY_TIMER_OVERFLOWp_old);
 
-    /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn_new = not1(MOBA_TIMER_OVERFLOWp_evn.qp_new());
+    /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn_new = not1(MOBA_TIMER_OVERFLOWp.qp_new());
     /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn_ext  = or2(PIN_CPU_LATCH_EXT, _TOPE_FF05_WRn_clk);
     /*#p03.MEXU*/ wire _MEXU_TIMA_LOADp_new      = nand3(_MUZU_CPU_LOAD_TIMAn_ext, ALUR_SYS_RSTn(AVOR_SYS_RSTp), _MEKE_TIMER_OVERFLOWn_new);
     /*#p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn_new   = not1(_MEXU_TIMA_LOADp_new);
@@ -235,7 +235,7 @@ struct GateBoyTimer {
   }
 
   /*p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY_evn;    // Axxxxxxx
-  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp_evn; // AxxxExxx
+  /*p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
 
   //----------
   // FF05 TIMA

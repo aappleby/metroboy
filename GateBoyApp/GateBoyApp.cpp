@@ -429,7 +429,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("sys_t2         %d\n",      gb->sys_t2);
   d("sys_clken      %d\n",      gb->sys_clken);
   d("sys_clkgood    %d\n",      gb->sys_clkgood);
-  d("sys_cpuready   %d\n",      gb->sys_cpuready);
+  d("sys_cpuready   %d\n",      gb->sys_clkreq);
   d("sys_cpu_en     %d\n",      gb->sys_cpu_en);
   d("sys_fastboot   %d\n",      gb->sys_fastboot);
   d("sys_cpu_start  %d\n",      gb->sys_cpu_start);

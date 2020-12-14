@@ -277,17 +277,6 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  /* p07.UBET*/ wire UBETp_ext()           const { return not1(wire(sys_t1)); }
-  /* p07.UVAR*/ wire UVARp_ext()           const { return not1(wire(sys_t2)); }
-  /* p07.UMUT*/ wire UMUT_MODE_DBG1p_ext() const { return and2(wire(sys_t1), UVARp_ext()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(wire(sys_t2), UBETp_ext()); }
-  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn_ext() const { return nand3(UBETp_ext(), UVARp_ext(), wire(sys_rst)); }
-  /* p08.RYCA*/ wire RYCA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
-  /* p08.TOVA*/ wire TOVA_MODE_DBG2n_ext() const { return not1(UNOR_MODE_DBG2p()); }
-  /* p08.MULE*/ wire MULE_MODE_DBG1n_ext() const { return not1(UMUT_MODE_DBG1p_ext()); }
-
-  //-----------------------------------------------------------------------------
-
   void run(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();
@@ -521,7 +510,6 @@ struct GateBoy {
   ResetRegisters      rst_reg;
   PhaseClockRegisters pclk_reg;
   VideoClockRegisters vclk_reg;
-  DebugRegisters      dbg_reg;
 
   //----------
 
@@ -620,7 +608,7 @@ struct GateBoy {
   bool sys_t2 = 0;
   bool sys_clken = 0;
   bool sys_clkgood = 0;
-  bool sys_cpuready = 0;
+  bool sys_clkreq = 0;
   bool sys_cpu_en = 0;
   bool sys_fastboot = 0;
   bool sys_cpu_start = 0;

@@ -1091,10 +1091,8 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp_evn.dff17(pclk.LAPE_AxCxExGx(), _VYPO_VCC, sprite_fetcher.SOBU_SFETCH_REQp_odd.qp_old());
   /* p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp_odd.dff17(pclk.TAVA_xBxDxFxH(), _VYPO_VCC, TEKY_SFETCH_REQp_old);
 
-  /* p27.NUNU*/ win_reg.NUNU_WIN_MATCHp_evn.dff17(pclk.MEHE_AxCxExGx(), XAPO_VID_RSTn(XODO_VID_RSTp), win_reg.PYCO_WIN_MATCHp_odd.qp_old());
-
   /*#p27.XOFO*/ wire _XOFO_WIN_RSTp_new_evn = nand3(reg_lcdc.WYMO_LCDC_WINENn_h.qn_new(), lcd.XAHY_LINE_RSTn(XODO_VID_RSTp), XAPO_VID_RSTn(XODO_VID_RSTp));
-
+  /* p27.NUNU*/ win_reg.NUNU_WIN_MATCHp_evn.dff17(pclk.MEHE_AxCxExGx(), XAPO_VID_RSTn(XODO_VID_RSTp), win_reg.PYCO_WIN_MATCHp_odd.qp_old());
   /* p27.PYNU*/ win_reg.PYNU_WIN_MODE_Ap_evn.nor_latch(win_reg.NUNU_WIN_MATCHp_evn.qp_new(), _XOFO_WIN_RSTp_new_evn);
   /* p27.NOPA*/ win_reg.NOPA_WIN_MODE_Bp_odd.dff17(pclk.ALET_xBxDxFxH(), XAPO_VID_RSTn(XODO_VID_RSTp), win_reg.PYNU_WIN_MODE_Ap_evn.qp_new());
 

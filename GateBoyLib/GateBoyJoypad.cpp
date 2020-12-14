@@ -1,8 +1,8 @@
 #include "GateBoyLib/GateBoyJoypad.h"
 
 void GateBoyJoypad::tock(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
+  Signal BUS_CPU_A[16],
+  Signal BUS_CPU_D[8],
   wire AVOR_SYS_RSTp,
   wire BOGA_Axxxxxxx_clkevn,
   wire TEDO_CPU_RDp,

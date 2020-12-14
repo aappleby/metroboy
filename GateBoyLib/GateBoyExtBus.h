@@ -18,7 +18,7 @@ struct ExtDataLatch {
 };
 
 struct ExtAddrLatch {
-  void tock(const GateBoyResetDebug& rstdbg, wire BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
+  void tock(const GateBoyResetDebug& rstdbg, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p; // xBxxxxxx
@@ -42,7 +42,7 @@ struct GateBoyExtBus {
     const GateBoyResetDebug& rstdbg,
     const GateBoyDMA& dma,
     const ExtAddrLatch& ext_addr_latch,
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire ABUZ_xxCDEFGH_clk_evn,
     wire TUTU_READ_BOOTROMp_new
   );
@@ -63,7 +63,7 @@ struct GateBoyExtBus {
 
   void cpu_data_to_pins(
     const GateBoyResetDebug& rstdbg,
-    wire BUS_CPU_D[8],
+    Signal BUS_CPU_D[8],
     wire PIN_CPU_RDp,
     wire PIN_CPU_WRp,
     wire TEDO_CPU_RDp,
@@ -73,7 +73,7 @@ struct GateBoyExtBus {
   void set_pins(
     const GateBoyResetDebug& rstdbg,
     const GateBoyDMA& dma,
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire PIN_CPU_RDp,
     wire PIN_CPU_WRp,
     wire ABUZ_xxCDEFGH_clk_evn,

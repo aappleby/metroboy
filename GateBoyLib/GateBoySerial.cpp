@@ -4,8 +4,8 @@
 // Serial
 
 void GateBoySerial::tock(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
+  Signal BUS_CPU_A[16],
+  Signal BUS_CPU_D[8],
   wire ALUR_SYS_RSTn,
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp,

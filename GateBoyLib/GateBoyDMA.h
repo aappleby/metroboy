@@ -5,7 +5,7 @@
 
 struct GateBoyDMA {
 
-  void tock(wire AVOR_SYS_RSTp, wire UVYT_ABCDxxxx, wire BUS_CPU_A[16], wire BUS_CPU_D[8], wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8])
+  void tock(wire AVOR_SYS_RSTp, wire UVYT_ABCDxxxx, Signal BUS_CPU_A[16], Signal BUS_CPU_D[8], wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8])
   {
     /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XEDA_FF46p_ext(BUS_CPU_A));
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);

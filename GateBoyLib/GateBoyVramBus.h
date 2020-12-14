@@ -29,7 +29,7 @@ struct SpriteTempB {
 
 struct GateBoyVramBus {
 
-  void cpu_addr_to_vram_addr(wire BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
+  void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
   void dma_addr_to_vram_addr(const GateBoyDMA& dma);
 
 

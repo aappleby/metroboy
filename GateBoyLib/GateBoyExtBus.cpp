@@ -57,7 +57,7 @@
 }
 */
 
-void ExtAddrLatch::tock(const GateBoyResetDebug& rstdbg, wire BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext) {
+void ExtAddrLatch::tock(const GateBoyResetDebug& rstdbg, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext) {
   /* p08.LOXO*/ wire _LOXO_HOLDn_new = and_or3(rstdbg.MULE_MODE_DBG1n_ext(), TEXO_ADDR_VRAMn_ext, rstdbg.UMUT_MODE_DBG1p_ext());
   /* p08.LASY*/ wire _LASY_HOLDp_new = not1(_LOXO_HOLDn_new);
   /* p08.MATE*/ wire _MATE_HOLDn_new = not1(_LASY_HOLDp_new);
@@ -82,7 +82,7 @@ void GateBoyExtBus::addr_latch_to_pins(
   const GateBoyResetDebug& rstdbg,
   const GateBoyDMA& dma,
   const ExtAddrLatch& ext_addr_latch,
-  wire BUS_CPU_A[16],
+  Signal BUS_CPU_A[16],
   wire ABUZ_xxCDEFGH_clk_evn,
   wire TUTU_READ_BOOTROMp_new
 )
@@ -199,7 +199,7 @@ void GateBoyExtBus::data_latch_to_cpu_bus(
 
 void GateBoyExtBus::cpu_data_to_pins(
   const GateBoyResetDebug& rstdbg,
-  wire BUS_CPU_D[8],
+  Signal BUS_CPU_D[8],
   wire PIN_CPU_RDp,
   wire PIN_CPU_WRp,
   wire TEDO_CPU_RDp,
@@ -248,7 +248,7 @@ void GateBoyExtBus::cpu_data_to_pins(
 void GateBoyExtBus::set_pins(
   const GateBoyResetDebug& rstdbg,
   const GateBoyDMA& dma,
-  wire BUS_CPU_A[16],
+  Signal BUS_CPU_A[16],
   wire PIN_CPU_RDp,
   wire PIN_CPU_WRp,
   wire ABUZ_xxCDEFGH_clk_evn,

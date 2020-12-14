@@ -676,8 +676,6 @@ void GateBoy::tock_slow(int pass_index) {
   // Data has to be driven on EFGH or we fail the wave tests
   wire BUS_CPU_OEp = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write;
 
-  bool BUS_CPU_A[16];
-
   BUS_CPU_A[ 0] = wire((cpu_addr >>  0) & 1);
   BUS_CPU_A[ 1] = wire((cpu_addr >>  1) & 1);
   BUS_CPU_A[ 2] = wire((cpu_addr >>  2) & 1);
@@ -694,8 +692,6 @@ void GateBoy::tock_slow(int pass_index) {
   BUS_CPU_A[13] = wire((cpu_addr >> 13) & 1);
   BUS_CPU_A[14] = wire((cpu_addr >> 14) & 1);
   BUS_CPU_A[15] = wire((cpu_addr >> 15) & 1);
-
-  bool BUS_CPU_D[8];
 
   BUS_CPU_D[0] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 0) & 1);
   BUS_CPU_D[1] = wire(!BUS_CPU_OEp || (bus_req.data_lo >> 1) & 1);
@@ -1169,8 +1165,6 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p35.RAVO*/ bool RAVO_LD1n_new;
 
   tock_pix_pipe(
-    BUS_CPU_A,
-    BUS_CPU_D,
     XODO_VID_RSTp,
 
     TEDO_CPU_RDp,
@@ -1280,9 +1274,6 @@ void GateBoy::tock_slow(int pass_index) {
     BUS_CPU_D_out);
 
   tock_vram(
-    BUS_CPU_A,
-    BUS_CPU_D,
-
     rstdbg.AVOR_SYS_RSTp(),
     XODO_VID_RSTp,
 
@@ -1309,8 +1300,6 @@ void GateBoy::tock_slow(int pass_index) {
   scan_counter.tock(vclk.XUPY_ABxxEFxx(), lcd.ANOM_LINE_RSTn(XODO_VID_RSTp));
 
   tock_oam(
-    BUS_CPU_A,
-    BUS_CPU_D,
     rstdbg.AVOR_SYS_RSTp(),
     pclk.ATAL_xBxDxFxH(),
     pclk.UVYT_ABCDxxxx(),
@@ -1324,8 +1313,6 @@ void GateBoy::tock_slow(int pass_index) {
   );
 
   tock_zram(
-    BUS_CPU_A,
-    BUS_CPU_D,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp
   );
@@ -1361,8 +1348,6 @@ void GateBoy::tock_slow(int pass_index) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_pix_pipe(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
   wire XODO_VID_RSTp_new_h,
 
   wire TEDO_CPU_RDp,
@@ -1754,8 +1739,6 @@ void GateBoy::tock_pix_pipe(
 
   [
     this,
-    BUS_CPU_A,
-    BUS_CPU_D,
     XODO_VID_RSTp_new_h,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
@@ -2058,9 +2041,6 @@ void GateBoy::tock_lcd(
 // VRAM interface
 
 void GateBoy::tock_vram(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-
     wire AVOR_SYS_RSTp,
     wire XODO_VID_RSTp,
 
@@ -2182,8 +2162,6 @@ void GateBoy::tock_vram(
 
   [
     this,
-    BUS_CPU_A,
-    BUS_CPU_D,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp
   ](){
@@ -2490,7 +2468,6 @@ void GateBoy::tock_vram(
 
   [
     this,
-    BUS_CPU_D,
     SALE_CPU_VRAM_WRn_new,
     SERE_CPU_VRAM_RDp_new
   ](){
@@ -2714,8 +2691,6 @@ void GateBoy::tock_vram(
 // OAM interface
 
 void GateBoy::tock_oam(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
     wire AVOR_SYS_RSTp,
     wire ATAL_xBxDxFxH,
     wire UVYT_ABCDxxxx,
@@ -2899,8 +2874,6 @@ void GateBoy::tock_oam(
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_zram(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp)
 {

@@ -18,8 +18,8 @@ struct GateBoyInterrupts {
     const RegLYC& reg_lyc,
     const GateBoySerial& serial,
 
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
+    Signal BUS_CPU_A[16],
+    Signal BUS_CPU_D[8],
     wire TEDO_CPU_RDp,
     wire TAPU_CPU_WRp,
 

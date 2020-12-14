@@ -9,7 +9,7 @@ struct CpuBus;
 struct OamLatchA {
 
   void latch_bus(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire TEDO_CPU_RDp,
     wire CATY_LATCH_EXTp,
 
@@ -49,7 +49,7 @@ struct OamLatchA {
   }
 
   void latch_to_cpu(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     BusOut BUS_OAM_An[8],
     wire TEDO_CPU_RDp,
     wire CATY_LATCH_EXTp,
@@ -96,7 +96,7 @@ struct OamLatchA {
 
 struct OamLatchB {
   void latch_bus(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire TEDO_CPU_RDp,
     wire CATY_LATCH_EXTp,
 
@@ -137,7 +137,7 @@ struct OamLatchB {
 
 
   void latch_to_cpu(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     BusOut BUS_OAM_An[8],
     wire TEDO_CPU_RDp,
     wire CATY_LATCH_EXTp,
@@ -185,7 +185,7 @@ struct OamLatchB {
 struct OamTempA {
 
   void latch_to_temp(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire ACYL_SCANNINGp,
     wire UVYT_ABCDxxxx_clk,
     wire XYSO_xBCDxFGH,
@@ -227,7 +227,7 @@ struct OamTempA {
 struct OamTempB {
 
   void latch_to_temp(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire ACYL_SCANNINGp,
     wire UVYT_ABCDxxxx_clk,
     wire XYSO_xBCDxFGH,
@@ -343,8 +343,8 @@ struct GateBoyOamBus {
   }
 
   void cpu_to_data_bus(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
+    Signal BUS_CPU_A[16],
+    Signal BUS_CPU_D[8],
     wire UVYT_ABCDxxxx,
     wire TAPU_CPU_WRp,
     wire XYMU_RENDERINGp,
@@ -397,7 +397,7 @@ struct GateBoyOamBus {
   }
 
   void update_pins(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire UVYT_ABCDxxxx,
     wire XYSO_xBCDxFGH,
     wire XOCE_xBCxxFGx,

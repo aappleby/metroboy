@@ -9,8 +9,8 @@ void GateBoyBootrom::reset_cart() {
 //--------------------------------------------------------------------------------
 
 void GateBoyBootrom::tock(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
+  Signal BUS_CPU_A[16],
+  Signal BUS_CPU_D[8],
   wire UMUT_MODE_DBG1p_ext,
   wire AVOR_SYS_RSTp,
   wire TEDO_CPU_RDp,
@@ -83,7 +83,7 @@ void GateBoyBootrom::tock(
 
 //--------------------------------------------------------------------------------
 
-wire GateBoyBootrom::TUTU_READ_BOOTROMp_new(wire BUS_CPU_A[16])
+wire GateBoyBootrom::TUTU_READ_BOOTROMp_new(Signal BUS_CPU_A[16])
 {
   /* p07.TULO*/ wire _TULO_ADDR_BOOTROMp_new = nor8(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12],
                                                     BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]);

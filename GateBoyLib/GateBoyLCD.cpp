@@ -21,7 +21,7 @@ void RegLX::tock(wire XODO_VID_RSTp, wire TALU_xxCDEFxx_clkevn) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void RegLY::tock(wire BUS_CPU_A[16],
+void RegLY::tock(Signal BUS_CPU_A[16],
                  wire XODO_VID_RSTp,
                  wire TEDO_CPU_RDp,
                  wire NYPE_x113p_c_new,
@@ -65,8 +65,8 @@ void RegLY::tock(wire BUS_CPU_A[16],
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void RegLCDC::tock(wire BUS_CPU_A[16],
-                   wire BUS_CPU_D[8],
+void RegLCDC::tock(Signal BUS_CPU_A[16],
+                   Signal BUS_CPU_D[8],
                    wire AVOR_SYS_RSTp,
                    wire TEDO_CPU_RDp,
                    wire TAPU_CPU_WRp,
@@ -100,8 +100,8 @@ void RegLCDC::tock(wire BUS_CPU_A[16],
 //------------------------------------------------------------------------------------------------------------------------
 
 void RegLYC::tock(
-  wire BUS_CPU_A[16],
-  wire BUS_CPU_D[8],
+  Signal BUS_CPU_A[16],
+  Signal BUS_CPU_D[8],
   wire AVOR_SYS_RSTp,
   wire TALU_xxCDEFxx_clkevn,
 

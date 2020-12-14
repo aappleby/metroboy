@@ -20,7 +20,7 @@ struct RegWY {
 
   int get() const { return pack_u8n(8, &NESO_WY0n_h); }
 
-  void tock(const wire BUS_CPU_A[16], const wire BUS_CPU_D[8], wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8]) {
+  void tock(const Signal BUS_CPU_A[16], const Signal BUS_CPU_D[8], wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8]) {
     // FF4A WY
     /* p23.WEKO*/ wire _WEKO_FF4A_WRp_clk_evn = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), VYGA_FF4Ap_ext(BUS_CPU_A));
     /* p23.VEFU*/ wire _VEFU_FF4A_WRn_clk_evn = not1(_WEKO_FF4A_WRp_clk_evn);
@@ -73,7 +73,7 @@ struct RegWX {
 
   int get() const        { return pack_u8n(8, &MYPA_WX0n_h); }
 
-  void tock(const wire BUS_CPU_A[16], const wire BUS_CPU_D[8], wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8]) {
+  void tock(const Signal BUS_CPU_A[16], const Signal BUS_CPU_D[8], wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp, BusOut BUS_CPU_D_out[8]) {
     // FF4B WX
     /* p23.WUZA*/ wire _WUZA_FF4B_WRp_clk_evn = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), VUMY_FF4Bp_ext(BUS_CPU_A));
     /* p23.VOXU*/ wire _VOXU_FF4B_WRn_clk_evn = not1(_WUZA_FF4B_WRp_clk_evn);
@@ -162,8 +162,8 @@ struct PixCounter {
 struct RegStat {
 
   void tock(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
+    Signal BUS_CPU_A[16],
+    Signal BUS_CPU_D[8],
     wire AVOR_SYS_RSTp,
     wire TEDO_CPU_RDp,
     wire TAPU_CPU_WRp,

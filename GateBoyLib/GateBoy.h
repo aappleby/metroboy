@@ -23,6 +23,7 @@
 #include "GateBoyLib/GateBoyOamBus.h"
 #include "GateBoyLib/GateBoyVramBus.h"
 #include "GateBoyLib/GateBoyResetDebug.h"
+#include "GateBoyLib/GateBoyCpuBus.h"
 
 //-----------------------------------------------------------------------------
 
@@ -108,22 +109,7 @@ struct GateBoy {
     return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
   }
 
-  void tock_reg_lyc(
-    wire BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-
-    wire WERO_ADDR_PPUp_ext,
-    wire XOLA_A00n_ext, wire WADO_A00p_ext,
-    wire XENO_A01n_ext, wire WESA_A01p_ext,
-    wire XUSY_A02n_ext, wire WALO_A02p_ext,
-    wire XERA_A03n_ext, wire WEPO_A03p_ext
-  );
-
   void tock_pix_pipe(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
     wire XODO_VID_RSTp_new_h,
 
     wire TEDO_CPU_RDp,
@@ -151,9 +137,6 @@ struct GateBoy {
   );
 
   void tock_vram(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
-
     wire AVOR_SYS_RSTp,
     wire XODO_VID_RSTp_new_h,
 
@@ -178,8 +161,6 @@ struct GateBoy {
   );
 
   void tock_oam(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
     wire AVOR_SYS_RSTp,
     wire ATAL_xBxDxFxH_clk_odd,
     wire UVYT_ABCDxxxx_clkevn,
@@ -193,8 +174,6 @@ struct GateBoy {
   );
 
   void tock_zram(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
     wire TEDO_CPU_RDp,
     wire TAPU_CPU_WRp
   );
@@ -242,6 +221,10 @@ struct GateBoy {
   //----------
   // CPU interface
 
+  //GateBoyCpuBus cpu_bus;
+
+  Signal BUS_CPU_A[16];
+  Signal BUS_CPU_D[8];
   BusOut BUS_CPU_D_out[8];
 
   PinIn  PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO

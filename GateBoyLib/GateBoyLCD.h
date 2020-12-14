@@ -31,7 +31,7 @@ struct RegLY {
   uint8_t get() const  { return pack_u8p(8, &MUWY_LY0p_evn); }
 
   void tock(
-    wire BUS_CPU_A[16],
+    Signal BUS_CPU_A[16],
     wire XODO_VID_RSTp,
     wire TEDO_CPU_RDp,
     wire NYPE_x113p_c_new,
@@ -58,8 +58,8 @@ struct RegLCDC {
   //wire XONA_LCDC_LCDENp() const { return XONA_LCDC_LCDENn_h.qn_old(); }
 
   void tock(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
+    Signal BUS_CPU_A[16],
+    Signal BUS_CPU_D[8],
     wire AVOR_SYS_RSTp,
     wire TEDO_CPU_RDp,
     wire TAPU_CPU_WRp,
@@ -81,8 +81,8 @@ struct RegLYC {
   uint8_t get() const { return pack_u8n(8, &SYRY_LYC0n); }
 
   void tock(
-    wire BUS_CPU_A[16],
-    wire BUS_CPU_D[8],
+    Signal BUS_CPU_A[16],
+    Signal BUS_CPU_D[8],
     wire AVOR_SYS_RSTp,
     wire TALU_xxCDEFxx_clkevn,
     wire TEDO_CPU_RDp,

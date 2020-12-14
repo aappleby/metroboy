@@ -18,8 +18,20 @@
   <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
+    <ClCompile Include="GateBoyClocks.cpp" />
+    <ClCompile Include="GateBoyDMA.cpp" />
+    <ClCompile Include="GateBoyExtBus.cpp" />
+    <ClCompile Include="GateBoyInterrupts.cpp" />
+    <ClCompile Include="GateBoyJoypad.cpp" />
+    <ClCompile Include="GateBoyOamBus.cpp" />
+    <ClCompile Include="GateBoyPixPipe.cpp" />
     <ClCompile Include="GateBoySerial.cpp" />
+    <ClCompile Include="GateBoySpriteFetcher.cpp" />
+    <ClCompile Include="GateBoySpriteScanner.cpp" />
     <ClCompile Include="GateBoyThread.cpp" />
+    <ClCompile Include="GateBoyTileFetcher.cpp" />
+    <ClCompile Include="GateBoyTimer.cpp" />
+    <ClCompile Include="GateBoyVramBus.cpp" />
     <ClCompile Include="Gates.cpp" />
     <ClCompile Include="Probe.cpp" />
     <ClCompile Include="GateBoyLCD.cpp" />

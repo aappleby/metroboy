@@ -324,11 +324,11 @@ void GateBoy::reset_cart(uint8_t* _boot_buf, size_t _boot_size, uint8_t* _cart_b
   reg_lcdc.VYXE_LCDC_BGENn_h  .reset(REG_D0C1);
   reg_lcdc.XYLO_LCDC_SPENn_h  .reset(REG_D1C1);
   reg_lcdc.XYMO_LCDC_SPSIZEn_h.reset(REG_D1C1);
-  rstdbg.XONA_LCDC_LCDENn_h .reset(REG_D0C1);
   reg_lcdc.XAFO_LCDC_BGMAPn_h .reset(REG_D1C1);
   reg_lcdc.WEXU_LCDC_BGTILEn_h.reset(REG_D0C1);
   reg_lcdc.WYMO_LCDC_WINENn_h .reset(REG_D1C1);
   reg_lcdc.WOKY_LCDC_WINMAPn_h.reset(REG_D1C1);
+  reg_lcdc.XONA_LCDC_LCDENn_h .reset(REG_D0C1);
 
   reg_lx.RUTU_x113p_g.reset(REG_D0C1);
   reg_lx.NYPE_x113p_c.reset(REG_D0C0);
@@ -890,15 +890,11 @@ void GateBoy::tock_slow(int pass_index) {
     BUS_CPU_D_out
   );
 
-  rstdbg.tock2(BUS_CPU_A,
-               BUS_CPU_D,
-               TEDO_CPU_RDp,
-               TAPU_CPU_WRp,
-               BUS_CPU_D_out);
+  rstdbg.tock2(reg_lcdc.XONA_LCDC_LCDENn_h.qn_new());
 
-  /* p01.XODO*/ wire XODO_VID_RSTp = nand2(rstdbg.XEBE_SYS_RSTn(), rstdbg.XONA_LCDC_LCDENn_h.qn_new());
+  /* p01.XODO*/ wire XODO_VID_RSTp = nand2(rstdbg.XEBE_SYS_RSTn(), reg_lcdc.XONA_LCDC_LCDENn_h.qn_new());
   /* p23.WYMO*/ wire WYMO_LCDC_WINENn_new = reg_lcdc.WYMO_LCDC_WINENn_h.qn_new();
-  /* p23.XONA*/ wire XONA_LCDC_LCDENp_h_new = rstdbg.XONA_LCDC_LCDENn_h.qn_new();
+  /* p23.XONA*/ wire XONA_LCDC_LCDENp_h_new = reg_lcdc.XONA_LCDC_LCDENn_h.qn_new();
 
   //------------------------------------------------------------------------------------------------------------------------
   // Video clocks
@@ -1991,7 +1987,7 @@ void GateBoy::tock_lcd(
     /*#p24.KASA*/ wire _KASA_LINE_ENDp_new = not1(PURE_LINE_ENDn_new_evn);
     /*#p24.UMOB*/ wire _UMOB_DIV_06p_new = not1(_UMEK_DIV06n_new);
     /*#p24.KEDY*/ wire _KEDY_LCDC_ENn_new_evn = not1(XONA_LCDC_LCDENp_h_new);
-    /*#p24.KAHE*/ wire _KAHE_LINE_ENDp_new = amux2(rstdbg.XONA_LCDC_LCDENn_h.qn_new(), _KASA_LINE_ENDp_new, _KEDY_LCDC_ENn_new_evn, _UMOB_DIV_06p_new);
+    /*#p24.KAHE*/ wire _KAHE_LINE_ENDp_new = amux2(reg_lcdc.XONA_LCDC_LCDENn_h.qn_new(), _KASA_LINE_ENDp_new, _KEDY_LCDC_ENn_new_evn, _UMOB_DIV_06p_new);
     /*#p24.KYMO*/ wire _KYMO_LINE_ENDn_new = not1(_KAHE_LINE_ENDp_new);
     lcd.PIN_LCD_LATCH_evn.pin_out(_KYMO_LINE_ENDn_new, _KYMO_LINE_ENDn_new);
   }();

@@ -72,6 +72,7 @@ struct RegLCDC {
   /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn_h; // xxxxxxxH
   /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn_h;  // xxxxxxxH
   /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn_h; // xxxxxxxH
+  /*p23.WOKY*/ DFF9 XONA_LCDC_LCDENn_h;  // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

@@ -75,6 +75,19 @@ struct Gate : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
+
+struct Signal : public BitBase {
+  void operator = (wire D) {
+    set_data(D);
+    SET_DIRTY();
+  }
+
+  operator wire() const {
+    return bit_data();
+  }
+};
+
+//-----------------------------------------------------------------------------
 // Generic DFF
 
 struct DFF : public BitBase {

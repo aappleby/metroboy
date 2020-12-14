@@ -82,6 +82,7 @@ void RegLCDC::tock(wire BUS_CPU_A[16],
   /* p23.WEXU*/ WEXU_LCDC_BGTILEn_h.dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[4]);
   /* p23.WYMO*/ WYMO_LCDC_WINENn_h .dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[5]);
   /* p23.WOKY*/ WOKY_LCDC_WINMAPn_h.dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[6]);
+  /* p23.WOKY*/ XONA_LCDC_LCDENn_h. dff9(_XUBO_FF40_WRn_clk, XARE_SYS_RSTn(AVOR_SYS_RSTp), BUS_CPU_D[7]);
 
   // FF40 LCDC
   /* p23.VYRE*/ wire _VYRE_FF40_RDp_ext = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), VOCA_FF40p_ext(BUS_CPU_A));
@@ -93,6 +94,7 @@ void RegLCDC::tock(wire BUS_CPU_A[16],
   /* p23.VOKE*/ BUS_CPU_D_out[4].tri6_nn(_WYCE_FF40_RDn_ext, WEXU_LCDC_BGTILEn_h.qp_new());
   /* p23.VATO*/ BUS_CPU_D_out[5].tri6_nn(_WYCE_FF40_RDn_ext, WYMO_LCDC_WINENn_h.qp_new());
   /*#p23.VAHA*/ BUS_CPU_D_out[6].tri6_nn(_WYCE_FF40_RDn_ext, WOKY_LCDC_WINMAPn_h.qp_new());
+  /*#p23.VAHA*/ BUS_CPU_D_out[7].tri6_nn(_WYCE_FF40_RDn_ext, XONA_LCDC_LCDENn_h.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

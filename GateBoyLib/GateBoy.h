@@ -223,10 +223,6 @@ struct GateBoy {
 
   GateBoyCpuBus cpu_bus;
 
-  Signal BUS_CPU_A[16];
-  Signal BUS_CPU_D[8];
-  BusOut BUS_CPU_D_out[8];
-
   //----------
 
   OamTempA oam_temp_a;

@@ -574,7 +574,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Buses =====\001\n");
-  d.dump_slice2p("BUS_CPU_D_out    ", &gb->BUS_CPU_D_out, 8);
+  d.dump_slice2p("BUS_CPU_D_out    ", &gb->cpu_bus.BUS_CPU_D_out, 8);
   d.dump_bitp   ("MAKA_HOLD_MEMp   ",  gb->oam_bus.MAKA_LATCH_EXTp_evn.state);
   d.dump_bitp   ("WUJE_CPU_OAM_WRn ",  gb->oam_bus.WUJE_CPU_OAM_WRn_evn.state);
   d.dump_slice2p("EXT_ADDR         ", &gb->ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);

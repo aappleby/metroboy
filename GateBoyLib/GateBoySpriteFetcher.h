@@ -4,20 +4,10 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
-  void reset_cart() {
-    TAKA_SFETCH_RUNNINGp.reset(REG_D0C0);
-    SOBU_SFETCH_REQp.reset(REG_D0C0);
-    SUDA_SFETCH_REQp.reset(REG_D0C1);
-    TOXE_SFETCH_S0p.reset(REG_D1C1);
-    TULY_SFETCH_S1p.reset(REG_D0C0);
-    TESE_SFETCH_S2p.reset(REG_D1C1);
-    TYFO_SFETCH_S0p_D1.reset(REG_D1C1);
-    TOBU_SFETCH_S1p_D2.reset(REG_D0C0);
-    VONU_SFETCH_S1p_D4.reset(REG_D0C0);
-    SEBA_SFETCH_S1p_D5.reset(REG_D0C1);
-  }
+  void dump(Dumper& d);
+  void reset_cart();
 
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp);
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
 
   /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_any(), VONU_SFETCH_S1p_D4.qp_any()); }
 
@@ -66,12 +56,6 @@ struct SpriteFetcher {
     /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp);
     /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, TYFO_SFETCH_S0p_D1.qp_new());
     return _SYCU_SFETCH_S0pe;
-  }
-
-  wire SECA_SFETCH_RSTn(wire ROSY_VID_RSTp, wire ATEJ_LINE_RSTp) const {
-    /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp_new(), SUDA_SFETCH_REQp.qn_new());
-    /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, ROSY_VID_RSTp, ATEJ_LINE_RSTp);
-    return _SECA_SFETCH_RSTn;
   }
 
   wire XADO_STORE_SPRITE_An() const {

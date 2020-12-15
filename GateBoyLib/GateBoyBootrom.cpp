@@ -6,13 +6,6 @@
 
 //--------------------------------------------------------------------------------
 
-void GateBoyBootrom::reset_cart() {
-  BOOT_BITn_h.reset(REG_D1C1);
-  PIN_CPU_BOOTp.reset(REG_D0C0);
-}
-
-//--------------------------------------------------------------------------------
-
 void GateBoyBootrom::tock(
   GateBoyResetDebug& rst,
   GateBoyCpuBus& cpu_bus,
@@ -22,9 +15,9 @@ void GateBoyBootrom::tock(
     /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
     /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
     // FF50 - disable bootrom bit
-    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0], BOOT_BITn_h.qp_old());
-    /* p07.TEPU*/ BOOT_BITn_h.dff17(_TUGE_FF50_WRn, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
-    /* p07.SYPU*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_TEXE_FF50_RDp, BOOT_BITn_h.qp_new());
+    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0], cpu_bus.BOOT_BITn_h.qp_old());
+    /* p07.TEPU*/ cpu_bus.BOOT_BITn_h.dff17(_TUGE_FF50_WRn, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
+    /* p07.SYPU*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_TEXE_FF50_RDp, cpu_bus.BOOT_BITn_h.qp_new());
   }
 
   /* BOOT -> CBD */
@@ -56,8 +49,9 @@ void GateBoyBootrom::tock(
   uint16_t cpu_addr = pack_u16p(16, cpu_bus.BUS_CPU_A);
   uint8_t bootrom_data = boot_buf[cpu_addr & 0xFF];
 
-  /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn_h.qp_new());
+  /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_bus.BOOT_BITn_h.qp_new());
   /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, cpu_bus.TULO_ADDR_BOOTROMp());
+  cpu_bus.PIN_CPU_BOOTp.setp(_TUTU_READ_BOOTROMp);
 
   /* p07.ZORO*/ wire _ZORO_0000xxxx_XX = nor4(cpu_bus.BUS_CPU_A[15], cpu_bus.BUS_CPU_A[14], cpu_bus.BUS_CPU_A[13], cpu_bus.BUS_CPU_A[12]);
   /* p07.ZADU*/ wire _ZADU_xxxx0000_XX = nor4(cpu_bus.BUS_CPU_A[11], cpu_bus.BUS_CPU_A[10], cpu_bus.BUS_CPU_A[ 9], cpu_bus.BUS_CPU_A[ 8]);
@@ -74,8 +68,6 @@ void GateBoyBootrom::tock(
   cpu_bus.BUS_CPU_D_out[5].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x20));
   cpu_bus.BUS_CPU_D_out[6].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x40));
   cpu_bus.BUS_CPU_D_out[7].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x80));
-
-  PIN_CPU_BOOTp.setp(_TUTU_READ_BOOTROMp);
 }
 
 //--------------------------------------------------------------------------------

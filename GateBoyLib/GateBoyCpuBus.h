@@ -2,7 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyCpuBus {
-
+  void reset_cart();
   void set_addr(uint16_t cpu_addr);
   void set_data(wire BUS_CPU_OEp, uint8_t cpu_data);
   void tock(const GateBoyResetDebug& rst, const GateBoyClock& clk);
@@ -20,6 +20,9 @@ struct GateBoyCpuBus {
 
   PinIn  PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
   PinIn  PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+
+  /*p07.TEPU*/ DFF17 BOOT_BITn_h;
+  PinOut PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
 
   /* p07.TEDO*/ Signal TEDO_CPU_RDp;
   /* p01.APOV*/ Signal APOV_CPU_WRp;
@@ -80,6 +83,8 @@ struct GateBoyCpuBus {
 
   /* p07.TULO*/ wire TULO_ADDR_BOOTROMp() const { return nor8(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12],
                                                               BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]); }
+  /* p07.TERA*/ wire TERA_BOOT_BITp    () const { return not1(BOOT_BITn_h.qp_new()); }
+  /* p07.TUTU*/ wire TUTU_READ_BOOTROMp() const { return and2(TERA_BOOT_BITp(), TULO_ADDR_BOOTROMp()); }
 
   /* p22.WUTU*/ wire WUTU_ADDR_PPUn    () const { return nand3(SYKE_ADDR_HIp(), BUS_CPU_A[6], XALY_0x00xxxx()); }
   /* p22.WERO*/ wire WERO_ADDR_PPUp    () const { return not1(WUTU_ADDR_PPUn()); }

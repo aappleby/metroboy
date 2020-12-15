@@ -168,6 +168,8 @@ struct GateBoy {
 
   void tock_slow(int pass_index);
 
+  void update_lcd();
+
   uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
   uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
   int64_t commit_and_hash() {
@@ -248,7 +250,6 @@ struct GateBoy {
 
   GateBoyDiv     div;
   GateBoyTimer   timer;
-  GateBoyBootrom bootrom;
 
   GateBoyDMA dma;
 

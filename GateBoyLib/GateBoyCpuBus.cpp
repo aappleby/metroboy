@@ -3,6 +3,11 @@
 #include "GateBoyResetDebug.h"
 #include "GateBoyClocks.h"
 
+void GateBoyCpuBus::reset_cart() {
+  BOOT_BITn_h.reset(REG_D1C1);
+  PIN_CPU_BOOTp.reset(REG_D0C0);
+}
+
 void GateBoyCpuBus::set_addr(uint16_t cpu_addr) {
   BUS_CPU_A[ 0] = wire((cpu_addr >>  0) & 1);
   BUS_CPU_A[ 1] = wire((cpu_addr >>  1) & 1);

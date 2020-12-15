@@ -176,6 +176,8 @@ void GateBoyLCD::tock(
   const RegLX& reg_lx,
   const RegLY& reg_ly)
 {
+  _XODO_VID_RSTp = rst.XODO_VID_RSTp();
+
   /*#p21.XYVO*/ wire _XYVO_y144p_old = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
 
   /*#p21.POPU*/ POPU_VBLANKp.dff17(reg_lx.NYPE_x113p(), rst.LYFE_VID_RSTn(), _XYVO_y144p_old);

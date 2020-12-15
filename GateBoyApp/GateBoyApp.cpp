@@ -780,7 +780,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     uint16_t code_size = 0;
     uint16_t code_base = 0;
 
-    if (!gb->bootrom.BOOT_BITn_h.qp_old()) {
+    if (!gb->cpu_bus.BOOT_BITn_h.qp_old()) {
       code = gb_thread.boot.data();
       code_size = 256;
       code_base = ADDR_BOOT_ROM_BEGIN;

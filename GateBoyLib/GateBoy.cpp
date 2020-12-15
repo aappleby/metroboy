@@ -647,6 +647,12 @@ void GateBoy::tock_slow(int pass_index) {
   serial.PIN_SIN.pin_in(1, 1);
   serial.PIN_SCK.pin_in(0, 0);
 
+  interrupts.PIN_CPU_ACK_VBLANK.setp(wire(cpu.int_ack & INT_VBLANK_MASK));
+  interrupts.PIN_CPU_ACK_STAT  .setp(wire(cpu.int_ack & INT_STAT_MASK));
+  interrupts.PIN_CPU_ACK_TIMER .setp(wire(cpu.int_ack & INT_TIMER_MASK));
+  interrupts.PIN_CPU_ACK_SERIAL.setp(wire(cpu.int_ack & INT_SERIAL_MASK));
+  interrupts.PIN_CPU_ACK_JOYPAD.setp(wire(cpu.int_ack & INT_JOYPAD_MASK));
+
   //-----------------------------------------------------------------------------
   // SOC-to-CPU control signals
 
@@ -1112,30 +1118,18 @@ void GateBoy::tock_slow(int pass_index) {
   serial.tock(rst, cpu_bus, div);
 
   {
-    interrupts.PIN_CPU_ACK_VBLANK.setp(wire(cpu.int_ack & INT_VBLANK_MASK));
-    interrupts.PIN_CPU_ACK_STAT  .setp(wire(cpu.int_ack & INT_STAT_MASK));
-    interrupts.PIN_CPU_ACK_TIMER .setp(wire(cpu.int_ack & INT_TIMER_MASK));
-    interrupts.PIN_CPU_ACK_SERIAL.setp(wire(cpu.int_ack & INT_SERIAL_MASK));
-    interrupts.PIN_CPU_ACK_JOYPAD.setp(wire(cpu.int_ack & INT_JOYPAD_MASK));
-
     /*#p21.WODU*/ wire WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), pix_count.XANO_PX167p()); // WODU goes high on odd, cleared on H
     interrupts.tock(
       rst,
+      cpu_bus,
       joypad,
       reg_stat,
       reg_lyc,
       serial,
-
-      cpu_bus.BUS_CPU_A,
-      cpu_bus.BUS_CPU_D,
-      cpu_bus.TEDO_CPU_RDp,
-      cpu_bus.TAPU_CPU_WRp,
-
       lcd.PARU_VBLANKp(),
       reg_lx.PURE_LINE_ENDn(),
       timer.MOBA_TIMER_OVERFLOWp.qp_new(),
-      WODU_HBLANKp,
-      cpu_bus.BUS_CPU_D_out);
+      WODU_HBLANKp);
   }
 
   wire ABUZ_EXT_RAM_CS_CLK = [this](){

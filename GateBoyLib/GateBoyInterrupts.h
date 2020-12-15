@@ -13,21 +13,15 @@ struct GateBoyInterrupts {
 
   void tock(
     const GateBoyResetDebug& rst,
+      GateBoyCpuBus& cpu_bus,
     const GateBoyJoypad& joypad,
     const RegStat& reg_stat,
     const RegLYC& reg_lyc,
     const GateBoySerial& serial,
-
-    Signal BUS_CPU_A[16],
-    Signal BUS_CPU_D[8],
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-
     wire PARU_VBLANKp,
     wire PURE_LINE_ENDn,
     wire MOBA_TIMER_OVERFLOWp,
-    wire WODU_HBLANKp,
-    BusOut BUS_CPU_D_out[8]);
+    wire WODU_HBLANKp);
 
   /*p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
   /*p02.UBUL*/ DFF22 UBUL_FF0F_D3p;

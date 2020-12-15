@@ -1320,127 +1320,16 @@ void GateBoy::tock_vram(
   //----------------------------------------
   // Background/window map and tile adddress generator
 
-  [
-    this,
-    TEVO_FETCH_TRIGp
-  ]() {
+  auto scroll_x = scroll_x_adder(pix_count, reg_scx);
+  auto scroll_y = scroll_y_adder(reg_ly, reg_scy);
 
-    auto scroll_x = scroll_x_adder(pix_count, reg_scx);
-    auto scroll_y = scroll_y_adder(reg_ly, reg_scy);
+  win_map_x.tock(rst, TEVO_FETCH_TRIGp, win_reg.PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn.qn_new(), lcd.XAHY_LINE_RSTn());
+  win_line_y.tock(rst, win_reg.PORE_WIN_MODEp(), lcd.PARU_VBLANKp());
 
-    win_map_x.tock(rst, TEVO_FETCH_TRIGp, win_reg.PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn.qn_new(), lcd.XAHY_LINE_RSTn());
-    win_line_y.tock(rst, win_reg.PORE_WIN_MODEp(), lcd.PARU_VBLANKp());
-
-    {
-      // BG map read address
-      /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(tile_fetcher.POTU_BGW_MAP_READp(), win_reg.AXAD_WIN_MODEn());
-      /* p26.BAFY*/ wire _BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
-      /* p26.AXEP*/ vram_bus.BUS_VRAM_An[ 0].tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BABE_MAP_X0S);
-      /* p26.AFEB*/ vram_bus.BUS_VRAM_An[ 1].tri6_nn(_BAFY_BG_MAP_READn, scroll_x.ABOD_MAP_X1S);
-      /* p26.ALEL*/ vram_bus.BUS_VRAM_An[ 2].tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BEWY_MAP_X2S);
-      /* p26.COLY*/ vram_bus.BUS_VRAM_An[ 3].tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BYCA_MAP_X3S);
-      /* p26.AJAN*/ vram_bus.BUS_VRAM_An[ 4].tri6_nn(_BAFY_BG_MAP_READn, scroll_x.ACUL_MAP_X4S);
-      /* p26.DUHO*/ vram_bus.BUS_VRAM_An[ 5].tri6_nn(_BAFY_BG_MAP_READn, scroll_y.ETAM_MAP_Y0S);
-      /* p26.CASE*/ vram_bus.BUS_VRAM_An[ 6].tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DOTO_MAP_Y1S);
-      /* p26.CYPO*/ vram_bus.BUS_VRAM_An[ 7].tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DABA_MAP_Y2S);
-      /* p26.CETA*/ vram_bus.BUS_VRAM_An[ 8].tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EFYK_MAP_Y3S);
-      /* p26.DAFE*/ vram_bus.BUS_VRAM_An[ 9].tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EJOK_MAP_Y4S);
-      /*#p26.AMUV*/ vram_bus.BUS_VRAM_An[10].tri6_nn(_BAFY_BG_MAP_READn, reg_lcdc.XAFO_LCDC_BGMAPn.qn_new());
-      /* p26.COVE*/ vram_bus.BUS_VRAM_An[11].tri6_nn(_BAFY_BG_MAP_READn, 1);
-      /* p26.COXO*/ vram_bus.BUS_VRAM_An[12].tri6_nn(_BAFY_BG_MAP_READn, 1);
-    }
-
-
-    {
-      // Win map read address
-      /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp());
-      /*#p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not1(_XEZE_WIN_MAP_READp);
-      /*#p27.XEJA*/ vram_bus.BUS_VRAM_An[ 0].tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WYKA_WIN_X3.qp_new());
-      /* p27.XAMO*/ vram_bus.BUS_VRAM_An[ 1].tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WODY_WIN_X4.qp_new());
-      /* p27.XAHE*/ vram_bus.BUS_VRAM_An[ 2].tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WOBO_WIN_X5.qp_new());
-      /* p27.XULO*/ vram_bus.BUS_VRAM_An[ 3].tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WYKO_WIN_X6.qp_new());
-      /* p27.WUJU*/ vram_bus.BUS_VRAM_An[ 4].tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.XOLO_WIN_X7.qp_new());
-      /*#p27.VYTO*/ vram_bus.BUS_VRAM_An[ 5].tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TUFU_WIN_Y3.qp_new());
-      /* p27.VEHA*/ vram_bus.BUS_VRAM_An[ 6].tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TAXA_WIN_Y4.qp_new());
-      /* p27.VACE*/ vram_bus.BUS_VRAM_An[ 7].tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TOZO_WIN_Y5.qp_new());
-      /* p27.VOVO*/ vram_bus.BUS_VRAM_An[ 8].tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TATE_WIN_Y6.qp_new());
-      /* p27.VULO*/ vram_bus.BUS_VRAM_An[ 9].tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TEKE_WIN_Y7.qp_new());
-      /*#p27.VEVY*/ vram_bus.BUS_VRAM_An[10].tri6_nn(_WUKO_WIN_MAP_READn, reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
-      /* p27.VEZA*/ vram_bus.BUS_VRAM_An[11].tri6_nn(_WUKO_WIN_MAP_READn, 1);
-      /* p27.VOGU*/ vram_bus.BUS_VRAM_An[12].tri6_nn(_WUKO_WIN_MAP_READn, 1);
-    }
-
-    // BG/Win tile read address
-    {
-      /* p26.ASUL*/ wire _ASUL_BG_TILE_READp =  and2(tile_fetcher.NETA_BGW_TILE_READp(), win_reg.AXAD_WIN_MODEn());
-      /* p26.BEJE*/ wire _BEJE_BG_TILE_READn = not1(_ASUL_BG_TILE_READp);
-      /*#p27.XUHA*/ wire _XUHA_FETCH_HILOp = not1(tile_fetcher.NOFU_BFETCH_S2n());
-
-      /*#p26.ASUM*/ vram_bus.BUS_VRAM_An[ 0].tri6_nn(_BEJE_BG_TILE_READn, _XUHA_FETCH_HILOp);
-      /* p26.EVAD*/ vram_bus.BUS_VRAM_An[ 1].tri6_nn(_BEJE_BG_TILE_READn, scroll_y.FAFO_TILE_Y0S);
-      /* p26.DAHU*/ vram_bus.BUS_VRAM_An[ 2].tri6_nn(_BEJE_BG_TILE_READn, scroll_y.EMUX_TILE_Y1S);
-      /* p26.DODE*/ vram_bus.BUS_VRAM_An[ 3].tri6_nn(_BEJE_BG_TILE_READn, scroll_y.ECAB_TILE_Y2S);
-    }
-    {
-      /* p25.XUCY*/ wire _XUCY_WIN_TILE_READn = nand2(tile_fetcher.NETA_BGW_TILE_READp(), win_reg.PORE_WIN_MODEp());
-      /*#p27.XUHA*/ wire _XUHA_FETCH_HILOp = not1(tile_fetcher.NOFU_BFETCH_S2n());
-      /*#p25.XONU*/ vram_bus.BUS_VRAM_An[ 0].tri6_nn(_XUCY_WIN_TILE_READn, _XUHA_FETCH_HILOp);
-      /*#p25.WUDO*/ vram_bus.BUS_VRAM_An[ 1].tri6_nn(_XUCY_WIN_TILE_READn, win_line_y.VYNO_WIN_Y0.qp_new());
-      /*#p25.WAWE*/ vram_bus.BUS_VRAM_An[ 2].tri6_nn(_XUCY_WIN_TILE_READn, win_line_y.VUJO_WIN_Y1.qp_new());
-      /*#p25.WOLU*/ vram_bus.BUS_VRAM_An[ 3].tri6_nn(_XUCY_WIN_TILE_READn, win_line_y.VYMU_WIN_Y2.qp_new());
-    }
-    {
-      /*#p25.VAPY*/ vram_bus.BUS_VRAM_An[ 4].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.RAWU_TILE_DB0p.qp_new());
-      /*#p25.SEZU*/ vram_bus.BUS_VRAM_An[ 5].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.POZO_TILE_DB1p.qp_new());
-      /*#p25.VEJY*/ vram_bus.BUS_VRAM_An[ 6].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.PYZO_TILE_DB2p.qp_new());
-      /*#p25.RUSA*/ vram_bus.BUS_VRAM_An[ 7].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.POXA_TILE_DB3p.qp_new());
-      /*#p25.ROHA*/ vram_bus.BUS_VRAM_An[ 8].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.PULO_TILE_DB4p.qp_new());
-      /*#p25.RESO*/ vram_bus.BUS_VRAM_An[ 9].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.POJU_TILE_DB5p.qp_new());
-      /*#p25.SUVO*/ vram_bus.BUS_VRAM_An[10].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.POWY_TILE_DB6p.qp_new());
-      /*#p25.TOBO*/ vram_bus.BUS_VRAM_An[11].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), tile_temp_b.PYJU_TILE_DB7p.qp_new());
-    }
-    {
-      /*#p25.VUZA*/ wire _VUZA_TILE_BANKp = nor2(tile_temp_b.PYJU_TILE_DB7p.qp_new(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new());
-      /*#p25.VURY*/ vram_bus.BUS_VRAM_An[12].tri6_pn(tile_fetcher.NETA_BGW_TILE_READp(), _VUZA_TILE_BANKp);
-    }
-  }();
-
-  //----------------------------------------
-  // Sprite read VRAM address generator
-
-  [
-    this,
-    XYMU_RENDERINGp
-  ](){
-    /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_temp_b.YZOS_OAM_DB6p.qp_new());
-    /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
-
-    /*#p29.XUQU*/ wire _XUQU_SPRITE_AB = not1(sprite_fetcher.VONU_SFETCH_S1p_D4.qn_new());
-    /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, sprite_store.SPR_TRI_L[0].qp_new());
-    /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, sprite_store.SPR_TRI_L[1].qp_new());
-    /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, sprite_store.SPR_TRI_L[2].qp_new());
-    /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, sprite_store.SPR_TRI_L[3].qp_new());
-    /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
-
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGp);
-    /* p29.SAKY*/ wire _SAKY_SFETCHn = nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
-    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(_SAKY_SFETCHn, _TEPA_RENDERINGp); // def or
-    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
-    /* p29.ABON*/ wire _ABON_SFETCHINGn = not1(_TEXY_SFETCHINGp);
-    /* p29.ABEM*/ vram_bus.BUS_VRAM_An[ 0].tri6_nn(_ABON_SFETCHINGn, _XUQU_SPRITE_AB);
-    /* p29.BAXE*/ vram_bus.BUS_VRAM_An[ 1].tri6_nn(_ABON_SFETCHINGn, _CYVU_L0);
-    /* p29.ARAS*/ vram_bus.BUS_VRAM_An[ 2].tri6_nn(_ABON_SFETCHINGn, _BORE_L1);
-    /* p29.AGAG*/ vram_bus.BUS_VRAM_An[ 3].tri6_nn(_ABON_SFETCHINGn, _BUVY_L2);
-    /* p29.FAMU*/ vram_bus.BUS_VRAM_An[ 4].tri6_nn(_ABON_SFETCHINGn, _GEJY_L3);
-    /*#p29.FUGY*/ vram_bus.BUS_VRAM_An[ 5].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XEGU_OAM_DA1p.qp_new());
-    /* p29.GAVO*/ vram_bus.BUS_VRAM_An[ 6].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YJEX_OAM_DA2p.qp_new());
-    /* p29.WYGA*/ vram_bus.BUS_VRAM_An[ 7].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XYJU_OAM_DA3p.qp_new());
-    /* p29.WUNE*/ vram_bus.BUS_VRAM_An[ 8].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YBOG_OAM_DA4p.qp_new());
-    /* p29.GOTU*/ vram_bus.BUS_VRAM_An[ 9].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.WYSO_OAM_DA5p.qp_new());
-    /* p29.GEGU*/ vram_bus.BUS_VRAM_An[10].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XOTE_OAM_DA6p.qp_new());
-    /* p29.XEHE*/ vram_bus.BUS_VRAM_An[11].tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YZAB_OAM_DA7p.qp_new());
-    /* p29.DYSO*/ vram_bus.BUS_VRAM_An[12].tri6_nn(_ABON_SFETCHINGn, 0);   // sprites always in low half of tile store
-  }();
+  vram_bus.scroll_to_addr(scroll_x, scroll_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.AXAD_WIN_MODEn(), reg_lcdc.XAFO_LCDC_BGMAPn.qn_new());
+  vram_bus.win_to_addr(win_map_x, win_line_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
+  vram_bus.tile_to_addr(scroll_y, win_line_y, tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new(), win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
+  vram_bus.sprite_to_addr(sprite_store, oam_temp_a, oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), XYMU_RENDERINGp, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
 
   //----------------------------------------
   // VRAM address bus to VRAM pins

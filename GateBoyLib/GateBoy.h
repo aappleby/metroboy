@@ -25,28 +25,6 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 
-struct BGScrollX {
-  wire ATAD_TILE_X0S;
-  wire BEHU_TILE_X1S;
-  wire APYH_TILE_X2S;
-  wire BABE_MAP_X0S;
-  wire ABOD_MAP_X1S;
-  wire BEWY_MAP_X2S;
-  wire BYCA_MAP_X3S;
-  wire ACUL_MAP_X4S;
-};
-
-struct BGScrollY {
-  wire FAFO_TILE_Y0S;
-  wire EMUX_TILE_Y1S;
-  wire ECAB_TILE_Y2S;
-  wire ETAM_MAP_Y0S;
-  wire DOTO_MAP_Y1S;
-  wire DABA_MAP_Y2S;
-  wire EFYK_MAP_Y3S;
-  wire EJOK_MAP_Y4S;
-};
-
 #pragma warning(push)
 #pragma warning(disable : 4189)
 

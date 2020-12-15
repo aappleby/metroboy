@@ -129,6 +129,8 @@ struct TileFetcher {
   /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
   /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
 
+  /*#p27.XUHA*/ wire XUHA_FETCH_HILOp()    const { return not1(NOFU_BFETCH_S2n()); }
+
 
   wire LOMA_LATCH_TILE_DAn() const;
   wire LABU_LATCH_TILE_DBn() const;

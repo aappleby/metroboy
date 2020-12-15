@@ -69,6 +69,11 @@ struct SpriteFetcher {
     return _PUCO_STORE_SPRITE_Bn;
   }
 
+  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
+
+  /*#p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not1(VONU_SFETCH_S1p_D4.qn_new()); }
+
+
   Signal _XYMU_RENDERINGp;
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp; // ABCDEFGH Set on odd, cleared on even

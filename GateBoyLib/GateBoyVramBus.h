@@ -2,8 +2,35 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyDMA;
+struct WinMapX;
+struct WinLineY;
+struct TileTempB;
+struct OamTempA;
+struct OamTempB;
 
 //-----------------------------------------------------------------------------
+
+struct BGScrollX {
+  wire ATAD_TILE_X0S;
+  wire BEHU_TILE_X1S;
+  wire APYH_TILE_X2S;
+  wire BABE_MAP_X0S;
+  wire ABOD_MAP_X1S;
+  wire BEWY_MAP_X2S;
+  wire BYCA_MAP_X3S;
+  wire ACUL_MAP_X4S;
+};
+
+struct BGScrollY {
+  wire FAFO_TILE_Y0S;
+  wire EMUX_TILE_Y1S;
+  wire ECAB_TILE_Y2S;
+  wire ETAM_MAP_Y0S;
+  wire DOTO_MAP_Y1S;
+  wire DABA_MAP_Y2S;
+  wire EFYK_MAP_Y3S;
+  wire EJOK_MAP_Y4S;
+};
 
 struct SpriteFlipX {
   wire PUTE_FLIP0p;
@@ -15,6 +42,8 @@ struct SpriteFlipX {
   wire PAWE_FLIP6p;
   wire PULY_FLIP7p;
 };
+
+//-----------------------------------------------------------------------------
 
 struct SpriteTempA {
   void store_sprite(SpriteFlipX sprite, wire XADO_STORE_SPRITE_An);
@@ -46,7 +75,10 @@ struct GateBoyVramBus {
 
   void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
   void dma_addr_to_vram_addr(const GateBoyDMA& dma);
-
+  void scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, wire XAFO_LCDC_BGMAPp);
+  void win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, wire WOKY_LCDC_WINMAPp);
+  void tile_to_addr(const BGScrollY scroll_y, const WinLineY win_line_y, const TileTempB tile_temp_b, wire NETA_BGW_TILE_READp, wire XUHA_FETCH_HILOp, wire WEXU_LCDC_BGTILEp, wire PORE_WIN_MODEp, wire AXAD_WIN_MODEn);
+  void sprite_to_addr(const SpriteStore& sprite_store, const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, wire XYMU_RENDERINGp, wire XYMO_LCDC_SPSIZEp);
 
   BusOut BUS_VRAM_An[13];
   BusIO  BUS_VRAM_Dp[8];

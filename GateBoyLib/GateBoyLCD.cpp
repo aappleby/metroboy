@@ -159,9 +159,9 @@ void RegLYC::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_
 
 //------------------------------------------------------------------------------------------------------------------------
 
-wire GateBoyLCD::ATEJ_LINE_RSTp(wire XODO_VID_RSTp) const {
+wire GateBoyLCD::ATEJ_LINE_RSTp() const {
   /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(CATU_LINE_P000p.qp_any());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(ANEL_LINE_P002p.qp_any(), _ABAF_LINE_P000n, ABEZ_VID_RSTn(XODO_VID_RSTp)); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(ANEL_LINE_P002p.qp_any(), _ABAF_LINE_P000n, ABEZ_VID_RSTn(_XODO_VID_RSTp)); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp = not1(_BYHA_LINE_TRIGn);
   return _ATEJ_LINE_RSTp;
 }

@@ -5,17 +5,10 @@
 
 struct GateBoySerial {
 
-  void tock(
-    Signal BUS_CPU_A[16],
-    Signal BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-    wire TAMA_DIV05p,
-    BusOut BUS_CPU_D_out[8]);
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);
 
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
-  /*p06.CULY*/ DFF17 CULY_XFER_DIR;    // AxxxDxxH ?
+  /*p06.CULY*/ DFF17 CULY_SER_DIR;    // AxxxDxxH ?
   /*p06.COTY*/ DFF17 COTY_SER_CLK;     // AxxxDxxH ?
   /*p06.ELYS*/ DFF17 ELYS_SER_OUT;     // AxxxDxxH ?
 

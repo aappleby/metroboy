@@ -560,7 +560,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Serial =====\001\n");
   d.dump_bitp   ("ETAF_SER_RUNNING", gb->serial.ETAF_SER_RUNNING.state);
-  d.dump_bitp   ("CULY_XFER_DIR   ", gb->serial.CULY_XFER_DIR.state);
+  d.dump_bitp   ("CULY_XFER_DIR   ", gb->serial.CULY_SER_DIR.state);
   d.dump_bitp   ("COTY_SER_CLK    ", gb->serial.COTY_SER_CLK.state);
   d.dump_bitp   ("ELYS_SER_OUT    ", gb->serial.ELYS_SER_OUT.state);
   d.dump_slice2p("CAFA_SER_CNT    ", &gb->serial.CAFA_SER_CNT0, 4);

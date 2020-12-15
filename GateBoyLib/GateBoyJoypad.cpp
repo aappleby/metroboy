@@ -1,30 +1,24 @@
 #include "GateBoyLib/GateBoyJoypad.h"
 
-void GateBoyJoypad::tock(
-  Signal BUS_CPU_A[16],
-  Signal BUS_CPU_D[8],
-  wire AVOR_SYS_RSTp,
-  wire BOGA_Axxxxxxx_clkevn,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-  BusOut BUS_CPU_D_out[8])
+#include "GateBoyLib/GateBoyCpuBus.h"
+#include "GateBoyLib/GateBoyResetDebug.h"
+#include "GateBoyLib/GateBoyClocks.h"
+
+void GateBoyJoypad::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
 {
-
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
-
-  /* p10.ACAT*/ wire _ACAT_FF00_RDp     =  and4(TEDO_CPU_RDp, ANAP_FF_0xx00000(BUS_CPU_A), AKUG_A06n(BUS_CPU_A), BYKO_A05n(BUS_CPU_A));
-  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn     = nand4(TAPU_CPU_WRp, ANAP_FF_0xx00000(BUS_CPU_A), AKUG_A06n(BUS_CPU_A), BYKO_A05n(BUS_CPU_A));
+  /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
+  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
 
   // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
   // That also means that _both_ P14 and P15 are selected at reset :/
-  /* p05.JUTE*/ JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[0]);
-  /* p05.KECY*/ KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[1]);
-  /* p05.JALE*/ JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[2]);
-  /* p05.KYME*/ KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[3]);
-  /* p05.KELY*/ KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[4]);
-  /* p05.COFY*/ COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[5]);
-  /* p05.KUKO*/ KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[6]);
-  /* p05.KERU*/ KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn, _ALUR_SYS_RSTn, BUS_CPU_D[7]);
+  /* p05.JUTE*/ JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0]);
+  /* p05.KECY*/ KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1]);
+  /* p05.JALE*/ JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2]);
+  /* p05.KYME*/ KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3]);
+  /* p05.KELY*/ KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4]);
+  /* p05.COFY*/ COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5]);
+  /* p05.KUKO*/ KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6]);
+  /* p05.KERU*/ KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7]);
 
   wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
   /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);
@@ -64,15 +58,15 @@ void GateBoyJoypad::tock(
 
   /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN_JOY_P13.qp_new(), PIN_JOY_P12.qp_new(), PIN_JOY_P11.qp_new(), PIN_JOY_P10.qp_new());
 
-  /* p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(BOGA_Axxxxxxx_clkevn, _KERY_ANY_BUTTONp);
+  /* p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(clk.BOGA_Axxxxxxx(), _KERY_ANY_BUTTONp);
   wire _AWOB_WAKE_CPUp = AWOB_WAKE_CPU.qp_new();
 
   PIN_CPU_WAKE.setp(_AWOB_WAKE_CPUp);
 
-  /* p02.APUG*/ APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn, AGEM_JP_GLITCH2.qp_old());
-  /* p02.AGEM*/ AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn, ACEF_JP_GLITCH1.qp_old());
-  /* p02.ACEF*/ ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn, BATU_JP_GLITCH0.qp_old());
-  /* p02.BATU*/ BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx_clkevn, _ALUR_SYS_RSTn, _KERY_ANY_BUTTONp);
+  /* p02.APUG*/ APUG_JP_GLITCH3.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp_old());
+  /* p02.AGEM*/ AGEM_JP_GLITCH2.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp_old());
+  /* p02.ACEF*/ ACEF_JP_GLITCH1.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), BATU_JP_GLITCH0.qp_old());
+  /* p02.BATU*/ BATU_JP_GLITCH0.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
 
   /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
   /* p05.KEVU*/ KEVU_JOYP_L0n.tp_latch(_BYZO_FF00_RDn, PIN_JOY_P10.qp_new());
@@ -81,13 +75,13 @@ void GateBoyJoypad::tock(
   /* p05.KOLO*/ KOLO_JOYP_L3n.tp_latch(_BYZO_FF00_RDn, PIN_JOY_P13.qp_new());
 
     // FF00 P1 / JOYP
-  /* p05.KEMA*/ BUS_CPU_D_out[0].tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new());
-  /* p05.KURO*/ BUS_CPU_D_out[1].tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new());
-  /* p05.KUVE*/ BUS_CPU_D_out[2].tri6_nn(_BYZO_FF00_RDn, KEJA_JOYP_L2n.qp_new());
-  /* p05.JEKU*/ BUS_CPU_D_out[3].tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new());
-  /* p05.KOCE*/ BUS_CPU_D_out[4].tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new());
-  /* p05.CUDY*/ BUS_CPU_D_out[5].tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new());
-  /* p??.????*/ BUS_CPU_D_out[6].tri6_nn(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6n.qp_new());
-  /* p??.????*/ BUS_CPU_D_out[7].tri6_nn(_BYZO_FF00_RDn, KERU_DBG_FF00_D7n.qp_new());
+  /* p05.KEMA*/ cpu_bus.BUS_CPU_D_out[0].tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new());
+  /* p05.KURO*/ cpu_bus.BUS_CPU_D_out[1].tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new());
+  /* p05.KUVE*/ cpu_bus.BUS_CPU_D_out[2].tri6_nn(_BYZO_FF00_RDn, KEJA_JOYP_L2n.qp_new());
+  /* p05.JEKU*/ cpu_bus.BUS_CPU_D_out[3].tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new());
+  /* p05.KOCE*/ cpu_bus.BUS_CPU_D_out[4].tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new());
+  /* p05.CUDY*/ cpu_bus.BUS_CPU_D_out[5].tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new());
+  /* p??.????*/ cpu_bus.BUS_CPU_D_out[6].tri6_nn(_BYZO_FF00_RDn, KUKO_DBG_FF00_D6n.qp_new());
+  /* p??.????*/ cpu_bus.BUS_CPU_D_out[7].tri6_nn(_BYZO_FF00_RDn, KERU_DBG_FF00_D7n.qp_new());
 }
 

@@ -5,14 +5,7 @@
 
 struct GateBoyJoypad {
 
-  void tock(
-    Signal BUS_CPU_A[16],
-    Signal BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire BOGA_Axxxxxxx_clkevn,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-    BusOut BUS_CPU_D_out[8]);
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
 
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new(), BATU_JP_GLITCH0.qp_new()); }
 

@@ -110,24 +110,17 @@ struct GateBoy {
   }
 
   void tock_pix_pipe(
-    wire XODO_VID_RSTp,
     wire XYMU_RENDERINGp,
     wire SACU_CLKPIPE_evn,
     wire NYXU_BFETCH_RSTn
   );
 
   void tock_lcd(
-    wire TALU_xxCDEFxx,
     wire TYFA_CLKPIPE_odd,
     wire SACU_CLKPIPE_evn,
-    wire XONA_LCDC_LCDENp,
     wire XYMU_RENDERINGp,
     wire AVAP_SCAN_DONE_TRIGp,
-    wire WEGO_HBLANKp,
-    wire PURE_LINE_ENDn,
-    Signal REMY_LD0n,
-    Signal RAVO_LD1n
-  );
+    wire WEGO_HBLANKp);
 
   void tock_vram(
     wire ABUZ_xxCDEFGH,

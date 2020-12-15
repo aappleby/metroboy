@@ -3,6 +3,8 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyClocks.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
+#include "GateBoyLib/GateBoyTimer.h"
+#include "GateBoyLib/GateBoyPixPipe.h"
 
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -188,77 +190,88 @@ void GateBoyLCD::tock(
 
 //--------------------------------------------------------------------------------
 
-void GateBoyLCD::set_pins(
-  GateBoyResetDebug& rst,
-  GateBoyClock& clk,
-  wire TYFA_CLKPIPE_odd,
-  wire XONA_LCDC_LCDENp,
-  wire XYMU_RENDERINGp,
-  wire AVAP_SCAN_DONE_TRIGp,
-  wire XYDO_PX3p,
-  wire TULU_DIV07p,
-  wire REMY_LD0n,
-  wire RAVO_LD1n,
-  const RegLX& reg_lx,
-  const RegLY& reg_ly)
-{
+void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk, const RegLX& reg_lx) {
+  /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), reg_lx.TEGY_STROBE());
+  /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p());
+  /*#p21.POGU*/ wire _POGU = not1(_RYNO);
+  PIN_LCD_CNTRL.pin_out(_POGU, _POGU);
+}
+
+//--------------------------------------------------------------------------------
+// if LCDC_ENn, PIN_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
+
+void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, const RegLX& reg_lx, wire TULU_DIV07p, wire XONA_LCDC_LCDENp) {
+  /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n(),   rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn_any());
+  /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(), rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn_any());
+
+  /*#p24.MAGU*/ wire _MAGU = xor2(NAPO_FRAME_EVENp.qp_new(), LUCA_LINE_EVENp.qn_new());
+  /*#p24.MECO*/ wire _MECO = not1(_MAGU);
+  /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
+  /* p01.UREK*/ wire _UREK_DIV07n = not1(TULU_DIV07p);
+  /*#p24.USEC*/ wire _USEC_DIV07p = not1(_UREK_DIV07n);
+  /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(XONA_LCDC_LCDENp);
+  /*#p24.KUPA*/ wire _KUPA = amux2(XONA_LCDC_LCDENp, _KEBO, _KEDY_LCDC_ENn, _USEC_DIV07p);
+  /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
+  PIN_LCD_FLIPS.pin_out(_KOFO, _KOFO);
+}
+
+//--------------------------------------------------------------------------------
+
+void GateBoyLCD::set_pin_vsync(GateBoyResetDebug& rst, const RegLX& reg_lx, const RegLY& reg_ly) {
+  /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113n(), rst.LYFE_VID_RSTn(), reg_ly.NERU_y000p());
+  /*#p24.MURE*/ wire _MURE_VSYNC = not1(MEDA_VSYNC_OUTn.qp_new());
+  PIN_LCD_VSYNC.pin_out(_MURE_VSYNC, _MURE_VSYNC);
+}
+
+//--------------------------------------------------------------------------------
+// FIXME inversion
+// I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
+// seems to be correct and makes it match the trace. With that change, HSYNC is 30 phases.
+// Is it possible that it should be 29 phases and it only looks like 30 phases because of gate delay?
+// That would be a loooot of gate delay.
+// Could we possibly be incrementing X3p one phase early?
+
+void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wire XYMU_RENDERINGp, wire XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp) {
+  /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
+  /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
+  /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(!_ROXO_CLKPIPE_odd, XYMU_RENDERINGp, XYDO_PX3p);
+
+  // LCD horizontal sync pin latch
+  /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old()));
+  /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
+  /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
+  /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new()));
+  /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
+  /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
+
+  /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(POFY.qp_new());
+  PIN_LCD_HSYNC.pin_out(_RUZE_HSYNCn, _RUZE_HSYNCn);
+}
+
+//--------------------------------------------------------------------------------
+
+void GateBoyLCD::set_pin_data(wire REMY_LD0n, wire RAVO_LD1n) {
   PIN_LCD_DATA0.pin_out(REMY_LD0n, REMY_LD0n);
   PIN_LCD_DATA1.pin_out(RAVO_LD1n, RAVO_LD1n);
+}
 
-  /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), reg_lx.TEGY_STROBE());
+void GateBoyLCD::set_pin_latch(GateBoyDiv& div, RegLX& reg_lx, RegLCDC& reg_lcdc) {
+  /* p01.UMEK*/ wire _UMEK_DIV06n = not1(div.UGOT_DIV06p.qp_new());
+  /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(reg_lx.PURE_LINE_ENDn());
+  /*#p24.UMOB*/ wire _UMOB_DIV_06p = not1(_UMEK_DIV06n);
+  /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(reg_lcdc.XONA_LCDC_LCDENn.qn_new());
+  /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(reg_lcdc.XONA_LCDC_LCDENn.qn_new(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, _UMOB_DIV_06p);
+  /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1(_KAHE_LINE_ENDp);
+  PIN_LCD_LATCH.pin_out(_KYMO_LINE_ENDn, _KYMO_LINE_ENDn);
+}
 
-  {
-    /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p());
-    /*#p21.POGU*/ wire _POGU = not1(_RYNO);
-    PIN_LCD_CNTRL.pin_out(_POGU, _POGU);
-  }
-
-  {
-    // if LCDC_ENn, PIN_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
-    /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n(),   rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn_any());
-    /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(), rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn_any());
-
-    /*#p24.MAGU*/ wire _MAGU = xor2(NAPO_FRAME_EVENp.qp_new(), LUCA_LINE_EVENp.qn_new());
-    /*#p24.MECO*/ wire _MECO = not1(_MAGU);
-    /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
-    /* p01.UREK*/ wire _UREK_DIV07n = not1(TULU_DIV07p);
-    /*#p24.USEC*/ wire _USEC_DIV07p = not1(_UREK_DIV07n);
-    /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(XONA_LCDC_LCDENp);
-    /*#p24.KUPA*/ wire _KUPA = amux2(XONA_LCDC_LCDENp, _KEBO, _KEDY_LCDC_ENn, _USEC_DIV07p);
-    /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
-    PIN_LCD_FLIPS.pin_out(_KOFO, _KOFO);
-  }
-
-  {
-    /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113n(), rst.LYFE_VID_RSTn(), reg_ly.NERU_y000p());
-    /*#p24.MURE*/ wire _MURE_VSYNC = not1(MEDA_VSYNC_OUTn.qp_new());
-    PIN_LCD_VSYNC.pin_out(_MURE_VSYNC, _MURE_VSYNC);
-  }
-
-  //----------------------------------------
-  // FIXME inversion
-  // I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
-  // seems to be correct and makes it match the trace. With that change, HSYNC is 30 phases.
-  // Is it possible that it should be 29 phases and it only looks like 30 phases because of gate delay?
-  // That would be a loooot of gate delay.
-  // Could we possibly be incrementing X3p one phase early?
-
-  {
-    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-    /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
-    /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(!_ROXO_CLKPIPE_odd, XYMU_RENDERINGp, XYDO_PX3p);
-
-    // LCD horizontal sync pin latch
-    /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old()));
-    /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
-    /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
-    /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new()));
-    /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
-    /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
-
-    /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(POFY.qp_new());
-    PIN_LCD_HSYNC.pin_out(_RUZE_HSYNCn, _RUZE_HSYNCn);
-  }
+void GateBoyLCD::set_pin_clock(PixCounter& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn) {
+  /*#p21.XAJO*/ wire _XAJO_X_009p = and2(pix_count.XEHO_PX0p.qp_new(), pix_count.XYDO_PX3p.qp_new());
+  /*#p21.WUSA*/ WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, WEGO_HBLANKp);
+  /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(WUSA_LCD_CLOCK_GATE.qp_new(), SACU_CLKPIPE_evn);
+  /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, fine_scroll.POVA_FINE_MATCH_TRIGp());
+  /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);
+  PIN_LCD_CLOCK.pin_out(_RYPO_LCD_CLOCK, _RYPO_LCD_CLOCK);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

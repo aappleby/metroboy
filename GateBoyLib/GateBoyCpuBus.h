@@ -10,7 +10,6 @@ struct GateBoyCpuBus {
   PinIn  PIN_CPU_WRp;           // top right port PORTA_01: ->
   PinOut PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   PinOut PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  PinOut PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   PinOut PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   PinIn  PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
@@ -73,6 +72,9 @@ struct GateBoyCpuBus {
   /* p08.TUMA*/ wire TUMA_A000_BFFFp   () const { return and3(BUS_CPU_A[13], SOGY_A14n(), BUS_CPU_A[15]); }
   /* p08.TYNU*/ wire TYNU_A000_FFFFp   () const { return and_or3(BUS_CPU_A[15], BUS_CPU_A[14], TUMA_A000_BFFFp()); }
   /* p28.ADAH*/ wire ADAH_FE00_FEFFn   () const { return not1(SARO_ADDR_OAMp()); }
+
+  /* p07.TULO*/ wire TULO_ADDR_BOOTROMp() const { return nor8(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12],
+                                                              BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]); }
 
   /* p22.WUTU*/ wire WUTU_ADDR_PPUn    () const { return nand3(SYKE_ADDR_HIp(), BUS_CPU_A[6], XALY_0x00xxxx()); }
   /* p22.WERO*/ wire WERO_ADDR_PPUp    () const { return not1(WUTU_ADDR_PPUn()); }

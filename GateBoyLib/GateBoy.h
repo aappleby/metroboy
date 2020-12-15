@@ -123,15 +123,10 @@ struct GateBoy {
     wire WEGO_HBLANKp);
 
   void tock_vram(
-    wire ABUZ_xxCDEFGH,
+    wire ABUZ_EXT_RAM_CS_CLK,
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
     wire XYMU_RENDERINGp_new_xxx
-  );
-
-  void tock_oam(wire XYMU_RENDERINGp, wire ACYL_SCANNINGp);
-
-  void tock_zram(
   );
 
   static wire ROGE_WY_MATCHp(const RegWY& reg_wy, const RegLY& reg_ly, wire WYMO_LCDC_WINENp) {

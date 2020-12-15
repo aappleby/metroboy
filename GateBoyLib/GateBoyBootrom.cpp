@@ -55,10 +55,8 @@ void GateBoyBootrom::tock(
   uint16_t cpu_addr = pack_u16p(16, cpu_bus.BUS_CPU_A);
   uint8_t bootrom_data = boot_buf[cpu_addr & 0xFF];
 
-  /* p07.TULO*/ wire _TULO_ADDR_BOOTROMp = nor8(cpu_bus.BUS_CPU_A[15], cpu_bus.BUS_CPU_A[14], cpu_bus.BUS_CPU_A[13], cpu_bus.BUS_CPU_A[12],
-                                                    cpu_bus.BUS_CPU_A[11], cpu_bus.BUS_CPU_A[10], cpu_bus.BUS_CPU_A[ 9], cpu_bus.BUS_CPU_A[ 8]);
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn_h.qp_new());
-  /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, _TULO_ADDR_BOOTROMp);
+  /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, cpu_bus.TULO_ADDR_BOOTROMp());
 
   /* p07.ZORO*/ wire _ZORO_0000xxxx_XX = nor4(cpu_bus.BUS_CPU_A[15], cpu_bus.BUS_CPU_A[14], cpu_bus.BUS_CPU_A[13], cpu_bus.BUS_CPU_A[12]);
   /* p07.ZADU*/ wire _ZADU_xxxx0000_XX = nor4(cpu_bus.BUS_CPU_A[11], cpu_bus.BUS_CPU_A[10], cpu_bus.BUS_CPU_A[ 9], cpu_bus.BUS_CPU_A[ 8]);
@@ -75,17 +73,8 @@ void GateBoyBootrom::tock(
   cpu_bus.BUS_CPU_D_out[5].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x20));
   cpu_bus.BUS_CPU_D_out[6].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x40));
   cpu_bus.BUS_CPU_D_out[7].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x80));
-}
 
-//--------------------------------------------------------------------------------
-
-wire GateBoyBootrom::TUTU_READ_BOOTROMp(Signal BUS_CPU_A[16])
-{
-  /* p07.TULO*/ wire _TULO_ADDR_BOOTROMp = nor8(BUS_CPU_A[15], BUS_CPU_A[14], BUS_CPU_A[13], BUS_CPU_A[12],
-                                                BUS_CPU_A[11], BUS_CPU_A[10], BUS_CPU_A[ 9], BUS_CPU_A[ 8]);
-  /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(BOOT_BITn_h.qp_new());
-  /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, _TULO_ADDR_BOOTROMp);
-  return _TUTU_READ_BOOTROMp;
+  PIN_CPU_BOOTp.setp(_TUTU_READ_BOOTROMp);
 }
 
 //--------------------------------------------------------------------------------

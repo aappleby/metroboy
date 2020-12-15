@@ -81,10 +81,10 @@ void ExtAddrLatch::tock(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire
 
 void GateBoyExtBus::addr_latch_to_pins(
   const GateBoyResetDebug& rst,
+  const GateBoyCpuBus& cpu_bus,
   const GateBoyDMA& dma,
   const ExtAddrLatch& ext_addr_latch,
-  Signal BUS_CPU_A[16],
-  wire ABUZ_xxCDEFGH,
+  wire ABUZ_EXT_RAM_CS_CLK,
   wire TUTU_READ_BOOTROMp
 )
 {
@@ -153,8 +153,8 @@ void GateBoyExtBus::addr_latch_to_pins(
   PIN_EXT_A[14].pin_out(_PUHE, _PAHY);
 
   // A15 is "special"
-  /* p08.SOBY*/ wire _SOBY_A15n = nor2(BUS_CPU_A[15], TUTU_READ_BOOTROMp);
-  /* p08.SEPY*/ wire _SEPY_A15p = nand2(ABUZ_xxCDEFGH, _SOBY_A15n);
+  /* p08.SOBY*/ wire _SOBY_A15n = nor2(cpu_bus.BUS_CPU_A[15], TUTU_READ_BOOTROMp);
+  /* p08.SEPY*/ wire _SEPY_A15p = nand2(ABUZ_EXT_RAM_CS_CLK, _SOBY_A15n);
   /* p08.TAZY*/ wire _TAZY_A15p = mux2p(dma.LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
   /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, rst.RYCA_MODE_DBG2n());
   /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, rst.UNOR_MODE_DBG2p());
@@ -231,7 +231,7 @@ void GateBoyExtBus::set_pins(
   const GateBoyResetDebug& rst,
   const GateBoyCpuBus& cpu_bus,
   const GateBoyDMA& dma,
-  wire ABUZ_xxCDEFGH)
+  wire ABUZ_EXT_RAM_CS_CLK)
 {
   /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(cpu_bus.TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
   /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.LEVO_ADDR_VRAMn(), cpu_bus.PIN_CPU_WRp.qp_new());
@@ -248,7 +248,7 @@ void GateBoyExtBus::set_pins(
   /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, rst.UNOR_MODE_DBG2p());
   PIN_EXT_WRn.pin_out(_UVER_WR_A, _USUF_WR_D);
 
-  /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A = and3(ABUZ_xxCDEFGH, cpu_bus.TYNU_A000_FFFFp(), cpu_bus.TUNA_0000_FDFF());
+  /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A = and3(ABUZ_EXT_RAM_CS_CLK, cpu_bus.TYNU_A000_FFFFp(), cpu_bus.TUNA_0000_FDFF());
   /* p08.TYHO*/ wire _TYHO_PIN_EXT_CS_A = mux2p(dma.LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _TOZA_PIN_EXT_CS_A);
   PIN_EXT_CSn.pin_out(_TYHO_PIN_EXT_CS_A, _TYHO_PIN_EXT_CS_A);
 }

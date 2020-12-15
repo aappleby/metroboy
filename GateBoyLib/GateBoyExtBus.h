@@ -40,10 +40,10 @@ struct ExtAddrLatch {
 struct GateBoyExtBus {
   void addr_latch_to_pins(
     const GateBoyResetDebug& rst,
+    const GateBoyCpuBus& cpu_bus,
     const GateBoyDMA& dma,
     const ExtAddrLatch& ext_addr_latch,
-    Signal BUS_CPU_A[16],
-    wire ABUZ_xxCDEFGH,
+    wire ABUZ_EXT_RAM_CS_CLK,
     wire TUTU_READ_BOOTROMp
   );
 
@@ -55,7 +55,7 @@ struct GateBoyExtBus {
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
     const GateBoyDMA& dma,
-    wire ABUZ_xxCDEFGH);
+    wire ABUZ_EXT_RAM_CS_CLK);
 
   void cart_to_pins(const uint8_t* cart_buf, uint8_t* cart_ram, uint8_t* ext_ram);
 

@@ -1,6 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+struct PixCounter;
+struct FineScroll;
+
 //-----------------------------------------------------------------------------
 
 struct RegLX {
@@ -112,29 +115,16 @@ struct GateBoyLCD {
   /* p29.DYBA*/ wire DYBA_LINE_RSTp() const { return not1(BYVA_LINE_RSTn()); }
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn() const { return not1(BALU_LINE_RSTp()); }
   /* p21.TADY*/ wire TADY_LINE_RSTn() const { return nor2(ATEJ_LINE_RSTp(), TOFU_VID_RSTp(_XODO_VID_RSTp)); }
-
-
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(POPU_VBLANKp.qn_new()); }
 
-  void tock(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    const RegLX& reg_lx,
-    const RegLY& reg_ly);
-
-  void set_pins(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    wire TYFA_CLKPIPE_odd,
-    wire XONA_LCDC_LCDENp,
-    wire XYMU_RENDERINGp,
-    wire AVAP_SCAN_DONE_TRIGp,
-    wire XYDO_PX3p,
-    wire TULU_DIV07p,
-    wire REMY_LD0n,
-    wire RAVO_LD1n,
-    const RegLX& reg_lx,
-    const RegLY& reg_ly);
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, const RegLX& reg_lx, const RegLY& reg_ly);
+  void set_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
+  void set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk, const RegLX& reg_lx);
+  void set_pin_flip(GateBoyResetDebug& rst, const RegLX& reg_lx, wire TULU_DIV07p, wire XONA_LCDC_LCDENp);
+  void set_pin_vsync(GateBoyResetDebug& rst, const RegLX& reg_lx, const RegLY& reg_ly);
+  void set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wire XYMU_RENDERINGp, wire XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp);
+  void set_pin_latch(GateBoyDiv& div, RegLX& reg_lx, RegLCDC& reg_lcdc);
+  void set_pin_clock(PixCounter& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
 
   Signal _XODO_VID_RSTp;
 

@@ -2,6 +2,7 @@
 
 #include "GateBoyLib/GateBoyDMA.h"
 #include "GateBoyLib/GateBoyResetDebug.h"
+#include "GateBoyLib/GateBoyCpuBus.h"
 
 //----------------------------------------
 // FIXME - implement MBC1
@@ -197,43 +198,35 @@ void GateBoyExtBus::data_latch_to_cpu_bus(
   /* p08.TAJU*/ BUS_CPU_D_out[7].tri6_nn(_LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 }
 
-void GateBoyExtBus::cpu_data_to_pins(
-  const GateBoyResetDebug& rst,
-  Signal BUS_CPU_D[8],
-  wire PIN_CPU_RDp,
-  wire PIN_CPU_WRp,
-  wire TEDO_CPU_RDp,
-  wire TEXO_ADDR_VRAMn)
+void GateBoyExtBus::cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus)
 {
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
   // will actually end up in oam?
 
-  /* p08.REDU*/ wire _REDU_CPU_RDn = not1(TEDO_CPU_RDp);
-  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn, rst.UMUT_MODE_DBG1p());
-  /* p08.LEVO*/ wire _LEVO_ADDR_INT_OR_ADDR_VRAM = not1(TEXO_ADDR_VRAMn);
-  /* p08.LAGU*/ wire _LAGU = and_or3(PIN_CPU_RDp, _LEVO_ADDR_INT_OR_ADDR_VRAM, PIN_CPU_WRp);
+  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(cpu_bus.TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
+  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.LEVO_ADDR_VRAMn(), cpu_bus.PIN_CPU_WRp.qp_new());
   /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
-  /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(rst.UNOR_MODE_DBG2p(), _REDU_CPU_RDn, _MOTY_CPU_EXT_RD);
+  /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(rst.UNOR_MODE_DBG2p(), cpu_bus.REDU_CPU_RDn(), _MOTY_CPU_EXT_RD);
   /* p08.LULA*/ wire _LULA_CBD_TO_EPDp = not1(_RORU_CBD_TO_EPDn);
 
-  /* p25.RUXA*/ wire _RUXA = nand2(BUS_CPU_D[0], _LULA_CBD_TO_EPDp);
-  /* p25.RUJA*/ wire _RUJA = nand2(BUS_CPU_D[1], _LULA_CBD_TO_EPDp);
-  /* p25.RABY*/ wire _RABY = nand2(BUS_CPU_D[2], _LULA_CBD_TO_EPDp);
-  /* p25.RERA*/ wire _RERA = nand2(BUS_CPU_D[3], _LULA_CBD_TO_EPDp);
-  /* p25.RORY*/ wire _RORY = nand2(BUS_CPU_D[4], _LULA_CBD_TO_EPDp);
-  /* p25.RYVO*/ wire _RYVO = nand2(BUS_CPU_D[5], _LULA_CBD_TO_EPDp);
-  /* p25.RAFY*/ wire _RAFY = nand2(BUS_CPU_D[6], _LULA_CBD_TO_EPDp);
-  /* p25.RAVU*/ wire _RAVU = nand2(BUS_CPU_D[7], _LULA_CBD_TO_EPDp);
+  /* p25.RUXA*/ wire _RUXA = nand2(cpu_bus.BUS_CPU_D[0], _LULA_CBD_TO_EPDp);
+  /* p25.RUJA*/ wire _RUJA = nand2(cpu_bus.BUS_CPU_D[1], _LULA_CBD_TO_EPDp);
+  /* p25.RABY*/ wire _RABY = nand2(cpu_bus.BUS_CPU_D[2], _LULA_CBD_TO_EPDp);
+  /* p25.RERA*/ wire _RERA = nand2(cpu_bus.BUS_CPU_D[3], _LULA_CBD_TO_EPDp);
+  /* p25.RORY*/ wire _RORY = nand2(cpu_bus.BUS_CPU_D[4], _LULA_CBD_TO_EPDp);
+  /* p25.RYVO*/ wire _RYVO = nand2(cpu_bus.BUS_CPU_D[5], _LULA_CBD_TO_EPDp);
+  /* p25.RAFY*/ wire _RAFY = nand2(cpu_bus.BUS_CPU_D[6], _LULA_CBD_TO_EPDp);
+  /* p25.RAVU*/ wire _RAVU = nand2(cpu_bus.BUS_CPU_D[7], _LULA_CBD_TO_EPDp);
 
-  /* p08.RUNE*/ wire _RUNE = nor2 (BUS_CPU_D[0], _RORU_CBD_TO_EPDn);
-  /* p08.RYPU*/ wire _RYPU = nor2 (BUS_CPU_D[1], _RORU_CBD_TO_EPDn);
-  /* p08.SULY*/ wire _SULY = nor2 (BUS_CPU_D[2], _RORU_CBD_TO_EPDn);
-  /* p08.SEZE*/ wire _SEZE = nor2 (BUS_CPU_D[3], _RORU_CBD_TO_EPDn);
-  /* p08.RESY*/ wire _RESY = nor2 (BUS_CPU_D[4], _RORU_CBD_TO_EPDn);
-  /* p08.TAMU*/ wire _TAMU = nor2 (BUS_CPU_D[5], _RORU_CBD_TO_EPDn);
-  /* p08.ROGY*/ wire _ROGY = nor2 (BUS_CPU_D[6], _RORU_CBD_TO_EPDn);
-  /* p08.RYDA*/ wire _RYDA = nor2 (BUS_CPU_D[7], _RORU_CBD_TO_EPDn);
+  /* p08.RUNE*/ wire _RUNE = nor2 (cpu_bus.BUS_CPU_D[0], _RORU_CBD_TO_EPDn);
+  /* p08.RYPU*/ wire _RYPU = nor2 (cpu_bus.BUS_CPU_D[1], _RORU_CBD_TO_EPDn);
+  /* p08.SULY*/ wire _SULY = nor2 (cpu_bus.BUS_CPU_D[2], _RORU_CBD_TO_EPDn);
+  /* p08.SEZE*/ wire _SEZE = nor2 (cpu_bus.BUS_CPU_D[3], _RORU_CBD_TO_EPDn);
+  /* p08.RESY*/ wire _RESY = nor2 (cpu_bus.BUS_CPU_D[4], _RORU_CBD_TO_EPDn);
+  /* p08.TAMU*/ wire _TAMU = nor2 (cpu_bus.BUS_CPU_D[5], _RORU_CBD_TO_EPDn);
+  /* p08.ROGY*/ wire _ROGY = nor2 (cpu_bus.BUS_CPU_D[6], _RORU_CBD_TO_EPDn);
+  /* p08.RYDA*/ wire _RYDA = nor2 (cpu_bus.BUS_CPU_D[7], _RORU_CBD_TO_EPDn);
 
   PIN_EXT_D[0].pin_out(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
   PIN_EXT_D[1].pin_out(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
@@ -247,17 +240,12 @@ void GateBoyExtBus::cpu_data_to_pins(
 
 void GateBoyExtBus::set_pins(
   const GateBoyResetDebug& rst,
+  const GateBoyCpuBus& cpu_bus,
   const GateBoyDMA& dma,
-  Signal BUS_CPU_A[16],
-  wire PIN_CPU_RDp,
-  wire PIN_CPU_WRp,
-  wire ABUZ_xxCDEFGH,
-  wire TEXO_ADDR_VRAMn,
-  wire APOV_CPU_WRp)
+  wire ABUZ_xxCDEFGH)
 {
-  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn, rst.UMUT_MODE_DBG1p());
-  /* p08.LEVO*/ wire _LEVO_ADDR_INT_OR_ADDR_VRAM = not1(TEXO_ADDR_VRAMn);
-  /* p08.LAGU*/ wire _LAGU = and_or3(PIN_CPU_RDp, _LEVO_ADDR_INT_OR_ADDR_VRAM, PIN_CPU_WRp);
+  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(cpu_bus.TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
+  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.LEVO_ADDR_VRAMn(), cpu_bus.PIN_CPU_WRp.qp_new());
   /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
   /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(dma.LUMA_DMA_CARTp(), _MOTY_CPU_EXT_RD);
@@ -265,14 +253,13 @@ void GateBoyExtBus::set_pins(
   /* p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, rst.UNOR_MODE_DBG2p());
   PIN_EXT_RDn.pin_out(_UGAC_RD_A, _URUN_RD_D);
 
-  /* p08.MEXO*/ wire _MEXO_CPU_WRn = not1(APOV_CPU_WRp);
-  /* p08.NEVY*/ wire _NEVY = or2(_MEXO_CPU_WRn, _MOCA_DBG_EXT_RD);
+  /* p08.NEVY*/ wire _NEVY = or2(cpu_bus.MEXO_CPU_WRn(), _MOCA_DBG_EXT_RD);
   /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, dma.LUMA_DMA_CARTp());
   /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, rst.TOVA_MODE_DBG2n());
   /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, rst.UNOR_MODE_DBG2p());
   PIN_EXT_WRn.pin_out(_UVER_WR_A, _USUF_WR_D);
 
-  /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A = and3(ABUZ_xxCDEFGH, TYNU_A000_FFFFp(BUS_CPU_A), TUNA_0000_FDFF(BUS_CPU_A));
+  /* p08.TOZA*/ wire _TOZA_PIN_EXT_CS_A = and3(ABUZ_xxCDEFGH, cpu_bus.TYNU_A000_FFFFp(), cpu_bus.TUNA_0000_FDFF());
   /* p08.TYHO*/ wire _TYHO_PIN_EXT_CS_A = mux2p(dma.LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _TOZA_PIN_EXT_CS_A);
   PIN_EXT_CSn.pin_out(_TYHO_PIN_EXT_CS_A, _TYHO_PIN_EXT_CS_A);
 }

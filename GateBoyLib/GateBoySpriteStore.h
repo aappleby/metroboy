@@ -41,6 +41,9 @@ struct SpriteMatch {
     return _FEPO_STORE_MATCHp_new_evn;
   }
 
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp()); }
+
+
   SpriteGetFlag get_flag() const {
     wire GND = 0;
     /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(YDUG_STORE0_MATCHn);

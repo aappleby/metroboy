@@ -61,25 +61,13 @@ struct GateBoyExtBus {
     BusOut BUS_CPU_D_out[8]
   );
 
-  void cpu_data_to_pins(
-    const GateBoyResetDebug& rst,
-    Signal BUS_CPU_D[8],
-    wire PIN_CPU_RDp,
-    wire PIN_CPU_WRp,
-    wire TEDO_CPU_RDp,
-    wire TEXO_ADDR_VRAMn
-  );
+  void cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus);
 
   void set_pins(
     const GateBoyResetDebug& rst,
+    const GateBoyCpuBus& cpu_bus,
     const GateBoyDMA& dma,
-    Signal BUS_CPU_A[16],
-    wire PIN_CPU_RDp,
-    wire PIN_CPU_WRp,
-    wire ABUZ_xxCDEFGH,
-    wire TEXO_ADDR_VRAMn,
-    wire APOV_CPU_WRp
-  );
+    wire ABUZ_xxCDEFGH);
 
   void cart_to_pins(const uint8_t* cart_buf, uint8_t* cart_ram, uint8_t* ext_ram);
 

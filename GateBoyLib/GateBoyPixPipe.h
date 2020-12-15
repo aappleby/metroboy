@@ -112,10 +112,8 @@ struct PixCounter {
 struct RegStat {
 
   void tock(
+    GateBoyResetDebug& rst,
     GateBoyCpuBus& cpu_bus,
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
     wire ACYL_SCANNINGp,
     wire XYMU_RENDERINGp,
     wire PARU_VBLANKp,
@@ -176,10 +174,9 @@ struct RegOBP1 {
 struct WindowRegisters {
 
   void tock(
-    wire XODO_VID_RSTp,
-    wire ALET_xBxDxFxH,
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
     wire TYFA_CLKPIPE_odd,
-    wire XAPO_VID_RSTn,
     wire NUKO_WX_MATCHp,
     wire XYMU_RENDERINGp,
     wire ROZE_FINE_COUNT_7n);

@@ -88,7 +88,7 @@ SpriteStoreFlag SpriteCounter::get_store_flag(wire _DYTY_STORE_CLKp_new_odd) {
 
 //----------------------------------------
 
-SpriteMatch SpriteStore::get_match(wire _AROR_MATCH_ENp_new, const PixCounter& _pix_count) {
+SpriteMatch SpriteStore::get_match(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count) {
   /*#p21.ACAM*/ wire ACAM_PX0n_new_evn = not1(_pix_count.XEHO_PX0p.qp_any());
   /* p21.AZUB*/ wire AZUB_PX1n_new_evn = not1(_pix_count.SAVY_PX1p.qp_any());
   /* p21.AMEL*/ wire AMEL_PX2n_new_evn = not1(_pix_count.XODU_PX2p.qp_any());

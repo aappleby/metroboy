@@ -1,7 +1,7 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct PixCounter;
+struct PixCount;
 struct RegLY;
 struct OamTempA;
 struct OamTempB;
@@ -120,7 +120,7 @@ struct SpriteCounter {
 
 struct SpriteStore {
 
-  SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCounter& _pix_count);
+  SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count);
   void get_sprite(SpriteMatch sprite_match);
   void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteGetFlag sprite_flag);
 

@@ -69,7 +69,7 @@ struct RegWX {
 //-----------------------------------------------------------------------------
 // Pixel counter
 
-struct PixCounter {
+struct PixCount {
 
   void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
     // Pixel counter, has carry lookahead because this can increment every tcycle

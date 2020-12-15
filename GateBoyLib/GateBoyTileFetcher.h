@@ -38,6 +38,9 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct RegSCX {
+
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
   // FF43 - SCX -> ppu, vram bus
   /*p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
   /*p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
@@ -52,6 +55,9 @@ struct RegSCX {
 //-----------------------------------------------------------------------------
 
 struct RegSCY {
+
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
   // FF42 - SCY -> vram bus
   /*p23.GAVE*/ DFF9 GAVE_SCY0n;          // xxxxxxxH
   /*p23.FYMO*/ DFF9 FYMO_SCY1n;          // xxxxxxxH
@@ -66,6 +72,8 @@ struct RegSCY {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
+  void tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, wire WYMO_LCDC_WINENp, wire XAHY_LINE_RSTn);
+
   // Current window map coord
   /*p27.WYKA*/ DFF17 WYKA_WIN_X3;      // AxCxExGx
   /*p27.WODY*/ DFF17 WODY_WIN_X4;      // AxCxExGx
@@ -77,6 +85,8 @@ struct WinMapX {
 //-----------------------------------------------------------------------------
 
 struct WinLineY {
+  void tock(const GateBoyResetDebug& rst, wire PORE_WIN_MODEp, wire PARU_VBLANKp);
+
   /*p27.VYNO*/ DFF17 VYNO_WIN_Y0;      // AxCxExGh probably, but not enough data.
   /*p27.VUJO*/ DFF17 VUJO_WIN_Y1;      // AxCxExGh probably, but not enough data.
   /*p27.VYMU*/ DFF17 VYMU_WIN_Y2;      // AxCxExGh probably, but not enough data.

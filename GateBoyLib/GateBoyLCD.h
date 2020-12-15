@@ -124,7 +124,7 @@ struct GateBoyLCD {
   void set_pin_vsync(GateBoyResetDebug& rst, const RegLX& reg_lx, const RegLY& reg_ly);
   void set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wire XYMU_RENDERINGp, wire XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp);
   void set_pin_latch(GateBoyDiv& div, RegLX& reg_lx, RegLCDC& reg_lcdc);
-  void set_pin_clock(PixCounter& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
+  void set_pin_clock(PixCount& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
 
   Signal _XODO_VID_RSTp;
 

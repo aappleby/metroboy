@@ -25,6 +25,93 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 
+struct BGScrollX {
+  wire ATAD_TILE_X0S;
+  wire BEHU_TILE_X1S;
+  wire APYH_TILE_X2S;
+  wire BABE_MAP_X0S;
+  wire ABOD_MAP_X1S;
+  wire BEWY_MAP_X2S;
+  wire BYCA_MAP_X3S;
+  wire ACUL_MAP_X4S;
+};
+
+struct BGScrollY {
+  wire FAFO_TILE_Y0S;
+  wire EMUX_TILE_Y1S;
+  wire ECAB_TILE_Y2S;
+  wire ETAM_MAP_Y0S;
+  wire DOTO_MAP_Y1S;
+  wire DABA_MAP_Y2S;
+  wire EFYK_MAP_Y3S;
+  wire EJOK_MAP_Y4S;
+};
+
+#pragma warning(push)
+#pragma warning(disable : 4189)
+
+inline BGScrollX scroll_x_adder(PixCount& pix_count, RegSCX reg_scx) {
+  /*#p26.ATAD*/ wire _ATAD_TILE_X0S = add_s(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), 0);
+  /*#p26.ATAD*/ wire _ATAD_TILE_X0C = add_c(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), 0);
+  /* p26.BEHU*/ wire _BEHU_TILE_X1S = add_s(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0C);
+  /* p26.BEHU*/ wire _BEHU_TILE_X1C = add_c(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0C);
+  /* p26.APYH*/ wire _APYH_TILE_X2S = add_s(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1C);
+  /* p26.APYH*/ wire _APYH_TILE_X2C = add_c(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1C);
+  /* p26.BABE*/ wire _BABE_MAP_X0S  = add_s(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), _APYH_TILE_X2C);
+  /* p26.BABE*/ wire _BABE_MAP_X0C  = add_c(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), _APYH_TILE_X2C);
+  /* p26.ABOD*/ wire _ABOD_MAP_X1S  = add_s(pix_count.TUHU_PX4p.qp_new(), reg_scx.BEMY_SCX4n.qn_new(), _BABE_MAP_X0C);
+  /* p26.ABOD*/ wire _ABOD_MAP_X1C  = add_c(pix_count.TUHU_PX4p.qp_new(), reg_scx.BEMY_SCX4n.qn_new(), _BABE_MAP_X0C);
+  /* p26.BEWY*/ wire _BEWY_MAP_X2S  = add_s(pix_count.TUKY_PX5p.qp_new(), reg_scx.CUZY_SCX5n.qn_new(), _ABOD_MAP_X1C);
+  /* p26.BEWY*/ wire _BEWY_MAP_X2C  = add_c(pix_count.TUKY_PX5p.qp_new(), reg_scx.CUZY_SCX5n.qn_new(), _ABOD_MAP_X1C);
+  /* p26.BYCA*/ wire _BYCA_MAP_X3S  = add_s(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), _BEWY_MAP_X2C);
+  /* p26.BYCA*/ wire _BYCA_MAP_X3C  = add_c(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), _BEWY_MAP_X2C);
+  /* p26.ACUL*/ wire _ACUL_MAP_X4S  = add_s(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), _BYCA_MAP_X3C);
+  /* p26.ACUL*/ wire _ACUL_MAP_X4C  = add_c(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), _BYCA_MAP_X3C);
+
+  return {
+    _ATAD_TILE_X0S,
+    _BEHU_TILE_X1S,
+    _APYH_TILE_X2S,
+    _BABE_MAP_X0S,
+    _ABOD_MAP_X1S,
+    _BEWY_MAP_X2S,
+    _BYCA_MAP_X3S,
+    _ACUL_MAP_X4S
+  };
+}
+
+inline BGScrollY scroll_y_adder(RegLY& reg_ly, RegSCY& reg_scy) {
+  /*#p26.FAFO*/ wire _FAFO_TILE_Y0S = add_s(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), 0);
+  /*#p26.FAFO*/ wire _FAFO_TILE_Y0C = add_c(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), 0);
+  /* p26.EMUX*/ wire _EMUX_TILE_Y1S = add_s(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0C);
+  /* p26.EMUX*/ wire _EMUX_TILE_Y1C = add_c(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0C);
+  /* p26.ECAB*/ wire _ECAB_TILE_Y2S = add_s(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1C);
+  /* p26.ECAB*/ wire _ECAB_TILE_Y2C = add_c(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1C);
+  /* p26.ETAM*/ wire _ETAM_MAP_Y0S  = add_s(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), _ECAB_TILE_Y2C);
+  /* p26.ETAM*/ wire _ETAM_MAP_Y0C  = add_c(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), _ECAB_TILE_Y2C);
+  /* p26.DOTO*/ wire _DOTO_MAP_Y1S  = add_s(reg_ly.LOVU_LY4p.qp_new(), reg_scy.DEDE_SCY4n.qn_new(), _ETAM_MAP_Y0C);
+  /* p26.DOTO*/ wire _DOTO_MAP_Y1C  = add_c(reg_ly.LOVU_LY4p.qp_new(), reg_scy.DEDE_SCY4n.qn_new(), _ETAM_MAP_Y0C);
+  /* p26.DABA*/ wire _DABA_MAP_Y2S  = add_s(reg_ly.LEMA_LY5p.qp_new(), reg_scy.FOTY_SCY5n.qn_new(), _DOTO_MAP_Y1C);
+  /* p26.DABA*/ wire _DABA_MAP_Y2C  = add_c(reg_ly.LEMA_LY5p.qp_new(), reg_scy.FOTY_SCY5n.qn_new(), _DOTO_MAP_Y1C);
+  /* p26.EFYK*/ wire _EFYK_MAP_Y3S  = add_s(reg_ly.MATO_LY6p.qp_new(), reg_scy.FOHA_SCY6n.qn_new(), _DABA_MAP_Y2C);
+  /* p26.EFYK*/ wire _EFYK_MAP_Y3C  = add_c(reg_ly.MATO_LY6p.qp_new(), reg_scy.FOHA_SCY6n.qn_new(), _DABA_MAP_Y2C);
+  /* p26.EJOK*/ wire _EJOK_MAP_Y4S  = add_s(reg_ly.LAFO_LY7p.qp_new(), reg_scy.FUNY_SCY7n.qn_new(), _EFYK_MAP_Y3C);
+  /* p26.EJOK*/ wire _EJOK_MAP_Y4C  = add_c(reg_ly.LAFO_LY7p.qp_new(), reg_scy.FUNY_SCY7n.qn_new(), _EFYK_MAP_Y3C);
+
+  return {
+    _FAFO_TILE_Y0S,
+    _EMUX_TILE_Y1S,
+    _ECAB_TILE_Y2S,
+    _ETAM_MAP_Y0S,
+    _DOTO_MAP_Y1S,
+    _DABA_MAP_Y2S,
+    _EFYK_MAP_Y3S,
+    _EJOK_MAP_Y4S
+  };
+}
+
+#pragma warning(pop)
+
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)
@@ -146,7 +233,7 @@ struct GateBoy {
     return _ROGE_WY_MATCHp;
   }
 
-  static wire NUKO_WX_MATCHp(const PixCounter& pix_count, const RegWX& reg_wx, wire REJO_WY_MATCH_LATCHp) {
+  static wire NUKO_WX_MATCHp(const PixCount& pix_count, const RegWX& reg_wx, wire REJO_WY_MATCH_LATCHp) {
     /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p = xnor2(pix_count.XEHO_PX0p.qp_old(), reg_wx.MYPA_WX0n.qn_old());
     /* p27.PUWU*/ wire _PUWU_WX_MATCH1p = xnor2(pix_count.SAVY_PX1p.qp_old(), reg_wx.NOFE_WX1n.qn_old());
     /* p27.PUHO*/ wire _PUHO_WX_MATCH2p = xnor2(pix_count.XODU_PX2p.qp_old(), reg_wx.NOKE_WX2n.qn_old());
@@ -236,7 +323,7 @@ struct GateBoy {
 
   //----------
 
-  PixCounter pix_count;
+  PixCount pix_count;
   RegStat reg_stat;
   RegBGP  reg_bgp;
   RegOBP0 reg_obp0;

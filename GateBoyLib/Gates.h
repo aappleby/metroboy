@@ -681,6 +681,7 @@ struct GateBoyVramBus;
 
 struct SpriteStore;
 struct ScanCounter;
+struct PixCount;
 
 struct RegSCX;
 struct RegSCY;

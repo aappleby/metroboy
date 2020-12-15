@@ -110,14 +110,10 @@ struct GateBoy {
   }
 
   void tock_pix_pipe(
-    wire XODO_VID_RSTp_new_h,
-
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-
-    wire XYMU_RENDERINGp_new_xxx,
-    wire SACU_CLKPIPE_AxCxExGx_clknew_evn,
-    wire NYXU_BFETCH_RSTn_new_xxx
+    wire XODO_VID_RSTp,
+    wire XYMU_RENDERINGp,
+    wire SACU_CLKPIPE_evn,
+    wire NYXU_BFETCH_RSTn
   );
 
   void tock_lcd(
@@ -135,20 +131,10 @@ struct GateBoy {
 
   void tock_vram(
     wire AVOR_SYS_RSTp,
-    wire XODO_VID_RSTp_new_h,
-
-    wire ATAL_xBxDxFxH_clk_odd,
-    wire ABUZ_xxCDEFGH_clk_evn,
-
-    wire CATY_LATCH_EXTp_ext,
-    wire SOSE_ADDR_VRAMp_ext,
-
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-    wire APOV_CPU_WRp_clkevn,
-
+    wire XODO_VID_RSTp,
+    wire ATAL_xBxDxFxH,
+    wire ABUZ_xxCDEFGH,
     wire TUTO_DBG_VRAMp_new,
-
     wire ATEJ_LINE_RSTp,
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
@@ -163,16 +149,11 @@ struct GateBoy {
     wire UVYT_ABCDxxxx_clkevn,
     wire XOCE_xBCxxFGx_clkodd,
     wire XYSO_xBCDxFGH_clkodd,
-    wire TAPU_CPU_WRp,
-    wire TEDO_CPU_RDp,
-    wire CATY_LATCH_EXTp_ext,
     wire XYMU_RENDERINGp_new_xxx,
     wire ACYL_SCANNINGp_new_evn
   );
 
   void tock_zram(
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp
   );
 
   static wire ROGE_WY_MATCHp(const RegWY& reg_wy, const RegLY& reg_ly, wire WYMO_LCDC_WINENp) {

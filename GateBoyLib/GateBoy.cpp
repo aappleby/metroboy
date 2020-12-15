@@ -1138,9 +1138,6 @@ void GateBoy::tock_slow(int pass_index) {
   tock_pix_pipe(
     rst.XODO_VID_RSTp(),
 
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.TAPU_CPU_WRp,
-
     XYMU_RENDERINGp,
     SACU_CLKPIPE_evn,
     NYXU_BFETCH_RSTn
@@ -1205,8 +1202,8 @@ void GateBoy::tock_slow(int pass_index) {
 
 
   /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn = and2(cpu_bus.PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn(cpu_bus.BUS_CPU_A));
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp = nor2(SYRO_FE00_FFFF(cpu_bus.BUS_CPU_A), TEXO_ADDR_VRAMn);
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp = and2(TEFA_ADDR_VRAMp, cpu_bus.BUS_CPU_A[15]);
+  ///*#p25.TEFA*/ wire TEFA_ADDR_VRAMp = nor2(SYRO_FE00_FFFF(cpu_bus.BUS_CPU_A), TEXO_ADDR_VRAMn);
+  ///*#p25.SOSE*/ wire SOSE_ADDR_VRAMp = and2(TEFA_ADDR_VRAMp, cpu_bus.BUS_CPU_A[15]);
 
   ext_addr_latch.tock(rst, cpu_bus.BUS_CPU_A, TEXO_ADDR_VRAMn);
   ext_bus.addr_latch_to_pins(rst, dma, ext_addr_latch, cpu_bus.BUS_CPU_A, ABUZ_xxCDEFGH, bootrom.TUTU_READ_BOOTROMp(cpu_bus.BUS_CPU_A));
@@ -1244,19 +1241,9 @@ void GateBoy::tock_slow(int pass_index) {
   tock_vram(
     rst.AVOR_SYS_RSTp(),
     rst.XODO_VID_RSTp(),
-
     pclk.ATAL_xBxDxFxH(),
     ABUZ_xxCDEFGH,
-
-    CATY_LATCH_EXTp,
-    SOSE_ADDR_VRAMp,
-
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.TAPU_CPU_WRp,
-    cpu_bus.APOV_CPU_WRp,
-
     rst.TUTO_VRAM_DBGp(),
-
     lcd.ATEJ_LINE_RSTp(rst.XODO_VID_RSTp()),
     TEVO_FETCH_TRIGp,
     NYXU_BFETCH_RSTn,
@@ -1273,16 +1260,11 @@ void GateBoy::tock_slow(int pass_index) {
     pclk.UVYT_ABCDxxxx(),
     vclk.XOCE_xBCxxFGx(),
     vclk.XYSO_xBCDxFGH(),
-    cpu_bus.TAPU_CPU_WRp,
-    cpu_bus.TEDO_CPU_RDp,
-    CATY_LATCH_EXTp,
     XYMU_RENDERINGp,
     ACYL_SCANNINGp
   );
 
   tock_zram(
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.TAPU_CPU_WRp
   );
 
   //----------------------------------------
@@ -1317,10 +1299,6 @@ void GateBoy::tock_slow(int pass_index) {
 
 void GateBoy::tock_pix_pipe(
   wire XODO_VID_RSTp,
-
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-
   wire XYMU_RENDERINGp,
   wire SACU_CLKPIPE_evn,
   wire NYXU_BFETCH_RSTn)
@@ -1645,14 +1623,12 @@ void GateBoy::tock_pix_pipe(
 
   [
     this,
-    XODO_VID_RSTp,
-    TEDO_CPU_RDp,
-    TAPU_CPU_WRp
+    XODO_VID_RSTp
   ]() {
     {
       // FF47 BGP
-      /* p36.VUSO*/ wire _VUSO_FF47_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), WERA_FF47p(cpu_bus.BUS_CPU_A));
-      /* p36.VELY*/ wire _VELY_FF47_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), WERA_FF47p(cpu_bus.BUS_CPU_A));
+      /* p36.VUSO*/ wire _VUSO_FF47_RDp = and2(cpu_bus.ASOT_CPU_RDp(), WERA_FF47p(cpu_bus.BUS_CPU_A));
+      /* p36.VELY*/ wire _VELY_FF47_WRp = and2(cpu_bus.CUPA_CPU_WRp(), WERA_FF47p(cpu_bus.BUS_CPU_A));
       /* p36.TEPO*/ wire _TEPO_FF47_WRp = not1(_VELY_FF47_WRp);
       /* p36.TEPY*/ wire _TEPY_FF47_RDn = not1(_VUSO_FF47_RDp);
 
@@ -1677,8 +1653,8 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF48 OBP0
-      /* p36.XUFY*/ wire _XUFY_FF48_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAYO_FF48p(cpu_bus.BUS_CPU_A));
-      /* p36.XOMA*/ wire _XOMA_FF48_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAYO_FF48p(cpu_bus.BUS_CPU_A));
+      /* p36.XUFY*/ wire _XUFY_FF48_RDp = and2(cpu_bus.ASOT_CPU_RDp(), XAYO_FF48p(cpu_bus.BUS_CPU_A));
+      /* p36.XOMA*/ wire _XOMA_FF48_WRp = and2(cpu_bus.CUPA_CPU_WRp(), XAYO_FF48p(cpu_bus.BUS_CPU_A));
       /* p36.XELO*/ wire _XELO_FF48_WRn = not1(_XOMA_FF48_WRp);
       /* p36.XOZY*/ wire _XOZY_FF48_RDn = not1(_XUFY_FF48_RDp);
 
@@ -1703,8 +1679,8 @@ void GateBoy::tock_pix_pipe(
 
     {
       // FF49 OBP1
-      /* p36.MUMY*/ wire _MUMY_FF49_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), TEGO_FF49p(cpu_bus.BUS_CPU_A));
-      /* p36.MYXE*/ wire _MYXE_FF49_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), TEGO_FF49p(cpu_bus.BUS_CPU_A));
+      /* p36.MUMY*/ wire _MUMY_FF49_RDp = and2(cpu_bus.ASOT_CPU_RDp(), TEGO_FF49p(cpu_bus.BUS_CPU_A));
+      /* p36.MYXE*/ wire _MYXE_FF49_WRp = and2(cpu_bus.CUPA_CPU_WRp(), TEGO_FF49p(cpu_bus.BUS_CPU_A));
       /* p36.LEHO*/ wire _LEHO_FF49_WRn = not1(_MYXE_FF49_WRp);
       /* p36.LOTE*/ wire _LOTE_FF49_RDn = not1(_MUMY_FF49_RDp);
 
@@ -1945,19 +1921,9 @@ void GateBoy::tock_lcd(
 void GateBoy::tock_vram(
     wire AVOR_SYS_RSTp,
     wire XODO_VID_RSTp,
-
     wire ATAL_xBxDxFxH,
     wire ABUZ_xxCDEFGH,
-
-    wire CATY_LATCH_EXTp,
-    wire SOSE_ADDR_VRAMp,
-
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-    wire APOV_CPU_WRp,
-
     wire TUTO_VRAM_DBGp,
-
     wire ATEJ_LINE_RSTp,
     wire TEVO_FETCH_TRIGp,
     wire NYXU_BFETCH_RSTn,
@@ -1996,7 +1962,6 @@ void GateBoy::tock_vram(
 
   [
     this,
-    SOSE_ADDR_VRAMp,
     ABUZ_xxCDEFGH,
     XYMU_RENDERINGp,
 
@@ -2004,8 +1969,8 @@ void GateBoy::tock_vram(
     &SALE_CPU_VRAM_WRn
   ](){
     // Ignoring debug for now
-    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp, ABUZ_xxCDEFGH);
-    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp, cpu_bus.PIN_CPU_WRp.qp_new());  // Schematic wrong, second input is PIN_CPU_WRp
+    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(cpu_bus.SOSE_ADDR_VRAMp(), ABUZ_xxCDEFGH);
+    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(cpu_bus.SOSE_ADDR_VRAMp(), cpu_bus.PIN_CPU_WRp.qp_new());  // Schematic wrong, second input is PIN_CPU_WRp
 
     ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN_VRAM_OEn.qn_new());
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_VRAM_CSn.qn_new());
@@ -2063,17 +2028,15 @@ void GateBoy::tock_vram(
   // SCX/SCY read/write
 
   [
-    this,
-    TEDO_CPU_RDp,
-    TAPU_CPU_WRp
+    this
   ](){
     // FF42 SCY, FF43 SCX
 
-    /* p23.ANYP*/ wire _ANYP_FF42_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XARO_FF42p(cpu_bus.BUS_CPU_A));
-    /* p23.BEDY*/ wire _BEDY_FF42_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XARO_FF42p(cpu_bus.BUS_CPU_A));
+    /* p23.ANYP*/ wire _ANYP_FF42_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.XARO_FF42p());
+    /* p23.BEDY*/ wire _BEDY_FF42_WRp = and2(cpu_bus.CUPA_CPU_WRp(), cpu_bus.XARO_FF42p());
 
-    /* p23.AVOG*/ wire _AVOG_FF43_RDp = and2(ASOT_CPU_RDp(TEDO_CPU_RDp), XAVY_FF43p(cpu_bus.BUS_CPU_A));
-    /* p23.ARUR*/ wire _ARUR_FF43_WRp = and2(CUPA_CPU_WRp(TAPU_CPU_WRp), XAVY_FF43p(cpu_bus.BUS_CPU_A));
+    /* p23.AVOG*/ wire _AVOG_FF43_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.XAVY_FF43p());
+    /* p23.ARUR*/ wire _ARUR_FF43_WRp = and2(cpu_bus.CUPA_CPU_WRp(), cpu_bus.XAVY_FF43p());
 
     /* FF42 SCY */
     /* p23.CAVO*/ wire _CAVO_FF42_WRn = not1(_BEDY_FF42_WRp);
@@ -2448,9 +2411,7 @@ void GateBoy::tock_vram(
 
   [
     this,
-    APOV_CPU_WRp,
     TUTO_VRAM_DBGp,
-    SOSE_ADDR_VRAMp,
     SERE_CPU_VRAM_RDp,
     SALE_CPU_VRAM_WRn,
     XYMU_RENDERINGp
@@ -2471,7 +2432,7 @@ void GateBoy::tock_vram(
 
     vram_bus.PIN_VRAM_CSn.pin_out(_SOKY_MCSp_A, _SETY_MCSp_D); // FIXME not actually using this pin, but we should
 
-    /* p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and2(SOSE_ADDR_VRAMp, APOV_CPU_WRp);
+    /* p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and2(cpu_bus.SOSE_ADDR_VRAMp(), cpu_bus.APOV_CPU_WRp);
     /* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
     /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp, _SUDO_MWRp, _TUJA_CPU_VRAM_WRp);
     /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
@@ -2560,12 +2521,7 @@ void GateBoy::tock_vram(
   //----------------------------------------
   // VRAM bus to CPU bus
 
-  [this, TEDO_CPU_RDp, CATY_LATCH_EXTp, SERE_CPU_VRAM_RDp]() {
-    /* p07.AJAS*/ wire _AJAS_CPU_RDn = not1(TEDO_CPU_RDp);
-    /* p07.ASOT*/ wire _ASOT_CPU_RDp = not1(_AJAS_CPU_RDn);
-    /* p28.MYNU*/ wire _MYNU_CPU_RDn = nand2(_ASOT_CPU_RDp, CATY_LATCH_EXTp);
-    /* p28.LEKO*/ wire _LEKO_CPU_RDp = not1(_MYNU_CPU_RDn);
-
+  [this, SERE_CPU_VRAM_RDp]() {
     /* p25.RERY*/ wire _RERY_VBUS_D0n = not1(vram_bus.BUS_VRAM_Dp[0].qp_new());
     /* p25.RUNA*/ wire _RUNA_VBUS_D1n = not1(vram_bus.BUS_VRAM_Dp[1].qp_new());
     /* p25.RONA*/ wire _RONA_VBUS_D2n = not1(vram_bus.BUS_VRAM_Dp[2].qp_new());
@@ -2575,7 +2531,7 @@ void GateBoy::tock_vram(
     /* p25.RABO*/ wire _RABO_VBUS_D6n = not1(vram_bus.BUS_VRAM_Dp[6].qp_new());
     /* p25.SAME*/ wire _SAME_VBUS_D7n = not1(vram_bus.BUS_VRAM_Dp[7].qp_new());
 
-    /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, _LEKO_CPU_RDp);
+    /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, cpu_bus.LEKO_CPU_RDp());
     /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
 
     /*#p25.RUGA*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_SEBY_VBD_TO_CBDp, _RERY_VBUS_D0n);
@@ -2598,9 +2554,6 @@ void GateBoy::tock_oam(
     wire UVYT_ABCDxxxx,
     wire XOCE_xBCxxFGx,
     wire XYSO_xBCDxFGH,
-    wire TAPU_CPU_WRp,
-    wire TEDO_CPU_RDp,
-    wire CATY_LATCH_EXTp,
     wire XYMU_RENDERINGp,
     wire ACYL_SCANNINGp)
 {
@@ -2681,7 +2634,7 @@ void GateBoy::tock_oam(
     cpu_bus.BUS_CPU_A,
     cpu_bus.BUS_CPU_D,
     UVYT_ABCDxxxx,
-    TAPU_CPU_WRp,
+    cpu_bus.TAPU_CPU_WRp,
     XYMU_RENDERINGp,
     dma.MATU_DMA_RUNNINGp.qp_new(),
     ACYL_SCANNINGp);
@@ -2730,8 +2683,8 @@ void GateBoy::tock_oam(
 
   oam_latch_a.latch_bus(
     cpu_bus.BUS_CPU_A,
-    TEDO_CPU_RDp,
-    CATY_LATCH_EXTp,
+    cpu_bus.TEDO_CPU_RDp,
+    cpu_bus.CATY_LATCH_EXTp(),
     oam_bus.BUS_OAM_DAn,
     ACYL_SCANNINGp,
     XOCE_xBCxxFGx,
@@ -2740,8 +2693,8 @@ void GateBoy::tock_oam(
 
   oam_latch_b.latch_bus(
     cpu_bus.BUS_CPU_A,
-    TEDO_CPU_RDp,
-    CATY_LATCH_EXTp,
+    cpu_bus.TEDO_CPU_RDp,
+    cpu_bus.CATY_LATCH_EXTp(),
     oam_bus.BUS_OAM_DBn,
     ACYL_SCANNINGp,
     XOCE_xBCxxFGx,
@@ -2751,8 +2704,8 @@ void GateBoy::tock_oam(
   oam_latch_a.latch_to_cpu(
     cpu_bus.BUS_CPU_A,
     oam_bus.BUS_OAM_An,
-    TEDO_CPU_RDp,
-    CATY_LATCH_EXTp,
+    cpu_bus.TEDO_CPU_RDp,
+    cpu_bus.CATY_LATCH_EXTp(),
     dma.MATU_DMA_RUNNINGp.qp_new(),
     ACYL_SCANNINGp,
     XYMU_RENDERINGp,
@@ -2762,8 +2715,8 @@ void GateBoy::tock_oam(
   oam_latch_b.latch_to_cpu(
     cpu_bus.BUS_CPU_A,
     oam_bus.BUS_OAM_An,
-    TEDO_CPU_RDp,
-    CATY_LATCH_EXTp,
+    cpu_bus.TEDO_CPU_RDp,
+    cpu_bus.CATY_LATCH_EXTp(),
     dma.MATU_DMA_RUNNINGp.qp_new(),
     ACYL_SCANNINGp,
     XYMU_RENDERINGp,
@@ -2773,9 +2726,7 @@ void GateBoy::tock_oam(
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_zram(
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp)
+void GateBoy::tock_zram()
 {
   // ZRAM control signals are
   // clk_reg.PIN_CPU_BUKE_AxxxxxGH
@@ -2790,26 +2741,26 @@ void GateBoy::tock_zram(
 
   wire zram_hit = (cpu_addr >= 0xFF80) && (cpu_addr <= 0xFFFE);
 
-  wire zram_clk_new = nand2(TAPU_CPU_WRp, zram_hit);
+  wire zram_clk_new = nand2(cpu_bus.TAPU_CPU_WRp, zram_hit);
 
   if (!zram_clk_old && zram_clk_new) {
     zero_ram[cpu_addr & 0x007F] = zram_data_latch;
   }
   zram_clk_old = zram_clk_new;
 
-  if (zram_hit && TEDO_CPU_RDp) {
+  if (zram_hit && cpu_bus.TEDO_CPU_RDp) {
     zram_data_latch = zero_ram[cpu_addr & 0x007F];
   }
 
   if ((cpu_addr >= 0xFF80) && (cpu_addr <= 0xFFFE)) {
-    cpu_bus.BUS_CPU_D_out[0].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x01));
-    cpu_bus.BUS_CPU_D_out[1].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x02));
-    cpu_bus.BUS_CPU_D_out[2].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x04));
-    cpu_bus.BUS_CPU_D_out[3].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x08));
-    cpu_bus.BUS_CPU_D_out[4].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x10));
-    cpu_bus.BUS_CPU_D_out[5].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x20));
-    cpu_bus.BUS_CPU_D_out[6].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x40));
-    cpu_bus.BUS_CPU_D_out[7].tri(TEDO_CPU_RDp, wire(zram_data_latch & 0x80));
+    cpu_bus.BUS_CPU_D_out[0].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x01));
+    cpu_bus.BUS_CPU_D_out[1].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x02));
+    cpu_bus.BUS_CPU_D_out[2].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x04));
+    cpu_bus.BUS_CPU_D_out[3].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x08));
+    cpu_bus.BUS_CPU_D_out[4].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x10));
+    cpu_bus.BUS_CPU_D_out[5].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x20));
+    cpu_bus.BUS_CPU_D_out[6].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x40));
+    cpu_bus.BUS_CPU_D_out[7].tri(cpu_bus.TEDO_CPU_RDp, wire(zram_data_latch & 0x80));
   }
 }
 

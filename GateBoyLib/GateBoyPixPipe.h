@@ -1,6 +1,13 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+struct SpriteFetcher;
+struct TileTempA;
+struct TileTempB;
+struct SpriteTempA;
+struct SpriteTempB;
+struct OamTempB;
+
 //-----------------------------------------------------------------------------
 // FF4A - WY
 
@@ -131,6 +138,8 @@ struct RegStat {
 // FF47 - BGP
 
 struct RegBGP {
+  void tock(GateBoyCpuBus& cpu_bus);
+
   /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
   /*p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
   /*p36.PYLU*/ DFF8p PYLU_BGP_D2n; // xxxxxxxH
@@ -145,6 +154,8 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
+  void tock(GateBoyCpuBus& cpu_bus);
+
   /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
   /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
   /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n; // xxxxxxxH
@@ -159,6 +170,8 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
+  void tock(GateBoyCpuBus& cpu_bus);
+
   /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
   /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
   /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n; // xxxxxxxH
@@ -284,6 +297,21 @@ struct PPURegisters {
 //-----------------------------------------------------------------------------
 
 struct PixelPipes {
+
+  void tock(
+    SpriteFetcher& sprite_fetcher,
+    TileTempA& tile_temp_a,
+    TileTempB& tile_temp_b,
+    SpriteTempA& sprite_temp_a,
+    SpriteTempB& sprite_temp_b,
+    OamTempB& oam_temp_b,
+    RegLCDC& reg_lcdc,
+    RegBGP& reg_bgp,
+    RegOBP0& reg_obp0,
+    RegOBP1& reg_obp1,
+    //wire XYMU_RENDERINGp,
+    wire SACU_CLKPIPE_evn,
+    wire NYXU_BFETCH_RSTn);
 
   /*p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
   /*p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1; // AxCxExGx

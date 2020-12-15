@@ -394,3 +394,49 @@ void GateBoyVramBus::tock_vram(uint8_t* vid_ram) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyVramBus::pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn) {
+  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn);
+  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
+
+  /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
+  /*#p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
+  /*#p25.RELA*/ wire _RELA_CBD_TO_VPDp =  or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
+  /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
+
+  /* p25.RODY*/ BUS_VRAM_Dp[0].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[0].qn_new());
+  /* p25.REBA*/ BUS_VRAM_Dp[1].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[1].qn_new());
+  /* p25.RYDO*/ BUS_VRAM_Dp[2].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[2].qn_new());
+  /* p25.REMO*/ BUS_VRAM_Dp[3].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[3].qn_new());
+  /* p25.ROCE*/ BUS_VRAM_Dp[4].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[4].qn_new());
+  /* p25.ROPU*/ BUS_VRAM_Dp[5].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[5].qn_new());
+  /* p25.RETA*/ BUS_VRAM_Dp[6].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[6].qn_new());
+  /* p25.RAKU*/ BUS_VRAM_Dp[7].tri6_pn(_RENA_CBD_TO_VPDn, PIN_VRAM_Dp[7].qn_new());
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyVramBus::data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp) {
+  /* p25.RERY*/ wire _RERY_VBUS_D0n = not1(BUS_VRAM_Dp[0].qp_new());
+  /* p25.RUNA*/ wire _RUNA_VBUS_D1n = not1(BUS_VRAM_Dp[1].qp_new());
+  /* p25.RONA*/ wire _RONA_VBUS_D2n = not1(BUS_VRAM_Dp[2].qp_new());
+  /* p25.RUNO*/ wire _RUNO_VBUS_D3n = not1(BUS_VRAM_Dp[3].qp_new());
+  /* p25.SANA*/ wire _SANA_VBUS_D4n = not1(BUS_VRAM_Dp[4].qp_new());
+  /* p25.RORO*/ wire _RORO_VBUS_D5n = not1(BUS_VRAM_Dp[5].qp_new());
+  /* p25.RABO*/ wire _RABO_VBUS_D6n = not1(BUS_VRAM_Dp[6].qp_new());
+  /* p25.SAME*/ wire _SAME_VBUS_D7n = not1(BUS_VRAM_Dp[7].qp_new());
+
+  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, cpu_bus.LEKO_CPU_RDp());
+  /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
+
+  /*#p25.RUGA*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_SEBY_VBD_TO_CBDp, _RERY_VBUS_D0n);
+  /* p25.ROTA*/ cpu_bus.BUS_CPU_D_out[1].tri6_pn(_SEBY_VBD_TO_CBDp, _RUNA_VBUS_D1n);
+  /* p25.RYBU*/ cpu_bus.BUS_CPU_D_out[2].tri6_pn(_SEBY_VBD_TO_CBDp, _RONA_VBUS_D2n);
+  /* p25.RAJU*/ cpu_bus.BUS_CPU_D_out[3].tri6_pn(_SEBY_VBD_TO_CBDp, _RUNO_VBUS_D3n);
+  /* p25.TYJA*/ cpu_bus.BUS_CPU_D_out[4].tri6_pn(_SEBY_VBD_TO_CBDp, _SANA_VBUS_D4n);
+  /* p25.REXU*/ cpu_bus.BUS_CPU_D_out[5].tri6_pn(_SEBY_VBD_TO_CBDp, _RORO_VBUS_D5n);
+  /* p25.RUPY*/ cpu_bus.BUS_CPU_D_out[6].tri6_pn(_SEBY_VBD_TO_CBDp, _RABO_VBUS_D6n);
+  /* p25.TOKU*/ cpu_bus.BUS_CPU_D_out[7].tri6_pn(_SEBY_VBD_TO_CBDp, _SAME_VBUS_D7n);
+}
+
+//------------------------------------------------------------------------------------------------------------------------

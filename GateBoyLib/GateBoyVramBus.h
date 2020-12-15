@@ -89,6 +89,9 @@ struct GateBoyVramBus {
 
   void tock_vram(uint8_t* vid_ram);
 
+  void pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
+  void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);
+
   BusOut BUS_VRAM_An[13];
   BusIO  BUS_VRAM_Dp[8];
   PinOut PIN_VRAM_CSn; // PIN_43

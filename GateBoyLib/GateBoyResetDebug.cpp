@@ -2,11 +2,11 @@
 
 #include "GateBoyLib/GateBoyClocks.h"
 
-void GateBoyResetDebug::tock(const GateBoyPhaseClock& pclk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p) {
+void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p) {
 
-  /* p01.AFER*/ AFER_SYS_RSTp.dff13(pclk.BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), ASOL_POR_DONEn.qp_old());
+  /* p01.AFER*/ AFER_SYS_RSTp.dff13(clk.BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), ASOL_POR_DONEn.qp_old());
 
-  /* p01.UPYF*/ wire _UPYF = or2(PIN_SYS_RST.qp_new(), pclk.UCOB_CLKBADp());
+  /* p01.UPYF*/ wire _UPYF = or2(PIN_SYS_RST.qp_new(), clk.UCOB_CLKBADp());
   /* p01.TUBO*/ TUBO_WAITINGp.nor_latch(_UPYF, sys_clkreq);
   /* p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp_new(), UPOF_DIV15p);
   /* p01.TABA*/ wire _TABA_POR_TRIGn = or3(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);

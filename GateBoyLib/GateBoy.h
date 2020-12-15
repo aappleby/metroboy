@@ -224,8 +224,7 @@ struct GateBoy {
   //----------
 
   GateBoyResetDebug rst;
-  GateBoyPhaseClock pclk;
-  GateBoyVideoClock vclk;
+  GateBoyClock clk;
 
   //----------
 

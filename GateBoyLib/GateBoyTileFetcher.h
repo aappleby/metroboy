@@ -2,7 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyVramBus;
-struct GateBoyPhaseClock;
+struct GateBoyClock;
 
 //-----------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ struct WinLineY {
 
 struct TileFetcher {
 
-  void tock2(GateBoyPhaseClock& pclk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
+  void tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const {
     return not1(POKY_PRELOAD_LATCHp.qp_any());

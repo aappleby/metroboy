@@ -1,7 +1,7 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct GateBoyPhaseClock;
+struct GateBoyClock;
 
 //-----------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ struct GateBoyResetDebug {
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
   /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
 
-  void tock(const GateBoyPhaseClock& pclk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
+  void tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
   void tock2(wire XONA_LCDC_LCDENp);
 
   //----------------------------------------

@@ -1,7 +1,7 @@
 #include "GateBoyLib/GateBoyClocks.h"
 #include "GateBoyLib/GateBoyResetDebug.h"
 
-void GateBoyPhaseClock::tock(const GateBoyResetDebug& rst) {
+void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp.qp_old());
   /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp.qn_old());
   /* p01.APUK*/ APUK_ABxxxxGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGHp.qn_old());
@@ -18,8 +18,8 @@ void GateBoyPhaseClock::tock(const GateBoyResetDebug& rst) {
   PIN_CPU_BOGA_Axxxxxxx.setp(BOGA_Axxxxxxx());
 }
 
-void GateBoyVideoClock::tock_vid(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk) {
-  /* p29.WOSU*/ WOSU_AxxDExxH.dff17(pclk.XYFY_xBxDxFxH(),   rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_any());
-  /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(pclk.XOTA_AxCxExGx(),   rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_any());
+void GateBoyClock::tock_vid(const GateBoyResetDebug& rst) {
+  /* p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),        rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_any());
+  /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),        rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_any());
   /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_any()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }

@@ -7,14 +7,24 @@ struct RegLX {
   uint8_t get() const  { return pack_u8p(7, &SAXO_LX0p); }
 
   wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1(RUTU_x113p.qp_new());
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1(_RUTU_x113p.qp_new());
     return _PURE_LINE_ENDn_new_evn;
   }
 
-  void tock(wire XODO_VID_RSTp, wire TALU_xxCDEFxx_clkevn);
+  wire TEGY_STROBE() const;
 
-  /*p21.RUTU*/ DFF17 RUTU_x113p;  // xxxxxxGx
-  /*p21.NYPE*/ DFF17 NYPE_x113p;  // xxCxxxxx
+  wire NYPE_x113p() const { return _NYPE_x113p.qp_new(); }
+  wire NYPE_x113n() const { return _NYPE_x113p.qn_new(); }
+
+  wire RUTU_x113p() const { return _RUTU_x113p.qp_new(); }
+  wire RUTU_x113n() const { return _RUTU_x113p.qn_new(); }
+
+  /*#p24.LOFU*/ wire LOFU_x113n() const { return not1(RUTU_x113p()); }
+
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk);
+
+  /*p21.RUTU*/ DFF17 _RUTU_x113p;  // xxxxxxGx
+  /*p21.NYPE*/ DFF17 _NYPE_x113p;  // xxCxxxxx
 
   /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
   /*p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
@@ -30,13 +40,12 @@ struct RegLX {
 struct RegLY {
   uint8_t get() const  { return pack_u8p(8, &MUWY_LY0p); }
 
-  void tock(
-    Signal BUS_CPU_A[16],
-    wire XODO_VID_RSTp,
-    wire TEDO_CPU_RDp,
-    wire NYPE_x113p_c_new,
-    wire RUTU_x113p_g_new,
-    BusOut BUS_CPU_D_out[8]);
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, RegLX& reg_lx);
+
+  /*#p24.NERU*/ wire NERU_y000p() const {
+    return nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(),
+                MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
+  }
 
   /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
 
@@ -51,19 +60,11 @@ struct RegLY {
 };
 
 //-----------------------------------------------------------------------------
-// XONA_LCDC_LCDENn is in GateBoyResetDebug
+// FF40 LCDC
 
 struct RegLCDC {
 
-  //wire XONA_LCDC_LCDENp() const { return XONA_LCDC_LCDENn_h.qn_old(); }
-
-  void tock(
-    Signal BUS_CPU_A[16],
-    Signal BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-    BusOut BUS_CPU_D_out[8]);
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;   // xxxxxxxH
   /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;   // xxxxxxxH
@@ -81,14 +82,10 @@ struct RegLYC {
   uint8_t get() const { return pack_u8n(8, &SYRY_LYC0n); }
 
   void tock(
-    Signal BUS_CPU_A[16],
-    Signal BUS_CPU_D[8],
-    wire AVOR_SYS_RSTp,
-    wire TALU_xxCDEFxx_clkevn,
-    wire TEDO_CPU_RDp,
-    wire TAPU_CPU_WRp,
-    const RegLY& reg_ly,
-    BusOut BUS_CPU_D_out[8]);
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
+    GateBoyCpuBus& cpu_bus,
+    const RegLY& reg_ly);
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
 
@@ -119,14 +116,14 @@ struct GateBoyLCD {
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(POPU_VBLANKp.qn_new()); }
 
   void tock(
-    wire XODO_VID_RSTp,
-    wire XUPY_ABxxEFxx,
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
     const RegLX& reg_lx,
     const RegLY& reg_ly);
 
   void set_pins(
-    wire XODO_VID_RSTp,
-    wire TALU_xxCDEFxx,
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
     wire TYFA_CLKPIPE_odd,
     wire XONA_LCDC_LCDENp,
     wire XYMU_RENDERINGp,

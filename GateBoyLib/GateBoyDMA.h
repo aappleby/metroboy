@@ -5,7 +5,7 @@
 
 struct GateBoyDMA {
 
-  void tock(GateBoyResetDebug& rst, GateBoyPhaseClock& pclk, GateBoyCpuBus& cpu_bus);
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
   /* p04.LUMA*/ wire LUMA_DMA_CARTp() const;
   /* p04.LUFA*/ wire LUFA_DMA_VRAMp() const;
 

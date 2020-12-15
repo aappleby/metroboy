@@ -4,7 +4,7 @@
 #include "GateBoyLib/GateBoyClocks.h"
 #include "GateBoyLib/GateBoyResetDebug.h"
 
-  void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyPhaseClock& pclk, GateBoyCpuBus& cpu_bus)
+  void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
   {
     /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(cpu_bus.TAPU_CPU_WRp), XEDA_FF46p(cpu_bus.BUS_CPU_A));
     /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
@@ -30,9 +30,9 @@
     /* p04.NUVY*/ cpu_bus.BUS_CPU_D_out[7].tri6_pn(PUSY_FF46_RDp, MARU_DMA_A15n.qp_new());
 
     /*#p04.LUPA*/ wire _LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn_old());
-    /*#p04.LUVY*/ LUVY_DMA_TRIG_d0.dff17(pclk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
+    /*#p04.LUVY*/ LUVY_DMA_TRIG_d0.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
 
-    /*#p04.LENE*/ LENE_DMA_TRIG_d4.dff17(pclk.MOPA_xxxxEFGH(), rst.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.qp_old());
+    /*#p04.LENE*/ LENE_DMA_TRIG_d4.dff17(clk.MOPA_xxxxEFGH(), rst.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.qp_old());
 
     /*#p04.LOKO*/ wire _LOKO_DMA_RSTp = nand2(LENE_DMA_TRIG_d4.qn_new(), rst.CUNU_SYS_RSTn());
     /*#p04.LYXE*/ LYXE_DMA_LATCHp.nor_latch(LAVY_FF46_WRp, _LOKO_DMA_RSTp);
@@ -44,15 +44,15 @@
                                                    NYKO_DMA_A04p.qp_old(), MUGU_DMA_A07p.qp_old());
     /*#p04.NOLO*/ wire _NOLO_DMA_DONEp_old = not1(_NAVO_DMA_DONEn_old);
 
-    /*#p04.MYTE*/ MYTE_DMA_DONE.dff17(pclk.MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp_old);
+    /*#p04.MYTE*/ MYTE_DMA_DONE.dff17(clk.MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp_old);
 
-    /*#p04.MATU*/ MATU_DMA_RUNNINGp.dff17(pclk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp.qp_old());
+    /*#p04.MATU*/ MATU_DMA_RUNNINGp.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp.qp_old());
 
     /* p04.LARA*/ LARA_DMA_LATCHn = nand3(LOKY_DMA_LATCHp.qp_old(), MYTE_DMA_DONE.qn_new(), rst.CUNU_SYS_RSTn());
     /*#p04.LOKY*/ LOKY_DMA_LATCHp = nand2(LARA_DMA_LATCHn.qp_new(), LENE_DMA_TRIG_d4.qn_new());
     /* p04.LARA*/ LARA_DMA_LATCHn = nand3(LOKY_DMA_LATCHp.qp_new(), MYTE_DMA_DONE.qn_new(), rst.CUNU_SYS_RSTn());
 
-    /*#p04.META*/ wire _META_DMA_CLKp = and2(pclk.UVYT_ABCDxxxx(), LOKY_DMA_LATCHp.qp_new());
+    /*#p04.META*/ wire _META_DMA_CLKp = and2(clk.UVYT_ABCDxxxx(), LOKY_DMA_LATCHp.qp_new());
     /*#p04.NAKY*/ NAKY_DMA_A00p.dff17(_META_DMA_CLKp,         _LAPA_DMA_RSTn, NAKY_DMA_A00p.qn_any());
     /*#p04.PYRO*/ PYRO_DMA_A01p.dff17(NAKY_DMA_A00p.qn_new(), _LAPA_DMA_RSTn, PYRO_DMA_A01p.qn_any());
     /* p04.NEFY*/ NEFY_DMA_A02p.dff17(PYRO_DMA_A01p.qn_new(), _LAPA_DMA_RSTn, NEFY_DMA_A02p.qn_any());

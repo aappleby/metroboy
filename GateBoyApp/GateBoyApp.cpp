@@ -506,23 +506,23 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Clocks =====\001\n");
   d("PHASE %d%d%d%d\n",
-    gb->pclk.AFUR_xxxxEFGHp.qp_old(),
-    gb->pclk.ALEF_AxxxxFGHp.qp_old(),
-    gb->pclk.APUK_ABxxxxGHp.qp_old(),
-    gb->pclk.ADYK_ABCxxxxHp.qp_old());
+    gb->clk.AFUR_xxxxEFGHp.qp_old(),
+    gb->clk.ALEF_AxxxxFGHp.qp_old(),
+    gb->clk.APUK_ABxxxxGHp.qp_old(),
+    gb->clk.ADYK_ABCxxxxHp.qp_old());
   d("\n");
   d.dump_bitp("TUBO_WAITINGp ", gb->rst.TUBO_WAITINGp.state);
   d.dump_bitn("ASOL_POR_DONEn", gb->rst.ASOL_POR_DONEn.state);
   d.dump_bitp("AFER_SYS_RSTp ", gb->rst.AFER_SYS_RSTp.state);
   d("\n");
-  d.dump_bitp("AFUR_xxxxEFGHp", gb->pclk.AFUR_xxxxEFGHp.state);
-  d.dump_bitp("ALEF_AxxxxFGHp", gb->pclk.ALEF_AxxxxFGHp.state);
-  d.dump_bitp("APUK_ABxxxxGHp", gb->pclk.APUK_ABxxxxGHp.state);
-  d.dump_bitp("ADYK_ABCxxxxHp", gb->pclk.ADYK_ABCxxxxHp.state);
+  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk.AFUR_xxxxEFGHp.state);
+  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk.ALEF_AxxxxFGHp.state);
+  d.dump_bitp("APUK_ABxxxxGHp", gb->clk.APUK_ABxxxxGHp.state);
+  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk.ADYK_ABCxxxxHp.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->vclk.WUVU_ABxxEFxx.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->vclk.VENA_xxCDEFxx.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->vclk.WOSU_AxxDExxH.state);
+  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk.WUVU_ABxxEFxx.state);
+  d.dump_bitp("VENA_xxCDEFxxp", gb->clk.VENA_xxCDEFxx.state);
+  d.dump_bitp("WOSU_AxxDExxHp", gb->clk.WOSU_AxxDExxH.state);
   d("\n");
 
   d("\002===== Timer =====\001\n");
@@ -610,8 +610,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\n");
 
-  d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx.NYPE_x113p.state);
-  d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx.RUTU_x113p.state);
+  d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx._NYPE_x113p.state);
+  d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx._RUTU_x113p.state);
 
   d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p.state);
   d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp.state);

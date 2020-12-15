@@ -5,9 +5,10 @@ struct GateBoyResetDebug;
 
 //-----------------------------------------------------------------------------
 
-struct GateBoyPhaseClock {
+struct GateBoyClock {
 
   void tock(const GateBoyResetDebug& rst);
+  void tock_vid(const GateBoyResetDebug& rst);
 
   //----------------------------------------
   // Root clocks - ignoring the deglitcher here
@@ -65,14 +66,29 @@ struct GateBoyPhaseClock {
   /* p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); }
   /* p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); }
 
+  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
+  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }
+  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(WOSU_AxxDExxH.qp_new()); }
+  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
+  /*#p21.SONO*/ wire SONO_ABxxxxGH() const { return not1(TALU_xxCDEFxx()); }
+  /* p29.XYSO*/ wire XYSO_xBCDxFGH() const { return not1(WOJO_AxxxExxx()); }
+  /*#p30.CYKE*/ wire CYKE_ABxxEFxx() const { return not1(XUPY_ABxxEFxx()); }
+  /*#p30.WUDA*/ wire WUDA_xxCDxxGH() const { return not1(CYKE_ABxxEFxx()); }
+  /*#p28.AWOH*/ wire AWOH_xxCDxxGH() const { return not1(XUPY_ABxxEFxx()); }
+
+
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
   /*p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;
   /*p01.APUK*/ DFF9 APUK_ABxxxxGHp;
   /*p01.ADYK*/ DFF9 ADYK_ABCxxxxHp;
 
+  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
+  /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
+  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
+
   PinIn PIN_SYS_CLKGOOD;
-  PinIn PIN_SYS_CLK;
   PinIn PIN_SYS_CLKREQ;
+  PinIn PIN_SYS_CLK;
 
   PinOut PIN_EXT_CLK;    // PIN_75
 
@@ -84,24 +100,6 @@ struct GateBoyPhaseClock {
   PinOut PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
   PinOut PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
   PinOut PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
-};
-
-//-----------------------------------------------------------------------------
-
-struct GateBoyVideoClock {
-  void tock_vid(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk);
-
-  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
-  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }
-  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(WOSU_AxxDExxH.qp_new()); }
-  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
-  /* p29.XYSO*/ wire XYSO_xBCDxFGH() const { return not1(WOJO_AxxxExxx()); }
-  /*#p30.CYKE*/ wire CYKE_ABxxEFxx() const { return not1(XUPY_ABxxEFxx()); }
-  /*#p30.WUDA*/ wire WUDA_xxCDxxGH() const { return not1(CYKE_ABxxEFxx()); }
-
-  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
-  /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
-  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 };
 
 //-----------------------------------------------------------------------------

@@ -29,24 +29,24 @@ void TileTempB::tock(const GateBoyVramBus& vram_bus, wire _LABU_LATCH_TILE_DBn)
   /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(_LABU_LATCH_TILE_DBn, _VYPO_VCC, vram_bus.BUS_VRAM_Dp[7].qp_old());
 }
 
-void TileFetcher::tock2(GateBoyPhaseClock& pclk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
+void TileFetcher::tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
   /* p27.LAXU*/ _LAXU_BFETCH_S0p.RSTn(NYXU_BFETCH_RSTn);
   /* p27.MESU*/ _MESU_BFETCH_S1p.RSTn(NYXU_BFETCH_RSTn);
   /* p27.NYVA*/ _NYVA_BFETCH_S2p.RSTn(NYXU_BFETCH_RSTn);
 
   /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid_any = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
-  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(pclk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn_mid_any);
+  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn_mid_any);
 
   /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17(_LEBO_AxCxExGx,               NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_new());
   /* p27.MESU*/ _MESU_BFETCH_S1p.dff17(_LAXU_BFETCH_S0p.qn_new(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_new());
   /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17(_MESU_BFETCH_S1p.qn_new(), NYXU_BFETCH_RSTn, _NYVA_BFETCH_S2p.qn_new());
 
   /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_old = not1(MOCE_BFETCH_DONEn_old);
-  /* p27.LOVY*/ LOVY_FETCH_DONEp.dff17(pclk.MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, _LYRY_BFETCH_DONEp_old);
+  /* p27.LOVY*/ LOVY_FETCH_DONEp.dff17(clk.MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, _LYRY_BFETCH_DONEp_old);
   /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn_new_evn = and2(LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGp);
   /* p27.LONY*/ LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn_new_evn);
-  /* p27.LYZU*/ _LYZU_BFETCH_S0p_D1.dff17(pclk.ALET_xBxDxFxH(), XYMU_RENDERINGp, _LAXU_BFETCH_S0p.qp_new());
+  /* p27.LYZU*/ _LYZU_BFETCH_S0p_D1.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGp, _LAXU_BFETCH_S0p.qp_new());
 }
 
 

@@ -6,6 +6,11 @@ struct GateBoyClock;
 //-----------------------------------------------------------------------------
 
 struct GateBoyResetDebug {
+  void reset_cart() {
+    PIN_CPU_STARTp.reset(REG_D0C0);
+    TUBO_WAITINGp.reset(REG_D0C0);
+  }
+
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_any(), ASOL_POR_DONEn.qp_any()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }

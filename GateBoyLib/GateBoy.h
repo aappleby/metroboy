@@ -174,26 +174,6 @@ struct GateBoy {
     return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
   }
 
-  void tock_pix_pipe(
-    wire XYMU_RENDERINGp,
-    wire SACU_CLKPIPE_evn,
-    wire NYXU_BFETCH_RSTn
-  );
-
-  void tock_lcd(
-    wire TYFA_CLKPIPE_odd,
-    wire SACU_CLKPIPE_evn,
-    wire XYMU_RENDERINGp,
-    wire AVAP_SCAN_DONE_TRIGp,
-    wire WEGO_HBLANKp);
-
-  void tock_vram(
-    wire ABUZ_EXT_RAM_CS_CLK,
-    wire TEVO_FETCH_TRIGp_new,
-    wire NYXU_BFETCH_RSTn_new_xxx,
-    wire XYMU_RENDERINGp_new_xxx
-  );
-
   static wire ROGE_WY_MATCHp(const RegWY& reg_wy, const RegLY& reg_ly, wire WYMO_LCDC_WINENp) {
     /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p = xnor2(reg_wy.NESO_WY0n.qn_old(), reg_ly.MUWY_LY0p.qp_old());
     /* p27.PEBO*/ wire _PEBO_WY_MATCH1p = xnor2(reg_wy.NYRO_WY1n.qn_old(), reg_ly.MYRO_LY1p.qp_old());
@@ -325,8 +305,7 @@ struct GateBoy {
 
   uint64_t sentinel2 = SENTINEL2;
 
-  bool oam_clk_old = 0;
-  bool zram_clk_old = 0;
+  Signal old_zram_clk;
 
   //-----------------------------------------------------------------------------
   // Control stuff
@@ -381,8 +360,6 @@ struct GateBoy {
   uint8_t framebuffer[160*144];
   uint8_t gb_screen_x = 0;
   uint8_t gb_screen_y = 0;
-  bool old_lcd_clock = 0;
-  bool old_lcd_latch = 0;
   uint8_t lcd_data_latch = 0;
 
   //-----------------------------------------------------------------------------

@@ -4,8 +4,22 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
+  void reset_cart() {
+    TAKA_SFETCH_RUNNINGp.reset(REG_D0C0);
+    SOBU_SFETCH_REQp.reset(REG_D0C0);
+    SUDA_SFETCH_REQp.reset(REG_D0C1);
+    TOXE_SFETCH_S0p.reset(REG_D1C1);
+    TULY_SFETCH_S1p.reset(REG_D0C0);
+    TESE_SFETCH_S2p.reset(REG_D1C1);
+    TYFO_SFETCH_S0p_D1.reset(REG_D1C1);
+    TOBU_SFETCH_S1p_D2.reset(REG_D0C0);
+    VONU_SFETCH_S1p_D4.reset(REG_D0C0);
+    SEBA_SFETCH_S1p_D5.reset(REG_D0C1);
+  }
 
-  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp);
+
+  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_any(), VONU_SFETCH_S1p_D4.qp_any()); }
 
   /* p29.TEXY*/ wire TEXY_SFETCHINGp() const {
     /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);

@@ -73,6 +73,36 @@ struct SpriteTempB {
 
 struct GateBoyVramBus {
 
+  void reset_cart() {
+    BUS_VRAM_An[ 0].reset(REG_D1C0);
+    BUS_VRAM_An[ 1].reset(REG_D1C0);
+    BUS_VRAM_An[ 2].reset(REG_D1C0);
+    BUS_VRAM_An[ 3].reset(REG_D1C0);
+    BUS_VRAM_An[ 4].reset(REG_D0C0);
+    BUS_VRAM_An[ 5].reset(REG_D1C0);
+    BUS_VRAM_An[ 6].reset(REG_D0C0);
+    BUS_VRAM_An[ 7].reset(REG_D1C0);
+    BUS_VRAM_An[ 8].reset(REG_D1C0);
+    BUS_VRAM_An[ 9].reset(REG_D1C0);
+    BUS_VRAM_An[10].reset(REG_D1C0);
+    BUS_VRAM_An[11].reset(REG_D1C0);
+    BUS_VRAM_An[12].reset(REG_D1C0);
+
+    PIN_VRAM_Ap[ 0].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 1].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 2].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 3].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 4].reset(REG_D1C0);
+    PIN_VRAM_Ap[ 5].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 6].reset(REG_D1C0);
+    PIN_VRAM_Ap[ 7].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 8].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 9].reset(REG_D0C0);
+    PIN_VRAM_Ap[10].reset(REG_D0C0);
+    PIN_VRAM_Ap[11].reset(REG_D0C0);
+    PIN_VRAM_Ap[12].reset(REG_D0C0);
+  }
+
   void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
   void dma_addr_to_vram_addr(const GateBoyDMA& dma);
   void scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, wire XAFO_LCDC_BGMAPp);
@@ -91,6 +121,8 @@ struct GateBoyVramBus {
 
   void pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
   void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);
+
+  SpriteFlipX get_flipped_sprite(wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p);
 
   BusOut BUS_VRAM_An[13];
   BusIO  BUS_VRAM_Dp[8];

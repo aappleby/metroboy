@@ -8,6 +8,7 @@
 
 void GateBoyBootrom::reset_cart() {
   BOOT_BITn_h.reset(REG_D1C1);
+  PIN_CPU_BOOTp.reset(REG_D0C0);
 }
 
 //--------------------------------------------------------------------------------

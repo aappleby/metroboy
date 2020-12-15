@@ -7,6 +7,14 @@ struct GateBoyResetDebug;
 
 struct GateBoyClock {
 
+  void reset_cart() {
+    PIN_CPU_BUKE_AxxxxxGH.reset(REG_D1C0);
+
+    WUVU_ABxxEFxx.reset(REG_D1C1);
+    VENA_xxCDEFxx.reset(REG_D0C0);
+    WOSU_AxxDExxH.reset(REG_D1C0);
+  }
+
   void tock(const GateBoyResetDebug& rst);
   void tock_vid(const GateBoyResetDebug& rst);
 

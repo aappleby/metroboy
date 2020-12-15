@@ -70,6 +70,16 @@ struct RegWX {
 // Pixel counter
 
 struct PixCount {
+  void reset_cart() {
+    XEHO_PX0p.reset(REG_D1C1);
+    SAVY_PX1p.reset(REG_D1C1);
+    XODU_PX2p.reset(REG_D1C1);
+    XYDO_PX3p.reset(REG_D0C1);
+    TUHU_PX4p.reset(REG_D0C1);
+    TUKY_PX5p.reset(REG_D1C1);
+    TAKO_PX6p.reset(REG_D0C1);
+    SYBE_PX7p.reset(REG_D1C1);
+  }
 
   void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
     // Pixel counter, has carry lookahead because this can increment every tcycle
@@ -117,6 +127,9 @@ struct PixCount {
 // FF41 - STAT
 
 struct RegStat {
+  void reset_cart() {
+    RUPO_STAT_LYC_MATCHn.reset(REG_D0C0);
+  }
 
   void tock(
     GateBoyResetDebug& rst,
@@ -138,6 +151,17 @@ struct RegStat {
 // FF47 - BGP
 
 struct RegBGP {
+  void reset_cart() {
+    PAVO_BGP_D0n.reset(REG_D1C1);
+    NUSY_BGP_D1n.reset(REG_D1C1);
+    PYLU_BGP_D2n.reset(REG_D0C1);
+    MAXY_BGP_D3n.reset(REG_D0C1);
+    MUKE_BGP_D4n.reset(REG_D0C1);
+    MORU_BGP_D5n.reset(REG_D0C1);
+    MOGY_BGP_D6n.reset(REG_D0C1);
+    MENA_BGP_D7n.reset(REG_D0C1);
+  }
+
   void tock(GateBoyCpuBus& cpu_bus);
 
   /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
@@ -286,8 +310,13 @@ struct FineScroll {
 };
 
 //-----------------------------------------------------------------------------
+// FIXME this is kinda useless now
 
 struct PPURegisters {
+  void reset_cart() {
+    VOGA_HBLANKp.reset(REG_D1C0);
+  }
+
   wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_any(); }
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
@@ -297,6 +326,17 @@ struct PPURegisters {
 //-----------------------------------------------------------------------------
 
 struct PixelPipes {
+
+  void reset_cart() {
+    VEZO_MASK_PIPE_0.reset(REG_D1C1);
+    WURU_MASK_PIPE_1.reset(REG_D1C1);
+    VOSA_MASK_PIPE_2.reset(REG_D1C1);
+    WYFU_MASK_PIPE_3.reset(REG_D1C1);
+    XETE_MASK_PIPE_4.reset(REG_D1C1);
+    WODA_MASK_PIPE_5.reset(REG_D1C1);
+    VUMO_MASK_PIPE_6.reset(REG_D1C1);
+    VAVA_MASK_PIPE_7.reset(REG_D1C1);
+  }
 
   void tock(
     SpriteFetcher& sprite_fetcher,

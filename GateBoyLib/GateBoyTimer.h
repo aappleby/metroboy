@@ -9,6 +9,25 @@ struct GateBoyCpuBus;
 // FF04 DIV
 
 struct GateBoyDiv {
+  void reset_cart() {
+    UKUP_DIV00p.reset(REG_D1C1);
+    UFOR_DIV01p.reset(REG_D1C0);
+    UNER_DIV02p.reset(REG_D0C0);
+    TERO_DIV03p.reset(REG_D0C1);
+    UNYK_DIV04p.reset(REG_D1C1);
+    TAMA_DIV05p.reset(REG_D1C0);
+    UGOT_DIV06p.reset(REG_D1C0);
+    TULU_DIV07p.reset(REG_D1C0);
+    TUGO_DIV08p.reset(REG_D0C0);
+    TOFE_DIV09p.reset(REG_D1C1);
+    TERU_DIV10p.reset(REG_D0C0);
+    SOLA_DIV11p.reset(REG_D1C1);
+    SUBU_DIV12p.reset(REG_D0C0);
+    TEKA_DIV13p.reset(REG_D1C1);
+    UKET_DIV14p.reset(REG_D1C0);
+    UPOF_DIV15p.reset(REG_D1C0);
+  }
+
   int get_div() const  { return pack_u16p(16, &UKUP_DIV00p); }
 
   void force_set_div(uint16_t div) {

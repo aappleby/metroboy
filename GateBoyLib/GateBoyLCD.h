@@ -7,6 +7,18 @@ struct FineScroll;
 //-----------------------------------------------------------------------------
 
 struct RegLX {
+  void reset_cart() {
+    _RUTU_x113p.reset(REG_D0C1);
+    _NYPE_x113p.reset(REG_D0C0);
+    SAXO_LX0p.reset(REG_D0C0);
+    TYPO_LX1p.reset(REG_D1C1);
+    VYZO_LX2p.reset(REG_D0C0);
+    TELU_LX3p.reset(REG_D0C1);
+    SUDE_LX4p.reset(REG_D0C1);
+    TAHA_LX5p.reset(REG_D1C1);
+    TYRY_LX6p.reset(REG_D1C0);
+  }
+
   uint8_t get() const  { return pack_u8p(7, &SAXO_LX0p); }
 
   wire PURE_LINE_ENDn() const {
@@ -41,6 +53,18 @@ struct RegLX {
 //-----------------------------------------------------------------------------
 
 struct RegLY {
+  void reset_cart() {
+    MYTA_y153p.reset(REG_D1C0);
+    MUWY_LY0p.reset(REG_D0C0);
+    MYRO_LY1p.reset(REG_D0C1);
+    LEXA_LY2p.reset(REG_D0C1);
+    LYDO_LY3p.reset(REG_D0C1);
+    LOVU_LY4p.reset(REG_D0C1);
+    LEMA_LY5p.reset(REG_D0C1);
+    MATO_LY6p.reset(REG_D0C1);
+    LAFO_LY7p.reset(REG_D0C1);
+  }
+
   uint8_t get() const  { return pack_u8p(8, &MUWY_LY0p); }
 
   void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, RegLX& reg_lx);
@@ -66,6 +90,16 @@ struct RegLY {
 // FF40 LCDC
 
 struct RegLCDC {
+  void reset_cart() {
+    VYXE_LCDC_BGENn  .reset(REG_D0C1);
+    XYLO_LCDC_SPENn  .reset(REG_D1C1);
+    XYMO_LCDC_SPSIZEn.reset(REG_D1C1);
+    XAFO_LCDC_BGMAPn .reset(REG_D1C1);
+    WEXU_LCDC_BGTILEn.reset(REG_D0C1);
+    WYMO_LCDC_WINENn .reset(REG_D1C1);
+    WOKY_LCDC_WINMAPn.reset(REG_D1C1);
+    XONA_LCDC_LCDENn .reset(REG_D0C1);
+  }
 
   void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
@@ -82,6 +116,10 @@ struct RegLCDC {
 //-----------------------------------------------------------------------------
 
 struct RegLYC {
+  void reset_cart() {
+    ROPO_LY_MATCH_SYNCp.reset(REG_D1C0);
+  }
+
   uint8_t get() const { return pack_u8n(8, &SYRY_LYC0n); }
 
   void tock(
@@ -105,6 +143,35 @@ struct RegLYC {
 //-----------------------------------------------------------------------------
 
 struct GateBoyLCD {
+
+  void reset_cart() {
+    CATU_LINE_P000p.reset(REG_D0C1);
+    ANEL_LINE_P002p.reset(REG_D0C0);
+    POPU_VBLANKp.reset(REG_D1C0);
+    SYGU_LINE_STROBE.reset(REG_D0C1);
+    MEDA_VSYNC_OUTn.reset(REG_D1C1);
+    LUCA_LINE_EVENp.reset(REG_D1C1);
+    NAPO_FRAME_EVENp.reset(REG_D0C1);
+    RUJU.reset(REG_D1C0);
+    POFY.reset(REG_D0C0);
+    POME.reset(REG_D1C0);
+    PAHO_X_8_SYNC.reset(REG_D0C1);
+    WUSA_LCD_CLOCK_GATE.reset(REG_D0C0);
+
+    PIN_LCD_DATA1.reset(REG_D0C0);
+    PIN_LCD_DATA0.reset(REG_D0C0);
+    PIN_LCD_HSYNC.reset(REG_D0C0);
+    PIN_LCD_FLIPS.reset(REG_D0C0);
+    PIN_LCD_CNTRL.reset(REG_D0C0);
+    PIN_LCD_LATCH.reset(REG_D0C0);
+    PIN_LCD_CLOCK.reset(REG_D0C0);
+    PIN_LCD_VSYNC.reset(REG_D1C0);
+
+    lcd_pix_lo.reset(REG_D0C0);
+    lcd_pix_hi.reset(REG_D0C0);
+    memset(lcd_pipe_lo, 0x02, sizeof(lcd_pipe_lo));
+    memset(lcd_pipe_hi, 0x02, sizeof(lcd_pipe_hi));
+  }
 
   /* p28.ATEJ*/ wire ATEJ_LINE_RSTp() const;
   /* p27.XAHY*/ wire XAHY_LINE_RSTn() const { return not1(ATEJ_LINE_RSTp()); }
@@ -153,6 +220,9 @@ struct GateBoyLCD {
   /*PIN_55*/ PinOut PIN_LCD_LATCH;
   /*PIN_53*/ PinOut PIN_LCD_CLOCK;
   /*PIN_57*/ PinOut PIN_LCD_VSYNC;
+
+  Signal old_lcd_clock;
+  Signal old_lcd_latch;
 
   NorLatch lcd_pix_lo;
   NorLatch lcd_pix_hi;

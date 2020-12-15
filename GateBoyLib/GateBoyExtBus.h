@@ -7,6 +7,17 @@ struct GateBoyResetDebug;
 //-----------------------------------------------------------------------------
 
 struct ExtDataLatch {
+  void reset_cart() {
+    SOMA_EXT_DATA_LATCH_D0n.reset(REG_D1C0);
+    RONY_EXT_DATA_LATCH_D1n.reset(REG_D0C0);
+    RAXY_EXT_DATA_LATCH_D2n.reset(REG_D1C0);
+    SELO_EXT_DATA_LATCH_D3n.reset(REG_D0C0);
+    SODY_EXT_DATA_LATCH_D4n.reset(REG_D1C0);
+    SAGO_EXT_DATA_LATCH_D5n.reset(REG_D1C0);
+    RUPA_EXT_DATA_LATCH_D6n.reset(REG_D1C0);
+    SAZY_EXT_DATA_LATCH_D7n.reset(REG_D1C0);
+  }
+
   /*p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
   /*p08.RONY*/ TpLatch RONY_EXT_DATA_LATCH_D1n; // AxCxExxx
   /*p08.RAXY*/ TpLatch RAXY_EXT_DATA_LATCH_D2n; // AxCxExxx
@@ -18,6 +29,24 @@ struct ExtDataLatch {
 };
 
 struct ExtAddrLatch {
+  void reset_cart() {
+    ALOR_EXT_ADDR_LATCH_00p.reset(REG_D1C0);
+    APUR_EXT_ADDR_LATCH_01p.reset(REG_D0C0);
+    ALYR_EXT_ADDR_LATCH_02p.reset(REG_D1C0);
+    ARET_EXT_ADDR_LATCH_03p.reset(REG_D1C0);
+    AVYS_EXT_ADDR_LATCH_04p.reset(REG_D0C0);
+    ATEV_EXT_ADDR_LATCH_05p.reset(REG_D0C0);
+    AROS_EXT_ADDR_LATCH_06p.reset(REG_D1C0);
+    ARYM_EXT_ADDR_LATCH_07p.reset(REG_D0C0);
+    LUNO_EXT_ADDR_LATCH_08p.reset(REG_D0C0);
+    LYSA_EXT_ADDR_LATCH_09p.reset(REG_D0C0);
+    PATE_EXT_ADDR_LATCH_10p.reset(REG_D0C0);
+    LUMY_EXT_ADDR_LATCH_11p.reset(REG_D0C0);
+    LOBU_EXT_ADDR_LATCH_12p.reset(REG_D0C0);
+    LONU_EXT_ADDR_LATCH_13p.reset(REG_D0C0);
+    NYRE_EXT_ADDR_LATCH_14p.reset(REG_D0C0);
+  }
+
   void tock(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
@@ -38,6 +67,34 @@ struct ExtAddrLatch {
 };
 
 struct GateBoyExtBus {
+  void reset_cart() {
+    PIN_EXT_A[ 0].reset(REG_D1C0);
+    PIN_EXT_A[ 1].reset(REG_D0C0);
+    PIN_EXT_A[ 2].reset(REG_D1C0);
+    PIN_EXT_A[ 3].reset(REG_D1C0);
+    PIN_EXT_A[ 4].reset(REG_D0C0);
+    PIN_EXT_A[ 5].reset(REG_D0C0);
+    PIN_EXT_A[ 6].reset(REG_D1C0);
+    PIN_EXT_A[ 7].reset(REG_D0C0);
+    PIN_EXT_A[ 8].reset(REG_D0C0);
+    PIN_EXT_A[ 9].reset(REG_D0C0);
+    PIN_EXT_A[10].reset(REG_D0C0);
+    PIN_EXT_A[11].reset(REG_D0C0);
+    PIN_EXT_A[12].reset(REG_D0C0);
+    PIN_EXT_A[13].reset(REG_D0C0);
+    PIN_EXT_A[14].reset(REG_D0C0);
+    PIN_EXT_A[15].reset(REG_D1C0);
+
+    PIN_EXT_D[0].reset(REG_D0C0);
+    PIN_EXT_D[1].reset(REG_D1C0);
+    PIN_EXT_D[2].reset(REG_D0C0);
+    PIN_EXT_D[3].reset(REG_D1C0);
+    PIN_EXT_D[4].reset(REG_D0C0);
+    PIN_EXT_D[5].reset(REG_D0C0);
+    PIN_EXT_D[6].reset(REG_D0C0);
+    PIN_EXT_D[7].reset(REG_D0C0);
+  }
+
   void addr_latch_to_pins(
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,

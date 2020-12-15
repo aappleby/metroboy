@@ -5,13 +5,23 @@
 
 struct OamLatchA {
 
+  void reset_cart() {
+    YDYV_OAM_LATCH_DA0n.reset(REG_D1C0);
+    YCEB_OAM_LATCH_DA1n.reset(REG_D1C0);
+    ZUCA_OAM_LATCH_DA2n.reset(REG_D1C0);
+    WONE_OAM_LATCH_DA3n.reset(REG_D1C0);
+    ZAXE_OAM_LATCH_DA4n.reset(REG_D1C0);
+    XAFU_OAM_LATCH_DA5n.reset(REG_D1C0);
+    YSES_OAM_LATCH_DA6n.reset(REG_D1C0);
+    ZECA_OAM_LATCH_DA7n.reset(REG_D1C0);
+  }
+
   void latch_bus(
     GateBoyCpuBus& cpu_bus,
     BusIO BUS_OAM_DAn[8],
     wire ACYL_SCANNINGp,
     wire XOCE_xBCxxFGx,
-    wire XUJA_SPR_OAM_LATCHn,
-    uint8_t oam_data_latch_a);
+    wire XUJA_SPR_OAM_LATCHn);
 
   void latch_to_cpu(
     GateBoyCpuBus& cpu_bus,
@@ -33,13 +43,24 @@ struct OamLatchA {
 //-----------------------------------------------------------------------------
 
 struct OamLatchB {
+
+  void reset_cart() {
+    XYKY_OAM_LATCH_DB0n.reset(REG_D1C0);
+    YRUM_OAM_LATCH_DB1n.reset(REG_D1C0);
+    YSEX_OAM_LATCH_DB2n.reset(REG_D1C0);
+    YVEL_OAM_LATCH_DB3n.reset(REG_D1C0);
+    WYNO_OAM_LATCH_DB4n.reset(REG_D1C0);
+    CYRA_OAM_LATCH_DB5n.reset(REG_D1C0);
+    ZUVE_OAM_LATCH_DB6n.reset(REG_D1C0);
+    ECED_OAM_LATCH_DB7n.reset(REG_D1C0);
+  }
+
   void latch_bus(
     GateBoyCpuBus& cpu_bus,
     BusIO BUS_OAM_DBn[8],
     wire ACYL_SCANNINGp,
     wire XOCE_xBCxxFGx,
-    wire XUJA_SPR_OAM_LATCHn,
-    uint8_t oam_data_latch_b);
+    wire XUJA_SPR_OAM_LATCHn);
 
   void latch_to_cpu(
     GateBoyCpuBus& cpu_bus,
@@ -62,6 +83,18 @@ struct OamLatchB {
 // oam byte 0, byte 2
 
 struct OamTempA {
+
+  void reset_cart() {
+    XUSO_OAM_DA0p.reset(REG_D0C1);
+    XEGU_OAM_DA1p.reset(REG_D0C1);
+    YJEX_OAM_DA2p.reset(REG_D0C1);
+    XYJU_OAM_DA3p.reset(REG_D0C1);
+    YBOG_OAM_DA4p.reset(REG_D0C1);
+    WYSO_OAM_DA5p.reset(REG_D0C1);
+    XOTE_OAM_DA6p.reset(REG_D0C1);
+    YZAB_OAM_DA7p.reset(REG_D0C1);
+  }
+
 
   void latch_to_temp(
     GateBoyClock& clk,
@@ -86,6 +119,17 @@ struct OamTempA {
 
 struct OamTempB {
 
+  void reset_cart() {
+    YLOR_OAM_DB0p.reset(REG_D0C1);
+    ZYTY_OAM_DB1p.reset(REG_D0C1);
+    ZYVE_OAM_DB2p.reset(REG_D0C1);
+    ZEZY_OAM_DB3p.reset(REG_D0C1);
+    GOMO_OAM_DB4p.reset(REG_D0C1);
+    BAXO_OAM_DB5p.reset(REG_D0C1);
+    YZOS_OAM_DB6p.reset(REG_D0C1);
+    DEPO_OAM_DB7p.reset(REG_D0C1);
+  }
+
   void latch_to_temp(
     GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
@@ -108,6 +152,17 @@ struct OamTempB {
 
 struct GateBoyOamBus {
 
+  void reset_cart() {
+    BUS_OAM_An[0].reset(REG_D1C0);
+    BUS_OAM_An[1].reset(REG_D1C0);
+    BUS_OAM_An[2].reset(REG_D1C0);
+    BUS_OAM_An[3].reset(REG_D1C0);
+    BUS_OAM_An[4].reset(REG_D0C0);
+    BUS_OAM_An[5].reset(REG_D1C0);
+    BUS_OAM_An[6].reset(REG_D0C0);
+    BUS_OAM_An[7].reset(REG_D1C0);
+  }
+
   void ext_to_data_bus (const GateBoyDMA& dma, PinIO PIN_EXT_D[8]);
   void vram_to_data_bus(const GateBoyDMA& dma, BusIO BUS_VRAM_Dp[8]);
 
@@ -123,6 +178,7 @@ struct GateBoyOamBus {
     wire ACYL_SCANNINGp);
 
   void update_pins(
+    GateBoyResetDebug& rst,
     GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
 
@@ -132,6 +188,8 @@ struct GateBoyOamBus {
 
     wire XUJY_OAM_CLKENp,
     wire XUJA_SPR_OAM_LATCHn);
+
+  void tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn, uint8_t* oam_ram);
 
   /*p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;       // AxxxExxx
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;   // AxxxExxx
@@ -143,6 +201,8 @@ struct GateBoyOamBus {
   PinOut PIN_OAM_WRn_A;  // AxxxExxH
   PinOut PIN_OAM_WRn_B;  // AxxxExxH
   PinOut PIN_OAM_OEn;    // ABCDEFGH
+
+  Signal old_oam_clk;
 };
 
 //-----------------------------------------------------------------------------

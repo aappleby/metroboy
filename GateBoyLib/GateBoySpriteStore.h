@@ -106,6 +106,14 @@ struct SpriteMatch {
 //-----------------------------------------------------------------------------
 
 struct SpriteCounter {
+  void reset_cart() {
+    DEZY_COUNT_CLKp.reset(REG_D1C1);
+    BESE_SPRITE_COUNT0.reset(REG_D0C1);
+    CUXY_SPRITE_COUNT1.reset(REG_D0C1);
+    BEGO_SPRITE_COUNT2.reset(REG_D0C1);
+    DYBE_SPRITE_COUNT3.reset(REG_D0C1);
+  }
+
   void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
   SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
 
@@ -119,6 +127,26 @@ struct SpriteCounter {
 //-----------------------------------------------------------------------------
 
 struct SpriteStore {
+  void reset_cart() {
+    XADU_SPRITE_IDX0p.reset(REG_D0C1);
+    XEDY_SPRITE_IDX1p.reset(REG_D0C1);
+    ZUZE_SPRITE_IDX2p.reset(REG_D1C1);
+    XOBE_SPRITE_IDX3p.reset(REG_D0C1);
+    YDUF_SPRITE_IDX4p.reset(REG_D1C1);
+    XECU_SPRITE_IDX5p.reset(REG_D0C1);
+
+    SPR_TRI_I[0].reset(REG_D0C0);
+    SPR_TRI_I[1].reset(REG_D0C0);
+    SPR_TRI_I[2].reset(REG_D1C0);
+    SPR_TRI_I[3].reset(REG_D0C0);
+    SPR_TRI_I[4].reset(REG_D1C0);
+    SPR_TRI_I[5].reset(REG_D0C0);
+
+    SPR_TRI_L[0].reset(REG_D1C0);
+    SPR_TRI_L[1].reset(REG_D1C0);
+    SPR_TRI_L[2].reset(REG_D1C0);
+    SPR_TRI_L[3].reset(REG_D1C0);
+  }
 
   SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count);
   void get_sprite(SpriteMatch sprite_match);

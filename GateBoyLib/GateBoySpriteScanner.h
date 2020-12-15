@@ -28,11 +28,20 @@ SpriteDeltaY sprite_delta_y(const OamTempA& oam_temp_a, const RegLY& reg_ly);
 //------------------------------------------------------------------------------------------------------------------------
 
 struct ScanCounter {
-   /*#p28.FETO*/ wire FETO_SCAN_DONEp() const {
-     return and4(YFEL_SCAN0.qp_any(), WEWY_SCAN1.qp_any(), GOSO_SCAN2.qp_any(), FONY_SCAN5.qp_any()); // 32 + 4 + 2 + 1 = 39
-   }
+  void reset_cart() {
+    YFEL_SCAN0.reset(REG_D1C1);
+    WEWY_SCAN1.reset(REG_D1C0);
+    GOSO_SCAN2.reset(REG_D1C0);
+    ELYN_SCAN3.reset(REG_D0C0);
+    FAHA_SCAN4.reset(REG_D0C1);
+    FONY_SCAN5.reset(REG_D1C1);
+  }
 
-   void tock(wire XUPY_ABxxEFxx, wire ANOM_LINE_RSTn);
+  /*#p28.FETO*/ wire FETO_SCAN_DONEp() const {
+    return and4(YFEL_SCAN0.qp_any(), WEWY_SCAN1.qp_any(), GOSO_SCAN2.qp_any(), FONY_SCAN5.qp_any()); // 32 + 4 + 2 + 1 = 39
+  }
+
+  void tock(wire XUPY_ABxxEFxx, wire ANOM_LINE_RSTn);
 
   /*p28.YFEL*/ DFF17 YFEL_SCAN0;        // AxxxExxx
   /*p28.WEWY*/ DFF17 WEWY_SCAN1;        // Axxxxxxx
@@ -45,6 +54,12 @@ struct ScanCounter {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteScanner {
+  void reset_cart() {
+    BESU_SCANNINGp.reset(REG_D0C0);
+    CENO_SCANNINGp.reset(REG_D0C1);
+    BYBA_SCAN_DONE_Ap.reset(REG_D1C1);
+    DOBA_SCAN_DONE_Bp.reset(REG_D1C0);
+  }
 
   wire AVAP_SCAN_DONE_TRIGp(wire BALU_LINE_RSTp) const {
     /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_Bp.qp_any(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_any());

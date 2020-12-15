@@ -2,6 +2,11 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyCpuBus {
+
+  void set_addr(uint16_t cpu_addr);
+  void set_data(wire BUS_CPU_OEp, uint8_t cpu_data);
+  void tock(const GateBoyResetDebug& rst, const GateBoyClock& clk);
+
   Signal BUS_CPU_A[16];
   Signal BUS_CPU_D[8];
   BusOut BUS_CPU_D_out[8];

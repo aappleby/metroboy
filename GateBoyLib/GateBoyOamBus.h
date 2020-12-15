@@ -64,10 +64,9 @@ struct OamLatchB {
 struct OamTempA {
 
   void latch_to_temp(
+    GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
     wire ACYL_SCANNINGp,
-    wire UVYT_ABCDxxxx,
-    wire XYSO_xBCDxFGH,
     wire MATU_DMA_RUNNINGp,
     wire XUJY_OAM_CLKENp,
     const OamLatchA& oam_latch_a);
@@ -88,10 +87,9 @@ struct OamTempA {
 struct OamTempB {
 
   void latch_to_temp(
+    GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
     wire ACYL_SCANNINGp,
-    wire UVYT_ABCDxxxx,
-    wire XYSO_xBCDxFGH,
     wire MATU_DMA_RUNNINGp,
     wire XUJY_OAM_CLKENp,
     const OamLatchB& oam_latch_b);
@@ -110,32 +108,23 @@ struct OamTempB {
 
 struct GateBoyOamBus {
 
-  void ext_to_data_bus(
-    PinIO PIN_EXT_D[8],
-    wire MATU_DMA_RUNNINGp,
-    wire PULA_DMA_A13n,
-    wire POKU_DMA_A14n,
-    wire MARU_DMA_A15n);
+  void ext_to_data_bus (const GateBoyDMA& dma, PinIO PIN_EXT_D[8]);
+  void vram_to_data_bus(const GateBoyDMA& dma, BusIO BUS_VRAM_Dp[8]);
 
-  void vram_to_data_bus(
-    BusIO BUS_VRAM_Dp[8],
-    wire MATU_DMA_RUNNINGp,
-    wire PULA_DMA_A13n,
-    wire POKU_DMA_A14n,
-    wire MARU_DMA_A15n);
+  void dma_to_addr_bus(GateBoyDMA& dma);
+  void sprite_index_to_addr_bus(GateBoyDMA& dma, SpriteStore& sprite_store, wire XYMU_RENDERINGp);
+  void scan_index_to_addr_bus(ScanCounter& scan_counter, wire ACYL_SCANNINGp);
 
   void cpu_to_data_bus(
+    GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
-    wire UVYT_ABCDxxxx,
     wire XYMU_RENDERINGp,
     wire MATU_DMA_RUNNINGp,
     wire ACYL_SCANNINGp);
 
   void update_pins(
+    GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
-    wire UVYT_ABCDxxxx,
-    wire XYSO_xBCDxFGH,
-    wire XOCE_xBCxxFGx,
 
     wire XYMU_RENDERINGp,
     wire MATU_DMA_RUNNINGp,

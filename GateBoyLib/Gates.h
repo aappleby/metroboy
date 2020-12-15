@@ -679,6 +679,9 @@ struct GateBoyDiv;
 struct GateBoyTimer;
 struct GateBoyVramBus;
 
+struct SpriteStore;
+struct ScanCounter;
+
 struct RegSCX;
 struct RegSCY;
 struct RegWX;

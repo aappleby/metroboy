@@ -97,9 +97,9 @@ struct TileFetcher {
     return not1(POKY_PRELOAD_LATCHp.qp_any());
   }
 
-  wire TAVE_PRELOAD_DONE_TRIGp(wire XYMU_RENDERINGp) const {
+  wire TAVE_PRELOAD_DONE_TRIGp() const {
     /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn      = not1(POKY_PRELOAD_LATCHp.qp_any());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn, NYKA_FETCH_DONEp.qp_any(), PORY_FETCH_DONEp.qp_any());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(_XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn, NYKA_FETCH_DONEp.qp_any(), PORY_FETCH_DONEp.qp_any());
     /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
     return _TAVE_PRELOAD_DONE_TRIGp;
   }
@@ -120,9 +120,10 @@ struct TileFetcher {
   /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
 
 
-  wire LOMA_LATCH_TILE_DAn(wire XYMU_RENDERINGp) const;
-  wire LABU_LATCH_TILE_DBn(wire XYMU_RENDERINGp) const;
+  wire LOMA_LATCH_TILE_DAn() const;
+  wire LABU_LATCH_TILE_DBn() const;
 
+  Signal _XYMU_RENDERINGp;
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?

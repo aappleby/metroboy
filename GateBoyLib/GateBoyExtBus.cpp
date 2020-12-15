@@ -161,14 +161,9 @@ void GateBoyExtBus::addr_latch_to_pins(
   PIN_EXT_A[15].pin_out(_SUZE_A15n, _RULO_A15n);
 }
 
-void GateBoyExtBus::pins_to_data_latch(
-  wire PIN_CPU_RDp,
-  wire PIN_CPU_LATCH_EXT,
-  wire TEXO_ADDR_VRAMn,
-  ExtDataLatch& ext_data_latch)
+void GateBoyExtBus::pins_to_data_latch(const GateBoyCpuBus& cpu_bus, ExtDataLatch& ext_data_latch)
 {
-  // External data bus -> latch -> CPU data bus
-  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(PIN_CPU_RDp, TEXO_ADDR_VRAMn, PIN_CPU_LATCH_EXT);
+  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.PIN_CPU_LATCH_EXT.qp_new());
   /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN_EXT_D[0].qn_new());
   /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn, PIN_EXT_D[1].qn_new());
   /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn, PIN_EXT_D[2].qn_new());
@@ -179,23 +174,17 @@ void GateBoyExtBus::pins_to_data_latch(
   /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn, PIN_EXT_D[7].qn_new());
 }
 
-void GateBoyExtBus::data_latch_to_cpu_bus(
-  const ExtDataLatch& ext_data_latch,
-  wire PIN_CPU_RDp,
-  wire PIN_CPU_LATCH_EXT,
-  wire TEXO_ADDR_VRAMn,
-  BusOut BUS_CPU_D_out[8])
+void GateBoyExtBus::data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus, const ExtDataLatch& ext_data_latch)
 {
-  // External data bus -> latch -> CPU data bus
-  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(PIN_CPU_RDp, TEXO_ADDR_VRAMn, PIN_CPU_LATCH_EXT);
-  /*#p08.RYMA*/ BUS_CPU_D_out[0].tri6_nn(_LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
-  /* p08.RUVO*/ BUS_CPU_D_out[1].tri6_nn(_LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
-  /* p08.RYKO*/ BUS_CPU_D_out[2].tri6_nn(_LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
-  /* p08.TAVO*/ BUS_CPU_D_out[3].tri6_nn(_LAVO_HOLDn, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
-  /* p08.TEPE*/ BUS_CPU_D_out[4].tri6_nn(_LAVO_HOLDn, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
-  /* p08.SAFO*/ BUS_CPU_D_out[5].tri6_nn(_LAVO_HOLDn, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
-  /* p08.SEVU*/ BUS_CPU_D_out[6].tri6_nn(_LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
-  /* p08.TAJU*/ BUS_CPU_D_out[7].tri6_nn(_LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
+  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.PIN_CPU_LATCH_EXT.qp_new());
+  /*#p08.RYMA*/ cpu_bus.BUS_CPU_D_out[0].tri6_nn(_LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
+  /* p08.RUVO*/ cpu_bus.BUS_CPU_D_out[1].tri6_nn(_LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
+  /* p08.RYKO*/ cpu_bus.BUS_CPU_D_out[2].tri6_nn(_LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
+  /* p08.TAVO*/ cpu_bus.BUS_CPU_D_out[3].tri6_nn(_LAVO_HOLDn, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
+  /* p08.TEPE*/ cpu_bus.BUS_CPU_D_out[4].tri6_nn(_LAVO_HOLDn, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
+  /* p08.SAFO*/ cpu_bus.BUS_CPU_D_out[5].tri6_nn(_LAVO_HOLDn, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
+  /* p08.SEVU*/ cpu_bus.BUS_CPU_D_out[6].tri6_nn(_LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
+  /* p08.TAJU*/ cpu_bus.BUS_CPU_D_out[7].tri6_nn(_LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 }
 
 void GateBoyExtBus::cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus)

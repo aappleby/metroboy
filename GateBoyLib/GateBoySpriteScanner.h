@@ -53,6 +53,7 @@ struct SpriteScanner {
   }
 
   /* p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(CENO_SCANNINGp.qn_new()); }
+  /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp; // Axxxxxxx
   /*p29.CENO*/ DFF17 CENO_SCANNINGp;    // xxxxExxx

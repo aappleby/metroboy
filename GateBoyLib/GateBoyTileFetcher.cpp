@@ -35,8 +35,8 @@ void TileFetcher::tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETC
   /* p27.MESU*/ _MESU_BFETCH_S1p.RSTn(NYXU_BFETCH_RSTn);
   /* p27.NYVA*/ _NYVA_BFETCH_S2p.RSTn(NYXU_BFETCH_RSTn);
 
-  /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid_any = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
-  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn_mid_any);
+  /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
+  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn_mid);
 
   /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17(_LEBO_AxCxExGx,               NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_new());
   /* p27.MESU*/ _MESU_BFETCH_S1p.dff17(_LAXU_BFETCH_S0p.qn_new(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_new());
@@ -44,44 +44,43 @@ void TileFetcher::tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETC
 
   /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_old = not1(MOCE_BFETCH_DONEn_old);
   /* p27.LOVY*/ LOVY_FETCH_DONEp.dff17(clk.MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, _LYRY_BFETCH_DONEp_old);
-  /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn_new_evn = and2(LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGp);
-  /* p27.LONY*/ LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn_new_evn);
+  /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGp);
+  /* p27.LONY*/ LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn);
   /* p27.LYZU*/ _LYZU_BFETCH_S0p_D1.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGp, _LAXU_BFETCH_S0p.qp_new());
 }
 
+wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGp);
 
-wire TileFetcher::LOMA_LATCH_TILE_DAn(wire XYMU_RENDERINGp) const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(XYMU_RENDERINGp);
+  /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
+  /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();
+  /* p27.NYVA*/ wire NYVA_BFETCH_S2p = _NYVA_BFETCH_S2p.qp_new();
 
-  /* p27.LAXU*/ wire LAXU_BFETCH_S0p_evn_new = _LAXU_BFETCH_S0p.qp_new();
-  /* p27.MESU*/ wire MESU_BFETCH_S1p_evn_new = _MESU_BFETCH_S1p.qp_new();
-  /* p27.NYVA*/ wire NYVA_BFETCH_S2p_evn_new = _NYVA_BFETCH_S2p.qp_new();
+  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1(LAXU_BFETCH_S0p);
+  /*#p27.NOFU*/ wire _NOFU_BFETCH_S2n = not1(NYVA_BFETCH_S2p);
 
-  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n_new_evn = not1(LAXU_BFETCH_S0p_evn_new);
-  /*#p27.NOFU*/ wire _NOFU_BFETCH_S2n_new_evn = not1(NYVA_BFETCH_S2p_evn_new);
+  /*#p27.MYSO*/ wire _MYSO_STORE_VRAM_DATA_TRIGp = nor3(_LOBY_RENDERINGn_new_xxx, _LAXE_BFETCH_S0n, _LYZU_BFETCH_S0p_D1.qp_new()); // MYSO fires on fetch phase 2, 6, 10
 
-  /*#p27.MYSO*/ wire _MYSO_STORE_VRAM_DATA_TRIGp_new = nor3(_LOBY_RENDERINGn_new_xxx, _LAXE_BFETCH_S0n_new_evn, _LYZU_BFETCH_S0p_D1.qp_new()); // MYSO fires on fetch phase 2, 6, 10
-
-  /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn_new = nand3(_MYSO_STORE_VRAM_DATA_TRIGp_new, MESU_BFETCH_S1p_evn_new, _NOFU_BFETCH_S2n_new_evn); // NYDY on fetch phase 6
-  /*#p32.METE*/ wire _METE_LATCH_TILE_DAp_new = not1(_NYDY_LATCH_TILE_DAn_new);
-  /*#p32.LOMA*/ wire _LOMA_LATCH_TILE_DAn_new = not1(_METE_LATCH_TILE_DAp_new);
-  return _LOMA_LATCH_TILE_DAn_new;
+  /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn = nand3(_MYSO_STORE_VRAM_DATA_TRIGp, MESU_BFETCH_S1p, _NOFU_BFETCH_S2n); // NYDY on fetch phase 6
+  /*#p32.METE*/ wire _METE_LATCH_TILE_DAp = not1(_NYDY_LATCH_TILE_DAn);
+  /*#p32.LOMA*/ wire _LOMA_LATCH_TILE_DAn = not1(_METE_LATCH_TILE_DAp);
+  return _LOMA_LATCH_TILE_DAn;
 }
 
-wire TileFetcher::LABU_LATCH_TILE_DBn(wire XYMU_RENDERINGp) const {
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(XYMU_RENDERINGp);
+wire TileFetcher::LABU_LATCH_TILE_DBn() const {
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp);
 
-  /* p27.LAXU*/ wire LAXU_BFETCH_S0p_evn_new = _LAXU_BFETCH_S0p.qp_new();
-  /* p27.MESU*/ wire MESU_BFETCH_S1p_evn_new = _MESU_BFETCH_S1p.qp_new();
+  /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
+  /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();
 
-  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n_new_evn = not1(LAXU_BFETCH_S0p_evn_new);
-  /*#p27.NAKO*/ wire _NAKO_BFETCH_S1n_new_evn = not1(MESU_BFETCH_S1p_evn_new);
+  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1(LAXU_BFETCH_S0p);
+  /*#p27.NAKO*/ wire _NAKO_BFETCH_S1n = not1(MESU_BFETCH_S1p);
 
-  /*#p27.MYSO*/ wire _MYSO_STORE_VRAM_DATA_TRIGp_new = nor3(_LOBY_RENDERINGn_new_xxx, _LAXE_BFETCH_S0n_new_evn, _LYZU_BFETCH_S0p_D1.qp_new()); // MYSO fires on fetch phase 2, 6, 10
+  /*#p27.MYSO*/ wire _MYSO_STORE_VRAM_DATA_TRIGp = nor3(_LOBY_RENDERINGn, _LAXE_BFETCH_S0n, _LYZU_BFETCH_S0p_D1.qp_new()); // MYSO fires on fetch phase 2, 6, 10
 
-  /* p27.MOFU*/ wire _MOFU_LATCH_TILE_DBp_new = and2(_MYSO_STORE_VRAM_DATA_TRIGp_new, _NAKO_BFETCH_S1n_new_evn); // MOFU fires on fetch phase 2 and 10
-  /* p32.LESO*/ wire _LESO_LATCH_TILE_DBn_new = not1(_MOFU_LATCH_TILE_DBp_new);
-  /* p??.LUVE*/ wire _LUVE_LATCH_TILE_DBp_new = not1(_LESO_LATCH_TILE_DBn_new); // Schematic wrong, was labeled AJAR
-  /* p32.LABU*/ wire _LABU_LATCH_TILE_DBn_new = not1(_LUVE_LATCH_TILE_DBp_new);
-  return _LABU_LATCH_TILE_DBn_new;
+  /* p27.MOFU*/ wire _MOFU_LATCH_TILE_DBp = and2(_MYSO_STORE_VRAM_DATA_TRIGp, _NAKO_BFETCH_S1n); // MOFU fires on fetch phase 2 and 10
+  /* p32.LESO*/ wire _LESO_LATCH_TILE_DBn = not1(_MOFU_LATCH_TILE_DBp);
+  /* p??.LUVE*/ wire _LUVE_LATCH_TILE_DBp = not1(_LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
+  /* p32.LABU*/ wire _LABU_LATCH_TILE_DBn = not1(_LUVE_LATCH_TILE_DBp);
+  return _LABU_LATCH_TILE_DBn;
 }

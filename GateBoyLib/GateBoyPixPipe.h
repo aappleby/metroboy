@@ -189,8 +189,8 @@ struct WindowRegisters {
   /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp() const { return not1(NYFO_WIN_MODE_TRIGn()); }
 
 
-  wire NAFY_WIN_MODE_TRIGn(wire XYMU_RENDERINGp) const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
+  wire NAFY_WIN_MODE_TRIGn() const {
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp);
     /* p24.NAFY*/ wire _NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp(), _LOBY_RENDERINGn);
     return _NAFY_WIN_MODE_TRIGn;
   }
@@ -216,6 +216,7 @@ struct WindowRegisters {
   /* p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
   /* p26.AXAD*/ wire AXAD_WIN_MODEn() const { return not1(PORE_WIN_MODEp()); }
 
+  Signal _XYMU_RENDERINGp;
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn;             // xxCxxxGx

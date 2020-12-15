@@ -47,20 +47,8 @@ struct GateBoyExtBus {
     wire TUTU_READ_BOOTROMp
   );
 
-  void pins_to_data_latch(
-    wire PIN_CPU_RDp,
-    wire PIN_CPU_LATCH_EXT,
-    wire TEXO_ADDR_VRAMn,
-    ExtDataLatch& ext_data_latch);
-
-  void data_latch_to_cpu_bus(
-    const ExtDataLatch& ext_data_latch,
-    wire PIN_CPU_RDp,
-    wire PIN_CPU_LATCH_EXT,
-    wire TEXO_ADDR_VRAMn,
-    BusOut BUS_CPU_D_out[8]
-  );
-
+  void pins_to_data_latch(const GateBoyCpuBus& cpu_bus, ExtDataLatch& ext_data_latch);
+  void data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus, const ExtDataLatch& ext_data_latch);
   void cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus);
 
   void set_pins(

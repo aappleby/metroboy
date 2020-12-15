@@ -12,6 +12,8 @@ struct GateBoyDMA {
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
   /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
 
+  Signal _XYMU_RENDERINGp;
+
   /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;  // Axxxxxxx
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx
   /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;      // xxxxExxx

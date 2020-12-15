@@ -130,28 +130,13 @@ struct GateBoy {
   );
 
   void tock_vram(
-    wire AVOR_SYS_RSTp,
-    wire XODO_VID_RSTp,
-    wire ATAL_xBxDxFxH,
     wire ABUZ_xxCDEFGH,
-    wire TUTO_DBG_VRAMp_new,
-    wire ATEJ_LINE_RSTp,
     wire TEVO_FETCH_TRIGp_new,
     wire NYXU_BFETCH_RSTn_new_xxx,
-    wire PARU_VBLANKp_new_evn,
-    wire WYMO_LCDC_WINENn_new,
     wire XYMU_RENDERINGp_new_xxx
   );
 
-  void tock_oam(
-    wire AVOR_SYS_RSTp,
-    wire ATAL_xBxDxFxH_clk_odd,
-    wire UVYT_ABCDxxxx_clkevn,
-    wire XOCE_xBCxxFGx_clkodd,
-    wire XYSO_xBCDxFGH_clkodd,
-    wire XYMU_RENDERINGp_new_xxx,
-    wire ACYL_SCANNINGp_new_evn
-  );
+  void tock_oam(wire XYMU_RENDERINGp, wire ACYL_SCANNINGp);
 
   void tock_zram(
   );

@@ -1075,7 +1075,7 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp_new());
 
   oam_temp_a.latch_to_temp(
-    cpu_bus.BUS_CPU_A,
+    cpu_bus,
     ACYL_SCANNINGp,
     pclk.UVYT_ABCDxxxx(),
     vclk.XYSO_xBCDxFGH(),
@@ -1084,7 +1084,7 @@ void GateBoy::tock_slow(int pass_index) {
     oam_latch_a);
 
   oam_temp_b.latch_to_temp(
-    cpu_bus.BUS_CPU_A,
+    cpu_bus,
     ACYL_SCANNINGp,
     pclk.UVYT_ABCDxxxx(),
     vclk.XYSO_xBCDxFGH(),
@@ -2562,15 +2562,14 @@ void GateBoy::tock_oam(
 
   auto dma_to_bus_addr = [](GateBoyOamBus& oam_bus, GateBoyDMA& dma){
     // DMA OAM write address driver
-    /* p04.DUGA*/ wire _DUGA_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
-    /* p28.FODO*/ oam_bus.BUS_OAM_An[0].tri6_nn(_DUGA_DMA_RUNNINGn, dma.NAKY_DMA_A00p.qp_new());
-    /* p28.FESA*/ oam_bus.BUS_OAM_An[1].tri6_nn(_DUGA_DMA_RUNNINGn, dma.PYRO_DMA_A01p.qp_new());
-    /* p28.FAGO*/ oam_bus.BUS_OAM_An[2].tri6_nn(_DUGA_DMA_RUNNINGn, dma.NEFY_DMA_A02p.qp_new());
-    /* p28.FYKY*/ oam_bus.BUS_OAM_An[3].tri6_nn(_DUGA_DMA_RUNNINGn, dma.MUTY_DMA_A03p.qp_new());
-    /* p28.ELUG*/ oam_bus.BUS_OAM_An[4].tri6_nn(_DUGA_DMA_RUNNINGn, dma.NYKO_DMA_A04p.qp_new());
-    /* p28.EDOL*/ oam_bus.BUS_OAM_An[5].tri6_nn(_DUGA_DMA_RUNNINGn, dma.PYLO_DMA_A05p.qp_new());
-    /* p28.FYDU*/ oam_bus.BUS_OAM_An[6].tri6_nn(_DUGA_DMA_RUNNINGn, dma.NUTO_DMA_A06p.qp_new());
-    /* p28.FETU*/ oam_bus.BUS_OAM_An[7].tri6_nn(_DUGA_DMA_RUNNINGn, dma.MUGU_DMA_A07p.qp_new());
+    /* p28.FODO*/ oam_bus.BUS_OAM_An[0].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.NAKY_DMA_A00p.qp_new());
+    /* p28.FESA*/ oam_bus.BUS_OAM_An[1].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.PYRO_DMA_A01p.qp_new());
+    /* p28.FAGO*/ oam_bus.BUS_OAM_An[2].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.NEFY_DMA_A02p.qp_new());
+    /* p28.FYKY*/ oam_bus.BUS_OAM_An[3].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.MUTY_DMA_A03p.qp_new());
+    /* p28.ELUG*/ oam_bus.BUS_OAM_An[4].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.NYKO_DMA_A04p.qp_new());
+    /* p28.EDOL*/ oam_bus.BUS_OAM_An[5].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.PYLO_DMA_A05p.qp_new());
+    /* p28.FYDU*/ oam_bus.BUS_OAM_An[6].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.NUTO_DMA_A06p.qp_new());
+    /* p28.FETU*/ oam_bus.BUS_OAM_An[7].tri6_nn(dma.DUGA_DMA_RUNNINGn(), dma.MUGU_DMA_A07p.qp_new());
   };
 
   dma_to_bus_addr(oam_bus, dma);
@@ -2578,8 +2577,7 @@ void GateBoy::tock_oam(
   auto sprite_index_to_bus_addr = [](GateBoyOamBus& oam_bus, GateBoyDMA& dma, SpriteStore& sprite_store, wire XYMU_RENDERINGp){
     wire VCC = 1;
     // OAM address from sprite fetcher
-    /*#p28.BOGE*/ wire _BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
-    /* p28.AJON*/ wire _AJON_RENDERINGp = and2(_BOGE_DMA_RUNNINGn, XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
+    /* p28.AJON*/ wire _AJON_RENDERINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
     /* p28.BETE*/ wire _BETE_SFETCHINGn = not1(_AJON_RENDERINGp);
     /* p28.GECA*/ oam_bus.BUS_OAM_An[0].tri6_nn(_BETE_SFETCHINGn, VCC);
     /* p28.WYDU*/ oam_bus.BUS_OAM_An[1].tri6_nn(_BETE_SFETCHINGn, VCC);
@@ -2631,10 +2629,8 @@ void GateBoy::tock_oam(
   // CPU write to OAM
 
   oam_bus.cpu_to_data_bus(
-    cpu_bus.BUS_CPU_A,
-    cpu_bus.BUS_CPU_D,
+    cpu_bus,
     UVYT_ABCDxxxx,
-    cpu_bus.TAPU_CPU_WRp,
     XYMU_RENDERINGp,
     dma.MATU_DMA_RUNNINGp.qp_new(),
     ACYL_SCANNINGp);
@@ -2682,9 +2678,7 @@ void GateBoy::tock_oam(
   // OAM bus to OAM data latch
 
   oam_latch_a.latch_bus(
-    cpu_bus.BUS_CPU_A,
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.CATY_LATCH_EXTp(),
+    cpu_bus,
     oam_bus.BUS_OAM_DAn,
     ACYL_SCANNINGp,
     XOCE_xBCxxFGx,
@@ -2692,9 +2686,7 @@ void GateBoy::tock_oam(
     oam_data_latch_a);
 
   oam_latch_b.latch_bus(
-    cpu_bus.BUS_CPU_A,
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.CATY_LATCH_EXTp(),
+    cpu_bus,
     oam_bus.BUS_OAM_DBn,
     ACYL_SCANNINGp,
     XOCE_xBCxxFGx,
@@ -2702,25 +2694,19 @@ void GateBoy::tock_oam(
     oam_data_latch_b);
 
   oam_latch_a.latch_to_cpu(
-    cpu_bus.BUS_CPU_A,
+    cpu_bus,
     oam_bus.BUS_OAM_An,
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.CATY_LATCH_EXTp(),
     dma.MATU_DMA_RUNNINGp.qp_new(),
     ACYL_SCANNINGp,
-    XYMU_RENDERINGp,
-    cpu_bus.BUS_CPU_D_out
+    XYMU_RENDERINGp
   );
 
   oam_latch_b.latch_to_cpu(
-    cpu_bus.BUS_CPU_A,
+    cpu_bus,
     oam_bus.BUS_OAM_An,
-    cpu_bus.TEDO_CPU_RDp,
-    cpu_bus.CATY_LATCH_EXTp(),
     dma.MATU_DMA_RUNNINGp.qp_new(),
     ACYL_SCANNINGp,
-    XYMU_RENDERINGp,
-    cpu_bus.BUS_CPU_D_out
+    XYMU_RENDERINGp
   );
 }
 

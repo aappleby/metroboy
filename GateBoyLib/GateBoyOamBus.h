@@ -6,9 +6,7 @@
 struct OamLatchA {
 
   void latch_bus(
-    Signal BUS_CPU_A[16],
-    wire TEDO_CPU_RDp,
-    wire CATY_LATCH_EXTp,
+    GateBoyCpuBus& cpu_bus,
     BusIO BUS_OAM_DAn[8],
     wire ACYL_SCANNINGp,
     wire XOCE_xBCxxFGx,
@@ -16,14 +14,11 @@ struct OamLatchA {
     uint8_t oam_data_latch_a);
 
   void latch_to_cpu(
-    Signal BUS_CPU_A[16],
+    GateBoyCpuBus& cpu_bus,
     BusOut BUS_OAM_An[8],
-    wire TEDO_CPU_RDp,
-    wire CATY_LATCH_EXTp,
     wire MATU_DMA_RUNNINGp,
     wire ACYL_SCANNINGp,
-    wire XYMU_RENDERINGp,
-    BusOut BUS_CPU_D_out[8]);
+    wire XYMU_RENDERINGp);
 
   /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n; // xBxDxFxx // Proooobably all odd clocks?
   /*p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n; // xBxDxFxx
@@ -39,9 +34,7 @@ struct OamLatchA {
 
 struct OamLatchB {
   void latch_bus(
-    Signal BUS_CPU_A[16],
-    wire TEDO_CPU_RDp,
-    wire CATY_LATCH_EXTp,
+    GateBoyCpuBus& cpu_bus,
     BusIO BUS_OAM_DBn[8],
     wire ACYL_SCANNINGp,
     wire XOCE_xBCxxFGx,
@@ -49,14 +42,11 @@ struct OamLatchB {
     uint8_t oam_data_latch_b);
 
   void latch_to_cpu(
-    Signal BUS_CPU_A[16],
+    GateBoyCpuBus& cpu_bus,
     BusOut BUS_OAM_An[8],
-    wire TEDO_CPU_RDp,
-    wire CATY_LATCH_EXTp,
     wire MATU_DMA_RUNNINGp,
     wire ACYL_SCANNINGp,
-    wire XYMU_RENDERINGp,
-    BusOut BUS_CPU_D_out[8]);
+    wire XYMU_RENDERINGp);
 
   /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n; // xBxxxFxx // Proooobably all odd clocks?
   /*p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n; // xBxxxFxx
@@ -74,9 +64,9 @@ struct OamLatchB {
 struct OamTempA {
 
   void latch_to_temp(
-    Signal BUS_CPU_A[16],
+    GateBoyCpuBus& cpu_bus,
     wire ACYL_SCANNINGp,
-    wire UVYT_ABCDxxxx_clk,
+    wire UVYT_ABCDxxxx,
     wire XYSO_xBCDxFGH,
     wire MATU_DMA_RUNNINGp,
     wire XUJY_OAM_CLKENp,
@@ -98,9 +88,9 @@ struct OamTempA {
 struct OamTempB {
 
   void latch_to_temp(
-    Signal BUS_CPU_A[16],
+    GateBoyCpuBus& cpu_bus,
     wire ACYL_SCANNINGp,
-    wire UVYT_ABCDxxxx_clk,
+    wire UVYT_ABCDxxxx,
     wire XYSO_xBCDxFGH,
     wire MATU_DMA_RUNNINGp,
     wire XUJY_OAM_CLKENp,
@@ -135,10 +125,8 @@ struct GateBoyOamBus {
     wire MARU_DMA_A15n);
 
   void cpu_to_data_bus(
-    Signal BUS_CPU_A[16],
-    Signal BUS_CPU_D[8],
+    GateBoyCpuBus& cpu_bus,
     wire UVYT_ABCDxxxx,
-    wire TAPU_CPU_WRp,
     wire XYMU_RENDERINGp,
     wire MATU_DMA_RUNNINGp,
     wire ACYL_SCANNINGp);

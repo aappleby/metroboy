@@ -10,6 +10,7 @@ struct GateBoyDMA {
   /* p04.LUFA*/ wire LUFA_DMA_VRAMp() const;
 
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
+  /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
 
   /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;  // Axxxxxxx
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx

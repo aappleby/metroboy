@@ -513,7 +513,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   d.dump_bitp("TUBO_WAITINGp ", gb->rst.TUBO_WAITINGp.state);
   d.dump_bitn("ASOL_POR_DONEn", gb->rst.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->rst.AFER_SYS_RSTp_evn.state);
+  d.dump_bitp("AFER_SYS_RSTp ", gb->rst.AFER_SYS_RSTp.state);
   d("\n");
   d.dump_bitp("AFUR_xxxxEFGHp", gb->pclk.AFUR_xxxxEFGHp.state);
   d.dump_bitp("ALEF_AxxxxFGHp", gb->pclk.ALEF_AxxxxFGHp.state);
@@ -588,17 +588,17 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
-  d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &gb->dma.NAFA_DMA_A08n_h), pack_u8p(8, &gb->dma.NAKY_DMA_A00p_evn));
+  d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &gb->dma.NAFA_DMA_A08n), pack_u8p(8, &gb->dma.NAKY_DMA_A00p));
   d("\n");
-  d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma.MATU_DMA_RUNNINGp_evn.state);
-  d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma.LYXE_DMA_LATCHp_evn  .state);
-  d.dump_bitp("MYTE_DMA_DONE    ", gb->dma.MYTE_DMA_DONE_evn    .state);
-  d.dump_bitp("LUVY_DMA_TRIG_d0 ", gb->dma.LUVY_DMA_TRIG_d0_evn .state);
-  d.dump_bitp("LENE_DMA_TRIG_d4 ", gb->dma.LENE_DMA_TRIG_d4_evn .state);
-  d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma.LOKY_DMA_LATCHp_evn  .state);
+  d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma.MATU_DMA_RUNNINGp.state);
+  d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma.LYXE_DMA_LATCHp  .state);
+  d.dump_bitp("MYTE_DMA_DONE    ", gb->dma.MYTE_DMA_DONE    .state);
+  d.dump_bitp("LUVY_DMA_TRIG_d0 ", gb->dma.LUVY_DMA_TRIG_d0 .state);
+  d.dump_bitp("LENE_DMA_TRIG_d4 ", gb->dma.LENE_DMA_TRIG_d4 .state);
+  d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma.LOKY_DMA_LATCHp  .state);
   d("\n");
-  d.dump_slice2p("DMA_A_LOW ", &gb->dma.NAKY_DMA_A00p_evn, 8);
-  d.dump_slice2n("DMA_A_HIGH", &gb->dma.NAFA_DMA_A08n_h, 8);
+  d.dump_slice2p("DMA_A_LOW ", &gb->dma.NAKY_DMA_A00p, 8);
+  d.dump_slice2n("DMA_A_HIGH", &gb->dma.NAFA_DMA_A08n, 8);
   d("\n");
 
   d("\002===== LCD =====\001\n");
@@ -611,7 +611,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx.NYPE_x113p.state);
-  d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx.RUTU_x113p_g.state);
+  d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx.RUTU_x113p.state);
 
   d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p.state);
   d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp.state);
@@ -644,17 +644,17 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p));
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap_evn.state);
-  d.dump_bitp("PUKU_WIN_HITn         ", gb->win_reg.PUKU_WIN_HITn_evn.state);
-  d.dump_bitp("RYDY_WIN_HITp         ", gb->win_reg.RYDY_WIN_HITp_evn.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
+  d.dump_bitp("PUKU_WIN_HITn         ", gb->win_reg.PUKU_WIN_HITn.state);
+  d.dump_bitp("RYDY_WIN_HITp         ", gb->win_reg.RYDY_WIN_HITp.state);
   d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->win_reg.SOVY_WIN_HITp.state);
-  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->win_reg.NOPA_WIN_MODE_Bp_odd.state);
-  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->win_reg.PYCO_WIN_MATCHp_odd.state);
-  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->win_reg.NUNU_WIN_MATCHp_evn.state);
-  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->win_reg.REJO_WY_MATCH_LATCHp_evn.state);
-  d.dump_bitp("SARY_WY_MATCH         ", gb->win_reg.SARY_WY_MATCHp_evn.state);
-  d.dump_bitp("RYFA_FETCHn_A         ", gb->win_reg.RYFA_WIN_FETCHn_A_evn.state);
-  d.dump_bitp("RENE_FETCHn_B         ", gb->win_reg.RENE_WIN_FETCHn_B_odd.state);
+  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
+  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->win_reg.PYCO_WIN_MATCHp.state);
+  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->win_reg.NUNU_WIN_MATCHp.state);
+  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->win_reg.REJO_WY_MATCH_LATCHp.state);
+  d.dump_bitp("SARY_WY_MATCH         ", gb->win_reg.SARY_WY_MATCHp.state);
+  d.dump_bitp("RYFA_FETCHn_A         ", gb->win_reg.RYFA_WIN_FETCHn_A.state);
+  d.dump_bitp("RENE_FETCHn_B         ", gb->win_reg.RENE_WIN_FETCHn_B.state);
 
   d.dump_bitp("RYKU_FINE_CNT0        ", gb->fine_scroll.RYKU_FINE_CNT0.state);
   d.dump_bitp("ROGA_FINE_CNT1        ", gb->fine_scroll.ROGA_FINE_CNT1.state);
@@ -664,7 +664,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
 
   d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_STAT_LYC_MATCHn.state);
-  d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp_xxx.state);
+  d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp.state);
   d("\n");
   d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);
   d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
@@ -675,12 +675,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
   d("\n");
   d.dump_slice2n("FF40 LCDC ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
-  d.dump_slice2n("FF41 STAT ", &gb->reg_stat.ROXE_STAT_HBI_ENn_h, 4);
-  d.dump_slice2n("FF47 BGP  ", &gb->reg_bgp. PAVO_BGP_D0n_h, 8);
-  d.dump_slice2n("FF48 OBP0 ", &gb->reg_obp0.XUFU_OBP0_D0n_h, 8);
-  d.dump_slice2n("FF49 OBP1 ", &gb->reg_obp1.MOXY_OBP1_D0n_h, 8);
-  d.dump_slice2n("FF4A WY   ", &gb->reg_wy.  NESO_WY0n_h, 8);
-  d.dump_slice2n("FF4B WX   ", &gb->reg_wx.  MYPA_WX0n_h, 8);
+  d.dump_slice2n("FF41 STAT ", &gb->reg_stat.ROXE_STAT_HBI_ENn, 4);
+  d.dump_slice2n("FF47 BGP  ", &gb->reg_bgp. PAVO_BGP_D0n, 8);
+  d.dump_slice2n("FF48 OBP0 ", &gb->reg_obp0.XUFU_OBP0_D0n, 8);
+  d.dump_slice2n("FF49 OBP1 ", &gb->reg_obp1.MOXY_OBP1_D0n, 8);
+  d.dump_slice2n("FF4A WY   ", &gb->reg_wy.  NESO_WY0n, 8);
+  d.dump_slice2n("FF4B WX   ", &gb->reg_wx.  MYPA_WX0n, 8);
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;
@@ -689,27 +689,27 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Tile Fetch =====\001\n");
-  d.dump_bitp   ("POKY_PRELOAD_LATCHp", gb->tile_fetcher.POKY_PRELOAD_LATCHp_odd.state);
-  d.dump_bitp   ("LONY_FETCHINGp     ", gb->tile_fetcher.LONY_FETCHINGp_xxx.state);
-  d.dump_bitp   ("LOVY_FETCH_DONEp   ", gb->tile_fetcher.LOVY_FETCH_DONEp_evn.state);
-  d.dump_bitp   ("NYKA_FETCH_DONEp   ", gb->tile_fetcher.NYKA_FETCH_DONEp_xxx.state);
-  d.dump_bitp   ("PORY_FETCH_DONEp   ", gb->tile_fetcher.PORY_FETCH_DONEp_xxx.state);
-  d.dump_bitp   ("PYGO_FETCH_DONEp   ", gb->tile_fetcher.PYGO_FETCH_DONEp_odd.state);
+  d.dump_bitp   ("POKY_PRELOAD_LATCHp", gb->tile_fetcher.POKY_PRELOAD_LATCHp.state);
+  d.dump_bitp   ("LONY_FETCHINGp     ", gb->tile_fetcher.LONY_FETCHINGp.state);
+  d.dump_bitp   ("LOVY_FETCH_DONEp   ", gb->tile_fetcher.LOVY_FETCH_DONEp.state);
+  d.dump_bitp   ("NYKA_FETCH_DONEp   ", gb->tile_fetcher.NYKA_FETCH_DONEp.state);
+  d.dump_bitp   ("PORY_FETCH_DONEp   ", gb->tile_fetcher.PORY_FETCH_DONEp.state);
+  d.dump_bitp   ("PYGO_FETCH_DONEp   ", gb->tile_fetcher.PYGO_FETCH_DONEp.state);
   d("\n");
-  d.dump_bitp   ("LAXU_BFETCH_S0p    ", gb->tile_fetcher.LAXU_BFETCH_S0p_evn.state);
-  d.dump_bitp   ("MESU_BFETCH_S1p    ", gb->tile_fetcher.MESU_BFETCH_S1p_evn.state);
-  d.dump_bitp   ("NYVA_BFETCH_S2p    ", gb->tile_fetcher.NYVA_BFETCH_S2p_evn.state);
-  d.dump_bitp   ("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher.LYZU_BFETCH_S0p_D1_odd.state);
+  d.dump_bitp   ("LAXU_BFETCH_S0p    ", gb->tile_fetcher._LAXU_BFETCH_S0p.state);
+  d.dump_bitp   ("MESU_BFETCH_S1p    ", gb->tile_fetcher._MESU_BFETCH_S1p.state);
+  d.dump_bitp   ("NYVA_BFETCH_S2p    ", gb->tile_fetcher._NYVA_BFETCH_S2p.state);
+  d.dump_bitp   ("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher._LYZU_BFETCH_S0p_D1.state);
   //d.dump_bitn   ("NYXU_BFETCH_RSTp   ", gb->NYXU_BFETCH_RSTn.state);
   d("\n");
-  d.dump_slice2p("WIN MAP X ", &gb->win_map_x.WYKA_WIN_X3_evn, 5);
-  d.dump_slice2p("WIN Y     ", &gb->win_line_y.VYNO_WIN_Y0_evn, 8);
+  d.dump_slice2p("WIN MAP X ", &gb->win_map_x.WYKA_WIN_X3, 5);
+  d.dump_slice2p("WIN Y     ", &gb->win_line_y.VYNO_WIN_Y0, 8);
   d("\n");
-  d.dump_slice2n("FF42 SCY  ", &gb->reg_scy.GAVE_SCY0n_h, 8);
-  d.dump_slice2n("FF43 SCX  ", &gb->reg_scx.DATY_SCX0n_h, 8);
+  d.dump_slice2n("FF42 SCY  ", &gb->reg_scy.GAVE_SCY0n, 8);
+  d.dump_slice2n("FF43 SCX  ", &gb->reg_scx.DATY_SCX0n, 8);
   d("\n");
-  d.dump_slice2n("TEMP A    ", &gb->tile_temp_a.LEGU_TILE_DA0n_odd, 8);
-  d.dump_slice2p("TEMP B    ", &gb->tile_temp_b.RAWU_TILE_DB0p_odd, 8);
+  d.dump_slice2n("TEMP A    ", &gb->tile_temp_a.LEGU_TILE_DA0n, 8);
+  d.dump_slice2p("TEMP B    ", &gb->tile_temp_b.RAWU_TILE_DB0p, 8);
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");

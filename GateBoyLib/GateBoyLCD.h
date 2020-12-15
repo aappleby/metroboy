@@ -7,13 +7,13 @@ struct RegLX {
   uint8_t get() const  { return pack_u8p(7, &SAXO_LX0p); }
 
   wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1(RUTU_x113p_g.qp_new());
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1(RUTU_x113p.qp_new());
     return _PURE_LINE_ENDn_new_evn;
   }
 
   void tock(wire XODO_VID_RSTp, wire TALU_xxCDEFxx_clkevn);
 
-  /*p21.RUTU*/ DFF17 RUTU_x113p_g;  // xxxxxxGx
+  /*p21.RUTU*/ DFF17 RUTU_x113p;  // xxxxxxGx
   /*p21.NYPE*/ DFF17 NYPE_x113p;  // xxCxxxxx
 
   /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G

@@ -18,7 +18,7 @@ void GateBoyPhaseClock::tock(const GateBoyResetDebug& rst) {
   PIN_CPU_BOGA_Axxxxxxx.setp(BOGA_Axxxxxxx());
 }
 
-void GateBoyVideoClock::tock(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk) {
+void GateBoyVideoClock::tock_vid(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk) {
   /* p29.WOSU*/ WOSU_AxxDExxH.dff17(pclk.XYFY_xBxDxFxH(),   rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_any());
   /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(pclk.XOTA_AxCxExGx(),   rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_any());
   /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_any()); // inverting the clock to VENA doesn't seem to break anything, which is really weird

@@ -658,6 +658,39 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
 
+struct GateBoyBootrom;
+struct GateBoyPhaseClock;
+struct GateBoyVideoClock;
+struct GateBoyCpuBus;
+struct GateBoyDMA;
+struct GateBoyExtBus;
+struct GateBoyInterrupts;
+struct GateBoyJoypad;
+struct GateBoyLCD;
+struct GateBoyOamBus;
+struct GateBoyPixPipe;
+struct GateBoyResetDebug;
+struct GateBoySerial;
+struct GateBoySpriteFetcher;
+struct GateBoySpriteScanner;
+struct GateBoySpriteStore;
+struct GateBoyTileFetcher;
+struct GateBoyDiv;
+struct GateBoyTimer;
+struct GateBoyVramBus;
+
+struct RegSCX;
+struct RegSCY;
+struct RegWX;
+struct RegWY;
+struct RegLY;
+struct RegLYC;
+struct RegStat;
+struct RegBGP;
+struct RegOBP0;
+struct RegOBP1;
+struct RegLCDC;
+
 /*#p01.ALUR*/ inline wire ALUR_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(AVOR_SYS_RSTp); }
 /*#p01.DULA*/ inline wire DULA_SYS_RSTp     (const wire AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
 /*#p01.CUNU*/ inline wire CUNU_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(DULA_SYS_RSTp(AVOR_SYS_RSTp)); }

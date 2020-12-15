@@ -1,36 +1,33 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct RegLYC;
-struct GateBoyCpuBus;
-
 //-----------------------------------------------------------------------------
 // FF4A - WY
 
 struct RegWY {
   void set(uint8_t wy) {
-    NESO_WY0n_h.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
-    NYRO_WY1n_h.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
-    NAGA_WY2n_h.reset((wy & 0x04) ? REG_D0C1 : REG_D1C1);
-    MELA_WY3n_h.reset((wy & 0x08) ? REG_D0C1 : REG_D1C1);
-    NULO_WY4n_h.reset((wy & 0x10) ? REG_D0C1 : REG_D1C1);
-    NENE_WY5n_h.reset((wy & 0x20) ? REG_D0C1 : REG_D1C1);
-    NUKA_WY6n_h.reset((wy & 0x40) ? REG_D0C1 : REG_D1C1);
-    NAFU_WY7n_h.reset((wy & 0x80) ? REG_D0C1 : REG_D1C1);
+    NESO_WY0n.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
+    NYRO_WY1n.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
+    NAGA_WY2n.reset((wy & 0x04) ? REG_D0C1 : REG_D1C1);
+    MELA_WY3n.reset((wy & 0x08) ? REG_D0C1 : REG_D1C1);
+    NULO_WY4n.reset((wy & 0x10) ? REG_D0C1 : REG_D1C1);
+    NENE_WY5n.reset((wy & 0x20) ? REG_D0C1 : REG_D1C1);
+    NUKA_WY6n.reset((wy & 0x40) ? REG_D0C1 : REG_D1C1);
+    NAFU_WY7n.reset((wy & 0x80) ? REG_D0C1 : REG_D1C1);
   }
 
-  int get() const { return pack_u8n(8, &NESO_WY0n_h); }
+  int get() const { return pack_u8n(8, &NESO_WY0n); }
 
-  void tock(GateBoyCpuBus& cpu_bus, wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp);
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
-  /*p23.NESO*/ DFF9 NESO_WY0n_h; // xxxxxxxH
-  /*p23.NYRO*/ DFF9 NYRO_WY1n_h; // xxxxxxxH
-  /*p23.NAGA*/ DFF9 NAGA_WY2n_h; // xxxxxxxH
-  /*p23.MELA*/ DFF9 MELA_WY3n_h; // xxxxxxxH
-  /*p23.NULO*/ DFF9 NULO_WY4n_h; // xxxxxxxH
-  /*p23.NENE*/ DFF9 NENE_WY5n_h; // xxxxxxxH
-  /*p23.NUKA*/ DFF9 NUKA_WY6n_h; // xxxxxxxH
-  /*p23.NAFU*/ DFF9 NAFU_WY7n_h; // xxxxxxxH
+  /*p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
+  /*p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
+  /*p23.NAGA*/ DFF9 NAGA_WY2n; // xxxxxxxH
+  /*p23.MELA*/ DFF9 MELA_WY3n; // xxxxxxxH
+  /*p23.NULO*/ DFF9 NULO_WY4n; // xxxxxxxH
+  /*p23.NENE*/ DFF9 NENE_WY5n; // xxxxxxxH
+  /*p23.NUKA*/ DFF9 NUKA_WY6n; // xxxxxxxH
+  /*p23.NAFU*/ DFF9 NAFU_WY7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -38,28 +35,28 @@ struct RegWY {
 
 struct RegWX {
   void set(uint8_t wx) {
-    MYPA_WX0n_h.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
-    NOFE_WX1n_h.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
-    NOKE_WX2n_h.reset((wx & 0x04) ? REG_D0C1 : REG_D1C1);
-    MEBY_WX3n_h.reset((wx & 0x08) ? REG_D0C1 : REG_D1C1);
-    MYPU_WX4n_h.reset((wx & 0x10) ? REG_D0C1 : REG_D1C1);
-    MYCE_WX5n_h.reset((wx & 0x20) ? REG_D0C1 : REG_D1C1);
-    MUVO_WX6n_h.reset((wx & 0x40) ? REG_D0C1 : REG_D1C1);
-    NUKU_WX7n_h.reset((wx & 0x80) ? REG_D0C1 : REG_D1C1);
+    MYPA_WX0n.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
+    NOFE_WX1n.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
+    NOKE_WX2n.reset((wx & 0x04) ? REG_D0C1 : REG_D1C1);
+    MEBY_WX3n.reset((wx & 0x08) ? REG_D0C1 : REG_D1C1);
+    MYPU_WX4n.reset((wx & 0x10) ? REG_D0C1 : REG_D1C1);
+    MYCE_WX5n.reset((wx & 0x20) ? REG_D0C1 : REG_D1C1);
+    MUVO_WX6n.reset((wx & 0x40) ? REG_D0C1 : REG_D1C1);
+    NUKU_WX7n.reset((wx & 0x80) ? REG_D0C1 : REG_D1C1);
   }
 
-  int get() const        { return pack_u8n(8, &MYPA_WX0n_h); }
+  int get() const { return pack_u8n(8, &MYPA_WX0n); }
 
-  void tock(GateBoyCpuBus& cpu_bus, wire AVOR_SYS_RSTp, wire TEDO_CPU_RDp, wire TAPU_CPU_WRp);
+  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
-  /*p23.MYPA*/ DFF9 MYPA_WX0n_h; // xxxxxxxH
-  /*p23.NOFE*/ DFF9 NOFE_WX1n_h; // xxxxxxxH
-  /*p23.NOKE*/ DFF9 NOKE_WX2n_h; // xxxxxxxH
-  /*p23.MEBY*/ DFF9 MEBY_WX3n_h; // xxxxxxxH
-  /*p23.MYPU*/ DFF9 MYPU_WX4n_h; // xxxxxxxH
-  /*p23.MYCE*/ DFF9 MYCE_WX5n_h; // xxxxxxxH
-  /*p23.MUVO*/ DFF9 MUVO_WX6n_h; // xxxxxxxH
-  /*p23.NUKU*/ DFF9 NUKU_WX7n_h; // xxxxxxxH
+  /*p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
+  /*p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH
+  /*p23.NOKE*/ DFF9 NOKE_WX2n; // xxxxxxxH
+  /*p23.MEBY*/ DFF9 MEBY_WX3n; // xxxxxxxH
+  /*p23.MYPU*/ DFF9 MYPU_WX4n; // xxxxxxxH
+  /*p23.MYCE*/ DFF9 MYCE_WX5n; // xxxxxxxH
+  /*p23.MUVO*/ DFF9 MUVO_WX6n; // xxxxxxxH
+  /*p23.NUKU*/ DFF9 NUKU_WX7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -69,28 +66,28 @@ struct PixCounter {
 
   void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
     // Pixel counter, has carry lookahead because this can increment every tcycle
-    /* p21.RYBO*/ wire RYBO_old_evn = xor2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
-    /* p21.XUKE*/ wire XUKE_old_evn = and2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old());
-    /* p21.XYLE*/ wire XYLE_old_evn = and2(XODU_PX2p.qp_old(), XUKE_old_evn);
-    /* p21.XEGY*/ wire XEGY_old_evn = xor2(XODU_PX2p.qp_old(), XUKE_old_evn); // feet facing gnd
-    /* p21.XORA*/ wire XORA_old_evn = xor2(XYDO_PX3p.qp_old(), XYLE_old_evn); // feet facing gnd
+    /* p21.RYBO*/ wire RYBO_old = xor2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
+    /* p21.XUKE*/ wire XUKE_old = and2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old());
+    /* p21.XYLE*/ wire XYLE_old = and2(XODU_PX2p.qp_old(), XUKE_old);
+    /* p21.XEGY*/ wire XEGY_old = xor2(XODU_PX2p.qp_old(), XUKE_old); // feet facing gnd
+    /* p21.XORA*/ wire XORA_old = xor2(XYDO_PX3p.qp_old(), XYLE_old); // feet facing gnd
 
     /* p21.XEHO*/ XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEHO_PX0p.qn_old());
-    /* p21.SAVY*/ SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, RYBO_old_evn);
-    /* p21.XODU*/ XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEGY_old_evn);
-    /* p21.XYDO*/ XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XORA_old_evn);
+    /* p21.SAVY*/ SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, RYBO_old);
+    /* p21.XODU*/ XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEGY_old);
+    /* p21.XYDO*/ XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XORA_old);
 
-    /* p24.TOCA*/ wire TOCA_new_evn = not1(XYDO_PX3p.qp_new());
-    /* p21.SAKE*/ wire SAKE_old_evn = xor2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
-    /* p21.TYBA*/ wire TYBA_old_evn = and2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
-    /* p21.SURY*/ wire SURY_old_evn = and2(TAKO_PX6p.qp_old(), TYBA_old_evn);
-    /* p21.TYGE*/ wire TYGE_old_evn = xor2(TAKO_PX6p.qp_old(), TYBA_old_evn);
-    /* p21.ROKU*/ wire ROKU_old_evn = xor2(SYBE_PX7p.qp_old(), SURY_old_evn);
+    /* p24.TOCA*/ wire TOCA_new = not1(XYDO_PX3p.qp_new());
+    /* p21.SAKE*/ wire SAKE_old = xor2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
+    /* p21.TYBA*/ wire TYBA_old = and2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
+    /* p21.SURY*/ wire SURY_old = and2(TAKO_PX6p.qp_old(), TYBA_old);
+    /* p21.TYGE*/ wire TYGE_old = xor2(TAKO_PX6p.qp_old(), TYBA_old);
+    /* p21.ROKU*/ wire ROKU_old = xor2(SYBE_PX7p.qp_old(), SURY_old);
 
-    /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new_evn, TADY_LINE_RSTn, TUHU_PX4p.qn_any());
-    /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new_evn, TADY_LINE_RSTn, SAKE_old_evn);
-    /* p21.TAKO*/ TAKO_PX6p.dff17(TOCA_new_evn, TADY_LINE_RSTn, TYGE_old_evn);
-    /* p21.SYBE*/ SYBE_PX7p.dff17(TOCA_new_evn, TADY_LINE_RSTn, ROKU_old_evn);
+    /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn, TUHU_PX4p.qn_any());
+    /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn, SAKE_old);
+    /* p21.TAKO*/ TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn, TYGE_old);
+    /* p21.SYBE*/ SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn, ROKU_old);
   }
 
   /*#p21.XUGU*/ wire XANO_PX167p() const {
@@ -126,52 +123,52 @@ struct RegStat {
 
   /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn;       // xxCxxxxx
 
-  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn_h; // xxxxxxxH
-  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn_h; // xxxxxxxH
-  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn_h; // xxxxxxxH
-  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn_h; // xxxxxxxH
+  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
+  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn; // xxxxxxxH
+  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn; // xxxxxxxH
+  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
 // FF47 - BGP
 
 struct RegBGP {
-  /*p36.PAVO*/ DFF8p PAVO_BGP_D0n_h; // xxxxxxxH
-  /*p36.NUSY*/ DFF8p NUSY_BGP_D1n_h; // xxxxxxxH
-  /*p36.PYLU*/ DFF8p PYLU_BGP_D2n_h; // xxxxxxxH
-  /*p36.MAXY*/ DFF8p MAXY_BGP_D3n_h; // xxxxxxxH
-  /*p36.MUKE*/ DFF8p MUKE_BGP_D4n_h; // xxxxxxxH
-  /*p36.MORU*/ DFF8p MORU_BGP_D5n_h; // xxxxxxxH
-  /*p36.MOGY*/ DFF8p MOGY_BGP_D6n_h; // xxxxxxxH
-  /*p36.MENA*/ DFF8p MENA_BGP_D7n_h; // xxxxxxxH
+  /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
+  /*p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
+  /*p36.PYLU*/ DFF8p PYLU_BGP_D2n; // xxxxxxxH
+  /*p36.MAXY*/ DFF8p MAXY_BGP_D3n; // xxxxxxxH
+  /*p36.MUKE*/ DFF8p MUKE_BGP_D4n; // xxxxxxxH
+  /*p36.MORU*/ DFF8p MORU_BGP_D5n; // xxxxxxxH
+  /*p36.MOGY*/ DFF8p MOGY_BGP_D6n; // xxxxxxxH
+  /*p36.MENA*/ DFF8p MENA_BGP_D7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
 // FF48 - OBP0
 
 struct RegOBP0 {
-  /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n_h; // xxxxxxxH
-  /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n_h; // xxxxxxxH
-  /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n_h; // xxxxxxxH
-  /*p36.XALO*/ DFF8p XALO_OBP0_D3n_h; // xxxxxxxH
-  /*p36.XERU*/ DFF8p XERU_OBP0_D4n_h; // xxxxxxxH
-  /*p36.XYZE*/ DFF8p XYZE_OBP0_D5n_h; // xxxxxxxH
-  /*p36.XUPO*/ DFF8p XUPO_OBP0_D6n_h; // xxxxxxxH
-  /*p36.XANA*/ DFF8p XANA_OBP0_D7n_h; // xxxxxxxH
+  /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
+  /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
+  /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n; // xxxxxxxH
+  /*p36.XALO*/ DFF8p XALO_OBP0_D3n; // xxxxxxxH
+  /*p36.XERU*/ DFF8p XERU_OBP0_D4n; // xxxxxxxH
+  /*p36.XYZE*/ DFF8p XYZE_OBP0_D5n; // xxxxxxxH
+  /*p36.XUPO*/ DFF8p XUPO_OBP0_D6n; // xxxxxxxH
+  /*p36.XANA*/ DFF8p XANA_OBP0_D7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
 // FF49 - OBP1
 
 struct RegOBP1 {
-  /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n_h; // xxxxxxxH
-  /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n_h; // xxxxxxxH
-  /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n_h; // xxxxxxxH
-  /*p36.LOSE*/ DFF8p LOSE_OBP1_D3n_h; // xxxxxxxH
-  /*p36.LUNE*/ DFF8p LUNE_OBP1_D4n_h; // xxxxxxxH
-  /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n_h; // xxxxxxxH
-  /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n_h; // xxxxxxxH
-  /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n_h; // xxxxxxxH
+  /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
+  /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
+  /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n; // xxxxxxxH
+  /*p36.LOSE*/ DFF8p LOSE_OBP1_D3n; // xxxxxxxH
+  /*p36.LUNE*/ DFF8p LUNE_OBP1_D4n; // xxxxxxxH
+  /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n; // xxxxxxxH
+  /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n; // xxxxxxxH
+  /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -188,7 +185,7 @@ struct WindowRegisters {
     wire ROZE_FINE_COUNT_7n);
 
   wire NUNY_WIN_MODE_TRIGp() const {
-    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap_evn.qp_any(), NOPA_WIN_MODE_Bp_odd.qn_any());
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap.qp_any(), NOPA_WIN_MODE_Bp.qn_any());
     return _NUNY_WIN_MODE_TRIGp;
   }
   /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn() const { return not1(NUNY_WIN_MODE_TRIGp()); }
@@ -202,38 +199,38 @@ struct WindowRegisters {
   }
 
   wire SUZU_WIN_FIRST_TILEne() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp_evn.qp_any());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp.qp_any());
     /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp.qp_any());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
     return _SUZU_WIN_FIRST_TILEne;
   }
 
   wire SEKO_WIN_FETCH_TRIGp() const {
-    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A_evn.qn_any(), RENE_WIN_FETCHn_B_odd.qp_any());
+    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A.qn_any(), RENE_WIN_FETCHn_B.qp_any());
     return _SEKO_WIN_FETCH_TRIGp;
   }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp_evn.qp_any()); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp.qp_any()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp() const { return not1(SYLO_WIN_HITn()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
 
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not1(PYNU_WIN_MODE_Ap_evn.qp_new()); }
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not1(PYNU_WIN_MODE_Ap.qp_new()); }
   /* p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
   /* p26.AXAD*/ wire AXAD_WIN_MODEn() const { return not1(PORE_WIN_MODEp()); }
 
 
-  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_evn;            // AxxxxxGx
-  /*p27.PUKU*/ Gate PUKU_WIN_HITn_evn;                   // xxCxxxGx
-  /*p27.RYDY*/ Gate RYDY_WIN_HITp_evn;                   // xxCxxxGx
-  /*p27.SOVY*/ DFF17 SOVY_WIN_HITp;                      // xxxDxxxH
-  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_odd;               // xBxDxFxH
-  /*p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_odd;                // xxxDxxxH
-  /*p27.NUNU*/ DFF17 NUNU_WIN_MATCHp_evn;                // xxxxExGx
-  /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp_evn;        // xxCxxxxx
-  /*p27.SARY*/ DFF17 SARY_WY_MATCHp_evn;                 // xxCxxxxx
-  /*p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A_evn;              // AxCxExGx
-  /*p27.RENE*/ DFF17 RENE_WIN_FETCHn_B_odd;              // xBxDxFxH
+  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
+  /*p27.PUKU*/ Gate PUKU_WIN_HITn;             // xxCxxxGx
+  /*p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
+  /*p27.SOVY*/ DFF17 SOVY_WIN_HITp;            // xxxDxxxH
+  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;         // xBxDxFxH
+  /*p27.PYCO*/ DFF17 PYCO_WIN_MATCHp;          // xxxDxxxH
+  /*p27.NUNU*/ DFF17 NUNU_WIN_MATCHp;          // xxxxExGx
+  /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp;  // xxCxxxxx
+  /*p27.SARY*/ DFF17 SARY_WY_MATCHp;           // xxCxxxxx
+  /*p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A;        // AxCxExGx
+  /*p27.RENE*/ DFF17 RENE_WIN_FETCHn_B;        // xBxDxFxH
 };
 
 struct FineScroll {
@@ -244,17 +241,17 @@ struct FineScroll {
     /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
     /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
 
-    /*#p27.PAHA*/ wire _PAHA_RENDERINGn_new_evn = not1(XYMU_RENDERINGp);
-    /*#p27.PASO*/ wire _PASO_FINE_RST_new = nor2(_PAHA_RENDERINGn_new_evn, TEVO_FETCH_TRIGp);
-    /*#p27.RYKU*/ RYKU_FINE_CNT0.RSTn(_PASO_FINE_RST_new);
-    /*#p27.ROGA*/ ROGA_FINE_CNT1.RSTn(_PASO_FINE_RST_new);
-    /*#p27.RUBU*/ RUBU_FINE_CNT2.RSTn(_PASO_FINE_RST_new);
+    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGp);
+    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, TEVO_FETCH_TRIGp);
+    /*#p27.RYKU*/ RYKU_FINE_CNT0.RSTn(_PASO_FINE_RST);
+    /*#p27.ROGA*/ ROGA_FINE_CNT1.RSTn(_PASO_FINE_RST);
+    /*#p27.RUBU*/ RUBU_FINE_CNT2.RSTn(_PASO_FINE_RST);
 
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_new_evn = nand3(RUBU_FINE_CNT2.qp_new(), ROGA_FINE_CNT1.qp_new(), RYKU_FINE_CNT0.qp_new());
-    /*#p27.PECU*/ wire _PECU_FINE_CLK_AxCxExGx_clknew_evn = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n_new_evn);
-    /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK_AxCxExGx_clknew_evn, _PASO_FINE_RST_new, RYKU_FINE_CNT0.qn_new());
-    /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17(RYKU_FINE_CNT0.qn_new(),            _PASO_FINE_RST_new, ROGA_FINE_CNT1.qn_new());
-    /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17(ROGA_FINE_CNT1.qn_new(),            _PASO_FINE_RST_new, RUBU_FINE_CNT2.qn_new());
+    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(RUBU_FINE_CNT2.qp_new(), ROGA_FINE_CNT1.qp_new(), RYKU_FINE_CNT0.qp_new());
+    /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n);
+    /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17(_PECU_FINE_CLK,          _PASO_FINE_RST, RYKU_FINE_CNT0.qn_new());
+    /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17(RYKU_FINE_CNT0.qn_new(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn_new());
+    /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17(ROGA_FINE_CNT1.qn_new(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn_new());
   }
 
   /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_old() {
@@ -283,7 +280,7 @@ struct PPURegisters {
   wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_any(); }
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-  /*p21.VOGA*/ DFF17 VOGA_HBLANKp_xxx;                   // ABxDxFxH Clocked on odd, reset on A
+  /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
 };
 
 //-----------------------------------------------------------------------------

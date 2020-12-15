@@ -43,21 +43,21 @@ struct GateBoyExtBus {
     const GateBoyDMA& dma,
     const ExtAddrLatch& ext_addr_latch,
     Signal BUS_CPU_A[16],
-    wire ABUZ_xxCDEFGH_clk_evn,
-    wire TUTU_READ_BOOTROMp_new
+    wire ABUZ_xxCDEFGH,
+    wire TUTU_READ_BOOTROMp
   );
 
   void pins_to_data_latch(
     wire PIN_CPU_RDp,
     wire PIN_CPU_LATCH_EXT,
-    wire TEXO_ADDR_VRAMn_ext,
+    wire TEXO_ADDR_VRAMn,
     ExtDataLatch& ext_data_latch);
 
   void data_latch_to_cpu_bus(
     const ExtDataLatch& ext_data_latch,
     wire PIN_CPU_RDp,
     wire PIN_CPU_LATCH_EXT,
-    wire TEXO_ADDR_VRAMn_ext,
+    wire TEXO_ADDR_VRAMn,
     BusOut BUS_CPU_D_out[8]
   );
 
@@ -76,9 +76,9 @@ struct GateBoyExtBus {
     Signal BUS_CPU_A[16],
     wire PIN_CPU_RDp,
     wire PIN_CPU_WRp,
-    wire ABUZ_xxCDEFGH_clk_evn,
-    wire TEXO_ADDR_VRAMn_ext,
-    wire APOV_CPU_WRp_clkevn
+    wire ABUZ_xxCDEFGH,
+    wire TEXO_ADDR_VRAMn,
+    wire APOV_CPU_WRp
   );
 
   void cart_to_pins(const uint8_t* cart_buf, uint8_t* cart_ram, uint8_t* ext_ram);

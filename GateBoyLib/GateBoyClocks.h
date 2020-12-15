@@ -63,6 +63,7 @@ struct GateBoyPhaseClock {
   /*#p01.BYRY*/ wire BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH()); }
   /*#p01.BUDE*/ wire BUDE_xxxxEFGH() const { return not1(BYRY_ABCDxxxx()); }
   /* p01.UVYT*/ wire UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); }
+  /* p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); }
 
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
   /*p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;
@@ -88,7 +89,7 @@ struct GateBoyPhaseClock {
 //-----------------------------------------------------------------------------
 
 struct GateBoyVideoClock {
-  void tock(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk);
+  void tock_vid(const GateBoyResetDebug& rst, const GateBoyPhaseClock& pclk);
 
   /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
   /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }

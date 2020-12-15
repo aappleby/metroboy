@@ -6,7 +6,7 @@ struct GateBoyPhaseClock;
 //-----------------------------------------------------------------------------
 
 struct GateBoyResetDebug {
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp_evn.qp_any(), ASOL_POR_DONEn.qp_any()); }
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_any(), ASOL_POR_DONEn.qp_any()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
@@ -31,16 +31,12 @@ struct GateBoyResetDebug {
   /* p07.UBET*/ wire UBETp()           const { return not1(PIN_SYS_T1.qp_any()); }
   /* p07.UVAR*/ wire UVARp()           const { return not1(PIN_SYS_T2.qp_any()); }
   /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_SYS_T1.qp_any(), UVARp()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p()     const { return and2(PIN_SYS_T2.qp_any(), UBETp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_SYS_T2.qp_any(), UBETp()); }
   /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_SYS_RST.qp_any()); }
   /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
-
-  wire TUTO_DBG_VRAMp(wire UNOR_MODE_DBG2p) {
-    /* p25.TUTO*/ wire _TUTO_DBG_VRAMp_new = and2(UNOR_MODE_DBG2p, SOTO_DBG_VRAMp.qn_new());
-    return _TUTO_DBG_VRAMp_new;
-  }
+  /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
 
   void tock(const GateBoyPhaseClock& pclk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
   void tock2(wire XONA_LCDC_LCDENp);
@@ -49,7 +45,7 @@ struct GateBoyResetDebug {
 
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ DFF13 AFER_SYS_RSTp_evn; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
+  /*p01.AFER*/ DFF13 AFER_SYS_RSTp; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
   // This is here because it controls the reset signals for all the graphics stuff.

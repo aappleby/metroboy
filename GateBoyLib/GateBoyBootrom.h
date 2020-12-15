@@ -11,7 +11,7 @@ struct GateBoyBootrom {
 
   void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, uint8_t* boot_buf);
 
-  wire TUTU_READ_BOOTROMp_new(Signal BUS_CPU_A[16]);
+  wire TUTU_READ_BOOTROMp(Signal BUS_CPU_A[16]);
 
   /*p07.TEPU*/ DFF17 BOOT_BITn_h;
 };

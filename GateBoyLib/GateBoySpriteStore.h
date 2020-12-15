@@ -106,11 +106,11 @@ struct SpriteCounter {
   void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
   SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
 
-  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp_evn;    // AxCxExGx
-  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0_evn; // AxxxExxx
-  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1_evn; // AxxxExxx
-  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2_evn; // AxxxExxx
-  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3_evn; // AxxxExxx
+  /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
+  /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
+  /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
+  /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx
+  /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3; // AxxxExxx
 };
 
 //-----------------------------------------------------------------------------
@@ -149,12 +149,12 @@ struct SpriteStore {
   //----------------------------------------
   // Sprite index latch selects which store to write
 
-  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p_evn; // AxxxExxx
-  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p_evn; // AxxxExxx
-  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p_evn; // AxxxExxx
-  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p_evn; // AxxxExxx
-  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p_evn; // AxxxExxx
-  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p_evn; // AxxxExxx
+  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
+  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
+  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
+  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
+  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
+  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
 
   //----------------------------------------
   // All 10 of the sprite stores

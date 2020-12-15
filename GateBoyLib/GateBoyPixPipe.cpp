@@ -81,7 +81,7 @@ void RegStat::tock(
 
   /* p21.RYJU*/ wire _RYJU_FF41_WRn_clk_evn = not1(_SEPA_FF41_WRp_clk);
   /* p21.PAGO*/ wire _PAGO_LYC_MATCH_RST_new_evn = or2(WESY_SYS_RSTn(AVOR_SYS_RSTp), _RYJU_FF41_WRn_clk_evn);
-  /* p21.RUPO*/ RUPO_STAT_LYC_MATCHn_evn.nor_latch(_PAGO_LYC_MATCH_RST_new_evn, reg_lyc.ROPO_LY_MATCH_SYNCp_c.qp_new());
+  /* p21.RUPO*/ RUPO_STAT_LYC_MATCHn.nor_latch(_PAGO_LYC_MATCH_RST_new_evn, reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new());
 
   // FF41 STAT
   /* p21.SADU*/ wire _SADU_STAT_MODE0n_new  = nor2(XYMU_RENDERINGp, PARU_VBLANKp); // die NOR
@@ -91,7 +91,7 @@ void RegStat::tock(
   /* p21.VAVE*/ wire _VAVE_FF41_RDn_ext = not1(_TOBE_FF41_RDp_ext);
   /*#p21.TEBY*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_TOBE_FF41_RDp_ext, _SADU_STAT_MODE0n_new);
   /*#p21.WUGA*/ cpu_bus.BUS_CPU_D_out[1].tri6_pn(_TOBE_FF41_RDp_ext, _XATY_STAT_MODE1n_new);
-  /*#p21.SEGO*/ cpu_bus.BUS_CPU_D_out[2].tri6_pn(_TOBE_FF41_RDp_ext, RUPO_STAT_LYC_MATCHn_evn.qp_new());
+  /*#p21.SEGO*/ cpu_bus.BUS_CPU_D_out[2].tri6_pn(_TOBE_FF41_RDp_ext, RUPO_STAT_LYC_MATCHn.qp_new());
   /* p21.PUZO*/ cpu_bus.BUS_CPU_D_out[3].tri6_nn(_VAVE_FF41_RDn_ext, ROXE_STAT_HBI_ENn_h.qp_new());
   /* p21.POFO*/ cpu_bus.BUS_CPU_D_out[4].tri6_nn(_VAVE_FF41_RDn_ext, RUFO_STAT_VBI_ENn_h.qp_new());
   /* p21.SASY*/ cpu_bus.BUS_CPU_D_out[5].tri6_nn(_VAVE_FF41_RDn_ext, REFE_STAT_OAI_ENn_h.qp_new());

@@ -526,12 +526,12 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->timer.NYDU_TIMA7p_DELAY_evn.state);
+  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->timer.NYDU_TIMA7p_DELAY.state);
   d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->timer.MOBA_TIMER_OVERFLOWp.state);
-  d.dump_slice2p("DIV ", &gb->div.UKUP_DIV00p_evn, 16);
-  d.dump_slice2p("TIMA", &gb->timer.REGA_TIMA0p_evn, 8);
-  d.dump_slice2p("TMA ", &gb->timer.SABU_TMA0p_h, 8);
-  d.dump_slice2p("TAC ", &gb->timer.SOPU_TAC0p_h, 3);
+  d.dump_slice2p("DIV ", &gb->div.UKUP_DIV00p, 16);
+  d.dump_slice2p("TIMA", &gb->timer.REGA_TIMA0p, 8);
+  d.dump_slice2p("TMA ", &gb->timer.SABU_TMA0p, 8);
+  d.dump_slice2p("TAC ", &gb->timer.SOPU_TAC0p, 3);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
@@ -575,16 +575,16 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Buses =====\001\n");
   d.dump_slice2p("BUS_CPU_D_out    ", &gb->cpu_bus.BUS_CPU_D_out, 8);
-  d.dump_bitp   ("MAKA_HOLD_MEMp   ",  gb->oam_bus.MAKA_LATCH_EXTp_evn.state);
-  d.dump_bitp   ("WUJE_CPU_OAM_WRn ",  gb->oam_bus.WUJE_CPU_OAM_WRn_evn.state);
+  d.dump_bitp   ("MAKA_HOLD_MEMp   ",  gb->oam_bus.MAKA_LATCH_EXTp.state);
+  d.dump_bitp   ("WUJE_CPU_OAM_WRn ",  gb->oam_bus.WUJE_CPU_OAM_WRn.state);
   d.dump_slice2p("EXT_ADDR         ", &gb->ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("EXT_DATA         ", &gb->ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   d.dump_slice2n("SPRITE TEMP A    ", &gb->sprite_temp_a.REWO_SPRITE_DA0n, 8);
   d.dump_slice2n("SPRITE TEMP B    ", &gb->sprite_temp_b.PEFO_SPRITE_DB0n, 8);
-  d.dump_slice2n("OAM LATCH A      ", &gb->oam_latch_a.YDYV_OAM_LATCH_DA0n_odd, 8);
-  d.dump_slice2n("OAM LATCH B      ", &gb->oam_latch_b.XYKY_OAM_LATCH_DB0n_odd, 8);
-  d.dump_slice2p("OAM TEMP A       ", &gb->oam_temp_a.XUSO_OAM_DA0p_evn, 8);
-  d.dump_slice2p("OAM TEMP B       ", &gb->oam_temp_b.YLOR_OAM_DB0p_evn, 8);
+  d.dump_slice2n("OAM LATCH A      ", &gb->oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
+  d.dump_slice2n("OAM LATCH B      ", &gb->oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
+  d.dump_slice2p("OAM TEMP A       ", &gb->oam_temp_a.XUSO_OAM_DA0p, 8);
+  d.dump_slice2p("OAM TEMP B       ", &gb->oam_temp_b.YLOR_OAM_DB0p, 8);
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
@@ -610,25 +610,25 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\n");
 
-  d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx.NYPE_x113p_c.state);
+  d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx.NYPE_x113p.state);
   d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx.RUTU_x113p_g.state);
 
-  d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p_evn.state);
-  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp_c.state);
+  d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p.state);
+  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp.state);
 
-  d.dump_bitp("POPU_VBLANKp       ", gb->lcd.POPU_VBLANKp_evn.state);
-  d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd.SYGU_LINE_STROBE_evn.state);
-  d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd.MEDA_VSYNC_OUTn_evn.state);
-  d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd.LUCA_LINE_EVENp_evn.state);
-  d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd.NAPO_FRAME_EVENp_evn.state);
-  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd.CATU_LINE_P000p_a.state);
-  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd.ANEL_LINE_P002p_c.state);
+  d.dump_bitp("POPU_VBLANKp       ", gb->lcd.POPU_VBLANKp.state);
+  d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd.SYGU_LINE_STROBE.state);
+  d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd.MEDA_VSYNC_OUTn.state);
+  d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd.LUCA_LINE_EVENp.state);
+  d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd.NAPO_FRAME_EVENp.state);
+  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd.CATU_LINE_P000p.state);
+  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd.ANEL_LINE_P002p.state);
   d("\n");
-  d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p_evn.state,  7);
-  d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p_evn.state,  8);
+  d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p.state,  7);
+  d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p.state,  8);
   d.dump_slice2n("LYC ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
   d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE.state);
-  d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd.PAHO_X_8_SYNC_odd.state);
+  d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd.PAHO_X_8_SYNC.state);
   d.dump_bitp("RUJU                  ", gb->lcd.RUJU.state);
   d.dump_bitp("POFY                  ", gb->lcd.POFY.state);
   d.dump_bitp("POME                  ", gb->lcd.POME.state);
@@ -663,18 +663,18 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
 
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_STAT_LYC_MATCHn_evn.state);
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_STAT_LYC_MATCHn.state);
   d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp_xxx.state);
   d("\n");
   d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);
-  d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0_evn, 8);
-  d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0_evn, 8);
-  d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0_evn, 8);
-  d.dump_slice2p("SPR PIPE B", &gb->pix_pipes.NYLU_SPR_PIPE_B0_evn, 8);
-  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0_evn, 8);
-  d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0_evn, 8);
+  d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
+  d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0, 8);
+  d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0, 8);
+  d.dump_slice2p("SPR PIPE B", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
+  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
+  d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
   d("\n");
-  d.dump_slice2n("FF40 LCDC ", &gb->reg_lcdc.VYXE_LCDC_BGENn_h, 8);
+  d.dump_slice2n("FF40 LCDC ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
   d.dump_slice2n("FF41 STAT ", &gb->reg_stat.ROXE_STAT_HBI_ENn_h, 4);
   d.dump_slice2n("FF47 BGP  ", &gb->reg_bgp. PAVO_BGP_D0n_h, 8);
   d.dump_slice2n("FF48 OBP0 ", &gb->reg_obp0.XUFU_OBP0_D0n_h, 8);
@@ -713,47 +713,47 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
-  d.dump_bitp("TAKA_SFETCH_RUNNINGp", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp_xxx.state);
-  d.dump_bitp("SOBU_SFETCH_REQp    ", gb->sprite_fetcher.SOBU_SFETCH_REQp_odd    .state);
-  d.dump_bitp("SUDA_SFETCH_REQp    ", gb->sprite_fetcher.SUDA_SFETCH_REQp_evn    .state);
-  d.dump_bitp("TOXE_SFETCH_S0      ", gb->sprite_fetcher.TOXE_SFETCH_S0p_odd     .state);
-  d.dump_bitp("TULY_SFETCH_S1      ", gb->sprite_fetcher.TULY_SFETCH_S1p_odd     .state);
-  d.dump_bitp("TESE_SFETCH_S2      ", gb->sprite_fetcher.TESE_SFETCH_S2p_odd     .state);
-  d.dump_bitp("TYFO_SFETCH_S0_D1   ", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1_evn  .state);
-  d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2_odd  .state);
-  d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4_odd  .state);
-  d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5_evn  .state);
+  d.dump_bitp("TAKA_SFETCH_RUNNINGp", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp.state);
+  d.dump_bitp("SOBU_SFETCH_REQp    ", gb->sprite_fetcher.SOBU_SFETCH_REQp    .state);
+  d.dump_bitp("SUDA_SFETCH_REQp    ", gb->sprite_fetcher.SUDA_SFETCH_REQp    .state);
+  d.dump_bitp("TOXE_SFETCH_S0      ", gb->sprite_fetcher.TOXE_SFETCH_S0p     .state);
+  d.dump_bitp("TULY_SFETCH_S1      ", gb->sprite_fetcher.TULY_SFETCH_S1p     .state);
+  d.dump_bitp("TESE_SFETCH_S2      ", gb->sprite_fetcher.TESE_SFETCH_S2p     .state);
+  d.dump_bitp("TYFO_SFETCH_S0_D1   ", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1  .state);
+  d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2  .state);
+  d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4  .state);
+  d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5  .state);
   //d.dump_bitp("WUTY_SFETCH_DONEp   ", gb->WUTY_SFETCH_DONEp                  .state);
   d("\n");
 
   d("\002===== Sprite Scan =====\001\n");
-  d("SCAN INDEX        : %02d\n", pack_u8p(6, &gb->scan_counter.YFEL_SCAN0_evn));
+  d("SCAN INDEX        : %02d\n", pack_u8p(6, &gb->scan_counter.YFEL_SCAN0));
   d("\n");
-  d.dump_bitp("BESU_SCANNINGp   ", gb->sprite_scanner.BESU_SCANNINGp_evn.state);
-  d.dump_bitp("CENO_SCANNINGp   ", gb->sprite_scanner.CENO_SCANNINGp_evn.state);
-  d.dump_bitp("BYBA_SCAN_DONE_Ap", gb->sprite_scanner.BYBA_SCAN_DONE_Ap_evn.state);
-  d.dump_bitp("DOBA_SCAN_DONE_Bp", gb->sprite_scanner.DOBA_SCAN_DONE_Bp_xxx.state);
+  d.dump_bitp("BESU_SCANNINGp   ", gb->sprite_scanner.BESU_SCANNINGp.state);
+  d.dump_bitp("CENO_SCANNINGp   ", gb->sprite_scanner.CENO_SCANNINGp.state);
+  d.dump_bitp("BYBA_SCAN_DONE_Ap", gb->sprite_scanner.BYBA_SCAN_DONE_Ap.state);
+  d.dump_bitp("DOBA_SCAN_DONE_Bp", gb->sprite_scanner.DOBA_SCAN_DONE_Bp.state);
   d("\n");
-  d.dump_bitp("YFEL_SCAN0       ", gb->scan_counter.YFEL_SCAN0_evn.state);
-  d.dump_bitp("WEWY_SCAN1       ", gb->scan_counter.WEWY_SCAN1_evn.state);
-  d.dump_bitp("GOSO_SCAN2       ", gb->scan_counter.GOSO_SCAN2_evn.state);
-  d.dump_bitp("ELYN_SCAN3       ", gb->scan_counter.ELYN_SCAN3_evn.state);
-  d.dump_bitp("FAHA_SCAN4       ", gb->scan_counter.FAHA_SCAN4_evn.state);
-  d.dump_bitp("FONY_SCAN5       ", gb->scan_counter.FONY_SCAN5_evn.state);
+  d.dump_bitp("YFEL_SCAN0       ", gb->scan_counter.YFEL_SCAN0.state);
+  d.dump_bitp("WEWY_SCAN1       ", gb->scan_counter.WEWY_SCAN1.state);
+  d.dump_bitp("GOSO_SCAN2       ", gb->scan_counter.GOSO_SCAN2.state);
+  d.dump_bitp("ELYN_SCAN3       ", gb->scan_counter.ELYN_SCAN3.state);
+  d.dump_bitp("FAHA_SCAN4       ", gb->scan_counter.FAHA_SCAN4.state);
+  d.dump_bitp("FONY_SCAN5       ", gb->scan_counter.FONY_SCAN5.state);
   d("\n");
 
   const auto& ss = gb->sprite_store;
   d("\002===== Sprite Store =====\001\n");
-  d.dump_bitp   ("DEZY_STORE_ENn", gb->sprite_counter.DEZY_COUNT_CLKp_evn.state);
-  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p_evn));
-  d.dump_slice2p("SPRITE COUNT", &gb->sprite_counter.BESE_SPRITE_COUNT0_evn, 4);
+  d.dump_bitp   ("DEZY_STORE_ENn", gb->sprite_counter.DEZY_COUNT_CLKp.state);
+  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p));
+  d.dump_slice2p("SPRITE COUNT", &gb->sprite_counter.BESE_SPRITE_COUNT0, 4);
   d("\n");
-  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_store.XADU_SPRITE_IDX0p_evn.state);
-  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_store.XEDY_SPRITE_IDX1p_evn.state);
-  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_store.ZUZE_SPRITE_IDX2p_evn.state);
-  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_store.XOBE_SPRITE_IDX3p_evn.state);
-  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_store.YDUF_SPRITE_IDX4p_evn.state);
-  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_store.XECU_SPRITE_IDX5p_evn.state);
+  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_store.XADU_SPRITE_IDX0p.state);
+  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_store.XEDY_SPRITE_IDX1p.state);
+  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_store.ZUZE_SPRITE_IDX2p.state);
+  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_store.XOBE_SPRITE_IDX3p.state);
+  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_store.YDUF_SPRITE_IDX4p.state);
+  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_store.XECU_SPRITE_IDX5p.state);
 
   d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp_evn.qp_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n_odd), pack_u8n(4, &ss.GYHO_STORE0_L0n_odd), pack_u8n(8, &ss.XEPE_STORE0_X0p_odd));
   d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp_evn.qp_old(), pack_u8n(6, &ss.CADU_STORE1_I0n_odd), pack_u8n(4, &ss.AMES_STORE1_L0n_odd), pack_u8n(8, &ss.DANY_STORE1_X0p_odd));

@@ -29,6 +29,14 @@ struct GateBoyCpuBus {
   /* p07.RYCU*/ wire RYCU_FE00_FFFF    () { return not1(TUNA_0000_FDFF()); }
   /* p25.SYRO*/ wire SYRO_FE00_FFFF    () { return not1(TUNA_0000_FDFF()); }
 
+  /* p04.DECY*/ wire DECY_LATCH_EXTn   () { return not1(PIN_CPU_LATCH_EXT.qp_new()); }
+  /* p04.CATY*/ wire CATY_LATCH_EXTp   () { return not1(DECY_LATCH_EXTn()); }
+
+  /* p07.AJAS*/ wire AJAS_CPU_RDn      () { return not1(TEDO_CPU_RDp); }
+  /* p07.ASOT*/ wire ASOT_CPU_RDp      () { return not1(AJAS_CPU_RDn()); }
+  /* p28.MYNU*/ wire MYNU_CPU_RDn      () { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
+  /* p28.LEKO*/ wire LEKO_CPU_RDp      () { return not1(MYNU_CPU_RDn()); }
+
   /* p03.TOVY*/ wire TOVY_A00n         () { return not1(BUS_CPU_A[0]); }
   /* p08.TOLA*/ wire TOLA_A01n         () { return not1(BUS_CPU_A[1]); }
   /* p22.XOLA*/ wire XOLA_A00n         () { return not1(BUS_CPU_A[0]); }

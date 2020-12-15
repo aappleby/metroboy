@@ -1334,80 +1334,11 @@ void GateBoy::tock_vram(
   vram_bus.cpu_data_to_bus_data(cpu_bus, SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn);
   vram_bus.bus_data_to_pins(SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn);
 
-  //----------------------------------------
-  // PIN_VRAM_CSn
+  vram_bus.set_pin_cs(rst.TUTO_VRAM_DBGp(), SERE_CPU_VRAM_RDp, dma.LUFA_DMA_VRAMp(), tile_fetcher.LENA_BFETCHINGp(), sprite_fetcher.TEXY_SFETCHINGp());
+  vram_bus.set_pin_wr(rst.TUTO_VRAM_DBGp(), SERE_CPU_VRAM_RDp, cpu_bus.TUJA_CPU_VRAM_WRp());
+  vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), SALE_CPU_VRAM_WRn, dma.LUFA_DMA_VRAMp(), XYMU_RENDERINGp, tile_fetcher.LONY_FETCHINGp.qp_new(), sprite_fetcher.SOHO_SPR_VRAM_RDp());
 
-  [
-    this,
-    SERE_CPU_VRAM_RDp,
-    SALE_CPU_VRAM_WRn,
-    XYMU_RENDERINGp
-  ]() {
-    /* p29.SAKY*/ wire _SAKY_SFETCHn = nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGp);
-    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(_SAKY_SFETCHn, _TEPA_RENDERINGp); // def or
-    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
-    /* p27.LUSU*/ wire _LUSU_FETCHINGn = not1(tile_fetcher.LONY_FETCHINGp.qp_new());
-    /* p27.LENA*/ wire _LENA_BFETCHINGp = not1(_LUSU_FETCHINGn);
-    /*#p25.SUTU*/ wire _SUTU_MCSn   = nor4(_LENA_BFETCHINGp, dma.LUFA_DMA_VRAMp(), _TEXY_SFETCHINGp, SERE_CPU_VRAM_RDp);
-
-    /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(rst.TUTO_VRAM_DBGp());
-    /* p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn);
-    /* p25.SEWO*/ wire _SEWO_MCSn_D =  or2(_SUTU_MCSn, rst.TUTO_VRAM_DBGp());
-    /* p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
-    /* p25.SETY*/ wire _SETY_MCSp_D = not1(_SEWO_MCSn_D);
-
-    vram_bus.PIN_VRAM_CSn.pin_out(_SOKY_MCSp_A, _SETY_MCSp_D); // FIXME not actually using this pin, but we should
-
-    /* p25.TUJA*/ wire _TUJA_CPU_VRAM_WRp = and2(cpu_bus.SOSE_ADDR_VRAMp(), cpu_bus.APOV_CPU_WRp);
-    /* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
-    /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(rst.TUTO_VRAM_DBGp(), _SUDO_MWRp, _TUJA_CPU_VRAM_WRp);
-    /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
-
-    /* p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn);
-    /* p25.SOFY*/ wire _SOFY_MWRn_D =  or2(_SOHY_MWRn, rst.TUTO_VRAM_DBGp());
-    /* p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
-    /* p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
-
-    vram_bus.PIN_VRAM_WRn.pin_out(_SYSY_MWRp_A, _RAGU_MWRp_D);
-
-    /*#p29.TYFO*/ wire _TYFO_SFETCH_S0p_D1 = sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new();
-    /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
-    /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(_TYFO_SFETCH_S0p_D1, _TYTU_SFETCH_S0n);
-
-    /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and2(_TACU_SPR_SEQ_5_TRIG, _TEXY_SFETCHINGp);
-
-    /*#p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(dma.LUFA_DMA_VRAMp(), XYMU_RENDERINGp);
-    /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn, _XANE_VRAM_LOCKn);
-    /* p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(_SOHO_SPR_VRAM_RDp);
-    /* p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not1(tile_fetcher.LONY_FETCHINGp.qp_new());
-    /* p25.APAM*/ wire _APAM_DMA_VRAMn    = not1(dma.LUFA_DMA_VRAMp());
-    /* p25.RACU*/ wire _RACU_MOEn   = and4(_RYLU_CPU_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAMn); // def and
-
-    /* p25.SEMA*/ wire _SEMA_MOEn_A = and2(_RACU_MOEn, _RACO_DBG_VRAMn);
-    /* p25.RUTE*/ wire _RUTE_MOEn_D =  or2(_RACU_MOEn, rst.TUTO_VRAM_DBGp()); // schematic wrong, second input is RACU
-    /* p25.REFO*/ wire _REFO_MOEn_A = not1(_SEMA_MOEn_A);
-    /* p25.SAHA*/ wire _SAHA_MOEn_D = not1(_RUTE_MOEn_D);
-    vram_bus.PIN_VRAM_OEn.pin_out(_REFO_MOEn_A, _SAHA_MOEn_D);
-  }();
-
-  //----------------------------------------
-  // The actual VRAM
-
-  uint16_t vram_addr_latch;
-  uint8_t vram_data_latch;
-
-  [this, &vram_addr_latch, &vram_data_latch](){
-    vram_addr_latch = pack_u16p(13, vram_bus.PIN_VRAM_Ap);
-    vram_data_latch = pack_u8p (8,  vram_bus.PIN_VRAM_Dp);
-
-    if (!vram_bus.PIN_VRAM_WRn.qp_new()) {
-      vid_ram[vram_addr_latch] = vram_data_latch;
-    }
-    if (!vram_bus.PIN_VRAM_OEn.qp_new()) {
-      vram_data_latch = vid_ram[vram_addr_latch];
-    }
-  }();
+  vram_bus.tock_vram(vid_ram);
 
   //----------------------------------------
   // VRAM pins to VRAM bus
@@ -1415,8 +1346,7 @@ void GateBoy::tock_vram(
   [
     this,
     SALE_CPU_VRAM_WRn,
-    SERE_CPU_VRAM_RDp,
-    vram_data_latch
+    SERE_CPU_VRAM_RDp
   ](){
     /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn);
     /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
@@ -1425,15 +1355,6 @@ void GateBoy::tock_vram(
     /*#p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
     /*#p25.RELA*/ wire _RELA_CBD_TO_VPDp =  or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
     /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
-
-    vram_bus.PIN_VRAM_Dp[0].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x01);
-    vram_bus.PIN_VRAM_Dp[1].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x02);
-    vram_bus.PIN_VRAM_Dp[2].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x04);
-    vram_bus.PIN_VRAM_Dp[3].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x08);
-    vram_bus.PIN_VRAM_Dp[4].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x10);
-    vram_bus.PIN_VRAM_Dp[5].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x20);
-    vram_bus.PIN_VRAM_Dp[6].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x40);
-    vram_bus.PIN_VRAM_Dp[7].pin_in(!vram_bus.PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x80);
 
     /* p25.RODY*/ vram_bus.BUS_VRAM_Dp[0].tri6_pn(_RENA_CBD_TO_VPDn, vram_bus.PIN_VRAM_Dp[0].qn_new());
     /* p25.REBA*/ vram_bus.BUS_VRAM_Dp[1].tri6_pn(_RENA_CBD_TO_VPDn, vram_bus.PIN_VRAM_Dp[1].qn_new());

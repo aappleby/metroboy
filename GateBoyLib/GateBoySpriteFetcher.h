@@ -5,52 +5,59 @@
 
 struct SpriteFetcher {
 
+  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
+
+  /* p29.TEXY*/ wire TEXY_SFETCHINGp() const {
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);
+    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
+    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
+    return _TEXY_SFETCHINGp;
+  }
+
   /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn() const { return not1(TAKA_SFETCH_RUNNINGp.qp_any()); }
 
+  /* p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not1(TOXE_SFETCH_S0p.qp_new()); }
+
+  /* p29.TUVO*/ wire TUVO_PPU_OAM_RDp() const {
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);
+    return nor3(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new(), TESE_SFETCH_S2p.qp_new());
+  }
+
   wire TACU_SPR_SEQ_5_TRIG() const {
-    /*#p29.TYFO*/ wire _TYFO_SFETCH_S0p_D1 = TYFO_SFETCH_S0p_D1.qp_new();
-    /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(TOXE_SFETCH_S0p.qp_new());
-    /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(_TYFO_SFETCH_S0p_D1, _TYTU_SFETCH_S0n);
+    /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n());
     return _TACU_SPR_SEQ_5_TRIG;
   }
 
   wire XUJY_OAM_CLKENp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);
-    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new(), TESE_SFETCH_S2p.qp_new());
-    /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(_TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG());
+    /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp(), TACU_SPR_SEQ_5_TRIG());
     /* p25.XUJY*/ wire _XUJY_OAM_CLKENp = not1(_VAPE_OAM_CLKENn);
     return _XUJY_OAM_CLKENp;
   }
 
 
   wire XUJA_SPR_OAM_LATCHn() const {
-    /*#p29.TYFO*/ wire _TYFO_SFETCH_S0p_D1 = TYFO_SFETCH_S0p_D1.qp_new();
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);
-    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new(), TESE_SFETCH_S2p.qp_new());
-    /* p28.WEFY*/ wire _WEFY_SPR_READp = and2(_TUVO_PPU_OAM_RDp, _TYFO_SFETCH_S0p_D1);
+    /* p28.WEFY*/ wire _WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp(), TYFO_SFETCH_S0p_D1.qp_new());
     /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(_WEFY_SPR_READp);
     return _XUJA_SPR_OAM_LATCHn;
   }
 
   /* p29.WUTY*/ wire WUTY_SFETCH_DONE_TRIGp() const {
-    /* p29.TYNO*/ wire _TYNO_new = nand3(TOXE_SFETCH_S0p.qp_new(), SEBA_SFETCH_S1p_D5.qp_new(), VONU_SFETCH_S1p_D4.qp_new());
-    /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn_new = or2(TYFO_SFETCH_S0p_D1.qn_new(), _TYNO_new);
-    /* p29.WUTY*/ wire _WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn_new);
+    /* p29.TYNO*/ wire _TYNO = nand3(TOXE_SFETCH_S0p.qp_new(), SEBA_SFETCH_S1p_D5.qp_new(), VONU_SFETCH_S1p_D4.qp_new());
+    /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn = or2(TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
+    /* p29.WUTY*/ wire _WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
     return _WUTY_SFETCH_DONE_TRIGp;
   }
 
   wire SYCU_SFETCH_S0pe() const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn_new = not1(_XYMU_RENDERINGp);
-    /* p29.TYTU*/ wire _TYTU_SFETCH_S0n_new = not1(TOXE_SFETCH_S0p.qp_new());
-    /*#p29.TYFO*/ wire _TYFO_SFETCH_S0p_D1_new = TYFO_SFETCH_S0p_D1.qp_new();
-    /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe_new = nor3(_TYTU_SFETCH_S0n_new, _LOBY_RENDERINGn_new, _TYFO_SFETCH_S0p_D1_new);
-    return _SYCU_SFETCH_S0pe_new;
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp);
+    /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, TYFO_SFETCH_S0p_D1.qp_new());
+    return _SYCU_SFETCH_S0pe;
   }
 
   wire SECA_SFETCH_RSTn(wire ROSY_VID_RSTp, wire ATEJ_LINE_RSTp) const {
-    /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp_new = and2(SOBU_SFETCH_REQp.qp_new(), SUDA_SFETCH_REQp.qn_new());
-    /*#p27.SECA*/ wire _SECA_SFETCH_RSTn_new = nor3(_RYCE_SFETCH_TRIGp_new, ROSY_VID_RSTp, ATEJ_LINE_RSTp);
-    return _SECA_SFETCH_RSTn_new;
+    /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp_new(), SUDA_SFETCH_REQp.qn_new());
+    /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, ROSY_VID_RSTp, ATEJ_LINE_RSTp);
+    return _SECA_SFETCH_RSTn;
   }
 
   wire XADO_STORE_SPRITE_An() const {
@@ -69,9 +76,13 @@ struct SpriteFetcher {
     return _PUCO_STORE_SPRITE_Bn;
   }
 
-  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
-
   /*#p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not1(VONU_SFETCH_S1p_D4.qn_new()); }
+
+  wire SOHO_SPR_VRAM_RDp() const {
+    /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG(), TEXY_SFETCHINGp());
+    return _SOHO_SPR_VRAM_RDp;
+  }
+
 
 
   Signal _XYMU_RENDERINGp;

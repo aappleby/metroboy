@@ -321,3 +321,76 @@ void GateBoyVramBus::bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM
   PIN_VRAM_Dp[6].pin_out(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n);
   PIN_VRAM_Dp[7].pin_out(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n);
 }
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyVramBus::set_pin_cs(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire LUFA_DMA_VRAMp, wire LENA_BFETCHINGp, wire TEXY_SFETCHINGp) {
+  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp, LUFA_DMA_VRAMp, TEXY_SFETCHINGp, SERE_CPU_VRAM_RDp);
+
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
+  /* p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn);
+  /* p25.SEWO*/ wire _SEWO_MCSn_D =  or2(_SUTU_MCSn, TUTO_VRAM_DBGp);
+  /* p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
+  /* p25.SETY*/ wire _SETY_MCSp_D = not1(_SEWO_MCSn_D);
+
+  PIN_VRAM_CSn.pin_out(_SOKY_MCSp_A, _SETY_MCSp_D); // FIXME not actually using this pin, but we should
+}
+
+void GateBoyVramBus::set_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp) {
+  /* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
+  /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp, _SUDO_MWRp, TUJA_CPU_VRAM_WRp);
+  /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
+
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
+  /* p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn);
+  /* p25.SOFY*/ wire _SOFY_MWRn_D =  or2(_SOHY_MWRn, TUTO_VRAM_DBGp);
+  /* p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
+  /* p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
+
+  PIN_VRAM_WRn.pin_out(_SYSY_MWRp_A, _RAGU_MWRp_D);
+}
+
+void GateBoyVramBus::set_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wire LUFA_DMA_VRAMp, wire XYMU_RENDERINGp, wire LONY_BFETCHINGp, wire SOHO_SPR_VRAM_RDp) {
+  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(LUFA_DMA_VRAMp, XYMU_RENDERINGp);
+  /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn, _XANE_VRAM_LOCKn);
+  /* p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(SOHO_SPR_VRAM_RDp);
+  /* p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not1(LONY_BFETCHINGp);
+  /* p25.APAM*/ wire _APAM_DMA_VRAMn    = not1(LUFA_DMA_VRAMp);
+
+  /* p25.RACU*/ wire _RACU_MOEn   = and4(_RYLU_CPU_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAMn); // def and
+
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
+  /* p25.SEMA*/ wire _SEMA_MOEn_A = and2(_RACU_MOEn, _RACO_DBG_VRAMn);
+  /* p25.RUTE*/ wire _RUTE_MOEn_D =  or2(_RACU_MOEn, TUTO_VRAM_DBGp); // schematic wrong, second input is RACU
+  /* p25.REFO*/ wire _REFO_MOEn_A = not1(_SEMA_MOEn_A);
+  /* p25.SAHA*/ wire _SAHA_MOEn_D = not1(_RUTE_MOEn_D);
+  PIN_VRAM_OEn.pin_out(_REFO_MOEn_A, _SAHA_MOEn_D);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyVramBus::tock_vram(uint8_t* vid_ram) {
+  uint16_t vram_addr_latch;
+  uint8_t vram_data_latch;
+
+  vram_addr_latch = pack_u16p(13, PIN_VRAM_Ap);
+  vram_data_latch = pack_u8p (8,  PIN_VRAM_Dp);
+
+  if (!PIN_VRAM_WRn.qp_new()) {
+    vid_ram[vram_addr_latch] = vram_data_latch;
+  }
+  if (!PIN_VRAM_OEn.qp_new()) {
+    vram_data_latch = vid_ram[vram_addr_latch];
+  }
+
+  PIN_VRAM_Dp[0].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x01);
+  PIN_VRAM_Dp[1].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x02);
+  PIN_VRAM_Dp[2].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x04);
+  PIN_VRAM_Dp[3].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x08);
+  PIN_VRAM_Dp[4].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x10);
+  PIN_VRAM_Dp[5].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x20);
+  PIN_VRAM_Dp[6].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x40);
+  PIN_VRAM_Dp[7].pin_in(!PIN_VRAM_OEn.qp_new(), vram_data_latch & 0x80);
+}
+
+//------------------------------------------------------------------------------------------------------------------------

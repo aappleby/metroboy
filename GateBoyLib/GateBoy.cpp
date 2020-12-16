@@ -347,7 +347,7 @@ void GateBoy::next_phase() {
   combine_hash(cumulative_hash, phase_hash);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
@@ -426,65 +426,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   clk.tock(rst);
 
-  //-----------------------------------------------------------------------------
-  // SOC-to-CPU control signals
+  //----------------------------------------
 
-  uint16_t cpu_addr = DELTA_HA ? bus_req.addr & 0x00FF : bus_req.addr;
 
-  // PIN_CPU_RDp / PIN_CPU_WRp
-  if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    cpu_bus.PIN_CPU_RDp.setp(bus_req.read);
-    cpu_bus.PIN_CPU_WRp.setp(bus_req.write);
-  }
-  else {
-    cpu_bus.PIN_CPU_RDp.setp(0);
-    cpu_bus.PIN_CPU_WRp.setp(0);
-  }
-
-  // not at all certain about this. seems to break some oam read glitches.
-  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-    cpu_bus.PIN_CPU_LATCH_EXT.setp(1);
-  }
-  else {
-    cpu_bus.PIN_CPU_LATCH_EXT.setp(0);
-  }
-
-  cpu_bus.PIN_CPU_6.setp(0);
-
-  // Data has to be driven on EFGH or we fail the wave tests
-  wire BUS_CPU_OEp = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write;
-
-  cpu_bus.set_addr(cpu_addr);
-  cpu_bus.set_data(BUS_CPU_OEp, bus_req.data_lo);
-
-  // This pin is weird and I'm not sure I have it right.
-
-  {
-    bool addr_ext = (bus_req.read || bus_req.write) && (bus_req.addr < 0xFE00);
-    if (bus_req.addr <= 0x00FF && !cpu_bus.BOOT_BITn_h.qp_old()) addr_ext = false;
-
-    if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-      cpu_bus.PIN_CPU_EXT_BUSp.setp(addr_ext);
-    }
-    else {
-      // This seems wrong, but it passes tests. *shrug*
-      if (bus_req.addr >= 0x8000 && bus_req.addr <= 0x9FFF) {
-        cpu_bus.PIN_CPU_EXT_BUSp.setp(0);
-      }
-      else {
-        cpu_bus.PIN_CPU_EXT_BUSp.setp(addr_ext);
-      }
-    }
-  }
-
-  cpu_bus.PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF(cpu_bus.BUS_CPU_A));
-  cpu_bus.PIN_CPU_UNOR_DBG.setp(rst.UNOR_MODE_DBG2p());
-  cpu_bus.PIN_CPU_UMUT_DBG.setp(rst.UMUT_MODE_DBG1p());
+  cpu_bus.tock(rst, clk, phase_total, bus_req);
 
   //----------------------------------------
   // CPU read signals
-
-  cpu_bus.tock(rst, clk);
 
   div.tock(rst, clk, cpu_bus);
 

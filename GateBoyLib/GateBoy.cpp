@@ -771,6 +771,31 @@ void GateBoy::tock_slow(int pass_index) {
     imask_latch = pack_u8p(5, &interrupts.IE_D0);
   }
 
+  cpu_bus.BUS_CPU_A[ 0].set_new(0);
+  cpu_bus.BUS_CPU_A[ 1].set_new(0);
+  cpu_bus.BUS_CPU_A[ 2].set_new(0);
+  cpu_bus.BUS_CPU_A[ 3].set_new(0);
+  cpu_bus.BUS_CPU_A[ 4].set_new(0);
+  cpu_bus.BUS_CPU_A[ 5].set_new(0);
+  cpu_bus.BUS_CPU_A[ 6].set_new(0);
+  cpu_bus.BUS_CPU_A[ 7].set_new(0);
+  cpu_bus.BUS_CPU_A[ 8].set_new(0);
+  cpu_bus.BUS_CPU_A[ 9].set_new(0);
+  cpu_bus.BUS_CPU_A[10].set_new(0);
+  cpu_bus.BUS_CPU_A[11].set_new(0);
+  cpu_bus.BUS_CPU_A[12].set_new(0);
+  cpu_bus.BUS_CPU_A[13].set_new(0);
+  cpu_bus.BUS_CPU_A[14].set_new(0);
+  cpu_bus.BUS_CPU_A[15].set_new(0);
+
+  cpu_bus.BUS_CPU_D[0].set_new(0);
+  cpu_bus.BUS_CPU_D[1].set_new(0);
+  cpu_bus.BUS_CPU_D[2].set_new(0);
+  cpu_bus.BUS_CPU_D[3].set_new(0);
+  cpu_bus.BUS_CPU_D[4].set_new(0);
+  cpu_bus.BUS_CPU_D[5].set_new(0);
+  cpu_bus.BUS_CPU_D[6].set_new(0);
+  cpu_bus.BUS_CPU_D[7].set_new(0);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -104,6 +104,7 @@ struct Gate : public BitBase {
 struct Signal : public BitBase {
   void set_old(wire D) {
     set_data_old(D);
+    set_data_new(D);
   }
 
   void set_new(wire D) {

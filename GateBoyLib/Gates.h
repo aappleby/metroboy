@@ -2,16 +2,6 @@
 #include "CoreLib/Types.h"
 #include <stdio.h>
 
-#ifdef USE_DIRTY_BIT
-#define CHECK_DIRTYn() CHECK_N(wire(state & 0x80))
-#define CHECK_DIRTYp() CHECK_P(wire(state & 0x80))
-#define SET_DIRTY() { state |= 0b10000000; }
-#else
-#define CHECK_DIRTYn()
-#define CHECK_DIRTYp()
-#define SET_DIRTY()
-#endif
-
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
@@ -41,7 +31,7 @@ struct BitBase {
 
   void tri(wire OEp, wire Dp) {
     if (OEp) set_data_new(Dp);
-    SET_DIRTY();
+    set_dirty();
   }
 
   uint8_t state = 0;
@@ -49,7 +39,11 @@ struct BitBase {
 protected:
 
   void set_data_old(wire data)   {
+#ifdef USE_OLD_BIT
     state = (state & 0b11111011) | (data << 2);
+#else
+    state = (state & 0b11111110) | (data << 0);
+#endif
   }
   void set_data_new(wire data)   {
     state = (state & 0b11111110) | (data << 0);
@@ -57,16 +51,31 @@ protected:
   void set_clock(wire clock) {
     state = (state & 0b11111101) | (clock << 1);
   }
-
-
-#ifdef USE_OLD_BIT
-  wire bit_data_old() const { CHECK_DIRTYn(); return wire(state & 0x04); }
-#else
-  wire bit_data_old() const { return bit_data(); }
+  void set_dirty() {
+#ifdef USE_DIRTY_BIT
+    state |= 0b10000000;
 #endif
+  }
+
+  wire bit_data_old() const {
+#ifdef USE_DIRTY_BIT
+    CHECK_N(wire(state & 0x80));
+#endif
+#ifdef USE_OLD_BIT
+    return wire(state & 0x04);
+#else
+    return bit_data();
+#endif
+  }
 
   wire bit_data()     const { return wire(state & 0x01); }
-  wire bit_data_new() const { CHECK_DIRTYp(); return wire(state & 0x01); }
+
+  wire bit_data_new() const {
+#ifdef USE_DIRTY_BIT
+    CHECK_P(wire(state & 0x80));
+#endif
+    return wire(state & 0x01);
+  }
   wire bit_clock()    const { return wire(state & 0x02); }
   wire bit_dirty()    const { return wire(state & 0x80); }
 };
@@ -84,7 +93,7 @@ constexpr uint8_t REG_D1C1 = 0b00000111;
 struct Gate : public BitBase {
   void set(wire D) {
     state = (state & 0xFE) | uint8_t(D);
-    SET_DIRTY();
+    set_dirty();
   }
 
   void operator = (wire D) { set(D); }
@@ -93,9 +102,13 @@ struct Gate : public BitBase {
 //-----------------------------------------------------------------------------
 
 struct Signal : public BitBase {
+  void set_old(wire D) {
+    set_data_old(D);
+  }
+
   void set_new(wire D) {
     set_data_new(D);
-    SET_DIRTY();
+    set_dirty();
   }
 };
 
@@ -107,17 +120,17 @@ struct DFF : public BitBase {
     if (!bit_clock() && CLKp) set_data_new(Dp);
     set_clock(CLKp);
     set_data_new((bit_data() || !SETn) && RSTn);
-    SET_DIRTY();
+    set_dirty();
   }
 
   void RSTn(wire RSTn) {
     set_data_new(bit_data() && RSTn);
-    SET_DIRTY();
+    set_dirty();
   }
 
   void SETn(wire SETn) {
     set_data_new(bit_data() || !SETn);
-    SET_DIRTY();
+    set_dirty();
   }
 };
 
@@ -354,9 +367,9 @@ struct PinIn : public BitBase {
 //----------
 
 struct PinOut : public BitBase {
-  void setp   (wire Dp)                    { set_data_new(Dp);                          SET_DIRTY(); }
-  void pin_out(wire HI, wire LO)           { set_data_new((!HI) || (HI != LO));         SET_DIRTY(); }
-  void pin_out(wire OEp, wire HI, wire LO) { set_data_new((!HI) || (HI != LO) || !OEp); SET_DIRTY(); }
+  void setp   (wire Dp)                    { set_data_new(Dp);                          set_dirty(); }
+  void pin_out(wire HI, wire LO)           { set_data_new((!HI) || (HI != LO));         set_dirty(); }
+  void pin_out(wire OEp, wire HI, wire LO) { set_data_new((!HI) || (HI != LO) || !OEp); set_dirty(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -373,7 +386,7 @@ struct NorLatch : public BitBase {
   void nor_latch(wire SETp, wire RSTp) {
     if (SETp) set_data_new(1);
     if (RSTp) set_data_new(0);
-    SET_DIRTY();
+    set_dirty();
   }
 };
 
@@ -391,7 +404,7 @@ struct NandLatch : public BitBase {
   void nand_latch(wire SETn, wire RSTn) {
     if (!SETn) set_data_new(1);
     if (!RSTn) set_data_new(0);
-    SET_DIRTY();
+    set_dirty();
   }
 };
 

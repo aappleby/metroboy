@@ -23,8 +23,8 @@ void GateBoyInterrupts::tock(
 {
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(rst.AVOR_SYS_RSTp());
 
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
-  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -39,17 +39,17 @@ void GateBoyInterrupts::tock(
   /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(PIN_CPU_ACK_JOYPAD.qp_new());
 
   /* p02.ROTU*/ wire _ROTU_FF0F_WRp   = not1(_REFA_FF0F_WRn);
-  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D[0]);
-  /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.BUS_CPU_D[1]);
-  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.BUS_CPU_D[2]);
-  /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.BUS_CPU_D[3]);
-  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.BUS_CPU_D[4]);
+  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D[0].qp());
+  /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.BUS_CPU_D[1].qp());
+  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.BUS_CPU_D[2].qp());
+  /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.BUS_CPU_D[3].qp());
+  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.BUS_CPU_D[4].qp());
 
-  /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(cpu_bus.BUS_CPU_D[0], _REFA_FF0F_WRn);
-  /* p02.NABE*/ wire _NABE_INT1_WRn = or2(cpu_bus.BUS_CPU_D[1], _REFA_FF0F_WRn);
-  /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D[2], _REFA_FF0F_WRn);
-  /* p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D[3], _REFA_FF0F_WRn);
-  /* p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D[4], _REFA_FF0F_WRn);
+  /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(cpu_bus.BUS_CPU_D[0].qp(), _REFA_FF0F_WRn);
+  /* p02.NABE*/ wire _NABE_INT1_WRn = or2(cpu_bus.BUS_CPU_D[1].qp(), _REFA_FF0F_WRn);
+  /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D[2].qp(), _REFA_FF0F_WRn);
+  /* p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D[3].qp(), _REFA_FF0F_WRn);
+  /* p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D[4].qp(), _REFA_FF0F_WRn);
 
   /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n = and3(_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  _ALUR_SYS_RSTn);
   /* p02.MOVU*/ wire _MOVU_FF0F_RST1n = and3(_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, _ALUR_SYS_RSTn);
@@ -105,14 +105,14 @@ void GateBoyInterrupts::tock(
 
     uint16_t cpu_addr = pack_u16p(16, cpu_bus.BUS_CPU_A);
     wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
-    wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp, FFFF_HIT_ext);
-    wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp, FFFF_HIT_ext);
+    wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp.qp(), FFFF_HIT_ext);
+    wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp(), FFFF_HIT_ext);
 
-    IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), cpu_bus.BUS_CPU_D[0]);
-    IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), cpu_bus.BUS_CPU_D[1]);
-    IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), cpu_bus.BUS_CPU_D[2]);
-    IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), cpu_bus.BUS_CPU_D[3]);
-    IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_any(), cpu_bus.BUS_CPU_D[4]);
+    IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[0].qp());
+    IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[1].qp());
+    IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[2].qp());
+    IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[3].qp());
+    IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[4].qp());
 
     cpu_bus.BUS_CPU_D_out[0].tri6_nn(FFFF_RDn_ext, IE_D0.qn_new());
     cpu_bus.BUS_CPU_D_out[1].tri6_nn(FFFF_RDn_ext, IE_D1.qn_new());

@@ -11,7 +11,7 @@ struct GateBoyResetDebug {
     TUBO_WAITINGp.reset(REG_D0C0);
   }
 
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_any(), ASOL_POR_DONEn.qp_any()); }
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp(), ASOL_POR_DONEn.qp()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
@@ -22,7 +22,7 @@ struct GateBoyResetDebug {
   /* p01.XARE*/ wire XARE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
   /* p03.MULO*/ wire MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
 
-  /* p01.XODO*/ wire XODO_VID_RSTp() const { return nand2(XEBE_SYS_RSTn(), _XONA_LCDC_LCDENp); }
+  /* p01.XODO*/ wire XODO_VID_RSTp() const { return nand2(XEBE_SYS_RSTn(), _XONA_LCDC_LCDENp.qp()); }
   /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
   /* p01.LYHA*/ wire LYHA_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.LYFE*/ wire LYFE_VID_RSTn() const { return not1(LYHA_VID_RSTp()); }
@@ -33,11 +33,11 @@ struct GateBoyResetDebug {
   /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /* p07.UBET*/ wire UBETp()           const { return not1(PIN_SYS_T1.qp_any()); }
-  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN_SYS_T2.qp_any()); }
-  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_SYS_T1.qp_any(), UVARp()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_SYS_T2.qp_any(), UBETp()); }
-  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_SYS_RST.qp_any()); }
+  /* p07.UBET*/ wire UBETp()           const { return not1(PIN_SYS_T1.qp()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN_SYS_T2.qp()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_SYS_T1.qp(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_SYS_T2.qp(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_SYS_RST.qp()); }
   /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }

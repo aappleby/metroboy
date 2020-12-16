@@ -20,7 +20,7 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_
   PIN_CPU_SYS_RSTp.setp(AFER_SYS_RSTp.qp_new());
 
   /*#p25.SYCY*/ wire _SYCY_MODE_DBG2n = not1(UNOR_MODE_DBG2p());
-  /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n, CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn_any());
+  /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n, CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn());
 }
 
 void GateBoyResetDebug::tock2(wire XONA_LCDC_LCDENp)

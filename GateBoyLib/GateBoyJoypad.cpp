@@ -6,19 +6,19 @@
 
 void GateBoyJoypad::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
 {
-  /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
-  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
+  /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
+  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
 
   // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
   // That also means that _both_ P14 and P15 are selected at reset :/
-  /* p05.JUTE*/ JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0]);
-  /* p05.KECY*/ KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1]);
-  /* p05.JALE*/ JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2]);
-  /* p05.KYME*/ KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3]);
-  /* p05.KELY*/ KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4]);
-  /* p05.COFY*/ COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5]);
-  /* p05.KUKO*/ KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6]);
-  /* p05.KERU*/ KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7]);
+  /* p05.JUTE*/ JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp());
+  /* p05.KECY*/ KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp());
+  /* p05.JALE*/ JALE_JOYP_UC     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp());
+  /* p05.KYME*/ KYME_JOYP_DS     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3].qp());
+  /* p05.KELY*/ KELY_JOYP_UDLRp  .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4].qp());
+  /* p05.COFY*/ COFY_JOYP_ABCSp  .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5].qp());
+  /* p05.KUKO*/ KUKO_DBG_FF00_D6n.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp());
+  /* p05.KERU*/ KERU_DBG_FF00_D7n.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp());
 
   wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
   /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);

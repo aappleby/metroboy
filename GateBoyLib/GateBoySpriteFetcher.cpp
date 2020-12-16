@@ -29,7 +29,14 @@ void SpriteFetcher::reset_cart() {
   SEBA_SFETCH_S1p_D5.reset(REG_D0C1);
 }
 
-void SpriteFetcher::tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old) {
+void SpriteFetcher::tock(
+  GateBoyResetDebug& rst,
+  GateBoyClock& clk,
+  wire XYMU_RENDERINGp,
+  wire ATEJ_LINE_RSTp,
+  wire TAVE_PRELOAD_DONE_TRIGp,
+  wire TEKY_SFETCH_REQp_old)
+{
   wire _VYPO_VCC = 1;
 
   _XYMU_RENDERINGp = XYMU_RENDERINGp;

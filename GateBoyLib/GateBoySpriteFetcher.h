@@ -9,21 +9,21 @@ struct SpriteFetcher {
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
 
-  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_any(), VONU_SFETCH_S1p_D4.qp_any()); }
+  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp(), VONU_SFETCH_S1p_D4.qp()); }
 
   /* p29.TEXY*/ wire TEXY_SFETCHINGp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp.qp());
     /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
     /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
     return _TEXY_SFETCHINGp;
   }
 
-  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn() const { return not1(TAKA_SFETCH_RUNNINGp.qp_any()); }
+  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn() const { return not1(TAKA_SFETCH_RUNNINGp.qp()); }
 
   /* p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not1(TOXE_SFETCH_S0p.qp_new()); }
 
   /* p29.TUVO*/ wire TUVO_PPU_OAM_RDp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp);
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp.qp());
     return nor3(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new(), TESE_SFETCH_S2p.qp_new());
   }
 
@@ -53,7 +53,7 @@ struct SpriteFetcher {
   }
 
   wire SYCU_SFETCH_S0pe() const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp);
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp());
     /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, TYFO_SFETCH_S0p_D1.qp_new());
     return _SYCU_SFETCH_S0pe;
   }

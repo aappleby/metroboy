@@ -101,14 +101,14 @@ struct PixCount {
     /* p21.TYGE*/ wire TYGE_old = xor2(TAKO_PX6p.qp_old(), TYBA_old);
     /* p21.ROKU*/ wire ROKU_old = xor2(SYBE_PX7p.qp_old(), SURY_old);
 
-    /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn, TUHU_PX4p.qn_any());
+    /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn, TUHU_PX4p.qn());
     /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn, SAKE_old);
     /* p21.TAKO*/ TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn, TYGE_old);
     /* p21.SYBE*/ SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn, ROKU_old);
   }
 
   /*#p21.XUGU*/ wire XANO_PX167p() const {
-    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp_any(), SAVY_PX1p.qp_any(), XODU_PX2p.qp_any(), TUKY_PX5p.qp_any(), SYBE_PX7p.qp_any()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp(), SAVY_PX1p.qp(), XODU_PX2p.qp(), TUKY_PX5p.qp(), SYBE_PX7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
     /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
     return _XANO_PX167p;
   }
@@ -213,13 +213,14 @@ struct WindowRegisters {
   void tock(
     GateBoyResetDebug& rst,
     GateBoyClock& clk,
-    wire TYFA_CLKPIPE_odd,
-    wire NUKO_WX_MATCHp,
     wire XYMU_RENDERINGp,
-    wire ROZE_FINE_COUNT_7n);
+    wire TYFA_CLKPIPE_odd,
+    wire NUKO_WX_MATCHp_old,
+    wire ROZE_FINE_COUNT_7n_old,
+    wire RYDY_WIN_HITp_old);
 
   wire NUNY_WIN_MODE_TRIGp() const {
-    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap.qp_any(), NOPA_WIN_MODE_Bp.qn_any());
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap.qp(), NOPA_WIN_MODE_Bp.qn());
     return _NUNY_WIN_MODE_TRIGp;
   }
   /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn() const { return not1(NUNY_WIN_MODE_TRIGp()); }
@@ -227,24 +228,24 @@ struct WindowRegisters {
 
 
   wire NAFY_WIN_MODE_TRIGn() const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp);
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp());
     /* p24.NAFY*/ wire _NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp(), _LOBY_RENDERINGn);
     return _NAFY_WIN_MODE_TRIGn;
   }
 
   wire SUZU_WIN_FIRST_TILEne() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp.qp_any());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp.qp_any());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp.qp());
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp.qp());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
     return _SUZU_WIN_FIRST_TILEne;
   }
 
   wire SEKO_WIN_FETCH_TRIGp() const {
-    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A.qn_any(), RENE_WIN_FETCHn_B.qp_any());
+    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A.qn(), RENE_WIN_FETCHn_B.qp());
     return _SEKO_WIN_FETCH_TRIGp;
   }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp.qp_any()); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp.qp()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp() const { return not1(SYLO_WIN_HITn()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
@@ -317,7 +318,7 @@ struct PPURegisters {
     VOGA_HBLANKp.reset(REG_D1C0);
   }
 
-  wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_any(); }
+  wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn(); }
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A

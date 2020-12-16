@@ -104,17 +104,17 @@ struct TileFetcher {
   void tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const {
-    return not1(POKY_PRELOAD_LATCHp.qp_any());
+    return not1(POKY_PRELOAD_LATCHp.qp());
   }
 
   wire TAVE_PRELOAD_DONE_TRIGp() const {
-    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn      = not1(POKY_PRELOAD_LATCHp.qp_any());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(_XYMU_RENDERINGp, _ROMO_PRELOAD_DONEn, NYKA_FETCH_DONEp.qp_any(), PORY_FETCH_DONEp.qp_any());
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn      = not1(POKY_PRELOAD_LATCHp.qp());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn = nand4(_XYMU_RENDERINGp.qp(), _ROMO_PRELOAD_DONEn, NYKA_FETCH_DONEp.qp(), PORY_FETCH_DONEp.qp());
     /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp = not1(_SUVU_PRELOAD_DONE_TRIGn);
     return _TAVE_PRELOAD_DONE_TRIGp;
   }
 
-  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn(wire NYXU_BFETCH_RSTn) const { return nand3(_LAXU_BFETCH_S0p.qp_any(), _NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn); }
+  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn(wire NYXU_BFETCH_RSTn) const { return nand3(_LAXU_BFETCH_S0p.qp(), _NYVA_BFETCH_S2p.qp(), NYXU_BFETCH_RSTn); }
   /* p27.LYRY*/ wire LYRY_BFETCH_DONEp(wire NYXU_BFETCH_RSTn) const { return not1(MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn)); }
 
   /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1(LONY_FETCHINGp.qp_new()); }

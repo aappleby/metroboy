@@ -9,14 +9,14 @@
 
 void GateBoySerial::tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div)
 {
-  /* p06.UFEG*/ wire _UFEG_FF01_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A[ 0]);
-  /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A[ 0]);
+  /* p06.UFEG*/ wire _UFEG_FF01_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A[ 0].qp());
+  /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A[ 0].qp());
 
-  /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1], cpu_bus.TOVY_A00n());
-  /* p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1], cpu_bus.TOVY_A00n());
+  /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1].qp(), cpu_bus.TOVY_A00n());
+  /* p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1].qp(), cpu_bus.TOVY_A00n());
 
   /* p06.COTY*/ COTY_SER_CLK.dff17(div.TAMA_DIV05p.qp_new(), _UWAM_FF02_WRn, COTY_SER_CLK.qn_old());
-  /* p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0]);
+  /* p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp());
 
   /* p06.CARO*/ wire _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn());
   /* p06.CAFA*/ CAFA_SER_CNT0.RSTn(_CARO_SER_RSTn);
@@ -26,7 +26,7 @@ void GateBoySerial::tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoy
 
   /* p06.COBA*/ wire _COBA_SER_CNT3n = not1(CALY_SER_CNT3.qp_new());
   /* p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, rst.ALUR_SYS_RSTn());
-  /* p06.ETAF*/ ETAF_SER_RUNNING.dff17(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D[7]);
+  /* p06.ETAF*/ ETAF_SER_RUNNING.dff17(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D[7].qp());
 
   /* p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN_SCK.qn_new());
   /* p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
@@ -57,24 +57,24 @@ void GateBoySerial::tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoy
   }
 
   {
-    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[0], rst.ALUR_SYS_RSTn());
-    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[1], rst.ALUR_SYS_RSTn());
-    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[2], rst.ALUR_SYS_RSTn());
-    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[3], rst.ALUR_SYS_RSTn());
-    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[4], rst.ALUR_SYS_RSTn());
-    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[5], rst.ALUR_SYS_RSTn());
-    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[6], rst.ALUR_SYS_RSTn());
-    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[7], rst.ALUR_SYS_RSTn());
+    /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[0].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[1].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[2].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[3].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[4].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[5].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[6].qp(), rst.ALUR_SYS_RSTn());
+    /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[7].qp(), rst.ALUR_SYS_RSTn());
 
     /* p06.DAKU*/ wire _DAKU_FF01_WRp = not1(_URYS_FF01_WRn);
-    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(cpu_bus.BUS_CPU_D[0], _DAKU_FF01_WRp);
-    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(cpu_bus.BUS_CPU_D[1], _DAKU_FF01_WRp);
-    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(cpu_bus.BUS_CPU_D[2], _DAKU_FF01_WRp);
-    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(cpu_bus.BUS_CPU_D[3], _DAKU_FF01_WRp);
-    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(cpu_bus.BUS_CPU_D[4], _DAKU_FF01_WRp);
-    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(cpu_bus.BUS_CPU_D[5], _DAKU_FF01_WRp);
-    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(cpu_bus.BUS_CPU_D[6], _DAKU_FF01_WRp);
-    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(cpu_bus.BUS_CPU_D[7], _DAKU_FF01_WRp);
+    /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(cpu_bus.BUS_CPU_D[0].qp(), _DAKU_FF01_WRp);
+    /* p06.DOCU*/ wire _DOCU_SER_DATA1_SETn = nand2(cpu_bus.BUS_CPU_D[1].qp(), _DAKU_FF01_WRp);
+    /* p06.DELA*/ wire _DELA_SER_DATA2_SETn = nand2(cpu_bus.BUS_CPU_D[2].qp(), _DAKU_FF01_WRp);
+    /* p06.DYGE*/ wire _DYGE_SER_DATA3_SETn = nand2(cpu_bus.BUS_CPU_D[3].qp(), _DAKU_FF01_WRp);
+    /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2(cpu_bus.BUS_CPU_D[4].qp(), _DAKU_FF01_WRp);
+    /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2(cpu_bus.BUS_CPU_D[5].qp(), _DAKU_FF01_WRp);
+    /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(cpu_bus.BUS_CPU_D[6].qp(), _DAKU_FF01_WRp);
+    /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(cpu_bus.BUS_CPU_D[7].qp(), _DAKU_FF01_WRp);
 
     /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(PIN_SIN.qp_new());
     /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old());

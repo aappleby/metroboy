@@ -372,7 +372,7 @@ void GateBoyOamBus::tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_S
     oam_data_latch_b = oam_ram[(oam_addr_latch << 1) + 1];
   }
 
-  old_oam_clk = !PIN_OAM_CLKn.qp_new();
+  old_oam_clk.set_new(!PIN_OAM_CLKn.qp_new());
 
   /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
   /*#p28.BOTA*/ wire _BOTA_OAM_OEn  = nand3(cpu_bus.BOFE_LATCH_EXTn(), cpu_bus.SARO_ADDR_OAMp(), cpu_bus.ASOT_CPU_RDp()); // Schematic wrong, this is NAND

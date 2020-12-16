@@ -593,8 +593,8 @@ void PixelPipes::tock(
     /*#p35.REMY*/ wire _REMY_LD0n = not1(_PERO_COL_LO);
     /*#p35.RAVO*/ wire _RAVO_LD1n = not1(_PATY_COL_HI);
 
-    /*#p35.REMY*/ REMY_LD0n = _REMY_LD0n;
-    /*#p35.RAVO*/ RAVO_LD1n = _RAVO_LD1n;
+    /*#p35.REMY*/ REMY_LD0n.set_new(_REMY_LD0n);
+    /*#p35.RAVO*/ RAVO_LD1n.set_new(_RAVO_LD1n);
   }
 }
 

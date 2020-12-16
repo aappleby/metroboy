@@ -39,7 +39,7 @@ void SpriteFetcher::tock(
 {
   wire _VYPO_VCC = 1;
 
-  _XYMU_RENDERINGp = XYMU_RENDERINGp;
+  _XYMU_RENDERINGp.set_new(XYMU_RENDERINGp);
 
   /* p27.SUDA*/ SUDA_SFETCH_REQp.dff17(clk.LAPE_AxCxExGx(), _VYPO_VCC, SOBU_SFETCH_REQp.qp_old());
   /* p27.SOBU*/ SOBU_SFETCH_REQp.dff17(clk.TAVA_xBxDxFxH(), _VYPO_VCC, TEKY_SFETCH_REQp_old);

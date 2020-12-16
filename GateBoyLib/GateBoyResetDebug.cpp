@@ -25,5 +25,5 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_
 
 void GateBoyResetDebug::tock2(wire XONA_LCDC_LCDENp)
 {
-  _XONA_LCDC_LCDENp = XONA_LCDC_LCDENp;
+  _XONA_LCDC_LCDENp.set_new(XONA_LCDC_LCDENp);
 }

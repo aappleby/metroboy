@@ -30,13 +30,6 @@ inline uint64_t commit_and_hash(T& obj) {
 struct BitBase {
   void reset(uint8_t s) { state = s; }
 
-  void set_data(wire data)   {
-    state = (state & 0b11111110) | (data << 0);
-  }
-  void set_clock(wire clock) {
-    state = (state & 0b11111101) | (clock << 1);
-  }
-
   wire qp_old() const { return  bit_data_old(); }
   wire qn_old() const { return !bit_data_old(); }
 
@@ -47,13 +40,24 @@ struct BitBase {
   wire qn_new() const { return !bit_data_new(); }
 
   void tri(wire OEp, wire Dp) {
-    if (OEp) set_data(Dp);
+    if (OEp) set_data_new(Dp);
     SET_DIRTY();
   }
 
   uint8_t state = 0;
 
 protected:
+
+  void set_data_old(wire data)   {
+    state = (state & 0b11111011) | (data << 2);
+  }
+  void set_data_new(wire data)   {
+    state = (state & 0b11111110) | (data << 0);
+  }
+  void set_clock(wire clock) {
+    state = (state & 0b11111101) | (clock << 1);
+  }
+
 
 #ifdef USE_OLD_BIT
   wire bit_data_old() const { CHECK_DIRTYn(); return wire(state & 0x04); }
@@ -89,8 +93,8 @@ struct Gate : public BitBase {
 //-----------------------------------------------------------------------------
 
 struct Signal : public BitBase {
-  void operator = (wire D) {
-    set_data(D);
+  void set_new(wire D) {
+    set_data_new(D);
     SET_DIRTY();
   }
 };
@@ -100,19 +104,19 @@ struct Signal : public BitBase {
 
 struct DFF : public BitBase {
   void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    if (!bit_clock() && CLKp) set_data(Dp);
+    if (!bit_clock() && CLKp) set_data_new(Dp);
     set_clock(CLKp);
-    set_data((bit_data() || !SETn) && RSTn);
+    set_data_new((bit_data() || !SETn) && RSTn);
     SET_DIRTY();
   }
 
   void RSTn(wire RSTn) {
-    set_data(bit_data() && RSTn);
+    set_data_new(bit_data() && RSTn);
     SET_DIRTY();
   }
 
   void SETn(wire SETn) {
-    set_data(bit_data() || !SETn);
+    set_data_new(bit_data() || !SETn);
     SET_DIRTY();
   }
 };
@@ -350,9 +354,9 @@ struct PinIn : public BitBase {
 //----------
 
 struct PinOut : public BitBase {
-  void setp   (wire Dp)                    { set_data(Dp);                          SET_DIRTY(); }
-  void pin_out(wire HI, wire LO)           { set_data((!HI) || (HI != LO));         SET_DIRTY(); }
-  void pin_out(wire OEp, wire HI, wire LO) { set_data((!HI) || (HI != LO) || !OEp); SET_DIRTY(); }
+  void setp   (wire Dp)                    { set_data_new(Dp);                          SET_DIRTY(); }
+  void pin_out(wire HI, wire LO)           { set_data_new((!HI) || (HI != LO));         SET_DIRTY(); }
+  void pin_out(wire OEp, wire HI, wire LO) { set_data_new((!HI) || (HI != LO) || !OEp); SET_DIRTY(); }
 };
 
 //-----------------------------------------------------------------------------
@@ -367,8 +371,8 @@ struct PinOut : public BitBase {
 
 struct NorLatch : public BitBase {
   void nor_latch(wire SETp, wire RSTp) {
-    if (SETp) set_data(1);
-    if (RSTp) set_data(0);
+    if (SETp) set_data_new(1);
+    if (RSTp) set_data_new(0);
     SET_DIRTY();
   }
 };
@@ -385,8 +389,8 @@ struct NorLatch : public BitBase {
 
 struct NandLatch : public BitBase {
   void nand_latch(wire SETn, wire RSTn) {
-    if (!SETn) set_data(1);
-    if (!RSTn) set_data(0);
+    if (!SETn) set_data_new(1);
+    if (!RSTn) set_data_new(0);
     SET_DIRTY();
   }
 };

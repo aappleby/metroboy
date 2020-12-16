@@ -467,7 +467,7 @@ void GateBoy::tock_slow(int pass_index) {
   reg_lcdc.tock(rst, cpu_bus); // LCDC. Has to be near the top as it controls the video reset signal
 
   rst.tock2(reg_lcdc.XONA_LCDC_LCDENn.qn_new());
-  lcd._XODO_VID_RSTp = rst.XODO_VID_RSTp();
+  lcd._XODO_VID_RSTp.set_new(rst.XODO_VID_RSTp());
 
   clk.tock_vid(rst);
   dma.tock(rst, clk, cpu_bus);
@@ -509,9 +509,9 @@ void GateBoy::tock_slow(int pass_index) {
   /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGp);
 
 
-  dma._XYMU_RENDERINGp = XYMU_RENDERINGp;
-  win_reg._XYMU_RENDERINGp = XYMU_RENDERINGp;
-  tile_fetcher._XYMU_RENDERINGp = XYMU_RENDERINGp;
+  dma._XYMU_RENDERINGp.set_new(XYMU_RENDERINGp);
+  win_reg._XYMU_RENDERINGp.set_new(XYMU_RENDERINGp);
+  tile_fetcher._XYMU_RENDERINGp.set_new(XYMU_RENDERINGp);
 
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), lcd.XAHY_LINE_RSTn(), XAPO_VID_RSTn(rst.XODO_VID_RSTp()));
 
@@ -728,7 +728,7 @@ void GateBoy::tock_slow(int pass_index) {
     if (!old_zram_clk.qp() && zram_clk_new) {
       zero_ram[zram_addr & 0x007F] = zram_data_latch;
     }
-    old_zram_clk = zram_clk_new;
+    old_zram_clk.set_new(zram_clk_new);
 
     if (zram_hit && cpu_bus.TEDO_CPU_RDp.qp()) {
       zram_data_latch = zero_ram[zram_addr & 0x007F];
@@ -814,8 +814,8 @@ void GateBoy::update_lcd() {
   lcd.lcd_pipe_lo[159].dff(!lcd.PIN_LCD_CLOCK.qp_new(), 1, 1, lcd.lcd_pix_lo.qp_new());
   lcd.lcd_pipe_hi[159].dff(!lcd.PIN_LCD_CLOCK.qp_new(), 1, 1, lcd.lcd_pix_hi.qp_new());
 
-  lcd.old_lcd_clock = lcd.PIN_LCD_CLOCK.qp_new();
-  lcd.old_lcd_latch = lcd.PIN_LCD_LATCH.qp_new();
+  lcd.old_lcd_clock.set_new(lcd.PIN_LCD_CLOCK.qp_new());
+  lcd.old_lcd_latch.set_new(lcd.PIN_LCD_LATCH.qp_new());
 
 }
 

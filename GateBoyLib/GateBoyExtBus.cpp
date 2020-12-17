@@ -58,6 +58,8 @@
 }
 */
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void ExtAddrLatch::tock(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext) {
   /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(rst.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn_ext, rst.UMUT_MODE_DBG1p());
   /* p08.LASY*/ wire _LASY_HOLDp = not1(_LOXO_HOLDn);
@@ -79,11 +81,12 @@ void ExtAddrLatch::tock(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire
   /* p08.NYRE*/ NYRE_EXT_ADDR_LATCH_14p.tp_latch(_MATE_HOLDn, BUS_CPU_A[14].qp());
 }
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void GateBoyExtBus::addr_latch_to_pins(
   const GateBoyResetDebug& rst,
   const GateBoyCpuBus& cpu_bus,
   const GateBoyDMA& dma,
-  const ExtAddrLatch& ext_addr_latch,
   wire ABUZ_EXT_RAM_CS_CLK,
   wire TUTU_READ_BOOTROMp
 )
@@ -161,7 +164,9 @@ void GateBoyExtBus::addr_latch_to_pins(
   PIN_EXT_A[15].pin_out(_SUZE_A15n, _RULO_A15n);
 }
 
-void GateBoyExtBus::pins_to_data_latch(const GateBoyCpuBus& cpu_bus, ExtDataLatch& ext_data_latch)
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyExtBus::pins_to_data_latch(const GateBoyCpuBus& cpu_bus)
 {
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.PIN_CPU_LATCH_EXT.qp_new());
   /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN_EXT_D[0].qn_new());
@@ -174,7 +179,9 @@ void GateBoyExtBus::pins_to_data_latch(const GateBoyCpuBus& cpu_bus, ExtDataLatc
   /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn, PIN_EXT_D[7].qn_new());
 }
 
-void GateBoyExtBus::data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus, const ExtDataLatch& ext_data_latch)
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyExtBus::data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus)
 {
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.PIN_CPU_RDp.qp_new(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.PIN_CPU_LATCH_EXT.qp_new());
   /*#p08.RYMA*/ cpu_bus.BUS_CPU_D_out[0].tri6_nn(_LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
@@ -186,6 +193,8 @@ void GateBoyExtBus::data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus, const ExtDataL
   /* p08.SEVU*/ cpu_bus.BUS_CPU_D_out[6].tri6_nn(_LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
   /* p08.TAJU*/ cpu_bus.BUS_CPU_D_out[7].tri6_nn(_LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 }
+
+//------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyExtBus::cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus)
 {
@@ -227,6 +236,8 @@ void GateBoyExtBus::cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoy
   PIN_EXT_D[7].pin_out(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 }
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void GateBoyExtBus::set_pins(
   const GateBoyResetDebug& rst,
   const GateBoyCpuBus& cpu_bus,
@@ -253,44 +264,46 @@ void GateBoyExtBus::set_pins(
   PIN_EXT_CSn.pin_out(_TYHO_PIN_EXT_CS_A, _TYHO_PIN_EXT_CS_A);
 }
 
-// The actual "cart" stuff.
+//------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyExtBus::cart_to_pins(const uint8_t* cart_buf, uint8_t* cart_ram, uint8_t* ext_ram) {
-  uint16_t ext_addr_latch = pack_u16p(16, &PIN_EXT_A[ 0]);
-  uint8_t ext_data_latch = pack_u8p(8, &PIN_EXT_D[0]);
+  uint16_t _ext_addr_latch = pack_u16p(16, &PIN_EXT_A[ 0]);
+  uint8_t _ext_data_latch = pack_u8p(8, &PIN_EXT_D[0]);
 
   // ROM read
-  uint16_t rom_addr = ext_addr_latch & 0x7FFF;
+  uint16_t rom_addr = _ext_addr_latch & 0x7FFF;
   wire rom_CEn_new = PIN_EXT_A[15].qp_new();
   wire rom_OEp_new = !rom_CEn_new && !PIN_EXT_RDn.qp_new() && cart_buf;
-  if (rom_OEp_new)  ext_data_latch = cart_buf[rom_addr];
+  if (rom_OEp_new)  _ext_data_latch = cart_buf[rom_addr];
 
   // Ext RAM read
-  uint16_t eram_addr = (ext_addr_latch & 0x1FFF);
+  uint16_t eram_addr = (_ext_addr_latch & 0x1FFF);
   wire eram_CE1n_new = PIN_EXT_CSn.qp_new();
   wire eram_CE2_new  = PIN_EXT_A[14].qp_new();
   wire eram_WRp_new  = !eram_CE1n_new && eram_CE2_new && !PIN_EXT_WRn.qp_new();
   wire eram_OEp_new  = !eram_CE1n_new && eram_CE2_new && !eram_WRp_new && !PIN_EXT_RDn.qp_new();
-  if (eram_WRp_new) ext_ram[eram_addr]  = ext_data_latch;
-  if (eram_OEp_new) ext_data_latch = ext_ram[eram_addr];
+  if (eram_WRp_new) ext_ram[eram_addr]  = _ext_data_latch;
+  if (eram_OEp_new) _ext_data_latch = ext_ram[eram_addr];
 
   // Cart RAM read
-  uint16_t cram_addr = (ext_addr_latch & 0x1FFF);
+  uint16_t cram_addr = (_ext_addr_latch & 0x1FFF);
   wire cram_CS1n_new = PIN_EXT_CSn.qp_new();
   wire cram_CS2_new  = PIN_EXT_A[13].qp_new() && !PIN_EXT_A[14].qp_new() && PIN_EXT_A[15].qp_new();
   wire cram_WRp_new  = !cram_CS1n_new && cram_CS2_new && !PIN_EXT_WRn.qp_new();
   wire cram_OEp_new  = !cram_CS1n_new && cram_CS2_new && !PIN_EXT_RDn.qp_new();
 
-  if (cram_WRp_new) cart_ram[cram_addr] = ext_data_latch;
-  if (cram_OEp_new) ext_data_latch = cart_ram[cram_addr];
+  if (cram_WRp_new) cart_ram[cram_addr] = _ext_data_latch;
+  if (cram_OEp_new) _ext_data_latch = cart_ram[cram_addr];
 
   wire ext_OEp = rom_OEp_new || eram_OEp_new || cram_OEp_new;
-  PIN_EXT_D[0].tri(ext_OEp, wire(ext_data_latch & 0x01));
-  PIN_EXT_D[1].tri(ext_OEp, wire(ext_data_latch & 0x02));
-  PIN_EXT_D[2].tri(ext_OEp, wire(ext_data_latch & 0x04));
-  PIN_EXT_D[3].tri(ext_OEp, wire(ext_data_latch & 0x08));
-  PIN_EXT_D[4].tri(ext_OEp, wire(ext_data_latch & 0x10));
-  PIN_EXT_D[5].tri(ext_OEp, wire(ext_data_latch & 0x20));
-  PIN_EXT_D[6].tri(ext_OEp, wire(ext_data_latch & 0x40));
-  PIN_EXT_D[7].tri(ext_OEp, wire(ext_data_latch & 0x80));
+  PIN_EXT_D[0].tri(ext_OEp, wire(_ext_data_latch & 0x01));
+  PIN_EXT_D[1].tri(ext_OEp, wire(_ext_data_latch & 0x02));
+  PIN_EXT_D[2].tri(ext_OEp, wire(_ext_data_latch & 0x04));
+  PIN_EXT_D[3].tri(ext_OEp, wire(_ext_data_latch & 0x08));
+  PIN_EXT_D[4].tri(ext_OEp, wire(_ext_data_latch & 0x10));
+  PIN_EXT_D[5].tri(ext_OEp, wire(_ext_data_latch & 0x20));
+  PIN_EXT_D[6].tri(ext_OEp, wire(_ext_data_latch & 0x40));
+  PIN_EXT_D[7].tri(ext_OEp, wire(_ext_data_latch & 0x80));
 }
+
+//------------------------------------------------------------------------------------------------------------------------

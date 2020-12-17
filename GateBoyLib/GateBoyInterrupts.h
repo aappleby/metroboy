@@ -1,16 +1,10 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct GateBoyResetDebug;
-struct GateBoyJoypad;
-struct RegStat;
-struct RegLYC;
-struct GateBoySerial;
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyInterrupts {
-  void reset_cart() {
+  void reset_app() {
     LOPE_FF0F_D0p.reset(REG_D1C1);
     PIN_CPU_INT_VBLANK.reset(REG_D1C0);
   }
@@ -26,6 +20,26 @@ struct GateBoyInterrupts {
     wire PURE_LINE_ENDn,
     wire MOBA_TIMER_OVERFLOWp,
     wire WODU_HBLANKp);
+
+  void dump(Dumper& d) {
+    d.dump_bitp("IE_D0        ", IE_D0.state);
+    d.dump_bitp("IE_D1        ", IE_D1.state);
+    d.dump_bitp("IE_D2        ", IE_D2.state);
+    d.dump_bitp("IE_D3        ", IE_D3.state);
+    d.dump_bitp("IE_D4        ", IE_D4.state);
+    d("\n");
+    d.dump_bitp("LOPE_FF0F_0  ", LOPE_FF0F_D0p.state);
+    d.dump_bitp("LALU_FF0F_1  ", LALU_FF0F_D1p.state);
+    d.dump_bitp("NYBO_FF0F_2  ", NYBO_FF0F_D2p.state);
+    d.dump_bitp("UBUL_FF0F_3  ", UBUL_FF0F_D3p.state);
+    d.dump_bitp("ULAK_FF0F_4  ", ULAK_FF0F_D4p.state);
+    d("\n");
+    d.dump_bitp("MATY_FF0F_L0p", MATY_FF0F_L0p.state);
+    d.dump_bitp("MOPO_FF0F_L1p", MOPO_FF0F_L1p.state);
+    d.dump_bitp("PAVY_FF0F_L2p", PAVY_FF0F_L2p.state);
+    d.dump_bitp("NEJY_FF0F_L3p", NEJY_FF0F_L3p.state);
+    d.dump_bitp("NUTY_FF0F_L4p", NUTY_FF0F_L4p.state);
+  }
 
   /*p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
   /*p02.UBUL*/ DFF22 UBUL_FF0F_D3p;
@@ -57,4 +71,4 @@ struct GateBoyInterrupts {
   PinOut PIN_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joypad int
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

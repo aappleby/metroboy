@@ -7,7 +7,7 @@ struct GateBoyResetDebug;
 
 struct GateBoyClock {
 
-  void reset_cart() {
+  void reset_app() {
     PIN_CPU_BUKE_AxxxxxGH.reset(REG_D1C0);
 
     WUVU_ABxxEFxx.reset(REG_D1C1);
@@ -86,6 +86,16 @@ struct GateBoyClock {
   /*#p28.AWOH*/ wire AWOH_xxCDxxGH() const { return not1(XUPY_ABxxEFxx()); }
   /*#p01.AJAX*/ wire AJAX_xxxxEFGH() const { return not1(ATYP_ABCDxxxx()); }
 
+  void dump(Dumper& d) {
+    d.dump_bitp("AFUR_xxxxEFGHp", AFUR_xxxxEFGHp.state);
+    d.dump_bitp("ALEF_AxxxxFGHp", ALEF_AxxxxFGHp.state);
+    d.dump_bitp("APUK_ABxxxxGHp", APUK_ABxxxxGHp.state);
+    d.dump_bitp("ADYK_ABCxxxxHp", ADYK_ABCxxxxHp.state);
+    d("\n");
+    d.dump_bitp("WUVU_ABxxEFxxp", WUVU_ABxxEFxx.state);
+    d.dump_bitp("VENA_xxCDEFxxp", VENA_xxCDEFxx.state);
+    d.dump_bitp("WOSU_AxxDExxHp", WOSU_AxxDExxH.state);
+  }
 
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
   /*p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;

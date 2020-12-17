@@ -1,152 +1,13 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct PixCounter;
-struct FineScroll;
+#include "GateBoyLib/GateBoyRegisters.h"
 
-//-----------------------------------------------------------------------------
-
-struct RegLX {
-  void reset_cart() {
-    _RUTU_x113p.reset(REG_D0C1);
-    _NYPE_x113p.reset(REG_D0C0);
-    SAXO_LX0p.reset(REG_D0C0);
-    TYPO_LX1p.reset(REG_D1C1);
-    VYZO_LX2p.reset(REG_D0C0);
-    TELU_LX3p.reset(REG_D0C1);
-    SUDE_LX4p.reset(REG_D0C1);
-    TAHA_LX5p.reset(REG_D1C1);
-    TYRY_LX6p.reset(REG_D1C0);
-  }
-
-  uint8_t get() const  { return pack_u8p(7, &SAXO_LX0p); }
-
-  wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1(_RUTU_x113p.qp());
-    return _PURE_LINE_ENDn_new_evn;
-  }
-
-  wire TEGY_STROBE() const;
-
-  wire NYPE_x113p() const { return _NYPE_x113p.qp(); }
-  wire NYPE_x113n() const { return _NYPE_x113p.qn(); }
-
-  wire RUTU_x113p() const { return _RUTU_x113p.qp(); }
-  wire RUTU_x113n() const { return _RUTU_x113p.qn(); }
-
-  /*#p24.LOFU*/ wire LOFU_x113n() const { return not1(RUTU_x113p()); }
-
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk);
-
-  /*p21.RUTU*/ DFF17 _RUTU_x113p;  // xxxxxxGx
-  /*p21.NYPE*/ DFF17 _NYPE_x113p;  // xxCxxxxx
-
-  /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.VYZO*/ DFF17 VYZO_LX2p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TELU*/ DFF17 TELU_LX3p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.SUDE*/ DFF17 SUDE_LX4p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TAHA*/ DFF17 TAHA_LX5p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TYRY*/ DFF17 TYRY_LX6p; // xxCxxxGx Ticks on C, reset on G
-};
-
-//-----------------------------------------------------------------------------
-
-struct RegLY {
-  void reset_cart() {
-    MYTA_y153p.reset(REG_D1C0);
-    MUWY_LY0p.reset(REG_D0C0);
-    MYRO_LY1p.reset(REG_D0C1);
-    LEXA_LY2p.reset(REG_D0C1);
-    LYDO_LY3p.reset(REG_D0C1);
-    LOVU_LY4p.reset(REG_D0C1);
-    LEMA_LY5p.reset(REG_D0C1);
-    MATO_LY6p.reset(REG_D0C1);
-    LAFO_LY7p.reset(REG_D0C1);
-  }
-
-  uint8_t get() const  { return pack_u8p(8, &MUWY_LY0p); }
-
-  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, RegLX& reg_lx);
-
-  /*#p24.NERU*/ wire NERU_y000p() const {
-    return nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(),
-                MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
-  }
-
-  /*#p21.XYVO*/ wire XYVO_y144p() const { return and2(LOVU_LY4p.qp_old(), LAFO_LY7p.qp_old()); } // 128 + 16 = 144
-
-  /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
-
-  /*p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LEXA*/ DFF17 LEXA_LY2p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LYDO*/ DFF17 LYDO_LY3p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LOVU*/ DFF17 LOVU_LY4p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LEMA*/ DFF17 LEMA_LY5p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.MATO*/ DFF17 MATO_LY6p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LAFO*/ DFF17 LAFO_LY7p;  // xxCxxxGx Ticks on G, reset on C
-};
-
-//-----------------------------------------------------------------------------
-// FF40 LCDC
-
-struct RegLCDC {
-  void reset_cart() {
-    VYXE_LCDC_BGENn  .reset(REG_D0C1);
-    XYLO_LCDC_SPENn  .reset(REG_D1C1);
-    XYMO_LCDC_SPSIZEn.reset(REG_D1C1);
-    XAFO_LCDC_BGMAPn .reset(REG_D1C1);
-    WEXU_LCDC_BGTILEn.reset(REG_D0C1);
-    WYMO_LCDC_WINENn .reset(REG_D1C1);
-    WOKY_LCDC_WINMAPn.reset(REG_D1C1);
-    XONA_LCDC_LCDENn .reset(REG_D0C1);
-  }
-
-  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;   // xxxxxxxH
-  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;   // xxxxxxxH
-  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn; // xxxxxxxH
-  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;  // xxxxxxxH
-  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn; // xxxxxxxH
-  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;  // xxxxxxxH
-  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn; // xxxxxxxH
-  /*p23.WOKY*/ DFF9 XONA_LCDC_LCDENn;  // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
-
-struct RegLYC {
-  void reset_cart() {
-    ROPO_LY_MATCH_SYNCp.reset(REG_D1C0);
-  }
-
-  uint8_t get() const { return pack_u8n(8, &SYRY_LYC0n); }
-
-  void tock(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    GateBoyCpuBus& cpu_bus,
-    const RegLY& reg_ly);
-
-  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
-
-  /*p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH
-  /*p23.VUCE*/ DFF9 VUCE_LYC1n; // xxxxxxxH
-  /*p23.SEDY*/ DFF9 SEDY_LYC2n; // xxxxxxxH
-  /*p23.SALO*/ DFF9 SALO_LYC3n; // xxxxxxxH
-  /*p23.SOTA*/ DFF9 SOTA_LYC4n; // xxxxxxxH
-  /*p23.VAFA*/ DFF9 VAFA_LYC5n; // xxxxxxxH
-  /*p23.VEVO*/ DFF9 VEVO_LYC6n; // xxxxxxxH
-  /*p23.RAHA*/ DFF9 RAHA_LYC7n; // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyLCD {
 
-  void reset_cart() {
+  void reset_app() {
     CATU_LINE_P000p.reset(REG_D0C1);
     ANEL_LINE_P002p.reset(REG_D0C0);
     POPU_VBLANKp.reset(REG_D1C0);
@@ -201,6 +62,23 @@ struct GateBoyLCD {
   void set_pin_latch(GateBoyDiv& div, RegLX& reg_lx, RegLCDC& reg_lcdc);
   void set_pin_clock(PixCount& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
 
+  void dump(Dumper& d) {
+    d.dump_bitp("CATU_LINE_P000p    ", CATU_LINE_P000p.state);
+    d.dump_bitp("ANEL_LINE_P002p    ", ANEL_LINE_P002p.state);
+    d.dump_bitp("POPU_VBLANKp       ", POPU_VBLANKp.state);
+    d.dump_bitp("SYGU_LINE_STROBE   ", SYGU_LINE_STROBE.state);
+    d.dump_bitn("MEDA_VSYNC_OUTn    ", MEDA_VSYNC_OUTn.state);
+    d.dump_bitp("LUCA_LINE_EVENp    ", LUCA_LINE_EVENp.state);
+    d.dump_bitp("NAPO_FRAME_EVENp   ", NAPO_FRAME_EVENp.state);
+    d.dump_bitp("RUJU               ", RUJU.state);
+    d.dump_bitp("POFY               ", POFY.state);
+    d.dump_bitp("POME               ", POME.state);
+    d.dump_bitp("PAHO_X_8_SYNC      ", PAHO_X_8_SYNC.state);
+    d.dump_bitp("WUSA_LCD_CLOCK_GATE", WUSA_LCD_CLOCK_GATE.state);
+    d.dump_bitp("lcd_pix_lo         ", lcd_pix_lo.state);
+    d.dump_bitp("lcd_pix_hi         ", lcd_pix_hi.state);
+  }
+
   Signal _XODO_VID_RSTp;
 
   // H deltas are due to reg writes
@@ -239,4 +117,4 @@ struct GateBoyLCD {
   DFF lcd_pipe_hi[160];
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

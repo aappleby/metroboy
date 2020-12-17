@@ -3,20 +3,7 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyClocks.h"
 
-void SpriteFetcher::dump(Dumper& d) {
-  d.dump_bitp("TAKA_SFETCH_RUNNINGp", TAKA_SFETCH_RUNNINGp.state);
-  d.dump_bitp("SOBU_SFETCH_REQp    ", SOBU_SFETCH_REQp    .state);
-  d.dump_bitp("SUDA_SFETCH_REQp    ", SUDA_SFETCH_REQp    .state);
-  d.dump_bitp("TOXE_SFETCH_S0      ", TOXE_SFETCH_S0p     .state);
-  d.dump_bitp("TULY_SFETCH_S1      ", TULY_SFETCH_S1p     .state);
-  d.dump_bitp("TESE_SFETCH_S2      ", TESE_SFETCH_S2p     .state);
-  d.dump_bitp("TYFO_SFETCH_S0_D1   ", TYFO_SFETCH_S0p_D1  .state);
-  d.dump_bitp("TOBU_SFETCH_S1_D2   ", TOBU_SFETCH_S1p_D2  .state);
-  d.dump_bitp("VONU_SFETCH_S1_D4   ", VONU_SFETCH_S1p_D4  .state);
-  d.dump_bitp("SEBA_SFETCH_S1_D5   ", SEBA_SFETCH_S1p_D5  .state);
-}
-
-void SpriteFetcher::reset_cart() {
+void SpriteFetcher::reset_app() {
   TAKA_SFETCH_RUNNINGp.reset(REG_D0C0);
   SOBU_SFETCH_REQp.reset(REG_D0C0);
   SUDA_SFETCH_REQp.reset(REG_D0C1);

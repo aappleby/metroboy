@@ -2,12 +2,31 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyCpuBus {
-  void reset_cart();
+  void reset_app();
   void tock(
     const GateBoyResetDebug& rst,
     const GateBoyClock& clk,
     int phase_total,
     Req bus_req);
+
+  void dump(Dumper& d) {
+    d.dump_slice2p("BUS_CPU_A        ", BUS_CPU_A, 8);
+    d.dump_slice2p("BUS_CPU_D        ", BUS_CPU_D, 8);
+    d.dump_slice2p("BUS_CPU_D_out    ", BUS_CPU_D_out, 8);
+    d.dump_bitp   ("PIN_CPU_RDp      ", PIN_CPU_RDp.state);
+    d.dump_bitp   ("PIN_CPU_WRp      ", PIN_CPU_WRp.state);
+    //d.dump_bitp   ("PIN_CPU_UNOR_DBG ", PIN_CPU_UNOR_DBG.state);
+    d.dump_bitp   ("PIN_CPU_ADDR_HIp ", PIN_CPU_ADDR_HIp.state);
+    //d.dump_bitp   ("PIN_CPU_UMUT_DBG ", PIN_CPU_UMUT_DBG.state);
+    d.dump_bitp   ("PIN_CPU_EXT_BUSp ", PIN_CPU_EXT_BUSp.state);
+    //d.dump_bitp   ("PIN_CPU_6        ", PIN_CPU_6.state);
+    d.dump_bitp   ("PIN_CPU_LATCH_EXT", PIN_CPU_LATCH_EXT.state);
+    //d.dump_bitp   ("BOOT_BITn        ", BOOT_BITn_h.state);
+    //d.dump_bitp   ("PIN_CPU_BOOTp    ", PIN_CPU_BOOTp.state);
+    //d.dump_bitp   ("TEDO_CPU_RDp     ", TEDO_CPU_RDp.state);
+    //d.dump_bitp   ("APOV_CPU_WRp     ", APOV_CPU_WRp.state);
+    //d.dump_bitp   ("TAPU_CPU_WRp     ", TAPU_CPU_WRp.state);
+  }
 
   Signal BUS_CPU_A[16];
   Signal BUS_CPU_D[8];

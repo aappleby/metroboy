@@ -21,9 +21,9 @@ struct GateBoyThread {
     int64_t count;
   };
 
-  void reset_boot(const blob& _boot, const blob& _cart);
-  void reset_cart   (const blob& _boot, const blob& _cart);
-  void set_cart     (const blob& _boot, const blob& _cart);
+  void reset_boot();
+  void reset_app();
+  void set_cart(const blob& _boot, const blob& _cart);
 
   void start();
   void stop();
@@ -71,7 +71,7 @@ struct GateBoyThread {
   Command command = {0,0};
 
   double   old_sim_time = 0;
-  int32_t  old_phase_total = 0;
+  uint64_t old_phase_total = 0;
   double   phase_rate_smooth = 0;
 };
 

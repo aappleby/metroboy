@@ -1,210 +1,14 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyRegisters.h"
+
 struct SpriteFetcher;
 struct TileTempA;
 struct TileTempB;
 struct SpriteTempA;
 struct SpriteTempB;
 struct OamTempB;
-
-//-----------------------------------------------------------------------------
-// FF4A - WY
-
-struct RegWY {
-  void set(uint8_t wy) {
-    NESO_WY0n.reset((wy & 0x01) ? REG_D0C1 : REG_D1C1);
-    NYRO_WY1n.reset((wy & 0x02) ? REG_D0C1 : REG_D1C1);
-    NAGA_WY2n.reset((wy & 0x04) ? REG_D0C1 : REG_D1C1);
-    MELA_WY3n.reset((wy & 0x08) ? REG_D0C1 : REG_D1C1);
-    NULO_WY4n.reset((wy & 0x10) ? REG_D0C1 : REG_D1C1);
-    NENE_WY5n.reset((wy & 0x20) ? REG_D0C1 : REG_D1C1);
-    NUKA_WY6n.reset((wy & 0x40) ? REG_D0C1 : REG_D1C1);
-    NAFU_WY7n.reset((wy & 0x80) ? REG_D0C1 : REG_D1C1);
-  }
-
-  int get() const { return pack_u8n(8, &NESO_WY0n); }
-
-  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  /*p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
-  /*p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
-  /*p23.NAGA*/ DFF9 NAGA_WY2n; // xxxxxxxH
-  /*p23.MELA*/ DFF9 MELA_WY3n; // xxxxxxxH
-  /*p23.NULO*/ DFF9 NULO_WY4n; // xxxxxxxH
-  /*p23.NENE*/ DFF9 NENE_WY5n; // xxxxxxxH
-  /*p23.NUKA*/ DFF9 NUKA_WY6n; // xxxxxxxH
-  /*p23.NAFU*/ DFF9 NAFU_WY7n; // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
-// FF4B - WX
-
-struct RegWX {
-  void set(uint8_t wx) {
-    MYPA_WX0n.reset((wx & 0x01) ? REG_D0C1 : REG_D1C1);
-    NOFE_WX1n.reset((wx & 0x02) ? REG_D0C1 : REG_D1C1);
-    NOKE_WX2n.reset((wx & 0x04) ? REG_D0C1 : REG_D1C1);
-    MEBY_WX3n.reset((wx & 0x08) ? REG_D0C1 : REG_D1C1);
-    MYPU_WX4n.reset((wx & 0x10) ? REG_D0C1 : REG_D1C1);
-    MYCE_WX5n.reset((wx & 0x20) ? REG_D0C1 : REG_D1C1);
-    MUVO_WX6n.reset((wx & 0x40) ? REG_D0C1 : REG_D1C1);
-    NUKU_WX7n.reset((wx & 0x80) ? REG_D0C1 : REG_D1C1);
-  }
-
-  int get() const { return pack_u8n(8, &MYPA_WX0n); }
-
-  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  /*p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
-  /*p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH
-  /*p23.NOKE*/ DFF9 NOKE_WX2n; // xxxxxxxH
-  /*p23.MEBY*/ DFF9 MEBY_WX3n; // xxxxxxxH
-  /*p23.MYPU*/ DFF9 MYPU_WX4n; // xxxxxxxH
-  /*p23.MYCE*/ DFF9 MYCE_WX5n; // xxxxxxxH
-  /*p23.MUVO*/ DFF9 MUVO_WX6n; // xxxxxxxH
-  /*p23.NUKU*/ DFF9 NUKU_WX7n; // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
-// Pixel counter
-
-struct PixCount {
-  void reset_cart() {
-    XEHO_PX0p.reset(REG_D1C1);
-    SAVY_PX1p.reset(REG_D1C1);
-    XODU_PX2p.reset(REG_D1C1);
-    XYDO_PX3p.reset(REG_D0C1);
-    TUHU_PX4p.reset(REG_D0C1);
-    TUKY_PX5p.reset(REG_D1C1);
-    TAKO_PX6p.reset(REG_D0C1);
-    SYBE_PX7p.reset(REG_D1C1);
-  }
-
-  void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
-    // Pixel counter, has carry lookahead because this can increment every tcycle
-    /* p21.RYBO*/ wire RYBO_old = xor2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
-    /* p21.XUKE*/ wire XUKE_old = and2(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old());
-    /* p21.XYLE*/ wire XYLE_old = and2(XODU_PX2p.qp_old(), XUKE_old);
-    /* p21.XEGY*/ wire XEGY_old = xor2(XODU_PX2p.qp_old(), XUKE_old); // feet facing gnd
-    /* p21.XORA*/ wire XORA_old = xor2(XYDO_PX3p.qp_old(), XYLE_old); // feet facing gnd
-
-    /* p21.XEHO*/ XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEHO_PX0p.qn_old());
-    /* p21.SAVY*/ SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, RYBO_old);
-    /* p21.XODU*/ XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEGY_old);
-    /* p21.XYDO*/ XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XORA_old);
-
-    /* p24.TOCA*/ wire TOCA_new = not1(XYDO_PX3p.qp_new());
-    /* p21.SAKE*/ wire SAKE_old = xor2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
-    /* p21.TYBA*/ wire TYBA_old = and2(TUHU_PX4p.qp_old(), TUKY_PX5p.qp_old());
-    /* p21.SURY*/ wire SURY_old = and2(TAKO_PX6p.qp_old(), TYBA_old);
-    /* p21.TYGE*/ wire TYGE_old = xor2(TAKO_PX6p.qp_old(), TYBA_old);
-    /* p21.ROKU*/ wire ROKU_old = xor2(SYBE_PX7p.qp_old(), SURY_old);
-
-    /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn, TUHU_PX4p.qn());
-    /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn, SAKE_old);
-    /* p21.TAKO*/ TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn, TYGE_old);
-    /* p21.SYBE*/ SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn, ROKU_old);
-  }
-
-  /*#p21.XUGU*/ wire XANO_PX167p() const {
-    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp(), SAVY_PX1p.qp(), XODU_PX2p.qp(), TUKY_PX5p.qp(), SYBE_PX7p.qp()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
-    return _XANO_PX167p;
-  }
-
-  /*p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
-  /*p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
-  /*p21.XODU*/ DFF17 XODU_PX2p; // AxCxExGx
-  /*p21.XYDO*/ DFF17 XYDO_PX3p; // AxCxExGx
-  /*p21.TUHU*/ DFF17 TUHU_PX4p; // AxCxExGx
-  /*p21.TUKY*/ DFF17 TUKY_PX5p; // AxCxExGx
-  /*p21.TAKO*/ DFF17 TAKO_PX6p; // AxCxExGx
-  /*p21.SYBE*/ DFF17 SYBE_PX7p; // AxCxExGx
-};
-
-//-----------------------------------------------------------------------------
-// FF41 - STAT
-
-struct RegStat {
-  void reset_cart() {
-    RUPO_STAT_LYC_MATCHn.reset(REG_D0C0);
-  }
-
-  void tock(
-    GateBoyResetDebug& rst,
-    GateBoyCpuBus& cpu_bus,
-    wire ACYL_SCANNINGp,
-    wire XYMU_RENDERINGp,
-    wire PARU_VBLANKp,
-    const RegLYC& reg_lyc);
-
-  /*p21.RUPO*/ NorLatch RUPO_STAT_LYC_MATCHn;       // xxCxxxxx
-
-  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
-  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn; // xxxxxxxH
-  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn; // xxxxxxxH
-  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn; // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
-// FF47 - BGP
-
-struct RegBGP {
-  void reset_cart() {
-    PAVO_BGP_D0n.reset(REG_D1C1);
-    NUSY_BGP_D1n.reset(REG_D1C1);
-    PYLU_BGP_D2n.reset(REG_D0C1);
-    MAXY_BGP_D3n.reset(REG_D0C1);
-    MUKE_BGP_D4n.reset(REG_D0C1);
-    MORU_BGP_D5n.reset(REG_D0C1);
-    MOGY_BGP_D6n.reset(REG_D0C1);
-    MENA_BGP_D7n.reset(REG_D0C1);
-  }
-
-  void tock(GateBoyCpuBus& cpu_bus);
-
-  /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
-  /*p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
-  /*p36.PYLU*/ DFF8p PYLU_BGP_D2n; // xxxxxxxH
-  /*p36.MAXY*/ DFF8p MAXY_BGP_D3n; // xxxxxxxH
-  /*p36.MUKE*/ DFF8p MUKE_BGP_D4n; // xxxxxxxH
-  /*p36.MORU*/ DFF8p MORU_BGP_D5n; // xxxxxxxH
-  /*p36.MOGY*/ DFF8p MOGY_BGP_D6n; // xxxxxxxH
-  /*p36.MENA*/ DFF8p MENA_BGP_D7n; // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
-// FF48 - OBP0
-
-struct RegOBP0 {
-  void tock(GateBoyCpuBus& cpu_bus);
-
-  /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
-  /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
-  /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n; // xxxxxxxH
-  /*p36.XALO*/ DFF8p XALO_OBP0_D3n; // xxxxxxxH
-  /*p36.XERU*/ DFF8p XERU_OBP0_D4n; // xxxxxxxH
-  /*p36.XYZE*/ DFF8p XYZE_OBP0_D5n; // xxxxxxxH
-  /*p36.XUPO*/ DFF8p XUPO_OBP0_D6n; // xxxxxxxH
-  /*p36.XANA*/ DFF8p XANA_OBP0_D7n; // xxxxxxxH
-};
-
-//-----------------------------------------------------------------------------
-// FF49 - OBP1
-
-struct RegOBP1 {
-  void tock(GateBoyCpuBus& cpu_bus);
-
-  /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
-  /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
-  /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n; // xxxxxxxH
-  /*p36.LOSE*/ DFF8p LOSE_OBP1_D3n; // xxxxxxxH
-  /*p36.LUNE*/ DFF8p LUNE_OBP1_D4n; // xxxxxxxH
-  /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n; // xxxxxxxH
-  /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n; // xxxxxxxH
-  /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n; // xxxxxxxH
-};
 
 //-----------------------------------------------------------------------------
 
@@ -314,7 +118,7 @@ struct FineScroll {
 // FIXME this is kinda useless now
 
 struct PPURegisters {
-  void reset_cart() {
+  void reset_app() {
     VOGA_HBLANKp.reset(REG_D1C0);
   }
 
@@ -328,7 +132,7 @@ struct PPURegisters {
 
 struct PixelPipes {
 
-  void reset_cart() {
+  void reset_app() {
     VEZO_MASK_PIPE_0.reset(REG_D1C1);
     WURU_MASK_PIPE_1.reset(REG_D1C1);
     VOSA_MASK_PIPE_2.reset(REG_D1C1);
@@ -339,20 +143,33 @@ struct PixelPipes {
     VAVA_MASK_PIPE_7.reset(REG_D1C1);
   }
 
-  void tock(
-    SpriteFetcher& sprite_fetcher,
+  void tock_bgw_pipe(
     TileTempA& tile_temp_a,
     TileTempB& tile_temp_b,
-    SpriteTempA& sprite_temp_a,
-    SpriteTempB& sprite_temp_b,
-    OamTempB& oam_temp_b,
-    RegLCDC& reg_lcdc,
-    RegBGP& reg_bgp,
-    RegOBP0& reg_obp0,
-    RegOBP1& reg_obp1,
-    //wire XYMU_RENDERINGp,
     wire SACU_CLKPIPE_evn,
     wire NYXU_BFETCH_RSTn);
+
+  void tock_sprite_pipe(
+    SpriteFetcher& sprite_fetcher,
+    SpriteTempA& sprite_temp_a,
+    SpriteTempB& sprite_temp_b,
+    wire SACU_CLKPIPE_evn);
+
+  void tock_mask_pipe(
+    SpriteFetcher& sprite_fetcher,
+    OamTempB& oam_temp_b,
+    wire SACU_CLKPIPE_evn);
+
+  void tock_pal_pipe(
+    SpriteFetcher& sprite_fetcher,
+    OamTempB& oam_temp_b,
+    wire SACU_CLKPIPE_evn);
+
+  void tock_pix_output(RegLCDC& reg_lcdc);
+
+  RegBGP  reg_bgp;
+  RegOBP0 reg_obp0;
+  RegOBP1 reg_obp1;
 
   /*p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
   /*p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1; // AxCxExGx

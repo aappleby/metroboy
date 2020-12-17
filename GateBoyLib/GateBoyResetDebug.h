@@ -1,12 +1,10 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct GateBoyClock;
-
 //-----------------------------------------------------------------------------
 
 struct GateBoyResetDebug {
-  void reset_cart() {
+  void reset_app() {
     PIN_CPU_STARTp.reset(REG_D0C0);
     TUBO_WAITINGp.reset(REG_D0C0);
   }
@@ -45,6 +43,12 @@ struct GateBoyResetDebug {
 
   void tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
   void tock2(wire XONA_LCDC_LCDENp);
+
+  void dump(Dumper& d) {
+    d.dump_bitp("TUBO_WAITINGp ", TUBO_WAITINGp.state);
+    d.dump_bitn("ASOL_POR_DONEn", ASOL_POR_DONEn.state);
+    d.dump_bitp("AFER_SYS_RSTp ", AFER_SYS_RSTp.state);
+  }
 
   //----------------------------------------
 

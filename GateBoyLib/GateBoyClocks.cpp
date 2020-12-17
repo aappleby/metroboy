@@ -1,6 +1,8 @@
 #include "GateBoyLib/GateBoyClocks.h"
 #include "GateBoyLib/GateBoyResetDebug.h"
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
 
   wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();
@@ -24,8 +26,12 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   PIN_CPU_BOGA_Axxxxxxx.setp(BOGA_Axxxxxxx());
 }
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void GateBoyClock::tock_vid(const GateBoyResetDebug& rst) {
   /* p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),        rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old());
   /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),        rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old());
   /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
+
+//------------------------------------------------------------------------------------------------------------------------

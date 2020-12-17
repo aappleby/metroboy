@@ -7,7 +7,7 @@ extern const uint32_t gb_colors[];
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyPPU::reset_cart() {
+void MetroBoyPPU::reset_app() {
   *this = {0};
 
   phase_count = 0;

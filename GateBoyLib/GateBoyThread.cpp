@@ -9,29 +9,20 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoyThread::reset_boot(const blob& _boot, const blob& _cart) {
-  printf("Resetting sim to run boot rom\n");
-  boot = _boot;
-  cart = _cart;
+void GateBoyThread::reset_boot() {
   gb.reset_states();
-  gb->reset_boot(boot.data(), boot.size(),
-                    cart.data(), cart.size(), true);
+  gb->reset_boot(true);
 }
 
-void GateBoyThread::reset_cart(const blob& _boot, const blob& _cart) {
-  printf("Resetting sim to run cart\n");
-  boot = _boot;
-  cart = _cart;
+void GateBoyThread::reset_app() {
   gb.reset_states();
-  gb->reset_cart(boot.data(), boot.size(),
-                  cart.data(), cart.size());
+  gb->reset_app();
 }
 
 void GateBoyThread::set_cart(const blob& _boot, const blob& _cart) {
   boot = _boot;
   cart = _cart;
-  gb->set_cart(boot.data(), boot.size(),
-               cart.data(), cart.size());
+  gb->set_cart(boot.data(), boot.size(), cart.data(), cart.size());
 }
 
 //------------------------------------------------------------------------------

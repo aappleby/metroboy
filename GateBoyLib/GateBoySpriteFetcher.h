@@ -1,11 +1,12 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyRegisters.h"
+
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
-  void dump(Dumper& d);
-  void reset_cart();
+  void reset_app();
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
 
@@ -81,7 +82,18 @@ struct SpriteFetcher {
     return _SOHO_SPR_VRAM_RDp;
   }
 
-
+  void dump(Dumper& d) {
+    d.dump_bitp("TAKA_SFETCH_RUNNINGp", TAKA_SFETCH_RUNNINGp.state);
+    d.dump_bitp("SOBU_SFETCH_REQp    ", SOBU_SFETCH_REQp    .state);
+    d.dump_bitp("SUDA_SFETCH_REQp    ", SUDA_SFETCH_REQp    .state);
+    d.dump_bitp("TOXE_SFETCH_S0      ", TOXE_SFETCH_S0p     .state);
+    d.dump_bitp("TULY_SFETCH_S1      ", TULY_SFETCH_S1p     .state);
+    d.dump_bitp("TESE_SFETCH_S2      ", TESE_SFETCH_S2p     .state);
+    d.dump_bitp("TYFO_SFETCH_S0_D1   ", TYFO_SFETCH_S0p_D1  .state);
+    d.dump_bitp("TOBU_SFETCH_S1_D2   ", TOBU_SFETCH_S1p_D2  .state);
+    d.dump_bitp("VONU_SFETCH_S1_D4   ", VONU_SFETCH_S1p_D4  .state);
+    d.dump_bitp("SEBA_SFETCH_S1_D5   ", SEBA_SFETCH_S1p_D5  .state);
+  }
 
   Signal _XYMU_RENDERINGp;
 
@@ -97,6 +109,9 @@ struct SpriteFetcher {
   /*p29.TOBU*/ DFF17 TOBU_SFETCH_S1p_D2;       // xBxDxFxH
   /*p29.VONU*/ DFF17 VONU_SFETCH_S1p_D4;       // xBxDxFxH
   /*p29.SEBA*/ DFF17 SEBA_SFETCH_S1p_D5;       // AxCxExGx
+
+  SpriteTempA sprite_temp_a;
+  SpriteTempB sprite_temp_b;
 };
 
 //-----------------------------------------------------------------------------

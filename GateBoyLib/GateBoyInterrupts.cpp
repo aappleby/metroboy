@@ -9,6 +9,8 @@
 #include "GateBoyLib/GateBoyLCD.h"
 #include "GateBoyLib/GateBoySerial.h"
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void GateBoyInterrupts::tock(
   const GateBoyResetDebug& rst,
   GateBoyCpuBus& cpu_bus,
@@ -121,3 +123,5 @@ void GateBoyInterrupts::tock(
     cpu_bus.BUS_CPU_D_out[4].tri6_nn(FFFF_RDn_ext, IE_D4.qn_new());
   }
 }
+
+//------------------------------------------------------------------------------------------------------------------------

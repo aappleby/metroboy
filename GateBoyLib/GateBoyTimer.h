@@ -9,7 +9,7 @@ struct GateBoyCpuBus;
 // FF04 DIV
 
 struct GateBoyDiv {
-  void reset_cart() {
+  void reset_app() {
     UKUP_DIV00p.reset(REG_D1C1);
     UFOR_DIV01p.reset(REG_D1C0);
     UNER_DIV02p.reset(REG_D0C0);
@@ -58,6 +58,11 @@ struct GateBoyDiv {
     GateBoyCpuBus& cpu_bus
   );
 
+  void dump(Dumper& d) {
+    d.dump_slice2p("DIV16", &UKUP_DIV00p, 16);
+    d.dump_slice2p("DIV8 ", &UGOT_DIV06p, 8);
+  }
+
   /*p01.UKUP*/ DFF17 UKUP_DIV00p; // AxxxExxx
   /*p01.UFOR*/ DFF17 UFOR_DIV01p; // AxxxExxx
   /*p01.UNER*/ DFF17 UNER_DIV02p; // AxxxExxx
@@ -101,6 +106,14 @@ struct GateBoyTimer {
     RAGE_TIMA5p.reset(((tima_a >>  5) & 1) | ((tima_b >>  5) & 2));
     PEDA_TIMA6p.reset(((tima_a >>  6) & 1) | ((tima_b >>  6) & 2));
     NUGA_TIMA7p.reset(((tima_a >>  7) & 1) | ((tima_b >>  7) & 2));
+  }
+
+  void dump(Dumper& d) {
+    d.dump_bitp("NYDU_TIMA7p_DELAY   ", NYDU_TIMA7p_DELAY.state);
+    d.dump_bitp("MOBA_TIMER_OVERFLOWp", MOBA_TIMER_OVERFLOWp.state);
+    d.dump_slice2p("TIMA", &REGA_TIMA0p, 8);
+    d.dump_slice2p("TMA ", &SABU_TMA0p, 8);
+    d.dump_slice2p("TAC ", &SOPU_TAC0p, 3);
   }
 
   /*p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY;    // Axxxxxxx

@@ -4,6 +4,8 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyClocks.h"
 
+//------------------------------------------------------------------------------------------------------------------------
+
 void GateBoyJoypad::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
 {
   /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
@@ -85,3 +87,4 @@ void GateBoyJoypad::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBu
   /* p??.????*/ cpu_bus.BUS_CPU_D_out[7].tri6_nn(_BYZO_FF00_RDn, KERU_DBG_FF00_D7n.qp_new());
 }
 
+//------------------------------------------------------------------------------------------------------------------------

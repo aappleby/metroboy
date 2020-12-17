@@ -87,7 +87,8 @@ int diff(void* a, void* b, int size) {
 
 GateBoy GateBoyTests::create_gb_poweron() {
   GateBoy gb;
-  gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
+  gb.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb.reset_boot(true);
   gb.sys_cpu_en = 0;
   return gb;
 }
@@ -95,19 +96,16 @@ GateBoy GateBoyTests::create_gb_poweron() {
 int GateBoyTests::test_post_bootrom_state() {
   TEST_START();
 
-  uint64_t hash1, hash2;
-
   GateBoy gb1;
-  GateBoy gb2;
-
   gb1.load_post_bootrom_state();
-  gb2.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-
   memset(&gb1.probes, 0, sizeof(gb1.probes));
-  memset(&gb2.probes, 0, sizeof(gb2.probes));
+  uint64_t hash1 = hash_states(&gb1, sizeof(gb1));
 
-  hash1 = hash_states(&gb1, sizeof(gb1));
-  hash2 = hash_states(&gb2, sizeof(gb2));
+  GateBoy gb2;
+  gb2.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb2.reset_app();
+  memset(&gb2.probes, 0, sizeof(gb2.probes));
+  uint64_t hash2 = hash_states(&gb2, sizeof(gb2));
 
 #if 1
   /*
@@ -755,7 +753,8 @@ int GateBoyTests::run_microtest(const char* filename) {
   if (verbose) LOG_B("%-30s ", filename);
 
   GateBoy gb;
-  gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb.reset_app();
   gb.phase_total = 0;
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
@@ -797,12 +796,14 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
 
   LOG_B("reset_poweron wtih fastboot = true\n");
   GateBoy gb1;
-  gb1.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), true);
+  gb1.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb1.reset_boot(true);
   LOG_G("reset_poweron wtih fastboot = true done\n");
 
   LOG_B("reset_poweron wtih fastboot = false\n");
   GateBoy gb2;
-  gb2.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size(), false);
+  gb2.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb2.reset_boot(false);
   LOG_G("reset_poweron wtih fastboot = false done\n");
 
   int start = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1);
@@ -831,7 +832,8 @@ int GateBoyTests::test_reset_cart_vs_dump() {
 
   LOG_B("reset_poweron wtih fastboot = true\n");
   GateBoy gb2;
-  gb2.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb2.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb2.reset_app();
   LOG_G("reset_cart2 done\n");
 
   // Ignore the framebuffers for now
@@ -979,7 +981,8 @@ int GateBoyTests::test_ext_bus() {
     cart_rom = as.link();
 
     GateBoy gb;
-    gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+    gb.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+    gb.reset_app();
     gb.run(120);
 
 #if 0
@@ -1618,7 +1621,8 @@ int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
   GateBoy gb;
-  gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+  gb.reset_app();
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
 
@@ -1788,7 +1792,8 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gb.reset_boot(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0, true);
+    gb.set_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0);
+    gb.reset_boot(true);
     gb.dbg_req.addr = 0x0150;
     gb.dbg_req.data = 0;
     gb.dbg_req.read = 1;

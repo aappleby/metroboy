@@ -1,13 +1,37 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyJoypad {
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
 
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new(), BATU_JP_GLITCH0.qp_new()); }
+
+  void dump(Dumper& d) {
+    d.dump_bitp("AWOB_WAKE_CPU  ", AWOB_WAKE_CPU.state);
+    d("\n");
+    d.dump_bitp("BATU_JP_GLITCH0", BATU_JP_GLITCH0.state);
+    d.dump_bitp("ACEF_JP_GLITCH1", ACEF_JP_GLITCH1.state);
+    d.dump_bitp("AGEM_JP_GLITCH2", AGEM_JP_GLITCH2.state);
+    d.dump_bitp("APUG_JP_GLITCH3", APUG_JP_GLITCH3.state);
+    d("\n");
+    d.dump_bitp("JUTE_JOYP_RA   ", JUTE_JOYP_RA.state);
+    d.dump_bitp("KECY_JOYP_LB   ", KECY_JOYP_LB.state);
+    d.dump_bitp("JALE_JOYP_UC   ", JALE_JOYP_UC.state);
+    d.dump_bitp("KYME_JOYP_DS   ", KYME_JOYP_DS.state);
+    d.dump_bitp("KELY_JOYP_UDLR ", KELY_JOYP_UDLRp.state);
+    d.dump_bitp("COFY_JOYP_ABCS ", COFY_JOYP_ABCSp.state);
+    d("\n");
+    d.dump_bitn("KUKO_DBG_FF00_D", KUKO_DBG_FF00_D6n.state);
+    d.dump_bitn("KERU_DBG_FF00_D", KERU_DBG_FF00_D7n.state);
+    d("\n");
+    d.dump_bitn("KEVU_JOYP_L0   ", KEVU_JOYP_L0n.state);
+    d.dump_bitn("KAPA_JOYP_L1   ", KAPA_JOYP_L1n.state);
+    d.dump_bitn("KEJA_JOYP_L2   ", KEJA_JOYP_L2n.state);
+    d.dump_bitn("KOLO_JOYP_L3   ", KOLO_JOYP_L3n.state);
+  }
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
@@ -41,4 +65,4 @@ struct GateBoyJoypad {
   PinOut PIN_JOY_P15; // PIN_62
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

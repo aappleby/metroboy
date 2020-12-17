@@ -1,7 +1,7 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyDMA {
 
@@ -11,6 +11,20 @@ struct GateBoyDMA {
 
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
   /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
+
+  void dump(Dumper& d) {
+    d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &NAFA_DMA_A08n), pack_u8p(8, &NAKY_DMA_A00p));
+    d("\n");
+    d.dump_bitp("MATU_DMA_RUNNINGp", MATU_DMA_RUNNINGp.state);
+    d.dump_bitp("LYXE_DMA_LATCHp  ", LYXE_DMA_LATCHp  .state);
+    d.dump_bitp("MYTE_DMA_DONE    ", MYTE_DMA_DONE    .state);
+    d.dump_bitp("LUVY_DMA_TRIG_d0 ", LUVY_DMA_TRIG_d0 .state);
+    d.dump_bitp("LENE_DMA_TRIG_d4 ", LENE_DMA_TRIG_d4 .state);
+    d.dump_bitp("LOKY_DMA_LATCHp  ", LOKY_DMA_LATCHp  .state);
+    d("\n");
+    d.dump_slice2p("DMA_A_LOW ", &NAKY_DMA_A00p, 8);
+    d.dump_slice2n("DMA_A_HIGH", &NAFA_DMA_A08n, 8);
+  }
 
   Signal _XYMU_RENDERINGp;
 
@@ -43,4 +57,4 @@ struct GateBoyDMA {
 
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

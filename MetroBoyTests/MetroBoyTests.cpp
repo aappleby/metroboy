@@ -75,7 +75,7 @@ int run_microtest(std::string filename) {
 
   blob rom = load_blob(path);
   MetroBoy gb;
-  gb.reset_cart(rom.data(), rom.size());
+  gb.reset_app(rom.data(), rom.size());
 
   int timeout = 8000; // All our "fast" microtests take under 4000 phases
   int phase = 0;

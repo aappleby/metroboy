@@ -11,13 +11,13 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::reset_cart(uint8_t* new_rom, size_t new_rom_size) {
+void MetroBoy::reset_app(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  cpu.reset_cart();
+  cpu.reset_app();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
-  ppu.reset_cart();
+  ppu.reset_app();
   oam.reset();
   spu.reset();
   timer.reset();
@@ -127,7 +127,7 @@ void MetroBoy::next_phase() {
     else if (cpu_has_vbus_req) bus_data = vbus_ack.data_lo;
     else if (cpu_has_obus_req) bus_data = obus_ack.data_lo;
 
-    cpu.tock_ha(ints.imask, ints.intf, bus_data);
+    cpu.tock_ab(ints.imask, ints.intf, bus_data);
 
     /*
     cpu.tock_ack(imask_delay, intf_delay, bus_data);
@@ -164,7 +164,10 @@ void MetroBoy::next_phase() {
   // prioritize reqs
 
   if (DELTA_AB) {
-    cpu_req = cpu.bus_req;
+    cpu_req.addr  = cpu._bus_addr;
+    cpu_req.data  = cpu._bus_data;
+    cpu_req.read  = cpu._bus_read;
+    cpu_req.write = cpu._bus_write;
 
     ibus_req = {0};
     ebus_req = {0};
@@ -183,13 +186,6 @@ void MetroBoy::next_phase() {
     else {
       ebus_req = cpu_req;
     }
-
-    // hackkkk
-    /*
-    if (cpu_req.write && cpu_req.addr >= 0x8000 && cpu_req.addr <= 0x9FFF) {
-      vram.ram[cpu_req.addr - 0x8000] = cpu_req.data;
-    }
-    */
   }
 
   ppu.get_vbus_req(vbus_req);

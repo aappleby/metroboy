@@ -1,12 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-struct PixCount;
-struct RegLY;
-struct OamTempA;
-struct OamTempB;
+//------------------------------------------------------------------------------------------------------------------------
 
-struct SpriteGetFlag {
+struct SpriteFirstMatch {
   /* p29.GUVA*/ wire GUVA_SPRITE0_GETp;
   /* p29.ENUT*/ wire ENUT_SPRITE1_GETp;
   /* p29.EMOL*/ wire EMOL_SPRITE2_GETp;
@@ -32,7 +29,9 @@ struct SpriteStoreFlag {
   /* p29.DECU*/ wire DECU_STORE9_CLKn;
 };
 
-struct SpriteMatch {
+//------------------------------------------------------------------------------------------------------------------------
+
+struct SpriteMatchFlag {
 
   wire FEPO_STORE_MATCHp() const {
     /* p29.FEFY*/ wire _FEFY_STORE_MATCHp_new_evn = nand5(XAGE_STORE4_MATCHn, YLOZ_STORE3_MATCHn, DEGO_STORE2_MATCHn, DYDU_STORE1_MATCHn, YDUG_STORE0_MATCHn);
@@ -42,54 +41,6 @@ struct SpriteMatch {
   }
 
   /*#p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp()); }
-
-
-  SpriteGetFlag get_flag() const {
-    wire GND = 0;
-    /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(YDUG_STORE0_MATCHn);
-    /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1(DYDU_STORE1_MATCHn);
-    /* p29.GUPO*/ wire _GUPO_STORE2_MATCH = not1(DEGO_STORE2_MATCHn);
-    /* p29.WEBO*/ wire _WEBO_STORE3_MATCH = not1(YLOZ_STORE3_MATCHn);
-    /* p29.WUNA*/ wire _WUNA_STORE4_MATCH = not1(XAGE_STORE4_MATCHn);
-    /* p29.GABA*/ wire _GABA_STORE5_MATCH = not1(EGOM_STORE5_MATCHn);
-    /* p29.WASE*/ wire _WASE_STORE6_MATCH = not1(YBEZ_STORE6_MATCHn);
-    /* p29.GYTE*/ wire _GYTE_STORE7_MATCH = not1(DYKA_STORE7_MATCHn);
-    /* p29.GEKE*/ wire _GEKE_STORE8_MATCH = not1(EFYL_STORE8_MATCHn);
-
-    /* p29.GEZE*/ wire _GEZE_STORE0_MATCH = or2(_WEFU_STORE0_MATCH, GND);
-    /* p29.FUMA*/ wire _FUMA_STORE1_MATCH = or2(_GAJA_STORE1_MATCH, _GEZE_STORE0_MATCH);
-    /* p29.GEDE*/ wire _GEDE_STORE2_MATCH = or2(_GUPO_STORE2_MATCH, _FUMA_STORE1_MATCH);
-    /* p29.WUTO*/ wire _WUTO_STORE3_MATCH = or2(_WEBO_STORE3_MATCH, _GEDE_STORE2_MATCH);
-    /* p29.XYLA*/ wire _XYLA_STORE4_MATCH = or2(_WUNA_STORE4_MATCH, _WUTO_STORE3_MATCH);
-    /* p29.WEJA*/ wire _WEJA_STORE5_MATCH = or2(_GABA_STORE5_MATCH, _XYLA_STORE4_MATCH);
-    /* p29.WYLA*/ wire _WYLA_STORE6_MATCH = or2(_WASE_STORE6_MATCH, _WEJA_STORE5_MATCH);
-    /* p29.FAVO*/ wire _FAVO_STORE7_MATCH = or2(_GYTE_STORE7_MATCH, _WYLA_STORE6_MATCH);
-    /* p29.GYGA*/ wire _GYGA_STORE8_MATCH = or2(_GEKE_STORE8_MATCH, _FAVO_STORE7_MATCH);
-
-    /* p29.GUVA*/ wire _GUVA_SPRITE0_GETp = nor2(YDUG_STORE0_MATCHn, GND);
-    /* p29.ENUT*/ wire _ENUT_SPRITE1_GETp = nor2(DYDU_STORE1_MATCHn, _GEZE_STORE0_MATCH);
-    /* p29.EMOL*/ wire _EMOL_SPRITE2_GETp = nor2(DEGO_STORE2_MATCHn, _FUMA_STORE1_MATCH);
-    /* p29.GYFY*/ wire _GYFY_SPRITE3_GETp = nor2(YLOZ_STORE3_MATCHn, _GEDE_STORE2_MATCH);
-    /* p29.GONO*/ wire _GONO_SPRITE4_GETp = nor2(XAGE_STORE4_MATCHn, _WUTO_STORE3_MATCH);
-    /* p29.GEGA*/ wire _GEGA_SPRITE5_GETp = nor2(EGOM_STORE5_MATCHn, _XYLA_STORE4_MATCH);
-    /* p29.XOJA*/ wire _XOJA_SPRITE6_GETp = nor2(YBEZ_STORE6_MATCHn, _WEJA_STORE5_MATCH);
-    /* p29.GUTU*/ wire _GUTU_SPRITE7_GETp = nor2(DYKA_STORE7_MATCHn, _WYLA_STORE6_MATCH);
-    /* p29.FOXA*/ wire _FOXA_SPRITE8_GETp = nor2(EFYL_STORE8_MATCHn, _FAVO_STORE7_MATCH);
-    /* p29.GUZE*/ wire _GUZE_SPRITE9_GETp = nor2(YGEM_STORE9_MATCHn, _GYGA_STORE8_MATCH);
-
-    return {
-      _GUVA_SPRITE0_GETp,
-      _ENUT_SPRITE1_GETp,
-      _EMOL_SPRITE2_GETp,
-      _GYFY_SPRITE3_GETp,
-      _GONO_SPRITE4_GETp,
-      _GEGA_SPRITE5_GETp,
-      _XOJA_SPRITE6_GETp,
-      _GUTU_SPRITE7_GETp,
-      _FOXA_SPRITE8_GETp,
-      _GUZE_SPRITE9_GETp
-    };
-  }
 
   /* p29.YDUG*/ wire YDUG_STORE0_MATCHn;
   /* p29.DYDU*/ wire DYDU_STORE1_MATCHn;
@@ -103,68 +54,50 @@ struct SpriteMatch {
   /* p29.YGEM*/ wire YGEM_STORE9_MATCHn;
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
-struct SpriteCounter {
-  void reset_cart() {
-    DEZY_COUNT_CLKp.reset(REG_D1C1);
-    BESE_SPRITE_COUNT0.reset(REG_D0C1);
-    CUXY_SPRITE_COUNT1.reset(REG_D0C1);
-    BEGO_SPRITE_COUNT2.reset(REG_D0C1);
-    DYBE_SPRITE_COUNT3.reset(REG_D0C1);
-  }
+struct SpriteStore {
+  void reset_app();
 
   void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
-  SpriteStoreFlag get_store_flag(wire _DYTY_STORE_CLKp_new_odd);
+
+  SpriteStoreFlag  get_store_flags(wire _DYTY_STORE_CLKp_new_odd);
+  SpriteMatchFlag  get_match_flags(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count);
+  SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
+
+  void get_sprite(SpriteFirstMatch first_match, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]);
+  void reset_first_match(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
+
+  void store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I[6]);
+  void store_sprite_line (SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]);
+  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b);
+
+  void get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, BusOut BUS_OAM_An[8], BusIO SPR_TRI_I[6]);
+  void get_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, BusIO SPR_TRI_L[4]);
+
+  void dump(Dumper& d);
+
+  //----------------------------------------
+  // Sprite index latch selects which store to write
+
+  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
+  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
+  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
+  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
+  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
+  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
+
+  //----------------------------------------
+  // Sprite counter tracks how many sprites have been selected for this line.
 
   /*p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
   /*p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
   /*p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
   /*p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx
   /*p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3; // AxxxExxx
-};
-
-//-----------------------------------------------------------------------------
-
-struct SpriteStore {
-  void reset_cart() {
-    XADU_SPRITE_IDX0p.reset(REG_D0C1);
-    XEDY_SPRITE_IDX1p.reset(REG_D0C1);
-    ZUZE_SPRITE_IDX2p.reset(REG_D1C1);
-    XOBE_SPRITE_IDX3p.reset(REG_D0C1);
-    YDUF_SPRITE_IDX4p.reset(REG_D1C1);
-    XECU_SPRITE_IDX5p.reset(REG_D0C1);
-
-    SPR_TRI_I[0].reset(REG_D0C0);
-    SPR_TRI_I[1].reset(REG_D0C0);
-    SPR_TRI_I[2].reset(REG_D1C0);
-    SPR_TRI_I[3].reset(REG_D0C0);
-    SPR_TRI_I[4].reset(REG_D1C0);
-    SPR_TRI_I[5].reset(REG_D0C0);
-
-    SPR_TRI_L[0].reset(REG_D1C0);
-    SPR_TRI_L[1].reset(REG_D1C0);
-    SPR_TRI_L[2].reset(REG_D1C0);
-    SPR_TRI_L[3].reset(REG_D1C0);
-  }
-
-  SpriteMatch get_match(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count);
-  void get_sprite(SpriteMatch sprite_match);
-  void reset_matched_store(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteGetFlag sprite_flag);
-
-  void store_sprite_index(SpriteStoreFlag store_flag);
-  void store_sprite_line (SpriteStoreFlag store_flag);
-  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b);
-
-  void get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, BusOut BUS_OAM_An[8]);
-  void get_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a);
-
-
-  BusIO SPR_TRI_I[6]; // AxCxExGx
-  BusIO SPR_TRI_L[4]; // AxCxExGx
 
   //----------------------------------------
-  // Active sprite counter, 10 match signals, 10 reset signals
+  // 10 reset signals
 
   /*p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp_evn;   // AxCxExGx
   /*p29.CEDY*/ DFF17 CEDY_STORE1_RSTp_evn;   // AxCxExGx
@@ -176,16 +109,6 @@ struct SpriteStore {
   /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp_evn;   // AxCxExGx
   /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp_evn;   // AxCxExGx
   /*p29.FONO*/ DFF17 FONO_STORE9_RSTp_evn;   // AxCxExGx
-
-  //----------------------------------------
-  // Sprite index latch selects which store to write
-
-  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
-  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
-  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
-  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
-  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
-  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
 
   //----------------------------------------
   // All 10 of the sprite stores
@@ -423,4 +346,4 @@ struct SpriteStore {
   /*p31.YZOF*/ DFF9 YZOF_STORE9_X7p_odd;
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

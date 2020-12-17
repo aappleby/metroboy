@@ -3,10 +3,14 @@
 #include "GateBoyResetDebug.h"
 #include "GateBoyClocks.h"
 
-void GateBoyCpuBus::reset_cart() {
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyCpuBus::reset_app() {
   BOOT_BITn_h.reset(REG_D1C1);
   PIN_CPU_BOOTp.reset(REG_D0C0);
 }
+
+//------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::tock(
   const GateBoyResetDebug& rst,
@@ -104,3 +108,5 @@ void GateBoyCpuBus::tock(
   APOV_CPU_WRp.set_new(_APOV_CPU_WRp);
   TAPU_CPU_WRp.set_new(_TAPU_CPU_WRp);
 }
+
+//------------------------------------------------------------------------------------------------------------------------

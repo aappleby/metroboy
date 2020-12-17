@@ -145,80 +145,89 @@ constexpr uint8_t F_ZERO = 0x80;
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::reset_boot() {
-  *this = MetroBoyCPU();
-
-  ime = ime_delay = 0;
-
-  state = 0;
-
-  int_ack = 0;
-
-  pc = 0x0000;
-  op_addr = pc;
-  op = 0;
-  cb = 0;
-  state = 0;
-
-  bc = 0x0000;
-  de = 0x0000;
-  hl = 0x0000;
-  af = 0x0000;
-  sp = 0x0000;
-  xy = 0x0000;
-
-  set_bus(pc, 0);
+  memset(this, 0, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::reset_cart() {
+void MetroBoyCPU::reset_app() {
+  _bus_addr  = 0x0100;
+  _bus_data  = 0x00;
+  _bus_read  = 1;
+  _bus_write = 0;
+
+  op_addr = 0x00FE;
+  op = 0xe0;
+  cb = 0x11;
   state = 2;
   state_ = 0;
-  op_addr = 0xFE;
-  op = 0xE0;
-  cb = 0x11;
-  ime = false;
-  ime_delay = false;
   in = 0x50;
   out = 0x00;
-  bus_req.addr = 0x0100;
-  bus_req.data = 0x00;
-  bus_req.read = 0x01;
-  bus_req.write = 0x00;
-  bus_req.pad1 = 0x00;
+
+  ime = false;
+  ime_delay = false;
+  int_ack = 0x00;
+
   alu_x = 0x00;
   alu_y = 0x00;
   alu_f = 0xb0;
   alu_o = 0x00;
-  inc_x = 0x00;
-  inc_y = 0x00;
-  inc_c = 0x00;
-  int_ack = 0x00;
+
+  pc = 0x0100;
+  sp = 0xFFFE;
+  xy = 0xFF50;
   bc = 0x0013;
   de = 0x00D8;
   hl = 0x014D;
   af = 0x01B0;
-  xy = 0xFF50;
-  pc = 0x0100;
-  sp = 0xFFFE;
-  t = 0x00;
+}
+
+//-----------------------------------------------------------------------------
+
+void MetroBoyCPU::dump(Dumper& d_) const {
+  d_("bus req : %04x:%02x %s%s\n", _bus_addr, _bus_data, _bus_read  ? "\003R\001" : "-", _bus_write ? "\002W\001" : "-");
+  d_("op addr : 0x%04x\n", op_addr);
+  d_("opname  : '%s' @ %d->%d\n", op_strings2[op], state, state_);
+  d_("opcode  : 0x%02x\n", op);
+  d_("CB      : 0x%02x\n", cb);
+  d_("in      : 0x%02x\n", in);
+  d_("out     : 0x%02x\n", out);
+  d_("\n");
+  d_("IME     : %d\n", ime);
+  d_("IME_    : %d\n", ime_delay);
+  d_("int #   : %d\n", INT);
+  d_("int_ack : 0x%02x\n", int_ack);
+  d_("\n");
+  d_("alu_x   : 0x%02x\n", alu_x);
+  d_("alu_y   : 0x%02x\n", alu_y);
+  d_("alu_f   : 0x%02x\n", alu_f);
+  d_("alu_o   : 0x%02x\n", alu_o);
+  d_("\n");
+  d_("PC      : 0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
+  d_("SP      : 0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
+  d_("XY      : 0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
+  d_("BC      : 0x%04x 0x%02x 0x%02x\n", bc, b, c);
+  d_("DE      : 0x%04x 0x%02x 0x%02x\n", de, d, e);
+  d_("HL      : 0x%04x 0x%02x 0x%02x\n", hl, h, l);
+  d_("AF      : 0x%04x 0x%02x 0x%02x\n", af, a, f);
+  d_("\n");
 }
 
 //-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 
-void MetroBoyCPU::tock_ha(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
+void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   state = state_;
   ime = ime_delay;
 
-  if (bus_req.read) {
+  if (_bus_read) {
     in = bus_data;
   }
 
   if (state == 0) {
-    pc = bus_req.addr;
-    op_addr = bus_req.addr;
+    pc = _bus_addr;
+    op_addr = _bus_addr;
     op = bus_data;
 
     if ((imask & intf_gh) && ime) {
@@ -243,7 +252,9 @@ void MetroBoyCPU::tock_ha(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   }
 }
 
-void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_cd) {
+//-----------------------------------------------------------------------------
+
+void MetroBoyCPU::tock_ef(uint8_t imask, uint8_t intf_cd) {
   if (HALT) {
     if ((imask & intf_cd) && ime) {
       state_ = 0;
@@ -257,7 +268,7 @@ void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
   uint8_t _int_addr = 0;
   uint8_t _int_ack = 0;
 
-  uint16_t ad = bus_req.addr;
+  uint16_t ad = _bus_addr;
   uint16_t adp = ad + 1;
   uint16_t adm = ad - 1;
 
@@ -280,19 +291,18 @@ void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
-  uint16_t ad = bus_req.addr;
+  uint16_t ad = _bus_addr;
   uint16_t adp = ad + 1;
   uint16_t adm = ad - 1;
 
   if (state == 0) {
     pc = adp;
     bus_read(pc);
-    state_ = !(imask_ & intf_);
+    state_ = !(imask_& intf_);
   }
   else if (state == 1) {
     pc = ad;
     bus_read(pc);
-    //state_ = !(imask_ & intf_);
     state_ = 1;
   }
 }
@@ -302,7 +312,7 @@ void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
 void MetroBoyCPU::execute_op() {
   state_ = state + 1;
 
-  uint16_t ad = bus_req.addr;
+  uint16_t ad = _bus_addr;
   uint16_t adp = ad + 1;
   uint16_t adm = ad - 1;
 
@@ -670,6 +680,8 @@ uint8_t MetroBoyCPU::alu(uint8_t arg1, uint8_t arg2, int op, uint8_t flags) {
   return alu(op, flags);
 }
 
+//-----------------------------------------------------------------------------
+
 uint8_t MetroBoyCPU::alu(int op, uint8_t flags) {
   alu_f = flags;
   const uint8_t x = alu_x;
@@ -858,37 +870,6 @@ uint8_t MetroBoyCPU::alu_cb(int op, uint8_t flags) {
   }
 
   return alu_o;
-}
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyCPU::dump(Dumper& d_) const {
-  d_("\002===== CPU =====\001\n");
-  d_("state    %d\n", state);
-  d_("state_   %d\n", state_);
-  d_("op addr  0x%04x\n", op_addr);
-  d_("opcode   0x%02x\n", op);
-  d_("opname   '%s' @ %d\n", op_strings2[op], state);
-  d_("CB       0x%02x\n", cb);
-  d_("in       0x%02x\n", in);
-  d_("out      0x%02x\n", out);
-  d_("\n");
-  d_("bus req   ");
-  dump_req(d_, bus_req);
-  d_("PC        0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
-  d_("SP        0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
-  d_("XY        0x%04x 0x%02x 0x%02x\n", xy, xyh, xyl);
-  d_("BC        0x%04x 0x%02x 0x%02x\n", bc, b, c);
-  d_("DE        0x%04x 0x%02x 0x%02x\n", de, d, e);
-  d_("HL        0x%04x 0x%02x 0x%02x\n", hl, h, l);
-  d_("AF        0x%04x 0x%02x 0x%02x\n", af, a, f);
-  d_("alu_f     0x%02x\n", alu_f);
-  d_("\n");
-  d_("IME       %d\n", ime);
-  d_("IME_      %d\n", ime_delay);
-  d_("interrupt %d\n", INT);
-  d_("int_ack   0x%02x\n", int_ack);
-  d_("\n");
 }
 
 //-----------------------------------------------------------------------------

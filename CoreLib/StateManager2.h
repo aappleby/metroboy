@@ -22,7 +22,6 @@ struct StateStack {
   void pop()  { if (states.size() > 1) { states.pop_back(); } }
 
   void reset_states() {
-    states.clear();
     states.resize(1);
   }
 

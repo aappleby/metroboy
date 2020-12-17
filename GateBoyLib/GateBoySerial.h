@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoySerial {
-  void reset_cart() {
+  void reset_app() {
     COTY_SER_CLK.reset(REG_D0C0);
   }
 

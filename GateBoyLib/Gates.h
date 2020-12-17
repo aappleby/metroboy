@@ -105,6 +105,7 @@ struct Signal : private BitBase {
   //using BitBase::qp_old;
   using BitBase::qp;
   using BitBase::qp_new;
+  using BitBase::state;
 
   void set_old(wire D) {
     set_data_old(D);
@@ -606,21 +607,34 @@ struct GateBoyDiv;
 struct GateBoyTimer;
 struct GateBoyVramBus;
 
+struct SpriteScanner;
 struct SpriteStore;
-struct ScanCounter;
+struct FineScroll;
+struct SpriteFlipX;
 struct PixCount;
 
+struct RegLCDC;
+struct RegStat;
 struct RegSCX;
 struct RegSCY;
-struct RegWX;
-struct RegWY;
 struct RegLY;
+struct RegLX;
 struct RegLYC;
-struct RegStat;
 struct RegBGP;
 struct RegOBP0;
 struct RegOBP1;
-struct RegLCDC;
+struct RegWY;
+struct RegWX;
+
+struct WinMapX;
+struct WinLineY;
+struct SpriteTempA;
+struct SpriteTempB;
+struct TileTempA;
+struct TileTempB;
+struct OamTempA;
+struct OamTempB;
+
 
 /*#p01.ALUR*/ inline wire ALUR_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(AVOR_SYS_RSTp); }
 /*#p01.DULA*/ inline wire DULA_SYS_RSTp     (const wire AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }

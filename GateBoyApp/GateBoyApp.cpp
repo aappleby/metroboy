@@ -45,12 +45,16 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
   // regenerate post-bootrom dump
-  gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
-  for (int i = 0; i < 8192; i++) {
-    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
-  }
+  //gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  //gb_thread.reset_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  //for (int i = 0; i < 8192; i++) {
+  //  gb_thread.gb->vid_ram[i] = (uint8_t)rand();
+  //}
+
+  gb_thread.set_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_005_div.gb"));
+  gb_thread.reset_app();
 #endif
 
 
@@ -116,7 +120,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -211,7 +215,8 @@ void GateBoyApp::save_raw_dump() {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  gb_thread.reset_cart(DMG_ROM_blob, load_blob(filename));
+  gb_thread.set_cart(DMG_ROM_blob, load_blob(filename));
+  gb_thread.reset_app();
 
   printf("Loaded %zd bytes from rom %s\n", gb_thread.cart.size(), filename);
 }
@@ -223,7 +228,8 @@ void GateBoyApp::load_rom(const char* filename) {
 
 void GateBoyApp::load_flat_dump(const char* filename) {
 
-  gb_thread.reset_cart(DMG_ROM_blob, load_blob(filename));
+  gb_thread.set_cart(DMG_ROM_blob, load_blob(filename));
+  gb_thread.reset_app();
 
   memcpy(gb_thread.gb->vid_ram,  gb_thread.cart.data() + 0x8000, 8192);
   memcpy(gb_thread.gb->cart_ram, gb_thread.cart.data() + 0xA000, 8192);
@@ -231,6 +237,7 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   memcpy(gb_thread.gb->oam_ram,  gb_thread.cart.data() + 0xFE00, 256);
   memcpy(gb_thread.gb->zero_ram, gb_thread.cart.data() + 0xFF80, 128);
 
+#if 0
   gb_thread.gb->dbg_write(ADDR_BGP,  gb_thread.cart[ADDR_BGP]);
   gb_thread.gb->dbg_write(ADDR_OBP0, gb_thread.cart[ADDR_OBP0]);
   gb_thread.gb->dbg_write(ADDR_OBP1, gb_thread.cart[ADDR_OBP1]);
@@ -258,6 +265,7 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   // #define FLAG_LCD_ON       0x80
 
   gb_thread.gb->dbg_write(ADDR_LCDC, gb_thread.cart[ADDR_LCDC]);
+#endif
 }
 
 
@@ -294,7 +302,7 @@ void GateBoyApp::app_update(double /*delta*/) {
 
     case SDLK_F1:   load_raw_dump();            break;
     case SDLK_F4:   save_raw_dump();            break;
-    case SDLK_r:    gb_thread.reset_cart(gb_thread.boot, gb_thread.cart);          break;
+    case SDLK_r:    gb_thread.reset_app();          break;
     //case SDLK_d:    show_diff   = !show_diff;   break;
     case SDLK_g:    show_golden = !show_golden; break;
     case SDLK_o:    draw_passes = !draw_passes; break;
@@ -355,42 +363,29 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   uint8_t* framebuffer = gb->framebuffer;
   uint8_t* vid_ram = gb->vid_ram;
-  int64_t phase_total = gb->phase_total;
+  uint64_t phase_total = gb->phase_total;
 
   StringDumper d;
   float cursor = 0;
 
   //----------------------------------------
 
-  d("\002===== Top =====\001\n");
+  d("\002===== Thread =====\001\n");
 
-  const char* phases[] = {
-    "\002A_______\001",
-    "\003_B______\001",
-    "\002__C_____\001",
-    "\003___D____\001",
-    "\002____E___\001",
-    "\003_____F__\001",
-    "\002______G_\001",
-    "\003_______H\001",
-  };
-
-  d("phase %s\n", phases[gb->phase_total & 7]);
-
-  d("State count %d\n", gb_thread.gb.state_count());
+  d("State count   : %d\n", gb_thread.gb.state_count());
   size_t state_size = gb_thread.gb.state_size_bytes();
   if (state_size < 1024 * 1024) {
-    d("State size  %d K\n", state_size / 1024);
+    d("State size    : %d K\n", state_size / 1024);
   }
   else {
-    d("State size  %d M\n", state_size / (1024 * 1024));
+    d("State size    : %d M\n", state_size / (1024 * 1024));
   }
-  d("BGB cycle   0x%08x\n",  (gb->phase_total / 4) - 0x10000);
-  d("Sim clock   %f\n",      double(gb->phase_total) / (4194304.0 * 2));
+  d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
+  d("Sim clock     : %f\n",      double(gb->phase_total) / (4194304.0 * 2));
 
-  d("Commands left %d\n",    uint8_t(gb_thread.cursor_w - gb_thread.cursor_r));
-  d("Steps left    %d\n",    gb_thread.command.count);
-  d("Waiting       %d\n",    gb_thread.sig_waiting.load());
+  d("Commands left : %d\n",    uint8_t(gb_thread.cursor_w - gb_thread.cursor_r));
+  d("Steps left    : %d\n",    gb_thread.command.count);
+  d("Waiting       : %d\n",    gb_thread.sig_waiting.load());
 
   double phase_rate = (gb->phase_total - gb_thread.old_phase_total) / (gb->sim_time - gb_thread.old_sim_time);
 
@@ -400,8 +395,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   gb_thread.phase_rate_smooth = (gb_thread.phase_rate_smooth * 0.99) + (phase_rate * 0.01);
 
-  d("Phase rate    %f\n",      gb_thread.phase_rate_smooth);
-  d("Sim fps       %f\n",      60.0 * gb_thread.phase_rate_smooth / PHASES_PER_SECOND);
+  d("Phase rate    : %f\n",      gb_thread.phase_rate_smooth);
+  d("Sim fps       : %f\n",      60.0 * gb_thread.phase_rate_smooth / PHASES_PER_SECOND);
 
   gb_thread.old_phase_total = gb->phase_total;
   gb_thread.old_sim_time = gb->sim_time;
@@ -412,90 +407,17 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("Phase count %lld\n",    phase_count);
   d("Phase rate  %f\n",      double(phase_count) / sim_time);
   */
-
-  d("\n");
-  d("dbg_req ");
-  dump_req(d, gb->dbg_req);
-  d("cpu_req ");
-  dump_req(d, gb->cpu_req);
-  d("bus_req ");
-  dump_req(d, gb->bus_req);
-  d("cpu_data_latch %d 0x%02x\n", gb->cpu_data_latch, gb->cpu_data_latch);
   d("\n");
 
-  d("\002===== GateBoy =====\001\n");
-  d("sys_rst        %d\n",      gb->sys_rst);
-  d("sys_t1         %d\n",      gb->sys_t1);
-  d("sys_t2         %d\n",      gb->sys_t2);
-  d("sys_clken      %d\n",      gb->sys_clken);
-  d("sys_clkgood    %d\n",      gb->sys_clkgood);
-  d("sys_cpuready   %d\n",      gb->sys_clkreq);
-  d("sys_cpu_en     %d\n",      gb->sys_cpu_en);
-  d("sys_fastboot   %d\n",      gb->sys_fastboot);
-  d("sys_buttons    %d\n",      gb->sys_buttons);
-  d("\n");
-
-  d("gb_screen_x    %d\n",      gb->gb_screen_x);
-  d("gb_screen_y    %d\n",      gb->gb_screen_y);
-  d("lcd_data_latch %d\n", gb->lcd_data_latch);
-  d.dump_bitp("lcd_pix_lo ",  gb->lcd.lcd_pix_lo.state);
-  d.dump_bitp("lcd_pix_hi ",  gb->lcd.lcd_pix_hi.state);
-
-  d.dump_slice2p("lcd_pipe_lo", gb->lcd.lcd_pipe_lo, 8);
-  d.dump_slice2p("lcd_pipe_hi", gb->lcd.lcd_pipe_hi, 8);
-  d("\n");
-
-  d("sim_time    %f\n",      gb->sim_time);
-  d("phase_total %d\n",      gb->phase_total);
-  d("pass_hash   %016llx\n", gb->phase_hash);
-  d("total_hash  %016llx\n", gb->cumulative_hash);
+  d("\002===== GateBoy Top =====\001\n");
+  gb->dump(d);
   d("\n");
 
   d("\002===== CPU =====\001\n");
-  d("state    %d\n", gb->cpu.state);
-  d("state_   %d\n", gb->cpu.state_);
-  d("op addr  0x%04x\n", gb->cpu.op_addr);
-  d("opcode   0x%02x\n", gb->cpu.op);
-  d("opname   '%s' @ %d\n", op_strings2[gb->cpu.op], gb->cpu.state);
-  d("CB       0x%02x\n", gb->cpu.cb);
-  d("in       0x%02x\n", gb->cpu.in);
-  d("out      0x%02x\n", gb->cpu.out);
-  d("\n");
-  d("bus req   ");
-  dump_req(d, gb->cpu.bus_req);
-  d("PC        0x%04x 0x%02x 0x%02x\n", gb->cpu.pc, gb->cpu.pcl, gb->cpu.pch);
-  d("SP        0x%04x 0x%02x 0x%02x\n", gb->cpu.sp, gb->cpu.sph, gb->cpu.spl);
-  d("XY        0x%04x 0x%02x 0x%02x\n", gb->cpu.xy, gb->cpu.xyh, gb->cpu.xyl);
-  d("BC        0x%04x 0x%02x 0x%02x\n", gb->cpu.bc, gb->cpu.b,   gb->cpu.c);
-  d("DE        0x%04x 0x%02x 0x%02x\n", gb->cpu.de, gb->cpu.d,   gb->cpu.e);
-  d("HL        0x%04x 0x%02x 0x%02x\n", gb->cpu.hl, gb->cpu.h,   gb->cpu.l);
-  d("AF        0x%04x 0x%02x 0x%02x\n", gb->cpu.af, gb->cpu.a,   gb->cpu.f);
-  d("alu_f     0x%02x\n", gb->cpu.alu_f);
-  d("\n");
-  d("IME       %d\n", gb->cpu.ime);
-  d("IME_      %d\n", gb->cpu.ime_delay);
-  d("interrupt %d\n", gb->cpu.op == 0xF4);
-  d("int_ack   0x%02x\n", gb->cpu.int_ack);
-  d("\n");
+  gb->cpu.dump(d);
 
   d("\002===== Ints =====\001\n");
-  d.dump_bitp("IE_D0        ", gb->interrupts.IE_D0.state);
-  d.dump_bitp("IE_D1        ", gb->interrupts.IE_D1.state);
-  d.dump_bitp("IE_D2        ", gb->interrupts.IE_D2.state);
-  d.dump_bitp("IE_D3        ", gb->interrupts.IE_D3.state);
-  d.dump_bitp("IE_D4        ", gb->interrupts.IE_D4.state);
-  d("\n");
-  d.dump_bitp("LOPE_FF0F_0  ", gb->interrupts.LOPE_FF0F_D0p.state);
-  d.dump_bitp("LALU_FF0F_1  ", gb->interrupts.LALU_FF0F_D1p.state);
-  d.dump_bitp("NYBO_FF0F_2  ", gb->interrupts.NYBO_FF0F_D2p.state);
-  d.dump_bitp("UBUL_FF0F_3  ", gb->interrupts.UBUL_FF0F_D3p.state);
-  d.dump_bitp("ULAK_FF0F_4  ", gb->interrupts.ULAK_FF0F_D4p.state);
-  d("\n");
-  d.dump_bitp("MATY_FF0F_L0p", gb->interrupts.MATY_FF0F_L0p.state);
-  d.dump_bitp("MOPO_FF0F_L1p", gb->interrupts.MOPO_FF0F_L1p.state);
-  d.dump_bitp("PAVY_FF0F_L2p", gb->interrupts.PAVY_FF0F_L2p.state);
-  d.dump_bitp("NEJY_FF0F_L3p", gb->interrupts.NEJY_FF0F_L3p.state);
-  d.dump_bitp("NUTY_FF0F_L4p", gb->interrupts.NUTY_FF0F_L4p.state);
+  gb->interrupts.dump(d);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -504,60 +426,24 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //----------------------------------------
 
+  d("\002===== Reset/Debug =====\001\n");
+  gb->rst.dump(d);
+  d("\n");
+
   d("\002===== Clocks =====\001\n");
-  d("PHASE %d%d%d%d\n",
-    gb->clk.AFUR_xxxxEFGHp.qp_old(),
-    gb->clk.ALEF_AxxxxFGHp.qp_old(),
-    gb->clk.APUK_ABxxxxGHp.qp_old(),
-    gb->clk.ADYK_ABCxxxxHp.qp_old());
-  d("\n");
-  d.dump_bitp("TUBO_WAITINGp ", gb->rst.TUBO_WAITINGp.state);
-  d.dump_bitn("ASOL_POR_DONEn", gb->rst.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp ", gb->rst.AFER_SYS_RSTp.state);
-  d("\n");
-  d.dump_bitp("AFUR_xxxxEFGHp", gb->clk.AFUR_xxxxEFGHp.state);
-  d.dump_bitp("ALEF_AxxxxFGHp", gb->clk.ALEF_AxxxxFGHp.state);
-  d.dump_bitp("APUK_ABxxxxGHp", gb->clk.APUK_ABxxxxGHp.state);
-  d.dump_bitp("ADYK_ABCxxxxHp", gb->clk.ADYK_ABCxxxxHp.state);
-  d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp", gb->clk.WUVU_ABxxEFxx.state);
-  d.dump_bitp("VENA_xxCDEFxxp", gb->clk.VENA_xxCDEFxx.state);
-  d.dump_bitp("WOSU_AxxDExxHp", gb->clk.WOSU_AxxDExxH.state);
+  gb->clk.dump(d);
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  d.dump_bitp("NYDU_TIMA7p_DELAY  ", gb->timer.NYDU_TIMA7p_DELAY.state);
-  d.dump_bitp("MOBA_TIMER_OVERFLOWp", gb->timer.MOBA_TIMER_OVERFLOWp.state);
-  d.dump_slice2p("DIV ", &gb->div.UKUP_DIV00p, 16);
-  d.dump_slice2p("TIMA", &gb->timer.REGA_TIMA0p, 8);
-  d.dump_slice2p("TMA ", &gb->timer.SABU_TMA0p, 8);
-  d.dump_slice2p("TAC ", &gb->timer.SOPU_TAC0p, 3);
+  gb->div.dump(d);
+  gb->timer.dump(d);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
-  d.dump_bitp("AWOB_WAKE_CPU  ", gb->joypad.AWOB_WAKE_CPU.state);
-  d("\n");
-  d.dump_bitp("BATU_JP_GLITCH0", gb->joypad.BATU_JP_GLITCH0.state);
-  d.dump_bitp("ACEF_JP_GLITCH1", gb->joypad.ACEF_JP_GLITCH1.state);
-  d.dump_bitp("AGEM_JP_GLITCH2", gb->joypad.AGEM_JP_GLITCH2.state);
-  d.dump_bitp("APUG_JP_GLITCH3", gb->joypad.APUG_JP_GLITCH3.state);
-  d("\n");
-  d.dump_bitp("JUTE_JOYP_RA   ", gb->joypad.JUTE_JOYP_RA.state);
-  d.dump_bitp("KECY_JOYP_LB   ", gb->joypad.KECY_JOYP_LB.state);
-  d.dump_bitp("JALE_JOYP_UC   ", gb->joypad.JALE_JOYP_UC.state);
-  d.dump_bitp("KYME_JOYP_DS   ", gb->joypad.KYME_JOYP_DS.state);
-  d.dump_bitp("KELY_JOYP_UDLR ", gb->joypad.KELY_JOYP_UDLRp.state);
-  d.dump_bitp("COFY_JOYP_ABCS ", gb->joypad.COFY_JOYP_ABCSp.state);
-  d("\n");
-  d.dump_bitn("KUKO_DBG_FF00_D", gb->joypad.KUKO_DBG_FF00_D6n.state);
-  d.dump_bitn("KERU_DBG_FF00_D", gb->joypad.KERU_DBG_FF00_D7n.state);
-  d("\n");
-  d.dump_bitn("KEVU_JOYP_L0   ", gb->joypad.KEVU_JOYP_L0n.state);
-  d.dump_bitn("KAPA_JOYP_L1   ", gb->joypad.KAPA_JOYP_L1n.state);
-  d.dump_bitn("KEJA_JOYP_L2   ", gb->joypad.KEJA_JOYP_L2n.state);
-  d.dump_bitn("KOLO_JOYP_L3   ", gb->joypad.KOLO_JOYP_L3n.state);
+  gb->joypad.dump(d);
   d("\n");
 
+  /*
   d("\002===== Serial =====\001\n");
   d.dump_bitp   ("ETAF_SER_RUNNING", gb->serial.ETAF_SER_RUNNING.state);
   d.dump_bitp   ("CULY_XFER_DIR   ", gb->serial.CULY_SER_DIR.state);
@@ -566,6 +452,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("CAFA_SER_CNT    ", &gb->serial.CAFA_SER_CNT0, 4);
   d.dump_slice2p("CUBA_SER_DATA   ", &gb->serial.CUBA_SER_DATA0, 8);
   d("\n");
+  */
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224 - 64;
@@ -573,65 +460,63 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   //----------------------------------------
 
-  d("\002===== Buses =====\001\n");
-  d.dump_slice2p("BUS_CPU_D_out    ", &gb->cpu_bus.BUS_CPU_D_out, 8);
-  d.dump_bitp   ("MAKA_HOLD_MEMp   ",  gb->oam_bus.MAKA_LATCH_EXTp.state);
-  d.dump_bitp   ("WUJE_CPU_OAM_WRn ",  gb->oam_bus.WUJE_CPU_OAM_WRn.state);
-  d.dump_slice2p("EXT_ADDR         ", &gb->ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
-  d.dump_slice2n("EXT_DATA         ", &gb->ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
-  d.dump_slice2n("SPRITE TEMP A    ", &gb->sprite_temp_a.REWO_SPRITE_DA0n, 8);
-  d.dump_slice2n("SPRITE TEMP B    ", &gb->sprite_temp_b.PEFO_SPRITE_DB0n, 8);
-  d.dump_slice2n("OAM LATCH A      ", &gb->oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
-  d.dump_slice2n("OAM LATCH B      ", &gb->oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
-  d.dump_slice2p("OAM TEMP A       ", &gb->oam_temp_a.XUSO_OAM_DA0p, 8);
-  d.dump_slice2p("OAM TEMP B       ", &gb->oam_temp_b.YLOR_OAM_DB0p, 8);
+  d("\002===== CPU Bus =====\001\n");
+  gb->cpu_bus.dump(d);
+  d("\n");
+
+  d("\002===== EXT Bus =====\001\n");
+  gb->ext_bus.dump(d);
+  d("\n");
+
+  d("\002===== VRAM Bus =====\001\n");
+  gb->vram_bus.dump(d);
+  d("\n");
+
+  d("\002===== OAM Bus =====\001\n");
+  gb->oam_bus.dump(d);
+  d("\n");
+
+  d("\002===== Temp Regs =====\001\n");
+  d.dump_slice2n("Tile temp A  ", &gb->tile_fetcher.tile_temp_a.LEGU_TILE_DA0n, 8);
+  d.dump_slice2p("Tile temp B  ", &gb->tile_fetcher.tile_temp_b.RAWU_TILE_DB0p, 8);
+  d.dump_slice2n("Sprite temp A", &gb->sprite_fetcher.sprite_temp_a.REWO_SPRITE_DA0n, 8);
+  d.dump_slice2n("Sprite temp B", &gb->sprite_fetcher.sprite_temp_b.PEFO_SPRITE_DB0n, 8);
   d("\n");
 
   d("\002===== DMA Reg =====\001\n");
-  d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &gb->dma.NAFA_DMA_A08n), pack_u8p(8, &gb->dma.NAKY_DMA_A00p));
-  d("\n");
-  d.dump_bitp("MATU_DMA_RUNNINGp", gb->dma.MATU_DMA_RUNNINGp.state);
-  d.dump_bitp("LYXE_DMA_LATCHp  ", gb->dma.LYXE_DMA_LATCHp  .state);
-  d.dump_bitp("MYTE_DMA_DONE    ", gb->dma.MYTE_DMA_DONE    .state);
-  d.dump_bitp("LUVY_DMA_TRIG_d0 ", gb->dma.LUVY_DMA_TRIG_d0 .state);
-  d.dump_bitp("LENE_DMA_TRIG_d4 ", gb->dma.LENE_DMA_TRIG_d4 .state);
-  d.dump_bitp("LOKY_DMA_LATCHp  ", gb->dma.LOKY_DMA_LATCHp  .state);
-  d("\n");
-  d.dump_slice2p("DMA_A_LOW ", &gb->dma.NAKY_DMA_A00p, 8);
-  d.dump_slice2n("DMA_A_HIGH", &gb->dma.NAFA_DMA_A08n, 8);
+  gb->dma.dump(d);
   d("\n");
 
   d("\002===== LCD =====\001\n");
-  d("LX        : %03d\n", gb->reg_lx.get());
-  d("LY        : %03d\n", gb->reg_ly.get());
-  d("LYC       : %03d\n", gb->reg_lyc.get());
-  d.dump_bitp("lcd_pix_lo", gb->lcd.lcd_pix_lo.state);
-  d.dump_bitp("lcd_pix_lo", gb->lcd.lcd_pix_hi.state);
 
-  d("\n");
+  /*
+  #define ADDR_LCDC        0xFF40
+  #define ADDR_STAT        0xFF41
+  #define ADDR_SCY         0xFF42
+  #define ADDR_SCX         0xFF43
+  #define ADDR_LY          0xFF44
+  #define ADDR_LYC         0xFF45
+  #define ADDR_DMA         0xFF46
+  #define ADDR_BGP         0xFF47
+  #define ADDR_OBP0        0xFF48
+  #define ADDR_OBP1        0xFF49
+  #define ADDR_WY          0xFF4A
+  #define ADDR_WX          0xFF4B
+  */
 
-  d.dump_bitp("LX NYPE_LINE_P002p ", gb->reg_lx._NYPE_x113p.state);
-  d.dump_bitp("LX RUTU_LINE_P910p ", gb->reg_lx._RUTU_x113p.state);
-
-  d.dump_bitp("LY MYTA_y153p      ", gb->reg_ly.MYTA_y153p.state);
-  d.dump_bitp("ROPO_LY_MATCH_SYNCp", gb->reg_lyc.ROPO_LY_MATCH_SYNCp.state);
-
-  d.dump_bitp("POPU_VBLANKp       ", gb->lcd.POPU_VBLANKp.state);
-  d.dump_bitp("SYGU_LINE_STROBE   ", gb->lcd.SYGU_LINE_STROBE.state);
-  d.dump_bitn("MEDA_VSYNC_OUTn    ", gb->lcd.MEDA_VSYNC_OUTn.state);
-  d.dump_bitp("LUCA_LINE_EVENp    ", gb->lcd.LUCA_LINE_EVENp.state);
-  d.dump_bitp("NAPO_FRAME_EVENp   ", gb->lcd.NAPO_FRAME_EVENp.state);
-  d.dump_bitp("CATU_LINE_P000p    ", gb->lcd.CATU_LINE_P000p.state);
-  d.dump_bitp("ANEL_LINE_P002p    ", gb->lcd.ANEL_LINE_P002p.state);
-  d("\n");
-  d.dump_slice2p("LX  ", &gb->reg_lx.SAXO_LX0p.state,  7);
-  d.dump_slice2p("LY  ", &gb->reg_ly.MUWY_LY0p.state,  8);
-  d.dump_slice2n("LYC ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp("WUSA_LCD_CLOCK_GATE   ", gb->lcd.WUSA_LCD_CLOCK_GATE.state);
-  d.dump_bitp("PAHO_X_8_SYNC         ", gb->lcd.PAHO_X_8_SYNC.state);
-  d.dump_bitp("RUJU                  ", gb->lcd.RUJU.state);
-  d.dump_bitp("POFY                  ", gb->lcd.POFY.state);
-  d.dump_bitp("POME                  ", gb->lcd.POME.state);
+  gb->reg_lcdc.dump(d);
+  gb->reg_stat.dump(d);
+  gb->reg_scy.dump(d);
+  gb->reg_scx.dump(d);
+  gb->reg_lx.dump(d);
+  gb->reg_ly.dump(d);
+  gb->reg_lyc.dump(d);
+  gb->pix_pipes.reg_bgp.dump(d);
+  gb->pix_pipes.reg_obp0.dump(d);
+  gb->pix_pipes.reg_obp1.dump(d);
+  gb->reg_wy.dump(d);
+  gb->reg_wx.dump(d);
+  gb->lcd.dump(d);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -674,13 +559,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
   d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
   d("\n");
-  d.dump_slice2n("FF40 LCDC ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
-  d.dump_slice2n("FF41 STAT ", &gb->reg_stat.ROXE_STAT_HBI_ENn, 4);
-  d.dump_slice2n("FF47 BGP  ", &gb->reg_bgp. PAVO_BGP_D0n, 8);
-  d.dump_slice2n("FF48 OBP0 ", &gb->reg_obp0.XUFU_OBP0_D0n, 8);
-  d.dump_slice2n("FF49 OBP1 ", &gb->reg_obp1.MOXY_OBP1_D0n, 8);
-  d.dump_slice2n("FF4A WY   ", &gb->reg_wy.  NESO_WY0n, 8);
-  d.dump_slice2n("FF4B WX   ", &gb->reg_wx.  MYPA_WX0n, 8);
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;
@@ -689,82 +567,25 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Tile Fetch =====\001\n");
-  d.dump_bitp   ("POKY_PRELOAD_LATCHp", gb->tile_fetcher.POKY_PRELOAD_LATCHp.state);
-  d.dump_bitp   ("LONY_FETCHINGp     ", gb->tile_fetcher.LONY_FETCHINGp.state);
-  d.dump_bitp   ("LOVY_FETCH_DONEp   ", gb->tile_fetcher.LOVY_FETCH_DONEp.state);
-  d.dump_bitp   ("NYKA_FETCH_DONEp   ", gb->tile_fetcher.NYKA_FETCH_DONEp.state);
-  d.dump_bitp   ("PORY_FETCH_DONEp   ", gb->tile_fetcher.PORY_FETCH_DONEp.state);
-  d.dump_bitp   ("PYGO_FETCH_DONEp   ", gb->tile_fetcher.PYGO_FETCH_DONEp.state);
+  gb->tile_fetcher.dump(d);
   d("\n");
-  d.dump_bitp   ("LAXU_BFETCH_S0p    ", gb->tile_fetcher._LAXU_BFETCH_S0p.state);
-  d.dump_bitp   ("MESU_BFETCH_S1p    ", gb->tile_fetcher._MESU_BFETCH_S1p.state);
-  d.dump_bitp   ("NYVA_BFETCH_S2p    ", gb->tile_fetcher._NYVA_BFETCH_S2p.state);
-  d.dump_bitp   ("LYZU_BFETCH_S0p_D1 ", gb->tile_fetcher._LYZU_BFETCH_S0p_D1.state);
-  //d.dump_bitn   ("NYXU_BFETCH_RSTp   ", gb->NYXU_BFETCH_RSTn.state);
+
   d("\n");
   d.dump_slice2p("WIN MAP X ", &gb->win_map_x.WYKA_WIN_X3, 5);
   d.dump_slice2p("WIN Y     ", &gb->win_line_y.VYNO_WIN_Y0, 8);
   d("\n");
-  d.dump_slice2n("FF42 SCY  ", &gb->reg_scy.GAVE_SCY0n, 8);
-  d.dump_slice2n("FF43 SCX  ", &gb->reg_scx.DATY_SCX0n, 8);
-  d("\n");
-  d.dump_slice2n("TEMP A    ", &gb->tile_temp_a.LEGU_TILE_DA0n, 8);
-  d.dump_slice2p("TEMP B    ", &gb->tile_temp_b.RAWU_TILE_DB0p, 8);
-  d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
-  d.dump_bitp("TAKA_SFETCH_RUNNINGp", gb->sprite_fetcher.TAKA_SFETCH_RUNNINGp.state);
-  d.dump_bitp("SOBU_SFETCH_REQp    ", gb->sprite_fetcher.SOBU_SFETCH_REQp    .state);
-  d.dump_bitp("SUDA_SFETCH_REQp    ", gb->sprite_fetcher.SUDA_SFETCH_REQp    .state);
-  d.dump_bitp("TOXE_SFETCH_S0      ", gb->sprite_fetcher.TOXE_SFETCH_S0p     .state);
-  d.dump_bitp("TULY_SFETCH_S1      ", gb->sprite_fetcher.TULY_SFETCH_S1p     .state);
-  d.dump_bitp("TESE_SFETCH_S2      ", gb->sprite_fetcher.TESE_SFETCH_S2p     .state);
-  d.dump_bitp("TYFO_SFETCH_S0_D1   ", gb->sprite_fetcher.TYFO_SFETCH_S0p_D1  .state);
-  d.dump_bitp("TOBU_SFETCH_S1_D2   ", gb->sprite_fetcher.TOBU_SFETCH_S1p_D2  .state);
-  d.dump_bitp("VONU_SFETCH_S1_D4   ", gb->sprite_fetcher.VONU_SFETCH_S1p_D4  .state);
-  d.dump_bitp("SEBA_SFETCH_S1_D5   ", gb->sprite_fetcher.SEBA_SFETCH_S1p_D5  .state);
-  //d.dump_bitp("WUTY_SFETCH_DONEp   ", gb->WUTY_SFETCH_DONEp                  .state);
+  gb->sprite_fetcher.dump(d);
   d("\n");
 
   d("\002===== Sprite Scan =====\001\n");
-  d("SCAN INDEX        : %02d\n", pack_u8p(6, &gb->scan_counter.YFEL_SCAN0));
-  d("\n");
-  d.dump_bitp("BESU_SCANNINGp   ", gb->sprite_scanner.BESU_SCANNINGp.state);
-  d.dump_bitp("CENO_SCANNINGp   ", gb->sprite_scanner.CENO_SCANNINGp.state);
-  d.dump_bitp("BYBA_SCAN_DONE_Ap", gb->sprite_scanner.BYBA_SCAN_DONE_Ap.state);
-  d.dump_bitp("DOBA_SCAN_DONE_Bp", gb->sprite_scanner.DOBA_SCAN_DONE_Bp.state);
-  d("\n");
-  d.dump_bitp("YFEL_SCAN0       ", gb->scan_counter.YFEL_SCAN0.state);
-  d.dump_bitp("WEWY_SCAN1       ", gb->scan_counter.WEWY_SCAN1.state);
-  d.dump_bitp("GOSO_SCAN2       ", gb->scan_counter.GOSO_SCAN2.state);
-  d.dump_bitp("ELYN_SCAN3       ", gb->scan_counter.ELYN_SCAN3.state);
-  d.dump_bitp("FAHA_SCAN4       ", gb->scan_counter.FAHA_SCAN4.state);
-  d.dump_bitp("FONY_SCAN5       ", gb->scan_counter.FONY_SCAN5.state);
+  gb->sprite_scanner.dump(d);
   d("\n");
 
   const auto& ss = gb->sprite_store;
   d("\002===== Sprite Store =====\001\n");
-  d.dump_bitp   ("DEZY_STORE_ENn", gb->sprite_counter.DEZY_COUNT_CLKp.state);
-  d("SPRITE INDEX      : %02d\n", pack_u8p(6, &gb->sprite_store.XADU_SPRITE_IDX0p));
-  d.dump_slice2p("SPRITE COUNT", &gb->sprite_counter.BESE_SPRITE_COUNT0, 4);
-  d("\n");
-  d.dump_bitp("XADU_SPRITE_IDX0p", gb->sprite_store.XADU_SPRITE_IDX0p.state);
-  d.dump_bitp("XEDY_SPRITE_IDX1p", gb->sprite_store.XEDY_SPRITE_IDX1p.state);
-  d.dump_bitp("ZUZE_SPRITE_IDX2p", gb->sprite_store.ZUZE_SPRITE_IDX2p.state);
-  d.dump_bitp("XOBE_SPRITE_IDX3p", gb->sprite_store.XOBE_SPRITE_IDX3p.state);
-  d.dump_bitp("YDUF_SPRITE_IDX4p", gb->sprite_store.YDUF_SPRITE_IDX4p.state);
-  d.dump_bitp("XECU_SPRITE_IDX5p", gb->sprite_store.XECU_SPRITE_IDX5p.state);
-
-  d("STORE0 R%d I%02d L%02d X%03d\n", ss.EBOJ_STORE0_RSTp_evn.qp_old(), pack_u8n(6, &ss.YGUS_STORE0_I0n_odd), pack_u8n(4, &ss.GYHO_STORE0_L0n_odd), pack_u8n(8, &ss.XEPE_STORE0_X0p_odd));
-  d("STORE1 R%d I%02d L%02d X%03d\n", ss.CEDY_STORE1_RSTp_evn.qp_old(), pack_u8n(6, &ss.CADU_STORE1_I0n_odd), pack_u8n(4, &ss.AMES_STORE1_L0n_odd), pack_u8n(8, &ss.DANY_STORE1_X0p_odd));
-  d("STORE2 R%d I%02d L%02d X%03d\n", ss.EGAV_STORE2_RSTp_evn.qp_old(), pack_u8n(6, &ss.BUHE_STORE2_I0n_odd), pack_u8n(4, &ss.YLOV_STORE2_L0n_odd), pack_u8n(8, &ss.FOKA_STORE2_X0p_odd));
-  d("STORE3 R%d I%02d L%02d X%03d\n", ss.GOTA_STORE3_RSTp_evn.qp_old(), pack_u8n(6, &ss.DEVY_STORE3_I0n_odd), pack_u8n(4, &ss.ZURO_STORE3_L0n_odd), pack_u8n(8, &ss.XOLY_STORE3_X0p_odd));
-  d("STORE4 R%d I%02d L%02d X%03d\n", ss.XUDY_STORE4_RSTp_evn.qp_old(), pack_u8n(6, &ss.XAVE_STORE4_I0n_odd), pack_u8n(4, &ss.CAPO_STORE4_L0n_odd), pack_u8n(8, &ss.WEDU_STORE4_X0p_odd));
-  d("STORE5 R%d I%02d L%02d X%03d\n", ss.WAFY_STORE5_RSTp_evn.qp_old(), pack_u8n(6, &ss.EKOP_STORE5_I0n_odd), pack_u8n(4, &ss.ACEP_STORE5_L0n_odd), pack_u8n(8, &ss.FUSA_STORE5_X0p_odd));
-  d("STORE6 R%d I%02d L%02d X%03d\n", ss.WOMY_STORE6_RSTp_evn.qp_old(), pack_u8n(6, &ss.GABO_STORE6_I0n_odd), pack_u8n(4, &ss.ZUMY_STORE6_L0n_odd), pack_u8n(8, &ss.YCOL_STORE6_X0p_odd));
-  d("STORE7 R%d I%02d L%02d X%03d\n", ss.WAPO_STORE7_RSTp_evn.qp_old(), pack_u8n(6, &ss.GULE_STORE7_I0n_odd), pack_u8n(4, &ss.XYNA_STORE7_L0n_odd), pack_u8n(8, &ss.ERAZ_STORE7_X0p_odd));
-  d("STORE8 R%d I%02d L%02d X%03d\n", ss.EXUQ_STORE8_RSTp_evn.qp_old(), pack_u8n(6, &ss.AXUV_STORE8_I0n_odd), pack_u8n(4, &ss.AZAP_STORE8_L0n_odd), pack_u8n(8, &ss.EZUF_STORE8_X0p_odd));
-  d("STORE9 R%d I%02d L%02d X%03d\n", ss.FONO_STORE9_RSTp_evn.qp_old(), pack_u8n(6, &ss.YBER_STORE9_I0n_odd), pack_u8n(4, &ss.CANA_STORE9_L0n_odd), pack_u8n(8, &ss.XUVY_STORE9_X0p_odd));
+  gb->sprite_store.dump(d);
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
@@ -906,7 +727,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     double(phase_total) / (4194304.0 * 2),
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");
-  d("Sim time %f, sim ratio %f, frame time %f\n", sim_time_smooth, sim_ratio, frame_time_smooth);
+  //d("Sim time %f, sim ratio %f, frame time %f\n", sim_time_smooth, sim_ratio, frame_time_smooth);
   text_painter.render(view, d.s, gb_x, gb_y + 144 * 2);
   d.clear();
 

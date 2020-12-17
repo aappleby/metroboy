@@ -771,6 +771,7 @@ void GateBoy::tock_slow(int pass_index) {
     imask_latch = pack_u8p(5, &interrupts.IE_D0);
   }
 
+#if 0
   cpu_bus.BUS_CPU_A[ 0].set_new(0);
   cpu_bus.BUS_CPU_A[ 1].set_new(0);
   cpu_bus.BUS_CPU_A[ 2].set_new(0);
@@ -796,6 +797,7 @@ void GateBoy::tock_slow(int pass_index) {
   cpu_bus.BUS_CPU_D[5].set_new(0);
   cpu_bus.BUS_CPU_D[6].set_new(0);
   cpu_bus.BUS_CPU_D[7].set_new(0);
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------

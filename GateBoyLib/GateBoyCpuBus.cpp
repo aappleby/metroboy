@@ -55,23 +55,23 @@ void GateBoyCpuBus::set_pins(
   int phase_total,
   Req bus_req_new)
 {
-  PIN_CPU_RDp.set_new(DELTA_HA ? 0 : bus_req_new.read);
-  PIN_CPU_WRp.set_new(DELTA_HA ? 0 : bus_req_new.write);
+  PIN_CPU_RDp.pin_in(DELTA_HA ? 0 : bus_req_new.read);
+  PIN_CPU_WRp.pin_in(DELTA_HA ? 0 : bus_req_new.write);
 
   // not at all certain about this. seems to break some oam read glitches.
   if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {
-    PIN_CPU_LATCH_EXT.set_new(1);
+    PIN_CPU_LATCH_EXT.pin_in(1);
   }
   else {
-    PIN_CPU_LATCH_EXT.set_new(0);
+    PIN_CPU_LATCH_EXT.pin_in(0);
   }
 
-  PIN_CPU_6.set_new(0);
+  PIN_CPU_6.pin_in(0);
 
   uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
   bool addr_ext_new = (PIN_CPU_RDp.qp_new() || PIN_CPU_WRp.qp_new()) && (bus_addr_new < 0xFE00);
   if (bus_addr_new <= 0x00FF && !BOOT_BITn_h.qp_old()) addr_ext_new = false;
-  PIN_CPU_EXT_BUSp.set_new(addr_ext_new);
+  PIN_CPU_EXT_BUSp.pin_in(addr_ext_new);
 
 #if 0
   if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
@@ -90,9 +90,9 @@ void GateBoyCpuBus::set_pins(
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  PIN_CPU_ADDR_HIp.set_new(SYRO_FE00_FFFF());
-  PIN_CPU_UNOR_DBG.set_new(rst.UNOR_MODE_DBG2p());
-  PIN_CPU_UMUT_DBG.set_new(rst.UMUT_MODE_DBG1p());
+  PIN_CPU_ADDR_HIp.pin_out(SYRO_FE00_FFFF());
+  PIN_CPU_UNOR_DBG.pin_out(rst.UNOR_MODE_DBG2p());
+  PIN_CPU_UMUT_DBG.pin_out(rst.UMUT_MODE_DBG1p());
 
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_EXT_RDn.qn_new()*/ 0, PIN_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);

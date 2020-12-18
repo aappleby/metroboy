@@ -64,21 +64,21 @@ void ExtAddrLatch::tock(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire
   /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(rst.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn_ext, rst.UMUT_MODE_DBG1p());
   /* p08.LASY*/ wire _LASY_HOLDp = not1(_LOXO_HOLDn);
   /* p08.MATE*/ wire _MATE_HOLDn = not1(_LASY_HOLDp);
-  /* p08.ALOR*/ ALOR_EXT_ADDR_LATCH_00p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 0].qp());
-  /* p08.APUR*/ APUR_EXT_ADDR_LATCH_01p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 1].qp());
-  /* p08.ALYR*/ ALYR_EXT_ADDR_LATCH_02p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 2].qp());
-  /* p08.ARET*/ ARET_EXT_ADDR_LATCH_03p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 3].qp());
-  /* p08.AVYS*/ AVYS_EXT_ADDR_LATCH_04p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 4].qp());
-  /* p08.ATEV*/ ATEV_EXT_ADDR_LATCH_05p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 5].qp());
-  /* p08.AROS*/ AROS_EXT_ADDR_LATCH_06p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 6].qp());
-  /* p08.ARYM*/ ARYM_EXT_ADDR_LATCH_07p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 7].qp());
-  /* p08.LUNO*/ LUNO_EXT_ADDR_LATCH_08p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 8].qp());
-  /* p08.LYSA*/ LYSA_EXT_ADDR_LATCH_09p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 9].qp());
-  /* p08.PATE*/ PATE_EXT_ADDR_LATCH_10p.tp_latch(_MATE_HOLDn, BUS_CPU_A[10].qp());
-  /* p08.LUMY*/ LUMY_EXT_ADDR_LATCH_11p.tp_latch(_MATE_HOLDn, BUS_CPU_A[11].qp());
-  /* p08.LOBU*/ LOBU_EXT_ADDR_LATCH_12p.tp_latch(_MATE_HOLDn, BUS_CPU_A[12].qp());
-  /* p08.LONU*/ LONU_EXT_ADDR_LATCH_13p.tp_latch(_MATE_HOLDn, BUS_CPU_A[13].qp());
-  /* p08.NYRE*/ NYRE_EXT_ADDR_LATCH_14p.tp_latch(_MATE_HOLDn, BUS_CPU_A[14].qp());
+  /* p08.ALOR*/ ALOR_EXT_ADDR_LATCH_00p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 0].qp_new());
+  /* p08.APUR*/ APUR_EXT_ADDR_LATCH_01p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 1].qp_new());
+  /* p08.ALYR*/ ALYR_EXT_ADDR_LATCH_02p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 2].qp_new());
+  /* p08.ARET*/ ARET_EXT_ADDR_LATCH_03p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 3].qp_new());
+  /* p08.AVYS*/ AVYS_EXT_ADDR_LATCH_04p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 4].qp_new());
+  /* p08.ATEV*/ ATEV_EXT_ADDR_LATCH_05p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 5].qp_new());
+  /* p08.AROS*/ AROS_EXT_ADDR_LATCH_06p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 6].qp_new());
+  /* p08.ARYM*/ ARYM_EXT_ADDR_LATCH_07p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 7].qp_new());
+  /* p08.LUNO*/ LUNO_EXT_ADDR_LATCH_08p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 8].qp_new());
+  /* p08.LYSA*/ LYSA_EXT_ADDR_LATCH_09p.tp_latch(_MATE_HOLDn, BUS_CPU_A[ 9].qp_new());
+  /* p08.PATE*/ PATE_EXT_ADDR_LATCH_10p.tp_latch(_MATE_HOLDn, BUS_CPU_A[10].qp_new());
+  /* p08.LUMY*/ LUMY_EXT_ADDR_LATCH_11p.tp_latch(_MATE_HOLDn, BUS_CPU_A[11].qp_new());
+  /* p08.LOBU*/ LOBU_EXT_ADDR_LATCH_12p.tp_latch(_MATE_HOLDn, BUS_CPU_A[12].qp_new());
+  /* p08.LONU*/ LONU_EXT_ADDR_LATCH_13p.tp_latch(_MATE_HOLDn, BUS_CPU_A[13].qp_new());
+  /* p08.NYRE*/ NYRE_EXT_ADDR_LATCH_14p.tp_latch(_MATE_HOLDn, BUS_CPU_A[14].qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ void GateBoyExtBus::addr_latch_to_pins(
   PIN_EXT_A[14].pin_out(_PUHE, _PAHY);
 
   // A15 is "special"
-  /* p08.SOBY*/ wire _SOBY_A15n = nor2(cpu_bus.BUS_CPU_A[15].qp(), TUTU_READ_BOOTROMp);
+  /* p08.SOBY*/ wire _SOBY_A15n = nor2(cpu_bus.BUS_CPU_A[15].qp_new(), TUTU_READ_BOOTROMp);
   /* p08.SEPY*/ wire _SEPY_A15p = nand2(ABUZ_EXT_RAM_CS_CLK, _SOBY_A15n);
   /* p08.TAZY*/ wire _TAZY_A15p = mux2p(dma.LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
   /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, rst.RYCA_MODE_DBG2n());
@@ -208,23 +208,23 @@ void GateBoyExtBus::cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoy
   /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(rst.UNOR_MODE_DBG2p(), cpu_bus.REDU_CPU_RDn(), _MOTY_CPU_EXT_RD);
   /* p08.LULA*/ wire _LULA_CBD_TO_EPDp = not1(_RORU_CBD_TO_EPDn);
 
-  /* p25.RUXA*/ wire _RUXA = nand2(cpu_bus.BUS_CPU_D[0].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RUJA*/ wire _RUJA = nand2(cpu_bus.BUS_CPU_D[1].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RABY*/ wire _RABY = nand2(cpu_bus.BUS_CPU_D[2].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RERA*/ wire _RERA = nand2(cpu_bus.BUS_CPU_D[3].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RORY*/ wire _RORY = nand2(cpu_bus.BUS_CPU_D[4].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RYVO*/ wire _RYVO = nand2(cpu_bus.BUS_CPU_D[5].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RAFY*/ wire _RAFY = nand2(cpu_bus.BUS_CPU_D[6].qp(), _LULA_CBD_TO_EPDp);
-  /* p25.RAVU*/ wire _RAVU = nand2(cpu_bus.BUS_CPU_D[7].qp(), _LULA_CBD_TO_EPDp);
+  /* p25.RUXA*/ wire _RUXA = nand2(cpu_bus.BUS_CPU_D[0].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RUJA*/ wire _RUJA = nand2(cpu_bus.BUS_CPU_D[1].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RABY*/ wire _RABY = nand2(cpu_bus.BUS_CPU_D[2].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RERA*/ wire _RERA = nand2(cpu_bus.BUS_CPU_D[3].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RORY*/ wire _RORY = nand2(cpu_bus.BUS_CPU_D[4].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RYVO*/ wire _RYVO = nand2(cpu_bus.BUS_CPU_D[5].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RAFY*/ wire _RAFY = nand2(cpu_bus.BUS_CPU_D[6].qp_new(), _LULA_CBD_TO_EPDp);
+  /* p25.RAVU*/ wire _RAVU = nand2(cpu_bus.BUS_CPU_D[7].qp_new(), _LULA_CBD_TO_EPDp);
 
-  /* p08.RUNE*/ wire _RUNE = nor2 (cpu_bus.BUS_CPU_D[0].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.RYPU*/ wire _RYPU = nor2 (cpu_bus.BUS_CPU_D[1].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.SULY*/ wire _SULY = nor2 (cpu_bus.BUS_CPU_D[2].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.SEZE*/ wire _SEZE = nor2 (cpu_bus.BUS_CPU_D[3].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.RESY*/ wire _RESY = nor2 (cpu_bus.BUS_CPU_D[4].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.TAMU*/ wire _TAMU = nor2 (cpu_bus.BUS_CPU_D[5].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.ROGY*/ wire _ROGY = nor2 (cpu_bus.BUS_CPU_D[6].qp(), _RORU_CBD_TO_EPDn);
-  /* p08.RYDA*/ wire _RYDA = nor2 (cpu_bus.BUS_CPU_D[7].qp(), _RORU_CBD_TO_EPDn);
+  /* p08.RUNE*/ wire _RUNE = nor2 (cpu_bus.BUS_CPU_D[0].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.RYPU*/ wire _RYPU = nor2 (cpu_bus.BUS_CPU_D[1].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.SULY*/ wire _SULY = nor2 (cpu_bus.BUS_CPU_D[2].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.SEZE*/ wire _SEZE = nor2 (cpu_bus.BUS_CPU_D[3].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.RESY*/ wire _RESY = nor2 (cpu_bus.BUS_CPU_D[4].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.TAMU*/ wire _TAMU = nor2 (cpu_bus.BUS_CPU_D[5].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.ROGY*/ wire _ROGY = nor2 (cpu_bus.BUS_CPU_D[6].qp_new(), _RORU_CBD_TO_EPDn);
+  /* p08.RYDA*/ wire _RYDA = nor2 (cpu_bus.BUS_CPU_D[7].qp_new(), _RORU_CBD_TO_EPDn);
 
   PIN_EXT_D[0].pin_out(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
   PIN_EXT_D[1].pin_out(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
@@ -296,14 +296,14 @@ void GateBoyExtBus::cart_to_pins(const uint8_t* cart_buf, uint8_t* cart_ram, uin
   if (cram_OEp_new) _ext_data_latch = cart_ram[cram_addr];
 
   wire ext_OEp = rom_OEp_new || eram_OEp_new || cram_OEp_new;
-  PIN_EXT_D[0].tri(ext_OEp, wire(_ext_data_latch & 0x01));
-  PIN_EXT_D[1].tri(ext_OEp, wire(_ext_data_latch & 0x02));
-  PIN_EXT_D[2].tri(ext_OEp, wire(_ext_data_latch & 0x04));
-  PIN_EXT_D[3].tri(ext_OEp, wire(_ext_data_latch & 0x08));
-  PIN_EXT_D[4].tri(ext_OEp, wire(_ext_data_latch & 0x10));
-  PIN_EXT_D[5].tri(ext_OEp, wire(_ext_data_latch & 0x20));
-  PIN_EXT_D[6].tri(ext_OEp, wire(_ext_data_latch & 0x40));
-  PIN_EXT_D[7].tri(ext_OEp, wire(_ext_data_latch & 0x80));
+  PIN_EXT_D[0].pin_out(ext_OEp, wire(_ext_data_latch & 0x01));
+  PIN_EXT_D[1].pin_out(ext_OEp, wire(_ext_data_latch & 0x02));
+  PIN_EXT_D[2].pin_out(ext_OEp, wire(_ext_data_latch & 0x04));
+  PIN_EXT_D[3].pin_out(ext_OEp, wire(_ext_data_latch & 0x08));
+  PIN_EXT_D[4].pin_out(ext_OEp, wire(_ext_data_latch & 0x10));
+  PIN_EXT_D[5].pin_out(ext_OEp, wire(_ext_data_latch & 0x20));
+  PIN_EXT_D[6].pin_out(ext_OEp, wire(_ext_data_latch & 0x40));
+  PIN_EXT_D[7].pin_out(ext_OEp, wire(_ext_data_latch & 0x80));
 }
 
 //------------------------------------------------------------------------------------------------------------------------

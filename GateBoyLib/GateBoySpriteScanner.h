@@ -18,11 +18,11 @@ struct SpriteScanner {
   }
 
   /*#p28.FETO*/ wire FETO_SCAN_DONEp() const {
-    return and4(YFEL_SCAN0.qp(), WEWY_SCAN1.qp(), GOSO_SCAN2.qp(), FONY_SCAN5.qp()); // 32 + 4 + 2 + 1 = 39
+    return and4(YFEL_SCAN0.qp_new(), WEWY_SCAN1.qp_new(), GOSO_SCAN2.qp_new(), FONY_SCAN5.qp_new()); // 32 + 4 + 2 + 1 = 39
   }
 
   wire AVAP_SCAN_DONE_TRIGp(wire BALU_LINE_RSTp) const {
-    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_Bp.qp(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn());
+    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_new());
     /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp = not1(_BEBU_SCAN_DONE_TRIGn);
     return _AVAP_SCAN_DONE_TRIGp;
   }

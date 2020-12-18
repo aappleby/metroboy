@@ -25,8 +25,8 @@ void GateBoyInterrupts::tock(
 {
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(rst.AVOR_SYS_RSTp());
 
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
-  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -41,17 +41,17 @@ void GateBoyInterrupts::tock(
   /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(PIN_CPU_ACK_JOYPAD.qp_new());
 
   /* p02.ROTU*/ wire _ROTU_FF0F_WRp   = not1(_REFA_FF0F_WRn);
-  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D[0].qp());
-  /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.BUS_CPU_D[1].qp());
-  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.BUS_CPU_D[2].qp());
-  /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.BUS_CPU_D[3].qp());
-  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.BUS_CPU_D[4].qp());
+  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D[0].qp_new());
+  /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.BUS_CPU_D[1].qp_new());
+  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.BUS_CPU_D[2].qp_new());
+  /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.BUS_CPU_D[3].qp_new());
+  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.BUS_CPU_D[4].qp_new());
 
-  /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(cpu_bus.BUS_CPU_D[0].qp(), _REFA_FF0F_WRn);
-  /* p02.NABE*/ wire _NABE_INT1_WRn = or2(cpu_bus.BUS_CPU_D[1].qp(), _REFA_FF0F_WRn);
-  /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D[2].qp(), _REFA_FF0F_WRn);
-  /* p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D[3].qp(), _REFA_FF0F_WRn);
-  /* p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D[4].qp(), _REFA_FF0F_WRn);
+  /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(cpu_bus.BUS_CPU_D[0].qp_new(), _REFA_FF0F_WRn);
+  /* p02.NABE*/ wire _NABE_INT1_WRn = or2(cpu_bus.BUS_CPU_D[1].qp_new(), _REFA_FF0F_WRn);
+  /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D[2].qp_new(), _REFA_FF0F_WRn);
+  /* p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D[3].qp_new(), _REFA_FF0F_WRn);
+  /* p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D[4].qp_new(), _REFA_FF0F_WRn);
 
   /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n = and3(_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  _ALUR_SYS_RSTn);
   /* p02.MOVU*/ wire _MOVU_FF0F_RST1n = and3(_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, _ALUR_SYS_RSTn);
@@ -87,11 +87,11 @@ void GateBoyInterrupts::tock(
   /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!_ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
   /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!_ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
-  PIN_CPU_INT_VBLANK.set_new(LOPE_FF0F_D0p.qp_new());
-  PIN_CPU_INT_STAT  .set_new(LALU_FF0F_D1p.qp_new());
-  PIN_CPU_INT_TIMER .set_new(NYBO_FF0F_D2p.qp_new());
-  PIN_CPU_INT_SERIAL.set_new(UBUL_FF0F_D3p.qp_new());
-  PIN_CPU_INT_JOYPAD.set_new(ULAK_FF0F_D4p.qp_new());
+  PIN_CPU_INT_VBLANK.pin_out(LOPE_FF0F_D0p.qp_new());
+  PIN_CPU_INT_STAT  .pin_out(LALU_FF0F_D1p.qp_new());
+  PIN_CPU_INT_TIMER .pin_out(NYBO_FF0F_D2p.qp_new());
+  PIN_CPU_INT_SERIAL.pin_out(UBUL_FF0F_D3p.qp_new());
+  PIN_CPU_INT_JOYPAD.pin_out(ULAK_FF0F_D4p.qp_new());
 
   // FF0F INTF
   /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
@@ -107,14 +107,14 @@ void GateBoyInterrupts::tock(
 
     uint16_t cpu_addr = pack_u16p(16, cpu_bus.BUS_CPU_A);
     wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
-    wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp.qp(), FFFF_HIT_ext);
-    wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp(), FFFF_HIT_ext);
+    wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp.qp_new(), FFFF_HIT_ext);
+    wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
 
-    IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[0].qp());
-    IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[1].qp());
-    IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[2].qp());
-    IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[3].qp());
-    IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[4].qp());
+    IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_new(), cpu_bus.BUS_CPU_D[0].qp_old());
+    IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_new(), cpu_bus.BUS_CPU_D[1].qp_old());
+    IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_new(), cpu_bus.BUS_CPU_D[2].qp_old());
+    IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_new(), cpu_bus.BUS_CPU_D[3].qp_old());
+    IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp_new(), cpu_bus.BUS_CPU_D[4].qp_old());
 
     cpu_bus.BUS_CPU_D[0].tri6_nn(FFFF_RDn_ext, IE_D0.qn_new());
     cpu_bus.BUS_CPU_D[1].tri6_nn(FFFF_RDn_ext, IE_D1.qn_new());

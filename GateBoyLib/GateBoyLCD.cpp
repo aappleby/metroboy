@@ -9,8 +9,8 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 wire GateBoyLCD::ATEJ_LINE_RSTp() const {
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(CATU_LINE_P000p.qp());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(ANEL_LINE_P002p.qp(), _ABAF_LINE_P000n, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp())); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(CATU_LINE_P000p.qp_new());
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp_new())); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp = not1(_BYHA_LINE_TRIGn);
   return _ATEJ_LINE_RSTp;
 }
@@ -49,8 +49,8 @@ void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk, const R
 // if LCDC_ENn, PIN_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
 void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, const RegLX& reg_lx, wire TULU_DIV07p, wire XONA_LCDC_LCDENp) {
-  /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n(),   rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn());
-  /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(), rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn());
+  /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n(),   rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn_new());
+  /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(), rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn_new());
 
   /*#p24.MAGU*/ wire _MAGU = xor2(NAPO_FRAME_EVENp.qp_new(), LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire _MECO = not1(_MAGU);
@@ -85,12 +85,12 @@ void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wi
   /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(!_ROXO_CLKPIPE_odd, XYMU_RENDERINGp, XYDO_PX3p);
 
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old()));
-  /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
-  /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
-  /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new()));
-  /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
-  /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
+  /*#p24.POME*/ POME.set_new(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old()));
+  /*#p24.RUJU*/ RUJU.set_new(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
+  /*#p24.POFY*/ POFY.set_new(not1(RUJU.qp_new()));
+  /*#p24.POME*/ POME.set_new(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new()));
+  /*#p24.RUJU*/ RUJU.set_new(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
+  /*#p24.POFY*/ POFY.set_new(not1(RUJU.qp_new()));
 
   /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(POFY.qp_new());
   PIN_LCD_HSYNC.pin_out(_RUZE_HSYNCn, _RUZE_HSYNCn);

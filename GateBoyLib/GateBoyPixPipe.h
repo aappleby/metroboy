@@ -24,7 +24,7 @@ struct WindowRegisters {
     wire RYDY_WIN_HITp_old);
 
   wire NUNY_WIN_MODE_TRIGp() const {
-    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap.qp(), NOPA_WIN_MODE_Bp.qn());
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp = and2(PYNU_WIN_MODE_Ap.qp_new(), NOPA_WIN_MODE_Bp.qn_new());
     return _NUNY_WIN_MODE_TRIGp;
   }
   /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn() const { return not1(NUNY_WIN_MODE_TRIGp()); }
@@ -32,24 +32,24 @@ struct WindowRegisters {
 
 
   wire NAFY_WIN_MODE_TRIGn() const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp());
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp_new());
     /* p24.NAFY*/ wire _NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp(), _LOBY_RENDERINGn);
     return _NAFY_WIN_MODE_TRIGn;
   }
 
   wire SUZU_WIN_FIRST_TILEne() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp.qp());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp.qp());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn = not1(RYDY_WIN_HITp.qp_new());
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne = nand2(_SYLO_WIN_HITn, SOVY_WIN_HITp.qp_new());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne = not1(_TUXY_WIN_FIRST_TILEne);
     return _SUZU_WIN_FIRST_TILEne;
   }
 
   wire SEKO_WIN_FETCH_TRIGp() const {
-    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A.qn(), RENE_WIN_FETCHn_B.qp());
+    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp = nor2(RYFA_WIN_FETCHn_A.qn_new(), RENE_WIN_FETCHn_B.qp_new());
     return _SEKO_WIN_FETCH_TRIGp;
   }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp.qp()); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn() const { return not1(RYDY_WIN_HITp.qp_new()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp() const { return not1(SYLO_WIN_HITn()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn() const { return not1(TOMU_WIN_HITp()); }
@@ -85,9 +85,9 @@ struct FineScroll {
 
     /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGp);
     /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, TEVO_FETCH_TRIGp);
-    /*#p27.RYKU*/ RYKU_FINE_CNT0.RSTn(_PASO_FINE_RST);
-    /*#p27.ROGA*/ ROGA_FINE_CNT1.RSTn(_PASO_FINE_RST);
-    /*#p27.RUBU*/ RUBU_FINE_CNT2.RSTn(_PASO_FINE_RST);
+    /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17_rst(_PASO_FINE_RST);
+    /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17_rst(_PASO_FINE_RST);
+    /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17_rst(_PASO_FINE_RST);
 
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(RUBU_FINE_CNT2.qp_new(), ROGA_FINE_CNT1.qp_new(), RYKU_FINE_CNT0.qp_new());
     /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n);
@@ -124,7 +124,7 @@ struct PPURegisters {
     VOGA_HBLANKp.reset(REG_D1C0);
   }
 
-  wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn(); }
+  wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_new(); }
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A

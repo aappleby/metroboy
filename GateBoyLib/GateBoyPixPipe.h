@@ -6,11 +6,11 @@
 struct SpriteFetcher;
 struct TileTempA;
 struct TileTempB;
-struct SpriteTempA;
-struct SpriteTempB;
+struct SpritePixA;
+struct SpritePixB;
 struct OamTempB;
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct WindowRegisters {
 
@@ -73,6 +73,8 @@ struct WindowRegisters {
   /*p27.RENE*/ DFF17 RENE_WIN_FETCHn_B;        // xBxDxFxH
 };
 
+//------------------------------------------------------------------------------------------------------------------------
+
 struct FineScroll {
 
   void tock(wire XYMU_RENDERINGp, wire TYFA_CLKPIPE_odd, wire TEVO_FETCH_TRIGp) {
@@ -114,11 +116,11 @@ struct FineScroll {
   /*p??.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 // FIXME this is kinda useless now
 
 struct PPURegisters {
-  void reset_app() {
+  void reset_to_cart() {
     VOGA_HBLANKp.reset(REG_D1C0);
   }
 
@@ -128,11 +130,11 @@ struct PPURegisters {
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct PixelPipes {
 
-  void reset_app() {
+  void reset_to_cart() {
     VEZO_MASK_PIPE_0.reset(REG_D1C1);
     WURU_MASK_PIPE_1.reset(REG_D1C1);
     VOSA_MASK_PIPE_2.reset(REG_D1C1);
@@ -151,8 +153,8 @@ struct PixelPipes {
 
   void tock_sprite_pipe(
     SpriteFetcher& sprite_fetcher,
-    SpriteTempA& sprite_temp_a,
-    SpriteTempB& sprite_temp_b,
+    SpritePixA& sprite_pix_a,
+    SpritePixB& sprite_pix_b,
     wire SACU_CLKPIPE_evn);
 
   void tock_mask_pipe(

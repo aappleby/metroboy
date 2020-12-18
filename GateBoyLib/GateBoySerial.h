@@ -4,11 +4,14 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoySerial {
-  void reset_app() {
+  void reset_to_cart() {
     COTY_SER_CLK.reset(REG_D0C0);
   }
 
-  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);
+  void read(GateBoyCpuBus& cpu_bus);
+  void write_old(GateBoyCpuBus& cpu_bus);
+  void write_new(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);
 
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
   /*p06.CULY*/ DFF17 CULY_SER_DIR;    // AxxxDxxH ?

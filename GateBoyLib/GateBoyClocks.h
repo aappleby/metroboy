@@ -7,7 +7,7 @@ struct GateBoyResetDebug;
 
 struct GateBoyClock {
 
-  void reset_app() {
+  void reset_to_cart() {
     PIN_CPU_BUKE_AxxxxxGH.reset(REG_D1C0);
 
     WUVU_ABxxEFxx.reset(REG_D1C1);

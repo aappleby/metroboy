@@ -6,7 +6,10 @@
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
+  void tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
+
+  wire LOMA_LATCH_TILE_DAn() const;
+  wire LABU_LATCH_TILE_DBn() const;
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const {
     return not1(POKY_PRELOAD_LATCHp.qp());
@@ -36,9 +39,6 @@ struct TileFetcher {
 
   /*#p27.XUHA*/ wire XUHA_FETCH_HILOp()    const { return not1(NOFU_BFETCH_S2n()); }
 
-  wire LOMA_LATCH_TILE_DAn() const;
-  wire LABU_LATCH_TILE_DBn() const;
-
   void dump(Dumper& d) {
     d.dump_bitp   ("POKY_PRELOAD_LATCHp", POKY_PRELOAD_LATCHp.state);
     d.dump_bitp   ("LONY_FETCHINGp     ", LONY_FETCHINGp.state);
@@ -46,7 +46,6 @@ struct TileFetcher {
     d.dump_bitp   ("NYKA_FETCH_DONEp   ", NYKA_FETCH_DONEp.state);
     d.dump_bitp   ("PORY_FETCH_DONEp   ", PORY_FETCH_DONEp.state);
     d.dump_bitp   ("PYGO_FETCH_DONEp   ", PYGO_FETCH_DONEp.state);
-    d("\n");
     d.dump_bitp   ("LAXU_BFETCH_S0p    ", _LAXU_BFETCH_S0p.state);
     d.dump_bitp   ("MESU_BFETCH_S1p    ", _MESU_BFETCH_S1p.state);
     d.dump_bitp   ("NYVA_BFETCH_S2p    ", _NYVA_BFETCH_S2p.state);

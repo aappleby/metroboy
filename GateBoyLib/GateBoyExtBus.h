@@ -7,7 +7,7 @@ struct GateBoyResetDebug;
 //------------------------------------------------------------------------------------------------------------------------
 
 struct ExtDataLatch {
-  void reset_app() {
+  void reset_to_cart() {
     SOMA_EXT_DATA_LATCH_D0n.reset(REG_D1C0);
     RONY_EXT_DATA_LATCH_D1n.reset(REG_D1C0);
     RAXY_EXT_DATA_LATCH_D2n.reset(REG_D1C0);
@@ -31,7 +31,7 @@ struct ExtDataLatch {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct ExtAddrLatch {
-  void reset_app() {
+  void reset_to_cart() {
     ALOR_EXT_ADDR_LATCH_00p.reset(REG_D0C0);
     APUR_EXT_ADDR_LATCH_01p.reset(REG_D0C0);
     ALYR_EXT_ADDR_LATCH_02p.reset(REG_D0C0);
@@ -71,9 +71,9 @@ struct ExtAddrLatch {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyExtBus {
-  void reset_app() {
-    ext_addr_latch.reset_app();
-    ext_data_latch.reset_app();
+  void reset_to_cart() {
+    ext_addr_latch.reset_to_cart();
+    ext_data_latch.reset_to_cart();
 
     PIN_EXT_A[ 0].reset(REG_D1C0);
     PIN_EXT_A[ 1].reset(REG_D0C0);

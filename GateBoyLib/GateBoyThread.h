@@ -21,9 +21,9 @@ struct GateBoyThread {
     int64_t count;
   };
 
-  void reset_boot();
-  void reset_app();
-  void set_cart(const blob& _boot, const blob& _cart);
+  void reset_to_bootrom();
+  void reset_to_cart();
+  void load_cart(const blob& _boot, const blob& _cart);
 
   void start();
   void stop();

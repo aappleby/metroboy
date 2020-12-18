@@ -33,22 +33,22 @@ struct GateBoy {
 
   void dump(Dumper& d) const;
 
-  void reset_boot(bool fastboot);
-  void reset_app();
-  void set_cart(uint8_t* _boot_buf, size_t _boot_size,
+  void reset_to_bootrom(bool fastboot);
+  void reset_to_cart();
+  void load_cart(uint8_t* _boot_buf, size_t _boot_size,
                 uint8_t* _cart_buf, size_t _cart_size);
-
-  void load_post_bootrom_state();
 
   //----------------------------------------
 
-  void load_dump(const char* filename) {
-    load_obj(filename, *this);
+  void from_blob(const blob& b) {
+    ASSERT_P(b.size() == sizeof(*this));
+    memcpy(this, b.data(), sizeof(*this));
     check_sentinel();
   }
 
-  void save_dump(const char* filename) {
-    save_obj(filename, *this);
+  void to_blob(blob& b) {
+    uint8_t* bytes = (uint8_t*)this;
+    b.insert(b.end(), bytes, bytes + sizeof(*this));
   }
 
   //----------------------------------------
@@ -61,23 +61,22 @@ struct GateBoy {
     }
   }
 
+  static bool check_sentinel(const blob& b) {
+    if (b.size() != sizeof(GateBoy)) return false;
+
+    GateBoy* gb = (GateBoy*)b.data();
+    if (gb->sentinel1 != SENTINEL1) return false;
+    if (gb->sentinel2 != SENTINEL2) return false;
+    if (gb->sentinel3 != SENTINEL3) return false;
+    if (gb->sentinel4 != SENTINEL4) return false;
+    return true;
+  }
+
   void check_sentinel() const {
-    if (sentinel1 != SENTINEL1) {
-      printf("sentinel1 fail!\n");
-      *reinterpret_cast<int*>(SENTINEL4) = 1;
-    }
-    if (sentinel2 != SENTINEL2) {
-      printf("sentinel2 fail!\n");
-      *reinterpret_cast<int*>(SENTINEL4) = 1;
-    }
-    if (sentinel3 != SENTINEL3) {
-      printf("sentinel3 fail!\n");
-      *reinterpret_cast<int*>(SENTINEL4) = 1;
-    }
-    if (sentinel4 != SENTINEL4) {
-      printf("sentinel4 fail!\n");
-      *reinterpret_cast<int*>(SENTINEL4) = 1;
-    }
+    ASSERT_P(sentinel1 == SENTINEL1);
+    ASSERT_P(sentinel2 == SENTINEL2);
+    ASSERT_P(sentinel3 == SENTINEL3);
+    ASSERT_P(sentinel4 == SENTINEL4);
   }
 
   uint8_t dbg_read (int addr);
@@ -89,7 +88,7 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void run(int phase_count) {
+  void run_phases(int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase();
     }
@@ -157,64 +156,44 @@ struct GateBoy {
   GateBoyZramBus zram_bus;
 
   //----------
-
-  //----------
-
   GateBoyResetDebug rst;
-  GateBoyClock clk;
-
-  //----------
-
-  GateBoyDiv     div;
-  GateBoyTimer   timer;
-
-  GateBoyDMA dma;
-
+  GateBoyClock      clk;
+  GateBoyDiv        div;
+  GateBoyTimer      timer;
+  GateBoyDMA        dma;
   GateBoyInterrupts interrupts;
-
-  GateBoyJoypad joypad;
-
-  GateBoySerial serial;
+  GateBoyJoypad     joypad;
+  GateBoySerial     serial;
 
   //----------
 
-  BusIO SPR_TRI_I[6]; // AxCxExGx
-  BusIO SPR_TRI_L[4]; // AxCxExGx
+  Bus SPR_TRI_I[6]; // AxCxExGx
+  Bus SPR_TRI_L[4]; // AxCxExGx
 
   SpriteStore   sprite_store;
   SpriteScanner sprite_scanner;
-
-  //----------
-
-  TileFetcher tile_fetcher;
-
-  RegSCX reg_scx;
-  RegSCY reg_scy;
-  WinMapX win_map_x;
-  WinLineY win_line_y;
-
-  //----------
-
   SpriteFetcher sprite_fetcher;
-
-  //----------
-
-  PixCount pix_count;
-  RegStat reg_stat;
-  WindowRegisters win_reg;
-  FineScroll fine_scroll;
-  PPURegisters ppu_reg;
-  PixelPipes pix_pipes;
-  RegWY reg_wy;
-  RegWX reg_wx;
-
-  //----------
+  TileFetcher   tile_fetcher;
 
   RegLCDC reg_lcdc;
+  RegStat reg_stat;
+  RegSCX  reg_scx;
+  RegSCY  reg_scy;
   RegLX   reg_lx;
   RegLY   reg_ly;
   RegLYC  reg_lyc;
-  GateBoyLCD lcd;
+  RegWY   reg_wy;
+  RegWX   reg_wx;
+
+  WinMapX         win_map_x;
+  WinLineY        win_line_y;
+  WindowRegisters win_reg;
+  FineScroll      fine_scroll;
+
+  PPURegisters ppu_reg;
+  PixCount     pix_count;
+  PixelPipes   pix_pipes;
+  GateBoyLCD   lcd;
 
   //----------
 
@@ -237,9 +216,9 @@ struct GateBoy {
   // CPU
 
   MetroBoyCPU      cpu;
-  Req      cpu_req = {0};
-  Req      dbg_req = {0};
-  Req      bus_req = {0};
+
+  Req      bus_req_old = {0};
+  Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
   uint8_t  imask_latch = 0;
 
@@ -267,6 +246,8 @@ struct GateBoy {
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];
 
+  uint64_t sentinel3 = SENTINEL3;
+
   //-----------------------------------------------------------------------------
   // LCD and framebuffer
 
@@ -276,8 +257,6 @@ struct GateBoy {
   uint8_t lcd_data_latch = 0;
 
   //-----------------------------------------------------------------------------
-
-  uint64_t sentinel3 = SENTINEL3;
 
   double   sim_time = 0;
   uint64_t phase_total = 0;

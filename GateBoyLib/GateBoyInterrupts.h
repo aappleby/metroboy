@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyInterrupts {
-  void reset_app() {
+  void reset_to_cart() {
     LOPE_FF0F_D0p.reset(REG_D1C1);
     PIN_CPU_INT_VBLANK.reset(REG_D1C0);
   }

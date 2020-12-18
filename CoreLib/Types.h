@@ -212,7 +212,7 @@ struct Dumper {
   void dump_slice2p(const char* tag, const void* blob, int byte_count) {
     const uint8_t* d = (const uint8_t*)blob;
 
-    uint8_t val = 0;
+    uint16_t val = 0;
     for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
 
     operator()("%s : ", tag);
@@ -324,22 +324,18 @@ void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 
-inline void ASSERT_P (wire A)         { if (!A)     __debugbreak(); }
-inline void ASSERT_N (wire A)         { if (A)      __debugbreak(); }
+#define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail : " #A); __debugbreak(); }
+#define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail : " #A); __debugbreak(); }
 
 #ifdef ALWAYS_CHECK
 
-inline void CHECK_P (wire A)         { if (!A)     __debugbreak(); }
-inline void CHECK_N (wire A)         { if (A)      __debugbreak(); }
-inline void CHECK_EQ(wire A, wire B) { if (A != B) __debugbreak(); }
-inline void CHECK_NE(wire A, wire B) { if (A == B) __debugbreak(); }
+#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail : " #A);  __debugbreak(); }
+#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail : " #A);  __debugbreak(); }
 
 #else
 
 #define CHECK_P(A)
 #define CHECK_N(A)
-#define CHECK_EQ(A,B)
-#define CHECK_NE(A,B)
 
 #endif
 

@@ -9,7 +9,7 @@ struct GateBoyCpuBus;
 // FF04 DIV
 
 struct GateBoyDiv {
-  void reset_app() {
+  void reset_to_cart() {
     UKUP_DIV00p.reset(REG_D1C1);
     UFOR_DIV01p.reset(REG_D1C0);
     UNER_DIV02p.reset(REG_D0C0);
@@ -52,7 +52,17 @@ struct GateBoyDiv {
     UPOF_DIV15p.reset(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
   }
 
-  void tock(
+  void read(
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
+    GateBoyCpuBus& cpu_bus
+  );
+  void write(
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
+    GateBoyCpuBus& cpu_bus
+  );
+  void tock2(
     GateBoyResetDebug& rst,
     GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus

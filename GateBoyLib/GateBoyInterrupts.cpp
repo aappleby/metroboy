@@ -87,19 +87,19 @@ void GateBoyInterrupts::tock(
   /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(!_ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
   /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(!_ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
-  PIN_CPU_INT_VBLANK.setp(LOPE_FF0F_D0p.qp_new());
-  PIN_CPU_INT_STAT  .setp(LALU_FF0F_D1p.qp_new());
-  PIN_CPU_INT_TIMER .setp(NYBO_FF0F_D2p.qp_new());
-  PIN_CPU_INT_SERIAL.setp(UBUL_FF0F_D3p.qp_new());
-  PIN_CPU_INT_JOYPAD.setp(ULAK_FF0F_D4p.qp_new());
+  PIN_CPU_INT_VBLANK.set_new(LOPE_FF0F_D0p.qp_new());
+  PIN_CPU_INT_STAT  .set_new(LALU_FF0F_D1p.qp_new());
+  PIN_CPU_INT_TIMER .set_new(NYBO_FF0F_D2p.qp_new());
+  PIN_CPU_INT_SERIAL.set_new(UBUL_FF0F_D3p.qp_new());
+  PIN_CPU_INT_JOYPAD.set_new(ULAK_FF0F_D4p.qp_new());
 
   // FF0F INTF
   /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
-  /*#p02.NELA*/ cpu_bus.BUS_CPU_D_out[0].tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO*/ cpu_bus.BUS_CPU_D_out[1].tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D_out[2].tri6_pn(_POLA_FF0F_RDp, PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO*/ cpu_bus.BUS_CPU_D_out[3].tri6_pn(_POLA_FF0F_RDp, NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D_out[4].tri6_pn(_POLA_FF0F_RDp, NUTY_FF0F_L4p.qn_new());
+  /*#p02.NELA*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new());
+  /*#p02.NABO*/ cpu_bus.BUS_CPU_D[1].tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new());
+  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D[2].tri6_pn(_POLA_FF0F_RDp, PAVY_FF0F_L2p.qn_new());
+  /*#p02.PADO*/ cpu_bus.BUS_CPU_D[3].tri6_pn(_POLA_FF0F_RDp, NEJY_FF0F_L3p.qn_new());
+  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D[4].tri6_pn(_POLA_FF0F_RDp, NUTY_FF0F_L4p.qn_new());
 
   {
     // FFFF - IE
@@ -116,11 +116,11 @@ void GateBoyInterrupts::tock(
     IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[3].qp());
     IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN_SYS_RST.qp(), cpu_bus.BUS_CPU_D[4].qp());
 
-    cpu_bus.BUS_CPU_D_out[0].tri6_nn(FFFF_RDn_ext, IE_D0.qn_new());
-    cpu_bus.BUS_CPU_D_out[1].tri6_nn(FFFF_RDn_ext, IE_D1.qn_new());
-    cpu_bus.BUS_CPU_D_out[2].tri6_nn(FFFF_RDn_ext, IE_D2.qn_new());
-    cpu_bus.BUS_CPU_D_out[3].tri6_nn(FFFF_RDn_ext, IE_D3.qn_new());
-    cpu_bus.BUS_CPU_D_out[4].tri6_nn(FFFF_RDn_ext, IE_D4.qn_new());
+    cpu_bus.BUS_CPU_D[0].tri6_nn(FFFF_RDn_ext, IE_D0.qn_new());
+    cpu_bus.BUS_CPU_D[1].tri6_nn(FFFF_RDn_ext, IE_D1.qn_new());
+    cpu_bus.BUS_CPU_D[2].tri6_nn(FFFF_RDn_ext, IE_D2.qn_new());
+    cpu_bus.BUS_CPU_D[3].tri6_nn(FFFF_RDn_ext, IE_D3.qn_new());
+    cpu_bus.BUS_CPU_D[4].tri6_nn(FFFF_RDn_ext, IE_D4.qn_new());
   }
 }
 

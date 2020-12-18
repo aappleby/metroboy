@@ -11,13 +11,13 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::reset_app(uint8_t* new_rom, size_t new_rom_size) {
+void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  cpu.reset_app();
+  cpu.reset_to_cart();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
-  ppu.reset_app();
+  ppu.reset_to_cart();
   oam.reset();
   spu.reset();
   timer.reset();
@@ -43,13 +43,13 @@ void MetroBoy::reset_app(uint8_t* new_rom, size_t new_rom_size) {
 }
 
 
-void MetroBoy::reset_boot(uint8_t* new_rom, size_t new_rom_size) {
+void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  cpu.reset_boot();
+  cpu.reset_to_bootrom();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset();
-  ppu.reset_boot();
+  ppu.reset_to_bootrom();
   oam.reset();
   spu.reset();
   timer.reset();

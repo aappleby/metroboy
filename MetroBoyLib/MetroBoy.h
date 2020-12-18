@@ -21,8 +21,8 @@
 struct MetroBoy {
   MetroBoy() = default;
 
-  void reset_app(uint8_t* new_rom, size_t new_rom_size);
-  void reset_boot(uint8_t* new_rom, size_t new_rom_size);
+  void reset_to_cart(uint8_t* new_rom, size_t new_rom_size);
+  void reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size);
 
   void next_phase();
 

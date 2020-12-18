@@ -2,17 +2,20 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyCpuBus {
-  void reset_app();
-  void tock(
+  void reset_to_cart();
+
+  void set_addr(int phase_total, Req bus_req_new);
+  void set_data(int phase_total, Req bus_req_new);
+  void set_pins(
     const GateBoyResetDebug& rst,
     const GateBoyClock& clk,
     int phase_total,
-    Req bus_req);
+    Req bus_req_new);
 
   void dump(Dumper& d) {
-    d.dump_slice2p("BUS_CPU_A        ", BUS_CPU_A, 8);
+    d.dump_slice2p("BUS_CPU_A        ", BUS_CPU_A, 16);
     d.dump_slice2p("BUS_CPU_D        ", BUS_CPU_D, 8);
-    d.dump_slice2p("BUS_CPU_D_out    ", BUS_CPU_D_out, 8);
+    d.dump_slice2p("BUS_CPU_D_out    ", BUS_CPU_D, 8);
     d.dump_bitp   ("PIN_CPU_RDp      ", PIN_CPU_RDp.state);
     d.dump_bitp   ("PIN_CPU_WRp      ", PIN_CPU_WRp.state);
     //d.dump_bitp   ("PIN_CPU_UNOR_DBG ", PIN_CPU_UNOR_DBG.state);
@@ -29,8 +32,7 @@ struct GateBoyCpuBus {
   }
 
   Signal BUS_CPU_A[16];
-  Signal BUS_CPU_D[8];
-  BusOut BUS_CPU_D_out[8];
+  Bus BUS_CPU_D[8];
 
   PinIn  PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
   PinIn  PIN_CPU_WRp;           // top right port PORTA_01: ->
@@ -88,8 +90,9 @@ struct GateBoyCpuBus {
   /* p07.TYRO*/ wire TYRO_XX_0x0x0000p () const { return nor6(BUS_CPU_A[ 7].qp(), BUS_CPU_A[ 5].qp(), BUS_CPU_A[ 3].qp(), BUS_CPU_A[ 2].qp(), BUS_CPU_A[ 1].qp(), BUS_CPU_A[ 0].qp()); }
   /* p07.TUFA*/ wire TUFA_XX_x1x1xxxxp () const { return and2(BUS_CPU_A[ 4].qp(), BUS_CPU_A[ 6].qp()); }
 
-  /* p07.SYKE*/ wire SYKE_ADDR_HIp     () const { return nor2(TUNA_0000_FDFF(), TONA_A08n()); }
-  /* p07.SOHA*/ wire SOHA_ADDR_HIn     () const { return not1(SYKE_ADDR_HIp()); }
+  /*#p07.SYKE*/ wire SYKE_ADDR_HIp     () const { return nor2(TUNA_0000_FDFF(), TONA_A08n()); }
+  /*#p07.SOHA*/ wire SOHA_ADDR_HIn     () const { return not1(SYKE_ADDR_HIp()); }
+
   /* p22.XALY*/ wire XALY_0x00xxxx     () const { return nor3(BUS_CPU_A[7].qp(), BUS_CPU_A[5].qp(), BUS_CPU_A[4].qp()); }
   /* p06.SARE*/ wire SARE_XX00_XX07p   () const { return nor5(BUS_CPU_A[7].qp(), BUS_CPU_A[6].qp(), BUS_CPU_A[5].qp(), BUS_CPU_A[4].qp(), BUS_CPU_A[3].qp()); }
   /* p03.RYFO*/ wire RYFO_FF04_FF07p   () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A[2].qp(), SARE_XX00_XX07p()); }
@@ -118,8 +121,8 @@ struct GateBoyCpuBus {
 
   /* p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), APOV_CPU_WRp.qp()); }
 
-  /* p07.ROPE*/ wire ROPE_ADDR_OAMn    () const { return nand2(SOHA_ADDR_HIn(), RYCU_FE00_FFFF()); }
-  /* p07.SARO*/ wire SARO_ADDR_OAMp    () const { return not1(ROPE_ADDR_OAMn()); }
+  /*#p07.ROPE*/ wire ROPE_ADDR_OAMn    () const { return nand2(SOHA_ADDR_HIn(), RYCU_FE00_FFFF()); } // looks like nand?
+  /*#p07.SARO*/ wire SARO_ADDR_OAMp    () const { return not1(ROPE_ADDR_OAMn()); }
 
   /* p22.WORU*/ wire WORU_FF40n        () const { return nand5(WERO_ADDR_PPUp(), XOLA_A00n(), XENO_A01n(), XUSY_A02n(), XERA_A03n()); }
   /* p22.WOFA*/ wire WOFA_FF41n        () const { return nand5(WERO_ADDR_PPUp(), WADO_A00p(), XENO_A01n(), XUSY_A02n(), XERA_A03n()); }

@@ -144,13 +144,13 @@ constexpr uint8_t F_ZERO = 0x80;
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::reset_boot() {
+void MetroBoyCPU::reset_to_bootrom() {
   memset(this, 0, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::reset_app() {
+void MetroBoyCPU::reset_to_cart() {
   _bus_addr  = 0x0100;
   _bus_data  = 0x00;
   _bus_read  = 1;

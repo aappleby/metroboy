@@ -130,8 +130,8 @@ void PixelPipes::tock_bgw_pipe(
 
 void PixelPipes::tock_sprite_pipe(
   SpriteFetcher& sprite_fetcher,
-  SpriteTempA& sprite_temp_a,
-  SpriteTempB& sprite_temp_b,
+  SpritePixA& sprite_pix_a,
+  SpritePixB& sprite_pix_b,
   wire SACU_CLKPIPE_evn)
 {
   wire GND = 0;
@@ -157,23 +157,23 @@ void PixelPipes::tock_sprite_pipe(
 
   // Sprite pipe A
   {
-    /* p33.PABE*/ wire _PABE_SPR_PIX_SET0 = nand2(_LESY_SPRITE_MASK0p, sprite_temp_a.REWO_SPRITE_DA0n.qn_new());
-    /* p33.MYTO*/ wire _MYTO_SPR_PIX_SET1 = nand2(_LOTA_SPRITE_MASK1p, sprite_temp_a.PEBA_SPRITE_DA1n.qn_new());
-    /* p33.LELA*/ wire _LELA_SPR_PIX_SET2 = nand2(_LYKU_SPRITE_MASK2p, sprite_temp_a.MOFO_SPRITE_DA2n.qn_new());
-    /* p33.MAME*/ wire _MAME_SPR_PIX_SET3 = nand2(_ROBY_SPRITE_MASK3p, sprite_temp_a.PUDU_SPRITE_DA3n.qn_new());
-    /* p33.VEXU*/ wire _VEXU_SPR_PIX_SET4 = nand2(_TYTA_SPRITE_MASK4p, sprite_temp_a.SAJA_SPRITE_DA4n.qn_new());
-    /* p33.VABY*/ wire _VABY_SPR_PIX_SET5 = nand2(_TYCO_SPRITE_MASK5p, sprite_temp_a.SUNY_SPRITE_DA5n.qn_new());
-    /* p33.TUXA*/ wire _TUXA_SPR_PIX_SET6 = nand2(_SOKA_SPRITE_MASK6p, sprite_temp_a.SEMO_SPRITE_DA6n.qn_new());
-    /* p33.VUNE*/ wire _VUNE_SPR_PIX_SET7 = nand2(_XOVU_SPRITE_MASK7p, sprite_temp_a.SEGA_SPRITE_DA7n.qn_new());
+    /* p33.PABE*/ wire _PABE_SPR_PIX_SET0 = nand2(_LESY_SPRITE_MASK0p, sprite_pix_a.REWO_SPRITE_DA0n.qn_new());
+    /* p33.MYTO*/ wire _MYTO_SPR_PIX_SET1 = nand2(_LOTA_SPRITE_MASK1p, sprite_pix_a.PEBA_SPRITE_DA1n.qn_new());
+    /* p33.LELA*/ wire _LELA_SPR_PIX_SET2 = nand2(_LYKU_SPRITE_MASK2p, sprite_pix_a.MOFO_SPRITE_DA2n.qn_new());
+    /* p33.MAME*/ wire _MAME_SPR_PIX_SET3 = nand2(_ROBY_SPRITE_MASK3p, sprite_pix_a.PUDU_SPRITE_DA3n.qn_new());
+    /* p33.VEXU*/ wire _VEXU_SPR_PIX_SET4 = nand2(_TYTA_SPRITE_MASK4p, sprite_pix_a.SAJA_SPRITE_DA4n.qn_new());
+    /* p33.VABY*/ wire _VABY_SPR_PIX_SET5 = nand2(_TYCO_SPRITE_MASK5p, sprite_pix_a.SUNY_SPRITE_DA5n.qn_new());
+    /* p33.TUXA*/ wire _TUXA_SPR_PIX_SET6 = nand2(_SOKA_SPRITE_MASK6p, sprite_pix_a.SEMO_SPRITE_DA6n.qn_new());
+    /* p33.VUNE*/ wire _VUNE_SPR_PIX_SET7 = nand2(_XOVU_SPRITE_MASK7p, sprite_pix_a.SEGA_SPRITE_DA7n.qn_new());
 
-    /* p33.RATA*/ wire _RATA_SPR_PIX_DA0n = not1(sprite_temp_a.REWO_SPRITE_DA0n.qn_new());
-    /* p33.NUCA*/ wire _NUCA_SPR_PIX_DA1n = not1(sprite_temp_a.PEBA_SPRITE_DA1n.qn_new());
-    /* p33.LASE*/ wire _LASE_SPR_PIX_DA2n = not1(sprite_temp_a.MOFO_SPRITE_DA2n.qn_new());
-    /* p33.LUBO*/ wire _LUBO_SPR_PIX_DA3n = not1(sprite_temp_a.PUDU_SPRITE_DA3n.qn_new());
-    /* p33.WERY*/ wire _WERY_SPR_PIX_DA4n = not1(sprite_temp_a.SAJA_SPRITE_DA4n.qn_new());
-    /* p33.WURA*/ wire _WURA_SPR_PIX_DA5n = not1(sprite_temp_a.SUNY_SPRITE_DA5n.qn_new());
-    /* p33.SULU*/ wire _SULU_SPR_PIX_DA6n = not1(sprite_temp_a.SEMO_SPRITE_DA6n.qn_new());
-    /* p33.WAMY*/ wire _WAMY_SPR_PIX_DA7n = not1(sprite_temp_a.SEGA_SPRITE_DA7n.qn_new());
+    /* p33.RATA*/ wire _RATA_SPR_PIX_DA0n = not1(sprite_pix_a.REWO_SPRITE_DA0n.qn_new());
+    /* p33.NUCA*/ wire _NUCA_SPR_PIX_DA1n = not1(sprite_pix_a.PEBA_SPRITE_DA1n.qn_new());
+    /* p33.LASE*/ wire _LASE_SPR_PIX_DA2n = not1(sprite_pix_a.MOFO_SPRITE_DA2n.qn_new());
+    /* p33.LUBO*/ wire _LUBO_SPR_PIX_DA3n = not1(sprite_pix_a.PUDU_SPRITE_DA3n.qn_new());
+    /* p33.WERY*/ wire _WERY_SPR_PIX_DA4n = not1(sprite_pix_a.SAJA_SPRITE_DA4n.qn_new());
+    /* p33.WURA*/ wire _WURA_SPR_PIX_DA5n = not1(sprite_pix_a.SUNY_SPRITE_DA5n.qn_new());
+    /* p33.SULU*/ wire _SULU_SPR_PIX_DA6n = not1(sprite_pix_a.SEMO_SPRITE_DA6n.qn_new());
+    /* p33.WAMY*/ wire _WAMY_SPR_PIX_DA7n = not1(sprite_pix_a.SEGA_SPRITE_DA7n.qn_new());
 
     /* p33.PYZU*/ wire _PYZU_SPR_PIX_RST0 = nand2(_LESY_SPRITE_MASK0p, _RATA_SPR_PIX_DA0n);
     /* p33.MADA*/ wire _MADA_SPR_PIX_RST1 = nand2(_LOTA_SPRITE_MASK1p, _NUCA_SPR_PIX_DA1n);
@@ -196,23 +196,23 @@ void PixelPipes::tock_sprite_pipe(
 
   // Sprite pipe B
   {
-    /* p33.MEZU*/ wire _MEZU_SPR_PIX_SET0 = nand2(_LESY_SPRITE_MASK0p, sprite_temp_b.PEFO_SPRITE_DB0n.qn_new());
-    /* p33.RUSY*/ wire _RUSY_SPR_PIX_SET1 = nand2(_LOTA_SPRITE_MASK1p, sprite_temp_b.ROKA_SPRITE_DB1n.qn_new());
-    /* p33.MYXA*/ wire _MYXA_SPR_PIX_SET2 = nand2(_LYKU_SPRITE_MASK2p, sprite_temp_b.MYTU_SPRITE_DB2n.qn_new());
-    /* p33.RANO*/ wire _RANO_SPR_PIX_SET3 = nand2(_ROBY_SPRITE_MASK3p, sprite_temp_b.RAMU_SPRITE_DB3n.qn_new());
-    /* p33.TYGA*/ wire _TYGA_SPR_PIX_SET4 = nand2(_TYTA_SPRITE_MASK4p, sprite_temp_b.SELE_SPRITE_DB4n.qn_new());
-    /* p33.VUME*/ wire _VUME_SPR_PIX_SET5 = nand2(_TYCO_SPRITE_MASK5p, sprite_temp_b.SUTO_SPRITE_DB5n.qn_new());
-    /* p33.TAPO*/ wire _TAPO_SPR_PIX_SET6 = nand2(_SOKA_SPRITE_MASK6p, sprite_temp_b.RAMA_SPRITE_DB6n.qn_new());
-    /* p33.TESO*/ wire _TESO_SPR_PIX_SET7 = nand2(_XOVU_SPRITE_MASK7p, sprite_temp_b.RYDU_SPRITE_DB7n.qn_new());
+    /* p33.MEZU*/ wire _MEZU_SPR_PIX_SET0 = nand2(_LESY_SPRITE_MASK0p, sprite_pix_b.PEFO_SPRITE_DB0n.qn_new());
+    /* p33.RUSY*/ wire _RUSY_SPR_PIX_SET1 = nand2(_LOTA_SPRITE_MASK1p, sprite_pix_b.ROKA_SPRITE_DB1n.qn_new());
+    /* p33.MYXA*/ wire _MYXA_SPR_PIX_SET2 = nand2(_LYKU_SPRITE_MASK2p, sprite_pix_b.MYTU_SPRITE_DB2n.qn_new());
+    /* p33.RANO*/ wire _RANO_SPR_PIX_SET3 = nand2(_ROBY_SPRITE_MASK3p, sprite_pix_b.RAMU_SPRITE_DB3n.qn_new());
+    /* p33.TYGA*/ wire _TYGA_SPR_PIX_SET4 = nand2(_TYTA_SPRITE_MASK4p, sprite_pix_b.SELE_SPRITE_DB4n.qn_new());
+    /* p33.VUME*/ wire _VUME_SPR_PIX_SET5 = nand2(_TYCO_SPRITE_MASK5p, sprite_pix_b.SUTO_SPRITE_DB5n.qn_new());
+    /* p33.TAPO*/ wire _TAPO_SPR_PIX_SET6 = nand2(_SOKA_SPRITE_MASK6p, sprite_pix_b.RAMA_SPRITE_DB6n.qn_new());
+    /* p33.TESO*/ wire _TESO_SPR_PIX_SET7 = nand2(_XOVU_SPRITE_MASK7p, sprite_pix_b.RYDU_SPRITE_DB7n.qn_new());
 
-    /* p33.LOZA*/ wire _LOZA_SPR_PIX_DB0n = not1(sprite_temp_b.PEFO_SPRITE_DB0n.qn_new());
-    /* p33.SYBO*/ wire _SYBO_SPR_PIX_DB1n = not1(sprite_temp_b.ROKA_SPRITE_DB1n.qn_new());
-    /* p33.LUMO*/ wire _LUMO_SPR_PIX_DB2n = not1(sprite_temp_b.MYTU_SPRITE_DB2n.qn_new());
-    /* p33.SOLO*/ wire _SOLO_SPR_PIX_DB3n = not1(sprite_temp_b.RAMU_SPRITE_DB3n.qn_new());
-    /* p33.VOBY*/ wire _VOBY_SPR_PIX_DB4n = not1(sprite_temp_b.SELE_SPRITE_DB4n.qn_new());
-    /* p33.WYCO*/ wire _WYCO_SPR_PIX_DB5n = not1(sprite_temp_b.SUTO_SPRITE_DB5n.qn_new());
-    /* p33.SERY*/ wire _SERY_SPR_PIX_DB6n = not1(sprite_temp_b.RAMA_SPRITE_DB6n.qn_new());
-    /* p33.SELU*/ wire _SELU_SPR_PIX_DB7n = not1(sprite_temp_b.RYDU_SPRITE_DB7n.qn_new());
+    /* p33.LOZA*/ wire _LOZA_SPR_PIX_DB0n = not1(sprite_pix_b.PEFO_SPRITE_DB0n.qn_new());
+    /* p33.SYBO*/ wire _SYBO_SPR_PIX_DB1n = not1(sprite_pix_b.ROKA_SPRITE_DB1n.qn_new());
+    /* p33.LUMO*/ wire _LUMO_SPR_PIX_DB2n = not1(sprite_pix_b.MYTU_SPRITE_DB2n.qn_new());
+    /* p33.SOLO*/ wire _SOLO_SPR_PIX_DB3n = not1(sprite_pix_b.RAMU_SPRITE_DB3n.qn_new());
+    /* p33.VOBY*/ wire _VOBY_SPR_PIX_DB4n = not1(sprite_pix_b.SELE_SPRITE_DB4n.qn_new());
+    /* p33.WYCO*/ wire _WYCO_SPR_PIX_DB5n = not1(sprite_pix_b.SUTO_SPRITE_DB5n.qn_new());
+    /* p33.SERY*/ wire _SERY_SPR_PIX_DB6n = not1(sprite_pix_b.RAMA_SPRITE_DB6n.qn_new());
+    /* p33.SELU*/ wire _SELU_SPR_PIX_DB7n = not1(sprite_pix_b.RYDU_SPRITE_DB7n.qn_new());
 
     /* p33.MOFY*/ wire _MOFY_SPR_PIX_RST0 = nand2(_LESY_SPRITE_MASK0p, _LOZA_SPR_PIX_DB0n);
     /* p33.RUCA*/ wire _RUCA_SPR_PIX_RST1 = nand2(_LOTA_SPRITE_MASK1p, _SYBO_SPR_PIX_DB1n);

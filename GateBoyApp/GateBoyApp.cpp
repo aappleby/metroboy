@@ -47,14 +47,14 @@ void GateBoyApp::app_init() {
 
 #if 1
   // regenerate post-bootrom dump
-  //gb_thread.reset_boot(DMG_ROM_blob, load_blob("roms/tetris.gb"));
-  //gb_thread.reset_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
-  //for (int i = 0; i < 8192; i++) {
-  //  gb_thread.gb->vid_ram[i] = (uint8_t)rand();
-  //}
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  gb_thread.reset_to_bootrom();
+  for (int i = 0; i < 8192; i++) {
+    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
+  }
 
-  gb_thread.set_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_005_div.gb"));
-  gb_thread.reset_app();
+  //gb_thread.set_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_005_div.gb"));
+  //gb_thread.reset_app();
 #endif
 
 
@@ -199,14 +199,20 @@ void GateBoyApp::app_close() {
 //------------------------------------------------------------------------------
 
 void GateBoyApp::load_raw_dump() {
-  printf("Loading raw dump from %s\n", "gateboy.raw.dump");
-  gb_thread.gb->load_dump("gateboy.raw.dump");
-  gb_thread.set_cart(DMG_ROM_blob, gb_thread.cart);
+  const char* filename = "gateboy.raw.dump";
+  printf("Loading raw dump from %s\n", filename);
+  blob dump = load_blob(filename);
+  gb_thread.gb->from_blob(dump);
+  gb_thread.load_cart(DMG_ROM_blob, gb_thread.cart);
+  //gb_thread.gb->reset_to_cart();
 }
 
 void GateBoyApp::save_raw_dump() {
-  printf("Saving raw dump to %s\n", "gateboy.raw.dump");
-  gb_thread.gb->save_dump("gateboy.raw.dump");
+  const char* filename = "gateboy.raw.dump";
+  printf("Saving raw dump to %s\n", filename);
+  blob dump;
+  gb_thread.gb->to_blob(dump);
+  save_blob(filename, dump);
 }
 
 //------------------------------------------------------------------------------
@@ -215,8 +221,8 @@ void GateBoyApp::save_raw_dump() {
 void GateBoyApp::load_rom(const char* filename) {
   printf("Loading %s\n", filename);
 
-  gb_thread.set_cart(DMG_ROM_blob, load_blob(filename));
-  gb_thread.reset_app();
+  gb_thread.load_cart(DMG_ROM_blob, load_blob(filename));
+  gb_thread.reset_to_cart();
 
   printf("Loaded %zd bytes from rom %s\n", gb_thread.cart.size(), filename);
 }
@@ -228,8 +234,8 @@ void GateBoyApp::load_rom(const char* filename) {
 
 void GateBoyApp::load_flat_dump(const char* filename) {
 
-  gb_thread.set_cart(DMG_ROM_blob, load_blob(filename));
-  gb_thread.reset_app();
+  gb_thread.load_cart(DMG_ROM_blob, load_blob(filename));
+  gb_thread.reset_to_cart();
 
   memcpy(gb_thread.gb->vid_ram,  gb_thread.cart.data() + 0x8000, 8192);
   memcpy(gb_thread.gb->cart_ram, gb_thread.cart.data() + 0xA000, 8192);
@@ -302,7 +308,7 @@ void GateBoyApp::app_update(double /*delta*/) {
 
     case SDLK_F1:   load_raw_dump();            break;
     case SDLK_F4:   save_raw_dump();            break;
-    case SDLK_r:    gb_thread.reset_app();          break;
+    case SDLK_r:    gb_thread.reset_to_cart();          break;
     //case SDLK_d:    show_diff   = !show_diff;   break;
     case SDLK_g:    show_golden = !show_golden; break;
     case SDLK_o:    draw_passes = !draw_passes; break;
@@ -439,8 +445,14 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb->timer.dump(d);
   d("\n");
 
+  /*
   d("\002===== Joypad =====\001\n");
   gb->joypad.dump(d);
+  d("\n");
+  */
+
+  d("\002===== DMA =====\001\n");
+  gb->dma.dump(d);
   d("\n");
 
   /*
@@ -479,12 +491,49 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== Temp Regs =====\001\n");
   d.dump_slice2n("Tile temp A  ", &gb->tile_fetcher.tile_temp_a.LEGU_TILE_DA0n, 8);
   d.dump_slice2p("Tile temp B  ", &gb->tile_fetcher.tile_temp_b.RAWU_TILE_DB0p, 8);
-  d.dump_slice2n("Sprite temp A", &gb->sprite_fetcher.sprite_temp_a.REWO_SPRITE_DA0n, 8);
-  d.dump_slice2n("Sprite temp B", &gb->sprite_fetcher.sprite_temp_b.PEFO_SPRITE_DB0n, 8);
+  d.dump_slice2n("Sprite temp A", &gb->sprite_fetcher.sprite_pix_a.REWO_SPRITE_DA0n, 8);
+  d.dump_slice2n("Sprite temp B", &gb->sprite_fetcher.sprite_pix_b.PEFO_SPRITE_DB0n, 8);
   d("\n");
 
-  d("\002===== DMA Reg =====\001\n");
-  gb->dma.dump(d);
+  text_painter.render(view, d.s.c_str(), cursor, 0);
+  cursor += 240;
+  d.clear();
+
+  //----------------------------------------
+
+  d("\002===== Pix Pipe =====\001\n");
+  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p));
+  d("\n");
+  d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
+  d.dump_bitp("PUKU_WIN_HITn         ", gb->win_reg.PUKU_WIN_HITn.state);
+  d.dump_bitp("RYDY_WIN_HITp         ", gb->win_reg.RYDY_WIN_HITp.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->win_reg.SOVY_WIN_HITp.state);
+  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
+  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->win_reg.PYCO_WIN_MATCHp.state);
+  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->win_reg.NUNU_WIN_MATCHp.state);
+  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->win_reg.REJO_WY_MATCH_LATCHp.state);
+  d.dump_bitp("SARY_WY_MATCH         ", gb->win_reg.SARY_WY_MATCHp.state);
+  d.dump_bitp("RYFA_FETCHn_A         ", gb->win_reg.RYFA_WIN_FETCHn_A.state);
+  d.dump_bitp("RENE_FETCHn_B         ", gb->win_reg.RENE_WIN_FETCHn_B.state);
+
+  d.dump_bitp("RYKU_FINE_CNT0        ", gb->fine_scroll.RYKU_FINE_CNT0.state);
+  d.dump_bitp("ROGA_FINE_CNT1        ", gb->fine_scroll.ROGA_FINE_CNT1.state);
+  d.dump_bitp("RUBU_FINE_CNT2        ", gb->fine_scroll.RUBU_FINE_CNT2.state);
+  d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
+  d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
+  d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
+
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_LYC_MATCHn.state);
+  d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp.state);
+  d("\n");
+  d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);
+  d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
+  d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0, 8);
+  d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0, 8);
+  d.dump_slice2p("SPR PIPE B", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
+  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
+  d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
   d("\n");
 
   d("\002===== LCD =====\001\n");
@@ -520,47 +569,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
 
   text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 240;
-  d.clear();
-
-  //----------------------------------------
-
-  d("\002===== Pix Pipe =====\001\n");
-  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p));
-  d("\n");
-  d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
-  d.dump_bitp("PUKU_WIN_HITn         ", gb->win_reg.PUKU_WIN_HITn.state);
-  d.dump_bitp("RYDY_WIN_HITp         ", gb->win_reg.RYDY_WIN_HITp.state);
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->win_reg.SOVY_WIN_HITp.state);
-  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
-  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->win_reg.PYCO_WIN_MATCHp.state);
-  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->win_reg.NUNU_WIN_MATCHp.state);
-  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->win_reg.REJO_WY_MATCH_LATCHp.state);
-  d.dump_bitp("SARY_WY_MATCH         ", gb->win_reg.SARY_WY_MATCHp.state);
-  d.dump_bitp("RYFA_FETCHn_A         ", gb->win_reg.RYFA_WIN_FETCHn_A.state);
-  d.dump_bitp("RENE_FETCHn_B         ", gb->win_reg.RENE_WIN_FETCHn_B.state);
-
-  d.dump_bitp("RYKU_FINE_CNT0        ", gb->fine_scroll.RYKU_FINE_CNT0.state);
-  d.dump_bitp("ROGA_FINE_CNT1        ", gb->fine_scroll.ROGA_FINE_CNT1.state);
-  d.dump_bitp("RUBU_FINE_CNT2        ", gb->fine_scroll.RUBU_FINE_CNT2.state);
-  d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
-  d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
-  d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
-
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_STAT_LYC_MATCHn.state);
-  d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp.state);
-  d("\n");
-  d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);
-  d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
-  d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0, 8);
-  d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0, 8);
-  d.dump_slice2p("SPR PIPE B", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
-  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
-  d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
-  d("\n");
-
-  text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += 224;
   d.clear();
 
@@ -568,9 +576,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== Tile Fetch =====\001\n");
   gb->tile_fetcher.dump(d);
-  d("\n");
-
-  d("\n");
   d.dump_slice2p("WIN MAP X ", &gb->win_map_x.WYKA_WIN_X3, 5);
   d.dump_slice2p("WIN Y     ", &gb->win_line_y.VYNO_WIN_Y0, 8);
   d("\n");

@@ -7,7 +7,7 @@
 
 struct GateBoyLCD {
 
-  void reset_app() {
+  void reset_to_cart() {
     CATU_LINE_P000p.reset(REG_D0C1);
     ANEL_LINE_P002p.reset(REG_D0C0);
     POPU_VBLANKp.reset(REG_D1C0);
@@ -75,8 +75,10 @@ struct GateBoyLCD {
     d.dump_bitp("POME               ", POME.state);
     d.dump_bitp("PAHO_X_8_SYNC      ", PAHO_X_8_SYNC.state);
     d.dump_bitp("WUSA_LCD_CLOCK_GATE", WUSA_LCD_CLOCK_GATE.state);
-    d.dump_bitp("lcd_pix_lo         ", lcd_pix_lo.state);
-    d.dump_bitp("lcd_pix_hi         ", lcd_pix_hi.state);
+    //d.dump_bitp("lcd_pix_lo         ", lcd_pix_lo.state);
+    //d.dump_bitp("lcd_pix_hi         ", lcd_pix_hi.state);
+
+    // FIXME dump pins
   }
 
   Signal _XODO_VID_RSTp;

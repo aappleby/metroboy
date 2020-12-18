@@ -14,16 +14,16 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_
   /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(PIN_SYS_RST.qp_new(), _ALYP_RSTn);
   /* p01.ASOL*/ ASOL_POR_DONEn.nor_latch(PIN_SYS_RST.qp_new(), _AFAR_RSTp); // Schematic wrong, this is a latch.
 
-  PIN_CPU_EXT_CLKGOOD.setp(sys_clkgood);
-  PIN_CPU_EXT_RST.setp(PIN_SYS_RST.qp_new());
-  PIN_CPU_STARTp.setp(_TABA_POR_TRIGn);
-  PIN_CPU_SYS_RSTp.setp(AFER_SYS_RSTp.qp_new());
+  PIN_CPU_EXT_CLKGOOD.set_new(sys_clkgood);
+  PIN_CPU_EXT_RST.set_new(PIN_SYS_RST.qp_new());
+  PIN_CPU_STARTp.set_new(_TABA_POR_TRIGn);
+  PIN_CPU_SYS_RSTp.set_new(AFER_SYS_RSTp.qp_new());
 
   /*#p25.SYCY*/ wire _SYCY_MODE_DBG2n = not1(UNOR_MODE_DBG2p());
   /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n, CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn());
 }
 
-void GateBoyResetDebug::tock2(wire XONA_LCDC_LCDENp)
+void GateBoyResetDebug::tock(wire XONA_LCDC_LCDENp)
 {
   _XONA_LCDC_LCDENp.set_new(XONA_LCDC_LCDENp);
 }

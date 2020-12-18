@@ -5,7 +5,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::reset_app() {
+void SpriteStore::reset_to_cart() {
   DEZY_COUNT_CLKp.reset(REG_D1C1);
   BESE_SPRITE_COUNT0.reset(REG_D0C1);
   CUXY_SPRITE_COUNT1.reset(REG_D0C1);
@@ -302,7 +302,7 @@ SpriteFirstMatch SpriteStore::get_first_match(SpriteMatchFlag match_flag) const 
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::get_sprite(SpriteFirstMatch first_match, BusIO SPR_TRI_I[6], BusIO SPR_TRI_L[4]) {
+void SpriteStore::get_sprite(SpriteFirstMatch first_match, Bus SPR_TRI_I[6], Bus SPR_TRI_L[4]) {
 
   /* p29.FURO*/ wire _FURO_SPRITE0_GETn_new_evn = not1(first_match.GUVA_SPRITE0_GETp);
   /* p29.DYDO*/ wire _DYDO_SPRITE1_GETn_new_evn = not1(first_match.ENUT_SPRITE1_GETp);
@@ -561,7 +561,7 @@ void SpriteStore::reset_first_match(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I[6]) {
+void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag, Bus SPR_TRI_I[6]) {
   /* p29.GENY*/ wire _GENY_STORE0_CLKp_new_odd = not1(store_flag.DYHU_STORE0_CLKn);
   /* p29.BYVY*/ wire _BYVY_STORE1_CLKp_new_odd = not1(store_flag.BUCO_STORE1_CLKn);
   /* p29.BUZY*/ wire _BUZY_STORE2_CLKp_new_odd = not1(store_flag.GYFO_STORE2_CLKn);
@@ -646,7 +646,7 @@ void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag, BusIO SPR_TRI_I
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag, BusIO SPR_TRI_L[4]) {
+void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag, Bus SPR_TRI_L[4]) {
   /* p29.ENOB*/ wire _ENOB_STORE0_CLKp_new_odd = not1(store_flag.DYHU_STORE0_CLKn);
   /* p29.AHOF*/ wire _AHOF_STORE1_CLKp_new_odd = not1(store_flag.BUCO_STORE1_CLKn);
   /* p29.FUKE*/ wire _FUKE_STORE2_CLKp_new_odd = not1(store_flag.GYFO_STORE2_CLKn);
@@ -825,7 +825,7 @@ void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, BusOut BUS_OAM_An[8], BusIO SPR_TRI_I[6]) {
+void SpriteStore::get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]) {
   wire VCC = 1;
   /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(BUS_OAM_An[2].qp_old());
   /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(BUS_OAM_An[3].qp_old());
@@ -853,7 +853,7 @@ void SpriteStore::get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wir
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::get_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, BusIO SPR_TRI_L[4]) {
+void SpriteStore::get_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus SPR_TRI_L[4]) {
   wire GND = 0;
 
   /*#p29.EBOS*/ wire EBOS_LY0n_new_evn = not1(reg_ly.MUWY_LY0p.qp_new());

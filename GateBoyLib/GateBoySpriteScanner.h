@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void reset_app() {
+  void reset_to_cart() {
     BESU_SCANNINGp.reset(REG_D0C0);
     CENO_SCANNINGp.reset(REG_D0C1);
     BYBA_SCAN_DONE_Ap.reset(REG_D1C1);

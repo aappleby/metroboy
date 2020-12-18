@@ -5,11 +5,9 @@
 #include "GateBoyLib/GateBoyClocks.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 
+//------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-void TileFetcher::tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
+void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
   /* p27.LAXU*/ _LAXU_BFETCH_S0p.RSTn(NYXU_BFETCH_RSTn);
   /* p27.MESU*/ _MESU_BFETCH_S1p.RSTn(NYXU_BFETCH_RSTn);
@@ -27,10 +25,15 @@ void TileFetcher::tock2(GateBoyClock& clk, wire XYMU_RENDERINGp, wire NYXU_BFETC
   /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGp);
   /* p27.LONY*/ LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn);
   /* p27.LYZU*/ _LYZU_BFETCH_S0p_D1.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGp, _LAXU_BFETCH_S0p.qp_new());
+
+  tile_temp_a.tock(BUS_VRAM_Dp, LOMA_LATCH_TILE_DAn());
+  tile_temp_b.tock(BUS_VRAM_Dp, LABU_LATCH_TILE_DBn());
 }
 
+//------------------------------------------------------------------------------------------------------------------------
+
 wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGp.qp());
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGp.qp());
 
   /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
   /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();
@@ -46,6 +49,8 @@ wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
   /*#p32.LOMA*/ wire _LOMA_LATCH_TILE_DAn = not1(_METE_LATCH_TILE_DAp);
   return _LOMA_LATCH_TILE_DAn;
 }
+
+//------------------------------------------------------------------------------------------------------------------------
 
 wire TileFetcher::LABU_LATCH_TILE_DBn() const {
   /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp());
@@ -64,3 +69,5 @@ wire TileFetcher::LABU_LATCH_TILE_DBn() const {
   /* p32.LABU*/ wire _LABU_LATCH_TILE_DBn = not1(_LUVE_LATCH_TILE_DBp);
   return _LABU_LATCH_TILE_DBn;
 }
+
+//------------------------------------------------------------------------------------------------------------------------

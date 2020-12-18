@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyResetDebug {
-  void reset_app() {
+  void reset_to_cart() {
     PIN_CPU_STARTp.reset(REG_D0C0);
     TUBO_WAITINGp.reset(REG_D0C0);
   }
@@ -42,7 +42,7 @@ struct GateBoyResetDebug {
   /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
 
   void tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
-  void tock2(wire XONA_LCDC_LCDENp);
+  void tock(wire XONA_LCDC_LCDENp);
 
   void dump(Dumper& d) {
     d.dump_bitp("TUBO_WAITINGp ", TUBO_WAITINGp.state);

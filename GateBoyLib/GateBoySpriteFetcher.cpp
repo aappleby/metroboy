@@ -3,7 +3,7 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyClocks.h"
 
-void SpriteFetcher::reset_app() {
+void SpriteFetcher::reset_to_cart() {
   TAKA_SFETCH_RUNNINGp.reset(REG_D0C0);
   SOBU_SFETCH_REQp.reset(REG_D0C0);
   SUDA_SFETCH_REQp.reset(REG_D0C1);

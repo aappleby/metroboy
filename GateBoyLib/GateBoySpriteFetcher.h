@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
-  void reset_app();
+  void reset_to_cart();
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
 
@@ -110,8 +110,8 @@ struct SpriteFetcher {
   /*p29.VONU*/ DFF17 VONU_SFETCH_S1p_D4;       // xBxDxFxH
   /*p29.SEBA*/ DFF17 SEBA_SFETCH_S1p_D5;       // AxCxExGx
 
-  SpriteTempA sprite_temp_a;
-  SpriteTempB sprite_temp_b;
+  SpritePixA sprite_pix_a;
+  SpritePixB sprite_pix_b;
 };
 
 //-----------------------------------------------------------------------------

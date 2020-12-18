@@ -5,73 +5,73 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyCpuBus::reset_app() {
+void GateBoyCpuBus::reset_to_cart() {
   BOOT_BITn_h.reset(REG_D1C1);
   PIN_CPU_BOOTp.reset(REG_D0C0);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyCpuBus::tock(
+void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
+{
+  uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
+  BUS_CPU_A[ 0].set_new(wire(bus_addr_new & 0x0001));
+  BUS_CPU_A[ 1].set_new(wire(bus_addr_new & 0x0002));
+  BUS_CPU_A[ 2].set_new(wire(bus_addr_new & 0x0004));
+  BUS_CPU_A[ 3].set_new(wire(bus_addr_new & 0x0008));
+  BUS_CPU_A[ 4].set_new(wire(bus_addr_new & 0x0010));
+  BUS_CPU_A[ 5].set_new(wire(bus_addr_new & 0x0020));
+  BUS_CPU_A[ 6].set_new(wire(bus_addr_new & 0x0040));
+  BUS_CPU_A[ 7].set_new(wire(bus_addr_new & 0x0080));
+  BUS_CPU_A[ 8].set_new(wire(bus_addr_new & 0x0100));
+  BUS_CPU_A[ 9].set_new(wire(bus_addr_new & 0x0200));
+  BUS_CPU_A[10].set_new(wire(bus_addr_new & 0x0400));
+  BUS_CPU_A[11].set_new(wire(bus_addr_new & 0x0800));
+  BUS_CPU_A[12].set_new(wire(bus_addr_new & 0x1000));
+  BUS_CPU_A[13].set_new(wire(bus_addr_new & 0x2000));
+  BUS_CPU_A[14].set_new(wire(bus_addr_new & 0x4000));
+  BUS_CPU_A[15].set_new(wire(bus_addr_new & 0x8000));
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
+ wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
+  BUS_CPU_D[0].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x01));
+  BUS_CPU_D[1].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x02));
+  BUS_CPU_D[2].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x04));
+  BUS_CPU_D[3].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x08));
+  BUS_CPU_D[4].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x10));
+  BUS_CPU_D[5].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x20));
+  BUS_CPU_D[6].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x40));
+  BUS_CPU_D[7].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x80));
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyCpuBus::set_pins(
   const GateBoyResetDebug& rst,
   const GateBoyClock& clk,
   int phase_total,
-  Req bus_req)
+  Req bus_req_new)
 {
-  uint16_t bus_addr = DELTA_HA ? bus_req.addr & 0x00FF : bus_req.addr;
-  BUS_CPU_A[ 0].set_new(wire((bus_addr >>  0) & 1));
-  BUS_CPU_A[ 1].set_new(wire((bus_addr >>  1) & 1));
-  BUS_CPU_A[ 2].set_new(wire((bus_addr >>  2) & 1));
-  BUS_CPU_A[ 3].set_new(wire((bus_addr >>  3) & 1));
-  BUS_CPU_A[ 4].set_new(wire((bus_addr >>  4) & 1));
-  BUS_CPU_A[ 5].set_new(wire((bus_addr >>  5) & 1));
-  BUS_CPU_A[ 6].set_new(wire((bus_addr >>  6) & 1));
-  BUS_CPU_A[ 7].set_new(wire((bus_addr >>  7) & 1));
-  BUS_CPU_A[ 8].set_new(wire((bus_addr >>  8) & 1));
-  BUS_CPU_A[ 9].set_new(wire((bus_addr >>  9) & 1));
-  BUS_CPU_A[10].set_new(wire((bus_addr >> 10) & 1));
-  BUS_CPU_A[11].set_new(wire((bus_addr >> 11) & 1));
-  BUS_CPU_A[12].set_new(wire((bus_addr >> 12) & 1));
-  BUS_CPU_A[13].set_new(wire((bus_addr >> 13) & 1));
-  BUS_CPU_A[14].set_new(wire((bus_addr >> 14) & 1));
-  BUS_CPU_A[15].set_new(wire((bus_addr >> 15) & 1));
-
-  wire bus_oe = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req.write;
-  BUS_CPU_D[0].set_new(wire(!bus_oe || (bus_req.data_lo >> 0) & 1));
-  BUS_CPU_D[1].set_new(wire(!bus_oe || (bus_req.data_lo >> 1) & 1));
-  BUS_CPU_D[2].set_new(wire(!bus_oe || (bus_req.data_lo >> 2) & 1));
-  BUS_CPU_D[3].set_new(wire(!bus_oe || (bus_req.data_lo >> 3) & 1));
-  BUS_CPU_D[4].set_new(wire(!bus_oe || (bus_req.data_lo >> 4) & 1));
-  BUS_CPU_D[5].set_new(wire(!bus_oe || (bus_req.data_lo >> 5) & 1));
-  BUS_CPU_D[6].set_new(wire(!bus_oe || (bus_req.data_lo >> 6) & 1));
-  BUS_CPU_D[7].set_new(wire(!bus_oe || (bus_req.data_lo >> 7) & 1));
-
-  BUS_CPU_D_out[0].reset(REG_D1C0);
-  BUS_CPU_D_out[1].reset(REG_D1C0);
-  BUS_CPU_D_out[2].reset(REG_D1C0);
-  BUS_CPU_D_out[3].reset(REG_D1C0);
-  BUS_CPU_D_out[4].reset(REG_D1C0);
-  BUS_CPU_D_out[5].reset(REG_D1C0);
-  BUS_CPU_D_out[6].reset(REG_D1C0);
-  BUS_CPU_D_out[7].reset(REG_D1C0);
-
-  PIN_CPU_RDp.setp(DELTA_HA ? 0 : bus_req.read);
-  PIN_CPU_WRp.setp(DELTA_HA ? 0 : bus_req.write);
+  PIN_CPU_RDp.set_new(DELTA_HA ? 0 : bus_req_new.read);
+  PIN_CPU_WRp.set_new(DELTA_HA ? 0 : bus_req_new.write);
 
   // not at all certain about this. seems to break some oam read glitches.
-  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req.read && (bus_req.addr < 0xFF00))) {
-    PIN_CPU_LATCH_EXT.setp(1);
+  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {
+    PIN_CPU_LATCH_EXT.set_new(1);
   }
   else {
-    PIN_CPU_LATCH_EXT.setp(0);
+    PIN_CPU_LATCH_EXT.set_new(0);
   }
 
-  PIN_CPU_6.setp(0);
+  PIN_CPU_6.set_new(0);
 
-  bool addr_ext = (PIN_CPU_RDp.qp_new() || PIN_CPU_WRp.qp_new()) && (bus_addr < 0xFE00);
-  if (bus_addr <= 0x00FF && !BOOT_BITn_h.qp_old()) addr_ext = false;
-  PIN_CPU_EXT_BUSp.setp(addr_ext);
-
+  uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
+  bool addr_ext_new = (PIN_CPU_RDp.qp_new() || PIN_CPU_WRp.qp_new()) && (bus_addr_new < 0xFE00);
+  if (bus_addr_new <= 0x00FF && !BOOT_BITn_h.qp_old()) addr_ext_new = false;
+  PIN_CPU_EXT_BUSp.set_new(addr_ext_new);
 
 #if 0
   if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
@@ -90,9 +90,9 @@ void GateBoyCpuBus::tock(
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  PIN_CPU_ADDR_HIp.setp(SYRO_FE00_FFFF());
-  PIN_CPU_UNOR_DBG.setp(rst.UNOR_MODE_DBG2p());
-  PIN_CPU_UMUT_DBG.setp(rst.UMUT_MODE_DBG1p());
+  PIN_CPU_ADDR_HIp.set_new(SYRO_FE00_FFFF());
+  PIN_CPU_UNOR_DBG.set_new(rst.UNOR_MODE_DBG2p());
+  PIN_CPU_UMUT_DBG.set_new(rst.UMUT_MODE_DBG1p());
 
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_EXT_RDn.qn_new()*/ 0, PIN_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);

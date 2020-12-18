@@ -5,8 +5,8 @@
 
 #pragma pack(push, 1)
 struct MetroBoyCPU {
-  void reset_boot();
-  void reset_app();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   void dump(Dumper& d) const;
 

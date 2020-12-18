@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyOamBus {
-  void reset_app() {
+  void reset_to_cart() {
     BUS_OAM_An[0].reset(REG_D1C0);
     BUS_OAM_An[1].reset(REG_D1C0);
     BUS_OAM_An[2].reset(REG_D1C0);
@@ -16,20 +16,22 @@ struct GateBoyOamBus {
     BUS_OAM_An[6].reset(REG_D0C0);
     BUS_OAM_An[7].reset(REG_D1C0);
 
-    oam_latch_a.reset_app();
-    oam_latch_b.reset_app();
-    oam_temp_a.reset_app();
-    oam_temp_b.reset_app();
+    oam_latch_a.reset_to_cart();
+    oam_latch_b.reset_to_cart();
+    oam_temp_a.reset_to_cart();
+    oam_temp_b.reset_to_cart();
   }
 
   void latch_bus(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XOCE_xBCxxFGx, wire XUJA_SPR_OAM_LATCHn);
   void latch_to_cpu(GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XYMU_RENDERINGp);
-  void latch_to_temp(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
+  void latch_to_temp_a(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
+  void latch_to_temp_b(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void ext_to_data_bus (const GateBoyDMA& dma, PinIO PIN_EXT_D[8]);
-  void vram_to_data_bus(const GateBoyDMA& dma, BusIO BUS_VRAM_Dp[8]);
+  void vram_to_data_bus(const GateBoyDMA& dma, Bus BUS_VRAM_Dp[8]);
   void dma_to_addr_bus(GateBoyDMA& dma);
-  void sprite_index_to_addr_bus(GateBoyDMA& dma, BusIO SPR_TRI_I[6], wire XYMU_RENDERINGp);
+  void sprite_index_to_addr_bus(GateBoyDMA& dma, Bus SPR_TRI_I[6], wire XYMU_RENDERINGp);
   void scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp);
+  void cpu_to_addr_bus(GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
   void cpu_to_data_bus(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
   void set_pin_clk(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XUJY_OAM_CLKENp);
   void set_pin_wr (GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
@@ -60,9 +62,9 @@ struct GateBoyOamBus {
   /*p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;       // AxxxExxx
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;   // AxxxExxx
 
-  BusOut BUS_OAM_An[8];  // ABCDEFGH
-  BusIO  BUS_OAM_DAn[8];
-  BusIO  BUS_OAM_DBn[8];
+  Bus BUS_OAM_An[8];  // ABCDEFGH
+  Bus  BUS_OAM_DAn[8];
+  Bus  BUS_OAM_DBn[8];
   PinOut PIN_OAM_CLKn;   // ABCDEFGH
   PinOut PIN_OAM_WRn_A;  // AxxxExxH
   PinOut PIN_OAM_WRn_B;  // AxxxExxH

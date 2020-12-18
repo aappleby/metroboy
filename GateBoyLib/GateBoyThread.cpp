@@ -9,20 +9,20 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoyThread::reset_boot() {
+void GateBoyThread::reset_to_bootrom() {
   gb.reset_states();
-  gb->reset_boot(true);
+  gb->reset_to_bootrom(true);
 }
 
-void GateBoyThread::reset_app() {
+void GateBoyThread::reset_to_cart() {
   gb.reset_states();
-  gb->reset_app();
+  gb->reset_to_cart();
 }
 
-void GateBoyThread::set_cart(const blob& _boot, const blob& _cart) {
+void GateBoyThread::load_cart(const blob& _boot, const blob& _cart) {
   boot = _boot;
   cart = _cart;
-  gb->set_cart(boot.data(), boot.size(), cart.data(), cart.size());
+  gb->load_cart(boot.data(), boot.size(), cart.data(), cart.size());
 }
 
 //------------------------------------------------------------------------------

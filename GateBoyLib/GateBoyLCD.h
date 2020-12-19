@@ -8,43 +8,54 @@
 struct GateBoyLCD {
 
   void reset_to_cart() {
-    CATU_LINE_P000p.reset(REG_D0C1);
-    ANEL_LINE_P002p.reset(REG_D0C0);
-    POPU_VBLANKp.reset(REG_D1C0);
-    SYGU_LINE_STROBE.reset(REG_D0C1);
-    MEDA_VSYNC_OUTn.reset(REG_D1C1);
-    LUCA_LINE_EVENp.reset(REG_D1C1);
-    NAPO_FRAME_EVENp.reset(REG_D0C1);
-    RUJU.reset(REG_D1C0);
-    POFY.reset(REG_D0C0);
-    POME.reset(REG_D1C0);
-    PAHO_X_8_SYNC.reset(REG_D0C1);
-    WUSA_LCD_CLOCK_GATE.reset(REG_D0C0);
+    CATU_LINE_P000p.reset_to_cart(REG_D0C1);
+    ANEL_LINE_P002p.reset_to_cart(REG_D0C0);
+    POPU_VBLANKp.reset_to_cart(REG_D1C0);
+    SYGU_LINE_STROBE.reset_to_cart(REG_D0C1);
+    MEDA_VSYNC_OUTn.reset_to_cart(REG_D1C1);
+    LUCA_LINE_EVENp.reset_to_cart(REG_D1C1);
+    NAPO_FRAME_EVENp.reset_to_cart(REG_D0C1);
+    RUJU.reset_to_cart(REG_D1C0);
+    POFY.reset_to_cart(REG_D0C0);
+    POME.reset_to_cart(REG_D1C0);
+    PAHO_X_8_SYNC.reset_to_cart(REG_D0C1);
+    WUSA_LCD_CLOCK_GATE.reset_to_cart(REG_D0C0);
 
-    PIN_LCD_DATA1.reset(REG_D0C0);
-    PIN_LCD_DATA0.reset(REG_D0C0);
-    PIN_LCD_HSYNC.reset(REG_D0C0);
-    PIN_LCD_FLIPS.reset(REG_D0C0);
-    PIN_LCD_CNTRL.reset(REG_D0C0);
-    PIN_LCD_LATCH.reset(REG_D0C0);
-    PIN_LCD_CLOCK.reset(REG_D0C0);
-    PIN_LCD_VSYNC.reset(REG_D1C0);
+    PIN_LCD_DATA1.reset_to_cart(REG_D0C0);
+    PIN_LCD_DATA0.reset_to_cart(REG_D0C0);
+    PIN_LCD_HSYNC.reset_to_cart(REG_D0C0);
+    PIN_LCD_FLIPS.reset_to_cart(REG_D0C0);
+    PIN_LCD_CNTRL.reset_to_cart(REG_D0C0);
+    PIN_LCD_LATCH.reset_to_cart(REG_D0C0);
+    PIN_LCD_CLOCK.reset_to_cart(REG_D0C0);
+    PIN_LCD_VSYNC.reset_to_cart(REG_D1C0);
 
-    lcd_pix_lo.reset(REG_D0C0);
-    lcd_pix_hi.reset(REG_D0C0);
+    lcd_pix_lo.reset_to_cart(REG_D0C0);
+    lcd_pix_hi.reset_to_cart(REG_D0C0);
     memset(lcd_pipe_lo, 0x02, sizeof(lcd_pipe_lo));
     memset(lcd_pipe_hi, 0x02, sizeof(lcd_pipe_hi));
   }
 
-  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp() const;
-  /* p27.XAHY*/ wire XAHY_LINE_RSTn() const { return not1(ATEJ_LINE_RSTp()); }
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn() const { return nor2(ATEJ_LINE_RSTp(), ATAR_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp() const { return  or2(ATEJ_LINE_RSTp(), AMYG_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
-  /*#p29.BALU*/ wire BALU_LINE_RSTp() const { return not1(ANOM_LINE_RSTn()); }
-  /* p28.BYVA*/ wire BYVA_LINE_RSTn() const { return not1(ABAK_LINE_RSTp()); }
-  /* p29.DYBA*/ wire DYBA_LINE_RSTp() const { return not1(BYVA_LINE_RSTn()); }
-  /*#p29.BAGY*/ wire BAGY_LINE_RSTn() const { return not1(BALU_LINE_RSTp()); }
-  /* p21.TADY*/ wire TADY_LINE_RSTn() const { return nor2(ATEJ_LINE_RSTp(), TOFU_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
+  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_old() const;
+  /* p27.XAHY*/ wire XAHY_LINE_RSTn_old() const { return not1(ATEJ_LINE_RSTp_old()); }
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp(_XODO_VID_RSTp.qp_old())); }
+  /* p28.ABAK*/ wire ABAK_LINE_RSTp_old() const { return  or2(ATEJ_LINE_RSTp_old(), AMYG_VID_RSTp(_XODO_VID_RSTp.qp_old())); }
+  /*#p29.BALU*/ wire BALU_LINE_RSTp_old() const { return not1(ANOM_LINE_RSTn_old()); }
+  /* p28.BYVA*/ wire BYVA_LINE_RSTn_old() const { return not1(ABAK_LINE_RSTp_old()); }
+  /* p29.DYBA*/ wire DYBA_LINE_RSTp_old() const { return not1(BYVA_LINE_RSTn_old()); }
+  /*#p29.BAGY*/ wire BAGY_LINE_RSTn_old() const { return not1(BALU_LINE_RSTp_old()); }
+  /* p21.TADY*/ wire TADY_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), TOFU_VID_RSTp(_XODO_VID_RSTp.qp_old())); }
+
+  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_new() const;
+  /* p27.XAHY*/ wire XAHY_LINE_RSTn_new() const { return not1(ATEJ_LINE_RSTp_new()); }
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), ATAR_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
+  /* p28.ABAK*/ wire ABAK_LINE_RSTp_new() const { return  or2(ATEJ_LINE_RSTp_new(), AMYG_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
+  /*#p29.BALU*/ wire BALU_LINE_RSTp_new() const { return not1(ANOM_LINE_RSTn_new()); }
+  /* p28.BYVA*/ wire BYVA_LINE_RSTn_new() const { return not1(ABAK_LINE_RSTp_new()); }
+  /* p29.DYBA*/ wire DYBA_LINE_RSTp_new() const { return not1(BYVA_LINE_RSTn_new()); }
+  /*#p29.BAGY*/ wire BAGY_LINE_RSTn_new() const { return not1(BALU_LINE_RSTp_new()); }
+  /* p21.TADY*/ wire TADY_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), TOFU_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
+
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(POPU_VBLANKp.qn_new()); }
 
   void tock(

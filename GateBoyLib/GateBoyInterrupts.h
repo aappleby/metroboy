@@ -5,13 +5,17 @@
 
 struct GateBoyInterrupts {
   void reset_to_cart() {
-    LOPE_FF0F_D0p.reset(REG_D1C1);
-    PIN_CPU_INT_VBLANK.reset(REG_D1C0);
+    LOPE_FF0F_D0p.reset_to_cart(REG_D1C1);
+    PIN_CPU_INT_VBLANK.reset_to_cart(REG_D1C0);
   }
 
+  void read_intf(GateBoyCpuBus& cpu_bus);
+  void write_intf_async(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
+  void read_ie(GateBoyCpuBus& cpu_bus);
+  void write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
   void tock(
-    const GateBoyResetDebug& rst,
-      GateBoyCpuBus& cpu_bus,
     const GateBoyJoypad& joypad,
     const RegStat& reg_stat,
     const RegLYC& reg_lyc,
@@ -53,6 +57,7 @@ struct GateBoyInterrupts {
   /*p02.MOPO*/ TpLatch MOPO_FF0F_L1p;
   /*p02.PAVY*/ TpLatch PAVY_FF0F_L2p;
 
+  // This is technically in the CPU, but we're going to implement it here for now.
   DFF IE_D0;
   DFF IE_D1;
   DFF IE_D2;

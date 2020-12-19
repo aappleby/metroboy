@@ -2,7 +2,7 @@
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
-void MetroBoyJoypad::reset() {
+void MetroBoyJoypad::reset_to_cart() {
   val = 0xFF;
   p1 = 0xCF; // FF00
 }
@@ -18,7 +18,7 @@ void MetroBoyJoypad::tick(int phase_total, const Req& req, Ack& ack) const {
 }
 
 void MetroBoyJoypad::tock(int phase_total, const Req& req) {
-  if (DELTA_GH && req.write && req.addr == ADDR_P1) {
+  if (DELTA_GH && req.write_sync && req.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (req.data_lo & 0x30);
     switch (p1 & 0x30) {
     case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;

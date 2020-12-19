@@ -24,7 +24,7 @@ void MetroBoyCart::set_rom(uint8_t* new_rom, size_t new_rom_size) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCart::reset() {
+void MetroBoyCart::reset_to_cart() {
   ram_enable = false;
   mode = 0;
   bank_latch1 = 0;
@@ -128,7 +128,7 @@ void MetroBoyCart::tock(int phase_total, const Req& req) {
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
-  if (DELTA_GH && req.write) {
+  if (DELTA_GH && req.write_sync) {
     if (region == 0) {
       // cart_rom
       ram_enable = (req.data_lo & 0x0F) == 0x0A;

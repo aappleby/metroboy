@@ -5,7 +5,7 @@
 
 struct MetroBoyOAM {
 
-  void reset();
+  void reset_to_cart();
   void tock(int phase_total, const Req& req);
   void tick(int phase_total, const Req& req, Ack& ack) const;
 

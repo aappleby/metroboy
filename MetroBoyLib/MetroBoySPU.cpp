@@ -6,7 +6,7 @@ const char* byte_to_bits(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-void MetroBoySPU::reset() {
+void MetroBoySPU::reset_to_cart() {
   *this = {0};
 
   nr10 = 0x80;
@@ -47,7 +47,7 @@ void MetroBoySPU::tick(int phase_total, const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void MetroBoySPU::tock(int phase_total, const Req& req) {
-  if (DELTA_GH && req.write) bus_write(req);
+  if (DELTA_GH && req.write_sync) bus_write(req);
 
   if (!DELTA_HA) return;
 
@@ -376,7 +376,7 @@ void MetroBoySPU::bus_write(const Req& req) {
   if (!sound_on) {
     if (req.addr == 0xFF26) {
       nr52 = (uint8_t)req.data_lo | 0b01110000;
-      if (nr52 & 0x80) reset();
+      if (nr52 & 0x80) reset_to_cart();
     }
     return;
   }

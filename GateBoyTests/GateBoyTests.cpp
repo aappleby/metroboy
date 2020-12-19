@@ -1741,7 +1741,7 @@ void GateBoyTests::run_benchmark() {
     gb.bus_req_new.addr = 0x0150;
     gb.bus_req_new.data = 0;
     gb.bus_req_new.read = 1;
-    gb.bus_req_new.write = 0;
+    gb.bus_req_new.write_sync = 0;
     gb.sys_cpu_en = false;
     gb.phase_total = 0;
 

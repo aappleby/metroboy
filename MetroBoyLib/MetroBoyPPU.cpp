@@ -211,7 +211,7 @@ bool MetroBoyPPU::read(uint16_t addr, uint8_t& out) {
 
 //-----------------------------------------------------------------------------
 
-bool MetroBoyPPU::write(uint16_t addr, uint8_t data) {
+bool MetroBoyPPU::write_sync(uint16_t addr, uint8_t data) {
   switch (addr) {
   case ADDR_LCDC: reg_lcdc = data; return true;
   case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); return true;
@@ -287,8 +287,8 @@ void MetroBoyPPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, 
   // interrupt glitch - oam stat fires on vblank
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-  if (DELTA_GH && req.write) {
-    write(req.addr, req.data_lo);
+  if (DELTA_GH && req.write_sync) {
+    write_sync(req.addr, req.data_lo);
   }
 
 #if 0

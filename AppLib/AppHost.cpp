@@ -116,7 +116,7 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // Initialize internal renderers
 
-  view_raw = view_raw.reset(initial_screen_w, initial_screen_h);
+  view_raw = view_raw.reset_to_cart(initial_screen_w, initial_screen_h);
   view_smooth = view_raw;
   view_snap = view_raw;
 
@@ -235,7 +235,7 @@ int AppHost::app_main(int, char**) {
       switch (event.type) {
       case SDL_KEYDOWN: {
         if (event.key.keysym.sym == SDLK_ESCAPE) {
-          view_raw = view_raw.reset(screen_w, screen_h);
+          view_raw = view_raw.reset_to_cart(screen_w, screen_h);
           if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
         }
         break;

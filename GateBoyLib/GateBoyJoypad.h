@@ -6,7 +6,7 @@
 struct GateBoyJoypad {
 
   void read(GateBoyCpuBus& cpu_bus);
-  void write(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
   void tock2(GateBoyResetDebug& rst, GateBoyClock& clk);
 
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new(), BATU_JP_GLITCH0.qp_new()); }

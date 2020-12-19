@@ -4,16 +4,16 @@
 #include "GateBoyLib/GateBoyClocks.h"
 
 void SpriteFetcher::reset_to_cart() {
-  TAKA_SFETCH_RUNNINGp.reset(REG_D0C0);
-  SOBU_SFETCH_REQp.reset(REG_D0C0);
-  SUDA_SFETCH_REQp.reset(REG_D0C1);
-  TOXE_SFETCH_S0p.reset(REG_D1C1);
-  TULY_SFETCH_S1p.reset(REG_D0C0);
-  TESE_SFETCH_S2p.reset(REG_D1C1);
-  TYFO_SFETCH_S0p_D1.reset(REG_D1C1);
-  TOBU_SFETCH_S1p_D2.reset(REG_D0C0);
-  VONU_SFETCH_S1p_D4.reset(REG_D0C0);
-  SEBA_SFETCH_S1p_D5.reset(REG_D0C1);
+  TAKA_SFETCH_RUNNINGp.reset_to_cart(REG_D0C0);
+  SOBU_SFETCH_REQp.reset_to_cart(REG_D0C0);
+  SUDA_SFETCH_REQp.reset_to_cart(REG_D0C1);
+  TOXE_SFETCH_S0p.reset_to_cart(REG_D1C1);
+  TULY_SFETCH_S1p.reset_to_cart(REG_D0C0);
+  TESE_SFETCH_S2p.reset_to_cart(REG_D1C1);
+  TYFO_SFETCH_S0p_D1.reset_to_cart(REG_D1C1);
+  TOBU_SFETCH_S1p_D2.reset_to_cart(REG_D0C0);
+  VONU_SFETCH_S1p_D4.reset_to_cart(REG_D0C0);
+  SEBA_SFETCH_S1p_D5.reset_to_cart(REG_D0C1);
 }
 
 void SpriteFetcher::tock(
@@ -39,15 +39,14 @@ void SpriteFetcher::tock(
   /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp_new(), SUDA_SFETCH_REQp.qn_new());
   /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, rst.ROSY_VID_RSTp(), ATEJ_LINE_RSTp);
 
-  /*#p29.TOXE*/ TOXE_SFETCH_S0p.RSTn(_SECA_SFETCH_RSTn);
-  /*#p29.TULY*/ TULY_SFETCH_S1p.RSTn(_SECA_SFETCH_RSTn);
-  /*#p29.TESE*/ TESE_SFETCH_S2p.RSTn(_SECA_SFETCH_RSTn);
-
-  /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand2(TESE_SFETCH_S2p.qp_new(), TOXE_SFETCH_S0p.qp_new());
-  /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_= nand2(clk.LAPE_AxCxExGx(), _TAME_SFETCH_CLK_GATE);
-  /*#p29.TOXE*/ TOXE_SFETCH_S0p.dff17(_TOMA_SFETCH_xBxDxFxH_,   _SECA_SFETCH_RSTn, TOXE_SFETCH_S0p.qn_new());
-  /*#p29.TULY*/ TULY_SFETCH_S1p.dff17(TOXE_SFETCH_S0p.qn_new(), _SECA_SFETCH_RSTn, TULY_SFETCH_S1p.qn_new());
-  /*#p29.TESE*/ TESE_SFETCH_S2p.dff17(TULY_SFETCH_S1p.qn_new(), _SECA_SFETCH_RSTn, TESE_SFETCH_S2p.qn_new());
+  // Feedback loop
+  for (int feedback = 0; feedback < 2; feedback++) {
+    /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand2(TESE_SFETCH_S2p.qp_any(), TOXE_SFETCH_S0p.qp_any());
+    /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_= nand2(clk.LAPE_AxCxExGx(), _TAME_SFETCH_CLK_GATE);
+    /*#p29.TOXE*/ TOXE_SFETCH_S0p.dff17_any(_TOMA_SFETCH_xBxDxFxH_,   _SECA_SFETCH_RSTn, TOXE_SFETCH_S0p.qn_any());
+    /*#p29.TULY*/ TULY_SFETCH_S1p.dff17_any(TOXE_SFETCH_S0p.qn_any(), _SECA_SFETCH_RSTn, TULY_SFETCH_S1p.qn_any());
+    /*#p29.TESE*/ TESE_SFETCH_S2p.dff17_any(TULY_SFETCH_S1p.qn_any(), _SECA_SFETCH_RSTn, TESE_SFETCH_S2p.qn_any());
+  }
 
   /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn);

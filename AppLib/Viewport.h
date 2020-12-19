@@ -31,7 +31,7 @@ struct Viewport {
   Viewport pan(dvec2 delta);
   Viewport snap();
   Viewport ease(Viewport target, double delta);
-  Viewport reset(int screen_w, int screen_h) {
+  Viewport reset_to_cart(int screen_w, int screen_h) {
     return {
       {0,0},
       {screen_w, screen_h},

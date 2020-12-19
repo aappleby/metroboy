@@ -5,7 +5,10 @@
 
 struct GateBoyDMA {
 
+  void write_dma_sync(GateBoyCpuBus& cpu_bus);
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
+  void read_dma(GateBoyCpuBus& cpu_bus);
+
   /* p04.LUMA*/ wire LUMA_DMA_CARTp() const;
   /* p04.LUFA*/ wire LUFA_DMA_VRAMp() const;
 
@@ -13,7 +16,7 @@ struct GateBoyDMA {
   /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
 
   void dump(Dumper& d) {
-    d("DMA Addr 0x%02x:%02x\n", pack_u8n(8, &NAFA_DMA_A08n), pack_u8p(8, &NAKY_DMA_A00p));
+    d("DMA Addr 0x%02x:%02x\n", BitBase::pack_oldn(8, &NAFA_DMA_A08n), BitBase::pack_old(8, &NAKY_DMA_A00p));
     d("\n");
     d.dump_bitp("MATU_DMA_RUNNINGp", MATU_DMA_RUNNINGp.state);
     d.dump_bitp("LYXE_DMA_LATCHp  ", LYXE_DMA_LATCHp  .state);

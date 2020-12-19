@@ -5,8 +5,6 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyClocks.h"
 
-#include "GateBoyLib/GateBoySpriteFetcher.h"
-#include "GateBoyLib/GateBoyTileFetcher.h"
 #include "GateBoyLib/GateBoyVramBus.h"
 #include "GateBoyLib/GateBoyOamBus.h"
 
@@ -129,14 +127,14 @@ void PixelPipes::tock_bgw_pipe(
 //------------------------------------------------------------------------------------------------------------------------
 
 void PixelPipes::tock_sprite_pipe(
-  SpriteFetcher& sprite_fetcher,
   SpritePixA& sprite_pix_a,
   SpritePixB& sprite_pix_b,
+  wire WUTY_SFETCH_DONE_TRIGp,
   wire SACU_CLKPIPE_evn)
 {
   wire GND = 0;
 
-  /* p29.XEFY*/ wire _XEPY_SPRITE_DONEn  = not1(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp());
+  /* p29.XEFY*/ wire _XEPY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp);
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEPY_SPRITE_DONEn, NYLU_SPR_PIPE_B0.qp_old(), NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEPY_SPRITE_DONEn, PEFU_SPR_PIPE_B1.qp_old(), MASO_SPR_PIPE_A1.qp_old());
   /* p34.MYZO*/ wire _MYZO_SPRITE_MASK2n = or3(_XEPY_SPRITE_DONEn, NATY_SPR_PIPE_B2.qp_old(), LEFE_SPR_PIPE_A2.qp_old());
@@ -236,10 +234,14 @@ void PixelPipes::tock_sprite_pipe(
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void PixelPipes::tock_mask_pipe(SpriteFetcher& sprite_fetcher, OamTempB& oam_temp_b, wire SACU_CLKPIPE_evn) {
+void PixelPipes::tock_mask_pipe(
+  OamTempB& oam_temp_b,
+  wire WUTY_SFETCH_DONE_TRIGp,
+  wire SACU_CLKPIPE_evn)
+{
   wire _VYPO_VCC = 1;
 
-  /* p29.XEFY*/ wire _XEPY_SPRITE_DONEn  = not1(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp());
+  /* p29.XEFY*/ wire _XEPY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp);
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEPY_SPRITE_DONEn, NYLU_SPR_PIPE_B0.qp_old(), NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEPY_SPRITE_DONEn, PEFU_SPR_PIPE_B1.qp_old(), MASO_SPR_PIPE_A1.qp_old());
   /* p34.MYZO*/ wire _MYZO_SPRITE_MASK2n = or3(_XEPY_SPRITE_DONEn, NATY_SPR_PIPE_B2.qp_old(), LEFE_SPR_PIPE_A2.qp_old());
@@ -300,13 +302,13 @@ void PixelPipes::tock_mask_pipe(SpriteFetcher& sprite_fetcher, OamTempB& oam_tem
 //------------------------------------------------------------------------------------------------------------------------
 
 void PixelPipes::tock_pal_pipe(
-  SpriteFetcher& sprite_fetcher,
   OamTempB& oam_temp_b,
+  wire WUTY_SFETCH_DONE_TRIGp,
   wire SACU_CLKPIPE_evn)
 {
   wire GND = 0;
 
-  /* p29.XEFY*/ wire _XEPY_SPRITE_DONEn  = not1(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp());
+  /* p29.XEFY*/ wire _XEPY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp);
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEPY_SPRITE_DONEn, NYLU_SPR_PIPE_B0.qp_old(), NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEPY_SPRITE_DONEn, PEFU_SPR_PIPE_B1.qp_old(), MASO_SPR_PIPE_A1.qp_old());
   /* p34.MYZO*/ wire _MYZO_SPRITE_MASK2n = or3(_XEPY_SPRITE_DONEn, NATY_SPR_PIPE_B2.qp_old(), LEFE_SPR_PIPE_A2.qp_old());

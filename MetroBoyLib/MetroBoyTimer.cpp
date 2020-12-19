@@ -8,7 +8,7 @@ static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyTimer::reset() {
+void MetroBoyTimer::reset_to_cart() {
   div  = 0xEAF2;
   tima = 0;
   tma  = 0;
@@ -45,7 +45,7 @@ void MetroBoyTimer::tock(int phase_total, const Req& req) {
     update_tima();
   }
 
-  if (DELTA_FG && req.write) {
+  if (DELTA_FG && req.write_sync) {
     switch(req.addr) {
     case ADDR_DIV:  div  = 0; break;
     case ADDR_TIMA: tima = req.data_lo; tima_7_sync = false; break;

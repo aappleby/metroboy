@@ -7,10 +7,10 @@
 thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
-  reset();
+  reset_to_cart();
 }
 
-void Probes::reset() {
+void Probes::reset_to_cart() {
   pass_cursor = 0;
 
   for (int i = 0; i < channel_count; i++) {

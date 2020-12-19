@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct MetroBoyTimer {
-  void reset();
+  void reset_to_cart();
 
   void tick(int phase_total, const Req& req, Ack& ack);
   void tock(int phase_total, const Req& req);

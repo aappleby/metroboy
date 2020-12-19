@@ -62,7 +62,8 @@ struct SpriteStore {
   void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
 
   SpriteStoreFlag  get_store_flags(wire _DYTY_STORE_CLKp_new_odd);
-  SpriteMatchFlag  get_match_flags(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count);
+  SpriteMatchFlag  get_match_flags_old(wire _AROR_MATCH_ENp_old, const PixCount& _pix_count_old);
+  SpriteMatchFlag  get_match_flags_new(wire _AROR_MATCH_ENp, const PixCount& _pix_count);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
 
   void get_sprite(SpriteFirstMatch first_match, Bus SPR_TRI_I[6], Bus SPR_TRI_L[4]);
@@ -72,8 +73,8 @@ struct SpriteStore {
   void store_sprite_line (SpriteStoreFlag store_flag, Bus SPR_TRI_L[4]);
   void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b);
 
-  void get_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]);
-  void get_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus SPR_TRI_L[4]);
+  void oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]);
+  void ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus SPR_TRI_L[4]);
 
   void dump(Dumper& d);
 

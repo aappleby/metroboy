@@ -15,8 +15,26 @@ inline uint64_t commit_and_hash(T& obj) {
 //-----------------------------------------------------------------------------
 
 struct BitBase {
-  void reset(uint8_t s) { state = s; }
+  void reset_to_cart(uint8_t s) { state = s; }
   uint8_t state = 0;
+
+  wire qp_any() const { return  bit_data_new(); }
+  wire qn_any() const { return !bit_data_new(); }
+
+  inline static uint32_t pack_old(int c, const BitBase* b) {
+    uint32_t r = 0;
+    for (int i = 0; i < c; i++) r |= (b[i].qp_old() << i);
+    return r;
+  }
+
+  inline static uint32_t pack_new(int c, const BitBase* b) {
+    uint32_t r = 0;
+    for (int i = 0; i < c; i++) r |= (b[i].qp_new() << i);
+    return r;
+  }
+
+  inline static uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
+  inline static uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
 protected:
 
@@ -29,10 +47,12 @@ protected:
   void set_data_new (wire d) { state = (state & 0b11111110) | (d << 0); }
   void set_clock    (wire d) { state = (state & 0b11111101) | (d << 1); }
   void set_data_old (wire d) { state = (state & 0b11111011) | (d << 2); }
+  void set_lock     (wire d) { state = (state & 0b11110111) | (d << 3); }
 
   wire bit_data_new () const { return state & 0b00000001; }
   wire bit_clock    () const { return state & 0b00000010; }
   wire bit_data_old () const { return state & 0b00000100; }
+  wire bit_locked   () const { return state & 0b00001000; }
 
   void set_dirty1() { state |= 0b00010000; }
   void set_dirty2() { state |= 0b00100000; }
@@ -103,10 +123,10 @@ struct DFF : public BitBase {
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  void dff_clk(wire CLKp, wire Dp) {
-    CHECK_N(bit_dirty1());
-    CHECK_N(bit_dirty2());
+  wire qp_mid() const { CHECK_P(bit_dirty1()); return  bit_data_new(); }
+  wire qn_mid() const { CHECK_P(bit_dirty1()); return !bit_data_new(); }
 
+  void dff_clk_any(wire CLKp, wire Dp) {
     if (!bit_clock() && CLKp) set_data_new(Dp);
     set_clock(CLKp);
     set_dirty1();
@@ -115,10 +135,7 @@ struct DFF : public BitBase {
     set_dirty4();
   }
 
-  void dff_rst(wire SETn, wire RSTn) {
-    CHECK_P(bit_dirty1());
-    CHECK_N(bit_dirty2());
-
+  void dff_rst_any(wire SETn, wire RSTn) {
     set_data_new((bit_data_new() || !SETn) && RSTn);
     set_dirty2();
 
@@ -126,9 +143,27 @@ struct DFF : public BitBase {
     set_dirty4();
   }
 
+
+  void dff_clk(wire CLKp, wire Dp) {
+    CHECK_N(bit_dirty1());
+    CHECK_N(bit_dirty2());
+    dff_clk_any(CLKp, Dp);
+  }
+
+  void dff_rst(wire SETn, wire RSTn) {
+    CHECK_P(bit_dirty1());
+    CHECK_N(bit_dirty2());
+    dff_rst_any(SETn, RSTn);
+  }
+
   void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     dff_clk(CLKp, Dp);
     dff_rst(SETn, RSTn);
+  }
+
+  void dff_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+    dff_clk_any(CLKp, Dp);
+    dff_rst_any(SETn, RSTn);
   }
 };
 
@@ -182,6 +217,9 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
+  void dff9_set(wire SETn) { dff_rst(SETn, 1); }
+  void dff9_clk(wire CLKp, wire Dn) { dff_clk(CLKp, !Dn); }
+
   void dff9(wire CLKp, wire SETn, wire Dn) { dff(CLKp, SETn, 1, !Dn); }
 };
 
@@ -252,6 +290,10 @@ struct DFF17 : public DFF {
   void dff17(wire CLKp, wire RSTn, wire Dp) { dff(CLKp, 1, RSTn, Dp); }
   void dff17_clk(wire CLKp, wire Dp)        { dff_clk(CLKp, Dp); }
   void dff17_rst(wire RSTn)                 { dff_rst(1, RSTn); }
+
+  void dff17_rst_any(wire RSTn)             { dff_rst_any(1, RSTn); }
+
+  void dff17_any(wire CLKp, wire RSTn, wire Dp) { dff_any(CLKp, 1, RSTn, Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -280,6 +322,9 @@ struct DFF17 : public DFF {
 
 struct DFF20 : public DFF {
   void dff20(wire CLKn, wire LOADp, wire newD) { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data_old()); }
+
+  void dff20_clk (wire CLKn)             { dff_clk(!CLKn, !bit_data_old()); }
+  void dff20_load(wire LOADp, wire newD) { dff_rst(!(LOADp && newD), !(LOADp && !newD)); }
 };
 
 //-----------------------------------------------------------------------------
@@ -312,6 +357,9 @@ struct DFF20 : public DFF {
 
 struct DFF22 : public DFF {
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) { dff(CLKp, SETn, RSTn, Dp); }
+
+  void dff22_clk(wire CLKp, wire Dp)   { dff_clk(CLKp, Dp); }
+  void dff22_rst(wire SETn, wire RSTn) { dff_rst(SETn, RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -332,32 +380,40 @@ struct DFF22 : public DFF {
 // tri6_pn : top rung tadpole facing second rung dot.
 
 struct Bus : public BitBase {
-  using BitBase::qp_old;
-  using BitBase::qp_new;
+  Bus() { reset(); }
 
-  Bus() { state = 1; }
-  void reset(uint8_t s) { state = s; }
+  void reset() {
+    state = 0;
+    set_data_old(1);
+    set_data_new(1);
+  }
 
-  // dirty1 = touched
-  // dirty2 = driven
-  // dirty3 = locked
-  // dirty4 = locked
+  void reset_to_cart(wire Dp) {
+    set_data_old(Dp);
+    set_data_new(Dp);
+    set_lock(1);
+  }
+
+  wire qp_any() const { return BitBase::qp_any(); }
+  wire qn_any() const { return BitBase::qn_any(); }
+
+  wire qp_old() const { return BitBase::qp_old(); }
+  wire qn_old() const { return BitBase::qn_old(); }
+
+  wire qp_new() const { return BitBase::qp_new(); }
+  wire qn_new() const { return BitBase::qn_new(); }
 
   void tri(wire OEp, wire Dp) {
-    // Must not be locked.
-    CHECK_N(bit_dirty3());
-
-    // First touch, reset state.
-    if (!bit_dirty1()) { state = 1; set_dirty1(); }
+    CHECK_N(bit_locked());
 
     if (OEp) {
       set_data_new(Dp);
-      set_dirty2();
     }
+    set_dirty1();
+    set_dirty2();
+    set_dirty3();
+    set_dirty4();
   }
-
-
-  void lock() { set_dirty3(); set_dirty4(); }
 
   void set(wire Dp) { tri(1, Dp); }
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !Dn); }
@@ -375,37 +431,34 @@ struct PinIO : public BitBase {
   using BitBase::qn_new;
 
   // dirty1 = touched
-  // dirty2 = driven
+  // dirty2 = touched
   // dirty3 = pin_in called
   // dirty4 = pin_out called
 
   void pin_in(wire OEp, wire Dp) {
     // First touch, reset state.
-    if (!bit_dirty1()) { state = 1; set_dirty1(); }
+    if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
 
     if (OEp) {
       set_data_new(Dp);
-      set_dirty2();
     }
     set_dirty3();
   }
 
   void pin_out(wire OEp, wire Dp) {
-    if (!bit_dirty1()) { state = 1; set_dirty1(); }
+    if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
 
     if (OEp){
       set_data_new(Dp);
-      set_dirty2();
     }
     set_dirty4();
   }
 
   void pin_out(wire OEp, wire HI, wire LO) {
-    if (!bit_dirty1()) { state = 1; set_dirty1(); }
+    if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
 
     if (OEp && (HI == LO)){
       set_data_new(!HI);
-      set_dirty2();
     }
     set_dirty4();
   }
@@ -511,6 +564,8 @@ struct NorLatch : public BitBase {
     if (RSTp) set_data_new(0);
     set_dirty1();
     set_dirty2();
+    set_dirty3();
+    set_dirty4();
   }
 };
 
@@ -535,6 +590,8 @@ struct NandLatch : public BitBase {
     if (!RSTn) set_data_new(0);
     set_dirty1();
     set_dirty2();
+    set_dirty3();
+    set_dirty4();
   }
 };
 
@@ -565,6 +622,8 @@ struct TpLatch : public BitBase {
     if (HOLDn) set_data_new(D);
     set_dirty1();
     set_dirty2();
+    set_dirty3();
+    set_dirty4();
   }
 };
 
@@ -576,48 +635,6 @@ struct TpLatch : public BitBase {
 
 
 
-
-//-----------------------------------------------------------------------------
-
-inline uint8_t pack_u8p(int c, const void* blob) {
-  const uint8_t* b = (const uint8_t*)blob;
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= (b[i] & 1) << i;
-  }
-  return r;
-}
-
-inline uint8_t pack_u8n(int c, const void* blob) {
-  const uint8_t* b = (const uint8_t*)blob;
-  uint8_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= !(b[i] & 1) << i;
-  }
-  return r;
-}
-
-//-----------------------------------------------------------------------------
-
-inline uint16_t pack_u16p(int c, const void* blob) {
-  const uint8_t* b = (const uint8_t*)blob;
-  uint16_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= (b[i] & 1) << i;
-  }
-  return r;
-}
-
-inline uint16_t pack_u16n(int c, const void* blob) {
-  const uint8_t* b = (const uint8_t*)blob;
-  uint16_t r = 0;
-  for (int i = 0; i < c; i++) {
-    r |= !(b[i] & 1) << i;
-  }
-  return r;
-}
-
-//-----------------------------------------------------------------------------
 
 
 

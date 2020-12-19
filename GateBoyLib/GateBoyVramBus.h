@@ -8,33 +8,33 @@
 struct GateBoyVramBus {
 
   void reset_to_cart() {
-    BUS_VRAM_An[ 0].reset(REG_D1C0);
-    BUS_VRAM_An[ 1].reset(REG_D1C0);
-    BUS_VRAM_An[ 2].reset(REG_D1C0);
-    BUS_VRAM_An[ 3].reset(REG_D1C0);
-    BUS_VRAM_An[ 4].reset(REG_D0C0);
-    BUS_VRAM_An[ 5].reset(REG_D1C0);
-    BUS_VRAM_An[ 6].reset(REG_D0C0);
-    BUS_VRAM_An[ 7].reset(REG_D1C0);
-    BUS_VRAM_An[ 8].reset(REG_D1C0);
-    BUS_VRAM_An[ 9].reset(REG_D1C0);
-    BUS_VRAM_An[10].reset(REG_D1C0);
-    BUS_VRAM_An[11].reset(REG_D1C0);
-    BUS_VRAM_An[12].reset(REG_D1C0);
+    BUS_VRAM_An[ 0].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 1].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 2].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 3].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 4].reset_to_cart(REG_D0C0);
+    BUS_VRAM_An[ 5].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 6].reset_to_cart(REG_D0C0);
+    BUS_VRAM_An[ 7].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 8].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 9].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[10].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[11].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[12].reset_to_cart(REG_D1C0);
 
-    PIN_VRAM_Ap[ 0].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 1].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 2].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 3].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 4].reset(REG_D1C0);
-    PIN_VRAM_Ap[ 5].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 6].reset(REG_D1C0);
-    PIN_VRAM_Ap[ 7].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 8].reset(REG_D0C0);
-    PIN_VRAM_Ap[ 9].reset(REG_D0C0);
-    PIN_VRAM_Ap[10].reset(REG_D0C0);
-    PIN_VRAM_Ap[11].reset(REG_D0C0);
-    PIN_VRAM_Ap[12].reset(REG_D0C0);
+    PIN_VRAM_Ap[ 0].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 1].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 2].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 3].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 4].reset_to_cart(REG_D1C0);
+    PIN_VRAM_Ap[ 5].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 6].reset_to_cart(REG_D1C0);
+    PIN_VRAM_Ap[ 7].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 8].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[ 9].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[10].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[11].reset_to_cart(REG_D0C0);
+    PIN_VRAM_Ap[12].reset_to_cart(REG_D0C0);
   }
 
   void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
@@ -51,7 +51,8 @@ struct GateBoyVramBus {
   void set_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp);
   void set_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wire LUFA_DMA_VRAMp, wire XYMU_RENDERINGp, wire LONY_BFETCHINGp, wire SOHO_SPR_VRAM_RDp);
 
-  void tock_vram(uint8_t* vid_ram);
+  void read_vram(const uint8_t* vid_ram);
+  void write_vram(uint8_t* vid_ram);
 
   void pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
   void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);

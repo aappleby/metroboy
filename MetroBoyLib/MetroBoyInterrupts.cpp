@@ -35,7 +35,7 @@ void MetroBoyInterrupts::tock(int phase_total, const Req& req,
   }
 
   if (DELTA_GH) {
-    if (req.write) {
+    if (req.write_sync) {
       if (req.addr == ADDR_IF) intf  = (uint8_t)req.data | 0b11100000;
       if (req.addr == ADDR_IE) imask = (uint8_t)req.data;
     }

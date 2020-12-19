@@ -10,63 +10,50 @@ struct GateBoyCpuBus;
 
 struct GateBoyDiv {
   void reset_to_cart() {
-    UKUP_DIV00p.reset(REG_D1C1);
-    UFOR_DIV01p.reset(REG_D1C0);
-    UNER_DIV02p.reset(REG_D0C0);
-    TERO_DIV03p.reset(REG_D0C1);
-    UNYK_DIV04p.reset(REG_D1C1);
-    TAMA_DIV05p.reset(REG_D1C0);
-    UGOT_DIV06p.reset(REG_D1C0);
-    TULU_DIV07p.reset(REG_D1C0);
-    TUGO_DIV08p.reset(REG_D0C0);
-    TOFE_DIV09p.reset(REG_D1C1);
-    TERU_DIV10p.reset(REG_D0C0);
-    SOLA_DIV11p.reset(REG_D1C1);
-    SUBU_DIV12p.reset(REG_D0C0);
-    TEKA_DIV13p.reset(REG_D1C1);
-    UKET_DIV14p.reset(REG_D1C0);
-    UPOF_DIV15p.reset(REG_D1C0);
+    UKUP_DIV00p.reset_to_cart(REG_D1C1);
+    UFOR_DIV01p.reset_to_cart(REG_D1C0);
+    UNER_DIV02p.reset_to_cart(REG_D0C0);
+    TERO_DIV03p.reset_to_cart(REG_D0C1);
+    UNYK_DIV04p.reset_to_cart(REG_D1C1);
+    TAMA_DIV05p.reset_to_cart(REG_D1C0);
+    UGOT_DIV06p.reset_to_cart(REG_D1C0);
+    TULU_DIV07p.reset_to_cart(REG_D1C0);
+    TUGO_DIV08p.reset_to_cart(REG_D0C0);
+    TOFE_DIV09p.reset_to_cart(REG_D1C1);
+    TERU_DIV10p.reset_to_cart(REG_D0C0);
+    SOLA_DIV11p.reset_to_cart(REG_D1C1);
+    SUBU_DIV12p.reset_to_cart(REG_D0C0);
+    TEKA_DIV13p.reset_to_cart(REG_D1C1);
+    UKET_DIV14p.reset_to_cart(REG_D1C0);
+    UPOF_DIV15p.reset_to_cart(REG_D1C0);
   }
 
-  int get_div() const  { return pack_u16p(16, &UKUP_DIV00p); }
+  int get_div() const  { return BitBase::pack_old(16, &UKUP_DIV00p); }
 
   void force_set_div(uint16_t div) {
     uint16_t div_a = div;
     uint16_t div_b = ((~div) << 2);
 
-    UKUP_DIV00p.reset(((div_a >>  0) & 1) | ((div_b >>  0) & 2));
-    UFOR_DIV01p.reset(((div_a >>  1) & 1) | ((div_b >>  1) & 2));
-    UNER_DIV02p.reset(((div_a >>  2) & 1) | ((div_b >>  2) & 2));
-    TERO_DIV03p.reset(((div_a >>  3) & 1) | ((div_b >>  3) & 2));
-    UNYK_DIV04p.reset(((div_a >>  4) & 1) | ((div_b >>  4) & 2));
-    TAMA_DIV05p.reset(((div_a >>  5) & 1) | ((div_b >>  5) & 2));
-    UGOT_DIV06p.reset(((div_a >>  6) & 1) | ((div_b >>  6) & 2));
-    TULU_DIV07p.reset(((div_a >>  7) & 1) | ((div_b >>  7) & 2));
-    TUGO_DIV08p.reset(((div_a >>  8) & 1) | ((div_b >>  8) & 2));
-    TOFE_DIV09p.reset(((div_a >>  9) & 1) | ((div_b >>  9) & 2));
-    TERU_DIV10p.reset(((div_a >> 10) & 1) | ((div_b >> 10) & 2));
-    SOLA_DIV11p.reset(((div_a >> 11) & 1) | ((div_b >> 11) & 2));
-    SUBU_DIV12p.reset(((div_a >> 12) & 1) | ((div_b >> 12) & 2));
-    TEKA_DIV13p.reset(((div_a >> 13) & 1) | ((div_b >> 13) & 2));
-    UKET_DIV14p.reset(((div_a >> 14) & 1) | ((div_b >> 14) & 2));
-    UPOF_DIV15p.reset(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
+    UKUP_DIV00p.reset_to_cart(((div_a >>  0) & 1) | ((div_b >>  0) & 2));
+    UFOR_DIV01p.reset_to_cart(((div_a >>  1) & 1) | ((div_b >>  1) & 2));
+    UNER_DIV02p.reset_to_cart(((div_a >>  2) & 1) | ((div_b >>  2) & 2));
+    TERO_DIV03p.reset_to_cart(((div_a >>  3) & 1) | ((div_b >>  3) & 2));
+    UNYK_DIV04p.reset_to_cart(((div_a >>  4) & 1) | ((div_b >>  4) & 2));
+    TAMA_DIV05p.reset_to_cart(((div_a >>  5) & 1) | ((div_b >>  5) & 2));
+    UGOT_DIV06p.reset_to_cart(((div_a >>  6) & 1) | ((div_b >>  6) & 2));
+    TULU_DIV07p.reset_to_cart(((div_a >>  7) & 1) | ((div_b >>  7) & 2));
+    TUGO_DIV08p.reset_to_cart(((div_a >>  8) & 1) | ((div_b >>  8) & 2));
+    TOFE_DIV09p.reset_to_cart(((div_a >>  9) & 1) | ((div_b >>  9) & 2));
+    TERU_DIV10p.reset_to_cart(((div_a >> 10) & 1) | ((div_b >> 10) & 2));
+    SOLA_DIV11p.reset_to_cart(((div_a >> 11) & 1) | ((div_b >> 11) & 2));
+    SUBU_DIV12p.reset_to_cart(((div_a >> 12) & 1) | ((div_b >> 12) & 2));
+    TEKA_DIV13p.reset_to_cart(((div_a >> 13) & 1) | ((div_b >> 13) & 2));
+    UKET_DIV14p.reset_to_cart(((div_a >> 14) & 1) | ((div_b >> 14) & 2));
+    UPOF_DIV15p.reset_to_cart(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
   }
 
-  void read(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    GateBoyCpuBus& cpu_bus
-  );
-  void write(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    GateBoyCpuBus& cpu_bus
-  );
-  void tock2(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    GateBoyCpuBus& cpu_bus
-  );
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
+  void read(GateBoyCpuBus& cpu_bus);
 
   void dump(Dumper& d) {
     d.dump_slice2p("DIV16", &UKUP_DIV00p, 16);
@@ -94,28 +81,38 @@ struct GateBoyDiv {
 //-----------------------------------------------------------------------------
 
 struct GateBoyTimer {
-  void tock(
+
+  int get_tima() const { return BitBase::pack_old(8,  &REGA_TIMA0p); }
+  int get_tma() const  { return BitBase::pack_old(8,  &SABU_TMA0p); }
+  int get_tac() const  { return BitBase::pack_old(3,  &SOPU_TAC0p); }
+
+  void read_tima(GateBoyCpuBus& cpu_bus);
+  void write_tima_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
+  void read_tma(GateBoyCpuBus& cpu_bus);
+  void write_tma_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
+  void read_tac(GateBoyCpuBus& cpu_bus);
+  void write_tac_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+
+  void tock2(
     GateBoyResetDebug& rst,
     GateBoyClock& clk,
     GateBoyCpuBus& cpu_bus,
     const GateBoyDiv& div);
 
-  int get_tima() const { return pack_u8p (8,  &REGA_TIMA0p); }
-  int get_tma() const  { return pack_u8p (8,  &SABU_TMA0p); }
-  int get_tac() const  { return pack_u8p (3,  &SOPU_TAC0p); }
-
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;
     uint16_t tima_b = ((~tima) << 2);
 
-    REGA_TIMA0p.reset(((tima_a >>  0) & 1) | ((tima_b >>  0) & 2));
-    POVY_TIMA1p.reset(((tima_a >>  1) & 1) | ((tima_b >>  1) & 2));
-    PERU_TIMA2p.reset(((tima_a >>  2) & 1) | ((tima_b >>  2) & 2));
-    RATE_TIMA3p.reset(((tima_a >>  3) & 1) | ((tima_b >>  3) & 2));
-    RUBY_TIMA4p.reset(((tima_a >>  4) & 1) | ((tima_b >>  4) & 2));
-    RAGE_TIMA5p.reset(((tima_a >>  5) & 1) | ((tima_b >>  5) & 2));
-    PEDA_TIMA6p.reset(((tima_a >>  6) & 1) | ((tima_b >>  6) & 2));
-    NUGA_TIMA7p.reset(((tima_a >>  7) & 1) | ((tima_b >>  7) & 2));
+    REGA_TIMA0p.reset_to_cart(((tima_a >>  0) & 1) | ((tima_b >>  0) & 2));
+    POVY_TIMA1p.reset_to_cart(((tima_a >>  1) & 1) | ((tima_b >>  1) & 2));
+    PERU_TIMA2p.reset_to_cart(((tima_a >>  2) & 1) | ((tima_b >>  2) & 2));
+    RATE_TIMA3p.reset_to_cart(((tima_a >>  3) & 1) | ((tima_b >>  3) & 2));
+    RUBY_TIMA4p.reset_to_cart(((tima_a >>  4) & 1) | ((tima_b >>  4) & 2));
+    RAGE_TIMA5p.reset_to_cart(((tima_a >>  5) & 1) | ((tima_b >>  5) & 2));
+    PEDA_TIMA6p.reset_to_cart(((tima_a >>  6) & 1) | ((tima_b >>  6) & 2));
+    NUGA_TIMA7p.reset_to_cart(((tima_a >>  7) & 1) | ((tima_b >>  7) & 2));
   }
 
   void dump(Dumper& d) {

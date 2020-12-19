@@ -8,11 +8,20 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-wire GateBoyLCD::ATEJ_LINE_RSTp() const {
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(CATU_LINE_P000p.qp_new());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp_new())); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp = not1(_BYHA_LINE_TRIGn);
-  return _ATEJ_LINE_RSTp;
+wire GateBoyLCD::ATEJ_LINE_RSTp_old() const {
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(CATU_LINE_P000p.qp_old());
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp_old())); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_TRIGn_old);
+  return _ATEJ_LINE_RSTp_old;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+wire GateBoyLCD::ATEJ_LINE_RSTp_new() const {
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(CATU_LINE_P000p.qp_new());
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_new = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp_new())); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_TRIGn_new);
+  return _ATEJ_LINE_RSTp_new;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -40,7 +49,7 @@ void GateBoyLCD::tock(
 
 void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk, const RegLX& reg_lx) {
   /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), reg_lx.TEGY_STROBE());
-  /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p());
+  /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p_new());
   /*#p21.POGU*/ wire _POGU = not1(_RYNO);
   PIN_LCD_CNTRL.pin_out(_POGU, _POGU);
 }
@@ -49,8 +58,8 @@ void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk, const R
 // if LCDC_ENn, PIN_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
 void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, const RegLX& reg_lx, wire TULU_DIV07p, wire XONA_LCDC_LCDENp) {
-  /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n(),   rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn_new());
-  /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(), rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn_new());
+  /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n_new(), rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn_old());
+  /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(),   rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn_old());
 
   /*#p24.MAGU*/ wire _MAGU = xor2(NAPO_FRAME_EVENp.qp_new(), LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire _MECO = not1(_MAGU);

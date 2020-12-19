@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct MetroBoySPU {
-  void reset();
+  void reset_to_cart();
 
   void tick(int phase_total, const Req& req, Ack& ibus_ack) const;
   void tock(int phase_total, const Req& req);

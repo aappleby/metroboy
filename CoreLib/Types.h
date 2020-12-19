@@ -100,11 +100,11 @@ struct Req {
     uint16_t data = 0;
   };
   uint8_t  read = 0;
-  uint8_t  write = 0;
+  uint8_t  write_sync = 0;
   uint16_t pad1 = 0;
 
   operator bool() const {
-    return read || write;
+    return read || write_sync;
   }
 };
 #pragma pack(pop)

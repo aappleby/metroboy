@@ -12,7 +12,7 @@ struct MetroBoyPPU {
   void reset_to_bootrom();
 
   bool    read (uint16_t addr, uint8_t& out);
-  bool    write(uint16_t addr, uint8_t data);
+  bool    write_sync(uint16_t addr, uint8_t data);
 
   uint8_t read(uint16_t addr) {
     uint8_t temp = 0;

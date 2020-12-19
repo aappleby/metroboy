@@ -1,12 +1,12 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    PIN_CPU_STARTp.reset(REG_D0C0);
-    TUBO_WAITINGp.reset(REG_D0C0);
+    PIN_CPU_STARTp.reset_to_cart(REG_D0C0);
+    TUBO_WAITINGp.reset_to_cart(REG_D0C0);
   }
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
@@ -42,7 +42,7 @@ struct GateBoyResetDebug {
   /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
 
   void tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
-  void tock(wire XONA_LCDC_LCDENp);
+  void set_signals(wire XONA_LCDC_LCDENp);
 
   void dump(Dumper& d) {
     d.dump_bitp("TUBO_WAITINGp ", TUBO_WAITINGp.state);
@@ -70,4 +70,5 @@ struct GateBoyResetDebug {
   PinOut PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
 };
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
+

@@ -16,15 +16,15 @@ void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
 
   cpu.reset_to_cart();
   cart.set_rom(new_rom, new_rom_size);
-  cart.reset();
+  cart.reset_to_cart();
   ppu.reset_to_cart();
-  oam.reset();
-  spu.reset();
-  timer.reset();
-  vram.reset();
-  joypad.reset();
-  serial.reset();
-  zram.reset();
+  oam.reset_to_cart();
+  spu.reset_to_cart();
+  timer.reset_to_cart();
+  vram.reset_to_cart();
+  joypad.reset_to_cart();
+  serial.reset_to_cart();
+  zram.reset_to_cart();
 
   boot.disable_bootrom = true;
 
@@ -33,7 +33,7 @@ void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
   ebus_req.addr = 0x0100;
   ebus_req.data = 0x00;
   ebus_req.read = 1;
-  ebus_req.write = 0;
+  ebus_req.write_sync = 0;
 
   ebus_ack.addr = 0x0100;
   ebus_ack.data = 0x00;
@@ -48,15 +48,15 @@ void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
 
   cpu.reset_to_bootrom();
   cart.set_rom(new_rom, new_rom_size);
-  cart.reset();
+  cart.reset_to_cart();
   ppu.reset_to_bootrom();
-  oam.reset();
-  spu.reset();
-  timer.reset();
-  vram.reset();
-  joypad.reset();
-  serial.reset();
-  zram.reset();
+  oam.reset_to_cart();
+  spu.reset_to_cart();
+  timer.reset_to_cart();
+  vram.reset_to_cart();
+  joypad.reset_to_cart();
+  serial.reset_to_cart();
+  zram.reset_to_cart();
 
   boot.disable_bootrom = false;
 
@@ -65,7 +65,7 @@ void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   ebus_req.addr = 0x0000;
   ebus_req.data = 0x00;
   ebus_req.read = 1;
-  ebus_req.write = 0;
+  ebus_req.write_sync = 0;
 
   ebus_ack.addr = 0x0000;
   ebus_ack.data = 0x00;
@@ -167,7 +167,7 @@ void MetroBoy::next_phase() {
     cpu_req.addr  = cpu._bus_addr;
     cpu_req.data  = cpu._bus_data;
     cpu_req.read  = cpu._bus_read;
-    cpu_req.write = cpu._bus_write;
+    cpu_req.write_sync = cpu._bus_write;
 
     ibus_req = {0};
     ebus_req = {0};
@@ -198,21 +198,21 @@ void MetroBoy::next_phase() {
     vbus_req.addr = dma.addr;
     vbus_req.data = 0;
     vbus_req.read = 1;
-    vbus_req.write = 0;
+    vbus_req.write_sync = 0;
   }
 
   if (dma_src_ebus) {
     ebus_req.addr = dma.addr;
     ebus_req.data = 0;
     ebus_req.read = 1;
-    ebus_req.write = 0;
+    ebus_req.write_sync = 0;
   }
 
   if (DELTA_EF && dma.DMA_RUN_WRITE) {
     obus_req.addr = uint16_t(0xFE00 | (dma.addr & 0xFF));
     obus_req.data = dma_data_latch;
     obus_req.read = 0;
-    obus_req.write = 1;
+    obus_req.write_sync = 1;
   }
 
   phase_total++;

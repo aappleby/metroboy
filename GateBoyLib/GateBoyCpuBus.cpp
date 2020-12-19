@@ -5,9 +5,19 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
+void GateBoyCpuBus::reset_to_bootrom() {
+  for (int i = 0; i < 8; i++) {
+    BUS_CPU_D[i].reset_to_cart(1);
+  }
+}
+
 void GateBoyCpuBus::reset_to_cart() {
-  BOOT_BITn_h.reset(REG_D1C1);
-  PIN_CPU_BOOTp.reset(REG_D0C0);
+  BOOT_BITn_h.reset_to_cart(REG_D1C1);
+  PIN_CPU_BOOTp.reset_to_cart(REG_D0C0);
+
+  for (int i = 0; i < 8; i++) {
+    BUS_CPU_D[i].reset_to_cart(1);
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -36,7 +46,7 @@ void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
- wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
+  wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write_sync;
   BUS_CPU_D[0].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x01));
   BUS_CPU_D[1].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x02));
   BUS_CPU_D[2].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x04));
@@ -56,7 +66,7 @@ void GateBoyCpuBus::set_pins(
   Req bus_req_new)
 {
   PIN_CPU_RDp.pin_in(DELTA_HA ? 0 : bus_req_new.read);
-  PIN_CPU_WRp.pin_in(DELTA_HA ? 0 : bus_req_new.write);
+  PIN_CPU_WRp.pin_in(DELTA_HA ? 0 : bus_req_new.write_sync);
 
   // not at all certain about this. seems to break some oam read glitches.
   if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {

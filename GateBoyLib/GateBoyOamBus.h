@@ -7,14 +7,14 @@
 
 struct GateBoyOamBus {
   void reset_to_cart() {
-    BUS_OAM_An[0].reset(REG_D1C0);
-    BUS_OAM_An[1].reset(REG_D1C0);
-    BUS_OAM_An[2].reset(REG_D1C0);
-    BUS_OAM_An[3].reset(REG_D1C0);
-    BUS_OAM_An[4].reset(REG_D0C0);
-    BUS_OAM_An[5].reset(REG_D1C0);
-    BUS_OAM_An[6].reset(REG_D0C0);
-    BUS_OAM_An[7].reset(REG_D1C0);
+    BUS_OAM_An[0].reset_to_cart(1);
+    BUS_OAM_An[1].reset_to_cart(1);
+    BUS_OAM_An[2].reset_to_cart(1);
+    BUS_OAM_An[3].reset_to_cart(1);
+    BUS_OAM_An[4].reset_to_cart(0);
+    BUS_OAM_An[5].reset_to_cart(1);
+    BUS_OAM_An[6].reset_to_cart(0);
+    BUS_OAM_An[7].reset_to_cart(1);
 
     oam_latch_a.reset_to_cart();
     oam_latch_b.reset_to_cart();
@@ -63,8 +63,8 @@ struct GateBoyOamBus {
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;   // AxxxExxx
 
   Bus BUS_OAM_An[8];  // ABCDEFGH
-  Bus  BUS_OAM_DAn[8];
-  Bus  BUS_OAM_DBn[8];
+  Bus BUS_OAM_DAn[8];
+  Bus BUS_OAM_DBn[8];
   PinOut PIN_OAM_CLKn;   // ABCDEFGH
   PinOut PIN_OAM_WRn_A;  // AxxxExxH
   PinOut PIN_OAM_WRn_B;  // AxxxExxH

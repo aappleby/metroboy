@@ -27,8 +27,7 @@ wire GateBoyDMA::LUFA_DMA_VRAMp() const {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
-{
+void GateBoyDMA::write_dma_sync(GateBoyCpuBus& cpu_bus) {
   /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(cpu_bus.TAPU_CPU_WRp.qp_new()), XEDA_FF46p(cpu_bus.BUS_CPU_A));
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
   /*#p04.NAFA*/ NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D[0].qp_old());
@@ -39,19 +38,13 @@ void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
   /* p04.PULA*/ PULA_DMA_A13n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D[5].qp_old());
   /* p04.POKU*/ POKU_DMA_A14n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D[6].qp_old());
   /* p04.MARU*/ MARU_DMA_A15n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D[7].qp_old());
+}
 
-  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(cpu_bus.TEDO_CPU_RDp.qp_new()), XEDA_FF46p(cpu_bus.BUS_CPU_A));
-  /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
-  /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
-  /*#p04.POLY*/ cpu_bus.BUS_CPU_D[0].tri6_pn(PUSY_FF46_RDp, NAFA_DMA_A08n.qp_new());
-  /* p04.ROFO*/ cpu_bus.BUS_CPU_D[1].tri6_pn(PUSY_FF46_RDp, PYNE_DMA_A09n.qp_new());
-  /* p04.REMA*/ cpu_bus.BUS_CPU_D[2].tri6_pn(PUSY_FF46_RDp, PARA_DMA_A10n.qp_new());
-  /* p04.PANE*/ cpu_bus.BUS_CPU_D[3].tri6_pn(PUSY_FF46_RDp, NYDO_DMA_A11n.qp_new());
-  /* p04.PARE*/ cpu_bus.BUS_CPU_D[4].tri6_pn(PUSY_FF46_RDp, NYGY_DMA_A12n.qp_new());
-  /* p04.RALY*/ cpu_bus.BUS_CPU_D[5].tri6_pn(PUSY_FF46_RDp, PULA_DMA_A13n.qp_new());
-  /* p04.RESU*/ cpu_bus.BUS_CPU_D[6].tri6_pn(PUSY_FF46_RDp, POKU_DMA_A14n.qp_new());
-  /* p04.NUVY*/ cpu_bus.BUS_CPU_D[7].tri6_pn(PUSY_FF46_RDp, MARU_DMA_A15n.qp_new());
+//------------------------------------------------------------------------------------------------------------------------
 
+void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
+{
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(cpu_bus.TAPU_CPU_WRp.qp_new()), XEDA_FF46p(cpu_bus.BUS_CPU_A));
   /*#p04.LUPA*/ wire _LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn_old());
   /*#p04.LENE*/ LENE_DMA_TRIG_d4.dff17(clk.MOPA_xxxxEFGH(), rst.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.qp_old());
   /*#p04.LUVY*/ LUVY_DMA_TRIG_d0.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
@@ -84,6 +77,22 @@ void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
   /* p04.PYLO*/ PYLO_DMA_A05p.dff17(NYKO_DMA_A04p.qn_new(), _LAPA_DMA_RSTn, PYLO_DMA_A05p.qn_old());
   /* p04.NUTO*/ NUTO_DMA_A06p.dff17(PYLO_DMA_A05p.qn_new(), _LAPA_DMA_RSTn, NUTO_DMA_A06p.qn_old());
   /* p04.MUGU*/ MUGU_DMA_A07p.dff17(NUTO_DMA_A06p.qn_new(), _LAPA_DMA_RSTn, MUGU_DMA_A07p.qn_old());
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoyDMA::read_dma(GateBoyCpuBus& cpu_bus) {
+  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(cpu_bus.TEDO_CPU_RDp.qp_new()), XEDA_FF46p(cpu_bus.BUS_CPU_A));
+  /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
+  /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
+  /*#p04.POLY*/ cpu_bus.BUS_CPU_D[0].tri6_pn(PUSY_FF46_RDp, NAFA_DMA_A08n.qp_new());
+  /* p04.ROFO*/ cpu_bus.BUS_CPU_D[1].tri6_pn(PUSY_FF46_RDp, PYNE_DMA_A09n.qp_new());
+  /* p04.REMA*/ cpu_bus.BUS_CPU_D[2].tri6_pn(PUSY_FF46_RDp, PARA_DMA_A10n.qp_new());
+  /* p04.PANE*/ cpu_bus.BUS_CPU_D[3].tri6_pn(PUSY_FF46_RDp, NYDO_DMA_A11n.qp_new());
+  /* p04.PARE*/ cpu_bus.BUS_CPU_D[4].tri6_pn(PUSY_FF46_RDp, NYGY_DMA_A12n.qp_new());
+  /* p04.RALY*/ cpu_bus.BUS_CPU_D[5].tri6_pn(PUSY_FF46_RDp, PULA_DMA_A13n.qp_new());
+  /* p04.RESU*/ cpu_bus.BUS_CPU_D[6].tri6_pn(PUSY_FF46_RDp, POKU_DMA_A14n.qp_new());
+  /* p04.NUVY*/ cpu_bus.BUS_CPU_D[7].tri6_pn(PUSY_FF46_RDp, MARU_DMA_A15n.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -9,16 +9,21 @@
 
 void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
-  /* p27.LAXU*/ _LAXU_BFETCH_S0p.RSTn(NYXU_BFETCH_RSTn);
-  /* p27.MESU*/ _MESU_BFETCH_S1p.RSTn(NYXU_BFETCH_RSTn);
-  /* p27.NYVA*/ _NYVA_BFETCH_S2p.RSTn(NYXU_BFETCH_RSTn);
+#if 0
+  // FIXME do I need this?
+  /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_rst(NYXU_BFETCH_RSTn);
+  /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_rst(NYXU_BFETCH_RSTn);
+  /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17_rst(NYXU_BFETCH_RSTn);
+#endif
 
-  /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn_mid = MOCE_BFETCH_DONEn(NYXU_BFETCH_RSTn);
-  /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn_mid);
+  for (int feedback = 0; feedback < 2; feedback++) {
+    /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn);
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn);
 
-  /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17(_LEBO_AxCxExGx,               NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_new());
-  /* p27.MESU*/ _MESU_BFETCH_S1p.dff17(_LAXU_BFETCH_S0p.qn_new(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_new());
-  /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17(_MESU_BFETCH_S1p.qn_new(), NYXU_BFETCH_RSTn, _NYVA_BFETCH_S2p.qn_new());
+    /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_any(_LEBO_AxCxExGx,            NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_any());
+    /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_any(_LAXU_BFETCH_S0p.qn_any(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_any());
+    /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17_any(_MESU_BFETCH_S1p.qn_any(), NYXU_BFETCH_RSTn, _NYVA_BFETCH_S2p.qn_any());
+  }
 
   /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_old = not1(MOCE_BFETCH_DONEn_old);
   /* p27.LOVY*/ LOVY_FETCH_DONEp.dff17(clk.MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, _LYRY_BFETCH_DONEp_old);
@@ -33,7 +38,7 @@ void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERIN
 //------------------------------------------------------------------------------------------------------------------------
 
 wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGp.qp());
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGp.qp_new());
 
   /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
   /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();
@@ -53,7 +58,7 @@ wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
 //------------------------------------------------------------------------------------------------------------------------
 
 wire TileFetcher::LABU_LATCH_TILE_DBn() const {
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp());
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp_new());
 
   /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
   /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();

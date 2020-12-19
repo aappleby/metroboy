@@ -6,20 +6,22 @@
 
 //--------------------------------------------------------------------------------
 
-void GateBoyBootrom::tock(
-  GateBoyResetDebug& rst,
-  GateBoyCpuBus& cpu_bus,
-  uint8_t* boot_buf)
+void GateBoyBootrom::read_boot_bit(GateBoyCpuBus& cpu_bus)
 {
-  {
-    /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
-    /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
-    // FF50 - disable bootrom bit
-    /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0].qp_new(), cpu_bus.BOOT_BITn_h.qp_old());
-    /* p07.TEPU*/ cpu_bus.BOOT_BITn_h.dff17(_TUGE_FF50_WRn, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
-    /* p07.SYPU*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_TEXE_FF50_RDp, cpu_bus.BOOT_BITn_h.qp_new());
-  }
+  /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
+  /* p07.SYPU*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_TEXE_FF50_RDp, cpu_bus.BOOT_BITn_h.qp_new());
+}
 
+void GateBoyBootrom::write_boot_bit_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
+{
+  /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
+  // FF50 - disable bootrom bit
+  /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0].qp_old(), cpu_bus.BOOT_BITn_h.qp_old());
+  /* p07.TEPU*/ cpu_bus.BOOT_BITn_h.dff17(_TUGE_FF50_WRn, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
+}
+
+void GateBoyBootrom::read_bootrom(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, uint8_t* boot_buf)
+{
   /* BOOT -> CBD */
 #if 0
 /* p07.ZYBA*/ wire ZYBA_ADDR_00n = not1(BUS_CPU_A[ 0]);
@@ -46,7 +48,7 @@ void GateBoyBootrom::tock(
 #endif
 
   // this is kind of a hack
-  uint16_t cpu_addr = pack_u16p(16, cpu_bus.BUS_CPU_A);
+  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
   uint8_t bootrom_data = boot_buf[cpu_addr & 0xFF];
 
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_bus.BOOT_BITn_h.qp_new());

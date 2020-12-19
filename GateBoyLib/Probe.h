@@ -3,7 +3,7 @@
 
 struct Probes {
   Probes();
-  void reset();
+  void reset_to_cart();
   void probe(int index, const char* signal_name, char s);
   void begin_pass(int pass_count);
   void end_pass(bool stable);

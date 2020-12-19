@@ -502,7 +502,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Pix Pipe =====\001\n");
-  d("PIX COUNT  0x%02x\n", pack_u8p(8, &gb->pix_count.XEHO_PX0p));
+  d("PIX COUNT  0x%02x\n", BitBase::pack_old(8, &gb->pix_count.XEHO_PX0p));
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap.state);

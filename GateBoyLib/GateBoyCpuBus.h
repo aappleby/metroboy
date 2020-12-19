@@ -2,6 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyCpuBus {
+  void reset_to_bootrom();
   void reset_to_cart();
 
   void set_addr(int phase_total, Req bus_req_new);
@@ -11,6 +12,17 @@ struct GateBoyCpuBus {
     const GateBoyClock& clk,
     int phase_total,
     Req bus_req_new);
+
+  void reset_data() {
+    BUS_CPU_D[0].reset();
+    BUS_CPU_D[1].reset();
+    BUS_CPU_D[2].reset();
+    BUS_CPU_D[3].reset();
+    BUS_CPU_D[4].reset();
+    BUS_CPU_D[5].reset();
+    BUS_CPU_D[6].reset();
+    BUS_CPU_D[7].reset();
+  }
 
   void dump(Dumper& d) {
     d.dump_slice2p("BUS_CPU_A        ", BUS_CPU_A, 16);
@@ -149,4 +161,25 @@ struct GateBoyCpuBus {
   /* p22.TEGO*/ wire TEGO_FF49p        () const { return not1(VAMA_FF49n()); }
   /* p22.VYGA*/ wire VYGA_FF4Ap        () const { return not1(WYVO_FF4An()); }
   /* p22.VUMY*/ wire VUMY_FF4Bp        () const { return not1(WAGE_FF4Bn()); }
+
+  wire TOLE_CPU_VRAM_RDp(wire ABUZ_EXT_RAM_CS_CLK)
+  {
+    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
+    ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN_VRAM_OEn.qn_new()); // Ignoring debug for now
+    ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_VRAM_CSn.qn_new());
+    ///*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = mux2p(_TEFY_VRAM_MCSp, _TUTO_DBG_VRAMp, _TUCA_CPU_VRAM_RDp);
+    /*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = _TUCA_CPU_VRAM_RDp;;
+    return _TOLE_CPU_VRAM_RDp;
+  }
+
+  wire SALE_CPU_VRAM_WRn()
+  {
+    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), PIN_CPU_WRp.qp_new());  // Schematic wrong, second input is PIN_CPU_WRp
+    ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN_VRAM_OEn.qn_new()); // Ignoring debug for now
+    ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_VRAM_CSn.qn_new());
+    ///*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(_TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
+    /*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = _TEGU_CPU_VRAM_WRn;
+    return _SALE_CPU_VRAM_WRn;
+  }
+
 };

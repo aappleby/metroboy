@@ -5,7 +5,7 @@
 
 struct MetroBoyCart {
   void set_rom(uint8_t* new_rom, size_t new_rom_size);
-  void reset();
+  void reset_to_cart();
 
   void tick(int phase_total, const Req& req, Ack& ebus_ack) const;
   void tock(int phase_total, const Req& req);

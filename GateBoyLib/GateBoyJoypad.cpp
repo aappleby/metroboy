@@ -30,7 +30,7 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyJoypad::write(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
+void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
   /* p05.JUTE*/ JUTE_JOYP_RA     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
   /* p05.KECY*/ KECY_JOYP_LB     .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old());

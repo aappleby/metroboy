@@ -100,11 +100,11 @@ struct Req {
     uint16_t data = 0;
   };
   uint8_t  read = 0;
-  uint8_t  write_sync = 0;
+  uint8_t  write = 0;
   uint16_t pad1 = 0;
 
   operator bool() const {
-    return read || write_sync;
+    return read || write;
   }
 };
 #pragma pack(pop)
@@ -160,167 +160,73 @@ struct Dumper {
   virtual void indent() {}
   virtual void dedent() {}
 
-  /*
-  inline void dump_reg(const char* tag, wire D0, wire D1, wire D2, wire D3, wire D4, wire D5, wire D6, wire D7) {
-    uint8_t D = pack_u8(8, D0, D1, D2, D3, D4, D5, D6, D7);
-    operator()("%-10s : %-3d 0x%02x 0b%d%d%d%d%d%d%d%d\n", tag, D, D, D7, D6, D5, D4, D3, D2, D1, D0);
-  }
-  */
-
-  /*
-  inline void dump_reg(const char* tag, const void* bits) {
-    dump_reg(tag, pack_u8(8, bits));
-  }
-  */
-
-  inline void dump_reg(const char* tag, uint8_t D) {
-    operator()("%-10s : %-3d 0x%02x 0b%d%d%d%d%d%d%d%d\n", tag, D, D,
-      wire(D & 0x80),
-      wire(D & 0x40),
-      wire(D & 0x20),
-      wire(D & 0x10),
-      wire(D & 0x08),
-      wire(D & 0x04),
-      wire(D & 0x02),
-      wire(D & 0x01));
-  }
-
   inline void dump_bitp(const char* tag, uint8_t b) {
-    operator()("%s : ", tag);
-    add_char((b & 0x02) ? '\002' : '\003');
-
-    //if      (b & 0x08) add_char('R');
-    //else if (b & 0x04) add_char('S');
-    //else               add_char((b & 0x01) ? '1' : '0');
-    add_char((b & 0x01) ? '1' : '0');
-    add_char('\001');
-    add_char('\n');
+    operator()("%s%c\n", tag, (b & 0x01) ? '1' : '0');
   }
 
   inline void dump_bitn(const char* tag, uint8_t b) {
-    operator()("%s : ", tag);
-    add_char((b & 0x02) ? '\002' : '\003');
+    operator()("%s%c\n", tag, (b & 0x01) ? '0' : '1');
+  }
 
-    //if      (b & 0x08) add_char('R');
-    //else if (b & 0x04) add_char('S');
-    //else               add_char((b & 0x01) ? '0' : '1');
-    add_char((b & 0x01) ? '0' : '1');
-    add_char('\001');
-    add_char('\n');
+  inline void dump_bytep(const char* tag, uint8_t b) {
+    operator()(tag);
+    for (int i = 7; i >= 0; i--) {
+      add_char((b & (1 << i)) ? '1' : '0');
+    }
+    operator()(" 0x%02x %d\n", b, b);
   }
 
   void dump_slice2p(const char* tag, const void* blob, int byte_count) {
-    const uint8_t* d = (const uint8_t*)blob;
-
-    uint16_t val = 0;
-    for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
-
-    operator()("%s : ", tag);
+    operator()(tag);
     for (int i = byte_count; i < 8; i++) add_char(' ');
+
+    const uint8_t* d = (const uint8_t*)blob;
     for (int i = byte_count - 1; i >= 0; i--) {
       add_char((d[i] & 0x02) ? '\002' : '\003');
-
-      /*
-      if      (d[i] & 0x08) add_char('R');
-      else if (d[i] & 0x04) add_char('S');
-      else                  add_char((d[i] & 0x01) ? '1' : '0');
-      */
       add_char((d[i] & 0x01) ? '1' : '0');
     }
     add_char('\001');
 
+    uint16_t val = 0;
+    for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
     if (byte_count <= 8) {
       operator()(" 0x%02x %d\n", val, val);
     } else {
-      operator()("\n%s : 0x%04x %d\n", tag, val, val);
+      operator()("\n%s0x%04x %d\n", tag, val, val);
     }
   }
 
   void dump_slice2n(const char* tag, const void* blob, int byte_count) {
-    const uint8_t* d = (const uint8_t*)blob;
-
-    uint8_t val = 0;
-    for (int i = 0; i < byte_count; i++) val |= ((~d[i] & 1) << i);
-
-    operator()("%s : ", tag);
+    operator()(tag);
     for (int i = byte_count; i < 8; i++) add_char(' ');
+
+    const uint8_t* d = (const uint8_t*)blob;
     for (int i = byte_count - 1; i >= 0; i--) {
       add_char((d[i] & 0x02) ? '\002' : '\003');
-
-      //if      (d[i] & 0x08) add_char('R');
-      //else if (d[i] & 0x04) add_char('S');
-      //else                  add_char((d[i] & 0x01) ? '0' : '1');
       add_char((d[i] & 0x01) ? '0' : '1');
     }
     add_char('\001');
 
+    uint8_t val = 0;
+    for (int i = 0; i < byte_count; i++) val |= ((~d[i] & 1) << i);
     if (byte_count <= 8) {
       operator()(" 0x%02x %d\n", val, val);
     } else {
-      operator()("\n%s : 0x%04x %d\n", tag, val, val);
+      operator()("\n%s0x%04x %d\n", tag, val, val);
     }
   }
 
-  void dump_slice(const char* tag, int bit_index, uint8_t* d, int byte_count, const char a, const char b) {
-    operator()("%s : ", tag);
-    const int mask = 1 << bit_index;
-    for (int i = 0; i < byte_count; i++) {
-      add_char((d[i] & mask) ? b : a);
-    }
-    add_char('\n');
+  void dump_req(const char* tag, const Req& req) {
+    operator()("%s%04x:%04x %s%s\n", tag, req.addr, req.data,
+      req.read  ? "\003R\001" : "-",
+      req.write ? "\002W\001" : "-");
   }
 
-  void dump_bit_d(const char* tag, uint8_t* d) {
-    operator()("%s : %c%c%c%c%c%c%c%c\n",
-      tag,
-      (d[0] & 0x01) ? '1' : '0',
-      (d[1] & 0x01) ? '1' : '0',
-      (d[2] & 0x01) ? '1' : '0',
-      (d[3] & 0x01) ? '1' : '0',
-      (d[4] & 0x01) ? '1' : '0',
-      (d[5] & 0x01) ? '1' : '0',
-      (d[6] & 0x01) ? '1' : '0');
-  }
-
-  void dump_bit_clk(const char* tag, uint8_t* d) {
-    operator()("%s : %c%c%c%c%c%c%c%c\n",
-      tag,
-      (d[0] & 0x02) ? '1' : '0',
-      (d[1] & 0x02) ? '1' : '0',
-      (d[2] & 0x02) ? '1' : '0',
-      (d[3] & 0x02) ? '1' : '0',
-      (d[4] & 0x02) ? '1' : '0',
-      (d[5] & 0x02) ? '1' : '0',
-      (d[6] & 0x02) ? '1' : '0');
-  }
-
-  void dump_bit_set(const char* tag, uint8_t* d) {
-    operator()("%s : %c%c%c%c%c%c%c%c\n",
-      tag,
-      (d[0] & 0x04) ? '1' : '0',
-      (d[1] & 0x04) ? '1' : '0',
-      (d[2] & 0x04) ? '1' : '0',
-      (d[3] & 0x04) ? '1' : '0',
-      (d[4] & 0x04) ? '1' : '0',
-      (d[5] & 0x04) ? '1' : '0',
-      (d[6] & 0x04) ? '1' : '0');
-  }
-
-  void dump_bit_rst(const char* tag, uint8_t* d) {
-    operator()("%s : %c%c%c%c%c%c%c%c\n",
-      tag,
-      (d[0] & 0x08) ? '1' : '0',
-      (d[1] & 0x08) ? '1' : '0',
-      (d[2] & 0x08) ? '1' : '0',
-      (d[3] & 0x08) ? '1' : '0',
-      (d[4] & 0x08) ? '1' : '0',
-      (d[5] & 0x08) ? '1' : '0',
-      (d[6] & 0x08) ? '1' : '0');
+  void dump_ack(const char* tag, const Ack& ack) {
+    operator()("%s%04x:%04x %s -\n", tag, ack.addr, ack.data,
+      ack.read  ? "\003R\001" : "-");
   }
 };
-
-void dump_req(Dumper& d, const Req& req);
-void dump_ack(Dumper& d, const Ack& ack);
 
 //-----------------------------------------------------------------------------
 

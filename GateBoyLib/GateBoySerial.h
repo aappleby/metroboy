@@ -8,7 +8,8 @@ struct GateBoySerial {
     COTY_SER_CLK.reset_to_cart(REG_D0C0);
   }
 
-  void tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);
+  void tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);
+  void tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   void read_sb(GateBoyCpuBus& cpu_bus);
   void write_sb_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
@@ -35,9 +36,9 @@ struct GateBoySerial {
   /*p06.EROD*/ DFF22 EROD_SER_DATA6; // xxxxExxx
   /*p06.EDER*/ DFF22 EDER_SER_DATA7; // xxxxExxx
 
-  PinIO  PIN_SCK;  // PIN_68
-  PinIn  PIN_SIN;  // PIN_69
-  PinOut PIN_SOUT; // PIN_70
+  PinIO  PIN68_SCK;
+  PinIn  PIN69_SIN;
+  PinOut PIN70_SOUT;
 };
 
 //-----------------------------------------------------------------------------

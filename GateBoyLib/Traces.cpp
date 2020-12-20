@@ -42,7 +42,7 @@
     // LOPE_04 NC
     // LOPE_05 SC
     // LOPE_06 SC
-    // LOPE_07 << D    PESU_GND 
+    // LOPE_07 << D    PESU_GND
     // LOPE_08 NC
     // LOPE_09 SC
     // LOPE_10 NC
@@ -51,7 +51,7 @@
     // LOPE_13 NC
     // LOPE_14 << SETn MYZU_04
     // LOPE_15 >> Qn
-    // LOPE_16 >> Q    PIN_CPU_INT_VBLANK, MATY_03
+    // LOPE_16 >> Q    SIG_CPU_INT_VBLANK, MATY_03
     // LOPE_17 << RSTn LYTA_05
     // LOPE_18 NC
     // LOPE_19 SC
@@ -66,7 +66,7 @@
     // TEME_05 << RAHU
     // TEME_06 << BUS_CPU_D0p
     // TEME_07 nc
-    // TEME_08 nc 
+    // TEME_08 nc
     // TEME_09 >> BUS_VRAM_D0p
     // TEME_10 nc
 
@@ -437,7 +437,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
     RORU_02 << REDU_02
     RORU_03 << MOTY_04
     RORU_04 nc
-    RORU_05 nc 
+    RORU_05 nc
     RORU_06 >> LULA_01, *
 
     LULA is NOT
@@ -457,7 +457,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
     LULA = not1(RORU)
     RUXA = nand2(CPU_D0, LULA);
     D0_A = RUXA;
-    
+
 
     // if RORU selects MOTY:
 
@@ -538,7 +538,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
     TEVY_05 >> TEXO_02
 
     TEXO is AND2
-    TEXO_01 << top right cpu port pin 7 
+    TEXO_01 << top right cpu port pin 7
     TEXO_02 << TEVY_05
     TEXO_03 nc
     TEXO_04 >> LAVO_02, MOCA_01, LEVO_01, LOXO_02
@@ -604,7 +604,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
     TEVY_05 >> TEXO_02
 
     TEXO is AND2
-    TEXO_01 << top right cpu port pin 7 
+    TEXO_01 << top right cpu port pin 7
     TEXO_02 << TEVY_05
     TEXO_03 nc
     TEXO_04 >> LAVO_02, MOCA_01, LEVO_01, LOXO_02
@@ -672,7 +672,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 
 
 #if 0
-  // these are all "normal operating mode" w/o rendering or dma 
+  // these are all "normal operating mode" w/o rendering or dma
 
   PIN_OAM_OE     = nand2(PIN_CPU_RDp, !PIN_CPU_HOLD_MEM,                     ADDR_OAM);
   OPD_TO_OBD     = nand2(PIN_CPU_RDp, !PIN_CPU_HOLD_MEM,                     ADDR_OAM);
@@ -741,7 +741,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
     // XEPE_09 >> nc
 
 
-    
+
     // ATYP := not(AFUR_09);
   // AJAX := not(ATYP_02);
   // AROV := not(APUK_09);
@@ -789,7 +789,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // WEZA03 ==
 // WEZA04 << XECU12
 // WEZA05 nc
-// WEZA06 
+// WEZA06
 
 
 // Die trace:
@@ -928,7 +928,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 
 // MORY00 << MATU17
 // MORY01
-// MORY02 
+// MORY02
 // -> MORY reads DMA_RUNNING.qp
 
 // arm on vcc side
@@ -1009,7 +1009,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // SOBU_03 SC
 // SOBU_04 NC
 // SOBU_05 NC
-// SOBU_06 << VYPO    RSTn 
+// SOBU_06 << VYPO    RSTn
 // SOBU_07 << TEKY_06 D
 // SOBU_08 NC
 // SOBU_09 SC
@@ -1080,7 +1080,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // WUSA01 nc
 // WUSA02 >> nc
 // WUSA03 >> TOBA00
-// WUSA04 nc 
+// WUSA04 nc
 // WUSA05 << WEGO03
 
 // When XAJO03 goes high, WUSA03 goes high.
@@ -1184,7 +1184,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // AFER_13 >> AVOR_01
 
 // Latch w/ arms on the ground side, output on the top rung - nor4 latch with inverted output
-    
+
 // UCOB_01 << SYS_PIN_CLK_GOOD
 // UCOB_02 >> UPYF_02, UFOL_01
 
@@ -1195,7 +1195,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 
 // TUBO_00 << CLKREQ
 // TUBO_01 nc
-// TUBO_02 >> UNUT 
+// TUBO_02 >> UNUT
 // TUBO_03 == nc
 // TUBO_04 nc
 // TUBO_05 << UPYF
@@ -1209,7 +1209,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // UNUT_03 nc
 // UNUT_04 >> TABA_03
 
-// TABA_01 << UNOR_04 
+// TABA_01 << UNOR_04
 // TABA_02 << UMUT_04
 // TABA_03 << UNUT_04
 // TABA_04 nc
@@ -1256,7 +1256,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 
 // TUBO_00 << CLKREQ
 // TUBO_01 nc
-// TUBO_02 >> UNUT 
+// TUBO_02 >> UNUT
 // TUBO_03 == nc
 // TUBO_04 nc
 // TUBO_05 << UPYF
@@ -1308,7 +1308,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // UKUP_17 >> nc                Q    _MUST_ be Q  - see DIV
 
 // So this makes no sense. SYS_PIN_RSTn high -> DIV always reset. But SYS_PIN_RSTn is high in run mode.
-// UCOB_CLKBAD low in run mode 
+// UCOB_CLKBAD low in run mode
 
 // If TAPE is going to do anything here, UCOB and RST _must_ be low
 
@@ -1341,7 +1341,7 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
 // UKUP_17 >> nc                Q    _MUST_ be Q  - see DIV
 
 // So this makes no sense. SYS_PIN_RSTn high -> DIV always reset. But SYS_PIN_RSTn is high in run mode.
-// UCOB_CLKBAD low in run mode 
+// UCOB_CLKBAD low in run mode
 
 // If TAPE is going to do anything here, UCOB and RST _must_ be low
 

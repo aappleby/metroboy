@@ -61,10 +61,10 @@ struct ScopeIndent {
 //#define EXPECT_EQ(A, B)      if ((A) != (B)) { LOG_Y("EXPECT_EQ fail: %s @ %d\n", __FILE__, __LINE__); LOG_Y("EXPECT_EQ fail: 0x%llx != 0x%llx\n", uint64_t(A), uint64_t(B)); failures++; }
 //#define EXPECT_NE(A, B)      if ((A) == (B)) { LOG_Y("EXPECT_NE fail: %s @ %d\n", __FILE__, __LINE__); LOG_Y("EXPECT_NE fail: 0x%llx == 0x%llx\n", uint64_t(A), uint64_t(B)); failures++; }
 
-#define EXPECT_EQ(A, B, ...) if ((A) != (B)) { LOG_Y("EXPECT_EQ fail: %s @ %d\n", __FILE__, __LINE__); LOG_Y(__VA_ARGS__); failures++; }
-#define EXPECT_NE(A, B, ...) if ((A) == (B)) { LOG_Y("EXPECT_NE fail: %s @ %d\n", __FILE__, __LINE__); LOG_Y(__VA_ARGS__); failures++; }
+#define EXPECT_EQ(A, B, ...) if ((A) != (B)) { LOG_Y("EXPECT_EQ fail: %llx != %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); failures++; }
+#define EXPECT_NE(A, B, ...) if ((A) == (B)) { LOG_Y("EXPECT_NE fail: %llx == %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); failures++; }
 
-#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R("ASSERT_EQ fail: %s @ %d\n", __FILE__, __LINE__); LOG_R("ASSERT_EQ fail: 0x%llx != 0x%llx\n", uint64_t(A), uint64_t(B)); LOG_R(__VA_ARGS__); LOG("\n"); failures++; TEST_END(); }
-#define ASSERT_NE(A, B, ...) if ((A) == (B)) { LOG_R("ASSERT_NE fail: %s @ %d\n", __FILE__, __LINE__); LOG_R("ASSERT_NE fail: 0x%llx == 0x%llx\n", uint64_t(A), uint64_t(B)); LOG_R(__VA_ARGS__); LOG("\n"); failures++; TEST_END(); }
+#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R("ASSERT_EQ fail: %llx != %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); failures++; TEST_END(); }
+#define ASSERT_NE(A, B, ...) if ((A) == (B)) { LOG_R("ASSERT_NE fail: %llx == %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); failures++; TEST_END(); }
 
 //-----------------------------------------------------------------------------

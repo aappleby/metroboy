@@ -25,39 +25,40 @@ struct GateBoyCpuBus {
   }
 
   void dump(Dumper& d) {
-    d.dump_slice2p("BUS_CPU_A        ", BUS_CPU_A, 16);
-    d.dump_slice2p("BUS_CPU_D        ", BUS_CPU_D, 8);
-    d.dump_slice2p("BUS_CPU_D_out    ", BUS_CPU_D, 8);
-    d.dump_bitp   ("PIN_CPU_RDp      ", PIN_CPU_RDp.state);
-    d.dump_bitp   ("PIN_CPU_WRp      ", PIN_CPU_WRp.state);
-    //d.dump_bitp   ("PIN_CPU_UNOR_DBG ", PIN_CPU_UNOR_DBG.state);
-    d.dump_bitp   ("PIN_CPU_ADDR_HIp ", PIN_CPU_ADDR_HIp.state);
-    //d.dump_bitp   ("PIN_CPU_UMUT_DBG ", PIN_CPU_UMUT_DBG.state);
-    d.dump_bitp   ("PIN_CPU_EXT_BUSp ", PIN_CPU_EXT_BUSp.state);
-    //d.dump_bitp   ("PIN_CPU_6        ", PIN_CPU_6.state);
-    d.dump_bitp   ("PIN_CPU_LATCH_EXT", PIN_CPU_LATCH_EXT.state);
-    //d.dump_bitp   ("BOOT_BITn        ", BOOT_BITn_h.state);
-    //d.dump_bitp   ("PIN_CPU_BOOTp    ", PIN_CPU_BOOTp.state);
-    //d.dump_bitp   ("TEDO_CPU_RDp     ", TEDO_CPU_RDp.state);
-    //d.dump_bitp   ("APOV_CPU_WRp     ", APOV_CPU_WRp.state);
-    //d.dump_bitp   ("TAPU_CPU_WRp     ", TAPU_CPU_WRp.state);
+    d.dump_bitp   ("SIG_CPU_RDp       : ", SIG_CPU_RDp.state);
+    d.dump_bitp   ("SIG_CPU_WRp       : ", SIG_CPU_WRp.state);
+    d.dump_bitp   ("SIG_CPU_UNOR_DBG  : ", SIG_CPU_UNOR_DBG.state);
+    d.dump_bitp   ("SIG_CPU_ADDR_HIp  : ", SIG_CPU_ADDR_HIp.state);
+    d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", SIG_CPU_UMUT_DBG.state);
+    d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", SIG_CPU_EXT_BUSp.state);
+    d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
+    d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", SIG_CPU_LATCH_EXT.state);
+    d.dump_bitp   ("BOOT_BITn         : ", BOOT_BITn_h.state);
+    d.dump_bitp   ("SIG_CPU_BOOTp     : ", SIG_CPU_BOOTp.state);
+    d.dump_bitp   ("TEDO_CPU_RDp      : ", TEDO_CPU_RDp.state);
+    d.dump_bitp   ("APOV_CPU_WRp      : ", APOV_CPU_WRp.state);
+    d.dump_bitp   ("TAPU_CPU_WRp      : ", TAPU_CPU_WRp.state);
+    d.dump_slice2p("BUS_CPU_A : ", BUS_CPU_A, 16);
+    d.dump_slice2p("BUS_CPU_D : ", BUS_CPU_D, 8);
   }
+
+  Signal _XYMU_RENDERINGp;
 
   Signal BUS_CPU_A[16];
   Bus BUS_CPU_D[8];
 
-  PinIn  PIN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
-  PinIn  PIN_CPU_WRp;           // top right port PORTA_01: ->
-  PinOut PIN_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
-  PinOut PIN_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  PinOut PIN_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-  PinIn  PIN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
+  Signal SIG_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
+  Signal SIG_CPU_WRp;           // top right port PORTA_01: ->
+  Signal SIG_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  Signal SIG_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
+  Signal SIG_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  Signal SIG_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
 
-  PinIn  PIN_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
-  PinIn  PIN_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
+  Signal SIG_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
+  Signal SIG_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
 
   /*p07.TEPU*/ DFF17 BOOT_BITn_h;
-  PinOut PIN_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  Signal SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
 
   /* p07.TEDO*/ Signal TEDO_CPU_RDp;
   /* p01.APOV*/ Signal APOV_CPU_WRp;
@@ -73,7 +74,7 @@ struct GateBoyCpuBus {
   /* p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(APOV_CPU_WRp.qp_new()); }
 
 
-  /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(PIN_CPU_LATCH_EXT.qp_new()); }
+  /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(SIG_CPU_LATCH_EXT.qp_new()); }
   /* p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
 
@@ -126,7 +127,7 @@ struct GateBoyCpuBus {
   /* p22.WERO*/ wire WERO_ADDR_PPUp    () const { return not1(WUTU_ADDR_PPUn()); }
 
   /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn   () const { return or3(BUS_CPU_A[13].qp_new(), BUS_CPU_A[14].qp_new(), SORE_A15n()); }
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(PIN_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn()); }
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(SIG_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn()); }
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), BUS_CPU_A[15].qp_new()); }
   /* p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
@@ -165,8 +166,8 @@ struct GateBoyCpuBus {
   wire TOLE_CPU_VRAM_RDp(wire ABUZ_EXT_RAM_CS_CLK)
   {
     /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
-    ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN_VRAM_OEn.qn_new()); // Ignoring debug for now
-    ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_VRAM_CSn.qn_new());
+    ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN45_VRAM_OEn.qn_new()); // Ignoring debug for now
+    ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN43_VRAM_CSn.qn_new());
     ///*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = mux2p(_TEFY_VRAM_MCSp, _TUTO_DBG_VRAMp, _TUCA_CPU_VRAM_RDp);
     /*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = _TUCA_CPU_VRAM_RDp;;
     return _TOLE_CPU_VRAM_RDp;
@@ -174,9 +175,9 @@ struct GateBoyCpuBus {
 
   wire SALE_CPU_VRAM_WRn()
   {
-    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), PIN_CPU_WRp.qp_new());  // Schematic wrong, second input is PIN_CPU_WRp
-    ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN_VRAM_OEn.qn_new()); // Ignoring debug for now
-    ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_VRAM_CSn.qn_new());
+    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), SIG_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_CPU_WRp
+    ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN45_VRAM_OEn.qn_new()); // Ignoring debug for now
+    ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN43_VRAM_CSn.qn_new());
     ///*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(_TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
     /*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = _TEGU_CPU_VRAM_WRn;
     return _SALE_CPU_VRAM_WRn;

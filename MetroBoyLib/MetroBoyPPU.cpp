@@ -287,7 +287,7 @@ void MetroBoyPPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, 
   // interrupt glitch - oam stat fires on vblank
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-  if (DELTA_GH && req.write_sync) {
+  if (DELTA_GH && req.write) {
     write_sync(req.addr, req.data_lo);
   }
 

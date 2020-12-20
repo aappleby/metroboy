@@ -47,14 +47,43 @@ void GateBoyApp::app_init() {
 
 #if 1
   // regenerate post-bootrom dump
+  /*
   gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
   }
+  */
 
-  //gb_thread.set_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_005_div.gb"));
-  //gb_thread.reset_app();
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_000_stat.gb"));
+  gb_thread.reset_to_cart();
+  gb_thread.gb->sys_cpu_en = 0;
+  memset(gb_thread.gb->framebuffer, 3, sizeof(gb_thread.gb->framebuffer));
+
+  /*
+  for (int i = 0; i < 1024 * 6; i++) {
+    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
+  }
+  for (int i = 1024 * 6; i < 8192; i++) {
+    gb_thread.gb->vid_ram[i] = 0x00;
+  }
+
+  gb_thread.gb->dbg_write(ADDR_BGP, 0b11100100);
+  */
+  {
+    uint8_t* vram = gb_thread.gb->vid_ram;
+    int cursor = 0;
+
+    for (int i = 0; i < 768; i++) {
+      for (int j = 0; j < 8; j++) vram[cursor++] = (uint8_t)i;
+    }
+    for (int i = 0; i < 2048; i++) {
+      vram[cursor++] = 0;
+    }
+
+
+  }
+
 #endif
 
 
@@ -373,6 +402,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   StringDumper d;
   float cursor = 0;
+  float col_spacing = 6.5 * 32;
 
   //----------------------------------------
 
@@ -419,19 +449,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb->dump(d);
   d("\n");
 
-  d("\002===== CPU =====\001\n");
-  gb->cpu.dump(d);
-
-  d("\002===== Ints =====\001\n");
-  gb->interrupts.dump(d);
-  d("\n");
-
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 224 - 32;
-  d.clear();
-
-  //----------------------------------------
-
   d("\002===== Reset/Debug =====\001\n");
   gb->rst.dump(d);
   d("\n");
@@ -445,159 +462,18 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb->timer.dump(d);
   d("\n");
 
-  /*
-  d("\002===== Joypad =====\001\n");
-  gb->joypad.dump(d);
-  d("\n");
-  */
-
-  d("\002===== DMA =====\001\n");
-  gb->dma.dump(d);
-  d("\n");
-
-  /*
-  d("\002===== Serial =====\001\n");
-  d.dump_bitp   ("ETAF_SER_RUNNING", gb->serial.ETAF_SER_RUNNING.state);
-  d.dump_bitp   ("CULY_XFER_DIR   ", gb->serial.CULY_SER_DIR.state);
-  d.dump_bitp   ("COTY_SER_CLK    ", gb->serial.COTY_SER_CLK.state);
-  d.dump_bitp   ("ELYS_SER_OUT    ", gb->serial.ELYS_SER_OUT.state);
-  d.dump_slice2p("CAFA_SER_CNT    ", &gb->serial.CAFA_SER_CNT0, 4);
-  d.dump_slice2p("CUBA_SER_DATA   ", &gb->serial.CUBA_SER_DATA0, 8);
-  d("\n");
-  */
-
   text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 224 - 64;
+  cursor += col_spacing;
   d.clear();
 
   //----------------------------------------
 
-  d("\002===== CPU Bus =====\001\n");
-  gb->cpu_bus.dump(d);
+  d("\002===== CPU =====\001\n");
+  gb->cpu.dump(d);
+
+  d("\002===== Interrupts =====\001\n");
+  gb->interrupts.dump(d);
   d("\n");
-
-  d("\002===== EXT Bus =====\001\n");
-  gb->ext_bus.dump(d);
-  d("\n");
-
-  d("\002===== VRAM Bus =====\001\n");
-  gb->vram_bus.dump(d);
-  d("\n");
-
-  d("\002===== OAM Bus =====\001\n");
-  gb->oam_bus.dump(d);
-  d("\n");
-
-  d("\002===== Temp Regs =====\001\n");
-  d.dump_slice2n("Tile temp A  ", &gb->tile_fetcher.tile_temp_a.LEGU_TILE_DA0n, 8);
-  d.dump_slice2p("Tile temp B  ", &gb->tile_fetcher.tile_temp_b.RAWU_TILE_DB0p, 8);
-  d.dump_slice2n("Sprite temp A", &gb->sprite_fetcher.sprite_pix_a.REWO_SPRITE_DA0n, 8);
-  d.dump_slice2n("Sprite temp B", &gb->sprite_fetcher.sprite_pix_b.PEFO_SPRITE_DB0n, 8);
-  d("\n");
-
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 240;
-  d.clear();
-
-  //----------------------------------------
-
-  d("\002===== Pix Pipe =====\001\n");
-  d("PIX COUNT  0x%02x\n", BitBase::pack_old(8, &gb->pix_count.XEHO_PX0p));
-  d("\n");
-  d.dump_bitp("XYMU_RENDERINGn       ", gb->ppu_reg.XYMU_RENDERINGn.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap      ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
-  d.dump_bitp("PUKU_WIN_HITn         ", gb->win_reg.PUKU_WIN_HITn.state);
-  d.dump_bitp("RYDY_WIN_HITp         ", gb->win_reg.RYDY_WIN_HITp.state);
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B ", gb->win_reg.SOVY_WIN_HITp.state);
-  d.dump_bitp("NOPA_WIN_MODE_B       ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
-  d.dump_bitp("PYCO_WX_MATCH_A       ", gb->win_reg.PYCO_WIN_MATCHp.state);
-  d.dump_bitp("NUNU_WX_MATCH_B       ", gb->win_reg.NUNU_WIN_MATCHp.state);
-  d.dump_bitp("REJO_WY_MATCH_LATCH   ", gb->win_reg.REJO_WY_MATCH_LATCHp.state);
-  d.dump_bitp("SARY_WY_MATCH         ", gb->win_reg.SARY_WY_MATCHp.state);
-  d.dump_bitp("RYFA_FETCHn_A         ", gb->win_reg.RYFA_WIN_FETCHn_A.state);
-  d.dump_bitp("RENE_FETCHn_B         ", gb->win_reg.RENE_WIN_FETCHn_B.state);
-
-  d.dump_bitp("RYKU_FINE_CNT0        ", gb->fine_scroll.RYKU_FINE_CNT0.state);
-  d.dump_bitp("ROGA_FINE_CNT1        ", gb->fine_scroll.ROGA_FINE_CNT1.state);
-  d.dump_bitp("RUBU_FINE_CNT2        ", gb->fine_scroll.RUBU_FINE_CNT2.state);
-  d.dump_bitp("PUXA_FINE_MATCH_A     ", gb->fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
-  d.dump_bitp("NYZE_FINE_MATCH_B     ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
-  d.dump_bitp("ROXY_FINE_SCROLL_DONEn", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
-
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn ", gb->reg_stat.RUPO_LYC_MATCHn.state);
-  d.dump_bitp("VOGA_HBLANKp          ", gb->ppu_reg.VOGA_HBLANKp.state);
-  d("\n");
-  d.dump_slice2p("PIX COUNT ", &gb->pix_count.XEHO_PX0p, 8);
-  d.dump_slice2p("BG PIPE A ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
-  d.dump_slice2p("BG PIPE B ", &gb->pix_pipes.TOMY_BGW_PIPE_B0, 8);
-  d.dump_slice2p("SPR PIPE A", &gb->pix_pipes.NURO_SPR_PIPE_A0, 8);
-  d.dump_slice2p("SPR PIPE B", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
-  d.dump_slice2p("PAL PIPE  ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
-  d.dump_slice2p("MASK PIPE ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
-  d("\n");
-
-  d("\002===== LCD =====\001\n");
-
-  /*
-  #define ADDR_LCDC        0xFF40
-  #define ADDR_STAT        0xFF41
-  #define ADDR_SCY         0xFF42
-  #define ADDR_SCX         0xFF43
-  #define ADDR_LY          0xFF44
-  #define ADDR_LYC         0xFF45
-  #define ADDR_DMA         0xFF46
-  #define ADDR_BGP         0xFF47
-  #define ADDR_OBP0        0xFF48
-  #define ADDR_OBP1        0xFF49
-  #define ADDR_WY          0xFF4A
-  #define ADDR_WX          0xFF4B
-  */
-
-  gb->reg_lcdc.dump(d);
-  gb->reg_stat.dump(d);
-  gb->reg_scy.dump(d);
-  gb->reg_scx.dump(d);
-  gb->reg_lx.dump(d);
-  gb->reg_ly.dump(d);
-  gb->reg_lyc.dump(d);
-  gb->pix_pipes.reg_bgp.dump(d);
-  gb->pix_pipes.reg_obp0.dump(d);
-  gb->pix_pipes.reg_obp1.dump(d);
-  gb->reg_wy.dump(d);
-  gb->reg_wx.dump(d);
-  gb->lcd.dump(d);
-  d("\n");
-
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 224;
-  d.clear();
-
-  //----------------------------------------
-
-  d("\002===== Tile Fetch =====\001\n");
-  gb->tile_fetcher.dump(d);
-  d.dump_slice2p("WIN MAP X ", &gb->win_map_x.WYKA_WIN_X3, 5);
-  d.dump_slice2p("WIN Y     ", &gb->win_line_y.VYNO_WIN_Y0, 8);
-  d("\n");
-
-  d("\002===== Sprite Fetch =====\001\n");
-  gb->sprite_fetcher.dump(d);
-  d("\n");
-
-  d("\002===== Sprite Scan =====\001\n");
-  gb->sprite_scanner.dump(d);
-  d("\n");
-
-  const auto& ss = gb->sprite_store;
-  d("\002===== Sprite Store =====\001\n");
-  gb->sprite_store.dump(d);
-  d("\n");
-
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += 224 - 32;
-  d.clear();
-
-  //----------------------------------------
 
   d("\002===== Disasm =====\001\n");
   {
@@ -626,6 +502,144 @@ void GateBoyApp::app_render_frame(Viewport view) {
     assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
   }
   d("\n");
+
+  /*
+  d("\002===== Joypad =====\001\n");
+  gb->joypad.dump(d);
+  d("\n");
+  */
+
+  /*
+  d("\002===== Serial =====\001\n");
+  d.dump_bitp   ("ETAF_SER_RUNNING : ", gb->serial.ETAF_SER_RUNNING.state);
+  d.dump_bitp   ("CULY_XFER_DIR    : ", gb->serial.CULY_SER_DIR.state);
+  d.dump_bitp   ("COTY_SER_CLK     : ", gb->serial.COTY_SER_CLK.state);
+  d.dump_bitp   ("ELYS_SER_OUT     : ", gb->serial.ELYS_SER_OUT.state);
+  d.dump_slice2p("CAFA_SER_CNT     : ", &gb->serial.CAFA_SER_CNT0, 4);
+  d.dump_slice2p("CUBA_SER_DATA    : ", &gb->serial.CUBA_SER_DATA0, 8);
+  d("\n");
+  */
+
+  text_painter.render(view, d.s.c_str(), cursor, 0);
+  cursor += col_spacing;
+  d.clear();
+
+  //----------------------------------------
+
+  d("\002===== CPU Bus =====\001\n");
+  gb->cpu_bus.dump(d);
+  d("\n");
+
+  d("\002===== EXT Bus =====\001\n");
+  gb->ext_bus.dump(d);
+  d("\n");
+
+  d("\002===== VRAM Bus =====\001\n");
+  gb->vram_bus.dump(d);
+  d("\n");
+
+  d("\002===== OAM Bus =====\001\n");
+  gb->oam_bus.dump(d);
+  d("\n");
+
+  d("\002===== DMA =====\001\n");
+  gb->dma.dump(d);
+  d("\n");
+
+  text_painter.render(view, d.s.c_str(), cursor, 0);
+  cursor += col_spacing;
+  d.clear();
+
+  //----------------------------------------
+
+  d("\002===== LCD =====\001\n");
+  gb->lcd.dump(d);
+  d.dump_slice2p("LX         : ", &gb->lcd.reg_lx.SAXO_LX0p.state,  7);
+  d.dump_slice2p("FF44 LY    : ", &gb->lcd.reg_ly.MUWY_LY0p.state,  8);
+  d.dump_slice2n("FF45 LYC   : ", &gb->lcd.reg_lyc.SYRY_LYC0n.state, 8);
+  d.dump_bitp   ("MYTA_y153p          : ", gb->lcd.reg_ly.MYTA_y153p.state);
+  d.dump_bitp   ("RUTU_LINE_P910p     : ", gb->lcd.reg_lx.RUTU_x113p.state);
+  d.dump_bitp   ("NYPE_LINE_P002p     : ", gb->lcd.reg_lx.NYPE_x113p.state);
+  d.dump_bitp   ("ROPO_LY_MATCH_SYNCp : ", gb->lcd.reg_lyc.ROPO_LY_MATCH_SYNCp.state);
+  d("\n");
+
+  d("\002===== PPU Regs=====\001\n");
+  d.dump_slice2n("FF40 LCDC  : ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
+  d.dump_slice2n("FF41 STAT  : ", &gb->reg_stat.ROXE_STAT_HBI_ENn, 4);
+  d.dump_slice2n("FF42 SCY   : ", &gb->reg_scy.GAVE_SCY0n, 8);
+  d.dump_slice2n("FF43 SCX   : ", &gb->reg_scx.DATY_SCX0n, 8);
+  d.dump_slice2n("FF47 BGP   : ", &gb->pix_pipes.reg_bgp.PAVO_BGP_D0n, 8);
+  d.dump_slice2n("FF48 OBP0  : ", &gb->pix_pipes.reg_obp0.XUFU_OBP0_D0n, 8);
+  d.dump_slice2n("FF49 OBP1  : ", &gb->pix_pipes.reg_obp1.MOXY_OBP1_D0n, 8);
+  d.dump_slice2n("FF4A WY    : ", &gb->reg_wy.NESO_WY0n, 8);
+  d.dump_slice2n("FF4B WX    : ", &gb->reg_wx.MYPA_WX0n, 8);
+  d.dump_slice2p("WIN MAP X  : ", &gb->win_map_x.WYKA_WIN_X3, 5);
+  d.dump_slice2p("WIN LINE Y : ", &gb->win_line_y.VYNO_WIN_Y0, 8);
+  d.dump_bitp   ("RUPO_LYC_MATCHn     : ", gb->reg_stat.RUPO_LYC_MATCHn.state);
+  d("\n");
+
+  d("\002===== Pix Pipe =====\001\n");
+  d.dump_slice2p("PIX COUNT  : ", &gb->pix_count.XEHO_PX0p, 8);
+  d.dump_slice2p("BG PIPE A  : ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
+  d.dump_slice2p("BG PIPE B  : ", &gb->pix_pipes.TOMY_BGW_PIPE_B0, 8);
+  d.dump_slice2p("SPR PIPE A : ", &gb->pix_pipes.NURO_SPR_PIPE_A0, 8);
+  d.dump_slice2p("SPR PIPE B : ", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
+  d.dump_slice2p("PAL PIPE   : ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
+  d.dump_slice2p("MASK PIPE  : ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
+  d.dump_bitn   ("REMY_LD0n  : ", gb->pix_pipes.REMY_LD0n.state);
+  d.dump_bitn   ("RAVO_LD1n  : ", gb->pix_pipes.RAVO_LD1n.state);
+
+  d("\n");
+  d.dump_bitp("XYMU_RENDERINGn        : ", gb->ppu_reg.XYMU_RENDERINGn.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap       : ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
+  d.dump_bitp("PUKU_WIN_HITn          : ", gb->win_reg.PUKU_WIN_HITn.state);
+  d.dump_bitp("RYDY_WIN_HITp          : ", gb->win_reg.RYDY_WIN_HITp.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", gb->win_reg.SOVY_WIN_HITp.state);
+  d.dump_bitp("NOPA_WIN_MODE_B        : ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
+  d.dump_bitp("PYCO_WX_MATCH_A        : ", gb->win_reg.PYCO_WIN_MATCHp.state);
+  d.dump_bitp("NUNU_WX_MATCH_B        : ", gb->win_reg.NUNU_WIN_MATCHp.state);
+  d.dump_bitp("REJO_WY_MATCH_LATCH    : ", gb->win_reg.REJO_WY_MATCH_LATCHp.state);
+  d.dump_bitp("SARY_WY_MATCH          : ", gb->win_reg.SARY_WY_MATCHp.state);
+  d.dump_bitp("RYFA_FETCHn_A          : ", gb->win_reg.RYFA_WIN_FETCHn_A.state);
+  d.dump_bitp("RENE_FETCHn_B          : ", gb->win_reg.RENE_WIN_FETCHn_B.state);
+  d.dump_bitp("RYKU_FINE_CNT0         : ", gb->fine_scroll.RYKU_FINE_CNT0.state);
+  d.dump_bitp("ROGA_FINE_CNT1         : ", gb->fine_scroll.ROGA_FINE_CNT1.state);
+  d.dump_bitp("RUBU_FINE_CNT2         : ", gb->fine_scroll.RUBU_FINE_CNT2.state);
+  d.dump_bitp("PUXA_FINE_MATCH_A      : ", gb->fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
+  d.dump_bitp("NYZE_FINE_MATCH_B      : ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
+  d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
+  d.dump_bitp("RUPO_LYC_MATCH_LATCHn  : ", gb->reg_stat.RUPO_LYC_MATCHn.state);
+  d.dump_bitp("VOGA_HBLANKp           : ", gb->ppu_reg.VOGA_HBLANKp.state);
+  d("\n");
+
+  text_painter.render(view, d.s.c_str(), cursor, 0);
+  cursor += col_spacing;
+  d.clear();
+
+  //----------------------------------------
+
+  d("\002===== Tile Fetch =====\001\n");
+  gb->tile_fetcher.dump(d);
+  d("\n");
+
+  d("\002===== Sprite Fetch =====\001\n");
+  gb->sprite_fetcher.dump(d);
+  d("\n");
+
+  d("\002===== Sprite Scan =====\001\n");
+  gb->sprite_scanner.dump(d);
+  d("\n");
+
+  const auto& ss = gb->sprite_store;
+  d("\002===== Sprite Store =====\001\n");
+  gb->sprite_store.dump(d);
+  d("\n");
+
+  text_painter.render(view, d.s.c_str(), cursor, 0);
+  cursor += col_spacing;
+  d.clear();
+
+  //----------------------------------------
 
   d("\002===== OAM =====\001\n");
   for (int y = 0; y < 10; y++) {
@@ -671,53 +685,51 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   // Draw screen and vid ram contents
 
-  int gb_x = 1216;
-  int gb_y = 32;
-
-  if (has_golden && show_diff) {
-    gb_blitter.blit_diff(view, gb_x, gb_y,  2, framebuffer, golden_u8);
-  } else if (show_golden) {
-    gb_blitter.blit_screen(view, gb_x, gb_y,  2, golden_u8);
-  } else {
-    gb_blitter.blit_screen(view, gb_x, gb_y,  2, framebuffer);
-  }
-
-  gb_blitter.blit_tiles (view, 1632, 32,  1, vid_ram);
-  gb_blitter.blit_map   (view, 1344, 448, 1, vid_ram, 0, 0);
-  gb_blitter.blit_map   (view, 1632, 448, 1, vid_ram, 0, 1);
-  gb_blitter.blit_map   (view, 1344, 736, 1, vid_ram, 1, 0);
-  gb_blitter.blit_map   (view, 1632, 736, 1, vid_ram, 1, 1);
-
   // Draw screen overlay
   {
+    memset(overlay, 0, sizeof(overlay));
+
+#if 0
     int fb_x = gb->gb_screen_x;
     int fb_y = gb->gb_screen_y;
     if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
-      memset(overlay, 0, sizeof(overlay));
-
       for (int x = 0; x < fb_x; x++) {
         uint8_t p0 = gb->lcd.lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
         uint8_t p1 = gb->lcd.lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
-
         int r = (3 - (p0 + p1 * 2)) * 30 + 50;
         int g = (3 - (p0 + p1 * 2)) * 30 + 50;
         int b = (3 - (p0 + p1 * 2)) * 30 + 30;
-
         overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
       {
         uint8_t p0 = gb->lcd.lcd_pix_lo.qp_old();
         uint8_t p1 = gb->lcd.lcd_pix_hi.qp_old();
-
         int c = (3 - (p0 + p1 * 2)) * 85;
-
         overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
       }
-
-      update_texture_u32(overlay_tex, 160, 144, overlay);
-      blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
     }
+#endif
+
+    update_texture_u32(overlay_tex, 160, 144, overlay);
   }
+
+  int gb_x = 42 * 32;
+  int gb_y = 1 * 32;
+
+  if (has_golden && show_diff) {
+    gb_blitter.blit_diff(view,   gb_x, gb_y,  2, framebuffer, golden_u8);
+  } else if (show_golden) {
+    gb_blitter.blit_screen(view, gb_x, gb_y,  2, golden_u8);
+  } else {
+    gb_blitter.blit_screen(view, gb_x, gb_y,  2, framebuffer);
+  }
+  gb_blitter.blit_tiles (view, 33 * 32, 16 * 32, 1, vid_ram);
+  gb_blitter.blit_map   (view, 42 * 32, 16 * 32, 1, vid_ram, 0, 0);
+  gb_blitter.blit_map   (view, 51 * 32, 16 * 32, 1, vid_ram, 0, 1);
+  gb_blitter.blit_map   (view, 42 * 32, 25 * 32, 1, vid_ram, 1, 0);
+  gb_blitter.blit_map   (view, 51 * 32, 25 * 32, 1, vid_ram, 1, 1);
+
+  blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
 
   // Status bar under screen
 
@@ -739,7 +751,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   // Probe dump
 
   gb->probes.dump(d, draw_passes);
-  text_painter.render(view, d.s, 640 - 64, 640 + 128);
+  text_painter.render(view, d.s, 34 * 32, 11 * 32);
   d.clear();
 
   frame_count++;

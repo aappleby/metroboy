@@ -57,14 +57,15 @@ struct GateBoyJoypad {
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2n; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3n; // 10-rung, looks like pass gate or something
 
-  PinOut PIN_CPU_WAKE;          // top right wire by itself <- P02.AWOB
+  Signal SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB
 
-  PinIn  PIN_JOY_P10; // PIN_67   Pressing a button pulls the corresponding pin _down_.
-  PinIn  PIN_JOY_P11; // PIN_66
-  PinIn  PIN_JOY_P12; // PIN_65
-  PinIn  PIN_JOY_P13; // PIN_64
-  PinOut PIN_JOY_P14; // PIN_63
-  PinOut PIN_JOY_P15; // PIN_62
+  // Pressing a button pulls the corresponding pin _down_.
+  PinIn  PIN67_JOY_P10;
+  PinIn  PIN66_JOY_P11;
+  PinIn  PIN65_JOY_P12;
+  PinIn  PIN64_JOY_P13;
+  PinOut PIN63_JOY_P14;
+  PinOut PIN62_JOY_P15;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

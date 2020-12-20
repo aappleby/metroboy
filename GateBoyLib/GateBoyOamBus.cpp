@@ -128,17 +128,17 @@ void GateBoyOamBus::latch_to_temp_b(
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyOamBus::ext_to_data_bus(const GateBoyDMA& dma, PinIO PIN_EXT_D[8])
+void GateBoyOamBus::ext_to_data_bus(const GateBoyDMA& dma, PinIO PIN17_DATA[8])
 {
   // DMA write OAM from ram/cart
-  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(PIN_EXT_D[0].qn_new());
-  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(PIN_EXT_D[1].qn_new());
-  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(PIN_EXT_D[2].qn_new());
-  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(PIN_EXT_D[3].qn_new());
-  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(PIN_EXT_D[4].qn_new());
-  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(PIN_EXT_D[5].qn_new());
-  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(PIN_EXT_D[6].qn_new());
-  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(PIN_EXT_D[7].qn_new());
+  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(PIN17_DATA[0].qn_new());
+  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(PIN17_DATA[1].qn_new());
+  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(PIN17_DATA[2].qn_new());
+  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(PIN17_DATA[3].qn_new());
+  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(PIN17_DATA[4].qn_new());
+  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(PIN17_DATA[5].qn_new());
+  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(PIN17_DATA[6].qn_new());
+  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(PIN17_DATA[7].qn_new());
 
   /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(dma.LUMA_DMA_CARTp());
 
@@ -308,7 +308,7 @@ void GateBoyOamBus::set_pin_clk(
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1(_BYCU_OAM_CLKp);
 
-  PIN_OAM_CLKn.pin_out(_COTA_OAM_CLKn);
+  SIG_OAM_CLKn.set_new(_COTA_OAM_CLKn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -339,8 +339,8 @@ void GateBoyOamBus::set_pin_wr(
   /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1(_YNYC_OAM_A_WRp);
   /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1(_YLYC_OAM_B_WRp);
 
-  PIN_OAM_WRn_A.pin_out(_ZOFE_OAM_A_WRn);
-  PIN_OAM_WRn_B.pin_out(_ZONE_OAM_B_WRn);
+  SIG_OAM_WRn_A.set_new(_ZOFE_OAM_A_WRn);
+  SIG_OAM_WRn_B.set_new(_ZONE_OAM_B_WRn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -359,7 +359,7 @@ void GateBoyOamBus::set_pin_oe(
   /*#p28.YRYV*/ wire _YRYU_OAM_OEp = not1(_YVAL_OAM_OEn);
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYU_OAM_OEp);
 
-  PIN_OAM_OEn.pin_out(_ZODO_OAM_OEn);
+  SIG_OAM_OEn.set_new(_ZODO_OAM_OEn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -369,17 +369,17 @@ void GateBoyOamBus::tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_S
   uint8_t oam_data_a = (uint8_t)BitBase::pack_newn(8, &BUS_OAM_DAn[0]);
   uint8_t oam_data_b = (uint8_t)BitBase::pack_newn(8, &BUS_OAM_DBn[0]);
 
-  if (!old_oam_clk.qp_old() && !PIN_OAM_CLKn.qp_new()) {
-    if (!PIN_OAM_WRn_A.qp_new()) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-    if (!PIN_OAM_WRn_B.qp_new()) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+  if (!old_oam_clk.qp_old() && !SIG_OAM_CLKn.qp_new()) {
+    if (!SIG_OAM_WRn_A.qp_new()) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+    if (!SIG_OAM_WRn_B.qp_new()) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }
 
-  if (!PIN_OAM_OEn.qp_new()) {
+  if (!SIG_OAM_OEn.qp_new()) {
     oam_data_a = oam_ram[(oam_addr << 1) + 0];
     oam_data_b = oam_ram[(oam_addr << 1) + 1];
   }
 
-  old_oam_clk.set_new(!PIN_OAM_CLKn.qp_new());
+  old_oam_clk.set_new(!SIG_OAM_CLKn.qp_new());
 
   /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
   /*#p28.BOTA*/ wire _BOTA_OAM_OEn  = nand3(cpu_bus.BOFE_LATCH_EXTn(), cpu_bus.SARO_ADDR_OAMp(), cpu_bus.ASOT_CPU_RDp()); // Schematic wrong, this is NAND

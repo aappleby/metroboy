@@ -71,12 +71,12 @@
 #define RLA            (0x17)
 #define RRA            (0x1F)
 #define DAA            (0x27)
-#define LCD_PIN_LATCH            (0x2F)
+#define CPL            (0x2F)
 #define SCF            (0x37)
 #define CCF            (0x3F)
 
 //-----------------------------------------------------------------------------
-// quad 1              
+// quad 1
 
 #define LD_B_B         (0x40)
 #define LD_B_C         (0x41)
@@ -112,7 +112,7 @@
 #define LD_E_H         (0x5C)
 #define LD_E_L         (0x5D)
 #define LD_E_HL        (0x5E)
-#define LD_E_A         (0x5F) 
+#define LD_E_A         (0x5F)
 
 #define LD_H_B         (0x60)
 #define LD_H_C         (0x61)
@@ -151,7 +151,7 @@
 #define LD_A_A         (0x7F)
 
 //-----------------------------------------------------------------------------
-// quad 2              
+// quad 2
 
 #define ADD_A_B        (0x80)
 #define ADD_A_C        (0x81)

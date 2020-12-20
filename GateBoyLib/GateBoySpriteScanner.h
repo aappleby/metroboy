@@ -48,16 +48,16 @@ struct SpriteScanner {
 
   void dump(Dumper& d) {
     d          ("SCAN INDEX        : %02d\n", BitBase::pack_old(6, &YFEL_SCAN0));
-    d.dump_bitp("BESU_SCANNINGp   ", BESU_SCANNINGp.state);
-    d.dump_bitp("CENO_SCANNINGp   ", CENO_SCANNINGp.state);
-    d.dump_bitp("BYBA_SCAN_DONE_Ap", BYBA_SCAN_DONE_Ap.state);
-    d.dump_bitp("DOBA_SCAN_DONE_Bp", DOBA_SCAN_DONE_Bp.state);
-    d.dump_bitp("YFEL_SCAN0       ", YFEL_SCAN0.state);
-    d.dump_bitp("WEWY_SCAN1       ", WEWY_SCAN1.state);
-    d.dump_bitp("GOSO_SCAN2       ", GOSO_SCAN2.state);
-    d.dump_bitp("ELYN_SCAN3       ", ELYN_SCAN3.state);
-    d.dump_bitp("FAHA_SCAN4       ", FAHA_SCAN4.state);
-    d.dump_bitp("FONY_SCAN5       ", FONY_SCAN5.state);
+    d.dump_bitp("BESU_SCANNINGp    : ", BESU_SCANNINGp.state);
+    d.dump_bitp("CENO_SCANNINGp    : ", CENO_SCANNINGp.state);
+    d.dump_bitp("BYBA_SCAN_DONE_Ap : ", BYBA_SCAN_DONE_Ap.state);
+    d.dump_bitp("DOBA_SCAN_DONE_Bp : ", DOBA_SCAN_DONE_Bp.state);
+    d.dump_bitp("YFEL_SCAN0        : ", YFEL_SCAN0.state);
+    d.dump_bitp("WEWY_SCAN1        : ", WEWY_SCAN1.state);
+    d.dump_bitp("GOSO_SCAN2        : ", GOSO_SCAN2.state);
+    d.dump_bitp("ELYN_SCAN3        : ", ELYN_SCAN3.state);
+    d.dump_bitp("FAHA_SCAN4        : ", FAHA_SCAN4.state);
+    d.dump_bitp("FONY_SCAN5        : ", FONY_SCAN5.state);
   }
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp; // Axxxxxxx

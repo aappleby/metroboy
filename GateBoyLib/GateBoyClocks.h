@@ -8,7 +8,7 @@ struct GateBoyResetDebug;
 struct GateBoyClock {
 
   void reset_to_cart() {
-    PIN_CPU_BUKE_AxxxxxGH.reset_to_cart(REG_D1C0);
+    SIG_CPU_BUKE_AxxxxxGH.reset_to_cart(REG_D1C0);
 
     WUVU_ABxxEFxx.reset_to_cart(REG_D1C1);
     VENA_xxCDEFxx.reset_to_cart(REG_D0C0);
@@ -21,12 +21,12 @@ struct GateBoyClock {
   //----------------------------------------
   // Root clocks - ignoring the deglitcher here
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_SYS_CLKGOOD.qp_new()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_SYS_CLKGOOD.qp_new()); }
-  /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(PIN_SYS_CLKREQ.qp_new()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN74_CLKGOOD.qp_new()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN74_CLKGOOD.qp_new()); }
+  /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.qp_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
-  /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN_SYS_CLK.qp_new(); }
+  /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN74_CLK.qp_new(); }
   /* p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); }
   /* p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
   /*#p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); }
@@ -87,14 +87,14 @@ struct GateBoyClock {
   /*#p01.AJAX*/ wire AJAX_xxxxEFGH() const { return not1(ATYP_ABCDxxxx()); }
 
   void dump(Dumper& d) {
-    d.dump_bitp("AFUR_xxxxEFGHp", AFUR_xxxxEFGHp.state);
-    d.dump_bitp("ALEF_AxxxxFGHp", ALEF_AxxxxFGHp.state);
-    d.dump_bitp("APUK_ABxxxxGHp", APUK_ABxxxxGHp.state);
-    d.dump_bitp("ADYK_ABCxxxxHp", ADYK_ABCxxxxHp.state);
+    d.dump_bitp("AFUR_xxxxEFGHp : ", AFUR_xxxxEFGHp.state);
+    d.dump_bitp("ALEF_AxxxxFGHp : ", ALEF_AxxxxFGHp.state);
+    d.dump_bitp("APUK_ABxxxxGHp : ", APUK_ABxxxxGHp.state);
+    d.dump_bitp("ADYK_ABCxxxxHp : ", ADYK_ABCxxxxHp.state);
     d("\n");
-    d.dump_bitp("WUVU_ABxxEFxxp", WUVU_ABxxEFxx.state);
-    d.dump_bitp("VENA_xxCDEFxxp", VENA_xxCDEFxx.state);
-    d.dump_bitp("WOSU_AxxDExxHp", WOSU_AxxDExxH.state);
+    d.dump_bitp("WUVU_ABxxEFxxp : ", WUVU_ABxxEFxx.state);
+    d.dump_bitp("VENA_xxCDEFxxp : ", VENA_xxCDEFxx.state);
+    d.dump_bitp("WOSU_AxxDExxHp : ", WOSU_AxxDExxH.state);
   }
 
   /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
@@ -106,20 +106,19 @@ struct GateBoyClock {
   /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
   /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 
-  PinIn PIN_SYS_CLKGOOD;
-  PinIn PIN_SYS_CLKREQ;
-  PinIn PIN_SYS_CLK;
+  PinIn  PIN74_CLKGOOD;
+  PinIn  PIN74_CLK;
+  PinOut PIN75_EXT_CLK;
 
-  PinOut PIN_EXT_CLK;    // PIN_75
-
-  PinOut PIN_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
-  PinOut PIN_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
-  PinOut PIN_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
-  PinOut PIN_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
-  PinOut PIN_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
-  PinOut PIN_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
-  PinOut PIN_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before PIN_CPU_READYp is asserted.
-  PinOut PIN_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
+  Signal SIG_CPU_CLKREQ;
+  Signal SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
+  Signal SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
+  Signal SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
+  Signal SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
+  Signal SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
+  Signal SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
+  Signal SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
+  Signal SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 };
 
 //-----------------------------------------------------------------------------

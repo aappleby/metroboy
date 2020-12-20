@@ -160,7 +160,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
     /*p16.FAKO*/ wire RESTART_RST = nor4(b.apu.APU_RESET1, b.ch3.CH3_RESTART_SYNC);
 
     /*p16.JUZO*/ next.ch3.FF1E_WR = not1(FF1E_WRn);
-    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.PIN_CPU_HOLD_MEM, b.apu.APU_WR);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.SIG_CPU_HOLD_MEM, b.apu.APU_WR);
     /*p16.FOVO*/ next.ch3.FF1E_WRo = nand2(CPU_WR_WEIRD, ADDR_FF1E);
     /*p16.EPYX*/ next.ch3.FF1E_WRp = nor4(b.apu.APU_WR, ADDR_FF1E); // polarity?
 

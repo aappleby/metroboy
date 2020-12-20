@@ -22,19 +22,19 @@ struct GateBoyVramBus {
     BUS_VRAM_An[11].reset_to_cart(REG_D1C0);
     BUS_VRAM_An[12].reset_to_cart(REG_D1C0);
 
-    PIN_VRAM_Ap[ 0].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 1].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 2].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 3].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 4].reset_to_cart(REG_D1C0);
-    PIN_VRAM_Ap[ 5].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 6].reset_to_cart(REG_D1C0);
-    PIN_VRAM_Ap[ 7].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 8].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[ 9].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[10].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[11].reset_to_cart(REG_D0C0);
-    PIN_VRAM_Ap[12].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 0].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 1].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 2].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 3].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 4].reset_to_cart(REG_D1C0);
+    PIN34_VRAM_ADDR[ 5].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 6].reset_to_cart(REG_D1C0);
+    PIN34_VRAM_ADDR[ 7].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 8].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[ 9].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[10].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[11].reset_to_cart(REG_D0C0);
+    PIN34_VRAM_ADDR[12].reset_to_cart(REG_D0C0);
   }
 
   void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
@@ -58,22 +58,22 @@ struct GateBoyVramBus {
   void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);
 
   void dump(Dumper& d) {
-    d.dump_slice2n("BUS_VRAM_An ", BUS_VRAM_An, 13);
-    d.dump_slice2p("BUS_VRAM_Dp ", BUS_VRAM_Dp, 8);
-    d.dump_bitp   ("PIN_VRAM_CSn", PIN_VRAM_CSn.state);
-    d.dump_bitp   ("PIN_VRAM_OEn", PIN_VRAM_OEn.state);
-    d.dump_bitp   ("PIN_VRAM_WRn", PIN_VRAM_WRn.state);
-    d.dump_slice2p("PIN_VRAM_Ap ", PIN_VRAM_Ap, 13);
-    d.dump_slice2p("PIN_VRAM_Dp ", PIN_VRAM_Dp, 8);
+    d.dump_bitp   ("PIN43_VRAM_CSn : ", PIN43_VRAM_CSn.state);
+    d.dump_bitp   ("PIN45_VRAM_OEn : ", PIN45_VRAM_OEn.state);
+    d.dump_bitp   ("PIN49_VRAM_WRn : ", PIN49_VRAM_WRn.state);
+    d.dump_slice2n("BUS_VRAM_An : ", BUS_VRAM_An, 13);
+    d.dump_slice2p("BUS_VRAM_Dp : ", BUS_VRAM_Dp, 8);
+    d.dump_slice2p("PIN34_VRAM_ADDR : ", PIN34_VRAM_ADDR, 13);
+    d.dump_slice2p("PIN25_VRAM_DATA : ", PIN25_VRAM_DATA, 8);
   }
 
   Bus BUS_VRAM_An[13];
-  Bus  BUS_VRAM_Dp[8];
-  PinOut PIN_VRAM_CSn; // PIN_43
-  PinOut PIN_VRAM_OEn; // PIN_45
-  PinOut PIN_VRAM_WRn; // PIN_49
-  PinOut PIN_VRAM_Ap[13];
-  PinIO  PIN_VRAM_Dp[8];
+  Bus BUS_VRAM_Dp[8];
+  PinOut PIN43_VRAM_CSn;
+  PinOut PIN45_VRAM_OEn;
+  PinOut PIN49_VRAM_WRn;
+  PinOut PIN34_VRAM_ADDR[13]; // Pins 34 - 48
+  PinIO  PIN25_VRAM_DATA[8];  // Pins 25 - 33
 };
 
 //-----------------------------------------------------------------------------

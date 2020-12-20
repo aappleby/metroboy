@@ -575,7 +575,7 @@ void SpriteStore::get_sprite(SpriteFirstMatch first_match, Bus SPR_TRI_I[6], Bus
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::reset_first_match(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag) {
+void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag) {
   // Sprite store X resetter. This has to happen before the match check.
   /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
@@ -613,95 +613,116 @@ void SpriteStore::reset_first_match(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_
   /* p29.WUZO*/ wire _WUZO_STORE8_RSTn_new_evn = not1(_GORO_STORE8_RSTp_new_evn);
   /* p29.DOSY*/ wire _DOSY_STORE9_RSTn_new_evn = not1(_DUBU_STORE9_RSTp_new_evn);
 
-  /*#p31.XEPE*/ XEPE_STORE0_X0p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.YLAH*/ YLAH_STORE0_X1p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.ZOLA*/ ZOLA_STORE0_X2p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.ZULU*/ ZULU_STORE0_X3p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.WELO*/ WELO_STORE0_X4p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.XUNY*/ XUNY_STORE0_X5p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.WOTE*/ WOTE_STORE0_X6p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
-  /* p31.XAKO*/ XAKO_STORE0_X7p_odd.dff9_set(_DYNA_STORE0_RSTn_new_evn);
 
-  /* p31.DANY*/ DANY_STORE1_X0p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.DUKO*/ DUKO_STORE1_X1p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.DESU*/ DESU_STORE1_X2p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.DAZO*/ DAZO_STORE1_X3p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.DAKE*/ DAKE_STORE1_X4p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.CESO*/ CESO_STORE1_X5p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.DYFU*/ DYFU_STORE1_X6p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
-  /* p31.CUSY*/ CUSY_STORE1_X7p_odd.dff9_set(_DOKU_STORE1_RSTn_new_evn);
+  /* p29.FUXU*/ wire _FUXU_STORE0_CLKp_new_odd = not1(store_flag.DYHU_STORE0_CLKn);
+  /* p29.ASYS*/ wire _ASYS_STORE1_CLKp_new_odd = not1(store_flag.BUCO_STORE1_CLKn);
+  /* p29.CACU*/ wire _CACU_STORE2_CLKp_new_odd = not1(store_flag.GYFO_STORE2_CLKn);
+  /* p29.YFAG*/ wire _YFAG_STORE3_CLKp_new_odd = not1(store_flag.GUSA_STORE3_CLKn);
+  /* p29.WOFO*/ wire _WOFO_STORE4_CLKp_new_odd = not1(store_flag.DUKE_STORE4_CLKn);
+  /* p29.CYLA*/ wire _CYLA_STORE5_CLKp_new_odd = not1(store_flag.BEDE_STORE5_CLKn);
+  /* p29.ZAPE*/ wire _ZAPE_STORE6_CLKp_new_odd = not1(store_flag.WEKA_STORE6_CLKn);
+  /* p29.GECY*/ wire _GECY_STORE7_CLKp_new_odd = not1(store_flag.GYVO_STORE7_CLKn);
+  /* p29.CEXU*/ wire _CEXU_STORE8_CLKp_new_odd = not1(store_flag.BUKA_STORE8_CLKn);
+  /* p29.WEME*/ wire _WEME_STORE9_CLKp_new_odd = not1(store_flag.DECU_STORE9_CLKn);
 
-  /* p31.FOKA*/ FOKA_STORE2_X0p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.FYTY*/ FYTY_STORE2_X1p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.FUBY*/ FUBY_STORE2_X2p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.GOXU*/ GOXU_STORE2_X3p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.DUHY*/ DUHY_STORE2_X4p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.EJUF*/ EJUF_STORE2_X5p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.ENOR*/ ENOR_STORE2_X6p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
-  /* p31.DEPY*/ DEPY_STORE2_X7p_odd.dff9_set(_GAMY_STORE2_RSTn_new_evn);
+  /*#p31.ZAGO*/ wire _ZAGO_SPX0n_new_any = not1(oam_temp_b.YLOR_OAM_DB0p.qp_old());
+  /* p31.ZOCY*/ wire _ZOCY_SPX1n_new_any = not1(oam_temp_b.ZYTY_OAM_DB1p.qp_old());
+  /* p31.YPUR*/ wire _YPUR_SPX2n_new_any = not1(oam_temp_b.ZYVE_OAM_DB2p.qp_old());
+  /* p31.YVOK*/ wire _YVOK_SPX3n_new_any = not1(oam_temp_b.ZEZY_OAM_DB3p.qp_old());
+  /* p31.COSE*/ wire _COSE_SPX4n_new_any = not1(oam_temp_b.GOMO_OAM_DB4p.qp_old());
+  /* p31.AROP*/ wire _AROP_SPX5n_new_any = not1(oam_temp_b.BAXO_OAM_DB5p.qp_old());
+  /* p31.XATU*/ wire _XATU_SPX6n_new_any = not1(oam_temp_b.YZOS_OAM_DB6p.qp_old());
+  /* p31.BADY*/ wire _BADY_SPX7n_new_any = not1(oam_temp_b.DEPO_OAM_DB7p.qp_old());
 
-  /* p31.XOLY*/ XOLY_STORE3_X0p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.XYBA*/ XYBA_STORE3_X1p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.XABE*/ XABE_STORE3_X2p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.XEKA*/ XEKA_STORE3_X3p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.XOMY*/ XOMY_STORE3_X4p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.WUHA*/ WUHA_STORE3_X5p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.WYNA*/ WYNA_STORE3_X6p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
-  /* p31.WECO*/ WECO_STORE3_X7p_odd.dff9_set(_WUPA_STORE3_RSTn_new_evn);
+  /*#p31.XEPE*/ XEPE_STORE0_X0p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.YLAH*/ YLAH_STORE0_X1p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.ZOLA*/ ZOLA_STORE0_X2p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.ZULU*/ ZULU_STORE0_X3p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.WELO*/ WELO_STORE0_X4p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.XUNY*/ XUNY_STORE0_X5p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.WOTE*/ WOTE_STORE0_X6p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.XAKO*/ XAKO_STORE0_X7p_odd.dff9(_FUXU_STORE0_CLKp_new_odd, _DYNA_STORE0_RSTn_new_evn, _BADY_SPX7n_new_any);
 
-  /* p31.WEDU*/ WEDU_STORE4_X0p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.YGAJ*/ YGAJ_STORE4_X1p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.ZYJO*/ ZYJO_STORE4_X2p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.XURY*/ XURY_STORE4_X3p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.YBED*/ YBED_STORE4_X4p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.ZALA*/ ZALA_STORE4_X5p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.WYDE*/ WYDE_STORE4_X6p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
-  /* p31.XEPA*/ XEPA_STORE4_X7p_odd.dff9_set(_WUNU_STORE4_RSTn_new_evn);
+  /* p31.DANY*/ DANY_STORE1_X0p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.DUKO*/ DUKO_STORE1_X1p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.DESU*/ DESU_STORE1_X2p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.DAZO*/ DAZO_STORE1_X3p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.DAKE*/ DAKE_STORE1_X4p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.CESO*/ CESO_STORE1_X5p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.DYFU*/ DYFU_STORE1_X6p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.CUSY*/ CUSY_STORE1_X7p_odd.dff9(_ASYS_STORE1_CLKp_new_odd, _DOKU_STORE1_RSTn_new_evn, _BADY_SPX7n_new_any);
 
-  /* p31.FUSA*/ FUSA_STORE5_X0p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.FAXA*/ FAXA_STORE5_X1p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.FOZY*/ FOZY_STORE5_X2p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.FESY*/ FESY_STORE5_X3p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.CYWE*/ CYWE_STORE5_X4p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.DYBY*/ DYBY_STORE5_X5p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.DURY*/ DURY_STORE5_X6p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
-  /* p31.CUVY*/ CUVY_STORE5_X7p_odd.dff9_set(_EJAD_STORE5_RSTn_new_evn);
+  /* p31.FOKA*/ FOKA_STORE2_X0p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.FYTY*/ FYTY_STORE2_X1p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.FUBY*/ FUBY_STORE2_X2p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.GOXU*/ GOXU_STORE2_X3p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.DUHY*/ DUHY_STORE2_X4p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.EJUF*/ EJUF_STORE2_X5p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.ENOR*/ ENOR_STORE2_X6p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.DEPY*/ DEPY_STORE2_X7p_odd.dff9(_CACU_STORE2_CLKp_new_odd, _GAMY_STORE2_RSTn_new_evn, _BADY_SPX7n_new_any);
 
-  /* p31.YCOL*/ YCOL_STORE6_X0p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.YRAC*/ YRAC_STORE6_X1p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.YMEM*/ YMEM_STORE6_X2p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.YVAG*/ YVAG_STORE6_X3p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.ZOLY*/ ZOLY_STORE6_X4p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.ZOGO*/ ZOGO_STORE6_X5p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.ZECU*/ ZECU_STORE6_X6p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
-  /* p31.ZESA*/ ZESA_STORE6_X7p_odd.dff9_set(_XAHO_STORE6_RSTn_new_evn);
+  /* p31.XOLY*/ XOLY_STORE3_X0p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.XYBA*/ XYBA_STORE3_X1p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.XABE*/ XABE_STORE3_X2p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.XEKA*/ XEKA_STORE3_X3p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.XOMY*/ XOMY_STORE3_X4p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.WUHA*/ WUHA_STORE3_X5p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.WYNA*/ WYNA_STORE3_X6p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.WECO*/ WECO_STORE3_X7p_odd.dff9(_YFAG_STORE3_CLKp_new_odd, _WUPA_STORE3_RSTn_new_evn, _BADY_SPX7n_new_any);
 
-  /* p31.ERAZ*/ ERAZ_STORE7_X0p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.EPUM*/ EPUM_STORE7_X1p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.EROL*/ EROL_STORE7_X2p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.EHYN*/ EHYN_STORE7_X3p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.FAZU*/ FAZU_STORE7_X4p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.FAXE*/ FAXE_STORE7_X5p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.EXUK*/ EXUK_STORE7_X6p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
-  /* p31.FEDE*/ FEDE_STORE7_X7p_odd.dff9_set(_GAFY_STORE7_RSTn_new_evn);
+  /* p31.WEDU*/ WEDU_STORE4_X0p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.YGAJ*/ YGAJ_STORE4_X1p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.ZYJO*/ ZYJO_STORE4_X2p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.XURY*/ XURY_STORE4_X3p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.YBED*/ YBED_STORE4_X4p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.ZALA*/ ZALA_STORE4_X5p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.WYDE*/ WYDE_STORE4_X6p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.XEPA*/ XEPA_STORE4_X7p_odd.dff9(_WOFO_STORE4_CLKp_new_odd, _WUNU_STORE4_RSTn_new_evn, _BADY_SPX7n_new_any);
 
-  /* p31.EZUF*/ EZUF_STORE8_X0p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.ENAD*/ ENAD_STORE8_X1p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.EBOW*/ EBOW_STORE8_X2p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.FYCA*/ FYCA_STORE8_X3p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.GAVY*/ GAVY_STORE8_X4p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.GYPU*/ GYPU_STORE8_X5p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.GADY*/ GADY_STORE8_X6p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
-  /* p31.GAZA*/ GAZA_STORE8_X7p_odd.dff9_set(_WUZO_STORE8_RSTn_new_evn);
+  /* p31.FUSA*/ FUSA_STORE5_X0p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.FAXA*/ FAXA_STORE5_X1p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.FOZY*/ FOZY_STORE5_X2p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.FESY*/ FESY_STORE5_X3p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.CYWE*/ CYWE_STORE5_X4p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.DYBY*/ DYBY_STORE5_X5p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.DURY*/ DURY_STORE5_X6p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.CUVY*/ CUVY_STORE5_X7p_odd.dff9(_CYLA_STORE5_CLKp_new_odd, _EJAD_STORE5_RSTn_new_evn, _BADY_SPX7n_new_any);
 
-  /* p31.XUVY*/ XUVY_STORE9_X0p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.XERE*/ XERE_STORE9_X1p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.XUZO*/ XUZO_STORE9_X2p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.XEXA*/ XEXA_STORE9_X3p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.YPOD*/ YPOD_STORE9_X4p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.YROP*/ YROP_STORE9_X5p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.YNEP*/ YNEP_STORE9_X6p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
-  /* p31.YZOF*/ YZOF_STORE9_X7p_odd.dff9_set(_DOSY_STORE9_RSTn_new_evn);
+  /* p31.YCOL*/ YCOL_STORE6_X0p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.YRAC*/ YRAC_STORE6_X1p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.YMEM*/ YMEM_STORE6_X2p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.YVAG*/ YVAG_STORE6_X3p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.ZOLY*/ ZOLY_STORE6_X4p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.ZOGO*/ ZOGO_STORE6_X5p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.ZECU*/ ZECU_STORE6_X6p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.ZESA*/ ZESA_STORE6_X7p_odd.dff9(_ZAPE_STORE6_CLKp_new_odd, _XAHO_STORE6_RSTn_new_evn, _BADY_SPX7n_new_any);
+
+  /* p31.ERAZ*/ ERAZ_STORE7_X0p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.EPUM*/ EPUM_STORE7_X1p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.EROL*/ EROL_STORE7_X2p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.EHYN*/ EHYN_STORE7_X3p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.FAZU*/ FAZU_STORE7_X4p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.FAXE*/ FAXE_STORE7_X5p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.EXUK*/ EXUK_STORE7_X6p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.FEDE*/ FEDE_STORE7_X7p_odd.dff9(_GECY_STORE7_CLKp_new_odd, _GAFY_STORE7_RSTn_new_evn, _BADY_SPX7n_new_any);
+
+  /* p31.EZUF*/ EZUF_STORE8_X0p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.ENAD*/ ENAD_STORE8_X1p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.EBOW*/ EBOW_STORE8_X2p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.FYCA*/ FYCA_STORE8_X3p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.GAVY*/ GAVY_STORE8_X4p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.GYPU*/ GYPU_STORE8_X5p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.GADY*/ GADY_STORE8_X6p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.GAZA*/ GAZA_STORE8_X7p_odd.dff9(_CEXU_STORE8_CLKp_new_odd, _WUZO_STORE8_RSTn_new_evn, _BADY_SPX7n_new_any);
+
+  /* p31.XUVY*/ XUVY_STORE9_X0p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _ZAGO_SPX0n_new_any);
+  /* p31.XERE*/ XERE_STORE9_X1p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _ZOCY_SPX1n_new_any);
+  /* p31.XUZO*/ XUZO_STORE9_X2p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _YPUR_SPX2n_new_any);
+  /* p31.XEXA*/ XEXA_STORE9_X3p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _YVOK_SPX3n_new_any);
+  /* p31.YPOD*/ YPOD_STORE9_X4p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _COSE_SPX4n_new_any);
+  /* p31.YROP*/ YROP_STORE9_X5p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _AROP_SPX5n_new_any);
+  /* p31.YNEP*/ YNEP_STORE9_X6p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _XATU_SPX6n_new_any);
+  /* p31.YZOF*/ YZOF_STORE9_X7p_odd.dff9(_WEME_STORE9_CLKp_new_odd, _DOSY_STORE9_RSTn_new_evn, _BADY_SPX7n_new_any);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -856,120 +877,6 @@ void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag, Bus SPR_TRI_L[4]
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam_temp_b) {
-  /* p29.FUXU*/ wire _FUXU_STORE0_CLKp_new_odd = not1(store_flag.DYHU_STORE0_CLKn);
-  /* p29.ASYS*/ wire _ASYS_STORE1_CLKp_new_odd = not1(store_flag.BUCO_STORE1_CLKn);
-  /* p29.CACU*/ wire _CACU_STORE2_CLKp_new_odd = not1(store_flag.GYFO_STORE2_CLKn);
-  /* p29.YFAG*/ wire _YFAG_STORE3_CLKp_new_odd = not1(store_flag.GUSA_STORE3_CLKn);
-  /* p29.WOFO*/ wire _WOFO_STORE4_CLKp_new_odd = not1(store_flag.DUKE_STORE4_CLKn);
-  /* p29.CYLA*/ wire _CYLA_STORE5_CLKp_new_odd = not1(store_flag.BEDE_STORE5_CLKn);
-  /* p29.ZAPE*/ wire _ZAPE_STORE6_CLKp_new_odd = not1(store_flag.WEKA_STORE6_CLKn);
-  /* p29.GECY*/ wire _GECY_STORE7_CLKp_new_odd = not1(store_flag.GYVO_STORE7_CLKn);
-  /* p29.CEXU*/ wire _CEXU_STORE8_CLKp_new_odd = not1(store_flag.BUKA_STORE8_CLKn);
-  /* p29.WEME*/ wire _WEME_STORE9_CLKp_new_odd = not1(store_flag.DECU_STORE9_CLKn);
-
-  /*#p31.ZAGO*/ wire _ZAGO_SPX0n_new_any = not1(oam_temp_b.YLOR_OAM_DB0p.qp_old());
-  /* p31.ZOCY*/ wire _ZOCY_SPX1n_new_any = not1(oam_temp_b.ZYTY_OAM_DB1p.qp_old());
-  /* p31.YPUR*/ wire _YPUR_SPX2n_new_any = not1(oam_temp_b.ZYVE_OAM_DB2p.qp_old());
-  /* p31.YVOK*/ wire _YVOK_SPX3n_new_any = not1(oam_temp_b.ZEZY_OAM_DB3p.qp_old());
-  /* p31.COSE*/ wire _COSE_SPX4n_new_any = not1(oam_temp_b.GOMO_OAM_DB4p.qp_old());
-  /* p31.AROP*/ wire _AROP_SPX5n_new_any = not1(oam_temp_b.BAXO_OAM_DB5p.qp_old());
-  /* p31.XATU*/ wire _XATU_SPX6n_new_any = not1(oam_temp_b.YZOS_OAM_DB6p.qp_old());
-  /* p31.BADY*/ wire _BADY_SPX7n_new_any = not1(oam_temp_b.DEPO_OAM_DB7p.qp_old());
-
-  /*#p31.XEPE*/ XEPE_STORE0_X0p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.YLAH*/ YLAH_STORE0_X1p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.ZOLA*/ ZOLA_STORE0_X2p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.ZULU*/ ZULU_STORE0_X3p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.WELO*/ WELO_STORE0_X4p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.XUNY*/ XUNY_STORE0_X5p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.WOTE*/ WOTE_STORE0_X6p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.XAKO*/ XAKO_STORE0_X7p_odd.dff9_clk(_FUXU_STORE0_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.DANY*/ DANY_STORE1_X0p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.DUKO*/ DUKO_STORE1_X1p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.DESU*/ DESU_STORE1_X2p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.DAZO*/ DAZO_STORE1_X3p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.DAKE*/ DAKE_STORE1_X4p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.CESO*/ CESO_STORE1_X5p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.DYFU*/ DYFU_STORE1_X6p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.CUSY*/ CUSY_STORE1_X7p_odd.dff9_clk(_ASYS_STORE1_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.FOKA*/ FOKA_STORE2_X0p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.FYTY*/ FYTY_STORE2_X1p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.FUBY*/ FUBY_STORE2_X2p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.GOXU*/ GOXU_STORE2_X3p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.DUHY*/ DUHY_STORE2_X4p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.EJUF*/ EJUF_STORE2_X5p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.ENOR*/ ENOR_STORE2_X6p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.DEPY*/ DEPY_STORE2_X7p_odd.dff9_clk(_CACU_STORE2_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.XOLY*/ XOLY_STORE3_X0p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.XYBA*/ XYBA_STORE3_X1p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.XABE*/ XABE_STORE3_X2p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.XEKA*/ XEKA_STORE3_X3p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.XOMY*/ XOMY_STORE3_X4p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.WUHA*/ WUHA_STORE3_X5p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.WYNA*/ WYNA_STORE3_X6p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.WECO*/ WECO_STORE3_X7p_odd.dff9_clk(_YFAG_STORE3_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.WEDU*/ WEDU_STORE4_X0p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.YGAJ*/ YGAJ_STORE4_X1p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.ZYJO*/ ZYJO_STORE4_X2p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.XURY*/ XURY_STORE4_X3p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.YBED*/ YBED_STORE4_X4p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.ZALA*/ ZALA_STORE4_X5p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.WYDE*/ WYDE_STORE4_X6p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.XEPA*/ XEPA_STORE4_X7p_odd.dff9_clk(_WOFO_STORE4_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.FUSA*/ FUSA_STORE5_X0p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.FAXA*/ FAXA_STORE5_X1p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.FOZY*/ FOZY_STORE5_X2p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.FESY*/ FESY_STORE5_X3p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.CYWE*/ CYWE_STORE5_X4p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.DYBY*/ DYBY_STORE5_X5p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.DURY*/ DURY_STORE5_X6p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.CUVY*/ CUVY_STORE5_X7p_odd.dff9_clk(_CYLA_STORE5_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.YCOL*/ YCOL_STORE6_X0p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.YRAC*/ YRAC_STORE6_X1p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.YMEM*/ YMEM_STORE6_X2p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.YVAG*/ YVAG_STORE6_X3p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.ZOLY*/ ZOLY_STORE6_X4p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.ZOGO*/ ZOGO_STORE6_X5p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.ZECU*/ ZECU_STORE6_X6p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.ZESA*/ ZESA_STORE6_X7p_odd.dff9_clk(_ZAPE_STORE6_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.ERAZ*/ ERAZ_STORE7_X0p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.EPUM*/ EPUM_STORE7_X1p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.EROL*/ EROL_STORE7_X2p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.EHYN*/ EHYN_STORE7_X3p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.FAZU*/ FAZU_STORE7_X4p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.FAXE*/ FAXE_STORE7_X5p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.EXUK*/ EXUK_STORE7_X6p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.FEDE*/ FEDE_STORE7_X7p_odd.dff9_clk(_GECY_STORE7_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.EZUF*/ EZUF_STORE8_X0p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.ENAD*/ ENAD_STORE8_X1p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.EBOW*/ EBOW_STORE8_X2p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.FYCA*/ FYCA_STORE8_X3p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.GAVY*/ GAVY_STORE8_X4p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.GYPU*/ GYPU_STORE8_X5p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.GADY*/ GADY_STORE8_X6p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.GAZA*/ GAZA_STORE8_X7p_odd.dff9_clk(_CEXU_STORE8_CLKp_new_odd, _BADY_SPX7n_new_any);
-
-  /* p31.XUVY*/ XUVY_STORE9_X0p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _ZAGO_SPX0n_new_any);
-  /* p31.XERE*/ XERE_STORE9_X1p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _ZOCY_SPX1n_new_any);
-  /* p31.XUZO*/ XUZO_STORE9_X2p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _YPUR_SPX2n_new_any);
-  /* p31.XEXA*/ XEXA_STORE9_X3p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _YVOK_SPX3n_new_any);
-  /* p31.YPOD*/ YPOD_STORE9_X4p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _COSE_SPX4n_new_any);
-  /* p31.YROP*/ YROP_STORE9_X5p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _AROP_SPX5n_new_any);
-  /* p31.YNEP*/ YNEP_STORE9_X6p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _XATU_SPX6n_new_any);
-  /* p31.YZOF*/ YZOF_STORE9_X7p_odd.dff9_clk(_WEME_STORE9_CLKp_new_odd, _BADY_SPX7n_new_any);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void SpriteStore::oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]) {
   wire VCC = 1;
   /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(BUS_OAM_An[2].qp_old());
@@ -1028,27 +935,26 @@ void SpriteStore::ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY&
 //------------------------------------------------------------------------------------------------------------------------
 
 void SpriteStore::dump(Dumper& d) {
-  d("SPRITE INDEX      : %02d\n", BitBase::pack_old(6, &XADU_SPRITE_IDX0p));
-  d.dump_bitp("XADU_SPRITE_IDX0p", XADU_SPRITE_IDX0p.state);
-  d.dump_bitp("XEDY_SPRITE_IDX1p", XEDY_SPRITE_IDX1p.state);
-  d.dump_bitp("ZUZE_SPRITE_IDX2p", ZUZE_SPRITE_IDX2p.state);
-  d.dump_bitp("XOBE_SPRITE_IDX3p", XOBE_SPRITE_IDX3p.state);
-  d.dump_bitp("YDUF_SPRITE_IDX4p", YDUF_SPRITE_IDX4p.state);
-  d.dump_bitp("XECU_SPRITE_IDX5p", XECU_SPRITE_IDX5p.state);
+  d             ("SPRITE INDEX      : %02d\n", BitBase::pack_old(6, &XADU_SPRITE_IDX0p));
+  d.dump_bitp   ("XADU_SPRITE_IDX0p : ", XADU_SPRITE_IDX0p.state);
+  d.dump_bitp   ("XEDY_SPRITE_IDX1p : ", XEDY_SPRITE_IDX1p.state);
+  d.dump_bitp   ("ZUZE_SPRITE_IDX2p : ", ZUZE_SPRITE_IDX2p.state);
+  d.dump_bitp   ("XOBE_SPRITE_IDX3p : ", XOBE_SPRITE_IDX3p.state);
+  d.dump_bitp   ("YDUF_SPRITE_IDX4p : ", YDUF_SPRITE_IDX4p.state);
+  d.dump_bitp   ("XECU_SPRITE_IDX5p : ", XECU_SPRITE_IDX5p.state);
+  d.dump_bitp   ("DEZY_STORE_ENn    : ", DEZY_COUNT_CLKp.state);
   d("\n");
-  d.dump_bitp   ("DEZY_STORE_ENn", DEZY_COUNT_CLKp.state);
-  d.dump_slice2p("SPRITE COUNT", &BESE_SPRITE_COUNT0, 4);
-  d("\n");
-  d("STORE0 R%d I%02d L%02d X%03d\n", EBOJ_STORE0_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &YGUS_STORE0_I0n_odd), BitBase::pack_oldn(4, &GYHO_STORE0_L0n_odd), BitBase::pack_oldn(8, &XEPE_STORE0_X0p_odd));
-  d("STORE1 R%d I%02d L%02d X%03d\n", CEDY_STORE1_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &CADU_STORE1_I0n_odd), BitBase::pack_oldn(4, &AMES_STORE1_L0n_odd), BitBase::pack_oldn(8, &DANY_STORE1_X0p_odd));
-  d("STORE2 R%d I%02d L%02d X%03d\n", EGAV_STORE2_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &BUHE_STORE2_I0n_odd), BitBase::pack_oldn(4, &YLOV_STORE2_L0n_odd), BitBase::pack_oldn(8, &FOKA_STORE2_X0p_odd));
-  d("STORE3 R%d I%02d L%02d X%03d\n", GOTA_STORE3_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &DEVY_STORE3_I0n_odd), BitBase::pack_oldn(4, &ZURO_STORE3_L0n_odd), BitBase::pack_oldn(8, &XOLY_STORE3_X0p_odd));
-  d("STORE4 R%d I%02d L%02d X%03d\n", XUDY_STORE4_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &XAVE_STORE4_I0n_odd), BitBase::pack_oldn(4, &CAPO_STORE4_L0n_odd), BitBase::pack_oldn(8, &WEDU_STORE4_X0p_odd));
-  d("STORE5 R%d I%02d L%02d X%03d\n", WAFY_STORE5_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &EKOP_STORE5_I0n_odd), BitBase::pack_oldn(4, &ACEP_STORE5_L0n_odd), BitBase::pack_oldn(8, &FUSA_STORE5_X0p_odd));
-  d("STORE6 R%d I%02d L%02d X%03d\n", WOMY_STORE6_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &GABO_STORE6_I0n_odd), BitBase::pack_oldn(4, &ZUMY_STORE6_L0n_odd), BitBase::pack_oldn(8, &YCOL_STORE6_X0p_odd));
-  d("STORE7 R%d I%02d L%02d X%03d\n", WAPO_STORE7_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &GULE_STORE7_I0n_odd), BitBase::pack_oldn(4, &XYNA_STORE7_L0n_odd), BitBase::pack_oldn(8, &ERAZ_STORE7_X0p_odd));
-  d("STORE8 R%d I%02d L%02d X%03d\n", EXUQ_STORE8_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &AXUV_STORE8_I0n_odd), BitBase::pack_oldn(4, &AZAP_STORE8_L0n_odd), BitBase::pack_oldn(8, &EZUF_STORE8_X0p_odd));
-  d("STORE9 R%d I%02d L%02d X%03d\n", FONO_STORE9_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &YBER_STORE9_I0n_odd), BitBase::pack_oldn(4, &CANA_STORE9_L0n_odd), BitBase::pack_oldn(8, &XUVY_STORE9_X0p_odd));
+  d.dump_slice2p("SPRITE COUNT : ", &BESE_SPRITE_COUNT0, 4);
+  d             ("STORE0 R%d I%02d L%02d X%03d\n", EBOJ_STORE0_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &YGUS_STORE0_I0n_odd), BitBase::pack_oldn(4, &GYHO_STORE0_L0n_odd), BitBase::pack_oldn(8, &XEPE_STORE0_X0p_odd));
+  d             ("STORE1 R%d I%02d L%02d X%03d\n", CEDY_STORE1_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &CADU_STORE1_I0n_odd), BitBase::pack_oldn(4, &AMES_STORE1_L0n_odd), BitBase::pack_oldn(8, &DANY_STORE1_X0p_odd));
+  d             ("STORE2 R%d I%02d L%02d X%03d\n", EGAV_STORE2_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &BUHE_STORE2_I0n_odd), BitBase::pack_oldn(4, &YLOV_STORE2_L0n_odd), BitBase::pack_oldn(8, &FOKA_STORE2_X0p_odd));
+  d             ("STORE3 R%d I%02d L%02d X%03d\n", GOTA_STORE3_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &DEVY_STORE3_I0n_odd), BitBase::pack_oldn(4, &ZURO_STORE3_L0n_odd), BitBase::pack_oldn(8, &XOLY_STORE3_X0p_odd));
+  d             ("STORE4 R%d I%02d L%02d X%03d\n", XUDY_STORE4_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &XAVE_STORE4_I0n_odd), BitBase::pack_oldn(4, &CAPO_STORE4_L0n_odd), BitBase::pack_oldn(8, &WEDU_STORE4_X0p_odd));
+  d             ("STORE5 R%d I%02d L%02d X%03d\n", WAFY_STORE5_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &EKOP_STORE5_I0n_odd), BitBase::pack_oldn(4, &ACEP_STORE5_L0n_odd), BitBase::pack_oldn(8, &FUSA_STORE5_X0p_odd));
+  d             ("STORE6 R%d I%02d L%02d X%03d\n", WOMY_STORE6_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &GABO_STORE6_I0n_odd), BitBase::pack_oldn(4, &ZUMY_STORE6_L0n_odd), BitBase::pack_oldn(8, &YCOL_STORE6_X0p_odd));
+  d             ("STORE7 R%d I%02d L%02d X%03d\n", WAPO_STORE7_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &GULE_STORE7_I0n_odd), BitBase::pack_oldn(4, &XYNA_STORE7_L0n_odd), BitBase::pack_oldn(8, &ERAZ_STORE7_X0p_odd));
+  d             ("STORE8 R%d I%02d L%02d X%03d\n", EXUQ_STORE8_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &AXUV_STORE8_I0n_odd), BitBase::pack_oldn(4, &AZAP_STORE8_L0n_odd), BitBase::pack_oldn(8, &EZUF_STORE8_X0p_odd));
+  d             ("STORE9 R%d I%02d L%02d X%03d\n", FONO_STORE9_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &YBER_STORE9_I0n_odd), BitBase::pack_oldn(4, &CANA_STORE9_L0n_odd), BitBase::pack_oldn(8, &XUVY_STORE9_X0p_odd));
 }
 
 //------------------------------------------------------------------------------------------------------------------------

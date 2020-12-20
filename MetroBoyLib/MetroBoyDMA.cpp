@@ -54,7 +54,7 @@ void MetroBoyDMA::tick(int phase_total, const Req& req, Ack& ack) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyDMA::tock(int phase_total, const Req& req) {
-  bool DMA_WR = (req.addr == 0xFF46) && req.write_sync && (DELTA_FG || DELTA_GH || DELTA_HA);
+  bool DMA_WR = (req.addr == 0xFF46) && req.write && (DELTA_FG || DELTA_GH || DELTA_HA);
   bool DMA_RST = DMA_RUN_TRIG_d4;
 
   if (DELTA_BC) {
@@ -69,7 +69,7 @@ void MetroBoyDMA::tock(int phase_total, const Req& req) {
   if (DELTA_FG) {
     /*p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
     /*p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
-    if (req.write_sync && req.addr == 0xFF46) {
+    if (req.write && req.addr == 0xFF46) {
       addr = (req.data_lo << 8);
     }
   }

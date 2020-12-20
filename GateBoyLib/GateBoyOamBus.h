@@ -26,7 +26,7 @@ struct GateBoyOamBus {
   void latch_to_cpu(GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XYMU_RENDERINGp);
   void latch_to_temp_a(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void latch_to_temp_b(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
-  void ext_to_data_bus (const GateBoyDMA& dma, PinIO PIN_EXT_D[8]);
+  void ext_to_data_bus (const GateBoyDMA& dma, PinIO PIN17_DATA[8]);
   void vram_to_data_bus(const GateBoyDMA& dma, Bus BUS_VRAM_Dp[8]);
   void dma_to_addr_bus(GateBoyDMA& dma);
   void sprite_index_to_addr_bus(GateBoyDMA& dma, Bus SPR_TRI_I[6], wire XYMU_RENDERINGp);
@@ -40,19 +40,21 @@ struct GateBoyOamBus {
   void tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn, uint8_t* oam_ram);
 
   void dump(Dumper& d) {
-    d.dump_bitp   ("MAKA_LATCH_EXTp ", MAKA_LATCH_EXTp.state);
-    d.dump_bitp   ("WUJE_CPU_OAM_WRn", WUJE_CPU_OAM_WRn.state);
-    d.dump_slice2n("BUS_OAM_An      ", BUS_OAM_An, 8);
-    d.dump_slice2n("BUS_OAM_DAn     ", BUS_OAM_DAn, 8);
-    d.dump_slice2n("BUS_OAM_DBn     ", BUS_OAM_DBn, 8);
-    d.dump_bitp   ("PIN_OAM_CLKn    ", PIN_OAM_CLKn.state);
-    d.dump_bitp   ("PIN_OAM_WRn_A   ", PIN_OAM_WRn_A.state);
-    d.dump_bitp   ("PIN_OAM_WRn_B   ", PIN_OAM_WRn_B.state);
-    d.dump_bitp   ("PIN_OAM_OEn     ", PIN_OAM_OEn.state);
-    d.dump_slice2n("OAM LATCH A     ", &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
-    d.dump_slice2n("OAM LATCH B     ", &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
-    d.dump_slice2p("OAM TEMP A      ", &oam_temp_a.XUSO_OAM_DA0p, 8);
-    d.dump_slice2p("OAM TEMP B      ", &oam_temp_b.YLOR_OAM_DB0p, 8);
+    d.dump_bitp   ("MAKA_LATCH_EXTp  : ", MAKA_LATCH_EXTp.state);
+    d.dump_bitp   ("WUJE_CPU_OAM_WRn : ", WUJE_CPU_OAM_WRn.state);
+    d.dump_bitp   ("SIG_OAM_CLKn     : ", SIG_OAM_CLKn.state);
+    d.dump_bitp   ("SIG_OAM_WRn_A    : ", SIG_OAM_WRn_A.state);
+    d.dump_bitp   ("SIG_OAM_WRn_B    : ", SIG_OAM_WRn_B.state);
+    d.dump_bitp   ("SIG_OAM_OEn      : ", SIG_OAM_OEn.state);
+
+    d.dump_slice2n("BUS_OAM_An  : ", BUS_OAM_An, 8);
+    d.dump_slice2n("BUS_OAM_DAn : ", BUS_OAM_DAn, 8);
+    d.dump_slice2n("BUS_OAM_DBn : ", BUS_OAM_DBn, 8);
+    d.dump_slice2n("OAM LATCH A : ", &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
+    d.dump_slice2n("OAM LATCH B : ", &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
+    d.dump_slice2p("OAM TEMP A  : ", &oam_temp_a.XUSO_OAM_DA0p, 8);
+    d.dump_slice2p("OAM TEMP B  : ", &oam_temp_b.YLOR_OAM_DB0p, 8);
+
   }
 
   OamLatchA oam_latch_a;
@@ -65,10 +67,10 @@ struct GateBoyOamBus {
   Bus BUS_OAM_An[8];  // ABCDEFGH
   Bus BUS_OAM_DAn[8];
   Bus BUS_OAM_DBn[8];
-  PinOut PIN_OAM_CLKn;   // ABCDEFGH
-  PinOut PIN_OAM_WRn_A;  // AxxxExxH
-  PinOut PIN_OAM_WRn_B;  // AxxxExxH
-  PinOut PIN_OAM_OEn;    // ABCDEFGH
+  Signal SIG_OAM_CLKn;   // ABCDEFGH
+  Signal SIG_OAM_WRn_A;  // AxxxExxH
+  Signal SIG_OAM_WRn_B;  // AxxxExxH
+  Signal SIG_OAM_OEn;    // ABCDEFGH
   Signal old_oam_clk;
 };
 

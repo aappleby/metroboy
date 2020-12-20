@@ -33,7 +33,7 @@ void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
   ebus_req.addr = 0x0100;
   ebus_req.data = 0x00;
   ebus_req.read = 1;
-  ebus_req.write_sync = 0;
+  ebus_req.write = 0;
 
   ebus_ack.addr = 0x0100;
   ebus_ack.data = 0x00;
@@ -65,7 +65,7 @@ void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   ebus_req.addr = 0x0000;
   ebus_req.data = 0x00;
   ebus_req.read = 1;
-  ebus_req.write_sync = 0;
+  ebus_req.write = 0;
 
   ebus_ack.addr = 0x0000;
   ebus_ack.data = 0x00;
@@ -167,7 +167,7 @@ void MetroBoy::next_phase() {
     cpu_req.addr  = cpu._bus_addr;
     cpu_req.data  = cpu._bus_data;
     cpu_req.read  = cpu._bus_read;
-    cpu_req.write_sync = cpu._bus_write;
+    cpu_req.write = cpu._bus_write;
 
     ibus_req = {0};
     ebus_req = {0};
@@ -198,21 +198,21 @@ void MetroBoy::next_phase() {
     vbus_req.addr = dma.addr;
     vbus_req.data = 0;
     vbus_req.read = 1;
-    vbus_req.write_sync = 0;
+    vbus_req.write = 0;
   }
 
   if (dma_src_ebus) {
     ebus_req.addr = dma.addr;
     ebus_req.data = 0;
     ebus_req.read = 1;
-    ebus_req.write_sync = 0;
+    ebus_req.write = 0;
   }
 
   if (DELTA_EF && dma.DMA_RUN_WRITE) {
     obus_req.addr = uint16_t(0xFE00 | (dma.addr & 0xFF));
     obus_req.data = dma_data_latch;
     obus_req.read = 0;
-    obus_req.write_sync = 1;
+    obus_req.write = 1;
   }
 
   phase_total++;
@@ -230,14 +230,14 @@ void MetroBoy::dump_bus(Dumper& d) {
   d("boot   %d\n", boot.disable_bootrom);
   d("\n");
 
-  d("---IBUS req:    "); dump_req(d, ibus_req);
-  d("---IBUS ack:    "); dump_ack(d, ibus_ack);
-  d("---EBUS req:    "); dump_req(d, ebus_req);
-  d("---EBUS ack:    "); dump_ack(d, ebus_ack);
-  d("---VBUS req:    "); dump_req(d, vbus_req);
-  d("---VBUS ack:    "); dump_ack(d, vbus_ack);
-  d("---OBUS req:    "); dump_req(d, obus_req);
-  d("---OBUS ack:    "); dump_ack(d, obus_ack);
+  d.dump_req("---IBUS req:    ", ibus_req);
+  d.dump_ack("---IBUS ack:    ", ibus_ack);
+  d.dump_req("---EBUS req:    ", ebus_req);
+  d.dump_ack("---EBUS ack:    ", ebus_ack);
+  d.dump_req("---VBUS req:    ", vbus_req);
+  d.dump_ack("---VBUS ack:    ", vbus_ack);
+  d.dump_req("---OBUS req:    ", obus_req);
+  d.dump_ack("---OBUS ack:    ", obus_ack);
   d("\n");
 }
 

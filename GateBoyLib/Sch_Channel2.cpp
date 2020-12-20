@@ -179,7 +179,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
 
     /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
     next.ch2.GADO = not1(CPU_RDn);
-    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.PIN_CPU_HOLD_MEM, b.apu.APU_WR);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.SIG_CPU_HOLD_MEM, b.apu.APU_WR);
     next.ch2.EVYF = nand2(CPU_WR_WEIRD, ADDR_FF19);
     next.ch2.HUMA = nor4(ADDR_FF19, b.ch2.GADO);
   }

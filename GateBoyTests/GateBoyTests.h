@@ -6,6 +6,8 @@ struct GateBoy;
 
 struct GateBoyTests {
 
+  int test_regs();
+
   int test_fastboot_vs_slowboot();
   int test_reset_cart_vs_dump();
 
@@ -16,9 +18,7 @@ struct GateBoyTests {
   int test_mem();
   int test_dma();
   int test_interrupts();
-  int test_joypad();
   int test_ppu();
-  int test_serial();
   int test_timer();
 
   int test_micro_poweron();

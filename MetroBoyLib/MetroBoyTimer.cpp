@@ -45,7 +45,7 @@ void MetroBoyTimer::tock(int phase_total, const Req& req) {
     update_tima();
   }
 
-  if (DELTA_FG && req.write_sync) {
+  if (DELTA_FG && req.write) {
     switch(req.addr) {
     case ADDR_DIV:  div  = 0; break;
     case ADDR_TIMA: tima = req.data_lo; tima_7_sync = false; break;

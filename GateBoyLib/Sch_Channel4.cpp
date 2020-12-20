@@ -142,7 +142,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p09.KEBA*/ wire RSTa = not1(RSTn);
     /*p19.CABE*/ wire RSTs = not1(RSTa);
 
-    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.PIN_CPU_HOLD_MEM, b.apu.APU_WR);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and2(b.cpu.SIG_CPU_HOLD_MEM, b.apu.APU_WR);
     /*p19.DULU*/ next.ch4.FF23_WRn = nand2(CPU_WR_WEIRD, FF23a);
     /*p19.CUNY*/ next.ch4.NR44_STOP  = tock_pos(a.ch4.FF23_WRn, b.ch4.FF23_WRn, RSTs, b.ch4.NR44_STOP,  b.bus.TS_D6());
 

@@ -5,7 +5,7 @@
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    PIN_CPU_STARTp.reset_to_cart(REG_D0C0);
+    SIG_CPU_STARTp.reset_to_cart(REG_D0C0);
     TUBO_WAITINGp.reset_to_cart(REG_D0C0);
   }
 
@@ -31,11 +31,11 @@ struct GateBoyResetDebug {
   /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /* p07.UBET*/ wire UBETp()           const { return not1(PIN_SYS_T1.qp_new()); }
-  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN_SYS_T2.qp_new()); }
-  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_SYS_T1.qp_new(), UVARp()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_SYS_T2.qp_new(), UBETp()); }
-  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_SYS_RST.qp_new()); }
+  /* p07.UBET*/ wire UBETp()           const { return not1(PIN77_T1.qp_new()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN76_T2.qp_new()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN77_T1.qp_new(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN76_T2.qp_new(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN71_RST.qp_new()); }
   /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
@@ -45,29 +45,29 @@ struct GateBoyResetDebug {
   void set_signals(wire XONA_LCDC_LCDENp);
 
   void dump(Dumper& d) {
-    d.dump_bitp("TUBO_WAITINGp ", TUBO_WAITINGp.state);
-    d.dump_bitn("ASOL_POR_DONEn", ASOL_POR_DONEn.state);
-    d.dump_bitp("AFER_SYS_RSTp ", AFER_SYS_RSTp.state);
+    d.dump_bitp("TUBO_WAITINGp  : ", TUBO_WAITINGp.state);
+    d.dump_bitn("ASOL_POR_DONEn : ", ASOL_POR_DONEn.state);
+    d.dump_bitp("AFER_SYS_RSTp  : ", AFER_SYS_RSTp.state);
   }
 
   //----------------------------------------
 
-  /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping PIN_CPU_DBG_RST when UPOF_DIV_15 changed
+  PinIn  PIN71_RST;
+  PinIn  PIN77_T1;
+  PinIn  PIN76_T2;
+
+  /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping SIG_CPU_INT_RESETp when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ DFF13 AFER_SYS_RSTp; // AFER should keep clocking even if PIN_CPU_CLKREQ = 0
+  /*p01.AFER*/ DFF13 AFER_SYS_RSTp;     // AFER should keep clocking even if SIG_CPU_CLKREQ = 0
   /*p25.SOTO*/ DFF17 SOTO_DBG_VRAMp;
 
   // This is here because it controls the reset signals for all the graphics stuff.
   /*p23.XONA*/ Signal _XONA_LCDC_LCDENp;  // xxxxxxxH
 
-  PinIn PIN_SYS_RST;
-  PinIn PIN_SYS_T1;
-  PinIn PIN_SYS_T2;
-
-  PinOut PIN_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut PIN_CPU_EXT_RST;       // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  PinOut PIN_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
-  PinOut PIN_CPU_SYS_RSTp;      // top center port PORTC_01: <- P01.AFER , reset related state
+  Signal SIG_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  Signal SIG_CPU_EXT_RESETp;    // top center port PORTC_02: <- PIN71_RST directly connected to the pad
+  Signal SIG_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
+  Signal SIG_CPU_INT_RESETp;    // top center port PORTC_01: <- P01.AFER , reset related state
 };
 
 //------------------------------------------------------------------------------------------------------------------------

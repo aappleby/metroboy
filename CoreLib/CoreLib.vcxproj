@@ -27,6 +27,7 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Opcodes.h" />
+    <ClInclude Include="OpDecoder.h" />
     <ClInclude Include="SmoothTimer.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="StateManager2.h" />

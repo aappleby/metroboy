@@ -9,13 +9,6 @@
 
 void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
-#if 0
-  // FIXME do I need this?
-  /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_rst(NYXU_BFETCH_RSTn);
-  /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_rst(NYXU_BFETCH_RSTn);
-  /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17_rst(NYXU_BFETCH_RSTn);
-#endif
-
   for (int feedback = 0; feedback < 2; feedback++) {
     /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn);
     /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn);

@@ -47,12 +47,12 @@ protected:
   void set_data_new (wire d) { state = (state & 0b11111110) | (d << 0); }
   void set_clock    (wire d) { state = (state & 0b11111101) | (d << 1); }
   void set_data_old (wire d) { state = (state & 0b11111011) | (d << 2); }
-  void set_lock     (wire d) { state = (state & 0b11110111) | (d << 3); }
+  //void set_lock     (wire d) { state = (state & 0b11110111) | (d << 3); }
 
   wire bit_data_new () const { return state & 0b00000001; }
   wire bit_clock    () const { return state & 0b00000010; }
   wire bit_data_old () const { return state & 0b00000100; }
-  wire bit_locked   () const { return state & 0b00001000; }
+  //wire bit_locked   () const { return state & 0b00001000; }
 
   void set_dirty1() { state |= 0b00010000; }
   void set_dirty2() { state |= 0b00100000; }
@@ -123,47 +123,29 @@ struct DFF : public BitBase {
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  wire qp_mid() const { CHECK_P(bit_dirty1()); return  bit_data_new(); }
-  wire qn_mid() const { CHECK_P(bit_dirty1()); return !bit_data_new(); }
-
-  void dff_clk_any(wire CLKp, wire Dp) {
-    if (!bit_clock() && CLKp) set_data_new(Dp);
-    set_clock(CLKp);
-    set_dirty1();
-
-    set_dirty3();
-    set_dirty4();
-  }
-
-  void dff_rst_any(wire SETn, wire RSTn) {
-    set_data_new((bit_data_new() || !SETn) && RSTn);
-    set_dirty2();
-
-    set_dirty3();
-    set_dirty4();
-  }
-
-
-  void dff_clk(wire CLKp, wire Dp) {
+  void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     CHECK_N(bit_dirty1());
     CHECK_N(bit_dirty2());
-    dff_clk_any(CLKp, Dp);
-  }
 
-  void dff_rst(wire SETn, wire RSTn) {
-    CHECK_P(bit_dirty1());
-    CHECK_N(bit_dirty2());
-    dff_rst_any(SETn, RSTn);
-  }
+    if (!bit_clock() && CLKp) set_data_new(Dp);
+    set_clock(CLKp);
+    set_data_new((bit_data_new() || !SETn) && RSTn);
 
-  void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    dff_clk(CLKp, Dp);
-    dff_rst(SETn, RSTn);
+    set_dirty1();
+    set_dirty2();
+    set_dirty3();
+    set_dirty4();
   }
 
   void dff_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    dff_clk_any(CLKp, Dp);
-    dff_rst_any(SETn, RSTn);
+    if (!bit_clock() && CLKp) set_data_new(Dp);
+    set_clock(CLKp);
+    set_data_new((bit_data_new() || !SETn) && RSTn);
+
+    set_dirty1();
+    set_dirty2();
+    set_dirty3();
+    set_dirty4();
   }
 };
 
@@ -217,9 +199,6 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
-  void dff9_set(wire SETn) { dff_rst(SETn, 1); }
-  void dff9_clk(wire CLKp, wire Dn) { dff_clk(CLKp, !Dn); }
-
   void dff9(wire CLKp, wire SETn, wire Dn) { dff(CLKp, SETn, 1, !Dn); }
 };
 
@@ -240,9 +219,6 @@ struct DFF9 : public DFF {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public DFF {
-  using BitBase::qp_old;
-  using BitBase::qp_new;
-
   void dff11(wire CLKp, wire RSTn, wire Dp) { dff(CLKp, 1, RSTn, Dp); }
 };
 
@@ -287,12 +263,7 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
-  void dff17(wire CLKp, wire RSTn, wire Dp) { dff(CLKp, 1, RSTn, Dp); }
-  void dff17_clk(wire CLKp, wire Dp)        { dff_clk(CLKp, Dp); }
-  void dff17_rst(wire RSTn)                 { dff_rst(1, RSTn); }
-
-  void dff17_rst_any(wire RSTn)             { dff_rst_any(1, RSTn); }
-
+  void dff17(wire CLKp, wire RSTn, wire Dp)     { dff(CLKp, 1, RSTn, Dp); }
   void dff17_any(wire CLKp, wire RSTn, wire Dp) { dff_any(CLKp, 1, RSTn, Dp); }
 };
 
@@ -322,9 +293,6 @@ struct DFF17 : public DFF {
 
 struct DFF20 : public DFF {
   void dff20(wire CLKn, wire LOADp, wire newD) { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data_old()); }
-
-  void dff20_clk (wire CLKn)             { dff_clk(!CLKn, !bit_data_old()); }
-  void dff20_load(wire LOADp, wire newD) { dff_rst(!(LOADp && newD), !(LOADp && !newD)); }
 };
 
 //-----------------------------------------------------------------------------
@@ -357,9 +325,6 @@ struct DFF20 : public DFF {
 
 struct DFF22 : public DFF {
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) { dff(CLKp, SETn, RSTn, Dp); }
-
-  void dff22_clk(wire CLKp, wire Dp)   { dff_clk(CLKp, Dp); }
-  void dff22_rst(wire SETn, wire RSTn) { dff_rst(SETn, RSTn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -391,7 +356,6 @@ struct Bus : public BitBase {
   void reset_to_cart(wire Dp) {
     set_data_old(Dp);
     set_data_new(Dp);
-    set_lock(1);
   }
 
   wire qp_any() const { return BitBase::qp_any(); }
@@ -404,8 +368,6 @@ struct Bus : public BitBase {
   wire qn_new() const { return BitBase::qn_new(); }
 
   void tri(wire OEp, wire Dp) {
-    CHECK_N(bit_locked());
-
     if (OEp) {
       set_data_new(Dp);
     }
@@ -422,6 +384,7 @@ struct Bus : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
+// FIXME these should be making better use of the dirty flags
 
 struct PinIO : public BitBase {
   using BitBase::qp_old;
@@ -435,7 +398,7 @@ struct PinIO : public BitBase {
   // dirty3 = pin_in called
   // dirty4 = pin_out called
 
-  void pin_in(wire OEp, wire Dp) {
+  void pin_in_oedp(wire OEp, wire Dp) {
     // First touch, reset state.
     if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
 
@@ -445,7 +408,7 @@ struct PinIO : public BitBase {
     set_dirty3();
   }
 
-  void pin_out(wire OEp, wire Dp) {
+  void pin_out_oedp(wire OEp, wire Dp) {
     if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
 
     if (OEp){
@@ -454,7 +417,7 @@ struct PinIO : public BitBase {
     set_dirty4();
   }
 
-  void pin_out(wire OEp, wire HI, wire LO) {
+  void pin_out_oehilo(wire OEp, wire HI, wire LO) {
     if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
 
     if (OEp && (HI == LO)){
@@ -470,7 +433,7 @@ struct PinIn : public BitBase {
   using BitBase::qp_old;
   using BitBase::qp_new;
 
-  void pin_in(wire Dp) {
+  void pin_in_dp(wire Dp) {
     set_data_new(Dp);
     set_dirty1();
     set_dirty2();
@@ -485,7 +448,7 @@ struct PinOut : public BitBase {
   using BitBase::qp_old;
   using BitBase::qp_new;
 
-  void pin_out(wire Dp) {
+  void pin_out_dp(wire Dp) {
     CHECK_N(bit_dirty1());
 
     set_data_new(Dp);
@@ -496,14 +459,11 @@ struct PinOut : public BitBase {
     set_dirty4();
   }
 
-  void pin_out(wire HI, wire LO) {
+  void pin_out_hilo(wire HI, wire LO) {
     CHECK_N(bit_dirty1());
 
     if (HI == LO) {
       set_data_new(!HI);
-    }
-    else {
-      set_data_new(1);
     }
 
     set_dirty1();
@@ -512,7 +472,8 @@ struct PinOut : public BitBase {
     set_dirty4();
   }
 
-  void pin_out(wire OEp, wire HI, wire LO) {
+  // OE could be "enable pullup"?
+  void pin_out_oehilo(wire OEp, wire HI, wire LO) {
     CHECK_N(bit_dirty1());
 
     if (OEp && (HI == LO)) {
@@ -527,20 +488,6 @@ struct PinOut : public BitBase {
     set_dirty3();
     set_dirty4();
   }
-
-  /*
-  void pin_out(wire HI, wire LO) {
-    set_data_new((!HI) || (HI != LO));
-    set_dirty1();
-    set_dirty2();
-  }
-
-  void pin_out(wire OEp, wire HI, wire LO) {
-    set_data_new((!HI) || (HI != LO) || !OEp);
-    set_dirty1();
-    set_dirty2();
-  }
-  */
 };
 
 //-----------------------------------------------------------------------------
@@ -609,7 +556,7 @@ struct NandLatch : public BitBase {
 // TPLATCH_09 nc
 // TPLATCH_10 >> Qn
 
-// Output 08 must _not_ be inverting, see PIN_EXT_A14p
+// Output 08 must _not_ be inverting, see pin EXT_A14p
 // Output 10 _must_ be inverting...?
 
 struct TpLatch : public BitBase {

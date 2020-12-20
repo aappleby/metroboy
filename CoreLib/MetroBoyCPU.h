@@ -15,11 +15,12 @@ struct MetroBoyCPU {
 
   void execute_int(uint8_t imask_, uint8_t intf_);
   void execute_halt(uint8_t imask_, uint8_t intf_);
+  void execute_cb();
   void execute_op();
 
   //----------------------------------------
 
-  void bus_nop(uint16_t addr = 0) {
+  void bus_pass(uint16_t addr) {
     _bus_addr  = addr;
     _bus_data  = 0;
     _bus_read  = 0;
@@ -40,14 +41,7 @@ struct MetroBoyCPU {
     _bus_write = 1;
   }
 
-  void bus_write(uint16_t addr) {
-    _bus_addr  = addr;
-    _bus_data  = out;
-    _bus_read  = 0;
-    _bus_write = 1;
-  }
-
-  void op_done(uint16_t addr) {
+  void bus_done(uint16_t addr) {
     _bus_addr  = addr;
     _bus_data  = 0;
     _bus_read  = 1;
@@ -55,16 +49,21 @@ struct MetroBoyCPU {
     state_ = 0;
   }
 
+  //----------------------------------------
+
   uint8_t get_reg(int mux);
   void    set_reg(int mux, uint8_t data);
   void    set_f(uint8_t mask);
-  uint8_t alu(uint8_t arg1, uint8_t arg2, int op, uint8_t flags);
-  uint8_t alu(int op, uint8_t flags);
+  uint8_t alu(uint8_t x, uint8_t y, int op, uint8_t flags);
+  uint8_t rlu(uint8_t x, int op, uint8_t flags);
   uint8_t daa(uint8_t x, uint8_t f);
-  uint8_t rlu(int op, uint8_t flags);
-  uint8_t alu_cb(int op, uint8_t flags);
+  uint8_t alu_cb(uint8_t arg1, int op, uint8_t flags);
 
   //----------------------------------------
+
+  // hacks to make tock idempotent
+  bool tocked_ab = false;
+  bool tocked_ef = false;
 
   uint16_t _bus_addr;
   uint8_t  _bus_data;
@@ -76,13 +75,10 @@ struct MetroBoyCPU {
   uint8_t  cb;
   int      state, state_;
   uint8_t  in;
-  uint8_t  out;
 
   bool     ime, ime_delay;
   uint8_t  int_ack;
 
-  uint8_t  alu_x;
-  uint8_t  alu_y;
   uint8_t  alu_f;
   uint8_t  alu_o;
 

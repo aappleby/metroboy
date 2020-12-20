@@ -67,11 +67,10 @@ struct SpriteStore {
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
 
   void get_sprite(SpriteFirstMatch first_match, Bus SPR_TRI_I[6], Bus SPR_TRI_L[4]);
-  void reset_first_match(wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
   void store_sprite_index(SpriteStoreFlag store_flag, Bus SPR_TRI_I[6]);
   void store_sprite_line (SpriteStoreFlag store_flag, Bus SPR_TRI_L[4]);
-  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b);
+  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
   void oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]);
   void ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus SPR_TRI_L[4]);

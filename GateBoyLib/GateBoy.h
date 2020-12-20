@@ -98,7 +98,7 @@ struct GateBoy {
 
   void tock_slow(int pass_index);
 
-  void update_lcd();
+  void update_framebuffer();
 
   uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
   uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
@@ -179,9 +179,6 @@ struct GateBoy {
   RegStat reg_stat;
   RegSCX  reg_scx;
   RegSCY  reg_scy;
-  RegLX   reg_lx;
-  RegLY   reg_ly;
-  RegLYC  reg_lyc;
   RegWY   reg_wy;
   RegWX   reg_wx;
 
@@ -252,9 +249,8 @@ struct GateBoy {
   // LCD and framebuffer
 
   uint8_t framebuffer[160*144];
-  uint8_t gb_screen_x = 0;
-  uint8_t gb_screen_y = 0;
-  uint8_t lcd_data_latch = 0;
+  //uint8_t gb_screen_x = 0;
+  //uint8_t gb_screen_y = 0;
 
   //-----------------------------------------------------------------------------
 

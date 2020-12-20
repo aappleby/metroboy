@@ -32,20 +32,19 @@ int main(int argc, char** argv) {
 
 
   //failures += t.test_fastboot_vs_slowboot();
-  failures += t.test_reset_cart_vs_dump();
+  //failures += t.test_reset_cart_vs_dump();
+
+  failures += t.test_clk();
+  failures += t.test_regs();
+  failures += t.test_mem();
 
 #if 0
   failures += t.test_init();
-  failures += t.test_clk();
-  failures += t.test_mem();
   failures += t.test_ext_bus();
   failures += t.test_dma();
   failures += t.test_interrupts();
-  failures += t.test_joypad();
   failures += t.test_ppu();
-  failures += t.test_serial();
   failures += t.test_timer();
-
   failures += t.test_micro_poweron();
   failures += t.test_micro_lcden();
   failures += t.test_micro_timer();
@@ -109,6 +108,36 @@ GateBoy GateBoyTests::create_gb_poweron() {
   gb.reset_to_bootrom(true);
   gb.sys_cpu_en = 0;
   return gb;
+}
+
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_regs() {
+  TEST_START();
+
+  failures += test_reg("P1",   ADDR_P1,   0b00110000);
+  failures += test_reg("SB",   ADDR_SB,   0b11111111);
+  failures += test_reg("SC",   ADDR_SC,   0b10000001);
+  failures += test_reg("TIMA", ADDR_TIMA, 0b11111111);
+  failures += test_reg("TMA",  ADDR_TMA,  0b11111111);
+  failures += test_reg("TAC",  ADDR_TAC,  0b00000111);
+  failures += test_reg("IF",   ADDR_IF,   0b00011111);
+  //failures += test_reg("LCDC", ADDR_LCDC, 0b11111111); // don't test this reg here, writing does things
+  failures += test_reg("STAT", ADDR_STAT, 0b01111000);
+  failures += test_reg("SCY",  ADDR_SCY,  0b11111111);
+  failures += test_reg("SCX",  ADDR_SCX,  0b11111111);
+  //failures += test_reg("LY",   0xFF44, 177); // not standard reg
+  failures += test_reg("LYC",  ADDR_LYC,  0b11111111);
+  //failures += test_reg("DMA",  ADDR_DMA,  0b11111111); // side effects
+  failures += test_reg("BGP",  ADDR_BGP,  0b11111111);
+  failures += test_reg("OBP0", ADDR_OBP0, 0b11111111);
+  failures += test_reg("OBP1", ADDR_OBP1, 0b11111111);
+  failures += test_reg("WY",   ADDR_WY,   0b11111111);
+  failures += test_reg("WX",   ADDR_WX,   0b11111111);
+  failures += test_reg("IE",   ADDR_IE,   0b00011111);
+
+  TEST_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -836,25 +865,26 @@ int GateBoyTests::test_init() {
 
   LOG_G("Checking reg values\n");
   EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
-  EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
-  EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom unstable latch problem
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
+  //EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
+  //EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
+  //EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
+  //EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
+  //EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom unstable latch problem
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
+  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
+  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
+  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
+  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
+  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
 
   TEST_END();
 }
@@ -885,15 +915,15 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), 0b10011001);
 
 #if 0
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEDO_xBCDEFGH.qp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BEKO_ABCDxxxx.qp(), 0b11110000);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUDE_xxxxEFGH.qp(), 0b00001111);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOLO_ABCDEFxx.qp(), 0b11111100);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BUKE_AxxxxxGH.qp(), 0b10000011);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOMA_xBCDEFGH.qp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.PIN_CPU_BOGA_Axxxxxxx.qp(), 0b10000000);
-    EXPECT_CLK(top.ext_bus.PIN_EXT_CLK.qp(),           0b11110000);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BEDO_xBCDEFGH.qp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BEKO_ABCDxxxx.qp(), 0b11110000);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BUDE_xxxxEFGH.qp(), 0b00001111);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOLO_ABCDEFxx.qp(), 0b11111100);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BUKE_AxxxxxGH.qp(), 0b10000011);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOMA_xBCDEFGH.qp(), 0b01111111);
+    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOGA_Axxxxxxx.qp(), 0b10000000);
+    EXPECT_CLK(top.ext_bus.PIN75_EXT_CLK.qp(),         0b11110000);
 #endif
     gb.next_phase();
   }
@@ -1366,9 +1396,6 @@ int GateBoyTests::test_interrupts() {
   //dbg_write(ADDR_STAT, EI_OAM);
   //dbg_write(ADDR_IE,   0b11111111);
 
-  test_reg("IF",   0xFF0F, 0b00011111);
-  test_reg("IE",   0xFFFF, 0b00011111);
-
   TEST_END();
 }
 
@@ -1393,10 +1420,6 @@ int GateBoyTests::test_bootrom() {
 
 int GateBoyTests::test_timer() {
   TEST_START();
-
-  test_reg("TIMA", ADDR_TIMA, 0b11111111); // works
-  test_reg("TMA",  ADDR_TMA,  0b11111111); // works
-  test_reg("TAC",  ADDR_TAC,  0b00000111); // works
 
   // TAC 100 - 2048 phases per TIMA tick
   // TAC 101 - 32 phases per TIMA tick
@@ -1509,16 +1532,6 @@ int GateBoyTests::test_timer() {
 
 //------------------------------------------------------------------------------
 
-int GateBoyTests::test_joypad() {
-  TEST_START();
-
-  failures += test_reg("JOYP", ADDR_P1,   0b00110000);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
 int GateBoyTests::test_dma() {
   TEST_START();
 
@@ -1603,29 +1616,8 @@ int GateBoyTests::test_dma(uint16_t src) {
 
 //------------------------------------------------------------------------------
 
-int GateBoyTests::test_serial() {
-  TEST_START();
-  failures += test_reg("SB", ADDR_SB, 0b11111111);
-  failures += test_reg("SC", ADDR_SC, 0b10000001);
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
 int GateBoyTests::test_ppu() {
   TEST_START();
-
-  //failures += test_reg("LCDC", ADDR_LCDC, 0b11111111); // don't test this reg here, writing does things
-  failures += test_reg("STAT", ADDR_STAT, 0b01111000);
-  failures += test_reg("SCY",  ADDR_SCY,  0b11111111);
-  failures += test_reg("SCX",  ADDR_SCX,  0b11111111);
-  //failures += test_reg("LY",   0xFF44, 177); // not standard reg
-  failures += test_reg("LYC",  ADDR_LYC,  0b11111111);
-  failures += test_reg("BGP",  ADDR_BGP,  0b11111111);
-  failures += test_reg("OBP0", ADDR_OBP0, 0b11111111);
-  failures += test_reg("OBP1", ADDR_OBP1, 0b11111111);
-  failures += test_reg("WY",   ADDR_WY,   0b11111111);
-  failures += test_reg("WX",   ADDR_WX,   0b11111111);
 
   // slow
   if (0) {
@@ -1635,20 +1627,20 @@ int GateBoyTests::test_ppu() {
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (int i = 0; i < 153; i++) {
-      EXPECT_EQ(i, gb.reg_ly.get());
+      EXPECT_EQ(i, gb.lcd.reg_ly.get_old());
       gb.run_phases(114 * 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, gb.reg_ly.get());
+    EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
     gb.run_phases(114 * 8);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, gb.reg_ly.get());
+    EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
     gb.run_phases(114 * 8);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, gb.reg_ly.get());
+    EXPECT_EQ(1, gb.lcd.reg_ly.get_old());
 
     if (!failures) LOG_B("Pass");
   }
@@ -1741,7 +1733,7 @@ void GateBoyTests::run_benchmark() {
     gb.bus_req_new.addr = 0x0150;
     gb.bus_req_new.data = 0;
     gb.bus_req_new.read = 1;
-    gb.bus_req_new.write_sync = 0;
+    gb.bus_req_new.write = 0;
     gb.sys_cpu_en = false;
     gb.phase_total = 0;
 

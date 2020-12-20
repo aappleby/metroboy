@@ -22,7 +22,7 @@ void MetroBoySerial::tick(int phase_total, const Req& req, Ack& ack) const {
 }
 
 void MetroBoySerial::tock(int phase_total, const Req& req) {
-  if (req.write_sync && DELTA_GH) {
+  if (req.write && DELTA_GH) {
     if (req.addr == ADDR_SB) sb = (uint8_t)req.data_lo;
     if (req.addr == ADDR_SC) sc = (uint8_t)req.data_lo | 0b01111110;
   }

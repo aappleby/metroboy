@@ -44,6 +44,91 @@ void GateBoySerial::read_sb(GateBoyCpuBus& cpu_bus)
 
 void GateBoySerial::write_sb_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
 {
+  (void)rst;
+  (void)cpu_bus;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
+{
+  /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TOVY_A00n());
+  /* p06.CORE*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_UCOM_FF02_RDp, CULY_SER_DIR.qn_new());
+  /* p06.ELUV*/ cpu_bus.BUS_CPU_D[7].tri6_pn(_UCOM_FF02_RDp, ETAF_SER_RUNNING.qn_new());
+}
+
+void GateBoySerial::write_sc_sync(GateBoyCpuBus& cpu_bus)
+{
+  (void)cpu_bus;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div)
+{
+  /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p());
+  /*#p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
+
+  /*#p01.UVYN*/ wire _UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
+  /*#p06.COTY*/ COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, COTY_SER_CLK.qn_old()); // schematic wrong, clock is UVYN
+
+  //----------------------------------------
+  // Feedback loop
+
+  for (int rep = 0; rep < 2; rep++) {
+    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_any());
+    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_any());
+
+    {
+      /* p06.CARO*/ wire _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn());
+      /*#p06.CAFA*/ CAFA_SER_CNT0.dff17_any(_DAWA_SER_CLK,          _CARO_SER_RSTn, CAFA_SER_CNT0.qn_any());
+      /*#p06.CYLO*/ CYLO_SER_CNT1.dff17_any(CAFA_SER_CNT0.qn_any(), _CARO_SER_RSTn, CYLO_SER_CNT1.qn_any());
+      /*#p06.CYDE*/ CYDE_SER_CNT2.dff17_any(CYLO_SER_CNT1.qn_any(), _CARO_SER_RSTn, CYDE_SER_CNT2.qn_any());
+      /*#p06.CALY*/ CALY_SER_CNT3.dff17_any(CYDE_SER_CNT2.qn_any(), _CARO_SER_RSTn, CALY_SER_CNT3.qn_any());
+    }
+
+    {
+      /*#p06.COBA*/ wire _COBA_SER_CNT3n = not1(CALY_SER_CNT3.qp_any());
+      /*#p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, rst.ALUR_SYS_RSTn());
+      /*#p06.ETAF*/ ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D[7].qp_old());
+    }
+
+    {
+      /*#p06.KEXU*/ wire _KEXU = nand2(_DAWA_SER_CLK, CULY_SER_DIR.qp_new()); // schematic wrong, first input is DAWA
+      /*#p06.JAGO*/ wire _JAGO =  not1(CULY_SER_DIR.qp_new());
+      /*#p06.KUJO*/ wire _KUJO =  nor2(_JAGO, _DAWA_SER_CLK); // schematic wrong
+
+      PIN68_SCK.pin_in_oedp(0, 0);
+      PIN68_SCK.pin_out_oehilo(CULY_SER_DIR.qp_new(), _KEXU, _KUJO);
+    }
+  }
+
+  //----------------------------------------
+
+  {
+    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_new());
+    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
+    /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
+    /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old());
+    /* p05.KENA*/ wire _KENA = /*mux2n(KUKO_DBG_FF00_D6,*/ ELYS_SER_OUT.qp_new() /*, FF60_0)*/; // FIXME hacking out debug stuff
+    PIN70_SOUT.pin_out_dp(_KENA);
+  }
+
+}
+
+
+
+void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
+  /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_new());
+  /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
+  /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
+  /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
+  /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
+  /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
+
+  // this pin has 4 wires attached, but they're not traced
+  PIN69_SIN.pin_in_dp(0);
+
   /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A[ 0].qp_new());
   /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[0].qp_new(), rst.ALUR_SYS_RSTn());
   /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[1].qp_new(), rst.ALUR_SYS_RSTn());
@@ -64,102 +149,15 @@ void GateBoySerial::write_sb_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bu
   /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(cpu_bus.BUS_CPU_D[6].qp_new(), _DAKU_FF01_WRp);
   /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(cpu_bus.BUS_CPU_D[7].qp_new(), _DAKU_FF01_WRp);
 
-  /* p06.EDER*/ EDER_SER_DATA7.dff22_rst(_EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn);
-  /* p06.EROD*/ EROD_SER_DATA6.dff22_rst(_EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn);
-  /* p06.EJAB*/ EJAB_SER_DATA5.dff22_rst(_ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn);
-  /* p06.DOVU*/ DOVU_SER_DATA4.dff22_rst(_DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn);
-  /* p06.DOJO*/ DOJO_SER_DATA3.dff22_rst(_DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn);
-  /* p06.DYRA*/ DYRA_SER_DATA2.dff22_rst(_DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn);
-  /* p06.DEGU*/ DEGU_SER_DATA1.dff22_rst(_DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn);
-  /* p06.CUBA*/ CUBA_SER_DATA0.dff22_rst(_CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
-{
-  /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TOVY_A00n());
-  /* p06.CORE*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_UCOM_FF02_RDp, CULY_SER_DIR.qn_new());
-  /* p06.ELUV*/ cpu_bus.BUS_CPU_D[7].tri6_pn(_UCOM_FF02_RDp, ETAF_SER_RUNNING.qn_new());
-}
-
-void GateBoySerial::write_sc_sync(GateBoyCpuBus& cpu_bus)
-{
-  /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p());
-  /*#p06.CULY*/ CULY_SER_DIR    .dff17_clk(_UWAM_FF02_WRn, cpu_bus.BUS_CPU_D[0].qp_old());
-  /*#p06.ETAF*/ ETAF_SER_RUNNING.dff17_clk(_UWAM_FF02_WRn, cpu_bus.BUS_CPU_D[7].qp_old());
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div)
-{
-  /*#p06.CULY*/ CULY_SER_DIR.dff17_rst(rst.ALUR_SYS_RSTn());
-
-  /*#p01.UVYN*/ wire _UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
-  /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p());
-  /*#p06.COTY*/ COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, COTY_SER_CLK.qn_old()); // schematic wrong, clock is UVYN
-
-  //----------------------------------------
-  // Feedback loop
-
-  for (int rep = 0; rep < 2; rep++) {
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN_SCK.qn_any());
-    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_any());
-
-    {
-      /* p06.CARO*/ wire _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn());
-      /*#p06.CAFA*/ CAFA_SER_CNT0.dff17_any(_DAWA_SER_CLK,          _CARO_SER_RSTn, CAFA_SER_CNT0.qn_any());
-      /*#p06.CYLO*/ CYLO_SER_CNT1.dff17_any(CAFA_SER_CNT0.qn_any(), _CARO_SER_RSTn, CYLO_SER_CNT1.qn_any());
-      /*#p06.CYDE*/ CYDE_SER_CNT2.dff17_any(CYLO_SER_CNT1.qn_any(), _CARO_SER_RSTn, CYDE_SER_CNT2.qn_any());
-      /*#p06.CALY*/ CALY_SER_CNT3.dff17_any(CYDE_SER_CNT2.qn_any(), _CARO_SER_RSTn, CALY_SER_CNT3.qn_any());
-    }
-
-    {
-      /*#p06.COBA*/ wire _COBA_SER_CNT3n = not1(CALY_SER_CNT3.qp_any());
-      /*#p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, rst.ALUR_SYS_RSTn());
-      /*#p06.ETAF*/ ETAF_SER_RUNNING.dff17_rst_any(_CABY_XFER_RESET);
-    }
-
-    {
-      /*#p06.KEXU*/ wire _KEXU = nand2(_DAWA_SER_CLK, CULY_SER_DIR.qp_new()); // schematic wrong, first input is DAWA
-      /*#p06.JAGO*/ wire _JAGO =  not1(CULY_SER_DIR.qp_new());
-      /*#p06.KUJO*/ wire _KUJO =  nor2(_JAGO, _DAWA_SER_CLK); // schematic wrong
-      PIN_SCK.pin_in(0, 0);
-      PIN_SCK.pin_out(CULY_SER_DIR.qp_new(), _KEXU, _KUJO);
-    }
-  }
-
-  //----------------------------------------
-
-  {
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN_SCK.qn_new());
-    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
-    /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
-    /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old());
-    /* p05.KENA*/ wire _KENA = /*mux2n(KUKO_DBG_FF00_D6,*/ ELYS_SER_OUT.qp_new() /*, FF60_0)*/; // FIXME hacking out debug stuff
-    PIN_SOUT.pin_out(_KENA);
-  }
-
-  {
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN_SCK.qn_new());
-    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
-    /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
-    /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
-    /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
-    /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
-
-    PIN_SIN.pin_in(0);
-    /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(PIN_SIN.qp_new());
-    /* p06.EDER*/ EDER_SER_DATA7.dff22_clk(_EPYT_SER_CLK, EROD_SER_DATA6.qp_old());
-    /* p06.EROD*/ EROD_SER_DATA6.dff22_clk(_EPYT_SER_CLK, EJAB_SER_DATA5.qp_old());
-    /* p06.EJAB*/ EJAB_SER_DATA5.dff22_clk(_EPYT_SER_CLK, DOVU_SER_DATA4.qp_old());
-    /* p06.DOVU*/ DOVU_SER_DATA4.dff22_clk(_EPYT_SER_CLK, DOJO_SER_DATA3.qp_old());
-    /* p06.DOJO*/ DOJO_SER_DATA3.dff22_clk(_DAWE_SER_CLK, DYRA_SER_DATA2.qp_old());
-    /* p06.DYRA*/ DYRA_SER_DATA2.dff22_clk(_DAWE_SER_CLK, DEGU_SER_DATA1.qp_old());
-    /* p06.DEGU*/ DEGU_SER_DATA1.dff22_clk(_DAWE_SER_CLK, CUBA_SER_DATA0.qp_old());
-    /* p06.CUBA*/ CUBA_SER_DATA0.dff22_clk(_DAWE_SER_CLK, _CAGE_SER_IN_new);
-  }
+  /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(PIN69_SIN.qp_new());
+  /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old());
+  /* p06.EROD*/ EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, EJAB_SER_DATA5.qp_old());
+  /* p06.EJAB*/ EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, DOVU_SER_DATA4.qp_old());
+  /* p06.DOVU*/ DOVU_SER_DATA4.dff22(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, DOJO_SER_DATA3.qp_old());
+  /* p06.DOJO*/ DOJO_SER_DATA3.dff22(_DAWE_SER_CLK, _DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn, DYRA_SER_DATA2.qp_old());
+  /* p06.DYRA*/ DYRA_SER_DATA2.dff22(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, DEGU_SER_DATA1.qp_old());
+  /* p06.DEGU*/ DEGU_SER_DATA1.dff22(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, CUBA_SER_DATA0.qp_old());
+  /* p06.CUBA*/ CUBA_SER_DATA0.dff22(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SER_IN_new);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

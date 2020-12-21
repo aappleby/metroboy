@@ -7,13 +7,13 @@
 
 void GateBoyCpuBus::reset_to_bootrom() {
   for (int i = 0; i < 8; i++) {
-    BUS_CPU_D[i].reset_to_cart(1);
+    BUS_CPU_D[i].state = 1;
   }
 }
 
 void GateBoyCpuBus::reset_to_cart() {
-  BOOT_BITn_h.reset_to_cart(REG_D1C1);
-  SIG_CPU_BOOTp.reset_to_cart(REG_D0C0);
+  BOOT_BITn_h.state = REG_D1C1;
+  SIG_CPU_BOOTp.state = REG_D0C0;
 
   BUS_CPU_A[ 0].state = 0b0000;
   BUS_CPU_A[ 1].state = 0b0000;

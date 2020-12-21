@@ -55,6 +55,8 @@ void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
 
 void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div)
 {
+  PIN68_SCK.reset_for_pass();
+
   /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p());
   /*#p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
 

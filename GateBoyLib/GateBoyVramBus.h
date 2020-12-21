@@ -8,19 +8,19 @@
 struct GateBoyVramBus {
 
   void reset_to_cart() {
-    BUS_VRAM_An[ 0].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 1].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 2].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 3].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 4].reset_to_cart(REG_D0C0);
-    BUS_VRAM_An[ 5].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 6].reset_to_cart(REG_D0C0);
-    BUS_VRAM_An[ 7].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 8].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[ 9].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[10].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[11].reset_to_cart(REG_D1C0);
-    BUS_VRAM_An[12].reset_to_cart(REG_D1C0);
+    BUS_VRAM_An[ 0].state = 1;
+    BUS_VRAM_An[ 1].state = 1;
+    BUS_VRAM_An[ 2].state = 1;
+    BUS_VRAM_An[ 3].state = 1;
+    BUS_VRAM_An[ 4].state = 0;
+    BUS_VRAM_An[ 5].state = 1;
+    BUS_VRAM_An[ 6].state = 0;
+    BUS_VRAM_An[ 7].state = 1;
+    BUS_VRAM_An[ 8].state = 1;
+    BUS_VRAM_An[ 9].state = 1;
+    BUS_VRAM_An[10].state = 1;
+    BUS_VRAM_An[11].state = 1;
+    BUS_VRAM_An[12].state = 1;
 
     PIN34_VRAM_ADDR[ 0].state = 0b00001101;
     PIN34_VRAM_ADDR[ 1].state = 0b00001101;

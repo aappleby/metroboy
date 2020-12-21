@@ -34,22 +34,22 @@ struct GateBoyDiv {
     uint16_t div_a = div;
     uint16_t div_b = ((~div) << 2);
 
-    UKUP_DIV00p.reset_to_cart(((div_a >>  0) & 1) | ((div_b >>  0) & 2));
-    UFOR_DIV01p.reset_to_cart(((div_a >>  1) & 1) | ((div_b >>  1) & 2));
-    UNER_DIV02p.reset_to_cart(((div_a >>  2) & 1) | ((div_b >>  2) & 2));
-    TERO_DIV03p.reset_to_cart(((div_a >>  3) & 1) | ((div_b >>  3) & 2));
-    UNYK_DIV04p.reset_to_cart(((div_a >>  4) & 1) | ((div_b >>  4) & 2));
-    TAMA_DIV05p.reset_to_cart(((div_a >>  5) & 1) | ((div_b >>  5) & 2));
-    UGOT_DIV06p.reset_to_cart(((div_a >>  6) & 1) | ((div_b >>  6) & 2));
-    TULU_DIV07p.reset_to_cart(((div_a >>  7) & 1) | ((div_b >>  7) & 2));
-    TUGO_DIV08p.reset_to_cart(((div_a >>  8) & 1) | ((div_b >>  8) & 2));
-    TOFE_DIV09p.reset_to_cart(((div_a >>  9) & 1) | ((div_b >>  9) & 2));
-    TERU_DIV10p.reset_to_cart(((div_a >> 10) & 1) | ((div_b >> 10) & 2));
-    SOLA_DIV11p.reset_to_cart(((div_a >> 11) & 1) | ((div_b >> 11) & 2));
-    SUBU_DIV12p.reset_to_cart(((div_a >> 12) & 1) | ((div_b >> 12) & 2));
-    TEKA_DIV13p.reset_to_cart(((div_a >> 13) & 1) | ((div_b >> 13) & 2));
-    UKET_DIV14p.reset_to_cart(((div_a >> 14) & 1) | ((div_b >> 14) & 2));
-    UPOF_DIV15p.reset_to_cart(((div_a >> 15) & 1) | ((div_b >> 15) & 2));
+    UKUP_DIV00p.state = ((div_a >>  0) & 1) | ((div_b >>  0) & 2);
+    UFOR_DIV01p.state = ((div_a >>  1) & 1) | ((div_b >>  1) & 2);
+    UNER_DIV02p.state = ((div_a >>  2) & 1) | ((div_b >>  2) & 2);
+    TERO_DIV03p.state = ((div_a >>  3) & 1) | ((div_b >>  3) & 2);
+    UNYK_DIV04p.state = ((div_a >>  4) & 1) | ((div_b >>  4) & 2);
+    TAMA_DIV05p.state = ((div_a >>  5) & 1) | ((div_b >>  5) & 2);
+    UGOT_DIV06p.state = ((div_a >>  6) & 1) | ((div_b >>  6) & 2);
+    TULU_DIV07p.state = ((div_a >>  7) & 1) | ((div_b >>  7) & 2);
+    TUGO_DIV08p.state = ((div_a >>  8) & 1) | ((div_b >>  8) & 2);
+    TOFE_DIV09p.state = ((div_a >>  9) & 1) | ((div_b >>  9) & 2);
+    TERU_DIV10p.state = ((div_a >> 10) & 1) | ((div_b >> 10) & 2);
+    SOLA_DIV11p.state = ((div_a >> 11) & 1) | ((div_b >> 11) & 2);
+    SUBU_DIV12p.state = ((div_a >> 12) & 1) | ((div_b >> 12) & 2);
+    TEKA_DIV13p.state = ((div_a >> 13) & 1) | ((div_b >> 13) & 2);
+    UKET_DIV14p.state = ((div_a >> 14) & 1) | ((div_b >> 14) & 2);
+    UPOF_DIV15p.state = ((div_a >> 15) & 1) | ((div_b >> 15) & 2);
   }
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
@@ -105,14 +105,14 @@ struct GateBoyTimer {
     uint16_t tima_a = tima;
     uint16_t tima_b = ((~tima) << 2);
 
-    REGA_TIMA0p.reset_to_cart(((tima_a >>  0) & 1) | ((tima_b >>  0) & 2));
-    POVY_TIMA1p.reset_to_cart(((tima_a >>  1) & 1) | ((tima_b >>  1) & 2));
-    PERU_TIMA2p.reset_to_cart(((tima_a >>  2) & 1) | ((tima_b >>  2) & 2));
-    RATE_TIMA3p.reset_to_cart(((tima_a >>  3) & 1) | ((tima_b >>  3) & 2));
-    RUBY_TIMA4p.reset_to_cart(((tima_a >>  4) & 1) | ((tima_b >>  4) & 2));
-    RAGE_TIMA5p.reset_to_cart(((tima_a >>  5) & 1) | ((tima_b >>  5) & 2));
-    PEDA_TIMA6p.reset_to_cart(((tima_a >>  6) & 1) | ((tima_b >>  6) & 2));
-    NUGA_TIMA7p.reset_to_cart(((tima_a >>  7) & 1) | ((tima_b >>  7) & 2));
+    REGA_TIMA0p.state = ((tima_a >>  0) & 1) | ((tima_b >>  0) & 2);
+    POVY_TIMA1p.state = ((tima_a >>  1) & 1) | ((tima_b >>  1) & 2);
+    PERU_TIMA2p.state = ((tima_a >>  2) & 1) | ((tima_b >>  2) & 2);
+    RATE_TIMA3p.state = ((tima_a >>  3) & 1) | ((tima_b >>  3) & 2);
+    RUBY_TIMA4p.state = ((tima_a >>  4) & 1) | ((tima_b >>  4) & 2);
+    RAGE_TIMA5p.state = ((tima_a >>  5) & 1) | ((tima_b >>  5) & 2);
+    PEDA_TIMA6p.state = ((tima_a >>  6) & 1) | ((tima_b >>  6) & 2);
+    NUGA_TIMA7p.state = ((tima_a >>  7) & 1) | ((tima_b >>  7) & 2);
   }
 
   void dump(Dumper& d) {

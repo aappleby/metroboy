@@ -8,14 +8,14 @@ struct GateBoyResetDebug;
 
 struct ExtDataLatch {
   void reset_to_cart() {
-    SOMA_EXT_DATA_LATCH_D0n.reset_to_cart(REG_D1C0);
-    RONY_EXT_DATA_LATCH_D1n.reset_to_cart(REG_D1C0);
-    RAXY_EXT_DATA_LATCH_D2n.reset_to_cart(REG_D1C0);
-    SELO_EXT_DATA_LATCH_D3n.reset_to_cart(REG_D1C0);
-    SODY_EXT_DATA_LATCH_D4n.reset_to_cart(REG_D1C0);
-    SAGO_EXT_DATA_LATCH_D5n.reset_to_cart(REG_D1C0);
-    RUPA_EXT_DATA_LATCH_D6n.reset_to_cart(REG_D1C0);
-    SAZY_EXT_DATA_LATCH_D7n.reset_to_cart(REG_D1C0);
+    SOMA_EXT_DATA_LATCH_D0n.state = REG_D1C0;
+    RONY_EXT_DATA_LATCH_D1n.state = REG_D1C0;
+    RAXY_EXT_DATA_LATCH_D2n.state = REG_D1C0;
+    SELO_EXT_DATA_LATCH_D3n.state = REG_D1C0;
+    SODY_EXT_DATA_LATCH_D4n.state = REG_D1C0;
+    SAGO_EXT_DATA_LATCH_D5n.state = REG_D1C0;
+    RUPA_EXT_DATA_LATCH_D6n.state = REG_D1C0;
+    SAZY_EXT_DATA_LATCH_D7n.state = REG_D1C0;
   }
 
   /*p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx

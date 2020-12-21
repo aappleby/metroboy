@@ -25,11 +25,13 @@ uint64_t commit_and_hash(void* blob, size_t size) {
   for (size_t i = 0; i < size; i++) {
     uint8_t s = base[i];
 
+#ifdef USE_DIRTY_BIT
     if (!(s & 0x80)) {
       LOG_Y("Bit %d not dirty after sim pass!\n", i);
       bad_bits = true;
     }
-    s = (s & 0b00001011) | ((s & 1) << 2);
+#endif
+    s &= 0b00001011;
 
     combine_hash(h, s);
 

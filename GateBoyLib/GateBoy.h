@@ -236,6 +236,9 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // LCD and framebuffer
 
+  int old_lcd_x = 0;
+  int old_lcd_y = 0;
+
   uint8_t framebuffer[160*144];
   //uint8_t gb_screen_x = 0;
   //uint8_t gb_screen_y = 0;

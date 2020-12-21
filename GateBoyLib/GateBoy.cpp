@@ -126,9 +126,9 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sys_cpu_en = true;
 
   if (fastboot) {
-    div.TERO_DIV03p.reset_to_cart(REG_D0C1);
-    div.UNYK_DIV04p.reset_to_cart(REG_D0C1);
-    div.UPOF_DIV15p.reset_to_cart(REG_D1C1);
+    div.TERO_DIV03p.state = REG_D0C1;
+    div.UNYK_DIV04p.state = REG_D0C1;
+    div.UPOF_DIV15p.state = REG_D1C1;
   }
 
   memset(framebuffer, 4, sizeof(framebuffer));
@@ -149,17 +149,17 @@ void GateBoy::reset_to_cart() {
   interrupts.reset_to_cart();
   serial.reset_to_cart();
 
-  SPR_TRI_I[0].reset_to_cart(REG_D0C0);
-  SPR_TRI_I[1].reset_to_cart(REG_D0C0);
-  SPR_TRI_I[2].reset_to_cart(REG_D1C0);
-  SPR_TRI_I[3].reset_to_cart(REG_D0C0);
-  SPR_TRI_I[4].reset_to_cart(REG_D1C0);
-  SPR_TRI_I[5].reset_to_cart(REG_D0C0);
+  SPR_TRI_I[0].state = 0;
+  SPR_TRI_I[1].state = 0;
+  SPR_TRI_I[2].state = 1;
+  SPR_TRI_I[3].state = 0;
+  SPR_TRI_I[4].state = 1;
+  SPR_TRI_I[5].state = 0;
 
-  SPR_TRI_L[0].reset_to_cart(REG_D1C0);
-  SPR_TRI_L[1].reset_to_cart(REG_D1C0);
-  SPR_TRI_L[2].reset_to_cart(REG_D1C0);
-  SPR_TRI_L[3].reset_to_cart(REG_D1C0);
+  SPR_TRI_L[0].state = 1;
+  SPR_TRI_L[1].state = 1;
+  SPR_TRI_L[2].state = 1;
+  SPR_TRI_L[3].state = 1;
 
   sprite_store.reset_to_cart();
   sprite_scanner.reset_to_cart();
@@ -494,6 +494,10 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire XYDO_PX3p_old = pix_count.XYDO_PX3p.qp_old();
 
+  //RegBGP old_reg_bgp = pix_pipes.reg_bgp;
+  //RegOBP0 old_reg_obp0 = pix_pipes.reg_obp0;
+  //RegOBP1 old_reg_obp1 = pix_pipes.reg_obp1;
+
   //-----------------------------------------------------------------------------
 
   rst.PIN71_RST.pin_in_dp(!sys_rst);
@@ -687,7 +691,15 @@ void GateBoy::tock_slow(int pass_index) {
     pix_pipes.tock_mask_pipe  (oam_bus.oam_temp_b, sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
     pix_pipes.tock_pal_pipe   (oam_bus.oam_temp_b, sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
     pix_pipes.tock_sprite_pipe(sprite_fetcher.sprite_pix_a, sprite_fetcher.sprite_pix_b, sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(),SACU_CLKPIPE_evn);
-    pix_pipes.tock_pix_output (reg_lcdc);
+    pix_pipes.tock_pix_output(
+      reg_lcdc,
+      //old_reg_bgp,
+      //old_reg_obp0,
+      //old_reg_obp1
+      pix_pipes.reg_bgp,
+      pix_pipes.reg_obp0,
+      pix_pipes.reg_obp1
+    );
   }
 
   {
@@ -720,6 +732,15 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p01.ABUZ*/ wire _ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
 
   {
+    ext_bus.PIN17_DATA[0].reset_for_pass();
+    ext_bus.PIN17_DATA[1].reset_for_pass();
+    ext_bus.PIN17_DATA[2].reset_for_pass();
+    ext_bus.PIN17_DATA[3].reset_for_pass();
+    ext_bus.PIN17_DATA[4].reset_for_pass();
+    ext_bus.PIN17_DATA[5].reset_for_pass();
+    ext_bus.PIN17_DATA[6].reset_for_pass();
+    ext_bus.PIN17_DATA[7].reset_for_pass();
+
     ext_bus.set_control_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);
     ext_bus.copy_addr_latch_to_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
@@ -732,6 +753,15 @@ void GateBoy::tock_slow(int pass_index) {
 
 
   {
+    vram_bus.PIN25_VRAM_DATA[0].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[1].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[2].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[3].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[4].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[5].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[6].reset_for_pass();
+    vram_bus.PIN25_VRAM_DATA[7].reset_for_pass();
+
     auto scroll_x = BGScrollX::add(pix_count, reg_scx);
     auto scroll_y = BGScrollY::add(lcd.reg_ly, reg_scy);
 
@@ -815,14 +845,19 @@ void GateBoy::update_framebuffer()
   int lcd_y = lcd.reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    //overlay[lcd_x + lcd_y * 160] = 0xFF00FFFF;
-    //uint8_t p0 = gb->lcd.PIN51_LCD_DATA0.qp_old();
-    //uint8_t p1 = gb->lcd.PIN50_LCD_DATA1.qp_old();
+    //if (lcd_x != old_lcd_x) framebuffer[lcd_x + lcd_y * 160] = 3;
+
     uint8_t p0 = pix_pipes.REMY_LD0n.qn_new();
     uint8_t p1 = pix_pipes.RAVO_LD1n.qn_new();
-    framebuffer[lcd_x + lcd_y * 160] = p0 + p1 * 2;
-    //if (lcd_x < 159) framebuffer[(lcd_x + 1) + lcd_y * 160] = 4;
+
+    //uint8_t old_pix = framebuffer[lcd_x + lcd_y * 160];
+    uint8_t new_pix = p0 + p1 * 2;
+
+    framebuffer[lcd_x + lcd_y * 160] = new_pix;
   }
+
+  old_lcd_x = lcd_x;
+  old_lcd_y = lcd_y;
 
 #if 0
   if (!lcd.old_lcd_clock.qp_old() && lcd.PIN53_LCD_CLOCK.qp_new()) {

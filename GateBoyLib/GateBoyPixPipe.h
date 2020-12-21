@@ -144,7 +144,7 @@ struct FineScroll {
 
 struct PPURegisters {
   void reset_to_cart() {
-    VOGA_HBLANKp.reset_to_cart(REG_D1C0);
+    VOGA_HBLANKp.state = REG_D1C0;
   }
 
   wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_new(); }
@@ -158,14 +158,14 @@ struct PPURegisters {
 struct PixelPipes {
 
   void reset_to_cart() {
-    VEZO_MASK_PIPE_0.reset_to_cart(REG_D1C1);
-    WURU_MASK_PIPE_1.reset_to_cart(REG_D1C1);
-    VOSA_MASK_PIPE_2.reset_to_cart(REG_D1C1);
-    WYFU_MASK_PIPE_3.reset_to_cart(REG_D1C1);
-    XETE_MASK_PIPE_4.reset_to_cart(REG_D1C1);
-    WODA_MASK_PIPE_5.reset_to_cart(REG_D1C1);
-    VUMO_MASK_PIPE_6.reset_to_cart(REG_D1C1);
-    VAVA_MASK_PIPE_7.reset_to_cart(REG_D1C1);
+    VEZO_MASK_PIPE_0.state = REG_D1C1;
+    WURU_MASK_PIPE_1.state = REG_D1C1;
+    VOSA_MASK_PIPE_2.state = REG_D1C1;
+    WYFU_MASK_PIPE_3.state = REG_D1C1;
+    XETE_MASK_PIPE_4.state = REG_D1C1;
+    WODA_MASK_PIPE_5.state = REG_D1C1;
+    VUMO_MASK_PIPE_6.state = REG_D1C1;
+    VAVA_MASK_PIPE_7.state = REG_D1C1;
     REMY_LD0n.state = 0b00000101;
     RAVO_LD1n.state = 0b00000101;
   }
@@ -192,7 +192,11 @@ struct PixelPipes {
     wire WUTY_SFETCH_DONE_TRIGp,
     wire SACU_CLKPIPE_evn);
 
-  void tock_pix_output(RegLCDC& reg_lcdc);
+  void tock_pix_output(
+    RegLCDC& reg_lcdc,
+    RegBGP  _reg_bgp,
+    RegOBP0 _reg_obp0,
+    RegOBP1 _reg_obp1);
 
   RegBGP  reg_bgp;
   RegOBP0 reg_obp0;

@@ -109,14 +109,14 @@ struct SpritePix {
 
 struct RegLCDC {
   void reset_to_cart() {
-    VYXE_LCDC_BGENn  .reset_to_cart(REG_D0C1);
-    XYLO_LCDC_SPENn  .reset_to_cart(REG_D1C1);
-    XYMO_LCDC_SPSIZEn.reset_to_cart(REG_D1C1);
-    XAFO_LCDC_BGMAPn .reset_to_cart(REG_D1C1);
-    WEXU_LCDC_BGTILEn.reset_to_cart(REG_D0C1);
-    WYMO_LCDC_WINENn .reset_to_cart(REG_D1C1);
-    WOKY_LCDC_WINMAPn.reset_to_cart(REG_D1C1);
-    XONA_LCDC_LCDENn .reset_to_cart(REG_D0C1);
+    VYXE_LCDC_BGENn  .state = REG_D0C1;
+    XYLO_LCDC_SPENn  .state = REG_D1C1;
+    XYMO_LCDC_SPSIZEn.state = REG_D1C1;
+    XAFO_LCDC_BGMAPn .state = REG_D1C1;
+    WEXU_LCDC_BGTILEn.state = REG_D0C1;
+    WYMO_LCDC_WINENn .state = REG_D1C1;
+    WOKY_LCDC_WINMAPn.state = REG_D1C1;
+    XONA_LCDC_LCDENn .state = REG_D0C1;
   }
 
   void read(GateBoyCpuBus& cpu_bus);
@@ -136,8 +136,13 @@ struct RegLCDC {
 // FF41 - STAT
 
 struct RegStat {
+
+  void dump(Dumper& d) {
+    d.dump_slice2n("FF41 STAT  : ", &ROXE_STAT_HBI_ENn, 4);
+  }
+
   void reset_to_cart() {
-    RUPO_LYC_MATCHn.reset_to_cart(REG_D0C0);
+    RUPO_LYC_MATCHn.state = REG_D0C0;
   }
 
   void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
@@ -322,14 +327,14 @@ struct RegLYC {
 
 struct RegBGP {
   void reset_to_cart() {
-    PAVO_BGP_D0n.reset_to_cart(REG_D1C1);
-    NUSY_BGP_D1n.reset_to_cart(REG_D1C1);
-    PYLU_BGP_D2n.reset_to_cart(REG_D0C1);
-    MAXY_BGP_D3n.reset_to_cart(REG_D0C1);
-    MUKE_BGP_D4n.reset_to_cart(REG_D0C1);
-    MORU_BGP_D5n.reset_to_cart(REG_D0C1);
-    MOGY_BGP_D6n.reset_to_cart(REG_D0C1);
-    MENA_BGP_D7n.reset_to_cart(REG_D0C1);
+    PAVO_BGP_D0n.state = REG_D1C1;
+    NUSY_BGP_D1n.state = REG_D1C1;
+    PYLU_BGP_D2n.state = REG_D0C1;
+    MAXY_BGP_D3n.state = REG_D0C1;
+    MUKE_BGP_D4n.state = REG_D0C1;
+    MORU_BGP_D5n.state = REG_D0C1;
+    MOGY_BGP_D6n.state = REG_D0C1;
+    MENA_BGP_D7n.state = REG_D0C1;
   }
 
   void read(GateBoyCpuBus& cpu_bus);
@@ -384,14 +389,14 @@ struct RegOBP1 {
 
 struct RegWY {
   void set(uint8_t wy) {
-    NESO_WY0n.reset_to_cart((wy & 0x01) ? REG_D0C1 : REG_D1C1);
-    NYRO_WY1n.reset_to_cart((wy & 0x02) ? REG_D0C1 : REG_D1C1);
-    NAGA_WY2n.reset_to_cart((wy & 0x04) ? REG_D0C1 : REG_D1C1);
-    MELA_WY3n.reset_to_cart((wy & 0x08) ? REG_D0C1 : REG_D1C1);
-    NULO_WY4n.reset_to_cart((wy & 0x10) ? REG_D0C1 : REG_D1C1);
-    NENE_WY5n.reset_to_cart((wy & 0x20) ? REG_D0C1 : REG_D1C1);
-    NUKA_WY6n.reset_to_cart((wy & 0x40) ? REG_D0C1 : REG_D1C1);
-    NAFU_WY7n.reset_to_cart((wy & 0x80) ? REG_D0C1 : REG_D1C1);
+    NESO_WY0n.state = (wy & 0x01) ? REG_D0C1 : REG_D1C1;
+    NYRO_WY1n.state = (wy & 0x02) ? REG_D0C1 : REG_D1C1;
+    NAGA_WY2n.state = (wy & 0x04) ? REG_D0C1 : REG_D1C1;
+    MELA_WY3n.state = (wy & 0x08) ? REG_D0C1 : REG_D1C1;
+    NULO_WY4n.state = (wy & 0x10) ? REG_D0C1 : REG_D1C1;
+    NENE_WY5n.state = (wy & 0x20) ? REG_D0C1 : REG_D1C1;
+    NUKA_WY6n.state = (wy & 0x40) ? REG_D0C1 : REG_D1C1;
+    NAFU_WY7n.state = (wy & 0x80) ? REG_D0C1 : REG_D1C1;
   }
 
   int get() const { return BitBase::pack_oldn(8, &NESO_WY0n); }
@@ -414,14 +419,14 @@ struct RegWY {
 
 struct RegWX {
   void set(uint8_t wx) {
-    MYPA_WX0n.reset_to_cart((wx & 0x01) ? REG_D0C1 : REG_D1C1);
-    NOFE_WX1n.reset_to_cart((wx & 0x02) ? REG_D0C1 : REG_D1C1);
-    NOKE_WX2n.reset_to_cart((wx & 0x04) ? REG_D0C1 : REG_D1C1);
-    MEBY_WX3n.reset_to_cart((wx & 0x08) ? REG_D0C1 : REG_D1C1);
-    MYPU_WX4n.reset_to_cart((wx & 0x10) ? REG_D0C1 : REG_D1C1);
-    MYCE_WX5n.reset_to_cart((wx & 0x20) ? REG_D0C1 : REG_D1C1);
-    MUVO_WX6n.reset_to_cart((wx & 0x40) ? REG_D0C1 : REG_D1C1);
-    NUKU_WX7n.reset_to_cart((wx & 0x80) ? REG_D0C1 : REG_D1C1);
+    MYPA_WX0n.state = (wx & 0x01) ? REG_D0C1 : REG_D1C1;
+    NOFE_WX1n.state = (wx & 0x02) ? REG_D0C1 : REG_D1C1;
+    NOKE_WX2n.state = (wx & 0x04) ? REG_D0C1 : REG_D1C1;
+    MEBY_WX3n.state = (wx & 0x08) ? REG_D0C1 : REG_D1C1;
+    MYPU_WX4n.state = (wx & 0x10) ? REG_D0C1 : REG_D1C1;
+    MYCE_WX5n.state = (wx & 0x20) ? REG_D0C1 : REG_D1C1;
+    MUVO_WX6n.state = (wx & 0x40) ? REG_D0C1 : REG_D1C1;
+    NUKU_WX7n.state = (wx & 0x80) ? REG_D0C1 : REG_D1C1;
   }
 
   int get() const { return BitBase::pack_oldn(8, &MYPA_WX0n); }
@@ -444,14 +449,14 @@ struct RegWX {
 struct OamLatchA {
 
   void reset_to_cart() {
-    YDYV_OAM_LATCH_DA0n.reset_to_cart(REG_D1C0);
-    YCEB_OAM_LATCH_DA1n.reset_to_cart(REG_D1C0);
-    ZUCA_OAM_LATCH_DA2n.reset_to_cart(REG_D1C0);
-    WONE_OAM_LATCH_DA3n.reset_to_cart(REG_D1C0);
-    ZAXE_OAM_LATCH_DA4n.reset_to_cart(REG_D1C0);
-    XAFU_OAM_LATCH_DA5n.reset_to_cart(REG_D1C0);
-    YSES_OAM_LATCH_DA6n.reset_to_cart(REG_D1C0);
-    ZECA_OAM_LATCH_DA7n.reset_to_cart(REG_D1C0);
+    YDYV_OAM_LATCH_DA0n.state = REG_D1C0;
+    YCEB_OAM_LATCH_DA1n.state = REG_D1C0;
+    ZUCA_OAM_LATCH_DA2n.state = REG_D1C0;
+    WONE_OAM_LATCH_DA3n.state = REG_D1C0;
+    ZAXE_OAM_LATCH_DA4n.state = REG_D1C0;
+    XAFU_OAM_LATCH_DA5n.state = REG_D1C0;
+    YSES_OAM_LATCH_DA6n.state = REG_D1C0;
+    ZECA_OAM_LATCH_DA7n.state = REG_D1C0;
   }
 
   /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n; // xBxDxFxx // Proooobably all odd clocks?
@@ -469,14 +474,14 @@ struct OamLatchA {
 struct OamLatchB {
 
   void reset_to_cart() {
-    XYKY_OAM_LATCH_DB0n.reset_to_cart(REG_D1C0);
-    YRUM_OAM_LATCH_DB1n.reset_to_cart(REG_D1C0);
-    YSEX_OAM_LATCH_DB2n.reset_to_cart(REG_D1C0);
-    YVEL_OAM_LATCH_DB3n.reset_to_cart(REG_D1C0);
-    WYNO_OAM_LATCH_DB4n.reset_to_cart(REG_D1C0);
-    CYRA_OAM_LATCH_DB5n.reset_to_cart(REG_D1C0);
-    ZUVE_OAM_LATCH_DB6n.reset_to_cart(REG_D1C0);
-    ECED_OAM_LATCH_DB7n.reset_to_cart(REG_D1C0);
+    XYKY_OAM_LATCH_DB0n.state = REG_D1C0;
+    YRUM_OAM_LATCH_DB1n.state = REG_D1C0;
+    YSEX_OAM_LATCH_DB2n.state = REG_D1C0;
+    YVEL_OAM_LATCH_DB3n.state = REG_D1C0;
+    WYNO_OAM_LATCH_DB4n.state = REG_D1C0;
+    CYRA_OAM_LATCH_DB5n.state = REG_D1C0;
+    ZUVE_OAM_LATCH_DB6n.state = REG_D1C0;
+    ECED_OAM_LATCH_DB7n.state = REG_D1C0;
   }
 
   /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n; // xBxxxFxx // Proooobably all odd clocks?
@@ -495,14 +500,14 @@ struct OamLatchB {
 struct OamTempA {
 
   void reset_to_cart() {
-    XUSO_OAM_DA0p.reset_to_cart(REG_D0C1);
-    XEGU_OAM_DA1p.reset_to_cart(REG_D0C1);
-    YJEX_OAM_DA2p.reset_to_cart(REG_D0C1);
-    XYJU_OAM_DA3p.reset_to_cart(REG_D0C1);
-    YBOG_OAM_DA4p.reset_to_cart(REG_D0C1);
-    WYSO_OAM_DA5p.reset_to_cart(REG_D0C1);
-    XOTE_OAM_DA6p.reset_to_cart(REG_D0C1);
-    YZAB_OAM_DA7p.reset_to_cart(REG_D0C1);
+    XUSO_OAM_DA0p.state = REG_D0C1;
+    XEGU_OAM_DA1p.state = REG_D0C1;
+    YJEX_OAM_DA2p.state = REG_D0C1;
+    XYJU_OAM_DA3p.state = REG_D0C1;
+    YBOG_OAM_DA4p.state = REG_D0C1;
+    WYSO_OAM_DA5p.state = REG_D0C1;
+    XOTE_OAM_DA6p.state = REG_D0C1;
+    YZAB_OAM_DA7p.state = REG_D0C1;
   }
 
   /*p29.XUSO*/ DFF8n XUSO_OAM_DA0p; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
@@ -521,14 +526,14 @@ struct OamTempA {
 struct OamTempB {
 
   void reset_to_cart() {
-    YLOR_OAM_DB0p.reset_to_cart(REG_D0C1);
-    ZYTY_OAM_DB1p.reset_to_cart(REG_D0C1);
-    ZYVE_OAM_DB2p.reset_to_cart(REG_D0C1);
-    ZEZY_OAM_DB3p.reset_to_cart(REG_D0C1);
-    GOMO_OAM_DB4p.reset_to_cart(REG_D0C1);
-    BAXO_OAM_DB5p.reset_to_cart(REG_D0C1);
-    YZOS_OAM_DB6p.reset_to_cart(REG_D0C1);
-    DEPO_OAM_DB7p.reset_to_cart(REG_D0C1);
+    YLOR_OAM_DB0p.state = REG_D0C1;
+    ZYTY_OAM_DB1p.state = REG_D0C1;
+    ZYVE_OAM_DB2p.state = REG_D0C1;
+    ZEZY_OAM_DB3p.state = REG_D0C1;
+    GOMO_OAM_DB4p.state = REG_D0C1;
+    BAXO_OAM_DB5p.state = REG_D0C1;
+    YZOS_OAM_DB6p.state = REG_D0C1;
+    DEPO_OAM_DB7p.state = REG_D0C1;
   }
 
   /*p31.YLOR*/ DFF8n YLOR_OAM_DB0p; // AxxxExxx - sprite x bit 0,

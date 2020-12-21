@@ -5,16 +5,16 @@
 
 struct SpriteScanner {
   void reset_to_cart() {
-    BESU_SCANNINGp.reset_to_cart(REG_D0C0);
-    CENO_SCANNINGp.reset_to_cart(REG_D0C1);
-    BYBA_SCAN_DONE_Ap.reset_to_cart(REG_D1C1);
-    DOBA_SCAN_DONE_Bp.reset_to_cart(REG_D1C0);
-    YFEL_SCAN0.reset_to_cart(REG_D1C1);
-    WEWY_SCAN1.reset_to_cart(REG_D1C0);
-    GOSO_SCAN2.reset_to_cart(REG_D1C0);
-    ELYN_SCAN3.reset_to_cart(REG_D0C0);
-    FAHA_SCAN4.reset_to_cart(REG_D0C1);
-    FONY_SCAN5.reset_to_cart(REG_D1C1);
+    BESU_SCANNINGp.state = REG_D0C0;
+    CENO_SCANNINGp.state = REG_D0C1;
+    BYBA_SCAN_DONE_Ap.state = REG_D1C1;
+    DOBA_SCAN_DONE_Bp.state = REG_D1C0;
+    YFEL_SCAN0.state = REG_D1C1;
+    WEWY_SCAN1.state = REG_D1C0;
+    GOSO_SCAN2.state = REG_D1C0;
+    ELYN_SCAN3.state = REG_D0C0;
+    FAHA_SCAN4.state = REG_D0C1;
+    FONY_SCAN5.state = REG_D1C1;
   }
 
   /*#p28.FETO*/ wire FETO_SCAN_DONEp_old() const {

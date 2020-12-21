@@ -26,13 +26,13 @@ struct GateBoyLCD {
     POME.state = 0b00000101;
     PAHO_X_8_SYNC.state = 0b00000010;
     WUSA_LCD_CLOCK_GATE.state = 0b00000000;
-    PIN50_LCD_DATA1.state = 0b00001101;
-    PIN51_LCD_DATA0.state = 0b00001101;
-    PIN54_LCD_HSYNC.state = 0b00001101;
-    PIN56_LCD_FLIPS.state = 0b00001101;
-    PIN52_LCD_CNTRL.state = 0b00001101;
-    PIN55_LCD_LATCH.state = 0b00001101;
-    PIN53_LCD_CLOCK.state = 0b00001101;
+    PIN50_LCD_DATA1.state = 0b00001001;
+    PIN51_LCD_DATA0.state = 0b00001001;
+    PIN54_LCD_HSYNC.state = 0b00001001;
+    PIN56_LCD_FLIPS.state = 0b00001001;
+    PIN52_LCD_CNTRL.state = 0b00001001;
+    PIN55_LCD_LATCH.state = 0b00001001;
+    PIN53_LCD_CLOCK.state = 0b00001001;
     PIN57_LCD_VSYNC.state = 0b00001000;
 
     //lcd_pix_lo.reset_to_cart(REG_D0C0);

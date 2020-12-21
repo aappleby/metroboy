@@ -958,6 +958,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A14_WAVE = "00000000 01111111 00000000 00000000 00000000";
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
 
+#ifdef USE_DRIVEN_BIT
     const char* D00_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // Scope trace w/ extra pulldown resistor patched in so we can see when
     const char* D01_WAVE = "^^111111 ^1110000 ^^000000 ^^000000 ^^^^^^^^"; // the pullups are the only thing driving the bus.
     const char* D02_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
@@ -966,6 +967,16 @@ int GateBoyTests::test_ext_bus() {
     const char* D05_WAVE = "^^111111 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
     const char* D06_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
+#else
+    const char* D00_WAVE = "11111111 11111111 11000000 11111111 11111111"; // Scope trace w/ extra pulldown resistor patched in so we can see when
+    const char* D01_WAVE = "11111111 11110000 11000000 11000000 11111111"; // the pullups are the only thing driving the bus.
+    const char* D02_WAVE = "11111111 11111111 11000000 11111111 11111111"; // #
+    const char* D03_WAVE = "11000000 11110000 11111111 11111111 11111111"; // #
+    const char* D04_WAVE = "11111111 11111111 11111111 11111111 11111111"; // #
+    const char* D05_WAVE = "11111111 11110000 11000000 11111111 11111111"; // #
+    const char* D06_WAVE = "11111111 11111111 11000000 11111111 11111111"; // #
+    const char* D07_WAVE = "11000000 11110000 11000000 11111111 11111111"; // #
+#endif
 
     for (int i = 0; i < 40; i++) {
       char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
@@ -1081,6 +1092,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A14_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
 
+#ifdef USE_DRIVEN_BIT
     const char* D00_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D01_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^000000 ^^^^^^^^";
     const char* D02_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
@@ -1089,6 +1101,16 @@ int GateBoyTests::test_ext_bus() {
     const char* D05_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D06_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+#else
+    const char* D00_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D01_WAVE = "11111111 11111111 11000000 11000000 11111111";
+    const char* D02_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D03_WAVE = "11000000 11111111 11111111 11111111 11111111";
+    const char* D04_WAVE = "11111111 11111111 11111111 11111111 11111111";
+    const char* D05_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D06_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D07_WAVE = "11000000 11111111 11000000 11111111 11111111";
+#endif
 
     for (int i = 0; i < 40; i++) {
       char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
@@ -1252,6 +1274,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
 #endif
 
+#ifdef USE_DRIVEN_BIT
     const char* D00_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D01_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^000000 ^^^^^^^^";
     const char* D02_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
@@ -1260,6 +1283,16 @@ int GateBoyTests::test_ext_bus() {
     const char* D05_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D06_WAVE = "^^111111 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
+#else
+    const char* D00_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D01_WAVE = "11111111 11111111 11000000 11000000 11111111";
+    const char* D02_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D03_WAVE = "11000000 11111111 11111111 11111111 11111111";
+    const char* D04_WAVE = "11111111 11111111 11111111 11111111 11111111";
+    const char* D05_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D06_WAVE = "11111111 11111111 11000000 11111111 11111111";
+    const char* D07_WAVE = "11000000 11111111 11000000 11111111 11111111";
+#endif
 
     for (int i = 0; i < 40; i++) {
       char CLK = gb.clk.PIN75_CLK_OUT.ext_c();

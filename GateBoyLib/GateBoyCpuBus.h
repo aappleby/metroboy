@@ -14,14 +14,14 @@ struct GateBoyCpuBus {
     Req bus_req_new);
 
   void reset_data() {
-    BUS_CPU_D[0].reset();
-    BUS_CPU_D[1].reset();
-    BUS_CPU_D[2].reset();
-    BUS_CPU_D[3].reset();
-    BUS_CPU_D[4].reset();
-    BUS_CPU_D[5].reset();
-    BUS_CPU_D[6].reset();
-    BUS_CPU_D[7].reset();
+    BUS_CPU_D[0].state = 1;
+    BUS_CPU_D[1].state = 1;
+    BUS_CPU_D[2].state = 1;
+    BUS_CPU_D[3].state = 1;
+    BUS_CPU_D[4].state = 1;
+    BUS_CPU_D[5].state = 1;
+    BUS_CPU_D[6].state = 1;
+    BUS_CPU_D[7].state = 1;
   }
 
   void dump(Dumper& d) {

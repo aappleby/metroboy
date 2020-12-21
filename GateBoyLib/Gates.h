@@ -15,7 +15,6 @@ inline uint64_t commit_and_hash(T& obj) {
 //-----------------------------------------------------------------------------
 
 struct BitBase {
-  void reset_to_cart(uint8_t s) { state = s; }
   uint8_t state = 0;
 
   wire qp_any() const { return  bit_data_new(); }
@@ -39,33 +38,38 @@ struct BitBase {
   inline static uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
   inline static uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
+#ifdef USE_DRIVEN_BIT
   inline char int_c() {
-    return bit_driven() ? (bit_data_old() ? '1' : '0') : (bit_data_old() ? '^' : 'v');
+    return bit_driven() ? (bit_data_new() ? '1' : '0') : (bit_data_new() ? '^' : 'v');
   }
 
   inline char ext_c() {
     //return bit_driven() ? (bit_data_old() ? '0' : '1') : (bit_data_old() ? 'v' : '^');
-    return bit_driven() ? (bit_data_old() ? '0' : '1') : '^';
+    return bit_driven() ? (bit_data_new() ? '0' : '1') : '^';
   }
+#else
+  inline char int_c() {
+    return bit_data_new() ? '1' : '0';
+  }
+
+  inline char ext_c() {
+    return bit_data_new() ? '0' : '1';
+  }
+#endif
 
 protected:
 
-  wire qp_old() const { CHECK_P((state & 0xF0) == 0x00); return  bit_data_old(); }
-  wire qn_old() const { CHECK_P((state & 0xF0) == 0x00); return !bit_data_old(); }
-
-  wire qp_new() const { CHECK_P((state & 0xF0) == 0xF0); return  bit_data_new(); }
-  wire qn_new() const { CHECK_P((state & 0xF0) == 0xF0); return !bit_data_new(); }
-
-  void set_data_new (wire d) { state = (state & 0b11111110) | (d << 0); }
-  void set_clock    (wire d) { state = (state & 0b11111101) | (d << 1); }
-  void set_data_old (wire d) { state = (state & 0b11111011) | (d << 2); }
+#ifdef USE_DRIVEN_BIT
   void set_driven   (wire d) { state = (state & 0b11110111) | (d << 3); }
-
-  wire bit_data_new () const { return state & 0b00000001; }
-  wire bit_clock    () const { return state & 0b00000010; }
-  wire bit_data_old () const { return state & 0b00000100; }
   wire bit_driven   () const { return state & 0b00001000; }
+#else
+  void set_driven   (wire d) { (void)d; }
+  wire bit_driven   () const { return 0; }
+#endif
 
+#ifdef USE_DIRTY_BIT
+  void check_old() const { CHECK_P((state & 0xF0) == 0x00); }
+  void check_new() const { CHECK_P((state & 0xF0) == 0xF0); }
   void set_dirty1() { state |= 0b00010000; }
   void set_dirty2() { state |= 0b00100000; }
   void set_dirty3() { state |= 0b01000000; }
@@ -75,6 +79,32 @@ protected:
   wire bit_dirty2() const { return state & 0b00100000; }
   wire bit_dirty3() const { return state & 0b01000000; }
   wire bit_dirty4() const { return state & 0b10000000; }
+#else
+  void check_old() const { }
+  void check_new() const { }
+  void set_dirty1() { }
+  void set_dirty2() { }
+  void set_dirty3() { }
+  void set_dirty4() { }
+
+  wire bit_dirty1() const { return 0; }
+  wire bit_dirty2() const { return 0; }
+  wire bit_dirty3() const { return 0; }
+  wire bit_dirty4() const { return 0; }
+#endif
+
+  wire qp_old() const { check_old(); return  bit_data_new(); }
+  wire qn_old() const { check_old(); return !bit_data_new(); }
+
+  wire qp_new() const { check_new(); return  bit_data_new(); }
+  wire qn_new() const { check_new(); return !bit_data_new(); }
+
+  void set_data_new (wire d) { state = (state & 0b11111110) | (d << 0); }
+  void set_clock    (wire d) { state = (state & 0b11111101) | (d << 1); }
+
+  wire bit_data_new () const { return state & 0b00000001; }
+  wire bit_clock    () const { return state & 0b00000010; }
+
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -304,7 +334,7 @@ struct DFF17 : public DFF {
 // DFF20_20 << CLKn
 
 struct DFF20 : public DFF {
-  void dff20(wire CLKn, wire LOADp, wire newD) { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data_old()); }
+  void dff20(wire CLKn, wire LOADp, wire newD) { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data_new()); }
 };
 
 //-----------------------------------------------------------------------------
@@ -357,18 +387,7 @@ struct DFF22 : public DFF {
 // tri6_pn : top rung tadpole facing second rung dot.
 
 struct Bus : public BitBase {
-  Bus() { reset(); }
-
-  void reset() {
-    state = 0;
-    set_data_old(1);
-    set_data_new(1);
-  }
-
-  void reset_to_cart(wire Dp) {
-    set_data_old(Dp);
-    set_data_new(Dp);
-  }
+  Bus() { state = 1; }
 
   wire qp_any() const { return BitBase::qp_any(); }
   wire qn_any() const { return BitBase::qn_any(); }
@@ -402,13 +421,18 @@ struct PinIO : public BitBase {
   wire int_qp_new() const { return  qp_new(); }
   wire ext_qp_new() const { return !qp_new(); }
 
+  void reset_for_pass() {
+    state = 1;
+    set_dirty1();
+  }
+
   // dirty1 = touched
   // dirty2 = touched
   // dirty3 = pin_in called
   // dirty4 = pin_out called
 
   void pin_in_oedp(wire OEp, wire D) {
-    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
+    CHECK_P(bit_dirty1());
 
     if (OEp) {
       set_driven(1);
@@ -420,7 +444,7 @@ struct PinIO : public BitBase {
   }
 
   void pin_out_oedp(wire OEp, wire Dp) {
-    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
+    CHECK_P(bit_dirty1());
 
     if (OEp){
       set_driven(1);
@@ -432,7 +456,7 @@ struct PinIO : public BitBase {
   }
 
   void pin_out_oehilo(wire OEp, wire HI, wire LO) {
-    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
+    CHECK_P(bit_dirty1());
 
     if (OEp && (HI == LO)){
       set_driven(1);

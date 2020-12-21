@@ -71,14 +71,14 @@ wire SpriteDeltaY::GESE_SCAN_MATCH_Yp(wire XYMO_LCDC_SPSIZEn) {
 // Pixel counter
 
 void PixCount::reset_to_cart() {
-  XEHO_PX0p.reset_to_cart(REG_D1C1);
-  SAVY_PX1p.reset_to_cart(REG_D1C1);
-  XODU_PX2p.reset_to_cart(REG_D1C1);
-  XYDO_PX3p.reset_to_cart(REG_D0C1);
-  TUHU_PX4p.reset_to_cart(REG_D0C1);
-  TUKY_PX5p.reset_to_cart(REG_D1C1);
-  TAKO_PX6p.reset_to_cart(REG_D0C1);
-  SYBE_PX7p.reset_to_cart(REG_D1C1);
+  XEHO_PX0p.state = REG_D1C1;
+  SAVY_PX1p.state = REG_D1C1;
+  XODU_PX2p.state = REG_D1C1;
+  XYDO_PX3p.state = REG_D0C1;
+  TUHU_PX4p.state = REG_D0C1;
+  TUKY_PX5p.state = REG_D1C1;
+  TAKO_PX6p.state = REG_D0C1;
+  SYBE_PX7p.state = REG_D1C1;
 }
 
 void PixCount::tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {

@@ -5,8 +5,8 @@
 
 struct GateBoyInterrupts {
   void reset_to_cart() {
-    LOPE_FF0F_D0p.reset_to_cart(REG_D1C1);
-    SIG_CPU_INT_VBLANK.reset_to_cart(REG_D1C0);
+    LOPE_FF0F_D0p.state = REG_D1C1;
+    SIG_CPU_INT_VBLANK.state = REG_D1C0;
   }
 
   void read_intf(GateBoyCpuBus& cpu_bus);

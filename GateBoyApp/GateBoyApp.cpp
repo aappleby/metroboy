@@ -45,7 +45,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+#if 0
   // regenerate post-bootrom dump
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
@@ -54,11 +54,35 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 0
+#if 1
   {
-    auto blob = load_blob("gateboy_post_bootrom.raw.dump");
-    gb_thread.gb->from_blob(blob);
-    gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_005.gb"));
+    /*
+    m3_lcdc_obj_size_change.gb - small fail
+    m3_lcdc_obj_size_change_scx.gb - small fail
+    m3_lcdc_bg_en_change.gb - something off by one
+    m3_bgp_change.gb - off by one
+    m3_lcdc_obj_en_change.gb - off by one
+    m3_lcdc_obj_en_change_variant.gb - off by one
+    m3_lcdc_win_en_change_multiple_wx.gb -  fail, chunks off. image from mealybug wrong
+    m3_bgp_change_sprites.gb - off by one
+    m3_obp0_change.gb
+    m3_lcdc_bg_map_change.gb
+    m3_lcdc_tile_sel_change.gb
+    m3_lcdc_tile_sel_win_change.gb
+    m3_lcdc_win_en_change_multiple.gb  - fail, chunks off
+    m3_lcdc_win_map_change.gb
+    m3_scx_low_3_bits.gb
+    m3_window_timing.gb
+    m3_window_timing_wx_0.gb
+    m3_wx_4_change.gb
+    m3_wx_4_change_sprites.gb
+    m3_wx_5_change.gb
+    m3_wx_6_change.gb
+    */
+
+    //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"));
+    load_rom   ("roms/mealybug/m3_bgp_change_sprites.gb");
+    load_golden("roms/mealybug/m3_bgp_change_sprites.bmp");
   }
 #endif
 
@@ -136,60 +160,6 @@ void GateBoyApp::app_init() {
   //gb_thread.gb->dbg_write(ADDR_SCX, 3);
 
 #endif
-
-  /*
-
-  {
-    memset(gb->oam_ram, 0, 160);
-    memset(gb->vid_ram, 0, 8192);
-    uint8_t* cursor = gb->vid_ram;
-    for (int i = 0; i < 384; i++) {
-      *cursor++ = 0b11111111;
-      *cursor++ = 0b11111111;
-      *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;f
-      *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b10101011;
-      *cursor++ = 0b10000001;
-      *cursor++ = 0b11111111;
-      *cursor++ = 0b11111111;
-    }
-  }
-  */
-
-  /*
-  for (int i = 0; i < 2048; i += 2) {
-    gb->vid_ram[i + 0] = 0xFF;
-    gb->vid_ram[i + 1] = 0x00;
-  }
-  memset(&gb->vid_ram[1024 * 2], 0x00, 1024 * 4);
-
-  for (int i = 0; i < 160; i+= 4) {
-    gb->oam_ram[i + 0] = 0xFF;
-    gb->oam_ram[i + 1] = 0xFF;
-  }
-
-  gb->oam_ram[0] = 17;
-  gb->oam_ram[1] = 8;
-  */
-
-
-  //gb->pix_pipe.set_wx(7);
-  //gb->pix_pipe.set_wy(16);
-
-  // run rom
-
-  //load_rom   ("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.gb");
-  //load_golden("roms/mealybug/m3_lcdc_win_en_change_multiple_wx.bmp");
-
-  //load_rom("microtests/build/dmg/win10_scx3_a.gb");
 
   LOG_G("GateBoyApp::app_init() done\n");
   gb_thread.start();
@@ -314,7 +284,7 @@ void GateBoyApp::app_update(double /*delta*/) {
     case SDLK_F1:   load_raw_dump();            break;
     case SDLK_F4:   save_raw_dump();            break;
     case SDLK_r:    gb_thread.reset_to_cart();          break;
-    //case SDLK_d:    show_diff   = !show_diff;   break;
+    case SDLK_d:    show_diff   = !show_diff;   break;
     case SDLK_g:    show_golden = !show_golden; break;
     case SDLK_o:    draw_passes = !draw_passes; break;
     case SDLK_UP:   stepmode = STEP_PHASE;      break;
@@ -402,11 +372,13 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   double phase_rate = (gb->phase_total - gb_thread.old_phase_total) / (gb->sim_time - gb_thread.old_sim_time);
 
-  if (gb->sim_time == gb_thread.old_sim_time) {
-    phase_rate = 0;
-  }
+  if (phase_rate > 0) {
+    if (gb->sim_time == gb_thread.old_sim_time) {
+      phase_rate = 0;
+    }
 
-  gb_thread.phase_rate_smooth = (gb_thread.phase_rate_smooth * 0.99) + (phase_rate * 0.01);
+    gb_thread.phase_rate_smooth = (gb_thread.phase_rate_smooth * 0.99) + (phase_rate * 0.01);
+  }
 
   d("Phase rate    : %f\n",      gb_thread.phase_rate_smooth);
   d("Sim fps       : %f\n",      60.0 * gb_thread.phase_rate_smooth / PHASES_PER_SECOND);
@@ -515,7 +487,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== PPU Regs=====\001\n");
   d.dump_slice2n("FF40 LCDC  : ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
-  d.dump_slice2n("FF41 STAT  : ", &gb->reg_stat.ROXE_STAT_HBI_ENn, 4);
+  gb->reg_stat.dump(d);
   d.dump_slice2n("FF42 SCY   : ", &gb->reg_scy.GAVE_SCY0n, 8);
   d.dump_slice2n("FF43 SCX   : ", &gb->reg_scx.DATY_SCX0n, 8);
   d.dump_slice2n("FF47 BGP   : ", &gb->pix_pipes.reg_bgp.PAVO_BGP_D0n, 8);

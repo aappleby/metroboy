@@ -90,8 +90,8 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
       /*#p06.JAGO*/ wire _JAGO =  not1(CULY_SER_DIR.qp_new());
       /*#p06.KUJO*/ wire _KUJO =  nor2(_JAGO, _DAWA_SER_CLK); // schematic wrong
 
-      PIN68_SCK.pin_in_oedp(0, !0);
-      PIN68_SCK.pin_out_oehilo(CULY_SER_DIR.qp_new(), _KEXU, _KUJO);
+      PIN68_SCK.pin_out_pull_hilo_any(CULY_SER_DIR.qp_new(), _KEXU, _KUJO);
+      PIN68_SCK.pin_in_oedp_any(0, !0);
     }
   }
 

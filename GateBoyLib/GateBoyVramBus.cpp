@@ -286,14 +286,14 @@ void GateBoyVramBus::bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM
   /* p25.RYTY*/ wire _RYTY_D6n = not1(_SEDO_D6p);
   /* p25.RADY*/ wire _RADY_D7n = not1(_SAWU_D7p);
 
-  PIN25_VRAM_DATA[0].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n);
-  PIN25_VRAM_DATA[1].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n);
-  PIN25_VRAM_DATA[2].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n);
-  PIN25_VRAM_DATA[3].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n);
-  PIN25_VRAM_DATA[4].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n);
-  PIN25_VRAM_DATA[5].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n);
-  PIN25_VRAM_DATA[6].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n);
-  PIN25_VRAM_DATA[7].pin_out_oehilo(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n);
+  PIN25_VRAM_DATA[0].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n);
+  PIN25_VRAM_DATA[1].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n);
+  PIN25_VRAM_DATA[2].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n);
+  PIN25_VRAM_DATA[3].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n);
+  PIN25_VRAM_DATA[4].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n);
+  PIN25_VRAM_DATA[5].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n);
+  PIN25_VRAM_DATA[6].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n);
+  PIN25_VRAM_DATA[7].pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

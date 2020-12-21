@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
+#if 1
   failures += t.test_bootrom();
 #ifdef RUN_SLOW_TESTS
   failures += t.test_fastboot_vs_slowboot();
@@ -54,6 +55,7 @@ int main(int argc, char** argv) {
   failures += t.test_micro_window();
   failures += t.test_micro_ppu();
   failures += t.test_micro_dma();
+#endif
 
   auto finish = timestamp();
 
@@ -978,7 +980,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "11000000 11110000 11000000 11111111 11111111"; // #
 #endif
 
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 1; i++) {
       char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
       char WRn = gb.ext_bus.PIN78_WRn.ext_c();
       char RDn = gb.ext_bus.PIN79_RDn.ext_c();
@@ -1048,7 +1050,7 @@ int GateBoyTests::test_ext_bus() {
 #endif
   }
 
-#if 1
+#if 0
   if (1) {
     LOG_B("Testing vram write external bus waves\n");
 
@@ -1185,7 +1187,7 @@ int GateBoyTests::test_ext_bus() {
   }
 #endif
 
-#if 1
+#if 0
   if (1) {
     LOG_B("Testing zram write external bus waves\n");
 

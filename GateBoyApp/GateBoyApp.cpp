@@ -54,7 +54,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   {
     /*
     m3_lcdc_obj_size_change.gb - small fail
@@ -87,66 +87,21 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 0
-  // run tiny app
-  if (1) {
-    /*
-    std::string app = R"(
-    0150:
-      ld a, $00
-      ldh ($40), a
-      ld a, $73
-      ld hl, $8000
-      ld (hl), a
-      ld hl, $809F
-      ld (hl), a
+#if 1
+  const char* app = R"(
+  0150:
+    ld a, $55
+    ld hl, $c003
+    ld (hl), a
+    jr -3
+  )";
 
-      ld hl, $FF80
-      ld a, $E0
-      ld (hl+), a
-      ld a, $46
-      ld (hl+), a
-      ld a, $3E
-      ld (hl+), a
-      ld a, $28
-      ld (hl+), a
-      ld a, $3D
-      ld (hl+), a
-      ld a, $20
-      ld (hl+), a
-      ld a, $FD
-      ld (hl+), a
-      ld a, $C9
-      ld (hl+), a
+  Assembler as;
+  as.assemble(app);
 
-      ld a, $80
-      call $ff80
-
-      ld a, $00
-      ld hl, $8000
-      add (hl)
-      jr -2
-    )";
-    */
-
-    std::string app = R"(
-    0150:
-      ld a, ($FF40)
-      ld a, ($FF40)
-      ld a, ($FF40)
-      ld a, ($FF40)
-      ld a, ($FF40)
-      ld a, ($FF40)
-      ld a, ($FF40)
-      jp $0150
-    )";
-
-    Assembler as;
-    as.assemble(app.c_str());
-    blob rom = as.link();
-
-    gb_thread.reset_cart(DMG_ROM_blob, rom);
-  }
+  gb_thread.load_cart(DMG_ROM_blob, as.link());
+  gb_thread.reset_to_cart();
+  gb_thread.gb->run_phases(120);
 #endif
 
 #if 0
@@ -156,9 +111,6 @@ void GateBoyApp::app_init() {
 
   gb_thread.gb->dbg_write(ADDR_WY, 113);
   gb_thread.gb->dbg_write(ADDR_WX, 13 + 7);
-
-  //gb_thread.gb->dbg_write(ADDR_SCX, 3);
-
 #endif
 
   LOG_G("GateBoyApp::app_init() done\n");

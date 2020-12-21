@@ -221,14 +221,14 @@ void GateBoyExtBus::copy_cpu_data_to_pins(const GateBoyResetDebug& rst, const Ga
   /* p08.ROGY*/ wire _ROGY = nor2 (cpu_bus.BUS_CPU_D[6].qp_new(), _RORU_CBD_TO_EPDn);
   /* p08.RYDA*/ wire _RYDA = nor2 (cpu_bus.BUS_CPU_D[7].qp_new(), _RORU_CBD_TO_EPDn);
 
-  PIN17_DATA[0].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
-  PIN17_DATA[1].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
-  PIN17_DATA[2].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
-  PIN17_DATA[3].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
-  PIN17_DATA[4].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
-  PIN17_DATA[5].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
-  PIN17_DATA[6].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
-  PIN17_DATA[7].pin_out_oehilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
+  PIN17_DATA[0].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
+  PIN17_DATA[1].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
+  PIN17_DATA[2].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
+  PIN17_DATA[3].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
+  PIN17_DATA[4].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
+  PIN17_DATA[5].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
+  PIN17_DATA[6].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
+  PIN17_DATA[7].pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

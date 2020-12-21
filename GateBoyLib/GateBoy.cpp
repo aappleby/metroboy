@@ -208,7 +208,7 @@ void GateBoy::reset_to_cart() {
 
   sim_time = 169.62587129999756;
   phase_total = 46880728;
-  phase_origin = 0;
+  phase_origin = 46880728;
   phase_hash = 0xad3faa49f49984b4;
   cumulative_hash = 0x6e58a5c197ff4af1;
 
@@ -786,20 +786,31 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN01_ADDR[14].reset_for_pass();
     ext_bus.PIN01_ADDR[15].reset_for_pass();
 
-    ext_bus.PIN17_DATA[0].reset_for_pass();
-    ext_bus.PIN17_DATA[1].reset_for_pass();
-    ext_bus.PIN17_DATA[2].reset_for_pass();
-    ext_bus.PIN17_DATA[3].reset_for_pass();
-    ext_bus.PIN17_DATA[4].reset_for_pass();
-    ext_bus.PIN17_DATA[5].reset_for_pass();
-    ext_bus.PIN17_DATA[6].reset_for_pass();
-    ext_bus.PIN17_DATA[7].reset_for_pass();
+    //ext_bus.PIN17_DATA[0].reset_for_pass();
+    //ext_bus.PIN17_DATA[1].reset_for_pass();
+    //ext_bus.PIN17_DATA[2].reset_for_pass();
+    //ext_bus.PIN17_DATA[3].reset_for_pass();
+    //ext_bus.PIN17_DATA[4].reset_for_pass();
+    //ext_bus.PIN17_DATA[5].reset_for_pass();
+    //ext_bus.PIN17_DATA[6].reset_for_pass();
+    //ext_bus.PIN17_DATA[7].reset_for_pass();
+
+    ext_bus.PIN17_DATA[0].state = 0b00110000;
+    ext_bus.PIN17_DATA[1].state = 0b00110000;
+    ext_bus.PIN17_DATA[2].state = 0b00110000;
+    ext_bus.PIN17_DATA[3].state = 0b00110000;
+    ext_bus.PIN17_DATA[4].state = 0b00110000;
+    ext_bus.PIN17_DATA[5].state = 0b00110000;
+    ext_bus.PIN17_DATA[6].state = 0b00110000;
+    ext_bus.PIN17_DATA[7].state = 0b00110000;
 
     ext_bus.set_control_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);
     ext_bus.copy_addr_latch_to_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
+
     ext_bus.copy_cpu_data_to_pins(rst, cpu_bus);
     ext_bus.read_ext_to_pins(cart_buf, cart_ram, int_ram);
+
     ext_bus.write_pins_to_ext(cart_ram, int_ram);
     ext_bus.copy_pins_to_data_latch(cpu_bus);
     ext_bus.copy_data_latch_to_cpu_bus(cpu_bus);

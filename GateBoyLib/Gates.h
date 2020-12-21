@@ -421,7 +421,6 @@ struct Bus : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// FIXME these should be making better use of the dirty flags
 
 struct PinIO : public BitBase {
   wire int_qp_new() const { return  qp_new(); }
@@ -431,6 +430,7 @@ struct PinIO : public BitBase {
     CHECK_N(bit_dirty1());
     state = 1;
     set_dirty1();
+    set_dirty2();
   }
 
   // dirty1 = touched
@@ -438,44 +438,74 @@ struct PinIO : public BitBase {
   // dirty3 = pin_in called
   // dirty4 = pin_out called
 
-  void pin_in_oedp(wire OEp, wire D) {
-    CHECK_P(bit_dirty1());
-
-    if (OEp) {
-      set_driven(1);
-      set_data_new(!D);
-    }
-
-    set_dirty2();
-    set_dirty3();
-  }
-
   void pin_out_oedp(wire OEp, wire Dp) {
     CHECK_P(bit_dirty1());
+    CHECK_P(bit_dirty2());
+    CHECK_N(bit_dirty3());
+    CHECK_N(bit_dirty4());
 
     if (OEp){
       set_driven(1);
       set_data_new(Dp);
     }
 
-    set_dirty2();
-    set_dirty4();
+    set_dirty3();
   }
 
-  void pin_out_oehilo(wire OEp, wire HI, wire LO) {
+  void pin_out_pull_hilo(wire OEp, wire HI, wire LO) {
     CHECK_P(bit_dirty1());
+    CHECK_P(bit_dirty2());
+    CHECK_N(bit_dirty3());
+    CHECK_N(bit_dirty4());
 
     if (OEp && (HI == LO)){
       set_driven(1);
       set_data_new(HI);
     }
 
-    set_dirty2();
+    set_dirty3();
+  }
+
+  void pin_out_pull_hilo_any(wire OEp, wire HI, wire LO) {
+    CHECK_P(bit_dirty1());
+    CHECK_P(bit_dirty2());
+
+    if (OEp && (HI == LO)){
+      set_driven(1);
+      set_data_new(HI);
+    }
+
+    set_dirty3();
+  }
+
+  void pin_in_oedp(wire OEp, wire D) {
+    CHECK_P(bit_dirty1());
+    CHECK_P(bit_dirty2());
+    CHECK_P(bit_dirty3());
+    CHECK_N(bit_dirty4());
+
+    if (OEp) {
+      set_driven(1);
+      set_data_new(!D);
+    }
+
+    set_dirty4();
+  }
+
+  void pin_in_oedp_any(wire OEp, wire D) {
+    CHECK_P(bit_dirty1());
+    CHECK_P(bit_dirty2());
+
+    if (OEp) {
+      set_driven(1);
+      set_data_new(!D);
+    }
+
     set_dirty4();
   }
 };
 
-//----------
+//-----------------------------------------------------------------------------
 
 struct PinIn : public BitBase {
   wire int_qp_new() const { return  qp_new(); }
@@ -484,18 +514,19 @@ struct PinIn : public BitBase {
     CHECK_N(bit_dirty1());
     state = 1;
     set_dirty1();
+    set_dirty2();
+    set_dirty3();
   }
 
   void pin_in_dp(wire D) {
     CHECK_P(bit_dirty1());
+    CHECK_N(bit_dirty4());
     set_data_new(!D);
-    set_dirty2();
-    set_dirty3();
     set_dirty4();
   }
 };
 
-//----------
+//-----------------------------------------------------------------------------
 // OE could be "enable pullup"?
 
 struct PinOut : public BitBase {
@@ -506,46 +537,42 @@ struct PinOut : public BitBase {
     CHECK_N(bit_dirty1());
     state = 1;
     set_dirty1();
+    set_dirty2();
+    set_dirty3();
   }
 
 
   void pin_out_dp(wire Dp) {
     CHECK_P(bit_dirty1());
+    CHECK_N(bit_dirty4());
 
     set_data_new(Dp);
     set_driven(1);
 
-    set_dirty1();
-    set_dirty2();
-    set_dirty3();
     set_dirty4();
   }
 
   void pin_out_hilo(wire HI, wire LO) {
     CHECK_P(bit_dirty1());
+    CHECK_N(bit_dirty4());
 
     if (HI == LO) {
       set_data_new(HI);
       set_driven(1);
     }
 
-    set_dirty1();
-    set_dirty2();
-    set_dirty3();
     set_dirty4();
   }
 
   void pin_out_oehilo(wire OEp, wire HI, wire LO) {
     CHECK_P(bit_dirty1());
+    CHECK_N(bit_dirty4());
 
     if (OEp && (HI == LO)) {
       set_data_new(HI);
       set_driven(1);
     }
 
-    set_dirty1();
-    set_dirty2();
-    set_dirty3();
     set_dirty4();
   }
 };

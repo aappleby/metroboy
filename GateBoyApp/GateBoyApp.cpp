@@ -47,7 +47,7 @@ void GateBoyApp::app_init() {
 
 #if 1
   // regenerate post-bootrom dump
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
@@ -56,26 +56,10 @@ void GateBoyApp::app_init() {
 
 #if 0
   {
-    const char* app = R"(
-    0150:
-      ld a, $55
-      ld hl, $9777
-      ld (hl), a
-      jr -3
-    )";
-
-    Assembler as;
-    as.assemble(app);
-    gb_thread.load_cart(DMG_ROM_blob, as.link());
-    gb_thread.reset_to_cart();
-    gb_thread.gb->run_phases(112);
-    gb_thread.gb->phase_origin = gb_thread.gb->phase_total;
+    auto blob = load_blob("gateboy_post_bootrom.raw.dump");
+    gb_thread.gb->from_blob(blob);
+    gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_005.gb"));
   }
-#endif
-
-#if 0
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_119_ly.gb"));
-  gb_thread.reset_to_cart();
 #endif
 
 
@@ -688,8 +672,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_x = gb->pix_count.get_new() - 8;
-    int fb_y = gb->lcd.reg_ly.get_new();
+    int fb_x = gb->pix_count.get_old() - 8;
+    int fb_y = gb->lcd.reg_ly.get_old();
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {

@@ -462,6 +462,7 @@ struct PinIn : public BitBase {
 // OE could be "enable pullup"?
 
 struct PinOut : public BitBase {
+  wire ext_qp_old() const { return !qp_old(); }
   wire ext_qp_new() const { return !qp_new(); }
 
   void pin_out_dp(wire Dp) {

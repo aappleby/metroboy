@@ -112,7 +112,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   //----------------------------------------
   // Delay to sync up with expected div value
 
-  run_phases(8);
+  run_phases(16);
 
   //----------------------------------------
   // Fetch the first instruction in the bootrom

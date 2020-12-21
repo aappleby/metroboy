@@ -1,19 +1,8 @@
-new after refactor - probably because of removed glitch delays
-    int_hblank_halt_scx3.gb          98   99   -1  255 FAIL @ 138
-    int_hblank_halt_scx3.gb          98   99   -1  255 FAIL @ 138
-    int_hblank_halt_scx7.gb          99  100   -1  255 FAIL @ 139
-    int_hblank_halt_scx7.gb          99  100   -1  255 FAIL @ 139
-
-
-
 need to trace clocks for RUPO_LYC_MATCH_LATCH
   inverting ROPO clock delays it even more
 
 //----------
 // PPU
-
-line_153_ly_c.gb
-  ly doesn't change until phase C after the read
 
 ppu_sprite0_scx3_a.gb
   read happens waaaay after we hit hblank, wtf
@@ -64,11 +53,6 @@ oam_read_l1_a.gb
 
 oam_read_l1_f.gb
   dmg pass, ags pass
-
-oam_write_l0_b.gb
-  dmg pass, ags pass
-  the write should _not_ go through
-  CPU_WRp hitting two passes before XYMU goes high
 
 oam_write_l0_d.gb
   dmg pass, ags pass

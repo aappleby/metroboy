@@ -10,8 +10,8 @@ struct GateBoyCpuBus;
 
 struct GateBoyDiv {
   void reset_to_cart() {
-    UKUP_DIV00p.state = 0b00000010;
-    UFOR_DIV01p.state = 0b00000111;
+    UKUP_DIV00p.state = 0b00000111;
+    UFOR_DIV01p.state = 0b00000101;
     UNER_DIV02p.state = 0b00000000;
     TERO_DIV03p.state = 0b00000010;
     UNYK_DIV04p.state = 0b00000111;

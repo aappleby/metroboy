@@ -26,37 +26,34 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-#ifdef RUN_SLOW_TESTS
   failures += t.test_bootrom();
-#endif
-
-
+#ifdef RUN_SLOW_TESTS
   failures += t.test_fastboot_vs_slowboot();
+#endif
   failures += t.test_reset_cart_vs_dump();
 
-  //failures += t.test_clk();
-  //failures += t.test_regs();
-  //failures += t.test_mem();
-  //failures += t.test_dma();
+  failures += t.test_clk();
+  failures += t.test_regs();
+  failures += t.test_mem();
+  failures += t.test_dma();
+  failures += t.test_init();
+  failures += t.test_ext_bus();
+  failures += t.test_ppu();
+  failures += t.test_timer();
 
-  //failures += t.test_init();
-  //failures += t.test_ext_bus();
-  //failures += t.test_interrupts();
-  //failures += t.test_ppu();
-  //failures += t.test_timer();
-  //failures += t.test_micro_poweron();
-  //failures += t.test_micro_lcden();
-  //failures += t.test_micro_timer();
-  //failures += t.test_micro_int_vblank();
-  //failures += t.test_micro_int_stat();
-  //failures += t.test_micro_int_timer();
-  //failures += t.test_micro_int_serial();
-  //failures += t.test_micro_int_joypad();
-  //failures += t.test_micro_lock_oam();
-  //failures += t.test_micro_lock_vram();
-  //failures += t.test_micro_window();
-  //failures += t.test_micro_ppu();
-  //failures += t.test_micro_dma();
+  failures += t.test_micro_poweron();
+  failures += t.test_micro_lcden();
+  failures += t.test_micro_timer();
+  failures += t.test_micro_int_vblank();
+  failures += t.test_micro_int_stat();
+  failures += t.test_micro_int_timer();
+  failures += t.test_micro_int_serial();
+  failures += t.test_micro_int_joypad();
+  failures += t.test_micro_lock_oam();
+  failures += t.test_micro_lock_vram();
+  failures += t.test_micro_window();
+  failures += t.test_micro_ppu();
+  failures += t.test_micro_dma();
 
   auto finish = timestamp();
 
@@ -121,13 +118,13 @@ int GateBoyTests::test_regs() {
   failures += test_reg("TMA",  ADDR_TMA,  0b11111111);
   failures += test_reg("TAC",  ADDR_TAC,  0b00000111);
   failures += test_reg("IF",   ADDR_IF,   0b00011111);
-  //failures += test_reg("LCDC", ADDR_LCDC, 0b11111111); // don't test this reg here, writing does things
+  failures += test_reg("LCDC", ADDR_LCDC, 0b11111111);
   failures += test_reg("STAT", ADDR_STAT, 0b01111000);
   failures += test_reg("SCY",  ADDR_SCY,  0b11111111);
   failures += test_reg("SCX",  ADDR_SCX,  0b11111111);
-  //failures += test_reg("LY",   0xFF44, 177); // not standard reg
+  //failures += test_reg("LY",   ADDR_LY,   177); not writable
   failures += test_reg("LYC",  ADDR_LYC,  0b11111111);
-  //failures += test_reg("DMA",  ADDR_DMA,  0b11111111); // side effects
+  failures += test_reg("DMA",  ADDR_DMA,  0b11111111);
   failures += test_reg("BGP",  ADDR_BGP,  0b11111111);
   failures += test_reg("OBP0", ADDR_OBP0, 0b11111111);
   failures += test_reg("OBP1", ADDR_OBP1, 0b11111111);
@@ -209,15 +206,13 @@ int GateBoyTests::test_micro_poweron() {
   failures += run_microtest("poweron_stat_000.gb");
   failures += run_microtest("poweron_stat_005.gb");
   failures += run_microtest("poweron_stat_006.gb"); // probably due to unstable data latch
-  printf("\n");
   failures += run_microtest("poweron_stat_007.gb");
   failures += run_microtest("poweron_stat_026.gb");
   failures += run_microtest("poweron_stat_027.gb");
   failures += run_microtest("poweron_stat_069.gb");
   failures += run_microtest("poweron_stat_070.gb");
   failures += run_microtest("poweron_stat_119.gb");
-  failures += run_microtest("poweron_stat_120.gb");
-  printf("\n");
+  failures += run_microtest("poweron_stat_120.gb"); // failing
   failures += run_microtest("poweron_stat_121.gb");
   failures += run_microtest("poweron_stat_140.gb");
   failures += run_microtest("poweron_stat_141.gb");
@@ -283,10 +278,6 @@ int GateBoyTests::test_micro_int_vblank() {
 int GateBoyTests::test_micro_int_stat() {
   TEST_START();
 
-  failures += run_microtest("poweron_000_div.gb");
-  failures += run_microtest("poweron_004_div.gb");
-  failures += run_microtest("poweron_005_div.gb");
-
   failures += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
   failures += run_microtest("int_hblank_halt_scx1.gb"); // int fires on 824 A
   failures += run_microtest("int_hblank_halt_scx2.gb"); // int fires on 826 C
@@ -334,8 +325,8 @@ int GateBoyTests::test_micro_int_stat() {
 
   // broken and slow
 #ifdef RUN_SLOW_TESTS
-  //failures += run_microtest("int_hblank_halt_bug_a.gb");
-  //failures += run_microtest("int_hblank_halt_bug_b.gb");
+  failures += run_microtest("int_hblank_halt_bug_a.gb"); // failing
+  failures += run_microtest("int_hblank_halt_bug_b.gb"); // failing
 #endif
 
   failures += run_microtest("hblank_int_if_a.gb");
@@ -515,11 +506,11 @@ int GateBoyTests::test_micro_lcden() {
   failures += run_microtest("lcdon_to_stat1_a.gb");
   failures += run_microtest("lcdon_to_stat1_b.gb");
   failures += run_microtest("lcdon_to_stat1_c.gb");
-  failures += run_microtest("lcdon_to_stat1_d.gb");
+  failures += run_microtest("lcdon_to_stat1_d.gb"); // failing
   failures += run_microtest("lcdon_to_stat1_e.gb");
 #endif
 
-  failures += run_microtest("lcdon_to_stat2_a.gb");
+  failures += run_microtest("lcdon_to_stat2_a.gb"); // failing
   failures += run_microtest("lcdon_to_stat2_b.gb");
   failures += run_microtest("lcdon_to_stat2_c.gb");
   failures += run_microtest("lcdon_to_stat2_d.gb");
@@ -552,23 +543,23 @@ int GateBoyTests::test_micro_lock_oam() {
   failures += run_microtest("oam_read_l0_a.gb");
   failures += run_microtest("oam_read_l0_b.gb");
   failures += run_microtest("oam_read_l0_c.gb");
-  failures += run_microtest("oam_read_l0_d.gb");
-  failures += run_microtest("oam_read_l1_a.gb");
+  failures += run_microtest("oam_read_l0_d.gb"); // failing
+  failures += run_microtest("oam_read_l1_a.gb"); // failing
   failures += run_microtest("oam_read_l1_b.gb");
   failures += run_microtest("oam_read_l1_c.gb");
   failures += run_microtest("oam_read_l1_d.gb");
   failures += run_microtest("oam_read_l1_e.gb");
-  failures += run_microtest("oam_read_l1_f.gb");
+  failures += run_microtest("oam_read_l1_f.gb"); // failing
 
   failures += run_microtest("oam_write_l0_a.gb");
   failures += run_microtest("oam_write_l0_b.gb");
   failures += run_microtest("oam_write_l0_c.gb");
-  failures += run_microtest("oam_write_l0_d.gb");
+  failures += run_microtest("oam_write_l0_d.gb"); // failing
   failures += run_microtest("oam_write_l0_e.gb");
 
   failures += run_microtest("oam_write_l1_a.gb");
   failures += run_microtest("oam_write_l1_b.gb");
-  failures += run_microtest("oam_write_l1_c.gb");
+  failures += run_microtest("oam_write_l1_c.gb"); // failing
   failures += run_microtest("oam_write_l1_d.gb");
   failures += run_microtest("oam_write_l1_e.gb");
   failures += run_microtest("oam_write_l1_f.gb");
@@ -576,21 +567,21 @@ int GateBoyTests::test_micro_lock_oam() {
   failures += run_microtest("lcdon_to_oam_unlock_a.gb");
   failures += run_microtest("lcdon_to_oam_unlock_b.gb");
   failures += run_microtest("lcdon_to_oam_unlock_c.gb");
-  failures += run_microtest("lcdon_to_oam_unlock_d.gb");
+  failures += run_microtest("lcdon_to_oam_unlock_d.gb"); // failing
 
-  failures += run_microtest("poweron_000_oam.gb");
-  failures += run_microtest("poweron_005_oam.gb");
-  failures += run_microtest("poweron_006_oam.gb"); // fail, this is in the gap between hblank and scan
-  failures += run_microtest("poweron_069_oam.gb");
-  failures += run_microtest("poweron_070_oam.gb");
-  failures += run_microtest("poweron_119_oam.gb");
-  failures += run_microtest("poweron_120_oam.gb"); // fail, this is in the gap between hblank and scan
-  failures += run_microtest("poweron_121_oam.gb");
-  failures += run_microtest("poweron_183_oam.gb");
-  failures += run_microtest("poweron_184_oam.gb");
-  failures += run_microtest("poweron_233_oam.gb");
-  failures += run_microtest("poweron_234_oam.gb"); // fail, this is in the gap between hblank and scan
-  failures += run_microtest("poweron_235_oam.gb");
+  failures += run_microtest("poweron_oam_000.gb");
+  failures += run_microtest("poweron_oam_005.gb");
+  failures += run_microtest("poweron_oam_006.gb"); // fail, this is in the gap between hblank and scan
+  failures += run_microtest("poweron_oam_069.gb");
+  failures += run_microtest("poweron_oam_070.gb");
+  failures += run_microtest("poweron_oam_119.gb");
+  failures += run_microtest("poweron_oam_120.gb"); // fail, this is in the gap between hblank and scan
+  failures += run_microtest("poweron_oam_121.gb");
+  failures += run_microtest("poweron_oam_183.gb");
+  failures += run_microtest("poweron_oam_184.gb");
+  failures += run_microtest("poweron_oam_233.gb");
+  failures += run_microtest("poweron_oam_234.gb"); // fail, this is in the gap between hblank and scan
+  failures += run_microtest("poweron_oam_235.gb");
 
   TEST_END();
 }
@@ -600,15 +591,15 @@ int GateBoyTests::test_micro_lock_oam() {
 int GateBoyTests::test_micro_lock_vram() {
   TEST_START();
 
-  failures += run_microtest("poweron_000_vram.gb");
-  failures += run_microtest("poweron_025_vram.gb");
-  failures += run_microtest("poweron_026_vram.gb"); // fail, this is in the gap between scan and render
-  failures += run_microtest("poweron_069_vram.gb");
-  failures += run_microtest("poweron_070_vram.gb");
-  failures += run_microtest("poweron_139_vram.gb");
-  failures += run_microtest("poweron_140_vram.gb"); // fail, this is in the gap between scan and render
-  failures += run_microtest("poweron_183_vram.gb");
-  failures += run_microtest("poweron_184_vram.gb");
+  failures += run_microtest("poweron_vram_000.gb");
+  failures += run_microtest("poweron_vram_025.gb");
+  failures += run_microtest("poweron_vram_026.gb"); // fail, this is in the gap between scan and render
+  failures += run_microtest("poweron_vram_069.gb");
+  failures += run_microtest("poweron_vram_070.gb");
+  failures += run_microtest("poweron_vram_139.gb");
+  failures += run_microtest("poweron_vram_140.gb"); // fail, this is in the gap between scan and render
+  failures += run_microtest("poweron_vram_183.gb");
+  failures += run_microtest("poweron_vram_184.gb");
 
   TEST_END();
 }
@@ -681,7 +672,7 @@ int GateBoyTests::test_micro_ppu() {
   failures += run_microtest("line_153_ly_d.gb");
   failures += run_microtest("line_153_ly_e.gb");
   failures += run_microtest("line_153_ly_f.gb");
-  failures += run_microtest("line_153_lyc0_int_inc_sled.gb");
+  failures += run_microtest("line_153_lyc0_int_inc_sled.gb");  // failing
 #endif
 
   failures += run_microtest("lyc1_write_timing_a.gb");
@@ -689,18 +680,18 @@ int GateBoyTests::test_micro_ppu() {
   failures += run_microtest("lyc1_write_timing_c.gb");
   failures += run_microtest("lyc1_write_timing_d.gb");
 
-  failures += run_microtest("stat_write_glitch_l0_a.gb");
-  failures += run_microtest("stat_write_glitch_l0_b.gb");
+  failures += run_microtest("stat_write_glitch_l0_a.gb"); // failing
+  failures += run_microtest("stat_write_glitch_l0_b.gb"); // failing
   failures += run_microtest("stat_write_glitch_l0_c.gb");
   failures += run_microtest("stat_write_glitch_l1_a.gb");
-  failures += run_microtest("stat_write_glitch_l1_b.gb");
-  failures += run_microtest("stat_write_glitch_l1_c.gb");
+  failures += run_microtest("stat_write_glitch_l1_b.gb"); // failing
+  failures += run_microtest("stat_write_glitch_l1_c.gb"); // failing
   failures += run_microtest("stat_write_glitch_l1_d.gb");
 
   failures += run_microtest("ppu_sprite0_scx0_b.gb");
   failures += run_microtest("ppu_sprite0_scx2_a.gb");
   failures += run_microtest("ppu_sprite0_scx2_b.gb");
-  failures += run_microtest("ppu_sprite0_scx3_a.gb");
+  failures += run_microtest("ppu_sprite0_scx3_a.gb"); // failing
   failures += run_microtest("ppu_sprite0_scx3_b.gb");
   failures += run_microtest("ppu_sprite0_scx4_a.gb");
   failures += run_microtest("ppu_sprite0_scx4_b.gb");
@@ -708,7 +699,7 @@ int GateBoyTests::test_micro_ppu() {
   failures += run_microtest("ppu_sprite0_scx5_b.gb");
   failures += run_microtest("ppu_sprite0_scx6_a.gb");
   failures += run_microtest("ppu_sprite0_scx6_b.gb");
-  failures += run_microtest("ppu_sprite0_scx7_a.gb");
+  failures += run_microtest("ppu_sprite0_scx7_a.gb"); // failing
   failures += run_microtest("ppu_sprite0_scx7_b.gb");
 
   failures += run_microtest("sprite4_0_a.gb");
@@ -832,23 +823,9 @@ int GateBoyTests::run_microtest(const char* filename) {
 int GateBoyTests::test_init() {
   TEST_START();
 
-  // FIXME should not be hashing pointers
-  //gb.set_rom(nullptr, 0);
-  //uint64_t top_hash = hash_states(&gb, sizeof(gb));
-  //LOG_B("Top state hash after reset_states is 0x%016llx\n", top_hash);
-  //EXPECT_EQ(0x6242fa077bd36b15, top_hash, "Top hash mismatch");
-  //gb.set_rom(rom.data(), rom.size());
-
   GateBoy gb = create_gb_poweron();
 
   LOG_G("Checking reg flags\n");
-
-  // All regs should be clean and unlocked
-  /*
-  for (uint8_t* cursor = gb.reg_begin(); cursor != gb.reg_end(); cursor++) {
-    CHECK_N(*cursor & 0xF0);
-  }
-  */
 
   LOG_G("Checking mem\n");
   // Mem should be clear
@@ -873,7 +850,7 @@ int GateBoyTests::test_init() {
   EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
   EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
-  EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom unstable latch problem
+  EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
@@ -913,17 +890,15 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), 0b00111100);
     EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), 0b10011001);
 
-#if 0
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOWA_Axxxxxxx.qp(), 0b10000000);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BEDO_xBCDEFGH.qp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BEKO_ABCDxxxx.qp(), 0b11110000);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BUDE_xxxxEFGH.qp(), 0b00001111);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOLO_ABCDEFxx.qp(), 0b11111100);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BUKE_AxxxxxGH.qp(), 0b10000011);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOMA_xBCDEFGH.qp(), 0b01111111);
-    EXPECT_CLK(top.cpu_bus.SIG_CPU_BOGA_Axxxxxxx.qp(), 0b10000000);
-    EXPECT_CLK(top.ext_bus.PIN75_EXT_CLK.qp(),         0b11110000);
-#endif
+    EXPECT_CLK(top.clk.SIG_CPU_BOWA_Axxxxxxx.qp_old(), 0b10000000);
+    EXPECT_CLK(top.clk.SIG_CPU_BEDO_xBCDEFGH.qp_old(), 0b01111111);
+    EXPECT_CLK(top.clk.SIG_CPU_BEKO_ABCDxxxx.qp_old(), 0b11110000);
+    EXPECT_CLK(top.clk.SIG_CPU_BUDE_xxxxEFGH.qp_old(), 0b00001111);
+    EXPECT_CLK(top.clk.SIG_CPU_BOLO_ABCDEFxx.qp_old(), 0b11111100);
+    EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.qp_old(), 0b10000011);
+    EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.qp_old(), 0b01111111);
+    EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.qp_old(), 0b10000000);
+    EXPECT_CLK(top.clk.PIN75_CLK_OUT.ext_qp_old(),     0b11110000);
     gb.next_phase();
   }
 
@@ -956,7 +931,7 @@ int GateBoyTests::test_ext_bus() {
     GateBoy gb;
     gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.reset_to_cart();
-    gb.run_phases(112);
+    gb.run_phases(120);
 
 #if 1
     // Start checking each phase
@@ -1081,7 +1056,7 @@ int GateBoyTests::test_ext_bus() {
     GateBoy gb;
     gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.reset_to_cart();
-    gb.run_phases(112);
+    gb.run_phases(120);
 
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1207,7 +1182,7 @@ int GateBoyTests::test_ext_bus() {
     GateBoy gb;
     gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.reset_to_cart();
-    gb.run_phases(112);
+    gb.run_phases(120);
 
     // Start checking each phase
 
@@ -1377,29 +1352,6 @@ int GateBoyTests::test_mem() {
 
 //------------------------------------------------------------------------------
 
-int GateBoyTests::test_interrupts() {
-  TEST_START();
-
-  GateBoy gb = create_gb_poweron();
-
-  // hblank no stat int
-  // vblank no stat int
-
-  /*
-  #define EI_GLITCH    0b10000000
-  #define EI_LYC       0b01000000
-  #define EI_OAM       0b00100000
-  #define EI_VBLANK    0b00010000
-  #define EI_HBLANK    0b00001000
-  */
-  //dbg_write(ADDR_STAT, EI_OAM);
-  //dbg_write(ADDR_IE,   0b11111111);
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
 // FIXME dis brokn
 
 int GateBoyTests::test_bootrom() {
@@ -1509,7 +1461,7 @@ int GateBoyTests::test_timer() {
   }
   if (!failures) LOG("\n");
 
-#if 0
+#if 1
   {
     GateBoy gb = create_gb_poweron();
     gb.sys_cpu_en = 0;
@@ -1606,30 +1558,30 @@ int GateBoyTests::test_ppu() {
   TEST_START();
 
   // slow
-  if (0) {
-    LOG("Checking LY increment rate... ");
-    GateBoy gb = create_gb_poweron();
-    gb.dbg_write(ADDR_LCDC, 0x80);
+#ifdef RUN_SLOW_TESTS
+  LOG("Checking LY increment rate... ");
+  GateBoy gb = create_gb_poweron();
+  gb.dbg_write(ADDR_LCDC, 0x80);
 
-    // LY should increment every 114*8 phases after LCD enable, except on the last line.
-    for (int i = 0; i < 153; i++) {
-      EXPECT_EQ(i, gb.lcd.reg_ly.get_old());
-      gb.run_phases(114 * 8);
-    }
-
-    // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
+  // LY should increment every 114*8 phases after LCD enable, except on the last line.
+  for (int i = 0; i < 153; i++) {
+    EXPECT_EQ(i, gb.lcd.reg_ly.get_old());
     gb.run_phases(114 * 8);
-
-    // And we should be at 0 again
-    EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
-    gb.run_phases(114 * 8);
-
-    // And now we should be at 1.
-    EXPECT_EQ(1, gb.lcd.reg_ly.get_old());
-
-    if (!failures) LOG_B("Pass");
   }
+
+  // LY is reset early on the last line, we should be at 0 now.
+  EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
+  gb.run_phases(114 * 8);
+
+  // And we should be at 0 again
+  EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
+  gb.run_phases(114 * 8);
+
+  // And now we should be at 1.
+  EXPECT_EQ(1, gb.lcd.reg_ly.get_old());
+
+  if (!failures) LOG_B("Pass");
+#endif
   LOG("\n");
 
   TEST_END();

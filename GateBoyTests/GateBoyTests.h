@@ -17,7 +17,6 @@ struct GateBoyTests {
   int test_ext_bus();
   int test_mem();
   int test_dma();
-  int test_interrupts();
   int test_ppu();
   int test_timer();
 

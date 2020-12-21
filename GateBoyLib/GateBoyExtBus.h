@@ -8,14 +8,14 @@ struct GateBoyResetDebug;
 
 struct ExtDataLatch {
   void reset_to_cart() {
-    SOMA_EXT_DATA_LATCH_D0n.state = REG_D1C0;
-    RONY_EXT_DATA_LATCH_D1n.state = REG_D1C0;
-    RAXY_EXT_DATA_LATCH_D2n.state = REG_D1C0;
-    SELO_EXT_DATA_LATCH_D3n.state = REG_D1C0;
-    SODY_EXT_DATA_LATCH_D4n.state = REG_D1C0;
-    SAGO_EXT_DATA_LATCH_D5n.state = REG_D1C0;
-    RUPA_EXT_DATA_LATCH_D6n.state = REG_D1C0;
-    SAZY_EXT_DATA_LATCH_D7n.state = REG_D1C0;
+    SOMA_EXT_DATA_LATCH_D0n.state = 0;
+    RONY_EXT_DATA_LATCH_D1n.state = 0;
+    RAXY_EXT_DATA_LATCH_D2n.state = 0;
+    SELO_EXT_DATA_LATCH_D3n.state = 0;
+    SODY_EXT_DATA_LATCH_D4n.state = 0;
+    SAGO_EXT_DATA_LATCH_D5n.state = 0;
+    RUPA_EXT_DATA_LATCH_D6n.state = 0;
+    SAZY_EXT_DATA_LATCH_D7n.state = 0;
   }
 
   /*p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
@@ -32,21 +32,21 @@ struct ExtDataLatch {
 
 struct ExtAddrLatch {
   void reset_to_cart() {
-    ALOR_EXT_ADDR_LATCH_00p.state = 0b00000101;
-    APUR_EXT_ADDR_LATCH_01p.state = 0b00000000;
-    ALYR_EXT_ADDR_LATCH_02p.state = 0b00000101;
-    ARET_EXT_ADDR_LATCH_03p.state = 0b00000101;
-    AVYS_EXT_ADDR_LATCH_04p.state = 0b00000000;
-    ATEV_EXT_ADDR_LATCH_05p.state = 0b00000000;
-    AROS_EXT_ADDR_LATCH_06p.state = 0b00000101;
-    ARYM_EXT_ADDR_LATCH_07p.state = 0b00000000;
-    LUNO_EXT_ADDR_LATCH_08p.state = 0b00000000;
-    LYSA_EXT_ADDR_LATCH_09p.state = 0b00000000;
-    PATE_EXT_ADDR_LATCH_10p.state = 0b00000000;
-    LUMY_EXT_ADDR_LATCH_11p.state = 0b00000000;
-    LOBU_EXT_ADDR_LATCH_12p.state = 0b00000000;
-    LONU_EXT_ADDR_LATCH_13p.state = 0b00000000;
-    NYRE_EXT_ADDR_LATCH_14p.state = 0b00000000;
+    ALOR_EXT_ADDR_LATCH_00p.state = 1;
+    APUR_EXT_ADDR_LATCH_01p.state = 0;
+    ALYR_EXT_ADDR_LATCH_02p.state = 1;
+    ARET_EXT_ADDR_LATCH_03p.state = 1;
+    AVYS_EXT_ADDR_LATCH_04p.state = 0;
+    ATEV_EXT_ADDR_LATCH_05p.state = 0;
+    AROS_EXT_ADDR_LATCH_06p.state = 1;
+    ARYM_EXT_ADDR_LATCH_07p.state = 0;
+    LUNO_EXT_ADDR_LATCH_08p.state = 0;
+    LYSA_EXT_ADDR_LATCH_09p.state = 0;
+    PATE_EXT_ADDR_LATCH_10p.state = 0;
+    LUMY_EXT_ADDR_LATCH_11p.state = 0;
+    LOBU_EXT_ADDR_LATCH_12p.state = 0;
+    LONU_EXT_ADDR_LATCH_13p.state = 0;
+    NYRE_EXT_ADDR_LATCH_14p.state = 0;
   }
 
   void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
@@ -75,31 +75,31 @@ struct GateBoyExtBus {
     ext_addr_latch.reset_to_cart();
     ext_data_latch.reset_to_cart();
 
-    PIN01_ADDR[ 0].state = 0b1000;
-    PIN01_ADDR[ 1].state = 0b1101;
-    PIN01_ADDR[ 2].state = 0b1000;
-    PIN01_ADDR[ 3].state = 0b1000;
-    PIN01_ADDR[ 4].state = 0b1101;
-    PIN01_ADDR[ 5].state = 0b1101;
-    PIN01_ADDR[ 6].state = 0b1000;
-    PIN01_ADDR[ 7].state = 0b1101;
-    PIN01_ADDR[ 8].state = 0b1101;
-    PIN01_ADDR[ 9].state = 0b1101;
-    PIN01_ADDR[10].state = 0b1101;
-    PIN01_ADDR[11].state = 0b1101;
-    PIN01_ADDR[12].state = 0b1101;
-    PIN01_ADDR[13].state = 0b1101;
-    PIN01_ADDR[14].state = 0b1101;
-    PIN01_ADDR[15].state = 0b1000;
+    PIN01_ADDR[ 0].state = 0;
+    PIN01_ADDR[ 1].state = 1;
+    PIN01_ADDR[ 2].state = 0;
+    PIN01_ADDR[ 3].state = 0;
+    PIN01_ADDR[ 4].state = 1;
+    PIN01_ADDR[ 5].state = 1;
+    PIN01_ADDR[ 6].state = 0;
+    PIN01_ADDR[ 7].state = 1;
+    PIN01_ADDR[ 8].state = 1;
+    PIN01_ADDR[ 9].state = 1;
+    PIN01_ADDR[10].state = 1;
+    PIN01_ADDR[11].state = 1;
+    PIN01_ADDR[12].state = 1;
+    PIN01_ADDR[13].state = 1;
+    PIN01_ADDR[14].state = 1;
+    PIN01_ADDR[15].state = 0;
 
-    PIN17_DATA[0].state = 0b0101;
-    PIN17_DATA[1].state = 0b0101;
-    PIN17_DATA[2].state = 0b0101;
-    PIN17_DATA[3].state = 0b0101;
-    PIN17_DATA[4].state = 0b0101;
-    PIN17_DATA[5].state = 0b0101;
-    PIN17_DATA[6].state = 0b0101;
-    PIN17_DATA[7].state = 0b0101;
+    PIN17_DATA[0].state = 0;
+    PIN17_DATA[1].state = 0;
+    PIN17_DATA[2].state = 0;
+    PIN17_DATA[3].state = 0;
+    PIN17_DATA[4].state = 0;
+    PIN17_DATA[5].state = 0;
+    PIN17_DATA[6].state = 0;
+    PIN17_DATA[7].state = 0;
   }
 
   void copy_addr_latch_to_pins(

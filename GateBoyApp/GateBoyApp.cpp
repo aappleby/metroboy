@@ -45,7 +45,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
   // regenerate post-bootrom dump
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
@@ -87,7 +87,7 @@ void GateBoyApp::app_init() {
 #endif
 
 
-#if 1
+#if 0
   const char* app = R"(
   0150:
     ld a, $55

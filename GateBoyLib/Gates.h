@@ -110,9 +110,9 @@ protected:
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 
 constexpr uint8_t REG_D0C0 = 0b00000000;
-constexpr uint8_t REG_D1C0 = 0b00000101;
+constexpr uint8_t REG_D1C0 = 0b00000001;
 constexpr uint8_t REG_D0C1 = 0b00000010;
-constexpr uint8_t REG_D1C1 = 0b00000111;
+constexpr uint8_t REG_D1C1 = 0b00000011;
 
 //-----------------------------------------------------------------------------
 

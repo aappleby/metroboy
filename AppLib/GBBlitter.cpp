@@ -456,7 +456,7 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, c
     uniforms.palette[4] = default_pal[4];
 
     uniforms.which_map = which_map;
-    uniforms.alt_map = alt_map;
+    uniforms.alt_map = !alt_map;
     update_ubo(blit_map_ubo, sizeof(uniforms), &uniforms);
 
     bind_shader(blit_map_prog);

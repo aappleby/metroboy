@@ -119,8 +119,8 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/dma_0x1000.gb"));
+#if 0
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/hblank_int_scx1_nops_b.gb"));
   gb_thread.reset_to_cart();
 #endif
 
@@ -187,7 +187,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 0
+#if 1
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -310,7 +310,7 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   memcpy(gb_thread.gb->oam_ram,  gb_thread.cart.data() + 0xFE00, 256);
   memcpy(gb_thread.gb->zero_ram, gb_thread.cart.data() + 0xFF80, 128);
 
-#if 0
+#if 1
   gb_thread.gb->dbg_write(ADDR_BGP,  gb_thread.cart[ADDR_BGP]);
   gb_thread.gb->dbg_write(ADDR_OBP0, gb_thread.cart[ADDR_OBP0]);
   gb_thread.gb->dbg_write(ADDR_OBP1, gb_thread.cart[ADDR_OBP1]);
@@ -439,8 +439,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   uint64_t phase_total = gb->phase_total;
 
   StringDumper d;
-  float cursor = 0;
-  float col_spacing = 6.5 * 32;
+  float cursor_x = 8;
+  float cursor_y = 4;
+  float col_spacing = 7 * 32;
 
   //----------------------------------------
 
@@ -504,8 +505,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb->joypad.dump(d);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += col_spacing;
+  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
@@ -513,36 +514,18 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\002===== CPU =====\001\n");
   gb->cpu.dump(d);
 
+  d("\002===== CPU Bus =====\001\n");
+  gb->cpu_bus.dump(d);
+  d("\n");
+
   d("\002===== Interrupts =====\001\n");
   gb->interrupts.dump(d);
   d("\n");
 
-  d("\002===== Disasm =====\001\n");
-  {
-    uint16_t pc = gb->cpu.op_addr;
-    const uint8_t* code = nullptr;
-    uint16_t code_size = 0;
-    uint16_t code_base = 0;
+  d("\002===== DMA =====\001\n");
+  gb->dma.dump(d);
+  d("\n");
 
-    if (!gb->cpu_bus.BOOT_BITn_h.qp_old()) {
-      code = gb_thread.boot.data();
-      code_size = 256;
-      code_base = ADDR_BOOT_ROM_BEGIN;
-    }
-    else if (pc >= 0x0000 && pc <= 0x7FFF) {
-      // FIXME needs to account for mbc1 mem mapping
-      code = gb_thread.cart.data();
-      code_size = 32768;
-      code_base = ADDR_CART_ROM_BEGIN;
-    }
-    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code = gb->zero_ram;
-      code_size = 127;
-      code_base = ADDR_ZEROPAGE_BEGIN;
-    }
-
-    assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
-  }
   d("\n");
 
   /*
@@ -556,34 +539,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("\n");
   */
 
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += col_spacing;
-  d.clear();
-
-  //----------------------------------------
-
-  d("\002===== CPU Bus =====\001\n");
-  gb->cpu_bus.dump(d);
-  d("\n");
-
-  d("\002===== EXT Bus =====\001\n");
-  gb->ext_bus.dump(d);
-  d("\n");
-
-  d("\002===== VRAM Bus =====\001\n");
-  gb->vram_bus.dump(d);
-  d("\n");
-
-  d("\002===== OAM Bus =====\001\n");
-  gb->oam_bus.dump(d);
-  d("\n");
-
-  d("\002===== DMA =====\001\n");
-  gb->dma.dump(d);
-  d("\n");
-
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += col_spacing;
+  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
@@ -598,6 +555,24 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp   ("NYPE_LINE_P002p     : ", gb->lcd.reg_lx.NYPE_x113p.state);
   d.dump_bitp   ("ROPO_LY_MATCH_SYNCp : ", gb->lcd.reg_lyc.ROPO_LY_MATCH_SYNCp.state);
   d("\n");
+
+  d("\002===== EXT Bus =====\001\n");
+  gb->ext_bus.dump(d);
+  d("\n");
+
+  d("\002===== VRAM Bus =====\001\n");
+  gb->vram_bus.dump(d);
+  d("\n");
+
+  d("\002===== OAM Bus =====\001\n");
+  gb->oam_bus.dump(d);
+  d("\n");
+
+  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  cursor_x += col_spacing;
+  d.clear();
+
+  //----------------------------------------
 
   d("\002===== PPU Regs=====\001\n");
   d.dump_slice2n("FF40 LCDC  : ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
@@ -648,15 +623,15 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d.dump_bitp("VOGA_HBLANKp           : ", gb->ppu_reg.VOGA_HBLANKp.state);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += col_spacing;
-  d.clear();
-
-  //----------------------------------------
-
   d("\002===== Tile Fetch =====\001\n");
   gb->tile_fetcher.dump(d);
   d("\n");
+
+  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  cursor_x += col_spacing;
+  d.clear();
+
+  //----------------------------------------
 
   d("\002===== Sprite Fetch =====\001\n");
   gb->sprite_fetcher.dump(d);
@@ -671,8 +646,41 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb->sprite_store.dump(d);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor, 0);
-  cursor += col_spacing;
+  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  cursor_x += col_spacing;
+  d.clear();
+
+  //----------------------------------------
+
+  d("\002===== Disasm =====\001\n");
+  {
+    uint16_t pc = gb->cpu.op_addr;
+    const uint8_t* code = nullptr;
+    uint16_t code_size = 0;
+    uint16_t code_base = 0;
+
+    if (!gb->cpu_bus.BOOT_BITn_h.qp_old()) {
+      code = gb_thread.boot.data();
+      code_size = 256;
+      code_base = ADDR_BOOT_ROM_BEGIN;
+    }
+    else if (pc >= 0x0000 && pc <= 0x7FFF) {
+      // FIXME needs to account for mbc1 mem mapping
+      code = gb_thread.cart.data();
+      code_size = 32768;
+      code_base = ADDR_CART_ROM_BEGIN;
+    }
+    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
+      code = gb->zero_ram;
+      code_size = 127;
+      code_base = ADDR_ZEROPAGE_BEGIN;
+    }
+
+    assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
+  }
+
+  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
@@ -693,7 +701,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     d("\n");
   }
   d("\n");
-  text_painter.render(view, d.s.c_str(), cursor, 0);
+  text_painter.render(view, d.s.c_str(), 42 * 32 - 16, 10 * 32);
   d.clear();
 
   //----------------------------------------
@@ -749,8 +757,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
     update_texture_u32(overlay_tex, 160, 144, overlay);
   }
 
-  int gb_x = 42 * 32;
-  int gb_y = 1 * 32;
+  int gb_x = 42 * 32 - 16;
+  int gb_y = 8;
 
   if (has_golden && show_diff) {
     gb_blitter.blit_diff(view,   gb_x, gb_y,  2, framebuffer, golden_u8);
@@ -759,11 +767,9 @@ void GateBoyApp::app_render_frame(Viewport view) {
   } else {
     gb_blitter.blit_screen(view, gb_x, gb_y,  2, framebuffer);
   }
-  gb_blitter.blit_tiles (view, 33 * 32, 16 * 32, 1, vid_ram);
-  gb_blitter.blit_map   (view, 42 * 32, 16 * 32, 1, vid_ram, 0, 0);
-  gb_blitter.blit_map   (view, 51 * 32, 16 * 32, 1, vid_ram, 0, 1);
-  gb_blitter.blit_map   (view, 42 * 32, 25 * 32, 1, vid_ram, 1, 0);
-  gb_blitter.blit_map   (view, 51 * 32, 25 * 32, 1, vid_ram, 1, 1);
+  gb_blitter.blit_map   (view, 52 * 32 - 8,   0 * 32 + 8,  1, vid_ram, gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old(),  gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old());
+  gb_blitter.blit_map   (view, 52 * 32 - 8,   8 * 32 + 16, 1, vid_ram, gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old(), gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old());
+  gb_blitter.blit_tiles (view, 52 * 32 - 8,  16 * 32 + 24, 1, vid_ram);
 
   blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
 
@@ -787,7 +793,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   // Probe dump
 
   gb->probes.dump(d, draw_passes);
-  text_painter.render(view, d.s, 34 * 32, 11 * 32);
+  text_painter.render(view, d.s, 42 * 32 - 16, 19 * 32 - 24);
   d.clear();
 
   frame_count++;

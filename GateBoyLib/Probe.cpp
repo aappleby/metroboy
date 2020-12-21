@@ -53,7 +53,7 @@ void Probes::end_pass(bool _stable) {
 void Probes::dump(Dumper& d, bool draw_passes) {
   for (int y = 0; y < channel_count; y++) {
 
-    d("\001%-24s : ", names[y]);
+    d("\001%-16s : ", names[y]);
     if (draw_passes) {
       auto s = pass_samples[y];
       for (int x = 0; x < sample_count; x++) {

@@ -236,6 +236,8 @@ void GateBoy::reset_to_cart() {
   phase_origin = 46880728;
   phase_hash = 0xd53410c0b6bcb522;
   cumulative_hash = 0x2532ab22e64c63aa;
+
+  probes.reset_to_cart();
 }
 
 //------------------------------------------------------------------------------

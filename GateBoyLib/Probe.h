@@ -10,8 +10,8 @@ struct Probes {
 
   void dump(Dumper& d, bool draw_passes = true);
 
-  static const int channel_count = 8;
-  static const int sample_count = 96;
+  static const int channel_count = 16;
+  static const int sample_count = 32;
 
   int  pass_cursor;
   int  phase_cursor;

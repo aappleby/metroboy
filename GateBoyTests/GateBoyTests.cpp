@@ -32,31 +32,31 @@ int main(int argc, char** argv) {
 
 
   //failures += t.test_fastboot_vs_slowboot();
-  //failures += t.test_reset_cart_vs_dump();
+  failures += t.test_reset_cart_vs_dump();
 
-  failures += t.test_clk();
-  failures += t.test_regs();
-  failures += t.test_mem();
-  failures += t.test_dma();
+  //failures += t.test_clk();
+  //failures += t.test_regs();
+  //failures += t.test_mem();
+  //failures += t.test_dma();
 
-  failures += t.test_init();
-  failures += t.test_ext_bus();
-  failures += t.test_interrupts();
-  failures += t.test_ppu();
-  failures += t.test_timer();
-  failures += t.test_micro_poweron();
-  failures += t.test_micro_lcden();
-  failures += t.test_micro_timer();
-  failures += t.test_micro_int_vblank();
-  failures += t.test_micro_int_stat();
-  failures += t.test_micro_int_timer();
-  failures += t.test_micro_int_serial();
-  failures += t.test_micro_int_joypad();
-  failures += t.test_micro_lock_oam();
-  failures += t.test_micro_lock_vram();
-  failures += t.test_micro_window();
-  failures += t.test_micro_ppu();
-  failures += t.test_micro_dma();
+  //failures += t.test_init();
+  //failures += t.test_ext_bus();
+  //failures += t.test_interrupts();
+  //failures += t.test_ppu();
+  //failures += t.test_timer();
+  //failures += t.test_micro_poweron();
+  //failures += t.test_micro_lcden();
+  //failures += t.test_micro_timer();
+  //failures += t.test_micro_int_vblank();
+  //failures += t.test_micro_int_stat();
+  //failures += t.test_micro_int_timer();
+  //failures += t.test_micro_int_serial();
+  //failures += t.test_micro_int_joypad();
+  //failures += t.test_micro_lock_oam();
+  //failures += t.test_micro_lock_vram();
+  //failures += t.test_micro_window();
+  //failures += t.test_micro_ppu();
+  //failures += t.test_micro_dma();
 
   auto finish = timestamp();
 
@@ -207,56 +207,59 @@ int GateBoyTests::test_micro_poweron() {
 
   LOG_B("===== Stat boot state =====\n");
 
-  failures += run_microtest("poweron_000_stat.gb");
-  failures += run_microtest("poweron_005_stat.gb");
-  failures += run_microtest("poweron_006_stat.gb"); // probably due to unstable data latch
-  failures += run_microtest("poweron_007_stat.gb");
-  failures += run_microtest("poweron_026_stat.gb");
-  failures += run_microtest("poweron_027_stat.gb");
-  failures += run_microtest("poweron_069_stat.gb");
-  failures += run_microtest("poweron_070_stat.gb");
-  failures += run_microtest("poweron_119_stat.gb");
-  failures += run_microtest("poweron_120_stat.gb");
-  failures += run_microtest("poweron_121_stat.gb");
-  failures += run_microtest("poweron_140_stat.gb");
-  failures += run_microtest("poweron_141_stat.gb");
-  failures += run_microtest("poweron_183_stat.gb");
-  failures += run_microtest("poweron_184_stat.gb");
-  failures += run_microtest("poweron_234_stat.gb");
-  failures += run_microtest("poweron_235_stat.gb");
+  failures += run_microtest("poweron_stat_000.gb");
+  failures += run_microtest("poweron_stat_005.gb");
+  failures += run_microtest("poweron_stat_006.gb"); // probably due to unstable data latch
+  printf("\n");
+  failures += run_microtest("poweron_stat_007.gb");
+  failures += run_microtest("poweron_stat_026.gb");
+  failures += run_microtest("poweron_stat_027.gb");
+  failures += run_microtest("poweron_stat_069.gb");
+  failures += run_microtest("poweron_stat_070.gb");
+  failures += run_microtest("poweron_stat_119.gb");
+  failures += run_microtest("poweron_stat_120.gb");
+  printf("\n");
+  failures += run_microtest("poweron_stat_121.gb");
+  failures += run_microtest("poweron_stat_140.gb");
+  failures += run_microtest("poweron_stat_141.gb");
+  failures += run_microtest("poweron_stat_183.gb");
+  failures += run_microtest("poweron_stat_184.gb");
+  failures += run_microtest("poweron_stat_234.gb");
+
+  failures += run_microtest("poweron_stat_235.gb");
 
   LOG_B("===== Div state =====\n");
 
-  failures += run_microtest("poweron_000_div.gb");
-  failures += run_microtest("poweron_004_div.gb");
-  failures += run_microtest("poweron_005_div.gb");
+  failures += run_microtest("poweron_div_000.gb");
+  failures += run_microtest("poweron_div_004.gb");
+  failures += run_microtest("poweron_div_005.gb");
 
   LOG_B("===== LY boot state =====\n");
 
-  failures += run_microtest("poweron_000_ly.gb");
-  failures += run_microtest("poweron_119_ly.gb");
-  failures += run_microtest("poweron_120_ly.gb");
-  failures += run_microtest("poweron_233_ly.gb");
-  failures += run_microtest("poweron_234_ly.gb");
+  failures += run_microtest("poweron_ly_000.gb");
+  failures += run_microtest("poweron_ly_119.gb");
+  failures += run_microtest("poweron_ly_120.gb");
+  failures += run_microtest("poweron_ly_233.gb");
+  failures += run_microtest("poweron_ly_234.gb");
 
   LOG_B("===== Other reg initial values =====\n");
-  failures += run_microtest("poweron_000_bgp.gb");
-  failures += run_microtest("poweron_000_dma.gb");
-  failures += run_microtest("poweron_000_if.gb");
-  failures += run_microtest("poweron_000_joy.gb");
-  failures += run_microtest("poweron_000_lcdc.gb");
-  failures += run_microtest("poweron_000_lyc.gb");
-  failures += run_microtest("poweron_000_obp0.gb");
-  failures += run_microtest("poweron_000_obp1.gb");
-  failures += run_microtest("poweron_000_sb.gb");
-  failures += run_microtest("poweron_000_sc.gb");
-  failures += run_microtest("poweron_000_scx.gb");
-  failures += run_microtest("poweron_000_scy.gb");
-  failures += run_microtest("poweron_000_tac.gb");
-  failures += run_microtest("poweron_000_tima.gb");
-  failures += run_microtest("poweron_000_tma.gb");
-  failures += run_microtest("poweron_000_wx.gb");
-  failures += run_microtest("poweron_000_wy.gb");
+  failures += run_microtest("poweron_bgp_000.gb");
+  failures += run_microtest("poweron_dma_000.gb");
+  failures += run_microtest("poweron_if_000.gb");
+  failures += run_microtest("poweron_joy_000.gb");
+  failures += run_microtest("poweron_lcdc_000.gb");
+  failures += run_microtest("poweron_lyc_000.gb");
+  failures += run_microtest("poweron_obp0_000.gb");
+  failures += run_microtest("poweron_obp1_000.gb");
+  failures += run_microtest("poweron_sb_000.gb");
+  failures += run_microtest("poweron_sc_000.gb");
+  failures += run_microtest("poweron_scx_000.gb");
+  failures += run_microtest("poweron_scy_000.gb");
+  failures += run_microtest("poweron_tac_000.gb");
+  failures += run_microtest("poweron_tima_000.gb");
+  failures += run_microtest("poweron_tma_000.gb");
+  failures += run_microtest("poweron_wx_000.gb");
+  failures += run_microtest("poweron_wy_000.gb");
 
   TEST_END();
 }

@@ -15,9 +15,31 @@ void GateBoyCpuBus::reset_to_cart() {
   BOOT_BITn_h.reset_to_cart(REG_D1C1);
   SIG_CPU_BOOTp.reset_to_cart(REG_D0C0);
 
-  for (int i = 0; i < 8; i++) {
-    BUS_CPU_D[i].reset_to_cart(1);
-  }
+  BUS_CPU_A[ 0].state = 0b0000;
+  BUS_CPU_A[ 1].state = 0b0000;
+  BUS_CPU_A[ 2].state = 0b0000;
+  BUS_CPU_A[ 3].state = 0b0000;
+  BUS_CPU_A[ 4].state = 0b0101;
+  BUS_CPU_A[ 5].state = 0b0000;
+  BUS_CPU_A[ 6].state = 0b0101;
+  BUS_CPU_A[ 7].state = 0b0000;
+  BUS_CPU_A[ 8].state = 0b0000;
+  BUS_CPU_A[ 9].state = 0b0000;
+  BUS_CPU_A[10].state = 0b0000;
+  BUS_CPU_A[11].state = 0b0000;
+  BUS_CPU_A[12].state = 0b0000;
+  BUS_CPU_A[13].state = 0b0000;
+  BUS_CPU_A[14].state = 0b0000;
+  BUS_CPU_A[15].state = 0b0000;
+
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].state = 0b0101;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -45,59 +45,13 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
   // regenerate post-bootrom dump
-  /*
   gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
   }
-  */
-
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_000_stat.gb"));
-  gb_thread.reset_to_cart();
-  gb_thread.gb->sys_cpu_en = 0;
-  memset(gb_thread.gb->framebuffer, 3, sizeof(gb_thread.gb->framebuffer));
-
-  /*
-  for (int i = 0; i < 1024 * 6; i++) {
-    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
-  }
-  for (int i = 1024 * 6; i < 8192; i++) {
-    gb_thread.gb->vid_ram[i] = 0x00;
-  }
-
-  gb_thread.gb->dbg_write(ADDR_BGP, 0b11100100);
-  */
-  {
-    uint8_t* vram = gb_thread.gb->vid_ram;
-    int cursor = 0;
-
-    for (int i = 0; i < 768; i++) {
-      for (int j = 0; j < 8; j++) vram[cursor++] = (uint8_t)i;
-    }
-    for (int i = 0; i < 2048; i++) {
-      vram[cursor++] = 0;
-    }
-
-
-  }
-
-  //memset(gb_thread.gb->int_ram, 0x34, 4096);
-  //memset(gb_thread.gb->zero_ram, 0x34, 128);
-  //memset(gb_thread.gb->zero_ram, 0x34, 128);
-  //memset(gb_thread.cart.data(), 0x34, 0x8000);
-
-  //gb_thread.gb->dbg_write(0xC000, 0x77);
-  //gb_thread.gb->dbg_read(0xC000);
-
-  //gb_thread.gb->dbg_read(ADDR_P1);
-  gb_thread.gb->dbg_write(0xC003, 0x77);
-
-
-
-
 #endif
 
 #if 0
@@ -119,7 +73,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_119_ly.gb"));
   gb_thread.reset_to_cart();
 #endif
@@ -734,26 +688,30 @@ void GateBoyApp::app_render_frame(Viewport view) {
   {
     memset(overlay, 0, sizeof(overlay));
 
-#if 0
-    int fb_x = gb->gb_screen_x;
-    int fb_y = gb->gb_screen_y;
-    if (fb_y >= 0 && fb_y < 144 && fb_x >= 0 && fb_x < 160) {
-      for (int x = 0; x < fb_x; x++) {
-        uint8_t p0 = gb->lcd.lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
-        uint8_t p1 = gb->lcd.lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
-        int r = (3 - (p0 + p1 * 2)) * 30 + 50;
-        int g = (3 - (p0 + p1 * 2)) * 30 + 50;
-        int b = (3 - (p0 + p1 * 2)) * 30 + 30;
-        overlay[x + fb_y * 160] = 0xFF000000 | (b << 16) | (g << 8) | (r << 0);
+    int fb_x = gb->pix_count.get_new() - 8;
+    int fb_y = gb->lcd.reg_ly.get_new();
+
+    if (fb_y >= 0 && fb_y < 144) {
+      for (int x = 0; x < 160; x++) {
+        //uint8_t p0 = gb->lcd.lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
+        //uint8_t p1 = gb->lcd.lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
+        //int r = (3 - (p0 + p1 * 2)) * 30 + 50;
+        //int g = (3 - (p0 + p1 * 2)) * 30 + 50;
+        //int b = (3 - (p0 + p1 * 2)) * 30 + 30;
+
+        uint32_t c = (x == fb_x) ? 0x77FFFFFF : 0x2200FFFF;
+
+        overlay[x + fb_y * 160] = c; //0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
+      /*
       {
         uint8_t p0 = gb->lcd.lcd_pix_lo.qp_old();
         uint8_t p1 = gb->lcd.lcd_pix_hi.qp_old();
         int c = (3 - (p0 + p1 * 2)) * 85;
         overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
       }
+      */
     }
-#endif
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
   }

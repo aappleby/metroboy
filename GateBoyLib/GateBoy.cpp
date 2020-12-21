@@ -202,9 +202,9 @@ void GateBoy::reset_to_cart() {
     cpu_bus.BUS_CPU_D[7].tri(1, wire(op & 0x80));
   }
   */
-  sys_cpu_en = false;
-  dbg_read(0x100);
-  sys_cpu_en = true;
+  //sys_cpu_en = false;
+  //dbg_read(0x100);
+  //sys_cpu_en = true;
 
   memcpy(vid_ram, vram_boot, 8192);
 
@@ -412,9 +412,9 @@ void GateBoy::next_phase() {
 
   tock_slow(1);
   probes.end_pass(true);
+  auto& gb_new = *this;
 #endif
 
-  auto& gb_new = *this;
   uint64_t phase_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
 
 #ifdef CHECK_SINGLE_PASS
@@ -835,7 +835,7 @@ void GateBoy::update_framebuffer()
     uint8_t p0 = pix_pipes.REMY_LD0n.qn_new();
     uint8_t p1 = pix_pipes.RAVO_LD1n.qn_new();
     framebuffer[lcd_x + lcd_y * 160] = p0 + p1 * 2;
-    if (lcd_x < 159) framebuffer[(lcd_x + 1) + lcd_y * 160] = 4;
+    //if (lcd_x < 159) framebuffer[(lcd_x + 1) + lcd_y * 160] = 4;
   }
 
 #if 0

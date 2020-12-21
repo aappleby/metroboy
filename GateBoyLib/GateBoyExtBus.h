@@ -32,21 +32,21 @@ struct ExtDataLatch {
 
 struct ExtAddrLatch {
   void reset_to_cart() {
-    ALOR_EXT_ADDR_LATCH_00p.reset_to_cart(REG_D0C0);
-    APUR_EXT_ADDR_LATCH_01p.reset_to_cart(REG_D0C0);
-    ALYR_EXT_ADDR_LATCH_02p.reset_to_cart(REG_D0C0);
-    ARET_EXT_ADDR_LATCH_03p.reset_to_cart(REG_D0C0);
-    AVYS_EXT_ADDR_LATCH_04p.reset_to_cart(REG_D0C0);
-    ATEV_EXT_ADDR_LATCH_05p.reset_to_cart(REG_D0C0);
-    AROS_EXT_ADDR_LATCH_06p.reset_to_cart(REG_D0C0);
-    ARYM_EXT_ADDR_LATCH_07p.reset_to_cart(REG_D0C0);
-    LUNO_EXT_ADDR_LATCH_08p.reset_to_cart(REG_D1C0);
-    LYSA_EXT_ADDR_LATCH_09p.reset_to_cart(REG_D0C0);
-    PATE_EXT_ADDR_LATCH_10p.reset_to_cart(REG_D0C0);
-    LUMY_EXT_ADDR_LATCH_11p.reset_to_cart(REG_D0C0);
-    LOBU_EXT_ADDR_LATCH_12p.reset_to_cart(REG_D0C0);
-    LONU_EXT_ADDR_LATCH_13p.reset_to_cart(REG_D0C0);
-    NYRE_EXT_ADDR_LATCH_14p.reset_to_cart(REG_D0C0);
+    ALOR_EXT_ADDR_LATCH_00p.state = 0b00000101;
+    APUR_EXT_ADDR_LATCH_01p.state = 0b00000000;
+    ALYR_EXT_ADDR_LATCH_02p.state = 0b00000101;
+    ARET_EXT_ADDR_LATCH_03p.state = 0b00000101;
+    AVYS_EXT_ADDR_LATCH_04p.state = 0b00000000;
+    ATEV_EXT_ADDR_LATCH_05p.state = 0b00000000;
+    AROS_EXT_ADDR_LATCH_06p.state = 0b00000101;
+    ARYM_EXT_ADDR_LATCH_07p.state = 0b00000000;
+    LUNO_EXT_ADDR_LATCH_08p.state = 0b00000000;
+    LYSA_EXT_ADDR_LATCH_09p.state = 0b00000000;
+    PATE_EXT_ADDR_LATCH_10p.state = 0b00000000;
+    LUMY_EXT_ADDR_LATCH_11p.state = 0b00000000;
+    LOBU_EXT_ADDR_LATCH_12p.state = 0b00000000;
+    LONU_EXT_ADDR_LATCH_13p.state = 0b00000000;
+    NYRE_EXT_ADDR_LATCH_14p.state = 0b00000000;
   }
 
   void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
@@ -75,31 +75,31 @@ struct GateBoyExtBus {
     ext_addr_latch.reset_to_cart();
     ext_data_latch.reset_to_cart();
 
-    PIN01_ADDR[ 0].reset_to_cart(REG_D1C0);
-    PIN01_ADDR[ 1].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[ 2].reset_to_cart(REG_D1C0);
-    PIN01_ADDR[ 3].reset_to_cart(REG_D1C0);
-    PIN01_ADDR[ 4].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[ 5].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[ 6].reset_to_cart(REG_D1C0);
-    PIN01_ADDR[ 7].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[ 8].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[ 9].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[10].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[11].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[12].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[13].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[14].reset_to_cart(REG_D0C0);
-    PIN01_ADDR[15].reset_to_cart(REG_D1C0);
+    PIN01_ADDR[ 0].state = 0b1000;
+    PIN01_ADDR[ 1].state = 0b1101;
+    PIN01_ADDR[ 2].state = 0b1000;
+    PIN01_ADDR[ 3].state = 0b1000;
+    PIN01_ADDR[ 4].state = 0b1101;
+    PIN01_ADDR[ 5].state = 0b1101;
+    PIN01_ADDR[ 6].state = 0b1000;
+    PIN01_ADDR[ 7].state = 0b1101;
+    PIN01_ADDR[ 8].state = 0b1101;
+    PIN01_ADDR[ 9].state = 0b1101;
+    PIN01_ADDR[10].state = 0b1101;
+    PIN01_ADDR[11].state = 0b1101;
+    PIN01_ADDR[12].state = 0b1101;
+    PIN01_ADDR[13].state = 0b1101;
+    PIN01_ADDR[14].state = 0b1101;
+    PIN01_ADDR[15].state = 0b1000;
 
-    PIN17_DATA[0].reset_to_cart(REG_D0C0);
-    PIN17_DATA[1].reset_to_cart(REG_D1C0);
-    PIN17_DATA[2].reset_to_cart(REG_D0C0);
-    PIN17_DATA[3].reset_to_cart(REG_D1C0);
-    PIN17_DATA[4].reset_to_cart(REG_D0C0);
-    PIN17_DATA[5].reset_to_cart(REG_D0C0);
-    PIN17_DATA[6].reset_to_cart(REG_D0C0);
-    PIN17_DATA[7].reset_to_cart(REG_D0C0);
+    PIN17_DATA[0].state = 0b0101;
+    PIN17_DATA[1].state = 0b0101;
+    PIN17_DATA[2].state = 0b0101;
+    PIN17_DATA[3].state = 0b0101;
+    PIN17_DATA[4].state = 0b0101;
+    PIN17_DATA[5].state = 0b0101;
+    PIN17_DATA[6].state = 0b0101;
+    PIN17_DATA[7].state = 0b0101;
   }
 
   void copy_addr_latch_to_pins(

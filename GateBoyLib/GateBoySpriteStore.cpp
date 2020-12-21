@@ -6,18 +6,18 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void SpriteStore::reset_to_cart() {
-  XADU_SPRITE_IDX0p.state = 0b00000010;
-  XEDY_SPRITE_IDX1p.state = 0b00000010;
-  ZUZE_SPRITE_IDX2p.state = 0b00000111;
-  XOBE_SPRITE_IDX3p.state = 0b00000010;
-  YDUF_SPRITE_IDX4p.state = 0b00000111;
-  XECU_SPRITE_IDX5p.state = 0b00000010;
+  XADU_SPRITE_IDX0p.reset(1, 0);
+  XEDY_SPRITE_IDX1p.reset(1, 0);
+  ZUZE_SPRITE_IDX2p.reset(1, 1);
+  XOBE_SPRITE_IDX3p.reset(1, 0);
+  YDUF_SPRITE_IDX4p.reset(1, 1);
+  XECU_SPRITE_IDX5p.reset(1, 0);
 
-  DEZY_COUNT_CLKp.state = 0b00000111;
-  BESE_SPRITE_COUNT0.state = 0b00000010;
-  CUXY_SPRITE_COUNT1.state = 0b00000010;
-  BEGO_SPRITE_COUNT2.state = 0b00000010;
-  DYBE_SPRITE_COUNT3.state = 0b00000010;
+  DEZY_COUNT_CLKp.reset(1, 1);
+  BESE_SPRITE_COUNT0.reset(1, 0);
+  CUXY_SPRITE_COUNT1.reset(1, 0);
+  BEGO_SPRITE_COUNT2.reset(1, 0);
+  DYBE_SPRITE_COUNT3.reset(1, 0);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -8,33 +8,33 @@
 struct GateBoyVramBus {
 
   void reset_to_cart() {
-    BUS_VRAM_An[ 0].state = 1;
-    BUS_VRAM_An[ 1].state = 1;
-    BUS_VRAM_An[ 2].state = 1;
-    BUS_VRAM_An[ 3].state = 1;
-    BUS_VRAM_An[ 4].state = 0;
-    BUS_VRAM_An[ 5].state = 1;
-    BUS_VRAM_An[ 6].state = 0;
-    BUS_VRAM_An[ 7].state = 1;
-    BUS_VRAM_An[ 8].state = 1;
-    BUS_VRAM_An[ 9].state = 1;
-    BUS_VRAM_An[10].state = 1;
-    BUS_VRAM_An[11].state = 1;
-    BUS_VRAM_An[12].state = 1;
+    BUS_VRAM_An[ 0].reset(1);
+    BUS_VRAM_An[ 1].reset(1);
+    BUS_VRAM_An[ 2].reset(1);
+    BUS_VRAM_An[ 3].reset(1);
+    BUS_VRAM_An[ 4].reset(0);
+    BUS_VRAM_An[ 5].reset(1);
+    BUS_VRAM_An[ 6].reset(0);
+    BUS_VRAM_An[ 7].reset(1);
+    BUS_VRAM_An[ 8].reset(1);
+    BUS_VRAM_An[ 9].reset(1);
+    BUS_VRAM_An[10].reset(1);
+    BUS_VRAM_An[11].reset(1);
+    BUS_VRAM_An[12].reset(1);
 
-    PIN34_VRAM_ADDR[ 0].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 1].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 2].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 3].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 4].state = 0b00001000;
-    PIN34_VRAM_ADDR[ 5].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 6].state = 0b00001000;
-    PIN34_VRAM_ADDR[ 7].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 8].state = 0b00001101;
-    PIN34_VRAM_ADDR[ 9].state = 0b00001101;
-    PIN34_VRAM_ADDR[10].state = 0b00001101;
-    PIN34_VRAM_ADDR[11].state = 0b00001101;
-    PIN34_VRAM_ADDR[12].state = 0b00001101;
+    PIN34_VRAM_ADDR[ 0].reset(1);
+    PIN34_VRAM_ADDR[ 1].reset(1);
+    PIN34_VRAM_ADDR[ 2].reset(1);
+    PIN34_VRAM_ADDR[ 3].reset(1);
+    PIN34_VRAM_ADDR[ 4].reset(0);
+    PIN34_VRAM_ADDR[ 5].reset(1);
+    PIN34_VRAM_ADDR[ 6].reset(0);
+    PIN34_VRAM_ADDR[ 7].reset(1);
+    PIN34_VRAM_ADDR[ 8].reset(1);
+    PIN34_VRAM_ADDR[ 9].reset(1);
+    PIN34_VRAM_ADDR[10].reset(1);
+    PIN34_VRAM_ADDR[11].reset(1);
+    PIN34_VRAM_ADDR[12].reset(1);
   }
 
   void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);

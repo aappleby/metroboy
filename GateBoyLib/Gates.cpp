@@ -18,7 +18,7 @@ uint64_t commit_and_hash(void* blob, size_t size) {
   (void)size;
 
   uint64_t h = HASH_INIT;
-
+#ifdef USE_HASH
   uint8_t* base = (uint8_t*)blob;
   bool bad_bits = false;
 
@@ -39,6 +39,7 @@ uint64_t commit_and_hash(void* blob, size_t size) {
   }
 
   ASSERT_N(bad_bits);
+#endif
 
   return h;
 }

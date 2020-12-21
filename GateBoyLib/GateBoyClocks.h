@@ -8,12 +8,12 @@ struct GateBoyResetDebug;
 struct GateBoyClock {
 
   void reset_to_cart() {
-    SIG_CPU_BUKE_AxxxxxGH.state = REG_D1C0;
-    SIG_CPU_CLKREQ.state = 0b00000101;
+    SIG_CPU_BUKE_AxxxxxGH.reset(1);
+    SIG_CPU_CLKREQ.reset(1);
 
-    WUVU_ABxxEFxx.state = REG_D1C1;
-    VENA_xxCDEFxx.state = REG_D0C0;
-    WOSU_AxxDExxH.state = REG_D1C0;
+    WUVU_ABxxEFxx.reset(1, 1);
+    VENA_xxCDEFxx.reset(0, 0);
+    WOSU_AxxDExxH.reset(0, 1);
   }
 
   void tock(const GateBoyResetDebug& rst);

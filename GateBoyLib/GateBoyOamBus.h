@@ -7,14 +7,14 @@
 
 struct GateBoyOamBus {
   void reset_to_cart() {
-    BUS_OAM_An[0].state = 1;
-    BUS_OAM_An[1].state = 1;
-    BUS_OAM_An[2].state = 1;
-    BUS_OAM_An[3].state = 1;
-    BUS_OAM_An[4].state = 0;
-    BUS_OAM_An[5].state = 1;
-    BUS_OAM_An[6].state = 0;
-    BUS_OAM_An[7].state = 1;
+    BUS_OAM_An[0].reset(1);
+    BUS_OAM_An[1].reset(1);
+    BUS_OAM_An[2].reset(1);
+    BUS_OAM_An[3].reset(1);
+    BUS_OAM_An[4].reset(0);
+    BUS_OAM_An[5].reset(1);
+    BUS_OAM_An[6].reset(0);
+    BUS_OAM_An[7].reset(1);
 
     oam_latch_a.reset_to_cart();
     oam_latch_b.reset_to_cart();

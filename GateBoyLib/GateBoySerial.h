@@ -5,7 +5,7 @@
 
 struct GateBoySerial {
   void reset_to_cart() {
-    COTY_SER_CLK.state = REG_D0C0;
+    COTY_SER_CLK.reset(0, 0);
   }
 
   void tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);

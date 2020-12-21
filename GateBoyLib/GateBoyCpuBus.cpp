@@ -7,39 +7,39 @@
 
 void GateBoyCpuBus::reset_to_bootrom() {
   for (int i = 0; i < 8; i++) {
-    BUS_CPU_D[i].state = 1;
+    BUS_CPU_D[i].reset(1);
   }
 }
 
 void GateBoyCpuBus::reset_to_cart() {
-  BOOT_BITn_h.state = REG_D1C1;
-  SIG_CPU_BOOTp.state = REG_D0C0;
+  BOOT_BITn_h.reset(1, 1);
+  SIG_CPU_BOOTp.reset(0);
 
-  BUS_CPU_A[ 0].state = 0b0000;
-  BUS_CPU_A[ 1].state = 0b0000;
-  BUS_CPU_A[ 2].state = 0b0000;
-  BUS_CPU_A[ 3].state = 0b0000;
-  BUS_CPU_A[ 4].state = 0b0101;
-  BUS_CPU_A[ 5].state = 0b0000;
-  BUS_CPU_A[ 6].state = 0b0101;
-  BUS_CPU_A[ 7].state = 0b0000;
-  BUS_CPU_A[ 8].state = 0b0000;
-  BUS_CPU_A[ 9].state = 0b0000;
-  BUS_CPU_A[10].state = 0b0000;
-  BUS_CPU_A[11].state = 0b0000;
-  BUS_CPU_A[12].state = 0b0000;
-  BUS_CPU_A[13].state = 0b0000;
-  BUS_CPU_A[14].state = 0b0000;
-  BUS_CPU_A[15].state = 0b0000;
+  BUS_CPU_A[ 0].reset(0);
+  BUS_CPU_A[ 1].reset(0);
+  BUS_CPU_A[ 2].reset(0);
+  BUS_CPU_A[ 3].reset(0);
+  BUS_CPU_A[ 4].reset(1);
+  BUS_CPU_A[ 5].reset(0);
+  BUS_CPU_A[ 6].reset(1);
+  BUS_CPU_A[ 7].reset(0);
+  BUS_CPU_A[ 8].reset(0);
+  BUS_CPU_A[ 9].reset(0);
+  BUS_CPU_A[10].reset(0);
+  BUS_CPU_A[11].reset(0);
+  BUS_CPU_A[12].reset(0);
+  BUS_CPU_A[13].reset(0);
+  BUS_CPU_A[14].reset(0);
+  BUS_CPU_A[15].reset(0);
 
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
-  BUS_CPU_D[0].state = 0b0101;
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D[0].reset(1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -4,16 +4,16 @@
 #include "GateBoyLib/GateBoyClocks.h"
 
 void SpriteFetcher::reset_to_cart() {
-  TAKA_SFETCH_RUNNINGp.state = REG_D0C0;
-  SOBU_SFETCH_REQp  .state = REG_D0C0;
-  SUDA_SFETCH_REQp  .state = REG_D0C1;
-  TOXE_SFETCH_S0p   .state = REG_D1C1;
-  TULY_SFETCH_S1p   .state = REG_D0C0;
-  TESE_SFETCH_S2p   .state = REG_D1C1;
-  TYFO_SFETCH_S0p_D1.state = REG_D1C1;
-  TOBU_SFETCH_S1p_D2.state = REG_D0C0;
-  VONU_SFETCH_S1p_D4.state = REG_D0C0;
-  SEBA_SFETCH_S1p_D5.state = REG_D0C1;
+  TAKA_SFETCH_RUNNINGp.reset(0);
+  SOBU_SFETCH_REQp  .reset(0, 0);
+  SUDA_SFETCH_REQp  .reset(1, 0);
+  TOXE_SFETCH_S0p   .reset(1, 1);
+  TULY_SFETCH_S1p   .reset(0, 0);
+  TESE_SFETCH_S2p   .reset(1, 1);
+  TYFO_SFETCH_S0p_D1.reset(1, 1);
+  TOBU_SFETCH_S1p_D2.reset(0, 0);
+  VONU_SFETCH_S1p_D4.reset(0, 0);
+  SEBA_SFETCH_S1p_D5.reset(1, 0);
 }
 
 void SpriteFetcher::tock(

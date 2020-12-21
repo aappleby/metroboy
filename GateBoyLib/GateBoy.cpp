@@ -126,9 +126,9 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sys_cpu_en = true;
 
   if (fastboot) {
-    div.TERO_DIV03p.state = REG_D0C1;
-    div.UNYK_DIV04p.state = REG_D0C1;
-    div.UPOF_DIV15p.state = REG_D1C1;
+    div.TERO_DIV03p.reset(1, 0);
+    div.UNYK_DIV04p.reset(1, 0);
+    div.UPOF_DIV15p.reset(1, 1);
   }
 
   memset(framebuffer, 4, sizeof(framebuffer));
@@ -149,17 +149,17 @@ void GateBoy::reset_to_cart() {
   interrupts.reset_to_cart();
   serial.reset_to_cart();
 
-  SPR_TRI_I[0].state = 0;
-  SPR_TRI_I[1].state = 0;
-  SPR_TRI_I[2].state = 1;
-  SPR_TRI_I[3].state = 0;
-  SPR_TRI_I[4].state = 1;
-  SPR_TRI_I[5].state = 0;
+  SPR_TRI_I[0].reset(0);
+  SPR_TRI_I[1].reset(0);
+  SPR_TRI_I[2].reset(1);
+  SPR_TRI_I[3].reset(0);
+  SPR_TRI_I[4].reset(1);
+  SPR_TRI_I[5].reset(0);
 
-  SPR_TRI_L[0].state = 1;
-  SPR_TRI_L[1].state = 1;
-  SPR_TRI_L[2].state = 1;
-  SPR_TRI_L[3].state = 1;
+  SPR_TRI_L[0].reset(1);
+  SPR_TRI_L[1].reset(1);
+  SPR_TRI_L[2].reset(1);
+  SPR_TRI_L[3].reset(1);
 
   sprite_store.reset_to_cart();
   sprite_scanner.reset_to_cart();
@@ -786,15 +786,7 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN01_ADDR[14].reset_for_pass();
     ext_bus.PIN01_ADDR[15].reset_for_pass();
 
-    //ext_bus.PIN17_DATA[0].reset_for_pass();
-    //ext_bus.PIN17_DATA[1].reset_for_pass();
-    //ext_bus.PIN17_DATA[2].reset_for_pass();
-    //ext_bus.PIN17_DATA[3].reset_for_pass();
-    //ext_bus.PIN17_DATA[4].reset_for_pass();
-    //ext_bus.PIN17_DATA[5].reset_for_pass();
-    //ext_bus.PIN17_DATA[6].reset_for_pass();
-    //ext_bus.PIN17_DATA[7].reset_for_pass();
-
+    // FIXME this is slightly weird
     ext_bus.PIN17_DATA[0].state = 0b00110000;
     ext_bus.PIN17_DATA[1].state = 0b00110000;
     ext_bus.PIN17_DATA[2].state = 0b00110000;

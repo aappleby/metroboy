@@ -254,7 +254,8 @@ void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
 uint8_t GateBoy::dbg_read(int addr) {
   CHECK_P((phase_total & 7) == 0);
 
-  bool old_sys_cpu_en = sys_cpu_en;
+  Req old_req = bus_req_new;
+  bool old_cpu_en = sys_cpu_en;
   sys_cpu_en = false;
 
   bus_req_new.addr = uint16_t(addr);
@@ -263,7 +264,9 @@ uint8_t GateBoy::dbg_read(int addr) {
   bus_req_new.write = 0;
   run_phases(8);
 
-  sys_cpu_en = old_sys_cpu_en;
+  bus_req_new = old_req;
+  sys_cpu_en = old_cpu_en;
+
   return cpu_data_latch;
 }
 
@@ -272,8 +275,11 @@ uint8_t GateBoy::dbg_read(int addr) {
 void GateBoy::dbg_write(int addr, uint8_t data) {
   CHECK_P((phase_total & 7) == 0);
 
-  bool old_sys_cpu_en = sys_cpu_en;
+  Req old_req = bus_req_new;
+  bool old_cpu_en = sys_cpu_en;
   sys_cpu_en = false;
+
+  //printf("old req %d %d %d %d\n", old_req.addr, old_req.data, old_req.read, old_req.write);
 
   bus_req_new.addr = uint16_t(addr);
   bus_req_new.data = data;
@@ -281,7 +287,8 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   bus_req_new.write = 1;
   run_phases(8);
 
-  sys_cpu_en = old_sys_cpu_en;
+  bus_req_new = old_req;
+  sys_cpu_en = old_cpu_en;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

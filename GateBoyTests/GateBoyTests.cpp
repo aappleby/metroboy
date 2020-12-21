@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
   failures += t.test_clk();
   failures += t.test_regs();
   failures += t.test_mem();
-  //failures += t.test_dma();
+  failures += t.test_dma();
 
   failures += t.test_init();
   failures += t.test_ext_bus();
@@ -1580,32 +1580,18 @@ int GateBoyTests::test_dma(uint16_t src) {
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
 
-  uint8_t blob[256];
+  uint8_t* mem = get_flat_ptr(gb, src);
   for (int i = 0; i < 256; i++) {
-    blob[i] = uint8_t(rand());
+    mem[i] = uint8_t(rand());
+    gb.oam_ram[i] = 0xFF;
   }
-
-  if (src < 0x8000) {
-    for (int i = 0; i < 256; i++) {
-      gb.cart_buf[src + i] = blob[i];
-    }
-  }
-  else {
-    for (int i = 0; i < 256; i++) {
-      gb.dbg_write(src + i, blob[i]);
-    }
-  }
-
-  memset(gb.oam_ram, 0xFF, 256);
 
   gb.dbg_write(0xFF46, uint8_t(src >> 8));
-
-  //gb.run_phases(1288);
-  gb.run_phases(250 * 8);
+  gb.run_phases(1288);
 
   for (int i = 0; i < 160; i++) {
-    uint8_t a = blob[i];
-    uint8_t b = gb.dbg_read(0xFE00 + i);
+    uint8_t a = mem[i];
+    uint8_t b = gb.oam_ram[i];
     ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
   }
 

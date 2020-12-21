@@ -1494,7 +1494,7 @@ int GateBoyTests::test_timer() {
   }
   if (!failures) LOG("\n");
 
-#if 1
+#ifdef RUN_SLOW_TESTS
   {
     GateBoy gb = create_gb_poweron();
     gb.sys_cpu_en = 0;

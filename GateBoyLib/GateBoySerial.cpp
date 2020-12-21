@@ -56,6 +56,7 @@ void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
 void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div)
 {
   PIN68_SCK.reset_for_pass();
+  PIN70_SOUT.reset_for_pass();
 
   /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p());
   /*#p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
@@ -110,6 +111,8 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
 
 
 void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
+  PIN69_SIN.reset_for_pass();
+
   /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
   /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
   /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);

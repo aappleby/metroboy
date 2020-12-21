@@ -46,6 +46,13 @@ void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
 
 void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys_buttons)
 {
+  PIN67_JOY_P10.reset_for_pass();
+  PIN66_JOY_P11.reset_for_pass();
+  PIN65_JOY_P12.reset_for_pass();
+  PIN64_JOY_P13.reset_for_pass();
+  PIN63_JOY_P14.reset_for_pass();
+  PIN62_JOY_P15.reset_for_pass();
+
   wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
   /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);
 

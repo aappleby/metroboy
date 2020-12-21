@@ -500,6 +500,12 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
+  rst.PIN71_RST.reset_for_pass();
+  clk.PIN74_CLKGOOD.reset_for_pass();
+  clk.PIN74_CLK_IN.reset_for_pass();
+  rst.PIN76_T2.reset_for_pass();
+  rst.PIN77_T1.reset_for_pass();
+
   rst.PIN71_RST.pin_in_dp(!sys_rst);
   clk.PIN74_CLKGOOD.pin_in_dp(!sys_clkgood);
   clk.PIN74_CLK_IN.pin_in_dp((phase_total & 1) && sys_clken);
@@ -558,7 +564,15 @@ void GateBoy::tock_slow(int pass_index) {
   serial.tock1(rst, cpu_bus, div);
 
   {
-    cpu_bus.reset_data();
+    cpu_bus.BUS_CPU_D[0].reset_for_pass();
+    cpu_bus.BUS_CPU_D[1].reset_for_pass();
+    cpu_bus.BUS_CPU_D[2].reset_for_pass();
+    cpu_bus.BUS_CPU_D[3].reset_for_pass();
+    cpu_bus.BUS_CPU_D[4].reset_for_pass();
+    cpu_bus.BUS_CPU_D[5].reset_for_pass();
+    cpu_bus.BUS_CPU_D[6].reset_for_pass();
+    cpu_bus.BUS_CPU_D[7].reset_for_pass();
+
     cpu_bus.set_data(int(phase_total), bus_req_new);
 
   }
@@ -655,12 +669,22 @@ void GateBoy::tock_slow(int pass_index) {
   sprite_store.store_sprite_line (store_flag, SPR_TRI_L);
   //^^^^^
 
+  SPR_TRI_I[0].reset_for_pass();
+  SPR_TRI_I[1].reset_for_pass();
+  SPR_TRI_I[2].reset_for_pass();
+  SPR_TRI_I[3].reset_for_pass();
+  SPR_TRI_I[4].reset_for_pass();
+  SPR_TRI_I[5].reset_for_pass();
+  SPR_TRI_L[0].reset_for_pass();
+  SPR_TRI_L[1].reset_for_pass();
+  SPR_TRI_L[2].reset_for_pass();
+  SPR_TRI_L[3].reset_for_pass();
+
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(ppu_reg.XYMU_RENDERINGp(), sprite_scanner.BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
   SpriteMatchFlag sprite_match = sprite_store.get_match_flags_new(_AROR_MATCH_ENp, pix_count);
   SpriteFirstMatch first_match = sprite_store.get_first_match(sprite_match);
   sprite_store.get_sprite(first_match, SPR_TRI_I, SPR_TRI_L);
-
 
 
   win_reg.tock(rst, clk, ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_b, _NUKO_WX_MATCHp_old, fine_scroll.ROZE_FINE_COUNT_7n_old(), RYDY_WIN_HITp_old);
@@ -703,6 +727,15 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   {
+    lcd.PIN50_LCD_DATA1.reset_for_pass();
+    lcd.PIN51_LCD_DATA0.reset_for_pass();
+    lcd.PIN54_LCD_HSYNC.reset_for_pass();
+    lcd.PIN56_LCD_FLIPS.reset_for_pass();
+    lcd.PIN52_LCD_CNTRL.reset_for_pass();
+    lcd.PIN55_LCD_LATCH.reset_for_pass();
+    lcd.PIN53_LCD_CLOCK.reset_for_pass();
+    lcd.PIN57_LCD_VSYNC.reset_for_pass();
+
     lcd.set_pin_data(pix_pipes.REMY_LD0n.qp_new(), pix_pipes.RAVO_LD1n.qp_new());
     lcd.set_pin_ctrl(rst, clk);
     lcd.set_pin_flip(rst, div.TULU_DIV07p.qp_new(), XONA_LCDC_LCDENp_new);
@@ -732,6 +765,27 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p01.ABUZ*/ wire _ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
 
   {
+    ext_bus.PIN80_CSn.reset_for_pass();
+    ext_bus.PIN79_RDn.reset_for_pass();
+    ext_bus.PIN78_WRn.reset_for_pass();
+
+    ext_bus.PIN01_ADDR[ 0].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 1].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 2].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 3].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 4].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 5].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 6].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 7].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 8].reset_for_pass();
+    ext_bus.PIN01_ADDR[ 9].reset_for_pass();
+    ext_bus.PIN01_ADDR[10].reset_for_pass();
+    ext_bus.PIN01_ADDR[11].reset_for_pass();
+    ext_bus.PIN01_ADDR[12].reset_for_pass();
+    ext_bus.PIN01_ADDR[13].reset_for_pass();
+    ext_bus.PIN01_ADDR[14].reset_for_pass();
+    ext_bus.PIN01_ADDR[15].reset_for_pass();
+
     ext_bus.PIN17_DATA[0].reset_for_pass();
     ext_bus.PIN17_DATA[1].reset_for_pass();
     ext_bus.PIN17_DATA[2].reset_for_pass();
@@ -753,6 +807,47 @@ void GateBoy::tock_slow(int pass_index) {
 
 
   {
+    vram_bus.BUS_VRAM_An[ 0].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 1].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 2].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 3].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 4].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 5].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 6].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 7].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 8].reset_for_pass();
+    vram_bus.BUS_VRAM_An[ 9].reset_for_pass();
+    vram_bus.BUS_VRAM_An[10].reset_for_pass();
+    vram_bus.BUS_VRAM_An[11].reset_for_pass();
+    vram_bus.BUS_VRAM_An[12].reset_for_pass();
+
+    vram_bus.BUS_VRAM_Dp[0].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[1].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[2].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[3].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[4].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[5].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[6].reset_for_pass();
+    vram_bus.BUS_VRAM_Dp[7].reset_for_pass();
+
+    vram_bus.PIN43_VRAM_CSn.reset_for_pass();
+    vram_bus.PIN45_VRAM_OEn.reset_for_pass();
+    vram_bus.PIN49_VRAM_WRn.reset_for_pass();
+
+    vram_bus.PIN34_VRAM_ADDR[ 0].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 1].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 2].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 3].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 4].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 5].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 6].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 7].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 8].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[ 9].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[10].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[11].reset_for_pass();
+    vram_bus.PIN34_VRAM_ADDR[12].reset_for_pass();
+
     vram_bus.PIN25_VRAM_DATA[0].reset_for_pass();
     vram_bus.PIN25_VRAM_DATA[1].reset_for_pass();
     vram_bus.PIN25_VRAM_DATA[2].reset_for_pass();
@@ -791,6 +886,12 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   {
+    for(int i = 0; i < 8; i++) {
+      oam_bus.BUS_OAM_An[i].reset_for_pass();
+      oam_bus.BUS_OAM_DAn[i].reset_for_pass();
+      oam_bus.BUS_OAM_DBn[i].reset_for_pass();
+    }
+
     oam_bus.dma_to_addr_bus(dma);
     oam_bus.sprite_index_to_addr_bus(dma, SPR_TRI_I, ppu_reg.XYMU_RENDERINGp());
     oam_bus.scan_index_to_addr_bus(sprite_scanner, ACYL_SCANNINGp);

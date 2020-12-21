@@ -389,6 +389,12 @@ struct DFF22 : public DFF {
 struct Bus : public BitBase {
   Bus() { state = 1; }
 
+  void reset_for_pass() {
+    CHECK_N(bit_dirty1());
+    state = 1;
+    set_dirty1();
+  }
+
   wire qp_any() const { return BitBase::qp_any(); }
   wire qn_any() const { return BitBase::qn_any(); }
 
@@ -399,10 +405,10 @@ struct Bus : public BitBase {
   wire qn_new() const { return BitBase::qn_new(); }
 
   void tri(wire OEp, wire Dp) {
+    CHECK_P(bit_dirty1());
     if (OEp) {
       set_data_new(Dp);
     }
-    set_dirty1();
     set_dirty2();
     set_dirty3();
     set_dirty4();
@@ -422,6 +428,7 @@ struct PinIO : public BitBase {
   wire ext_qp_new() const { return !qp_new(); }
 
   void reset_for_pass() {
+    CHECK_N(bit_dirty1());
     state = 1;
     set_dirty1();
   }
@@ -473,9 +480,15 @@ struct PinIO : public BitBase {
 struct PinIn : public BitBase {
   wire int_qp_new() const { return  qp_new(); }
 
-  void pin_in_dp(wire D) {
-    set_data_new(!D);
+  void reset_for_pass() {
+    CHECK_N(bit_dirty1());
+    state = 1;
     set_dirty1();
+  }
+
+  void pin_in_dp(wire D) {
+    CHECK_P(bit_dirty1());
+    set_data_new(!D);
     set_dirty2();
     set_dirty3();
     set_dirty4();
@@ -489,9 +502,15 @@ struct PinOut : public BitBase {
   wire ext_qp_old() const { return !qp_old(); }
   wire ext_qp_new() const { return !qp_new(); }
 
-  void pin_out_dp(wire Dp) {
+  void reset_for_pass() {
     CHECK_N(bit_dirty1());
-    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
+    state = 1;
+    set_dirty1();
+  }
+
+
+  void pin_out_dp(wire Dp) {
+    CHECK_P(bit_dirty1());
 
     set_data_new(Dp);
     set_driven(1);
@@ -503,8 +522,7 @@ struct PinOut : public BitBase {
   }
 
   void pin_out_hilo(wire HI, wire LO) {
-    CHECK_N(bit_dirty1());
-    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
+    CHECK_P(bit_dirty1());
 
     if (HI == LO) {
       set_data_new(HI);
@@ -518,8 +536,7 @@ struct PinOut : public BitBase {
   }
 
   void pin_out_oehilo(wire OEp, wire HI, wire LO) {
-    CHECK_N(bit_dirty1());
-    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
+    CHECK_P(bit_dirty1());
 
     if (OEp && (HI == LO)) {
       set_data_new(HI);

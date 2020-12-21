@@ -13,17 +13,6 @@ struct GateBoyCpuBus {
     int phase_total,
     Req bus_req_new);
 
-  void reset_data() {
-    BUS_CPU_D[0].state = 1;
-    BUS_CPU_D[1].state = 1;
-    BUS_CPU_D[2].state = 1;
-    BUS_CPU_D[3].state = 1;
-    BUS_CPU_D[4].state = 1;
-    BUS_CPU_D[5].state = 1;
-    BUS_CPU_D[6].state = 1;
-    BUS_CPU_D[7].state = 1;
-  }
-
   void dump(Dumper& d) {
     d.dump_bitp   ("SIG_CPU_RDp       : ", SIG_CPU_RDp.state);
     d.dump_bitp   ("SIG_CPU_WRp       : ", SIG_CPU_WRp.state);

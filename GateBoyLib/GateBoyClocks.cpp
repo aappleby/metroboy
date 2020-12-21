@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
+  PIN75_CLK_OUT.reset_for_pass();
 
   wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();
   wire AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old();

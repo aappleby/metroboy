@@ -870,7 +870,7 @@ void GateBoy::tock_slow(int pass_index) {
 
 void GateBoy::update_framebuffer()
 {
-  int lcd_x = pix_count.get_new();
+  int lcd_x = pix_count.get_new() - 8;
   int lcd_y = lcd.reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {

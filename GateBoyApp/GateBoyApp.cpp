@@ -441,7 +441,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   StringDumper d;
   float cursor_x = 8;
   float cursor_y = 4;
-  float col_spacing = 7 * 32;
+  float col_spacing = 220;
 
   //----------------------------------------
 

@@ -6,18 +6,18 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void SpriteStore::reset_to_cart() {
-  DEZY_COUNT_CLKp.reset_to_cart(REG_D1C1);
-  BESE_SPRITE_COUNT0.reset_to_cart(REG_D0C1);
-  CUXY_SPRITE_COUNT1.reset_to_cart(REG_D0C1);
-  BEGO_SPRITE_COUNT2.reset_to_cart(REG_D0C1);
-  DYBE_SPRITE_COUNT3.reset_to_cart(REG_D0C1);
+  XADU_SPRITE_IDX0p.state = 0b00000010;
+  XEDY_SPRITE_IDX1p.state = 0b00000010;
+  ZUZE_SPRITE_IDX2p.state = 0b00000111;
+  XOBE_SPRITE_IDX3p.state = 0b00000010;
+  YDUF_SPRITE_IDX4p.state = 0b00000111;
+  XECU_SPRITE_IDX5p.state = 0b00000010;
 
-  XADU_SPRITE_IDX0p.reset_to_cart(REG_D0C1);
-  XEDY_SPRITE_IDX1p.reset_to_cart(REG_D0C1);
-  ZUZE_SPRITE_IDX2p.reset_to_cart(REG_D0C1);
-  XOBE_SPRITE_IDX3p.reset_to_cart(REG_D0C1);
-  YDUF_SPRITE_IDX4p.reset_to_cart(REG_D0C1);
-  XECU_SPRITE_IDX5p.reset_to_cart(REG_D0C1);
+  DEZY_COUNT_CLKp.state = 0b00000111;
+  BESE_SPRITE_COUNT0.state = 0b00000010;
+  CUXY_SPRITE_COUNT1.state = 0b00000010;
+  BEGO_SPRITE_COUNT2.state = 0b00000010;
+  DYBE_SPRITE_COUNT3.state = 0b00000010;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

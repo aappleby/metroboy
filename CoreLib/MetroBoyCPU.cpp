@@ -22,16 +22,19 @@ void MetroBoyCPU::reset_to_bootrom() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::reset_to_cart() {
-  _bus_addr  = 0x0100;
-  _bus_data  = 0x00;
-  _bus_read  = 1;
-  _bus_write = 0;
+  tocked_ab = false;
+  tocked_de = true;
+
+  _bus_addr  = 0xff50;
+  _bus_data  = 1;
+  _bus_read  = 0;
+  _bus_write = 1;
 
   op_addr = 0x00FE;
   op = 0xe0;
   cb = 0x11;
-  state = 2;
-  state_ = 0;
+  state = 1;
+  state_ = 2;
   in = 0x50;
 
   ime = false;

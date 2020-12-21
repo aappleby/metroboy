@@ -9,6 +9,7 @@ struct GateBoyClock {
 
   void reset_to_cart() {
     SIG_CPU_BUKE_AxxxxxGH.reset_to_cart(REG_D1C0);
+    SIG_CPU_CLKREQ.state = 0b00000101;
 
     WUVU_ABxxEFxx.reset_to_cart(REG_D1C1);
     VENA_xxCDEFxx.reset_to_cart(REG_D0C0);

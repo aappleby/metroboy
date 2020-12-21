@@ -194,15 +194,15 @@ struct RegSCX {
 
 struct RegLY {
   void reset_to_cart() {
-    MYTA_y153p.reset_to_cart(REG_D1C0);
-    MUWY_LY0p.reset_to_cart(REG_D0C0);
-    MYRO_LY1p.reset_to_cart(REG_D0C1);
-    LEXA_LY2p.reset_to_cart(REG_D0C1);
-    LYDO_LY3p.reset_to_cart(REG_D0C1);
-    LOVU_LY4p.reset_to_cart(REG_D0C1);
-    LEMA_LY5p.reset_to_cart(REG_D0C1);
-    MATO_LY6p.reset_to_cart(REG_D0C1);
-    LAFO_LY7p.reset_to_cart(REG_D0C1);
+    MYTA_y153p.state = 0b00000101;
+    MUWY_LY0p .state = 0b00000000;
+    MYRO_LY1p .state = 0b00000010;
+    LEXA_LY2p .state = 0b00000010;
+    LYDO_LY3p .state = 0b00000010;
+    LOVU_LY4p .state = 0b00000010;
+    LEMA_LY5p .state = 0b00000010;
+    MATO_LY6p .state = 0b00000010;
+    LAFO_LY7p .state = 0b00000010;
   }
 
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &MUWY_LY0p); }
@@ -236,15 +236,15 @@ struct RegLY {
 
 struct RegLX {
   void reset_to_cart() {
-    RUTU_x113p.reset_to_cart(REG_D0C1);
-    NYPE_x113p.reset_to_cart(REG_D0C0);
-    SAXO_LX0p.reset_to_cart(REG_D1C0);
-    TYPO_LX1p.reset_to_cart(REG_D1C0);
-    VYZO_LX2p.reset_to_cart(REG_D0C0);
-    TELU_LX3p.reset_to_cart(REG_D0C1);
-    SUDE_LX4p.reset_to_cart(REG_D0C1);
-    TAHA_LX5p.reset_to_cart(REG_D1C1);
-    TYRY_LX6p.reset_to_cart(REG_D1C0);
+    RUTU_x113p.state = 0b00000010;
+    NYPE_x113p.state = 0b00000000;
+    SAXO_LX0p .state = 0b00000000;
+    TYPO_LX1p .state = 0b00000111;
+    VYZO_LX2p .state = 0b00000000;
+    TELU_LX3p .state = 0b00000010;
+    SUDE_LX4p .state = 0b00000010;
+    TAHA_LX5p .state = 0b00000111;
+    TYRY_LX6p .state = 0b00000101;
   }
 
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &SAXO_LX0p); }
@@ -288,7 +288,15 @@ struct RegLX {
 
 struct RegLYC {
   void reset_to_cart() {
-    ROPO_LY_MATCH_SYNCp.reset_to_cart(REG_D1C0);
+    ROPO_LY_MATCH_SYNCp.state = 0b00000101;
+    SYRY_LYC0n.state = 0b00000111;
+    VUCE_LYC1n.state = 0b00000111;
+    SEDY_LYC2n.state = 0b00000111;
+    SALO_LYC3n.state = 0b00000111;
+    SOTA_LYC4n.state = 0b00000111;
+    VAFA_LYC5n.state = 0b00000111;
+    VEVO_LYC6n.state = 0b00000111;
+    RAHA_LYC7n.state = 0b00000111;
   }
 
   uint8_t get() const { return (uint8_t)BitBase::pack_oldn(8, &SYRY_LYC0n); }

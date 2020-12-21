@@ -5,8 +5,20 @@
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    SIG_CPU_STARTp.reset_to_cart(REG_D0C0);
-    TUBO_WAITINGp.reset_to_cart(REG_D0C0);
+    PIN71_RST.state = 0b00000000;
+    PIN77_T1.state  = 0b00000000;
+    PIN76_T2.state  = 0b00000000;
+
+    TUBO_WAITINGp.state  = 0b00000000;
+    ASOL_POR_DONEn.state = 0b00000000;
+    AFER_SYS_RSTp.state  = 0b00000010;
+    SOTO_DBG_VRAMp.state = 0b00000010;
+
+    _XONA_LCDC_LCDENp.state   = 0b00000101;
+    SIG_CPU_EXT_CLKGOOD.state = 0b00000101;
+    SIG_CPU_EXT_RESETp.state  = 0b00000000;
+    SIG_CPU_STARTp.state      = 0b00000000;
+    SIG_CPU_INT_RESETp.state  = 0b00000000;
   }
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }

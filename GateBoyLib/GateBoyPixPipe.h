@@ -166,6 +166,8 @@ struct PixelPipes {
     WODA_MASK_PIPE_5.reset_to_cart(REG_D1C1);
     VUMO_MASK_PIPE_6.reset_to_cart(REG_D1C1);
     VAVA_MASK_PIPE_7.reset_to_cart(REG_D1C1);
+    REMY_LD0n.state = 0b00000101;
+    RAVO_LD1n.state = 0b00000101;
   }
 
   void tock_bgw_pipe(

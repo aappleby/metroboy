@@ -8,31 +8,32 @@
 struct GateBoyLCD {
 
   void reset_to_cart() {
+    _XODO_VID_RSTp.state = 0b00000000;
+
     reg_lx.reset_to_cart();
     reg_ly.reset_to_cart();
     reg_lyc.reset_to_cart();
 
-    CATU_LINE_P000p.reset_to_cart(REG_D0C1);
-    ANEL_LINE_P002p.reset_to_cart(REG_D0C0);
-    POPU_VBLANKp.reset_to_cart(REG_D1C0);
-    SYGU_LINE_STROBE.reset_to_cart(REG_D0C1);
-    MEDA_VSYNC_OUTn.reset_to_cart(REG_D1C1);
-    LUCA_LINE_EVENp.reset_to_cart(REG_D1C1);
-    NAPO_FRAME_EVENp.reset_to_cart(REG_D0C1);
-    RUJU.reset_to_cart(REG_D1C0);
-    POFY.reset_to_cart(REG_D0C0);
-    POME.reset_to_cart(REG_D1C0);
-    PAHO_X_8_SYNC.reset_to_cart(REG_D0C1);
-    WUSA_LCD_CLOCK_GATE.reset_to_cart(REG_D0C0);
-
-    PIN50_LCD_DATA1.reset_to_cart(REG_D0C0);
-    PIN51_LCD_DATA0.reset_to_cart(REG_D0C0);
-    PIN54_LCD_HSYNC.reset_to_cart(REG_D0C0);
-    PIN56_LCD_FLIPS.reset_to_cart(REG_D0C0);
-    PIN52_LCD_CNTRL.reset_to_cart(REG_D0C0);
-    PIN55_LCD_LATCH.reset_to_cart(REG_D0C0);
-    PIN53_LCD_CLOCK.reset_to_cart(REG_D0C0);
-    PIN57_LCD_VSYNC.reset_to_cart(REG_D1C0);
+    CATU_LINE_P000p.state = 0b00000010;
+    ANEL_LINE_P002p.state = 0b00000000;
+    POPU_VBLANKp.state = 0b00000101;
+    SYGU_LINE_STROBE.state = 0b00000010;
+    MEDA_VSYNC_OUTn.state = 0b00000111;
+    LUCA_LINE_EVENp.state = 0b00000111;
+    NAPO_FRAME_EVENp.state = 0b00000010;
+    RUJU.state = 0b00000101;
+    POFY.state = 0b00000000;
+    POME.state = 0b00000101;
+    PAHO_X_8_SYNC.state = 0b00000010;
+    WUSA_LCD_CLOCK_GATE.state = 0b00000000;
+    PIN50_LCD_DATA1.state = 0b00001101;
+    PIN51_LCD_DATA0.state = 0b00001101;
+    PIN54_LCD_HSYNC.state = 0b00001101;
+    PIN56_LCD_FLIPS.state = 0b00001101;
+    PIN52_LCD_CNTRL.state = 0b00001101;
+    PIN55_LCD_LATCH.state = 0b00001101;
+    PIN53_LCD_CLOCK.state = 0b00001101;
+    PIN57_LCD_VSYNC.state = 0b00001000;
 
     //lcd_pix_lo.reset_to_cart(REG_D0C0);
     //lcd_pix_hi.reset_to_cart(REG_D0C0);

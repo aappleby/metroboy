@@ -10,22 +10,22 @@ struct GateBoyCpuBus;
 
 struct GateBoyDiv {
   void reset_to_cart() {
-    UKUP_DIV00p.reset_to_cart(REG_D1C1);
-    UFOR_DIV01p.reset_to_cart(REG_D1C0);
-    UNER_DIV02p.reset_to_cart(REG_D0C0);
-    TERO_DIV03p.reset_to_cart(REG_D0C1);
-    UNYK_DIV04p.reset_to_cart(REG_D1C1);
-    TAMA_DIV05p.reset_to_cart(REG_D1C0);
-    UGOT_DIV06p.reset_to_cart(REG_D1C0);
-    TULU_DIV07p.reset_to_cart(REG_D1C0);
-    TUGO_DIV08p.reset_to_cart(REG_D0C0);
-    TOFE_DIV09p.reset_to_cart(REG_D1C1);
-    TERU_DIV10p.reset_to_cart(REG_D0C0);
-    SOLA_DIV11p.reset_to_cart(REG_D1C1);
-    SUBU_DIV12p.reset_to_cart(REG_D0C0);
-    TEKA_DIV13p.reset_to_cart(REG_D1C1);
-    UKET_DIV14p.reset_to_cart(REG_D1C0);
-    UPOF_DIV15p.reset_to_cart(REG_D1C0);
+    UKUP_DIV00p.state = 0b00000010;
+    UFOR_DIV01p.state = 0b00000111;
+    UNER_DIV02p.state = 0b00000000;
+    TERO_DIV03p.state = 0b00000010;
+    UNYK_DIV04p.state = 0b00000111;
+    TAMA_DIV05p.state = 0b00000101;
+    UGOT_DIV06p.state = 0b00000101;
+    TULU_DIV07p.state = 0b00000101;
+    TUGO_DIV08p.state = 0b00000000;
+    TOFE_DIV09p.state = 0b00000111;
+    TERU_DIV10p.state = 0b00000000;
+    SOLA_DIV11p.state = 0b00000111;
+    SUBU_DIV12p.state = 0b00000000;
+    TEKA_DIV13p.state = 0b00000111;
+    UKET_DIV14p.state = 0b00000101;
+    UPOF_DIV15p.state = 0b00000101;
   }
 
   int get_div() const  { return BitBase::pack_old(16, &UKUP_DIV00p); }

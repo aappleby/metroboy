@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 #endif
 
 
-  //failures += t.test_fastboot_vs_slowboot();
+  failures += t.test_fastboot_vs_slowboot();
   failures += t.test_reset_cart_vs_dump();
 
   //failures += t.test_clk();
@@ -193,9 +193,8 @@ int GateBoyTests::test_reset_cart_vs_dump() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  bool match = diff("dump", &gb1, start, end,
-                    "reset_to_cart", &gb2, start, end);
-  EXPECT_EQ(match, true);
+  failures += diff("dump", &gb1, start, end,
+                   "reset_to_cart", &gb2, start, end);
 
   TEST_END();
 }

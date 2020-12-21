@@ -182,29 +182,21 @@ void GateBoy::reset_to_cart() {
 
   cpu.reset_to_cart();
 
-  bus_req_old.addr = 0x100;
-  bus_req_old.data = cart_buf[bus_req_old.addr];
-  bus_req_old.read = 1;
-  bus_req_old.write = 0;
-  bus_req_new = bus_req_old;
+  bus_req_old.addr = 0xFF50;
+  bus_req_old.data = 1;
+  bus_req_old.read = 0;
+  bus_req_old.write = 1;
 
-  /*
-  sys_cpu_en = true;
-  {
-    uint8_t op = cart_buf[bus_req_old.addr];
-    cpu_bus.BUS_CPU_D[0].tri(1, wire(op & 0x01));
-    cpu_bus.BUS_CPU_D[1].tri(1, wire(op & 0x02));
-    cpu_bus.BUS_CPU_D[2].tri(1, wire(op & 0x04));
-    cpu_bus.BUS_CPU_D[3].tri(1, wire(op & 0x08));
-    cpu_bus.BUS_CPU_D[4].tri(1, wire(op & 0x10));
-    cpu_bus.BUS_CPU_D[5].tri(1, wire(op & 0x20));
-    cpu_bus.BUS_CPU_D[6].tri(1, wire(op & 0x40));
-    cpu_bus.BUS_CPU_D[7].tri(1, wire(op & 0x80));
-  }
-  */
-  //sys_cpu_en = false;
-  //dbg_read(0x100);
-  //sys_cpu_en = true;
+  bus_req_new.addr = 0xFF50;
+  bus_req_new.data = 1;
+  bus_req_new.read = 0;
+  bus_req_new.write = 1;
+
+  cpu_data_latch = 1;
+  int_ack_latch = 0;
+  intf_latch = 1;
+  intf_latch_delay = 0;
+  intf_halt_latch = 1;
 
   memcpy(vid_ram, vram_boot, 8192);
 
@@ -214,14 +206,11 @@ void GateBoy::reset_to_cart() {
 
   memcpy(framebuffer, framebuffer_boot, 160*144);
 
-  //gb_screen_x = 159;
-  //gb_screen_y = 152;
-
   sim_time = 169.62587129999756;
   phase_total = 46880728;
-  phase_origin = 46880728;
-  phase_hash = 0xd53410c0b6bcb522;
-  cumulative_hash = 0x2532ab22e64c63aa;
+  phase_origin = 0;
+  phase_hash = 0xad3faa49f49984b4;
+  cumulative_hash = 0x6e58a5c197ff4af1;
 
   probes.reset_to_cart();
 }
@@ -309,9 +298,6 @@ struct GateBoyOffsets {
   const int o_reg_stat       = offsetof(GateBoy, reg_stat);
   const int o_reg_scx        = offsetof(GateBoy, reg_scx );
   const int o_reg_scy        = offsetof(GateBoy, reg_scy );
-  const int o_reg_lx         = offsetof(GateBoy, lcd.reg_lx  );
-  const int o_reg_ly         = offsetof(GateBoy, lcd.reg_ly  );
-  const int o_reg_lyc        = offsetof(GateBoy, lcd.reg_lyc );
   const int o_reg_wy         = offsetof(GateBoy, reg_wy  );
   const int o_reg_wx         = offsetof(GateBoy, reg_wx  );
 

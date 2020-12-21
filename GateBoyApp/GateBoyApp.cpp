@@ -119,8 +119,8 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 0
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/hblank_int_scx1_nops_b.gb"));
+#if 1
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_119_ly.gb"));
   gb_thread.reset_to_cart();
 #endif
 
@@ -187,7 +187,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -482,6 +482,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   d("Phase count %lld\n",    phase_count);
   d("Phase rate  %f\n",      double(phase_count) / sim_time);
   */
+
   d("\n");
 
   d("\002===== GateBoy Top =====\001\n");

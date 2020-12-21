@@ -26,23 +26,29 @@ struct GateBoyInterrupts {
     wire WODU_HBLANKp);
 
   void dump(Dumper& d) {
-    d.dump_bitp("LOPE_FF0F_0   : ", LOPE_FF0F_D0p.state);
-    d.dump_bitp("LALU_FF0F_1   : ", LALU_FF0F_D1p.state);
-    d.dump_bitp("NYBO_FF0F_2   : ", NYBO_FF0F_D2p.state);
-    d.dump_bitp("UBUL_FF0F_3   : ", UBUL_FF0F_D3p.state);
-    d.dump_bitp("ULAK_FF0F_4   : ", ULAK_FF0F_D4p.state);
+    d.dump_slice2p("FF0F IF : ", &LOPE_FF0F_D0p.state, 5);
+    d.dump_slice2p("FFFF IE : ", &IE_D0.state, 5);
+    d.dump_slice2p("LATCH   : ", &MATY_FF0F_L0p.state, 5);
+    d.dump_slice2p("CPU_INT : ", &SIG_CPU_INT_VBLANK.state, 5);
+    d.dump_slice2p("CPU_ACK : ", &SIG_CPU_ACK_VBLANK.state, 5);
+    /*
+    d.dump_bitp("FF0F IF D0    : ", LOPE_FF0F_D0p.state);
+    d.dump_bitp("FF0F IF D1    : ", LALU_FF0F_D1p.state);
+    d.dump_bitp("FF0F IF D2    : ", NYBO_FF0F_D2p.state);
+    d.dump_bitp("FF0F IF D3    : ", UBUL_FF0F_D3p.state);
+    d.dump_bitp("FF0F IF D4    : ", ULAK_FF0F_D4p.state);
+    d("\n");
+    d.dump_bitp("FFFF IE D0    : ", IE_D0.state);
+    d.dump_bitp("FFFF IE D1    : ", IE_D1.state);
+    d.dump_bitp("FFFF IE D2    : ", IE_D2.state);
+    d.dump_bitp("FFFF IE D3    : ", IE_D3.state);
+    d.dump_bitp("FFFF IE D4    : ", IE_D4.state);
     d("\n");
     d.dump_bitp("MATY_FF0F_L0p : ", MATY_FF0F_L0p.state);
     d.dump_bitp("MOPO_FF0F_L1p : ", MOPO_FF0F_L1p.state);
     d.dump_bitp("PAVY_FF0F_L2p : ", PAVY_FF0F_L2p.state);
     d.dump_bitp("NEJY_FF0F_L3p : ", NEJY_FF0F_L3p.state);
     d.dump_bitp("NUTY_FF0F_L4p : ", NUTY_FF0F_L4p.state);
-    d("\n");
-    d.dump_bitp("IE_D0         : ", IE_D0.state);
-    d.dump_bitp("IE_D1         : ", IE_D1.state);
-    d.dump_bitp("IE_D2         : ", IE_D2.state);
-    d.dump_bitp("IE_D3         : ", IE_D3.state);
-    d.dump_bitp("IE_D4         : ", IE_D4.state);
     d("\n");
     d.dump_bitp("SIG_CPU_INT_VBLANK : ", SIG_CPU_INT_VBLANK.state);
     d.dump_bitp("SIG_CPU_INT_STAT   : ", SIG_CPU_INT_STAT  .state);
@@ -55,6 +61,7 @@ struct GateBoyInterrupts {
     d.dump_bitp("SIG_CPU_ACK_TIMER  : ", SIG_CPU_ACK_TIMER .state);
     d.dump_bitp("SIG_CPU_ACK_SERIAL : ", SIG_CPU_ACK_SERIAL.state);
     d.dump_bitp("SIG_CPU_ACK_JOYPAD : ", SIG_CPU_ACK_JOYPAD.state);
+    */
   }
 
   /*p02.LOPE*/ DFF22 LOPE_FF0F_D0p;

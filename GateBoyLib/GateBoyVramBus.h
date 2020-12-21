@@ -58,13 +58,13 @@ struct GateBoyVramBus {
   void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);
 
   void dump(Dumper& d) {
-    d.dump_bitp   ("PIN43_VRAM_CSn : ", PIN43_VRAM_CSn.state);
-    d.dump_bitp   ("PIN45_VRAM_OEn : ", PIN45_VRAM_OEn.state);
-    d.dump_bitp   ("PIN49_VRAM_WRn : ", PIN49_VRAM_WRn.state);
-    d.dump_slice2n("BUS_VRAM_An : ", BUS_VRAM_An, 13);
-    d.dump_slice2p("BUS_VRAM_Dp : ", BUS_VRAM_Dp, 8);
+    d.dump_bitp   ("PIN43_VRAM_CSn  : ", PIN43_VRAM_CSn.state);
+    d.dump_bitp   ("PIN45_VRAM_OEn  : ", PIN45_VRAM_OEn.state);
+    d.dump_bitp   ("PIN49_VRAM_WRn  : ", PIN49_VRAM_WRn.state);
     d.dump_slice2p("PIN34_VRAM_ADDR : ", PIN34_VRAM_ADDR, 13);
     d.dump_slice2p("PIN25_VRAM_DATA : ", PIN25_VRAM_DATA, 8);
+    d.dump_slice2n("BUS_VRAM_An     : ", BUS_VRAM_An, 13);
+    d.dump_slice2p("BUS_VRAM_Dp     : ", BUS_VRAM_Dp, 8);
   }
 
   Bus BUS_VRAM_An[13];

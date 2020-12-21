@@ -85,7 +85,7 @@ void MetroBoyCPU::dump(Dumper& d_) const {
 void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   if (tocked_ab) return;
   tocked_ab = 1;
-  tocked_ef = 0;
+  tocked_de = 0;
 
   state = state_;
   ime = ime_delay;
@@ -114,10 +114,10 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::tock_ef(uint8_t imask, uint8_t intf_cd) {
-  if (tocked_ef) return;
+void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_cd) {
+  if (tocked_de) return;
   tocked_ab = 0;
-  tocked_ef = 1;
+  tocked_de = 1;
 
   if (HALT) {
     if ((imask & intf_cd) && ime) {

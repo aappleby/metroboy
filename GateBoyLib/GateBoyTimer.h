@@ -57,7 +57,7 @@ struct GateBoyDiv {
 
   void dump(Dumper& d) {
     d.dump_slice2p("DIV16 : ", &UKUP_DIV00p, 16);
-    d.dump_slice2p("DIV8  : ", &UGOT_DIV06p, 8);
+    d.dump_slice2p("FF04 DIV  : ", &UGOT_DIV06p, 8);
   }
 
   /*p01.UKUP*/ DFF17 UKUP_DIV00p; // AxxxExxx
@@ -116,9 +116,9 @@ struct GateBoyTimer {
   }
 
   void dump(Dumper& d) {
-    d.dump_slice2p("TIMA  : ", &REGA_TIMA0p, 8);
-    d.dump_slice2p("TMA   : ", &SABU_TMA0p, 8);
-    d.dump_slice2p("TAC   : ", &SOPU_TAC0p, 3);
+    d.dump_slice2p("FF05 TIMA : ", &REGA_TIMA0p, 8);
+    d.dump_slice2p("FF06 TMA  : ", &SABU_TMA0p, 8);
+    d.dump_slice2p("FF07 TAC  : ", &SOPU_TAC0p, 3);
     d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", NYDU_TIMA7p_DELAY.state);
     d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", MOBA_TIMER_OVERFLOWp.state);
   }

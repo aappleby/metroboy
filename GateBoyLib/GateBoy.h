@@ -217,22 +217,10 @@ struct GateBoy {
   Req      bus_req_old = {0};
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
-  uint8_t  imask_latch = 0;
-
-  bool int_vblank = 0;
-  bool int_vblank_halt = 0;
-
-  bool int_stat = 0;
-  bool int_stat_halt = 0;
-
-  bool int_timer = 0;
-  bool int_timer_halt = 0;
-
-  bool int_serial = 0;
-  bool int_serial_halt = 0;
-
-  bool int_joypad = 0;
-  bool int_joypad_halt = 0;
+  uint8_t  int_ack_latch = 0;
+  uint8_t  intf_latch = 0;
+  uint8_t  intf_latch_delay = 0;
+  uint8_t  intf_halt_latch = 0;
 
   //-----------------------------------------------------------------------------
   // Memory

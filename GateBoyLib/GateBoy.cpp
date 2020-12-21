@@ -206,20 +206,6 @@ void GateBoy::reset_to_cart() {
   dbg_read(0x100);
   sys_cpu_en = true;
 
-
-  imask_latch = 0;
-
-  int_vblank = true;
-  int_vblank_halt = true;
-  int_stat = false;
-  int_stat_halt = false;
-  int_timer = false;
-  int_timer_halt = false;
-  int_serial = false;
-  int_serial_halt = false;
-  int_joypad = false;
-  int_joypad_halt = false;
-
   memcpy(vid_ram, vram_boot, 8192);
 
   zero_ram[0x7A] = 0x39;
@@ -343,42 +329,63 @@ struct GateBoyOffsets {
 
 //------------------------------------------------------------------------------------------------------------------------
 
+/*
+#define INT_VBLANK_MASK  0b00000001
+#define INT_STAT_MASK    0b00000010
+#define INT_TIMER_MASK   0b00000100
+#define INT_SERIAL_MASK  0b00001000
+#define INT_JOYPAD_MASK  0b00010000
+*/
+
 void GateBoy::next_phase() {
 
   //----------------------------------------
 
   if (DELTA_HA) {
     cpu_data_latch = (uint8_t)BitBase::pack_old(8, &cpu_bus.BUS_CPU_D[0]);
+
+    // this one latches funny, some hardware bug
+    intf_halt_latch &= ~INT_TIMER_MASK;
+    if (interrupts.NYBO_FF0F_D2p.qp_old()) intf_halt_latch |= INT_TIMER_MASK;
+
+    intf_latch = 0;
+    if (interrupts.LOPE_FF0F_D0p.qp_old()) intf_latch |= INT_VBLANK_MASK;
+    if (interrupts.LALU_FF0F_D1p.qp_old()) intf_latch |= INT_STAT_MASK;
+    if (interrupts.NYBO_FF0F_D2p.qp_old()) intf_latch |= INT_TIMER_MASK;
+    if (interrupts.UBUL_FF0F_D3p.qp_old()) intf_latch |= INT_SERIAL_MASK;
+    if (interrupts.ULAK_FF0F_D4p.qp_old()) intf_latch |= INT_JOYPAD_MASK;
   }
 
-  if (DELTA_AB && sys_cpu_en) {
-    uint8_t intf = 0;
-    if (int_vblank) intf |= INT_VBLANK_MASK;
-    if (int_stat)   intf |= INT_STAT_MASK;
-    if (int_timer)  intf |= INT_TIMER_MASK;
-    if (int_serial) intf |= INT_SERIAL_MASK;
-    if (int_joypad) intf |= INT_JOYPAD_MASK;
-
-    cpu.tock_ab(imask_latch, intf, cpu_data_latch);
-
-    bus_req_new.addr  = cpu._bus_addr;
-    bus_req_new.data  = cpu._bus_data;
-    bus_req_new.read  = cpu._bus_read;
-    bus_req_new.write = cpu._bus_write;
+  if (DELTA_AB) {
+    if (sys_cpu_en) {
+      cpu.tock_ab((uint8_t)BitBase::pack_old(5, &interrupts.IE_D0), intf_latch, cpu_data_latch);
+    }
   }
 
-  //----------------------------------------
+  if (DELTA_AB) {
+    if (sys_cpu_en) {
+      bus_req_new.addr  = cpu._bus_addr;
+      bus_req_new.data  = cpu._bus_data;
+      bus_req_new.read  = cpu._bus_read;
+      bus_req_new.write = cpu._bus_write;
+    }
+    int_ack_latch = cpu.int_ack;
+  }
 
-  if (DELTA_EF && sys_cpu_en) {
+  if (DELTA_DE) {
+    intf_halt_latch &= ~INT_VBLANK_MASK;
+    intf_halt_latch &= ~INT_STAT_MASK;
+    intf_halt_latch &= ~INT_SERIAL_MASK;
+    intf_halt_latch &= ~INT_JOYPAD_MASK;
 
-    uint8_t intf = 0;
-    if (int_vblank_halt) intf |= INT_VBLANK_MASK;
-    if (int_stat_halt)   intf |= INT_STAT_MASK;
-    if (int_timer_halt)  intf |= INT_TIMER_MASK;
-    if (int_serial_halt) intf |= INT_SERIAL_MASK;
-    if (int_joypad_halt) intf |= INT_JOYPAD_MASK;
+    if (interrupts.LOPE_FF0F_D0p.qp_old()) intf_halt_latch |= INT_VBLANK_MASK;
+    if (interrupts.LALU_FF0F_D1p.qp_old()) intf_halt_latch |= INT_STAT_MASK;
+    if (interrupts.UBUL_FF0F_D3p.qp_old()) intf_halt_latch |= INT_SERIAL_MASK;
+    if (interrupts.ULAK_FF0F_D4p.qp_old()) intf_halt_latch |= INT_JOYPAD_MASK;
 
-    cpu.tock_ef(imask_latch, intf);
+    if (sys_cpu_en) {
+      cpu.tock_de((uint8_t)BitBase::pack_old(5, &interrupts.IE_D0), intf_halt_latch);
+    }
   }
 
   //----------------------------------------
@@ -391,6 +398,7 @@ void GateBoy::next_phase() {
   probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
 
   tock_slow(0);
+
   probes.end_pass(false);
 
 #ifdef CHECK_SINGLE_PASS
@@ -509,11 +517,11 @@ void GateBoy::tock_slow(int pass_index) {
   rst.PIN77_T1.pin_in_dp(!sys_t1);
 
   clk.SIG_CPU_CLKREQ.set_new(sys_clkreq);
-  interrupts.SIG_CPU_ACK_VBLANK.set_new(wire(cpu.int_ack & INT_VBLANK_MASK));
-  interrupts.SIG_CPU_ACK_STAT  .set_new(wire(cpu.int_ack & INT_STAT_MASK));
-  interrupts.SIG_CPU_ACK_TIMER .set_new(wire(cpu.int_ack & INT_TIMER_MASK));
-  interrupts.SIG_CPU_ACK_SERIAL.set_new(wire(cpu.int_ack & INT_SERIAL_MASK));
-  interrupts.SIG_CPU_ACK_JOYPAD.set_new(wire(cpu.int_ack & INT_JOYPAD_MASK));
+  interrupts.SIG_CPU_ACK_VBLANK.set_new(wire(int_ack_latch & INT_VBLANK_MASK));
+  interrupts.SIG_CPU_ACK_STAT  .set_new(wire(int_ack_latch & INT_STAT_MASK));
+  interrupts.SIG_CPU_ACK_TIMER .set_new(wire(int_ack_latch & INT_TIMER_MASK));
+  interrupts.SIG_CPU_ACK_SERIAL.set_new(wire(int_ack_latch & INT_SERIAL_MASK));
+  interrupts.SIG_CPU_ACK_JOYPAD.set_new(wire(int_ack_latch & INT_JOYPAD_MASK));
 
   //----------------------------------------
   // Sys clock signals
@@ -811,59 +819,6 @@ void GateBoy::tock_slow(int pass_index) {
     pix_pipes.reg_obp1.read(cpu_bus);
     zram_bus.read(cpu_bus, zero_ram);
   }
-
-  //----------------------------------------
-  // Save signals for next phase.
-
-  if (DELTA_DE) {
-    int_vblank_halt = interrupts.LOPE_FF0F_D0p.qp_new();
-    int_stat_halt   = interrupts.LALU_FF0F_D1p.qp_new();
-    int_serial_halt = interrupts.UBUL_FF0F_D3p.qp_new();
-    int_joypad_halt = interrupts.ULAK_FF0F_D4p.qp_new();
-  }
-
-  if (DELTA_GH) {
-    // this one latches funny, some hardware bug
-    int_timer_halt = interrupts.NYBO_FF0F_D2p.qp_new();
-
-    int_vblank = interrupts.LOPE_FF0F_D0p.qp_new();
-    int_stat   = interrupts.LALU_FF0F_D1p.qp_new();
-    int_timer  = interrupts.NYBO_FF0F_D2p.qp_new();
-    int_serial = interrupts.UBUL_FF0F_D3p.qp_new();
-    int_joypad = interrupts.ULAK_FF0F_D4p.qp_new();
-  }
-
-  if (DELTA_HA) {
-    imask_latch = (uint8_t)BitBase::pack_new(5, &interrupts.IE_D0);
-  }
-
-#if 0
-  cpu_bus.BUS_CPU_A[ 0].set_new(0);
-  cpu_bus.BUS_CPU_A[ 1].set_new(0);
-  cpu_bus.BUS_CPU_A[ 2].set_new(0);
-  cpu_bus.BUS_CPU_A[ 3].set_new(0);
-  cpu_bus.BUS_CPU_A[ 4].set_new(0);
-  cpu_bus.BUS_CPU_A[ 5].set_new(0);
-  cpu_bus.BUS_CPU_A[ 6].set_new(0);
-  cpu_bus.BUS_CPU_A[ 7].set_new(0);
-  cpu_bus.BUS_CPU_A[ 8].set_new(0);
-  cpu_bus.BUS_CPU_A[ 9].set_new(0);
-  cpu_bus.BUS_CPU_A[10].set_new(0);
-  cpu_bus.BUS_CPU_A[11].set_new(0);
-  cpu_bus.BUS_CPU_A[12].set_new(0);
-  cpu_bus.BUS_CPU_A[13].set_new(0);
-  cpu_bus.BUS_CPU_A[14].set_new(0);
-  cpu_bus.BUS_CPU_A[15].set_new(0);
-
-  cpu_bus.BUS_CPU_D[0].set_new(0);
-  cpu_bus.BUS_CPU_D[1].set_new(0);
-  cpu_bus.BUS_CPU_D[2].set_new(0);
-  cpu_bus.BUS_CPU_D[3].set_new(0);
-  cpu_bus.BUS_CPU_D[4].set_new(0);
-  cpu_bus.BUS_CPU_D[5].set_new(0);
-  cpu_bus.BUS_CPU_D[6].set_new(0);
-  cpu_bus.BUS_CPU_D[7].set_new(0);
-#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------

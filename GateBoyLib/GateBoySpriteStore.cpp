@@ -935,16 +935,10 @@ void SpriteStore::ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY&
 //------------------------------------------------------------------------------------------------------------------------
 
 void SpriteStore::dump(Dumper& d) {
-  d             ("SPRITE INDEX      : %02d\n", BitBase::pack_old(6, &XADU_SPRITE_IDX0p));
-  d.dump_bitp   ("XADU_SPRITE_IDX0p : ", XADU_SPRITE_IDX0p.state);
-  d.dump_bitp   ("XEDY_SPRITE_IDX1p : ", XEDY_SPRITE_IDX1p.state);
-  d.dump_bitp   ("ZUZE_SPRITE_IDX2p : ", ZUZE_SPRITE_IDX2p.state);
-  d.dump_bitp   ("XOBE_SPRITE_IDX3p : ", XOBE_SPRITE_IDX3p.state);
-  d.dump_bitp   ("YDUF_SPRITE_IDX4p : ", YDUF_SPRITE_IDX4p.state);
-  d.dump_bitp   ("XECU_SPRITE_IDX5p : ", XECU_SPRITE_IDX5p.state);
-  d.dump_bitp   ("DEZY_STORE_ENn    : ", DEZY_COUNT_CLKp.state);
+  d.dump_slice2p("SPRITE INDEX   : ", &XADU_SPRITE_IDX0p.state, 6);
+  d.dump_slice2p("SPRITE COUNT   : ", &BESE_SPRITE_COUNT0, 4);
+  d.dump_bitp   ("DEZY_STORE_ENn : ", DEZY_COUNT_CLKp.state);
   d("\n");
-  d.dump_slice2p("SPRITE COUNT : ", &BESE_SPRITE_COUNT0, 4);
   d             ("STORE0 R%d I%02d L%02d X%03d\n", EBOJ_STORE0_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &YGUS_STORE0_I0n_odd), BitBase::pack_oldn(4, &GYHO_STORE0_L0n_odd), BitBase::pack_oldn(8, &XEPE_STORE0_X0p_odd));
   d             ("STORE1 R%d I%02d L%02d X%03d\n", CEDY_STORE1_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &CADU_STORE1_I0n_odd), BitBase::pack_oldn(4, &AMES_STORE1_L0n_odd), BitBase::pack_oldn(8, &DANY_STORE1_X0p_odd));
   d             ("STORE2 R%d I%02d L%02d X%03d\n", EGAV_STORE2_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &BUHE_STORE2_I0n_odd), BitBase::pack_oldn(4, &YLOV_STORE2_L0n_odd), BitBase::pack_oldn(8, &FOKA_STORE2_X0p_odd));

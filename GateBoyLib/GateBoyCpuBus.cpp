@@ -78,25 +78,15 @@ void GateBoyCpuBus::set_pins(
 
   SIG_CPU_6.set_new(0);
 
-  uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-  bool addr_ext_new = (SIG_CPU_RDp.qp_new() || SIG_CPU_WRp.qp_new()) && (bus_addr_new < 0xFE00);
-  if (bus_addr_new <= 0x00FF && !BOOT_BITn_h.qp_old()) addr_ext_new = false;
-  SIG_CPU_EXT_BUSp.set_new(addr_ext_new);
+  // FIXME yeeeeeech this is nasty. probably not right.
 
-#if 0
-  if (DELTA_AB || DELTA_BC || DELTA_CD || DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    SIG_CPU_EXT_BUSp.setp(addr_ext);
+  uint16_t bus_addr_new = bus_req_new.addr;
+  bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_addr_new < 0xFE00);
+  if (bus_addr_new <= 0x00FF && !BOOT_BITn_h.qp_old()) addr_ext_new = false;
+  if (DELTA_HA) {
+    if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
   }
-  else {
-    // This seems wrong, but it passes tests. *shrug*
-    if (bus_addr >= 0x8000 && bus_addr <= 0x9FFF) {
-      SIG_CPU_EXT_BUSp.setp(0);
-    }
-    else {
-      SIG_CPU_EXT_BUSp.setp(addr_ext);
-    }
-  }
-#endif
+  SIG_CPU_EXT_BUSp.set_new(addr_ext_new);
 
   // Data has to be driven on EFGH or we fail the wave tests
 

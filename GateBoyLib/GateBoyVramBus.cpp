@@ -344,28 +344,28 @@ void GateBoyVramBus::set_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wir
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyVramBus::read_vram(const uint8_t* vid_ram) {
-  uint16_t addr = (uint16_t)BitBase::pack_new(13, PIN34_VRAM_ADDR);
+  uint16_t addr = (uint16_t)BitBase::pack_ext_new(13, PIN34_VRAM_ADDR);
   uint8_t data = 0xFF;
 
-  if (!PIN45_VRAM_OEn.qp_new()) {
+  if (!PIN45_VRAM_OEn.ext_qp_new()) {
     data = vid_ram[addr];
   }
 
-  PIN25_VRAM_DATA[0].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x01);
-  PIN25_VRAM_DATA[1].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x02);
-  PIN25_VRAM_DATA[2].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x04);
-  PIN25_VRAM_DATA[3].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x08);
-  PIN25_VRAM_DATA[4].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x10);
-  PIN25_VRAM_DATA[5].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x20);
-  PIN25_VRAM_DATA[6].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x40);
-  PIN25_VRAM_DATA[7].pin_in_oedp(!PIN45_VRAM_OEn.qp_new(), data & 0x80);
+  PIN25_VRAM_DATA[0].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x01);
+  PIN25_VRAM_DATA[1].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x02);
+  PIN25_VRAM_DATA[2].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x04);
+  PIN25_VRAM_DATA[3].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x08);
+  PIN25_VRAM_DATA[4].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x10);
+  PIN25_VRAM_DATA[5].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x20);
+  PIN25_VRAM_DATA[6].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x40);
+  PIN25_VRAM_DATA[7].pin_in_oedp(!PIN45_VRAM_OEn.ext_qp_new(), data & 0x80);
 }
 
 void GateBoyVramBus::write_vram(uint8_t* vid_ram) {
-  uint16_t addr= (uint16_t)BitBase::pack_new(13, PIN34_VRAM_ADDR);
-  uint8_t data = (uint8_t)BitBase::pack_new(8,  PIN25_VRAM_DATA);
+  uint16_t addr= (uint16_t)BitBase::pack_ext_new(13, PIN34_VRAM_ADDR);
+  uint8_t data = (uint8_t)BitBase::pack_ext_new(8, PIN25_VRAM_DATA);
 
-  if (!PIN49_VRAM_WRn.qp_new()) {
+  if (!PIN49_VRAM_WRn.ext_qp_new()) {
     vid_ram[addr] = data;
   }
 }
@@ -381,14 +381,14 @@ void GateBoyVramBus::pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM
   /*#p25.RELA*/ wire _RELA_CBD_TO_VPDp =  or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
   /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
 
-  /* p25.RODY*/ BUS_VRAM_Dp[0].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[0].qn_new());
-  /* p25.REBA*/ BUS_VRAM_Dp[1].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[1].qn_new());
-  /* p25.RYDO*/ BUS_VRAM_Dp[2].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[2].qn_new());
-  /* p25.REMO*/ BUS_VRAM_Dp[3].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[3].qn_new());
-  /* p25.ROCE*/ BUS_VRAM_Dp[4].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[4].qn_new());
-  /* p25.ROPU*/ BUS_VRAM_Dp[5].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[5].qn_new());
-  /* p25.RETA*/ BUS_VRAM_Dp[6].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[6].qn_new());
-  /* p25.RAKU*/ BUS_VRAM_Dp[7].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[7].qn_new());
+  /* p25.RODY*/ BUS_VRAM_Dp[0].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[0].int_qp_new());
+  /* p25.REBA*/ BUS_VRAM_Dp[1].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[1].int_qp_new());
+  /* p25.RYDO*/ BUS_VRAM_Dp[2].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[2].int_qp_new());
+  /* p25.REMO*/ BUS_VRAM_Dp[3].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[3].int_qp_new());
+  /* p25.ROCE*/ BUS_VRAM_Dp[4].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[4].int_qp_new());
+  /* p25.ROPU*/ BUS_VRAM_Dp[5].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[5].int_qp_new());
+  /* p25.RETA*/ BUS_VRAM_Dp[6].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[6].int_qp_new());
+  /* p25.RAKU*/ BUS_VRAM_Dp[7].tri6_pn(_RENA_CBD_TO_VPDn, PIN25_VRAM_DATA[7].int_qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

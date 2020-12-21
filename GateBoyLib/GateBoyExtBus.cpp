@@ -164,14 +164,14 @@ void GateBoyExtBus::copy_addr_latch_to_pins(const GateBoyResetDebug& rst, const 
 void GateBoyExtBus::copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus)
 {
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp.qp_new(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.SIG_CPU_LATCH_EXT.qp_new());
-  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN17_DATA[0].qn_new());
-  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn, PIN17_DATA[1].qn_new());
-  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn, PIN17_DATA[2].qn_new());
-  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latch(_LAVO_HOLDn, PIN17_DATA[3].qn_new());
-  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latch(_LAVO_HOLDn, PIN17_DATA[4].qn_new());
-  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latch(_LAVO_HOLDn, PIN17_DATA[5].qn_new());
-  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latch(_LAVO_HOLDn, PIN17_DATA[6].qn_new());
-  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn, PIN17_DATA[7].qn_new());
+  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN17_DATA[0].int_qp_new());
+  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn, PIN17_DATA[1].int_qp_new());
+  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn, PIN17_DATA[2].int_qp_new());
+  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latch(_LAVO_HOLDn, PIN17_DATA[3].int_qp_new());
+  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latch(_LAVO_HOLDn, PIN17_DATA[4].int_qp_new());
+  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latch(_LAVO_HOLDn, PIN17_DATA[5].int_qp_new());
+  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latch(_LAVO_HOLDn, PIN17_DATA[6].int_qp_new());
+  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn, PIN17_DATA[7].int_qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -268,28 +268,38 @@ void GateBoyExtBus::set_control_pins(
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyExtBus::read_ext_to_pins(const uint8_t* cart_buf, const uint8_t* cart_ram, const uint8_t* ext_ram) {
-  uint16_t addr = (uint16_t)BitBase::pack_new(16, &PIN01_ADDR[ 0]);
+void GateBoyExtBus::read_ext_to_pins(const uint8_t* cart_buf, const uint8_t* cart_ram, const uint8_t* int_ram) {
+  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &PIN01_ADDR[ 0]);
   uint8_t data = 0xFF;
 
   // ROM read
-  wire rom_CEn = PIN01_ADDR[15].qp_new();
-  wire rom_OEp = !rom_CEn && !PIN79_RDn.qp_new() && cart_buf;
+  //wire rom_CEn = PIN01_ADDR[15].ext_qp_new();
+  //wire rom_OEp = !rom_CEn && !PIN79_RDn.ext_qp_new() && cart_buf;
+  wire rom_OEp = (addr >= 0x0000) && (addr <= 0x7FFF) && !PIN79_RDn.ext_qp_new();
   if (rom_OEp) data = cart_buf[addr & 0x7FFF];
 
-  // Ext RAM read
-  wire eram_CS1n = PIN80_CSn.qp_new();
-  wire eram_CS2p = PIN01_ADDR[14].qp_new();
-  wire eram_OEp  = !eram_CS1n && eram_CS2p && !PIN79_RDn.qp_new();
-  if (eram_OEp) data = ext_ram[addr & 0x1FFF];
-
   // Cart RAM read
-  wire cram_CS1n = PIN80_CSn.qp_new();
-  wire cram_CS2p = PIN01_ADDR[13].qp_new() && !PIN01_ADDR[14].qp_new() && PIN01_ADDR[15].qp_new();
-  wire cram_OEp  = !cram_CS1n && cram_CS2p && !PIN79_RDn.qp_new();
+  //wire cram_CS1n = PIN80_CSn.ext_qp_new();
+  //wire cram_CS2p = PIN01_ADDR[13].ext_qp_new() && !PIN01_ADDR[14].ext_qp_new() && PIN01_ADDR[15].ext_qp_new();
+  //wire cram_OEp  = !cram_CS1n && cram_CS2p && !PIN79_RDn.ext_qp_new();
+  wire cram_OEp = (addr >= 0xA000) && (addr <= 0xBFFF) && !PIN79_RDn.ext_qp_new();
   if (cram_OEp) data = cart_ram[addr & 0x1FFF];
 
-  wire ext_OEp = rom_OEp || eram_OEp || cram_OEp;
+  // Internal RAM read
+  //wire iram_CS1n = PIN80_CSn.qp_new();
+  //wire iram_CS2p = PIN01_ADDR[14].qp_new();
+  //wire iram_OEp  = !iram_CS1n && iram_CS2p && !PIN79_RDn.qp_new();
+  wire iram_OEp = (addr >= 0xC000) && (addr <= 0xDFFF) && !PIN79_RDn.ext_qp_new();
+  if (iram_OEp) data = int_ram[addr & 0x1FFF];
+
+  // Echo RAM read
+  //wire eram_CS1n = PIN80_CSn.qp_new();
+  //wire eram_CS2p = PIN01_ADDR[14].qp_new();
+  //wire eram_OEp  = !eram_CS1n && eram_CS2p && !PIN79_RDn.qp_new();
+  wire eram_OEp = (addr >= 0xE000) && (addr <= 0xFFFF) && !PIN79_RDn.ext_qp_new();
+  if (eram_OEp) data = int_ram[addr & 0x1FFF];
+
+  wire ext_OEp = rom_OEp || cram_OEp || iram_OEp || eram_OEp;
   PIN17_DATA[0].pin_in_oedp(ext_OEp, wire(data & 0x01));
   PIN17_DATA[1].pin_in_oedp(ext_OEp, wire(data & 0x02));
   PIN17_DATA[2].pin_in_oedp(ext_OEp, wire(data & 0x04));
@@ -302,21 +312,30 @@ void GateBoyExtBus::read_ext_to_pins(const uint8_t* cart_buf, const uint8_t* car
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyExtBus::write_pins_to_ext(uint8_t* cart_ram, uint8_t* ext_ram) {
-  uint16_t addr = (uint16_t)BitBase::pack_new(16, &PIN01_ADDR[ 0]);
-  uint8_t data = (uint8_t)BitBase::pack_new(8, &PIN17_DATA[0]);
-
-  // Ext RAM write
-  wire eram_CS1n = PIN80_CSn.qp_new();
-  wire eram_CS2p = PIN01_ADDR[14].qp_new();
-  wire eram_WRp  = !eram_CS1n && eram_CS2p && !PIN78_WRn.qp_new();
-  if (eram_WRp) ext_ram[addr & 0x1FFF]  = data;
+void GateBoyExtBus::write_pins_to_ext(uint8_t* cart_ram, uint8_t* int_ram) {
+  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &PIN01_ADDR[ 0]);
+  uint8_t data = (uint8_t)BitBase::pack_ext_new(8, &PIN17_DATA[0]);
 
   // Cart RAM write
-  wire cram_CS1n = PIN80_CSn.qp_new();
-  wire cram_CS2p = PIN01_ADDR[13].qp_new() && !PIN01_ADDR[14].qp_new() && PIN01_ADDR[15].qp_new();
-  wire cram_WRp  = !cram_CS1n && cram_CS2p && !PIN78_WRn.qp_new();
+  //wire cram_CS1n = PIN80_CSn.qp_new();
+  //wire cram_CS2p = PIN01_ADDR[13].qp_new() && !PIN01_ADDR[14].qp_new() && PIN01_ADDR[15].qp_new();
+  //wire cram_WRp  = !cram_CS1n && cram_CS2p && !PIN78_WRn.qp_new();
+  wire cram_WRp = (addr >= 0xA000) && (addr <= 0xBFFF) && !PIN78_WRn.ext_qp_new();
   if (cram_WRp) cart_ram[addr & 0x1FFF] = data;
+
+  // Internal RAM write
+  //wire iram_CS1n = PIN80_CSn.qp_new();
+  //wire iram_CS2p = PIN01_ADDR[14].qp_new();
+  //wire iram_WRp  = !iram_CS1n && iram_CS2p && !PIN78_WRn.qp_new();
+  wire iram_WRp = (addr >= 0xC000) && (addr <= 0xDFFF) && !PIN78_WRn.ext_qp_new();
+  if (iram_WRp) int_ram[addr & 0x1FFF]  = data;
+
+  // Echo RAM write
+  //wire eram_CS1n = PIN80_CSn.qp_new();
+  //wire eram_CS2p = PIN01_ADDR[14].qp_new();
+  //wire eram_WRp  = !eram_CS1n && iram_CS2p && !PIN78_WRn.qp_new();
+  wire eram_WRp = (addr >= 0xE000) && (addr <= 0xFFFF) && !PIN78_WRn.ext_qp_new();
+  if (eram_WRp) int_ram[addr & 0x1FFF]  = data;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

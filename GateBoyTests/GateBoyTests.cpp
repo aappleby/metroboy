@@ -37,11 +37,10 @@ int main(int argc, char** argv) {
   failures += t.test_clk();
   failures += t.test_regs();
   failures += t.test_mem();
+  //failures += t.test_dma();
 
-#if 0
   failures += t.test_init();
   failures += t.test_ext_bus();
-  failures += t.test_dma();
   failures += t.test_interrupts();
   failures += t.test_ppu();
   failures += t.test_timer();
@@ -56,9 +55,8 @@ int main(int argc, char** argv) {
   failures += t.test_micro_lock_oam();
   failures += t.test_micro_lock_vram();
   failures += t.test_micro_window();
-  failures += t.test_micro_dma();
   failures += t.test_micro_ppu();
-#endif
+  failures += t.test_micro_dma();
 
   auto finish = timestamp();
 
@@ -853,7 +851,7 @@ int GateBoyTests::test_init() {
   LOG_G("Checking mem\n");
   // Mem should be clear
   for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.cart_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.ext_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.int_ram[i]);
 
   // Framebuffer should be 0x04 (yellow) except for the first pixel, which
   // always gets written to because XONA_LCDCENn is 0 at boot
@@ -865,26 +863,25 @@ int GateBoyTests::test_init() {
 
   LOG_G("Checking reg values\n");
   EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
-  //EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
-  //EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
-  //EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
-  //EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
-  //EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom unstable latch problem
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
-  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
-  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
-  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
-  //EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
-  //EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
+  EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
+  EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom unstable latch problem
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
 
   TEST_END();
 }
@@ -957,9 +954,9 @@ int GateBoyTests::test_ext_bus() {
     GateBoy gb;
     gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
     gb.reset_to_cart();
-    gb.run_phases(120);
+    gb.run_phases(112);
 
-#if 0
+#if 1
     // Start checking each phase
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11110001 11111111 11111111 11111111";
@@ -994,36 +991,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.ext_bus.PIN_EXT_CLK.c();
-      char WRn = gb.ext_bus.PIN_EXT_WRn.c();
-      char RDn = gb.ext_bus.PIN_EXT_RDn.c();
-      char CSn = gb.ext_bus.PIN_EXT_CSn.c();
+      char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
+      char WRn = gb.ext_bus.PIN78_WRn.ext_c();
+      char RDn = gb.ext_bus.PIN79_RDn.ext_c();
+      char CSn = gb.ext_bus.PIN80_CSn.ext_c();
 
-      char A00 = gb.ext_bus.PIN_EXT_A00p.c();
-      char A01 = gb.ext_bus.PIN_EXT_A01p.c();
-      char A02 = gb.ext_bus.PIN_EXT_A02p.c();
-      char A03 = gb.ext_bus.PIN_EXT_A03p.c();
-      char A04 = gb.ext_bus.PIN_EXT_A04p.c();
-      char A05 = gb.ext_bus.PIN_EXT_A05p.c();
-      char A06 = gb.ext_bus.PIN_EXT_A06p.c();
-      char A07 = gb.ext_bus.PIN_EXT_A07p.c();
-      char A08 = gb.ext_bus.PIN_EXT_A08p.c();
-      char A09 = gb.ext_bus.PIN_EXT_A09p.c();
-      char A10 = gb.ext_bus.PIN_EXT_A10p.c();
-      char A11 = gb.ext_bus.PIN_EXT_A11p.c();
-      char A12 = gb.ext_bus.PIN_EXT_A12p.c();
-      char A13 = gb.ext_bus.PIN_EXT_A13p.c();
-      char A14 = gb.ext_bus.PIN_EXT_A14p.c();
-      char A15 = gb.ext_bus.PIN_EXT_A15p.c();
+      char A00 = gb.ext_bus.PIN01_ADDR[ 0].ext_c();
+      char A01 = gb.ext_bus.PIN01_ADDR[ 1].ext_c();
+      char A02 = gb.ext_bus.PIN01_ADDR[ 2].ext_c();
+      char A03 = gb.ext_bus.PIN01_ADDR[ 3].ext_c();
+      char A04 = gb.ext_bus.PIN01_ADDR[ 4].ext_c();
+      char A05 = gb.ext_bus.PIN01_ADDR[ 5].ext_c();
+      char A06 = gb.ext_bus.PIN01_ADDR[ 6].ext_c();
+      char A07 = gb.ext_bus.PIN01_ADDR[ 7].ext_c();
+      char A08 = gb.ext_bus.PIN01_ADDR[ 8].ext_c();
+      char A09 = gb.ext_bus.PIN01_ADDR[ 9].ext_c();
+      char A10 = gb.ext_bus.PIN01_ADDR[10].ext_c();
+      char A11 = gb.ext_bus.PIN01_ADDR[11].ext_c();
+      char A12 = gb.ext_bus.PIN01_ADDR[12].ext_c();
+      char A13 = gb.ext_bus.PIN01_ADDR[13].ext_c();
+      char A14 = gb.ext_bus.PIN01_ADDR[14].ext_c();
+      char A15 = gb.ext_bus.PIN01_ADDR[15].ext_c();
 
-      char D00 = gb.ext_bus.PIN_EXT_D00p.c();
-      char D01 = gb.ext_bus.PIN_EXT_D01p.c();
-      char D02 = gb.ext_bus.PIN_EXT_D02p.c();
-      char D03 = gb.ext_bus.PIN_EXT_D03p.c();
-      char D04 = gb.ext_bus.PIN_EXT_D04p.c();
-      char D05 = gb.ext_bus.PIN_EXT_D05p.c();
-      char D06 = gb.ext_bus.PIN_EXT_D06p.c();
-      char D07 = gb.ext_bus.PIN_EXT_D07p.c();
+      char D00 = gb.ext_bus.PIN17_DATA[0].ext_c();
+      char D01 = gb.ext_bus.PIN17_DATA[1].ext_c();
+      char D02 = gb.ext_bus.PIN17_DATA[2].ext_c();
+      char D03 = gb.ext_bus.PIN17_DATA[3].ext_c();
+      char D04 = gb.ext_bus.PIN17_DATA[4].ext_c();
+      char D05 = gb.ext_bus.PIN17_DATA[5].ext_c();
+      char D06 = gb.ext_bus.PIN17_DATA[6].ext_c();
+      char D07 = gb.ext_bus.PIN17_DATA[7].ext_c();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1063,7 +1060,7 @@ int GateBoyTests::test_ext_bus() {
 #endif
   }
 
-#if 0
+#if 1
   if (1) {
     LOG_B("Testing vram write external bus waves\n");
 
@@ -1080,8 +1077,9 @@ int GateBoyTests::test_ext_bus() {
     cart_rom = as.link();
 
     GateBoy gb;
-    gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-    gb.run(120);
+    gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+    gb.reset_to_cart();
+    gb.run_phases(112);
 
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1116,37 +1114,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.ext_bus.PIN_EXT_CLK.c();
-      char WRn = gb.ext_bus.PIN_EXT_WRn.c();
-      char RDn = gb.ext_bus.PIN_EXT_RDn.c();
-      char CSn = gb.ext_bus.PIN_EXT_CSn.c();
+      char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
+      char WRn = gb.ext_bus.PIN78_WRn.ext_c();
+      char RDn = gb.ext_bus.PIN79_RDn.ext_c();
+      char CSn = gb.ext_bus.PIN80_CSn.ext_c();
 
-      char A00 = gb.ext_bus.PIN_EXT_A00p.c();
-      char A01 = gb.ext_bus.PIN_EXT_A01p.c();
-      char A02 = gb.ext_bus.PIN_EXT_A02p.c();
-      char A03 = gb.ext_bus.PIN_EXT_A03p.c();
-      char A04 = gb.ext_bus.PIN_EXT_A04p.c();
-      char A05 = gb.ext_bus.PIN_EXT_A05p.c();
-      char A06 = gb.ext_bus.PIN_EXT_A06p.c();
-      char A07 = gb.ext_bus.PIN_EXT_A07p.c();
-      char A08 = gb.ext_bus.PIN_EXT_A08p.c();
-      char A09 = gb.ext_bus.PIN_EXT_A09p.c();
-      char A10 = gb.ext_bus.PIN_EXT_A10p.c();
-      char A11 = gb.ext_bus.PIN_EXT_A11p.c();
-      char A12 = gb.ext_bus.PIN_EXT_A12p.c();
-      char A13 = gb.ext_bus.PIN_EXT_A13p.c();
-      char A14 = gb.ext_bus.PIN_EXT_A14p.c();
-      char A15 = gb.ext_bus.PIN_EXT_A15p.c();
+      char A00 = gb.ext_bus.PIN01_ADDR[ 0].ext_c();
+      char A01 = gb.ext_bus.PIN01_ADDR[ 1].ext_c();
+      char A02 = gb.ext_bus.PIN01_ADDR[ 2].ext_c();
+      char A03 = gb.ext_bus.PIN01_ADDR[ 3].ext_c();
+      char A04 = gb.ext_bus.PIN01_ADDR[ 4].ext_c();
+      char A05 = gb.ext_bus.PIN01_ADDR[ 5].ext_c();
+      char A06 = gb.ext_bus.PIN01_ADDR[ 6].ext_c();
+      char A07 = gb.ext_bus.PIN01_ADDR[ 7].ext_c();
+      char A08 = gb.ext_bus.PIN01_ADDR[ 8].ext_c();
+      char A09 = gb.ext_bus.PIN01_ADDR[ 9].ext_c();
+      char A10 = gb.ext_bus.PIN01_ADDR[10].ext_c();
+      char A11 = gb.ext_bus.PIN01_ADDR[11].ext_c();
+      char A12 = gb.ext_bus.PIN01_ADDR[12].ext_c();
+      char A13 = gb.ext_bus.PIN01_ADDR[13].ext_c();
+      char A14 = gb.ext_bus.PIN01_ADDR[14].ext_c();
+      char A15 = gb.ext_bus.PIN01_ADDR[15].ext_c();
 
-      char D00 = gb.ext_bus.PIN_EXT_D00p.c();
-      char D01 = gb.ext_bus.PIN_EXT_D01p.c();
-      char D02 = gb.ext_bus.PIN_EXT_D02p.c();
-      char D03 = gb.ext_bus.PIN_EXT_D03p.c();
-      char D04 = gb.ext_bus.PIN_EXT_D04p.c();
-      char D05 = gb.ext_bus.PIN_EXT_D05p.c();
-      char D06 = gb.ext_bus.PIN_EXT_D06p.c();
-      char D07 = gb.ext_bus.PIN_EXT_D07p.c();
-
+      char D00 = gb.ext_bus.PIN17_DATA[0].ext_c();
+      char D01 = gb.ext_bus.PIN17_DATA[1].ext_c();
+      char D02 = gb.ext_bus.PIN17_DATA[2].ext_c();
+      char D03 = gb.ext_bus.PIN17_DATA[3].ext_c();
+      char D04 = gb.ext_bus.PIN17_DATA[4].ext_c();
+      char D05 = gb.ext_bus.PIN17_DATA[5].ext_c();
+      char D06 = gb.ext_bus.PIN17_DATA[6].ext_c();
+      char D07 = gb.ext_bus.PIN17_DATA[7].ext_c();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1189,7 +1186,7 @@ int GateBoyTests::test_ext_bus() {
   }
 #endif
 
-#if 0
+#if 1
   if (1) {
     LOG_B("Testing zram write external bus waves\n");
 
@@ -1206,8 +1203,9 @@ int GateBoyTests::test_ext_bus() {
     cart_rom = as.link();
 
     GateBoy gb;
-    gb.reset_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-    gb.run(120);
+    gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
+    gb.reset_to_cart();
+    gb.run_phases(112);
 
     // Start checking each phase
 
@@ -1287,37 +1285,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.ext_bus.PIN_EXT_CLK.c();
-      char WRn = gb.ext_bus.PIN_EXT_WRn.c();
-      char RDn = gb.ext_bus.PIN_EXT_RDn.c();
-      char CSn = gb.ext_bus.PIN_EXT_CSn.c();
+      char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
+      char WRn = gb.ext_bus.PIN78_WRn.ext_c();
+      char RDn = gb.ext_bus.PIN79_RDn.ext_c();
+      char CSn = gb.ext_bus.PIN80_CSn.ext_c();
 
-      char A00 = gb.ext_bus.PIN_EXT_A00p.c();
-      char A01 = gb.ext_bus.PIN_EXT_A01p.c();
-      char A02 = gb.ext_bus.PIN_EXT_A02p.c();
-      char A03 = gb.ext_bus.PIN_EXT_A03p.c();
-      char A04 = gb.ext_bus.PIN_EXT_A04p.c();
-      char A05 = gb.ext_bus.PIN_EXT_A05p.c();
-      char A06 = gb.ext_bus.PIN_EXT_A06p.c();
-      char A07 = gb.ext_bus.PIN_EXT_A07p.c();
-      char A08 = gb.ext_bus.PIN_EXT_A08p.c();
-      char A09 = gb.ext_bus.PIN_EXT_A09p.c();
-      char A10 = gb.ext_bus.PIN_EXT_A10p.c();
-      char A11 = gb.ext_bus.PIN_EXT_A11p.c();
-      char A12 = gb.ext_bus.PIN_EXT_A12p.c();
-      char A13 = gb.ext_bus.PIN_EXT_A13p.c();
-      char A14 = gb.ext_bus.PIN_EXT_A14p.c();
-      char A15 = gb.ext_bus.PIN_EXT_A15p.c();
+      char A00 = gb.ext_bus.PIN01_ADDR[ 0].ext_c();
+      char A01 = gb.ext_bus.PIN01_ADDR[ 1].ext_c();
+      char A02 = gb.ext_bus.PIN01_ADDR[ 2].ext_c();
+      char A03 = gb.ext_bus.PIN01_ADDR[ 3].ext_c();
+      char A04 = gb.ext_bus.PIN01_ADDR[ 4].ext_c();
+      char A05 = gb.ext_bus.PIN01_ADDR[ 5].ext_c();
+      char A06 = gb.ext_bus.PIN01_ADDR[ 6].ext_c();
+      char A07 = gb.ext_bus.PIN01_ADDR[ 7].ext_c();
+      char A08 = gb.ext_bus.PIN01_ADDR[ 8].ext_c();
+      char A09 = gb.ext_bus.PIN01_ADDR[ 9].ext_c();
+      char A10 = gb.ext_bus.PIN01_ADDR[10].ext_c();
+      char A11 = gb.ext_bus.PIN01_ADDR[11].ext_c();
+      char A12 = gb.ext_bus.PIN01_ADDR[12].ext_c();
+      char A13 = gb.ext_bus.PIN01_ADDR[13].ext_c();
+      char A14 = gb.ext_bus.PIN01_ADDR[14].ext_c();
+      char A15 = gb.ext_bus.PIN01_ADDR[15].ext_c();
 
-      char D00 = gb.ext_bus.PIN_EXT_D00p.c();
-      char D01 = gb.ext_bus.PIN_EXT_D01p.c();
-      char D02 = gb.ext_bus.PIN_EXT_D02p.c();
-      char D03 = gb.ext_bus.PIN_EXT_D03p.c();
-      char D04 = gb.ext_bus.PIN_EXT_D04p.c();
-      char D05 = gb.ext_bus.PIN_EXT_D05p.c();
-      char D06 = gb.ext_bus.PIN_EXT_D06p.c();
-      char D07 = gb.ext_bus.PIN_EXT_D07p.c();
-
+      char D00 = gb.ext_bus.PIN17_DATA[0].ext_c();
+      char D01 = gb.ext_bus.PIN17_DATA[1].ext_c();
+      char D02 = gb.ext_bus.PIN17_DATA[2].ext_c();
+      char D03 = gb.ext_bus.PIN17_DATA[3].ext_c();
+      char D04 = gb.ext_bus.PIN17_DATA[4].ext_c();
+      char D05 = gb.ext_bus.PIN17_DATA[5].ext_c();
+      char D06 = gb.ext_bus.PIN17_DATA[6].ext_c();
+      char D07 = gb.ext_bus.PIN17_DATA[7].ext_c();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1555,10 +1552,10 @@ uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
     return gb.cart_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xC000 && addr <= 0xDFFF) {
-    return gb.ext_ram + (addr & 0x1FFF);
+    return gb.int_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xE000 && addr <= 0xFDFF) {
-    return gb.ext_ram + (addr & 0x1FFF);
+    return gb.int_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xFE00 && addr <= 0xFEFF) {
     return gb.oam_ram + (addr & 0x00FF);
@@ -1603,7 +1600,8 @@ int GateBoyTests::test_dma(uint16_t src) {
 
   gb.dbg_write(0xFF46, uint8_t(src >> 8));
 
-  gb.run_phases(1288);
+  //gb.run_phases(1288);
+  gb.run_phases(250 * 8);
 
   for (int i = 0; i < 160; i++) {
     uint8_t a = blob[i];
@@ -1669,8 +1667,9 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
     else {
       mem[i] = data_wr;
     }
+    ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
     uint8_t data_rd = gb.dbg_read(addr_start + i);
-    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr_start + i, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
   for (int i = 0; i < len; i += step) {
@@ -1682,8 +1681,9 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
     else {
       mem[i] = data_wr;
     }
+    ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
     uint8_t data_rd = gb.dbg_read(addr_start + i);
-    ASSERT_EQ(data_rd, data_wr, "addr 0x%04x : expected 0x%02x, was 0x%02x", addr_start + i, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
   TEST_END();

@@ -131,14 +131,14 @@ void GateBoyOamBus::latch_to_temp_b(
 void GateBoyOamBus::ext_to_data_bus(const GateBoyDMA& dma, PinIO PIN17_DATA[8])
 {
   // DMA write OAM from ram/cart
-  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(PIN17_DATA[0].qn_new());
-  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(PIN17_DATA[1].qn_new());
-  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(PIN17_DATA[2].qn_new());
-  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(PIN17_DATA[3].qn_new());
-  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(PIN17_DATA[4].qn_new());
-  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(PIN17_DATA[5].qn_new());
-  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(PIN17_DATA[6].qn_new());
-  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(PIN17_DATA[7].qn_new());
+  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(PIN17_DATA[0].int_qp_new());
+  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(PIN17_DATA[1].int_qp_new());
+  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(PIN17_DATA[2].int_qp_new());
+  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(PIN17_DATA[3].int_qp_new());
+  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(PIN17_DATA[4].int_qp_new());
+  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(PIN17_DATA[5].int_qp_new());
+  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(PIN17_DATA[6].int_qp_new());
+  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(PIN17_DATA[7].int_qp_new());
 
   /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(dma.LUMA_DMA_CARTp());
 

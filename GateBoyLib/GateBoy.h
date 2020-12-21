@@ -239,7 +239,7 @@ struct GateBoy {
 
   uint8_t vid_ram [8192];
   uint8_t cart_ram[8192];
-  uint8_t ext_ram [8192];
+  uint8_t int_ram [8192];
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];
 
@@ -256,6 +256,8 @@ struct GateBoy {
 
   double   sim_time = 0;
   uint64_t phase_total = 0;
+  uint64_t phase_origin = 0;
+
   uint64_t phase_hash = 0;
   uint64_t cumulative_hash = 0;
 

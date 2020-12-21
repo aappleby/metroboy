@@ -36,6 +36,18 @@ struct BitBase {
   inline static uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
   inline static uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
+  inline static uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
+  inline static uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
+
+  inline char int_c() {
+    return bit_driven() ? (bit_data_old() ? '1' : '0') : (bit_data_old() ? '^' : 'v');
+  }
+
+  inline char ext_c() {
+    //return bit_driven() ? (bit_data_old() ? '0' : '1') : (bit_data_old() ? 'v' : '^');
+    return bit_driven() ? (bit_data_old() ? '0' : '1') : '^';
+  }
+
 protected:
 
   wire qp_old() const { CHECK_P((state & 0xF0) == 0x00); return  bit_data_old(); }
@@ -47,12 +59,12 @@ protected:
   void set_data_new (wire d) { state = (state & 0b11111110) | (d << 0); }
   void set_clock    (wire d) { state = (state & 0b11111101) | (d << 1); }
   void set_data_old (wire d) { state = (state & 0b11111011) | (d << 2); }
-  //void set_lock     (wire d) { state = (state & 0b11110111) | (d << 3); }
+  void set_driven   (wire d) { state = (state & 0b11110111) | (d << 3); }
 
   wire bit_data_new () const { return state & 0b00000001; }
   wire bit_clock    () const { return state & 0b00000010; }
   wire bit_data_old () const { return state & 0b00000100; }
-  //wire bit_locked   () const { return state & 0b00001000; }
+  wire bit_driven   () const { return state & 0b00001000; }
 
   void set_dirty1() { state |= 0b00010000; }
   void set_dirty2() { state |= 0b00100000; }
@@ -387,42 +399,47 @@ struct Bus : public BitBase {
 // FIXME these should be making better use of the dirty flags
 
 struct PinIO : public BitBase {
-  using BitBase::qp_old;
-  using BitBase::qp_new;
-
-  using BitBase::qn_old;
-  using BitBase::qn_new;
+  wire int_qp_new() const { return  qp_new(); }
+  wire ext_qp_new() const { return !qp_new(); }
 
   // dirty1 = touched
   // dirty2 = touched
   // dirty3 = pin_in called
   // dirty4 = pin_out called
 
-  void pin_in_oedp(wire OEp, wire Dp) {
-    // First touch, reset state.
-    if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
+  void pin_in_oedp(wire OEp, wire D) {
+    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
 
     if (OEp) {
-      set_data_new(Dp);
+      set_driven(1);
+      set_data_new(!D);
     }
+
+    set_dirty2();
     set_dirty3();
   }
 
   void pin_out_oedp(wire OEp, wire Dp) {
-    if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
+    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
 
     if (OEp){
+      set_driven(1);
       set_data_new(Dp);
     }
+
+    set_dirty2();
     set_dirty4();
   }
 
   void pin_out_oehilo(wire OEp, wire HI, wire LO) {
-    if (!bit_dirty1()) { state = 1; set_dirty1(); set_dirty2(); }
+    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
 
     if (OEp && (HI == LO)){
-      set_data_new(!HI);
+      set_driven(1);
+      set_data_new(HI);
     }
+
+    set_dirty2();
     set_dirty4();
   }
 };
@@ -430,11 +447,10 @@ struct PinIO : public BitBase {
 //----------
 
 struct PinIn : public BitBase {
-  using BitBase::qp_old;
-  using BitBase::qp_new;
+  wire int_qp_new() const { return  qp_new(); }
 
-  void pin_in_dp(wire Dp) {
-    set_data_new(Dp);
+  void pin_in_dp(wire D) {
+    set_data_new(!D);
     set_dirty1();
     set_dirty2();
     set_dirty3();
@@ -443,15 +459,17 @@ struct PinIn : public BitBase {
 };
 
 //----------
+// OE could be "enable pullup"?
 
 struct PinOut : public BitBase {
-  using BitBase::qp_old;
-  using BitBase::qp_new;
+  wire ext_qp_new() const { return !qp_new(); }
 
   void pin_out_dp(wire Dp) {
     CHECK_N(bit_dirty1());
+    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
 
     set_data_new(Dp);
+    set_driven(1);
 
     set_dirty1();
     set_dirty2();
@@ -461,9 +479,11 @@ struct PinOut : public BitBase {
 
   void pin_out_hilo(wire HI, wire LO) {
     CHECK_N(bit_dirty1());
+    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
 
     if (HI == LO) {
-      set_data_new(!HI);
+      set_data_new(HI);
+      set_driven(1);
     }
 
     set_dirty1();
@@ -472,15 +492,13 @@ struct PinOut : public BitBase {
     set_dirty4();
   }
 
-  // OE could be "enable pullup"?
   void pin_out_oehilo(wire OEp, wire HI, wire LO) {
     CHECK_N(bit_dirty1());
+    if (!bit_dirty1()) { state = 1; set_driven(0); set_dirty1(); }
 
     if (OEp && (HI == LO)) {
-      set_data_new(!HI);
-    }
-    else {
-      set_data_new(1);
+      set_data_new(HI);
+      set_driven(1);
     }
 
     set_dirty1();
@@ -565,8 +583,8 @@ struct TpLatch : public BitBase {
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  void tp_latch(wire HOLDn, wire D) {
-    if (HOLDn) set_data_new(D);
+  void tp_latch(wire HOLDn, wire Dp) {
+    if (HOLDn) set_data_new(Dp);
     set_dirty1();
     set_dirty2();
     set_dirty3();

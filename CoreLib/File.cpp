@@ -26,7 +26,7 @@ size_t load_blob(const char* filename, void* dst, size_t dst_size) {
 
   fseek(f, 0, SEEK_END);
   size_t size = ftell(f);
-  printf("Loading %zd bytes from %s\n", size, filename);
+  //printf("Loading %zd bytes from %s\n", size, filename);
 
   ASSERT_P(size == dst_size);
   fseek(f, 0, SEEK_SET);
@@ -36,7 +36,7 @@ size_t load_blob(const char* filename, void* dst, size_t dst_size) {
 }
 
 void save_blob(const char* filename, const void* src, size_t size) {
-  printf("Saving %zd bytes to %s\n", size, filename);
+  //printf("Saving %zd bytes to %s\n", size, filename);
   FILE* f = nullptr;
   fopen_s(&f, filename, "wb");
   fwrite(src, 1, size, f);

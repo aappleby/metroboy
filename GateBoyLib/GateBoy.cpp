@@ -45,7 +45,9 @@ void GateBoy::dump(Dumper& d) const {
   //d.dump_slice2p("lcd_pipe_hi  : ", lcd.lcd_pipe_hi, 8);
   //d("\n");
   d             ("sim_time     : %f\n",      sim_time);
-  d             ("phase_total  : %d\n",      phase_total);
+  d             ("phase_total  : %lld\n",    phase_total);
+  d             ("phase_origin : %lld\n",    phase_origin);
+  d             ("phase_delta  : %lld\n",    phase_total - phase_origin);
   d             ("pass_hash    : %016llx\n", phase_hash);
   d             ("total_hash   : %016llx\n", cumulative_hash);
 }
@@ -98,6 +100,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   CHECK_P(clk.ADYK_ABCxxxxHp.qp_old());
 
   phase_total = 0;
+  phase_origin = 0;
 
   //----------------------------------------
   // Wait for SIG_CPU_START
@@ -230,6 +233,7 @@ void GateBoy::reset_to_cart() {
 
   sim_time = 169.62587129999756;
   phase_total = 46880728;
+  phase_origin = 46880728;
   phase_hash = 0xd53410c0b6bcb522;
   cumulative_hash = 0x2532ab22e64c63aa;
 }
@@ -489,30 +493,11 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  rst.PIN71_RST.pin_in_dp(sys_rst);
-  clk.PIN74_CLKGOOD.pin_in_dp(sys_clkgood);
-  clk.PIN74_CLK.pin_in_dp(!(phase_total & 1) && sys_clken);
-  rst.PIN76_T2.pin_in_dp(sys_t2);
-  rst.PIN77_T1.pin_in_dp(sys_t1);
-
-  if (joypad.PIN63_JOY_P14.qp_old()) {
-    joypad.PIN67_JOY_P10.pin_in_dp(!(sys_buttons & 0x01));
-    joypad.PIN66_JOY_P11.pin_in_dp(!(sys_buttons & 0x02));
-    joypad.PIN65_JOY_P12.pin_in_dp(!(sys_buttons & 0x04));
-    joypad.PIN64_JOY_P13.pin_in_dp(!(sys_buttons & 0x08));
-  }
-  else if (joypad.PIN62_JOY_P15.qp_old()) {
-    joypad.PIN67_JOY_P10.pin_in_dp(!(sys_buttons & 0x10));
-    joypad.PIN66_JOY_P11.pin_in_dp(!(sys_buttons & 0x20));
-    joypad.PIN65_JOY_P12.pin_in_dp(!(sys_buttons & 0x40));
-    joypad.PIN64_JOY_P13.pin_in_dp(!(sys_buttons & 0x80));
-  }
-  else {
-    joypad.PIN67_JOY_P10.pin_in_dp(1);
-    joypad.PIN66_JOY_P11.pin_in_dp(1);
-    joypad.PIN65_JOY_P12.pin_in_dp(1);
-    joypad.PIN64_JOY_P13.pin_in_dp(1);
-  }
+  rst.PIN71_RST.pin_in_dp(!sys_rst);
+  clk.PIN74_CLKGOOD.pin_in_dp(!sys_clkgood);
+  clk.PIN74_CLK_IN.pin_in_dp((phase_total & 1) && sys_clken);
+  rst.PIN76_T2.pin_in_dp(!sys_t2);
+  rst.PIN77_T1.pin_in_dp(!sys_t1);
 
   clk.SIG_CPU_CLKREQ.set_new(sys_clkreq);
   interrupts.SIG_CPU_ACK_VBLANK.set_new(wire(cpu.int_ack & INT_VBLANK_MASK));
@@ -546,7 +531,6 @@ void GateBoy::tock_slow(int pass_index) {
   // Sync writes to registers
   {
     joypad.write_sync(rst, cpu_bus);
-    serial.write_sc_sync(cpu_bus);
     reg_scx.write_sync(rst, cpu_bus);
     reg_scy.write_sync(rst, cpu_bus);
     lcd.reg_lyc.write_sync(rst, cpu_bus); // must be before reg_ly.tock()
@@ -716,7 +700,7 @@ void GateBoy::tock_slow(int pass_index) {
     update_framebuffer();
   }
 
-  joypad.tock2(rst, clk);
+  joypad.tock2(rst, clk, sys_buttons);
 
   sprite_scanner.tock(clk.XUPY_ABxxEFxx(), lcd.ANOM_LINE_RSTn_new());
 
@@ -737,8 +721,8 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);
     ext_bus.copy_addr_latch_to_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
     ext_bus.copy_cpu_data_to_pins(rst, cpu_bus);
-    ext_bus.read_ext_to_pins(cart_buf, cart_ram, ext_ram);
-    ext_bus.write_pins_to_ext(cart_ram, ext_ram);
+    ext_bus.read_ext_to_pins(cart_buf, cart_ram, int_ram);
+    ext_bus.write_pins_to_ext(cart_ram, int_ram);
     ext_bus.copy_pins_to_data_latch(cpu_bus);
     ext_bus.copy_data_latch_to_cpu_bus(cpu_bus);
   }
@@ -793,9 +777,6 @@ void GateBoy::tock_slow(int pass_index) {
   // Async writes and reads
 
   {
-    interrupts.write_intf_async(rst, cpu_bus);
-    serial.write_sb_async(rst, cpu_bus);
-
     interrupts.read_ie(cpu_bus);
     interrupts.read_intf(cpu_bus);
     reg_stat.read(cpu_bus, ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGp(), lcd.PARU_VBLANKp());
@@ -821,15 +802,6 @@ void GateBoy::tock_slow(int pass_index) {
     pix_pipes.reg_obp1.read(cpu_bus);
     zram_bus.read(cpu_bus, zero_ram);
   }
-
-  //----------------------------------------
-  // Set pins that go back to the CPU
-
-  interrupts.SIG_CPU_INT_VBLANK.set_new(interrupts.LOPE_FF0F_D0p.qp_new());
-  interrupts.SIG_CPU_INT_STAT  .set_new(interrupts.LALU_FF0F_D1p.qp_new());
-  interrupts.SIG_CPU_INT_TIMER .set_new(interrupts.NYBO_FF0F_D2p.qp_new());
-  interrupts.SIG_CPU_INT_SERIAL.set_new(interrupts.UBUL_FF0F_D3p.qp_new());
-  interrupts.SIG_CPU_INT_JOYPAD.set_new(interrupts.ULAK_FF0F_D4p.qp_new());
 
   //----------------------------------------
   // Save signals for next phase.

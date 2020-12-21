@@ -42,12 +42,6 @@ void GateBoySerial::read_sb(GateBoyCpuBus& cpu_bus)
   /*#p06.ETAK*/ cpu_bus.BUS_CPU_D[7].tri6_pn(_UFEG_FF01_RDp, EDER_SER_DATA7.qn_new());
 }
 
-void GateBoySerial::write_sb_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
-{
-  (void)rst;
-  (void)cpu_bus;
-}
-
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
@@ -55,11 +49,6 @@ void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
   /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A[ 1].qp_new(), cpu_bus.TOVY_A00n());
   /* p06.CORE*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_UCOM_FF02_RDp, CULY_SER_DIR.qn_new());
   /* p06.ELUV*/ cpu_bus.BUS_CPU_D[7].tri6_pn(_UCOM_FF02_RDp, ETAF_SER_RUNNING.qn_new());
-}
-
-void GateBoySerial::write_sc_sync(GateBoyCpuBus& cpu_bus)
-{
-  (void)cpu_bus;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -98,7 +87,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
       /*#p06.JAGO*/ wire _JAGO =  not1(CULY_SER_DIR.qp_new());
       /*#p06.KUJO*/ wire _KUJO =  nor2(_JAGO, _DAWA_SER_CLK); // schematic wrong
 
-      PIN68_SCK.pin_in_oedp(0, 0);
+      PIN68_SCK.pin_in_oedp(0, !0);
       PIN68_SCK.pin_out_oehilo(CULY_SER_DIR.qp_new(), _KEXU, _KUJO);
     }
   }
@@ -106,7 +95,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
   //----------------------------------------
 
   {
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_new());
+    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
     /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old());
@@ -119,7 +108,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
 
 
 void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
-  /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_new());
+  /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
   /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
   /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
   /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
@@ -127,7 +116,7 @@ void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
 
   // this pin has 4 wires attached, but they're not traced
-  PIN69_SIN.pin_in_dp(0);
+  PIN69_SIN.pin_in_dp(1);
 
   /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A[ 0].qp_new());
   /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[0].qp_new(), rst.ALUR_SYS_RSTn());
@@ -149,7 +138,7 @@ void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(cpu_bus.BUS_CPU_D[6].qp_new(), _DAKU_FF01_WRp);
   /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2(cpu_bus.BUS_CPU_D[7].qp_new(), _DAKU_FF01_WRp);
 
-  /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(PIN69_SIN.qp_new());
+  /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(PIN69_SIN.int_qp_new());
   /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old());
   /* p06.EROD*/ EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, EJAB_SER_DATA5.qp_old());
   /* p06.EJAB*/ EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, DOVU_SER_DATA4.qp_old());

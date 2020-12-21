@@ -10,8 +10,6 @@ struct GateBoyInterrupts {
   }
 
   void read_intf(GateBoyCpuBus& cpu_bus);
-  void write_intf_async(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
   void read_ie(GateBoyCpuBus& cpu_bus);
   void write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
@@ -28,12 +26,6 @@ struct GateBoyInterrupts {
     wire WODU_HBLANKp);
 
   void dump(Dumper& d) {
-    d.dump_bitp("IE_D0         : ", IE_D0.state);
-    d.dump_bitp("IE_D1         : ", IE_D1.state);
-    d.dump_bitp("IE_D2         : ", IE_D2.state);
-    d.dump_bitp("IE_D3         : ", IE_D3.state);
-    d.dump_bitp("IE_D4         : ", IE_D4.state);
-    d("\n");
     d.dump_bitp("LOPE_FF0F_0   : ", LOPE_FF0F_D0p.state);
     d.dump_bitp("LALU_FF0F_1   : ", LALU_FF0F_D1p.state);
     d.dump_bitp("NYBO_FF0F_2   : ", NYBO_FF0F_D2p.state);
@@ -45,6 +37,24 @@ struct GateBoyInterrupts {
     d.dump_bitp("PAVY_FF0F_L2p : ", PAVY_FF0F_L2p.state);
     d.dump_bitp("NEJY_FF0F_L3p : ", NEJY_FF0F_L3p.state);
     d.dump_bitp("NUTY_FF0F_L4p : ", NUTY_FF0F_L4p.state);
+    d("\n");
+    d.dump_bitp("IE_D0         : ", IE_D0.state);
+    d.dump_bitp("IE_D1         : ", IE_D1.state);
+    d.dump_bitp("IE_D2         : ", IE_D2.state);
+    d.dump_bitp("IE_D3         : ", IE_D3.state);
+    d.dump_bitp("IE_D4         : ", IE_D4.state);
+    d("\n");
+    d.dump_bitp("SIG_CPU_INT_VBLANK : ", SIG_CPU_INT_VBLANK.state);
+    d.dump_bitp("SIG_CPU_INT_STAT   : ", SIG_CPU_INT_STAT  .state);
+    d.dump_bitp("SIG_CPU_INT_TIMER  : ", SIG_CPU_INT_TIMER .state);
+    d.dump_bitp("SIG_CPU_INT_SERIAL : ", SIG_CPU_INT_SERIAL.state);
+    d.dump_bitp("SIG_CPU_INT_JOYPAD : ", SIG_CPU_INT_JOYPAD.state);
+    d("\n");
+    d.dump_bitp("SIG_CPU_ACK_VBLANK : ", SIG_CPU_ACK_VBLANK.state);
+    d.dump_bitp("SIG_CPU_ACK_STAT   : ", SIG_CPU_ACK_STAT  .state);
+    d.dump_bitp("SIG_CPU_ACK_TIMER  : ", SIG_CPU_ACK_TIMER .state);
+    d.dump_bitp("SIG_CPU_ACK_SERIAL : ", SIG_CPU_ACK_SERIAL.state);
+    d.dump_bitp("SIG_CPU_ACK_JOYPAD : ", SIG_CPU_ACK_JOYPAD.state);
   }
 
   /*p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
@@ -66,16 +76,17 @@ struct GateBoyInterrupts {
   DFF IE_D3;
   DFF IE_D4;
 
-  Signal SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
   Signal SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
-  Signal SIG_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
   Signal SIG_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
-  Signal SIG_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
   Signal SIG_CPU_INT_TIMER ;    // bottom right port PORTB_11: <- P02.NYBO, timer int
-  Signal SIG_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
   Signal SIG_CPU_INT_SERIAL;    // bottom right port PORTB_15: <- P02.UBUL, serial int
-  Signal SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
   Signal SIG_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joypad int
+
+  Signal SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
+  Signal SIG_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
+  Signal SIG_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
+  Signal SIG_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
+  Signal SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
 };
 
 //------------------------------------------------------------------------------------------------------------------------

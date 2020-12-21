@@ -29,7 +29,7 @@ uint64_t commit_and_hash(void* blob, size_t size) {
       LOG_Y("Bit %d not dirty after sim pass!\n", i);
       bad_bits = true;
     }
-    s = (s & 0x03) | ((s & 1) << 2);
+    s = (s & 0b00001011) | ((s & 1) << 2);
 
     combine_hash(h, s);
 

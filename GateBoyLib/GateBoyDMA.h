@@ -30,15 +30,6 @@ struct GateBoyDMA {
 
   Signal _XYMU_RENDERINGp;
 
-  /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;  // Axxxxxxx
-  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx
-  /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;      // xxxxExxx
-  /*p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;   // Axxxxxxx
-  /*p04.LENE*/ DFF17 LENE_DMA_TRIG_d4;   // xxxxExxx
-
-  /*p04.LARA*/ Gate LARA_DMA_LATCHn;     // xxxxExxx - NAND latch w/ LOKY
-  /*p04.LOKY*/ Gate LOKY_DMA_LATCHp;     // xxxxExxx - NAND latch w/ LARA
-
   /*p04.NAKY*/ DFF17 NAKY_DMA_A00p;      // Axxxxxxx
   /*p04.PYRO*/ DFF17 PYRO_DMA_A01p;      // Axxxxxxx
   /*p04.NEFY*/ DFF17 NEFY_DMA_A02p;      // Axxxxxxx
@@ -57,6 +48,14 @@ struct GateBoyDMA {
   /*p04.POKU*/ DFF8p POKU_DMA_A14n;      // xxxxxxxH
   /*p04.MARU*/ DFF8p MARU_DMA_A15n;      // xxxxxxxH
 
+  /*p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;  // Axxxxxxx
+  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx
+  /*p04.MYTE*/ DFF17 MYTE_DMA_DONE;      // xxxxExxx
+  /*p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;   // Axxxxxxx
+  /*p04.LENE*/ DFF17 LENE_DMA_TRIG_d4;   // xxxxExxx
+
+  /*p04.LARA*/ Gate LARA_DMA_LATCHn;     // xxxxExxx - NAND latch w/ LOKY
+  /*p04.LOKY*/ Gate LOKY_DMA_LATCHp;     // xxxxExxx - NAND latch w/ LARA
 };
 
 //------------------------------------------------------------------------------------------------------------------------

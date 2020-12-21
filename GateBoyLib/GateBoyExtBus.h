@@ -124,22 +124,22 @@ struct GateBoyExtBus {
   void write_pins_to_ext(uint8_t* cart_ram, uint8_t* ext_ram);
 
   void dump(Dumper& d) {
-    d.dump_bitp   ("PIN80_CSn  : ", PIN80_CSn.state);
-    d.dump_bitp   ("PIN79_RDn  : ", PIN79_RDn.state);
-    d.dump_bitp   ("PIN78_WRn  : ", PIN78_WRn.state);
+    d.dump_slice2n("PIN01_ADDR : ", PIN01_ADDR, 16);
+    d.dump_slice2n("PIN17_DATA : ", PIN17_DATA, 8);
+    d.dump_bitn   ("PIN80_CSn  : ", PIN80_CSn.state);
+    d.dump_bitn   ("PIN79_RDn  : ", PIN79_RDn.state);
+    d.dump_bitn   ("PIN78_WRn  : ", PIN78_WRn.state);
     d.dump_slice2p("ADDR LATCH : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
     d.dump_slice2n("DATA LATCH : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
-    d.dump_slice2p("PIN01_ADDR : ", PIN01_ADDR, 16);
-    d.dump_slice2p("PIN17_DATA : ", PIN17_DATA, 8);
   }
 
-  ExtDataLatch ext_data_latch;
-  ExtAddrLatch ext_addr_latch;
+  PinOut PIN01_ADDR[16]; // Pins 01 - 16
+  PinIO  PIN17_DATA[8];  // Pins 17 - 24
   PinOut PIN80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
   PinOut PIN79_RDn;      // RDn idles low, goes high on phase B for an external write
   PinOut PIN78_WRn;      // WRn idles high, goes low during EFG if there's a write
-  PinOut PIN01_ADDR[16]; // Pins 01 - 16
-  PinIO  PIN17_DATA[8];  // Pins 17 - 24
+  ExtDataLatch ext_data_latch;
+  ExtAddrLatch ext_addr_latch;
 
   // pin17 a << RUXA
   // pin17 b << LULA

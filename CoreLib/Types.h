@@ -228,6 +228,8 @@ struct Dumper {
   }
 };
 
+#define DUMP_BITP(A) d.dump_bitp(#A " : ", A.state);
+
 //-----------------------------------------------------------------------------
 
 #define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail : " #A); __debugbreak(); }

@@ -21,12 +21,12 @@ struct GateBoyClock {
   //----------------------------------------
   // Root clocks - ignoring the deglitcher here
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN74_CLKGOOD.qp_new()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN74_CLKGOOD.qp_new()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN74_CLKGOOD.int_qp_new()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN74_CLKGOOD.int_qp_new()); }
   /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.qp_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
-  /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN74_CLK.qp_new(); }
+  /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN74_CLK_IN.int_qp_new(); }
   /* p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1(ATAL_xBxDxFxH()); }
   /* p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
   /*#p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); }
@@ -107,8 +107,8 @@ struct GateBoyClock {
   /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 
   PinIn  PIN74_CLKGOOD;
-  PinIn  PIN74_CLK;
-  PinOut PIN75_EXT_CLK;
+  PinIn  PIN74_CLK_IN;
+  PinOut PIN75_CLK_OUT;
 
   Signal SIG_CPU_CLKREQ;
   Signal SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock

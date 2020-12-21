@@ -12,10 +12,7 @@ struct GateBoySerial {
   void tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   void read_sb(GateBoyCpuBus& cpu_bus);
-  void write_sb_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
   void read_sc(GateBoyCpuBus& cpu_bus);
-  void write_sc_sync(GateBoyCpuBus& cpu_bus);
 
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
   /*p06.CULY*/ DFF17 CULY_SER_DIR;    // AxxxDxxH ?

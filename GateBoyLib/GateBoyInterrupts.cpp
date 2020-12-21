@@ -32,13 +32,6 @@ void GateBoyInterrupts::read_intf(GateBoyCpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyInterrupts::write_intf_async(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
-  (void)rst;
-  (void)cpu_bus;
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void GateBoyInterrupts::read_ie(GateBoyCpuBus& cpu_bus)
 {
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
@@ -58,11 +51,11 @@ void GateBoyInterrupts::write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cp
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
 
-  IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.qp_new(), cpu_bus.BUS_CPU_D[0].qp_old());
-  IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.qp_new(), cpu_bus.BUS_CPU_D[1].qp_old());
-  IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.qp_new(), cpu_bus.BUS_CPU_D[2].qp_old());
-  IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.qp_new(), cpu_bus.BUS_CPU_D[3].qp_old());
-  IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.qp_new(), cpu_bus.BUS_CPU_D[4].qp_old());
+  IE_D0.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[0].qp_old());
+  IE_D1.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[1].qp_old());
+  IE_D2.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[2].qp_old());
+  IE_D3.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[3].qp_old());
+  IE_D4.dff(FFFF_WRn_ext, 1, !rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[4].qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -139,6 +132,12 @@ void GateBoyInterrupts::tock(
   /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp,          _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, _PESU_VCC);
   /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, _PESU_VCC);
   /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(joypad.ASOK_INT_JOYp(),        _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, _PESU_VCC);
+
+  SIG_CPU_INT_VBLANK.set_new(LOPE_FF0F_D0p.qp_new());
+  SIG_CPU_INT_STAT  .set_new(LALU_FF0F_D1p.qp_new());
+  SIG_CPU_INT_TIMER .set_new(NYBO_FF0F_D2p.qp_new());
+  SIG_CPU_INT_SERIAL.set_new(UBUL_FF0F_D3p.qp_new());
+  SIG_CPU_INT_JOYPAD.set_new(ULAK_FF0F_D4p.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ void GateBoyApp::app_init() {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+#if 0
   // regenerate post-bootrom dump
   /*
   gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/tetris.gb"));
@@ -84,6 +84,44 @@ void GateBoyApp::app_init() {
 
   }
 
+  //memset(gb_thread.gb->int_ram, 0x34, 4096);
+  //memset(gb_thread.gb->zero_ram, 0x34, 128);
+  //memset(gb_thread.gb->zero_ram, 0x34, 128);
+  //memset(gb_thread.cart.data(), 0x34, 0x8000);
+
+  //gb_thread.gb->dbg_write(0xC000, 0x77);
+  //gb_thread.gb->dbg_read(0xC000);
+
+  //gb_thread.gb->dbg_read(ADDR_P1);
+  gb_thread.gb->dbg_write(0xC003, 0x77);
+
+
+
+
+#endif
+
+#if 0
+  {
+    const char* app = R"(
+    0150:
+      ld a, $55
+      ld hl, $9777
+      ld (hl), a
+      jr -3
+    )";
+
+    Assembler as;
+    as.assemble(app);
+    gb_thread.load_cart(DMG_ROM_blob, as.link());
+    gb_thread.reset_to_cart();
+    gb_thread.gb->run_phases(112);
+    gb_thread.gb->phase_origin = gb_thread.gb->phase_total;
+  }
+#endif
+
+#if 1
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/dma_0x1000.gb"));
+  gb_thread.reset_to_cart();
 #endif
 
 
@@ -268,7 +306,7 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
   memcpy(gb_thread.gb->vid_ram,  gb_thread.cart.data() + 0x8000, 8192);
   memcpy(gb_thread.gb->cart_ram, gb_thread.cart.data() + 0xA000, 8192);
-  memcpy(gb_thread.gb->ext_ram,  gb_thread.cart.data() + 0xC000, 8192);
+  memcpy(gb_thread.gb->int_ram,  gb_thread.cart.data() + 0xC000, 8192);
   memcpy(gb_thread.gb->oam_ram,  gb_thread.cart.data() + 0xFE00, 256);
   memcpy(gb_thread.gb->zero_ram, gb_thread.cart.data() + 0xFF80, 128);
 
@@ -462,6 +500,10 @@ void GateBoyApp::app_render_frame(Viewport view) {
   gb->timer.dump(d);
   d("\n");
 
+  d("\002===== Joypad =====\001\n");
+  gb->joypad.dump(d);
+  d("\n");
+
   text_painter.render(view, d.s.c_str(), cursor, 0);
   cursor += col_spacing;
   d.clear();
@@ -502,12 +544,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
     assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
   }
   d("\n");
-
-  /*
-  d("\002===== Joypad =====\001\n");
-  gb->joypad.dump(d);
-  d("\n");
-  */
 
   /*
   d("\002===== Serial =====\001\n");

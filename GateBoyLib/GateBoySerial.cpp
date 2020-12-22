@@ -68,7 +68,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
   // Feedback loop
 
   for (int rep = 0; rep < 2; rep++) {
-    /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_any());
+    /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2nb(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.qn_any());
     /*#p06.DAWA*/ wire2 _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_any());
 
     {
@@ -98,7 +98,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
   //----------------------------------------
 
   {
-    /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
+    /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2nb(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
     /*#p06.DAWA*/ wire2 _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
     /*#p06.EDYL*/ wire2 _EDYL_SER_CLK = not1b(_DAWA_SER_CLK);
     /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old());
@@ -113,7 +113,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
 void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   PIN69_SIN.reset_for_pass();
 
-  /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
+  /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2nb(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN68_SCK.int_qp_new());
   /*#p06.DAWA*/ wire2 _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new());
   /*#p06.EDYL*/ wire2 _EDYL_SER_CLK = not1b(_DAWA_SER_CLK);
   /* p06.EPYT*/ wire2 _EPYT_SER_CLK = not1b(_EDYL_SER_CLK);
@@ -134,14 +134,14 @@ void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p06.EGUV*/ wire2 _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D[7].qp_new(), rst.ALUR_SYS_RSTn());
 
   /* p06.DAKU*/ wire2 _DAKU_FF01_WRp = not1b(_URYS_FF01_WRn);
-  /* p06.CUFU*/ wire2 _CUFU_SER_DATA0_SETn = nand2(cpu_bus.BUS_CPU_D[0].qp_new(), _DAKU_FF01_WRp);
-  /* p06.DOCU*/ wire2 _DOCU_SER_DATA1_SETn = nand2(cpu_bus.BUS_CPU_D[1].qp_new(), _DAKU_FF01_WRp);
-  /* p06.DELA*/ wire2 _DELA_SER_DATA2_SETn = nand2(cpu_bus.BUS_CPU_D[2].qp_new(), _DAKU_FF01_WRp);
-  /* p06.DYGE*/ wire2 _DYGE_SER_DATA3_SETn = nand2(cpu_bus.BUS_CPU_D[3].qp_new(), _DAKU_FF01_WRp);
-  /* p06.DOLA*/ wire2 _DOLA_SER_DATA4_SETn = nand2(cpu_bus.BUS_CPU_D[4].qp_new(), _DAKU_FF01_WRp);
-  /* p06.ELOK*/ wire2 _ELOK_SER_DATA5_SETn = nand2(cpu_bus.BUS_CPU_D[5].qp_new(), _DAKU_FF01_WRp);
-  /* p06.EDEL*/ wire2 _EDEL_SER_DATA6_SETn = nand2(cpu_bus.BUS_CPU_D[6].qp_new(), _DAKU_FF01_WRp);
-  /* p06.EFEF*/ wire2 _EFEL_SER_DATA7_SETn = nand2(cpu_bus.BUS_CPU_D[7].qp_new(), _DAKU_FF01_WRp);
+  /* p06.CUFU*/ wire2 _CUFU_SER_DATA0_SETn = nand2b(cpu_bus.BUS_CPU_D[0].qp_new(), _DAKU_FF01_WRp);
+  /* p06.DOCU*/ wire2 _DOCU_SER_DATA1_SETn = nand2b(cpu_bus.BUS_CPU_D[1].qp_new(), _DAKU_FF01_WRp);
+  /* p06.DELA*/ wire2 _DELA_SER_DATA2_SETn = nand2b(cpu_bus.BUS_CPU_D[2].qp_new(), _DAKU_FF01_WRp);
+  /* p06.DYGE*/ wire2 _DYGE_SER_DATA3_SETn = nand2b(cpu_bus.BUS_CPU_D[3].qp_new(), _DAKU_FF01_WRp);
+  /* p06.DOLA*/ wire2 _DOLA_SER_DATA4_SETn = nand2b(cpu_bus.BUS_CPU_D[4].qp_new(), _DAKU_FF01_WRp);
+  /* p06.ELOK*/ wire2 _ELOK_SER_DATA5_SETn = nand2b(cpu_bus.BUS_CPU_D[5].qp_new(), _DAKU_FF01_WRp);
+  /* p06.EDEL*/ wire2 _EDEL_SER_DATA6_SETn = nand2b(cpu_bus.BUS_CPU_D[6].qp_new(), _DAKU_FF01_WRp);
+  /* p06.EFEF*/ wire2 _EFEL_SER_DATA7_SETn = nand2b(cpu_bus.BUS_CPU_D[7].qp_new(), _DAKU_FF01_WRp);
 
   /* p06.CAGE*/ wire2 _CAGE_SER_IN_new  = not1b(PIN69_SIN.int_qp_new());
   /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old());

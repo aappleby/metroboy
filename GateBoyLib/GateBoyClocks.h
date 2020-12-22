@@ -41,10 +41,10 @@ struct GateBoyClock {
   /* p27.MOXE*/ wire2 MOXE_AxCxExGx() const { return not1b(ALET_xBxDxFxH()); }
   /* p27.TAVA*/ wire2 TAVA_xBxDxFxH() const { return not1b(LAPE_AxCxExGx()); }
 
-  /*#p01.ATYP*/ wire2 ATYP_ABCDxxxx() const { return not1(AFUR_xxxxEFGHp.qp_new()); }
-  /*#p01.AFEP*/ wire2 AFEP_AxxxxFGH() const { return not1(ALEF_AxxxxFGHp.qn_new()); }
-  /*#p01.AROV*/ wire2 AROV_xxCDEFxx() const { return not1(APUK_ABxxxxGHp.qp_new()); }
-  /*#p01.ADAR*/ wire2 ADAR_ABCxxxxH() const { return not1(ADYK_ABCxxxxHp.qn_new()); }
+  /*#p01.ATYP*/ wire2 ATYP_ABCDxxxx() const { return not1b(AFUR_xxxxEFGHp.qp_new()); }
+  /*#p01.AFEP*/ wire2 AFEP_AxxxxFGH() const { return not1b(ALEF_AxxxxFGHp.qn_new()); }
+  /*#p01.AROV*/ wire2 AROV_xxCDEFxx() const { return not1b(APUK_ABxxxxGHp.qp_new()); }
+  /*#p01.ADAR*/ wire2 ADAR_ABCxxxxH() const { return not1b(ADYK_ABCxxxxHp.qn_new()); }
 
   /*#p01.BEKO*/ wire2 BEKO_ABCDxxxx() const { return not1b(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
   /*#p01.BAPY*/ wire2 BAPY_xxxxxxGH() const { return nor3b(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }

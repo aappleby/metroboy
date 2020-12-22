@@ -25,13 +25,13 @@ void WindowRegisters::tock(
   wire2 ROZE_FINE_COUNT_7n_old,
   wire2 RYDY_WIN_HITp_old)
 {
-  /*#p24.SEGU*/ wire2 _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-  /* p27.ROCO*/ wire2 _ROCO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
+  /*#p24.SEGU*/ wire2 _SEGU_CLKPIPE_evn = not1b(TYFA_CLKPIPE_odd);
+  /* p27.ROCO*/ wire2 _ROCO_CLKPIPE_odd = not1b(_SEGU_CLKPIPE_evn);
   /* p27.PYCO*/ PYCO_WIN_MATCHp.dff17(_ROCO_CLKPIPE_odd, rst.XAPO_VID_RSTn(), NUKO_WX_MATCHp_old);
 
   /* p27.SOVY*/ SOVY_WIN_HITp.dff17(clk.ALET_xBxDxFxH(), rst.XAPO_VID_RSTn(), RYDY_WIN_HITp_old);
 
-  /* p27.PANY*/ wire2 _PANY_WIN_FETCHn_old = nor2(NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
+  /* p27.PANY*/ wire2 _PANY_WIN_FETCHn_old = nor2b(NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
   /* p27.RYFA*/ RYFA_WIN_FETCHn_A.dff17(_SEGU_CLKPIPE_evn, XYMU_RENDERINGp, _PANY_WIN_FETCHn_old);
 }
 

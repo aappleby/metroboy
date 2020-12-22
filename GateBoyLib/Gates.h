@@ -704,7 +704,6 @@ struct TpLatch : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-inline wire2 not1(wire2 a) { return !a; }
 inline wire2 not1b(wire2 a) { return ~a; }
 
 inline wire2 and2(wire2 a, wire2 b) { return a & b; }
@@ -722,33 +721,20 @@ inline wire2 or5(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return  (a | b |
 
 inline wire2 xor2 (wire2 a, wire2 b) { return a ^ b; }
 
-inline wire2 xnor2 (wire2 a, wire2 b) { return a == b; }
 inline wire2 xnor2b(wire2 a, wire2 b) { return ~(a ^ b); }
 
-inline wire2 nor2 (wire2 a, wire2 b) { return !(a | b); }
 inline wire2 nor2b(wire2 a, wire2 b) { return ~(a | b); }
-inline wire2 nor3 (wire2 a, wire2 b, wire2 c) { return !(a | b | c); }
 inline wire2 nor3b(wire2 a, wire2 b, wire2 c) { return ~(a | b | c); }
-inline wire2 nor4 (wire2 a, wire2 b, wire2 c, wire2 d) { return !(a | b | c | d); }
 inline wire2 nor4b(wire2 a, wire2 b, wire2 c, wire2 d) { return ~(a | b | c | d); }
-inline wire2 nor5 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return !(a | b | c | d | e); }
 inline wire2 nor5b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return ~(a | b | c | d | e); }
-inline wire2 nor6 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return !(a | b | c | d | e | f); }
 inline wire2 nor6b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return ~(a | b | c | d | e | f); }
-inline wire2 nor8 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g, wire2 h) { return !(a | b | c | d | e | f | g | h); }
 inline wire2 nor8b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g, wire2 h) { return ~(a | b | c | d | e | f | g | h); }
 
-inline wire2 nand2 (wire2 a, wire2 b) { return !(a & b); }
 inline wire2 nand2b(wire2 a, wire2 b) { return ~(a & b); }
-inline wire2 nand3 (wire2 a, wire2 b, wire2 c) { return !(a & b & c); }
 inline wire2 nand3b(wire2 a, wire2 b, wire2 c) { return ~(a & b & c); }
-//inline wire2 nand4 (wire2 a, wire2 b, wire2 c, wire2 d) { return !(a & b & c & d); }
 inline wire2 nand4b(wire2 a, wire2 b, wire2 c, wire2 d) { return ~(a & b & c & d); }
-inline wire2 nand5 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return !(a & b & c & d & e); }
 inline wire2 nand5b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return ~(a & b & c & d & e); }
-//inline wire2 nand6 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return !(a & b & c & d & e & f); }
 inline wire2 nand6b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return ~(a & b & c & d & e & f); }
-//inline wire2 nand7 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g) { return !(a & b & c & d & e & f & g); }
 inline wire2 nand7b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g) { return ~(a & b & c & d & e & f & g); }
 
 inline wire2 and_or3(wire2 a, wire2 b, wire2 c) { return (a & b) | c; }
@@ -768,14 +754,10 @@ inline wire2 add_s(wire2 a, wire2 b, wire2 c) {
 
 // Six-rung mux cells are _non_inverting_. m = 1 selects input A
 inline wire2 mux2p(wire2 m, wire2 a, wire2 b) {
-  return m ? a : b;
+  return bit(m) ? a : b;
 }
 
 // Five-rung mux cells are _inverting_. m = 1 selects input A
-inline wire2 mux2n(wire2 m, wire2 a, wire2 b) {
-  return !(m ? a : b);
-}
-
 inline wire2 mux2nb(wire2 m, wire2 a, wire2 b) {
   return ~(bit(m) ? a : b);
 }

@@ -39,11 +39,11 @@
   wire2 cart_rom_a16 = bank_0 ? 0 : MBC1_BANK_D2.qp_new();
   wire2 cart_rom_a17 = bank_0 ? 0 : MBC1_BANK_D3.qp_new();
   wire2 cart_rom_a18 = bank_0 ? 0 : MBC1_BANK_D4.qp_new();
-  wire2 cart_rom_a19 = MBC1_MODE.qp_new() ? 0 : bank_0 ? 0 : MBC1_BANK_D5.qp_new();
-  wire2 cart_rom_a20 = MBC1_MODE.qp_new() ? 0 : bank_0 ? 0 : MBC1_BANK_D6.qp_new();
+  wire2 cart_rom_a19 = bit(MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : MBC1_BANK_D5.qp_new();
+  wire2 cart_rom_a20 = bit(MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : MBC1_BANK_D6.qp_new();
 
-  wire2 cart_ram_a13 = MBC1_MODE.qp_new() ? MBC1_BANK_D5.qp_new() : 0;
-  wire2 cart_ram_a14 = MBC1_MODE.qp_new() ? MBC1_BANK_D6.qp_new() : 0;
+  wire2 cart_ram_a13 = bit(MBC1_MODE.qp_new()) ? MBC1_BANK_D5.qp_new() : 0;
+  wire2 cart_ram_a14 = bit(MBC1_MODE.qp_new()) ? MBC1_BANK_D6.qp_new() : 0;
 
   // ROM read
   {

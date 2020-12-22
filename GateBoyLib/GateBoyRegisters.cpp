@@ -277,7 +277,7 @@ void RegStat::tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, const RegLYC&
 {
   // FIXME polarity doesn't seem right, are we sure that RUPO is a nor latch and these signals are correct?
   /* p21.SEPA*/ wire2 _SEPA_FF41_WRp = and2(cpu_bus.CUPA_CPU_WRp(), cpu_bus.VARY_FF41p());
-  /* p21.RYJU*/ wire2 _RYJU_FF41_WRn = not1(_SEPA_FF41_WRp);
+  /* p21.RYJU*/ wire2 _RYJU_FF41_WRn = not1b(_SEPA_FF41_WRp);
   /* p21.PAGO*/ wire2 _PAGO_LYC_MATCH_RST = or2(rst.WESY_SYS_RSTn(), _RYJU_FF41_WRn);
   /* p21.RUPO*/ RUPO_LYC_MATCHn.nor_latch(_PAGO_LYC_MATCH_RST, reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new());
 }

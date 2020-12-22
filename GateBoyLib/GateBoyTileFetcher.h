@@ -12,7 +12,7 @@ struct TileFetcher {
   wire2 LABU_LATCH_TILE_DBn() const;
 
   /* p27.ROMO*/ wire2 ROMO_PRELOAD_DONEn() const {
-    return not1(POKY_PRELOAD_LATCHp.qp_new());
+    return not1b(POKY_PRELOAD_LATCHp.qp_new());
   }
 
   wire2 TAVE_PRELOAD_DONE_TRIGp_old() const {

@@ -217,8 +217,8 @@ struct RegLY {
   void tock2(GateBoyResetDebug& rst, RegLX& reg_lx);
 
   /*#p24.NERU*/ wire2 NERU_y000p() const {
-    return nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(),
-                MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
+    return nor8b(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(),
+                 MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
   }
 
   /*#p21.XYVO*/ wire2 XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old(), LAFO_LY7p.qp_old()); } // 128 + 16 = 144
@@ -256,7 +256,7 @@ struct RegLX {
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
 
   wire2 PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire2 _PURE_LINE_ENDn_new_evn = not1(RUTU_x113p.qp_new());
+    /*#p21.PURE*/ wire2 _PURE_LINE_ENDn_new_evn = not1b(RUTU_x113p.qp_new());
     return _PURE_LINE_ENDn_new_evn;
   }
 
@@ -271,8 +271,8 @@ struct RegLX {
   wire2 RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
   wire2 RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
 
-  /*#p24.LOFU*/ wire2 LOFU_x113n_old() const { return not1(RUTU_x113p_old()); }
-  /*#p24.LOFU*/ wire2 LOFU_x113n_new() const { return not1(RUTU_x113p_new()); }
+  /*#p24.LOFU*/ wire2 LOFU_x113n_old() const { return not1b(RUTU_x113p_old()); }
+  /*#p24.LOFU*/ wire2 LOFU_x113n_new() const { return not1b(RUTU_x113p_new()); }
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk);
 

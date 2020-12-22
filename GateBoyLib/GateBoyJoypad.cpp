@@ -54,7 +54,7 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   PIN62_JOY_P15.reset_for_pass();
 
   wire2 BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
-  /* p05.KURA*/ wire2 _KURA_JOYP_DBGn_new = not1(BURO_FF60_0p_new);
+  /* p05.KURA*/ wire2 _KURA_JOYP_DBGn_new = not1b(BURO_FF60_0p_new);
 
   /*
   // lcd ribbon voltages after bootrom

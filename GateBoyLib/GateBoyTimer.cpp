@@ -113,14 +113,14 @@ void GateBoyTimer::read_tma(GateBoyCpuBus& cpu_bus) {
 
 void GateBoyTimer::write_tma_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p03.TYJU*/ wire2 _TYJU_FF06_WRn = nand4b(cpu_bus.TAPU_CPU_WRp.qp_new2(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A[ 1].qp_new2(), cpu_bus.TOVY_A00n());
-  /* p03.SABU*/ SABU_TMA0p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
-  /* p03.NYKE*/ NYKE_TMA1p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old());
-  /* p03.MURU*/ MURU_TMA2p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old());
-  /* p03.TYVA*/ TYVA_TMA3p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3].qp_old());
-  /* p03.TYRU*/ TYRU_TMA4p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4].qp_old());
-  /* p03.SUFY*/ SUFY_TMA5p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5].qp_old());
-  /* p03.PETO*/ PETO_TMA6p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp_old());
-  /* p03.SETA*/ SETA_TMA7p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old());
+  /* p03.SABU*/ SABU_TMA0p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old2());
+  /* p03.NYKE*/ NYKE_TMA1p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old2());
+  /* p03.MURU*/ MURU_TMA2p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old2());
+  /* p03.TYVA*/ TYVA_TMA3p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3].qp_old2());
+  /* p03.TYRU*/ TYRU_TMA4p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4].qp_old2());
+  /* p03.SUFY*/ SUFY_TMA5p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5].qp_old2());
+  /* p03.PETO*/ PETO_TMA6p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp_old2());
+  /* p03.SETA*/ SETA_TMA7p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old2());
 
 }
 
@@ -133,9 +133,9 @@ void GateBoyTimer::read_tac(GateBoyCpuBus& cpu_bus) {
 
 void GateBoyTimer::write_tac_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p03.SARA*/ wire2 _SARA_FF07_WRn = nand4b(cpu_bus.TAPU_CPU_WRp.qp_new2(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A[ 1].qp_new2(), cpu_bus.BUS_CPU_A[ 0].qp_new2());
-  /* p03.SOPU*/ SOPU_TAC0p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
-  /* p03.SAMY*/ SAMY_TAC1p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old());
-  /* p03.SABO*/ SABO_TAC2p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old());
+  /* p03.SOPU*/ SOPU_TAC0p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old2());
+  /* p03.SAMY*/ SAMY_TAC1p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old2());
+  /* p03.SABO*/ SABO_TAC2p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old2());
 
 }
 
@@ -148,7 +148,7 @@ void GateBoyTimer::tock2(
   const GateBoyDiv& div)
 {
 
-  /*#p03.MERY*/ wire2 _MERY_TIMER_OVERFLOWp_old = nor2b(NUGA_TIMA7p.qp_old(), NYDU_TIMA7p_DELAY.qn_old2());
+  /*#p03.MERY*/ wire2 _MERY_TIMER_OVERFLOWp_old = nor2b(NUGA_TIMA7p.qp_old2(), NYDU_TIMA7p_DELAY.qn_old2());
   /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _MERY_TIMER_OVERFLOWp_old);
 
   /*#p03.TOPE*/ wire2 _TOPE_FF05_WRn = nand4b(cpu_bus.TAPU_CPU_WRp.qp_new2(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A[ 0].qp_new2());
@@ -156,7 +156,7 @@ void GateBoyTimer::tock2(
   /*#p03.MEKE*/ wire2 _MEKE_TIMER_OVERFLOWn = not1b(MOBA_TIMER_OVERFLOWp.qp_new2());
   /*#p03.MEXU*/ wire2 _MEXU_TIMA_LOADp      = nand3b(_MUZU_CPU_LOAD_TIMAn, rst.ALUR_SYS_RSTn(), _MEKE_TIMER_OVERFLOWn);
   /*#p03.MUGY*/ wire2 _MUGY_TIMA_MAX_RSTn   = not1b(_MEXU_TIMA_LOADp);
-  /*#p03.NYDU*/ NYDU_TIMA7p_DELAY.dff17(clk.BOGA_Axxxxxxx(), _MUGY_TIMA_MAX_RSTn, NUGA_TIMA7p.qp_old());
+  /*#p03.NYDU*/ NYDU_TIMA7p_DELAY.dff17(clk.BOGA_Axxxxxxx(), _MUGY_TIMA_MAX_RSTn, NUGA_TIMA7p.qp_old2());
 
   /*#p03.UBOT*/ wire2 _UBOT_DIV01n = not1b(div.UFOR_DIV01p.qp_new2());
   /*#p03.UVYR*/ wire2 _UVYR_DIV03n = not1b(div.TERO_DIV03p.qp_new2());

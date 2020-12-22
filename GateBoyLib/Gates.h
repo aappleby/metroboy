@@ -21,7 +21,7 @@ struct BitBase {
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
 
   wire2 qp_old() const { check_old(); return bit_data(); }
-  wire2 qp_new() const { check_new(); return bit_data(); }
+  //wire2 qp_new() const { check_new(); return bit_data(); }
 
   wire2 qp_any2() const { return state; }
   wire2 qn_any2() const { return ~state; }

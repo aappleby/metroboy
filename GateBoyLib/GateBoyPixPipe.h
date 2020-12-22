@@ -31,7 +31,7 @@ struct WindowRegisters {
   /* p27.MOSU*/ wire2 MOSU_WIN_MODE_TRIGp_old() const { return not1b(NYFO_WIN_MODE_TRIGn_old()); }
 
   wire2 NUNY_WIN_MODE_TRIGp_new() const {
-    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_new = and2(PYNU_WIN_MODE_Ap.qp_new(), NOPA_WIN_MODE_Bp.qn_new2());
+    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_new = and2(PYNU_WIN_MODE_Ap.qp_new2(), NOPA_WIN_MODE_Bp.qn_new2());
     return _NUNY_WIN_MODE_TRIGp_new;
   }
   /* p27.NYFO*/ wire2 NYFO_WIN_MODE_TRIGn_new() const { return not1b(NUNY_WIN_MODE_TRIGp_new()); }
@@ -39,7 +39,7 @@ struct WindowRegisters {
 
 
   wire2 NAFY_WIN_MODE_TRIGn() const {
-    /* p24.LOBY*/ wire2 _LOBY_RENDERINGn = not1b(_XYMU_RENDERINGp.qp_new());
+    /* p24.LOBY*/ wire2 _LOBY_RENDERINGn = not1b(_XYMU_RENDERINGp.qp_new2());
     /* p24.NAFY*/ wire2 _NAFY_WIN_MODE_TRIGn = nor2b(MOSU_WIN_MODE_TRIGp_new(), _LOBY_RENDERINGn);
     return _NAFY_WIN_MODE_TRIGn;
   }
@@ -52,8 +52,8 @@ struct WindowRegisters {
   }
 
   wire2 SUZU_WIN_FIRST_TILEne_new() const {
-    /*#p27.SYLO*/ wire2 _SYLO_WIN_HITn_new = not1b(RYDY_WIN_HITp.qp_new());
-    /* p27.TUXY*/ wire2 _TUXY_WIN_FIRST_TILEne_new = nand2b(_SYLO_WIN_HITn_new, SOVY_WIN_HITp.qp_new());
+    /*#p27.SYLO*/ wire2 _SYLO_WIN_HITn_new = not1b(RYDY_WIN_HITp.qp_new2());
+    /* p27.TUXY*/ wire2 _TUXY_WIN_FIRST_TILEne_new = nand2b(_SYLO_WIN_HITn_new, SOVY_WIN_HITp.qp_new2());
     /* p27.SUZU*/ wire2 _SUZU_WIN_FIRST_TILEne_new = not1b(_TUXY_WIN_FIRST_TILEne_new);
     return _SUZU_WIN_FIRST_TILEne_new;
   }
@@ -64,7 +64,7 @@ struct WindowRegisters {
   }
 
   wire2 SEKO_WIN_FETCH_TRIGp_new() const {
-    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_new = nor2b(RYFA_WIN_FETCHn_A.qn_new2(), RENE_WIN_FETCHn_B.qp_new());
+    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_new = nor2b(RYFA_WIN_FETCHn_A.qn_new2(), RENE_WIN_FETCHn_B.qp_new2());
     return _SEKO_WIN_FETCH_TRIGp_new;
   }
 
@@ -73,12 +73,12 @@ struct WindowRegisters {
   /* p27.TUKU*/ wire2 TUKU_WIN_HITn_old() const { return not1b(TOMU_WIN_HITp_old()); }
   /*#p24.SOCY*/ wire2 SOCY_WIN_HITn_old() const { return not1b(TOMU_WIN_HITp_old()); }
 
-  /*#p27.SYLO*/ wire2 SYLO_WIN_HITn_new() const { return not1b(RYDY_WIN_HITp.qp_new()); }
+  /*#p27.SYLO*/ wire2 SYLO_WIN_HITn_new() const { return not1b(RYDY_WIN_HITp.qp_new2()); }
   /*#p24.TOMU*/ wire2 TOMU_WIN_HITp_new() const { return not1b(SYLO_WIN_HITn_new()); }
   /* p27.TUKU*/ wire2 TUKU_WIN_HITn_new() const { return not1b(TOMU_WIN_HITp_new()); }
   /*#p24.SOCY*/ wire2 SOCY_WIN_HITn_new() const { return not1b(TOMU_WIN_HITp_new()); }
 
-  /*#p27.NOCU*/ wire2 NOCU_WIN_MODEn() const { return not1b(PYNU_WIN_MODE_Ap.qp_new()); }
+  /*#p27.NOCU*/ wire2 NOCU_WIN_MODEn() const { return not1b(PYNU_WIN_MODE_Ap.qp_new2()); }
   /* p27.PORE*/ wire2 PORE_WIN_MODEp() const { return not1b(NOCU_WIN_MODEn()); }
   /* p26.AXAD*/ wire2 AXAD_WIN_MODEn() const { return not1b(PORE_WIN_MODEp()); }
 
@@ -126,7 +126,7 @@ struct FineScroll {
 
 
   /*#p27.POVA*/ wire2 POVA_FINE_MATCH_TRIGp() {
-    wire2 _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new(), NYZE_SCX_FINE_MATCH_B.qn_new2());
+    wire2 _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new2(), NYZE_SCX_FINE_MATCH_B.qn_new2());
     return _POVA_FINE_MATCH_TRIGp;
   }
 

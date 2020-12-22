@@ -45,7 +45,6 @@ private:
   void load_golden(const char* filename);
 
   RunMode runmode = RUN_STEP;
-  StepSize stepmode = STEP_PHASE;
 
   const uint8_t* keyboard_state = nullptr;
 

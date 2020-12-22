@@ -11,15 +11,13 @@
 #include <condition_variable>
 #include <atomic>
 #include <deque>
+#include <barrier>
 
 //--------------------------------------------------------------------------------
 
 struct GateBoyThread {
 
-  struct Command {
-    int64_t op;
-    int64_t count;
-  };
+  GateBoyThread() : pause_barrier(2), resume_barrier(2) {}
 
   void reset_to_bootrom();
   void reset_to_cart();
@@ -27,40 +25,45 @@ struct GateBoyThread {
 
   void start();
   void stop();
-
-  void thread_main();
   void pause();
   void resume();
-  void post_work(Command c);
-  void clear_work();
+  bool paused() { return sig_break; }
 
   void step_phase(int steps);
-  void step_pass(int steps);
   void step_back(int steps);
+  void clear_work();
 
-  void run_step_phase();
-  void run_step_pass();
-  void run_step_back();
-
-  std::thread* main;
+  void dump(Dumper& d);
 
   StateStack<GateBoy> gb;
   blob boot;
   blob cart;
-  Assembler assembler;
+
+private:
+
+  struct Command {
+    int64_t op;
+    int64_t count;
+  };
+
+  void thread_main();
+  void post_work(Command c);
+
+  void run_step_phase();
+  void run_step_back();
+
+  std::thread* main;
 
   int pause_count = 0;
-  std::mutex mut;
-  std::atomic_bool sig_pause   = false;
-  std::atomic_bool sig_waiting = false;
+  std::atomic_bool sig_break   = false;
   std::atomic_bool sig_exit    = false;
-  std::condition_variable cv_thread_pause;
-  std::condition_variable cv_thread_resume;
+  std::barrier<> pause_barrier;
+  std::barrier<> resume_barrier;
 
   enum {
+    CMD_None,
     CMD_Exit,
     CMD_StepPhase,
-    CMD_StepPass,
     CMD_StepBack,
   };
 

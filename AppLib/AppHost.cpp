@@ -274,7 +274,7 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // ImGui render
 
-    /*
+#if 0
     //ImGui::ShowDemoWindow();
 
     ImGui::Render();
@@ -320,7 +320,7 @@ int AppHost::app_main(int, char**) {
 
       glDisable(GL_SCISSOR_TEST);
     }
-    */
+#endif
 
     //----------------------------------------
     // Client end frame

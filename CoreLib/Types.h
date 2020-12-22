@@ -31,24 +31,11 @@ enum RunMode {
   RUN_SYNC = 3, // run until end of frame, then wait for vsync signal
 };
 
-enum StepSize {
-  STEP_PASS  = 0,
-  STEP_PHASE = 1,
-};
-
 static const char* runmode_names[] = {
   "RUN_STOP ",
   "RUN_STEP ",
   "RUN_FAST ",
   "RUN_SYNC ",
-};
-
-static const char* stepmode_names[] = {
-  "STEP_PASS  ",
-  "STEP_PHASE ",
-  "STEP_CYCLE ",
-  "STEP_LINE  ",
-  "STEP_FRAME ",
 };
 
 static const char* phase_names[] = {

@@ -82,7 +82,6 @@ public:
   // controls
 
   RunMode runmode = RUN_STEP;
-  StepSize stepsize = STEP_PHASE;
 
   bool rom_loaded = false;
   int overlay_mode = 0;

@@ -139,7 +139,6 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
 
   rom_loaded = true;
   runmode = RUN_STEP;
-  stepsize = STEP_PHASE;
 }
 
 //-----------------------------------------------------------------------------
@@ -237,10 +236,7 @@ void MetroBoyApp::app_update(double /*delta*/) {
   else if (runmode == RUN_STEP) {
     if (step_forward) {
       gb.push();
-      if      (stepsize == STEP_PHASE) { step_phase(step_forward); }
-      //else if (stepsize == STEP_CYCLE) { step_cycle(step_forward); }
-      //else if (stepsize == STEP_LINE)  { step_line (step_forward); }
-      //else if (stepsize == STEP_FRAME) { step_frame(step_forward); }
+      step_phase(step_forward);
     }
     if (step_backward) {
       gb.pop();
@@ -342,7 +338,7 @@ void MetroBoyApp::app_render_ui(Viewport view) {
     column += 32 * 7;
   }
 
-  text_painter.dprintf("%s %s\n", runmode_names[runmode], stepmode_names[stepsize]);
+  text_painter.dprintf("%s\n", runmode_names[runmode]);
 
   size_t state_size = gb.state_size_bytes();
   if (state_size < 1024 * 1024) {

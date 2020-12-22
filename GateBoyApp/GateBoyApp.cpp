@@ -54,7 +54,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 0
+#if 1
   {
     /*
     m3_lcdc_obj_size_change.gb - small fail
@@ -104,7 +104,7 @@ void GateBoyApp::app_init() {
   gb_thread.gb->run_phases(120);
 #endif
 
-#if 1
+#if 0
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -173,7 +173,6 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   memcpy(gb_thread.gb->oam_ram,  gb_thread.cart.data() + 0xFE00, 256);
   memcpy(gb_thread.gb->zero_ram, gb_thread.cart.data() + 0xFF80, 128);
 
-#if 1
   gb_thread.gb->dbg_write(ADDR_BGP,  gb_thread.cart[ADDR_BGP]);
   gb_thread.gb->dbg_write(ADDR_OBP0, gb_thread.cart[ADDR_OBP0]);
   gb_thread.gb->dbg_write(ADDR_OBP1, gb_thread.cart[ADDR_OBP1]);
@@ -181,29 +180,8 @@ void GateBoyApp::load_flat_dump(const char* filename) {
   gb_thread.gb->dbg_write(ADDR_SCX,  gb_thread.cart[ADDR_SCX]);
   gb_thread.gb->dbg_write(ADDR_WY,   gb_thread.cart[ADDR_WY]);
   gb_thread.gb->dbg_write(ADDR_WX,   gb_thread.cart[ADDR_WX]);
-
-  // Bit 7 - LCD Display Enable             (0=Off, 1=On)
-  // Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 5 - Window Display Enable          (0=Off, 1=On)
-  // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-  // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
-  // Bit 2 - OBJ (Sprite) Size              (0=8x8, 1=8x16)
-  // Bit 1 - OBJ (Sprite) Display Enable    (0=Off, 1=On)
-  // Bit 0 - BG Display (for CGB see below) (0=Off, 1=On)
-
-  // #define FLAG_BG_ON        0x01
-  // #define FLAG_OBJ_ON       0x02
-  // #define FLAG_TALL_SPRITES 0x04
-  // #define FLAG_BG_MAP_1     0x08
-  // #define FLAG_TILE_0       0x10
-  // #define FLAG_WIN_ON       0x20
-  // #define FLAG_WIN_MAP_1    0x40
-  // #define FLAG_LCD_ON       0x80
-
   gb_thread.gb->dbg_write(ADDR_LCDC, gb_thread.cart[ADDR_LCDC]);
-#endif
 }
-
 
 //-----------------------------------------------------------------------------
 
@@ -214,7 +192,7 @@ void GateBoyApp::app_update(double /*delta*/) {
     if (event.type == SDL_KEYDOWN)
     switch (event.key.keysym.sym) {
 
-    case SDLK_SPACE: { gb_thread.sig_pause ? gb_thread.resume() : gb_thread.pause(); break; }
+    case SDLK_SPACE: { gb_thread.paused() ? gb_thread.resume() : gb_thread.pause(); break; }
 
     case SDLK_f: {
       gb_thread.clear_work();
@@ -242,8 +220,6 @@ void GateBoyApp::app_update(double /*delta*/) {
     case SDLK_d:    show_diff   = !show_diff;   break;
     case SDLK_g:    show_golden = !show_golden; break;
     case SDLK_o:    draw_passes = !draw_passes; break;
-    case SDLK_UP:   stepmode = STEP_PHASE;      break;
-    case SDLK_DOWN: stepmode = STEP_PASS;       break;
     //case SDLK_c:  { gb_thread.toggle_cpu(); break; }
 
     case SDLK_LEFT:   {
@@ -259,20 +235,15 @@ void GateBoyApp::app_update(double /*delta*/) {
 
     case SDLK_RIGHT:  {
       if (runmode == RUN_STEP) {
-        if (stepmode == STEP_PHASE) {
-          if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-            gb_thread.step_phase(114 * 8 * 8);
-          }
-          else if (keyboard_state[SDL_SCANCODE_LALT]) {
-            gb_thread.step_phase(114 * 8);
-          } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-            gb_thread.step_phase(8);
-          } else {
-            gb_thread.step_phase(1);
-          }
+        if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
+          gb_thread.step_phase(114 * 8 * 8);
         }
-        else {
-          gb_thread.step_pass(1);
+        else if (keyboard_state[SDL_SCANCODE_LALT]) {
+          gb_thread.step_phase(114 * 8);
+        } else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+          gb_thread.step_phase(8);
+        } else {
+          gb_thread.step_phase(1);
         }
       }
       break;
@@ -309,45 +280,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //----------------------------------------
 
   d("\002===== Thread =====\001\n");
-
-  d("State count   : %d\n", gb_thread.gb.state_count());
-  size_t state_size = gb_thread.gb.state_size_bytes();
-  if (state_size < 1024 * 1024) {
-    d("State size    : %d K\n", state_size / 1024);
-  }
-  else {
-    d("State size    : %d M\n", state_size / (1024 * 1024));
-  }
-  d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
-  d("Sim clock     : %f\n",      double(gb->phase_total) / (4194304.0 * 2));
-
-  d("Commands left : %d\n",    uint8_t(gb_thread.cursor_w - gb_thread.cursor_r));
-  d("Steps left    : %d\n",    gb_thread.command.count);
-  d("Waiting       : %d\n",    gb_thread.sig_waiting.load());
-
-  double phase_rate = (gb->phase_total - gb_thread.old_phase_total) / (gb->sim_time - gb_thread.old_sim_time);
-
-  if (phase_rate > 0) {
-    if (gb->sim_time == gb_thread.old_sim_time) {
-      phase_rate = 0;
-    }
-
-    gb_thread.phase_rate_smooth = (gb_thread.phase_rate_smooth * 0.99) + (phase_rate * 0.01);
-  }
-
-  d("Phase rate    : %f\n",      gb_thread.phase_rate_smooth);
-  d("Sim fps       : %f\n",      60.0 * gb_thread.phase_rate_smooth / PHASES_PER_SECOND);
-
-  gb_thread.old_phase_total = gb->phase_total;
-  gb_thread.old_sim_time = gb->sim_time;
-
-  /*
-  d("Pass count  %lld\n",    pass_count);
-  d("Pass rate   %f\n",      double(pass_count) / sim_time);
-  d("Phase count %lld\n",    phase_count);
-  d("Phase rate  %f\n",      double(phase_count) / sim_time);
-  */
-
+  gb_thread.dump(d);
   d("\n");
 
   d("\002===== GateBoy Top =====\001\n");
@@ -390,8 +323,6 @@ void GateBoyApp::app_render_frame(Viewport view) {
 
   d("\002===== DMA =====\001\n");
   gb->dma.dump(d);
-  d("\n");
-
   d("\n");
 
   /*
@@ -576,22 +507,20 @@ void GateBoyApp::app_render_frame(Viewport view) {
   //blitter.blit(view, trace_tex, 0, 0, 912, 154);
 
   // Draw flat memory view
-  /*
   {
     //printf("rom_buf.data() %p\n", rom_buf.data());
     //printf("gb->rom_buf %p\n", gb->rom_buf);
 
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb->rom_buf);
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.cart.data());
     update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vid_ram);
     update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart_ram);
-    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->ext_ram);
+    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->int_ram);
     update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->oam_ram);
     update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zero_ram);
     blitter.blit_mono(view, ram_tex, 256, 256,
                       0, 0, 256, 256,
                       960 + 96 - 64, 640 + 96, 256, 256);
   }
-  */
 
   // Draw screen and vid ram contents
 
@@ -650,9 +579,8 @@ void GateBoyApp::app_render_frame(Viewport view) {
   double sim_ratio = 0.0;
   double sim_time_smooth = 0.0;
 
-  d("%s %s Sim clock %8.3f %s %s\n",
+  d("%s Sim clock %8.3f %s %s\n",
     runmode_names[runmode],
-    stepmode_names[stepmode],
     double(phase_total) / (4194304.0 * 2),
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");

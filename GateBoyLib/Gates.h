@@ -161,9 +161,13 @@ struct DFF : public BitBase {
   }
 
   void dff_any(wire2 CLKp, wire2 SETn, wire2 RSTn, wire2 Dp) {
-    if (bit(~bit_clock() & CLKp)) set_data(Dp);
-    set_clock(CLKp);
-    set_data((bit_data() | ~SETn) & RSTn);
+    CLKp <<= 1;
+
+    if ((state | ~CLKp) & 2) Dp = state;
+
+    Dp = (Dp | ~SETn) & RSTn;
+    state = (state & 0b11111110) | (Dp   & 0b00000001);
+    state = (state & 0b11111101) | (CLKp & 0b00000010);
 
     set_new();
     set_dirty3();

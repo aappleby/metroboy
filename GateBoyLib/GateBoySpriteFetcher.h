@@ -19,7 +19,7 @@ struct SpriteFetcher {
     return _TEXY_SFETCHINGp;
   }
 
-  /* p27.SOWO*/ wire2 SOWO_SFETCH_RUNNINGn_old() const { return not1b(TAKA_SFETCH_RUNNINGp.qp_old()); }
+  /* p27.SOWO*/ wire2 SOWO_SFETCH_RUNNINGn_old() const { return not1b(TAKA_SFETCH_RUNNINGp.qp_old2()); }
   /* p27.SOWO*/ wire2 SOWO_SFETCH_RUNNINGn_new() const { return not1b(TAKA_SFETCH_RUNNINGp.qp_new2()); }
 
   /* p29.TYTU*/ wire2 TYTU_SFETCH_S0n() const { return not1b(TOXE_SFETCH_S0p.qp_new2()); }

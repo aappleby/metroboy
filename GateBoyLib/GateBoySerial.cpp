@@ -59,7 +59,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
   PIN70_SOUT.reset_for_pass();
 
   /*#p06.UWAM*/ wire2 _UWAM_FF02_WRn = nand4b(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A[ 1].qp_new2(), cpu_bus.TAPU_CPU_WRp.qp_new2(), cpu_bus.SANO_FF00_FF03p());
-  /*#p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
+  /*#p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old2());
 
   /*#p01.UVYN*/ wire2 _UVYN_DIV05n = not1b(div.TAMA_DIV05p.qp_new2());
   /*#p06.COTY*/ COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, COTY_SER_CLK.qn_old2()); // schematic wrong, clock is UVYN
@@ -82,7 +82,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
     {
       /*#p06.COBA*/ wire2 _COBA_SER_CNT3n = not1b(CALY_SER_CNT3.qp_any2());
       /*#p06.CABY*/ wire2 _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, rst.ALUR_SYS_RSTn());
-      /*#p06.ETAF*/ ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D[7].qp_old());
+      /*#p06.ETAF*/ ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, cpu_bus.BUS_CPU_D[7].qp_old2());
     }
 
     {
@@ -101,7 +101,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
     /*#p06.CAVE*/ wire2 _CAVE_SER_CLK = mux2nb(CULY_SER_DIR.qp_new2(), COTY_SER_CLK.qp_new2(), PIN68_SCK.int_qp_new());
     /*#p06.DAWA*/ wire2 _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new2());
     /*#p06.EDYL*/ wire2 _EDYL_SER_CLK = not1b(_DAWA_SER_CLK);
-    /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old());
+    /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old2());
     /* p05.KENA*/ wire2 _KENA = /*mux2n(KUKO_DBG_FF00_D6,*/ ELYS_SER_OUT.qp_new2() /*, FF60_0)*/; // FIXME hacking out debug stuff
     PIN70_SOUT.pin_out_dp(_KENA);
   }
@@ -144,13 +144,13 @@ void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p06.EFEF*/ wire2 _EFEL_SER_DATA7_SETn = nand2b(cpu_bus.BUS_CPU_D[7].qp_new2(), _DAKU_FF01_WRp);
 
   /* p06.CAGE*/ wire2 _CAGE_SER_IN_new  = not1b(PIN69_SIN.int_qp_new());
-  /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old());
-  /* p06.EROD*/ EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, EJAB_SER_DATA5.qp_old());
-  /* p06.EJAB*/ EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, DOVU_SER_DATA4.qp_old());
-  /* p06.DOVU*/ DOVU_SER_DATA4.dff22(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, DOJO_SER_DATA3.qp_old());
-  /* p06.DOJO*/ DOJO_SER_DATA3.dff22(_DAWE_SER_CLK, _DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn, DYRA_SER_DATA2.qp_old());
-  /* p06.DYRA*/ DYRA_SER_DATA2.dff22(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, DEGU_SER_DATA1.qp_old());
-  /* p06.DEGU*/ DEGU_SER_DATA1.dff22(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, CUBA_SER_DATA0.qp_old());
+  /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old2());
+  /* p06.EROD*/ EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, EJAB_SER_DATA5.qp_old2());
+  /* p06.EJAB*/ EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, DOVU_SER_DATA4.qp_old2());
+  /* p06.DOVU*/ DOVU_SER_DATA4.dff22(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, DOJO_SER_DATA3.qp_old2());
+  /* p06.DOJO*/ DOJO_SER_DATA3.dff22(_DAWE_SER_CLK, _DYGE_SER_DATA3_SETn, _DAJU_SER_DATA3_RSTn, DYRA_SER_DATA2.qp_old2());
+  /* p06.DYRA*/ DYRA_SER_DATA2.dff22(_DAWE_SER_CLK, _DELA_SER_DATA2_SETn, _DYBO_SER_DATA2_RSTn, DEGU_SER_DATA1.qp_old2());
+  /* p06.DEGU*/ DEGU_SER_DATA1.dff22(_DAWE_SER_CLK, _DOCU_SER_DATA1_SETn, _DUMO_SER_DATA1_RSTn, CUBA_SER_DATA0.qp_old2());
   /* p06.CUBA*/ CUBA_SER_DATA0.dff22(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SER_IN_new);
 }
 

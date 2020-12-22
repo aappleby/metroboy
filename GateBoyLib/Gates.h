@@ -20,9 +20,6 @@ struct BitBase {
   BitBase() { state = 0; }
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
 
-  wire2 qp_old() const { check_old(); return bit_data(); }
-  //wire2 qp_new() const { check_new(); return bit_data(); }
-
   wire2 qp_any2() const { return state; }
   wire2 qn_any2() const { return ~state; }
 
@@ -34,7 +31,7 @@ struct BitBase {
 
   inline static uint32_t pack_old(int c, const BitBase* b) {
     uint32_t r = 0;
-    for (int i = 0; i < c; i++) r |= (b[i].qp_old() << i);
+    for (int i = 0; i < c; i++) r |= (bit(b[i].qp_old2()) << i);
     return r;
   }
 

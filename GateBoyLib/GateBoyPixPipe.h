@@ -24,7 +24,7 @@ struct WindowRegisters {
     wire2 RYDY_WIN_HITp_old);
 
   wire2 NUNY_WIN_MODE_TRIGp_old() const {
-    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_old = and2(PYNU_WIN_MODE_Ap.qp_old(), NOPA_WIN_MODE_Bp.qn_old2());
+    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_old = and2(PYNU_WIN_MODE_Ap.qp_old2(), NOPA_WIN_MODE_Bp.qn_old2());
     return _NUNY_WIN_MODE_TRIGp_old;
   }
   /* p27.NYFO*/ wire2 NYFO_WIN_MODE_TRIGn_old() const { return not1b(NUNY_WIN_MODE_TRIGp_old()); }
@@ -45,8 +45,8 @@ struct WindowRegisters {
   }
 
   wire2 SUZU_WIN_FIRST_TILEne_old() const {
-    /*#p27.SYLO*/ wire2 _SYLO_WIN_HITn_old = not1b(RYDY_WIN_HITp.qp_old());
-    /* p27.TUXY*/ wire2 _TUXY_WIN_FIRST_TILEne_old = nand2b(_SYLO_WIN_HITn_old, SOVY_WIN_HITp.qp_old());
+    /*#p27.SYLO*/ wire2 _SYLO_WIN_HITn_old = not1b(RYDY_WIN_HITp.qp_old2());
+    /* p27.TUXY*/ wire2 _TUXY_WIN_FIRST_TILEne_old = nand2b(_SYLO_WIN_HITn_old, SOVY_WIN_HITp.qp_old2());
     /* p27.SUZU*/ wire2 _SUZU_WIN_FIRST_TILEne_old = not1b(_TUXY_WIN_FIRST_TILEne_old);
     return _SUZU_WIN_FIRST_TILEne_old;
   }
@@ -59,7 +59,7 @@ struct WindowRegisters {
   }
 
   wire2 SEKO_WIN_FETCH_TRIGp_old() const {
-    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_old = nor2b(RYFA_WIN_FETCHn_A.qn_old2(), RENE_WIN_FETCHn_B.qp_old());
+    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_old = nor2b(RYFA_WIN_FETCHn_A.qn_old2(), RENE_WIN_FETCHn_B.qp_old2());
     return _SEKO_WIN_FETCH_TRIGp_old;
   }
 
@@ -68,7 +68,7 @@ struct WindowRegisters {
     return _SEKO_WIN_FETCH_TRIGp_new;
   }
 
-  /*#p27.SYLO*/ wire2 SYLO_WIN_HITn_old() const { return not1b(RYDY_WIN_HITp.qp_old()); }
+  /*#p27.SYLO*/ wire2 SYLO_WIN_HITn_old() const { return not1b(RYDY_WIN_HITp.qp_old2()); }
   /*#p24.TOMU*/ wire2 TOMU_WIN_HITp_old() const { return not1b(SYLO_WIN_HITn_old()); }
   /* p27.TUKU*/ wire2 TUKU_WIN_HITn_old() const { return not1b(TOMU_WIN_HITp_old()); }
   /*#p24.SOCY*/ wire2 SOCY_WIN_HITn_old() const { return not1b(TOMU_WIN_HITp_old()); }
@@ -120,7 +120,7 @@ struct FineScroll {
   }
 
   /*#p27.ROZE*/ wire2 ROZE_FINE_COUNT_7n_old() {
-    wire2 _ROZE_FINE_COUNT_7n_old = nand3b(RUBU_FINE_CNT2.qp_old(), ROGA_FINE_CNT1.qp_old(), RYKU_FINE_CNT0.qp_old());
+    wire2 _ROZE_FINE_COUNT_7n_old = nand3b(RUBU_FINE_CNT2.qp_old2(), ROGA_FINE_CNT1.qp_old2(), RYKU_FINE_CNT0.qp_old2());
     return _ROZE_FINE_COUNT_7n_old;
   }
 

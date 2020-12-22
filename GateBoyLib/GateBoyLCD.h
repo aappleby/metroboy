@@ -43,13 +43,13 @@ struct GateBoyLCD {
 
   /* p28.ATEJ*/ wire2 ATEJ_LINE_RSTp_old() const;
   /* p27.XAHY*/ wire2 XAHY_LINE_RSTn_old() const { return not1b(ATEJ_LINE_RSTp_old()); }
-  /*#p28.ANOM*/ wire2 ANOM_LINE_RSTn_old() const { return nor2b(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp(_XODO_VID_RSTp.qp_old())); }
-  /* p28.ABAK*/ wire2 ABAK_LINE_RSTp_old() const { return  or2(ATEJ_LINE_RSTp_old(), AMYG_VID_RSTp(_XODO_VID_RSTp.qp_old())); }
+  /*#p28.ANOM*/ wire2 ANOM_LINE_RSTn_old() const { return nor2b(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp(_XODO_VID_RSTp.qp_old2())); }
+  /* p28.ABAK*/ wire2 ABAK_LINE_RSTp_old() const { return  or2(ATEJ_LINE_RSTp_old(), AMYG_VID_RSTp(_XODO_VID_RSTp.qp_old2())); }
   /*#p29.BALU*/ wire2 BALU_LINE_RSTp_old() const { return not1b(ANOM_LINE_RSTn_old()); }
   /* p28.BYVA*/ wire2 BYVA_LINE_RSTn_old() const { return not1b(ABAK_LINE_RSTp_old()); }
   /* p29.DYBA*/ wire2 DYBA_LINE_RSTp_old() const { return not1b(BYVA_LINE_RSTn_old()); }
   /*#p29.BAGY*/ wire2 BAGY_LINE_RSTn_old() const { return not1b(BALU_LINE_RSTp_old()); }
-  /* p21.TADY*/ wire2 TADY_LINE_RSTn_old() const { return nor2b(ATEJ_LINE_RSTp_old(), TOFU_VID_RSTp(_XODO_VID_RSTp.qp_old())); }
+  /* p21.TADY*/ wire2 TADY_LINE_RSTn_old() const { return nor2b(ATEJ_LINE_RSTp_old(), TOFU_VID_RSTp(_XODO_VID_RSTp.qp_old2())); }
 
   /* p28.ATEJ*/ wire2 ATEJ_LINE_RSTp_new() const;
   /* p27.XAHY*/ wire2 XAHY_LINE_RSTn_new() const { return not1b(ATEJ_LINE_RSTp_new()); }

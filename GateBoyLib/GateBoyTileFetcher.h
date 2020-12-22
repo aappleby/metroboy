@@ -16,8 +16,8 @@ struct TileFetcher {
   }
 
   wire2 TAVE_PRELOAD_DONE_TRIGp_old() const {
-    /* p27.ROMO*/ wire2 _ROMO_PRELOAD_DONEn_old      = not1b(POKY_PRELOAD_LATCHp.qp_old());
-    /* p27.SUVU*/ wire2 _SUVU_PRELOAD_DONE_TRIGn_old = nand4b(_XYMU_RENDERINGp.qp_old(), _ROMO_PRELOAD_DONEn_old, NYKA_FETCH_DONEp.qp_old(), PORY_FETCH_DONEp.qp_old());
+    /* p27.ROMO*/ wire2 _ROMO_PRELOAD_DONEn_old      = not1b(POKY_PRELOAD_LATCHp.qp_old2());
+    /* p27.SUVU*/ wire2 _SUVU_PRELOAD_DONE_TRIGn_old = nand4b(_XYMU_RENDERINGp.qp_old2(), _ROMO_PRELOAD_DONEn_old, NYKA_FETCH_DONEp.qp_old2(), PORY_FETCH_DONEp.qp_old2());
     /* p27.TAVE*/ wire2 _TAVE_PRELOAD_DONE_TRIGp_old = not1b(_SUVU_PRELOAD_DONE_TRIGn_old);
     return _TAVE_PRELOAD_DONE_TRIGp_old;
   }
@@ -29,7 +29,7 @@ struct TileFetcher {
     return _TAVE_PRELOAD_DONE_TRIGp_new;
   }
 
-  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_old(wire2 NYXU_BFETCH_RSTn_old) const { return nand3b(_LAXU_BFETCH_S0p.qp_old(), _NYVA_BFETCH_S2p.qp_old(), NYXU_BFETCH_RSTn_old); }
+  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_old(wire2 NYXU_BFETCH_RSTn_old) const { return nand3b(_LAXU_BFETCH_S0p.qp_old2(), _NYVA_BFETCH_S2p.qp_old2(), NYXU_BFETCH_RSTn_old); }
   /* p27.LYRY*/ wire2 LYRY_BFETCH_DONEp_old(wire2 NYXU_BFETCH_RSTn_old) const { return not1b(MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old)); }
 
   /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_new(wire2 NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_new2(), _NYVA_BFETCH_S2p.qp_new2(), NYXU_BFETCH_RSTn_new); }

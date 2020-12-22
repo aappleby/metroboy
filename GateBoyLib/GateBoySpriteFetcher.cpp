@@ -28,13 +28,13 @@ void SpriteFetcher::tock(
 
   _XYMU_RENDERINGp.set(XYMU_RENDERINGp);
 
-  /* p27.SUDA*/ SUDA_SFETCH_REQp.dff17(clk.LAPE_AxCxExGx(), _VYPO_VCC, SOBU_SFETCH_REQp.qp_old());
+  /* p27.SUDA*/ SUDA_SFETCH_REQp.dff17(clk.LAPE_AxCxExGx(), _VYPO_VCC, SOBU_SFETCH_REQp.qp_old2());
   /* p27.SOBU*/ SOBU_SFETCH_REQp.dff17(clk.TAVA_xBxDxFxH(), _VYPO_VCC, TEKY_SFETCH_REQp_old);
 
-  /*#p29.TYFO*/ TYFO_SFETCH_S0p_D1.dff17(clk.LAPE_AxCxExGx(), _VYPO_VCC,       TOXE_SFETCH_S0p.qp_old());
-  /*#p29.SEBA*/ SEBA_SFETCH_S1p_D5.dff17(clk.LAPE_AxCxExGx(), XYMU_RENDERINGp, VONU_SFETCH_S1p_D4.qp_old());
-  /*#p29.VONU*/ VONU_SFETCH_S1p_D4.dff17(clk.TAVA_xBxDxFxH(), XYMU_RENDERINGp, TOBU_SFETCH_S1p_D2.qp_old());
-  /*#p29.TOBU*/ TOBU_SFETCH_S1p_D2.dff17(clk.TAVA_xBxDxFxH(), XYMU_RENDERINGp, TULY_SFETCH_S1p.qp_old());
+  /*#p29.TYFO*/ TYFO_SFETCH_S0p_D1.dff17(clk.LAPE_AxCxExGx(), _VYPO_VCC,       TOXE_SFETCH_S0p.qp_old2());
+  /*#p29.SEBA*/ SEBA_SFETCH_S1p_D5.dff17(clk.LAPE_AxCxExGx(), XYMU_RENDERINGp, VONU_SFETCH_S1p_D4.qp_old2());
+  /*#p29.VONU*/ VONU_SFETCH_S1p_D4.dff17(clk.TAVA_xBxDxFxH(), XYMU_RENDERINGp, TOBU_SFETCH_S1p_D2.qp_old2());
+  /*#p29.TOBU*/ TOBU_SFETCH_S1p_D2.dff17(clk.TAVA_xBxDxFxH(), XYMU_RENDERINGp, TULY_SFETCH_S1p.qp_old2());
 
   /* p27.RYCE*/ wire2 _RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp_new2(), SUDA_SFETCH_REQp.qn_new2());
   /*#p27.SECA*/ wire2 _SECA_SFETCH_RSTn = nor3b(_RYCE_SFETCH_TRIGp, rst.ROSY_VID_RSTp(), ATEJ_LINE_RSTp);

@@ -6,7 +6,7 @@
 
 void GateBoyResetDebug::tock(const GateBoyClock& clk, wire2 sys_clkreq, wire2 sys_clkgood, wire2 UPOF_DIV15p) {
 
-  /* p01.AFER*/ AFER_SYS_RSTp.dff13(clk.BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), ASOL_POR_DONEn.qp_old());
+  /* p01.AFER*/ AFER_SYS_RSTp.dff13(clk.BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), ASOL_POR_DONEn.qp_old2());
 
   /* p01.UPYF*/ wire2 _UPYF = or2(PIN71_RST.int_qp_new(), clk.UCOB_CLKBADp());
   /* p01.TUBO*/ TUBO_WAITINGp.nor_latch(_UPYF, sys_clkreq);

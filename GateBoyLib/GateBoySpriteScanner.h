@@ -18,7 +18,7 @@ struct SpriteScanner {
   }
 
   /*#p28.FETO*/ wire2 FETO_SCAN_DONEp_old() const {
-    return and4(YFEL_SCAN0.qp_old(), WEWY_SCAN1.qp_old(), GOSO_SCAN2.qp_old(), FONY_SCAN5.qp_old()); // 32 + 4 + 2 + 1 = 39
+    return and4(YFEL_SCAN0.qp_old2(), WEWY_SCAN1.qp_old2(), GOSO_SCAN2.qp_old2(), FONY_SCAN5.qp_old2()); // 32 + 4 + 2 + 1 = 39
   }
 
   /*#p28.FETO*/ wire2 FETO_SCAN_DONEp_new() const {
@@ -30,7 +30,7 @@ struct SpriteScanner {
   }
 
   wire2 AVAP_SCAN_DONE_TRIGp_old(wire2 BALU_LINE_RSTp) const {
-    /*#p29.BEBU*/ wire2 _BEBU_SCAN_DONE_TRIGn_old = or3(DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_old2());
+    /*#p29.BEBU*/ wire2 _BEBU_SCAN_DONE_TRIGn_old = or3(DOBA_SCAN_DONE_Bp.qp_old2(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_old2());
     /*#p29.AVAP*/ wire2 _AVAP_SCAN_DONE_TRIGp_old = not1b(_BEBU_SCAN_DONE_TRIGn_old);
     return _AVAP_SCAN_DONE_TRIGp_old;
   }

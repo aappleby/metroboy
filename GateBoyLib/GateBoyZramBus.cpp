@@ -35,7 +35,7 @@ void GateBoyZramBus::write(GateBoyCpuBus& cpu_bus, uint8_t* zero_ram)
   wire2 CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   wire2 clk_new = bit(~cpu_bus.TAPU_CPU_WRp.qp_new2());
-  if (bit(~clk_old.qp_old()) && clk_new && CSp) {
+  if (bit(~clk_old.qp_old2()) && clk_new && CSp) {
     zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, cpu_bus.BUS_CPU_D);
   }
   clk_old.set(clk_new);

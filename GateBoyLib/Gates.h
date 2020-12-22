@@ -49,12 +49,11 @@ struct BitBase {
 
 #ifdef USE_DRIVEN_BIT
   inline char int_c() {
-    return bit_driven() ? (bit_data() ? '1' : '0') : (bit_data() ? '^' : 'v');
+    return bit_driven() ? (bit(state, 0) ? '1' : '0') : (bit(state, 0) ? '^' : 'v');
   }
 
   inline char ext_c() {
-    //return bit_driven() ? (bit_data_old() ? '0' : '1') : (bit_data_old() ? 'v' : '^');
-    return bit_driven() ? (bit_data() ? '0' : '1') : '^';
+    return bit_driven() ? (bit(state, 0) ? '0' : '1') : '^';
   }
 #else
   inline char int_c() {
@@ -105,8 +104,6 @@ struct BitBase {
   void set_clock(wire2 d) { state = (state & 0b11101101) | (bit(d) << 1); }
 
   wire2 bit_data () const { return bit( state, 0); }
-  wire2 bit_datan() const { return bit(~state, 0); }
-  wire2 bit_clock() const { return bit( state, 1); }
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -318,7 +315,19 @@ struct DFF17 : public DFF {
 // DFF20_20 << CLKn
 
 struct DFF20 : public DFF {
-  void dff20(wire2 CLKn, wire2 LOADp, wire2 newD)    { dff(~CLKn, ~(LOADp & newD), ~(LOADp & ~newD), ~bit_data()); }
+  void dff20(wire2 CLKn, wire2 LOADp, wire2 newD) {
+    CHECK_N(bit_new());
+
+    wire2 CLKp = (~CLKn << 1) & 2;
+    if (~state & CLKp & 2) state = ~state;
+    state = (state & ~LOADp) | (newD & LOADp);
+    state = (state & 0b11111101) | CLKp;
+
+    set_new();
+    set_dirty3();
+    set_dirty4();
+
+  }
 };
 
 //-----------------------------------------------------------------------------

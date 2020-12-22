@@ -389,14 +389,14 @@ struct RegOBP1 {
 
 struct RegWY {
   void set(uint8_t wy) {
-    NESO_WY0n.reset(1, !(wy & 0x01));
-    NYRO_WY1n.reset(1, !(wy & 0x02));
-    NAGA_WY2n.reset(1, !(wy & 0x04));
-    MELA_WY3n.reset(1, !(wy & 0x08));
-    NULO_WY4n.reset(1, !(wy & 0x10));
-    NENE_WY5n.reset(1, !(wy & 0x20));
-    NUKA_WY6n.reset(1, !(wy & 0x40));
-    NAFU_WY7n.reset(1, !(wy & 0x80));
+    NESO_WY0n.reset(1, !((wy >> 0) & 1));
+    NYRO_WY1n.reset(1, !((wy >> 1) & 1));
+    NAGA_WY2n.reset(1, !((wy >> 2) & 1));
+    MELA_WY3n.reset(1, !((wy >> 3) & 1));
+    NULO_WY4n.reset(1, !((wy >> 4) & 1));
+    NENE_WY5n.reset(1, !((wy >> 5) & 1));
+    NUKA_WY6n.reset(1, !((wy >> 6) & 1));
+    NAFU_WY7n.reset(1, !((wy >> 7) & 1));
   }
 
   int get() const { return BitBase::pack_oldn(8, &NESO_WY0n); }
@@ -419,14 +419,14 @@ struct RegWY {
 
 struct RegWX {
   void set(uint8_t wx) {
-    MYPA_WX0n.reset(1, !(wx & 0x01));
-    NOFE_WX1n.reset(1, !(wx & 0x02));
-    NOKE_WX2n.reset(1, !(wx & 0x04));
-    MEBY_WX3n.reset(1, !(wx & 0x08));
-    MYPU_WX4n.reset(1, !(wx & 0x10));
-    MYCE_WX5n.reset(1, !(wx & 0x20));
-    MUVO_WX6n.reset(1, !(wx & 0x40));
-    NUKU_WX7n.reset(1, !(wx & 0x80));
+    MYPA_WX0n.reset(1, !((wx >> 0) & 1));
+    NOFE_WX1n.reset(1, !((wx >> 1) & 1));
+    NOKE_WX2n.reset(1, !((wx >> 2) & 1));
+    MEBY_WX3n.reset(1, !((wx >> 3) & 1));
+    MYPU_WX4n.reset(1, !((wx >> 4) & 1));
+    MYCE_WX5n.reset(1, !((wx >> 5) & 1));
+    MUVO_WX6n.reset(1, !((wx >> 6) & 1));
+    NUKU_WX7n.reset(1, !((wx >> 7) & 1));
   }
 
   int get() const { return BitBase::pack_oldn(8, &MYPA_WX0n); }

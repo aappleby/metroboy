@@ -389,23 +389,23 @@ void GateBoyOamBus::tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_S
   /*#p28.YRYV*/ wire _YRYU_OAM_OEp = not1(_YVAL_OAM_OEn);
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYU_OAM_OEp);
 
-  BUS_OAM_DAn[0].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x01));
-  BUS_OAM_DAn[1].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x02));
-  BUS_OAM_DAn[2].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x04));
-  BUS_OAM_DAn[3].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x08));
-  BUS_OAM_DAn[4].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x10));
-  BUS_OAM_DAn[5].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x20));
-  BUS_OAM_DAn[6].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x40));
-  BUS_OAM_DAn[7].tri6_nn(_ZODO_OAM_OEn, (oam_data_a & 0x80));
+  BUS_OAM_DAn[0].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 0) & 1);
+  BUS_OAM_DAn[1].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 1) & 1);
+  BUS_OAM_DAn[2].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 2) & 1);
+  BUS_OAM_DAn[3].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 3) & 1);
+  BUS_OAM_DAn[4].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 4) & 1);
+  BUS_OAM_DAn[5].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 5) & 1);
+  BUS_OAM_DAn[6].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 6) & 1);
+  BUS_OAM_DAn[7].tri6_nn(_ZODO_OAM_OEn, (oam_data_a >> 7) & 1);
 
-  BUS_OAM_DBn[0].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x01));
-  BUS_OAM_DBn[1].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x02));
-  BUS_OAM_DBn[2].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x04));
-  BUS_OAM_DBn[3].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x08));
-  BUS_OAM_DBn[4].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x10));
-  BUS_OAM_DBn[5].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x20));
-  BUS_OAM_DBn[6].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x40));
-  BUS_OAM_DBn[7].tri6_nn(_ZODO_OAM_OEn, (oam_data_b & 0x80));
+  BUS_OAM_DBn[0].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 0) & 1);
+  BUS_OAM_DBn[1].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 1) & 1);
+  BUS_OAM_DBn[2].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 2) & 1);
+  BUS_OAM_DBn[3].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 3) & 1);
+  BUS_OAM_DBn[4].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 4) & 1);
+  BUS_OAM_DBn[5].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 5) & 1);
+  BUS_OAM_DBn[6].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 6) & 1);
+  BUS_OAM_DBn[7].tri6_nn(_ZODO_OAM_OEn, (oam_data_b >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -300,14 +300,14 @@ void GateBoyExtBus::read_ext_to_pins(const uint8_t* cart_buf, const uint8_t* car
   if (eram_OEp) data = int_ram[addr & 0x1FFF];
 
   wire ext_OEp = rom_OEp || cram_OEp || iram_OEp || eram_OEp;
-  PIN17_DATA[0].pin_in_oedp(ext_OEp, wire(data & 0x01));
-  PIN17_DATA[1].pin_in_oedp(ext_OEp, wire(data & 0x02));
-  PIN17_DATA[2].pin_in_oedp(ext_OEp, wire(data & 0x04));
-  PIN17_DATA[3].pin_in_oedp(ext_OEp, wire(data & 0x08));
-  PIN17_DATA[4].pin_in_oedp(ext_OEp, wire(data & 0x10));
-  PIN17_DATA[5].pin_in_oedp(ext_OEp, wire(data & 0x20));
-  PIN17_DATA[6].pin_in_oedp(ext_OEp, wire(data & 0x40));
-  PIN17_DATA[7].pin_in_oedp(ext_OEp, wire(data & 0x80));
+  PIN17_DATA[0].pin_in_oedp(ext_OEp, (data >> 0) & 1);
+  PIN17_DATA[1].pin_in_oedp(ext_OEp, (data >> 1) & 1);
+  PIN17_DATA[2].pin_in_oedp(ext_OEp, (data >> 2) & 1);
+  PIN17_DATA[3].pin_in_oedp(ext_OEp, (data >> 3) & 1);
+  PIN17_DATA[4].pin_in_oedp(ext_OEp, (data >> 4) & 1);
+  PIN17_DATA[5].pin_in_oedp(ext_OEp, (data >> 5) & 1);
+  PIN17_DATA[6].pin_in_oedp(ext_OEp, (data >> 6) & 1);
+  PIN17_DATA[7].pin_in_oedp(ext_OEp, (data >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

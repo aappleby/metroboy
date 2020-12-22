@@ -63,14 +63,14 @@ void GateBoyBootrom::read_bootrom(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus
   /* p07.YULA*/ uint8_t _YULA_BOOT_RDp   = and3(cpu_bus.TEDO_CPU_RDp.qp_new(), _YAZA_MODE_DBG1n, _TUTU_READ_BOOTROMp); // def AND
   /* p07.ZADO*/ uint8_t _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_0000_00FF);
   /* p07.ZERY*/ uint8_t _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
-  cpu_bus.BUS_CPU_D[0].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x01));
-  cpu_bus.BUS_CPU_D[1].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x02));
-  cpu_bus.BUS_CPU_D[2].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x04));
-  cpu_bus.BUS_CPU_D[3].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x08));
-  cpu_bus.BUS_CPU_D[4].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x10));
-  cpu_bus.BUS_CPU_D[5].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x20));
-  cpu_bus.BUS_CPU_D[6].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x40));
-  cpu_bus.BUS_CPU_D[7].tri6_pn(_ZERY_BOOT_CSp, !bool(bootrom_data & 0x80));
+  cpu_bus.BUS_CPU_D[0].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 0) & 1));
+  cpu_bus.BUS_CPU_D[1].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 1) & 1));
+  cpu_bus.BUS_CPU_D[2].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 2) & 1));
+  cpu_bus.BUS_CPU_D[3].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 3) & 1));
+  cpu_bus.BUS_CPU_D[4].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 4) & 1));
+  cpu_bus.BUS_CPU_D[5].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 5) & 1));
+  cpu_bus.BUS_CPU_D[6].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 6) & 1));
+  cpu_bus.BUS_CPU_D[7].tri6_pn(_ZERY_BOOT_CSp, !((bootrom_data >> 7) & 1));
 }
 
 //--------------------------------------------------------------------------------

@@ -73,16 +73,16 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   PIN62_JOY_P15.pin_out_hilo(_CELA, COFY_JOYP_ABCSp.qn_new());
 
   if (PIN63_JOY_P14.ext_qp_new()) {
-    PIN67_JOY_P10.pin_in_dp(!(sys_buttons & 0x01));
-    PIN66_JOY_P11.pin_in_dp(!(sys_buttons & 0x02));
-    PIN65_JOY_P12.pin_in_dp(!(sys_buttons & 0x04));
-    PIN64_JOY_P13.pin_in_dp(!(sys_buttons & 0x08));
+    PIN67_JOY_P10.pin_in_dp(!((sys_buttons >> 0) & 1));
+    PIN66_JOY_P11.pin_in_dp(!((sys_buttons >> 1) & 1));
+    PIN65_JOY_P12.pin_in_dp(!((sys_buttons >> 2) & 1));
+    PIN64_JOY_P13.pin_in_dp(!((sys_buttons >> 3) & 1));
   }
   else if (PIN62_JOY_P15.ext_qp_new()) {
-    PIN67_JOY_P10.pin_in_dp(!(sys_buttons & 0x10));
-    PIN66_JOY_P11.pin_in_dp(!(sys_buttons & 0x20));
-    PIN65_JOY_P12.pin_in_dp(!(sys_buttons & 0x40));
-    PIN64_JOY_P13.pin_in_dp(!(sys_buttons & 0x80));
+    PIN67_JOY_P10.pin_in_dp(!((sys_buttons >> 4) & 1));
+    PIN66_JOY_P11.pin_in_dp(!((sys_buttons >> 5) & 1));
+    PIN65_JOY_P12.pin_in_dp(!((sys_buttons >> 6) & 1));
+    PIN64_JOY_P13.pin_in_dp(!((sys_buttons >> 7) & 1));
   }
   else {
     PIN67_JOY_P10.pin_in_dp(1);

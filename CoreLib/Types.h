@@ -20,6 +20,8 @@ typedef std::vector<uint8_t> blob;
 typedef bool wire;
 typedef uint8_t wire2;
 
+inline bool bit(wire2 w) { return bool(w & 1); }
+
 enum RunMode {
   RUN_STOP = 0, // don't run
   RUN_STEP = 1, // run one step

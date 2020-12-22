@@ -6,10 +6,10 @@
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   PIN75_CLK_OUT.reset_for_pass();
 
-  wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();
-  wire AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old();
-  wire ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old();
-  wire APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old();
+  uint8_t ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();
+  uint8_t AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old();
+  uint8_t ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old();
+  uint8_t APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old();
 
   /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(!ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp_old);
   /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp_old);

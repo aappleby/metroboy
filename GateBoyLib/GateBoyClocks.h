@@ -24,7 +24,7 @@ struct GateBoyClock {
 
   /* p01.UCOB*/ wire2 UCOB_CLKBADp() const { return not1b(PIN74_CLKGOOD.int_qp_new()); }
   /* p01.ATEZ*/ wire2 ATEZ_CLKBADp() const { return not1b(PIN74_CLKGOOD.int_qp_new()); }
-  /* p01.ABOL*/ wire2 ABOL_CLKREQn() const { return not1b(SIG_CPU_CLKREQ.qp_new()); }
+  /* p01.ABOL*/ wire2 ABOL_CLKREQn() const { return not1b(SIG_CPU_CLKREQ.qp_new2()); }
   /*#p01.BUTY*/ wire2 BUTY_CLKREQp() const { return not1b(ABOL_CLKREQn()); }
 
   /* p01.ATAL*/ wire2 ATAL_xBxDxFxH() const { return PIN74_CLK_IN.int_qp_new(); }
@@ -41,9 +41,9 @@ struct GateBoyClock {
   /* p27.MOXE*/ wire2 MOXE_AxCxExGx() const { return not1b(ALET_xBxDxFxH()); }
   /* p27.TAVA*/ wire2 TAVA_xBxDxFxH() const { return not1b(LAPE_AxCxExGx()); }
 
-  /*#p01.ATYP*/ wire2 ATYP_ABCDxxxx() const { return not1b(AFUR_xxxxEFGHp.qp_new()); }
+  /*#p01.ATYP*/ wire2 ATYP_ABCDxxxx() const { return not1b(AFUR_xxxxEFGHp.qp_new2()); }
   /*#p01.AFEP*/ wire2 AFEP_AxxxxFGH() const { return not1b(ALEF_AxxxxFGHp.qn_new2()); }
-  /*#p01.AROV*/ wire2 AROV_xxCDEFxx() const { return not1b(APUK_ABxxxxGHp.qp_new()); }
+  /*#p01.AROV*/ wire2 AROV_xxCDEFxx() const { return not1b(APUK_ABxxxxGHp.qp_new2()); }
   /*#p01.ADAR*/ wire2 ADAR_ABCxxxxH() const { return not1b(ADYK_ABCxxxxHp.qn_new2()); }
 
   /*#p01.BEKO*/ wire2 BEKO_ABCDxxxx() const { return not1b(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
@@ -78,7 +78,7 @@ struct GateBoyClock {
 
   /*#p21.TALU*/ wire2 TALU_xxCDEFxx() const { return not1b(VENA_xxCDEFxx.qn_new2()); }
   /*#p29.XUPY*/ wire2 XUPY_ABxxEFxx() const { return not1b(WUVU_ABxxEFxx.qn_new2()); }
-  /*#p29.XOCE*/ wire2 XOCE_xBCxxFGx() const { return not1b(WOSU_AxxDExxH.qp_new()); }
+  /*#p29.XOCE*/ wire2 XOCE_xBCxxFGx() const { return not1b(WOSU_AxxDExxH.qp_new2()); }
   /*#p29.WOJO*/ wire2 WOJO_AxxxExxx() const { return nor2b(WOSU_AxxDExxH.qn_new2(), WUVU_ABxxEFxx.qn_new2()); }
   /*#p21.SONO*/ wire2 SONO_ABxxxxGH() const { return not1b(TALU_xxCDEFxx()); }
   /* p29.XYSO*/ wire2 XYSO_xBCDxFGH() const { return not1b(WOJO_AxxxExxx()); }

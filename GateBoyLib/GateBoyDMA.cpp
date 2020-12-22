@@ -68,7 +68,7 @@ void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
   /*#p04.LOKY*/ LOKY_DMA_LATCHp.set(nand2b(LARA_DMA_LATCHn.qp_new2(), LENE_DMA_TRIG_d4.qn_new2()));
   /* p04.LARA*/ LARA_DMA_LATCHn.set(nand3b(LOKY_DMA_LATCHp.qp_new2(), MYTE_DMA_DONE.qn_new2(), rst.CUNU_SYS_RSTn()));
 
-  /*#p04.META*/ wire2 _META_DMA_CLKp = and2(clk.UVYT_ABCDxxxx(), LOKY_DMA_LATCHp.qp_new());
+  /*#p04.META*/ wire2 _META_DMA_CLKp = and2(clk.UVYT_ABCDxxxx(), LOKY_DMA_LATCHp.qp_new2());
   /*#p04.NAKY*/ NAKY_DMA_A00p.dff17(_META_DMA_CLKp,         _LAPA_DMA_RSTn, NAKY_DMA_A00p.qn_old2());
   /*#p04.PYRO*/ PYRO_DMA_A01p.dff17(NAKY_DMA_A00p.qn_new2(), _LAPA_DMA_RSTn, PYRO_DMA_A01p.qn_old2());
   /* p04.NEFY*/ NEFY_DMA_A02p.dff17(PYRO_DMA_A01p.qn_new2(), _LAPA_DMA_RSTn, NEFY_DMA_A02p.qn_old2());

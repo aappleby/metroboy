@@ -21,7 +21,7 @@ struct GateBoyResetDebug {
     SIG_CPU_INT_RESETp.reset(0);
   }
 
-  /*#p01.AVOR*/ wire2 AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
+  /*#p01.AVOR*/ wire2 AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new2(), ASOL_POR_DONEn.qp_new2()); }
   /*#p01.ALUR*/ wire2 ALUR_SYS_RSTn() const { return not1b(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire2 DULA_SYS_RSTp() const { return not1b(ALUR_SYS_RSTn()); }
   /*#p01.CUNU*/ wire2 CUNU_SYS_RSTn() const { return not1b(DULA_SYS_RSTp()); }
@@ -32,7 +32,7 @@ struct GateBoyResetDebug {
   /* p01.XARE*/ wire2 XARE_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
   /* p03.MULO*/ wire2 MULO_SYS_RSTn() const { return not1b(ALUR_SYS_RSTn()); }
 
-  /* p01.XODO*/ wire2 XODO_VID_RSTp() const { return nand2b(XEBE_SYS_RSTn(), _XONA_LCDC_LCDENp.qp_new()); }
+  /* p01.XODO*/ wire2 XODO_VID_RSTp() const { return nand2b(XEBE_SYS_RSTn(), _XONA_LCDC_LCDENp.qp_new2()); }
   /* p01.XAPO*/ wire2 XAPO_VID_RSTn() const { return not1b(XODO_VID_RSTp()); }
   /* p01.LYHA*/ wire2 LYHA_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
   /* p01.LYFE*/ wire2 LYFE_VID_RSTn() const { return not1b(LYHA_VID_RSTp()); }

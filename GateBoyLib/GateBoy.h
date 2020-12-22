@@ -102,8 +102,17 @@ struct GateBoy {
 
   uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
   uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
+
   int64_t commit_and_hash() {
     return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
+  }
+
+  void set_old_bits() {
+    uint8_t* b = reg_begin();
+    size_t s = reg_end() - reg_begin();
+    for (size_t i = 0; i < s; i++) {
+      b[i] |= 0b00010000;
+    }
   }
 
   static wire ROGE_WY_MATCHp_old(const RegWY& reg_wy_old, const RegLY& reg_ly_old, wire WYMO_LCDC_WINENp_old) {

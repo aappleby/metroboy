@@ -17,14 +17,14 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   /* p01.ADYK*/ ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGHp_old);
 
   PIN75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
-  SIG_CPU_BOWA_Axxxxxxx.set_new(BOWA_xBCDEFGH());
-  SIG_CPU_BEDO_xBCDEFGH.set_new(BEDO_Axxxxxxx());
-  SIG_CPU_BEKO_ABCDxxxx.set_new(BEKO_ABCDxxxx());
-  SIG_CPU_BUDE_xxxxEFGH.set_new(BUDE_xxxxEFGH());
-  SIG_CPU_BOLO_ABCDEFxx.set_new(BOLO_ABCDEFxx());
-  SIG_CPU_BUKE_AxxxxxGH.set_new(BUKE_AxxxxxGH());
-  SIG_CPU_BOMA_xBCDEFGH.set_new(BOMA_xBCDEFGH());
-  SIG_CPU_BOGA_Axxxxxxx.set_new(BOGA_Axxxxxxx());
+  SIG_CPU_BOWA_Axxxxxxx.set(BOWA_xBCDEFGH());
+  SIG_CPU_BEDO_xBCDEFGH.set(BEDO_Axxxxxxx());
+  SIG_CPU_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx());
+  SIG_CPU_BUDE_xxxxEFGH.set(BUDE_xxxxEFGH());
+  SIG_CPU_BOLO_ABCDEFxx.set(BOLO_ABCDEFxx());
+  SIG_CPU_BUKE_AxxxxxGH.set(BUKE_AxxxxxGH());
+  SIG_CPU_BOMA_xBCDEFGH.set(BOMA_xBCDEFGH());
+  SIG_CPU_BOGA_Axxxxxxx.set(BOGA_Axxxxxxx());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

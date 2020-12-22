@@ -133,11 +133,11 @@ void GateBoyInterrupts::tock(
   /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, _PESU_VCC);
   /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(joypad.ASOK_INT_JOYp(),        _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, _PESU_VCC);
 
-  SIG_CPU_INT_VBLANK.set_new(LOPE_FF0F_D0p.qp_new());
-  SIG_CPU_INT_STAT  .set_new(LALU_FF0F_D1p.qp_new());
-  SIG_CPU_INT_TIMER .set_new(NYBO_FF0F_D2p.qp_new());
-  SIG_CPU_INT_SERIAL.set_new(UBUL_FF0F_D3p.qp_new());
-  SIG_CPU_INT_JOYPAD.set_new(ULAK_FF0F_D4p.qp_new());
+  SIG_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.qp_new());
+  SIG_CPU_INT_STAT  .set(LALU_FF0F_D1p.qp_new());
+  SIG_CPU_INT_TIMER .set(NYBO_FF0F_D2p.qp_new());
+  SIG_CPU_INT_SERIAL.set(UBUL_FF0F_D3p.qp_new());
+  SIG_CPU_INT_JOYPAD.set(ULAK_FF0F_D4p.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

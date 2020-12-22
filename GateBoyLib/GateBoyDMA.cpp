@@ -64,9 +64,9 @@ void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
 
   /*#p04.MATU*/ MATU_DMA_RUNNINGp.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), LOKY_DMA_LATCHp.qp_old());
 
-  /* p04.LARA*/ LARA_DMA_LATCHn.set_new(nand3(LOKY_DMA_LATCHp.qp_old(), MYTE_DMA_DONE.qn_new(), rst.CUNU_SYS_RSTn()));
-  /*#p04.LOKY*/ LOKY_DMA_LATCHp.set_new(nand2(LARA_DMA_LATCHn.qp_new(), LENE_DMA_TRIG_d4.qn_new()));
-  /* p04.LARA*/ LARA_DMA_LATCHn.set_new(nand3(LOKY_DMA_LATCHp.qp_new(), MYTE_DMA_DONE.qn_new(), rst.CUNU_SYS_RSTn()));
+  /* p04.LARA*/ LARA_DMA_LATCHn.set(nand3(LOKY_DMA_LATCHp.qp_old(), MYTE_DMA_DONE.qn_new(), rst.CUNU_SYS_RSTn()));
+  /*#p04.LOKY*/ LOKY_DMA_LATCHp.set(nand2(LARA_DMA_LATCHn.qp_new(), LENE_DMA_TRIG_d4.qn_new()));
+  /* p04.LARA*/ LARA_DMA_LATCHn.set(nand3(LOKY_DMA_LATCHp.qp_new(), MYTE_DMA_DONE.qn_new(), rst.CUNU_SYS_RSTn()));
 
   /*#p04.META*/ wire _META_DMA_CLKp = and2(clk.UVYT_ABCDxxxx(), LOKY_DMA_LATCHp.qp_new());
   /*#p04.NAKY*/ NAKY_DMA_A00p.dff17(_META_DMA_CLKp,         _LAPA_DMA_RSTn, NAKY_DMA_A00p.qn_old());

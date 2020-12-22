@@ -75,6 +75,8 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 
   cpu_bus.reset_to_bootrom();
 
+  set_old_bits();
+
   //----------------------------------------
   // Update the sim without ticking the clock twice to to settle initial reset signals.
 
@@ -83,7 +85,8 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 
   // FIXME? - Not sure why it takes 7 passes to stabilize.
   for (int i = 0; i < 7; i++) {
-    tock_slow(0); commit_and_hash();
+    tock_slow(0);
+    commit_and_hash();
   }
 
   //----------------------------------------
@@ -126,9 +129,9 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sys_cpu_en = true;
 
   if (fastboot) {
-    div.TERO_DIV03p.reset(1, 0);
-    div.UNYK_DIV04p.reset(1, 0);
-    div.UPOF_DIV15p.reset(1, 1);
+    div.TERO_DIV03p.state = 0b00010010;
+    div.UNYK_DIV04p.state = 0b00010010;
+    div.UPOF_DIV15p.state = 0b00010011;
   }
 
   memset(framebuffer, 4, sizeof(framebuffer));
@@ -171,6 +174,8 @@ void GateBoy::reset_to_cart() {
   pix_pipes.reg_bgp.reset_to_cart();
   reg_lcdc.reset_to_cart();
   lcd.reset_to_cart();
+
+  set_old_bits();
 
   sys_rst = false;
   sys_t1 = false;
@@ -512,12 +517,12 @@ void GateBoy::tock_slow(int pass_index) {
   rst.PIN76_T2.pin_in_dp(!sys_t2);
   rst.PIN77_T1.pin_in_dp(!sys_t1);
 
-  clk.SIG_CPU_CLKREQ.set_new(sys_clkreq);
-  interrupts.SIG_CPU_ACK_VBLANK.set_new(wire(int_ack_latch & INT_VBLANK_MASK));
-  interrupts.SIG_CPU_ACK_STAT  .set_new(wire(int_ack_latch & INT_STAT_MASK));
-  interrupts.SIG_CPU_ACK_TIMER .set_new(wire(int_ack_latch & INT_TIMER_MASK));
-  interrupts.SIG_CPU_ACK_SERIAL.set_new(wire(int_ack_latch & INT_SERIAL_MASK));
-  interrupts.SIG_CPU_ACK_JOYPAD.set_new(wire(int_ack_latch & INT_JOYPAD_MASK));
+  clk.SIG_CPU_CLKREQ.set(sys_clkreq);
+  interrupts.SIG_CPU_ACK_VBLANK.set(wire(int_ack_latch & INT_VBLANK_MASK));
+  interrupts.SIG_CPU_ACK_STAT  .set(wire(int_ack_latch & INT_STAT_MASK));
+  interrupts.SIG_CPU_ACK_TIMER .set(wire(int_ack_latch & INT_TIMER_MASK));
+  interrupts.SIG_CPU_ACK_SERIAL.set(wire(int_ack_latch & INT_SERIAL_MASK));
+  interrupts.SIG_CPU_ACK_JOYPAD.set(wire(int_ack_latch & INT_JOYPAD_MASK));
 
   //----------------------------------------
   // Sys clock signals
@@ -612,10 +617,10 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p21.XYMU*/ ppu_reg.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp);
   /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGp());
 
-  cpu_bus._XYMU_RENDERINGp.set_new(ppu_reg.XYMU_RENDERINGp());
-  dma._XYMU_RENDERINGp.set_new(ppu_reg.XYMU_RENDERINGp());
-  win_reg._XYMU_RENDERINGp.set_new(ppu_reg.XYMU_RENDERINGp());
-  tile_fetcher._XYMU_RENDERINGp.set_new(ppu_reg.XYMU_RENDERINGp());
+  cpu_bus._XYMU_RENDERINGp.set(ppu_reg.XYMU_RENDERINGp());
+  dma._XYMU_RENDERINGp.set(ppu_reg.XYMU_RENDERINGp());
+  win_reg._XYMU_RENDERINGp.set(ppu_reg.XYMU_RENDERINGp());
+  tile_fetcher._XYMU_RENDERINGp.set(ppu_reg.XYMU_RENDERINGp());
 
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), lcd.XAHY_LINE_RSTn_new(), rst.XAPO_VID_RSTn());
 
@@ -627,10 +632,10 @@ void GateBoy::tock_slow(int pass_index) {
   /* p24.PYGO*/ tile_fetcher.PYGO_FETCH_DONEp.dff17(clk.ALET_xBxDxFxH(), ppu_reg.XYMU_RENDERINGp(),     tile_fetcher.PORY_FETCH_DONEp.qp_old());
   /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.dff17(clk.MYVO_AxCxExGx(), win_reg.NAFY_WIN_MODE_TRIGn(), tile_fetcher.NYKA_FETCH_DONEp.qp_old());
   /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(clk.ALET_xBxDxFxH(), win_reg.NAFY_WIN_MODE_TRIGn(), LYRY_BFETCH_DONEp_old);
-  /* p27.RYDY*/ win_reg.RYDY_WIN_HITp.set_new(nor3(win_reg.PUKU_WIN_HITn.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_new(), rst.PYRY_VID_RSTp()));
-  /* p27.PUKU*/ win_reg.PUKU_WIN_HITn.set_new(nor2(win_reg.RYDY_WIN_HITp.qp_new(), win_reg.NUNY_WIN_MODE_TRIGp_new()));
-  /* p27.RYDY*/ win_reg.RYDY_WIN_HITp.set_new(nor3(win_reg.PUKU_WIN_HITn.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new(), rst.PYRY_VID_RSTp()));
-  /* p27.PUKU*/ win_reg.PUKU_WIN_HITn.set_new(nor2(win_reg.RYDY_WIN_HITp.qp_new(), win_reg.NUNY_WIN_MODE_TRIGp_new()));
+  /* p27.RYDY*/ win_reg.RYDY_WIN_HITp.set(nor3(win_reg.PUKU_WIN_HITn.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_new(), rst.PYRY_VID_RSTp()));
+  /* p27.PUKU*/ win_reg.PUKU_WIN_HITn.set(nor2(win_reg.RYDY_WIN_HITp.qp_new(), win_reg.NUNY_WIN_MODE_TRIGp_new()));
+  /* p27.RYDY*/ win_reg.RYDY_WIN_HITp.set(nor3(win_reg.PUKU_WIN_HITn.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new(), rst.PYRY_VID_RSTp()));
+  /* p27.PUKU*/ win_reg.PUKU_WIN_HITn.set(nor2(win_reg.RYDY_WIN_HITp.qp_new(), win_reg.NUNY_WIN_MODE_TRIGp_new()));
   // ^^^^^
 
 
@@ -787,14 +792,14 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN01_ADDR[15].reset_for_pass();
 
     // FIXME this is slightly weird
-    ext_bus.PIN17_DATA[0].state = 0b00110000;
-    ext_bus.PIN17_DATA[1].state = 0b00110000;
-    ext_bus.PIN17_DATA[2].state = 0b00110000;
-    ext_bus.PIN17_DATA[3].state = 0b00110000;
-    ext_bus.PIN17_DATA[4].state = 0b00110000;
-    ext_bus.PIN17_DATA[5].state = 0b00110000;
-    ext_bus.PIN17_DATA[6].state = 0b00110000;
-    ext_bus.PIN17_DATA[7].state = 0b00110000;
+    ext_bus.PIN17_DATA[0].state = 0b00100000;
+    ext_bus.PIN17_DATA[1].state = 0b00100000;
+    ext_bus.PIN17_DATA[2].state = 0b00100000;
+    ext_bus.PIN17_DATA[3].state = 0b00100000;
+    ext_bus.PIN17_DATA[4].state = 0b00100000;
+    ext_bus.PIN17_DATA[5].state = 0b00100000;
+    ext_bus.PIN17_DATA[6].state = 0b00100000;
+    ext_bus.PIN17_DATA[7].state = 0b00100000;
 
     ext_bus.set_control_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);

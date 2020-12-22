@@ -96,7 +96,7 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   /* p02.AWOB*/ AWOB_WAKE_CPU.tp_latch(clk.BOGA_Axxxxxxx(), _KERY_ANY_BUTTONp);
   wire _AWOB_WAKE_CPUp = AWOB_WAKE_CPU.qp_new();
 
-  SIG_CPU_WAKE.set_new(_AWOB_WAKE_CPUp);
+  SIG_CPU_WAKE.set(_AWOB_WAKE_CPUp);
 
   /* p02.APUG*/ APUG_JP_GLITCH3.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp_old());
   /* p02.AGEM*/ AGEM_JP_GLITCH2.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp_old());

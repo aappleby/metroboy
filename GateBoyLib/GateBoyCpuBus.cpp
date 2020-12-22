@@ -47,22 +47,22 @@ void GateBoyCpuBus::reset_to_cart() {
 void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
 {
   uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-  BUS_CPU_A[ 0].set_new(wire(bus_addr_new & 0x0001));
-  BUS_CPU_A[ 1].set_new(wire(bus_addr_new & 0x0002));
-  BUS_CPU_A[ 2].set_new(wire(bus_addr_new & 0x0004));
-  BUS_CPU_A[ 3].set_new(wire(bus_addr_new & 0x0008));
-  BUS_CPU_A[ 4].set_new(wire(bus_addr_new & 0x0010));
-  BUS_CPU_A[ 5].set_new(wire(bus_addr_new & 0x0020));
-  BUS_CPU_A[ 6].set_new(wire(bus_addr_new & 0x0040));
-  BUS_CPU_A[ 7].set_new(wire(bus_addr_new & 0x0080));
-  BUS_CPU_A[ 8].set_new(wire(bus_addr_new & 0x0100));
-  BUS_CPU_A[ 9].set_new(wire(bus_addr_new & 0x0200));
-  BUS_CPU_A[10].set_new(wire(bus_addr_new & 0x0400));
-  BUS_CPU_A[11].set_new(wire(bus_addr_new & 0x0800));
-  BUS_CPU_A[12].set_new(wire(bus_addr_new & 0x1000));
-  BUS_CPU_A[13].set_new(wire(bus_addr_new & 0x2000));
-  BUS_CPU_A[14].set_new(wire(bus_addr_new & 0x4000));
-  BUS_CPU_A[15].set_new(wire(bus_addr_new & 0x8000));
+  BUS_CPU_A[ 0].set(wire(bus_addr_new & 0x0001));
+  BUS_CPU_A[ 1].set(wire(bus_addr_new & 0x0002));
+  BUS_CPU_A[ 2].set(wire(bus_addr_new & 0x0004));
+  BUS_CPU_A[ 3].set(wire(bus_addr_new & 0x0008));
+  BUS_CPU_A[ 4].set(wire(bus_addr_new & 0x0010));
+  BUS_CPU_A[ 5].set(wire(bus_addr_new & 0x0020));
+  BUS_CPU_A[ 6].set(wire(bus_addr_new & 0x0040));
+  BUS_CPU_A[ 7].set(wire(bus_addr_new & 0x0080));
+  BUS_CPU_A[ 8].set(wire(bus_addr_new & 0x0100));
+  BUS_CPU_A[ 9].set(wire(bus_addr_new & 0x0200));
+  BUS_CPU_A[10].set(wire(bus_addr_new & 0x0400));
+  BUS_CPU_A[11].set(wire(bus_addr_new & 0x0800));
+  BUS_CPU_A[12].set(wire(bus_addr_new & 0x1000));
+  BUS_CPU_A[13].set(wire(bus_addr_new & 0x2000));
+  BUS_CPU_A[14].set(wire(bus_addr_new & 0x4000));
+  BUS_CPU_A[15].set(wire(bus_addr_new & 0x8000));
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -87,18 +87,18 @@ void GateBoyCpuBus::set_pins(
   int phase_total,
   Req bus_req_new)
 {
-  SIG_CPU_RDp.set_new(DELTA_HA ? 0 : bus_req_new.read);
-  SIG_CPU_WRp.set_new(DELTA_HA ? 0 : bus_req_new.write);
+  SIG_CPU_RDp.set(DELTA_HA ? 0 : bus_req_new.read);
+  SIG_CPU_WRp.set(DELTA_HA ? 0 : bus_req_new.write);
 
   // not at all certain about this. seems to break some oam read glitches.
   if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {
-    SIG_CPU_LATCH_EXT.set_new(1);
+    SIG_CPU_LATCH_EXT.set(1);
   }
   else {
-    SIG_CPU_LATCH_EXT.set_new(0);
+    SIG_CPU_LATCH_EXT.set(0);
   }
 
-  SIG_CPU_6.set_new(0);
+  SIG_CPU_6.set(0);
 
   // FIXME yeeeeeech this is nasty. probably not right.
 
@@ -108,13 +108,13 @@ void GateBoyCpuBus::set_pins(
   if (DELTA_HA) {
     if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
   }
-  SIG_CPU_EXT_BUSp.set_new(addr_ext_new);
+  SIG_CPU_EXT_BUSp.set(addr_ext_new);
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  SIG_CPU_ADDR_HIp.set_new(SYRO_FE00_FFFF());
-  SIG_CPU_UNOR_DBG.set_new(rst.UNOR_MODE_DBG2p());
-  SIG_CPU_UMUT_DBG.set_new(rst.UMUT_MODE_DBG1p());
+  SIG_CPU_ADDR_HIp.set(SYRO_FE00_FFFF());
+  SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
+  SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
 
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
@@ -126,9 +126,9 @@ void GateBoyCpuBus::set_pins(
   /* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
   /* p07.TAPU*/ wire _TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
 
-  TEDO_CPU_RDp.set_new(_TEDO_CPU_RDp);
-  APOV_CPU_WRp.set_new(_APOV_CPU_WRp);
-  TAPU_CPU_WRp.set_new(_TAPU_CPU_WRp);
+  TEDO_CPU_RDp.set(_TEDO_CPU_RDp);
+  APOV_CPU_WRp.set(_APOV_CPU_WRp);
+  TAPU_CPU_WRp.set(_TAPU_CPU_WRp);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

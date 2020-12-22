@@ -32,7 +32,7 @@ void GateBoyLCD::tock(
   wire XYVO_y144p_old,
   wire RUTU_x113p_old)
 {
-  _XODO_VID_RSTp.set_new(rst.XODO_VID_RSTp());
+  _XODO_VID_RSTp.set(rst.XODO_VID_RSTp());
 
   /*#p21.POPU*/ POPU_VBLANKp.dff17(reg_lx.NYPE_x113p_new(), rst.LYFE_VID_RSTn(), XYVO_y144p_old);
 
@@ -93,12 +93,12 @@ void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wi
   /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(!_ROXO_CLKPIPE_odd, XYMU_RENDERINGp, XYDO_PX3p);
 
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ POME.set_new(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old()));
-  /*#p24.RUJU*/ RUJU.set_new(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
-  /*#p24.POFY*/ POFY.set_new(not1(RUJU.qp_new()));
-  /*#p24.POME*/ POME.set_new(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new()));
-  /*#p24.RUJU*/ RUJU.set_new(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
-  /*#p24.POFY*/ POFY.set_new(not1(RUJU.qp_new()));
+  /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old()));
+  /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
+  /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
+  /*#p24.POME*/ POME.set(nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new()));
+  /*#p24.RUJU*/ RUJU.set(or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new()));
+  /*#p24.POFY*/ POFY.set(not1(RUJU.qp_new()));
 
   /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(POFY.qp_new());
   PIN54_LCD_HSYNC.pin_out_dp( _RUZE_HSYNCn);

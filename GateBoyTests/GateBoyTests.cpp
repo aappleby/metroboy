@@ -1392,8 +1392,6 @@ int GateBoyTests::test_mem() {
 
 //------------------------------------------------------------------------------
 
-// FIXME dis brokn
-
 int GateBoyTests::test_bootrom() {
   TEST_START();
 

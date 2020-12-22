@@ -308,7 +308,7 @@ void GateBoyOamBus::set_pin_clk(
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1(_BYCU_OAM_CLKp);
 
-  SIG_OAM_CLKn.set_new(_COTA_OAM_CLKn);
+  SIG_OAM_CLKn.set(_COTA_OAM_CLKn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -339,8 +339,8 @@ void GateBoyOamBus::set_pin_wr(
   /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1(_YNYC_OAM_A_WRp);
   /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1(_YLYC_OAM_B_WRp);
 
-  SIG_OAM_WRn_A.set_new(_ZOFE_OAM_A_WRn);
-  SIG_OAM_WRn_B.set_new(_ZONE_OAM_B_WRn);
+  SIG_OAM_WRn_A.set(_ZOFE_OAM_A_WRn);
+  SIG_OAM_WRn_B.set(_ZONE_OAM_B_WRn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -359,7 +359,7 @@ void GateBoyOamBus::set_pin_oe(
   /*#p28.YRYV*/ wire _YRYU_OAM_OEp = not1(_YVAL_OAM_OEn);
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYU_OAM_OEp);
 
-  SIG_OAM_OEn.set_new(_ZODO_OAM_OEn);
+  SIG_OAM_OEn.set(_ZODO_OAM_OEn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ void GateBoyOamBus::tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_S
     oam_data_b = oam_ram[(oam_addr << 1) + 1];
   }
 
-  old_oam_clk.set_new(!SIG_OAM_CLKn.qp_new());
+  old_oam_clk.set(!SIG_OAM_CLKn.qp_new());
 
   /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
   /*#p28.BOTA*/ wire _BOTA_OAM_OEn  = nand3(cpu_bus.BOFE_LATCH_EXTn(), cpu_bus.SARO_ADDR_OAMp(), cpu_bus.ASOT_CPU_RDp()); // Schematic wrong, this is NAND

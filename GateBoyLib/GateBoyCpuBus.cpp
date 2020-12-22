@@ -47,36 +47,36 @@ void GateBoyCpuBus::reset_to_cart() {
 void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
 {
   uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-  BUS_CPU_A[ 0].set(wire(bus_addr_new & 0x0001));
-  BUS_CPU_A[ 1].set(wire(bus_addr_new & 0x0002));
-  BUS_CPU_A[ 2].set(wire(bus_addr_new & 0x0004));
-  BUS_CPU_A[ 3].set(wire(bus_addr_new & 0x0008));
-  BUS_CPU_A[ 4].set(wire(bus_addr_new & 0x0010));
-  BUS_CPU_A[ 5].set(wire(bus_addr_new & 0x0020));
-  BUS_CPU_A[ 6].set(wire(bus_addr_new & 0x0040));
-  BUS_CPU_A[ 7].set(wire(bus_addr_new & 0x0080));
-  BUS_CPU_A[ 8].set(wire(bus_addr_new & 0x0100));
-  BUS_CPU_A[ 9].set(wire(bus_addr_new & 0x0200));
-  BUS_CPU_A[10].set(wire(bus_addr_new & 0x0400));
-  BUS_CPU_A[11].set(wire(bus_addr_new & 0x0800));
-  BUS_CPU_A[12].set(wire(bus_addr_new & 0x1000));
-  BUS_CPU_A[13].set(wire(bus_addr_new & 0x2000));
-  BUS_CPU_A[14].set(wire(bus_addr_new & 0x4000));
-  BUS_CPU_A[15].set(wire(bus_addr_new & 0x8000));
+  BUS_CPU_A[ 0].set((bus_addr_new >>  0) & 1);
+  BUS_CPU_A[ 1].set((bus_addr_new >>  1) & 1);
+  BUS_CPU_A[ 2].set((bus_addr_new >>  2) & 1);
+  BUS_CPU_A[ 3].set((bus_addr_new >>  3) & 1);
+  BUS_CPU_A[ 4].set((bus_addr_new >>  4) & 1);
+  BUS_CPU_A[ 5].set((bus_addr_new >>  5) & 1);
+  BUS_CPU_A[ 6].set((bus_addr_new >>  6) & 1);
+  BUS_CPU_A[ 7].set((bus_addr_new >>  7) & 1);
+  BUS_CPU_A[ 8].set((bus_addr_new >>  8) & 1);
+  BUS_CPU_A[ 9].set((bus_addr_new >>  9) & 1);
+  BUS_CPU_A[10].set((bus_addr_new >> 10) & 1);
+  BUS_CPU_A[11].set((bus_addr_new >> 11) & 1);
+  BUS_CPU_A[12].set((bus_addr_new >> 12) & 1);
+  BUS_CPU_A[13].set((bus_addr_new >> 13) & 1);
+  BUS_CPU_A[14].set((bus_addr_new >> 14) & 1);
+  BUS_CPU_A[15].set((bus_addr_new >> 15) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
-  wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
-  BUS_CPU_D[0].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x01));
-  BUS_CPU_D[1].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x02));
-  BUS_CPU_D[2].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x04));
-  BUS_CPU_D[3].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x08));
-  BUS_CPU_D[4].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x10));
-  BUS_CPU_D[5].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x20));
-  BUS_CPU_D[6].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x40));
-  BUS_CPU_D[7].tri(bus_oe_new, wire(bus_req_new.data_lo & 0x80));
+  uint8_t bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
+  BUS_CPU_D[0].tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
+  BUS_CPU_D[1].tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
+  BUS_CPU_D[2].tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
+  BUS_CPU_D[3].tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
+  BUS_CPU_D[4].tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
+  BUS_CPU_D[5].tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
+  BUS_CPU_D[6].tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
+  BUS_CPU_D[7].tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -116,15 +116,15 @@ void GateBoyCpuBus::set_pins(
   SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
   SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
 
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
-  /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
+  /* p07.UJYV*/ uint8_t _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
+  /* p07.TEDO*/ uint8_t _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
-  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
-  /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
-  /* p01.APOV*/ wire _APOV_CPU_WRp = not1(_AREV_CPU_WRn);
+  /*#p01.AFAS*/ uint8_t _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
+  /* p01.AREV*/ uint8_t _AREV_CPU_WRn = nand2(SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+  /* p01.APOV*/ uint8_t _APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
-  /* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
-  /* p07.TAPU*/ wire _TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
+  /* p07.UBAL*/ uint8_t _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
+  /* p07.TAPU*/ uint8_t _TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
 
   TEDO_CPU_RDp.set(_TEDO_CPU_RDp);
   APOV_CPU_WRp.set(_APOV_CPU_WRp);

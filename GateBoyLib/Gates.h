@@ -390,9 +390,7 @@ struct Bus : public BitBase {
 
   void reset_for_pass() {
     CHECK_N(bit_new());
-    set_data(1);
-    set_new();
-    set_dirty3();
+    state = 0b01100001;
   }
 
   void tri(wire2 OEp, wire2 Dp) {
@@ -425,8 +423,7 @@ struct PinIO : public BitBase {
 
   void reset_for_pass() {
     CHECK_N(bit_new());
-    set_data(1);
-    set_new();
+    state = 0b00100001;
   }
 
   void pin_out_oedp(wire2 OEp, wire2 Dp) {
@@ -503,9 +500,7 @@ struct PinIn : public BitBase {
 
   void reset_for_pass() {
     CHECK_N(bit_new());
-    set_data(1);
-    set_new();
-    set_dirty3();
+    state = 0b01100001;
   }
 
   void pin_in_dp(wire2 D) {
@@ -531,18 +526,14 @@ struct PinOut : public BitBase {
 
   void reset_for_pass() {
     CHECK_N(bit_new());
-    set_data(1);
-    set_new();
-    set_dirty3();
+    state = 0b01100001;
   }
 
 
   void pin_out_dp(wire2 Dp) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
-    set_data(Dp);
-    set_driven(1);
-    set_dirty4();
+    state = 0b11101000 | bit(Dp);
   }
 
   void pin_out_hilo(wire2 HI, wire2 LO) {

@@ -122,6 +122,12 @@ constexpr bool in_range(uint16_t addr, uint16_t begin, uint16_t end) {
 //-----------------------------------------------------------------------------
 // Flags
 
+#define BIT_VBLANK  0
+#define BIT_STAT    1
+#define BIT_TIMER   2
+#define BIT_SERIAL  3
+#define BIT_JOYPAD  4
+
 #define INT_VBLANK_MASK  0b00000001
 #define INT_STAT_MASK    0b00000010
 #define INT_TIMER_MASK   0b00000100

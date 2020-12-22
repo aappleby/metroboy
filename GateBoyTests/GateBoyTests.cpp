@@ -874,7 +874,7 @@ int GateBoyTests::test_init() {
 
 //-----------------------------------------------------------------------------
 
-#define EXPECT_CLK(A, B) EXPECT_EQ(wire(A), wire((B) & (1 << (7 - phase))), "Clock phase mismatch, %s at phase %d", #A, phase);
+#define EXPECT_CLK(A, B) EXPECT_EQ((A) & 1, ((B) >> (7 - phase)) & 1, "Clock phase mismatch, %s at phase %d", #A, phase);
 
 int GateBoyTests::test_clk() {
   TEST_START();

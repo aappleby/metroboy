@@ -12,8 +12,8 @@ struct GateBoyDMA {
   /* p04.LUMA*/ wire2 LUMA_DMA_CARTp() const;
   /* p04.LUFA*/ wire2 LUFA_DMA_VRAMp() const;
 
-  /*#p28.BOGE*/ wire2 BOGE_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
-  /* p04.DUGA*/ wire2 DUGA_DMA_RUNNINGn() const { return not1(MATU_DMA_RUNNINGp.qp_new()); }
+  /*#p28.BOGE*/ wire2 BOGE_DMA_RUNNINGn() const { return not1b(MATU_DMA_RUNNINGp.qp_new()); }
+  /* p04.DUGA*/ wire2 DUGA_DMA_RUNNINGn() const { return not1b(MATU_DMA_RUNNINGp.qp_new()); }
 
   void dump(Dumper& d) {
     d.dump_slice2p("DMA_A_LOW  : ", &NAKY_DMA_A00p, 8);

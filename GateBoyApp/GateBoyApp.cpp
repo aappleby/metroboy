@@ -111,6 +111,9 @@ void GateBoyApp::app_init() {
 
   gb_thread.gb->dbg_write(ADDR_WY, 113);
   gb_thread.gb->dbg_write(ADDR_WX, 13 + 7);
+
+  //gb_thread.gb->dbg_write(ADDR_SCX, 7);
+  //gb_thread.gb->dbg_write(ADDR_SCY, 7);
 #endif
 
   LOG_G("GateBoyApp::app_init() done\n");

@@ -19,10 +19,9 @@ struct BitBase {
 
   BitBase() { state = 0; }
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
-  explicit BitBase(wire new_state) { state = new_state; }
 
-  wire qp_any() const { return  bit_data(); }
-  wire qn_any() const { return !bit_data(); }
+  uint8_t qp_any() const { return  bit_data(); }
+  uint8_t qn_any() const { return !bit_data(); }
 
   BitBase operator!() { return BitBase(state ^ 1); }
 
@@ -66,25 +65,24 @@ struct BitBase {
 //protected:
 
 #ifdef USE_DRIVEN_BIT
-  void set_driven   (wire d) { state = (state & 0b11110111) | (d << 3); }
-  wire bit_driven   () const { return state & 0b00001000; }
+  void    set_driven   (uint8_t d) { state = (state & 0b11110111) | ((d & 1) << 3); }
+  uint8_t bit_driven   () const { return state & 0b00001000; }
 #else
-  void set_driven   (wire d) { (void)d; }
-  wire bit_driven   () const { return 0; }
+  void    set_driven (uint8_t d) { (void)d; }
+  uint8_t bit_driven () const    { return 0; }
 #endif
 
 #ifdef USE_DIRTY_BIT
-  //void check_old() const { CHECK_P((state & 0xE0) == 0x00); }
   void check_old() const { CHECK_P((state & 0xF0) == 0x10); }
   void check_new() const { CHECK_P((state & 0xF0) == 0xE0); }
   void set_new()    { state &= 0b11101111; state |= 0b00100000; }
   void set_dirty3() { state |= 0b01000000; }
   void set_dirty4() { state |= 0b10000000; }
 
-  wire bit_old()    const { return state & 0b00010000; }
-  wire bit_new()    const { return state & 0b00100000; }
-  wire bit_dirty3() const { return state & 0b01000000; }
-  wire bit_dirty4() const { return state & 0b10000000; }
+  uint8_t bit_old()    const { return (state >> 4) & 1; }
+  uint8_t bit_new()    const { return (state >> 5) & 1; }
+  uint8_t bit_dirty3() const { return (state >> 6) & 1; }
+  uint8_t bit_dirty4() const { return (state >> 7) & 1; }
 #else
   void check_old() const { }
   void check_new() const { }
@@ -93,23 +91,23 @@ struct BitBase {
   void set_dirty3() { }
   void set_dirty4() { }
 
-  wire bit_dirty1() const { return 0; }
-  wire bit_new2() const { return 0; }
-  wire bit_dirty3() const { return 0; }
-  wire bit_dirty4() const { return 0; }
+  uint8_t bit_old()    const { return 0; }
+  uint8_t bit_new()    const { return 0; }
+  uint8_t bit_dirty3() const { return 0; }
+  uint8_t bit_dirty4() const { return 0; }
 #endif
 
-  wire qp_old() const { check_old(); return  bit_data(); }
-  wire qn_old() const { check_old(); return !bit_data(); }
+  uint8_t qp_old() const { check_old(); return  bit_data(); }
+  uint8_t qn_old() const { check_old(); return !bit_data(); }
 
-  wire qp_new() const { check_new(); return  bit_data(); }
-  wire qn_new() const { check_new(); return !bit_data(); }
+  uint8_t qp_new() const { check_new(); return  bit_data(); }
+  uint8_t qn_new() const { check_new(); return !bit_data(); }
 
-  void set_data (wire d) { state = (state & 0b11101110) | (d << 0); }
-  void set_clock(wire d) { state = (state & 0b11101101) | (d << 1); }
+  void set_data (uint8_t d) { state = (state & 0b11101110) | ((d & 1) << 0); }
+  void set_clock(uint8_t d) { state = (state & 0b11101101) | ((d & 1) << 1); }
 
-  wire bit_data () const { return wire(state & 0b00000001); }
-  wire bit_clock() const { return wire(state & 0b00000010); }
+  uint8_t bit_data () const { return (state >> 0) & 1; }
+  uint8_t bit_clock() const { return (state >> 1) & 1; }
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -120,7 +118,7 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 // dirty4 = set() called
 
 struct Gate : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
   using BitBase::qp_old;
   using BitBase::qp_new;
@@ -128,7 +126,7 @@ struct Gate : public BitBase {
   using BitBase::qn_old;
   using BitBase::qn_new;
 
-  void set(wire D) {
+  void set(uint8_t D) {
     set_data(D);
     set_new();
     set_dirty3();
@@ -143,7 +141,7 @@ struct Gate : public BitBase {
 
 
 struct Signal : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
   using BitBase::qp_old;
   using BitBase::qp_new;
@@ -151,7 +149,7 @@ struct Signal : public BitBase {
   using BitBase::qn_old;
   using BitBase::qn_new;
 
-  void set(wire D) {
+  void set(uint8_t D) {
     CHECK_N(bit_new());
     set_data(D);
     set_new();
@@ -168,35 +166,20 @@ struct Signal : public BitBase {
 // dirty4 = dff() called
 
 struct DFF : public BitBase {
-  void reset(wire clk, wire d) { state = uint8_t(clk << 1) | uint8_t(d); }
+  void reset(uint8_t clk, uint8_t d) { state = uint8_t(clk << 1) | uint8_t(d); }
 
   using BitBase::qp_old;
   using BitBase::qn_old;
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+  void dff(uint8_t CLKp, uint8_t SETn, uint8_t RSTn, uint8_t Dp) {
     CHECK_N(bit_new());
     dff_any(CLKp, SETn, RSTn, Dp);
   }
 
-  void dff_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+  void dff_any(uint8_t CLKp, uint8_t SETn, uint8_t RSTn, uint8_t Dp) {
     if (!bit_clock() && CLKp) set_data(Dp);
-    set_clock(CLKp);
-    set_data((bit_data() || !SETn) && RSTn);
-
-    set_new();
-    set_dirty3();
-    set_dirty4();
-  }
-
-  void dff(wire CLKp, wire SETn, wire RSTn, BitBase Dp) {
-    CHECK_N(bit_new());
-    dff_any(CLKp, SETn, RSTn, Dp);
-  }
-
-  void dff_any(wire CLKp, wire SETn, wire RSTn, BitBase Dp) {
-    if (!bit_clock() && CLKp) set_data(Dp.qp_old());
     set_clock(CLKp);
     set_data((bit_data() || !SETn) && RSTn);
 
@@ -220,8 +203,7 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public DFF {
-  void dff8n(wire CLKn, wire Dn)    { dff(!CLKn, 1, 1, !Dn); }
-  void dff8n(wire CLKn, BitBase Dn) { dff(!CLKn, 1, 1, !Dn); }
+  void dff8n(uint8_t CLKn, uint8_t Dn)    { dff(!CLKn, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -238,8 +220,7 @@ struct DFF8n : public DFF {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public DFF {
-  void dff8p(wire CLKp, wire Dn)    { dff(CLKp, 1, 1, !Dn); }
-  void dff8p(wire CLKp, BitBase Dn) { dff(CLKp, 1, 1, !Dn); }
+  void dff8p(uint8_t CLKp, uint8_t Dn)    { dff(CLKp, 1, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -258,8 +239,7 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
-  void dff9(wire CLKp, wire SETn, wire Dn)    { dff(CLKp, SETn, 1, !Dn); }
-  void dff9(wire CLKp, wire SETn, BitBase Dn) { dff(CLKp, SETn, 1, !Dn); }
+  void dff9(uint8_t CLKp, uint8_t SETn, uint8_t Dn)    { dff(CLKp, SETn, 1, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -279,8 +259,7 @@ struct DFF9 : public DFF {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public DFF {
-  void dff11(wire CLKp, wire RSTn, wire Dp)    { dff(CLKp, 1, RSTn, Dp); }
-  void dff11(wire CLKp, wire RSTn, BitBase Dp) { dff(CLKp, 1, RSTn, Dp); }
+  void dff11(uint8_t CLKp, uint8_t RSTn, uint8_t Dp)    { dff(CLKp, 1, RSTn, Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -300,8 +279,7 @@ struct DFF11 : public DFF {
 // DFF13_13 >> Q
 
 struct DFF13 : public DFF {
-  void dff13(wire CLKp, wire RSTn, wire Dp)    { dff(CLKp, 1, RSTn, Dp); }
-  void dff13(wire CLKp, wire RSTn, BitBase Dp) { dff(CLKp, 1, RSTn, Dp); }
+  void dff13(uint8_t CLKp, uint8_t RSTn, uint8_t Dp)    { dff(CLKp, 1, RSTn, Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -325,10 +303,8 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
-  void dff17(wire CLKp, wire RSTn, wire Dp)        { dff(CLKp, 1, RSTn, Dp); }
-  void dff17_any(wire CLKp, wire RSTn, wire Dp)    { dff_any(CLKp, 1, RSTn, Dp); }
-  void dff17(wire CLKp, wire RSTn, BitBase Dp)     { dff(CLKp, 1, RSTn, Dp); }
-  void dff17_any(wire CLKp, wire RSTn, BitBase Dp) { dff_any(CLKp, 1, RSTn, Dp); }
+  void dff17(uint8_t CLKp, uint8_t RSTn, uint8_t Dp)        { dff(CLKp, 1, RSTn, Dp); }
+  void dff17_any(uint8_t CLKp, uint8_t RSTn, uint8_t Dp)    { dff_any(CLKp, 1, RSTn, Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -356,18 +332,7 @@ struct DFF17 : public DFF {
 // DFF20_20 << CLKn
 
 struct DFF20 : public DFF {
-  void dff20(wire CLKn, wire LOADp, wire newD)    { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data()); }
-
-
-  void dff20(wire CLKn, wire LOADp, BitBase newD) {
-    if (LOADp) {
-      wire Dp = newD.qp_new();
-      dff(!CLKn, !(LOADp && Dp), !(LOADp && !Dp), !bit_data());
-    }
-    else {
-      dff(!CLKn, 1, 1, !bit_data());
-    }
-  }
+  void dff20(uint8_t CLKn, uint8_t LOADp, uint8_t newD)    { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data()); }
 };
 
 //-----------------------------------------------------------------------------
@@ -399,8 +364,7 @@ struct DFF20 : public DFF {
 // DFF22_22 << CLKp
 
 struct DFF22 : public DFF {
-  void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp)    { dff(CLKp, SETn, RSTn, Dp); }
-  void dff22(wire CLKp, wire SETn, wire RSTn, BitBase Dp) { dff(CLKp, SETn, RSTn, Dp); }
+  void dff22(uint8_t CLKp, uint8_t SETn, uint8_t RSTn, uint8_t Dp)    { dff(CLKp, SETn, RSTn, Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -427,7 +391,7 @@ struct DFF22 : public DFF {
 struct Bus : public BitBase {
   Bus() { state = 1; }
 
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
   void reset_for_pass() {
     CHECK_N(bit_new());
@@ -436,16 +400,16 @@ struct Bus : public BitBase {
     set_dirty3();
   }
 
-  wire qp_any() const { return BitBase::qp_any(); }
-  wire qn_any() const { return BitBase::qn_any(); }
+  uint8_t qp_any() const { return BitBase::qp_any(); }
+  uint8_t qn_any() const { return BitBase::qn_any(); }
 
-  wire qp_old() const { return BitBase::qp_old(); }
-  wire qn_old() const { return BitBase::qn_old(); }
+  uint8_t qp_old() const { return BitBase::qp_old(); }
+  uint8_t qn_old() const { return BitBase::qn_old(); }
 
-  wire qp_new() const { return BitBase::qp_new(); }
-  wire qn_new() const { return BitBase::qn_new(); }
+  uint8_t qp_new() const { return BitBase::qp_new(); }
+  uint8_t qn_new() const { return BitBase::qn_new(); }
 
-  void tri(wire OEp, wire Dp) {
+  void tri(uint8_t OEp, uint8_t Dp) {
     CHECK_P(bit_new());
     if (OEp) {
       set_driven(1);
@@ -454,21 +418,10 @@ struct Bus : public BitBase {
     set_dirty4();
   }
 
-  void tri(BitBase OEp, BitBase Dp) {
-    CHECK_P(bit_new());
-    if (OEp.qp_new()) {
-      set_driven(1);
-      set_data(Dp.qp_new());
-    }
-    set_dirty4();
-  }
-
-  void set(wire Dp) { tri(1, Dp); }
-  void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !Dn); }
-  void tri6_pn (wire OEp, wire Dn) { tri( OEp, !Dn); }
-  void tri10_np(wire OEn, wire Dp) { tri(!OEn,  Dp); }
-
-  void tri6_pn (BitBase OEp, BitBase Dn) { tri( OEp, !Dn); }
+  void set(uint8_t Dp) { tri(1, Dp); }
+  void tri6_nn (uint8_t OEn, uint8_t Dn) { tri(!OEn, !Dn); }
+  void tri6_pn (uint8_t OEp, uint8_t Dn) { tri( OEp, !Dn); }
+  void tri10_np(uint8_t OEn, uint8_t Dp) { tri(!OEn,  Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -479,10 +432,10 @@ struct Bus : public BitBase {
 // OE could actually be "enable pullup"?
 
 struct PinIO : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
-  wire int_qp_new() const { return  qp_new(); }
-  wire ext_qp_new() const { return !qp_new(); }
+  uint8_t int_qp_new() const { return  qp_new(); }
+  uint8_t ext_qp_new() const { return !qp_new(); }
 
   void reset_for_pass() {
     CHECK_N(bit_new());
@@ -490,7 +443,7 @@ struct PinIO : public BitBase {
     set_new();
   }
 
-  void pin_out_oedp(wire OEp, wire Dp) {
+  void pin_out_oedp(uint8_t OEp, uint8_t Dp) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty3());
     CHECK_N(bit_dirty4());
@@ -503,7 +456,7 @@ struct PinIO : public BitBase {
     set_dirty3();
   }
 
-  void pin_out_pull_hilo(wire OEp, wire HI, wire LO) {
+  void pin_out_pull_hilo(uint8_t OEp, uint8_t HI, uint8_t LO) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty3());
     CHECK_N(bit_dirty4());
@@ -516,7 +469,7 @@ struct PinIO : public BitBase {
     set_dirty3();
   }
 
-  void pin_out_pull_hilo_any(wire OEp, wire HI, wire LO) {
+  void pin_out_pull_hilo_any(uint8_t OEp, uint8_t HI, uint8_t LO) {
     CHECK_P(bit_new());
 
     if (OEp && (HI == LO)){
@@ -527,7 +480,7 @@ struct PinIO : public BitBase {
     set_dirty3();
   }
 
-  void pin_in_oedp(wire OEp, wire D) {
+  void pin_in_oedp(uint8_t OEp, uint8_t D) {
     CHECK_P(bit_new());
     CHECK_P(bit_dirty3());
     CHECK_N(bit_dirty4());
@@ -540,7 +493,7 @@ struct PinIO : public BitBase {
     set_dirty4();
   }
 
-  void pin_in_oedp_any(wire OEp, wire D) {
+  void pin_in_oedp_any(uint8_t OEp, uint8_t D) {
     CHECK_P(bit_new());
 
     if (OEp) {
@@ -558,9 +511,9 @@ struct PinIO : public BitBase {
 // dirty4 = pin_in called
 
 struct PinIn : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
-  wire int_qp_new() const { return  qp_new(); }
+  uint8_t int_qp_new() const { return  qp_new(); }
 
   void reset_for_pass() {
     CHECK_N(bit_new());
@@ -569,7 +522,7 @@ struct PinIn : public BitBase {
     set_dirty3();
   }
 
-  void pin_in_dp(wire D) {
+  void pin_in_dp(uint8_t D) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
     set_data(!D);
@@ -585,10 +538,10 @@ struct PinIn : public BitBase {
 // OE could actually be "enable pullup"?
 
 struct PinOut : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
-  wire ext_qp_old() const { return !qp_old(); }
-  wire ext_qp_new() const { return !qp_new(); }
+  uint8_t ext_qp_old() const { return !qp_old(); }
+  uint8_t ext_qp_new() const { return !qp_new(); }
 
   void reset_for_pass() {
     CHECK_N(bit_new());
@@ -598,7 +551,7 @@ struct PinOut : public BitBase {
   }
 
 
-  void pin_out_dp(wire Dp) {
+  void pin_out_dp(uint8_t Dp) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
     set_data(Dp);
@@ -606,7 +559,7 @@ struct PinOut : public BitBase {
     set_dirty4();
   }
 
-  void pin_out_hilo(wire HI, wire LO) {
+  void pin_out_hilo(uint8_t HI, uint8_t LO) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
 
@@ -618,7 +571,7 @@ struct PinOut : public BitBase {
     set_dirty4();
   }
 
-  void pin_out_oehilo(wire OEp, wire HI, wire LO) {
+  void pin_out_oehilo(uint8_t OEp, uint8_t HI, uint8_t LO) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
 
@@ -642,14 +595,14 @@ struct PinOut : public BitBase {
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
   using BitBase::qp_old;
   using BitBase::qn_old;
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  void nor_latch(wire SETp, wire RSTp) {
+  void nor_latch(uint8_t SETp, uint8_t RSTp) {
     if (SETp) set_data(1);
     if (RSTp) set_data(0);
     set_new();
@@ -669,14 +622,14 @@ struct NorLatch : public BitBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
   using BitBase::qp_old;
   using BitBase::qn_old;
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  void nand_latch(wire SETn, wire RSTn) {
+  void nand_latch(uint8_t SETn, uint8_t RSTn) {
     if (!SETn) set_data(1);
     if (!RSTn) set_data(0);
     set_new();
@@ -703,14 +656,14 @@ struct NandLatch : public BitBase {
 // Output 10 _must_ be inverting...?
 
 struct TpLatch : public BitBase {
-  void reset(wire s) { state = s; }
+  void reset(uint8_t s) { state = s; }
 
   using BitBase::qp_old;
   using BitBase::qn_old;
   using BitBase::qp_new;
   using BitBase::qn_new;
 
-  void tp_latch(wire HOLDn, wire Dp) {
+  void tp_latch(uint8_t HOLDn, uint8_t Dp) {
     if (HOLDn) set_data(Dp);
     set_new();
     set_dirty3();
@@ -742,17 +695,6 @@ struct TpLatch : public BitBase {
 
 
 
-
-#if 0
-inline BitBase not1(BitBase a)            { return BitBase(a.state ^ 1); }
-inline BitBase or2 (BitBase a, BitBase b) { return BitBase(a.state | b.state); }
-
-__declspec(noinline) inline BitBase and4(BitBase a, BitBase b, BitBase c, BitBase d) {
-  uint8_t hi = a.state | b.state | c.state | d.state;
-  uint8_t lo = a.state & b.state & c.state & d.state;
-  return BitBase((hi & 0b11111110) | (lo & 0b00000001));
-}
-#endif
 
 
 
@@ -799,39 +741,39 @@ inline uint8_t or_and3(uint8_t a, uint8_t b, uint8_t c) { return (a | b) & c; }
 
 //-----------------------------------------------------------------------------
 
-inline wire add_c(wire a, wire b, wire c) {
-  return (a + b + c) >> 1;
+inline uint8_t add_c(uint8_t a, uint8_t b, uint8_t c) {
+  return ((a & 1) + (b & 1) + (c & 1)) >> 1;
 }
 
-inline wire add_s(wire a, wire b, wire c) {
-  return (a + b + c) & 1;
+inline uint8_t add_s(uint8_t a, uint8_t b, uint8_t c) {
+  return ((a & 1) + (b & 1) + (c & 1)) & 1;
 }
 
 //-----------------------------------------------------------------------------
 
 // Six-rung mux cells are _non_inverting_. m = 1 selects input A
-inline wire mux2p(wire m, wire a, wire b) {
+inline uint8_t mux2p(uint8_t m, uint8_t a, uint8_t b) {
   return m ? a : b;
 }
 
 // Five-rung mux cells are _inverting_. m = 1 selects input A
-inline wire mux2n(wire m, wire a, wire b) {
+inline uint8_t mux2n(uint8_t m, uint8_t a, uint8_t b) {
   return !(m ? a : b);
 }
 
-inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
+inline uint8_t amux2(uint8_t a0, uint8_t b0, uint8_t a1, uint8_t b1) {
   return (b0 & a0) | (b1 & a1);
 }
 
-inline wire amux3(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2) {
+inline uint8_t amux3(uint8_t a0, uint8_t b0, uint8_t a1, uint8_t b1, uint8_t a2, uint8_t b2) {
   return (b0 & a0) | (b1 & a1) | (b2 & a2);
 }
 
-inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3) {
+inline uint8_t amux4(uint8_t a0, uint8_t b0, uint8_t a1, uint8_t b1, uint8_t a2, uint8_t b2, uint8_t a3, uint8_t b3) {
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3);
 }
 
-inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3, wire a4, wire b4, wire a5, wire b5) {
+inline uint8_t amux6(uint8_t a0, uint8_t b0, uint8_t a1, uint8_t b1, uint8_t a2, uint8_t b2, uint8_t a3, uint8_t b3, uint8_t a4, uint8_t b4, uint8_t a5, uint8_t b5) {
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
 
@@ -885,96 +827,96 @@ struct OamTempA;
 struct OamTempB;
 
 
-/*#p01.ALUR*/ inline wire ALUR_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(AVOR_SYS_RSTp); }
-/*#p01.DULA*/ inline wire DULA_SYS_RSTp     (const wire AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
-/*#p01.CUNU*/ inline wire CUNU_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(DULA_SYS_RSTp(AVOR_SYS_RSTp)); }
-/*#p01.XORE*/ inline wire XORE_SYS_RSTp     (const wire AVOR_SYS_RSTp)   { return not1(CUNU_SYS_RSTn(AVOR_SYS_RSTp)); }
-/* p01.XEBE*/ inline wire XEBE_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/*#p01.WALU*/ inline wire WALU_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/* p01.WESY*/ inline wire WESY_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/* p01.XARE*/ inline wire XARE_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/* p03.MULO*/ inline wire MULO_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
+/*#p01.ALUR*/ inline uint8_t ALUR_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(AVOR_SYS_RSTp); }
+/*#p01.DULA*/ inline uint8_t DULA_SYS_RSTp     (const uint8_t AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
+/*#p01.CUNU*/ inline uint8_t CUNU_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(DULA_SYS_RSTp(AVOR_SYS_RSTp)); }
+/*#p01.XORE*/ inline uint8_t XORE_SYS_RSTp     (const uint8_t AVOR_SYS_RSTp)   { return not1(CUNU_SYS_RSTn(AVOR_SYS_RSTp)); }
+/* p01.XEBE*/ inline uint8_t XEBE_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
+/*#p01.WALU*/ inline uint8_t WALU_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
+/* p01.WESY*/ inline uint8_t WESY_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
+/* p01.XARE*/ inline uint8_t XARE_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
+/* p03.MULO*/ inline uint8_t MULO_SYS_RSTn     (const uint8_t AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
 
-/* p01.XAPO*/ inline wire XAPO_VID_RSTn     (const wire XODO_VID_RSTp)   { return not1(XODO_VID_RSTp); }
-/* p01.LYHA*/ inline wire LYHA_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/* p01.LYFE*/ inline wire LYFE_VID_RSTn     (const wire XODO_VID_RSTp)   { return not1(LYHA_VID_RSTp(XODO_VID_RSTp)); }
-/* p01.TOFU*/ inline wire TOFU_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/* p01.ROSY*/ inline wire ROSY_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/*#p01.ATAR*/ inline wire ATAR_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/*#p01.ABEZ*/ inline wire ABEZ_VID_RSTn     (const wire XODO_VID_RSTp)   { return not1(ATAR_VID_RSTp(XODO_VID_RSTp)); }
-/* p01.PYRY*/ inline wire PYRY_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/* p01.AMYG*/ inline wire AMYG_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.XAPO*/ inline uint8_t XAPO_VID_RSTn     (const uint8_t XODO_VID_RSTp)   { return not1(XODO_VID_RSTp); }
+/* p01.LYHA*/ inline uint8_t LYHA_VID_RSTp     (const uint8_t XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.LYFE*/ inline uint8_t LYFE_VID_RSTn     (const uint8_t XODO_VID_RSTp)   { return not1(LYHA_VID_RSTp(XODO_VID_RSTp)); }
+/* p01.TOFU*/ inline uint8_t TOFU_VID_RSTp     (const uint8_t XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.ROSY*/ inline uint8_t ROSY_VID_RSTp     (const uint8_t XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/*#p01.ATAR*/ inline uint8_t ATAR_VID_RSTp     (const uint8_t XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/*#p01.ABEZ*/ inline uint8_t ABEZ_VID_RSTn     (const uint8_t XODO_VID_RSTp)   { return not1(ATAR_VID_RSTp(XODO_VID_RSTp)); }
+/* p01.PYRY*/ inline uint8_t PYRY_VID_RSTp     (const uint8_t XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
+/* p01.AMYG*/ inline uint8_t AMYG_VID_RSTp     (const uint8_t XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
 
-/* p07.AJAS*/ inline wire AJAS_CPU_RDn      (const wire TEDO_CPU_RDp)    { return not1(TEDO_CPU_RDp); }
-/* p07.ASOT*/ inline wire ASOT_CPU_RDp      (const wire TEDO_CPU_RDp)    { return not1(AJAS_CPU_RDn(TEDO_CPU_RDp)); }
+/* p07.AJAS*/ inline uint8_t AJAS_CPU_RDn      (const uint8_t TEDO_CPU_RDp)    { return not1(TEDO_CPU_RDp); }
+/* p07.ASOT*/ inline uint8_t ASOT_CPU_RDp      (const uint8_t TEDO_CPU_RDp)    { return not1(AJAS_CPU_RDn(TEDO_CPU_RDp)); }
 
-/* p07.DYKY*/ inline wire DYKY_CPU_WRn      (const wire TAPU_CPU_WRp)    { return not1(TAPU_CPU_WRp); }
-/* p07.CUPA*/ inline wire CUPA_CPU_WRp      (const wire TAPU_CPU_WRp)    { return not1(DYKY_CPU_WRn(TAPU_CPU_WRp)); }
+/* p07.DYKY*/ inline uint8_t DYKY_CPU_WRn      (const uint8_t TAPU_CPU_WRp)    { return not1(TAPU_CPU_WRp); }
+/* p07.CUPA*/ inline uint8_t CUPA_CPU_WRp      (const uint8_t TAPU_CPU_WRp)    { return not1(DYKY_CPU_WRn(TAPU_CPU_WRp)); }
 
-/* p07.TUNA*/ inline wire TUNA_0000_FDFF    (const Signal BUS_CPU_A[16]) { return nand7(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), BUS_CPU_A[13].qp_new(), BUS_CPU_A[12].qp_new(), BUS_CPU_A[11].qp_new(), BUS_CPU_A[10].qp_new(), BUS_CPU_A[ 9].qp_new()); }
-/* p07.RYCU*/ inline wire RYCU_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
-/* p25.SYRO*/ inline wire SYRO_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
+/* p07.TUNA*/ inline uint8_t TUNA_0000_FDFF    (const Signal BUS_CPU_A[16]) { return nand7(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), BUS_CPU_A[13].qp_new(), BUS_CPU_A[12].qp_new(), BUS_CPU_A[11].qp_new(), BUS_CPU_A[10].qp_new(), BUS_CPU_A[ 9].qp_new()); }
+/* p07.RYCU*/ inline uint8_t RYCU_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
+/* p25.SYRO*/ inline uint8_t SYRO_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
 
-/* p03.TOVY*/ inline wire TOVY_A00n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0].qp_new()); }
-/* p08.TOLA*/ inline wire TOLA_A01n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1].qp_new()); }
-/* p22.XOLA*/ inline wire XOLA_A00n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0].qp_new()); }
-/* p22.XENO*/ inline wire XENO_A01n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1].qp_new()); }
-/* p22.XUSY*/ inline wire XUSY_A02n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2].qp_new()); }
-/* p22.XERA*/ inline wire XERA_A03n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 3].qp_new()); }
-/* p07.TONA*/ inline wire TONA_A08n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 8].qp_new()); }
-/*#p08.SORE*/ inline wire SORE_A15n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[15].qp_new()); }
-/* p06.SEFY*/ inline wire SEFY_A02n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2].qp_new()); }
-/* p10.BYKO*/ inline wire BYKO_A05n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 5].qp_new()); }
-/* p10.AKUG*/ inline wire AKUG_A06n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 6].qp_new()); }
-/* p08.SOGY*/ inline wire SOGY_A14n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[14].qp_new()); }
+/* p03.TOVY*/ inline uint8_t TOVY_A00n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0].qp_new()); }
+/* p08.TOLA*/ inline uint8_t TOLA_A01n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1].qp_new()); }
+/* p22.XOLA*/ inline uint8_t XOLA_A00n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0].qp_new()); }
+/* p22.XENO*/ inline uint8_t XENO_A01n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1].qp_new()); }
+/* p22.XUSY*/ inline uint8_t XUSY_A02n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2].qp_new()); }
+/* p22.XERA*/ inline uint8_t XERA_A03n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 3].qp_new()); }
+/* p07.TONA*/ inline uint8_t TONA_A08n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 8].qp_new()); }
+/*#p08.SORE*/ inline uint8_t SORE_A15n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[15].qp_new()); }
+/* p06.SEFY*/ inline uint8_t SEFY_A02n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2].qp_new()); }
+/* p10.BYKO*/ inline uint8_t BYKO_A05n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 5].qp_new()); }
+/* p10.AKUG*/ inline uint8_t AKUG_A06n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 6].qp_new()); }
+/* p08.SOGY*/ inline uint8_t SOGY_A14n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[14].qp_new()); }
 
-/* p22.WADO*/ inline wire WADO_A00p         (const Signal BUS_CPU_A[16]) { return not1(XOLA_A00n(BUS_CPU_A)); }
-/* p22.WESA*/ inline wire WESA_A01p         (const Signal BUS_CPU_A[16]) { return not1(XENO_A01n(BUS_CPU_A)); }
-/* p22.WALO*/ inline wire WALO_A02p         (const Signal BUS_CPU_A[16]) { return not1(XUSY_A02n(BUS_CPU_A)); }
-/* p22.WEPO*/ inline wire WEPO_A03p         (const Signal BUS_CPU_A[16]) { return not1(XERA_A03n(BUS_CPU_A)); }
+/* p22.WADO*/ inline uint8_t WADO_A00p         (const Signal BUS_CPU_A[16]) { return not1(XOLA_A00n(BUS_CPU_A)); }
+/* p22.WESA*/ inline uint8_t WESA_A01p         (const Signal BUS_CPU_A[16]) { return not1(XENO_A01n(BUS_CPU_A)); }
+/* p22.WALO*/ inline uint8_t WALO_A02p         (const Signal BUS_CPU_A[16]) { return not1(XUSY_A02n(BUS_CPU_A)); }
+/* p22.WEPO*/ inline uint8_t WEPO_A03p         (const Signal BUS_CPU_A[16]) { return not1(XERA_A03n(BUS_CPU_A)); }
 
-/* p07.SYKE*/ inline wire SYKE_ADDR_HIp     (const Signal BUS_CPU_A[16]) { return nor2(TUNA_0000_FDFF(BUS_CPU_A), TONA_A08n(BUS_CPU_A)); }
-/* p07.SOHA*/ inline wire SOHA_ADDR_HIn     (const Signal BUS_CPU_A[16]) { return not1(SYKE_ADDR_HIp(BUS_CPU_A)); }
-/* p07.ROPE*/ inline wire ROPE_ADDR_OAMn    (const Signal BUS_CPU_A[16]) { return nand2(SOHA_ADDR_HIn(BUS_CPU_A), RYCU_FE00_FFFF(BUS_CPU_A)); }
-/* p07.SARO*/ inline wire SARO_ADDR_OAMp    (const Signal BUS_CPU_A[16]) { return not1(ROPE_ADDR_OAMn(BUS_CPU_A)); }
-/* p22.XALY*/ inline wire XALY_0x00xxxx     (const Signal BUS_CPU_A[16]) { return nor3(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new()); }
-/* p22.WUTU*/ inline wire WUTU_ADDR_PPUn    (const Signal BUS_CPU_A[16]) { return nand3(SYKE_ADDR_HIp(BUS_CPU_A), BUS_CPU_A[ 6].qp_new(), XALY_0x00xxxx(BUS_CPU_A)); }
-/* p22.WERO*/ inline wire WERO_ADDR_PPUp    (const Signal BUS_CPU_A[16]) { return not1(WUTU_ADDR_PPUn(BUS_CPU_A)); }
-/*#p08.TEVY*/ inline wire TEVY_ADDR_VRAMn   (const Signal BUS_CPU_A[16]) { return or3(BUS_CPU_A[13].qp_new(), BUS_CPU_A[14].qp_new(), SORE_A15n(BUS_CPU_A)); }
-/* p06.SARE*/ inline wire SARE_XX00_XX07p   (const Signal BUS_CPU_A[16]) { return nor5 (BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 6].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 3].qp_new()); }
-/* p03.RYFO*/ inline wire RYFO_FF04_FF07p   (const Signal BUS_CPU_A[16]) { return and3(SYKE_ADDR_HIp(BUS_CPU_A), BUS_CPU_A[ 2].qp_new(), SARE_XX00_XX07p(BUS_CPU_A)); }
-/* p10.AMUS*/ inline wire AMUS_XX_0xx00000p (const Signal BUS_CPU_A[16]) { return nor6(BUS_CPU_A[ 0].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 3].qp_new(), BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 7].qp_new()); }
-/* p07.SAPA*/ inline wire SAPA_XX_xxxx1111p (const Signal BUS_CPU_A[16]) { return and4(BUS_CPU_A[ 0].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 3].qp_new()); }
-/* p07.SEMY*/ inline wire SEMY_XX_0000xxxxp (const Signal BUS_CPU_A[16]) { return nor4(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 6].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new()); }
-/* p06.SANO*/ inline wire SANO_FF00_FF03p   (const Signal BUS_CPU_A[16]) { return and3(SARE_XX00_XX07p(BUS_CPU_A), SEFY_A02n(BUS_CPU_A), SYKE_ADDR_HIp(BUS_CPU_A)); }
-/* p10.ANAP*/ inline wire ANAP_FF_0xx00000  (const Signal BUS_CPU_A[16]) { return and2(SYKE_ADDR_HIp(BUS_CPU_A), AMUS_XX_0xx00000p(BUS_CPU_A)); }
-/* p08.TUMA*/ inline wire TUMA_A000_BFFFp   (const Signal BUS_CPU_A[16]) { return and3(BUS_CPU_A[13].qp_new(), SOGY_A14n(BUS_CPU_A), BUS_CPU_A[15].qp_new()); }
-/* p08.TYNU*/ inline wire TYNU_A000_FFFFp   (const Signal BUS_CPU_A[16]) { return and_or3(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), TUMA_A000_BFFFp(BUS_CPU_A)); }
-/* p28.ADAH*/ inline wire ADAH_FE00_FEFFn   (const Signal BUS_CPU_A[16]) { return not1(SARO_ADDR_OAMp(BUS_CPU_A)); }
+/* p07.SYKE*/ inline uint8_t SYKE_ADDR_HIp     (const Signal BUS_CPU_A[16]) { return nor2(TUNA_0000_FDFF(BUS_CPU_A), TONA_A08n(BUS_CPU_A)); }
+/* p07.SOHA*/ inline uint8_t SOHA_ADDR_HIn     (const Signal BUS_CPU_A[16]) { return not1(SYKE_ADDR_HIp(BUS_CPU_A)); }
+/* p07.ROPE*/ inline uint8_t ROPE_ADDR_OAMn    (const Signal BUS_CPU_A[16]) { return nand2(SOHA_ADDR_HIn(BUS_CPU_A), RYCU_FE00_FFFF(BUS_CPU_A)); }
+/* p07.SARO*/ inline uint8_t SARO_ADDR_OAMp    (const Signal BUS_CPU_A[16]) { return not1(ROPE_ADDR_OAMn(BUS_CPU_A)); }
+/* p22.XALY*/ inline uint8_t XALY_0x00xxxx     (const Signal BUS_CPU_A[16]) { return nor3(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new()); }
+/* p22.WUTU*/ inline uint8_t WUTU_ADDR_PPUn    (const Signal BUS_CPU_A[16]) { return nand3(SYKE_ADDR_HIp(BUS_CPU_A), BUS_CPU_A[ 6].qp_new(), XALY_0x00xxxx(BUS_CPU_A)); }
+/* p22.WERO*/ inline uint8_t WERO_ADDR_PPUp    (const Signal BUS_CPU_A[16]) { return not1(WUTU_ADDR_PPUn(BUS_CPU_A)); }
+/*#p08.TEVY*/ inline uint8_t TEVY_ADDR_VRAMn   (const Signal BUS_CPU_A[16]) { return or3(BUS_CPU_A[13].qp_new(), BUS_CPU_A[14].qp_new(), SORE_A15n(BUS_CPU_A)); }
+/* p06.SARE*/ inline uint8_t SARE_XX00_XX07p   (const Signal BUS_CPU_A[16]) { return nor5 (BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 6].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 3].qp_new()); }
+/* p03.RYFO*/ inline uint8_t RYFO_FF04_FF07p   (const Signal BUS_CPU_A[16]) { return and3(SYKE_ADDR_HIp(BUS_CPU_A), BUS_CPU_A[ 2].qp_new(), SARE_XX00_XX07p(BUS_CPU_A)); }
+/* p10.AMUS*/ inline uint8_t AMUS_XX_0xx00000p (const Signal BUS_CPU_A[16]) { return nor6(BUS_CPU_A[ 0].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 3].qp_new(), BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 7].qp_new()); }
+/* p07.SAPA*/ inline uint8_t SAPA_XX_xxxx1111p (const Signal BUS_CPU_A[16]) { return and4(BUS_CPU_A[ 0].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 3].qp_new()); }
+/* p07.SEMY*/ inline uint8_t SEMY_XX_0000xxxxp (const Signal BUS_CPU_A[16]) { return nor4(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 6].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new()); }
+/* p06.SANO*/ inline uint8_t SANO_FF00_FF03p   (const Signal BUS_CPU_A[16]) { return and3(SARE_XX00_XX07p(BUS_CPU_A), SEFY_A02n(BUS_CPU_A), SYKE_ADDR_HIp(BUS_CPU_A)); }
+/* p10.ANAP*/ inline uint8_t ANAP_FF_0xx00000  (const Signal BUS_CPU_A[16]) { return and2(SYKE_ADDR_HIp(BUS_CPU_A), AMUS_XX_0xx00000p(BUS_CPU_A)); }
+/* p08.TUMA*/ inline uint8_t TUMA_A000_BFFFp   (const Signal BUS_CPU_A[16]) { return and3(BUS_CPU_A[13].qp_new(), SOGY_A14n(BUS_CPU_A), BUS_CPU_A[15].qp_new()); }
+/* p08.TYNU*/ inline uint8_t TYNU_A000_FFFFp   (const Signal BUS_CPU_A[16]) { return and_or3(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), TUMA_A000_BFFFp(BUS_CPU_A)); }
+/* p28.ADAH*/ inline uint8_t ADAH_FE00_FEFFn   (const Signal BUS_CPU_A[16]) { return not1(SARO_ADDR_OAMp(BUS_CPU_A)); }
 
-/* p22.WORU*/ inline wire WORU_FF40n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WOFA*/ inline wire WOFA_FF41n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WEBU*/ inline wire WEBU_FF42n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WAVU*/ inline wire WAVU_FF43n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WYLE*/ inline wire WYLE_FF44n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WETY*/ inline wire WETY_FF45n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/*#p22.WATE*/ inline wire WATE_FF46n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WYBO*/ inline wire WYBO_FF47n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WETA*/ inline wire WETA_FF48n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-/* p22.VAMA*/ inline wire VAMA_FF49n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-/* p22.WYVO*/ inline wire WYVO_FF4An        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-/* p22.WAGE*/ inline wire WAGE_FF4Bn        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
+/* p22.WORU*/ inline uint8_t WORU_FF40n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WOFA*/ inline uint8_t WOFA_FF41n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WEBU*/ inline uint8_t WEBU_FF42n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WAVU*/ inline uint8_t WAVU_FF43n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WYLE*/ inline uint8_t WYLE_FF44n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WETY*/ inline uint8_t WETY_FF45n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/*#p22.WATE*/ inline uint8_t WATE_FF46n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WYBO*/ inline uint8_t WYBO_FF47n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
+/* p22.WETA*/ inline uint8_t WETA_FF48n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
+/* p22.VAMA*/ inline uint8_t VAMA_FF49n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
+/* p22.WYVO*/ inline uint8_t WYVO_FF4An        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
+/* p22.WAGE*/ inline uint8_t WAGE_FF4Bn        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
 
-/* p22.VOCA*/ inline wire VOCA_FF40p        (const Signal BUS_CPU_A[16]) { return not1(WORU_FF40n(BUS_CPU_A)); }
-/* p22.VARY*/ inline wire VARY_FF41p        (const Signal BUS_CPU_A[16]) { return not1(WOFA_FF41n(BUS_CPU_A)); }
-/* p22.XARO*/ inline wire XARO_FF42p        (const Signal BUS_CPU_A[16]) { return not1(WEBU_FF42n(BUS_CPU_A)); }
-/* p22.XAVY*/ inline wire XAVY_FF43p        (const Signal BUS_CPU_A[16]) { return not1(WAVU_FF43n(BUS_CPU_A)); }
-/* p22.XOGY*/ inline wire XOGY_FF44p        (const Signal BUS_CPU_A[16]) { return not1(WYLE_FF44n(BUS_CPU_A)); }
-/* p22.XAYU*/ inline wire XAYU_FF45p        (const Signal BUS_CPU_A[16]) { return not1(WETY_FF45n(BUS_CPU_A)); }
-/*#p22.XEDA*/ inline wire XEDA_FF46p        (const Signal BUS_CPU_A[16]) { return not1(WATE_FF46n(BUS_CPU_A)); }
-/* p22.WERA*/ inline wire WERA_FF47p        (const Signal BUS_CPU_A[16]) { return not1(WYBO_FF47n(BUS_CPU_A)); }
-/* p22.XAYO*/ inline wire XAYO_FF48p        (const Signal BUS_CPU_A[16]) { return not1(WETA_FF48n(BUS_CPU_A)); }
-/* p22.TEGO*/ inline wire TEGO_FF49p        (const Signal BUS_CPU_A[16]) { return not1(VAMA_FF49n(BUS_CPU_A)); }
-/* p22.VYGA*/ inline wire VYGA_FF4Ap        (const Signal BUS_CPU_A[16]) { return not1(WYVO_FF4An(BUS_CPU_A)); }
-/* p22.VUMY*/ inline wire VUMY_FF4Bp        (const Signal BUS_CPU_A[16]) { return not1(WAGE_FF4Bn(BUS_CPU_A)); }
+/* p22.VOCA*/ inline uint8_t VOCA_FF40p        (const Signal BUS_CPU_A[16]) { return not1(WORU_FF40n(BUS_CPU_A)); }
+/* p22.VARY*/ inline uint8_t VARY_FF41p        (const Signal BUS_CPU_A[16]) { return not1(WOFA_FF41n(BUS_CPU_A)); }
+/* p22.XARO*/ inline uint8_t XARO_FF42p        (const Signal BUS_CPU_A[16]) { return not1(WEBU_FF42n(BUS_CPU_A)); }
+/* p22.XAVY*/ inline uint8_t XAVY_FF43p        (const Signal BUS_CPU_A[16]) { return not1(WAVU_FF43n(BUS_CPU_A)); }
+/* p22.XOGY*/ inline uint8_t XOGY_FF44p        (const Signal BUS_CPU_A[16]) { return not1(WYLE_FF44n(BUS_CPU_A)); }
+/* p22.XAYU*/ inline uint8_t XAYU_FF45p        (const Signal BUS_CPU_A[16]) { return not1(WETY_FF45n(BUS_CPU_A)); }
+/*#p22.XEDA*/ inline uint8_t XEDA_FF46p        (const Signal BUS_CPU_A[16]) { return not1(WATE_FF46n(BUS_CPU_A)); }
+/* p22.WERA*/ inline uint8_t WERA_FF47p        (const Signal BUS_CPU_A[16]) { return not1(WYBO_FF47n(BUS_CPU_A)); }
+/* p22.XAYO*/ inline uint8_t XAYO_FF48p        (const Signal BUS_CPU_A[16]) { return not1(WETA_FF48n(BUS_CPU_A)); }
+/* p22.TEGO*/ inline uint8_t TEGO_FF49p        (const Signal BUS_CPU_A[16]) { return not1(VAMA_FF49n(BUS_CPU_A)); }
+/* p22.VYGA*/ inline uint8_t VYGA_FF4Ap        (const Signal BUS_CPU_A[16]) { return not1(WYVO_FF4An(BUS_CPU_A)); }
+/* p22.VUMY*/ inline uint8_t VUMY_FF4Bp        (const Signal BUS_CPU_A[16]) { return not1(WAGE_FF4Bn(BUS_CPU_A)); }
 

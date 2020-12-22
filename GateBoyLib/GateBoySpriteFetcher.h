@@ -10,28 +10,28 @@ struct SpriteFetcher {
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire2 XYMU_RENDERINGp, wire2 ATEJ_LINE_RSTp, wire2 TAVE_PRELOAD_DONE_TRIGp, wire2 TEKY_SFETCH_REQp_old);
 
-  /* p29.SAKY*/ wire2 SAKY_SFETCHn() const { return nor2b(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
+  /* p29.SAKY*/ wire2 SAKY_SFETCHn() const { return nor2b(TULY_SFETCH_S1p.qp_new2(), VONU_SFETCH_S1p_D4.qp_new2()); }
 
   /* p29.TEXY*/ wire2 TEXY_SFETCHINGp() const {
-    /* p29.TEPA*/ wire2 _TEPA_RENDERINGp = not1b(_XYMU_RENDERINGp.qp_new());
+    /* p29.TEPA*/ wire2 _TEPA_RENDERINGp = not1b(_XYMU_RENDERINGp.qp_new2());
     /* p29.TYSO*/ wire2 _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
     /* p29.TEXY*/ wire2 _TEXY_SFETCHINGp = not1b(_TYSO_SFETCHINGn);
     return _TEXY_SFETCHINGp;
   }
 
   /* p27.SOWO*/ wire2 SOWO_SFETCH_RUNNINGn_old() const { return not1b(TAKA_SFETCH_RUNNINGp.qp_old()); }
-  /* p27.SOWO*/ wire2 SOWO_SFETCH_RUNNINGn_new() const { return not1b(TAKA_SFETCH_RUNNINGp.qp_new()); }
+  /* p27.SOWO*/ wire2 SOWO_SFETCH_RUNNINGn_new() const { return not1b(TAKA_SFETCH_RUNNINGp.qp_new2()); }
 
-  /* p29.TYTU*/ wire2 TYTU_SFETCH_S0n() const { return not1b(TOXE_SFETCH_S0p.qp_new()); }
+  /* p29.TYTU*/ wire2 TYTU_SFETCH_S0n() const { return not1b(TOXE_SFETCH_S0p.qp_new2()); }
 
   /* p29.TUVO*/ wire2 TUVO_PPU_OAM_RDp() const {
-    /* p29.TEPA*/ wire2 _TEPA_RENDERINGp = not1b(_XYMU_RENDERINGp.qp_new());
-    wire2 _TUVO_PPU_OAM_RDp = nor3b(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new(), TESE_SFETCH_S2p.qp_new());
+    /* p29.TEPA*/ wire2 _TEPA_RENDERINGp = not1b(_XYMU_RENDERINGp.qp_new2());
+    wire2 _TUVO_PPU_OAM_RDp = nor3b(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new2(), TESE_SFETCH_S2p.qp_new2());
     return _TUVO_PPU_OAM_RDp;
   }
 
   wire2 TACU_SPR_SEQ_5_TRIG() const {
-    /* p29.TACU*/ wire2 _TACU_SPR_SEQ_5_TRIG = nand2b(TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n());
+    /* p29.TACU*/ wire2 _TACU_SPR_SEQ_5_TRIG = nand2b(TYFO_SFETCH_S0p_D1.qp_new2(), TYTU_SFETCH_S0n());
     return _TACU_SPR_SEQ_5_TRIG;
   }
 
@@ -43,26 +43,26 @@ struct SpriteFetcher {
 
 
   wire2 XUJA_SPR_OAM_LATCHn() const {
-    /* p28.WEFY*/ wire2 _WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp(), TYFO_SFETCH_S0p_D1.qp_new());
+    /* p28.WEFY*/ wire2 _WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp(), TYFO_SFETCH_S0p_D1.qp_new2());
     /*#p28.XUJA*/ wire2 _XUJA_SPR_OAM_LATCHn  = not1b(_WEFY_SPR_READp);
     return _XUJA_SPR_OAM_LATCHn;
   }
 
   /* p29.WUTY*/ wire2 WUTY_SFETCH_DONE_TRIGp() const {
-    /* p29.TYNO*/ wire2 _TYNO = nand3b(TOXE_SFETCH_S0p.qp_new(), SEBA_SFETCH_S1p_D5.qp_new(), VONU_SFETCH_S1p_D4.qp_new());
+    /* p29.TYNO*/ wire2 _TYNO = nand3b(TOXE_SFETCH_S0p.qp_new2(), SEBA_SFETCH_S1p_D5.qp_new2(), VONU_SFETCH_S1p_D4.qp_new2());
     /* p29.VUSA*/ wire2 _VUSA_SPRITE_DONEn = or2(TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
     /* p29.WUTY*/ wire2 _WUTY_SFETCH_DONE_TRIGp = not1b(_VUSA_SPRITE_DONEn);
     return _WUTY_SFETCH_DONE_TRIGp;
   }
 
   wire2 SYCU_SFETCH_S0pe() const {
-    /* p24.LOBY*/ wire2 _LOBY_RENDERINGn = not1b(_XYMU_RENDERINGp.qp_new());
-    /* p29.SYCU*/ wire2 _SYCU_SFETCH_S0pe = nor3b(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, TYFO_SFETCH_S0p_D1.qp_new());
+    /* p24.LOBY*/ wire2 _LOBY_RENDERINGn = not1b(_XYMU_RENDERINGp.qp_new2());
+    /* p29.SYCU*/ wire2 _SYCU_SFETCH_S0pe = nor3b(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, TYFO_SFETCH_S0p_D1.qp_new2());
     return _SYCU_SFETCH_S0pe;
   }
 
   wire2 XADO_STORE_SPRITE_An() const {
-    /*#p29.TOPU*/ wire2 _TOPU_STORE_SPRITE_Ap = and2(TULY_SFETCH_S1p.qp_new(), SYCU_SFETCH_S0pe());
+    /*#p29.TOPU*/ wire2 _TOPU_STORE_SPRITE_Ap = and2(TULY_SFETCH_S1p.qp_new2(), SYCU_SFETCH_S0pe());
     /*#p29.VYWA*/ wire2 _VYWA_STORE_SPRITE_An = not1b(_TOPU_STORE_SPRITE_Ap);
     /*#p29.WENY*/ wire2 _WENY_STORE_SPRITE_Ap = not1b(_VYWA_STORE_SPRITE_An);
     /*#p29.XADO*/ wire2 _XADO_STORE_SPRITE_An = not1b(_WENY_STORE_SPRITE_Ap);
@@ -70,7 +70,7 @@ struct SpriteFetcher {
   }
 
   wire2 PUCO_STORE_SPRITE_Bn() const {
-    /*#p29.RACA*/ wire2 _RACA_STORE_SPRITE_Bp = and2(VONU_SFETCH_S1p_D4.qp_new(), SYCU_SFETCH_S0pe());
+    /*#p29.RACA*/ wire2 _RACA_STORE_SPRITE_Bp = and2(VONU_SFETCH_S1p_D4.qp_new2(), SYCU_SFETCH_S0pe());
     /*#p29.PEBY*/ wire2 _PEBY_STORE_SPRITE_Bn = not1b(_RACA_STORE_SPRITE_Bp);
     /*#p29.NYBE*/ wire2 _NYBE_STORE_SPRITE_Bp = not1b(_PEBY_STORE_SPRITE_Bn);
     /*#p29.PUCO*/ wire2 _PUCO_STORE_SPRITE_Bn = not1b(_NYBE_STORE_SPRITE_Bp);

@@ -217,12 +217,12 @@ struct RegLY {
   void tock2(GateBoyResetDebug& rst, RegLX& reg_lx);
 
   /*#p24.NERU*/ wire2 NERU_y000p() const {
-    return nor8b(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(),
-                 MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
+    return nor8b(LAFO_LY7p.qp_new2(), LOVU_LY4p.qp_new2(), LYDO_LY3p.qp_new2(), MUWY_LY0p.qp_new2(),
+                 MYRO_LY1p.qp_new2(), LEXA_LY2p.qp_new2(), LEMA_LY5p.qp_new2(), MATO_LY6p.qp_new2());
   }
 
-  /*#p21.XYVO*/ wire2 XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old(), LAFO_LY7p.qp_old()); } // 128 + 16 = 144
-  /*#p21.XYVO*/ wire2 XYVO_y144p_new() const { return and2(LOVU_LY4p.qp_new(), LAFO_LY7p.qp_new()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire2 XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old2(), LAFO_LY7p.qp_old2()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire2 XYVO_y144p_new() const { return and2(LOVU_LY4p.qp_new2(), LAFO_LY7p.qp_new2()); } // 128 + 16 = 144
 
   /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
 
@@ -256,20 +256,20 @@ struct RegLX {
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
 
   wire2 PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire2 _PURE_LINE_ENDn_new_evn = not1b(RUTU_x113p.qp_new());
+    /*#p21.PURE*/ wire2 _PURE_LINE_ENDn_new_evn = not1b(RUTU_x113p.qp_new2());
     return _PURE_LINE_ENDn_new_evn;
   }
 
   wire2 TEGY_STROBE() const;
 
-  wire2 NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
-  wire2 NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
+  wire2 NYPE_x113p_new() const { return NYPE_x113p.qp_new2(); }
+  wire2 NYPE_x113n_new() const { return NYPE_x113p.qn_new2(); }
 
-  wire2 RUTU_x113p_old() const { return RUTU_x113p.qp_old(); }
+  wire2 RUTU_x113p_old() const { return RUTU_x113p.qp_old2(); }
   wire2 RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
 
-  wire2 RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
-  wire2 RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
+  wire2 RUTU_x113p_new() const { return RUTU_x113p.qp_new2(); }
+  wire2 RUTU_x113n_new() const { return RUTU_x113p.qn_new2(); }
 
   /*#p24.LOFU*/ wire2 LOFU_x113n_old() const { return not1b(RUTU_x113p_old()); }
   /*#p24.LOFU*/ wire2 LOFU_x113n_new() const { return not1b(RUTU_x113p_new()); }

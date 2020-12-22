@@ -104,7 +104,7 @@ void GateBoyCpuBus::set_pins(
 
   uint16_t bus_addr_new = bus_req_new.addr;
   bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_addr_new < 0xFE00);
-  if (bus_addr_new <= 0x00FF && bit(~BOOT_BITn_h.qp_old())) addr_ext_new = false;
+  if (bus_addr_new <= 0x00FF && bit(~BOOT_BITn_h.qp_old2())) addr_ext_new = false;
   if (DELTA_HA) {
     if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
   }
@@ -116,14 +116,14 @@ void GateBoyCpuBus::set_pins(
   SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
   SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
 
-  /* p07.UJYV*/ wire2 _UJYV_CPU_RDn = mux2nb(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
+  /* p07.UJYV*/ wire2 _UJYV_CPU_RDn = mux2nb(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new2()*/ 0, SIG_CPU_RDp.qp_new2()); // Ignoring debug stuff for now
   /* p07.TEDO*/ wire2 _TEDO_CPU_RDp = not1b(_UJYV_CPU_RDn);
 
   /*#p01.AFAS*/ wire2 _AFAS_xxxxEFGx = nor2b(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
-  /* p01.AREV*/ wire2 _AREV_CPU_WRn = nand2b(SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+  /* p01.AREV*/ wire2 _AREV_CPU_WRn = nand2b(SIG_CPU_WRp.qp_new2(), _AFAS_xxxxEFGx);
   /* p01.APOV*/ wire2 _APOV_CPU_WRp = not1b(_AREV_CPU_WRn);
 
-  /* p07.UBAL*/ wire2 _UBAL_CPU_WRn = mux2nb(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
+  /* p07.UBAL*/ wire2 _UBAL_CPU_WRn = mux2nb(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new2()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
   /* p07.TAPU*/ wire2 _TAPU_CPU_WRp = not1b(_UBAL_CPU_WRn); // xxxxEFGx
 
   TEDO_CPU_RDp.set(_TEDO_CPU_RDp);

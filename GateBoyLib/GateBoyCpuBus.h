@@ -53,78 +53,78 @@ struct GateBoyCpuBus {
   /* p01.APOV*/ Signal APOV_CPU_WRp;
   /* p07.TAPU*/ Signal TAPU_CPU_WRp;
 
-  /* p07.AJAS*/ wire2 AJAS_CPU_RDn      () const { return not1b(TEDO_CPU_RDp.qp_new()); }
-  /* p07.DYKY*/ wire2 DYKY_CPU_WRn      () const { return not1b(TAPU_CPU_WRp.qp_new()); }
+  /* p07.AJAS*/ wire2 AJAS_CPU_RDn      () const { return not1b(TEDO_CPU_RDp.qp_new2()); }
+  /* p07.DYKY*/ wire2 DYKY_CPU_WRn      () const { return not1b(TAPU_CPU_WRp.qp_new2()); }
   /* p07.ASOT*/ wire2 ASOT_CPU_RDp      () const { return not1b(AJAS_CPU_RDn()); }
   /* p28.LEKO*/ wire2 LEKO_CPU_RDp      () const { return not1b(MYNU_CPU_RDn()); }
   /* p07.CUPA*/ wire2 CUPA_CPU_WRp      () const { return not1b(DYKY_CPU_WRn()); }
   /* p28.MYNU*/ wire2 MYNU_CPU_RDn      () const { return nand2b(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
-  /* p08.REDU*/ wire2 REDU_CPU_RDn      () const { return not1b(TEDO_CPU_RDp.qp_new()); }
-  /* p08.MEXO*/ wire2 MEXO_CPU_WRn      () const { return not1b(APOV_CPU_WRp.qp_new()); }
+  /* p08.REDU*/ wire2 REDU_CPU_RDn      () const { return not1b(TEDO_CPU_RDp.qp_new2()); }
+  /* p08.MEXO*/ wire2 MEXO_CPU_WRn      () const { return not1b(APOV_CPU_WRp.qp_new2()); }
 
 
-  /* p04.DECY*/ wire2 DECY_LATCH_EXTn   () const { return not1b(SIG_CPU_LATCH_EXT.qp_new()); }
+  /* p04.DECY*/ wire2 DECY_LATCH_EXTn   () const { return not1b(SIG_CPU_LATCH_EXT.qp_new2()); }
   /* p04.CATY*/ wire2 CATY_LATCH_EXTp   () const { return not1b(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire2 BOFE_LATCH_EXTn   () const { return not1b(CATY_LATCH_EXTp()); }
 
-  /* p07.TUNA*/ wire2 TUNA_0000_FDFF    () const { return nand7b(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), BUS_CPU_A[13].qp_new(), BUS_CPU_A[12].qp_new(), BUS_CPU_A[11].qp_new(), BUS_CPU_A[10].qp_new(), BUS_CPU_A[9].qp_new()); }
+  /* p07.TUNA*/ wire2 TUNA_0000_FDFF    () const { return nand7b(BUS_CPU_A[15].qp_new2(), BUS_CPU_A[14].qp_new2(), BUS_CPU_A[13].qp_new2(), BUS_CPU_A[12].qp_new2(), BUS_CPU_A[11].qp_new2(), BUS_CPU_A[10].qp_new2(), BUS_CPU_A[9].qp_new2()); }
   /* p07.RYCU*/ wire2 RYCU_FE00_FFFF    () const { return not1b(TUNA_0000_FDFF()); }
   /* p25.SYRO*/ wire2 SYRO_FE00_FFFF    () const { return not1b(TUNA_0000_FDFF()); }
 
-  /* p03.TOVY*/ wire2 TOVY_A00n         () const { return not1b(BUS_CPU_A[0].qp_new()); }
-  /* p08.TOLA*/ wire2 TOLA_A01n         () const { return not1b(BUS_CPU_A[1].qp_new()); }
-  /* p22.XOLA*/ wire2 XOLA_A00n         () const { return not1b(BUS_CPU_A[0].qp_new()); }
-  /* p22.XENO*/ wire2 XENO_A01n         () const { return not1b(BUS_CPU_A[1].qp_new()); }
-  /* p22.XUSY*/ wire2 XUSY_A02n         () const { return not1b(BUS_CPU_A[2].qp_new()); }
-  /* p22.XERA*/ wire2 XERA_A03n         () const { return not1b(BUS_CPU_A[3].qp_new()); }
-  /* p07.TONA*/ wire2 TONA_A08n         () const { return not1b(BUS_CPU_A[8].qp_new()); }
-  /*#p08.SORE*/ wire2 SORE_A15n         () const { return not1b(BUS_CPU_A[15].qp_new()); }
-  /* p06.SEFY*/ wire2 SEFY_A02n         () const { return not1b(BUS_CPU_A[2].qp_new()); }
-  /* p10.BYKO*/ wire2 BYKO_A05n         () const { return not1b(BUS_CPU_A[5].qp_new()); }
-  /* p10.AKUG*/ wire2 AKUG_A06n         () const { return not1b(BUS_CPU_A[6].qp_new()); }
-  /* p08.SOGY*/ wire2 SOGY_A14n         () const { return not1b(BUS_CPU_A[14].qp_new()); }
+  /* p03.TOVY*/ wire2 TOVY_A00n         () const { return not1b(BUS_CPU_A[0].qp_new2()); }
+  /* p08.TOLA*/ wire2 TOLA_A01n         () const { return not1b(BUS_CPU_A[1].qp_new2()); }
+  /* p22.XOLA*/ wire2 XOLA_A00n         () const { return not1b(BUS_CPU_A[0].qp_new2()); }
+  /* p22.XENO*/ wire2 XENO_A01n         () const { return not1b(BUS_CPU_A[1].qp_new2()); }
+  /* p22.XUSY*/ wire2 XUSY_A02n         () const { return not1b(BUS_CPU_A[2].qp_new2()); }
+  /* p22.XERA*/ wire2 XERA_A03n         () const { return not1b(BUS_CPU_A[3].qp_new2()); }
+  /* p07.TONA*/ wire2 TONA_A08n         () const { return not1b(BUS_CPU_A[8].qp_new2()); }
+  /*#p08.SORE*/ wire2 SORE_A15n         () const { return not1b(BUS_CPU_A[15].qp_new2()); }
+  /* p06.SEFY*/ wire2 SEFY_A02n         () const { return not1b(BUS_CPU_A[2].qp_new2()); }
+  /* p10.BYKO*/ wire2 BYKO_A05n         () const { return not1b(BUS_CPU_A[5].qp_new2()); }
+  /* p10.AKUG*/ wire2 AKUG_A06n         () const { return not1b(BUS_CPU_A[6].qp_new2()); }
+  /* p08.SOGY*/ wire2 SOGY_A14n         () const { return not1b(BUS_CPU_A[14].qp_new2()); }
 
   /* p22.WADO*/ wire2 WADO_A00p         () const { return not1b(XOLA_A00n()); }
   /* p22.WESA*/ wire2 WESA_A01p         () const { return not1b(XENO_A01n()); }
   /* p22.WALO*/ wire2 WALO_A02p         () const { return not1b(XUSY_A02n()); }
   /* p22.WEPO*/ wire2 WEPO_A03p         () const { return not1b(XERA_A03n()); }
 
-  /* p07.TYRO*/ wire2 TYRO_XX_0x0x0000p () const { return nor6b(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 3].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 0].qp_new()); }
-  /* p07.TUFA*/ wire2 TUFA_XX_x1x1xxxxp () const { return and2(BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 6].qp_new()); }
+  /* p07.TYRO*/ wire2 TYRO_XX_0x0x0000p () const { return nor6b(BUS_CPU_A[ 7].qp_new2(), BUS_CPU_A[ 5].qp_new2(), BUS_CPU_A[ 3].qp_new2(), BUS_CPU_A[ 2].qp_new2(), BUS_CPU_A[ 1].qp_new2(), BUS_CPU_A[ 0].qp_new2()); }
+  /* p07.TUFA*/ wire2 TUFA_XX_x1x1xxxxp () const { return and2(BUS_CPU_A[ 4].qp_new2(), BUS_CPU_A[ 6].qp_new2()); }
 
   /*#p07.SYKE*/ wire2 SYKE_ADDR_HIp     () const { return nor2b(TUNA_0000_FDFF(), TONA_A08n()); }
   /*#p07.SOHA*/ wire2 SOHA_ADDR_HIn     () const { return not1b(SYKE_ADDR_HIp()); }
 
-  /* p22.XALY*/ wire2 XALY_0x00xxxx     () const { return nor3b(BUS_CPU_A[7].qp_new(), BUS_CPU_A[5].qp_new(), BUS_CPU_A[4].qp_new()); }
-  /* p06.SARE*/ wire2 SARE_XX00_XX07p   () const { return nor5b(BUS_CPU_A[7].qp_new(), BUS_CPU_A[6].qp_new(), BUS_CPU_A[5].qp_new(), BUS_CPU_A[4].qp_new(), BUS_CPU_A[3].qp_new()); }
-  /* p03.RYFO*/ wire2 RYFO_FF04_FF07p   () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A[2].qp_new(), SARE_XX00_XX07p()); }
+  /* p22.XALY*/ wire2 XALY_0x00xxxx     () const { return nor3b(BUS_CPU_A[7].qp_new2(), BUS_CPU_A[5].qp_new2(), BUS_CPU_A[4].qp_new2()); }
+  /* p06.SARE*/ wire2 SARE_XX00_XX07p   () const { return nor5b(BUS_CPU_A[7].qp_new2(), BUS_CPU_A[6].qp_new2(), BUS_CPU_A[5].qp_new2(), BUS_CPU_A[4].qp_new2(), BUS_CPU_A[3].qp_new2()); }
+  /* p03.RYFO*/ wire2 RYFO_FF04_FF07p   () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A[2].qp_new2(), SARE_XX00_XX07p()); }
 
-  /* p03.RYFO*/ wire2 RYFO_FF04_FF07p_b () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A[2].qp_new(), SARE_XX00_XX07p()); }
+  /* p03.RYFO*/ wire2 RYFO_FF04_FF07p_b () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A[2].qp_new2(), SARE_XX00_XX07p()); }
 
-  /* p10.AMUS*/ wire2 AMUS_XX_0xx00000p () const { return nor6b(BUS_CPU_A[0].qp_new(), BUS_CPU_A[1].qp_new(), BUS_CPU_A[2].qp_new(), BUS_CPU_A[3].qp_new(), BUS_CPU_A[4].qp_new(), BUS_CPU_A[7].qp_new()); }
-  /* p07.SAPA*/ wire2 SAPA_XX_xxxx1111p () const { return and4(BUS_CPU_A[0].qp_new(), BUS_CPU_A[1].qp_new(), BUS_CPU_A[2].qp_new(), BUS_CPU_A[3].qp_new()); }
-  /* p07.SEMY*/ wire2 SEMY_XX_0000xxxxp () const { return nor4b(BUS_CPU_A[7].qp_new(), BUS_CPU_A[6].qp_new(), BUS_CPU_A[5].qp_new(), BUS_CPU_A[4].qp_new()); }
+  /* p10.AMUS*/ wire2 AMUS_XX_0xx00000p () const { return nor6b(BUS_CPU_A[0].qp_new2(), BUS_CPU_A[1].qp_new2(), BUS_CPU_A[2].qp_new2(), BUS_CPU_A[3].qp_new2(), BUS_CPU_A[4].qp_new2(), BUS_CPU_A[7].qp_new2()); }
+  /* p07.SAPA*/ wire2 SAPA_XX_xxxx1111p () const { return and4(BUS_CPU_A[0].qp_new2(), BUS_CPU_A[1].qp_new2(), BUS_CPU_A[2].qp_new2(), BUS_CPU_A[3].qp_new2()); }
+  /* p07.SEMY*/ wire2 SEMY_XX_0000xxxxp () const { return nor4b(BUS_CPU_A[7].qp_new2(), BUS_CPU_A[6].qp_new2(), BUS_CPU_A[5].qp_new2(), BUS_CPU_A[4].qp_new2()); }
   /* p06.SANO*/ wire2 SANO_FF00_FF03p   () const { return and3(SARE_XX00_XX07p(), SEFY_A02n(), SYKE_ADDR_HIp()); }
   /* p10.ANAP*/ wire2 ANAP_FF_0xx00000  () const { return and2(SYKE_ADDR_HIp(), AMUS_XX_0xx00000p()); }
-  /* p08.TUMA*/ wire2 TUMA_A000_BFFFp   () const { return and3(BUS_CPU_A[13].qp_new(), SOGY_A14n(), BUS_CPU_A[15].qp_new()); }
-  /* p08.TYNU*/ wire2 TYNU_A000_FFFFp   () const { return and_or3(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), TUMA_A000_BFFFp()); }
+  /* p08.TUMA*/ wire2 TUMA_A000_BFFFp   () const { return and3(BUS_CPU_A[13].qp_new2(), SOGY_A14n(), BUS_CPU_A[15].qp_new2()); }
+  /* p08.TYNU*/ wire2 TYNU_A000_FFFFp   () const { return and_or3(BUS_CPU_A[15].qp_new2(), BUS_CPU_A[14].qp_new2(), TUMA_A000_BFFFp()); }
   /* p28.ADAH*/ wire2 ADAH_FE00_FEFFn   () const { return not1b(SARO_ADDR_OAMp()); }
 
-  /* p07.TULO*/ wire2 TULO_ADDR_BOOTROMp() const { return nor8b(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), BUS_CPU_A[13].qp_new(), BUS_CPU_A[12].qp_new(),
-                                                               BUS_CPU_A[11].qp_new(), BUS_CPU_A[10].qp_new(), BUS_CPU_A[ 9].qp_new(), BUS_CPU_A[ 8].qp_new()); }
-  /* p07.TERA*/ wire2 TERA_BOOT_BITp    () const { return not1b(BOOT_BITn_h.qp_new()); }
+  /* p07.TULO*/ wire2 TULO_ADDR_BOOTROMp() const { return nor8b(BUS_CPU_A[15].qp_new2(), BUS_CPU_A[14].qp_new2(), BUS_CPU_A[13].qp_new2(), BUS_CPU_A[12].qp_new2(),
+                                                               BUS_CPU_A[11].qp_new2(), BUS_CPU_A[10].qp_new2(), BUS_CPU_A[ 9].qp_new2(), BUS_CPU_A[ 8].qp_new2()); }
+  /* p07.TERA*/ wire2 TERA_BOOT_BITp    () const { return not1b(BOOT_BITn_h.qp_new2()); }
   /* p07.TUTU*/ wire2 TUTU_READ_BOOTROMp() const { return and2(TERA_BOOT_BITp(), TULO_ADDR_BOOTROMp()); }
 
-  /* p22.WUTU*/ wire2 WUTU_ADDR_PPUn    () const { return nand3b(SYKE_ADDR_HIp(), BUS_CPU_A[6].qp_new(), XALY_0x00xxxx()); }
+  /* p22.WUTU*/ wire2 WUTU_ADDR_PPUn    () const { return nand3b(SYKE_ADDR_HIp(), BUS_CPU_A[6].qp_new2(), XALY_0x00xxxx()); }
   /* p22.WERO*/ wire2 WERO_ADDR_PPUp    () const { return not1b(WUTU_ADDR_PPUn()); }
 
-  /*#p08.TEVY*/ wire2 TEVY_ADDR_VRAMn   () const { return or3(BUS_CPU_A[13].qp_new(), BUS_CPU_A[14].qp_new(), SORE_A15n()); }
-  /*#p08.TEXO*/ wire2 TEXO_ADDR_VRAMn   () const { return and2(SIG_CPU_EXT_BUSp.qp_new(), TEVY_ADDR_VRAMn()); }
+  /*#p08.TEVY*/ wire2 TEVY_ADDR_VRAMn   () const { return or3(BUS_CPU_A[13].qp_new2(), BUS_CPU_A[14].qp_new2(), SORE_A15n()); }
+  /*#p08.TEXO*/ wire2 TEXO_ADDR_VRAMn   () const { return and2(SIG_CPU_EXT_BUSp.qp_new2(), TEVY_ADDR_VRAMn()); }
   /*#p25.TEFA*/ wire2 TEFA_ADDR_VRAMp   () const { return nor2b(SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
-  /*#p25.SOSE*/ wire2 SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), BUS_CPU_A[15].qp_new()); }
+  /*#p25.SOSE*/ wire2 SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), BUS_CPU_A[15].qp_new2()); }
   /* p08.LEVO*/ wire2 LEVO_ADDR_VRAMn   () const { return not1b(TEXO_ADDR_VRAMn()); }
 
-  /* p25.TUJA*/ wire2 TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), APOV_CPU_WRp.qp_new()); }
+  /* p25.TUJA*/ wire2 TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), APOV_CPU_WRp.qp_new2()); }
 
   /*#p07.ROPE*/ wire2 ROPE_ADDR_OAMn    () const { return nand2b(SOHA_ADDR_HIn(), RYCU_FE00_FFFF()); } // looks like nand?
   /*#p07.SARO*/ wire2 SARO_ADDR_OAMp    () const { return not1b(ROPE_ADDR_OAMn()); }

@@ -111,11 +111,11 @@ struct FineScroll {
     /*#p27.PASO*/ wire2 _PASO_FINE_RST = nor2b(_PAHA_RENDERINGn, TEVO_FETCH_TRIGp);
 
     for (int feedback = 0; feedback < 2; feedback++) {
-      /*#p27.ROZE*/ wire2 _ROZE_FINE_COUNT_7n = nand3b(RUBU_FINE_CNT2.qp_any(), ROGA_FINE_CNT1.qp_any(), RYKU_FINE_CNT0.qp_any());
+      /*#p27.ROZE*/ wire2 _ROZE_FINE_COUNT_7n = nand3b(RUBU_FINE_CNT2.qp_any2(), ROGA_FINE_CNT1.qp_any2(), RYKU_FINE_CNT0.qp_any2());
       /*#p27.PECU*/ wire2 _PECU_FINE_CLK = nand2b(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n);
-      /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17_any(_PECU_FINE_CLK,          _PASO_FINE_RST, RYKU_FINE_CNT0.qn_any());
-      /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17_any(RYKU_FINE_CNT0.qn_any(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn_any());
-      /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17_any(ROGA_FINE_CNT1.qn_any(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn_any());
+      /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17_any(_PECU_FINE_CLK,           _PASO_FINE_RST, RYKU_FINE_CNT0.qn_any2());
+      /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17_any(RYKU_FINE_CNT0.qn_any2(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn_any2());
+      /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17_any(ROGA_FINE_CNT1.qn_any2(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn_any2());
     }
   }
 

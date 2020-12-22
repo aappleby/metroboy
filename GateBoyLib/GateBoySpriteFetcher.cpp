@@ -41,11 +41,11 @@ void SpriteFetcher::tock(
 
   // Feedback loop
   for (int feedback = 0; feedback < 2; feedback++) {
-    /*#p29.TAME*/ wire2 _TAME_SFETCH_CLK_GATE = nand2b(TESE_SFETCH_S2p.qp_any(), TOXE_SFETCH_S0p.qp_any());
+    /*#p29.TAME*/ wire2 _TAME_SFETCH_CLK_GATE = nand2b(TESE_SFETCH_S2p.qp_any2(), TOXE_SFETCH_S0p.qp_any2());
     /*#p29.TOMA*/ wire2 _TOMA_SFETCH_xBxDxFxH_= nand2b(clk.LAPE_AxCxExGx(), _TAME_SFETCH_CLK_GATE);
-    /*#p29.TOXE*/ TOXE_SFETCH_S0p.dff17_any(_TOMA_SFETCH_xBxDxFxH_,   _SECA_SFETCH_RSTn, TOXE_SFETCH_S0p.qn_any());
-    /*#p29.TULY*/ TULY_SFETCH_S1p.dff17_any(TOXE_SFETCH_S0p.qn_any(), _SECA_SFETCH_RSTn, TULY_SFETCH_S1p.qn_any());
-    /*#p29.TESE*/ TESE_SFETCH_S2p.dff17_any(TULY_SFETCH_S1p.qn_any(), _SECA_SFETCH_RSTn, TESE_SFETCH_S2p.qn_any());
+    /*#p29.TOXE*/ TOXE_SFETCH_S0p.dff17_any(_TOMA_SFETCH_xBxDxFxH_,   _SECA_SFETCH_RSTn, TOXE_SFETCH_S0p.qn_any2());
+    /*#p29.TULY*/ TULY_SFETCH_S1p.dff17_any(TOXE_SFETCH_S0p.qn_any2(), _SECA_SFETCH_RSTn, TULY_SFETCH_S1p.qn_any2());
+    /*#p29.TESE*/ TESE_SFETCH_S2p.dff17_any(TULY_SFETCH_S1p.qn_any2(), _SECA_SFETCH_RSTn, TESE_SFETCH_S2p.qn_any2());
   }
 
   /* p27.VEKU*/ wire2 _VEKU_SFETCH_RUNNING_RSTn = nor2b(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp); // def nor

@@ -26,7 +26,7 @@ struct SpriteScanner {
   }
 
   /*#p28.FETO*/ wire2 FETO_SCAN_DONEp_any() const {
-    return and4(YFEL_SCAN0.qp_any(), WEWY_SCAN1.qp_any(), GOSO_SCAN2.qp_any(), FONY_SCAN5.qp_any()); // 32 + 4 + 2 + 1 = 39
+    return and4(YFEL_SCAN0.qp_any2(), WEWY_SCAN1.qp_any2(), GOSO_SCAN2.qp_any2(), FONY_SCAN5.qp_any2()); // 32 + 4 + 2 + 1 = 39
   }
 
   wire2 AVAP_SCAN_DONE_TRIGp_old(wire2 BALU_LINE_RSTp) const {

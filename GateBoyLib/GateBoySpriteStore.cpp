@@ -29,15 +29,15 @@ void SpriteStore::update_count(wire2 XAPO_VID_RSTn, wire2 ZEME_AxCxExGx, wire2 A
   /*#p28.AZYB*/ wire2 _AZYB_LINE_TRIGn = not1b(ATEJ_LINE_RSTp);
 
   for (int feedback = 0; feedback < 2; feedback++) {
-    /*#p29.BAKY*/ wire2 _BAKY_SPRITES_FULL_new = and2(CUXY_SPRITE_COUNT1.qp_any(), DYBE_SPRITE_COUNT3.qp_any());
+    /*#p29.BAKY*/ wire2 _BAKY_SPRITES_FULL_new = and2(CUXY_SPRITE_COUNT1.qp_any2(), DYBE_SPRITE_COUNT3.qp_any2());
 
     /* p29.DEZY*/ DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx, XAPO_VID_RSTn, _DYTY_STORE_CLKp_new_odd);
-    /*#p29.CAKE*/ wire2 _CAKE_COUNT_CLKp_new = or2(_BAKY_SPRITES_FULL_new, DEZY_COUNT_CLKp.qp_any());
+    /*#p29.CAKE*/ wire2 _CAKE_COUNT_CLKp_new = or2(_BAKY_SPRITES_FULL_new, DEZY_COUNT_CLKp.qp_any2());
 
-    /* p29.BESE*/ BESE_SPRITE_COUNT0.dff17_any(_CAKE_COUNT_CLKp_new,        _AZYB_LINE_TRIGn, BESE_SPRITE_COUNT0.qn_any());
-    /* p29.CUXY*/ CUXY_SPRITE_COUNT1.dff17_any(BESE_SPRITE_COUNT0.qn_any(), _AZYB_LINE_TRIGn, CUXY_SPRITE_COUNT1.qn_any());
-    /* p29.BEGO*/ BEGO_SPRITE_COUNT2.dff17_any(CUXY_SPRITE_COUNT1.qn_any(), _AZYB_LINE_TRIGn, BEGO_SPRITE_COUNT2.qn_any());
-    /* p29.DYBE*/ DYBE_SPRITE_COUNT3.dff17_any(BEGO_SPRITE_COUNT2.qn_any(), _AZYB_LINE_TRIGn, DYBE_SPRITE_COUNT3.qn_any());
+    /* p29.BESE*/ BESE_SPRITE_COUNT0.dff17_any(_CAKE_COUNT_CLKp_new,         _AZYB_LINE_TRIGn, BESE_SPRITE_COUNT0.qn_any2());
+    /* p29.CUXY*/ CUXY_SPRITE_COUNT1.dff17_any(BESE_SPRITE_COUNT0.qn_any2(), _AZYB_LINE_TRIGn, CUXY_SPRITE_COUNT1.qn_any2());
+    /* p29.BEGO*/ BEGO_SPRITE_COUNT2.dff17_any(CUXY_SPRITE_COUNT1.qn_any2(), _AZYB_LINE_TRIGn, BEGO_SPRITE_COUNT2.qn_any2());
+    /* p29.DYBE*/ DYBE_SPRITE_COUNT3.dff17_any(BEGO_SPRITE_COUNT2.qn_any2(), _AZYB_LINE_TRIGn, DYBE_SPRITE_COUNT3.qn_any2());
   }
 }
 

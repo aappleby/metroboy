@@ -6,10 +6,10 @@
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   PIN75_CLK_OUT.reset_for_pass();
 
-  wire2 ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();
-  wire2 AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old();
-  wire2 ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old();
-  wire2 APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old();
+  wire2 ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old2();
+  wire2 AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old2();
+  wire2 ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old2();
+  wire2 APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old2();
 
   /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(~ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp_old);
   /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp_old);
@@ -30,9 +30,9 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyClock::tock_vid(const GateBoyResetDebug& rst) {
-  /* p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),        rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old());
-  /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),        rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old());
-  /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
+  /* p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),         rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old2());
+  /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),         rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old2());
+  /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new2(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_old2()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 
 //------------------------------------------------------------------------------------------------------------------------

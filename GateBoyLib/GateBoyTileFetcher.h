@@ -35,7 +35,7 @@ struct TileFetcher {
   /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_new(wire2 NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_new(), _NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn_new); }
   /* p27.LYRY*/ wire2 LYRY_BFETCH_DONEp_new(wire2 NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_new(NYXU_BFETCH_RSTn_new)); }
 
-  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_any(wire2 NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_any(), _NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn_new); }
+  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_any(wire2 NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_any2(), _NYVA_BFETCH_S2p.qp_any2(), NYXU_BFETCH_RSTn_new); }
   /* p27.LYRY*/ wire2 LYRY_BFETCH_DONEp_any(wire2 NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn_new)); }
 
   /* p27.LUSU*/ wire2 LUSU_FETCHINGn()      const { return not1b(LONY_FETCHINGp.qp_new()); }

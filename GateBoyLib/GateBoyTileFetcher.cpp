@@ -13,9 +13,9 @@ void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire2 XYMU_RENDERI
     /* p27.MOCE*/ wire2 _MOCE_BFETCH_DONEn = MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn);
     /* p27.LEBO*/ wire2 _LEBO_AxCxExGx = nand2b(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn);
 
-    /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_any(_LEBO_AxCxExGx,            NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_any());
-    /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_any(_LAXU_BFETCH_S0p.qn_any(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_any());
-    /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17_any(_MESU_BFETCH_S1p.qn_any(), NYXU_BFETCH_RSTn, _NYVA_BFETCH_S2p.qn_any());
+    /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_any(_LEBO_AxCxExGx,             NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_any2());
+    /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_any(_LAXU_BFETCH_S0p.qn_any2(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_any2());
+    /* p27.NYVA*/ _NYVA_BFETCH_S2p.dff17_any(_MESU_BFETCH_S1p.qn_any2(), NYXU_BFETCH_RSTn, _NYVA_BFETCH_S2p.qn_any2());
   }
 
   /* p27.LYRY*/ wire2 _LYRY_BFETCH_DONEp_old = not1b(MOCE_BFETCH_DONEn_old);

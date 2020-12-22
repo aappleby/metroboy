@@ -54,7 +54,7 @@ void GateBoyApp::app_init() {
   }
 #endif
 
-#if 1
+#if 0
   {
     /*
     m3_lcdc_obj_size_change.gb - small fail
@@ -104,7 +104,7 @@ void GateBoyApp::app_init() {
   gb_thread.gb->run_phases(120);
 #endif
 
-#if 0
+#if 1
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;

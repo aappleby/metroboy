@@ -104,7 +104,7 @@ void GateBoyCpuBus::set_pins(
 
   uint16_t bus_addr_new = bus_req_new.addr;
   bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_addr_new < 0xFE00);
-  if (bus_addr_new <= 0x00FF && !BOOT_BITn_h.qp_old()) addr_ext_new = false;
+  if (bus_addr_new <= 0x00FF && bit(~BOOT_BITn_h.qp_old())) addr_ext_new = false;
   if (DELTA_HA) {
     if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
   }

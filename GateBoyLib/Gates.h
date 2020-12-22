@@ -20,8 +20,8 @@ struct BitBase {
   BitBase() { state = 0; }
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
 
-  wire2 qp_any() const { return  bit_data(); }
-  wire2 qn_any() const { return !bit_data(); }
+  wire2 qp_any() const { return bit_data(); }
+  wire2 qn_any() const { return bit_datan(); }
 
   BitBase operator!() { return BitBase(state ^ 1); }
 
@@ -97,17 +97,18 @@ struct BitBase {
   wire2 bit_dirty4() const { return 0; }
 #endif
 
-  wire2 qp_old() const { check_old(); return  bit_data(); }
-  wire2 qn_old() const { check_old(); return !bit_data(); }
+  wire2 qp_old() const { check_old(); return bit_data(); }
+  wire2 qn_old() const { check_old(); return bit_datan(); }
 
-  wire2 qp_new() const { check_new(); return  bit_data(); }
-  wire2 qn_new() const { check_new(); return !bit_data(); }
+  wire2 qp_new() const { check_new(); return bit_data(); }
+  wire2 qn_new() const { check_new(); return bit_datan(); }
 
   void set_data (wire2 d) { state = (state & 0b11101110) | (bit(d) << 0); }
   void set_clock(wire2 d) { state = (state & 0b11101101) | (bit(d) << 1); }
 
-  wire2 bit_data () const { return bit(state, 0); }
-  wire2 bit_clock() const { return bit(state, 1); }
+  wire2 bit_data () const { return bit( state, 0); }
+  wire2 bit_datan() const { return bit(~state, 0); }
+  wire2 bit_clock() const { return bit( state, 1); }
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -179,9 +180,9 @@ struct DFF : public BitBase {
   }
 
   void dff_any(wire2 CLKp, wire2 SETn, wire2 RSTn, wire2 Dp) {
-    if (!bit_clock() && bit(CLKp)) set_data(Dp);
+    if (bit(~bit_clock() & CLKp)) set_data(Dp);
     set_clock(CLKp);
-    set_data((bit_data() || !bit(SETn)) && bit(RSTn));
+    set_data((bit_data() | ~SETn) & RSTn);
 
     set_new();
     set_dirty3();
@@ -203,7 +204,7 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public DFF {
-  void dff8n(wire2 CLKn, wire2 Dn)    { dff(!CLKn, 1, 1, !Dn); }
+  void dff8n(wire2 CLKn, wire2 Dn)    { dff(~CLKn, 1, 1, ~Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -220,7 +221,7 @@ struct DFF8n : public DFF {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public DFF {
-  void dff8p(wire2 CLKp, wire2 Dn)    { dff(CLKp, 1, 1, !Dn); }
+  void dff8p(wire2 CLKp, wire2 Dn)    { dff(CLKp, 1, 1, ~Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -239,7 +240,7 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
-  void dff9(wire2 CLKp, wire2 SETn, wire2 Dn)    { dff(CLKp, SETn, 1, !Dn); }
+  void dff9(wire2 CLKp, wire2 SETn, wire2 Dn)    { dff(CLKp, SETn, 1, ~Dn); }
 };
 
 //-----------------------------------------------------------------------------
@@ -332,7 +333,7 @@ struct DFF17 : public DFF {
 // DFF20_20 << CLKn
 
 struct DFF20 : public DFF {
-  void dff20(wire2 CLKn, wire2 LOADp, wire2 newD)    { dff(!CLKn, !(LOADp && newD), !(LOADp && !newD), !bit_data()); }
+  void dff20(wire2 CLKn, wire2 LOADp, wire2 newD)    { dff(~CLKn, ~(LOADp & newD), ~(LOADp & ~newD), ~bit_data()); }
 };
 
 //-----------------------------------------------------------------------------
@@ -419,9 +420,9 @@ struct Bus : public BitBase {
   }
 
   void set(wire2 Dp) { tri(1, Dp); }
-  void tri6_nn (wire2 OEn, wire2 Dn) { tri(!OEn, !Dn); }
-  void tri6_pn (wire2 OEp, wire2 Dn) { tri( OEp, !Dn); }
-  void tri10_np(wire2 OEn, wire2 Dp) { tri(!OEn,  Dp); }
+  void tri6_nn (wire2 OEn, wire2 Dn) { tri(~OEn, ~Dn); }
+  void tri6_pn (wire2 OEp, wire2 Dn) { tri( OEp, ~Dn); }
+  void tri10_np(wire2 OEn, wire2 Dp) { tri(~OEn,  Dp); }
 };
 
 //-----------------------------------------------------------------------------
@@ -434,8 +435,8 @@ struct Bus : public BitBase {
 struct PinIO : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire2 int_qp_new() const { return  qp_new(); }
-  wire2 ext_qp_new() const { return !qp_new(); }
+  wire2 int_qp_new() const { return bit( qp_new()); }
+  wire2 ext_qp_new() const { return bit(~qp_new()); }
 
   void reset_for_pass() {
     CHECK_N(bit_new());
@@ -487,7 +488,7 @@ struct PinIO : public BitBase {
 
     if (bit(OEp)) {
       set_driven(1);
-      set_data(!D);
+      set_data(~D);
     }
 
     set_dirty4();
@@ -498,7 +499,7 @@ struct PinIO : public BitBase {
 
     if (bit(OEp)) {
       set_driven(1);
-      set_data(!D);
+      set_data(~D);
     }
 
     set_dirty4();
@@ -525,7 +526,7 @@ struct PinIn : public BitBase {
   void pin_in_dp(wire2 D) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
-    set_data(!D);
+    set_data(~D);
     set_dirty4();
   }
 };
@@ -540,8 +541,8 @@ struct PinIn : public BitBase {
 struct PinOut : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire2 ext_qp_old() const { return !qp_old(); }
-  wire2 ext_qp_new() const { return !qp_new(); }
+  wire2 ext_qp_old() const { return bit(~qp_old()); }
+  wire2 ext_qp_new() const { return bit(~qp_new()); }
 
   void reset_for_pass() {
     CHECK_N(bit_new());
@@ -630,8 +631,8 @@ struct NandLatch : public BitBase {
   using BitBase::qn_new;
 
   void nand_latch(wire2 SETn, wire2 RSTn) {
-    if (!bit(SETn)) set_data(1);
-    if (!bit(RSTn)) set_data(0);
+    if (bit(~SETn)) set_data(1);
+    if (bit(~RSTn)) set_data(0);
     set_new();
     set_dirty3();
     set_dirty4();
@@ -723,19 +724,31 @@ inline wire2 xor2 (wire2 a, wire2 b) { return a ^ b; }
 
 inline wire2 xnor2(wire2 a, wire2 b) { return a == b; }
 
-inline wire2 nor2(wire2 a, wire2 b) { return !(a | b); }
-inline wire2 nor3(wire2 a, wire2 b, wire2 c) { return !(a | b | c); }
-inline wire2 nor4(wire2 a, wire2 b, wire2 c, wire2 d) { return !(a | b | c | d); }
-inline wire2 nor5(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return !(a | b | c | d | e); }
-inline wire2 nor6(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return !(a | b | c | d | e | f); }
-inline wire2 nor8(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g, wire2 h) { return !(a | b | c | d | e | f | g | h); }
+inline wire2 nor2 (wire2 a, wire2 b) { return !(a | b); }
+inline wire2 nor2b(wire2 a, wire2 b) { return ~(a | b); }
+inline wire2 nor3 (wire2 a, wire2 b, wire2 c) { return !(a | b | c); }
+inline wire2 nor3b(wire2 a, wire2 b, wire2 c) { return ~(a | b | c); }
+inline wire2 nor4 (wire2 a, wire2 b, wire2 c, wire2 d) { return !(a | b | c | d); }
+inline wire2 nor4b(wire2 a, wire2 b, wire2 c, wire2 d) { return ~(a | b | c | d); }
+inline wire2 nor5 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return !(a | b | c | d | e); }
+inline wire2 nor5b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return ~(a | b | c | d | e); }
+inline wire2 nor6 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return !(a | b | c | d | e | f); }
+inline wire2 nor6b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return ~(a | b | c | d | e | f); }
+inline wire2 nor8 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g, wire2 h) { return !(a | b | c | d | e | f | g | h); }
+inline wire2 nor8b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g, wire2 h) { return ~(a | b | c | d | e | f | g | h); }
 
-inline wire2 nand2(wire2 a, wire2 b) { return !(a & b); }
-inline wire2 nand3(wire2 a, wire2 b, wire2 c) { return !(a & b & c); }
-inline wire2 nand4(wire2 a, wire2 b, wire2 c, wire2 d) { return !(a & b & c & d); }
-inline wire2 nand5(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return !(a & b & c & d & e); }
-inline wire2 nand6(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return !(a & b & c & d & e & f); }
-inline wire2 nand7(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g) { return !(a & b & c & d & e & f & g); }
+inline wire2 nand2 (wire2 a, wire2 b) { return !(a & b); }
+inline wire2 nand2b(wire2 a, wire2 b) { return ~(a & b); }
+inline wire2 nand3 (wire2 a, wire2 b, wire2 c) { return !(a & b & c); }
+inline wire2 nand3b(wire2 a, wire2 b, wire2 c) { return ~(a & b & c); }
+inline wire2 nand4 (wire2 a, wire2 b, wire2 c, wire2 d) { return !(a & b & c & d); }
+inline wire2 nand4b(wire2 a, wire2 b, wire2 c, wire2 d) { return ~(a & b & c & d); }
+inline wire2 nand5 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return !(a & b & c & d & e); }
+inline wire2 nand5b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e) { return ~(a & b & c & d & e); }
+inline wire2 nand6 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return !(a & b & c & d & e & f); }
+inline wire2 nand6b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f) { return ~(a & b & c & d & e & f); }
+inline wire2 nand7 (wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g) { return !(a & b & c & d & e & f & g); }
+inline wire2 nand7b(wire2 a, wire2 b, wire2 c, wire2 d, wire2 e, wire2 f, wire2 g) { return ~(a & b & c & d & e & f & g); }
 
 inline wire2 and_or3(wire2 a, wire2 b, wire2 c) { return (a & b) | c; }
 inline wire2 or_and3(wire2 a, wire2 b, wire2 c) { return (a | b) & c; }

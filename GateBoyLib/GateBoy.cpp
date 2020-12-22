@@ -108,7 +108,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   //----------------------------------------
   // Wait for SIG_CPU_START
 
-  while(!rst.SIG_CPU_STARTp.qp_old()) {
+  while(bit(~rst.SIG_CPU_STARTp.qp_old())) {
     run_phases(8);
   }
 
@@ -511,11 +511,11 @@ void GateBoy::tock_slow(int pass_index) {
   rst.PIN76_T2.reset_for_pass();
   rst.PIN77_T1.reset_for_pass();
 
-  rst.PIN71_RST.pin_in_dp(!sys_rst);
-  clk.PIN74_CLKGOOD.pin_in_dp(!sys_clkgood);
+  rst.PIN71_RST.pin_in_dp(bit(~sys_rst));
+  clk.PIN74_CLKGOOD.pin_in_dp(bit(~sys_clkgood));
   clk.PIN74_CLK_IN.pin_in_dp((phase_total & 1) && sys_clken);
-  rst.PIN76_T2.pin_in_dp(!sys_t2);
-  rst.PIN77_T1.pin_in_dp(!sys_t1);
+  rst.PIN76_T2.pin_in_dp(bit(~sys_t2));
+  rst.PIN77_T1.pin_in_dp(bit(~sys_t1));
 
   clk.SIG_CPU_CLKREQ.set(sys_clkreq);
   interrupts.SIG_CPU_ACK_VBLANK.set(bit(int_ack_latch, BIT_VBLANK));
@@ -615,7 +615,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   /*#p21.WEGO*/ wire2 WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), ppu_reg.VOGA_HBLANKp.qp_new());
   /*#p21.XYMU*/ ppu_reg.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp);
-  /* p24.LOBY*/ wire2 LOBY_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGp());
+  /* p24.LOBY*/ wire2 LOBY_RENDERINGn = not1b(ppu_reg.XYMU_RENDERINGp());
 
   cpu_bus._XYMU_RENDERINGp.set(ppu_reg.XYMU_RENDERINGp());
   dma._XYMU_RENDERINGp.set(ppu_reg.XYMU_RENDERINGp());
@@ -643,17 +643,17 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.VYBO*/ wire2 VYBO_CLKPIPE_b = nor3(FEPO_STORE_MATCHp_old, WODU_HBLANKp_old, clk.MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
   /*#p24.TYFA*/ wire2 TYFA_CLKPIPE_b = and3(win_reg.SOCY_WIN_HITn_new(), tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_b);
 
-  /*#p24.SEGU*/ wire2 _SEGU_CLKPIPE_a = not1(TYFA_CLKPIPE_b);
-  /*#p24.ROXO*/ wire2 _ROXO_CLKPIPE_b = not1(_SEGU_CLKPIPE_a);
+  /*#p24.SEGU*/ wire2 _SEGU_CLKPIPE_a = not1b(TYFA_CLKPIPE_b);
+  /*#p24.ROXO*/ wire2 _ROXO_CLKPIPE_b = not1b(_SEGU_CLKPIPE_a);
 
   /*#p27.NYZE*/ fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17(clk.MOXE_AxCxExGx(), ppu_reg.XYMU_RENDERINGp(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_old());
   /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(_ROXO_CLKPIPE_b, ppu_reg.XYMU_RENDERINGp(), _POHU_SCX_FINE_MATCHp_old);
   /*#p27.POVA*/ wire2 _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
-  /*#p27.PAHA*/ wire2 _PAHA_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGp());
+  /*#p27.PAHA*/ wire2 _PAHA_RENDERINGn = not1b(ppu_reg.XYMU_RENDERINGp());
 
   /*#p27.ROXY*/ fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);
 
-  /*#p24.SEGU*/ wire2 SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_b);
+  /*#p24.SEGU*/ wire2 SEGU_CLKPIPE_evn = not1b(TYFA_CLKPIPE_b);
   /*#p24.SACU*/ wire2 SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
 
   /* p21.TADY*/ wire2 TADY_LINE_RSTn = nor2(lcd.ATEJ_LINE_RSTp_new(), rst.TOFU_VID_RSTp());
@@ -666,7 +666,7 @@ void GateBoy::tock_slow(int pass_index) {
   SpriteDeltaY delta = SpriteDeltaY::sub(oam_bus.oam_temp_a, lcd.reg_ly);
   /* p29.GESE*/ wire2 _GESE_SCAN_MATCH_Yp = delta.GESE_SCAN_MATCH_Yp(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
   /* p29.CARE*/ wire2 _CARE_COUNT_CLKn = and3(clk.XOCE_xBCxxFGx(), sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
-  /* p29.DYTY*/ wire2 _DYTY_COUNT_CLKp = not1(_CARE_COUNT_CLKn);
+  /* p29.DYTY*/ wire2 _DYTY_COUNT_CLKp = not1b(_CARE_COUNT_CLKn);
   sprite_store.update_count(rst.XAPO_VID_RSTn(), clk.ZEME_AxCxExGx(), lcd.ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
   SpriteStoreFlag store_flag = sprite_store.get_store_flags(_DYTY_COUNT_CLKp);
   sprite_store.store_sprite_x(store_flag, oam_bus.oam_temp_b, lcd.ABAK_LINE_RSTp_new(), sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), old_first_match);
@@ -969,7 +969,7 @@ void GateBoy::update_framebuffer()
   old_lcd_y = lcd_y;
 
 #if 0
-  if (!lcd.old_lcd_clock.qp_old() && lcd.PIN53_LCD_CLOCK.qp_new()) {
+  if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN53_LCD_CLOCK.qp_new()) {
     //printf("gb_screen_x++\n");
     gb_screen_x++;
   }
@@ -978,7 +978,7 @@ void GateBoy::update_framebuffer()
     gb_screen_x = 0;
   }
 
-  if (!lcd.old_lcd_latch.qp_old() && lcd.PIN55_LCD_LATCH.qp_new()) {
+  if (bit(~lcd.old_lcd_latch.qp_old()) && lcd.PIN55_LCD_LATCH.qp_new()) {
     if (gb_screen_y < 144) {
       for (int x = 0; x < 159; x++) {
         uint8_t p0 = lcd.lcd_pipe_lo[x + 1].qp_new();

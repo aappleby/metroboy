@@ -12,7 +12,7 @@
 void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
   /* p10.ACAT*/ wire2 _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
 
-  /* p05.BYZO*/ wire2 _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
+  /* p05.BYZO*/ wire2 _BYZO_FF00_RDn = not1b(_ACAT_FF00_RDp);
   /* p05.KEVU*/ KEVU_JOYP_L0n.tp_latch(_BYZO_FF00_RDn, PIN67_JOY_P10.int_qp_new());
   /* p05.KAPA*/ KAPA_JOYP_L1n.tp_latch(_BYZO_FF00_RDn, PIN66_JOY_P11.int_qp_new());
   /* p05.KEJA*/ KEJA_JOYP_L2n.tp_latch(_BYZO_FF00_RDn, PIN65_JOY_P12.int_qp_new());
@@ -31,7 +31,7 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
-  /* p10.ATOZ*/ wire2 _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
+  /* p10.ATOZ*/ wire2 _ATOZ_FF00_WRn = nand4b(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
   /* p05.JUTE*/ JUTE_DBG_D0    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
   /* p05.KECY*/ KECY_DBG_D1    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old());
   /* p05.JALE*/ JALE_DBG_D2    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old());
@@ -73,16 +73,16 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   PIN62_JOY_P15.pin_out_hilo(_CELA, COFY_JOYP_ABCSp.qn_new());
 
   if (PIN63_JOY_P14.ext_qp_new()) {
-    PIN67_JOY_P10.pin_in_dp(!((sys_buttons >> 0) & 1));
-    PIN66_JOY_P11.pin_in_dp(!((sys_buttons >> 1) & 1));
-    PIN65_JOY_P12.pin_in_dp(!((sys_buttons >> 2) & 1));
-    PIN64_JOY_P13.pin_in_dp(!((sys_buttons >> 3) & 1));
+    PIN67_JOY_P10.pin_in_dp(bit(~sys_buttons, 0));
+    PIN66_JOY_P11.pin_in_dp(bit(~sys_buttons, 1));
+    PIN65_JOY_P12.pin_in_dp(bit(~sys_buttons, 2));
+    PIN64_JOY_P13.pin_in_dp(bit(~sys_buttons, 3));
   }
   else if (PIN62_JOY_P15.ext_qp_new()) {
-    PIN67_JOY_P10.pin_in_dp(!((sys_buttons >> 4) & 1));
-    PIN66_JOY_P11.pin_in_dp(!((sys_buttons >> 5) & 1));
-    PIN65_JOY_P12.pin_in_dp(!((sys_buttons >> 6) & 1));
-    PIN64_JOY_P13.pin_in_dp(!((sys_buttons >> 7) & 1));
+    PIN67_JOY_P10.pin_in_dp(bit(~sys_buttons, 4));
+    PIN66_JOY_P11.pin_in_dp(bit(~sys_buttons, 5));
+    PIN65_JOY_P12.pin_in_dp(bit(~sys_buttons, 6));
+    PIN64_JOY_P13.pin_in_dp(bit(~sys_buttons, 7));
   }
   else {
     PIN67_JOY_P10.pin_in_dp(1);

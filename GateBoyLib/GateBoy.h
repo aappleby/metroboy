@@ -208,14 +208,14 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Control stuff
 
-  bool sys_rst = 0;
-  bool sys_t1 = 0;
-  bool sys_t2 = 0;
-  bool sys_clken = 0;
-  bool sys_clkgood = 0;
-  bool sys_clkreq = 0;
-  bool sys_cpu_en = 0;
-  bool sys_fastboot = 0;
+  uint8_t sys_rst = 0;
+  uint8_t sys_t1 = 0;
+  uint8_t sys_t2 = 0;
+  uint8_t sys_clken = 0;
+  uint8_t sys_clkgood = 0;
+  uint8_t sys_clkreq = 0;
+  uint8_t sys_cpu_en = 0;
+  uint8_t sys_fastboot = 0;
   uint8_t sys_buttons = 0;
 
   //-----------------------------------------------------------------------------

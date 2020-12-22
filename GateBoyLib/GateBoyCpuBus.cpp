@@ -68,7 +68,7 @@ void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
-  uint8_t bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
+  wire2 bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
   BUS_CPU_D[0].tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
   BUS_CPU_D[1].tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
   BUS_CPU_D[2].tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
@@ -116,15 +116,15 @@ void GateBoyCpuBus::set_pins(
   SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
   SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
 
-  /* p07.UJYV*/ uint8_t _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
-  /* p07.TEDO*/ uint8_t _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
+  /* p07.UJYV*/ wire2 _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
+  /* p07.TEDO*/ wire2 _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
-  /*#p01.AFAS*/ uint8_t _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
-  /* p01.AREV*/ uint8_t _AREV_CPU_WRn = nand2(SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
-  /* p01.APOV*/ uint8_t _APOV_CPU_WRp = not1(_AREV_CPU_WRn);
+  /*#p01.AFAS*/ wire2 _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
+  /* p01.AREV*/ wire2 _AREV_CPU_WRn = nand2(SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+  /* p01.APOV*/ wire2 _APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
-  /* p07.UBAL*/ uint8_t _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
-  /* p07.TAPU*/ uint8_t _TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
+  /* p07.UBAL*/ wire2 _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
+  /* p07.TAPU*/ wire2 _TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
 
   TEDO_CPU_RDp.set(_TEDO_CPU_RDp);
   APOV_CPU_WRp.set(_APOV_CPU_WRp);

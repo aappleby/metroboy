@@ -20,10 +20,10 @@ struct GateBoyInterrupts {
     const RegStat& reg_stat,
     const RegLYC& reg_lyc,
     const GateBoySerial& serial,
-    wire PARU_VBLANKp,
-    wire PURE_LINE_ENDn,
-    wire MOBA_TIMER_OVERFLOWp,
-    wire WODU_HBLANKp);
+    wire2 PARU_VBLANKp,
+    wire2 PURE_LINE_ENDn,
+    wire2 MOBA_TIMER_OVERFLOWp,
+    wire2 WODU_HBLANKp);
 
   void dump(Dumper& d) {
     d.dump_slice2p("FF0F IF : ", &LOPE_FF0F_D0p.state, 5);

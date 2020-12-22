@@ -18,6 +18,7 @@ typedef std::vector<uint8_t> blob;
 
 //typedef const bool wire;
 typedef bool wire;
+typedef uint8_t wire2;
 
 enum RunMode {
   RUN_STOP = 0, // don't run

@@ -4,54 +4,54 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteFirstMatch {
-  /* p29.GUVA*/ wire GUVA_SPRITE0_GETp;
-  /* p29.ENUT*/ wire ENUT_SPRITE1_GETp;
-  /* p29.EMOL*/ wire EMOL_SPRITE2_GETp;
-  /* p29.GYFY*/ wire GYFY_SPRITE3_GETp;
-  /* p29.GONO*/ wire GONO_SPRITE4_GETp;
-  /* p29.GEGA*/ wire GEGA_SPRITE5_GETp;
-  /* p29.XOJA*/ wire XOJA_SPRITE6_GETp;
-  /* p29.GUTU*/ wire GUTU_SPRITE7_GETp;
-  /* p29.FOXA*/ wire FOXA_SPRITE8_GETp;
-  /* p29.GUZE*/ wire GUZE_SPRITE9_GETp;
+  /* p29.GUVA*/ wire2 GUVA_SPRITE0_GETp;
+  /* p29.ENUT*/ wire2 ENUT_SPRITE1_GETp;
+  /* p29.EMOL*/ wire2 EMOL_SPRITE2_GETp;
+  /* p29.GYFY*/ wire2 GYFY_SPRITE3_GETp;
+  /* p29.GONO*/ wire2 GONO_SPRITE4_GETp;
+  /* p29.GEGA*/ wire2 GEGA_SPRITE5_GETp;
+  /* p29.XOJA*/ wire2 XOJA_SPRITE6_GETp;
+  /* p29.GUTU*/ wire2 GUTU_SPRITE7_GETp;
+  /* p29.FOXA*/ wire2 FOXA_SPRITE8_GETp;
+  /* p29.GUZE*/ wire2 GUZE_SPRITE9_GETp;
 };
 
 struct SpriteStoreFlag {
-  /* p29.DYHU*/ wire DYHU_STORE0_CLKn;
-  /* p29.BUCO*/ wire BUCO_STORE1_CLKn;
-  /* p29.GYFO*/ wire GYFO_STORE2_CLKn;
-  /* p29.GUSA*/ wire GUSA_STORE3_CLKn;
-  /* p29.DUKE*/ wire DUKE_STORE4_CLKn;
-  /* p29.BEDE*/ wire BEDE_STORE5_CLKn;
-  /* p29.WEKA*/ wire WEKA_STORE6_CLKn;
-  /* p29.GYVO*/ wire GYVO_STORE7_CLKn;
-  /* p29.BUKA*/ wire BUKA_STORE8_CLKn;
-  /* p29.DECU*/ wire DECU_STORE9_CLKn;
+  /* p29.DYHU*/ wire2 DYHU_STORE0_CLKn;
+  /* p29.BUCO*/ wire2 BUCO_STORE1_CLKn;
+  /* p29.GYFO*/ wire2 GYFO_STORE2_CLKn;
+  /* p29.GUSA*/ wire2 GUSA_STORE3_CLKn;
+  /* p29.DUKE*/ wire2 DUKE_STORE4_CLKn;
+  /* p29.BEDE*/ wire2 BEDE_STORE5_CLKn;
+  /* p29.WEKA*/ wire2 WEKA_STORE6_CLKn;
+  /* p29.GYVO*/ wire2 GYVO_STORE7_CLKn;
+  /* p29.BUKA*/ wire2 BUKA_STORE8_CLKn;
+  /* p29.DECU*/ wire2 DECU_STORE9_CLKn;
 };
 
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteMatchFlag {
 
-  wire FEPO_STORE_MATCHp() const {
-    /* p29.FEFY*/ wire _FEFY_STORE_MATCHp_new_evn = nand5(XAGE_STORE4_MATCHn, YLOZ_STORE3_MATCHn, DEGO_STORE2_MATCHn, DYDU_STORE1_MATCHn, YDUG_STORE0_MATCHn);
-    /* p29.FOVE*/ wire _FOVE_STORE_MATCHp_new_evn = nand5(YGEM_STORE9_MATCHn, EFYL_STORE8_MATCHn, DYKA_STORE7_MATCHn, YBEZ_STORE6_MATCHn, EGOM_STORE5_MATCHn);
-    /* p29.FEPO*/ wire _FEPO_STORE_MATCHp_new_evn = or2(_FEFY_STORE_MATCHp_new_evn, _FOVE_STORE_MATCHp_new_evn);
+  wire2 FEPO_STORE_MATCHp() const {
+    /* p29.FEFY*/ wire2 _FEFY_STORE_MATCHp_new_evn = nand5(XAGE_STORE4_MATCHn, YLOZ_STORE3_MATCHn, DEGO_STORE2_MATCHn, DYDU_STORE1_MATCHn, YDUG_STORE0_MATCHn);
+    /* p29.FOVE*/ wire2 _FOVE_STORE_MATCHp_new_evn = nand5(YGEM_STORE9_MATCHn, EFYL_STORE8_MATCHn, DYKA_STORE7_MATCHn, YBEZ_STORE6_MATCHn, EGOM_STORE5_MATCHn);
+    /* p29.FEPO*/ wire2 _FEPO_STORE_MATCHp_new_evn = or2(_FEFY_STORE_MATCHp_new_evn, _FOVE_STORE_MATCHp_new_evn);
     return _FEPO_STORE_MATCHp_new_evn;
   }
 
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp()); }
+  /*#p21.XENA*/ wire2 XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp()); }
 
-  /* p29.YDUG*/ wire YDUG_STORE0_MATCHn;
-  /* p29.DYDU*/ wire DYDU_STORE1_MATCHn;
-  /* p29.DEGO*/ wire DEGO_STORE2_MATCHn;
-  /* p29.YLOZ*/ wire YLOZ_STORE3_MATCHn;
-  /* p29.XAGE*/ wire XAGE_STORE4_MATCHn;
-  /* p29.EGOM*/ wire EGOM_STORE5_MATCHn;
-  /* p29.YBEZ*/ wire YBEZ_STORE6_MATCHn;
-  /* p29.DYKA*/ wire DYKA_STORE7_MATCHn;
-  /* p29.EFYL*/ wire EFYL_STORE8_MATCHn;
-  /* p29.YGEM*/ wire YGEM_STORE9_MATCHn;
+  /* p29.YDUG*/ wire2 YDUG_STORE0_MATCHn;
+  /* p29.DYDU*/ wire2 DYDU_STORE1_MATCHn;
+  /* p29.DEGO*/ wire2 DEGO_STORE2_MATCHn;
+  /* p29.YLOZ*/ wire2 YLOZ_STORE3_MATCHn;
+  /* p29.XAGE*/ wire2 XAGE_STORE4_MATCHn;
+  /* p29.EGOM*/ wire2 EGOM_STORE5_MATCHn;
+  /* p29.YBEZ*/ wire2 YBEZ_STORE6_MATCHn;
+  /* p29.DYKA*/ wire2 DYKA_STORE7_MATCHn;
+  /* p29.EFYL*/ wire2 EFYL_STORE8_MATCHn;
+  /* p29.YGEM*/ wire2 YGEM_STORE9_MATCHn;
 };
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -59,21 +59,21 @@ struct SpriteMatchFlag {
 struct SpriteStore {
   void reset_to_cart();
 
-  void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp_new_odd);
+  void update_count(wire2 XODO_VID_RSTp, wire2 ATAL_xBxDxFxH, wire2 ATEJ_LINE_TRIGp, wire2 _DYTY_STORE_CLKp_new_odd);
 
-  SpriteStoreFlag  get_store_flags(wire _DYTY_STORE_CLKp_new_odd);
-  SpriteMatchFlag  get_match_flags_old(wire _AROR_MATCH_ENp_old, const PixCount& _pix_count_old);
-  SpriteMatchFlag  get_match_flags_new(wire _AROR_MATCH_ENp, const PixCount& _pix_count);
+  SpriteStoreFlag  get_store_flags(wire2 _DYTY_STORE_CLKp_new_odd);
+  SpriteMatchFlag  get_match_flags_old(wire2 _AROR_MATCH_ENp_old, const PixCount& _pix_count_old);
+  SpriteMatchFlag  get_match_flags_new(wire2 _AROR_MATCH_ENp, const PixCount& _pix_count);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
 
   void get_sprite(SpriteFirstMatch first_match, Bus SPR_TRI_I[6], Bus SPR_TRI_L[4]);
 
   void store_sprite_index(SpriteStoreFlag store_flag, Bus SPR_TRI_I[6]);
   void store_sprite_line (SpriteStoreFlag store_flag, Bus SPR_TRI_L[4]);
-  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
+  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire2 _ABAK_LINE_RSTp, wire2 WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
-  void oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]);
-  void ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus SPR_TRI_L[4]);
+  void oam_addr_to_sprite_index(wire2 WUDA_xxCDxxGH, wire2 XYMU_RENDERINGp, wire2 CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]);
+  void ly_to_sprite_line(wire2 FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus SPR_TRI_L[4]);
 
   void dump(Dumper& d);
 

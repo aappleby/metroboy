@@ -36,6 +36,27 @@ void GateBoyDiv::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
 
 void GateBoyDiv::read(GateBoyCpuBus& cpu_bus)
 {
+#if 0
+  /* p01.UMEK*/ auto _UMEK_DIV06n_evn = not1(UGOT_DIV06p);
+  /* p01.UREK*/ auto _UREK_DIV07n_evn = not1(TULU_DIV07p);
+  /* p01.UTOK*/ auto _UTOK_DIV08n_evn = not1(TUGO_DIV08p);
+  /* p01.SAPY*/ auto _SAPY_DIV09n_evn = not1(TOFE_DIV09p);
+  /* p01.UMER*/ auto _UMER_DIV10n_evn = not1(TERU_DIV10p);
+  /* p01.RAVE*/ auto _RAVE_DIV11n_evn = not1(SOLA_DIV11p);
+  /* p01.RYSO*/ auto _RYSO_DIV12n_evn = not1(SUBU_DIV12p);
+  /* p01.UDOR*/ auto _UDOR_DIV13n_evn = not1(TEKA_DIV13p);
+
+  /* p01.TAGY*/ auto _TAGY_FF04_RDp_ext = and4(cpu_bus.TEDO_CPU_RDp, BitBase(cpu_bus.RYFO_FF04_FF07p()), BitBase(cpu_bus.TOLA_A01n()), BitBase(cpu_bus.TOVY_A00n()));
+
+  /* p01.TAWU*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_TAGY_FF04_RDp_ext, _UMEK_DIV06n_evn);
+  /* p01.TAKU*/ cpu_bus.BUS_CPU_D[1].tri6_pn(_TAGY_FF04_RDp_ext, _UREK_DIV07n_evn);
+  /* p01.TEMU*/ cpu_bus.BUS_CPU_D[2].tri6_pn(_TAGY_FF04_RDp_ext, _UTOK_DIV08n_evn);
+  /* p01.TUSE*/ cpu_bus.BUS_CPU_D[3].tri6_pn(_TAGY_FF04_RDp_ext, _SAPY_DIV09n_evn);
+  /* p01.UPUG*/ cpu_bus.BUS_CPU_D[4].tri6_pn(_TAGY_FF04_RDp_ext, _UMER_DIV10n_evn); // Schematic wrong, UPUG/SEPU driving D5/D4
+  /* p01.SEPU*/ cpu_bus.BUS_CPU_D[5].tri6_pn(_TAGY_FF04_RDp_ext, _RAVE_DIV11n_evn);
+  /* p01.SAWA*/ cpu_bus.BUS_CPU_D[6].tri6_pn(_TAGY_FF04_RDp_ext, _RYSO_DIV12n_evn);
+  /* p01.TATU*/ cpu_bus.BUS_CPU_D[7].tri6_pn(_TAGY_FF04_RDp_ext, _UDOR_DIV13n_evn);
+#else
   /* p01.UMEK*/ wire _UMEK_DIV06n_evn = not1(UGOT_DIV06p.qp_new());
   /* p01.UREK*/ wire _UREK_DIV07n_evn = not1(TULU_DIV07p.qp_new());
   /* p01.UTOK*/ wire _UTOK_DIV08n_evn = not1(TUGO_DIV08p.qp_new());
@@ -54,6 +75,8 @@ void GateBoyDiv::read(GateBoyCpuBus& cpu_bus)
   /* p01.SEPU*/ cpu_bus.BUS_CPU_D[5].tri6_pn(_TAGY_FF04_RDp_ext, _RAVE_DIV11n_evn);
   /* p01.SAWA*/ cpu_bus.BUS_CPU_D[6].tri6_pn(_TAGY_FF04_RDp_ext, _RYSO_DIV12n_evn);
   /* p01.TATU*/ cpu_bus.BUS_CPU_D[7].tri6_pn(_TAGY_FF04_RDp_ext, _UDOR_DIV13n_evn);
+#endif
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ void GateBoyBootrom::write_boot_bit_sync(GateBoyResetDebug& rst, GateBoyCpuBus& 
   /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.TYRO_XX_0x0x0000p(), cpu_bus.TUFA_XX_x1x1xxxxp());
   // FF50 - disable bootrom bit
 
-  /* p07.SATO*/ auto _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0], cpu_bus.BOOT_BITn_h);
+  /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(cpu_bus.BUS_CPU_D[0].qp_old(), cpu_bus.BOOT_BITn_h.qp_old());
   /* p07.TEPU*/ cpu_bus.BOOT_BITn_h.dff17(_TUGE_FF50_WRn, rst.ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
 }
 

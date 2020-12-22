@@ -89,7 +89,7 @@ struct BitBase {
   void check_old() const { }
   void check_new() const { }
   void set_dirty1() { }
-  void set_new2() { }
+  void set_new()    { }
   void set_dirty3() { }
   void set_dirty4() { }
 
@@ -454,16 +454,29 @@ struct Bus : public BitBase {
     set_dirty4();
   }
 
+  void tri(BitBase OEp, BitBase Dp) {
+    CHECK_P(bit_new());
+    if (OEp.qp_new()) {
+      set_driven(1);
+      set_data(Dp.qp_new());
+    }
+    set_dirty4();
+  }
+
   void set(wire Dp) { tri(1, Dp); }
   void tri6_nn (wire OEn, wire Dn) { tri(!OEn, !Dn); }
   void tri6_pn (wire OEp, wire Dn) { tri( OEp, !Dn); }
   void tri10_np(wire OEn, wire Dp) { tri(!OEn,  Dp); }
+
+  void tri6_pn (BitBase OEp, BitBase Dn) { tri( OEp, !Dn); }
 };
 
 //-----------------------------------------------------------------------------
 // dirty2 = reset
 // dirty3 = pin_out called
 // dirty4 = pin_in called
+
+// OE could actually be "enable pullup"?
 
 struct PinIO : public BitBase {
   void reset(wire s) { state = s; }
@@ -730,16 +743,16 @@ struct TpLatch : public BitBase {
 
 
 
-
+#if 0
 inline BitBase not1(BitBase a)            { return BitBase(a.state ^ 1); }
 inline BitBase or2 (BitBase a, BitBase b) { return BitBase(a.state | b.state); }
 
-inline BitBase and4(BitBase a, BitBase b, BitBase c, BitBase d) {
+__declspec(noinline) inline BitBase and4(BitBase a, BitBase b, BitBase c, BitBase d) {
   uint8_t hi = a.state | b.state | c.state | d.state;
   uint8_t lo = a.state & b.state & c.state & d.state;
   return BitBase((hi & 0b11111110) | (lo & 0b00000001));
 }
-
+#endif
 
 
 
@@ -748,45 +761,46 @@ inline BitBase and4(BitBase a, BitBase b, BitBase c, BitBase d) {
 
 //-----------------------------------------------------------------------------
 
-inline wire not1(wire a) { return !a; }
+inline uint8_t not1(uint8_t a) { return !a; }
 
-inline wire and2(wire a, wire b) { return a & b; }
-inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }
-inline wire and4(wire a, wire b, wire c, wire d) { return  (a & b & c & d); }
-inline wire and5(wire a, wire b, wire c, wire d, wire e) { return  (a & b & c & d & e); }
-inline wire and6(wire a, wire b, wire c, wire d, wire e, wire f) { return  (a & b & c & d & e & f); }
-inline wire and7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return  (a & b & c & d & e & f & g); }
+inline uint8_t and2(uint8_t a, uint8_t b) { return a & b; }
+inline uint8_t and3(uint8_t a, uint8_t b, uint8_t c) { return  (a & b & c); }
 
-inline wire or2(wire a, wire b) { return a | b; }
-inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
-inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
-inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
+inline uint8_t and4(uint8_t a, uint8_t b, uint8_t c, uint8_t d) { return  (a & b & c & d); }
+inline uint8_t and5(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e) { return  (a & b & c & d & e); }
+inline uint8_t and6(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f) { return  (a & b & c & d & e & f); }
+inline uint8_t and7(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g) { return  (a & b & c & d & e & f & g); }
 
-inline wire xor2 (wire a, wire b) { return a ^ b; }
+inline uint8_t or2(uint8_t a, uint8_t b) { return a | b; }
+inline uint8_t or3(uint8_t a, uint8_t b, uint8_t c) { return  (a | b | c); }
+inline uint8_t or4(uint8_t a, uint8_t b, uint8_t c, uint8_t d) { return  (a | b | c | d); }
+inline uint8_t or5(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e) { return  (a | b | c | d | e); }
 
-inline wire xnor2(wire a, wire b) { return a == b; }
+inline uint8_t xor2 (uint8_t a, uint8_t b) { return a ^ b; }
 
-inline wire nor2(wire a, wire b) { return !(a | b); }
-inline wire nor3(wire a, wire b, wire c) { return !(a | b | c); }
-inline wire nor4(wire a, wire b, wire c, wire d) { return !(a | b | c | d); }
-inline wire nor5(wire a, wire b, wire c, wire d, wire e) { return !(a | b | c | d | e); }
-inline wire nor6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a | b | c | d | e | f); }
-inline wire nor8(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) { return !(a | b | c | d | e | f | g | h); }
+inline uint8_t xnor2(uint8_t a, uint8_t b) { return a == b; }
 
-inline wire nand2(wire a, wire b) { return !(a & b); }
-inline wire nand3(wire a, wire b, wire c) { return !(a & b & c); }
-inline wire nand4(wire a, wire b, wire c, wire d) { return !(a & b & c & d); }
-inline wire nand5(wire a, wire b, wire c, wire d, wire e) { return !(a & b & c & d & e); }
-inline wire nand6(wire a, wire b, wire c, wire d, wire e, wire f) { return !(a & b & c & d & e & f); }
-inline wire nand7(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { return !(a & b & c & d & e & f & g); }
+inline uint8_t nor2(uint8_t a, uint8_t b) { return !(a | b); }
+inline uint8_t nor3(uint8_t a, uint8_t b, uint8_t c) { return !(a | b | c); }
+inline uint8_t nor4(uint8_t a, uint8_t b, uint8_t c, uint8_t d) { return !(a | b | c | d); }
+inline uint8_t nor5(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e) { return !(a | b | c | d | e); }
+inline uint8_t nor6(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f) { return !(a | b | c | d | e | f); }
+inline uint8_t nor8(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h) { return !(a | b | c | d | e | f | g | h); }
 
-inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
-inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
+inline uint8_t nand2(uint8_t a, uint8_t b) { return !(a & b); }
+inline uint8_t nand3(uint8_t a, uint8_t b, uint8_t c) { return !(a & b & c); }
+inline uint8_t nand4(uint8_t a, uint8_t b, uint8_t c, uint8_t d) { return !(a & b & c & d); }
+inline uint8_t nand5(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e) { return !(a & b & c & d & e); }
+inline uint8_t nand6(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f) { return !(a & b & c & d & e & f); }
+inline uint8_t nand7(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g) { return !(a & b & c & d & e & f & g); }
+
+inline uint8_t and_or3(uint8_t a, uint8_t b, uint8_t c) { return (a & b) | c; }
+inline uint8_t or_and3(uint8_t a, uint8_t b, uint8_t c) { return (a | b) & c; }
 
 //-----------------------------------------------------------------------------
 
 inline wire add_c(wire a, wire b, wire c) {
-  return (a + b + c) & 2;
+  return (a + b + c) >> 1;
 }
 
 inline wire add_s(wire a, wire b, wire c) {

@@ -79,10 +79,10 @@ struct BitBase {
   void set_dirty3() { state |= 0b01000000; }
   void set_dirty4() { state |= 0b10000000; }
 
-  uint8_t bit_old()    const { return (state >> 4) & 1; }
-  uint8_t bit_new()    const { return (state >> 5) & 1; }
-  uint8_t bit_dirty3() const { return (state >> 6) & 1; }
-  uint8_t bit_dirty4() const { return (state >> 7) & 1; }
+  uint8_t bit_old()    const { return bit(state, 4); }
+  uint8_t bit_new()    const { return bit(state, 5); }
+  uint8_t bit_dirty3() const { return bit(state, 6); }
+  uint8_t bit_dirty4() const { return bit(state, 7); }
 #else
   void check_old() const { }
   void check_new() const { }
@@ -103,11 +103,11 @@ struct BitBase {
   uint8_t qp_new() const { check_new(); return  bit_data(); }
   uint8_t qn_new() const { check_new(); return !bit_data(); }
 
-  void set_data (uint8_t d) { state = (state & 0b11101110) | ((d & 1) << 0); }
-  void set_clock(uint8_t d) { state = (state & 0b11101101) | ((d & 1) << 1); }
+  void set_data (uint8_t d) { state = (state & 0b11101110) | (bit(d) << 0); }
+  void set_clock(uint8_t d) { state = (state & 0b11101101) | (bit(d) << 1); }
 
-  uint8_t bit_data () const { return (state >> 0) & 1; }
-  uint8_t bit_clock() const { return (state >> 1) & 1; }
+  uint8_t bit_data () const { return bit(state, 0); }
+  uint8_t bit_clock() const { return bit(state, 1); }
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -166,7 +166,7 @@ struct Signal : public BitBase {
 // dirty4 = dff() called
 
 struct DFF : public BitBase {
-  void reset(uint8_t clk, uint8_t d) { state = uint8_t(clk << 1) | uint8_t(d); }
+  void reset(uint8_t clk, uint8_t d) { state = uint8_t((clk & 1) << 1) | uint8_t(d & 1); }
 
   using BitBase::qp_old;
   using BitBase::qn_old;
@@ -181,7 +181,7 @@ struct DFF : public BitBase {
   void dff_any(uint8_t CLKp, uint8_t SETn, uint8_t RSTn, uint8_t Dp) {
     if (!bit_clock() && CLKp) set_data(Dp);
     set_clock(CLKp);
-    set_data((bit_data() || !SETn) && RSTn);
+    set_data((bit_data() || !bit(SETn)) && bit(RSTn));
 
     set_new();
     set_dirty3();
@@ -704,6 +704,7 @@ struct TpLatch : public BitBase {
 //-----------------------------------------------------------------------------
 
 inline uint8_t not1(uint8_t a) { return !a; }
+inline uint8_t not1b(uint8_t a) { return ~a; }
 
 inline uint8_t and2(uint8_t a, uint8_t b) { return a & b; }
 inline uint8_t and3(uint8_t a, uint8_t b, uint8_t c) { return  (a & b & c); }
@@ -742,11 +743,11 @@ inline uint8_t or_and3(uint8_t a, uint8_t b, uint8_t c) { return (a | b) & c; }
 //-----------------------------------------------------------------------------
 
 inline uint8_t add_c(uint8_t a, uint8_t b, uint8_t c) {
-  return ((a & 1) + (b & 1) + (c & 1)) >> 1;
+  return bit(bit(a) + bit(b) + bit(c), 1);
 }
 
 inline uint8_t add_s(uint8_t a, uint8_t b, uint8_t c) {
-  return ((a & 1) + (b & 1) + (c & 1)) & 1;
+  return bit(bit(a) + bit(b) + bit(c), 0);
 }
 
 //-----------------------------------------------------------------------------

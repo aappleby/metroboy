@@ -22,6 +22,7 @@ typedef uint8_t wire2;
 
 inline bool bit(wire2 w)        { return bool(w & 1); }
 inline bool bit(wire2 w, int i) { return bool((w >> i) & 1); }
+inline uint8_t mask(int i) { return (1 << i) - 1; }
 
 enum RunMode {
   RUN_STOP = 0, // don't run

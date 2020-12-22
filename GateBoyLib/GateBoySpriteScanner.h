@@ -30,18 +30,18 @@ struct SpriteScanner {
   }
 
   wire2 AVAP_SCAN_DONE_TRIGp_old(wire2 BALU_LINE_RSTp) const {
-    /*#p29.BEBU*/ wire2 _BEBU_SCAN_DONE_TRIGn_old = or3(DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_old());
+    /*#p29.BEBU*/ wire2 _BEBU_SCAN_DONE_TRIGn_old = or3(DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_old2());
     /*#p29.AVAP*/ wire2 _AVAP_SCAN_DONE_TRIGp_old = not1b(_BEBU_SCAN_DONE_TRIGn_old);
     return _AVAP_SCAN_DONE_TRIGp_old;
   }
 
   wire2 AVAP_SCAN_DONE_TRIGp_new(wire2 BALU_LINE_RSTp) const {
-    /*#p29.BEBU*/ wire2 _BEBU_SCAN_DONE_TRIGn_new = or3(DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_new());
+    /*#p29.BEBU*/ wire2 _BEBU_SCAN_DONE_TRIGn_new = or3(DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, BYBA_SCAN_DONE_Ap.qn_new2());
     /*#p29.AVAP*/ wire2 _AVAP_SCAN_DONE_TRIGp_new = not1b(_BEBU_SCAN_DONE_TRIGn_new);
     return _AVAP_SCAN_DONE_TRIGp_new;
   }
 
-  /* p29.CEHA*/ wire2 CEHA_SCANNINGp() const { return not1b(CENO_SCANNINGp.qn_new()); }
+  /* p29.CEHA*/ wire2 CEHA_SCANNINGp() const { return not1b(CENO_SCANNINGp.qn_new2()); }
   /*#p29.BYJO*/ wire2 BYJO_SCANNINGn() const { return not1b(CEHA_SCANNINGp()); }
 
   void tock(wire2 XUPY_ABxxEFxx, wire2 ANOM_LINE_RSTn);

@@ -266,7 +266,7 @@ struct RegLX {
   wire2 NYPE_x113n_new() const { return NYPE_x113p.qn_new2(); }
 
   wire2 RUTU_x113p_old() const { return RUTU_x113p.qp_old2(); }
-  wire2 RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
+  wire2 RUTU_x113n_old() const { return RUTU_x113p.qn_old2(); }
 
   wire2 RUTU_x113p_new() const { return RUTU_x113p.qp_new2(); }
   wire2 RUTU_x113n_new() const { return RUTU_x113p.qn_new2(); }

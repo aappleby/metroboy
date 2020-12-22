@@ -50,7 +50,7 @@ struct SpriteFetcher {
 
   /* p29.WUTY*/ wire2 WUTY_SFETCH_DONE_TRIGp() const {
     /* p29.TYNO*/ wire2 _TYNO = nand3b(TOXE_SFETCH_S0p.qp_new2(), SEBA_SFETCH_S1p_D5.qp_new2(), VONU_SFETCH_S1p_D4.qp_new2());
-    /* p29.VUSA*/ wire2 _VUSA_SPRITE_DONEn = or2(TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
+    /* p29.VUSA*/ wire2 _VUSA_SPRITE_DONEn = or2(TYFO_SFETCH_S0p_D1.qn_new2(), _TYNO);
     /* p29.WUTY*/ wire2 _WUTY_SFETCH_DONE_TRIGp = not1b(_VUSA_SPRITE_DONEn);
     return _WUTY_SFETCH_DONE_TRIGp;
   }
@@ -77,7 +77,7 @@ struct SpriteFetcher {
     return _PUCO_STORE_SPRITE_Bn;
   }
 
-  /*#p29.XUQU*/ wire2 XUQU_SPRITE_AB() const { return not1b(VONU_SFETCH_S1p_D4.qn_new()); }
+  /*#p29.XUQU*/ wire2 XUQU_SPRITE_AB() const { return not1b(VONU_SFETCH_S1p_D4.qn_new2()); }
 
   wire2 SOHO_SPR_VRAM_RDp() const {
     /* p25.SOHO*/ wire2 _SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG(), TEXY_SFETCHINGp());

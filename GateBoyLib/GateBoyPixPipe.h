@@ -24,14 +24,14 @@ struct WindowRegisters {
     wire2 RYDY_WIN_HITp_old);
 
   wire2 NUNY_WIN_MODE_TRIGp_old() const {
-    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_old = and2(PYNU_WIN_MODE_Ap.qp_old(), NOPA_WIN_MODE_Bp.qn_old());
+    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_old = and2(PYNU_WIN_MODE_Ap.qp_old(), NOPA_WIN_MODE_Bp.qn_old2());
     return _NUNY_WIN_MODE_TRIGp_old;
   }
   /* p27.NYFO*/ wire2 NYFO_WIN_MODE_TRIGn_old() const { return not1b(NUNY_WIN_MODE_TRIGp_old()); }
   /* p27.MOSU*/ wire2 MOSU_WIN_MODE_TRIGp_old() const { return not1b(NYFO_WIN_MODE_TRIGn_old()); }
 
   wire2 NUNY_WIN_MODE_TRIGp_new() const {
-    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_new = and2(PYNU_WIN_MODE_Ap.qp_new(), NOPA_WIN_MODE_Bp.qn_new());
+    /*#p27.NUNY*/ wire2 _NUNY_WIN_MODE_TRIGp_new = and2(PYNU_WIN_MODE_Ap.qp_new(), NOPA_WIN_MODE_Bp.qn_new2());
     return _NUNY_WIN_MODE_TRIGp_new;
   }
   /* p27.NYFO*/ wire2 NYFO_WIN_MODE_TRIGn_new() const { return not1b(NUNY_WIN_MODE_TRIGp_new()); }
@@ -59,12 +59,12 @@ struct WindowRegisters {
   }
 
   wire2 SEKO_WIN_FETCH_TRIGp_old() const {
-    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_old = nor2b(RYFA_WIN_FETCHn_A.qn_old(), RENE_WIN_FETCHn_B.qp_old());
+    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_old = nor2b(RYFA_WIN_FETCHn_A.qn_old2(), RENE_WIN_FETCHn_B.qp_old());
     return _SEKO_WIN_FETCH_TRIGp_old;
   }
 
   wire2 SEKO_WIN_FETCH_TRIGp_new() const {
-    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_new = nor2b(RYFA_WIN_FETCHn_A.qn_new(), RENE_WIN_FETCHn_B.qp_new());
+    /* p27.SEKO*/ wire2 _SEKO_WIN_FETCH_TRIGp_new = nor2b(RYFA_WIN_FETCHn_A.qn_new2(), RENE_WIN_FETCHn_B.qp_new());
     return _SEKO_WIN_FETCH_TRIGp_new;
   }
 
@@ -126,7 +126,7 @@ struct FineScroll {
 
 
   /*#p27.POVA*/ wire2 POVA_FINE_MATCH_TRIGp() {
-    wire2 _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new(), NYZE_SCX_FINE_MATCH_B.qn_new());
+    wire2 _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new(), NYZE_SCX_FINE_MATCH_B.qn_new2());
     return _POVA_FINE_MATCH_TRIGp;
   }
 
@@ -147,7 +147,7 @@ struct PPURegisters {
     VOGA_HBLANKp.reset(0, 1);
   }
 
-  wire2 XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_new(); }
+  wire2 XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_new2(); }
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A

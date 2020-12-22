@@ -61,7 +61,7 @@ struct GateBoyLCD {
   /*#p29.BAGY*/ wire2 BAGY_LINE_RSTn_new() const { return not1b(BALU_LINE_RSTp_new()); }
   /* p21.TADY*/ wire2 TADY_LINE_RSTn_new() const { return nor2b(ATEJ_LINE_RSTp_new(), TOFU_VID_RSTp(_XODO_VID_RSTp.qp_new())); }
 
-  /*#p21.PARU*/ wire2 PARU_VBLANKp() const { return not1b(POPU_VBLANKp.qn_new()); }
+  /*#p21.PARU*/ wire2 PARU_VBLANKp() const { return not1b(POPU_VBLANKp.qn_new2()); }
 
   void tock(
     GateBoyResetDebug& rst,

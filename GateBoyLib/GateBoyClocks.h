@@ -42,9 +42,9 @@ struct GateBoyClock {
   /* p27.TAVA*/ wire2 TAVA_xBxDxFxH() const { return not1b(LAPE_AxCxExGx()); }
 
   /*#p01.ATYP*/ wire2 ATYP_ABCDxxxx() const { return not1b(AFUR_xxxxEFGHp.qp_new()); }
-  /*#p01.AFEP*/ wire2 AFEP_AxxxxFGH() const { return not1b(ALEF_AxxxxFGHp.qn_new()); }
+  /*#p01.AFEP*/ wire2 AFEP_AxxxxFGH() const { return not1b(ALEF_AxxxxFGHp.qn_new2()); }
   /*#p01.AROV*/ wire2 AROV_xxCDEFxx() const { return not1b(APUK_ABxxxxGHp.qp_new()); }
-  /*#p01.ADAR*/ wire2 ADAR_ABCxxxxH() const { return not1b(ADYK_ABCxxxxHp.qn_new()); }
+  /*#p01.ADAR*/ wire2 ADAR_ABCxxxxH() const { return not1b(ADYK_ABCxxxxHp.qn_new2()); }
 
   /*#p01.BEKO*/ wire2 BEKO_ABCDxxxx() const { return not1b(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
   /*#p01.BAPY*/ wire2 BAPY_xxxxxxGH() const { return nor3b(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }
@@ -76,10 +76,10 @@ struct GateBoyClock {
   /* p04.MOPA*/ wire2 MOPA_xxxxEFGH() const { return not1b(UVYT_ABCDxxxx()); }
   /* p28.XYNY*/ wire2 XYNY_ABCDxxxx() const { return not1b(MOPA_xxxxEFGH()); }
 
-  /*#p21.TALU*/ wire2 TALU_xxCDEFxx() const { return not1b(VENA_xxCDEFxx.qn_new()); }
-  /*#p29.XUPY*/ wire2 XUPY_ABxxEFxx() const { return not1b(WUVU_ABxxEFxx.qn_new()); }
+  /*#p21.TALU*/ wire2 TALU_xxCDEFxx() const { return not1b(VENA_xxCDEFxx.qn_new2()); }
+  /*#p29.XUPY*/ wire2 XUPY_ABxxEFxx() const { return not1b(WUVU_ABxxEFxx.qn_new2()); }
   /*#p29.XOCE*/ wire2 XOCE_xBCxxFGx() const { return not1b(WOSU_AxxDExxH.qp_new()); }
-  /*#p29.WOJO*/ wire2 WOJO_AxxxExxx() const { return nor2b(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
+  /*#p29.WOJO*/ wire2 WOJO_AxxxExxx() const { return nor2b(WOSU_AxxDExxH.qn_new2(), WUVU_ABxxEFxx.qn_new2()); }
   /*#p21.SONO*/ wire2 SONO_ABxxxxGH() const { return not1b(TALU_xxCDEFxx()); }
   /* p29.XYSO*/ wire2 XYSO_xBCDxFGH() const { return not1b(WOJO_AxxxExxx()); }
   /*#p30.CYKE*/ wire2 CYKE_ABxxEFxx() const { return not1b(XUPY_ABxxEFxx()); }

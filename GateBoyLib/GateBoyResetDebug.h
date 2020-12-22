@@ -51,7 +51,7 @@ struct GateBoyResetDebug {
   /* p08.RYCA*/ wire2 RYCA_MODE_DBG2n() const { return not1b(UNOR_MODE_DBG2p()); }
   /* p08.TOVA*/ wire2 TOVA_MODE_DBG2n() const { return not1b(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire2 MULE_MODE_DBG1n() const { return not1b(UMUT_MODE_DBG1p()); }
-  /* p25.TUTO*/ wire2 TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
+  /* p25.TUTO*/ wire2 TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new2()); }
 
   void tock(const GateBoyClock& clk, wire2 sys_clkreq, wire2 sys_clkgood, wire2 UPOF_DIV15p);
   void set_signals(wire2 XONA_LCDC_LCDENp);

@@ -517,8 +517,6 @@ struct Bus : public BitBase {
 // dirty3 = pin_out called
 // dirty4 = pin_in called
 
-// OE could actually be "enable pullup"?
-
 struct PinIO : public BitBase {
   void reset(uint8_t s) { state = s; }
 
@@ -532,51 +530,52 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_out_oedp(wire2 OEp, wire2 Dp) {
+  void pin_out_oedp(wire2 PUn, wire2 Dp) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
 
     state = Dp;
-
     state &= BIT_DATA;
     state |= BIT_DRIVEN;
-    state |= BIT_DIRTY3;
 
-    if (!bit(OEp)) state &= ~BIT_DRIVEN;
-    if (!bit(OEp)) state |= BIT_PULLUP;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    if (!bit(PUn)) state |= BIT_PULLUP;
   }
 
   //----------------------------------------
 
-  void pin_out_pull_hilo(wire2 OEp, wire2 HI, wire2 LO) {
+  void pin_out_pull_hilo(wire2 PUn, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
 
-    if (bit(HI) == bit(LO)){
+    if (bit(HI ^ LO) == 0){
       state = HI;
       state &= BIT_DATA;
       state |= BIT_DRIVEN;
     }
 
+    state |= BIT_NEW;
     state |= BIT_DIRTY3;
-    if (!bit(OEp)) state |= BIT_PULLUP;
+    if (!bit(PUn)) state |= BIT_PULLUP;
   }
 
   //----------------------------------------
 
-  void pin_out_pull_hilo_any(wire2 OEp, wire2 HI, wire2 LO) {
+  void pin_out_pull_hilo_any(wire2 PUn, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
 
-    if (bit(HI) == bit(LO)){
+    if (bit(HI ^ LO) == 0){
       state = HI;
       state &= BIT_DATA;
       state |= BIT_DRIVEN;
     }
 
+    state |= BIT_NEW;
     state |= BIT_DIRTY3;
-    if (!bit(OEp)) state |= BIT_PULLUP;
+    if (!bit(PUn)) state |= BIT_PULLUP;
   }
 
   //----------------------------------------
@@ -589,19 +588,12 @@ struct PinIO : public BitBase {
     wire2 Dp = ~Dn;
 
     if (bit(OEp)) {
-      state = Dp;
-      state &= BIT_DATA;
+      state &= ~BIT_DATA;
+      state |= bit(Dp);
       state |= BIT_DRIVEN;
-      state |= BIT_DIRTY4;
-      if (!bit(OEp)) state &= ~BIT_DRIVEN;
-      if (!bit(OEp)) state |= BIT_PULLUP;
-    }
-    else {
-      state |= BIT_DIRTY4;
-      if (!bit(OEp)) state &= ~BIT_DRIVEN;
-      if (!bit(OEp)) state |= BIT_PULLUP;
     }
 
+    state |= BIT_DIRTY4;
   }
 
   //----------------------------------------
@@ -612,18 +604,12 @@ struct PinIO : public BitBase {
     wire2 Dp = ~Dn;
 
     if (bit(OEp)) {
-      state = Dp;
-      state &= BIT_DATA;
+      state &= ~BIT_DATA;
+      state |= bit(Dp);
       state |= BIT_DRIVEN;
-      state |= BIT_DIRTY4;
-      if (!bit(OEp)) state &= ~BIT_DRIVEN;
-      if (!bit(OEp)) state |= BIT_PULLUP;
     }
-    else {
-      state |= BIT_DIRTY4;
-      if (!bit(OEp)) state &= ~BIT_DRIVEN;
-      if (!bit(OEp)) state |= BIT_PULLUP;
-    }
+
+    state |= BIT_DIRTY4;
   }
 
   //----------------------------------------
@@ -674,13 +660,11 @@ struct PinOut : public BitBase {
     state = BIT_DIRTY3 | BIT_NEW | BIT_DATA;
   }
 
-
   void pin_out_dp(wire2 Dp) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY4);
 
     state = Dp;
-
     state &= BIT_DATA;
     state |= BIT_DRIVEN;
     state |= BIT_NEW;
@@ -688,30 +672,39 @@ struct PinOut : public BitBase {
     state |= BIT_DIRTY4;
   }
 
-  void pin_out_hilo(wire2 HI, wire2 LO) {
+  __declspec(noinline) void pin_out_hilo(wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY4);
 
-    if (bit(HI) == bit(LO)) {
-      state = (state & 0b11101110) | (bit(HI) << 0);
+    if (bit(HI ^ LO) == 0){
+      state = HI;
+      state &= BIT_DATA;
       state |= BIT_DRIVEN;
+      state |= BIT_NEW;
+      state |= BIT_DIRTY3;
+      state |= BIT_DIRTY4;
     }
-
-    state |= BIT_DIRTY4;
+    else {
+      state |= BIT_DIRTY4;
+    }
   }
 
   void pin_out_oehilo(wire2 PUn, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY4);
 
-    if (bit(HI) == bit(LO)) {
-      state = (state & 0b11101110) | (bit(HI) << 0);
+    if (bit(HI ^ LO) == 0){
+      state = HI;
+      state &= BIT_DATA;
+      state |= BIT_DRIVEN;
+      state |= BIT_NEW;
+      state |= BIT_DIRTY3;
+      state |= BIT_DIRTY4;
+    }
+    else {
+      state |= BIT_DIRTY4;
     }
 
-    state |= BIT_DRIVEN;
-    state |= BIT_DIRTY4;
-
-    if (!bit(PUn)) state &= ~BIT_DRIVEN;
     if (!bit(PUn)) state |= BIT_PULLUP;
   }
 };

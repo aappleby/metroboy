@@ -65,11 +65,11 @@ struct BitBase {
   }
 #else
   inline char int_c() {
-    return bit_data() ? '1' : '0';
+    return (state & BIT_DATA) ? '1' : '0';
   }
 
   inline char ext_c() {
-    return bit_data() ? '0' : '1';
+    return (state & BIT_DATA) ? '0' : '1';
   }
 #endif
 
@@ -84,9 +84,6 @@ struct BitBase {
 #endif
 
   void set_data (wire2 d) { state = (state & 0b11101110) | (bit(d) << 0); }
-  void set_clock(wire2 d) { state = (state & 0b11101101) | (bit(d) << 1); }
-
-  wire2 bit_data () const { return bit( state, 0); }
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -100,12 +97,7 @@ struct Gate : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void set(wire2 D) {
-    state &= ~BIT_DATA;
-    state &= ~BIT_OLD;
-    state |= bit(D);
-    state |= BIT_NEW;
-    state |= BIT_DIRTY3;
-    state |= BIT_DIRTY4;
+    state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | bit(D);
   }
 };
 
@@ -120,12 +112,7 @@ struct Signal : public BitBase {
 
   void set(wire2 D) {
     CHECK_N(state & BIT_NEW);
-    state &= ~BIT_DATA;
-    state &= ~BIT_OLD;
-    state |= bit(D);
-    state |= BIT_NEW;
-    state |= BIT_DIRTY3;
-    state |= BIT_DIRTY4;
+    state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | bit(D);
   }
 };
 
@@ -145,15 +132,15 @@ struct DFF : public BitBase {
   }
 
   void dff_any(wire2 CLKp, wire2 SETn, wire2 RSTn, wire2 Dp) {
-    CLKp <<= 1;
+    CLKp = (CLKp << 1) & 2;
 
-    if ((state | ~CLKp) & 2) Dp = state;
+    if (~state & CLKp & 2) state = Dp;
 
-    Dp = (Dp | ~SETn) & RSTn;
-    state = (state & 0b11111110) | (Dp   & 0b00000001);
-    state = (state & 0b11111101) | (CLKp & 0b00000010);
+    state |= ~SETn;
+    state &= RSTn;
 
-    state &= ~BIT_OLD;
+    state &= BIT_DATA;
+    state |= CLKp;
     state |= BIT_NEW;
     state |= BIT_DIRTY3;
     state |= BIT_DIRTY4;
@@ -174,7 +161,22 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public DFF {
-  void dff8n(wire2 CLKn, wire2 Dn)    { dff(~CLKn, 1, 1, ~Dn); }
+  void dff8n(wire2 CLKn, wire2 Dn) {
+    CHECK_N(state & BIT_NEW);
+
+    wire2 CLKp = ~CLKn;
+    wire2 Dp = ~Dn;
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -191,7 +193,21 @@ struct DFF8n : public DFF {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public DFF {
-  void dff8p(wire2 CLKp, wire2 Dn)    { dff(CLKp, 1, 1, ~Dn); }
+  void dff8p(wire2 CLKp, wire2 Dn) {
+    CHECK_N(state & BIT_NEW);
+
+    wire2 Dp = ~Dn;
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -210,7 +226,23 @@ struct DFF8p : public DFF {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public DFF {
-  void dff9(wire2 CLKp, wire2 SETn, wire2 Dn)    { dff(CLKp, SETn, 1, ~Dn); }
+  void dff9(wire2 CLKp, wire2 SETn, wire2 Dn) {
+    CHECK_N(state & BIT_NEW);
+
+    wire2 Dp = ~Dn;
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state |= ~SETn;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -230,7 +262,21 @@ struct DFF9 : public DFF {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public DFF {
-  void dff11(wire2 CLKp, wire2 RSTn, wire2 Dp)    { dff(CLKp, 1, RSTn, Dp); }
+  void dff11(wire2 CLKp, wire2 RSTn, wire2 Dp) {
+    CHECK_N(state & BIT_NEW);
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state &= RSTn;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -250,7 +296,21 @@ struct DFF11 : public DFF {
 // DFF13_13 >> Q
 
 struct DFF13 : public DFF {
-  void dff13(wire2 CLKp, wire2 RSTn, wire2 Dp)    { dff(CLKp, 1, RSTn, Dp); }
+  void dff13(wire2 CLKp, wire2 RSTn, wire2 Dp) {
+    CHECK_N(state & BIT_NEW);
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state &= RSTn;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -274,8 +334,35 @@ struct DFF13 : public DFF {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public DFF {
-  void dff17(wire2 CLKp, wire2 RSTn, wire2 Dp)        { dff(CLKp, 1, RSTn, Dp); }
-  void dff17_any(wire2 CLKp, wire2 RSTn, wire2 Dp)    { dff_any(CLKp, 1, RSTn, Dp); }
+  void dff17(wire2 CLKp, wire2 RSTn, wire2 Dp) {
+    CHECK_N(state & BIT_NEW);
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state &= RSTn;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
+
+  void dff17_any(wire2 CLKp, wire2 RSTn, wire2 Dp) {
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state &= RSTn;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -311,15 +398,13 @@ struct DFF20 : public DFF {
     if (~state & CLKp & 2) state = ~state;
 
     state &= ~LOADp;
-    state &= ~BIT_CLOCK;
-    state &= ~BIT_OLD;
-
     state |= (newD & LOADp);
+
+    state &= BIT_DATA;
     state |= CLKp;
     state |= BIT_NEW;
     state |= BIT_DIRTY3;
     state |= BIT_DIRTY4;
-
   }
 };
 
@@ -352,7 +437,22 @@ struct DFF20 : public DFF {
 // DFF22_22 << CLKp
 
 struct DFF22 : public DFF {
-  void dff22(wire2 CLKp, wire2 SETn, wire2 RSTn, wire2 Dp)    { dff(CLKp, SETn, RSTn, Dp); }
+  void dff22(wire2 CLKp, wire2 SETn, wire2 RSTn, wire2 Dp) {
+    CHECK_N(state & BIT_NEW);
+
+    CLKp = (CLKp << 1) & 2;
+
+    if (~state & CLKp & 2) state = Dp;
+
+    state |= ~SETn;
+    state &= RSTn;
+
+    state &= BIT_DATA;
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
 };
 
 //-----------------------------------------------------------------------------

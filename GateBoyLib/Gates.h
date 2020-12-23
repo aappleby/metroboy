@@ -58,16 +58,14 @@ struct BitBase {
 
   inline char int_c() {
     if (state & BIT_DRIVEN) return bit(state, 0) ? '1' : '0';
-    return '^';
-    //if (state & BIT_PULLUP) return '^';
-    //return 'X';
+    if (state & BIT_PULLUP) return '^';
+    return 'X';
   }
 
   inline char ext_c() {
     if (state & BIT_DRIVEN) return bit(state, 0) ? '0' : '1';
-    return '^';
-    //if (state & BIT_PULLUP) return '^';
-    //return 'X';
+    if (state & BIT_PULLUP) return '^';
+    return 'X';
   }
 
 #ifdef CHECK_DIRTY_BIT
@@ -84,9 +82,6 @@ struct BitBase {
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 
 //-----------------------------------------------------------------------------
-// dirty2 = set() called
-// dirty3 = set() called
-// dirty4 = set() called
 
 struct Gate : public BitBase {
   void reset(uint8_t s) { state = s; }
@@ -97,10 +92,6 @@ struct Gate : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// dirty2 = set() called
-// dirty3 = set() called
-// dirty4 = set() called
-
 
 struct Signal : public BitBase {
   void reset(uint8_t s) { state = s; }
@@ -113,10 +104,6 @@ struct Signal : public BitBase {
 
 //-----------------------------------------------------------------------------
 // Generic DFF
-
-// dirty2 = dff() called
-// dirty3 = dff() called
-// dirty4 = dff() called
 
 struct DFF : public BitBase {
   void reset(wire2 clk, wire2 d) { state = uint8_t((bit(clk) << 1) | bit(d)); }
@@ -451,10 +438,6 @@ struct DFF22 : public DFF {
 };
 
 //-----------------------------------------------------------------------------
-// dirty2 = reset
-// dirty3 = reset
-// dirty4 = tri called
-
 // Bus with pull-up
 
 // TYGO_01 << BUS_CPU_D2p
@@ -513,9 +496,6 @@ struct Bus : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// dirty2 = reset
-// dirty3 = pin_out called
-// dirty4 = pin_in called
 
 struct PinIO : public BitBase {
   void reset(uint8_t s) { state = s; }
@@ -616,9 +596,6 @@ struct PinIO : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// dirty2 = reset
-// dirty3 = reset
-// dirty4 = pin_in called
 
 struct PinIn : public BitBase {
   void reset(uint8_t s) { state = s; }
@@ -645,9 +622,6 @@ struct PinIn : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// dirty2 = reset
-// dirty3 = reset
-// dirty4 = pin_out called
 
 struct PinOut : public BitBase {
   void reset(uint8_t s) { state = s; }

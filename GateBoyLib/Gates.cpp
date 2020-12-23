@@ -32,7 +32,7 @@ uint64_t commit_and_hash(void* blob, size_t size) {
     }
 #endif
     combine_hash(h, (s & 0b11));
-    base[i] = (s & 0b00001011) | 0b00010000;
+    base[i] = (s & 0b00001111) | 0b00010000;
   }
 
   ASSERT_N(bad_bits);

@@ -974,7 +974,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D06_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 40; i++) {
       char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
       char WRn = gb.ext_bus.PIN78_WRn.ext_c();
       char RDn = gb.ext_bus.PIN79_RDn.ext_c();

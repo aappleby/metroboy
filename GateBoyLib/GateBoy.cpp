@@ -712,7 +712,15 @@ void GateBoy::tock_slow(int pass_index) {
 
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(clk.ALET_xBxDxFxH(), ppu_reg.XYMU_RENDERINGp(), RYFA_WIN_FETCHn_A_old);
-    win_reg.tock(rst, clk, ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_odd, _NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old, RYDY_WIN_HITp_old);
+
+    //win_reg.tock(rst, clk, ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_odd, _NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old, RYDY_WIN_HITp_old);
+    /* p27.ROCO*/ wire2 _ROCO_CLKPIPE_odd = not1b(SEGU_CLKPIPE_evn);
+    /* p27.PYCO*/ win_reg.PYCO_WIN_MATCHp.dff17(_ROCO_CLKPIPE_odd, rst.XAPO_VID_RSTn(), _NUKO_WX_MATCHp_old);
+
+    /* p27.SOVY*/ win_reg.SOVY_WIN_HITp.dff17(clk.ALET_xBxDxFxH(), rst.XAPO_VID_RSTn(), RYDY_WIN_HITp_old);
+
+    /* p27.PANY*/ wire2 _PANY_WIN_FETCHn_old = nor2b(_NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
+    /* p27.RYFA*/ win_reg.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_evn, ppu_reg.XYMU_RENDERINGp(), _PANY_WIN_FETCHn_old);
   }
 
   /* p27.TEVO*/ wire2 TEVO_FETCH_TRIGp = or3(win_reg.SEKO_WIN_FETCH_TRIGp_new(), win_reg.SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR

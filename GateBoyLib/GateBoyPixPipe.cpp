@@ -16,6 +16,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
+#if 0
 void WindowRegisters::tock(
   GateBoyResetDebug& rst,
   GateBoyClock& clk,
@@ -34,6 +35,7 @@ void WindowRegisters::tock(
   /* p27.PANY*/ wire2 _PANY_WIN_FETCHn_old = nor2b(NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
   /* p27.RYFA*/ RYFA_WIN_FETCHn_A.dff17(_SEGU_CLKPIPE_evn, XYMU_RENDERINGp, _PANY_WIN_FETCHn_old);
 }
+#endif
 
 //------------------------------------------------------------------------------------------------------------------------
 

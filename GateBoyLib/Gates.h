@@ -530,13 +530,16 @@ struct PinIO : public BitBase {
     state = BIT_NEW | BIT_DATA;
   }
 
+  //----------------------------------------
+
   void pin_out_oedp(wire2 OEp, wire2 Dp) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
 
-    state = (state & 0b11101110) | (bit(Dp) << 0);
+    state = Dp;
 
+    state &= BIT_DATA;
     state |= BIT_DRIVEN;
     state |= BIT_DIRTY3;
 
@@ -544,33 +547,39 @@ struct PinIO : public BitBase {
     if (!bit(OEp)) state |= BIT_PULLUP;
   }
 
+  //----------------------------------------
+
   void pin_out_pull_hilo(wire2 OEp, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
 
     if (bit(HI) == bit(LO)){
+      state = HI;
+      state &= BIT_DATA;
       state |= BIT_DRIVEN;
-      state = (state & 0b11101110) | (bit(HI) << 0);
     }
 
     state |= BIT_DIRTY3;
-    if (!bit(OEp)) state &= ~BIT_DRIVEN;
     if (!bit(OEp)) state |= BIT_PULLUP;
   }
+
+  //----------------------------------------
 
   void pin_out_pull_hilo_any(wire2 OEp, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
 
     if (bit(HI) == bit(LO)){
+      state = HI;
+      state &= BIT_DATA;
       state |= BIT_DRIVEN;
-      state = (state & 0b11101110) | (bit(HI) << 0);
     }
 
     state |= BIT_DIRTY3;
-    if (!bit(OEp)) state &= ~BIT_DRIVEN;
     if (!bit(OEp)) state |= BIT_PULLUP;
   }
+
+  //----------------------------------------
 
   void pin_in_oedp(wire2 OEp, wire2 Dn) {
     CHECK_P(state & BIT_NEW);
@@ -580,14 +589,22 @@ struct PinIO : public BitBase {
     wire2 Dp = ~Dn;
 
     if (bit(OEp)) {
+      state = Dp;
+      state &= BIT_DATA;
       state |= BIT_DRIVEN;
-      state = (state & 0b11101110) | (bit(Dp) << 0);
+      state |= BIT_DIRTY4;
+      if (!bit(OEp)) state &= ~BIT_DRIVEN;
+      if (!bit(OEp)) state |= BIT_PULLUP;
+    }
+    else {
+      state |= BIT_DIRTY4;
+      if (!bit(OEp)) state &= ~BIT_DRIVEN;
+      if (!bit(OEp)) state |= BIT_PULLUP;
     }
 
-    state |= BIT_DIRTY4;
-    if (!bit(OEp)) state &= ~BIT_DRIVEN;
-    if (!bit(OEp)) state |= BIT_PULLUP;
   }
+
+  //----------------------------------------
 
   void pin_in_oedp_any(wire2 OEp, wire2 Dn) {
     CHECK_P(state & BIT_NEW);
@@ -595,14 +612,21 @@ struct PinIO : public BitBase {
     wire2 Dp = ~Dn;
 
     if (bit(OEp)) {
+      state = Dp;
+      state &= BIT_DATA;
       state |= BIT_DRIVEN;
-      state = (state & 0b11101110) | (bit(Dp) << 0);
+      state |= BIT_DIRTY4;
+      if (!bit(OEp)) state &= ~BIT_DRIVEN;
+      if (!bit(OEp)) state |= BIT_PULLUP;
     }
-
-    state |= BIT_DIRTY4;
-    if (!bit(OEp)) state &= ~BIT_DRIVEN;
-    if (!bit(OEp)) state |= BIT_PULLUP;
+    else {
+      state |= BIT_DIRTY4;
+      if (!bit(OEp)) state &= ~BIT_DRIVEN;
+      if (!bit(OEp)) state |= BIT_PULLUP;
+    }
   }
+
+  //----------------------------------------
 };
 
 //-----------------------------------------------------------------------------

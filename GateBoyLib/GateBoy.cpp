@@ -390,21 +390,17 @@ void GateBoy::next_phase() {
 
   tock_slow(0);
 
-  probes.end_pass(false);
-
 #ifdef CHECK_SINGLE_PASS
   uint64_t pass_hash_old = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
 
   static GateBoy gb_old;
   gb_old = *this;
 
-  probes.begin_pass(1);
-  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
-
   tock_slow(1);
-  probes.end_pass(true);
   auto& gb_new = *this;
 #endif
+
+  probes.end_pass(true);
 
   uint64_t phase_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
 
@@ -956,6 +952,9 @@ void GateBoy::update_framebuffer()
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     uint8_t p0 = bit(lcd.PIN51_LCD_DATA0.qp_new2());
     uint8_t p1 = bit(lcd.PIN50_LCD_DATA1.qp_new2());
+
+    //probe(4, "pix lo", p0);
+    //probe(5, "pix hi", p1);
 
     uint8_t new_pix = p0 + p1 * 2;
 

@@ -519,7 +519,7 @@ void GateBoyApp::app_render_frame(Viewport view) {
     update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zero_ram);
     blitter.blit_mono(view, ram_tex, 256, 256,
                       0, 0, 256, 256,
-                      960 + 96 - 64, 640 + 96, 256, 256);
+                      42 * 32 - 16, 640 + 96 + 32 + 32, 256, 256);
   }
 
   // Draw screen and vid ram contents

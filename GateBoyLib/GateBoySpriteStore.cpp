@@ -634,6 +634,7 @@ void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam
   /* p31.XATU*/ wire2 _XATU_SPX6n_new_any = not1b(oam_temp_b.YZOS_OAM_DB6p.qp_old2());
   /* p31.BADY*/ wire2 _BADY_SPX7n_new_any = not1b(oam_temp_b.DEPO_OAM_DB7p.qp_old2());
 
+
   /*#p31.XEPE*/ XEPE_STORE0_X0p_odd.dff9(_FUXU_STORE0_clk, _DYNA_STORE0_RSTn_new_evn, _ZAGO_SPX0n_new_any);
   /* p31.YLAH*/ YLAH_STORE0_X1p_odd.dff9(_FUXU_STORE0_clk, _DYNA_STORE0_RSTn_new_evn, _ZOCY_SPX1n_new_any);
   /* p31.ZOLA*/ ZOLA_STORE0_X2p_odd.dff9(_FUXU_STORE0_clk, _DYNA_STORE0_RSTn_new_evn, _YPUR_SPX2n_new_any);

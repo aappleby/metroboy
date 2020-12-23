@@ -72,6 +72,10 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   PIN63_JOY_P14.pin_out_hilo(_KARU, KELY_JOYP_UDLRp.qn_new2());
   PIN62_JOY_P15.pin_out_hilo(_CELA, COFY_JOYP_ABCSp.qn_new2());
 
+  // FIXME hacking in a pullup here
+  PIN63_JOY_P14.state |= BIT_PULLUP;
+  PIN62_JOY_P15.state |= BIT_PULLUP;
+
   if (PIN63_JOY_P14.ext_qp_new()) {
     PIN67_JOY_P10.pin_in_dp(bit(~sys_buttons, 0));
     PIN66_JOY_P11.pin_in_dp(bit(~sys_buttons, 1));

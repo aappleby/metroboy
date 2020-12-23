@@ -27,13 +27,13 @@ int main(int argc, char** argv) {
   auto start = timestamp();
 
 #if 1
-  failures += t.test_bootrom();
+  //failures += t.test_bootrom();
 #ifdef RUN_SLOW_TESTS
-  failures += t.test_fastboot_vs_slowboot();
+  //failures += t.test_fastboot_vs_slowboot();
 #endif
-  failures += t.test_reset_cart_vs_dump();
+  //failures += t.test_reset_cart_vs_dump();
 
-  failures += t.test_clk();
+  //failures += t.test_clk();
   failures += t.test_regs();
   failures += t.test_mem();
   failures += t.test_dma();

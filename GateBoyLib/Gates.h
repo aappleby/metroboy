@@ -14,6 +14,14 @@ inline uint64_t commit_and_hash(T& obj) {
 
 //-----------------------------------------------------------------------------
 
+#define BIT_DIRTY4 0b10000000
+#define BIT_DIRTY3 0b01000000
+#define BIT_NEW    0b00100000
+#define BIT_OLD    0b00010000
+#define BIT_DRIVEN 0b00001000
+#define BIT_CLOCK  0b00000010
+#define BIT_DATA   0b00000001
+
 struct BitBase {
   uint8_t state;
 
@@ -49,11 +57,11 @@ struct BitBase {
 
 #ifdef USE_DRIVEN_BIT
   inline char int_c() {
-    return bit_driven() ? (bit(state, 0) ? '1' : '0') : (bit(state, 0) ? '^' : 'v');
+    return (state & BIT_DRIVEN) ? (bit(state, 0) ? '1' : '0') : (bit(state, 0) ? '^' : 'v');
   }
 
   inline char ext_c() {
-    return bit_driven() ? (bit(state, 0) ? '0' : '1') : '^';
+    return (state & BIT_DRIVEN) ? (bit(state, 0) ? '0' : '1') : '^';
   }
 #else
   inline char int_c() {
@@ -67,20 +75,12 @@ struct BitBase {
 
 //protected:
 
-#ifdef USE_DRIVEN_BIT
-  void  set_driven   (wire2 d) { state = (state & 0b11110111) | ((d & 1) << 3); }
-  wire2 bit_driven   () const { return state & 0b00001000; }
-#else
-  void  set_driven (wire2 d) { (void)d; }
-  wire2 bit_driven () const    { return 0; }
-#endif
-
 #ifdef USE_DIRTY_BIT
-  void check_old() const { CHECK_P((state & 0xF0) == 0x10); }
-  void check_new() const { CHECK_P((state & 0xF0) == 0xE0); }
-  void set_new()    { state &= 0b11101111; state |= 0b00100000; }
-  void set_dirty3() { state |= 0b01000000; }
-  void set_dirty4() { state |= 0b10000000; }
+  void check_old() const { CHECK_P((state & 0xF0) == BIT_OLD); }
+  void check_new() const { CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4)); }
+  void set_new()    { state &= ~BIT_OLD; state |= BIT_NEW; }
+  void set_dirty3() { state |= BIT_DIRTY3; }
+  void set_dirty4() { state |= BIT_DIRTY4; }
 
   wire2 bit_old()    const { return bit(state, 4); }
   wire2 bit_new()    const { return bit(state, 5); }
@@ -396,7 +396,7 @@ struct Bus : public BitBase {
   void tri(wire2 OEp, wire2 Dp) {
     CHECK_P(bit_new());
     if (bit(OEp)) {
-      set_driven(1);
+      state |= BIT_DRIVEN;
       set_data(Dp);
     }
     set_dirty4();
@@ -432,7 +432,7 @@ struct PinIO : public BitBase {
     CHECK_N(bit_dirty4());
 
     if (OEp){
-      set_driven(1);
+      state |= BIT_DRIVEN;
       set_data(Dp);
     }
 
@@ -445,7 +445,7 @@ struct PinIO : public BitBase {
     CHECK_N(bit_dirty4());
 
     if (bit(OEp) && (bit(HI) == bit(LO))){
-      set_driven(1);
+      state |= BIT_DRIVEN;
       set_data(HI);
     }
 
@@ -456,7 +456,7 @@ struct PinIO : public BitBase {
     CHECK_P(bit_new());
 
     if (bit(OEp) && (bit(HI) == bit(LO))){
-      set_driven(1);
+      state |= BIT_DRIVEN;
       set_data(HI);
     }
 
@@ -469,7 +469,7 @@ struct PinIO : public BitBase {
     CHECK_N(bit_dirty4());
 
     if (bit(OEp)) {
-      set_driven(1);
+      state |= BIT_DRIVEN;
       set_data(~D);
     }
 
@@ -480,7 +480,7 @@ struct PinIO : public BitBase {
     CHECK_P(bit_new());
 
     if (bit(OEp)) {
-      set_driven(1);
+      state |= BIT_DRIVEN;
       set_data(~D);
     }
 
@@ -506,8 +506,7 @@ struct PinIn : public BitBase {
   void pin_in_dp(wire2 D) {
     CHECK_P(bit_new());
     CHECK_N(bit_dirty4());
-    set_data(~D);
-    set_dirty4();
+    state = 0b11101000 | bit(~D);
   }
 };
 
@@ -542,7 +541,7 @@ struct PinOut : public BitBase {
 
     if (bit(HI) == bit(LO)) {
       set_data(HI);
-      set_driven(1);
+      state |= BIT_DRIVEN;
     }
 
     set_dirty4();
@@ -554,7 +553,7 @@ struct PinOut : public BitBase {
 
     if (bit(OEp) && (bit(HI) == bit(LO))) {
       set_data(HI);
-      set_driven(1);
+      state |= BIT_DRIVEN;
     }
 
     set_dirty4();

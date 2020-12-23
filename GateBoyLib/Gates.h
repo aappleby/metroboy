@@ -512,12 +512,12 @@ struct PinIO : public BitBase {
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
 
-    if (OEp){
-      state |= BIT_DRIVEN;
-      state = (state & 0b11101110) | (bit(Dp) << 0);
-    }
+    state = (state & 0b11101110) | (bit(Dp) << 0);
 
+    state |= BIT_DRIVEN;
     state |= BIT_DIRTY3;
+
+    if (!OEp) state &= ~BIT_DRIVEN;
   }
 
   void pin_out_pull_hilo(wire2 OEp, wire2 HI, wire2 LO) {
@@ -531,6 +531,7 @@ struct PinIO : public BitBase {
     }
 
     state |= BIT_DIRTY3;
+    if (!OEp) state &= ~BIT_DRIVEN;
   }
 
   void pin_out_pull_hilo_any(wire2 OEp, wire2 HI, wire2 LO) {
@@ -542,6 +543,7 @@ struct PinIO : public BitBase {
     }
 
     state |= BIT_DIRTY3;
+    if (!OEp) state &= ~BIT_DRIVEN;
   }
 
   void pin_in_oedp(wire2 OEp, wire2 Dn) {
@@ -557,6 +559,7 @@ struct PinIO : public BitBase {
     }
 
     state |= BIT_DIRTY4;
+    if (!OEp) state &= ~BIT_DRIVEN;
   }
 
   void pin_in_oedp_any(wire2 OEp, wire2 Dn) {
@@ -570,6 +573,7 @@ struct PinIO : public BitBase {
     }
 
     state |= BIT_DIRTY4;
+    if (!OEp) state &= ~BIT_DRIVEN;
   }
 };
 
@@ -606,8 +610,6 @@ struct PinIn : public BitBase {
 // dirty2 = reset
 // dirty3 = reset
 // dirty4 = pin_out called
-
-// OE could actually be "enable pullup"?
 
 struct PinOut : public BitBase {
   void reset(uint8_t s) { state = s; }
@@ -646,16 +648,18 @@ struct PinOut : public BitBase {
     state |= BIT_DIRTY4;
   }
 
-  void pin_out_oehilo(wire2 OEp, wire2 HI, wire2 LO) {
+  void pin_out_oehilo(wire2 PUn, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY4);
 
-    if (bit(OEp) && (bit(HI) == bit(LO))) {
+    if (bit(HI) == bit(LO)) {
       state = (state & 0b11101110) | (bit(HI) << 0);
-      state |= BIT_DRIVEN;
     }
 
+    state |= BIT_DRIVEN;
     state |= BIT_DIRTY4;
+
+    if (!bit(PUn)) state &= ~BIT_DRIVEN;
   }
 };
 
@@ -730,7 +734,11 @@ struct TpLatch : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void tp_latch(wire2 HOLDn, wire2 Dp) {
-    if (bit(HOLDn)) set_data(Dp);
+    wire2 SETp = HOLDn & Dp;
+    wire2 RSTp = HOLDn & ~Dp;
+
+    state |= SETp;
+    state &= ~RSTp;
 
     state &= BIT_DATA;
     state |= BIT_DRIVEN;

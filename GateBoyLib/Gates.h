@@ -14,14 +14,14 @@ inline uint64_t commit_and_hash(T& obj) {
 
 //-----------------------------------------------------------------------------
 
-#define BIT_DIRTY4 0b10000000
-#define BIT_DIRTY3 0b01000000
-#define BIT_NEW    0b00100000
-#define BIT_OLD    0b00010000
-#define BIT_DRIVEN 0b00001000
-#define BIT_PULLUP 0b00000100
-#define BIT_CLOCK  0b00000010
 #define BIT_DATA   0b00000001
+#define BIT_CLOCK  0b00000010
+#define BIT_PULLUP 0b00000100
+#define BIT_DRIVEN 0b00001000
+#define BIT_OLD    0b00010000
+#define BIT_NEW    0b00100000
+#define BIT_DIRTY3 0b01000000
+#define BIT_DIRTY4 0b10000000
 
 struct BitBase {
   uint8_t state;
@@ -483,14 +483,30 @@ struct Bus : public BitBase {
 
   void tri(wire2 OEp, wire2 Dp) {
     CHECK_P(state & BIT_NEW);
-    if (bit(OEp)) {
-      state |= BIT_DRIVEN;
-      state = (state & 0b11101110) | (bit(Dp) << 0);
-    }
+
+    wire2 new_state = Dp;
+    new_state &= BIT_DATA;
+    new_state |= BIT_PULLUP;
+    new_state |= BIT_DRIVEN;
+    new_state |= BIT_NEW;
+    new_state |= BIT_DIRTY3;
+    new_state |= BIT_DIRTY4;
+
+    if (bit(OEp)) state = new_state;
     state |= BIT_DIRTY4;
   }
 
-  void set(wire2 Dp) { tri(1, Dp); }
+  void set(wire2 Dp) {
+    CHECK_P(state & BIT_NEW);
+    state = Dp;
+    state &= BIT_DATA;
+    state |= BIT_PULLUP;
+    state |= BIT_DRIVEN;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
+
   void tri6_nn (wire2 OEn, wire2 Dn) { tri(~OEn, ~Dn); }
   void tri6_pn (wire2 OEp, wire2 Dn) { tri( OEp, ~Dn); }
   void tri10_np(wire2 OEn, wire2 Dp) { tri(~OEn,  Dp); }

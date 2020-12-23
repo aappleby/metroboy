@@ -525,7 +525,7 @@ struct PinIO : public BitBase {
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
 
-    if (bit(OEp) && (bit(HI) == bit(LO))){
+    if (bit(HI) == bit(LO)){
       state |= BIT_DRIVEN;
       state = (state & 0b11101110) | (bit(HI) << 0);
     }
@@ -537,7 +537,7 @@ struct PinIO : public BitBase {
   void pin_out_pull_hilo_any(wire2 OEp, wire2 HI, wire2 LO) {
     CHECK_P(state & BIT_NEW);
 
-    if (bit(OEp) && (bit(HI) == bit(LO))){
+    if (bit(HI) == bit(LO)){
       state |= BIT_DRIVEN;
       state = (state & 0b11101110) | (bit(HI) << 0);
     }
@@ -559,7 +559,7 @@ struct PinIO : public BitBase {
     }
 
     state |= BIT_DIRTY4;
-    if (!OEp) state &= ~BIT_DRIVEN;
+    if (!bit(OEp)) state &= ~BIT_DRIVEN;
   }
 
   void pin_in_oedp_any(wire2 OEp, wire2 Dn) {
@@ -573,7 +573,7 @@ struct PinIO : public BitBase {
     }
 
     state |= BIT_DIRTY4;
-    if (!OEp) state &= ~BIT_DRIVEN;
+    if (!bit(OEp)) state &= ~BIT_DRIVEN;
   }
 };
 

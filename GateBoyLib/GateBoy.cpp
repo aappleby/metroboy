@@ -505,6 +505,8 @@ void GateBoy::tock_slow(int pass_index) {
 
   //auto BUS_CPU_D_old = cpu_bus.BUS_CPU_D;
 
+  auto ROZE_FINE_COUNT_7n_old = fine_scroll.ROZE_FINE_COUNT_7n_old();
+
   //-----------------------------------------------------------------------------
 
   rst.PIN71_RST.reset_for_pass();
@@ -607,7 +609,9 @@ void GateBoy::tock_slow(int pass_index) {
 
     /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGp.dff17(clk.XUPY_ABxxEFxx(), rst.ABEZ_VID_RSTn(),  sprite_scanner.BESU_SCANNINGp.qp_old2());
     /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd.CATU_LINE_P000p.qp_new2(), ASEN_SCAN_DONE_TRIGp);
+    sprite_scanner.tock(clk.XUPY_ABxxEFxx(), lcd.ANOM_LINE_RSTn_new());
   }
+
 
 
   /*#p29.BEBU*/ wire2 BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new2(), lcd.BALU_LINE_RSTp_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new2());
@@ -651,17 +655,6 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.SEGU*/ wire2 SEGU_CLKPIPE_evn = not1b(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire2 ROXO_CLKPIPE_odd = not1b(SEGU_CLKPIPE_evn);
 
-  {
-    /*#p27.NYZE*/ fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17(clk.MOXE_AxCxExGx(), ppu_reg.XYMU_RENDERINGp(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_old2());
-    /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(ROXO_CLKPIPE_odd, ppu_reg.XYMU_RENDERINGp(), _POHU_SCX_FINE_MATCHp_old);
-    /*#p27.POVA*/ wire2 _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new2(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new2());
-    /*#p27.PAHA*/ wire2 _PAHA_RENDERINGn = not1b(ppu_reg.XYMU_RENDERINGp());
-
-    /*#p27.ROXY*/ fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);
-  }
-
-
-
   // vvvvvvvvvv
   {
     sprite_fetcher.tock(rst, clk, ppu_reg.XYMU_RENDERINGp(), lcd.ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
@@ -694,6 +687,15 @@ void GateBoy::tock_slow(int pass_index) {
   }
   //^^^^^
 
+  {
+    /*#p27.NYZE*/ fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17(clk.MOXE_AxCxExGx(), ppu_reg.XYMU_RENDERINGp(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_old2());
+    /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(ROXO_CLKPIPE_odd, ppu_reg.XYMU_RENDERINGp(), _POHU_SCX_FINE_MATCHp_old);
+    /*#p27.POVA*/ wire2 _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new2(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new2());
+    /*#p27.PAHA*/ wire2 _PAHA_RENDERINGn = not1b(ppu_reg.XYMU_RENDERINGp());
+
+    /*#p27.ROXY*/ fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);
+  }
+
   /*#p24.SACU*/ wire2 SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new2());
   pix_count.tock(lcd.TADY_LINE_RSTn_new(), SACU_CLKPIPE_evn);
 
@@ -708,15 +710,14 @@ void GateBoy::tock_slow(int pass_index) {
   }
   /*#p21.WODU*/ wire2 WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), pix_count.XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 
-  sprite_scanner.tock(clk.XUPY_ABxxEFxx(), lcd.ANOM_LINE_RSTn_new());
-
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(clk.ALET_xBxDxFxH(), ppu_reg.XYMU_RENDERINGp(), RYFA_WIN_FETCHn_A_old);
-    win_reg.tock(rst, clk, ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_odd, _NUKO_WX_MATCHp_old, fine_scroll.ROZE_FINE_COUNT_7n_old(), RYDY_WIN_HITp_old);
+    win_reg.tock(rst, clk, ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_odd, _NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old, RYDY_WIN_HITp_old);
   }
 
   /* p27.TEVO*/ wire2 TEVO_FETCH_TRIGp = or3(win_reg.SEKO_WIN_FETCH_TRIGp_new(), win_reg.SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire2 NYXU_BFETCH_RSTn = nor3b(AVAP_SCAN_DONE_TRIGp, win_reg.MOSU_WIN_MODE_TRIGp_new(), TEVO_FETCH_TRIGp);
+  tile_fetcher.tock(clk, vram_bus.BUS_VRAM_Dp, ppu_reg.XYMU_RENDERINGp(), NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
   fine_scroll.tock(ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_odd, TEVO_FETCH_TRIGp);
 
@@ -727,7 +728,6 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
 
-  tile_fetcher.tock(clk, vram_bus.BUS_VRAM_Dp, ppu_reg.XYMU_RENDERINGp(), NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
   //----------------------------------------
   // Pixel pipes

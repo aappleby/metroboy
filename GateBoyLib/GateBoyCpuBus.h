@@ -31,8 +31,6 @@ struct GateBoyCpuBus {
     d.dump_slice2p("BUS_CPU_D : ", BUS_CPU_D, 8);
   }
 
-  Signal _XYMU_RENDERINGp;
-
   Signal BUS_CPU_A[16];
   Bus BUS_CPU_D[8];
 

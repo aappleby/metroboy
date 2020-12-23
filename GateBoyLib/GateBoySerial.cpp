@@ -73,7 +73,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
 
     {
       /* p06.CARO*/ wire2 _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn());
-      /*#p06.CAFA*/ CAFA_SER_CNT0.dff17_any(_DAWA_SER_CLK,          _CARO_SER_RSTn, CAFA_SER_CNT0.qn_any2());
+      /*#p06.CAFA*/ CAFA_SER_CNT0.dff17_any(_DAWA_SER_CLK,           _CARO_SER_RSTn, CAFA_SER_CNT0.qn_any2());
       /*#p06.CYLO*/ CYLO_SER_CNT1.dff17_any(CAFA_SER_CNT0.qn_any2(), _CARO_SER_RSTn, CYLO_SER_CNT1.qn_any2());
       /*#p06.CYDE*/ CYDE_SER_CNT2.dff17_any(CYLO_SER_CNT1.qn_any2(), _CARO_SER_RSTn, CYDE_SER_CNT2.qn_any2());
       /*#p06.CALY*/ CALY_SER_CNT3.dff17_any(CYDE_SER_CNT2.qn_any2(), _CARO_SER_RSTn, CALY_SER_CNT3.qn_any2());

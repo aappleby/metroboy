@@ -38,12 +38,6 @@ struct WindowRegisters {
   /* p27.MOSU*/ wire2 MOSU_WIN_MODE_TRIGp_new() const { return not1b(NYFO_WIN_MODE_TRIGn_new()); }
 
 
-  wire2 NAFY_WIN_MODE_TRIGn() const {
-    /* p24.LOBY*/ wire2 _LOBY_RENDERINGn = not1b(_XYMU_RENDERINGp.qp_new2());
-    /* p24.NAFY*/ wire2 _NAFY_WIN_MODE_TRIGn = nor2b(MOSU_WIN_MODE_TRIGp_new(), _LOBY_RENDERINGn);
-    return _NAFY_WIN_MODE_TRIGn;
-  }
-
   wire2 SUZU_WIN_FIRST_TILEne_old() const {
     /*#p27.SYLO*/ wire2 _SYLO_WIN_HITn_old = not1b(RYDY_WIN_HITp.qp_old2());
     /* p27.TUXY*/ wire2 _TUXY_WIN_FIRST_TILEne_old = nand2b(_SYLO_WIN_HITn_old, SOVY_WIN_HITp.qp_old2());
@@ -81,8 +75,6 @@ struct WindowRegisters {
   /*#p27.NOCU*/ wire2 NOCU_WIN_MODEn() const { return not1b(PYNU_WIN_MODE_Ap.qp_new2()); }
   /* p27.PORE*/ wire2 PORE_WIN_MODEp() const { return not1b(NOCU_WIN_MODEn()); }
   /* p26.AXAD*/ wire2 AXAD_WIN_MODEn() const { return not1b(PORE_WIN_MODEp()); }
-
-  Signal _XYMU_RENDERINGp;
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
   /*p27.PUKU*/ Gate PUKU_WIN_HITn;             // xxCxxxGx

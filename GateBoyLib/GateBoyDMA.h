@@ -28,8 +28,6 @@ struct GateBoyDMA {
     d("\n");
   }
 
-  Signal _XYMU_RENDERINGp;
-
   /*p04.NAKY*/ DFF17 NAKY_DMA_A00p;      // Axxxxxxx
   /*p04.PYRO*/ DFF17 PYRO_DMA_A01p;      // Axxxxxxx
   /*p04.NEFY*/ DFF17 NEFY_DMA_A02p;      // Axxxxxxx

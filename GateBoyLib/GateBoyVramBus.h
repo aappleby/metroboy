@@ -37,6 +37,58 @@ struct GateBoyVramBus {
     PIN34_VRAM_ADDR[12].reset(1);
   }
 
+  void reset_buses() {
+    BUS_VRAM_An[ 0].reset_for_pass();
+    BUS_VRAM_An[ 1].reset_for_pass();
+    BUS_VRAM_An[ 2].reset_for_pass();
+    BUS_VRAM_An[ 3].reset_for_pass();
+    BUS_VRAM_An[ 4].reset_for_pass();
+    BUS_VRAM_An[ 5].reset_for_pass();
+    BUS_VRAM_An[ 6].reset_for_pass();
+    BUS_VRAM_An[ 7].reset_for_pass();
+    BUS_VRAM_An[ 8].reset_for_pass();
+    BUS_VRAM_An[ 9].reset_for_pass();
+    BUS_VRAM_An[10].reset_for_pass();
+    BUS_VRAM_An[11].reset_for_pass();
+    BUS_VRAM_An[12].reset_for_pass();
+
+    BUS_VRAM_Dp[0].reset_for_pass();
+    BUS_VRAM_Dp[1].reset_for_pass();
+    BUS_VRAM_Dp[2].reset_for_pass();
+    BUS_VRAM_Dp[3].reset_for_pass();
+    BUS_VRAM_Dp[4].reset_for_pass();
+    BUS_VRAM_Dp[5].reset_for_pass();
+    BUS_VRAM_Dp[6].reset_for_pass();
+    BUS_VRAM_Dp[7].reset_for_pass();
+
+    PIN43_VRAM_CSn.reset_for_pass();
+    PIN45_VRAM_OEn.reset_for_pass();
+    PIN49_VRAM_WRn.reset_for_pass();
+
+    PIN34_VRAM_ADDR[ 0].reset_for_pass();
+    PIN34_VRAM_ADDR[ 1].reset_for_pass();
+    PIN34_VRAM_ADDR[ 2].reset_for_pass();
+    PIN34_VRAM_ADDR[ 3].reset_for_pass();
+    PIN34_VRAM_ADDR[ 4].reset_for_pass();
+    PIN34_VRAM_ADDR[ 5].reset_for_pass();
+    PIN34_VRAM_ADDR[ 6].reset_for_pass();
+    PIN34_VRAM_ADDR[ 7].reset_for_pass();
+    PIN34_VRAM_ADDR[ 8].reset_for_pass();
+    PIN34_VRAM_ADDR[ 9].reset_for_pass();
+    PIN34_VRAM_ADDR[10].reset_for_pass();
+    PIN34_VRAM_ADDR[11].reset_for_pass();
+    PIN34_VRAM_ADDR[12].reset_for_pass();
+
+    PIN25_VRAM_DATA[0].reset_for_pass();
+    PIN25_VRAM_DATA[1].reset_for_pass();
+    PIN25_VRAM_DATA[2].reset_for_pass();
+    PIN25_VRAM_DATA[3].reset_for_pass();
+    PIN25_VRAM_DATA[4].reset_for_pass();
+    PIN25_VRAM_DATA[5].reset_for_pass();
+    PIN25_VRAM_DATA[6].reset_for_pass();
+    PIN25_VRAM_DATA[7].reset_for_pass();
+  }
+
   void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire2 XYMU_RENDERINGp, wire2 LUFA_DMA_VRAMp);
   void dma_addr_to_vram_addr(const GateBoyDMA& dma);
   void scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire2 POTU_BGW_MAP_READp, wire2 AXAD_WIN_MODEn, wire2 XAFO_LCDC_BGMAPp);

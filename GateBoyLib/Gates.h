@@ -78,26 +78,9 @@ struct BitBase {
 #ifdef USE_DIRTY_BIT
   void check_old() const { CHECK_P((state & 0xF0) == BIT_OLD); }
   void check_new() const { CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4)); }
-  void set_new()    { state &= ~BIT_OLD; state |= BIT_NEW; }
-  void set_dirty3() { state |= BIT_DIRTY3; }
-  void set_dirty4() { state |= BIT_DIRTY4; }
-
-  wire2 bit_old()    const { return bit(state, 4); }
-  wire2 bit_new()    const { return bit(state, 5); }
-  wire2 bit_dirty3() const { return bit(state, 6); }
-  wire2 bit_dirty4() const { return bit(state, 7); }
 #else
   void check_old() const { }
   void check_new() const { }
-  void set_dirty1() { }
-  void set_new()    { }
-  void set_dirty3() { }
-  void set_dirty4() { }
-
-  wire2 bit_old()    const { return 0; }
-  wire2 bit_new()    const { return 0; }
-  wire2 bit_dirty3() const { return 0; }
-  wire2 bit_dirty4() const { return 0; }
 #endif
 
   void set_data (wire2 d) { state = (state & 0b11101110) | (bit(d) << 0); }
@@ -117,10 +100,12 @@ struct Gate : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void set(wire2 D) {
-    set_data(D);
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    state &= ~BIT_DATA;
+    state &= ~BIT_OLD;
+    state |= bit(D);
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -134,11 +119,13 @@ struct Signal : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void set(wire2 D) {
-    CHECK_N(bit_new());
-    set_data(D);
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    CHECK_N(state & BIT_NEW);
+    state &= ~BIT_DATA;
+    state &= ~BIT_OLD;
+    state |= bit(D);
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -153,7 +140,7 @@ struct DFF : public BitBase {
   void reset(wire2 clk, wire2 d) { state = uint8_t((bit(clk) << 1) | bit(d)); }
 
   void dff(wire2 CLKp, wire2 SETn, wire2 RSTn, wire2 Dp) {
-    CHECK_N(bit_new());
+    CHECK_N(state & BIT_NEW);
     dff_any(CLKp, SETn, RSTn, Dp);
   }
 
@@ -166,9 +153,10 @@ struct DFF : public BitBase {
     state = (state & 0b11111110) | (Dp   & 0b00000001);
     state = (state & 0b11111101) | (CLKp & 0b00000010);
 
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    state &= ~BIT_OLD;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -316,16 +304,21 @@ struct DFF17 : public DFF {
 
 struct DFF20 : public DFF {
   void dff20(wire2 CLKn, wire2 LOADp, wire2 newD) {
-    CHECK_N(bit_new());
+    CHECK_N(state & BIT_NEW);
+    CLKn = (CLKn << 1) & 2;
+    wire2 CLKp = CLKn ^ 2;
 
-    wire2 CLKp = (~CLKn << 1) & 2;
     if (~state & CLKp & 2) state = ~state;
-    state = (state & ~LOADp) | (newD & LOADp);
-    state = (state & 0b11111101) | CLKp;
 
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    state &= ~LOADp;
+    state &= ~BIT_CLOCK;
+    state &= ~BIT_OLD;
+
+    state |= (newD & LOADp);
+    state |= CLKp;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
 
   }
 };
@@ -389,17 +382,17 @@ struct Bus : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void reset_for_pass() {
-    CHECK_N(bit_new());
+    CHECK_N(state & BIT_NEW);
     state = 0b01100001;
   }
 
   void tri(wire2 OEp, wire2 Dp) {
-    CHECK_P(bit_new());
+    CHECK_P(state & BIT_NEW);
     if (bit(OEp)) {
       state |= BIT_DRIVEN;
       set_data(Dp);
     }
-    set_dirty4();
+    state |= BIT_DIRTY4;
   }
 
   void set(wire2 Dp) { tri(1, Dp); }
@@ -422,69 +415,69 @@ struct PinIO : public BitBase {
   wire2 ext_qp_new() const { return qn_new2(); }
 
   void reset_for_pass() {
-    CHECK_N(bit_new());
+    CHECK_N(state & BIT_NEW);
     state = 0b00100001;
   }
 
   void pin_out_oedp(wire2 OEp, wire2 Dp) {
-    CHECK_P(bit_new());
-    CHECK_N(bit_dirty3());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_N(state & BIT_DIRTY3);
+    CHECK_N(state & BIT_DIRTY4);
 
     if (OEp){
       state |= BIT_DRIVEN;
       set_data(Dp);
     }
 
-    set_dirty3();
+    state |= BIT_DIRTY3;
   }
 
   void pin_out_pull_hilo(wire2 OEp, wire2 HI, wire2 LO) {
-    CHECK_P(bit_new());
-    CHECK_N(bit_dirty3());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_N(state & BIT_DIRTY3);
+    CHECK_N(state & BIT_DIRTY4);
 
     if (bit(OEp) && (bit(HI) == bit(LO))){
       state |= BIT_DRIVEN;
       set_data(HI);
     }
 
-    set_dirty3();
+    state |= BIT_DIRTY3;
   }
 
   void pin_out_pull_hilo_any(wire2 OEp, wire2 HI, wire2 LO) {
-    CHECK_P(bit_new());
+    CHECK_P(state & BIT_NEW);
 
     if (bit(OEp) && (bit(HI) == bit(LO))){
       state |= BIT_DRIVEN;
       set_data(HI);
     }
 
-    set_dirty3();
+    state |= BIT_DIRTY3;
   }
 
   void pin_in_oedp(wire2 OEp, wire2 D) {
-    CHECK_P(bit_new());
-    CHECK_P(bit_dirty3());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_P(state & BIT_DIRTY3);
+    CHECK_N(state & BIT_DIRTY4);
 
     if (bit(OEp)) {
       state |= BIT_DRIVEN;
       set_data(~D);
     }
 
-    set_dirty4();
+    state |= BIT_DIRTY4;
   }
 
   void pin_in_oedp_any(wire2 OEp, wire2 D) {
-    CHECK_P(bit_new());
+    CHECK_P(state & BIT_NEW);
 
     if (bit(OEp)) {
       state |= BIT_DRIVEN;
       set_data(~D);
     }
 
-    set_dirty4();
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -499,13 +492,13 @@ struct PinIn : public BitBase {
   wire2 int_qp_new() const { return qp_new2(); }
 
   void reset_for_pass() {
-    CHECK_N(bit_new());
+    CHECK_N(state & BIT_NEW);
     state = 0b01100001;
   }
 
   void pin_in_dp(wire2 D) {
-    CHECK_P(bit_new());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_N(state & BIT_DIRTY4);
     state = 0b11101000 | bit(~D);
   }
 };
@@ -524,39 +517,39 @@ struct PinOut : public BitBase {
   wire2 ext_qp_new() const { return qn_new2(); }
 
   void reset_for_pass() {
-    CHECK_N(bit_new());
+    CHECK_N(state & BIT_NEW);
     state = 0b01100001;
   }
 
 
   void pin_out_dp(wire2 Dp) {
-    CHECK_P(bit_new());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_N(state & BIT_DIRTY4);
     state = 0b11101000 | bit(Dp);
   }
 
   void pin_out_hilo(wire2 HI, wire2 LO) {
-    CHECK_P(bit_new());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_N(state & BIT_DIRTY4);
 
     if (bit(HI) == bit(LO)) {
       set_data(HI);
       state |= BIT_DRIVEN;
     }
 
-    set_dirty4();
+    state |= BIT_DIRTY4;
   }
 
   void pin_out_oehilo(wire2 OEp, wire2 HI, wire2 LO) {
-    CHECK_P(bit_new());
-    CHECK_N(bit_dirty4());
+    CHECK_P(state & BIT_NEW);
+    CHECK_N(state & BIT_DIRTY4);
 
     if (bit(OEp) && (bit(HI) == bit(LO))) {
       set_data(HI);
       state |= BIT_DRIVEN;
     }
 
-    set_dirty4();
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -576,9 +569,9 @@ struct NorLatch : public BitBase {
   void nor_latch(wire2 SETp, wire2 RSTp) {
     if (bit(SETp)) set_data(1);
     if (bit(RSTp)) set_data(0);
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    state &= ~BIT_OLD; state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -598,9 +591,9 @@ struct NandLatch : public BitBase {
   void nand_latch(wire2 SETn, wire2 RSTn) {
     if (bit(~SETn)) set_data(1);
     if (bit(~RSTn)) set_data(0);
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    state &= ~BIT_OLD; state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
   }
 };
 
@@ -626,9 +619,9 @@ struct TpLatch : public BitBase {
 
   void tp_latch(wire2 HOLDn, wire2 Dp) {
     if (bit(HOLDn)) set_data(Dp);
-    set_new();
-    set_dirty3();
-    set_dirty4();
+    state &= ~BIT_OLD; state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
   }
 };
 

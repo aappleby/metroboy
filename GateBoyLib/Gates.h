@@ -76,6 +76,8 @@ struct BitBase {
     CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
   }
   void check_old() const {
+    // we'll have to do a bunch of initial state cleanup before we can check driven/pullup on old signals...
+    //check_any();
     CHECK_P((state & 0xF0) == BIT_OLD);
   }
   void check_new() const {

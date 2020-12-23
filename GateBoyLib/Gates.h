@@ -55,7 +55,6 @@ struct BitBase {
   inline static uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
   inline static uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
-#ifdef USE_DRIVEN_BIT
   inline char int_c() {
     return (state & BIT_DRIVEN) ? (bit(state, 0) ? '1' : '0') : (bit(state, 0) ? '^' : 'v');
   }
@@ -63,19 +62,8 @@ struct BitBase {
   inline char ext_c() {
     return (state & BIT_DRIVEN) ? (bit(state, 0) ? '0' : '1') : '^';
   }
-#else
-  inline char int_c() {
-    return (state & BIT_DATA) ? '1' : '0';
-  }
 
-  inline char ext_c() {
-    return (state & BIT_DATA) ? '0' : '1';
-  }
-#endif
-
-//protected:
-
-#ifdef USE_DIRTY_BIT
+#ifdef CHECK_DIRTY_BIT
   void check_old() const { CHECK_P((state & 0xF0) == BIT_OLD); }
   void check_new() const { CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4)); }
 #else

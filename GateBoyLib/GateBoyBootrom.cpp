@@ -23,7 +23,7 @@ void GateBoyBootrom::write_boot_bit_sync(GateBoyResetDebug& rst, GateBoyCpuBus& 
 
 void GateBoyBootrom::read_bootrom(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, uint8_t* boot_buf)
 {
-  /* BOOT -> CBD */
+  // BOOT -> CBD
   // this is kind of a hack
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
   wire bootrom_data = boot_buf[cpu_addr & 0xFF];

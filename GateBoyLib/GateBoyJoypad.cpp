@@ -24,8 +24,6 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
   /* p05.JEKU*/ cpu_bus.BUS_CPU_D[3].tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new2());
   /* p05.KOCE*/ cpu_bus.BUS_CPU_D[4].tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new2());
   /* p05.CUDY*/ cpu_bus.BUS_CPU_D[5].tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new2());
-  /* p??.????*/ cpu_bus.BUS_CPU_D[6].tri6_nn(_BYZO_FF00_RDn, KUKO_DBG_D6.qp_new2());
-  /* p??.????*/ cpu_bus.BUS_CPU_D[7].tri6_nn(_BYZO_FF00_RDn, KERU_DBG_D7.qp_new2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

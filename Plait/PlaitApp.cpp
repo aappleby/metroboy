@@ -105,6 +105,7 @@ void parse_name(std::string& name) {
 //-----------------------------------------------------------------------------
 
 void parse_rest(std::string& rest) {
+  (void)rest;
 }
 
 //-----------------------------------------------------------------------------
@@ -231,7 +232,7 @@ int main(int argc, char** argv) {
 
   plait::CellDB* cell_db = new plait::CellDB();
 
-  string test_line = R"(  /* p??.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());)";
+  string test_line = R"(  /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());)";
   parse_line(test_line, *cell_db);
 
   for (string line; getline(lines, line); ) {

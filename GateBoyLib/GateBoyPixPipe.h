@@ -126,9 +126,9 @@ struct FineScroll {
   /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
 
-  /*p??.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
+  /*p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
   /*p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
-  /*p??.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
+  /*p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
 };
 
 //------------------------------------------------------------------------------------------------------------------------

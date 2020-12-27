@@ -63,7 +63,7 @@ wire TileFetcher::LABU_LATCH_TILE_DBn() const {
 
   /* p27.MOFU*/ wire _MOFU_LATCH_TILE_DBp = and2(_MYSO_STORE_VRAM_DATA_TRIGp, _NAKO_BFETCH_S1n); // MOFU fires on fetch phase 2 and 10
   /* p32.LESO*/ wire _LESO_LATCH_TILE_DBn = not1b(_MOFU_LATCH_TILE_DBp);
-  /* p??.LUVE*/ wire _LUVE_LATCH_TILE_DBp = not1b(_LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
+  /* p32.LUVE*/ wire _LUVE_LATCH_TILE_DBp = not1b(_LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
   /* p32.LABU*/ wire _LABU_LATCH_TILE_DBn = not1b(_LUVE_LATCH_TILE_DBp);
   return _LABU_LATCH_TILE_DBn;
 }

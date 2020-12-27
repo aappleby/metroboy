@@ -251,7 +251,7 @@ void RegStat::read(
 {
   /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2b(XYMU_RENDERINGp, PARU_VBLANKp);   // die NOR
   /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2b(ACYL_SCANNINGp, XYMU_RENDERINGp); // die NOR
-  /* p??.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());
+  /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());
   /* p21.VAVE*/ wire _VAVE_FF41_RDn = not1b(_TOBE_FF41_RDp);
   /*#p21.TEBY*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
   /*#p21.WUGA*/ cpu_bus.BUS_CPU_D[1].tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);

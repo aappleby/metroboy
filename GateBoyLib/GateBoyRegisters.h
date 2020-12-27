@@ -22,19 +22,19 @@ struct SpriteDeltaY {
 
   static SpriteDeltaY sub(const OamTempA& oam_temp_a, const RegLY& reg_ly);
 
-  wire2 GESE_SCAN_MATCH_Yp(wire2 XYMO_LCDC_SPSIZEn);
+  wire GESE_SCAN_MATCH_Yp(wire XYMO_LCDC_SPSIZEn);
 
-  /* p29.DEGE*/ wire2 DEGE_SPRITE_DELTA0;
-  /* p29.DABY*/ wire2 DABY_SPRITE_DELTA1;
-  /* p29.DABU*/ wire2 DABU_SPRITE_DELTA2;
-  /* p29.GYSA*/ wire2 GYSA_SPRITE_DELTA3;
-  /* p29.GACE*/ wire2 GACE_SPRITE_DELTA4;
-  /* p29.GUVU*/ wire2 GUVU_SPRITE_DELTA5;
-  /* p29.GYDA*/ wire2 GYDA_SPRITE_DELTA6;
-  /* p29.GEWY*/ wire2 GEWY_SPRITE_DELTA7;
+  /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
+  /* p29.DABY*/ wire DABY_SPRITE_DELTA1;
+  /* p29.DABU*/ wire DABU_SPRITE_DELTA2;
+  /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3;
+  /* p29.GACE*/ wire GACE_SPRITE_DELTA4;
+  /* p29.GUVU*/ wire GUVU_SPRITE_DELTA5;
+  /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
+  /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
 
-  /* p29.GYKY*/ wire2 GYKY_YDIFF_S3;
-  /* p29.WUHU*/ wire2 WUHU_YDIFF_C7;
+  /* p29.GYKY*/ wire GYKY_YDIFF_S3;
+  /* p29.WUHU*/ wire WUHU_YDIFF_C7;
 };
 
 //-----------------------------------------------------------------------------
@@ -42,9 +42,9 @@ struct SpriteDeltaY {
 
 struct PixCount {
   void reset_to_cart();
-  void tock(wire2 TADY_LINE_RSTn, wire2 SACU_CLKPIPE_evn);
-  wire2 XANO_PX167p_old() const;
-  wire2 XANO_PX167p_new() const;
+  void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn);
+  wire XANO_PX167p_old() const;
+  wire XANO_PX167p_new() const;
 
   int get_old() { return BitBase::pack_old(8, &XEHO_PX0p); }
   int get_new() { return BitBase::pack_new(8, &XEHO_PX0p); }
@@ -64,14 +64,14 @@ struct PixCount {
 struct BGScrollX {
   static BGScrollX add(PixCount& pix_count, RegSCX reg_scx);
 
-  wire2 ATAD_TILE_X0S;
-  wire2 BEHU_TILE_X1S;
-  wire2 APYH_TILE_X2S;
-  wire2 BABE_MAP_X0S;
-  wire2 ABOD_MAP_X1S;
-  wire2 BEWY_MAP_X2S;
-  wire2 BYCA_MAP_X3S;
-  wire2 ACUL_MAP_X4S;
+  wire ATAD_TILE_X0S;
+  wire BEHU_TILE_X1S;
+  wire APYH_TILE_X2S;
+  wire BABE_MAP_X0S;
+  wire ABOD_MAP_X1S;
+  wire BEWY_MAP_X2S;
+  wire BYCA_MAP_X3S;
+  wire ACUL_MAP_X4S;
 };
 
 //-----------------------------------------------------------------------------
@@ -79,29 +79,29 @@ struct BGScrollX {
 struct BGScrollY {
   static BGScrollY add(RegLY& reg_ly, RegSCY& reg_scy);
 
-  wire2 FAFO_TILE_Y0S;
-  wire2 EMUX_TILE_Y1S;
-  wire2 ECAB_TILE_Y2S;
-  wire2 ETAM_MAP_Y0S;
-  wire2 DOTO_MAP_Y1S;
-  wire2 DABA_MAP_Y2S;
-  wire2 EFYK_MAP_Y3S;
-  wire2 EJOK_MAP_Y4S;
+  wire FAFO_TILE_Y0S;
+  wire EMUX_TILE_Y1S;
+  wire ECAB_TILE_Y2S;
+  wire ETAM_MAP_Y0S;
+  wire DOTO_MAP_Y1S;
+  wire DABA_MAP_Y2S;
+  wire EFYK_MAP_Y3S;
+  wire EJOK_MAP_Y4S;
 };
 
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  static SpritePix flip(Bus BUS_VRAM_Dp[8], wire2 TEXY_SFETCHINGp, wire2 BAXO_OAM_DB5p);
+  static SpritePix flip(Bus BUS_VRAM_Dp[8], wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p);
 
-  wire2 PUTE_FLIP0p;
-  wire2 PELO_FLIP1p;
-  wire2 PONO_FLIP2p;
-  wire2 POBE_FLIP3p;
-  wire2 PACY_FLIP4p;
-  wire2 PUGU_FLIP5p;
-  wire2 PAWE_FLIP6p;
-  wire2 PULY_FLIP7p;
+  wire PUTE_FLIP0p;
+  wire PELO_FLIP1p;
+  wire PONO_FLIP2p;
+  wire POBE_FLIP3p;
+  wire PACY_FLIP4p;
+  wire PUGU_FLIP5p;
+  wire PAWE_FLIP6p;
+  wire PULY_FLIP7p;
 };
 
 //-----------------------------------------------------------------------------
@@ -147,7 +147,7 @@ struct RegStat {
 
   void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
   void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, const RegLYC& reg_lyc);
-  void read(GateBoyCpuBus& cpu_bus, wire2 ACYL_SCANNINGp, wire2 XYMU_RENDERINGp, wire2 PARU_VBLANKp);
+  void read(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XYMU_RENDERINGp, wire PARU_VBLANKp);
 
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
 
@@ -216,13 +216,13 @@ struct RegLY {
   void read(GateBoyCpuBus& cpu_bus);
   void tock2(GateBoyResetDebug& rst, RegLX& reg_lx);
 
-  /*#p24.NERU*/ wire2 NERU_y000p() const {
-    return nor8b(LAFO_LY7p.qp_new2(), LOVU_LY4p.qp_new2(), LYDO_LY3p.qp_new2(), MUWY_LY0p.qp_new2(),
-                 MYRO_LY1p.qp_new2(), LEXA_LY2p.qp_new2(), LEMA_LY5p.qp_new2(), MATO_LY6p.qp_new2());
+  wire NERU_y000p() const {
+    /*#p24.NERU*/ wire _NERU_y000p = nor8b(LAFO_LY7p.qp_new2(), LOVU_LY4p.qp_new2(), LYDO_LY3p.qp_new2(), MUWY_LY0p.qp_new2(), MYRO_LY1p.qp_new2(), LEXA_LY2p.qp_new2(), LEMA_LY5p.qp_new2(), MATO_LY6p.qp_new2());
+    return _NERU_y000p;
   }
 
-  /*#p21.XYVO*/ wire2 XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old2(), LAFO_LY7p.qp_old2()); } // 128 + 16 = 144
-  /*#p21.XYVO*/ wire2 XYVO_y144p_new() const { return and2(LOVU_LY4p.qp_new2(), LAFO_LY7p.qp_new2()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old2(), LAFO_LY7p.qp_old2()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire XYVO_y144p_new() const { return and2(LOVU_LY4p.qp_new2(), LAFO_LY7p.qp_new2()); } // 128 + 16 = 144
 
   /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
 
@@ -255,24 +255,24 @@ struct RegLX {
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &SAXO_LX0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
 
-  wire2 PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire2 _PURE_LINE_ENDn_new_evn = not1b(RUTU_x113p.qp_new2());
+  wire PURE_LINE_ENDn() const {
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1b(RUTU_x113p.qp_new2());
     return _PURE_LINE_ENDn_new_evn;
   }
 
-  wire2 TEGY_STROBE() const;
+  wire TEGY_STROBE() const;
 
-  wire2 NYPE_x113p_new() const { return NYPE_x113p.qp_new2(); }
-  wire2 NYPE_x113n_new() const { return NYPE_x113p.qn_new2(); }
+  wire NYPE_x113p_new() const { return NYPE_x113p.qp_new2(); }
+  wire NYPE_x113n_new() const { return NYPE_x113p.qn_new2(); }
 
-  wire2 RUTU_x113p_old() const { return RUTU_x113p.qp_old2(); }
-  wire2 RUTU_x113n_old() const { return RUTU_x113p.qn_old2(); }
+  wire RUTU_x113p_old() const { return RUTU_x113p.qp_old2(); }
+  wire RUTU_x113n_old() const { return RUTU_x113p.qn_old2(); }
 
-  wire2 RUTU_x113p_new() const { return RUTU_x113p.qp_new2(); }
-  wire2 RUTU_x113n_new() const { return RUTU_x113p.qn_new2(); }
+  wire RUTU_x113p_new() const { return RUTU_x113p.qp_new2(); }
+  wire RUTU_x113n_new() const { return RUTU_x113p.qn_new2(); }
 
-  /*#p24.LOFU*/ wire2 LOFU_x113n_old() const { return not1b(RUTU_x113p_old()); }
-  /*#p24.LOFU*/ wire2 LOFU_x113n_new() const { return not1b(RUTU_x113p_new()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1b(RUTU_x113p_old()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1b(RUTU_x113p_new()); }
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk);
 
@@ -550,7 +550,7 @@ struct OamTempB {
 
 struct TileTempA {
 
-  void tock(Bus BUS_VRAM_Dp[8], wire2 LOMA_LATCH_TILE_DAn);
+  void tock(Bus BUS_VRAM_Dp[8], wire LOMA_LATCH_TILE_DAn);
 
   void dump(Dumper& d) {
     d.dump_slice2n("Tile Temp A : ", &LEGU_TILE_DA0n, 8);
@@ -569,7 +569,7 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void tock(Bus BUS_VRAM_Dp[8], wire2 _LABU_LATCH_TILE_DBn);
+  void tock(Bus BUS_VRAM_Dp[8], wire _LABU_LATCH_TILE_DBn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("Tile Temp B : ", &RAWU_TILE_DB0p, 8);
@@ -588,7 +588,7 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
-  void store_sprite_pix(SpritePix sprite, wire2 XADO_STORE_SPRITE_An);
+  void store_sprite_pix(SpritePix sprite, wire XADO_STORE_SPRITE_An);
 
   void dump(Dumper& d) {
     d.dump_slice2n("Sprite Temp A : ", &REWO_SPRITE_DA0n, 8);
@@ -607,7 +607,7 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  void store_sprite_pix(SpritePix sprite, wire2 PUCO_STORE_SPRITE_Bn);
+  void store_sprite_pix(SpritePix sprite, wire PUCO_STORE_SPRITE_Bn);
 
   void dump(Dumper& d) {
     d.dump_slice2n("Sprite Temp B : ", &PEFO_SPRITE_DB0n, 8);
@@ -627,7 +627,7 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
-  void tock(const GateBoyResetDebug& rst, wire2 TEVO_FETCH_TRIGp, wire2 PORE_WIN_MODEp, wire2 WYMO_LCDC_WINENp, wire2 XAHY_LINE_RSTn);
+  void tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, wire WYMO_LCDC_WINENp, wire XAHY_LINE_RSTn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("Win Map X : ", &WYKA_WIN_X3, 5);
@@ -644,7 +644,7 @@ struct WinMapX {
 //-----------------------------------------------------------------------------
 
 struct WinLineY {
-  void tock(const GateBoyResetDebug& rst, wire2 PORE_WIN_MODEp, wire2 PARU_VBLANKp);
+  void tock(const GateBoyResetDebug& rst, wire PORE_WIN_MODEp, wire PARU_VBLANKp);
 
   void dump(Dumper& d) {
     d.dump_slice2p("Win Line Y : ", &VYNO_WIN_Y0, 8);

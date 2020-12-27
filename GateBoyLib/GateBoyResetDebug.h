@@ -21,40 +21,40 @@ struct GateBoyResetDebug {
     SIG_CPU_INT_RESETp.reset(0);
   }
 
-  /*#p01.AVOR*/ wire2 AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new2(), ASOL_POR_DONEn.qp_new2()); }
-  /*#p01.ALUR*/ wire2 ALUR_SYS_RSTn() const { return not1b(AVOR_SYS_RSTp()); }
-  /*#p01.DULA*/ wire2 DULA_SYS_RSTp() const { return not1b(ALUR_SYS_RSTn()); }
-  /*#p01.CUNU*/ wire2 CUNU_SYS_RSTn() const { return not1b(DULA_SYS_RSTp()); }
-  /*#p01.XORE*/ wire2 XORE_SYS_RSTp() const { return not1b(CUNU_SYS_RSTn()); }
-  /* p01.XEBE*/ wire2 XEBE_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
-  /*#p01.WALU*/ wire2 WALU_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
-  /* p01.WESY*/ wire2 WESY_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
-  /* p01.XARE*/ wire2 XARE_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
-  /* p03.MULO*/ wire2 MULO_SYS_RSTn() const { return not1b(ALUR_SYS_RSTn()); }
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new2(), ASOL_POR_DONEn.qp_new2()); }
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1b(AVOR_SYS_RSTp()); }
+  /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1b(ALUR_SYS_RSTn()); }
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const { return not1b(DULA_SYS_RSTp()); }
+  /*#p01.XORE*/ wire XORE_SYS_RSTp() const { return not1b(CUNU_SYS_RSTn()); }
+  /* p01.XEBE*/ wire XEBE_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
+  /*#p01.WALU*/ wire WALU_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
+  /* p01.WESY*/ wire WESY_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
+  /* p01.XARE*/ wire XARE_SYS_RSTn() const { return not1b(XORE_SYS_RSTp()); }
+  /* p03.MULO*/ wire MULO_SYS_RSTn() const { return not1b(ALUR_SYS_RSTn()); }
 
-  /* p01.XODO*/ wire2 XODO_VID_RSTp() const { return nand2b(XEBE_SYS_RSTn(), _XONA_LCDC_LCDENp.qp_new2()); }
-  /* p01.XAPO*/ wire2 XAPO_VID_RSTn() const { return not1b(XODO_VID_RSTp()); }
-  /* p01.LYHA*/ wire2 LYHA_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
-  /* p01.LYFE*/ wire2 LYFE_VID_RSTn() const { return not1b(LYHA_VID_RSTp()); }
-  /* p01.TOFU*/ wire2 TOFU_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
-  /* p01.ROSY*/ wire2 ROSY_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
-  /*#p01.ATAR*/ wire2 ATAR_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
-  /*#p01.ABEZ*/ wire2 ABEZ_VID_RSTn() const { return not1b(ATAR_VID_RSTp()); }
-  /* p01.PYRY*/ wire2 PYRY_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
-  /* p01.AMYG*/ wire2 AMYG_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
+  /* p01.XODO*/ wire XODO_VID_RSTp() const { return nand2b(XEBE_SYS_RSTn(), _XONA_LCDC_LCDENp.qp_new2()); }
+  /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1b(XODO_VID_RSTp()); }
+  /* p01.LYHA*/ wire LYHA_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
+  /* p01.LYFE*/ wire LYFE_VID_RSTn() const { return not1b(LYHA_VID_RSTp()); }
+  /* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
+  /* p01.ROSY*/ wire ROSY_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
+  /*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
+  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1b(ATAR_VID_RSTp()); }
+  /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
+  /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1b(XAPO_VID_RSTn()); }
 
-  /* p07.UBET*/ wire2 UBETp()           const { return not1b(PIN77_T1.int_qp_new()); }
-  /* p07.UVAR*/ wire2 UVARp()           const { return not1b(PIN76_T2.int_qp_new()); }
-  /* p07.UMUT*/ wire2 UMUT_MODE_DBG1p() const { return and2(PIN77_T1.int_qp_new(), UVARp()); }
-  /* p07.UNOR*/ wire2 UNOR_MODE_DBG2p() const { return and2(PIN76_T2.int_qp_new(), UBETp()); }
-  /* p07.UPOJ*/ wire2 UPOJ_MODE_PRODn() const { return nand3b(UBETp(), UVARp(), PIN71_RST.int_qp_new()); }
-  /* p08.RYCA*/ wire2 RYCA_MODE_DBG2n() const { return not1b(UNOR_MODE_DBG2p()); }
-  /* p08.TOVA*/ wire2 TOVA_MODE_DBG2n() const { return not1b(UNOR_MODE_DBG2p()); }
-  /* p08.MULE*/ wire2 MULE_MODE_DBG1n() const { return not1b(UMUT_MODE_DBG1p()); }
-  /* p25.TUTO*/ wire2 TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new2()); }
+  /* p07.UBET*/ wire UBETp()           const { return not1b(PIN77_T1.int_qp_new()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1b(PIN76_T2.int_qp_new()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN77_T1.int_qp_new(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN76_T2.int_qp_new(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3b(UBETp(), UVARp(), PIN71_RST.int_qp_new()); }
+  /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1b(UNOR_MODE_DBG2p()); }
+  /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1b(UNOR_MODE_DBG2p()); }
+  /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1b(UMUT_MODE_DBG1p()); }
+  /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new2()); }
 
-  void tock(const GateBoyClock& clk, wire2 sys_clkreq, wire2 sys_clkgood, wire2 UPOF_DIV15p);
-  void set_signals(wire2 XONA_LCDC_LCDENp);
+  void tock(const GateBoyClock& clk, wire sys_clkreq, wire sys_clkgood, wire UPOF_DIV15p);
+  void set_signals(wire XONA_LCDC_LCDENp);
 
   void dump(Dumper& d) {
     d.dump_bitp("TUBO_WAITINGp  : ", TUBO_WAITINGp.state);
@@ -76,7 +76,7 @@ struct GateBoyResetDebug {
   // This is here because it controls the reset signals for all the graphics stuff.
   /*p23.XONA*/ Signal _XONA_LCDC_LCDENp;  // xxxxxxxH
 
-  Signal SIG_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire2 on PAD_XI,
+  Signal SIG_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   Signal SIG_CPU_EXT_RESETp;    // top center port PORTC_02: <- PIN71_RST directly connected to the pad
   Signal SIG_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
   Signal SIG_CPU_INT_RESETp;    // top center port PORTC_01: <- P01.AFER , reset related state

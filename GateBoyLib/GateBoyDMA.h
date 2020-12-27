@@ -9,11 +9,17 @@ struct GateBoyDMA {
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
   void read_dma(GateBoyCpuBus& cpu_bus);
 
-  /* p04.LUMA*/ wire2 LUMA_DMA_CARTp() const;
-  /* p04.LUFA*/ wire2 LUFA_DMA_VRAMp() const;
+  wire LUMA_DMA_CARTp() const;
+  wire LUFA_DMA_VRAMp() const;
 
-  /*#p28.BOGE*/ wire2 BOGE_DMA_RUNNINGn() const { return not1b(MATU_DMA_RUNNINGp.qp_new2()); }
-  /* p04.DUGA*/ wire2 DUGA_DMA_RUNNINGn() const { return not1b(MATU_DMA_RUNNINGp.qp_new2()); }
+  wire BOGE_DMA_RUNNINGn() const {
+    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1b(MATU_DMA_RUNNINGp.qp_new2());
+    return BOGE_DMA_RUNNINGn;
+  }
+  wire DUGA_DMA_RUNNINGn() const {
+    /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1b(MATU_DMA_RUNNINGp.qp_new2());
+    return DUGA_DMA_RUNNINGn;
+  }
 
   void dump(Dumper& d) {
     d.dump_slice2p("DMA_A_LOW  : ", &NAKY_DMA_A00p, 8);

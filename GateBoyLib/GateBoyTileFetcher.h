@@ -6,51 +6,49 @@
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire2 XYMU_RENDERINGp, wire2 NYXU_BFETCH_RSTn, wire2 MOCE_BFETCH_DONEn_old);
+  void tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
-  wire2 LOMA_LATCH_TILE_DAn() const;
-  wire2 LABU_LATCH_TILE_DBn() const;
+  wire LOMA_LATCH_TILE_DAn() const;
+  wire LABU_LATCH_TILE_DBn() const;
 
-  /* p27.ROMO*/ wire2 ROMO_PRELOAD_DONEn() const {
-    return not1b(POKY_PRELOAD_LATCHp.qp_new2());
-  }
+  /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const { return not1b(POKY_PRELOAD_LATCHp.qp_new2()); }
 
-  wire2 TAVE_PRELOAD_DONE_TRIGp_old() const {
-    /* p27.ROMO*/ wire2 _ROMO_PRELOAD_DONEn_old      = not1b(POKY_PRELOAD_LATCHp.qp_old2());
-    /* p27.SUVU*/ wire2 _SUVU_PRELOAD_DONE_TRIGn_old = nand4b(_XYMU_RENDERINGp.qp_old2(), _ROMO_PRELOAD_DONEn_old, NYKA_FETCH_DONEp.qp_old2(), PORY_FETCH_DONEp.qp_old2());
-    /* p27.TAVE*/ wire2 _TAVE_PRELOAD_DONE_TRIGp_old = not1b(_SUVU_PRELOAD_DONE_TRIGn_old);
+  wire TAVE_PRELOAD_DONE_TRIGp_old() const {
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_old      = not1b(POKY_PRELOAD_LATCHp.qp_old2());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_old = nand4b(_XYMU_RENDERINGp.qp_old2(), _ROMO_PRELOAD_DONEn_old, NYKA_FETCH_DONEp.qp_old2(), PORY_FETCH_DONEp.qp_old2());
+    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_old = not1b(_SUVU_PRELOAD_DONE_TRIGn_old);
     return _TAVE_PRELOAD_DONE_TRIGp_old;
   }
 
-  wire2 TAVE_PRELOAD_DONE_TRIGp_new() const {
-    /* p27.ROMO*/ wire2 _ROMO_PRELOAD_DONEn_new      = not1b(POKY_PRELOAD_LATCHp.qp_new2());
-    /* p27.SUVU*/ wire2 _SUVU_PRELOAD_DONE_TRIGn_new = nand4b(_XYMU_RENDERINGp.qp_new2(), _ROMO_PRELOAD_DONEn_new, NYKA_FETCH_DONEp.qp_new2(), PORY_FETCH_DONEp.qp_new2());
-    /* p27.TAVE*/ wire2 _TAVE_PRELOAD_DONE_TRIGp_new = not1b(_SUVU_PRELOAD_DONE_TRIGn_new);
+  wire TAVE_PRELOAD_DONE_TRIGp_new() const {
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new      = not1b(POKY_PRELOAD_LATCHp.qp_new2());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4b(_XYMU_RENDERINGp.qp_new2(), _ROMO_PRELOAD_DONEn_new, NYKA_FETCH_DONEp.qp_new2(), PORY_FETCH_DONEp.qp_new2());
+    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new = not1b(_SUVU_PRELOAD_DONE_TRIGn_new);
     return _TAVE_PRELOAD_DONE_TRIGp_new;
   }
 
-  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_old(wire2 NYXU_BFETCH_RSTn_old) const { return nand3b(_LAXU_BFETCH_S0p.qp_old2(), _NYVA_BFETCH_S2p.qp_old2(), NYXU_BFETCH_RSTn_old); }
-  /* p27.LYRY*/ wire2 LYRY_BFETCH_DONEp_old(wire2 NYXU_BFETCH_RSTn_old) const { return not1b(MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old)); }
+  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn_old(wire NYXU_BFETCH_RSTn_old) const { return nand3b(_LAXU_BFETCH_S0p.qp_old2(), _NYVA_BFETCH_S2p.qp_old2(), NYXU_BFETCH_RSTn_old); }
+  /* p27.LYRY*/ wire LYRY_BFETCH_DONEp_old(wire NYXU_BFETCH_RSTn_old) const { return not1b(MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old)); }
 
-  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_new(wire2 NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_new2(), _NYVA_BFETCH_S2p.qp_new2(), NYXU_BFETCH_RSTn_new); }
-  /* p27.LYRY*/ wire2 LYRY_BFETCH_DONEp_new(wire2 NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_new(NYXU_BFETCH_RSTn_new)); }
+  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn_new(wire NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_new2(), _NYVA_BFETCH_S2p.qp_new2(), NYXU_BFETCH_RSTn_new); }
+  /* p27.LYRY*/ wire LYRY_BFETCH_DONEp_new(wire NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_new(NYXU_BFETCH_RSTn_new)); }
 
-  /* p27.MOCE*/ wire2 MOCE_BFETCH_DONEn_any(wire2 NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_any2(), _NYVA_BFETCH_S2p.qp_any2(), NYXU_BFETCH_RSTn_new); }
-  /* p27.LYRY*/ wire2 LYRY_BFETCH_DONEp_any(wire2 NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn_new)); }
+  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn_any(wire NYXU_BFETCH_RSTn_new) const { return nand3b(_LAXU_BFETCH_S0p.qp_any2(), _NYVA_BFETCH_S2p.qp_any2(), NYXU_BFETCH_RSTn_new); }
+  /* p27.LYRY*/ wire LYRY_BFETCH_DONEp_any(wire NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn_new)); }
 
-  /* p27.LUSU*/ wire2 LUSU_FETCHINGn()      const { return not1b(LONY_FETCHINGp.qp_new2()); }
-  /* p27.MESU*/ wire2 MESU_BFETCH_S1p()     const { return _MESU_BFETCH_S1p.qp_new2(); }
-  /* p27.NYVA*/ wire2 NYVA_BFETCH_S2p()     const { return _NYVA_BFETCH_S2p.qp_new2(); }
+  /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1b(LONY_FETCHINGp.qp_new2()); }
+  /* p27.MESU*/ wire MESU_BFETCH_S1p()     const { return _MESU_BFETCH_S1p.qp_new2(); }
+  /* p27.NYVA*/ wire NYVA_BFETCH_S2p()     const { return _NYVA_BFETCH_S2p.qp_new2(); }
 
-  /* p27.LENA*/ wire2 LENA_BFETCHINGp()     const { return not1b(LUSU_FETCHINGn()); }
-  /*#p27.NAKO*/ wire2 NAKO_BFETCH_S1n()     const { return not1b(MESU_BFETCH_S1p()); }
-  /*#p27.NOFU*/ wire2 NOFU_BFETCH_S2n()     const { return not1b(NYVA_BFETCH_S2p()); }
-  /* p27.NOGU*/ wire2 NOGU_BFETCH_01p()     const { return nand2b(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
-  /* p27.NENY*/ wire2 NENY_BFETCH_01n()     const { return not1b(NOGU_BFETCH_01p()); }
-  /* p27.POTU*/ wire2 POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
-  /* p27.NETA*/ wire2 NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
+  /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1b(LUSU_FETCHINGn()); }
+  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1b(MESU_BFETCH_S1p()); }
+  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1b(NYVA_BFETCH_S2p()); }
+  /* p27.NOGU*/ wire NOGU_BFETCH_01p()     const { return nand2b(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
+  /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1b(NOGU_BFETCH_01p()); }
+  /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
+  /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
 
-  /*#p27.XUHA*/ wire2 XUHA_FETCH_HILOp()    const { return not1b(NOFU_BFETCH_S2n()); }
+  /*#p27.XUHA*/ wire XUHA_FETCH_HILOp()    const { return not1b(NOFU_BFETCH_S2n()); }
 
   void dump(Dumper& d) {
     d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", POKY_PRELOAD_LATCHp.state);

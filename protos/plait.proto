@@ -12,7 +12,6 @@ message Cell {
   required string page = 3;  // Page of the schematic this cell appears on.
   required string type = 4;  // Type of the cell in the die shot (and3, nor8, df22, etc)
   optional string doc  = 5;  // Notes/comments about the cell.
-  required uint64 guid = 6;  // Global unique ID, probably a hash of the tag.
   repeated string args = 7;  // Tags of all the cells connected to this cell's input(s).
                              // For connections to cells with multiple outputs, this will be of the form "XXXX.port".
 }

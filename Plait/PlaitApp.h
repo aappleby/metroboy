@@ -9,7 +9,7 @@
 
 #include "CoreLib/Debug.h"
 
-#include "plait_wrapper.h"
+#include "protos/plait_wrapper.h"
 
 #include <map>
 #include <set>

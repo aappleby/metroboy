@@ -706,23 +706,23 @@ PIN_EXT_A15_D        = and2(                           !PIN_CPU_ADDR_EXT, !A15);
   PIN_EXT_A00n_A = not1(tp_latch(and(PIN_CPU_ADDR_EXT, !ADDR_VRAM), BUS_CPU_A00));
 
 
-  /*read  rom */ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;
-  /*write rom */ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;
+  PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;  /*read  rom */
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;  /*write rom */
 
-  /*read  vram*/ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = false;
-  /*write vram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false;
+  PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = false; /*read  vram*/
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false; /*write vram*/
 
-  /*read  cram*/ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;
-  /*write cram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;
+  PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;  /*read  cram*/
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;  /*write cram*/
 
-  /*read  eram*/ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;
-  /*write eram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;
+  PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = true;  /*read  eram*/
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = true;  /*write eram*/
 
-  /*read  oam */ PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = false;
-  /*write oam */ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false;
+  PIN_CPU_HOLD_MEM = true;  PIN_CPU_ADDR_EXT = false; /*read  oam */
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false; /*write oam */
 
-  /*read  hram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = dc;
-  /*write hram*/ PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false;
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = dc;    /*read  hram*/
+  PIN_CPU_HOLD_MEM = dc;    PIN_CPU_ADDR_EXT = false; /*write hram*/
 
 #endif
 

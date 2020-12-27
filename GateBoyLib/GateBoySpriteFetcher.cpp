@@ -19,12 +19,12 @@ void SpriteFetcher::reset_to_cart() {
 void SpriteFetcher::tock(
   GateBoyResetDebug& rst,
   GateBoyClock& clk,
-  wire2 XYMU_RENDERINGp,
-  wire2 ATEJ_LINE_RSTp,
-  wire2 TAVE_PRELOAD_DONE_TRIGp,
-  wire2 TEKY_SFETCH_REQp_old)
+  wire XYMU_RENDERINGp,
+  wire ATEJ_LINE_RSTp,
+  wire TAVE_PRELOAD_DONE_TRIGp,
+  wire TEKY_SFETCH_REQp_old)
 {
-  wire2 _VYPO_VCC = 1;
+  wire _VYPO_VCC = 1;
 
   _XYMU_RENDERINGp.set(XYMU_RENDERINGp);
 
@@ -36,18 +36,18 @@ void SpriteFetcher::tock(
   /*#p29.VONU*/ VONU_SFETCH_S1p_D4.dff17(clk.TAVA_xBxDxFxH(), XYMU_RENDERINGp, TOBU_SFETCH_S1p_D2.qp_old2());
   /*#p29.TOBU*/ TOBU_SFETCH_S1p_D2.dff17(clk.TAVA_xBxDxFxH(), XYMU_RENDERINGp, TULY_SFETCH_S1p.qp_old2());
 
-  /* p27.RYCE*/ wire2 _RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp_new2(), SUDA_SFETCH_REQp.qn_new2());
-  /*#p27.SECA*/ wire2 _SECA_SFETCH_RSTn = nor3b(_RYCE_SFETCH_TRIGp, rst.ROSY_VID_RSTp(), ATEJ_LINE_RSTp);
+  /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(SOBU_SFETCH_REQp.qp_new2(), SUDA_SFETCH_REQp.qn_new2());
+  /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3b(_RYCE_SFETCH_TRIGp, rst.ROSY_VID_RSTp(), ATEJ_LINE_RSTp);
 
   // Feedback loop
   for (int feedback = 0; feedback < 2; feedback++) {
-    /*#p29.TAME*/ wire2 _TAME_SFETCH_CLK_GATE = nand2b(TESE_SFETCH_S2p.qp_any2(), TOXE_SFETCH_S0p.qp_any2());
-    /*#p29.TOMA*/ wire2 _TOMA_SFETCH_xBxDxFxH_= nand2b(clk.LAPE_AxCxExGx(), _TAME_SFETCH_CLK_GATE);
+    /*#p29.TAME*/ wire _TAME_SFETCH_CLK_GATE = nand2b(TESE_SFETCH_S2p.qp_any2(), TOXE_SFETCH_S0p.qp_any2());
+    /*#p29.TOMA*/ wire _TOMA_SFETCH_xBxDxFxH_= nand2b(clk.LAPE_AxCxExGx(), _TAME_SFETCH_CLK_GATE);
     /*#p29.TOXE*/ TOXE_SFETCH_S0p.dff17_any(_TOMA_SFETCH_xBxDxFxH_,   _SECA_SFETCH_RSTn, TOXE_SFETCH_S0p.qn_any2());
     /*#p29.TULY*/ TULY_SFETCH_S1p.dff17_any(TOXE_SFETCH_S0p.qn_any2(), _SECA_SFETCH_RSTn, TULY_SFETCH_S1p.qn_any2());
     /*#p29.TESE*/ TESE_SFETCH_S2p.dff17_any(TULY_SFETCH_S1p.qn_any2(), _SECA_SFETCH_RSTn, TESE_SFETCH_S2p.qn_any2());
   }
 
-  /* p27.VEKU*/ wire2 _VEKU_SFETCH_RUNNING_RSTn = nor2b(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp); // def nor
+  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2b(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn);
 }

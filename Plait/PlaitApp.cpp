@@ -11,13 +11,12 @@
 #include <SDL2/SDL.h>
 #endif
 
-#include "plait_wrapper.h"
-
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <regex>
 #include <deque>
+#include <algorithm>
 
 #include <windows.h>
 
@@ -25,36 +24,29 @@ using namespace std;
 
 std::map<std::string, uint32_t> node_type_to_color;
 
-#if 0
-  const string lines[] = {
-    "/* p01.RAVE*/ RAVE_DIV11n_evn <= not1b(SOLA_DIV11p);",
-    "/* p01.RYSO*/ RYSO_DIV12n_evn <= not1b(SUBU_DIV12p);",
-    "/* p01.RYSO*/ RYSO_DIV12n_evn <= not1b(SUBU_DIV12p);",
-    "/* p01.SAPY*/ SAPY_DIV09n_evn <= not1b(TOFE_DIV09p);",
-    "/* p01.SOLA*/ SOLA_DIV11p <= dff17(TERU_DIV10p, UFOL_DIV_RSTn, SOLA_DIV11p);",
-    "/* p01.SUBU*/ SUBU_DIV12p <= dff17(SOLA_DIV11p, UFOL_DIV_RSTn, SUBU_DIV12p);",
-    "/* p01.TAGY*/ TAGY_FF04_RDp_ext <= and4(TEDO_CPU_RDp, RYFO_FF04_FF07p, TOLA_A01n, TOVY_A00n);",
-    "/* p01.TAMA*/ TAMA_DIV05p <= dff17(UNYK_DIV04p, UFOL_DIV_RSTn, TAMA_DIV05p);",
-    "/* p01.TAPE*/ TAPE_FF04_WRp <= and4(TAPU_CPU_WRp, RYFO_FF04_FF07p, TOLA_A01n, TOVY_A00n);",
-    "/* p01.TEKA*/ TEKA_DIV13p <= dff17(SUBU_DIV12p, UFOL_DIV_RSTn, TEKA_DIV13p);",
-    "/* p01.TERU*/ TERU_DIV10p <= dff17(TOFE_DIV09p, UFOL_DIV_RSTn, TERU_DIV10p);",
-    "/* p01.TOFE*/ TOFE_DIV09p => dff17(TUGO_DIV08p, UFOL_DIV_RSTn, TOFE_DIV09p);",
-    "/* p01.TUGO*/ TUGO_DIV08p <= dff17(TULU_DIV07p, UFOL_DIV_RSTn, TUGO_DIV08p);",
-    "/* p01.TULU*/ TULU_DIV07p <= dff17(UGOT_DIV06p, UFOL_DIV_RSTn, TULU_DIV07p);",
-    "/* p01.UDOR*/ UDOR_DIV13n_evn <= not1b(TEKA_DIV13p);",
-    "/* p01.UFOL*/ UFOL_DIV_RSTn <= nor3b(UCOB_CLKBADp, PIN71_int_qp_new, TAPE_FF04_WRp);",
-    "/* p01.UFOR*/ UFOR_DIV01p <= dff17(UKUP_DIV00p, UFOL_DIV_RSTn, UFOR_DIV01p);",
-    "/* p01.UGOT*/ UGOT_DIV06p <= dff17(TAMA_DIV05p, UFOL_DIV_RSTn, UGOT_DIV06p);"
-  };
-#endif
+regex tagged_line_regex(R"(^\s*\/\*(.*?)\*\/\s*(.*))");
+
+regex local_decl(R"(^wire\s+(\w+)\s*=\s(.*)$)");
+
+regex func_decl(R"(^(inline\s+)?wire\s+(\w+)\s*.*\{\s*return\s*(.*)\})");
+
+regex wire_decl(R"(^wire\s*(\w+);$)");
+
+regex signal_decl(R"(^Signal\s*(\w+);$)");
+
+regex tri_call(R"(^(.*)\.\s*(tri\w+\(.*$))");
+
+regex dff_call(R"(^(.*)\.\s*(dff\w+\(.*$))");
+
+regex latch_call(R"(^(.*)\.\s*(.*_latch\(.*$))");
+
+regex set_call(R"(^(.*)\.\s*set\((.*)\))");
 
 
-//regex line_regex(R"((.*?)\s*(<=|=>)\s*(.*))");
-regex line_regex(R"((.*?)\s*<=\s*(.+))");
-regex prefix_regex(R"((.*?)\s*(\S+)$)");
-regex func_regex(R"((\w*)\((.*)\);?\s*(.*?)\s*$)");
-regex arg_regex(R"(\s*(\S+?)\s*(,|$)\s*)");
-regex signal_regex(R"(^\s*(\S+);\s*(.*?)$)"); // not sure if this one works
+std::set<string> all_tags;
+std::set<string> verified_tags;
+
+int total_matches = 0;
 
 //-----------------------------------------------------------------------------
 
@@ -85,78 +77,125 @@ Node* Plait::get_node(const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void parse_line(const std::string& line, plait::CellDB& cell_db) {
+bool has_tag(const plait::CellDB& cell_db, const std::string& tag) {
+  for (auto& cell : cell_db.cells()) {
+    if (cell.tag() == tag) return true;
+  }
+  return false;
+}
 
-  string prefix;
-  string suffix;
-  string arglist;
+//-----------------------------------------------------------------------------
 
-  string tag;
-  string name;
-  string dir;
-  string func;
-  vector<string> args;
-  string tail;
+void parse_tag(const std::string& tag) {
+  static regex valid_tag(R"(^(.?)p([0-9]{2})\.([A-Z]{4})$)");
 
-  smatch line_matches;
-  if (regex_search(line, line_matches, line_regex)) {
-    prefix = line_matches[1].str();
-    suffix = line_matches[2].str();
+  smatch matches;
+  if (!regex_match(tag,  matches, valid_tag))  printf("Invalid tag  : \"%s\"\n", tag.c_str());
+}
 
-    smatch prefix_matches;
-    if (regex_search(prefix, prefix_matches, prefix_regex)) {
-      tag = prefix_matches[1].str();
-      name = prefix_matches[2].str();
-    } else {
-      printf("prefix match fail\n");
-      return;
+//-----------------------------------------------------------------------------
+
+
+void parse_name(std::string& name) {
+  static regex valid_name(R"(^(\w+\.)*(_?[A-Z]{4}_?\w*)\s*$)");
+  smatch matches;
+  if (!regex_match(name, matches, valid_name)) printf("Invalid name : \"%s\"\n", name.c_str());
+}
+
+//-----------------------------------------------------------------------------
+
+void parse_rest(std::string& rest) {
+}
+
+//-----------------------------------------------------------------------------
+
+void parse_line(std::string& line, plait::CellDB& cell_db) {
+  (void)cell_db;
+
+  //line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
+  //line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+
+  smatch matches;
+  if (regex_match(line, matches, tagged_line_regex)) {
+    string tag = matches[1].str();
+    string rest = matches[2].str();
+
+    //printf("tag %s\n", tag.c_str());
+
+    parse_tag(tag);
+  }
+  else {
+    //printf("%.100s\n", line.c_str());
+    //printf("x");
+  }
+
+#if 0
+  smatch matches;
+  if (regex_search(line, matches, tagged_line_regex)) {
+    string verified = matches[1].str();
+    string page = matches[2].str();
+    string tag = matches[3].str();
+    string rest = matches[4].str();
+    //printf("verified %s page %s tag %s rest %.20s\n", verified.c_str(), page.c_str(), tag.c_str(), rest.c_str());
+    total_matches++;
+
+    parse_tag(verified, page, tag);
+    if (verified == "#") verified_tags.insert(tag);
+
+    if (regex_search(rest, matches, local_decl)) {
+      string name = matches[1].str();
+      //string val = matches[2].str();
+      //printf("name \"%s\" = val \"%s\"\n", name.c_str(), val.c_str());
+      parse_name(name);
     }
-
-    smatch suffix_matches;
-    if (regex_search(suffix, suffix_matches, func_regex)) {
-      func = suffix_matches[1].str();
-      arglist = suffix_matches[2].str();
-      tail = suffix_matches[3].str();
-
-      auto arg_begin = sregex_iterator(arglist.begin(), arglist.end(), arg_regex);
-      auto arg_end = sregex_iterator();
-      for (sregex_iterator i = arg_begin; i != arg_end; ++i) {
-        args.push_back((*i)[1].str());
-      }
+    else if (regex_search(rest, matches, func_decl)) {
+      string name = matches[2].str();
+      //string val = matches[3].str();
+      //printf("name \"%s\" = val \"%s\"\n", name.c_str(), val.c_str());
+      parse_name(name);
     }
-    else if (regex_search(suffix, suffix_matches, signal_regex)) {
-      args.push_back(suffix_matches[1].str());
-      func = "<signal>";
-      tail = suffix_matches[2].str();
+    else if (regex_search(rest, matches, wire_decl)) {
+      string name = matches[1].str();
+      //printf("name \"%s\"\n", name.c_str());
+      parse_name(name);
+    }
+    else if (regex_search(rest, matches, signal_decl)) {
+      string name = matches[1].str();
+      //printf("name \"%s\"\n", name.c_str());
+      parse_name(name);
+    }
+    else if (regex_search(rest, matches, tri_call)) {
+      //string bus = matches[1].str();
+      //string val = matches[2].str();
+      //printf("bus \"%s\" val \"%s\"\n", bus.c_str(), val.c_str());
+    }
+    else if (regex_search(rest, matches, dff_call)) {
+      string name = matches[1].str();
+      //string val = matches[2].str();
+      //printf("name \"%s\" = val \"%s\"\n", name.c_str(), val.c_str());
+      parse_name(name);
+    }
+    else if (regex_search(rest, matches, latch_call)) {
+      string name = matches[1].str();
+      //string val = matches[2].str();
+      //printf("name \"%s\" = val \"%s\"\n", name.c_str(), val.c_str());
+      parse_name(name);
+    }
+    else if (regex_search(rest, matches, set_call)) {
+      string name = matches[1].str();
+      //string val = matches[2].str();
+      //printf("name \"%s\" = val \"%s\"\n", name.c_str(), val.c_str());
+      parse_name(name);
     }
     else {
-      printf("suffix match fail\n");
-      return;
+      printf("Bad line : \"%.100s\"\n", line.c_str());
     }
   }
   else {
-    printf("line match fail\n");
-    return;
+    //printf("line match fail %.20s\n", line.c_str());
+    //printf("line %s\n", line.c_str());
   }
-
-  auto new_cell = cell_db.mutable_cells()->Add();
-
-  new_cell->set_name(name);
-  new_cell->set_tag(tag);
-  new_cell->set_type(func);
-  new_cell->set_doc(tail);
-
-  for (auto& arg : args) {
-    new_cell->add_args(arg);
-  }
-
-  /*
-  Node* gate_node = get_or_create_node(name);
-  gate_node->tag = tag;
-  gate_node->func = func;
-  gate_node->tail = tail;
-  gate_node->prev = prev;
-  */
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -181,26 +220,49 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
-  printf("Loading plait %f\n", timestamp());
-  std::ifstream lines("plait_data.txt");
+  printf("Loading plait cell db %f\n", timestamp());
+  //std::ifstream lines("plait_data.txt");
+  std::ifstream lines("conglom.txt");
   printf("\n");
 
   ConsoleDumper console;
 
-  printf("Parsing plait %f\n", timestamp());
+  printf("Parsing plait cell db %f\n", timestamp());
 
-  plait::CellDB* cells = new plait::CellDB();
+  plait::CellDB* cell_db = new plait::CellDB();
+
+  string test_line = R"(  /* p??.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());)";
+  parse_line(test_line, *cell_db);
 
   for (string line; getline(lines, line); ) {
     //console("Line : \"%s\"\n", line.c_str());
-    parse_line(line, *cells);
+    parse_line(line, *cell_db);
   }
+  printf("\n");
+
+
+  printf("Total matches %d\n", total_matches);
+  printf("Unique tags %zd\n", all_tags.size());
+  printf("Verified tags %zd\n", verified_tags.size());
+
+#if 0
+  printf("Cell count %d\n", cell_db->cells_size());
+
+  printf("Printing plait cell db %f\n", timestamp());
 
   string blah;
 
-  google::protobuf::TextFormat::PrintToString(*cells, &blah);
+  google::protobuf::TextFormat::PrintToString(*cell_db, &blah);
+  //printf("dump:\n%s\n", blah.c_str());
 
-  printf("dump:\n, %s\n", blah.c_str());
+  {
+    plait::CellDB* cell_db2 = new plait::CellDB();
+    google::protobuf::TextFormat::ParseFromString(blah, cell_db2);
+
+    string blah2;
+    google::protobuf::TextFormat::PrintToString(*cell_db2, &blah2);
+    //printf("dump:\n%s\n", blah2.c_str());
+  }
 
 
   //PlaitApp* app = new PlaitApp();
@@ -215,6 +277,9 @@ int main(int argc, char** argv) {
 
   //printf("blep x %f\n", blep.x());
   //printf("blep y %f\n", blep.y());
+#endif
+
+  printf("Done %f\n", timestamp());
 
   return ret;
 }

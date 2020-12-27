@@ -206,7 +206,6 @@ class Cell PROTOBUF_FINAL :
     kPageFieldNumber = 3,
     kTypeFieldNumber = 4,
     kDocFieldNumber = 5,
-    kGuidFieldNumber = 6,
   };
   // repeated string args = 7;
   int args_size() const;
@@ -332,19 +331,6 @@ class Cell PROTOBUF_FINAL :
   std::string* _internal_mutable_doc();
   public:
 
-  // required uint64 guid = 6;
-  bool has_guid() const;
-  private:
-  bool _internal_has_guid() const;
-  public:
-  void clear_guid();
-  ::PROTOBUF_NAMESPACE_ID::uint64 guid() const;
-  void set_guid(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_guid() const;
-  void _internal_set_guid(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  public:
-
   // @@protoc_insertion_point(class_scope:plait.Cell)
  private:
   class _Internal;
@@ -363,7 +349,6 @@ class Cell PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr page_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr type_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr doc_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 guid_;
   friend struct ::TableStruct_plait_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1587,34 +1572,6 @@ inline void Cell::set_allocated_doc(std::string* doc) {
   doc_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), doc,
       GetArena());
   // @@protoc_insertion_point(field_set_allocated:plait.Cell.doc)
-}
-
-// required uint64 guid = 6;
-inline bool Cell::_internal_has_guid() const {
-  bool value = (_has_bits_[0] & 0x00000020u) != 0;
-  return value;
-}
-inline bool Cell::has_guid() const {
-  return _internal_has_guid();
-}
-inline void Cell::clear_guid() {
-  guid_ = PROTOBUF_ULONGLONG(0);
-  _has_bits_[0] &= ~0x00000020u;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 Cell::_internal_guid() const {
-  return guid_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 Cell::guid() const {
-  // @@protoc_insertion_point(field_get:plait.Cell.guid)
-  return _internal_guid();
-}
-inline void Cell::_internal_set_guid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _has_bits_[0] |= 0x00000020u;
-  guid_ = value;
-}
-inline void Cell::set_guid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _internal_set_guid(value);
-  // @@protoc_insertion_point(field_set:plait.Cell.guid)
 }
 
 // repeated string args = 7;

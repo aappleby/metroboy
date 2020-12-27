@@ -49,7 +49,7 @@ struct ExtAddrLatch {
     NYRE_EXT_ADDR_LATCH_14p.reset(0);
   }
 
-  void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire2 TEXO_ADDR_VRAMn_ext);
+  void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p; // xBxxxxxx
@@ -106,7 +106,7 @@ struct GateBoyExtBus {
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
     const GateBoyDMA& dma,
-    wire2 ABUZ_EXT_RAM_CS_CLK
+    wire ABUZ_EXT_RAM_CS_CLK
   );
 
   void copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus);
@@ -117,7 +117,7 @@ struct GateBoyExtBus {
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
     const GateBoyDMA& dma,
-    wire2 ABUZ_EXT_RAM_CS_CLK);
+    wire ABUZ_EXT_RAM_CS_CLK);
 
   void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus);
   void read_ext_to_pins (const uint8_t* cart_buf, const uint8_t* cart_ram, const uint8_t* ext_ram);

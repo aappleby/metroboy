@@ -83,6 +83,9 @@
   <ItemGroup>
     <Natvis Include="GateBoy.natvis" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="_junk.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

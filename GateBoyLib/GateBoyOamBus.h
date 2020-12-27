@@ -22,22 +22,22 @@ struct GateBoyOamBus {
     oam_temp_b.reset_to_cart();
   }
 
-  void latch_bus(GateBoyCpuBus& cpu_bus, wire2 ACYL_SCANNINGp, wire2 XOCE_xBCxxFGx, wire2 XUJA_SPR_OAM_LATCHn);
-  void latch_to_cpu(GateBoyCpuBus& cpu_bus, wire2 MATU_DMA_RUNNINGp, wire2 ACYL_SCANNINGp, wire2 XYMU_RENDERINGp);
-  void latch_to_temp_a(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire2 ACYL_SCANNINGp, wire2 MATU_DMA_RUNNINGp, wire2 XUJY_OAM_CLKENp);
-  void latch_to_temp_b(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire2 ACYL_SCANNINGp, wire2 MATU_DMA_RUNNINGp, wire2 XUJY_OAM_CLKENp);
+  void latch_bus(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XOCE_xBCxxFGx, wire XUJA_SPR_OAM_LATCHn);
+  void latch_to_cpu(GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XYMU_RENDERINGp);
+  void latch_to_temp_a(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
+  void latch_to_temp_b(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void ext_to_data_bus (const GateBoyDMA& dma, PinIO PIN17_DATA[8]);
   void vram_to_data_bus(const GateBoyDMA& dma, Bus BUS_VRAM_Dp[8]);
   void dma_to_addr_bus(GateBoyDMA& dma);
-  void sprite_index_to_addr_bus(GateBoyDMA& dma, Bus SPR_TRI_I[6], wire2 XYMU_RENDERINGp);
-  void scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire2 ACYL_SCANNINGp);
-  void cpu_to_addr_bus(GateBoyCpuBus& cpu_bus, wire2 XYMU_RENDERINGp, wire2 MATU_DMA_RUNNINGp, wire2 ACYL_SCANNINGp);
-  void cpu_to_data_bus(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire2 XYMU_RENDERINGp, wire2 MATU_DMA_RUNNINGp, wire2 ACYL_SCANNINGp);
-  void set_pin_clk(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire2 MATU_DMA_RUNNINGp, wire2 ACYL_SCANNINGp, wire2 XUJY_OAM_CLKENp);
-  void set_pin_wr (GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire2 XYMU_RENDERINGp, wire2 MATU_DMA_RUNNINGp, wire2 ACYL_SCANNINGp);
-  void set_pin_oe (GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire2 ACYL_SCANNINGp, wire2 XUJA_SPR_OAM_LATCHn);
+  void sprite_index_to_addr_bus(GateBoyDMA& dma, Bus SPR_TRI_I[6], wire XYMU_RENDERINGp);
+  void scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp);
+  void cpu_to_addr_bus(GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
+  void cpu_to_data_bus(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
+  void set_pin_clk(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XUJY_OAM_CLKENp);
+  void set_pin_wr (GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
+  void set_pin_oe (GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn);
 
-  void tock(GateBoyCpuBus& cpu_bus, wire2 XOCE_xBCxxFGx, wire2 ACYL_SCANNINGp, wire2 XUJA_SPR_OAM_LATCHn, uint8_t* oam_ram);
+  void tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn, uint8_t* oam_ram);
 
   void dump(Dumper& d) {
     d.dump_bitp   ("MAKA_LATCH_EXTp  : ", MAKA_LATCH_EXTp.state);

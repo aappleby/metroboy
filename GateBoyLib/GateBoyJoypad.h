@@ -9,7 +9,7 @@ struct GateBoyJoypad {
   void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
   void tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys_buttons);
 
-  /* p02.ASOK*/ wire2 ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new2(), BATU_JP_GLITCH0.qp_new2()); }
+  /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new2(), BATU_JP_GLITCH0.qp_new2()); }
 
   void dump(Dumper& d) {
     d.dump_bitp("AWOB_WAKE_CPU   : ", AWOB_WAKE_CPU.state);
@@ -64,7 +64,7 @@ struct GateBoyJoypad {
   /*p05.KEJA*/ TpLatch KEJA_JOYP_L2n; // 10-rung, looks like pass gate or something
   /*p05.KOLO*/ TpLatch KOLO_JOYP_L3n; // 10-rung, looks like pass gate or something
 
-  Signal SIG_CPU_WAKE;  // top right wire2 by itself <- P02.AWOB
+  Signal SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB
 
   // Pressing a button pulls the corresponding pin _down_.
   PinIn  PIN67_JOY_P10;

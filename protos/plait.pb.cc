@@ -124,14 +124,12 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_plait_2eproto::offsets[] PROTO
   PROTOBUF_FIELD_OFFSET(::plait::Cell, page_),
   PROTOBUF_FIELD_OFFSET(::plait::Cell, type_),
   PROTOBUF_FIELD_OFFSET(::plait::Cell, doc_),
-  PROTOBUF_FIELD_OFFSET(::plait::Cell, guid_),
   PROTOBUF_FIELD_OFFSET(::plait::Cell, args_),
   0,
   1,
   2,
   3,
   4,
-  5,
   ~0u,
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::plait::CellDB, _internal_metadata_),
@@ -189,11 +187,11 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_plait_2eproto::offsets[] PROTO
   PROTOBUF_FIELD_OFFSET(::plait::Plait, root_frames_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 12, sizeof(::plait::Cell)},
-  { 19, -1, sizeof(::plait::CellDB)},
-  { 25, 36, sizeof(::plait::Node)},
-  { 42, 57, sizeof(::plait::Frame)},
-  { 67, -1, sizeof(::plait::Plait)},
+  { 0, 11, sizeof(::plait::Cell)},
+  { 17, -1, sizeof(::plait::CellDB)},
+  { 23, 34, sizeof(::plait::Node)},
+  { 40, 55, sizeof(::plait::Frame)},
+  { 65, -1, sizeof(::plait::Plait)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -205,19 +203,19 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_plait_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\013plait.proto\022\005plait\"f\n\004Cell\022\014\n\004name\030\001 \002"
+  "\n\013plait.proto\022\005plait\"X\n\004Cell\022\014\n\004name\030\001 \002"
   "(\t\022\013\n\003tag\030\002 \002(\t\022\014\n\004page\030\003 \002(\t\022\014\n\004type\030\004 "
-  "\002(\t\022\013\n\003doc\030\005 \001(\t\022\014\n\004guid\030\006 \002(\004\022\014\n\004args\030\007"
-  " \003(\t\"$\n\006CellDB\022\032\n\005cells\030\001 \003(\0132\013.plait.Ce"
-  "ll\"k\n\004Node\022\014\n\004guid\030\001 \002(\004\022\017\n\007cell_id\030\002 \002("
-  "\004\022\020\n\010origin_x\030\003 \002(\001\022\020\n\010origin_y\030\004 \002(\001\022\017\n"
-  "\007scale_x\030\005 \002(\001\022\017\n\007scale_y\030\006 \002(\001\"\312\001\n\005Fram"
-  "e\022\014\n\004guid\030\001 \002(\004\022\014\n\004name\030\002 \002(\t\022\014\n\004type\030\003 "
-  "\002(\t\022\013\n\003doc\030\004 \001(\t\022\020\n\010origin_x\030\005 \002(\001\022\020\n\010or"
-  "igin_y\030\006 \002(\001\022\017\n\007scale_x\030\007 \002(\001\022\017\n\007scale_y"
-  "\030\010 \002(\001\022 \n\013child_nodes\030\t \003(\0132\013.plait.Node"
-  "\022\"\n\014child_frames\030\n \003(\0132\014.plait.Frame\"*\n\005"
-  "Plait\022!\n\013root_frames\030\001 \003(\0132\014.plait.Frame"
+  "\002(\t\022\013\n\003doc\030\005 \001(\t\022\014\n\004args\030\007 \003(\t\"$\n\006CellDB"
+  "\022\032\n\005cells\030\001 \003(\0132\013.plait.Cell\"k\n\004Node\022\014\n\004"
+  "guid\030\001 \002(\004\022\017\n\007cell_id\030\002 \002(\004\022\020\n\010origin_x\030"
+  "\003 \002(\001\022\020\n\010origin_y\030\004 \002(\001\022\017\n\007scale_x\030\005 \002(\001"
+  "\022\017\n\007scale_y\030\006 \002(\001\"\312\001\n\005Frame\022\014\n\004guid\030\001 \002("
+  "\004\022\014\n\004name\030\002 \002(\t\022\014\n\004type\030\003 \002(\t\022\013\n\003doc\030\004 \001"
+  "(\t\022\020\n\010origin_x\030\005 \002(\001\022\020\n\010origin_y\030\006 \002(\001\022\017"
+  "\n\007scale_x\030\007 \002(\001\022\017\n\007scale_y\030\010 \002(\001\022 \n\013chil"
+  "d_nodes\030\t \003(\0132\013.plait.Node\022\"\n\014child_fram"
+  "es\030\n \003(\0132\014.plait.Frame\"*\n\005Plait\022!\n\013root_"
+  "frames\030\001 \003(\0132\014.plait.Frame"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_plait_2eproto_deps[1] = {
 };
@@ -230,7 +228,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_pla
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_plait_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_plait_2eproto = {
-  false, false, descriptor_table_protodef_plait_2eproto, "plait.proto", 520,
+  false, false, descriptor_table_protodef_plait_2eproto, "plait.proto", 506,
   &descriptor_table_plait_2eproto_once, descriptor_table_plait_2eproto_sccs, descriptor_table_plait_2eproto_deps, 5, 0,
   schemas, file_default_instances, TableStruct_plait_2eproto::offsets,
   file_level_metadata_plait_2eproto, 5, file_level_enum_descriptors_plait_2eproto, file_level_service_descriptors_plait_2eproto,
@@ -260,11 +258,8 @@ class Cell::_Internal {
   static void set_has_doc(HasBits* has_bits) {
     (*has_bits)[0] |= 16u;
   }
-  static void set_has_guid(HasBits* has_bits) {
-    (*has_bits)[0] |= 32u;
-  }
   static bool MissingRequiredFields(const HasBits& has_bits) {
-    return ((has_bits[0] & 0x0000002f) ^ 0x0000002f) != 0;
+    return ((has_bits[0] & 0x0000000f) ^ 0x0000000f) != 0;
   }
 };
 
@@ -305,7 +300,6 @@ Cell::Cell(const Cell& from)
     doc_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_doc(), 
       GetArena());
   }
-  guid_ = from.guid_;
   // @@protoc_insertion_point(copy_constructor:plait.Cell)
 }
 
@@ -316,7 +310,6 @@ void Cell::SharedCtor() {
   page_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   type_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   doc_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  guid_ = PROTOBUF_ULONGLONG(0);
 }
 
 Cell::~Cell() {
@@ -374,7 +367,6 @@ void Cell::Clear() {
       doc_.ClearNonDefaultToEmpty();
     }
   }
-  guid_ = PROTOBUF_ULONGLONG(0);
   _has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -439,14 +431,6 @@ const char* Cell::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inter
           #ifndef NDEBUG
           ::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "plait.Cell.doc");
           #endif  // !NDEBUG
-          CHK_(ptr);
-        } else goto handle_unusual;
-        continue;
-      // required uint64 guid = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 48)) {
-          _Internal::set_has_guid(&has_bits);
-          guid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -546,12 +530,6 @@ failure:
         5, this->_internal_doc(), target);
   }
 
-  // required uint64 guid = 6;
-  if (cached_has_bits & 0x00000020u) {
-    target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(6, this->_internal_guid(), target);
-  }
-
   // repeated string args = 7;
   for (int i = 0, n = this->_internal_args_size(); i < n; i++) {
     const auto& s = this->_internal_args(i);
@@ -602,20 +580,13 @@ size_t Cell::RequiredFieldsByteSizeFallback() const {
         this->_internal_type());
   }
 
-  if (_internal_has_guid()) {
-    // required uint64 guid = 6;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
-        this->_internal_guid());
-  }
-
   return total_size;
 }
 size_t Cell::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:plait.Cell)
   size_t total_size = 0;
 
-  if (((_has_bits_[0] & 0x0000002f) ^ 0x0000002f) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x0000000f) ^ 0x0000000f) == 0) {  // All required fields are present.
     // required string name = 1;
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -635,11 +606,6 @@ size_t Cell::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_type());
-
-    // required uint64 guid = 6;
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
-        this->_internal_guid());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -697,7 +663,7 @@ void Cell::MergeFrom(const Cell& from) {
 
   args_.MergeFrom(from.args_);
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 0x0000003fu) {
+  if (cached_has_bits & 0x0000001fu) {
     if (cached_has_bits & 0x00000001u) {
       _internal_set_name(from._internal_name());
     }
@@ -713,10 +679,6 @@ void Cell::MergeFrom(const Cell& from) {
     if (cached_has_bits & 0x00000010u) {
       _internal_set_doc(from._internal_doc());
     }
-    if (cached_has_bits & 0x00000020u) {
-      guid_ = from.guid_;
-    }
-    _has_bits_[0] |= cached_has_bits;
   }
 }
 
@@ -749,7 +711,6 @@ void Cell::InternalSwap(Cell* other) {
   page_.Swap(&other->page_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   type_.Swap(&other->type_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   doc_.Swap(&other->doc_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-  swap(guid_, other->guid_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Cell::GetMetadata() const {

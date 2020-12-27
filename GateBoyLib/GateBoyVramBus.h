@@ -89,25 +89,25 @@ struct GateBoyVramBus {
     PIN25_VRAM_DATA[7].reset_for_pass();
   }
 
-  void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire2 XYMU_RENDERINGp, wire2 LUFA_DMA_VRAMp);
+  void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
   void dma_addr_to_vram_addr(const GateBoyDMA& dma);
-  void scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire2 POTU_BGW_MAP_READp, wire2 AXAD_WIN_MODEn, wire2 XAFO_LCDC_BGMAPp);
-  void win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire2 POTU_BGW_MAP_READp, wire2 PORE_WIN_MODEp, wire2 WOKY_LCDC_WINMAPp);
-  void tile_to_addr(const BGScrollY scroll_y, const WinLineY win_line_y, const TileTempB tile_temp_b, wire2 NETA_BGW_TILE_READp, wire2 XUHA_FETCH_HILOp, wire2 WEXU_LCDC_BGTILEp, wire2 PORE_WIN_MODEp, wire2 AXAD_WIN_MODEn);
-  void sprite_to_addr(Bus SPR_TRI_L[4], const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire2 XUQU_SPRITE_AB, wire2 SAKY_SFETCHn, wire2 XYMU_RENDERINGp, wire2 XYMO_LCDC_SPSIZEp);
+  void scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, wire XAFO_LCDC_BGMAPp);
+  void win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, wire WOKY_LCDC_WINMAPp);
+  void tile_to_addr(const BGScrollY scroll_y, const WinLineY win_line_y, const TileTempB tile_temp_b, wire NETA_BGW_TILE_READp, wire XUHA_FETCH_HILOp, wire WEXU_LCDC_BGTILEp, wire PORE_WIN_MODEp, wire AXAD_WIN_MODEn);
+  void sprite_to_addr(Bus SPR_TRI_L[4], const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, wire XYMU_RENDERINGp, wire XYMO_LCDC_SPSIZEp);
   void addr_to_pins();
-  void cpu_data_to_bus_data(const GateBoyCpuBus& cpu_bus, wire2 SERE_CPU_VRAM_RDp, wire2 SALE_CPU_VRAM_WRn);
-  void bus_data_to_pins(wire2 SERE_CPU_VRAM_RDp, wire2 SALE_CPU_VRAM_WRn);
+  void cpu_data_to_bus_data(const GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
+  void bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
 
-  void set_pin_cs(wire2 TUTO_VRAM_DBGp, wire2 SERE_CPU_VRAM_RDp, wire2 LUFA_DMA_VRAMp, wire2 LENA_BFETCHINGp, wire2 TEXY_SFETCHINGp);
-  void set_pin_wr(wire2 TUTO_VRAM_DBGp, wire2 SERE_CPU_VRAM_RDp, wire2 TUJA_CPU_VRAM_WRp);
-  void set_pin_oe(wire2 TUTO_VRAM_DBGp, wire2 SALE_CPU_VRAM_WRn, wire2 LUFA_DMA_VRAMp, wire2 XYMU_RENDERINGp, wire2 LONY_BFETCHINGp, wire2 SOHO_SPR_VRAM_RDp);
+  void set_pin_cs(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire LUFA_DMA_VRAMp, wire LENA_BFETCHINGp, wire TEXY_SFETCHINGp);
+  void set_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp);
+  void set_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wire LUFA_DMA_VRAMp, wire XYMU_RENDERINGp, wire LONY_BFETCHINGp, wire SOHO_SPR_VRAM_RDp);
 
   void read_vram(const uint8_t* vid_ram);
   void write_vram(uint8_t* vid_ram);
 
-  void pins_to_data_bus(wire2 SERE_CPU_VRAM_RDp, wire2 SALE_CPU_VRAM_WRn);
-  void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire2 SERE_CPU_VRAM_RDp);
+  void pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
+  void data_bus_to_cpu_bus(GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);
 
   void dump(Dumper& d) {
     d.dump_bitp   ("PIN43_VRAM_CSn  : ", PIN43_VRAM_CSn.state);

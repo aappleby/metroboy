@@ -146,22 +146,24 @@ struct Sprite {
 //-----------------------------------------------------------------------------
 
 struct Dumper {
+  virtual void operator()(const char* format, ...) = 0;
+
   virtual void add_char(char c) { (void)c; }
   virtual void newline() { add_char('\n'); }
-
-  virtual void operator()(const char* format, ...) = 0;
   virtual void indent() {}
   virtual void dedent() {}
 
-  inline void dump_bitp(const char* tag, uint8_t b) {
+  //----------
+
+  void dump_bitp(const char* tag, uint8_t b) {
     operator()("%s%c\n", tag, (b & 0x01) ? '1' : '0');
   }
 
-  inline void dump_bitn(const char* tag, uint8_t b) {
+  void dump_bitn(const char* tag, uint8_t b) {
     operator()("%s%c\n", tag, (b & 0x01) ? '0' : '1');
   }
 
-  inline void dump_bytep(const char* tag, uint8_t b) {
+  void dump_bytep(const char* tag, uint8_t b) {
     operator()(tag);
     for (int i = 7; i >= 0; i--) {
       add_char((b & (1 << i)) ? '1' : '0');

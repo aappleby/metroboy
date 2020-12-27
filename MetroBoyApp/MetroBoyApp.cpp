@@ -143,7 +143,7 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_update(double /*delta*/) {
+void MetroBoyApp::app_update(Viewport /*view*/, double /*delta*/) {
   int  step_forward = 0;
   int  step_backward = 0;
 

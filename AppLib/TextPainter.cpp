@@ -8,6 +8,9 @@
 
 extern const char* terminus;
 
+const int glyph_size_x = 6;
+const int glyph_size_y = 12;
+
 //-----------------------------------------------------------------------------
 
 const char* text_glsl = R"(
@@ -25,8 +28,8 @@ const float inv_atlas_height = 1.0 / atlas_height;
 
 layout(std140) uniform TextUniforms {
   vec4  viewport;
-  vec4  text_pos;
-  vec4  bg_palette;
+  vec4  origin;
+  vec4  bg_col;
   vec4  palette[16];
 };
 
@@ -40,37 +43,34 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 
 #ifdef _VERTEX_
 
-layout(location = 0) in uint glyph2;
+layout(location = 0) in ivec4 glyph2;
 
 out vec2  tc_glyph;
-out vec4  fg_color;
-out vec4  bg_color;
+out vec4  fg_col;
 
 void main() {
   float corner_x = float((gl_VertexID >> 0) & 1);
   float corner_y = float((gl_VertexID >> 1) & 1);
 
-  uint glyph_packed = glyph2;
-  float glyph_x = float((glyph_packed >>  0) & 0xFFu);
-  float glyph_y = float((glyph_packed >>  8) & 0xFFu);
-  int col       = int  ((glyph_packed >> 16) & 0x1Fu);
-  int row       = int  ((glyph_packed >> 21) & 0x07u);
-  int fg_style  = int  ((glyph_packed >> 24) & 0xFFu);
+  float glyph_x = float(glyph2.x);
+  float glyph_y = float(glyph2.y);
+  float col     = float((glyph2.z >> 0) & 0x1F);
+  float row     = float((glyph2.z >> 5) & 0x07);
+  int fg_style  = glyph2.w;
 
-  float glyph_tcx = (float(col) * atlas_stride_x) + (corner_x * glyph_size_x);
-  float glyph_tcy = (float(row) * atlas_stride_y) + (corner_y * glyph_size_y);
+  float glyph_tcx = (col * atlas_stride_x) + (corner_x * glyph_size_x);
+  float glyph_tcy = (row * atlas_stride_y) + (corner_y * glyph_size_y);
 
   glyph_tcx = remap(glyph_tcx, 0.0, atlas_width,  0.0, 1.0);
   glyph_tcy = remap(glyph_tcy, 0.0, atlas_height, 0.0, 1.0);
 
   tc_glyph = vec2(glyph_tcx, glyph_tcy);
-  fg_color = palette[fg_style];
-  bg_color = bg_palette;
+  fg_col = palette[fg_style];
 
   //----------
 
-  float quad_x = (glyph_x + corner_x) * glyph_size_x * text_pos.z + text_pos.x;
-  float quad_y = (glyph_y + corner_y) * glyph_size_y * text_pos.w + text_pos.y;
+  float quad_x = glyph_x * origin.z + corner_x * glyph_size_x * origin.z + origin.x;
+  float quad_y = glyph_y * origin.w + corner_y * glyph_size_y * origin.w + origin.y;
 
   gl_Position = vec4(remap(quad_x, viewport.x, viewport.z, -1.0,  1.0),
                      remap(quad_y, viewport.y, viewport.w,  1.0, -1.0),
@@ -81,19 +81,14 @@ void main() {
 #else
 
 in vec2 tc_glyph;
-in vec4 fg_color;
-in vec4 bg_color;
+in vec4 fg_col;
 
 out vec4 fs_out;
 
 void main() {
   float p = texture(font_tex, tc_glyph).r;
 
-  //p = ((p - 0.5) * 10.0) + 0.5;
-  //p = clamp(p, 0.0, 1.0);
-
-  //float p = texelFetch(font_tex, ivec2(tc_glyph.x, tc_glyph.y), 0).r;
-  fs_out = mix(bg_color, fg_color, p);
+  fs_out = mix(bg_col, fg_col, p);
 }
 
 #endif
@@ -113,13 +108,13 @@ void TextPainter::init() {
   set_pal(6, 1.0f, 0.6f, 1.0f, 1.0f); // error magenta
   set_pal(7, 0.4f, 0.4f, 0.4f, 1.0f); // grey
 
-  inst_data = new uint32_t[65536];
+  line_data = new uint16_t[65536];
 
-  dummy_vao = create_vao();
+  line_vao = create_vao();
 
-  inst_vbo = create_vbo(65536 * 4);
+  line_vbo = create_vbo(65536 * 4);
   glEnableVertexAttribArray(0);
-  glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 4, 0);
+  glVertexAttribIPointer(0, 4, GL_SHORT, 8, 0);
   glVertexAttribDivisor(0, 1);
 
   uint8_t* dst_pix = new uint8_t[32768];
@@ -128,7 +123,6 @@ void TextPainter::init() {
   delete [] dst_pix;
 
   text_ubo = create_ubo(sizeof(TextUniforms));
-  text_uniforms.bg_palette = vec4(0.0, 0.0, 0.0, 0.5);
 }
 
 //-----------------------------------------------------------------------------
@@ -137,23 +131,27 @@ void TextPainter::render(Viewport view, double x, double y, float scale) {
 
   bind_shader(text_prog);
 
-  text_uniforms.text_pos = {x, y, scale, scale};
   text_uniforms.viewport = {
     (float)view.min.x,
     (float)view.min.y,
     (float)view.max.x,
     (float)view.max.y,
   };
+  text_uniforms.origin = {x, y, scale, scale};
+  text_uniforms.bg_col = bg_col;
   update_ubo(text_ubo, sizeof(text_uniforms), &text_uniforms);
   bind_ubo(text_prog, "TextUniforms", 0, text_ubo);
 
   bind_texture(text_prog, "font_tex", 0, font_tex);
 
-  bind_vao(dummy_vao);
+  bind_vao(line_vao);
 
-  update_vbo(inst_vbo, (inst_end - inst_begin)*4, inst_data + inst_begin);
+  int glyph_count = (inst_end - inst_begin) / 4;
+  int bytes_per_glyph = 8;
 
-  glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, inst_end - inst_begin);
+  update_vbo(line_vbo, glyph_count * bytes_per_glyph, line_data + inst_begin);
+
+  glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, glyph_count);
 
   text_x = 0;
   text_y = 0;
@@ -162,20 +160,24 @@ void TextPainter::render(Viewport view, double x, double y, float scale) {
 
 //-----------------------------------------------------------------------------
 
+void TextPainter::push_char(int x, int y, int c, int pal) {
+  line_data[inst_end++] = uint16_t(x);
+  line_data[inst_end++] = uint16_t(y);
+  line_data[inst_end++] = uint16_t(c);
+  line_data[inst_end++] = uint16_t(pal);
+}
+
 void TextPainter::add_char(const char c) {
-  if (c < 10) {
+  if (c == '\n') {
+    text_x = 0;
+    text_y += glyph_size_y;
+  }
+  else if (c < 10) {
     fg_pal = c;
   }
-  else if (c == '\n') {
-    text_x = 0;
-    text_y++;
-  }
   else {
-    uint32_t packed = (text_x << 0) | (text_y << 8) | (c << 16) | (fg_pal << 24);
-    inst_data[inst_end] = packed;
-
-    inst_end++;
-    text_x++;
+    push_char(text_x, text_y, c, fg_pal);
+    text_x += glyph_size_x;
   }
 }
 
@@ -184,20 +186,40 @@ void TextPainter::add_char(const char c, const char d) {
   add_char(d);
 }
 
-void TextPainter::add_text(const char* text_painter) {
-  for(; *text_painter; text_painter++) {
-    add_char(*text_painter);
+void TextPainter::add_text(const char* s) {
+  for(; *s; s++) {
+    add_char(*s);
   }
 }
 
-void TextPainter::add_text(const char* text_painter, int len) {
+void TextPainter::add_text(const char* s, int len) {
   for (int i = 0; i < len; i++) {
-    add_char(text_painter[i]);
+    add_char(s[i]);
   }
 }
 
-void TextPainter::add_string(const std::string& text_painter) {
-  for (auto c : text_painter) add_char(c);
+void TextPainter::add_text_at(const char* s, int x, int y) {
+  int cursor_x = x;
+  int cursor_y = y;
+
+  for(; *s; s++) {
+    int c = *s;
+    if (c == '\n') {
+      cursor_x = x;
+      cursor_y += glyph_size_y;
+    }
+    else if (c < 10) {
+      fg_pal = c;
+    }
+    else {
+      push_char(cursor_x, cursor_y, c, fg_pal);
+      cursor_x += glyph_size_x;
+    }
+  }
+}
+
+void TextPainter::add_string(const std::string& s) {
+  for (auto c : s) add_char(c);
 }
 
 void TextPainter::dprintf(const char* format, ...) {

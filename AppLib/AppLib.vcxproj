@@ -15,12 +15,14 @@
     <ClInclude Include="AppHost.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="Blitter.h" />
+    <ClInclude Include="BoxPainter.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="DummyApp.h" />
     <ClInclude Include="DumpPainter.h" />
     <ClInclude Include="GBBlitter.h" />
     <ClInclude Include="GLBase.h" />
     <ClInclude Include="GridPainter.h" />
+    <ClInclude Include="LinePainter.h" />
     <ClInclude Include="TextPainter.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
@@ -33,12 +35,14 @@
     <ClCompile Include="AppHost.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Blitter.cpp" />
+    <ClCompile Include="BoxPainter.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="DummyApp.cpp" />
     <ClCompile Include="DumpPainter.cpp" />
     <ClCompile Include="GBBlitter.cpp" />
     <ClCompile Include="GLBase.cpp" />
     <ClCompile Include="GridPainter.cpp" />
+    <ClCompile Include="LinePainter.cpp" />
     <ClCompile Include="Terminus.cpp" />
     <ClCompile Include="TextPainter.cpp" />
     <ClCompile Include="Viewport.cpp" />
@@ -92,6 +96,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -112,6 +117,7 @@
       <SDLCheck>false</SDLCheck>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>

@@ -71,8 +71,8 @@ int AppHost::app_main(int, char**) {
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  const int initial_screen_w = 1920;
-  const int initial_screen_h = 1080;
+  const int initial_screen_w = 3200;
+  const int initial_screen_h = 1440;
 
   window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -214,13 +214,16 @@ int AppHost::app_main(int, char**) {
     for(int i = 0; i < nevents; i++) {
       auto& event = events[i];
       switch (event.type) {
+
       case SDL_MOUSEWHEEL: {
         view_raw = view_raw.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
         break;
       }
       case SDL_MOUSEMOTION: {
-        if (event.motion.state & SDL_BUTTON_LMASK) {
-          view_raw = view_raw.pan({event.motion.xrel, event.motion.yrel});
+        if (!app->is_mouse_locked()) {
+          if (event.motion.state & SDL_BUTTON_LMASK) {
+            view_raw = view_raw.pan({event.motion.xrel, event.motion.yrel});
+          }
         }
         break;
       }
@@ -250,8 +253,6 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // Client app update
 
-    app->app_update(delta);
-
     Viewport snapped = view_raw.snap();
     view_smooth = view_smooth.ease(view_raw, delta);
     view_snap = view_snap.ease(snapped, delta);
@@ -260,6 +261,8 @@ int AppHost::app_main(int, char**) {
       view_raw = view_snap;
       view_smooth = view_snap;
     }
+
+    app->app_update(view_snap, delta);
 
     //----------------------------------------
     // Client app render

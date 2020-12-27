@@ -20,8 +20,16 @@ _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
 
 //-----------------------------------------------------------------------------
 
-void APIENTRY debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
-                          GLsizei /*length*/, const GLchar* message, const GLvoid* /*userParam*/) {
+void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
+                          GLsizei length, const GLchar* message, const GLvoid* userParam) {
+
+  (void)source;
+  (void)type;
+  (void)id;
+  (void)severity;
+  (void)length;
+  (void)message;
+  (void)userParam;
 
   if (severity == GL_DEBUG_TYPE_ERROR ||
       severity == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR ||
@@ -33,8 +41,6 @@ void APIENTRY debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLe
   else {
   	//printf("GLDEBUG: %s\n", message);
   }
-  //#define GL_DEBUG_TYPE_OTHER 0x8251
-
 }
 
 //-----------------------------------------------------------------------------
@@ -74,12 +80,12 @@ void* init_gl(void* window) {
   LOG_B("Version:  "); LOG_G("%s\n", glGetString(GL_VERSION));
   LOG_B("GLSL:     "); LOG_G("%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-#ifndef USE_OPENGL_ES
+//#ifndef USE_OPENGL_ES
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   glDebugMessageCallback(debugOutput, nullptr);
-#endif
+//#endif
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
@@ -317,6 +323,7 @@ void bind_table(int prog, const char* name, int index, int tex) {
 
 int create_shader(const char* name, const char* src) {
   static bool verbose = false;
+  CHECK_N(glGetError());
 
   LOG_B("Compiling %s\n", name);
 
@@ -332,13 +339,15 @@ int create_shader(const char* name, const char* src) {
   glShaderSource(vertexShader, (int)vert_srcs.size(), vert_srcs.begin(), NULL);
   glCompileShader(vertexShader);
 
-  {
+  int vshader_result = 0;
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vshader_result);
+
+  if ((vshader_result == GL_FALSE) || verbose) {
     char buf[1024];
     int len = 0;
     glGetShaderInfoLog(vertexShader, 1024, &len, buf);
-    if (verbose) printf("  Vert shader log %s\n", buf);
+    printf("  Vert shader log %s\n", buf);
   }
-
 
   auto frag_srcs = {
     "#version 300 es\n",
@@ -351,11 +360,14 @@ int create_shader(const char* name, const char* src) {
   glShaderSource(fragmentShader, (int)frag_srcs.size(), frag_srcs.begin(), NULL);
   glCompileShader(fragmentShader);
 
-  {
+  int fshader_result = 0;
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fshader_result);
+
+  if ((fshader_result == GL_FALSE) || verbose) {
     char buf[1024];
     int len = 0;
     glGetShaderInfoLog(fragmentShader, 1024, &len, buf);
-    if (verbose) printf("  Frag shader log %s\n", buf);
+    printf("  Frag shader log %s\n", buf);
   }
 
   int shaderProgram = glCreateProgram();
@@ -364,11 +376,14 @@ int create_shader(const char* name, const char* src) {
   glLinkProgram(shaderProgram);
   glUseProgram(shaderProgram);
 
-  {
+  int prog_result = 0;
+  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &prog_result);
+
+  if((prog_result == GL_FALSE) || verbose) {
     char buf[1024];
     int len = 0;
     glGetProgramInfoLog(shaderProgram, 1024, &len, buf);
-    if (verbose) printf("  Shader program log %s\n", buf);
+    printf("  Shader program log %s\n", buf);
 
   }
 

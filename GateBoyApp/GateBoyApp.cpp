@@ -185,7 +185,7 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_update(double /*delta*/) {
+void GateBoyApp::app_update(Viewport /*view*/, double /*delta*/) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
 

@@ -28,7 +28,7 @@ public:
   void load_rom(const char* filename);
 
   void begin_frame() { frame_begin = timestamp(); }
-  void app_update(double delta) override;
+  void app_update(Viewport /*view*/, double delta) override;
   void app_render_frame(Viewport view) override;
   void app_render_ui(Viewport /*view*/) override {};
 

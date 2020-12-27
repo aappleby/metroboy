@@ -34,7 +34,8 @@ void DummyApp::app_close() {
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::app_update(double delta) {
+void DummyApp::app_update(Viewport view, double delta) {
+  (void)view;
   (void)delta;
 }
 

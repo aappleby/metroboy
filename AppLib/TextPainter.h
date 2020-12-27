@@ -5,8 +5,8 @@
 
 struct TextUniforms {
   vec4 viewport = {};
-  vec4 text_pos = {};
-  vec4 bg_palette = {};
+  vec4 origin = {};
+  vec4 bg_col = {};
   vec4 palette[16] = {};
 };
 
@@ -15,10 +15,15 @@ public:
 
   void init();
 
+  void push_char(int x, int y, int c, int pal);
+
   void add_char(const char c);
   void add_char(const char c, const char d);
+
   void add_text(const char* text_painter);
   void add_text(const char* text_painter, int len);
+  void add_text_at(const char* s, int x, int y);
+
   void add_string(const std::string& text_painter);
   void dprintf(const char* format, ...);
 
@@ -33,7 +38,9 @@ public:
 
   void set_pal(int index, float r, float g, float b, float a);
 
-private:
+//private:
+
+  vec4 bg_col;
 
   uint32_t text_prog = 0;
   uint32_t font_tex = 0;
@@ -51,10 +58,10 @@ private:
   int inst_begin = 0;
   int inst_end = 0;
 
-  uint32_t dummy_vao = 0;
+  uint32_t line_vao = 0;
 
-  uint32_t  inst_vbo = 0;
-  uint32_t* inst_data = 0;
+  uint32_t  line_vbo = 0;
+  uint16_t* line_data = 0;
 
   uint32_t text_ubo = 0;
   TextUniforms text_uniforms = {};

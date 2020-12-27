@@ -22,7 +22,7 @@ public:
   virtual void app_close();
 
   virtual void begin_frame() { frame_begin = timestamp(); }
-  virtual void app_update(double delta);
+  virtual void app_update(Viewport view, double delta);
   virtual void app_render_frame(Viewport view);
   virtual void app_render_ui(Viewport view);
   virtual void end_frame()   { frame_end = timestamp(); frame_time = frame_end - frame_begin; }

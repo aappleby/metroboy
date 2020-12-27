@@ -20,7 +20,17 @@ struct StringDumper : public Dumper {
     va_end (args);
     s.append(source_buf);
   }
-  void print() { printf("%s", s.c_str()); }
+  //void print() { printf("%s", s.c_str()); }
   void clear() { s.clear(); }
+};
+
+
+struct ConsoleDumper : public Dumper {
+  void operator()(const char* format, ...) override {
+    va_list args;
+    va_start (args, format);
+    vprintf (format, args);
+    va_end (args);
+  }
 };
 

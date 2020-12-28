@@ -44,6 +44,9 @@ void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
 
 void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys_buttons)
 {
+  //wire PIN58_VCC = 1;
+  wire PIN36_GND = 0;
+
   PIN67_JOY_P10.reset_for_pass();
   PIN66_JOY_P11.reset_for_pass();
   PIN65_JOY_P12.reset_for_pass();
@@ -51,8 +54,8 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   PIN63_JOY_P14.reset_for_pass();
   PIN62_JOY_P15.reset_for_pass();
 
-  wire BURO_FF60_0p_new = 0; // FIXME hacking out debug stuff
-  /* p05.KURA*/ wire _KURA_JOYP_DBGn_new = not1b(BURO_FF60_0p_new);
+  /* p07.BURO*/ wire _BURO_FF60_D0p = not1b(PIN36_GND); // FIXME hacking out debug stuff
+  /* p05.KURA*/ wire _KURA_FF60_D0n = not1b(_BURO_FF60_D0p);
 
   /*
   // lcd ribbon voltages after bootrom
@@ -64,8 +67,8 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   09 0 diodes 3 & 4
   */
 
-  /* p05.KARU*/ wire _KARU = or2(KELY_JOYP_UDLRp.qn_new2(), _KURA_JOYP_DBGn_new);
-  /* p05.CELA*/ wire _CELA = or2(COFY_JOYP_ABCSp.qn_new2(), _KURA_JOYP_DBGn_new);
+  /* p05.KARU*/ wire _KARU = or2(KELY_JOYP_UDLRp.qn_new2(), _KURA_FF60_D0n);
+  /* p05.CELA*/ wire _CELA = or2(COFY_JOYP_ABCSp.qn_new2(), _KURA_FF60_D0n);
 
   PIN63_JOY_P14.pin_out_hilo(_KARU, KELY_JOYP_UDLRp.qn_new2());
   PIN62_JOY_P15.pin_out_hilo(_CELA, COFY_JOYP_ABCSp.qn_new2());

@@ -137,7 +137,7 @@ void GateBoyTimer::tock2(
 
   /*#p03.UBOT*/ wire _UBOT_DIV01n = not1b(div.UFOR_DIV01p.qp_new2());
   /*#p03.UVYR*/ wire _UVYR_DIV03n = not1b(div.TERO_DIV03p.qp_new2());
-  /* p01.UVYN*/ wire _UVYN_DIV05n = not1b(div.TAMA_DIV05p.qp_new2());
+  /*#p01.UVYN*/ wire _UVYN_DIV05n = not1b(div.TAMA_DIV05p.qp_new2());
   /* p01.UREK*/ wire _UREK_DIV07n = not1b(div.TULU_DIV07p.qp_new2());
 
   /*#p03.UKAP*/ wire _UKAP_CLK_MUXa  = mux2nb(SOPU_TAC0p.qp_new2(), _UVYN_DIV05n, _UVYR_DIV03n);

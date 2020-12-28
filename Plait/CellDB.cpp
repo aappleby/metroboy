@@ -81,13 +81,72 @@ set<string> valid_gate_types = {
   "nor_latch",
   "tp_latchn",
   "tp_latchp",
+
+  "pin_out_pull_hilo",
+  "pin_out_dp",
+  "pin_out_hilo",
 };
+
+void Cell::sanity_check() const {
+  CHECK_N(page.empty());
+  CHECK_N(tag.empty());
+  CHECK_N(gate.empty());
+  CHECK_N(args.empty());
+}
+
+void Cell::merge(const Cell& c) {
+  if (verified.empty()) verified = c.verified;
+  if (page.empty())     page = c.page;
+  if (tag.empty())      tag = c.tag;
+  if (gate.empty())     gate = c.gate;
+  if (bus.empty())      bus = c.bus;
+  if (pin.empty())      pin = c.pin;
+  if (doc.empty())      doc = c.doc;
+  if (args.empty())     args = c.args;
+  for (auto n : c.names) names.insert(n);
+
+  CHECK_P(c.verified.empty() || verified == c.verified);
+  CHECK_P(c.page.empty() || page == c.page);
+  CHECK_P(c.tag.empty() || tag == c.tag);
+
+  if (!c.gate.empty()) {
+    // FIXME need a better way of handling gates with multiple outputs...
+    if (gate == "add_s" || gate == "add_c") {
+      CHECK_P(c.gate == "add_s" || c.gate == "add_c");
+    }
+    else {
+      CHECK_P(gate == c.gate);
+    }
+  }
+
+  CHECK_P(c.bus.empty() || bus == c.bus);
+  CHECK_P(c.pin.empty() || pin == c.pin);
+  CHECK_P(c.doc.empty() || doc == c.doc);
+
+  if (!c.args.empty()) {
+    CHECK_P(args.size() == c.args.size());
+    for (size_t i = 0; i < args.size(); i++) {
+      CHECK_P(args[i] == c.args[i]);
+    }
+  }
+}
 
 void Cell::dump(Dumper& d) {
   //d("p%s.%s = %s(", page.c_str(), tag.c_str(), gate.c_str());
   //for (auto arg : args)   d("%s ", arg.c_str());
   //d(");\n");
 
+  d("%s", verified.c_str());
+  d("p%s.", page.c_str());
+  d("%s ", tag.c_str());
+  d("%-10s ", gate.c_str());
+  d("%-20s ", bus.c_str());
+  d("("); for (auto arg : args)   d("%s ", arg.c_str());  d(") ");
+  d("("); for (auto name : names) d("%s ", name.c_str()); d(") ");
+  d("%s ", doc.c_str());
+  d("\n");
+
+  /*
   d("Page  : %s\n", page.c_str());
   d("Tag   : %s\n", tag.c_str());
   d("Gate  : %s\n", gate.c_str());
@@ -96,6 +155,7 @@ void Cell::dump(Dumper& d) {
   d("Args  : "); for (auto arg : args)   d("%s ", arg.c_str());  d("\n");
   d("Names : "); for (auto name : names) d("%s ", name.c_str()); d("\n");
   d("\n");
+  */
 }
 
 //-----------------------------------------------------------------------------
@@ -106,11 +166,19 @@ void Cell::dump(Dumper& d) {
 bool CellDB::parse_tag_comment(Cell& c, const std::string& tag_comment) {
   static regex valid_tag(R"(^\/\*(.?)p([0-9]{2})\.([A-Z]{4})\*\/$)");
 
+  static regex pin_tag(R"(^\/\*(.?)(PIN[0-9]{2})\*\/$)");
+
   smatch match;
   if (regex_match(tag_comment,  match, valid_tag)) {
     c.verified = match[1].str();
     c.page = match[2].str();
     c.tag = match[3].str();
+    return true;
+  }
+  else if (regex_match(tag_comment, match, pin_tag)) {
+    //printf("Pin tag %s\n", tag_comment.c_str());
+    c.verified = match[1].str();
+    c.pin = match[2].str();
     return true;
   }
   else {
@@ -249,6 +317,21 @@ bool CellDB::parse_bus_name(Cell& c, const string& bus_name) {
 }
 
 //-----------------------------------------------------------------------------
+
+bool CellDB::parse_pin_name(Cell& c, const string& bus_name) {
+  static regex valid_pin_name(R"(^(?:\w+\.)*(PIN\d{2}_\w+)$)");
+
+  smatch match;
+  if (regex_match(bus_name, match, valid_pin_name)) {
+    c.names.insert(match[1].str());
+    return true;
+  } else {
+    printf("Could not parse pin name %s\n", bus_name.c_str());
+    return false;
+  }
+}
+
+//-----------------------------------------------------------------------------
 // everything after the comment tag
 
 bool CellDB::parse_rest(Cell& c, const string& rest) {
@@ -262,6 +345,8 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
   static regex dff_call(R"(^(.*)\.\s*(dff\w+\(.*$))");
   static regex latch_call(R"(^(.*)\.\s*(.*_latch[pn]?\(.*$))");
   static regex set_call(R"(^(.*)\.\s*set\((.*)\).*)");
+
+  static regex pin_call(R"(^(.*)\.\s*(pin\w+\(.*$))");
 
   //rest.erase(remove_if(rest.begin(), rest.end(), ::isspace), rest.end());
   bool result = true;
@@ -287,6 +372,10 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
   }
   else if (regex_match(rest, match, tri_call)) {
     result &= parse_bus_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
+  }
+  else if (regex_match(rest, match, pin_call)) {
+    result &= parse_pin_name(c, match[1].str());
     result &= parse_cell_def(c, match[2].str());
   }
   else if (regex_match(rest, match, dff_call)) {
@@ -351,10 +440,18 @@ bool CellDB::parse_file(const std::string& path) {
     Cell c;
     if (parse_line(c, line)) {
       total_tagged_lines++;
+      //c.dump(d);
       //if (c.doc.size()) c.dump(d);
       //if (c.args.size() > 3) c.dump(d);
       //if (c.names.size() > 0) c.dump(d);
-      if (c.gate == "tri10_np") c.dump(d);
+      //if (c.gate == "tri10_np") c.dump(d);
+
+      if (!c.pin.empty()) {
+        pin_map[c.pin].merge(c);
+      }
+      else {
+        cell_map[c.tag].merge(c);
+      }
     }
   }
   return result;
@@ -387,11 +484,58 @@ bool CellDB::parse_dir(const std::string& path) {
     }
   }
 
+  //----------------------------------------
+  // Check that all cells are sane and all args have a corresponding cell
+
+  for (const auto& [key, value] : cell_map) {
+    value.sanity_check();
+
+    for (const auto& arg : value.args) {
+      if (arg.starts_with("BUS_")) continue;
+      if (arg.starts_with("SIG_")) continue;
+      if (arg.starts_with("PIN")) continue;
+
+      if (cell_map.count(arg) == 0) {
+        printf("Can't find definition for cell %s\n", arg.c_str());
+      }
+      else {
+        cell_map[arg].mark++;
+      }
+    }
+  }
+
+  //----------------------------------------
+  // Check that all cells are used by some other cell or pin
+
+  // FIXME - need cells for pins...
+
+  for (auto& [key, value] : cell_map) {
+    value.mark = 0;
+    if (!value.bus.empty()) value.mark++;
+  }
+
+  for (auto& [key, value] : cell_map) {
+    for (const auto& arg : value.args) {
+      cell_map[arg].mark++;
+    }
+  }
+
+  int unused_count = 0;
+  for (auto& [key, value] : cell_map) {
+    if (value.mark == 0) {
+      printf("Cell %s unused\n", value.tag.c_str());
+      unused_count++;
+    }
+  }
+
+  //----------------------------------------
+
   printf("Total lines %d\n", total_lines);
   printf("Total tagged lines %d\n", total_tagged_lines);
   printf("Total pages %zd\n", all_pages.size());
   printf("Unique tags %zd\n", all_tags.size());
   printf("Verified tags %zd\n", verified_tags.size());
+  printf("Unused tags %d\n", unused_count);
 
   //for (auto tag : all_tags) printf("%s ", tag.c_str());
   //for (auto bus : all_buses) printf("%s\n", bus.c_str());

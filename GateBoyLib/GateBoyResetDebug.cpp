@@ -23,6 +23,11 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire SIG_CLKREQ, wire SIG_
 
   /*#p25.SYCY*/ wire _SYCY_MODE_DBG2n = not1b(UNOR_MODE_DBG2p());
   /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n, CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn_old2());
+
+  // APET
+  // APER
+  // AMUT
+  // BURO
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -141,10 +141,10 @@ void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p06.DOLA*/ wire _DOLA_SER_DATA4_SETn = nand2b(cpu_bus.BUS_CPU_D[4].qp_new2(), _DAKU_FF01_WRp);
   /* p06.ELOK*/ wire _ELOK_SER_DATA5_SETn = nand2b(cpu_bus.BUS_CPU_D[5].qp_new2(), _DAKU_FF01_WRp);
   /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2b(cpu_bus.BUS_CPU_D[6].qp_new2(), _DAKU_FF01_WRp);
-  /* p06.EFEF*/ wire _EFEL_SER_DATA7_SETn = nand2b(cpu_bus.BUS_CPU_D[7].qp_new2(), _DAKU_FF01_WRp);
+  /* p06.EFEF*/ wire _EFEF_SER_DATA7_SETn = nand2b(cpu_bus.BUS_CPU_D[7].qp_new2(), _DAKU_FF01_WRp);
 
   /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1b(PIN69_SIN.int_qp_new());
-  /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEL_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old2());
+  /* p06.EDER*/ EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEF_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, EROD_SER_DATA6.qp_old2());
   /* p06.EROD*/ EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, EJAB_SER_DATA5.qp_old2());
   /* p06.EJAB*/ EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, DOVU_SER_DATA4.qp_old2());
   /* p06.DOVU*/ DOVU_SER_DATA4.dff22(_EPYT_SER_CLK, _DOLA_SER_DATA4_SETn, _DYLY_SER_DATA4_RSTn, DOJO_SER_DATA3.qp_old2());

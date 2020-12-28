@@ -75,31 +75,31 @@ struct GateBoyExtBus {
     ext_addr_latch.reset_to_cart();
     ext_data_latch.reset_to_cart();
 
-    PIN01_ADDR[ 0].reset(0);
-    PIN01_ADDR[ 1].reset(1);
-    PIN01_ADDR[ 2].reset(0);
-    PIN01_ADDR[ 3].reset(0);
-    PIN01_ADDR[ 4].reset(1);
-    PIN01_ADDR[ 5].reset(1);
-    PIN01_ADDR[ 6].reset(0);
-    PIN01_ADDR[ 7].reset(1);
-    PIN01_ADDR[ 8].reset(1);
-    PIN01_ADDR[ 9].reset(1);
-    PIN01_ADDR[10].reset(1);
-    PIN01_ADDR[11].reset(1);
-    PIN01_ADDR[12].reset(1);
-    PIN01_ADDR[13].reset(1);
-    PIN01_ADDR[14].reset(1);
-    PIN01_ADDR[15].reset(0);
+    PIN01_A00.reset(0);
+    PIN02_A01.reset(1);
+    PIN03_A02.reset(0);
+    PIN04_A03.reset(0);
+    PIN05_A04.reset(1);
+    PIN06_A05.reset(1);
+    PIN07_A06.reset(0);
+    PIN08_A07.reset(1);
+    PIN09_A08.reset(1);
+    PIN10_A09.reset(1);
+    PIN11_A10.reset(1);
+    PIN12_A11.reset(1);
+    PIN13_A12.reset(1);
+    PIN14_A13.reset(1);
+    PIN15_A14.reset(1);
+    PIN16_A15.reset(0);
 
-    PIN17_DATA[0].reset(0);
-    PIN17_DATA[1].reset(0);
-    PIN17_DATA[2].reset(0);
-    PIN17_DATA[3].reset(0);
-    PIN17_DATA[4].reset(0);
-    PIN17_DATA[5].reset(0);
-    PIN17_DATA[6].reset(0);
-    PIN17_DATA[7].reset(0);
+    PIN17_D00.reset(0);
+    PIN18_D01.reset(0);
+    PIN19_D02.reset(0);
+    PIN20_D03.reset(0);
+    PIN21_D04.reset(0);
+    PIN22_D05.reset(0);
+    PIN23_D06.reset(0);
+    PIN24_D07.reset(0);
   }
 
   void copy_addr_latch_to_pins(
@@ -124,8 +124,8 @@ struct GateBoyExtBus {
   void write_pins_to_ext(uint8_t* cart_ram, uint8_t* ext_ram);
 
   void dump(Dumper& d) {
-    d.dump_slice2n("PIN01_ADDR : ", PIN01_ADDR, 16);
-    d.dump_slice2n("PIN17_DATA : ", PIN17_DATA, 8);
+    d.dump_slice2n("PIN01_ADDR : ", &PIN01_A00, 16);
+    d.dump_slice2n("PIN17_DATA : ", &PIN17_D00, 8);
     d.dump_bitn   ("PIN80_CSn  : ", PIN80_CSn.state);
     d.dump_bitn   ("PIN79_RDn  : ", PIN79_RDn.state);
     d.dump_bitn   ("PIN78_WRn  : ", PIN78_WRn.state);
@@ -133,8 +133,32 @@ struct GateBoyExtBus {
     d.dump_slice2n("DATA LATCH : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   }
 
-  PinOut PIN01_ADDR[16]; // Pins 01 - 16
-  PinIO  PIN17_DATA[8];  // Pins 17 - 24
+  PinOut PIN01_A00;
+  PinOut PIN02_A01;
+  PinOut PIN03_A02;
+  PinOut PIN04_A03;
+  PinOut PIN05_A04;
+  PinOut PIN06_A05;
+  PinOut PIN07_A06;
+  PinOut PIN08_A07;
+  PinOut PIN09_A08;
+  PinOut PIN10_A09;
+  PinOut PIN11_A10;
+  PinOut PIN12_A11;
+  PinOut PIN13_A12;
+  PinOut PIN14_A13;
+  PinOut PIN15_A14;
+  PinOut PIN16_A15;
+
+  PinIO  PIN17_D00;
+  PinIO  PIN18_D01;
+  PinIO  PIN19_D02;
+  PinIO  PIN20_D03;
+  PinIO  PIN21_D04;
+  PinIO  PIN22_D05;
+  PinIO  PIN23_D06;
+  PinIO  PIN24_D07;
+
   PinOut PIN80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
   PinOut PIN79_RDn;      // RDn idles low, goes high on phase B for an external write
   PinOut PIN78_WRn;      // WRn idles high, goes low during EFG if there's a write

@@ -228,7 +228,7 @@ void RegLCDC::read(GateBoyCpuBus& cpu_bus)
   /* p23.VOKE*/ cpu_bus.BUS_CPU_D[4].tri6_nn(_WYCE_FF40_RDn, WEXU_LCDC_BGTILEn.qp_new2());
   /* p23.VATO*/ cpu_bus.BUS_CPU_D[5].tri6_nn(_WYCE_FF40_RDn, WYMO_LCDC_WINENn.qp_new2());
   /*#p23.VAHA*/ cpu_bus.BUS_CPU_D[6].tri6_nn(_WYCE_FF40_RDn, WOKY_LCDC_WINMAPn.qp_new2());
-  /*#p23.VAHA*/ cpu_bus.BUS_CPU_D[7].tri6_nn(_WYCE_FF40_RDn, XONA_LCDC_LCDENn.qp_new2());
+  /*#p23.XEBU*/ cpu_bus.BUS_CPU_D[7].tri6_nn(_WYCE_FF40_RDn, XONA_LCDC_LCDENn.qp_new2());
 }
 
 void RegLCDC::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
@@ -242,7 +242,7 @@ void RegLCDC::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
   /* p23.WEXU*/ WEXU_LCDC_BGTILEn.dff9(_XUBO_FF40_WRn, rst.XARE_SYS_RSTn(), cpu_bus.BUS_CPU_D[4].qp_old2());
   /* p23.WYMO*/ WYMO_LCDC_WINENn .dff9(_XUBO_FF40_WRn, rst.XARE_SYS_RSTn(), cpu_bus.BUS_CPU_D[5].qp_old2());
   /* p23.WOKY*/ WOKY_LCDC_WINMAPn.dff9(_XUBO_FF40_WRn, rst.XARE_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp_old2());
-  /* p23.WOKY*/ XONA_LCDC_LCDENn. dff9(_XUBO_FF40_WRn, rst.XARE_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old2());
+  /* p23.XONA*/ XONA_LCDC_LCDENn. dff9(_XUBO_FF40_WRn, rst.XARE_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -651,16 +651,16 @@ void TileTempA::tock(Bus BUS_VRAM_Dp[8], wire LOMA_LATCH_TILE_DAn)
 
 void TileTempB::tock(Bus BUS_VRAM_Dp[8], wire LABU_LATCH_TILE_DBn)
 {
-  wire _VYPO_VCC = 1;
+  wire PIN58_VCC = 1;
   // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
-  /* p32.RAWU*/ RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[0].qp_old2());
-  /* p32.POZO*/ POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[1].qp_old2());
-  /* p32.PYZO*/ PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[2].qp_old2());
-  /* p32.POXA*/ POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[3].qp_old2());
-  /* p32.PULO*/ PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[4].qp_old2());
-  /* p32.POJU*/ POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[5].qp_old2());
-  /* p32.POWY*/ POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[6].qp_old2());
-  /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, _VYPO_VCC, BUS_VRAM_Dp[7].qp_old2());
+  /* p32.RAWU*/ RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[0].qp_old2());
+  /* p32.POZO*/ POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[1].qp_old2());
+  /* p32.PYZO*/ PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[2].qp_old2());
+  /* p32.POXA*/ POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[3].qp_old2());
+  /* p32.PULO*/ PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[4].qp_old2());
+  /* p32.POJU*/ POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[5].qp_old2());
+  /* p32.POWY*/ POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[6].qp_old2());
+  /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[7].qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

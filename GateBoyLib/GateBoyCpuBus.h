@@ -155,21 +155,29 @@ struct GateBoyCpuBus {
   wire TOLE_CPU_VRAM_RDp(wire ABUZ_EXT_RAM_CS_CLK)
   {
    // Ignoring debug for now
-    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
+    ///*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
     ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN45_VRAM_OEn.qn_new2());
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN43_VRAM_CSn.qn_new2());
     ///*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = mux2p(_TEFY_VRAM_MCSp, _TUTO_DBG_VRAMp, _TUCA_CPU_VRAM_RDp);
-    return _TUCA_CPU_VRAM_RDp;
+
+    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = nand2b(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
+    /*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = not1b(_TUCA_CPU_VRAM_RDp);
+
+    return _TOLE_CPU_VRAM_RDp;
   }
 
   wire SALE_CPU_VRAM_WRn()
   {
     // Ignoring debug for now
-    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2b(SOSE_ADDR_VRAMp(), SIG_CPU_WRp.qp_new2());  // Schematic wrong, second input is SIG_CPU_WRp
+    ///*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2b(SOSE_ADDR_VRAMp(), SIG_CPU_WRp.qp_new2());  // Schematic wrong, second input is SIG_CPU_WRp
     ///*#p25.TAVY*/ wire _TAVY_MOEp         = not1(vram_bus.PIN45_VRAM_OEn.qn_new2());
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN43_VRAM_CSn.qn_new2());
     ///*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(_TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
-    return _TEGU_CPU_VRAM_WRn;
+
+    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), SIG_CPU_WRp.qp_new2());  // Schematic wrong, second input is SIG_CPU_WRp
+    /*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = not1b(_TEGU_CPU_VRAM_WRn);
+
+    return _SALE_CPU_VRAM_WRn;
   }
 
 };

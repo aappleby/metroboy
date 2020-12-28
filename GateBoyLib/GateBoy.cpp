@@ -468,7 +468,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire MOCE_BFETCH_DONEn_old = tile_fetcher.MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old);
   wire LYRY_BFETCH_DONEp_old = tile_fetcher.LYRY_BFETCH_DONEp_old(NYXU_BFETCH_RSTn_old);
-  wire TEKY_SFETCH_REQp_old = and4(old_match.FEPO_STORE_MATCHp(), win_reg.TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, sprite_fetcher.SOWO_SFETCH_RUNNINGn_old());
+  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(old_match.FEPO_STORE_MATCHp(), win_reg.TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, sprite_fetcher.SOWO_SFETCH_RUNNINGn_old());
 
   wire WYMO_LCDC_WINENp_old = reg_lcdc.WYMO_LCDC_WINENn.qn_old2();
 
@@ -793,32 +793,32 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN79_RDn.reset_for_pass();
     ext_bus.PIN78_WRn.reset_for_pass();
 
-    ext_bus.PIN01_ADDR[ 0].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 1].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 2].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 3].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 4].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 5].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 6].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 7].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 8].reset_for_pass();
-    ext_bus.PIN01_ADDR[ 9].reset_for_pass();
-    ext_bus.PIN01_ADDR[10].reset_for_pass();
-    ext_bus.PIN01_ADDR[11].reset_for_pass();
-    ext_bus.PIN01_ADDR[12].reset_for_pass();
-    ext_bus.PIN01_ADDR[13].reset_for_pass();
-    ext_bus.PIN01_ADDR[14].reset_for_pass();
-    ext_bus.PIN01_ADDR[15].reset_for_pass();
+    ext_bus.PIN01_A00.reset_for_pass();
+    ext_bus.PIN02_A01.reset_for_pass();
+    ext_bus.PIN03_A02.reset_for_pass();
+    ext_bus.PIN04_A03.reset_for_pass();
+    ext_bus.PIN05_A04.reset_for_pass();
+    ext_bus.PIN06_A05.reset_for_pass();
+    ext_bus.PIN07_A06.reset_for_pass();
+    ext_bus.PIN08_A07.reset_for_pass();
+    ext_bus.PIN09_A08.reset_for_pass();
+    ext_bus.PIN10_A09.reset_for_pass();
+    ext_bus.PIN11_A10.reset_for_pass();
+    ext_bus.PIN12_A11.reset_for_pass();
+    ext_bus.PIN13_A12.reset_for_pass();
+    ext_bus.PIN14_A13.reset_for_pass();
+    ext_bus.PIN15_A14.reset_for_pass();
+    ext_bus.PIN16_A15.reset_for_pass();
 
     // FIXME this is slightly weird
-    ext_bus.PIN17_DATA[0].state = 0b00100000;
-    ext_bus.PIN17_DATA[1].state = 0b00100000;
-    ext_bus.PIN17_DATA[2].state = 0b00100000;
-    ext_bus.PIN17_DATA[3].state = 0b00100000;
-    ext_bus.PIN17_DATA[4].state = 0b00100000;
-    ext_bus.PIN17_DATA[5].state = 0b00100000;
-    ext_bus.PIN17_DATA[6].state = 0b00100000;
-    ext_bus.PIN17_DATA[7].state = 0b00100000;
+    ext_bus.PIN17_D00.state = 0b00100000;
+    ext_bus.PIN18_D01.state = 0b00100000;
+    ext_bus.PIN19_D02.state = 0b00100000;
+    ext_bus.PIN20_D03.state = 0b00100000;
+    ext_bus.PIN21_D04.state = 0b00100000;
+    ext_bus.PIN22_D05.state = 0b00100000;
+    ext_bus.PIN23_D06.state = 0b00100000;
+    ext_bus.PIN24_D07.state = 0b00100000;
 
     ext_bus.set_control_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);
@@ -886,7 +886,7 @@ void GateBoy::tock_slow(int pass_index) {
     oam_bus.sprite_index_to_addr_bus(dma, BUS_SPR_I, ppu_reg.XYMU_RENDERINGp());
     oam_bus.scan_index_to_addr_bus(sprite_scanner, ACYL_SCANNINGp);
     oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp);
-    oam_bus.ext_to_data_bus(dma, ext_bus.PIN17_DATA);
+    oam_bus.ext_to_data_bus(dma, ext_bus);
     oam_bus.vram_to_data_bus(dma, vram_bus.BUS_VRAM_Dp);
     oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp);
     oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());

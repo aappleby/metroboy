@@ -4,8 +4,11 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 
 struct Cell {
+  void sanity_check() const;
+  void merge(const Cell& c);
   void dump(Dumper& d);
 
   std::string verified;
@@ -13,9 +16,12 @@ struct Cell {
   std::string tag;
   std::string gate;
   std::string bus;
+  std::string pin;
   std::string doc;
-  std::set<std::string> names;
   std::vector<std::string> args;
+  std::set<std::string> names;
+
+  int mark = 0;
 };
 
 struct CellDB {
@@ -30,6 +36,7 @@ struct CellDB {
   bool parse_cell_input(Cell& c, const std::string& input);
 
   bool parse_bus_name(Cell& c, const std::string& bus_name);
+  bool parse_pin_name(Cell& c, const std::string& bus_name);
 
   bool parse_tag_comment(Cell& c, const std::string& tag_comment);
   bool parse_reg_type(Cell& c, const std::string& type);
@@ -43,6 +50,9 @@ struct CellDB {
   std::set<std::string> all_pins;
 
   std::set<std::string> verified_tags;
+
+  std::map<std::string, Cell> cell_map;
+  std::map<std::string, Cell> pin_map;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

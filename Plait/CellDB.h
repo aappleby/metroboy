@@ -8,32 +8,35 @@
 struct Cell {
   void dump(Dumper& d);
 
+  std::string verified;
   std::string page;
   std::string tag;
-  std::string name;
   std::string gate;
-  std::vector<std::string> args;
+  std::string bus;
   std::string doc;
+  std::set<std::string> names;
+  std::vector<std::string> args;
 };
 
 struct CellDB {
   bool parse_dir(const std::string& path);
   bool parse_file(const std::string& path);
-  bool parse_line(const std::string& line);
-  bool parse_rest(const std::string& rest);
+  bool parse_line(Cell& c, const std::string& line);
+  bool parse_rest(Cell& c, const std::string& rest);
 
-  bool parse_cell_name(const std::string& cell_name);
-  bool parse_cell_def(const std::string& value);
-  bool parse_cell_input_list(const std::string& arglist);
-  bool parse_cell_input(const std::string& input);
+  bool parse_cell_name(Cell& c, const std::string& cell_name);
+  bool parse_cell_def(Cell& c, const std::string& value);
+  bool parse_cell_input_list(Cell& c, const std::string& arglist);
+  bool parse_cell_input(Cell& c, const std::string& input);
 
-  bool parse_bus_name(const std::string& bus_name);
+  bool parse_bus_name(Cell& c, const std::string& bus_name);
 
-  bool parse_tag_comment(const std::string& tag_comment);
-  bool parse_reg_type(const std::string& type);
-  bool parse_gate_type(const std::string& type);
+  bool parse_tag_comment(Cell& c, const std::string& tag_comment);
+  bool parse_reg_type(Cell& c, const std::string& type);
+  bool parse_gate_type(Cell& c, const std::string& type);
 
   std::set<std::string> all_pages;
+  std::set<std::string> all_names;
   std::set<std::string> all_tags;
   std::set<std::string> all_buses;
   std::set<std::string> all_signals;

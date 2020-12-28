@@ -203,12 +203,12 @@ void GateBoyOamBus::dma_to_addr_bus(GateBoyDMA& dma) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyOamBus::sprite_index_to_addr_bus(GateBoyDMA& dma, Bus BUS_SPR_I[6], wire XYMU_RENDERINGp){
-  wire VCC = 1;
+  wire PIN58_VCC = 1;
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_SFETCHINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SFETCHINGn = not1b(_AJON_SFETCHINGp);
-  /* p28.GECA*/ BUS_OAM_An[0].tri6_nn(_BETE_SFETCHINGn, VCC);
-  /* p28.WYDU*/ BUS_OAM_An[1].tri6_nn(_BETE_SFETCHINGn, VCC);
+  /* p28.GECA*/ BUS_OAM_An[0].tri6_nn(_BETE_SFETCHINGn, PIN58_VCC);
+  /* p28.WYDU*/ BUS_OAM_An[1].tri6_nn(_BETE_SFETCHINGn, PIN58_VCC);
   /* p28.GYBU*/ BUS_OAM_An[2].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[0].qp_new2());
   /* p28.GYKA*/ BUS_OAM_An[3].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[1].qp_new2());
   /* p28.FABY*/ BUS_OAM_An[4].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[2].qp_new2());
@@ -221,10 +221,10 @@ void GateBoyOamBus::sprite_index_to_addr_bus(GateBoyDMA& dma, Bus BUS_SPR_I[6], 
 
 void GateBoyOamBus::scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp) {
   // OAM address from sprite scanner
-  wire GND = 0;
+  wire PIN36_GND = 0;
   /* p28.APAR*/ wire _APAR_SCANNINGn = not1b(ACYL_SCANNINGp);
-  /* p28.GEFY*/ BUS_OAM_An[0].tri6_nn(_APAR_SCANNINGn, GND);
-  /* p28.WUWE*/ BUS_OAM_An[1].tri6_nn(_APAR_SCANNINGn, GND);
+  /* p28.GEFY*/ BUS_OAM_An[0].tri6_nn(_APAR_SCANNINGn, PIN36_GND);
+  /* p28.WUWE*/ BUS_OAM_An[1].tri6_nn(_APAR_SCANNINGn, PIN36_GND);
   /* p28.GUSE*/ BUS_OAM_An[2].tri6_nn(_APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new2());
   /* p28.GEMA*/ BUS_OAM_An[3].tri6_nn(_APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new2());
   /* p28.FUTO*/ BUS_OAM_An[4].tri6_nn(_APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new2());

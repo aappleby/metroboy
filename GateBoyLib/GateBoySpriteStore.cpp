@@ -400,7 +400,7 @@ SpriteMatchFlag SpriteStore::get_match_flags_new(wire _AROR_MATCH_ENp_new, const
 //------------------------------------------------------------------------------------------------------------------------
 
 SpriteFirstMatch SpriteStore::get_first_match(SpriteMatchFlag match_flag) const {
-  wire GND = 0;
+  wire PIN36_GND = 0;
   /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1b(match_flag.YDUG_STORE0_MATCHn);
   /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1b(match_flag.DYDU_STORE1_MATCHn);
   /* p29.GUPO*/ wire _GUPO_STORE2_MATCH = not1b(match_flag.DEGO_STORE2_MATCHn);
@@ -411,7 +411,7 @@ SpriteFirstMatch SpriteStore::get_first_match(SpriteMatchFlag match_flag) const 
   /* p29.GYTE*/ wire _GYTE_STORE7_MATCH = not1b(match_flag.DYKA_STORE7_MATCHn);
   /* p29.GEKE*/ wire _GEKE_STORE8_MATCH = not1b(match_flag.EFYL_STORE8_MATCHn);
 
-  /* p29.GEZE*/ wire _GEZE_STORE0_MATCH = or2(_WEFU_STORE0_MATCH, GND);
+  /* p29.GEZE*/ wire _GEZE_STORE0_MATCH = or2(_WEFU_STORE0_MATCH, PIN36_GND);
   /* p29.FUMA*/ wire _FUMA_STORE1_MATCH = or2(_GAJA_STORE1_MATCH, _GEZE_STORE0_MATCH);
   /* p29.GEDE*/ wire _GEDE_STORE2_MATCH = or2(_GUPO_STORE2_MATCH, _FUMA_STORE1_MATCH);
   /* p29.WUTO*/ wire _WUTO_STORE3_MATCH = or2(_WEBO_STORE3_MATCH, _GEDE_STORE2_MATCH);
@@ -421,7 +421,7 @@ SpriteFirstMatch SpriteStore::get_first_match(SpriteMatchFlag match_flag) const 
   /* p29.FAVO*/ wire _FAVO_STORE7_MATCH = or2(_GYTE_STORE7_MATCH, _WYLA_STORE6_MATCH);
   /* p29.GYGA*/ wire _GYGA_STORE8_MATCH = or2(_GEKE_STORE8_MATCH, _FAVO_STORE7_MATCH);
 
-  /* p29.GUVA*/ wire _GUVA_SPRITE0_GETp = nor2b(match_flag.YDUG_STORE0_MATCHn, GND);
+  /* p29.GUVA*/ wire _GUVA_SPRITE0_GETp = nor2b(match_flag.YDUG_STORE0_MATCHn, PIN36_GND);
   /* p29.ENUT*/ wire _ENUT_SPRITE1_GETp = nor2b(match_flag.DYDU_STORE1_MATCHn, _GEZE_STORE0_MATCH);
   /* p29.EMOL*/ wire _EMOL_SPRITE2_GETp = nor2b(match_flag.DEGO_STORE2_MATCHn, _FUMA_STORE1_MATCH);
   /* p29.GYFY*/ wire _GYFY_SPRITE3_GETp = nor2b(match_flag.YLOZ_STORE3_MATCHn, _GEDE_STORE2_MATCH);
@@ -907,15 +907,15 @@ void SpriteStore::oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERI
 //------------------------------------------------------------------------------------------------------------------------
 
 void SpriteStore::ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus BUS_SPR_L[4]) {
-  wire GND = 0;
+  wire PIN36_GND = 0;
 
   /*#p29.EBOS*/ wire EBOS_LY0n_new_evn = not1b(reg_ly.MUWY_LY0p.qp_new2());
   /* p29.DASA*/ wire DASA_LY1n_new_evn = not1b(reg_ly.MYRO_LY1p.qp_new2());
   /* p29.FUKY*/ wire FUKY_LY2n_new_evn = not1b(reg_ly.LEXA_LY2p.qp_new2());
   /* p29.FUVE*/ wire FUVE_LY3n_new_evn = not1b(reg_ly.LYDO_LY3p.qp_new2());
 
-  /* p29.ERUC*/ wire _ERUC_YDIFF_S0_new = add_s(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), GND);
-  /* p29.ERUC*/ wire _ERUC_YDIFF_C0_new = add_c(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), GND);
+  /* p29.ERUC*/ wire _ERUC_YDIFF_S0_new = add_s(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), PIN36_GND);
+  /* p29.ERUC*/ wire _ERUC_YDIFF_C0_new = add_c(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), PIN36_GND);
   /* p29.ENEF*/ wire _ENEF_YDIFF_S1_new = add_s(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new2(), _ERUC_YDIFF_C0_new);
   /* p29.ENEF*/ wire _ENEF_YDIFF_C1_new = add_c(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new2(), _ERUC_YDIFF_C0_new);
   /* p29.FECO*/ wire _FECO_YDIFF_S2_new = add_s(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p.qp_new2(), _ENEF_YDIFF_C1_new);

@@ -1,5 +1,7 @@
 #include "Plait/CellDB.h"
 
+#include "CoreLib/Debug.h"
+
 #include <map>
 #include <set>
 #include <vector>
@@ -82,14 +84,17 @@ set<string> valid_gate_types = {
 };
 
 void Cell::dump(Dumper& d) {
-  d("Page : %s\n", page.c_str());
-  d("Tag  : %s\n", tag.c_str());
-  d("Name : %s\n", name.c_str());
-  d("Func : %s\n", gate.c_str());
-  d("Args : ");
-  for(auto arg : args) d("%s", arg.c_str());
-  d("\n");
-  d("Doc  : \"%s\"\n", doc.c_str());
+  //d("p%s.%s = %s(", page.c_str(), tag.c_str(), gate.c_str());
+  //for (auto arg : args)   d("%s ", arg.c_str());
+  //d(");\n");
+
+  d("Page  : %s\n", page.c_str());
+  d("Tag   : %s\n", tag.c_str());
+  d("Gate  : %s\n", gate.c_str());
+  d("Bus   : %s\n", bus.c_str());
+  if (!doc.empty()) d("Doc   : \"%s\"\n", doc.c_str());
+  d("Args  : "); for (auto arg : args)   d("%s ", arg.c_str());  d("\n");
+  d("Names : "); for (auto name : names) d("%s ", name.c_str()); d("\n");
   d("\n");
 }
 
@@ -98,18 +103,14 @@ void Cell::dump(Dumper& d) {
 // /* p00.ABCD*/
 // /*p00.ABCD*/
 
-bool CellDB::parse_tag_comment(const std::string& tag_comment) {
+bool CellDB::parse_tag_comment(Cell& c, const std::string& tag_comment) {
   static regex valid_tag(R"(^\/\*(.?)p([0-9]{2})\.([A-Z]{4})\*\/$)");
 
-  smatch matches;
-  if (regex_match(tag_comment,  matches, valid_tag)) {
-    string verified = matches[1].str();
-    string page = matches[2].str();
-    string tag = matches[3].str();
-    if (verified == "#") verified_tags.insert(tag);
-    all_pages.insert(page);
-    all_tags.insert(tag);
-
+  smatch match;
+  if (regex_match(tag_comment,  match, valid_tag)) {
+    c.verified = match[1].str();
+    c.page = match[2].str();
+    c.tag = match[3].str();
     return true;
   }
   else {
@@ -120,8 +121,9 @@ bool CellDB::parse_tag_comment(const std::string& tag_comment) {
 
 //-----------------------------------------------------------------------------
 
-bool CellDB::parse_gate_type(const std::string& type) {
+bool CellDB::parse_gate_type(Cell& c, const std::string& type) {
   if (valid_gate_types.contains(type)) {
+    c.gate = type;
     return true;
   }
   else {
@@ -132,7 +134,8 @@ bool CellDB::parse_gate_type(const std::string& type) {
 
 //-----------------------------------------------------------------------------
 
-bool CellDB::parse_reg_type(const std::string& type) {
+bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
+  (void)c;
   if (valid_reg_types.contains(type)) {
     return true;
   }
@@ -144,29 +147,33 @@ bool CellDB::parse_reg_type(const std::string& type) {
 
 //-----------------------------------------------------------------------------
 
-bool CellDB::parse_cell_input(const std::string& arg) {
+bool CellDB::parse_cell_input(Cell& c, const std::string& arg) {
 
-  static regex tagged_arg(R"(^(?:\w+\.)*[A-Z]{4}.*)");
-  static regex bus_arg(R"(^(?:\w+\.)*BUS_.*)");
-  static regex sig_arg(R"(^(?:\w+\.)*SIG_.*)");
-  static regex pin_arg(R"(^(?:\w+\.)*PIN\d{2}_.*)");
+  static regex tagged_arg(R"(^(?:\w+\.)*([A-Z]{4}).*)");
+  static regex bus_arg(R"(^(?:\w+\.)*(BUS_[^.]*)(?:\.[^.]+)*)");
+  static regex sig_arg(R"(^(?:\w+\.)*(SIG_[^.]*)(?:\.[^.]+)*)");
+  static regex pin_arg(R"(^(?:\w+\.)*(PIN\d{2}_[^.]*)(?:\.[^.]+)*)");
 
-  smatch matches;
-
-  if (regex_match(arg, matches, tagged_arg)) {
+  smatch match;
+  if (regex_match(arg, match, tagged_arg)) {
+    c.args.push_back(match[1].str());
     return true;
   }
-  else if (regex_match(arg, matches, bus_arg)) {
+  else if (regex_match(arg, match, bus_arg)) {
+    //printf("bus arg %s\n", arg.c_str());
+    c.args.push_back(match[1].str());
     return true;
   }
-  else if (regex_match(arg, matches, sig_arg)) {
+  else if (regex_match(arg, match, sig_arg)) {
+    c.args.push_back(match[1].str());
     return true;
   }
-  else if (regex_match(arg, matches, pin_arg)) {
+  else if (regex_match(arg, match, pin_arg)) {
+    c.args.push_back(match[1].str());
     return true;
   }
   else {
-    printf("Could not parse arg %s\n", arg.c_str());
+    printf("Could not parse arg \"%s\"\n", arg.c_str());
     return false;
   }
 }
@@ -174,12 +181,15 @@ bool CellDB::parse_cell_input(const std::string& arg) {
 //-----------------------------------------------------------------------------
 // <input>, <input>...
 
-bool CellDB::parse_cell_input_list(const string& arglist) {
-  static regex arg_regex("\\s*_?(.*?),");
+bool CellDB::parse_cell_input_list(Cell& c, const string& arglist_c) {
+  static regex arg_regex(R"(\s*_?(.+?)(,|$))");
+
+  string arglist = arglist_c;
+  arglist.erase(remove_if(arglist.begin(), arglist.end(), ::isspace), arglist.end());
 
   bool result = true;
   for (sregex_iterator i = sregex_iterator(arglist.begin(), arglist.end(), arg_regex); i != sregex_iterator(); i++) {
-    result &= parse_cell_input((*i)[1].str().c_str());
+    result &= parse_cell_input(c, (*i)[1].str().c_str());
   }
   return result;
 }
@@ -187,16 +197,17 @@ bool CellDB::parse_cell_input_list(const string& arglist) {
 //-----------------------------------------------------------------------------
 // <cell_type> ( <input list> );
 
-bool CellDB::parse_cell_def(const string& value) {
-  static regex valid_value(R"((.*?)\s*\((.*)\);.*)");
+bool CellDB::parse_cell_def(Cell& c, const string& value) {
+  static regex valid_value(R"((.*?)\s*\((.*)\);\s*(.*))");
 
   //printf("value %s\n", value.c_str());
 
   bool result = true;
-  smatch matches;
-  if (regex_match(value, matches, valid_value)) {
-    result &= parse_gate_type(matches[1].str());
-    result &= parse_cell_input_list(matches[2].str());
+  smatch match;
+  if (regex_match(value, match, valid_value)) {
+    result &= parse_gate_type(c, match[1].str());
+    result &= parse_cell_input_list(c, match[2].str());
+    c.doc = match[3].str();
   }
   else {
     printf("Could not parse value %s\n", value.c_str());
@@ -209,11 +220,12 @@ bool CellDB::parse_cell_def(const string& value) {
 // foo.bar.baz._ABCD_OTHER_STUFF
 // foo.bar.baz.ABCD_OTHER_STUFF
 
-bool CellDB::parse_cell_name(const string& name) {
-  static regex valid_cell_name(R"(^(?:\w+\.)*_?([A-Z]{4})(_?\w*)\s*$)");
+bool CellDB::parse_cell_name(Cell& c, const string& name) {
+  static regex valid_cell_name(R"(^(?:\w+\.)*_?([A-Z]{4}\w*)\s*$)");
 
-  smatch matches;
-  if (regex_match(name, matches, valid_cell_name)) {
+  smatch match;
+  if (regex_match(name, match, valid_cell_name)) {
+    c.names.insert(match[1].str());
     return true;
   } else {
     printf("Could not parse name %s\n", name.c_str());
@@ -223,13 +235,12 @@ bool CellDB::parse_cell_name(const string& name) {
 
 //-----------------------------------------------------------------------------
 
-bool CellDB::parse_bus_name(const string& bus_name) {
-  static regex valid_bus_name(R"(^(?:\w+\.)*(BUS_\w+\[\d+\])$)");
+bool CellDB::parse_bus_name(Cell& c, const string& bus_name) {
+  static regex valid_bus_name(R"(^(?:\w+\.)*(BUS_\w+\[\s*\d+\])$)");
 
-  //all_buses.insert(matches[1].str());
-
-  smatch matches;
-  if (regex_match(bus_name, matches, valid_bus_name)) {
+  smatch match;
+  if (regex_match(bus_name, match, valid_bus_name)) {
+    c.bus = match[1].str();
     return true;
   } else {
     printf("Could not parse bus name %s\n", bus_name.c_str());
@@ -240,7 +251,7 @@ bool CellDB::parse_bus_name(const string& bus_name) {
 //-----------------------------------------------------------------------------
 // everything after the comment tag
 
-bool CellDB::parse_rest(const string& rest) {
+bool CellDB::parse_rest(Cell& c, const string& rest) {
   static regex member_decl(R"(^(\w+)\s+(\w+);.*)");
   static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
   static regex local_decl(R"(^wire\s+(\w+)\s*=\s*(.*)$)");
@@ -252,49 +263,47 @@ bool CellDB::parse_rest(const string& rest) {
   static regex latch_call(R"(^(.*)\.\s*(.*_latch[pn]?\(.*$))");
   static regex set_call(R"(^(.*)\.\s*set\((.*)\).*)");
 
-  smatch matches;
-
-  //line.erase(remove_if(line.begin(), line.end(), ::isspace), line.end());
-
+  //rest.erase(remove_if(rest.begin(), rest.end(), ::isspace), rest.end());
   bool result = true;
 
-  if (regex_match(rest, matches, member_decl)) {
-    result &= parse_reg_type(matches[1].str());
-    result &= parse_cell_name(matches[2].str());
+  smatch match;
+  if (regex_match(rest, match, member_decl)) {
+    result &= parse_reg_type(c, match[1].str());
+    result &= parse_cell_name(c, match[2].str());
   }
-  else if (regex_match(rest, matches, local_decl)) {
-    result &= parse_cell_name(matches[1].str());
-    result &= parse_cell_def(matches[2].str());
+  else if (regex_match(rest, match, local_decl)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
-  else if (regex_match(rest, matches, func_decl)) {
-    result &= parse_cell_name(matches[2].str());
-    result &= parse_cell_def(matches[3].str());
+  else if (regex_match(rest, match, func_decl)) {
+    result &= parse_cell_name(c, match[2].str());
+    result &= parse_cell_def(c, match[3].str());
   }
-  else if (regex_match(rest, matches, wire_decl)) {
-    result &= parse_cell_name(matches[1].str());
+  else if (regex_match(rest, match, wire_decl)) {
+    result &= parse_cell_name(c, match[1].str());
   }
-  else if (regex_match(rest, matches, signal_decl)) {
-    result &= parse_cell_name(matches[1].str());
+  else if (regex_match(rest, match, signal_decl)) {
+    result &= parse_cell_name(c, match[1].str());
   }
-  else if (regex_match(rest, matches, tri_call)) {
-    result &= parse_bus_name(matches[1].str());
-    result &= parse_cell_def(matches[2].str());
+  else if (regex_match(rest, match, tri_call)) {
+    result &= parse_bus_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
-  else if (regex_match(rest, matches, dff_call)) {
-    result &= parse_cell_name(matches[1].str());
-    result &= parse_cell_def(matches[2].str());
+  else if (regex_match(rest, match, dff_call)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
-  else if (regex_match(rest, matches, latch_call)) {
-    result &= parse_cell_name(matches[1].str());
-    result &= parse_cell_def(matches[2].str());
+  else if (regex_match(rest, match, latch_call)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
-  else if (regex_match(rest, matches, set_call)) {
-    result &= parse_cell_name(matches[1].str());
-    result &= parse_cell_def(matches[2].str());
+  else if (regex_match(rest, match, set_call)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
-  else if (regex_match(rest, matches, member_assign)) {
-    result &= parse_cell_name(matches[1].str());
-    result &= parse_cell_def(matches[2].str());
+  else if (regex_match(rest, match, member_assign)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
   else {
     result = false;
@@ -304,35 +313,49 @@ bool CellDB::parse_rest(const string& rest) {
 
 //-----------------------------------------------------------------------------
 
-bool CellDB::parse_line(const std::string& line) {
+bool CellDB::parse_line(Cell& c, const std::string& line) {
   static regex tagged_line_regex(R"(^\s*(\/\*.*?\*\/)\s*(.*))");
-
-  total_lines++;
 
   bool result = true;
   smatch matches;
   if (regex_match(line, matches, tagged_line_regex)) {
-    total_tagged_lines++;
-    string tag = matches[1].str();
-    string rest = matches[2].str();
-    result &= parse_tag_comment(tag);
-    result &= parse_rest(rest);
+    result &= parse_tag_comment(c, matches[1].str());
+    result &= parse_rest(c, matches[2].str());
+
+    if (result) {
+      if (c.verified == "#") verified_tags.insert(c.tag);
+      all_pages.insert(c.page);
+      all_tags.insert(c.tag);
+    }
+    if (!result) {
+      printf("Could not parse line : \"%s\"\n", line.c_str());
+    }
+  }
+  else {
+    result = false;
   }
 
-  if (!result) {
-    printf("Could not parse line : \"%s\"\n", line.c_str());
-  }
   return result;
 }
 
 //-----------------------------------------------------------------------------
 
 bool CellDB::parse_file(const std::string& path) {
+  ConsoleDumper d;
+
   bool result = true;
   printf("Parsing %s\n", path.c_str());
   std::ifstream lines(path);
   for (string line; getline(lines, line); ) {
-    result &= parse_line(line);
+    total_lines++;
+    Cell c;
+    if (parse_line(c, line)) {
+      total_tagged_lines++;
+      //if (c.doc.size()) c.dump(d);
+      //if (c.args.size() > 3) c.dump(d);
+      //if (c.names.size() > 0) c.dump(d);
+      if (c.gate == "tri10_np") c.dump(d);
+    }
   }
   return result;
 }
@@ -340,7 +363,18 @@ bool CellDB::parse_file(const std::string& path) {
 //-----------------------------------------------------------------------------
 
 bool CellDB::parse_dir(const std::string& path) {
+  (void)path;
+
   bool result = true;
+#if 0
+  {
+    ConsoleDumper d;
+    string line = R"(/* p21.ROKU*/ wire ROKU_old = xor2(SYBE_PX7p.qp_old2(), SURY_old); // derp)";
+    Cell c;
+    parse_line(c, line);
+    c.dump(d);
+  }
+#else
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
       static regex src_names(R"(^GateBoy\w*\.(cpp|h)$)");
@@ -361,8 +395,10 @@ bool CellDB::parse_dir(const std::string& path) {
 
   //for (auto tag : all_tags) printf("%s ", tag.c_str());
   //for (auto bus : all_buses) printf("%s\n", bus.c_str());
+  //for (auto name : all_names) printf("%s\n", name.c_str());
 
   printf("\n");
+#endif
 
   return result;
 }

@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) {
-  wire GND = 0;
+  wire PIN36_GND = 0;
 
   /*#p29.EBOS*/ wire EBOS_LY0n_new_evn = not1b(reg_ly.MUWY_LY0p.qp_new2());
   /* p29.DASA*/ wire DASA_LY1n_new_evn = not1b(reg_ly.MYRO_LY1p.qp_new2());
@@ -20,8 +20,8 @@ SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) 
   /* p29.FEMO*/ wire FEMO_LY6n_new_evn = not1b(reg_ly.MATO_LY6p.qp_new2());
   /* p29.GUSU*/ wire GUSU_LY7n_new_evn = not1b(reg_ly.LAFO_LY7p.qp_new2());
 
-  /* p29.ERUC*/ wire _ERUC_YDIFF_S0_new = add_s(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), GND);
-  /* p29.ERUC*/ wire _ERUC_YDIFF_C0_new = add_c(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), GND);
+  /* p29.ERUC*/ wire _ERUC_YDIFF_S0_new = add_s(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), PIN36_GND);
+  /* p29.ERUC*/ wire _ERUC_YDIFF_C0_new = add_c(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new2(), PIN36_GND);
   /* p29.ENEF*/ wire _ENEF_YDIFF_S1_new = add_s(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new2(), _ERUC_YDIFF_C0_new);
   /* p29.ENEF*/ wire _ENEF_YDIFF_C1_new = add_c(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new2(), _ERUC_YDIFF_C0_new);
   /* p29.FECO*/ wire _FECO_YDIFF_S2_new = add_s(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p.qp_new2(), _ENEF_YDIFF_C1_new);
@@ -99,10 +99,10 @@ void PixCount::tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
   /* p21.TYBA*/ wire TYBA_old = and2(TUHU_PX4p.qp_old2(), TUKY_PX5p.qp_old2());
   /* p21.SURY*/ wire SURY_old = and2(TAKO_PX6p.qp_old2(), TYBA_old);
   /* p21.TYGE*/ wire TYGE_old = xor2(TAKO_PX6p.qp_old2(), TYBA_old);
-  /* p21.ROKU*/ wire ROKU_old = xor2(SYBE_PX7p.qp_old2(), SURY_old);
+  /* p21.ROKU*/ wire ROKU_old = xor2(SYBE_PX7p.qp_old2(), SURY_old); // derp
 
   /* p21.TUHU*/ TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn, TUHU_PX4p.qn_old2());
-  /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn, SAKE_old);
+  /* p21.TUKY*/ TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn, SAKE_old); // this is a doc
   /* p21.TAKO*/ TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn, TYGE_old);
   /* p21.SYBE*/ SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn, ROKU_old);
 }
@@ -125,8 +125,10 @@ wire PixCount::XANO_PX167p_new() const {
 #pragma warning(disable : 4189)
 
 BGScrollX BGScrollX::add(PixCount& pix_count, RegSCX reg_scx) {
-  /*#p26.ATAD*/ wire _ATAD_TILE_X0S = add_s(pix_count.XEHO_PX0p.qp_new2(), reg_scx.DATY_SCX0n.qn_new2(), 0);
-  /*#p26.ATAD*/ wire _ATAD_TILE_X0C = add_c(pix_count.XEHO_PX0p.qp_new2(), reg_scx.DATY_SCX0n.qn_new2(), 0);
+  wire PIN36_GND = 0;
+
+  /*#p26.ATAD*/ wire _ATAD_TILE_X0S = add_s(pix_count.XEHO_PX0p.qp_new2(), reg_scx.DATY_SCX0n.qn_new2(), PIN36_GND);
+  /*#p26.ATAD*/ wire _ATAD_TILE_X0C = add_c(pix_count.XEHO_PX0p.qp_new2(), reg_scx.DATY_SCX0n.qn_new2(), PIN36_GND);
   /* p26.BEHU*/ wire _BEHU_TILE_X1S = add_s(pix_count.SAVY_PX1p.qp_new2(), reg_scx.DUZU_SCX1n.qn_new2(), _ATAD_TILE_X0C);
   /* p26.BEHU*/ wire _BEHU_TILE_X1C = add_c(pix_count.SAVY_PX1p.qp_new2(), reg_scx.DUZU_SCX1n.qn_new2(), _ATAD_TILE_X0C);
   /* p26.APYH*/ wire _APYH_TILE_X2S = add_s(pix_count.XODU_PX2p.qp_new2(), reg_scx.CYXU_SCX2n.qn_new2(), _BEHU_TILE_X1C);
@@ -155,8 +157,10 @@ BGScrollX BGScrollX::add(PixCount& pix_count, RegSCX reg_scx) {
 }
 
 BGScrollY BGScrollY::add(RegLY& reg_ly, RegSCY& reg_scy) {
-  /*#p26.FAFO*/ wire _FAFO_TILE_Y0S = add_s(reg_ly.MUWY_LY0p.qp_new2(), reg_scy.GAVE_SCY0n.qn_new2(), 0);
-  /*#p26.FAFO*/ wire _FAFO_TILE_Y0C = add_c(reg_ly.MUWY_LY0p.qp_new2(), reg_scy.GAVE_SCY0n.qn_new2(), 0);
+  wire PIN36_GND = 0;
+
+  /*#p26.FAFO*/ wire _FAFO_TILE_Y0S = add_s(reg_ly.MUWY_LY0p.qp_new2(), reg_scy.GAVE_SCY0n.qn_new2(), PIN36_GND);
+  /*#p26.FAFO*/ wire _FAFO_TILE_Y0C = add_c(reg_ly.MUWY_LY0p.qp_new2(), reg_scy.GAVE_SCY0n.qn_new2(), PIN36_GND);
   /* p26.EMUX*/ wire _EMUX_TILE_Y1S = add_s(reg_ly.MYRO_LY1p.qp_new2(), reg_scy.FYMO_SCY1n.qn_new2(), _FAFO_TILE_Y0C);
   /* p26.EMUX*/ wire _EMUX_TILE_Y1C = add_c(reg_ly.MYRO_LY1p.qp_new2(), reg_scy.FYMO_SCY1n.qn_new2(), _FAFO_TILE_Y0C);
   /* p26.ECAB*/ wire _ECAB_TILE_Y2S = add_s(reg_ly.LEXA_LY2p.qp_new2(), reg_scy.FEZU_SCY2n.qn_new2(), _EMUX_TILE_Y1C);

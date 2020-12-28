@@ -4,6 +4,8 @@
 #include "AppLib/AppHost.h"
 #include "AppLib/GLBase.h"
 
+#include "Plait/CellDB.h"
+
 #define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
 #include "SDL/include/SDL.h"
@@ -88,7 +90,9 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
-  parse_dir("GateBoyLib");
+  CellDB cell_db;
+
+  cell_db.parse_dir("GateBoyLib");
 
 #if 0
   printf("Loading plait cell db %f\n", timestamp());

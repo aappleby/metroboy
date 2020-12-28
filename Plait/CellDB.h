@@ -1,13 +1,48 @@
 #pragma once
 
+#include "CoreLib/Types.h"
 #include <string>
+#include <vector>
+#include <set>
+
+struct Cell {
+  void dump(Dumper& d);
+
+  std::string page;
+  std::string tag;
+  std::string name;
+  std::string gate;
+  std::vector<std::string> args;
+  std::string doc;
+};
 
 struct CellDB {
+  bool parse_dir(const std::string& path);
+  bool parse_file(const std::string& path);
+  bool parse_line(const std::string& line);
+  bool parse_rest(const std::string& rest);
+
+  bool parse_cell_name(const std::string& cell_name);
+  bool parse_cell_def(const std::string& value);
+  bool parse_cell_input_list(const std::string& arglist);
+  bool parse_cell_input(const std::string& input);
+
+  bool parse_bus_name(const std::string& bus_name);
+
   bool parse_tag_comment(const std::string& tag_comment);
   bool parse_reg_type(const std::string& type);
-  bool parse_cell_input(const std::string& input);
-  bool parse_input_list(const std::string& inputs);
-  bool parse_cell_def(const std::string& value);
+  bool parse_gate_type(const std::string& type);
+
+  std::set<std::string> all_pages;
+  std::set<std::string> all_tags;
+  std::set<std::string> all_buses;
+  std::set<std::string> all_signals;
+  std::set<std::string> all_pins;
+
+  std::set<std::string> verified_tags;
+
+  int total_lines = 0;
+  int total_tagged_lines = 0;
 };
 
 #if 0
@@ -26,15 +61,6 @@ typedef std::map<std::string, Node*> NameToNode;
 typedef std::multimap<std::string, std::string> NameToEdges;
 
 //-----------------------------------------------------------------------------
-
-struct Cell {
-  std::string name;
-  std::string tag;
-  std::string func;
-  std::string tail;
-
-  std::vector<std::string> args;
-};
 
 //-----------------------------------------------------------------------------
 

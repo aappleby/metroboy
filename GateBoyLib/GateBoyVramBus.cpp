@@ -122,14 +122,14 @@ void GateBoyVramBus::tile_to_addr(const BGScrollY scroll_y, const WinLineY win_l
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyVramBus::sprite_to_addr(Bus SPR_TRI_L[4], const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, wire XYMU_RENDERINGp, wire XYMO_LCDC_SPSIZEp) {
+void GateBoyVramBus::sprite_to_addr(Bus BUS_SPR_L[4], const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, wire XYMU_RENDERINGp, wire XYMO_LCDC_SPSIZEp) {
   /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1b(oam_temp_b.YZOS_OAM_DB6p.qp_new2());
   /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1b(XYMO_LCDC_SPSIZEp);
 
-  /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, SPR_TRI_L[0].qp_new2());
-  /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, SPR_TRI_L[1].qp_new2());
-  /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, SPR_TRI_L[2].qp_new2());
-  /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, SPR_TRI_L[3].qp_new2());
+  /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, BUS_SPR_L[0].qp_new2());
+  /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, BUS_SPR_L[1].qp_new2());
+  /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, BUS_SPR_L[2].qp_new2());
+  /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, BUS_SPR_L[3].qp_new2());
   /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_temp_a.XUSO_OAM_DA0p.qp_new2(), _FUFO_LCDC_SPSIZEn, XYMO_LCDC_SPSIZEp, _WAGO_L3);
 
   /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1b(XYMU_RENDERINGp);

@@ -176,8 +176,8 @@ struct GateBoy {
 
   //----------
 
-  Bus SPR_TRI_I[6]; // AxCxExGx
-  Bus SPR_TRI_L[4]; // AxCxExGx
+  Bus BUS_SPR_I[6]; // AxCxExGx
+  Bus BUS_SPR_L[4]; // AxCxExGx
 
   SpriteStore   sprite_store;
   SpriteScanner sprite_scanner;

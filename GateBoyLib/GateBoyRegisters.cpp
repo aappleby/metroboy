@@ -383,13 +383,13 @@ void RegLY::tock2(GateBoyResetDebug& rst, RegLX& reg_lx)
 //------------------------------------------------------------------------------------------------------------------------
 
 wire RegLX::TEGY_STROBE() const {
-  /* p21.SAXO*/ wire _SAXO_LX0p = this->SAXO_LX0p.qp_new2();
-  /* p21.TYPO*/ wire _TYPO_LX1p = this->TYPO_LX1p.qp_new2();
-  /* p21.VYZO*/ wire _VYZO_LX2p = this->VYZO_LX2p.qp_new2();
-  /* p21.TELU*/ wire _TELU_LX3p = this->TELU_LX3p.qp_new2();
-  /* p21.SUDE*/ wire _SUDE_LX4p = this->SUDE_LX4p.qp_new2();
-  /* p21.TAHA*/ wire _TAHA_LX5p = this->TAHA_LX5p.qp_new2();
-  /* p21.TYRY*/ wire _TYRY_LX6p = this->TYRY_LX6p.qp_new2();
+  wire _SAXO_LX0p = this->SAXO_LX0p.qp_new2();
+  wire _TYPO_LX1p = this->TYPO_LX1p.qp_new2();
+  wire _VYZO_LX2p = this->VYZO_LX2p.qp_new2();
+  wire _TELU_LX3p = this->TELU_LX3p.qp_new2();
+  wire _SUDE_LX4p = this->SUDE_LX4p.qp_new2();
+  wire _TAHA_LX5p = this->TAHA_LX5p.qp_new2();
+  wire _TYRY_LX6p = this->TYRY_LX6p.qp_new2();
 
   /*#p21.TOCU*/ wire _TOCU_LX0n = not1b(_SAXO_LX0p);
   /*#p21.VEPE*/ wire _VEPE_LX1n = not1b(_TYPO_LX1p);

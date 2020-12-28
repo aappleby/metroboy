@@ -474,12 +474,12 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire WYMO_LCDC_WINENp_old = reg_lcdc.WYMO_LCDC_WINENn.qn_old2();
 
-  /* p27.ROGE*/ wire _ROGE_WY_MATCHp_old = ROGE_WY_MATCHp_old(reg_wy, lcd.reg_ly, WYMO_LCDC_WINENp_old);
+  wire _ROGE_WY_MATCHp_old = ROGE_WY_MATCHp_old(reg_wy, lcd.reg_ly, WYMO_LCDC_WINENp_old);
   wire REJO_WY_MATCH_LATCHp_old = win_reg.REJO_WY_MATCH_LATCHp.qp_old2();
-  /* p27.NUKO*/ wire _NUKO_WX_MATCHp_old = NUKO_WX_MATCHp_old(pix_count, reg_wx, REJO_WY_MATCH_LATCHp_old); // FIXME old/new?
+  wire _NUKO_WX_MATCHp_old = NUKO_WX_MATCHp_old(pix_count, reg_wx, REJO_WY_MATCH_LATCHp_old); // FIXME old/new?
 
-  /*#p21.XYVO*/ wire XYVO_y144p_old = lcd.reg_ly.XYVO_y144p_old();
-  /* p21.RUTU*/ wire RUTU_x113p_old = lcd.reg_lx.RUTU_x113p_old();
+  wire XYVO_y144p_old = lcd.reg_ly.XYVO_y144p_old();
+  wire RUTU_x113p_old = lcd.reg_lx.RUTU_x113p_old();
 
   wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
 
@@ -517,7 +517,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   rst.PIN71_RST.pin_in_dp(bit(~sys_rst));
   clk.PIN74_CLKGOOD.pin_in_dp(bit(~sys_clkgood));
-  clk.PIN74_CLK_IN.pin_in_dp((phase_total & 1) && sys_clken);
+  clk.PIN74_CLK_IN.pin_in_dp(!(phase_total & 1) && sys_clken);
   rst.PIN76_T2.pin_in_dp(bit(~sys_t2));
   rst.PIN77_T1.pin_in_dp(bit(~sys_t1));
 
@@ -642,10 +642,10 @@ void GateBoy::tock_slow(int pass_index) {
     /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(clk.ALET_xBxDxFxH(), _NAFY_WIN_MODE_TRIGn, LYRY_BFETCH_DONEp_old);
     /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.qp_new2(), LOBY_RENDERINGn);
 
-    /* p27.RYDY*/ win_reg.RYDY_WIN_HITp.set(nor3b(win_reg.PUKU_WIN_HITn.qp_old2(), tile_fetcher.PORY_FETCH_DONEp.qp_new2(), rst.PYRY_VID_RSTp()));
-    /* p27.PUKU*/ win_reg.PUKU_WIN_HITn.set(nor2b(win_reg.RYDY_WIN_HITp.qp_new2(), win_reg.NUNY_WIN_MODE_TRIGp_new()));
-    /* p27.RYDY*/ win_reg.RYDY_WIN_HITp.set(nor3b(win_reg.PUKU_WIN_HITn.qp_new2(), tile_fetcher.PORY_FETCH_DONEp.qp_new2(), rst.PYRY_VID_RSTp()));
-    /* p27.PUKU*/ win_reg.PUKU_WIN_HITn.set(nor2b(win_reg.RYDY_WIN_HITp.qp_new2(), win_reg.NUNY_WIN_MODE_TRIGp_new()));
+    /* p27.RYDY*/ win_reg.RYDY_WIN_HITp = nor3b(win_reg.PUKU_WIN_HITn.qp_any2(), tile_fetcher.PORY_FETCH_DONEp.qp_any2(), rst.PYRY_VID_RSTp());
+    /* p27.PUKU*/ win_reg.PUKU_WIN_HITn = nor2b(win_reg.RYDY_WIN_HITp.qp_any2(), win_reg.NUNY_WIN_MODE_TRIGp_new());
+    /* p27.RYDY*/ win_reg.RYDY_WIN_HITp = nor3b(win_reg.PUKU_WIN_HITn.qp_any2(), tile_fetcher.PORY_FETCH_DONEp.qp_any2(), rst.PYRY_VID_RSTp());
+    /* p27.PUKU*/ win_reg.PUKU_WIN_HITn = nor2b(win_reg.RYDY_WIN_HITp.qp_any2(), win_reg.NUNY_WIN_MODE_TRIGp_new());
     // ^^^^^
 
   }

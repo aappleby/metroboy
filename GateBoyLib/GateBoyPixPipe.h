@@ -116,7 +116,6 @@ struct FineScroll {
     return _ROZE_FINE_COUNT_7n_old;
   }
 
-
   wire POVA_FINE_MATCH_TRIGp() {
     /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new2(), NYZE_SCX_FINE_MATCH_B.qn_new2());
     return _POVA_FINE_MATCH_TRIGp;

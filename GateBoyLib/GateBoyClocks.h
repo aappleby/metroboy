@@ -20,15 +20,19 @@ struct GateBoyClock {
   void tock_vid(const GateBoyResetDebug& rst);
 
   //----------------------------------------
-  // Root clocks - ignoring the deglitcher here
+  // Root clocks
 
   /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1b(PIN74_CLKGOOD.int_qp_new()); }
   /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1b(PIN74_CLKGOOD.int_qp_new()); }
   /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1b(SIG_CPU_CLKREQ.qp_new2()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1b(ABOL_CLKREQn()); }
 
-  /* p01.ATAL*/ wire ATAL_xBxDxFxH() const { return PIN74_CLK_IN.int_qp_new(); }
-  /* p01.AZOF*/ wire AZOF_AxCxExGx() const { return not1b(ATAL_xBxDxFxH()); }
+  wire AZOF_AxCxExGx() const {
+    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1b(AVET.qp_new2());
+    /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1b(_ATAL_xBxDxFxH);
+    return _AZOF_AxCxExGx;
+  }
+
   /* p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1b(AZOF_AxCxExGx()); }
   /*#p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1b(ZAXY_xBxDxFxH()); }
   /* p29.XYVA*/ wire XYVA_xBxDxFxH() const { return not1b(ZEME_AxCxExGx()); }
@@ -98,14 +102,17 @@ struct GateBoyClock {
     d.dump_bitp("WOSU_AxxDExxHp : ", WOSU_AxxDExxH.state);
   }
 
-  /*p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
-  /*p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;
-  /*p01.APUK*/ DFF9 APUK_ABxxxxGHp;
-  /*p01.ADYK*/ DFF9 ADYK_ABCxxxxHp;
+  /* p01.ANOS*/ Gate ANOS; // NAND latch deglitcher
+  /* p01.AVET*/ Gate AVET; // NAND latch deglitcher
 
-  /*p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
-  /*p21.VENA*/ DFF17 VENA_xxCDEFxx;
-  /*p29.WOSU*/ DFF17 WOSU_AxxDExxH;
+  /* p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
+  /* p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;
+  /* p01.APUK*/ DFF9 APUK_ABxxxxGHp;
+  /* p01.ADYK*/ DFF9 ADYK_ABCxxxxHp;
+
+  /* p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
+  /* p21.VENA*/ DFF17 VENA_xxCDEFxx;
+  /* p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 
   PinIn  PIN74_CLKGOOD;
   PinIn  PIN74_CLK_IN;

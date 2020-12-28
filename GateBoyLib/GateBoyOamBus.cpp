@@ -20,23 +20,23 @@ void GateBoyOamBus::latch_bus(
   /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn, _BOTA_OAM_OEn); // def and
   /*#p28.BODE*/ wire _BODE_OAM_OEp = not1b(_ASYT_OAM_OEn);
 
-  /* p29.YDYV*/ oam_latch_a.YDYV_OAM_LATCH_DA0n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[0].qp_new2());
-  /* p29.YCEB*/ oam_latch_a.YCEB_OAM_LATCH_DA1n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[1].qp_new2());
-  /* p29.ZUCA*/ oam_latch_a.ZUCA_OAM_LATCH_DA2n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[2].qp_new2());
-  /* p29.WONE*/ oam_latch_a.WONE_OAM_LATCH_DA3n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[3].qp_new2());
-  /* p29.ZAXE*/ oam_latch_a.ZAXE_OAM_LATCH_DA4n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[4].qp_new2());
-  /* p29.XAFU*/ oam_latch_a.XAFU_OAM_LATCH_DA5n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[5].qp_new2());
-  /* p29.YSES*/ oam_latch_a.YSES_OAM_LATCH_DA6n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[6].qp_new2());
-  /* p29.ZECA*/ oam_latch_a.ZECA_OAM_LATCH_DA7n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DAn[7].qp_new2());
+  /* p29.YDYV*/ oam_latch_a.YDYV_OAM_LATCH_DA0n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[0].qp_new2());
+  /* p29.YCEB*/ oam_latch_a.YCEB_OAM_LATCH_DA1n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[1].qp_new2());
+  /* p29.ZUCA*/ oam_latch_a.ZUCA_OAM_LATCH_DA2n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[2].qp_new2());
+  /* p29.WONE*/ oam_latch_a.WONE_OAM_LATCH_DA3n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[3].qp_new2());
+  /* p29.ZAXE*/ oam_latch_a.ZAXE_OAM_LATCH_DA4n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[4].qp_new2());
+  /* p29.XAFU*/ oam_latch_a.XAFU_OAM_LATCH_DA5n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[5].qp_new2());
+  /* p29.YSES*/ oam_latch_a.YSES_OAM_LATCH_DA6n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[6].qp_new2());
+  /* p29.ZECA*/ oam_latch_a.ZECA_OAM_LATCH_DA7n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DAn[7].qp_new2());
 
-  /*#p31.XYKY*/ oam_latch_b.XYKY_OAM_LATCH_DB0n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[0].qp_new2());
-  /* p31.YRUM*/ oam_latch_b.YRUM_OAM_LATCH_DB1n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[1].qp_new2());
-  /* p31.YSEX*/ oam_latch_b.YSEX_OAM_LATCH_DB2n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[2].qp_new2());
-  /* p31.YVEL*/ oam_latch_b.YVEL_OAM_LATCH_DB3n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[3].qp_new2());
-  /* p31.WYNO*/ oam_latch_b.WYNO_OAM_LATCH_DB4n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[4].qp_new2());
-  /* p31.CYRA*/ oam_latch_b.CYRA_OAM_LATCH_DB5n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[5].qp_new2());
-  /* p31.ZUVE*/ oam_latch_b.ZUVE_OAM_LATCH_DB6n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[6].qp_new2());
-  /* p31.ECED*/ oam_latch_b.ECED_OAM_LATCH_DB7n.tp_latch(_BODE_OAM_OEp, BUS_OAM_DBn[7].qp_new2());
+  /*#p31.XYKY*/ oam_latch_b.XYKY_OAM_LATCH_DB0n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[0].qp_new2());
+  /* p31.YRUM*/ oam_latch_b.YRUM_OAM_LATCH_DB1n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[1].qp_new2());
+  /* p31.YSEX*/ oam_latch_b.YSEX_OAM_LATCH_DB2n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[2].qp_new2());
+  /* p31.YVEL*/ oam_latch_b.YVEL_OAM_LATCH_DB3n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[3].qp_new2());
+  /* p31.WYNO*/ oam_latch_b.WYNO_OAM_LATCH_DB4n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[4].qp_new2());
+  /* p31.CYRA*/ oam_latch_b.CYRA_OAM_LATCH_DB5n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[5].qp_new2());
+  /* p31.ZUVE*/ oam_latch_b.ZUVE_OAM_LATCH_DB6n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[6].qp_new2());
+  /* p31.ECED*/ oam_latch_b.ECED_OAM_LATCH_DB7n.tp_latchn(_BODE_OAM_OEp, BUS_OAM_DBn[7].qp_new2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ void GateBoyOamBus::latch_to_temp_a(
   wire MATU_DMA_RUNNINGp,
   wire XUJY_OAM_CLKENp)
 {
-  /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not1b(or_and3(cpu_bus.SARO_ADDR_OAMp(), MATU_DMA_RUNNINGp, clk.MOPA_xxxxEFGH())); // CUFE looks like BYHA minus an inverter
+  /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not_or_and3(cpu_bus.SARO_ADDR_OAMp(), MATU_DMA_RUNNINGp, clk.MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
   /* p25.AVER*/ wire _AVER_AxxxExxx = nand2b(ACYL_SCANNINGp, clk.XYSO_xBCDxFGH());
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3b(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1b(_BYCU_OAM_CLKp);
@@ -110,7 +110,7 @@ void GateBoyOamBus::latch_to_temp_b(
   wire MATU_DMA_RUNNINGp,
   wire XUJY_OAM_CLKENp)
 {
-  /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not1b(or_and3(cpu_bus.SARO_ADDR_OAMp(), MATU_DMA_RUNNINGp, clk.MOPA_xxxxEFGH())); // CUFE looks like BYHA minus an inverter
+  /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not_or_and3(cpu_bus.SARO_ADDR_OAMp(), MATU_DMA_RUNNINGp, clk.MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
   /* p25.AVER*/ wire _AVER_AxxxExxx = nand2b(ACYL_SCANNINGp, clk.XYSO_xBCDxFGH());
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3b(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1b(_BYCU_OAM_CLKp);
@@ -304,7 +304,7 @@ void GateBoyOamBus::set_pin_clk(
   wire XUJY_OAM_CLKENp)
 {
   /* p25.AVER*/ wire _AVER_AxxxExxx = nand2b(ACYL_SCANNINGp, clk.XYSO_xBCDxFGH());
-  /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not1b(or_and3(cpu_bus.SARO_ADDR_OAMp(), MATU_DMA_RUNNINGp, clk.MOPA_xxxxEFGH())); // CUFE looks like BYHA minus an inverter
+  /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not_or_and3(cpu_bus.SARO_ADDR_OAMp(), MATU_DMA_RUNNINGp, clk.MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3b(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1b(_BYCU_OAM_CLKp);
 

@@ -102,8 +102,8 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_new2());
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1b(_DAWA_SER_CLK);
     /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old2());
-    /* p05.KENA*/ wire _KENA = /*mux2n(KUKO_DBG_FF00_D6,*/ ELYS_SER_OUT.qp_new2() /*, FF60_0)*/; // FIXME hacking out debug stuff
-    PIN70_SOUT.pin_out_dp(_KENA);
+    ///* p05.KENA*/ wire _KENA = mux2n(KUKO_DBG_FF00_D6, ELYS_SER_OUT.qp_new2(), FF60_0); // FIXME hacking out debug stuff
+    PIN70_SOUT.pin_out_dp(ELYS_SER_OUT.qp_new2());
   }
 
 }

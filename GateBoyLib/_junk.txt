@@ -1,0 +1,275 @@
+
+
+
+
+#if 0
+  [
+    this,
+
+    XODO_VID_RSTp,
+    &NUKO_WX_MATCHp_old_evn
+  ](){
+
+    /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p_old_evn = xnor2(pix_count.XEHO_PX0p.qp_old2(), reg_wx.MYPA_WX0n_h.qn_old());
+    /* p27.PUWU*/ wire _PUWU_WX_MATCH1p_old_evn = xnor2(pix_count.SAVY_PX1p.qp_old2(), reg_wx.NOFE_WX1n_h.qn_old());
+    /* p27.PUHO*/ wire _PUHO_WX_MATCH2p_old_evn = xnor2(pix_count.XODU_PX2p.qp_old2(), reg_wx.NOKE_WX2n_h.qn_old());
+    /* p27.NYTU*/ wire _NYTU_WX_MATCH3p_old_evn = xnor2(pix_count.XYDO_PX3p.qp_old2(), reg_wx.MEBY_WX3n_h.qn_old());
+    /* p27.NEZO*/ wire _NEZO_WX_MATCH4p_old_evn = xnor2(pix_count.TUHU_PX4p.qp_old2(), reg_wx.MYPU_WX4n_h.qn_old());
+    /* p27.NORY*/ wire _NORY_WX_MATCH5p_old_evn = xnor2(pix_count.TUKY_PX5p.qp_old2(), reg_wx.MYCE_WX5n_h.qn_old());
+    /* p27.NONO*/ wire _NONO_WX_MATCH6p_old_evn = xnor2(pix_count.TAKO_PX6p.qp_old2(), reg_wx.MUVO_WX6n_h.qn_old());
+    /* p27.PASE*/ wire _PASE_WX_MATCH7p_old_evn = xnor2(pix_count.SYBE_PX7p.qp_old2(), reg_wx.NUKU_WX7n_h.qn_old());
+
+    /* p27.PUKY*/ wire _PUKY_WX_MATCHn_old_evn  = nand5(win_reg.REJO_WY_MATCH_LATCHp_evn.qp_old2(), _NEZO_WX_MATCH4p_old_evn, _NORY_WX_MATCH5p_old_evn, _NONO_WX_MATCH6p_old_evn, _PASE_WX_MATCH7p_old_evn);
+    /* p27.NUFA*/ wire _NUFA_WX_MATCHp_old_evn  = not1(_PUKY_WX_MATCHn_old_evn);
+    /* p27.NOGY*/ wire _NOGY_WX_MATCHn_old_evn  = nand5(_NUFA_WX_MATCHp_old_evn, _MYLO_WX_MATCH0p_old_evn, _PUWU_WX_MATCH1p_old_evn, _PUHO_WX_MATCH2p_old_evn, _NYTU_WX_MATCH3p_old_evn);
+    /* p27.NUKO*/ NUKO_WX_MATCHp_old_evn  = not1(_NOGY_WX_MATCHn_old_evn);
+
+    /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p_old_evn = xnor2(reg_wy.NESO_WY0n_h.qn_old(), reg_ly.MUWY_LY0p_evn.qp_old2());
+    /* p27.PEBO*/ wire _PEBO_WY_MATCH1p_old_evn = xnor2(reg_wy.NYRO_WY1n_h.qn_old(), reg_ly.MYRO_LY1p_evn.qp_old2());
+    /* p27.POMO*/ wire _POMO_WY_MATCH2p_old_evn = xnor2(reg_wy.NAGA_WY2n_h.qn_old(), reg_ly.LEXA_LY2p_evn.qp_old2());
+    /* p27.NEVU*/ wire _NEVU_WY_MATCH3p_old_evn = xnor2(reg_wy.MELA_WY3n_h.qn_old(), reg_ly.LYDO_LY3p_evn.qp_old2());
+    /* p27.NOJO*/ wire _NOJO_WY_MATCH4p_old_evn = xnor2(reg_wy.NULO_WY4n_h.qn_old(), reg_ly.LOVU_LY4p_evn.qp_old2());
+    /* p27.PAGA*/ wire _PAGA_WY_MATCH5p_old_evn = xnor2(reg_wy.NENE_WY5n_h.qn_old(), reg_ly.LEMA_LY5p_evn.qp_old2());
+    /* p27.PEZO*/ wire _PEZO_WY_MATCH6p_old_evn = xnor2(reg_wy.NUKA_WY6n_h.qn_old(), reg_ly.MATO_LY6p_evn.qp_old2());
+    /* p27.NUPA*/ wire _NUPA_WY_MATCH7p_old_evn = xnor2(reg_wy.NAFU_WY7n_h.qn_old(), reg_ly.LAFO_LY7p_evn.qp_old2());
+
+    /*#p27.PALO*/ wire _PALO_WY_MATCH_HIn_old_evn = nand5(reg_lcdc.WYMO_LCDC_WINENn_h.qn_old(), _NOJO_WY_MATCH4p_old_evn, _PAGA_WY_MATCH5p_old_evn, _PEZO_WY_MATCH6p_old_evn, _NUPA_WY_MATCH7p_old_evn);
+    /* p27.NELE*/ wire _NELE_WY_MATCH_HIp_old_evn = not1(_PALO_WY_MATCH_HIn_old_evn);
+    /* p27.PAFU*/ wire _PAFU_WY_MATCHn_old_evn    = nand5(_NELE_WY_MATCH_HIp_old_evn, _NAZE_WY_MATCH0p_old_evn, _PEBO_WY_MATCH1p_old_evn, _POMO_WY_MATCH2p_old_evn, _NEVU_WY_MATCH3p_old_evn);
+    /* p27.ROGE*/ wire _ROGE_WY_MATCHp_old_evn    = not1(_PAFU_WY_MATCHn_old_evn);
+
+    {
+      /* p01.XAPO*/ wire _XAPO_VID_RSTn = not1(XODO_VID_RSTp);
+      /* p01.PYRY*/ wire _PYRY_VID_RSTp = not1(_XAPO_VID_RSTn);
+      /* p27.SARY*/ win_reg.SARY_WY_MATCHp_evn.dff17(vclk.TALU_xxCDEFxx(), _XAPO_VID_RSTn, _ROGE_WY_MATCHp_old_evn);
+      /* p27.REPU*/ wire _REPU_VBLANKp = or2(lcd.PARU_VBLANKp(), _PYRY_VID_RSTp);
+      /* p27.REJO*/ win_reg.REJO_WY_MATCH_LATCHp_evn.nor_latch(win_reg.SARY_WY_MATCHp_evn.qp_new2(), _REPU_VBLANKp);
+    }
+  }();
+#endif
+
+
+
+
+#if 0
+void WindowRegisters::tock(
+  GateBoyResetDebug& rst,
+  GateBoyClock& clk,
+  wire XYMU_RENDERINGp,
+  wire TYFA_CLKPIPE_odd,
+  wire NUKO_WX_MATCHp_old,
+  wire ROZE_FINE_COUNT_7n_old,
+  wire RYDY_WIN_HITp_old)
+{
+  /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1b(TYFA_CLKPIPE_odd);
+  /* p27.ROCO*/ wire _ROCO_CLKPIPE_odd = not1b(_SEGU_CLKPIPE_evn);
+  /* p27.PYCO*/ PYCO_WIN_MATCHp.dff17(_ROCO_CLKPIPE_odd, rst.XAPO_VID_RSTn(), NUKO_WX_MATCHp_old);
+
+  /* p27.SOVY*/ SOVY_WIN_HITp.dff17(clk.ALET_xBxDxFxH(), rst.XAPO_VID_RSTn(), RYDY_WIN_HITp_old);
+
+  /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2b(NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
+  /* p27.RYFA*/ RYFA_WIN_FETCHn_A.dff17(_SEGU_CLKPIPE_evn, XYMU_RENDERINGp, _PANY_WIN_FETCHn_old);
+}
+#endif
+
+
+
+// debug stuff
+#if 0
+  /* p05.KOLE*/ wire _KOLE = nand2(JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
+  /* p05.KYBU*/ wire _KYBU = nor2 (JUTE_JOYP_RA.qp17(), _KURA);
+  /* p05.KYTO*/ wire _KYTO = nand2(KECY_JOYP_LB.qp17(), BURO_FF60_0p);
+  /* p05.KABU*/ wire _KABU = nor2 (KECY_JOYP_LB.qp17(), _KURA);
+  /* p05.KYHU*/ wire _KYHU = nand2(JALE_JOYP_UC.qp17(), BURO_FF60_0p);
+  /* p05.KASY*/ wire _KASY = nor2 (JALE_JOYP_UC.qp17(), _KURA);
+  /* p05.KORY*/ wire _KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
+  /* p05.KALE*/ wire _KALE = nor2 (KYME_JOYP_DS.qp17(), _KURA);
+
+  PIN67_JOY_P10.pin_out_hilo2(_KOLE, _KYBU);
+  PIN66_JOY_P11.pin_out_hilo2(_KYTO, _KABU);
+  PIN65_JOY_P12.pin_out_hilo2(_KYHU, _KASY);
+  PIN64_JOY_P13.pin_out_hilo2(_KORY, _KALE);
+#endif
+
+
+
+#if 0
+/* p07.ZYBA*/ wire ZYBA_ADDR_00n = not1b(BUS_CPU_A[ 0]);
+/* p07.ZUVY*/ wire ZUVY_ADDR_01n = not1b(BUS_CPU_A[ 1]);
+/* p07.ZUFY*/ wire ZUFY_ADDR_04n = not1b(BUS_CPU_A[ 4]);
+/* p07.ZERA*/ wire ZERA_ADDR_05n = not1b(BUS_CPU_A[ 5]);
+/* p07.ZOLE*/ wire ZOLE_ADDR_00  = and2(ZUVY_ADDR_01n, ZYBA_ADDR_00n);
+/* p07.ZAJE*/ wire ZAJE_ADDR_01  = and2(ZUVY_ADDR_01n, BUS_CPU_A[ 0]);
+/* p07.ZUBU*/ wire ZUBU_ADDR_10  = and2(BUS_CPU_A[ 1], ZYBA_ADDR_00n);
+/* p07.ZAPY*/ wire ZAPY_ADDR_11  = and2(BUS_CPU_A[ 1], BUS_CPU_A[ 0]);
+
+/* p07.ZETE*/ wire BOOTROM_A1nA0n = not1b(ZOLE_ADDR_00);
+/* p07.ZEFU*/ wire BOOTROM_A1nA0p  = not1b(ZAJE_ADDR_01);
+/* p07.ZYRO*/ wire BOOTROM_A1pA0n  = not1b(ZUBU_ADDR_10);
+/* p07.ZAPA*/ wire BOOTROM_A1pA0p   = not1b(ZAPY_ADDR_11);
+/* p07.ZYGA*/ wire BOOTROM_A2n    = not1b(BUS_CPU_A[ 2]);
+/* p07.ZYKY*/ wire BOOTROM_A3n    = not1b(BUS_CPU_A[ 3]);
+/* p07.ZYKY*/ wire BOOTROM_A5nA4n = and2(ZERA_ADDR_05n, ZUFY_ADDR_04n);
+/* p07.ZYGA*/ wire BOOTROM_A5nA4p  = and2(ZERA_ADDR_05n, BUS_CPU_A[ 4]);
+/* p07.ZOVY*/ wire BOOTROM_A5pA4n  = and2(BUS_CPU_A[ 5], ZUFY_ADDR_04n);
+/* p07.ZUKO*/ wire BOOTROM_A5pA4p   = and2(BUS_CPU_A[ 5], BUS_CPU_A[ 4]);
+/* p07.ZAGE*/ wire BOOTROM_A6n    = not1b(BUS_CPU_A[ 6]);
+/* p07.ZYRA*/ wire BOOTROM_A7n    = not1b(BUS_CPU_A[ 7]);
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------------------------------
+// Debug stuff I disabled
+
+#if 0
+
+/* p07.APET*/ wire APET_MODE_DBG = or2(clk_reg.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
+/* p07.APER*/ wire FF60_WRn = nand2(APET_MODE_DBG, BUS_CPU_A[ 5], BUS_CPU_A[ 6], TAPU_CPUWR, ADDR_111111110xx00000);
+
+//----------
+// weird debug things, probably not right
+
+/* p05.AXYN*/ wire AXYN_xBCDEFGH = not1(clk_reg.BEDO_Axxxxxxx);
+/* p05.ADYR*/ wire ADYR_Axxxxxxx = not1(AXYN_xBCDEFGH);
+/* p05.APYS*/ wire APYS_xBCDEFGH = nor4(sys_sig.MODE_DBG2, ADYR_Axxxxxxx);
+/* p05.AFOP*/ wire AFOP_Axxxxxxx = not1(APYS_xBCDEFGH);
+/* p07.LECO*/ wire LECO_xBCDEFGH = nor4(clk_reg.BEDO_Axxxxxxx, sys_sig.MODE_DBG2);
+
+if (AFOP_Axxxxxxx) set_data(
+  /* p05.ANOC*/ not1(GND),
+  /* p05.ATAJ*/ not1(GND),
+  /* p05.AJEC*/ not1(GND),
+  /* p05.ASUZ*/ not1(GND),
+  /* p05.BENU*/ not1(GND),
+  /* p05.AKAJ*/ not1(GND),
+  /* p05.ARAR*/ not1(GND),
+  /* p05.BEDA*/ not1(GND)
+);
+
+if (LECO_xBCDEFGH) set_data(
+  /* p07.ROMY*/ GND,
+  /* p07.RYNE*/ GND,
+  /* p07.REJY*/ GND,
+  /* p07.RASE*/ GND,
+  /* p07.REKA*/ GND,
+  /* p07.ROWE*/ GND,
+  /* p07.RYKE*/ GND,
+  /* p07.RARU*/ GND
+);
+
+
+
+//----------
+// more debug stuff
+
+/* p25.TUSO*/ wire TUSO = nor4(MODE_DBG2, dff20.SIG_CPU_BOGA_xBCDEFGH);
+/* p25.SOLE*/ wire SOLE = not1(TUSO);
+
+if (VYPO_GND) bus_out.set_data(
+  /* p25.TOVU*/ SOLE,
+  /* p25.SOSA*/ SOLE,
+  /* p25.SEDU*/ SOLE,
+  /* p25.TAXO*/ SOLE,
+  /* p25.TAHY*/ SOLE,
+  /* p25.TESU*/ SOLE,
+  /* p25.TAZU*/ SOLE,
+  /* p25.TEWA*/ SOLE
+);
+
+///* p05.KORE*/ wire P05_NC0 = nand2(KERU_DBG_FF00_D7, FF60_0);
+///* p05.KYWE*/ wire P05_NC1 = nor4 (KERU_DBG_FF00_D7, FF60_0o);
+
+/* p08.LYRA*/ wire DBG_D_RDn = nand2(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
+/* p08.TUTY*/ if (DBG_D_RDn) BUS_CPU_D[0] = not1(/* p08.TOVO*/ not1(pins.PIN17_D0_C));
+/* p08.SYWA*/ if (DBG_D_RDn) BUS_CPU_D[1] = not1(/* p08.RUZY*/ not1(pins.PIN18_D1_C));
+/* p08.SUGU*/ if (DBG_D_RDn) BUS_CPU_D[2] = not1(/* p08.ROME*/ not1(pins.PIN19_D2_C));
+/* p08.TAWO*/ if (DBG_D_RDn) BUS_CPU_D[3] = not1(/* p08.SAZA*/ not1(pins.PIN20_D3_C));
+/* p08.TUTE*/ if (DBG_D_RDn) BUS_CPU_D[4] = not1(/* p08.TEHE*/ not1(pins.PIN21_D4_C));
+/* p08.SAJO*/ if (DBG_D_RDn) BUS_CPU_D[5] = not1(/* p08.RATU*/ not1(pins.PIN22_D5_C));
+/* p08.TEMY*/ if (DBG_D_RDn) BUS_CPU_D[6] = not1(/* p08.SOCA*/ not1(pins.PIN23_D6_C));
+/* p08.ROPA*/ if (DBG_D_RDn) BUS_CPU_D[7] = not1(/* p08.RYBA*/ not1(pins.PIN24_D7_C));
+
+// hack, not correct
+{
+  // FF60 debug state
+  /* p07.APET*/ wire APET_MODE_DBG = or2(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
+  /* p07.APER*/ wire FF60_WRn = nand2(APET_MODE_DBG, BUS_CPU_A[ 5], BUS_CPU_A[ 6], bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
+
+  /* p05.KURA*/ wire FF60_0n = not1(BURO_FF60_0);
+  /* p05.JEVA*/ wire FF60_0o = not1(BURO_FF60_0);
+  /* p07.BURO*/ BURO_FF60_0 = ff9(FF60_WRn, rst_sig.SYS_RESETn, BUS_CPU_D[0]);
+  /* p07.AMUT*/ AMUT_FF60_1 = ff9(FF60_WRn, rst_sig.SYS_RESETn, BUS_CPU_D[1]);
+
+  ///* p05.KURA*/ wire FF60_0n = not1(FF60);
+  ///* p05.JEVA*/ wire FF60_0o = not1(FF60);
+}
+
+
+// so the address bus is technically a tribuf, but we're going to ignore
+// this debug circuit for now.
+{
+  // If we're in debug mode 2, drive external address bus onto internal address
+
+  /*#p08.KOVA*/ wire KOVA_A00p = not1(PIN01_EXT_A[ 0].qn_new2());
+  /* p08.CAMU*/ wire CAMU_A01p = not1(PIN01_EXT_A[ 1].qn_new2());
+  /* p08.BUXU*/ wire BUXU_A02p = not1(PIN01_EXT_A[ 2].qn_new2());
+  /* p08.BASE*/ wire BASE_A03p = not1(PIN01_EXT_A[ 3].qn_new2());
+  /* p08.AFEC*/ wire AFEC_A04p = not1(PIN01_EXT_A[ 4].qn_new2());
+  /* p08.ABUP*/ wire ABUP_A05p = not1(PIN01_EXT_A[ 5].qn_new2());
+  /* p08.CYGU*/ wire CYGU_A06p = not1(PIN01_EXT_A[ 6].qn_new2());
+  /* p08.COGO*/ wire COGO_A07p = not1(PIN01_EXT_A[ 7].qn_new2());
+  /* p08.MUJY*/ wire MUJY_A08p = not1(PIN01_EXT_A[ 8].qn_new2());
+  /* p08.NENA*/ wire NENA_A09p = not1(PIN01_EXT_A[ 9].qn_new2());
+  /* p08.SURA*/ wire SURA_A10p = not1(PIN01_EXT_A[10].qn_new2());
+  /* p08.MADY*/ wire MADY_A11p = not1(PIN01_EXT_A[11].qn_new2());
+  /* p08.LAHE*/ wire LAHE_A12p = not1(PIN01_EXT_A[12].qn_new2());
+  /* p08.LURA*/ wire LURA_A13p = not1(PIN01_EXT_A[13].qn_new2());
+  /* p08.PEVO*/ wire PEVO_A14p = not1(PIN01_EXT_A[14].qn_new2());
+  /* p08.RAZA*/ wire RAZA_A15p = not1(PIN01_EXT_A[15].qn_new2());
+
+  // KEJO_01 << KOVA_02
+  // KEJO_02
+  // KEJO_03
+  // KEJO_04 << TOVA_02
+  // KEJO_05 << KOVA_02
+  // KEJO_06
+  // KEJO_07
+  // KEJO_08
+  // KEJO_09 >> BUS_CPU_A[ 0]p
+  // KEJO_10
+
+  /* p08.KEJO*/ BUS_CPU_A[ 0] = tribuf_10np(TOVA_MODE_DBG2n, KOVA_A00p);
+  /* p08.BYXE*/ BUS_CPU_A[ 1] = tribuf_10np(TOVA_MODE_DBG2n, CAMU_A01p);
+  /* p08.AKAN*/ BUS_CPU_A[ 2] = tribuf_10np(TOVA_MODE_DBG2n, BUXU_A02p);
+  /* p08.ANAR*/ BUS_CPU_A[ 3] = tribuf_10np(TOVA_MODE_DBG2n, BASE_A03p);
+  /* p08.AZUV*/ BUS_CPU_A[ 4] = tribuf_10np(TOVA_MODE_DBG2n, AFEC_A04p);
+  /* p08.AJOV*/ BUS_CPU_A[ 5] = tribuf_10np(TOVA_MODE_DBG2n, ABUP_A05p);
+  /* p08.BYNE*/ BUS_CPU_A[ 6] = tribuf_10np(TOVA_MODE_DBG2n, CYGU_A06p);
+  /* p08.BYNA*/ BUS_CPU_A[ 7] = tribuf_10np(TOVA_MODE_DBG2n, COGO_A07p);
+  /* p08.LOFA*/ BUS_CPU_A[ 8] = tribuf_10np(TOVA_MODE_DBG2n, MUJY_A08p);
+  /* p08.MAPU*/ BUS_CPU_A[ 9] = tribuf_10np(TOVA_MODE_DBG2n, NENA_A09p);
+  /* p08.RALA*/ BUS_CPU_A[10] = tribuf_10np(TOVA_MODE_DBG2n, SURA_A10p);
+  /* p08.LORA*/ BUS_CPU_A[11] = tribuf_10np(TOVA_MODE_DBG2n, MADY_A11p);
+  /* p08.LYNA*/ BUS_CPU_A[12] = tribuf_10np(TOVA_MODE_DBG2n, LAHE_A12p);
+  /* p08.LEFY*/ BUS_CPU_A[13] = tribuf_10np(TOVA_MODE_DBG2n, LURA_A13p);
+  /* p08.NEFE*/ BUS_CPU_A[14] = tribuf_10np(TOVA_MODE_DBG2n, PEVO_A14p);
+  /* p08.SYZU*/ BUS_CPU_A[15] = tribuf_10np(TOVA_MODE_DBG2n, RAZA_A15p);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+#endif

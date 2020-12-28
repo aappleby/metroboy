@@ -65,21 +65,21 @@ void GateBoyExtBus::copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, co
   /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(rst.MULE_MODE_DBG1n(), cpu_bus.TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
   /* p08.LASY*/ wire _LASY_HOLDp = not1b(_LOXO_HOLDn);
   /* p08.MATE*/ wire _MATE_HOLDn = not1b(_LASY_HOLDp);
-  /* p08.ALOR*/ ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 0].qp_new2());
-  /* p08.APUR*/ ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 1].qp_new2());
-  /* p08.ALYR*/ ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 2].qp_new2());
-  /* p08.ARET*/ ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 3].qp_new2());
-  /* p08.AVYS*/ ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 4].qp_new2());
-  /* p08.ATEV*/ ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 5].qp_new2());
-  /* p08.AROS*/ ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 6].qp_new2());
-  /* p08.ARYM*/ ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 7].qp_new2());
-  /* p08.LUNO*/ ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 8].qp_new2());
-  /* p08.LYSA*/ ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 9].qp_new2());
-  /* p08.PATE*/ ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[10].qp_new2());
-  /* p08.LUMY*/ ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[11].qp_new2());
-  /* p08.LOBU*/ ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[12].qp_new2());
-  /* p08.LONU*/ ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[13].qp_new2());
-  /* p08.NYRE*/ ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.tp_latch(_MATE_HOLDn, cpu_bus.BUS_CPU_A[14].qp_new2());
+  /* p08.ALOR*/ ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 0].qp_new2());
+  /* p08.APUR*/ ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 1].qp_new2());
+  /* p08.ALYR*/ ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 2].qp_new2());
+  /* p08.ARET*/ ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 3].qp_new2());
+  /* p08.AVYS*/ ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 4].qp_new2());
+  /* p08.ATEV*/ ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 5].qp_new2());
+  /* p08.AROS*/ ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 6].qp_new2());
+  /* p08.ARYM*/ ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 7].qp_new2());
+  /* p08.LUNO*/ ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 8].qp_new2());
+  /* p08.LYSA*/ ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[ 9].qp_new2());
+  /* p08.PATE*/ ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[10].qp_new2());
+  /* p08.LUMY*/ ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[11].qp_new2());
+  /* p08.LOBU*/ ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[12].qp_new2());
+  /* p08.LONU*/ ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[13].qp_new2());
+  /* p08.NYRE*/ ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.tp_latchn(_MATE_HOLDn, cpu_bus.BUS_CPU_A[14].qp_new2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -164,14 +164,14 @@ void GateBoyExtBus::copy_addr_latch_to_pins(const GateBoyResetDebug& rst, const 
 void GateBoyExtBus::copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus)
 {
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3b(cpu_bus.SIG_CPU_RDp.qp_new2(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.SIG_CPU_LATCH_EXT.qp_new2());
-  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latch(_LAVO_HOLDn, PIN17_DATA[0].int_qp_new());
-  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latch(_LAVO_HOLDn, PIN17_DATA[1].int_qp_new());
-  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latch(_LAVO_HOLDn, PIN17_DATA[2].int_qp_new());
-  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latch(_LAVO_HOLDn, PIN17_DATA[3].int_qp_new());
-  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latch(_LAVO_HOLDn, PIN17_DATA[4].int_qp_new());
-  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latch(_LAVO_HOLDn, PIN17_DATA[5].int_qp_new());
-  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latch(_LAVO_HOLDn, PIN17_DATA[6].int_qp_new());
-  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latch(_LAVO_HOLDn, PIN17_DATA[7].int_qp_new());
+  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[0].int_qp_new());
+  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[1].int_qp_new());
+  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[2].int_qp_new());
+  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[3].int_qp_new());
+  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[4].int_qp_new());
+  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[5].int_qp_new());
+  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[6].int_qp_new());
+  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(_LAVO_HOLDn, PIN17_DATA[7].int_qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

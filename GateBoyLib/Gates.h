@@ -99,7 +99,7 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 struct Gate : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  void set(wire D) {
+  void operator=(wire D) {
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }
 };
@@ -109,6 +109,10 @@ struct Gate : public BitBase {
 struct Signal : public BitBase {
   void reset(uint8_t s) { state = s; }
 
+  void operator=(wire D) {
+    CHECK_N(state & BIT_NEW);
+    state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
+  }
   void set(wire D) {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
@@ -121,7 +125,7 @@ struct Signal : public BitBase {
 struct DFF : public BitBase {
   void reset(wire clk, wire d) { state = uint8_t((bit(clk) << 1) | bit(d)); }
 
-  void dff(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+  void dff_sr(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     CHECK_N(state & BIT_NEW);
     CLKp = (CLKp << 1) & 2;
 
@@ -137,6 +141,10 @@ struct DFF : public BitBase {
     Dp |= BIT_DIRTY4;
 
     state = Dp;
+  }
+
+  void dff_r(wire CLKp, wire RSTn, wire Dp) {
+    dff_sr(CLKp, 1, RSTn, Dp);
   }
 
   void dff_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
@@ -644,6 +652,7 @@ struct PinIn : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   wire int_qp_new() const { return qp_new2(); }
+  wire int_qn_new() const { return qn_new2(); }
 
   void reset_for_pass() {
     CHECK_N(state & BIT_NEW);
@@ -791,9 +800,23 @@ struct NandLatch : public BitBase {
 struct TpLatch : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  void tp_latch(wire HOLDn, wire Dp) {
+  void tp_latchn(wire HOLDn, wire Dp) {
     wire SETp = HOLDn & Dp;
     wire RSTp = HOLDn & ~Dp;
+
+    state |= SETp;
+    state &= ~RSTp;
+
+    state &= BIT_DATA;
+    state |= BIT_DRIVEN;
+    state |= BIT_NEW;
+    state |= BIT_DIRTY3;
+    state |= BIT_DIRTY4;
+  }
+
+  void tp_latchp(wire HOLDp, wire Dp) {
+    wire SETp = (~HOLDp) & Dp;
+    wire RSTp = (~HOLDp) & ~Dp;
 
     state |= SETp;
     state &= ~RSTp;
@@ -873,6 +896,8 @@ inline wire nand7b(wire a, wire b, wire c, wire d, wire e, wire f, wire g) { ret
 
 inline wire and_or3(wire a, wire b, wire c) { return (a & b) | c; }
 inline wire or_and3(wire a, wire b, wire c) { return (a | b) & c; }
+
+inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 
 //-----------------------------------------------------------------------------
 

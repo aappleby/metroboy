@@ -6,15 +6,24 @@
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   PIN75_CLK_OUT.reset_for_pass();
 
+  /* p01.ARYS*/ wire ARYS = not1b(PIN74_CLK_IN.int_qp_new());
+  /* p01.AVET*/ AVET = nand2b(ANOS.qp_any2(), ARYS);
+  /* p01.ANOS*/ ANOS = nand2b(PIN74_CLK_IN.int_qp_new(), AVET.qp_any2());
+  /* p01.AVET*/ AVET = nand2b(ANOS.qp_any2(), ARYS);
+  /* p01.ANOS*/ ANOS = nand2b(PIN74_CLK_IN.int_qp_new(), AVET.qp_any2());
+
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1b(AVET.qp_new2());
+  /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1b(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
+
   wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old2();
   wire AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old2();
   wire ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old2();
   wire APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old2();
 
-  /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(~ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp_old);
-  /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp_old);
-  /* p01.APUK*/ APUK_ABxxxxGHp.dff9(~ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGHp_old);
-  /* p01.ADYK*/ ADYK_ABCxxxxHp.dff9( ATAL_xBxDxFxH(), rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGHp_old);
+  /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(_ATAN_AxCxExGx, rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp_old);
+  /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9(_ATAL_xBxDxFxH, rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp_old);
+  /* p01.APUK*/ APUK_ABxxxxGHp.dff9(_ATAN_AxCxExGx, rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGHp_old);
+  /* p01.ADYK*/ ADYK_ABCxxxxHp.dff9(_ATAL_xBxDxFxH, rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGHp_old);
 
   PIN75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
   SIG_CPU_BOWA_Axxxxxxx.set(BOWA_xBCDEFGH());

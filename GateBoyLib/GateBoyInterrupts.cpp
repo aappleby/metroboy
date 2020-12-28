@@ -15,13 +15,13 @@ void GateBoyInterrupts::read_intf(GateBoyCpuBus& cpu_bus) {
   /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4b(cpu_bus.TEDO_CPU_RDp.qp_new2(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
   /* p02.POLA*/ wire _POLA_FF0F_RDp = not1b(_ROLO_FF0F_RDn);
 
-  // FIXME this inversion fixes a bunch of tests...
-  // MATY is one of those big yellow latchy things
-  /* p02.MATY*/ MATY_FF0F_L0p.tp_latch(~_ROLO_FF0F_RDn, LOPE_FF0F_D0p.qp_new2()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latch(~_ROLO_FF0F_RDn, LALU_FF0F_D1p.qp_new2()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latch(~_ROLO_FF0F_RDn, NYBO_FF0F_D2p.qp_new2()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latch(~_ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp_new2()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latch(~_ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp_new2()); // OUTPUT ON RUNG 10
+  // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
+
+  /* p02.MATY*/ MATY_FF0F_L0p.tp_latchp(_ROLO_FF0F_RDn, LOPE_FF0F_D0p.qp_new2()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ MOPO_FF0F_L1p.tp_latchp(_ROLO_FF0F_RDn, LALU_FF0F_D1p.qp_new2()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ PAVY_FF0F_L2p.tp_latchp(_ROLO_FF0F_RDn, NYBO_FF0F_D2p.qp_new2()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latchp(_ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp_new2()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latchp(_ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp_new2()); // OUTPUT ON RUNG 10
 
   /*#p02.NELA*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new2());
   /*#p02.NABO*/ cpu_bus.BUS_CPU_D[1].tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new2());
@@ -51,11 +51,11 @@ void GateBoyInterrupts::write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cp
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_WRn_ext = nand2b(cpu_bus.TAPU_CPU_WRp.qp_new2(), FFFF_HIT_ext);
 
-  IE_D0.dff(FFFF_WRn_ext, 1, ~rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[0].qp_old2());
-  IE_D1.dff(FFFF_WRn_ext, 1, ~rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[1].qp_old2());
-  IE_D2.dff(FFFF_WRn_ext, 1, ~rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[2].qp_old2());
-  IE_D3.dff(FFFF_WRn_ext, 1, ~rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[3].qp_old2());
-  IE_D4.dff(FFFF_WRn_ext, 1, ~rst.PIN71_RST.int_qp_new(), cpu_bus.BUS_CPU_D[4].qp_old2());
+  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[0].qp_old2());
+  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[1].qp_old2());
+  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[2].qp_old2());
+  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[3].qp_old2());
+  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[4].qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -82,10 +82,8 @@ void GateBoyInterrupts::tock(
   /*#p21.SELA*/ wire _SELA_LINE_ENDp = not1b(PURE_LINE_ENDn);
   /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_LINE_ENDp);
   /*#p21.TARU*/ wire _TARU_INT_HBL   = and2(WODU_HBLANKp, _TOLU_VBLANKn);
-  /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(reg_stat.RUGU_STAT_LYI_ENn.qn_new2(), reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new2(),
-                                             reg_stat.REFE_STAT_OAI_ENn.qn_new2(), _TAPA_INT_OAM,
-                                             reg_stat.RUFO_STAT_VBI_ENn.qn_new2(), PARU_VBLANKp, // polarity?
-                                             reg_stat.ROXE_STAT_HBI_ENn.qn_new2(), _TARU_INT_HBL);
+  // polarity?
+  /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(reg_stat.RUGU_STAT_LYI_ENn.qn_new2(), reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new2(), reg_stat.REFE_STAT_OAI_ENn.qn_new2(), _TAPA_INT_OAM, reg_stat.RUFO_STAT_VBI_ENn.qn_new2(), PARU_VBLANKp, reg_stat.ROXE_STAT_HBI_ENn.qn_new2(), _TARU_INT_HBL);
 
   /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp = not1b(_TOLU_VBLANKn);
   /*#p21.TUVA*/ wire _TUVA_INT_STATn   = not1b(_SUKO_INT_STATp);

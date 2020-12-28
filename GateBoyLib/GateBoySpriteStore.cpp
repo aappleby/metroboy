@@ -879,7 +879,7 @@ void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag, Bus SPR_TRI_L[4]
 //------------------------------------------------------------------------------------------------------------------------
 
 void SpriteStore::oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus SPR_TRI_I[6]) {
-  wire VCC = 1;
+  wire PIN58_VCC = 1;
   /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1b(BUS_OAM_An[2].qp_old2());
   /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1b(BUS_OAM_An[3].qp_old2());
   /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1b(BUS_OAM_An[4].qp_old2());
@@ -888,12 +888,12 @@ void SpriteStore::oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERI
   /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1b(BUS_OAM_An[7].qp_old2());
 
   // Sprite store grabs the sprite index off the _old_ oam address bus
-  /* p30.XADU*/ XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH, VCC, _YFOT_OAM_A2p_old);
-  /* p30.XEDY*/ XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH, VCC, _YFOC_OAM_A3p_old);
-  /* p30.ZUZE*/ ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH, VCC, _YVOM_OAM_A4p_old);
-  /* p30.XOBE*/ XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH, VCC, _YMEV_OAM_A5p_old);
-  /* p30.YDUF*/ YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH, VCC, _XEMU_OAM_A6p_old);
-  /* p30.XECU*/ XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH, VCC, _YZET_OAM_A7p_old);
+  /* p30.XADU*/ XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _YFOT_OAM_A2p_old);
+  /* p30.XEDY*/ XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _YFOC_OAM_A3p_old);
+  /* p30.ZUZE*/ ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _YVOM_OAM_A4p_old);
+  /* p30.XOBE*/ XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _YMEV_OAM_A5p_old);
+  /* p30.YDUF*/ YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _XEMU_OAM_A6p_old);
+  /* p30.XECU*/ XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _YZET_OAM_A7p_old);
 
   /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(CENO_SCANNINGn, XYMU_RENDERINGp);
   /*#p30.WUZY*/ SPR_TRI_I[0].tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XADU_SPRITE_IDX0p.qn_new2());

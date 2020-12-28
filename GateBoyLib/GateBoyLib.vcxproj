@@ -46,7 +46,6 @@
     <ClCompile Include="Sch_Channel2.cpp" />
     <ClCompile Include="Sch_Channel3.cpp" />
     <ClCompile Include="Sch_Channel4.cpp" />
-    <ClCompile Include="Traces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BusDump.h" />
@@ -84,6 +83,7 @@
     <Natvis Include="GateBoy.natvis" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Traces.txt" />
     <Text Include="_junk.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

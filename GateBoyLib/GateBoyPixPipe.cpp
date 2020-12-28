@@ -383,15 +383,8 @@ void PixelPipes::tock_pix_output(
   /*#p35.VATA*/ wire VATA_PAL_OBP0C = and3(WYRU_PIX_SP_HIp, WELE_PIX_SP_LOn, LAVA_MASK_OPB0); // does not have vcc arm
   /*#p35.VYRO*/ wire VYRO_PAL_OBP0D = and3(WYRU_PIX_SP_HIp, WOLO_PIX_SP_LOp, LAVA_MASK_OPB0); // does not have vcc arm
 
-  /*#p35.WUFU*/ wire WUFU_COL_OBP0_HI = amux4(_reg_obp0.XANA_OBP0_D7n.qp_any2(), VYRO_PAL_OBP0D,
-                                              _reg_obp0.XYZE_OBP0_D5n.qp_any2(), VATA_PAL_OBP0C,
-                                              _reg_obp0.XALO_OBP0_D3n.qp_any2(), VOLO_PAL_OBP0B,
-                                              _reg_obp0.XUKY_OBP0_D1n.qp_any2(), VUGO_PAL_OBP0A);
-
-  /*#p35.WALY*/ wire WALY_COL_OBP0_LO = amux4(_reg_obp0.XUPO_OBP0_D6n.qp_any2(), VYRO_PAL_OBP0D,
-                                              _reg_obp0.XERU_OBP0_D4n.qp_any2(), VATA_PAL_OBP0C,
-                                              _reg_obp0.XOVA_OBP0_D2n.qp_any2(), VOLO_PAL_OBP0B,
-                                              _reg_obp0.XUFU_OBP0_D0n.qp_any2(), VUGO_PAL_OBP0A);
+  /*#p35.WUFU*/ wire WUFU_COL_OBP0_HI = amux4(_reg_obp0.XANA_OBP0_D7n.qp_any2(), VYRO_PAL_OBP0D, _reg_obp0.XYZE_OBP0_D5n.qp_any2(), VATA_PAL_OBP0C, _reg_obp0.XALO_OBP0_D3n.qp_any2(), VOLO_PAL_OBP0B, _reg_obp0.XUKY_OBP0_D1n.qp_any2(), VUGO_PAL_OBP0A);
+  /*#p35.WALY*/ wire WALY_COL_OBP0_LO = amux4(_reg_obp0.XUPO_OBP0_D6n.qp_any2(), VYRO_PAL_OBP0D, _reg_obp0.XERU_OBP0_D4n.qp_any2(), VATA_PAL_OBP0C, _reg_obp0.XOVA_OBP0_D2n.qp_any2(), VOLO_PAL_OBP0B, _reg_obp0.XUFU_OBP0_D0n.qp_any2(), VUGO_PAL_OBP0A);
 
   //----------------------------------------
   // Sprite palette 1 lookup
@@ -408,15 +401,8 @@ void PixelPipes::tock_pix_output(
   /*#p35.LARU*/ wire LARU_PAL_OBP1C = and3(LOZO_PIX_SP_HIp, MABY_PIX_SP_LOn, LUKU_MASK_OBP1); // does not have vcc arm
   /*#p35.LEDO*/ wire LEDO_PAL_OBP1D = and3(LOZO_PIX_SP_HIp, LYLE_PIX_SP_LOp, LUKU_MASK_OBP1); // does not have vcc arm
 
-  /*#p35.MOKA*/ wire MOKA_COL_OBP1_HI = amux4(_reg_obp1.LUXO_OBP1_D7n.qp_any2(), LEDO_PAL_OBP1D,
-                                              _reg_obp1.LUGU_OBP1_D5n.qp_any2(), LARU_PAL_OBP1C,
-                                              _reg_obp1.LOSE_OBP1_D3n.qp_any2(), LYKY_PAL_OBP1B,
-                                              _reg_obp1.LAWO_OBP1_D1n.qp_any2(), LOPU_PAL_OBP1A);
-
-  /*#p35.MUFA*/ wire MUFA_COL_OBP1_LO = amux4(LEDO_PAL_OBP1D, _reg_obp1.LEPU_OBP1_D6n.qp_any2(),
-                                              LARU_PAL_OBP1C, _reg_obp1.LUNE_OBP1_D4n.qp_any2(),
-                                              LYKY_PAL_OBP1B, _reg_obp1.MOSA_OBP1_D2n.qp_any2(),
-                                              LOPU_PAL_OBP1A, _reg_obp1.MOXY_OBP1_D0n.qp_any2());
+  /*#p35.MOKA*/ wire MOKA_COL_OBP1_HI = amux4(_reg_obp1.LUXO_OBP1_D7n.qp_any2(), LEDO_PAL_OBP1D, _reg_obp1.LUGU_OBP1_D5n.qp_any2(), LARU_PAL_OBP1C, _reg_obp1.LOSE_OBP1_D3n.qp_any2(), LYKY_PAL_OBP1B, _reg_obp1.LAWO_OBP1_D1n.qp_any2(), LOPU_PAL_OBP1A);
+  /*#p35.MUFA*/ wire MUFA_COL_OBP1_LO = amux4(LEDO_PAL_OBP1D, _reg_obp1.LEPU_OBP1_D6n.qp_any2(), LARU_PAL_OBP1C, _reg_obp1.LUNE_OBP1_D4n.qp_any2(), LYKY_PAL_OBP1B, _reg_obp1.MOSA_OBP1_D2n.qp_any2(), LOPU_PAL_OBP1A, _reg_obp1.MOXY_OBP1_D0n.qp_any2());
 
   //----------------------------------------
   // Background/window palette lookup
@@ -433,15 +419,8 @@ void PixelPipes::tock_pix_output(
   /* p35.NUMA*/ wire NUMA_PAL_BGPC = and3(NALE_PIX_BG_HIp, SOBA_PIX_BG_LOn, MUVE_MASK_BGP); // does not have vcc arm
   /* p35.NYPO*/ wire NYPO_PAL_BGPD = and3(NALE_PIX_BG_HIp, NUPO_PIX_BG_LOp, MUVE_MASK_BGP); // does not have vcc arm
 
-  /*#p35.NELO*/ wire NELO_COL_BG_LO = amux4(NYPO_PAL_BGPD, _reg_bgp.MOGY_BGP_D6n.qp_any2(),
-                                            NUMA_PAL_BGPC, _reg_bgp.MUKE_BGP_D4n.qp_any2(),
-                                            NUXO_PAL_BGPB, _reg_bgp.PYLU_BGP_D2n.qp_any2(),
-                                            POBU_PAL_BGPA, _reg_bgp.PAVO_BGP_D0n.qp_any2());
-
-  /*#p35.NURA*/ wire NURA_COL_BG_HI = amux4(_reg_bgp.MENA_BGP_D7n.qp_any2(), NYPO_PAL_BGPD,
-                                            _reg_bgp.MORU_BGP_D5n.qp_any2(), NUMA_PAL_BGPC,
-                                            _reg_bgp.MAXY_BGP_D3n.qp_any2(), NUXO_PAL_BGPB,
-                                            _reg_bgp.NUSY_BGP_D1n.qp_any2(), POBU_PAL_BGPA);
+  /*#p35.NELO*/ wire NELO_COL_BG_LO = amux4(NYPO_PAL_BGPD, _reg_bgp.MOGY_BGP_D6n.qp_any2(), NUMA_PAL_BGPC, _reg_bgp.MUKE_BGP_D4n.qp_any2(), NUXO_PAL_BGPB, _reg_bgp.PYLU_BGP_D2n.qp_any2(), POBU_PAL_BGPA, _reg_bgp.PAVO_BGP_D0n.qp_any2());
+  /*#p35.NURA*/ wire NURA_COL_BG_HI = amux4(_reg_bgp.MENA_BGP_D7n.qp_any2(), NYPO_PAL_BGPD, _reg_bgp.MORU_BGP_D5n.qp_any2(), NUMA_PAL_BGPC, _reg_bgp.MAXY_BGP_D3n.qp_any2(), NUXO_PAL_BGPB, _reg_bgp.NUSY_BGP_D1n.qp_any2(), POBU_PAL_BGPA);
 
   //----------------------------------------
   // Pixel merge and send
@@ -452,8 +431,8 @@ void PixelPipes::tock_pix_output(
   /*#p35.REMY*/ wire _REMY_LD0n = not1b(_PERO_COL_LO);
   /*#p35.RAVO*/ wire _RAVO_LD1n = not1b(_PATY_COL_HI);
 
-  /*#p35.REMY*/ REMY_LD0n.set(_REMY_LD0n);
-  /*#p35.RAVO*/ RAVO_LD1n.set(_RAVO_LD1n);
+  REMY_LD0n.set(_REMY_LD0n);
+  RAVO_LD1n.set(_RAVO_LD1n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

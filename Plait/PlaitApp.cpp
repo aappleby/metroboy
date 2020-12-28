@@ -17,34 +17,13 @@
 #include <regex>
 #include <deque>
 #include <algorithm>
+#include <filesystem>
 
 #include <windows.h>
 
 using namespace std;
 
-std::map<std::string, uint32_t> node_type_to_color;
-
-std::set<string> all_tags;
-std::set<string> verified_tags;
-
-int total_matches = 0;
-
-std::set<string> valid_cell_types = {
-  "DFF8p",
-  "DFF8n",
-  "DFF9",
-  "DFF11",
-  "DFF13",
-  "DFF17",
-  "DFF20",
-  "DFF22",
-  "wire",
-  "Gate",
-  "Signal",
-  "NorLatch",
-  "NandLatch",
-  "TpLatch",
-};
+//std::map<std::string, uint32_t> node_type_to_color;
 
 //-----------------------------------------------------------------------------
 
@@ -75,210 +54,22 @@ Node* Plait::get_node(const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
+/*
 bool has_tag(const plait::CellDB& cell_db, const std::string& tag) {
   for (auto& cell : cell_db.cells()) {
     if (cell.tag() == tag) return true;
   }
   return false;
 }
+*/
 
-//-----------------------------------------------------------------------------
-
-bool parse_tag(const std::string& tag) {
-  static regex valid_tag(R"(^(.?)p([0-9]{2})\.([A-Z]{4})$)");
-
-  smatch matches;
-  if (regex_match(tag,  matches, valid_tag)) {
-    //string verified = matches[1].str();
-    //string page = matches[2].str();
-    //string tag = matches[3].str();
-    //if (verified == "#") verified_tags.insert(tag);
-    return true;
-  }
-  else {
-    printf("Could not parse tag %s\n", tag.c_str());
-    return false;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-bool parse_type(const std::string type) {
-  if (valid_cell_types.contains(type)) {
-    return true;
-  }
-  else {
-    printf("Could not parse type %s\n", type.c_str());
-    return false;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-bool parse_arg(const std::string& arg) {
-
-  static regex tagged_arg(R"(^(?:\w+\.)*[A-Z]{4}.*)");
-  //static regex tagged_arg(R"(^(?:\w+\.)*[A-Z]{4}(?:_\w+)*(?:\.\w+\(\))*$)");
-
-  //static regex simple_arg(R"(^(?:\w+\.)*[A-Z]{4}(?:_\w+)*(?:\.\w+\(\))*$)");
-  //static regex scoped_arg(R"(^(?:\w+\.)*(\w+)(?:\..*)?)");
-  static regex bus_arg(R"(^(?:\w+\.)*BUS_.*)");
-  static regex sig_arg(R"(^(?:\w+\.)*SIG_.*)");
-  static regex pin_arg(R"(^(?:\w+\.)*PIN\d{2}_.*)");
-  //static regex call_arg(R"(^[A-Z]{4}_.*\(\)$)");
-
-  smatch matches;
-
-  if (regex_match(arg, matches, tagged_arg)) {
-    return true;
-  }
-  else if (regex_match(arg, matches, bus_arg)) {
-    return true;
-  }
-  else if (regex_match(arg, matches, sig_arg)) {
-    return true;
-  }
-  else if (regex_match(arg, matches, pin_arg)) {
-    return true;
-  }
-  else {
-    printf("Could not parse arg %s\n", arg.c_str());
-    return false;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-bool parse_arglist(const std::string& arglist) {
-  static std::regex arg_regex("\\s*_?(.*?),");
-
-  bool result = true;
-  for (std::sregex_iterator i = std::sregex_iterator(arglist.begin(), arglist.end(), arg_regex); i != std::sregex_iterator(); i++) {
-    result &= parse_arg((*i)[1].str().c_str());
-  }
-  return result;
-}
-
-//-----------------------------------------------------------------------------
-
-bool parse_value(const std::string& value) {
-  static regex valid_value(R"(.*?\((.*)\);.*)");
-
-  smatch matches;
-  if (regex_match(value, matches, valid_value)) {
-    return parse_arglist(matches[1].str());
-  }
-  else {
-    printf("Could not parse value %s\n", value.c_str());
-    return false;
-  }
-
-}
-
-//-----------------------------------------------------------------------------
-
-bool parse_name(const std::string& name) {
-  static regex valid_name(R"(^(?:\w+\.)*_?([A-Z]{4})(_?\w*)\s*$)");
-  smatch matches;
-  if (regex_match(name, matches, valid_name)) {
-    return true;
-  } else {
-    printf("Could not parse name %s\n", name.c_str());
-    return false;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-bool parse_rest(const std::string& rest) {
-  static regex member_decl(R"(^(\w+)\s+(\w+);.*)");
-  static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
-  static regex local_decl(R"(^wire\s+(\w+)\s*=\s(.*)$)");
-  static regex func_decl(R"(^(inline\s+)?wire\s+(\w+)\s*.*\{\s*return\s*(.*)\}.*)");
-  static regex wire_decl(R"(^wire\s*(\w+);.*$)");
-  static regex signal_decl(R"(^Signal\s*(\w+);.*$)");
-  static regex tri_call(R"(^(.*)\.\s*(tri\w+\(.*$))");
-  static regex dff_call(R"(^(.*)\.\s*(dff\w+\(.*$))");
-  static regex latch_call(R"(^(.*)\.\s*(.*_latch[pn]?\(.*$))");
-  static regex set_call(R"(^(.*)\.\s*set\((.*)\).*)");
-
-  smatch matches;
-
-  //line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
-
-  bool result = true;
-
-  if (regex_match(rest, matches, member_decl)) {
-    result &= parse_type(matches[1].str());
-    result &= parse_name(matches[2].str());
-  }
-  else if (regex_match(rest, matches, local_decl)) {
-    result &= parse_name(matches[1].str());
-    result &= parse_value(matches[2].str());
-  }
-  else if (regex_match(rest, matches, func_decl)) {
-    result &= parse_name(matches[2].str());
-    result &= parse_value(matches[3].str());
-  }
-  else if (regex_match(rest, matches, wire_decl)) {
-    result &= parse_name(matches[1].str());
-  }
-  else if (regex_match(rest, matches, signal_decl)) {
-    result &= parse_name(matches[1].str());
-  }
-  else if (regex_match(rest, matches, tri_call)) {
-    //string bus = matches[1].str();
-    result &= parse_value(matches[2].str());
-  }
-  else if (regex_match(rest, matches, dff_call)) {
-    result &= parse_name(matches[1].str());
-    result &= parse_value(matches[2].str());
-  }
-  else if (regex_match(rest, matches, latch_call)) {
-    result &= parse_name(matches[1].str());
-    result &= parse_value(matches[2].str());
-  }
-  else if (regex_match(rest, matches, set_call)) {
-    result &= parse_name(matches[1].str());
-    result &= parse_value(matches[2].str());
-  }
-  else if (regex_match(rest, matches, member_assign)) {
-    result &= parse_name(matches[1].str());
-    result &= parse_value(matches[2].str());
-  }
-  else {
-    result = false;
-  }
-  return result;
-}
-
-//-----------------------------------------------------------------------------
-
-void parse_line(std::string& line, plait::CellDB& cell_db) {
-  static regex tagged_line_regex(R"(^\s*\/\*(.*?)\*\/\s*(.*))");
-  (void)cell_db;
-
-  bool result = true;
-
-  smatch matches;
-  if (regex_match(line, matches, tagged_line_regex)) {
-    string tag = matches[1].str();
-    string rest = matches[2].str();
-    result &= parse_tag(tag);
-    result &= parse_rest(rest);
-  }
-
-  if (!result) {
-    printf("Could not parse line : \"%s\"\n", line.c_str());
-  }
-}
 
 //-----------------------------------------------------------------------------
 
 #if 0
 void Node::dump(Dumper& d) {
   d("Node : \"%s\"\n", cell->name.c_str());
-  d("Tag  : \"%s\"\n", cell->tag.c_str());
+  d("Tag  : \"%s\"\n", cell->tag_comment.c_str());
   d("Func : \"%s\"\n", cell->func.c_str());
   d("Tail : \"%s\"\n", cell->tail.c_str());
   for(auto p : prev) {
@@ -290,11 +81,16 @@ void Node::dump(Dumper& d) {
 
 //-----------------------------------------------------------------------------
 
+void parse_dir(string path);
+
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
   int ret = 0;
 
+  parse_dir("GateBoyLib");
+
+#if 0
   printf("Loading plait cell db %f\n", timestamp());
   //std::ifstream lines("plait_data.txt");
   std::ifstream lines("conglom.txt");
@@ -304,23 +100,24 @@ int main(int argc, char** argv) {
 
   printf("Parsing plait cell db %f\n", timestamp());
 
-  plait::CellDB* cell_db = new plait::CellDB();
+  //plait::CellDB* cell_db = new plait::CellDB();
 
   //string test_line = R"(  /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());)";
   //parse_line(test_line, *cell_db);
 
-  string test_rest = "DFF9 AFUR_xxxxEFGHp;";
-  parse_rest(test_rest);
+  //string test_rest = "DFF9 AFUR_xxxxEFGHp;";
+  //parse_rest(test_rest);
 
   for (string line; getline(lines, line); ) {
-    parse_line(line, *cell_db);
+    parse_line(line);
   }
   printf("\n");
 
 
-  printf("Total matches %d\n", total_matches);
+  printf("Total tagged lines %d\n", total_tagged_lines);
   printf("Unique tags %zd\n", all_tags.size());
   printf("Verified tags %zd\n", verified_tags.size());
+#endif
 
 #if 0
   printf("Cell count %d\n", cell_db->cells_size());
@@ -373,6 +170,7 @@ const char* PlaitApp::app_get_title() {
 //-----------------------------------------------------------------------------
 
 void PlaitApp::app_init() {
+  /*
   node_type_to_color["not1b"] = 0xFF808080;
   node_type_to_color[""]      = 0xFF008000;
 
@@ -390,6 +188,7 @@ void PlaitApp::app_init() {
   node_type_to_color["dff17"] = 0xFF004040;
   node_type_to_color["dff20"] = 0xFF004040;
   node_type_to_color["dff22"] = 0xFF004040;
+  */
 
   check_gl_error();
   box_painter.init();
@@ -488,13 +287,7 @@ void PlaitApp::app_init() {
   printf("Done %f\n", timestamp());
 }
 
-//-----------------------------------------------------------------------------
-
-void PlaitApp::app_close() {
-}
-
-//-----------------------------------------------------------------------------
-
+#if 0
 Node* PlaitApp::pick_node(dvec2 pos) {
   (pos);
 
@@ -516,12 +309,22 @@ Node* PlaitApp::pick_node(dvec2 pos) {
 
   return nullptr;
 }
+#endif
+
+//-----------------------------------------------------------------------------
+
+void PlaitApp::app_close() {
+}
+
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 
 void PlaitApp::app_update(Viewport view, double delta) {
+  (void)view;
   (void)delta;
 
+#if 0
   int mouse_x, mouse_y;
   mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
   mouse_pos = view.screenToWorld({mouse_x, mouse_y});
@@ -558,6 +361,7 @@ void PlaitApp::app_update(Viewport view, double delta) {
       hit_node->pos_new.y = round(hit_node->pos_new.y / 16) * 16.0;
     }
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

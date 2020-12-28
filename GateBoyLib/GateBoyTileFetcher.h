@@ -37,12 +37,9 @@ struct TileFetcher {
   /* p27.LYRY*/ wire LYRY_BFETCH_DONEp_any(wire NYXU_BFETCH_RSTn_new) const { return not1b(MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn_new)); }
 
   /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1b(LONY_FETCHINGp.qp_new2()); }
-  /* p27.MESU*/ wire MESU_BFETCH_S1p()     const { return _MESU_BFETCH_S1p.qp_new2(); }
-  /* p27.NYVA*/ wire NYVA_BFETCH_S2p()     const { return _NYVA_BFETCH_S2p.qp_new2(); }
-
   /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1b(LUSU_FETCHINGn()); }
-  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1b(MESU_BFETCH_S1p()); }
-  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1b(NYVA_BFETCH_S2p()); }
+  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1b(_MESU_BFETCH_S1p.qp_new2()); }
+  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1b(_NYVA_BFETCH_S2p.qp_new2()); }
   /* p27.NOGU*/ wire NOGU_BFETCH_01p()     const { return nand2b(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
   /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1b(NOGU_BFETCH_01p()); }
   /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }

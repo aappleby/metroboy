@@ -451,11 +451,9 @@ void GateBoy::tock_slow(int pass_index) {
 
   SpriteMatchFlag old_match = sprite_store.get_match_flags_old(_AROR_MATCH_ENp_old, pix_count);
 
-  /* p29.FEPO*/ wire FEPO_STORE_MATCHp_old = old_match.FEPO_STORE_MATCHp();
-
   SpriteFirstMatch old_first_match = sprite_store.get_first_match(old_match);
 
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1b(FEPO_STORE_MATCHp_old);
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1b(old_match.FEPO_STORE_MATCHp());
   /*#p21.WODU*/ wire WODU_HBLANKp_old = and2(XENA_STORE_MATCHn_old, pix_count.XANO_PX167p_old());
 
   wire TAVE_PRELOAD_DONE_TRIGp_old = tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_old();
@@ -470,7 +468,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire MOCE_BFETCH_DONEn_old = tile_fetcher.MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old);
   wire LYRY_BFETCH_DONEp_old = tile_fetcher.LYRY_BFETCH_DONEp_old(NYXU_BFETCH_RSTn_old);
-  wire TEKY_SFETCH_REQp_old = and4(FEPO_STORE_MATCHp_old, win_reg.TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, sprite_fetcher.SOWO_SFETCH_RUNNINGn_old());
+  wire TEKY_SFETCH_REQp_old = and4(old_match.FEPO_STORE_MATCHp(), win_reg.TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, sprite_fetcher.SOWO_SFETCH_RUNNINGn_old());
 
   wire WYMO_LCDC_WINENp_old = reg_lcdc.WYMO_LCDC_WINENn.qn_old2();
 
@@ -489,7 +487,7 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p27.RONE*/ wire _RONE_SCX_FINE_MATCHn_old = nand4b(fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_old2(), _SUHA_SCX_FINE_MATCHp_old, _SYBY_SCX_FINE_MATCHp_old, _SOZU_SCX_FINE_MATCHp_old);
   /*#p27.POHU*/ wire _POHU_SCX_FINE_MATCHp_old = not1b(_RONE_SCX_FINE_MATCHn_old);
 
-  /* p27.RYDY*/ wire RYDY_WIN_HITp_old = win_reg.RYDY_WIN_HITp.qp_old2();
+  wire RYDY_WIN_HITp_old = win_reg.RYDY_WIN_HITp.qp_old2();
 
   wire RYFA_WIN_FETCHn_A_old = win_reg.RYFA_WIN_FETCHn_A.qp_old2();
 
@@ -650,7 +648,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   }
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3b(FEPO_STORE_MATCHp_old, WODU_HBLANKp_old, clk.MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3b(old_match.FEPO_STORE_MATCHp(), WODU_HBLANKp_old, clk.MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(win_reg.SOCY_WIN_HITn_new(), tile_fetcher.POKY_PRELOAD_LATCHp.qp_new2(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1b(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1b(SEGU_CLKPIPE_evn);
@@ -663,7 +661,7 @@ void GateBoy::tock_slow(int pass_index) {
     oam_bus.latch_to_temp_b(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp.qp_new2(), sprite_fetcher.XUJY_OAM_CLKENp());
 
     SpriteDeltaY delta = SpriteDeltaY::sub(oam_bus.oam_temp_a, lcd.reg_ly);
-    /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp = delta.GESE_SCAN_MATCH_Yp(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new2());
+    wire _GESE_SCAN_MATCH_Yp = delta.GESE_SCAN_MATCH_Yp(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new2());
     /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(clk.XOCE_xBCxxFGx(), sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /* p29.DYTY*/ wire _DYTY_COUNT_CLKp = not1b(_CARE_COUNT_CLKn);
     sprite_store.update_count(rst.XAPO_VID_RSTn(), clk.ZEME_AxCxExGx(), lcd.ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
@@ -786,6 +784,10 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Ext bus
 
+  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(clk.AROV_xxCDEFxx(), clk.AJAX_xxxxEFGH(), cpu_bus.SIG_CPU_EXT_BUSp.qp_new2());
+  /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2b(rst.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
+  /*#p01.ABUZ*/ wire _ABUZ_EXT_RAM_CS_CLK = not1b(_AWOD_ABxxxxxx);
+
   {
     ext_bus.PIN80_CSn.reset_for_pass();
     ext_bus.PIN79_RDn.reset_for_pass();
@@ -818,7 +820,6 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN17_DATA[6].state = 0b00100000;
     ext_bus.PIN17_DATA[7].state = 0b00100000;
 
-    /*#p01.ABUZ*/ wire _ABUZ_EXT_RAM_CS_CLK = ABUZ_EXT_RAM_CS_CLK(rst, clk, cpu_bus);
     ext_bus.set_control_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);
     ext_bus.copy_addr_latch_to_pins(rst, cpu_bus, dma, _ABUZ_EXT_RAM_CS_CLK);
@@ -838,7 +839,6 @@ void GateBoy::tock_slow(int pass_index) {
     vram_bus.reset_buses();
 
 
-    /*#p01.ABUZ*/ wire _ABUZ_EXT_RAM_CS_CLK = ABUZ_EXT_RAM_CS_CLK(rst, clk, cpu_bus);
     /*#p25.ROPY*/ wire _ROPY_RENDERINGn = not1b(ppu_reg.XYMU_RENDERINGp());
     /*#p25.SERE*/ wire _SERE_CPU_VRAM_RDp = and2(cpu_bus.TOLE_CPU_VRAM_RDp(_ABUZ_EXT_RAM_CS_CLK), _ROPY_RENDERINGn);
 

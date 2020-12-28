@@ -162,10 +162,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\protos\plait_wrapper.cc" />
+    <ClCompile Include="CellDB.cpp" />
+    <ClCompile Include="Plait.cpp" />
     <ClCompile Include="PlaitApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\protos\plait_wrapper.h" />
+    <ClInclude Include="CellDB.h" />
+    <ClInclude Include="Plait.h" />
     <ClInclude Include="PlaitApp.h" />
   </ItemGroup>
   <ItemGroup>

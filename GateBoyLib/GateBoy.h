@@ -149,14 +149,6 @@ struct GateBoy {
     return _NUKO_WX_MATCHp;
   }
 
-  static wire ABUZ_EXT_RAM_CS_CLK(const GateBoyResetDebug& rst, const GateBoyClock& clk, const GateBoyCpuBus& cpu_bus) {
-    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(clk.AROV_xxCDEFxx(), clk.AJAX_xxxxEFGH(), cpu_bus.SIG_CPU_EXT_BUSp.qp_new2());
-    /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2b(rst.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
-    /*#p01.ABUZ*/ wire _ABUZ_EXT_RAM_CS_CLK = not1b(_AWOD_ABxxxxxx);
-    return _ABUZ_EXT_RAM_CS_CLK;
-  }
-
-
   //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive
   // from BitBase.

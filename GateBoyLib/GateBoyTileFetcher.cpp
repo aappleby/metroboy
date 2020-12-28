@@ -10,8 +10,8 @@
 void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
   for (int feedback = 0; feedback < 2; feedback++) {
-    /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn);
-    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2b(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn);
+    ///* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn);
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2b(clk.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn));
 
     /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_any(_LEBO_AxCxExGx,             NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_any2());
     /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_any(_LAXU_BFETCH_S0p.qn_any2(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_any2());
@@ -33,16 +33,16 @@ void TileFetcher::tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERIN
 wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
   /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1b(_XYMU_RENDERINGp.qp_new2());
 
-  /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new2();
-  /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new2();
-  /* p27.NYVA*/ wire NYVA_BFETCH_S2p = _NYVA_BFETCH_S2p.qp_new2();
+  ///* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new2();
+  ///* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new2();
+  ///* p27.NYVA*/ wire NYVA_BFETCH_S2p = _NYVA_BFETCH_S2p.qp_new2();
 
-  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1b(LAXU_BFETCH_S0p);
-  /*#p27.NOFU*/ wire _NOFU_BFETCH_S2n = not1b(NYVA_BFETCH_S2p);
+  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1b(_LAXU_BFETCH_S0p.qp_new2());
+  /*#p27.NOFU*/ wire _NOFU_BFETCH_S2n = not1b(_NYVA_BFETCH_S2p.qp_new2());
 
   /*#p27.MYSO*/ wire _MYSO_STORE_VRAM_DATA_TRIGp = nor3b(_LOBY_RENDERINGn_new_xxx, _LAXE_BFETCH_S0n, _LYZU_BFETCH_S0p_D1.qp_new2()); // MYSO fires on fetch phase 2, 6, 10
 
-  /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn = nand3b(_MYSO_STORE_VRAM_DATA_TRIGp, MESU_BFETCH_S1p, _NOFU_BFETCH_S2n); // NYDY on fetch phase 6
+  /*#p27.NYDY*/ wire _NYDY_LATCH_TILE_DAn = nand3b(_MYSO_STORE_VRAM_DATA_TRIGp, _MESU_BFETCH_S1p.qp_new2(), _NOFU_BFETCH_S2n); // NYDY on fetch phase 6
   /*#p32.METE*/ wire _METE_LATCH_TILE_DAp = not1b(_NYDY_LATCH_TILE_DAn);
   /*#p32.LOMA*/ wire _LOMA_LATCH_TILE_DAn = not1b(_METE_LATCH_TILE_DAp);
   return _LOMA_LATCH_TILE_DAn;
@@ -53,11 +53,11 @@ wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
 wire TileFetcher::LABU_LATCH_TILE_DBn() const {
   /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1b(_XYMU_RENDERINGp.qp_new2());
 
-  /* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new2();
-  /* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new2();
+  ///* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new2();
+  ///* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new2();
 
-  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1b(LAXU_BFETCH_S0p);
-  /*#p27.NAKO*/ wire _NAKO_BFETCH_S1n = not1b(MESU_BFETCH_S1p);
+  /*#p27.LAXE*/ wire _LAXE_BFETCH_S0n = not1b(_LAXU_BFETCH_S0p.qp_new2());
+  /*#p27.NAKO*/ wire _NAKO_BFETCH_S1n = not1b(_MESU_BFETCH_S1p.qp_new2());
 
   /*#p27.MYSO*/ wire _MYSO_STORE_VRAM_DATA_TRIGp = nor3b(_LOBY_RENDERINGn, _LAXE_BFETCH_S0n, _LYZU_BFETCH_S0p_D1.qp_new2()); // MYSO fires on fetch phase 2, 6, 10
 

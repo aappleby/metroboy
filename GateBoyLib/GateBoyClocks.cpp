@@ -4,21 +4,24 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
+  PIN73_CLK_DRIVE.reset_for_pass();
   PIN75_CLK_OUT.reset_for_pass();
 
-  /* p01.ARYS*/ wire ARYS = not1b(PIN74_CLK_IN.int_qp_new());
-  /* p01.AVET*/ AVET = nand2b(ANOS.qp_any2(), ARYS);
-  /* p01.ANOS*/ ANOS = nand2b(PIN74_CLK_IN.int_qp_new(), AVET.qp_any2());
-  /* p01.AVET*/ AVET = nand2b(ANOS.qp_any2(), ARYS);
-  /* p01.ANOS*/ ANOS = nand2b(PIN74_CLK_IN.int_qp_new(), AVET.qp_any2());
+  /*PIN73*/ PIN73_CLK_DRIVE.pin_out_dp(PIN74_CLK_IN.int_qp_new());
 
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1b(AVET.qp_new2());
-  /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1b(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
+  /* p01.ARYS*/ wire ARYS = not1(PIN74_CLK_IN.int_qp_new());
+  /* p01.AVET*/ AVET = nand2(ANOS.qp_any(), ARYS);
+  /* p01.ANOS*/ ANOS = nand2(PIN74_CLK_IN.int_qp_new(), AVET.qp_any());
+  /* p01.AVET*/ AVET = nand2(ANOS.qp_any(), ARYS);
+  /* p01.ANOS*/ ANOS = nand2(PIN74_CLK_IN.int_qp_new(), AVET.qp_any());
 
-  wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old2();
-  wire AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old2();
-  wire ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old2();
-  wire APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old2();
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET.qp_new());
+  /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
+
+  wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();
+  wire AFUR_xxxxEFGHp_old = AFUR_xxxxEFGHp.qn_old();
+  wire ALEF_AxxxxFGHp_old = ALEF_AxxxxFGHp.qn_old();
+  wire APUK_ABxxxxGHp_old = APUK_ABxxxxGHp.qn_old();
 
   /* p01.AFUR*/ AFUR_xxxxEFGHp.dff9(_ATAN_AxCxExGx, rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxHp_old);
   /* p01.ALEF*/ ALEF_AxxxxFGHp.dff9(_ATAL_xBxDxFxH, rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGHp_old);
@@ -39,9 +42,9 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyClock::tock_vid(const GateBoyResetDebug& rst) {
-  /* p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),         rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old2());
-  /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),         rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old2());
-  /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new2(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_old2()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
+  /* p29.WOSU*/ WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),         rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old());
+  /* p29.WUVU*/ WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),         rst.XAPO_VID_RSTn(), WUVU_ABxxEFxx.qn_old());
+  /* p21.VENA*/ VENA_xxCDEFxx.dff17(WUVU_ABxxEFxx.qn_new(), rst.XAPO_VID_RSTn(), VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 
 //------------------------------------------------------------------------------------------------------------------------

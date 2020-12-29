@@ -6,6 +6,11 @@
 #include <set>
 #include <map>
 
+struct Port {
+  std::string tag;
+  std::string port;
+};
+
 struct Cell {
   void sanity_check() const;
   void merge(const Cell& c);
@@ -19,7 +24,7 @@ struct Cell {
   std::string pin;
   std::string sig;
   std::string doc;
-  std::vector<std::string> args;
+  std::vector<Port> args;
   std::set<std::string> names;
 
   int mark = 0;
@@ -33,14 +38,14 @@ struct CellDB {
 
   bool parse_cell_name(Cell& c, const std::string& cell_name);
   bool parse_cell_def(Cell& c, const std::string& value);
-  bool parse_cell_input_list(Cell& c, const std::string& arglist);
-  bool parse_cell_input(Cell& c, const std::string& input);
+  bool parse_cell_arg(Cell& c, const std::string& input);
+  bool parse_cell_arglist(Cell& c, const std::string& arglist);
 
   bool parse_bus_name(Cell& c, const std::string& bus_name);
   bool parse_pin_name(Cell& c, const std::string& pin_name);
   bool parse_sig_name(Cell& c, const std::string& sig_name);
 
-  bool parse_tag_comment(Cell& c, const std::string& tag_comment);
+  bool parse_tag(Cell& c, const std::string& tag_comment);
   bool parse_reg_type(Cell& c, const std::string& type);
   bool parse_gate_type(Cell& c, const std::string& type);
 

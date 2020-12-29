@@ -105,8 +105,7 @@ struct GateBoyExtBus {
   void copy_addr_latch_to_pins(
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
-    const GateBoyDMA& dma,
-    wire ABUZ_EXT_RAM_CS_CLK
+    const GateBoyDMA& dma
   );
 
   void copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus);
@@ -116,8 +115,8 @@ struct GateBoyExtBus {
   void set_control_pins(
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
-    const GateBoyDMA& dma,
-    wire ABUZ_EXT_RAM_CS_CLK);
+    const GateBoyDMA& dma
+  );
 
   void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus);
   void read_ext_to_pins (const uint8_t* cart_buf, const uint8_t* cart_ram, const uint8_t* ext_ram);

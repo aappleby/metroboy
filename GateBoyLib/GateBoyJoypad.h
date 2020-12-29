@@ -9,7 +9,7 @@ struct GateBoyJoypad {
   void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
   void tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys_buttons);
 
-  /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new2(), BATU_JP_GLITCH0.qp_new2()); }
+  /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(APUG_JP_GLITCH3.qp_new(), BATU_JP_GLITCH0.qp_new()); }
 
   void dump(Dumper& d) {
     d.dump_bitp("AWOB_WAKE_CPU   : ", AWOB_WAKE_CPU.state);

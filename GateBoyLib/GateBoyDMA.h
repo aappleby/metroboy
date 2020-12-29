@@ -13,11 +13,11 @@ struct GateBoyDMA {
   wire LUFA_DMA_VRAMp() const;
 
   wire BOGE_DMA_RUNNINGn() const {
-    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1b(MATU_DMA_RUNNINGp.qp_new2());
+    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp.qp_new());
     return BOGE_DMA_RUNNINGn;
   }
   wire DUGA_DMA_RUNNINGn() const {
-    /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1b(MATU_DMA_RUNNINGp.qp_new2());
+    /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp.qp_new());
     return DUGA_DMA_RUNNINGn;
   }
 

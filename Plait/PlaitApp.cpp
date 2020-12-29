@@ -175,19 +175,19 @@ const char* PlaitApp::app_get_title() {
 
 void PlaitApp::app_init() {
   /*
-  node_type_to_color["not1b"] = 0xFF808080;
+  node_type_to_color["not1"] = 0xFF808080;
   node_type_to_color[""]      = 0xFF008000;
 
   node_type_to_color["and4"]    = 0xFF000080;
-  node_type_to_color["nand4b"]  = 0xFF000080;
-  node_type_to_color["nand3b"]  = 0xFF000080;
+  node_type_to_color["nand4"]  = 0xFF000080;
+  node_type_to_color["nand3"]  = 0xFF000080;
 
-  node_type_to_color["mux2nb"] = 0xFF004080;
+  node_type_to_color["mux2n"] = 0xFF004080;
   node_type_to_color["mux2b"]  = 0xFF004080;
 
   node_type_to_color["or2"]   = 0xFF800000;
-  node_type_to_color["nor2b"] = 0xFF800000;
-  node_type_to_color["nor3b"] = 0xFF800000;
+  node_type_to_color["nor2"] = 0xFF800000;
+  node_type_to_color["nor3"] = 0xFF800000;
 
   node_type_to_color["dff17"] = 0xFF004040;
   node_type_to_color["dff20"] = 0xFF004040;

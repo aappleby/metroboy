@@ -108,11 +108,9 @@ void TextPainter::init() {
   set_pal(6, 1.0f, 0.6f, 1.0f, 1.0f); // error magenta
   set_pal(7, 0.4f, 0.4f, 0.4f, 1.0f); // grey
 
-  line_data = new uint16_t[65536];
-
-  line_vao = create_vao();
-
-  line_vbo = create_vbo(65536 * 4);
+  text_data = new uint16_t[max_text_bytes / sizeof(uint16_t)];
+  text_vao = create_vao();
+  text_vbo = create_vbo(max_text_bytes);
   glEnableVertexAttribArray(0);
   glVertexAttribIPointer(0, 4, GL_SHORT, 8, 0);
   glVertexAttribDivisor(0, 1);
@@ -144,12 +142,12 @@ void TextPainter::render(Viewport view, double x, double y, float scale) {
 
   bind_texture(text_prog, "font_tex", 0, font_tex);
 
-  bind_vao(line_vao);
+  bind_vao(text_vao);
 
   int glyph_count = (inst_end - inst_begin) / 4;
   int bytes_per_glyph = 8;
 
-  update_vbo(line_vbo, glyph_count * bytes_per_glyph, line_data + inst_begin);
+  update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data + inst_begin);
 
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, glyph_count);
 
@@ -161,10 +159,11 @@ void TextPainter::render(Viewport view, double x, double y, float scale) {
 //-----------------------------------------------------------------------------
 
 void TextPainter::push_char(int x, int y, int c, int pal) {
-  line_data[inst_end++] = uint16_t(x);
-  line_data[inst_end++] = uint16_t(y);
-  line_data[inst_end++] = uint16_t(c);
-  line_data[inst_end++] = uint16_t(pal);
+  text_data[inst_end++] = uint16_t(x);
+  text_data[inst_end++] = uint16_t(y);
+  text_data[inst_end++] = uint16_t(c);
+  text_data[inst_end++] = uint16_t(pal);
+  CHECK_P((inst_end * sizeof(uint16_t)) < max_text_bytes);
 }
 
 void TextPainter::add_char(const char c) {

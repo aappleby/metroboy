@@ -25,139 +25,20 @@
 
 using namespace std;
 
-//std::map<std::string, uint32_t> node_type_to_color;
-
 //-----------------------------------------------------------------------------
-
-#if 0
-Node* Plait::get_or_create_node(const std::string& name) {
-  Node* new_node = get_node(name);
-  if (new_node) return new_node;
-
-  new_node = new Node();
-  new_node->name = name;
-
-  nodes.push_back(new_node);
-  names.insert({name, new_node});
-
-  return new_node;
-}
-
-Node* Plait::get_node(const std::string& name) {
-  auto it = names.find(name);
-  if (it == names.end()) {
-    return nullptr;
-  }
-  else {
-    return (*it).second;
-  }
-}
-#endif
-
-//-----------------------------------------------------------------------------
-
-/*
-bool has_tag(const plait::CellDB& cell_db, const std::string& tag) {
-  for (auto& cell : cell_db.cells()) {
-    if (cell.tag() == tag) return true;
-  }
-  return false;
-}
-*/
-
-
-//-----------------------------------------------------------------------------
-
-#if 0
-void Node::dump(Dumper& d) {
-  d("Node : \"%s\"\n", cell->name.c_str());
-  d("Tag  : \"%s\"\n", cell->tag_comment.c_str());
-  d("Func : \"%s\"\n", cell->func.c_str());
-  d("Tail : \"%s\"\n", cell->tail.c_str());
-  for(auto p : prev) {
-    d("Arg  : \"%s\"\n", p->cell->name.c_str());
-  }
-  d("\n");
-}
-#endif
-
-//-----------------------------------------------------------------------------
-
-void parse_dir(string path);
 
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
   int ret = 0;
 
-  CellDB cell_db;
+  PlaitApp* app = new PlaitApp();
 
-  cell_db.parse_dir("GateBoyLib");
+  app->cell_db.parse_dir("GateBoyLib");
 
-#if 0
-  printf("Loading plait cell db %f\n", timestamp());
-  //std::ifstream lines("plait_data.txt");
-  std::ifstream lines("conglom.txt");
-  printf("\n");
-
-  ConsoleDumper console;
-
-  printf("Parsing plait cell db %f\n", timestamp());
-
-  //plait::CellDB* cell_db = new plait::CellDB();
-
-  //string test_line = R"(  /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());)";
-  //parse_line(test_line, *cell_db);
-
-  //string test_rest = "DFF9 AFUR_xxxxEFGHp;";
-  //parse_rest(test_rest);
-
-  for (string line; getline(lines, line); ) {
-    parse_line(line);
-  }
-  printf("\n");
-
-
-  printf("Total tagged lines %d\n", total_tagged_lines);
-  printf("Unique tags %zd\n", all_tags.size());
-  printf("Verified tags %zd\n", verified_tags.size());
-#endif
-
-#if 0
-  printf("Cell count %d\n", cell_db->cells_size());
-
-  printf("Printing plait cell db %f\n", timestamp());
-
-  string blah;
-
-  google::protobuf::TextFormat::PrintToString(*cell_db, &blah);
-  //printf("dump:\n%s\n", blah.c_str());
-
-  {
-    plait::CellDB* cell_db2 = new plait::CellDB();
-    google::protobuf::TextFormat::ParseFromString(blah, cell_db2);
-
-    string blah2;
-    google::protobuf::TextFormat::PrintToString(*cell_db2, &blah2);
-    //printf("dump:\n%s\n", blah2.c_str());
-  }
-
-
-  //PlaitApp* app = new PlaitApp();
-  //AppHost* app_host = new AppHost(app);
-  //ret = app_host->app_main(argc, argv);
-  //delete app;
-
-  //plait::dvec2 blep;
-
-  //blep.set_x(10);
-  //blep.set_y(20);
-
-  //printf("blep x %f\n", blep.x());
-  //printf("blep y %f\n", blep.y());
-#endif
-
-  printf("Done %f\n", timestamp());
+  AppHost* app_host = new AppHost(app);
+  ret = app_host->app_main(argc, argv);
+  delete app;
 
   return ret;
 }
@@ -174,25 +55,67 @@ const char* PlaitApp::app_get_title() {
 //-----------------------------------------------------------------------------
 
 void PlaitApp::app_init() {
-  /*
-  node_type_to_color["not1"] = 0xFF808080;
-  node_type_to_color[""]      = 0xFF008000;
+  auto& n2c = node_type_to_color;
 
-  node_type_to_color["and4"]    = 0xFF000080;
-  node_type_to_color["nand4"]  = 0xFF000080;
-  node_type_to_color["nand3"]  = 0xFF000080;
+  n2c[""]      = 0xFF008000;
 
-  node_type_to_color["mux2n"] = 0xFF004080;
-  node_type_to_color["mux2b"]  = 0xFF004080;
+  n2c["not1"]  = 0xFF808080;
 
-  node_type_to_color["or2"]   = 0xFF800000;
-  node_type_to_color["nor2"] = 0xFF800000;
-  node_type_to_color["nor3"] = 0xFF800000;
+  n2c["and2"]  = 0xFF000080;
+  n2c["and3"]  = 0xFF000080;
+  n2c["and4"]  = 0xFF000080;
+  n2c["nand2"] = 0xFF000080;
+  n2c["nand3"] = 0xFF000080;
+  n2c["nand4"] = 0xFF000080;
+  n2c["nand5"] = 0xFF000080;
+  n2c["nand6"] = 0xFF000080;
+  n2c["nand7"] = 0xFF000080;
 
-  node_type_to_color["dff17"] = 0xFF004040;
-  node_type_to_color["dff20"] = 0xFF004040;
-  node_type_to_color["dff22"] = 0xFF004040;
-  */
+  n2c["or2"]   = 0xFF800000;
+  n2c["or3"]   = 0xFF800000;
+  n2c["or4"]   = 0xFF800000;
+
+  n2c["and_or3"] = 0xFF800080;
+  n2c["or_and3"] = 0xFF800080;
+  n2c["not_or_and3"] = 0xFF800080;
+
+  n2c["add_s"] = 0xFF008000;
+  n2c["add_c"] = 0xFF008000;
+
+  n2c["nor2"]  = 0xFF800000;
+  n2c["nor3"]  = 0xFF800000;
+  n2c["nor4"]  = 0xFF800000;
+  n2c["nor5"]  = 0xFF800000;
+  n2c["nor6"]  = 0xFF800000;
+  n2c["nor7"]  = 0xFF800000;
+  n2c["nor8"]  = 0xFF800000;
+
+  n2c["xor2"]  = 0xFF808000;
+  n2c["xnor2"] = 0xFF808000;
+
+  n2c["mux2n"] = 0xFF004080;
+  n2c["mux2p"] = 0xFF004080;
+  n2c["amux2"] = 0xFF004080;
+  n2c["amux4"] = 0xFF004080;
+
+  n2c["dff9" ] = 0xFF004040;
+  n2c["dff22"] = 0xFF004040;
+  n2c["dff17"] = 0xFF004040;
+  n2c["dff20"] = 0xFF004040;
+  n2c["dff17_any"] = 0xFF004040;
+  n2c["dff13"] = 0xFF004040;
+  n2c["dff8n"] = 0xFF004040;
+  n2c["dff11"] = 0xFF004040;
+  n2c["dff8p"] = 0xFF004040;
+
+  n2c["tri10_np"] = 0xFF008080;
+  n2c["tri6_pn"]  = 0xFF008080;
+  n2c["tri6_nn"]  = 0xFF008080;
+
+  n2c["nand_latch"] = 0xFF0060B0;
+  n2c["nor_latch" ] = 0xFF0060B0;
+  n2c["tp_latchn" ] = 0xFF0060B0;
+  n2c["tp_latchp" ] = 0xFF0060B0;
 
   check_gl_error();
   box_painter.init();
@@ -221,9 +144,52 @@ void PlaitApp::app_init() {
 
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+  int cursor_x = 0;
+  int cursor_y = 0;
+
+  for (auto& [tag, cell] : cell_db.cell_map) {
+    auto node = new Node();
+    cell->node = node;
+    node->cell = cell;
+  }
+
+  for (auto& [tag, cell] : cell_db.cell_map) {
+    auto node = (Node*)cell->node;
+
+    cursor_x = rand() * 2 - 32768;
+    cursor_y = rand() * 2 - 32768;
+
+    node->set_pos_old({cursor_x, cursor_y});
+    node->set_pos_new({cursor_x, cursor_y});
+    node->color = 0xFFFF00FF;
+
+    auto it = node_type_to_color.find(cell->gate);
+    if (it != node_type_to_color.end()) node->color = (*it).second;
+
+    for (auto& port : cell->args) {
+      if (cell_db.has_cell(port.tag)) {
+        auto prev_cell = cell_db.get_cell(port.tag);
+        auto prev_node = (Node*)prev_cell->node;
+        if (prev_node) {
+          node->prev.push_back(prev_node);
+          prev_node->next.push_back(node);
+        }
+      }
+    }
+
+    plait.nodes.push_back(node);
+
+    cursor_x += 128 + 16;
+    if (cursor_x >= 4096) {
+      cursor_x = 0;
+      cursor_y += 80;
+    }
+  }
+
+
 #if 0
   Node test_nodes[] = {
-    { { 256,  256},  { 256,  256}, "+====\\\n|REPU >\n+====/"},
+    { { 256,  256},  { 256,  256}, "+====\\\node|REPU >\node+====/"},
     { { 20,  20},  { 20,  20}, "SARY"},
     { { 30,  30},  { 30,  30}, "REJO"},
     { { 40,  40},  { 40,  40}, "XOFO"},
@@ -258,15 +224,15 @@ void PlaitApp::app_init() {
   // Mark levels
   /*
   deque<Node*> queue;
-  for (auto& n : plait.nodes) {
-    n->mark = 0;
-    if (n->prev.empty()) {
-      n->rank = 0;
-      plait.roots.insert(n);
-      queue.push_back(n);
+  for (auto& node : plait.nodes) {
+    node->mark = 0;
+    if (node->prev.empty()) {
+      node->rank = 0;
+      plait.roots.insert(node);
+      queue.push_back(node);
     }
     else {
-      n->rank = -1;
+      node->rank = -1;
     }
   }
 
@@ -277,43 +243,40 @@ void PlaitApp::app_init() {
   /*
   vector<int> cursor_y(100, 0);
 
-  for (auto& n : plait.nodes) {
-    if (n->rank < 0) __debugbreak();
+  for (auto& node : plait.nodes) {
+    if (node->rank < 0) __debugbreak();
 
-    n->pos_old.x = n->rank * 128;
-    n->pos_old.y = cursor_y[n->rank] * 128;
-    cursor_y[n->rank]++;
+    node->pos_old.x = node->rank * 128;
+    node->pos_old.y = cursor_y[node->rank] * 128;
+    cursor_y[node->rank]++;
   }
 
-  for (auto& n : plait.nodes) n->pos_new = n->pos_old;
+  for (auto& node : plait.nodes) node->pos_new = node->pos_old;
   */
 
-  printf("Done %f\n", timestamp());
+  printf("Done %f\node", timestamp());
 }
 
-#if 0
-Node* PlaitApp::pick_node(dvec2 pos) {
-  (pos);
+//-----------------------------------------------------------------------------
 
-  /*
-  printf("pick at %f %f\n", pos.x, pos.y);
+Node* PlaitApp::pick_node(dvec2 _mouse_pos) {
   for (auto n : plait.nodes) {
+    if (n == hit_node) continue;
+    dvec2 node_pos = n->get_pos_old();
+
     int width = 128;
     int height = 64;
 
-    if (pos.x >= n->pos_old.x &&
-        pos.y >= n->pos_old.y &&
-        pos.x <= n->pos_old.x + width &&
-        pos.y <= n->pos_old.y + height) {
-      printf("picked %s\n", n->name.c_str());
+    if (_mouse_pos.x >= node_pos.x &&
+        _mouse_pos.y >= node_pos.y &&
+        _mouse_pos.x <= node_pos.x + width &&
+        _mouse_pos.y <= node_pos.y + height) {
       return n;
     }
   }
-  */
 
   return nullptr;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -322,50 +285,120 @@ void PlaitApp::app_close() {
 
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-void PlaitApp::app_update(Viewport view, double delta) {
+void PlaitApp::app_update(Viewport view, double delta_time) {
   (void)view;
-  (void)delta;
-
-#if 0
-  int mouse_x, mouse_y;
-  mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
-  mouse_pos = view.screenToWorld({mouse_x, mouse_y});
+  (void)delta_time;
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (keyboard_state[SDL_SCANCODE_LSHIFT]) continue;
 
     switch (event.type) {
+    case SDL_KEYDOWN: {
+      int key = event.key.keysym.scancode;
+      if (key == SDL_SCANCODE_E) show_edges = !show_edges;
+      if (key == SDL_SCANCODE_A) show_anchors = !show_anchors;
+      break;
+    }
+
     case SDL_MOUSEBUTTONDOWN: {
-      hit_node = pick_node(mouse_pos);
+      if (event.button.clicks == 1) {
+        click_start = view.screenToWorld({event.button.x, event.button.y});
+      }
+      hit_node = pick_node(click_start);
+      break;
+    }
+
+    case SDL_MOUSEBUTTONUP: {
+      click_end = view.screenToWorld({event.button.x, event.button.y});
       if (hit_node) {
-        mouse_locked = true;
-        drag_start = mouse_pos;
+        if (keyboard_state[SDL_SCANCODE_F]) {
+          if (hover_node) {
+            printf("Linking %s to %s\n", hit_node->cell->tag.c_str(), hover_node->cell->tag.c_str());
+            hit_node->set_anchor(hover_node);
+          }
+          else {
+            printf("Unlinking %s\n", hit_node->cell->tag.c_str());
+            hit_node->set_anchor(nullptr);
+          }
+        }
+        hit_node->set_pos_old(hit_node->get_pos_new());
+        hit_node = nullptr;
+      }
+
+      if (event.button.clicks == 2) {
+        auto node = pick_node(click_end);
+        if (node) {
+          node->locked = !node->locked;
+        }
       }
       break;
     }
-    case SDL_MOUSEBUTTONUP: {
+
+    case SDL_MOUSEMOTION: {
+      mouse_pos = view.screenToWorld({event.motion.x, event.motion.y});
+
+      hover_node = pick_node(mouse_pos);
+
       if (hit_node) {
-        hit_node->pos_old = hit_node->pos_new;
-        hit_node = nullptr;
+        if (keyboard_state[SDL_SCANCODE_F]) {
+        }
+        else {
+          dvec2 new_pos = hit_node->get_pos_old() + (mouse_pos - click_start);
+          new_pos.x = round(new_pos.x / 16) * 16.0;
+          new_pos.y = round(new_pos.y / 16) * 16.0;
+
+          hit_node->set_pos_new(new_pos);
+        }
       }
-      drag_end = mouse_pos;
-      mouse_locked = false;
+
       break;
     }
     }
   }
 
-  if (mouse_buttons & SDL_BUTTON_LMASK) {
-    if (hit_node) {
-      hit_node->pos_new = hit_node->pos_old + (mouse_pos - drag_start);
-      hit_node->pos_new.x = round(hit_node->pos_new.x / 16) * 16.0;
-      hit_node->pos_new.y = round(hit_node->pos_new.y / 16) * 16.0;
+  // Pull nodes towards their parents
+
+  for (auto node : plait.nodes) {
+    if (node == hit_node) continue;
+    if (node->locked) continue;
+    if (node->anchored()) continue;
+    dvec2 d = {0,0};
+    int active_springs = 0;
+
+    for (auto prev : node->prev) {
+      if (prev->anchored_to(node)) continue;
+      dvec2 offset = prev->get_pos_new() - node->get_pos_new();
+      if (length(offset) < 512) continue;
+      active_springs++;
+      d += offset;
+    }
+
+    if (active_springs) {
+      d /= double(active_springs);
+      node->set_pos_new(node->get_pos_old() + d * 0.01);
+    }
+    node->commit_pos();
+  }
+
+#if 0
+  // Push nodes away from their siblings
+  for (auto node : plait.nodes) {
+    if (node == hit_node) continue;
+    if (node->locked) continue;
+
+    size_t sib_count = node->prev.size();
+
+    for (size_t i = 0; i < sib_count; i++) {
+      auto sib_a = node->prev[(i - 1 + sib_count) % sib_count];
+      auto sib_b = node->prev[(i + 1) % sib_count];
+
+      dvec2 delta_a = sib_a->pos_new - node->pos_new;
+      dvec2 delta_b = sib_b->pos_new - node->pos_new;
     }
   }
 #endif
+
 }
 
 //-----------------------------------------------------------------------------
@@ -375,98 +408,82 @@ void PlaitApp::app_render_frame(Viewport view) {
 
   text_painter.bg_col = {0,0.5,0,0.5};
 
-  const int node_height = 64;
-  const int node_width = 128;
-  const int port_height = 4;
-  const int port_width = 4;
+  const dvec2 node_size = {128,64};
+  const dvec2 port_size = {4,4};
 
-#if 0
-  for (auto n : plait.nodes) {
-    float nx = (float)n->pos_new.x;
-    float ny = (float)n->pos_new.y;
+  for (auto node : plait.nodes) {
+    dvec2 node_pos = node->get_pos_new();
 
-    outline_painter.push(nx,       ny,      nx + 128, ny);
-    outline_painter.push(nx + 128, ny,      nx + 128, ny + 64);
-    outline_painter.push(nx + 128, ny + 64, nx,       ny + 64);
-    outline_painter.push(nx,       ny + 64, nx,       ny);
+    outline_painter.push_box(node_pos, node_pos + node_size, 0xFF808080);
 
-    {
-      auto it = node_type_to_color.find(n->func);
-      if (it == node_type_to_color.end()) {
-        box_painter.push(nx + 4, ny + 4, 120, 56, 0xFFFF00FF);
-      }
-      else {
-        box_painter.push(nx + 4, ny + 4, 120, 56, (*it).second);
-      }
+    box_painter.push_corner_size(
+      node_pos + dvec2(4,4),
+      node_size - dvec2(8,8),
+      node == hover_node ? 0xFF00FF00 : node->color);
+
+    text_painter.add_text_at(node->cell->tag.c_str(),  int(node_pos.x + 8), int(node_pos.y + 8));
+    text_painter.add_text_at(node->cell->gate.c_str(), int(node_pos.x + 8), int(node_pos.y + 24));
+    if (node->locked) text_painter.add_text_at("LOCKED", int(node_pos.x + 8), int(node_pos.y + 40));
+
+    if (hit_node && keyboard_state[SDL_SCANCODE_F]) {
+      edge_painter.push(mouse_pos, 0xFFFFFF, hit_node->get_pos_new() + node_size * 0.5, 0xFFFF8080);
     }
 
-    text_painter.add_text_at(n->name.c_str(), int(nx + 8), int(ny + 8));
-    text_painter.add_text_at(n->func.c_str(), int(nx + 8), int(ny + 24));
-
-    /*
-    for (size_t i = 0; i < p->next.size(); i++) {
-      auto n = p->next[i];
-      float nx = float(n->pos_new.x);
-      float ny = float(n->pos_new.y) + 8 + 16 * i;
-
-      edge_painter.push(px + 128, py + 32, nx, ny + 32);
-    }
-    */
-
-    /*
-    float space = (64 - 4) / float(n->prev.size());
-
-    for (size_t i = 0; i < n->prev.size(); i++) {
-      auto p = n->prev[i];
-      float px = float(p->pos_new.x) + 128;
-      float py = float(p->pos_new.y) + 32;
-
-
-      port_painter.push(nx,
-                       ny + space * i + space / 2,
-                       4, 4,
-                       0x80808080);
-    }
-    */
-
+#if 1
     // input port(s)
     {
-      const int port_count = int(n->prev.size());
+      const int port_in_count = int(node->prev.size());
+      auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
+      auto stride = gap + port_size.y;
 
-      float gap = (node_height - (port_height * port_count)) / float(port_count + 1);
-      float stride = gap + port_height;
-
-      for (size_t i = 0; i < port_count; i++) {
-        auto p = n->prev[i];
-        float px = float(p->pos_new.x) + node_width;
-        float py = float(p->pos_new.y) + node_height / 2;
-
-        float port_x = nx + port_width / 2;
-        float port_y = ny + gap + stride * i;
-
-        edge_painter.push(px - port_width / 2,
-                          py,
-                          port_x,
-                          port_y);
-
-        port_painter.push(port_x - port_width / 2,
-                          port_y - port_height / 2,
-                          float(port_width),
-                          float(port_height),
-                          0x80808080);
+      for (size_t i = 0; i < port_in_count; i++) {
+        dvec2 port_pos = node->get_pos_new() + dvec2(0, gap + stride * i);
+        port_painter.push_center_size(port_pos, port_size, 0x80808080);
       }
     }
-
-    {
-      port_painter.push(nx + node_width - port_width,
-                        ny + node_height / 2 - port_height / 2,
-                        float(port_width),
-                        float(port_height),
-                        0x80008000);
-    }
-
-  }
 #endif
+
+#if 1
+    // output port(s)
+    {
+      const int port_out_count = 1;
+      auto gap = (node_size.y - (port_size.y * port_out_count)) / float(port_out_count + 1);
+      auto stride = gap + port_size.y;
+
+      for (size_t i = 0; i < port_out_count; i++) {
+        dvec2 port_pos = node_pos + dvec2(node_size.x, gap + stride * i);
+        port_painter.push_center_size(port_pos, port_size, 0x80008000);
+      }
+    }
+#endif
+
+#if 1
+    // edges from previous node(s)
+    if (show_edges) {
+      const int port_in_count = int(node->prev.size());
+      auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
+      auto stride = gap + port_size.y;
+
+      for (size_t i = 0; i < port_in_count; i++) {
+        auto prev = node->prev[i];
+        if (prev == nullptr) continue;
+
+        dvec2 port_prev = prev->get_pos_new() + dvec2(node_size.x, node_size.y / 2);
+        dvec2 port_next = node->get_pos_new() + dvec2(0, gap + stride * i);
+
+        edge_painter.push(port_prev, 0x800000FF, port_next, 0x8000FF00);
+      }
+    }
+#endif
+
+    // anchor edge
+    if (show_anchors && node->get_anchor()) {
+      dvec2 center_a = node->get_anchor()->get_pos_new() + node_size / 2.0;
+      dvec2 center_b = node->get_pos_new() + node_size / 2.0;
+      edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
+
+    }
+  }
 
   port_painter.render(view, 0, 0, 1);
   edge_painter.render(view, 0, 0, 1);

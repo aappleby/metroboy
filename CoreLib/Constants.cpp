@@ -250,13 +250,13 @@ const char* op_strings2[256] = {
   "or b",            "or c",        "or d",           "or e",        "or h",         "or l",         "or  (hl)",     "or a",
   "cp b",            "cp c",        "cp d",           "cp e",        "cp h",         "cp l",         "cp  (hl)",     "cp a",
 
-  "ret nz",          "pop bc",      "jp nz, d16",     "jp d16",      "call nz, d16", "push bc",      "add d8",       "rst 0x00",
+  "ret nz",          "pop bc",      "jp nz, d16",     "jp d16",      "call nz, d16", "push_corner_size bc",      "add d8",       "rst 0x00",
   "ret z",           "ret",         "jp z, d16",      "prefix cb",   "call z, d16",  "call d16",     "adc d8",       "rst 0x08",
-  "ret nc",          "pop de",      "jp nc, d16",     "undefined1",  "call nc, d16", "push de",      "sub d8",       "rst 0x10",
+  "ret nc",          "pop de",      "jp nc, d16",     "undefined1",  "call nc, d16", "push_corner_size de",      "sub d8",       "rst 0x10",
   "ret c",           "reti",        "jp c, d16",      "undefined2",  "call c, d16",  "undefined3",   "sbc d8",       "rst 0x18",
-  "ldh (d8), a",     "pop hl",      "ldh (c), a",     "undefined4",  "undefined5",   "push hl",      "and d8",       "rst 0x20",
+  "ldh (d8), a",     "pop hl",      "ldh (c), a",     "undefined4",  "undefined5",   "push_corner_size hl",      "and d8",       "rst 0x20",
   "add sp, d8",      "jp hl",       "ld (d16), a",    "undefined6",  "undefined7",   "undefined8",   "xor d8",       "rst 0x28",
-  "ldh a, (d8)",     "pop af",      "ldh a, (c)",     "di",          "(isr)",        "push af",      "or d8",        "rst 0x30",
+  "ldh a, (d8)",     "pop af",      "ldh a, (c)",     "di",          "(isr)",        "push_corner_size af",      "or d8",        "rst 0x30",
   "ld hl, sp + d8",  "ld sp, hl",   "ld a, (d16)",    "ei",          "undefined10",  "undefined11",  "cp d8",        "rst 0x38",
 };
 
@@ -289,13 +289,13 @@ const char* op_strings[256] = {
   "or b",               "or c",           "or d",            "or e",        "or h",            "or l",         "or  (hl)",         "or a",
   "cp b",               "cp c",           "cp d",            "cp e",        "cp h",            "cp l",         "cp  (hl)",         "cp a",
 
-  "ret nz",             "pop bc",         "jp nz, $%04hx",   "jp $%04hx",   "call nz, $%04hx", "push bc",      "add $%02hhx",      "rst $00",
+  "ret nz",             "pop bc",         "jp nz, $%04hx",   "jp $%04hx",   "call nz, $%04hx", "push_corner_size bc",      "add $%02hhx",      "rst $00",
   "ret z",              "ret",            "jp z, $%04hx",    "prefix cb",   "call z, $%04hx",  "call $%04hx",  "adc $%02hhx",      "rst $08",
-  "ret nc",             "pop de",         "jp nc, $%04hx",   "undefined1",  "call nc, $%04hx", "push de",      "sub $%02hhx",      "rst $10",
+  "ret nc",             "pop de",         "jp nc, $%04hx",   "undefined1",  "call nc, $%04hx", "push_corner_size de",      "sub $%02hhx",      "rst $10",
   "ret c",              "reti",           "jp c, $%04hx",    "undefined2",  "call c, $%04hx",  "undefined3",   "sbc $%02hhx",      "rst $18",
-  "ldh ($%02hhx), a",   "pop hl",         "ldh (c), a",      "undefined4",  "undefined5",      "push hl",      "and $%02hhx",      "rst $20",
+  "ldh ($%02hhx), a",   "pop hl",         "ldh (c), a",      "undefined4",  "undefined5",      "push_corner_size hl",      "and $%02hhx",      "rst $20",
   "add sp, %d",         "jp hl",          "ld ($%04hx), a",  "undefined6",  "undefined7",      "undefined8",   "xor $%02hhx",      "rst $28",
-  "ldh a, ($%02hhx)",   "pop af",         "ldh a, (c)",      "di",          "(isr)",           "push af",      "or $%02hhx",       "rst $30",
+  "ldh a, ($%02hhx)",   "pop af",         "ldh a, (c)",      "di",          "(isr)",           "push_corner_size af",      "or $%02hhx",       "rst $30",
   "ld hl, sp + %d",     "ld sp, hl",      "ld a, ($%04hx)",  "ei",          "undefined10",     "undefined11",  "cp $%02hhx",       "rst $38",
 };
 

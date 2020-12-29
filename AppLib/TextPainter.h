@@ -40,6 +40,8 @@ public:
 
 //private:
 
+  const int max_text_bytes = 65536 * 4;
+
   vec4 bg_col;
 
   uint32_t text_prog = 0;
@@ -58,11 +60,10 @@ public:
   int inst_begin = 0;
   int inst_end = 0;
 
-  uint32_t line_vao = 0;
+  uint32_t  text_vao = 0;
+  uint32_t  text_vbo = 0;
+  uint32_t  text_ubo = 0;
+  uint16_t* text_data = 0;
 
-  uint32_t  line_vbo = 0;
-  uint16_t* line_data = 0;
-
-  uint32_t text_ubo = 0;
   TextUniforms text_uniforms = {};
 };

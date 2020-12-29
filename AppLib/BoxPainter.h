@@ -13,11 +13,26 @@ public:
 
   void init();
 
-  void push(float x, float y, float w, float h, uint32_t col);
+  void push_corner_corner(float x, float y, float w, float h, uint32_t color);
+  void push_corner_size  (float x, float y, float w, float h, uint32_t color);
+
+  void push_corner_size(dvec2 pos, dvec2 size, uint32_t color) {
+    push_corner_size(float(pos.x), float(pos.y), float(size.x), float(size.y), color);
+  }
+
+  void push_center_size(dvec2 center, dvec2 size, uint32_t color) {
+    push_corner_corner(float(center.x - (size.x / 2)),
+                       float(center.y - (size.y / 2)),
+                       float(center.x + (size.x / 2)),
+                       float(center.y + (size.y / 2)),
+                       color);
+  }
 
   void render(Viewport view, double x, double y, float scale = 1.0f);
 
 private:
+
+  const int max_box_bytes = 65536 * 4;
 
   uint32_t  box_prog = 0;
   uint32_t  box_ubo = 0;

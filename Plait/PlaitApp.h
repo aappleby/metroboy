@@ -9,6 +9,8 @@
 
 #include "CoreLib/Debug.h"
 
+#include "Plait/Plait.h"
+#include "Plait/CellDB.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,13 +25,15 @@ public:
   void app_render_frame(Viewport view) override;
   void app_render_ui(Viewport view) override;
 
-  bool is_mouse_locked() const override { return mouse_locked; }
+  bool is_mouse_locked() const override { return hit_node != nullptr; }
 
-  //Node* pick_node(dvec2 pos);
+  Node* pick_node(dvec2 pos);
 
   //----------------------------------------
 
-  //Plait plait;
+  Plait plait;
+  CellDB cell_db;
+  std::map<std::string, uint32_t> node_type_to_color;
 
   GridPainter grid_painter;
   LinePainter edge_painter;
@@ -42,14 +46,16 @@ public:
 
   const uint8_t* keyboard_state = nullptr;
 
-  dvec2 drag_start;
-  dvec2 drag_end;
+  dvec2 click_start;
+  dvec2 click_end;
   dvec2 mouse_pos;
-  bool mouse_locked;
 
-  int mouse_buttons;
-  bool dragging;
-  //Node* hit_node;
+  Node* hit_node;
+  Node* hover_node;
+
+  bool show_edges = true;
+  bool show_anchors = false;
+
 };
 
 //-----------------------------------------------------------------------------

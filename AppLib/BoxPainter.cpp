@@ -61,11 +61,11 @@ void main() {
 void BoxPainter::init() {
   box_prog = create_shader("box_glsl", box_glsl);
 
-  box_data_u32 = new uint32_t[65536];
+  box_data_u32 = new uint32_t[max_box_bytes / sizeof(uint32_t)];
   box_data_f32 = reinterpret_cast<float*>(box_data_u32);
 
   box_vao = create_vao();
-  box_vbo = create_vbo(65536 * 4);
+  box_vbo = create_vbo(max_box_bytes);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(0, 4, GL_FLOAT,         GL_FALSE, 20, 0);
@@ -78,12 +78,24 @@ void BoxPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void BoxPainter::push(float x, float y, float w, float h, uint32_t col) {
+void BoxPainter::push_corner_corner(float ax, float ay, float bx, float by, uint32_t col) {
+  box_data_f32[box_cursor++] = ax;
+  box_data_f32[box_cursor++] = ay;
+  box_data_f32[box_cursor++] = bx - ax;
+  box_data_f32[box_cursor++] = by - ay;
+  box_data_u32[box_cursor++] = col;
+
+  CHECK_P(box_cursor * sizeof(uint32_t) < max_box_bytes);
+}
+
+void BoxPainter::push_corner_size(float x, float y, float w, float h, uint32_t col) {
   box_data_f32[box_cursor++] = x;
   box_data_f32[box_cursor++] = y;
   box_data_f32[box_cursor++] = w;
   box_data_f32[box_cursor++] = h;
   box_data_u32[box_cursor++] = col;
+
+  CHECK_P(box_cursor * sizeof(uint32_t) < max_box_bytes);
 }
 
 //-----------------------------------------------------------------------------

@@ -13,6 +13,26 @@
 
 using namespace std;
 
+#if 0
+  printf("Cell count %d\n", cell_db->cells_size());
+
+  printf("Printing plait cell db %f\n", timestamp());
+
+  string blah;
+
+  google::protobuf::TextFormat::PrintToString(*cell_db, &blah);
+  //printf("dump:\n%s\n", blah.c_str());
+
+  {
+    plait::CellDB* cell_db2 = new plait::CellDB();
+    google::protobuf::TextFormat::ParseFromString(blah, cell_db2);
+
+    string blah2;
+    google::protobuf::TextFormat::PrintToString(*cell_db2, &blah2);
+    //printf("dump:\n%s\n", blah2.c_str());
+  }
+#endif
+
 set<string> valid_reg_types = {
   "DFF8p",
   "DFF8n",
@@ -364,16 +384,10 @@ bool CellDB::parse_cell_name(Cell& c, const string& name) {
 //-----------------------------------------------------------------------------
 
 bool CellDB::parse_bus_name(Cell& c, const string& bus_name) {
-  static regex valid_bus_name1(R"(^(?:\w+\.)*(BUS_\w+\[\s*\d+\])$)");
-
-  static regex valid_bus_name2(R"(^(?:\w+\.)*(BUS_\w+)$)");
+  static regex valid_bus_name(R"(^(?:\w+\.)*(BUS_\w+)$)");
 
   smatch match;
-  if (regex_match(bus_name, match, valid_bus_name1)) {
-    c.bus = match[1].str();
-    return true;
-  }
-  else if (regex_match(bus_name, match, valid_bus_name2)) {
+  if (regex_match(bus_name, match, valid_bus_name)) {
     c.bus = match[1].str();
     return true;
   } else {
@@ -514,22 +528,29 @@ bool CellDB::parse_file(const std::string& path) {
   std::ifstream lines(path);
   for (string line; getline(lines, line); ) {
     total_lines++;
-    Cell c;
-    if (parse_line(c, line)) {
+    Cell* c = new Cell();
+    if (parse_line(*c, line)) {
       total_tagged_lines++;
 
-      if (!c.tag.empty()) {
-        CHECK_P(c.tag.size() == 4);
-        cell_map[c.tag].merge(c);
+      if (!c->tag.empty()) {
+        auto old = cell_map[c->tag];
+        if (old) { old->merge(*c); delete c; }
+        else     { cell_map[c->tag] = c; }
       }
-      else if (!c.pin.empty()) {
-        pin_map[c.pin].merge(c);
+      else if (!c->pin.empty()) {
+        auto old = pin_map[c->pin];
+        if (old) { old->merge(*c); delete c; }
+        else     { pin_map[c->pin] = c; }
       }
-      else if (!c.sig.empty()) {
-        sig_map[c.sig].merge(c);
+      else if (!c->sig.empty()) {
+        auto old = sig_map[c->sig];
+        if (old) { old->merge(*c); delete c; }
+        else     { sig_map[c->sig] = c; }
       }
-      else if (!c.bus.empty()) {
-        bus_map[c.bus].merge(c);
+      else if (!c->bus.empty()) {
+        auto old = bus_map[c->bus];
+        if (old) { old->merge(*c); delete c; }
+        else     { bus_map[c->bus] = c; }
       }
       else {
         printf("Don't know what to do with this\n");
@@ -566,19 +587,28 @@ bool CellDB::parse_dir(const std::string& path) {
       }
     }
   }
+#endif
+  sanity_check();
+
+  return result;
+}
+
+//-----------------------------------------------------------------------------
+
+void CellDB::sanity_check() {
 
   //----------------------------------------
   // Check that all cells are sane and all args have a corresponding cell
 
-  for (const auto& [key, value] : cell_map) {
-    value.sanity_check();
+  for (auto& [key, value] : cell_map) {
+    value->sanity_check();
 
-    for (const auto& arg : value.args) {
+    for (const auto& arg : value->args) {
       if (!has_cell(arg.tag)) {
         printf("Can't find definition for cell %s\n", arg.tag.c_str());
       }
       else {
-        get_cell(arg.tag).mark++;
+        get_cell(arg.tag)->mark++;
       }
     }
   }
@@ -587,30 +617,30 @@ bool CellDB::parse_dir(const std::string& path) {
   // Check that all cells are used by some other cell or pin
 
   for (auto& [key, value] : cell_map) {
-    value.mark = 0;
-    if (!value.bus.empty()) value.mark++;
+    value->mark = 0;
+    if (!value->bus.empty()) value->mark++;
   }
 
   for (auto& [key, value] : cell_map) {
-    for (const auto& arg : value.args) {
-      if (has_cell(arg.tag)) get_cell(arg.tag).mark++;
+    for (const auto& arg : value->args) {
+      if (has_cell(arg.tag)) get_cell(arg.tag)->mark++;
     }
   }
   for (auto& [key, value] : pin_map) {
-    for (const auto& arg : value.args) {
-      if (has_cell(arg.tag)) get_cell(arg.tag).mark++;
+    for (const auto& arg : value->args) {
+      if (has_cell(arg.tag)) get_cell(arg.tag)->mark++;
     }
   }
   for (auto& [key, value] : sig_map) {
-    for (const auto& arg : value.args) {
-      if (has_cell(arg.tag)) get_cell(arg.tag).mark++;
+    for (const auto& arg : value->args) {
+      if (has_cell(arg.tag)) get_cell(arg.tag)->mark++;
     }
   }
 
   int unused_count = 0;
   for (auto& [key, value] : cell_map) {
-    if (value.mark == 0) {
-      printf("Cell %s unused\n", value.tag.c_str());
+    if (value->mark == 0) {
+      printf("Cell %s unused\n", value->tag.c_str());
       unused_count++;
     }
   }
@@ -639,9 +669,6 @@ bool CellDB::parse_dir(const std::string& path) {
   //for (auto name : all_names) printf("%s\n", name.c_str());
 
   printf("\n");
-#endif
-
-  return result;
 }
 
 //-----------------------------------------------------------------------------

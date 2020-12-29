@@ -53,10 +53,10 @@ void main() {
 void LinePainter::init() {
   line_prog = create_shader("line_glsl", line_glsl);
 
-  line_data = new uint32_t[65536];
+  line_data = new uint32_t[max_line_bytes / sizeof(uint32_t)];
   line_ubo = create_ubo(sizeof(LineUniforms));
   line_vao = create_vao();
-  line_vbo = create_vbo(65536 * 4);
+  line_vbo = create_vbo(max_line_bytes);
 
   glEnableVertexAttribArray(0);
   glVertexAttribIPointer(0, 2, GL_INT, 12, 0);
@@ -81,22 +81,25 @@ void LinePainter::render(Viewport view, double x, double y, float scale) {
 
   bind_vao(line_vao);
 
-  int vert_count = inst_end / 3;
+  int vert_count = line_end / 3;
 
-  update_vbo(line_vbo, inst_end * 4, line_data);
+  update_vbo(line_vbo, line_end * 4, line_data);
   glDrawArrays(GL_LINES, 0, vert_count);
-  inst_begin = inst_end = 0;
+  inst_begin = line_end = 0;
 }
 
 //-----------------------------------------------------------------------------
 
-void LinePainter::push(int ax, int ay, int bx, int by) {
-  line_data[inst_end++] = ax;
-  line_data[inst_end++] = ay;
-  line_data[inst_end++] = 0x7777FFFF;
-  line_data[inst_end++] = bx;
-  line_data[inst_end++] = by;
-  line_data[inst_end++] = 0x77FF77FF;
+void LinePainter::push(int ax, int ay, uint32_t ac,
+                       int bx, int by, uint32_t bc) {
+  line_data[line_end++] = ax;
+  line_data[line_end++] = ay;
+  line_data[line_end++] = ac;
+  line_data[line_end++] = bx;
+  line_data[line_end++] = by;
+  line_data[line_end++] = bc;
+
+  CHECK_P((line_end * sizeof(uint32_t)) < max_line_bytes);
 }
 
 //-----------------------------------------------------------------------------

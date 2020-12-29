@@ -10,7 +10,7 @@
 
 wire GateBoyLCD::ATEJ_LINE_RSTp_old() const {
   /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(CATU_LINE_P000p.qp_old());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp_old())); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn_old()); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_TRIGn_old);
   return bit(_ATEJ_LINE_RSTp_old);
 }
@@ -19,7 +19,7 @@ wire GateBoyLCD::ATEJ_LINE_RSTp_old() const {
 
 wire GateBoyLCD::ATEJ_LINE_RSTp_new() const {
   /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(CATU_LINE_P000p.qp_new());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_new = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn(_XODO_VID_RSTp.qp_new())); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_new = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
   /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_TRIGn_new);
   return bit(_ATEJ_LINE_RSTp_new);
 }

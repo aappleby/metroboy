@@ -10,8 +10,8 @@
 void TileFetcher::tock(GateBoyClock& clk, const GateBoyVramBus& vram_bus, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
   for (int feedback = 0; feedback < 2; feedback++) {
-    ///* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn);
-    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn));
+    /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = nand3(_LAXU_BFETCH_S0p.qp_any(), _NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn);
+    /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(clk.ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn);
 
     /* p27.LAXU*/ _LAXU_BFETCH_S0p.dff17_any(_LEBO_AxCxExGx,             NYXU_BFETCH_RSTn, _LAXU_BFETCH_S0p.qn_any());
     /* p27.MESU*/ _MESU_BFETCH_S1p.dff17_any(_LAXU_BFETCH_S0p.qn_any(), NYXU_BFETCH_RSTn, _MESU_BFETCH_S1p.qn_any());

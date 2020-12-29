@@ -249,7 +249,7 @@ bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
 
 bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
 
-  static regex cell_arg(R"(^(?:\w+\.)*([A-Z]{4})\w*(\.[^.]+)?)");
+  static regex cell_arg(R"(^(?:\w+\.)*_?([A-Z]{4})\w*(\.[^.]+)?)");
   static regex cell_func_arg(R"(^(?:\w+\.)*([A-Z]{4})\w+\(\))");
 
   static regex bus_arg (R"(^(?:\w+\.)*(BUS_[^.]*)(\.[^.]+)?)");

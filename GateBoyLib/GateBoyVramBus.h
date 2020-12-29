@@ -89,7 +89,7 @@ struct GateBoyVramBus {
     PIN25_VRAM_D07.reset_for_pass();
   }
 
-  void cpu_addr_to_vram_addr(Signal BUS_CPU_A[16], wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
+  void cpu_addr_to_vram_addr(const GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp);
   void dma_addr_to_vram_addr(const GateBoyDMA& dma);
   void scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, wire XAFO_LCDC_BGMAPp);
   void win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, wire WOKY_LCDC_WINMAPp);
@@ -119,28 +119,28 @@ struct GateBoyVramBus {
     d.dump_slice2p("BUS_VRAM_Dp     : ", &BUS_VRAM_D00p, 8);
   }
 
-  Bus BUS_VRAM_A00n;
-  Bus BUS_VRAM_A01n;
-  Bus BUS_VRAM_A02n;
-  Bus BUS_VRAM_A03n;
-  Bus BUS_VRAM_A04n;
-  Bus BUS_VRAM_A05n;
-  Bus BUS_VRAM_A06n;
-  Bus BUS_VRAM_A07n;
-  Bus BUS_VRAM_A08n;
-  Bus BUS_VRAM_A09n;
-  Bus BUS_VRAM_A10n;
-  Bus BUS_VRAM_A11n;
-  Bus BUS_VRAM_A12n;
+  /*BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;
+  /*BUS_VRAM_A01n*/ Bus BUS_VRAM_A01n;
+  /*BUS_VRAM_A02n*/ Bus BUS_VRAM_A02n;
+  /*BUS_VRAM_A03n*/ Bus BUS_VRAM_A03n;
+  /*BUS_VRAM_A04n*/ Bus BUS_VRAM_A04n;
+  /*BUS_VRAM_A05n*/ Bus BUS_VRAM_A05n;
+  /*BUS_VRAM_A06n*/ Bus BUS_VRAM_A06n;
+  /*BUS_VRAM_A07n*/ Bus BUS_VRAM_A07n;
+  /*BUS_VRAM_A08n*/ Bus BUS_VRAM_A08n;
+  /*BUS_VRAM_A09n*/ Bus BUS_VRAM_A09n;
+  /*BUS_VRAM_A10n*/ Bus BUS_VRAM_A10n;
+  /*BUS_VRAM_A11n*/ Bus BUS_VRAM_A11n;
+  /*BUS_VRAM_A12n*/ Bus BUS_VRAM_A12n;
 
-  Bus BUS_VRAM_D00p;
-  Bus BUS_VRAM_D01p;
-  Bus BUS_VRAM_D02p;
-  Bus BUS_VRAM_D03p;
-  Bus BUS_VRAM_D04p;
-  Bus BUS_VRAM_D05p;
-  Bus BUS_VRAM_D06p;
-  Bus BUS_VRAM_D07p;
+  /*BUS_VRAM_D00p*/ Bus BUS_VRAM_D00p;
+  /*BUS_VRAM_D01p*/ Bus BUS_VRAM_D01p;
+  /*BUS_VRAM_D02p*/ Bus BUS_VRAM_D02p;
+  /*BUS_VRAM_D03p*/ Bus BUS_VRAM_D03p;
+  /*BUS_VRAM_D04p*/ Bus BUS_VRAM_D04p;
+  /*BUS_VRAM_D05p*/ Bus BUS_VRAM_D05p;
+  /*BUS_VRAM_D06p*/ Bus BUS_VRAM_D06p;
+  /*BUS_VRAM_D07p*/ Bus BUS_VRAM_D07p;
 
   /*PIN43*/ PinOut PIN43_VRAM_CSn;
   /*PIN45*/ PinOut PIN45_VRAM_OEn;

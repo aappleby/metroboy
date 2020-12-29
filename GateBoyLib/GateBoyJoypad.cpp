@@ -18,12 +18,12 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
   /* p05.KEJA*/ KEJA_JOYP_L2n.tp_latchn(_BYZO_FF00_RDn, PIN65_JOY_P12.int_qp_new());
   /* p05.KOLO*/ KOLO_JOYP_L3n.tp_latchn(_BYZO_FF00_RDn, PIN64_JOY_P13.int_qp_new());
 
-  /* p05.KEMA*/ cpu_bus.BUS_CPU_D[0].tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new2());
-  /* p05.KURO*/ cpu_bus.BUS_CPU_D[1].tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new2());
-  /* p05.KUVE*/ cpu_bus.BUS_CPU_D[2].tri6_nn(_BYZO_FF00_RDn, KEJA_JOYP_L2n.qp_new2());
-  /* p05.JEKU*/ cpu_bus.BUS_CPU_D[3].tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new2());
-  /* p05.KOCE*/ cpu_bus.BUS_CPU_D[4].tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new2());
-  /* p05.CUDY*/ cpu_bus.BUS_CPU_D[5].tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new2());
+  /* p05.KEMA*/ cpu_bus.BUS_CPU_D00p.tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new2());
+  /* p05.KURO*/ cpu_bus.BUS_CPU_D01p.tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new2());
+  /* p05.KUVE*/ cpu_bus.BUS_CPU_D02p.tri6_nn(_BYZO_FF00_RDn, KEJA_JOYP_L2n.qp_new2());
+  /* p05.JEKU*/ cpu_bus.BUS_CPU_D03p.tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new2());
+  /* p05.KOCE*/ cpu_bus.BUS_CPU_D04p.tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new2());
+  /* p05.CUDY*/ cpu_bus.BUS_CPU_D05p.tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -34,8 +34,8 @@ void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   ///* p05.KECY*/ KECY_DBG_D1    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old2());
   ///* p05.JALE*/ JALE_DBG_D2    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old2());
   ///* p05.KYME*/ KYME_DBG_D3    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3].qp_old2());
-  /* p05.KELY*/ KELY_JOYP_UDLRp.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4].qp_old2());
-  /* p05.COFY*/ COFY_JOYP_ABCSp.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5].qp_old2());
+  /* p05.KELY*/ KELY_JOYP_UDLRp.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D04p.qp_old2());
+  /* p05.COFY*/ COFY_JOYP_ABCSp.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D05p.qp_old2());
   ///* p05.KUKO*/ KUKO_DBG_D6    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp_old2());
   ///* p05.KERU*/ KERU_DBG_D7    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old2());
 }

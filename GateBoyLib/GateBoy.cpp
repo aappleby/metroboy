@@ -320,7 +320,7 @@ void GateBoy::next_phase() {
   //----------------------------------------
 
   if (DELTA_HA) {
-    cpu_data_latch = (uint8_t)BitBase::pack_old(8, &cpu_bus.BUS_CPU_D[0]);
+    cpu_data_latch = (uint8_t)BitBase::pack_old(8, &cpu_bus.BUS_CPU_D00p);
 
     // this one latches funny, some hardware bug
     intf_halt_latch &= ~INT_TIMER_MASK;
@@ -566,14 +566,14 @@ void GateBoy::tock_slow(int pass_index) {
   serial.tock1(rst, cpu_bus, div);
 
   {
-    cpu_bus.BUS_CPU_D[0].reset_for_pass();
-    cpu_bus.BUS_CPU_D[1].reset_for_pass();
-    cpu_bus.BUS_CPU_D[2].reset_for_pass();
-    cpu_bus.BUS_CPU_D[3].reset_for_pass();
-    cpu_bus.BUS_CPU_D[4].reset_for_pass();
-    cpu_bus.BUS_CPU_D[5].reset_for_pass();
-    cpu_bus.BUS_CPU_D[6].reset_for_pass();
-    cpu_bus.BUS_CPU_D[7].reset_for_pass();
+    cpu_bus.BUS_CPU_D00p.reset_for_pass();
+    cpu_bus.BUS_CPU_D01p.reset_for_pass();
+    cpu_bus.BUS_CPU_D02p.reset_for_pass();
+    cpu_bus.BUS_CPU_D03p.reset_for_pass();
+    cpu_bus.BUS_CPU_D04p.reset_for_pass();
+    cpu_bus.BUS_CPU_D05p.reset_for_pass();
+    cpu_bus.BUS_CPU_D06p.reset_for_pass();
+    cpu_bus.BUS_CPU_D07p.reset_for_pass();
 
     cpu_bus.set_data(int(phase_total), bus_req_new);
 
@@ -836,7 +836,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p25.SERE*/ wire _SERE_CPU_VRAM_RDp = and2(cpu_bus.TOLE_CPU_VRAM_RDp(_ABUZ_EXT_RAM_CS_CLK), _ROPY_RENDERINGn);
 
 
-    vram_bus.cpu_addr_to_vram_addr(cpu_bus.BUS_CPU_A, ppu_reg.XYMU_RENDERINGp(), dma.LUFA_DMA_VRAMp());
+    vram_bus.cpu_addr_to_vram_addr(cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.LUFA_DMA_VRAMp());
     vram_bus.dma_addr_to_vram_addr(dma);
 
     auto scroll_x = BGScrollX::add(pix_count, reg_scx);

@@ -23,39 +23,39 @@ void GateBoyInterrupts::read_intf(GateBoyCpuBus& cpu_bus) {
   /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latchp(_ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp_new2()); // OUTPUT ON RUNG 10
   /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latchp(_ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp_new2()); // OUTPUT ON RUNG 10
 
-  /*#p02.NELA*/ cpu_bus.BUS_CPU_D[0].tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new2());
-  /*#p02.NABO*/ cpu_bus.BUS_CPU_D[1].tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new2());
-  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D[2].tri6_pn(_POLA_FF0F_RDp, PAVY_FF0F_L2p.qn_new2());
-  /*#p02.PADO*/ cpu_bus.BUS_CPU_D[3].tri6_pn(_POLA_FF0F_RDp, NEJY_FF0F_L3p.qn_new2());
-  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D[4].tri6_pn(_POLA_FF0F_RDp, NUTY_FF0F_L4p.qn_new2());
+  /*#p02.NELA*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new2());
+  /*#p02.NABO*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new2());
+  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_POLA_FF0F_RDp, PAVY_FF0F_L2p.qn_new2());
+  /*#p02.PADO*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_POLA_FF0F_RDp, NEJY_FF0F_L3p.qn_new2());
+  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_POLA_FF0F_RDp, NUTY_FF0F_L4p.qn_new2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyInterrupts::read_ie(GateBoyCpuBus& cpu_bus)
 {
-  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
+  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &cpu_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_RDn_ext = nand2b(cpu_bus.TEDO_CPU_RDp.qp_new2(), FFFF_HIT_ext);
 
-  cpu_bus.BUS_CPU_D[0].tri6_nn(FFFF_RDn_ext, IE_D0.qn_new2());
-  cpu_bus.BUS_CPU_D[1].tri6_nn(FFFF_RDn_ext, IE_D1.qn_new2());
-  cpu_bus.BUS_CPU_D[2].tri6_nn(FFFF_RDn_ext, IE_D2.qn_new2());
-  cpu_bus.BUS_CPU_D[3].tri6_nn(FFFF_RDn_ext, IE_D3.qn_new2());
-  cpu_bus.BUS_CPU_D[4].tri6_nn(FFFF_RDn_ext, IE_D4.qn_new2());
+  cpu_bus.BUS_CPU_D00p.tri6_nn(FFFF_RDn_ext, IE_D0.qn_new2());
+  cpu_bus.BUS_CPU_D01p.tri6_nn(FFFF_RDn_ext, IE_D1.qn_new2());
+  cpu_bus.BUS_CPU_D02p.tri6_nn(FFFF_RDn_ext, IE_D2.qn_new2());
+  cpu_bus.BUS_CPU_D03p.tri6_nn(FFFF_RDn_ext, IE_D3.qn_new2());
+  cpu_bus.BUS_CPU_D04p.tri6_nn(FFFF_RDn_ext, IE_D4.qn_new2());
 }
 
 void GateBoyInterrupts::write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
 {
-  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
+  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &cpu_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_WRn_ext = nand2b(cpu_bus.TAPU_CPU_WRp.qp_new2(), FFFF_HIT_ext);
 
-  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[0].qp_old2());
-  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[1].qp_old2());
-  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[2].qp_old2());
-  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[3].qp_old2());
-  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D[4].qp_old2());
+  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D00p.qp_old2());
+  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D01p.qp_old2());
+  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D02p.qp_old2());
+  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D03p.qp_old2());
+  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D04p.qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -106,17 +106,17 @@ void GateBoyInterrupts::tock(
   /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1b(SIG_CPU_ACK_JOYPAD.qp_new2());
 
   /* p02.ROTU*/ wire _ROTU_FF0F_WRp   = not1b(_REFA_FF0F_WRn);
-  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3b(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D[0].qp_new2());
-  /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3b(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.BUS_CPU_D[1].qp_new2());
-  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3b(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.BUS_CPU_D[2].qp_new2());
-  /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3b(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.BUS_CPU_D[3].qp_new2());
-  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3b(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.BUS_CPU_D[4].qp_new2());
+  /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3b(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D00p.qp_new2());
+  /* p02.MODY*/ wire _MODY_FF0F_SET1n = nand3b(_ROTU_FF0F_WRp, _LEJA_INT_STAT_ACKn, cpu_bus.BUS_CPU_D01p.qp_new2());
+  /* p02.PYHU*/ wire _PYHU_FF0F_SET2n = nand3b(_ROTU_FF0F_WRp, _LESA_INT_TIM_ACKn,  cpu_bus.BUS_CPU_D02p.qp_new2());
+  /* p02.TOME*/ wire _TOME_FF0F_SET3n = nand3b(_ROTU_FF0F_WRp, _LUFE_INT_SER_ACKn,  cpu_bus.BUS_CPU_D03p.qp_new2());
+  /* p02.TOGA*/ wire _TOGA_FF0F_SET4n = nand3b(_ROTU_FF0F_WRp, _LAMO_INT_JOY_ACKn,  cpu_bus.BUS_CPU_D04p.qp_new2());
 
-  /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(cpu_bus.BUS_CPU_D[0].qp_new2(), _REFA_FF0F_WRn);
-  /* p02.NABE*/ wire _NABE_INT1_WRn = or2(cpu_bus.BUS_CPU_D[1].qp_new2(), _REFA_FF0F_WRn);
-  /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D[2].qp_new2(), _REFA_FF0F_WRn);
-  /* p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D[3].qp_new2(), _REFA_FF0F_WRn);
-  /* p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D[4].qp_new2(), _REFA_FF0F_WRn);
+  /*#p02.MUXE*/ wire _MUXE_INT0_WRn = or2(cpu_bus.BUS_CPU_D00p.qp_new2(), _REFA_FF0F_WRn);
+  /* p02.NABE*/ wire _NABE_INT1_WRn = or2(cpu_bus.BUS_CPU_D01p.qp_new2(), _REFA_FF0F_WRn);
+  /* p02.RAKE*/ wire _RAKE_INT2_WRn = or2(cpu_bus.BUS_CPU_D02p.qp_new2(), _REFA_FF0F_WRn);
+  /* p02.SULO*/ wire _SULO_INT3_WRn = or2(cpu_bus.BUS_CPU_D03p.qp_new2(), _REFA_FF0F_WRn);
+  /* p02.SEME*/ wire _SEME_INT4_WRn = or2(cpu_bus.BUS_CPU_D04p.qp_new2(), _REFA_FF0F_WRn);
 
   /*#p02.LYTA*/ wire _LYTA_FF0F_RST0n = and3(_MUXE_INT0_WRn, _LETY_INT_VBL_ACKn,  _ALUR_SYS_RSTn);
   /* p02.MOVU*/ wire _MOVU_FF0F_RST1n = and3(_NABE_INT1_WRn, _LEJA_INT_STAT_ACKn, _ALUR_SYS_RSTn);

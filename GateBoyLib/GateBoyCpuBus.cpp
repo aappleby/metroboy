@@ -6,40 +6,45 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::reset_to_bootrom() {
-  for (int i = 0; i < 8; i++) {
-    BUS_CPU_D[i].reset(1);
-  }
+  BUS_CPU_D00p.reset(1);
+  BUS_CPU_D01p.reset(1);
+  BUS_CPU_D02p.reset(1);
+  BUS_CPU_D03p.reset(1);
+  BUS_CPU_D04p.reset(1);
+  BUS_CPU_D05p.reset(1);
+  BUS_CPU_D06p.reset(1);
+  BUS_CPU_D07p.reset(1);
 }
 
 void GateBoyCpuBus::reset_to_cart() {
   TEPU_BOOT_BITn_h.reset(1, 1);
   SIG_CPU_BOOTp.reset(0);
 
-  BUS_CPU_A[ 0].reset(0);
-  BUS_CPU_A[ 1].reset(0);
-  BUS_CPU_A[ 2].reset(0);
-  BUS_CPU_A[ 3].reset(0);
-  BUS_CPU_A[ 4].reset(1);
-  BUS_CPU_A[ 5].reset(0);
-  BUS_CPU_A[ 6].reset(1);
-  BUS_CPU_A[ 7].reset(0);
-  BUS_CPU_A[ 8].reset(0);
-  BUS_CPU_A[ 9].reset(0);
-  BUS_CPU_A[10].reset(0);
-  BUS_CPU_A[11].reset(0);
-  BUS_CPU_A[12].reset(0);
-  BUS_CPU_A[13].reset(0);
-  BUS_CPU_A[14].reset(0);
-  BUS_CPU_A[15].reset(0);
+  BUS_CPU_A00p.reset(0);
+  BUS_CPU_A01p.reset(0);
+  BUS_CPU_A02p.reset(0);
+  BUS_CPU_A03p.reset(0);
+  BUS_CPU_A04p.reset(1);
+  BUS_CPU_A05p.reset(0);
+  BUS_CPU_A06p.reset(1);
+  BUS_CPU_A07p.reset(0);
+  BUS_CPU_A08p.reset(0);
+  BUS_CPU_A09p.reset(0);
+  BUS_CPU_A10p.reset(0);
+  BUS_CPU_A11p.reset(0);
+  BUS_CPU_A12p.reset(0);
+  BUS_CPU_A13p.reset(0);
+  BUS_CPU_A14p.reset(0);
+  BUS_CPU_A15p.reset(0);
 
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
-  BUS_CPU_D[0].reset(1);
+  BUS_CPU_D00p.reset(1);
+  BUS_CPU_D01p.reset(1);
+  BUS_CPU_D02p.reset(1);
+  BUS_CPU_D03p.reset(1);
+  BUS_CPU_D04p.reset(1);
+  BUS_CPU_D05p.reset(1);
+  BUS_CPU_D06p.reset(1);
+  BUS_CPU_D07p.reset(1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -47,36 +52,36 @@ void GateBoyCpuBus::reset_to_cart() {
 void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
 {
   uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-  BUS_CPU_A[ 0].set((bus_addr_new >>  0) & 1);
-  BUS_CPU_A[ 1].set((bus_addr_new >>  1) & 1);
-  BUS_CPU_A[ 2].set((bus_addr_new >>  2) & 1);
-  BUS_CPU_A[ 3].set((bus_addr_new >>  3) & 1);
-  BUS_CPU_A[ 4].set((bus_addr_new >>  4) & 1);
-  BUS_CPU_A[ 5].set((bus_addr_new >>  5) & 1);
-  BUS_CPU_A[ 6].set((bus_addr_new >>  6) & 1);
-  BUS_CPU_A[ 7].set((bus_addr_new >>  7) & 1);
-  BUS_CPU_A[ 8].set((bus_addr_new >>  8) & 1);
-  BUS_CPU_A[ 9].set((bus_addr_new >>  9) & 1);
-  BUS_CPU_A[10].set((bus_addr_new >> 10) & 1);
-  BUS_CPU_A[11].set((bus_addr_new >> 11) & 1);
-  BUS_CPU_A[12].set((bus_addr_new >> 12) & 1);
-  BUS_CPU_A[13].set((bus_addr_new >> 13) & 1);
-  BUS_CPU_A[14].set((bus_addr_new >> 14) & 1);
-  BUS_CPU_A[15].set((bus_addr_new >> 15) & 1);
+  BUS_CPU_A00p.set((bus_addr_new >>  0) & 1);
+  BUS_CPU_A01p.set((bus_addr_new >>  1) & 1);
+  BUS_CPU_A02p.set((bus_addr_new >>  2) & 1);
+  BUS_CPU_A03p.set((bus_addr_new >>  3) & 1);
+  BUS_CPU_A04p.set((bus_addr_new >>  4) & 1);
+  BUS_CPU_A05p.set((bus_addr_new >>  5) & 1);
+  BUS_CPU_A06p.set((bus_addr_new >>  6) & 1);
+  BUS_CPU_A07p.set((bus_addr_new >>  7) & 1);
+  BUS_CPU_A08p.set((bus_addr_new >>  8) & 1);
+  BUS_CPU_A09p.set((bus_addr_new >>  9) & 1);
+  BUS_CPU_A10p.set((bus_addr_new >> 10) & 1);
+  BUS_CPU_A11p.set((bus_addr_new >> 11) & 1);
+  BUS_CPU_A12p.set((bus_addr_new >> 12) & 1);
+  BUS_CPU_A13p.set((bus_addr_new >> 13) & 1);
+  BUS_CPU_A14p.set((bus_addr_new >> 14) & 1);
+  BUS_CPU_A15p.set((bus_addr_new >> 15) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
   wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
-  BUS_CPU_D[0].tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
-  BUS_CPU_D[1].tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
-  BUS_CPU_D[2].tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
-  BUS_CPU_D[3].tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
-  BUS_CPU_D[4].tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
-  BUS_CPU_D[5].tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
-  BUS_CPU_D[6].tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
-  BUS_CPU_D[7].tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
+  BUS_CPU_D00p.tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
+  BUS_CPU_D01p.tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
+  BUS_CPU_D02p.tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
+  BUS_CPU_D03p.tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
+  BUS_CPU_D04p.tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
+  BUS_CPU_D05p.tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
+  BUS_CPU_D06p.tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
+  BUS_CPU_D07p.tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

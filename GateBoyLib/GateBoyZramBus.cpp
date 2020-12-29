@@ -13,30 +13,30 @@
 
 void GateBoyZramBus::read(GateBoyCpuBus& cpu_bus, uint8_t* zero_ram)
 {
-  uint16_t addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
+  uint16_t addr = (uint16_t)BitBase::pack_new(16, &cpu_bus.BUS_CPU_A00p);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   uint8_t data = zero_ram[addr & 0x007F];
-  cpu_bus.BUS_CPU_D[0].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 0));
-  cpu_bus.BUS_CPU_D[1].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 1));
-  cpu_bus.BUS_CPU_D[2].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 2));
-  cpu_bus.BUS_CPU_D[3].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 3));
-  cpu_bus.BUS_CPU_D[4].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 4));
-  cpu_bus.BUS_CPU_D[5].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 5));
-  cpu_bus.BUS_CPU_D[6].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 6));
-  cpu_bus.BUS_CPU_D[7].tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 7));
+  cpu_bus.BUS_CPU_D00p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 0));
+  cpu_bus.BUS_CPU_D01p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 1));
+  cpu_bus.BUS_CPU_D02p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 2));
+  cpu_bus.BUS_CPU_D03p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 3));
+  cpu_bus.BUS_CPU_D04p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 4));
+  cpu_bus.BUS_CPU_D05p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 5));
+  cpu_bus.BUS_CPU_D06p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 6));
+  cpu_bus.BUS_CPU_D07p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new2()), bit(data, 7));
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyZramBus::write(GateBoyCpuBus& cpu_bus, uint8_t* zero_ram)
 {
-  uint16_t addr = (uint16_t)BitBase::pack_new(16, cpu_bus.BUS_CPU_A);
+  uint16_t addr = (uint16_t)BitBase::pack_new(16, &cpu_bus.BUS_CPU_A00p);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   wire clk_new = bit(~cpu_bus.TAPU_CPU_WRp.qp_new2());
   if (bit(~clk_old.qp_old2()) && clk_new && CSp) {
-    zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, cpu_bus.BUS_CPU_D);
+    zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, &cpu_bus.BUS_CPU_D00p);
   }
   clk_old.set(clk_new);
 }

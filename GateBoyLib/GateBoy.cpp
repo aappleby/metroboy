@@ -696,7 +696,7 @@ void GateBoy::tock_slow(int pass_index) {
   {
     SpriteFirstMatch first_match = sprite_store.get_first_match(sprite_match);
     sprite_store.get_sprite(first_match);
-    sprite_store.oam_addr_to_sprite_index(clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGp(), sprite_scanner.CENO_SCANNINGp.qn_new2(), oam_bus.BUS_OAM_An);
+    sprite_store.oam_addr_to_sprite_index(oam_bus, clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGp(), sprite_scanner.CENO_SCANNINGp.qn_new2());
     sprite_store.ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp(), lcd.reg_ly, oam_bus.oam_temp_a);
   }
   /*#p21.WODU*/ wire WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), pix_count.XANO_PX167p_new()); // WODU goes high on odd, cleared on H
@@ -869,11 +869,32 @@ void GateBoy::tock_slow(int pass_index) {
   // OAM bus
 
   {
-    for(int i = 0; i < 8; i++) {
-      oam_bus.BUS_OAM_An[i].reset_for_pass();
-      oam_bus.BUS_OAM_DAn[i].reset_for_pass();
-      oam_bus.BUS_OAM_DBn[i].reset_for_pass();
-    }
+    oam_bus.BUS_OAM_A00n.reset_for_pass();
+    oam_bus.BUS_OAM_A01n.reset_for_pass();
+    oam_bus.BUS_OAM_A02n.reset_for_pass();
+    oam_bus.BUS_OAM_A03n.reset_for_pass();
+    oam_bus.BUS_OAM_A04n.reset_for_pass();
+    oam_bus.BUS_OAM_A05n.reset_for_pass();
+    oam_bus.BUS_OAM_A06n.reset_for_pass();
+    oam_bus.BUS_OAM_A07n.reset_for_pass();
+
+    oam_bus.BUS_OAM_DA00n.reset_for_pass();
+    oam_bus.BUS_OAM_DA01n.reset_for_pass();
+    oam_bus.BUS_OAM_DA02n.reset_for_pass();
+    oam_bus.BUS_OAM_DA03n.reset_for_pass();
+    oam_bus.BUS_OAM_DA04n.reset_for_pass();
+    oam_bus.BUS_OAM_DA05n.reset_for_pass();
+    oam_bus.BUS_OAM_DA06n.reset_for_pass();
+    oam_bus.BUS_OAM_DA07n.reset_for_pass();
+
+    oam_bus.BUS_OAM_DB00n.reset_for_pass();
+    oam_bus.BUS_OAM_DB01n.reset_for_pass();
+    oam_bus.BUS_OAM_DB02n.reset_for_pass();
+    oam_bus.BUS_OAM_DB03n.reset_for_pass();
+    oam_bus.BUS_OAM_DB04n.reset_for_pass();
+    oam_bus.BUS_OAM_DB05n.reset_for_pass();
+    oam_bus.BUS_OAM_DB06n.reset_for_pass();
+    oam_bus.BUS_OAM_DB07n.reset_for_pass();
 
     oam_bus.dma_to_addr_bus(dma);
     oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGp());

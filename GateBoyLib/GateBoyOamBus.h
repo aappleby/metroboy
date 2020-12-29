@@ -7,14 +7,14 @@
 
 struct GateBoyOamBus {
   void reset_to_cart() {
-    BUS_OAM_An[0].reset(1);
-    BUS_OAM_An[1].reset(1);
-    BUS_OAM_An[2].reset(1);
-    BUS_OAM_An[3].reset(1);
-    BUS_OAM_An[4].reset(0);
-    BUS_OAM_An[5].reset(1);
-    BUS_OAM_An[6].reset(0);
-    BUS_OAM_An[7].reset(1);
+    BUS_OAM_A00n.reset(1);
+    BUS_OAM_A01n.reset(1);
+    BUS_OAM_A02n.reset(1);
+    BUS_OAM_A03n.reset(1);
+    BUS_OAM_A04n.reset(0);
+    BUS_OAM_A05n.reset(1);
+    BUS_OAM_A06n.reset(0);
+    BUS_OAM_A07n.reset(1);
 
     oam_latch_a.reset_to_cart();
     oam_latch_b.reset_to_cart();
@@ -47,9 +47,9 @@ struct GateBoyOamBus {
     d.dump_bitp   ("SIG_OAM_WRn_B    : ", SIG_OAM_WRn_B.state);
     d.dump_bitp   ("SIG_OAM_OEn      : ", SIG_OAM_OEn.state);
 
-    d.dump_slice2n("BUS_OAM_An  : ", BUS_OAM_An, 8);
-    d.dump_slice2n("BUS_OAM_DAn : ", BUS_OAM_DAn, 8);
-    d.dump_slice2n("BUS_OAM_DBn : ", BUS_OAM_DBn, 8);
+    d.dump_slice2n("BUS_OAM_An  : ", &BUS_OAM_A00n, 8);
+    d.dump_slice2n("BUS_OAM_DAn : ", &BUS_OAM_DA00n, 8);
+    d.dump_slice2n("BUS_OAM_DBn : ", &BUS_OAM_DB00n, 8);
     d.dump_slice2n("OAM LATCH A : ", &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
     d.dump_slice2n("OAM LATCH B : ", &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
     d.dump_slice2p("OAM TEMP A  : ", &oam_temp_a.XUSO_OAM_DA0p, 8);
@@ -64,13 +64,38 @@ struct GateBoyOamBus {
   /*p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;       // AxxxExxx
   /*p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;   // AxxxExxx
 
-  Bus BUS_OAM_An[8];  // ABCDEFGH
-  Bus BUS_OAM_DAn[8];
-  Bus BUS_OAM_DBn[8];
-  Signal SIG_OAM_CLKn;   // ABCDEFGH
-  Signal SIG_OAM_WRn_A;  // AxxxExxH
-  Signal SIG_OAM_WRn_B;  // AxxxExxH
-  Signal SIG_OAM_OEn;    // ABCDEFGH
+  /*BUS_OAM_A00n*/ Bus BUS_OAM_A00n;  // ABCDEFGH
+  /*BUS_OAM_A01n*/ Bus BUS_OAM_A01n;  // ABCDEFGH
+  /*BUS_OAM_A02n*/ Bus BUS_OAM_A02n;  // ABCDEFGH
+  /*BUS_OAM_A03n*/ Bus BUS_OAM_A03n;  // ABCDEFGH
+  /*BUS_OAM_A04n*/ Bus BUS_OAM_A04n;  // ABCDEFGH
+  /*BUS_OAM_A05n*/ Bus BUS_OAM_A05n;  // ABCDEFGH
+  /*BUS_OAM_A06n*/ Bus BUS_OAM_A06n;  // ABCDEFGH
+  /*BUS_OAM_A07n*/ Bus BUS_OAM_A07n;  // ABCDEFGH
+
+  /*BUS_OAM_DA00n*/ Bus BUS_OAM_DA00n;
+  /*BUS_OAM_DA01n*/ Bus BUS_OAM_DA01n;
+  /*BUS_OAM_DA02n*/ Bus BUS_OAM_DA02n;
+  /*BUS_OAM_DA03n*/ Bus BUS_OAM_DA03n;
+  /*BUS_OAM_DA04n*/ Bus BUS_OAM_DA04n;
+  /*BUS_OAM_DA05n*/ Bus BUS_OAM_DA05n;
+  /*BUS_OAM_DA06n*/ Bus BUS_OAM_DA06n;
+  /*BUS_OAM_DA07n*/ Bus BUS_OAM_DA07n;
+
+  /*BUS_OAM_DB00n*/ Bus BUS_OAM_DB00n;
+  /*BUS_OAM_DB01n*/ Bus BUS_OAM_DB01n;
+  /*BUS_OAM_DB02n*/ Bus BUS_OAM_DB02n;
+  /*BUS_OAM_DB03n*/ Bus BUS_OAM_DB03n;
+  /*BUS_OAM_DB04n*/ Bus BUS_OAM_DB04n;
+  /*BUS_OAM_DB05n*/ Bus BUS_OAM_DB05n;
+  /*BUS_OAM_DB06n*/ Bus BUS_OAM_DB06n;
+  /*BUS_OAM_DB07n*/ Bus BUS_OAM_DB07n;
+
+  /*SIG_OAM_CLKn */ Signal SIG_OAM_CLKn;   // ABCDEFGH
+  /*SIG_OAM_WRn_A*/ Signal SIG_OAM_WRn_A;  // AxxxExxH
+  /*SIG_OAM_WRn_B*/ Signal SIG_OAM_WRn_B;  // AxxxExxH
+  /*SIG_OAM_OEn  */ Signal SIG_OAM_OEn;    // ABCDEFGH
+
   Signal old_oam_clk;
 };
 

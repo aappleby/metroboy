@@ -890,14 +890,14 @@ void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8]) {
+void SpriteStore::oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn) {
   wire PIN58_VCC = 1;
-  /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1b(BUS_OAM_An[2].qp_old2());
-  /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1b(BUS_OAM_An[3].qp_old2());
-  /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1b(BUS_OAM_An[4].qp_old2());
-  /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1b(BUS_OAM_An[5].qp_old2());
-  /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1b(BUS_OAM_An[6].qp_old2());
-  /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1b(BUS_OAM_An[7].qp_old2());
+  /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1b(oam_bus.BUS_OAM_A02n.qp_old2());
+  /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1b(oam_bus.BUS_OAM_A03n.qp_old2());
+  /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1b(oam_bus.BUS_OAM_A04n.qp_old2());
+  /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1b(oam_bus.BUS_OAM_A05n.qp_old2());
+  /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1b(oam_bus.BUS_OAM_A06n.qp_old2());
+  /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1b(oam_bus.BUS_OAM_A07n.qp_old2());
 
   // Sprite store grabs the sprite index off the _old_ oam address bus
   /* p30.XADU*/ XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH, PIN58_VCC, _YFOT_OAM_A2p_old);

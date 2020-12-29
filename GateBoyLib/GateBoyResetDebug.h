@@ -64,9 +64,12 @@ struct GateBoyResetDebug {
 
   //----------------------------------------
 
-  PinIn  PIN71_RST;
-  PinIn  PIN77_T1;
-  PinIn  PIN76_T2;
+  /*SIG_CLKREQ*/  Signal SIG_CLKREQ;
+  /*SIG_CLKGOOD*/ Signal SIG_CLKGOOD;
+
+  /*PIN71*/ PinIn  PIN71_RST;
+  /*PIN77*/ PinIn  PIN77_T1;
+  /*PIN76*/ PinIn  PIN76_T2;
 
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping SIG_CPU_INT_RESETp when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.

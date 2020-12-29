@@ -30,14 +30,14 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
 
 void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4b(cpu_bus.TAPU_CPU_WRp.qp_new2(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
-  /* p05.JUTE*/ JUTE_DBG_D0    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old2());
-  /* p05.KECY*/ KECY_DBG_D1    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old2());
-  /* p05.JALE*/ JALE_DBG_D2    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old2());
-  /* p05.KYME*/ KYME_DBG_D3    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3].qp_old2());
+  ///* p05.JUTE*/ JUTE_DBG_D0    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old2());
+  ///* p05.KECY*/ KECY_DBG_D1    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old2());
+  ///* p05.JALE*/ JALE_DBG_D2    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old2());
+  ///* p05.KYME*/ KYME_DBG_D3    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[3].qp_old2());
   /* p05.KELY*/ KELY_JOYP_UDLRp.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[4].qp_old2());
   /* p05.COFY*/ COFY_JOYP_ABCSp.dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[5].qp_old2());
-  /* p05.KUKO*/ KUKO_DBG_D6    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp_old2());
-  /* p05.KERU*/ KERU_DBG_D7    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old2());
+  ///* p05.KUKO*/ KUKO_DBG_D6    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[6].qp_old2());
+  ///* p05.KERU*/ KERU_DBG_D7    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[7].qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -70,8 +70,8 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   /* p05.KARU*/ wire _KARU = or2(KELY_JOYP_UDLRp.qn_new2(), _KURA_FF60_D0n);
   /* p05.CELA*/ wire _CELA = or2(COFY_JOYP_ABCSp.qn_new2(), _KURA_FF60_D0n);
 
-  PIN63_JOY_P14.pin_out_hilo(_KARU, KELY_JOYP_UDLRp.qn_new2());
-  PIN62_JOY_P15.pin_out_hilo(_CELA, COFY_JOYP_ABCSp.qn_new2());
+  /*PIN63*/ PIN63_JOY_P14.pin_out_hilo(_KARU, KELY_JOYP_UDLRp.qn_new2());
+  /*PIN62*/ PIN62_JOY_P15.pin_out_hilo(_CELA, COFY_JOYP_ABCSp.qn_new2());
 
   // FIXME hacking in a pullup here
   PIN63_JOY_P14.state |= BIT_PULLUP;
@@ -99,9 +99,7 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
   /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN64_JOY_P13.int_qp_new(), PIN65_JOY_P12.int_qp_new(), PIN66_JOY_P11.int_qp_new(), PIN67_JOY_P10.int_qp_new());
 
   /* p02.AWOB*/ AWOB_WAKE_CPU.tp_latchn(clk.BOGA_Axxxxxxx(), _KERY_ANY_BUTTONp);
-  wire _AWOB_WAKE_CPUp = AWOB_WAKE_CPU.qp_new2();
-
-  SIG_CPU_WAKE.set(_AWOB_WAKE_CPUp);
+  /*SIG_CPU_WAKE*/ SIG_CPU_WAKE.set(AWOB_WAKE_CPU.qp_new2());
 
   /* p02.APUG*/ APUG_JP_GLITCH3.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), AGEM_JP_GLITCH2.qp_old2());
   /* p02.AGEM*/ AGEM_JP_GLITCH2.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), ACEF_JP_GLITCH1.qp_old2());

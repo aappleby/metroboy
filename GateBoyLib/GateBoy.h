@@ -176,9 +176,6 @@ struct GateBoy {
 
   //----------
 
-  Bus BUS_SPR_I[6]; // AxCxExGx
-  Bus BUS_SPR_L[4]; // AxCxExGx
-
   SpriteStore   sprite_store;
   SpriteScanner sprite_scanner;
   SpriteFetcher sprite_fetcher;
@@ -200,6 +197,10 @@ struct GateBoy {
   PixCount     pix_count;
   PixelPipes   pix_pipes;
   GateBoyLCD   lcd;
+
+  /*PIN58*/ PinIn PIN58_VCC;
+  /*PIN36*/ PinIn PIN36_GND;
+  /*PIN72*/ PinIn PIN72_GND;
 
   //----------
 

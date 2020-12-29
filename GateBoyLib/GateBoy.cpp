@@ -151,19 +151,6 @@ void GateBoy::reset_to_cart() {
   div.reset_to_cart();
   interrupts.reset_to_cart();
   serial.reset_to_cart();
-
-  BUS_SPR_I[0].reset(0);
-  BUS_SPR_I[1].reset(0);
-  BUS_SPR_I[2].reset(1);
-  BUS_SPR_I[3].reset(0);
-  BUS_SPR_I[4].reset(1);
-  BUS_SPR_I[5].reset(0);
-
-  BUS_SPR_L[0].reset(1);
-  BUS_SPR_L[1].reset(1);
-  BUS_SPR_L[2].reset(1);
-  BUS_SPR_L[3].reset(1);
-
   sprite_store.reset_to_cart();
   sprite_scanner.reset_to_cart();
   sprite_fetcher.reset_to_cart();
@@ -291,8 +278,8 @@ struct GateBoyOffsets {
   const int o_joypad         = offsetof(GateBoy, joypad);
   const int o_ser_reg        = offsetof(GateBoy, serial);
 
-  const int o_SPR_TRI_I      = offsetof(GateBoy, BUS_SPR_I);
-  const int o_SPR_TRI_L      = offsetof(GateBoy, BUS_SPR_L);
+  const int o_SPR_TRI_I      = offsetof(GateBoy, sprite_store.BUS_SPR_I0);
+  const int o_SPR_TRI_L      = offsetof(GateBoy, sprite_store.BUS_SPR_L0);
 
   const int o_sprite_store   = offsetof(GateBoy, sprite_store);
   const int o_sprite_scanner = offsetof(GateBoy, sprite_scanner);
@@ -507,6 +494,14 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
+  PIN58_VCC.reset_for_pass();
+  PIN36_GND.reset_for_pass();
+  PIN72_GND.reset_for_pass();
+
+  PIN58_VCC.pin_in_dp(1);
+  PIN36_GND.pin_in_dp(0);
+  PIN72_GND.pin_in_dp(0);
+
   rst.PIN71_RST.reset_for_pass();
   clk.PIN74_CLKGOOD.reset_for_pass();
   clk.PIN74_CLK_IN.reset_for_pass();
@@ -667,21 +662,19 @@ void GateBoy::tock_slow(int pass_index) {
     sprite_store.update_count(rst.XAPO_VID_RSTn(), clk.ZEME_AxCxExGx(), lcd.ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
     SpriteStoreFlag store_flag = sprite_store.get_store_flags(_DYTY_COUNT_CLKp);
     sprite_store.store_sprite_x(store_flag, oam_temp_b_old, lcd.ABAK_LINE_RSTp_new(), sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), old_first_match);
-    sprite_store.store_sprite_index(store_flag, BUS_SPR_I);
-    sprite_store.store_sprite_line (store_flag, BUS_SPR_L);
+    sprite_store.store_sprite_index(store_flag);
+    sprite_store.store_sprite_line (store_flag);
 
-    BUS_SPR_I[0].reset_for_pass();
-    BUS_SPR_I[1].reset_for_pass();
-    BUS_SPR_I[2].reset_for_pass();
-    BUS_SPR_I[3].reset_for_pass();
-    BUS_SPR_I[4].reset_for_pass();
-    BUS_SPR_I[5].reset_for_pass();
-    BUS_SPR_L[0].reset_for_pass();
-    BUS_SPR_L[1].reset_for_pass();
-    BUS_SPR_L[2].reset_for_pass();
-    BUS_SPR_L[3].reset_for_pass();
-
-
+    sprite_store.BUS_SPR_I0.reset_for_pass();
+    sprite_store.BUS_SPR_I1.reset_for_pass();
+    sprite_store.BUS_SPR_I2.reset_for_pass();
+    sprite_store.BUS_SPR_I3.reset_for_pass();
+    sprite_store.BUS_SPR_I4.reset_for_pass();
+    sprite_store.BUS_SPR_I5.reset_for_pass();
+    sprite_store.BUS_SPR_L0.reset_for_pass();
+    sprite_store.BUS_SPR_L1.reset_for_pass();
+    sprite_store.BUS_SPR_L2.reset_for_pass();
+    sprite_store.BUS_SPR_L3.reset_for_pass();
   }
   //^^^^^
 
@@ -702,9 +695,9 @@ void GateBoy::tock_slow(int pass_index) {
   SpriteMatchFlag sprite_match = sprite_store.get_match_flags_new(_AROR_MATCH_ENp, pix_count);
   {
     SpriteFirstMatch first_match = sprite_store.get_first_match(sprite_match);
-    sprite_store.get_sprite(first_match, BUS_SPR_I, BUS_SPR_L);
-    sprite_store.oam_addr_to_sprite_index(clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGp(), sprite_scanner.CENO_SCANNINGp.qn_new2(), oam_bus.BUS_OAM_An, BUS_SPR_I);
-    sprite_store.ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp(), lcd.reg_ly, oam_bus.oam_temp_a, BUS_SPR_L);
+    sprite_store.get_sprite(first_match);
+    sprite_store.oam_addr_to_sprite_index(clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGp(), sprite_scanner.CENO_SCANNINGp.qn_new2(), oam_bus.BUS_OAM_An);
+    sprite_store.ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp(), lcd.reg_ly, oam_bus.oam_temp_a);
   }
   /*#p21.WODU*/ wire WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), pix_count.XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 
@@ -855,7 +848,7 @@ void GateBoy::tock_slow(int pass_index) {
     vram_bus.win_to_addr(win_map_x, win_line_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn.qn_new2());
 
     vram_bus.tile_to_addr(scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new2(), win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
-    vram_bus.sprite_to_addr(BUS_SPR_L, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGp(), reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new2());
+    vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGp(), reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new2());
     vram_bus.addr_to_pins();
 
     vram_bus.cpu_data_to_bus_data(cpu_bus, _SERE_CPU_VRAM_RDp, cpu_bus.SALE_CPU_VRAM_WRn());
@@ -883,7 +876,7 @@ void GateBoy::tock_slow(int pass_index) {
     }
 
     oam_bus.dma_to_addr_bus(dma);
-    oam_bus.sprite_index_to_addr_bus(dma, BUS_SPR_I, ppu_reg.XYMU_RENDERINGp());
+    oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGp());
     oam_bus.scan_index_to_addr_bus(sprite_scanner, ACYL_SCANNINGp);
     oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp);
     oam_bus.ext_to_data_bus(dma, ext_bus);

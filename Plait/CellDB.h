@@ -17,6 +17,7 @@ struct Cell {
   std::string gate;
   std::string bus;
   std::string pin;
+  std::string sig;
   std::string doc;
   std::vector<std::string> args;
   std::set<std::string> names;
@@ -36,23 +37,31 @@ struct CellDB {
   bool parse_cell_input(Cell& c, const std::string& input);
 
   bool parse_bus_name(Cell& c, const std::string& bus_name);
-  bool parse_pin_name(Cell& c, const std::string& bus_name);
+  bool parse_pin_name(Cell& c, const std::string& pin_name);
+  bool parse_sig_name(Cell& c, const std::string& sig_name);
 
   bool parse_tag_comment(Cell& c, const std::string& tag_comment);
   bool parse_reg_type(Cell& c, const std::string& type);
   bool parse_gate_type(Cell& c, const std::string& type);
 
-  std::set<std::string> all_pages;
-  std::set<std::string> all_names;
-  std::set<std::string> all_tags;
-  std::set<std::string> all_buses;
-  std::set<std::string> all_signals;
-  std::set<std::string> all_pins;
+  bool  has_cell(const std::string& tag) {
+         if (tag.starts_with("BUS_")) return bus_map.count(tag) != 0;
+    else if (tag.starts_with("SIG_")) return sig_map.count(tag) != 0;
+    else if (tag.starts_with("PIN"))  return pin_map.count(tag) != 0;
+    else                              return cell_map.count(tag) != 0;
+  }
 
-  std::set<std::string> verified_tags;
+  Cell& get_cell(const std::string& tag) {
+         if (tag.starts_with("BUS_")) return bus_map[tag];
+    else if (tag.starts_with("SIG_")) return sig_map[tag];
+    else if (tag.starts_with("PIN"))  return pin_map[tag];
+    else                              return cell_map[tag];
+  }
 
   std::map<std::string, Cell> cell_map;
+  std::map<std::string, Cell> bus_map;
   std::map<std::string, Cell> pin_map;
+  std::map<std::string, Cell> sig_map;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

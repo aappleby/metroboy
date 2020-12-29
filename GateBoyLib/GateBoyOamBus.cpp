@@ -203,19 +203,19 @@ void GateBoyOamBus::dma_to_addr_bus(GateBoyDMA& dma) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyOamBus::sprite_index_to_addr_bus(GateBoyDMA& dma, Bus BUS_SPR_I[6], wire XYMU_RENDERINGp){
+void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, wire XYMU_RENDERINGp){
   wire PIN58_VCC = 1;
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_SFETCHINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SFETCHINGn = not1b(_AJON_SFETCHINGp);
   /* p28.GECA*/ BUS_OAM_An[0].tri6_nn(_BETE_SFETCHINGn, PIN58_VCC);
   /* p28.WYDU*/ BUS_OAM_An[1].tri6_nn(_BETE_SFETCHINGn, PIN58_VCC);
-  /* p28.GYBU*/ BUS_OAM_An[2].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[0].qp_new2());
-  /* p28.GYKA*/ BUS_OAM_An[3].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[1].qp_new2());
-  /* p28.FABY*/ BUS_OAM_An[4].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[2].qp_new2());
-  /* p28.FACO*/ BUS_OAM_An[5].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[3].qp_new2());
-  /* p28.FUGU*/ BUS_OAM_An[6].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[4].qp_new2());
-  /* p28.FYKE*/ BUS_OAM_An[7].tri6_nn(_BETE_SFETCHINGn, BUS_SPR_I[5].qp_new2());
+  /* p28.GYBU*/ BUS_OAM_An[2].tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I0.qp_new2());
+  /* p28.GYKA*/ BUS_OAM_An[3].tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I1.qp_new2());
+  /* p28.FABY*/ BUS_OAM_An[4].tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I2.qp_new2());
+  /* p28.FACO*/ BUS_OAM_An[5].tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I3.qp_new2());
+  /* p28.FUGU*/ BUS_OAM_An[6].tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I4.qp_new2());
+  /* p28.FYKE*/ BUS_OAM_An[7].tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I5.qp_new2());
 };
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ void GateBoyOamBus::set_pin_clk(
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3b(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1b(_BYCU_OAM_CLKp);
 
-  SIG_OAM_CLKn.set(_COTA_OAM_CLKn);
+  /*SIG_OAM_CLKn*/ SIG_OAM_CLKn.set(_COTA_OAM_CLKn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -340,8 +340,8 @@ void GateBoyOamBus::set_pin_wr(
   /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1b(_YNYC_OAM_A_WRp);
   /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1b(_YLYC_OAM_B_WRp);
 
-  SIG_OAM_WRn_A.set(_ZOFE_OAM_A_WRn);
-  SIG_OAM_WRn_B.set(_ZONE_OAM_B_WRn);
+  /*SIG_OAM_WRn_A*/ SIG_OAM_WRn_A.set(_ZOFE_OAM_A_WRn);
+  /*SIG_OAM_WRn_B*/ SIG_OAM_WRn_B.set(_ZONE_OAM_B_WRn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -360,7 +360,7 @@ void GateBoyOamBus::set_pin_oe(
   /*#p28.YRYV*/ wire _YRYV_OAM_OEp = not1b(_YVAL_OAM_OEn);
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1b(_YRYV_OAM_OEp);
 
-  SIG_OAM_OEn.set(_ZODO_OAM_OEn);
+  /*SIG_OAM_OEn*/ SIG_OAM_OEn.set(_ZODO_OAM_OEn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

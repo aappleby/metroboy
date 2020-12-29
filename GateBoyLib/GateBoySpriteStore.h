@@ -66,16 +66,31 @@ struct SpriteStore {
   SpriteMatchFlag  get_match_flags_new(wire _AROR_MATCH_ENp, const PixCount& _pix_count);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
 
-  void get_sprite(SpriteFirstMatch first_match, Bus BUS_SPR_I[6], Bus BUS_SPR_L[4]);
+  void get_sprite(SpriteFirstMatch first_match);
 
-  void store_sprite_index(SpriteStoreFlag store_flag, Bus BUS_SPR_I[6]);
-  void store_sprite_line (SpriteStoreFlag store_flag, Bus BUS_SPR_L[4]);
+  void store_sprite_index(SpriteStoreFlag store_flag);
+  void store_sprite_line (SpriteStoreFlag store_flag);
   void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
-  void oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8], Bus BUS_SPR_I[6]);
-  void ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a, Bus BUS_SPR_L[4]);
+  void oam_addr_to_sprite_index(wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn, Bus BUS_OAM_An[8]);
+  void ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a);
 
   void dump(Dumper& d);
+
+  //----------------------------------------
+  // Sprite store index/line tristate buses
+
+  /*BUS_SPR_I0*/ Bus BUS_SPR_I0; // AxCxExGx
+  /*BUS_SPR_I1*/ Bus BUS_SPR_I1; // AxCxExGx
+  /*BUS_SPR_I2*/ Bus BUS_SPR_I2; // AxCxExGx
+  /*BUS_SPR_I3*/ Bus BUS_SPR_I3; // AxCxExGx
+  /*BUS_SPR_I4*/ Bus BUS_SPR_I4; // AxCxExGx
+  /*BUS_SPR_I5*/ Bus BUS_SPR_I5; // AxCxExGx
+
+  /*BUS_SPR_L0*/ Bus BUS_SPR_L0; // AxCxExGx
+  /*BUS_SPR_L1*/ Bus BUS_SPR_L1; // AxCxExGx
+  /*BUS_SPR_L2*/ Bus BUS_SPR_L2; // AxCxExGx
+  /*BUS_SPR_L3*/ Bus BUS_SPR_L3; // AxCxExGx
 
   //----------------------------------------
   // Sprite index latch selects which store to write

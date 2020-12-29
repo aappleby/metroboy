@@ -90,7 +90,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
       /*#p06.JAGO*/ wire _JAGO =  not1b(CULY_SER_DIR.qp_new2());
       /*#p06.KUJO*/ wire _KUJO =  nor2b(_JAGO, _DAWA_SER_CLK); // schematic wrong
 
-      PIN68_SCK.pin_out_pull_hilo_any(CULY_SER_DIR.qp_new2(), _KEXU, _KUJO);
+      /*PIN68*/ PIN68_SCK.pin_out_pull_hilo_any(CULY_SER_DIR.qp_new2(), _KEXU, _KUJO);
       PIN68_SCK.pin_in_oedp_any(0, 1);
     }
   }
@@ -103,7 +103,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1b(_DAWA_SER_CLK);
     /*#p06.ELYS*/ ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), EDER_SER_DATA7.qp_old2());
     ///* p05.KENA*/ wire _KENA = mux2n(KUKO_DBG_FF00_D6, ELYS_SER_OUT.qp_new2(), FF60_0); // FIXME hacking out debug stuff
-    PIN70_SOUT.pin_out_dp(ELYS_SER_OUT.qp_new2());
+    /*PIN70*/ PIN70_SOUT.pin_out_dp(ELYS_SER_OUT.qp_new2());
   }
 
 }

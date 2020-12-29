@@ -39,6 +39,9 @@ void GateBoyBootrom::read_bootrom(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus
   /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(cpu_bus.TEDO_CPU_RDp.qp_new2(), _YAZA_MODE_DBG1n, _TUTU_READ_BOOTROMp); // def AND
   /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2b(_YULA_BOOT_RDp, _ZUFA_0000_00FF);
   /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1b(_ZADO_BOOT_CSn);
+
+  /*SIG_BOOT_CSp*/ cpu_bus.SIG_BOOT_CSp.set(_ZERY_BOOT_CSp);
+
   cpu_bus.BUS_CPU_D[0].tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 0));
   cpu_bus.BUS_CPU_D[1].tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 1));
   cpu_bus.BUS_CPU_D[2].tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 2));

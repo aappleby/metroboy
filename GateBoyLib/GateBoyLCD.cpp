@@ -50,7 +50,7 @@ void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk) {
   /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), reg_lx.TEGY_STROBE());
   /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new2(), reg_lx.RUTU_x113p_new());
   /*#p21.POGU*/ wire _POGU = not1b(_RYNO);
-  PIN52_LCD_CNTRL.pin_out_dp(_POGU);
+  /*PIN52*/ PIN52_LCD_CNTRL.pin_out_dp(_POGU);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, wire TULU_DIV07p, wire XON
   /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1b(XONA_LCDC_LCDENp);
   /*#p24.KUPA*/ wire _KUPA = amux2(XONA_LCDC_LCDENp, _KEBO, _KEDY_LCDC_ENn, _USEC_DIV07p);
   /*#p24.KOFO*/ wire _KOFO = not1b(_KUPA);
-  PIN56_LCD_FLIPS.pin_out_dp(_KOFO);
+  /*PIN56*/ PIN56_LCD_FLIPS.pin_out_dp(_KOFO);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, wire TULU_DIV07p, wire XON
 void GateBoyLCD::set_pin_vsync(GateBoyResetDebug& rst) {
   /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113n_new(), rst.LYFE_VID_RSTn(), reg_ly.NERU_y000p());
   /*#p24.MURE*/ wire _MURE_VSYNC = not1b(MEDA_VSYNC_OUTn.qp_new2());
-  PIN57_LCD_VSYNC.pin_out_dp(_MURE_VSYNC);
+  /*PIN57*/ PIN57_LCD_VSYNC.pin_out_dp(_MURE_VSYNC);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -103,14 +103,14 @@ void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wi
   /*#p24.POFY*/ POFY = not1b(RUJU.qp_new2());
 
   /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1b(POFY.qp_new2());
-  PIN54_LCD_HSYNC.pin_out_dp( _RUZE_HSYNCn);
+  /*PIN54*/ PIN54_LCD_HSYNC.pin_out_dp( _RUZE_HSYNCn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyLCD::set_pin_data(wire REMY_LD0n, wire RAVO_LD1n) {
-  PIN51_LCD_DATA0.pin_out_dp(REMY_LD0n);
-  PIN50_LCD_DATA1.pin_out_dp(RAVO_LD1n);
+  /*PIN51*/ PIN51_LCD_DATA0.pin_out_dp(REMY_LD0n);
+  /*PIN50*/ PIN50_LCD_DATA1.pin_out_dp(RAVO_LD1n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void GateBoyLCD::set_pin_latch(GateBoyDiv& div, RegLCDC& reg_lcdc) {
   /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1b(reg_lcdc.XONA_LCDC_LCDENn.qn_new2());
   /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(reg_lcdc.XONA_LCDC_LCDENn.qn_new2(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, _UMOB_DIV_06p);
   /*#p24.KYMO*/ wire _KYMO_LINE_ENDn = not1b(_KAHE_LINE_ENDp);
-  PIN55_LCD_LATCH.pin_out_dp(_KYMO_LINE_ENDn);
+  /*PIN55*/ PIN55_LCD_LATCH.pin_out_dp(_KYMO_LINE_ENDn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ void GateBoyLCD::set_pin_clock(PixCount& pix_count, FineScroll& fine_scroll, wir
   /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(WUSA_LCD_CLOCK_GATE.qp_new2(), SACU_CLKPIPE_evn);
   /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, fine_scroll.POVA_FINE_MATCH_TRIGp());
   /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1b(_SEMU_LCD_CLOCK);
-  PIN53_LCD_CLOCK.pin_out_dp(_RYPO_LCD_CLOCK);
+  /*PIN53*/ PIN53_LCD_CLOCK.pin_out_dp(_RYPO_LCD_CLOCK);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

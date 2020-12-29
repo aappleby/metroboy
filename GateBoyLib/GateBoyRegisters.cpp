@@ -192,16 +192,16 @@ BGScrollY BGScrollY::add(RegLY& reg_ly, RegSCY& reg_scy) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpritePix SpritePix::flip(Bus BUS_VRAM_Dp[8], wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p) {
+SpritePix SpritePix::flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p) {
   /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p, TEXY_SFETCHINGp);
-  /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[7].qp_old2(), BUS_VRAM_Dp[0].qp_old2());
-  /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[6].qp_old2(), BUS_VRAM_Dp[1].qp_old2());
-  /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[5].qp_old2(), BUS_VRAM_Dp[2].qp_old2());
-  /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[4].qp_old2(), BUS_VRAM_Dp[3].qp_old2());
-  /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[3].qp_old2(), BUS_VRAM_Dp[4].qp_old2());
-  /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[2].qp_old2(), BUS_VRAM_Dp[5].qp_old2());
-  /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[1].qp_old2(), BUS_VRAM_Dp[6].qp_old2());
-  /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X_old, BUS_VRAM_Dp[0].qp_old2(), BUS_VRAM_Dp[7].qp_old2());
+  /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D07p.qp_old2(), vram_bus.BUS_VRAM_D00p.qp_old2());
+  /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D06p.qp_old2(), vram_bus.BUS_VRAM_D01p.qp_old2());
+  /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D05p.qp_old2(), vram_bus.BUS_VRAM_D02p.qp_old2());
+  /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D04p.qp_old2(), vram_bus.BUS_VRAM_D03p.qp_old2());
+  /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D03p.qp_old2(), vram_bus.BUS_VRAM_D04p.qp_old2());
+  /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D02p.qp_old2(), vram_bus.BUS_VRAM_D05p.qp_old2());
+  /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D01p.qp_old2(), vram_bus.BUS_VRAM_D06p.qp_old2());
+  /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D00p.qp_old2(), vram_bus.BUS_VRAM_D07p.qp_old2());
 
   return {
     _PUTE_FLIP0p,
@@ -635,32 +635,32 @@ void RegWX::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void TileTempA::tock(Bus BUS_VRAM_Dp[8], wire LOMA_LATCH_TILE_DAn)
+void TileTempA::store_vram_data(const GateBoyVramBus& vram_bus, wire LOMA_LATCH_TILE_DAn)
 {
-  /* p32.LEGU*/ LEGU_TILE_DA0n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[0].qp_old2());
-  /* p32.NUDU*/ NUDU_TILE_DA1n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[1].qp_old2());
-  /* p32.MUKU*/ MUKU_TILE_DA2n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[2].qp_old2());
-  /* p32.LUZO*/ LUZO_TILE_DA3n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[3].qp_old2());
-  /* p32.MEGU*/ MEGU_TILE_DA4n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[4].qp_old2());
-  /* p32.MYJY*/ MYJY_TILE_DA5n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[5].qp_old2());
-  /* p32.NASA*/ NASA_TILE_DA6n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[6].qp_old2());
-  /* p32.NEFO*/ NEFO_TILE_DA7n.dff8p(LOMA_LATCH_TILE_DAn, BUS_VRAM_Dp[7].qp_old2());
+  /* p32.LEGU*/ LEGU_TILE_DA0n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D00p.qp_old2());
+  /* p32.NUDU*/ NUDU_TILE_DA1n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D01p.qp_old2());
+  /* p32.MUKU*/ MUKU_TILE_DA2n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D02p.qp_old2());
+  /* p32.LUZO*/ LUZO_TILE_DA3n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D03p.qp_old2());
+  /* p32.MEGU*/ MEGU_TILE_DA4n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D04p.qp_old2());
+  /* p32.MYJY*/ MYJY_TILE_DA5n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D05p.qp_old2());
+  /* p32.NASA*/ NASA_TILE_DA6n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D06p.qp_old2());
+  /* p32.NEFO*/ NEFO_TILE_DA7n.dff8p(LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D07p.qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void TileTempB::tock(Bus BUS_VRAM_Dp[8], wire LABU_LATCH_TILE_DBn)
+void TileTempB::store_vram_data(const GateBoyVramBus& vram_bus, wire LABU_LATCH_TILE_DBn)
 {
   wire PIN58_VCC = 1;
   // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
-  /* p32.RAWU*/ RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[0].qp_old2());
-  /* p32.POZO*/ POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[1].qp_old2());
-  /* p32.PYZO*/ PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[2].qp_old2());
-  /* p32.POXA*/ POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[3].qp_old2());
-  /* p32.PULO*/ PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[4].qp_old2());
-  /* p32.POJU*/ POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[5].qp_old2());
-  /* p32.POWY*/ POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[6].qp_old2());
-  /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, BUS_VRAM_Dp[7].qp_old2());
+  /* p32.RAWU*/ RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D00p.qp_old2());
+  /* p32.POZO*/ POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D01p.qp_old2());
+  /* p32.PYZO*/ PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D02p.qp_old2());
+  /* p32.POXA*/ POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D03p.qp_old2());
+  /* p32.PULO*/ PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D04p.qp_old2());
+  /* p32.POJU*/ POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D05p.qp_old2());
+  /* p32.POWY*/ POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D06p.qp_old2());
+  /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, PIN58_VCC, vram_bus.BUS_VRAM_D07p.qp_old2());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

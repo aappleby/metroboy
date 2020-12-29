@@ -27,7 +27,7 @@ struct GateBoyOamBus {
   void latch_to_temp_a(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void latch_to_temp_b(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void ext_to_data_bus (const GateBoyDMA& dma, const GateBoyExtBus& ext_bus);
-  void vram_to_data_bus(const GateBoyDMA& dma, Bus BUS_VRAM_Dp[8]);
+  void vram_to_data_bus(const GateBoyDMA& dma, const GateBoyVramBus& vram_bus);
   void dma_to_addr_bus(GateBoyDMA& dma);
   void sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, wire XYMU_RENDERINGp);
   void scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp);

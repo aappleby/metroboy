@@ -92,7 +92,7 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  static SpritePix flip(Bus BUS_VRAM_Dp[8], wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p);
+  static SpritePix flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p);
 
   wire PUTE_FLIP0p;
   wire PELO_FLIP1p;
@@ -550,7 +550,7 @@ struct OamTempB {
 
 struct TileTempA {
 
-  void tock(Bus BUS_VRAM_Dp[8], wire LOMA_LATCH_TILE_DAn);
+  void store_vram_data(const GateBoyVramBus& vram_bus, wire LOMA_LATCH_TILE_DAn);
 
   void dump(Dumper& d) {
     d.dump_slice2n("Tile Temp A : ", &LEGU_TILE_DA0n, 8);
@@ -569,7 +569,7 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void tock(Bus BUS_VRAM_Dp[8], wire _LABU_LATCH_TILE_DBn);
+  void store_vram_data(const GateBoyVramBus& vram_bus, wire _LABU_LATCH_TILE_DBn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("Tile Temp B : ", &RAWU_TILE_DB0p, 8);

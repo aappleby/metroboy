@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void tock(GateBoyClock& clk, Bus BUS_VRAM_Dp[8], wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
+  void tock(GateBoyClock& clk, const GateBoyVramBus& vram_bus, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
   wire LOMA_LATCH_TILE_DAn() const;
   wire LABU_LATCH_TILE_DBn() const;

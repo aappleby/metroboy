@@ -716,12 +716,12 @@ void GateBoy::tock_slow(int pass_index) {
 
   /* p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(win_reg.SEKO_WIN_FETCH_TRIGp_new(), win_reg.SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3b(AVAP_SCAN_DONE_TRIGp, win_reg.MOSU_WIN_MODE_TRIGp_new(), TEVO_FETCH_TRIGp);
-  tile_fetcher.tock(clk, vram_bus.BUS_VRAM_Dp, ppu_reg.XYMU_RENDERINGp(), NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
+  tile_fetcher.tock(clk, vram_bus, ppu_reg.XYMU_RENDERINGp(), NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
   fine_scroll.tock(ppu_reg.XYMU_RENDERINGp(), TYFA_CLKPIPE_odd, TEVO_FETCH_TRIGp);
 
   {
-    SpritePix sprite_pix = SpritePix::flip(vram_bus.BUS_VRAM_Dp, sprite_fetcher.TEXY_SFETCHINGp(), BAXO_OAM_DB5p_old);
+    SpritePix sprite_pix = SpritePix::flip(vram_bus, sprite_fetcher.TEXY_SFETCHINGp(), BAXO_OAM_DB5p_old);
     sprite_fetcher.sprite_pix_a.store_sprite_pix(sprite_pix, sprite_fetcher.XADO_STORE_SPRITE_An());
     sprite_fetcher.sprite_pix_b.store_sprite_pix(sprite_pix, sprite_fetcher.PUCO_STORE_SPRITE_Bn());
   }
@@ -880,7 +880,7 @@ void GateBoy::tock_slow(int pass_index) {
     oam_bus.scan_index_to_addr_bus(sprite_scanner, ACYL_SCANNINGp);
     oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp);
     oam_bus.ext_to_data_bus(dma, ext_bus);
-    oam_bus.vram_to_data_bus(dma, vram_bus.BUS_VRAM_Dp);
+    oam_bus.vram_to_data_bus(dma, vram_bus);
     oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp);
     oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
     oam_bus.set_pin_wr (rst, clk, cpu_bus, ppu_reg.XYMU_RENDERINGp(), dma.MATU_DMA_RUNNINGp.qp_new2(), ACYL_SCANNINGp);

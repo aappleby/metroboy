@@ -12,6 +12,8 @@
 #include "Plait/Plait.h"
 #include "Plait/CellDB.h"
 
+#include <functional>
+
 //-----------------------------------------------------------------------------
 
 class PlaitApp : public App {
@@ -25,9 +27,23 @@ public:
   void app_render_frame(Viewport view) override;
   void app_render_ui(Viewport view) override;
 
-  bool is_mouse_locked() const override { return hit_node != nullptr; }
+  bool is_mouse_locked() const override;
+  bool is_keyboard_locked() const override;
 
-  Node* pick_node(dvec2 pos);
+  typedef std::function<void(Node*)> NodeCallback;
+
+  void apply_region(dvec2 corner_a, dvec2 corner_b, NodeCallback callback);
+
+  void select_region(dvec2 corner_a, dvec2 corner_b);
+  void lock_region(dvec2 corner_a, dvec2 corner_b);
+  void select_node(Node* node);
+
+  void commit_selection();
+  void revert_selection();
+  void clear_selection();
+
+  Node* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
+  void  draw_node(Node* node);
 
   //----------------------------------------
 
@@ -45,17 +61,29 @@ public:
   int tex = 0;
 
   const uint8_t* keyboard_state = nullptr;
+  int keyboard_count = 0;
 
-  dvec2 click_start;
-  dvec2 click_end;
-  dvec2 mouse_pos;
+  dvec2 click_start_screen;
+  dvec2 click_end_screen;
+  dvec2 mouse_pos_screen;
 
-  Node* hit_node;
-  Node* hover_node;
+  dvec2 click_start_world;
+  dvec2 click_end_world;
+  dvec2 mouse_pos_world;
 
   bool show_edges = true;
-  bool show_anchors = false;
+  bool show_anchors = true;
 
+  dvec2 sel_min;
+  dvec2 sel_max;
+
+  Node* clicked_node = nullptr;
+  Node* hovered_node = nullptr;
+
+  std::set<Node*> selection;
+
+  std::vector<uint8_t> old_keys;
+  std::vector<uint8_t> new_keys;
 };
 
 //-----------------------------------------------------------------------------

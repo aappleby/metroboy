@@ -15,11 +15,22 @@ struct Port {
 
 //------------------------------------------------------------------------------------------------------------------------
 
+enum class CellType {
+  UNKNOWN = 0,
+  LOGIC,
+  TRIBUF,
+  DFF,
+  LATCH,
+  BUS,
+  PIN,
+};
+
 struct Cell {
   void sanity_check() const;
   void merge(const Cell& c);
   void dump(Dumper& d);
 
+  CellType cell_type = CellType::UNKNOWN;
   std::string verified;
   std::string page;
   std::string tag;
@@ -54,13 +65,13 @@ struct CellDB {
   bool parse_cell_arg(Cell& c, const std::string& input);
   bool parse_cell_arglist(Cell& c, const std::string& arglist);
 
-  bool parse_bus_name(Cell& c, const std::string& bus_name);
+  bool parse_tribuf_bus_target(Cell& c, const std::string& bus_name);
   bool parse_pin_name(Cell& c, const std::string& pin_name);
   bool parse_sig_name(Cell& c, const std::string& sig_name);
 
   bool parse_tag(Cell& c, const std::string& tag_comment);
   bool parse_reg_type(Cell& c, const std::string& type);
-  bool parse_gate_type(Cell& c, const std::string& type);
+  bool parse_cell_gate(Cell& c, const std::string& type);
 
   bool  has_cell(const std::string& tag) {
          if (tag.starts_with("BUS_")) return bus_map.count(tag) != 0;
@@ -75,6 +86,21 @@ struct CellDB {
     else if (tag.starts_with("PIN"))  return pin_map[tag];
     else                              return cell_map[tag];
   }
+
+  Cell* get_or_create_cell(const std::string& tag) {
+    Cell * old_cell = get_cell(tag);
+    if (old_cell) return old_cell;
+
+    Cell* new_cell = new Cell();
+
+         if (tag.starts_with("BUS_")) bus_map[tag] = new_cell;
+    else if (tag.starts_with("SIG_")) sig_map[tag] = new_cell;
+    else if (tag.starts_with("PIN"))  pin_map[tag] = new_cell;
+    else                              cell_map[tag] = new_cell;
+
+    return new_cell;
+  }
+
 
   std::map<std::string, Cell*> cell_map;
   std::map<std::string, Cell*> bus_map;

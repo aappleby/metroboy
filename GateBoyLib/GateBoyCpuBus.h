@@ -72,9 +72,9 @@ struct GateBoyCpuBus {
 
   /* p07.TEPU*/ DFF17 TEPU_BOOT_BITn_h;
 
-  /* p07.TEDO*/ Signal TEDO_CPU_RDp;
-  /* p01.APOV*/ Signal APOV_CPU_WRp;
-  /* p07.TAPU*/ Signal TAPU_CPU_WRp;
+  Signal TEDO_CPU_RDp;
+  Signal APOV_CPU_WRp;
+  Signal TAPU_CPU_WRp;
 
   /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(TEDO_CPU_RDp.qp_new()); }
   /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(TAPU_CPU_WRp.qp_new()); }

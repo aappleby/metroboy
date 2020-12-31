@@ -8,6 +8,10 @@
 struct StringDumper : public Dumper {
   std::string s;
 
+  const char* c_str() {
+    return s.c_str();
+  }
+
   void add_char(char c) override {
     s.push_back(c);
   }

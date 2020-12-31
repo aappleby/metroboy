@@ -247,8 +247,8 @@ struct PixelPipes {
   /*p26.VUMO*/ DFF22 VUMO_MASK_PIPE_6; // AxCxExGx
   /*p26.VAVA*/ DFF22 VAVA_MASK_PIPE_7; // AxCxExGx
 
-  /*#p35.REMY*/ Signal REMY_LD0n;
-  /*#p35.RAVO*/ Signal RAVO_LD1n;
+  Signal REMY_LD0n;
+  Signal RAVO_LD1n;
 };
 
 //-----------------------------------------------------------------------------

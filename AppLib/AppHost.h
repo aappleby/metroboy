@@ -14,6 +14,7 @@ private:
 
   App* app = nullptr;
 
+  Viewport view_screen;
   Viewport view_raw;
   Viewport view_smooth;
   Viewport view_snap;

@@ -16,59 +16,95 @@ using namespace glm;
 
 struct Node {
 
+  const char* name() const {
+    if (cell) {
+      if (cell->names.empty()) {
+        return cell->tag.c_str();
+      }
+      else {
+        const auto& it = cell->names.begin();
+        return (*it).c_str();
+      }
+    }
+    else {
+      return "<no cell>";
+    }
+  }
+
+  const char* gate() const {
+    if (cell) {
+      return cell->gate.c_str();
+    }
+    else {
+      return "<no gate>";
+    }
+  }
+
+  //----------------------------------------
+
   bool anchored_to(Node* target) {
-    Node* cursor = anchor;
-    while(cursor) {
+    for (Node* cursor = anchor; cursor; cursor = cursor->anchor) {
       if (cursor == target) return true;
-      cursor = cursor->anchor;
     }
     return false;
   }
 
   void set_anchor(Node* new_anchor) {
+    // Ignore invalid anchors, or anchors that would create a loop.
+    if (this == new_anchor) return;
+    if (anchor == new_anchor) return;
     if (new_anchor && new_anchor->anchored_to(this)) return;
+
+    // Unlink from old anchor.
     if (anchor) {
       offset_old += anchor->get_pos_old();
       offset_new += anchor->get_pos_new();
       anchor = nullptr;
     }
+
+    // Link to new anchor.
     if (new_anchor) {
       anchor = new_anchor;
       offset_old -= anchor->get_pos_old();
       offset_new -= anchor->get_pos_new();
     }
   }
-  bool anchored() { return anchor != nullptr; }
+
+  bool  anchored() { return anchor != nullptr; }
   Node* get_anchor() { return anchor; }
 
-  void commit_pos() {
-    set_pos_old(get_pos_new());
-  }
-
-  void set_pos_old(dvec2 pos) {
-    offset_old = pos;
-    if (anchor) offset_old -= anchor->get_pos_old();
-  }
-  void set_pos_new(dvec2 pos) {
-    offset_new = pos;
-    if (anchor) offset_new -= anchor->get_pos_new();
-  }
-
+  void set_pos_old(dvec2 pos) { offset_old = anchor ? pos - anchor->get_pos_old() : pos; }
+  void set_pos_new(dvec2 pos) { offset_new = anchor ? pos - anchor->get_pos_new() : pos; }
   dvec2 get_pos_old() { return anchor ? anchor->get_pos_old() + offset_old : offset_old; }
   dvec2 get_pos_new() { return anchor ? anchor->get_pos_new() + offset_new : offset_new; }
+  void commit_pos() {
+    //printf("Committing %s\n", cell->tag.c_str());
+    offset_old = offset_new;
+  }
+  void revert_pos() { offset_new = offset_old; }
 
-  Cell* cell = nullptr;
+  void toggle_lock() { locked = !locked; }
+
+  //----------------------------------------
+
   int rank = 0;
   int mark = 0;
 
   bool locked = 0;
+  bool selected = 0;
 
   uint32_t color = 0xFFFF00FF;
 
   std::vector<Node*> prev;
   std::vector<Node*> next;
 
+  dvec2 spring_force = {0,0};
+
+  const Cell* get_cell()            { return cell; }
+  void        set_cell(Cell* _cell) { cell = _cell; }
+
 private:
+  Cell* cell = nullptr;
   Node* anchor = nullptr;
   dvec2 offset_old = {0,0};
   dvec2 offset_new = {0,0};

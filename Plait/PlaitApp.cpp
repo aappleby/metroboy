@@ -21,11 +21,11 @@
 #include <algorithm>
 #include <filesystem>
 
-#include <windows.h>
+//#include <windows.h>
 
 using namespace std;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
   (void)argc;
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
   return ret;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 PlaitApp::~PlaitApp() {
 };
@@ -52,70 +52,54 @@ const char* PlaitApp::app_get_title() {
   return "PlaitApp";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_init() {
+#if 1
   auto& n2c = node_type_to_color;
 
-  n2c[""]      = 0xFF008000;
+  //n2c[""]      = 0xFF008000;
 
   n2c["not1"]  = 0xFF808080;
 
-  n2c["and2"]  = 0xFF000080;
-  n2c["and3"]  = 0xFF000080;
-  n2c["and4"]  = 0xFF000080;
-  n2c["nand2"] = 0xFF000080;
-  n2c["nand3"] = 0xFF000080;
-  n2c["nand4"] = 0xFF000080;
-  n2c["nand5"] = 0xFF000080;
-  n2c["nand6"] = 0xFF000080;
-  n2c["nand7"] = 0xFF000080;
+  n2c["and2"]  = 0xFF002080;
+  n2c["and3"]  = 0xFF002080;
+  n2c["and4"]  = 0xFF002080;
 
-  n2c["or2"]   = 0xFF800000;
-  n2c["or3"]   = 0xFF800000;
-  n2c["or4"]   = 0xFF800000;
+  n2c["nand2"] = 0xFF200080;
+  n2c["nand3"] = 0xFF200080;
+  n2c["nand4"] = 0xFF200080;
+  n2c["nand5"] = 0xFF200080;
+  n2c["nand6"] = 0xFF200080;
+  n2c["nand7"] = 0xFF200080;
 
-  n2c["and_or3"] = 0xFF800080;
-  n2c["or_and3"] = 0xFF800080;
+  n2c["or2"]   = 0xFF802000;
+  n2c["or3"]   = 0xFF802000;
+  n2c["or4"]   = 0xFF802000;
+
+  n2c["nor2"]  = 0xFF800020;
+  n2c["nor3"]  = 0xFF800020;
+  n2c["nor4"]  = 0xFF800020;
+  n2c["nor5"]  = 0xFF800020;
+  n2c["nor6"]  = 0xFF800020;
+  n2c["nor7"]  = 0xFF800020;
+  n2c["nor8"]  = 0xFF800020;
+
+  n2c["and_or3"]     = 0xFF800080;
+  n2c["or_and3"]     = 0xFF800080;
   n2c["not_or_and3"] = 0xFF800080;
 
   n2c["add_s"] = 0xFF008000;
   n2c["add_c"] = 0xFF008000;
 
-  n2c["nor2"]  = 0xFF800000;
-  n2c["nor3"]  = 0xFF800000;
-  n2c["nor4"]  = 0xFF800000;
-  n2c["nor5"]  = 0xFF800000;
-  n2c["nor6"]  = 0xFF800000;
-  n2c["nor7"]  = 0xFF800000;
-  n2c["nor8"]  = 0xFF800000;
-
   n2c["xor2"]  = 0xFF808000;
-  n2c["xnor2"] = 0xFF808000;
+  n2c["xnor2"] = 0xFF808020;
 
   n2c["mux2n"] = 0xFF004080;
   n2c["mux2p"] = 0xFF004080;
   n2c["amux2"] = 0xFF004080;
   n2c["amux4"] = 0xFF004080;
-
-  n2c["dff9" ] = 0xFF004040;
-  n2c["dff22"] = 0xFF004040;
-  n2c["dff17"] = 0xFF004040;
-  n2c["dff20"] = 0xFF004040;
-  n2c["dff17_any"] = 0xFF004040;
-  n2c["dff13"] = 0xFF004040;
-  n2c["dff8n"] = 0xFF004040;
-  n2c["dff11"] = 0xFF004040;
-  n2c["dff8p"] = 0xFF004040;
-
-  n2c["tri10_np"] = 0xFF008080;
-  n2c["tri6_pn"]  = 0xFF008080;
-  n2c["tri6_nn"]  = 0xFF008080;
-
-  n2c["nand_latch"] = 0xFF0060B0;
-  n2c["nor_latch" ] = 0xFF0060B0;
-  n2c["tp_latchn" ] = 0xFF0060B0;
-  n2c["tp_latchp" ] = 0xFF0060B0;
+#endif
 
   check_gl_error();
   box_painter.init();
@@ -142,29 +126,45 @@ void PlaitApp::app_init() {
 
   tex = create_texture_u32(4, 4, pix);
 
-  keyboard_state = SDL_GetKeyboardState(nullptr);
+  keyboard_count = 0;
+  keyboard_state = SDL_GetKeyboardState(&keyboard_count);
+  old_keys.resize(keyboard_count, 0);
+  new_keys.resize(keyboard_count, 0);
 
-  int cursor_x = 0;
-  int cursor_y = 0;
+  // Create nodes for all cells.
 
   for (auto& [tag, cell] : cell_db.cell_map) {
     auto node = new Node();
     cell->node = node;
-    node->cell = cell;
+    node->set_cell(cell);
+    plait.nodes.push_back(node);
   }
 
-  for (auto& [tag, cell] : cell_db.cell_map) {
-    auto node = (Node*)cell->node;
+  for (auto& [tag, cell] : cell_db.pin_map) {
+    auto node = new Node();
+    cell->node = node;
+    node->set_cell(cell);
+    plait.nodes.push_back(node);
+  }
 
-    cursor_x = rand() * 2 - 32768;
-    cursor_y = rand() * 2 - 32768;
+  for (auto& [tag, cell] : cell_db.bus_map) {
+    auto node = new Node();
+    cell->node = node;
+    node->set_cell(cell);
+    plait.nodes.push_back(node);
+  }
 
-    node->set_pos_old({cursor_x, cursor_y});
-    node->set_pos_new({cursor_x, cursor_y});
-    node->color = 0xFFFF00FF;
+  for (auto& [tag, cell] : cell_db.sig_map) {
+    auto node = new Node();
+    cell->node = node;
+    node->set_cell(cell);
+    plait.nodes.push_back(node);
+  }
 
-    auto it = node_type_to_color.find(cell->gate);
-    if (it != node_type_to_color.end()) node->color = (*it).second;
+  // Link nodes based on the connectivity in the cell db
+
+  for (auto node : plait.nodes) {
+    auto cell = node->get_cell();
 
     for (auto& port : cell->args) {
       if (cell_db.has_cell(port.tag)) {
@@ -176,93 +176,61 @@ void PlaitApp::app_init() {
         }
       }
     }
+  }
 
-    plait.nodes.push_back(node);
+  // Position and color nodes
 
-    cursor_x += 128 + 16;
-    if (cursor_x >= 4096) {
-      cursor_x = 0;
-      cursor_y += 80;
+  for (auto node : plait.nodes) {
+    int node_x = rand() * 2 - 32768;
+    int node_y = rand() * 2 - 32768;
+    node->set_pos_new({node_x, node_y});
+    node->commit_pos();
+
+    node->color = 0xFFFF00FF;
+    auto cell_type = node->get_cell()->cell_type;
+
+    if      (cell_type == CellType::TRIBUF) node->color = 0xFF008080;
+    else if (cell_type == CellType::DFF)    node->color = 0xFF004040;
+    else if (cell_type == CellType::LATCH)  node->color = 0xFF0060B0;
+    else if (cell_type == CellType::BUS)    node->color = 0xFF404040;
+    else if (cell_type == CellType::PIN)    node->color = 0xFF800080;
+    else if (cell_type == CellType::LOGIC) {
+      auto it = node_type_to_color.find(node->gate());
+      if (it != node_type_to_color.end()) {
+        node->color = (*it).second;
+      }
+      else {
+        printf("Could not pick a color for %s\n", node->gate());
+      }
     }
   }
 
+  // Add a test anchor node
 
-#if 0
-  Node test_nodes[] = {
-    { { 256,  256},  { 256,  256}, "+====\\\node|REPU >\node+====/"},
-    { { 20,  20},  { 20,  20}, "SARY"},
-    { { 30,  30},  { 30,  30}, "REJO"},
-    { { 40,  40},  { 40,  40}, "XOFO"},
-    { { 50,  50},  { 50,  50}, "NUNU"},
-    { { 60,  60},  { 60,  60}, "PYNU"},
-    { { 70,  70},  { 70,  70}, "NOPA"},
-    { { 80,  80},  { 80,  80}, "NAFY"},
-    { { 90,  90},  { 90,  90}, "PYGO"},
-    { {128, 128},  {128, 128}, "PORY"},
-  };
+  Node* anchor = new Node();
+  anchor->set_pos_new({0,0});
+  anchor->commit_pos();
+  plait.nodes.push_back(anchor);
 
-  for (int i = 0; i < 10; i++) {
-    Node* new_node = new Node();
-    new_node->name = test_nodes[i].name;
-    new_node->pos_old = test_nodes[i].pos_old;
-    new_node->pos_new = test_nodes[i].pos_new;
-
-    plait.nodes.push_back(new_node);
-    plait.names[new_node->name] = new_node;
-  }
-#endif
-
-  // Hook up next pointers
-  /*
-  for (auto next : plait.nodes) {
-    for (auto prev : next->prev) {
-      prev->next.push_back(next);
-    }
-  }
-  */
-
-  // Mark levels
-  /*
-  deque<Node*> queue;
-  for (auto& node : plait.nodes) {
-    node->mark = 0;
-    if (node->prev.empty()) {
-      node->rank = 0;
-      plait.roots.insert(node);
-      queue.push_back(node);
-    }
-    else {
-      node->rank = -1;
-    }
-  }
-
-  plait.update_rank();
-  */
-
-  // Initial placement
-  /*
-  vector<int> cursor_y(100, 0);
-
-  for (auto& node : plait.nodes) {
-    if (node->rank < 0) __debugbreak();
-
-    node->pos_old.x = node->rank * 128;
-    node->pos_old.y = cursor_y[node->rank] * 128;
-    cursor_y[node->rank]++;
-  }
-
-  for (auto& node : plait.nodes) node->pos_new = node->pos_old;
-  */
-
-  printf("Done %f\node", timestamp());
+  printf("Init done %f\n", timestamp());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Node* PlaitApp::pick_node(dvec2 _mouse_pos) {
-  for (auto n : plait.nodes) {
-    if (n == hit_node) continue;
-    dvec2 node_pos = n->get_pos_old();
+void PlaitApp::app_close() {
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Node* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered) {
+  (void)ignore_selected;
+  (void)ignore_clicked;
+  (void)ignore_hovered;
+
+  for (auto node : plait.nodes) {
+    if ((node == clicked_node) && ignore_clicked) continue;
+
+    dvec2 node_pos = node->get_pos_new();
 
     int width = 128;
     int height = 64;
@@ -271,231 +239,614 @@ Node* PlaitApp::pick_node(dvec2 _mouse_pos) {
         _mouse_pos.y >= node_pos.y &&
         _mouse_pos.x <= node_pos.x + width &&
         _mouse_pos.y <= node_pos.y + height) {
-      return n;
+      return node;
     }
   }
 
   return nullptr;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::app_close() {
+void PlaitApp::apply_region(dvec2 corner_a, dvec2 corner_b, NodeCallback callback) {
+
+  dvec2 rmin = min(corner_a, corner_b);
+  dvec2 rmax = max(corner_a, corner_b);
+
+  const dvec2 node_size = {128,64};
+
+  for (auto node : plait.nodes) {
+    dvec2 nmin = node->get_pos_new();
+    dvec2 nmax = node->get_pos_new() + node_size;
+
+    if (nmin.x < rmin.x) continue;
+    if (nmin.y < rmin.y) continue;
+    if (nmax.x > rmax.x) continue;
+    if (nmax.y > rmax.y) continue;
+
+    callback(node);
+  }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
+  printf("Selection region ");
+  auto callback = [this](Node* node) {
+    printf("%s ", node->name());
+    node->selected = true;
+    selection.insert(node);
+  };
+
+  apply_region(corner_a, corner_b, callback);
+  printf("\n");
+}
+
+void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
+  printf("Locking region ");
+  auto callback = [this](Node* node) {
+    printf("%s ", node->name());
+    node->locked = true;
+  };
+
+  apply_region(corner_a, corner_b, callback);
+  printf("\n");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void PlaitApp::select_node(Node* node) {
+  printf("Selecting %s\n", node->name());
+  node->selected = true;
+  selection.insert(node);
+}
+
+void PlaitApp::commit_selection() {
+  if (selection.empty()) return;
+
+  printf("Committing ");
+  for (auto node : selection) {
+    printf("%s ", node->name());
+    node->commit_pos();
+  }
+  printf("\n");
+}
+
+void PlaitApp::revert_selection() {
+  if (selection.empty()) return;
+
+  printf("Reverting ");
+  for (auto node : selection) {
+    printf("%s ", node->name());
+    node->revert_pos();
+  }
+  printf("\n");
+}
+
+void PlaitApp::clear_selection() {
+  if (selection.empty()) return;
+
+  printf("Unselecting ");
+  for (auto node : selection) {
+    printf("%s ", node->name());
+    node->selected = false;
+  }
+  selection.clear();
+  printf("\n");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+double remap(double x, double a1, double a2, double b1, double b2) {
+  x = (x - a1) / (a2 - a1);
+  x = x * (b2 - b1) + b1;
+  return x;
+}
+
+double remap_clamp(double x, double a1, double a2, double b1, double b2) {
+  if (x < a1) x = a1;
+  if (x > a2) x = a2;
+
+  x = (x - a1) / (a2 - a1);
+  x = x * (b2 - b1) + b1;
+  return x;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void spring_nodes(Node* a, Node* b) {
+  dvec2 offset = b->get_pos_new() - a->get_pos_new();
+  double dist = length(offset);
+  offset = normalize(offset);
+
+  if (dist < 1) return;
+
+  double push_force = remap_clamp(dist, 10, 256, -256, 0);
+  double pull_force = remap_clamp(dist, 1024, 16384, 0, 16384);
+
+  a->spring_force += offset * push_force;
+  a->spring_force += offset * pull_force;
+
+  b->spring_force += offset * -push_force;
+  b->spring_force += offset * -pull_force;
+}
+
+void spring_nodes2(Node* a, Node* b) {
+  dvec2 offset = b->get_pos_new() - a->get_pos_new();
+  double dist = length(offset);
+  offset = normalize(offset);
+
+  if (dist < 1) return;
+
+  double push_force = remap_clamp(dist,   0,  96, -512,   0);
+  double pull_force = remap_clamp(dist,  96, 192,    0, 512);
+
+  a->spring_force += offset * push_force;
+  a->spring_force += offset * pull_force;
+
+  b->spring_force += offset * -push_force;
+  b->spring_force += offset * -pull_force;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_update(Viewport view, double delta_time) {
   (void)view;
   (void)delta_time;
 
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    if (keyboard_state[SDL_SCANCODE_LSHIFT]) continue;
+  int mouse_x = 0, mouse_y = 0;
+  uint32_t mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+  mouse_pos_screen = {mouse_x, mouse_y};
+  mouse_pos_world = view.screenToWorld(mouse_pos_screen);
+  hovered_node = pick_node(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
 
-    switch (event.type) {
+  //----------------------------------------
+
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) switch (event.type) {
+
+    //----------------------------------------
+
     case SDL_KEYDOWN: {
       int key = event.key.keysym.scancode;
       if (key == SDL_SCANCODE_E) show_edges = !show_edges;
       if (key == SDL_SCANCODE_A) show_anchors = !show_anchors;
+      if (key == SDL_SCANCODE_RETURN) {
+        commit_selection();
+        clear_selection();
+      }
+      if (key == SDL_SCANCODE_ESCAPE) {
+        revert_selection();
+        clear_selection();
+      }
       break;
     }
+
+    //----------------------------------------
 
     case SDL_MOUSEBUTTONDOWN: {
-      if (event.button.clicks == 1) {
-        click_start = view.screenToWorld({event.button.x, event.button.y});
+      if (event.button.clicks != 1) {
+        break;
       }
-      hit_node = pick_node(click_start);
-      break;
-    }
 
-    case SDL_MOUSEBUTTONUP: {
-      click_end = view.screenToWorld({event.button.x, event.button.y});
-      if (hit_node) {
-        if (keyboard_state[SDL_SCANCODE_F]) {
-          if (hover_node) {
-            printf("Linking %s to %s\n", hit_node->cell->tag.c_str(), hover_node->cell->tag.c_str());
-            hit_node->set_anchor(hover_node);
-          }
-          else {
-            printf("Unlinking %s\n", hit_node->cell->tag.c_str());
-            hit_node->set_anchor(nullptr);
-          }
+      //printf("Click start at %d %d\n", event.button.x, event.button.y);
+
+      memcpy(old_keys.data(), keyboard_state, keyboard_count);
+      memset(new_keys.data(), 0, keyboard_count);
+
+      printf("\n");
+      click_start_screen = {event.button.x, event.button.y};
+      click_start_world = view.screenToWorld(click_start_screen);
+      clicked_node = pick_node(click_start_world, /*ignore_selected*/ false, /*ignore_clicked*/ false, /*ignore_hovered*/ false);
+
+      if (old_keys[SDL_SCANCODE_D]) {
+        if (!clicked_node) {
+          printf("D-clicked on nothing\n");
         }
-        hit_node->set_pos_old(hit_node->get_pos_new());
-        hit_node = nullptr;
-      }
-
-      if (event.button.clicks == 2) {
-        auto node = pick_node(click_end);
-        if (node) {
-          node->locked = !node->locked;
-        }
-      }
-      break;
-    }
-
-    case SDL_MOUSEMOTION: {
-      mouse_pos = view.screenToWorld({event.motion.x, event.motion.y});
-
-      hover_node = pick_node(mouse_pos);
-
-      if (hit_node) {
-        if (keyboard_state[SDL_SCANCODE_F]) {
+        else if (clicked_node->selected) {
+          printf("D-clicked on selected node %s\n", clicked_node->name());
+          clicked_node->toggle_lock();
         }
         else {
-          dvec2 new_pos = hit_node->get_pos_old() + (mouse_pos - click_start);
-          new_pos.x = round(new_pos.x / 16) * 16.0;
-          new_pos.y = round(new_pos.y / 16) * 16.0;
-
-          hit_node->set_pos_new(new_pos);
+          printf("D-clicked on unselected node %s\n", clicked_node->name());
+          clicked_node->toggle_lock();
+        }
+      }
+      if (old_keys[SDL_SCANCODE_LCTRL]) {
+        if (!clicked_node) {
+          printf("Control-clicked on nothing\n");
+        }
+        else if (clicked_node->selected) {
+          printf("Control-clicked on selected node %s\n", clicked_node->name());
+        }
+        else {
+          printf("Control-clicked on unselected node %s\n", clicked_node->name());
+          select_node(clicked_node);
+        }
+      }
+      else if (old_keys[SDL_SCANCODE_F]) {
+        if (!clicked_node) {
+          printf("F-clicked on nothing\n");
+        }
+        else if (clicked_node->selected) {
+          printf("F-clicked on selected node %s\n", clicked_node->name());
+        }
+        else {
+          printf("F-clicked on unselected node %s\n", clicked_node->name());
+          // quick anchor, clicked node becomes anchor arg
+          commit_selection();
+          clear_selection();
+          select_node(clicked_node);
+        }
+      }
+      else {
+        if (!clicked_node) {
+          printf("Clicked on nothing\n");
+        }
+        else if (clicked_node->selected) {
+          printf("Clicked on selected node %s\n", clicked_node->name());
+          commit_selection();
+        }
+        else {
+          printf("Clicked on unselected node %s\n", clicked_node->name());
+          // clicked on unselected node, quick select it.
+          commit_selection();
+          clear_selection();
+          select_node(clicked_node);
         }
       }
 
       break;
     }
-    }
-  }
 
-  // Pull nodes towards their parents
+    //----------------------------------------
+
+    case SDL_MOUSEBUTTONUP: {
+      //printf("Click end at %d %d\n", event.button.x, event.button.y);
+
+      memcpy(new_keys.data(), keyboard_state, keyboard_count);
+      click_end_screen = {event.button.x, event.button.y};
+      click_end_world = view.screenToWorld(click_end_screen);
+      auto end_node = pick_node(click_end_world, /*ignore_selected*/ false, /*ignore_clicked*/ false, /*ignore_hovered*/ false);
+
+      bool was_drag = length(click_end_screen - click_start_screen) > 3;
+
+      if (old_keys[SDL_SCANCODE_D]) {
+        if (was_drag) {
+          lock_region(click_start_world, click_end_world);
+        }
+      }
+      if (old_keys[SDL_SCANCODE_F]) {
+        if (end_node) {
+          if (selection.size()) {
+            printf("Linking selection ");
+            for (auto selected_node : selection) printf("%s ", selected_node->name());
+            printf("to %s\n", end_node->name());
+            for (auto selected_node : selection) selected_node->set_anchor(nullptr);
+            for (auto selected_node : selection) selected_node->set_anchor(end_node);
+          }
+        }
+        else {
+          if (selection.size()) {
+            printf("Unlinking selection ");
+            for (auto selected_node : selection) printf("%s ", selected_node->name());
+            printf("\n");
+            for (auto selected_node : selection) selected_node->set_anchor(nullptr);
+          }
+          if (clicked_node) {
+            printf("Unlinking clicked node %s\n", clicked_node->name());
+            clicked_node->set_anchor(nullptr);
+          }
+          commit_selection();
+          clear_selection();
+        }
+      }
+      else if (old_keys[SDL_SCANCODE_LCTRL] && new_keys[SDL_SCANCODE_LCTRL]) {
+        if (was_drag) {
+          select_region(click_start_world, click_end_world);
+        }
+      }
+      else if (clicked_node) {
+      }
+      else if (!clicked_node) {
+        if (!was_drag) {
+          commit_selection();
+          clear_selection();
+        }
+      }
+
+      memset(old_keys.data(), 0, keyboard_count);
+      clicked_node = nullptr;
+      break;
+    }
+
+    //----------------------------------------
+
+    case SDL_MOUSEMOTION: {
+
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+      }
+      else if (keyboard_state[SDL_SCANCODE_F]) {
+      }
+      else if (mouse_buttons & SDL_BUTTON_LMASK && clicked_node) {
+        for (auto selected_node : selection) {
+          dvec2 new_pos = selected_node->get_pos_old() + (mouse_pos_world - click_start_world);
+          new_pos.x = round(new_pos.x / 16) * 16.0;
+          new_pos.y = round(new_pos.y / 16) * 16.0;
+          selected_node->set_pos_new(new_pos);
+        }
+      }
+
+      break;
+    }
+
+    //----------------------------------------
+
+  } // while (SDL_PollEvent(&event)) switch (event.type)
+
+  //----------------------------------------
+  // Pull nodes towards their parents/children
 
   for (auto node : plait.nodes) {
-    if (node == hit_node) continue;
-    if (node->locked) continue;
-    if (node->anchored()) continue;
-    dvec2 d = {0,0};
-    int active_springs = 0;
-
-    for (auto prev : node->prev) {
-      if (prev->anchored_to(node)) continue;
-      dvec2 offset = prev->get_pos_new() - node->get_pos_new();
-      if (length(offset) < 512) continue;
-      active_springs++;
-      d += offset;
+    for (auto next : node->next) {
+      spring_nodes(node, next);
     }
 
-    if (active_springs) {
-      d /= double(active_springs);
-      node->set_pos_new(node->get_pos_old() + d * 0.01);
+    if (node->get_cell() && node->get_cell()->cell_type == CellType::BUS) {
+      if (node->prev.size() >= 2) {
+        for (size_t i = 0; i < node->prev.size() - 1; i++) {
+          spring_nodes2(node->prev[i + 0], node->prev[i + 1]);
+        }
+      }
     }
-    node->commit_pos();
+    else {
+      if (node->next.size() >= 2) {
+        for (size_t i = 0; i < node->next.size() - 1; i++) {
+          spring_nodes2(node->next[i + 0], node->next[i + 1]);
+        }
+      }
+    }
   }
 
 #if 0
   // Push nodes away from their siblings
   for (auto node : plait.nodes) {
-    if (node == hit_node) continue;
-    if (node->locked) continue;
+    if (node->prev.size() >= 2) {
+      for (size_t i = 0; i < node->prev.size() - 1; i++) {
+        Node* a = node->prev[i + 0];
+        Node* b = node->prev[i + 1];
 
-    size_t sib_count = node->prev.size();
+        if (a->selected) continue;
+        if (a->locked) continue;
+        if (a->anchored()) continue;
 
-    for (size_t i = 0; i < sib_count; i++) {
-      auto sib_a = node->prev[(i - 1 + sib_count) % sib_count];
-      auto sib_b = node->prev[(i + 1) % sib_count];
+        dvec2 offset = a->get_pos_new() - b->get_pos_new();
+        if (length(offset) < 256) {
+          a->set_pos_new(a->get_pos_old() + offset * 0.01);
+          a->commit_pos();
+        }
+      }
+    }
 
-      dvec2 delta_a = sib_a->pos_new - node->pos_new;
-      dvec2 delta_b = sib_b->pos_new - node->pos_new;
+    if (node->next.size() >= 2) {
+      for (size_t i = 0; i < node->next.size() - 1; i++) {
+        Node* a = node->next[i + 0];
+        Node* b = node->next[i + 1];
+
+        if (a->selected) continue;
+        if (a->locked) continue;
+        if (a->anchored()) continue;
+
+        dvec2 offset = a->get_pos_new() - b->get_pos_new();
+        if (length(offset) < 256) {
+          a->set_pos_new(a->get_pos_old() + offset * 0.01);
+          a->commit_pos();
+        }
+      }
     }
   }
 #endif
 
+  //----------------------------------------
+  // Apply accumulated spring forces
+
+  for (auto node : plait.nodes) {
+    if (node->selected || node->locked || node->anchored()) {
+    }
+    else {
+      node->set_pos_new(node->get_pos_old() + node->spring_force * 0.01);
+      node->commit_pos();
+    }
+    node->spring_force = {0,0};
+  }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::app_render_frame(Viewport view) {
-  grid_painter.render(view);
-
-  text_painter.bg_col = {0,0.5,0,0.5};
-
+void PlaitApp::draw_node(Node* node) {
+  dvec2 node_pos_new = node->get_pos_new();
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
 
-  for (auto node : plait.nodes) {
-    dvec2 node_pos = node->get_pos_new();
+  outline_painter.push_box(node_pos_new, node_pos_new + node_size, node->selected ? 0xFFCCCCCC : 0xFF808080);
 
-    outline_painter.push_box(node_pos, node_pos + node_size, 0xFF808080);
+  box_painter.push_corner_size(
+    node_pos_new + dvec2(4,4),
+    node_size - dvec2(8,8),
+    node == hovered_node ? 0xFF00FF00 : node->color);
 
-    box_painter.push_corner_size(
-      node_pos + dvec2(4,4),
-      node_size - dvec2(8,8),
-      node == hover_node ? 0xFF00FF00 : node->color);
+  text_painter.add_text_at(node->name(),  int(node_pos_new.x + 8), int(node_pos_new.y + 8));
+  text_painter.add_text_at(node->gate(), int(node_pos_new.x + 8), int(node_pos_new.y + 24));
+  if (node->locked) text_painter.add_text_at("LOCKED", int(node_pos_new.x + 8), int(node_pos_new.y + 40));
 
-    text_painter.add_text_at(node->cell->tag.c_str(),  int(node_pos.x + 8), int(node_pos.y + 8));
-    text_painter.add_text_at(node->cell->gate.c_str(), int(node_pos.x + 8), int(node_pos.y + 24));
-    if (node->locked) text_painter.add_text_at("LOCKED", int(node_pos.x + 8), int(node_pos.y + 40));
+  // input port(s)
+  {
+    const int port_in_count = int(node->prev.size());
+    auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
+    auto stride = gap + port_size.y;
 
-    if (hit_node && keyboard_state[SDL_SCANCODE_F]) {
-      edge_painter.push(mouse_pos, 0xFFFFFF, hit_node->get_pos_new() + node_size * 0.5, 0xFFFF8080);
-    }
-
-#if 1
-    // input port(s)
-    {
-      const int port_in_count = int(node->prev.size());
-      auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
-      auto stride = gap + port_size.y;
-
-      for (size_t i = 0; i < port_in_count; i++) {
-        dvec2 port_pos = node->get_pos_new() + dvec2(0, gap + stride * i);
-        port_painter.push_center_size(port_pos, port_size, 0x80808080);
-      }
-    }
-#endif
-
-#if 1
-    // output port(s)
-    {
-      const int port_out_count = 1;
-      auto gap = (node_size.y - (port_size.y * port_out_count)) / float(port_out_count + 1);
-      auto stride = gap + port_size.y;
-
-      for (size_t i = 0; i < port_out_count; i++) {
-        dvec2 port_pos = node_pos + dvec2(node_size.x, gap + stride * i);
-        port_painter.push_center_size(port_pos, port_size, 0x80008000);
-      }
-    }
-#endif
-
-#if 1
-    // edges from previous node(s)
-    if (show_edges) {
-      const int port_in_count = int(node->prev.size());
-      auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
-      auto stride = gap + port_size.y;
-
-      for (size_t i = 0; i < port_in_count; i++) {
-        auto prev = node->prev[i];
-        if (prev == nullptr) continue;
-
-        dvec2 port_prev = prev->get_pos_new() + dvec2(node_size.x, node_size.y / 2);
-        dvec2 port_next = node->get_pos_new() + dvec2(0, gap + stride * i);
-
-        edge_painter.push(port_prev, 0x800000FF, port_next, 0x8000FF00);
-      }
-    }
-#endif
-
-    // anchor edge
-    if (show_anchors && node->get_anchor()) {
-      dvec2 center_a = node->get_anchor()->get_pos_new() + node_size / 2.0;
-      dvec2 center_b = node->get_pos_new() + node_size / 2.0;
-      edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
-
+    for (size_t i = 0; i < port_in_count; i++) {
+      dvec2 port_pos = node->get_pos_new() + dvec2(0, gap + stride * i);
+      port_painter.push_center_size(port_pos, port_size, 0x80808080);
     }
   }
 
-  port_painter.render(view, 0, 0, 1);
-  edge_painter.render(view, 0, 0, 1);
-  box_painter.render(view, 0, 0, 1);
-  text_painter.render(view, 0, 0, 1);
-  outline_painter.render(view, 0, 0, 1);
+  // output port(s)
+  {
+    const int port_out_count = 1;
+    auto gap = (node_size.y - (port_size.y * port_out_count)) / float(port_out_count + 1);
+    auto stride = gap + port_size.y;
+
+    for (size_t i = 0; i < port_out_count; i++) {
+      dvec2 port_pos = node_pos_new + dvec2(node_size.x, gap + stride * i);
+      port_painter.push_center_size(port_pos, port_size, 0x80008000);
+    }
+  }
+
+  // edges from previous node(s)
+  if (show_edges) {
+    const int port_in_count = int(node->prev.size());
+    auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
+    auto stride = gap + port_size.y;
+
+
+    for (size_t i = 0; i < port_in_count; i++) {
+      auto prev = node->prev[i];
+      if (prev == nullptr) continue;
+
+      uint32_t color_a = (node->selected || prev->selected) ? 0xFF8888FF : 0x800000FF;
+      uint32_t color_b = (node->selected || prev->selected) ? 0xFF88FF88 : 0x8000FF00;
+
+      dvec2 port_prev = prev->get_pos_new() + dvec2(node_size.x, node_size.y / 2);
+      dvec2 port_next = node->get_pos_new() + dvec2(0, gap + stride * i);
+
+      edge_painter.push(port_prev, color_a, port_next, color_b);
+    }
+  }
+
+  // anchor edge
+  if (show_anchors && node->get_anchor()) {
+    dvec2 center_a = node->get_anchor()->get_pos_new() + node_size / 2.0;
+    dvec2 center_b = node->get_pos_new() + node_size / 2.0;
+    edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
+  }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::app_render_ui(Viewport view) {
-  (void)view;
+void PlaitApp::app_render_frame(Viewport view_world) {
+  int mouse_x = 0, mouse_y = 0;
+  uint32_t mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+  text_painter.bg_col = {0,0.5,0,0.5};
+  const dvec2 node_size = {128,64};
+
+  //----------------------------------------
+  // Grid layer
+
+  grid_painter.render(view_world);
+
+  //----------------------------------------
+  // Selected node shadows
+
+  for (auto node : selection) {
+    dvec2 node_pos_old = node->get_pos_old();
+    outline_painter.push_box(node_pos_old, node_pos_old + node_size, 0xFF404040);
+  }
+  outline_painter.render(view_world, 0, 0, 1);
+
+  //----------------------------------------
+  // Node layer
+
+  for (auto node : plait.nodes) draw_node(node);
+
+  port_painter.render(view_world, 0, 0, 1);
+  edge_painter.render(view_world, 0, 0, 1);
+  box_painter.render(view_world, 0, 0, 1);
+  text_painter.render(view_world, 0, 0, 1);
+  outline_painter.render(view_world, 0, 0, 1);
+
+  //----------------------------------------
+  // UI layer
+
+  // Draw in-progress anchor edges
+
+  if (keyboard_state[SDL_SCANCODE_F] && clicked_node) {
+    if (selection.size()) {
+      for (auto selected_node : selection) {
+        edge_painter.push(mouse_pos_world, 0xFFFFFFFF, selected_node->get_pos_new() + node_size * 0.5, 0xFFFF8080);
+      }
+    }
+
+    if (clicked_node) {
+      edge_painter.push(mouse_pos_world, 0xFFFFFFFF, clicked_node->get_pos_new() + node_size * 0.5, 0xFFFF8080);
+    }
+  }
+
+  // Draw selection rect
+
+  uint32_t selection_rect_color = 0x00000000;
+
+  if (old_keys[SDL_SCANCODE_D]      && keyboard_state[SDL_SCANCODE_D])      selection_rect_color = 0xCC80FFFF;
+  if (old_keys[SDL_SCANCODE_LCTRL]  && keyboard_state[SDL_SCANCODE_LCTRL])  selection_rect_color = 0xCCFFFFFF;
+  if (old_keys[SDL_SCANCODE_LSHIFT] && keyboard_state[SDL_SCANCODE_LSHIFT]) selection_rect_color = 0xCC8080FF;
+
+  if (selection_rect_color && (mouse_buttons & SDL_BUTTON_LMASK)) {
+    outline_painter.push_box(
+      click_start_world,
+      view_world.screenToWorld({mouse_x, mouse_y}),
+      selection_rect_color);
+  }
+
+  port_painter.render(view_world, 0, 0, 1);
+  edge_painter.render(view_world, 0, 0, 1);
+  box_painter.render(view_world, 0, 0, 1);
+  text_painter.render(view_world, 0, 0, 1);
+  outline_painter.render(view_world, 0, 0, 1);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void PlaitApp::app_render_ui(Viewport view_screen) {
+  // Draw selection info
+  {
+    StringDumper d;
+    d("Selected nodes : ");
+    for (auto selected_node : selection) d("%s ", selected_node->name());
+    d("\n");
+    d("Clicked node : %s\n", clicked_node ? clicked_node->name() : "<none>");
+    d("Hovered node : %s\n", hovered_node ? hovered_node->name() : "<none>");
+    text_painter.add_text_at(d.c_str(), 0, 0);
+  }
+
+  text_painter.render(view_screen, 0, 0, 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+bool PlaitApp::is_mouse_locked() const {
+  int mouse_x = 0, mouse_y = 0;
+  uint32_t mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+
+  if (mouse_buttons & SDL_BUTTON_LMASK) {
+    if (old_keys[SDL_SCANCODE_D]     ) return true;
+    if (old_keys[SDL_SCANCODE_F]     ) return true;
+    if (old_keys[SDL_SCANCODE_LCTRL] ) return true;
+    if (old_keys[SDL_SCANCODE_LSHIFT]) return true;
+    if (old_keys[SDL_SCANCODE_LALT]  ) return true;
+    if (keyboard_state[SDL_SCANCODE_D]     ) return true;
+    if (keyboard_state[SDL_SCANCODE_F]     ) return true;
+    if (keyboard_state[SDL_SCANCODE_LCTRL] ) return true;
+    if (keyboard_state[SDL_SCANCODE_LSHIFT]) return true;
+    if (keyboard_state[SDL_SCANCODE_LALT]  ) return true;
+  }
+
+  return clicked_node != nullptr;
+}
+
+//--------------------------------------------------------------------------------
+
+bool PlaitApp::is_keyboard_locked() const {
+  return !selection.empty();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------

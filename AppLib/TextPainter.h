@@ -40,7 +40,7 @@ public:
 
 //private:
 
-  const int max_text_bytes = 65536 * 4;
+  const int max_text_bytes = 1024 * 1024;
 
   vec4 bg_col;
 

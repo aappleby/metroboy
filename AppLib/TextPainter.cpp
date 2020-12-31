@@ -126,6 +126,7 @@ void TextPainter::init() {
 //-----------------------------------------------------------------------------
 
 void TextPainter::render(Viewport view, double x, double y, float scale) {
+  if (inst_end == 0) return;
 
   bind_shader(text_prog);
 

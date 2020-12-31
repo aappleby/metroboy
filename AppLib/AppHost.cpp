@@ -116,9 +116,10 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // Initialize internal renderers
 
-  view_raw = view_raw.reset_to_cart(initial_screen_w, initial_screen_h);
-  view_smooth = view_raw;
-  view_snap = view_raw;
+  view_screen = Viewport::screenspace(initial_screen_w, initial_screen_h);
+  view_raw    = view_screen;
+  view_smooth = view_screen;
+  view_snap   = view_screen;
 
   printf("\n");
 
@@ -141,6 +142,7 @@ int AppHost::app_main(int, char**) {
 
     int screen_w = 0, screen_h = 0;
     SDL_GL_GetDrawableSize((SDL_Window*)window, &screen_w, &screen_h);
+    view_screen = Viewport::screenspace(screen_w, screen_h);
 
     int mouse_x = 0, mouse_y = 0;
     const auto mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
@@ -215,6 +217,11 @@ int AppHost::app_main(int, char**) {
       auto& event = events[i];
       switch (event.type) {
 
+      case SDL_MOUSEBUTTONDOWN: {
+        //printf("AppHost click start at %d %d\n", event.button.x, event.button.y);
+        break;
+      }
+
       case SDL_MOUSEWHEEL: {
         view_raw = view_raw.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
         break;
@@ -237,9 +244,11 @@ int AppHost::app_main(int, char**) {
       auto& event = events[i];
       switch (event.type) {
       case SDL_KEYDOWN: {
-        if (event.key.keysym.sym == SDLK_ESCAPE) {
-          view_raw = view_raw.reset_to_cart(screen_w, screen_h);
-          if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
+        if (!app->is_keyboard_locked()) {
+          if (event.key.keysym.sym == SDLK_ESCAPE) {
+            view_raw = view_screen;
+            if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
+          }
         }
         break;
       }
@@ -272,7 +281,7 @@ int AppHost::app_main(int, char**) {
 
     app->app_render_frame(view_snap);
 
-    app->app_render_ui(view_snap);
+    app->app_render_ui(view_screen);
 
     //----------------------------------------
     // ImGui render

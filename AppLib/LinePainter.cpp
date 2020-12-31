@@ -67,6 +67,8 @@ void LinePainter::init() {
 //-----------------------------------------------------------------------------
 
 void LinePainter::render(Viewport view, double x, double y, float scale) {
+  if (line_end == 0) return;
+
   bind_shader(line_prog);
 
   line_uniforms.origin = {x, y, scale, scale};

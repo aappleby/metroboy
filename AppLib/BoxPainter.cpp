@@ -101,6 +101,7 @@ void BoxPainter::push_corner_size(float x, float y, float w, float h, uint32_t c
 //-----------------------------------------------------------------------------
 
 void BoxPainter::render(Viewport view, double x, double y, float scale) {
+  if (box_cursor == 0) return;
 
   bind_shader(box_prog);
 

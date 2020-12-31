@@ -18,6 +18,7 @@ public:
   virtual void end_frame() {};
 
   virtual bool is_mouse_locked() const { return false; }
+  virtual bool is_keyboard_locked() const { return false; }
 };
 
 //-----------------------------------------------------------------------------

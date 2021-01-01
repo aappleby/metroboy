@@ -3,90 +3,117 @@
 #include <iostream>
 #include <fstream>
 
-#if 0
-void Node::dump(Dumper& d) {
-  d("Node : \"%s\"\n", cell->name.c_str());
-  d("Tag  : \"%s\"\n", cell->tag_comment.c_str());
-  d("Func : \"%s\"\n", cell->func.c_str());
-  d("Tail : \"%s\"\n", cell->tail.c_str());
-  for(auto p : prev) {
-    d("Arg  : \"%s\"\n", p->cell->name.c_str());
-  }
-  d("\n");
-}
-#endif
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-#if 0
-Node* Plait::get_or_create_node(const std::string& name) {
-  Node* new_node = get_node(name);
-  if (new_node) return new_node;
-
-  new_node = new Node();
-  new_node->name = name;
-
-  nodes.push_back(new_node);
-  names.insert({name, new_node});
-
-  return new_node;
-}
-
-Node* Plait::get_node(const std::string& name) {
-  auto it = names.find(name);
-  if (it == names.end()) {
-    return nullptr;
+const char* Node::tag() const {
+  if (cell) {
+    return cell->tag.c_str();
   }
   else {
-    return (*it).second;
+    return "<no_tag>";
   }
 }
-#endif
 
-//-----------------------------------------------------------------------------
+const char* Node::name() const {
+  if (cell) {
+    if (cell->names.empty()) {
+      return cell->tag.c_str();
+    }
+    else {
+      const auto& it = cell->names.begin();
+      return (*it).c_str();
+    }
+  }
+  else {
+    return "<no_cell>";
+  }
+}
 
-/*
-bool has_tag(const plait::CellDB& cell_db, const std::string& tag) {
-  for (auto& cell : cell_db.cells()) {
-    if (cell.tag() == tag) return true;
+const char* Node::gate() const {
+  if (cell) {
+    return cell->gate.c_str();
+  }
+  else {
+    return "<no_gate>";
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+bool Node::anchored_to(Node* target) {
+  for (Node* cursor = anchor; cursor; cursor = cursor->anchor) {
+    if (cursor == target) return true;
   }
   return false;
 }
-*/
 
+void Node::set_anchor(Node* new_anchor) {
+  // Ignore invalid anchors, or anchors that would create a loop.
+  if (this == new_anchor) return;
+  if (anchor == new_anchor) return;
+  if (new_anchor && new_anchor->anchored_to(this)) return;
+
+  // Unlink from old anchor.
+  if (anchor) {
+    offset_old += anchor->get_pos_old();
+    offset_new += anchor->get_pos_new();
+    anchor = nullptr;
+  }
+
+  // Link to new anchor.
+  if (new_anchor) {
+    anchor = new_anchor;
+    offset_old -= anchor->get_pos_old();
+    offset_new -= anchor->get_pos_new();
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#if 0
+  void update_rank1() {
+    mark = 1;
+    rank = 0;
+    for(auto p : prev) {
+      if (p->mark) continue;
+      if (p->rank == -1) p->update_rank1();
+      if (p->rank >= rank) {
+        rank = p->rank + 1;
+      }
+    }
+    mark = 0;
+  }
+
+  void update_rank2() {
+    if (prev.empty() && next.empty()) {
+      rank = 0;
+    }
+    else if (prev.empty()) {
+      int min_next = 1000000;
+      for (auto n : next) if (n->rank < min_next) min_next = n->rank;
+      rank = min_next - 1;
+    }
+    else if (next.empty()) {
+      int max_prev = -1;
+      for (auto p : prev) if (p->rank > max_prev) max_prev = p->rank;
+      rank = max_prev + 1;
+    }
+    else {
+      int max_prev = -1;
+      for (auto p : prev) if (p->rank > max_prev) max_prev = p->rank;
+      int min_next = 1000000;
+      for (auto n : next) if (n->rank < min_next) min_next = n->rank;
+
+      rank = (max_prev + min_next) / 2;
+    }
+  }
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void Plait::save(const char* filename) {
   printf("Saving plait\n");
   std::ofstream out(filename);
-
-  /*
-  for (auto node : nodes) {
-    out << "Hello World" << std::endl;
-  }
-  */
-
-  /*
-  int rank = 0;
-  int mark = 0;
-
-  bool locked = 0;
-  bool selected = 0;
-
-  uint32_t color = 0xFFFF00FF;
-
-  std::vector<Node*> prev;
-  std::vector<Node*> next;
-
-  dvec2 spring_force = {0,0};
-
-  const Cell* get_cell()            { return cell; }
-  void        set_cell(Cell* _cell) { cell = _cell; }
-
-  Cell* cell = nullptr;
-  Node* anchor = nullptr;
-  dvec2 offset_old = {0,0};
-  dvec2 offset_new = {0,0};
-  */
 
   out << nodes.size() << std::endl;
 
@@ -98,6 +125,8 @@ void Plait::save(const char* filename) {
     out << node->offset_old.y << std::endl;
   }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void Plait::load(const char* filename) {
   printf("Loading plait\n");
@@ -146,3 +175,5 @@ void Plait::load(const char* filename) {
     }
   }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------

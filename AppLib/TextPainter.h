@@ -15,14 +15,14 @@ public:
 
   void init();
 
-  void push_char(int x, int y, int c, int pal);
+  void push_char(float x, float y, int c, int pal);
 
   void add_char(const char c);
   void add_char(const char c, const char d);
 
   void add_text(const char* text_painter);
   void add_text(const char* text_painter, int len);
-  void add_text_at(const char* s, int x, int y);
+  void add_text_at(const char* s, float x, float y);
 
   void add_string(const std::string& text_painter);
   void dprintf(const char* format, ...);
@@ -41,6 +41,8 @@ public:
 //private:
 
   const int max_text_bytes = 1024 * 1024;
+  const int bytes_per_glyph = 16;
+  const int max_glyphs = max_text_bytes / bytes_per_glyph;
 
   vec4 bg_col;
 
@@ -50,20 +52,21 @@ public:
 
   uint32_t dump_tex = 0;
 
-  int text_x = 0;
-  int text_y = 0;
+  float text_x = 0;
+  float text_y = 0;
 
   int fg_pal = 1;
 
   int pal_locs[16];
 
-  int inst_begin = 0;
-  int inst_end = 0;
+  int glyph_count = 0;
 
   uint32_t  text_vao = 0;
   uint32_t  text_vbo = 0;
   uint32_t  text_ubo = 0;
-  uint16_t* text_data = 0;
+
+  uint32_t* text_data_u32 = 0;
+  float*    text_data_f32 = 0;
 
   TextUniforms text_uniforms = {};
 };

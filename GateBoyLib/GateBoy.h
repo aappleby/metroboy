@@ -200,7 +200,6 @@ struct GateBoy {
 
   /*PIN58*/ PinIn PIN58_VCC;
   /*PIN32*/ PinIn PIN32_GND;
-  /*PIN72*/ PinIn PIN72_GND;
 
   //----------
 

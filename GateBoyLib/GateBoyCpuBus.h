@@ -20,7 +20,7 @@ struct GateBoyCpuBus {
     d.dump_bitp   ("SIG_CPU_ADDR_HIp  : ", SIG_CPU_ADDR_HIp.state);
     d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", SIG_CPU_UMUT_DBG.state);
     d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", SIG_CPU_EXT_BUSp.state);
-    d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
+    //d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
     d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", SIG_CPU_LATCH_EXT.state);
     d.dump_bitp   ("BOOT_BITn         : ", TEPU_BOOT_BITn_h.state);
     d.dump_bitp   ("SIG_CPU_BOOTp     : ", SIG_CPU_BOOTp.state);
@@ -33,22 +33,22 @@ struct GateBoyCpuBus {
 
   Signal ABUZ_EXT_RAM_CS_CLK;
 
-  /*BUS_CPU_A00p*/ Signal BUS_CPU_A00p;
-  /*BUS_CPU_A01p*/ Signal BUS_CPU_A01p;
-  /*BUS_CPU_A02p*/ Signal BUS_CPU_A02p;
-  /*BUS_CPU_A03p*/ Signal BUS_CPU_A03p;
-  /*BUS_CPU_A04p*/ Signal BUS_CPU_A04p;
-  /*BUS_CPU_A05p*/ Signal BUS_CPU_A05p;
-  /*BUS_CPU_A06p*/ Signal BUS_CPU_A06p;
-  /*BUS_CPU_A07p*/ Signal BUS_CPU_A07p;
-  /*BUS_CPU_A08p*/ Signal BUS_CPU_A08p;
-  /*BUS_CPU_A09p*/ Signal BUS_CPU_A09p;
-  /*BUS_CPU_A10p*/ Signal BUS_CPU_A10p;
-  /*BUS_CPU_A11p*/ Signal BUS_CPU_A11p;
-  /*BUS_CPU_A12p*/ Signal BUS_CPU_A12p;
-  /*BUS_CPU_A13p*/ Signal BUS_CPU_A13p;
-  /*BUS_CPU_A14p*/ Signal BUS_CPU_A14p;
-  /*BUS_CPU_A15p*/ Signal BUS_CPU_A15p;
+  /*BUS_CPU_A00p*/ Bus BUS_CPU_A00p;
+  /*BUS_CPU_A01p*/ Bus BUS_CPU_A01p;
+  /*BUS_CPU_A02p*/ Bus BUS_CPU_A02p;
+  /*BUS_CPU_A03p*/ Bus BUS_CPU_A03p;
+  /*BUS_CPU_A04p*/ Bus BUS_CPU_A04p;
+  /*BUS_CPU_A05p*/ Bus BUS_CPU_A05p;
+  /*BUS_CPU_A06p*/ Bus BUS_CPU_A06p;
+  /*BUS_CPU_A07p*/ Bus BUS_CPU_A07p;
+  /*BUS_CPU_A08p*/ Bus BUS_CPU_A08p;
+  /*BUS_CPU_A09p*/ Bus BUS_CPU_A09p;
+  /*BUS_CPU_A10p*/ Bus BUS_CPU_A10p;
+  /*BUS_CPU_A11p*/ Bus BUS_CPU_A11p;
+  /*BUS_CPU_A12p*/ Bus BUS_CPU_A12p;
+  /*BUS_CPU_A13p*/ Bus BUS_CPU_A13p;
+  /*BUS_CPU_A14p*/ Bus BUS_CPU_A14p;
+  /*BUS_CPU_A15p*/ Bus BUS_CPU_A15p;
 
   /*BUS_CPU_D00p*/ Bus BUS_CPU_D00p;
   /*BUS_CPU_D01p*/ Bus BUS_CPU_D01p;
@@ -65,7 +65,7 @@ struct GateBoyCpuBus {
   /*SIG_CPU_ADDR_HIp*/  Signal SIG_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
   /*SIG_CPU_UMUT_DBG*/  Signal SIG_CPU_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   /*SIG_CPU_EXT_BUSp*/  Signal SIG_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
-  /*SIG_CPU_6*/         Signal SIG_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
+  ///*SIG_CPU_6*/         Signal SIG_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6?
   /*SIG_CPU_LATCH_EXT*/ Signal SIG_CPU_LATCH_EXT;     // top left port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
   /*SIG_CPU_BOOTp*/     Signal SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   /*SIG_BOOT_CSp*/      Signal SIG_BOOT_CSp;          // cs for bootrom

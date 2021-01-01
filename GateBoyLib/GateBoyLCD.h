@@ -148,14 +148,14 @@ struct GateBoyLCD {
   //DFF lcd_pipe_lo[160];
   //DFF lcd_pipe_hi[160];
 
-  PinOut PIN50_LCD_DATA1;
-  PinOut PIN51_LCD_DATA0;
-  PinOut PIN54_LCD_HSYNC;
-  PinOut PIN56_LCD_FLIPS;
-  PinOut PIN52_LCD_CNTRL;
-  PinOut PIN55_LCD_LATCH;
-  PinOut PIN53_LCD_CLOCK;
-  PinOut PIN57_LCD_VSYNC;
+  /*PIN50*/ PinOut PIN50_LCD_DATA1;
+  /*PIN51*/ PinOut PIN51_LCD_DATA0;
+  /*PIN54*/ PinOut PIN54_LCD_HSYNC;
+  /*PIN56*/ PinOut PIN56_LCD_FLIPS;
+  /*PIN52*/ PinOut PIN52_LCD_CNTRL;
+  /*PIN55*/ PinOut PIN55_LCD_LATCH;
+  /*PIN53*/ PinOut PIN53_LCD_CLOCK;
+  /*PIN57*/ PinOut PIN57_LCD_VSYNC;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

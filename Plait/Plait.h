@@ -12,9 +12,18 @@
 
 using namespace glm;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct Node {
+
+  const char* tag() const {
+    if (cell) {
+      return cell->tag.c_str();
+    }
+    else {
+      return "<no_tag>";
+    }
+  }
 
   const char* name() const {
     if (cell) {
@@ -27,7 +36,7 @@ struct Node {
       }
     }
     else {
-      return "<no cell>";
+      return "<no_cell>";
     }
   }
 
@@ -36,7 +45,7 @@ struct Node {
       return cell->gate.c_str();
     }
     else {
-      return "<no gate>";
+      return "<no_gate>";
     }
   }
 
@@ -103,7 +112,7 @@ struct Node {
   const Cell* get_cell()            { return cell; }
   void        set_cell(Cell* _cell) { cell = _cell; }
 
-private:
+//private:
   Cell* cell = nullptr;
   Node* anchor = nullptr;
   dvec2 offset_old = {0,0};
@@ -149,19 +158,7 @@ private:
 #endif
 };
 
-//-----------------------------------------------------------------------------
-
-struct Frame {
-  std::string name;
-  dvec2 origin;
-  dvec2 size;
-  dvec2 scale;
-
-  std::vector<Frame*> frames;
-  std::vector<Node*>  nodes;
-};
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct Plait {
   //Node* get_node(const std::string& name);
@@ -194,7 +191,10 @@ struct Plait {
   //typedef std::map<std::string, Node*> NameToNode;
   //typedef std::multimap<std::string, std::string> NameToEdges;
 
+  void save(const char* filename);
+  void load(const char* filename);
+
   std::vector<Node*> nodes;
 };
 
-
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -132,35 +132,35 @@ struct GateBoyExtBus {
     d.dump_slice2n("DATA LATCH : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   }
 
-  PinOut PIN01_A00;
-  PinOut PIN02_A01;
-  PinOut PIN03_A02;
-  PinOut PIN04_A03;
-  PinOut PIN05_A04;
-  PinOut PIN06_A05;
-  PinOut PIN07_A06;
-  PinOut PIN08_A07;
-  PinOut PIN09_A08;
-  PinOut PIN10_A09;
-  PinOut PIN11_A10;
-  PinOut PIN12_A11;
-  PinOut PIN13_A12;
-  PinOut PIN14_A13;
-  PinOut PIN15_A14;
-  PinOut PIN16_A15;
+  /*PIN01*/ PinOut PIN01_A00;
+  /*PIN02*/ PinOut PIN02_A01;
+  /*PIN03*/ PinOut PIN03_A02;
+  /*PIN04*/ PinOut PIN04_A03;
+  /*PIN05*/ PinOut PIN05_A04;
+  /*PIN06*/ PinOut PIN06_A05;
+  /*PIN07*/ PinOut PIN07_A06;
+  /*PIN08*/ PinOut PIN08_A07;
+  /*PIN09*/ PinOut PIN09_A08;
+  /*PIN10*/ PinOut PIN10_A09;
+  /*PIN11*/ PinOut PIN11_A10;
+  /*PIN12*/ PinOut PIN12_A11;
+  /*PIN13*/ PinOut PIN13_A12;
+  /*PIN14*/ PinOut PIN14_A13;
+  /*PIN15*/ PinOut PIN15_A14;
+  /*PIN16*/ PinOut PIN16_A15;
 
-  PinIO  PIN17_D00;
-  PinIO  PIN18_D01;
-  PinIO  PIN19_D02;
-  PinIO  PIN20_D03;
-  PinIO  PIN21_D04;
-  PinIO  PIN22_D05;
-  PinIO  PIN23_D06;
-  PinIO  PIN24_D07;
+  /*PIN17*/ PinIO  PIN17_D00;
+  /*PIN18*/ PinIO  PIN18_D01;
+  /*PIN19*/ PinIO  PIN19_D02;
+  /*PIN20*/ PinIO  PIN20_D03;
+  /*PIN21*/ PinIO  PIN21_D04;
+  /*PIN22*/ PinIO  PIN22_D05;
+  /*PIN23*/ PinIO  PIN23_D06;
+  /*PIN24*/ PinIO  PIN24_D07;
 
-  PinOut PIN80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
-  PinOut PIN79_RDn;      // RDn idles low, goes high on phase B for an external write
-  PinOut PIN78_WRn;      // WRn idles high, goes low during EFG if there's a write
+  /*PIN80*/ PinOut PIN80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
+  /*PIN79*/ PinOut PIN79_RDn;      // RDn idles low, goes high on phase B for an external write
+  /*PIN78*/ PinOut PIN78_WRn;      // WRn idles high, goes low during EFG if there's a write
   ExtDataLatch ext_data_latch;
   ExtAddrLatch ext_addr_latch;
 

@@ -43,7 +43,9 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 
 #ifdef _VERTEX_
 
-layout(location = 0) in ivec4 glyph2;
+layout(location = 0) in vec2 glyph_pos;
+layout(location = 1) in int  glyph_idx;
+layout(location = 2) in int  glyph_pal;
 
 out vec2  tc_glyph;
 out vec4  fg_col;
@@ -52,11 +54,11 @@ void main() {
   float corner_x = float((gl_VertexID >> 0) & 1);
   float corner_y = float((gl_VertexID >> 1) & 1);
 
-  float glyph_x = float(glyph2.x);
-  float glyph_y = float(glyph2.y);
-  float col     = float((glyph2.z >> 0) & 0x1F);
-  float row     = float((glyph2.z >> 5) & 0x07);
-  int fg_style  = glyph2.w;
+  float glyph_x = glyph_pos.x;
+  float glyph_y = glyph_pos.y;
+  float col     = float((glyph_idx >> 0) & 0x1F);
+  float row     = float((glyph_idx >> 5) & 0x07);
+  int fg_style  = glyph_pal;
 
   float glyph_tcx = (col * atlas_stride_x) + (corner_x * glyph_size_x);
   float glyph_tcy = (row * atlas_stride_y) + (corner_y * glyph_size_y);
@@ -108,12 +110,22 @@ void TextPainter::init() {
   set_pal(6, 1.0f, 0.6f, 1.0f, 1.0f); // error magenta
   set_pal(7, 0.4f, 0.4f, 0.4f, 1.0f); // grey
 
-  text_data = new uint16_t[max_text_bytes / sizeof(uint16_t)];
+  text_data_u32 = new uint32_t[max_text_bytes / sizeof(text_data_u32[0])];
+  text_data_f32 = reinterpret_cast<float*>(text_data_u32);
+
   text_vao = create_vao();
   text_vbo = create_vbo(max_text_bytes);
   glEnableVertexAttribArray(0);
-  glVertexAttribIPointer(0, 4, GL_SHORT, 8, 0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
+
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, bytes_per_glyph, 0);
+  glVertexAttribIPointer(1, 1, GL_INT,             bytes_per_glyph, (void*)8);
+  glVertexAttribIPointer(2, 1, GL_INT,             bytes_per_glyph, (void*)12);
+
   glVertexAttribDivisor(0, 1);
+  glVertexAttribDivisor(1, 1);
+  glVertexAttribDivisor(2, 1);
 
   uint8_t* dst_pix = new uint8_t[32768];
   for (int i = 0; i < 32768; i++) dst_pix[i] = terminus[i] == '#' ? 0xFF : 0x00;
@@ -126,7 +138,7 @@ void TextPainter::init() {
 //-----------------------------------------------------------------------------
 
 void TextPainter::render(Viewport view, double x, double y, float scale) {
-  if (inst_end == 0) return;
+  if (glyph_count == 0) return;
 
   bind_shader(text_prog);
 
@@ -145,26 +157,24 @@ void TextPainter::render(Viewport view, double x, double y, float scale) {
 
   bind_vao(text_vao);
 
-  int glyph_count = (inst_end - inst_begin) / 4;
-  int bytes_per_glyph = 8;
-
-  update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data + inst_begin);
+  update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data_u32);
 
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, glyph_count);
 
   text_x = 0;
   text_y = 0;
-  inst_begin = inst_end = 0;
+  glyph_count = 0;
 }
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::push_char(int x, int y, int c, int pal) {
-  text_data[inst_end++] = uint16_t(x);
-  text_data[inst_end++] = uint16_t(y);
-  text_data[inst_end++] = uint16_t(c);
-  text_data[inst_end++] = uint16_t(pal);
-  CHECK_P((inst_end * sizeof(uint16_t)) < max_text_bytes);
+void TextPainter::push_char(float x, float y, int c, int pal) {
+  text_data_f32[(glyph_count * 4) + 0] = float(x);
+  text_data_f32[(glyph_count * 4) + 1] = float(y);
+  text_data_u32[(glyph_count * 4) + 2] = uint16_t(c);
+  text_data_u32[(glyph_count * 4) + 3] = uint16_t(pal);
+  glyph_count++;
+  CHECK_P(glyph_count <= max_glyphs);
 }
 
 void TextPainter::add_char(const char c) {
@@ -198,9 +208,9 @@ void TextPainter::add_text(const char* s, int len) {
   }
 }
 
-void TextPainter::add_text_at(const char* s, int x, int y) {
-  int cursor_x = x;
-  int cursor_y = y;
+void TextPainter::add_text_at(const char* s, float x, float y) {
+  float cursor_x = x;
+  float cursor_y = y;
 
   for(; *s; s++) {
     int c = *s;

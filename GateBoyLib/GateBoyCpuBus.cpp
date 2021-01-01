@@ -103,7 +103,7 @@ void GateBoyCpuBus::set_pins(
     SIG_CPU_LATCH_EXT.set(0);
   }
 
-  SIG_CPU_6.set(0);
+  //SIG_CPU_6.set(0);
 
   // FIXME yeeeeeech this is nasty. probably not right.
 
@@ -117,9 +117,9 @@ void GateBoyCpuBus::set_pins(
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  SIG_CPU_ADDR_HIp.set(SYRO_FE00_FFFF());
-  SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
-  SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
+  /*SIG_CPU_ADDR_HIp*/ SIG_CPU_ADDR_HIp.set(SYRO_FE00_FFFF());
+  /*SIG_CPU_UNOR_DBG*/ SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
+  /*SIG_CPU_UMUT_DBG*/ SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
 
   ///* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now

@@ -497,11 +497,9 @@ void GateBoy::tock_slow(int pass_index) {
 
   PIN58_VCC.reset_for_pass();
   PIN32_GND.reset_for_pass();
-  PIN72_GND.reset_for_pass();
 
   PIN58_VCC.pin_in_dp(1);
   PIN32_GND.pin_in_dp(0);
-  PIN72_GND.pin_in_dp(0);
 
   rst.PIN71_RST.reset_for_pass();
   clk.PIN74_CLKGOOD.reset_for_pass();
@@ -526,6 +524,23 @@ void GateBoy::tock_slow(int pass_index) {
   // Sys clock signals
 
   clk.tock(rst);
+
+  cpu_bus.BUS_CPU_A00p.reset_for_pass();
+  cpu_bus.BUS_CPU_A01p.reset_for_pass();
+  cpu_bus.BUS_CPU_A02p.reset_for_pass();
+  cpu_bus.BUS_CPU_A03p.reset_for_pass();
+  cpu_bus.BUS_CPU_A04p.reset_for_pass();
+  cpu_bus.BUS_CPU_A05p.reset_for_pass();
+  cpu_bus.BUS_CPU_A06p.reset_for_pass();
+  cpu_bus.BUS_CPU_A07p.reset_for_pass();
+  cpu_bus.BUS_CPU_A08p.reset_for_pass();
+  cpu_bus.BUS_CPU_A09p.reset_for_pass();
+  cpu_bus.BUS_CPU_A10p.reset_for_pass();
+  cpu_bus.BUS_CPU_A11p.reset_for_pass();
+  cpu_bus.BUS_CPU_A12p.reset_for_pass();
+  cpu_bus.BUS_CPU_A13p.reset_for_pass();
+  cpu_bus.BUS_CPU_A14p.reset_for_pass();
+  cpu_bus.BUS_CPU_A15p.reset_for_pass();
 
   cpu_bus.set_addr(int(phase_total), bus_req_new);
   cpu_bus.set_pins(rst, clk, int(phase_total), bus_req_new);

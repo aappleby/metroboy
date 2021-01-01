@@ -54,51 +54,86 @@ const char* PlaitApp::app_get_title() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+
+const uint32_t COL_DARK_GREY    = 0xFF444444;
+const uint32_t COL_MID_GREY     = 0xFF888888;
+const uint32_t COL_PALE_GREY    = 0xFFCCCCCC;
+const uint32_t COL_DARK_RED     = 0xFF444488;
+const uint32_t COL_MID_RED      = 0xFF4444CC;
+const uint32_t COL_PALE_RED     = 0xFF8888CC;
+const uint32_t COL_DARK_GREEN   = 0xFF448844;
+const uint32_t COL_MID_GREEN    = 0xFF44CC44;
+const uint32_t COL_PALE_GREEN   = 0xFF88CC88;
+const uint32_t COL_DARK_BLUE    = 0xFF884444;
+const uint32_t COL_MID_BLUE     = 0xFFCC4444;
+const uint32_t COL_PALE_BLUE    = 0xFFCC8888;
+const uint32_t COL_DARK_YELLOW  = 0xFF448888;
+const uint32_t COL_MID_YELLOW   = 0xFF44CCCC;
+const uint32_t COL_PALE_YELLOW  = 0xFF88CCCC;
+const uint32_t COL_DARK_MAGENTA = 0xFF884488;
+const uint32_t COL_MID_MAGENTA  = 0xFFCC44CC;
+const uint32_t COL_PALE_MAGENTA = 0xFFCC88CC;
+const uint32_t COL_DARK_TEAL    = 0xFF888844;
+const uint32_t COL_MID_TEAL     = 0xFFCCCC44;
+const uint32_t COL_PALE_TEAL    = 0xFFCCCC88;
+
+const uint32_t COL_ORANGE = 0xFF4488CC;
+const uint32_t COL_LIME   = 0xFF44CC88;
+const uint32_t COL_ROSE   = 0xFF8844CC;
+const uint32_t COL_MINT   = 0xFF88CC44;
+const uint32_t COL_VIOLET = 0xFFCC4488;
+const uint32_t COL_AZURE  = 0xFFCC8844;
+
+const uint32_t COL_HINT1 = 0x00111111;
+const uint32_t COL_HINT2 = 0x00222222;
+const uint32_t COL_HINT3 = 0x00333333;
+
 void PlaitApp::app_init() {
 #if 1
   auto& n2c = node_type_to_color;
 
   //n2c[""]      = 0xFF008000;
 
-  n2c["not1"]  = 0xFF808080;
+  n2c["not1"]  = COL_MID_GREY;
 
-  n2c["and2"]  = 0xFF002080;
-  n2c["and3"]  = 0xFF002080;
-  n2c["and4"]  = 0xFF002080;
+  n2c["and2"]  = COL_MID_RED;
+  n2c["and3"]  = COL_MID_RED;
+  n2c["and4"]  = COL_MID_RED;
 
-  n2c["nand2"] = 0xFF200080;
-  n2c["nand3"] = 0xFF200080;
-  n2c["nand4"] = 0xFF200080;
-  n2c["nand5"] = 0xFF200080;
-  n2c["nand6"] = 0xFF200080;
-  n2c["nand7"] = 0xFF200080;
+  n2c["nand2"] = COL_MID_RED - COL_HINT1;
+  n2c["nand3"] = COL_MID_RED - COL_HINT1;
+  n2c["nand4"] = COL_MID_RED - COL_HINT1;
+  n2c["nand5"] = COL_MID_RED - COL_HINT1;
+  n2c["nand6"] = COL_MID_RED - COL_HINT1;
+  n2c["nand7"] = COL_MID_RED - COL_HINT1;
 
-  n2c["or2"]   = 0xFF802000;
-  n2c["or3"]   = 0xFF802000;
-  n2c["or4"]   = 0xFF802000;
+  n2c["or2"]   = COL_MID_BLUE;
+  n2c["or3"]   = COL_MID_BLUE;
+  n2c["or4"]   = COL_MID_BLUE;
 
-  n2c["nor2"]  = 0xFF800020;
-  n2c["nor3"]  = 0xFF800020;
-  n2c["nor4"]  = 0xFF800020;
-  n2c["nor5"]  = 0xFF800020;
-  n2c["nor6"]  = 0xFF800020;
-  n2c["nor7"]  = 0xFF800020;
-  n2c["nor8"]  = 0xFF800020;
+  n2c["nor2"]  = COL_MID_BLUE - COL_HINT1;
+  n2c["nor3"]  = COL_MID_BLUE - COL_HINT1;
+  n2c["nor4"]  = COL_MID_BLUE - COL_HINT1;
+  n2c["nor5"]  = COL_MID_BLUE - COL_HINT1;
+  n2c["nor6"]  = COL_MID_BLUE - COL_HINT1;
+  n2c["nor7"]  = COL_MID_BLUE - COL_HINT1;
+  n2c["nor8"]  = COL_MID_BLUE - COL_HINT1;
 
-  n2c["and_or3"]     = 0xFF800080;
-  n2c["or_and3"]     = 0xFF800080;
-  n2c["not_or_and3"] = 0xFF800080;
+  n2c["and_or3"]     = COL_MID_MAGENTA;
+  n2c["or_and3"]     = COL_MID_MAGENTA;
+  n2c["not_or_and3"] = COL_MID_MAGENTA - COL_HINT1;
 
-  n2c["add_s"] = 0xFF008000;
-  n2c["add_c"] = 0xFF008000;
+  n2c["add_s"] = COL_AZURE;
+  n2c["add_c"] = COL_AZURE;
 
-  n2c["xor2"]  = 0xFF808000;
-  n2c["xnor2"] = 0xFF808020;
+  n2c["xor2"]  = COL_MINT;
+  n2c["xnor2"] = COL_MINT;
 
-  n2c["mux2n"] = 0xFF004080;
-  n2c["mux2p"] = 0xFF004080;
-  n2c["amux2"] = 0xFF004080;
-  n2c["amux4"] = 0xFF004080;
+  n2c["mux2n"] = COL_ROSE - COL_HINT1;
+  n2c["mux2p"] = COL_ROSE + COL_HINT1;
+  n2c["amux2"] = COL_ROSE;
+  n2c["amux4"] = COL_ROSE;
 #endif
 
   check_gl_error();
@@ -133,28 +168,7 @@ void PlaitApp::app_init() {
 
   // Create nodes for all cells.
 
-  for (auto& [tag, cell] : cell_db.cell_map) {
-    auto node = new Node();
-    cell->node = node;
-    node->set_cell(cell);
-    plait.nodes.push_back(node);
-  }
-
-  for (auto& [tag, cell] : cell_db.pin_map) {
-    auto node = new Node();
-    cell->node = node;
-    node->set_cell(cell);
-    plait.nodes.push_back(node);
-  }
-
-  for (auto& [tag, cell] : cell_db.bus_map) {
-    auto node = new Node();
-    cell->node = node;
-    node->set_cell(cell);
-    plait.nodes.push_back(node);
-  }
-
-  for (auto& [tag, cell] : cell_db.sig_map) {
+  for (auto& [tag, cell] : cell_db.tag_map) {
     auto node = new Node();
     cell->node = node;
     node->set_cell(cell);
@@ -186,15 +200,22 @@ void PlaitApp::app_init() {
     node->set_pos_new({node_x, node_y});
     node->commit_pos();
 
-    node->color = 0xFFFF00FF;
-    auto cell_type = node->get_cell()->cell_type;
+    node->color = 0x00000000;
 
-    if      (cell_type == CellType::TRIBUF) node->color = 0xFF008080;
-    else if (cell_type == CellType::DFF)    node->color = 0xFF004040;
-    else if (cell_type == CellType::LATCH)  node->color = 0xFF0060B0;
-    else if (cell_type == CellType::BUS)    node->color = 0xFF404040;
-    else if (cell_type == CellType::PIN)    node->color = 0xFF800080;
-    else if (cell_type == CellType::LOGIC) {
+    auto cell_type = node->get_cell()->cell_type;
+    if (cell_type == CellType::PIN_IN)  node->color = COL_PALE_RED;
+    if (cell_type == CellType::PIN_OUT) node->color = COL_PALE_GREEN;
+    if (cell_type == CellType::PIN_IO)  node->color = COL_PALE_YELLOW;
+
+    if (cell_type == CellType::SIG_IN)  node->color = COL_MID_RED;
+    if (cell_type == CellType::SIG_OUT) node->color = COL_MID_GREEN;
+
+    if (cell_type == CellType::BUS)     node->color = COL_DARK_GREY;
+    if (cell_type == CellType::DFF)     node->color = COL_DARK_YELLOW;
+    if (cell_type == CellType::LATCH)   node->color = COL_ORANGE;
+    if (cell_type == CellType::TRIBUF)  node->color = COL_MID_YELLOW;
+
+    if (cell_type == CellType::LOGIC) {
       auto it = node_type_to_color.find(node->gate());
       if (it != node_type_to_color.end()) {
         node->color = (*it).second;
@@ -409,6 +430,8 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
 
     case SDL_KEYDOWN: {
       int key = event.key.keysym.scancode;
+      int mod = event.key.keysym.mod;
+
       if (key == SDL_SCANCODE_E) show_edges = !show_edges;
       if (key == SDL_SCANCODE_A) show_anchors = !show_anchors;
       if (key == SDL_SCANCODE_RETURN) {
@@ -419,6 +442,15 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
         revert_selection();
         clear_selection();
       }
+
+      if ((key == SDL_SCANCODE_S) && (mod & KMOD_CTRL)) {
+        plait.save("gameboy.plait");
+      }
+
+      if ((key == SDL_SCANCODE_L) && (mod & KMOD_CTRL)) {
+        plait.load("gameboy.plait");
+      }
+
       break;
     }
 
@@ -587,6 +619,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
   //----------------------------------------
   // Pull nodes towards their parents/children
 
+#if 1
   for (auto node : plait.nodes) {
     for (auto next : node->next) {
       spring_nodes(node, next);
@@ -607,6 +640,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       }
     }
   }
+#endif
 
 #if 0
   // Push nodes away from their siblings
@@ -650,6 +684,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
   //----------------------------------------
   // Apply accumulated spring forces
 
+#if 1
   for (auto node : plait.nodes) {
     if (node->selected || node->locked || node->anchored()) {
     }
@@ -659,6 +694,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
     }
     node->spring_force = {0,0};
   }
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -673,42 +709,38 @@ void PlaitApp::draw_node(Node* node) {
   box_painter.push_corner_size(
     node_pos_new + dvec2(4,4),
     node_size - dvec2(8,8),
-    node == hovered_node ? 0xFF00FF00 : node->color);
+    node == hovered_node ? node->color + COL_HINT3 : node->color);
 
-  text_painter.add_text_at(node->name(),  int(node_pos_new.x + 8), int(node_pos_new.y + 8));
-  text_painter.add_text_at(node->gate(), int(node_pos_new.x + 8), int(node_pos_new.y + 24));
-  if (node->locked) text_painter.add_text_at("LOCKED", int(node_pos_new.x + 8), int(node_pos_new.y + 40));
+  text_painter.add_text_at(node->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
+  text_painter.add_text_at(node->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
+  if (node->locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
 
   // input port(s)
   {
     const int port_in_count = int(node->prev.size());
-    auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
-    auto stride = gap + port_size.y;
+    auto stride = (node_size.y) / float(port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
-      dvec2 port_pos = node->get_pos_new() + dvec2(0, gap + stride * i);
-      port_painter.push_center_size(port_pos, port_size, 0x80808080);
+      dvec2 port_pos = node_pos_new + dvec2(0, stride * (i + 1));
+      port_painter.push_center_size(port_pos, port_size, 0xCC008000);
     }
   }
 
   // output port(s)
   {
     const int port_out_count = 1;
-    auto gap = (node_size.y - (port_size.y * port_out_count)) / float(port_out_count + 1);
-    auto stride = gap + port_size.y;
+    auto stride = (node_size.y) / float(port_out_count + 1);
 
     for (size_t i = 0; i < port_out_count; i++) {
-      dvec2 port_pos = node_pos_new + dvec2(node_size.x, gap + stride * i);
-      port_painter.push_center_size(port_pos, port_size, 0x80008000);
+      dvec2 port_pos = node_pos_new + dvec2(node_size.x, stride * (i + 1));
+      port_painter.push_center_size(port_pos, port_size, 0xCC000080);
     }
   }
 
   // edges from previous node(s)
   if (show_edges) {
     const int port_in_count = int(node->prev.size());
-    auto gap = (node_size.y - (port_size.y * port_in_count)) / float(port_in_count + 1);
-    auto stride = gap + port_size.y;
-
+    auto stride = (node_size.y) / float(port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
       auto prev = node->prev[i];
@@ -718,7 +750,7 @@ void PlaitApp::draw_node(Node* node) {
       uint32_t color_b = (node->selected || prev->selected) ? 0xFF88FF88 : 0x8000FF00;
 
       dvec2 port_prev = prev->get_pos_new() + dvec2(node_size.x, node_size.y / 2);
-      dvec2 port_next = node->get_pos_new() + dvec2(0, gap + stride * i);
+      dvec2 port_next = node->get_pos_new() + dvec2(0, stride * (i + 1));
 
       edge_painter.push(port_prev, color_a, port_next, color_b);
     }
@@ -737,7 +769,7 @@ void PlaitApp::draw_node(Node* node) {
 void PlaitApp::app_render_frame(Viewport view_world) {
   int mouse_x = 0, mouse_y = 0;
   uint32_t mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
-  text_painter.bg_col = {0,0.5,0,0.5};
+  text_painter.bg_col = {0.0,0.0,0.0,0.3};
   const dvec2 node_size = {128,64};
 
   //----------------------------------------

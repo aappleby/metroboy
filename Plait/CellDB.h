@@ -17,12 +17,16 @@ struct Port {
 
 enum class CellType {
   UNKNOWN = 0,
-  LOGIC,
-  TRIBUF,
+  PIN_IN,
+  PIN_OUT,
+  PIN_IO,
+  SIG_IN,
+  SIG_OUT,
+  BUS,
   DFF,
   LATCH,
-  BUS,
-  PIN,
+  TRIBUF,
+  LOGIC,
 };
 
 struct Cell {
@@ -30,31 +34,22 @@ struct Cell {
   void merge(const Cell& c);
   void dump(Dumper& d);
 
-  CellType cell_type = CellType::UNKNOWN;
-  std::string verified;
-  std::string page;
-  std::string tag;
-  std::string gate;
-  std::string bus;
-  std::string pin;
-  std::string sig;
-  std::string doc;
-  std::vector<Port> args;
+  CellType              cell_type = CellType::UNKNOWN;
+  std::string           verified;
+  std::string           page;
+  std::string           tag;
+  std::string           gate;
+  std::vector<Port>     args;
   std::set<std::string> names;
+  std::string           doc;
 
   void* node = nullptr;
-
   int mark = 0;
-
-  int16_t origin_x;
-  int16_t origin_y;
 };
 
 //------------------------------------------------------------------------------------------------------------------------
 
 struct CellDB {
-  void sanity_check();
-
   bool parse_dir(const std::string& path);
   bool parse_file(const std::string& path);
   bool parse_line(Cell& c, const std::string& line);
@@ -74,38 +69,24 @@ struct CellDB {
   bool parse_cell_gate(Cell& c, const std::string& type);
 
   bool  has_cell(const std::string& tag) {
-         if (tag.starts_with("BUS_")) return bus_map.count(tag) != 0;
-    else if (tag.starts_with("SIG_")) return sig_map.count(tag) != 0;
-    else if (tag.starts_with("PIN"))  return pin_map.count(tag) != 0;
-    else                              return cell_map.count(tag) != 0;
+    return tag_map.find(tag) != tag_map.end();
   }
 
   Cell* get_cell(const std::string& tag) {
-         if (tag.starts_with("BUS_")) return bus_map[tag];
-    else if (tag.starts_with("SIG_")) return sig_map[tag];
-    else if (tag.starts_with("PIN"))  return pin_map[tag];
-    else                              return cell_map[tag];
+    CHECK_P(has_cell(tag));
+    return tag_map[tag];
   }
 
   Cell* get_or_create_cell(const std::string& tag) {
-    Cell * old_cell = get_cell(tag);
-    if (old_cell) return old_cell;
+    auto it = tag_map.find(tag);
+    if (it != tag_map.end()) return (*it).second;
 
     Cell* new_cell = new Cell();
-
-         if (tag.starts_with("BUS_")) bus_map[tag] = new_cell;
-    else if (tag.starts_with("SIG_")) sig_map[tag] = new_cell;
-    else if (tag.starts_with("PIN"))  pin_map[tag] = new_cell;
-    else                              cell_map[tag] = new_cell;
-
+    tag_map[tag] = new_cell;
     return new_cell;
   }
 
-
-  std::map<std::string, Cell*> cell_map;
-  std::map<std::string, Cell*> bus_map;
-  std::map<std::string, Cell*> pin_map;
-  std::map<std::string, Cell*> sig_map;
+  std::map<std::string, Cell*> tag_map;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

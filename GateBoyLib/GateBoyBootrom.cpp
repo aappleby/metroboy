@@ -30,7 +30,7 @@ void GateBoyBootrom::read_bootrom(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus
 
   /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
   /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, cpu_bus.TULO_ADDR_BOOTROMp());
-  cpu_bus.SIG_CPU_BOOTp.set(_TUTU_READ_BOOTROMp);
+  /*SIG_CPU_BOOTp*/ cpu_bus.SIG_CPU_BOOTp.set(_TUTU_READ_BOOTROMp);
 
   /* p07.ZORO*/ wire _ZORO_0000xxxx_XX = nor4(cpu_bus.BUS_CPU_A15p.qp_new(), cpu_bus.BUS_CPU_A14p.qp_new(), cpu_bus.BUS_CPU_A13p.qp_new(), cpu_bus.BUS_CPU_A12p.qp_new());
   /* p07.ZADU*/ wire _ZADU_xxxx0000_XX = nor4(cpu_bus.BUS_CPU_A11p.qp_new(), cpu_bus.BUS_CPU_A10p.qp_new(), cpu_bus.BUS_CPU_A09p.qp_new(), cpu_bus.BUS_CPU_A08p.qp_new());

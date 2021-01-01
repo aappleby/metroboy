@@ -12,23 +12,19 @@ class LinePainter {
 public:
 
   void init();
-  void push(int ax, int ay, uint32_t ac, int bx, int by, uint32_t bc);
   void render(Viewport view, double x, double y, float scale = 1.0f);
-
-  void push(float ax, float ay, float bx, float by) {
-    push(int(ax), int(ay), 0xFF0000FF, int(bx), int(by), 0xFF00FF00);
-  }
+  void push(float ax, float ay, uint32_t ac, float bx, float by, uint32_t bc);
 
   void push(dvec2 a, uint32_t ac, dvec2 b, uint32_t bc) {
-    push(int(a.x), int(a.y), ac,
-         int(b.x), int(b.y), bc);
+    push(float(a.x), float(a.y), ac,
+         float(b.x), float(b.y), bc);
   }
 
   void push_box(dvec2 a, dvec2 b, uint32_t c) {
-    push(int(a.x), int(a.y), c, int(b.x), int(a.y), c);
-    push(int(b.x), int(a.y), c, int(b.x), int(b.y), c);
-    push(int(b.x), int(b.y), c, int(a.x), int(b.y), c);
-    push(int(a.x), int(b.y), c, int(a.x), int(a.y), c);
+    push(float(a.x), float(a.y), c, float(b.x), float(a.y), c);
+    push(float(b.x), float(a.y), c, float(b.x), float(b.y), c);
+    push(float(b.x), float(b.y), c, float(a.x), float(b.y), c);
+    push(float(a.x), float(b.y), c, float(a.x), float(a.y), c);
   }
 
 private:
@@ -42,7 +38,8 @@ private:
 
   uint32_t  line_vao = 0;
   uint32_t  line_vbo = 0;
-  uint32_t* line_data = 0;
+  uint32_t* line_data_u32 = 0;
+  float*    line_data_f32 = 0;
 
   uint32_t line_ubo = 0;
   LineUniforms line_uniforms = {};

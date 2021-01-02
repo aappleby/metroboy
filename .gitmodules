@@ -7,3 +7,6 @@
 [submodule "SDL"]
 	path = SDL
 	url = https://github.com/SDL-mirror/SDL
+[submodule "json"]
+	path = json
+	url = https://github.com/nlohmann/json

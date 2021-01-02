@@ -133,7 +133,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)\SDL\VisualC\x64\Debug\SDL2.lib;$(SolutionDir)\protobuf\lib\libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\SDL\VisualC\x64\Debug\SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
@@ -151,23 +151,22 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>$(SolutionDir)\json;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)\SDL\VisualC\x64\Release\SDL2.lib;$(SolutionDir)\protobuf\lib\libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\SDL\VisualC\x64\Release\SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\protos\plait_wrapper.cc" />
     <ClCompile Include="CellDB.cpp" />
     <ClCompile Include="Plait.cpp" />
     <ClCompile Include="PlaitApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\protos\plait_wrapper.h" />
     <ClInclude Include="CellDB.h" />
     <ClInclude Include="Plait.h" />
     <ClInclude Include="PlaitApp.h" />
@@ -179,9 +178,6 @@
     <ProjectReference Include="..\CoreLib\CoreLib.vcxproj">
       <Project>{6e04c36f-3672-4257-b250-da34da7f6a42}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\protos\plait.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -63,19 +63,19 @@ public:
   const uint8_t* keyboard_state = nullptr;
   int keyboard_count = 0;
 
-  dvec2 click_start_screen;
-  dvec2 click_end_screen;
-  dvec2 mouse_pos_screen;
+  dvec2 click_start_screen = {0,0};
+  dvec2 click_end_screen = {0,0};
+  dvec2 mouse_pos_screen = {0,0};
 
-  dvec2 click_start_world;
-  dvec2 click_end_world;
-  dvec2 mouse_pos_world;
+  dvec2 click_start_world = {0,0};
+  dvec2 click_end_world = {0,0};
+  dvec2 mouse_pos_world = {0,0};
 
   bool show_edges = true;
   bool show_anchors = true;
 
-  dvec2 sel_min;
-  dvec2 sel_max;
+  dvec2 sel_min = {0,0};
+  dvec2 sel_max = {0,0};
 
   Node* clicked_node = nullptr;
   Node* hovered_node = nullptr;

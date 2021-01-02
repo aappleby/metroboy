@@ -137,7 +137,7 @@ void TextPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::render(Viewport view, double x, double y, float scale) {
+void TextPainter::render(Viewport view, double x, double y, double scale) {
   if (glyph_count == 0) return;
 
   bind_shader(text_prog);
@@ -168,7 +168,7 @@ void TextPainter::render(Viewport view, double x, double y, float scale) {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::push_char(float x, float y, int c, int pal) {
+void TextPainter::push_char(double x, double y, int c, int pal) {
   text_data_f32[(glyph_count * 4) + 0] = float(x);
   text_data_f32[(glyph_count * 4) + 1] = float(y);
   text_data_u32[(glyph_count * 4) + 2] = uint16_t(c);
@@ -208,9 +208,9 @@ void TextPainter::add_text(const char* s, int len) {
   }
 }
 
-void TextPainter::add_text_at(const char* s, float x, float y) {
-  float cursor_x = x;
-  float cursor_y = y;
+void TextPainter::add_text_at(const char* s, double x, double y) {
+  double cursor_x = x;
+  double cursor_y = y;
 
   for(; *s; s++) {
     int c = *s;
@@ -241,7 +241,7 @@ void TextPainter::dprintf(const char* format, ...) {
   add_text(buffer, count);
 }
 
-void TextPainter::set_pal(int index, float r, float g, float b, float a) {
+void TextPainter::set_pal(int index, double r, double g, double b, double a) {
   text_uniforms.palette[index] = {r,g,b,a};
 }
 

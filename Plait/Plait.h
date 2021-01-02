@@ -10,9 +10,9 @@ using namespace glm;
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct Node {
+  Node(const Cell* _cell) : cell(_cell) {}
 
   const Cell* get_cell()            { return cell; }
-  void        set_cell(Cell* _cell) { cell = _cell; }
 
   const char* tag() const;
   const char* name() const;
@@ -20,14 +20,14 @@ struct Node {
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(Node* target);
-  Node* get_anchor() { return anchor; }
+  const Node* get_anchor() { return anchor; }
   void  set_anchor(Node* new_anchor);
 
   void set_pos_old(dvec2 pos) { offset_old = anchor ? pos - anchor->get_pos_old() : pos; }
   void set_pos_new(dvec2 pos) { offset_new = anchor ? pos - anchor->get_pos_new() : pos; }
 
-  dvec2 get_pos_old() { return anchor ? anchor->get_pos_old() + offset_old : offset_old; }
-  dvec2 get_pos_new() { return anchor ? anchor->get_pos_new() + offset_new : offset_new; }
+  dvec2 get_pos_old() const { return anchor ? anchor->get_pos_old() + offset_old : offset_old; }
+  dvec2 get_pos_new() const { return anchor ? anchor->get_pos_new() + offset_new : offset_new; }
 
   void commit_pos() { offset_old = offset_new; }
   void revert_pos() { offset_new = offset_old; }
@@ -39,14 +39,14 @@ struct Node {
 
   bool hidden = 0;
   bool locked = 0;
-  Node* anchor = nullptr;
   dvec2 offset_old = {0,0};
   dvec2 offset_new = {0,0};
+  const Node* anchor = nullptr;
 
   //----------------------------------------
   // State from cell db
 
-  Cell* cell = nullptr;
+  const Cell* cell = nullptr;
   std::vector<Node*> prev;
   std::vector<Node*> next;
 
@@ -64,9 +64,27 @@ struct Node {
 
 struct Plait {
   void save(const char* filename);
-  void load(const char* filename);
+  void load(const char* filename, CellDB& cell_db);
+
+  void save_json(const char* filename);
+  void load_json(const char* filename, CellDB& cell_db);
 
   std::map<std::string, Node*> node_map;
+
+  Node* get_or_create_node(const std::string& tag, CellDB& cell_db) {
+    auto cell = cell_db.tag_to_cell[tag];
+    if (!cell) {
+      printf("Tag \"%s\" not in cell db\n", tag.c_str());
+      return nullptr;
+    }
+
+    auto node = node_map[tag];
+    if (node) return node;
+
+    node = new Node(cell);
+    node_map[tag] = node;
+    return node;
+  }
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

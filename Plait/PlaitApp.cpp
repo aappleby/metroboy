@@ -38,33 +38,7 @@ int main(int argc, char** argv) {
   printf("Loading gameboy.cell_db.json");
   app->cell_db.load_json("gameboy.cell_db.json");
 
-  // Create nodes for all cells.
-
-  for (auto& [tag, cell] : app->cell_db.tag_to_cell) {
-    auto node = new Node();
-    cell->node = node;
-    node->set_cell(cell);
-    app->plait.node_map[tag] = node;
-  }
-
-  // Link nodes based on the connectivity in the cell db
-
-  for (auto& [tag, node] : app->plait.node_map) {
-    auto cell = node->get_cell();
-
-    for (auto& port : cell->args) {
-      if (app->cell_db.has_cell(port.tag)) {
-        auto prev_cell = app->cell_db.get_cell(port.tag);
-        auto prev_node = (Node*)prev_cell->node;
-        if (prev_node) {
-          node->prev.push_back(prev_node);
-          prev_node->next.push_back(node);
-        }
-      }
-    }
-  }
-
-  app->plait.load("gameboy.plait");
+  app->plait.load("gameboy.plait", app->cell_db);
 
 
   AppHost* app_host = new AppHost(app);
@@ -400,17 +374,17 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       }
 
       if ((key == SDL_SCANCODE_S) && (mod & KMOD_CTRL)) {
-        printf("Saving gameboy.cell_db.json\n");
-        cell_db.save_json("gameboy.cell_db.json");
-        printf("Saving gameboy.plait\n");
-        plait.save("gameboy.plait");
+        //printf("Saving gameboy.cell_db.json\n");
+        //cell_db.save_json("gameboy.cell_db.json");
+        //plait.save("gameboy.plait");
+        plait.save_json("gameboy.plait.json");
       }
 
       if ((key == SDL_SCANCODE_L) && (mod & KMOD_CTRL)) {
         //printf("Loading gameboy.cell_db.json\n");
         //cell_db.load_json("gameboy.cell_db.json");
         printf("Loading gameboy.plait\n");
-        plait.load("gameboy.plait");
+        plait.load("gameboy.plait", cell_db);
       }
 
       break;
@@ -679,8 +653,8 @@ void PlaitApp::draw_node(Node* node) {
 
   // input port(s)
   {
-    const int port_in_count = int(node->prev.size());
-    auto stride = (node_size.y) / float(port_in_count + 1);
+    size_t port_in_count = node->prev.size();
+    double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
       dvec2 port_pos = node_pos_new + dvec2(0, stride * (i + 1));
@@ -690,8 +664,8 @@ void PlaitApp::draw_node(Node* node) {
 
   // output port(s)
   {
-    const int port_out_count = 1;
-    auto stride = (node_size.y) / float(port_out_count + 1);
+    size_t port_out_count = 1;
+    double stride = (node_size.y) / (port_out_count + 1);
 
     for (size_t i = 0; i < port_out_count; i++) {
       dvec2 port_pos = node_pos_new + dvec2(node_size.x, stride * (i + 1));
@@ -701,8 +675,8 @@ void PlaitApp::draw_node(Node* node) {
 
   // edges from previous node(s)
   if (show_edges) {
-    const int port_in_count = int(node->prev.size());
-    auto stride = (node_size.y) / float(port_in_count + 1);
+    size_t port_in_count = node->prev.size();
+    double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
       auto prev = node->prev[i];

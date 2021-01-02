@@ -43,7 +43,6 @@ struct Cell {
   std::set<std::string> names;
   std::string           doc;
 
-  void* node = nullptr;
   int mark = 0;
 };
 

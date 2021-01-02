@@ -15,28 +15,28 @@ public:
 
   void init();
 
-  void push_char(float x, float y, int c, int pal);
+  void push_char(double x, double y, int c, int pal);
 
   void add_char(const char c);
   void add_char(const char c, const char d);
 
   void add_text(const char* text_painter);
   void add_text(const char* text_painter, int len);
-  void add_text_at(const char* s, float x, float y);
+  void add_text_at(const char* s, double x, double y);
 
   void add_string(const std::string& text_painter);
   void dprintf(const char* format, ...);
 
-  void render(Viewport view, double x, double y, float scale = 1.0f);
+  void render(Viewport view, double x, double y, double scale = 1.0f);
 
-  void render(Viewport view, const std::string& text, double x, double y, float scale = 1.0f) {
+  void render(Viewport view, const std::string& text, double x, double y, double scale = 1.0f) {
     add_string(text);
     render(view, x, y, scale);
   }
 
   void newline() { add_char(1, '\n'); }
 
-  void set_pal(int index, float r, float g, float b, float a);
+  void set_pal(int index, double r, double g, double b, double a);
 
 //private:
 
@@ -52,8 +52,8 @@ public:
 
   uint32_t dump_tex = 0;
 
-  float text_x = 0;
-  float text_y = 0;
+  double text_x = 0;
+  double text_y = 0;
 
   int fg_pal = 1;
 

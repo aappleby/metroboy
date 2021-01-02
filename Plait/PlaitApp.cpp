@@ -172,12 +172,12 @@ void PlaitApp::app_init() {
     auto node = new Node();
     cell->node = node;
     node->set_cell(cell);
-    plait.nodes.push_back(node);
+    plait.node_map[tag] = node;
   }
 
   // Link nodes based on the connectivity in the cell db
 
-  for (auto node : plait.nodes) {
+  for (auto& [tag, node] : plait.node_map) {
     auto cell = node->get_cell();
 
     for (auto& port : cell->args) {
@@ -194,7 +194,7 @@ void PlaitApp::app_init() {
 
   // Position and color nodes
 
-  for (auto node : plait.nodes) {
+  for (auto& [tag, node] : plait.node_map) {
     int node_x = rand() * 2 - 32768;
     int node_y = rand() * 2 - 32768;
     node->set_pos_new({node_x, node_y});
@@ -228,11 +228,6 @@ void PlaitApp::app_init() {
 
   // Add a test anchor node
 
-  Node* anchor = new Node();
-  anchor->set_pos_new({0,0});
-  anchor->commit_pos();
-  plait.nodes.push_back(anchor);
-
   printf("Init done %f\n", timestamp());
 }
 
@@ -248,7 +243,7 @@ Node* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool ignore_cl
   (void)ignore_clicked;
   (void)ignore_hovered;
 
-  for (auto node : plait.nodes) {
+  for (auto& [tag, node] : plait.node_map) {
     if ((node == clicked_node) && ignore_clicked) continue;
 
     dvec2 node_pos = node->get_pos_new();
@@ -276,7 +271,7 @@ void PlaitApp::apply_region(dvec2 corner_a, dvec2 corner_b, NodeCallback callbac
 
   const dvec2 node_size = {128,64};
 
-  for (auto node : plait.nodes) {
+  for (auto& [tag, node] : plait.node_map) {
     dvec2 nmin = node->get_pos_new();
     dvec2 nmax = node->get_pos_new() + node_size;
 
@@ -620,7 +615,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
   // Pull nodes towards their parents/children
 
 #if 1
-  for (auto node : plait.nodes) {
+  for (auto& [tag, node] : plait.node_map) {
     for (auto next : node->next) {
       spring_nodes(node, next);
     }
@@ -685,7 +680,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
   // Apply accumulated spring forces
 
 #if 1
-  for (auto node : plait.nodes) {
+  for (auto& [tag, node] : plait.node_map) {
     if (node->selected || node->locked || node->anchored()) {
     }
     else {
@@ -789,7 +784,9 @@ void PlaitApp::app_render_frame(Viewport view_world) {
   //----------------------------------------
   // Node layer
 
-  for (auto node : plait.nodes) draw_node(node);
+  for (auto& [tag, node] : plait.node_map) {
+    draw_node(node);
+  }
 
   port_painter.render(view_world, 0, 0, 1);
   edge_painter.render(view_world, 0, 0, 1);

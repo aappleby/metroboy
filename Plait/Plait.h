@@ -37,6 +37,7 @@ struct Node {
   //----------------------------------------
   // Serialized state
 
+  bool hidden = 0;
   bool locked = 0;
   Node* anchor = nullptr;
   dvec2 offset_old = {0,0};
@@ -65,7 +66,7 @@ struct Plait {
   void save(const char* filename);
   void load(const char* filename);
 
-  std::vector<Node*> nodes;
+  std::map<std::string, Node*> node_map;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

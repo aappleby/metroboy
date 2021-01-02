@@ -115,10 +115,10 @@ void Plait::save(const char* filename) {
   printf("Saving plait\n");
   std::ofstream out(filename);
 
-  out << nodes.size() << std::endl;
+  out << node_map.size() << std::endl;
 
-  for (auto node : nodes) {
-    out << node->tag() << std::endl;
+  for (auto& [tag, node] : node_map) {
+    out << tag << std::endl;
     out << node->locked << std::endl;
     out << (node->anchor ? node->anchor->tag() : "<no_anchor>") << std::endl;
     out << node->offset_old.x << std::endl;
@@ -136,8 +136,7 @@ void Plait::load(const char* filename) {
   lines >> node_count;
   printf("Node count %d\n", node_count);
 
-  std::map<std::string, Node*> node_map;
-  for(auto node : nodes) node_map[node->tag()] = node;
+  for(auto& [tag, node] : node_map) node_map[node->tag()] = node;
 
   for (int i = 0; i < node_count; i++) {
     std::string tag;

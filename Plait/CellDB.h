@@ -50,6 +50,11 @@ struct Cell {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct CellDB {
+  void clear();
+  void save_json(const char* filename);
+  void load_json(const char* filename);
+
+
   bool parse_dir(const std::string& path);
   bool parse_file(const std::string& path);
   bool parse_line(Cell& c, const std::string& line);
@@ -69,24 +74,24 @@ struct CellDB {
   bool parse_cell_gate(Cell& c, const std::string& type);
 
   bool  has_cell(const std::string& tag) {
-    return tag_map.find(tag) != tag_map.end();
+    return tag_to_cell.find(tag) != tag_to_cell.end();
   }
 
   Cell* get_cell(const std::string& tag) {
     CHECK_P(has_cell(tag));
-    return tag_map[tag];
+    return tag_to_cell[tag];
   }
 
   Cell* get_or_create_cell(const std::string& tag) {
-    auto it = tag_map.find(tag);
-    if (it != tag_map.end()) return (*it).second;
+    auto it = tag_to_cell.find(tag);
+    if (it != tag_to_cell.end()) return (*it).second;
 
     Cell* new_cell = new Cell();
-    tag_map[tag] = new_cell;
+    tag_to_cell[tag] = new_cell;
     return new_cell;
   }
 
-  std::map<std::string, Cell*> tag_map;
+  std::map<std::string, Cell*> tag_to_cell;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

@@ -59,6 +59,39 @@ inline T clamp_val(S a, T min, T max) {
   return (a < min) ? min : (a > max) ? max : T(a);
 }
 
+const uint32_t COL_DARK_GREY    = 0xFF444444;
+const uint32_t COL_MID_GREY     = 0xFF888888;
+const uint32_t COL_PALE_GREY    = 0xFFCCCCCC;
+const uint32_t COL_DARK_RED     = 0xFF444488;
+const uint32_t COL_MID_RED      = 0xFF4444CC;
+const uint32_t COL_PALE_RED     = 0xFF8888CC;
+const uint32_t COL_DARK_GREEN   = 0xFF448844;
+const uint32_t COL_MID_GREEN    = 0xFF44CC44;
+const uint32_t COL_PALE_GREEN   = 0xFF88CC88;
+const uint32_t COL_DARK_BLUE    = 0xFF884444;
+const uint32_t COL_MID_BLUE     = 0xFFCC4444;
+const uint32_t COL_PALE_BLUE    = 0xFFCC8888;
+const uint32_t COL_DARK_YELLOW  = 0xFF448888;
+const uint32_t COL_MID_YELLOW   = 0xFF44CCCC;
+const uint32_t COL_PALE_YELLOW  = 0xFF88CCCC;
+const uint32_t COL_DARK_MAGENTA = 0xFF884488;
+const uint32_t COL_MID_MAGENTA  = 0xFFCC44CC;
+const uint32_t COL_PALE_MAGENTA = 0xFFCC88CC;
+const uint32_t COL_DARK_TEAL    = 0xFF888844;
+const uint32_t COL_MID_TEAL     = 0xFFCCCC44;
+const uint32_t COL_PALE_TEAL    = 0xFFCCCC88;
+
+const uint32_t COL_ORANGE = 0xFF4488CC;
+const uint32_t COL_LIME   = 0xFF44CC88;
+const uint32_t COL_ROSE   = 0xFF8844CC;
+const uint32_t COL_MINT   = 0xFF88CC44;
+const uint32_t COL_VIOLET = 0xFFCC4488;
+const uint32_t COL_AZURE  = 0xFFCC8844;
+
+const uint32_t COL_HINT1 = 0x00111111;
+const uint32_t COL_HINT2 = 0x00222222;
+const uint32_t COL_HINT3 = 0x00333333;
+
 //-----------------------------------------------------------------------------
 
 //#define PHASE(A) ((A) & (1 << (7 - phase)))

@@ -34,7 +34,38 @@ int main(int argc, char** argv) {
 
   PlaitApp* app = new PlaitApp();
 
-  app->cell_db.parse_dir("GateBoyLib");
+  //app->cell_db.parse_dir("GateBoyLib");
+  printf("Loading gameboy.cell_db.json");
+  app->cell_db.load_json("gameboy.cell_db.json");
+
+  // Create nodes for all cells.
+
+  for (auto& [tag, cell] : app->cell_db.tag_to_cell) {
+    auto node = new Node();
+    cell->node = node;
+    node->set_cell(cell);
+    app->plait.node_map[tag] = node;
+  }
+
+  // Link nodes based on the connectivity in the cell db
+
+  for (auto& [tag, node] : app->plait.node_map) {
+    auto cell = node->get_cell();
+
+    for (auto& port : cell->args) {
+      if (app->cell_db.has_cell(port.tag)) {
+        auto prev_cell = app->cell_db.get_cell(port.tag);
+        auto prev_node = (Node*)prev_cell->node;
+        if (prev_node) {
+          node->prev.push_back(prev_node);
+          prev_node->next.push_back(node);
+        }
+      }
+    }
+  }
+
+  app->plait.load("gameboy.plait");
+
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
@@ -53,41 +84,6 @@ const char* PlaitApp::app_get_title() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-const uint32_t COL_DARK_GREY    = 0xFF444444;
-const uint32_t COL_MID_GREY     = 0xFF888888;
-const uint32_t COL_PALE_GREY    = 0xFFCCCCCC;
-const uint32_t COL_DARK_RED     = 0xFF444488;
-const uint32_t COL_MID_RED      = 0xFF4444CC;
-const uint32_t COL_PALE_RED     = 0xFF8888CC;
-const uint32_t COL_DARK_GREEN   = 0xFF448844;
-const uint32_t COL_MID_GREEN    = 0xFF44CC44;
-const uint32_t COL_PALE_GREEN   = 0xFF88CC88;
-const uint32_t COL_DARK_BLUE    = 0xFF884444;
-const uint32_t COL_MID_BLUE     = 0xFFCC4444;
-const uint32_t COL_PALE_BLUE    = 0xFFCC8888;
-const uint32_t COL_DARK_YELLOW  = 0xFF448888;
-const uint32_t COL_MID_YELLOW   = 0xFF44CCCC;
-const uint32_t COL_PALE_YELLOW  = 0xFF88CCCC;
-const uint32_t COL_DARK_MAGENTA = 0xFF884488;
-const uint32_t COL_MID_MAGENTA  = 0xFFCC44CC;
-const uint32_t COL_PALE_MAGENTA = 0xFFCC88CC;
-const uint32_t COL_DARK_TEAL    = 0xFF888844;
-const uint32_t COL_MID_TEAL     = 0xFFCCCC44;
-const uint32_t COL_PALE_TEAL    = 0xFFCCCC88;
-
-const uint32_t COL_ORANGE = 0xFF4488CC;
-const uint32_t COL_LIME   = 0xFF44CC88;
-const uint32_t COL_ROSE   = 0xFF8844CC;
-const uint32_t COL_MINT   = 0xFF88CC44;
-const uint32_t COL_VIOLET = 0xFFCC4488;
-const uint32_t COL_AZURE  = 0xFFCC8844;
-
-const uint32_t COL_HINT1 = 0x00111111;
-const uint32_t COL_HINT2 = 0x00222222;
-const uint32_t COL_HINT3 = 0x00333333;
 
 void PlaitApp::app_init() {
 #if 1
@@ -166,40 +162,7 @@ void PlaitApp::app_init() {
   old_keys.resize(keyboard_count, 0);
   new_keys.resize(keyboard_count, 0);
 
-  // Create nodes for all cells.
-
-  for (auto& [tag, cell] : cell_db.tag_map) {
-    auto node = new Node();
-    cell->node = node;
-    node->set_cell(cell);
-    plait.node_map[tag] = node;
-  }
-
-  // Link nodes based on the connectivity in the cell db
-
   for (auto& [tag, node] : plait.node_map) {
-    auto cell = node->get_cell();
-
-    for (auto& port : cell->args) {
-      if (cell_db.has_cell(port.tag)) {
-        auto prev_cell = cell_db.get_cell(port.tag);
-        auto prev_node = (Node*)prev_cell->node;
-        if (prev_node) {
-          node->prev.push_back(prev_node);
-          prev_node->next.push_back(node);
-        }
-      }
-    }
-  }
-
-  // Position and color nodes
-
-  for (auto& [tag, node] : plait.node_map) {
-    int node_x = rand() * 2 - 32768;
-    int node_y = rand() * 2 - 32768;
-    node->set_pos_new({node_x, node_y});
-    node->commit_pos();
-
     node->color = 0x00000000;
 
     auto cell_type = node->get_cell()->cell_type;
@@ -225,8 +188,6 @@ void PlaitApp::app_init() {
       }
     }
   }
-
-  // Add a test anchor node
 
   printf("Init done %f\n", timestamp());
 }
@@ -439,10 +400,16 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       }
 
       if ((key == SDL_SCANCODE_S) && (mod & KMOD_CTRL)) {
+        printf("Saving gameboy.cell_db.json\n");
+        cell_db.save_json("gameboy.cell_db.json");
+        printf("Saving gameboy.plait\n");
         plait.save("gameboy.plait");
       }
 
       if ((key == SDL_SCANCODE_L) && (mod & KMOD_CTRL)) {
+        //printf("Loading gameboy.cell_db.json\n");
+        //cell_db.load_json("gameboy.cell_db.json");
+        printf("Loading gameboy.plait\n");
         plait.load("gameboy.plait");
       }
 

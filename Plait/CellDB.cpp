@@ -11,7 +11,23 @@
 #include <fstream>
 #include <filesystem>
 
+#include "json/single_include/nlohmann/json.hpp"
+
 using namespace std;
+
+NLOHMANN_JSON_SERIALIZE_ENUM( CellType, {
+  {CellType::UNKNOWN, nullptr},
+  {CellType::PIN_IN,  "PIN_IN"},
+  {CellType::PIN_OUT, "PIN_OUT"},
+  {CellType::PIN_IO,  "PIN_IO"},
+  {CellType::SIG_IN,  "SIG_IN"},
+  {CellType::SIG_OUT, "SIG_OUT"},
+  {CellType::BUS,     "BUS"},
+  {CellType::LOGIC,   "LOGIC"},
+  {CellType::TRIBUF,  "TRIBUF"},
+  {CellType::DFF,     "DFF"},
+  {CellType::LATCH,   "LATCH"},
+});
 
 static std::map<CellType, string> cell_type_to_name = {
   {CellType::UNKNOWN, "UNKNOWN"},
@@ -26,6 +42,63 @@ static std::map<CellType, string> cell_type_to_name = {
   {CellType::DFF,     "DFF"},
   {CellType::LATCH,   "LATCH"},
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void CellDB::clear() {
+  for (auto& [tag, cell] : tag_to_cell) delete cell;
+  tag_to_cell.clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void to_json(nlohmann::json& j, const Port& p) {
+  j["tag"]  = p.tag;
+  j["port"] = p.port;
+}
+
+void from_json(const nlohmann::json& j, Port& p) {
+  j["tag"] .get_to(p.tag);
+  j["port"].get_to(p.port);
+}
+
+void to_json(nlohmann::json& j, const Cell* c) {
+  j["cell_type"] = c->cell_type;
+  j["verified"]  = c->verified;
+  j["page"]      = c->page;
+  j["tag"]       = c->tag;
+  j["gate"]      = c->gate;
+  j["args"]      = c->args;
+  j["names"]     = c->names;
+  j["doc"]       = c->doc;
+}
+
+void from_json(const nlohmann::json& j, Cell*& c) {
+  c = new Cell();
+  j["cell_type"].get_to(c->cell_type);
+  j["verified"] .get_to(c->verified);
+  j["page"]     .get_to(c->page);
+  j["tag"]      .get_to(c->tag);
+  j["gate"]     .get_to(c->gate);
+  j["args"]     .get_to(c->args);
+  j["names"]    .get_to(c->names);
+  j["doc"]      .get_to(c->doc);
+}
+
+void CellDB::save_json(const char* filename) {
+  using namespace nlohmann;
+
+  json root(tag_to_cell);
+  std::ofstream(filename) << root.dump(2);
+}
+
+void CellDB::load_json(const char* filename) {
+  using namespace nlohmann;
+  CHECK_P(tag_to_cell.empty());
+  json root;
+  std::ifstream(filename) >> root;
+  root.get_to(tag_to_cell);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -595,7 +668,7 @@ bool CellDB::parse_dir(const std::string& path) {
   //----------------------------------------
   // Postprocess the cells.
 
-  for (auto& [tag, cell] : tag_map) {
+  for (auto& [tag, cell] : tag_to_cell) {
     // Tribufs don't get names, add the tag as the default name.
     if (cell->cell_type == CellType::TRIBUF) {
       CHECK_P(cell->names.empty());
@@ -636,12 +709,12 @@ bool CellDB::parse_dir(const std::string& path) {
   //----------------------------------------
   // Check that all cells are sane.
 
-  for (auto& [tag, cell] : tag_map) cell->sanity_check();
+  for (auto& [tag, cell] : tag_to_cell) cell->sanity_check();
 
   //----------------------------------------
   // Check that all cells are used by some other cell, or are output cells.
 
-  for (auto& [tag, cell] : tag_map) {
+  for (auto& [tag, cell] : tag_to_cell) {
     for (const auto& arg : cell->args) {
       CHECK_P(has_cell(arg.tag));
       get_cell(arg.tag)->mark++;
@@ -649,7 +722,7 @@ bool CellDB::parse_dir(const std::string& path) {
   }
 
   bool any_unused = false;
-  for (auto& [tag, cell] : tag_map) {
+  for (auto& [tag, cell] : tag_to_cell) {
     if (cell->cell_type == CellType::PIN_OUT) continue;
     if (cell->cell_type == CellType::SIG_OUT) continue;
 
@@ -669,7 +742,7 @@ bool CellDB::parse_dir(const std::string& path) {
 
   printf("Total lines %d\n", total_lines);
   printf("Total tagged lines %d\n", total_tagged_lines);
-  printf("Tag map size %zd\n", tag_map.size());
+  printf("Tag map size %zd\n", tag_to_cell.size());
   //printf("Unused tags %d\n", unused_count);
 
   //ConsoleDumper d;

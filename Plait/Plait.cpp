@@ -136,8 +136,6 @@ void Plait::load(const char* filename) {
   lines >> node_count;
   printf("Node count %d\n", node_count);
 
-  for(auto& [tag, node] : node_map) node_map[node->tag()] = node;
-
   for (int i = 0; i < node_count; i++) {
     std::string tag;
     bool locked;

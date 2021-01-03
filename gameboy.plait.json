@@ -2,20 +2,20 @@
   "ABAF": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17984.0,
-    "offset_y": -960.0
+    "offset_x": -19296.0,
+    "offset_y": -2080.0
   },
   "ABAK": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17600.0,
-    "offset_y": -1024.0
+    "offset_x": -18896.0,
+    "offset_y": -2144.0
   },
   "ABEF": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 144.0
+    "offset_x": 6336.0,
+    "offset_y": -4032.0
   },
   "ABEG": {
     "anchor_tag": "ACEP",
@@ -25,11 +25,10 @@
     "offset_y": 64.0
   },
   "ABEM": {
-    "anchor_tag": "ABON",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 10848.0,
+    "offset_y": -6704.0
   },
   "ABEZ": {
     "ghost": true,
@@ -53,8 +52,8 @@
   "ABON": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11584.0,
-    "offset_y": -4960.0
+    "offset_x": 10624.0,
+    "offset_y": -6800.0
   },
   "ABOP": {
     "anchor_tag": "AROF",
@@ -66,8 +65,8 @@
   "ABOV": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18688.0,
-    "offset_y": -2512.0
+    "offset_x": -19904.0,
+    "offset_y": -2272.0
   },
   "ABUG": {
     "anchor_tag": "ABOP",
@@ -92,11 +91,11 @@
   "ACAM": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 464.0
+    "offset_x": 6336.0,
+    "offset_y": -3712.0
   },
   "ACAT": {
-    "ghost": false,
+    "ghost": true,
     "locked": false,
     "offset_x": -30128.0,
     "offset_y": -7728.0
@@ -110,14 +109,14 @@
   "ACEN": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10672.0,
-    "offset_y": -6224.0
+    "offset_x": 10912.0,
+    "offset_y": -6864.0
   },
   "ACEP": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9792.0,
-    "offset_y": 1728.0
+    "offset_x": 9488.0,
+    "offset_y": -2448.0
   },
   "ACOT": {
     "anchor_tag": "ARYN",
@@ -136,8 +135,8 @@
   "ACYL": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12944.0,
-    "offset_y": -4752.0
+    "offset_x": -5120.0,
+    "offset_y": -10272.0
   },
   "ADAH": {
     "ghost": false,
@@ -155,8 +154,8 @@
   "ADAZ": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 80.0
+    "offset_x": 6336.0,
+    "offset_y": -4096.0
   },
   "ADYB": {
     "anchor_tag": "APOB",
@@ -281,20 +280,20 @@
   "AHAL": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 272.0
+    "offset_x": 6336.0,
+    "offset_y": -3904.0
   },
   "AHOC": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19104.0,
-    "offset_y": -10064.0
+    "offset_x": 9408.0,
+    "offset_y": -6736.0
   },
   "AHOF": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10144.0,
-    "offset_y": 1152.0
+    "offset_x": 9840.0,
+    "offset_y": -3024.0
   },
   "AHUM": {
     "anchor_tag": "BYRO",
@@ -340,26 +339,26 @@
   "AJEP": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7456.0,
-    "offset_y": -8352.0
+    "offset_x": -752.0,
+    "offset_y": -8896.0
   },
   "AJON": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12064.0,
-    "offset_y": -6256.0
+    "offset_x": -5776.0,
+    "offset_y": -10912.0
   },
   "AJUJ": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11936.0,
-    "offset_y": -6256.0
+    "offset_x": -4992.0,
+    "offset_y": -11232.0
   },
   "AKOL": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": 1920.0
+    "offset_x": 10992.0,
+    "offset_y": -2256.0
   },
   "AKUG": {
     "ghost": false,
@@ -402,7 +401,7 @@
     "offset_y": -3680.0
   },
   "ALOR": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -23744.0,
     "offset_y": -8768.0
@@ -429,14 +428,14 @@
   "AMAB": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11808.0,
-    "offset_y": -6256.0
+    "offset_x": -3680.0,
+    "offset_y": -11168.0
   },
   "AMEL": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 336.0
+    "offset_x": 6336.0,
+    "offset_y": -3840.0
   },
   "AMER": {
     "anchor_tag": "APOK",
@@ -448,14 +447,14 @@
   "AMES": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10368.0,
-    "offset_y": 1056.0
+    "offset_x": 10064.0,
+    "offset_y": -3120.0
   },
   "AMET": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21856.0,
-    "offset_y": -8496.0
+    "offset_x": -23296.0,
+    "offset_y": -8768.0
   },
   "AMUH": {
     "anchor_tag": "AVEB",
@@ -467,8 +466,8 @@
   "AMUN": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16096.0,
-    "offset_y": -14432.0
+    "offset_x": -8224.0,
+    "offset_y": -7376.0
   },
   "AMUS": {
     "ghost": false,
@@ -490,7 +489,7 @@
     "offset_y": -6464.0
   },
   "ANAP": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -7728.0
@@ -505,15 +504,14 @@
   "ANEL": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17984.0,
-    "offset_y": -1024.0
+    "offset_x": -19232.0,
+    "offset_y": -2384.0
   },
   "ANOM": {
-    "anchor_tag": "APAR",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -4752.0,
+    "offset_y": -9840.0
   },
   "ANOS": {
     "ghost": false,
@@ -529,7 +527,7 @@
     "offset_y": 64.0
   },
   "ANYP": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8816.0
@@ -537,8 +535,8 @@
   "APAG": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7936.0,
-    "offset_y": -13024.0
+    "offset_x": -2544.0,
+    "offset_y": -8976.0
   },
   "APAM": {
     "ghost": false,
@@ -549,8 +547,8 @@
   "APAR": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7040.0,
-    "offset_y": -2176.0
+    "offset_x": -2992.0,
+    "offset_y": -9808.0
   },
   "APEV": {
     "anchor_tag": "BADA",
@@ -616,14 +614,15 @@
   "APUX": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 208.0
+    "offset_x": 6336.0,
+    "offset_y": -3968.0
   },
   "APYH": {
+    "anchor_tag": "BEHU",
     "ghost": false,
     "locked": true,
-    "offset_x": 9808.0,
-    "offset_y": -5952.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "APYV": {
     "anchor_tag": "AFEN",
@@ -669,8 +668,8 @@
   "AROR": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7632.0,
-    "offset_y": -160.0
+    "offset_x": 7328.0,
+    "offset_y": -4336.0
   },
   "AROS": {
     "anchor_tag": "ATEV",
@@ -687,10 +686,10 @@
     "offset_y": 0.0
   },
   "ARUR": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7392.0
+    "offset_x": -29248.0,
+    "offset_y": -8496.0
   },
   "ARYM": {
     "anchor_tag": "AROS",
@@ -715,20 +714,20 @@
   "ASAH": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 16.0
+    "offset_x": 6336.0,
+    "offset_y": -4160.0
   },
   "ASAM": {
     "ghost": false,
     "locked": true,
-    "offset_x": 624.0,
-    "offset_y": -9808.0
+    "offset_x": -2352.0,
+    "offset_y": -9792.0
   },
   "ASEN": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4528.0,
-    "offset_y": -1936.0
+    "offset_x": -4496.0,
+    "offset_y": -10240.0
   },
   "ASOK": {
     "ghost": false,
@@ -758,14 +757,14 @@
   "ASUL": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10272.0,
-    "offset_y": -6656.0
+    "offset_x": 11088.0,
+    "offset_y": -6928.0
   },
   "ASUM": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11008.0,
-    "offset_y": -6880.0
+    "offset_x": 11536.0,
+    "offset_y": -6704.0
   },
   "ASUR": {
     "anchor_tag": "ATYR",
@@ -777,20 +776,20 @@
   "ASYS": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5248.0,
-    "offset_y": 672.0
+    "offset_x": 4944.0,
+    "offset_y": -3504.0
   },
   "ASYT": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7328.0,
-    "offset_y": -8352.0
+    "offset_x": -624.0,
+    "offset_y": -8896.0
   },
   "ATAD": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9808.0,
-    "offset_y": -6080.0
+    "offset_x": 8320.0,
+    "offset_y": -7072.0
   },
   "ATAL": {
     "ghost": false,
@@ -813,8 +812,8 @@
   "ATEJ": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17728.0,
-    "offset_y": -1024.0
+    "offset_x": -19072.0,
+    "offset_y": -2352.0
   },
   "ATEM": {
     "anchor_tag": "AMER",
@@ -880,8 +879,8 @@
   "AVAP": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5056.0,
-    "offset_y": -1936.0
+    "offset_x": -4672.0,
+    "offset_y": -10240.0
   },
   "AVEB": {
     "anchor_tag": "WOWA",
@@ -893,8 +892,8 @@
   "AVER": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12080.0,
-    "offset_y": -3456.0
+    "offset_x": -784.0,
+    "offset_y": -9344.0
   },
   "AVET": {
     "ghost": false,
@@ -903,7 +902,7 @@
     "offset_y": -3872.0
   },
   "AVOG": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8752.0
@@ -943,14 +942,14 @@
   "AWOH": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18112.0,
-    "offset_y": -960.0
+    "offset_x": -19504.0,
+    "offset_y": -2112.0
   },
   "AXAD": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8832.0,
-    "offset_y": -4960.0
+    "offset_x": 10576.0,
+    "offset_y": -6912.0
   },
   "AXEC": {
     "anchor_tag": "CYRO",
@@ -962,8 +961,8 @@
   "AXEP": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": -6784.0
+    "offset_x": 11344.0,
+    "offset_y": -6704.0
   },
   "AXER": {
     "anchor_tag": "WUZU",
@@ -982,20 +981,20 @@
   "AZAP": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11520.0,
-    "offset_y": 1728.0
+    "offset_x": 11216.0,
+    "offset_y": -2448.0
   },
   "AZAR": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6096.0,
-    "offset_y": -6192.0
+    "offset_x": -7296.0,
+    "offset_y": -15392.0
   },
   "AZEM": {
     "ghost": false,
     "locked": true,
-    "offset_x": -3568.0,
-    "offset_y": -1936.0
+    "offset_x": 2304.0,
+    "offset_y": -1424.0
   },
   "AZOF": {
     "ghost": false,
@@ -1013,21 +1012,20 @@
   "AZUB": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6640.0,
-    "offset_y": 400.0
+    "offset_x": 6336.0,
+    "offset_y": -3776.0
   },
   "AZUL": {
-    "anchor_tag": "APAG",
     "ghost": false,
     "locked": true,
-    "offset_x": 224.0,
-    "offset_y": 0.0
+    "offset_x": -2384.0,
+    "offset_y": -8976.0
   },
   "AZYB": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3088.0,
-    "offset_y": 2352.0
+    "offset_x": 2784.0,
+    "offset_y": -1824.0
   },
   "BABE": {
     "anchor_tag": "APYH",
@@ -1039,8 +1037,8 @@
   "BACE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9920.0,
-    "offset_y": 1728.0
+    "offset_x": 9616.0,
+    "offset_y": -2448.0
   },
   "BACO": {
     "anchor_tag": "AHUM",
@@ -1080,20 +1078,20 @@
   "BAFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10800.0,
-    "offset_y": -6224.0
+    "offset_x": 11088.0,
+    "offset_y": -6864.0
   },
   "BAGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5696.0,
-    "offset_y": -1936.0
+    "offset_x": -4352.0,
+    "offset_y": -9856.0
   },
   "BAHU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 0.0
+    "offset_x": 7104.0,
+    "offset_y": -4176.0
   },
   "BAJO": {
     "anchor_tag": "COTU",
@@ -1112,14 +1110,14 @@
   "BAKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3584.0,
-    "offset_y": 2560.0
+    "offset_x": 3280.0,
+    "offset_y": -1616.0
   },
   "BALU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5824.0,
-    "offset_y": -1936.0
+    "offset_x": -4544.0,
+    "offset_y": -9792.0
   },
   "BALY": {
     "ghost": false,
@@ -1215,8 +1213,8 @@
   "BAZY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 256.0
+    "offset_x": 6720.0,
+    "offset_y": -3920.0
   },
   "BEBA": {
     "anchor_tag": "AMUN",
@@ -1228,8 +1226,8 @@
   "BEBU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5184.0,
-    "offset_y": -1936.0
+    "offset_x": -3888.0,
+    "offset_y": -9568.0
   },
   "BECA": {
     "anchor_tag": "BYHU",
@@ -1252,10 +1250,10 @@
     "offset_y": -4512.0
   },
   "BEDY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7456.0
+    "offset_x": -29248.0,
+    "offset_y": -8560.0
   },
   "BEFE": {
     "anchor_tag": "BACO",
@@ -1272,10 +1270,11 @@
     "offset_y": 64.0
   },
   "BEHU": {
+    "anchor_tag": "ATAD",
     "ghost": false,
     "locked": true,
-    "offset_x": 9808.0,
-    "offset_y": -6016.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "BEJA": {
     "ghost": false,
@@ -1286,8 +1285,8 @@
   "BEJE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10624.0,
-    "offset_y": -7088.0
+    "offset_x": 11344.0,
+    "offset_y": -6800.0
   },
   "BEKO": {
     "ghost": false,
@@ -1336,20 +1335,20 @@
   "BESE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3584.0,
-    "offset_y": 2272.0
+    "offset_x": 3280.0,
+    "offset_y": -1904.0
   },
   "BESU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4080.0,
-    "offset_y": -1936.0
+    "offset_x": -4336.0,
+    "offset_y": -10240.0
   },
   "BETE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4880.0,
-    "offset_y": -10080.0
+    "offset_x": -2576.0,
+    "offset_y": -9792.0
   },
   "BETU": {
     "anchor_tag": "BUBO",
@@ -1396,14 +1395,14 @@
   "BOBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 0.0
+    "offset_x": 6848.0,
+    "offset_y": -4176.0
   },
   "BODE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7200.0,
-    "offset_y": -8352.0
+    "offset_x": -496.0,
+    "offset_y": -8896.0
   },
   "BODU": {
     "anchor_tag": "BUJA",
@@ -1427,8 +1426,8 @@
   "BOGE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21776.0,
-    "offset_y": -9424.0
+    "offset_x": -22192.0,
+    "offset_y": -10672.0
   },
   "BOKU": {
     "anchor_tag": "CABA",
@@ -1464,17 +1463,16 @@
     "offset_y": 64.0
   },
   "BORE": {
-    "anchor_tag": "CYVU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 10624.0,
+    "offset_y": -6576.0
   },
   "BOSO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11648.0,
-    "offset_y": 1728.0
+    "offset_x": 11344.0,
+    "offset_y": -2448.0
   },
   "BOTA": {
     "ghost": false,
@@ -1526,8 +1524,8 @@
   "BUCE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 12224.0,
-    "offset_y": 1056.0
+    "offset_x": 11920.0,
+    "offset_y": -3120.0
   },
   "BUCO": {
     "anchor_tag": "DYHU",
@@ -1539,8 +1537,8 @@
   "BUCY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9568.0,
-    "offset_y": 1824.0
+    "offset_x": 9264.0,
+    "offset_y": -2352.0
   },
   "BUDE": {
     "ghost": false,
@@ -1626,8 +1624,8 @@
   "BUMY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 256.0
+    "offset_x": 7104.0,
+    "offset_y": -3920.0
   },
   "BUNA": {
     "anchor_tag": "BULU",
@@ -1823,234 +1821,234 @@
     "offset_y": 64.0
   },
   "BUS_OAM_A00n": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -4480.0,
-    "offset_y": -8224.0
+    "offset_x": -2096.0,
+    "offset_y": -9728.0
   },
   "BUS_OAM_A01n": {
     "anchor_tag": "BUS_OAM_A00n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_A02n": {
     "anchor_tag": "BUS_OAM_A01n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_A03n": {
     "anchor_tag": "BUS_OAM_A02n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_A04n": {
     "anchor_tag": "BUS_OAM_A03n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_A05n": {
     "anchor_tag": "BUS_OAM_A04n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_A06n": {
     "anchor_tag": "BUS_OAM_A05n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_A07n": {
     "anchor_tag": "BUS_OAM_A06n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA00n": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -4480.0,
-    "offset_y": -7664.0
+    "offset_x": -2096.0,
+    "offset_y": -8976.0
   },
   "BUS_OAM_DA01n": {
     "anchor_tag": "BUS_OAM_DA00n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA02n": {
     "anchor_tag": "BUS_OAM_DA01n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA03n": {
     "anchor_tag": "BUS_OAM_DA02n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA04n": {
     "anchor_tag": "BUS_OAM_DA03n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA05n": {
     "anchor_tag": "BUS_OAM_DA04n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA06n": {
     "anchor_tag": "BUS_OAM_DA05n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DA07n": {
     "anchor_tag": "BUS_OAM_DA06n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB00n": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -4480.0,
-    "offset_y": -7120.0
+    "offset_x": -2096.0,
+    "offset_y": -8432.0
   },
   "BUS_OAM_DB01n": {
     "anchor_tag": "BUS_OAM_DB00n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB02n": {
     "anchor_tag": "BUS_OAM_DB01n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB03n": {
     "anchor_tag": "BUS_OAM_DB02n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB04n": {
     "anchor_tag": "BUS_OAM_DB03n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB05n": {
     "anchor_tag": "BUS_OAM_DB04n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB06n": {
     "anchor_tag": "BUS_OAM_DB05n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_OAM_DB07n": {
     "anchor_tag": "BUS_OAM_DB06n",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_I0": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 12544.0,
-    "offset_y": 1312.0
+    "offset_x": 12240.0,
+    "offset_y": -2864.0
   },
   "BUS_SPR_I1": {
     "anchor_tag": "BUS_SPR_I0",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_I2": {
     "anchor_tag": "BUS_SPR_I1",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_I3": {
     "anchor_tag": "BUS_SPR_I2",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_I4": {
     "anchor_tag": "BUS_SPR_I3",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_I5": {
     "anchor_tag": "BUS_SPR_I4",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_L0": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 12544.0,
-    "offset_y": 1056.0
+    "offset_x": 12240.0,
+    "offset_y": -3120.0
   },
   "BUS_SPR_L1": {
     "anchor_tag": "BUS_SPR_L0",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_L2": {
     "anchor_tag": "BUS_SPR_L1",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_SPR_L3": {
     "anchor_tag": "BUS_SPR_L2",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -2147,56 +2145,56 @@
     "offset_y": 0.0
   },
   "BUS_VRAM_D00p": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 12496.0,
-    "offset_y": -7440.0
+    "offset_x": -10544.0,
+    "offset_y": -14656.0
   },
   "BUS_VRAM_D01p": {
     "anchor_tag": "BUS_VRAM_D00p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_VRAM_D02p": {
     "anchor_tag": "BUS_VRAM_D01p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_VRAM_D03p": {
     "anchor_tag": "BUS_VRAM_D02p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_VRAM_D04p": {
     "anchor_tag": "BUS_VRAM_D03p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_VRAM_D05p": {
     "anchor_tag": "BUS_VRAM_D04p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_VRAM_D06p": {
     "anchor_tag": "BUS_VRAM_D05p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "BUS_VRAM_D07p": {
     "anchor_tag": "BUS_VRAM_D06p",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -2220,36 +2218,34 @@
     "offset_y": -4512.0
   },
   "BUVY": {
-    "anchor_tag": "BORE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 10624.0,
+    "offset_y": -6512.0
   },
   "BUWY": {
-    "anchor_tag": "CAVO",
     "ghost": false,
     "locked": true,
-    "offset_x": 160.0,
-    "offset_y": 0.0
+    "offset_x": 7424.0,
+    "offset_y": -6960.0
   },
   "BUZA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 2144.0,
-    "offset_y": -1376.0
+    "offset_x": 2176.0,
+    "offset_y": -2080.0
   },
   "BUZY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10720.0,
-    "offset_y": 1248.0
+    "offset_x": 10416.0,
+    "offset_y": -2928.0
   },
   "BYBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5440.0,
-    "offset_y": -1936.0
+    "offset_x": -4192.0,
+    "offset_y": -9808.0
   },
   "BYBY": {
     "anchor_tag": "CEMY",
@@ -2268,8 +2264,8 @@
   "BYCU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6560.0,
-    "offset_y": -7040.0
+    "offset_x": -560.0,
+    "offset_y": -9280.0
   },
   "BYDO": {
     "anchor_tag": "BOVE",
@@ -2281,8 +2277,8 @@
   "BYHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17856.0,
-    "offset_y": -1024.0
+    "offset_x": -19104.0,
+    "offset_y": -2096.0
   },
   "BYHE": {
     "anchor_tag": "BEXY",
@@ -2301,8 +2297,8 @@
   "BYJO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -3696.0,
-    "offset_y": -1936.0
+    "offset_x": 2064.0,
+    "offset_y": -1600.0
   },
   "BYJU": {
     "ghost": false,
@@ -2326,14 +2322,14 @@
   "BYME": {
     "ghost": false,
     "locked": true,
-    "offset_x": 12224.0,
-    "offset_y": 1728.0
+    "offset_x": 11920.0,
+    "offset_y": -2448.0
   },
   "BYMY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": 1824.0
+    "offset_x": 10992.0,
+    "offset_y": -2352.0
   },
   "BYNY": {
     "anchor_tag": "BUHU",
@@ -2352,8 +2348,8 @@
   "BYRO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10496.0,
-    "offset_y": 1056.0
+    "offset_x": 10192.0,
+    "offset_y": -3120.0
   },
   "BYRY": {
     "ghost": false,
@@ -2364,14 +2360,14 @@
   "BYVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3488.0,
-    "offset_y": 1216.0
+    "offset_x": 3184.0,
+    "offset_y": -2960.0
   },
   "BYVY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10144.0,
-    "offset_y": 1248.0
+    "offset_x": 9840.0,
+    "offset_y": -2928.0
   },
   "BYXO": {
     "ghost": false,
@@ -2408,8 +2404,8 @@
   "CACU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5408.0,
-    "offset_y": 672.0
+    "offset_x": 5104.0,
+    "offset_y": -3504.0
   },
   "CADO": {
     "anchor_tag": "CECU",
@@ -2461,8 +2457,8 @@
   "CAKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3584.0,
-    "offset_y": 2176.0
+    "offset_x": 3280.0,
+    "offset_y": -2000.0
   },
   "CAKO": {
     "anchor_tag": "BASA",
@@ -2481,8 +2477,8 @@
   "CANA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 12096.0,
-    "offset_y": 1728.0
+    "offset_x": 11792.0,
+    "offset_y": -2448.0
   },
   "CAPE": {
     "anchor_tag": "CYPY",
@@ -2494,14 +2490,14 @@
   "CAPO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 12096.0,
-    "offset_y": 1056.0
+    "offset_x": 11792.0,
+    "offset_y": -3120.0
   },
   "CARE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3424.0,
-    "offset_y": 1984.0
+    "offset_x": 3120.0,
+    "offset_y": -2192.0
   },
   "CARO": {
     "ghost": false,
@@ -2540,8 +2536,8 @@
   "CATU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18112.0,
-    "offset_y": -1024.0
+    "offset_x": -19456.0,
+    "offset_y": -2304.0
   },
   "CATY": {
     "ghost": false,
@@ -2558,8 +2554,8 @@
   "CAVO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11440.0,
-    "offset_y": -7552.0
+    "offset_x": 7328.0,
+    "offset_y": -6880.0
   },
   "CAWO": {
     "anchor_tag": "COHO",
@@ -2592,8 +2588,8 @@
   "CEDE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5968.0,
-    "offset_y": -6192.0
+    "offset_x": -21600.0,
+    "offset_y": -5792.0
   },
   "CEDU": {
     "anchor_tag": "WONY",
@@ -2626,8 +2622,8 @@
   "CEHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -3824.0,
-    "offset_y": -1936.0
+    "offset_x": 1904.0,
+    "offset_y": -1440.0
   },
   "CEHU": {
     "anchor_tag": "CYVY",
@@ -2639,8 +2635,8 @@
   "CEKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 64.0
+    "offset_x": 6720.0,
+    "offset_y": -4112.0
   },
   "CELA": {
     "ghost": false,
@@ -2658,14 +2654,14 @@
   "CEMY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4288.0,
-    "offset_y": 2272.0
+    "offset_x": 3984.0,
+    "offset_y": -1904.0
   },
   "CENO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -3952.0,
-    "offset_y": -1936.0
+    "offset_x": 1648.0,
+    "offset_y": -1616.0
   },
   "CEPU": {
     "anchor_tag": "BADU",
@@ -2698,14 +2694,14 @@
   "CEVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 256.0
+    "offset_x": 6976.0,
+    "offset_y": -3920.0
   },
   "CEXU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6368.0,
-    "offset_y": 672.0
+    "offset_x": 6064.0,
+    "offset_y": -3504.0
   },
   "COBA": {
     "ghost": false,
@@ -2751,8 +2747,8 @@
   "COLA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 0.0
+    "offset_x": 6720.0,
+    "offset_y": -4176.0
   },
   "COLO": {
     "anchor_tag": "CYKA",
@@ -2764,8 +2760,8 @@
   "COLU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 0.0
+    "offset_x": 6976.0,
+    "offset_y": -4176.0
   },
   "COLY": {
     "anchor_tag": "ALEL",
@@ -2791,8 +2787,8 @@
   "CONY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 64.0
+    "offset_x": 7104.0,
+    "offset_y": -4112.0
   },
   "CORE": {
     "ghost": false,
@@ -2810,8 +2806,8 @@
   "COTA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6432.0,
-    "offset_y": -7040.0
+    "offset_x": -432.0,
+    "offset_y": -9280.0
   },
   "COTU": {
     "anchor_tag": "KOTY",
@@ -2850,8 +2846,8 @@
   "CUBE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11072.0,
-    "offset_y": 1312.0
+    "offset_x": 10768.0,
+    "offset_y": -2864.0
   },
   "CUBO": {
     "anchor_tag": "BEFE",
@@ -2870,8 +2866,8 @@
   "CUCU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3104.0,
-    "offset_y": 1424.0
+    "offset_x": 2800.0,
+    "offset_y": -2752.0
   },
   "CUDY": {
     "ghost": false,
@@ -2889,8 +2885,8 @@
   "CUFE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22560.0,
-    "offset_y": -7216.0
+    "offset_x": -784.0,
+    "offset_y": -9216.0
   },
   "CUFO": {
     "anchor_tag": "GYHO",
@@ -3053,20 +3049,20 @@
   "CYKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18112.0,
-    "offset_y": -1088.0
+    "offset_x": -19488.0,
+    "offset_y": -2400.0
   },
   "CYLA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5888.0,
-    "offset_y": 672.0
+    "offset_x": 5584.0,
+    "offset_y": -3504.0
   },
   "CYLE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 256.0
+    "offset_x": 6848.0,
+    "offset_y": -3920.0
   },
   "CYLO": {
     "anchor_tag": "CAFA",
@@ -3113,8 +3109,8 @@
   "CYVU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11216.0,
-    "offset_y": -4832.0
+    "offset_x": 10624.0,
+    "offset_y": -6640.0
   },
   "CYVY": {
     "anchor_tag": "XEBA",
@@ -3175,14 +3171,14 @@
   "DAGA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 1152.0
+    "offset_x": 6848.0,
+    "offset_y": -3024.0
   },
   "DAGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 1088.0
+    "offset_x": 6848.0,
+    "offset_y": -3088.0
   },
   "DAHU": {
     "anchor_tag": "ASUM",
@@ -3247,11 +3243,10 @@
     "offset_y": 64.0
   },
   "DAMU": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 320.0
+    "offset_x": 9728.0,
+    "offset_y": -6432.0
   },
   "DANY": {
     "anchor_tag": "ASYS",
@@ -3282,11 +3277,10 @@
     "offset_y": 64.0
   },
   "DAVA": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 384.0
+    "offset_x": 9728.0,
+    "offset_y": -6368.0
   },
   "DAWA": {
     "ghost": false,
@@ -3304,8 +3298,8 @@
   "DAWU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 1152.0
+    "offset_x": 6976.0,
+    "offset_y": -3024.0
   },
   "DAZO": {
     "anchor_tag": "DESU",
@@ -3351,8 +3345,8 @@
   "DEGE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 2880.0,
-    "offset_y": 1424.0
+    "offset_x": 2576.0,
+    "offset_y": -2752.0
   },
   "DEGO": {
     "anchor_tag": "DYDU",
@@ -3385,8 +3379,8 @@
   "DENY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": 1728.0
+    "offset_x": 10992.0,
+    "offset_y": -2448.0
   },
   "DEPO": {
     "anchor_tag": "YZOS",
@@ -3412,8 +3406,8 @@
   "DESO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 1088.0
+    "offset_x": 7104.0,
+    "offset_y": -3088.0
   },
   "DESU": {
     "anchor_tag": "DUKO",
@@ -3432,8 +3426,8 @@
   "DETY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 64.0
+    "offset_x": 6848.0,
+    "offset_y": -4112.0
   },
   "DEVE": {
     "anchor_tag": "XUNA",
@@ -3466,8 +3460,8 @@
   "DEZO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4064.0,
-    "offset_y": 2272.0
+    "offset_x": 3760.0,
+    "offset_y": -1904.0
   },
   "DEZU": {
     "anchor_tag": "EFUD",
@@ -3479,20 +3473,20 @@
   "DEZY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3584.0,
-    "offset_y": 2080.0
+    "offset_x": 3280.0,
+    "offset_y": -2096.0
   },
   "DOBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5312.0,
-    "offset_y": -1936.0
+    "offset_x": -4032.0,
+    "offset_y": -9808.0
   },
   "DOBO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9920.0,
-    "offset_y": 1984.0
+    "offset_x": 9616.0,
+    "offset_y": -2192.0
   },
   "DOCU": {
     "anchor_tag": "CUFU",
@@ -3581,8 +3575,8 @@
   "DOZO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 64.0
+    "offset_x": 6976.0,
+    "offset_y": -4112.0
   },
   "DUBU": {
     "anchor_tag": "GORO",
@@ -3594,8 +3588,8 @@
   "DUCU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 384.0
+    "offset_x": 6976.0,
+    "offset_y": -3792.0
   },
   "DUDE": {
     "anchor_tag": "CUGY",
@@ -3607,8 +3601,8 @@
   "DUGA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23232.0,
-    "offset_y": -9856.0
+    "offset_x": -3328.0,
+    "offset_y": -9808.0
   },
   "DUHA": {
     "anchor_tag": "DUNY",
@@ -3675,15 +3669,14 @@
   "DUSE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 1088.0
+    "offset_x": 6720.0,
+    "offset_y": -3088.0
   },
   "DUVE": {
-    "anchor_tag": "EVAX",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 9728.0,
+    "offset_y": -6112.0
   },
   "DUZA": {
     "anchor_tag": "WAGA",
@@ -3695,8 +3688,8 @@
   "DUZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 1152.0
+    "offset_x": 6720.0,
+    "offset_y": -3024.0
   },
   "DUZU": {
     "anchor_tag": "DATY",
@@ -3708,8 +3701,8 @@
   "DYBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4064.0,
-    "offset_y": 640.0
+    "offset_x": 3760.0,
+    "offset_y": -3536.0
   },
   "DYBE": {
     "anchor_tag": "BEGO",
@@ -3735,8 +3728,8 @@
   "DYDO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10144.0,
-    "offset_y": 1056.0
+    "offset_x": 9840.0,
+    "offset_y": -3120.0
   },
   "DYDU": {
     "anchor_tag": "YDUG",
@@ -3769,8 +3762,8 @@
   "DYHU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4512.0,
-    "offset_y": 2272.0
+    "offset_x": 4208.0,
+    "offset_y": -1904.0
   },
   "DYKA": {
     "anchor_tag": "YBEZ",
@@ -3795,14 +3788,14 @@
   "DYMO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9568.0,
-    "offset_y": 1920.0
+    "offset_x": 9264.0,
+    "offset_y": -2256.0
   },
   "DYNA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4512.0,
-    "offset_y": 640.0
+    "offset_x": 4208.0,
+    "offset_y": -3536.0
   },
   "DYNY": {
     "anchor_tag": "DOBO",
@@ -3835,26 +3828,26 @@
   "DYTY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3584.0,
-    "offset_y": 1984.0
+    "offset_x": 3280.0,
+    "offset_y": -2192.0
   },
   "DYWE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4288.0,
-    "offset_y": 640.0
+    "offset_x": 3984.0,
+    "offset_y": -3536.0
   },
   "DYZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 1088.0
+    "offset_x": 6976.0,
+    "offset_y": -3088.0
   },
   "EBEF": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 704.0
+    "offset_x": 6976.0,
+    "offset_y": -3472.0
   },
   "EBEX": {
     "anchor_tag": "GORU",
@@ -3866,14 +3859,14 @@
   "EBOJ": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4064.0,
-    "offset_y": 1376.0
+    "offset_x": 3760.0,
+    "offset_y": -2800.0
   },
   "EBOS": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18288.0,
-    "offset_y": -4272.0
+    "offset_x": -20608.0,
+    "offset_y": -3008.0
   },
   "EBOW": {
     "anchor_tag": "ENAD",
@@ -3890,11 +3883,10 @@
     "offset_y": 64.0
   },
   "ECAL": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 9728.0,
+    "offset_y": -6688.0
   },
   "ECED": {
     "anchor_tag": "ZUVE",
@@ -3913,8 +3905,8 @@
   "EDEN": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3840.0,
-    "offset_y": 2272.0
+    "offset_x": 3536.0,
+    "offset_y": -1904.0
   },
   "EDER": {
     "anchor_tag": "EROD",
@@ -3946,8 +3938,8 @@
   "EDYM": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 704.0
+    "offset_x": 6720.0,
+    "offset_y": -3472.0
   },
   "EFAB": {
     "anchor_tag": "EVOK",
@@ -4006,11 +3998,10 @@
     "offset_y": 64.0
   },
   "EGEZ": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 128.0
+    "offset_x": 9728.0,
+    "offset_y": -6624.0
   },
   "EGOM": {
     "anchor_tag": "XAGE",
@@ -4057,8 +4048,8 @@
   "EJAW": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 1152.0
+    "offset_x": 7104.0,
+    "offset_y": -3024.0
   },
   "EJOK": {
     "anchor_tag": "EFYK",
@@ -4070,8 +4061,8 @@
   "EJOT": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 384.0
+    "offset_x": 6720.0,
+    "offset_y": -3792.0
   },
   "EJUF": {
     "anchor_tag": "DUHY",
@@ -4187,8 +4178,8 @@
   "EMYB": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 704.0
+    "offset_x": 6848.0,
+    "offset_y": -3472.0
   },
   "ENAD": {
     "anchor_tag": "EZUF",
@@ -4214,8 +4205,8 @@
   "ENOB": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9568.0,
-    "offset_y": 1152.0
+    "offset_x": 9264.0,
+    "offset_y": -3024.0
   },
   "ENOR": {
     "anchor_tag": "EJUF",
@@ -4246,11 +4237,10 @@
     "offset_y": 64.0
   },
   "ERAF": {
-    "anchor_tag": "DUVE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 9728.0,
+    "offset_y": -6048.0
   },
   "ERAZ": {
     "anchor_tag": "GECY",
@@ -4260,11 +4250,10 @@
     "offset_y": 96.0
   },
   "EREW": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 512.0
+    "offset_x": 9728.0,
+    "offset_y": -6240.0
   },
   "EROD": {
     "anchor_tag": "EJAB",
@@ -4283,14 +4272,14 @@
   "ERUC": {
     "ghost": false,
     "locked": true,
-    "offset_x": 2624.0,
-    "offset_y": 1424.0
+    "offset_x": 2320.0,
+    "offset_y": -2752.0
   },
   "ESAJ": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 384.0
+    "offset_x": 6848.0,
+    "offset_y": -3792.0
   },
   "ETAD": {
     "anchor_tag": "ELEP",
@@ -4327,11 +4316,10 @@
     "offset_y": 64.0
   },
   "ETEG": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 448.0
+    "offset_x": 9728.0,
+    "offset_y": -6304.0
   },
   "ETYM": {
     "anchor_tag": "EKOP",
@@ -4348,11 +4336,10 @@
     "offset_y": 64.0
   },
   "EVAX": {
-    "anchor_tag": "AHOC",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 9728.0,
+    "offset_y": -6176.0
   },
   "EVOK": {
     "anchor_tag": "DAME",
@@ -4378,20 +4365,20 @@
   "EWOK": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 704.0
+    "offset_x": 7104.0,
+    "offset_y": -3472.0
   },
   "EWOT": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11872.0,
-    "offset_y": 1152.0
+    "offset_x": 12496.0,
+    "offset_y": -3152.0
   },
   "EWUD": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 384.0
+    "offset_x": 7104.0,
+    "offset_y": -3792.0
   },
   "EXUK": {
     "anchor_tag": "FAXE",
@@ -4408,11 +4395,10 @@
     "offset_y": 64.0
   },
   "EXYF": {
-    "anchor_tag": "FUSY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 9728.0,
+    "offset_y": -5920.0
   },
   "EZOC": {
     "anchor_tag": "WYWY",
@@ -4445,14 +4431,14 @@
   "FADO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11872.0,
-    "offset_y": 1728.0
+    "offset_x": 11568.0,
+    "offset_y": -2448.0
   },
   "FAFO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10016.0,
-    "offset_y": -5520.0
+    "offset_x": 8560.0,
+    "offset_y": -6672.0
   },
   "FAGO": {
     "anchor_tag": "FESA",
@@ -4471,8 +4457,8 @@
   "FAKA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11872.0,
-    "offset_y": 1824.0
+    "offset_x": 11568.0,
+    "offset_y": -2352.0
   },
   "FAKU": {
     "anchor_tag": "FUTO",
@@ -4484,8 +4470,8 @@
   "FAME": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10720.0,
-    "offset_y": 1056.0
+    "offset_x": 10416.0,
+    "offset_y": -3120.0
   },
   "FAMU": {
     "anchor_tag": "AGAG",
@@ -4546,14 +4532,14 @@
   "FEFO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10720.0,
-    "offset_y": 1920.0
+    "offset_x": 10416.0,
+    "offset_y": -2256.0
   },
   "FEFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8416.0,
-    "offset_y": -0.0
+    "offset_x": 8112.0,
+    "offset_y": -4176.0
   },
   "FEHA": {
     "anchor_tag": "DAJE",
@@ -4565,8 +4551,8 @@
   "FEKA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": 1248.0
+    "offset_x": 10992.0,
+    "offset_y": -2928.0
   },
   "FEMO": {
     "anchor_tag": "FOFA",
@@ -4578,8 +4564,8 @@
   "FEPO": {
     "ghost": true,
     "locked": true,
-    "offset_x": 8576.0,
-    "offset_y": 48.0
+    "offset_x": 8272.0,
+    "offset_y": -4128.0
   },
   "FEPU": {
     "anchor_tag": "FUVE",
@@ -4598,8 +4584,8 @@
   "FESO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 768.0
+    "offset_x": 6848.0,
+    "offset_y": -3408.0
   },
   "FESY": {
     "anchor_tag": "FOZY",
@@ -4611,8 +4597,8 @@
   "FETO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5568.0,
-    "offset_y": -1936.0
+    "offset_x": -4352.0,
+    "offset_y": -9760.0
   },
   "FETU": {
     "anchor_tag": "FYDU",
@@ -4660,8 +4646,8 @@
     "anchor_tag": "DUGA",
     "ghost": false,
     "locked": true,
-    "offset_x": 128.0,
-    "offset_y": 0.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "FOFA": {
     "anchor_tag": "FEPU",
@@ -4708,8 +4694,8 @@
   "FOKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 768.0
+    "offset_x": 6976.0,
+    "offset_y": -3408.0
   },
   "FONE": {
     "anchor_tag": "FYCU",
@@ -4742,8 +4728,8 @@
   "FOVE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8416.0,
-    "offset_y": 96.0
+    "offset_x": 8112.0,
+    "offset_y": -4080.0
   },
   "FOXA": {
     "anchor_tag": "GUTU",
@@ -4776,8 +4762,8 @@
   "FUFO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11120.0,
-    "offset_y": -4512.0
+    "offset_x": 10432.0,
+    "offset_y": -6480.0
   },
   "FUGU": {
     "anchor_tag": "FACO",
@@ -4794,24 +4780,22 @@
     "offset_y": 64.0
   },
   "FUHE": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 192.0
+    "offset_x": 9728.0,
+    "offset_y": -6560.0
   },
   "FUJO": {
-    "anchor_tag": "FEZU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 7728.0,
+    "offset_y": -6384.0
   },
   "FUKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10720.0,
-    "offset_y": 1152.0
+    "offset_x": 10416.0,
+    "offset_y": -3024.0
   },
   "FUKY": {
     "anchor_tag": "DASA",
@@ -4837,8 +4821,8 @@
   "FURO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9568.0,
-    "offset_y": 1056.0
+    "offset_x": 9264.0,
+    "offset_y": -3120.0
   },
   "FUSA": {
     "anchor_tag": "CYLA",
@@ -4848,11 +4832,10 @@
     "offset_y": 96.0
   },
   "FUSY": {
-    "anchor_tag": "ERAF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 9728.0,
+    "offset_y": -5984.0
   },
   "FUTO": {
     "anchor_tag": "GEMA",
@@ -4878,8 +4861,8 @@
   "FUXU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5088.0,
-    "offset_y": 672.0
+    "offset_x": 4784.0,
+    "offset_y": -3504.0
   },
   "FUZO": {
     "anchor_tag": "GESY",
@@ -4891,8 +4874,8 @@
   "FUZU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 768.0
+    "offset_x": 6720.0,
+    "offset_y": -3408.0
   },
   "FYCA": {
     "anchor_tag": "EBOW",
@@ -4904,8 +4887,8 @@
   "FYCU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3840.0,
-    "offset_y": 2592.0
+    "offset_x": 3536.0,
+    "offset_y": -1584.0
   },
   "FYDU": {
     "anchor_tag": "EDOL",
@@ -4973,15 +4956,14 @@
   "FYVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 768.0
+    "offset_x": 7104.0,
+    "offset_y": -3408.0
   },
   "FYZY": {
-    "anchor_tag": "EXYF",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 256.0
+    "offset_x": 9728.0,
+    "offset_y": -6496.0
   },
   "GABA": {
     "anchor_tag": "WUNA",
@@ -5000,8 +4982,8 @@
   "GABU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 448.0
+    "offset_x": 6976.0,
+    "offset_y": -3728.0
   },
   "GACE": {
     "anchor_tag": "GYSA",
@@ -5027,8 +5009,8 @@
   "GAFE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 448.0
+    "offset_x": 7104.0,
+    "offset_y": -3728.0
   },
   "GAFY": {
     "anchor_tag": "XAHO",
@@ -5082,8 +5064,8 @@
   "GASU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 448.0
+    "offset_x": 6848.0,
+    "offset_y": -3728.0
   },
   "GATE": {
     "anchor_tag": "BYME",
@@ -5095,15 +5077,14 @@
   "GAVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5248.0,
-    "offset_y": -2272.0
+    "offset_x": -4544.0,
+    "offset_y": -9664.0
   },
   "GAVE": {
-    "anchor_tag": "CAVO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 7664.0,
+    "offset_y": -6800.0
   },
   "GAVO": {
     "anchor_tag": "FUGY",
@@ -5150,8 +5131,8 @@
   "GECY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6208.0,
-    "offset_y": 672.0
+    "offset_x": 5904.0,
+    "offset_y": -3504.0
   },
   "GEDE": {
     "anchor_tag": "FUMA",
@@ -5163,8 +5144,8 @@
   "GEFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6832.0,
-    "offset_y": -2176.0
+    "offset_x": -2816.0,
+    "offset_y": -9728.0
   },
   "GEGA": {
     "anchor_tag": "GONO",
@@ -5183,14 +5164,14 @@
   "GEJY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11376.0,
-    "offset_y": -4592.0
+    "offset_x": 10624.0,
+    "offset_y": -6448.0
   },
   "GEKA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11808.0,
-    "offset_y": -6192.0
+    "offset_x": -1680.0,
+    "offset_y": -9824.0
   },
   "GEKE": {
     "anchor_tag": "GYTE",
@@ -5209,8 +5190,8 @@
   "GENY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9568.0,
-    "offset_y": 1248.0
+    "offset_x": 9264.0,
+    "offset_y": -2928.0
   },
   "GERA": {
     "anchor_tag": "FEVU",
@@ -5222,8 +5203,8 @@
   "GESE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3264.0,
-    "offset_y": 1984.0
+    "offset_x": 2960.0,
+    "offset_y": -2192.0
   },
   "GESY": {
     "anchor_tag": "FYSU",
@@ -5235,8 +5216,8 @@
   "GEVE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 960.0
+    "offset_x": 6976.0,
+    "offset_y": -3216.0
   },
   "GEWY": {
     "anchor_tag": "GYDA",
@@ -5248,8 +5229,8 @@
   "GEZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8512.0,
-    "offset_y": 320.0
+    "offset_x": 8208.0,
+    "offset_y": -3856.0
   },
   "GOBA": {
     "anchor_tag": "WARE",
@@ -5266,11 +5247,11 @@
     "offset_y": 64.0
   },
   "GODO": {
-    "anchor_tag": "GONU",
+    "anchor_tag": "FUJO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 160.0,
+    "offset_y": 0.0
   },
   "GOFO": {
     "anchor_tag": "AJAL",
@@ -5282,8 +5263,8 @@
   "GOHO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 448.0
+    "offset_x": 6720.0,
+    "offset_y": -3728.0
   },
   "GOHU": {
     "anchor_tag": "FOGO",
@@ -5302,8 +5283,8 @@
   "GOLA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 960.0
+    "offset_x": 6848.0,
+    "offset_y": -3216.0
   },
   "GOMO": {
     "anchor_tag": "ZEZY",
@@ -5385,8 +5366,8 @@
   "GOWO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11872.0,
-    "offset_y": 1056.0
+    "offset_x": 11568.0,
+    "offset_y": -3120.0
   },
   "GOXU": {
     "anchor_tag": "FUBY",
@@ -5405,20 +5386,20 @@
   "GUDE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 960.0
+    "offset_x": 7104.0,
+    "offset_y": -3216.0
   },
   "GUGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10720.0,
-    "offset_y": 1728.0
+    "offset_x": 10416.0,
+    "offset_y": -2448.0
   },
   "GUKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11552.0,
-    "offset_y": -6192.0
+    "offset_x": -912.0,
+    "offset_y": -10224.0
   },
   "GUKY": {
     "anchor_tag": "WACY",
@@ -5486,8 +5467,8 @@
   "GUVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9136.0,
-    "offset_y": 1392.0
+    "offset_x": 8832.0,
+    "offset_y": -2784.0
   },
   "GUVE": {
     "anchor_tag": "WYXO",
@@ -5513,8 +5494,8 @@
   "GUZO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 960.0
+    "offset_x": 6720.0,
+    "offset_y": -3216.0
   },
   "GYBU": {
     "anchor_tag": "WYDU",
@@ -5554,14 +5535,14 @@
   "GYGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9568.0,
-    "offset_y": 1728.0
+    "offset_x": 9264.0,
+    "offset_y": -2448.0
   },
   "GYHO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9792.0,
-    "offset_y": 1056.0
+    "offset_x": 9488.0,
+    "offset_y": -3120.0
   },
   "GYKA": {
     "anchor_tag": "GYBU",
@@ -5580,8 +5561,8 @@
   "GYMA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": 1056.0
+    "offset_x": 10992.0,
+    "offset_y": -3120.0
   },
   "GYNO": {
     "anchor_tag": "GULE",
@@ -5666,20 +5647,20 @@
   "KASA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19616.0,
-    "offset_y": -3488.0
+    "offset_x": -21936.0,
+    "offset_y": -2224.0
   },
   "KEBO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -336.0,
-    "offset_y": -5280.0
+    "offset_x": -19184.0,
+    "offset_y": -1776.0
   },
   "KEDY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -208.0,
-    "offset_y": -5344.0
+    "offset_x": -19056.0,
+    "offset_y": -1840.0
   },
   "KEJA": {
     "ghost": false,
@@ -5728,8 +5709,8 @@
   "KOFO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -80.0,
-    "offset_y": -5280.0
+    "offset_x": -18928.0,
+    "offset_y": -1776.0
   },
   "KOLO": {
     "ghost": false,
@@ -5740,8 +5721,8 @@
   "KOTY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21728.0,
-    "offset_y": -8496.0
+    "offset_x": -23072.0,
+    "offset_y": -8768.0
   },
   "KUJO": {
     "ghost": false,
@@ -5759,8 +5740,8 @@
   "KUPO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21600.0,
-    "offset_y": -8496.0
+    "offset_x": -22944.0,
+    "offset_y": -8768.0
   },
   "KURA": {
     "ghost": false,
@@ -5783,8 +5764,8 @@
   "KYMO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -80.0,
-    "offset_y": -5216.0
+    "offset_x": -18928.0,
+    "offset_y": -1712.0
   },
   "LABE": {
     "anchor_tag": "LUCE",
@@ -5794,21 +5775,22 @@
     "offset_y": 64.0
   },
   "LABU": {
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 1184.0,
-    "offset_y": -12064.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "LACA": {
     "anchor_tag": "PIN36",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LACE": {
     "anchor_tag": "LOBE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -5848,48 +5830,49 @@
   },
   "LAJU": {
     "anchor_tag": "LOTE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "LAKY": {
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 4352.0,
-    "offset_y": -12192.0
+    "offset_x": 384.0,
+    "offset_y": 0.0
   },
   "LALA": {
-    "anchor_tag": "LOMY",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 256.0
   },
   "LALO": {
     "anchor_tag": "PIN39",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LALU": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1712.0,
-    "offset_y": -15376.0
+    "offset_x": -13184.0,
+    "offset_y": -10256.0
   },
   "LAMA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18672.0,
-    "offset_y": -4336.0
+    "offset_x": -20992.0,
+    "offset_y": -3072.0
   },
   "LAMO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2384.0,
-    "offset_y": -14992.0
+    "offset_x": -14960.0,
+    "offset_y": -10096.0
   },
   "LAMY": {
     "anchor_tag": "LUKE",
@@ -5914,7 +5897,7 @@
     "ghost": false,
     "locked": true,
     "offset_x": -23744.0,
-    "offset_y": -9984.0
+    "offset_y": -10240.0
   },
   "LARU": {
     "anchor_tag": "LYKY",
@@ -5925,7 +5908,7 @@
   },
   "LARY": {
     "anchor_tag": "LODY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -5956,10 +5939,10 @@
     "offset_y": -7248.0
   },
   "LAVY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7200.0
+    "offset_x": -29248.0,
+    "offset_y": -8304.0
   },
   "LAWO": {
     "ghost": false,
@@ -5970,35 +5953,33 @@
   "LAXE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6316.99,
-    "offset_y": -3155.09
+    "offset_x": -10656.0,
+    "offset_y": -3088.0
   },
   "LAXU": {
-    "anchor_tag": "LEBO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -10784.0,
+    "offset_y": -3088.0
   },
   "LEBA": {
     "anchor_tag": "LUGA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "LEBO": {
-    "anchor_tag": "MOCE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -10784.0,
+    "offset_y": -3216.0
   },
   "LEBU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23488.0,
-    "offset_y": -8832.0
+    "offset_x": -23520.0,
+    "offset_y": -10240.0
   },
   "LEDO": {
     "anchor_tag": "LARU",
@@ -6009,9 +5990,9 @@
   },
   "LEFA": {
     "anchor_tag": "PIN40",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LEFE": {
@@ -6022,23 +6003,23 @@
     "offset_y": 64.0
   },
   "LEGU": {
-    "anchor_tag": "LOMA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "LEHO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 10336.0,
-    "offset_y": -12992.0
+    "offset_x": 7936.0,
+    "offset_y": -13344.0
   },
   "LEJA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2384.0,
-    "offset_y": -15184.0
+    "offset_x": -14960.0,
+    "offset_y": -10288.0
   },
   "LEKA": {
     "ghost": false,
@@ -6047,17 +6028,17 @@
     "offset_y": -12352.0
   },
   "LEKE": {
-    "anchor_tag": "NOLY",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 128.0
   },
   "LEKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11680.0,
-    "offset_y": -6128.0
+    "offset_x": -16624.0,
+    "offset_y": -13792.0
   },
   "LELA": {
     "anchor_tag": "MYTO",
@@ -6068,7 +6049,7 @@
   },
   "LELU": {
     "anchor_tag": "LEBA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6094,7 +6075,7 @@
   },
   "LEPA": {
     "anchor_tag": "LAJU",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6113,23 +6094,23 @@
     "offset_y": 64.0
   },
   "LERU": {
-    "anchor_tag": "MOSY",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 320.0
   },
   "LESA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2384.0,
-    "offset_y": -15120.0
+    "offset_x": -14960.0,
+    "offset_y": -10224.0
   },
   "LESO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1392.0,
-    "offset_y": -6192.0
+    "offset_x": 3120.0,
+    "offset_y": -12352.0
   },
   "LESU": {
     "anchor_tag": "LEFE",
@@ -6141,14 +6122,14 @@
   "LESY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 2000.0,
-    "offset_y": -13696.0
+    "offset_x": 3056.0,
+    "offset_y": -15744.0
   },
   "LETY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2384.0,
-    "offset_y": -15248.0
+    "offset_x": -14960.0,
+    "offset_y": -10352.0
   },
   "LEVA": {
     "anchor_tag": "LOSO",
@@ -6172,14 +6153,14 @@
   },
   "LEXE": {
     "anchor_tag": "PIN34",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LOBE": {
     "anchor_tag": "REDO",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6199,21 +6180,21 @@
   },
   "LODE": {
     "anchor_tag": "LEPA",
-    "ghost": true,
-    "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
-  },
-  "LODO": {
-    "anchor_tag": "MYVY",
     "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
+  "LODO": {
+    "anchor_tag": "LOZE",
+    "ghost": false,
+    "locked": true,
+    "offset_x": 384.0,
+    "offset_y": 320.0
+  },
   "LODY": {
     "anchor_tag": "LYKA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6221,14 +6202,14 @@
   "LOFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19776.0,
-    "offset_y": -3584.0
+    "offset_x": -22096.0,
+    "offset_y": -2320.0
   },
   "LOGO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23056.0,
-    "offset_y": -8848.0
+    "offset_x": -23296.0,
+    "offset_y": -10240.0
   },
   "LOKA": {
     "anchor_tag": "PYGU",
@@ -6247,7 +6228,7 @@
     "ghost": false,
     "locked": true,
     "offset_x": -23744.0,
-    "offset_y": -10048.0
+    "offset_y": -10432.0
   },
   "LOLE": {
     "anchor_tag": "MOKO",
@@ -6258,16 +6239,17 @@
   },
   "LOLY": {
     "anchor_tag": "PIN38",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LOMA": {
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 3552.0,
-    "offset_y": -12128.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "LOME": {
     "ghost": false,
@@ -6276,11 +6258,11 @@
     "offset_y": -12352.0
   },
   "LOMY": {
-    "anchor_tag": "LEKE",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 192.0
   },
   "LONU": {
     "anchor_tag": "LOBU",
@@ -6296,10 +6278,10 @@
     "offset_y": -7312.0
   },
   "LOPE": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1712.0,
-    "offset_y": -15440.0
+    "offset_x": -13184.0,
+    "offset_y": -10320.0
   },
   "LOPU": {
     "ghost": false,
@@ -6334,23 +6316,24 @@
     "offset_y": 64.0
   },
   "LOTE": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 9936.0,
     "offset_y": -12704.0
   },
   "LOTO": {
-    "anchor_tag": "NYXO",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 128.0
   },
   "LOTY": {
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 4576.0,
-    "offset_y": -12064.0
+    "offset_x": 512.0,
+    "offset_y": 0.0
   },
   "LOVA": {
     "anchor_tag": "VYCU",
@@ -6369,8 +6352,8 @@
   "LOVY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8366.71,
-    "offset_y": -2675.89
+    "offset_x": -8384.0,
+    "offset_y": -2688.0
   },
   "LOWA": {
     "anchor_tag": "PAZO",
@@ -6380,11 +6363,11 @@
     "offset_y": 64.0
   },
   "LOXA": {
-    "anchor_tag": "LALA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 320.0
   },
   "LOXO": {
     "ghost": false,
@@ -6395,14 +6378,14 @@
   "LOZA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1840.0,
-    "offset_y": -13616.0
+    "offset_x": 3632.0,
+    "offset_y": -15152.0
   },
   "LOZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3776.0,
-    "offset_y": -12128.0
+    "offset_x": 3376.0,
+    "offset_y": -12976.0
   },
   "LOZO": {
     "ghost": false,
@@ -6412,9 +6395,9 @@
   },
   "LOZU": {
     "anchor_tag": "PIN35",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LUBO": {
@@ -6426,16 +6409,16 @@
   },
   "LUBY": {
     "anchor_tag": "PIN41",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LUCA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -720.0,
-    "offset_y": -5280.0
+    "offset_x": -19568.0,
+    "offset_y": -1776.0
   },
   "LUCE": {
     "anchor_tag": "LEPY",
@@ -6447,14 +6430,14 @@
   "LUFA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19824.0,
-    "offset_y": -9152.0
+    "offset_x": -22848.0,
+    "offset_y": -10224.0
   },
   "LUFE": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2384.0,
-    "offset_y": -15056.0
+    "offset_x": -14960.0,
+    "offset_y": -10160.0
   },
   "LUFY": {
     "anchor_tag": "LYDE",
@@ -6465,7 +6448,7 @@
   },
   "LUGA": {
     "anchor_tag": "LUKY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6477,17 +6460,18 @@
     "offset_y": -12048.0
   },
   "LUHE": {
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 4128.0,
-    "offset_y": -12064.0
+    "offset_x": 256.0,
+    "offset_y": 0.0
   },
   "LUJA": {
-    "anchor_tag": "LUTU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 192.0
   },
   "LUKE": {
     "anchor_tag": "MENE",
@@ -6504,7 +6488,7 @@
   },
   "LUKY": {
     "anchor_tag": "LYZA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6512,14 +6496,14 @@
   "LULA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22080.0,
-    "offset_y": -5504.0
+    "offset_x": -22256.0,
+    "offset_y": -5312.0
   },
   "LUMA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22128.0,
-    "offset_y": -8672.0
+    "offset_x": -23296.0,
+    "offset_y": -8864.0
   },
   "LUMO": {
     "anchor_tag": "SYBO",
@@ -6564,8 +6548,8 @@
   "LURY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7616.0,
-    "offset_y": -2592.0
+    "offset_x": -8256.0,
+    "offset_y": -2688.0
   },
   "LUSU": {
     "ghost": false,
@@ -6574,23 +6558,23 @@
     "offset_y": -6880.0
   },
   "LUTU": {
-    "anchor_tag": "NEXA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 128.0
   },
   "LUVE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -6192.0
+    "offset_x": 3248.0,
+    "offset_y": -12352.0
   },
   "LUVO": {
     "anchor_tag": "PIN37",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "LUVY": {
@@ -6602,8 +6586,8 @@
   "LUXA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3744.0,
-    "offset_y": -12784.0
+    "offset_x": 3376.0,
+    "offset_y": -12416.0
   },
   "LUXO": {
     "ghost": false,
@@ -6612,11 +6596,11 @@
     "offset_y": -12112.0
   },
   "LUZO": {
-    "anchor_tag": "MUKU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 192.0
   },
   "LYCO": {
     "anchor_tag": "WUVA",
@@ -6640,11 +6624,11 @@
     "offset_y": 64.0
   },
   "LYDU": {
-    "anchor_tag": "LOTO",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 192.0
   },
   "LYFE": {
     "ghost": true,
@@ -6660,7 +6644,7 @@
   },
   "LYKA": {
     "anchor_tag": "LACE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6702,8 +6686,8 @@
   "LYRY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6128.0,
-    "offset_y": -4000.0
+    "offset_x": -10176.0,
+    "offset_y": -2752.0
   },
   "LYSA": {
     "anchor_tag": "LUNO",
@@ -6713,10 +6697,10 @@
     "offset_y": 64.0
   },
   "LYTA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15248.0
+    "offset_x": -14512.0,
+    "offset_y": -10352.0
   },
   "LYWE": {
     "ghost": false,
@@ -6732,7 +6716,7 @@
   },
   "LYZA": {
     "anchor_tag": "LODE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -6740,8 +6724,8 @@
   "LYZU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5536.0,
-    "offset_y": -3184.0
+    "offset_x": -10528.0,
+    "offset_y": -3088.0
   },
   "MABY": {
     "ghost": false,
@@ -6750,11 +6734,11 @@
     "offset_y": -12096.0
   },
   "MACU": {
-    "anchor_tag": "MOJU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 192.0
   },
   "MADA": {
     "anchor_tag": "PYZU",
@@ -6766,8 +6750,8 @@
   "MAGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -592.0,
-    "offset_y": -5280.0
+    "offset_x": -19440.0,
+    "offset_y": -1776.0
   },
   "MAJO": {
     "anchor_tag": "RUSY",
@@ -6819,7 +6803,7 @@
   },
   "MASA": {
     "anchor_tag": "LOZU",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -6854,18 +6838,18 @@
   "MATU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23440.0,
-    "offset_y": -10080.0
+    "offset_x": -23744.0,
+    "offset_y": -10528.0
   },
   "MATY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15248.0
+    "offset_x": -12912.0,
+    "offset_y": -10304.0
   },
   "MAVU": {
     "anchor_tag": "LUVO",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -6886,8 +6870,8 @@
   "MECO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -464.0,
-    "offset_y": -5280.0
+    "offset_x": -19312.0,
+    "offset_y": -1776.0
   },
   "MEDA": {
     "ghost": false,
@@ -6898,8 +6882,8 @@
   "MEFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1088.0,
-    "offset_y": -13824.0
+    "offset_x": 4592.0,
+    "offset_y": -15744.0
   },
   "MEGA": {
     "anchor_tag": "LOKA",
@@ -6916,11 +6900,11 @@
     "offset_y": 64.0
   },
   "MEGU": {
-    "anchor_tag": "LUZO",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 256.0
   },
   "MEHE": {
     "ghost": false,
@@ -6931,8 +6915,8 @@
   "MEKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12032.0,
-    "offset_y": -8144.0
+    "offset_x": -19104.0,
+    "offset_y": -6752.0
   },
   "MELA": {
     "anchor_tag": "NAGA",
@@ -6970,7 +6954,7 @@
   },
   "MEPA": {
     "anchor_tag": "LOLY",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -6985,27 +6969,26 @@
   "MERY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12288.0,
-    "offset_y": -8144.0
+    "offset_x": -18400.0,
+    "offset_y": -6816.0
   },
   "MESU": {
-    "anchor_tag": "LAXU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -10784.0,
+    "offset_y": -3024.0
   },
   "META": {
     "ghost": false,
     "locked": true,
     "offset_x": -23744.0,
-    "offset_y": -9920.0
+    "offset_y": -10336.0
   },
   "METE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1392.0,
-    "offset_y": -6320.0
+    "offset_x": 3248.0,
+    "offset_y": -12912.0
   },
   "MEVE": {
     "anchor_tag": "MEFU",
@@ -7016,7 +6999,7 @@
   },
   "MEWY": {
     "anchor_tag": "LEFA",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -7036,20 +7019,20 @@
   "MEXU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12672.0,
-    "offset_y": -8144.0
+    "offset_x": -18912.0,
+    "offset_y": -7136.0
   },
   "MEZU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4352.0,
-    "offset_y": -14368.0
+    "offset_x": 3760.0,
+    "offset_y": -15152.0
   },
   "MOBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12160.0,
-    "offset_y": -8144.0
+    "offset_x": -18240.0,
+    "offset_y": -6752.0
   },
   "MOCA": {
     "ghost": false,
@@ -7060,8 +7043,8 @@
   "MOCE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6560.0,
-    "offset_y": -3808.0
+    "offset_x": -10784.0,
+    "offset_y": -3152.0
   },
   "MODA": {
     "anchor_tag": "NUKE",
@@ -7071,17 +7054,17 @@
     "offset_y": 64.0
   },
   "MODU": {
-    "anchor_tag": "NEPO",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 320.0
   },
   "MODY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15600.0
+    "offset_x": -14544.0,
+    "offset_y": -10864.0
   },
   "MOFO": {
     "anchor_tag": "PEBA",
@@ -7093,14 +7076,15 @@
   "MOFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1520.0,
-    "offset_y": -6192.0
+    "offset_x": -10096.0,
+    "offset_y": -3328.0
   },
   "MOFY": {
+    "anchor_tag": "MEZU",
     "ghost": false,
     "locked": true,
-    "offset_x": 4576.0,
-    "offset_y": -14240.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "MOGY": {
     "ghost": false,
@@ -7109,11 +7093,11 @@
     "offset_y": -13392.0
   },
   "MOJU": {
-    "anchor_tag": "NOZO",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 128.0
   },
   "MOJY": {
     "anchor_tag": "MALE",
@@ -7136,7 +7120,7 @@
     "offset_y": 64.0
   },
   "MOLU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8560.0
@@ -7148,10 +7132,10 @@
     "offset_y": -4320.0
   },
   "MOPO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15184.0
+    "offset_x": -12912.0,
+    "offset_y": -10240.0
   },
   "MORU": {
     "ghost": false,
@@ -7162,8 +7146,8 @@
   "MORY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22832.0,
-    "offset_y": -8976.0
+    "offset_x": -23072.0,
+    "offset_y": -10240.0
   },
   "MOSA": {
     "ghost": false,
@@ -7174,15 +7158,15 @@
   "MOSU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -10128.0,
-    "offset_y": -2544.0
+    "offset_x": -11552.0,
+    "offset_y": -3248.0
   },
   "MOSY": {
-    "anchor_tag": "LUJA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 256.0
   },
   "MOTY": {
     "ghost": false,
@@ -7191,16 +7175,16 @@
     "offset_y": -5952.0
   },
   "MOVU": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15184.0
+    "offset_x": -14512.0,
+    "offset_y": -10288.0
   },
   "MOXE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8064.0,
-    "offset_y": -10304.0
+    "offset_x": -7008.0,
+    "offset_y": -5984.0
   },
   "MOXY": {
     "ghost": false,
@@ -7218,14 +7202,14 @@
   "MUDA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23280.0,
-    "offset_y": -8848.0
+    "offset_x": -23520.0,
+    "offset_y": -10336.0
   },
   "MUDE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20608.0,
-    "offset_y": -3456.0
+    "offset_x": -22928.0,
+    "offset_y": -2192.0
   },
   "MUFA": {
     "ghost": false,
@@ -7250,14 +7234,14 @@
   "MUGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12544.0,
-    "offset_y": -8144.0
+    "offset_x": -18720.0,
+    "offset_y": -6816.0
   },
   "MUHO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23056.0,
-    "offset_y": -8944.0
+    "offset_x": -23296.0,
+    "offset_y": -10336.0
   },
   "MUKA": {
     "anchor_tag": "LOVA",
@@ -7273,11 +7257,11 @@
     "offset_y": -13328.0
   },
   "MUKU": {
-    "anchor_tag": "NUDU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 128.0
   },
   "MULE": {
     "ghost": false,
@@ -7288,8 +7272,8 @@
   "MULO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13504.0,
-    "offset_y": -7984.0
+    "offset_x": -19104.0,
+    "offset_y": -7424.0
   },
   "MULY": {
     "anchor_tag": "MUFE",
@@ -7300,13 +7284,13 @@
   },
   "MUME": {
     "anchor_tag": "LUBY",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
   },
   "MUMY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8368.0
@@ -7354,20 +7338,20 @@
   "MUWY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18672.0,
-    "offset_y": -4272.0
+    "offset_x": -20992.0,
+    "offset_y": -3008.0
   },
   "MUXE": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2160.0,
-    "offset_y": -15248.0
+    "offset_x": -14736.0,
+    "offset_y": -10352.0
   },
   "MUZU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22512.0,
-    "offset_y": -8736.0
+    "offset_x": -19104.0,
+    "offset_y": -7520.0
   },
   "MYCE": {
     "anchor_tag": "MYPU",
@@ -7377,10 +7361,11 @@
     "offset_y": 64.0
   },
   "MYDE": {
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 4800.0,
-    "offset_y": -12128.0
+    "offset_x": 640.0,
+    "offset_y": 0.0
   },
   "MYFA": {
     "anchor_tag": "XEPO",
@@ -7391,17 +7376,17 @@
   },
   "MYFU": {
     "anchor_tag": "LEXE",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
   },
   "MYJY": {
-    "anchor_tag": "MEGU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 320.0
   },
   "MYLO": {
     "anchor_tag": "VYCU",
@@ -7419,8 +7404,8 @@
   "MYNU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11808.0,
-    "offset_y": -6128.0
+    "offset_x": -16848.0,
+    "offset_y": -13728.0
   },
   "MYNY": {
     "anchor_tag": "DEFY",
@@ -7445,7 +7430,7 @@
   },
   "MYRE": {
     "anchor_tag": "LACA",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -7459,7 +7444,7 @@
   },
   "MYSA": {
     "anchor_tag": "LALO",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -7467,20 +7452,20 @@
   "MYSO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7722.49,
-    "offset_y": -2619.17
+    "offset_x": -10400.0,
+    "offset_y": -3088.0
   },
   "MYTA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19280.0,
-    "offset_y": -3984.0
+    "offset_x": -21600.0,
+    "offset_y": -2720.0
   },
   "MYTE": {
     "ghost": false,
     "locked": true,
     "offset_x": -23744.0,
-    "offset_y": -10240.0
+    "offset_y": -10144.0
   },
   "MYTO": {
     "anchor_tag": "PABE",
@@ -7503,11 +7488,11 @@
     "offset_y": -3488.0
   },
   "MYVY": {
-    "anchor_tag": "LYDU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 256.0
   },
   "MYXA": {
     "anchor_tag": "RUCA",
@@ -7517,10 +7502,10 @@
     "offset_y": 64.0
   },
   "MYXE": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7008.0
+    "offset_x": -29248.0,
+    "offset_y": -8112.0
   },
   "MYZO": {
     "anchor_tag": "MEVE",
@@ -7530,22 +7515,22 @@
     "offset_y": 64.0
   },
   "MYZU": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15664.0
+    "offset_x": -14544.0,
+    "offset_y": -10928.0
   },
   "NABE": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2160.0,
-    "offset_y": -15184.0
+    "offset_x": -14736.0,
+    "offset_y": -10288.0
   },
   "NABO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -15184.0
+    "offset_x": -12560.0,
+    "offset_y": -10288.0
   },
   "NADA": {
     "anchor_tag": "NERO",
@@ -7555,11 +7540,11 @@
     "offset_y": 64.0
   },
   "NADY": {
-    "anchor_tag": "NYHA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 448.0
   },
   "NAFA": {
     "anchor_tag": "MUGU",
@@ -7578,8 +7563,8 @@
   "NAFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -10000.0,
-    "offset_y": -2544.0
+    "offset_x": -11184.0,
+    "offset_y": -3152.0
   },
   "NAGA": {
     "anchor_tag": "NYRO",
@@ -7589,17 +7574,17 @@
     "offset_y": 64.0
   },
   "NAJA": {
-    "anchor_tag": "NUTE",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 448.0
   },
   "NAKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1648.0,
-    "offset_y": -6192.0
+    "offset_x": -10336.0,
+    "offset_y": -3392.0
   },
   "NAKY": {
     "ghost": false,
@@ -7616,8 +7601,8 @@
   "NAPO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -720.0,
-    "offset_y": -5344.0
+    "offset_x": -19568.0,
+    "offset_y": -1840.0
   },
   "NARO": {
     "anchor_tag": "TOTU",
@@ -7627,11 +7612,11 @@
     "offset_y": 64.0
   },
   "NASA": {
-    "anchor_tag": "MYJY",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 384.0
   },
   "NATY": {
     "anchor_tag": "PEFU",
@@ -7644,13 +7629,13 @@
     "ghost": false,
     "locked": true,
     "offset_x": -23744.0,
-    "offset_y": -10112.0
+    "offset_y": -9952.0
   },
   "NAXY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12064.0,
-    "offset_y": -6192.0
+    "offset_x": -5824.0,
+    "offset_y": -11440.0
   },
   "NAZE": {
     "anchor_tag": "VOMY",
@@ -7660,18 +7645,18 @@
     "offset_y": 64.0
   },
   "NEDA": {
-    "anchor_tag": "MODU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 384.0
   },
   "NEFO": {
-    "anchor_tag": "NASA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 448.0
   },
   "NEFY": {
     "anchor_tag": "PYRO",
@@ -7681,22 +7666,22 @@
     "offset_y": 64.0
   },
   "NEJY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15056.0
+    "offset_x": -12912.0,
+    "offset_y": -10112.0
   },
   "NELA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -15248.0
+    "offset_x": -12560.0,
+    "offset_y": -10352.0
   },
   "NELE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16960.0,
-    "offset_y": -9040.0
+    "offset_x": -10576.0,
+    "offset_y": -10032.0
   },
   "NELO": {
     "ghost": false,
@@ -7714,15 +7699,15 @@
   "NENY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1392.0,
-    "offset_y": -6256.0
+    "offset_x": -9760.0,
+    "offset_y": -3504.0
   },
   "NEPO": {
-    "anchor_tag": "MACU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 256.0
   },
   "NERO": {
     "anchor_tag": "PUXY",
@@ -7734,8 +7719,8 @@
   "NERU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18368.0,
-    "offset_y": -4496.0
+    "offset_x": -20688.0,
+    "offset_y": -3232.0
   },
   "NESO": {
     "anchor_tag": "VEFU",
@@ -7747,8 +7732,8 @@
   "NETA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9680.0,
-    "offset_y": -6560.0
+    "offset_x": 10928.0,
+    "offset_y": -6976.0
   },
   "NEVU": {
     "anchor_tag": "POMO",
@@ -7764,18 +7749,18 @@
     "offset_y": -5440.0
   },
   "NEXA": {
-    "anchor_tag": "LOTY",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 512.0,
     "offset_y": 64.0
   },
   "NEZE": {
-    "anchor_tag": "LOXA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 384.0
   },
   "NEZO": {
     "anchor_tag": "NYTU",
@@ -7785,17 +7770,17 @@
     "offset_y": 64.0
   },
   "NOBO": {
-    "anchor_tag": "NEZE",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 448.0
   },
   "NOCU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8576.0,
-    "offset_y": -4960.0
+    "offset_x": 10160.0,
+    "offset_y": -7040.0
   },
   "NOFE": {
     "anchor_tag": "MYPA",
@@ -7807,20 +7792,20 @@
   "NOFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1648.0,
-    "offset_y": -6256.0
+    "offset_x": -10320.0,
+    "offset_y": -3312.0
   },
   "NOGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1520.0,
-    "offset_y": -6256.0
+    "offset_x": -10016.0,
+    "offset_y": -3616.0
   },
   "NOGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16288.0,
-    "offset_y": -8976.0
+    "offset_x": -9904.0,
+    "offset_y": -9968.0
   },
   "NOJO": {
     "anchor_tag": "NEVU",
@@ -7839,12 +7824,12 @@
   "NOKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18384.0,
-    "offset_y": -3632.0
+    "offset_x": -20704.0,
+    "offset_y": -2368.0
   },
   "NOLA": {
     "anchor_tag": "PYRE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -7853,13 +7838,13 @@
     "ghost": false,
     "locked": true,
     "offset_x": -23744.0,
-    "offset_y": -10176.0
+    "offset_y": -10048.0
   },
   "NOLY": {
-    "anchor_tag": "LUHE",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 256.0,
     "offset_y": 64.0
   },
   "NONO": {
@@ -7883,10 +7868,10 @@
     "offset_y": 64.0
   },
   "NOZO": {
-    "anchor_tag": "MYDE",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 640.0,
     "offset_y": 64.0
   },
   "NUCA": {
@@ -7897,17 +7882,17 @@
     "offset_y": 64.0
   },
   "NUDU": {
-    "anchor_tag": "LEGU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 128.0,
     "offset_y": 64.0
   },
   "NUFA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16288.0,
-    "offset_y": -9040.0
+    "offset_x": -9904.0,
+    "offset_y": -10032.0
   },
   "NUGA": {
     "anchor_tag": "PEDA",
@@ -7934,7 +7919,7 @@
     "ghost": false,
     "locked": true,
     "offset_x": -9008.0,
-    "offset_y": -4848.0
+    "offset_y": -4656.0
   },
   "NUKU": {
     "anchor_tag": "MUVO",
@@ -7995,10 +7980,11 @@
     "offset_y": -12528.0
   },
   "NURO": {
+    "anchor_tag": "PYZU",
     "ghost": false,
     "locked": true,
-    "offset_x": 4800.0,
-    "offset_y": -13760.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "NUSY": {
     "ghost": false,
@@ -8007,11 +7993,11 @@
     "offset_y": -12432.0
   },
   "NUTE": {
-    "anchor_tag": "LODO",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 384.0
   },
   "NUTO": {
     "anchor_tag": "PYLO",
@@ -8021,16 +8007,16 @@
     "offset_y": 64.0
   },
   "NUTY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -14992.0
+    "offset_x": -12912.0,
+    "offset_y": -10048.0
   },
   "NUVA": {
     "anchor_tag": "PIN44",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "NUVY": {
@@ -8050,14 +8036,14 @@
   "NYBE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -2304.0,
-    "offset_y": -13568.0
+    "offset_x": 3008.0,
+    "offset_y": -14976.0
   },
   "NYBO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1712.0,
-    "offset_y": -15312.0
+    "offset_x": -13184.0,
+    "offset_y": -10192.0
   },
   "NYDO": {
     "anchor_tag": "PARA",
@@ -8069,14 +8055,14 @@
   "NYDU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12416.0,
-    "offset_y": -8144.0
+    "offset_x": -18560.0,
+    "offset_y": -6816.0
   },
   "NYDY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1520.0,
-    "offset_y": -6320.0
+    "offset_x": -10336.0,
+    "offset_y": -3632.0
   },
   "NYFO": {
     "ghost": false,
@@ -8085,7 +8071,7 @@
     "offset_y": -4464.0
   },
   "NYGO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29680.0,
     "offset_y": -8560.0
@@ -8098,17 +8084,17 @@
     "offset_y": 64.0
   },
   "NYHA": {
-    "anchor_tag": "LERU",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 384.0
   },
   "NYKA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9872.0,
-    "offset_y": -2544.0
+    "offset_x": -11040.0,
+    "offset_y": -3024.0
   },
   "NYKE": {
     "anchor_tag": "SABU",
@@ -8132,16 +8118,17 @@
     "offset_y": 64.0
   },
   "NYLU": {
+    "anchor_tag": "MOFY",
     "ghost": false,
     "locked": true,
-    "offset_x": 4800.0,
-    "offset_y": -14304.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "NYPE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19776.0,
-    "offset_y": -3680.0
+    "offset_x": -22096.0,
+    "offset_y": -2416.0
   },
   "NYPO": {
     "anchor_tag": "NUMA",
@@ -8172,34 +8159,33 @@
     "offset_y": 64.0
   },
   "NYVA": {
-    "anchor_tag": "MESU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -10784.0,
+    "offset_y": -2960.0
   },
   "NYXO": {
-    "anchor_tag": "LAKY",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 384.0,
     "offset_y": 64.0
   },
   "NYXU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7040.0,
-    "offset_y": -3584.0
+    "offset_x": -10784.0,
+    "offset_y": -3280.0
   },
   "NYZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7936.0,
-    "offset_y": -10240.0
+    "offset_x": -6768.0,
+    "offset_y": -5840.0
   },
   "PABA": {
     "anchor_tag": "RARO",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -8207,8 +8193,8 @@
   "PABE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4352.0,
-    "offset_y": -13824.0
+    "offset_x": 3760.0,
+    "offset_y": -14608.0
   },
   "PACY": {
     "anchor_tag": "POBE",
@@ -8218,16 +8204,16 @@
     "offset_y": 64.0
   },
   "PADO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -15056.0
+    "offset_x": -12560.0,
+    "offset_y": -10160.0
   },
   "PAFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16960.0,
-    "offset_y": -8976.0
+    "offset_x": -10576.0,
+    "offset_y": -9968.0
   },
   "PAGA": {
     "anchor_tag": "NOJO",
@@ -8239,8 +8225,8 @@
   "PAGO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8464.0,
-    "offset_y": -7744.0
+    "offset_x": -7248.0,
+    "offset_y": -4896.0
   },
   "PAGU": {
     "anchor_tag": "PYMA",
@@ -8252,14 +8238,14 @@
   "PAHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8368.0,
-    "offset_y": -9728.0
+    "offset_x": -7136.0,
+    "offset_y": -5648.0
   },
   "PAHO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8672.0,
-    "offset_y": -11296.0
+    "offset_x": -8112.0,
+    "offset_y": -5664.0
   },
   "PAHY": {
     "anchor_tag": "LEVA",
@@ -8271,8 +8257,8 @@
   "PALO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16960.0,
-    "offset_y": -9104.0
+    "offset_x": -10576.0,
+    "offset_y": -10096.0
   },
   "PALU": {
     "anchor_tag": "SOMY",
@@ -8332,8 +8318,8 @@
   "PARU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17200.0,
-    "offset_y": -5920.0
+    "offset_x": -19760.0,
+    "offset_y": -3296.0
   },
   "PASE": {
     "anchor_tag": "NONO",
@@ -8345,8 +8331,8 @@
   "PASO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8240.0,
-    "offset_y": -9728.0
+    "offset_x": -7008.0,
+    "offset_y": -5648.0
   },
   "PATE": {
     "anchor_tag": "LYSA",
@@ -8368,10 +8354,10 @@
     "offset_y": -13200.0
   },
   "PAVY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15120.0
+    "offset_x": -12912.0,
+    "offset_y": -10176.0
   },
   "PAWE": {
     "anchor_tag": "PUGU",
@@ -8404,8 +8390,8 @@
   "PEBY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6150.58,
-    "offset_y": -3229.38
+    "offset_x": -7136.0,
+    "offset_y": -2272.0
   },
   "PECU": {
     "anchor_tag": "PASO",
@@ -8423,17 +8409,16 @@
   },
   "PEDU": {
     "anchor_tag": "PIN46",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "PEFO": {
-    "anchor_tag": "PUCO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 3504.0,
+    "offset_y": -15152.0
   },
   "PEFU": {
     "anchor_tag": "NYLU",
@@ -8450,10 +8435,10 @@
     "offset_y": 64.0
   },
   "PEGY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -14992.0
+    "offset_x": -12560.0,
+    "offset_y": -10096.0
   },
   "PELA": {
     "anchor_tag": "MEGA",
@@ -8618,8 +8603,8 @@
   "PIN17": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21696.0,
-    "offset_y": -5232.0
+    "offset_x": -21824.0,
+    "offset_y": -5152.0
   },
   "PIN18": {
     "anchor_tag": "PIN17",
@@ -8733,63 +8718,63 @@
     "offset_y": 64.0
   },
   "PIN34": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": 12960.0,
+    "offset_x": 12992.0,
     "offset_y": -6704.0
   },
   "PIN35": {
     "anchor_tag": "PIN34",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN36": {
     "anchor_tag": "PIN35",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN37": {
     "anchor_tag": "PIN36",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN38": {
     "anchor_tag": "PIN37",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN39": {
     "anchor_tag": "PIN38",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN40": {
     "anchor_tag": "PIN39",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN41": {
     "anchor_tag": "PIN40",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN42": {
     "anchor_tag": "PIN46",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -8802,7 +8787,7 @@
   },
   "PIN44": {
     "anchor_tag": "PIN47",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -8815,21 +8800,21 @@
   },
   "PIN46": {
     "anchor_tag": "PIN44",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN47": {
     "anchor_tag": "PIN48",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "PIN48": {
     "anchor_tag": "PIN41",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -8855,32 +8840,32 @@
   "PIN52": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19296.0,
-    "offset_y": -3328.0
+    "offset_x": -21616.0,
+    "offset_y": -2064.0
   },
   "PIN53": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8192.0,
-    "offset_y": -11936.0
+    "offset_x": -6208.0,
+    "offset_y": -5696.0
   },
   "PIN54": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4416.0,
-    "offset_y": -12416.0
+    "offset_x": -6544.0,
+    "offset_y": -4704.0
   },
   "PIN55": {
     "ghost": false,
     "locked": true,
-    "offset_x": 48.0,
-    "offset_y": -5216.0
+    "offset_x": -18800.0,
+    "offset_y": -1712.0
   },
   "PIN56": {
     "ghost": false,
     "locked": true,
-    "offset_x": 48.0,
-    "offset_y": -5280.0
+    "offset_x": -18800.0,
+    "offset_y": -1776.0
   },
   "PIN57": {
     "ghost": false,
@@ -8988,22 +8973,24 @@
     "offset_y": -4576.0
   },
   "PIN78": {
+    "anchor_tag": "UVER",
     "ghost": false,
     "locked": true,
-    "offset_x": -20864.0,
-    "offset_y": -9152.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "PIN79": {
+    "anchor_tag": "UGAC",
     "ghost": false,
     "locked": true,
-    "offset_x": -20864.0,
-    "offset_y": -8976.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "PIN80": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21616.0,
-    "offset_y": -6624.0
+    "offset_x": -22640.0,
+    "offset_y": -9152.0
   },
   "POBE": {
     "anchor_tag": "PONO",
@@ -9035,27 +9022,27 @@
   "POFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4672.0,
-    "offset_y": -12416.0
+    "offset_x": -6800.0,
+    "offset_y": -4704.0
   },
   "POGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19456.0,
-    "offset_y": -3328.0
+    "offset_x": -21776.0,
+    "offset_y": -2064.0
   },
   "POHU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7856.0,
-    "offset_y": -9472.0
+    "offset_x": -6624.0,
+    "offset_y": -5392.0
   },
   "POJU": {
-    "anchor_tag": "PULO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 320.0
   },
   "POKA": {
     "ghost": false,
@@ -9073,14 +9060,14 @@
   "POKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13616.0,
-    "offset_y": -10048.0
+    "offset_x": -9472.0,
+    "offset_y": -3552.0
   },
   "POLA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -15312.0
+    "offset_x": -12560.0,
+    "offset_y": -10416.0
   },
   "POLO": {
     "anchor_tag": "PELA",
@@ -9093,14 +9080,14 @@
     "anchor_tag": "PUSY",
     "ghost": false,
     "locked": true,
-    "offset_x": 128.0,
-    "offset_y": 0.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "POME": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4672.0,
-    "offset_y": -12480.0
+    "offset_x": -6800.0,
+    "offset_y": -4768.0
   },
   "POMO": {
     "anchor_tag": "PEBO",
@@ -9118,22 +9105,22 @@
   },
   "PONY": {
     "anchor_tag": "PIN42",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "POPU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17328.0,
-    "offset_y": -5920.0
+    "offset_x": -19936.0,
+    "offset_y": -3296.0
   },
   "PORE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8704.0,
-    "offset_y": -4960.0
+    "offset_x": 10336.0,
+    "offset_y": -7024.0
   },
   "PORY": {
     "ghost": false,
@@ -9151,14 +9138,14 @@
   "POTU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9632.0,
-    "offset_y": -6288.0
+    "offset_x": 10624.0,
+    "offset_y": -7216.0
   },
   "POVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7808.0,
-    "offset_y": -10240.0
+    "offset_x": -7184.0,
+    "offset_y": -5760.0
   },
   "POVY": {
     "anchor_tag": "REGA",
@@ -9170,36 +9157,35 @@
   "POWU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11936.0,
-    "offset_y": -6192.0
+    "offset_x": -3136.0,
+    "offset_y": -10368.0
   },
   "POWY": {
-    "anchor_tag": "POJU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 384.0
   },
   "POXA": {
-    "anchor_tag": "PYZO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 192.0
   },
   "POZO": {
-    "anchor_tag": "RAWU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 128.0,
     "offset_y": 64.0
   },
   "PUCO": {
-    "anchor_tag": "NYBE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 3168.0,
+    "offset_y": -14976.0
   },
   "PUDU": {
     "anchor_tag": "MOFO",
@@ -9245,8 +9231,8 @@
   "PUKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16288.0,
-    "offset_y": -9104.0
+    "offset_x": -9904.0,
+    "offset_y": -10096.0
   },
   "PULA": {
     "anchor_tag": "NYGY",
@@ -9256,11 +9242,11 @@
     "offset_y": 64.0
   },
   "PULO": {
-    "anchor_tag": "POXA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 256.0
   },
   "PULY": {
     "anchor_tag": "PAWE",
@@ -9270,10 +9256,11 @@
     "offset_y": 64.0
   },
   "PUME": {
+    "anchor_tag": "SYPY",
     "ghost": false,
     "locked": true,
-    "offset_x": 4352.0,
-    "offset_y": -11648.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "PUNU": {
     "anchor_tag": "VOMY",
@@ -9285,8 +9272,8 @@
   "PURE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19776.0,
-    "offset_y": -3488.0
+    "offset_x": -22096.0,
+    "offset_y": -2224.0
   },
   "PUSO": {
     "anchor_tag": "ROWU",
@@ -9298,22 +9285,20 @@
   "PUSY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -23616.0,
-    "offset_y": -9344.0
+    "offset_x": -23520.0,
+    "offset_y": -9408.0
   },
   "PUTE": {
-    "anchor_tag": "XONO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 3168.0,
+    "offset_y": -14880.0
   },
   "PUVA": {
-    "anchor_tag": "UVER",
     "ghost": false,
     "locked": true,
-    "offset_x": -160.0,
-    "offset_y": 32.0
+    "offset_x": -23072.0,
+    "offset_y": -9056.0
   },
   "PUWU": {
     "anchor_tag": "MYLO",
@@ -9325,8 +9310,8 @@
   "PUXA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8064.0,
-    "offset_y": -10240.0
+    "offset_x": -6976.0,
+    "offset_y": -5872.0
   },
   "PUXY": {
     "anchor_tag": "MULO",
@@ -9343,11 +9328,11 @@
     "offset_y": 64.0
   },
   "PYBO": {
-    "anchor_tag": "NEDA",
+    "anchor_tag": "LOZE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 448.0
   },
   "PYCO": {
     "ghost": false,
@@ -9356,16 +9341,16 @@
     "offset_y": -4512.0
   },
   "PYGA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15120.0
+    "offset_x": -14512.0,
+    "offset_y": -10224.0
   },
   "PYGO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13744.0,
-    "offset_y": -10048.0
+    "offset_x": -9600.0,
+    "offset_y": -3552.0
   },
   "PYGU": {
     "anchor_tag": "PODA",
@@ -9375,10 +9360,10 @@
     "offset_y": 64.0
   },
   "PYHU": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15536.0
+    "offset_x": -14544.0,
+    "offset_y": -10800.0
   },
   "PYJO": {
     "anchor_tag": "NATY",
@@ -9388,11 +9373,11 @@
     "offset_y": 64.0
   },
   "PYJU": {
-    "anchor_tag": "POWY",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 448.0
   },
   "PYLO": {
     "anchor_tag": "NYKO",
@@ -9429,7 +9414,7 @@
   },
   "PYRE": {
     "anchor_tag": "SETE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -9448,17 +9433,18 @@
     "offset_y": -6464.0
   },
   "PYZO": {
-    "anchor_tag": "POZO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 128.0
   },
   "PYZU": {
+    "anchor_tag": "PABE",
     "ghost": false,
     "locked": true,
-    "offset_x": 4576.0,
-    "offset_y": -13696.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "PYZY": {
     "anchor_tag": "TAFA",
@@ -9535,11 +9521,11 @@
     "offset_y": 64.0
   },
   "RAGA": {
-    "anchor_tag": "RAJO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 448.0
   },
   "RAGE": {
     "anchor_tag": "RUBY",
@@ -9564,22 +9550,22 @@
   "RAHU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5088.0,
-    "offset_y": -7328.0
+    "offset_x": -15296.0,
+    "offset_y": -16000.0
   },
   "RAJA": {
-    "anchor_tag": "RUTO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 320.0
   },
   "RAJO": {
-    "anchor_tag": "RAJA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 384.0
   },
   "RAJU": {
     "anchor_tag": "RYBU",
@@ -9595,10 +9581,10 @@
     "offset_y": -12576.0
   },
   "RAKE": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2160.0,
-    "offset_y": -15120.0
+    "offset_x": -14736.0,
+    "offset_y": -10224.0
   },
   "RAKU": {
     "anchor_tag": "RETA",
@@ -9610,15 +9596,15 @@
   "RALO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21424.0,
-    "offset_y": -5184.0
+    "offset_x": -21600.0,
+    "offset_y": -5696.0
   },
   "RALU": {
-    "anchor_tag": "SETU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 384.0
   },
   "RALY": {
     "anchor_tag": "PARE",
@@ -9651,15 +9637,15 @@
   "RAPE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17904.0,
-    "offset_y": -4048.0
+    "offset_x": -20224.0,
+    "offset_y": -2784.0
   },
   "RAPU": {
-    "anchor_tag": "RYLE",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 384.0
   },
   "RARE": {
     "anchor_tag": "RULY",
@@ -9670,7 +9656,7 @@
   },
   "RARO": {
     "anchor_tag": "TEPY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -9685,8 +9671,8 @@
   "RATA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1344.0,
-    "offset_y": -14160.0
+    "offset_x": 3632.0,
+    "offset_y": -14608.0
   },
   "RATE": {
     "anchor_tag": "PERU",
@@ -9736,11 +9722,11 @@
     "offset_y": -7904.0
   },
   "RAWU": {
-    "anchor_tag": "LABU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "RAXY": {
     "anchor_tag": "RONY",
@@ -9779,7 +9765,7 @@
   },
   "REDO": {
     "anchor_tag": "PABA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -9798,10 +9784,10 @@
     "offset_y": 64.0
   },
   "REFA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2160.0,
-    "offset_y": -15312.0
+    "offset_x": -14736.0,
+    "offset_y": -10416.0
   },
   "REFE": {
     "anchor_tag": "RUGU",
@@ -9824,21 +9810,20 @@
     "offset_y": 64.0
   },
   "REGA": {
-    "anchor_tag": "MEXU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -18720.0,
+    "offset_y": -7360.0
   },
   "REGE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5664.0,
-    "offset_y": -6928.0
+    "offset_x": -12560.0,
+    "offset_y": -16448.0
   },
   "REHO": {
     "anchor_tag": "PONY",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -9853,8 +9838,8 @@
   "REJO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16832.0,
-    "offset_y": -9040.0
+    "offset_x": -10448.0,
+    "offset_y": -10032.0
   },
   "REKU": {
     "anchor_tag": "REVU",
@@ -9866,8 +9851,8 @@
   "RELA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4944.0,
-    "offset_y": -7536.0
+    "offset_x": -15440.0,
+    "offset_y": -16208.0
   },
   "REMA": {
     "anchor_tag": "ROFO",
@@ -9892,8 +9877,8 @@
   "RENA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5664.0,
-    "offset_y": -6992.0
+    "offset_x": -11376.0,
+    "offset_y": -14896.0
   },
   "RENE": {
     "ghost": false,
@@ -9911,8 +9896,8 @@
   "REPU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17072.0,
-    "offset_y": -5920.0
+    "offset_x": -19584.0,
+    "offset_y": -3296.0
   },
   "RERA": {
     "anchor_tag": "RABY",
@@ -9972,7 +9957,7 @@
   },
   "REVA": {
     "anchor_tag": "SOTU",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -9980,8 +9965,8 @@
   "REVO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4720.0,
-    "offset_y": -7552.0
+    "offset_x": -15664.0,
+    "offset_y": -16224.0
   },
   "REVU": {
     "anchor_tag": "RYRO",
@@ -9991,18 +9976,17 @@
     "offset_y": 64.0
   },
   "REVY": {
-    "anchor_tag": "TYCE",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 192.0
   },
   "REWO": {
-    "anchor_tag": "XADO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 3504.0,
+    "offset_y": -14608.0
   },
   "REXU": {
     "anchor_tag": "TYJA",
@@ -10034,8 +10018,8 @@
   "ROCY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4960.0,
-    "offset_y": -7328.0
+    "offset_x": -15424.0,
+    "offset_y": -16000.0
   },
   "RODU": {
     "anchor_tag": "RARE",
@@ -10047,14 +10031,14 @@
   "RODY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5920.0,
-    "offset_y": -6928.0
+    "offset_x": -11120.0,
+    "offset_y": -14672.0
   },
   "ROFA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5792.0,
-    "offset_y": -6992.0
+    "offset_x": -11392.0,
+    "offset_y": -14720.0
   },
   "ROFO": {
     "anchor_tag": "POLY",
@@ -10073,8 +10057,8 @@
   "ROGE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16960.0,
-    "offset_y": -8912.0
+    "offset_x": -10576.0,
+    "offset_y": -9904.0
   },
   "ROGY": {
     "anchor_tag": "TAMU",
@@ -10098,10 +10082,11 @@
     "offset_y": 64.0
   },
   "ROKE": {
+    "anchor_tag": "TOPE",
     "ghost": false,
     "locked": true,
-    "offset_x": -13920.0,
-    "offset_y": -7984.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "ROKO": {
     "anchor_tag": "SYMA",
@@ -10113,14 +10098,14 @@
   "ROKU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11488.0
+    "offset_x": -14992.0,
+    "offset_y": -11952.0
   },
   "ROLO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15312.0
+    "offset_x": -12912.0,
+    "offset_y": -10368.0
   },
   "ROLU": {
     "anchor_tag": "REPA",
@@ -10145,8 +10130,8 @@
   "RONE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7984.0,
-    "offset_y": -9472.0
+    "offset_x": -6752.0,
+    "offset_y": -5392.0
   },
   "RONY": {
     "anchor_tag": "SOMA",
@@ -10164,8 +10149,8 @@
   "ROPO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9296.0,
-    "offset_y": -6512.0
+    "offset_x": -19728.0,
+    "offset_y": -6544.0
   },
   "ROPU": {
     "anchor_tag": "ROCE",
@@ -10177,8 +10162,8 @@
   "ROPY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8272.0,
-    "offset_y": -6768.0
+    "offset_x": -16912.0,
+    "offset_y": -13872.0
   },
   "RORA": {
     "anchor_tag": "SUKY",
@@ -10204,8 +10189,8 @@
   "RORU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22480.0,
-    "offset_y": -5536.0
+    "offset_x": -22528.0,
+    "offset_y": -5328.0
   },
   "RORY": {
     "anchor_tag": "RERA",
@@ -10236,28 +10221,28 @@
   },
   "ROTE": {
     "anchor_tag": "RYLA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "ROTU": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15728.0
+    "offset_x": -14544.0,
+    "offset_y": -10992.0
   },
   "ROVA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1264.0,
-    "offset_y": -15120.0
+    "offset_x": -12560.0,
+    "offset_y": -10224.0
   },
   "ROVE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5536.0,
-    "offset_y": -6992.0
+    "offset_x": -11328.0,
+    "offset_y": -15280.0
   },
   "ROWU": {
     "anchor_tag": "SURO",
@@ -10276,8 +10261,8 @@
   "ROXO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12640.0,
-    "offset_y": -10800.0
+    "offset_x": -8240.0,
+    "offset_y": -5664.0
   },
   "ROXU": {
     "anchor_tag": "MUNE",
@@ -10289,8 +10274,8 @@
   "ROXY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8240.0,
-    "offset_y": -9792.0
+    "offset_x": -7008.0,
+    "offset_y": -5712.0
   },
   "ROZE": {
     "anchor_tag": "PECU",
@@ -10328,17 +10313,17 @@
     "offset_y": 64.0
   },
   "RUCE": {
-    "anchor_tag": "SOLY",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 128.0
   },
   "RUCO": {
-    "anchor_tag": "TOSA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 256.0,
     "offset_y": 64.0
   },
   "RUDA": {
@@ -10370,16 +10355,18 @@
     "offset_y": 64.0
   },
   "RUGO": {
+    "anchor_tag": "SUCO",
     "ghost": false,
     "locked": true,
-    "offset_x": 4800.0,
-    "offset_y": -11584.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "RUGU": {
+    "anchor_tag": "RYVE",
     "ghost": false,
     "locked": true,
-    "offset_x": -9424.0,
-    "offset_y": -6384.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "RUGY": {
     "anchor_tag": "ROLU",
@@ -10405,12 +10392,12 @@
   "RUJU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4672.0,
-    "offset_y": -12544.0
+    "offset_x": -6800.0,
+    "offset_y": -4832.0
   },
   "RUKY": {
     "anchor_tag": "NUVA",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -10431,7 +10418,7 @@
   },
   "RUMA": {
     "anchor_tag": "PEDU",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -10460,8 +10447,8 @@
   "RUNE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22256.0,
-    "offset_y": -5360.0
+    "offset_x": -22272.0,
+    "offset_y": -5152.0
   },
   "RUNO": {
     "anchor_tag": "RONA",
@@ -10478,10 +10465,11 @@
     "offset_y": 64.0
   },
   "RUPO": {
+    "anchor_tag": "PAGO",
     "ghost": false,
     "locked": true,
-    "offset_x": -8336.0,
-    "offset_y": -7744.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "RUPY": {
     "anchor_tag": "REXU",
@@ -10493,8 +10481,8 @@
   "RURA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5408.0,
-    "offset_y": -6928.0
+    "offset_x": -11936.0,
+    "offset_y": -15648.0
   },
   "RUSA": {
     "anchor_tag": "VEJY",
@@ -10530,17 +10518,17 @@
     "offset_y": -7840.0
   },
   "RUTO": {
-    "anchor_tag": "RYJA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 256.0
   },
   "RUTU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19936.0,
-    "offset_y": -3488.0
+    "offset_x": -22256.0,
+    "offset_y": -2224.0
   },
   "RUVO": {
     "anchor_tag": "RYMA",
@@ -10552,26 +10540,26 @@
   "RUVY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4304.0,
-    "offset_y": -7376.0
+    "offset_x": -16080.0,
+    "offset_y": -16048.0
   },
   "RUXA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22000.0,
+    "offset_x": -22048.0,
     "offset_y": -5152.0
   },
   "RUZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4544.0,
-    "offset_y": -12416.0
+    "offset_x": -6672.0,
+    "offset_y": -4704.0
   },
   "RYBO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12256.0
+    "offset_x": -14992.0,
+    "offset_y": -12720.0
   },
   "RYBU": {
     "anchor_tag": "ROTA",
@@ -10651,37 +10639,37 @@
     "offset_y": -12784.0
   },
   "RYGA": {
-    "anchor_tag": "REVY",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 256.0
   },
   "RYJA": {
-    "anchor_tag": "RUCE",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 384.0,
+    "offset_y": 192.0
   },
   "RYJE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4560.0,
-    "offset_y": -7552.0
+    "offset_x": -15824.0,
+    "offset_y": -16224.0
   },
   "RYJU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8592.0,
-    "offset_y": -7744.0
+    "offset_x": -7376.0,
+    "offset_y": -4896.0
   },
   "RYJY": {
-    "anchor_tag": "SUPU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 448.0
   },
   "RYKO": {
     "anchor_tag": "RUVO",
@@ -10706,17 +10694,17 @@
   },
   "RYLA": {
     "anchor_tag": "SORA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "RYLE": {
-    "anchor_tag": "RYGA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 320.0
   },
   "RYLU": {
     "ghost": false,
@@ -10725,16 +10713,16 @@
     "offset_y": -7968.0
   },
   "RYMA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -20688.0,
-    "offset_y": -5248.0
+    "offset_x": -21376.0,
+    "offset_y": -5152.0
   },
   "RYME": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18160.0,
-    "offset_y": -4272.0
+    "offset_x": -20480.0,
+    "offset_y": -3008.0
   },
   "RYNA": {
     "anchor_tag": "RUSE",
@@ -10746,14 +10734,14 @@
   "RYNO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19616.0,
-    "offset_y": -3328.0
+    "offset_x": -21936.0,
+    "offset_y": -2064.0
   },
   "RYPO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8320.0,
-    "offset_y": -11936.0
+    "offset_x": -6336.0,
+    "offset_y": -5696.0
   },
   "RYPU": {
     "anchor_tag": "RUNE",
@@ -10770,11 +10758,11 @@
     "offset_y": 64.0
   },
   "RYSA": {
-    "anchor_tag": "SADY",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 192.0
   },
   "RYSO": {
     "anchor_tag": "RAVE",
@@ -10800,8 +10788,8 @@
   "RYVE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9552.0,
-    "offset_y": -6384.0
+    "offset_x": -13792.0,
+    "offset_y": -10416.0
   },
   "RYVO": {
     "anchor_tag": "RORY",
@@ -10841,21 +10829,21 @@
   "SACU": {
     "ghost": true,
     "locked": true,
-    "offset_x": -6992.0,
-    "offset_y": -11328.0
+    "offset_x": -10320.0,
+    "offset_y": -12848.0
   },
   "SADU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17072.0,
-    "offset_y": -5856.0
+    "offset_x": -7248.0,
+    "offset_y": -5024.0
   },
   "SADY": {
-    "anchor_tag": "TACA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 128.0
   },
   "SAFO": {
     "anchor_tag": "TEPE",
@@ -10887,8 +10875,8 @@
   "SAKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12128.0
+    "offset_x": -14992.0,
+    "offset_y": -12592.0
   },
   "SAKO": {
     "anchor_tag": "SYBU",
@@ -10913,8 +10901,8 @@
   "SALE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4144.0,
-    "offset_y": -7248.0
+    "offset_x": -16240.0,
+    "offset_y": -15920.0
   },
   "SALO": {
     "anchor_tag": "SEDY",
@@ -10925,7 +10913,7 @@
   },
   "SALU": {
     "anchor_tag": "NOLA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -10967,8 +10955,8 @@
   "SANU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20160.0,
-    "offset_y": -3488.0
+    "offset_x": -22480.0,
+    "offset_y": -2224.0
   },
   "SAPA": {
     "ghost": false,
@@ -10978,7 +10966,7 @@
   },
   "SAPU": {
     "anchor_tag": "REVA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -10993,8 +10981,8 @@
   "SARA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -14640.0,
-    "offset_y": -8368.0
+    "offset_x": -19584.0,
+    "offset_y": -7712.0
   },
   "SARE": {
     "ghost": false,
@@ -11011,8 +10999,8 @@
   "SARY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16832.0,
-    "offset_y": -9104.0
+    "offset_x": -10448.0,
+    "offset_y": -10096.0
   },
   "SASY": {
     "anchor_tag": "POTE",
@@ -11038,8 +11026,8 @@
   "SAVY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11936.0
+    "offset_x": -14992.0,
+    "offset_y": -12400.0
   },
   "SAWA": {
     "anchor_tag": "SEPU",
@@ -11058,14 +11046,14 @@
   "SAXO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20416.0,
-    "offset_y": -3616.0
+    "offset_x": -22736.0,
+    "offset_y": -2352.0
   },
   "SAZO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4432.0,
-    "offset_y": -7376.0
+    "offset_x": -15952.0,
+    "offset_y": -16048.0
   },
   "SAZU": {
     "anchor_tag": "SUMO",
@@ -11084,22 +11072,21 @@
   "SEBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8944.0,
-    "offset_y": -2688.0
+    "offset_x": -9696.0,
+    "offset_y": -2864.0
   },
   "SEBO": {
-    "anchor_tag": "SURE",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 192.0
   },
   "SEBY": {
-    "anchor_tag": "TYVY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -10176.0,
+    "offset_y": -14720.0
   },
   "SECA": {
     "ghost": false,
@@ -11122,11 +11109,10 @@
     "offset_y": 64.0
   },
   "SEFA": {
-    "anchor_tag": "ROVE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -10000.0,
+    "offset_y": -15712.0
   },
   "SEFU": {
     "anchor_tag": "SOGO",
@@ -11149,22 +11135,24 @@
     "offset_y": 64.0
   },
   "SEGO": {
+    "anchor_tag": "RUPO",
     "ghost": false,
     "locked": true,
-    "offset_x": -8208.0,
-    "offset_y": -7744.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "SEGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12768.0,
-    "offset_y": -10800.0
+    "offset_x": -8368.0,
+    "offset_y": -5664.0
   },
   "SEJA": {
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 4576.0,
-    "offset_y": -12608.0
+    "offset_x": 512.0,
+    "offset_y": 0.0
   },
   "SEJY": {
     "anchor_tag": "SAKO",
@@ -11183,14 +11171,14 @@
   "SEKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8048.0,
-    "offset_y": -3744.0
+    "offset_x": -8464.0,
+    "offset_y": -3280.0
   },
   "SELA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19616.0,
-    "offset_y": -3584.0
+    "offset_x": -21936.0,
+    "offset_y": -2320.0
   },
   "SELE": {
     "anchor_tag": "RAMU",
@@ -11220,10 +11208,10 @@
     "offset_y": -7904.0
   },
   "SEME": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2160.0,
-    "offset_y": -14992.0
+    "offset_x": -14736.0,
+    "offset_y": -10096.0
   },
   "SEMO": {
     "anchor_tag": "SUNY",
@@ -11235,8 +11223,8 @@
   "SEMU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8448.0,
-    "offset_y": -11936.0
+    "offset_x": -6464.0,
+    "offset_y": -5696.0
   },
   "SEMY": {
     "ghost": false,
@@ -11245,17 +11233,17 @@
     "offset_y": -8208.0
   },
   "SENO": {
-    "anchor_tag": "SEJA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 512.0,
     "offset_y": 64.0
   },
   "SEPA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7520.0
+    "offset_x": -29520.0,
+    "offset_y": -8096.0
   },
   "SEPU": {
     "anchor_tag": "UPUG",
@@ -11280,8 +11268,8 @@
   "SERE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8144.0,
-    "offset_y": -6768.0
+    "offset_x": -16784.0,
+    "offset_y": -13904.0
   },
   "SERY": {
     "anchor_tag": "WYCO",
@@ -11299,17 +11287,17 @@
   },
   "SETE": {
     "anchor_tag": "TUBY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "SETU": {
-    "anchor_tag": "SOBO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 320.0
   },
   "SETY": {
     "ghost": false,
@@ -11364,34 +11352,34 @@
     "offset_y": -4192.0
   },
   "SIG_CPU_ACK_JOYPAD": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2608.0,
-    "offset_y": -14992.0
+    "offset_x": -15184.0,
+    "offset_y": -10096.0
   },
   "SIG_CPU_ACK_SERIAL": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2608.0,
-    "offset_y": -15056.0
+    "offset_x": -15184.0,
+    "offset_y": -10160.0
   },
   "SIG_CPU_ACK_STAT": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2608.0,
-    "offset_y": -15184.0
+    "offset_x": -15184.0,
+    "offset_y": -10288.0
   },
   "SIG_CPU_ACK_TIMER": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2608.0,
-    "offset_y": -15120.0
+    "offset_x": -15184.0,
+    "offset_y": -10224.0
   },
   "SIG_CPU_ACK_VBLANK": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2608.0,
-    "offset_y": -15248.0
+    "offset_x": -15184.0,
+    "offset_y": -10352.0
   },
   "SIG_CPU_ADDR_HIp": {
     "ghost": false,
@@ -11478,10 +11466,10 @@
     "offset_y": -4736.0
   },
   "SIG_CPU_INT_JOYPAD": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15440.0
+    "offset_x": -12912.0,
+    "offset_y": -10464.0
   },
   "SIG_CPU_INT_RESETp": {
     "ghost": false,
@@ -11490,28 +11478,28 @@
     "offset_y": -4416.0
   },
   "SIG_CPU_INT_SERIAL": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15504.0
+    "offset_x": -12912.0,
+    "offset_y": -10528.0
   },
   "SIG_CPU_INT_STAT": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15632.0
+    "offset_x": -12912.0,
+    "offset_y": -10656.0
   },
   "SIG_CPU_INT_TIMER": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15568.0
+    "offset_x": -12912.0,
+    "offset_y": -10592.0
   },
   "SIG_CPU_INT_VBLANK": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1488.0,
-    "offset_y": -15696.0
+    "offset_x": -12912.0,
+    "offset_y": -10720.0
   },
   "SIG_CPU_LATCH_EXT": {
     "ghost": false,
@@ -11558,14 +11546,14 @@
   "SIG_OAM_CLKn": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6304.0,
-    "offset_y": -7040.0
+    "offset_x": -304.0,
+    "offset_y": -9280.0
   },
   "SIG_OAM_OEn": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6128.0,
-    "offset_y": -8320.0
+    "offset_x": 64.0,
+    "offset_y": -9104.0
   },
   "SIG_OAM_WRn_A": {
     "anchor_tag": "ZOFE",
@@ -11588,11 +11576,11 @@
     "offset_y": -13024.0
   },
   "SOBO": {
-    "anchor_tag": "RYSA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 256.0
   },
   "SOBU": {
     "ghost": false,
@@ -11642,8 +11630,8 @@
   "SOGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13488.0,
-    "offset_y": -8224.0
+    "offset_x": -18944.0,
+    "offset_y": -7568.0
   },
   "SOGY": {
     "ghost": false,
@@ -11664,11 +11652,11 @@
     "offset_y": -7904.0
   },
   "SOHU": {
-    "anchor_tag": "RALU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 640.0,
+    "offset_y": 448.0
   },
   "SOHY": {
     "ghost": false,
@@ -11677,11 +11665,11 @@
     "offset_y": -7200.0
   },
   "SOJA": {
-    "anchor_tag": "RAPU",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 448.0
   },
   "SOKA": {
     "anchor_tag": "TYCO",
@@ -11718,17 +11706,17 @@
     "offset_y": 64.0
   },
   "SOLY": {
-    "anchor_tag": "TUXE",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 384.0,
     "offset_y": 64.0
   },
   "SOMA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21072.0,
-    "offset_y": -5296.0
+    "offset_x": -21600.0,
+    "offset_y": -5152.0
   },
   "SOMU": {
     "anchor_tag": "SOSY",
@@ -11758,11 +11746,10 @@
     "offset_y": 64.0
   },
   "SORA": {
-    "anchor_tag": "SARA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 240.0,
-    "offset_y": 0.0
+    "offset_x": -19424.0,
+    "offset_y": -7712.0
   },
   "SORE": {
     "ghost": false,
@@ -11812,7 +11799,7 @@
   },
   "SOTU": {
     "anchor_tag": "SUPO",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -11820,8 +11807,8 @@
   "SOVU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18032.0,
-    "offset_y": -4016.0
+    "offset_x": -20352.0,
+    "offset_y": -2752.0
   },
   "SOVY": {
     "ghost": false,
@@ -11832,8 +11819,8 @@
   "SOWO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6016.0,
-    "offset_y": -2000.0
+    "offset_x": -6864.0,
+    "offset_y": -2192.0
   },
   "SOZU": {
     "anchor_tag": "SYBY",
@@ -11845,8 +11832,8 @@
   "SUBO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18032.0,
-    "offset_y": -4080.0
+    "offset_x": -20352.0,
+    "offset_y": -2816.0
   },
   "SUBU": {
     "anchor_tag": "SOLA",
@@ -11856,17 +11843,18 @@
     "offset_y": 64.0
   },
   "SUCA": {
-    "anchor_tag": "SEBO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 256.0
   },
   "SUCO": {
+    "anchor_tag": "PUME",
     "ghost": false,
     "locked": true,
-    "offset_x": 4576.0,
-    "offset_y": -11520.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "SUDA": {
     "ghost": false,
@@ -11884,8 +11872,8 @@
   "SUDO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -10192.0,
-    "offset_y": -3520.0
+    "offset_x": -9776.0,
+    "offset_y": -3264.0
   },
   "SUFY": {
     "anchor_tag": "TYRU",
@@ -11918,8 +11906,8 @@
   "SUKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9168.0,
-    "offset_y": -6320.0
+    "offset_x": -13600.0,
+    "offset_y": -10256.0
   },
   "SUKY": {
     "anchor_tag": "PAMO",
@@ -11929,10 +11917,10 @@
     "offset_y": 64.0
   },
   "SULO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -2160.0,
-    "offset_y": -15056.0
+    "offset_x": -14736.0,
+    "offset_y": -10160.0
   },
   "SULU": {
     "anchor_tag": "WURA",
@@ -11971,31 +11959,31 @@
   },
   "SUPE": {
     "anchor_tag": "ROTE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "SUPO": {
     "anchor_tag": "SALU",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "SUPU": {
-    "anchor_tag": "SYWE",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 384.0
   },
   "SURE": {
-    "anchor_tag": "SENO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 128.0
   },
   "SURO": {
     "anchor_tag": "SOMU",
@@ -12007,8 +11995,8 @@
   "SURY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11296.0
+    "offset_x": -14992.0,
+    "offset_y": -11760.0
   },
   "SUTO": {
     "anchor_tag": "SELE",
@@ -12106,8 +12094,8 @@
   "SYGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19776.0,
-    "offset_y": -3328.0
+    "offset_x": -22096.0,
+    "offset_y": -2064.0
   },
   "SYKE": {
     "ghost": false,
@@ -12131,14 +12119,14 @@
   "SYNU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5280.0,
-    "offset_y": -6928.0
+    "offset_x": -10112.0,
+    "offset_y": -16720.0
   },
   "SYNY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9424.0,
-    "offset_y": -4864.0
+    "offset_x": 11344.0,
+    "offset_y": -6928.0
   },
   "SYPU": {
     "anchor_tag": "TEXE",
@@ -12150,8 +12138,8 @@
   "SYPY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4128.0,
-    "offset_y": -11520.0
+    "offset_x": 3632.0,
+    "offset_y": -13520.0
   },
   "SYRO": {
     "ghost": false,
@@ -12187,11 +12175,11 @@
     "offset_y": -7264.0
   },
   "SYWE": {
-    "anchor_tag": "SUCA",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 512.0,
+    "offset_y": 320.0
   },
   "SYZO": {
     "anchor_tag": "TUBE",
@@ -12215,17 +12203,17 @@
     "offset_y": 64.0
   },
   "TACA": {
-    "anchor_tag": "TOMY",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
+    "offset_x": 640.0,
     "offset_y": 64.0
   },
   "TACU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7696.0,
-    "offset_y": -2848.0
+    "offset_x": -7744.0,
+    "offset_y": -2880.0
   },
   "TADE": {
     "ghost": false,
@@ -12236,8 +12224,8 @@
   "TADY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9136.0,
-    "offset_y": -12064.0
+    "offset_x": -15120.0,
+    "offset_y": -12528.0
   },
   "TAFA": {
     "anchor_tag": "SUCO",
@@ -12262,9 +12250,9 @@
   },
   "TAGO": {
     "anchor_tag": "PIN47",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "TAGY": {
@@ -12297,8 +12285,8 @@
   "TAKA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6144.0,
-    "offset_y": -2000.0
+    "offset_x": -6240.0,
+    "offset_y": -2016.0
   },
   "TAKO": {
     "anchor_tag": "TUKY",
@@ -12344,8 +12332,8 @@
   "TAPA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9296.0,
-    "offset_y": -6128.0
+    "offset_x": -14000.0,
+    "offset_y": -10512.0
   },
   "TAPE": {
     "ghost": false,
@@ -12369,8 +12357,8 @@
   "TARU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9296.0,
-    "offset_y": -6064.0
+    "offset_x": -13968.0,
+    "offset_y": -10368.0
   },
   "TATE": {
     "anchor_tag": "TOZO",
@@ -12435,38 +12423,39 @@
   "TEBO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20160.0,
-    "offset_y": -3232.0
+    "offset_x": -22480.0,
+    "offset_y": -1968.0
   },
   "TEBY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16944.0,
-    "offset_y": -5856.0
+    "offset_x": -6992.0,
+    "offset_y": -5024.0
   },
   "TECE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20160.0,
-    "offset_y": -3296.0
+    "offset_x": -22480.0,
+    "offset_y": -2032.0
   },
   "TECY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13616.0,
-    "offset_y": -8224.0
+    "offset_x": -19104.0,
+    "offset_y": -7616.0
   },
   "TEDA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11216.0,
-    "offset_y": -8400.0
+    "offset_x": -18560.0,
+    "offset_y": -7424.0
   },
   "TEDE": {
+    "anchor_tag": "XOGA",
     "ghost": false,
     "locked": true,
-    "offset_x": 4352.0,
-    "offset_y": -13280.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "TEDO": {
     "ghost": true,
@@ -12481,7 +12470,7 @@
     "offset_y": -7536.0
   },
   "TEGO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8304.0
@@ -12495,8 +12484,8 @@
   "TEGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -19936.0,
-    "offset_y": -3328.0
+    "offset_x": -22256.0,
+    "offset_y": -2064.0
   },
   "TEKA": {
     "anchor_tag": "SUBU",
@@ -12515,14 +12504,14 @@
   "TEKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13744.0,
-    "offset_y": -8192.0
+    "offset_x": -19264.0,
+    "offset_y": -7584.0
   },
   "TEKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5216.0,
-    "offset_y": -4528.0
+    "offset_x": -7456.0,
+    "offset_y": -3296.0
   },
   "TELU": {
     "anchor_tag": "VYZO",
@@ -12534,8 +12523,8 @@
   "TEME": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5632.0,
-    "offset_y": -7792.0
+    "offset_x": -10800.0,
+    "offset_y": -14656.0
   },
   "TEMU": {
     "anchor_tag": "TAKU",
@@ -12572,10 +12561,10 @@
     "offset_y": 64.0
   },
   "TEPO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 10448.0,
-    "offset_y": -12272.0
+    "offset_x": 7936.0,
+    "offset_y": -13536.0
   },
   "TEPU": {
     "anchor_tag": "SATO",
@@ -12585,7 +12574,7 @@
     "offset_y": 64.0
   },
   "TEPY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 9936.0,
     "offset_y": -12032.0
@@ -12634,8 +12623,8 @@
   "TEVO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7664.0,
-    "offset_y": -3376.0
+    "offset_x": -8096.0,
+    "offset_y": -2992.0
   },
   "TEVY": {
     "ghost": false,
@@ -12665,20 +12654,20 @@
   "TEXY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -3520.0,
-    "offset_y": -6880.0
+    "offset_x": -6704.0,
+    "offset_y": -3040.0
   },
   "TOBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8624.0,
-    "offset_y": -11936.0
+    "offset_x": -13648.0,
+    "offset_y": -12464.0
   },
   "TOBE": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -29904.0,
-    "offset_y": -8880.0
+    "offset_x": -29520.0,
+    "offset_y": -8160.0
   },
   "TOBO": {
     "anchor_tag": "SUVO",
@@ -12690,20 +12679,20 @@
   "TOBU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9984.0,
-    "offset_y": -2896.0
+    "offset_x": -10144.0,
+    "offset_y": -2864.0
   },
   "TOCA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12448.0
+    "offset_x": -14992.0,
+    "offset_y": -12912.0
   },
   "TOCU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20288.0,
-    "offset_y": -3616.0
+    "offset_x": -22608.0,
+    "offset_y": -2352.0
   },
   "TODE": {
     "ghost": false,
@@ -12732,10 +12721,10 @@
     "offset_y": -6400.0
   },
   "TOGA": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15408.0
+    "offset_x": -14544.0,
+    "offset_y": -10672.0
   },
   "TOKU": {
     "anchor_tag": "RUPY",
@@ -12753,14 +12742,14 @@
   "TOLE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9698.36,
-    "offset_y": -3582.32
+    "offset_x": -16912.0,
+    "offset_y": -13936.0
   },
   "TOLU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -10048.0,
-    "offset_y": -5040.0
+    "offset_x": -14096.0,
+    "offset_y": -10256.0
   },
   "TOMA": {
     "ghost": false,
@@ -12769,10 +12758,10 @@
     "offset_y": -2704.0
   },
   "TOME": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15472.0
+    "offset_x": -14544.0,
+    "offset_y": -10736.0
   },
   "TOMU": {
     "ghost": false,
@@ -12781,10 +12770,11 @@
     "offset_y": -4576.0
   },
   "TOMY": {
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 4800.0,
-    "offset_y": -12672.0
+    "offset_x": 640.0,
+    "offset_y": 0.0
   },
   "TONA": {
     "ghost": false,
@@ -12795,8 +12785,8 @@
   "TOPE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22512.0,
-    "offset_y": -8800.0
+    "offset_x": -19264.0,
+    "offset_y": -7424.0
   },
   "TOPU": {
     "ghost": false,
@@ -12812,10 +12802,11 @@
     "offset_y": 64.0
   },
   "TOSA": {
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 4128.0,
-    "offset_y": -12608.0
+    "offset_x": 256.0,
+    "offset_y": 0.0
   },
   "TOTU": {
     "anchor_tag": "SYPY",
@@ -12827,8 +12818,8 @@
   "TOVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21808.0,
-    "offset_y": -8704.0
+    "offset_x": -23072.0,
+    "offset_y": -8864.0
   },
   "TOVY": {
     "ghost": false,
@@ -12853,8 +12844,8 @@
   "TOZA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21872.0,
-    "offset_y": -6624.0
+    "offset_x": -22896.0,
+    "offset_y": -9152.0
   },
   "TOZO": {
     "anchor_tag": "TAXA",
@@ -12866,8 +12857,8 @@
   "TOZU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20160.0,
-    "offset_y": -3360.0
+    "offset_x": -22480.0,
+    "offset_y": -2096.0
   },
   "TUBE": {
     "anchor_tag": "SUGY",
@@ -12883,10 +12874,10 @@
     "offset_y": -4160.0
   },
   "TUBY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -13088.0,
-    "offset_y": -7984.0
+    "offset_x": -19424.0,
+    "offset_y": -7424.0
   },
   "TUCA": {
     "ghost": false,
@@ -12922,11 +12913,10 @@
     "offset_y": 64.0
   },
   "TUFU": {
-    "anchor_tag": "VYMU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 11712.0,
+    "offset_y": -6384.0
   },
   "TUGE": {
     "ghost": false,
@@ -12944,8 +12934,8 @@
   "TUHU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11744.0
+    "offset_x": -14992.0,
+    "offset_y": -12208.0
   },
   "TUJA": {
     "ghost": false,
@@ -12962,9 +12952,9 @@
   },
   "TUJY": {
     "anchor_tag": "PIN48",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -144.0,
+    "offset_x": -160.0,
     "offset_y": 0.0
   },
   "TUKU": {
@@ -13027,10 +13017,10 @@
     "offset_y": 64.0
   },
   "TUNY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -15056.0
+    "offset_x": -14512.0,
+    "offset_y": -10160.0
   },
   "TUPE": {
     "anchor_tag": "XEXU",
@@ -13049,8 +13039,8 @@
   "TUTO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9872.0,
-    "offset_y": -3472.0
+    "offset_x": -9776.0,
+    "offset_y": -3328.0
   },
   "TUTU": {
     "ghost": false,
@@ -13061,8 +13051,8 @@
   "TUVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9040.0,
-    "offset_y": -6320.0
+    "offset_x": -13472.0,
+    "offset_y": -10256.0
   },
   "TUVO": {
     "ghost": false,
@@ -13085,10 +13075,11 @@
     "offset_y": 64.0
   },
   "TUXE": {
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 4352.0,
-    "offset_y": -12736.0
+    "offset_x": 384.0,
+    "offset_y": 0.0
   },
   "TUXY": {
     "ghost": false,
@@ -13099,15 +13090,15 @@
   "TYBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11360.0
+    "offset_x": -14992.0,
+    "offset_y": -11824.0
   },
   "TYCE": {
-    "anchor_tag": "RUCO",
+    "anchor_tag": "LUXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 256.0,
+    "offset_y": 128.0
   },
   "TYCO": {
     "anchor_tag": "TYTA",
@@ -13126,8 +13117,8 @@
   "TYFA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12896.0,
-    "offset_y": -10800.0
+    "offset_x": -8496.0,
+    "offset_y": -5664.0
   },
   "TYFO": {
     "ghost": false,
@@ -13145,8 +13136,8 @@
   "TYGE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11424.0
+    "offset_x": -14992.0,
+    "offset_y": -11888.0
   },
   "TYGO": {
     "anchor_tag": "TEWU",
@@ -13158,8 +13149,8 @@
   "TYHO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -21744.0,
-    "offset_y": -6624.0
+    "offset_x": -22768.0,
+    "offset_y": -9152.0
   },
   "TYJA": {
     "anchor_tag": "RAJU",
@@ -13171,14 +13162,14 @@
   "TYJU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -14176.0,
-    "offset_y": -8048.0
+    "offset_x": -19584.0,
+    "offset_y": -7424.0
   },
   "TYJY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9664.0,
-    "offset_y": -3280.0
+    "offset_x": -9648.0,
+    "offset_y": -3264.0
   },
   "TYKO": {
     "anchor_tag": "XELY",
@@ -13195,29 +13186,28 @@
     "offset_y": 64.0
   },
   "TYME": {
-    "ghost": true,
-    "locked": true,
-    "offset_x": -1936.0,
-    "offset_y": -14992.0
-  },
-  "TYMU": {
-    "anchor_tag": "UGAC",
     "ghost": false,
     "locked": true,
-    "offset_x": -160.0,
-    "offset_y": 32.0
+    "offset_x": -14512.0,
+    "offset_y": -10096.0
+  },
+  "TYMU": {
+    "ghost": false,
+    "locked": true,
+    "offset_x": -23072.0,
+    "offset_y": -8960.0
   },
   "TYNO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8608.0,
-    "offset_y": -2688.0
+    "offset_x": -9472.0,
+    "offset_y": -2864.0
   },
   "TYNU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -22000.0,
-    "offset_y": -6624.0
+    "offset_x": -23072.0,
+    "offset_y": -9152.0
   },
   "TYPO": {
     "anchor_tag": "SAXO",
@@ -13256,8 +13246,8 @@
   "TYSO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -3648.0,
-    "offset_y": -6880.0
+    "offset_x": -6832.0,
+    "offset_y": -3040.0
   },
   "TYTA": {
     "anchor_tag": "ROBY",
@@ -13282,8 +13272,8 @@
   "TYVY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7712.0,
-    "offset_y": -6400.0
+    "offset_x": -16400.0,
+    "offset_y": -13856.0
   },
   "UBAL": {
     "ghost": true,
@@ -13304,10 +13294,10 @@
     "offset_y": -5728.0
   },
   "UBUL": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1712.0,
-    "offset_y": -15248.0
+    "offset_x": -13184.0,
+    "offset_y": -10128.0
   },
   "UCOB": {
     "ghost": false,
@@ -13349,11 +13339,11 @@
     "offset_y": 64.0
   },
   "UGAC": {
-    "anchor_tag": "PIN79",
+    "anchor_tag": "URUN",
     "ghost": false,
     "locked": true,
-    "offset_x": -192.0,
-    "offset_y": -32.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "UGOT": {
     "anchor_tag": "TAMA",
@@ -13371,8 +13361,8 @@
   "UKAP": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13744.0,
-    "offset_y": -8256.0
+    "offset_x": -19264.0,
+    "offset_y": -7648.0
   },
   "UKET": {
     "anchor_tag": "TEKA",
@@ -13389,10 +13379,10 @@
     "offset_y": 64.0
   },
   "ULAK": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": -1712.0,
-    "offset_y": -15184.0
+    "offset_x": -13184.0,
+    "offset_y": -10064.0
   },
   "UMEK": {
     "ghost": false,
@@ -13410,8 +13400,8 @@
   "UMOB": {
     "ghost": false,
     "locked": true,
-    "offset_x": -10154.3,
-    "offset_y": -3773.09
+    "offset_x": -19184.0,
+    "offset_y": -1648.0
   },
   "UMUT": {
     "ghost": false,
@@ -13479,11 +13469,11 @@
     "offset_y": 64.0
   },
   "URUN": {
-    "anchor_tag": "PIN79",
+    "anchor_tag": "TYMU",
     "ghost": false,
     "locked": true,
-    "offset_x": -192.0,
-    "offset_y": 32.0
+    "offset_x": 176.0,
+    "offset_y": 0.0
   },
   "URYS": {
     "ghost": false,
@@ -13494,15 +13484,15 @@
   "USEC": {
     "ghost": false,
     "locked": true,
-    "offset_x": -336.0,
-    "offset_y": -5216.0
+    "offset_x": -19184.0,
+    "offset_y": -1712.0
   },
   "USUF": {
-    "anchor_tag": "PIN78",
+    "anchor_tag": "PUVA",
     "ghost": false,
     "locked": true,
-    "offset_x": -192.0,
-    "offset_y": 32.0
+    "offset_x": 176.0,
+    "offset_y": 0.0
   },
   "UTOK": {
     "anchor_tag": "UREK",
@@ -13518,11 +13508,11 @@
     "offset_y": -4448.0
   },
   "UVER": {
-    "anchor_tag": "PIN78",
+    "anchor_tag": "USUF",
     "ghost": false,
     "locked": true,
-    "offset_x": -192.0,
-    "offset_y": -32.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "UVYN": {
     "ghost": false,
@@ -13591,7 +13581,7 @@
     "offset_y": 64.0
   },
   "VAMA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8304.0
@@ -13606,14 +13596,14 @@
   "VAPE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8640.0,
-    "offset_y": -3200.0
+    "offset_x": -7792.0,
+    "offset_y": -3152.0
   },
   "VAPY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11728.0,
-    "offset_y": -6752.0
+    "offset_x": 11104.0,
+    "offset_y": -6448.0
   },
   "VARE": {
     "anchor_tag": "PYJO",
@@ -13625,14 +13615,14 @@
   "VARO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18416.0,
-    "offset_y": -4336.0
+    "offset_x": -20736.0,
+    "offset_y": -3072.0
   },
   "VARY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -30128.0,
-    "offset_y": -8208.0
+    "offset_x": -29648.0,
+    "offset_y": -8128.0
   },
   "VATA": {
     "anchor_tag": "VOLO",
@@ -13665,8 +13655,8 @@
   "VAVE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9296.0,
-    "offset_y": -6448.0
+    "offset_x": -13568.0,
+    "offset_y": -10144.0
   },
   "VAZU": {
     "anchor_tag": "RACE",
@@ -13678,8 +13668,8 @@
   "VEFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -17344.0,
-    "offset_y": -9296.0
+    "offset_x": -10960.0,
+    "offset_y": -10288.0
   },
   "VEGA": {
     "anchor_tag": "VARO",
@@ -13705,14 +13695,14 @@
   "VEKU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6272.0,
-    "offset_y": -2000.0
+    "offset_x": -6368.0,
+    "offset_y": -2400.0
   },
   "VELY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7136.0
+    "offset_x": -29248.0,
+    "offset_y": -8240.0
   },
   "VENA": {
     "ghost": true,
@@ -13730,8 +13720,8 @@
   "VETU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8896.0,
-    "offset_y": -4608.0
+    "offset_x": 11584.0,
+    "offset_y": -7216.0
   },
   "VEVO": {
     "anchor_tag": "VAFA",
@@ -13762,10 +13752,11 @@
     "offset_y": 64.0
   },
   "VEZO": {
+    "anchor_tag": "WOKA",
     "ghost": false,
     "locked": true,
-    "offset_x": 4800.0,
-    "offset_y": -13216.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "VOBY": {
     "anchor_tag": "SOLO",
@@ -13775,14 +13766,14 @@
     "offset_y": 64.0
   },
   "VOCA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8784.0
   },
   "VODE": {
     "anchor_tag": "TAGO",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -13790,8 +13781,8 @@
   "VOGA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12512.0
+    "offset_x": -14384.0,
+    "offset_y": -12752.0
   },
   "VOGU": {
     "anchor_tag": "VEZA",
@@ -13817,8 +13808,8 @@
   "VOKU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -20160.0,
-    "offset_y": -3424.0
+    "offset_x": -22480.0,
+    "offset_y": -2160.0
   },
   "VOLO": {
     "anchor_tag": "VUGO",
@@ -13837,8 +13828,8 @@
   "VONU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9072.0,
-    "offset_y": -2688.0
+    "offset_x": -9920.0,
+    "offset_y": -2864.0
   },
   "VOSA": {
     "anchor_tag": "WURU",
@@ -13857,12 +13848,12 @@
   "VOTY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8912.0,
-    "offset_y": -6320.0
+    "offset_x": -13344.0,
+    "offset_y": -10256.0
   },
   "VOVA": {
     "anchor_tag": "TUJY",
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -160.0,
     "offset_y": 0.0
@@ -13877,8 +13868,8 @@
   "VOXU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -16672.0,
-    "offset_y": -9296.0
+    "offset_x": -10288.0,
+    "offset_y": -10288.0
   },
   "VUCE": {
     "anchor_tag": "SYRY",
@@ -13894,10 +13885,11 @@
     "offset_y": -12752.0
   },
   "VUJO": {
+    "anchor_tag": "VYNO",
     "ghost": false,
     "locked": true,
-    "offset_x": 9424.0,
-    "offset_y": -4736.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "VULO": {
     "anchor_tag": "VOVO",
@@ -13927,7 +13919,7 @@
     "offset_y": -12624.0
   },
   "VUMY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8880.0
@@ -13960,7 +13952,7 @@
     "offset_y": -2560.0
   },
   "VUSO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8496.0
@@ -13973,17 +13965,16 @@
     "offset_y": 64.0
   },
   "VUZA": {
-    "anchor_tag": "PYJU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 10704.0,
+    "offset_y": -6960.0
   },
   "VYBO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13472.0,
-    "offset_y": -11344.0
+    "offset_x": -14272.0,
+    "offset_y": -12976.0
   },
   "VYCO": {
     "ghost": false,
@@ -13999,16 +13990,17 @@
     "offset_y": 0.0
   },
   "VYGA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8400.0
   },
   "VYMU": {
+    "anchor_tag": "VUJO",
     "ghost": false,
     "locked": true,
-    "offset_x": 9424.0,
-    "offset_y": -4672.0
+    "offset_x": 0.0,
+    "offset_y": 64.0
   },
   "VYNE": {
     "anchor_tag": "WOJY",
@@ -14020,20 +14012,20 @@
   "VYNO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9424.0,
-    "offset_y": -4800.0
+    "offset_x": 11712.0,
+    "offset_y": -6640.0
   },
   "VYPU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9920.0,
-    "offset_y": -5040.0
+    "offset_x": -13344.0,
+    "offset_y": -10320.0
   },
   "VYRE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5744.0,
-    "offset_y": -9504.0
+    "offset_x": -25024.0,
+    "offset_y": -7248.0
   },
   "VYRO": {
     "anchor_tag": "VATA",
@@ -14059,8 +14051,8 @@
   "VYWA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6267.22,
-    "offset_y": -3292.33
+    "offset_x": -7312.0,
+    "offset_y": -2368.0
   },
   "VYXE": {
     "anchor_tag": "XYMO",
@@ -14086,8 +14078,8 @@
   "WABE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10720.0,
-    "offset_y": 1824.0
+    "offset_x": 10416.0,
+    "offset_y": -2352.0
   },
   "WABO": {
     "anchor_tag": "EZOC",
@@ -14124,13 +14116,13 @@
     "offset_y": -8912.0
   },
   "WAFO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -11680.0,
-    "offset_y": -6192.0
+    "offset_x": -1072.0,
+    "offset_y": -9904.0
   },
   "WAFU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8688.0
@@ -14150,17 +14142,16 @@
     "offset_y": 64.0
   },
   "WAGE": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8880.0
   },
   "WAGO": {
-    "anchor_tag": "BUVY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 10432.0,
+    "offset_y": -6416.0
   },
   "WAJA": {
     "anchor_tag": "WOXY",
@@ -14218,8 +14209,8 @@
   "WANE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18928.0,
-    "offset_y": -4336.0
+    "offset_x": -21248.0,
+    "offset_y": -3072.0
   },
   "WANU": {
     "anchor_tag": "XEFE",
@@ -14243,23 +14234,22 @@
     "offset_y": 64.0
   },
   "WARE": {
-    "anchor_tag": "BUWY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 7824.0,
+    "offset_y": -6800.0
   },
   "WARU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7584.0
+    "offset_x": -29248.0,
+    "offset_y": -8688.0
   },
   "WASA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5968.0,
-    "offset_y": -6128.0
+    "offset_x": -21376.0,
+    "offset_y": -5696.0
   },
   "WASE": {
     "anchor_tag": "GABA",
@@ -14276,7 +14266,7 @@
     "offset_y": 64.0
   },
   "WATE": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -7824.0
@@ -14296,7 +14286,7 @@
     "offset_y": 64.0
   },
   "WAVU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8496.0
@@ -14318,8 +14308,8 @@
   "WAXE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11072.0,
-    "offset_y": 1728.0
+    "offset_x": 10768.0,
+    "offset_y": -2448.0
   },
   "WAXO": {
     "anchor_tag": "REHU",
@@ -14329,7 +14319,7 @@
     "offset_y": 64.0
   },
   "WAXU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8304.0
@@ -14337,8 +14327,8 @@
   "WAZY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9296.0,
-    "offset_y": -4800.0
+    "offset_x": 11344.0,
+    "offset_y": -6992.0
   },
   "WEBA": {
     "anchor_tag": "VARE",
@@ -14355,7 +14345,7 @@
     "offset_y": 64.0
   },
   "WEBU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8112.0
@@ -14391,20 +14381,20 @@
   "WEFU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8288.0,
-    "offset_y": 320.0
+    "offset_x": 7984.0,
+    "offset_y": -3856.0
   },
   "WEFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8000.0,
-    "offset_y": -2624.0
+    "offset_x": -8160.0,
+    "offset_y": -2560.0
   },
   "WEGO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8880.0,
-    "offset_y": -12064.0
+    "offset_x": -14160.0,
+    "offset_y": -12608.0
   },
   "WEHE": {
     "anchor_tag": "GYHO",
@@ -14423,8 +14413,8 @@
   "WEJO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5712.0,
-    "offset_y": -6128.0
+    "offset_x": -21376.0,
+    "offset_y": -6240.0
   },
   "WEKA": {
     "anchor_tag": "BEDE",
@@ -14434,10 +14424,10 @@
     "offset_y": 64.0
   },
   "WEKO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -6944.0
+    "offset_x": -29248.0,
+    "offset_y": -8048.0
   },
   "WEKU": {
     "anchor_tag": "WANE",
@@ -14462,8 +14452,8 @@
   "WEME": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6528.0,
-    "offset_y": 672.0
+    "offset_x": 6224.0,
+    "offset_y": -3504.0
   },
   "WENU": {
     "anchor_tag": "CEGA",
@@ -14475,8 +14465,8 @@
   "WENY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -1664.0,
-    "offset_y": -14544.0
+    "offset_x": 3008.0,
+    "offset_y": -14336.0
   },
   "WEPO": {
     "ghost": false,
@@ -14492,7 +14482,7 @@
     "offset_y": 64.0
   },
   "WERA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8592.0
@@ -14537,13 +14527,13 @@
     "offset_y": -4224.0
   },
   "WETA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8016.0
   },
   "WETY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8688.0
@@ -14558,8 +14548,8 @@
   "WEWU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6512.0,
-    "offset_y": -7952.0
+    "offset_x": 800.0,
+    "offset_y": -9264.0
   },
   "WEWY": {
     "anchor_tag": "YFEL",
@@ -14620,8 +14610,8 @@
   "WODU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13600.0,
-    "offset_y": -11344.0
+    "offset_x": -14576.0,
+    "offset_y": -12704.0
   },
   "WODY": {
     "anchor_tag": "WYKA",
@@ -14631,7 +14621,7 @@
     "offset_y": 64.0
   },
   "WOFA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8208.0
@@ -14639,8 +14629,8 @@
   "WOFO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5728.0,
-    "offset_y": 672.0
+    "offset_x": 5424.0,
+    "offset_y": -3504.0
   },
   "WOHU": {
     "anchor_tag": "GAKE",
@@ -14652,14 +14642,14 @@
   "WOJO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12336.0,
-    "offset_y": -3456.0
+    "offset_x": -1040.0,
+    "offset_y": -9344.0
   },
   "WOJU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": -64.0
+    "offset_x": 6720.0,
+    "offset_y": -4240.0
   },
   "WOJY": {
     "anchor_tag": "LYCO",
@@ -14669,10 +14659,11 @@
     "offset_y": 64.0
   },
   "WOKA": {
+    "anchor_tag": "TEDE",
     "ghost": false,
     "locked": true,
-    "offset_x": 4576.0,
-    "offset_y": -13152.0
+    "offset_x": 128.0,
+    "offset_y": 0.0
   },
   "WOKO": {
     "anchor_tag": "ZAVE",
@@ -14744,7 +14735,7 @@
     "offset_y": 64.0
   },
   "WORU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8784.0
@@ -14758,8 +14749,8 @@
   "WOTA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 3104.0,
-    "offset_y": 1792.0
+    "offset_x": 2800.0,
+    "offset_y": -2384.0
   },
   "WOTE": {
     "anchor_tag": "XUNY",
@@ -14771,8 +14762,8 @@
   "WOWA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5840.0,
-    "offset_y": -6128.0
+    "offset_x": -7072.0,
+    "offset_y": -15888.0
   },
   "WOXA": {
     "ghost": false,
@@ -14804,8 +14795,8 @@
   "WUDA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1872.0,
-    "offset_y": -1392.0
+    "offset_x": 1904.0,
+    "offset_y": -2096.0
   },
   "WUDO": {
     "anchor_tag": "XONU",
@@ -14817,8 +14808,8 @@
   "WUFA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11872.0,
-    "offset_y": 1920.0
+    "offset_x": 11568.0,
+    "offset_y": -2256.0
   },
   "WUFU": {
     "ghost": false,
@@ -14834,11 +14825,10 @@
     "offset_y": 64.0
   },
   "WUGA": {
-    "anchor_tag": "XATY",
     "ghost": false,
     "locked": true,
-    "offset_x": 128.0,
-    "offset_y": 0.0
+    "offset_x": -6992.0,
+    "offset_y": -4960.0
   },
   "WUHA": {
     "anchor_tag": "XOMY",
@@ -14884,33 +14874,32 @@
   "WUKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11104.0,
-    "offset_y": -5856.0
+    "offset_x": 12080.0,
+    "offset_y": -6848.0
   },
   "WUKU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11552.0,
-    "offset_y": -6128.0
+    "offset_x": -1312.0,
+    "offset_y": -9840.0
   },
   "WUKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10752.0,
-    "offset_y": -4448.0
+    "offset_x": 10272.0,
+    "offset_y": -6576.0
   },
   "WULE": {
-    "anchor_tag": "ZOPU",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8848.0
   },
   "WUME": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4640.0,
-    "offset_y": -8224.0
+    "offset_x": 832.0,
+    "offset_y": -8464.0
   },
   "WUNA": {
     "anchor_tag": "WEBO",
@@ -14957,20 +14946,20 @@
   "WURY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18544.0,
-    "offset_y": -4272.0
+    "offset_x": -20864.0,
+    "offset_y": -3008.0
   },
   "WUSA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8752.0,
-    "offset_y": -11936.0
+    "offset_x": -13936.0,
+    "offset_y": -12528.0
   },
   "WUSE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10144.0,
-    "offset_y": 1920.0
+    "offset_x": 9840.0,
+    "offset_y": -2256.0
   },
   "WUTO": {
     "anchor_tag": "GEDE",
@@ -15026,10 +15015,10 @@
     "offset_y": 64.0
   },
   "WUZA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -6880.0
+    "offset_x": -29248.0,
+    "offset_y": -7984.0
   },
   "WUZO": {
     "anchor_tag": "GAFY",
@@ -15041,17 +15030,17 @@
   "WUZU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6096.0,
-    "offset_y": -6128.0
+    "offset_x": -7072.0,
+    "offset_y": -15344.0
   },
   "WUZY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 2144.0,
-    "offset_y": -1312.0
+    "offset_x": 2176.0,
+    "offset_y": -2016.0
   },
   "WYBO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8592.0
@@ -15122,8 +15111,8 @@
   "WYJA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11680.0,
-    "offset_y": -6256.0
+    "offset_x": -1152.0,
+    "offset_y": -10368.0
   },
   "WYJU": {
     "anchor_tag": "VAHA",
@@ -15133,11 +15122,10 @@
     "offset_y": 64.0
   },
   "WYKA": {
-    "anchor_tag": "XACO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 12080.0,
+    "offset_y": -6704.0
   },
   "WYKO": {
     "anchor_tag": "WOBO",
@@ -15147,11 +15135,10 @@
     "offset_y": 64.0
   },
   "WYKY": {
-    "anchor_tag": "ZAKY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8304.0
   },
   "WYLA": {
     "anchor_tag": "WEJA",
@@ -15161,7 +15148,7 @@
     "offset_y": 64.0
   },
   "WYLE": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -7920.0
@@ -15169,8 +15156,8 @@
   "WYLU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11872.0,
-    "offset_y": 1248.0
+    "offset_x": 12528.0,
+    "offset_y": -2848.0
   },
   "WYMO": {
     "anchor_tag": "XUBO",
@@ -15228,7 +15215,7 @@
     "offset_y": 64.0
   },
   "WYVO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30352.0,
     "offset_y": -8400.0
@@ -15250,11 +15237,11 @@
   "WYZA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": -64.0
+    "offset_x": 6976.0,
+    "offset_y": -4240.0
   },
   "WYZE": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8240.0
@@ -15297,21 +15284,20 @@
   "XACO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 9024.0,
-    "offset_y": -4672.0
+    "offset_x": 11824.0,
+    "offset_y": -6912.0
   },
   "XADO": {
-    "anchor_tag": "WENY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 3168.0,
+    "offset_y": -14336.0
   },
   "XADU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1872.0,
-    "offset_y": -1328.0
+    "offset_x": 1904.0,
+    "offset_y": -2032.0
   },
   "XAFO": {
     "anchor_tag": "WEXU",
@@ -15351,8 +15337,8 @@
   "XAHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 192.0
+    "offset_x": 6976.0,
+    "offset_y": -3984.0
   },
   "XAHE": {
     "anchor_tag": "XAMO",
@@ -15377,12 +15363,12 @@
   "XAJO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8880.0,
-    "offset_y": -11936.0
+    "offset_x": -14864.0,
+    "offset_y": -12400.0
   },
   "XAJU": {
     "anchor_tag": "XUBY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -15449,8 +15435,8 @@
   "XANO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8752.0,
-    "offset_y": -12000.0
+    "offset_x": -14736.0,
+    "offset_y": -12464.0
   },
   "XAPO": {
     "ghost": true,
@@ -15465,14 +15451,14 @@
     "offset_y": -4128.0
   },
   "XARO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8112.0
   },
   "XARY": {
     "anchor_tag": "XOZY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -15494,8 +15480,8 @@
   "XATY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11984.0,
-    "offset_y": -3264.0
+    "offset_x": -7248.0,
+    "offset_y": -4960.0
   },
   "XAVE": {
     "anchor_tag": "CUMU",
@@ -15507,37 +15493,37 @@
   "XAVU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 128.0
+    "offset_x": 6976.0,
+    "offset_y": -4048.0
   },
   "XAVY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8496.0
   },
   "XAWO": {
     "anchor_tag": "XAXA",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "XAXA": {
     "anchor_tag": "XOBO",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
   },
   "XAYO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8016.0
   },
   "XAYU": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -8688.0
@@ -15552,8 +15538,8 @@
   "XEBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7632.0,
-    "offset_y": -64.0
+    "offset_x": 7328.0,
+    "offset_y": -4240.0
   },
   "XEBE": {
     "ghost": true,
@@ -15583,7 +15569,7 @@
     "offset_y": 64.0
   },
   "XEDA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -7824.0
@@ -15591,8 +15577,8 @@
   "XEDU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11936.0,
-    "offset_y": -7488.0
+    "offset_x": 9952.0,
+    "offset_y": -6816.0
   },
   "XEDY": {
     "anchor_tag": "XADU",
@@ -15611,14 +15597,14 @@
   "XEFY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 864.0,
-    "offset_y": -13824.0
+    "offset_x": 4160.0,
+    "offset_y": -15888.0
   },
   "XEGA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6064.0,
-    "offset_y": -8128.0
+    "offset_x": 928.0,
+    "offset_y": -9264.0
   },
   "XEGE": {
     "anchor_tag": "XABO",
@@ -15637,8 +15623,8 @@
   "XEGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12384.0
+    "offset_x": -14992.0,
+    "offset_y": -12848.0
   },
   "XEHE": {
     "anchor_tag": "GEGU",
@@ -15650,20 +15636,20 @@
   "XEHO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12000.0
+    "offset_x": -14992.0,
+    "offset_y": -12464.0
   },
   "XEJA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11808.0,
-    "offset_y": -5936.0
+    "offset_x": 12272.0,
+    "offset_y": -6704.0
   },
   "XEJU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 896.0
+    "offset_x": 6720.0,
+    "offset_y": -3280.0
   },
   "XEKA": {
     "anchor_tag": "XABE",
@@ -15680,10 +15666,10 @@
     "offset_y": 64.0
   },
   "XELO": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
-    "offset_x": 10368.0,
-    "offset_y": -13584.0
+    "offset_x": 7936.0,
+    "offset_y": -13440.0
   },
   "XELY": {
     "anchor_tag": "XUKU",
@@ -15695,14 +15681,14 @@
   "XEMU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1696.0,
-    "offset_y": -1072.0
+    "offset_x": 1728.0,
+    "offset_y": -1776.0
   },
   "XENA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -13728.0,
-    "offset_y": -11344.0
+    "offset_x": -14704.0,
+    "offset_y": -12896.0
   },
   "XENO": {
     "ghost": false,
@@ -15720,8 +15706,8 @@
   "XENY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 128.0
+    "offset_x": 6848.0,
+    "offset_y": -4048.0
   },
   "XEPA": {
     "anchor_tag": "WYDE",
@@ -15787,8 +15773,8 @@
   "XEVA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 128.0
+    "offset_x": 7104.0,
+    "offset_y": -4048.0
   },
   "XEXA": {
     "anchor_tag": "XUZO",
@@ -15807,8 +15793,8 @@
   "XEZE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10832.0,
-    "offset_y": -5952.0
+    "offset_x": 11824.0,
+    "offset_y": -7008.0
   },
   "XOBA": {
     "anchor_tag": "XECA",
@@ -15826,7 +15812,7 @@
   },
   "XOBO": {
     "anchor_tag": "XAJU",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -15838,7 +15824,7 @@
     "offset_y": -4624.0
   },
   "XODO": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -25120.0,
     "offset_y": -6560.0
@@ -15846,8 +15832,8 @@
   "XODU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11872.0
+    "offset_x": -14992.0,
+    "offset_y": -12336.0
   },
   "XODY": {
     "anchor_tag": "XYNE",
@@ -15865,11 +15851,11 @@
   "XOGA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4128.0,
-    "offset_y": -13152.0
+    "offset_x": 3632.0,
+    "offset_y": -14064.0
   },
   "XOGY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -30128.0,
     "offset_y": -7920.0
@@ -15883,7 +15869,7 @@
   },
   "XOKE": {
     "anchor_tag": "XARY",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -15902,11 +15888,10 @@
     "offset_y": 64.0
   },
   "XOLO": {
-    "anchor_tag": "WYKO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": 12080.0,
+    "offset_y": -6448.0
   },
   "XOLY": {
     "anchor_tag": "YFAG",
@@ -15916,10 +15901,10 @@
     "offset_y": 96.0
   },
   "XOMA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7072.0
+    "offset_x": -29248.0,
+    "offset_y": -8176.0
   },
   "XOMY": {
     "anchor_tag": "XEKA",
@@ -15938,14 +15923,14 @@
   "XONO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -2864.0,
-    "offset_y": -13600.0
+    "offset_x": 2848.0,
+    "offset_y": -14880.0
   },
   "XONU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11264.0,
-    "offset_y": -7200.0
+    "offset_x": 11888.0,
+    "offset_y": -6704.0
   },
   "XOPO": {
     "anchor_tag": "XOBA",
@@ -15957,8 +15942,8 @@
   "XORA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12064.0
+    "offset_x": -14992.0,
+    "offset_y": -12528.0
   },
   "XORE": {
     "ghost": true,
@@ -15969,8 +15954,8 @@
   "XOSU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 1024.0
+    "offset_x": 6720.0,
+    "offset_y": -3152.0
   },
   "XOSY": {
     "anchor_tag": "YLOV",
@@ -16020,7 +16005,7 @@
     "offset_y": 64.0
   },
   "XOZY": {
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 9936.0,
     "offset_y": -13376.0
@@ -16033,7 +16018,7 @@
   },
   "XUBY": {
     "anchor_tag": "XUNO",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -16048,14 +16033,14 @@
   "XUCO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 1024.0
+    "offset_x": 6976.0,
+    "offset_y": -3152.0
   },
   "XUCY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10416.0,
-    "offset_y": -7328.0
+    "offset_x": 11712.0,
+    "offset_y": -6784.0
   },
   "XUDY": {
     "anchor_tag": "GOTA",
@@ -16065,10 +16050,10 @@
     "offset_y": 64.0
   },
   "XUFA": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
-    "offset_x": -27936.0,
-    "offset_y": -7264.0
+    "offset_x": -29248.0,
+    "offset_y": -8368.0
   },
   "XUFO": {
     "anchor_tag": "XUTE",
@@ -16084,7 +16069,7 @@
     "offset_y": -12944.0
   },
   "XUFY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8432.0
@@ -16092,14 +16077,14 @@
   "XUGU": {
     "ghost": false,
     "locked": true,
-    "offset_x": -8880.0,
-    "offset_y": -12000.0
+    "offset_x": -14864.0,
+    "offset_y": -12464.0
   },
   "XUHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10448.0,
-    "offset_y": -6928.0
+    "offset_x": 11344.0,
+    "offset_y": -6864.0
   },
   "XUHO": {
     "anchor_tag": "TAFU",
@@ -16118,8 +16103,8 @@
   "XUJA": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7584.0,
-    "offset_y": -3136.0
+    "offset_x": -8032.0,
+    "offset_y": -2560.0
   },
   "XUJO": {
     "anchor_tag": "CADO",
@@ -16131,14 +16116,14 @@
   "XUJY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6688.0,
-    "offset_y": -7040.0
+    "offset_x": -784.0,
+    "offset_y": -9280.0
   },
   "XUKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12320.0
+    "offset_x": -14992.0,
+    "offset_y": -12784.0
   },
   "XUKU": {
     "anchor_tag": "XYRU",
@@ -16175,7 +16160,7 @@
   },
   "XUNO": {
     "anchor_tag": "XOKE",
-    "ghost": true,
+    "ghost": false,
     "locked": true,
     "offset_x": 0.0,
     "offset_y": 64.0
@@ -16202,14 +16187,14 @@
   "XUPY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18240.0,
-    "offset_y": -1024.0
+    "offset_x": -19648.0,
+    "offset_y": -2272.0
   },
   "XUQU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11216.0,
-    "offset_y": -4896.0
+    "offset_x": 10624.0,
+    "offset_y": -6704.0
   },
   "XURA": {
     "anchor_tag": "XOGA",
@@ -16296,8 +16281,8 @@
   "XYDO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -11808.0
+    "offset_x": -14992.0,
+    "offset_y": -12272.0
   },
   "XYFE": {
     "anchor_tag": "YZOR",
@@ -16329,8 +16314,8 @@
   "XYHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11296.0,
-    "offset_y": 1152.0
+    "offset_x": 10992.0,
+    "offset_y": -3024.0
   },
   "XYJU": {
     "anchor_tag": "YJEX",
@@ -16349,8 +16334,8 @@
   "XYKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": -7056.0,
-    "offset_y": -8096.0
+    "offset_x": 672.0,
+    "offset_y": -9200.0
   },
   "XYLA": {
     "anchor_tag": "WUTO",
@@ -16362,8 +16347,8 @@
   "XYLE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -9008.0,
-    "offset_y": -12192.0
+    "offset_x": -14992.0,
+    "offset_y": -12656.0
   },
   "XYLO": {
     "anchor_tag": "XONA",
@@ -16373,7 +16358,7 @@
     "offset_y": 64.0
   },
   "XYLY": {
-    "ghost": false,
+    "ghost": true,
     "locked": true,
     "offset_x": -29904.0,
     "offset_y": -8624.0
@@ -16381,8 +16366,8 @@
   "XYME": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10144.0,
-    "offset_y": 1728.0
+    "offset_x": 9840.0,
+    "offset_y": -2448.0
   },
   "XYMO": {
     "anchor_tag": "WOKY",
@@ -16400,8 +16385,8 @@
   "XYNA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10944.0,
-    "offset_y": 1728.0
+    "offset_x": 10640.0,
+    "offset_y": -2448.0
   },
   "XYNE": {
     "anchor_tag": "XUXU",
@@ -16447,15 +16432,14 @@
   "XYSO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -12208.0,
-    "offset_y": -3456.0
+    "offset_x": -912.0,
+    "offset_y": -9344.0
   },
   "XYTO": {
-    "anchor_tag": "ZUMO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8048.0
   },
   "XYVA": {
     "ghost": true,
@@ -16473,8 +16457,8 @@
   "XYVO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -18944.0,
-    "offset_y": -2512.0
+    "offset_x": -20160.0,
+    "offset_y": -2272.0
   },
   "XYZE": {
     "ghost": false,
@@ -16519,20 +16503,20 @@
   "YBOX": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 896.0
+    "offset_x": 7104.0,
+    "offset_y": -3280.0
   },
   "YBUK": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10496.0,
-    "offset_y": 1728.0
+    "offset_x": 10192.0,
+    "offset_y": -2448.0
   },
   "YCAH": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 832.0
+    "offset_x": 6848.0,
+    "offset_y": -3344.0
   },
   "YCEB": {
     "anchor_tag": "YDYV",
@@ -16551,8 +16535,8 @@
   "YDAJ": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 832.0
+    "offset_x": 6976.0,
+    "offset_y": -3344.0
   },
   "YDOT": {
     "anchor_tag": "FYMA",
@@ -16571,20 +16555,20 @@
   "YDUG": {
     "ghost": false,
     "locked": true,
-    "offset_x": 8064.0,
-    "offset_y": 320.0
+    "offset_x": 7760.0,
+    "offset_y": -3856.0
   },
   "YDYV": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5776.0,
-    "offset_y": -8480.0
+    "offset_x": 704.0,
+    "offset_y": -8400.0
   },
   "YFAG": {
     "ghost": false,
     "locked": true,
-    "offset_x": 5568.0,
-    "offset_y": 672.0
+    "offset_x": 5264.0,
+    "offset_y": -3504.0
   },
   "YFAP": {
     "anchor_tag": "WUME",
@@ -16594,35 +16578,34 @@
     "offset_y": 64.0
   },
   "YFEL": {
-    "anchor_tag": "ANOM",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -4544.0,
+    "offset_y": -9600.0
   },
   "YFOC": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1696.0,
-    "offset_y": -1264.0
+    "offset_x": 1728.0,
+    "offset_y": -1968.0
   },
   "YFOP": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 1216.0
+    "offset_x": 6976.0,
+    "offset_y": -2960.0
   },
   "YFOT": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1696.0,
-    "offset_y": -1328.0
+    "offset_x": 1728.0,
+    "offset_y": -2032.0
   },
   "YFUN": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": -64.0
+    "offset_x": 6848.0,
+    "offset_y": -4240.0
   },
   "YGAJ": {
     "anchor_tag": "WEDU",
@@ -16662,8 +16645,8 @@
   "YHOK": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 832.0
+    "offset_x": 6720.0,
+    "offset_y": -3344.0
   },
   "YJEM": {
     "anchor_tag": "YWAV",
@@ -16724,8 +16707,8 @@
   "YLOV": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10944.0,
-    "offset_y": 1056.0
+    "offset_x": 10640.0,
+    "offset_y": -3120.0
   },
   "YLOZ": {
     "anchor_tag": "DEGO",
@@ -16737,14 +16720,14 @@
   "YLYC": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11552.0,
-    "offset_y": -6320.0
+    "offset_x": -448.0,
+    "offset_y": -10032.0
   },
   "YMAM": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 1216.0
+    "offset_x": 6720.0,
+    "offset_y": -2960.0
   },
   "YMEM": {
     "anchor_tag": "YRAC",
@@ -16756,8 +16739,8 @@
   "YMEV": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1696.0,
-    "offset_y": -1136.0
+    "offset_x": 1728.0,
+    "offset_y": -1840.0
   },
   "YNAZ": {
     "anchor_tag": "YWOS",
@@ -16783,8 +16766,8 @@
   "YNYC": {
     "ghost": false,
     "locked": true,
-    "offset_x": -11552.0,
-    "offset_y": -6256.0
+    "offset_x": -448.0,
+    "offset_y": -9888.0
   },
   "YPOD": {
     "anchor_tag": "XEXA",
@@ -16810,8 +16793,8 @@
   "YPUK": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": -64.0
+    "offset_x": 7104.0,
+    "offset_y": -4240.0
   },
   "YPUR": {
     "anchor_tag": "ZOCY",
@@ -16851,8 +16834,8 @@
   "YRYV": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6384.0,
-    "offset_y": -8320.0
+    "offset_x": -192.0,
+    "offset_y": -9104.0
   },
   "YSES": {
     "anchor_tag": "XAFU",
@@ -16892,8 +16875,8 @@
   "YTYP": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 1216.0
+    "offset_x": 6848.0,
+    "offset_y": -2960.0
   },
   "YULA": {
     "ghost": false,
@@ -16904,8 +16887,8 @@
   "YVAC": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 1216.0
+    "offset_x": 7104.0,
+    "offset_y": -2960.0
   },
   "YVAG": {
     "anchor_tag": "YMEM",
@@ -16917,14 +16900,14 @@
   "YVAL": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6512.0,
-    "offset_y": -8320.0
+    "offset_x": -320.0,
+    "offset_y": -9104.0
   },
   "YVAP": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 128.0
+    "offset_x": 6720.0,
+    "offset_y": -4048.0
   },
   "YVEL": {
     "anchor_tag": "YSEX",
@@ -16943,21 +16926,20 @@
   "YVOM": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1696.0,
-    "offset_y": -1200.0
+    "offset_x": 1728.0,
+    "offset_y": -1904.0
   },
   "YVUC": {
-    "anchor_tag": "ZATO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8592.0
   },
   "YVUZ": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 832.0
+    "offset_x": 7104.0,
+    "offset_y": -3344.0
   },
   "YWAK": {
     "anchor_tag": "ZONY",
@@ -16990,8 +16972,8 @@
   "YWOK": {
     "ghost": false,
     "locked": true,
-    "offset_x": -5600.0,
-    "offset_y": -8544.0
+    "offset_x": 960.0,
+    "offset_y": -8464.0
   },
   "YWOS": {
     "anchor_tag": "CEHU",
@@ -17017,8 +16999,8 @@
   "YZET": {
     "ghost": false,
     "locked": true,
-    "offset_x": 1696.0,
-    "offset_y": -1008.0
+    "offset_x": 1728.0,
+    "offset_y": -1712.0
   },
   "YZOF": {
     "anchor_tag": "YNEP",
@@ -17070,40 +17052,38 @@
   "ZAGO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 4512.0,
-    "offset_y": 96.0
+    "offset_x": 4208.0,
+    "offset_y": -4080.0
   },
   "ZAHA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 640.0
+    "offset_x": 6976.0,
+    "offset_y": -3536.0
   },
   "ZAJA": {
-    "anchor_tag": "WULE",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8240.0
   },
   "ZAKO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7632.0,
-    "offset_y": 640.0
+    "offset_x": 7328.0,
+    "offset_y": -3536.0
   },
   "ZAKU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 896.0
+    "offset_x": 6976.0,
+    "offset_y": -3280.0
   },
   "ZAKY": {
-    "anchor_tag": "ZAMY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8912.0
   },
   "ZALA": {
     "anchor_tag": "YBED",
@@ -17113,23 +17093,22 @@
     "offset_y": 64.0
   },
   "ZAMY": {
-    "anchor_tag": "AZUL",
     "ghost": false,
     "locked": true,
-    "offset_x": 224.0,
-    "offset_y": 0.0
+    "offset_x": -2224.0,
+    "offset_y": -8432.0
   },
   "ZAPE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 6048.0,
-    "offset_y": 672.0
+    "offset_x": 5744.0,
+    "offset_y": -3504.0
   },
   "ZARE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 320.0
+    "offset_x": 6720.0,
+    "offset_y": -3856.0
   },
   "ZARO": {
     "anchor_tag": "CAWO",
@@ -17141,15 +17120,14 @@
   "ZATE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 896.0
+    "offset_x": 6848.0,
+    "offset_y": -3280.0
   },
   "ZATO": {
-    "anchor_tag": "ZUFO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8656.0
   },
   "ZAVE": {
     "anchor_tag": "ZECE",
@@ -17159,11 +17137,10 @@
     "offset_y": 64.0
   },
   "ZAXA": {
-    "anchor_tag": "ZAMY",
     "ghost": false,
     "locked": true,
-    "offset_x": 128.0,
-    "offset_y": 0.0
+    "offset_x": -2224.0,
+    "offset_y": -8976.0
   },
   "ZAXE": {
     "anchor_tag": "WONE",
@@ -17181,8 +17158,8 @@
   "ZEBA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 640.0
+    "offset_x": 6848.0,
+    "offset_y": -3536.0
   },
   "ZECA": {
     "anchor_tag": "YSES",
@@ -17208,8 +17185,8 @@
   "ZEDA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 512.0
+    "offset_x": 7104.0,
+    "offset_y": -3664.0
   },
   "ZEDY": {
     "anchor_tag": "ZUMU",
@@ -17221,8 +17198,8 @@
   "ZEFE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 192.0
+    "offset_x": 7104.0,
+    "offset_y": -3984.0
   },
   "ZEHA": {
     "anchor_tag": "DEVE",
@@ -17234,8 +17211,8 @@
   "ZEJO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 512.0
+    "offset_x": 6976.0,
+    "offset_y": -3664.0
   },
   "ZEME": {
     "ghost": true,
@@ -17246,8 +17223,8 @@
   "ZEMU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 320.0
+    "offset_x": 6848.0,
+    "offset_y": -3856.0
   },
   "ZENE": {
     "anchor_tag": "ZYLU",
@@ -17280,8 +17257,8 @@
   "ZEXE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11648.0,
-    "offset_y": 1056.0
+    "offset_x": 11344.0,
+    "offset_y": -3120.0
   },
   "ZEXO": {
     "anchor_tag": "ZAFU",
@@ -17307,14 +17284,14 @@
   "ZODO": {
     "ghost": false,
     "locked": true,
-    "offset_x": -6256.0,
-    "offset_y": -8320.0
+    "offset_x": -64.0,
+    "offset_y": -9104.0
   },
   "ZOFE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4576.0,
-    "offset_y": -8560.0
+    "offset_x": -320.0,
+    "offset_y": -9888.0
   },
   "ZOGO": {
     "anchor_tag": "ZOLY",
@@ -17326,8 +17303,8 @@
   "ZOGY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 640.0
+    "offset_x": 6720.0,
+    "offset_y": -3536.0
   },
   "ZOJY": {
     "anchor_tag": "ZARO",
@@ -17339,8 +17316,8 @@
   "ZOKY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 640.0
+    "offset_x": 7104.0,
+    "offset_y": -3536.0
   },
   "ZOLA": {
     "anchor_tag": "YLAH",
@@ -17359,8 +17336,8 @@
   "ZONE": {
     "ghost": false,
     "locked": true,
-    "offset_x": -4576.0,
-    "offset_y": -8496.0
+    "offset_x": -320.0,
+    "offset_y": -10032.0
   },
   "ZONY": {
     "anchor_tag": "WYTE",
@@ -17370,11 +17347,10 @@
     "offset_y": 64.0
   },
   "ZOPU": {
-    "anchor_tag": "ZAXA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8368.0
   },
   "ZORO": {
     "ghost": false,
@@ -17383,11 +17359,10 @@
     "offset_y": -6992.0
   },
   "ZOZO": {
-    "anchor_tag": "WYKY",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8784.0
   },
   "ZUBE": {
     "anchor_tag": "ZEXO",
@@ -17417,37 +17392,34 @@
     "offset_y": -7376.0
   },
   "ZUFE": {
-    "anchor_tag": "XYTO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8528.0
   },
   "ZUFO": {
-    "anchor_tag": "ZAJA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8720.0
   },
   "ZUGA": {
-    "anchor_tag": "ZOZO",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8176.0
   },
   "ZUKE": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11072.0,
-    "offset_y": 1056.0
+    "offset_x": 10768.0,
+    "offset_y": -3120.0
   },
   "ZULO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 1024.0
+    "offset_x": 7104.0,
+    "offset_y": -3152.0
   },
   "ZULU": {
     "anchor_tag": "ZOLA",
@@ -17457,11 +17429,10 @@
     "offset_y": 64.0
   },
   "ZUMO": {
-    "anchor_tag": "ZUGA",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -8112.0
   },
   "ZUMU": {
     "anchor_tag": "WOKO",
@@ -17473,8 +17444,8 @@
   "ZUMY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10368.0,
-    "offset_y": 1728.0
+    "offset_x": 10064.0,
+    "offset_y": -2448.0
   },
   "ZURE": {
     "anchor_tag": "EKES",
@@ -17486,14 +17457,14 @@
   "ZURO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 11520.0,
-    "offset_y": 1056.0
+    "offset_x": 11216.0,
+    "offset_y": -3120.0
   },
   "ZURU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 10144.0,
-    "offset_y": 1824.0
+    "offset_x": 9840.0,
+    "offset_y": -2352.0
   },
   "ZURY": {
     "anchor_tag": "ZENE",
@@ -17512,14 +17483,14 @@
   "ZUVU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 1024.0
+    "offset_x": 6848.0,
+    "offset_y": -3152.0
   },
   "ZUZA": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 512.0
+    "offset_x": 6848.0,
+    "offset_y": -3664.0
   },
   "ZUZE": {
     "anchor_tag": "XEDY",
@@ -17531,21 +17502,20 @@
   "ZUZY": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7408.0,
-    "offset_y": 320.0
+    "offset_x": 7104.0,
+    "offset_y": -3856.0
   },
   "ZYFA": {
-    "anchor_tag": "YVUC",
     "ghost": false,
     "locked": true,
-    "offset_x": 0.0,
-    "offset_y": 64.0
+    "offset_x": -2224.0,
+    "offset_y": -7984.0
   },
   "ZYGO": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7280.0,
-    "offset_y": 320.0
+    "offset_x": 6976.0,
+    "offset_y": -3856.0
   },
   "ZYJO": {
     "anchor_tag": "YGAJ",
@@ -17557,8 +17527,8 @@
   "ZYKU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 192.0
+    "offset_x": 6720.0,
+    "offset_y": -3984.0
   },
   "ZYLU": {
     "anchor_tag": "ZURO",
@@ -17577,8 +17547,8 @@
   "ZYPU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7152.0,
-    "offset_y": 192.0
+    "offset_x": 6848.0,
+    "offset_y": -3984.0
   },
   "ZYSA": {
     "anchor_tag": "XUVO",
@@ -17618,7 +17588,7 @@
   "ZYWU": {
     "ghost": false,
     "locked": true,
-    "offset_x": 7024.0,
-    "offset_y": 512.0
+    "offset_x": 6720.0,
+    "offset_y": -3664.0
   }
 }

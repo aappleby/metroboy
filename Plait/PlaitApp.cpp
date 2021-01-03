@@ -703,8 +703,14 @@ void PlaitApp::draw_node(Node* node) {
 
       // Make edges connected to selected nodes opaque.
       if (node->selected || prev->selected) {
-        color_a |= 0xFF000000;
-        color_b |= 0xFF000000;
+        if (edge_backwards) {
+          color_a = 0xFF8080FF;
+          color_b = 0xFF8080FF;
+        }
+        else {
+          color_a |= 0xFF000000;
+          color_b |= 0xFF000000;
+        }
       }
 
       dvec2 port_prev = prev->get_pos_new() + dvec2(node_size.x, node_size.y / 2);

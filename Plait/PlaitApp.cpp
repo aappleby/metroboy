@@ -546,7 +546,8 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       }
       else if (mouse_buttons & SDL_BUTTON_LMASK && clicked_node) {
         for (auto selected_node : selection) {
-          //if (selected_node->anchored()) continue;
+          if (selected_node->root_anchor_is_selected()) continue;
+
           dvec2 new_pos = selected_node->get_pos_old() + (mouse_pos_world - click_start_world);
           new_pos.x = round(new_pos.x / 16) * 16.0;
           new_pos.y = round(new_pos.y / 16) * 16.0;

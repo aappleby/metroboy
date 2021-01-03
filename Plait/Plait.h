@@ -23,6 +23,15 @@ struct Node {
   const Node* get_anchor() { return anchor; }
   void  set_anchor(Node* new_anchor);
 
+  bool root_anchor_is_selected() const {
+    if (anchor == nullptr) return false;
+
+    const Node* cursor = anchor;
+    while(cursor->anchor) cursor = cursor->anchor;
+    return cursor->selected;
+  }
+
+
   void set_pos_old(dvec2 pos) { offset_old = anchor ? pos - anchor->get_pos_old() : pos; }
   void set_pos_new(dvec2 pos) { offset_new = anchor ? pos - anchor->get_pos_new() : pos; }
 

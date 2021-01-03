@@ -32,12 +32,13 @@ struct Node {
   void commit_pos() { offset_old = offset_new; }
   void revert_pos() { offset_new = offset_old; }
 
-  void toggle_lock() { locked = !locked; }
+  void toggle_locked() { locked = !locked; }
+  void toggle_ghost()  { ghost = !ghost; }
 
   //----------------------------------------
   // Serialized state
 
-  bool hidden = 0;
+  bool ghost = 0;
   bool locked = 0;
   dvec2 offset_old = {0,0};
   dvec2 offset_new = {0,0};
@@ -63,9 +64,6 @@ struct Node {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct Plait {
-  void save(const char* filename);
-  void load(const char* filename, CellDB& cell_db);
-
   void save_json(const char* filename);
   void load_json(const char* filename, CellDB& cell_db);
 

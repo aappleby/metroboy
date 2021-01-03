@@ -35,10 +35,11 @@ int main(int argc, char** argv) {
   PlaitApp* app = new PlaitApp();
 
   //app->cell_db.parse_dir("GateBoyLib");
-  printf("Loading gameboy.cell_db.json");
+  printf("Loading gameboy.cell_db.json\n");
   app->cell_db.load_json("gameboy.cell_db.json");
 
-  app->plait.load("gameboy.plait", app->cell_db);
+  printf("Loading gameboy.plait.json\n");
+  app->plait.load_json("gameboy.plait.json", app->cell_db);
 
 
   AppHost* app_host = new AppHost(app);
@@ -306,6 +307,8 @@ double remap_clamp(double x, double a1, double a2, double b1, double b2) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void spring_nodes(Node* a, Node* b) {
+  if (a->ghost || b->ghost) return;
+
   dvec2 offset = b->get_pos_new() - a->get_pos_new();
   double dist = length(offset);
   offset = normalize(offset);
@@ -323,6 +326,8 @@ void spring_nodes(Node* a, Node* b) {
 }
 
 void spring_nodes2(Node* a, Node* b) {
+  if (a->ghost || b->ghost) return;
+
   dvec2 offset = b->get_pos_new() - a->get_pos_new();
   double dist = length(offset);
   offset = normalize(offset);
@@ -362,29 +367,30 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       int key = event.key.keysym.scancode;
       int mod = event.key.keysym.mod;
 
-      if (key == SDL_SCANCODE_E) show_edges = !show_edges;
-      if (key == SDL_SCANCODE_A) show_anchors = !show_anchors;
-      if (key == SDL_SCANCODE_RETURN) {
+      if (key == SDL_SCANCODE_Q) {
+        for (auto node : selection) node->toggle_ghost();
+      }
+      else if (key == SDL_SCANCODE_E) show_edges = !show_edges;
+      else if (key == SDL_SCANCODE_A) show_anchors = !show_anchors;
+      else if (key == SDL_SCANCODE_RETURN) {
         commit_selection();
         clear_selection();
       }
-      if (key == SDL_SCANCODE_ESCAPE) {
+      else if (key == SDL_SCANCODE_ESCAPE) {
         revert_selection();
         clear_selection();
       }
-
-      if ((key == SDL_SCANCODE_S) && (mod & KMOD_CTRL)) {
+      else if ((key == SDL_SCANCODE_S) && (mod & KMOD_CTRL)) {
         //printf("Saving gameboy.cell_db.json\n");
         //cell_db.save_json("gameboy.cell_db.json");
         //plait.save("gameboy.plait");
         plait.save_json("gameboy.plait.json");
       }
-
-      if ((key == SDL_SCANCODE_L) && (mod & KMOD_CTRL)) {
+      else if ((key == SDL_SCANCODE_L) && (mod & KMOD_CTRL)) {
         //printf("Loading gameboy.cell_db.json\n");
         //cell_db.load_json("gameboy.cell_db.json");
         printf("Loading gameboy.plait\n");
-        plait.load("gameboy.plait", cell_db);
+        plait.load_json("gameboy.plait", cell_db);
       }
 
       break;
@@ -413,11 +419,11 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
         }
         else if (clicked_node->selected) {
           printf("D-clicked on selected node %s\n", clicked_node->name());
-          clicked_node->toggle_lock();
+          clicked_node->toggle_locked();
         }
         else {
           printf("D-clicked on unselected node %s\n", clicked_node->name());
-          clicked_node->toggle_lock();
+          clicked_node->toggle_locked();
         }
       }
       if (old_keys[SDL_SCANCODE_LCTRL]) {
@@ -511,6 +517,8 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       }
       else if (old_keys[SDL_SCANCODE_LCTRL] && new_keys[SDL_SCANCODE_LCTRL]) {
         if (was_drag) {
+          commit_selection();
+          clear_selection();
           select_region(click_start_world, click_end_world);
         }
       }
@@ -538,6 +546,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
       }
       else if (mouse_buttons & SDL_BUTTON_LMASK && clicked_node) {
         for (auto selected_node : selection) {
+          //if (selected_node->anchored()) continue;
           dvec2 new_pos = selected_node->get_pos_old() + (mouse_pos_world - click_start_world);
           new_pos.x = round(new_pos.x / 16) * 16.0;
           new_pos.y = round(new_pos.y / 16) * 16.0;
@@ -555,7 +564,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
   //----------------------------------------
   // Pull nodes towards their parents/children
 
-#if 1
+#if 0
   for (auto& [tag, node] : plait.node_map) {
     for (auto next : node->next) {
       spring_nodes(node, next);
@@ -620,7 +629,7 @@ void PlaitApp::app_update(Viewport view, double delta_time) {
   //----------------------------------------
   // Apply accumulated spring forces
 
-#if 1
+#if 0
   for (auto& [tag, node] : plait.node_map) {
     if (node->selected || node->locked || node->anchored()) {
     }
@@ -640,12 +649,17 @@ void PlaitApp::draw_node(Node* node) {
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
 
+  size_t port_in_count = node->prev.size();
+  size_t port_out_count = 1;
+
   outline_painter.push_box(node_pos_new, node_pos_new + node_size, node->selected ? 0xFFCCCCCC : 0xFF808080);
 
-  box_painter.push_corner_size(
-    node_pos_new + dvec2(4,4),
-    node_size - dvec2(8,8),
-    node == hovered_node ? node->color + COL_HINT3 : node->color);
+  if (!node->ghost) {
+    box_painter.push_corner_size(
+      node_pos_new + dvec2(4,4),
+      node_size - dvec2(8,8),
+      node == hovered_node ? node->color + COL_HINT3 : node->color);
+  }
 
   text_painter.add_text_at(node->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
   text_painter.add_text_at(node->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
@@ -653,7 +667,6 @@ void PlaitApp::draw_node(Node* node) {
 
   // input port(s)
   {
-    size_t port_in_count = node->prev.size();
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
@@ -664,7 +677,6 @@ void PlaitApp::draw_node(Node* node) {
 
   // output port(s)
   {
-    size_t port_out_count = 1;
     double stride = (node_size.y) / (port_out_count + 1);
 
     for (size_t i = 0; i < port_out_count; i++) {
@@ -674,16 +686,25 @@ void PlaitApp::draw_node(Node* node) {
   }
 
   // edges from previous node(s)
-  if (show_edges) {
-    size_t port_in_count = node->prev.size();
+  if (show_edges && !node->ghost) {
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
       auto prev = node->prev[i];
       if (prev == nullptr) continue;
+      if (prev->ghost) continue;
 
-      uint32_t color_a = (node->selected || prev->selected) ? 0xFF8888FF : 0x800000FF;
-      uint32_t color_b = (node->selected || prev->selected) ? 0xFF88FF88 : 0x8000FF00;
+      // Highlight "backwards" edges in red.
+      bool edge_backwards = prev->get_pos_new().x > node->get_pos_new().x;
+
+      uint32_t color_a = edge_backwards ? 0xFF0000FF : 0x40FFFFFF;
+      uint32_t color_b = edge_backwards ? 0xFF0000FF : 0x4044FF44;
+
+      // Make edges connected to selected nodes opaque.
+      if (node->selected || prev->selected) {
+        color_a |= 0xFF000000;
+        color_b |= 0xFF000000;
+      }
 
       dvec2 port_prev = prev->get_pos_new() + dvec2(node_size.x, node_size.y / 2);
       dvec2 port_next = node->get_pos_new() + dvec2(0, stride * (i + 1));
@@ -729,11 +750,11 @@ void PlaitApp::app_render_frame(Viewport view_world) {
     draw_node(node);
   }
 
+  outline_painter.render(view_world, 0, 0, 1);
+  box_painter.render(view_world, 0, 0, 1);
   port_painter.render(view_world, 0, 0, 1);
   edge_painter.render(view_world, 0, 0, 1);
-  box_painter.render(view_world, 0, 0, 1);
   text_painter.render(view_world, 0, 0, 1);
-  outline_painter.render(view_world, 0, 0, 1);
 
   //----------------------------------------
   // UI layer

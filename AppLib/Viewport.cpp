@@ -29,6 +29,12 @@ dvec2 Viewport::screenToWorld(dvec2 v) const {
   return {x, y};
 }
 
+dvec2 Viewport::deltaScreenToWorld(dvec2 delta) const {
+  double x = (delta.x / screen_size.x) * (max.x - min.x);
+  double y = (delta.y / screen_size.y) * (max.y - min.y);
+  return {x, y};
+}
+
 double Viewport::get_zoom() const {
   double w = screen_size.x / (max.x - min.x);
   double z = log2(w);

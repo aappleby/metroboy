@@ -14,21 +14,15 @@ private:
 
   App* app = nullptr;
 
-  Viewport view_screen;
-  Viewport view_raw;
-  Viewport view_smooth;
-  Viewport view_snap;
-
   bool quit = false;
   void* window = nullptr;
   void* gl_context = nullptr;
-  const uint8_t* keyboard_state = nullptr;
 
-  //uint32_t imgui_prog = 0;
-  //uint32_t imgui_tex = 0;
-  //uint32_t imgui_vao = 0;
-  //uint32_t imgui_vbo = 0;
-  //uint32_t imgui_ibo = 0;
+  uint32_t imgui_prog = 0;
+  uint32_t imgui_tex = 0;
+  uint32_t imgui_vao = 0;
+  uint32_t imgui_vbo = 0;
+  uint32_t imgui_ibo = 0;
 };
 
 //-----------------------------------------------------------------------------

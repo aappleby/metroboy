@@ -23,23 +23,81 @@ struct Node {
   const Node* get_anchor() { return anchor; }
   void  set_anchor(Node* new_anchor);
 
-  bool root_anchor_is_selected() const {
-    if (anchor == nullptr) return false;
+  dvec2 get_pos_abs_new() const {
+    if (floating) {
+      return pos_abs;
+    }
+    else {
+      return get_pos_anchor_abs_new() + pos_rel;
+    }
+  }
 
-    const Node* cursor = anchor;
-    while(cursor->anchor) cursor = cursor->anchor;
-    return cursor->selected;
+  dvec2 get_pos_rel_new() const {
+    if (floating) {
+      return pos_abs - get_pos_anchor_abs_new();
+    }
+    else {
+      return pos_rel;
+    }
+  }
+
+  dvec2 get_pos_abs_old() const {
+    return get_pos_anchor_abs_old() + pos_rel;
+  }
+
+  dvec2 get_pos_rel_old() const {
+    return pos_rel;
   }
 
 
-  void set_pos_old(dvec2 pos) { offset_old = anchor ? pos - anchor->get_pos_old() : pos; }
-  void set_pos_new(dvec2 pos) { offset_new = anchor ? pos - anchor->get_pos_new() : pos; }
+  dvec2 get_pos_anchor_abs_new() const {
+    return anchor ? anchor->get_pos_abs_new() : dvec2(0,0);
+  }
 
-  dvec2 get_pos_old() const { return anchor ? anchor->get_pos_old() + offset_old : offset_old; }
-  dvec2 get_pos_new() const { return anchor ? anchor->get_pos_new() + offset_new : offset_new; }
+  dvec2 get_pos_anchor_abs_old() const {
+    return anchor ? anchor->get_pos_abs_old() : dvec2(0,0);
+  }
 
-  void commit_pos() { offset_old = offset_new; }
-  void revert_pos() { offset_new = offset_old; }
+  void move(dvec2 delta) {
+    make_floating();
+    pos_abs += delta;
+  }
+
+  void set_pos_abs_new(dvec2 p) {
+    pos_abs = p;
+    floating = true;
+  }
+
+  void commit_pos() {
+    if (floating) {
+      printf("commit_pos\n");
+      floating = false;
+      pos_rel = pos_abs - get_pos_anchor_abs_new();
+    }
+  }
+
+  void revert_pos() {
+    if (floating) {
+      printf("revert_pos\n");
+      floating = false;
+      pos_abs = pos_rel + get_pos_anchor_abs_new();
+    }
+  }
+
+  void make_floating() {
+    if (!floating) {
+      pos_abs = pos_rel + get_pos_anchor_abs_new();
+      floating = true;
+    }
+  }
+
+  dvec2 pos_abs = {0,0};
+  dvec2 pos_rel = {0,0};
+  bool floating = 0;
+
+
+
+
 
   void toggle_locked() { locked = !locked; }
   void toggle_ghost()  { ghost = !ghost; }
@@ -49,9 +107,8 @@ struct Node {
 
   bool ghost = 0;
   bool locked = 0;
-  dvec2 offset_old = {0,0};
-  dvec2 offset_new = {0,0};
-  const Node* anchor = nullptr;
+
+  Node* anchor = nullptr;
 
   //----------------------------------------
   // State from cell db
@@ -65,7 +122,7 @@ struct Node {
 
   int  rank = 0;
   int  mark = 0;
-  bool selected = 0;
+  bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   uint32_t color = 0xFFFF00FF;
   dvec2 spring_force = {0,0};
 };

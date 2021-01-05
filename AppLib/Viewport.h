@@ -25,6 +25,9 @@ struct Viewport {
 
   dvec2 worldToScreen(dvec2 v) const;
   dvec2 screenToWorld(dvec2 v) const;
+
+  dvec2 deltaScreenToWorld(dvec2 delta) const;
+
   double get_zoom() const;
 
   Viewport zoom(dvec2 screen_pos, double zoom);
@@ -39,4 +42,46 @@ struct Viewport {
       {screen_w, screen_h}
     };
   }
+};
+
+struct ViewController {
+
+  void init(int screen_w, int screen_h) {
+    view_screen = Viewport::screenspace(screen_w, screen_h);
+    view_target = view_screen;
+    view_smooth = view_screen;
+    view_snap   = view_screen;
+  }
+
+  void begin_frame(int screen_w, int screen_h) {
+    view_screen = Viewport::screenspace(screen_w, screen_h);
+  }
+
+  void on_mouse_wheel(int mouse_x, int mouse_y, double wheel) {
+    view_target = view_target.zoom({mouse_x, mouse_y}, wheel);
+  }
+
+  void pan(double dx, double dy) {
+    view_target = view_target.pan({dx, dy});
+  }
+
+  void update(double delta) {
+    Viewport snapped = view_target.snap();
+    view_smooth = view_smooth.ease(view_target, delta);
+    view_snap = view_snap.ease(snapped, delta);
+
+    if (view_snap == snapped) {
+      view_target = view_snap;
+      view_smooth = view_snap;
+    }
+  }
+
+  void pop_view() {
+    view_target = view_screen;
+  }
+
+  Viewport view_screen;
+  Viewport view_target;
+  Viewport view_smooth;
+  Viewport view_snap;
 };

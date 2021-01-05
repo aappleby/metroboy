@@ -18,7 +18,7 @@ class GateBoyApp : public App {
 public:
 
   const char* app_get_title() override { return "GateBoyApp"; }
-  void app_init() override;
+  void app_init(int screen_w, int screen_h) override;
   void app_close() override;
 
   void reset_to_bootrom();
@@ -28,9 +28,9 @@ public:
   void load_rom(const char* filename);
 
   void begin_frame() { frame_begin = timestamp(); }
-  void app_update(Viewport /*view*/, double delta) override;
-  void app_render_frame(Viewport view) override;
-  void app_render_ui(Viewport /*view*/) override {};
+  void app_update(double delta) override;
+  void app_render_frame() override;
+  void app_render_ui() override {};
 
   void end_frame() {
     frame_end = timestamp();

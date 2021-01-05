@@ -34,7 +34,7 @@ const char* MetroBoyApp::app_get_title() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_init() {
+void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   app_start = timestamp();
 
   blitter.init();
@@ -143,7 +143,7 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_update(Viewport /*view*/, double /*delta*/) {
+void MetroBoyApp::app_update(double /*delta*/) {
   int  step_forward = 0;
   int  step_backward = 0;
 
@@ -251,7 +251,8 @@ void MetroBoyApp::app_update(Viewport /*view*/, double /*delta*/) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_render_frame(Viewport view) {
+void MetroBoyApp::app_render_frame() {
+  Viewport view = Viewport::screenspace(1920, 1080);
 
   grid_painter.render(view);
 
@@ -297,7 +298,9 @@ void MetroBoyApp::app_render_frame(Viewport view) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_render_ui(Viewport view) {
+void MetroBoyApp::app_render_ui() {
+  Viewport view = Viewport::screenspace(1920, 1080);
+
   StringDumper d;
 
   int column = 0;

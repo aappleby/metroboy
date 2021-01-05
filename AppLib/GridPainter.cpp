@@ -42,17 +42,22 @@ in  vec2 world_pos;
 out vec4 frag_col;
 
 void main() {
+
   if (world_pos.x < -32768.0 ||
       world_pos.x >  32768.0 ||
       world_pos.y < -32768.0 ||
       world_pos.y >  32768.0) {
-    frag_col = vec4(0.4, 0.0, 0.0, 1.0);
+    frag_col = vec4(0.0, 0.0, 0.1, 1.0);
     return;
   }
 
-  bool bx = fract(world_pos.x * (1.0 / 64.0)) > 0.5;
-  bool by = fract(world_pos.y * (1.0 / 64.0)) > 0.5;
-  bool b = bx ^^ by;
+  int world_x = int(world_pos.x);
+  int world_y = int(world_pos.y);
+
+  bool bx = (((world_x >> 5) & 1) == 0);
+  bool by = (((world_y >> 5) & 1) == 0);
+  bool b  = bx ^^ by;
+
 
   float ga = 14.0 / 255.0;
   float gb = 19.0 / 255.0;

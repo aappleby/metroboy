@@ -12,7 +12,10 @@ const char* DummyApp::app_get_title() {
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::app_init() {
+void DummyApp::app_init(int _screen_w, int _screen_h) {
+  screen_w = _screen_w;
+  screen_h = _screen_h;
+
   grid_painter.init();
   text_painter.init();
   blitter.init();
@@ -34,14 +37,15 @@ void DummyApp::app_close() {
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::app_update(Viewport view, double delta) {
-  (void)view;
+void DummyApp::app_update(double delta) {
   (void)delta;
 }
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::app_render_frame(Viewport view) {
+void DummyApp::app_render_frame() {
+  Viewport view = Viewport::screenspace(screen_w, screen_h);
+
   grid_painter.render(view);
 
   static int count = 0;
@@ -53,8 +57,7 @@ void DummyApp::app_render_frame(Viewport view) {
 
 //-----------------------------------------------------------------------------
 
-void DummyApp::app_render_ui(Viewport view) {
-  (void)view;
+void DummyApp::app_render_ui() {
 }
 
 //-----------------------------------------------------------------------------

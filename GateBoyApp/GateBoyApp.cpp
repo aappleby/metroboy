@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_init() {
+void GateBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   LOG_G("GateBoyApp::app_init()\n");
   LOG_SCOPE_INDENT();
 
@@ -185,7 +185,7 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_update(Viewport /*view*/, double /*delta*/) {
+void GateBoyApp::app_update(double /*delta*/) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
 
@@ -261,7 +261,9 @@ void GateBoyApp::app_update(Viewport /*view*/, double /*delta*/) {
 
 #pragma warning(disable:4189)
 
-void GateBoyApp::app_render_frame(Viewport view) {
+void GateBoyApp::app_render_frame() {
+  Viewport view = Viewport::screenspace(1920, 1080);
+
   gb_thread.pause();
 
   grid_painter.render(view);

@@ -17,15 +17,15 @@
 class MetroBoyApp : public App {
 public:
 
-  virtual const char* app_get_title();
-  virtual void app_init();
-  virtual void app_close();
+  virtual const char* app_get_title() override;
+  virtual void app_init(int _screen_w, int _screen_h) override;
+  virtual void app_close() override;
 
-  virtual void begin_frame() { frame_begin = timestamp(); }
-  virtual void app_update(Viewport view, double delta);
-  virtual void app_render_frame(Viewport view);
-  virtual void app_render_ui(Viewport view);
-  virtual void end_frame()   { frame_end = timestamp(); frame_time = frame_end - frame_begin; }
+  virtual void begin_frame(int /*screen_w*/, int /*screen_h*/) override { frame_begin = timestamp(); }
+  virtual void app_update(double delta) override;
+  virtual void app_render_frame() override;
+  virtual void app_render_ui() override;
+  virtual void end_frame() override { frame_end = timestamp(); frame_time = frame_end - frame_begin; }
 
   void post();
   void load_rom(const std::string& prefix, const std::string& name);

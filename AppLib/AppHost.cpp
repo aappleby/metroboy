@@ -1,7 +1,7 @@
 #include "AppLib/AppHost.h"
 #include "AppLib/GLBase.h"
 
-//#include "imgui/imgui.h"
+#include "imgui/imgui.h"
 #include "glad/glad.h"
 
 #include "CoreLib/Tests.h"
@@ -71,22 +71,21 @@ int AppHost::app_main(int, char**) {
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  const int initial_screen_w = 3200;
-  const int initial_screen_h = 1440;
+  const int initial_screen_w = 1920;
+  const int initial_screen_h = 1080;
 
   window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                             initial_screen_w, initial_screen_h,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
 
-  keyboard_state = SDL_GetKeyboardState(nullptr);
+  const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
 
   gl_context = (SDL_GLContext)init_gl(window);
 
   //----------------------------------------
   // Initialize ImGui and ImGui renderer
 
-  /*
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
   ImGuiIO& io = ImGui::GetIO();
@@ -110,20 +109,14 @@ int AppHost::app_main(int, char**) {
     glVertexAttribPointer(1, 2, GL_FLOAT,         GL_FALSE, 20, (void*)8);
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE,  20, (void*)16);
   }
-  */
 
 
   //----------------------------------------
   // Initialize internal renderers
 
-  view_screen = Viewport::screenspace(initial_screen_w, initial_screen_h);
-  view_raw    = view_screen;
-  view_smooth = view_screen;
-  view_snap   = view_screen;
-
   printf("\n");
 
-  app->app_init();
+  app->app_init(initial_screen_w, initial_screen_h);
 
   //----------------------------------------
   // Loop forever
@@ -132,146 +125,37 @@ int AppHost::app_main(int, char**) {
   static double new_now = timestamp();
 
   while (!quit) {
-    app->begin_frame();
-    old_now = new_now;
-    new_now = timestamp();
-    const double delta = new_now - old_now;
-
-    //----------------------------------------
-    // Peek events and dispatch to ImGui
+    if (keyboard_state[SDL_SCANCODE_ESCAPE] && keyboard_state[SDL_SCANCODE_LSHIFT]) {
+      break;
+    }
 
     int screen_w = 0, screen_h = 0;
     SDL_GL_GetDrawableSize((SDL_Window*)window, &screen_w, &screen_h);
-    view_screen = Viewport::screenspace(screen_w, screen_h);
+    io.DisplaySize.x = float(screen_w);
+    io.DisplaySize.y = float(screen_h);
 
-    int mouse_x = 0, mouse_y = 0;
-    const auto mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
-    const auto world_mouse = view_snap.screenToWorld({mouse_x, mouse_y});
+    app->begin_frame(screen_w, screen_h);
+    old_now = new_now;
+    new_now = timestamp();
+    const double delta = new_now - old_now;
+    io.DeltaTime = (float)delta;
 
-    bool mouse_captured = false;
-    (void)mouse_captured;
+    //----------------------------------------
+    // Check for quit message
 
     SDL_PumpEvents();
     SDL_Event events[64];
     const int nevents = SDL_PeepEvents(events, 64, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
-
-#if 0
-    io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
-    io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
-    io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
-
-    io.MousePos = { (float)world_mouse.x, (float)world_mouse.y };
-
-    io.DeltaTime = 1.0f/60.0f;              // set the time elapsed since the previous frame (in seconds)
-    io.DisplaySize.x = 1920.0f;             // set the current display width
-    io.DisplaySize.y = 1280.0f;             // set the current display height here
-    io.MousePos = my_mouse_pos;             // set the mouse position
-    io.MouseDown[0] = my_mouse_buttons[0];  // set the mouse button states
-    io.MouseDown[1] = my_mouse_buttons[1];
-
-    io.DeltaTime = (float)delta;
-    io.DisplaySize.x = float(screen_w);
-    io.DisplaySize.y = float(screen_h);
-
-    ImGui::NewFrame();
-
-    mouse_captured = io.WantCaptureMouse;
-
     for(int i = 0; i < nevents; i++) {
-      const SDL_Event* event = &events[i];
-
-      switch (event->type) {
-      case SDL_MOUSEWHEEL: {
-        if (io.WantCaptureMouse) {
-          if (event->wheel.x > 0) io.MouseWheelH += 1;
-          if (event->wheel.x < 0) io.MouseWheelH -= 1;
-          if (event->wheel.y > 0) io.MouseWheel += 1;
-          if (event->wheel.y < 0) io.MouseWheel -= 1;
-        }
-        break;
-      }
-      case SDL_TEXTINPUT: {
-        io.AddInputCharactersUTF8(event->text.text);
-        break;
-      }
-      case SDL_KEYDOWN:
-      case SDL_KEYUP: {
-        int key = event->key.keysym.scancode;
-        IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
-        io.KeysDown[key] = (event->type == SDL_KEYDOWN);
-        io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
-        io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
-        io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
-        io.KeySuper = false;
-        break;
-      }
-      }
-    }
-#endif
-
-
-    //----------------------------------------
-    // Handle mouse events
-
-    for(int i = 0; i < nevents; i++) {
-      auto& event = events[i];
-      switch (event.type) {
-
-      case SDL_MOUSEBUTTONDOWN: {
-        //printf("AppHost click start at %d %d\n", event.button.x, event.button.y);
-        break;
-      }
-
-      case SDL_MOUSEWHEEL: {
-        view_raw = view_raw.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
-        break;
-      }
-      case SDL_MOUSEMOTION: {
-        if (!app->is_mouse_locked()) {
-          if (event.motion.state & SDL_BUTTON_LMASK) {
-            view_raw = view_raw.pan({event.motion.xrel, event.motion.yrel});
-          }
-        }
-        break;
-      }
-      }
-    }
-
-    //----------------------------------------
-    // Handle key events
-
-    for(int i = 0; i < nevents; i++) {
-      auto& event = events[i];
-      switch (event.type) {
-      case SDL_KEYDOWN: {
-        if (!app->is_keyboard_locked()) {
-          if (event.key.keysym.sym == SDLK_ESCAPE) {
-            view_raw = view_screen;
-            if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
-          }
-        }
-        break;
-      }
-      case SDL_QUIT: {
-        quit = true;
-        break;
-      }
-      }
+      if (events[i].type == SDL_QUIT) quit = true;
     }
 
     //----------------------------------------
     // Client app update
 
-    Viewport snapped = view_raw.snap();
-    view_smooth = view_smooth.ease(view_raw, delta);
-    view_snap = view_snap.ease(snapped, delta);
+    //view_control.update(delta);
 
-    if (view_snap == snapped) {
-      view_raw = view_snap;
-      view_smooth = view_snap;
-    }
-
-    app->app_update(view_snap, delta);
+    app->app_update(delta);
 
     //----------------------------------------
     // Client app render
@@ -279,24 +163,24 @@ int AppHost::app_main(int, char**) {
     glViewport(0, 0, screen_w, screen_h);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    app->app_render_frame(view_snap);
+    ImGui::NewFrame();
 
-    app->app_render_ui(view_screen);
+    app->app_render_frame();
+
+    app->app_render_ui();
 
     //----------------------------------------
     // ImGui render
 
-#if 0
-    //ImGui::ShowDemoWindow();
-
+    ImGui::ShowDemoWindow();
     ImGui::Render();
+
     const ImDrawData* draw_data = ImGui::GetDrawData();
 
     if (draw_data->CmdListsCount) {
       glUseProgram(imgui_prog);
 
-      glUniform4f(glGetUniformLocation(imgui_prog, "viewport"),
-                 (float)view_snap.min.x, (float)view_snap.min.y, (float)view_snap.max.x, (float)view_snap.max.y);
+      glUniform4f(glGetUniformLocation(imgui_prog, "viewport"), 0, 0, (float)screen_w, (float)screen_h);
       glUniform1i(glGetUniformLocation(imgui_prog, "tex"), 0);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, imgui_tex);
@@ -314,17 +198,11 @@ int AppHost::app_main(int, char**) {
 
         for (int i = 0; i < l->CmdBuffer.Size; i++) {
           const ImDrawCmd* c = &l->CmdBuffer[i];
+          glScissor(int(c->ClipRect.x),
+                    screen_h - int(c->ClipRect.w),
+                    int(c->ClipRect.z - c->ClipRect.x),
+                    int(c->ClipRect.w - c->ClipRect.y));
 
-          const auto clip_min = view_snap.worldToScreen({c->ClipRect.x, c->ClipRect.y});
-          const auto clip_max = view_snap.worldToScreen({c->ClipRect.z, c->ClipRect.w});
-
-          const int clip_min_x = (int)clip_min.x;
-          const int clip_min_y = (int)clip_min.y;
-          const int clip_max_x = (int)clip_max.x;
-          const int clip_max_y = (int)clip_max.y;
-
-          glScissor(clip_min_x, screen_h - clip_max_y,
-                    clip_max_x - clip_min_x, clip_max_y - clip_min_y);
           glDrawElements(GL_TRIANGLES, c->ElemCount, GL_UNSIGNED_SHORT,
                           reinterpret_cast<void*>(intptr_t(c->IdxOffset * 2)));
         }
@@ -332,7 +210,6 @@ int AppHost::app_main(int, char**) {
 
       glDisable(GL_SCISSOR_TEST);
     }
-#endif
 
     //----------------------------------------
     // Client end frame

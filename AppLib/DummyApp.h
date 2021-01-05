@@ -12,15 +12,17 @@ public:
   ~DummyApp() override;
 
   const char* app_get_title() override;
-  void app_init() override;
+  void app_init(int screen_w, int screen_h) override;
   void app_close() override;
-  void app_update(Viewport view, double delta) override;
-  void app_render_frame(Viewport view) override;
-  void app_render_ui(Viewport view) override;
+  void app_update(double delta) override;
+  void app_render_frame() override;
+  void app_render_ui() override;
 
   GridPainter grid_painter;
   TextPainter text_painter;
   Blitter     blitter;
+  int screen_w = 0;
+  int screen_h = 0;
   int tex = 0;
 };
 

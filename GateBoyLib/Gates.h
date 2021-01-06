@@ -901,12 +901,16 @@ inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 
 //-----------------------------------------------------------------------------
 
-inline wire add_c(wire a, wire b, wire c) {
-  return bit(bit(a) + bit(b) + bit(c), 1);
-}
+struct AdderOut {
+  const wire s;
+  const wire c;
+};
 
-inline wire add_s(wire a, wire b, wire c) {
-  return bit(bit(a) + bit(b) + bit(c), 0);
+inline AdderOut add3(wire a, wire b, wire c) {
+  return {
+    bit(bit(a) + bit(b) + bit(c), 0),
+    bit(bit(a) + bit(b) + bit(c), 1)
+  };
 }
 
 //-----------------------------------------------------------------------------

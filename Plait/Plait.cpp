@@ -50,8 +50,8 @@ bool Node::anchored_to(Node* target) {
 }
 
 void Node::set_anchor(Node* new_anchor) {
-  CHECK_N(floating);
-  CHECK_N(new_anchor->floating);
+  CHECK_P(new_anchor == nullptr || pinned);
+  CHECK_P(new_anchor == nullptr || new_anchor->pinned);
 
   // Ignore invalid anchors, or anchors that would create a loop.
   if (this == new_anchor) return;
@@ -124,7 +124,6 @@ void Plait::save_json(const char* filename) {
     auto& jnode = root[tag];
     node->commit_pos();
 
-    jnode["ghost"]      = node->ghost;
     jnode["locked"]     = node->locked;
     jnode["pos_rel_x"]  = node->pos_rel.x;
     jnode["pos_rel_y"]  = node->pos_rel.y;
@@ -175,7 +174,6 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
     auto node = new Node(cell);
     node_map[tag] = node;
 
-    node->ghost     = jnode.value("ghost", false);
     node->locked    = jnode.value("locked", false);
     node->pos_rel.x = jnode.value("pos_rel_x", 0.0);
     node->pos_rel.y = jnode.value("pos_rel_y", 0.0);

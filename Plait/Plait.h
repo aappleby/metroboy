@@ -24,7 +24,7 @@ struct Node {
   void  set_anchor(Node* new_anchor);
 
   dvec2 get_pos_abs_new() const {
-    if (floating) {
+    if (!pinned) {
       return pos_abs;
     }
     else {
@@ -33,7 +33,7 @@ struct Node {
   }
 
   dvec2 get_pos_rel_new() const {
-    if (floating) {
+    if (!pinned) {
       return pos_abs - get_pos_anchor_abs_new();
     }
     else {
@@ -59,44 +59,41 @@ struct Node {
   }
 
   void move(dvec2 delta) {
-    make_floating();
+    unpin();
     pos_abs += delta;
   }
 
   void set_pos_abs_new(dvec2 p) {
     pos_abs = p;
-    floating = true;
+    pinned = false;
   }
 
   void commit_pos() {
-    if (floating) {
+    if (!pinned) {
       printf("commit_pos\n");
-      floating = false;
       pos_rel = pos_abs - get_pos_anchor_abs_new();
+      pinned = true;
     }
   }
 
   void revert_pos() {
-    if (floating) {
+    if (!pinned) {
       printf("revert_pos\n");
-      floating = false;
       pos_abs = pos_rel + get_pos_anchor_abs_new();
+      pinned = true;
     }
   }
 
-  void make_floating() {
-    if (!floating) {
+  void unpin() {
+    if (pinned) {
       pos_abs = pos_rel + get_pos_anchor_abs_new();
-      floating = true;
+      pinned = false;
     }
   }
 
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
-  bool floating = 0;
-
-
-
+  bool pinned = 1;
 
 
   void toggle_locked() { locked = !locked; }

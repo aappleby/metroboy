@@ -26,14 +26,14 @@ struct GateBoyLCD {
     POME.reset(1);
     PAHO_X_8_SYNC.reset(1, 0);
     WUSA_LCD_CLOCK_GATE.reset(0);
-    PIN50_LCD_DATA1.reset(1);
-    PIN51_LCD_DATA0.reset(1);
-    PIN54_LCD_HSYNC.reset(1);
-    PIN56_LCD_FLIPS.reset(1);
-    PIN52_LCD_CNTRL.reset(1);
-    PIN55_LCD_LATCH.reset(1);
-    PIN53_LCD_CLOCK.reset(1);
-    PIN57_LCD_VSYNC.reset(0);
+    PIN_50_LCD_DATA1.reset(1);
+    PIN_51_LCD_DATA0.reset(1);
+    PIN_54_LCD_HSYNC.reset(1);
+    PIN_56_LCD_FLIPS.reset(1);
+    PIN_52_LCD_CNTRL.reset(1);
+    PIN_55_LCD_LATCH.reset(1);
+    PIN_53_LCD_CLOCK.reset(1);
+    PIN_57_LCD_VSYNC.reset(0);
 
     //lcd_pix_lo.reset_to_cart(REG_D0C0);
     //lcd_pix_hi.reset_to_cart(REG_D0C0);
@@ -106,14 +106,14 @@ struct GateBoyLCD {
     //d.dump_bitp("lcd_pix_lo          : ", lcd_pix_lo.state);
     //d.dump_bitp("lcd_pix_hi          : ", lcd_pix_hi.state);
     d("\n");
-    d.dump_bitp("PIN50_LCD_DATA1     : ", PIN50_LCD_DATA1.state);
-    d.dump_bitp("PIN51_LCD_DATA0     : ", PIN51_LCD_DATA0.state);
-    d.dump_bitp("PIN54_LCD_HSYNC     : ", PIN54_LCD_HSYNC.state);
-    d.dump_bitp("PIN56_LCD_FLIPS     : ", PIN56_LCD_FLIPS.state);
-    d.dump_bitp("PIN52_LCD_CNTRL     : ", PIN52_LCD_CNTRL.state);
-    d.dump_bitp("PIN55_LCD_LATCH     : ", PIN55_LCD_LATCH.state);
-    d.dump_bitp("PIN53_LCD_CLOCK     : ", PIN53_LCD_CLOCK.state);
-    d.dump_bitp("PIN57_LCD_VSYNC     : ", PIN57_LCD_VSYNC.state);
+    d.dump_bitp("PIN_50_LCD_DATA1     : ", PIN_50_LCD_DATA1.state);
+    d.dump_bitp("PIN_51_LCD_DATA0     : ", PIN_51_LCD_DATA0.state);
+    d.dump_bitp("PIN_54_LCD_HSYNC     : ", PIN_54_LCD_HSYNC.state);
+    d.dump_bitp("PIN_56_LCD_FLIPS     : ", PIN_56_LCD_FLIPS.state);
+    d.dump_bitp("PIN_52_LCD_CNTRL     : ", PIN_52_LCD_CNTRL.state);
+    d.dump_bitp("PIN_55_LCD_LATCH     : ", PIN_55_LCD_LATCH.state);
+    d.dump_bitp("PIN_53_LCD_CLOCK     : ", PIN_53_LCD_CLOCK.state);
+    d.dump_bitp("PIN_57_LCD_VSYNC     : ", PIN_57_LCD_VSYNC.state);
   }
 
   Signal _XODO_VID_RSTp;
@@ -148,14 +148,14 @@ struct GateBoyLCD {
   //DFF lcd_pipe_lo[160];
   //DFF lcd_pipe_hi[160];
 
-  /*PIN50*/ PinOut PIN50_LCD_DATA1;
-  /*PIN51*/ PinOut PIN51_LCD_DATA0;
-  /*PIN54*/ PinOut PIN54_LCD_HSYNC;
-  /*PIN56*/ PinOut PIN56_LCD_FLIPS;
-  /*PIN52*/ PinOut PIN52_LCD_CNTRL;
-  /*PIN55*/ PinOut PIN55_LCD_LATCH;
-  /*PIN53*/ PinOut PIN53_LCD_CLOCK;
-  /*PIN57*/ PinOut PIN57_LCD_VSYNC;
+  /*PIN_50*/ PinOut PIN_50_LCD_DATA1;
+  /*PIN_51*/ PinOut PIN_51_LCD_DATA0;
+  /*PIN_54*/ PinOut PIN_54_LCD_HSYNC;
+  /*PIN_56*/ PinOut PIN_56_LCD_FLIPS;
+  /*PIN_52*/ PinOut PIN_52_LCD_CNTRL;
+  /*PIN_55*/ PinOut PIN_55_LCD_LATCH;
+  /*PIN_53*/ PinOut PIN_53_LCD_CLOCK;
+  /*PIN_57*/ PinOut PIN_57_LCD_VSYNC;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

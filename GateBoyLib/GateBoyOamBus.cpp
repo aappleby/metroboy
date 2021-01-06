@@ -133,14 +133,14 @@ void GateBoyOamBus::latch_to_temp_b(
 void GateBoyOamBus::ext_to_data_bus(const GateBoyDMA& dma, const GateBoyExtBus& ext_bus)
 {
   // DMA write OAM from ram/cart
-  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(ext_bus.PIN17_D00.int_qp_new());
-  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(ext_bus.PIN18_D01.int_qp_new());
-  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(ext_bus.PIN19_D02.int_qp_new());
-  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(ext_bus.PIN20_D03.int_qp_new());
-  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(ext_bus.PIN21_D04.int_qp_new());
-  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(ext_bus.PIN22_D05.int_qp_new());
-  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(ext_bus.PIN23_D06.int_qp_new());
-  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(ext_bus.PIN24_D07.int_qp_new());
+  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(ext_bus.PIN_17_D00.int_qp_new());
+  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(ext_bus.PIN_18_D01.int_qp_new());
+  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(ext_bus.PIN_19_D02.int_qp_new());
+  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(ext_bus.PIN_20_D03.int_qp_new());
+  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(ext_bus.PIN_21_D04.int_qp_new());
+  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(ext_bus.PIN_22_D05.int_qp_new());
+  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(ext_bus.PIN_23_D06.int_qp_new());
+  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(ext_bus.PIN_24_D07.int_qp_new());
 
   /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(dma.LUMA_DMA_CARTp());
 
@@ -205,12 +205,12 @@ void GateBoyOamBus::dma_to_addr_bus(GateBoyDMA& dma) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, wire XYMU_RENDERINGp){
-  wire PIN58_VCC = 1;
+  wire PIN_58_VCC = 1;
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_SFETCHINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SFETCHINGn = not1(_AJON_SFETCHINGp);
-  /* p28.GECA*/ BUS_OAM_A00n.tri6_nn(_BETE_SFETCHINGn, PIN58_VCC);
-  /* p28.WYDU*/ BUS_OAM_A01n.tri6_nn(_BETE_SFETCHINGn, PIN58_VCC);
+  /* p28.GECA*/ BUS_OAM_A00n.tri6_nn(_BETE_SFETCHINGn, PIN_58_VCC);
+  /* p28.WYDU*/ BUS_OAM_A01n.tri6_nn(_BETE_SFETCHINGn, PIN_58_VCC);
   /* p28.GYBU*/ BUS_OAM_A02n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I0.qp_new());
   /* p28.GYKA*/ BUS_OAM_A03n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I1.qp_new());
   /* p28.FABY*/ BUS_OAM_A04n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I2.qp_new());
@@ -223,10 +223,10 @@ void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const Sprite
 
 void GateBoyOamBus::scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp) {
   // OAM address from sprite scanner
-  wire PIN32_GND = 0;
+  wire PIN_32_GND = 0;
   /* p28.APAR*/ wire _APAR_SCANNINGn = not1(ACYL_SCANNINGp);
-  /* p28.GEFY*/ BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, PIN32_GND);
-  /* p28.WUWE*/ BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, PIN32_GND);
+  /* p28.GEFY*/ BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, PIN_32_GND);
+  /* p28.WUWE*/ BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, PIN_32_GND);
   /* p28.GUSE*/ BUS_OAM_A02n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new());
   /* p28.GEMA*/ BUS_OAM_A03n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new());
   /* p28.FUTO*/ BUS_OAM_A04n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new());

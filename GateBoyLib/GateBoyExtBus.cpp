@@ -48,8 +48,8 @@
   // ROM read
   {
     uint16_t rom_addr = ext_addr & 0x7FFF;
-    wire OEn = PIN79_EXT_RDn.qp_new();
-    wire CEn = PIN01_EXT_A[15].qp_new();
+    wire OEn = PIN_79_EXT_RDn.qp_new();
+    wire CEn = PIN_01_EXT_A[15].qp_new();
 
     if (!CEn && !OEn) {
       ext_bus.set_pin_data(cart_rom[rom_addr]);
@@ -134,21 +134,21 @@ void GateBoyExtBus::copy_addr_latch_to_pins(const GateBoyResetDebug& rst, const 
   /* p08.LEVA*/ wire _LEVA = nor2(_MUCE_A13p, rst.UNOR_MODE_DBG2p());
   /* p08.PAHY*/ wire _PAHY = nor2(_PEGE_A14p, rst.UNOR_MODE_DBG2p());
 
-  /*PIN01*/ PIN01_A00.pin_out_hilo(_KUPO, _KOTY);
-  /*PIN02*/ PIN02_A01.pin_out_hilo(_CABA, _COTU);
-  /*PIN03*/ PIN03_A02.pin_out_hilo(_BOKU, _BAJO);
-  /*PIN04*/ PIN04_A03.pin_out_hilo(_BOTY, _BOLA);
-  /*PIN05*/ PIN05_A04.pin_out_hilo(_BYLA, _BEVO);
-  /*PIN06*/ PIN06_A05.pin_out_hilo(_BADU, _AJAV);
-  /*PIN07*/ PIN07_A06.pin_out_hilo(_CEPU, _CYKA);
-  /*PIN08*/ PIN08_A07.pin_out_hilo(_DEFY, _COLO);
-  /*PIN09*/ PIN09_A08.pin_out_hilo(_MYNY, _MEGO);
-  /*PIN10*/ PIN10_A09.pin_out_hilo(_MUNE, _MENY);
-  /*PIN11*/ PIN11_A10.pin_out_hilo(_ROXU, _RORE);
-  /*PIN12*/ PIN12_A11.pin_out_hilo(_LEPY, _LYNY);
-  /*PIN13*/ PIN13_A12.pin_out_hilo(_LUCE, _LOSO);
-  /*PIN14*/ PIN14_A13.pin_out_hilo(_LABE, _LEVA);
-  /*PIN15*/ PIN15_A14.pin_out_hilo(_PUHE, _PAHY);
+  /*PIN_01*/ PIN_01_A00.pin_out_hilo(_KUPO, _KOTY);
+  /*PIN_02*/ PIN_02_A01.pin_out_hilo(_CABA, _COTU);
+  /*PIN_03*/ PIN_03_A02.pin_out_hilo(_BOKU, _BAJO);
+  /*PIN_04*/ PIN_04_A03.pin_out_hilo(_BOTY, _BOLA);
+  /*PIN_05*/ PIN_05_A04.pin_out_hilo(_BYLA, _BEVO);
+  /*PIN_06*/ PIN_06_A05.pin_out_hilo(_BADU, _AJAV);
+  /*PIN_07*/ PIN_07_A06.pin_out_hilo(_CEPU, _CYKA);
+  /*PIN_08*/ PIN_08_A07.pin_out_hilo(_DEFY, _COLO);
+  /*PIN_09*/ PIN_09_A08.pin_out_hilo(_MYNY, _MEGO);
+  /*PIN_10*/ PIN_10_A09.pin_out_hilo(_MUNE, _MENY);
+  /*PIN_11*/ PIN_11_A10.pin_out_hilo(_ROXU, _RORE);
+  /*PIN_12*/ PIN_12_A11.pin_out_hilo(_LEPY, _LYNY);
+  /*PIN_13*/ PIN_13_A12.pin_out_hilo(_LUCE, _LOSO);
+  /*PIN_14*/ PIN_14_A13.pin_out_hilo(_LABE, _LEVA);
+  /*PIN_15*/ PIN_15_A14.pin_out_hilo(_PUHE, _PAHY);
 
   // A15 is "special"
   /* p08.SOBY*/ wire _SOBY_A15n = nor2 (cpu_bus.BUS_CPU_A15p.qp_new(), cpu_bus.TUTU_READ_BOOTROMp());
@@ -156,7 +156,7 @@ void GateBoyExtBus::copy_addr_latch_to_pins(const GateBoyResetDebug& rst, const 
   /* p08.TAZY*/ wire _TAZY_A15p = mux2p (dma.LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
   /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, rst.RYCA_MODE_DBG2n());
   /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, rst.UNOR_MODE_DBG2p());
-  /*PIN16*/ PIN16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
+  /*PIN_16*/ PIN_16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -164,14 +164,14 @@ void GateBoyExtBus::copy_addr_latch_to_pins(const GateBoyResetDebug& rst, const 
 void GateBoyExtBus::copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus)
 {
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp.qp_new(), cpu_bus.TEXO_ADDR_VRAMn(), cpu_bus.SIG_CPU_LATCH_EXT.qp_new());
-  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, PIN17_D00.int_qp_new());
-  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, PIN18_D01.int_qp_new());
-  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(_LAVO_HOLDn, PIN19_D02.int_qp_new());
-  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(_LAVO_HOLDn, PIN20_D03.int_qp_new());
-  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(_LAVO_HOLDn, PIN21_D04.int_qp_new());
-  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(_LAVO_HOLDn, PIN22_D05.int_qp_new());
-  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(_LAVO_HOLDn, PIN23_D06.int_qp_new());
-  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(_LAVO_HOLDn, PIN24_D07.int_qp_new());
+  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, PIN_17_D00.int_qp_new());
+  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, PIN_18_D01.int_qp_new());
+  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(_LAVO_HOLDn, PIN_19_D02.int_qp_new());
+  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(_LAVO_HOLDn, PIN_20_D03.int_qp_new());
+  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(_LAVO_HOLDn, PIN_21_D04.int_qp_new());
+  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(_LAVO_HOLDn, PIN_22_D05.int_qp_new());
+  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(_LAVO_HOLDn, PIN_23_D06.int_qp_new());
+  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(_LAVO_HOLDn, PIN_24_D07.int_qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -221,14 +221,14 @@ void GateBoyExtBus::copy_cpu_data_to_pins(const GateBoyResetDebug& rst, const Ga
   /* p08.ROGY*/ wire _ROGY = nor2 (cpu_bus.BUS_CPU_D06p.qp_new(), _RORU_CBD_TO_EPDn);
   /* p08.RYDA*/ wire _RYDA = nor2 (cpu_bus.BUS_CPU_D07p.qp_new(), _RORU_CBD_TO_EPDn);
 
-  /*PIN17*/ PIN17_D00.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
-  /*PIN18*/ PIN18_D01.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
-  /*PIN19*/ PIN19_D02.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
-  /*PIN20*/ PIN20_D03.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
-  /*PIN21*/ PIN21_D04.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
-  /*PIN22*/ PIN22_D05.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
-  /*PIN23*/ PIN23_D06.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
-  /*PIN24*/ PIN24_D07.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
+  /*PIN_17*/ PIN_17_D00.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
+  /*PIN_18*/ PIN_18_D01.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
+  /*PIN_19*/ PIN_19_D02.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
+  /*PIN_20*/ PIN_20_D03.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
+  /*PIN_21*/ PIN_21_D04.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
+  /*PIN_22*/ PIN_22_D05.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
+  /*PIN_23*/ PIN_23_D06.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
+  /*PIN_24*/ PIN_24_D07.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ void GateBoyExtBus::set_control_pins(
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(dma.LUMA_DMA_CARTp(), _MOTY_CPU_EXT_RD);
     /* p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, rst.TOVA_MODE_DBG2n());
     /* p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, rst.UNOR_MODE_DBG2p());
-    /*PIN79*/ PIN79_RDn.pin_out_hilo(_UGAC_RD_A, _URUN_RD_D);
+    /*PIN_79*/ PIN_79_RDn.pin_out_hilo(_UGAC_RD_A, _URUN_RD_D);
   }
 
   {
@@ -255,85 +255,85 @@ void GateBoyExtBus::set_control_pins(
     /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, dma.LUMA_DMA_CARTp());
     /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, rst.TOVA_MODE_DBG2n());
     /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, rst.UNOR_MODE_DBG2p());
-    /*PIN78*/ PIN78_WRn.pin_out_hilo(_UVER_WR_A, _USUF_WR_D);
+    /*PIN_78*/ PIN_78_WRn.pin_out_hilo(_UVER_WR_A, _USUF_WR_D);
   }
 
   {
     /* p08.TOZA*/ wire _TOZA_CS_A = and3(cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new(), cpu_bus.TYNU_A000_FFFFp(), cpu_bus.TUNA_0000_FDFF());
     /* p08.TYHO*/ wire _TYHO_CS_A = mux2p(dma.LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _TOZA_CS_A);
-    /*PIN80*/ PIN80_CSn.pin_out_dp(_TYHO_CS_A);
+    /*PIN_80*/ PIN_80_CSn.pin_out_dp(_TYHO_CS_A);
   }
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyExtBus::read_ext_to_pins(const uint8_t* cart_buf, const uint8_t* cart_ram, const uint8_t* int_ram) {
-  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &PIN01_A00);
+  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &PIN_01_A00);
   wire data = 0xFF;
 
   // ROM read
-  //wire rom_CEn = PIN01_ADDR[15].ext_qp_new2();
-  //wire rom_OEp = bit(~rom_CEn) && bit(~PIN79_RDn.ext_qp_new2()) && cart_buf;
-  wire rom_OEp = (addr >= 0x0000) && (addr <= 0x7FFF) && bit(~PIN79_RDn.ext_qp_new());
+  //wire rom_CEn = PIN_01_ADDR[15].ext_qp_new2();
+  //wire rom_OEp = bit(~rom_CEn) && bit(~PIN_79_RDn.ext_qp_new2()) && cart_buf;
+  wire rom_OEp = (addr >= 0x0000) && (addr <= 0x7FFF) && bit(~PIN_79_RDn.ext_qp_new());
   if (rom_OEp) data = cart_buf[addr & 0x7FFF];
 
   // Cart RAM read
-  //wire cram_CS1n = PIN80_CSn.ext_qp_new2();
-  //wire cram_CS2p = PIN01_ADDR[13].ext_qp_new2() && bit(~PIN01_ADDR[14].ext_qp_new2()) && PIN01_ADDR[15].ext_qp_new2();
-  //wire cram_OEp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN79_RDn.ext_qp_new2());
-  wire cram_OEp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~PIN79_RDn.ext_qp_new());
+  //wire cram_CS1n = PIN_80_CSn.ext_qp_new2();
+  //wire cram_CS2p = PIN_01_ADDR[13].ext_qp_new2() && bit(~PIN_01_ADDR[14].ext_qp_new2()) && PIN_01_ADDR[15].ext_qp_new2();
+  //wire cram_OEp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_79_RDn.ext_qp_new2());
+  wire cram_OEp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~PIN_79_RDn.ext_qp_new());
   if (cram_OEp) data = cart_ram[addr & 0x1FFF];
 
   // Internal RAM read
-  //wire iram_CS1n = PIN80_CSn.qp_new();
-  //wire iram_CS2p = PIN01_ADDR[14].qp_new();
-  //wire iram_OEp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN79_RDn.qp_new());
-  wire iram_OEp = (addr >= 0xC000) && (addr <= 0xDFFF) && bit(~PIN79_RDn.ext_qp_new());
+  //wire iram_CS1n = PIN_80_CSn.qp_new();
+  //wire iram_CS2p = PIN_01_ADDR[14].qp_new();
+  //wire iram_OEp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN_79_RDn.qp_new());
+  wire iram_OEp = (addr >= 0xC000) && (addr <= 0xDFFF) && bit(~PIN_79_RDn.ext_qp_new());
   if (iram_OEp) data = int_ram[addr & 0x1FFF];
 
   // Echo RAM read
-  //wire eram_CS1n = PIN80_CSn.qp_new();
-  //wire eram_CS2p = PIN01_ADDR[14].qp_new();
-  //wire eram_OEp  = bit(~eram_CS1n) && eram_CS2p && bit(~PIN79_RDn.qp_new());
-  wire eram_OEp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~PIN79_RDn.ext_qp_new());
+  //wire eram_CS1n = PIN_80_CSn.qp_new();
+  //wire eram_CS2p = PIN_01_ADDR[14].qp_new();
+  //wire eram_OEp  = bit(~eram_CS1n) && eram_CS2p && bit(~PIN_79_RDn.qp_new());
+  wire eram_OEp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~PIN_79_RDn.ext_qp_new());
   if (eram_OEp) data = int_ram[addr & 0x1FFF];
 
   wire ext_OEp = rom_OEp || cram_OEp || iram_OEp || eram_OEp;
-  PIN17_D00.pin_in_oedp(ext_OEp, (data >> 0) & 1);
-  PIN18_D01.pin_in_oedp(ext_OEp, (data >> 1) & 1);
-  PIN19_D02.pin_in_oedp(ext_OEp, (data >> 2) & 1);
-  PIN20_D03.pin_in_oedp(ext_OEp, (data >> 3) & 1);
-  PIN21_D04.pin_in_oedp(ext_OEp, (data >> 4) & 1);
-  PIN22_D05.pin_in_oedp(ext_OEp, (data >> 5) & 1);
-  PIN23_D06.pin_in_oedp(ext_OEp, (data >> 6) & 1);
-  PIN24_D07.pin_in_oedp(ext_OEp, (data >> 7) & 1);
+  PIN_17_D00.pin_in_oedp(ext_OEp, (data >> 0) & 1);
+  PIN_18_D01.pin_in_oedp(ext_OEp, (data >> 1) & 1);
+  PIN_19_D02.pin_in_oedp(ext_OEp, (data >> 2) & 1);
+  PIN_20_D03.pin_in_oedp(ext_OEp, (data >> 3) & 1);
+  PIN_21_D04.pin_in_oedp(ext_OEp, (data >> 4) & 1);
+  PIN_22_D05.pin_in_oedp(ext_OEp, (data >> 5) & 1);
+  PIN_23_D06.pin_in_oedp(ext_OEp, (data >> 6) & 1);
+  PIN_24_D07.pin_in_oedp(ext_OEp, (data >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyExtBus::write_pins_to_ext(uint8_t* cart_ram, uint8_t* int_ram) {
-  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &PIN01_A00);
-  wire data = (wire)BitBase::pack_ext_new(8, &PIN17_D00);
+  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &PIN_01_A00);
+  wire data = (wire)BitBase::pack_ext_new(8, &PIN_17_D00);
 
   // Cart RAM write
-  //wire cram_CS1n = PIN80_CSn.qp_new();
-  //wire cram_CS2p = PIN01_ADDR[13].qp_new() && bit(~PIN01_ADDR[14].qp_new()) && PIN01_ADDR[15].qp_new();
-  //wire cram_WRp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN78_WRn.qp_new());
-  wire cram_WRp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~PIN78_WRn.ext_qp_new());
+  //wire cram_CS1n = PIN_80_CSn.qp_new();
+  //wire cram_CS2p = PIN_01_ADDR[13].qp_new() && bit(~PIN_01_ADDR[14].qp_new()) && PIN_01_ADDR[15].qp_new();
+  //wire cram_WRp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_78_WRn.qp_new());
+  wire cram_WRp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~PIN_78_WRn.ext_qp_new());
   if (cram_WRp) cart_ram[addr & 0x1FFF] = data;
 
   // Internal RAM write
-  //wire iram_CS1n = PIN80_CSn.qp_new();
-  //wire iram_CS2p = PIN01_ADDR[14].qp_new();
-  //wire iram_WRp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN78_WRn.qp_new());
-  wire iram_WRp = (addr >= 0xC000) && (addr <= 0xDFFF) && bit(~PIN78_WRn.ext_qp_new());
+  //wire iram_CS1n = PIN_80_CSn.qp_new();
+  //wire iram_CS2p = PIN_01_ADDR[14].qp_new();
+  //wire iram_WRp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN_78_WRn.qp_new());
+  wire iram_WRp = (addr >= 0xC000) && (addr <= 0xDFFF) && bit(~PIN_78_WRn.ext_qp_new());
   if (iram_WRp) int_ram[addr & 0x1FFF]  = data;
 
   // Echo RAM write
-  //wire eram_CS1n = PIN80_CSn.qp_new();
-  //wire eram_CS2p = PIN01_ADDR[14].qp_new();
-  //wire eram_WRp  = bit(~eram_CS1n) && iram_CS2p && bit(~PIN78_WRn.qp_new());
-  wire eram_WRp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~PIN78_WRn.ext_qp_new());
+  //wire eram_CS1n = PIN_80_CSn.qp_new();
+  //wire eram_CS2p = PIN_01_ADDR[14].qp_new();
+  //wire eram_WRp  = bit(~eram_CS1n) && iram_CS2p && bit(~PIN_78_WRn.qp_new());
+  wire eram_WRp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~PIN_78_WRn.ext_qp_new());
   if (eram_WRp) int_ram[addr & 0x1FFF]  = data;
 }
 

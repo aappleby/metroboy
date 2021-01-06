@@ -905,7 +905,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.qp_old(), 0b10000011);
     EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.qp_old(), 0b01111111);
     EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.qp_old(), 0b10000000);
-    EXPECT_CLK(top.clk.PIN75_CLK_OUT.ext_qp_old(),      0b11110000);
+    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.ext_qp_old(),      0b11110000);
     gb.next_phase();
   }
 
@@ -975,36 +975,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
-      char WRn = gb.ext_bus.PIN78_WRn.ext_c();
-      char RDn = gb.ext_bus.PIN79_RDn.ext_c();
-      char CSn = gb.ext_bus.PIN80_CSn.ext_c();
+      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
+      char WRn = gb.ext_bus.PIN_78_WRn.ext_c();
+      char RDn = gb.ext_bus.PIN_79_RDn.ext_c();
+      char CSn = gb.ext_bus.PIN_80_CSn.ext_c();
 
-      char A00 = gb.ext_bus.PIN01_A00.ext_c();
-      char A01 = gb.ext_bus.PIN02_A01.ext_c();
-      char A02 = gb.ext_bus.PIN03_A02.ext_c();
-      char A03 = gb.ext_bus.PIN04_A03.ext_c();
-      char A04 = gb.ext_bus.PIN05_A04.ext_c();
-      char A05 = gb.ext_bus.PIN06_A05.ext_c();
-      char A06 = gb.ext_bus.PIN07_A06.ext_c();
-      char A07 = gb.ext_bus.PIN08_A07.ext_c();
-      char A08 = gb.ext_bus.PIN09_A08.ext_c();
-      char A09 = gb.ext_bus.PIN10_A09.ext_c();
-      char A10 = gb.ext_bus.PIN11_A10.ext_c();
-      char A11 = gb.ext_bus.PIN12_A11.ext_c();
-      char A12 = gb.ext_bus.PIN13_A12.ext_c();
-      char A13 = gb.ext_bus.PIN14_A13.ext_c();
-      char A14 = gb.ext_bus.PIN15_A14.ext_c();
-      char A15 = gb.ext_bus.PIN16_A15.ext_c();
+      char A00 = gb.ext_bus.PIN_01_A00.ext_c();
+      char A01 = gb.ext_bus.PIN_02_A01.ext_c();
+      char A02 = gb.ext_bus.PIN_03_A02.ext_c();
+      char A03 = gb.ext_bus.PIN_04_A03.ext_c();
+      char A04 = gb.ext_bus.PIN_05_A04.ext_c();
+      char A05 = gb.ext_bus.PIN_06_A05.ext_c();
+      char A06 = gb.ext_bus.PIN_07_A06.ext_c();
+      char A07 = gb.ext_bus.PIN_08_A07.ext_c();
+      char A08 = gb.ext_bus.PIN_09_A08.ext_c();
+      char A09 = gb.ext_bus.PIN_10_A09.ext_c();
+      char A10 = gb.ext_bus.PIN_11_A10.ext_c();
+      char A11 = gb.ext_bus.PIN_12_A11.ext_c();
+      char A12 = gb.ext_bus.PIN_13_A12.ext_c();
+      char A13 = gb.ext_bus.PIN_14_A13.ext_c();
+      char A14 = gb.ext_bus.PIN_15_A14.ext_c();
+      char A15 = gb.ext_bus.PIN_16_A15.ext_c();
 
-      char D00 = gb.ext_bus.PIN17_D00.ext_c();
-      char D01 = gb.ext_bus.PIN18_D01.ext_c();
-      char D02 = gb.ext_bus.PIN19_D02.ext_c();
-      char D03 = gb.ext_bus.PIN20_D03.ext_c();
-      char D04 = gb.ext_bus.PIN21_D04.ext_c();
-      char D05 = gb.ext_bus.PIN22_D05.ext_c();
-      char D06 = gb.ext_bus.PIN23_D06.ext_c();
-      char D07 = gb.ext_bus.PIN24_D07.ext_c();
+      char D00 = gb.ext_bus.PIN_17_D00.ext_c();
+      char D01 = gb.ext_bus.PIN_18_D01.ext_c();
+      char D02 = gb.ext_bus.PIN_19_D02.ext_c();
+      char D03 = gb.ext_bus.PIN_20_D03.ext_c();
+      char D04 = gb.ext_bus.PIN_21_D04.ext_c();
+      char D05 = gb.ext_bus.PIN_22_D05.ext_c();
+      char D06 = gb.ext_bus.PIN_23_D06.ext_c();
+      char D07 = gb.ext_bus.PIN_24_D07.ext_c();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1098,36 +1098,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
-      char WRn = gb.ext_bus.PIN78_WRn.ext_c();
-      char RDn = gb.ext_bus.PIN79_RDn.ext_c();
-      char CSn = gb.ext_bus.PIN80_CSn.ext_c();
+      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
+      char WRn = gb.ext_bus.PIN_78_WRn.ext_c();
+      char RDn = gb.ext_bus.PIN_79_RDn.ext_c();
+      char CSn = gb.ext_bus.PIN_80_CSn.ext_c();
 
-      char A00 = gb.ext_bus.PIN01_A00.ext_c();
-      char A01 = gb.ext_bus.PIN02_A01.ext_c();
-      char A02 = gb.ext_bus.PIN03_A02.ext_c();
-      char A03 = gb.ext_bus.PIN04_A03.ext_c();
-      char A04 = gb.ext_bus.PIN05_A04.ext_c();
-      char A05 = gb.ext_bus.PIN06_A05.ext_c();
-      char A06 = gb.ext_bus.PIN07_A06.ext_c();
-      char A07 = gb.ext_bus.PIN08_A07.ext_c();
-      char A08 = gb.ext_bus.PIN09_A08.ext_c();
-      char A09 = gb.ext_bus.PIN10_A09.ext_c();
-      char A10 = gb.ext_bus.PIN11_A10.ext_c();
-      char A11 = gb.ext_bus.PIN12_A11.ext_c();
-      char A12 = gb.ext_bus.PIN13_A12.ext_c();
-      char A13 = gb.ext_bus.PIN14_A13.ext_c();
-      char A14 = gb.ext_bus.PIN15_A14.ext_c();
-      char A15 = gb.ext_bus.PIN16_A15.ext_c();
+      char A00 = gb.ext_bus.PIN_01_A00.ext_c();
+      char A01 = gb.ext_bus.PIN_02_A01.ext_c();
+      char A02 = gb.ext_bus.PIN_03_A02.ext_c();
+      char A03 = gb.ext_bus.PIN_04_A03.ext_c();
+      char A04 = gb.ext_bus.PIN_05_A04.ext_c();
+      char A05 = gb.ext_bus.PIN_06_A05.ext_c();
+      char A06 = gb.ext_bus.PIN_07_A06.ext_c();
+      char A07 = gb.ext_bus.PIN_08_A07.ext_c();
+      char A08 = gb.ext_bus.PIN_09_A08.ext_c();
+      char A09 = gb.ext_bus.PIN_10_A09.ext_c();
+      char A10 = gb.ext_bus.PIN_11_A10.ext_c();
+      char A11 = gb.ext_bus.PIN_12_A11.ext_c();
+      char A12 = gb.ext_bus.PIN_13_A12.ext_c();
+      char A13 = gb.ext_bus.PIN_14_A13.ext_c();
+      char A14 = gb.ext_bus.PIN_15_A14.ext_c();
+      char A15 = gb.ext_bus.PIN_16_A15.ext_c();
 
-      char D00 = gb.ext_bus.PIN17_D00.ext_c();
-      char D01 = gb.ext_bus.PIN18_D01.ext_c();
-      char D02 = gb.ext_bus.PIN19_D02.ext_c();
-      char D03 = gb.ext_bus.PIN20_D03.ext_c();
-      char D04 = gb.ext_bus.PIN21_D04.ext_c();
-      char D05 = gb.ext_bus.PIN22_D05.ext_c();
-      char D06 = gb.ext_bus.PIN23_D06.ext_c();
-      char D07 = gb.ext_bus.PIN24_D07.ext_c();
+      char D00 = gb.ext_bus.PIN_17_D00.ext_c();
+      char D01 = gb.ext_bus.PIN_18_D01.ext_c();
+      char D02 = gb.ext_bus.PIN_19_D02.ext_c();
+      char D03 = gb.ext_bus.PIN_20_D03.ext_c();
+      char D04 = gb.ext_bus.PIN_21_D04.ext_c();
+      char D05 = gb.ext_bus.PIN_22_D05.ext_c();
+      char D06 = gb.ext_bus.PIN_23_D06.ext_c();
+      char D07 = gb.ext_bus.PIN_24_D07.ext_c();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1269,36 +1269,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN75_CLK_OUT.ext_c();
-      char WRn = gb.ext_bus.PIN78_WRn.ext_c();
-      char RDn = gb.ext_bus.PIN79_RDn.ext_c();
-      char CSn = gb.ext_bus.PIN80_CSn.ext_c();
+      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
+      char WRn = gb.ext_bus.PIN_78_WRn.ext_c();
+      char RDn = gb.ext_bus.PIN_79_RDn.ext_c();
+      char CSn = gb.ext_bus.PIN_80_CSn.ext_c();
 
-      char A00 = gb.ext_bus.PIN01_A00.ext_c();
-      char A01 = gb.ext_bus.PIN02_A01.ext_c();
-      char A02 = gb.ext_bus.PIN03_A02.ext_c();
-      char A03 = gb.ext_bus.PIN04_A03.ext_c();
-      char A04 = gb.ext_bus.PIN05_A04.ext_c();
-      char A05 = gb.ext_bus.PIN06_A05.ext_c();
-      char A06 = gb.ext_bus.PIN07_A06.ext_c();
-      char A07 = gb.ext_bus.PIN08_A07.ext_c();
-      char A08 = gb.ext_bus.PIN09_A08.ext_c();
-      char A09 = gb.ext_bus.PIN10_A09.ext_c();
-      char A10 = gb.ext_bus.PIN11_A10.ext_c();
-      char A11 = gb.ext_bus.PIN12_A11.ext_c();
-      char A12 = gb.ext_bus.PIN13_A12.ext_c();
-      char A13 = gb.ext_bus.PIN14_A13.ext_c();
-      char A14 = gb.ext_bus.PIN15_A14.ext_c();
-      char A15 = gb.ext_bus.PIN16_A15.ext_c();
+      char A00 = gb.ext_bus.PIN_01_A00.ext_c();
+      char A01 = gb.ext_bus.PIN_02_A01.ext_c();
+      char A02 = gb.ext_bus.PIN_03_A02.ext_c();
+      char A03 = gb.ext_bus.PIN_04_A03.ext_c();
+      char A04 = gb.ext_bus.PIN_05_A04.ext_c();
+      char A05 = gb.ext_bus.PIN_06_A05.ext_c();
+      char A06 = gb.ext_bus.PIN_07_A06.ext_c();
+      char A07 = gb.ext_bus.PIN_08_A07.ext_c();
+      char A08 = gb.ext_bus.PIN_09_A08.ext_c();
+      char A09 = gb.ext_bus.PIN_10_A09.ext_c();
+      char A10 = gb.ext_bus.PIN_11_A10.ext_c();
+      char A11 = gb.ext_bus.PIN_12_A11.ext_c();
+      char A12 = gb.ext_bus.PIN_13_A12.ext_c();
+      char A13 = gb.ext_bus.PIN_14_A13.ext_c();
+      char A14 = gb.ext_bus.PIN_15_A14.ext_c();
+      char A15 = gb.ext_bus.PIN_16_A15.ext_c();
 
-      char D00 = gb.ext_bus.PIN17_D00.ext_c();
-      char D01 = gb.ext_bus.PIN18_D01.ext_c();
-      char D02 = gb.ext_bus.PIN19_D02.ext_c();
-      char D03 = gb.ext_bus.PIN20_D03.ext_c();
-      char D04 = gb.ext_bus.PIN21_D04.ext_c();
-      char D05 = gb.ext_bus.PIN22_D05.ext_c();
-      char D06 = gb.ext_bus.PIN23_D06.ext_c();
-      char D07 = gb.ext_bus.PIN24_D07.ext_c();
+      char D00 = gb.ext_bus.PIN_17_D00.ext_c();
+      char D01 = gb.ext_bus.PIN_18_D01.ext_c();
+      char D02 = gb.ext_bus.PIN_19_D02.ext_c();
+      char D03 = gb.ext_bus.PIN_20_D03.ext_c();
+      char D04 = gb.ext_bus.PIN_21_D04.ext_c();
+      char D05 = gb.ext_bus.PIN_22_D05.ext_c();
+      char D06 = gb.ext_bus.PIN_23_D06.ext_c();
+      char D07 = gb.ext_bus.PIN_24_D07.ext_c();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 

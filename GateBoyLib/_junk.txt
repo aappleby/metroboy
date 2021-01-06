@@ -85,10 +85,10 @@ void WindowRegisters::tock(
   /* p05.KORY*/ wire _KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
   /* p05.KALE*/ wire _KALE = nor2 (KYME_JOYP_DS.qp17(), _KURA);
 
-  PIN67_JOY_P10.pin_out_hilo2(_KOLE, _KYBU);
-  PIN66_JOY_P11.pin_out_hilo2(_KYTO, _KABU);
-  PIN65_JOY_P12.pin_out_hilo2(_KYHU, _KASY);
-  PIN64_JOY_P13.pin_out_hilo2(_KORY, _KALE);
+  PIN_67_JOY_P10.pin_out_hilo2(_KOLE, _KYBU);
+  PIN_66_JOY_P11.pin_out_hilo2(_KYTO, _KABU);
+  PIN_65_JOY_P12.pin_out_hilo2(_KYHU, _KASY);
+  PIN_64_JOY_P13.pin_out_hilo2(_KORY, _KALE);
 #endif
 
 
@@ -194,14 +194,14 @@ if (VYPO_GND) bus_out.set_data(
 ///* p05.KYWE*/ wire P05_NC1 = nor4 (KERU_DBG_FF00_D7, FF60_0o);
 
 /* p08.LYRA*/ wire DBG_D_RDn = nand2(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-/* p08.TUTY*/ if (DBG_D_RDn) BUS_CPU_D[0] = not1(/* p08.TOVO*/ not1(pins.PIN17_D0_C));
-/* p08.SYWA*/ if (DBG_D_RDn) BUS_CPU_D[1] = not1(/* p08.RUZY*/ not1(pins.PIN18_D1_C));
-/* p08.SUGU*/ if (DBG_D_RDn) BUS_CPU_D[2] = not1(/* p08.ROME*/ not1(pins.PIN19_D2_C));
-/* p08.TAWO*/ if (DBG_D_RDn) BUS_CPU_D[3] = not1(/* p08.SAZA*/ not1(pins.PIN20_D3_C));
-/* p08.TUTE*/ if (DBG_D_RDn) BUS_CPU_D[4] = not1(/* p08.TEHE*/ not1(pins.PIN21_D4_C));
-/* p08.SAJO*/ if (DBG_D_RDn) BUS_CPU_D[5] = not1(/* p08.RATU*/ not1(pins.PIN22_D5_C));
-/* p08.TEMY*/ if (DBG_D_RDn) BUS_CPU_D[6] = not1(/* p08.SOCA*/ not1(pins.PIN23_D6_C));
-/* p08.ROPA*/ if (DBG_D_RDn) BUS_CPU_D[7] = not1(/* p08.RYBA*/ not1(pins.PIN24_D7_C));
+/* p08.TUTY*/ if (DBG_D_RDn) BUS_CPU_D[0] = not1(/* p08.TOVO*/ not1(pins.PIN_17_D0_C));
+/* p08.SYWA*/ if (DBG_D_RDn) BUS_CPU_D[1] = not1(/* p08.RUZY*/ not1(pins.PIN_18_D1_C));
+/* p08.SUGU*/ if (DBG_D_RDn) BUS_CPU_D[2] = not1(/* p08.ROME*/ not1(pins.PIN_19_D2_C));
+/* p08.TAWO*/ if (DBG_D_RDn) BUS_CPU_D[3] = not1(/* p08.SAZA*/ not1(pins.PIN_20_D3_C));
+/* p08.TUTE*/ if (DBG_D_RDn) BUS_CPU_D[4] = not1(/* p08.TEHE*/ not1(pins.PIN_21_D4_C));
+/* p08.SAJO*/ if (DBG_D_RDn) BUS_CPU_D[5] = not1(/* p08.RATU*/ not1(pins.PIN_22_D5_C));
+/* p08.TEMY*/ if (DBG_D_RDn) BUS_CPU_D[6] = not1(/* p08.SOCA*/ not1(pins.PIN_23_D6_C));
+/* p08.ROPA*/ if (DBG_D_RDn) BUS_CPU_D[7] = not1(/* p08.RYBA*/ not1(pins.PIN_24_D7_C));
 
 // hack, not correct
 {
@@ -224,22 +224,22 @@ if (VYPO_GND) bus_out.set_data(
 {
   // If we're in debug mode 2, drive external address bus onto internal address
 
-  /*#p08.KOVA*/ wire KOVA_A00p = not1(PIN01_EXT_A[ 0].qn_new2());
-  /* p08.CAMU*/ wire CAMU_A01p = not1(PIN01_EXT_A[ 1].qn_new2());
-  /* p08.BUXU*/ wire BUXU_A02p = not1(PIN01_EXT_A[ 2].qn_new2());
-  /* p08.BASE*/ wire BASE_A03p = not1(PIN01_EXT_A[ 3].qn_new2());
-  /* p08.AFEC*/ wire AFEC_A04p = not1(PIN01_EXT_A[ 4].qn_new2());
-  /* p08.ABUP*/ wire ABUP_A05p = not1(PIN01_EXT_A[ 5].qn_new2());
-  /* p08.CYGU*/ wire CYGU_A06p = not1(PIN01_EXT_A[ 6].qn_new2());
-  /* p08.COGO*/ wire COGO_A07p = not1(PIN01_EXT_A[ 7].qn_new2());
-  /* p08.MUJY*/ wire MUJY_A08p = not1(PIN01_EXT_A[ 8].qn_new2());
-  /* p08.NENA*/ wire NENA_A09p = not1(PIN01_EXT_A[ 9].qn_new2());
-  /* p08.SURA*/ wire SURA_A10p = not1(PIN01_EXT_A[10].qn_new2());
-  /* p08.MADY*/ wire MADY_A11p = not1(PIN01_EXT_A[11].qn_new2());
-  /* p08.LAHE*/ wire LAHE_A12p = not1(PIN01_EXT_A[12].qn_new2());
-  /* p08.LURA*/ wire LURA_A13p = not1(PIN01_EXT_A[13].qn_new2());
-  /* p08.PEVO*/ wire PEVO_A14p = not1(PIN01_EXT_A[14].qn_new2());
-  /* p08.RAZA*/ wire RAZA_A15p = not1(PIN01_EXT_A[15].qn_new2());
+  /*#p08.KOVA*/ wire KOVA_A00p = not1(PIN_01_EXT_A[ 0].qn_new2());
+  /* p08.CAMU*/ wire CAMU_A01p = not1(PIN_01_EXT_A[ 1].qn_new2());
+  /* p08.BUXU*/ wire BUXU_A02p = not1(PIN_01_EXT_A[ 2].qn_new2());
+  /* p08.BASE*/ wire BASE_A03p = not1(PIN_01_EXT_A[ 3].qn_new2());
+  /* p08.AFEC*/ wire AFEC_A04p = not1(PIN_01_EXT_A[ 4].qn_new2());
+  /* p08.ABUP*/ wire ABUP_A05p = not1(PIN_01_EXT_A[ 5].qn_new2());
+  /* p08.CYGU*/ wire CYGU_A06p = not1(PIN_01_EXT_A[ 6].qn_new2());
+  /* p08.COGO*/ wire COGO_A07p = not1(PIN_01_EXT_A[ 7].qn_new2());
+  /* p08.MUJY*/ wire MUJY_A08p = not1(PIN_01_EXT_A[ 8].qn_new2());
+  /* p08.NENA*/ wire NENA_A09p = not1(PIN_01_EXT_A[ 9].qn_new2());
+  /* p08.SURA*/ wire SURA_A10p = not1(PIN_01_EXT_A[10].qn_new2());
+  /* p08.MADY*/ wire MADY_A11p = not1(PIN_01_EXT_A[11].qn_new2());
+  /* p08.LAHE*/ wire LAHE_A12p = not1(PIN_01_EXT_A[12].qn_new2());
+  /* p08.LURA*/ wire LURA_A13p = not1(PIN_01_EXT_A[13].qn_new2());
+  /* p08.PEVO*/ wire PEVO_A14p = not1(PIN_01_EXT_A[14].qn_new2());
+  /* p08.RAZA*/ wire RAZA_A15p = not1(PIN_01_EXT_A[15].qn_new2());
 
   // KEJO_01 << KOVA_02
   // KEJO_02

@@ -4,16 +4,16 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyClock::tock(const GateBoyResetDebug& rst) {
-  PIN73_CLK_DRIVE.reset_for_pass();
-  PIN75_CLK_OUT.reset_for_pass();
+  PIN_73_CLK_DRIVE.reset_for_pass();
+  PIN_75_CLK_OUT.reset_for_pass();
 
-  /*PIN73*/ PIN73_CLK_DRIVE.pin_out_dp(PIN74_CLK_IN.int_qp_new());
+  /*PIN_73*/ PIN_73_CLK_DRIVE.pin_out_dp(PIN_74_CLK_IN.int_qp_new());
 
-  /* p01.ARYS*/ wire ARYS = not1(PIN74_CLK_IN.int_qp_new());
+  /* p01.ARYS*/ wire ARYS = not1(PIN_74_CLK_IN.int_qp_new());
   /* p01.AVET*/ AVET = nand2(ANOS.qp_any(), ARYS);
-  /* p01.ANOS*/ ANOS = nand2(PIN74_CLK_IN.int_qp_new(), AVET.qp_any());
+  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK_IN.int_qp_new(), AVET.qp_any());
   /* p01.AVET*/ AVET = nand2(ANOS.qp_any(), ARYS);
-  /* p01.ANOS*/ ANOS = nand2(PIN74_CLK_IN.int_qp_new(), AVET.qp_any());
+  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK_IN.int_qp_new(), AVET.qp_any());
 
   /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET.qp_new());
   /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
@@ -28,7 +28,7 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   /* p01.APUK*/ APUK_ABxxxxGHp.dff9(_ATAN_AxCxExGx, rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGHp_old);
   /* p01.ADYK*/ ADYK_ABCxxxxHp.dff9(_ATAL_xBxDxFxH, rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGHp_old);
 
-  /*PIN75*/ PIN75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
+  /*PIN_75*/ PIN_75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
   /*SIG_CPU_BOWA_Axxxxxxx*/ SIG_CPU_BOWA_Axxxxxxx.set(BOWA_xBCDEFGH());
   /*SIG_CPU_BEDO_xBCDEFGH*/ SIG_CPU_BEDO_xBCDEFGH.set(BEDO_Axxxxxxx());
   /*SIG_CPU_BEKO_ABCDxxxx*/ SIG_CPU_BEKO_ABCDxxxx.set(BEKO_ABCDxxxx());

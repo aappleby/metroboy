@@ -5,9 +5,9 @@
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    PIN71_RST.reset(0);
-    PIN77_T1.reset(0);
-    PIN76_T2.reset(0);
+    PIN_71_RST.reset(0);
+    PIN_77_T1.reset(0);
+    PIN_76_T2.reset(0);
 
     TUBO_WAITINGp.reset(0);
     ASOL_POR_DONEn.reset(0);
@@ -43,11 +43,11 @@ struct GateBoyResetDebug {
   /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /* p07.UBET*/ wire UBETp()           const { return not1(PIN77_T1.int_qp_new()); }
-  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN76_T2.int_qp_new()); }
-  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN77_T1.int_qp_new(), UVARp()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN76_T2.int_qp_new(), UBETp()); }
-  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN71_RST.int_qp_new()); }
+  /* p07.UBET*/ wire UBETp()           const { return not1(PIN_77_T1.int_qp_new()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1(PIN_76_T2.int_qp_new()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_77_T1.int_qp_new(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_76_T2.int_qp_new(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_71_RST.int_qp_new()); }
   /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
@@ -67,9 +67,9 @@ struct GateBoyResetDebug {
   /*SIG_CLKREQ*/  Signal SIG_CLKREQ;
   /*SIG_CLKGOOD*/ Signal SIG_CLKGOOD;
 
-  /*PIN71*/ PinIn  PIN71_RST;
-  /*PIN77*/ PinIn  PIN77_T1;
-  /*PIN76*/ PinIn  PIN76_T2;
+  /*PIN_71*/ PinIn  PIN_71_RST;
+  /*PIN_77*/ PinIn  PIN_77_T1;
+  /*PIN_76*/ PinIn  PIN_76_T2;
 
   /*p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping SIG_CPU_INT_RESETp when UPOF_DIV_15 changed
   /*p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.
@@ -80,7 +80,7 @@ struct GateBoyResetDebug {
   Signal _XONA_LCDC_LCDENp;  // xxxxxxxH
 
   /*SIG_CPU_EXT_CLKGOOD*/ Signal SIG_CPU_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  /*SIG_CPU_EXT_RESETp*/  Signal SIG_CPU_EXT_RESETp;    // top center port PORTC_02: <- PIN71_RST directly connected to the pad
+  /*SIG_CPU_EXT_RESETp*/  Signal SIG_CPU_EXT_RESETp;    // top center port PORTC_02: <- PIN_71_RST directly connected to the pad
   /*SIG_CPU_STARTp*/      Signal SIG_CPU_STARTp;        // top center port PORTC_04: <- P01.CPU_RESET
   /*SIG_CPU_INT_RESETp*/  Signal SIG_CPU_INT_RESETp;    // top center port PORTC_01: <- P01.AFER , reset related state
 };

@@ -32,7 +32,7 @@ enum class CellType {
 struct Cell {
   void sanity_check() const;
   void merge(const Cell& c);
-  void dump(Dumper& d);
+  void dump(Dumper& d) const;
 
   CellType              cell_type = CellType::UNKNOWN;
   std::string           verified;

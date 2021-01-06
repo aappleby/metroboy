@@ -51,11 +51,11 @@ void GateBoyInterrupts::write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cp
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
 
-  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D00p.qp_old());
-  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D01p.qp_old());
-  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D02p.qp_old());
-  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D03p.qp_old());
-  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN71_RST.int_qn_new(), cpu_bus.BUS_CPU_D04p.qp_old());
+  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D00p.qp_old());
+  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D01p.qp_old());
+  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D02p.qp_old());
+  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D03p.qp_old());
+  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D04p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -124,12 +124,12 @@ void GateBoyInterrupts::tock(
   /* p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  _ALUR_SYS_RSTn);
   /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  _ALUR_SYS_RSTn);
 
-  wire PIN58_VCC = 1;
-  /* p02.LOPE*/ LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,              _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PIN58_VCC);
-  /* p02.LALU*/ LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,                _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PIN58_VCC);
-  /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp,           _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PIN58_VCC);
-  /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PIN58_VCC);
-  /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(joypad.ASOK_INT_JOYp(),         _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PIN58_VCC);
+  wire PIN_58_VCC = 1;
+  /* p02.LOPE*/ LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,              _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, PIN_58_VCC);
+  /* p02.LALU*/ LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,                _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, PIN_58_VCC);
+  /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp,           _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, PIN_58_VCC);
+  /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, PIN_58_VCC);
+  /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(joypad.ASOK_INT_JOYp(),         _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, PIN_58_VCC);
 
   /*SIG_CPU_INT_VBLANK*/ SIG_CPU_INT_VBLANK.set(LOPE_FF0F_D0p.qp_new());
   /*SIG_CPU_INT_STAT  */ SIG_CPU_INT_STAT  .set(LALU_FF0F_D1p.qp_new());

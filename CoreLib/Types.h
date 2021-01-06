@@ -258,13 +258,13 @@ struct Dumper {
 
 //-----------------------------------------------------------------------------
 
-#define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail : " #A); __debugbreak(); }
-#define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail : " #A); __debugbreak(); }
+#define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); __debugbreak(); }
+#define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); __debugbreak(); }
 
 #ifdef ALWAYS_CHECK
 
-#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail : " #A);  __debugbreak(); }
-#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail : " #A);  __debugbreak(); }
+#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
+#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
 
 #else
 

@@ -198,8 +198,8 @@ struct GateBoy {
   PixelPipes   pix_pipes;
   GateBoyLCD   lcd;
 
-  /*PIN58*/ PinIn PIN58_VCC;
-  /*PIN32*/ PinIn PIN32_GND;
+  /*PIN_58*/ PinIn PIN_58_VCC;
+  /*PIN_32*/ PinIn PIN_32_GND;
 
   //----------
 

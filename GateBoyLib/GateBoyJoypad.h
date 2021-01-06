@@ -15,12 +15,12 @@ struct GateBoyJoypad {
     d.dump_bitp("AWOB_WAKE_CPU   : ", AWOB_WAKE_CPU.state);
     d.dump_bitp("SIG_CPU_WAKE    : ", SIG_CPU_WAKE.state);
     d("\n");
-    d.dump_bitp("PIN67_JOY_P10   : ", PIN67_JOY_P10.state);
-    d.dump_bitp("PIN66_JOY_P11   : ", PIN66_JOY_P11.state);
-    d.dump_bitp("PIN65_JOY_P12   : ", PIN65_JOY_P12.state);
-    d.dump_bitp("PIN64_JOY_P13   : ", PIN64_JOY_P13.state);
-    d.dump_bitp("PIN63_JOY_P14   : ", PIN63_JOY_P14.state);
-    d.dump_bitp("PIN62_JOY_P15   : ", PIN62_JOY_P15.state);
+    d.dump_bitp("PIN_67_JOY_P10   : ", PIN_67_JOY_P10.state);
+    d.dump_bitp("PIN_66_JOY_P11   : ", PIN_66_JOY_P11.state);
+    d.dump_bitp("PIN_65_JOY_P12   : ", PIN_65_JOY_P12.state);
+    d.dump_bitp("PIN_64_JOY_P13   : ", PIN_64_JOY_P13.state);
+    d.dump_bitp("PIN_63_JOY_P14   : ", PIN_63_JOY_P14.state);
+    d.dump_bitp("PIN_62_JOY_P15   : ", PIN_62_JOY_P15.state);
     d("\n");
     d.dump_bitp("KEVU_JOYP_L0n   : ", KEVU_JOYP_L0n.state);
     d.dump_bitp("KAPA_JOYP_L1n   : ", KAPA_JOYP_L1n.state);
@@ -67,12 +67,12 @@ struct GateBoyJoypad {
   /*SIG_CPU_WAKE*/ Signal SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB
 
   // Pressing a button pulls the corresponding pin _down_.
-  /*PIN67*/ PinIn  PIN67_JOY_P10;
-  /*PIN66*/ PinIn  PIN66_JOY_P11;
-  /*PIN65*/ PinIn  PIN65_JOY_P12;
-  /*PIN64*/ PinIn  PIN64_JOY_P13;
-  /*PIN63*/ PinOut PIN63_JOY_P14;
-  /*PIN62*/ PinOut PIN62_JOY_P15;
+  /*PIN_67*/ PinIn  PIN_67_JOY_P10;
+  /*PIN_66*/ PinIn  PIN_66_JOY_P11;
+  /*PIN_65*/ PinIn  PIN_65_JOY_P12;
+  /*PIN_64*/ PinIn  PIN_64_JOY_P13;
+  /*PIN_63*/ PinOut PIN_63_JOY_P14;
+  /*PIN_62*/ PinOut PIN_62_JOY_P15;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

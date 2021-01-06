@@ -495,23 +495,23 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  PIN58_VCC.reset_for_pass();
-  PIN32_GND.reset_for_pass();
+  PIN_58_VCC.reset_for_pass();
+  PIN_32_GND.reset_for_pass();
 
-  PIN58_VCC.pin_in_dp(1);
-  PIN32_GND.pin_in_dp(0);
+  PIN_58_VCC.pin_in_dp(1);
+  PIN_32_GND.pin_in_dp(0);
 
-  rst.PIN71_RST.reset_for_pass();
-  clk.PIN74_CLKGOOD.reset_for_pass();
-  clk.PIN74_CLK_IN.reset_for_pass();
-  rst.PIN76_T2.reset_for_pass();
-  rst.PIN77_T1.reset_for_pass();
+  rst.PIN_71_RST.reset_for_pass();
+  clk.PIN_74_CLKGOOD.reset_for_pass();
+  clk.PIN_74_CLK_IN.reset_for_pass();
+  rst.PIN_76_T2.reset_for_pass();
+  rst.PIN_77_T1.reset_for_pass();
 
-  rst.PIN71_RST.pin_in_dp(bit(~sys_rst));
-  clk.PIN74_CLKGOOD.pin_in_dp(bit(~sys_clkgood));
-  clk.PIN74_CLK_IN.pin_in_dp(!(phase_total & 1) && sys_clken);
-  rst.PIN76_T2.pin_in_dp(bit(~sys_t2));
-  rst.PIN77_T1.pin_in_dp(bit(~sys_t1));
+  rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
+  clk.PIN_74_CLKGOOD.pin_in_dp(bit(~sys_clkgood));
+  clk.PIN_74_CLK_IN.pin_in_dp(!(phase_total & 1) && sys_clken);
+  rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
+  rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
 
   clk.SIG_CPU_CLKREQ.set(sys_clkreq);
   interrupts.SIG_CPU_ACK_VBLANK.set(bit(int_ack_latch, BIT_VBLANK));
@@ -773,14 +773,14 @@ void GateBoy::tock_slow(int pass_index) {
   {
     /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), ppu_reg.VOGA_HBLANKp.qp_new());
 
-    lcd.PIN50_LCD_DATA1.reset_for_pass();
-    lcd.PIN51_LCD_DATA0.reset_for_pass();
-    lcd.PIN54_LCD_HSYNC.reset_for_pass();
-    lcd.PIN56_LCD_FLIPS.reset_for_pass();
-    lcd.PIN52_LCD_CNTRL.reset_for_pass();
-    lcd.PIN55_LCD_LATCH.reset_for_pass();
-    lcd.PIN53_LCD_CLOCK.reset_for_pass();
-    lcd.PIN57_LCD_VSYNC.reset_for_pass();
+    lcd.PIN_50_LCD_DATA1.reset_for_pass();
+    lcd.PIN_51_LCD_DATA0.reset_for_pass();
+    lcd.PIN_54_LCD_HSYNC.reset_for_pass();
+    lcd.PIN_56_LCD_FLIPS.reset_for_pass();
+    lcd.PIN_52_LCD_CNTRL.reset_for_pass();
+    lcd.PIN_55_LCD_LATCH.reset_for_pass();
+    lcd.PIN_53_LCD_CLOCK.reset_for_pass();
+    lcd.PIN_57_LCD_VSYNC.reset_for_pass();
 
     lcd.set_pin_data(pix_pipes.REMY_LD0n.qp_new(), pix_pipes.RAVO_LD1n.qp_new());
     lcd.set_pin_ctrl(rst, clk);
@@ -798,36 +798,36 @@ void GateBoy::tock_slow(int pass_index) {
   // Ext bus
 
   {
-    ext_bus.PIN80_CSn.reset_for_pass();
-    ext_bus.PIN79_RDn.reset_for_pass();
-    ext_bus.PIN78_WRn.reset_for_pass();
+    ext_bus.PIN_80_CSn.reset_for_pass();
+    ext_bus.PIN_79_RDn.reset_for_pass();
+    ext_bus.PIN_78_WRn.reset_for_pass();
 
-    ext_bus.PIN01_A00.reset_for_pass();
-    ext_bus.PIN02_A01.reset_for_pass();
-    ext_bus.PIN03_A02.reset_for_pass();
-    ext_bus.PIN04_A03.reset_for_pass();
-    ext_bus.PIN05_A04.reset_for_pass();
-    ext_bus.PIN06_A05.reset_for_pass();
-    ext_bus.PIN07_A06.reset_for_pass();
-    ext_bus.PIN08_A07.reset_for_pass();
-    ext_bus.PIN09_A08.reset_for_pass();
-    ext_bus.PIN10_A09.reset_for_pass();
-    ext_bus.PIN11_A10.reset_for_pass();
-    ext_bus.PIN12_A11.reset_for_pass();
-    ext_bus.PIN13_A12.reset_for_pass();
-    ext_bus.PIN14_A13.reset_for_pass();
-    ext_bus.PIN15_A14.reset_for_pass();
-    ext_bus.PIN16_A15.reset_for_pass();
+    ext_bus.PIN_01_A00.reset_for_pass();
+    ext_bus.PIN_02_A01.reset_for_pass();
+    ext_bus.PIN_03_A02.reset_for_pass();
+    ext_bus.PIN_04_A03.reset_for_pass();
+    ext_bus.PIN_05_A04.reset_for_pass();
+    ext_bus.PIN_06_A05.reset_for_pass();
+    ext_bus.PIN_07_A06.reset_for_pass();
+    ext_bus.PIN_08_A07.reset_for_pass();
+    ext_bus.PIN_09_A08.reset_for_pass();
+    ext_bus.PIN_10_A09.reset_for_pass();
+    ext_bus.PIN_11_A10.reset_for_pass();
+    ext_bus.PIN_12_A11.reset_for_pass();
+    ext_bus.PIN_13_A12.reset_for_pass();
+    ext_bus.PIN_14_A13.reset_for_pass();
+    ext_bus.PIN_15_A14.reset_for_pass();
+    ext_bus.PIN_16_A15.reset_for_pass();
 
     // FIXME this is slightly weird
-    ext_bus.PIN17_D00.state = 0b00100000;
-    ext_bus.PIN18_D01.state = 0b00100000;
-    ext_bus.PIN19_D02.state = 0b00100000;
-    ext_bus.PIN20_D03.state = 0b00100000;
-    ext_bus.PIN21_D04.state = 0b00100000;
-    ext_bus.PIN22_D05.state = 0b00100000;
-    ext_bus.PIN23_D06.state = 0b00100000;
-    ext_bus.PIN24_D07.state = 0b00100000;
+    ext_bus.PIN_17_D00.state = 0b00100000;
+    ext_bus.PIN_18_D01.state = 0b00100000;
+    ext_bus.PIN_19_D02.state = 0b00100000;
+    ext_bus.PIN_20_D03.state = 0b00100000;
+    ext_bus.PIN_21_D04.state = 0b00100000;
+    ext_bus.PIN_22_D05.state = 0b00100000;
+    ext_bus.PIN_23_D06.state = 0b00100000;
+    ext_bus.PIN_24_D07.state = 0b00100000;
 
     ext_bus.set_control_pins(rst, cpu_bus, dma);
     ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus);
@@ -977,8 +977,8 @@ void GateBoy::update_framebuffer()
   int lcd_y = lcd.reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    uint8_t p0 = bit(lcd.PIN51_LCD_DATA0.qp_new());
-    uint8_t p1 = bit(lcd.PIN50_LCD_DATA1.qp_new());
+    uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_new());
+    uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_new());
 
     //probe(4, "pix lo", p0);
     //probe(5, "pix hi", p1);
@@ -992,16 +992,16 @@ void GateBoy::update_framebuffer()
   old_lcd_y = lcd_y;
 
 #if 0
-  if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN53_LCD_CLOCK.qp_new()) {
+  if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN_53_LCD_CLOCK.qp_new()) {
     //printf("gb_screen_x++\n");
     gb_screen_x++;
   }
-  if (lcd.PIN54_LCD_HSYNC.qp_new() || lcd.PIN55_LCD_LATCH.qp_new()) {
+  if (lcd.PIN_54_LCD_HSYNC.qp_new() || lcd.PIN_55_LCD_LATCH.qp_new()) {
     //printf("gb_screen_x = 0\n");
     gb_screen_x = 0;
   }
 
-  if (bit(~lcd.old_lcd_latch.qp_old()) && lcd.PIN55_LCD_LATCH.qp_new()) {
+  if (bit(~lcd.old_lcd_latch.qp_old()) && lcd.PIN_55_LCD_LATCH.qp_new()) {
     if (gb_screen_y < 144) {
       for (int x = 0; x < 159; x++) {
         uint8_t p0 = lcd.lcd_pipe_lo[x + 1].qp_new();
@@ -1015,7 +1015,7 @@ void GateBoy::update_framebuffer()
       }
     }
 
-    if (lcd.PIN57_LCD_VSYNC.qp_new()) {
+    if (lcd.PIN_57_LCD_VSYNC.qp_new()) {
       //printf("gb_screen_y = 0\n");
       gb_screen_y = 0;
     }
@@ -1025,8 +1025,8 @@ void GateBoy::update_framebuffer()
     }
   }
 
-  lcd.old_lcd_clock.set_new(lcd.PIN53_LCD_CLOCK.qp_new());
-  lcd.old_lcd_latch.set_new(lcd.PIN55_LCD_LATCH.qp_new());
+  lcd.old_lcd_clock.set_new(lcd.PIN_53_LCD_CLOCK.qp_new());
+  lcd.old_lcd_latch.set_new(lcd.PIN_55_LCD_LATCH.qp_new());
 #endif
 }
 

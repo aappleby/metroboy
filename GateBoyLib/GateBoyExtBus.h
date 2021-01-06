@@ -75,31 +75,31 @@ struct GateBoyExtBus {
     ext_addr_latch.reset_to_cart();
     ext_data_latch.reset_to_cart();
 
-    PIN01_A00.reset(0);
-    PIN02_A01.reset(1);
-    PIN03_A02.reset(0);
-    PIN04_A03.reset(0);
-    PIN05_A04.reset(1);
-    PIN06_A05.reset(1);
-    PIN07_A06.reset(0);
-    PIN08_A07.reset(1);
-    PIN09_A08.reset(1);
-    PIN10_A09.reset(1);
-    PIN11_A10.reset(1);
-    PIN12_A11.reset(1);
-    PIN13_A12.reset(1);
-    PIN14_A13.reset(1);
-    PIN15_A14.reset(1);
-    PIN16_A15.reset(0);
+    PIN_01_A00.reset(0);
+    PIN_02_A01.reset(1);
+    PIN_03_A02.reset(0);
+    PIN_04_A03.reset(0);
+    PIN_05_A04.reset(1);
+    PIN_06_A05.reset(1);
+    PIN_07_A06.reset(0);
+    PIN_08_A07.reset(1);
+    PIN_09_A08.reset(1);
+    PIN_10_A09.reset(1);
+    PIN_11_A10.reset(1);
+    PIN_12_A11.reset(1);
+    PIN_13_A12.reset(1);
+    PIN_14_A13.reset(1);
+    PIN_15_A14.reset(1);
+    PIN_16_A15.reset(0);
 
-    PIN17_D00.reset(0);
-    PIN18_D01.reset(0);
-    PIN19_D02.reset(0);
-    PIN20_D03.reset(0);
-    PIN21_D04.reset(0);
-    PIN22_D05.reset(0);
-    PIN23_D06.reset(0);
-    PIN24_D07.reset(0);
+    PIN_17_D00.reset(0);
+    PIN_18_D01.reset(0);
+    PIN_19_D02.reset(0);
+    PIN_20_D03.reset(0);
+    PIN_21_D04.reset(0);
+    PIN_22_D05.reset(0);
+    PIN_23_D06.reset(0);
+    PIN_24_D07.reset(0);
   }
 
   void copy_addr_latch_to_pins(
@@ -123,51 +123,51 @@ struct GateBoyExtBus {
   void write_pins_to_ext(uint8_t* cart_ram, uint8_t* ext_ram);
 
   void dump(Dumper& d) {
-    d.dump_slice2n("PIN01_ADDR : ", &PIN01_A00, 16);
-    d.dump_slice2n("PIN17_DATA : ", &PIN17_D00, 8);
-    d.dump_bitn   ("PIN80_CSn  : ", PIN80_CSn.state);
-    d.dump_bitn   ("PIN79_RDn  : ", PIN79_RDn.state);
-    d.dump_bitn   ("PIN78_WRn  : ", PIN78_WRn.state);
+    d.dump_slice2n("PIN_01_ADDR : ", &PIN_01_A00, 16);
+    d.dump_slice2n("PIN_17_DATA : ", &PIN_17_D00, 8);
+    d.dump_bitn   ("PIN_80_CSn  : ", PIN_80_CSn.state);
+    d.dump_bitn   ("PIN_79_RDn  : ", PIN_79_RDn.state);
+    d.dump_bitn   ("PIN_78_WRn  : ", PIN_78_WRn.state);
     d.dump_slice2p("ADDR LATCH : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
     d.dump_slice2n("DATA LATCH : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   }
 
-  /*PIN01*/ PinOut PIN01_A00;
-  /*PIN02*/ PinOut PIN02_A01;
-  /*PIN03*/ PinOut PIN03_A02;
-  /*PIN04*/ PinOut PIN04_A03;
-  /*PIN05*/ PinOut PIN05_A04;
-  /*PIN06*/ PinOut PIN06_A05;
-  /*PIN07*/ PinOut PIN07_A06;
-  /*PIN08*/ PinOut PIN08_A07;
-  /*PIN09*/ PinOut PIN09_A08;
-  /*PIN10*/ PinOut PIN10_A09;
-  /*PIN11*/ PinOut PIN11_A10;
-  /*PIN12*/ PinOut PIN12_A11;
-  /*PIN13*/ PinOut PIN13_A12;
-  /*PIN14*/ PinOut PIN14_A13;
-  /*PIN15*/ PinOut PIN15_A14;
-  /*PIN16*/ PinOut PIN16_A15;
+  /*PIN_01*/ PinOut PIN_01_A00;
+  /*PIN_02*/ PinOut PIN_02_A01;
+  /*PIN_03*/ PinOut PIN_03_A02;
+  /*PIN_04*/ PinOut PIN_04_A03;
+  /*PIN_05*/ PinOut PIN_05_A04;
+  /*PIN_06*/ PinOut PIN_06_A05;
+  /*PIN_07*/ PinOut PIN_07_A06;
+  /*PIN_08*/ PinOut PIN_08_A07;
+  /*PIN_09*/ PinOut PIN_09_A08;
+  /*PIN_10*/ PinOut PIN_10_A09;
+  /*PIN_11*/ PinOut PIN_11_A10;
+  /*PIN_12*/ PinOut PIN_12_A11;
+  /*PIN_13*/ PinOut PIN_13_A12;
+  /*PIN_14*/ PinOut PIN_14_A13;
+  /*PIN_15*/ PinOut PIN_15_A14;
+  /*PIN_16*/ PinOut PIN_16_A15;
 
-  /*PIN17*/ PinIO  PIN17_D00;
-  /*PIN18*/ PinIO  PIN18_D01;
-  /*PIN19*/ PinIO  PIN19_D02;
-  /*PIN20*/ PinIO  PIN20_D03;
-  /*PIN21*/ PinIO  PIN21_D04;
-  /*PIN22*/ PinIO  PIN22_D05;
-  /*PIN23*/ PinIO  PIN23_D06;
-  /*PIN24*/ PinIO  PIN24_D07;
+  /*PIN_17*/ PinIO  PIN_17_D00;
+  /*PIN_18*/ PinIO  PIN_18_D01;
+  /*PIN_19*/ PinIO  PIN_19_D02;
+  /*PIN_20*/ PinIO  PIN_20_D03;
+  /*PIN_21*/ PinIO  PIN_21_D04;
+  /*PIN_22*/ PinIO  PIN_22_D05;
+  /*PIN_23*/ PinIO  PIN_23_D06;
+  /*PIN_24*/ PinIO  PIN_24_D07;
 
-  /*PIN80*/ PinOut PIN80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
-  /*PIN79*/ PinOut PIN79_RDn;      // RDn idles low, goes high on phase B for an external write
-  /*PIN78*/ PinOut PIN78_WRn;      // WRn idles high, goes low during EFG if there's a write
+  /*PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
+  /*PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
+  /*PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
   ExtDataLatch ext_data_latch;
   ExtAddrLatch ext_addr_latch;
 
-  // pin17 a << RUXA
-  // pin17 b << LULA
-  // pin17 c >> TOVO,RALO,SOMA
-  // pin17 d << RUNE
+  // PIN_17 a << RUXA
+  // PIN_17 b << LULA
+  // PIN_17 c >> TOVO,RALO,SOMA
+  // PIN_17 d << RUNE
 };
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -121,8 +121,8 @@ void GateBoyCpuBus::set_pins(
   /*SIG_CPU_UNOR_DBG*/ SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
   /*SIG_CPU_UMUT_DBG*/ SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
 
-  ///* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
-  ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
+  ///* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
+  ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
 
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(SIG_CPU_RDp.qp_new());
   /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);

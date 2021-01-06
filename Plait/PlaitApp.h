@@ -29,10 +29,10 @@ enum class ToolMode {
   SELECT_REGION,
   LOCK_REGION,
   UNLOCK_REGION,
+  GHOST_REGION,
   PLACE_ANCHOR,
   PAN_VIEW,
   MENU_OPTION,
-  HIGHLIGHT_HOVER,
 };
 
 //-----------------------------------------------------------------------------
@@ -67,10 +67,16 @@ public:
   Node* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
   void  draw_node(Node* node);
 
-  bool event_to_tool(SDL_Event event);
-  bool event_to_imgui(SDL_Event event);
-  bool event_to_view_control(SDL_Event event);
-  bool event_to_ui(SDL_Event event);
+  void event_select_tool  (SDL_Event event);
+  void event_imgui        (SDL_Event event);
+  void event_drag_nodes   (SDL_Event event);
+  void event_select_region(SDL_Event event);
+  void event_lock_region  (SDL_Event event);
+  void event_unlock_region(SDL_Event event);
+  void event_ghost_region (SDL_Event event);
+  void event_place_anchor (SDL_Event event);
+  void event_pan_view     (SDL_Event event);
+  void event_menu_option  (SDL_Event event);
 
   bool on_mouse_down(uint32_t mouse_buttons_posedge);
   bool on_mouse_up(uint32_t mouse_buttons_negedge);
@@ -94,8 +100,11 @@ public:
   Blitter     blitter;
   int tex = 0;
 
+  uint32_t mouse_buttons = 0;
   dvec2 mouse_pos_screen = {0,0};
-  dvec2 mouse_pos_world = {0,0};
+  dvec2 mouse_pos_world  = {0,0};
+  dvec2 click_pos_screen = {0,0};
+  dvec2 click_pos_world  = {0,0};
 
   int frame_count = 0;
 
@@ -116,20 +125,12 @@ public:
   bool show_edges = true;
   bool show_anchors = true;
 
-  bool sel_active = false;
-  dvec2 sel_begin = {0,0};
-  dvec2 sel_end   = {0,0};
   std::set<Node*> selection;
 
   Node* clicked_node = nullptr;
   dvec2 clicked_offset = {0,0};
-  dvec2 clicked_pos_abs = {0,0};
 
   Node* hovered_node = nullptr;
-
-  dvec2 drag_begin = {0,0};
-  dvec2 drag_end = {0,0};
-
 
   //std::vector<uint8_t> keys_old;
   //std::vector<uint8_t> keys_new;

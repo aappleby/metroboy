@@ -33,8 +33,8 @@ struct SpriteDeltaY {
   /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
   /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
 
-  /* p29.GYKY*/ wire GYKY_YDIFF_S3;
-  /* p29.WUHU*/ wire WUHU_YDIFF_C7;
+  /* p29.GYKY*/ AdderOut GYKY_YDIFF3;
+  /* p29.WUHU*/ AdderOut WUHU_YDIFF7;
 };
 
 //-----------------------------------------------------------------------------
@@ -64,14 +64,14 @@ struct PixCount {
 struct BGScrollX {
   static BGScrollX add(PixCount& pix_count, RegSCX reg_scx);
 
-  wire ATAD_TILE_X0S;
-  wire BEHU_TILE_X1S;
-  wire APYH_TILE_X2S;
-  wire BABE_MAP_X0S;
-  wire ABOD_MAP_X1S;
-  wire BEWY_MAP_X2S;
-  wire BYCA_MAP_X3S;
-  wire ACUL_MAP_X4S;
+  AdderOut ATAD_TILE_X0;
+  AdderOut BEHU_TILE_X1;
+  AdderOut APYH_TILE_X2;
+  AdderOut BABE_MAP_X0;
+  AdderOut ABOD_MAP_X1;
+  AdderOut BEWY_MAP_X2;
+  AdderOut BYCA_MAP_X3;
+  AdderOut ACUL_MAP_X4;
 };
 
 //-----------------------------------------------------------------------------
@@ -79,14 +79,14 @@ struct BGScrollX {
 struct BGScrollY {
   static BGScrollY add(RegLY& reg_ly, RegSCY& reg_scy);
 
-  wire FAFO_TILE_Y0S;
-  wire EMUX_TILE_Y1S;
-  wire ECAB_TILE_Y2S;
-  wire ETAM_MAP_Y0S;
-  wire DOTO_MAP_Y1S;
-  wire DABA_MAP_Y2S;
-  wire EFYK_MAP_Y3S;
-  wire EJOK_MAP_Y4S;
+  AdderOut FAFO_TILE_Y0;
+  AdderOut EMUX_TILE_Y1;
+  AdderOut ECAB_TILE_Y2;
+  AdderOut ETAM_MAP_Y0;
+  AdderOut DOTO_MAP_Y1;
+  AdderOut DABA_MAP_Y2;
+  AdderOut EFYK_MAP_Y3;
+  AdderOut EJOK_MAP_Y4;
 };
 
 //-----------------------------------------------------------------------------

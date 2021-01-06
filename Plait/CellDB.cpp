@@ -15,6 +15,36 @@
 
 using namespace std;
 
+// foo.bar.baz. foo.bar.baz._
+#define MATCH_CELL_TAG_PREFIX "^(?:\\w+\\.)*_?"
+
+// ASDF, ASDFq, ASDFn
+#define MATCH_CELL_TAG        "[A-Z]{4}[a-z]?"
+
+// PIN_12
+#define MATCH_PIN_TAG         "PIN_[0-9]{2}"
+
+// SIG_WHATEVER
+#define MATCH_SIG_TAG         "SIG_\\w+"
+
+// BUS_WHATEVER
+#define MATCH_BUS_TAG         "BUS_\\w+"
+
+// stuff.foo.bar.baz
+#define MATCH_CELL_TAG_SUFFIX "(?:\\.[^.]+)*)"
+
+// literal /* at start of line
+#define MATCH_COMMENT_BEGIN_LINE   R"(^\/\*)"
+// literal */ at end of line
+#define MATCH_COMMENT_END_LINE     R"(\*\/$)"
+
+#define MATCH_WHITESPACE R"(\s*)"
+#define MATCH_PAGE_TAG   R"(p[0-9]{2})"
+
+#define CAPTURE_PIN_TAG      "(" MATCH_PIN_TAG  ")"
+#define CAPTURE_PAGE_TAG     "(" MATCH_PAGE_TAG ")"
+#define CAPTURE_VERIFIED_TAG "(.?)"
+
 NLOHMANN_JSON_SERIALIZE_ENUM( CellType, {
   {CellType::UNKNOWN, nullptr},
   {CellType::PIN_IN,  "PIN_IN"},
@@ -83,6 +113,13 @@ void from_json(const nlohmann::json& j, Cell*& c) {
   j["args"]     .get_to(c->args);
   j["names"]    .get_to(c->names);
   j["doc"]      .get_to(c->doc);
+
+  if (c->names.size() > 1) {
+    printf("Cell %s has multiple names - \n", c->tag.c_str());
+    for (auto& name : c->names) {
+      printf("    %s\n", name.c_str());
+    }
+  }
 }
 
 void CellDB::save_json(const char* filename) {
@@ -100,26 +137,40 @@ void CellDB::load_json(const char* filename) {
   root.get_to(tag_to_cell);
 }
 
+void Cell::dump(Dumper& d) const {
+  using namespace nlohmann;
+
+  json j;
+  ::to_json(j, this);
+
+  d(j.dump(2).c_str());
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void Cell::sanity_check() const {
+  if (gate.empty()) {
+    ConsoleDumper d;
+    dump(d);
+  }
+
   CHECK_N(cell_type == CellType::UNKNOWN);
   CHECK_N(tag.empty());
   CHECK_N(gate.empty());
   CHECK_N(names.empty());
 
   if (cell_type == CellType::PIN_IN) {
-    CHECK_P(tag.starts_with("PIN"));
+    CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate == "pin_input");
     CHECK_P(args.empty());
   }
   else if (cell_type == CellType::PIN_OUT) {
-    CHECK_P(tag.starts_with("PIN"));
+    CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate != "pin_input");
     CHECK_P(args.size());
   }
   else if (cell_type == CellType::PIN_IO) {
-    CHECK_P(tag.starts_with("PIN"));
+    CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate != "pin_input");
     CHECK_P(args.size());
   }
@@ -155,10 +206,21 @@ void Cell::merge(const Cell& c) {
   names.insert(c.names.begin(), c.names.end());
 
   CHECK_P(cell_type == c.cell_type);
-  CHECK_P(c.verified.empty() || verified == c.verified);
-  CHECK_P(c.page.empty() || page == c.page);
-  CHECK_P(c.tag.empty() || tag == c.tag);
 
+  if (!c.gate.empty() && (gate != c.gate)) {
+    ConsoleDumper d;
+    dump(d);
+    d("------\n");
+    c.dump(d);
+  }
+
+  CHECK_P(c.verified.empty() || verified == c.verified);
+  CHECK_P(c.page.empty()     || page == c.page);
+  CHECK_P(c.tag.empty()      || tag == c.tag);
+  CHECK_P(c.gate.empty()     || gate == c.gate);
+  CHECK_P(c.doc.empty()      || doc == c.doc);
+
+  /*
   if (!c.gate.empty()) {
     // FIXME need a better way of handling gates with multiple outputs...
     if (gate == "add_s" || gate == "add_c") {
@@ -168,6 +230,8 @@ void Cell::merge(const Cell& c) {
       CHECK_P(gate == c.gate);
     }
   }
+  */
+
 
   if (!c.args.empty()) {
     CHECK_P(args.size() == c.args.size());
@@ -177,35 +241,7 @@ void Cell::merge(const Cell& c) {
     }
   }
 
-  CHECK_P(c.doc.empty() || doc == c.doc);
 
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-void Cell::dump(Dumper& d) {
-  d("%-10s",       cell_type_to_name[cell_type].c_str());
-  d("%-1s",        verified.c_str());
-  d("p%-2s.",      page.c_str());
-  d("%-24s ",       tag.c_str());
-  d("gate:%-24s ", gate.c_str());
-
-  d("args:(");
-  for (auto arg : args) {
-    if (arg.port.empty()) {
-      d("%s ", arg.tag.c_str());
-    }
-    else {
-      d("%s.%s ", arg.tag.c_str(), arg.port.c_str());
-    }
-  }
-  d(") ");
-
-  d("names:(");
-  for (auto name : names) d("%s ", name.c_str());
-  d(") ");
-
-  d("\n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -214,32 +250,37 @@ void Cell::dump(Dumper& d) {
 // /*p00.ABCD*/
 
 bool CellDB::parse_tag(Cell& c, const std::string& tag_comment) {
-  static regex pin_tag (R"(^\/\*(.?)(PIN[0-9]{2})\s*\*\/$)");
+  //static regex pin_tag (R"(^\/\*(.?)(PIN_[0-9]{2})\s*\*\/$)");
+
+  static regex pin_tag(
+    MATCH_COMMENT_BEGIN_LINE
+    CAPTURE_VERIFIED_TAG
+    CAPTURE_PIN_TAG
+    MATCH_WHITESPACE
+    MATCH_COMMENT_END_LINE
+  );
+
   static regex sig_tag (R"(^\/\*(.?)(SIG_\w+)\s*\*\/$)");
   static regex bus_tag (R"(^\/\*(.?)(BUS_\w+)\s*\*\/$)");
-  static regex cell_tag(R"(^\/\*(.?)p([0-9]{2})\.([A-Z]{4})\s*\*\/$)");
+  static regex cell_tag(R"(^\/\*(.?)p([0-9]{2})\.([A-Z]{4}\w*)\s*\*\/$)");
 
   smatch match;
   if (regex_match(tag_comment, match, pin_tag)) {
-    //c.cell_type = CellType::PIN;
     c.verified = match[1].str();
     c.tag = match[2].str();
     return true;
   }
   else if (regex_match(tag_comment, match, sig_tag)) {
-    //c.cell_type = CellType::SIGNAL;
     c.verified = match[1].str();
     c.tag = match[2].str();
     return true;
   }
   else if (regex_match(tag_comment, match, bus_tag)) {
-    //c.cell_type = CellType::BUS;
     c.verified = match[1].str();
     c.tag = match[2].str();
     return true;
   }
   else if (regex_match(tag_comment,  match, cell_tag)) {
-    //c.cell_type = CellType::UNKNOWN;
     c.verified = match[1].str();
     c.page = match[2].str();
     c.tag = match[3].str();
@@ -360,12 +401,13 @@ bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
 
 bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
 
-  static regex cell_arg(R"(^(?:\w+\.)*_?([A-Z]{4})\w*(\.[^.]+)?)");
+  static regex cell_arg(MATCH_CELL_TAG_PREFIX "(" MATCH_CELL_TAG ")\\w*" MATCH_CELL_TAG_SUFFIX);
+
   static regex cell_func_arg(R"(^(?:\w+\.)*([A-Z]{4})\w+\(\))");
 
   static regex bus_arg (R"(^(?:\w+\.)*(BUS_[^.]*)(\.[^.]+)?)");
   static regex sig_arg (R"(^(?:\w+\.)*(SIG_[^.]*)(\.[^.]+)?)");
-  static regex pin_arg (R"(^(?:\w+\.)*(PIN\d{2})_[^.]*(\.[^.]+)?)");
+  static regex pin_arg (R"(^(?:\w+\.)*(PIN_\d{2})_[^.]*(\.[^.]+)?)");
 
   smatch match;
   if (regex_match(arg, match, cell_arg)) {
@@ -438,12 +480,9 @@ bool CellDB::parse_cell_def(Cell& c, const string& value) {
 
 bool CellDB::parse_cell_name(Cell& c, const string& name) {
   static regex valid_cell_name(R"(^(?:\w+\.)*_?([A-Z]{4}\w*)\s*$)");
-
-  static regex valid_pin_name(R"(^(PIN\d{2}_\w+)$)");
-
-  static regex valid_sig_name(R"(^(SIG_\w+)$)");
-
-  static regex valid_bus_name(R"(^(BUS_\w+)$)");
+  static regex valid_pin_name (R"(^(PIN_\d{2}_\w+)$)");
+  static regex valid_sig_name (R"(^(SIG_\w+)$)");
+  static regex valid_bus_name (R"(^(BUS_\w+)$)");
 
   smatch match;
   if (regex_match(name, match, valid_cell_name)) {
@@ -490,7 +529,7 @@ bool CellDB::parse_tribuf_bus_target(Cell& c, const string& bus_name) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 bool CellDB::parse_pin_name(Cell& c, const string& pin_name) {
-  static regex valid_pin_name(R"(^(?:\w+\.)*(PIN\d{2}_\w+)$)");
+  static regex valid_pin_name(R"(^(?:\w+\.)*(PIN_\d{2}_\w+)$)");
 
   smatch match;
   if (regex_match(pin_name, match, valid_pin_name)) {
@@ -646,7 +685,7 @@ bool CellDB::parse_dir(const std::string& path) {
   bool result = true;
 #if 0
   {
-    string line = R"(  /*PIN58*/ PinIn PIN58_VCC;)";
+    string line = R"(  /*PIN_58*/ PinIn PIN_58_VCC;)";
     Cell c;
     parse_line(c, line);
     c.dump(d);

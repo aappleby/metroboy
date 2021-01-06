@@ -22,8 +22,8 @@ struct GateBoyClock {
   //----------------------------------------
   // Root clocks
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN74_CLKGOOD.int_qp_new()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN74_CLKGOOD.int_qp_new()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLKGOOD.int_qp_new()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLKGOOD.int_qp_new()); }
   /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.qp_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
@@ -114,10 +114,10 @@ struct GateBoyClock {
   /* p21.VENA*/ DFF17 VENA_xxCDEFxx;
   /* p29.WOSU*/ DFF17 WOSU_AxxDExxH;
 
-  /*PIN73*/ PinOut PIN73_CLK_DRIVE;
-  /*PIN74*/ PinIn  PIN74_CLKGOOD;
-  /*PIN74*/ PinIn  PIN74_CLK_IN;
-  /*PIN75*/ PinOut PIN75_CLK_OUT;
+  /*PIN_73*/ PinOut PIN_73_CLK_DRIVE;
+  /*PIN_74*/ PinIn  PIN_74_CLKGOOD;
+  /*PIN_74*/ PinIn  PIN_74_CLK_IN;
+  /*PIN_75*/ PinOut PIN_75_CLK_OUT;
 
   /*SIG_CPU_CLKREQ       */ Signal SIG_CPU_CLKREQ;
   /*SIG_CPU_BOWA_Axxxxxxx*/ Signal SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock

@@ -39,14 +39,14 @@ struct WindowRegisters {
 
 
   wire SUZU_WIN_FIRST_TILEne_old() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(RYDY_WIN_HITp.qp_old());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(RYDY_WIN_HITp);
     /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_old = nand2(_SYLO_WIN_HITn_old, SOVY_WIN_HITp.qp_old());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_old = not1(_TUXY_WIN_FIRST_TILEne_old);
     return _SUZU_WIN_FIRST_TILEne_old;
   }
 
   wire SUZU_WIN_FIRST_TILEne_new() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(RYDY_WIN_HITp.qp_new());
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(RYDY_WIN_HITp);
     /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, SOVY_WIN_HITp.qp_new());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_new = not1(_TUXY_WIN_FIRST_TILEne_new);
     return _SUZU_WIN_FIRST_TILEne_new;
@@ -62,12 +62,12 @@ struct WindowRegisters {
     return _SEKO_WIN_FETCH_TRIGp_new;
   }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_old() const { return not1(RYDY_WIN_HITp.qp_old()); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_old() const { return not1(RYDY_WIN_HITp); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_old() const { return not1(SYLO_WIN_HITn_old()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(RYDY_WIN_HITp.qp_new()); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(RYDY_WIN_HITp); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_new() const { return not1(SYLO_WIN_HITn_new()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }

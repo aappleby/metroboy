@@ -11,7 +11,7 @@
 
 void GateBoyDiv::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
 {
-  /* p01.TAPE*/ wire _TAPE_FF04_WRp = and4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
+  /* p01.TAPE*/ wire _TAPE_FF04_WRp = and4(cpu_bus.TAPU_CPU_WRp, cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
   /* p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(clk.UCOB_CLKBADp(), rst.PIN_71_RST.qp_int_new(), _TAPE_FF04_WRp);
 
   /* p01.UKUP*/ UKUP_DIV00p.dff17(clk.BOGA_Axxxxxxx(),  _UFOL_DIV_RSTn, UKUP_DIV00p.qn_old());
@@ -45,7 +45,7 @@ void GateBoyDiv::read(GateBoyCpuBus& cpu_bus)
   /* p01.RYSO*/ wire _RYSO_DIV12n_evn = not1(SUBU_DIV12p.qp_new());
   /* p01.UDOR*/ wire _UDOR_DIV13n_evn = not1(TEKA_DIV13p.qp_new());
 
-  /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext    = and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
+  /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext    = and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
   /* p01.TAWU*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_TAGY_FF04_RDp_ext, _UMEK_DIV06n_evn);
   /* p01.TAKU*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_TAGY_FF04_RDp_ext, _UREK_DIV07n_evn);
   /* p01.TEMU*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_TAGY_FF04_RDp_ext, _UTOK_DIV08n_evn);
@@ -59,7 +59,7 @@ void GateBoyDiv::read(GateBoyCpuBus& cpu_bus)
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyTimer::read_tima(GateBoyCpuBus& cpu_bus) {
-  /*#p03.TEDA*/ wire _TEDA_FF05_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
+  /*#p03.TEDA*/ wire _TEDA_FF05_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
   /*#p03.SOKU*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_TEDA_FF05_RDp, REGA_TIMA0p.qn_new());
   /*#p03.RACY*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_TEDA_FF05_RDp, POVY_TIMA1p.qn_new());
   /*#p03.RAVY*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_TEDA_FF05_RDp, PERU_TIMA2p.qn_new());
@@ -77,7 +77,7 @@ void GateBoyTimer::write_tima_async(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_b
 }
 
 void GateBoyTimer::read_tma(GateBoyCpuBus& cpu_bus) {
-  /* p03.TUBY*/ wire _TUBY_FF06_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
+  /* p03.TUBY*/ wire _TUBY_FF06_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
   /*#p03.SETE*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_TUBY_FF06_RDp, SABU_TMA0p.qn_new());
   /*#p03.PYRE*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_TUBY_FF06_RDp, NYKE_TMA1p.qn_new());
   /*#p03.NOLA*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_TUBY_FF06_RDp, MURU_TMA2p.qn_new());
@@ -89,7 +89,7 @@ void GateBoyTimer::read_tma(GateBoyCpuBus& cpu_bus) {
 }
 
 void GateBoyTimer::write_tma_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
-  /* p03.TYJU*/ wire _TYJU_FF06_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
+  /* p03.TYJU*/ wire _TYJU_FF06_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
   /* p03.SABU*/ SABU_TMA0p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D00p.qp_old());
   /* p03.NYKE*/ NYKE_TMA1p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D01p.qp_old());
   /* p03.MURU*/ MURU_TMA2p.dff17(_TYJU_FF06_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D02p.qp_old());
@@ -102,14 +102,14 @@ void GateBoyTimer::write_tma_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus
 }
 
 void GateBoyTimer::read_tac(GateBoyCpuBus& cpu_bus) {
-  /* p03.SORA*/ wire _SORA_FF07_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.BUS_CPU_A00p.qp_new());
+  /* p03.SORA*/ wire _SORA_FF07_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.BUS_CPU_A00p.qp_new());
   /*#p03.RYLA*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_SORA_FF07_RDp, SOPU_TAC0p.qn_new());
   /*#p03.ROTE*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_SORA_FF07_RDp, SAMY_TAC1p.qn_new());
   /*#p03.SUPE*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_SORA_FF07_RDp, SABO_TAC2p.qn_new());
 }
 
 void GateBoyTimer::write_tac_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
-  /* p03.SARA*/ wire _SARA_FF07_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.BUS_CPU_A00p.qp_new());
+  /* p03.SARA*/ wire _SARA_FF07_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.BUS_CPU_A00p.qp_new());
   /* p03.SOPU*/ SOPU_TAC0p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D00p.qp_old());
   /* p03.SAMY*/ SAMY_TAC1p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D01p.qp_old());
   /* p03.SABO*/ SABO_TAC2p.dff17(_SARA_FF07_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D02p.qp_old());
@@ -128,8 +128,8 @@ void GateBoyTimer::tock2(
   /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp_old = nor2(NUGA_TIMA7p.qp_old(), NYDU_TIMA7p_DELAY.qn_old());
   /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _MERY_TIMER_OVERFLOWp_old);
 
-  /*#p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
-  /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(cpu_bus.SIG_CPU_LATCH_EXT.qp_new(), _TOPE_FF05_WRn);
+  /*#p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.RYFO_FF04_FF07p(),  cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
+  /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(cpu_bus.SIG_CPU_LATCH_EXT, _TOPE_FF05_WRn);
   /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn = not1(MOBA_TIMER_OVERFLOWp.qp_new());
   /*#p03.MEXU*/ wire _MEXU_TIMA_LOADp      = nand3(_MUZU_CPU_LOAD_TIMAn, rst.ALUR_SYS_RSTn(), _MEKE_TIMER_OVERFLOWn);
   /*#p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn   = not1(_MEXU_TIMA_LOADp);

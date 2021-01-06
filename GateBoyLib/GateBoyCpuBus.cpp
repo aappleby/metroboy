@@ -124,11 +124,11 @@ void GateBoyCpuBus::set_pins(
   ///* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
 
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(SIG_CPU_RDp.qp_new());
+  /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(SIG_CPU_RDp);
   /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
   /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
-  /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+  /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(SIG_CPU_WRp, _AFAS_xxxxEFGx);
   /* p01.APOV*/ wire _APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
   /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(_APOV_CPU_WRp);

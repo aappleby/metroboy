@@ -24,11 +24,11 @@ struct GateBoyClock {
 
   /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLKGOOD.qp_int_new()); }
   /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLKGOOD.qp_int_new()); }
-  /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.qp_new()); }
+  /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire AZOF_AxCxExGx() const {
-    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET.qp_new());
+    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET);
     /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
     return _AZOF_AxCxExGx;
   }

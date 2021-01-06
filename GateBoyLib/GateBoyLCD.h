@@ -63,13 +63,13 @@ struct GateBoyLCD {
 
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(POPU_VBLANKp.qn_new()); }
 
-  /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(_XODO_VID_RSTp.qp_new()); }
+  /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(_XODO_VID_RSTp); }
   /* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
 
-  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(_XODO_VID_RSTp.qp_old()); }
+  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(_XODO_VID_RSTp); }
   /* p01.TOFU*/ wire TOFU_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
   /*#p01.ATAR*/ wire ATAR_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
@@ -79,9 +79,9 @@ struct GateBoyLCD {
     GateBoyResetDebug& rst,
     GateBoyClock& clk,
     wire XYVO_y144p_old,
-    wire RUTU_x113p_old);
+    DFF17 RUTU_x113p_old);
 
-  void set_pin_data(Signal REMY_LD0n, Signal RAVO_LD1n);
+  void set_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
   void set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk);
   void set_pin_flip(GateBoyResetDebug& rst, DFF17 TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
   void set_pin_vsync(GateBoyResetDebug& rst);
@@ -98,9 +98,9 @@ struct GateBoyLCD {
     d.dump_bitn("MEDA_VSYNC_OUTn     : ", MEDA_VSYNC_OUTn.state);
     d.dump_bitp("LUCA_LINE_EVENp     : ", LUCA_LINE_EVENp.state);
     d.dump_bitp("NAPO_FRAME_EVENp    : ", NAPO_FRAME_EVENp.state);
-    d.dump_bitp("RUJU                : ", RUJU.state);
-    d.dump_bitp("POFY                : ", POFY.state);
-    d.dump_bitp("POME                : ", POME.state);
+    d.dump_bitp("RUJU                : ", RUJU.get_state());
+    d.dump_bitp("POFY                : ", POFY.get_state());
+    d.dump_bitp("POME                : ", POME.get_state());
     d.dump_bitp("PAHO_X_8_SYNC       : ", PAHO_X_8_SYNC.state);
     d.dump_bitp("WUSA_LCD_CLOCK_GATE : ", WUSA_LCD_CLOCK_GATE.state);
     //d.dump_bitp("lcd_pix_lo          : ", lcd_pix_lo.state);

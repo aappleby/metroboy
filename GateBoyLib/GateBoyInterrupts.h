@@ -29,8 +29,8 @@ struct GateBoyInterrupts {
     d.dump_slice2p("FF0F IF : ", &LOPE_FF0F_D0p.state, 5);
     d.dump_slice2p("FFFF IE : ", &IE_D0.state, 5);
     d.dump_slice2p("LATCH   : ", &MATY_FF0F_L0p.state, 5);
-    d.dump_slice2p("CPU_INT : ", &SIG_CPU_INT_VBLANK.state, 5);
-    d.dump_slice2p("CPU_ACK : ", &SIG_CPU_ACK_VBLANK.state, 5);
+    d.dump_slice2p("CPU_INT : ", &SIG_CPU_INT_VBLANK, 5);
+    d.dump_slice2p("CPU_ACK : ", &SIG_CPU_ACK_VBLANK, 5);
     /*
     d.dump_bitp("FF0F IF D0    : ", LOPE_FF0F_D0p.state);
     d.dump_bitp("FF0F IF D1    : ", LALU_FF0F_D1p.state);

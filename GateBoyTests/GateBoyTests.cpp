@@ -897,15 +897,15 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), 0b00111100);
     EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), 0b10011001);
 
-    EXPECT_CLK(top.clk.SIG_CPU_BOWA_Axxxxxxx.qp_old(), 0b10000000);
-    EXPECT_CLK(top.clk.SIG_CPU_BEDO_xBCDEFGH.qp_old(), 0b01111111);
-    EXPECT_CLK(top.clk.SIG_CPU_BEKO_ABCDxxxx.qp_old(), 0b11110000);
-    EXPECT_CLK(top.clk.SIG_CPU_BUDE_xxxxEFGH.qp_old(), 0b00001111);
-    EXPECT_CLK(top.clk.SIG_CPU_BOLO_ABCDEFxx.qp_old(), 0b11111100);
-    EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.qp_old(), 0b10000011);
-    EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.qp_old(), 0b01111111);
-    EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.qp_old(), 0b10000000);
-    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.ext_qp_old(),      0b11110000);
+    EXPECT_CLK(top.clk.SIG_CPU_BOWA_Axxxxxxx,       0b10000000);
+    EXPECT_CLK(top.clk.SIG_CPU_BEDO_xBCDEFGH,       0b01111111);
+    EXPECT_CLK(top.clk.SIG_CPU_BEKO_ABCDxxxx,       0b11110000);
+    EXPECT_CLK(top.clk.SIG_CPU_BUDE_xxxxEFGH,       0b00001111);
+    EXPECT_CLK(top.clk.SIG_CPU_BOLO_ABCDEFxx,       0b11111100);
+    EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH,       0b10000011);
+    EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH,       0b01111111);
+    EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx,       0b10000000);
+    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.ext_qp_old(), 0b11110000);
     gb.next_phase();
   }
 

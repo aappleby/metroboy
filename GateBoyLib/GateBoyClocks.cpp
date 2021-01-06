@@ -10,12 +10,12 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   /*PIN_73*/ PIN_73_CLK_DRIVE.pin_out_dp(PIN_74_CLK_IN.qp_int_new());
 
   /* p01.ARYS*/ wire ARYS = not1(PIN_74_CLK_IN.qp_int_new());
-  /* p01.AVET*/ AVET = nand2(ANOS.qp_any(), ARYS);
-  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK_IN.qp_int_new(), AVET.qp_any());
-  /* p01.AVET*/ AVET = nand2(ANOS.qp_any(), ARYS);
-  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK_IN.qp_int_new(), AVET.qp_any());
+  /* p01.AVET*/ AVET = nand2(ANOS, ARYS);
+  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK_IN.qp_int_new(), AVET);
+  /* p01.AVET*/ AVET = nand2(ANOS, ARYS);
+  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK_IN.qp_int_new(), AVET);
 
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET.qp_new());
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET);
   /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
   wire ADYK_ABCxxxxHp_old = ADYK_ABCxxxxHp.qp_old();

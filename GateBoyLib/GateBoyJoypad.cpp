@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
-  /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
+  /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
 
   /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
   /* p05.KEVU*/ KEVU_JOYP_L0n.tp_latchn(_BYZO_FF00_RDn, PIN_67_JOY_P10.qp_int_new());
@@ -29,7 +29,7 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyJoypad::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
-  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
+  /* p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
   ///* p05.JUTE*/ JUTE_DBG_D0    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
   ///* p05.KECY*/ KECY_DBG_D1    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old());
   ///* p05.JALE*/ JALE_DBG_D2    .dff17(_ATOZ_FF00_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[2].qp_old());

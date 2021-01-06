@@ -30,13 +30,13 @@ void GateBoyLCD::tock(
   GateBoyResetDebug& rst,
   GateBoyClock& clk,
   wire XYVO_y144p_old,
-  wire RUTU_x113p_old)
+  DFF17 RUTU_x113p_old)
 {
   _XODO_VID_RSTp.set(rst.XODO_VID_RSTp());
 
   /*#p21.POPU*/ POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), rst.LYFE_VID_RSTn(), XYVO_y144p_old);
 
-  /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old);
+  /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old.qp_old());
   /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
   /*#p29.ALES*/ wire _ALES_y144n_old = not1(XYVO_y144p_old);
   /*#p29.ABOV*/ wire _ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
@@ -94,22 +94,22 @@ void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, No
   /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
 
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ POME = nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old());
-  /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new());
-  /*#p24.POFY*/ POFY = not1(RUJU.qp_new());
-  /*#p24.POME*/ POME = nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_new());
-  /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME.qp_new());
-  /*#p24.POFY*/ POFY = not1(RUJU.qp_new());
+  /*#p24.POME*/ POME = nor2(AVAP_SCAN_DONE_TRIGp, POFY);
+  /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME);
+  /*#p24.POFY*/ POFY = not1(RUJU);
+  /*#p24.POME*/ POME = nor2(AVAP_SCAN_DONE_TRIGp, POFY);
+  /*#p24.RUJU*/ RUJU = or3(PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), POME);
+  /*#p24.POFY*/ POFY = not1(RUJU);
 
-  /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(POFY.qp_new());
+  /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(POFY);
   /*PIN_54*/ PIN_54_LCD_HSYNC.pin_out_dp( _RUZE_HSYNCn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyLCD::set_pin_data(Signal REMY_LD0n, Signal RAVO_LD1n) {
-  /*PIN_51*/ PIN_51_LCD_DATA0.pin_out_dp(REMY_LD0n.qp_new());
-  /*PIN_50*/ PIN_50_LCD_DATA1.pin_out_dp(RAVO_LD1n.qp_new());
+void GateBoyLCD::set_pin_data(wire REMY_LD0n, wire RAVO_LD1n) {
+  /*PIN_51*/ PIN_51_LCD_DATA0.pin_out_dp(REMY_LD0n);
+  /*PIN_50*/ PIN_50_LCD_DATA1.pin_out_dp(RAVO_LD1n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

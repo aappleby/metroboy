@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyInterrupts::read_intf(GateBoyCpuBus& cpu_bus) {
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
   /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
 
   // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
@@ -36,7 +36,7 @@ void GateBoyInterrupts::read_ie(GateBoyCpuBus& cpu_bus)
 {
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &cpu_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
-  wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp.qp_new(), FFFF_HIT_ext);
+  wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp, FFFF_HIT_ext);
 
   cpu_bus.BUS_CPU_D00p.tri6_nn(FFFF_RDn_ext, IE_D0.qn_new());
   cpu_bus.BUS_CPU_D01p.tri6_nn(FFFF_RDn_ext, IE_D1.qn_new());
@@ -49,7 +49,7 @@ void GateBoyInterrupts::write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cp
 {
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &cpu_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
-  wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
+  wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp, FFFF_HIT_ext);
 
   IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D00p.qp_old());
   IE_D1.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D01p.qp_old());
@@ -91,7 +91,7 @@ void GateBoyInterrupts::tock(
 
 
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(rst.AVOR_SYS_RSTp());
-  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SYKE_ADDR_HIp(), cpu_bus.SEMY_XX_0000xxxxp(), cpu_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -99,11 +99,11 @@ void GateBoyInterrupts::tock(
   // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
   // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
-  /* p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(SIG_CPU_ACK_VBLANK.qp_new());
-  /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not1(SIG_CPU_ACK_STAT.qp_new());
-  /* p02.LESA*/ wire _LESA_INT_TIM_ACKn  = not1(SIG_CPU_ACK_TIMER.qp_new());
-  /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn  = not1(SIG_CPU_ACK_SERIAL.qp_new());
-  /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(SIG_CPU_ACK_JOYPAD.qp_new());
+  /* p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(SIG_CPU_ACK_VBLANK);
+  /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not1(SIG_CPU_ACK_STAT);
+  /* p02.LESA*/ wire _LESA_INT_TIM_ACKn  = not1(SIG_CPU_ACK_TIMER);
+  /* p02.LUFE*/ wire _LUFE_INT_SER_ACKn  = not1(SIG_CPU_ACK_SERIAL);
+  /* p02.LAMO*/ wire _LAMO_INT_JOY_ACKn  = not1(SIG_CPU_ACK_JOYPAD);
 
   /* p02.ROTU*/ wire _ROTU_FF0F_WRp   = not1(_REFA_FF0F_WRn);
   /* p02.MYZU*/ wire _MYZU_FF0F_SET0n = nand3(_ROTU_FF0F_WRp, _LETY_INT_VBL_ACKn,  cpu_bus.BUS_CPU_D00p.qp_new());

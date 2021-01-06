@@ -42,10 +42,10 @@ struct GateBoyOamBus {
   void dump(Dumper& d) {
     d.dump_bitp   ("MAKA_LATCH_EXTp  : ", MAKA_LATCH_EXTp.state);
     d.dump_bitp   ("WUJE_CPU_OAM_WRn : ", WUJE_CPU_OAM_WRn.state);
-    d.dump_bitp   ("SIG_OAM_CLKn     : ", SIG_OAM_CLKn.state);
-    d.dump_bitp   ("SIG_OAM_WRn_A    : ", SIG_OAM_WRn_A.state);
-    d.dump_bitp   ("SIG_OAM_WRn_B    : ", SIG_OAM_WRn_B.state);
-    d.dump_bitp   ("SIG_OAM_OEn      : ", SIG_OAM_OEn.state);
+    d.dump_bitp   ("SIG_OAM_CLKn     : ", SIG_OAM_CLKn.get_state());
+    d.dump_bitp   ("SIG_OAM_WRn_A    : ", SIG_OAM_WRn_A.get_state());
+    d.dump_bitp   ("SIG_OAM_WRn_B    : ", SIG_OAM_WRn_B.get_state());
+    d.dump_bitp   ("SIG_OAM_OEn      : ", SIG_OAM_OEn.get_state());
 
     d.dump_slice2n("BUS_OAM_An  : ", &BUS_OAM_A00n, 8);
     d.dump_slice2n("BUS_OAM_DAn : ", &BUS_OAM_DA00n, 8);

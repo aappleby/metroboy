@@ -31,7 +31,7 @@
 
 void GateBoySerial::read_sb(GateBoyCpuBus& cpu_bus)
 {
-  /* p06.UFEG*/ wire _UFEG_FF01_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
+  /* p06.UFEG*/ wire _UFEG_FF01_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
   /*#p06.CUGY*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_UFEG_FF01_RDp, CUBA_SER_DATA0.qn_new());
   /* p06.DUDE*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_UFEG_FF01_RDp, DEGU_SER_DATA1.qn_new());
   /* p06.DETU*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_UFEG_FF01_RDp, DYRA_SER_DATA2.qn_new());
@@ -46,7 +46,7 @@ void GateBoySerial::read_sb(GateBoyCpuBus& cpu_bus)
 
 void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
 {
-  /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
+  /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
   /* p06.CORE*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_UCOM_FF02_RDp, CULY_SER_DIR.qn_new());
   /* p06.ELUV*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_UCOM_FF02_RDp, ETAF_SER_RUNNING.qn_new());
 }
@@ -58,7 +58,7 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
   PIN_68_SCK.reset_for_pass();
   PIN_70_SOUT.reset_for_pass();
 
-  /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p());
+  /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(cpu_bus.TOVY_A00n(), cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TAPU_CPU_WRp, cpu_bus.SANO_FF00_FF03p());
   /*#p06.CULY*/ CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D00p.qp_old());
 
   /*#p01.UVYN*/ wire _UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
@@ -123,7 +123,7 @@ void GateBoySerial::tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus) {
   // this pin has 4 wire2s attached, but they're not traced
   PIN_69_SIN.pin_in_dp(1);
 
-  /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A00p.qp_new());
+  /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(),   cpu_bus.BUS_CPU_A00p.qp_new());
   /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D00p.qp_new(), rst.ALUR_SYS_RSTn());
   /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D01p.qp_new(), rst.ALUR_SYS_RSTn());
   /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, cpu_bus.BUS_CPU_D02p.qp_new(), rst.ALUR_SYS_RSTn());

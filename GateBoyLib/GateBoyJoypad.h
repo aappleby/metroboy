@@ -13,7 +13,7 @@ struct GateBoyJoypad {
 
   void dump(Dumper& d) {
     d.dump_bitp("AWOB_WAKE_CPU   : ", AWOB_WAKE_CPU.state);
-    d.dump_bitp("SIG_CPU_WAKE    : ", SIG_CPU_WAKE.state);
+    d.dump_bitp("SIG_CPU_WAKE    : ", SIG_CPU_WAKE.get_state());
     d("\n");
     d.dump_bitp("PIN_67_JOY_P10   : ", PIN_67_JOY_P10.state);
     d.dump_bitp("PIN_66_JOY_P11   : ", PIN_66_JOY_P11.state);

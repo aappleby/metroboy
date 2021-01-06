@@ -31,7 +31,7 @@ void TileFetcher::tock(GateBoyClock& clk, const GateBoyVramBus& vram_bus, NorLat
 //------------------------------------------------------------------------------------------------------------------------
 
 wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGp.qp_new());
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn_new_xxx = not1(_XYMU_RENDERINGn.qn_new());
 
   ///* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
   ///* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();
@@ -51,7 +51,7 @@ wire TileFetcher::LOMA_LATCH_TILE_DAn() const {
 //------------------------------------------------------------------------------------------------------------------------
 
 wire TileFetcher::LABU_LATCH_TILE_DBn() const {
-  /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp_new());
+  /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGn.qn_new());
 
   ///* p27.LAXU*/ wire LAXU_BFETCH_S0p = _LAXU_BFETCH_S0p.qp_new();
   ///* p27.MESU*/ wire MESU_BFETCH_S1p = _MESU_BFETCH_S1p.qp_new();

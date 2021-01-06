@@ -15,14 +15,14 @@ struct TileFetcher {
 
   wire TAVE_PRELOAD_DONE_TRIGp_old() const {
     /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_old      = not1(POKY_PRELOAD_LATCHp.qp_old());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_old = nand4(_XYMU_RENDERINGp.qp_old(), _ROMO_PRELOAD_DONEn_old, NYKA_FETCH_DONEp.qp_old(), PORY_FETCH_DONEp.qp_old());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_old = nand4(_XYMU_RENDERINGn.qn_old(), _ROMO_PRELOAD_DONEn_old, NYKA_FETCH_DONEp.qp_old(), PORY_FETCH_DONEp.qp_old());
     /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_old = not1(_SUVU_PRELOAD_DONE_TRIGn_old);
     return _TAVE_PRELOAD_DONE_TRIGp_old;
   }
 
   wire TAVE_PRELOAD_DONE_TRIGp_new() const {
     /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new      = not1(POKY_PRELOAD_LATCHp.qp_new());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4(_XYMU_RENDERINGp.qp_new(), _ROMO_PRELOAD_DONEn_new, NYKA_FETCH_DONEp.qp_new(), PORY_FETCH_DONEp.qp_new());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4(_XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, NYKA_FETCH_DONEp.qp_new(), PORY_FETCH_DONEp.qp_new());
     /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new = not1(_SUVU_PRELOAD_DONE_TRIGn_new);
     return _TAVE_PRELOAD_DONE_TRIGp_new;
   }
@@ -61,7 +61,7 @@ struct TileFetcher {
     d.dump_slice2p("Temp B : ", &tile_temp_b.RAWU_TILE_DB0p, 8);
   }
 
-  Signal _XYMU_RENDERINGp;
+  NorLatch _XYMU_RENDERINGn;
 
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?

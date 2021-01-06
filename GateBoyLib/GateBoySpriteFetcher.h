@@ -8,12 +8,12 @@
 struct SpriteFetcher {
   void reset_to_cart();
 
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, wire XYMU_RENDERINGp, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, NorLatch XYMU_RENDERINGn, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
 
   /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
 
   wire TEXY_SFETCHINGp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp.qp_new());
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGn.qn_new());
     /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
     /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
     return _TEXY_SFETCHINGp;
@@ -25,7 +25,7 @@ struct SpriteFetcher {
   /* p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not1(TOXE_SFETCH_S0p.qp_new()); }
 
   wire TUVO_PPU_OAM_RDp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGp.qp_new());
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGn.qn_new());
     /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGp, TULY_SFETCH_S1p.qp_new(), TESE_SFETCH_S2p.qp_new());
     return _TUVO_PPU_OAM_RDp;
   }
@@ -56,7 +56,7 @@ struct SpriteFetcher {
   }
 
   wire SYCU_SFETCH_S0pe() const {
-    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGp.qp_new());
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(_XYMU_RENDERINGn.qn_new());
     /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, TYFO_SFETCH_S0p_D1.qp_new());
     return _SYCU_SFETCH_S0pe;
   }
@@ -99,7 +99,7 @@ struct SpriteFetcher {
     d.dump_slice2n("Temp B : ", &sprite_pix_b.PEFO_SPRITE_DB0n, 8);
   }
 
-  Signal _XYMU_RENDERINGp;
+  NorLatch _XYMU_RENDERINGn;
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp; // ABCDEFGH Set on odd, cleared on even
   /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp;         // xBxDxFxH

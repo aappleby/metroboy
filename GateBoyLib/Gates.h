@@ -96,8 +96,18 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 
 //-----------------------------------------------------------------------------
 
-struct Gate : public BitBase {
+struct Gate : private BitBase {
   void reset(uint8_t s) { state = s; }
+
+  uint8_t get_state() const {
+    return state;
+  }
+
+  operator wire() const {
+    //return qp_new();
+    // FIXME turned off all old/new checking
+    return state;
+  }
 
   void operator=(wire D) {
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
@@ -106,13 +116,26 @@ struct Gate : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct Signal : public BitBase {
+struct Signal : private BitBase {
+  operator wire() const {
+    //return qp_new();
+    // FIXME turned off all old/new checking
+    return state;
+  }
+
+  uint8_t get_state() const {
+    return state;
+  }
+
   void reset(uint8_t s) { state = s; }
 
+  /*
   void operator=(wire D) {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }
+  */
+
   void set(wire D) {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
@@ -1017,6 +1040,8 @@ struct OamTempB;
 /* p07.DYKY*/ inline wire DYKY_CPU_WRn      (const wire TAPU_CPU_WRp)    { return not1(TAPU_CPU_WRp); }
 /* p07.CUPA*/ inline wire CUPA_CPU_WRp      (const wire TAPU_CPU_WRp)    { return not1(DYKY_CPU_WRn(TAPU_CPU_WRp)); }
 
+#if 0
+
 /* p07.TUNA*/ inline wire TUNA_0000_FDFF    (const Signal BUS_CPU_A[16]) { return nand7(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), BUS_CPU_A[13].qp_new(), BUS_CPU_A[12].qp_new(), BUS_CPU_A[11].qp_new(), BUS_CPU_A[10].qp_new(), BUS_CPU_A[ 9].qp_new()); }
 /* p07.RYCU*/ inline wire RYCU_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
 /* p25.SYRO*/ inline wire SYRO_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
@@ -1084,3 +1109,4 @@ struct OamTempB;
 /* p22.VYGA*/ inline wire VYGA_FF4Ap        (const Signal BUS_CPU_A[16]) { return not1(WYVO_FF4An(BUS_CPU_A)); }
 /* p22.VUMY*/ inline wire VUMY_FF4Bp        (const Signal BUS_CPU_A[16]) { return not1(WAGE_FF4Bn(BUS_CPU_A)); }
 
+#endif

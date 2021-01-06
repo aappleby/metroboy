@@ -396,14 +396,14 @@ void GateBoyApp::app_render_frame() {
   d.dump_slice2p("SPR PIPE B : ", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
   d.dump_slice2p("PAL PIPE   : ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
   d.dump_slice2p("MASK PIPE  : ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
-  d.dump_bitn   ("REMY_LD0n  : ", gb->pix_pipes.REMY_LD0n.state);
-  d.dump_bitn   ("RAVO_LD1n  : ", gb->pix_pipes.RAVO_LD1n.state);
+  d.dump_bitn   ("REMY_LD0n  : ", gb->pix_pipes.REMY_LD0n.get_state());
+  d.dump_bitn   ("RAVO_LD1n  : ", gb->pix_pipes.RAVO_LD1n.get_state());
 
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn        : ", gb->ppu_reg.XYMU_RENDERINGn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap       : ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
-  d.dump_bitp("PUKU_WIN_HITn          : ", gb->win_reg.PUKU_WIN_HITn.state);
-  d.dump_bitp("RYDY_WIN_HITp          : ", gb->win_reg.RYDY_WIN_HITp.state);
+  d.dump_bitp("PUKU_WIN_HITn          : ", gb->win_reg.PUKU_WIN_HITn.get_state());
+  d.dump_bitp("RYDY_WIN_HITp          : ", gb->win_reg.RYDY_WIN_HITp.get_state());
   d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", gb->win_reg.SOVY_WIN_HITp.state);
   d.dump_bitp("NOPA_WIN_MODE_B        : ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
   d.dump_bitp("PYCO_WX_MATCH_A        : ", gb->win_reg.PYCO_WIN_MATCHp.state);

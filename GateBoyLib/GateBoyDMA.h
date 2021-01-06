@@ -30,7 +30,7 @@ struct GateBoyDMA {
     d.dump_bitp   ("MYTE_DMA_DONE     : ", MYTE_DMA_DONE    .state);
     d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", LUVY_DMA_TRIG_d0 .state);
     d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", LENE_DMA_TRIG_d4 .state);
-    d.dump_bitp   ("LOKY_DMA_LATCHp   : ", LOKY_DMA_LATCHp  .state);
+    d.dump_bitp   ("LOKY_DMA_LATCHp   : ", LOKY_DMA_LATCHp  .get_state());
     d("\n");
   }
 

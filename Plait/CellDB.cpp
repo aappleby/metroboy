@@ -300,7 +300,6 @@ set<string> valid_logic_gates  = {
   "nand2", "nand3", "nand4", "nand5", "nand6", "nand7",
   "nor2", "nor3", "nor4", "nor5", "nor6", "nor8",
   "and_or3", "or_and3", "not_or_and3",
-  "add3",
   "mux2n", "mux2p", "amux2", "amux4",
 };
 
@@ -331,6 +330,11 @@ bool CellDB::parse_cell_gate(Cell& c, const std::string& gate) {
   else if (valid_logic_gates.contains(gate)) {
     CHECK_P(c.cell_type == CellType::UNKNOWN);
     c.cell_type = CellType::LOGIC;
+    c.gate = gate;
+    return true;
+  }
+  else if (gate == "add3") {
+    c.cell_type = CellType::ADDER;
     c.gate = gate;
     return true;
   }
@@ -384,6 +388,11 @@ bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
     c.cell_type = CellType::LOGIC;
     return true;
   }
+  else if (type == "AdderOut") {
+    CHECK_P(c.cell_type == CellType::UNKNOWN);
+    c.cell_type = CellType::ADDER;
+    return true;
+  }
   else {
     printf("Could not parse cell type %s\n", type.c_str());
     __debugbreak();
@@ -397,6 +406,7 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
 
   static regex simple_arg(
     "^"
+    "(?:\\w+\\.)*"
     "_?"
     "([A-Z]{4})"
     "\\w*"

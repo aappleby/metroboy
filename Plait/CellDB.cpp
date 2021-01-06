@@ -820,9 +820,18 @@ bool CellDB::parse_dir(const std::string& path) {
     for (auto arg : cell->args) {
       auto arg_cell = tag_to_cell[arg.tag];
       CHECK_P(arg_cell);
-      if (arg_cell->cell_type == CellType::DFF) {
-        CHECK_P(arg.port == "qn" || arg.port == "qp");
-      }
+
+      if (arg_cell->cell_type == CellType::PIN_IN)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::PIN_OUT) { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::PIN_IO)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::SIG_IN)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::SIG_OUT) { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::BUS)     { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::DFF)     { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::LATCH)   { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::TRIBUF)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
+      if (arg_cell->cell_type == CellType::ADDER)   { CHECK_P(arg.port == "s"   || arg.port == "c"); }
+      if (arg_cell->cell_type == CellType::LOGIC)   { CHECK_P(arg.port == ""); }
     }
   }
 

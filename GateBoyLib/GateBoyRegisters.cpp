@@ -52,8 +52,8 @@ SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) 
   };
 }
 
-wire SpriteDeltaY::GESE_SCAN_MATCH_Yp(wire XYMO_LCDC_SPSIZEn) {
-  /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn, GYKY_YDIFF3.s);
+wire SpriteDeltaY::GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn) {
+  /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), GYKY_YDIFF3.s);
   /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, WUHU_YDIFF7.c, _GOVU_SPSIZE_MATCH_new);
   /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
   return _GESE_SCAN_MATCH_Yp_new;
@@ -662,9 +662,9 @@ void SpritePixB::store_sprite_pix(SpritePix sprite, wire PUCO_STORE_SPRITE_Bn) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void WinMapX::tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, wire WYMO_LCDC_WINENp, wire XAHY_LINE_RSTn) {
+void WinMapX::tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn) {
   /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_FETCH_TRIGp, PORE_WIN_MODEp);
-  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENp, XAHY_LINE_RSTn, rst.XAPO_VID_RSTn());
+  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, rst.XAPO_VID_RSTn());
   /* p27.XACO*/ wire _XACO_WIN_RSTn = not1(_XOFO_WIN_RSTp);
   /* p27.WYKA*/ WYKA_WIN_X3.dff17(_VETU_WIN_MAPp,       _XACO_WIN_RSTn, WYKA_WIN_X3.qn_old());
   /* p27.WODY*/ WODY_WIN_X4.dff17(WYKA_WIN_X3.qn_new(), _XACO_WIN_RSTn, WODY_WIN_X4.qn_old());

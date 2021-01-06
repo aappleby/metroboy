@@ -7,7 +7,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void TileFetcher::tock(GateBoyClock& clk, const GateBoyVramBus& vram_bus, wire XYMU_RENDERINGp, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
+void TileFetcher::tock(GateBoyClock& clk, const GateBoyVramBus& vram_bus, NorLatch XYMU_RENDERINGn, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old)
 {
   for (int feedback = 0; feedback < 2; feedback++) {
     /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = nand3(_LAXU_BFETCH_S0p.qp_any(), _NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn);
@@ -20,9 +20,9 @@ void TileFetcher::tock(GateBoyClock& clk, const GateBoyVramBus& vram_bus, wire X
 
   /* p27.LYRY*/ wire _LYRY_BFETCH_DONEp_old = not1(MOCE_BFETCH_DONEn_old);
   /* p27.LOVY*/ LOVY_FETCH_DONEp.dff17(clk.MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, _LYRY_BFETCH_DONEp_old);
-  /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGp);
+  /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGn.qn_new());
   /* p27.LONY*/ LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn);
-  /* p27.LYZU*/ _LYZU_BFETCH_S0p_D1.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGp, _LAXU_BFETCH_S0p.qp_new());
+  /* p27.LYZU*/ _LYZU_BFETCH_S0p_D1.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), _LAXU_BFETCH_S0p.qp_new());
 
   tile_temp_a.store_vram_data(vram_bus, LOMA_LATCH_TILE_DAn());
   tile_temp_b.store_vram_data(vram_bus, LABU_LATCH_TILE_DBn());

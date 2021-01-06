@@ -8,9 +8,9 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyVramBus::cpu_addr_to_vram_addr(const GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire LUFA_DMA_VRAMp) {
+void GateBoyVramBus::cpu_addr_to_vram_addr(const GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, wire LUFA_DMA_VRAMp) {
   // CPU to VRAM address driver
-  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_new_evn = nor2(LUFA_DMA_VRAMp, XYMU_RENDERINGp);
+  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_new_evn = nor2(LUFA_DMA_VRAMp, XYMU_RENDERINGn.qn_new());
   /* p25.XEDU*/ wire _XEDU_VRAM_LOCKp_new_evn = not1(_XANE_VRAM_LOCKn_new_evn);
   /* p25.XAKY*/ BUS_VRAM_A00n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A00p.qp_new());
   /* p25.XUXU*/ BUS_VRAM_A01n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A01p.qp_new());
@@ -49,7 +49,7 @@ void GateBoyVramBus::dma_addr_to_vram_addr(const GateBoyDMA& dma) {
 //------------------------------------------------------------------------------------------------------------------------
 // BG map read address
 
-void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, wire XAFO_LCDC_BGMAPp) {
+void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, DFF9 XAFO_LCDC_BGMAPn) {
   wire PIN_58_VCC = 1;
   /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp, AXAD_WIN_MODEn);
   /* p26.BAFY*/ wire _BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
@@ -63,7 +63,7 @@ void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire
   /* p26.CYPO*/ BUS_VRAM_A07n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DABA_MAP_Y2.s);
   /* p26.CETA*/ BUS_VRAM_A08n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EFYK_MAP_Y3.s);
   /* p26.DAFE*/ BUS_VRAM_A09n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EJOK_MAP_Y4.s);
-  /*#p26.AMUV*/ BUS_VRAM_A10n.tri6_nn(_BAFY_BG_MAP_READn, XAFO_LCDC_BGMAPp);
+  /*#p26.AMUV*/ BUS_VRAM_A10n.tri6_nn(_BAFY_BG_MAP_READn, XAFO_LCDC_BGMAPn.qn_new());
   /* p26.COVE*/ BUS_VRAM_A11n.tri6_nn(_BAFY_BG_MAP_READn, PIN_58_VCC);
   /* p26.COXO*/ BUS_VRAM_A12n.tri6_nn(_BAFY_BG_MAP_READn, PIN_58_VCC);
 }
@@ -72,7 +72,7 @@ void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire
 // Win map read address
 
 
-void GateBoyVramBus::win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, wire WOKY_LCDC_WINMAPp) {
+void GateBoyVramBus::win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF9 WOKY_LCDC_WINMAPn) {
   wire PIN_58_VCC = 1;
   /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(POTU_BGW_MAP_READp, PORE_WIN_MODEp);
   /*#p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not1(_XEZE_WIN_MAP_READp);
@@ -86,7 +86,7 @@ void GateBoyVramBus::win_to_addr(const WinMapX& win_map_x, const WinLineY& win_l
   /* p27.VACE*/ BUS_VRAM_A07n.tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TOZO_WIN_Y5.qp_new());
   /* p27.VOVO*/ BUS_VRAM_A08n.tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TATE_WIN_Y6.qp_new());
   /* p27.VULO*/ BUS_VRAM_A09n.tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TEKE_WIN_Y7.qp_new());
-  /*#p27.VEVY*/ BUS_VRAM_A10n.tri6_nn(_WUKO_WIN_MAP_READn, WOKY_LCDC_WINMAPp);
+  /*#p27.VEVY*/ BUS_VRAM_A10n.tri6_nn(_WUKO_WIN_MAP_READn, WOKY_LCDC_WINMAPn.qn_new());
   /* p27.VEZA*/ BUS_VRAM_A11n.tri6_nn(_WUKO_WIN_MAP_READn, PIN_58_VCC);
   /* p27.VOGU*/ BUS_VRAM_A12n.tri6_nn(_WUKO_WIN_MAP_READn, PIN_58_VCC);
 }

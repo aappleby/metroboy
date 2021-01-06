@@ -72,7 +72,7 @@ struct SpriteStore {
   void store_sprite_line (SpriteStoreFlag store_flag);
   void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
-  void oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn);
+  void oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, NorLatch XYMU_RENDERINGn, DFF17 CENO_SCANNINGn);
   void ly_to_sprite_line(wire FEPO_STORE_MATCHp_new_evn, const RegLY& reg_ly, const OamTempA& oam_temp_a);
 
   void dump(Dumper& d);

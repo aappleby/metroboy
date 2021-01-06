@@ -890,7 +890,7 @@ void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, wire XYMU_RENDERINGp, wire CENO_SCANNINGn) {
+void SpriteStore::oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, NorLatch XYMU_RENDERINGn, DFF17 CENO_SCANNINGn) {
   wire PIN_58_VCC = 1;
   /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(oam_bus.BUS_OAM_A02n.qp_old());
   /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(oam_bus.BUS_OAM_A03n.qp_old());
@@ -907,7 +907,7 @@ void SpriteStore::oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WU
   /* p30.YDUF*/ YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH, PIN_58_VCC, _XEMU_OAM_A6p_old);
   /* p30.XECU*/ XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH, PIN_58_VCC, _YZET_OAM_A7p_old);
 
-  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(CENO_SCANNINGn, XYMU_RENDERINGp);
+  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
   /*#p30.WUZY*/ BUS_SPR_I0.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XADU_SPRITE_IDX0p.qn_new());
   /* p30.WYSE*/ BUS_SPR_I1.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XEDY_SPRITE_IDX1p.qn_new());
   /* p30.ZYSU*/ BUS_SPR_I2.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, ZUZE_SPRITE_IDX2p.qn_new());

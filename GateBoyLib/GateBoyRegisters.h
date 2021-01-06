@@ -22,7 +22,7 @@ struct SpriteDeltaY {
 
   static SpriteDeltaY sub(const OamTempA& oam_temp_a, const RegLY& reg_ly);
 
-  wire GESE_SCAN_MATCH_Yp(wire XYMO_LCDC_SPSIZEn);
+  wire GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn);
 
   /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
   /* p29.DABY*/ wire DABY_SPRITE_DELTA1;
@@ -627,7 +627,7 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
-  void tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, wire WYMO_LCDC_WINENp, wire XAHY_LINE_RSTn);
+  void tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("Win Map X : ", &WYKA_WIN_X3, 5);

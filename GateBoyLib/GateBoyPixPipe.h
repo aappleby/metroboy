@@ -93,13 +93,13 @@ struct WindowRegisters {
 
 struct FineScroll {
 
-  void tock(wire XYMU_RENDERINGp, wire TYFA_CLKPIPE_odd, wire TEVO_FETCH_TRIGp) {
+  void tock(NorLatch XYMU_RENDERINGn, wire TYFA_CLKPIPE_odd, wire TEVO_FETCH_TRIGp) {
     // Fine match counter. Registers are only read as old, so this can go down as far in the list as needed.
 
     /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
     /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
 
-    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGp);
+    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
     /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, TEVO_FETCH_TRIGp);
 
     for (int feedback = 0; feedback < 2; feedback++) {

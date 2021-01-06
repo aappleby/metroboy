@@ -27,6 +27,7 @@ enum class CellType {
   LATCH,
   TRIBUF,
   LOGIC,
+  ADDER
 };
 
 struct Cell {

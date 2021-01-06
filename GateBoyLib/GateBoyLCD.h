@@ -81,11 +81,11 @@ struct GateBoyLCD {
     wire XYVO_y144p_old,
     wire RUTU_x113p_old);
 
-  void set_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
+  void set_pin_data(Signal REMY_LD0n, Signal RAVO_LD1n);
   void set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk);
-  void set_pin_flip(GateBoyResetDebug& rst, wire TULU_DIV07p, wire XONA_LCDC_LCDENp);
+  void set_pin_flip(GateBoyResetDebug& rst, DFF17 TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
   void set_pin_vsync(GateBoyResetDebug& rst);
-  void set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wire XYMU_RENDERINGp, wire XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp);
+  void set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, NorLatch XYMU_RENDERINGn, DFF17 XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp);
   void set_pin_latch(GateBoyDiv& div, RegLCDC& reg_lcdc);
   void set_pin_clock(PixCount& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
   void update_lcd_pipe();

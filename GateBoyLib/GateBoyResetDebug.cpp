@@ -11,16 +11,16 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sig_clkreq, wire sig_
 
   /* p01.AFER*/ AFER_SYS_RSTp.dff13(clk.BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), ASOL_POR_DONEn.qp_old());
 
-  /* p01.UPYF*/ wire _UPYF = or2(PIN_71_RST.int_qp_new(), clk.UCOB_CLKBADp());
+  /* p01.UPYF*/ wire _UPYF = or2(PIN_71_RST.qp_int_new(), clk.UCOB_CLKBADp());
   /* p01.TUBO*/ TUBO_WAITINGp.nor_latch(_UPYF, SIG_CLKREQ.qp_new());
   /* p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(TUBO_WAITINGp.qp_new(), UPOF_DIV15p);
   /* p01.TABA*/ wire _TABA_POR_TRIGn = or3(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
   /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);
-  /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(PIN_71_RST.int_qp_new(), _ALYP_RSTn);
-  /* p01.ASOL*/ ASOL_POR_DONEn.nor_latch(PIN_71_RST.int_qp_new(), _AFAR_RSTp); // Schematic wrong, this is a latch.
+  /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(PIN_71_RST.qp_int_new(), _ALYP_RSTn);
+  /* p01.ASOL*/ ASOL_POR_DONEn.nor_latch(PIN_71_RST.qp_int_new(), _AFAR_RSTp); // Schematic wrong, this is a latch.
 
   /*SIG_CPU_EXT_CLKGOOD*/ SIG_CPU_EXT_CLKGOOD.set(SIG_CLKGOOD.qp_new());
-  /*SIG_CPU_EXT_RESETp */ SIG_CPU_EXT_RESETp.set(PIN_71_RST.int_qp_new());
+  /*SIG_CPU_EXT_RESETp */ SIG_CPU_EXT_RESETp.set(PIN_71_RST.qp_int_new());
   /*SIG_CPU_STARTp     */ SIG_CPU_STARTp.set(_TABA_POR_TRIGn);
   /*SIG_CPU_INT_RESETp */ SIG_CPU_INT_RESETp.set(AFER_SYS_RSTp.qp_new());
 
@@ -35,9 +35,11 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sig_clkreq, wire sig_
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyResetDebug::set_signals(wire XONA_LCDC_LCDENp)
+void GateBoyResetDebug::set_signals(DFF9 XONA_LCDC_LCDENn)
 {
-  _XONA_LCDC_LCDENp.set(XONA_LCDC_LCDENp);
+  //_XONA_LCDC_LCDENp.set(XONA_LCDC_LCDENp);
+  _XONA_LCDC_LCDENn = XONA_LCDC_LCDENn;
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------

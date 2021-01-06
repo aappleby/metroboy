@@ -115,7 +115,7 @@ struct GateBoy {
     }
   }
 
-  static wire ROGE_WY_MATCHp_old(const RegWY& reg_wy_old, const RegLY& reg_ly_old, wire WYMO_LCDC_WINENp_old) {
+  static wire ROGE_WY_MATCHp_old(const RegWY& reg_wy_old, const RegLY& reg_ly_old, DFF9 WYMO_LCDC_WINENn_old) {
     /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p = xnor2(reg_wy_old.NESO_WY0n.qn_old(), reg_ly_old.MUWY_LY0p.qp_old());
     /* p27.PEBO*/ wire _PEBO_WY_MATCH1p = xnor2(reg_wy_old.NYRO_WY1n.qn_old(), reg_ly_old.MYRO_LY1p.qp_old());
     /* p27.POMO*/ wire _POMO_WY_MATCH2p = xnor2(reg_wy_old.NAGA_WY2n.qn_old(), reg_ly_old.LEXA_LY2p.qp_old());
@@ -125,14 +125,14 @@ struct GateBoy {
     /* p27.PEZO*/ wire _PEZO_WY_MATCH6p = xnor2(reg_wy_old.NUKA_WY6n.qn_old(), reg_ly_old.MATO_LY6p.qp_old());
     /* p27.NUPA*/ wire _NUPA_WY_MATCH7p = xnor2(reg_wy_old.NAFU_WY7n.qn_old(), reg_ly_old.LAFO_LY7p.qp_old());
 
-    /*#p27.PALO*/ wire _PALO_WY_MATCHn  = nand5(WYMO_LCDC_WINENp_old, _NOJO_WY_MATCH4p, _PAGA_WY_MATCH5p, _PEZO_WY_MATCH6p, _NUPA_WY_MATCH7p);
+    /*#p27.PALO*/ wire _PALO_WY_MATCHn  = nand5(WYMO_LCDC_WINENn_old.qn_old(), _NOJO_WY_MATCH4p, _PAGA_WY_MATCH5p, _PEZO_WY_MATCH6p, _NUPA_WY_MATCH7p);
     /* p27.NELE*/ wire _NELE_WY_MATCHp  = not1(_PALO_WY_MATCHn);
     /* p27.PAFU*/ wire _PAFU_WY_MATCHn  = nand5(_NELE_WY_MATCHp, _NAZE_WY_MATCH0p, _PEBO_WY_MATCH1p, _POMO_WY_MATCH2p, _NEVU_WY_MATCH3p);
     /* p27.ROGE*/ wire _ROGE_WY_MATCHp  = not1(_PAFU_WY_MATCHn);
     return _ROGE_WY_MATCHp;
   }
 
-  static wire NUKO_WX_MATCHp_old(const PixCount& pix_count_old, const RegWX& reg_wx_old, wire REJO_WY_MATCH_LATCHp_old) {
+  static wire NUKO_WX_MATCHp_old(const PixCount& pix_count_old, const RegWX& reg_wx_old, NorLatch REJO_WY_MATCH_LATCHp_old) {
     /*#p27.MYLO*/ wire _MYLO_WX_MATCH0p = xnor2(pix_count_old.XEHO_PX0p.qp_old(), reg_wx_old.MYPA_WX0n.qn_old());
     /* p27.PUWU*/ wire _PUWU_WX_MATCH1p = xnor2(pix_count_old.SAVY_PX1p.qp_old(), reg_wx_old.NOFE_WX1n.qn_old());
     /* p27.PUHO*/ wire _PUHO_WX_MATCH2p = xnor2(pix_count_old.XODU_PX2p.qp_old(), reg_wx_old.NOKE_WX2n.qn_old());
@@ -142,7 +142,7 @@ struct GateBoy {
     /* p27.NONO*/ wire _NONO_WX_MATCH6p = xnor2(pix_count_old.TAKO_PX6p.qp_old(), reg_wx_old.MUVO_WX6n.qn_old());
     /* p27.PASE*/ wire _PASE_WX_MATCH7p = xnor2(pix_count_old.SYBE_PX7p.qp_old(), reg_wx_old.NUKU_WX7n.qn_old());
 
-    /* p27.PUKY*/ wire _PUKY_WX_MATCHn  = nand5(REJO_WY_MATCH_LATCHp_old, _NEZO_WX_MATCH4p, _NORY_WX_MATCH5p, _NONO_WX_MATCH6p, _PASE_WX_MATCH7p);
+    /* p27.PUKY*/ wire _PUKY_WX_MATCHn  = nand5(REJO_WY_MATCH_LATCHp_old.qp_old(), _NEZO_WX_MATCH4p, _NORY_WX_MATCH5p, _NONO_WX_MATCH6p, _PASE_WX_MATCH7p);
     /* p27.NUFA*/ wire _NUFA_WX_MATCHp  = not1(_PUKY_WX_MATCHn);
     /* p27.NOGY*/ wire _NOGY_WX_MATCHn  = nand5(_NUFA_WX_MATCHp, _MYLO_WX_MATCH0p, _PUWU_WX_MATCH1p, _PUHO_WX_MATCH2p, _NYTU_WX_MATCH3p);
     /* p27.NUKO*/ wire _NUKO_WX_MATCHp  = not1(_NOGY_WX_MATCHn);

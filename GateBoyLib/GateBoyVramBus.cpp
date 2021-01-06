@@ -339,26 +339,26 @@ void GateBoyVramBus::read_vram(const uint8_t* vid_ram) {
   uint16_t addr = (uint16_t)BitBase::pack_ext_new(13, &PIN_34_VRAM_A00);
   uint8_t data = 0xFF;
 
-  if (bit(~PIN_45_VRAM_OEn.ext_qp_new())) {
+  if (bit(~PIN_45_VRAM_OEn.qp_ext_new())) {
     data = vid_ram[addr];
   }
 
   // not tagging these, we'll leave only the internal connections in plait.
-  PIN_33_VRAM_D00.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 0));
-  PIN_31_VRAM_D01.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 1));
-  PIN_30_VRAM_D02.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 2));
-  PIN_29_VRAM_D03.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 3));
-  PIN_28_VRAM_D04.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 4));
-  PIN_27_VRAM_D05.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 5));
-  PIN_26_VRAM_D06.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 6));
-  PIN_25_VRAM_D07.pin_in_oedp(~PIN_45_VRAM_OEn.ext_qp_new(), bit(data, 7));
+  PIN_33_VRAM_D00.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 0));
+  PIN_31_VRAM_D01.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 1));
+  PIN_30_VRAM_D02.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 2));
+  PIN_29_VRAM_D03.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 3));
+  PIN_28_VRAM_D04.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 4));
+  PIN_27_VRAM_D05.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 5));
+  PIN_26_VRAM_D06.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 6));
+  PIN_25_VRAM_D07.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 7));
 }
 
 void GateBoyVramBus::write_vram(uint8_t* vid_ram) {
   uint16_t addr= (uint16_t)BitBase::pack_ext_new(13, &PIN_34_VRAM_A00);
   uint8_t data = (uint8_t)BitBase::pack_ext_new(8, &PIN_33_VRAM_D00);
 
-  if (bit(~PIN_49_VRAM_WRn.ext_qp_new())) {
+  if (bit(~PIN_49_VRAM_WRn.qp_ext_new())) {
     vid_ram[addr] = data;
   }
 }
@@ -374,14 +374,14 @@ void GateBoyVramBus::pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM
   /*#p25.RELA*/ wire _RELA_CBD_TO_VPDp =  or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
   /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
 
-  /* p25.RODY*/ BUS_VRAM_D00p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_33_VRAM_D00.int_qp_new());
-  /* p25.REBA*/ BUS_VRAM_D01p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_31_VRAM_D01.int_qp_new());
-  /* p25.RYDO*/ BUS_VRAM_D02p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_30_VRAM_D02.int_qp_new());
-  /* p25.REMO*/ BUS_VRAM_D03p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_29_VRAM_D03.int_qp_new());
-  /* p25.ROCE*/ BUS_VRAM_D04p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_28_VRAM_D04.int_qp_new());
-  /* p25.ROPU*/ BUS_VRAM_D05p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_27_VRAM_D05.int_qp_new());
-  /* p25.RETA*/ BUS_VRAM_D06p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_26_VRAM_D06.int_qp_new());
-  /* p25.RAKU*/ BUS_VRAM_D07p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_25_VRAM_D07.int_qp_new());
+  /* p25.RODY*/ BUS_VRAM_D00p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_33_VRAM_D00.qp_int_new());
+  /* p25.REBA*/ BUS_VRAM_D01p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_31_VRAM_D01.qp_int_new());
+  /* p25.RYDO*/ BUS_VRAM_D02p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_30_VRAM_D02.qp_int_new());
+  /* p25.REMO*/ BUS_VRAM_D03p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_29_VRAM_D03.qp_int_new());
+  /* p25.ROCE*/ BUS_VRAM_D04p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_28_VRAM_D04.qp_int_new());
+  /* p25.ROPU*/ BUS_VRAM_D05p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_27_VRAM_D05.qp_int_new());
+  /* p25.RETA*/ BUS_VRAM_D06p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_26_VRAM_D06.qp_int_new());
+  /* p25.RAKU*/ BUS_VRAM_D07p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_25_VRAM_D07.qp_int_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

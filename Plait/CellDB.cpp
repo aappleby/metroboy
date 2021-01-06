@@ -31,7 +31,7 @@ using namespace std;
 #define MATCH_BUS_TAG         "BUS_\\w+"
 
 // stuff.foo.bar.baz
-#define MATCH_CELL_TAG_SUFFIX "(?:\\.[^.]+)*)"
+#define MATCH_CELL_TAG_SUFFIX "(?:\\.[^.]+)*"
 
 // literal /* at start of line
 #define MATCH_COMMENT_BEGIN_LINE   R"(^\/\*)"
@@ -46,17 +46,18 @@ using namespace std;
 #define CAPTURE_VERIFIED_TAG "(.?)"
 
 NLOHMANN_JSON_SERIALIZE_ENUM( CellType, {
-  {CellType::UNKNOWN, nullptr},
+  {CellType::UNKNOWN, "UNKNOWN"},
   {CellType::PIN_IN,  "PIN_IN"},
   {CellType::PIN_OUT, "PIN_OUT"},
   {CellType::PIN_IO,  "PIN_IO"},
   {CellType::SIG_IN,  "SIG_IN"},
   {CellType::SIG_OUT, "SIG_OUT"},
   {CellType::BUS,     "BUS"},
-  {CellType::LOGIC,   "LOGIC"},
-  {CellType::TRIBUF,  "TRIBUF"},
   {CellType::DFF,     "DFF"},
   {CellType::LATCH,   "LATCH"},
+  {CellType::TRIBUF,  "TRIBUF"},
+  {CellType::LOGIC,   "LOGIC"},
+  {CellType::ADDER,   "ADDER"},
 });
 
 static std::map<CellType, string> cell_type_to_name = {
@@ -67,10 +68,11 @@ static std::map<CellType, string> cell_type_to_name = {
   {CellType::SIG_IN,  "SIG_IN"},
   {CellType::SIG_OUT, "SIG_OUT"},
   {CellType::BUS,     "BUS"},
-  {CellType::LOGIC,   "LOGIC"},
-  {CellType::TRIBUF,  "TRIBUF"},
   {CellType::DFF,     "DFF"},
   {CellType::LATCH,   "LATCH"},
+  {CellType::TRIBUF,  "TRIBUF"},
+  {CellType::LOGIC,   "LOGIC"},
+  {CellType::ADDER,   "ADDER"},
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -191,6 +193,13 @@ void Cell::sanity_check() const {
   else {
     CHECK_P(args.size());
   }
+
+  if (args.size()) {
+    for (auto& arg : args) {
+      static std::set<std::string> valid_ports = { "", "qp", "qn", "s", "c" };
+      CHECK_P(valid_ports.contains(arg.port));
+    }
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -220,19 +229,6 @@ void Cell::merge(const Cell& c) {
   CHECK_P(c.gate.empty()     || gate == c.gate);
   CHECK_P(c.doc.empty()      || doc == c.doc);
 
-  /*
-  if (!c.gate.empty()) {
-    // FIXME need a better way of handling gates with multiple outputs...
-    if (gate == "add_s" || gate == "add_c") {
-      CHECK_P(c.gate == "add_s" || c.gate == "add_c");
-    }
-    else {
-      CHECK_P(gate == c.gate);
-    }
-  }
-  */
-
-
   if (!c.args.empty()) {
     CHECK_P(args.size() == c.args.size());
     for (size_t i = 0; i < args.size(); i++) {
@@ -240,8 +236,6 @@ void Cell::merge(const Cell& c) {
       CHECK_P(args[i].port == c.args[i].port);
     }
   }
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -306,7 +300,7 @@ set<string> valid_logic_gates  = {
   "nand2", "nand3", "nand4", "nand5", "nand6", "nand7",
   "nor2", "nor3", "nor4", "nor5", "nor6", "nor8",
   "and_or3", "or_and3", "not_or_and3",
-  "add_s", "add_c",
+  "add3",
   "mux2n", "mux2p", "amux2", "amux4",
 };
 
@@ -401,29 +395,95 @@ bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
 
 bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
 
-  static regex cell_arg(MATCH_CELL_TAG_PREFIX "(" MATCH_CELL_TAG ")\\w*" MATCH_CELL_TAG_SUFFIX);
+  static regex simple_arg(
+    "^"
+    "_?"
+    "([A-Z]{4})"
+    "\\w*"
+    "$"
+  );
 
-  static regex cell_func_arg(R"(^(?:\w+\.)*([A-Z]{4})\w+\(\))");
+  static regex cell_arg_with_port(
+    "^"
+    "(?:\\w+\\.)*"
+    "_?"
+    "([A-Z]{4})"
+    "\\w*"
+    "\\."
+    "(\\w*)"
+    ".*"
+    "$"
+  );
 
-  static regex bus_arg (R"(^(?:\w+\.)*(BUS_[^.]*)(\.[^.]+)?)");
-  static regex sig_arg (R"(^(?:\w+\.)*(SIG_[^.]*)(\.[^.]+)?)");
-  static regex pin_arg (R"(^(?:\w+\.)*(PIN_\d{2})_[^.]*(\.[^.]+)?)");
+  static regex cell_arg_function(
+    "^"
+    "(?:\\w+\\.)*"
+    "([A-Z]{4})\\w+"
+    "\\(\\)"
+    "$"
+  );
+
+  static regex sig_arg(
+    "^"
+    "(?:\\w+\\.)*"
+    "(SIG_\\w+)"
+    "\\."
+    "(\\w*)"
+    ".*"
+    "$"
+  );
+
+  static regex bus_arg(
+    "^"
+    "(?:\\w+\\.)*"
+    "(BUS_\\w+)"
+    "\\."
+    "(\\w*)"
+    ".*"
+    "$"
+  );
+
+  static regex pin_arg_with_port(
+    "^"
+    "(?:\\w+\\.)*"
+    "(PIN_\\w+)"
+    "\\."
+    "(\\w*)"
+    ".*"
+    "$"
+  );
+
+  static regex pin_arg(
+    "^"
+    "(?:\\w+\\.)*"
+    "(PIN_\\w+)"
+    ".*"
+    "$"
+  );
 
   smatch match;
-  if (regex_match(arg, match, cell_arg)) {
+  if (regex_match(arg, match, simple_arg)) {
     c.args.push_back({match[1].str(), ""});
     return true;
   }
-  else if (regex_match(arg, match, cell_func_arg)) {
-    c.args.push_back({match[1].str(), ""});
+  else if (regex_match(arg, match, cell_arg_with_port)) {
+    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
     return true;
   }
-  else if (regex_match(arg, match, bus_arg)) {
+  else if (regex_match(arg, match, cell_arg_function)) {
     c.args.push_back({match[1].str(), ""});
     return true;
   }
   else if (regex_match(arg, match, sig_arg)) {
-    c.args.push_back({match[1].str(), ""});
+    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
+    return true;
+  }
+  else if (regex_match(arg, match, bus_arg)) {
+    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
+    return true;
+  }
+  else if (regex_match(arg, match, pin_arg_with_port)) {
+    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
     return true;
   }
   else if (regex_match(arg, match, pin_arg)) {
@@ -432,6 +492,7 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
   }
   else {
     printf("Could not parse arg \"%s\"\n", arg.c_str());
+    __debugbreak();
     return false;
   }
 }
@@ -563,6 +624,7 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
   static regex member_decl(R"(^(\w+)\s+(\w+)\s*;.*)");
   static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
   static regex local_decl(R"(^wire\s+(\w+)\s*=\s*(.*)$)");
+  static regex auto_decl (R"(^auto\s+(\w+)\s*=\s*(.*)$)");
   static regex func_decl(R"(^(inline\s+)?wire\s+(\w+)\s*.*\{\s*return\s*(.*)\}.*)");
   static regex wire_decl(R"(^wire\s*(\w+);.*$)");
   static regex signal_decl(R"(^Signal\s*(\w+);.*$)");
@@ -573,7 +635,6 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
 
   static regex pin_call(R"(^(.*)\.\s*(pin\w+\(.*$))");
 
-  //rest.erase(remove_if(rest.begin(), rest.end(), ::isspace), rest.end());
   bool result = true;
 
   smatch match;
@@ -585,11 +646,17 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
     result &= parse_cell_name(c, match[1].str());
     result &= parse_cell_def(c, match[2].str());
   }
+  else if (regex_match(rest, match, auto_decl)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
+  }
   else if (regex_match(rest, match, func_decl)) {
     result &= parse_cell_name(c, match[2].str());
     result &= parse_cell_def(c, match[3].str());
   }
   else if (regex_match(rest, match, wire_decl)) {
+    printf("are we using this?");
+    __debugbreak();
     result &= parse_cell_name(c, match[1].str());
   }
   else if (regex_match(rest, match, signal_decl)) {
@@ -685,7 +752,7 @@ bool CellDB::parse_dir(const std::string& path) {
   bool result = true;
 #if 0
   {
-    string line = R"(  /*PIN_58*/ PinIn PIN_58_VCC;)";
+    string line = R"(  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), PIN_32_GND);)";
     Cell c;
     parse_line(c, line);
     c.dump(d);
@@ -702,7 +769,6 @@ bool CellDB::parse_dir(const std::string& path) {
       }
     }
   }
-#endif
 
   //----------------------------------------
   // Postprocess the cells.
@@ -748,7 +814,19 @@ bool CellDB::parse_dir(const std::string& path) {
   //----------------------------------------
   // Check that all cells are sane.
 
-  for (auto& [tag, cell] : tag_to_cell) cell->sanity_check();
+  for (auto& [tag, cell] : tag_to_cell) {
+    cell->sanity_check();
+
+    for (auto arg : cell->args) {
+      auto arg_cell = tag_to_cell[arg.tag];
+      CHECK_P(arg_cell);
+      if (arg_cell->cell_type == CellType::DFF) {
+        CHECK_P(arg.port == "qn" || arg.port == "qp");
+      }
+    }
+  }
+
+
 
   //----------------------------------------
   // Check that all cells are used by some other cell, or are output cells.
@@ -791,6 +869,7 @@ bool CellDB::parse_dir(const std::string& path) {
   //for (auto& [key, value] : sig_map)  value->dump(d);
 
   printf("\n");
+#endif
 
   return result;
 }

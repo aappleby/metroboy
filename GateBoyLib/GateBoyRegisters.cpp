@@ -163,8 +163,8 @@ BGScrollY BGScrollY::add(RegLY& reg_ly, RegSCY& reg_scy) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpritePix SpritePix::flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p) {
-  /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p, TEXY_SFETCHINGp);
+SpritePix SpritePix::flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p) {
+  /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p.qp_old(), TEXY_SFETCHINGp);
   /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D07p.qp_old(), vram_bus.BUS_VRAM_D00p.qp_old());
   /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D06p.qp_old(), vram_bus.BUS_VRAM_D01p.qp_old());
   /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, vram_bus.BUS_VRAM_D05p.qp_old(), vram_bus.BUS_VRAM_D02p.qp_old());
@@ -342,17 +342,17 @@ void RegLY::read(GateBoyCpuBus& cpu_bus)
 void RegLY::tock2(GateBoyResetDebug& rst, RegLX& reg_lx)
 {
   /*#p21.NOKO*/ wire _NOKO_y153p_old = and4(LAFO_LY7p.qp_old(), LOVU_LY4p.qp_old(), LYDO_LY3p.qp_old(), MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-  /*#p21.MYTA*/ MYTA_y153p.dff17(reg_lx.NYPE_x113p_new(), rst.LYFE_VID_RSTn(), _NOKO_y153p_old);
+  /*#p21.MYTA*/ MYTA_y153p.dff17(reg_lx.NYPE_x113p.qp_new(), rst.LYFE_VID_RSTn(), _NOKO_y153p_old);
 
   /*#p21.LAMA*/ wire _LAMA_Y_RSTn = nor2(MYTA_y153p.qp_new(), rst.LYHA_VID_RSTp());
-  /*#p21.MUWY*/ MUWY_LY0p.dff17(reg_lx.RUTU_x113p_new(), _LAMA_Y_RSTn, MUWY_LY0p.qn_old());
-  /*#p21.MYRO*/ MYRO_LY1p.dff17(MUWY_LY0p.qn_new(),      _LAMA_Y_RSTn, MYRO_LY1p.qn_old());
-  /*#p21.LEXA*/ LEXA_LY2p.dff17(MYRO_LY1p.qn_new(),      _LAMA_Y_RSTn, LEXA_LY2p.qn_old());
-  /*#p21.LYDO*/ LYDO_LY3p.dff17(LEXA_LY2p.qn_new(),      _LAMA_Y_RSTn, LYDO_LY3p.qn_old());
-  /*#p21.LOVU*/ LOVU_LY4p.dff17(LYDO_LY3p.qn_new(),      _LAMA_Y_RSTn, LOVU_LY4p.qn_old());
-  /*#p21.LEMA*/ LEMA_LY5p.dff17(LOVU_LY4p.qn_new(),      _LAMA_Y_RSTn, LEMA_LY5p.qn_old());
-  /*#p21.MATO*/ MATO_LY6p.dff17(LEMA_LY5p.qn_new(),      _LAMA_Y_RSTn, MATO_LY6p.qn_old());
-  /*#p21.LAFO*/ LAFO_LY7p.dff17(MATO_LY6p.qn_new(),      _LAMA_Y_RSTn, LAFO_LY7p.qn_old());
+  /*#p21.MUWY*/ MUWY_LY0p.dff17(reg_lx.RUTU_x113p.qp_new(), _LAMA_Y_RSTn, MUWY_LY0p.qn_old());
+  /*#p21.MYRO*/ MYRO_LY1p.dff17(MUWY_LY0p.qn_new(),         _LAMA_Y_RSTn, MYRO_LY1p.qn_old());
+  /*#p21.LEXA*/ LEXA_LY2p.dff17(MYRO_LY1p.qn_new(),         _LAMA_Y_RSTn, LEXA_LY2p.qn_old());
+  /*#p21.LYDO*/ LYDO_LY3p.dff17(LEXA_LY2p.qn_new(),         _LAMA_Y_RSTn, LYDO_LY3p.qn_old());
+  /*#p21.LOVU*/ LOVU_LY4p.dff17(LYDO_LY3p.qn_new(),         _LAMA_Y_RSTn, LOVU_LY4p.qn_old());
+  /*#p21.LEMA*/ LEMA_LY5p.dff17(LOVU_LY4p.qn_new(),         _LAMA_Y_RSTn, LEMA_LY5p.qn_old());
+  /*#p21.MATO*/ MATO_LY6p.dff17(LEMA_LY5p.qn_new(),         _LAMA_Y_RSTn, MATO_LY6p.qn_old());
+  /*#p21.LAFO*/ LAFO_LY7p.dff17(MATO_LY6p.qn_new(),         _LAMA_Y_RSTn, LAFO_LY7p.qn_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

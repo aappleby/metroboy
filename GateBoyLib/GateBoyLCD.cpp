@@ -34,7 +34,7 @@ void GateBoyLCD::tock(
 {
   _XODO_VID_RSTp.set(rst.XODO_VID_RSTp());
 
-  /*#p21.POPU*/ POPU_VBLANKp.dff17(reg_lx.NYPE_x113p_new(), rst.LYFE_VID_RSTn(), XYVO_y144p_old);
+  /*#p21.POPU*/ POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), rst.LYFE_VID_RSTn(), XYVO_y144p_old);
 
   /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old);
   /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
@@ -48,7 +48,7 @@ void GateBoyLCD::tock(
 
 void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk) {
   /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), reg_lx.TEGY_STROBE());
-  /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p_new());
+  /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p.qp_new());
   /*#p21.POGU*/ wire _POGU = not1(_RYNO);
   /*PIN_52*/ PIN_52_LCD_CNTRL.pin_out_dp(_POGU);
 }
@@ -56,17 +56,17 @@ void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk) {
 //------------------------------------------------------------------------------------------------------------------------
 // if LCDC_ENn, PIN_56_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
-void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, wire TULU_DIV07p, wire XONA_LCDC_LCDENp) {
+void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn) {
   /*#p24.LUCA*/ LUCA_LINE_EVENp .dff17(reg_lx.LOFU_x113n_new(), rst.LYFE_VID_RSTn(), LUCA_LINE_EVENp.qn_old());
   /*#p21.NAPO*/ NAPO_FRAME_EVENp.dff17(POPU_VBLANKp.qp_new(),   rst.LYFE_VID_RSTn(), NAPO_FRAME_EVENp.qn_old());
 
   /*#p24.MAGU*/ wire _MAGU = xor2(NAPO_FRAME_EVENp.qp_new(), LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire _MECO = not1(_MAGU);
   /*#p24.KEBO*/ wire _KEBO = not1(_MECO);
-  /* p01.UREK*/ wire _UREK_DIV07n = not1(TULU_DIV07p);
+  /* p01.UREK*/ wire _UREK_DIV07n = not1(TULU_DIV07p.qp_new());
   /*#p24.USEC*/ wire _USEC_DIV07p = not1(_UREK_DIV07n);
-  /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(XONA_LCDC_LCDENp);
-  /*#p24.KUPA*/ wire _KUPA = amux2(XONA_LCDC_LCDENp, _KEBO, _KEDY_LCDC_ENn, _USEC_DIV07p);
+  /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(XONA_LCDC_LCDENn.qn_new());
+  /*#p24.KUPA*/ wire _KUPA = amux2(XONA_LCDC_LCDENn.qn_new(), _KEBO, _KEDY_LCDC_ENn, _USEC_DIV07p);
   /*#p24.KOFO*/ wire _KOFO = not1(_KUPA);
   /*PIN_56*/ PIN_56_LCD_FLIPS.pin_out_dp(_KOFO);
 }
@@ -74,7 +74,7 @@ void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, wire TULU_DIV07p, wire XON
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyLCD::set_pin_vsync(GateBoyResetDebug& rst) {
-  /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113n_new(), rst.LYFE_VID_RSTn(), reg_ly.NERU_y000p());
+  /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113p.qn_new(), rst.LYFE_VID_RSTn(), reg_ly.NERU_y000p());
   /*#p24.MURE*/ wire _MURE_VSYNC = not1(MEDA_VSYNC_OUTn.qp_new());
   /*PIN_57*/ PIN_57_LCD_VSYNC.pin_out_dp(_MURE_VSYNC);
 }
@@ -87,12 +87,11 @@ void GateBoyLCD::set_pin_vsync(GateBoyResetDebug& rst) {
 // That would be a loooot of gate delay.
 // Could we possibly be incrementing X3p one phase early?
 
-void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wire XYMU_RENDERINGp, wire XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp) {
+void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, NorLatch XYMU_RENDERINGn, DFF17 XYDO_PX3p_old, wire AVAP_SCAN_DONE_TRIGp) {
   /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
 
-  ///* p24.PAHO*/ PAHO_X_8_SYNC.dff17(bit(~_ROXO_CLKPIPE_odd), XYMU_RENDERINGp, XYDO_PX3p);
-  /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPE_odd, XYMU_RENDERINGp, XYDO_PX3p);
+  /* p24.PAHO*/ PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
 
   // LCD horizontal sync pin latch
   /*#p24.POME*/ POME = nor2(AVAP_SCAN_DONE_TRIGp, POFY.qp_old());
@@ -108,9 +107,9 @@ void GateBoyLCD::set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, wi
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyLCD::set_pin_data(wire REMY_LD0n, wire RAVO_LD1n) {
-  /*PIN_51*/ PIN_51_LCD_DATA0.pin_out_dp(REMY_LD0n);
-  /*PIN_50*/ PIN_50_LCD_DATA1.pin_out_dp(RAVO_LD1n);
+void GateBoyLCD::set_pin_data(Signal REMY_LD0n, Signal RAVO_LD1n) {
+  /*PIN_51*/ PIN_51_LCD_DATA0.pin_out_dp(REMY_LD0n.qp_new());
+  /*PIN_50*/ PIN_50_LCD_DATA1.pin_out_dp(RAVO_LD1n.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

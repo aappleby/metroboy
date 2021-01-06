@@ -22,8 +22,8 @@ struct GateBoyClock {
   //----------------------------------------
   // Root clocks
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLKGOOD.int_qp_new()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLKGOOD.int_qp_new()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLKGOOD.qp_int_new()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLKGOOD.qp_int_new()); }
   /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.qp_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 

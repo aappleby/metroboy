@@ -138,8 +138,6 @@ struct PPURegisters {
     VOGA_HBLANKp.reset(0, 1);
   }
 
-  wire XYMU_RENDERINGp() const { return XYMU_RENDERINGn.qn_new(); }
-
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
 };

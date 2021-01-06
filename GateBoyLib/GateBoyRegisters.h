@@ -92,7 +92,7 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  static SpritePix flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, wire BAXO_OAM_DB5p);
+  static SpritePix flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p);
 
   wire PUTE_FLIP0p;
   wire PELO_FLIP1p;
@@ -262,17 +262,17 @@ struct RegLX {
 
   wire TEGY_STROBE() const;
 
-  wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
-  wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
+  //wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
+  //wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
+  //
+  //wire RUTU_x113p_old() const { return RUTU_x113p.qp_old(); }
+  //wire RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
+  //
+  //wire RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
+  //wire RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
 
-  wire RUTU_x113p_old() const { return RUTU_x113p.qp_old(); }
-  wire RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
-
-  wire RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
-  wire RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
-
-  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(RUTU_x113p_old()); }
-  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(RUTU_x113p_new()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(RUTU_x113p.qp_old()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(RUTU_x113p.qp_new()); }
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk);
 

@@ -549,8 +549,8 @@ struct Bus : public BitBase {
 struct PinIO : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire int_qp_new() const { return qp_new(); }
-  wire ext_qp_new() const { return qn_new(); }
+  wire qp_int_new() const { return qp_new(); }
+  wire qp_ext_new() const { return qn_new(); }
 
   void reset_for_pass() {
     CHECK_N(state & BIT_NEW);
@@ -651,7 +651,7 @@ struct PinIO : public BitBase {
 struct PinIn : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire int_qp_new() const { return qp_new(); }
+  wire qp_int_new() const { return qp_new(); }
   wire int_qn_new() const { return qn_new(); }
 
   void reset_for_pass() {
@@ -679,7 +679,7 @@ struct PinOut : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   wire ext_qp_old() const { return qn_old(); }
-  wire ext_qp_new() const { return qn_new(); }
+  wire qp_ext_new() const { return qn_new(); }
 
   void reset_for_pass() {
     CHECK_N(state & BIT_NEW);

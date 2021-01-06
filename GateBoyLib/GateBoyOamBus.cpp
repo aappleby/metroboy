@@ -133,14 +133,14 @@ void GateBoyOamBus::latch_to_temp_b(
 void GateBoyOamBus::ext_to_data_bus(const GateBoyDMA& dma, const GateBoyExtBus& ext_bus)
 {
   // DMA write OAM from ram/cart
-  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(ext_bus.PIN_17_D00.int_qp_new());
-  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(ext_bus.PIN_18_D01.int_qp_new());
-  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(ext_bus.PIN_19_D02.int_qp_new());
-  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(ext_bus.PIN_20_D03.int_qp_new());
-  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(ext_bus.PIN_21_D04.int_qp_new());
-  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(ext_bus.PIN_22_D05.int_qp_new());
-  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(ext_bus.PIN_23_D06.int_qp_new());
-  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(ext_bus.PIN_24_D07.int_qp_new());
+  /* p25.RALO*/ wire _RALO_EXT_D0p = not1(ext_bus.PIN_17_D00.qp_int_new());
+  /* p25.TUNE*/ wire _TUNE_EXT_D1p = not1(ext_bus.PIN_18_D01.qp_int_new());
+  /* p25.SERA*/ wire _SERA_EXT_D2p = not1(ext_bus.PIN_19_D02.qp_int_new());
+  /* p25.TENU*/ wire _TENU_EXT_D3p = not1(ext_bus.PIN_20_D03.qp_int_new());
+  /* p25.SYSA*/ wire _SYSA_EXT_D4p = not1(ext_bus.PIN_21_D04.qp_int_new());
+  /* p25.SUGY*/ wire _SUGY_EXT_D5p = not1(ext_bus.PIN_22_D05.qp_int_new());
+  /* p25.TUBE*/ wire _TUBE_EXT_D6p = not1(ext_bus.PIN_23_D06.qp_int_new());
+  /* p25.SYZO*/ wire _SYZO_EXT_D7p = not1(ext_bus.PIN_24_D07.qp_int_new());
 
   /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(dma.LUMA_DMA_CARTp());
 

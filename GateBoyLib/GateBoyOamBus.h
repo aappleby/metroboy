@@ -23,18 +23,18 @@ struct GateBoyOamBus {
   }
 
   void latch_bus(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XOCE_xBCxxFGx, wire XUJA_SPR_OAM_LATCHn);
-  void latch_to_cpu(GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XYMU_RENDERINGp);
+  void latch_to_cpu(GateBoyCpuBus& cpu_bus, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, NorLatch XYMU_RENDERINGn);
   void latch_to_temp_a(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, DFF17 MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void latch_to_temp_b(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, DFF17 MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
   void ext_to_data_bus (const GateBoyDMA& dma, const GateBoyExtBus& ext_bus);
   void vram_to_data_bus(const GateBoyDMA& dma, const GateBoyVramBus& vram_bus);
   void dma_to_addr_bus(GateBoyDMA& dma);
-  void sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, wire XYMU_RENDERINGp);
+  void sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, NorLatch XYMU_RENDERINGn);
   void scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp);
-  void cpu_to_addr_bus(GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
-  void cpu_to_data_bus(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
-  void set_pin_clk(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XUJY_OAM_CLKENp);
-  void set_pin_wr (GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire XYMU_RENDERINGp, wire MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
+  void cpu_to_addr_bus(GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
+  void cpu_to_data_bus(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGp, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
+  void set_pin_clk(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XUJY_OAM_CLKENp);
+  void set_pin_wr (GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
   void set_pin_oe (GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn);
 
   void tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn, uint8_t* oam_ram);

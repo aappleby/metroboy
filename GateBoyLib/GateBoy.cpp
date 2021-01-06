@@ -878,8 +878,10 @@ void GateBoy::tock_slow(int pass_index) {
     //vram_bus.win_to_addr(win_map_x, win_line_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
     vram_bus.win_to_addr(win_map_x, win_line_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
 
-    vram_bus.tile_to_addr(scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new(), win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
-    vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGn.qn_new(), reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
+    //vram_bus.tile_to_addr(scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new(), win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
+    vram_bus.tile_to_addr(scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
+    //vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGn.qn_new(), reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
+    vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGn, reg_lcdc.XYMO_LCDC_SPSIZEn);
     vram_bus.addr_to_pins();
 
     vram_bus.cpu_data_to_bus_data(cpu_bus, _SERE_CPU_VRAM_RDp, cpu_bus.SALE_CPU_VRAM_WRn());
@@ -887,7 +889,8 @@ void GateBoy::tock_slow(int pass_index) {
 
     vram_bus.set_pin_cs(rst.TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, dma.LUFA_DMA_VRAMp(), tile_fetcher.LENA_BFETCHINGp(), sprite_fetcher.TEXY_SFETCHINGp());
     vram_bus.set_pin_wr(rst.TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, cpu_bus.TUJA_CPU_VRAM_WRp());
-    vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), ppu_reg.XYMU_RENDERINGn.qn_new(), tile_fetcher.LONY_FETCHINGp.qp_new(), sprite_fetcher.SOHO_SPR_VRAM_RDp());
+    //vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), ppu_reg.XYMU_RENDERINGn.qn_new(), tile_fetcher.LONY_FETCHINGp.qp_new(), sprite_fetcher.SOHO_SPR_VRAM_RDp());
+    vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), ppu_reg.XYMU_RENDERINGn, tile_fetcher.LONY_FETCHINGp, sprite_fetcher.SOHO_SPR_VRAM_RDp());
 
     vram_bus.read_vram(vid_ram);
     vram_bus.write_vram(vid_ram);
@@ -928,18 +931,24 @@ void GateBoy::tock_slow(int pass_index) {
     oam_bus.BUS_OAM_DB07n.reset_for_pass();
 
     oam_bus.dma_to_addr_bus(dma);
-    oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGn.qn_new());
+    //oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGn.qn_new());
+    oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGn);
     oam_bus.scan_index_to_addr_bus(sprite_scanner, ACYL_SCANNINGp);
-    oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    //oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
     oam_bus.ext_to_data_bus(dma, ext_bus);
     oam_bus.vram_to_data_bus(dma, vram_bus);
-    oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
-    oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
-    oam_bus.set_pin_wr (rst, clk, cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    //oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
+    //oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
+    oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
+    //oam_bus.set_pin_wr (rst, clk, cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    oam_bus.set_pin_wr (rst, clk, cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
     oam_bus.set_pin_oe (clk, cpu_bus, ACYL_SCANNINGp, sprite_fetcher.XUJA_SPR_OAM_LATCHn());
     oam_bus.tock(cpu_bus, clk.XOCE_xBCxxFGx(), ACYL_SCANNINGp, sprite_fetcher.XUJA_SPR_OAM_LATCHn(), oam_ram);
     oam_bus.latch_bus(cpu_bus, ACYL_SCANNINGp, clk.XOCE_xBCxxFGx(), sprite_fetcher.XUJA_SPR_OAM_LATCHn());
-    oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn.qn_new());
+    //oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn.qn_new());
+    oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn);
   }
 
   //----------------------------------------

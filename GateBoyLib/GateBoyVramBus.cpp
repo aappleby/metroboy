@@ -10,21 +10,21 @@
 
 void GateBoyVramBus::cpu_addr_to_vram_addr(const GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, wire LUFA_DMA_VRAMp) {
   // CPU to VRAM address driver
-  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn_new_evn = nor2(LUFA_DMA_VRAMp, XYMU_RENDERINGn.qn_new());
-  /* p25.XEDU*/ wire _XEDU_VRAM_LOCKp_new_evn = not1(_XANE_VRAM_LOCKn_new_evn);
-  /* p25.XAKY*/ BUS_VRAM_A00n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A00p.qp_new());
-  /* p25.XUXU*/ BUS_VRAM_A01n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A01p.qp_new());
-  /* p25.XYNE*/ BUS_VRAM_A02n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A02p.qp_new());
-  /* p25.XODY*/ BUS_VRAM_A03n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A03p.qp_new());
-  /* p25.XECA*/ BUS_VRAM_A04n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A04p.qp_new());
-  /* p25.XOBA*/ BUS_VRAM_A05n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A05p.qp_new());
-  /* p25.XOPO*/ BUS_VRAM_A06n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A06p.qp_new());
-  /* p25.XYBO*/ BUS_VRAM_A07n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A07p.qp_new());
-  /* p25.RYSU*/ BUS_VRAM_A08n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A08p.qp_new());
-  /* p25.RESE*/ BUS_VRAM_A09n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A09p.qp_new());
-  /* p25.RUSE*/ BUS_VRAM_A10n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A10p.qp_new());
-  /* p25.RYNA*/ BUS_VRAM_A11n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A11p.qp_new());
-  /* p25.RUMO*/ BUS_VRAM_A12n.tri6_nn(_XEDU_VRAM_LOCKp_new_evn, cpu_bus.BUS_CPU_A12p.qp_new());
+  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(LUFA_DMA_VRAMp, XYMU_RENDERINGn.qn_new());
+  /* p25.XEDU*/ wire _XEDU_VRAM_LOCKp = not1(_XANE_VRAM_LOCKn);
+  /* p25.XAKY*/ BUS_VRAM_A00n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A00p.qp_new());
+  /* p25.XUXU*/ BUS_VRAM_A01n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A01p.qp_new());
+  /* p25.XYNE*/ BUS_VRAM_A02n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A02p.qp_new());
+  /* p25.XODY*/ BUS_VRAM_A03n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A03p.qp_new());
+  /* p25.XECA*/ BUS_VRAM_A04n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A04p.qp_new());
+  /* p25.XOBA*/ BUS_VRAM_A05n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A05p.qp_new());
+  /* p25.XOPO*/ BUS_VRAM_A06n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A06p.qp_new());
+  /* p25.XYBO*/ BUS_VRAM_A07n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A07p.qp_new());
+  /* p25.RYSU*/ BUS_VRAM_A08n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A08p.qp_new());
+  /* p25.RESE*/ BUS_VRAM_A09n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A09p.qp_new());
+  /* p25.RUSE*/ BUS_VRAM_A10n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A10p.qp_new());
+  /* p25.RYNA*/ BUS_VRAM_A11n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A11p.qp_new());
+  /* p25.RUMO*/ BUS_VRAM_A12n.tri6_nn(_XEDU_VRAM_LOCKp, cpu_bus.BUS_CPU_A12p.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

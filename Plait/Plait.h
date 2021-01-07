@@ -9,19 +9,20 @@ using namespace glm;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct Node {
-  Node(const Cell* _cell) : cell(_cell) {}
+struct NodeInstance {
 
-  const Cell* get_cell()            { return cell; }
-
-  const char* tag() const;
-  const char* name() const;
-  const char* gate() const;
+  bool locked = 0;
+  dvec2 pos_abs = {0,0};
+  dvec2 pos_rel = {0,0};
+  NodeInstance* anchor = nullptr;
+  bool pinned = 1;
+  const Cell* cell = nullptr;
+  int  mark = 0;
 
   bool  anchored() { return anchor != nullptr; }
-  bool  anchored_to(Node* target);
-  const Node* get_anchor() { return anchor; }
-  void  set_anchor(Node* new_anchor);
+  bool  anchored_to(NodeInstance* target);
+  const NodeInstance* get_anchor() { return anchor; }
+  void  set_anchor(NodeInstance* new_anchor);
 
   dvec2 get_pos_abs_new() const {
     if (!pinned) {
@@ -58,67 +59,76 @@ struct Node {
     return anchor ? anchor->get_pos_abs_old() : dvec2(0,0);
   }
 
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct Node {
+  Node(const Cell* _cell) {
+    inst.cell = _cell;
+  }
+
+  const Cell* get_cell() {
+    return inst.cell;
+  }
+
+  const char* tag() const;
+  const char* name() const;
+  const char* gate() const;
+
   void move(dvec2 delta) {
     unpin();
-    pos_abs += delta;
+    inst.pos_abs += delta;
   }
 
   void set_pos_abs_new(dvec2 p) {
-    pos_abs = p;
-    pinned = false;
+    inst.pos_abs = p;
+    inst.pinned = false;
   }
 
   void commit_pos() {
-    if (!pinned) {
+    if (!inst.pinned) {
       printf("commit_pos\n");
-      pos_rel = pos_abs - get_pos_anchor_abs_new();
-      pinned = true;
+      inst.pos_rel = inst.pos_abs - inst.get_pos_anchor_abs_new();
+      inst.pinned = true;
     }
   }
 
   void revert_pos() {
-    if (!pinned) {
+    if (!inst.pinned) {
       printf("revert_pos\n");
-      pos_abs = pos_rel + get_pos_anchor_abs_new();
-      pinned = true;
+      inst.pos_abs = inst.pos_rel + inst.get_pos_anchor_abs_new();
+      inst.pinned = true;
     }
   }
 
   void unpin() {
-    if (pinned) {
-      pos_abs = pos_rel + get_pos_anchor_abs_new();
-      pinned = false;
+    if (inst.pinned) {
+      inst.pos_abs = inst.pos_rel + inst.get_pos_anchor_abs_new();
+      inst.pinned = false;
     }
   }
 
-  dvec2 pos_abs = {0,0};
-  dvec2 pos_rel = {0,0};
-  bool pinned = 1;
-
-
-  void toggle_locked() { locked = !locked; }
+  void toggle_locked() { inst.locked = !inst.locked; }
   void toggle_ghost()  { ghost = !ghost; }
 
   //----------------------------------------
   // Serialized state
 
-  bool ghost = 0;
-  bool locked = 0;
-
-  Node* anchor = nullptr;
+  NodeInstance inst;
 
   //----------------------------------------
   // State from cell db
 
-  const Cell* cell = nullptr;
-  std::vector<Node*> prev;
+  std::vector<Node*>       prev_node;
+  std::vector<std::string> prev_port;
   std::vector<Node*> next;
 
   //----------------------------------------
   // Sim/UI state
 
+  bool ghost = 0;
   int  rank = 0;
-  int  mark = 0;
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   uint32_t color = 0xFFFF00FF;
   dvec2 spring_force = {0,0};

@@ -122,8 +122,6 @@ struct GateBoyCpuBus {
   /* p06.SARE*/ wire SARE_XX00_XX07p   () const { return nor5(BUS_CPU_A07p.qp_new(), BUS_CPU_A06p.qp_new(), BUS_CPU_A05p.qp_new(), BUS_CPU_A04p.qp_new(), BUS_CPU_A03p.qp_new()); }
   /* p03.RYFO*/ wire RYFO_FF04_FF07p   () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A02p.qp_new(), SARE_XX00_XX07p()); }
 
-  /* p03.RYFO*/ wire RYFO_FF04_FF07p_b () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A02p.qp_new(), SARE_XX00_XX07p()); }
-
   /* p10.AMUS*/ wire AMUS_XX_0xx00000p () const { return nor6(BUS_CPU_A00p.qp_new(), BUS_CPU_A01p.qp_new(), BUS_CPU_A02p.qp_new(), BUS_CPU_A03p.qp_new(), BUS_CPU_A04p.qp_new(), BUS_CPU_A07p.qp_new()); }
   /* p07.SAPA*/ wire SAPA_XX_xxxx1111p () const { return and4(BUS_CPU_A00p.qp_new(), BUS_CPU_A01p.qp_new(), BUS_CPU_A02p.qp_new(), BUS_CPU_A03p.qp_new()); }
   /* p07.SEMY*/ wire SEMY_XX_0000xxxxp () const { return nor4(BUS_CPU_A07p.qp_new(), BUS_CPU_A06p.qp_new(), BUS_CPU_A05p.qp_new(), BUS_CPU_A04p.qp_new()); }

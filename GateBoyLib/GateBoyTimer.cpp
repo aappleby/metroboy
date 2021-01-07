@@ -36,24 +36,24 @@ void GateBoyDiv::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
 
 void GateBoyDiv::read(GateBoyCpuBus& cpu_bus)
 {
-  /* p01.UMEK*/ wire _UMEK_DIV06n_evn = not1(UGOT_DIV06p.qp_new());
-  /* p01.UREK*/ wire _UREK_DIV07n_evn = not1(TULU_DIV07p.qp_new());
-  /* p01.UTOK*/ wire _UTOK_DIV08n_evn = not1(TUGO_DIV08p.qp_new());
-  /* p01.SAPY*/ wire _SAPY_DIV09n_evn = not1(TOFE_DIV09p.qp_new());
-  /* p01.UMER*/ wire _UMER_DIV10n_evn = not1(TERU_DIV10p.qp_new());
-  /* p01.RAVE*/ wire _RAVE_DIV11n_evn = not1(SOLA_DIV11p.qp_new());
-  /* p01.RYSO*/ wire _RYSO_DIV12n_evn = not1(SUBU_DIV12p.qp_new());
-  /* p01.UDOR*/ wire _UDOR_DIV13n_evn = not1(TEKA_DIV13p.qp_new());
+  /* p01.UMEK*/ wire _UMEK_DIV06n = not1(UGOT_DIV06p.qp_new());
+  /* p01.UREK*/ wire _UREK_DIV07n = not1(TULU_DIV07p.qp_new());
+  /* p01.UTOK*/ wire _UTOK_DIV08n = not1(TUGO_DIV08p.qp_new());
+  /* p01.SAPY*/ wire _SAPY_DIV09n = not1(TOFE_DIV09p.qp_new());
+  /* p01.UMER*/ wire _UMER_DIV10n = not1(TERU_DIV10p.qp_new());
+  /* p01.RAVE*/ wire _RAVE_DIV11n = not1(SOLA_DIV11p.qp_new());
+  /* p01.RYSO*/ wire _RYSO_DIV12n = not1(SUBU_DIV12p.qp_new());
+  /* p01.UDOR*/ wire _UDOR_DIV13n = not1(TEKA_DIV13p.qp_new());
 
   /* p01.TAGY*/ wire _TAGY_FF04_RDp_ext    = and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.RYFO_FF04_FF07p(), cpu_bus.TOLA_A01n(), cpu_bus.TOVY_A00n());
-  /* p01.TAWU*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_TAGY_FF04_RDp_ext, _UMEK_DIV06n_evn);
-  /* p01.TAKU*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_TAGY_FF04_RDp_ext, _UREK_DIV07n_evn);
-  /* p01.TEMU*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_TAGY_FF04_RDp_ext, _UTOK_DIV08n_evn);
-  /* p01.TUSE*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_TAGY_FF04_RDp_ext, _SAPY_DIV09n_evn);
-  /* p01.UPUG*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_TAGY_FF04_RDp_ext, _UMER_DIV10n_evn); // Schematic wrong, UPUG/SEPU driving D5/D4
-  /* p01.SEPU*/ cpu_bus.BUS_CPU_D05p.tri6_pn(_TAGY_FF04_RDp_ext, _RAVE_DIV11n_evn);
-  /* p01.SAWA*/ cpu_bus.BUS_CPU_D06p.tri6_pn(_TAGY_FF04_RDp_ext, _RYSO_DIV12n_evn);
-  /* p01.TATU*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_TAGY_FF04_RDp_ext, _UDOR_DIV13n_evn);
+  /* p01.TAWU*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_TAGY_FF04_RDp_ext, _UMEK_DIV06n);
+  /* p01.TAKU*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_TAGY_FF04_RDp_ext, _UREK_DIV07n);
+  /* p01.TEMU*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_TAGY_FF04_RDp_ext, _UTOK_DIV08n);
+  /* p01.TUSE*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_TAGY_FF04_RDp_ext, _SAPY_DIV09n);
+  /* p01.UPUG*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_TAGY_FF04_RDp_ext, _UMER_DIV10n); // Schematic wrong, UPUG/SEPU driving D5/D4
+  /* p01.SEPU*/ cpu_bus.BUS_CPU_D05p.tri6_pn(_TAGY_FF04_RDp_ext, _RAVE_DIV11n);
+  /* p01.SAWA*/ cpu_bus.BUS_CPU_D06p.tri6_pn(_TAGY_FF04_RDp_ext, _RYSO_DIV12n);
+  /* p01.TATU*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_TAGY_FF04_RDp_ext, _UDOR_DIV13n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

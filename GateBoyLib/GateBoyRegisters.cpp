@@ -11,23 +11,23 @@
 SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) {
   SigIn SIG_GND = 0;
 
-  /*#p29.EBOS*/ wire EBOS_LY0n_new_evn = not1(reg_ly.MUWY_LY0p.qp_new());
-  /* p29.DASA*/ wire DASA_LY1n_new_evn = not1(reg_ly.MYRO_LY1p.qp_new());
-  /* p29.FUKY*/ wire FUKY_LY2n_new_evn = not1(reg_ly.LEXA_LY2p.qp_new());
-  /* p29.FUVE*/ wire FUVE_LY3n_new_evn = not1(reg_ly.LYDO_LY3p.qp_new());
-  /* p29.FEPU*/ wire FEPU_LY4n_new_evn = not1(reg_ly.LOVU_LY4p.qp_new());
-  /* p29.FOFA*/ wire FOFA_LY5n_new_evn = not1(reg_ly.LEMA_LY5p.qp_new());
-  /* p29.FEMO*/ wire FEMO_LY6n_new_evn = not1(reg_ly.MATO_LY6p.qp_new());
-  /* p29.GUSU*/ wire GUSU_LY7n_new_evn = not1(reg_ly.LAFO_LY7p.qp_new());
+  /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
+  /* p29.DASA*/ wire DASA_LY1n = not1(reg_ly.MYRO_LY1p.qp_new());
+  /* p29.FUKY*/ wire FUKY_LY2n = not1(reg_ly.LEXA_LY2p.qp_new());
+  /* p29.FUVE*/ wire FUVE_LY3n = not1(reg_ly.LYDO_LY3p.qp_new());
+  /* p29.FEPU*/ wire FEPU_LY4n = not1(reg_ly.LOVU_LY4p.qp_new());
+  /* p29.FOFA*/ wire FOFA_LY5n = not1(reg_ly.LEMA_LY5p.qp_new());
+  /* p29.FEMO*/ wire FEMO_LY6n = not1(reg_ly.MATO_LY6p.qp_new());
+  /* p29.GUSU*/ wire GUSU_LY7n = not1(reg_ly.LAFO_LY7p.qp_new());
 
-  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);
-  /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.carry);
-  /* p29.FECO*/ auto _FECO_YDIFF2 = add3(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p.qp_new(), _ENEF_YDIFF1.carry);
-  /* p29.GYKY*/ auto _GYKY_YDIFF3 = add3(FUVE_LY3n_new_evn, oam_temp_a.XYJU_OAM_DA3p.qp_new(), _FECO_YDIFF2.carry);
-  /* p29.GOPU*/ auto _GOPU_YDIFF4 = add3(FEPU_LY4n_new_evn, oam_temp_a.YBOG_OAM_DA4p.qp_new(), _GYKY_YDIFF3.carry);
-  /* p29.FUWA*/ auto _FUWA_YDIFF5 = add3(FOFA_LY5n_new_evn, oam_temp_a.WYSO_OAM_DA5p.qp_new(), _GOPU_YDIFF4.carry);
-  /* p29.GOJU*/ auto _GOJU_YDIFF6 = add3(FEMO_LY6n_new_evn, oam_temp_a.XOTE_OAM_DA6p.qp_new(), _FUWA_YDIFF5.carry);
-  /* p29.WUHU*/ auto _WUHU_YDIFF7 = add3(GUSU_LY7n_new_evn, oam_temp_a.YZAB_OAM_DA7p.qp_new(), _GOJU_YDIFF6.carry);
+  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);
+  /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n, oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.carry);
+  /* p29.FECO*/ auto _FECO_YDIFF2 = add3(FUKY_LY2n, oam_temp_a.YJEX_OAM_DA2p.qp_new(), _ENEF_YDIFF1.carry);
+  /* p29.GYKY*/ auto _GYKY_YDIFF3 = add3(FUVE_LY3n, oam_temp_a.XYJU_OAM_DA3p.qp_new(), _FECO_YDIFF2.carry);
+  /* p29.GOPU*/ auto _GOPU_YDIFF4 = add3(FEPU_LY4n, oam_temp_a.YBOG_OAM_DA4p.qp_new(), _GYKY_YDIFF3.carry);
+  /* p29.FUWA*/ auto _FUWA_YDIFF5 = add3(FOFA_LY5n, oam_temp_a.WYSO_OAM_DA5p.qp_new(), _GOPU_YDIFF4.carry);
+  /* p29.GOJU*/ auto _GOJU_YDIFF6 = add3(FEMO_LY6n, oam_temp_a.XOTE_OAM_DA6p.qp_new(), _FUWA_YDIFF5.carry);
+  /* p29.WUHU*/ auto _WUHU_YDIFF7 = add3(GUSU_LY7n, oam_temp_a.YZAB_OAM_DA7p.qp_new(), _GOJU_YDIFF6.carry);
 
   /* p29.DEGE*/ wire _DEGE_SPRITE_DELTA0_new = not1(_ERUC_YDIFF0.sum);
   /* p29.DABY*/ wire _DABY_SPRITE_DELTA1_new = not1(_ENEF_YDIFF1.sum);

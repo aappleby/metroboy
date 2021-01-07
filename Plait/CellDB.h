@@ -6,15 +6,6 @@
 #include <set>
 #include <map>
 
-//------------------------------------------------------------------------------------------------------------------------
-
-struct Arg {
-  std::string tag;
-  std::string port;
-};
-
-//------------------------------------------------------------------------------------------------------------------------
-
 enum class CellType {
   UNKNOWN = 0,
   PIN_IN,
@@ -31,6 +22,23 @@ enum class CellType {
   LOGIC,
 };
 
+//------------------------------------------------------------------------------------------------------------------------
+
+struct CellMeta {
+  CellType cell_type;
+  std::vector<std::string> input_ports;
+  std::vector<std::string> output_ports;
+};
+
+//------------------------------------------------------------------------------------------------------------------------
+
+struct Arg {
+  std::string tag;
+  std::string port;
+};
+
+//------------------------------------------------------------------------------------------------------------------------
+
 struct Cell {
   void sanity_check() const;
   void merge(const Cell& c);
@@ -43,7 +51,7 @@ struct Cell {
   std::string              gate;
   std::vector<Arg>         args;
   std::vector<std::string> ports; // FIXME not populated yet
-  std::set<std::string>    names;
+  std::string              name;
   std::string              doc;
 
   int mark = 0;

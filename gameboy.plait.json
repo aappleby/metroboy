@@ -6534,7 +6534,7 @@
     "pos_rel_y": -14704.0
   },
   "KERY": {
-    "anchor_tag": "PIN64",
+    "anchor_tag": "PIN_64",
     "locked": true,
     "pos_abs_x": -26240.0,
     "pos_abs_y": -14368.0,
@@ -6648,7 +6648,7 @@
     "pos_rel_y": -14016.0
   },
   "LACA": {
-    "anchor_tag": "PIN36",
+    "anchor_tag": "PIN_36",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -9184.0,
@@ -6724,7 +6724,7 @@
     "pos_rel_y": -14480.0
   },
   "LALO": {
-    "anchor_tag": "PIN39",
+    "anchor_tag": "PIN_39",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8992.0,
@@ -6885,7 +6885,7 @@
     "pos_rel_y": 64.0
   },
   "LEFA": {
-    "anchor_tag": "PIN40",
+    "anchor_tag": "PIN_40",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8928.0,
@@ -7070,7 +7070,7 @@
     "pos_rel_y": 64.0
   },
   "LEXE": {
-    "anchor_tag": "PIN34",
+    "anchor_tag": "PIN_34",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -9312.0,
@@ -7166,7 +7166,7 @@
     "pos_rel_y": -13440.0
   },
   "LOLY": {
-    "anchor_tag": "PIN38",
+    "anchor_tag": "PIN_38",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -9056.0,
@@ -7340,7 +7340,7 @@
     "pos_rel_y": -14352.0
   },
   "LOZU": {
-    "anchor_tag": "PIN35",
+    "anchor_tag": "PIN_35",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -9248.0,
@@ -7356,7 +7356,7 @@
     "pos_rel_y": 64.0
   },
   "LUBY": {
-    "anchor_tag": "PIN41",
+    "anchor_tag": "PIN_41",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8864.0,
@@ -7541,7 +7541,7 @@
     "pos_rel_y": -14016.0
   },
   "LUVO": {
-    "anchor_tag": "PIN37",
+    "anchor_tag": "PIN_37",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -9120.0,
@@ -9149,7 +9149,7 @@
     "pos_rel_y": -18928.0
   },
   "NUVA": {
-    "anchor_tag": "PIN44",
+    "anchor_tag": "PIN_44",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8672.0,
@@ -9596,7 +9596,7 @@
     "pos_rel_y": 64.0
   },
   "PEDU": {
-    "anchor_tag": "PIN46",
+    "anchor_tag": "PIN_46",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8608.0,
@@ -9686,7 +9686,7 @@
     "pos_rel_x": -10928.0,
     "pos_rel_y": -13248.0
   },
-  "PIN01": {
+  "PIN_01": {
     "anchor_tag": "KUPO",
     "locked": true,
     "pos_abs_x": -22240.0,
@@ -9694,555 +9694,541 @@
     "pos_rel_x": 128.0,
     "pos_rel_y": 0.0
   },
-  "PIN02": {
-    "anchor_tag": "PIN01",
+  "PIN_02": {
+    "anchor_tag": "PIN_01",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -9248.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN03": {
-    "anchor_tag": "PIN02",
+  "PIN_03": {
+    "anchor_tag": "PIN_02",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -9184.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN04": {
-    "anchor_tag": "PIN03",
+  "PIN_04": {
+    "anchor_tag": "PIN_03",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -9120.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN05": {
-    "anchor_tag": "PIN04",
+  "PIN_05": {
+    "anchor_tag": "PIN_04",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -9056.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN06": {
-    "anchor_tag": "PIN05",
+  "PIN_06": {
+    "anchor_tag": "PIN_05",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8992.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN07": {
-    "anchor_tag": "PIN06",
+  "PIN_07": {
+    "anchor_tag": "PIN_06",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8928.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN08": {
-    "anchor_tag": "PIN07",
+  "PIN_08": {
+    "anchor_tag": "PIN_07",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8864.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN09": {
-    "anchor_tag": "PIN08",
+  "PIN_09": {
+    "anchor_tag": "PIN_08",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8800.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN10": {
-    "anchor_tag": "PIN09",
+  "PIN_10": {
+    "anchor_tag": "PIN_09",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8736.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN11": {
-    "anchor_tag": "PIN10",
+  "PIN_11": {
+    "anchor_tag": "PIN_10",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8672.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN12": {
-    "anchor_tag": "PIN11",
+  "PIN_12": {
+    "anchor_tag": "PIN_11",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8608.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN13": {
-    "anchor_tag": "PIN12",
+  "PIN_13": {
+    "anchor_tag": "PIN_12",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8544.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN14": {
-    "anchor_tag": "PIN13",
+  "PIN_14": {
+    "anchor_tag": "PIN_13",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8480.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN15": {
-    "anchor_tag": "PIN14",
+  "PIN_15": {
+    "anchor_tag": "PIN_14",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8416.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN16": {
-    "anchor_tag": "PIN15",
+  "PIN_16": {
+    "anchor_tag": "PIN_15",
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -8352.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN17": {
+  "PIN_17": {
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6576.0,
     "pos_rel_x": 11040.0,
     "pos_rel_y": -6576.0
   },
-  "PIN18": {
-    "anchor_tag": "PIN17",
+  "PIN_18": {
+    "anchor_tag": "PIN_17",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6512.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN19": {
-    "anchor_tag": "PIN18",
+  "PIN_19": {
+    "anchor_tag": "PIN_18",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6448.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN20": {
-    "anchor_tag": "PIN19",
+  "PIN_20": {
+    "anchor_tag": "PIN_19",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6384.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN21": {
-    "anchor_tag": "PIN20",
+  "PIN_21": {
+    "anchor_tag": "PIN_20",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6320.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN22": {
-    "anchor_tag": "PIN21",
+  "PIN_22": {
+    "anchor_tag": "PIN_21",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6256.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN23": {
-    "anchor_tag": "PIN22",
+  "PIN_23": {
+    "anchor_tag": "PIN_22",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6192.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN24": {
-    "anchor_tag": "PIN23",
+  "PIN_24": {
+    "anchor_tag": "PIN_23",
     "locked": true,
     "pos_abs_x": 11040.0,
     "pos_abs_y": -6128.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN25": {
-    "anchor_tag": "PIN26",
+  "PIN_25": {
+    "anchor_tag": "PIN_26",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21472.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN26": {
-    "anchor_tag": "PIN27",
+  "PIN_26": {
+    "anchor_tag": "PIN_27",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21536.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN27": {
-    "anchor_tag": "PIN28",
+  "PIN_27": {
+    "anchor_tag": "PIN_28",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21600.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN28": {
-    "anchor_tag": "PIN29",
+  "PIN_28": {
+    "anchor_tag": "PIN_29",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21664.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN29": {
-    "anchor_tag": "PIN30",
+  "PIN_29": {
+    "anchor_tag": "PIN_30",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21728.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN30": {
-    "anchor_tag": "PIN31",
+  "PIN_30": {
+    "anchor_tag": "PIN_31",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21792.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN31": {
-    "anchor_tag": "PIN33",
+  "PIN_31": {
+    "anchor_tag": "PIN_33",
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21856.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN32": {
-    "locked": true,
-    "pos_abs_x": -32400.0,
-    "pos_abs_y": -10400.0,
-    "pos_rel_x": -32400.0,
-    "pos_rel_y": -10400.0
-  },
-  "PIN33": {
+  "PIN_33": {
     "locked": true,
     "pos_abs_x": 22928.0,
     "pos_abs_y": -21920.0,
     "pos_rel_x": 22928.0,
     "pos_rel_y": -21920.0
   },
-  "PIN34": {
+  "PIN_34": {
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -9312.0,
     "pos_rel_x": 32448.0,
     "pos_rel_y": -9312.0
   },
-  "PIN35": {
-    "anchor_tag": "PIN34",
+  "PIN_35": {
+    "anchor_tag": "PIN_34",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -9248.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN36": {
-    "anchor_tag": "PIN35",
+  "PIN_36": {
+    "anchor_tag": "PIN_35",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -9184.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN37": {
-    "anchor_tag": "PIN36",
+  "PIN_37": {
+    "anchor_tag": "PIN_36",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -9120.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN38": {
-    "anchor_tag": "PIN37",
+  "PIN_38": {
+    "anchor_tag": "PIN_37",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -9056.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN39": {
-    "anchor_tag": "PIN38",
+  "PIN_39": {
+    "anchor_tag": "PIN_38",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8992.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN40": {
-    "anchor_tag": "PIN39",
+  "PIN_40": {
+    "anchor_tag": "PIN_39",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8928.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN41": {
-    "anchor_tag": "PIN40",
+  "PIN_41": {
+    "anchor_tag": "PIN_40",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8864.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN42": {
-    "anchor_tag": "PIN46",
+  "PIN_42": {
+    "anchor_tag": "PIN_46",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8544.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN43": {
+  "PIN_43": {
     "locked": true,
     "pos_abs_x": 12000.0,
     "pos_abs_y": -18640.0,
     "pos_rel_x": 12000.0,
     "pos_rel_y": -18640.0
   },
-  "PIN44": {
-    "anchor_tag": "PIN47",
+  "PIN_44": {
+    "anchor_tag": "PIN_47",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8672.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN45": {
+  "PIN_45": {
     "locked": true,
     "pos_abs_x": 12000.0,
     "pos_abs_y": -19040.0,
     "pos_rel_x": 12000.0,
     "pos_rel_y": -19040.0
   },
-  "PIN46": {
-    "anchor_tag": "PIN44",
+  "PIN_46": {
+    "anchor_tag": "PIN_44",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8608.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN47": {
-    "anchor_tag": "PIN48",
+  "PIN_47": {
+    "anchor_tag": "PIN_48",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8736.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN48": {
-    "anchor_tag": "PIN41",
+  "PIN_48": {
+    "anchor_tag": "PIN_41",
     "locked": true,
     "pos_abs_x": 32448.0,
     "pos_abs_y": -8800.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN49": {
+  "PIN_49": {
     "locked": true,
     "pos_abs_x": 12000.0,
     "pos_abs_y": -18816.0,
     "pos_rel_x": 12000.0,
     "pos_rel_y": -18816.0
   },
-  "PIN50": {
+  "PIN_50": {
     "locked": true,
     "pos_abs_x": 30912.0,
     "pos_abs_y": -14336.0,
     "pos_rel_x": 30912.0,
     "pos_rel_y": -14336.0
   },
-  "PIN51": {
+  "PIN_51": {
     "locked": true,
     "pos_abs_x": 30912.0,
     "pos_abs_y": -15104.0,
     "pos_rel_x": 30912.0,
     "pos_rel_y": -15104.0
   },
-  "PIN52": {
+  "PIN_52": {
     "locked": true,
     "pos_abs_x": -18752.0,
     "pos_abs_y": -4176.0,
     "pos_rel_x": -18752.0,
     "pos_rel_y": -4176.0
   },
-  "PIN53": {
+  "PIN_53": {
     "locked": true,
     "pos_abs_x": 30672.0,
     "pos_abs_y": -16368.0,
     "pos_rel_x": 30672.0,
     "pos_rel_y": -16368.0
   },
-  "PIN54": {
+  "PIN_54": {
     "locked": true,
     "pos_abs_x": 30688.0,
     "pos_abs_y": -17120.0,
     "pos_rel_x": 30688.0,
     "pos_rel_y": -17120.0
   },
-  "PIN55": {
+  "PIN_55": {
     "locked": true,
     "pos_abs_x": -17248.0,
     "pos_abs_y": -3760.0,
     "pos_rel_x": -17248.0,
     "pos_rel_y": -3760.0
   },
-  "PIN56": {
+  "PIN_56": {
     "locked": true,
     "pos_abs_x": -17280.0,
     "pos_abs_y": -3952.0,
     "pos_rel_x": -17280.0,
     "pos_rel_y": -3952.0
   },
-  "PIN57": {
+  "PIN_57": {
     "locked": true,
     "pos_abs_x": -18384.0,
     "pos_abs_y": -4688.0,
     "pos_rel_x": -18384.0,
     "pos_rel_y": -4688.0
   },
-  "PIN58": {
-    "locked": true,
-    "pos_abs_x": -32624.0,
-    "pos_abs_y": -10400.0,
-    "pos_rel_x": -32624.0,
-    "pos_rel_y": -10400.0
-  },
-  "PIN62": {
+  "PIN_62": {
     "locked": true,
     "pos_abs_x": -25120.0,
     "pos_abs_y": -15152.0,
     "pos_rel_x": -25120.0,
     "pos_rel_y": -15152.0
   },
-  "PIN63": {
+  "PIN_63": {
     "locked": true,
     "pos_abs_x": -25120.0,
     "pos_abs_y": -15056.0,
     "pos_rel_x": -25120.0,
     "pos_rel_y": -15056.0
   },
-  "PIN64": {
+  "PIN_64": {
     "locked": true,
     "pos_abs_x": -26464.0,
     "pos_abs_y": -14464.0,
     "pos_rel_x": -26464.0,
     "pos_rel_y": -14464.0
   },
-  "PIN65": {
-    "anchor_tag": "PIN64",
+  "PIN_65": {
+    "anchor_tag": "PIN_64",
     "locked": true,
     "pos_abs_x": -26464.0,
     "pos_abs_y": -14400.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN66": {
-    "anchor_tag": "PIN65",
+  "PIN_66": {
+    "anchor_tag": "PIN_65",
     "locked": true,
     "pos_abs_x": -26464.0,
     "pos_abs_y": -14336.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN67": {
-    "anchor_tag": "PIN66",
+  "PIN_67": {
+    "anchor_tag": "PIN_66",
     "locked": true,
     "pos_abs_x": -26464.0,
     "pos_abs_y": -14272.0,
     "pos_rel_x": 0.0,
     "pos_rel_y": 64.0
   },
-  "PIN68": {
+  "PIN_68": {
     "locked": true,
     "pos_abs_x": -23968.0,
     "pos_abs_y": -13088.0,
     "pos_rel_x": -23968.0,
     "pos_rel_y": -13088.0
   },
-  "PIN69": {
+  "PIN_69": {
     "locked": false,
     "pos_abs_x": -24512.0,
     "pos_abs_y": -12448.0,
     "pos_rel_x": -24512.0,
     "pos_rel_y": -12448.0
   },
-  "PIN70": {
+  "PIN_70": {
     "locked": false,
     "pos_abs_x": -24032.0,
     "pos_abs_y": -11744.0,
     "pos_rel_x": -24032.0,
     "pos_rel_y": -11744.0
   },
-  "PIN71": {
+  "PIN_71": {
     "locked": true,
     "pos_abs_x": -32576.0,
     "pos_abs_y": -4736.0,
     "pos_rel_x": -32576.0,
     "pos_rel_y": -4736.0
   },
-  "PIN73": {
+  "PIN_73": {
     "locked": true,
     "pos_abs_x": -31616.0,
     "pos_abs_y": -4160.0,
     "pos_rel_x": -31616.0,
     "pos_rel_y": -4160.0
   },
-  "PIN74": {
+  "PIN_74": {
     "locked": true,
     "pos_abs_x": -32576.0,
     "pos_abs_y": -4064.0,
     "pos_rel_x": -32576.0,
     "pos_rel_y": -4064.0
   },
-  "PIN75": {
+  "PIN_75": {
     "locked": true,
     "pos_abs_x": -29824.0,
     "pos_abs_y": -4032.0,
     "pos_rel_x": -29824.0,
     "pos_rel_y": -4032.0
   },
-  "PIN76": {
+  "PIN_76": {
     "locked": true,
     "pos_abs_x": -32576.0,
     "pos_abs_y": -4448.0,
     "pos_rel_x": -32576.0,
     "pos_rel_y": -4448.0
   },
-  "PIN77": {
+  "PIN_77": {
     "locked": true,
     "pos_abs_x": -32576.0,
     "pos_abs_y": -4576.0,
     "pos_rel_x": -32576.0,
     "pos_rel_y": -4576.0
   },
-  "PIN78": {
+  "PIN_78": {
     "anchor_tag": "UVER",
     "locked": true,
     "pos_abs_x": -22240.0,
@@ -10250,7 +10236,7 @@
     "pos_rel_x": 128.0,
     "pos_rel_y": 0.0
   },
-  "PIN79": {
+  "PIN_79": {
     "anchor_tag": "UGAC",
     "locked": true,
     "pos_abs_x": -22240.0,
@@ -10258,7 +10244,7 @@
     "pos_rel_x": 128.0,
     "pos_rel_y": 0.0
   },
-  "PIN80": {
+  "PIN_80": {
     "locked": true,
     "pos_abs_x": -22240.0,
     "pos_abs_y": -9744.0,
@@ -10390,7 +10376,7 @@
     "pos_rel_y": 64.0
   },
   "PONY": {
-    "anchor_tag": "PIN42",
+    "anchor_tag": "PIN_42",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8544.0,
@@ -12922,20 +12908,6 @@
     "pos_rel_x": -25072.0,
     "pos_rel_y": -6352.0
   },
-  "SIG_CLKGOOD": {
-    "locked": true,
-    "pos_abs_x": -32576.0,
-    "pos_abs_y": -9104.0,
-    "pos_rel_x": -32576.0,
-    "pos_rel_y": -9104.0
-  },
-  "SIG_CLKREQ": {
-    "locked": true,
-    "pos_abs_x": -32576.0,
-    "pos_abs_y": -4192.0,
-    "pos_rel_x": -32576.0,
-    "pos_rel_y": -4192.0
-  },
   "SIG_CPU_ACK_JOYPAD": {
     "locked": true,
     "pos_abs_x": -128.0,
@@ -13960,7 +13932,7 @@
     "pos_rel_y": 64.0
   },
   "TAGO": {
-    "anchor_tag": "PIN47",
+    "anchor_tag": "PIN_47",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8736.0,
@@ -14765,7 +14737,7 @@
     "pos_rel_y": 64.0
   },
   "TUJY": {
-    "anchor_tag": "PIN48",
+    "anchor_tag": "PIN_48",
     "locked": true,
     "pos_abs_x": 32288.0,
     "pos_abs_y": -8800.0,

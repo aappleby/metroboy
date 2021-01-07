@@ -129,7 +129,7 @@ struct RegLCDC {
   /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn; // xxxxxxxH
   /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;  // xxxxxxxH
   /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn; // xxxxxxxH
-  /*p23.WOKY*/ DFF9 XONA_LCDC_LCDENn;  // xxxxxxxH
+  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn;  // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -256,8 +256,8 @@ struct RegLX {
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
 
   wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn_new_evn = not1(RUTU_x113p.qp_new());
-    return _PURE_LINE_ENDn_new_evn;
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(RUTU_x113p.qp_new());
+    return _PURE_LINE_ENDn;
   }
 
   wire TEGY_STROBE() const;

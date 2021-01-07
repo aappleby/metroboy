@@ -101,7 +101,7 @@ void to_json(nlohmann::json& j, const Cell* c) {
   j["tag"]       = c->tag;
   j["gate"]      = c->gate;
   j["args"]      = c->args;
-  j["names"]     = c->names;
+  j["name"]      = c->name;
   j["doc"]       = c->doc;
 }
 
@@ -113,15 +113,8 @@ void from_json(const nlohmann::json& j, Cell*& c) {
   j["tag"]      .get_to(c->tag);
   j["gate"]     .get_to(c->gate);
   j["args"]     .get_to(c->args);
-  j["names"]    .get_to(c->names);
+  j["name"]     .get_to(c->name);
   j["doc"]      .get_to(c->doc);
-
-  if (c->names.size() > 1) {
-    printf("Cell %s has multiple names - \n", c->tag.c_str());
-    for (auto& name : c->names) {
-      printf("    %s\n", name.c_str());
-    }
-  }
 }
 
 void CellDB::save_json(const char* filename) {
@@ -170,7 +163,11 @@ void Cell::sanity_check() const {
   CHECK_N(cell_type == CellType::UNKNOWN);
   CHECK_N(tag.empty());
   CHECK_N(gate.empty());
-  CHECK_N(names.empty());
+
+  if (name.empty()) {
+    printf("No name for tag %s\n", tag.c_str());
+  }
+  //CHECK_N(names.empty());
 
   if (cell_type == CellType::PIN_IN) {
     CHECK_P(tag.starts_with("PIN_"));
@@ -241,7 +238,7 @@ void Cell::merge(const Cell& c) {
   if (gate.empty())     gate = c.gate;
   if (doc.empty())      doc = c.doc;
   if (args.empty())     args = c.args;
-  names.insert(c.names.begin(), c.names.end());
+  if (name.empty())     name = c.name;
 
   CHECK_P(cell_type == c.cell_type);
 
@@ -257,6 +254,7 @@ void Cell::merge(const Cell& c) {
   CHECK_P(c.tag.empty()      || tag == c.tag);
   CHECK_P(c.gate.empty()     || gate == c.gate);
   CHECK_P(c.doc.empty()      || doc == c.doc);
+  CHECK_P(c.name.empty()     || name == c.name);
 
   if (!c.args.empty()) {
     CHECK_P(args.size() == c.args.size());
@@ -630,25 +628,34 @@ bool CellDB::parse_cell_name(Cell& c, const string& name) {
   static regex valid_sig_name (R"(^(SIG_\w+)$)");
   static regex valid_bus_name (R"(^(BUS_\w+)$)");
 
+  string base_name;
   smatch match;
   if (regex_match(name, match, valid_cell_name)) {
-    c.names.insert(match[1].str());
-    return true;
+    base_name = match[1].str();
   }
   else if (regex_match(name, match, valid_pin_name)) {
-    c.names.insert(match[1].str());
-    return true;
+    base_name = match[1].str();
   }
   else if (regex_match(name, match, valid_sig_name)) {
-    c.names.insert(match[1].str());
-    return true;
+    base_name = match[1].str();
   }
   else if (regex_match(name, match, valid_bus_name)) {
-    c.names.insert(match[1].str());
-    return true;
+    base_name = match[1].str();
   }
   else {
     printf("Could not parse name %s\n", name.c_str());
+    return false;
+  }
+
+  if (base_name.ends_with("_old") || base_name.ends_with("_new") || base_name.ends_with("_any")) {
+    base_name.resize(base_name.size() - 4);
+  }
+
+  if (base_name.size()) {
+    c.name = base_name;
+    return true;
+  }
+  else {
     return false;
   }
 }
@@ -679,7 +686,7 @@ bool CellDB::parse_pin_name(Cell& c, const string& pin_name) {
 
   smatch match;
   if (regex_match(pin_name, match, valid_pin_name)) {
-    c.names.insert(match[1].str());
+    c.name = match[1].str();
     return true;
   } else {
     printf("Could not parse pin name %s\n", pin_name.c_str());
@@ -694,7 +701,7 @@ bool CellDB::parse_sig_name(Cell& c, const string& sig_name) {
 
   smatch match;
   if (regex_match(sig_name, match, valid_pin_name)) {
-    c.names.insert(match[1].str());
+    c.name = match[1].str();
     return true;
   } else {
     printf("Could not parse sig name %s\n", sig_name.c_str());
@@ -841,7 +848,7 @@ bool CellDB::parse_dir(const std::string& path) {
   bool result = true;
 #if 0
   {
-    string line = R"(  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);)";
+    string line = R"(  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);)";
     Cell c;
     parse_line(c, line);
     c.dump(d);
@@ -865,8 +872,8 @@ bool CellDB::parse_dir(const std::string& path) {
   for (auto& [tag, cell] : tag_to_cell) {
     // Tribufs don't get names, add the tag as the default name.
     if (cell->cell_type == CellType::TRIBUF) {
-      CHECK_P(cell->names.empty());
-      cell->names.insert(cell->tag);
+      CHECK_P(cell->name.empty());
+      cell->name = cell->tag;
     }
 
     // All pins without gates are inputs from the outside world.
@@ -963,7 +970,7 @@ bool CellDB::parse_dir(const std::string& path) {
     if (cell->tag == "BUS_OAM_A01n") continue;
 
     if (cell->mark == 0) {
-      printf("Cell %s unused\n", (*cell->names.begin()).c_str());
+      printf("Cell %s unused\n", cell->name.c_str());
       any_unused = true;
     }
   }

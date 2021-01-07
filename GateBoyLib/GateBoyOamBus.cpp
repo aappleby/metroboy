@@ -207,8 +207,8 @@ void GateBoyOamBus::dma_to_addr_bus(GateBoyDMA& dma) {
 void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, NorLatch XYMU_RENDERINGn){
   SigIn SIG_VCC = 1;
   // OAM address from sprite fetcher
-  /* p28.AJON*/ wire _AJON_SFETCHINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
-  /* p28.BETE*/ wire _BETE_SFETCHINGn = not1(_AJON_SFETCHINGp);
+  /* p28.AJON*/ wire _AJON_RENDERINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
+  /* p28.BETE*/ wire _BETE_SFETCHINGn = not1(_AJON_RENDERINGp);
   /* p28.GECA*/ BUS_OAM_A00n.tri6_nn(_BETE_SFETCHINGn, SIG_VCC);
   /* p28.WYDU*/ BUS_OAM_A01n.tri6_nn(_BETE_SFETCHINGn, SIG_VCC);
   /* p28.GYBU*/ BUS_OAM_A02n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I0.qp_new());

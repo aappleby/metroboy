@@ -122,17 +122,13 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
 
     auto group = new NodeGroup(cell);
     tag_to_group[tag] = group;
-    group->nodes.resize(1);
-    for (auto& node : group->nodes) {
-      node = new Node();
-      node->group = group;
 
-      node->locked    = jnode.value("locked", false);
-      node->pos_rel.x = jnode.value("pos_rel_x", 0.0);
-      node->pos_rel.y = jnode.value("pos_rel_y", 0.0);
-      node->pos_abs.x = jnode.value("pos_abs_x", 0.0);
-      node->pos_abs.y = jnode.value("pos_abs_y", 0.0);
-    }
+    auto node = group->add_node();
+    node->locked    = jnode.value("locked", false);
+    node->pos_rel.x = jnode.value("pos_rel_x", 0.0);
+    node->pos_rel.y = jnode.value("pos_rel_y", 0.0);
+    node->pos_abs.x = jnode.value("pos_abs_x", 0.0);
+    node->pos_abs.y = jnode.value("pos_abs_y", 0.0);
   }
 
   // Check for missing tags
@@ -142,11 +138,7 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
       {
         auto group = new NodeGroup(cell);
         tag_to_group[tag] = group;
-        group->nodes.resize(1);
-        for (auto& node : group->nodes) {
-          node = new Node();
-          node->group = group;
-        }
+        group->add_node();
       }
     }
   }

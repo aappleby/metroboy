@@ -112,6 +112,13 @@ struct NodeGroup {
     cell = _cell;
   }
 
+  Node* add_node() {
+    auto node = new Node();
+    node->group = this;
+    nodes.push_back(node);
+    return node;
+  }
+
   const char* tag() const  { return cell ? cell->tag.c_str()  : "<no_tag>"; }
   const char* name() const { return cell ? cell->name.c_str() : "<no_cell>"; }
   const char* gate() const { return cell ? cell->gate.c_str() : "<no_gate>"; }

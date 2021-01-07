@@ -18,11 +18,16 @@ struct NodeInstance {
   bool pinned = 1;
   const Cell* cell = nullptr;
   int  mark = 0;
+  bool ghost = 0;
+  bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
+  dvec2 spring_force = {0,0};
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(NodeInstance* target);
   const NodeInstance* get_anchor() { return anchor; }
   void  set_anchor(NodeInstance* new_anchor);
+
+  void toggle_ghost()  { ghost = !ghost; }
 
   dvec2 get_pos_abs_new() const {
     if (!pinned) {
@@ -99,27 +104,24 @@ struct NodeInstance {
 
 struct Node {
   Node(const Cell* _cell) {
-    inst.cell = _cell;
-  }
-
-  const Cell* get_cell() {
-    return inst.cell;
+    cell = _cell;
+    nodes.resize(1);
+    nodes[0].cell = _cell;
   }
 
   const char* tag() const;
   const char* name() const;
   const char* gate() const;
 
-  void toggle_ghost()  { ghost = !ghost; }
-
   //----------------------------------------
   // Serialized state
 
-  NodeInstance inst;
+  std::vector<NodeInstance> nodes;
 
   //----------------------------------------
   // State from cell db
 
+  const Cell* cell = nullptr;
   std::vector<Node*>       prev_node;
   std::vector<std::string> prev_port;
   std::vector<Node*> next;
@@ -127,11 +129,7 @@ struct Node {
   //----------------------------------------
   // Sim/UI state
 
-  bool ghost = 0;
-  int  rank = 0;
-  bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   uint32_t color = 0xFFFF00FF;
-  dvec2 spring_force = {0,0};
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

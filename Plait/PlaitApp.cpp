@@ -148,7 +148,7 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
   for (auto& [tag, node] : plait.node_map) {
     node->color = 0xFFFF00FF;
 
-    auto cell_type = node->get_cell()->cell_type;
+    auto cell_type = node->cell->cell_type;
     if (cell_type == CellType::PIN_IN)  node->color = COL_PALE_RED;
     if (cell_type == CellType::PIN_OUT) node->color = COL_PALE_GREEN;
     if (cell_type == CellType::PIN_IO)  node->color = COL_PALE_YELLOW;
@@ -191,7 +191,7 @@ Node* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool ignore_cl
   for (auto& [tag, node] : plait.node_map) {
     if ((node == clicked_node) && ignore_clicked) continue;
 
-    dvec2 node_pos = node->inst.get_pos_abs_new();
+    dvec2 node_pos = node->nodes[0].get_pos_abs_new();
 
     int width = 128;
     int height = 64;
@@ -218,8 +218,8 @@ void PlaitApp::apply_region(dvec2 corner_a, dvec2 corner_b, NodeCallback callbac
   const dvec2 node_size = {128,64};
 
   for (auto& [tag, node] : plait.node_map) {
-    dvec2 nmin = node->inst.get_pos_abs_new();
-    dvec2 nmax = node->inst.get_pos_abs_new() + node_size;
+    dvec2 nmin = node->nodes[0].get_pos_abs_new();
+    dvec2 nmax = node->nodes[0].get_pos_abs_new() + node_size;
 
     if (nmin.x < rmin.x) continue;
     if (nmin.y < rmin.y) continue;
@@ -236,7 +236,7 @@ void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Selection region ");
   auto callback = [this](Node* node) {
     printf("%s ", node->name());
-    node->selected = true;
+    node->nodes[0].selected = true;
     selection.insert(node);
   };
 
@@ -248,7 +248,7 @@ void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Locking region ");
   auto callback = [this](Node* node) {
     printf("%s ", node->name());
-    node->inst.locked = true;
+    node->nodes[0].locked = true;
   };
 
   apply_region(corner_a, corner_b, callback);
@@ -259,7 +259,7 @@ void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
 
 void PlaitApp::select_node(Node* node) {
   printf("Selecting %s\n", node->name());
-  node->selected = true;
+  node->nodes[0].selected = true;
   selection.insert(node);
 }
 
@@ -269,7 +269,7 @@ void PlaitApp::commit_selection() {
   printf("Committing ");
   for (auto node : selection) {
     printf("%s ", node->name());
-    node->inst.commit_pos();
+    node->nodes[0].commit_pos();
   }
   printf("\n");
 }
@@ -280,7 +280,7 @@ void PlaitApp::revert_selection() {
   printf("Reverting ");
   for (auto node : selection) {
     printf("%s ", node->name());
-    node->inst.revert_pos();
+    node->nodes[0].revert_pos();
   }
   printf("\n");
 }
@@ -291,7 +291,7 @@ void PlaitApp::clear_selection() {
   printf("Unselecting ");
   for (auto node : selection) {
     printf("%s ", node->name());
-    node->selected = false;
+    node->nodes[0].selected = false;
   }
   selection.clear();
   printf("\n");
@@ -317,11 +317,11 @@ double remap_clamp(double x, double a1, double a2, double b1, double b2) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void spring_nodes(Node* a, Node* b) {
-  if (a->ghost || b->ghost) return;
-  if (a->selected || b->selected) return;
-  if (!a->inst.pinned || !b->inst.pinned) return;
+  if (a->nodes[0].ghost || b->nodes[0].ghost) return;
+  if (a->nodes[0].selected || b->nodes[0].selected) return;
+  if (!a->nodes[0].pinned || !b->nodes[0].pinned) return;
 
-  dvec2 offset = b->inst.get_pos_abs_new() - a->inst.get_pos_abs_new();
+  dvec2 offset = b->nodes[0].get_pos_abs_new() - a->nodes[0].get_pos_abs_new();
   double dist = length(offset);
   offset = normalize(offset);
 
@@ -330,19 +330,19 @@ void spring_nodes(Node* a, Node* b) {
   double push_force = remap_clamp(dist, 10, 256, -256, 0);
   double pull_force = remap_clamp(dist, 1024, 16384, 0, 16384);
 
-  a->spring_force += offset * push_force;
-  a->spring_force += offset * pull_force;
+  a->nodes[0].spring_force += offset * push_force;
+  a->nodes[0].spring_force += offset * pull_force;
 
-  b->spring_force += offset * -push_force;
-  b->spring_force += offset * -pull_force;
+  b->nodes[0].spring_force += offset * -push_force;
+  b->nodes[0].spring_force += offset * -pull_force;
 }
 
 void spring_nodes2(Node* a, Node* b) {
-  if (a->ghost || b->ghost) return;
-  if (a->selected || b->selected) return;
-  if (!a->inst.pinned || !b->inst.pinned) return;
+  if (a->nodes[0].ghost || b->nodes[0].ghost) return;
+  if (a->nodes[0].selected || b->nodes[0].selected) return;
+  if (!a->nodes[0].pinned || !b->nodes[0].pinned) return;
 
-  dvec2 offset = b->inst.get_pos_abs_new() - a->inst.get_pos_abs_new();
+  dvec2 offset = b->nodes[0].get_pos_abs_new() - a->nodes[0].get_pos_abs_new();
   double dist = length(offset);
   offset = normalize(offset);
 
@@ -351,11 +351,11 @@ void spring_nodes2(Node* a, Node* b) {
   double push_force = remap_clamp(dist,   0,  96, -512,   0);
   double pull_force = remap_clamp(dist,  96, 192,    0, 512);
 
-  a->spring_force += offset * push_force;
-  a->spring_force += offset * pull_force;
+  a->nodes[0].spring_force += offset * push_force;
+  a->nodes[0].spring_force += offset * pull_force;
 
-  b->spring_force += offset * -push_force;
-  b->spring_force += offset * -pull_force;
+  b->nodes[0].spring_force += offset * -push_force;
+  b->nodes[0].spring_force += offset * -pull_force;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -449,7 +449,7 @@ void PlaitApp::event_unlock_region(SDL_Event event) {
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
       auto callback = [this](Node* node) {
-        node->inst.locked = false;
+        node->nodes[0].locked = false;
       };
       apply_region(click_pos_world, mouse_pos_world, callback);
     }
@@ -472,7 +472,7 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
       auto callback = [this](Node* node) {
-        node->toggle_ghost();
+        node->nodes[0].toggle_ghost();
       };
       apply_region(click_pos_world, mouse_pos_world, callback);
     }
@@ -522,8 +522,8 @@ void PlaitApp::event_drag_nodes(SDL_Event event) {
       dvec2 pos_abs_new = mouse_pos_world + clicked_offset;
       pos_abs_new.x = round(pos_abs_new.x / 16) * 16.0;
       pos_abs_new.y = round(pos_abs_new.y / 16) * 16.0;
-      dvec2 delta = pos_abs_new - clicked_node->inst.get_pos_abs_new();
-      for (auto node : selection) node->inst.move(delta);
+      dvec2 delta = pos_abs_new - clicked_node->nodes[0].get_pos_abs_new();
+      for (auto node : selection) node->nodes[0].move(delta);
     }
     break;
   }
@@ -545,12 +545,12 @@ void PlaitApp::event_place_anchor(SDL_Event event) {
       auto anchor_target = pick_node(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
       if (anchor_target) {
         for (auto node : selection) {
-          node->inst.set_anchor(&anchor_target->inst);
+          node->nodes[0].set_anchor(&anchor_target->nodes[0]);
         }
       }
       else {
         for (auto node : selection) {
-          node->inst.set_anchor(nullptr);
+          node->nodes[0].set_anchor(nullptr);
         }
       }
     }
@@ -631,9 +631,9 @@ void PlaitApp::event_select_tool(SDL_Event event) {
   }
   else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button & SDL_BUTTON_LMASK) {
     if (clicked_node) {
-      clicked_offset  = clicked_node->inst.get_pos_abs_new() - mouse_pos_world;
+      clicked_offset  = clicked_node->nodes[0].get_pos_abs_new() - mouse_pos_world;
 
-      if (!clicked_node->selected) {
+      if (!clicked_node->nodes[0].selected) {
         commit_selection();
         clear_selection();
         select_node(clicked_node);
@@ -798,8 +798,8 @@ void PlaitApp::app_update(double delta_time) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::draw_node(Node* node) {
-  dvec2 node_pos_old = node->inst.get_pos_abs_old();
-  dvec2 node_pos_new = node->inst.get_pos_abs_new();
+  dvec2 node_pos_old = node->nodes[0].get_pos_abs_old();
+  dvec2 node_pos_new = node->nodes[0].get_pos_abs_new();
 
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
@@ -812,14 +812,14 @@ void PlaitApp::draw_node(Node* node) {
   // Node outline
   {
     uint32_t color = 0xFF808080;
-    if (node->selected) color = 0xFFCCCCCC;
+    if (node->nodes[0].selected) color = 0xFFCCCCCC;
     //if (node->floating) color = 0xFF0000FF;
 
     outline_painter.push_box(node_pos_new, node_pos_new + node_size, color);
   }
 
   // Node fill
-  if (!node->ghost) {
+  if (!node->nodes[0].ghost) {
     box_painter.push_corner_size(
       node_pos_new + dvec2(4,4),
       node_size - dvec2(8,8),
@@ -829,7 +829,7 @@ void PlaitApp::draw_node(Node* node) {
   // Node text
   text_painter.add_text_at(node->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
   text_painter.add_text_at(node->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
-  if (node->inst.locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
+  if (node->nodes[0].locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
 
   // Node input port(s)
   {
@@ -852,15 +852,15 @@ void PlaitApp::draw_node(Node* node) {
   }
 
   // Edges from previous node(s)
-  if (show_edges && !node->ghost) {
+  if (show_edges && !node->nodes[0].ghost) {
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
       auto prev = node->prev_node[i];
       if (prev == nullptr) continue;
-      if (prev->ghost) continue;
+      if (prev->nodes[0].ghost) continue;
 
-      auto prev_pos_new = prev->inst.get_pos_abs_new();
+      auto prev_pos_new = prev->nodes[0].get_pos_abs_new();
 
       // Highlight "backwards" edges in red.
       bool edge_backwards = prev_pos_new.x > node_pos_new.x;
@@ -869,7 +869,7 @@ void PlaitApp::draw_node(Node* node) {
       uint32_t color_b = edge_backwards ? 0xFF0000FF : 0x4044FF44;
 
       // Make edges connected to selected nodes opaque.
-      if (node->selected || prev->selected) {
+      if (node->nodes[0].selected || prev->nodes[0].selected) {
         if (edge_backwards) {
           color_a = 0xFF8080FF;
           color_b = 0xFF8080FF;
@@ -888,9 +888,9 @@ void PlaitApp::draw_node(Node* node) {
   }
 
   // Anchor edge
-  if (show_anchors && node->inst.anchored()) {
-    dvec2 center_a = node->inst.get_anchor()->get_pos_abs_new() + node_size / 2.0;
-    dvec2 center_b = node->inst.get_pos_abs_new() + node_size / 2.0;
+  if (show_anchors && node->nodes[0].anchored()) {
+    dvec2 center_a = node->nodes[0].get_anchor()->get_pos_abs_new() + node_size / 2.0;
+    dvec2 center_b = node->nodes[0].get_pos_abs_new() + node_size / 2.0;
     edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
   }
 }
@@ -913,7 +913,7 @@ void PlaitApp::app_render_frame() {
   // Node shadows
   {
     for (auto node : selection) {
-      dvec2 node_pos_old = node->inst.get_pos_abs_old();
+      dvec2 node_pos_old = node->nodes[0].get_pos_abs_old();
       outline_painter.push_box(node_pos_old, node_pos_old + node_size, 0xFF404040);
     }
     outline_painter.render(view_control.view_snap, 0, 0, 1);
@@ -922,7 +922,7 @@ void PlaitApp::app_render_frame() {
   // Unselected nodes
   {
     for (auto& [tag, node] : plait.node_map) {
-      if (!node->selected) draw_node(node);
+      if (!node->nodes[0].selected) draw_node(node);
     }
     outline_painter.render(view_control.view_snap, 0, 0, 1);
     box_painter.render(view_control.view_snap, 0, 0, 1);
@@ -950,7 +950,7 @@ void PlaitApp::app_render_frame() {
 
   if (current_tool == ToolMode::PLACE_ANCHOR) {
     for (auto selected_node : selection) {
-      edge_painter.push(mouse_pos_world, 0xFFFFFFFF, selected_node->inst.get_pos_abs_new() + node_size * 0.5, 0xFFFF8080);
+      edge_painter.push(mouse_pos_world, 0xFFFFFFFF, selected_node->nodes[0].get_pos_abs_new() + node_size * 0.5, 0xFFFF8080);
     }
     edge_painter.render(view_control.view_snap, 0, 0, 1);
   }

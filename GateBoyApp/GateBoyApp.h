@@ -44,6 +44,9 @@ private:
 
   void load_golden(const char* filename);
 
+  int screen_w = 1920;
+  int screen_h = 1080;
+
   RunMode runmode = RUN_STEP;
 
   const uint8_t* keyboard_state = nullptr;

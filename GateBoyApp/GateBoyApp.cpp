@@ -30,9 +30,12 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
+void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   LOG_G("GateBoyApp::app_init()\n");
   LOG_SCOPE_INDENT();
+
+  screen_w = _screen_w;
+  screen_h = _screen_h;
 
   grid_painter.init();
   text_painter.init();
@@ -262,7 +265,7 @@ void GateBoyApp::app_update(double /*delta*/) {
 #pragma warning(disable:4189)
 
 void GateBoyApp::app_render_frame() {
-  Viewport view = Viewport::screenspace(1920, 1080);
+  Viewport view = Viewport::screenspace(screen_w, screen_h);
 
   gb_thread.pause();
 

@@ -4,29 +4,29 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteFirstMatch {
-  /* p29.GUVA*/ wire GUVA_SPRITE0_GETp;
-  /* p29.ENUT*/ wire ENUT_SPRITE1_GETp;
-  /* p29.EMOL*/ wire EMOL_SPRITE2_GETp;
-  /* p29.GYFY*/ wire GYFY_SPRITE3_GETp;
-  /* p29.GONO*/ wire GONO_SPRITE4_GETp;
-  /* p29.GEGA*/ wire GEGA_SPRITE5_GETp;
-  /* p29.XOJA*/ wire XOJA_SPRITE6_GETp;
-  /* p29.GUTU*/ wire GUTU_SPRITE7_GETp;
-  /* p29.FOXA*/ wire FOXA_SPRITE8_GETp;
-  /* p29.GUZE*/ wire GUZE_SPRITE9_GETp;
+  /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
+  /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
+  /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
+  /* p29.GYFY*/ Gate GYFY_SPRITE3_GETp;
+  /* p29.GONO*/ Gate GONO_SPRITE4_GETp;
+  /* p29.GEGA*/ Gate GEGA_SPRITE5_GETp;
+  /* p29.XOJA*/ Gate XOJA_SPRITE6_GETp;
+  /* p29.GUTU*/ Gate GUTU_SPRITE7_GETp;
+  /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
+  /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 };
 
 struct SpriteStoreFlag {
-  /* p29.DYHU*/ wire DYHU_STORE0_CLKn;
-  /* p29.BUCO*/ wire BUCO_STORE1_CLKn;
-  /* p29.GYFO*/ wire GYFO_STORE2_CLKn;
-  /* p29.GUSA*/ wire GUSA_STORE3_CLKn;
-  /* p29.DUKE*/ wire DUKE_STORE4_CLKn;
-  /* p29.BEDE*/ wire BEDE_STORE5_CLKn;
-  /* p29.WEKA*/ wire WEKA_STORE6_CLKn;
-  /* p29.GYVO*/ wire GYVO_STORE7_CLKn;
-  /* p29.BUKA*/ wire BUKA_STORE8_CLKn;
-  /* p29.DECU*/ wire DECU_STORE9_CLKn;
+  /* p29.DYHU*/ Gate DYHU_STORE0_CLKn;
+  /* p29.BUCO*/ Gate BUCO_STORE1_CLKn;
+  /* p29.GYFO*/ Gate GYFO_STORE2_CLKn;
+  /* p29.GUSA*/ Gate GUSA_STORE3_CLKn;
+  /* p29.DUKE*/ Gate DUKE_STORE4_CLKn;
+  /* p29.BEDE*/ Gate BEDE_STORE5_CLKn;
+  /* p29.WEKA*/ Gate WEKA_STORE6_CLKn;
+  /* p29.GYVO*/ Gate GYVO_STORE7_CLKn;
+  /* p29.BUKA*/ Gate BUKA_STORE8_CLKn;
+  /* p29.DECU*/ Gate DECU_STORE9_CLKn;
 };
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -42,16 +42,16 @@ struct SpriteMatchFlag {
 
   /*#p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp()); }
 
-  /* p29.YDUG*/ wire YDUG_STORE0_MATCHn;
-  /* p29.DYDU*/ wire DYDU_STORE1_MATCHn;
-  /* p29.DEGO*/ wire DEGO_STORE2_MATCHn;
-  /* p29.YLOZ*/ wire YLOZ_STORE3_MATCHn;
-  /* p29.XAGE*/ wire XAGE_STORE4_MATCHn;
-  /* p29.EGOM*/ wire EGOM_STORE5_MATCHn;
-  /* p29.YBEZ*/ wire YBEZ_STORE6_MATCHn;
-  /* p29.DYKA*/ wire DYKA_STORE7_MATCHn;
-  /* p29.EFYL*/ wire EFYL_STORE8_MATCHn;
-  /* p29.YGEM*/ wire YGEM_STORE9_MATCHn;
+  /* p29.YDUG*/ Gate YDUG_STORE0_MATCHn;
+  /* p29.DYDU*/ Gate DYDU_STORE1_MATCHn;
+  /* p29.DEGO*/ Gate DEGO_STORE2_MATCHn;
+  /* p29.YLOZ*/ Gate YLOZ_STORE3_MATCHn;
+  /* p29.XAGE*/ Gate XAGE_STORE4_MATCHn;
+  /* p29.EGOM*/ Gate EGOM_STORE5_MATCHn;
+  /* p29.YBEZ*/ Gate YBEZ_STORE6_MATCHn;
+  /* p29.DYKA*/ Gate DYKA_STORE7_MATCHn;
+  /* p29.EFYL*/ Gate EFYL_STORE8_MATCHn;
+  /* p29.YGEM*/ Gate YGEM_STORE9_MATCHn;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

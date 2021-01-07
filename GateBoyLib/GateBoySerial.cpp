@@ -68,7 +68,8 @@ void GateBoySerial::tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBo
   // Feedback loop
 
   for (int rep = 0; rep < 2; rep++) {
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN_68_SCK.qn_any());
+    // FIXME check PIN_68 polarity
+    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(CULY_SER_DIR.qp_new(), COTY_SER_CLK.qp_new(), PIN_68_SCK.qp_any());
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, ETAF_SER_RUNNING.qn_any());
 
     {

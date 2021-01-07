@@ -10,7 +10,16 @@ struct SpriteFetcher {
 
   void tock(GateBoyResetDebug& rst, GateBoyClock& clk, NorLatch XYMU_RENDERINGn, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
 
+  /* p29.SAKY*/ wire SAKY_SFETCHn_old() const { return nor2(TULY_SFETCH_S1p.qp_old(), VONU_SFETCH_S1p_D4.qp_old()); }
+
   /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }
+
+  wire TEXY_SFETCHINGp_old() const {
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGn.qn_old());
+    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn_old(), _TEPA_RENDERINGp); // def or
+    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
+    return _TEXY_SFETCHINGp;
+  }
 
   wire TEXY_SFETCHINGp() const {
     /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(_XYMU_RENDERINGn.qn_new());

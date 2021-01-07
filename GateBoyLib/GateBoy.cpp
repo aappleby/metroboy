@@ -76,18 +76,15 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   cpu_bus.reset_to_bootrom();
 
   set_old_bits();
+  sys_fastboot = fastboot;
 
   //----------------------------------------
-  // Update the sim without ticking the clock twice to to settle initial reset signals.
+  // Update the sim without ticking the clock to to settle initial reset signals.
 
-  sys_fastboot = fastboot;
   sys_rst = 1;
 
-  // FIXME? - Not sure why it takes 7 passes to stabilize.
-  for (int i = 0; i < 7; i++) {
-    tock_slow(0);
-    commit_and_hash();
-  }
+  tock_slow(0);
+  commit_and_hash();
 
   //----------------------------------------
   // Release reset, start clock, and sync with phase
@@ -463,17 +460,14 @@ void GateBoy::tock_slow(int pass_index) {
 
   /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(old_match.FEPO_STORE_MATCHp(), win_reg.TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, sprite_fetcher.SOWO_SFETCH_RUNNINGn_old());
 
-  //wire WYMO_LCDC_WINENp_old = reg_lcdc.WYMO_LCDC_WINENn.qn_old();
   auto WYMO_LCDC_WINENn_old = reg_lcdc.WYMO_LCDC_WINENn;
 
   wire _ROGE_WY_MATCHp_old = ROGE_WY_MATCHp_old(reg_wy, lcd.reg_ly, WYMO_LCDC_WINENn_old);
-  //wire REJO_WY_MATCH_LATCHp_old = win_reg.REJO_WY_MATCH_LATCHp.qp_old();
   auto REJO_WY_MATCH_LATCHp_old = win_reg.REJO_WY_MATCH_LATCHp;
-  //wire _NUKO_WX_MATCHp_old = NUKO_WX_MATCHp_old(pix_count, reg_wx, REJO_WY_MATCH_LATCHp_old.qp_old()); // FIXME old/new?
   wire _NUKO_WX_MATCHp_old = NUKO_WX_MATCHp_old(pix_count, reg_wx, REJO_WY_MATCH_LATCHp_old); // FIXME old/new?
 
   wire XYVO_y144p_old = lcd.reg_ly.XYVO_y144p_old();
-  auto RUTU_x113p_old = lcd.reg_lx.RUTU_x113p;//_old();
+  auto RUTU_x113p_old = lcd.reg_lx.RUTU_x113p;
 
   wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
 
@@ -489,31 +483,22 @@ void GateBoy::tock_slow(int pass_index) {
 
   auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
 
-  //RegBGP old_reg_bgp = pix_pipes.reg_bgp;
-  //RegOBP0 old_reg_obp0 = pix_pipes.reg_obp0;
-  //RegOBP1 old_reg_obp1 = pix_pipes.reg_obp1;
-
-  //wire BAXO_OAM_DB5p_old = oam_bus.oam_temp_b.BAXO_OAM_DB5p.qp_old();
   auto BAXO_OAM_DB5p_old = oam_bus.oam_temp_b.BAXO_OAM_DB5p;
 
   auto oam_temp_b_old = oam_bus.oam_temp_b;
 
-  //auto BUS_CPU_D_old = cpu_bus.BUS_CPU_D;
-
   auto ROZE_FINE_COUNT_7n_old = fine_scroll.ROZE_FINE_COUNT_7n_old();
+
+  SpritePix sprite_pix_old = SpritePix::flip(vram_bus, sprite_fetcher.TEXY_SFETCHINGp_old(), BAXO_OAM_DB5p_old);
 
   //-----------------------------------------------------------------------------
 
   rst.PIN_71_RST.reset_for_pass();
-  //clk.PIN_74_CLKGOOD.reset_for_pass();
-  //clk.PIN_74_CLK_IN.reset_for_pass();
   clk.PIN_74_CLK.reset_for_pass();
   rst.PIN_76_T2.reset_for_pass();
   rst.PIN_77_T1.reset_for_pass();
 
   rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
-  //clk.PIN_74_CLKGOOD.pin_in_dp();
-  //clk.PIN_74_CLK_IN.pin_in_dp();
   clk.PIN_74_CLK.pin_in_dp(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
   rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
   rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
@@ -557,7 +542,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   reg_lcdc.write_sync(rst, cpu_bus); // LCDC. Has to be near the top as it controls the video reset signal
 
-  //rst.set_signals(reg_lcdc.XONA_LCDC_LCDENn.qn_new());
   rst.set_signals(reg_lcdc.XONA_LCDC_LCDENn);
   clk.tock_vid(rst);
 
@@ -638,11 +622,11 @@ void GateBoy::tock_slow(int pass_index) {
   {
     /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), ppu_reg.VOGA_HBLANKp.qp_new());
     /*#p21.XYMU*/ ppu_reg.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp);
+    tile_fetcher._XYMU_RENDERINGn = ppu_reg.XYMU_RENDERINGn;
   }
   /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGn.qn_new());
 
   {
-    tile_fetcher._XYMU_RENDERINGn = ppu_reg.XYMU_RENDERINGn;
     /* p27.REPU*/ wire _REPU_VBLANKp = or2(lcd.PARU_VBLANKp(), rst.PYRY_VID_RSTp());
     /* p27.SARY*/ win_reg.SARY_WY_MATCHp.dff17(clk.TALU_xxCDEFxx(), rst.XAPO_VID_RSTn(), _ROGE_WY_MATCHp_old);
     /* p27.REJO*/ win_reg.REJO_WY_MATCH_LATCHp.nor_latch(win_reg.SARY_WY_MATCHp.qp_new(), _REPU_VBLANKp);
@@ -676,14 +660,10 @@ void GateBoy::tock_slow(int pass_index) {
   {
     sprite_fetcher.tock(rst, clk, ppu_reg.XYMU_RENDERINGn, lcd.ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
 
-    //oam_bus.latch_to_temp_a(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp.qp_new(), sprite_fetcher.XUJY_OAM_CLKENp());
-    //oam_bus.latch_to_temp_b(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp.qp_new(), sprite_fetcher.XUJY_OAM_CLKENp());
-
     oam_bus.latch_to_temp_a(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
     oam_bus.latch_to_temp_b(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
 
     SpriteDeltaY delta = SpriteDeltaY::sub(oam_bus.oam_temp_a, lcd.reg_ly);
-    //wire _GESE_SCAN_MATCH_Yp = delta.GESE_SCAN_MATCH_Yp(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
     wire _GESE_SCAN_MATCH_Yp = delta.GESE_SCAN_MATCH_Yp(reg_lcdc.XYMO_LCDC_SPSIZEn);
 
     /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(clk.XOCE_xBCxxFGx(), sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
@@ -725,7 +705,6 @@ void GateBoy::tock_slow(int pass_index) {
   {
     SpriteFirstMatch first_match = sprite_store.get_first_match(sprite_match);
     sprite_store.get_sprite(first_match);
-    //sprite_store.oam_addr_to_sprite_index(oam_bus, clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGn.qn_new(), sprite_scanner.CENO_SCANNINGp.qn_new());
     sprite_store.oam_addr_to_sprite_index(oam_bus, clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGn, sprite_scanner.CENO_SCANNINGp);
     sprite_store.ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp(), lcd.reg_ly, oam_bus.oam_temp_a);
   }
@@ -734,7 +713,6 @@ void GateBoy::tock_slow(int pass_index) {
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(clk.ALET_xBxDxFxH(), ppu_reg.XYMU_RENDERINGn.qn_new(), RYFA_WIN_FETCHn_A_old.qp_old());
 
-    //win_reg.tock(rst, clk, ppu_reg.XYMU_RENDERINGn.qn_new(), TYFA_CLKPIPE_odd, _NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old, RYDY_WIN_HITp_old);
     /* p27.ROCO*/ wire _ROCO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
     /* p27.PYCO*/ win_reg.PYCO_WIN_MATCHp.dff17(_ROCO_CLKPIPE_odd, rst.XAPO_VID_RSTn(), _NUKO_WX_MATCHp_old);
 
@@ -746,16 +724,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   /* p27.TEVO*/ wire TEVO_FETCH_TRIGp = or3(win_reg.SEKO_WIN_FETCH_TRIGp_new(), win_reg.SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp, win_reg.MOSU_WIN_MODE_TRIGp_new(), TEVO_FETCH_TRIGp);
-  //tile_fetcher.tock(clk, vram_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
   tile_fetcher.tock(clk, vram_bus, ppu_reg.XYMU_RENDERINGn, NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
   fine_scroll.tock(ppu_reg.XYMU_RENDERINGn, TYFA_CLKPIPE_odd, TEVO_FETCH_TRIGp);
 
   {
-    //SpritePix sprite_pix = SpritePix::flip(vram_bus, sprite_fetcher.TEXY_SFETCHINGp(), BAXO_OAM_DB5p_old.qp_old());
-    SpritePix sprite_pix = SpritePix::flip(vram_bus, sprite_fetcher.TEXY_SFETCHINGp(), BAXO_OAM_DB5p_old);
-    sprite_fetcher.sprite_pix_a.store_sprite_pix(sprite_pix, sprite_fetcher.XADO_STORE_SPRITE_An());
-    sprite_fetcher.sprite_pix_b.store_sprite_pix(sprite_pix, sprite_fetcher.PUCO_STORE_SPRITE_Bn());
+    sprite_fetcher.sprite_pix_a.store_sprite_pix(sprite_pix_old, sprite_fetcher.XADO_STORE_SPRITE_An());
+    sprite_fetcher.sprite_pix_b.store_sprite_pix(sprite_pix_old, sprite_fetcher.PUCO_STORE_SPRITE_Bn());
   }
 
 

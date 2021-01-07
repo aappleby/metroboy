@@ -53,16 +53,16 @@ void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire
   SigIn SIG_VCC = 1;
   /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp, AXAD_WIN_MODEn);
   /* p26.BAFY*/ wire _BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
-  /* p26.AXEP*/ BUS_VRAM_A00n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BABE_MAP_X0.s);
-  /* p26.AFEB*/ BUS_VRAM_A01n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.ABOD_MAP_X1.s);
-  /* p26.ALEL*/ BUS_VRAM_A02n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BEWY_MAP_X2.s);
-  /* p26.COLY*/ BUS_VRAM_A03n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BYCA_MAP_X3.s);
-  /* p26.AJAN*/ BUS_VRAM_A04n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.ACUL_MAP_X4.s);
-  /* p26.DUHO*/ BUS_VRAM_A05n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.ETAM_MAP_Y0.s);
-  /* p26.CASE*/ BUS_VRAM_A06n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DOTO_MAP_Y1.s);
-  /* p26.CYPO*/ BUS_VRAM_A07n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DABA_MAP_Y2.s);
-  /* p26.CETA*/ BUS_VRAM_A08n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EFYK_MAP_Y3.s);
-  /* p26.DAFE*/ BUS_VRAM_A09n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EJOK_MAP_Y4.s);
+  /* p26.AXEP*/ BUS_VRAM_A00n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BABE_MAP_X0.sum);
+  /* p26.AFEB*/ BUS_VRAM_A01n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.ABOD_MAP_X1.sum);
+  /* p26.ALEL*/ BUS_VRAM_A02n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BEWY_MAP_X2.sum);
+  /* p26.COLY*/ BUS_VRAM_A03n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BYCA_MAP_X3.sum);
+  /* p26.AJAN*/ BUS_VRAM_A04n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.ACUL_MAP_X4.sum);
+  /* p26.DUHO*/ BUS_VRAM_A05n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.ETAM_MAP_Y0.sum);
+  /* p26.CASE*/ BUS_VRAM_A06n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DOTO_MAP_Y1.sum);
+  /* p26.CYPO*/ BUS_VRAM_A07n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.DABA_MAP_Y2.sum);
+  /* p26.CETA*/ BUS_VRAM_A08n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EFYK_MAP_Y3.sum);
+  /* p26.DAFE*/ BUS_VRAM_A09n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EJOK_MAP_Y4.sum);
   /*#p26.AMUV*/ BUS_VRAM_A10n.tri6_nn(_BAFY_BG_MAP_READn, XAFO_LCDC_BGMAPn.qn_new());
   /* p26.COVE*/ BUS_VRAM_A11n.tri6_nn(_BAFY_BG_MAP_READn, SIG_VCC);
   /* p26.COXO*/ BUS_VRAM_A12n.tri6_nn(_BAFY_BG_MAP_READn, SIG_VCC);
@@ -100,9 +100,9 @@ void GateBoyVramBus::tile_to_addr(const BGScrollY scroll_y, const WinLineY win_l
   /* p25.XUCY*/ wire _XUCY_WIN_TILE_READn = nand2(NETA_BGW_TILE_READp, PORE_WIN_MODEp);
 
   /*#p26.ASUM*/ BUS_VRAM_A00n.tri6_nn(_BEJE_BG_TILE_READn, XUHA_FETCH_HILOp);
-  /* p26.EVAD*/ BUS_VRAM_A01n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.FAFO_TILE_Y0.s);
-  /* p26.DAHU*/ BUS_VRAM_A02n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.EMUX_TILE_Y1.s);
-  /* p26.DODE*/ BUS_VRAM_A03n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.ECAB_TILE_Y2.s);
+  /* p26.EVAD*/ BUS_VRAM_A01n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.FAFO_TILE_Y0.sum);
+  /* p26.DAHU*/ BUS_VRAM_A02n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.EMUX_TILE_Y1.sum);
+  /* p26.DODE*/ BUS_VRAM_A03n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.ECAB_TILE_Y2.sum);
 
   /*#p25.XONU*/ BUS_VRAM_A00n.tri6_nn(_XUCY_WIN_TILE_READn, XUHA_FETCH_HILOp);
   /*#p25.WUDO*/ BUS_VRAM_A01n.tri6_nn(_XUCY_WIN_TILE_READn, win_line_y.VYNO_WIN_Y0.qp_new());

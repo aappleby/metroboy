@@ -879,36 +879,6 @@ struct TpLatch : public BitBase {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //-----------------------------------------------------------------------------
 
 inline wire not1(wire a) { return ~a; }
@@ -951,12 +921,12 @@ inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 
 //-----------------------------------------------------------------------------
 
-struct AdderOut {
-  const wire s;
-  const wire c;
+struct Adder {
+  const wire sum;
+  const wire carry;
 };
 
-inline AdderOut add3(wire a, wire b, wire c) {
+inline Adder add3(wire a, wire b, wire c) {
   return {
     bit(bit(a) + bit(b) + bit(c), 0),
     bit(bit(a) + bit(b) + bit(c), 1)
@@ -1039,101 +1009,3 @@ struct TileTempA;
 struct TileTempB;
 struct OamTempA;
 struct OamTempB;
-
-
-/*#p01.ALUR*/ inline wire ALUR_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(AVOR_SYS_RSTp); }
-/*#p01.DULA*/ inline wire DULA_SYS_RSTp     (const wire AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
-/*#p01.CUNU*/ inline wire CUNU_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(DULA_SYS_RSTp(AVOR_SYS_RSTp)); }
-/*#p01.XORE*/ inline wire XORE_SYS_RSTp     (const wire AVOR_SYS_RSTp)   { return not1(CUNU_SYS_RSTn(AVOR_SYS_RSTp)); }
-/* p01.XEBE*/ inline wire XEBE_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/*#p01.WALU*/ inline wire WALU_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/* p01.WESY*/ inline wire WESY_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/* p01.XARE*/ inline wire XARE_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(XORE_SYS_RSTp(AVOR_SYS_RSTp)); }
-/* p03.MULO*/ inline wire MULO_SYS_RSTn     (const wire AVOR_SYS_RSTp)   { return not1(ALUR_SYS_RSTn(AVOR_SYS_RSTp)); }
-
-/* p01.XAPO*/ inline wire XAPO_VID_RSTn     (const wire XODO_VID_RSTp)   { return not1(XODO_VID_RSTp); }
-/* p01.LYHA*/ inline wire LYHA_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/* p01.LYFE*/ inline wire LYFE_VID_RSTn     (const wire XODO_VID_RSTp)   { return not1(LYHA_VID_RSTp(XODO_VID_RSTp)); }
-/* p01.TOFU*/ inline wire TOFU_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/* p01.ROSY*/ inline wire ROSY_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/*#p01.ATAR*/ inline wire ATAR_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/*#p01.ABEZ*/ inline wire ABEZ_VID_RSTn     (const wire XODO_VID_RSTp)   { return not1(ATAR_VID_RSTp(XODO_VID_RSTp)); }
-/* p01.PYRY*/ inline wire PYRY_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-/* p01.AMYG*/ inline wire AMYG_VID_RSTp     (const wire XODO_VID_RSTp)   { return not1(XAPO_VID_RSTn(XODO_VID_RSTp)); }
-
-/* p07.AJAS*/ inline wire AJAS_CPU_RDn      (const wire TEDO_CPU_RDp)    { return not1(TEDO_CPU_RDp); }
-/* p07.ASOT*/ inline wire ASOT_CPU_RDp      (const wire TEDO_CPU_RDp)    { return not1(AJAS_CPU_RDn(TEDO_CPU_RDp)); }
-
-/* p07.DYKY*/ inline wire DYKY_CPU_WRn      (const wire TAPU_CPU_WRp)    { return not1(TAPU_CPU_WRp); }
-/* p07.CUPA*/ inline wire CUPA_CPU_WRp      (const wire TAPU_CPU_WRp)    { return not1(DYKY_CPU_WRn(TAPU_CPU_WRp)); }
-
-#if 0
-
-/* p07.TUNA*/ inline wire TUNA_0000_FDFF    (const Signal BUS_CPU_A[16]) { return nand7(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), BUS_CPU_A[13].qp_new(), BUS_CPU_A[12].qp_new(), BUS_CPU_A[11].qp_new(), BUS_CPU_A[10].qp_new(), BUS_CPU_A[ 9].qp_new()); }
-/* p07.RYCU*/ inline wire RYCU_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
-/* p25.SYRO*/ inline wire SYRO_FE00_FFFF    (const Signal BUS_CPU_A[16]) { return not1(TUNA_0000_FDFF(BUS_CPU_A)); }
-
-/* p03.TOVY*/ inline wire TOVY_A00n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0].qp_new()); }
-/* p08.TOLA*/ inline wire TOLA_A01n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1].qp_new()); }
-/* p22.XOLA*/ inline wire XOLA_A00n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 0].qp_new()); }
-/* p22.XENO*/ inline wire XENO_A01n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 1].qp_new()); }
-/* p22.XUSY*/ inline wire XUSY_A02n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2].qp_new()); }
-/* p22.XERA*/ inline wire XERA_A03n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 3].qp_new()); }
-/* p07.TONA*/ inline wire TONA_A08n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 8].qp_new()); }
-/*#p08.SORE*/ inline wire SORE_A15n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[15].qp_new()); }
-/* p06.SEFY*/ inline wire SEFY_A02n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 2].qp_new()); }
-/* p10.BYKO*/ inline wire BYKO_A05n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 5].qp_new()); }
-/* p10.AKUG*/ inline wire AKUG_A06n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[ 6].qp_new()); }
-/* p08.SOGY*/ inline wire SOGY_A14n         (const Signal BUS_CPU_A[16]) { return not1(BUS_CPU_A[14].qp_new()); }
-
-/* p22.WADO*/ inline wire WADO_A00p         (const Signal BUS_CPU_A[16]) { return not1(XOLA_A00n(BUS_CPU_A)); }
-/* p22.WESA*/ inline wire WESA_A01p         (const Signal BUS_CPU_A[16]) { return not1(XENO_A01n(BUS_CPU_A)); }
-/* p22.WALO*/ inline wire WALO_A02p         (const Signal BUS_CPU_A[16]) { return not1(XUSY_A02n(BUS_CPU_A)); }
-/* p22.WEPO*/ inline wire WEPO_A03p         (const Signal BUS_CPU_A[16]) { return not1(XERA_A03n(BUS_CPU_A)); }
-
-/* p07.SYKE*/ inline wire SYKE_ADDR_HIp     (const Signal BUS_CPU_A[16]) { return nor2(TUNA_0000_FDFF(BUS_CPU_A), TONA_A08n(BUS_CPU_A)); }
-/* p07.SOHA*/ inline wire SOHA_ADDR_HIn     (const Signal BUS_CPU_A[16]) { return not1(SYKE_ADDR_HIp(BUS_CPU_A)); }
-/* p07.ROPE*/ inline wire ROPE_ADDR_OAMn    (const Signal BUS_CPU_A[16]) { return nand2(SOHA_ADDR_HIn(BUS_CPU_A), RYCU_FE00_FFFF(BUS_CPU_A)); }
-/* p07.SARO*/ inline wire SARO_ADDR_OAMp    (const Signal BUS_CPU_A[16]) { return not1(ROPE_ADDR_OAMn(BUS_CPU_A)); }
-/* p22.XALY*/ inline wire XALY_0x00xxxx     (const Signal BUS_CPU_A[16]) { return nor3(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new()); }
-/* p22.WUTU*/ inline wire WUTU_ADDR_PPUn    (const Signal BUS_CPU_A[16]) { return nand3(SYKE_ADDR_HIp(BUS_CPU_A), BUS_CPU_A[ 6].qp_new(), XALY_0x00xxxx(BUS_CPU_A)); }
-/* p22.WERO*/ inline wire WERO_ADDR_PPUp    (const Signal BUS_CPU_A[16]) { return not1(WUTU_ADDR_PPUn(BUS_CPU_A)); }
-/*#p08.TEVY*/ inline wire TEVY_ADDR_VRAMn   (const Signal BUS_CPU_A[16]) { return or3(BUS_CPU_A[13].qp_new(), BUS_CPU_A[14].qp_new(), SORE_A15n(BUS_CPU_A)); }
-/* p06.SARE*/ inline wire SARE_XX00_XX07p   (const Signal BUS_CPU_A[16]) { return nor5 (BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 6].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 3].qp_new()); }
-/* p03.RYFO*/ inline wire RYFO_FF04_FF07p   (const Signal BUS_CPU_A[16]) { return and3(SYKE_ADDR_HIp(BUS_CPU_A), BUS_CPU_A[ 2].qp_new(), SARE_XX00_XX07p(BUS_CPU_A)); }
-/* p10.AMUS*/ inline wire AMUS_XX_0xx00000p (const Signal BUS_CPU_A[16]) { return nor6(BUS_CPU_A[ 0].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 3].qp_new(), BUS_CPU_A[ 4].qp_new(), BUS_CPU_A[ 7].qp_new()); }
-/* p07.SAPA*/ inline wire SAPA_XX_xxxx1111p (const Signal BUS_CPU_A[16]) { return and4(BUS_CPU_A[ 0].qp_new(), BUS_CPU_A[ 1].qp_new(), BUS_CPU_A[ 2].qp_new(), BUS_CPU_A[ 3].qp_new()); }
-/* p07.SEMY*/ inline wire SEMY_XX_0000xxxxp (const Signal BUS_CPU_A[16]) { return nor4(BUS_CPU_A[ 7].qp_new(), BUS_CPU_A[ 6].qp_new(), BUS_CPU_A[ 5].qp_new(), BUS_CPU_A[ 4].qp_new()); }
-/* p06.SANO*/ inline wire SANO_FF00_FF03p   (const Signal BUS_CPU_A[16]) { return and3(SARE_XX00_XX07p(BUS_CPU_A), SEFY_A02n(BUS_CPU_A), SYKE_ADDR_HIp(BUS_CPU_A)); }
-/* p10.ANAP*/ inline wire ANAP_FF_0xx00000  (const Signal BUS_CPU_A[16]) { return and2(SYKE_ADDR_HIp(BUS_CPU_A), AMUS_XX_0xx00000p(BUS_CPU_A)); }
-/* p08.TUMA*/ inline wire TUMA_A000_BFFFp   (const Signal BUS_CPU_A[16]) { return and3(BUS_CPU_A[13].qp_new(), SOGY_A14n(BUS_CPU_A), BUS_CPU_A[15].qp_new()); }
-/* p08.TYNU*/ inline wire TYNU_A000_FFFFp   (const Signal BUS_CPU_A[16]) { return and_or3(BUS_CPU_A[15].qp_new(), BUS_CPU_A[14].qp_new(), TUMA_A000_BFFFp(BUS_CPU_A)); }
-/* p28.ADAH*/ inline wire ADAH_FE00_FEFFn   (const Signal BUS_CPU_A[16]) { return not1(SARO_ADDR_OAMp(BUS_CPU_A)); }
-
-/* p22.WORU*/ inline wire WORU_FF40n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WOFA*/ inline wire WOFA_FF41n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WEBU*/ inline wire WEBU_FF42n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WAVU*/ inline wire WAVU_FF43n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WYLE*/ inline wire WYLE_FF44n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WETY*/ inline wire WETY_FF45n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/*#p22.WATE*/ inline wire WATE_FF46n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WYBO*/ inline wire WYBO_FF47n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), WALO_A02p(BUS_CPU_A), XERA_A03n(BUS_CPU_A)); }
-/* p22.WETA*/ inline wire WETA_FF48n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-/* p22.VAMA*/ inline wire VAMA_FF49n        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), XENO_A01n(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-/* p22.WYVO*/ inline wire WYVO_FF4An        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), XOLA_A00n(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-/* p22.WAGE*/ inline wire WAGE_FF4Bn        (const Signal BUS_CPU_A[16]) { return nand5(WERO_ADDR_PPUp(BUS_CPU_A), WADO_A00p(BUS_CPU_A), WESA_A01p(BUS_CPU_A), XUSY_A02n(BUS_CPU_A), WEPO_A03p(BUS_CPU_A)); }
-
-/* p22.VOCA*/ inline wire VOCA_FF40p        (const Signal BUS_CPU_A[16]) { return not1(WORU_FF40n(BUS_CPU_A)); }
-/* p22.VARY*/ inline wire VARY_FF41p        (const Signal BUS_CPU_A[16]) { return not1(WOFA_FF41n(BUS_CPU_A)); }
-/* p22.XARO*/ inline wire XARO_FF42p        (const Signal BUS_CPU_A[16]) { return not1(WEBU_FF42n(BUS_CPU_A)); }
-/* p22.XAVY*/ inline wire XAVY_FF43p        (const Signal BUS_CPU_A[16]) { return not1(WAVU_FF43n(BUS_CPU_A)); }
-/* p22.XOGY*/ inline wire XOGY_FF44p        (const Signal BUS_CPU_A[16]) { return not1(WYLE_FF44n(BUS_CPU_A)); }
-/* p22.XAYU*/ inline wire XAYU_FF45p        (const Signal BUS_CPU_A[16]) { return not1(WETY_FF45n(BUS_CPU_A)); }
-/*#p22.XEDA*/ inline wire XEDA_FF46p        (const Signal BUS_CPU_A[16]) { return not1(WATE_FF46n(BUS_CPU_A)); }
-/* p22.WERA*/ inline wire WERA_FF47p        (const Signal BUS_CPU_A[16]) { return not1(WYBO_FF47n(BUS_CPU_A)); }
-/* p22.XAYO*/ inline wire XAYO_FF48p        (const Signal BUS_CPU_A[16]) { return not1(WETA_FF48n(BUS_CPU_A)); }
-/* p22.TEGO*/ inline wire TEGO_FF49p        (const Signal BUS_CPU_A[16]) { return not1(VAMA_FF49n(BUS_CPU_A)); }
-/* p22.VYGA*/ inline wire VYGA_FF4Ap        (const Signal BUS_CPU_A[16]) { return not1(WYVO_FF4An(BUS_CPU_A)); }
-/* p22.VUMY*/ inline wire VUMY_FF4Bp        (const Signal BUS_CPU_A[16]) { return not1(WAGE_FF4Bn(BUS_CPU_A)); }
-
-#endif

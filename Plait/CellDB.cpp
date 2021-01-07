@@ -398,7 +398,7 @@ bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
     {"Bus",       CellType::BUS},
     //{"wire",      CellType::LOGIC},
     {"Gate",      CellType::LOGIC},
-    {"AdderOut",  CellType::ADDER},
+    {"Adder",     CellType::ADDER},
   };
 
   CHECK_P(c.cell_type == CellType::UNKNOWN);
@@ -509,10 +509,10 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
     else if (raw_port == "qn_any") {
       c.add_arg(match[1].str(), "qn");
     }
-    else if (raw_port == "c") {
+    else if (raw_port == "carry") {
       c.add_arg(match[1].str(), "carry");
     }
-    else if (raw_port == "s") {
+    else if (raw_port == "sum") {
       c.add_arg(match[1].str(), "sum");
     }
     else {

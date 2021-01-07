@@ -21,22 +21,22 @@ SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) 
   /* p29.GUSU*/ wire GUSU_LY7n_new_evn = not1(reg_ly.LAFO_LY7p.qp_new());
 
   /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);
-  /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.c);
-  /* p29.FECO*/ auto _FECO_YDIFF2 = add3(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p.qp_new(), _ENEF_YDIFF1.c);
-  /* p29.GYKY*/ auto _GYKY_YDIFF3 = add3(FUVE_LY3n_new_evn, oam_temp_a.XYJU_OAM_DA3p.qp_new(), _FECO_YDIFF2.c);
-  /* p29.GOPU*/ auto _GOPU_YDIFF4 = add3(FEPU_LY4n_new_evn, oam_temp_a.YBOG_OAM_DA4p.qp_new(), _GYKY_YDIFF3.c);
-  /* p29.FUWA*/ auto _FUWA_YDIFF5 = add3(FOFA_LY5n_new_evn, oam_temp_a.WYSO_OAM_DA5p.qp_new(), _GOPU_YDIFF4.c);
-  /* p29.GOJU*/ auto _GOJU_YDIFF6 = add3(FEMO_LY6n_new_evn, oam_temp_a.XOTE_OAM_DA6p.qp_new(), _FUWA_YDIFF5.c);
-  /* p29.WUHU*/ auto _WUHU_YDIFF7 = add3(GUSU_LY7n_new_evn, oam_temp_a.YZAB_OAM_DA7p.qp_new(), _GOJU_YDIFF6.c);
+  /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.carry);
+  /* p29.FECO*/ auto _FECO_YDIFF2 = add3(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p.qp_new(), _ENEF_YDIFF1.carry);
+  /* p29.GYKY*/ auto _GYKY_YDIFF3 = add3(FUVE_LY3n_new_evn, oam_temp_a.XYJU_OAM_DA3p.qp_new(), _FECO_YDIFF2.carry);
+  /* p29.GOPU*/ auto _GOPU_YDIFF4 = add3(FEPU_LY4n_new_evn, oam_temp_a.YBOG_OAM_DA4p.qp_new(), _GYKY_YDIFF3.carry);
+  /* p29.FUWA*/ auto _FUWA_YDIFF5 = add3(FOFA_LY5n_new_evn, oam_temp_a.WYSO_OAM_DA5p.qp_new(), _GOPU_YDIFF4.carry);
+  /* p29.GOJU*/ auto _GOJU_YDIFF6 = add3(FEMO_LY6n_new_evn, oam_temp_a.XOTE_OAM_DA6p.qp_new(), _FUWA_YDIFF5.carry);
+  /* p29.WUHU*/ auto _WUHU_YDIFF7 = add3(GUSU_LY7n_new_evn, oam_temp_a.YZAB_OAM_DA7p.qp_new(), _GOJU_YDIFF6.carry);
 
-  /* p29.DEGE*/ wire _DEGE_SPRITE_DELTA0_new = not1(_ERUC_YDIFF0.s);
-  /* p29.DABY*/ wire _DABY_SPRITE_DELTA1_new = not1(_ENEF_YDIFF1.s);
-  /* p29.DABU*/ wire _DABU_SPRITE_DELTA2_new = not1(_FECO_YDIFF2.s);
-  /* p29.GYSA*/ wire _GYSA_SPRITE_DELTA3_new = not1(_GYKY_YDIFF3.s);
-  /* p29.GACE*/ wire _GACE_SPRITE_DELTA4_new = not1(_GOPU_YDIFF4.s);
-  /* p29.GUVU*/ wire _GUVU_SPRITE_DELTA5_new = not1(_FUWA_YDIFF5.s);
-  /* p29.GYDA*/ wire _GYDA_SPRITE_DELTA6_new = not1(_GOJU_YDIFF6.s);
-  /* p29.GEWY*/ wire _GEWY_SPRITE_DELTA7_new = not1(_WUHU_YDIFF7.s);
+  /* p29.DEGE*/ wire _DEGE_SPRITE_DELTA0_new = not1(_ERUC_YDIFF0.sum);
+  /* p29.DABY*/ wire _DABY_SPRITE_DELTA1_new = not1(_ENEF_YDIFF1.sum);
+  /* p29.DABU*/ wire _DABU_SPRITE_DELTA2_new = not1(_FECO_YDIFF2.sum);
+  /* p29.GYSA*/ wire _GYSA_SPRITE_DELTA3_new = not1(_GYKY_YDIFF3.sum);
+  /* p29.GACE*/ wire _GACE_SPRITE_DELTA4_new = not1(_GOPU_YDIFF4.sum);
+  /* p29.GUVU*/ wire _GUVU_SPRITE_DELTA5_new = not1(_FUWA_YDIFF5.sum);
+  /* p29.GYDA*/ wire _GYDA_SPRITE_DELTA6_new = not1(_GOJU_YDIFF6.sum);
+  /* p29.GEWY*/ wire _GEWY_SPRITE_DELTA7_new = not1(_WUHU_YDIFF7.sum);
 
   return {
     _DEGE_SPRITE_DELTA0_new,
@@ -53,8 +53,8 @@ SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) 
 }
 
 wire SpriteDeltaY::GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn) {
-  /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), GYKY_YDIFF3.s);
-  /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, WUHU_YDIFF7.c, _GOVU_SPSIZE_MATCH_new);
+  /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), GYKY_YDIFF3.sum);
+  /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
   /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
   return _GESE_SCAN_MATCH_Yp_new;
 }
@@ -117,13 +117,13 @@ BGScrollX BGScrollX::add(PixCount& pix_count, RegSCX reg_scx) {
   SigIn SIG_GND = 0;
 
   /*#p26.ATAD*/ auto _ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), SIG_GND);
-  /* p26.BEHU*/ auto _BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0.c);
-  /* p26.APYH*/ auto _APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1.c);
-  /* p26.BABE*/ auto _BABE_MAP_X0  = add3(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), _APYH_TILE_X2.c);
-  /* p26.ABOD*/ auto _ABOD_MAP_X1  = add3(pix_count.TUHU_PX4p.qp_new(), reg_scx.BEMY_SCX4n.qn_new(), _BABE_MAP_X0.c);
-  /* p26.BEWY*/ auto _BEWY_MAP_X2  = add3(pix_count.TUKY_PX5p.qp_new(), reg_scx.CUZY_SCX5n.qn_new(), _ABOD_MAP_X1.c);
-  /* p26.BYCA*/ auto _BYCA_MAP_X3  = add3(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), _BEWY_MAP_X2.c);
-  /* p26.ACUL*/ auto _ACUL_MAP_X4  = add3(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), _BYCA_MAP_X3.c);
+  /* p26.BEHU*/ auto _BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0.carry);
+  /* p26.APYH*/ auto _APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1.carry);
+  /* p26.BABE*/ auto _BABE_MAP_X0  = add3(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), _APYH_TILE_X2.carry);
+  /* p26.ABOD*/ auto _ABOD_MAP_X1  = add3(pix_count.TUHU_PX4p.qp_new(), reg_scx.BEMY_SCX4n.qn_new(), _BABE_MAP_X0.carry);
+  /* p26.BEWY*/ auto _BEWY_MAP_X2  = add3(pix_count.TUKY_PX5p.qp_new(), reg_scx.CUZY_SCX5n.qn_new(), _ABOD_MAP_X1.carry);
+  /* p26.BYCA*/ auto _BYCA_MAP_X3  = add3(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), _BEWY_MAP_X2.carry);
+  /* p26.ACUL*/ auto _ACUL_MAP_X4  = add3(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), _BYCA_MAP_X3.carry);
 
   return {
     _ATAD_TILE_X0,
@@ -141,13 +141,13 @@ BGScrollY BGScrollY::add(RegLY& reg_ly, RegSCY& reg_scy) {
   SigIn SIG_GND = 0;
 
   /*#p26.FAFO*/ auto _FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), SIG_GND);
-  /* p26.EMUX*/ auto _EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0.c);
-  /* p26.ECAB*/ auto _ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1.c);
-  /* p26.ETAM*/ auto _ETAM_MAP_Y0  = add3(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), _ECAB_TILE_Y2.c);
-  /* p26.DOTO*/ auto _DOTO_MAP_Y1  = add3(reg_ly.LOVU_LY4p.qp_new(), reg_scy.DEDE_SCY4n.qn_new(), _ETAM_MAP_Y0.c);
-  /* p26.DABA*/ auto _DABA_MAP_Y2  = add3(reg_ly.LEMA_LY5p.qp_new(), reg_scy.FOTY_SCY5n.qn_new(), _DOTO_MAP_Y1.c);
-  /* p26.EFYK*/ auto _EFYK_MAP_Y3  = add3(reg_ly.MATO_LY6p.qp_new(), reg_scy.FOHA_SCY6n.qn_new(), _DABA_MAP_Y2.c);
-  /* p26.EJOK*/ auto _EJOK_MAP_Y4  = add3(reg_ly.LAFO_LY7p.qp_new(), reg_scy.FUNY_SCY7n.qn_new(), _EFYK_MAP_Y3.c);
+  /* p26.EMUX*/ auto _EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0.carry);
+  /* p26.ECAB*/ auto _ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1.carry);
+  /* p26.ETAM*/ auto _ETAM_MAP_Y0  = add3(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), _ECAB_TILE_Y2.carry);
+  /* p26.DOTO*/ auto _DOTO_MAP_Y1  = add3(reg_ly.LOVU_LY4p.qp_new(), reg_scy.DEDE_SCY4n.qn_new(), _ETAM_MAP_Y0.carry);
+  /* p26.DABA*/ auto _DABA_MAP_Y2  = add3(reg_ly.LEMA_LY5p.qp_new(), reg_scy.FOTY_SCY5n.qn_new(), _DOTO_MAP_Y1.carry);
+  /* p26.EFYK*/ auto _EFYK_MAP_Y3  = add3(reg_ly.MATO_LY6p.qp_new(), reg_scy.FOHA_SCY6n.qn_new(), _DABA_MAP_Y2.carry);
+  /* p26.EJOK*/ auto _EJOK_MAP_Y4  = add3(reg_ly.LAFO_LY7p.qp_new(), reg_scy.FUNY_SCY7n.qn_new(), _EFYK_MAP_Y3.carry);
 
   return {
     _FAFO_TILE_Y0,
@@ -630,28 +630,28 @@ void TileTempB::store_vram_data(const GateBoyVramBus& vram_bus, wire LABU_LATCH_
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpritePixA::store_sprite_pix(SpritePix sprite, wire XADO_STORE_SPRITE_An) {
-  /* p33.REWO*/ REWO_SPRITE_DA0n.dff8n(XADO_STORE_SPRITE_An, sprite.PUTE_FLIP0p);
-  /* p33.PEBA*/ PEBA_SPRITE_DA1n.dff8n(XADO_STORE_SPRITE_An, sprite.PELO_FLIP1p);
-  /* p33.MOFO*/ MOFO_SPRITE_DA2n.dff8n(XADO_STORE_SPRITE_An, sprite.PONO_FLIP2p);
-  /* p33.PUDU*/ PUDU_SPRITE_DA3n.dff8n(XADO_STORE_SPRITE_An, sprite.POBE_FLIP3p);
-  /* p33.SAJA*/ SAJA_SPRITE_DA4n.dff8n(XADO_STORE_SPRITE_An, sprite.PACY_FLIP4p);
-  /* p33.SUNY*/ SUNY_SPRITE_DA5n.dff8n(XADO_STORE_SPRITE_An, sprite.PUGU_FLIP5p);
-  /* p33.SEMO*/ SEMO_SPRITE_DA6n.dff8n(XADO_STORE_SPRITE_An, sprite.PAWE_FLIP6p);
-  /* p33.SEGA*/ SEGA_SPRITE_DA7n.dff8n(XADO_STORE_SPRITE_An, sprite.PULY_FLIP7p);
+void SpritePixA::store_sprite_pix(SpritePix sprite_pix_old, wire XADO_STORE_SPRITE_An) {
+  /* p33.REWO*/ REWO_SPRITE_DA0n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PUTE_FLIP0p);
+  /* p33.PEBA*/ PEBA_SPRITE_DA1n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PELO_FLIP1p);
+  /* p33.MOFO*/ MOFO_SPRITE_DA2n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PONO_FLIP2p);
+  /* p33.PUDU*/ PUDU_SPRITE_DA3n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.POBE_FLIP3p);
+  /* p33.SAJA*/ SAJA_SPRITE_DA4n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PACY_FLIP4p);
+  /* p33.SUNY*/ SUNY_SPRITE_DA5n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PUGU_FLIP5p);
+  /* p33.SEMO*/ SEMO_SPRITE_DA6n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PAWE_FLIP6p);
+  /* p33.SEGA*/ SEGA_SPRITE_DA7n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PULY_FLIP7p);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpritePixB::store_sprite_pix(SpritePix sprite, wire PUCO_STORE_SPRITE_Bn) {
-  /* p33.PEFO*/ PEFO_SPRITE_DB0n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PUTE_FLIP0p);
-  /* p33.ROKA*/ ROKA_SPRITE_DB1n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PELO_FLIP1p);
-  /* p33.MYTU*/ MYTU_SPRITE_DB2n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PONO_FLIP2p);
-  /* p33.RAMU*/ RAMU_SPRITE_DB3n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.POBE_FLIP3p);
-  /* p33.SELE*/ SELE_SPRITE_DB4n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PACY_FLIP4p);
-  /* p33.SUTO*/ SUTO_SPRITE_DB5n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PUGU_FLIP5p);
-  /* p33.RAMA*/ RAMA_SPRITE_DB6n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PAWE_FLIP6p);
-  /* p33.RYDU*/ RYDU_SPRITE_DB7n.dff8n(PUCO_STORE_SPRITE_Bn, sprite.PULY_FLIP7p);
+void SpritePixB::store_sprite_pix(SpritePix sprite_pix_old, wire PUCO_STORE_SPRITE_Bn) {
+  /* p33.PEFO*/ PEFO_SPRITE_DB0n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PUTE_FLIP0p);
+  /* p33.ROKA*/ ROKA_SPRITE_DB1n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PELO_FLIP1p);
+  /* p33.MYTU*/ MYTU_SPRITE_DB2n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PONO_FLIP2p);
+  /* p33.RAMU*/ RAMU_SPRITE_DB3n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.POBE_FLIP3p);
+  /* p33.SELE*/ SELE_SPRITE_DB4n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PACY_FLIP4p);
+  /* p33.SUTO*/ SUTO_SPRITE_DB5n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PUGU_FLIP5p);
+  /* p33.RAMA*/ RAMA_SPRITE_DB6n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PAWE_FLIP6p);
+  /* p33.RYDU*/ RYDU_SPRITE_DB7n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PULY_FLIP7p);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

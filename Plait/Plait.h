@@ -7,6 +7,8 @@
 
 using namespace glm;
 
+struct NodeGroup;
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct Node {
@@ -16,11 +18,14 @@ struct Node {
   dvec2 pos_rel = {0,0};
   Node* anchor = nullptr;
   bool pinned = 1;
-  const Cell* cell = nullptr;
   int  mark = 0;
   bool ghost = 0;
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   dvec2 spring_force = {0,0};
+  uint32_t color = 0xFFFF00FF;
+  std::vector<Node*>       prev_node;
+  std::vector<std::string> prev_port;
+  NodeGroup* group;
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(Node* target);
@@ -105,32 +110,15 @@ struct Node {
 struct NodeGroup {
   NodeGroup(const Cell* _cell) {
     cell = _cell;
-    nodes.resize(1);
-    nodes[0] = new Node();
-    nodes[0]->cell = _cell;
   }
 
-  const char* tag() const;
-  const char* name() const;
-  const char* gate() const;
-
-  //----------------------------------------
-  // Serialized state
-
-  std::vector<Node*> nodes;
-
-  //----------------------------------------
-  // State from cell db
+  const char* tag() const  { return cell ? cell->tag.c_str()  : "<no_tag>"; }
+  const char* name() const { return cell ? cell->name.c_str() : "<no_cell>"; }
+  const char* gate() const { return cell ? cell->gate.c_str() : "<no_gate>"; }
 
   const Cell* cell = nullptr;
+  std::vector<Node*> nodes;
   std::vector<NodeGroup*>  prev_group;
-  std::vector<std::string> prev_port;
-  std::vector<NodeGroup*>  next_group;
-
-  //----------------------------------------
-  // Sim/UI state
-
-  uint32_t color = 0xFFFF00FF;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,7 +127,7 @@ struct Plait {
   void save_json(const char* filename);
   void load_json(const char* filename, CellDB& cell_db);
 
-  std::map<std::string, NodeGroup*> node_map;
+  std::map<std::string, NodeGroup*> tag_to_group;
 
   NodeGroup* get_or_create_node(const std::string& tag, CellDB& cell_db) {
     auto cell = cell_db.tag_to_cell[tag];
@@ -148,11 +136,11 @@ struct Plait {
       return nullptr;
     }
 
-    auto node = node_map[tag];
+    auto node = tag_to_group[tag];
     if (node) return node;
 
     node = new NodeGroup(cell);
-    node_map[tag] = node;
+    tag_to_group[tag] = node;
     return node;
   }
 };

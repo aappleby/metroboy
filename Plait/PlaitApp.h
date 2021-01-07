@@ -52,20 +52,22 @@ public:
   void app_render_frame() override;
   void app_render_ui() override;
 
-  typedef std::function<void(NodeGroup*)> NodeCallback;
+  typedef std::function<void(NodeGroup*)> NodeGroupCallback;
+  typedef std::function<void(Node*)>      NodeCallback;
 
-  void apply_region(dvec2 corner_a, dvec2 corner_b, NodeCallback callback);
+  void apply_region_node (dvec2 corner_a, dvec2 corner_b, NodeCallback callback);
 
   void select_region(dvec2 corner_a, dvec2 corner_b);
   void lock_region(dvec2 corner_a, dvec2 corner_b);
-  void select_node(NodeGroup* node);
+  void select_node(Node* node);
 
   void commit_selection();
   void revert_selection();
   void clear_selection();
 
-  NodeGroup* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
-  void  draw_node(NodeGroup* node);
+  Node* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
+
+  void  draw_node(Node* node);
 
   void event_select_tool  (SDL_Event event);
   void event_imgui        (SDL_Event event);
@@ -108,34 +110,18 @@ public:
 
   int frame_count = 0;
 
-  //uint32_t mouse_buttons_old = 0;
-  //uint32_t mouse_buttons_new = 0;
-  //uint32_t mouse_buttons_posedge = 0;
-  //uint32_t mouse_buttons_negedge = 0;
-
-  //const uint8_t* keyboard_state = nullptr;
-  //int keyboard_count = 0;
-
-  //dvec2 click_start_screen = {0,0};
-  //dvec2 click_end_screen = {0,0};
-
-  //dvec2 click_start_world = {0,0};
-  //dvec2 click_end_world = {0,0};
-
   bool show_edges = true;
   bool show_anchors = true;
 
-  std::set<NodeGroup*> selection;
+  //std::set<NodeGroup*> group_selection;
+  std::set<Node*>      node_selection;
 
-  NodeGroup* clicked_node = nullptr;
-  dvec2 clicked_offset = {0,0};
+  Node*      clicked_node = nullptr;
+  //NodeGroup* clicked_group = nullptr;
+  dvec2      clicked_offset = {0,0};
 
-  NodeGroup* hovered_node = nullptr;
-
-  //std::vector<uint8_t> keys_old;
-  //std::vector<uint8_t> keys_new;
-  //std::vector<uint8_t> keys_posedge;
-  //std::vector<uint8_t> keys_negedge;
+  //NodeGroup* hovered_group = nullptr;
+  Node*      hovered_node = nullptr;
 };
 
 //-----------------------------------------------------------------------------

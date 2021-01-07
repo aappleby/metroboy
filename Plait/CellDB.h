@@ -45,6 +45,10 @@ struct Cell {
   std::string           doc;
 
   int mark = 0;
+
+  void add_arg(const std::string& _tag, const std::string& _port) {
+    args.push_back({_tag,_port});
+  }
 };
 
 //------------------------------------------------------------------------------------------------------------------------

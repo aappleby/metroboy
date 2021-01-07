@@ -349,7 +349,7 @@ bool CellDB::parse_cell_gate(Cell& c, const std::string& gate) {
 
 set<string> valid_dff_types    = { "DFF8p", "DFF8n", "DFF9", "DFF11", "DFF13", "DFF17", "DFF20", "DFF22" };
 set<string> valid_latch_types  = { "NorLatch", "NandLatch", "TpLatch" };
-set<string> valid_pin_types    = { "PinIn", "PinOut", "PinIO" };
+set<string> valid_pin_types    = { "PinIn", "PinOut", "PinIO", "PinClk" };
 
 bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
 
@@ -437,8 +437,6 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
     "^"
     "(?:\\w+\\.)*"
     "(SIG_\\w+)"
-    "\\."
-    "(\\w*)"
     ".*"
     "$"
   );
@@ -456,7 +454,7 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
   static regex pin_arg_with_port(
     "^"
     "(?:\\w+\\.)*"
-    "(PIN_\\w+)"
+    "(PIN_\\d{2})\\w*"
     "\\."
     "(\\w*)"
     ".*"
@@ -466,38 +464,38 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
   static regex pin_arg(
     "^"
     "(?:\\w+\\.)*"
-    "(PIN_\\w+)"
+    "(PIN_\\d{2})\\w*"
     ".*"
     "$"
   );
 
   smatch match;
   if (regex_match(arg, match, simple_arg)) {
-    c.args.push_back({match[1].str(), ""});
+    c.add_arg(match[1].str(), "");
     return true;
   }
   else if (regex_match(arg, match, cell_arg_with_port)) {
-    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
+    c.add_arg(match[1].str(), match[2].str().substr(0,2));
     return true;
   }
   else if (regex_match(arg, match, cell_arg_function)) {
-    c.args.push_back({match[1].str(), ""});
+    c.add_arg(match[1].str(), "");
     return true;
   }
   else if (regex_match(arg, match, sig_arg)) {
-    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
+    c.add_arg(match[1].str(), "");
     return true;
   }
   else if (regex_match(arg, match, bus_arg)) {
-    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
+    c.add_arg(match[1].str(), match[2].str().substr(0,2));
     return true;
   }
   else if (regex_match(arg, match, pin_arg_with_port)) {
-    c.args.push_back({match[1].str(), match[2].str().substr(0,2)});
+    c.add_arg(match[1].str(), match[2].str().substr(0,2));
     return true;
   }
   else if (regex_match(arg, match, pin_arg)) {
-    c.args.push_back({match[1].str(), ""});
+    c.add_arg(match[1].str(), "");
     return true;
   }
   else {
@@ -824,6 +822,18 @@ bool CellDB::parse_dir(const std::string& path) {
   //----------------------------------------
   // Check that all cells are sane.
 
+  /*
+  for (auto& [tag, cell] : tag_to_cell) {
+    if (tag[0] == 'P') printf("%s\n", tag.c_str());
+  }
+  */
+
+  {
+    auto& gnd = tag_to_cell["PIN_32"];
+    gnd->dump(d);
+  }
+
+
   for (auto& [tag, cell] : tag_to_cell) {
     cell->sanity_check();
 
@@ -834,13 +844,14 @@ bool CellDB::parse_dir(const std::string& path) {
       if (arg_cell->cell_type == CellType::PIN_IN)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::PIN_OUT) { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::PIN_IO)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::SIG_IN)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::SIG_OUT) { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::BUS)     { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::DFF)     { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::LATCH)   { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::TRIBUF)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
       if (arg_cell->cell_type == CellType::ADDER)   { CHECK_P(arg.port == "s"   || arg.port == "c"); }
+
+      if (arg_cell->cell_type == CellType::SIG_IN)  { CHECK_P(arg.port == ""); }
       if (arg_cell->cell_type == CellType::LOGIC)   { CHECK_P(arg.port == ""); }
     }
   }

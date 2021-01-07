@@ -51,11 +51,11 @@ void GateBoyInterrupts::write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cp
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp, FFFF_HIT_ext);
 
-  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D00p.qp_old());
-  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D01p.qp_old());
-  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D02p.qp_old());
-  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D03p.qp_old());
-  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.int_qn_new(), cpu_bus.BUS_CPU_D04p.qp_old());
+  IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), cpu_bus.BUS_CPU_D00p.qp_old());
+  IE_D1.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), cpu_bus.BUS_CPU_D01p.qp_old());
+  IE_D2.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), cpu_bus.BUS_CPU_D02p.qp_old());
+  IE_D3.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), cpu_bus.BUS_CPU_D03p.qp_old());
+  IE_D4.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), cpu_bus.BUS_CPU_D04p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

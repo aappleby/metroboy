@@ -905,7 +905,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.qp_old(), 0b10000011);
     EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.qp_old(), 0b01111111);
     EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.qp_old(), 0b10000000);
-    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.ext_qp_old(),    0b11110000);
+    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
     gb.next_phase();
   }
 

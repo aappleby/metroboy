@@ -392,7 +392,7 @@ bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
     {"PinIn",     CellType::PIN_IN},
     {"PinOut",    CellType::PIN_OUT},
     {"PinIO",     CellType::PIN_IO},
-    {"PinClk",    CellType::PIN_CLK},
+    {"PinClock",    CellType::PIN_CLK},
     {"SigIn",     CellType::SIG_IN},
     {"SigOut",    CellType::SIG_OUT},
     {"Bus",       CellType::BUS},
@@ -549,7 +549,7 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
   else if (regex_match(arg, match, pin_arg_with_port)) {
     const auto& raw_port = match[2].str();
 
-    if (raw_port == "qp_int_new") {
+    if      (raw_port == "qp_new") {
       c.add_arg(match[1].str(), "qp");
     }
     else if (raw_port == "qp_any") {
@@ -558,10 +558,10 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
     else if (raw_port == "qp_old") {
       c.add_arg(match[1].str(), "qp");
     }
-    else if (raw_port == "ck") {
+    else if (raw_port == "clock") {
       c.add_arg(match[1].str(), "clock");
     }
-    else if (raw_port == "cg") {
+    else if (raw_port == "clock_good") {
       c.add_arg(match[1].str(), "clock_good");
     }
     else {

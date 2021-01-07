@@ -580,7 +580,6 @@ struct Bus : public BitBase {
 struct PinIO : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire qp_int_new() const { return qp_new(); }
   wire qp_ext_new() const { return qn_new(); }
 
   void reset_for_pass() {
@@ -682,9 +681,6 @@ struct PinIO : public BitBase {
 struct PinIn : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire qp_int_new() const { return qp_new(); }
-  wire int_qn_new() const { return qn_new(); }
-
   void reset_for_pass() {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY3 | BIT_NEW | BIT_DATA;
@@ -706,13 +702,10 @@ struct PinIn : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct PinClk {
+struct PinClock {
 
-  wire cg() const { return CLKGOOD.qp_new(); }
-  wire ck() const     { return CLK.qp_new(); }
-
-  //wire qp_int_new() const { return qp_new(); }
-  //wire int_qn_new() const { return qn_new(); }
+  wire clock_good() const { return CLKGOOD.qp_new(); }
+  wire clock() const      { return CLK.qp_new(); }
 
   void reset_for_pass() {
     CLK.reset_for_pass();
@@ -735,7 +728,7 @@ private:
 struct PinOut : public BitBase {
   void reset(uint8_t s) { state = s; }
 
-  wire ext_qp_old() const { return qn_old(); }
+  wire qp_ext_old() const { return qn_old(); }
   wire qp_ext_new() const { return qn_new(); }
 
   void reset_for_pass() {

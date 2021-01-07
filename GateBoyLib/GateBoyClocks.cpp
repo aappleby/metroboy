@@ -7,13 +7,13 @@ void GateBoyClock::tock(const GateBoyResetDebug& rst) {
   PIN_73_CLK_DRIVE.reset_for_pass();
   PIN_75_CLK_OUT.reset_for_pass();
 
-  /*PIN_73*/ PIN_73_CLK_DRIVE.pin_out_dp(PIN_74_CLK.ck());
+  /*PIN_73*/ PIN_73_CLK_DRIVE.pin_out_dp(PIN_74_CLK.clock());
 
-  /* p01.ARYS*/ wire ARYS = not1(PIN_74_CLK.ck());
+  /* p01.ARYS*/ wire ARYS = not1(PIN_74_CLK.clock());
   /* p01.AVET*/ AVET = nand2(ANOS, ARYS);
-  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK.ck(), AVET);
+  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK.clock(), AVET);
   /* p01.AVET*/ AVET = nand2(ANOS, ARYS);
-  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK.ck(), AVET);
+  /* p01.ANOS*/ ANOS = nand2(PIN_74_CLK.clock(), AVET);
 
   /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(AVET);
   /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL

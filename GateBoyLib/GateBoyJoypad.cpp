@@ -13,10 +13,10 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
   /* p10.ACAT*/ wire _ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.ANAP_FF_0xx00000(), cpu_bus.AKUG_A06n(), cpu_bus.BYKO_A05n());
 
   /* p05.BYZO*/ wire _BYZO_FF00_RDn = not1(_ACAT_FF00_RDp);
-  /* p05.KEVU*/ KEVU_JOYP_L0n.tp_latchn(_BYZO_FF00_RDn, PIN_67_JOY_P10.qp_int_new());
-  /* p05.KAPA*/ KAPA_JOYP_L1n.tp_latchn(_BYZO_FF00_RDn, PIN_66_JOY_P11.qp_int_new());
-  /* p05.KEJA*/ KEJA_JOYP_L2n.tp_latchn(_BYZO_FF00_RDn, PIN_65_JOY_P12.qp_int_new());
-  /* p05.KOLO*/ KOLO_JOYP_L3n.tp_latchn(_BYZO_FF00_RDn, PIN_64_JOY_P13.qp_int_new());
+  /* p05.KEVU*/ KEVU_JOYP_L0n.tp_latchn(_BYZO_FF00_RDn, PIN_67_JOY_P10.qp_new());
+  /* p05.KAPA*/ KAPA_JOYP_L1n.tp_latchn(_BYZO_FF00_RDn, PIN_66_JOY_P11.qp_new());
+  /* p05.KEJA*/ KEJA_JOYP_L2n.tp_latchn(_BYZO_FF00_RDn, PIN_65_JOY_P12.qp_new());
+  /* p05.KOLO*/ KOLO_JOYP_L3n.tp_latchn(_BYZO_FF00_RDn, PIN_64_JOY_P13.qp_new());
 
   /* p05.KEMA*/ cpu_bus.BUS_CPU_D00p.tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new());
   /* p05.KURO*/ cpu_bus.BUS_CPU_D01p.tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new());
@@ -95,7 +95,7 @@ void GateBoyJoypad::tock2(GateBoyResetDebug& rst, GateBoyClock& clk, uint8_t sys
     PIN_64_JOY_P13.pin_in_dp(1);
   }
 
-  /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN_64_JOY_P13.qp_int_new(), PIN_65_JOY_P12.qp_int_new(), PIN_66_JOY_P11.qp_int_new(), PIN_67_JOY_P10.qp_int_new());
+  /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(PIN_64_JOY_P13.qp_new(), PIN_65_JOY_P12.qp_new(), PIN_66_JOY_P11.qp_new(), PIN_67_JOY_P10.qp_new());
 
   /* p02.AWOB*/ AWOB_WAKE_CPU.tp_latchn(clk.BOGA_Axxxxxxx(), _KERY_ANY_BUTTONp);
   /*SIG_CPU_WAKE*/ SIG_CPU_WAKE.sig_out(AWOB_WAKE_CPU.qp_new());

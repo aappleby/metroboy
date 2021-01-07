@@ -22,8 +22,8 @@ struct GateBoyClock {
   //----------------------------------------
   // Root clocks
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLK.cg()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLK.cg()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLK.clock_good()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLK.clock_good()); }
   /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
@@ -117,7 +117,7 @@ struct GateBoyClock {
   /*PIN_73*/ PinOut PIN_73_CLK_DRIVE;
   ///*PIN_74*/ PinIn  PIN_74_CLKGOOD;
   ///*PIN_74*/ PinIn  PIN_74_CLK_IN;
-  /*PIN_74*/ PinClk PIN_74_CLK;
+  /*PIN_74*/ PinClock PIN_74_CLK;
   /*PIN_75*/ PinOut PIN_75_CLK_OUT;
 
   /*SIG_CPU_CLKREQ       */ SigIn  SIG_CPU_CLKREQ;

@@ -374,14 +374,14 @@ void GateBoyVramBus::pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM
   /*#p25.RELA*/ wire _RELA_CBD_TO_VPDp =  or2(_REVO_CBD_TO_VPDp, _SAZO_CBD_TO_VPDp);
   /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
 
-  /* p25.RODY*/ BUS_VRAM_D00p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_33_VRAM_D00.qp_int_new());
-  /* p25.REBA*/ BUS_VRAM_D01p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_31_VRAM_D01.qp_int_new());
-  /* p25.RYDO*/ BUS_VRAM_D02p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_30_VRAM_D02.qp_int_new());
-  /* p25.REMO*/ BUS_VRAM_D03p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_29_VRAM_D03.qp_int_new());
-  /* p25.ROCE*/ BUS_VRAM_D04p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_28_VRAM_D04.qp_int_new());
-  /* p25.ROPU*/ BUS_VRAM_D05p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_27_VRAM_D05.qp_int_new());
-  /* p25.RETA*/ BUS_VRAM_D06p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_26_VRAM_D06.qp_int_new());
-  /* p25.RAKU*/ BUS_VRAM_D07p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_25_VRAM_D07.qp_int_new());
+  /* p25.RODY*/ BUS_VRAM_D00p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_33_VRAM_D00.qp_new());
+  /* p25.REBA*/ BUS_VRAM_D01p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_31_VRAM_D01.qp_new());
+  /* p25.RYDO*/ BUS_VRAM_D02p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_30_VRAM_D02.qp_new());
+  /* p25.REMO*/ BUS_VRAM_D03p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_29_VRAM_D03.qp_new());
+  /* p25.ROCE*/ BUS_VRAM_D04p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_28_VRAM_D04.qp_new());
+  /* p25.ROPU*/ BUS_VRAM_D05p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_27_VRAM_D05.qp_new());
+  /* p25.RETA*/ BUS_VRAM_D06p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_26_VRAM_D06.qp_new());
+  /* p25.RAKU*/ BUS_VRAM_D07p.tri6_pn(_RENA_CBD_TO_VPDn, PIN_25_VRAM_D07.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

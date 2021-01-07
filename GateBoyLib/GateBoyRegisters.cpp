@@ -358,27 +358,21 @@ void RegLY::tock2(GateBoyResetDebug& rst, RegLX& reg_lx)
 //------------------------------------------------------------------------------------------------------------------------
 
 wire RegLX::TEGY_STROBE() const {
-  wire _SAXO_LX0p = this->SAXO_LX0p.qp_new();
-  wire _TYPO_LX1p = this->TYPO_LX1p.qp_new();
-  wire _VYZO_LX2p = this->VYZO_LX2p.qp_new();
-  wire _TELU_LX3p = this->TELU_LX3p.qp_new();
-  wire _SUDE_LX4p = this->SUDE_LX4p.qp_new();
-  wire _TAHA_LX5p = this->TAHA_LX5p.qp_new();
-  wire _TYRY_LX6p = this->TYRY_LX6p.qp_new();
 
-  /*#p21.TOCU*/ wire _TOCU_LX0n = not1(_SAXO_LX0p);
-  /*#p21.VEPE*/ wire _VEPE_LX1n = not1(_TYPO_LX1p);
-  /* p21.VUTY*/ wire _VUTY_LX2n = not1(_VYZO_LX2p);
-  /* p21.VATE*/ wire _VATE_LX3n = not1(_TELU_LX3p);
-  /* p21.TUDA*/ wire _TUDA_LX4n = not1(_SUDE_LX4p);
-  /* p21.TAFY*/ wire _TAFY_LX5n = not1(_TAHA_LX5p);
-  /* p21.TUJU*/ wire _TUJU_LX6n = not1(_TYRY_LX6p);
+  /*#p21.TOCU*/ wire _TOCU_LX0n = not1(SAXO_LX0p.qp_new());
+  /*#p21.VEPE*/ wire _VEPE_LX1n = not1(TYPO_LX1p.qp_new());
+  /* p21.VUTY*/ wire _VUTY_LX2n = not1(VYZO_LX2p.qp_new());
+  /* p21.VATE*/ wire _VATE_LX3n = not1(TELU_LX3p.qp_new());
+  /* p21.TUDA*/ wire _TUDA_LX4n = not1(SUDE_LX4p.qp_new());
+  /* p21.TAFY*/ wire _TAFY_LX5n = not1(TAHA_LX5p.qp_new());
+  /* p21.TUJU*/ wire _TUJU_LX6n = not1(TYRY_LX6p.qp_new());
 
-  /* p21.VOKU*/ wire _VOKU_LX000n = nand7(_TUJU_LX6n, _TAFY_LX5n, _TUDA_LX4n, _VATE_LX3n, _VUTY_LX2n, _VEPE_LX1n, _TOCU_LX0n); // 0000000 == 0
-  /* p21.TOZU*/ wire _TOZU_LX007n = nand7(_TUJU_LX6n, _TAFY_LX5n, _TUDA_LX4n, _VATE_LX3n, _VYZO_LX2p, _TYPO_LX1p, _SAXO_LX0p); // 0000111 == 7
-  /* p21.TECE*/ wire _TECE_LX045n = nand7(_TUJU_LX6n, _TAHA_LX5p, _TUDA_LX4n, _TELU_LX3p, _VYZO_LX2p, _VEPE_LX1n, _SAXO_LX0p); // 0101101 == 45
-  /*#p21.TEBO*/ wire _TEBO_LX083n = nand7(_TYRY_LX6p, _TAFY_LX5n, _SUDE_LX4p, _VATE_LX3n, _VUTY_LX2n, _TYPO_LX1p, _SAXO_LX0p); // 1010011 == 83
-  /*#p21.TEGY*/ wire _TEGY_STROBE = nand4(_VOKU_LX000n, _TOZU_LX007n, _TECE_LX045n, _TEBO_LX083n);
+  /* p21.VOKU*/ wire _VOKU_LX000n = nand7(_TUJU_LX6n,         _TAFY_LX5n,         _TUDA_LX4n,         _VATE_LX3n,         _VUTY_LX2n,         _VEPE_LX1n,         _TOCU_LX0n); // 0000000 == 0
+  /* p21.TOZU*/ wire _TOZU_LX007n = nand7(_TUJU_LX6n,         _TAFY_LX5n,         _TUDA_LX4n,         _VATE_LX3n,         VYZO_LX2p.qp_new(), TYPO_LX1p.qp_new(), SAXO_LX0p.qp_new()); // 0000111 == 7
+  /* p21.TECE*/ wire _TECE_LX045n = nand7(_TUJU_LX6n,         TAHA_LX5p.qp_new(), _TUDA_LX4n,         TELU_LX3p.qp_new(), VYZO_LX2p.qp_new(), _VEPE_LX1n,         SAXO_LX0p.qp_new()); // 0101101 == 45
+  /*#p21.TEBO*/ wire _TEBO_LX083n = nand7(TYRY_LX6p.qp_new(), _TAFY_LX5n,         SUDE_LX4p.qp_new(), _VATE_LX3n,         _VUTY_LX2n,         TYPO_LX1p.qp_new(), SAXO_LX0p.qp_new()); // 1010011 == 83
+
+  /*#p21.TEGY*/ wire _TEGY_STROBE = nand4(_VOKU_LX000n,       _TOZU_LX007n,       _TECE_LX045n, _TEBO_LX083n);
 
   return _TEGY_STROBE;
 }

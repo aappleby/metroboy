@@ -4,10 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyResetDebug::tock(const GateBoyClock& clk, wire sig_clkreq, wire sig_clkgood, wire UPOF_DIV15p) {
-
-  SIG_CLKREQ.set(sig_clkreq);
-  SIG_CLKGOOD.set(sig_clkgood);
+void GateBoyResetDebug::tock(const GateBoyClock& clk, wire SIG_CLKREQ, wire SIG_CLKGOOD, wire UPOF_DIV15p) {
 
   /* p01.AFER*/ AFER_SYS_RSTp.dff13(clk.BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), ASOL_POR_DONEn.qp_old());
 

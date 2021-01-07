@@ -119,7 +119,7 @@ struct GateBoyClock {
   /*PIN_74*/ PinIn  PIN_74_CLK_IN;
   /*PIN_75*/ PinOut PIN_75_CLK_OUT;
 
-  /*SIG_CPU_CLKREQ       */ Signal SIG_CPU_CLKREQ;
+  /*SIG_CPU_CLKREQ       */ SigIn  SIG_CPU_CLKREQ;
   /*SIG_CPU_BOWA_Axxxxxxx*/ SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   /*SIG_CPU_BEDO_xBCDEFGH*/ SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
   /*SIG_CPU_BEKO_ABCDxxxx*/ SigOut SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock

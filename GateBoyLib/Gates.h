@@ -138,6 +138,7 @@ struct Signal : private BitBase {
 //-----------------------------------------------------------------------------
 
 struct SigIn : private BitBase {
+  SigIn() { state = 0; }
   SigIn(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
 
   operator wire()     const { return qp_new(); }

@@ -49,8 +49,6 @@ struct ExtAddrLatch {
     NYRE_EXT_ADDR_LATCH_14p.reset(0);
   }
 
-  void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, Signal BUS_CPU_A[16], wire TEXO_ADDR_VRAMn_ext);
-
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
   /*p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p; // xBxxxxxx
   /*p08.ALYR*/ TpLatch ALYR_EXT_ADDR_LATCH_02p; // xBxxxxxx

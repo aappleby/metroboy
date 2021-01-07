@@ -121,7 +121,7 @@ void Plait::save_json(const char* filename) {
 
   for (auto& [tag, node] : node_map) {
     auto& jnode = root[tag];
-    node->commit_pos();
+    node->inst.commit_pos();
 
     jnode["locked"]     = node->inst.locked;
     jnode["pos_rel_x"]  = node->inst.pos_rel.x;

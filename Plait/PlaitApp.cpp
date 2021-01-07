@@ -269,7 +269,7 @@ void PlaitApp::commit_selection() {
   printf("Committing ");
   for (auto node : selection) {
     printf("%s ", node->name());
-    node->commit_pos();
+    node->inst.commit_pos();
   }
   printf("\n");
 }
@@ -280,7 +280,7 @@ void PlaitApp::revert_selection() {
   printf("Reverting ");
   for (auto node : selection) {
     printf("%s ", node->name());
-    node->revert_pos();
+    node->inst.revert_pos();
   }
   printf("\n");
 }
@@ -523,7 +523,7 @@ void PlaitApp::event_drag_nodes(SDL_Event event) {
       pos_abs_new.x = round(pos_abs_new.x / 16) * 16.0;
       pos_abs_new.y = round(pos_abs_new.y / 16) * 16.0;
       dvec2 delta = pos_abs_new - clicked_node->inst.get_pos_abs_new();
-      for (auto node : selection) node->move(delta);
+      for (auto node : selection) node->inst.move(delta);
     }
     break;
   }

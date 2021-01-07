@@ -59,6 +59,40 @@ struct NodeInstance {
     return anchor ? anchor->get_pos_abs_old() : dvec2(0,0);
   }
 
+  void move(dvec2 delta) {
+    unpin();
+    pos_abs += delta;
+  }
+
+  void set_pos_abs_new(dvec2 p) {
+    pos_abs = p;
+    pinned = false;
+  }
+
+  void commit_pos() {
+    if (!pinned) {
+      printf("commit_pos\n");
+      pos_rel = pos_abs - get_pos_anchor_abs_new();
+      pinned = true;
+    }
+  }
+
+  void revert_pos() {
+    if (!pinned) {
+      printf("revert_pos\n");
+      pos_abs = pos_rel + get_pos_anchor_abs_new();
+      pinned = true;
+    }
+  }
+
+  void unpin() {
+    if (pinned) {
+      pos_abs = pos_rel + get_pos_anchor_abs_new();
+      pinned = false;
+    }
+  }
+
+  void toggle_locked() { locked = !locked; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -76,40 +110,6 @@ struct Node {
   const char* name() const;
   const char* gate() const;
 
-  void move(dvec2 delta) {
-    unpin();
-    inst.pos_abs += delta;
-  }
-
-  void set_pos_abs_new(dvec2 p) {
-    inst.pos_abs = p;
-    inst.pinned = false;
-  }
-
-  void commit_pos() {
-    if (!inst.pinned) {
-      printf("commit_pos\n");
-      inst.pos_rel = inst.pos_abs - inst.get_pos_anchor_abs_new();
-      inst.pinned = true;
-    }
-  }
-
-  void revert_pos() {
-    if (!inst.pinned) {
-      printf("revert_pos\n");
-      inst.pos_abs = inst.pos_rel + inst.get_pos_anchor_abs_new();
-      inst.pinned = true;
-    }
-  }
-
-  void unpin() {
-    if (inst.pinned) {
-      inst.pos_abs = inst.pos_rel + inst.get_pos_anchor_abs_new();
-      inst.pinned = false;
-    }
-  }
-
-  void toggle_locked() { inst.locked = !inst.locked; }
   void toggle_ghost()  { ghost = !ghost; }
 
   //----------------------------------------

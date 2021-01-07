@@ -500,14 +500,16 @@ void GateBoy::tock_slow(int pass_index) {
   //-----------------------------------------------------------------------------
 
   rst.PIN_71_RST.reset_for_pass();
-  clk.PIN_74_CLKGOOD.reset_for_pass();
-  clk.PIN_74_CLK_IN.reset_for_pass();
+  //clk.PIN_74_CLKGOOD.reset_for_pass();
+  //clk.PIN_74_CLK_IN.reset_for_pass();
+  clk.PIN_74_CLK.reset_for_pass();
   rst.PIN_76_T2.reset_for_pass();
   rst.PIN_77_T1.reset_for_pass();
 
   rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
-  clk.PIN_74_CLKGOOD.pin_in_dp(bit(~sys_clkgood));
-  clk.PIN_74_CLK_IN.pin_in_dp(!(phase_total & 1) && sys_clken);
+  //clk.PIN_74_CLKGOOD.pin_in_dp();
+  //clk.PIN_74_CLK_IN.pin_in_dp();
+  clk.PIN_74_CLK.pin_in_dp(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
   rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
   rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
 

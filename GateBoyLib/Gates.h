@@ -724,6 +724,32 @@ struct PinIn : public BitBase {
 
 //-----------------------------------------------------------------------------
 
+struct PinClk {
+
+  wire qp_int_new_clkgood() const { return CLKGOOD.qp_new(); }
+  wire qp_int_new_clk() const     { return CLK.qp_new(); }
+
+  //wire qp_int_new() const { return qp_new(); }
+  //wire int_qn_new() const { return qn_new(); }
+
+  void reset_for_pass() {
+    CLK.reset_for_pass();
+    CLKGOOD.reset_for_pass();
+  }
+
+  void pin_in_dp(wire clk, wire clkgood) {
+    CLK.pin_in_dp(clk);
+    CLKGOOD.pin_in_dp(clkgood);
+  }
+
+private:
+
+  PinIn CLK;
+  PinIn CLKGOOD;
+};
+
+//-----------------------------------------------------------------------------
+
 struct PinOut : public BitBase {
   void reset(uint8_t s) { state = s; }
 

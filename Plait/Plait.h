@@ -7,30 +7,36 @@
 
 using namespace glm;
 
-struct NodeGroup;
+struct PlaitCell;
+
+struct PlaitPath {
+  std::string cell_tag;
+  std::string node_name;
+  std::string port_name;
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct Node {
+struct PlaitNode {
 
   bool locked = 0;
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
-  Node* anchor = nullptr;
+  PlaitNode* anchor = nullptr;
   bool pinned = 1;
   int  mark = 0;
   bool ghost = 0;
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
-  std::vector<Node*>       prev_node;
+  std::vector<PlaitNode*>       prev_node;
   std::vector<std::string> prev_port;
-  NodeGroup* group;
+  PlaitCell* group;
 
   bool  anchored() { return anchor != nullptr; }
-  bool  anchored_to(Node* target);
-  const Node* get_anchor() { return anchor; }
-  void  set_anchor(Node* new_anchor);
+  bool  anchored_to(PlaitNode* target);
+  const PlaitNode* get_anchor() { return anchor; }
+  void  set_anchor(PlaitNode* new_anchor);
 
   void toggle_ghost()  { ghost = !ghost; }
 
@@ -107,13 +113,13 @@ struct Node {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct NodeGroup {
-  NodeGroup(const Cell* _cell) {
+struct PlaitCell {
+  PlaitCell(const Cell* _cell) {
     cell = _cell;
   }
 
-  Node* add_node() {
-    auto node = new Node();
+  PlaitNode* add_node() {
+    auto node = new PlaitNode();
     node->group = this;
     nodes.push_back(node);
     return node;
@@ -124,8 +130,8 @@ struct NodeGroup {
   const char* gate() const { return cell ? cell->gate.c_str() : "<no_gate>"; }
 
   const Cell* cell = nullptr;
-  std::vector<Node*> nodes;
-  std::vector<NodeGroup*>  prev_group;
+  std::vector<PlaitNode*> nodes;
+  std::vector<PlaitCell*>  prev_group;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -134,9 +140,9 @@ struct Plait {
   void save_json(const char* filename);
   void load_json(const char* filename, CellDB& cell_db);
 
-  std::map<std::string, NodeGroup*> tag_to_group;
+  std::map<std::string, PlaitCell*> tag_to_group;
 
-  NodeGroup* get_or_create_node(const std::string& tag, CellDB& cell_db) {
+  PlaitCell* get_or_create_node(const std::string& tag, CellDB& cell_db) {
     auto cell = cell_db.tag_to_cell[tag];
     if (!cell) {
       printf("Tag \"%s\" not in cell db\n", tag.c_str());
@@ -146,7 +152,7 @@ struct Plait {
     auto node = tag_to_group[tag];
     if (node) return node;
 
-    node = new NodeGroup(cell);
+    node = new PlaitCell(cell);
     tag_to_group[tag] = node;
     return node;
   }

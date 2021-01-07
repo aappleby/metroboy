@@ -43,15 +43,14 @@ int main(int argc, char** argv) {
   PlaitApp* app = new PlaitApp();
 
   //app->cell_db.parse_dir("GateBoyLib");
-  //app->cell_db.save_json("gameboy.cell_db_hax.json");
+  //app->cell_db.save_json("gameboy.cell_db.json");
 
   printf("Loading gameboy.cell_db.json\n");
-  app->cell_db.load_json("gameboy.cell_db_hax.json");
+  app->cell_db.load_json("gameboy.cell_db.json");
   printf("Done\n");
 
   printf("Loading gameboy.plait.json\n");
   app->plait.load_json("gameboy.plait.json", app->cell_db);
-
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
@@ -185,7 +184,7 @@ void PlaitApp::app_close() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Node* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered) {
+PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered) {
   (void)ignore_selected;
   (void)ignore_clicked;
   (void)ignore_hovered;
@@ -239,7 +238,7 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
 
 void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Selection region ");
-  auto callback = [this](Node* node) {
+  auto callback = [this](PlaitNode* node) {
     printf("%s ", node->group->name());
     node->selected = true;
     node_selection.insert(node);
@@ -251,7 +250,7 @@ void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
 
 void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Locking region ");
-  auto callback = [this](Node* node) {
+  auto callback = [this](PlaitNode* node) {
     printf("%s ", node->group->name());
     node->locked = true;
   };
@@ -262,7 +261,7 @@ void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::select_node(Node* node) {
+void PlaitApp::select_node(PlaitNode* node) {
   printf("Selecting %s\n", node->group->name());
   node->selected = true;
   node_selection.insert(node);
@@ -321,7 +320,7 @@ double remap_clamp(double x, double a1, double a2, double b1, double b2) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void spring_nodes(Node* a, Node* b) {
+void spring_nodes(PlaitNode* a, PlaitNode* b) {
   if (a->ghost    || b->ghost) return;
   if (a->selected || b->selected) return;
   if (!a->pinned  || !b->pinned) return;
@@ -342,7 +341,7 @@ void spring_nodes(Node* a, Node* b) {
   b->spring_force += offset * -pull_force;
 }
 
-void spring_nodes2(Node* a, Node* b) {
+void spring_nodes2(PlaitNode* a, PlaitNode* b) {
   if (a->ghost    || b->ghost) return;
   if (a->selected || b->selected) return;
   if (!a->pinned  || !b->pinned) return;
@@ -453,7 +452,7 @@ void PlaitApp::event_unlock_region(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      auto callback = [this](Node* node) {
+      auto callback = [this](PlaitNode* node) {
         node->locked = false;
       };
       apply_region_node(click_pos_world, mouse_pos_world, callback);
@@ -476,7 +475,7 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      auto callback = [this](Node* node) {
+      auto callback = [this](PlaitNode* node) {
         node->toggle_ghost();
       };
       apply_region_node(click_pos_world, mouse_pos_world, callback);
@@ -803,7 +802,7 @@ void PlaitApp::app_update(double delta_time) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::draw_node(Node* node) {
+void PlaitApp::draw_node(PlaitNode* node) {
   dvec2 node_pos_old = node->get_pos_abs_old();
   dvec2 node_pos_new = node->get_pos_abs_new();
 

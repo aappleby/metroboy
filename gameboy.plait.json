@@ -13132,6 +13132,13 @@
     "pos_rel_x": -32576.0,
     "pos_rel_y": -5344.0
   },
+  "SIG_GND": {
+    "locked": false,
+    "pos_abs_x": -32576.0,
+    "pos_abs_y": -9072.0,
+    "pos_rel_x": -32576.0,
+    "pos_rel_y": -9072.0
+  },
   "SIG_OAM_CLKn": {
     "locked": true,
     "pos_abs_x": 14944.0,
@@ -13161,6 +13168,13 @@
     "pos_abs_y": -12976.0,
     "pos_rel_x": 128.0,
     "pos_rel_y": 0.0
+  },
+  "SIG_VCC": {
+    "locked": false,
+    "pos_abs_x": -32576.0,
+    "pos_abs_y": -9168.0,
+    "pos_rel_x": -32576.0,
+    "pos_rel_y": -9168.0
   },
   "SOBA": {
     "locked": true,

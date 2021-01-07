@@ -24,14 +24,6 @@ enum class CellType {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct CellMeta {
-  CellType cell_type;
-  std::vector<std::string> input_ports;
-  std::vector<std::string> output_ports;
-};
-
-//------------------------------------------------------------------------------------------------------------------------
-
 struct Arg {
   std::string tag;
   std::string port;
@@ -67,7 +59,6 @@ struct CellDB {
   void clear();
   void save_json(const char* filename);
   void load_json(const char* filename);
-
 
   bool parse_dir(const std::string& path);
   bool parse_file(const std::string& path);

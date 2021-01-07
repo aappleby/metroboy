@@ -7,14 +7,14 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool Node::anchored_to(Node* target) {
+bool PlaitNode::anchored_to(PlaitNode* target) {
   for (auto cursor = anchor; cursor; cursor = cursor->anchor) {
     if (cursor == target) return true;
   }
   return false;
 }
 
-void Node::set_anchor(Node* new_anchor) {
+void PlaitNode::set_anchor(PlaitNode* new_anchor) {
   CHECK_P(new_anchor == nullptr || pinned);
   CHECK_P(new_anchor == nullptr || new_anchor->pinned);
 
@@ -120,7 +120,7 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
       continue;
     }
 
-    auto group = new NodeGroup(cell);
+    auto group = new PlaitCell(cell);
     tag_to_group[tag] = group;
 
     auto node = group->add_node();
@@ -136,7 +136,7 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
     if (tag_to_group.count(tag) == 0) {
       printf("Did not load node for tag \"%s\", creating placeholder\n", tag.c_str());
       {
-        auto group = new NodeGroup(cell);
+        auto group = new PlaitCell(cell);
         tag_to_group[tag] = group;
         group->add_node();
       }

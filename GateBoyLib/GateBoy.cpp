@@ -108,7 +108,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   //----------------------------------------
   // Wait for SIG_CPU_START
 
-  while(bit(~rst.SIG_CPU_STARTp)) {
+  while(bit(~rst.SIG_CPU_STARTp.qp_old())) {
     run_phases(8);
   }
 

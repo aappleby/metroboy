@@ -38,7 +38,7 @@ void GateBoyZramBus::write(GateBoyCpuBus& cpu_bus, uint8_t* zero_ram)
   if (bit(~clk_old) && clk_new && CSp) {
     zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, &cpu_bus.BUS_CPU_D00p);
   }
-  clk_old.set(clk_new);
+  clk_old = clk_new;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

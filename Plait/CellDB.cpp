@@ -837,6 +837,11 @@ bool CellDB::parse_dir(const std::string& path) {
       cell->gate = "pin_clk";
     }
 
+    if (cell->cell_type == CellType::SIG_IN) {
+      CHECK_P(cell->gate.empty());
+      cell->gate = "sig_in";
+    }
+
     // All buses without args are inputs from the CPU.
     if (cell->tag.starts_with("BUS_")) {
       cell->cell_type = CellType::BUS;

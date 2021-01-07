@@ -552,8 +552,8 @@ void GateBoy::tock_slow(int pass_index) {
 
   div.tock(rst, clk, cpu_bus);
 
-  wire div_trigger = bit(sys_fastboot) ? div.TERO_DIV03p.qp_new() : div.UPOF_DIV15p.qp_new();
-  rst.tock(clk, sys_clkreq, sys_clkgood, div_trigger);
+  DFF17 div_trigger = bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p;
+  rst.tock(clk, div_trigger);
 
   reg_lcdc.write_sync(rst, cpu_bus); // LCDC. Has to be near the top as it controls the video reset signal
 

@@ -42,11 +42,16 @@ int main(int argc, char** argv) {
 
   PlaitApp* app = new PlaitApp();
 
+  //printf("Parsing gateboy source\n");
   //app->cell_db.parse_dir("GateBoyLib");
+  //printf("Saving cell db\n");
   //app->cell_db.save_json("gameboy.cell_db.json");
+  //printf("Done\n");
 
   printf("Loading gameboy.cell_db.json\n");
+  app->cell_db.clear();
   app->cell_db.load_json("gameboy.cell_db.json");
+  printf("Tag map size %zd\n", app->cell_db.tag_to_cell.size());
   printf("Done\n");
 
   printf("Loading gameboy.plait.json\n");
@@ -144,31 +149,31 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
 
   tex = create_texture_u32(4, 4, pix);
 
-  for (auto& [tag, group] : plait.tag_to_group) {
-    for (auto node : group->nodes) {
+  for (auto& [tag, cell] : plait.tag_to_cell) {
+    for (auto node : cell->nodes) {
       node->color = 0xFFFF00FF;
 
-      auto cell_type = group->cell->cell_type;
-      if (cell_type == CellType::PIN_IN)  node->color = COL_PALE_RED;
-      if (cell_type == CellType::PIN_OUT) node->color = COL_PALE_GREEN;
-      if (cell_type == CellType::PIN_IO)  node->color = COL_PALE_YELLOW;
+      auto cell_type = cell->die_cell->cell_type;
+      if (cell_type == DieCellType::PIN_IN)  node->color = COL_PALE_RED;
+      if (cell_type == DieCellType::PIN_OUT) node->color = COL_PALE_GREEN;
+      if (cell_type == DieCellType::PIN_IO)  node->color = COL_PALE_YELLOW;
 
-      if (cell_type == CellType::SIG_IN)  node->color = COL_MID_RED;
-      if (cell_type == CellType::SIG_OUT) node->color = COL_MID_GREEN;
+      if (cell_type == DieCellType::SIG_IN)  node->color = COL_MID_RED;
+      if (cell_type == DieCellType::SIG_OUT) node->color = COL_MID_GREEN;
 
-      if (cell_type == CellType::BUS)     node->color = COL_DARK_GREY;
-      if (cell_type == CellType::DFF)     node->color = COL_DARK_YELLOW;
-      if (cell_type == CellType::LATCH)   node->color = COL_ORANGE;
-      if (cell_type == CellType::TRIBUF)  node->color = COL_MID_YELLOW;
-      if (cell_type == CellType::ADDER)   node->color = COL_MID_TEAL;
+      if (cell_type == DieCellType::BUS)     node->color = COL_DARK_GREY;
+      if (cell_type == DieCellType::DFF)     node->color = COL_DARK_YELLOW;
+      if (cell_type == DieCellType::LATCH)   node->color = COL_ORANGE;
+      if (cell_type == DieCellType::TRIBUF)  node->color = COL_MID_YELLOW;
+      if (cell_type == DieCellType::ADDER)   node->color = COL_MID_TEAL;
 
-      if (cell_type == CellType::LOGIC) {
-        auto it = node_type_to_color.find(group->gate());
+      if (cell_type == DieCellType::LOGIC) {
+        auto it = node_type_to_color.find(cell->gate());
         if (it != node_type_to_color.end()) {
           node->color = (*it).second;
         }
         else {
-          printf("Could not pick a color for %s\n", group->gate());
+          printf("Could not pick a color for %s\n", cell->gate());
         }
       }
     }
@@ -189,8 +194,8 @@ PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool igno
   (void)ignore_clicked;
   (void)ignore_hovered;
 
-  for (auto& [tag, group] : plait.tag_to_group) {
-    for (auto node : group->nodes) {
+  for (auto& [tag, cell] : plait.tag_to_cell) {
+    for (auto node : cell->nodes) {
       if ((node == clicked_node) && ignore_clicked) continue;
       dvec2 node_pos = node->get_pos_abs_new();
 
@@ -219,7 +224,7 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
 
   const dvec2 node_size = {128,64};
 
-  for (auto& [tag, group] : plait.tag_to_group) {
+  for (auto& [tag, group] : plait.tag_to_cell) {
     for (auto node : group->nodes) {
       dvec2 nmin = node->get_pos_abs_new();
       dvec2 nmax = node->get_pos_abs_new() + node_size;
@@ -928,7 +933,7 @@ void PlaitApp::app_render_frame() {
 
   // Unselected nodes
   {
-    for (auto& [tag, group] : plait.tag_to_group) {
+    for (auto& [tag, group] : plait.tag_to_cell) {
       for (auto node : group->nodes) {
         if (!node->selected) draw_node(node);
       }

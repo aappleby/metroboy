@@ -6,7 +6,7 @@
 #include <set>
 #include <map>
 
-enum class CellType {
+enum class DieCellType {
   UNKNOWN = 0,
   PIN_IN,
   PIN_OUT,
@@ -24,25 +24,24 @@ enum class CellType {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct Arg {
+struct DieCellArg {
   std::string tag;
   std::string port;
 };
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct Cell {
+struct DieCell {
   void sanity_check() const;
-  void merge(const Cell& c);
+  void merge(const DieCell& c);
   void dump(Dumper& d) const;
 
-  CellType                 cell_type = CellType::UNKNOWN;
+  DieCellType              cell_type = DieCellType::UNKNOWN;
   std::string              verified;
   std::string              page;
   std::string              tag;
   std::string              gate;
-  std::vector<Arg>         args;
-  std::vector<std::string> ports; // FIXME not populated yet
+  std::vector<DieCellArg>  args;
   std::string              name;
   std::string              doc;
 
@@ -55,48 +54,48 @@ struct Cell {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct CellDB {
+struct DieDB {
   void clear();
   void save_json(const char* filename);
   void load_json(const char* filename);
 
   bool parse_dir(const std::string& path);
   bool parse_file(const std::string& path);
-  bool parse_line(Cell& c, const std::string& line);
-  bool parse_rest(Cell& c, const std::string& rest);
+  bool parse_line(DieCell& c, const std::string& line);
+  bool parse_rest(DieCell& c, const std::string& rest);
 
-  bool parse_cell_name(Cell& c, const std::string& cell_name);
-  bool parse_cell_def(Cell& c, const std::string& value);
-  bool parse_cell_arg(Cell& c, const std::string& input);
-  bool parse_cell_arglist(Cell& c, const std::string& arglist);
+  bool parse_cell_name(DieCell& c, const std::string& cell_name);
+  bool parse_cell_def(DieCell& c, const std::string& value);
+  bool parse_cell_arg(DieCell& c, const std::string& input);
+  bool parse_cell_arglist(DieCell& c, const std::string& arglist);
 
-  bool parse_tribuf_bus_target(Cell& c, const std::string& bus_name);
-  bool parse_pin_name(Cell& c, const std::string& pin_name);
-  bool parse_sig_name(Cell& c, const std::string& sig_name);
+  bool parse_tribuf_bus_target(DieCell& c, const std::string& bus_name);
+  bool parse_pin_name(DieCell& c, const std::string& pin_name);
+  bool parse_sig_name(DieCell& c, const std::string& sig_name);
 
-  bool parse_tag(Cell& c, const std::string& tag_comment);
-  bool parse_reg_type(Cell& c, const std::string& type);
-  bool parse_cell_gate(Cell& c, const std::string& type);
+  bool parse_tag(DieCell& c, const std::string& tag_comment);
+  bool parse_reg_type(DieCell& c, const std::string& type);
+  bool parse_cell_gate(DieCell& c, const std::string& type);
 
   bool  has_cell(const std::string& tag) {
     return tag_to_cell.find(tag) != tag_to_cell.end();
   }
 
-  Cell* get_cell(const std::string& tag) {
+  DieCell* get_cell(const std::string& tag) {
     CHECK_P(has_cell(tag));
     return tag_to_cell[tag];
   }
 
-  Cell* get_or_create_cell(const std::string& tag) {
+  DieCell* get_or_create_cell(const std::string& tag) {
     auto it = tag_to_cell.find(tag);
     if (it != tag_to_cell.end()) return (*it).second;
 
-    Cell* new_cell = new Cell();
+    DieCell* new_cell = new DieCell();
     tag_to_cell[tag] = new_cell;
     return new_cell;
   }
 
-  std::map<std::string, Cell*> tag_to_cell;
+  std::map<std::string, DieCell*> tag_to_cell;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

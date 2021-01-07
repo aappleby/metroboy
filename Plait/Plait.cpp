@@ -85,7 +85,7 @@ void Plait::save_json(const char* filename) {
 
   json root;
 
-  for (auto& [tag, group] : tag_to_group) {
+  for (auto& [tag, group] : tag_to_cell) {
     auto& jnode = root[tag];
     group->nodes[0]->commit_pos();
     jnode["locked"]     = group->nodes[0]->locked;
@@ -93,7 +93,7 @@ void Plait::save_json(const char* filename) {
     jnode["pos_rel_y"]  = group->nodes[0]->pos_rel.y;
     jnode["pos_abs_x"]  = group->nodes[0]->pos_abs.x;
     jnode["pos_abs_y"]  = group->nodes[0]->pos_abs.y;
-    if (group->nodes[0]->anchor) jnode["anchor_tag"] = group->nodes[0]->anchor->group->cell->tag;
+    if (group->nodes[0]->anchor) jnode["anchor_tag"] = group->nodes[0]->anchor->group->die_cell->tag;
   }
 
   std::ofstream(filename) << root.dump(2);
@@ -101,11 +101,11 @@ void Plait::save_json(const char* filename) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void Plait::load_json(const char* filename, CellDB& cell_db) {
+void Plait::load_json(const char* filename, DieDB& cell_db) {
   printf("Loading plait %s\n", filename);
   using namespace nlohmann;
 
-  CHECK_P(tag_to_group.empty());
+  CHECK_P(tag_to_cell.empty());
 
   json root;
   std::ifstream(filename) >> root;
@@ -121,7 +121,7 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
     }
 
     auto group = new PlaitCell(cell);
-    tag_to_group[tag] = group;
+    tag_to_cell[tag] = group;
 
     auto node = group->add_node();
     node->locked    = jnode.value("locked", false);
@@ -133,11 +133,11 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
 
   // Check for missing tags
   for (auto& [tag, cell] : cell_db.tag_to_cell) {
-    if (tag_to_group.count(tag) == 0) {
+    if (tag_to_cell.count(tag) == 0) {
       printf("Did not load node for tag \"%s\", creating placeholder\n", tag.c_str());
       {
         auto group = new PlaitCell(cell);
-        tag_to_group[tag] = group;
+        tag_to_cell[tag] = group;
         group->add_node();
       }
     }
@@ -153,8 +153,8 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
     }
 
     // FIXME nodes[0]
-    auto group = tag_to_group[tag];
-    auto anchor_group = tag_to_group[anchor_tag];
+    auto group = tag_to_cell[tag];
+    auto anchor_group = tag_to_cell[anchor_tag];
 
     if (group && anchor_group) {
       group->nodes[0]->anchor = anchor_group->nodes[0];
@@ -168,13 +168,13 @@ void Plait::load_json(const char* filename, CellDB& cell_db) {
   }
 
   // Connect ports
-  for (auto& [tag, group] : tag_to_group) {
+  for (auto& [tag, group] : tag_to_cell) {
     auto node = group->nodes[0];
-    auto arg_count = group->cell->args.size();
+    auto arg_count = group->die_cell->args.size();
 
     for (auto i = 0; i < arg_count; i++) {
-      auto& arg = group->cell->args[i];
-      auto prev_group = tag_to_group[arg.tag];
+      auto& arg = group->die_cell->args[i];
+      auto prev_group = tag_to_cell[arg.tag];
       auto prev_node = prev_group->nodes[0];
 
       if (prev_group == nullptr) {

@@ -114,8 +114,8 @@ struct PlaitNode {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct PlaitCell {
-  PlaitCell(const Cell* _cell) {
-    cell = _cell;
+  PlaitCell(const DieCell* _cell) {
+    die_cell = _cell;
   }
 
   PlaitNode* add_node() {
@@ -125,11 +125,11 @@ struct PlaitCell {
     return node;
   }
 
-  const char* tag() const  { return cell ? cell->tag.c_str()  : "<no_tag>"; }
-  const char* name() const { return cell ? cell->name.c_str() : "<no_cell>"; }
-  const char* gate() const { return cell ? cell->gate.c_str() : "<no_gate>"; }
+  const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
+  const char* name() const { return die_cell ? die_cell->name.c_str() : "<no_cell>"; }
+  const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
 
-  const Cell* cell = nullptr;
+  const DieCell* die_cell = nullptr;
   std::vector<PlaitNode*> nodes;
   std::vector<PlaitCell*>  prev_group;
 };
@@ -138,22 +138,22 @@ struct PlaitCell {
 
 struct Plait {
   void save_json(const char* filename);
-  void load_json(const char* filename, CellDB& cell_db);
+  void load_json(const char* filename, DieDB& cell_db);
 
-  std::map<std::string, PlaitCell*> tag_to_group;
+  std::map<std::string, PlaitCell*> tag_to_cell;
 
-  PlaitCell* get_or_create_node(const std::string& tag, CellDB& cell_db) {
+  PlaitCell* get_or_create_node(const std::string& tag, DieDB& cell_db) {
     auto cell = cell_db.tag_to_cell[tag];
     if (!cell) {
       printf("Tag \"%s\" not in cell db\n", tag.c_str());
       return nullptr;
     }
 
-    auto node = tag_to_group[tag];
+    auto node = tag_to_cell[tag];
     if (node) return node;
 
     node = new PlaitCell(cell);
-    tag_to_group[tag] = node;
+    tag_to_cell[tag] = node;
     return node;
   }
 };

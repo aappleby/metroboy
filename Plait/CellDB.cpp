@@ -152,12 +152,14 @@ void Cell::dump(Dumper& d) const {
 
 void check_cell_tag(const std::string& tag) {
   (void)tag;
-  CHECK_P(tag.size() >= 4);
+  CHECK_P(tag.size() == 4);
   CHECK_P(tag[0] >= 'A' && tag[0] <= 'Z');
   CHECK_P(tag[1] >= 'A' && tag[1] <= 'Z');
   CHECK_P(tag[2] >= 'A' && tag[2] <= 'Z');
   CHECK_P(tag[3] >= 'A' && tag[3] <= 'Z');
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void Cell::sanity_check() const {
   if (gate.empty()) {
@@ -169,21 +171,6 @@ void Cell::sanity_check() const {
   CHECK_N(tag.empty());
   CHECK_N(gate.empty());
   CHECK_N(names.empty());
-
-  /*
-  PIN_IN,
-  PIN_OUT,
-  PIN_IO,
-  PIN_CLK,
-  SIG_IN,
-  SIG_OUT,
-  BUS,
-  DFF,
-  LATCH,
-  TRIBUF,
-  LOGIC,
-  ADDER
-  */
 
   if (cell_type == CellType::PIN_IN) {
     CHECK_P(tag.starts_with("PIN_"));
@@ -241,13 +228,6 @@ void Cell::sanity_check() const {
   }
   else {
     __debugbreak();
-  }
-
-  if (args.size()) {
-    for (auto& arg : args) {
-      static std::set<std::string> valid_ports = { "", "qp", "qn", "s", "c", "ck", "cg" };
-      CHECK_P(valid_ports.contains(arg.port));
-    }
   }
 }
 
@@ -509,7 +489,37 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
     return true;
   }
   else if (regex_match(arg, match, cell_arg_with_port)) {
-    c.add_arg(match[1].str(), match[2].str().substr(0,2));
+    const auto& raw_port = match[2].str();
+
+    if (raw_port == "qp_old") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "qn_old") {
+      c.add_arg(match[1].str(), "qn");
+    }
+    else if (raw_port == "qp_new") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "qn_new") {
+      c.add_arg(match[1].str(), "qn");
+    }
+    else if (raw_port == "qp_any") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "qn_any") {
+      c.add_arg(match[1].str(), "qn");
+    }
+    else if (raw_port == "c") {
+      c.add_arg(match[1].str(), "carry");
+    }
+    else if (raw_port == "s") {
+      c.add_arg(match[1].str(), "sum");
+    }
+    else {
+      printf("port %s\n", match[2].str().c_str());
+      __debugbreak();
+    }
+
     return true;
   }
   else if (regex_match(arg, match, cell_arg_function)) {
@@ -521,11 +531,44 @@ bool CellDB::parse_cell_arg(Cell& c, const std::string& arg) {
     return true;
   }
   else if (regex_match(arg, match, bus_arg)) {
-    c.add_arg(match[1].str(), match[2].str().substr(0,2));
+    const auto& raw_port = match[2].str();
+
+    if (raw_port == "qp_old") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "qp_new") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else {
+      printf("bus port %s\n", match[2].str().c_str());
+      __debugbreak();
+    }
+
     return true;
   }
   else if (regex_match(arg, match, pin_arg_with_port)) {
-    c.add_arg(match[1].str(), match[2].str().substr(0,2));
+    const auto& raw_port = match[2].str();
+
+    if (raw_port == "qp_int_new") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "qp_any") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "qp_old") {
+      c.add_arg(match[1].str(), "qp");
+    }
+    else if (raw_port == "ck") {
+      c.add_arg(match[1].str(), "clock");
+    }
+    else if (raw_port == "cg") {
+      c.add_arg(match[1].str(), "clock_good");
+    }
+    else {
+      printf("pin port %s\n", match[2].str().c_str());
+      __debugbreak();
+    }
+
     return true;
   }
   else if (regex_match(arg, match, pin_arg)) {
@@ -874,21 +917,25 @@ bool CellDB::parse_dir(const std::string& path) {
       auto arg_cell = tag_to_cell[arg.tag];
       CHECK_P(arg_cell);
 
-      // FIXME some of these are probably never used
+      // Tribufs can only drive a bus, buses can only be driven by tribufs.
+      if (cell->cell_type == CellType::BUS) {
+        CHECK_P(arg_cell->cell_type == CellType::TRIBUF);
+      }
+      if (arg_cell->cell_type == CellType::TRIBUF) {
+        CHECK_P(cell->cell_type == CellType::BUS);
+      }
 
       switch(arg_cell->cell_type) {
-      case CellType::PIN_IN:   { CHECK_P(arg.port == "qp"); break;}
-      //case CellType::PIN_OUT:  { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
-      case CellType::PIN_IO:   { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
-      case CellType::PIN_CLK:  { CHECK_P(arg.port == "cg" || arg.port == "ck"); break;}
+      case CellType::PIN_IN:   { CHECK_P(arg.port.starts_with("qp")); break;}
+      case CellType::PIN_IO:   { CHECK_P(arg.port.starts_with("qp")); break;}
+      case CellType::PIN_CLK:  { CHECK_P(arg.port == "clock_good" || arg.port == "clock"); break;}
       case CellType::SIG_IN:   { CHECK_P(arg.port == ""); break; }
-      case CellType::SIG_OUT:  { __debugbreak(); break;}
-      case CellType::BUS:      { CHECK_P(arg.port == "qp"); break;}
-      case CellType::DFF:      { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
-      case CellType::LATCH:    { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
+      case CellType::BUS:      { CHECK_P(arg.port.starts_with("qp")); break;}
+      case CellType::DFF:      { CHECK_P(arg.port.starts_with("qn") || arg.port.starts_with("qp")); break;}
+      case CellType::LATCH:    { CHECK_P(arg.port.starts_with("qn") || arg.port.starts_with("qp")); break;}
       case CellType::TRIBUF:   { CHECK_P(arg.port == ""); break; }
       case CellType::LOGIC:    { CHECK_P(arg.port == ""); break; }
-      case CellType::ADDER:    { CHECK_P(arg.port == "s"   || arg.port == "c"); break; }
+      case CellType::ADDER:    { CHECK_P(arg.port == "sum" || arg.port == "carry"); break; }
 
       default: __debugbreak(); break;
       }

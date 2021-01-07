@@ -154,8 +154,6 @@ struct SigIn : private BitBase {
 //-----------------------------------------------------------------------------
 
 struct SigOut : private BitBase {
-  SigOut(wire _state) { state = _state; }
-
   uint8_t get_state() const { return state; }
 
   using BitBase::qp_new;

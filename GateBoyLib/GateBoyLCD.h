@@ -116,7 +116,7 @@ struct GateBoyLCD {
     d.dump_bitp("PIN_57_LCD_VSYNC     : ", PIN_57_LCD_VSYNC.state);
   }
 
-  Signal _XODO_VID_RSTp;
+  Gate _XODO_VID_RSTp;
 
   RegLX  reg_lx;
   RegLY  reg_ly;

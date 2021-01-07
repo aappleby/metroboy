@@ -32,7 +32,7 @@ void GateBoyLCD::tock(
   wire XYVO_y144p_old,
   DFF17 RUTU_x113p_old)
 {
-  _XODO_VID_RSTp.set(rst.XODO_VID_RSTp());
+  _XODO_VID_RSTp = rst.XODO_VID_RSTp();
 
   /*#p21.POPU*/ POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), rst.LYFE_VID_RSTn(), XYVO_y144p_old);
 

@@ -120,14 +120,14 @@ struct GateBoyClock {
   /*PIN_75*/ PinOut PIN_75_CLK_OUT;
 
   /*SIG_CPU_CLKREQ       */ Signal SIG_CPU_CLKREQ;
-  /*SIG_CPU_BOWA_Axxxxxxx*/ Signal SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
-  /*SIG_CPU_BEDO_xBCDEFGH*/ Signal SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
-  /*SIG_CPU_BEKO_ABCDxxxx*/ Signal SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
-  /*SIG_CPU_BUDE_xxxxEFGH*/ Signal SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
-  /*SIG_CPU_BOLO_ABCDEFxx*/ Signal SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
-  /*SIG_CPU_BUKE_AxxxxxGH*/ Signal SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
-  /*SIG_CPU_BOMA_xBCDEFGH*/ Signal SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
-  /*SIG_CPU_BOGA_Axxxxxxx*/ Signal SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
+  /*SIG_CPU_BOWA_Axxxxxxx*/ SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
+  /*SIG_CPU_BEDO_xBCDEFGH*/ SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
+  /*SIG_CPU_BEKO_ABCDxxxx*/ SigOut SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
+  /*SIG_CPU_BUDE_xxxxEFGH*/ SigOut SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
+  /*SIG_CPU_BOLO_ABCDEFxx*/ SigOut SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
+  /*SIG_CPU_BUKE_AxxxxxGH*/ SigOut SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
+  /*SIG_CPU_BOMA_xBCDEFGH*/ SigOut SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
+  /*SIG_CPU_BOGA_Axxxxxxx*/ SigOut SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 };
 
 //-----------------------------------------------------------------------------

@@ -50,7 +50,7 @@ void GateBoyVramBus::dma_addr_to_vram_addr(const GateBoyDMA& dma) {
 // BG map read address
 
 void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, DFF9 XAFO_LCDC_BGMAPn) {
-  wire PIN_58_VCC = 1;
+  SigIn SIG_VCC = 1;
   /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp, AXAD_WIN_MODEn);
   /* p26.BAFY*/ wire _BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
   /* p26.AXEP*/ BUS_VRAM_A00n.tri6_nn(_BAFY_BG_MAP_READn, scroll_x.BABE_MAP_X0.s);
@@ -64,8 +64,8 @@ void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire
   /* p26.CETA*/ BUS_VRAM_A08n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EFYK_MAP_Y3.s);
   /* p26.DAFE*/ BUS_VRAM_A09n.tri6_nn(_BAFY_BG_MAP_READn, scroll_y.EJOK_MAP_Y4.s);
   /*#p26.AMUV*/ BUS_VRAM_A10n.tri6_nn(_BAFY_BG_MAP_READn, XAFO_LCDC_BGMAPn.qn_new());
-  /* p26.COVE*/ BUS_VRAM_A11n.tri6_nn(_BAFY_BG_MAP_READn, PIN_58_VCC);
-  /* p26.COXO*/ BUS_VRAM_A12n.tri6_nn(_BAFY_BG_MAP_READn, PIN_58_VCC);
+  /* p26.COVE*/ BUS_VRAM_A11n.tri6_nn(_BAFY_BG_MAP_READn, SIG_VCC);
+  /* p26.COXO*/ BUS_VRAM_A12n.tri6_nn(_BAFY_BG_MAP_READn, SIG_VCC);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ void GateBoyVramBus::scroll_to_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire
 
 
 void GateBoyVramBus::win_to_addr(const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF9 WOKY_LCDC_WINMAPn) {
-  wire PIN_58_VCC = 1;
+  SigIn SIG_VCC = 1;
   /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(POTU_BGW_MAP_READp, PORE_WIN_MODEp);
   /*#p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not1(_XEZE_WIN_MAP_READp);
   /*#p27.XEJA*/ BUS_VRAM_A00n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WYKA_WIN_X3.qp_new());
@@ -87,8 +87,8 @@ void GateBoyVramBus::win_to_addr(const WinMapX& win_map_x, const WinLineY& win_l
   /* p27.VOVO*/ BUS_VRAM_A08n.tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TATE_WIN_Y6.qp_new());
   /* p27.VULO*/ BUS_VRAM_A09n.tri6_nn(_WUKO_WIN_MAP_READn, win_line_y.TEKE_WIN_Y7.qp_new());
   /*#p27.VEVY*/ BUS_VRAM_A10n.tri6_nn(_WUKO_WIN_MAP_READn, WOKY_LCDC_WINMAPn.qn_new());
-  /* p27.VEZA*/ BUS_VRAM_A11n.tri6_nn(_WUKO_WIN_MAP_READn, PIN_58_VCC);
-  /* p27.VOGU*/ BUS_VRAM_A12n.tri6_nn(_WUKO_WIN_MAP_READn, PIN_58_VCC);
+  /* p27.VEZA*/ BUS_VRAM_A11n.tri6_nn(_WUKO_WIN_MAP_READn, SIG_VCC);
+  /* p27.VOGU*/ BUS_VRAM_A12n.tri6_nn(_WUKO_WIN_MAP_READn, SIG_VCC);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ void GateBoyVramBus::tile_to_addr(const BGScrollY scroll_y, const WinLineY win_l
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyVramBus::sprite_to_addr(const SpriteStore& sprite_store, const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, NorLatch XYMU_RENDERINGn, DFF9 XYMO_LCDC_SPSIZEn) {
-  wire PIN_32_GND = 0;
+  SigIn SIG_GND = 0;
 
   /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_temp_b.YZOS_OAM_DB6p.qp_new());
   /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1(XYMO_LCDC_SPSIZEn.qn_new());
@@ -152,7 +152,7 @@ void GateBoyVramBus::sprite_to_addr(const SpriteStore& sprite_store, const OamTe
   /* p29.GOTU*/ BUS_VRAM_A09n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.WYSO_OAM_DA5p.qp_new());
   /* p29.GEGU*/ BUS_VRAM_A10n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XOTE_OAM_DA6p.qp_new());
   /* p29.XEHE*/ BUS_VRAM_A11n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YZAB_OAM_DA7p.qp_new());
-  /* p29.DYSO*/ BUS_VRAM_A12n.tri6_nn(_ABON_SFETCHINGn, PIN_32_GND);   // sprites always in low half of tile store
+  /* p29.DYSO*/ BUS_VRAM_A12n.tri6_nn(_ABON_SFETCHINGn, SIG_GND);   // sprites always in low half of tile store
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -301,9 +301,9 @@ void GateBoyVramBus::set_pin_cs(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wir
 }
 
 void GateBoyVramBus::set_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp) {
-  wire PIN_58_VCC = 1;
+  SigIn SIG_VCC = 1;
   ///* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
-  /* p25.SUDO*/ wire _SUDO_MWRp = not1(PIN_58_VCC); // Ignoring debug stuff for now
+  /* p25.SUDO*/ wire _SUDO_MWRp = not1(SIG_VCC); // Ignoring debug stuff for now
   /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp, _SUDO_MWRp, TUJA_CPU_VRAM_WRp);
   /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
 

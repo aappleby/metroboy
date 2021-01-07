@@ -31,7 +31,7 @@ struct GateBoyCpuBus {
     d.dump_slice2p("BUS_CPU_D : ", &BUS_CPU_D00p, 8);
   }
 
-  Signal ABUZ_EXT_RAM_CS_CLK;
+  Gate ABUZ_EXT_RAM_CS_CLK;
 
   /*BUS_CPU_A00p*/ Bus BUS_CPU_A00p;
   /*BUS_CPU_A01p*/ Bus BUS_CPU_A01p;
@@ -72,9 +72,9 @@ struct GateBoyCpuBus {
 
   /* p07.TEPU*/ DFF17 TEPU_BOOT_BITn_h;
 
-  Signal TEDO_CPU_RDp;
-  Signal APOV_CPU_WRp;
-  Signal TAPU_CPU_WRp;
+  Gate TEDO_CPU_RDp;
+  Gate APOV_CPU_WRp;
+  Gate TAPU_CPU_WRp;
 
   /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(TEDO_CPU_RDp); }
   /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(TAPU_CPU_WRp); }

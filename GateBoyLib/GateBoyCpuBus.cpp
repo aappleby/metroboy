@@ -125,18 +125,14 @@ void GateBoyCpuBus::set_pins(
   ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
 
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(SIG_CPU_RDp);
-  /* p07.TEDO*/ wire _TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
+  /* p07.TEDO*/ TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
   /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
   /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(SIG_CPU_WRp, _AFAS_xxxxEFGx);
-  /* p01.APOV*/ wire _APOV_CPU_WRp = not1(_AREV_CPU_WRn);
+  /* p01.APOV*/ APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
-  /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(_APOV_CPU_WRp);
-  /* p07.TAPU*/ wire _TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
-
-  TEDO_CPU_RDp.set(_TEDO_CPU_RDp);
-  APOV_CPU_WRp.set(_APOV_CPU_WRp);
-  TAPU_CPU_WRp.set(_TAPU_CPU_WRp);
+  /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(APOV_CPU_WRp);
+  /* p07.TAPU*/ TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
 }
 
 //------------------------------------------------------------------------------------------------------------------------

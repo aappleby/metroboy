@@ -205,12 +205,12 @@ void GateBoyOamBus::dma_to_addr_bus(GateBoyDMA& dma) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, NorLatch XYMU_RENDERINGn){
-  wire PIN_58_VCC = 1;
+  SigIn SIG_VCC = 1;
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_SFETCHINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SFETCHINGn = not1(_AJON_SFETCHINGp);
-  /* p28.GECA*/ BUS_OAM_A00n.tri6_nn(_BETE_SFETCHINGn, PIN_58_VCC);
-  /* p28.WYDU*/ BUS_OAM_A01n.tri6_nn(_BETE_SFETCHINGn, PIN_58_VCC);
+  /* p28.GECA*/ BUS_OAM_A00n.tri6_nn(_BETE_SFETCHINGn, SIG_VCC);
+  /* p28.WYDU*/ BUS_OAM_A01n.tri6_nn(_BETE_SFETCHINGn, SIG_VCC);
   /* p28.GYBU*/ BUS_OAM_A02n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I0.qp_new());
   /* p28.GYKA*/ BUS_OAM_A03n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I1.qp_new());
   /* p28.FABY*/ BUS_OAM_A04n.tri6_nn(_BETE_SFETCHINGn, sprite_store.BUS_SPR_I2.qp_new());
@@ -223,10 +223,10 @@ void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const Sprite
 
 void GateBoyOamBus::scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp) {
   // OAM address from sprite scanner
-  wire PIN_32_GND = 0;
+  SigIn SIG_GND = 0;
   /* p28.APAR*/ wire _APAR_SCANNINGn = not1(ACYL_SCANNINGp);
-  /* p28.GEFY*/ BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, PIN_32_GND);
-  /* p28.WUWE*/ BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, PIN_32_GND);
+  /* p28.GEFY*/ BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, SIG_GND);
+  /* p28.WUWE*/ BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, SIG_GND);
   /* p28.GUSE*/ BUS_OAM_A02n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new());
   /* p28.GEMA*/ BUS_OAM_A03n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new());
   /* p28.FUTO*/ BUS_OAM_A04n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new());

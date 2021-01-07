@@ -760,7 +760,7 @@ bool CellDB::parse_dir(const std::string& path) {
   bool result = true;
 #if 0
   {
-    string line = R"(  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), PIN_32_GND);)";
+    string line = R"(  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);)";
     Cell c;
     parse_line(c, line);
     c.dump(d);
@@ -821,18 +821,6 @@ bool CellDB::parse_dir(const std::string& path) {
 
   //----------------------------------------
   // Check that all cells are sane.
-
-  /*
-  for (auto& [tag, cell] : tag_to_cell) {
-    if (tag[0] == 'P') printf("%s\n", tag.c_str());
-  }
-  */
-
-  {
-    auto& gnd = tag_to_cell["PIN_32"];
-    gnd->dump(d);
-  }
-
 
   for (auto& [tag, cell] : tag_to_cell) {
     cell->sanity_check();

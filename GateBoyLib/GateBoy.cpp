@@ -499,12 +499,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  PIN_58_VCC.reset_for_pass();
-  PIN_32_GND.reset_for_pass();
-
-  PIN_58_VCC.pin_in_dp(1);
-  PIN_32_GND.pin_in_dp(0);
-
   rst.PIN_71_RST.reset_for_pass();
   clk.PIN_74_CLKGOOD.reset_for_pass();
   clk.PIN_74_CLK_IN.reset_for_pass();
@@ -600,7 +594,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(clk.AROV_xxCDEFxx(), clk.AJAX_xxxxEFGH(), cpu_bus.SIG_CPU_EXT_BUSp);
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(rst.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
-  /*#p01.ABUZ*/ cpu_bus.ABUZ_EXT_RAM_CS_CLK.set(not1(_AWOD_ABxxxxxx));
+  /*#p01.ABUZ*/ cpu_bus.ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
 
   lcd.reg_lx.tock(rst, clk);
   lcd.reg_ly.tock2(rst, lcd.reg_lx);

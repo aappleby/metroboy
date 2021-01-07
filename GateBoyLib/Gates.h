@@ -129,12 +129,39 @@ struct Signal : private BitBase {
 
   void reset(uint8_t s) { state = s; }
 
-  /*
-  void operator=(wire D) {
+  void set(wire D) {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }
-  */
+};
+
+//-----------------------------------------------------------------------------
+
+struct SigIn : private BitBase {
+  SigIn(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
+
+  operator wire()     const { return qp_new(); }
+  uint8_t get_state() const { return state; }
+
+  void reset(uint8_t s) { state = s; }
+
+  void set(wire D) {
+    CHECK_N(state & BIT_NEW);
+    state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+struct SigOut : private BitBase {
+  SigOut(wire _state) { state = _state; }
+
+  uint8_t get_state() const { return state; }
+
+  using BitBase::qp_new;
+  using BitBase::qp_old;
+
+  void reset(uint8_t s) { state = s; }
 
   void set(wire D) {
     CHECK_N(state & BIT_NEW);

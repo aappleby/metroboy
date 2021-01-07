@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) {
-  wire PIN_32_GND = 0;
+  SigIn SIG_GND = 0;
 
   /*#p29.EBOS*/ wire EBOS_LY0n_new_evn = not1(reg_ly.MUWY_LY0p.qp_new());
   /* p29.DASA*/ wire DASA_LY1n_new_evn = not1(reg_ly.MYRO_LY1p.qp_new());
@@ -20,7 +20,7 @@ SpriteDeltaY SpriteDeltaY::sub(const OamTempA& oam_temp_a, const RegLY& reg_ly) 
   /* p29.FEMO*/ wire FEMO_LY6n_new_evn = not1(reg_ly.MATO_LY6p.qp_new());
   /* p29.GUSU*/ wire GUSU_LY7n_new_evn = not1(reg_ly.LAFO_LY7p.qp_new());
 
-  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), PIN_32_GND);
+  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n_new_evn, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);
   /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n_new_evn, oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.c);
   /* p29.FECO*/ auto _FECO_YDIFF2 = add3(FUKY_LY2n_new_evn, oam_temp_a.YJEX_OAM_DA2p.qp_new(), _ENEF_YDIFF1.c);
   /* p29.GYKY*/ auto _GYKY_YDIFF3 = add3(FUVE_LY3n_new_evn, oam_temp_a.XYJU_OAM_DA3p.qp_new(), _FECO_YDIFF2.c);
@@ -114,9 +114,9 @@ wire PixCount::XANO_PX167p_new() const {
 //------------------------------------------------------------------------------------------------------------------------
 
 BGScrollX BGScrollX::add(PixCount& pix_count, RegSCX reg_scx) {
-  wire PIN_32_GND = 0;
+  SigIn SIG_GND = 0;
 
-  /*#p26.ATAD*/ auto _ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), PIN_32_GND);
+  /*#p26.ATAD*/ auto _ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), SIG_GND);
   /* p26.BEHU*/ auto _BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0.c);
   /* p26.APYH*/ auto _APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1.c);
   /* p26.BABE*/ auto _BABE_MAP_X0  = add3(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), _APYH_TILE_X2.c);
@@ -138,9 +138,9 @@ BGScrollX BGScrollX::add(PixCount& pix_count, RegSCX reg_scx) {
 }
 
 BGScrollY BGScrollY::add(RegLY& reg_ly, RegSCY& reg_scy) {
-  wire PIN_32_GND = 0;
+  SigIn SIG_GND = 0;
 
-  /*#p26.FAFO*/ auto _FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), PIN_32_GND);
+  /*#p26.FAFO*/ auto _FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), SIG_GND);
   /* p26.EMUX*/ auto _EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0.c);
   /* p26.ECAB*/ auto _ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1.c);
   /* p26.ETAM*/ auto _ETAM_MAP_Y0  = add3(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), _ECAB_TILE_Y2.c);
@@ -622,16 +622,16 @@ void TileTempA::store_vram_data(const GateBoyVramBus& vram_bus, wire LOMA_LATCH_
 
 void TileTempB::store_vram_data(const GateBoyVramBus& vram_bus, wire LABU_LATCH_TILE_DBn)
 {
-  wire PIN_58_VCC = 1;
+  SigIn SIG_VCC = 1;
   // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
-  /* p32.RAWU*/ RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D00p.qp_old());
-  /* p32.POZO*/ POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D01p.qp_old());
-  /* p32.PYZO*/ PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D02p.qp_old());
-  /* p32.POXA*/ POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D03p.qp_old());
-  /* p32.PULO*/ PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D04p.qp_old());
-  /* p32.POJU*/ POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D05p.qp_old());
-  /* p32.POWY*/ POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D06p.qp_old());
-  /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, PIN_58_VCC, vram_bus.BUS_VRAM_D07p.qp_old());
+  /* p32.RAWU*/ RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D00p.qp_old());
+  /* p32.POZO*/ POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D01p.qp_old());
+  /* p32.PYZO*/ PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D02p.qp_old());
+  /* p32.POXA*/ POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D03p.qp_old());
+  /* p32.PULO*/ PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D04p.qp_old());
+  /* p32.POJU*/ POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D05p.qp_old());
+  /* p32.POWY*/ POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D06p.qp_old());
+  /* p32.PYJU*/ PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, vram_bus.BUS_VRAM_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

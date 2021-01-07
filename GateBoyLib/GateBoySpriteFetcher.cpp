@@ -24,14 +24,14 @@ void SpriteFetcher::tock(
   wire TAVE_PRELOAD_DONE_TRIGp,
   wire TEKY_SFETCH_REQp_old)
 {
-  wire PIN_58_VCC = 1;
+  SigIn SIG_VCC = 1;
 
   _XYMU_RENDERINGn = XYMU_RENDERINGn;
 
-  /* p27.SUDA*/ SUDA_SFETCH_REQp.dff17(clk.LAPE_AxCxExGx(), PIN_58_VCC, SOBU_SFETCH_REQp.qp_old());
-  /* p27.SOBU*/ SOBU_SFETCH_REQp.dff17(clk.TAVA_xBxDxFxH(), PIN_58_VCC, TEKY_SFETCH_REQp_old);
+  /* p27.SUDA*/ SUDA_SFETCH_REQp.dff17(clk.LAPE_AxCxExGx(), SIG_VCC, SOBU_SFETCH_REQp.qp_old());
+  /* p27.SOBU*/ SOBU_SFETCH_REQp.dff17(clk.TAVA_xBxDxFxH(), SIG_VCC, TEKY_SFETCH_REQp_old);
 
-  /*#p29.TYFO*/ TYFO_SFETCH_S0p_D1.dff17(clk.LAPE_AxCxExGx(), PIN_58_VCC,                TOXE_SFETCH_S0p.qp_old());
+  /*#p29.TYFO*/ TYFO_SFETCH_S0p_D1.dff17(clk.LAPE_AxCxExGx(), SIG_VCC,                TOXE_SFETCH_S0p.qp_old());
   /*#p29.SEBA*/ SEBA_SFETCH_S1p_D5.dff17(clk.LAPE_AxCxExGx(), _XYMU_RENDERINGn.qn_new(), VONU_SFETCH_S1p_D4.qp_old());
   /*#p29.VONU*/ VONU_SFETCH_S1p_D4.dff17(clk.TAVA_xBxDxFxH(), _XYMU_RENDERINGn.qn_new(), TOBU_SFETCH_S1p_D2.qp_old());
   /*#p29.TOBU*/ TOBU_SFETCH_S1p_D2.dff17(clk.TAVA_xBxDxFxH(), _XYMU_RENDERINGn.qn_new(), TULY_SFETCH_S1p.qp_old());

@@ -9,12 +9,12 @@ using namespace glm;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct NodeInstance {
+struct Node {
 
   bool locked = 0;
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
-  NodeInstance* anchor = nullptr;
+  Node* anchor = nullptr;
   bool pinned = 1;
   const Cell* cell = nullptr;
   int  mark = 0;
@@ -23,9 +23,9 @@ struct NodeInstance {
   dvec2 spring_force = {0,0};
 
   bool  anchored() { return anchor != nullptr; }
-  bool  anchored_to(NodeInstance* target);
-  const NodeInstance* get_anchor() { return anchor; }
-  void  set_anchor(NodeInstance* new_anchor);
+  bool  anchored_to(Node* target);
+  const Node* get_anchor() { return anchor; }
+  void  set_anchor(Node* new_anchor);
 
   void toggle_ghost()  { ghost = !ghost; }
 
@@ -102,11 +102,12 @@ struct NodeInstance {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct Node {
-  Node(const Cell* _cell) {
+struct NodeGroup {
+  NodeGroup(const Cell* _cell) {
     cell = _cell;
     nodes.resize(1);
-    nodes[0].cell = _cell;
+    nodes[0] = new Node();
+    nodes[0]->cell = _cell;
   }
 
   const char* tag() const;
@@ -116,15 +117,15 @@ struct Node {
   //----------------------------------------
   // Serialized state
 
-  std::vector<NodeInstance> nodes;
+  std::vector<Node*> nodes;
 
   //----------------------------------------
   // State from cell db
 
   const Cell* cell = nullptr;
-  std::vector<Node*>       prev_node;
+  std::vector<NodeGroup*>  prev_group;
   std::vector<std::string> prev_port;
-  std::vector<Node*> next;
+  std::vector<NodeGroup*>  next_group;
 
   //----------------------------------------
   // Sim/UI state
@@ -138,9 +139,9 @@ struct Plait {
   void save_json(const char* filename);
   void load_json(const char* filename, CellDB& cell_db);
 
-  std::map<std::string, Node*> node_map;
+  std::map<std::string, NodeGroup*> node_map;
 
-  Node* get_or_create_node(const std::string& tag, CellDB& cell_db) {
+  NodeGroup* get_or_create_node(const std::string& tag, CellDB& cell_db) {
     auto cell = cell_db.tag_to_cell[tag];
     if (!cell) {
       printf("Tag \"%s\" not in cell db\n", tag.c_str());
@@ -150,7 +151,7 @@ struct Plait {
     auto node = node_map[tag];
     if (node) return node;
 
-    node = new Node(cell);
+    node = new NodeGroup(cell);
     node_map[tag] = node;
     return node;
   }

@@ -147,7 +147,7 @@ struct RegStat {
 
   void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
   void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, const RegLYC& reg_lyc);
-  void read(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XYMU_RENDERINGp, wire PARU_VBLANKp);
+  void read(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, NorLatch XYMU_RENDERINGn, wire PARU_VBLANKp);
 
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
 

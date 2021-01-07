@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct Port {
+struct Arg {
   std::string tag;
   std::string port;
 };
@@ -27,8 +27,8 @@ enum class CellType {
   DFF,
   LATCH,
   TRIBUF,
+  ADDER,
   LOGIC,
-  ADDER
 };
 
 struct Cell {
@@ -36,14 +36,15 @@ struct Cell {
   void merge(const Cell& c);
   void dump(Dumper& d) const;
 
-  CellType              cell_type = CellType::UNKNOWN;
-  std::string           verified;
-  std::string           page;
-  std::string           tag;
-  std::string           gate;
-  std::vector<Port>     args;
-  std::set<std::string> names;
-  std::string           doc;
+  CellType                 cell_type = CellType::UNKNOWN;
+  std::string              verified;
+  std::string              page;
+  std::string              tag;
+  std::string              gate;
+  std::vector<Arg>         args;
+  std::vector<std::string> ports; // FIXME not populated yet
+  std::set<std::string>    names;
+  std::string              doc;
 
   int mark = 0;
 

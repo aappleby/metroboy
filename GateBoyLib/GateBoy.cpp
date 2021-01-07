@@ -428,6 +428,11 @@ void GateBoy::next_phase() {
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
+  /*SIG_VCC*/ SigIn SIG_VCC;
+  /*SIG_GND*/ SigIn SIG_GND;
+  SIG_VCC.sig_in(1);
+  SIG_GND.sig_in(0);
+
   //-----------------------------------------------------------------------------
   // We need the sprite match result from the previous cycle, so we recalculate it here. :/
 
@@ -955,7 +960,7 @@ void GateBoy::tock_slow(int pass_index) {
     timer.write_tima_async(rst, cpu_bus);
     reg_stat.tock(rst, cpu_bus, lcd.reg_lyc);
     joypad.tock2(rst, clk, sys_buttons);
-    interrupts.tock(rst, cpu_bus, joypad, reg_stat, lcd.reg_lyc, serial, lcd.PARU_VBLANKp(), lcd.reg_lx.PURE_LINE_ENDn(), timer.MOBA_TIMER_OVERFLOWp.qp_new(), WODU_HBLANKp);
+    interrupts.tock(rst, cpu_bus, joypad, reg_stat, lcd.reg_lyc, serial, lcd.PARU_VBLANKp(), lcd.reg_lx.PURE_LINE_ENDn(), timer.MOBA_TIMER_OVERFLOWp, WODU_HBLANKp);
   }
 
   //----------------------------------------
@@ -964,7 +969,7 @@ void GateBoy::tock_slow(int pass_index) {
   {
     interrupts.read_ie(cpu_bus);
     interrupts.read_intf(cpu_bus);
-    reg_stat.read(cpu_bus, ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn.qn_new(), lcd.PARU_VBLANKp());
+    reg_stat.read(cpu_bus, ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn, lcd.PARU_VBLANKp());
     joypad.read(cpu_bus);
     reg_scx.read(cpu_bus);
     reg_scy.read(cpu_bus);

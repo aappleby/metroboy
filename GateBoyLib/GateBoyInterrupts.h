@@ -22,7 +22,7 @@ struct GateBoyInterrupts {
     const GateBoySerial& serial,
     wire PARU_VBLANKp,
     wire PURE_LINE_ENDn,
-    wire MOBA_TIMER_OVERFLOWp,
+    DFF17 MOBA_TIMER_OVERFLOWp,
     wire WODU_HBLANKp);
 
   void dump(Dumper& d) {

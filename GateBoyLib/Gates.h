@@ -708,8 +708,8 @@ struct PinIn : public BitBase {
 
 struct PinClk {
 
-  wire qp_int_new_clkgood() const { return CLKGOOD.qp_new(); }
-  wire qp_int_new_clk() const     { return CLK.qp_new(); }
+  wire cg() const { return CLKGOOD.qp_new(); }
+  wire ck() const     { return CLK.qp_new(); }
 
   //wire qp_int_new() const { return qp_new(); }
   //wire int_qn_new() const { return qn_new(); }

@@ -221,11 +221,11 @@ void RegLCDC::write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus)
 void RegStat::read(
   GateBoyCpuBus& cpu_bus,
   wire ACYL_SCANNINGp,
-  wire XYMU_RENDERINGp,
+  NorLatch XYMU_RENDERINGn,
   wire PARU_VBLANKp)
 {
-  /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGp, PARU_VBLANKp);   // die NOR
-  /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp, XYMU_RENDERINGp); // die NOR
+  /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
+  /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp, XYMU_RENDERINGn.qn_new()); // die NOR
   /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.VARY_FF41p());
   /* p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp);
   /*#p21.TEBY*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);

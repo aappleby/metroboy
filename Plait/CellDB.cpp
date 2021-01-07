@@ -56,8 +56,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM( CellType, {
   {CellType::DFF,     "DFF"},
   {CellType::LATCH,   "LATCH"},
   {CellType::TRIBUF,  "TRIBUF"},
-  {CellType::LOGIC,   "LOGIC"},
   {CellType::ADDER,   "ADDER"},
+  {CellType::LOGIC,   "LOGIC"},
 });
 
 static std::map<CellType, string> cell_type_to_name = {
@@ -71,8 +71,8 @@ static std::map<CellType, string> cell_type_to_name = {
   {CellType::DFF,     "DFF"},
   {CellType::LATCH,   "LATCH"},
   {CellType::TRIBUF,  "TRIBUF"},
-  {CellType::LOGIC,   "LOGIC"},
   {CellType::ADDER,   "ADDER"},
+  {CellType::LOGIC,   "LOGIC"},
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -84,12 +84,12 @@ void CellDB::clear() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void to_json(nlohmann::json& j, const Port& p) {
+void to_json(nlohmann::json& j, const Arg& p) {
   j["tag"]  = p.tag;
   j["port"] = p.port;
 }
 
-void from_json(const nlohmann::json& j, Port& p) {
+void from_json(const nlohmann::json& j, Arg& p) {
   j["tag"] .get_to(p.tag);
   j["port"].get_to(p.port);
 }
@@ -150,6 +150,15 @@ void Cell::dump(Dumper& d) const {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+void check_cell_tag(const std::string& tag) {
+  (void)tag;
+  CHECK_P(tag.size() >= 4);
+  CHECK_P(tag[0] >= 'A' && tag[0] <= 'Z');
+  CHECK_P(tag[1] >= 'A' && tag[1] <= 'Z');
+  CHECK_P(tag[2] >= 'A' && tag[2] <= 'Z');
+  CHECK_P(tag[3] >= 'A' && tag[3] <= 'Z');
+}
+
 void Cell::sanity_check() const {
   if (gate.empty()) {
     ConsoleDumper d;
@@ -161,42 +170,82 @@ void Cell::sanity_check() const {
   CHECK_N(gate.empty());
   CHECK_N(names.empty());
 
+  /*
+  PIN_IN,
+  PIN_OUT,
+  PIN_IO,
+  PIN_CLK,
+  SIG_IN,
+  SIG_OUT,
+  BUS,
+  DFF,
+  LATCH,
+  TRIBUF,
+  LOGIC,
+  ADDER
+  */
+
   if (cell_type == CellType::PIN_IN) {
     CHECK_P(tag.starts_with("PIN_"));
-    CHECK_P(gate == "pin_input");
+    CHECK_P(gate == "pin_in");
     CHECK_P(args.empty());
   }
   else if (cell_type == CellType::PIN_OUT) {
     CHECK_P(tag.starts_with("PIN_"));
-    CHECK_P(gate != "pin_input");
-    CHECK_P(args.size());
+    CHECK_P(gate.starts_with("pin_out"));
+    CHECK_P(args.size() != 0);
   }
   else if (cell_type == CellType::PIN_IO) {
     CHECK_P(tag.starts_with("PIN_"));
-    CHECK_P(gate != "pin_input");
-    CHECK_P(args.size());
+    CHECK_P(gate.starts_with("pin_out"));
+    CHECK_P(args.size() != 0);
+  }
+  else if (cell_type == CellType::PIN_CLK) {
+    CHECK_P(tag.starts_with("PIN_"));
+    CHECK_P(gate == "pin_clk");
+    CHECK_P(args.empty());
   }
   else if (cell_type == CellType::SIG_IN) {
     CHECK_P(tag.starts_with("SIG_"));
-    CHECK_P(gate == "sig_input");
+    CHECK_P(gate == "sig_in");
     CHECK_P(args.empty());
   }
   else if (cell_type == CellType::SIG_OUT) {
     CHECK_P(tag.starts_with("SIG_"));
-    CHECK_P(gate == "set");
+    CHECK_P(gate == "sig_out");
     CHECK_P(args.size() == 1);
   }
   else if (cell_type == CellType::BUS) {
     CHECK_P(tag.starts_with("BUS_"));
-    CHECK_P(gate == "bus_input" || args.size());
+    CHECK_P(gate == "bus");
+  }
+  else if (cell_type == CellType::DFF) {
+    check_cell_tag(tag);
+    CHECK_P(args.size() >= 2);
+  }
+  else if (cell_type == CellType::LATCH) {
+    check_cell_tag(tag);
+    CHECK_P(args.size() == 2);
+  }
+  else if (cell_type == CellType::TRIBUF) {
+    check_cell_tag(tag);
+    CHECK_P(args.size() == 2);
+  }
+  else if (cell_type == CellType::ADDER) {
+    check_cell_tag(tag);
+    CHECK_P(args.size() == 3);
+  }
+  else if (cell_type == CellType::LOGIC) {
+    CHECK_P(args.size() >= 1);
+    check_cell_tag(tag);
   }
   else {
-    CHECK_P(args.size());
+    __debugbreak();
   }
 
   if (args.size()) {
     for (auto& arg : args) {
-      static std::set<std::string> valid_ports = { "", "qp", "qn", "s", "c" };
+      static std::set<std::string> valid_ports = { "", "qp", "qn", "s", "c", "ck", "cg" };
       CHECK_P(valid_ports.contains(arg.port));
     }
   }
@@ -780,18 +829,18 @@ bool CellDB::parse_dir(const std::string& path) {
     // All pins without gates are inputs from the outside world.
     if (cell->cell_type == CellType::PIN_IN) {
       CHECK_P(cell->gate.empty());
-      cell->gate = "pin_input";
+      cell->gate = "pin_in";
+    }
+
+    if (cell->cell_type == CellType::PIN_CLK) {
+      CHECK_P(cell->gate.empty());
+      cell->gate = "pin_clk";
     }
 
     // All buses without args are inputs from the CPU.
     if (cell->tag.starts_with("BUS_")) {
       cell->cell_type = CellType::BUS;
-      if (cell->args.size()) {
-        cell->gate = "bus";
-      }
-      else {
-        cell->gate = "bus_input";
-      }
+      cell->gate = "bus";
     }
 
     /*
@@ -820,18 +869,24 @@ bool CellDB::parse_dir(const std::string& path) {
       auto arg_cell = tag_to_cell[arg.tag];
       CHECK_P(arg_cell);
 
-      if (arg_cell->cell_type == CellType::PIN_IN)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::PIN_OUT) { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::PIN_IO)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::SIG_OUT) { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::BUS)     { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::DFF)     { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::LATCH)   { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::TRIBUF)  { CHECK_P(arg.port == "qn" || arg.port == "qp"); }
-      if (arg_cell->cell_type == CellType::ADDER)   { CHECK_P(arg.port == "s"   || arg.port == "c"); }
+      // FIXME some of these are probably never used
 
-      if (arg_cell->cell_type == CellType::SIG_IN)  { CHECK_P(arg.port == ""); }
-      if (arg_cell->cell_type == CellType::LOGIC)   { CHECK_P(arg.port == ""); }
+      switch(arg_cell->cell_type) {
+      case CellType::PIN_IN:   { CHECK_P(arg.port == "qp"); break;}
+      //case CellType::PIN_OUT:  { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
+      case CellType::PIN_IO:   { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
+      case CellType::PIN_CLK:  { CHECK_P(arg.port == "cg" || arg.port == "ck"); break;}
+      case CellType::SIG_IN:   { CHECK_P(arg.port == ""); break; }
+      case CellType::SIG_OUT:  { __debugbreak(); break;}
+      case CellType::BUS:      { CHECK_P(arg.port == "qp"); break;}
+      case CellType::DFF:      { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
+      case CellType::LATCH:    { CHECK_P(arg.port == "qn" || arg.port == "qp"); break;}
+      case CellType::TRIBUF:   { CHECK_P(arg.port == ""); break; }
+      case CellType::LOGIC:    { CHECK_P(arg.port == ""); break; }
+      case CellType::ADDER:    { CHECK_P(arg.port == "s"   || arg.port == "c"); break; }
+
+      default: __debugbreak(); break;
+      }
     }
   }
 

@@ -69,7 +69,7 @@ void GateBoyInterrupts::tock(
   const GateBoySerial& serial,
   wire PARU_VBLANKp,
   wire PURE_LINE_ENDn,
-  wire MOBA_TIMER_OVERFLOWp,
+  DFF17 MOBA_TIMER_OVERFLOWp,
   wire WODU_HBLANKp)
 {
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
@@ -127,7 +127,7 @@ void GateBoyInterrupts::tock(
   SigIn SIG_VCC = 1;
   /* p02.LOPE*/ LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,             _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, SIG_VCC);
   /* p02.LALU*/ LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,               _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, SIG_VCC);
-  /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp,          _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, SIG_VCC);
+  /* p02.NYBO*/ NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp.qp_new(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, SIG_VCC);
   /* p02.UBUL*/ UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, SIG_VCC);
   /* p02.ULAK*/ ULAK_FF0F_D4p.dff22(joypad.ASOK_INT_JOYp(),        _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, SIG_VCC);
 

@@ -371,17 +371,17 @@ void GateBoyOamBus::tock(GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_S
   uint8_t oam_data_a = (uint8_t)BitBase::pack_newn(8, &BUS_OAM_DA00n);
   uint8_t oam_data_b = (uint8_t)BitBase::pack_newn(8, &BUS_OAM_DB00n);
 
-  if (bit(~old_oam_clk) && bit(~SIG_OAM_CLKn)) {
-    if (bit(~SIG_OAM_WRn_A)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-    if (bit(~SIG_OAM_WRn_B)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+  if (bit(~old_oam_clk) && bit(~SIG_OAM_CLKn.qp_new())) {
+    if (bit(~SIG_OAM_WRn_A.qp_new())) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+    if (bit(~SIG_OAM_WRn_B.qp_new())) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }
 
-  if (bit(~SIG_OAM_OEn)) {
+  if (bit(~SIG_OAM_OEn.qp_new())) {
     oam_data_a = oam_ram[(oam_addr << 1) + 0];
     oam_data_b = oam_ram[(oam_addr << 1) + 1];
   }
 
-  old_oam_clk.set(bit(~SIG_OAM_CLKn));
+  old_oam_clk = bit(~SIG_OAM_CLKn.qp_new());
 
   /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(ACYL_SCANNINGp, XOCE_xBCxxFGx); // schematic wrong, is def nand2
   /*#p28.BOTA*/ wire _BOTA_OAM_OEn  = nand3(cpu_bus.BOFE_LATCH_EXTn(), cpu_bus.SARO_ADDR_OAMp(), cpu_bus.ASOT_CPU_RDp()); // Schematic wrong, this is NAND

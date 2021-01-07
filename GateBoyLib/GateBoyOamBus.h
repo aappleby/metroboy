@@ -91,12 +91,12 @@ struct GateBoyOamBus {
   /*BUS_OAM_DB06n*/ Bus BUS_OAM_DB06n;
   /*BUS_OAM_DB07n*/ Bus BUS_OAM_DB07n;
 
-  /*SIG_OAM_CLKn */ Signal SIG_OAM_CLKn;   // ABCDEFGH
-  /*SIG_OAM_WRn_A*/ Signal SIG_OAM_WRn_A;  // AxxxExxH
-  /*SIG_OAM_WRn_B*/ Signal SIG_OAM_WRn_B;  // AxxxExxH
-  /*SIG_OAM_OEn  */ Signal SIG_OAM_OEn;    // ABCDEFGH
+  /*SIG_OAM_CLKn */ SigOut SIG_OAM_CLKn;   // ABCDEFGH
+  /*SIG_OAM_WRn_A*/ SigOut SIG_OAM_WRn_A;  // AxxxExxH
+  /*SIG_OAM_WRn_B*/ SigOut SIG_OAM_WRn_B;  // AxxxExxH
+  /*SIG_OAM_OEn  */ SigOut SIG_OAM_OEn;    // ABCDEFGH
 
-  Signal old_oam_clk;
+  Gate old_oam_clk;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

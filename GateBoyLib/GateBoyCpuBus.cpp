@@ -92,15 +92,15 @@ void GateBoyCpuBus::set_pins(
   int phase_total,
   Req bus_req_new)
 {
-  SIG_CPU_RDp.set(DELTA_HA ? 0 : bus_req_new.read);
-  SIG_CPU_WRp.set(DELTA_HA ? 0 : bus_req_new.write);
+  SIG_CPU_RDp.sig_in(DELTA_HA ? 0 : bus_req_new.read);
+  SIG_CPU_WRp.sig_in(DELTA_HA ? 0 : bus_req_new.write);
 
   // not at all certain about this. seems to break some oam read glitches.
   if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {
-    SIG_CPU_LATCH_EXT.set(1);
+    SIG_CPU_LATCH_EXT.sig_in(1);
   }
   else {
-    SIG_CPU_LATCH_EXT.set(0);
+    SIG_CPU_LATCH_EXT.sig_in(0);
   }
 
   //SIG_CPU_6.set(0);
@@ -113,13 +113,13 @@ void GateBoyCpuBus::set_pins(
   if (DELTA_HA) {
     if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
   }
-  SIG_CPU_EXT_BUSp.set(addr_ext_new);
+  SIG_CPU_EXT_BUSp.sig_in(addr_ext_new);
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  /*SIG_CPU_ADDR_HIp*/ SIG_CPU_ADDR_HIp.set(SYRO_FE00_FFFF());
-  /*SIG_CPU_UNOR_DBG*/ SIG_CPU_UNOR_DBG.set(rst.UNOR_MODE_DBG2p());
-  /*SIG_CPU_UMUT_DBG*/ SIG_CPU_UMUT_DBG.set(rst.UMUT_MODE_DBG1p());
+  /*SIG_CPU_ADDR_HIp*/ SIG_CPU_ADDR_HIp.sig_out(SYRO_FE00_FFFF());
+  /*SIG_CPU_UNOR_DBG*/ SIG_CPU_UNOR_DBG.sig_out(rst.UNOR_MODE_DBG2p());
+  /*SIG_CPU_UMUT_DBG*/ SIG_CPU_UMUT_DBG.sig_out(rst.UMUT_MODE_DBG1p());
 
   ///* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now

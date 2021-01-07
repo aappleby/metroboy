@@ -513,12 +513,12 @@ void GateBoy::tock_slow(int pass_index) {
   rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
   rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
 
-  clk.SIG_CPU_CLKREQ.set(sys_clkreq);
-  interrupts.SIG_CPU_ACK_VBLANK.set(bit(int_ack_latch, BIT_VBLANK));
-  interrupts.SIG_CPU_ACK_STAT  .set(bit(int_ack_latch, BIT_STAT));
-  interrupts.SIG_CPU_ACK_TIMER .set(bit(int_ack_latch, BIT_TIMER));
-  interrupts.SIG_CPU_ACK_SERIAL.set(bit(int_ack_latch, BIT_SERIAL));
-  interrupts.SIG_CPU_ACK_JOYPAD.set(bit(int_ack_latch, BIT_JOYPAD));
+  clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
+  interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(int_ack_latch, BIT_VBLANK));
+  interrupts.SIG_CPU_ACK_STAT  .sig_in(bit(int_ack_latch, BIT_STAT));
+  interrupts.SIG_CPU_ACK_TIMER .sig_in(bit(int_ack_latch, BIT_TIMER));
+  interrupts.SIG_CPU_ACK_SERIAL.sig_in(bit(int_ack_latch, BIT_SERIAL));
+  interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(int_ack_latch, BIT_JOYPAD));
 
   //----------------------------------------
   // Sys clock signals

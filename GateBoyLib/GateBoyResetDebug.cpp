@@ -16,10 +16,10 @@ void GateBoyResetDebug::tock(const GateBoyClock& clk, wire SIG_CLKREQ, wire SIG_
   /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(PIN_71_RST.qp_int_new(), _ALYP_RSTn);
   /* p01.ASOL*/ ASOL_POR_DONEn.nor_latch(PIN_71_RST.qp_int_new(), _AFAR_RSTp); // Schematic wrong, this is a latch.
 
-  /*SIG_CPU_EXT_CLKGOOD*/ SIG_CPU_EXT_CLKGOOD.set(SIG_CLKGOOD);
-  /*SIG_CPU_EXT_RESETp */ SIG_CPU_EXT_RESETp.set(PIN_71_RST.qp_int_new());
-  /*SIG_CPU_STARTp     */ SIG_CPU_STARTp.set(_TABA_POR_TRIGn);
-  /*SIG_CPU_INT_RESETp */ SIG_CPU_INT_RESETp.set(AFER_SYS_RSTp.qp_new());
+  /*SIG_CPU_EXT_CLKGOOD*/ SIG_CPU_EXT_CLKGOOD.sig_out(SIG_CLKGOOD);
+  /*SIG_CPU_EXT_RESETp */ SIG_CPU_EXT_RESETp.sig_out(PIN_71_RST.qp_int_new());
+  /*SIG_CPU_STARTp     */ SIG_CPU_STARTp.sig_out(_TABA_POR_TRIGn);
+  /*SIG_CPU_INT_RESETp */ SIG_CPU_INT_RESETp.sig_out(AFER_SYS_RSTp.qp_new());
 
   /*#p25.SYCY*/ wire _SYCY_MODE_DBG2n = not1(UNOR_MODE_DBG2p());
   /*#p25.SOTO*/ SOTO_DBG_VRAMp.dff17(_SYCY_MODE_DBG2n, CUNU_SYS_RSTn(), SOTO_DBG_VRAMp.qn_old());

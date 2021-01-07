@@ -97,6 +97,9 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 //-----------------------------------------------------------------------------
 
 struct Gate : private BitBase {
+  Gate() { state = 0; }
+  Gate(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
+
   void reset(uint8_t s) { state = s; }
 
   uint8_t get_state() const {
@@ -116,27 +119,6 @@ struct Gate : private BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct Signal : private BitBase {
-  operator wire() const {
-    //return qp_new();
-    // FIXME turned off all old/new checking
-    return state;
-  }
-
-  uint8_t get_state() const {
-    return state;
-  }
-
-  void reset(uint8_t s) { state = s; }
-
-  void set(wire D) {
-    CHECK_N(state & BIT_NEW);
-    state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
-  }
-};
-
-//-----------------------------------------------------------------------------
-
 struct SigIn : private BitBase {
   SigIn() { state = 0; }
   SigIn(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
@@ -146,7 +128,7 @@ struct SigIn : private BitBase {
 
   void reset(uint8_t s) { state = s; }
 
-  void set(wire D) {
+  void sig_in(wire D) {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }
@@ -162,7 +144,7 @@ struct SigOut : private BitBase {
 
   void reset(uint8_t s) { state = s; }
 
-  void set(wire D) {
+  void sig_out(wire D) {
     CHECK_N(state & BIT_NEW);
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }

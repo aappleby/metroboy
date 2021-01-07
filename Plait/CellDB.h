@@ -20,6 +20,7 @@ enum class CellType {
   PIN_IN,
   PIN_OUT,
   PIN_IO,
+  PIN_CLK,
   SIG_IN,
   SIG_OUT,
   BUS,

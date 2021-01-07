@@ -347,50 +347,35 @@ bool CellDB::parse_cell_gate(Cell& c, const std::string& gate) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-set<string> valid_dff_types    = { "DFF8p", "DFF8n", "DFF9", "DFF11", "DFF13", "DFF17", "DFF20", "DFF22" };
-set<string> valid_latch_types  = { "NorLatch", "NandLatch", "TpLatch" };
-set<string> valid_pin_types    = { "PinIn", "PinOut", "PinIO", "PinClk" };
-
 bool CellDB::parse_reg_type(Cell& c, const std::string& type) {
+  static std::map<string, CellType> decl_to_reg_type = {
+    {"DFF8p",     CellType::DFF},
+    {"DFF8n",     CellType::DFF},
+    {"DFF9",      CellType::DFF},
+    {"DFF11",     CellType::DFF},
+    {"DFF13",     CellType::DFF},
+    {"DFF17",     CellType::DFF},
+    {"DFF20",     CellType::DFF},
+    {"DFF22",     CellType::DFF},
+    {"NorLatch",  CellType::LATCH},
+    {"NandLatch", CellType::LATCH},
+    {"TpLatch",   CellType::LATCH},
+    {"PinIn",     CellType::PIN_IN},
+    {"PinOut",    CellType::PIN_OUT},
+    {"PinIO",     CellType::PIN_IO},
+    {"PinClk",    CellType::PIN_CLK},
+    {"SigIn",     CellType::SIG_IN},
+    {"SigOut",    CellType::SIG_OUT},
+    {"Bus",       CellType::BUS},
+    //{"wire",      CellType::LOGIC},
+    {"Gate",      CellType::LOGIC},
+    {"AdderOut",  CellType::ADDER},
+  };
 
-  if (valid_dff_types.contains(type)) {
-    CHECK_P(c.cell_type == CellType::UNKNOWN);
-    c.cell_type = CellType::DFF;
-    return true;
-  }
-  else if (valid_latch_types.contains(type)) {
-    CHECK_P(c.cell_type == CellType::UNKNOWN);
-    c.cell_type = CellType::LATCH;
-    return true;
-  }
-  else if (valid_pin_types.contains(type)) {
-    if (type == "PinIn")  c.cell_type = CellType::PIN_IN;
-    if (type == "PinOut") c.cell_type = CellType::PIN_OUT;
-    if (type == "PinIO")  c.cell_type = CellType::PIN_IO;
-    return true;
-  }
-  else if (type == "Gate") {
-    CHECK_P(c.cell_type == CellType::UNKNOWN);
-    c.cell_type = CellType::LOGIC;
-    return true;
-  }
-  else if (type == "Signal") {
-    //CHECK_P(c.cell_type == CellType::SIGNAL);
-    return true;
-  }
-  else if (type == "Bus") {
-    //CHECK_P(c.cell_type == CellType::BUS);
-    //c.cell_type = CellType::BUS;
-    return true;
-  }
-  else if (type == "wire") {
-    CHECK_P(c.cell_type == CellType::UNKNOWN);
-    c.cell_type = CellType::LOGIC;
-    return true;
-  }
-  else if (type == "AdderOut") {
-    CHECK_P(c.cell_type == CellType::UNKNOWN);
-    c.cell_type = CellType::ADDER;
+  CHECK_P(c.cell_type == CellType::UNKNOWN);
+
+  if (decl_to_reg_type.contains(type)) {
+    c.cell_type = decl_to_reg_type[type];
     return true;
   }
   else {
@@ -639,7 +624,10 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
   static regex tri_call(R"(^(.*)\.\s*(tri\w+\(.*$))");
   static regex dff_call(R"(^(.*)\.\s*(dff\w+\(.*$))");
   static regex latch_call(R"(^(.*)\.\s*(.*_latch[pn]?\(.*$))");
-  static regex sig_set_call(R"(^(.*)\.\s*set\((.*)\).*)");
+
+  //static regex sig_set_call(R"(^(.*)\.\s*set\((.*)\).*)");
+  //static regex sig_in_call(R"(^(.*)\.\s*set\((.*)\).*)");
+  static regex sig_out_call(R"(^(.*)\.\s*sig_out\((.*)\).*)");
 
   static regex pin_call(R"(^(.*)\.\s*(pin\w+\(.*$))");
 
@@ -689,10 +677,11 @@ bool CellDB::parse_rest(Cell& c, const string& rest) {
     result &= parse_cell_name(c, match[1].str());
     result &= parse_cell_def(c, match[2].str());
   }
-  else if (regex_match(rest, match, sig_set_call)) {
+  else if (regex_match(rest, match, sig_out_call)) {
+    c.cell_type = CellType::SIG_OUT;
+    c.gate = "sig_out";
     result &= parse_sig_name(c, match[1].str());
     result &= parse_cell_arglist(c, match[2].str());
-    c.gate = "set";
   }
   else if (regex_match(rest, match, member_assign)) {
     result &= parse_cell_name(c, match[1].str());
@@ -805,6 +794,7 @@ bool CellDB::parse_dir(const std::string& path) {
       }
     }
 
+    /*
     // All signals without gates are inputs from the CPU.
     if (cell->tag.starts_with("SIG_")) {
       if (cell->gate.empty()) {
@@ -817,6 +807,7 @@ bool CellDB::parse_dir(const std::string& path) {
         cell->cell_type = CellType::SIG_OUT;
       }
     }
+    */
   }
 
   //----------------------------------------

@@ -310,7 +310,7 @@ void GateBoyOamBus::set_pin_clk(
   /* p25.BYCU*/ wire _BYCU_OAM_CLKp = nand3(_AVER_AxxxExxx, XUJY_OAM_CLKENp, _CUFE_OAM_CLKp);
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1(_BYCU_OAM_CLKp);
 
-  /*SIG_OAM_CLKn*/ SIG_OAM_CLKn.set(_COTA_OAM_CLKn);
+  /*SIG_OAM_CLKn*/ SIG_OAM_CLKn.sig_out(_COTA_OAM_CLKn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -341,8 +341,8 @@ void GateBoyOamBus::set_pin_wr(
   /* p28.ZOFE*/ wire _ZOFE_OAM_A_WRn = not1(_YNYC_OAM_A_WRp);
   /* p28.ZONE*/ wire _ZONE_OAM_B_WRn = not1(_YLYC_OAM_B_WRp);
 
-  /*SIG_OAM_WRn_A*/ SIG_OAM_WRn_A.set(_ZOFE_OAM_A_WRn);
-  /*SIG_OAM_WRn_B*/ SIG_OAM_WRn_B.set(_ZONE_OAM_B_WRn);
+  /*SIG_OAM_WRn_A*/ SIG_OAM_WRn_A.sig_out(_ZOFE_OAM_A_WRn);
+  /*SIG_OAM_WRn_B*/ SIG_OAM_WRn_B.sig_out(_ZONE_OAM_B_WRn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ void GateBoyOamBus::set_pin_oe(
   /*#p28.YRYV*/ wire _YRYV_OAM_OEp = not1(_YVAL_OAM_OEn);
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYV_OAM_OEp);
 
-  /*SIG_OAM_OEn*/ SIG_OAM_OEn.set(_ZODO_OAM_OEn);
+  /*SIG_OAM_OEn*/ SIG_OAM_OEn.sig_out(_ZODO_OAM_OEn);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

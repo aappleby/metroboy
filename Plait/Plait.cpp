@@ -18,10 +18,15 @@ void PlaitNode::set_anchor(PlaitNode* new_anchor) {
   CHECK_P(new_anchor == nullptr || pinned);
   CHECK_P(new_anchor == nullptr || new_anchor->pinned);
 
+  printf("anchor1\n");
+
   // Ignore invalid anchors, or anchors that would create a loop.
   if (this == new_anchor) return;
+  printf("anchor2\n");
   if (anchor == new_anchor) return;
+  printf("anchor3\n");
   if (new_anchor && new_anchor->anchored_to(this)) return;
+  printf("anchor4\n");
 
   // Unlink from old anchor.
   if (anchor) {
@@ -29,6 +34,8 @@ void PlaitNode::set_anchor(PlaitNode* new_anchor) {
     anchor = nullptr;
     anchor_tag.clear();
   }
+
+  printf("anchor5\n");
 
   // Link to new anchor.
   if (new_anchor) {
@@ -151,9 +158,9 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
     if (tag_to_cell.count(tag) == 0) {
       printf("Did not load node for tag \"%s\", creating placeholder\n", tag.c_str());
       {
-        auto group = new PlaitCell(die_cell);
-        tag_to_cell[tag] = group;
-        group->add_node("default");
+        auto plait_cell = new PlaitCell(die_cell);
+        tag_to_cell[tag] = plait_cell;
+        plait_cell->add_node("default");
       }
     }
   }

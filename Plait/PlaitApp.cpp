@@ -206,7 +206,6 @@ PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool igno
           _mouse_pos.y >= node_pos.y &&
           _mouse_pos.x <= node_pos.x + width &&
           _mouse_pos.y <= node_pos.y + height) {
-        //printf("hit node\n");
         return node;
       }
     }
@@ -224,8 +223,8 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
 
   const dvec2 node_size = {128,64};
 
-  for (auto& [tag, group] : plait.tag_to_cell) {
-    for (auto node : group->nodes) {
+  for (auto& [tag, plait_cell] : plait.tag_to_cell) {
+    for (auto node : plait_cell->nodes) {
       dvec2 nmin = node->get_pos_abs_new();
       dvec2 nmax = node->get_pos_abs_new() + node_size;
 
@@ -551,16 +550,8 @@ void PlaitApp::event_place_anchor(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONDOWN: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      auto anchor_target = pick_node(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
-      if (anchor_target) {
-        for (auto node : node_selection) {
-          node->set_anchor(anchor_target);
-        }
-      }
-      else {
-        for (auto node : node_selection) {
-          node->set_anchor(nullptr);
-        }
+      for (auto node : node_selection) {
+        node->set_anchor(clicked_node);
       }
     }
     break;
@@ -687,7 +678,6 @@ void PlaitApp::app_update(double delta_time) {
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_MOUSEBUTTONDOWN && (event.button.button & SDL_BUTTON_LMASK)) {
       clicked_node = pick_node(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
-      //clicked_group = pick_group(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
       click_pos_screen = mouse_pos_screen;
       click_pos_world = mouse_pos_world;
     }
@@ -866,13 +856,13 @@ void PlaitApp::draw_node(PlaitNode* node) {
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
-      auto prev_group = node->cell->prev_cells[i];
-      if (prev_group == nullptr) continue;
+      auto prev_cell = node->cell->prev_cells[i];
+      if (prev_cell == nullptr) continue;
 
       // FIXME this wrong
-      if (prev_group->nodes[0]->ghost) continue;
+      if (prev_cell->nodes[0]->ghost) continue;
 
-      auto prev_pos_new = prev_group->nodes[0]->get_pos_abs_new();
+      auto prev_pos_new = prev_cell->nodes[0]->get_pos_abs_new();
 
       // Highlight "backwards" edges in red.
       bool edge_backwards = prev_pos_new.x > node_pos_new.x;
@@ -881,7 +871,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
       uint32_t color_b = edge_backwards ? 0xFF0000FF : 0x4044FF44;
 
       // Make edges connected to selected nodes opaque.
-      if (node->selected || prev_group->nodes[0]->selected) {
+      if (node->selected || prev_cell->nodes[0]->selected) {
         if (edge_backwards) {
           color_a = 0xFF8080FF;
           color_b = 0xFF8080FF;
@@ -933,8 +923,8 @@ void PlaitApp::app_render_frame() {
 
   // Unselected nodes
   {
-    for (auto& [tag, group] : plait.tag_to_cell) {
-      for (auto node : group->nodes) {
+    for (auto& [tag, plait_cell] : plait.tag_to_cell) {
+      for (auto node : plait_cell->nodes) {
         if (!node->selected) draw_node(node);
       }
     }

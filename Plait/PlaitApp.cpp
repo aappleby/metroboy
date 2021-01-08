@@ -799,6 +799,47 @@ void PlaitApp::app_update(double delta_time) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+void PlaitApp::draw_edge(PlaitEdge* edge) {
+  const dvec2 node_size = {128,64};
+
+  auto prev_node = edge->prev_node;
+  auto next_node = edge->next_node;
+  if (prev_node->ghost || next_node->ghost) return;
+
+  auto prev_pos_new = prev_node->get_pos_abs_new();
+  auto next_pos_new = next_node->get_pos_abs_new();
+
+  // Highlight "backwards" edges in red.
+  bool edge_backwards = prev_pos_new.x > next_pos_new.x;
+  uint32_t color_a = edge_backwards ? 0xFF0000FF : 0x40FFFFFF;
+  uint32_t color_b = edge_backwards ? 0xFF0000FF : 0x4044FF44;
+
+  // Make edges connected to selected nodes opaque.
+  if (prev_node->selected || next_node->selected) {
+    if (edge_backwards) {
+      color_a = 0xFF8080FF;
+      color_b = 0xFF8080FF;
+    }
+    else {
+      color_a |= 0xFF000000;
+      color_b |= 0xFF000000;
+    }
+  }
+
+  size_t prev_port_count = prev_node->next_ports.size();
+  size_t next_port_count = next_node->prev_edges.size();
+
+  double stride_a = (node_size.y) / (prev_port_count + 1);
+  double stride_b = (node_size.y) / (next_port_count + 1);
+
+  dvec2 port_prev = prev_pos_new + dvec2(node_size.x, stride_a * (edge->prev_port + 1));
+  dvec2 port_next = next_pos_new + dvec2(0,           stride_b * (edge->next_port + 1));
+
+  edge_painter.push(port_prev, color_a, port_next, color_b);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 void PlaitApp::draw_node(PlaitNode* node) {
   const auto& view = view_control.view_snap;
 
@@ -813,10 +854,6 @@ void PlaitApp::draw_node(PlaitNode* node) {
   if (node_pos_old.y > view.max.y) node_visible = false;
   if (node_pos_old.x + node_size.x < view.min.x) node_visible = false;
   if (node_pos_old.y + node_size.y < view.min.y) node_visible = false;
-
-
-  size_t port_in_count = node->prev_nodes.size();
-  size_t port_out_count = node->ports.size();
 
   //----------------------------------------
 
@@ -846,60 +883,27 @@ void PlaitApp::draw_node(PlaitNode* node) {
 
   // Node input port(s)
   if (node_visible) {
-    double stride = (node_size.y) / (port_in_count + 1);
+    double prev_stride = (node_size.y) / (node->prev_edges.size() + 1);
 
-    for (size_t i = 0; i < port_in_count; i++) {
-      dvec2 port_pos = node_pos_new + dvec2(0, stride * (i + 1));
+    for (size_t i = 0; i < node->prev_edges.size(); i++) {
+      dvec2 port_pos = node_pos_new + dvec2(0, prev_stride * (i + 1));
       port_painter.push_center_size(port_pos, port_size, 0xCC008000);
     }
   }
 
   // Node output port(s)
   if (node_visible) {
-    double stride = (node_size.y) / (port_out_count + 1);
+    double next_stride = (node_size.y) / (node->next_ports.size() + 1);
 
-    for (size_t i = 0; i < port_out_count; i++) {
-      dvec2 port_pos = node_pos_new + dvec2(node_size.x, stride * (i + 1));
+    for (size_t i = 0; i < node->next_ports.size(); i++) {
+      dvec2 port_pos = node_pos_new + dvec2(node_size.x, next_stride * (i + 1));
       port_painter.push_center_size(port_pos, port_size, 0xCC000080);
     }
   }
 
-  // Edges from previous node(s)
+  // Edges connected to the inputs of this node
   if (show_edges && !node->ghost) {
-    double node_stride = (node_size.y) / (port_in_count + 1);
-
-    for (size_t i = 0; i < port_in_count; i++) {
-      auto prev_node = node->prev_nodes[i];
-      if (prev_node->ghost) continue;
-
-      auto prev_pos_new = prev_node->get_pos_abs_new();
-
-      // Highlight "backwards" edges in red.
-      bool edge_backwards = prev_pos_new.x > node_pos_new.x;
-
-      uint32_t color_a = edge_backwards ? 0xFF0000FF : 0x40FFFFFF;
-      uint32_t color_b = edge_backwards ? 0xFF0000FF : 0x4044FF44;
-
-      // Make edges connected to selected nodes opaque.
-      if (node->selected || prev_node->selected) {
-        if (edge_backwards) {
-          color_a = 0xFF8080FF;
-          color_b = 0xFF8080FF;
-        }
-        else {
-          color_a |= 0xFF000000;
-          color_b |= 0xFF000000;
-        }
-      }
-
-      size_t prev_port_count = prev_node->ports.size();
-      double prev_stride = (node_size.y) / (prev_port_count + 1);
-
-      dvec2 port_prev = prev_pos_new + dvec2(node_size.x, prev_stride * (node->prev_ports[i] + 1));
-      dvec2 port_next = node_pos_new + dvec2(0, node_stride * (i + 1));
-
-      edge_painter.push(port_prev, color_a, port_next, color_b);
-    }
+    for (auto edge : node->prev_edges) draw_edge(edge);
   }
 
   // Anchor edge

@@ -36,6 +36,8 @@ struct PlaitNode {
   }
 
   std::string name;
+  PlaitCell* plait_cell;
+
   bool locked = 0;
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
@@ -47,13 +49,18 @@ struct PlaitNode {
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
-  std::vector<PlaitNode*>  prev_nodes;
-  std::vector<int>         prev_ports;
-  PlaitCell* plait_cell;
-  std::vector<std::string> ports;
+
+  std::vector<std::string> next_ports;
 
   std::vector<PlaitEdge*> prev_edges;
   std::vector<PlaitEdge*> next_edges;
+
+  int find_port(const std::string& port_name) {
+    for (auto i = 0; i < next_ports.size(); i++) {
+      if (next_ports[i] == port_name) return i;
+    }
+    return -1;
+  }
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(PlaitNode* target);

@@ -68,6 +68,7 @@ public:
   PlaitNode* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
 
   void  draw_node(PlaitNode* node);
+  void  draw_edge(PlaitEdge* node);
 
   void event_select_tool  (SDL_Event event);
   void event_imgui        (SDL_Event event);

@@ -41,7 +41,7 @@ void PlaitNode::set_anchor(PlaitNode* new_anchor) {
   if (new_anchor) {
     pos_rel -= new_anchor->get_pos_abs_old();
     anchor = new_anchor;
-    anchor_tag = new_anchor->cell->tag();
+    anchor_tag = new_anchor->plait_cell->tag();
   }
 }
 
@@ -160,7 +160,7 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
     for (auto& node : plait_cell->nodes) {
       if (node->ports.empty()) {
         printf("Node %s.%s has no ports\n", plait_cell->die_cell->name.c_str(), node->name.c_str());
-        node->ports = DieDB::cell_type_to_out_ports[node->cell->die_cell->cell_type];
+        node->ports = DieDB::cell_type_to_out_ports[node->plait_cell->die_cell->cell_type];
       }
 
       //if (node->ports.empty()) {
@@ -228,6 +228,52 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
       }
     }
   }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void Plait::split_node(PlaitNode* node) {
+#if 0
+    std::string name;
+  bool locked = 0;
+  dvec2 pos_abs = {0,0};
+  dvec2 pos_rel = {0,0};
+  std::string anchor_tag;
+  PlaitNode* anchor = nullptr;
+  bool pinned = 1;
+  int  mark = 0;
+  bool ghost = 0;
+  bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
+  dvec2 spring_force = {0,0};
+  uint32_t color = 0xFFFF00FF;
+  std::vector<PlaitNode*>  prev_nodes;
+  std::vector<int>         prev_ports;
+  PlaitCell* cell;
+  std::vector<std::string> ports;
+#endif
+
+  PlaitNode* node_a = node->plait_cell->add_node("split_in");
+  PlaitNode* node_b = node->plait_cell->add_node("split_out");
+
+  node_a->locked = node->locked;
+  node_a->pos_abs = node->pos_abs;
+  node_a->pos_rel = node->pos_rel;
+  node_a->anchor_tag = "";
+  node_a->anchor = nullptr;
+  node_a->pinned = 0;
+  node_a->mark = 0;
+  node_a->ghost = 0;
+  node_a->selected = 0;
+  node_a->spring_force = {0,0};
+  node_a->color = node->color;
+  node_a->prev_nodes = node->prev_nodes;
+  node_a->prev_ports = node->prev_ports;
+  node_a->plait_cell = node->plait_cell;
+  node_a->ports = {};
+
+  // FIXME not finished
+  (void)node_b;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

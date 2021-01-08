@@ -245,7 +245,7 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
 void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Selection region ");
   auto callback = [this](PlaitNode* node) {
-    printf("%s ", node->cell->name());
+    printf("%s ", node->plait_cell->name());
     node->selected = true;
     node_selection.insert(node);
   };
@@ -257,7 +257,7 @@ void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
 void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Locking region ");
   auto callback = [this](PlaitNode* node) {
-    printf("%s ", node->cell->name());
+    printf("%s ", node->plait_cell->name());
     node->locked = true;
   };
 
@@ -268,7 +268,7 @@ void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::select_node(PlaitNode* node) {
-  printf("Selecting %s\n", node->cell->name());
+  printf("Selecting %s\n", node->plait_cell->name());
   node->selected = true;
   node_selection.insert(node);
 }
@@ -278,7 +278,7 @@ void PlaitApp::commit_selection() {
 
   printf("Committing ");
   for (auto node : node_selection) {
-    printf("%s ", node->cell->name());
+    printf("%s ", node->plait_cell->name());
     node->commit_pos();
   }
   printf("\n");
@@ -289,7 +289,7 @@ void PlaitApp::revert_selection() {
 
   printf("Reverting ");
   for (auto node : node_selection) {
-    printf("%s ", node->cell->name());
+    printf("%s ", node->plait_cell->name());
     node->revert_pos();
   }
   printf("\n");
@@ -300,7 +300,7 @@ void PlaitApp::clear_selection() {
 
   printf("Unselecting ");
   for (auto node : node_selection) {
-    printf("%s ", node->cell->name());
+    printf("%s ", node->plait_cell->name());
     node->selected = false;
   }
   node_selection.clear();
@@ -800,19 +800,28 @@ void PlaitApp::app_update(double delta_time) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::draw_node(PlaitNode* node) {
+  const auto& view = view_control.view_snap;
+
   dvec2 node_pos_old = node->get_pos_abs_old();
   dvec2 node_pos_new = node->get_pos_abs_new();
 
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
 
+  bool node_visible = true;
+  if (node_pos_old.x > view.max.x) node_visible = false;
+  if (node_pos_old.y > view.max.y) node_visible = false;
+  if (node_pos_old.x + node_size.x < view.min.x) node_visible = false;
+  if (node_pos_old.y + node_size.y < view.min.y) node_visible = false;
+
+
   size_t port_in_count = node->prev_nodes.size();
-  size_t port_out_count = 1;
+  size_t port_out_count = node->ports.size();
 
   //----------------------------------------
 
   // Node outline
-  {
+  if (node_visible) {
     uint32_t color = 0xFF808080;
     if (node->selected) color = 0xFFCCCCCC;
     //if (node->floating) color = 0xFF0000FF;
@@ -821,7 +830,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
   }
 
   // Node fill
-  if (!node->ghost) {
+  if (node_visible && !node->ghost) {
     box_painter.push_corner_size(
       node_pos_new + dvec2(4,4),
       node_size - dvec2(8,8),
@@ -829,12 +838,14 @@ void PlaitApp::draw_node(PlaitNode* node) {
   }
 
   // Node text
-  text_painter.add_text_at(node->cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
-  text_painter.add_text_at(node->cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
-  if (node->locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
+  if (node_visible) {
+    text_painter.add_text_at(node->plait_cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
+    text_painter.add_text_at(node->plait_cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
+    if (node->locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
+  }
 
   // Node input port(s)
-  {
+  if (node_visible) {
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
@@ -844,7 +855,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
   }
 
   // Node output port(s)
-  {
+  if (node_visible) {
     double stride = (node_size.y) / (port_out_count + 1);
 
     for (size_t i = 0; i < port_out_count; i++) {
@@ -859,12 +870,6 @@ void PlaitApp::draw_node(PlaitNode* node) {
 
     for (size_t i = 0; i < port_in_count; i++) {
       auto prev_node = node->prev_nodes[i];
-
-      //if (prev_node->cell->die_cell->tag == "PIN_74") __debugbreak();
-
-      //auto prev_cell = node->cell->prev_cells[i];
-      //if (prev_cell == nullptr) continue;
-
       if (prev_node->ghost) continue;
 
       auto prev_pos_new = prev_node->get_pos_abs_new();
@@ -898,7 +903,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
   }
 
   // Anchor edge
-  if (show_anchors && node->anchored()) {
+  if (node_visible && show_anchors && node->anchored()) {
     dvec2 center_a = node->get_anchor()->get_pos_abs_new() + node_size / 2.0;
     dvec2 center_b = node->get_pos_abs_new() + node_size / 2.0;
     edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
@@ -994,10 +999,10 @@ void PlaitApp::app_render_ui() {
     StringDumper d;
     d("Tool mode %s\n", tool_to_string[current_tool].c_str());
     d("Selected nodes : ");
-    for (auto selected_node : node_selection) d("%s ", selected_node->cell->name());
+    for (auto selected_node : node_selection) d("%s ", selected_node->plait_cell->name());
     d("\n");
-    d("Clicked node : %s\n", clicked_node ? clicked_node->cell->name() : "<none>");
-    d("Hovered node : %s\n", hovered_node ? hovered_node->cell->name() : "<none>");
+    d("Clicked node : %s\n", clicked_node ? clicked_node->plait_cell->name() : "<none>");
+    d("Hovered node : %s\n", hovered_node ? hovered_node->plait_cell->name() : "<none>");
     text_painter.add_text_at(d.c_str(), 0, 0);
   }
 

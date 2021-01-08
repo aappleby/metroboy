@@ -8,6 +8,9 @@
 using namespace glm;
 
 struct PlaitCell;
+struct PlaitNode;
+struct PlaitPath;
+struct PlaitEdge;
 
 struct PlaitPath {
   std::string cell_tag;
@@ -17,9 +20,18 @@ struct PlaitPath {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+struct PlaitEdge {
+  PlaitNode* prev_node;
+  int prev_port;
+  PlaitNode* next_node;
+  int next_port;
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 struct PlaitNode {
   PlaitNode(PlaitCell* _cell, const std::string& _name)
-  :cell(_cell), name(_name)
+  :plait_cell(_cell), name(_name)
   {
   }
 
@@ -37,8 +49,11 @@ struct PlaitNode {
   uint32_t color = 0xFFFF00FF;
   std::vector<PlaitNode*>  prev_nodes;
   std::vector<int>         prev_ports;
-  PlaitCell* cell;
+  PlaitCell* plait_cell;
   std::vector<std::string> ports;
+
+  std::vector<PlaitEdge*> prev_edges;
+  std::vector<PlaitEdge*> next_edges;
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(PlaitNode* target);
@@ -145,6 +160,8 @@ struct PlaitCell {
 struct Plait {
   void save_json(const char* filename);
   void load_json(const char* filename, DieDB& die_db);
+
+  void split_node(PlaitNode* node);
 
   std::map<std::string, PlaitCell*> tag_to_cell;
 

@@ -83,11 +83,16 @@ void Plait::save_json(const char* filename) {
   printf("Saving plait %s\n", filename);
   using namespace nlohmann;
 
+  for (auto& [tag, group] : tag_to_cell) {
+    for (auto node : group->nodes) node->commit_pos();
+  }
+
   json root;
 
+  json& groups = root["groups"];
+
   for (auto& [tag, group] : tag_to_cell) {
-    auto& jnode = root[tag];
-    group->nodes[0]->commit_pos();
+    auto& jnode = groups[tag];
     jnode["locked"]     = group->nodes[0]->locked;
     jnode["pos_rel_x"]  = group->nodes[0]->pos_rel.x;
     jnode["pos_rel_y"]  = group->nodes[0]->pos_rel.y;
@@ -110,7 +115,9 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
   json root;
   std::ifstream(filename) >> root;
 
-  for (auto& it : root.items()) {
+  json& groups = root["groups"];
+
+  for (auto& it : groups.items()) {
     auto& tag = it.key();
     auto& jnode = it.value();
 
@@ -144,7 +151,7 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
   }
 
   // Connect anchors
-  for (auto& [tag, jnode] : root.items()) {
+  for (auto& [tag, jnode] : groups.items()) {
     if (!jnode["anchor_tag"].is_string()) continue;
     const auto& anchor_tag = jnode["anchor_tag"].get<std::string>();
 

@@ -101,7 +101,6 @@ void Plait::save_json(const char* filename) {
     jcell["pos_abs_y"]  = cell->nodes[0]->pos_abs.y;
     if (cell->nodes[0]->anchor) jcell["anchor_tag"] = cell->nodes[0]->anchor->cell->die_cell->tag;
 
-    /*
     auto& jnodes = jcell["nodes"];
     for (auto node : cell->nodes) {
       auto& jnode = jnodes[node->name];
@@ -112,7 +111,6 @@ void Plait::save_json(const char* filename) {
       jnode["pos_abs_y"]  = cell->nodes[0]->pos_abs.y;
       if (cell->nodes[0]->anchor) jnode["anchor_tag"] = cell->nodes[0]->anchor->cell->die_cell->tag;
     }
-    */
   }
 
   std::ofstream(filename) << root.dump(2);
@@ -131,9 +129,7 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
 
   auto& jcells = root["cells"];
 
-  for (auto& it : jcells.items()) {
-    auto& tag = it.key();
-    auto& jnode = it.value();
+  for (auto& [tag, jnode] : jcells.items()) {
 
     auto die_cell = cell_db.tag_to_cell[tag];
     if (die_cell == nullptr) {

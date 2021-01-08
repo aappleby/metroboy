@@ -196,7 +196,7 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
         printf("Did not recognize arg tag %s\n", tag.c_str());
       }
       else {
-        plait_cell->prev_cells.push_back(prev_plait_cell);
+        //plait_cell->prev_cells.push_back(prev_plait_cell);
         node->prev_nodes.push_back(prev_node);
         node->prev_ports.push_back(arg.port);
       }

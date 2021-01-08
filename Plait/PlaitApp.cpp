@@ -804,7 +804,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
 
-  size_t port_in_count = node->cell->prev_cells.size();
+  size_t port_in_count = node->prev_nodes.size();
   size_t port_out_count = 1;
 
   //----------------------------------------
@@ -856,13 +856,13 @@ void PlaitApp::draw_node(PlaitNode* node) {
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
-      auto prev_cell = node->cell->prev_cells[i];
-      if (prev_cell == nullptr) continue;
+      auto prev_node = node->prev_nodes[i];
+      //auto prev_cell = node->cell->prev_cells[i];
+      //if (prev_cell == nullptr) continue;
 
-      // FIXME this wrong
-      if (prev_cell->nodes[0]->ghost) continue;
+      if (prev_node->ghost) continue;
 
-      auto prev_pos_new = prev_cell->nodes[0]->get_pos_abs_new();
+      auto prev_pos_new = prev_node->get_pos_abs_new();
 
       // Highlight "backwards" edges in red.
       bool edge_backwards = prev_pos_new.x > node_pos_new.x;
@@ -871,7 +871,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
       uint32_t color_b = edge_backwards ? 0xFF0000FF : 0x4044FF44;
 
       // Make edges connected to selected nodes opaque.
-      if (node->selected || prev_cell->nodes[0]->selected) {
+      if (node->selected || prev_node->selected) {
         if (edge_backwards) {
           color_a = 0xFF8080FF;
           color_b = 0xFF8080FF;

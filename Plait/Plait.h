@@ -136,7 +136,7 @@ struct PlaitCell {
 
   const DieCell* die_cell = nullptr;
   std::vector<PlaitNode*> nodes;
-  std::vector<PlaitCell*>  prev_cells;
+  //std::vector<PlaitCell*>  prev_cells;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

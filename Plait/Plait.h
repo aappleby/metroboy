@@ -20,6 +20,11 @@ struct PlaitPath {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+struct PlaitPortIndex {
+  PlaitNode* node;
+  int port;
+};
+
 struct PlaitEdge {
   PlaitNode* prev_node;
   int prev_port;
@@ -50,12 +55,20 @@ struct PlaitNode {
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
 
+  std::vector<std::string> prev_ports;
   std::vector<std::string> next_ports;
 
   std::vector<PlaitEdge*> prev_edges;
   std::vector<PlaitEdge*> next_edges;
 
-  int find_port(const std::string& port_name) {
+  int find_prev_port(const std::string& port_name) {
+    for (auto i = 0; i < prev_ports.size(); i++) {
+      if (prev_ports[i] == port_name) return i;
+    }
+    return -1;
+  }
+
+  int find_next_port(const std::string& port_name) {
     for (auto i = 0; i < next_ports.size(); i++) {
       if (next_ports[i] == port_name) return i;
     }
@@ -153,6 +166,22 @@ struct PlaitCell {
     return node;
   }
 
+  PlaitPortIndex find_prev_port(const std::string& port) {
+    for (auto node : nodes) {
+      int port_index = node->find_prev_port(port);
+      if (port_index >= 0) return {node, port_index};
+    }
+    return {nullptr, -1};
+  }
+
+  PlaitPortIndex find_next_port(const std::string& port) {
+    for (auto node : nodes) {
+      int port_index = node->find_next_port(port);
+      if (port_index >= 0) return {node, port_index};
+    }
+    return {nullptr, -1};
+  }
+
   const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
   const char* name() const { return die_cell ? die_cell->name.c_str() : "<no_cell>"; }
   const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
@@ -171,6 +200,7 @@ struct Plait {
   void split_node(PlaitNode* node);
 
   std::map<std::string, PlaitCell*> tag_to_cell;
+  std::vector<PlaitEdge*> edges;
 
   PlaitCell* get_or_create_node(const std::string& tag, DieDB& die_db) {
     auto cell = die_db.tag_to_cell[tag];

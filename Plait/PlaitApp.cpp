@@ -244,7 +244,7 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
 void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Selection region ");
   auto callback = [this](PlaitNode* node) {
-    printf("%s ", node->group->name());
+    printf("%s ", node->cell->name());
     node->selected = true;
     node_selection.insert(node);
   };
@@ -256,7 +256,7 @@ void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
 void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
   printf("Locking region ");
   auto callback = [this](PlaitNode* node) {
-    printf("%s ", node->group->name());
+    printf("%s ", node->cell->name());
     node->locked = true;
   };
 
@@ -267,7 +267,7 @@ void PlaitApp::lock_region(dvec2 corner_a, dvec2 corner_b) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::select_node(PlaitNode* node) {
-  printf("Selecting %s\n", node->group->name());
+  printf("Selecting %s\n", node->cell->name());
   node->selected = true;
   node_selection.insert(node);
 }
@@ -277,7 +277,7 @@ void PlaitApp::commit_selection() {
 
   printf("Committing ");
   for (auto node : node_selection) {
-    printf("%s ", node->group->name());
+    printf("%s ", node->cell->name());
     node->commit_pos();
   }
   printf("\n");
@@ -288,7 +288,7 @@ void PlaitApp::revert_selection() {
 
   printf("Reverting ");
   for (auto node : node_selection) {
-    printf("%s ", node->group->name());
+    printf("%s ", node->cell->name());
     node->revert_pos();
   }
   printf("\n");
@@ -299,7 +299,7 @@ void PlaitApp::clear_selection() {
 
   printf("Unselecting ");
   for (auto node : node_selection) {
-    printf("%s ", node->group->name());
+    printf("%s ", node->cell->name());
     node->selected = false;
   }
   node_selection.clear();
@@ -814,7 +814,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
 
-  size_t port_in_count = node->group->prev_group.size();
+  size_t port_in_count = node->cell->prev_cells.size();
   size_t port_out_count = 1;
 
   //----------------------------------------
@@ -837,8 +837,8 @@ void PlaitApp::draw_node(PlaitNode* node) {
   }
 
   // Node text
-  text_painter.add_text_at(node->group->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
-  text_painter.add_text_at(node->group->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
+  text_painter.add_text_at(node->cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
+  text_painter.add_text_at(node->cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
   if (node->locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
 
   // Node input port(s)
@@ -866,7 +866,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
     double stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
-      auto prev_group = node->group->prev_group[i];
+      auto prev_group = node->cell->prev_cells[i];
       if (prev_group == nullptr) continue;
 
       // FIXME this wrong
@@ -996,10 +996,10 @@ void PlaitApp::app_render_ui() {
     StringDumper d;
     d("Tool mode %s\n", tool_to_string[current_tool].c_str());
     d("Selected nodes : ");
-    for (auto selected_node : node_selection) d("%s ", selected_node->group->name());
+    for (auto selected_node : node_selection) d("%s ", selected_node->cell->name());
     d("\n");
-    d("Clicked node : %s\n", clicked_node ? clicked_node->group->name() : "<none>");
-    d("Hovered node : %s\n", hovered_node ? hovered_node->group->name() : "<none>");
+    d("Clicked node : %s\n", clicked_node ? clicked_node->cell->name() : "<none>");
+    d("Hovered node : %s\n", hovered_node ? hovered_node->cell->name() : "<none>");
     text_painter.add_text_at(d.c_str(), 0, 0);
   }
 

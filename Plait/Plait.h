@@ -18,7 +18,12 @@ struct PlaitPath {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct PlaitNode {
+  PlaitNode(PlaitCell* _cell, const std::string& _name)
+  :cell(_cell), name(_name)
+  {
+  }
 
+  std::string name;
   bool locked = 0;
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
@@ -29,9 +34,9 @@ struct PlaitNode {
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
-  std::vector<PlaitNode*>       prev_node;
-  std::vector<std::string> prev_port;
-  PlaitCell* group;
+  std::vector<PlaitNode*>       prev_nodes;
+  std::vector<std::string> prev_ports;
+  PlaitCell* cell;
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(PlaitNode* target);
@@ -118,9 +123,8 @@ struct PlaitCell {
     die_cell = _cell;
   }
 
-  PlaitNode* add_node() {
-    auto node = new PlaitNode();
-    node->group = this;
+  PlaitNode* add_node(const std::string& name) {
+    auto node = new PlaitNode(this, name);
     nodes.push_back(node);
     return node;
   }
@@ -131,7 +135,7 @@ struct PlaitCell {
 
   const DieCell* die_cell = nullptr;
   std::vector<PlaitNode*> nodes;
-  std::vector<PlaitCell*>  prev_group;
+  std::vector<PlaitCell*>  prev_cells;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

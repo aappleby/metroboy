@@ -42,7 +42,7 @@ void PlaitNode::set_anchor(PlaitNode* new_anchor) {
   void update_rank1() {
     mark = 1;
     rank = 0;
-    for(auto p : prev) {
+    for(auto p : prev) {node
       if (p->mark) continue;
       if (p->rank == -1) p->update_rank1();
       if (p->rank >= rank) {
@@ -83,22 +83,36 @@ void Plait::save_json(const char* filename) {
   printf("Saving plait %s\n", filename);
   using namespace nlohmann;
 
-  for (auto& [tag, group] : tag_to_cell) {
-    for (auto node : group->nodes) node->commit_pos();
+  for (auto& [tag, cell] : tag_to_cell) {
+    for (auto node : cell->nodes) node->commit_pos();
   }
 
   json root;
 
-  json& groups = root["groups"];
+  auto& cells = root["cells"];
 
-  for (auto& [tag, group] : tag_to_cell) {
-    auto& jnode = groups[tag];
-    jnode["locked"]     = group->nodes[0]->locked;
-    jnode["pos_rel_x"]  = group->nodes[0]->pos_rel.x;
-    jnode["pos_rel_y"]  = group->nodes[0]->pos_rel.y;
-    jnode["pos_abs_x"]  = group->nodes[0]->pos_abs.x;
-    jnode["pos_abs_y"]  = group->nodes[0]->pos_abs.y;
-    if (group->nodes[0]->anchor) jnode["anchor_tag"] = group->nodes[0]->anchor->group->die_cell->tag;
+  for (auto& [tag, cell] : tag_to_cell) {
+    auto& jcell = cells[tag];
+    jcell["name"]       = cell->nodes[0]->name;
+    jcell["locked"]     = cell->nodes[0]->locked;
+    jcell["pos_rel_x"]  = cell->nodes[0]->pos_rel.x;
+    jcell["pos_rel_y"]  = cell->nodes[0]->pos_rel.y;
+    jcell["pos_abs_x"]  = cell->nodes[0]->pos_abs.x;
+    jcell["pos_abs_y"]  = cell->nodes[0]->pos_abs.y;
+    if (cell->nodes[0]->anchor) jcell["anchor_tag"] = cell->nodes[0]->anchor->cell->die_cell->tag;
+
+    /*
+    auto& jnodes = jcell["nodes"];
+    for (auto node : cell->nodes) {
+      auto& jnode = jnodes[node->name];
+      jnode["locked"]     = cell->nodes[0]->locked;
+      jnode["pos_rel_x"]  = cell->nodes[0]->pos_rel.x;
+      jnode["pos_rel_y"]  = cell->nodes[0]->pos_rel.y;
+      jnode["pos_abs_x"]  = cell->nodes[0]->pos_abs.x;
+      jnode["pos_abs_y"]  = cell->nodes[0]->pos_abs.y;
+      if (cell->nodes[0]->anchor) jnode["anchor_tag"] = cell->nodes[0]->anchor->cell->die_cell->tag;
+    }
+    */
   }
 
   std::ofstream(filename) << root.dump(2);
@@ -115,22 +129,24 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
   json root;
   std::ifstream(filename) >> root;
 
-  json& groups = root["groups"];
+  auto& jcells = root["cells"];
 
-  for (auto& it : groups.items()) {
+  for (auto& it : jcells.items()) {
     auto& tag = it.key();
     auto& jnode = it.value();
 
-    auto cell = cell_db.tag_to_cell[tag];
-    if (cell == nullptr) {
+    auto die_cell = cell_db.tag_to_cell[tag];
+    if (die_cell == nullptr) {
       printf("Did not recognize cell tag %s\n", tag.c_str());
       continue;
     }
 
-    auto group = new PlaitCell(cell);
-    tag_to_cell[tag] = group;
+    auto plait_cell = new PlaitCell(die_cell);
+    tag_to_cell[tag] = plait_cell;
 
-    auto node = group->add_node();
+    std::string name = jnode.value("name", "default");
+    auto node = plait_cell->add_node(name);
+
     node->locked    = jnode.value("locked", false);
     node->pos_rel.x = jnode.value("pos_rel_x", 0.0);
     node->pos_rel.y = jnode.value("pos_rel_y", 0.0);
@@ -139,19 +155,19 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
   }
 
   // Check for missing tags
-  for (auto& [tag, cell] : cell_db.tag_to_cell) {
+  for (auto& [tag, die_cell] : cell_db.tag_to_cell) {
     if (tag_to_cell.count(tag) == 0) {
       printf("Did not load node for tag \"%s\", creating placeholder\n", tag.c_str());
       {
-        auto group = new PlaitCell(cell);
+        auto group = new PlaitCell(die_cell);
         tag_to_cell[tag] = group;
-        group->add_node();
+        group->add_node("default");
       }
     }
   }
 
   // Connect anchors
-  for (auto& [tag, jnode] : groups.items()) {
+  for (auto& [tag, jnode] : jcells.items()) {
     if (!jnode["anchor_tag"].is_string()) continue;
     const auto& anchor_tag = jnode["anchor_tag"].get<std::string>();
 
@@ -160,37 +176,37 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
     }
 
     // FIXME nodes[0]
-    auto group = tag_to_cell[tag];
-    auto anchor_group = tag_to_cell[anchor_tag];
+    auto plait_cell = tag_to_cell[tag];
+    auto anchor_cell = tag_to_cell[anchor_tag];
 
-    if (group && anchor_group) {
-      group->nodes[0]->anchor = anchor_group->nodes[0];
+    if (plait_cell && anchor_cell) {
+      plait_cell->nodes[0]->anchor = anchor_cell->nodes[0];
     }
-    else if (group == nullptr) {
+    else if (plait_cell == nullptr) {
       printf("bad tag %s\n", tag.c_str());
     }
-    else if (anchor_group == nullptr) {
+    else if (anchor_cell == nullptr) {
       printf("bad anchor tag %s\n", anchor_tag.c_str());
     }
   }
 
   // Connect ports
-  for (auto& [tag, group] : tag_to_cell) {
-    auto node = group->nodes[0];
-    auto arg_count = group->die_cell->args.size();
+  for (auto& [tag, plait_cell] : tag_to_cell) {
+    auto node = plait_cell->nodes[0];
+    auto arg_count = plait_cell->die_cell->args.size();
 
     for (auto i = 0; i < arg_count; i++) {
-      auto& arg = group->die_cell->args[i];
-      auto prev_group = tag_to_cell[arg.tag];
-      auto prev_node = prev_group->nodes[0];
+      auto& arg = plait_cell->die_cell->args[i];
+      auto prev_plait_cell = tag_to_cell[arg.tag];
+      auto prev_node = prev_plait_cell->nodes[0];
 
-      if (prev_group == nullptr) {
+      if (prev_plait_cell == nullptr) {
         printf("Did not recognize arg tag %s\n", tag.c_str());
       }
       else {
-        group->prev_group.push_back(prev_group);
-        node->prev_node.push_back(prev_node);
-        node->prev_port.push_back(arg.port);
+        plait_cell->prev_cells.push_back(prev_plait_cell);
+        node->prev_nodes.push_back(prev_node);
+        node->prev_ports.push_back(arg.port);
       }
     }
   }

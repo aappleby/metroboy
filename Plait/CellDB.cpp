@@ -75,6 +75,41 @@ static std::map<DieCellType, string> cell_type_to_name = {
   {DieCellType::LOGIC,   "LOGIC"},
 };
 
+/*
+      switch(arg_cell->cell_type) {
+      case DieCellType::PIN_IN:   { CHECK_P(arg.port.starts_with("qp")); break;}
+      case DieCellType::PIN_IO:   { CHECK_P(arg.port.starts_with("qp")); break;}
+      case DieCellType::PIN_CLK:  { CHECK_P(arg.port == "clock_good" || arg.port == "clock"); break;}
+      case DieCellType::SIG_IN:   { CHECK_P(arg.port == ""); break; }
+      case DieCellType::BUS:      { CHECK_P(arg.port.starts_with("qp")); break;}
+      case DieCellType::DFF:      { CHECK_P(arg.port.starts_with("qn") || arg.port.starts_with("qp")); break;}
+      case DieCellType::LATCH:    { CHECK_P(arg.port.starts_with("qn") || arg.port.starts_with("qp")); break;}
+      case DieCellType::TRIBUF:   { CHECK_P(arg.port == ""); break; }
+      case DieCellType::LOGIC:    { CHECK_P(arg.port == ""); break; }
+      case DieCellType::ADDER:    { CHECK_P(arg.port == "sum" || arg.port == "carry"); break; }
+*/
+
+static std::map<DieCellType, std::vector<std::string>> cell_type_to_out_ports = {
+  {DieCellType::UNKNOWN, {}},
+  {DieCellType::PIN_IN,  {"qp"}},
+  {DieCellType::PIN_OUT, {}},
+  {DieCellType::PIN_IO,  {"qp"}},
+  {DieCellType::PIN_CLK, {"clock_good", "clock"}},
+  {DieCellType::SIG_IN,  {"qp"}},
+  {DieCellType::SIG_OUT, {}},
+  {DieCellType::BUS,     {"qp"}},
+  {DieCellType::DFF,     {"qp", "qn"}},
+  {DieCellType::LATCH,   {"qp", "qn"}},
+  {DieCellType::TRIBUF,  {"qp"}},
+  {DieCellType::ADDER,   {"sum", "carry"}},
+  {DieCellType::LOGIC,   {"qp"}},
+};
+
+/*
+std::vector<std::string>& DieCell::get_out_ports() {
+}
+*/
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void DieDB::clear() {
@@ -229,6 +264,11 @@ void DieCell::sanity_check() const {
   }
   else {
     __debugbreak();
+  }
+
+  for (const auto& arg : args) {
+    CHECK_N(arg.tag.empty());
+    CHECK_N(arg.port.empty());
   }
 }
 
@@ -487,7 +527,7 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
 
   smatch match;
   if (regex_match(arg, match, simple_arg)) {
-    c.add_arg(match[1].str(), "");
+    c.add_arg(match[1].str(), "qp");
     return true;
   }
   else if (regex_match(arg, match, cell_arg_with_port)) {
@@ -525,11 +565,11 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
     return true;
   }
   else if (regex_match(arg, match, cell_arg_function)) {
-    c.add_arg(match[1].str(), "");
+    c.add_arg(match[1].str(), "qp");
     return true;
   }
   else if (regex_match(arg, match, sig_arg)) {
-    c.add_arg(match[1].str(), "");
+    c.add_arg(match[1].str(), "qp");
     return true;
   }
   else if (regex_match(arg, match, bus_arg)) {
@@ -574,7 +614,7 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
     return true;
   }
   else if (regex_match(arg, match, pin_arg)) {
-    c.add_arg(match[1].str(), "");
+    c.add_arg(match[1].str(), "qp");
     return true;
   }
   else {
@@ -674,7 +714,7 @@ bool DieDB::parse_tribuf_bus_target(DieCell& c, const string& bus_name) {
     std::string bus = match[1].str();
     DieCell* bus_cell = get_or_create_cell(bus);
     bus_cell->gate = "bus";
-    bus_cell->args.push_back({c.tag, ""});
+    bus_cell->args.push_back({c.tag, "qp"});
 
     return true;
   } else {
@@ -936,6 +976,15 @@ bool DieDB::parse_dir(const std::string& path) {
         CHECK_P(cell->cell_type == DieCellType::BUS);
       }
 
+      auto& out_ports = cell_type_to_out_ports[arg_cell->cell_type];
+      CHECK_P(out_ports.size());
+
+      if (std::find(out_ports.begin(), out_ports.end(), arg.port) == out_ports.end()) {
+        printf("Bad port %s\n", arg.port.c_str());
+        __debugbreak();
+      }
+
+      /*
       switch(arg_cell->cell_type) {
       case DieCellType::PIN_IN:   { CHECK_P(arg.port.starts_with("qp")); break;}
       case DieCellType::PIN_IO:   { CHECK_P(arg.port.starts_with("qp")); break;}
@@ -947,9 +996,9 @@ bool DieDB::parse_dir(const std::string& path) {
       case DieCellType::TRIBUF:   { CHECK_P(arg.port == ""); break; }
       case DieCellType::LOGIC:    { CHECK_P(arg.port == ""); break; }
       case DieCellType::ADDER:    { CHECK_P(arg.port == "sum" || arg.port == "carry"); break; }
-
       default: __debugbreak(); break;
       }
+      */
     }
   }
 

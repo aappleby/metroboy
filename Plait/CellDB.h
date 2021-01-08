@@ -50,6 +50,8 @@ struct DieCell {
   void add_arg(const std::string& _tag, const std::string& _port) {
     args.push_back({_tag,_port});
   }
+
+  //std::vector<std::string>& get_out_ports();
 };
 
 //------------------------------------------------------------------------------------------------------------------------

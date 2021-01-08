@@ -35,7 +35,7 @@ struct PlaitNode {
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
-  std::vector<PlaitNode*>       prev_nodes;
+  std::vector<PlaitNode*>  prev_nodes;
   std::vector<std::string> prev_ports;
   PlaitCell* cell;
 

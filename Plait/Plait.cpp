@@ -190,16 +190,14 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
     for (auto i = 0; i < arg_count; i++) {
       auto& arg = plait_cell->die_cell->args[i];
       auto prev_plait_cell = tag_to_cell[arg.tag];
-      auto prev_node = prev_plait_cell->nodes[0];
-
       if (prev_plait_cell == nullptr) {
         printf("Did not recognize arg tag %s\n", tag.c_str());
+        continue;
       }
-      else {
-        //plait_cell->prev_cells.push_back(prev_plait_cell);
-        node->prev_nodes.push_back(prev_node);
-        node->prev_ports.push_back(arg.port);
-      }
+
+      auto prev_node = prev_plait_cell->nodes[0];
+      node->prev_nodes.push_back(prev_node);
+      node->prev_ports.push_back(arg.port);
     }
   }
 }

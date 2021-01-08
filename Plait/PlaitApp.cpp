@@ -42,24 +42,26 @@ int main(int argc, char** argv) {
 
   PlaitApp* app = new PlaitApp();
 
+#if 0
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Saving cell db\n");
   app->die_db.save_json("gameboy.die_db.json");
   printf("Done\n");
+#else
+  printf("Loading gameboy.die_db.json\n");
+  app->die_db.clear();
+  app->die_db.load_json("gameboy.die_db.json");
+  printf("Tag map size %zd\n", app->die_db.tag_to_cell.size());
+  printf("Done\n");
 
-  //printf("Loading gameboy.die_db.json\n");
-  //app->die_db.clear();
-  //app->die_db.load_json("gameboy.die_db.json");
-  //printf("Tag map size %zd\n", app->die_db.tag_to_cell.size());
-  //printf("Done\n");
-  //
-  //printf("Loading gameboy.plait.json\n");
-  //app->plait.load_json("gameboy.plait.json", app->die_db);
-  //
-  //AppHost* app_host = new AppHost(app);
-  //ret = app_host->app_main(argc, argv);
-  //delete app;
+  printf("Loading gameboy.plait.json\n");
+  app->plait.load_json("gameboy.plait.json", app->die_db);
+
+  AppHost* app_host = new AppHost(app);
+  ret = app_host->app_main(argc, argv);
+  delete app;
+#endif
 
   return ret;
 }
@@ -853,10 +855,13 @@ void PlaitApp::draw_node(PlaitNode* node) {
 
   // Edges from previous node(s)
   if (show_edges && !node->ghost) {
-    double stride = (node_size.y) / (port_in_count + 1);
+    double node_stride = (node_size.y) / (port_in_count + 1);
 
     for (size_t i = 0; i < port_in_count; i++) {
       auto prev_node = node->prev_nodes[i];
+
+      //if (prev_node->cell->die_cell->tag == "PIN_74") __debugbreak();
+
       //auto prev_cell = node->cell->prev_cells[i];
       //if (prev_cell == nullptr) continue;
 
@@ -882,8 +887,11 @@ void PlaitApp::draw_node(PlaitNode* node) {
         }
       }
 
-      dvec2 port_prev = prev_pos_new + dvec2(node_size.x, node_size.y / 2);
-      dvec2 port_next = node_pos_new + dvec2(0, stride * (i + 1));
+      size_t prev_port_count = prev_node->ports.size();
+      double prev_stride = (node_size.y) / (prev_port_count + 1);
+
+      dvec2 port_prev = prev_pos_new + dvec2(node_size.x, prev_stride * (node->prev_ports[i] + 1));
+      dvec2 port_next = node_pos_new + dvec2(0, node_stride * (i + 1));
 
       edge_painter.push(port_prev, color_a, port_next, color_b);
     }

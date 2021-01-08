@@ -50,6 +50,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM( DieCellType, {
   {DieCellType::PIN_IN,  "PIN_IN"},
   {DieCellType::PIN_OUT, "PIN_OUT"},
   {DieCellType::PIN_IO,  "PIN_IO"},
+  {DieCellType::PIN_CLK, "PIN_CLK"},
   {DieCellType::SIG_IN,  "SIG_IN"},
   {DieCellType::SIG_OUT, "SIG_OUT"},
   {DieCellType::BUS,     "BUS"},
@@ -65,6 +66,7 @@ static std::map<DieCellType, string> cell_type_to_name = {
   {DieCellType::PIN_IN,  "PIN_IN"},
   {DieCellType::PIN_OUT, "PIN_OUT"},
   {DieCellType::PIN_IO,  "PIN_IO"},
+  {DieCellType::PIN_CLK, "PIN_CLK"},
   {DieCellType::SIG_IN,  "SIG_IN"},
   {DieCellType::SIG_OUT, "SIG_OUT"},
   {DieCellType::BUS,     "BUS"},
@@ -89,7 +91,7 @@ static std::map<DieCellType, string> cell_type_to_name = {
       case DieCellType::ADDER:    { CHECK_P(arg.port == "sum" || arg.port == "carry"); break; }
 */
 
-static std::map<DieCellType, std::vector<std::string>> cell_type_to_out_ports = {
+std::map<DieCellType, std::vector<std::string>> DieDB::cell_type_to_out_ports = {
   {DieCellType::UNKNOWN, {}},
   {DieCellType::PIN_IN,  {"qp"}},
   {DieCellType::PIN_OUT, {}},
@@ -104,11 +106,6 @@ static std::map<DieCellType, std::vector<std::string>> cell_type_to_out_ports = 
   {DieCellType::ADDER,   {"sum", "carry"}},
   {DieCellType::LOGIC,   {"qp"}},
 };
-
-/*
-std::vector<std::string>& DieCell::get_out_ports() {
-}
-*/
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -36,8 +36,9 @@ struct PlaitNode {
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
   std::vector<PlaitNode*>  prev_nodes;
-  std::vector<std::string> prev_ports;
+  std::vector<int>         prev_ports;
   PlaitCell* cell;
+  std::vector<std::string> ports;
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(PlaitNode* target);

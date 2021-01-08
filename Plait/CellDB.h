@@ -99,6 +99,8 @@ struct DieDB {
 
   std::map<std::string, DieCell*> tag_to_cell;
 
+  static std::map<DieCellType, std::vector<std::string>> cell_type_to_out_ports;
+
   int total_lines = 0;
   int total_tagged_lines = 0;
 };

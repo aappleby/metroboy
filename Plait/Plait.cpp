@@ -112,6 +112,7 @@ void Plait::save_json(const char* filename) {
       jnode["pos_abs_x"]  = node->pos_abs.x;
       jnode["pos_abs_y"]  = node->pos_abs.y;
       jnode["anchor_tag"] = node->anchor_tag;
+      jnode["ports"]      = node->ports;
     }
   }
 
@@ -132,7 +133,6 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
   auto& jcells = jroot["cells"];
 
   for (auto& [tag, jcell] : jcells.items()) {
-
     auto die_cell = die_db.tag_to_cell[tag];
     if (die_cell == nullptr) {
       printf("Did not recognize cell tag %s\n", tag.c_str());
@@ -150,6 +150,22 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
       node->pos_abs.x  = jnode.value("pos_abs_x", 0.0);
       node->pos_abs.y  = jnode.value("pos_abs_y", 0.0);
       node->anchor_tag = jnode.value("anchor_tag", "");
+      node->ports      = jnode.value("ports", std::vector<std::string>());
+      //printf("port count %zd\n", node->ports.size());
+    }
+  }
+
+  // Fix empty out ports
+  for (auto& [tag, plait_cell] : tag_to_cell) {
+    for (auto& node : plait_cell->nodes) {
+      if (node->ports.empty()) {
+        printf("Node %s.%s has no ports\n", plait_cell->die_cell->name.c_str(), node->name.c_str());
+        node->ports = DieDB::cell_type_to_out_ports[node->cell->die_cell->cell_type];
+      }
+
+      //if (node->ports.empty()) {
+      //  printf("Node %s.%s _still_ has no ports\n", tag.c_str(), node->name.c_str());
+      //}
     }
   }
 
@@ -166,7 +182,6 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
   }
 
   // Connect anchors
-
   for (auto& [tag, plait_cell] : tag_to_cell) {
     for (auto& node : plait_cell->nodes) {
       if (node->anchor_tag.empty()) continue;
@@ -195,9 +210,22 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
         continue;
       }
 
-      auto prev_node = prev_plait_cell->nodes[0];
-      node->prev_nodes.push_back(prev_node);
-      node->prev_ports.push_back(arg.port);
+      bool connected = false;
+      for (auto prev_node : prev_plait_cell->nodes) {
+        for (size_t iport = 0; iport < prev_node->ports.size(); iport++) {
+          if (prev_node->ports[iport] == arg.port) {
+            node->prev_nodes.push_back(prev_node);
+            node->prev_ports.push_back((int)iport);
+            connected = true;
+          }
+          if (connected) break;
+        }
+        if (connected) break;
+      }
+
+      if (!connected) {
+        printf("Could not link %s.%s, arg %s.%s\n", plait_cell->die_cell->name.c_str(), node->name.c_str(), arg.tag.c_str(), arg.port.c_str());
+      }
     }
   }
 }

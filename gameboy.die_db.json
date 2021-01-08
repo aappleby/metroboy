@@ -27342,7 +27342,7 @@
     },
     "PIN_74": {
       "args": [],
-      "cell_type": "UNKNOWN",
+      "cell_type": "PIN_CLK",
       "doc": "",
       "gate": "pin_clk",
       "name": "PIN_74_CLK",

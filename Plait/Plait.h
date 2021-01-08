@@ -142,12 +142,12 @@ struct PlaitCell {
 
 struct Plait {
   void save_json(const char* filename);
-  void load_json(const char* filename, DieDB& cell_db);
+  void load_json(const char* filename, DieDB& die_db);
 
   std::map<std::string, PlaitCell*> tag_to_cell;
 
-  PlaitCell* get_or_create_node(const std::string& tag, DieDB& cell_db) {
-    auto cell = cell_db.tag_to_cell[tag];
+  PlaitCell* get_or_create_node(const std::string& tag, DieDB& die_db) {
+    auto cell = die_db.tag_to_cell[tag];
     if (!cell) {
       printf("Tag \"%s\" not in cell db\n", tag.c_str());
       return nullptr;

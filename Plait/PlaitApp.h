@@ -90,7 +90,7 @@ public:
   ToolMode current_tool = ToolMode::NONE;
 
   Plait plait;
-  DieDB cell_db;
+  DieDB die_db;
   std::map<std::string, uint32_t> node_type_to_color;
 
   GridPainter grid_painter;

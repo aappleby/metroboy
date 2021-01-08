@@ -43,19 +43,19 @@ int main(int argc, char** argv) {
   PlaitApp* app = new PlaitApp();
 
   //printf("Parsing gateboy source\n");
-  //app->cell_db.parse_dir("GateBoyLib");
+  //app->die_db.parse_dir("GateBoyLib");
   //printf("Saving cell db\n");
-  //app->cell_db.save_json("gameboy.cell_db.json");
+  //app->die_db.save_json("gameboy.die_db.json");
   //printf("Done\n");
 
-  printf("Loading gameboy.cell_db.json\n");
-  app->cell_db.clear();
-  app->cell_db.load_json("gameboy.cell_db.json");
-  printf("Tag map size %zd\n", app->cell_db.tag_to_cell.size());
+  printf("Loading gameboy.die_db.json\n");
+  app->die_db.clear();
+  app->die_db.load_json("gameboy.die_db.json");
+  printf("Tag map size %zd\n", app->die_db.tag_to_cell.size());
   printf("Done\n");
 
   printf("Loading gameboy.plait.json\n");
-  app->plait.load_json("gameboy.plait.json", app->cell_db);
+  app->plait.load_json("gameboy.plait.json", app->die_db);
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);

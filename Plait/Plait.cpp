@@ -118,7 +118,7 @@ void Plait::save_json(const char* filename) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void Plait::load_json(const char* filename, DieDB& cell_db) {
+void Plait::load_json(const char* filename, DieDB& die_db) {
   printf("Loading plait %s\n", filename);
   using namespace nlohmann;
 
@@ -131,7 +131,7 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
 
   for (auto& [tag, jnode] : jcells.items()) {
 
-    auto die_cell = cell_db.tag_to_cell[tag];
+    auto die_cell = die_db.tag_to_cell[tag];
     if (die_cell == nullptr) {
       printf("Did not recognize cell tag %s\n", tag.c_str());
       continue;
@@ -151,7 +151,7 @@ void Plait::load_json(const char* filename, DieDB& cell_db) {
   }
 
   // Check for missing tags
-  for (auto& [tag, die_cell] : cell_db.tag_to_cell) {
+  for (auto& [tag, die_cell] : die_db.tag_to_cell) {
     if (tag_to_cell.count(tag) == 0) {
       printf("Did not load node for tag \"%s\", creating placeholder\n", tag.c_str());
       {

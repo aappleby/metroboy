@@ -27,12 +27,14 @@ void PlaitNode::set_anchor(PlaitNode* new_anchor) {
   if (anchor) {
     pos_rel += anchor->get_pos_abs_old();
     anchor = nullptr;
+    anchor_tag.clear();
   }
 
   // Link to new anchor.
   if (new_anchor) {
     pos_rel -= new_anchor->get_pos_abs_old();
     anchor = new_anchor;
+    anchor_tag = new_anchor->cell->tag();
   }
 }
 
@@ -93,23 +95,16 @@ void Plait::save_json(const char* filename) {
 
   for (auto& [tag, plait_cell] : tag_to_cell) {
     auto& jcell = jcells[tag];
-    jcell["name"]       = plait_cell->nodes[0]->name;
-    jcell["locked"]     = plait_cell->nodes[0]->locked;
-    jcell["pos_rel_x"]  = plait_cell->nodes[0]->pos_rel.x;
-    jcell["pos_rel_y"]  = plait_cell->nodes[0]->pos_rel.y;
-    jcell["pos_abs_x"]  = plait_cell->nodes[0]->pos_abs.x;
-    jcell["pos_abs_y"]  = plait_cell->nodes[0]->pos_abs.y;
-    if (plait_cell->nodes[0]->anchor) jcell["anchor_tag"] = plait_cell->nodes[0]->anchor->cell->die_cell->tag;
 
     auto& jnodes = jcell["nodes"];
     for (auto node : plait_cell->nodes) {
       auto& jnode = jnodes[node->name];
-      jnode["locked"]     = plait_cell->nodes[0]->locked;
-      jnode["pos_rel_x"]  = plait_cell->nodes[0]->pos_rel.x;
-      jnode["pos_rel_y"]  = plait_cell->nodes[0]->pos_rel.y;
-      jnode["pos_abs_x"]  = plait_cell->nodes[0]->pos_abs.x;
-      jnode["pos_abs_y"]  = plait_cell->nodes[0]->pos_abs.y;
-      if (plait_cell->nodes[0]->anchor) jnode["anchor_tag"] = plait_cell->nodes[0]->anchor->cell->die_cell->tag;
+      jnode["locked"]     = node->locked;
+      jnode["pos_rel_x"]  = node->pos_rel.x;
+      jnode["pos_rel_y"]  = node->pos_rel.y;
+      jnode["pos_abs_x"]  = node->pos_abs.x;
+      jnode["pos_abs_y"]  = node->pos_abs.y;
+      jnode["anchor_tag"] = node->anchor_tag;
     }
   }
 

@@ -87,33 +87,33 @@ void Plait::save_json(const char* filename) {
     for (auto node : cell->nodes) node->commit_pos();
   }
 
-  json root;
+  json jroot;
 
-  auto& cells = root["cells"];
+  auto& jcells = jroot["cells"];
 
-  for (auto& [tag, cell] : tag_to_cell) {
-    auto& jcell = cells[tag];
-    jcell["name"]       = cell->nodes[0]->name;
-    jcell["locked"]     = cell->nodes[0]->locked;
-    jcell["pos_rel_x"]  = cell->nodes[0]->pos_rel.x;
-    jcell["pos_rel_y"]  = cell->nodes[0]->pos_rel.y;
-    jcell["pos_abs_x"]  = cell->nodes[0]->pos_abs.x;
-    jcell["pos_abs_y"]  = cell->nodes[0]->pos_abs.y;
-    if (cell->nodes[0]->anchor) jcell["anchor_tag"] = cell->nodes[0]->anchor->cell->die_cell->tag;
+  for (auto& [tag, plait_cell] : tag_to_cell) {
+    auto& jcell = jcells[tag];
+    jcell["name"]       = plait_cell->nodes[0]->name;
+    jcell["locked"]     = plait_cell->nodes[0]->locked;
+    jcell["pos_rel_x"]  = plait_cell->nodes[0]->pos_rel.x;
+    jcell["pos_rel_y"]  = plait_cell->nodes[0]->pos_rel.y;
+    jcell["pos_abs_x"]  = plait_cell->nodes[0]->pos_abs.x;
+    jcell["pos_abs_y"]  = plait_cell->nodes[0]->pos_abs.y;
+    if (plait_cell->nodes[0]->anchor) jcell["anchor_tag"] = plait_cell->nodes[0]->anchor->cell->die_cell->tag;
 
     auto& jnodes = jcell["nodes"];
-    for (auto node : cell->nodes) {
+    for (auto node : plait_cell->nodes) {
       auto& jnode = jnodes[node->name];
-      jnode["locked"]     = cell->nodes[0]->locked;
-      jnode["pos_rel_x"]  = cell->nodes[0]->pos_rel.x;
-      jnode["pos_rel_y"]  = cell->nodes[0]->pos_rel.y;
-      jnode["pos_abs_x"]  = cell->nodes[0]->pos_abs.x;
-      jnode["pos_abs_y"]  = cell->nodes[0]->pos_abs.y;
-      if (cell->nodes[0]->anchor) jnode["anchor_tag"] = cell->nodes[0]->anchor->cell->die_cell->tag;
+      jnode["locked"]     = plait_cell->nodes[0]->locked;
+      jnode["pos_rel_x"]  = plait_cell->nodes[0]->pos_rel.x;
+      jnode["pos_rel_y"]  = plait_cell->nodes[0]->pos_rel.y;
+      jnode["pos_abs_x"]  = plait_cell->nodes[0]->pos_abs.x;
+      jnode["pos_abs_y"]  = plait_cell->nodes[0]->pos_abs.y;
+      if (plait_cell->nodes[0]->anchor) jnode["anchor_tag"] = plait_cell->nodes[0]->anchor->cell->die_cell->tag;
     }
   }
 
-  std::ofstream(filename) << root.dump(2);
+  std::ofstream(filename) << jroot.dump(2);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -124,12 +124,12 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
 
   CHECK_P(tag_to_cell.empty());
 
-  json root;
-  std::ifstream(filename) >> root;
+  json jroot;
+  std::ifstream(filename) >> jroot;
 
-  auto& jcells = root["cells"];
+  auto& jcells = jroot["cells"];
 
-  for (auto& [tag, jnode] : jcells.items()) {
+  for (auto& [tag, jcell] : jcells.items()) {
 
     auto die_cell = die_db.tag_to_cell[tag];
     if (die_cell == nullptr) {
@@ -140,14 +140,15 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
     auto plait_cell = new PlaitCell(die_cell);
     tag_to_cell[tag] = plait_cell;
 
-    std::string name = jnode.value("name", "default");
-    auto node = plait_cell->add_node(name);
-
-    node->locked    = jnode.value("locked", false);
-    node->pos_rel.x = jnode.value("pos_rel_x", 0.0);
-    node->pos_rel.y = jnode.value("pos_rel_y", 0.0);
-    node->pos_abs.x = jnode.value("pos_abs_x", 0.0);
-    node->pos_abs.y = jnode.value("pos_abs_y", 0.0);
+    for (auto& [name, jnode] : jcell["nodes"].items()) {
+      auto node = plait_cell->add_node(name);
+      node->locked     = jnode.value("locked", false);
+      node->pos_rel.x  = jnode.value("pos_rel_x", 0.0);
+      node->pos_rel.y  = jnode.value("pos_rel_y", 0.0);
+      node->pos_abs.x  = jnode.value("pos_abs_x", 0.0);
+      node->pos_abs.y  = jnode.value("pos_abs_y", 0.0);
+      node->anchor_tag = jnode.value("anchor_tag", "");
+    }
   }
 
   // Check for missing tags
@@ -163,26 +164,19 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
   }
 
   // Connect anchors
-  for (auto& [tag, jnode] : jcells.items()) {
-    if (!jnode["anchor_tag"].is_string()) continue;
-    const auto& anchor_tag = jnode["anchor_tag"].get<std::string>();
 
-    if (tag == anchor_tag) {
-      printf("node %s anchored to itself?\n", tag.c_str());
-    }
+  for (auto& [tag, plait_cell] : tag_to_cell) {
+    for (auto& node : plait_cell->nodes) {
+      if (node->anchor_tag.empty()) continue;
+      auto anchor_cell = tag_to_cell[node->anchor_tag];
 
-    // FIXME nodes[0]
-    auto plait_cell = tag_to_cell[tag];
-    auto anchor_cell = tag_to_cell[anchor_tag];
-
-    if (plait_cell && anchor_cell) {
-      plait_cell->nodes[0]->anchor = anchor_cell->nodes[0];
-    }
-    else if (plait_cell == nullptr) {
-      printf("bad tag %s\n", tag.c_str());
-    }
-    else if (anchor_cell == nullptr) {
-      printf("bad anchor tag %s\n", anchor_tag.c_str());
+      if (anchor_cell) {
+        // FIXME anchor path
+        node->anchor = anchor_cell->nodes[0];
+      }
+      else {
+        printf("bad anchor tag %s\n", node->anchor_tag.c_str());
+      }
     }
   }
 

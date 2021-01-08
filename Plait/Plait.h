@@ -27,6 +27,7 @@ struct PlaitNode {
   bool locked = 0;
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
+  std::string anchor_tag;
   PlaitNode* anchor = nullptr;
   bool pinned = 1;
   int  mark = 0;

@@ -206,12 +206,14 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
   }
 
   // Connect ports
+  // FIXME use edge table
+#if 0
   for (auto& [tag, plait_cell] : tag_to_cell) {
     auto next_node = plait_cell->nodes[0];
-    auto arg_count = plait_cell->die_cell->args.size();
+    auto arg_count = plait_cell->die_cell->cell_args.size();
 
     for (auto iarg = 0; iarg < arg_count; iarg++) {
-      auto& arg = plait_cell->die_cell->args[iarg];
+      auto& arg = plait_cell->die_cell->cell_args[iarg];
       auto prev_plait_cell = tag_to_cell[arg.tag];
       if (prev_plait_cell == nullptr) {
         printf("Did not recognize arg tag %s\n", tag.c_str());
@@ -244,6 +246,7 @@ void Plait::load_json(const char* filename, DieDB& die_db) {
       }
     }
   }
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

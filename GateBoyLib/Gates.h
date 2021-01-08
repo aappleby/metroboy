@@ -589,7 +589,7 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_out_oedp(wire PUn, wire Dp) {
+  void pin_io_out_oedp(wire PUn, wire Dp) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
@@ -605,7 +605,7 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_out_pull_hilo(wire PUn, wire HI, wire LO) {
+  void pin_io_out_pull_hilo(wire PUn, wire HI, wire LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
@@ -623,7 +623,7 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_out_pull_hilo_any(wire PUn, wire HI, wire LO) {
+  void pin_io_out_pull_hilo_any(wire PUn, wire HI, wire LO) {
     CHECK_P(state & BIT_NEW);
 
     if (bit(HI ^ LO) == 0){
@@ -639,7 +639,7 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_in_oedp(wire OEp, wire Dn) {
+  void pin_io_in_oedp(wire OEp, wire Dn) {
     CHECK_P(state & BIT_NEW);
     CHECK_P(state & BIT_DIRTY3);
     CHECK_N(state & BIT_DIRTY4);
@@ -658,7 +658,7 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_in_oedp_any(wire OEp, wire Dn) {
+  void pin_io_in_oedp_any(wire OEp, wire Dn) {
     CHECK_P(state & BIT_NEW);
 
     wire Dp = ~Dn;
@@ -712,7 +712,7 @@ struct PinClock {
     CLKGOOD.reset_for_pass();
   }
 
-  void pin_in_dp(wire clk, wire clkgood) {
+  void pin_clk(wire clk, wire clkgood) {
     CLK.pin_in_dp(clk);
     CLKGOOD.pin_in_dp(clkgood);
   }

@@ -221,14 +221,14 @@ void GateBoyExtBus::copy_cpu_data_to_pins(const GateBoyResetDebug& rst, const Ga
   /* p08.ROGY*/ wire _ROGY = nor2 (cpu_bus.BUS_CPU_D06p.qp_new(), _RORU_CBD_TO_EPDn);
   /* p08.RYDA*/ wire _RYDA = nor2 (cpu_bus.BUS_CPU_D07p.qp_new(), _RORU_CBD_TO_EPDn);
 
-  /*PIN_17*/ PIN_17_D00.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
-  /*PIN_18*/ PIN_18_D01.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
-  /*PIN_19*/ PIN_19_D02.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
-  /*PIN_20*/ PIN_20_D03.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
-  /*PIN_21*/ PIN_21_D04.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
-  /*PIN_22*/ PIN_22_D05.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
-  /*PIN_23*/ PIN_23_D06.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
-  /*PIN_24*/ PIN_24_D07.pin_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
+  /*PIN_17*/ PIN_17_D00.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
+  /*PIN_18*/ PIN_18_D01.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
+  /*PIN_19*/ PIN_19_D02.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
+  /*PIN_20*/ PIN_20_D03.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
+  /*PIN_21*/ PIN_21_D04.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
+  /*PIN_22*/ PIN_22_D05.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
+  /*PIN_23*/ PIN_23_D06.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
+  /*PIN_24*/ PIN_24_D07.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -299,14 +299,14 @@ void GateBoyExtBus::read_ext_to_pins(const uint8_t* cart_buf, const uint8_t* car
   if (eram_OEp) data = int_ram[addr & 0x1FFF];
 
   wire ext_OEp = rom_OEp || cram_OEp || iram_OEp || eram_OEp;
-  PIN_17_D00.pin_in_oedp(ext_OEp, (data >> 0) & 1);
-  PIN_18_D01.pin_in_oedp(ext_OEp, (data >> 1) & 1);
-  PIN_19_D02.pin_in_oedp(ext_OEp, (data >> 2) & 1);
-  PIN_20_D03.pin_in_oedp(ext_OEp, (data >> 3) & 1);
-  PIN_21_D04.pin_in_oedp(ext_OEp, (data >> 4) & 1);
-  PIN_22_D05.pin_in_oedp(ext_OEp, (data >> 5) & 1);
-  PIN_23_D06.pin_in_oedp(ext_OEp, (data >> 6) & 1);
-  PIN_24_D07.pin_in_oedp(ext_OEp, (data >> 7) & 1);
+  PIN_17_D00.pin_io_in_oedp(ext_OEp, (data >> 0) & 1);
+  PIN_18_D01.pin_io_in_oedp(ext_OEp, (data >> 1) & 1);
+  PIN_19_D02.pin_io_in_oedp(ext_OEp, (data >> 2) & 1);
+  PIN_20_D03.pin_io_in_oedp(ext_OEp, (data >> 3) & 1);
+  PIN_21_D04.pin_io_in_oedp(ext_OEp, (data >> 4) & 1);
+  PIN_22_D05.pin_io_in_oedp(ext_OEp, (data >> 5) & 1);
+  PIN_23_D06.pin_io_in_oedp(ext_OEp, (data >> 6) & 1);
+  PIN_24_D07.pin_io_in_oedp(ext_OEp, (data >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

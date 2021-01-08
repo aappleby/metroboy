@@ -107,6 +107,74 @@ std::map<DieCellType, std::vector<std::string>> DieDB::cell_type_to_out_ports = 
   {DieCellType::LOGIC,   {"qp"}},
 };
 
+std::map<std::string, std::vector<std::string>> DieDB::gate_type_to_in_ports = {
+  {"pin_in", {}},
+  {"pin_out_pull_hilo",     {"PUn", "HI", "LO"}},
+  {"pin_out_pull_hilo_any", {"PUn", "HI", "LO"}},
+  {"pin_out_dp",            {"DP"}},
+  {"pin_out_hilo",          {"HI", "LO"}},
+  {"pin_clk", {}},
+
+  {"sig_in", {}},
+  {"sig_out", {"Dp"}},
+
+  // bus is special, it has a variable number of inputs
+
+  {"dff9",      {"CLKp", "SETn", "Dp"}},
+  {"dff22",     {"CLKp", "SETn", "RSTn", "Dp"}},
+  {"dff17",     {"CLKp", "RSTn", "Dp"}},
+  {"dff20",     {"CLKn", "LOADp", "Dp"}},
+  {"dff17_any", {"CLKp", "RSTn", "Dp"}},
+  {"dff13",     {"CLKp", "RSTn", "Dp"}},
+  {"dff8n",     {"CLKn", "Dn"}},
+  {"dff11",     {"CLKp", "RSTn", "Dp"}},
+  {"dff8p",     {"CLKp", "Dn"}},
+
+  {"nand_latch", {"SETn", "RSTn"}},
+  {"nor_latch",  {"SETp", "RSTp"}},
+  {"tp_latchn",  {"HOLDn", "Dp"}},
+  {"tp_latchp",  {"HOLDp", "Dp"}},
+
+  {"tri10_np", {"OEn", "Dp"}},
+  {"tri6_pn",  {"OEp", "Dn"}},
+  {"tri6_nn",  {"OEn", "Dn"}},
+
+  {"add3", {"a", "b", "carry"}},
+
+  {"not1",  {"a"}},
+  {"and2",  {"a", "b"}},
+  {"and3",  {"a", "b", "c"}},
+  {"and4",  {"a", "b", "c", "d"}},
+  {"or2",   {"a", "b"}},
+  {"or3",   {"a", "b", "c"}},
+  {"or4",   {"a", "b", "c", "d"}},
+  {"xor2",  {"a", "b"}},
+  {"xnor2", {"a", "b"}},
+  {"nand2", {"a", "b"}},
+  {"nand3", {"a", "b", "c"}},
+  {"nand4", {"a", "b", "c", "d"}},
+  {"nand5", {"a", "b", "c", "d", "e"}},
+  {"nand6", {"a", "b", "c", "d", "e", "f"}},
+  {"nand7", {"a", "b", "c", "d", "e", "f", "g"}},
+  {"nand8", {"a", "b", "c", "d", "e", "f", "g", "h"}},
+  {"nor2",  {"a", "b"}},
+  {"nor3",  {"a", "b", "c"}},
+  {"nor4",  {"a", "b", "c", "d"}},
+  {"nor5",  {"a", "b", "c", "d", "e"}},
+  {"nor6",  {"a", "b", "c", "d", "e", "f"}},
+  {"nor7",  {"a", "b", "c", "d", "e", "f", "g"}},
+  {"nor8",  {"a", "b", "c", "d", "e", "f", "g", "h"}},
+
+  {"and_or3",      {"a", "b", "c"}},
+  {"or_and3",      {"a", "b", "c"}},
+  {"not_or_and3",  {"a", "b", "c"}},
+
+  {"mux2n", {"mux", "a1", "a0"}},
+  {"mux2p", {"mux", "a1", "a0"}},
+  {"amux2", {"a0", "b0", "a1", "b1"}},
+  {"amux4", {"a0", "b0", "a1", "b1", "a2", "b2", "a3", "b3"}},
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void DieDB::clear() {
@@ -117,36 +185,55 @@ void DieDB::clear() {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void to_json(nlohmann::json& j, const DieCellArg& p) {
-  j["tag"]  = p.tag;
-  j["port"] = p.port;
+  j["prev_tag"]  = p.tag;
+  j["prev_port"] = p.port;
 }
 
 void from_json(const nlohmann::json& j, DieCellArg& p) {
-  j["tag"] .get_to(p.tag);
-  j["port"].get_to(p.port);
+  j["prev_tag"] .get_to(p.tag);
+  j["prev_port"].get_to(p.port);
+}
+
+void to_json(nlohmann::json& j, const DieCellEdge& e) {
+  j["prev_tag"]  = e.prev_tag;
+  j["prev_port"] = e.prev_port;
+  j["next_tag"]  = e.next_tag;
+  j["next_port"] = e.next_port;
+}
+
+void from_json(const nlohmann::json& j, DieCellEdge& e) {
+  j["prev_tag"] .get_to(e.prev_tag);
+  j["prev_port"].get_to(e.prev_port);
+  j["next_tag"] .get_to(e.next_tag);
+  j["next_port"].get_to(e.next_port);
 }
 
 void to_json(nlohmann::json& j, const DieCell* c) {
-  j["cell_type"] = c->cell_type;
-  j["verified"]  = c->verified;
-  j["page"]      = c->page;
-  j["tag"]       = c->tag;
-  j["gate"]      = c->gate;
-  j["args"]      = c->args;
-  j["name"]      = c->name;
-  j["doc"]       = c->doc;
+  j["cell_type"]  = c->cell_type;
+  //j["verified"]   = c->verified;
+  j["page"]       = c->page;
+  //j["tag"]        = c->tag;
+  j["gate"]       = c->gate;
+  //j["args"]       = c->cell_args;
+  j["name"]       = c->name;
+  j["doc"]        = c->doc;
+  j["prev_ports"] = c->prev_ports;
+  j["next_ports"] = c->next_ports;
 }
 
 void from_json(const nlohmann::json& j, DieCell*& c) {
   c = new DieCell();
-  j["cell_type"].get_to(c->cell_type);
-  j["verified"] .get_to(c->verified);
-  j["page"]     .get_to(c->page);
-  j["tag"]      .get_to(c->tag);
-  j["gate"]     .get_to(c->gate);
-  j["args"]     .get_to(c->args);
-  j["name"]     .get_to(c->name);
-  j["doc"]      .get_to(c->doc);
+
+  c->cell_type  = j.value("cell_type",  DieCellType::UNKNOWN);
+  //c->verified   = j.value("verified",   false);
+  c->page       = j.value("page",       "<no_page>");
+  //c->tag        = j.value("tag",        "<no_tag>");
+  c->gate       = j.value("gate",       "<no_gate>");
+  //c->cell_args       = j.value("args",       std::vector<DieCellArg>());
+  c->name       = j.value("name",       "<no_name>");
+  c->doc        = j.value("doc",        "<no_doc>");
+  c->prev_ports = j.value("prev_ports", std::vector<std::string>());
+  c->next_ports = j.value("next_ports", std::vector<std::string>());
 }
 
 void DieDB::save_json(const char* filename) {
@@ -155,6 +242,7 @@ void DieDB::save_json(const char* filename) {
   json root;
 
   root["cells"] = tag_to_cell;
+  root["edges"] = edges;
 
   std::ofstream(filename) << root.dump(2);
 }
@@ -166,6 +254,7 @@ void DieDB::load_json(const char* filename) {
   std::ifstream(filename) >> root;
 
   root["cells"].get_to(tag_to_cell);
+  root["edges"].get_to(edges);
 }
 
 void DieCell::dump(Dumper& d) const {
@@ -203,37 +292,30 @@ void DieCell::sanity_check() const {
   if (name.empty()) {
     printf("No name for tag %s\n", tag.c_str());
   }
-  //CHECK_N(names.empty());
 
   if (cell_type == DieCellType::PIN_IN) {
     CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate == "pin_in");
-    CHECK_P(args.empty());
   }
   else if (cell_type == DieCellType::PIN_OUT) {
     CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate.starts_with("pin_out"));
-    CHECK_P(args.size() != 0);
   }
   else if (cell_type == DieCellType::PIN_IO) {
     CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate.starts_with("pin_out"));
-    CHECK_P(args.size() != 0);
   }
   else if (cell_type == DieCellType::PIN_CLK) {
     CHECK_P(tag.starts_with("PIN_"));
     CHECK_P(gate == "pin_clk");
-    CHECK_P(args.empty());
   }
   else if (cell_type == DieCellType::SIG_IN) {
     CHECK_P(tag.starts_with("SIG_"));
     CHECK_P(gate == "sig_in");
-    CHECK_P(args.empty());
   }
   else if (cell_type == DieCellType::SIG_OUT) {
     CHECK_P(tag.starts_with("SIG_"));
     CHECK_P(gate == "sig_out");
-    CHECK_P(args.size() == 1);
   }
   else if (cell_type == DieCellType::BUS) {
     CHECK_P(tag.starts_with("BUS_"));
@@ -241,36 +323,27 @@ void DieCell::sanity_check() const {
   }
   else if (cell_type == DieCellType::DFF) {
     check_cell_tag(tag);
-    CHECK_P(args.size() >= 2);
   }
   else if (cell_type == DieCellType::LATCH) {
     check_cell_tag(tag);
-    CHECK_P(args.size() == 2);
   }
   else if (cell_type == DieCellType::TRIBUF) {
     check_cell_tag(tag);
-    CHECK_P(args.size() == 2);
   }
   else if (cell_type == DieCellType::ADDER) {
     check_cell_tag(tag);
-    CHECK_P(args.size() == 3);
   }
   else if (cell_type == DieCellType::LOGIC) {
-    CHECK_P(args.size() >= 1);
     check_cell_tag(tag);
   }
   else {
     __debugbreak();
   }
-
-  for (const auto& arg : args) {
-    CHECK_N(arg.tag.empty());
-    CHECK_N(arg.port.empty());
-  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+#if 0
 void DieCell::merge(const DieCell& c) {
   if (cell_type == DieCellType::UNKNOWN) cell_type = c.cell_type;
   if (verified.empty()) verified = c.verified;
@@ -278,7 +351,7 @@ void DieCell::merge(const DieCell& c) {
   if (tag.empty())      tag = c.tag;
   if (gate.empty())     gate = c.gate;
   if (doc.empty())      doc = c.doc;
-  if (args.empty())     args = c.args;
+  if (cell_args.empty())     cell_args = c.cell_args;
   if (name.empty())     name = c.name;
 
   CHECK_P(cell_type == c.cell_type);
@@ -297,21 +370,22 @@ void DieCell::merge(const DieCell& c) {
   CHECK_P(c.doc.empty()      || doc == c.doc);
   CHECK_P(c.name.empty()     || name == c.name);
 
-  if (!c.args.empty()) {
-    CHECK_P(args.size() == c.args.size());
-    for (size_t i = 0; i < args.size(); i++) {
-      CHECK_P(args[i].tag  == c.args[i].tag);
-      CHECK_P(args[i].port == c.args[i].port);
+  if (!c.cell_args.empty()) {
+    CHECK_P(cell_args.size() == c.cell_args.size());
+    for (size_t i = 0; i < cell_args.size(); i++) {
+      CHECK_P(cell_args[i].tag  == c.cell_args[i].tag);
+      CHECK_P(cell_args[i].port == c.cell_args[i].port);
     }
   }
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 // /*#p00.ABCD*/
 // /* p00.ABCD*/
 // /*p00.ABCD*/
 
-bool DieDB::parse_tag(DieCell& c, const std::string& tag_comment) {
+bool DieDB::parse_tag(const std::string& tag_comment, std::string& page_out, std::string& tag_out) {
   //static regex pin_tag (R"(^\/\*(.?)(PIN_[0-9]{2})\s*\*\/$)");
 
   static regex pin_tag(
@@ -328,24 +402,24 @@ bool DieDB::parse_tag(DieCell& c, const std::string& tag_comment) {
 
   smatch match;
   if (regex_match(tag_comment, match, pin_tag)) {
-    c.verified = match[1].str();
-    c.tag = match[2].str();
+    //c.verified = match[1].str();
+    tag_out = match[2].str();
     return true;
   }
   else if (regex_match(tag_comment, match, sig_tag)) {
-    c.verified = match[1].str();
-    c.tag = match[2].str();
+    //c.verified = match[1].str();
+    tag_out = match[2].str();
     return true;
   }
   else if (regex_match(tag_comment, match, bus_tag)) {
-    c.verified = match[1].str();
-    c.tag = match[2].str();
+    //c.verified = match[1].str();
+    tag_out = match[2].str();
     return true;
   }
   else if (regex_match(tag_comment,  match, cell_tag)) {
-    c.verified = match[1].str();
-    c.page = match[2].str();
-    c.tag = match[3].str();
+    //c.verified = match[1].str();
+    page_out = match[2].str();
+    tag_out = match[3].str();
     return true;
   }
   else {
@@ -371,39 +445,109 @@ set<string> valid_logic_gates  = {
   "mux2n", "mux2p", "amux2", "amux4",
 };
 
+/*
+  PIN_IN,
+  PIN_OUT,
+  PIN_IO,
+  PIN_CLK,
+  SIG_IN,
+  SIG_OUT,
+  BUS,
+  DFF,
+  LATCH,
+  TRIBUF,
+  ADDER,
+  LOGIC,
+*/
+
+std::map<std::string, DieCellType> gate_to_cell_type = {
+  {"dff9",        DieCellType::DFF},
+  {"dff22",       DieCellType::DFF},
+  {"dff17",       DieCellType::DFF},
+  {"dff20",       DieCellType::DFF},
+  {"dff17_any",   DieCellType::DFF},
+  {"dff13",       DieCellType::DFF},
+  {"dff8n",       DieCellType::DFF},
+  {"dff11",       DieCellType::DFF},
+  {"dff8p",       DieCellType::DFF},
+
+  {"nand_latch",  DieCellType::LATCH},
+  {"nor_latch",   DieCellType::LATCH},
+  {"tp_latchn",   DieCellType::LATCH},
+  {"tp_latchp",   DieCellType::LATCH},
+
+  {"tri10_np",    DieCellType::TRIBUF},
+  {"tri6_pn",     DieCellType::TRIBUF},
+  {"tri6_nn",     DieCellType::TRIBUF},
+
+  {"not1",        DieCellType::LOGIC},
+  {"and2",        DieCellType::LOGIC},
+  {"and3",        DieCellType::LOGIC},
+  {"and4",        DieCellType::LOGIC},
+  {"or2",         DieCellType::LOGIC},
+  {"or3",         DieCellType::LOGIC},
+  {"or4",         DieCellType::LOGIC},
+  {"xor2",        DieCellType::LOGIC},
+  {"xnor2",       DieCellType::LOGIC},
+  {"nand2",       DieCellType::LOGIC},
+  {"nand3",       DieCellType::LOGIC},
+  {"nand4",       DieCellType::LOGIC},
+  {"nand5",       DieCellType::LOGIC},
+  {"nand6",       DieCellType::LOGIC},
+  {"nand7",       DieCellType::LOGIC},
+  {"nor2",        DieCellType::LOGIC},
+  {"nor3",        DieCellType::LOGIC},
+  {"nor4",        DieCellType::LOGIC},
+  {"nor5",        DieCellType::LOGIC},
+  {"nor6",        DieCellType::LOGIC},
+  {"nor8",        DieCellType::LOGIC},
+  {"and_or3",     DieCellType::LOGIC},
+  {"or_and3",     DieCellType::LOGIC},
+  {"not_or_and3", DieCellType::LOGIC},
+  {"mux2n",       DieCellType::LOGIC},
+  {"mux2p",       DieCellType::LOGIC},
+  {"amux2",       DieCellType::LOGIC},
+  {"amux4",       DieCellType::LOGIC},
+
+  {"add3",        DieCellType::ADDER},
+
+  // FIXME pin types, sig types
+};
+
 bool DieDB::parse_cell_gate(DieCell& c, const std::string& gate) {
+  CHECK_P(c.gate.empty() || c.gate == gate);
+  c.gate = gate;
+
   if (valid_dff_gates.contains(gate)) {
-    CHECK_P(c.cell_type == DieCellType::UNKNOWN);
+    CHECK_P(c.cell_type == DieCellType::DFF || c.cell_type == DieCellType::UNKNOWN);
     c.cell_type = DieCellType::DFF;
-    c.gate = gate;
     return true;
   }
   else if (valid_latch_gates.contains(gate)) {
-    CHECK_P(c.cell_type == DieCellType::UNKNOWN);
+    CHECK_P(c.cell_type == DieCellType::LATCH || c.cell_type == DieCellType::UNKNOWN);
     c.cell_type = DieCellType::LATCH;
-    c.gate = gate;
     return true;
   }
   else if (valid_pin_gates.contains(gate)) {
-    //CHECK_P(c.cell_type == CellType::PIN);
-    c.gate = gate;
+    CHECK_P(c.cell_type == DieCellType::PIN_IN ||
+            c.cell_type == DieCellType::PIN_OUT ||
+            c.cell_type == DieCellType::PIN_IO ||
+            c.cell_type == DieCellType::PIN_CLK);
     return true;
   }
   else if (valid_tribuf_gates.contains(gate)) {
-    CHECK_P(c.cell_type == DieCellType::UNKNOWN);
+    CHECK_P(c.cell_type == DieCellType::TRIBUF || c.cell_type == DieCellType::UNKNOWN);
     c.cell_type = DieCellType::TRIBUF;
-    c.gate = gate;
     return true;
   }
   else if (valid_logic_gates.contains(gate)) {
-    CHECK_P(c.cell_type == DieCellType::UNKNOWN);
+    CHECK_P(c.cell_type == DieCellType::LOGIC || c.cell_type == DieCellType::UNKNOWN);
     c.cell_type = DieCellType::LOGIC;
-    c.gate = gate;
     return true;
   }
   else if (gate == "add3") {
+    CHECK_P(c.cell_type == DieCellType::ADDER || c.cell_type == DieCellType::UNKNOWN);
     c.cell_type = DieCellType::ADDER;
-    c.gate = gate;
     return true;
   }
   else {
@@ -431,18 +575,18 @@ bool DieDB::parse_reg_type(DieCell& c, const std::string& type) {
     {"PinIn",     DieCellType::PIN_IN},
     {"PinOut",    DieCellType::PIN_OUT},
     {"PinIO",     DieCellType::PIN_IO},
-    {"PinClock",    DieCellType::PIN_CLK},
+    {"PinClock",  DieCellType::PIN_CLK},
     {"SigIn",     DieCellType::SIG_IN},
     {"SigOut",    DieCellType::SIG_OUT},
     {"Bus",       DieCellType::BUS},
-    //{"wire",      CellType::LOGIC},
     {"Gate",      DieCellType::LOGIC},
     {"Adder",     DieCellType::ADDER},
   };
 
-  CHECK_P(c.cell_type == DieCellType::UNKNOWN);
 
   if (decl_to_reg_type.contains(type)) {
+    CHECK_P(c.cell_type == DieCellType::UNKNOWN ||
+            c.cell_type == decl_to_reg_type[type]);
     c.cell_type = decl_to_reg_type[type];
     return true;
   }
@@ -455,7 +599,7 @@ bool DieDB::parse_reg_type(DieCell& c, const std::string& type) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
+bool DieDB::parse_cell_arg(const std::string& arg, DieCellArg& arg_out) {
 
   static regex simple_arg(
     "^"
@@ -524,35 +668,35 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
 
   smatch match;
   if (regex_match(arg, match, simple_arg)) {
-    c.add_arg(match[1].str(), "qp");
+    arg_out = {match[1].str(), "qp"};
     return true;
   }
   else if (regex_match(arg, match, cell_arg_with_port)) {
     const auto& raw_port = match[2].str();
 
     if (raw_port == "qp_old") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "qn_old") {
-      c.add_arg(match[1].str(), "qn");
+      arg_out = {match[1].str(), "qn"};
     }
     else if (raw_port == "qp_new") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "qn_new") {
-      c.add_arg(match[1].str(), "qn");
+      arg_out = {match[1].str(), "qn"};
     }
     else if (raw_port == "qp_any") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "qn_any") {
-      c.add_arg(match[1].str(), "qn");
+      arg_out = {match[1].str(), "qn"};
     }
     else if (raw_port == "carry") {
-      c.add_arg(match[1].str(), "carry");
+      arg_out = {match[1].str(), "carry"};
     }
     else if (raw_port == "sum") {
-      c.add_arg(match[1].str(), "sum");
+      arg_out = {match[1].str(), "sum"};
     }
     else {
       printf("port %s\n", match[2].str().c_str());
@@ -562,21 +706,21 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
     return true;
   }
   else if (regex_match(arg, match, cell_arg_function)) {
-    c.add_arg(match[1].str(), "qp");
+    arg_out = {match[1].str(), "qp"};
     return true;
   }
   else if (regex_match(arg, match, sig_arg)) {
-    c.add_arg(match[1].str(), "qp");
+    arg_out = {match[1].str(), "qp"};
     return true;
   }
   else if (regex_match(arg, match, bus_arg)) {
     const auto& raw_port = match[2].str();
 
     if (raw_port == "qp_old") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "qp_new") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else {
       printf("bus port %s\n", match[2].str().c_str());
@@ -589,19 +733,19 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
     const auto& raw_port = match[2].str();
 
     if      (raw_port == "qp_new") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "qp_any") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "qp_old") {
-      c.add_arg(match[1].str(), "qp");
+      arg_out = {match[1].str(), "qp"};
     }
     else if (raw_port == "clock") {
-      c.add_arg(match[1].str(), "clock");
+      arg_out = {match[1].str(), "clock"};
     }
     else if (raw_port == "clock_good") {
-      c.add_arg(match[1].str(), "clock_good");
+      arg_out = {match[1].str(), "clock_good"};
     }
     else {
       printf("pin port %s\n", match[2].str().c_str());
@@ -611,7 +755,7 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
     return true;
   }
   else if (regex_match(arg, match, pin_arg)) {
-    c.add_arg(match[1].str(), "qp");
+    arg_out = {match[1].str(), "qp"};
     return true;
   }
   else {
@@ -627,13 +771,34 @@ bool DieDB::parse_cell_arg(DieCell& c, const std::string& arg) {
 bool DieDB::parse_cell_arglist(DieCell& c, const string& arglist_c) {
   static regex arg_regex(R"(\s*_?(.+?)(,|$))");
 
+  CHECK_N(c.tag.empty());
+  CHECK_N(c.gate.empty());
+
+  const auto& next_ports = gate_type_to_in_ports[c.gate];
+  CHECK_N(next_ports.empty());
+
   string arglist = arglist_c;
   arglist.erase(remove_if(arglist.begin(), arglist.end(), ::isspace), arglist.end());
 
   bool result = true;
-  for (sregex_iterator i = sregex_iterator(arglist.begin(), arglist.end(), arg_regex); i != sregex_iterator(); i++) {
-    result &= parse_cell_arg(c, (*i)[1].str().c_str());
+  int i = 0;
+  for (sregex_iterator it = sregex_iterator(arglist.begin(), arglist.end(), arg_regex); it != sregex_iterator(); it++) {
+    DieCellArg prev_arg;
+    result &= parse_cell_arg((*it)[1].str(), prev_arg);
+    CHECK_P(result);
+
+    DieCellEdge edge = {
+      prev_arg.tag,
+      prev_arg.port,
+      c.tag,
+      next_ports[i]
+    };
+
+    edges.push_back(edge);
+
+    i++;
   }
+
   return result;
 }
 
@@ -650,6 +815,7 @@ bool DieDB::parse_cell_def(DieCell& c, const string& value) {
   if (regex_match(value, match, valid_value)) {
     result &= parse_cell_gate(c, match[1].str());
     result &= parse_cell_arglist(c, match[2].str());
+    CHECK_P(c.doc.empty());
     c.doc = match[3].str();
   }
   else {
@@ -693,6 +859,7 @@ bool DieDB::parse_cell_name(DieCell& c, const string& name) {
   }
 
   if (base_name.size()) {
+    CHECK_P(c.name.empty() || c.name == base_name);
     c.name = base_name;
     return true;
   }
@@ -705,13 +872,28 @@ bool DieDB::parse_cell_name(DieCell& c, const string& name) {
 
 bool DieDB::parse_tribuf_bus_target(DieCell& c, const string& bus_name) {
   static regex valid_bus_name(R"(^(?:\w+\.)*(BUS_\w+)$)");
+  CHECK_N(c.tag.empty());
 
   smatch match;
   if (regex_match(bus_name, match, valid_bus_name)) {
     std::string bus = match[1].str();
     DieCell* bus_cell = get_or_create_cell(bus);
     bus_cell->gate = "bus";
-    bus_cell->args.push_back({c.tag, "qp"});
+
+    size_t new_port_index = bus_cell->prev_ports.size();
+    char new_port_name[256];
+    sprintf_s(new_port_name, 256, "arg%02zd", new_port_index);
+
+    bus_cell->prev_ports.push_back(new_port_name);
+
+    DieCellEdge edge = {
+      c.tag,
+      "qp",
+      bus_cell->tag,
+      new_port_name
+    };
+
+    edges.push_back(edge);
 
     return true;
   } else {
@@ -727,6 +909,7 @@ bool DieDB::parse_pin_name(DieCell& c, const string& pin_name) {
 
   smatch match;
   if (regex_match(pin_name, match, valid_pin_name)) {
+    CHECK_P(c.name.empty());
     c.name = match[1].str();
     return true;
   } else {
@@ -742,6 +925,7 @@ bool DieDB::parse_sig_name(DieCell& c, const string& sig_name) {
 
   smatch match;
   if (regex_match(sig_name, match, valid_pin_name)) {
+    CHECK_P(c.name.empty());
     c.name = match[1].str();
     return true;
   } else {
@@ -836,17 +1020,25 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool DieDB::parse_line(DieCell& c, const std::string& line) {
+bool DieDB::parse_line(const std::string& line) {
   static regex tagged_line_regex(R"(^\s*(\/\*.*?\*\/)\s*(.*))");
 
   bool result = true;
   smatch matches;
   if (regex_match(line, matches, tagged_line_regex)) {
-    result &= parse_tag(c, matches[1].str());
-    result &= parse_rest(c, matches[2].str());
 
-    if (!result) {
+    std::string tag;
+    std::string page;
+
+    if (parse_tag(matches[1].str(), page, tag)) {
+      auto cell = get_or_create_cell(tag);
+      CHECK_P(cell->page.empty() || cell->page == page);
+      cell->page = page;
+      result &= parse_rest(*cell, matches[2].str());
+    }
+    else {
       printf("Could not parse line : \"%s\"\n", line.c_str());
+      result = false;
     }
   }
   else {
@@ -866,11 +1058,8 @@ bool DieDB::parse_file(const std::string& path) {
   std::ifstream lines(path);
   for (string line; getline(lines, line); ) {
     total_lines++;
-    DieCell c;
-    if (parse_line(c, line)) {
+    if (parse_line(line)) {
       total_tagged_lines++;
-      CHECK_N(c.tag.empty());
-      get_or_create_cell(c.tag)->merge(c);
     }
   }
   return result;
@@ -895,6 +1084,7 @@ bool DieDB::parse_dir(const std::string& path) {
     c.dump(d);
   }
 #else
+
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
       static regex src_names(R"(^GateBoy\w*\.(cpp|h)$)");
@@ -911,13 +1101,12 @@ bool DieDB::parse_dir(const std::string& path) {
   // Postprocess the cells.
 
   for (auto& [tag, cell] : tag_to_cell) {
-    // Tribufs don't get names, add the tag as the default name.
     if (cell->cell_type == DieCellType::TRIBUF) {
+      // Tribufs don't get names, add the tag as the default name.
       CHECK_P(cell->name.empty());
       cell->name = cell->tag;
     }
 
-    // All pins without gates are inputs from the outside world.
     if (cell->cell_type == DieCellType::PIN_IN) {
       CHECK_P(cell->gate.empty());
       cell->gate = "pin_in";
@@ -933,26 +1122,22 @@ bool DieDB::parse_dir(const std::string& path) {
       cell->gate = "sig_in";
     }
 
-    // All buses without args are inputs from the CPU.
     if (cell->tag.starts_with("BUS_")) {
+      CHECK_P(cell->cell_type == DieCellType::UNKNOWN);
+      CHECK_P(cell->gate.empty());
       cell->cell_type = DieCellType::BUS;
       cell->gate = "bus";
     }
 
-    /*
-    // All signals without gates are inputs from the CPU.
-    if (cell->tag.starts_with("SIG_")) {
-      if (cell->gate.empty()) {
-        CHECK_P(cell->cell_type == CellType::UNKNOWN);
-        cell->cell_type = CellType::SIG_IN;
-        cell->gate = "sig_input";
-      }
-      else {
-        CHECK_P(cell->cell_type == CellType::UNKNOWN);
-        cell->cell_type = CellType::SIG_OUT;
-      }
+    if (cell->cell_type == DieCellType::BUS) {
     }
-    */
+    else {
+      CHECK_P(gate_type_to_in_ports.contains(cell->gate));
+      cell->prev_ports = gate_type_to_in_ports[cell->gate];
+    }
+
+    CHECK_P(cell_type_to_out_ports.contains(cell->cell_type));
+    cell->next_ports = cell_type_to_out_ports[cell->cell_type];
   }
 
   //----------------------------------------
@@ -961,7 +1146,8 @@ bool DieDB::parse_dir(const std::string& path) {
   for (auto& [tag, cell] : tag_to_cell) {
     cell->sanity_check();
 
-    for (auto arg : cell->args) {
+#if 0
+    for (auto arg : cell->cell_args) {
       auto arg_cell = tag_to_cell[arg.tag];
       CHECK_P(arg_cell);
 
@@ -973,44 +1159,27 @@ bool DieDB::parse_dir(const std::string& path) {
         CHECK_P(cell->cell_type == DieCellType::BUS);
       }
 
-      auto& out_ports = cell_type_to_out_ports[arg_cell->cell_type];
-      CHECK_P(out_ports.size());
-
-      if (std::find(out_ports.begin(), out_ports.end(), arg.port) == out_ports.end()) {
+      if (std::find(arg_cell->next_ports.begin(), arg_cell->next_ports.end(), arg.port) == arg_cell->next_ports.end()) {
         printf("Bad port %s\n", arg.port.c_str());
         __debugbreak();
       }
-
-      /*
-      switch(arg_cell->cell_type) {
-      case DieCellType::PIN_IN:   { CHECK_P(arg.port.starts_with("qp")); break;}
-      case DieCellType::PIN_IO:   { CHECK_P(arg.port.starts_with("qp")); break;}
-      case DieCellType::PIN_CLK:  { CHECK_P(arg.port == "clock_good" || arg.port == "clock"); break;}
-      case DieCellType::SIG_IN:   { CHECK_P(arg.port == ""); break; }
-      case DieCellType::BUS:      { CHECK_P(arg.port.starts_with("qp")); break;}
-      case DieCellType::DFF:      { CHECK_P(arg.port.starts_with("qn") || arg.port.starts_with("qp")); break;}
-      case DieCellType::LATCH:    { CHECK_P(arg.port.starts_with("qn") || arg.port.starts_with("qp")); break;}
-      case DieCellType::TRIBUF:   { CHECK_P(arg.port == ""); break; }
-      case DieCellType::LOGIC:    { CHECK_P(arg.port == ""); break; }
-      case DieCellType::ADDER:    { CHECK_P(arg.port == "sum" || arg.port == "carry"); break; }
-      default: __debugbreak(); break;
-      }
-      */
     }
+#endif
   }
-
-
 
   //----------------------------------------
   // Check that all cells are used by some other cell, or are output cells.
 
+#if 0
   for (auto& [tag, cell] : tag_to_cell) {
-    for (const auto& arg : cell->args) {
+    for (const auto& arg : cell->cell_args) {
       CHECK_P(has_cell(arg.tag));
       get_cell(arg.tag)->mark++;
     }
   }
+#endif
 
+#if 0
   bool any_unused = false;
   for (auto& [tag, cell] : tag_to_cell) {
     if (cell->cell_type == DieCellType::PIN_OUT) continue;
@@ -1023,9 +1192,30 @@ bool DieDB::parse_dir(const std::string& path) {
       printf("Cell %s unused\n", cell->name.c_str());
       any_unused = true;
     }
+    cell->mark = 0;
   }
 
   if (any_unused) __debugbreak();
+#endif
+
+  //----------------------------------------
+  // Dump all edges to the edge list
+
+#if 0
+  for (auto& [next_tag, next_cell] : tag_to_cell) {
+    for (auto i = 0; i < next_cell->cell_args.size(); i++) {
+      auto& next_port = next_cell->prev_ports[i];
+      auto& prev_tag = next_cell->cell_args[i].tag;
+      auto& prev_port = next_cell->cell_args[i].port;
+      edges1.push_back({
+        prev_tag,
+        prev_port,
+        next_tag,
+        next_port
+      });
+    }
+  }
+#endif
 
   //----------------------------------------
   // Done, dump stats.
@@ -1040,6 +1230,8 @@ bool DieDB::parse_dir(const std::string& path) {
   //for (auto& [key, value] : pin_map)  value->dump(d);
   //for (auto& [key, value] : bus_map)  value->dump(d);
   //for (auto& [key, value] : sig_map)  value->dump(d);
+
+  printf("edges %zd should be 5871\n", edges.size());
 
   printf("\n");
 #endif

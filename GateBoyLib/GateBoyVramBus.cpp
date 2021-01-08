@@ -276,14 +276,14 @@ void GateBoyVramBus::bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM
   /* p25.RYTY*/ wire _RYTY_D6n = not1(_SEDO_D6p);
   /* p25.RADY*/ wire _RADY_D7n = not1(_SAWU_D7p);
 
-  /*PIN_33*/ PIN_33_VRAM_D00.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n);
-  /*PIN_31*/ PIN_31_VRAM_D01.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n);
-  /*PIN_30*/ PIN_30_VRAM_D02.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n);
-  /*PIN_29*/ PIN_29_VRAM_D03.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n);
-  /*PIN_28*/ PIN_28_VRAM_D04.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n);
-  /*PIN_27*/ PIN_27_VRAM_D05.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n);
-  /*PIN_26*/ PIN_26_VRAM_D06.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n);
-  /*PIN_25*/ PIN_25_VRAM_D07.pin_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n);
+  /*PIN_33*/ PIN_33_VRAM_D00.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n);
+  /*PIN_31*/ PIN_31_VRAM_D01.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n);
+  /*PIN_30*/ PIN_30_VRAM_D02.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n);
+  /*PIN_29*/ PIN_29_VRAM_D03.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n);
+  /*PIN_28*/ PIN_28_VRAM_D04.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n);
+  /*PIN_27*/ PIN_27_VRAM_D05.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n);
+  /*PIN_26*/ PIN_26_VRAM_D06.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n);
+  /*PIN_25*/ PIN_25_VRAM_D07.pin_io_out_pull_hilo(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -344,14 +344,14 @@ void GateBoyVramBus::read_vram(const uint8_t* vid_ram) {
   }
 
   // not tagging these, we'll leave only the internal connections in plait.
-  PIN_33_VRAM_D00.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 0));
-  PIN_31_VRAM_D01.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 1));
-  PIN_30_VRAM_D02.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 2));
-  PIN_29_VRAM_D03.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 3));
-  PIN_28_VRAM_D04.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 4));
-  PIN_27_VRAM_D05.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 5));
-  PIN_26_VRAM_D06.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 6));
-  PIN_25_VRAM_D07.pin_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 7));
+  PIN_33_VRAM_D00.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 0));
+  PIN_31_VRAM_D01.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 1));
+  PIN_30_VRAM_D02.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 2));
+  PIN_29_VRAM_D03.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 3));
+  PIN_28_VRAM_D04.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 4));
+  PIN_27_VRAM_D05.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 5));
+  PIN_26_VRAM_D06.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 6));
+  PIN_25_VRAM_D07.pin_io_in_oedp(~PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 7));
 }
 
 void GateBoyVramBus::write_vram(uint8_t* vid_ram) {

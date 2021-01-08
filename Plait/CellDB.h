@@ -60,26 +60,19 @@ struct DieCellEdge {
 
 struct DieCell {
   void sanity_check() const;
-  void merge(const DieCell& c);
   void dump(Dumper& d) const;
 
-  DieCellType              cell_type = DieCellType::UNKNOWN;
-  std::string              page;
-  std::string              tag;
-  std::string              gate;
-  std::string              name;
-  std::string              doc;
+  DieCellType cell_type = DieCellType::UNKNOWN;
+  std::string page;
+  std::string tag;
+  std::string gate;
+  std::string name;
+  std::string doc;
 
   std::vector<std::string> prev_ports;
   std::vector<std::string> next_ports;
 
   int mark = 0;
-
-  //void add_arg(const std::string& _tag, const std::string& _port) {
-  //  cell_args.push_back({_tag,_port});
-  //}
-
-  //std::vector<std::string>& get_out_ports();
 };
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -130,9 +123,9 @@ struct DieDB {
   std::map<std::string, DieCell*> tag_to_cell;
 
   static std::map<DieCellType, std::vector<std::string>> cell_type_to_out_ports;
-  static std::map<std::string, std::vector<std::string>> gate_type_to_in_ports;
+  static std::map<std::string, std::vector<std::string>> gate_to_in_ports;
 
-  std::vector<DieCellEdge> edges;
+  std::set<DieCellEdge> edges;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

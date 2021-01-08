@@ -48,6 +48,10 @@ int main(int argc, char** argv) {
   printf("Saving cell db\n");
   app->die_db.save_json("gameboy.die_db.json");
   printf("Done\n");
+  printf("Loading gameboy.die_db.json\n");
+  app->die_db.clear();
+  app->die_db.load_json("gameboy.die_db.json");
+  printf("Done\n");
 #else
   printf("Loading gameboy.die_db.json\n");
   app->die_db.clear();

@@ -589,22 +589,6 @@ struct PinIO : public BitBase {
 
   //----------------------------------------
 
-  void pin_io_out_oedp(wire PUn, wire Dp) {
-    CHECK_P(state & BIT_NEW);
-    CHECK_N(state & BIT_DIRTY3);
-    CHECK_N(state & BIT_DIRTY4);
-
-    state = Dp;
-    state &= BIT_DATA;
-    state |= BIT_DRIVEN;
-
-    state |= BIT_NEW;
-    state |= BIT_DIRTY3;
-    state |= (~PUn << 2) & BIT_PULLUP;
-  }
-
-  //----------------------------------------
-
   void pin_io_out_pull_hilo(wire PUn, wire HI, wire LO) {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY3);
@@ -761,22 +745,6 @@ struct PinOut : public BitBase {
     }
 
     state |= BIT_DIRTY4;
-  }
-
-  void pin_out_oehilo(wire PUn, wire HI, wire LO) {
-    CHECK_P(state & BIT_NEW);
-    CHECK_N(state & BIT_DIRTY4);
-
-    if (bit(HI ^ LO) == 0){
-      state = HI;
-      state &= BIT_DATA;
-      state |= BIT_DRIVEN;
-      state |= BIT_NEW;
-      state |= BIT_DIRTY3;
-    }
-
-    state |= BIT_DIRTY4;
-    state |= (~PUn << 2) & BIT_PULLUP;
   }
 };
 
